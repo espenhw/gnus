@@ -1,3 +1,15 @@
+2002-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-xmas.el (gnus-xmas-redefine): Quote `gnus-completing-read'
+	and `gnus-xmas-completing-read'.
+
+2002-01-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* nneething.el (nneething-message-id-number): Abolished.
+	(nneething-encode-file-name): Not encode numerical characters.
+	(nneething-make-head): `nneething-message-id-number' is not
+	used to generate message IDs.
+
 2002-01-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-emphasis-alist): Include !? as sentence-ending
@@ -62,7 +74,7 @@
 2002-01-20  Bj,Av(Brn Torkelsson  <torkel@acc.umu.se>
 
 	* dgnushack.el (dgnushack-compile): Compile smiley-ems for
-	XEmacs. 
+	XEmacs.
 
 2002-01-20  John H. Palmieri  <palmieri@math.washington.edu>
 
@@ -77,7 +89,7 @@
 2002-01-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnfolder.el (nnfolder-request-accept-article): Unfold
-	x-from-line. 
+	x-from-line.
 	(nnfolder-request-replace-article): Ditto.
 
 2002-01-20  Nevin Kapur  <nevin@jhu.edu>
@@ -94,20 +106,20 @@
 	* gnus-util.el (gnus-graphic-display-p): New function.
 
 	* nnmail.el (nnmail-article-group): Allow outputting traces of
-	non-strings. 
+	non-strings.
 
 	* nndoc.el (nndoc-type-alist): Rules for exim bounces.
 	(nndoc-exim-bounce-type-p): New function.
 
 	* message.el (message-dont-send): Doc fix.
 
-	* gnus-util.el (gnus-completing-read): Remove 
+	* gnus-util.el (gnus-completing-read): Remove
 	inherit-input-method.
 
 	* gnus-art.el (gnus-treat-smiley): Doc fix.
 
 	* gnus-agent.el (gnus-agent-fetch-headers): Ignore seen and recent
-	articles. 
+	articles.
 
 2002-01-19  Simon Josefsson  <jas@extundo.com>
 
@@ -126,12 +138,12 @@
 2002-01-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnkiboze.el (nnkiboze-generate-group): Make sure the directory
-	exists. 
+	exists.
 
 	* gnus-spec.el (gnus-string-width-function): New function.
 	(gnus-tilde-cut-form): Use it.
 	(gnus-tilde-max-form): Ditto.
-	(gnus-use-correct-string-widths): Default to (featurep 'xemacs). 
+	(gnus-use-correct-string-widths): Default to (featurep 'xemacs).
 	(gnus-substring-function): Use it.
 	(gnus-tilde-cut-form): Ditto.
 	(gnus-substring-function): New function.
@@ -156,14 +168,14 @@
 2002-01-19  Daniel Pittman  <daniel@rimspace.net>
 
 	* gnus-sum.el (gnus-summary-first-unseen-or-unread-subject): New
-	functions. 
+	functions.
 
 2002-01-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus.el (gnus-group-find-parameter): Clean up.	
+	* gnus.el (gnus-group-find-parameter): Clean up.
 
 	* gnus-sum.el (gnus-summary-goto-subject): Error on non-numerical
-	articles. 
+	articles.
 
 	* gnus-util.el (gnus-completing-read-with-default): Renamed.
 
@@ -171,7 +183,7 @@
 
 2002-01-19  Paul Stodghill  <stodghil@cs.cornell.edu>
 
-	* gnus-agent.el (gnus-category-name): Intern the category name. 
+	* gnus-agent.el (gnus-category-name): Intern the category name.
 
 2002-01-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -270,20 +282,20 @@
 2002-01-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-initial-limit): Inline
-	gnus-summary-limit-children. 
+	gnus-summary-limit-children.
 	(gnus-summary-initial-limit): Don't limit if
 	gnus-newsgroup-display is nil.
 	(gnus-summary-initial-limit): No, don't.
 
 	* gnus-util.el
 	(gnus-put-text-property-excluding-characters-with-faces): Inline
-	gnus-put-text-property. 
+	gnus-put-text-property.
 
 	* gnus-spec.el (gnus-default-format-specs): New variable.
 
 	* gnus-start.el (gnus-read-newsrc-file): Don't clear
-	gnus-format-specs. 
-	(gnus-read-newsrc-el-file): Default to gnus-default-format-specs. 
+	gnus-format-specs.
+	(gnus-read-newsrc-el-file): Default to gnus-default-format-specs.
 
 	* gnus-spec.el (gnus-update-format-specifications): Really check
 	the Gnus version of the .newsrc.eld file.
@@ -293,9 +305,9 @@
 	before splitting.
 
 	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Inline some
-	functions. 
+	functions.
 	(gnus-gather-threads-by-references): Inline
-	`gnus-split-references'. 
+	`gnus-split-references'.
 
 	* gnus-spec.el (gnus-summary-line-format-spec): New, optimized
 	default value of gnus-summary-line-format-spec.
@@ -341,7 +353,7 @@
 
 	* gnus.el: We don't need gnus-article-show-all-headers.
 
-	* gnus-art.el (article-show-all, gnus-article-show-all-header): 
+	* gnus-art.el (article-show-all, gnus-article-show-all-header):
 	Ditto.
 
 	* gnus-sum.el (gnus-summary-select-article): Don't call
@@ -387,7 +399,7 @@
 
 2002-01-12  Simon Josefsson  <jas@extundo.com>
 
-	* nnimap.el (nnimap-need-unselect-to-notice-new-mail) 
+	* nnimap.el (nnimap-need-unselect-to-notice-new-mail)
 	(nnimap-before-find-minmax-bugworkaround): Use it.
 	(nnimap-find-minmax-uid): Don't reselect current mailbox.
 	(nnimap-dont-close): New variable.
@@ -396,13 +408,13 @@
 2002-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-reply-with-original): Use
-	`mark-active'. 
+	`mark-active'.
 
-	* gnus-msg.el (gnus-summary-reply): Don't bug out on regions. 
+	* gnus-msg.el (gnus-summary-reply): Don't bug out on regions.
 
 	* gnus-logic.el (gnus-advanced-score-rule): Thinko fix.
 	(gnus-score-advanced): Clean up.
-	(gnus-score-advanced): Accept a multiple of the score. 
+	(gnus-score-advanced): Accept a multiple of the score.
 
 2002-01-12  Simon Josefsson  <jas@extundo.com>
 
@@ -429,7 +441,7 @@
 	* gnus-sum.el (gnus-summary-buffer-name): Return the dead name if
 	it exists.
 	(gnus-summary-setup-buffer): Wake up dead summary buffers.
-	(gnus-summary-buffer-name): Don't return the dead name after all. 
+	(gnus-summary-buffer-name): Don't return the dead name after all.
 	(gnus-summary-setup-buffer): Kill the dead buffer.
 
 	* gnus-art.el (gnus-article-followup-with-original): Store the
@@ -439,14 +451,14 @@
 
 	* gnus-fun.el (gnus-display-x-face-in-from): Fake it.
 	From: Karl Kleinpaste <karl@charcoal.com>
-	
+
 	* gnus-art.el (article-display-x-face): Ditto.
 	(gnus-article-reply-with-original): Use gnus-region-active-p.
 	(gnus-article-followup-with-original): Ditto.
 
 	* gnus-sum.el (gnus-summary-read-group-1): Don't select
 	downloadable article either.
-	
+
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-display-x-face): Insert From:.
@@ -456,7 +468,7 @@
 	gnus-article-prepare-hook.
 
 	* gnus-agent.el (gnus-agent-retrieve-headers): Load agentview.
-	(gnus-agent-toggle-plugged): Use gnus-agent-go-online. Move 
+	(gnus-agent-toggle-plugged): Use gnus-agent-go-online. Move
 	gnus-agent-possibly-synchronize-flags to the last.
 	(gnus-agent-go-online): New function. New variable.
 
@@ -467,7 +479,7 @@
 
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* message.el (message-ignored-news-headers) 
+	* message.el (message-ignored-news-headers)
 	(message-ignored-mail-headers): Add X-Gnus-Agent-Meta-Information:.
 	Suggested by ARISAWA Akihiro <ari@atesoft.advantest.co.jp>
 
@@ -477,7 +489,7 @@
 	(gnus-agent-regenerate): Show messages.
 
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
 	* gnus-agent.el (gnus-agent-regenerate-group): New function.
 	(gnus-agent-regenerate): New function.
 	(gnus-agent-save-alist): Sort.
@@ -522,7 +534,7 @@
 
 	* nnagent.el (nnagent-retrieve-headers): Don't use nnml
 	function. Insert undownloaded NOV.
-	
+
 	* gnus-agent.el (gnus-agent-retrieve-headers): New function.
 	(gnus-agent-request-article): New function.
 
@@ -533,7 +545,7 @@
 	(gnus-request-head): Use gnus-agent-request-article.
 	(gnus-request-body): Ditto.
 
-	* gnus-art.el (gnus-request-article-this-buffer): Use 
+	* gnus-art.el (gnus-request-article-this-buffer): Use
 	gnus-agent-request-article.
 
 	* gnus-sum.el (gnus-summary-read-group-1): Don't show the first
