@@ -116,7 +116,10 @@ the entire message.
 If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
   (let* ((access-type (cdr (assq 'access-type 
 				 (cdr (mm-handle-type handle)))))
-	 (func (cdr (assq (intern (downcase access-type))
+	 (func (cdr (assq (intern 
+			   (downcase 
+			    (or access-type
+				(error "Couldn't find access type."))))
 			  mm-extern-function-alist)))
 	 gnus-displaying-mime buf
 	 handles)

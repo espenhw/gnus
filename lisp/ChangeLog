@@ -1,3 +1,10 @@
+2000-11-12 21:35:04  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2231.el (rfc2231-encode-string): Insert semi-colon and
+	leading space.
+	* mm-extern.el (mm-inline-external-body): Report error when no 
+	access-type.
+
 2000-11-12 19:48:30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-select-newsgroup): Change the error message.

@@ -183,7 +183,7 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
 	(goto-char (point-min))
 	(while (not (eobp))
 	  (when (> (current-column) 60)
-	    (insert "\n")
+	    (insert ";\n")
 	    (setq broken t))
 	  (if (or (not (memq (following-char) ascii))
 		  (memq (following-char) control)
@@ -200,7 +200,8 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
 	(if (not broken)
 	    (insert param "*=")
 	  (while (not (eobp))
-	    (insert param "*" (format "%d" (incf num)) "*=")
+	    (insert (if (>= num 0) " " "\n ")
+		    param "*" (format "%d" (incf num)) "*=")
 	    (forward-line 1))))
        (spacep
 	(goto-char (point-min))
