@@ -2716,8 +2716,8 @@ It should typically alter the sending method in some way or other."
 			 (memq (char-charset char)
 			       '(eight-bit-control eight-bit-graphic)))))
 	  (add-text-properties (point) (1+ (point)) '(highlight t))
-	  (forward-char)
 	  (setq found t))
+	(forward-char)
 	(skip-chars-forward mm-7bit-chars))
       (when found
 	(setq choice
@@ -2739,6 +2739,7 @@ It should typically alter the sending method in some way or other."
 	    (delete-char 1)
 	    (if (eq choice ?r)
 		(insert ".")))
+	  (forward-char)
 	  (skip-chars-forward mm-7bit-chars))))))
 
 (defun message-add-action (action &rest types)
