@@ -594,10 +594,12 @@ The following commands are available:
 	    (delete-matching-lines gnus-ignored-newsgroups))
 	  (while (not (eobp)) 
 	    (ignore-errors
-             (push (cons (let ((p (point)))
-			   (skip-chars-forward "^ \t")
-			   (buffer-substring p (point)))
-			  (max 0 (- (1+ (read cur)) (read cur))))
+             (push (cons (if (eq (char-after) ?\")
+			     (read cur)
+			   (let ((p (point)))
+			     (skip-chars-forward "^ \t")
+			     (buffer-substring p (point))))
+			 (max 0 (- (1+ (read cur)) (read cur))))
 		    groups))
 	    (forward-line))))
       (setq groups (sort groups
