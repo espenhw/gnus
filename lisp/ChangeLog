@@ -1,3 +1,18 @@
+2003-03-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnrss.el (nnrss-decode-entities-unibyte-string): Use `buffer-string'.
+	* nndoc.el (nndoc-dissect-mime-parts-sub): do.
+	* nndb.el (nndb-request-accept-article, nndb-status-message): do.
+	* mm-url.el (mm-url-decode-entities-string): do.
+	* mml1991.el (mml1991-mailcrypt-sign, mml1991-gpg-sign): do.
+	* mm-decode.el (mm-find-raw-part-by-type): do.
+	* message.el (message-send-mail-partially)
+	(message-send-mail-with-sendmail): do.
+	* gnus-uu.el (gnus-uu-save-article, gnus-uu-reginize-string): do.
+	* gnus-kill.el (gnus-pp-gnus-kill): do.
+	* gnus-art.el (gnus-article-treat-unfold-headers)
+	(gnus-article-encrypt-body): do.
+
 2003-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* mail-source.el (mail-source-delete-incoming): Allow integer value.

@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.15 2002/10/10 00:54:59 jas Exp $
+;; RCS: $Id: mml1991.el,v 6.16 2002/10/11 00:02:24 jas Exp $
 
 ;;; Code:
 
@@ -57,7 +57,7 @@
     (while (looking-at "^Content[^ ]+:") (forward-line))
     (if (> (point) (point-min))
 	(progn
-	  (setq headers (buffer-substring (point-min) (point)))
+	  (setq headers (buffer-string))
 	  (kill-region (point-min) (point))))
     (goto-char (point-max))
     (unless (bolp)
@@ -142,7 +142,7 @@
     (while (looking-at "^Content[^ ]+:") (forward-line))
     (if (> (point) (point-min))
 	(progn
-	  (setq headers (buffer-substring (point-min) (point)))
+	  (setq headers (buffer-string))
 	  (kill-region (point-min) (point))))
     (goto-char (point-max))
     (unless (bolp)

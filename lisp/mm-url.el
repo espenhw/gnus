@@ -359,7 +359,7 @@ If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
   (with-temp-buffer
     (insert string)
     (mm-url-decode-entities)
-    (buffer-substring (point-min) (point-max))))
+    (buffer-string)))
 
 (defun mm-url-form-encode-xwfu (chunk)
   "Escape characters in a string for application/x-www-form-urlencoded.

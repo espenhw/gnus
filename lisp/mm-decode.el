@@ -1262,7 +1262,7 @@ If RECURSIVE, search recursively."
 		    (if notp
 			(not (equal (car ctl) type))
 		      (equal (car ctl) type)))
-	      (setq result (buffer-substring (point-min) (point-max)))))))
+	      (setq result (buffer-string))))))
       (forward-line 1)
       (setq start (point)))
     (when (and (not result) start)
@@ -1275,7 +1275,7 @@ If RECURSIVE, search recursively."
 		  (if notp
 		      (not (equal (car ctl) type))
 		    (equal (car ctl) type)))
-	    (setq result (buffer-substring (point-min) (point-max)))))))
+	    (setq result (buffer-string))))))
     result))
 
 (defvar mm-security-handle nil)

@@ -890,7 +890,7 @@ PARENT is the message-ID of the parent summary line, or nil for none."
 	    subtype "plain"))
     ;; Prepare the article and summary inserts.
     (unless article-insert
-      (setq article-insert (buffer-substring (point-min) (point-max))
+      (setq article-insert (buffer-string)
 	    head-end head-begin))
     ;; Fix MIME-Version
     (unless (string-match "MIME-Version:" article-insert)

@@ -1820,7 +1820,7 @@ unfolded."
       (while (not (eobp))
 	(save-restriction
 	  (mail-header-narrow-to-field)
-	  (let ((header (buffer-substring (point-min) (point-max))))
+	  (let ((header (buffer-string)))
 	    (with-temp-buffer
 	      (insert header)
 	      (goto-char (point-min))
@@ -6516,7 +6516,7 @@ For example:
 				   (search-forward field nil t))
 				 (prog2
 				     (message-narrow-to-field)
-				     (buffer-substring (point-min) (point-max))
+				     (buffer-string)
 				   (delete-region (point-min) (point-max))
 				   (widen))))
 			  '("Content-Type:" "Content-Transfer-Encoding:"

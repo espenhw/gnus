@@ -578,7 +578,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 	(insert "\n  t"))
       (insert ")")
       (prog1
-	  (buffer-substring (point-min) (point-max))
+	  (buffer-string)
 	(kill-buffer (current-buffer))))))
 
 (defun gnus-execute-1 (function regexp form header)

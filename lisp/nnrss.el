@@ -458,7 +458,7 @@ ARTICLE is the article number of the current headline.")
   (mm-with-unibyte-buffer
     (insert string)
     (mm-url-decode-entities-nbsp)
-    (buffer-substring (point-min) (point-max))))
+    (buffer-string)))
 
 (defalias 'nnrss-insert 'nnrss-insert-w3)
 

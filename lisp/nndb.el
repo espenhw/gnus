@@ -292,7 +292,7 @@ Optional LAST is ignored."
       (nntp-send-buffer "^[23].*\n"))
 
     (set-buffer nntp-server-buffer)
-    (setq msg (buffer-substring (point-min) (point-max)))
+    (setq msg (buffer-string))
     (or (string-match "^\\([0-9]+\\)" msg)
 	(error "nndb: %s" msg))
     (setq art (substring msg (match-beginning 1) (match-end 1)))
@@ -318,7 +318,7 @@ Optional LAST is ignored."
 (deffoo nndb-status-message (&optional server)
   "Return server status as a string."
   (set-buffer nntp-server-buffer)
-  (buffer-substring (point-min) (point-max)))
+  (buffer-string))
 
 ;; Import stuff from nntp
 

@@ -869,7 +869,7 @@ When called interactively, prompt for REGEXP."
 	    (setq body (buffer-substring (1- (point)) (point-max)))
 	    (narrow-to-region (point-min) (point))
 	    (if (not (setq headers gnus-uu-digest-headers))
-		(setq sorthead (buffer-substring (point-min) (point-max)))
+		(setq sorthead (buffer-string))
 	      (while headers
 		(setq headline (car headers))
 		(setq headers (cdr headers))
@@ -1089,7 +1089,7 @@ When called interactively, prompt for REGEXP."
     (while (re-search-forward "[ \t]+" nil t)
       (replace-match "[ \t]+" t t))
 
-    (buffer-substring (point-min) (point-max))))
+    (buffer-string)))
 
 (defun gnus-uu-get-list-of-articles (n)
   ;; If N is non-nil, the article numbers of the N next articles

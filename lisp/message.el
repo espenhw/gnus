@@ -3391,7 +3391,7 @@ It should typically alter the sending method in some way or other."
 	      (message-remove-header "Lines")
 	      (goto-char (point-max))
 	      (insert "Mime-Version: 1.0\n")
-	      (setq header (buffer-substring (point-min) (point-max))))
+	      (setq header (buffer-string)))
 	    (goto-char (point-max))
 	    (insert (format "Content-Type: message/partial; id=\"%s\"; number=%d; total=%d\n\n"
 			    id n total))
@@ -3581,7 +3581,7 @@ If you always want Gnus to send messages in one piece, set
 		(replace-match "; "))
 	      (if (not (zerop (buffer-size)))
 		  (error "Sending...failed to %s"
-			 (buffer-substring (point-min) (point-max)))))))
+			 (buffer-string))))))
       (when (bufferp errbuf)
 	(kill-buffer errbuf)))))
 
