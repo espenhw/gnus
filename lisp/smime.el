@@ -76,9 +76,9 @@
 ;;
 ;; Don't complain that this package doesn't do encrypted PEM files,
 ;; submit a patch instead.  I store my keys in a safe place, so I
-;; didn't need the encryption.  Also, programming this was made a lot
-;; easier by that decision.  One might think that this even influenced
-;; were I store my keys, and one would probably be right. :-)
+;; didn't need the encryption.  Also, programming was made easier by
+;; that decision.  One might think that this even influenced were I
+;; store my keys, and one would probably be right. :-)
 ;;
 ;; Suggestions and comments are appreciated, mail me at simon@josefsson.org.
 
@@ -106,19 +106,25 @@
   "S/MIME configuration.")
 
 (defcustom smime-keys nil
-  "Map your mail addresses to a file with your certified key.
+  "Map mail addresses to a file containing Certificate (and private key).
 The file is assumed to be in PEM format and not encrypted."
   :type '(repeat (list (string :tag "Mail address")
 		       (file :tag "File name")))
   :group 'smime)
 
-(defcustom smime-CAs nil
-  "List of directories/files containing certificates for CAs you trust.
-Files should be in PEM format.
-Directories should contain files (in PEM format) named to the X.509
+(defcustom smime-CA-directory ""
+  "Directory containing certificates for CAs you trust.
+Directory should contain files (in PEM format) named to the X.509
 hash of the certificate."
-  :type '(repeat (radio (directory :tag "Trusted CA directory")
-			(file :tag "Trusted CA file")))
+  :type '(choice (const :tag "none" nil)
+		 directory)
+  :group 'smime)
+
+(defcustom smime-CA-file ""
+  "Files containing certificates for CAs you trust.
+File should be in PEM format."
+  :type '(choice (const :tag "none" nil)
+		 file)
   :group 'smime)
 
 (defcustom smime-certificate-directory "~/Mail/certs/"
@@ -141,24 +147,29 @@ manually."
 (defun smime-call-openssl-region (b e buf &rest args)
   (case (apply 'call-process-region b e smime-openssl-program nil buf nil args)
     (0 t)
-    (1 (error "OpenSSL: An error occurred parsing the command options."))
-    (2 (error "OpenSSL: One of the input files could not be read."))
-    (3 (error "OpenSSL: an error occurred creating the PKCS#7 file or when reading the MIME message."))
-    (4 (error "OpenSSL: an error occurred decrypting or verifying the message."))
-    (t (error "Unknown OpenSSL exitcode %s" exitcode))))
+    (1 (message "OpenSSL: An error occurred parsing the command options.") nil)
+    (2 (message "OpenSSL: One of the input files could not be read.") nil)
+    (3 (message "OpenSSL: An error occurred creating the PKCS#7 file or when reading the MIME message.") nil)
+    (4 (message "OpenSSL: An error occurred decrypting or verifying the message.") nil)
+    (t (error "Unknown OpenSSL exitcode") nil)))
+
+;; Sign+encrypt region
 
 (defun smime-sign-region (b e keyfile)
   "Sign region with certified key in KEYFILE.
 If signing fails, the buffer is not modified.  Region is assumed to
 have proper MIME tags.  KEYFILE is expected to contain a PEM encoded
 private key and certificate."
-  (let* ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*"))))
-    (when (smime-call-openssl-region b e buffer "smime" "-sign"
-				     "-signer" (expand-file-name keyfile))
-      (delete-region b e)
-      (insert-buffer buffer)
-      (kill-buffer buffer)
-      t)))
+  (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*"))))
+    (prog1
+	(when (smime-call-openssl-region b e buffer "smime" "-sign"
+					 "-signer" (expand-file-name keyfile))
+	  (delete-region b e)
+	  (insert-buffer buffer)
+	  (when (looking-at "^MIME-Version: 1.0$")
+	    (delete-region (point) (progn (forward-line 1) (point))))
+	  t)
+      (kill-buffer buffer))))
 
 (defun smime-encrypt-region (b e certfiles)
   "Encrypt region for recipients specified in CERTFILES.
@@ -166,12 +177,17 @@ If encryption fails, the buffer is not modified.  Region is assumed to
 have proper MIME tags.  CERTFILES is a list of filenames, each file
 is expected to contain of a PEM encoded certificate."
   (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*"))))
-    (when (apply 'smime-call-openssl-region b e buffer "smime" "-encrypt"
-		 (mapcar 'expand-file-name certfiles))
-      (delete-region b e)
-      (insert-buffer buffer)
-      (kill-buffer buffer)
-      t)))
+    (prog1
+	(when (apply 'smime-call-openssl-region b e buffer "smime" "-encrypt"
+		     (mapcar 'expand-file-name certfiles))
+	  (delete-region b e)
+	  (insert-buffer buffer)
+	  (when (looking-at "^MIME-Version: 1.0$")
+	    (delete-region (point) (progn (forward-line 1) (point))))
+	  t)
+      (kill-buffer buffer))))
+
+;; Sign+encrypt buffer
 
 (defun smime-sign-buffer (&optional keyfile buffer)
   "S/MIME sign BUFFER with key in KEYFILE.
@@ -183,7 +199,8 @@ KEYFILE should contain a PEM encoded key and certificate."
      (or keyfile
 	 (smime-get-key-by-email
 	  (completing-read "Sign using which signature? " smime-keys nil nil
-			   (and (listp (car-safe smime-keys)) (caar smime-keys))))))))
+			   (and (listp (car-safe smime-keys))
+				(caar smime-keys))))))))
 
 (defun smime-encrypt-buffer (&optional certfiles buffer)
   "S/MIME encrypt BUFFER for recipients specified in CERTFILES.
@@ -197,6 +214,54 @@ nil."
      (or certfiles
 	 (list (read-file-name "Recipient's S/MIME certificate: "
 			       smime-certificate-directory nil))))))
+
+;; Verify+decrypt region
+
+(defun smime-verify-region (b e)
+  (let ((buffer (generate-new-buffer (generate-new-buffer-name "*smime*")))
+	(CAs (cond (smime-CA-file
+		    (list "-CAfile" (expand-file-name smime-CA-file)))
+		   (smime-CA-directory
+		    (list "-CApath" (expand-file-name smime-CA-directory)))
+		   (t
+		    (error "No CA configured.")))))
+    (prog1
+	(if (apply 'smime-call-openssl-region b e buffer "smime" "-verify" CAs)
+	    (message "S/MIME message verified succesfully.")
+	  (message "S/MIME message NOT verified successfully.")
+	  nil)
+      (kill-buffer buffer))))
+  
+(defun smime-decrypt-region (b e keyfile)
+  (let ((buffer (generate-new-buffer (generate-new-buffer-name "*smime*")))
+	CAs)
+    (when (apply 'smime-call-openssl-region b e buffer "smime" "-decrypt" 
+		 "-recip" keyfile)
+      
+      )
+    (kill-buffer buffer)))
+  
+;; Verify+Decrypt buffer
+
+(defun smime-verify-buffer (&optional buffer)
+  "Verify integrity of S/MIME message in BUFFER.
+Uses current buffer if BUFFER is nil."
+  (interactive)
+  (with-current-buffer (or buffer (current-buffer))
+    (smime-verify-region (point-min) (point-max))))
+
+(defun smime-decrypt-buffer (&optional buffer keyfile)
+  "Decrypt S/MIME message in BUFFER using KEYFILE.
+Uses current buffer if BUFFER is nil, queries user of KEYFILE is nil."
+  (interactive)
+  (with-current-buffer (or buffer (current-buffer))
+    (smime-decrypt-region 
+     (point-min) (point-max)
+     (or keyfile
+	 (smime-get-key-by-email
+	  (completing-read "Decrypt with which key? " smime-keys nil nil
+			   (and (listp (car-safe smime-keys)) 
+				(caar smime-keys))))))))
 
 ;; User interface.
 
