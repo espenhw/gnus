@@ -2711,7 +2711,8 @@ to find out how to use this."
 	      (cons '(valid-newsgroups . disabled)
 		    message-syntax-checks)))
       (message-cleanup-headers)
-      (if (not (message-check-news-syntax))
+      (if (not (let ((message-post-method method))
+		 (message-check-news-syntax)))
 	  nil
 	(unwind-protect
 	    (save-excursion
@@ -2890,10 +2891,9 @@ to find out how to use this."
 	    (known-groups
 	     (mapcar (lambda (n) (gnus-group-real-name n))
 		     (gnus-groups-from-server
-		      (cond ((equal gnus-post-method 'current)
-			     gnus-current-select-method)
-			    (gnus-post-method gnus-post-method)
-			    (t gnus-select-method)))))
+		      (if (message-functionp message-post-method)
+			  (funcall message-post-method)
+			message-post-method))))
 	    errors)
        (while groups
 	 (unless (or (equal (car groups) "poster")
