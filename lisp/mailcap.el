@@ -287,6 +287,10 @@ Nil means your home directory."
 		 directory)
   :group 'mailcap)
 
+(defvar mailcap-poor-system-types
+  '(ms-dos ms-windows windows-nt win32 w32 mswindows)
+  "Systems that don't have a Unix-like directory hierarchy.")
+
 ;;;
 ;;; Utility functions
 ;;;
@@ -363,7 +367,7 @@ MAILCAPS if set; otherwise (on Unix) use the path from RFC 1524, plus
     (cond
      (path nil)
      ((getenv "MAILCAPS") (setq path (getenv "MAILCAPS")))
-     ((memq system-type '(ms-dos ms-windows windows-nt))
+     ((memq system-type mailcap-poor-system-types)
       (setq path '("~/.mailcap" "~/mail.cap" "~/etc/mail.cap")))
      (t (setq path
 	      ;; This is per RFC 1524, specifically
@@ -860,7 +864,7 @@ If FORCE, re-parse even if already parsed."
     (cond
      (path nil)
      ((getenv "MIMETYPES") (setq path (getenv "MIMETYPES")))
-     ((memq system-type '(ms-dos ms-windows windows-nt))
+     ((memq system-type mailcap-poor-system-types)
       (setq path '("~/mime.typ" "~/etc/mime.typ")))
      (t (setq path
 	      ;; mime.types seems to be the normal name, definitely so
