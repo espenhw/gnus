@@ -10258,7 +10258,21 @@ possible but those listed are probably sufficient for most people.
 @table @code
 @item gnus-treat-buttonize (t, integer)
 @item gnus-treat-buttonize-head (head)
+
+@xref{Article Buttons}.
+
 @item gnus-treat-capitalize-sentences (t, integer)
+@item gnus-treat-overstrike (t, integer)
+@item gnus-treat-strip-cr (t, integer)
+@item gnus-treat-strip-headers-in-body (t, integer)
+@item gnus-treat-strip-leading-blank-lines (t, integer)
+@item gnus-treat-strip-multiple-blank-lines (t, integer)
+@item gnus-treat-strip-pem (t, last, integer)
+@item gnus-treat-strip-pgp (t, last, integer)
+@item gnus-treat-strip-trailing-blank-lines (t, last, integer)
+
+@xref{Article Washing}.
+
 @item gnus-treat-date-english (head)
 @item gnus-treat-date-iso8601 (head)
 @item gnus-treat-date-lapsed (head)
@@ -10266,9 +10280,29 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-date-original (head)
 @item gnus-treat-date-user-defined (head)
 @item gnus-treat-date-ut (head)
-@item gnus-treat-display-picons (head)
+
+@xref{Article Date}.
+
+@item gnus-treat-from-picon (head)
+@item gnus-treat-mail-picon (head)
+@item gnus-treat-newsgroups-picon (head)
+
+@xref{Picons}.
+
 @item gnus-treat-display-smileys (t, integer)
+
+@item gnus-treat-body-boundary (head)
+
+@vindex gnus-body-boundary-delimiter
+Adds a delimiter between header and body, the string used as delimiter
+is controlled by @code{gnus-body-boundary-delimiter}.
+
+@xref{Smileys}.
+
 @item gnus-treat-display-xface (head)
+
+@xref{X-Face}.
+
 @item gnus-treat-emphasize (t, head, integer)
 @item gnus-treat-fill-article (t, integer)
 @item gnus-treat-fill-long-lines (t, integer)
@@ -10277,27 +10311,25 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-hide-citation-maybe (t, integer)
 @item gnus-treat-hide-headers (head)
 @item gnus-treat-hide-signature (t, last)
+
+@xref{Article Hiding}.
+
 @item gnus-treat-highlight-citation (t, integer)
 @item gnus-treat-highlight-headers (head)
 @item gnus-treat-highlight-signature (t, last, integer)
-@item gnus-treat-overstrike (t, integer)
+
+@xref{Article Highlighting}.
+
 @item gnus-treat-play-sounds
-@item gnus-treat-strip-cr (t, integer)
-@item gnus-treat-strip-headers-in-body (t, integer)
-@item gnus-treat-strip-leading-blank-lines (t, integer)
-@item gnus-treat-strip-multiple-blank-lines (t, integer)
-@item gnus-treat-strip-pem (t, last, integer)
-@item gnus-treat-strip-pgp (t, last, integer)
-@item gnus-treat-strip-trailing-blank-lines (t, last, integer)
 @item gnus-treat-translate
 @item gnus-treat-x-pgp-sig (head)
-@item gnus-treat-from-picon (head)
-@item gnus-treat-mail-picon (head)
-@item gnus-treat-newsgroups-picon (head)
+
 @item gnus-treat-unfold-headers (head)
 @item gnus-treat-fold-headers (head)
 @item gnus-treat-fold-newsgroups (head)
-@item gnus-treat-body-boundary (head)
+
+
+
 @end table
 
 @vindex gnus-part-display-hook

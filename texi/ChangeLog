@@ -1,3 +1,8 @@
+2002-01-01  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Customizing Articles): Add crossreference links.  Add
+	gnus-body-boundary-delimiter.
+
 2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Choosing Commands): Addition.
