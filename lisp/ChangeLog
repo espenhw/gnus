@@ -1,3 +1,8 @@
+2002-06-05  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-send-mail-with-sendmail): Check return value
+	from call-process-region.
+
 2002-06-04  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-msg.el (gnus-group-mail, gnus-group-news)

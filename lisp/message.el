@@ -2993,6 +2993,7 @@ If you always want Gnus to send messages in one piece, set
 	  (erase-buffer))))
     (let ((default-directory "/")
 	  (coding-system-for-write message-send-coding-system))
+      (let ((cpr
       (apply 'call-process-region
 	     (append (list (point-min) (point-max)
 			   (if (boundp 'sendmail-program)
@@ -3015,7 +3016,9 @@ If you always want Gnus to send messages in one piece, set
 		     ;; For a resend, include the specific addresses.
 		     (if resend-to-addresses
 			 (list resend-to-addresses)
-		       '("-t")))))
+		       '("-t"))))))
+	(unless (zerop cpr)
+	  (error "Sending...failed: %s" cpr))))
     (when message-interactive
       (save-excursion
 	(set-buffer errbuf)
