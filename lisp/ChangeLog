@@ -1,5 +1,9 @@
 2001-08-04  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Revert.
+	(gnus-cache-passively-or-fully-p): Removed.
+	(gnus-cache-fully-p): Fix it.
+
 	* mm-view.el (mm-pkcs7-signed-magic): Support more ASN.1 lengths.
 
 2001-08-04  Simon Josefsson  <jas@extundo.com>

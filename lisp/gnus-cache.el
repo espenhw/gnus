@@ -160,7 +160,11 @@ it's not cached."
       (when (and number
 		 (> number 0)		; Reffed article.
 		 (or force
-		     (and (gnus-cache-passively-or-fully-p group)
+		     (and (or (not gnus-cacheable-groups)
+			      (string-match gnus-cacheable-groups group))
+			  (or (not gnus-uncacheable-groups)
+			      (not (string-match
+				    gnus-uncacheable-groups group)))
 			  (gnus-cache-member-of-class
 			   gnus-cache-enter-articles ticked dormant unread)))
 		 (not (file-exists-p (setq file (gnus-cache-file-name
@@ -692,24 +696,19 @@ If LOW, update the lower bound instead."
   (interactive "FMove the cache tree to: ")
   (rename-file gnus-cache-directory dir))
 
-(defun gnus-cache-passively-or-fully-p (&optional group)
-  "Returns non-nil if the cache should be used, possibly just passively.
+(defun gnus-cache-fully-p (&optional group)
+  "Returns non-nil if the cache should be fully used.
 If GROUP is non-nil, also cater to `gnus-cacheable-groups' and
 `gnus-uncacheable-groups'."
   (and gnus-use-cache
+       (not (eq gnus-use-cache 'passive))
        (if (null group)
 	   t
 	 (and (or (not gnus-cacheable-groups)
 		  (string-match gnus-cacheable-groups group))
 	      (or (not gnus-uncacheable-groups)
 		  (not (string-match gnus-uncacheable-groups group)))))))
-
-(defun gnus-cache-fully-p (&optional group)
-  "Returns non-nil if the cache should be fully used.
-If GROUP is non-nil, also cater to `gnus-cacheable-groups' and
-`gnus-uncacheable-groups'."
-  (and (gnus-cache-passively-or-fully-p group)
-       (not (eq gnus-use-cache 'passive))))
+       
 
 (provide 'gnus-cache)
 
