@@ -1,6 +1,6 @@
 ;;; pgg-gpg.el --- GnuPG support for PGG.
 
-;; Copyright (C) 1999, 2000, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Daiki Ueno <ueno@unixuser.org>
 ;; Created: 1999/10/28
@@ -120,12 +120,9 @@
       (with-temp-buffer
 	(apply #'call-process pgg-gpg-program nil t nil args)
 	(goto-char (point-min))
-	(while (re-search-forward "^\\(sec\\|pub\\):"  nil t)
-	  (push (substring
-		 (nth 3 (split-string
-			 (buffer-substring (match-end 0)
-					   (progn (end-of-line) (point)))
-			 ":")) 8)
+	(while (re-search-forward
+		"^\\(sec\\|pub\\):[^:]*:[^:]*:[^:]*:\\([^:]*\\)" nil t)
+	  (push (substring (match-string 2) 8)
 		pgg-gpg-all-secret-keys)))))
   pgg-gpg-all-secret-keys)
 
@@ -137,12 +134,9 @@
     (with-temp-buffer
       (apply #'call-process pgg-gpg-program nil t nil args)
       (goto-char (point-min))
-      (if (re-search-forward "^\\(sec\\|pub\\):"  nil t)
-	  (substring
-	   (nth 3 (split-string
-		   (buffer-substring (match-end 0)
-				     (progn (end-of-line)(point)))
-		   ":")) 8)))))
+      (if (re-search-forward "^\\(sec\\|pub\\):[^:]*:[^:]*:[^:]*:\\([^:]*\\)"
+			     nil t)
+	  (substring (match-string 2) 8)))))
 
 (defun pgg-gpg-encrypt-region (start end recipients &optional sign)
   "Encrypt the current region between START and END.
