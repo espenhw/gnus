@@ -1,3 +1,10 @@
+2005-01-15  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-summary-wash-map): Bind "W i" to
+	gnus-summary-idna-message.
+	(gnus-summary-make-menu-bar): Add De-IDNA menu entry.
+	(gnus-summary-idna-message): New function.
+
 2005-01-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-msg.el (gnus-confirm-mail-reply-to-news): Change default to

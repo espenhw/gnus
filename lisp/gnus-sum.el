@@ -1,5 +1,5 @@
 ;;; gnus-sum.el --- summary mode commands for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1945,7 +1945,8 @@ increase the score of each group you read."
   "v" gnus-summary-verbose-headers
   "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
   "p" gnus-article-verify-x-pgp-sig
-  "d" gnus-article-treat-dumbquotes)
+  "d" gnus-article-treat-dumbquotes
+  "i" gnus-summary-idna-message)
 
 (gnus-define-keys (gnus-summary-wash-deuglify-map "Y" gnus-summary-wash-map)
   ;; mnemonic: deuglif*Y*
@@ -2268,6 +2269,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Rot 13" gnus-summary-caesar-message
 	       ,@(if (featurep 'xemacs) '(t)
 		   '(:help "\"Caesar rotate\" article by 13"))]
+	      ["De-IDNA" gnus-summary-idna-message t]
 	      ["Morse decode" gnus-summary-morse-message t]
 	      ["Unix pipe..." gnus-summary-pipe-message t]
 	      ["Add buttons" gnus-article-add-buttons t]
@@ -8950,6 +8952,23 @@ forward."
 	(let ((start (window-start))
 	      buffer-read-only)
 	  (message-caesar-buffer-body arg)
+	  (set-window-start (get-buffer-window (current-buffer)) start))))))
+
+(defun gnus-summary-idna-message (&optional arg)
+  "Decode IDNA encoded domain names in the current articles.
+IDNA encoded domain names looks like `xn--bar'.  If a string
+remain unencoded after running this function, it is likely an
+invalid IDNA string (`xn--bar' is invalid)."
+  (interactive "P")
+  (gnus-summary-select-article)
+  (let ((mail-header-separator ""))
+    (gnus-eval-in-buffer-window gnus-article-buffer
+      (save-restriction
+	(widen)
+	(let ((start (window-start))
+	      buffer-read-only)
+	  (while (re-search-forward "\\(xn--[-0-9a-z]+\\)" nil t)
+	    (replace-match (idna-to-unicode (match-string 1))))
 	  (set-window-start (get-buffer-window (current-buffer)) start))))))
 
 (autoload 'unmorse-region "morse"
