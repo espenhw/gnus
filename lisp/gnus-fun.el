@@ -1,4 +1,4 @@
-;;; gnus-fun.el --- various frivoluos extension functions to Gnus
+;;; gnus-fun.el --- various frivolous extension functions to Gnus
 ;; Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -24,6 +24,10 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl)
+  (require 'mm-util))
 
 (defcustom gnus-x-face-directory (expand-file-name "x-faces" gnus-directory)
   "*Directory where X-Face PBM files are stored."
