@@ -1,3 +1,9 @@
+2002-01-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-preview): Bind gnus-original-article-buffer because
+	article-decode-group-name uses it.  Bind gnus-article-prepare-hook
+	because bbdb may use it.
+
 2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* nneething.el (nneething-request-article): When a non-text file
