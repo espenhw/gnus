@@ -8,6 +8,8 @@
 	same directory.
 	(gnus-agent-group-pathname): New function. Wrapper for
 	nnmail-group-pathname.
+	(gnus-agent-expire-unagentized-dirs): New variable.  May be
+	customized to disable gnus-agent-expire-unagentized-dirs.
 
 2003-04-10  Jesper Harder  <harder@ifa.au.dk>
 

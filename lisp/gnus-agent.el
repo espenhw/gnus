@@ -169,6 +169,11 @@ enable expiration per categories, topics, and groups."
   :type '(radio (const :format "Enable " ENABLE)
                 (const :format "Disable " DISABLE)))
 
+(defcustom gnus-agent-expire-unagentized-dirs t
+"Have gnus-agent-expire scan the directories under
+\(gnus-agent-directory) for groups that are no longer agentized.  When
+found, offer to remove them.")
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -2834,13 +2839,14 @@ articles in every agentized group."))
           (gnus-message 4 "Expiry...done")))))
 
 (defun gnus-agent-expire-unagentized-dirs ()
-  (when (boundp 'gnus-agent-expire-current-dirs)
+  (when (and gnus-agent-expire-unagentized-dirs
+             (boundp 'gnus-agent-expire-current-dirs))
     (let* ((keep (gnus-make-hashtable))
 	   ;; Formally bind gnus-agent-expire-current-dirs so that the
 	   ;; compiler will not complain about free references.
 	   (gnus-agent-expire-current-dirs
 	    (symbol-value 'gnus-agent-expire-current-dirs))
-	  dir)
+           dir)
 
       (gnus-sethash gnus-agent-directory t keep)
       (while gnus-agent-expire-current-dirs
@@ -2851,68 +2857,69 @@ articles in every agentized group."))
 	    (gnus-sethash dir t keep)
 	    (setq dir (file-name-directory (directory-file-name dir))))))
 
-  (let* (to-remove
-	 checker
-	 (checker
-	  (function
-	   (lambda (d)
-             "Given a directory, check it and its subdirectories for 
+      (let* (to-remove
+             checker
+             (checker
+              (function
+               (lambda (d)
+                 "Given a directory, check it and its subdirectories for 
               membership in the keep hash.  If it isn't found, add 
               it to to-remove." 
-	     (let ((files (directory-files d))
-		   file)
-	       (while (setq file (pop files))
-		 (cond ((equal file ".") ; Ignore self
-			nil)
-		       ((equal file "..") ; Ignore parent
-			nil)
-		       ((equal file ".overview") 
-                        ;; Directory must contain .overview to be
-                        ;; agent's cache of a group.
-			(let ((d (file-name-as-directory d))
-			      r)
-                          ;; Search ancestor's for last directory NOT
-                          ;; found in keep hash.
-			  (while (not (gnus-gethash
-				       (setq d (file-name-directory d)) keep))
-			    (setq r d
-				  d (directory-file-name d)))
-                          ;; if ANY ancestor was NOT in keep hash and
-                          ;; it it's already in to-remove, add it to
-                          ;; to-remove.                          
-			  (if (and r
-                                   (not (member r to-remove)))
-			      (push r to-remove))))
-		       ((file-directory-p (setq file (nnheader-concat d file)))
-			(funcall checker file)))))))))
-    (funcall checker gnus-agent-directory)
+                 (let ((files (directory-files d))
+                       file)
+                   (while (setq file (pop files))
+                     (cond ((equal file ".") ; Ignore self
+                            nil)
+                           ((equal file "..") ; Ignore parent
+                            nil)
+                           ((equal file ".overview") 
+                            ;; Directory must contain .overview to be
+                            ;; agent's cache of a group.
+                            (let ((d (file-name-as-directory d))
+                                  r)
+                              ;; Search ancestor's for last directory NOT
+                              ;; found in keep hash.
+                              (while (not (gnus-gethash
+                                           (setq d (file-name-directory d)) keep))
+                                (setq r d
+                                      d (directory-file-name d)))
+                              ;; if ANY ancestor was NOT in keep hash and
+                              ;; it it's already in to-remove, add it to
+                              ;; to-remove.                          
+                              (if (and r
+                                       (not (member r to-remove)))
+                                  (push r to-remove))))
+                           ((file-directory-p (setq file (nnheader-concat d file)))
+                            (funcall checker file)))))))))
+        (funcall checker gnus-agent-directory)
 
-    (when (and to-remove
-	       (gnus-y-or-n-p
-		"gnus-agent-expire has identified local directories that are\
+        (when (and to-remove
+                   (or gnus-expert-user
+                       (gnus-y-or-n-p
+                        "gnus-agent-expire has identified local directories that are\
  not currently required by any agentized group.	 Do you wish to consider\
- deleting them?"))
-      (while to-remove
-	(let ((dir (pop to-remove)))
-	  (if (gnus-y-or-n-p (format "Delete %s?" dir))
-	      (let* (delete-recursive
-		     (delete-recursive
-		      (function
-		       (lambda (f-or-d)
-			 (ignore-errors
-			  (if (file-directory-p f-or-d)
-			      (condition-case nil
-				  (delete-directory f-or-d)
-				(file-error
-				 (mapcar (lambda (f)
-					   (or (member f '("." ".."))
-					       (funcall delete-recursive
-							(nnheader-concat
-							 f-or-d f))))
-					 (directory-files f-or-d))
-				 (delete-directory f-or-d)))
-			    (delete-file f-or-d)))))))
-		(funcall delete-recursive dir))))))))))
+ deleting them?")))
+          (while to-remove
+            (let ((dir (pop to-remove)))
+              (if (gnus-y-or-n-p (format "Delete %s?" dir))
+                  (let* (delete-recursive
+                         (delete-recursive
+                          (function
+                           (lambda (f-or-d)
+                             (ignore-errors
+                               (if (file-directory-p f-or-d)
+                                   (condition-case nil
+                                       (delete-directory f-or-d)
+                                     (file-error
+                                      (mapcar (lambda (f)
+                                                (or (member f '("." ".."))
+                                                    (funcall delete-recursive
+                                                             (nnheader-concat
+                                                              f-or-d f))))
+                                              (directory-files f-or-d))
+                                      (delete-directory f-or-d)))
+                                 (delete-file f-or-d)))))))
+                    (funcall delete-recursive dir))))))))))
 
 ;;;###autoload
 (defun gnus-agent-batch ()
