@@ -7957,13 +7957,18 @@ of what's specified by the `gnus-refer-thread-limit' variable."
     (unless (eq gnus-fetch-old-headers 'invisible)
       (gnus-message 5 "Fetching headers for %s..." gnus-newsgroup-name)
       ;; Retrieve the headers and read them in.
-      (if (eq (gnus-retrieve-headers
-	       (list (min
-		      (+ (mail-header-number
-			  (gnus-summary-article-header))
-			 limit)
-		      gnus-newsgroup-end))
-	       gnus-newsgroup-name (* limit 2))
+      (if (eq (if (numberp limit)
+		  (gnus-retrieve-headers
+		   (list (min
+			  (+ (mail-header-number
+			      (gnus-summary-article-header))
+			     limit)
+			  gnus-newsgroup-end))
+		   gnus-newsgroup-name (* limit 2))
+		;; gnus-refer-thread-limit is t, i.e. fetch _all_
+		;; headers.
+		(gnus-retrieve-headers (list gnus-newsgroup-end)
+				       gnus-newsgroup-name limit))
 	      'nov)
 	  (gnus-build-all-threads)
 	(error "Can't fetch thread from backends that don't support NOV"))

@@ -1,3 +1,8 @@
+2003-02-11  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-refer-thread): Handle case where
+	gnus-refer-thread-limit is t.
+
 2003-02-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-util.el (mm-mule-charset-to-mime-charset): Use
