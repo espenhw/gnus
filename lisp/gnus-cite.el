@@ -1,6 +1,6 @@
 ;;; gnus-cite.el --- parse citations in articles for Gnus
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Per Abhiddenware
@@ -258,6 +258,11 @@ This should make it easier to see who wrote what."
   "Only hide excess citation if above this number of lines in the body."
   :group 'gnus-cite
   :type 'integer)
+
+(defcustom gnus-cite-blank-line-after-header t
+  "If non-nil, put a blank line between the citation header and the button."
+  :group 'gnus-cite
+  :type 'boolean)
 
 ;;; Internal Variables:
 
@@ -518,7 +523,8 @@ always hide."
 		    end (set-marker (make-marker) end))
 	      (gnus-add-text-properties-when 'article-type nil beg end props)
 	      (goto-char beg)
-	      (unless (save-excursion (search-backward "\n\n" nil t))
+	      (when (and gnus-cite-blank-line-after-header
+			 (not (save-excursion (search-backward "\n\n" nil t))))
 		(insert "\n"))
 	      (put-text-property
 	       (setq start (point-marker))

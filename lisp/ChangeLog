@@ -1,3 +1,12 @@
+2002-05-09  Miles Bader  <miles@gnu.org>
+
+	* gnus-cite.el (gnus-cite-blank-line-after-header): New variable.
+	(gnus-article-hide-citation): Respect it.
+
+2002-04-12  Juanma Barranquero  <lektu@terra.es>
+
+	* pop3.el (pop3-open-server): Fix typo.
+
 2002-06-18  Josh Huber  <huber@alum.wpi.edu>
 
 	* gnus.el (gnus-find-subscribed-addresses): Use add-to-list
