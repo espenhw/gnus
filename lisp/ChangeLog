@@ -1,3 +1,33 @@
+2003-04-09  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-write-active): Added option of
+	replacing, rather than updating, the agent's active file.  Do NOT
+	use the fully qualified group name as gnus-active-to-gnus-format
+	blindly prefixes group names with server names.
+	(gnus-agent-save-group-info): Merge BOTH min/max of current active
+	range, was just merging min, with specified active range.
+	(gnus-agent-expire): Save agent's active ranges after
+	expiring all groups.
+	(gnus-agent-expire-group-1): Update min of agent's active range to
+	min article currently fetched.
+	(gnus-agent-expire-unagentized-dirs): Avoid asking to delete the
+	same ancestor multiple times.
+
+	* gnus-async.el (gnus-asynchronous): Moved defcustom of
+	gnus-asynchronous away from defgroup of gnus-asynchronous.  This
+	seems to fix an intermittant error in which loading gnus-async
+	fails to define gnus-asynchronous (the variable).
+
+	* gnus-sum.el: Concur with Steve Young, 5th argument to 'load' is
+	non-essential.  Removed on all platforms.
+	(gnus-select-newsgroup): When the agent is active, expand the
+	group's active range to include fetched articles that are no
+	longer in the server's active range.
+
+	* gnus-util.el (gnus-with-output-to-file): Removed all of the
+	print-* bindings as they should be handled by the function doing
+	the printing.
+
 2003-04-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-uu.el (mm-uu-copy-to-buffer): buffer-file-coding-system
