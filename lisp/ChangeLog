@@ -1,3 +1,8 @@
+2002-03-13  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-send-mail-with-qmail): Make it work.  From
+	Pavel@Janik.cz (Pavel Jan,Bm(Bk).
+
 2002-03-13  Josh Huber  <huber@alum.wpi.edu>
 
 	* message.el (message-make-mft): Set case-fold-search while

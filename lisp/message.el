@@ -3062,8 +3062,8 @@ to find out how to use this."
 	 ;; free for -inject-arguments -- a big win for the user and for us
 	 ;; since we don't have to play that double-guessing game and the user
 	 ;; gets full control (no gestapo'ish -f's, for instance).  --sj
-         (if (functionp 'message-qmail-inject-args)
-             (funcall 'message-qmail-inject-args)
+         (if (message-functionp message-qmail-inject-args)
+             (funcall message-qmail-inject-args)
            message-qmail-inject-args)))
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
     ;; we have to look at the retval instead
