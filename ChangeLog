@@ -1,3 +1,7 @@
+2004-09-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* etc/.cvsignore: Remove unused.
+
 2004-06-16  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* make.bat: Fix line endings around arch-tag.
