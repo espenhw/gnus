@@ -22624,7 +22624,7 @@ events.  See @xref{Spam ELisp Package Sequence of Events}.
 
 @cindex spam-initialize
 To use @code{spam.el}, you @strong{must} run the function
-@code{spam-initialize} to autoload @code{spam.el} and to install the
+@code{spam-initialize} to autoload @file{spam.el} and to install the
 @code{spam.el} hooks.  There is one exception: if you use the
 @code{spam-use-stat} (@pxref{spam-stat spam filtering}) setting, you
 should turn it on before @code{spam-initialize}:
@@ -22634,7 +22634,7 @@ should turn it on before @code{spam-initialize}:
 (spam-initialize)
 @end example
 
-So, what happens when you load @code{spam.el}?
+So, what happens when you load @file{spam.el}?
 
 First, some hooks will get installed by @code{spam-initialize}.  There
 are some hooks for @code{spam-stat} so it can save its databases, and
@@ -22673,7 +22673,7 @@ You must have Bogofilter installed for that command to work properly.
 
 @end table
 
-Also, when you load @code{spam.el}, you will be able to customize its
+Also, when you load @file{spam.el}, you will be able to customize its
 variables.  Try @code{customize-group} on the @samp{spam} variable
 group.
 
@@ -22884,7 +22884,7 @@ spam checks for your nnmail split vs. your nnimap split.  Go crazy.
 You should still have specific checks such as
 @code{spam-use-regex-headers} set to @code{t}, even if you
 specifically invoke @code{spam-split} with the check.  The reason is
-that when loading @code{spam.el}, some conditional loading is done
+that when loading @file{spam.el}, some conditional loading is done
 depending on what @code{spam-use-xyz} variables you have set.  This
 is usually not critical, though.
 
@@ -23093,7 +23093,7 @@ back end, the @code{X-Spam-Status} header will be used.  If you use
 @code{spam-use-bogofilter}, the @code{X-Bogosity} header will be used.
 If you use @code{spam-use-crm114}, any header that matches the CRM114
 score format will be used.  As long as you set the appropriate back end
-variable to t @emph{before} you load @code{spam.el}, you will be
+variable to t @emph{before} you load @file{spam.el}, you will be
 fine.  @code{spam.el} will automatically add the right header to the
 internal Gnus list of required headers.
 
