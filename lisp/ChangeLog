@@ -1,3 +1,7 @@
+2002-01-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-expand-group-parameters): Match \N or \& only.
+
 2002-01-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-encode.el (mm-content-transfer-encoding-defaults): Add

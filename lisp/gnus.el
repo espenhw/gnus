@@ -2871,7 +2871,7 @@ You should probably use `gnus-find-method-for-group' instead."
   (let (new)
     (dolist (elem parameters)
       (if (and (stringp (cdr elem))
-	       (string-match "\\\\" (cdr elem)))
+	       (string-match "\\\\[0-9&]" (cdr elem)))
 	  (push (cons (car elem)
 		      (gnus-expand-group-parameter match (cdr elem) group))
 		new)
