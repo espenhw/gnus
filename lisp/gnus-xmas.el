@@ -632,7 +632,7 @@ The buffer is not selected, just returned to the caller."
 	  (erase-buffer)
 	  (if rawfile
 	      (condition-case ()
-		  (nnheader-insert-file-contents-literally filename t)
+		  (insert-file-contents-literally filename t)
 		(file-error
 		 ;; Unconditionally set error
 		 (setq error t)))

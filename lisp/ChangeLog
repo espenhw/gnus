@@ -1,4 +1,28 @@
-Wed Jan 17 22:58:05 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+Wed Jan 17 17:00:55 1996  Steven L. Baur  <steve@miranova.com>
+ 
+	* gnus-msg.el (gnus-inews-domain-name): mail-host-address may not
+	be predefined.
+
+Wed Jan 17 17:00:55 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus-xmas.el (gnus-xmas-find-file-noselect):
+	nnheader-insert-file-contents-literally lost the prefix
+
+Thu Jan 18 00:03:30 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-horizontal-recenter): Didn't work very well.
+	(gnus-dribble-enter): Don't enter anything if the buffer doesn't
+	exist. 
+	(gnus-recenter): New command.
+	(gnus-summary-refer-article): Give an error message.
+	(gnus-article-refer-article): Don't move point.
+
+Wed Jan 17 23:32:43 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-article-hide-boring-headers): Hide empty headers. 
+	(gnus-summary-recenter): Place point before recentering.
+
+Wed Jan 17 22:58:05 1996  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el (gnus-article-hide-header): Hide boring headers
 	selectively. 
@@ -6,6 +30,8 @@ Wed Jan 17 22:58:05 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
 
 	* nntp.el: Make sure `open-network-stream' has the right
 	definition. 
+
+	* gnus.el: 0.28 is released.
 
 Wed Jan 17 19:34:31 1996  Lars Ingebrigtsen  <lars@eyesore.no>
 

@@ -1516,7 +1516,8 @@ domain is undefined, the domain name is got from it."
 	     (domain 
 	      (or (if (stringp genericfrom) genericfrom)
 		  (getenv "DOMAINNAME")
-		  mail-host-address
+		  (and (boundp 'mail-host-address)
+		       mail-host-address)
 		  gnus-local-domain
 		  ;; Function `system-name' may return full internet name.
 		  ;; Suggested by Mike DeCorte <mrd@sun.soe.clarkson.edu>.

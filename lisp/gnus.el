@@ -1653,7 +1653,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.28"
+(defconst gnus-version "September Gnus v0.29"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -6504,6 +6504,7 @@ and the second element is the address."
    "*" gnus-cache-enter-article
    "\M-*" gnus-cache-remove-article
    "\M-&" gnus-summary-universal-argument
+   "\C-l" gnus-recenter
    "D" gnus-summary-enter-digest-group
    "I" gnus-summary-increase-score
    "L" gnus-summary-lower-score
@@ -9078,6 +9079,13 @@ If EXCLUDE-GROUP, do not go to this group."
 	(t
 	 (gnus-summary-find-next unread))))
 
+(defun gnus-recenter ()
+  "Center point in window and redisplay frame.
+Also do horizontal recentering."
+  (interactive)
+  (gnus-horizontal-recenter)
+  (recenter))
+
 (defun gnus-summary-recenter ()
   "Center point in the summary window.
 If `gnus-auto-center-summary' is nil, or the article buffer isn't
@@ -9103,6 +9111,7 @@ displayed, no centering will be performed."
 	window (min bottom (save-excursion 
 			     (forward-line (- top)) (point)))))
       ;; Do horizontal recentering while we're at it.
+      (gnus-summary-position-point)
       (gnus-horizontal-recenter))))
 
 (defun gnus-horizontal-recenter ()
@@ -9110,10 +9119,11 @@ displayed, no centering will be performed."
   (if (< (current-column) (/ (window-width) 2))
       (set-window-hscroll (get-buffer-window (current-buffer)) 0)
     (let* ((orig (point))
+	   (end (window-end))
 	   (max 0))
       ;; Find the longest line currently displayed in the window.
       (goto-char (window-start))
-      (while (< (point) (window-end))
+      (while (< (point) end)
 	(end-of-line)
 	(setq max (max max (current-column)))
 	(forward-line 1))
@@ -9122,10 +9132,10 @@ displayed, no centering will be performed."
       (if (> max (window-width))
 	  (set-window-hscroll 
 	   (get-buffer-window (current-buffer))
-	   (min (- (current-column) 
-		   (/ (+ (window-width) (window-hscroll)) 2)) 
+	   (min (- (current-column) (/ (window-width) 3))
 		(+ 2 (- max (window-width)))))
-	(set-window-hscroll (get-buffer-window (current-buffer)) 0)))))
+	(set-window-hscroll (get-buffer-window (current-buffer)) 0))
+      max)))
     
 ;; Function written by Stainless Steel Rat <ratinox@ccs.neu.edu>.
 (defun gnus-short-group-name (group &optional levels)
@@ -10445,8 +10455,9 @@ Return how many articles were fetched."
 	  (when gnus-refer-article-method
 	    (gnus-check-server gnus-refer-article-method))
 	  ;; Fetch the header, and display the article.
-	  (when (setq number (gnus-summary-insert-subject message-id))
-	    (gnus-summary-select-article nil nil nil number)))))))
+	  (if (setq number (gnus-summary-insert-subject message-id))
+	      (gnus-summary-select-article nil nil nil number)
+	    (gnus-message 3 "Couldn't fetch article %s" message-id)))))))
 
 (defun gnus-summary-enter-digest-group (&optional force)
   "Enter a digest group based on the current article."
@@ -13137,7 +13148,15 @@ always hide."
 	     ((eq elem 'empty)
 	      (while (re-search-forward "^[^:]+:[ \t]\n[^ \t]" nil t)
 		(forward-line -1)
-		(gnus-article-hide-header)))
+		(add-text-properties
+		 (progn (beginning-of-line) (point))
+		 (progn 
+		   (end-of-line)
+		   (if (re-search-forward "^[^ \t]" nil t)
+		       (match-beginning 0)
+		     (point-max)))
+		 (nconc (list 'gnus-type 'boring-headers)
+			gnus-hidden-properties))))
 	     ;; Hide boring Newsgroups header.
 	     ((eq elem 'newsgroups)
 	      (when (equal (mail-fetch-field "newsgroups")
@@ -13742,12 +13761,15 @@ Argument LINES specifies lines to be scrolled down."
 (defun gnus-article-refer-article ()
   "Read article specified by message-id around point."
   (interactive)
-  (search-forward ">" nil t)		;Move point to end of "<....>".
-  (if (re-search-backward "\\(<[^<> \t\n]+>\\)" nil t)
-      (let ((message-id (match-string 1)))
-	(set-buffer gnus-summary-buffer)
-	(gnus-summary-refer-article message-id))
-    (error "No references around point")))
+  (let ((point (point)))
+    (search-forward ">" nil t)		;Move point to end of "<....>".
+    (if (re-search-backward "\\(<[^<> \t\n]+>\\)" nil t)
+	(let ((message-id (match-string 1)))
+	  (goto-char point)
+	  (set-buffer gnus-summary-buffer)
+	  (gnus-summary-refer-article message-id))
+      (goto-char (point))
+      (error "No references around point"))))
 
 (defun gnus-article-show-summary ()
   "Reconfigure windows to show summary buffer."
@@ -13926,8 +13948,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
 
 (defun gnus-dribble-enter (string)
   (if (and (not gnus-dribble-ignore)
-	   (or gnus-dribble-buffer
-	       gnus-slave)
+	   gnus-dribble-buffer
 	   (buffer-name gnus-dribble-buffer))
       (let ((obuf (current-buffer)))
 	(set-buffer gnus-dribble-buffer)
