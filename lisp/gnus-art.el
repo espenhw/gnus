@@ -1323,7 +1323,7 @@ groups."
 
 ;;; Internal Variables:
 
-(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-\\wa-zA-Z0-9_=!?#$@~`%&*+|\\/.,]*[-\\wa-zA-Z0-9_=#$@~`%&*+|\\/]"
+(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-\\wa-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]*[-\\wa-zA-Z0-9_=#$@~`%&*+|\\/]"
   "*Regular expression that matches URLs.")
 
 (defvar gnus-button-alist 

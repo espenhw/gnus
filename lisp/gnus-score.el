@@ -282,6 +282,7 @@ If nil, the user will be asked for a duration.")
 
 (defvar gnus-score-help-winconf nil)
 (defvar gnus-adaptive-score-alist gnus-default-adaptive-score-alist)
+(defvar gnus-adaptive-word-score-alist gnus-default-adaptive-word-score-alist)
 (defvar gnus-score-trace nil)
 (defvar gnus-score-edit-buffer nil)
 

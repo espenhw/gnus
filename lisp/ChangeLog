@@ -1,3 +1,19 @@
+Wed Sep  4 05:19:58 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* nnmail.el (nnmail-move-inbox): Refuse to move if
+	gnnmai-crash-bux can't be written.
+
+	* gnus-art.el (gnus-button-url-regexp): Include : and ; in
+	regexp. 
+
+	* gnus-score.el (gnus-adaptive-word-score-alist): New variable. 
+
+	* nnmail.el (nnmail-move-inbox): Set file modes on wrong file. 
+
+Tue Sep  3 06:44:36 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.24 is released.
+
 Tue Sep  3 05:30:02 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus-async.el (gnus-async-prefetch-article): Reset async list
