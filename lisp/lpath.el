@@ -20,7 +20,7 @@
 	       tool-bar-add-item-from-menu tool-bar-local-item-from-menu
 	       url-generic-parse-url url-http-file-exists-p
 	       url-insert-file-contents vcard-pretty-print w32-focus-frame
-	       w3m-charset-to-coding-system w3m-region x-focus-frame))
+	       w3m-detect-meta-charset w3m-region x-focus-frame))
 (maybe-bind '(eudc-protocol
 	      filladapt-mode mc-pgp-always-sign
 	      rmail-insert-mime-forwarded-message-function url-current-object
@@ -28,8 +28,7 @@
 	      w3-meta-charset-content-type-regexp
 	      w3-meta-content-type-charset-regexp
 	      w3m-cid-retrieve-function-alist w3m-current-buffer
-	      w3m-display-inline-images w3m-meta-content-type-charset-regexp
-	      w3m-minor-mode-map))
+	      w3m-display-inline-images w3m-minor-mode-map))
 
 (if (featurep 'xemacs)
     (progn

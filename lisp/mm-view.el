@@ -129,26 +129,26 @@
 	(charset (mail-content-type-get
 		  (mm-handle-type handle) 'charset)))
     (save-excursion
-      (insert text)
+      (insert (if charset (mm-decode-string text charset) text))
       (save-restriction
 	(narrow-to-region b (point))
-	(goto-char (point-min))
-	(if (or (and (boundp 'w3-meta-content-type-charset-regexp)
-		     (re-search-forward
-		      w3-meta-content-type-charset-regexp nil t))
-		(and (boundp 'w3-meta-charset-content-type-regexp)
-		     (re-search-forward
-		      w3-meta-charset-content-type-regexp nil t)))
+	(unless charset
+	  (goto-char (point-min))
+	  (when (or (and (boundp 'w3-meta-content-type-charset-regexp)
+			 (re-search-forward
+			  w3-meta-content-type-charset-regexp nil t))
+		    (and (boundp 'w3-meta-charset-content-type-regexp)
+			 (re-search-forward
+			  w3-meta-charset-content-type-regexp nil t)))
 	    (setq charset
-		  (or (let ((bsubstr (buffer-substring-no-properties
-				      (match-beginning 2)
-				      (match-end 2))))
-			(if (fboundp 'w3-coding-system-for-mime-charset)
-			    (w3-coding-system-for-mime-charset bsubstr)
-			  (mm-charset-to-coding-system bsubstr)))
-		      charset)))
-	(delete-region (point-min) (point-max))
-	(insert (mm-decode-string text charset))
+		  (let ((bsubstr (buffer-substring-no-properties
+				  (match-beginning 2)
+				  (match-end 2))))
+		    (if (fboundp 'w3-coding-system-for-mime-charset)
+			(w3-coding-system-for-mime-charset bsubstr)
+		      (mm-charset-to-coding-system bsubstr))))
+	    (delete-region (point-min) (point-max))
+	    (insert (mm-decode-string text charset))))
 	(save-window-excursion
 	  (save-restriction
 	    (let ((w3-strict-width width)
@@ -224,19 +224,17 @@
 	(b (point))
 	(charset (mail-content-type-get (mm-handle-type handle) 'charset)))
     (save-excursion
-      (insert text)
+      (insert (if charset (mm-decode-string text charset) text))
       (save-restriction
 	(narrow-to-region b (point))
-	(goto-char (point-min))
-	(when (re-search-forward w3m-meta-content-type-charset-regexp nil t)
-	  (setq charset (or (w3m-charset-to-coding-system (match-string 2))
-			    charset)))
-	(when charset
-	  (delete-region (point-min) (point-max))
-	  (insert (mm-decode-string text charset)))
+	(unless charset
+	  (goto-char (point-min))
+	  (when (setq charset (w3m-detect-meta-charset))
+	    (delete-region (point-min) (point-max))
+	    (insert (mm-decode-string text charset))))
 	(let ((w3m-safe-url-regexp mm-w3m-safe-url-regexp)
 	      w3m-force-redisplay)
-	  (w3m-region (point-min) (point-max)))
+	  (w3m-region (point-min) (point-max) nil charset))
 	(when (and mm-inline-text-html-with-w3m-keymap
 		   (boundp 'w3m-minor-mode-map)
 		   w3m-minor-mode-map)

@@ -1,3 +1,12 @@
+2004-05-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mm-view.el (mm-inline-text-html-render-with-w3): Check META
+	tags, only when charsets are not specified in headers.
+	(mm-inline-text-html-render-with-w3m): Ditto.
+
+	* lpath.el: Remove `w3m-meta-content-type-charset-regexp' and
+	`w3m-charset-to-coding-system'.  Add `w3m-detect-meta-charset'.
+
 2004-05-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* gnus-art.el (article-strip-banner): Use MIME-encoded from fields
