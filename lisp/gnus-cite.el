@@ -748,7 +748,10 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(setq end (+ begin gnus-cite-max-prefix)))
       ;; Ignore quoted envelope From_.
       (when (and gnus-cite-ignore-quoted-from
-		 (looking-at ">from "))
+		 (prog2
+		     (setq case-fold-search nil)
+		     (looking-at ">From ")
+		   (setq case-fold-search t)))
 	(setq end (1+ begin)))
       (while (re-search-forward prefix-regexp (1- end) t)
 	;; Each prefix.

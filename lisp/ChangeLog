@@ -1,5 +1,10 @@
 2004-06-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-cite.el (gnus-cite-parse): Don't ignore case when finding
+	">From ".  Thanks to Reiner Steib <Reiner.Steib@gmx.de>.
+
+2004-06-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-cite.el (gnus-cite-ignore-quoted-from): New user option.
 	(gnus-cite-parse): Ignore quoted envelope From_.  Suggested by
 	Karl Chen <quarl@nospam.quarl.org>.
