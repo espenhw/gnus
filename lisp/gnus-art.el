@@ -5604,16 +5604,13 @@ The function must take one argument, the string naming the URL."
 
 (defcustom gnus-button-ctan-directory-regexp
   (concat
-   "\\b\\(\\("
+   "\\("; Cannot use `\(?: ... \)' (compatibility with Emacs 20).
    "biblio\\|digests\\|dviware\\|fonts\\|graphics\\|help\\|"
    "indexing\\|info\\|language\\|macros\\|support\\|systems\\|"
    "tds\\|tools\\|usergrps\\|web\\|nonfree\\|obsolete"
-   "\\)"
-   ;; Require at least one subdirectory to avoid false positives.
-   "/[-a-z0-9]+/[/-a-z0-9]+\\)")
-  "Regular expression that matches ctan directories.
-The first regexp group has to match the directory relative to
-`gnus-ctan-url'."
+   "\\)")
+  "Regular expression for ctan directories.
+It should match all directories in the top level of `gnus-ctan-url'."
   :group 'gnus-article-buttons
   :type 'regexp)
 
@@ -5939,10 +5936,15 @@ positives are possible."
     ;; CTAN
     ("\\bCTAN:[ \t\n]*\\([^>)!;:,'\n\t ]*\\)"
      0 (>= gnus-button-tex-level 1) gnus-button-handle-ctan 1)
-    ("\\btex-archive/\\([-/a-z0-9]+\\)"
-     1 (>= gnus-button-tex-level 7) gnus-button-handle-ctan 1)
-    (gnus-button-ctan-directory-regexp
-     1 (>= gnus-button-tex-level 9) gnus-button-handle-ctan 1)
+    ((concat "\\btex-archive/\\("
+	     gnus-button-ctan-directory-regexp
+	     "/[-_.a-z0-9/]+[-_./a-z0-9]+[/a-z0-9]\\)")
+     1 (>= gnus-button-tex-level 6) gnus-button-handle-ctan 1)
+    ((concat
+      "\\b\\("
+      gnus-button-ctan-directory-regexp
+      "/[-_.a-z0-9]+/[-_./a-z0-9]+[/a-z0-9]\\)")
+     1 (>= gnus-button-tex-level 8) gnus-button-handle-ctan 1)
     ;; This is info
     ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 2)

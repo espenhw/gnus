@@ -1,3 +1,9 @@
+2003-04-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-ctan-directory-regexp): Changed meaning
+	and value.
+	(gnus-button-alist): Use it.
+
 2003-04-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* pgg-gpg.el (pgg-gpg-process-region): do.
