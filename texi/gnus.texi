@@ -16281,12 +16281,12 @@ toggles the plugged/unplugged state of the Gnus Agent.
 * Server Agent Commands::       
 @end menu
 
-You can run a complete batch fetch from the command line with the
+You can run a complete batch command from the command line with the
 following incantation:
 
-@cindex gnus-agent-batch-fetch
+@cindex gnus-agent-batch
 @example
-$ emacs -batch -l ~/.gnus.el -f gnus-agent-batch-fetch
+$ emacs -batch -l ~/.gnus.el -f gnus-agent-batch
 @end example
 
 
