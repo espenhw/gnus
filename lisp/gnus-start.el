@@ -2248,7 +2248,8 @@ If FORCE is non-nil, the .newsrc file is read."
           (pop converters))
 
         ;; Perform converters to bring older version up to date.
-        (while (and converters (< fcv (caar converters)))
+	(when (and converters (< fcv (caar converters)))
+	  (while (and converters (< fcv (caar converters)))
             (let* ((converter-spec  (pop converters))
                    (convert-to      (nth 1 converter-spec))
                    (load-from       (nth 2 converter-spec))
@@ -2284,7 +2285,7 @@ If FORCE is non-nil, the .newsrc file is read."
               (funcall func convert-to)))
           (gnus-dribble-enter 
            (format ";Converted newsrc from version '%s' to '%s'? (n/y/?)"
-                   gnus-newsrc-file-version gnus-version))))))
+                   gnus-newsrc-file-version gnus-version)))))))
 
 (defun gnus-convert-mark-converter-prompt (converter no-prompt)
   (setplist converter
