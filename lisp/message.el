@@ -437,6 +437,13 @@ conjunction with `message-subscribed-regexps' and
   :group 'message-interface
   :type '(repeat sexp))
 
+(defcustom message-subscribed-address-file nil
+  "*A file containing addresses the user is subscribed to.
+If nil, do not look at any files to determine list subscriptions.  If
+non-nil, each line of this file should be a mailing list address."
+  :group 'message-interface
+  :type 'string)
+
 (defcustom message-subscribed-addresses nil
   "*Specifies a list of addresses the user is subscribed to.
 If nil, do not use any predefined list subscriptions.  This list of
@@ -2715,6 +2722,7 @@ It should typically alter the sending method in some way or other."
       ;; Generate the Mail-Followup-To header if the header is not there...
       (if (and (or message-subscribed-regexps
 		   message-subscribed-addresses
+		   message-subscribed-address-file
 		   message-subscribed-address-functions)
 	       (not (mail-fetch-field "mail-followup-to")))
 	  (setq headers
@@ -3766,9 +3774,25 @@ give as trustworthy answer as possible."
 	 (recipients
 	  (mapcar 'mail-strip-quoted-names
 		  (message-tokenize-header msg-recipients)))
+	 (file-regexps
+	  (if message-subscribed-address-file
+	      (let (begin end item re)
+		(save-excursion
+		  (with-temp-buffer
+		    (insert-file-contents message-subscribed-address-file)
+		    (while (not (eobp))
+		      (setq begin (point))
+		      (forward-line 1)
+		      (setq end (point))
+		      (if (bolp) (setq end (1- end)))
+		      (setq item (regexp-quote (buffer-substring begin end)))
+		      (if re (setq re (concat re "\\)\\|\\(" item))
+			(setq re (concat "\\`\\(" item))))
+		    (and re (list (concat re "\\)\\'"))))))))
 	 (mft-regexps (apply 'append message-subscribed-regexps
 			     (mapcar 'regexp-quote
 				     message-subscribed-addresses)
+			     file-regexps
 			     (mapcar 'funcall
 				     message-subscribed-address-functions))))
     (save-match-data

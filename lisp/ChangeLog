@@ -1,3 +1,8 @@
+2001-11-30 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el: New variable message-subscribed-address-file;
+	use it in message-make-mft.  From Paul Jarc <prj@po.cwru.edu>.
+
 2001-11-30 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-tab-body-function): Set to nil.
