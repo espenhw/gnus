@@ -192,8 +192,9 @@ If it is down, start it up (again)."
   "Request all new groups since DATE from METHOD."
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
-  (funcall (gnus-get-function method 'request-newgroups)
-	   date (nth 1 method)))
+  (let ((func (gnus-get-function method 'request-newgroups t)))
+    (when func
+      (funcall func date (nth 1 method)))))
 
 (defun gnus-server-opened (method)
   "Check whether a connection to METHOD has been opened."

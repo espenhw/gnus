@@ -276,7 +276,7 @@ with some simple extensions.
   (let ((top (gnus-topic-find-topology topic)))
     (unless top
       (error "No such topic: %s" topic))
-    (nth 2 (car top))))
+    (nth 3 (cadr top))))
 
 (defun gnus-topic-set-parameters (topic parameters)
   "Set the topic parameters of TOPIC to PARAMETERS."
@@ -287,7 +287,9 @@ with some simple extensions.
     ;; to begin with.
     (unless (nthcdr 2 (car top))
       (nconc (car top) (list nil)))
-    (setcar (nthcdr 2 (car top)) parameters)))
+    (unless (nthcdr 3 (car top))
+      (nconc (car top) (list nil)))
+    (setcar (nthcdr 3 (car top)) parameters)))
 
 (defun gnus-group-topic-parameters (group)
   "Compute the group parameters for GROUP taking into account inheretance from topics."
@@ -496,14 +498,14 @@ articles in the topic and its subtopics."
 	 (groups (cdr (assoc topic gnus-topic-alist)))
 	 (g (cdr (member group groups)))
 	 (unfound t))
-    (while (and g unfound)
-      (when (gnus-group-goto-group (pop g))
-	(beginning-of-line)
-	(setq unfound nil)))
-    (when unfound
+    ;; Try to jump to a visible group.
+    (while (and g (not (gnus-group-goto-group (car g) t)))
+      (pop g))
+    ;; It wasn't visible, so we try to see where to insert it.
+    (when (not g)
       (setq g (cdr (member group (reverse groups))))
       (while (and g unfound)
-	(when (gnus-group-goto-group (pop g))
+	(when (gnus-group-goto-group (pop g) t)
 	  (forward-line 1)
 	  (setq unfound nil)))
       (when unfound
@@ -851,16 +853,16 @@ articles in the topic and its subtopics."
       (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
       (add-hook 'gnus-group-catchup-group-hook 'gnus-topic-update-topic)
       (add-hook 'gnus-group-update-group-hook 'gnus-topic-update-topic)
-      (make-local-variable 'gnus-group-prepare-function)
-      (setq gnus-group-prepare-function 'gnus-group-prepare-topics)
-      (make-local-variable 'gnus-group-goto-next-group-function)
-      (setq gnus-group-goto-next-group-function 
-	    'gnus-topic-goto-next-group)
+      (set (make-local-variable 'gnus-group-prepare-function)
+	   'gnus-group-prepare-topics)
+      (set (make-local-variable 'gnus-group-get-parameter-function)
+	   'gnus-group-topic-parameters)
+      (set (make-local-variable 'gnus-group-goto-next-group-function)
+	   'gnus-topic-goto-next-group)
+      (set (make-local-variable 'gnus-group-indentation-function)
+	   'gnus-topic-group-indentation)
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
-      (make-local-variable 'gnus-group-indentation-function)
-      (setq gnus-group-indentation-function
-	    'gnus-topic-group-indentation)
       (gnus-make-local-hook 'gnus-check-bogus-groups-hook)
       (add-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist)
       (setq gnus-topology-checked-p nil)

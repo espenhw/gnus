@@ -326,7 +326,8 @@ If NOT-ALL, don't pack ticked articles."
       (while prefix
 	(gnus-set-work-buffer)
 	(insert (format "(setq gnus-soup-prev-prefix %d)\n" (cdar prefix)))
-	(make-directory (caar prefix) t)
+	(unless (file-exists-p (caar prefix))
+	  (make-directory (caar prefix) t))
 	(write-region (point-min) (point-max)
 		      (concat (caar prefix) gnus-soup-prefix-file) 
 		      nil 'nomesg)

@@ -471,6 +471,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
   '((gnus-group-mode "(gnus)The Group Buffer")
     (gnus-summary-mode "(gnus)The Summary Buffer")
     (gnus-article-mode "(gnus)The Article Buffer")
+    (mime/viewer-mode "(gnus)The Article Buffer")
     (gnus-server-mode "(gnus)The Server Buffer")
     (gnus-browse-mode "(gnus)Browse Foreign Server")
     (gnus-tree-mode "(gnus)Tree Display"))
@@ -699,7 +700,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-move" :interactive t
       gnus-group-move-group-to-server gnus-change-server)
      ("gnus-logic" gnus-score-advanced)
-     ("gnus-undo" gnus-undo-mode gnus-undo-register)
+     ("gnus-undo" gnus-undo-mode gnus-undo-register 
+      gnus-dup-unsuppress-article)
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
       gnus-async-prefetch-article gnus-async-prefetch-remove-group)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm

@@ -228,6 +228,12 @@
     (timezone-absolute-from-gregorian
      (nth 1 dat) (nth 2 dat) (car dat))))
 
+(defun gnus-time-to-day (time)
+  "Convert TIME to day number."
+  (let ((tim (decode-time time)))
+    (timezone-absolute-from-gregorian
+     (nth 4 tim) (nth 3 tim) (nth 5 tim))))
+
 (defun gnus-encode-date (date)
   "Convert DATE to internal time."
   (let* ((parse (timezone-parse-date date))
@@ -342,8 +348,10 @@
 
 (defun gnus-date-iso8601 (header)
   "Convert the date field in HEADER to YYMMDDTHHMMSS"
-  (format-time-string "%y%m%dT%H%M%S"
-		      (nnmail-date-to-time (mail-header-date header))))
+  (condition-case ()
+      (format-time-string "%Y%m%dT%H%M%S"
+			  (nnmail-date-to-time (mail-header-date header)))
+    (error "")))
 
 (defun gnus-mode-string-quote (string)
   "Quote all \"%\" in STRING."

@@ -1,3 +1,154 @@
+Sat Aug 10 06:03:07 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-soup.el (gnus-soup-write-prefixes): Protect against
+	existing dirs.
+
+	* gnus-topic.el (gnus-topic-parameters): Third parameter instead
+	of second.
+	(gnus-topic-set-parameters): Ditto.
+
+Sat Aug 10 05:22:43 1996  Lee Iverson  <leei@ai.sri.com>
+
+	* message.el (message-send-mail-with-mh): Didn't work.
+
+Sat Aug 10 03:57:42 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-dup.el (gnus-dup-unsuppress-article): Data instead of
+	ingo. 
+	(gnus-dup-unsuppress-article): Set the wrong variable.
+
+Sat Aug 10 00:52:26 1996  Jack Vinson  <jvinson@cheux.ecs.umass.edu>
+
+	* gnus.el (gnus-short-group-name): Bug in dotless names.
+
+Sat Aug 10 00:45:32 1996  Jens Lautenbacher  <jens@lemhrem.lem.uni-karlsruhe.de>
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Use the `gcc-self'
+	parameter. 
+
+Sat Aug 10 00:28:41 1996  François Pinard  <pinard@progiciels-bpi.ca>
+
+	* gnus-load.el (gnus-info-nodes): Add info node for
+	`mime/viewer-mode'. 
+
+Sat Aug 10 00:25:51 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-reply): Don't include first empty line. 
+
+Sat Aug 10 00:11:52 1996  François Pinard  <pinard@progiciels-bpi.ca>
+
+	* gnus-sum.el (gnus-summary-prev-unread-article): Doc fix.
+
+Sat Aug 10 00:08:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-util.el (gnus-date-iso8601): Protect agains buggy Dates. 
+
+Fri Aug  9 06:39:22 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-topic-mode): Hook into parameter thingies. 
+	(gnus-topic-parameters): Buggy definition.
+
+	* gnus-group.el (gnus-group-get-parameter-function): New
+	variable. 
+
+	* gnus.el (gnus-group-find-parameter): New function.
+
+	* gnus-sum.el (gnus-summary-read-document): New command and
+	keystroke. 
+
+	* gnus-group.el (gnus-group-clear-data-on-native-groups): New
+	command. 
+	(gnus-group-read-ephemeral-group): Accept an ACTIVATE-ONLY
+	parameter.
+
+	* gnus-score.el (gnus-decay-score): New function.
+	(gnus-decay-scores): New function.
+	(gnus-decay-score-function): New variable.
+	(gnus-score-date): Accept a `regexp' match.
+
+	* gnus-util.el (gnus-time-to-day): New function.
+
+	* gnus-score.el (gnus-decay-scores): New variable.
+	(gnus-score-decay-constant): New variable.
+	(gnus-score-decay-scale): New variable.
+
+	* gnus-sum.el (gnus-group-make-articles-read): Register undo. 
+
+	* gnus-group.el (gnus-update-read-articles): Register undo.
+
+	* gnus-undo.el (gnus-undo-register-1): Renamed.
+	(gnus-undo-register): New macro.
+
+	* gnus-group.el (gnus-group-yank-group): Be undoable.
+	(gnus-group-kill-group): Be undoable.
+	(gnus-undo): Required.
+	(gnus-group-clear-data): New keystroke.
+
+	* gnus-undo.el (gnus-undo-last-command): New variable.
+	(gnus-undo): Didn't work.
+	(gnus-undo-boundary): Keep track of whether the last command did a
+	boundary.
+	(gnus-undo): Set boundary.
+
+Thu Aug  8 19:43:02 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-spec.el (gnus-tilde-cut-form): New function.
+	(gnus-tilde-max-form): New definition.
+	(gnus-tilde-ignore-form): New function.
+	(gnus-parse-format): Rewrite to accept extended syntax.
+
+	* gnus-topic.el (gnus-topic-goto-missing-group): Try to be a bit
+	faster.
+
+	* gnus-group.el (gnus-group-goto-group): Accept optional FAR
+	parameter. 
+
+	* gnus-int.el (gnus-request-newgroups): Don't bug out on servers
+	that don't support this.
+
+	* gnus.el (gnus-server-extend-method): Would bug out on non-known
+	methods. 
+
+	* gnus-group.el (gnus-group-get-new-news): Put point in the group
+	buffer. 
+
+Wed Aug  7 15:40:44 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* nntp.el (nntp-open-rlogin): Now can be used as
+ 	nntp-open-connection function
+	(nntp-open-telnet): Ditto
+	(nntp-open-rlogin): Needed to remove telnet junk from nntp buffer
+ 	to make new nntp-wait-for happy
+	all: required carriage return for end of line 
+
+Tue Aug  6 21:58:26 1996  Jan Vroonhof  <vroonhof@math.ethz.ch (Jan Vroonhof)>
+
+	* nndoc.el (nndoc-generate-lanl-gov-head): New function
+	(nndoc-transform-lanl-gov-announce): New function
+	(nndoc-lanl-gov-announce-type-p): New funtion
+	(nndoc-type-alist): Added support for preprint announcements
+	(nndoc-type-alist): Only use 'slack-digests' if forced to.
+
+Tue Aug  6 20:41:02 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* nndoc.el (nndoc-type-alist): tried to call nndoc-guess-type-p
+
+Thu Aug  8 05:40:28 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-summary-walk-group-buffer): Put cursor in echo
+	area.
+
+	* gnus-dup.el (gnus-dup-unsuppress-article): New function.
+
+	* gnus-sum.el (gnus-mark-article-as-unread): Unsuppress
+	duplicates. 
+
+	* gnus-msg.el (gnus-debug): Scan gnus-load.el.
+
+Thu Aug  8 01:48:57 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.8 is released.
+
 Thu Aug  8 01:36:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el: Red Gnus v0.7 is released.

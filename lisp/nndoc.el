@@ -1,4 +1,3 @@
-;;; nndoc.el --- single file access for Gnus
 ;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -97,11 +96,26 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (body-begin . "^ ?$")
      (file-end . "^End of")
      (prepare-body-function . nndoc-unquote-dashes)
-     (subtype digest guess))
+     (subtype digest))  ;; impossible to really guess?
+    (lanl-gov-announce
+      (article-begin . "^\\\\\\\\\n")
+      (head-begin . "^Paper.*:")
+      (head-end   . "^\\\\\\\\\n")
+      (body-begin . "")  
+      (body-end   . "-------------------------------------------------")     
+      (file-end   . "^Title: Recent Seminal")
+      (generate-head-function . nndoc-generate-lanl-gov-head)
+      (article-transform-function . nndoc-transform-lanl-gov-announce)
+      (subtype preprints guess))
     (guess 
-     (guess . nndoc-guess-type))
+     (guess . t)
+     (subtype nil))
     (digest
-     (guess . nndoc-guess-digest-type))
+     (guess . t)
+     (subtype nil))
+    (preprints
+     (guess . t)
+     (subtype nil))
     ))
 
 
@@ -443,6 +457,44 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-slack-digest-type-p ()
   0)
+
+(defun nndoc-lanl-gov-announce-type-p ()
+  (when (let ((case-fold-search nil))
+	  (re-search-forward "^\\\\\\\\\nPaper: [a-z-]+/[0-9]+" nil t))
+    t))
+
+(defun nndoc-transform-lanl-gov-announce (article)
+  (goto-char (point-max))
+  (when (re-search-backward "^\\\\\\\\ +(\\([^ ]*\\) , *\\([^ ]*\\))" nil t)
+    (replace-match "\n\nGet it at \\1 (\\2)" t nil))
+  ;;  (when (re-search-backward "^\\\\\\\\$" nil t)
+  ;;    (replace-match "" t t))
+  )
+ 
+(defun nndoc-generate-lanl-gov-head (article)
+  (let ((entry (cdr (assq article nndoc-dissection-alist)))
+ 	(e-mail "no address given")
+ 	subject from)
+    (save-excursion
+      (set-buffer nndoc-current-buffer)
+      (save-restriction
+ 	(narrow-to-region (car entry) (nth 1 entry))
+ 	(goto-char (point-min))
+ 	(when (looking-at "^Paper.*: \\([a-z-]+/[0-9]+\\)")
+ 	  (setq subject (concat " (" (match-string 1) ")"))
+ 	  (when (re-search-forward "^From: \\([^ ]+\\)" nil t)
+ 	    (setq e-mail (match-string 1)))
+ 	  (when (re-search-forward "^Title: \\([^\f]*\\)\nAuthors?: \\(.*\\)"
+ 				   nil t)
+ 	    (setq subject (concat (match-string 1) subject))
+ 	    (setq from (concat (match-string 2) " <" e-mail ">"))))
+ 	))
+    (while (string-match "(\[^)\]*)" from)
+      (setq from (replace-match "" t t from)))
+    (insert "From: "  (or from "unknown")
+ 	    "\nSubject: " (or subject "(no subject)") "\n")))
+ 
+
 
 ;;;
 ;;; Functions for dissecting the documents

@@ -64,15 +64,16 @@ You probably don't want to do that, though.")
 
 (defvoo nntp-open-connection-function 'nntp-open-network-stream
   "*Function used for connecting to a remote system.
-It will be called with the address of the remote system.
+It will be called with the buffer to output in.
 
 Two pre-made functions are `nntp-open-network-stream', which is the
 default, and simply connects to some port or other on the remote
-system (see nntp-port-number).  The other is `nntp-open-rlogin', which
+system (see nntp-port-number).  The other are `nntp-open-rlogin', which
 does an rlogin on the remote system, and then does a telnet to the
-NNTP server available there (see nntp-rlogin-parameters).")
+NNTP server available there (see nntp-rlogin-parameters) and `nntp-open-telnet' which
+telnets to a remote system, logs in and does the same")
 
-(defvoo nntp-rlogin-parameters '("telnet" "${NNTPSERVER:=localhost}" "nntp")
+(defvoo nntp-rlogin-parameters '("telnet" "-8" "${NNTPSERVER:=news}" "nntp")
   "*Parameters to `nntp-open-login'.
 That function may be used as `nntp-open-server-function'.  In that
 case, this list will be used as the parameter list given to rsh.")
@@ -80,7 +81,7 @@ case, this list will be used as the parameter list given to rsh.")
 (defvoo nntp-rlogin-user-name nil
   "*User name on remote system when using the rlogin connect method.")
 
-(defvoo nntp-telnet-parameters '("exec" "telnet" "-8" "${NNTPSERVER:=localhost}" "nntp")
+(defvoo nntp-telnet-parameters '("exec" "telnet" "-8" "${NNTPSERVER:=news}" "nntp")
   "*Parameters to `nntp-open-telnet'.
 That function may be used as `nntp-open-server-function'.  In that
 case, this list will be executed as a command after logging in
@@ -131,7 +132,7 @@ If can be used to set up a server remotely, for instance.  Say you
 have an account at the machine \"other.machine\".  This machine has
 access to an NNTP server that you can't access locally.  You could
 then use this hook to rsh to the remote machine and start a proxy NNTP
-server there that you can connect to.")
+server there that you can connect to. See also `nntp-open-connection-function'")
 
 (defvoo nntp-warn-about-losing-connection t
   "*If non-nil, beep when a server closes connection.")
@@ -231,7 +232,7 @@ server there that you can connect to.")
 (deffoo nntp-request-article (article &optional group server buffer command)
   (nntp-possibly-change-group group server)
   (when (nntp-send-command-and-decode
-	 "\r\n\\.\r\n" "ARTICLE"
+	 "\r?\n\\.\r?\n" "ARTICLE"
 	 (if (numberp article) (int-to-string article) article))
     (when buffer
       (save-excursion
@@ -250,12 +251,12 @@ server there that you can connect to.")
 (deffoo nntp-request-body (article &optional group server)
   (nntp-possibly-change-group group server)
   (nntp-send-command-and-decode
-   "\r\n\\.\r\n" "BODY"
+   "\r?\n\\.\r?\n" "BODY"
    (if (numberp article) (int-to-string article) article)))
 
 (deffoo nntp-request-group (group &optional server dont-check)
   (nntp-possibly-change-group nil server)
-  (when (nntp-send-command "^2.*\r\n" "GROUP" group)
+  (when (nntp-send-command "^2.*\n" "GROUP" group)
     (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
       (setcar (cddr entry) group))))
 
@@ -297,11 +298,11 @@ server there that you can connect to.")
 
 (deffoo nntp-request-list (&optional server)
   (nntp-possibly-change-group nil server)
-  (nntp-send-command-and-decode "\r\n\\.\r\n" "LIST"))
+  (nntp-send-command-and-decode "\r?\n\\.\r?\n" "LIST"))
 
 (deffoo nntp-request-list-newsgroups (&optional server)
   (nntp-possibly-change-group nil server)
-  (nntp-send-command "\r\n\\.\r\n" "LIST NEWSGROUPS"))
+  (nntp-send-command "\r?\n\\.\r?\n" "LIST NEWSGROUPS"))
 
 (deffoo nntp-request-newgroups (date &optional server)
   (nntp-possibly-change-group nil server)
@@ -334,23 +335,23 @@ server there that you can connect to.")
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will make innd servers spawn an nnrpd process to allow actual article
 reading."
-  (nntp-send-command "^.*\r\n" "MODE READER"))
+  (nntp-send-command "^.*\r?\n" "MODE READER"))
 
 (defun nntp-send-nosy-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
-  (nntp-send-command "^.*\r\n" "AUTHINFO USER"
+  (nntp-send-command "^.*\r?\n" "AUTHINFO USER"
 		     (read-string "NNTP user name: "))
-  (nntp-send-command "^.*\r\n" "AUTHINFO PASS" 
+  (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" 
 		     (read-string "NNTP password: ")))
 
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
-  (nntp-send-command "^.*\r\n" "AUTHINFO USER" (user-login-name))
-  (nntp-send-command "^.*\r\n" "AUTHINFO PASS" 
+  (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
+  (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" 
 		     (read-string "NNTP password: ")))
 
 (defun nntp-send-authinfo-from-file ()
@@ -364,9 +365,9 @@ It will prompt for a password."
       (erase-buffer)
       (insert-file-contents "~/.nntp-authinfo")
       (goto-char (point-min))
-      (nntp-send-command "^.*\r\n" "AUTHINFO USER" (user-login-name))
+      (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
       (nntp-send-command 
-       "^.*\r\n" "AUTHINFO PASS" 
+       "^.*\r?\n" "AUTHINFO PASS" 
        (buffer-substring (point) (progn (end-of-line) (point))))
       (kill-buffer (current-buffer)))))
 
@@ -454,11 +455,12 @@ It will prompt for a password."
 		    (current-buffer)))
 	 (process
 	  (condition-case ()
-	      (funcall nntp-open-connection-function pbuffer)
+	      (funcall
+	       nntp-open-connection-function pbuffer)
 	    (error nil))))
     (when process
       (process-kill-without-query process)
-      (nntp-wait-for process "^.*\r\n" buffer)
+      (nntp-wait-for process "^.*\n" buffer)
       (if (memq (process-status process) '(open run))
 	  (prog1
 	      (caar (push (list process buffer nil) 
@@ -749,14 +751,14 @@ It will prompt for a password."
 	;; If `nntp-server-xover' is a string, then we just send this
 	;; command.
 	(if wait-for-reply
-	    (nntp-send-command-nodelete "\r\n\\.\r\n" nntp-server-xover range)
+	    (nntp-send-command-nodelete "\r?\n\\.\r?\n" nntp-server-xover range)
 	  ;; We do not wait for the reply.
-	  (nntp-send-command-nodelete "\r\n\\.\r\n" nntp-server-xover range))
+	  (nntp-send-command-nodelete "\r?\n\\.\r?\n" nntp-server-xover range))
       (let ((commands nntp-xover-commands))
 	;; `nntp-xover-commands' is a list of possible XOVER commands.
 	;; We try them all until we get at positive response. 
 	(while (and commands (eq nntp-server-xover 'try))
-	  (nntp-send-command-nodelete "\r\n\\.\r\n" (car commands) range)
+	  (nntp-send-command-nodelete "\r?\n\\.\r?\n" (car commands) range)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (goto-char (point-min))
@@ -788,16 +790,16 @@ It will prompt for a password."
       (set-buffer buf)
       (goto-char (point-min)))))
 
-(defun nntp-open-telnet (server)
+(defun nntp-open-telnet (buffer)
   (save-excursion
-    (set-buffer nntp-server-buffer)
+    (set-buffer buffer)
     (erase-buffer)
     (let ((proc (start-process
-		 "nntpd" nntp-server-buffer "telnet" "-8"))
+		 "nntpd" buffer "telnet" "-8"))
 	  (case-fold-search t))
       (when (memq (process-status proc) '(open run))
 	(process-send-string proc "set escape \^X\n")
-	(process-send-string proc (concat "open " server "\n"))
+	(process-send-string proc (concat "open " nntp-address "\n"))
 	(nntp-wait-for-string "^\r*.?login:")
 	(process-send-string
 	 proc (concat
@@ -828,19 +830,24 @@ It will prompt for a password."
 	(delete-region (point) (point-max)))
       proc)))
 
-(defun nntp-open-rlogin (server)
+(defun nntp-open-rlogin (buffer)
   "Open a connection to SERVER using rsh."
   (let ((proc (if nntp-rlogin-user-name
 		  (start-process
-		   "nntpd" nntp-server-buffer "rsh"
-		   server "-l" nntp-rlogin-user-name
+		   "nntpd" buffer "rsh"
+		   nntp-address "-l" nntp-rlogin-user-name
 		   (mapconcat 'identity
 			      nntp-rlogin-parameters " "))
 		(start-process
-		 "nntpd" nntp-server-buffer "rsh" server
+		 "nntpd" buffer "rsh" nntp-address
 		 (mapconcat 'identity
 			    nntp-rlogin-parameters " ")))))
-    proc))
+    (set-buffer buffer)
+    (nntp-wait-for-string "^\r*200")
+    (beginning-of-line)
+    (delete-region (point-min) (point))
+    proc)
+  )
 
 (defun nntp-find-group-and-number ()
   (save-excursion

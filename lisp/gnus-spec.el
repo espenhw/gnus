@@ -242,18 +242,46 @@
     (point) (progn ,@form (point))
     'face ',(symbol-value (intern (format "gnus-face-%d" type)))))
 
-(defun gnus-max-width-function (el max-width)
-  (or (numberp max-width) (signal 'wrong-type-argument '(numberp max-width)))
+(defun gnus-tilde-max-form (el max-width)
+  "Return a form that limits EL to MAX-WIDTH."
+  (let ((max (abs max-width)))
+    (if (symbolp el)
+	`(if (> (length ,el) ,max)
+	     ,(if (< max-width 0)
+		  `(substring ,el (- (length el) ,max))
+		`(substring ,el 0 ,max))
+	   ,el)
+      `(let ((val (eval ,el)))
+	 (if (> (length val) ,max)
+	     ,(if (< max-width 0)
+		  `(substring val (- (length val) ,max))
+		`(substring val 0 ,max))
+	   val)))))
+
+(defun gnus-tilde-cut-form (el cut-width)
+  "Return a form that cuts CUT-WIDTH off of EL."
+  (let ((cut (abs cut-width)))
+    (if (symbolp el)
+	`(if (> (length ,el) ,cut)
+	     ,(if (< cut-width 0)
+		  `(substring ,el 0 (- (length el) ,cut))
+		`(substring ,el ,cut))
+	   ,el)
+      `(let ((val (eval ,el)))
+	 (if (> (length val) ,cut)
+	     ,(if (< cut-width 0)
+		  `(substring val 0 (- (length val) ,cut))
+		`(substring va 0 ,cut))
+	   val)))))
+
+(defun gnus-tilde-ignore-form (el ignore-value)
+  "Return a form that is blank when EL is IGNORE-VALUE."
   (if (symbolp el)
-      `(if (> (length ,el) ,max-width)
-	   (substring ,el 0 ,max-width)
-	 ,el)
+      `(if (equal ,el ,ignore-value)
+	   "" ,el)
     `(let ((val (eval ,el)))
-       (if (numberp val)
-	   (setq val (int-to-string val)))
-       (if (> (length val) ,max-width)
-	   (substring val 0 ,max-width)
-	 val))))
+       (if (equal val ,ignore-value)
+	   "" val))))
 
 (defun gnus-parse-format (format spec-alist &optional insert)
   ;; This function parses the FORMAT string with the help of the
@@ -306,55 +334,110 @@
   ;; SPEC-ALIST and returns a list that can be eval'ed to return a
   ;; string.
   (let ((max-width 0)
-	spec flist fstring newspec elem beg result dontinsert)
+	spec flist fstring newspec elem beg result dontinsert user-defined
+	type spec value pad-width spec-beg cut-width ignore-value
+	tilde-form tilde elem-type)
     (save-excursion
       (gnus-set-work-buffer)
       (insert format)
       (goto-char (point-min))
-      (while (re-search-forward "%[-0-9]*\\(,[0-9]+\\)?\\([^0-9]\\)\\(.\\)?"
-				nil t)
-	(if (= (setq spec (string-to-char (match-string 2))) ?%)
-	      (setq newspec "%"
-		    beg (1+ (match-beginning 0)))
-	  ;; First check if there are any specs that look anything like
-	  ;; "%12,12A", ie. with a "max width specification".  These have
-	  ;; to be treated specially.
-	  (if (setq beg (match-beginning 1))
-	      (setq max-width
-		    (string-to-int
-		     (buffer-substring
-		      (1+ (match-beginning 1)) (match-end 1))))
-	    (setq max-width 0)
-	    (setq beg (match-beginning 2)))
-	  ;; Find the specification from `spec-alist'.
-	  (unless (setq elem (cdr (assq spec spec-alist)))
-	    (setq elem '("*" ?s)))
-	  ;; Treat user defined format specifiers specially.
-	  (when (eq (car elem) 'gnus-tmp-user-defined)
+      (while (re-search-forward "%" nil t)
+	(setq user-defined nil
+	      spec-beg nil
+	      pad-width nil
+	      max-width nil
+	      cut-width nil
+	      ignore-value nil
+	      tilde-form nil)
+	(setq spec-beg (1- (point)))
+
+	;; Parse this spec fully.
+	(while
+	    (cond 
+	     ((looking-at "\\([-.0-9]+\\)\\(,[-0-9]+\\)?")
+	      (setq pad-width (string-to-number (match-string 1)))
+	      (when (match-beginning 2)
+		(setq max-width (string-to-number (buffer-substring
+						   (1+ (match-beginning 2))
+						   (match-end 2)))))
+	      (goto-char (match-end 0)))
+	     ((looking-at "~")
+	      (forward-char 1)
+	      (setq tilde (read (current-buffer))
+		    type (car tilde)
+		    value (cadr tilde))
+	      (cond
+	       ((memq type '(pad pad-left))
+		(setq pad-width value))
+	       ((eq type 'pad-right)
+		(setq pad-width (- value)))
+	       ((eq type 'max)
+		(setq max-width value))
+	       ((memq type '(cut cut-left))
+		(setq cut-width value))
+	       ((eq type 'cut-right)
+		(setq cut-width (- value)))
+	       ((eq type 'ignore)
+		(setq ignore-value
+		      (if (stringp value) value (format "%s" value))))
+	       ((eq type 'form)
+		(setq tilde-form value))
+	       (t
+		(error "Unknown tilde type: %s" tilde)))
+	      t)
+	     (t
+	      nil)))
+	(when (= (setq spec (following-char)) ?u)
+	  (forward-char 1)
+	  (setq user-defined (following-char)))
+	(forward-char 1)
+	(delete-region spec-beg (point))
+
+	;; Now we have all the relevant data on this spec, so
+	;; we start doing stuff.
+	(insert "%")
+	(if (eq spec ?%)
+	    ;; "%%" just results in a "%".
+	    (insert "%")
+	  (cond
+	   ;; Do tilde forms.
+	   ((eq spec ?@)
+	    (setq elem (list tilde-form ?s)))
+	   ;; Treat user defined format specifiers specially.
+	   (user-defined
 	    (setq elem
 		  (list
-		   (list (intern (concat "gnus-user-format-function-"
-					 (match-string 3)))
-			 'gnus-tmp-header) ?s))
-	    (delete-region (match-beginning 3) (match-end 3)))
-	  (if (not (zerop max-width))
-	      (let ((el (car elem)))
-		(cond ((= (cadr elem) ?c)
-		       (setq el (list 'char-to-string el)))
-		      ((= (cadr elem) ?d)
-		       (setq el (list 'int-to-string el))))
-		(setq flist (cons (gnus-max-width-function el max-width)
-				  flist))
-		(setq newspec ?s))
-	    (progn
-	      (setq flist (cons (car elem) flist))
-	      (setq newspec (cadr elem)))))
-	;; Remove the old specification (and possibly a ",12" string).
-	(delete-region beg (match-end 2))
-	;; Insert the new specification.
-	(goto-char beg)
-	(insert newspec))
-      (setq fstring (buffer-substring 1 (point-max))))
+		   (list (intern (format "gnus-user-format-function-%c"
+					 user-defined))
+			 'gnus-tmp-header) ?s)))
+	   ;; Find the specification from `spec-alist'.
+	   ((setq elem (cdr (assq spec spec-alist))))
+	   (t
+	    (setq elem '("*" ?s))))
+	  (setq elem-type (cadr elem))
+	  ;; Insert the new format elements.
+	  (when pad-width
+	    (insert (number-to-string pad-width)))
+	  ;; Create the form to be evaled.
+	  (if (or max-width cut-width ignore-value)
+	      (progn
+		(insert ?s)
+		(let ((el (car elem)))
+		  (cond ((= (cadr elem) ?c)
+			 (setq el (list 'char-to-string el)))
+			((= (cadr elem) ?d)
+			 (setq el (list 'int-to-string el))))
+		  (when ignore-value
+		    (setq el (gnus-tilde-ignore-form el ignore-value)))
+		  (when cut-width
+		    (setq el (gnus-tilde-cut-form el cut-width)))
+		  (when max-width
+		    (setq el (gnus-tilde-max-form el max-width)))
+		  (push el flist)))
+	    (insert elem-type)
+	    (push (car elem) flist))))
+      (setq fstring (buffer-string)))
+    
     ;; Do some postprocessing to increase efficiency.
     (setq
      result

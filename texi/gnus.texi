@@ -257,7 +257,7 @@ into another language, under the above conditions for modified versions.
 
 
 @node Top
-@top The Gnus Newsreader
+@top The Red Gnus Newsreader
 
 @ifinfo
 
@@ -686,6 +686,13 @@ want to move to.
 You can also move individual groups with the @kbd{M-x
 gnus-group-move-group-to-server} command.  This is useful if you want to
 move a (foreign) group from one server to another.
+
+@kindex M-x gnus-group-clear-data-on-native-groups
+@findex gnus-group-clear-data-on-native-groups
+If you don't have access to both the old and new server, all your marks
+and read ranges have become worthless.  You can use the @kbd{M-x
+gnus-group-clear-data-on-native-groups} command to clear out all data
+that you have on your native groups.  Use with caution.
 
 
 @node Startup Files
@@ -1240,6 +1247,21 @@ the group buffer.
 @findex gnus-group-catchup-current-all
 Mark all articles in this group, even the ticked ones, as read
 (@code{gnus-group-catchup-current-all}).   
+
+@item M-c
+@kindex M-c (Group)
+@findex gnus-group-clear-data
+Clear the data from the current group---nix out marks and the list of
+read articles (@code{gnus-group-clear-data}).
+
+@item M-x gnus-group-clear-data-on-native-groups
+@kindex M-x gnus-group-clear-data-on-native-groups
+@findex gnus-group-clear-data-on-native-groups
+If you have switced from one @sc{nntp} server to another, all your marks
+and read ranges have become worthless.  You can use this command to
+clear out all data that you have on your native groups.  Use with
+caution. 
+
 @end table
 
 @vindex gnus-large-newsgroup
@@ -1524,9 +1546,11 @@ the command to be executed.
 @node Foreign Groups
 @section Foreign Groups
 
-Here are some group mode commands for making and editing general foreign
+Below are some group mode commands for making and editing general foreign
 groups, as well as commands to ease the creation of a few
-special-purpose groups:
+special-purpose groups.  All these commands insert the newly created
+groups under point---@code{gnus-subscribe-newsgroup-method} is not
+consulted.
 
 @table @kbd
 
@@ -1708,6 +1732,11 @@ broken behavior.  So there!
 @cindex to-group
 If the group parameter list contains an element like @code{(to-group
 . "some.group.name")}, all posts will be sent to that group.
+
+@item gcc-self
+@cindex gcc-self
+If this symbol is present in the group parameter list, new composed
+messages will be @code{Gcc}'d to the current group.  
 
 @item auto-expire
 @cindex auto-expire
@@ -2724,7 +2753,7 @@ Total thread score.
 @item d
 The @code{Date} in @code{YY-MMM} format.
 @item o
-The @code{Date} in @code{YYMMDD-HH:MM:SS} format.
+The @code{Date} in @code{YYYYMMDDTHHMMSS} format.
 @item M
 @code{Message-ID}.
 @item r
@@ -3404,11 +3433,18 @@ Canceled article (@code{gnus-canceled-mark})
 
 @item F
 @vindex gnus-souped-mark
-@sc{SOUP}ed article (@code{gnus-souped-mark}).
+@sc{SOUP}ed article (@code{gnus-souped-mark}).  @xref{SOUP}
 
 @item Q
 @vindex gnus-sparse-mark
-Sparsely reffed article (@code{gnus-sparse-mark}).
+Sparsely reffed article (@code{gnus-sparse-mark}).  @xref{Customizing
+Threading} 
+
+@item M
+@vindex gnus-duplicate-mark
+Article marked as read by duplicate suppression
+(@code{gnus-duplicated-mark}).  @xref{Duplicate Suppression}
+
 @end table
 
 All these marks just mean that the article is marked as read, really.
@@ -6093,8 +6129,8 @@ the process mark (@code{gnus-summary-universal-argument}).
 
 @table @kbd
 
-@item A D
-@kindex A D (Summary)
+@item C-d
+@kindex C-d (Summary)
 @findex gnus-summary-enter-digest-group
 If the current article is a collection of other articles (for instance,
 a digest), you might use this command to enter a group based on the that
@@ -6102,8 +6138,19 @@ article (@code{gnus-summary-enter-digest-group}).  Gnus will try to
 guess what article type is currently displayed unless you give a prefix
 to this command, which forces a ``digest'' interpretation.  Basically,
 whenever you see a message that is a collection of other messages on
-some format, you @kbd{A D} and read these messages in a more convenient
+some format, you @kbd{C-d} and read these messages in a more convenient
 fashion.
+
+@item M-C-d
+@kindex M-C-d (Summary)
+@findex gnus-summary-read-document
+This command is very similar to the one above, but lets you gather
+several documents into one biiig group
+(@code{gnus-summary-read-document}).  It does this by opening several
+@code{nndoc} groups for each document, and then opening an
+@code{nnvirtual} group on top of these @code{nndoc} groups.  This
+command understands the process/prefix convention
+(@pxref{Process/Prefix}). 
 
 @item C-t
 @kindex C-t (Summary)
@@ -9060,8 +9107,8 @@ variables to ensure that all your followups and replies end up in the
 In specific, this is what it does:
 
 @lisp
-(setq gnus-inews-article-function 'nnsoup-request-post)
-(setq send-mail-function 'nnsoup-request-mail)
+(setq message-send-news-function 'nnsoup-request-post)
+(setq message-send-mail-function 'nnsoup-request-mail)
 @end lisp
 
 And that's it, really.  If you only want news to go into the @sc{soup}
@@ -9238,6 +9285,7 @@ silently to help keep the sizes of the score files down.
 * Kill Files::               They are still here, but they can be ignored.
 * GroupLens::                Getting predictions on what you like to read.
 * Advanced Scoring::         Using logical expressions to build score rules.
+* Score Decays::             It can be useful to let scores wither away.
 @end menu
 
 
@@ -9738,13 +9786,23 @@ These two headers use different match types: @code{<}, @code{>},
 @code{=}, @code{>=} and @code{<=}.
 
 @item Date
-For the Date header we have three match types: @code{before}, @code{at}
-and @code{after}.  I can't really imagine this ever being useful, but,
-like, it would feel kinda silly not to provide this function.  Just in
-case.  You never know.  Better safe than sorry.  Once burnt, twice shy.
-Don't judge a book by its cover.  Never not have sex on a first date.
-(I have been told that at least one person, and I quote, ``found this
-function indispensable'', however.)
+For the Date header we have three kinda silly match types:
+@code{before}, @code{at} and @code{after}.  I can't really imagine this
+ever being useful, but, like, it would feel kinda silly not to provide
+this function.  Just in case.  You never know.  Better safe than sorry.
+Once burnt, twice shy.  Don't judge a book by its cover.  Never not have
+sex on a first date.  (I have been told that at least one person, and I
+quote, ``found this function indispensable'', however.)
+
+A more useful match type is @code{regexp}.  With it, you can match the
+date string using a regular expression.  The date is normalized to
+ISO8601 compact format first, which looks like @samp{YYYYMMDDTHHMMSS}.
+If you want to match all articles that have been posted on April 1st in
+every year, you could use @samp{....0401.........} as a match string,
+for instance.  (Note that the date is kept in its original time zone, so
+this will match articles that were posted when it was April 1st where
+the article was posted from.  Time zones are such wholesome fun for the
+whole family, eh?)
 
 @item Head, Body, All
 These three match keys use the same match types as the @code{From} (etc)
@@ -9994,10 +10052,11 @@ the length of the match is less than
 this variable is @code{nil}, exact matching will always be used to avoid
 this problem.
 
+@vindex gnus-default-adaptive-word-score-alist
 As mentioned above, you can adapt either on individual words or entire
 headers.  If you adapt on words, the
-@code{gnus-default-adaptive-word-score-alist} says what score each
-instance of a word should add given a mark.
+@code{gnus-default-adaptive-word-score-alist} variable says what score
+each instance of a word should add given a mark.
 
 @lisp
 (setq gnus-default-adaptive-word-score-alist  
@@ -10011,6 +10070,10 @@ This is the default value.  If you have adaption on words enabled, every
 word that appears in subjects of articles that are marked with
 @code{gnus-read-mark} will result in a score rule that increase the
 score with 30 points.
+
+@vindex gnus-ignored-adaptive-words
+Words that appear in the @code{gnus-ignored-adaptive-words} list will be
+ignored.
 
 After using this scheme for a while, it might be nice to write a
 @code{gnus-psychoanalyze-user} command to go through the rules and see
@@ -10129,9 +10192,9 @@ This will add a score to all articles that appear in a thread ``below''
 your own article.
 @end table
 
-@vindex gnus-inews-article-hook
+@vindex message-sent-hook
 These two functions are both primarily meant to be used in hooks like
-@code{message-send-hook}.  
+@code{message-sent-hook}.  
 
 @node Scoring Tips
 @section Scoring Tips
@@ -10731,6 +10794,62 @@ than it is to say:
 @end example
 
 
+@node Score Decays
+@section Score Decays
+@cindex score decays
+@cindex decays
+
+You may find that your scores have a tendency to grow without
+bounds, especially if you're using adaptive scoring.  If scores get too
+big, they lose all meaning---they simply max out and it's difficult to
+use them in any sensible way.
+
+@vindex gnus-decay-scores
+@findex gnus-decay-score
+@vindex gnus-score-decay-function
+Gnus provides a mechanism for decaying scores to help with this problem.
+When score files are loaded and @code{gnus-decay-scores} is
+non-@code{nil}, Gnus will run the score files through the decaying
+mechanism thereby lowering the scores of all non-permanent score rules.
+The decay itself if performed by the @code{gnus-score-decay-function}
+function, which is @code{gnus-decay-score} by default.  Here's the
+definition of that function:
+
+@lisp
+(defun gnus-decay-score (score)
+  (floor
+   (- score
+      (* (if (< score 0) 1 -1)
+	 (min score
+	      (max gnus-score-decay-constant
+		   (* (abs score)
+		      gnus-score-decay-scale)))))))
+@end lisp
+
+@vindex gnus-score-decay-scale
+@vindex gnus-score-decay-constant
+@code{gnus-score-decay-constant} is 3 by default and
+@code{gnus-score-decay-scale} is 0.05.  This should cause the following:
+
+@enumerate
+@item
+Scores between -3 and 3 will be set to 0 when this function is called.
+
+@item
+Scores with magnitudes between 3 and 60 will be shrunk by 3.
+
+@item
+Scores with magnutudes greater than 60 will be shrunk by 5% of the
+score.
+@end enumerate
+
+If you don't like this decay function, write your own.  It is called
+with the score to be decayed as its only parameter, and it should return
+the new score, which should be an integer.
+
+Gnus will try to decay scores once a day.  If you haven't run Gnus for
+four days, Gnus will decay the scores four times, for instance.
+
 
 @node Various
 @chapter Various
@@ -10839,17 +10958,119 @@ Here's an example format spec (from the group buffer): @samp{%M%S%5y:
 %(%g%)\n}.  We see that it is indeed extremely ugly, and that there are
 lots of percentages everywhere.  
 
+@menu 
+* Formatting Basics::     A formatting variable is basically a format string.
+* Advanced Formatting::   Modifying output in various ways.
+* User-Defined Specs::    Having Gnus call your own functions.
+* Formatting Fonts::      Making the formatting look colorful and nice.
+@end menu
+
+Currently Gnus uses the following formatting variables:
+@code{gnus-group-line-format}, @code{gnus-summary-line-format},
+@code{gnus-server-line-format}, @code{gnus-topic-line-format},
+@code{gnus-group-mode-line-format},
+@code{gnus-summary-mode-line-format},
+@code{gnus-article-mode-line-format},
+@code{gnus-server-mode-line-format}, and
+@code{gnus-summary-pick-line-format}.
+
+All these format variables can also be arbitrary elisp forms.  In that
+case, they will be @code{eval}ed to insert the required lines.
+
+@kindex M-x gnus-update-format
+@findex gnus-update-format
+Gnus includes a command to help you while creating your own format
+specs.  @kbd{M-x gnus-update-format} will @code{eval} the current form,
+update the spec in question and pop you to a buffer where you can
+examine the resulting lisp code to be run to generate the line.  
+
+
+
+@node Formatting Basics
+@subsection Formatting Basics
+
 Each @samp{%} element will be replaced by some string or other when the
 buffer in question is generated.  @samp{%5y} means ``insert the @samp{y}
-spec, and pad with spaces (to the left) to get a 5-character field''.
-(@samp{%-5y} means the same, but pad to the right instead.)  Just like a
-normal format spec, almost.
+spec, and pad with spaces to get a 5-character field''.
 
-You can also say @samp{%4,6y}, which means that the field will never be
-more than 6 characters wide and never less than 4 characters wide.
+As with normal C and Emacs Lisp formatting strings, the numerical
+modifier between the @samp{%} and the formatting type character will
+@dfn{pad} the output so that it is always at least that long.
+@samp{%5y} will make the field always (at least) five characters wide by
+padding with spaces to the left.  If you say @samp{%-5y}, it will pad to
+the right instead.
 
-All the specs allow for inserting user defined specifiers -- @samp{u}.
-The next character in the format string should be a letter.  @sc{gnus}
+You may also wish to limit the length of the field to protect against
+particularly wide values.  For that you can say @samp{%4,6y}, which
+means that the field will never be more than 6 characters wide and never
+less than 4 characters wide.
+
+
+@node Advanced Formatting
+@subsection Advanced Formatting
+
+It is frequently useful to post-process the fields in some way.
+Padding, limiting, cutting off parts and suppressing certain values can
+be achieved by using @dfn{tilde modifiers}.  A typical tilde spec might
+look like @samp{%~(cut 3)~(ignore "0")y}.
+
+These are the legal modifiers:
+
+@table @code
+@item pad
+@itemx pad-left
+Pad the field to the left with spaces until it reaches the required
+length.
+
+@item pad-right
+Pad the field to the right with spaces until it reaches the required
+length.
+
+@item max
+@itemx max-left
+Cut off characters from the left until it reaches the specified length.
+
+@item max-right
+Cut off characters from the right until it reaches the specified
+length. 
+
+@item cut
+@itemx cut-left
+Cut off the specified number of characters from the left.
+
+@item cut-right
+Cut off the specified number of characters from the right.
+
+@item ignore
+Return an empty string if the field is equal to the specified value. 
+
+@item form
+Use the specified form as the field value when the @samp{@} spec is
+used. 
+@end table
+
+Let's take an example.  The @samp{%o} spec in the summary mode lines
+will return a date in compact ISO8601 format---@samp{19960809T230410}.
+This is quite a mouthful, so we want to shave off the century number and
+the time, leaving us with a six-character date.  That would be
+@samp{%~(cut-left 2)~(max-right 6)~(pad 6)o}.  (Cutting is done before
+maxing, and we need the padding to ensure that the date is never less
+than 6 characters to make it look nice in columns.)
+
+Ignoring is done first; then cutting; then maxing; and then as the very
+last operation, padding.  
+
+If you use lots of these advanced thingies, you'll find that Gnus gets
+quite slow.  This can be helped enourmously by running @kbd{M-x
+gnus-compile} when you are setisfied with the look of your lines.
+@xref{Compiling}. 
+
+
+@node User-Defined Specs
+@subsection User-Defined Specs
+
+All the specs allow for inserting user defined specifiers---@samp{u}.
+The next character in the format string should be a letter.  Gnus
 will call the function @code{gnus-user-format-function-}@samp{X}, where
 @samp{X} is the letter following @samp{%u}.  The function will be passed
 a single parameter---what the parameter means depends on what buffer
@@ -10858,11 +11079,21 @@ be inserted into the buffer just like information from any other
 specifier.  This function may also be called with dummy values, so it
 should protect against that.
 
-There are also specs for highlighting, and these are shared by all the
-format variables.  Text inside the @samp{%(} and @samp{%)} specifiers
-will get the special @code{mouse-face} property set, which means that it
-will be highlighted (with @code{gnus-mouse-face}) when you put the mouse
-pointer over it.
+You can also use tilde modifiers (@pxref{Advanced Formatting} to achieve
+much the same without defining new functions.  Here's an example:
+@samp{%~(form (count-lines (point-min) (point-max)))@@}.  The form
+given here will be evaluated to yield the current line number, and then
+inserted.
+
+
+@node Formatting Fonts
+@subsection Formatting Fonts
+
+There are specs for highlighting, and these are shared by all the format
+variables.  Text inside the @samp{%(} and @samp{%)} specifiers will get
+the special @code{mouse-face} property set, which means that it will be
+highlighted (with @code{gnus-mouse-face}) when you put the mouse pointer
+over it.
 
 Text inside the @samp{%[} and @samp{%]} specifiers will have their
 normal faces set using @code{gnus-face-0}, which is @code{bold} by
@@ -10894,27 +11125,8 @@ Here's an alternative recipe for the group buffer:
 I'm sure you'll be able to use this scheme to create totally unreadable
 and extremely vulgar displays.  Have fun!
 
-Currently Gnus uses the following formatting variables:
-@code{gnus-group-line-format}, @code{gnus-summary-line-format},
-@code{gnus-server-line-format}, @code{gnus-topic-line-format},
-@code{gnus-group-mode-line-format},
-@code{gnus-summary-mode-line-format},
-@code{gnus-article-mode-line-format},
-@code{gnus-server-mode-line-format}, and
-@code{gnus-summary-pick-line-format}.
-
 Note that the @samp{%(} specs (and friends) do not make any sense on the
 mode-line variables.
-
-All these format variables can also be arbitrary elisp forms.  In that
-case, they will be @code{eval}ed to insert the required lines.
-
-@kindex M-x gnus-update-format
-@findex gnus-update-format
-Gnus includes a command to help you while creating your own format
-specs.  @kbd{M-x gnus-update-format} will @code{eval} the current form,
-update the spec in question and pop you to a buffer where you can
-examine the resulting lisp code to be run to generate the line.  
 
 
 @node Windows Configuration
@@ -11136,8 +11348,8 @@ You'd typically stick these @code{gnus-add-configuration} calls in your
 Gnus has been loaded.
 
 
-@node Compilation 
-@section Compilation 
+@node Compilation
+@section Compilation
 @cindex compilation
 @cindex byte-compilation
 
@@ -11154,7 +11366,10 @@ course.)
 To help with this, you can run @kbd{M-x gnus-compile} after you've
 fiddled around with the variables and feel that you're (kind of)
 satisfied.  This will result in the new specs being byte-compiled, and
-you'll get top speed again.
+you'll get top speed again.  Gnus will save these compiled specs in the
+@file{.newsrc.eld} file.  (User-defined functions aren't compiled by
+this function, though---you should compile them yourself by sticking
+them into the @code{.gnus.el} file and byte-compiling that file.)
 
 
 @node Mode Lines

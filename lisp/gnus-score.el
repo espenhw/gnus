@@ -110,6 +110,19 @@ will be expired along with non-matching score entries.")
 (defvar gnus-orphan-score nil
   "*All orphans get this score added. Set in the score file.")
 
+(defvar gnus-decay-scores nil
+  "*If non-nil, decay non-permanent scores.")
+
+(defvar gnus-decay-score-function 'gnus-decay-score
+  "*Function called to decay a score.
+It is called with one parameter -- the score to be decayed.")
+
+(defvar gnus-score-decay-constant 3
+  "*Decay all \"small\" scores with this amount.")
+
+(defvar gnus-score-decay-scale .05
+  "*Decay all \"big\" scores with this factor.")
+
 (defvar gnus-home-score-file nil
   "Variable to control where interative score entries are to go.
 It can be:
@@ -561,7 +574,7 @@ used as score."
 
 (defun gnus-newsgroup-score-alist ()
   (or
-   (let ((param-file (gnus-group-get-parameter 
+   (let ((param-file (gnus-group-find-parameter 
 		      gnus-newsgroup-name 'score-file)))
      (when param-file
        (gnus-score-load param-file)))
@@ -782,7 +795,7 @@ SCORE is the score to add."
   (when (gnus-buffer-live-p gnus-summary-buffer)
     (save-excursion
       (save-restriction
-	(goto-char (point-min))
+	(message-narrow-to-headers)
 	(let ((id (mail-fetch-field "message-id")))
 	  (when id
 	    (set-buffer gnus-summary-buffer)
@@ -948,7 +961,13 @@ SCORE is the score to add."
 	   (car (gnus-score-get 'thread-mark-and-expunge alist)))
 	  (adapt-file (car (gnus-score-get 'adapt-file alist)))
 	  (local (gnus-score-get 'local alist))
+	  (decay (car (gnus-score-get 'decay alist)))
 	  (eval (car (gnus-score-get 'eval alist))))
+      ;; Perform possible decays.
+      (when (and gnus-decay-scores
+		 (gnus-decay-scores alist decay))
+	(gnus-score-set 'touched '(t) alist)
+	(gnus-score-set 'decay (list (gnus-time-to-day (current-time)))))
       ;; We do not respect eval and files atoms from global score
       ;; files. 
       (and files (not global)
@@ -1389,7 +1408,7 @@ SCORE is the score to add."
 
 (defun gnus-score-date (scores header now expire &optional trace)
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
-	entries alist)
+	entries alist match match-func article)
 
     ;; Find matches.
     (while scores
@@ -1399,37 +1418,40 @@ SCORE is the score to add."
       (while (cdr entries)		;First entry is the header index.
 	(let* ((rest (cdr entries))		
 	       (kill (car rest))
-	       (match (timezone-make-date-sortable (nth 0 kill)))
 	       (type (or (nth 3 kill) 'before))
 	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
 	       (date (nth 2 kill))
 	       (found nil)
-	       (match-func 
-		(cond ((eq type 'after) 'string<)
-		      ((eq type 'before) 'gnus-string>)
-		      ((eq type 'at) 'string=)
-		      (t (error "Illegal match type: %s" type))))
 	       (articles gnus-scores-articles)
 	       l)
+	  (cond
+	   ((eq type 'after)
+	    (setq match-func 'string<
+		  match (gnus-date-iso8601 (nth 0 kill))))
+	   ((eq type 'before)
+	    (setq match-func 'gnus-string>
+		  match (gnus-date-iso8601 (nth 0 kill))))
+	   ((eq type 'at)
+	    (setq match-func 'string=
+		  match (gnus-date-iso8601 (nth 0 kill))))
+	   ((eq type 'regexp)
+	    (setq match-func 'string-match
+		  match (nth 0 kill)))
+	   (t (error "Illegal match type: %s" type)))
 	  ;; Instead of doing all the clever stuff that
 	  ;; `gnus-score-string' does to minimize searches and stuff,
 	  ;; I will assume that people generally will put so few
 	  ;; matches on numbers that any cleverness will take more
 	  ;; time than one would gain.
-	  (while articles
-	    (and
-	     (setq l (aref (caar articles) gnus-score-index))
-	     (funcall match-func match (timezone-make-date-sortable l))
-	     (progn
-	       (and trace (setq gnus-score-trace 
-				(cons
-				 (cons
-				  (car-safe (rassq alist gnus-score-cache))
-				  kill)
-				 gnus-score-trace)))
-	       (setq found t)
-	       (setcdr (car articles) (+ score (cdar articles)))))
-	    (setq articles (cdr articles)))
+	  (while (setq article (pop articles))
+	    (when (and
+		   (setq l (aref (car article) gnus-score-index))
+		   (funcall match-func match (gnus-date-iso8601 l)))
+	      (when trace
+		(push (cons (car-safe (rassq alist gnus-score-cache)) kill)
+		      gnus-score-trace))
+	      (setq found t)
+	      (setcdr article (+ score (cdr article)))))
 	  ;; Update expire date
 	  (cond ((null date))		;Permanent entry.
 		((and found gnus-update-score-entry-dates) ;Match, update date.
@@ -2377,7 +2399,7 @@ The list is determined from the variable gnus-score-file-alist."
 	(push home score-files)
 	(setq gnus-newsgroup-adaptive-score-file home)))
     ;; Check whether there is a `adapt-file' group parameter.
-    (let ((param-file (gnus-group-get-parameter group 'adapt-file)))
+    (let ((param-file (gnus-group-find-parameter group 'adapt-file)))
       (when param-file
 	(push param-file score-files)
 	(setq gnus-newsgroup-adaptive-score-file param-file)))
@@ -2393,7 +2415,7 @@ The list is determined from the variable gnus-score-file-alist."
       (when home
 	(push home score-files)))
     ;; Check whether there is a `score-file' group parameter.
-    (let ((param-file (gnus-group-get-parameter group 'score-file)))
+    (let ((param-file (gnus-group-find-parameter group 'score-file)))
       (when param-file
 	(push param-file score-files)))
     ;; Do the scoring if there are any score files for this group.
@@ -2492,9 +2514,37 @@ If ADAPT, return the home adaptive file instead."
     (concat group "." gnus-adaptive-file-suffix)))
 
 ;;;
-;;; Adaptive word scoring
+;;; Score decays
 ;;;
 
+(defun gnus-decay-score (score)
+  "Decay SCORE."
+  (floor
+   (- score
+      (* (if (< score 0) 1 -1)
+	 (min score
+	      (max gnus-score-decay-constant
+		   (* (abs score)
+		      gnus-score-decay-scale)))))))
+
+(defun gnus-decay-scores (alist day)
+  "Decay non-permanent scores in ALIST."
+  (let ((times (- (gnus-time-to-day (current-time)) day))
+	kill entry updated score n)
+    (unless (zerop times) ;Done decays today already?
+      (while (setq entry (pop alist))
+	(when (stringp (car entry))
+	  (setq entry (cdr entry))
+	  (while (setq kill (pop entry))
+	    (when (nth 2 kill)
+	      (setq updated t)
+	      (setq score (or (car kill) gnus-score-interactive-default-score)
+		    n times)
+	      (while (natnump (decf n))
+		(setq score (funcall gnus-decay-score-function score)))
+	      (setcar kill score))))))
+    ;; Return whether this score file needs to be saved.  By Je-haysuss!
+    updated))
 
 (provide 'gnus-score)
 

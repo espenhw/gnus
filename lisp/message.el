@@ -1414,10 +1414,17 @@ the user from the mailer."
 	       (concat (file-name-as-directory message-autosave-directory)
 		       "msg."))))
     (setq buffer-file-name name)
-    (mh-send-letter)
-    (condition-case ()
-	(delete-file name)
-      (error nil))))
+    ;; MH wants to generate these headers itself.
+    (let ((headers message-deletable-headers))
+      (while headers
+	(goto-char (point-min)) 
+	;;(message "Deleting header %s" (car headers)) (sit-for 5)
+	(and (re-search-forward 
+	      (concat "^" (symbol-name (car headers)) ": *") nil t)
+	     (message-delete-line))
+	(pop headers)))
+    ;; Pass it on to mh.
+    (mh-send-letter)))
 
 (defun message-send-news (&optional arg)
   (let ((tembuf (generate-new-buffer " *message temp*"))
@@ -2436,7 +2443,7 @@ Headers already prepared in the buffer are not modified."
       (narrow-to-region
        (goto-char (point-min))
        (if (search-forward "\n\n" nil t)
-	   (1- (point))
+	   (point)
 	 (point-max)))
       ;; Allow customizations to have their say.
       (if (not wide)

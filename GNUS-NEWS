@@ -34,3 +34,33 @@ used to pick articles.
 
 *** Commands for moving the .newsrc.eld from one server to
 another have been added.
+
+    `M-x gnus-change-server'
+
+*** A way to specify that "uninteresting" fields be suppressed when
+generating lines in buffers.
+
+*** Several commands in the group buffer can be undone with
+`M-C-_'.
+
+*** Scoring can be done on words using the new score type `w'.
+
+*** Adaptive scoring can be done on a Subject word-by-word basis:
+
+    (setq gnus-use-adaptive-scoring '(word))
+
+*** Scores can be decayed.
+ 
+    (setq gnus-decay-scores t)
+
+*** Scoring can be performed using a regexp on the Date header.  The
+Date is normalized to compact ISO 8601 format first.
+
+*** A new command has been added to remove all data on articles from
+the native server.
+
+   `M-x gnus-group-clear-data-on-native-groups'
+
+*** A new command for reading collections of documents
+(nndoc with nnvirtual on top) has been added -- `M-C-d'.
+

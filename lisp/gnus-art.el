@@ -493,8 +493,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 
 All normal editing commands are switched off.
 
-The following commands are available:
-
+The following commands are available in addition to all summary mode
+commands:
 \\<gnus-article-mode-map>
 \\[gnus-article-next-page]\t Scroll the article one page forwards
 \\[gnus-article-prev-page]\t Scroll the article one page backwards

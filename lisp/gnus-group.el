@@ -32,6 +32,7 @@
 (require 'gnus-int)
 (require 'gnus-range)
 (require 'gnus-win)
+(require 'gnus-undo)
 
 (defvar gnus-group-archive-directory
   "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
@@ -193,6 +194,7 @@ variable.")
 
 (defvar gnus-group-indentation-function nil)
 (defvar gnus-goto-missing-group-function nil)
+(defvar gnus-group-get-parameter-function 'gnus-group-get-parameter)
 (defvar gnus-group-goto-next-group-function nil
   "Function to override finding the next group after listing groups.")
 
@@ -273,6 +275,7 @@ variable.")
     "U" gnus-group-unsubscribe-group
     "c" gnus-group-catchup-current
     "C" gnus-group-catchup-current-all
+    "\M-c" gnus-group-clear-data
     "l" gnus-group-list-groups
     "L" gnus-group-list-all-groups
     "m" gnus-group-mail
@@ -1090,7 +1093,15 @@ Returns whether the fetching was successful or not."
 ;; Enter a group that is not in the group buffer.  Non-nil is returned
 ;; if selection was successful.
 (defun gnus-group-read-ephemeral-group
-  (group method &optional activate quit-config)
+  (group method &optional activate quit-config request-only)
+  "Read GROUP from METHOD as an ephemeral group.
+If ACTIVATE, request the group first.
+If QUIT-CONFIG, use that window configuration when
+exiting from the ephemeral group.
+If REQUEST-ONLY, don't actually read the group; just
+request it.
+
+Return the name of the group is selection was successful."
   (let ((group (if (gnus-group-foreign-p group) group
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash
@@ -1102,12 +1113,16 @@ Returns whether the fetching was successful or not."
     (set-buffer gnus-group-buffer)
     (unless (gnus-check-server method)
       (error "Unable to contact server: %s" (gnus-status-message method)))
-    (if activate (or (gnus-request-group group)
-		     (error "Couldn't request group")))
-    (condition-case ()
-	(gnus-group-read-group t t group)
-      ;(error nil)
-      (quit nil))))
+    (when activate
+      (unless (gnus-request-group group)
+	(error "Couldn't request group")))
+    (if request-only
+	group
+      (condition-case ()
+	  (when (gnus-group-read-group t t group)
+	    group)
+	;;(error nil)
+	(quit nil)))))
 
 (defun gnus-group-jump-to-group (group)
   "Jump to newsgroup GROUP."
@@ -1145,35 +1160,41 @@ Returns whether the fetching was successful or not."
     ;; Adjust cursor point.
     (gnus-group-position-point)))
 
-(defun gnus-group-goto-group (group)
-  "Goto to newsgroup GROUP."
+(defun gnus-group-goto-group (group &optional far)
+  "Goto to newsgroup GROUP.
+If FAR, it is likely that the group is not on the current line."
   (when group
-    (beginning-of-line)
-    (cond
-     ;; It's quite likely that we are on the right line, so
-     ;; we check the current line first.
-     ((eq (get-text-property (point) 'gnus-group)
-	  (gnus-intern-safe group gnus-active-hashtb))
-      (point))
-     ;; Previous and next line are also likely, so we check them as well.
-     ((save-excursion
+    (if far
+	(gnus-goto-char
+	 (text-property-any 
+	  (point-min) (point-max)
+	  'gnus-group (gnus-intern-safe group gnus-active-hashtb)))
+      (beginning-of-line)
+      (cond
+       ;; It's quite likely that we are on the right line, so
+       ;; we check the current line first.
+       ((eq (get-text-property (point) 'gnus-group)
+	    (gnus-intern-safe group gnus-active-hashtb))
+	(point))
+       ;; Previous and next line are also likely, so we check them as well.
+       ((save-excursion
+	  (forward-line -1)
+	  (eq (get-text-property (point) 'gnus-group)
+	      (gnus-intern-safe group gnus-active-hashtb)))
 	(forward-line -1)
-	(eq (get-text-property (point) 'gnus-group)
-	    (gnus-intern-safe group gnus-active-hashtb)))
-      (forward-line -1)
-      (point))
-     ((save-excursion
+	(point))
+       ((save-excursion
+	  (forward-line 1)
+	  (eq (get-text-property (point) 'gnus-group)
+	      (gnus-intern-safe group gnus-active-hashtb)))
 	(forward-line 1)
-	(eq (get-text-property (point) 'gnus-group)
-	    (gnus-intern-safe group gnus-active-hashtb)))
-      (forward-line 1)
-      (point))
-     (t
-      ;; Search through the entire buffer.
-      (gnus-goto-char
-       (text-property-any 
-	(point-min) (point-max)
-	'gnus-group (gnus-intern-safe group gnus-active-hashtb)))))))
+	(point))
+       (t
+	;; Search through the entire buffer.
+	(gnus-goto-char
+	 (text-property-any 
+	  (point-min) (point-max)
+	  'gnus-group (gnus-intern-safe group gnus-active-hashtb))))))))
 
 (defun gnus-group-next-group (n &optional silent)
   "Go to next N'th newsgroup.
@@ -1743,7 +1764,7 @@ If REVERSE, sort in reverse order."
 	(and (= level1 level2)
 	     (> (gnus-info-score info1) (gnus-info-score info2))))))
 
-;; Group catching up.
+;;; Clearing data
 
 (defun gnus-group-clear-data (n)
   "Clear all marks and read ranges from the current group."
@@ -1751,14 +1772,36 @@ If REVERSE, sort in reverse order."
   (let ((groups (gnus-group-process-prefix n))
 	group info)
     (while (setq group (pop groups))
-      (setq info (gnus-get-info group))
-      (gnus-info-set-read info nil)
-      (when (gnus-info-marks info)
-	(gnus-info-set-marks info nil))
+      (gnus-info-clear-data (setq info (gnus-get-info group)))
       (gnus-get-unread-articles-in-group info (gnus-active group) t)
       (when (gnus-group-goto-group group)
 	(gnus-group-remove-mark group)
 	(gnus-group-update-group-line)))))
+
+(defun gnus-group-clear-data-on-native-groups ()
+  "Clear all marks and read ranges from all native groups."
+  (interactive)
+  (when (gnus-yes-or-no-p "Really clear all data from almost all groups? ")
+    (let ((alist (cdr gnus-newsrc-alist))
+	  info)
+      (while (setq info (pop alist))
+	(gnus-info-clear-data info))
+      (gnus-get-unread-articles))))
+
+(defun gnus-info-clear-data (info)
+  "Clear all marks and read ranges from INFO."
+  (let ((group (gnus-info-group info)))
+    (gnus-undo-register
+      `(progn
+	 (gnus-info-set-marks ,info ,(gnus-info-marks info))
+	 (gnus-info-set-read ,info ,(gnus-info-read info))
+	 (when (gnus-group-goto-group ,group)
+	   (gnus-group-update-group-line))))
+    (gnus-info-set-read info nil)
+    (when (gnus-info-marks info)
+      (gnus-info-set-marks info nil))))
+
+;; Group catching up.
 
 (defun gnus-group-catchup-current (&optional n all)
   "Mark all articles not marked as unread in current newsgroup as read.
@@ -1847,7 +1890,7 @@ or nil if no action could be taken."
 	       (expirable (if (gnus-group-total-expirable-p group)
 			      (cons nil (gnus-list-of-read-articles group))
 			    (assq 'expire (gnus-info-marks info))))
-	       (expiry-wait (gnus-group-get-parameter group 'expiry-wait)))
+	       (expiry-wait (gnus-group-find-parameter group 'expiry-wait)))
 	  (when expirable
 	    (setcdr
 	     expirable
@@ -2022,6 +2065,10 @@ of groups killed."
 	  (gnus-delete-line)
 	  (when (and (not discard)
 		     (setq entry (gnus-gethash group gnus-newsrc-hashtb)))
+	    (gnus-undo-register
+	      `(progn
+		(gnus-group-goto-group ,(gnus-group-group-name))
+		(gnus-group-yank-group)))
 	    (push (cons (car entry) (nth 2 entry))
 		  gnus-list-of-killed-groups))
 	  (gnus-group-change-level
@@ -2073,7 +2120,10 @@ is returned."
        info (gnus-info-level (cdr info)) gnus-level-killed
        (and prev (gnus-gethash prev gnus-newsrc-hashtb))
        t)
-      (gnus-group-insert-group-line-info group))
+      (gnus-group-insert-group-line-info group)
+      (gnus-undo-register
+	`(when (gnus-group-goto-group ,group)
+	  (gnus-group-kill-group 1))))
     (forward-line -1)
     (gnus-group-position-point)
     (if (< (length out) 2) (car out) (nreverse out))))
@@ -2181,26 +2231,28 @@ If ARG is a number, it specifies which levels you are interested in
 re-scanning.  If ARG is non-nil and not a number, this will force
 \"hard\" re-reading of the active files from all servers."
   (interactive "P")
-  (run-hooks 'gnus-get-new-news-hook)
-  ;; We might read in new NoCeM messages here.
-  (when (and gnus-use-nocem 
-	     (null arg))
-    (gnus-nocem-scan-groups))
-  ;; If ARG is not a number, then we read the active file.
-  (when (and arg (not (numberp arg)))
-    (let ((gnus-read-active-file t))
-      (gnus-read-active-file))
-    (setq arg nil))
+  (save-excursion
+    (set-buffer gnus-group-buffer)
+    (run-hooks 'gnus-get-new-news-hook)
+    ;; We might read in new NoCeM messages here.
+    (when (and gnus-use-nocem 
+	       (null arg))
+      (gnus-nocem-scan-groups))
+    ;; If ARG is not a number, then we read the active file.
+    (when (and arg (not (numberp arg)))
+      (let ((gnus-read-active-file t))
+	(gnus-read-active-file))
+      (setq arg nil))
 
-  (setq arg (gnus-group-default-level arg t))
-  (if (and gnus-read-active-file (not arg))
-      (progn
-	(gnus-read-active-file)
-	(gnus-get-unread-articles arg))
-    (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
-      (gnus-get-unread-articles arg)))
-  (run-hooks 'gnus-after-getting-new-news-hook)
-  (gnus-group-list-groups))
+    (setq arg (gnus-group-default-level arg t))
+    (if (and gnus-read-active-file (not arg))
+	(progn
+	  (gnus-read-active-file)
+	  (gnus-get-unread-articles arg))
+      (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
+	(gnus-get-unread-articles arg)))
+    (run-hooks 'gnus-after-getting-new-news-hook)
+    (gnus-group-list-groups)))
 
 (defun gnus-group-get-new-news-this-group (&optional n)
   "Check for newly arrived news in the current group (and the N-1 next groups).
@@ -2612,10 +2664,7 @@ and the second element is the address."
 				  (copy-sequence articles)) '<) t))))))
 
 (defun gnus-update-read-articles (group unread)
-  "Update the list of read and ticked articles in GROUP using the
-UNREAD and TICKED lists.
-Note: UNSELECTED has to be sorted over `<'.
-Returns whether the updating was successful."
+  "Update the list of read articles in GROUP."
   (let* ((active (or gnus-newsgroup-active (gnus-active group)))
 	 (entry (gnus-gethash group gnus-newsrc-hashtb))
 	 (info (nth 2 entry))
@@ -2645,6 +2694,11 @@ Returns whether the updating was successful."
 	(setq unread (cdr unread)))
       (when (<= prev (cdr active))
 	(setq read (cons (cons prev (cdr active)) read)))
+      (gnus-undo-register
+	`(progn
+	   (gnus-info-set-marks ,info ,(gnus-info-marks info))
+	   (gnus-info-set-read ,info ,(gnus-info-read info))
+	   (gnus-get-unread-articles-in-group ,info (gnus-active ,group))))
       ;; Enter this list into the group info.
       (gnus-info-set-read
        info (if (> (length read) 1) (nreverse read) read))

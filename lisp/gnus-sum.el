@@ -30,6 +30,7 @@
 (require 'gnus-spec)
 (require 'gnus-range)
 (require 'gnus-int)
+(require 'gnus-undo)
 (require 'gnus)
 
 
@@ -882,6 +883,7 @@ increase the score of each group you read."
     "l" gnus-summary-goto-last-article
     "\C-c\C-v\C-v" gnus-uu-decode-uu-view
     "\C-d" gnus-summary-enter-digest-group
+    "\M-\C-d" gnus-summary-read-document
     "\C-c\C-b" gnus-bug
     "*" gnus-cache-enter-article
     "\M-*" gnus-cache-remove-article
@@ -1641,7 +1643,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 
 (defun gnus-summary-set-local-parameters (group)
  "Go through the local params of GROUP and set all variable specs in that list."
-  (let ((params (gnus-info-params (gnus-get-info group)))
+  (let ((params (gnus-group-find-parameter group))
 	elem)
     (while params
       (setq elem (car params)
@@ -3101,6 +3103,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	 xref-hashtb)))))
 
 (defun gnus-group-make-articles-read (group articles)
+  "Update the info of GROUP to say that only ARTICLES are unread."
   (let* ((num 0)
 	 (entry (gnus-gethash group gnus-newsrc-hashtb))
 	 (info (nth 2 entry))
@@ -3125,6 +3128,11 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	  (when (or (> id (cdr active))
 		    (< id (car active)))
 	    (setq articles (delq id articles))))))
+    (gnus-undo-register
+      `(progn
+	 (gnus-info-set-marks ,info ,(gnus-info-marks info))
+	 (gnus-info-set-read ,info ,(gnus-info-read info))
+	 (gnus-group-update-group group t)))
     ;; If the read list is nil, we init it.
     (and active
 	 (null (gnus-info-read info))
@@ -3138,25 +3146,24 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (gnus-info-read info) (setq articles (sort articles '<)))))
     ;; Then we have to re-compute how many unread
     ;; articles there are in this group.
-    (if active
-	(progn
-	  (cond
-	   ((not range)
-	    (setq num (- (1+ (cdr active)) (car active))))
-	   ((not (listp (cdr range)))
-	    (setq num (- (cdr active) (- (1+ (cdr range))
-					 (car range)))))
-	   (t
-	    (while range
-	      (if (numberp (car range))
-		  (setq num (1+ num))
-		(setq num (+ num (- (1+ (cdar range)) (caar range)))))
-	      (setq range (cdr range)))
-	    (setq num (- (cdr active) num))))
-	  ;; Update the number of unread articles.
-	  (setcar entry num)
-	  ;; Update the group buffer.
-	  (gnus-group-update-group group t)))))
+    (when active
+      (cond
+       ((not range)
+	(setq num (- (1+ (cdr active)) (car active))))
+       ((not (listp (cdr range)))
+	(setq num (- (cdr active) (- (1+ (cdr range))
+				     (car range)))))
+       (t
+	(while range
+	  (if (numberp (car range))
+	      (setq num (1+ num))
+	    (setq num (+ num (- (1+ (cdar range)) (caar range)))))
+	  (setq range (cdr range)))
+	(setq num (- (cdr active) num))))
+      ;; Update the number of unread articles.
+      (setcar entry num)
+      ;; Update the group buffer.
+      (gnus-group-update-group group t))))
 
 (defun gnus-methods-equal-p (m1 m2)
   (let ((m1 (or m1 gnus-select-method))
@@ -4345,6 +4352,7 @@ If BACKWARD, the previous article is selected instead of the next."
 (defun gnus-summary-walk-group-buffer (from-group cmd unread backward)
   (let ((keystrokes '((?\C-n (gnus-group-next-unread-group 1))
 		      (?\C-p (gnus-group-prev-unread-group 1))))
+	(cursor-in-echo-area t)
 	keve key group ended)
     (save-excursion
       (set-buffer gnus-group-buffer)
@@ -4398,7 +4406,7 @@ If UNREAD is non-nil, only unread articles are selected."
   (gnus-summary-next-article unread subject t))
 
 (defun gnus-summary-prev-unread-article ()
-  "Select unred article before current one."
+  "Select unread article before current one."
   (interactive)
   (gnus-summary-prev-article t (and gnus-auto-select-same
 				    (gnus-summary-article-subject))))
@@ -5034,7 +5042,9 @@ Return how many articles were fetched."
 	    (gnus-message 3 "Couldn't fetch article %s" message-id)))))))
 
 (defun gnus-summary-enter-digest-group (&optional force)
-  "Enter a digest group based on the current article."
+  "Enter an nndoc group based on the current article.
+If FORCE, force a digest interpretation.  If not, try
+to guess what the document format is."
   (interactive "P")
   (gnus-set-global-variables)
   (gnus-summary-select-article)
@@ -5070,6 +5080,49 @@ Return how many articles were fetched."
 	  (gnus-message 3 "Article couldn't be entered?"))
       (kill-buffer dig))))
 
+(defun gnus-summary-read-document (n)
+  "Open a new group based on the current article(s).
+Obeys the standard process/prefix convention."
+  (interactive "P")
+  (let ((articles (gnus-summary-work-articles n))
+	(ogroup gnus-newsgroup-name)
+	article group egroup groups vgroup)
+    (while (setq article (pop articles))
+      (setq group (format "%s-%d" gnus-newsgroup-name gnus-current-article))
+      (gnus-summary-remove-process-mark article)
+      (when (gnus-summary-display-article article)
+	(save-excursion
+	  (nnheader-temp-write nil
+	    (insert-buffer-substring gnus-original-article-buffer)
+	    ;; Remove some headers that may lead nndoc to make
+	    ;; the wrong guess.
+	    (message-narrow-to-head)
+	    (goto-char (point-min))
+	    (delete-matching-lines "^\\(Path\\):\\|^From ")
+	    (widen)
+	    (if (setq egroup
+		      (gnus-group-read-ephemeral-group
+		       group `(nndoc ,group (nndoc-address ,(current-buffer))
+				     (nndoc-article-type guess))
+		       t nil t))
+		(progn
+		  ;; Make all postings to this group go to the parent group.
+		  (nconc (gnus-info-params (gnus-get-info egroup))
+			 (list (cons 'to-group ogroup)))
+		  (push egroup groups))
+	      ;; Couldn't select this doc group.
+	      (gnus-error 3 "Article couldn't be entered"))))))
+    ;; Now we have selected all the documents.
+    (cond
+     ((not groups)
+      (error "None of the articles could be interpreted as documents"))
+     ((gnus-group-read-ephemeral-group
+       (setq vgroup (format "%s-%s" gnus-newsgroup-name (current-time-string)))
+       `(nnvirtual ,vgroup (nnvirtual-component-groups ,groups))
+       t))
+     (t
+      (error "Couldn't select virtual nndoc group")))))
+      
 (defun gnus-summary-isearch-article (&optional regexp-p)
   "Do incremental search forward on the current article.
 If REGEXP-P (the prefix) is non-nil, do regexp isearch."
@@ -5626,7 +5679,7 @@ latter case, they will be copied into the relevant groups."
 			(setq gnus-newsgroup-expirable
 			      (sort gnus-newsgroup-expirable '<))))
 	   (expiry-wait (if now 'immediate
-			  (gnus-group-get-parameter
+			  (gnus-group-find-parameter
 			   gnus-newsgroup-name 'expiry-wait)))
 	   es)
       (when expirable
@@ -5641,7 +5694,8 @@ latter case, they will be copied into the relevant groups."
 			expirable gnus-newsgroup-name)))
 	  (setq es (gnus-request-expire-articles
 		    expirable gnus-newsgroup-name)))
-	(or total (setq gnus-newsgroup-expirable es))
+	(unless total
+	  (setq gnus-newsgroup-expirable es))
 	;; We go through the old list of expirable, and mark all
 	;; really expired articles as nonexistent.
 	(unless (eq es expirable)	;If nothing was expired, we don't mark.
@@ -6175,10 +6229,15 @@ marked."
 (defun gnus-mark-article-as-unread (article &optional mark)
   "Enter ARTICLE in the pertinent lists and remove it from others."
   (let ((mark (or mark gnus-ticked-mark)))
-    (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
-    (setq gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant))
-    (setq gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable))
-    (setq gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
+    (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked)
+	  gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant)
+	  gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable)
+	  gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
+
+    ;; Unsuppress duplicates?
+    (when gnus-suppress-duplicates
+      (gnus-dup-unsuppress-article article))
+
     (cond ((= mark gnus-ticked-mark)
 	   (push article gnus-newsgroup-marked))
 	  ((= mark gnus-dormant-mark)

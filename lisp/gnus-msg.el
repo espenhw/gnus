@@ -319,9 +319,9 @@ header line with the old Message-ID."
 	     (pgroup group)
 	     to-address to-group mailing-list to-list)
 	(when group
-	  (setq to-address (gnus-group-get-parameter group 'to-address)
-		to-group (gnus-group-get-parameter group 'to-group)
-		to-list (gnus-group-get-parameter group 'to-list)
+	  (setq to-address (gnus-group-find-parameter group 'to-address)
+		to-group (gnus-group-find-parameter group 'to-group)
+		to-list (gnus-group-find-parameter group 'to-list)
 		mailing-list (when gnus-mailing-list-groups
 			       (string-match gnus-mailing-list-groups group))
 		group (gnus-group-real-name group)))
@@ -532,7 +532,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
     (gnus-setup-message (if yank 'reply-yank 'reply)
       (gnus-summary-select-article)
       (set-buffer (gnus-copy-article-buffer))
-      (message-reply nil nil (gnus-group-get-parameter
+      (message-reply nil nil (gnus-group-find-parameter
 			      gnus-newsgroup-name 'broken-reply-to))
       (when yank
 	(gnus-inews-yank-articles yank)))))
@@ -682,6 +682,8 @@ If YANK is non-nil, include the original article."
 (defun gnus-bug ()
   "Send a bug report to the Gnus maintainers."
   (interactive)
+  (unless (gnus-alive-p)
+    (error "Gnus has been shut down"))
   (gnus-setup-message 'bug
     (delete-other-windows)
     (switch-to-buffer "*Gnus Help Bug*")
@@ -710,7 +712,7 @@ If YANK is non-nil, include the original article."
   "Attemps to go through the Gnus source file and report what variables have been changed.
 The source file has to be in the Emacs load path."
   (interactive)
-  (let ((files '("gnus-sum.el" "gnus-group.el"
+  (let ((files '("gnus-load.el" "gnus-sum.el" "gnus-group.el"
 		 "gnus-art.el" "gnus-start.el"
 		 "gnus-msg.el" "gnus-score.el"
 		 "nnmail.el" "message.el"))
@@ -866,6 +868,7 @@ this is a reply."
   (let* ((var gnus-message-archive-group)
 	 (group (or group gnus-newsgroup-name ""))
 	 result
+	 gcc-self-val
 	 (groups
 	  (cond 
 	   ((null gnus-message-archive-method)
@@ -909,13 +912,27 @@ this is a reply."
 	  (gnus-inews-narrow-to-headers)
 	  (goto-char (point-max))
 	  (insert "Gcc: ")
-	  (while (setq name (pop groups))
-	    (insert (if (string-match ":" name)
-			name
-		      (gnus-group-prefixed-name 
-		       name gnus-message-archive-method)))
-	    (if groups (insert " ")))
-	  (insert "\n"))))))
+	  (if (and gnus-newsgroup-name
+		   (setq gcc-self-val
+			 (gnus-group-get-parameter
+			  gnus-newsgroup-name 'gcc-self)))
+	      (progn 
+		(insert
+		 (if (stringp gcc-self-val)
+		     gcc-self-val
+		   group))
+		(if (not (eq gcc-self-val 'none))
+		    (insert "\n")
+		  (progn
+		    (beginning-of-line)
+		    (kill-line))))
+	    (while (setq name (pop groups))
+	      (insert (if (string-match ":" name)
+			  name
+			(gnus-group-prefixed-name 
+			 name gnus-message-archive-method)))
+	      (if groups (insert " ")))
+	    (insert "\n")))))))
 
 (defun gnus-summary-send-draft ()
   "Enter a mail/post buffer to edit and send the draft."

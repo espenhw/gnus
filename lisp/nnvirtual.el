@@ -51,12 +51,14 @@ virtual group.")
 (defvoo nnvirtual-component-regexp nil
   "*Regexp to match component groups.")
 
+(defvoo nnvirtual-component-groups nil
+  "Component group in this nnvirtual group.")
+
 
 
 (defconst nnvirtual-version "nnvirtual 1.0")
 
 (defvoo nnvirtual-current-group nil)
-(defvoo nnvirtual-component-groups nil)
 (defvoo nnvirtual-mapping nil)
 
 (defvoo nnvirtual-status-string "")
@@ -192,14 +194,15 @@ virtual group.")
   (if nnvirtual-component-groups
       t
     (setq nnvirtual-mapping nil)
-    ;; Go through the newsrc alist and find all component groups.
-    (let ((newsrc (cdr gnus-newsrc-alist))
-	  group)
-      (while (setq group (car (pop newsrc)))
-	(when (string-match nnvirtual-component-regexp group) ; Match
-	  ;; Add this group to the list of component groups.
-	  (setq nnvirtual-component-groups
-		(cons group (delete group nnvirtual-component-groups))))))
+    (when nnvirtual-component-regexp
+      ;; Go through the newsrc alist and find all component groups.
+      (let ((newsrc (cdr gnus-newsrc-alist))
+	    group)
+	(while (setq group (car (pop newsrc)))
+	  (when (string-match nnvirtual-component-regexp group) ; Match
+	    ;; Add this group to the list of component groups.
+	    (setq nnvirtual-component-groups
+		  (cons group (delete group nnvirtual-component-groups)))))))
     (if (not nnvirtual-component-groups)
 	(nnheader-report 'nnvirtual "No component groups: %s" server)
       t)))

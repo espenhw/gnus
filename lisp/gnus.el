@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.8"
+(defconst gnus-version-number "0.9"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -317,9 +317,8 @@ If ARG, insert string at point."
   "Find Info documentation of Gnus."
   (interactive)
   ;; Enlarge info window if needed.
-  (let ((mode major-mode)
-	gnus-info-buffer)
-    (Info-goto-node (cadr (assq mode gnus-info-nodes)))
+  (let (gnus-info-buffer)
+    (Info-goto-node (cadr (assq major-mode gnus-info-nodes)))
     (setq gnus-info-buffer (current-buffer))
     (gnus-configure-windows 'info)))
 
@@ -334,7 +333,7 @@ that that variable is buffer-local to the summary buffers."
 
 (defun gnus-group-total-expirable-p (group)
   "Check whether GROUP is total-expirable or not."
-  (let ((params (gnus-info-params (gnus-get-info group))))
+  (let ((params (gnus-group-find-parameter group)))
     (or (memq 'total-expire params)
 	(cdr (assq 'total-expire params)) ; (total-expire . t)
 	(and gnus-total-expirable-newsgroups ; Check var.
@@ -342,7 +341,7 @@ that that variable is buffer-local to the summary buffers."
 
 (defun gnus-group-auto-expirable-p (group)
   "Check whether GROUP is total-expirable or not."
-  (let ((params (gnus-info-params (gnus-get-info group))))
+  (let ((params (gnus-group-find-parameter group)))
     (or (memq 'auto-expire params)
 	(cdr (assq 'auto-expire params)) ; (auto-expire . t)
 	(and gnus-auto-expirable-newsgroups ; Check var.
@@ -559,8 +558,18 @@ that that variable is buffer-local to the summary buffers."
   "Say whether the group is secondary or not."
   (gnus-secondary-method-p (gnus-find-method-for-group group)))
 
+(defun gnus-group-find-parameter (group &optional symbol)
+  "Return the group parameters for GROUP.
+If SYMBOL, return the value of that symbol in the group parameters."
+  (save-excursion
+    (set-buffer gnus-group-buffer)
+    (let ((parameters (funcall gnus-group-get-parameter-function group)))
+      (if symbol
+	  (gnus-group-parameter-value parameters symbol)
+	parameters))))
+
 (defun gnus-group-get-parameter (group &optional symbol)
-  "Returns the group parameters for GROUP.
+  "Return the group parameters for GROUP.
 If SYMBOL, return the value of that symbol in the group parameters."
   (let ((params (gnus-info-params (gnus-get-info group))))
     (if symbol
@@ -624,7 +633,8 @@ just the host name."
 		      (dot (string-match "\\." group)))
 		 (setq foreign (concat
 				(substring group (+ 1 plus)
-					   (cond ((< colon dot) colon)
+					   (cond ((null dot) colon)
+						 ((< colon dot) colon)
 						 ((< dot colon) dot))) ":")
 		       group (substring group (+ 1 colon))
 		       )))
@@ -711,10 +721,12 @@ If NEWSGROUP is nil, return the global kill file name instead."
   ;; called "hello+alt.alt".
   (let ((entry
 	 (gnus-copy-sequence
-	  (if (equal (car method) "native") gnus-select-method
+	  (if (gnus-server-equal method gnus-select-method) gnus-select-method
 	    (cdr (assoc (car method) gnus-server-alist))))))
-    (setcar (cdr entry) (concat (nth 1 entry) "+" group))
-    (nconc entry (cdr method))))
+    (if (not entry)
+	method
+      (setcar (cdr entry) (concat (nth 1 entry) "+" group))
+      (nconc entry (cdr method)))))
 
 (defun gnus-server-status (method)
   "Return the status of METHOD."

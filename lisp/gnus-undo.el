@@ -57,6 +57,7 @@
 (defvar gnus-undo-actions nil)
 (defvar gnus-undo-boundary t)
 (defvar gnus-undo-last nil)
+(defvar gnus-undo-boundary-inhibit nil)
 
 ;;; Minor mode definition.
 
@@ -113,9 +114,23 @@
 
 (defun gnus-undo-boundary ()
   "Set Gnus undo boundary."
-  (setq gnus-undo-boundary t))
+  (if gnus-undo-boundary-inhibit
+      (setq gnus-undo-boundary-inhibit nil)
+    (setq gnus-undo-boundary t)))
 
-(defun gnus-undo-register (function)
+(defun gnus-undo-register (form)
+  "Register FORMS as something to be performed to undo a change.
+FORMS may use backtick quote syntax."
+  (when gnus-undo-mode
+    (gnus-undo-register-1
+     `(lambda ()
+	,@form))))
+
+(put 'gnus-undo-register 'lisp-indent-function 0)
+(put 'gnus-undo-register 'lisp-indent-hook 0)
+(put 'gnus-undo-register 'edebug-form-spec '(body))
+
+(defun gnus-undo-register-1 (function)
   "Register FUNCTION as something to be performed to undo a change."
   (when gnus-undo-mode
     (cond
@@ -128,7 +143,8 @@
       (setcar gnus-undo-actions (cons function (car gnus-undo-actions))))
      ;; Initialize list.
      (t
-      (setq gnus-undo-actions (list (list function)))))))
+      (setq gnus-undo-actions (list (list function)))))
+    (setq gnus-undo-boundary-inhibit t)))
 
 (defun gnus-undo (n)
   "Undo some previous changes in Gnus buffers.
@@ -137,16 +153,17 @@ A numeric argument serves as a repeat count."
   (interactive "p")
   (unless gnus-undo-mode
     (error "Undoing is not enabled in this buffer"))
+  (message "%s" last-command)
   (when (or (not (eq last-command 'gnus-undo))
 	    (not gnus-undo-last))
     (setq gnus-undo-last gnus-undo-actions))
-  (let (actions action)
-    (while (setq actions (pop gnus-undo-last))
-      (unless action
-	(error "Nothing further to undo"))
-      (setq gnus-undo-actions (delq action gnus-undo-actions))
-      (while action
-	(funcall (pop action))))))
+  (let ((action (pop gnus-undo-last)))
+    (unless action
+      (error "Nothing further to undo"))
+    (setq gnus-undo-actions (delq action gnus-undo-actions))
+    (setq gnus-undo-boundary t)
+    (while action
+      (funcall (pop action)))))
 
 (provide 'gnus-undo)
 
