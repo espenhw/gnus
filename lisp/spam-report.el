@@ -86,9 +86,9 @@ instead."
 	      (let* ((host (match-string 1))
 		     (report (match-string 2))
 		     (url (format "http://%s%s" host report)))
-		(gnus-message 10 "Reporting spam through URL %s..." url)
+		(gnus-message 7 "Reporting spam through URL %s..." url)
 		(spam-report-url-ping host report))
-	    (gnus-message 10 "Could not find X-Report-Spam in article %d..."
+	    (gnus-message 3 "Could not find X-Report-Spam in article %d..."
 			  article)))))))
 
 (defun spam-report-url-ping (host report)
