@@ -162,9 +162,7 @@ there.")
 	       (message "nnspool: Receiving headers...done"))
 	  
 	  ;; Fold continuation lines.
-	  (goto-char (point-min))
-	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	    (replace-match " " t t))
+	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
 (defun nnspool-open-server (server &optional defs)

@@ -885,7 +885,7 @@ called."
 	    (buffer-disable-undo (current-buffer))
 	    (erase-buffer)
 	    (insert "Newsgroups: " newsgroups "\n"
-		    "From: " (gnus-inews-real-user-address) "\n"
+		    "From: " (gnus-inews-user-name) "\n"
 		    "Subject: cancel " message-id "\n"
 		    "Control: cancel " message-id "\n"
 		    (if distribution
@@ -1803,7 +1803,9 @@ mailer."
 	    (goto-char last))
 	  (forward-line 2)
 	  (gnus-configure-windows 'reply-yank 'force))
-	(run-hooks 'gnus-mail-hook)))))
+	(run-hooks 'gnus-mail-hook)
+	;; Mark this buffer as unchanged.
+	(set-buffer-modified-p nil)))))
 
 (defun gnus-new-news (&optional group inhibit-prompt)
   "Set up a *post-news* buffer that points to GROUP.
@@ -1820,6 +1822,8 @@ If INHIBIT-PROMPT, never prompt for a Subject."
     ;; Let posting styles be configured.
     (gnus-configure-posting-styles)
     (news-setup nil subject nil (and group (gnus-group-real-name group)) nil)
+    ;; Associate this buffer with the draft group.
+    (gnus-associate-buffer-with-draft)
     (goto-char (point-min))
 
     (unless (re-search-forward 
@@ -1859,6 +1863,8 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	    followup-to distribution newsgroups)
 	(set-buffer (get-buffer-create gnus-post-news-buffer))
 	(news-reply-mode)
+	;; Associate this buffer with the draft group.
+	(gnus-associate-buffer-with-draft)
 	(if (and (buffer-modified-p)
 		 (> (buffer-size) 0)
 		 (not (gnus-y-or-n-p 
@@ -2058,7 +2064,8 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	 (to-address (and address-group
 			  (mail-fetch-field "to"))))
     (setq gnus-add-to-address nil)
-    (or dont-send (gnus-mail-send))
+    (let ((buffer-file-name nil))
+      (or dont-send (gnus-mail-send)))
     (bury-buffer)
     ;; This mail group doesn't have a `to-address', so we add one
     ;; here.  Magic!  
@@ -2381,7 +2388,7 @@ Headers will be generated before sending."
   (use-local-map (copy-keymap (current-local-map)))
   (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
   (local-set-key "\C-c\C-p" 'gnus-put-message)
-  (local-set-key "\C-c\C-d" 'gnus-enter-into-draft-group))
+  (local-set-key "\C-c\C-d" 'gnus-put-draft-group))
 
 (defun gnus-mail-setup (type &optional to subject in-reply-to cc
 			     replybuffer actions)
@@ -2408,7 +2415,9 @@ Headers will be generated before sending."
 	       'gnus-mail-other-window-using-vm)))
      'gnus-vm-mail-setup)
     (t 'gnus-sendmail-mail-setup))
-   to subject in-reply-to cc replybuffer actions))
+   to subject in-reply-to cc replybuffer actions)
+  ;; Associate this mail buffer with the draft group.
+  (gnus-associate-buffer-with-draft))
 
 (defun gnus-sendmail-mail-setup (to subject in-reply-to cc replybuffer actions)
   (mail-mode)
@@ -2479,118 +2488,70 @@ Headers will be generated before sending."
   "Return the name of the draft group."
   (gnus-group-prefixed-name 
    (file-name-nondirectory gnus-draft-group-directory)
-   (list 'nndir gnus-draft-group-directory)))
+   (list 'nndraft gnus-draft-group-directory)))
 
 (defun gnus-make-draft-group ()
   "Make the draft group or die trying."
-  (let* ((method (` (nndir "private" 
-			   (nndir-directory (, gnus-draft-group-directory)))))
-	 (group (gnus-group-prefixed-name 
-		 (file-name-nondirectory gnus-draft-group-directory)
-		 method)))
+  (let* ((method (` (nndraft "private" 
+			     (nndraft-directory 
+			      (, gnus-draft-group-directory)))))
+	 (group (gnus-draft-group)))
     (or (gnus-gethash group gnus-newsrc-hashtb)
 	(gnus-group-make-group (gnus-group-real-name group) method)
 	(error "Can't create the draft group"))
+    (gnus-check-server method)
     group))
 
-(defun gnus-enter-into-draft-group ()
+(defun gnus-put-in-draft-group (&optional generate silent)
   "Enter the current buffer into the draft group."
   (interactive)
-  (gnus-put-in-draft-group t))
-
-(defun gnus-put-in-draft-group (&optional generate silent)
-  "Does the actual putting."
-  (let ((group (gnus-make-draft-group))
-	(type (list major-mode (buffer-name) gnus-newsgroup-name
-		    (point)))
-	(mode major-mode)
-	(buf (current-buffer)))
-    (widen)
-    (save-excursion
-      (nnheader-set-temp-buffer " *enter-draft*")
-      (insert-buffer-substring buf)
-      (save-restriction
-	(widen)
-	(gnus-inews-narrow-to-headers)
-	(let (gnus-deletable-headers)
-	  (if (eq mode 'mail-mode)
-	      (gnus-inews-insert-headers gnus-required-mail-headers)
-	    (gnus-inews-insert-headers)))
-	(widen))
-
-      (goto-char (point-min))
-      ;; We have to store whether we are in a mail group or news group. 
-      (insert (format "X-Gnus-Draft-Type: %S\n" type))
-      (and (re-search-forward
-	    (concat "^" (regexp-quote mail-header-separator) "$") nil t)
-	   (replace-match "" t t))
-      (if (prog1
-	      (gnus-request-accept-article group t)
-	    (kill-buffer (current-buffer)))
-	  (or silent
-	      (gnus-mail-send-and-exit 'dont-send))))
+  (when (gnus-request-accept-article (gnus-make-draft-group) t)
+    (unless silent
+      ;; This function does the proper marking of articles.
+      (gnus-mail-send-and-exit 'dont-send))
     (set-buffer-modified-p nil)))
+
+(defun gnus-associate-buffer-with-draft ()
+  (save-excursion
+    ;; Make sure the draft group exists.
+    (gnus-make-draft-group)
+    ;; Associate the buffer with the draft group.
+    (let ((article (gnus-request-associate-buffer (gnus-draft-group))))
+      ;; Arrange for deletion of the draft after successful sending.
+      (make-local-variable 'gnus-message-sent-hook)
+      (setq gnus-message-sent-hook
+	    (list
+	     `(lambda ()
+		(let ((gnus-verbose-backends nil))
+		  (gnus-request-expire-articles 
+		   (quote ,(list article))
+		   ,(gnus-draft-group) t))))))))
 
 (defun gnus-summary-send-draft ()
   "Enter a mail/post buffer to edit and send the draft."
   (interactive)
   (gnus-set-global-variables)
-  (gnus-summary-select-article t)
-  ;; First we find the draft type.
-  (let (type)
-    (save-excursion 
-      (set-buffer gnus-article-buffer)
-      (widen)
-      (gnus-narrow-to-headers)
-      (setq type (condition-case ()
-		     (read (mail-fetch-field "x-gnus-draft-type"))
-		   (error nil)))
-      (widen))
-    (or type
-	(error "Unknown draft type"))
-    ;; Get to the proper buffer.
-    (set-buffer (get-buffer-create (nth 1 type)))
-    ;; It might be modified.
-    (and (buffer-modified-p)
-	 (or (gnus-yes-or-no-p "Unsent message being composed; discard it? ")
-	     (error "Break")))
-    (setq buffer-read-only nil)
-    (buffer-enable-undo (current-buffer))
-    (erase-buffer)
-    ;; Set proper mode.
-    (funcall (car type))
-    (gnus-inews-modify-mail-mode-map)
-    (when (eq major-mode 'news-reply-mode)
-      (local-set-key "\C-c\C-c" 'gnus-inews-news))
-    ;; Arrange for deletion of the draft after successful sending.
-    (make-local-variable 'gnus-message-sent-hook)
-    (setq gnus-message-sent-hook
-	  (list
-	   `(lambda ()
-	      (gnus-request-expire-articles 
-	       (quote ,(list (cdr gnus-article-current)))
-	       ,gnus-newsgroup-name t)
-		(and (buffer-name ,gnus-summary-buffer)
-		     (save-excursion
-		       (set-buffer ,gnus-summary-buffer)
-		       (gnus-summary-mark-article 
-			,(cdr gnus-article-current) gnus-canceled-mark))))))
-    ;; Insert the draft.
-    (insert-buffer-substring gnus-article-buffer)
-    ;; Insert the separator.
-    (goto-char (point-min))
-    (search-forward "\n\n")
-    (forward-char -1)
-    (insert mail-header-separator)
-    ;; Remove the draft header.
-    (gnus-inews-narrow-to-headers)
-    (nnheader-remove-header "x-gnus-draft-type")
-    (widen)
-    ;; Configure windows.
-    (let ((gnus-draft-buffer (current-buffer)))
-      (gnus-configure-windows 'draft))
-    ;; Put point where you left it.
-    (goto-char (nth 3 type))))
+  (unless (equal gnus-newsgroup-name (gnus-draft-group))
+    (error "This function can only be used in the draft buffer"))
+  (let (buf point)
+    (if (not (setq buf (gnus-request-restore-buffer 
+			(gnus-summary-article-number) gnus-newsgroup-name)))
+	(error "Couldn't restore the article")
+      (setq point (point))
+      (switch-to-buffer buf)
+      (gnus-inews-modify-mail-mode-map)
+      (when (eq major-mode 'news-reply-mode)
+	(local-set-key "\C-c\C-c" 'gnus-inews-news))
+      (gnus-associate-buffer-with-draft) 
+      ;; Insert the separator.
+      (goto-char (point-min))
+      (search-forward "\n\n")
+      (forward-char -1)
+      (insert mail-header-separator)
+      ;; Configure windows.
+      (let ((gnus-draft-buffer (current-buffer)))
+	(gnus-configure-windows 'draft)
+	(goto-char (point))))))
   
 (defun gnus-configure-posting-styles ()
   "Configure posting styles according to `gnus-posting-styles'."

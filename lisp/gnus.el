@@ -241,6 +241,10 @@ If nil, ignore cross references.  If t, mark articles as read in
 subscribed newsgroups.  If neither t nor nil, mark as read in all
 newsgroups.") 
 
+(defvar gnus-single-article-buffer t
+  "*If non-nil, display all articles in the same buffer.
+If nil, each group will get its own article buffer.")
+
 (defvar gnus-use-dribble-file t
   "*Non-nil means that Gnus will use a dribble file to store user updates.
 If Emacs should crash without saving the .newsrc files, complete
@@ -346,6 +350,10 @@ parameter.  If it is a list, it will be evaled in the same buffer.
 If this form or function returns a string, this string will be used as
 a possible file name; and if it returns a non-nil list, that list will
 be used as possible file names.")
+
+(defvar gnus-move-split-methods nil
+  "*Variable used to suggest where articles are to be moved to.
+It uses the same syntax as the `gnus-split-methods' variable.")
 
 (defvar gnus-save-score nil
   "*If non-nil, save group scoring info.")
@@ -619,6 +627,9 @@ Ignored if `gnus-group-use-permanent-levels' is non-nil.")
 
 (defvar gnus-group-use-permanent-levels nil
   "*If non-nil, once you set a level, Gnus will use this level.")
+
+(defvar gnus-group-list-inactive-groups t
+  "*If non-nil, inactive groups will be listed.")
 
 (defvar gnus-show-mime nil
   "*If non-nil, do mime processing of articles.
@@ -1575,7 +1586,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.24"
+(defconst gnus-version "September Gnus v0.25"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1865,7 +1876,6 @@ Thank you for your help in stamping out bugs.
      ("gnus-vis" :interactive t
       gnus-article-push-button gnus-article-press-button 
       gnus-article-highlight gnus-article-highlight-some 
-      gnus-article-hide gnus-article-hide-signature 
       gnus-article-highlight-headers gnus-article-highlight-signature 
       gnus-article-add-buttons gnus-article-add-buttons-to-head 
       gnus-article-next-button gnus-article-prev-button)
@@ -4214,7 +4224,8 @@ If REGEXP, only list groups matching REGEXP."
 	       (<= (setq clevel (gnus-info-level info)) level) 
 	       (>= clevel lowest)
 	       (or all			; We list all groups?
-		   (eq unread t)	; We list unactivated groups
+		   (and gnus-group-list-inactive-groups
+			(eq unread t))	; We list unactivated groups
 		   (> unread 0)		; We list groups with unread articles
 		   (cdr (assq 'tick (gnus-info-marks info)))
 					; And groups with tickeds
@@ -5553,6 +5564,7 @@ or nil if no action could be taken."
       (setq group (pop groups))
       (gnus-group-remove-mark group)
       (when (gnus-check-backend-function 'request-expire-articles group)
+	(gnus-message 6 "Expiring articles in %s..." group)
 	(let* ((info (gnus-get-info group))
 	       (expirable (if (gnus-group-total-expirable-p group)
 			      (cons nil (gnus-list-of-read-articles group))
@@ -5568,7 +5580,10 @@ or nil if no action could be taken."
 			    (gnus-uncompress-sequence (cdr expirable)) group))
 		       (gnus-request-expire-articles 
 			(gnus-uncompress-sequence (cdr expirable))
-			group))))))))))
+			group)))))
+	  (gnus-message 6 "Expiring articles in %s...done" group)))
+      (gnus-group-position-point))))
+
 
 (defun gnus-group-expire-all-groups ()
   "Expire all expirable articles in all newsgroups."
@@ -5927,7 +5942,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
       (or (gnus-get-new-news-in-group group)
 	  (progn 
 	    (ding) 
-	    (message "%s error: %s" group (gnus-status-message group))
+	    (gnus-message 3 "%s error: %s" group (gnus-status-message group))
 	    (sit-for 2))))
     (gnus-group-next-unread-group 1 t)
     (gnus-summary-position-point)
@@ -5976,7 +5991,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
 		   gnus-description-hashtb))
 	     (setq desc (gnus-group-get-description group))
 	     (gnus-read-descriptions-file method))
-	 (message
+	 (message 
 	  (or desc (gnus-gethash group gnus-description-hashtb)
 	      "No description available")))))
 
@@ -7118,7 +7133,10 @@ article number."
       (setq gnus-summary-buffer (set-buffer (get-buffer-create buffer)))
       (gnus-add-current-to-buffer-list)
       (gnus-summary-mode group)
-      (and gnus-carpal (gnus-carpal-setup-buffer 'summary))
+      (when gnus-carpal 
+	(gnus-carpal-setup-buffer 'summary))
+      (unless gnus-single-article-buffer
+	(make-local-variable 'gnus-article-buffer))
       (setq gnus-newsgroup-name group)
       t)))
 
@@ -7126,23 +7144,24 @@ article number."
   ;; Set the global equivalents of the summary buffer-local variables
   ;; to the latest values they had.  These reflect the summary buffer
   ;; that was in action when the last article was fetched.
-  (if (eq major-mode 'gnus-summary-mode) 
-      (progn
-	(setq gnus-summary-buffer (current-buffer))
-	(let ((name gnus-newsgroup-name)
-	      (marked gnus-newsgroup-marked)
-	      (unread gnus-newsgroup-unreads)
-	      (headers gnus-current-headers)
-	      (data gnus-newsgroup-data)
-	      (score-file gnus-current-score-file))
-	  (save-excursion
-	    (set-buffer gnus-group-buffer)
-	    (setq gnus-newsgroup-name name)
-	    (setq gnus-newsgroup-marked marked)
-	    (setq gnus-newsgroup-unreads unread)
-	    (setq gnus-current-headers headers)
-	    (setq gnus-newsgroup-data data)
-	    (setq gnus-current-score-file score-file))))))
+  (when (eq major-mode 'gnus-summary-mode) 
+    (setq gnus-summary-buffer (current-buffer))
+    (let ((name gnus-newsgroup-name)
+	  (marked gnus-newsgroup-marked)
+	  (unread gnus-newsgroup-unreads)
+	  (headers gnus-current-headers)
+	  (data gnus-newsgroup-data)
+	  (article-buffer gnus-article-buffer)
+	  (score-file gnus-current-score-file))
+      (save-excursion
+	(set-buffer gnus-group-buffer)
+	(setq gnus-newsgroup-name name)
+	(setq gnus-newsgroup-marked marked)
+	(setq gnus-newsgroup-unreads unread)
+	(setq gnus-current-headers headers)
+	(setq gnus-newsgroup-data data)
+	(setq gnus-article-buffer article-buffer)
+	(setq gnus-current-score-file score-file)))))
 
 (defun gnus-summary-last-article-p (&optional article)
   "Return whether ARTICLE is the last article in the buffer."
@@ -7319,7 +7338,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	    (and (eq major-mode 'gnus-summary-mode)
 		 (gnus-set-global-variables))
 	    (gnus-configure-windows (cdr quit-config)))))
-      (message "Can't select group")
+      (gnus-message 3 "Can't select group")
       nil)
      ;; The user did a `C-g' while prompting for number of articles,
      ;; so we exit this group.
@@ -7771,7 +7790,7 @@ Unscored articles will be counted as having a score of zero."
   "Prepare summary buffer from THREADS and indentation LEVEL.  
 THREADS is either a list of `(PARENT [(CHILD1 [(GRANDCHILD ...]...) ...])'  
 or a straight list of headers."
-  (message "Generating summary...")
+  (gnus-message 7 "Generating summary...")
 
   (setq gnus-newsgroup-threads threads)
   (beginning-of-line)
@@ -8010,7 +8029,7 @@ or a straight list of headers."
 	(setq threads (if thread-end nil (cdr (car thread))))
 	(unless threads
 	  (setq gnus-tmp-level 0)))))
-  (message "Generating summary...done"))
+  (gnus-message 7 "Generating summary...done"))
 
 (defun gnus-summary-prepare-unthreaded (headers)
   "Generate an unthreaded summary buffer based on HEADERS."
@@ -8754,7 +8773,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 	       ))
       (error (progn 
 	       (ding)
-	       (message "Strange nov line.")
+	       (gnus-message 4 "Strange nov line")
 	       (setq header nil)
 	       (goto-char eol))))
 
@@ -9199,6 +9218,9 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	  (gnus-group-next-unread-group 1)))
     (if temporary
 	nil				;Nothing to do.
+      ;; If we have several article buffers, we kill them at exit.
+      (unless gnus-single-article-buffer
+	(gnus-kill-buffer gnus-article-buffer))
       (if (not gnus-kill-summary-on-exit)
 	  (gnus-deaden-summary)
 	;; We set all buffer-local variables to nil.  It is unclear why
@@ -9241,6 +9263,9 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (when (or no-questions
 	      gnus-expert-user
 	      (gnus-y-or-n-p "Do you really wanna quit reading this group? "))
+      ;; If we have several article buffers, we kill them at exit.
+      (unless gnus-single-article-buffer
+	(gnus-kill-buffer gnus-article-buffer))
       (if (not gnus-kill-summary-on-exit)
 	  (gnus-deaden-summary)
 	(gnus-close-group group)
@@ -9496,9 +9521,10 @@ If FORCE, also allow jumping to articles not currently shown."
 	 (gnus-summary-insert-subject article)
 	 (setq data (gnus-data-find article)))
     (goto-char b)
-    (if (and (not silent) (not data))
+    (if (not data)
 	(progn
-	  (message "Can't find article %d" article)
+	  (unless silent
+	    (gnus-message 3 "Can't find article %d" article))
 	  nil)
       (goto-char (gnus-data-pos data))
       article)))
@@ -9546,19 +9572,23 @@ be displayed."
     (prog1
 	(save-excursion
 	  (set-buffer gnus-summary-buffer)
-	  (if (or (null gnus-current-article)
-		  (null gnus-article-current)
-		  (null (get-buffer gnus-article-buffer))
-		  (not (eq article (cdr gnus-article-current)))
-		  (not (equal (car gnus-article-current) gnus-newsgroup-name))
+	  (if (or (and gnus-single-article-buffer
+		       (or (null gnus-current-article)
+			   (null gnus-article-current)
+			   (null (get-buffer gnus-article-buffer))
+			   (not (eq article (cdr gnus-article-current)))
+			   (not (equal (car gnus-article-current)
+				       gnus-newsgroup-name))))
+		  (and (not gnus-single-article-buffer)
+		       (null gnus-current-article))
 		  force)
 	      ;; The requested article is different from the current article.
-	      (progn
-		(gnus-summary-display-article article all-headers)
+	      (prog1
+		  (gnus-summary-display-article article all-headers)
 		(setq did article))
 	    (if (or all-headers gnus-show-all-headers) 
 		(gnus-article-show-all-headers))
-	    nil))
+	    t))
       (if did 
 	  (gnus-article-set-window-start 
 	   (cdr (assq article gnus-newsgroup-bookmarks)))))))
@@ -9832,7 +9862,7 @@ If ALL-HEADERS is non-nil, no header lines are hidden."
   (prog1
       (if (gnus-summary-goto-subject article force)
 	  (gnus-summary-display-article article all-headers)
-	(message "Couldn't go to article %s" article) nil)
+	(gnus-message 4 "Couldn't go to article %s" article) nil)
     (gnus-summary-position-point)))
 
 (defun gnus-summary-goto-last-article ()
@@ -9864,6 +9894,7 @@ If not given a prefix, use the process marked articles instead."
   (gnus-set-global-variables)
   (prog1
       (let ((articles (gnus-summary-work-articles n)))
+	(setq gnus-newsgroup-processable nil)
 	(gnus-summary-limit articles))
     (gnus-summary-position-point)))
 
@@ -10007,7 +10038,8 @@ Returns how many articles were removed."
     (if data
 	;; We try to find some article after the current one.
 	(while data
-	  (and (gnus-summary-goto-subject (gnus-data-number (car data)))
+	  (and (gnus-summary-goto-subject 
+		(gnus-data-number (car data)) nil t)
 	       (setq data nil
 		     found t))
 	  (setq data (cdr data))))
@@ -10511,30 +10543,18 @@ newsgroup that you want to move to have to support the `request-move'
 and `request-accept' functions. (Ie. mail newsgroups at present.)"
   (interactive "P")
   (gnus-set-global-variables)
-  (or (gnus-check-backend-function 'request-move-article gnus-newsgroup-name)
-      (error "The current newsgroup does not support article moving"))
+  (unless (gnus-check-backend-function
+	   'request-move-article gnus-newsgroup-name)
+    (error "The current newsgroup does not support article moving"))
   (let ((articles (gnus-summary-work-articles n))
 	(prefix (gnus-group-real-prefix gnus-newsgroup-name))
 	art-group to-method sel-met)
-    (if (and (not to-newsgroup) (not select-method))
-	(setq to-newsgroup
-	      (completing-read 
-	       (format "Where do you want to move %s? %s"
-		       (if (> (length articles) 1)
-			   (format "these %d articles" (length articles))
-			 "this article")
-		       (if gnus-current-move-group
-			   (format "(default %s) " gnus-current-move-group)
-			 ""))
-	       gnus-active-hashtb nil nil prefix)))
-    (if to-newsgroup
-        (progn
-          (if (or (string= to-newsgroup "") (string= to-newsgroup prefix))
-              (setq to-newsgroup (or gnus-current-move-group "")))
-          (or (gnus-active to-newsgroup)
-	      (gnus-activate-group to-newsgroup)
-              (error "No such group: %s" to-newsgroup))
-          (setq gnus-current-move-group to-newsgroup)))
+    (when (and (not to-newsgroup)
+	       (not select-method))
+      (setq to-newsgroup 
+	    (gnus-read-move-group-name 
+	     "move" gnus-current-move-group articles prefix))
+      (setq gnus-current-move-group to-newsgroup))
     (setq to-method (if select-method (list select-method "")
 		      (gnus-find-method-for-group to-newsgroup)))
     (or (gnus-check-backend-function 'request-accept-article (car to-method))
@@ -10661,25 +10681,12 @@ functions. (Ie. mail newsgroups at present.)"
 	(prefix (gnus-group-real-prefix gnus-newsgroup-name))
 	art-group to-method)
     (buffer-disable-undo copy-buf)
-    (if (and (not to-newsgroup) (not select-method))
-	(setq to-newsgroup
-	      (completing-read 
-	       (format "Where do you want to copy %s? %s"
-		       (if (> (length articles) 1)
-			   (format "these %d articles" (length articles))
-			 "this article")
-		       (if gnus-current-move-group
-			   (format "(default %s) " gnus-current-move-group)
-			 ""))
-	       gnus-active-hashtb nil nil prefix)))
-    (if to-newsgroup
-        (progn
-          (if (or (string= to-newsgroup "") (string= to-newsgroup prefix))
-              (setq to-newsgroup (or gnus-current-move-group "")))
-          (or (gnus-active to-newsgroup)
-	      (gnus-activate-group to-newsgroup)
-              (error "No such group: %s" to-newsgroup))
-          (setq gnus-current-move-group to-newsgroup)))
+    (when (and (not to-newsgroup)
+	       (not select-method))
+      (setq to-newsgroup 
+	    (gnus-read-move-group-name
+	     "copy" gnus-current-move-group articles prefix))
+      (setq gnus-current-move-group to-newsgroup))
     (setq to-method (if select-method (list select-method "")
 		      (gnus-find-method-for-group to-newsgroup)))
     (or (gnus-check-backend-function 'request-accept-article (car to-method))
@@ -10898,7 +10905,8 @@ groups."
   (if (gnus-group-read-only-p)
       (progn
 	(gnus-summary-edit-article-postpone)
-	(message "The current newsgroup does not support article editing.")
+	(gnus-message 
+	 1 "The current newsgroup does not support article editing.")
 	(ding))
     (let ((buf (buffer-substring-no-properties (point-min) (point-max))))
       (erase-buffer)
@@ -11607,7 +11615,8 @@ If given a prefix, mark all articles, unread as well as ticked, as
 read." 
   (interactive "P")
   (gnus-set-global-variables)
-  (gnus-summary-catchup all)
+  (save-excursion
+    (gnus-summary-catchup all))
   (gnus-summary-next-article t))
 
 ;; Thread-based commands.
@@ -11944,7 +11953,7 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	  ;; Remove headers accoring to `gnus-saved-headers'.
 	  (let ((gnus-visible-headers 
 		 (or gnus-saved-headers gnus-visible-headers)))
-	    (gnus-article-hide-headers t)))
+	    (gnus-article-hide-headers nil t)))
 	;; Remove any X-Gnus lines.
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
@@ -12026,11 +12035,10 @@ save those articles instead."
   (let ((gnus-default-article-saver 'gnus-summary-save-body-in-file))
     (gnus-summary-save-article arg)))
 
-(defun gnus-read-save-file-name (prompt default-name)
-  (let ((methods gnus-split-methods)
-	split-name method result match)
-    ;; Let the split methods have their say.
-    (when gnus-split-methods
+(defun gnus-get-split-value (methods)
+  "Return a value based on the split METHODS."
+  (let (split-name method result match)
+    (when methods
       (save-excursion
 	(set-buffer gnus-original-article-buffer)
 	(save-restriction
@@ -12058,6 +12066,45 @@ save those articles instead."
 		     (push result split-name))
 		    ((consp result)
 		     (setq split-name (append result split-name)))))))))
+    split-name))
+
+(defun gnus-read-move-group-name (prompt default articles prefix)
+  "Read a group name."
+  (let* ((split-name (gnus-get-split-value gnus-move-split-methods))
+	 (prom
+	  (format "Where do you want to %s %s? "
+		  prompt
+		  (if (> (length articles) 1)
+		      (format "these %d articles" (length articles))
+		    "this article")))
+	 (to-newsgroup
+	  (cond
+	   ((null split-name)
+	    (completing-read 
+	     (concat prom 
+		     (if default
+			 (format "(default %s) " default)
+		       ""))
+	     gnus-active-hashtb nil nil prefix))
+	   ((= 1 (length split-name))
+	    (completing-read prom gnus-active-hashtb 
+			     nil nil (cons (car split-name) 0)))
+	   (t
+	    (completing-read 
+	     prom (mapcar (lambda (el) (list el)) (nreverse split-name)))))))
+       
+    (when to-newsgroup
+      (if (or (string= to-newsgroup "") 
+	      (string= to-newsgroup prefix))
+	  (setq to-newsgroup (or default "")))
+      (or (gnus-active to-newsgroup)
+	  (gnus-activate-group to-newsgroup)
+	  (error "No such group: %s" to-newsgroup)))
+    to-newsgroup))
+
+(defun gnus-read-save-file-name (prompt default-name)
+  (let ((split-name (gnus-get-split-value gnus-split-methods)))
+    ;; Let the split methods have their say.
     (cond
      ;; No split name was found.
      ((null split-name)
@@ -12437,22 +12484,31 @@ The following commands are available:
   (run-hooks 'gnus-article-mode-hook))
 
 (defun gnus-article-setup-buffer ()
-  "Initialize article mode buffer."
+  "Initialize the article buffer."
   ;; Returns the article buffer.
-  (if (get-buffer gnus-article-buffer)
+  (let ((name (if gnus-single-article-buffer "*Article*"
+		(concat "*Article " gnus-newsgroup-name "*"))))
+    (setq gnus-article-buffer name)
+    ;; This might be a variable local to the summary buffer.
+    (unless gnus-single-article-buffer
       (save-excursion
-	(set-buffer gnus-article-buffer)
-	(buffer-disable-undo (current-buffer))
-	(setq buffer-read-only t)
+	(set-buffer gnus-summary-buffer)
+	(setq gnus-article-buffer name))
+      (make-local-variable 'gnus-summary-buffer))
+    (if (get-buffer name)
+	(save-excursion
+	  (set-buffer name)
+	  (buffer-disable-undo (current-buffer))
+	  (setq buffer-read-only t)
+	  (gnus-add-current-to-buffer-list)
+	  (or (eq major-mode 'gnus-article-mode)
+	      (gnus-article-mode))
+	  (current-buffer))
+      (save-excursion
+	(set-buffer (get-buffer-create name))
 	(gnus-add-current-to-buffer-list)
-	(or (eq major-mode 'gnus-article-mode)
-	    (gnus-article-mode))
-	(current-buffer))
-    (save-excursion
-      (set-buffer (get-buffer-create gnus-article-buffer))
-      (gnus-add-current-to-buffer-list)
-      (gnus-article-mode)
-      (current-buffer))))
+	(gnus-article-mode)
+	(current-buffer)))))
 
 ;; Set article window start at LINE, where LINE is the number of lines
 ;; from the head of the article.
@@ -12761,73 +12817,79 @@ Provided for backwards compatability."
       gnus-inhibit-hiding
       (gnus-article-hide-headers)))
 
-(defun gnus-article-hide-headers (&optional delete)
+(defun gnus-article-hide-headers (&optional show delete)
   "Hide unwanted headers and possibly sort them as well."
   (interactive "P")
   ;; This function might be inhibited.
-  (unless gnus-inhibit-hiding
-    (save-excursion
-      (set-buffer gnus-article-buffer)
-      (save-restriction
-	(let ((buffer-read-only nil)
-	      (ignored (when (not (stringp gnus-visible-headers))
-			 (cond ((stringp gnus-ignored-headers)
-				gnus-ignored-headers)
-			       ((listp gnus-ignored-headers)
-				(mapconcat 'identity gnus-ignored-headers
-					   "\\|")))))
-	      (visible (cond ((stringp gnus-visible-headers)
-			      gnus-visible-headers)
-			     ((listp gnus-visible-headers)
-			      (mapconcat 'identity gnus-visible-headers
-					 "\\|"))))
-	      want-list beg want-l)
-	  ;; First we narrow to just the headers.
-	  (widen)
-	  (goto-char (point-min))
-	  ;; Hide any "From " lines at the beginning of (mail) articles. 
-	  (while (looking-at "From ")
-	    (forward-line 1))
-	  (unless (bobp) 
-	    (add-text-properties (point-min) (point) gnus-hidden-properties))
-	  ;; Then treat the rest of the header lines.
-	  (narrow-to-region 
-	   (point) 
-	   (progn (search-forward "\n\n" nil t) (forward-line -1) (point)))
-	  ;; Then we use the two regular expressions
-	  ;; `gnus-ignored-headers' and `gnus-visible-headers' to
-	  ;; select which header lines is to remain visible in the
-	  ;; article buffer.
-	  (goto-char (point-min))
-	  (while (re-search-forward "^[^ \t]*:" nil t)
-	    (beginning-of-line)
-	    ;; We add the headers we want to keep to a list and delete
-	    ;; them from the buffer.
-	    (if (or (and visible (looking-at visible))
-		    (and ignored (not (looking-at ignored))))
-		(progn
-		  (push (buffer-substring
-			 (setq beg (point))
-			 (progn 
-			   (forward-line 1)
-			   ;; Be sure to get multi-line headers...
-			   (re-search-forward "^[^ \t]*:" nil t)
-			   (beginning-of-line) 
-			   (point)))
-			want-list)
-		  (delete-region beg (point)))
-	      (forward-line 1)))
-	  ;; Sort the headers that we want to display.
-	  (setq want-list (sort want-list 'gnus-article-header-less))
-	  (goto-char (point-min))
-	  (while want-list
-	    (insert (pop want-list)))
-	  ;; We make the unwanted headers invisible.
-	  (if delete
-	      (delete-region (point-min) (point-max))
-	    ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
-	    (add-text-properties 
-	     (point) (point-max) gnus-hidden-properties)))))))
+  (if show
+      (gnus-article-show-hidden-text 'headers)
+    (unless gnus-inhibit-hiding
+      (save-excursion
+	(set-buffer gnus-article-buffer)
+	(save-restriction
+	  (let ((buffer-read-only nil)
+		(ignored (when (not (stringp gnus-visible-headers))
+			   (cond ((stringp gnus-ignored-headers)
+				  gnus-ignored-headers)
+				 ((listp gnus-ignored-headers)
+				  (mapconcat 'identity gnus-ignored-headers
+					     "\\|")))))
+		(visible (cond ((stringp gnus-visible-headers)
+				gnus-visible-headers)
+			       ((listp gnus-visible-headers)
+				(mapconcat 'identity gnus-visible-headers
+					   "\\|"))))
+		want-list beg want-l)
+	    ;; First we narrow to just the headers.
+	    (widen)
+	    (goto-char (point-min))
+	    ;; Hide any "From " lines at the beginning of (mail) articles. 
+	    (while (looking-at "From ")
+	      (forward-line 1))
+	    (unless (bobp) 
+	      (add-text-properties 
+	       (point-min) (point)
+	       (nconc (list 'gnus-type 'headers) gnus-hidden-properties)))
+	    ;; Then treat the rest of the header lines.
+	    (narrow-to-region 
+	     (point) 
+	     (progn (search-forward "\n\n" nil t) (forward-line -1) (point)))
+	    ;; Then we use the two regular expressions
+	    ;; `gnus-ignored-headers' and `gnus-visible-headers' to
+	    ;; select which header lines is to remain visible in the
+	    ;; article buffer.
+	    (goto-char (point-min))
+	    (while (re-search-forward "^[^ \t]*:" nil t)
+	      (beginning-of-line)
+	      ;; We add the headers we want to keep to a list and delete
+	      ;; them from the buffer.
+	      (if (or (and visible (looking-at visible))
+		      (and ignored (not (looking-at ignored))))
+		  (progn
+		    (push (buffer-substring
+			   (setq beg (point))
+			   (progn 
+			     (forward-line 1)
+			     ;; Be sure to get multi-line headers...
+			     (re-search-forward "^[^ \t]*:" nil t)
+			     (beginning-of-line) 
+			     (point)))
+			  want-list)
+		    (delete-region beg (point)))
+		(forward-line 1)))
+	    ;; Sort the headers that we want to display.
+	    (setq want-list (sort want-list 'gnus-article-header-less))
+	    (goto-char (point-min))
+	    (while want-list
+	      (insert (pop want-list)))
+	    ;; We make the unwanted headers invisible.
+	    (if delete
+		(delete-region (point-min) (point-max))
+	      ;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
+	      (add-text-properties 
+	       (point) (point-max)
+	       (nconc (list 'gnus-type 'headers) 
+		      gnus-hidden-properties)))))))))
 
 (defsubst gnus-article-header-rank (header)
   "Give the rank of the string HEADER as given by `gnus-sorted-header-list'."
@@ -12991,38 +13053,78 @@ or not."
 	   (delete-char 1))
 	  ((gnus-message 3 "Malformed MIME quoted-printable message")))))
 
-(defun gnus-article-hide-pgp ()
-  "Hide any PGP headers and signatures in the current article."
+(defun gnus-article-hide-pgp (&optional show)
+  "Hide any PGP headers and signatures in the current article.
+If given a prefix, show the hidden PGP gruft instead."
   (interactive)
+  (if show
+      (gnus-article-show-hidden-text 'pgp)
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (let ((props (nconc (list 'gnus-type 'pgp) gnus-hidden-properties))
+	    buffer-read-only beg end)
+	(widen)
+	(goto-char (point-min))
+	;; Hide the "header".
+	(and (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
+	     (add-text-properties (match-beginning 0) (match-end 0) props))
+	(setq beg (point))
+	;; Hide the actual signature.
+	(and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
+	     (setq end (match-beginning 0))
+	     (add-text-properties 
+	      (match-beginning 0)
+	      (if (search-forward "\n-----END PGP SIGNATURE-----\n" nil t)
+		  (match-end 0)
+		;; Perhaps we shouldn't hide to the end of the buffer
+		;; if there is no end to the signature?
+		(point-max))
+	      props))
+	;; Hide "- " PGP quotation markers.
+	(when (and beg end)
+	  (narrow-to-region beg end)
+	  (goto-char (point-min))
+	  (while (re-search-forward "^- " nil t)
+	    (add-text-properties (match-beginning 0) (match-end 0) props))
+	  (widen))))))
+
+(defun gnus-article-hide-signature (&optional show)
+  "Hide the signature in the current article.
+If given a prefix, show the signature instead."
+  (interactive "P")
+  (if show
+      (gnus-article-show-hidden-text 'signature)
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (let ((buffer-read-only nil))
+	(goto-char (point-max))
+	(and (re-search-backward gnus-signature-separator nil t)
+	     gnus-signature-face
+	     (add-text-properties 
+	      (match-end 0) (point-max)
+	      (nconc (list 'gnus-type 'signature)
+		     gnus-hidden-properties)))))))
+
+(defun gnus-article-hide (&optional show force)
+  "Hide all the gruft in the current article.
+This means that PGP stuff, signatures, cited text and (some)
+headers will be hidden.
+If given a prefix, show the hidden text instead."
+  (interactive (list current-prefix-arg 'force))
+  (gnus-article-hide-headers show)
+  (gnus-article-hide-pgp show)
+  (gnus-article-hide-citation-maybe show force)
+  (gnus-article-hide-signature show))
+
+(defun gnus-article-show-hidden-text (type)
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (let (buffer-read-only beg end)
-      (widen)
-      (goto-char (point-min))
-      ;; Hide the "header".
-      (and (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
-	   (add-text-properties (match-beginning 0) (match-end 0)
-				gnus-hidden-properties))
-      (setq beg (point))
-      ;; Hide the actual signature.
-      (and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
-	   (setq end (match-beginning 0))
-	   (add-text-properties 
-	    (match-beginning 0)
-	    (if (search-forward "\n-----END PGP SIGNATURE-----\n" nil t)
-		(match-end 0)
-	      ;; Perhaps we shouldn't hide to the end of the buffer
-	      ;; if there is no end to the signature?
-	      (point-max))
-	    gnus-hidden-properties))
-      ;; Hide "- " PGP quotation markers.
-      (when (and beg end)
-	(narrow-to-region beg end)
-	(goto-char (point-min))
-	(while (re-search-forward "^- " nil t)
-	  (add-text-properties (match-beginning 0) (match-end 0)
-			       gnus-hidden-properties))
-	(widen)))))
+    (let ((buffer-read-only nil)
+	  (beg (point)))
+      (while (gnus-goto-char (text-property-any
+			      beg (point-max) 'gnus-type type))
+	(remove-text-properties (point) (setq beg (1+ (point)))
+				gnus-hidden-properties)))))
 
 (defvar gnus-article-time-units
   `((year . ,(* 365.25 24 60 60))
@@ -13804,6 +13906,17 @@ If GROUP is nil, all groups on METHOD are scanned."
   (let ((func (car (gnus-find-method-for-group group))))
     (funcall (intern (format "%s-request-replace-article" func))
 	     article (gnus-group-real-name group) buffer)))
+
+(defun gnus-request-associate-buffer (group)
+  (let ((method (gnus-find-method-for-group group)))
+    (funcall (gnus-get-function method 'request-associate-buffer) 
+	     (gnus-group-real-name group))))
+
+(defun gnus-request-restore-buffer (article group)
+  "Request a new buffer restored to the state of ARTICLE."
+  (let ((method (gnus-find-method-for-group group)))
+    (funcall (gnus-get-function method 'request-restore-buffer) 
+	     article (gnus-group-real-name group) (nth 1 method))))
 
 (defun gnus-request-create-group (group)
   (let ((method (gnus-find-method-for-group group)))
@@ -15392,7 +15505,7 @@ If FORCE is non-nil, the .newsrc file is read."
 		    (eval-buffer (current-buffer))
 		    t)
 		(error 
-		 (message "Possible error in %s" file)
+		 (gnus-message 3 "Possible error in %s" file)
 		 (ding)
 		 (sit-for 2)
 		 nil))

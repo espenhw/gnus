@@ -33,6 +33,7 @@
 (require 'rmail)
 (require 'nnmail)
 (require 'gnus)
+(eval-and-compile (require 'cl))
 
 (defvar nnmh-directory "~/Mail/"
   "*Mail spool directory.")
@@ -73,37 +74,38 @@
 
 ;;; Interface functions.
 
-(defun nnmh-retrieve-headers (sequence &optional newsgroup server fetch-old)
+(defun nnmh-retrieve-headers (articles &optional newsgroup server fetch-old)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (let* ((file nil)
-	   (number (length sequence))
+	   (number (length articles))
 	   (large (and (numberp nnmail-large-newsgroup)
 		       (> number nnmail-large-newsgroup)))
 	   (count 0)
 	   beg article)
       (nnmh-possibly-change-directory newsgroup)
-      (if (stringp (car sequence))
+      ;; We don't support fetching by Message-ID.
+      (if (stringp (car articles))
 	  'headers
-	(while sequence
-	  (setq article (car sequence))
-	  (setq file
-		(concat nnmh-current-directory (int-to-string article)))
-	  (if (and (file-exists-p file)
-		   (not (file-directory-p file)))
-	      (progn
-		(insert (format "221 %d Article retrieved.\n" article))
-		(setq beg (point))
-		(nnheader-insert-head file)
-		(goto-char beg)
-		(if (search-forward "\n\n" nil t)
-		    (forward-char -1)
-		  (goto-char (point-max))
-		  (insert "\n\n"))
-		(insert ".\n")
-		(delete-region (point) (point-max))))
-	  (setq sequence (cdr sequence))
+	(while articles
+	  (when (and (file-exists-p 
+		      (setq file (concat (file-name-as-directory 
+					  nnmh-current-directory)
+					 (int-to-string
+					  (setq article (pop articles))))))
+
+		     (not (file-directory-p file)))
+	    (insert (format "221 %d Article retrieved.\n" article))
+	    (setq beg (point))
+	    (nnheader-insert-head file)
+	    (goto-char beg)
+	    (if (search-forward "\n\n" nil t)
+		(forward-char -1)
+	      (goto-char (point-max))
+	      (insert "\n\n"))
+	    (insert ".\n")
+	    (delete-region (point) (point-max)))
 	  (setq count (1+ count))
 
 	  (and large
@@ -113,10 +115,7 @@
 
 	(and large (message "nnmh: Receiving headers...done"))
 
-	;; Fold continuation lines.
-	(goto-char (point-min))
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
+	(nnheader-fold-continuation-lines)
 	'headers))))
 
 (defun nnmh-open-server (server &optional defs)
@@ -299,17 +298,17 @@
        (file-error nil)))
     result))
 
-(defun nnmh-request-accept-article (group &optional last)
+(defun nnmh-request-accept-article (group &optional last noinsert)
   (if (stringp group)
       (and 
        (nnmail-activate 'nnmh)
        ;; We trick the choosing function into believing that only one
        ;; group is availiable.  
        (let ((nnmail-split-methods (list (list group ""))))
-	 (car (nnmh-save-mail))))
+	 (car (nnmh-save-mail noinsert))))
     (and
      (nnmail-activate 'nnmh)
-     (car (nnmh-save-mail)))))
+     (car (nnmh-save-mail noinsert)))))
 
 (defun nnmh-request-replace-article (article group buffer)
   (nnmh-possibly-change-directory group)
@@ -408,11 +407,12 @@
 	   (message "Creating mail directory %s" (car dirs)))
       (setq dirs (cdr dirs)))))
 	     
-(defun nnmh-save-mail ()
+(defun nnmh-save-mail (&optional noinsert)
   "Called narrowed to an article."
   (let ((group-art (nreverse (nnmail-article-group 'nnmh-active-number))))
-    (nnmail-insert-lines)
-    (nnmail-insert-xref group-art)
+    (unless noinsert
+      (nnmail-insert-lines)
+      (nnmail-insert-xref group-art))
     (run-hooks 'nnmh-prepare-save-mail-hook)
     (goto-char (point-min))
     (while (looking-at "From ")

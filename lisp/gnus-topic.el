@@ -179,7 +179,8 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
        (<= (setq clevel (gnus-info-level info)) level) 
        (>= clevel lowest)		; Is inside the level we want.
        (or all
-	   (eq unread t)
+	   (and gnus-group-list-inactive-groups
+		(eq unread t))
 	   (> unread 0)
 	   (cdr (assq 'tick (gnus-info-marks info))) ; Has right readedness.
 	   ;; Check for permanent visibility.

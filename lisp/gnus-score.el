@@ -175,6 +175,7 @@ of the last successful match.")
 (define-key gnus-summary-score-map "c" 'gnus-score-change-score-file)
 (define-key gnus-summary-score-map "m" 'gnus-score-set-mark-below)
 (define-key gnus-summary-score-map "x" 'gnus-score-set-expunge-below)
+(define-key gnus-summary-score-map "R" 'gnus-summary-rescore)
 (define-key gnus-summary-score-map "e" 'gnus-score-edit-alist)
 (define-key gnus-summary-score-map "f" 'gnus-score-edit-file)
 (define-key gnus-summary-score-map "t" 'gnus-score-find-trace)
@@ -582,6 +583,7 @@ SCORE is the score to add."
   (gnus-score-update-lines))
 
 (defun gnus-score-update-lines ()
+  "Update all lines in the summary buffer."
   (save-excursion
     (goto-char (point-min))
     (while (not (eobp))
@@ -1708,7 +1710,7 @@ This mode is an extended emacs-lisp mode.
     (and winconf (set-window-configuration winconf))))
 
 (defun gnus-score-find-trace ()
-  "Find all score rules applied to this article."
+  "Find all score rules that applies to the current article."
   (interactive)
   (let ((gnus-newsgroup-headers
 	 (list (gnus-summary-article-header)))
@@ -1728,6 +1730,14 @@ This mode is an extended emacs-lisp mode.
       (setq trace (cdr trace)))
     (goto-char (point-min))
     (pop-to-buffer buf)))
+
+(defun gnus-summary-rescore ()
+  "Redo the entire scoring process in the current summary."
+  (interactive)
+  (setq gnus-newsgroup-scored nil)
+  (gnus-score-flush-cache)
+  (gnus-possibly-score-headers)
+  (gnus-score-update-lines))
   
 (defun gnus-score-flush-cache ()
   "Flush the cache of score files."
@@ -1813,48 +1823,48 @@ This mode is an extended emacs-lisp mode.
   ;; If we can't read it, there are no score files.
   (if (not (file-exists-p (expand-file-name gnus-kill-files-directory)))
       (setq gnus-score-file-list nil)
-    (if (gnus-use-long-file-name 'not-score)
-	;; We want long file names.
-	(if (or (not gnus-score-file-list)
+    (if (not (gnus-use-long-file-name 'not-score))
+	;; We do not use long file names, so we have to do some
+	;; directory traversing.  
+	(setq gnus-score-file-list 
+	      (cons nil (gnus-score-score-files-1 gnus-kill-files-directory)))
+      ;; We want long file names.
+      (when (or (not gnus-score-file-list)
 		(not (car gnus-score-file-list))
 		(gnus-file-newer-than gnus-kill-files-directory
 				      (car gnus-score-file-list)))
-	    (setq gnus-score-file-list 
-		  (cons (nth 5 (file-attributes gnus-kill-files-directory))
-			(nreverse 
-			 (directory-files 
-			  gnus-kill-files-directory t 
-			  (gnus-score-file-regexp))))))
-      ;; We do not use long file names, so we have to do some
-      ;; directory traversing.  
-      (let ((mdir (length (expand-file-name gnus-kill-files-directory)))
-  	    (suffixes (list gnus-score-file-suffix gnus-adaptive-file-suffix))
- 	    dir files suffix)
-  	(while suffixes
- 	  (setq dir (expand-file-name
- 		     (concat gnus-kill-files-directory
- 			     (gnus-replace-chars-in-string group ?. ?/))))
-	  (setq dir (gnus-replace-chars-in-string dir ?: ?/))
-	  (setq suffix (car suffixes)
-		suffixes (cdr suffixes))
-	  (if (file-exists-p (concat dir "/" suffix))
-	      (setq files (cons (concat dir "/" suffix) files)))
-	  (while (>= (1+ (length dir)) mdir)
-	    (and (file-exists-p (concat dir "/all/" suffix))
-		 (setq files (cons (concat dir "/all/" suffix) files)))
-	    (string-match "/[^/]*$" dir)
-	    (setq dir (substring dir 0 (match-beginning 0)))))
 	(setq gnus-score-file-list 
-	      (cons nil (nreverse files)))))
+	      (cons (nth 5 (file-attributes gnus-kill-files-directory))
+		    (nreverse 
+		     (directory-files 
+		      gnus-kill-files-directory t 
+		      (gnus-score-file-regexp)))))))
     (cdr gnus-score-file-list)))
 
+(defun gnus-score-score-files-1 (dir)
+  "Return all possible score files under DIR."
+  (let ((files (directory-files (expand-file-name dir) t nil t))
+	(regexp (gnus-score-file-regexp))
+	out file)
+    (while files
+      (setq file (pop files))
+      (cond 
+       ((string-match "/\\.\\.?\\'" file)
+	nil)
+       ((file-directory-p file)
+	(setq out (nconc (gnus-score-score-files-1 file) out)))
+       ((string-match regexp file)
+	(push file out))))
+    out))
+       
 (defun gnus-score-file-regexp ()
+  "Return a regexp that match all score files."
   (concat "\\(" gnus-score-file-suffix 
-	  "\\|" gnus-adaptive-file-suffix "\\)$"))
+	  "\\|" gnus-adaptive-file-suffix "\\)\\'"))
 	
 (defun gnus-score-find-bnews (group)
   "Return a list of score files for GROUP.
-The score files are those files in the ~/News directory which matches
+The score files are those files in the ~/News/ directory which matches
 GROUP using BNews sys file syntax."
   (let* ((sfiles (append (gnus-score-score-files group)
 			 gnus-internal-global-score-files))

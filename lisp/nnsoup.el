@@ -320,19 +320,29 @@ The SOUP packet file name will be inserted at the %s.")
 	    range-list (gnus-uncompress-range (car info))
 	    prefix (gnus-soup-area-prefix (nth 1 info)))
       (when ;; All the articles in this file are marked for expiry.
-	  (and (gnus-sublist-p articles range-list)
+	  (and (or (setq mod-time (nth 5 (file-attributes
+					  (nnsoup-file prefix))))
+		   (setq mod-time (nth 5 (file-attributes
+					  (nnsoup-file prefix t)))))
+	       (gnus-sublist-p articles range-list)
 	       ;; This file is old enough. 
-	       (setq mod-time (nth 5 (nnsoup-file prefix)))
 	       (nnmail-expired-article-p group mod-time force))
 	;; Ok, we delete this file.
 	(when (condition-case nil
-		  (and
-		   (delete-file (nnsoup-file prefix))
-		   (delete-file (nnsoup-file prefix) t)
-		   t)
+		  (progn
+		    (when gnus-verbose-backends
+		      (message "Deleting %s..." (nnsoup-file prefix t)))
+		    (sit-for 1)
+		    (when (file-exists-p (nnsoup-file prefix))
+		      (delete-file (nnsoup-file prefix)))
+		    (when (file-exists-p (nnsoup-file prefix t))
+		      (delete-file (nnsoup-file prefix t)))
+		    t)
 		(error nil))
-	  (setcdr total-infolist (delq info total-infolist))
-	  (setq articles (gnus-sorted-complement articles range-list)))))
+	  (setcdr total-infolist (delq info (cdr total-infolist)))
+	  (setq articles (gnus-sorted-complement articles range-list))))
+      (when (not mod-time)
+	(setcdr total-infolist (delq info (cdr total-infolist)))))
     (nnsoup-write-active-file)
     ;; Return the articles that weren't expired.
     articles))
@@ -425,7 +435,8 @@ The SOUP packet file name will be inserted at the %s.")
 	  (current-buffer)))))
 
 (defun nnsoup-file (prefix &optional message)
-  (concat nnsoup-directory prefix (if message ".MSG" ".IDX")))
+  (expand-file-name
+   (concat nnsoup-directory prefix (if message ".MSG" ".IDX"))))
 
 (defun nnsoup-message-buffer (prefix)
   (nnsoup-index-buffer prefix 'msg))

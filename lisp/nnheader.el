@@ -420,6 +420,12 @@ Return the number of headers removed."
   (mapcar 'nnheader-file-to-number
 	  (directory-files dir nil nnheader-numerical-short-files t)))
 
+(defun nnheader-fold-continuation-lines ()
+  "Fold continuation lines in the current buffer."
+  (goto-char (point-min))
+  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+    (replace-match " " t t)))
+
 (provide 'nnheader)
 
 ;;; nnheader.el ends here

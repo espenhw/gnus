@@ -268,9 +268,7 @@ instead call function `nntp-status-message' to get status message.")
 	     (message "NNTP: Receiving headers...done"))
 
 	;; Now all of replies are received.  Fold continuation lines.
-	(goto-char (point-min))
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
+	(nnheader-fold-continuation-lines)
 	;; Remove all "\r"'s.
 	(goto-char (point-min))
 	(while (search-forward "\r" nil t)

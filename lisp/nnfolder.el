@@ -141,11 +141,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		(insert ".\n")))
 	  (setq sequence (cdr sequence)))
 
-	;; Fold continuation lines.
 	(set-buffer nntp-server-buffer)
-	(goto-char (point-min))
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
+	(nnheader-fold-continuation-lines)
 	'headers))))
 
 (defun nnfolder-open-server (server &optional defs)

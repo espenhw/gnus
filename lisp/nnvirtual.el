@@ -334,9 +334,9 @@ If the stream is opened, return T, otherwise return NIL."
 	    ()
 	  ;; And then we do the mapping for this component group. If
 	  ;; you feel tempted to cast your eyes to the soup below -
-	  ;; don't. It'll hurt your soul. Suffice to say that it
+	  ;; don't.  It'll hurt your soul.  Suffice to say that it
 	  ;; assigns ranges of nnvirtual article numbers to the
-	  ;; different component groups. To get the article number
+	  ;; different component groups.  To get the article number
 	  ;; from the nnvirtual number, one does something like
 	  ;; (+ (- number offset) (car active)), where `offset' is the
 	  ;; slice the mess below assigns, and active is the lowest

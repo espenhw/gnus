@@ -1228,16 +1228,6 @@ do the highlighting.  See the documentation for those functions."
   (gnus-article-highlight-signature)
   (gnus-article-add-buttons))
 
-(defun gnus-article-hide (&optional force)
-  "Hide current article.
-This function calls `gnus-article-hide-headers',
-`gnus-article-hide-citation-maybe', and `gnus-article-hide-signature'
-to do the hiding.  See the documentation for those functions." 
-  (interactive (list 'force))
-  (gnus-article-hide-headers)
-  (gnus-article-hide-citation-maybe force)
-  (gnus-article-hide-signature))
-
 (defun gnus-article-highlight-headers ()
   "Highlight article headers as specified by `gnus-header-face-alist'."
   (interactive)
@@ -1299,19 +1289,6 @@ It does this by highlighting everything after
 	     (gnus-article-add-button start end 'gnus-signature-toggle end)
 	     (gnus-overlay-put (gnus-make-overlay end (point-max))
 			       'face gnus-signature-face))))))
-
-(defun gnus-article-hide-signature ()
-  "Hide the signature in an article.
-It does this by making everything after `gnus-signature-separator' invisible."
-  (interactive)
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (let ((buffer-read-only nil))
-      (goto-char (point-max))
-      (and (re-search-backward gnus-signature-separator nil t)
-	   gnus-signature-face
-	   (add-text-properties (match-end 0) (point-max)
-				gnus-hidden-properties)))))
 
 (defun gnus-article-add-buttons (&optional force)
   "Find external references in the article and make buttons of them.

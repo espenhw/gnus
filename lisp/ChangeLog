@@ -1,4 +1,68 @@
+Tue Dec 19 18:13:49 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus-msg.el (gnus-cancel-news): Insert the usual user name, not
+	the "real" one.
+
+	* gnus.el (gnus-group-list-inactive-groups): New variable.
+	(gnus-group-prepare-flat): Use it.
+	(gnus-summary-select-article): Returned wrong value.
+
+	* gnus-topic.el (gnus-topic-find-groups): Ditto.
+
+Tue Dec 19 00:26:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-limit-to-articles): Reset the processed
+	articles. 
+	(gnus-summary-goto-subject): Would bug out when used silently.
+
+	* nnsoup.el (nnsoup-request-expire-articles): Didn't really work. 
+
+	* gnus-cite.el (gnus-article-hide-citation): Take a prefix to
+	"show". 
+
+	* gnus.el (gnus-article-hide-headers): Take a prefix to "show".
+	(gnus-article-hide-pgp): Ditto.
+	(gnus-article-hide-signature): Ditto.
+	(gnus-article-hide): Ditto.
+	(gnus-article-show-hidden-text): New function.
+
+Mon Dec 18 15:13:21 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-request-restore-buffer): New function.
+
+	* gnus-msg.el (gnus-associate-buffer-with-draft): New function.
+	(gnus-enter-into-draft-group): Removed functio.
+
+	* gnus.el (gnus-request-associate-buffer): New function.
+
+	* nndraft.el: New file.
+
+Sun Dec 17 20:16:45 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-score-score-files-1): New function.
+	(gnus-score-score-files): Use it to be able to provide full bnews
+	file syntax matching when using short file names.
+
+	* gnus-cite.el (gnus-article-hide-citation-in-followups): New
+	command and keystroke.
+
+	* gnus-score.el (gnus-summary-rescore): New command and keystroke.
+
+	* gnus.el (gnus-summary-catchup-and-goto-next-group): Didn't save
+	point. 
+	(gnus-single-article-buffer): New variable.
+	(gnus-article-setup-buffer): Use it.
+	(gnus-summary-setup-buffer): Ditto.
+	(gnus-move-split-methods): New variable.
+	(gnus-get-split-value): New function.
+	(gnus-read-save-file-name): Use it.
+	(gnus-read-move-group-name): New function.
+	(gnus-summary-copy-article): Use them.
+	(gnus-summary-move-article): Ditto.
+
 Sun Dec 17 16:06:11 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el: 0.24 is released.
 
 	* nndoc.el (nndoc-guess-digest-type): Didn't grok MIME digests.
 

@@ -142,10 +142,7 @@ all. This may very well take some time.")
 	       gnus-verbose-backends
 	       (message "nnml: Receiving headers...done"))
 
-	  ;; Fold continuation lines.
-	  (goto-char (point-min))
-	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	    (replace-match " " t t))
+	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
 (defun nnml-open-server (server &optional defs)

@@ -207,70 +207,90 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	      skip (gnus-cite-find-prefix number))
 	(gnus-cite-add-face number skip gnus-cite-attribution-face)))))
 
-(defun gnus-article-hide-citation (&optional force)
+(defun gnus-article-hide-citation (&optional show force)
   "Hide all cited text except attribution lines.
 See the documentation for `gnus-article-highlight-citation'."
-  (interactive (list 'force))
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe force)
-    (let ((buffer-read-only nil)
-	  (alist gnus-cite-prefix-alist)
-	  (inhibit-point-motion-hooks t)
-	  numbers number)
-      (while alist
-	(setq numbers (cdr (car alist))
-	      alist (cdr alist))
-	(while numbers
-	  (setq number (car numbers)
-		numbers (cdr numbers))
-	  (goto-line number)
-	  (or (assq number gnus-cite-attribution-alist)
-	      (add-text-properties (point) (progn (forward-line 1) (point))
-				   gnus-hidden-properties)))))))
+  (interactive (list current-prefix-arg 'force))
+  (if show
+      (gnus-article-show-hidden-text 'cite)
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (gnus-cite-parse-maybe force)
+      (let ((buffer-read-only nil)
+	    (alist gnus-cite-prefix-alist)
+	    (inhibit-point-motion-hooks t)
+	    numbers number)
+	(while alist
+	  (setq numbers (cdr (car alist))
+		alist (cdr alist))
+	  (while numbers
+	    (setq number (car numbers)
+		  numbers (cdr numbers))
+	    (goto-line number)
+	    (or (assq number gnus-cite-attribution-alist)
+		(add-text-properties 
+		 (point) (progn (forward-line 1) (point))
+		 (nconc (list 'gnus-type 'cite)
+			gnus-hidden-properties)))))))))
 
-(defun gnus-article-hide-citation-maybe (&optional force)
+(defun gnus-article-hide-citation-maybe (&optional show force)
   "Hide cited text that has an attribution line.
 This will do nothing unless at least `gnus-cite-hide-percentage'
 percent and at least `gnus-cite-hide-absolute' lines of the body is
 cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."
-  (interactive (list 'force))
+  (interactive (list current-prefix-arg 'force))
+  (if show
+      (gnus-article-show-hidden-text 'cite)
+    (save-excursion
+      (set-buffer gnus-article-buffer)
+      (gnus-cite-parse-maybe force)
+      (goto-char (point-min))
+      (search-forward "\n\n" nil t)
+      (let ((start (point))
+	    (atts gnus-cite-attribution-alist)
+	    (buffer-read-only nil)
+	    (inhibit-point-motion-hooks t)
+	    (hiden 0)
+	    total)
+	(goto-char (point-max))
+	(re-search-backward gnus-signature-separator nil t)
+	(setq total (count-lines start (point)))
+	(while atts
+	  (setq hiden (+ hiden (length (cdr (assoc (cdr (car atts))
+						   gnus-cite-prefix-alist))))
+		atts (cdr atts)))
+	(if (or force
+		(and (> (* 100 hiden) (* gnus-cite-hide-percentage total))
+		     (> hiden gnus-cite-hide-absolute)))
+	    (progn
+	      (setq atts gnus-cite-attribution-alist)
+	      (while atts
+		(setq total (cdr (assoc (cdr (car atts)) 
+					gnus-cite-prefix-alist))
+		      atts (cdr atts))
+		(while total
+		  (setq hiden (car total)
+			total (cdr total))
+		  (goto-line hiden)
+		  (or (assq hiden gnus-cite-attribution-alist)
+		      (add-text-properties 
+		       (point) (progn (forward-line 1) (point))
+		       (nconc (list 'gnus-type 'cite)
+			      gnus-hidden-properties)))))))))))
+
+(defun gnus-article-hide-citation-in-followups ()
+  "Hide cited text in non-root articles."
+  (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe force)
-    (goto-char (point-min))
-    (search-forward "\n\n" nil t)
-    (let ((start (point))
-	  (atts gnus-cite-attribution-alist)
-	  (buffer-read-only nil)
-	  (inhibit-point-motion-hooks t)
-	  (hiden 0)
-	  total)
-      (goto-char (point-max))
-      (re-search-backward gnus-signature-separator nil t)
-      (setq total (count-lines start (point)))
-      (while atts
-	(setq hiden (+ hiden (length (cdr (assoc (cdr (car atts))
-						 gnus-cite-prefix-alist))))
-	      atts (cdr atts)))
-      (if (or force
-	      (and (> (* 100 hiden) (* gnus-cite-hide-percentage total))
-		   (> hiden gnus-cite-hide-absolute)))
-	  (progn
-	    (setq atts gnus-cite-attribution-alist)
-	    (while atts
-	      (setq total (cdr (assoc (cdr (car atts)) gnus-cite-prefix-alist))
-		    atts (cdr atts))
-	      (while total
-		(setq hiden (car total)
-		      total (cdr total))
-		(goto-line hiden)
-		(or (assq hiden gnus-cite-attribution-alist)
-		    (add-text-properties (point) 
-					 (progn (forward-line 1) (point))
-					 gnus-hidden-properties)))))))))
+    (let ((article (cdr gnus-article-current)))
+      (unless (save-excursion
+		(set-buffer gnus-summary-buffer)
+		(gnus-root-id (mail-header-id 
+			       (gnus-summary-article-header article))))
+	(gnus-article-hide-citation)))))
 
 ;;; Internal functions:
 
@@ -562,8 +582,10 @@ See also the documentation for `gnus-article-highlight-citation'."
 				       gnus-hidden-properties))
 	      ((assq number gnus-cite-attribution-alist))
 	      (t
-	       (add-text-properties (point) (progn (forward-line 1) (point))
-				    gnus-hidden-properties)))))))
+	       (add-text-properties 
+		(point) (progn (forward-line 1) (point))
+		 (nconc (list 'gnus-type 'cite)
+			gnus-hidden-properties))))))))
 
 (defun gnus-cite-find-prefix (line)
   ;; Return citation prefix for LINE.
