@@ -4106,48 +4106,51 @@ regexp varstr."
 ;;; MIME functions
 ;;;
 
+(defvar messgage-inhibit-body-encoding nil)
+
 (defun message-encode-message-body ()
-  (let ((mail-parse-charset (or mail-parse-charset
-				message-default-charset
-				message-posting-charset))
-	(case-fold-search t)
-	lines content-type-p)
-    (message-goto-body)
-    (save-restriction
-      (narrow-to-region (point) (point-max))
-      (let ((new (mml-generate-mime)))
-	(when new
-	  (delete-region (point-min) (point-max))
-	  (insert new)
-	  (goto-char (point-min))
-	  (if (eq (aref new 0) ?\n)
-	      (delete-char 1)
-	    (search-forward "\n\n")
-	    (setq lines (buffer-substring (point-min) (1- (point))))
-	    (delete-region (point-min)  (point))))))
-    (save-restriction
-      (message-narrow-to-headers-or-head)
-      (message-remove-header "Mime-Version")
-      (goto-char (point-max))
-      (insert "MIME-Version: 1.0\n")
-      (when lines
-	(insert lines))
-      (setq content-type-p
-	    (re-search-backward "^Content-Type:" nil t)))
-    (save-restriction
-      (message-narrow-to-headers-or-head)
-      (message-remove-first-header "Content-Type")
-      (message-remove-first-header "Content-Transfer-Encoding"))
-    ;; We always make sure that the message has a Content-Type header.
-    ;; This is because some broken MTAs and MUAs get awfully confused
-    ;; when confronted with a message with a MIME-Version header and
-    ;; without a Content-Type header.  For instance, Solaris'
-    ;; /usr/bin/mail.
-    (unless content-type-p
-      (goto-char (point-min))
-      (re-search-forward "^MIME-Version:")
-      (forward-line 1)
-      (insert "Content-Type: text/plain; charset=us-ascii\n"))))
+  (unless messgage-inhibit-body-encoding 
+    (let ((mail-parse-charset (or mail-parse-charset
+				  message-default-charset
+				  message-posting-charset))
+	  (case-fold-search t)
+	  lines content-type-p)
+      (message-goto-body)
+      (save-restriction
+	(narrow-to-region (point) (point-max))
+	(let ((new (mml-generate-mime)))
+	  (when new
+	    (delete-region (point-min) (point-max))
+	    (insert new)
+	    (goto-char (point-min))
+	    (if (eq (aref new 0) ?\n)
+		(delete-char 1)
+	      (search-forward "\n\n")
+	      (setq lines (buffer-substring (point-min) (1- (point))))
+	      (delete-region (point-min)  (point))))))
+      (save-restriction
+	(message-narrow-to-headers-or-head)
+	(message-remove-header "Mime-Version")
+	(goto-char (point-max))
+	(insert "MIME-Version: 1.0\n")
+	(when lines
+	  (insert lines))
+	(setq content-type-p
+	      (re-search-backward "^Content-Type:" nil t)))
+      (save-restriction
+	(message-narrow-to-headers-or-head)
+	(message-remove-first-header "Content-Type")
+	(message-remove-first-header "Content-Transfer-Encoding"))
+      ;; We always make sure that the message has a Content-Type header.
+      ;; This is because some broken MTAs and MUAs get awfully confused
+      ;; when confronted with a message with a MIME-Version header and
+      ;; without a Content-Type header.  For instance, Solaris'
+      ;; /usr/bin/mail.
+      (unless content-type-p
+	(goto-char (point-min))
+	(re-search-forward "^MIME-Version:")
+	(forward-line 1)
+	(insert "Content-Type: text/plain; charset=us-ascii\n")))))
 
 (provide 'message)
 

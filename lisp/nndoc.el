@@ -137,7 +137,7 @@ from the document.")
 (defvoo nndoc-head-begin-function nil)
 (defvoo nndoc-body-end nil)
 ;; nndoc-dissection-alist is a list of sublists.  Each sublist holds the
-;; following items.  ARTICLE act as the association key and is an ordinal
+;; following items.  ARTICLE acts as the association key and is an ordinal
 ;; starting at 1.  HEAD-BEGIN [0], HEAD-END [1], BODY-BEGIN [2] and BODY-END
 ;; [3] are positions in the `nndoc' buffer.  LINE-COUNT [4] is a count of
 ;; lines in the body.  For MIME dissections only, ARTICLE-INSERT [5] and
@@ -645,16 +645,16 @@ PARENT is the message-ID of the parent summary line, or nil for none."
 	(message-id (nnmail-message-id))
 	head-end body-begin summary-insert message-rfc822 multipart-any
 	subject content-type type subtype boundary-regexp)
-      ;; Gracefully handle a missing body.
-      (goto-char head-begin)
-      (if (search-forward "\n\n" body-end t)
-	  (setq head-end (1- (point))
-		body-begin (point))
+    ;; Gracefully handle a missing body.
+    (goto-char head-begin)
+    (if (search-forward "\n\n" body-end t)
+	(setq head-end (1- (point))
+	      body-begin (point))
       (setq head-end body-end
 	    body-begin body-end))
     (narrow-to-region head-begin head-end)
-      ;; Save MIME attributes.
-      (goto-char head-begin)
+    ;; Save MIME attributes.
+    (goto-char head-begin)
     (setq content-type (message-fetch-field "Content-Type"))
     (when content-type
       (when (string-match
@@ -675,8 +675,8 @@ PARENT is the message-ID of the parent summary line, or nil for none."
       (when (or multipart-any (not article-insert))
 	(setq subject (message-fetch-field "Subject"))))
     (unless type
-	(setq type "text"
-	      subtype "plain"))
+      (setq type "text"
+	    subtype "plain"))
     ;; Prepare the article and summary inserts.
     (unless article-insert
       (setq article-insert (buffer-substring (point-min) (point-max))
@@ -688,8 +688,8 @@ PARENT is the message-ID of the parent summary line, or nil for none."
 			      (and position multipart-any ".")
 			      (and multipart-any "*")
 			      (and (or position multipart-any) " ")
-			    (cond ((string= subtype "plain") type)
-				  ((string= subtype "basic") type)
+			      (cond ((string= subtype "plain") type)
+				    ((string= subtype "basic") type)
 				    (t subtype))
 			      ">"
 			      (and subject " ")
@@ -712,13 +712,13 @@ PARENT is the message-ID of the parent summary line, or nil for none."
 				summary-insert)
 		  (replace-match line t t summary-insert)
 		(concat summary-insert line)))))
-      ;; Generate dissection information for this entity.
-      (push (list (incf nndoc-mime-split-ordinal)
-		  head-begin head-end body-begin body-end
-		  (count-lines body-begin body-end)
+    ;; Generate dissection information for this entity.
+    (push (list (incf nndoc-mime-split-ordinal)
+		head-begin head-end body-begin body-end
+		(count-lines body-begin body-end)
 		article-insert summary-insert)
-	    nndoc-dissection-alist)
-      ;; Recurse for all sub-entities, if any.
+	  nndoc-dissection-alist)
+    ;; Recurse for all sub-entities, if any.
     (widen)
     (cond
      (message-rfc822

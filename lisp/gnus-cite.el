@@ -614,7 +614,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 ;;; Internal functions:
 
 
-(defun gnus-cite-parse-maybe (&optional force)
+(defun gnus-cite-parse-maybe (&optional force no-overlay)
   "Always parse the buffer."
   (gnus-cite-localize)
   ;;Reset parser information.
@@ -622,7 +622,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 	gnus-cite-attribution-alist nil
 	gnus-cite-loose-prefix-alist nil
 	gnus-cite-loose-attribution-alist nil)
-  (gnus-cite-delete-overlays)
+  (unless no-overlay
+    (gnus-cite-delete-overlays))
   ;; Parse if not too large.
   (if (and gnus-cite-parse-max-size
 	   (> (buffer-size) gnus-cite-parse-max-size))
@@ -918,7 +919,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 (defun gnus-cite-toggle (prefix)
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe)
+    (gnus-cite-parse-maybe nil t)
     (let ((buffer-read-only nil)
 	  (numbers (cdr (assoc prefix gnus-cite-prefix-alist)))
 	  (inhibit-point-motion-hooks t)

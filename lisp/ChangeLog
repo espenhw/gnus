@@ -1,3 +1,16 @@
+Fri Feb 26 18:54:16 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.79 is released.
+
+1999-02-26 18:11:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cite.el (gnus-cite-toggle): Don't remove highlighting. 
+
+	* mml.el (mml-mode): Don't use add-minor-mode.
+
+	* message.el (messgage-inhibit-body-encoding): New variable.
+	(message-encode-message-body): Use it.
+
 Fri Feb 26 17:00:25 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.78 is released.

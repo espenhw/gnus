@@ -493,7 +493,6 @@
 		(if (null arg) (not mml-mode)
 		  (> (prefix-numeric-value arg) 0))))
       nil
-    (add-minor-mode 'mml-mode " MML" mml-mode-map)
     (set (make-local-variable 'mml-mode) t)
     (unless (assq 'mml-mode minor-mode-alist)
       (push `(mml-mode " MML") minor-mode-alist))
