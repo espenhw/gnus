@@ -1,3 +1,8 @@
+2002-06-18  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-delay.el (gnus-delay-send-queue): Delete the delay header
+	before sending.  Suggested by Jan Rychter.
+
 2002-06-18  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* dgnushack.el (remove): New compiler macro.

@@ -145,10 +145,14 @@ DELAY is a string, giving the length of the time.  Possible values are:
   (interactive)
   (save-excursion
     (let* ((group (format "nndraft:%s" gnus-delay-group))
+	   (message-send-hook (copy-sequence message-send-hook))
 	   articles
 	   article deadline)
       (when (gnus-gethash group gnus-newsrc-hashtb)
 	(gnus-activate-group group)
+	(add-hook 'message-send-hook
+		  '(lambda ()
+		     (message-remove-header gnus-delay-header)))
 	(setq articles (nndraft-articles))
 	(while (setq article (pop articles))
 	  (gnus-request-head article group)
