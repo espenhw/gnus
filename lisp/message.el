@@ -1533,7 +1533,9 @@ is used by default."
       (looking-at message-unix-mail-delimiter))))
 
 (defun message-fetch-field (header &optional not-all)
-  "The same as `mail-fetch-field', only remove all newlines."
+  "The same as `mail-fetch-field', only remove all newlines.
+Note that the buffer should be narrowed to the headers; see
+function `message-narrow-to-headers-or-head'."
   (let* ((inhibit-point-motion-hooks t)
 	 (case-fold-search t)
 	 (value (mail-fetch-field header nil (not not-all))))
