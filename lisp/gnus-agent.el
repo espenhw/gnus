@@ -1448,7 +1448,7 @@ of FILE placing the combined headers in nntp-server-buffer."
 		 ;; Some articles may not exist, so update `articles'
 		 ;; from what was actually found.  -- kai
 		 (setq articles
-		       (mapcar (lambda (x) (aref x 0))
+		       (mapcar (lambda (x) (mail-header-number x))
 			       gnus-newsgroup-headers))
 		 ;; `gnus-agent-overview-buffer' may be killed for
 		 ;; timeout reason.  If so, recreate it.
