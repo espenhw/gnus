@@ -512,13 +512,15 @@ Doing so would be even more evil than leaving it out."
 
 (defcustom message-qmail-inject-args nil
   "Arguments passed to qmail-inject programs.
-This should be a list of strings, one string for each argument.
+This should be a list of strings, one string for each argument.  It
+may also be a function.
 
 For e.g., if you wish to set the envelope sender address so that bounces
 go to the right place or to deal with listserv's usage of that address, you
 might set this variable to '(\"-f\" \"you@some.where\")."
   :group 'message-sending
-  :type '(repeat string))
+  :type '(choice (function)
+		 (repeat string)))
 
 (defvar message-cater-to-broken-inn t
   "Non-nil means Gnus should not fold the `References' header.
@@ -3060,7 +3062,9 @@ to find out how to use this."
 	 ;; free for -inject-arguments -- a big win for the user and for us
 	 ;; since we don't have to play that double-guessing game and the user
 	 ;; gets full control (no gestapo'ish -f's, for instance).  --sj
-	 message-qmail-inject-args))
+         (if (functionp 'message-qmail-inject-args)
+             (funcall 'message-qmail-inject-args)
+           message-qmail-inject-args)))
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
     ;; we have to look at the retval instead
     (0 nil)

@@ -1,3 +1,9 @@
+2002-03-12  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-qmail-inject-args): May be function.
+	(message-send-mail-with-qmail): Call function if m-q-i-a is
+	function.  From fn@hungry.org (Faried Nawaz).
+
 2002-03-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-abbrevs-loaded): Remove.
