@@ -193,7 +193,7 @@ Checks include `subject-cmsg', `multiple-headers', `sendsys',
   :group 'message-news
   :type '(repeat sexp))			; Fixme: improve this
 
-(defcustom message-required-headers '((optional . References))
+(defcustom message-required-headers '((optional . References) From)
   "*Headers to be generated or promted for when sending a message.
 Also see `message-required-news-headers' and
 1message-required-mail-headers'."

@@ -348,6 +348,11 @@ Thank you for your help in stamping out bugs.
 
 ;;; Internal functions.
 
+(defun gnus-inews-make-draft ()
+  `(lambda ()
+     (gnus-inews-make-draft-meta-information
+      ,gnus-newsgroup-name ,gnus-article-reply)))
+
 (defvar gnus-article-reply nil)
 (defmacro gnus-setup-message (config &rest forms)
   (let ((winconf (make-symbol "gnus-setup-message-winconf"))
@@ -381,10 +386,9 @@ Thank you for your help in stamping out bugs.
 		  message-required-headers)
        (when (and ,group
 		  (not (string= ,group "")))
-	 (push '(,(intern gnus-draft-meta-information-header)
-		 . (lambda ()
-		     (gnus-inews-make-draft-meta-information
-		      ,gnus-newsgroup-name ,gnus-article-reply)))
+	 (push (cons
+		(intern gnus-draft-meta-information-header)
+		(gnus-inews-make-draft))
 	       message-required-headers))
        (unwind-protect
 	   (progn

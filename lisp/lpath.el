@@ -40,7 +40,7 @@
 		     mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
 		     overlay-lists pgg-parse-crc24-string posn-point
 		     posn-window read-event set-buffer-multibyte track-mouse
-		     window-edges))
+		     window-edges w3m-region))
       (maybe-bind '(adaptive-fill-first-line-regexp
 		    buffer-display-table buffer-file-coding-system
 		    current-language-environment
