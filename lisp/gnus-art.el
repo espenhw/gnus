@@ -3566,8 +3566,11 @@ In no internal viewer is available, use an external viewer."
 	 (not gnus-mime-display-multipart-as-mixed))
     ;;;!!!We should find the start part, but we just default
     ;;;!!!to the first part.
-    (gnus-mime-display-part (cadr handle)))
-   ;; Other multiparts are handled like multipart/mixed.
+    ;;(gnus-mime-display-part (cadr handle))
+    ;;;!!! Most multipart/related is an HTML message plus images.
+    ;;;!!! Unfortunately we are unable to let W3 display those 
+    ;;;!!! included images, so we just display it as a mixed multipart.
+    (gnus-mime-display-mixed (cdr handle)))
    ((equal (car handle) "multipart/signed")
     (or (memq 'signed gnus-article-wash-types)
 	(push 'signed gnus-article-wash-types))
@@ -3578,6 +3581,7 @@ In no internal viewer is available, use an external viewer."
 	(push 'encrypted gnus-article-wash-types))
     (gnus-insert-mime-security-button handle)
     (gnus-mime-display-mixed (cdr handle)))
+   ;; Other multiparts are handled like multipart/mixed.
    (t
     (gnus-mime-display-mixed (cdr handle)))))
 
