@@ -561,6 +561,7 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
   "Read the cache active file."
   (gnus-make-directory gnus-cache-directory)
   (if (or (not (file-exists-p gnus-cache-active-file))
+	  (not (zerop (nth 7 (file-attributes gnus-cache-active-file))))
 	  force)
       ;; There is no active file, so we generate one.
       (gnus-cache-generate-active)

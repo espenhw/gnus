@@ -186,7 +186,7 @@ with some simple extensions.
   (let ((groups (cdr (assoc topic gnus-topic-alist)))
         info clevel unread group params visible-groups entry active)
     (setq lowest (or lowest 1))
-    (setq level (or level 7))
+    (setq level (or level gnus-level-unsubscribed))
     ;; We go through the newsrc to look for matches.
     (while groups
       (when (setq group (pop groups))
@@ -199,7 +199,7 @@ with some simple extensions.
 			      active
 			      (- (1+ (cdr active)) (car active))))
 	      clevel (or (gnus-info-level info)
-			 (if (member group gnus-zombie-list) 8 9))))
+			 (if (member group gnus-zombie-list) gnus-level-zombie gnus-level-killed))))
       (and
        unread				; nil means that the group is dead.
        (<= clevel level)
@@ -431,7 +431,7 @@ articles in the topic and its subtopics."
 	(if (stringp entry)
 	    ;; Dead groups.
 	    (gnus-group-insert-group-line
-	     entry (if (member entry gnus-zombie-list) 8 9)
+	     entry (if (member entry gnus-zombie-list) gnus-level-zombie gnus-level-killed)
 	     nil (- (1+ (cdr (setq active (gnus-active entry))))
 		    (car active))
 	     nil)
@@ -1185,7 +1185,7 @@ If COPYP, copy the groups instead."
   (if (not topic)
       (call-interactively 'gnus-group-mark-group)
     (save-excursion
-      (let ((groups (gnus-topic-find-groups topic 9 t)))
+      (let ((groups (gnus-topic-find-groups topic gnus-level-killed t)))
 	(while groups
 	  (funcall (if unmark 'gnus-group-remove-mark 'gnus-group-set-mark)
 		   (gnus-info-group (nth 2 (pop groups)))))))))
@@ -1309,7 +1309,7 @@ If FORCE, always re-read the active file."
   (let ((gnus-topic-topology gnus-topic-active-topology)
 	(gnus-topic-alist gnus-topic-active-alist)
 	gnus-killed-list gnus-zombie-list)
-    (gnus-group-list-groups 9 nil 1)))
+    (gnus-group-list-groups gnus-level-killed nil 1)))
 
 (defun gnus-topic-toggle-display-empty-topics ()
   "Show/hide topics that have no unread articles."

@@ -390,7 +390,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-babyl-body-begin ()
   (re-search-forward "^\n" nil t)
-  (when (looking-at "\*\*\* EOOH \*\*\*")
+  (when (looking-at "\\*\\*\\* EOOH \\*\\*\\*")
     (let ((next (or (save-excursion
 		      (re-search-forward nndoc-article-begin nil t))
 		    (point-max))))
@@ -402,7 +402,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-babyl-head-begin ()
   (when (re-search-forward "^[0-9].*\n" nil t)
-    (when (looking-at "\*\*\* EOOH \*\*\*")
+    (when (looking-at "\\*\\*\\* EOOH \\*\\*\\*")
       (forward-line 1))
     t))
 

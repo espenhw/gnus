@@ -283,6 +283,11 @@ so I simply dropped them."
   :group 'gnus-extract
   :type 'boolean)
 
+(defcustom gnus-uu-pre-uudecode-hook nil
+  "Hook run before sending a message to uudecode."
+  :group 'gnus-extract
+  :type 'hook)
+
 (defcustom gnus-uu-digest-headers
   '("^Date:" "^From:" "^To:" "^Cc:" "^Subject:" "^Message-ID:" "^Keywords:"
     "^Summary:" "^References:")
@@ -309,10 +314,10 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 (defvar gnus-uu-saved-article-name nil)
 
-(defconst gnus-uu-begin-string "^begin[ \t]+[0-7][0-7][0-7][ \t]+\\(.*\\)$")
-(defconst gnus-uu-end-string "^end[ \t]*$")
+(defvar gnus-uu-begin-string "^begin[ \t]+[0-7][0-7][0-7][ \t]+\\(.*\\)$")
+(defvar gnus-uu-end-string "^end[ \t]*$")
 
-(defconst gnus-uu-body-line "^M")
+(defvar gnus-uu-body-line "^M")
 (let ((i 61))
   (while (> (setq i (1- i)) 0)
     (setq gnus-uu-body-line (concat gnus-uu-body-line "[^a-z]")))
@@ -320,21 +325,21 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 ;"^M.............................................................?$"
 
-(defconst gnus-uu-shar-begin-string "^#! */bin/sh")
+(defvar gnus-uu-shar-begin-string "^#! */bin/sh")
 
 (defvar gnus-uu-shar-file-name nil)
-(defconst gnus-uu-shar-name-marker "begin [0-7][0-7][0-7][ \t]+\\(\\(\\w\\|\\.\\)*\\b\\)")
+(defvar gnus-uu-shar-name-marker "begin [0-7][0-7][0-7][ \t]+\\(\\(\\w\\|\\.\\)*\\b\\)")
 
-(defconst gnus-uu-postscript-begin-string "^%!PS-")
-(defconst gnus-uu-postscript-end-string "^%%EOF$")
+(defvar gnus-uu-postscript-begin-string "^%!PS-")
+(defvar gnus-uu-postscript-end-string "^%%EOF$")
 
 (defvar gnus-uu-file-name nil)
-(defconst gnus-uu-uudecode-process nil)
+(defvar gnus-uu-uudecode-process nil)
 (defvar gnus-uu-binhex-article-name nil)
 
 (defvar gnus-uu-work-dir nil)
 
-(defconst gnus-uu-output-buffer-name " *Gnus UU Output*")
+(defvar gnus-uu-output-buffer-name " *Gnus UU Output*")
 
 (defvar gnus-uu-default-dir gnus-article-save-directory)
 (defvar gnus-uu-digest-from-subject nil)
@@ -852,10 +857,10 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	    (re-search-forward "\n\n")
 	    ;; Quote all 30-dash lines.
 	    (save-excursion
-	      (while (re-search-forward delim nil t)
+	      (while (re-search-forward "^-" nil t)
 		(beginning-of-line)
 		(delete-char 1)
-		(insert " ")))
+		(insert "- ")))
 	    (setq body (buffer-substring (1- (point)) (point-max)))
 	    (narrow-to-region (point-min) (point))
 	    (if (not (setq headers gnus-uu-digest-headers))
@@ -906,11 +911,11 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 ;; Binhex treatment - not very advanced.
 
-(defconst gnus-uu-binhex-body-line
+(defvar gnus-uu-binhex-body-line
   "^[^:]...............................................................$")
-(defconst gnus-uu-binhex-begin-line
+(defvar gnus-uu-binhex-begin-line
   "^:...............................................................$")
-(defconst gnus-uu-binhex-end-line
+(defvar gnus-uu-binhex-end-line
   ":$")
 
 (defun gnus-uu-binhex-article (buffer in-state)
@@ -1202,6 +1207,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-grab-articles (articles process-function
 				       &optional sloppy limit no-errors)
   (let ((state 'first)
+	(gnus-asynchronous nil)
 	has-been-begin article result-file result-files process-state
 	gnus-summary-display-article-function
 	gnus-article-display-hook gnus-article-prepare-hook
@@ -1434,6 +1440,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	    ;; Try to correct mishandled uucode.
 	    (when gnus-uu-correct-stripped-uucode
 	      (gnus-uu-check-correct-stripped-uucode start-char (point)))
+	    (run-hooks 'gnus-uu-pre-uudecode-hook)
 
 	    ;; Send the text to the process.
 	    (condition-case nil

@@ -1151,7 +1151,7 @@ for new groups."
     (if (and (not oldlevel)
 	     (consp entry))
 	(setq oldlevel (gnus-info-level (nth 2 entry)))
-      (setq oldlevel (or oldlevel 9)))
+      (setq oldlevel (or oldlevel gnus-level-killed)))
     (when (stringp previous)
       (setq previous (gnus-gethash previous gnus-newsrc-hashtb)))
 
@@ -2485,6 +2485,7 @@ If FORCE is non-nil, the .newsrc file is read."
 		    (coding
 		     (and (boundp 'enable-multibyte-characters)
 			  enable-multibyte-characters
+			  (fboundp 'gnus-mule-get-coding-system)
 			  (gnus-mule-get-coding-system (symbol-name group)))))
 		(if coding
 		    (setq str (decode-coding-string str (car coding))))

@@ -259,6 +259,11 @@ This variable allows the same syntax as `gnus-home-score-file'."
 :type '(repeat (cons (character :tag "Mark")
 		     (integer :tag "Score"))))
 
+(defcustom gnus-adaptive-word-minimum nil
+  "If a number, this is the minimum score value that can be assigned to a word."
+  :group 'gnus-score-adapt
+  :type '(choice (const nil) integer))
+
 (defcustom gnus-score-mimic-keymap nil
   "*Have the score entry functions pretend that they are a keymap."
   :group 'gnus-score-default
@@ -2170,7 +2175,11 @@ SCORE is the score to add."
 		      ;; Put the word and score into the hashtb.
 		      (setq val (gnus-gethash (setq word (match-string 0))
 					      hashtb))
-		      (gnus-sethash word (+ (or val 0) score) hashtb))
+		      (setq val (+ score (or val 0)))
+		      (if (and gnus-adaptive-word-minimum
+			       (< val gnus-adaptive-word-minimum))
+			  (setq val gnus-adaptive-word-minimum))
+		      (gnus-sethash word val hashtb))
 		    (erase-buffer))))
 	    (set-syntax-table syntab))
 	  ;; Make all the ignorable words ignored.

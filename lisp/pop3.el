@@ -4,7 +4,7 @@
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3j
+;; Version: 1.3k
 
 ;; This file is part of GNU Emacs.
 
@@ -37,7 +37,7 @@
 (require 'mail-utils)
 (provide 'pop3)
 
-(defconst pop3-version "1.3j")
+(defconst pop3-version "1.3k")
 
 (defvar pop3-maildrop (or user-login-name (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
@@ -295,15 +295,18 @@ This function currently does nothing.")
       (set-buffer (process-buffer process))
       (while (not (re-search-forward "^\\.\r\n" nil t))
 	(accept-process-output process 3)
-;	;; bill@att.com ... to save wear and tear on the heap
-;	(if (> (buffer-size)  20000) (sleep-for 1))
-;	(if (> (buffer-size)  50000) (sleep-for 1))
-;	(if (> (buffer-size) 100000) (sleep-for 1))
-;	(if (> (buffer-size) 200000) (sleep-for 1))
-;	(if (> (buffer-size) 500000) (sleep-for 1))
-;	;; bill@att.com
+	;; bill@att.com ... to save wear and tear on the heap
+	;; uncommented because the condensed version below is a problem for
+	;; some.
+	(if (> (buffer-size)  20000) (sleep-for 1))
+	(if (> (buffer-size)  50000) (sleep-for 1))
+	(if (> (buffer-size) 100000) (sleep-for 1))
+	(if (> (buffer-size) 200000) (sleep-for 1))
+	(if (> (buffer-size) 500000) (sleep-for 1))
+	;; bill@att.com
 	;; condensed into:
-	(if (> (buffer-size) 20000) (sleep-for (/ (buffer-size) 20000)))
+	;; (sometimes causes problems for really large messages.)
+;	(if (> (buffer-size) 20000) (sleep-for (/ (buffer-size) 20000)))
 	(goto-char start))
       (setq pop3-read-point (point-marker))
 ;; this code does not seem to work for some POP servers...

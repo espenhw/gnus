@@ -228,7 +228,14 @@ all.  This may very well take some time.")
 
 (deffoo nnml-request-create-group (group &optional server args)
   (nnmail-activate 'nnml)
-  (unless (assoc group nnml-group-alist)
+  (cond
+   ((assoc group nnml-group-alist)
+    t)
+   ((and (file-exists-p (nnmail-group-pathname group nnml-directory))
+	 (not (file-directory-p (nnmail-group-pathname group nnml-directory))))
+    (nnheader-report 'nnml "%s is a file"
+		     (nnmail-group-pathname group nnml-directory)))
+   (t
     (let (active)
       (push (list group (setq active (cons 1 0)))
 	    nnml-group-alist)
@@ -238,8 +245,8 @@ all.  This may very well take some time.")
 	(when articles
 	  (setcar active (apply 'min articles))
 	  (setcdr active (apply 'max articles))))
-      (nnmail-save-active nnml-group-alist nnml-active-file)))
-  t)
+      (nnmail-save-active nnml-group-alist nnml-active-file)
+      t))))
 
 (deffoo nnml-request-list (&optional server)
   (save-excursion

@@ -1,17 +1,9 @@
-gnus dir file is bogus
-
-.gnus repository:
-http://superdave.socom.com/gnus/
-
 I would like the zombie-page to contain an URL to the source of the
 latest version of gnus or some explanation on where to find it.
 
 A way to continue editing the latest Message composition.
 http://www.sonicnet.com/feature/ari3/
 facep is not declared.
-Implement new "From " search.
-Install mh-e.
-No link to red gnus from ding page.
 Include a section in the manual on why the number of articles
 isn't the same in the group buffer and on the SPC prompt.
 Interacting with rmail fcc isn't easy.
@@ -782,3 +774,6 @@ X characters in the body.
 
 * a score match type that adds scores matching on From if From has replied
 to something someone else has said.
+
+* Read Netscape discussion groups:
+snews://secnews.netscape.com/netscape.communicator.unix 

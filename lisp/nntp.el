@@ -248,6 +248,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
       (if (memq (process-status process) '(open run))
 	  process
 	(when (buffer-name (process-buffer process))
+	  (message "Killed buffer %s" (process-buffer process))
 	  (kill-buffer (process-buffer process)))
 	(setq nntp-connection-alist (delq entry nntp-connection-alist))
 	nil))))
@@ -1103,15 +1104,13 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 (defun nntp-open-rlogin (buffer)
   "Open a connection to SERVER using rsh."
   (let ((proc (if nntp-rlogin-user-name
-		  (start-process
-		   "nntpd" buffer nntp-rlogin-program
-		   nntp-address "-l" nntp-rlogin-user-name
-		   (mapconcat 'identity
-			      nntp-rlogin-parameters " "))
-		(start-process
-		 "nntpd" buffer nntp-rlogin-program nntp-address
-		 (mapconcat 'identity
-			    nntp-rlogin-parameters " ")))))
+		  (apply 'start-process
+			 "nntpd" buffer nntp-rlogin-program
+			 nntp-address "-l" nntp-rlogin-user-name
+			 nntp-rlogin-parameters)
+		(apply 'start-process
+		       "nntpd" buffer nntp-rlogin-program nntp-address
+		       nntp-rlogin-parameters))))
     (set-buffer buffer)
     (nntp-wait-for-string "^\r*20[01]")
     (beginning-of-line)

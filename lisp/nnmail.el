@@ -1348,7 +1348,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		     nnmail-use-procmail)
 		 (directory-files
 		  nnmail-procmail-directory
-		  t (concat (if group (concat "^" group) "")
+		  t (concat (if group (concat "^" (regexp-quote group)) "")
 			    nnmail-procmail-suffix "$"))))
 	   (p procmails)
 	   (crash (when (and (file-exists-p nnmail-crash-box)

@@ -1,3 +1,79 @@
+Sun Jan  4 11:31:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.19 is released.
+
+Sun Jan  4 10:42:53 1998  Felix Lee  <flee@teleport.com>
+
+	* nntp.el (nntp-open-rlogin): Use a list of parameters.
+
+Sun Jan  4 10:25:05 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-fetch-groups): New command.
+
+	* gnus-sum.el (gnus-summary-print-article): Changed order of
+	parameters.
+
+Sun Jan  4 10:24:07 1998  Michael R. Cook  <mcook@cognex.com>
+
+	* gnus-sum.el (gnus-summary-print-article): Use process/prefix.
+
+Sun Jan  4 05:29:38 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-uu.el: Changed spurious defconsts to defvars.
+
+	* nnmail.el (nnmail-get-spool-files): Quote group name.
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Fetch ticked articles.
+	(gnus-agent-fetch-group-1): Never mind.
+
+Sat Dec 20 22:33:17 1997  Pete Ware  <ware@cis.ohio-state.edu>
+
+	* message.el (message-rename-buffer): Check for nil dirs.
+
+Fri Dec 19 21:45:59 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnml.el (nnml-request-create-group): Check for files.
+
+Fri Dec 19 21:39:43 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-mode): Fixed font-lock.
+
+Fri Dec 19 21:26:08 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cache.el (gnus-cache-read-active): Check for empty files. 
+
+Sun Dec 14 11:46:50 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-save-article): Quote all lines beginning
+	with a dash.
+
+1997-12-10  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus-start.el (gnus-read-descriptions-file): Really bind and gag 
+	Mule.
+
+Fri Dec  5 15:15:05 1997  Danny Siu  <dsiu@adobe.com>
+
+	* nndoc.el (nndoc-babyl-body-begin): quote the regexp for the
+ 	string "*** EOOH ***" properly.
+	(nndoc-babyl-head-begin): Same as above.
+
+Sun Dec 14 11:11:22 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-pre-uudecode-hook): New hook.
+
+	* gnus-sum.el (gnus-summary-read-group-1): Set mode line after
+	configuring. 
+
+Sun Dec 14 11:03:26 1997  Wes Hardaker  <wjhardaker@ucdavis.edu>
+
+	* gnus-score.el (gnus-adaptive-word-minimum): New variable.
+	(gnus-score-adaptive): Use it.
+
+Sun Dec 14 09:19:18 1997  Roland B. Roberts  <roberts@panix.com>
+
+	* gnus-group.el: Fixed hardcoded levels.
+
 Sat Dec  6 17:40:33 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.18 is released.

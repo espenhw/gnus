@@ -176,7 +176,7 @@
 
 (defvar gnus-agent-group-mode-map (make-sparse-keymap))
 (gnus-define-keys gnus-agent-group-mode-map
-  "Ju" gnus-agent-fetch-group
+  "Ju" gnus-agent-fetch-groups
   "Jc" gnus-enter-category-buffer
   "Jj" gnus-agent-toggle-plugged
   "Js" gnus-agent-fetch-session
@@ -296,6 +296,11 @@ agent minor mode in all Gnus buffers."
 ;;;
 ;;; Group mode commands
 ;;;
+
+(defun gnus-agent-fetch-groups (n)
+  "Put all new articles in the current groups into the agent."
+  (interactive "P")
+  (gnus-group-iterate n 'gnus-agent-fetch-group))
 
 (defun gnus-agent-fetch-group (group)
   "Put all new articles in GROUP into the agent."

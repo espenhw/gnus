@@ -1112,7 +1112,7 @@ If REGEXP, only list groups matching REGEXP."
 	 (mailp (memq 'mail (assoc (symbol-name
 				    (car (or method gnus-select-method)))
 				   gnus-valid-select-methods)))
-	 (level (or (gnus-info-level info) 9))
+	 (level (or (gnus-info-level info) gnus-level-killed))
 	 (score (or (gnus-info-score info) 0))
 	 (ticked (gnus-range-length (cdr (assq 'tick marked))))
 	 (group-age (gnus-group-timestamp-delta group))
@@ -1255,8 +1255,8 @@ already."
 (defun gnus-group-level (group)
   "Return the estimated level of GROUP."
   (or (gnus-info-level (gnus-get-info group))
-      (and (member group gnus-zombie-list) 8)
-      9))
+      (and (member group gnus-zombie-list) gnus-level-zombie)
+      gnus-level-killed))
 
 (defun gnus-group-search-forward (&optional backward all level first-too)
   "Find the next newsgroup with unread articles.
@@ -2709,7 +2709,7 @@ of groups killed."
 		(delq (assoc group gnus-newsrc-alist)
 		      gnus-newsrc-alist))
 	  (when gnus-group-change-level-function
-	    (funcall gnus-group-change-level-function group 9 3))
+	    (funcall gnus-group-change-level-function group gnus-level-killed 3))
 	  (cond
 	   ((setq entry (gnus-gethash group gnus-newsrc-hashtb))
 	    (push (cons (car entry) (nth 2 entry))
@@ -2854,7 +2854,7 @@ entail asking the server for the groups."
 
 (defun gnus-activate-all-groups (level)
   "Activate absolutely all groups."
-  (interactive (list 7))
+  (interactive (list gnus-level-unsubscribed))
   (let ((gnus-activate-level level)
 	(gnus-activate-foreign-newsgroups level))
     (gnus-group-get-new-news)))

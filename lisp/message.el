@@ -774,6 +774,8 @@ Defaults to `text-mode-abbrev-table'.")
        (0 'message-cited-text-face))))
   "Additional expressions to highlight in Message mode.")
 
+;; XEmacs does it like this.  For Emacs, we have to set the
+;; `font-lock-defaults' buffer-local variable.
 (put 'message-mode 'font-lock-defaults '(message-font-lock-keywords t))
 
 (defvar message-face-alist
@@ -1307,7 +1309,10 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 	(mail-abbrevs-setup)
       (funcall (intern "mail-aliases-setup"))))
   (message-set-auto-save-file-name)
-  (run-hooks 'text-mode-hook 'message-mode-hook))
+  (run-hooks 'text-mode-hook 'message-mode-hook)
+  (unless (string-match "XEmacs" emacs-version)
+    (set (make-local-variable 'font-lock-defaults)
+	 '(message-font-lock-keywords t))))
 
 
 
@@ -1589,7 +1594,9 @@ name, rather than giving an automatic name."
 		       (read-string "New buffer name: " name-default)
 		     name-default))
 	     (default-directory
-	       (file-name-as-directory message-autosave-directory)))
+	       (if message-autosave-directory
+		   (file-name-as-directory message-autosave-directory)
+		 default-directory)))
 	(rename-buffer name t)))))
 
 (defun message-fill-yanked-message (&optional justifyp)
