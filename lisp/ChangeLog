@@ -1,5 +1,9 @@
 2002-11-18  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-sum.el (gnus-summary-morse-message): New function.
+	(gnus-summary-wash-map): Bind to `W m'.
+	(gnus-summary-make-menu-bar): Add.
+
 	* nnimap.el (nnimap-request-expire-articles): Compress sequence
 	before storing \Deleted mark on expired articles.
 

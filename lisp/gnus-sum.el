@@ -1762,6 +1762,7 @@ increase the score of each group you read."
     "f" gnus-article-display-x-face
     "l" gnus-summary-stop-page-breaking
     "r" gnus-summary-caesar-message
+    "m" gnus-summary-morse-message
     "t" gnus-summary-toggle-header
     "g" gnus-treat-smiley
     "v" gnus-summary-verbose-headers
@@ -2069,6 +2070,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Rot 13" gnus-summary-caesar-message
 	       ,@(if (featurep 'xemacs) '(t)
 		   '(:help "\"Caesar rotate\" article by 13"))]
+	      ["Morse decode" gnus-summary-morse-message t]
 	      ["Unix pipe..." gnus-summary-pipe-message t]
 	      ["Add buttons" gnus-article-add-buttons t]
 	      ["Add buttons to head" gnus-article-add-buttons-to-head t]
@@ -8420,6 +8422,25 @@ forward."
 	      buffer-read-only)
 	  (message-caesar-buffer-body arg)
 	  (set-window-start (get-buffer-window (current-buffer)) start))))))
+
+(defun gnus-summary-morse-message (&optional arg)
+  "Morse decode the current article."
+  (interactive "P")
+  (gnus-summary-select-article)
+  (let ((mail-header-separator ""))
+    (gnus-eval-in-buffer-window gnus-article-buffer
+      (save-excursion
+	(save-restriction
+	  (widen)
+	  (let ((start (window-start))
+		(end (window-end))
+		buffer-read-only)
+	    (goto-char start)
+	    (while (re-search-forward "·" end t)
+	      (replace-match "."))
+	    (unmorse-region start end)
+	    (set-window-start (get-buffer-window (current-buffer)) 
+			      start)))))))
 
 (defun gnus-summary-stop-page-breaking ()
   "Stop page breaking in the current article."
