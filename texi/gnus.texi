@@ -22226,16 +22226,18 @@ server or when you sort through incoming mail.  If you get 200 spam
 messages per day from @samp{random-address@@vmadmin.com}, you block
 @samp{vmadmin.com}.  If you get 200 messages about @samp{VIAGRA}, you
 discard all messages with @samp{VIAGRA} in the message.  If you get
-lots of spam from Elbonia, for example, you try to filter all mail
-from Elbonian IPs.
+lots of spam from Bulgaria, for example, you try to filter all mail
+from Bulgarian IPs.  
 
-This, unfortunately, is a great way to discard legitimate e-mail.  For
-instance, the very informative and useful RISKS digest has been
-blocked by overzealous mail filters because it @strong{contained}
-words that were common in spam messages.  The risks of blocking a
-whole country from contacting you should also be obvious, so don't do
-it if you have the choice.  Nevertheless, in isolated cases, with
-great care, direct filtering of mail can be useful.
+This, unfortunately, is a great way to discard legitimate e-mail.  The
+risks of blocking a whole country (Bulgaria, Norway, Nigeria, China,
+etc.) or even a continent (Asia, Africa, Europe, etc.) from contacting
+you should be obvious, so don't do it if you have the choice.
+
+In another instance, the very informative and useful RISKS digest has
+been blocked by overzealous mail filters because it @strong{contained}
+words that were common in spam messages.  Nevertheless, in isolated
+cases, with great care, direct filtering of mail can be useful.
 
 Another approach to filtering e-mail is the distributed spam
 processing, for instance DCC implements such a system.  In essence,

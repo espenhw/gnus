@@ -1,3 +1,9 @@
+2004-01-12  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (The problem of spam): fixed so many countries and
+	continents are used as examples of why blocking by country blocks
+	is a bad idea.
+
 2004-01-11  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (The problem of spam): Fix, reported by Cheng Gao
