@@ -863,6 +863,10 @@ simple manner.")
 	,@(if (featurep 'xemacs) '(t)
 	    '(:help "Get newly arrived articles"))
 	]
+       ["Send delayed articles" gnus-delay-send-drafts
+	,@(if (featurep 'xemacs) '(t)
+	    '(:help "Send all articles that are scheduled to be sent now"))
+	]
        ["Activate all groups" gnus-activate-all-groups t]
        ["Restart Gnus" gnus-group-restart t]
        ["Read init file" gnus-group-read-init-file t]

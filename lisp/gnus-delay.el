@@ -24,23 +24,44 @@
 
 ;; Provide delayed posting of articles.
 
+;;; Todo:
+
+;; * `gnus-delay-send-drafts' barfs when group does not exist.
+;; * Integrate gnus-delay.el into the rest of Gnus automatically.  How
+;;   should this be done?  Basically, we need to do what
+;;   `gnus-delay-initialize' does.  But in which files?
+
 ;;; Code:
 
 (require 'nndraft)
 (require 'gnus-draft)
 
-(defvar gnus-delay-group "delayed"
-  "Group name for storing delayed articles.")
+;;;###autoload
+(defgroup gnus-delay nil
+  "Arrange for sending postings later."
+  :group 'gnus)
 
-(defvar gnus-delay-header "X-Gnus-Delayed"
-  "Header name for storing info about delayed articles.")
+(defcustom gnus-delay-group "delayed"
+  "Group name for storing delayed articles."
+  :type 'string
+  :group 'gnus-delay)
 
-(defvar gnus-delay-default-delay "3d"
-  "*Default length of delay.")
+(defcustom gnus-delay-header "X-Gnus-Delayed"
+  "Header name for storing info about delayed articles."
+  :type 'string
+  :group 'gnus-delay)
 
-(defvar gnus-delay-default-hour 8
-  "*If deadline is given as date, then assume this time of day.")
+(defcustom gnus-delay-default-delay "3d"
+  "*Default length of delay."
+  :type 'string
+  :group 'gnus-delay)
 
+(defcustom gnus-delay-default-hour 8
+  "*If deadline is given as date, then assume this time of day."
+  :type 'integer
+  :group 'gnus-delay)
+
+;;;###autoload
 (defun gnus-delay-article (delay)
   "Delay this article by some time.
 DELAY is a string, giving the length of the time.  Possible values are:
@@ -116,6 +137,7 @@ DELAY is a string, giving the length of the time.  Possible values are:
   (kill-buffer (current-buffer))
   (message-do-actions message-postpone-actions))
 
+;;;###autoload
 (defun gnus-delay-send-drafts ()
   "Send all the delayed messages that are due now."
   (interactive)
@@ -123,25 +145,27 @@ DELAY is a string, giving the length of the time.  Possible values are:
     (let* ((group (format "nndraft:%s" gnus-delay-group))
 	   articles
 	   article deadline)
-      (gnus-activate-group group)
-      (setq articles (nndraft-articles))
-      (while (setq article (pop articles))
-	(gnus-request-head article group)
-	(set-buffer nntp-server-buffer)
-	(goto-char (point-min))
-	(if (re-search-forward
-	     (concat "^" (regexp-quote gnus-delay-header) ":\\s-+")
-	     nil t)
-	    (progn
-	      (setq deadline (nnheader-header-value))
-	      (setq deadline (apply 'encode-time (parse-time-string deadline)))
-	      (setq deadline (time-since deadline))
- 	      (when (and (>= (nth 0 deadline) 0)
-			 (>= (nth 1 deadline) 0))
-		(message "Sending delayed article %d" article)
-		(gnus-draft-send article group)
-		(message "Sending delayed article %d...done" article)))
-	  (message "Delay header missing for article %d" article))))))
+      (when (gnus-gethash group gnus-newsrc-hashtb)
+	(gnus-activate-group group)
+	(setq articles (nndraft-articles))
+	(while (setq article (pop articles))
+	  (gnus-request-head article group)
+	  (set-buffer nntp-server-buffer)
+	  (goto-char (point-min))
+	  (if (re-search-forward
+	       (concat "^" (regexp-quote gnus-delay-header) ":\\s-+")
+	       nil t)
+	      (progn
+		(setq deadline (nnheader-header-value))
+		(setq deadline (apply 'encode-time
+				      (parse-time-string deadline)))
+		(setq deadline (time-since deadline))
+		(when (and (>= (nth 0 deadline) 0)
+			   (>= (nth 1 deadline) 0))
+		  (message "Sending delayed article %d" article)
+		  (gnus-draft-send article group)
+		  (message "Sending delayed article %d...done" article)))
+	    (message "Delay header missing for article %d" article)))))))
 
 ;;;###autoload
 (defun gnus-delay-initialize (&optional no-keymap no-check)
@@ -149,11 +173,8 @@ DELAY is a string, giving the length of the time.  Possible values are:
 This sets up a key binding in `message-mode' to delay a message.
 This tells Gnus to look for delayed messages after getting new news.
 
-Key binding is skipped if optional arg NO-KEYMAP is non-nil.
+The optional arg NO-KEYMAP is ignored.
 Checking delayed messages is skipped if optional arg NO-CHECK is non-nil."
-  (unless no-keymap
-    (require 'message)
-    (define-key message-mode-map "\C-c\n" 'gnus-delay-article))
   (unless no-check
     (add-hook 'gnus-get-new-news-hook 'gnus-delay-send-drafts)))
 

@@ -1487,6 +1487,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-s" 'message-send)
   (define-key message-mode-map "\C-c\C-k" 'message-kill-buffer)
   (define-key message-mode-map "\C-c\C-d" 'message-dont-send)
+  (define-key message-mode-map "\C-c\n" 'gnus-delay-article)
 
   (define-key message-mode-map "\C-c\C-e" 'message-elide-region)
   (define-key message-mode-map "\C-c\C-v" 'message-delete-not-region)
@@ -1523,6 +1524,9 @@ Point is left at the beginning of the narrowed-to region."
     ["Postpone Message" message-dont-send
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "File this draft message and exit"))]
+    ["Send at Specific Time" gnus-delay-article
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Ask, then arrange to send message at that time"))]
     ["Kill Message" message-kill-buffer
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Delete this message without sending"))]))

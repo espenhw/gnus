@@ -1,3 +1,18 @@
+2001-09-29  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-mode-map): Keybinding for `gnus-delay-article'.
+	(message-mode-menu): Menu item for same.
+
+	* gnus-group.el (gnus-group-make-menu-bar): Menu item for sending
+	delayed articles.
+
+	* gnus-delay.el (gnus-delay-send-drafts): Do nothing if
+	nndraft:delayed does not exist.
+	(gnus-delay-initialize): Don't set up keymap, that's done from
+	message.el now.
+	(gnus-delay, gnus-delay-group, gnus-delay-header) 
+	(gnus-delay-default-delay, gnus-delay-default-hour): Customize.
+
 2001-09-29  Simon Josefsson  <jas@extundo.com>
 
 	* mm-util.el (mm-mime-mule-charset-alist): Encode mule-utf-8 as
