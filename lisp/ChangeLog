@@ -1,3 +1,8 @@
+2004-10-18  David Edmondson  <dme@dme.org>
+
+	* mm-view.el (mm-w3m-cid-retrieve-1): Don't use recursive call
+	excessively.
+
 2004-10-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-util.el (gnus-split-references): accept a nil references
