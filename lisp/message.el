@@ -1616,7 +1616,6 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
       (mail-aliases-setup)))
   (message-set-auto-save-file-name)
   (mm-enable-multibyte)
-  (set (make-local-variable 'indent-line-function) 'indent-relative)
   (set (make-local-variable 'indent-tabs-mode) nil) ;No tabs for indentation.
   (mml-mode))
 
@@ -4825,14 +4824,14 @@ which specify the range to operate on."
 
 (defun message-tab ()
   "Complete names according to `message-completion-alist'.
-Do an `indent-line-function' if not in those headers."
+Do an `indent-relative' if not in those headers."
   (interactive)
   (let ((alist message-completion-alist))
     (while (and alist
 		(let ((mail-abbrev-mode-regexp (caar alist)))
 		  (not (mail-abbrev-in-expansion-header-p))))
       (setq alist (cdr alist)))
-    (funcall (or (cdar alist) indent-line-function))))
+    (funcall (or (cdar alist) 'indent-relative))))
 
 (defun message-expand-group ()
   "Expand the group name under point."

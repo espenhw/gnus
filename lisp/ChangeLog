@@ -1,3 +1,8 @@
+2001-08-09 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-tab): Use indent-relative.
+	(message-mode): Don't bind indent-line-function to indent-relative.
+
 2001-08-09  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-get-reply-headers): Fix string. Suggested by
