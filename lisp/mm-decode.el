@@ -98,8 +98,9 @@
 
 (defcustom mm-text-html-renderer
   (cond ((locate-library "w3") 'w3)
-	((locate-library "w3m") 'w3m)
-	((executable-find "w3m") 'w3m-standalone)
+	((executable-find "w3m") (if (locate-library "w3m")
+				     'w3m
+				   'w3m-standalone))
 	((executable-find "links") 'links)
 	((executable-find "lynx") 'lynx)
 	(t 'html2text))
