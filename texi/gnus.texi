@@ -17266,6 +17266,29 @@ connected to the net continuously.
 @dfn{Downloading} means fetching things from the net to your local
 machine.  @dfn{Uploading} is doing the opposite.
 
+You know that Gnus gives you all the opportunity you'd ever want for
+shooting yourself in the foot.  Some people call it flexibility.  Gnus
+is also customizable to a great extent, which means that the user has a
+say on how Gnus behaves.  Other newsreaders might unconditionally shoot
+you in your foot, but with Gnus, you have a choice!
+
+Gnus is never really in plugged or unplugged state.  Rather, it applies
+that state to each server individually.  This means that some servers
+can be plugged while others can be unplugged.  Additionally, some
+servers can be ignored by the Agent altogether (which means that
+they're kinda like plugged always).
+
+So when you unplug the Agent and then wonder why is Gnus opening a
+connection to the Net, the next step to do is to look whether all
+servers are agentized.  If there is an unagentized server, you found
+the culprit.
+
+Another thing is the @dfn{offline} state.  Sometimes, servers aren't
+reachable.  When Gnus notices this, it asks you whether you want the
+server to be switched to offline state.  If you say yes, then the
+server will behave somewhat as if it was unplugged, except that Gnus
+will ask you whether you want to switch it back online again.
+
 Let's take a typical Gnus session using the Agent.
 
 @itemize @bullet
@@ -17311,7 +17334,7 @@ Agent.  Go to the server buffer (@kbd{^} in the group buffer) and press
 @kbd{J a} on the server (or servers) that you wish to have covered by the
 Agent (@pxref{Server Agent Commands}), or @kbd{J r} on automatically
 added servers you do not wish to have covered by the Agent.  By default,
-all @code{nntp} and @code{nnimap} groups in @code{gnus-select-method} and
+all @code{nntp} and @code{nnimap} servers in @code{gnus-select-method} and
 @code{gnus-secondary-select-methods} are agentized.
 
 @item
