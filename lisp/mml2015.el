@@ -444,6 +444,16 @@ by you.")
       (with-temp-buffer
 	(setq message (current-buffer))
 	(insert part)
+	;; Convert <LF> to <CR><LF> in verify mode.  Sign and
+	;; clearsign use --textmode. The conversion is not necessary.
+	;; In clearverify, the conversion is not necessary either.
+	(goto-char (point-min))
+	(end-of-line)
+	(while (not (eobp))
+	  (unless (eq (char-before) ?\r)
+	    (insert "\r"))
+	  (forward-line)
+	  (end-of-line))
 	(with-temp-buffer
 	  (setq signature (current-buffer))
 	  (unless (setq part (mm-find-part-by-type
