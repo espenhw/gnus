@@ -1106,7 +1106,18 @@ EXTRA is the possible non-standard header."
 (defun gnus-score-edit-file-at-point ()
   "Edit score file at point.  Useful especially after `V t'."
   (interactive)
-  (gnus-score-edit-file (ffap-string-at-point)))
+  (let* ((string (ffap-string-at-point))
+	 ;; FIXME: Should be the full `match element', not just string at
+	 ;; point.
+	 file)
+    (save-excursion
+      (end-of-line)
+      (setq file (ffap-string-at-point)))
+    (gnus-score-edit-file file)
+    (unless (string= string file)
+      (goto-char (point-min))
+      ;; Goto first match
+      (search-forward string nil t))))
 
 (defun gnus-score-load-file (file)
   ;; Load score file FILE.  Returns a list a retrieved score-alists.
@@ -2354,8 +2365,8 @@ score in `gnus-newsgroup-scored' by SCORE."
 	(local-set-key "q"
 		       (lambda ()
 			 (interactive)
-			 (kill-buffer nil)
-			 (gnus-article-show-summary)))
+			 (bury-buffer nil)
+			 (gnus-summary-expand-window)))
 	(local-set-key "e" 'gnus-score-edit-file-at-point)
 	(setq truncate-lines t)
 	(while trace
