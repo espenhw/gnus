@@ -1,5 +1,10 @@
 2002-01-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (gnus-button-alist): Don't highlight <URL:.
+	Suggested by Ian Fitchet <ian.fitchet@lunanbay.com>
+
+2002-01-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
 	* gnus.el: We don't need gnus-article-show-all-headers.
 
 	* gnus-art.el (article-show-all, gnus-article-show-all-header): 
