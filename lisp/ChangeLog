@@ -1,3 +1,7 @@
+2000-11-12 11:53:18  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-button-menu): Use select-window.
+
 2000-11-12 09:47:54  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-display-part): Display multipart/related

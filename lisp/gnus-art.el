@@ -3042,9 +3042,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-button-menu (event)
   "Construct a context-sensitive menu of MIME commands."
   (interactive "e")
-  (save-excursion
+  (save-window-excursion
     (let ((pos (event-start event)))
-      (set-buffer (window-buffer (posn-window pos)))
+      (select-window (posn-window pos))
       (goto-char (posn-point pos))
       (gnus-article-check-buffer)
       (let ((response (x-popup-menu
