@@ -56,7 +56,7 @@
 (defvoo nnslashdot-active-url "http://slashdot.org/search.pl?section=&min=%d"
   "Where nnslashdot will fetch the active file from.")
 
-(defvoo nnslashdot-comments-url "http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=0&mode=flat&startat=%d"
+(defvoo nnslashdot-comments-url "http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=4&mode=flat&startat=%d"
   "Where nnslashdot will fetch comments from.")
 
 (defvoo nnslashdot-article-url
@@ -79,7 +79,7 @@
 
 (nnoo-define-basics nnslashdot)
 
-(deffoo nnslashdot-retrieve-headers (articles &optional group server fetch-old)
+(deffoo nnslashdot-thread-retrieve-headers (articles &optional group server fetch-old)
   (nnslashdot-possibly-change-server group server)
   (let ((last (car (last articles)))
 	(did nil)
@@ -87,13 +87,114 @@
 	(sid (caddr (assoc group nnslashdot-groups)))
 	headers article subject score from date lines parent point
 	startats s)
-    (save-excursion
-      (set-buffer nnslashdot-buffer)
-      (let ((case-fold-search t))
+    (unless gnus-nov-is-evil
+      (save-excursion
+	(set-buffer nnslashdot-buffer)
+	(let ((case-fold-search t))
+	  (erase-buffer)
+	  (when (= start 1)
+	    (nnweb-insert (format nnslashdot-article-url sid))
+	    (goto-char (point-min))
+	    (search-forward "Posted by ")
+	    (when (looking-at "<a[^>]+>\\([^<]+\\)")
+	      (setq from (match-string 1)))
+	    (search-forward " on ")
+	    (setq date (nnslashdot-date-to-date
+			(buffer-substring (point) (1- (search-forward "<")))))
+	    (forward-line 2)
+	    (setq lines (count-lines
+			 (point)
+			 (search-forward
+			  "A href=http://slashdot.org/article.pl")))
+	    (push
+	     (cons
+	      1
+	      (make-full-mail-header
+	       1 group from date (concat "<" sid "%1@slashdot>")
+	       "" 0 lines nil nil))
+	     headers)
+	    (goto-char (point-max))
+	    (while (re-search-backward "startat=\\([0-9]+\\)" nil t)
+	      (setq s (match-string 1))
+	      (unless (memq s startats)
+		(push s startats)))
+	    (unless startats
+	      (push 1 startats)))
+	  (setq startats (sort startats '<))
+	  (while (and (setq start (pop startats))
+		      (< start last))
+	    (setq point (goto-char (point-max)))
+	    (nnweb-insert
+	     (format nnslashdot-comments-url sid nnslashdot-threshold start))
+	    (goto-char point)
+	    (while (re-search-forward
+		    "<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score:\\([^)]+\\))"
+		    nil t)
+	      (setq article (string-to-number (match-string 1))
+		    subject (match-string 2)
+		    score (match-string 3))
+	      (when (string-match "^Re: *" subject)
+		(setq subject (concat "Re: " (substring subject (match-end 0)))))
+	      (forward-line 1)
+	      (if (looking-at
+		   "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
+		  (setq from (concat (match-string 1)
+				     " <" (match-string 2) ">"))
+		(looking-at "by \\(.+\\) on ")
+		(setq from (match-string 1)))
+	      (goto-char (- (match-end 0) 5))
+	      (search-forward " on ")
+	      (setq date
+		    (nnslashdot-date-to-date
+		     (buffer-substring (point) (progn (end-of-line) (point)))))
+	      (setq lines (/ (abs (- (search-forward "<td ")
+				     (search-forward "</td>")))
+			     70))
+	      (forward-line 2)
+	      (setq parent
+		    (if (looking-at ".*cid=\\([0-9]+\\)")
+			(match-string 1)
+		      nil))
+	      (setq did t)
+	      (push
+	       (cons
+		(1+ article)
+		(make-full-mail-header
+		 (1+ article) subject
+		 from date
+		 (concat "<" sid "%"
+			 (number-to-string (1+ article)) 
+			 "@slashdot>")
+		 (if parent
+		     (concat "<" sid "%"
+			     (number-to-string (1+ (string-to-number parent)))
+			     "@slashdot>")
+		   "")
+		 0 (string-to-number score) nil nil))
+	       headers)))))
+      (setq nnslashdot-headers
+	    (sort headers (lambda (s1 s2) (< (car s1) (car s2)))))
+      (save-excursion
+	(set-buffer nntp-server-buffer)
+	(erase-buffer)
+	(dolist (header nnslashdot-headers)
+	  (nnheader-insert-nov (cdr header))))
+      'nov)))
+
+(deffoo nnslashdot-retrieve-headers (articles &optional group
+					      server fetch-old)
+  (unless gnus-nov-is-evil
+    (nnslashdot-possibly-change-server group server)
+    (let ((last (car (last articles)))
+	  (did nil)
+	  (start (max (1- (car articles)) 1))
+	  (sid (caddr (assoc group nnslashdot-groups)))
+	  headers article subject score from date lines parent point)
+      (save-excursion
+	(set-buffer nnslashdot-buffer)
 	(erase-buffer)
 	(when (= start 1)
-	  (url-insert-file-contents (format nnslashdot-article-url sid))
-	  (setq buffer-file-name nil)
+	  (nnweb-insert (format nnslashdot-article-url sid))
 	  (goto-char (point-min))
 	  (search-forward "Posted by ")
 	  (when (looking-at "<a[^>]+>\\([^<]+\\)")
@@ -111,32 +212,25 @@
 	    (make-full-mail-header
 	     1 group from date (concat "<" sid "%1@slashdot>")
 	     "" 0 lines nil nil))
-	   headers)
-	  (goto-char (point-max))
-	  (while (re-search-backward "startat=\\([0-9]+\\)" nil t)
-	    (setq s (match-string 1))
-	    (unless (memq s startats)
-	      (push s startats)))
-	  (unless startats
-	    (push 1 startats)))
-	(setq startats (sort startats '<))
-	(while (and (setq start (pop startats))
-		    (< start last))
+	   headers))
+	(while (or (not article)
+		   (and did
+			(< article last)))
+	  (when article
+	    (setq start (1+ article)))
 	  (setq point (goto-char (point-max)))
-	  (url-insert-file-contents
+	  (nnweb-insert
 	   (format nnslashdot-comments-url sid nnslashdot-threshold start))
-	  (setq buffer-file-name nil)
 	  (goto-char point)
 	  (while (re-search-forward
-		  "<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score:\\([^)]+\\))"
+		  "<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score\\([^)]+\\))"
 		  nil t)
 	    (setq article (string-to-number (match-string 1))
 		  subject (match-string 2)
 		  score (match-string 3))
-	    (when (string-match "^Re: *" subject)
-	      (setq subject (concat "Re: " (substring subject (match-end 0)))))
 	    (forward-line 1)
-	    (if (looking-at "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
+	    (if (looking-at
+		 "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
 		(setq from (concat (match-string 1) " <" (match-string 2) ">"))
 	      (looking-at "by \\(.+\\) on ")
 	      (setq from (match-string 1)))
@@ -158,7 +252,7 @@
 	     (cons
 	      (1+ article)
 	      (make-full-mail-header
-	       (1+ article) subject
+	       (1+ article) (concat subject " (" score ")")
 	       from date
 	       (concat "<" sid "%"
 		       (number-to-string (1+ article)) 
@@ -168,108 +262,16 @@
 			   (number-to-string (1+ (string-to-number parent)))
 			   "@slashdot>")
 		 "")
-	       0 (string-to-number score) nil nil))
-	     headers)))))
-    (setq nnslashdot-headers
-	  (sort headers (lambda (s1 s2) (< (car s1) (car s2)))))
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)
-      (dolist (header nnslashdot-headers)
-	(nnheader-insert-nov (cdr header))))
-    'nov))
-
-(deffoo nnslashdot-sane-retrieve-headers (articles &optional group
-						   server fetch-old)
-  (nnslashdot-possibly-change-server group server)
-  (let ((last (car (last articles)))
-	(did nil)
-	(start (car articles))
-	(sid (caddr (assoc group nnslashdot-groups)))
-	headers article subject score from date lines parent point)
-    (save-excursion
-      (set-buffer nnslashdot-buffer)
-      (erase-buffer)
-      (when (= start 1)
-	(url-insert-file-contents (format nnslashdot-article-url sid))
-	(setq buffer-file-name nil)
-	(goto-char (point-min))
-	(search-forward "Posted by ")
-	(when (looking-at "<a[^>]+>\\([^<]+\\)")
-	  (setq from (match-string 1)))
-	(search-forward " on ")
-	(setq date (nnslashdot-date-to-date
-		    (buffer-substring (point) (1- (search-forward "<")))))
-	(forward-line 2)
-	(setq lines (count-lines (point)
-				 (search-forward
-				  "A href=http://slashdot.org/article.pl")))
-	(push
-	 (cons
-	  1
-	  (make-full-mail-header
-	   1 group from date (concat "<" sid "%1@slashdot>")
-	   "" 0 lines nil nil))
-	 headers))
-      (while (or (not article)
-		 (and did
-		      (< article last)))
-	(when article
-	  (setq start (1+ article)))
-	(setq point (goto-char (point-max)))
-	(url-insert-file-contents
-	 (format nnslashdot-comments-url sid nnslashdot-threshold start))
-	(setq buffer-file-name nil)
-	(goto-char point)
-	(while (re-search-forward
-		"<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score\\([^)]+\\))"
-		nil t)
-	  (setq article (string-to-number (match-string 1))
-		subject (match-string 2)
-		score (match-string 3))
-	  (forward-line 1)
-	  (if (looking-at "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
-	      (setq from (concat (match-string 1) " <" (match-string 2) ">"))
-	    (looking-at "by \\(.+\\) on ")
-	    (setq from (match-string 1)))
-	  (goto-char (- (match-end 0) 5))
-	  (search-forward " on ")
-	  (setq date
-		(nnslashdot-date-to-date
-		 (buffer-substring (point) (progn (end-of-line) (point)))))
-	  (setq lines (/ (abs (- (search-forward "<td ")
-				 (search-forward "</td>")))
-			 70))
-	  (forward-line 2)
-	  (setq parent
-		(if (looking-at ".*cid=\\([0-9]+\\)")
-		    (match-string 1)
-		  nil))
-	  (setq did t)
-	  (push
-	   (cons
-	    (1+ article)
-	    (make-full-mail-header
-	     (1+ article) (concat subject " (" score ")")
-	     from date
-	     (concat "<" sid "%"
-		     (number-to-string (1+ article)) 
-		     "@slashdot>")
-	     (if parent
-		 (concat "<" sid "%"
-			 (number-to-string (1+ (string-to-number parent)))
-			 "@slashdot>")
-	       "")
-	     0 lines nil nil))
-	   headers))))
-    (setq nnslashdot-headers
-	  (sort headers (lambda (s1 s2) (< (car s1) (car s2)))))
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)
-      (dolist (header nnslashdot-headers)
-	(nnheader-insert-nov (cdr header))))
-    'nov))
+	       0 lines nil nil))
+	     headers))))
+      (setq nnslashdot-headers
+	    (sort headers (lambda (s1 s2) (< (car s1) (car s2)))))
+      (save-excursion
+	(set-buffer nntp-server-buffer)
+	(erase-buffer)
+	(dolist (header nnslashdot-headers)
+	  (nnheader-insert-nov (cdr header))))
+      'nov)))
 
 (deffoo nnslashdot-request-group (group &optional server dont-check)
   (nnslashdot-possibly-change-server nil server)
@@ -347,8 +349,7 @@
     (while (> (- nnslashdot-group-number number) 0)
       (with-temp-buffer
 	(let ((case-fold-search t))
-	  (url-insert-file-contents (format nnslashdot-active-url number))
-	  (setq buffer-file-name nil)
+	  (nnweb-insert (format nnslashdot-active-url number))
 	  (goto-char (point-min))
 	  (while (re-search-forward
 		  "article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>" nil t)
@@ -370,9 +371,6 @@
   (nnslashdot-possibly-change-server nil server)
   (nnslashdot-generate-active)
   t)
-
-(deffoo nnslashdot-asynchronous-p ()
-  nil)
 
 (nnoo-define-skeleton nnslashdot)
 
@@ -407,42 +405,6 @@
 	  (save-excursion
 	    (nnheader-set-temp-buffer
 	     (format " *nnslashdot %s*" server))))))
-
-(defun nnslashdot-encode-www-form-urlencoded (pairs)
-  "Return PAIRS encoded for forms."
-  (mapconcat
-   (function
-    (lambda (data)
-      (concat (w3-form-encode-xwfu (car data)) "="
-	      (w3-form-encode-xwfu (cdr data)))))
-   pairs "&"))
-
-(defun nnslashdot-fetch-form (url pairs)
-  (let ((url-request-data (nnslashdot-encode-www-form-urlencoded pairs))
-	(url-request-method "POST")
-	(url-request-extra-headers
-	 '(("Content-type" . "application/x-www-form-urlencoded"))))
-    (url-insert-file-contents url)
-    (setq buffer-file-name nil))
-  t)
-
-(defun nnslashdot-decode-entities ()
-  (goto-char (point-min))
-  (while (re-search-forward "&\\([a-z]+\\);" nil t)
-    (replace-match (char-to-string (or (cdr (assq (intern (match-string 1))
-						  w3-html-entities))
-				       ?#))
-		   t t)))
-
-(defun nnslashdot-remove-markup ()
-  (goto-char (point-min))
-  (while (search-forward "<!--" nil t)
-    (delete-region (match-beginning 0)
-		   (or (search-forward "-->" nil t)
-		       (point-max))))
-  (goto-char (point-min))
-  (while (re-search-forward "<[^>]+>" nil t)
-    (replace-match "" t t)))
 
 (defun nnslashdot-date-to-date (sdate)
   (let ((elem (split-string sdate)))

@@ -1,3 +1,17 @@
+1999-11-10 05:22:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-open-server): Do address.
+	(nnultimate-forum-table-p): New function.
+
+	* nnweb.el (nnweb-insert-html): Renamed.
+	(nnweb-insert): New function.
+
+	* nnultimate.el (nnultimate-insert-html): New function.
+
+	* nnslashdot.el (nnslashdot-retrieve-headers): Don't do anything
+	if nov is evil.
+	(nnslashdot-retrieve-headers): use the sane version instead.
+
 1999-11-09 00:13:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-request-article): Fold case.

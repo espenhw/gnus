@@ -338,42 +338,6 @@ and `altavista'.")
       (url-retrieve url))
     (setq-default url-be-asynchronous old-asynch)))
 
-(defun nnweb-encode-www-form-urlencoded (pairs)
-  "Return PAIRS encoded for forms."
-  (mapconcat
-   (function
-    (lambda (data)
-      (concat (w3-form-encode-xwfu (car data)) "="
-	      (w3-form-encode-xwfu (cdr data)))))
-   pairs "&"))
-
-(defun nnweb-fetch-form (url pairs)
-  (let ((url-request-data (nnweb-encode-www-form-urlencoded pairs))
-	(url-request-method "POST")
-	(url-request-extra-headers
-	 '(("Content-type" . "application/x-www-form-urlencoded"))))
-    (url-insert-file-contents url)
-    (setq buffer-file-name nil))
-  t)
-
-(defun nnweb-decode-entities ()
-  (goto-char (point-min))
-  (while (re-search-forward "&\\([a-z]+\\);" nil t)
-    (replace-match (char-to-string (or (cdr (assq (intern (match-string 1))
-						  w3-html-entities))
-				       ?#))
-		   t t)))
-
-(defun nnweb-remove-markup ()
-  (goto-char (point-min))
-  (while (search-forward "<!--" nil t)
-    (delete-region (match-beginning 0)
-		   (or (search-forward "-->" nil t)
-		       (point-max))))
-  (goto-char (point-min))
-  (while (re-search-forward "<[^>]+>" nil t)
-    (replace-match "" t t)))
-
 ;;;
 ;;; DejaNews functions.
 ;;;
@@ -718,6 +682,105 @@ and `altavista'.")
        ("d1" . "")))))
   (setq buffer-file-name nil)
   t)
+
+;;;
+;;; General web/w3 interface utility functions
+;;;
+
+(defun nnweb-insert-html (parse)
+  "Insert HTML based on a w3 parse tree."
+  (if (stringp parse)
+      (insert parse)
+    (insert "<" (symbol-name (car parse)) " ")
+    (insert (mapconcat
+	     (lambda (param)
+	       (concat (symbol-name (car param)) "="
+		       (prin1-to-string
+			(if (consp (cdr param))
+			    (cadr param)
+			  (cdr param)))))
+	     (nth 1 parse)
+	     " "))
+    (insert ">\n")
+    (mapcar 'nnweb-insert-html (nth 2 parse))
+    (insert "</" (symbol-name (car parse)) ">\n")))
+
+(defun nnweb-encode-www-form-urlencoded (pairs)
+  "Return PAIRS encoded for forms."
+  (mapconcat
+   (function
+    (lambda (data)
+      (concat (w3-form-encode-xwfu (car data)) "="
+	      (w3-form-encode-xwfu (cdr data)))))
+   pairs "&"))
+
+(defun nnweb-fetch-form (url pairs)
+  "Fetch a form from URL with PAIRS as the data."
+  (let ((url-request-data (nnweb-encode-www-form-urlencoded pairs))
+	(url-request-method "POST")
+	(url-request-extra-headers
+	 '(("Content-type" . "application/x-www-form-urlencoded"))))
+    (url-insert-file-contents url)
+    (setq buffer-file-name nil))
+  t)
+
+(defun nnweb-decode-entities ()
+  "Decode all HTML entities."
+  (goto-char (point-min))
+  (while (re-search-forward "&\\([a-z]+\\);" nil t)
+    (replace-match (char-to-string (or (cdr (assq (intern (match-string 1))
+						  w3-html-entities))
+				       ?#))
+		   t t)))
+
+(defun nnweb-remove-markup ()
+  "Remove all HTML markup, leaving just plain text."
+  (goto-char (point-min))
+  (while (search-forward "<!--" nil t)
+    (delete-region (match-beginning 0)
+		   (or (search-forward "-->" nil t)
+		       (point-max))))
+  (goto-char (point-min))
+  (while (re-search-forward "<[^>]+>" nil t)
+    (replace-match "" t t)))
+
+(defun nnweb-insert (url)
+  "Insert the contents from an URL in the current buffer."
+  (let ((name buffer-file-name))
+    (url-insert-file-contents url)
+    (setq buffer-file-name name)))
+
+(defun nnweb-parse-find (type parse &optional maxdepth)
+  "Find the element of TYPE in PARSE."
+  (catch 'found
+    (nnweb-parse-find-1 type parse maxdepth)))
+
+(defun nnweb-parse-find-1 (type contents maxdepth)
+  (when (or (null maxdepth)
+	    (not (zerop maxdepth)))
+    (when (consp contents)
+      (when (eq (car contents) type)
+	(throw 'found contents))
+      (when (listp (cdr contents))
+	(dolist (element contents)
+	  (when (consp element)
+	    (nnweb-parse-find-1 type element
+				(and maxdepth (1- maxdepth)))))))))
+
+(defvar nnweb-text)
+(defun nnweb-text (parse)
+  "Return a list of text contents in PARSE."
+  (let ((nnweb-text nil))
+    (nnweb-text-1 parse)
+    (nreverse nnweb-text)))
+
+(defun nnweb-text-1 (contents)
+  (dolist (element contents)
+    (if (stringp element)
+	(push element nnweb-text)
+      (when (and (consp element)
+		 (listp (cdr element)))
+	(nnweb-text-1 element)))))
 
 (provide 'nnweb)
 
