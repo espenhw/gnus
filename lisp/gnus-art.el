@@ -3303,17 +3303,9 @@ The directory to save in defaults to `gnus-article-save-directory'."
       (shell-command-on-region (point-min) (point-max) command nil)))
   (setq gnus-last-shell-command command))
 
-(defmacro gnus-read-string (prompt &optional initial-contents history
-			    default-value)
-  "Like `read-string' but allow for older XEmacsen that don't have the 5th arg."
-  (if (and (featurep 'xemacs)
-	   (< emacs-minor-version 2))
-      `(read-string ,prompt ,initial-contents ,history)
-    `(read-string ,prompt ,initial-contents ,history ,default-value)))
-
 (defun gnus-summary-pipe-to-muttprint (&optional command)
   "Pipe this article to muttprint."
-  (setq command (gnus-read-string
+  (setq command (read-string
 		 "Print using command: " gnus-summary-muttprint-program
 		 nil gnus-summary-muttprint-program))
   (gnus-summary-save-in-pipe command))
