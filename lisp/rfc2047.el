@@ -294,7 +294,8 @@ Should be called narrowed to the head of the message."
       (while (not (eobp))
 	(cond
 	 ((memq (char-after) '(?  ?\t))
-	  (setq break (point)))
+	  ;; Break after LWSP.
+	  (setq break (1+ (point))))
 	 ((and (not break)
 	       (looking-at "=\\?"))
 	  (setq break (point)))
@@ -303,7 +304,9 @@ Should be called narrowed to the head of the message."
 	       (> (- (point) (gnus-point-at-bol)) 76))
 	  (goto-char break)
 	  (setq break nil)
-	  (insert "\n ")))
+	  (insert "\n ")
+	  ;; Don't break before the first non-LWSP characters.
+	  (forward-char 1)))
 	(unless (eobp)
 	  (forward-char 1))))))
 
@@ -331,7 +334,10 @@ Should be called narrowed to the head of the message."
 	  (pop alist))
 	(goto-char (point-min))
 	(while (not (eobp))
-	  (goto-char (min (point-max) (+ 64 (point))))
+	  (goto-char (min (point-max) (save-restriction
+					(widen)
+					;; THe QP encapsulation is about 20. 
+					(+ 56 (gnus-point-at-bol)))))
 	  (search-backward "=" (- (point) 2) t)
 	  (unless (eobp)
 	    (insert "\n")))))))

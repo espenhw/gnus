@@ -1,3 +1,9 @@
+2000-10-07 10:31:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-q-encode-region): Better calculation of
+	break point.
+	(rfc2047-fold-region): Don't break the first non-LWSP characters.
+
 2000-10-07 09:18:53  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-agent-fetching): New variable.
