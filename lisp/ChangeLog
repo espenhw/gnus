@@ -1,4 +1,11 @@
+2001-12-31  Florian Weimer  <fw@deneb.enyo.de>
+
+	* gnus.el (gnus): Warn if trying to run Gnus un-byte-compiled. 
+
 2001-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-line-format): Added %O to the default
+	value.
 
 	* gnus-util.el (gnus-text-with-property): The smallest point is
 	point-min. 

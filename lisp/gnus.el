@@ -3292,6 +3292,9 @@ If ARG is non-nil and a positive number, Gnus will use that as the
 startup level.	If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use."
   (interactive "P")
+  (unless (byte-code-function-p (symbol-function 'gnus))
+    (message "You should byte-compile Gnus")
+    (sit-for 2))
   (gnus-1 arg dont-connect slave))
 
 ;; Allow redefinition of Gnus functions.

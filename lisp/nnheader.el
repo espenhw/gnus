@@ -671,7 +671,7 @@ If FULL, translate everything."
 		path ""
 		i (if (and (< 1 (length leaf)) (eq ?: (aref leaf 1)))
 		      2 0))
-    ;; We translate -- but only the file name.  We leave the directory
+	;; We translate -- but only the file name.  We leave the directory
 	;; alone.
 	(if (and (featurep 'xemacs)
 		 (memq system-type '(cygwin32 win32 w32 mswindows windows-nt)))

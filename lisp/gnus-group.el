@@ -141,7 +141,7 @@ list."
 			 (function-item gnus-group-sort-by-rank)
 			 (function :tag "other" nil))))
 
-(defcustom gnus-group-line-format "%M\%S\%p\%P\%5y: %(%g%)%l\n"
+(defcustom gnus-group-line-format "%M\%S\%p\%P\%5y: %(%g%)%l %O\n"
   "*Format of group lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
