@@ -172,8 +172,7 @@
 		   "")
 		 0 (string-to-number score) nil nil))
 	       headers)))))
-      (setq nnslashdot-headers
-	    (sort headers (lambda (s1 s2) (< (car s1) (car s2)))))
+      (setq nnslashdot-headers (sort headers 'car-less-than-car))
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(erase-buffer)
@@ -325,8 +324,6 @@
 	(set-buffer (or buffer nntp-server-buffer))
 	(erase-buffer)
 	(insert contents)
-	;;(nnweb-remove-markup)
-	;;(nnweb-decode-entities)
 	(goto-char (point-min))
 	(insert "Content-Type: text/html\nMIME-Version: 1.0\n")
 	(let ((header (cdr (assq article nnslashdot-headers))))
