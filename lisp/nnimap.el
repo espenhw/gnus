@@ -645,6 +645,8 @@ If EXAMINE is non-nil the group is selected read-only."
 		      (cadr (assq 'nnimap-server-address defs))) defs)
 	(push (list 'nnimap-address server) defs)))
     (nnoo-change-server 'nnimap server defs)
+    (or nnimap-server-buffer
+	(setq nnimap-server-buffer (cadr (assq 'nnimap-server-buffer defs))))
     (with-current-buffer (get-buffer-create nnimap-server-buffer)
       (nnoo-change-server 'nnimap server defs))
     (or (and nnimap-server-buffer

@@ -1,3 +1,8 @@
+2001-07-27  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-open-server): Set nnimap-server-buffer if
+	nnoo-change-server failed to do it.
+
 2001-07-26 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-parameters): Make it customizable.
