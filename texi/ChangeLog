@@ -1,3 +1,7 @@
+2004-03-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (POP before SMTP): New node.
+
 2004-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (X-Face, Face): Add gnus-x-face and
