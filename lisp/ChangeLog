@@ -1,3 +1,7 @@
+2000-05-13 20:41:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-text): w3 might not recognize utf-8.
+
 2000-05-13 16:49:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el: Translate &nbsp; to SP.
