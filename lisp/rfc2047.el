@@ -113,7 +113,7 @@ Should be called narrowed to the head of the message."
 	(while (not (eobp))
 	  (save-restriction
 	    (rfc2047-narrow-to-field)
-	    (when (rfc2047-encodable-p)
+	    (when (rfc2047-encodable-p t)
 	      ;; We found something that may perhaps be encoded.
 	      (while (setq elem (pop alist))
 		(when (or (and (stringp (car elem))
@@ -133,13 +133,19 @@ Should be called narrowed to the head of the message."
 	(encode-coding-region (point-min) (point-max)
 			      mail-parse-charset)))))
 
-(defun rfc2047-encodable-p ()
-  "Say whether the current (narrowed) buffer contains characters that need encoding."
+(defun rfc2047-encodable-p (&optional header)
+  "Say whether the current (narrowed) buffer contains characters that need encoding.
+
+A non-nil value should be passed for the optional parameter HEADER if
+the region is part of a message header.  In this case, the only
+permitted unencoded charset is us-ascii."
   (let ((charsets
 	 (mapcar
 	  'mm-mime-charset
 	  (mm-find-charset-region (point-min) (point-max))))
-	(cs (list 'us-ascii mail-parse-charset))
+	(cs (if header
+		'(us-ascii)
+	      (list 'us-ascii mail-parse-charset)))
 	found)
     (while charsets
       (unless (memq (pop charsets) cs)
