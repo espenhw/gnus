@@ -34,7 +34,9 @@
 		     set-buffer-multibyte
 		     find-non-ascii-charset-region char-charset
 		     mule-write-region-no-coding-system
-		     find-charset-region base64-decode-string))
+		     find-charset-region base64-decode-string
+		     find-coding-systems-region get-charset-property
+		     coding-system-get))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
 		    mouse-selection-click-count-buffer buffer-display-table

@@ -181,11 +181,7 @@ Should be called narrowed to the head of the message."
 (defun rfc2047-encode (b e charset)
   "Encode the word in the region with CHARSET."
   (let* ((mime-charset
-	  (or
-	   (coding-system-get
-	    (get-charset-property charset 'prefered-coding-system)
-	    'mime-charset)
-	   (car (memq charset (find-coding-systems-region b e)))))
+	  (mm-mime-charset charset b e))
 	 (encoding (or (cdr (assq mime-charset
 			      rfc2047-charset-encoding-alist))
 		       'B))

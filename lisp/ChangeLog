@@ -1,3 +1,15 @@
+Tue Sep  8 07:09:28 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.19 is released.
+
+1998-09-08 04:51:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* base64.el (base64-encode-region): Accept no-line-break.
+
+	* mm-util.el (mm-mime-charset): New function.
+
+	* gnus-draft.el (gnus-draft-edit-message): Delete article.
+
 Tue Sep  8 04:29:23 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.18 is released.

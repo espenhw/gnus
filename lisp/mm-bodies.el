@@ -51,14 +51,8 @@ If no encoding was done, nil is returned."
 	charsets)
        ;; We encode.
        (t
-	(let ((mime-charset
-	       (or
-		(coding-system-get
-		 (get-charset-property (car charsets) 'prefered-coding-system)
-		 'mime-charset)
-		(car (memq (car charsets)
-			   (find-coding-systems-region
-			    (point-min) (point-max))))))
+	(let ((mime-charset 
+	       (mm-mime-charset (car charsets) (point-min) (point-max)))
 	      start)
 	  (when (or t
 		    ;; We always decode.

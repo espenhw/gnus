@@ -185,6 +185,17 @@ used as the line break code type of the coding system."
   (when (string-match "charset *= *\"? *\\([-0-9a-zA-Z_]+\\)\"? *$" header)
     (intern (downcase (match-string 1 header)))))
 
+
+(defun mm-mime-charset (charset b e)
+  (if (fboundp 'coding-system-get)
+      (or
+       (coding-system-get
+	(get-charset-property charset 'prefered-coding-system)
+	'mime-charset)
+       (car (memq charset (find-coding-systems-region
+			   (point-min) (point-max)))))
+    (mm-mule-charset-to-mime-charset charset)))
+
 (provide 'mm-util)
 
 ;;; mm-util.el ends here
