@@ -55,6 +55,7 @@
 ;;   o What about Gnus's article editing, can we support it?  NO!
 ;;   o Use \Draft to support the draft group??
 ;;   o Duplicate suppression
+;;   o Rewrite UID SEARCH UID X as UID FETCH X (UID) for those with slow servers
 
 ;;; Code:
 
@@ -280,8 +281,11 @@ typical complete file name would be
   "Suffix for NOV cache base filename.")
 
 (defvoo nnimap-nov-is-evil nil
-  "If non-nil, nnimap will never generate or use a local nov database for this backend.
-Using nov databases will speed up header fetching considerably.
+  "If non-nil, never generate or use a local nov database for this backend.
+Using nov databases should speed up header fetching considerably.
+However, it will invoke a UID SEARCH UID command on the server, and
+some servers implement this command inefficiently by opening each and
+every message in the group, thus making it quite slow.
 Unlike other backends, you do not need to take special care if you
 flip this variable.")
 
