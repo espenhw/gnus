@@ -1,3 +1,8 @@
+2001-08-23 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* gnus-spec.el (gnus-parse-complex-format): Use equal.
+
 2001-08-23 18:43:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-select-newsgroup): Use it.

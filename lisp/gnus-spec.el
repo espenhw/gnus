@@ -423,7 +423,7 @@
     (goto-char (point-min))
     (let ((form (read (current-buffer))))
       ;; If the first element is '(point), we just remove it.
-      (when (equalp (car form) '(point))
+      (when (equal (car form) '(point))
 	(pop form))
       (cons 'progn (gnus-complex-form-to-spec form spec-alist)))))
 
