@@ -1,3 +1,8 @@
+2001-12-26  Paul Jarc <prj@po.cwru.edu>
+	
+	* nnmaildir.el (nnmaildir-save-mail): create the destination
+	groups if they do not exist.
+
 2001-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* canlock.el (canlock-sha1-with-openssl): Remove unused variable.
@@ -248,14 +253,14 @@
 	* nnrss.el (nnrss-decode-entities-unibyte-string): Use
 	mm-url-decode-entities-nbsp.
 
-	* nnlistserv.el, nnultimate.el, nnwarchive.el, nnweb.el,
-	webmail.el, nnwfm.el: Use mm-url.
+	* nnlistserv.el, nnultimate.el, nnwarchive.el, nnweb.el:
+	* webmail.el, nnwfm.el: Use mm-url.
 
 	* mm-url.el (mm-url-fetch-form): Move from nnweb.
 	(mm-url-remove-markup): Move from nnweb.
 	(mm-url-fetch-simple): Move from webmail.
 
-	* nnslashdot.el (nnslashdot-request-post): mm-url-fetch-form.
+	* nnslashdot.el (nnslashdot-request-post): Use mm-url-fetch-form.
 
 2001-12-07 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -268,7 +273,7 @@
 
 	* nnweb.el (nnweb-replace-in-string): Removed.
 
-	* gnus-util.el (gnus-replace-in-string): New.
+	* gnus-util.el (gnus-replace-in-string): New function.
 	(gnus-mode-string-quote): Use it.
 
 	* nnrss.el (nnrss-format-string): Use gnus-replace-in-string.
@@ -429,7 +434,7 @@
 
 2001-11-25 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-util.el (gnus-directory-sep-char-regexp): New.
+	* gnus-util.el (gnus-directory-sep-char-regexp): New variable.
 	* gnus-score.el (gnus-score-find-bnews): Use it.
 
 	* gnus-sum.el (gnus-summary-limit-to-subject): An exclusion version.
@@ -755,10 +760,10 @@
 
 2001-11-01 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* mm-util.el (mm-iso-8859-x-to-15-region): New.
-	(mm-hack-charsets): New.
-	(mm-iso-8859-15-compatible): New.
-	(mm-iso-8859-x-to-15-table): New.
+	* mm-util.el (mm-iso-8859-x-to-15-region): New function.
+	(mm-hack-charsets): New variable.
+	(mm-iso-8859-15-compatible): New variable.
+	(mm-iso-8859-x-to-15-table): New variable.
 	(mm-find-mime-charset-region): Add parameter hack-charsets.
 
 	* mm-bodies.el (mm-encode-body): Use it.
@@ -777,10 +782,10 @@
 
 	* smiley-ems.el (smiley-update-cache): Auto detect file type.
 
-	* message.el (message-forward-rmail-make-body):
+	* message.el (message-forward-rmail-make-body): Use
 	save-window-excursion.
-	(message-encode-message-body): no error.
-	(message-setup-1): compose-mail send-actions are different from
+	(message-encode-message-body): Search with noerror.
+	(message-setup-1): Convert compose-mail send-actions to
 	message-send-actions.
 
 2001-11-01  Simon Josefsson  <jas@extundo.com>
@@ -818,12 +823,12 @@
 2001-10-31 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
         From: Josh Huber <huber@alum.wpi.edu>
 
-	* message.el (message-subscribed-address-functions): New.
-	(message-subscribed-addresses): New.
-	(message-subscribed-regexps): New.
-	(message-goto-mail-followup-to): New.
-	(message-send-mail): Mail-Followup-To.
-	(message-make-mft): New.
+	* message.el (message-subscribed-address-functions): New variable.
+	(message-subscribed-addresses): New variable.
+	(message-subscribed-regexps): New variable.
+	(message-goto-mail-followup-to): New function.
+	(message-send-mail): Add Mail-Followup-To.
+	(message-make-mft): New function.
 
 	* gnus.el (gnus-find-subscribed-addresses): New.
 

@@ -37,7 +37,7 @@
 ;; * We make it easy to manipulate marks, etc., from outside Gnus.
 ;; * All information about a group is stored in the maildir, for easy
 ;;   backup and restoring.
-;; * Use the filesystem as a database.
+;; * We use the filesystem as a database.
 ;;
 ;; Todo:
 ;; * Ignore old NOV data when gnus-extra-headers has changed.
@@ -1383,18 +1383,23 @@ by nnmaildir-request-article.")
   (catch 'return
     (if group-art nil
       (throw 'return nil))
-    (let ((group-art group-art)
-          x nnmaildir--file deactivate-mark)
+    (let ((ret group-art)
+          ga gname x groups nnmaildir--file deactivate-mark)
       (save-excursion
         (goto-char (point-min))
         (save-match-data
           (while (looking-at "From ")
             (replace-match "X-From-Line: ")
             (forward-line 1))))
-      (setq x (caar group-art) group-art (cdr group-art))
-      (if (nnmaildir-request-accept-article x) nil
-        (throw 'return nil)) ; not that nnmail bothers to check
-      (setq x (nnmaildir--prepare nil x)
+      (setq groups (nnmaildir--srv-get-groups nnmaildir--cur-server)
+            ga (car group-art) group-art (cdr group-art)
+            gname (car ga))
+      (or (intern-soft gname groups)
+          (nnmaildir-request-create-group gname)
+          (throw 'return nil)) ;; not that nnmail bothers to check :(
+      (if (nnmaildir-request-accept-article gname) nil
+        (throw 'return nil))
+      (setq x (nnmaildir--prepare nil gname)
             nnmaildir--file (nnmaildir--srv-get-dir nnmaildir--cur-server)
             nnmaildir--file (concat nnmaildir--file
                                     (nnmaildir--grp-get-name x))
@@ -1406,10 +1411,13 @@ by nnmaildir-request-article.")
                                     (nnmaildir--art-get-prefix x)
                                     (nnmaildir--art-get-suffix x)))
       (while group-art
-        (setq x (caar group-art) group-art (cdr group-art))
-        (if (nnmaildir-request-accept-article x) nil
-          (throw 'return nil))))
-    group-art))
+        (setq ga (car group-art) group-art (cdr group-art)
+              gname (car ga))
+        (if (and (or (intern-soft gname groups)
+                     (nnmaildir-request-create-group gname))
+                 (nnmaildir-request-accept-article gname)) nil
+          (setq ret (delq ga ret)))) ;; We'll still try the other groups
+      ret)))
 
 (defun nnmaildir-active-number (group)
   (let ((x (nnmaildir--prepare nil group)))
