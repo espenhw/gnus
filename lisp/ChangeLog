@@ -1,3 +1,8 @@
+2003-11-29  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-group.el (gnus-group-make-menu-bar): Add
+	gnus-group-make-rss-group.
+
 2003-11-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el: Added custom-manual links to all variables that have

@@ -891,6 +891,7 @@ simple manner.")
 	["Make a kiboze group..." gnus-group-make-kiboze-group t]
 	["Make a virtual group..." gnus-group-make-empty-virtual t]
 	["Add a group to a virtual..." gnus-group-add-to-virtual t]
+	["Make an RSS group..." gnus-group-make-rss-group t]
 	["Rename group..." gnus-group-rename-group
 	 (gnus-check-backend-function
 	  'request-rename-group (gnus-group-group-name))]
