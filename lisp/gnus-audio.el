@@ -113,7 +113,7 @@
 ;;  (setq gnus-audio-score-group "ST_laser.au")
 ;;  (setq gnus-audio-theme-song "startrek.au")
 ;;  (add-hook 'gnus-select-group-hook 'gnus-audio-startrek-select-group)
-M;  (add-hook 'gnus-exit-group-hook 'gnus-audio-startrek-exit-group))
+;;  (add-hook 'gnus-exit-group-hook 'gnus-audio-startrek-exit-group))
 ;;;***
 
 (defvar gnus-startup-jingle "Tuxedomoon.Jingle4.au"

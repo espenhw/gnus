@@ -1,5 +1,7 @@
 1999-12-04 08:31:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-audio.el: An M too far.
+
 	* gnus-msg.el (gnus-setup-message): One backtick too many.
 
 	* gnus-art.el (gnus-mime-view-part-as-type): mailcap-mime-types is 
