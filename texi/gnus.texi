@@ -8146,8 +8146,8 @@ Use w3 (this is the default).
 
 @item gnus-article-wash-html-with-w3m
 @findex gnus-article-wash-html-with-w3m
-Use the external @samp{w3m} program.  See
-@uref{http://w3m.sourceforge.net/} for more information.
+Use emacs-w3m (see @uref{http://emacs-w3m.namazu.org/} for more
+information).
 @end table
 
 @item W b

@@ -1,3 +1,7 @@
+2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Article Washing): Replace w3m to emacs-w3m.
+
 2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Mail Spool): Addition.
