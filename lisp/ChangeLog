@@ -1,5 +1,7 @@
 2000-12-25 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* dgnushack.el (dgnushack-compile): elc is in the current directory.
+
 	* qp.el (quoted-printable-encode-region): Don't check multibyte in
 	XEmacs.
 
