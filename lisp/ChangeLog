@@ -1,3 +1,8 @@
+2002-12-09  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* nntp.el (nntp-send-command): Braino in last commit.  Replace
+	`and' with `or'.
+
 2002-12-08  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nntp.el (nntp-send-command): Assume that echo does not happen
