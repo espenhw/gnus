@@ -1,3 +1,15 @@
+2000-11-19 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-verify-x-pgp-sig): Check whether
+	original-article-buffer exists.
+
+	* rfc2047.el (rfc2047-q-encoding-alist): Match Resent-.
+	(rfc2047-header-encoding-alist): Addresses are different from text.
+	(rfc2047-encode-message-header): Ditto.
+	(rfc2047-dissect-region): Extra parameter.
+	(rfc2047-encode-region): Ditto.
+	(rfc2047-encode-string): Ditto.
+
 2000-11-19 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-uu.el (mm-uu-pgp-encrypted-extract-1): New function.

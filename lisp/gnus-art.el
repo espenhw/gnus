@@ -2570,72 +2570,73 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 (defun article-verify-x-pgp-sig ()
   "Verify X-PGP-Sig."
   (interactive)
-  (let ((sig (with-current-buffer gnus-original-article-buffer
-	       (gnus-fetch-field "X-PGP-Sig")))
-	items info headers)
-    (when (and sig (mm-uu-pgp-signed-test))
-      (with-temp-buffer
-	(insert-buffer gnus-original-article-buffer)
-	(setq items (split-string sig))
-	(message-narrow-to-head)
-	(let ((inhibit-point-motion-hooks t)
-	      (case-fold-search t))
-	  ;; Don't verify multiple headers.
-	  (setq headers (mapconcat (lambda (header)
-				     (concat header ": " 
-					     (mail-fetch-field header) "\n"))
-				   (split-string (nth 1 items) ",") "")))
-	(delete-region (point-min) (point-max))
-	(insert "-----BEGIN PGP SIGNED MESSAGE-----\n\n")
-	(insert "X-Signed-Headers: " (nth 1 items) "\n")
-	(insert headers)
-	(widen)
-	(forward-line)
-	(while (not (eobp))
-	  (if (looking-at "^-")
-	      (insert "- "))
-	  (forward-line))
-	(insert "\n-----BEGIN PGP SIGNATURE-----\n")
-	(insert "Version: " (car items) "\n\n")
-	(insert (mapconcat 'identity (cddr items) "\n"))
-	(insert "\n-----END PGP SIGNATURE-----\n")
-	(let ((mm-security-handle (list (format "multipart/signed"))))
-	  (mml2015-clean-buffer)
-	  (let ((coding-system-for-write (or gnus-newsgroup-charset
-					     'iso-8859-1)))
-	    (funcall (mml2015-clear-verify-function)))
-	  (setq info 
-		(or (mm-handle-multipart-ctl-parameter 
-		     mm-security-handle 'gnus-details)
-		    (mm-handle-multipart-ctl-parameter 
-		     mm-security-handle 'gnus-info)))))
-      (when info
-	(let (buffer-read-only bface eface)
-	  (save-restriction
+  (if (gnus-buffer-live-p gnus-original-article-buffer)
+      (let ((sig (with-current-buffer gnus-original-article-buffer
+		   (gnus-fetch-field "X-PGP-Sig")))
+	    items info headers)
+	(when (and sig (mm-uu-pgp-signed-test))
+	  (with-temp-buffer
+	    (insert-buffer gnus-original-article-buffer)
+	    (setq items (split-string sig))
 	    (message-narrow-to-head)
-	    (goto-char (point-max))
-	    (forward-line -1)
-	    (setq bface (get-text-property (gnus-point-at-bol) 'face)
-		  eface (get-text-property (1- (gnus-point-at-eol)) 'face))
-	    (message-remove-header "X-Gnus-PGP-Verify")
-	    (if (re-search-forward "^X-PGP-Sig:" nil t)
-		(forward-line)
-	      (goto-char (point-max)))
-	    (narrow-to-region (point) (point))
-	    (insert "X-Gnus-PGP-Verify: " info "\n")
-	    (goto-char (point-min))
+	    (let ((inhibit-point-motion-hooks t)
+		  (case-fold-search t))
+	      ;; Don't verify multiple headers.
+	      (setq headers (mapconcat (lambda (header)
+					 (concat header ": " 
+						 (mail-fetch-field header) "\n"))
+				       (split-string (nth 1 items) ",") "")))
+	    (delete-region (point-min) (point-max))
+	    (insert "-----BEGIN PGP SIGNED MESSAGE-----\n\n")
+	    (insert "X-Signed-Headers: " (nth 1 items) "\n")
+	    (insert headers)
+	    (widen)
 	    (forward-line)
 	    (while (not (eobp))
-	      (if (not (looking-at "^[ \t]"))
-		  (insert " "))
+	      (if (looking-at "^-")
+		  (insert "- "))
 	      (forward-line))
-	    ;; Do highlighting.
-	    (goto-char (point-min))
-	    (when (looking-at "\\([^:]+\\): *")
-	      (put-text-property (match-beginning 1) (1+ (match-end 1))
-				 'face bface)
-	      (put-text-property (match-end 0) (point-max)
-				 'face eface))))))))
+	    (insert "\n-----BEGIN PGP SIGNATURE-----\n")
+	    (insert "Version: " (car items) "\n\n")
+	    (insert (mapconcat 'identity (cddr items) "\n"))
+	    (insert "\n-----END PGP SIGNATURE-----\n")
+	    (let ((mm-security-handle (list (format "multipart/signed"))))
+	      (mml2015-clean-buffer)
+	      (let ((coding-system-for-write (or gnus-newsgroup-charset
+						 'iso-8859-1)))
+		(funcall (mml2015-clear-verify-function)))
+	      (setq info 
+		    (or (mm-handle-multipart-ctl-parameter 
+			 mm-security-handle 'gnus-details)
+			(mm-handle-multipart-ctl-parameter 
+			 mm-security-handle 'gnus-info)))))
+	  (when info
+	    (let (buffer-read-only bface eface)
+	      (save-restriction
+		(message-narrow-to-head)
+		(goto-char (point-max))
+		(forward-line -1)
+		(setq bface (get-text-property (gnus-point-at-bol) 'face)
+		      eface (get-text-property (1- (gnus-point-at-eol)) 'face))
+		(message-remove-header "X-Gnus-PGP-Verify")
+		(if (re-search-forward "^X-PGP-Sig:" nil t)
+		    (forward-line)
+		  (goto-char (point-max)))
+		(narrow-to-region (point) (point))
+		(insert "X-Gnus-PGP-Verify: " info "\n")
+		(goto-char (point-min))
+		(forward-line)
+		(while (not (eobp))
+		  (if (not (looking-at "^[ \t]"))
+		      (insert " "))
+		  (forward-line))
+		;; Do highlighting.
+		(goto-char (point-min))
+		(when (looking-at "\\([^:]+\\): *")
+		  (put-text-property (match-beginning 1) (1+ (match-end 1))
+				     'face bface)
+		  (put-text-property (match-end 0) (point-max)
+				     'face eface)))))))))
 
 (eval-and-compile
   (mapcar

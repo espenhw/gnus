@@ -38,6 +38,8 @@
 (defvar rfc2047-header-encoding-alist
   '(("Newsgroups" . nil)
     ("Message-ID" . nil)
+    ("\\(Resent-\\)?\\(From\\|Cc\\|To\\|Bcc\\|Reply-To\\|Sender\\)" .
+     "-A-Za-z0-9!*+/=_")
     (t . mime))
   "*Header/encoding method alist.
 The list is traversed sequentially.  The keys can either be
@@ -49,7 +51,8 @@ The values can be:
 2) `mime', in which case the header will be encoded according to RFC2047;
 3) a charset, in which case it will be encoded as that charset;
 4) `default', in which case the field will be encoded as the rest
-   of the article.")
+   of the article.
+5) a string, like `mime', expect for using it as word-chars.")
 
 (defvar rfc2047-charset-encoding-alist
   '((us-ascii . nil)
@@ -82,7 +85,8 @@ Valid encodings are nil, `Q' and `B'.")
   "Alist of RFC2047 encodings to encoding functions.")
 
 (defvar rfc2047-q-encoding-alist
-  '(("\\(From\\|Cc\\|To\\|Bcc\||Reply-To\\):" . "-A-Za-z0-9!*+/") 
+  '(("\\(Resent-\\)?\\(From\\|Cc\\|To\\|Bcc\\|Reply-To\\|Sender\\):" 
+     . "-A-Za-z0-9!*+/" )
     ;; = (\075), _ (\137), ? (\077) are used in the encoded word.
     ;; Avoid using 8bit characters. Some versions of Emacs has bug!
     ;; Equivalent to "^\000-\007\011\013\015-\037\200-\377=_?"
@@ -137,6 +141,8 @@ Should be called narrowed to the head of the message."
 		(setq alist nil
 		      method (cdr elem))))
 	    (cond
+	     ((stringp method)
+	      (rfc2047-encode-region (point-min) (point-max) method))
 	     ((eq method 'mime)
 	      (rfc2047-encode-region (point-min) (point-max)))
 	     ((eq method 'default)
@@ -176,11 +182,12 @@ Should be called narrowed to the head of the message."
 	(setq found t)))
     found))
 
-(defun rfc2047-dissect-region (b e)
+(defun rfc2047-dissect-region (b e &optional word-chars)
   "Dissect the region between B and E into words."
-  (let ((word-chars "-A-Za-z0-9!*+/") 
-	;; Not using ietf-drums-specials-token makes life simple.
-	mail-parse-mule-charset
+  (unless word-chars
+    ;; Anything except most CTLs, WSP
+    (setq word-chars "\010\012\014\041-\177"))
+  (let (mail-parse-mule-charset
 	words point current 
 	result word)
     (save-restriction
@@ -230,9 +237,9 @@ Should be called narrowed to the head of the message."
 	(setq word (pop words))))
     result))
 
-(defun rfc2047-encode-region (b e)
+(defun rfc2047-encode-region (b e &optional word-chars)
   "Encode all encodable words in REGION."
-  (let ((words (rfc2047-dissect-region b e)) word)
+  (let ((words (rfc2047-dissect-region b e word-chars)) word)
     (save-restriction
       (narrow-to-region b e)
       (delete-region (point-min) (point-max))
@@ -252,11 +259,11 @@ Should be called narrowed to the head of the message."
 			  (cdr word))))
       (rfc2047-fold-region (point-min) (point-max)))))
 
-(defun rfc2047-encode-string (string)
+(defun rfc2047-encode-string (string &optional word-chars)
   "Encode words in STRING."
   (with-temp-buffer
     (insert string)
-    (rfc2047-encode-region (point-min) (point-max))
+    (rfc2047-encode-region (point-min) (point-max) word-chars)
     (buffer-string)))
 
 (defun rfc2047-encode (b e charset)
