@@ -6429,7 +6429,8 @@ displayed, no centering will be performed."
 (defun gnus-list-of-unread-articles (group)
   (let* ((read (gnus-info-read (gnus-get-info group)))
 	 (active (or (gnus-active group) (gnus-activate-group group)))
-	 (last (cdr active))
+	 (last (or (cdr active)
+		   (error "Group %s couldn't be activated " group)))
 	 first nlast unread)
     ;; If none are read, then all are unread.
     (if (not read)

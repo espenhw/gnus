@@ -594,7 +594,20 @@ Done before generating the new subject of a forward."
 
 ;; Useful to set in site-init.el
 ;;;###autoload
-(defcustom message-send-mail-function 'message-send-mail-with-sendmail
+(defcustom message-send-mail-function
+  (let ((program (if (boundp 'sendmail-program)
+		     ;; see paths.el
+		     sendmail-program)))
+    (cond
+     ((and program
+	   (string-match "/" program) ;; Skip path
+	   (file-executable-p program))
+      'message-send-mail-with-sendmail)
+     ((and program
+	   (executable-find program))
+      'message-send-mail-with-sendmail)
+     (t
+      'smtpmail-send-it)))
   "Function to call to send the current buffer as mail.
 The headers should be delimited by a line whose contents match the
 variable `mail-header-separator'.
