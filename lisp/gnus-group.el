@@ -1810,10 +1810,11 @@ ADDRESS."
 
   (when (stringp method)
     (setq method (or (gnus-server-to-method method) method)))
-  (let* ((meth (when (and method
-			  (not (gnus-server-equal method gnus-select-method)))
-		 (if address (list (intern method) address)
-		   method)))
+  (let* ((meth (gnus-method-simplify
+		(when (and method
+			   (not (gnus-server-equal method gnus-select-method)))
+		  (if address (list (intern method) address)
+		    method))))
 	 (nname (if method (gnus-group-prefixed-name name meth) name))
 	 backend info)
     (when (gnus-gethash nname gnus-newsrc-hashtb)
