@@ -422,6 +422,13 @@ this variable specifies group names."
 			 (cons :value ("" "") regexp (repeat string))
 			 (sexp :value nil))))
 
+(defcustom gnus-move-group-prefix-function 'gnus-group-real-prefix
+  "Function used to compute default prefix for article move/copy/etc prompts.
+The function should take one argument, a group name, and return a
+string with the suggested prefix."
+  :group 'gnus-summary-mail
+  :type 'function)
+
 (defcustom gnus-unread-mark ?           ;Whitespace
   "*Mark used for unread articles."
   :group 'gnus-summary-marks
@@ -8873,7 +8880,8 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
   (let ((articles (gnus-summary-work-articles n))
 	(prefix (if (gnus-check-backend-function
 		     'request-move-article gnus-newsgroup-name)
-		    (gnus-group-real-prefix gnus-newsgroup-name)
+		    (funcall gnus-move-group-prefix-function
+			     gnus-newsgroup-name)
 		  ""))
 	(names '((move "Move" "Moving")
 		 (copy "Copy" "Copying")
