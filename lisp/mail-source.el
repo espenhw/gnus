@@ -632,15 +632,23 @@ This only works when `display-time' is enabled."
 (defun mail-source-fetch-imap (source callback)
   "Fetcher for imap sources."
   (mail-source-bind (imap source)
-    (let ((found 0)
+    (let ((from (format "%s:%s:%s" server user port))
+	  (found 0)
 	  (buf (get-buffer-create (generate-new-buffer-name " *imap source*")))
 	  (mail-source-string (format "imap:%s:%s" server mailbox))
 	  remove)
       (if (and (imap-open server port stream authentication buf)
-	       (imap-authenticate user password buf)
+	       (imap-authenticate
+		user (or (cdr (assoc from mail-source-password-cache))
+			 password) buf)
 	       (imap-mailbox-select mailbox nil buf))
 	  (let (str (coding-system-for-write 'binary))
 	    (with-temp-file mail-source-crash-box
+	      ;; remember password
+	      (with-current-buffer buf
+		(when (or imap-password
+			  (assoc from mail-source-password-cache))
+		  (push (cons from imap-password) mail-source-password-cache)))
 	      ;; if predicate is nil, use all uids
 	      (dolist (uid (imap-search (or predicate "1:*") buf))
 		(when (setq str (imap-fetch uid "RFC822.PEEK" 'RFC822 nil buf))
@@ -661,6 +669,11 @@ This only works when `display-time' is enabled."
 	      (imap-mailbox-close buf))
 	    (imap-close buf))
 	(imap-close buf)
+	;; We nix out the password in case the error
+	;; was because of a wrong password being given.
+	(setq mail-source-password-cache
+	      (delq (assoc from mail-source-password-cache)
+		    mail-source-password-cache))
 	(error (imap-error-text buf)))
       (kill-buffer buf)
       found)))
