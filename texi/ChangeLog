@@ -1,3 +1,9 @@
+2002-02-03  Karl Kleinpaste  <karl@charcoal.com>
+
+	* gnus.texi (Summary Score Commands): Added detail on "extra"
+	header scoring.
+	(Score File Format): ditto
+
 2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Customization): Addition.

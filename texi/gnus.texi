@@ -16955,6 +16955,10 @@ Score on the number of lines.
 @item i
 Score on the @code{Message-ID} header.
 
+@item e
+Score on an "extra" header, that is, one of those in gnus-extra-headers,
+if your NNTP server tracks additional header data in overviews.
+
 @item f
 Score on followups---this matches the author name, and adds scores to
 the followups to this author.  (Using this key leads to the creation of
@@ -17023,9 +17027,10 @@ Greater than number.
 @end table
 
 @item
-The fourth and final key says whether this is a temporary (i.e., expiring)
-score entry, or a permanent (i.e., non-expiring) score entry, or whether
-it is to be done immediately, without adding to the score file.
+The fourth and usually final key says whether this is a temporary (i.e.,
+expiring) score entry, or a permanent (i.e., non-expiring) score entry,
+or whether it is to be done immediately, without adding to the score
+file.
 @table @kbd
 
 @item t
@@ -17037,6 +17042,11 @@ Permanent score entry.
 @item i
 Immediately scoring.
 @end table
+
+@item
+If you are scoring on `e' (extra) headers, you will then be prompted for
+the header name on which you wish to score.  This must be a header named
+in gnus-extra-headers, and @samp{TAB} completion is available.
 
 @end enumerate
 
@@ -17354,6 +17364,18 @@ that the matches will be done in a case-sensitive manner.  All these
 one-letter types are really just abbreviations for the @code{regexp},
 @code{string}, @code{exact}, and @code{word} types, which you can use
 instead, if you feel like.
+
+@item Extra
+Just as for the standard string overview headers, if you are using
+gnus-extra-headers, you can score on these headers' values.  In this
+case, there is a 5th element in the score entry, being the name of the
+header to be scored.  The following entry is useful in your
+@file{all.SCORE} file in case of spam attacks from a single origin host,
+if your NNTP server tracks NNTP-Posting-Host in overviews:
+
+@lisp
+("111.222.333.444" -1000 nil s "NNTP-Posting-Host")
+@end lisp
 
 @item Lines, Chars
 These two headers use different match types: @code{<}, @code{>},
