@@ -1,3 +1,8 @@
+2000-09-29 12:12:49  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Reimplement Mike
+	  McEwan's proposal.
+	
 2000-09-29 12:06:40  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el: Revoke Mike McEwan's 1998-09-05 patch due to

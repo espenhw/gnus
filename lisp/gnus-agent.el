@@ -27,6 +27,7 @@
 (require 'gnus-cache)
 (require 'nnvirtual)
 (require 'gnus-sum)
+(require 'gnus-score)
 (eval-when-compile
   (if (featurep 'xemacs)
       (require 'itimer)
@@ -1054,7 +1055,7 @@ the actual number of articles toggled is returned."
     ;; Fetch headers.
     (when (and (or (gnus-active group) (gnus-activate-group group))
 	       (setq articles (gnus-agent-fetch-headers group))
-	       (progn
+	       (let ((nntp-server-buffer gnus-agent-overview-buffer))
 		 ;; Parse them and see which articles we want to fetch.
 		 (setq gnus-newsgroup-dependencies
 		       (make-vector (length articles) 0))
@@ -1069,20 +1070,31 @@ the actual number of articles toggled is returned."
 	    (gnus-get-predicate
 	     (or (gnus-group-find-parameter group 'agent-predicate t)
 		 (cadr category))))
-      (setq score-param
-	    (or (gnus-group-get-parameter group 'agent-score)
-		(caddr category)))
-      (when score-param
-	(gnus-score-headers (list (list score-param))))
-      (setq arts nil)
-      (while (setq gnus-headers (pop gnus-newsgroup-headers))
-	(setq gnus-score
-	      (or (cdr (assq (mail-header-number gnus-headers)
-			     gnus-newsgroup-scored))
-		  gnus-summary-default-score))
-	(when (funcall predicate)
-	  (push (mail-header-number gnus-headers)
-		arts)))
+      (if (memq (caaddr predicate) '(gnus-agent-true gnus-agent-false))
+	  ;; Simple implementation
+	  (setq arts
+		(and (eq (caaddr predicate) 'gnus-agent-true) articles))
+	(setq arts nil)
+	(setq score-param
+	      (or (gnus-group-get-parameter group 'agent-score t)
+		  (caddr category)))
+	;; Translate score-param into real one
+	(cond
+	 ((eq score-param 'file)
+	  (setq score-param (gnus-all-score-files group)))
+	 ((stringp (car score-param)))
+	 (t
+	  (setq score-param (list (list score-param)))))
+	(when score-param
+	  (gnus-score-headers score-param))
+	(while (setq gnus-headers (pop gnus-newsgroup-headers))
+	  (setq gnus-score
+		(or (cdr (assq (mail-header-number gnus-headers)
+			       gnus-newsgroup-scored))
+		    gnus-summary-default-score))
+	  (when (funcall predicate)
+	    (push (mail-header-number gnus-headers)
+		  arts))))
       ;; Fetch the articles.
       (when arts
 	(gnus-agent-fetch-articles group arts)))
