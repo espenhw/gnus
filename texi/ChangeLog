@@ -1,3 +1,8 @@
+2003-03-17  Simon Josefsson  <jas@extundo.com>
+
+	* pgg.texi: Fix setfilename.  Tiny patch by Frank Haun
+	<pille3003@fhaun.de>.
+
 2003-03-09  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus.texi (Top): Added menu item for Maildir node.

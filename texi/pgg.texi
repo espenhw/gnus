@@ -1,6 +1,6 @@
 \input texinfo                  @c -*-texinfo-*-
 
-@setfilename pgg.info
+@setfilename pgg
 
 @set VERSION 0.1
 
