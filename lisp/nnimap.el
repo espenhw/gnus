@@ -38,7 +38,6 @@
 ;;
 ;;   o Don't require half of Gnus -- backends should be standalone
 ;;   o Support escape characters in `message-tokenize-header'
-;;   o Support NOV nnmail-extra-headers.
 ;;   o Verify that we don't use IMAP4rev1 specific things (RFC2060 App B)
 ;;   o Dont uid fetch 1,* in nnimap-retrive-groups (slow)
 ;;   o Split up big fetches (1,* header especially) in smaller chunks
@@ -355,37 +354,26 @@ If EXAMINE is non-nil the group is selected read-only."
 				 nnimap-progress-how-often)
 			      nnimap-progress-chars)))
   (with-current-buffer nntp-server-buffer
-    (nnheader-insert-nov
-     (with-current-buffer nnimap-server-buffer
-       (vector imap-current-message
-	       (nnimap-replace-whitespace
-		(imap-message-envelope-subject imap-current-message))
-	       (nnimap-replace-whitespace
-		(imap-envelope-from
-		 (car-safe (imap-message-envelope-from
-			    imap-current-message))))
-	       (nnimap-replace-whitespace
-		(imap-message-envelope-date imap-current-message))
-	       (nnimap-replace-whitespace
-		(imap-message-envelope-message-id imap-current-message))
-	       (nnimap-replace-whitespace
-		(let ((str (if (imap-capability 'IMAP4rev1)
-			       (nth 2 (assoc
-				       "HEADER.FIELDS REFERENCES"
-				       (imap-message-get
-					imap-current-message 'BODYDETAIL)))
-			     (imap-message-get imap-current-message
-					       'RFC822.HEADER))))
-		  (if (> (length str) (length "References: "))
-		      (substring str (length "References: "))
-		    (if (and (setq str (imap-message-envelope-in-reply-to
-					imap-current-message))
-			     (string-match "<[^>]+>" str))
-			(substring str (match-beginning 0) (match-end 0))))))
-	       (imap-message-get imap-current-message 'RFC822.SIZE)
-	       (imap-body-lines (imap-message-body imap-current-message))
-	       nil;; xref
-	       nil)))));; extra-headers
+    (let (headers lines chars uid)
+      (with-current-buffer nnimap-server-buffer
+	(setq uid imap-current-message
+	      headers (if (imap-capability 'IMAP4rev1)
+			  ;; xxx don't just use car? alist doesn't contain
+			  ;; anything else now, but it might...
+			  (nth 2 (car (imap-message-get uid 'BODYDETAIL)))
+			(imap-message-get uid 'RFC822.HEADER))
+	      lines (imap-body-lines (imap-message-body imap-current-message))
+	      chars (imap-message-get imap-current-message 'RFC822.SIZE)))
+      (nnheader-insert-nov
+       (with-temp-buffer
+	 (buffer-disable-undo)
+	 (insert headers)
+	 (nnheader-ms-strip-cr)
+	 (let ((head (nnheader-parse-head 'naked)))
+	   (mail-header-set-number head uid)
+	   (mail-header-set-chars head chars)
+	   (mail-header-set-lines head lines)
+	   head))))))
 
 (defun nnimap-retrieve-which-headers (articles fetch-old)
   "Get a range of articles to fetch based on ARTICLES and FETCH-OLD."
@@ -447,10 +435,15 @@ If EXAMINE is non-nil the group is selected read-only."
 	  (nnimap-length (gnus-range-length articles))
 	  (nnimap-counter 0))
       (imap-fetch (nnimap-range-to-string articles)
-		  (concat "(UID RFC822.SIZE ENVELOPE BODY "
-			  (if (imap-capability 'IMAP4rev1)
-			      "BODY.PEEK[HEADER.FIELDS (References)])"
-			    "RFC822.HEADER.LINES (References))")))
+		  (concat "(UID RFC822.SIZE BODY "
+			  (let ((headers
+				 (append '(Subject From Date Message-Id
+						   References In-Reply-To Xref)
+					 (copy-sequence
+					  nnmail-extra-headers))))
+			    (if (imap-capability 'IMAP4rev1)
+				(format "BODY.PEEK[HEADER.FIELDS %s])" headers)
+			      (format "RFC822.HEADER.LINES %s)" headers)))))
       (and (numberp nnmail-large-newsgroup)
 	   (> nnimap-length nnmail-large-newsgroup)
 	   (nnheader-message 6 "nnimap: Retrieving headers...done")))))
