@@ -2822,7 +2822,12 @@ display only a single character."
 
 (defun gnus-summary-setup-buffer (group)
   "Initialize summary buffer."
-  (let ((buffer (gnus-summary-buffer-name group)))
+  (let ((buffer (gnus-summary-buffer-name group))
+	(dead-name (concat "*Dead Summary "
+			   (gnus-group-decoded-name group) "*")))
+    ;; If a dead summary buffer exists, we kill it.
+    (when (gnus-buffer-live-p dead-name)
+      (gnus-kill-buffer dead-name))
     (if (get-buffer buffer)
 	(progn
 	  (set-buffer buffer)
@@ -6248,17 +6253,20 @@ The state which existed when entering the ephemeral is reset."
 	(set-buffer buffer)
 	(gnus-kill-buffer gnus-article-buffer)
 	(gnus-kill-buffer gnus-original-article-buffer)))
-    (cond (gnus-kill-summary-on-exit
-	   (when (and gnus-use-trees
-		      (gnus-buffer-exists-p buffer))
-	     (save-excursion
-	       (set-buffer buffer)
-	       (gnus-tree-close gnus-newsgroup-name)))
-	   (gnus-kill-buffer buffer))
-	  ((gnus-buffer-exists-p buffer)
-	   (save-excursion
-	     (set-buffer buffer)
-	     (gnus-deaden-summary))))))
+    (cond
+     ;; Kill the buffer.
+     (gnus-kill-summary-on-exit
+      (when (and gnus-use-trees
+		 (gnus-buffer-exists-p buffer))
+	(save-excursion
+	  (set-buffer buffer)
+	  (gnus-tree-close gnus-newsgroup-name)))
+      (gnus-kill-buffer buffer))
+     ;; Deaden the buffer.
+     ((gnus-buffer-exists-p buffer)
+      (save-excursion
+	(set-buffer buffer)
+	(gnus-deaden-summary))))))
 
 (defun gnus-summary-wake-up-the-dead (&rest args)
   "Wake up the dead summary buffer."

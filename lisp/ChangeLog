@@ -1,3 +1,14 @@
+2002-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-buffer-name): Return the dead name if
+	it exists.
+	(gnus-summary-setup-buffer): Wake up dead summary buffers.
+	(gnus-summary-buffer-name): Don't return the dead name after all. 
+	(gnus-summary-setup-buffer): Kill the dead buffer.
+
+	* gnus-art.el (gnus-article-followup-with-original): Store the
+	value of the mark before deactivating it.
+
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-fun.el (gnus-display-x-face-in-from): Fake it.

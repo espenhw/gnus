@@ -4695,7 +4695,8 @@ the entire article will be yanked."
 The text in the region will be yanked.  If the region isn't active,
 the entire article will be yanked."
   (interactive)
-  (let ((article (cdr gnus-article-current)) cont)
+  (let ((article (cdr gnus-article-current))
+	cont)
     (if (not (gnus-region-active-p))
 	(gnus-summary-followup (list (list article)))
       (setq cont (buffer-substring (point) (mark)))
