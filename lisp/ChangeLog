@@ -1,3 +1,9 @@
+2002-02-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-posting-styles): Add x-face-file.
+	(gnus-configure-posting-styles): Use it.
+	(gnus-configure-posting-styles): Remove trailing newspaces.
+
 2002-02-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	
 	* gnus-sum.el (gnus-articles-to-read): Fetch all if the predicate

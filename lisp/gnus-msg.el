@@ -127,6 +127,7 @@ See Info node `(gnus)Posting Styles'."
 					(const signature-file)
 					(const organization)
 					(const address)
+					(const x-face-file)
 					(const name)
 					(const body)
 					(symbol)
@@ -1642,13 +1643,20 @@ this is a reply."
 		   ((listp value)
 		    (eval value))))
 	    ;; Translate obsolescent value.
-	    (when (eq element 'signature-file)
+	    (cond
+	     ((eq element 'signature-file)
 	      (setq element 'signature
 		    filep t))
+	     ((eq element 'x-face-file)
+	      (setq element 'x-face
+		    filep t)))
 	    ;; Get the contents of file elems.
 	    (when (and filep v)
 	      (setq v (with-temp-buffer
 			(insert-file-contents v)
+			(goto-char (point-max))
+			(while (bolp)
+			  (delete-char -1))
 			(buffer-string))))
 	    (setq results (delq (assoc element results) results))
 	    (push (cons element v) results))))
