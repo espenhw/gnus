@@ -1,5 +1,9 @@
 2002-02-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-group.el (gnus-group-name-decode): Don't test
+	multibyte-string, because it breaks XEmacs.
+	From: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
 	* message.el (message-send-mail): Be talkative.
 
 	* mm-decode.el (mm-inlined-types): Add application/x-emacs-lisp.

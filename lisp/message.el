@@ -2874,7 +2874,7 @@ It should typically alter the sending method in some way or other."
 			"The message size is too large, split? "
 			t 
 			"\
-The message size exceeds " (/ message-send-mail-partially-limit 1000) "KB.
+The message size, " (/ (point-max) 1000) "KB, is too large.
 
 Some mail gateways (MTA's) bounce large messages.  To avoid the
 problem, answer `y', and the message will be split into several
