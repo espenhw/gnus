@@ -1,3 +1,7 @@
+2004-06-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* make.bat: Fix line endings around arch-tag.
+
 2004-06-03  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* etc/gnus/gnus-setup.ast (Setting up a NNTP server)
