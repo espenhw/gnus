@@ -68,7 +68,7 @@ This mode is an extended emacs-lisp mode.
     (easy-menu-define
      gnus-score-menu gnus-score-mode-map ""
      '("Score"
-       ["Exit" gnus-score-edit-done t]
+       ["Exit" gnus-score-edit-exit t]
        ["Insert date" gnus-score-edit-insert-date t]
        ["Format" gnus-score-pretty-print t]))
     (run-hooks 'gnus-score-menu-hook)))

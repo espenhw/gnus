@@ -5197,8 +5197,13 @@ If it is a function, this function will be called with the face as the
 argument.  If the @code{gnus-article-x-face-too-ugly} (which is a regexp)
 matches the @code{From} header, the face will not be shown.  The default
 action under Emacs is to fork off an @code{xv} to view the face; under
-XEmacs the default action is to display the face after the @code{From}
-header. 
+XEmacs the default action is to display the face before the @code{From}
+header.  (It's nicer if XEmacs has been compiled with X-Face support --
+that will make display somewhat faster.  If there's no native X-Face
+support, Gnus will try to convert the @code{X-Face} header using
+external programs from the @code{pbmplus} package and friends.)  If you
+want to have this function in the display hook, it should probably come
+last. 
 
 @item W b
 @kindex W b (Summary)

@@ -1730,7 +1730,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.17"
+(defconst gnus-version-number "5.2.19"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2095,6 +2095,7 @@ Thank you for your help in stamping out bugs.
       gnus-group-display-picons gnus-picons-article-display-x-face)
      ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p 
       gnus-grouplens-mode)
+     ("smiley" :interactive t gnus-smiley-display)
      ("gnus-vm" gnus-vm-mail-setup)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm))))
@@ -6542,7 +6543,9 @@ If N is negative, this group and the N-1 previous groups will be checked."
 (defun gnus-group-describe-group (force &optional group)
   "Display a description of the current newsgroup."
   (interactive (list current-prefix-arg (gnus-group-group-name)))
-  (and force (setq gnus-description-hashtb nil))
+  (when (and force
+	     gnus-description-hashtb)
+    (gnus-sethash group nil gnus-description-hashtb))
   (let ((method (gnus-find-method-for-group group))
 	desc)
     (or group (error "No group name given"))
@@ -16957,7 +16960,8 @@ If FORCE is non-nil, the .newsrc file is read."
     t))
 
 (defun gnus-read-descriptions-file (&optional method)
-  (let ((method (or method gnus-select-method)))
+  (let ((method (or method gnus-select-method))
+	group)
     (when (stringp method)
       (setq method (gnus-server-to-method method)))
     ;; We create the hashtable whether we manage to read the desc file
@@ -16978,35 +16982,43 @@ If FORCE is non-nil, the .newsrc file is read."
       (gnus-message 1 "Couldn't read newsgroups descriptions")
       nil)
      (t
-      (let (group)
-	(save-excursion
-	  (save-restriction
-	    (set-buffer nntp-server-buffer)
-	    (goto-char (point-min))
-	    (if (or (search-forward "\n.\n" nil t)
+      (save-excursion
+	(save-restriction
+	  (set-buffer nntp-server-buffer)
+	  (goto-char (point-min))
+	  (when (or (search-forward "\n.\n" nil t)
 		    (goto-char (point-max)))
-		(progn
-		  (beginning-of-line)
-		  (narrow-to-region (point-min) (point))))
-	    (goto-char (point-min))
-	    (while (not (eobp))
-	      ;; If we get an error, we set group to 0, which is not a
-	      ;; symbol...
-	      (setq group
-		    (condition-case ()
-			(let ((obarray gnus-description-hashtb))
-			  ;; Group is set to a symbol interned in this
-			  ;; hash table.
-			  (read nntp-server-buffer))
-		      (error 0)))
-	      (skip-chars-forward " \t")
-	      ;; ...  which leads to this line being effectively ignored.
-	      (and (symbolp group)
-		   (set group (buffer-substring
-			       (point) (progn (end-of-line) (point)))))
-	      (forward-line 1))))
-	(gnus-message 5 "Reading descriptions file...done")
-	t)))))
+	    (beginning-of-line)
+	    (narrow-to-region (point-min) (point)))
+	  ;; If these are groups from a foreign select method, we insert the
+	  ;; group prefix in front of the group names.
+	  (and method (not (gnus-server-equal
+			    (gnus-server-get-method nil method)
+			    (gnus-server-get-method nil gnus-select-method)))
+	       (let ((prefix (gnus-group-prefixed-name "" method)))
+		 (goto-char (point-min))
+		 (while (and (not (eobp))
+			     (progn (insert prefix)
+				    (zerop (forward-line 1)))))))
+	  (goto-char (point-min))
+	  (while (not (eobp))
+	    ;; If we get an error, we set group to 0, which is not a
+	    ;; symbol...
+	    (setq group
+		  (condition-case ()
+		      (let ((obarray gnus-description-hashtb))
+			;; Group is set to a symbol interned in this
+			;; hash table.
+			(read nntp-server-buffer))
+		    (error 0)))
+	    (skip-chars-forward " \t")
+	    ;; ...  which leads to this line being effectively ignored.
+	    (and (symbolp group)
+		 (set group (buffer-substring
+			     (point) (progn (end-of-line) (point)))))
+	    (forward-line 1))))
+      (gnus-message 5 "Reading descriptions file...done")
+      t))))
 
 (defun gnus-group-get-description (group)
   "Get the description of a group by sending XGTITLE to the server."

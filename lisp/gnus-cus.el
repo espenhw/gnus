@@ -129,8 +129,8 @@ want.")
 	       '(gnus-article-hide-headers-if-wanted
 		gnus-article-hide-boring-headers
 		gnus-article-treat-overstrike
-		gnus-article-display-x-face
-		gnus-article-maybe-highlight)
+		gnus-article-maybe-highlight
+		gnus-article-display-x-face)
 	     '(gnus-article-hide-headers-if-wanted
 	      gnus-article-hide-boring-headers
 	      gnus-article-treat-overstrike

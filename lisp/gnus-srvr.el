@@ -68,9 +68,9 @@ with some simple extensions.")
 
 (defun gnus-server-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'server)
-  (unless (boundp 'gnus-server-menu)
+  (unless (boundp 'gnus-server-server-menu)
     (easy-menu-define
-     gnus-server-menu gnus-server-mode-map ""
+     gnus-server-server-menu gnus-server-mode-map ""
      '("Server"
        ["Add" gnus-server-add-server t]
        ["Browse" gnus-server-read-server t]
@@ -83,7 +83,7 @@ with some simple extensions.")
        ))
 
     (easy-menu-define
-     gnus-server-menu gnus-server-mode-map ""
+     gnus-server-connections-menu gnus-server-mode-map ""
      '("Connections"
        ["Open" gnus-server-open-server t]
        ["Close" gnus-server-close-server t]

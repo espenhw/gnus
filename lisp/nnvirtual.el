@@ -228,7 +228,8 @@ virtual group.")
 	 (cgroup (cadr nart))
 	 ;; The component group might be a virtual group.
 	 (nmark (gnus-request-update-mark cgroup (caddr nart) mark)))
-    (when (and (= mark nmark)
+    (when (and nart
+	       (= mark nmark)
 	       (gnus-group-auto-expirable-p cgroup))
       (setq mark gnus-expirable-mark)))
   mark)

@@ -902,7 +902,7 @@ this is a reply."
 			name
 		      (gnus-group-prefixed-name 
 		       name gnus-message-archive-method)))
-	    (insert " "))
+	    (if groups (insert " ")))
 	  (insert "\n"))))))
 
 (defun gnus-summary-send-draft ()

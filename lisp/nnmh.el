@@ -216,8 +216,8 @@
 			       (expand-file-name nnmh-toplev))) dir)
 	      (nnheader-replace-chars-in-string
 	       (substring dir (match-end 0)) ?/ ?.))
-	    (apply (function max) files) 
-	    (apply (function min) files)))))))
+	    (apply 'max files) 
+	    (apply 'min files)))))))
   t)
 
 (deffoo nnmh-request-newgroups (date &optional server)
@@ -248,6 +248,8 @@
 		(condition-case ()
 		    (funcall nnmail-delete-file-function article)
 		  (file-error
+		   (nnheader-message 1 "Couldn't delete article %s in %s"
+				     article newsgroup)
 		   (setq rest (cons (car articles) rest)))))
 	    (setq rest (cons (car articles) rest))))
       (setq articles (cdr articles)))

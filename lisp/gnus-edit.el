@@ -537,7 +537,8 @@ groups matched by the current score file.")
 			  'gnus-score-custom-get
 			  'gnus-score-custom-save))
   (make-local-variable 'gnus-score-custom-file)
-  (setq gnus-score-custom-file (expand-file-name  "SCORE" gnus-kill-files-directory))
+  (setq gnus-score-custom-file
+	(expand-file-name "SCORE" gnus-kill-files-directory))
   (make-local-variable 'gnus-score-alist)
   (setq gnus-score-alist nil)
   (custom-reset-all))

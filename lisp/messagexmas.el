@@ -86,7 +86,10 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 	  (setq down (concat dir name "-down." xpm))
 	  (setq disabled (concat dir name "-disabled." xpm))
 	  (if (not (file-exists-p up))
-	      (set icon nil)
+	      (progn
+		(set icon nil)
+		(setq bar nil
+		      dir nil))
 	    (set icon (toolbar-make-button-list
 		       up (and (file-exists-p down) down)
 		       (and (file-exists-p disabled) disabled)))))))
@@ -100,7 +103,9 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 
 (defun message-xmas-exchange-point-and-mark ()
   "Exchange point and mark, but allow for XEmacs' optional argument."
-  (exchange-point-and-mark message-dont-activate-region))
+  (exchange-point-and-mark message-xmas-dont-activate-region))
+
+(fset 'message-exchange-point-and-mark 'message-xmas-exchange-point-and-mark)
 
 (provide 'messagexmas)
 

@@ -1,3 +1,73 @@
+Sat Jun 15 10:44:16 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* smiley.el: Included in distribution.
+
+Sat Jun 15 06:25:19 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* custom.el (custom-xmas-set-text-properties): Ignore string
+	props. 
+
+Sat Jun 15 03:12:58 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnvirtual.el (nnvirtual-request-update-mark): Would bug out on
+	pseudos. 
+
+ 	* gnus.el (gnus-read-descriptions-file): Insert prefix for foreign
+	groups.
+	(gnus-group-describe-group): Just `force' the current group.
+
+Sat Jun 15 02:43:29 1996  Christopher Davis  <ckd@loiosh.kei.com>
+
+	* message.el (message-mode): Have signature separator be paragraph
+	separator.
+
+Sat Jun 15 02:26:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* messagexmas.el (message-exchange-point-and-mark): fset to xmas. 
+
+Sat Jun 15 01:59:08 1996  lantz moore  <lantz_moore@ece.uc.edu>
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Don't insert spaces
+	at the end.
+
+Sat Jun 15 01:58:17 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-tokenize-header): Would return empty
+	strings. 
+
+Thu Jun 13 18:26:34 1996  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* gnus-scomo.el (gnus-score-make-menu-bar): Correct Exit function.
+
+	* gnus-score.el (gnus-score-edit-file): Correct message.
+
+	* gnus-srvr.el (gnus-server-make-menu-bar): Use two symbols for
+	two menus.
+
+	* gnus-xmas.el (gnus-xmas-score-menu-add): New function.
+	(gnus-xmas-redefine): Use it.
+	(gnus-xmas-server-menu-add): Add two menus.
+
+	* nnfolder.el (nnfolder-generate-active-file): Use other function
+	to read file (not sure whether this is OK, but now it worked for
+	me, even with VM folders)
+	(nnfolder-read-folder): delete oldactive (never used)
+
+Sat Jun 15 00:45:53 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* messagexmas.el (message-xmas-setup-toolbar): If one icon doesn't
+	exist, report a failure.
+
+	* nnmh.el (nnmh-request-expire-articles): Message errors.
+
+Fri Jun 14 13:06:43 1996  Steven L Baur  <steve@miranova.com>
+
+	* message.el (message-yank-original): Used misnamed wrapper
+	function.
+
+	* messagexmas.el (message-xmas-exchange-point-and-mark): Used
+	misnamed control variable.
+
 Fri Jun 14 06:24:02 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el: Gnus v5.2.17 is released.

@@ -525,10 +525,10 @@ The cdr of ech entry is a function for applying the face to a region.")
       (goto-char (point-min))
       (while (not (eobp))
 	(forward-char 1)
-	(cond ((or (eobp)
-		   (and (looking-at regexp)
-			(> (point) beg)
-			(not quoted)))
+	(cond ((and (> (point) beg)
+		    (or (eobp)
+			(and (looking-at regexp)
+			     (not quoted))))
 	       (push (buffer-substring beg (point)) elems)
 	       (setq beg (match-end 0)))
 	      ((= (following-char) ?\")
@@ -813,6 +813,7 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 				paragraph-start))
   (setq paragraph-separate (concat (regexp-quote mail-header-separator)
 				   "$\\|[ \t]*[-_][-_][-_]+$\\|"
+				   "-- $\\|"
 				   paragraph-separate))
   (make-local-variable 'message-reply-headers)
   (setq message-reply-headers nil)
@@ -1092,7 +1093,7 @@ prefix, and don't delete any headers."
       (delete-windows-on message-reply-buffer t)
       (insert-buffer message-reply-buffer)
       (funcall message-cite-function)
-      (gnus-exchange-point-and-mark)
+      (message-exchange-point-and-mark)
       (unless (bolp)
 	(insert ?\n))
       (unless modified
@@ -2886,7 +2887,7 @@ which specify the range to operate on."
        (if (eq (following-char) (char-after (- (point) 2)))
 	   (delete-char -2))))))
 
-(fset 'gnus-exchange-point-and-mark 'exchange-point-and-mark)
+(fset 'message-exchange-point-and-mark 'exchange-point-and-mark)
 
 ;; Support for toolbar
 (when (string-match "XEmacs\\|Lucid" emacs-version)

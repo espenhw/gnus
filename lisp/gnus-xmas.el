@@ -305,6 +305,10 @@ call it with the value of the `gnus-data' text property."
   (gnus-xmas-menu-add article
     gnus-article-article-menu gnus-article-treatment-menu))
 
+(defun gnus-xmas-score-menu-add ()
+  (gnus-xmas-menu-add score
+    gnus-score-menu))
+
 (defun gnus-xmas-pick-menu-add ()
   (gnus-xmas-menu-add pick
     gnus-pick-menu))
@@ -319,7 +323,7 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-server-menu-add ()
   (gnus-xmas-menu-add menu
-    gnus-server-menu))
+    gnus-server-server-menu gnus-server-connections-menu))
 
 (defun gnus-xmas-browse-menu-add ()
   (gnus-xmas-menu-add browse
@@ -500,6 +504,7 @@ pounce directly on the real variables themselves.")
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
   (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)
+  (add-hook 'gnus-score-mode-hook 'gnus-xmas-score-menu-add)
 
   (add-hook 'gnus-pick-mode-hook 'gnus-xmas-pick-menu-add)
   (add-hook 'gnus-tree-mode-hook 'gnus-xmas-tree-menu-add)
@@ -738,6 +743,6 @@ XEmacs compatibility workaround."
       (re-search-forward "^From:" nil t)
       (beginning-of-line)
       (set-extent-begin-glyph 
-       (make-extent (point) (point)) xface-glyph))))
+       (make-extent (point) (1+ (point))) xface-glyph))))
 
 ;;; gnus-xmas.el ends here

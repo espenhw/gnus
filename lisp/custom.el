@@ -207,7 +207,7 @@ STRING should be given if the last search was by `string-match' on STRING."
 	   (funcall 'set-face-underline-p 'underline t))))
 
 (defun custom-xmas-set-text-properties (start end props &optional buffer)
-  (if (or (null buffer) (bufferp buffer))
+  (if (null buffer)
       (if props
 	  (while props
 	    (custom-put-text-property 
