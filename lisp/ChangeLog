@@ -9,6 +9,10 @@
 
 	* spam.el: add spam-maybe-spam-stat-load to
 	gnus-get-top-new-news-hook, remove it from gnus-get-new-news-hook
+	(spam-bogofilter-register-with-bogofilter): use
+	spam-bogofilter-spam-switch and spam-bogofilter-ham-switch
+	(spam-bogofilter-spam-switch, spam-bogofilter-ham-switch): new
+	custom variables to replace "-s" and "-n"
 
 	* gnus-group.el (gnus-group-get-new-news): call the new
 	gnus-get-top-new-news-hook hook
