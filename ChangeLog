@@ -1,3 +1,7 @@
+2001-09-18 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* make-x.bat: New.
+
 2001-07-04  Yair Friedman  <yairfr@Amdocs.com>
 
 	* make.bat: Use infohack.el to create info files.
