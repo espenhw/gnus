@@ -1056,7 +1056,7 @@ The cdr of ech entry is a function for applying the face to a region.")
     (when value
       (while (string-match "\n[\t ]+" value)
 	(setq value (replace-match " " t t value)))
-      ;; We remove all text props.delete-region
+      ;; We remove all text props.
       (format "%s" value))))
 
 (defun message-narrow-to-field ()
@@ -1742,7 +1742,7 @@ Mail and USENET news headers are not rotated."
         (unless (equal 0 (call-process-region
                            (point-min) (point-max) program t t))
             (insert body)
-            (message "%s failed." program))))))
+            (message "%s failed" program))))))
 
 (defun message-rename-buffer (&optional enter-string)
   "Rename the *message* buffer to \"*message* RECIPIENT\".

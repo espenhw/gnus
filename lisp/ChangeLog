@@ -1,3 +1,14 @@
+1999-11-05 20:28:27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-cut-thread): Also cut for numberp
+	gnus-fetch-old-headers. 
+	(gnus-cut-threads): Ditto.
+	(gnus-summary-initial-limit): Ditto.
+	(gnus-summary-limit-children): Ditto.
+
+	* gnus-msg.el (gnus-configure-posting-styles): Allow `header'
+	matches. 
+
 1999-11-06  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-art.el (article-decode-encoded-words):

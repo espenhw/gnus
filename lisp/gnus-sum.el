@@ -6464,6 +6464,7 @@ If ALL, mark even excluded ticked and dormants as read."
   "Go forwards in the thread until we find an article that we want to display."
   (when (or (eq gnus-fetch-old-headers 'some)
 	    (eq gnus-fetch-old-headers 'invisible)
+	    (numberp gnus-fetch-old-headers)
 	    (eq gnus-build-sparse-threads 'some)
 	    (eq gnus-build-sparse-threads 'more))
     ;; Deal with old-fetched headers and sparse threads.
@@ -6493,6 +6494,7 @@ If ALL, mark even excluded ticked and dormants as read."
   "Cut off all uninteresting articles from the beginning of threads."
   (when (or (eq gnus-fetch-old-headers 'some)
 	    (eq gnus-fetch-old-headers 'invisible)
+	    (numberp gnus-fetch-old-headers)
 	    (eq gnus-build-sparse-threads 'some)
 	    (eq gnus-build-sparse-threads 'more))
     (let ((th threads))
@@ -6510,6 +6512,7 @@ fetch-old-headers verbiage, and so on."
   (if (or gnus-inhibit-limiting
 	  (and (null gnus-newsgroup-dormant)
 	       (not (eq gnus-fetch-old-headers 'some))
+	       (not (numberp gnus-fetch-old-headers))
 	       (not (eq gnus-fetch-old-headers 'invisible))
 	       (null gnus-summary-expunge-below)
 	       (not (eq gnus-build-sparse-threads 'some))
@@ -6563,7 +6566,8 @@ fetch-old-headers verbiage, and so on."
 		 (zerop children))
 	    ;; If this is "fetch-old-headered" and there is no
 	    ;; visible children, then we don't want this article.
-	    (and (eq gnus-fetch-old-headers 'some)
+	    (and (or (eq gnus-fetch-old-headers 'some)
+		     (numberp gnus-fetch-old-headers))
 		 (gnus-summary-article-ancient-p number)
 		 (zerop children))
 	    ;; If this is "fetch-old-headered" and `invisible', then

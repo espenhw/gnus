@@ -1106,10 +1106,15 @@ this is a reply."
       ;; Go through all styles and look for matches.
       (dolist (style styles)
 	(setq match (pop style))
+	(goto-char (point-min))
 	(when (cond
 	       ((stringp match)
 		;; Regexp string match on the group name.
 		(string-match match group))
+	       ((eq match 'header)
+		(let ((header (message-fetch-field (pop style))))
+		  (and header
+		       (string-match (pop style) header))))
 	       ((or (symbolp match)
 		    (gnus-functionp match))
 		(cond
