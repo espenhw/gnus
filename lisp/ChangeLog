@@ -1,5 +1,7 @@
 2002-02-04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nntp.el (nntp-send-command-and-decode): Check PROCESS.
+
 	* mm-url.el (mm-url-load-url): New function.
 	(mm-url-insert-file-contents): Use it.
 
