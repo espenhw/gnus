@@ -482,6 +482,9 @@ noticing asynchronous data.")
   (nntp-possibly-change-group nil server)
   (when (nntp-find-connection-buffer nntp-server-buffer)
     (save-excursion
+      ;; Erase nntp-sever-buffer before nntp-inhibit-erase.
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)
       (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
       ;; The first time this is run, this variable is `try'.  So we
       ;; try.
