@@ -1273,12 +1273,12 @@ See Info node `(gnus)Customizing Articles' and Info node
 	  gnus-treat-from-picon)
       'head nil)
   "Draw a boundary at the end of the headers.
-Valid values are nil, t, `head', `last', an integer or a predicate.
+Valid values are nil and `head'.
 See Info node `(gnus)Customizing Articles' for details."
   :version "21.1"
   :group 'gnus-article-treat
   :link '(custom-manual "(gnus)Customizing Articles")
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-capitalize-sentences nil
   "Capitalize sentence-starting words.
@@ -5742,7 +5742,8 @@ It should match all directories in the top level of `gnus-ctan-url'."
   :type 'regexp)
 
 (defcustom gnus-button-mid-or-mail-regexp
-  (concat "\\b\\(<?[a-z0-9][^<>\")!;:,{}\n\t ]*@"
+  (concat "\\b\\(<?[a-z0-9$%(*-=?[_][^<>\")!;:,{}\n\t ]*@"
+	  ;; Felix Wiemann in <87oeuomcz9.fsf@news2.ososo.de>
 	  gnus-button-valid-fqdn-regexp
 	  ">?\\)\\b")
   "Regular expression that matches a message ID or a mail address."
@@ -6052,10 +6053,14 @@ positives are possible."
      1 (>= gnus-button-message-level 0) gnus-button-fetch-group 5)
     ("\\b\\(nntp\\|news\\):\\(//\\)?\\([^'\">\n\t ]+\\)"
      0 (>= gnus-button-message-level 0) gnus-button-fetch-group 3)
+    ;; RFC 2392 (Don't allow `/' in domain part --> CID)
+    ("\\bmid:\\(//\\)?\\([^'\">\n\t ]+@[^'\">\n\t /]+\\)"
+     0 (>= gnus-button-message-level 0) gnus-button-message-id 2)
     ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)"
      2 (>= gnus-button-message-level 0) gnus-button-message-id 3)
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 2)
+    ;; RFC 2368 (The mailto URL scheme)
     ("mailto:\\([-a-z.@_+0-9%=?&]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)"
@@ -6115,6 +6120,8 @@ positives are possible."
      0 (>= gnus-button-emacs-level 9) gnus-button-handle-symbol 1)
     ("(setq[ \t\n]+\\([a-z][a-z0-9]+-[-a-z0-9]+\\)[ \t\n]+.+)"
      1 (>= gnus-button-emacs-level 7) gnus-button-handle-describe-variable 1)
+    ("\\bM-x[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
+     1 (>= gnus-button-emacs-level 7) gnus-button-handle-describe-function 1)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+f[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+v[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
@@ -6123,8 +6130,14 @@ positives are possible."
      ;; Unlike the other regexps we really have to require quoting
      ;; here to determine where it ends.
      1 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-key 3)
-    ;; This is how URLs _should_ be embedded in text (RFC 1738)...
+    ;; This is how URLs _should_ be embedded in text (RFC 1738, RFC 2396)...
     ("<URL: *\\([^<>]*\\)>"
+     1 (>= gnus-button-browse-level 0) gnus-button-embedded-url 1)
+    ;; RFC 2396 (2.4.3., delims) ...
+    ("\"URL: *\\([^\"]*\\)\""
+     1 (>= gnus-button-browse-level 0) gnus-button-embedded-url 1)
+    ;; RFC 2396 (2.4.3., delims) ...
+    ("\"URL: *\\([^\"]*\\)\""
      1 (>= gnus-button-browse-level 0) gnus-button-embedded-url 1)
     ;; Raw URLs.
     (gnus-button-url-regexp

@@ -1,5 +1,12 @@
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-treat-body-boundary): Fix doc-string and
+	custom type.
+	(gnus-button-mid-or-mail-regexp): Don't be too restrictive.
+	Suggested by Felix Wiemann <Felix.Wiemann@gmx.net>.
+	(gnus-button-alist): Added "M-x ... RET" and "mid:" buttons.
+	Added comments about relevant RFCs.
+
 	* gnus-sum.el (gnus-summary-mode): Untabify doc-string.
 	(gnus-summary-goto-article): Allow `%40'.
 	(gnus-summary-refer-article): Convert `%40' to `@'.
