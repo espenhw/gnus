@@ -27,8 +27,9 @@
 ;; This package implements a simple wrapper around the GNU TLS command
 ;; line application "gnutls-cli" to make Emacs support STARTTLS.  It
 ;; is backwards compatible (same API functions) with the "starttls.el"
-;; that is part of Emacs 21 (that version used an external program
-;; "starttls" that isn't widely installed, and was based on OpenSSL).
+;; that is part of Emacs 21 written by Daiki Ueno <ueno@unixuser.org>.
+;; (That version used an external program "starttls" that isn't widely
+;; installed, and was based on OpenSSL.)
 
 ;; This package require GNUTLS 0.9.90 (released 2003-10-08) or later.
 
@@ -81,7 +82,10 @@
 
 ;; Revision history:
 ;;
-;; 2003-11-15: cleanup, and posted to gnu.emacs.sources.
+;; 2003-09-20: Added to Gnus CVS.
+;; 2003-10-02: Minor fixes.
+;; 2003-11-15: Cleanup, and posted to gnu.emacs.sources.
+;; 2003-11-28: Fixes variable name conflicts, various other fixes, posted g.e.s.
 
 ;;; Code:
 
