@@ -54,6 +54,8 @@
 
 (require 'hex-util)
 
+(autoload 'executable-find "executable")
+
 ;;;
 ;;; external SHA1 function.
 ;;;
@@ -68,6 +70,11 @@ If this variable is set to nil, use internal function only.")
 (defvar sha1-program '("openssl" "sha1")
   "*Name of program to compute SHA1.
 It must be a string \(program name\) or list of strings \(name and its args\).")
+
+(defvar sha1-use-external 
+  (executable-find (car sha1-program))
+  "*Use external sh1 program.
+If this variable is set to nil, use internal function only.")
 
 (defun sha1-string-external (string)
   ;; `with-temp-buffer' is new in v20, so we do not use it.
@@ -396,13 +403,15 @@ It must be a string \(program name\) or list of strings \(name and its args\).")
 ;;;
 
 (defun sha1-region (beg end)
-  (if (and sha1-maximum-internal-length
+  (if (and sha1-use-external
+	   sha1-maximum-internal-length
 	   (> (abs (- end beg)) sha1-maximum-internal-length))
       (sha1-region-external beg end)
     (sha1-region-internal beg end)))
 
 (defun sha1-string (string)
-  (if (and sha1-maximum-internal-length
+  (if (and sha1-use-external
+	   sha1-maximum-internal-length
 	   (> (length string) sha1-maximum-internal-length))
       (sha1-string-external string)
     (sha1-string-internal string)))

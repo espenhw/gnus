@@ -1,5 +1,9 @@
 2001-12-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* sha1-el.el (sha1-use-external): New variable.
+	(sha1-region): Use it.
+	(sha1-string): Ditto.
+
 	* dgnushack.el (dgnushack-compile): Compile gnus-picon for Emacs.
 	* gnus-picon.el: Less warnings when compile.
 
