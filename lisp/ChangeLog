@@ -1,3 +1,9 @@
+2004-09-13  Simon Josefsson  <jas@extundo.com>
+
+	* dns-mode.el (dns-mode): Fix menu for XEmacs, reported by Steve
+	Youngs <steve@youngs.au.com> and suggested by Katsumi Yamaoka
+	<yamaoka@jpl.org>.
+
 2004-09-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-copy-article): Fixed doc string.

@@ -131,7 +131,7 @@ Turning on DNS mode runs `dns-mode-hook'."
   (unless (featurep 'xemacs)
     (set (make-local-variable 'font-lock-defaults)
 	 '(dns-mode-font-lock-keywords nil nil ((?_ . "w")))))
-  (easy-menu-add-item nil nil dns-mode-menu))
+  (easy-menu-add dns-mode-menu dns-mode-map))
 
 ;; Tools.
 
