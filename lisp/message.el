@@ -2296,7 +2296,11 @@ It should typically alter the sending method in some way or other."
 	      (insert ?\n))
 	  (when (and news
 		     (or (message-fetch-field "cc")
-			 (message-fetch-field "to")))
+			 (message-fetch-field "to"))
+		     (string= "text/plain"
+			      (car
+			       (mail-header-parse-content-type
+				(message-fetch-field "content-type")))))
 	    (message-insert-courtesy-copy))
 	  (if (or (not message-send-mail-partially-limit)
 		  (< (point-max) message-send-mail-partially-limit)
@@ -3913,7 +3917,7 @@ If ARG, allow editing of the cancellation message."
 	  (setq buf (set-buffer (get-buffer-create " *message cancel*"))))
 	(erase-buffer)
 	(insert "Newsgroups: " newsgroups "\n"
-		"From: " (message-make-from) "\n"
+               "From: " from "\n"
 		"Subject: cmsg cancel " message-id "\n"
 		"Control: cancel " message-id "\n"
 		(if distribution

@@ -1,3 +1,17 @@
+2000-08-14 20:08:40  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-mail): Only insert courtesy message
+	when text/plain.
+
+2000-08-14 19:55:04  Jesper Harder  <jesper_harder@hotmail.com>
+
+	* message.el (message-cancel-news): Copy the From header from the
+	original article.
+
+2000-08-14 19:52:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-async.el (gnus-asynchronous): Removed.
+
 2000-08-14 16:12:11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-fetch-maildir): Use MMDF mail
