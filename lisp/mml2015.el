@@ -143,14 +143,27 @@
 			(or (mml2015-fix-micalg
 			     (mail-content-type-get ctl 'micalg))
 			    "SHA1")))
-	(insert part "\n")
-	(goto-char (point-max))
+	(save-restriction
+	  (narrow-to-region (point) (point))
+	  (insert part "\n")
+	  (goto-char (point-min))
+	  (while (not (eobp))
+	    (if (looking-at "^-")
+		(insert "- "))
+	    (forward-line)))
 	(unless (setq part (mm-find-part-by-type 
 			    (cdr handle) "application/pgp-signature" nil t))
 	  (mm-set-handle-multipart-parameter 
 	   mm-security-handle 'gnus-info "Corrupted")
 	  (throw 'error handle))
-	(mm-insert-part part)
+	(save-restriction
+	  (narrow-to-region (point) (point))
+	  (mm-insert-part part)
+	  (goto-char (point-min))
+	  (if (re-search-forward "^-----\\([^-]+\\)-----$" nil t)
+	      (replace-match "BEGIN PGP SIGNATURE" t t nil 1))
+	  (if (re-search-forward "^-----\\([^-]+\\)-----$" nil t)
+	      (replace-match "END PGP SIGNATURE" t t nil 1)))
 	(unless (condition-case err
 		    (funcall mml2015-verify-function)
 		  (error 
@@ -181,11 +194,9 @@
 		   nil nil nil nil)
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number)))
-	(scheme-alist (funcall (or mc-default-scheme 
-				   (cdr (car mc-schemes)))))
 	hash)
     (goto-char (point-min))
-    (unless (re-search-forward (cdr (assq 'signed-begin-line scheme-alist)))
+    (unless (re-search-forward "^-----BEGIN PGP SIGNED MESSAGE-----\r?$" nil t)
       (error "Cannot find signed begin line." ))
     (goto-char (match-beginning 0))
     (forward-line 1)
@@ -202,11 +213,14 @@
 		    (downcase hash)))
     (insert (format "\n--%s\n" boundary))
     (goto-char (point-max))
-    (unless (re-search-backward (cdr (assq 'signed-end-line scheme-alist)))
+    (unless (re-search-backward "^-----END PGP \\(SIGNATURE\\)-----\r?$" nil t)
       (error "Cannot find signature part." ))
+    (replace-match "MESSAGE" t t nil 1)
     (goto-char (match-beginning 0))
-    (unless (re-search-backward "^-+BEGIN" nil t)
+    (unless (re-search-backward "^-----BEGIN PGP \\(SIGNATURE\\)-----\r?$" 
+				nil t)
       (error "Cannot find signature part." ))
+    (replace-match "MESSAGE" t t nil 1)
     (goto-char (match-beginning 0))
     (insert (format "--%s\n" boundary))
     (insert "Content-Type: application/pgp-signature\n\n")

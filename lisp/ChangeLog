@@ -1,3 +1,9 @@
+2000-11-12 08:52:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el (mml2015-mailcrypt-verify): Replace armors with
+	PGP SIGNATURE.  Escape leading "-"'s.
+	(mml2015-mailcrypt-sign): Replace armors with PGP MESSAGE.
+
 2000-11-11 15:55:35  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-uu.el (mm-uu-type-alist): Stricter shar regexp.
