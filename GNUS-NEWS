@@ -8,6 +8,18 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Group Carbon Copy (GCC) quoting
+
+To support groups that contains SPC and other weird characters, groups
+are quoted before they are placed in the Gcc: header.  While this
+should not cause problems, errorenous local customization may cause
+problems.  In particular, if you have local customizations (e.g.,
+variables such as gnus-message-archive-group) that return the string
+"nnml:foo, nnml:bar" (indicating Gcc into two groups) you must change
+it to return the list ("nnml:foo" "nnml:bar"), otherwise the Gcc: line
+will be quoted incorrectly.  Note that returning the string "nnml:foo,
+nnml:bar" was incorrect earlier, it just didn't generate any problems.
+
 ** gnus-agent
 
 The Gnus Agent is now enabled by default, and all nntp and nnimap
