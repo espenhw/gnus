@@ -1,5 +1,7 @@
 2004-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-msg.el (gnus-inews-make-draft): Quote list.
+
 	* pgg-pgp.el (pgg-pgp-verify-region): Clean up.
 
 2004-05-19  Michael Schierl  <schierlm-usenet@gmx.de>

@@ -362,7 +362,7 @@ Thank you for your help in stamping out bugs.
 (defun gnus-inews-make-draft (articles)
   `(lambda ()
      (gnus-inews-make-draft-meta-information
-      ,gnus-newsgroup-name ,@articles)))
+      ,gnus-newsgroup-name ',@articles)))
 
 (defvar gnus-article-reply nil)
 (defmacro gnus-setup-message (config &rest forms)
