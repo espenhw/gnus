@@ -1,3 +1,11 @@
+2000-12-17 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-extern.el (mm-inline-external-body): g-a-m-h may be a handle.
+
+	* mm-util.el (mm-enable-multibyte-mule4): Test charsetp.
+	(mm-disable-multibyte-mule4): Ditto.
+	(mm-with-unibyte-current-buffer-mule4): Ditto.
+
 2000-12-15 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* pop3.el (pop3-movemail): Use binary.

@@ -144,7 +144,10 @@ If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
 	    (unless good
 	      (mm-destroy-parts handles))))
 	(mm-handle-set-cache handle handles))
-      (push handles gnus-article-mime-handles))
+      (if (listp (car gnus-article-mime-handles))
+	  (push handles gnus-article-mime-handles)
+	(setq gnus-article-mime-handles
+	      (list handles gnus-article-mime-handles))))
     (unless no-display
       (save-excursion
 	(save-restriction
