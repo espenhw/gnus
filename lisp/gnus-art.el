@@ -2080,6 +2080,7 @@ If READ-CHARSET, ask for a coding system."
   (mm-setup-w3)
   (let ((w3-strict-width (window-width))
 	(url-standalone-mode t)
+ 	(url-gateway-unplugged t)
 	(w3-honor-stylesheets nil)
 	(w3-delay-image-loads t))
     (condition-case var

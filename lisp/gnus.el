@@ -1869,7 +1869,7 @@ covered by that variable."
   "Marks that shouldn't be propagated to backends.
 Typical marks are those that make no sense in a standalone backend,
 such as a mark that says whether an article is stored in the cache
-(which doesn't make sense in a standalone backend).")
+\(which doesn't make sense in a standalone backend).")
 
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)

@@ -86,6 +86,7 @@
   (let ((text (mm-get-part handle))
 	(b (point))
 	(url-standalone-mode t)
+ 	(url-gateway-unplugged t)
 	(w3-honor-stylesheets nil)
 	(w3-delay-image-loads t)
 	(url-current-object
@@ -119,10 +120,7 @@
 	    (let ((w3-strict-width width)
 		  ;; Don't let w3 set the global version of
 		  ;; this variable.
-		  (fill-column fill-column)
-		  (w3-honor-stylesheets nil)
-		  (w3-delay-image-loads t)
-		  (url-standalone-mode t))
+		  (fill-column fill-column))
 	      (condition-case var
 		  (w3-region (point-min) (point-max))
 		(error
@@ -351,6 +349,7 @@ will not be substituted.")
 (defun mm-w3-prepare-buffer ()
   (require 'w3)
   (let ((url-standalone-mode t)
+ 	(url-gateway-unplugged t)
 	(w3-honor-stylesheets nil)
 	(w3-delay-image-loads t))
     (w3-prepare-buffer)))

@@ -1545,6 +1545,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-f\C-k" 'message-goto-keywords)
   (define-key message-mode-map "\C-c\C-f\C-u" 'message-goto-summary)
   (define-key message-mode-map "\C-c\C-f\C-i" 'message-insert-or-toggle-importance)
+  (define-key message-mode-map "\C-c\C-f\C-a" 'message-gen-unsubscribed-mft)
   (define-key message-mode-map "\C-c\C-b" 'message-goto-body)
   (define-key message-mode-map "\C-c\C-i" 'message-goto-signature)
 
@@ -1923,6 +1924,26 @@ return nil."
       (forward-line 1)
     (goto-char (point-max))
     nil))
+
+(defun message-gen-unsubscribed-mft (&optional include-cc)
+  "Insert a reasonable MFT header in a post to an unsubscribed list.
+When making original posts to a mailing list you are not subscribed to,
+you have to type in a MFT header by hand.  The contents, usually, are
+the addresses of the list and your own address.  This function inserts
+such a header automatically.  It fetches the contents of the To: header
+in the current mail buffer, and appends the current user-mail-address.
+
+If the optional argument `include-cc' is non-nil, the addresses in the
+Cc: header are also put into the MFT."
+  
+  (interactive)
+  (message-remove-header "Mail-Followup-To")
+  (let* ((cc (and include-cc (message-fetch-field "Cc")))
+	 (tos (if cc
+		  (concat (message-fetch-field "To") "," cc)
+		(message-fetch-field "To"))))
+    (message-goto-mail-followup-to)
+    (insert (concat tos ", " user-mail-address))))
 
 
 

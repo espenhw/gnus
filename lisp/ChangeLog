@@ -1,5 +1,16 @@
 2002-02-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-gen-unsubscribed-mft): New function.
+	From Sriram Karra <karra@cs.utah.edu>.
+
+	* gnus.el (gnus-article-unpropagated-mark-lists): Backslash the
+	open parenthesis.
+
+	* mm-view.el (mm-w3-prepare-buffer): Bind url-gateway-unplugged.
+	(mm-inline-text-html-render-with-w3): Ditto.
+	* gnus-art.el (gnus-article-wash-html-with-w3): Ditto.
+	Suggested by Dave Love  <d.love@dl.ac.uk>.
+
 	* mm-url.el (mm-url-load-url): Require w3-vars for old versions.
 
 	* nntp.el (nntp-send-command-and-decode): Check PROCESS.
