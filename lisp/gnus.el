@@ -1149,7 +1149,8 @@ see the manual for details."
 This should be a mail method."
   :group 'gnus-server
   :group 'gnus-message
-  :type 'gnus-select-method)
+  :type '(choice (const :tag "Default archive method" "archive")
+		 gnus-select-method))
 
 (defcustom gnus-message-archive-group nil
   "*Name of the group in which to save the messages you've written.
