@@ -1,3 +1,19 @@
+2001-02-09 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-merge-handles): New function.
+
+	* mm-view.el (mm-inline-message): Use it.
+	(mm-view-message): Ditto.
+	
+	* mm-partial.el (mm-inline-partial): Ditto.
+
+	* mm-extern.el (mm-inline-external-body): Ditto.
+
+	* gnus-art.el (gnus-mime-view-part): Ditto.
+	(gnus-mime-view-part-as-type): Ditto.
+	(gnus-mime-save-part-and-strip): Prevent users to strip in some
+	cases.
+
 2001-02-08 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-cancel-news): Allow to shoot foot.

@@ -1,5 +1,5 @@
 ;;; mm-extern.el --- showing message/external-body
-;; Copyright (C) 2000 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: message external-body
@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-(eval-when-compile 
+(eval-when-compile
   (require 'cl))
 
 (require 'mm-util)
@@ -111,13 +111,13 @@
 ;;;###autoload
 (defun mm-inline-external-body (handle &optional no-display)
   "Show the external-body part of HANDLE.
-This function replaces the buffer of HANDLE with a buffer contains 
+This function replaces the buffer of HANDLE with a buffer contains
 the entire message.
 If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
-  (let* ((access-type (cdr (assq 'access-type 
+  (let* ((access-type (cdr (assq 'access-type
 				 (cdr (mm-handle-type handle)))))
-	 (func (cdr (assq (intern 
-			   (downcase 
+	 (func (cdr (assq (intern
+			   (downcase
 			    (or access-type
 				(error "Couldn't find access type."))))
 			  mm-extern-function-alist)))
@@ -144,10 +144,8 @@ If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
 	    (unless good
 	      (mm-destroy-parts handles))))
 	(mm-handle-set-cache handle handles))
-      (if (listp (car gnus-article-mime-handles))
-	  (push handles gnus-article-mime-handles)
-	(setq gnus-article-mime-handles
-	      (list handles gnus-article-mime-handles))))
+      (setq gnus-article-mime-handles
+	    (mm-merge-handles gnus-article-mime-handles handles)))
     (unless no-display
       (save-excursion
 	(save-restriction

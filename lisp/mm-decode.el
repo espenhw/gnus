@@ -1111,6 +1111,19 @@ If RECURSIVE, search recursively."
      (t nil))
     parts))
 
+(defun mm-multiple-handles (handles)
+   (and (listp (car handles)) 
+	(> (length handles) 1)))
+
+(defun mm-merge-handles (handles1 handles2) 
+  (append
+   (if (listp (car handles1)) 
+       handles1
+     (list handles1))
+   (if (listp (car handles2))
+       handles2
+     (list handles2))))
+
 (provide 'mm-decode)
 
 ;;; mm-decode.el ends here

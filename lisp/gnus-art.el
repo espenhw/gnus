@@ -3278,8 +3278,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((data (get-text-property (point) 'gnus-data))
-	 (file (and data (mm-save-part data)))
-	 param)
+	 file param)
+    (if (mm-multiple-handles gnus-article-mime-handles)
+	(error "This function is not implemented."))
+    (setq file (and data (mm-save-part data)))
     (when file
       (with-current-buffer (mm-handle-buffer data)
 	(erase-buffer)
@@ -3354,7 +3356,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (gnus-article-check-buffer)
   (let ((data (get-text-property (point) 'gnus-data)))
     (when data
-      (push (setq data (copy-sequence data)) gnus-article-mime-handles)
+      (setq gnus-article-mime-handles
+	    (mm-merge-handles
+	     gnus-article-mime-handles (setq data (copy-sequence data))))
       (mm-interactively-view-part data))))
 
 (defun gnus-mime-view-part-as-type-internal ()
@@ -3386,7 +3390,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			    (mm-handle-description handle)
 			    (mm-handle-cache handle)
 			    (mm-handle-id handle)))
-      (push handle gnus-article-mime-handles)
+      (setq gnus-article-mime-handles
+	    (mm-merge-handles gnus-article-mime-handles handle))
       (gnus-mm-display-part handle))))
 
 (defun gnus-mime-copy-part (&optional handle)
