@@ -1,3 +1,14 @@
+2004-06-14  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* nnheader.el (nnheader-generate-fake-message-id): accept a
+	number and build a fake message ID localized to a group and
+	article number (so it's repeatable from that point on)
+	(nnheader-fake-message-id-p): change regex to accomodate new fake
+	ID format
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): call
+	nnheader-generate-fake-message-id with the article number
+
 2004-06-12  YAGI Tatsuya  <ynyaaa@ybb.ne.jp>  (tiny change)
 
 	* gnus-art.el (gnus-article-next-page): Fix the way to find a real

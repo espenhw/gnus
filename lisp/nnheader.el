@@ -216,12 +216,16 @@ on your system, you could say something like:
 
 (defvar nnheader-fake-message-id 1)
 
-(defsubst nnheader-generate-fake-message-id ()
-  (concat "fake+none+" (int-to-string (incf nnheader-fake-message-id))))
+(defsubst nnheader-generate-fake-message-id (&optional number)
+  (if (numberp number)
+      (format "fake+none+%s+%d" gnus-newsgroup-name number)
+  (format "fake+none+%s+%s" 
+	  gnus-newsgroup-name 
+	  (int-to-string (incf nnheader-fake-message-id)))))
 
 (defsubst nnheader-fake-message-id-p (id)
   (save-match-data		       ; regular message-id's are <.*>
-    (string-match "\\`fake\\+none\\+[0-9]+\\'" id)))
+    (string-match "\\`fake\\+none\\+.*\\+[0-9]+\\'" id)))
 
 ;; Parsing headers and NOV lines.
 
@@ -283,7 +287,7 @@ on your system, you could say something like:
 		(or (search-forward ">" (point-at-eol) t) (point)))
 	     ;; If there was no message-id, we just fake one to make
 	     ;; subsequent routines simpler.
-	     (nnheader-generate-fake-message-id)))
+	     (nnheader-generate-fake-message-id number)))
 	 ;; References.
 	 (progn
 	   (goto-char p)
@@ -381,20 +385,21 @@ on your system, you could say something like:
 	       out)))
      out))
 
-(defmacro nnheader-nov-read-message-id ()
+(defmacro nnheader-nov-read-message-id (&optional number)
   '(let ((id (nnheader-nov-field)))
      (if (string-match "^<[^>]+>$" id)
 	 id
-       (nnheader-generate-fake-message-id))))
+       (nnheader-generate-fake-message-id number))))
 
 (defun nnheader-parse-nov ()
-  (let ((eol (point-at-eol)))
+  (let ((eol (point-at-eol))
+	(number (nnheader-nov-read-integer)))
     (vector
-     (nnheader-nov-read-integer)	; number
+     number				; number
      (nnheader-nov-field)		; subject
      (nnheader-nov-field)		; from
      (nnheader-nov-field)		; date
-     (nnheader-nov-read-message-id)	; id
+     (nnheader-nov-read-message-id number) ; id
      (nnheader-nov-field)		; refs
      (nnheader-nov-read-integer)	; chars
      (nnheader-nov-read-integer)	; lines
