@@ -1,3 +1,8 @@
+2001-04-10  Simon Josefsson  <simon@josefsson.org>
+
+	* imap.el (imap-message-copy): Work around buggy servers that
+	doesn't send TRYCREATE tags.
+
 2001-04-09 01:15:54  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-read-newsrc-el-file): Work with Semi-gnusae.

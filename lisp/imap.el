@@ -1462,8 +1462,11 @@ first element, rest of list contain the saved articles' UIDs."
 	      (if (imap-ok-p (imap-send-command-wait cmd))
 		  t
 		(when (and (not dont-create)
-			   (imap-mailbox-get-1 'trycreate mailbox))
-		  (imap-mailbox-create-1 mailbox)
+			   ;; removed because of buggy Oracle server
+			   ;; that doesn't send TRYCREATE tags (which
+			   ;; is a MUST according to specifications):
+			   ;;(imap-mailbox-get-1 'trycreate mailbox)
+			   (imap-mailbox-create-1 mailbox))
 		  (imap-ok-p (imap-send-command-wait cmd)))))
 	    (or no-copyuid
 		(imap-message-copyuid-1 mailbox)))))))
