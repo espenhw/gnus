@@ -2666,9 +2666,21 @@ just the host name."
 		group (substring group (+ 1 colon))))
 	(setq foreign (concat foreign ":")))
       ;; Collapse group name leaving LEVELS uncollapsed elements
-      (let* ((glist (split-string group "\\."))
-	     (glen (length glist))
+      (let* ((slist (split-string group "/"))
+	     (slen (length slist))
+	     (dlist (split-string group "\\."))
+	     (dlen (length dlist))
+	     glist
+	     glen
+	     gsep
 	     res)
+	(if (> slen dlen)
+	    (setq glist slist
+		  glen slen
+		  gsep "/")
+	  (setq glist dlist
+		glen dlen
+		gsep "."))
 	(setq levels (- glen levels))
 	(dolist (g glist)
 	  (push (if (>= (decf levels) 0)
@@ -2677,7 +2689,7 @@ just the host name."
 		      (substring g 0 1))
 		  g)
 		res))
-	(concat foreign (mapconcat 'identity (nreverse res) "."))))))
+	(concat foreign (mapconcat 'identity (nreverse res) gsep))))))
 
 (defun gnus-narrow-to-body ()
   "Narrow to the body of an article."

@@ -1,3 +1,7 @@
+2000-09-08  David Edmondson <dme@dme.org>
+
+	* gnus.el (gnus-short-group-name): Guess separator.
+
 2000-09-07  Tadashi Watanabe  <watanabe@sigmaitec.co.jp>
 
 	* smiley.el (smiley-buffer, smiley-create-glyph): Work with GTK
