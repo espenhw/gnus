@@ -2413,7 +2413,10 @@ Return nil if no complete line has arrived."
 	(imap-forward)
 	(push (imap-parse-nstring) body);; body-fld-desc
 	(imap-forward)
-	(push (imap-parse-string) body);; body-fld-enc
+	;; next `or' for Sun SIMS bug, it regard body-fld-enc as a
+	;; nstring and return NIL instead of defaulting back to 7BIT
+	;; as the standard says.
+	(push (or (imap-parse-nstring) "7BIT") body);; body-fld-enc
 	(imap-forward)
 	(push (imap-parse-number) body);; body-fld-octets
 

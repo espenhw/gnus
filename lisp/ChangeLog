@@ -1,3 +1,7 @@
+2000-09-22  Simon Josefsson  <simon@josefsson.org>
+
+	* imap.el (imap-parse-body): Work around bug in Sun SIMS.
+
 2000-09-21 21:54:48  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* lpath.el: Bind nnkiboze-score-file.
