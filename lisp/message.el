@@ -2499,7 +2499,7 @@ It should typically alter the sending method in some way or other."
   (message message-sending-message)
   (let ((alist message-send-method-alist)
 	(success t)
-	elem sent
+	elem sent dont-barf-on-no-method
 	(message-options message-options))
     (message-options-set-recipient)
     (while (and success
@@ -2516,9 +2516,19 @@ It should typically alter the sending method in some way or other."
 			 (error "Denied posting -- multiple copies")))
 		   (setq success (funcall (caddr elem) arg)))
 	  (setq sent t))))
-    (unless (or sent (not success))
+    (unless (or sent (not success)
+		(let ((fcc (message-fetch-field "Fcc"))
+		      (gcc (message-fetch-field "Gcc")))
+		  (and (or fcc gcc)
+		       (setq dont-barf-on-no-method 
+			     (gnus-y-or-n-p
+			      (format "No receiver, perform %s anyway? "
+				      (cond ((and fcc gcc) "Fcc and Gcc")
+					    (fcc "Fcc")
+					    (t "Gcc"))))))))
       (error "No methods specified to send by"))
-    (when (and success sent)
+    (when (or dont-barf-on-no-method
+	      (and success sent))
       (message-do-fcc)
       (save-excursion
 	(run-hooks 'message-sent-hook))

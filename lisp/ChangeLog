@@ -1,5 +1,11 @@
 2001-11-17  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-send): Ask user if Fcc/Gcc should be
+	performed when no other sender was specified.
+	Suggested by prj@po.cwru.edu (Paul Jarc).
+
+2001-11-17  Simon Josefsson  <jas@extundo.com>
+
 	* message.el (message-mode, message-mode-map): Use C-c C-u for
 	Importance: instead of C-c C-p (used by SC).
 
