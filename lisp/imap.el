@@ -770,8 +770,10 @@ sure of changing the value of `foo'."
 	(unwind-protect
 	    (progn
 	      (set-process-filter imap-process 'imap-arrival-filter)
+	      (erase-buffer)
 	      (when (and (eq imap-stream 'starttls)
 			 (imap-ok-p (imap-send-command-wait "STARTTLS")))
+		(set-process-filter imap-process nil)
 		(starttls-negotiate imap-process)))
 	  (set-process-filter imap-process nil)))
       (when (memq (process-status process) '(open run))
