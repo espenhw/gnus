@@ -4759,13 +4759,13 @@ no more unread articles after the current one, Gnus will offer to go to
 the next group.  If this variable is @code{t} and the next group is
 empty, Gnus will exit summary mode and return to the group buffer.  If
 this variable is neither @code{t} nor @code{nil}, Gnus will select the
-next group, no matter whether it has any unread articles or not.  As a
-special case, if this variable is @code{quietly}, Gnus will select the
-next group without asking for confirmation.  If this variable is
-@code{almost-quietly}, the same will happen only if you are located on
-the last article in the group.  Finally, if this variable is
-@code{slightly-quietly}, the @kbd{Z n} command will go to the next group
-without confirmation.  Also @pxref{Group Levels}.
+next group with unread articles.  As a special case, if this variable
+is @code{quietly}, Gnus will select the next group without asking for
+confirmation.  If this variable is @code{almost-quietly}, the same
+will happen only if you are located on the last article in the group.
+Finally, if this variable is @code{slightly-quietly}, the @kbd{Z n}
+command will go to the next group without confirmation.  Also
+@pxref{Group Levels}.
 
 @item gnus-auto-select-same
 @vindex gnus-auto-select-same
