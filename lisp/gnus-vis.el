@@ -1017,7 +1017,7 @@ ticked: The number of ticked articles in the group.
       (setq list (cdr list)))
     (let ((face (cdar list)))
       (unless (eq face (get-text-property beg 'face))
-	(put-text-property 
+	(gnus-put-text-property 
 	 beg end 'face 
 	 (setq face (if (boundp face) (symbol-value face) face)))
 	(when gnus-summary-highlight-line-function
@@ -1050,7 +1050,7 @@ ticked: The number of ticked articles in the group.
       (setq list (cdr list)))
     (let ((face (cdar list)))
       (unless (eq face (get-text-property beg 'face))
-	(put-text-property 
+	(gnus-put-text-property 
 	 beg end 'face 
 	 (setq face (if (boundp face) (symbol-value face) face)))
 	(gnus-extent-start-open beg)))
@@ -1352,14 +1352,14 @@ do the highlighting.  See the documentation for those functions."
 	      (when (and header-face
 			 (not (memq (point) hpoints)))
 		(push (point) hpoints)
-		(put-text-property from (point) 'face header-face))
+		(gnus-put-text-property from (point) 'face header-face))
 	      (when (and field-face
 			 (not (memq (setq from (point)) fpoints)))
 		(push from fpoints)
 		(if (re-search-forward "^[^ \t]" nil t)
 		    (forward-char -2)
 		  (goto-char (point-max)))
-		(put-text-property from (point) 'face field-face)))))))))
+		(gnus-put-text-property from (point) 'face field-face)))))))))
 
 (defun gnus-article-highlight-signature ()
   "Highlight the signature in an article.
@@ -1465,7 +1465,7 @@ specified by `gnus-button-alist'."
   (and gnus-article-button-face
        (gnus-overlay-put (gnus-make-overlay from to)
 			 'face gnus-article-button-face))
-  (add-text-properties 
+  (gnus-add-text-properties 
    from to
    (nconc (and gnus-article-mouse-face
 	       (list gnus-mouse-face-prop gnus-article-mouse-face))

@@ -36,11 +36,14 @@
 (defalias 'gnus-extent-detached-p 'ignore)
 (defalias 'gnus-extent-start-open 'ignore)
 (defalias 'gnus-set-text-properties 'set-text-properties)
+(defalias 'gnus-group-remove-excess-properties 'ignore)
+(defalias 'gnus-topic-remove-excess-properties 'ignore)
 (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
 (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
 (defalias 'gnus-make-local-hook 'make-local-hook)
 (defalias 'gnus-character-to-event 'identity)
 (defalias 'gnus-add-text-properties 'add-text-properties)
+(defalias 'gnus-put-text-property 'put-text-property)
 
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")

@@ -156,7 +156,7 @@ The following commands are available:
 		       (t
 			"(closed)"))))
     (beginning-of-line)
-    (add-text-properties
+    (gnus-add-text-properties
      (point)
      (prog1 (1+ (point))
        ;; Insert the text.

@@ -358,34 +358,40 @@ there.")
 	    (if (and fetch-old
 		     (not (numberp fetch-old)))
 		t			; We want all the headers.
-	      ;; First we find the first wanted line.
-	      (nnspool-find-nov-line
-	       (if fetch-old (max 1 (- (car articles) fetch-old))
-		 (car articles)))
-	      (delete-region (point-min) (point))
-	      ;; Then we find the last wanted line. 
-	      (if (nnspool-find-nov-line 
-		   (progn (while (cdr articles) (setq articles (cdr articles)))
-			  (car articles)))
-		  (forward-line 1))
-	      (delete-region (point) (point-max))
-	      ;; If the buffer is empty, this wasn't very successful.
-	      (unless (zerop (buffer-size))
-		;; We check what the last article number was.  The NOV file
-		;; may be out of sync with the articles in the group.
-		(forward-line -1)
-		(setq last (read (current-buffer)))
-		(if (= last (car articles))
-		    ;; Yup, it's all there.
-		    t
-		  ;; Perhaps not.  We try to find the missing articles.
-		  (while (and arts
-			      (<= last (car arts)))
-		    (pop arts))
-		  ;; The articles in `arts' are missing from the buffer.
-		  (while arts
-		    (nnspool-insert-nov-head (pop arts)))
-		  t)))))))))
+	      (condition-case ()
+		  (progn
+		    ;; First we find the first wanted line.
+		    (nnspool-find-nov-line
+		     (if fetch-old (max 1 (- (car articles) fetch-old))
+		       (car articles)))
+		    (delete-region (point-min) (point))
+		    ;; Then we find the last wanted line. 
+		    (if (nnspool-find-nov-line 
+			 (progn (while (cdr articles)
+				  (setq articles (cdr articles)))
+				(car articles)))
+			(forward-line 1))
+		    (delete-region (point) (point-max))
+		    ;; If the buffer is empty, this wasn't very successful.
+		    (unless (zerop (buffer-size))
+		      ;; We check what the last article number was.  
+		      ;; The NOV file may be out of sync with the articles
+		      ;; in the group.
+		      (forward-line -1)
+		      (setq last (read (current-buffer)))
+		      (if (= last (car articles))
+			  ;; Yup, it's all there.
+			  t
+			;; Perhaps not.  We try to find the missing articles.
+			(while (and arts
+				    (<= last (car arts)))
+			  (pop arts))
+			;; The articles in `arts' are missing from the buffer.
+			(while arts
+			  (nnspool-insert-nov-head (pop arts)))
+			t)))
+		;; The NOV file was corrupted.
+		(error nil)))))))))
 
 (defun nnspool-insert-nov-head (article)
   "Read the head of ARTICLE, convert to NOV headers, and insert."

@@ -144,14 +144,15 @@ the group.")
 	`(lambda (arg)
 	   (gnus-post-method arg ,gnus-newsgroup-name)))
   (setq message-newsreader (setq message-mailer (gnus-extended-version)))
-  (let ((actions
-	 `((set-window-configuration ,winconf)
-	   ((lambda ()
-	      (when (buffer-name ,buffer)
-		(set-buffer ,buffer)
-		,(when article
-		   `(gnus-summary-mark-article-as-replied ,article))))))))
-    (setq message-send-actions (append message-send-actions actions))))
+  (message-add-action
+   `(set-window-configuration ,winconf) 'exit 'postpone 'kill)
+  (message-add-action
+   `(when (buffer-name ,buffer)
+      (save-excursion
+	(set-buffer ,buffer)
+	,(when article
+	   `(gnus-summary-mark-article-as-replied ,article))))
+   'send))
 
 (put 'gnus-setup-message 'lisp-indent-function 1)
 (put 'gnus-setup-message 'lisp-indent-hook 1)

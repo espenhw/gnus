@@ -417,7 +417,7 @@ Two predefined functions are available:
 		(t (cdar gnus-tree-brackets))))
 	 (buffer-read-only nil)
 	 beg end)
-    (add-text-properties
+    (gnus-add-text-properties
      (setq beg (point))
      (setq end (progn (eval gnus-tree-line-format-spec) (point)))
      (list 'gnus-number gnus-tmp-number))
@@ -439,7 +439,7 @@ Two predefined functions are available:
 		    (not (eval (caar list))))
 	  (setq list (cdr list)))))
     (unless (eq (setq face (cdar list)) (get-text-property beg 'face))
-      (put-text-property 
+      (gnus-put-text-property 
        beg end 'face 
        (if (boundp face) (symbol-value face) face)))))
 
@@ -629,7 +629,7 @@ Two predefined functions are available:
     (set-buffer (gnus-get-tree-buffer))
     (let (region)
       (when (setq region (gnus-tree-article-region article))
-	(put-text-property (car region) (cdr region) 'face face)
+	(gnus-put-text-property (car region) (cdr region) 'face face)
 	(set-window-point 
 	 (get-buffer-window (current-buffer) t) (cdr region))))))
 

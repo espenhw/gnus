@@ -1225,86 +1225,6 @@ binary group with Huge articles) you can set this variable to @code{nil}
 in @code{gnus-select-group-hook}, which is called when a group is
 selected.
 
-@findex gnus-thread-sort-by-total-score
-@findex gnus-thread-sort-by-date
-@findex gnus-thread-sort-by-score
-@findex gnus-thread-sort-by-subject
-@findex gnus-thread-sort-by-author
-@findex gnus-thread-sort-by-number
-@vindex gnus-thread-sort-functions
-If you are using a threaded summary display, you can sort the threads by
-setting @code{gnus-thread-sort-functions}, which is a list of functions.
-By default, sorting is done on article numbers.  Ready-made sorting
-predicate functions include @code{gnus-thread-sort-by-number},
-@code{gnus-thread-sort-by-author}, @code{gnus-thread-sort-by-subject},
-@code{gnus-thread-sort-by-date}, @code{gnus-thread-sort-by-score}, and
-@code{gnus-thread-sort-by-total-score}.
-
-Each function takes two threads and return non-@code{nil} if the first
-thread should be sorted before the other.  Note that sorting really is
-normally done by looking only at the roots of each thread.  If you use
-more than one function, the primary sort key should be the last function
-in the list.  You should probably always include
-@code{gnus-thread-sort-by-number} in the list of sorting
-functions---preferably first.  This will ensure that threads that are
-equal with respect to the other sort criteria will be displayed in
-ascending article order.
-
-If you would like to sort by score, then by subject, and finally by
-number, you could do something like:
-
-@lisp
-(setq gnus-thread-sort-functions 
-      '(gnus-thread-sort-by-number
-        gnus-thread-sort-by-subject
-        gnus-thread-sort-by-score))
-@end lisp
-
-The threads that have highest score will be displayed first in the
-summary buffer.  When threads have the same score, they will be sorted
-alphabetically.  The threads that have the same score and the same
-subject will be sorted by number, which is (normally) the sequence in
-which the articles arrived.
-
-If you want to sort by score and then reverse arrival order, you could
-say something like:
-
-@lisp
-(setq gnus-thread-sort-functions
-      '((lambda (t1 t2) 
-          (not (gnus-thread-sort-by-number t1 t2)))
-        gnus-thread-sort-by-score))
-@end lisp
-
-@vindex gnus-thread-score-function
-The function in the @code{gnus-thread-score-function} variable (default
-@code{+}) is used for calculating the total score of a thread.  Useful
-functions might be @code{max}, @code{min}, or squared means, or whatever
-tickles your fancy.
-
-@findex gnus-article-sort-functions
-@findex gnus-article-sort-by-date
-@findex gnus-article-sort-by-score
-@findex gnus-article-sort-by-subject
-@findex gnus-article-sort-by-author
-@findex gnus-article-sort-by-number
-If you are using an unthreaded display for some strange reason or other,
-you have to fiddle with the @code{gnus-article-sort-functions} variable.
-It is very similar to the @code{gnus-thread-sort-functions}, except that
-is uses slightly different functions for article comparison.  Available
-sorting predicate functions are @code{gnus-article-sort-by-number},
-@code{gnus-article-sort-by-author}, @code{gnus-article-sort-by-subject},
-@code{gnus-article-sort-by-date}, and @code{gnus-article-sort-by-score}.
-
-If you want to sort an unthreaded summary display by subject, you could
-say something like:
-
-@lisp
-(setq gnus-article-sort-functions 
-      '(gnus-article-sort-by-number
-        gnus-article-sort-by-subject))
-@end lisp
-
 
 @node Subscription Commands
 @section Subscription Commands
@@ -2568,6 +2488,7 @@ move around, read articles, post articles and reply to articles.
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
+* Sorting::                     How articles and threads are sorted.
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
 * Article Caching::             You may store articles in a cache.
 * Persistent Articles::         Making articles expiry-resistant.
@@ -4119,6 +4040,91 @@ when doing thread commands.  If this variable is @code{nil}, articles in
 the same thread with different subjects will not be included in the
 operation in question.  If this variable is @code{fuzzy}, only articles
 that have subjects that are fuzzily equal will be included.
+
+
+@node Sorting
+@section Sorting
+
+@findex gnus-thread-sort-by-total-score
+@findex gnus-thread-sort-by-date
+@findex gnus-thread-sort-by-score
+@findex gnus-thread-sort-by-subject
+@findex gnus-thread-sort-by-author
+@findex gnus-thread-sort-by-number
+@vindex gnus-thread-sort-functions
+If you are using a threaded summary display, you can sort the threads by
+setting @code{gnus-thread-sort-functions}, which is a list of functions.
+By default, sorting is done on article numbers.  Ready-made sorting
+predicate functions include @code{gnus-thread-sort-by-number},
+@code{gnus-thread-sort-by-author}, @code{gnus-thread-sort-by-subject},
+@code{gnus-thread-sort-by-date}, @code{gnus-thread-sort-by-score}, and
+@code{gnus-thread-sort-by-total-score}.
+
+Each function takes two threads and return non-@code{nil} if the first
+thread should be sorted before the other.  Note that sorting really is
+normally done by looking only at the roots of each thread.  If you use
+more than one function, the primary sort key should be the last function
+in the list.  You should probably always include
+@code{gnus-thread-sort-by-number} in the list of sorting
+functions---preferably first.  This will ensure that threads that are
+equal with respect to the other sort criteria will be displayed in
+ascending article order.
+
+If you would like to sort by score, then by subject, and finally by
+number, you could do something like:
+
+@lisp
+(setq gnus-thread-sort-functions 
+      '(gnus-thread-sort-by-number
+        gnus-thread-sort-by-subject
+        gnus-thread-sort-by-score))
+@end lisp
+
+The threads that have highest score will be displayed first in the
+summary buffer.  When threads have the same score, they will be sorted
+alphabetically.  The threads that have the same score and the same
+subject will be sorted by number, which is (normally) the sequence in
+which the articles arrived.
+
+If you want to sort by score and then reverse arrival order, you could
+say something like:
+
+@lisp
+(setq gnus-thread-sort-functions
+      '((lambda (t1 t2) 
+          (not (gnus-thread-sort-by-number t1 t2)))
+        gnus-thread-sort-by-score))
+@end lisp
+
+@vindex gnus-thread-score-function
+The function in the @code{gnus-thread-score-function} variable (default
+@code{+}) is used for calculating the total score of a thread.  Useful
+functions might be @code{max}, @code{min}, or squared means, or whatever
+tickles your fancy.
+
+@findex gnus-article-sort-functions
+@findex gnus-article-sort-by-date
+@findex gnus-article-sort-by-score
+@findex gnus-article-sort-by-subject
+@findex gnus-article-sort-by-author
+@findex gnus-article-sort-by-number
+If you are using an unthreaded display for some strange reason or other,
+you have to fiddle with the @code{gnus-article-sort-functions} variable.
+It is very similar to the @code{gnus-thread-sort-functions}, except that
+is uses slightly different functions for article comparison.  Available
+sorting predicate functions are @code{gnus-article-sort-by-number},
+@code{gnus-article-sort-by-author}, @code{gnus-article-sort-by-subject},
+@code{gnus-article-sort-by-date}, and @code{gnus-article-sort-by-score}.
+
+If you want to sort an unthreaded summary display by subject, you could
+say something like:
+
+@lisp
+(setq gnus-article-sort-functions 
+      '(gnus-article-sort-by-number
+        gnus-article-sort-by-subject))
+@end lisp
+
 
 
 @node Asynchronous Fetching
@@ -6419,16 +6425,16 @@ appropriate headers filled out, and the user can edit the message before
 sending it.
 
 @menu
-* New Mail Message::
-* New News Message::
-* Reply::
-* Wide Reply::
-* Followup::
-* Canceling News::
-* Superseding::
-* Forwarding::
-* Resending::
-* Bouncing::
+* New Mail Message::     Editing a brand new mail message.
+* New News Message::     Editing a brand new news message.
+* Reply::                Replying via mail.
+* Wide Reply::           Responding to all people via mail.
+* Followup::             Following up via news.
+* Canceling News::       Canceling a news article.
+* Superseding::          Superseding a message.
+* Forwarding::           Forwarding a message via news or mail.
+* Resending::            Resending a mail message.
+* Bouncing::             Bouncing a mail message.
 @end menu
 
 
@@ -6852,13 +6858,14 @@ Send the message (@code{message-send}).
 @section Message Variables
 
 @menu
-* Message Headers::
-* Mail Headers::
-* Mail Variables::
-* News Headers::
-* News Variables::
-* Various Message Variables::
-* Sending Variables::
+* Message Headers::             General message header stuff.
+* Mail Headers::                Customizing mail headers.
+* Mail Variables::              Other mail variables.
+* News Headers::                Customizing news headers.
+* News Variables::              Other news variables.
+* Various Message Variables::   Other message variables.
+* Sending Variables::           Variables for sending.
+* Message Actions::             Actions to be performed when exiting.
 @end menu
 
 
@@ -7189,6 +7196,44 @@ message will be added.
 @end table
 
 
+@node Message Actions
+@subsection Message Actions
+
+When Message is being used from a news/mail reader, the reader is likely
+to want to perform some task after the message has been sent.  Perhaps
+return to the previous window configuration or mark an article as
+replied.  
+
+@vindex message-kill-actions
+@vindex message-postpone-actions
+@vindex message-exit-actions
+@vindex message-send-actions
+The user may exit from the message buffer in various ways.  The most
+common is @kbd{C-c C-c}, which sends the message and exits.  Other
+possibilities are @kbd{C-c C-s} which just sends the message, @kbd{C-c
+C-p} which postpones the message editing and buries the message buffer,
+and @kbd{C-c C-k} which kills the message buffer.  Each of these actions
+have lists associated with them that contains actions to be executed:
+@code{message-send-actions}, @code{message-exit-actions},
+@code{message-postpone-actions}, and @code{message-kill-actions}.  
+
+Message provides a function to interface with these lists:
+@code{message-add-action}.  The first parameter is the action to be
+added, and the rest of the arguments are which lists to add this action
+to.  Here's an example from Gnus:
+
+@lisp
+  (message-add-action
+   `(set-window-configuration ,(current-window-configuration))
+   'exit 'postpone 'kill)
+@end lisp
+
+This restores the Gnus window configuration when the message buffer is
+killed, postponed or exited.
+
+An @dfn{action} can be either a normal function; or a list where the
+@code{car} is a function and the @code{cdr} is the list of arguments; or
+a form to be @code{eval}ed.
 
 
 

@@ -297,7 +297,8 @@ articles in the topic and its subtopics."
     (gnus-add-text-properties 
      (point)
      (prog1 (1+ (point)) 
-       (eval gnus-topic-line-format-spec))
+       (eval gnus-topic-line-format-spec)
+       (gnus-topic-remove-excess-properties)1)
      (list 'gnus-topic (intern name)
 	   'gnus-topic-level level
 	   'gnus-topic-unread unread

@@ -300,6 +300,12 @@ If stringp, use this; if non-nil, use no host name (user name only).")
 (defvar message-checksum nil)
 (defvar message-send-actions nil
   "A list of actions to be performed upon successful sending of a message.")
+(defvar message-exit-actions nil
+  "A list of actions to be performed upon exiting after sending a message.")
+(defvar message-kill-actions nil
+  "A list of actions to be performed before killing a message buffer.")
+(defvar message-postpone-actions nil
+  "A list of actions to be performed after postponing a message.")
 
 ;;;###autoload
 (defvar message-default-headers nil
@@ -672,7 +678,8 @@ Return the number of headers removed."
 
   (define-key message-mode-map "\C-c\C-c" 'message-send-and-exit)
   (define-key message-mode-map "\C-c\C-s" 'message-send)
-  (define-key message-mode-map "\C-c\C-k" 'message-dont-send))
+  (define-key message-mode-map "\C-c\C-k" 'message-kill-buffer)
+  (define-key message-mode-map "\C-c\C-p" 'message-dont-send))
 
 (easy-menu-define message-mode-menu message-mode-map
   "Message Menu."
@@ -725,6 +732,9 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (make-local-variable 'message-reply-buffer)
   (setq message-reply-buffer nil)
   (make-local-variable 'message-send-actions)
+  (make-local-variable 'message-exit-actions)
+  (make-local-variable 'message-kill-actions)
+  (make-local-variable 'message-postpone-actions)
   (set-syntax-table message-mode-syntax-table)
   (use-local-map message-mode-map)
   (setq local-abbrev-table text-mode-abbrev-table)
@@ -1091,19 +1101,29 @@ The text will also be indented the normal way."
 (defun message-send-and-exit (&optional arg)
   "Send message like `message-send', then, if no errors, exit from mail buffer."
   (interactive "P")
-  (let ((buf (current-buffer)))
+  (let ((buf (current-buffer))
+	(actions message-exit-actions))
     (when (and (message-send arg)
 	       (buffer-name buf))
       (if message-kill-buffer-on-exit
 	  (kill-buffer buf)
 	(bury-buffer buf)
 	(when (eq buf (current-buffer))
-	  (message-bury buf))))))
+	  (message-bury buf)))
+      (message-do-actions actions))))
 
 (defun message-dont-send ()
   "Don't send the message you have been editing."
   (interactive)
-  (message-bury (current-buffer)))
+  (message-bury (current-buffer))
+  (message-do-actions message-postpone-actions))
+
+(defun message-kill-buffer ()
+  "Kill the current buffer."
+  (interactive)
+  (let ((actions message-kill-actions))
+    (kill-buffer (current-buffer))
+    (message-do-actions actions)))
 
 (defun message-bury (buffer)
   "Bury this mail buffer."
@@ -1152,15 +1172,31 @@ the user from the mailer."
       (unless buffer-file-name
 	(set-buffer-modified-p nil)
 	(delete-auto-save-file-if-necessary t))
-      ;; Now perform actions on successful sending.
-      (let ((actions message-send-actions))
-	(while actions
-	  (condition-case nil
-	      (apply (caar actions) (cdar actions))
-	    (error))
-	  (pop actions)))
+      (message-do-actions message-send-actions)
       ;; Return success.
       t)))
+
+(defun message-add-action (action &rest types)
+  "Add ACTION to be performed when doing an exit of type TYPES."
+  (let (var)
+    (while types
+      (set (setq var (intern (format "message-%s-actions" (pop types))))
+	   (nconc (symbol-value var) (list action))))))
+
+(defun message-do-actions (actions)
+  "Perform all actions in ACTIONS."
+  ;; Now perform actions on successful sending.
+  (while actions
+    (condition-case nil
+	(cond 
+	 ;; A simple function.
+	 ((message-functionp (car actions))
+	  (funcall (car actions)))
+	 ;; Something to be evaled.
+	 (t
+	  (eval (car actions))))
+      (error))
+    (pop actions)))
 
 (defun message-send-mail (&optional arg)
   (require 'mail-utils)
@@ -1176,7 +1212,9 @@ the user from the mailer."
       (message-narrow-to-headers)
       (setq resend-to-addresses (mail-fetch-field "resent-to"))
       ;; Insert some headers.
-      (message-generate-headers message-required-mail-headers)
+      (let ((message-deletable-headers
+	     (if news nil message-deletable-headers)))
+	(message-generate-headers message-required-mail-headers))
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (unwind-protect
@@ -1256,7 +1294,8 @@ the user from the mailer."
 	(method (if (message-functionp message-post-method)
 		    (funcall message-post-method arg)
 		  message-post-method))
-	(messbuf (current-buffer)))
+	(messbuf (current-buffer))
+	result)
     (save-restriction
       (message-narrow-to-headers)
       ;; Insert some headers.
@@ -1289,11 +1328,15 @@ the user from the mailer."
 	    (require (car method))
 	    (funcall (intern (format "%s-open-server" (car method)))
 		     (cadr method) (cddr method))
-	    (funcall (intern (format "%s-request-post"
-				     (car method)))))
+	    (setq result
+		  (funcall (intern (format "%s-request-post" (car method))))))
 	(kill-buffer tembuf))
       (set-buffer messbuf)
-      (push 'news message-sent-message-via))))
+      (if result
+	  (push 'news message-sent-message-via)
+	(message "Couldn't send message via news: %s"
+		 (nnheader-get-report (car method)))
+	nil))))
 
 ;;;
 ;;; Header generation & syntax checking.
@@ -1998,7 +2041,8 @@ Headers already prepared in the buffer are not modified."
   (message-mode))
 
 (defun message-setup (headers &optional replybuffer actions)
-  (setq message-send-actions actions)
+  (when actions
+    (setq message-send-actions actions))
   (setq message-reply-buffer replybuffer)
   (goto-char (point-min))
   ;; Insert all the headers.

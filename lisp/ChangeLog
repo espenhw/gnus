@@ -1,4 +1,45 @@
+Sun May 19 09:58:30 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-group-set-mode-line): Make sure we're in the group
+	buffer.
+
+Sun May 19 11:14:54 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-group-set-mode-line): Empty dribble is unchanged.
+	(gnus-article-set-window-start): Search all frames.
+	(gnus-eval-in-buffer-window): Select window in different frame. 
+	(gnus-get-unread-articles): Update info here.
+
+Sun May 19 07:30:07 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-backlog-remove-article): Read-only.
+
+	* gnus-xmas.el (gnus-xmas-put-text-property): New function.
+
+	* gnus.el (gnus-subscribe-newsgroup-method): Doc fix.
+
+Sat May 18 14:33:37 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-save-newsrc-file): Update mode line.
+
+	* message.el (message-exit-actions, message-kill-actions,
+	message-postpone-actions): New variables.
+	(message-kill-buffer): New command and keystroke.
+	(message-bury): Changed keystroke.
+	(message-do-actions): New function.
+	(message-add-action): New function.
+	(message-send-news): Report failures.
+	(message-send-mail): Don't remove Message-ID already generated for
+	news. 
+
+Sat May 18 08:20:03 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* nnspool.el (nnspool-retrieve-headers-with-nov): Escape buggy nov
+	files.
+
 Sat May 18 08:42:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: 0.88 is released.
 
 	* gnus.el (gnus-group-set-mode-line): Say whether the dribble
 	buffer has been modified.

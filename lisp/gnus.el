@@ -969,7 +969,8 @@ inserts new groups at the beginning of the list of groups;
 `gnus-subscribe-alphabetically' inserts new groups in strict
 alphabetic order; `gnus-subscribe-hierarchically' inserts new groups
 in hierarchical newsgroup order; `gnus-subscribe-interactively' asks
-for your decision; `gnus-subscribe-killed' kills all new groups.")
+for your decision; `gnus-subscribe-killed' kills all new groups;
+`gnus-subscribe-zombies' will make all new groups into zombies.")
 
 ;; Suggested by a bug report by Hallvard B Furuseth.
 ;; <h.b.furuseth@usit.uio.no>.
@@ -1718,7 +1719,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.88"
+(defconst gnus-version "September Gnus v0.89"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2103,11 +2104,17 @@ Thank you for your help in stamping out bugs.
 
 (defmacro gnus-eval-in-buffer-window (buffer &rest forms)
   "Pop to BUFFER, evaluate FORMS, and then return to the original window."
-  (let ((tempvar (make-symbol "GnusStartBufferWindow")))
-    `(let ((,tempvar (selected-window)))
+  (let ((tempvar (make-symbol "GnusStartBufferWindow"))
+	(w (make-symbol "w"))
+	(buf (make-symbol "buf")))
+    `(let* ((,tempvar (selected-window))
+	    (,buf ,buffer)
+	    (,w (get-buffer-window ,buf 'visible)))
        (unwind-protect
 	   (progn
-	     (pop-to-buffer ,buffer)
+	     (if ,w
+		 (select-window ,w)
+	       (pop-to-buffer ,buf))
 	     ,@forms)
 	 (select-window ,tempvar)))))
 
@@ -2347,7 +2354,7 @@ Thank you for your help in stamping out bugs.
 (defun gnus-summary-line-format-spec ()
   (insert gnus-tmp-unread gnus-tmp-replied
 	  gnus-tmp-score-char gnus-tmp-indentation)
-  (put-text-property
+  (gnus-put-text-property
    (point)
    (progn
      (insert
@@ -2367,7 +2374,7 @@ Thank you for your help in stamping out bugs.
 
 (defun gnus-summary-dummy-line-format-spec ()
   (insert "*  ")
-  (put-text-property
+  (gnus-put-text-property
    (point)
    (progn
      (insert ":				 :")
@@ -2383,7 +2390,7 @@ Thank you for your help in stamping out bugs.
 	  gnus-tmp-process-marked
 	  gnus-group-indentation
 	  (format "%5s: " gnus-tmp-number-of-unread))
-  (put-text-property
+  (gnus-put-text-property
    (point)
    (progn
      (insert gnus-tmp-group "\n")
@@ -2597,7 +2604,7 @@ Thank you for your help in stamping out bugs.
 (defvar gnus-mouse-face-4 'highlight)
 
 (defun gnus-mouse-face-function (form type)
-  `(put-text-property
+  `(gnus-put-text-property
     (point) (progn ,@form (point))
     gnus-mouse-face-prop
     ,(if (equal type 0)
@@ -2611,7 +2618,7 @@ Thank you for your help in stamping out bugs.
 (defvar gnus-face-4 'bold)
 
 (defun gnus-face-face-function (form type)
-  `(put-text-property
+  `(gnus-put-text-property
     (point) (progn ,@form (point))
     'face ',(symbol-value (intern (format "gnus-face-%d" type)))))
 
@@ -3747,14 +3754,14 @@ simple-first is t, first argument is already simplified."
   "Set text PROPS on the B to E region, extending `intangible' 1 past B."
   (gnus-add-text-properties b e props)
   (when (memq 'intangible props)
-    (put-text-property (max (1- b) (point-min))
+    (gnus-put-text-property (max (1- b) (point-min))
 		       b 'intangible (cddr (memq 'intangible props)))))
 
 (defsubst gnus-unhide-text (b e)
   "Remove hidden text properties from region between B and E."
   (remove-text-properties b e gnus-hidden-properties)
   (when (memq 'intangible gnus-hidden-properties)
-    (put-text-property (max (1- b) (point-min))
+    (gnus-put-text-property (max (1- b) (point-min))
 		       b 'intangible nil)))
 
 (defun gnus-hide-text-type (b e type)
@@ -4431,7 +4438,7 @@ prompt the user for the name of an NNTP server to use."
   ;; Fontify some.
   (goto-char (point-min))
   (and (search-forward "Praxis" nil t)
-       (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
+       (gnus-put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
   (goto-char (point-min))
   (let* ((mode-string (gnus-group-set-mode-line)))
     (setq mode-line-buffer-identification
@@ -4943,7 +4950,9 @@ increase the score of each group you read."
     (when (inline (gnus-visual-p 'group-highlight 'highlight))
       (forward-line -1)
       (run-hooks 'gnus-group-update-hook)
-      (forward-line))))
+      (forward-line))
+    ;; Allow XEmacs to remove front-sticky text properties.
+    (gnus-group-remove-excess-properties)))
 
 (defun gnus-group-update-group (group &optional visible-only)
   "Update all lines where GROUP appear.
@@ -4995,29 +5004,34 @@ already."
 
 (defun gnus-group-set-mode-line ()
   (when (memq 'group gnus-updated-mode-lines)
-    (let* ((gformat (or gnus-group-mode-line-format-spec
-			(setq gnus-group-mode-line-format-spec
-			      (gnus-parse-format
-			       gnus-group-mode-line-format
-			       gnus-group-mode-line-format-alist))))
-	   (gnus-tmp-news-server (cadr gnus-select-method))
-	   (gnus-tmp-news-method (car gnus-select-method))
-	   (max-len 60)
-	   gnus-tmp-header			;Dummy binding for user-defined formats
-	   ;; Get the resulting string.
-	   (mode-string (eval gformat)))
-      ;; Say whether the dribble buffer has been modified.
-      (setq mode-line-modified
-	    (if (and gnus-dribble-buffer
-		     (buffer-name gnus-dribble-buffer)
-		     (buffer-modified-p gnus-dribble-buffer))
-		"-* " "-- "))
-      ;; If the line is too long, we chop it off.
-      (when (> (length mode-string) max-len)
-	(setq mode-string (substring mode-string 0 (- max-len 4))))
-      (prog1
-	  (setq mode-line-buffer-identification (list mode-string))
-	(set-buffer-modified-p t)))))
+    (save-excursion
+      (set-buffer gnus-group-buffer)
+      (let* ((gformat (or gnus-group-mode-line-format-spec
+			  (setq gnus-group-mode-line-format-spec
+				(gnus-parse-format
+				 gnus-group-mode-line-format
+				 gnus-group-mode-line-format-alist))))
+	     (gnus-tmp-news-server (cadr gnus-select-method))
+	     (gnus-tmp-news-method (car gnus-select-method))
+	     (max-len 60)
+	     gnus-tmp-header		;Dummy binding for user-defined formats
+	     ;; Get the resulting string.
+	     (mode-string (eval gformat)))
+	;; Say whether the dribble buffer has been modified.
+	(setq mode-line-modified
+	      (if (and gnus-dribble-buffer
+		       (buffer-name gnus-dribble-buffer)
+		       (buffer-modified-p gnus-dribble-buffer)
+		       (save-excursion
+			 (set-buffer gnus-dribble-buffer)
+			 (not (zerop (buffer-size)))))
+		  "-* " "-- "))
+	;; If the line is too long, we chop it off.
+	(when (> (length mode-string) max-len)
+	  (setq mode-string (substring mode-string 0 (- max-len 4))))
+	(prog1
+	    (setq mode-line-buffer-identification (list mode-string))
+	  (set-buffer-modified-p t))))))
 
 (defun gnus-group-group-name ()
   "Get the name of the newsgroup on the current line."
@@ -7466,7 +7480,7 @@ This is all marks except unread, ticked, dormant, and expirable."
     (when (string= gnus-tmp-name "")
       (setq gnus-tmp-name gnus-tmp-from))
     (or (numberp gnus-tmp-lines) (setq gnus-tmp-lines 0))
-    (put-text-property
+    (gnus-put-text-property
      (point)
      (progn (eval gnus-summary-line-format-spec) (point))
      'gnus-number gnus-tmp-number)
@@ -8484,7 +8498,7 @@ or a straight list of headers."
 	    (when (string= gnus-tmp-name "")
 	      (setq gnus-tmp-name gnus-tmp-from))
 	    (or (numberp gnus-tmp-lines) (setq gnus-tmp-lines 0))
-	    (put-text-property
+	    (gnus-put-text-property
 	     (point)
 	     (progn (eval gnus-summary-line-format-spec) (point))
 	     'gnus-number number)
@@ -13361,7 +13375,7 @@ The following commands are available:
 ;; from the head of the article.
 (defun gnus-article-set-window-start (&optional line)
   (set-window-start
-   (get-buffer-window gnus-article-buffer)
+   (get-buffer-window gnus-article-buffer t)
    (save-excursion
      (set-buffer gnus-article-buffer)
      (goto-char (point-min))
@@ -13769,7 +13783,7 @@ always hide."
 	      (beginning-of-line)
 	      ;; We add the headers we want to keep to a list and delete
 	      ;; them from the buffer.
-	      (put-text-property 
+	      (gnus-put-text-property 
 	       (point) (1+ (point)) 'message-rank
 	       (if (or (and visible (looking-at visible))
 		       (and ignored
@@ -13786,7 +13800,7 @@ always hide."
 		;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
 		(gnus-hide-text-type beg (point-max) 'headers))
 	      ;; Work around XEmacs lossage.
-	      (put-text-property (point-min) beg 'invisible nil))))))))
+	      (gnus-put-text-property (point-min) beg 'invisible nil))))))))
 
 (defun gnus-article-hide-boring-headers (&optional arg)
   "Toggle hiding of headers that aren't very interesting.
@@ -13868,15 +13882,15 @@ always hide."
 	(let ((next (following-char))
 	      (previous (char-after (- (point) 2))))
 	  (cond ((eq next previous)
-		 (put-text-property (- (point) 2) (point) 'invisible t)
-		 (put-text-property (point) (1+ (point)) 'face 'bold))
+		 (gnus-put-text-property (- (point) 2) (point) 'invisible t)
+		 (gnus-put-text-property (point) (1+ (point)) 'face 'bold))
 		((eq next ?_)
-		 (put-text-property (1- (point)) (1+ (point)) 'invisible t)
-		 (put-text-property
+		 (gnus-put-text-property (1- (point)) (1+ (point)) 'invisible t)
+		 (gnus-put-text-property
 		  (- (point) 2) (1- (point)) 'face 'underline))
 		((eq previous ?_)
-		 (put-text-property (- (point) 2) (point) 'invisible t)
-		 (put-text-property
+		 (gnus-put-text-property (- (point) 2) (point) 'invisible t)
+		 (gnus-put-text-property
 		  (point) (1+ (point))	'face 'underline))))))))
 
 (defun gnus-article-word-wrap ()
@@ -14191,9 +14205,9 @@ how much time has lapsed since DATE."
 	    (forward-line -1)
 	    (when (and (gnus-visual-p 'article-highlight 'highlight)
 		       (looking-at "\\([^:]+\\): *\\(.*\\)$"))
-	      (put-text-property (match-beginning 1) (match-end 1)
+	      (gnus-put-text-property (match-beginning 1) (match-end 1)
 				 'face bface)
-	      (put-text-property (match-beginning 2) (match-end 2)
+	      (gnus-put-text-property (match-beginning 2) (match-end 2)
 				 'face eface))))))))
 
 (defun gnus-make-date-line (date type)
@@ -15736,20 +15750,19 @@ newsgroup."
 	  (when (<= (gnus-info-level info) foreign-level)
 	    (setq active (gnus-activate-group group 'scan))
 	    (unless (inline (gnus-virtual-group-p group))
-	      (inline (gnus-close-group group))))
-
+	      (inline (gnus-close-group group)))
+	    (when (fboundp (intern (concat (symbol-name (car method))
+					   "-request-update-info")))
+	      (inline (gnus-request-update-info info method))))
 	;; These groups are native or secondary.
 	(when (and (<= (gnus-info-level info) level)
 		   (not gnus-read-active-file))
 	  (setq active (gnus-activate-group group 'scan))
 	  (inline (gnus-close-group group))))
 
+      ;; Get the number of unread articles in the group.
       (if active
-	  (inline (gnus-get-unread-articles-in-group 
-		   info active
-		   (and method
-			(fboundp (intern (concat (symbol-name (car method))
-						 "-request-update-info"))))))
+	  (inline (gnus-get-unread-articles-in-group info active))
 	;; The group couldn't be reached, so we nix out the number of
 	;; unread articles and stuff.
 	(gnus-set-active group nil)
@@ -16595,7 +16608,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (kill-buffer (current-buffer))
 	  (gnus-message
 	   5 "Saving %s.eld...done" gnus-current-startup-file))
-	(gnus-dribble-delete-file)))))
+	(gnus-dribble-delete-file)
+	(gnus-group-set-mode-line)))))
 
 (defun gnus-gnus-to-quick-newsrc-format ()
   "Insert Gnus variables such as gnus-newsrc-alist in lisp format."
@@ -16858,7 +16872,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (setq b (point))
 	  (insert-buffer-substring buffer)
 	  ;; Tag the beginning of the article with the ident.
-	  (put-text-property b (1+ b) 'gnus-backlog ident))))))
+	  (gnus-put-text-property b (1+ b) 'gnus-backlog ident))))))
 
 (defun gnus-backlog-remove-oldest-article ()
   (save-excursion
@@ -16887,16 +16901,17 @@ If FORCE is non-nil, the .newsrc file is read."
 	;; It was in the backlog.
 	(save-excursion
 	  (set-buffer (gnus-backlog-buffer))
-	  (when (setq beg (text-property-any
-			   (point-min) (point-max) 'gnus-backlog
-			   ident))
-	    ;; Find the end (i. e., the beginning of the next article).
-	    (setq end
-		  (next-single-property-change
-		   (1+ beg) 'gnus-backlog (current-buffer) (point-max)))
-	    (delete-region beg end)
-	    ;; Return success.
-	    t))))))
+	  (let (buffer-read-only)
+	    (when (setq beg (text-property-any
+			     (point-min) (point-max) 'gnus-backlog
+			     ident))
+	      ;; Find the end (i. e., the beginning of the next article).
+	      (setq end
+		    (next-single-property-change
+		     (1+ beg) 'gnus-backlog (current-buffer) (point-max)))
+	      (delete-region beg end)
+	      ;; Return success.
+	      t)))))))
 
 (defun gnus-backlog-request-article (group number buffer)
   (when (numberp number)

@@ -97,7 +97,7 @@ It is provided only to ease porting of broken FSF Emacs programs."
 		    (list (extent-property extent 'text-prop) nil)
 		    buffer))
 		 buffer start end nil nil 'text-prop)
-    (add-text-properties start end props buffer)))
+    (gnus-add-text-properties start end props buffer)))
 
 (defun gnus-xmas-highlight-selected-summary ()
   ;; Highlight selected article in summary buffer
@@ -148,6 +148,10 @@ displayed, no centering will be performed."
   (add-text-properties start end props object)
   (put-text-property start end 'start-closed nil object))
 
+(defun gnus-xmas-put-text-property (start end prop value &optional object)
+  (put-text-property start end prop value object)
+  (put-text-property start end 'start-closed nil object))
+
 (defun gnus-xmas-extent-start-open (point)
   (map-extents (lambda (extent arg)
 		 (set-extent-property extent 'start-open t))
@@ -191,7 +195,7 @@ call it with the value of the `gnus-data' text property."
   (and gnus-article-button-face
        (gnus-overlay-put (gnus-make-overlay from to) 
 			 'face gnus-article-button-face))
-  (add-text-properties 
+  (gnus-add-text-properties 
    from to
    (nconc
     (and gnus-article-mouse-face
@@ -294,6 +298,26 @@ call it with the value of the `gnus-data' text property."
 	       (event-to-character event)) 
 	  event)))
 
+(defun gnus-xmas-group-remove-excess-properties ()
+  (let ((end (point))
+	(beg (progn (forward-line -1) (point))))
+    (remove-text-properties (1+ beg) end '(gnus-group nil))
+    (remove-text-properties 
+     beg end 
+     '(gnus-topic nil gnus-topic-level nil gnus-topic-visible nil))
+    (goto-char end)
+    (map-extents 
+     (lambda (e ma)
+       (set-extent-property e 'start-closed t))
+     (current-buffer) beg end)))
+		  
+(defun gnus-xmas-topic-remove-excess-properties ()
+  (let ((end (point))
+	(beg (progn (forward-line -1) (point))))
+    (remove-text-properties beg end '(gnus-group nil gnus-unread nil))
+    (remove-text-properties (1+ beg) end '(gnus-topic nil))
+    (goto-char end)))
+
 (defun gnus-xmas-seconds-since-epoch (date)
   "Return a floating point number that says how many seconds have lapsed between Jan 1 12:00:00 1970 and DATE."
   (let* ((tdate (mapcar (lambda (ti) (and ti (string-to-int ti)))
@@ -330,6 +354,7 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-overlay-end 'extent-end-position)
   (fset 'gnus-extent-detached-p 'extent-detached-p)
   (fset 'gnus-add-text-properties 'gnus-xmas-add-text-properties)
+  (fset 'gnus-put-text-property 'gnus-xmas-put-text-property)
       
   (require 'text-props)
   (if (< emacs-minor-version 14)
@@ -441,7 +466,14 @@ pounce directly on the real variables themselves.")
   (add-hook 'gnus-grouplens-mode-hook 'gnus-xmas-grouplens-menu-add)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
-  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar))
+  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
+
+  (when (and (<= emacs-major-version 19)
+	     (<= emacs-minor-version 13))
+    (fset 'gnus-group-remove-excess-properties
+	  'gnus-xmas-group-remove-excess-properties)
+    (fset 'gnus-topic-remove-excess-properties
+	  'gnus-xmas-topic-remove-excess-properties)))
 
 
 ;;; XEmacs logo and toolbar.

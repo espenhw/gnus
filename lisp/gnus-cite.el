@@ -334,7 +334,7 @@ always hide."
 		(setq beg nil)
 	      (setq beg (point))))
 	  (when (and beg end)
-	    (add-text-properties beg end props)
+	    (gnus-add-text-properties beg end props)
 	    (goto-char beg)
 	    (unless (save-excursion (search-backward "\n\n" nil t))
 	      (insert "\n"))
@@ -351,7 +351,7 @@ always hide."
      (if (text-property-any
 	  (car region) (1- (cdr region))
 	  (car gnus-hidden-properties) (cadr gnus-hidden-properties))
-	 'remove-text-properties 'add-text-properties)
+	 'remove-text-properties 'gnus-add-text-properties)
      (car region) (cdr region) gnus-hidden-properties)))
 
 (defun gnus-article-hide-citation-maybe (&optional arg force)
@@ -396,7 +396,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 			total (cdr total))
 		  (goto-line hiden)
 		  (or (assq hiden gnus-cite-attribution-alist)
-		      (add-text-properties 
+		      (gnus-add-text-properties 
 		       (point) (progn (forward-line 1) (point))
 		       (nconc (list 'gnus-type 'cite)
 			      gnus-hidden-properties)))))))))))
@@ -703,7 +703,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 				       gnus-hidden-properties))
 	      ((assq number gnus-cite-attribution-alist))
 	      (t
-	       (add-text-properties 
+	       (gnus-add-text-properties 
 		(point) (progn (forward-line 1) (point))
 		 (nconc (list 'gnus-type 'cite)
 			gnus-hidden-properties))))))))
