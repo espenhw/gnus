@@ -767,6 +767,11 @@ have to deal with users that use these evil tools, in which case you may
 set this variable to a regexp that matches these prefixes.  Myself, I
 just throw away non-compliant mail.
 
+@item message-alternative-emails
+@vindex message-alternative-emails
+A regexp to match the alternative email addresses.  The first matched
+address (not primary one) is used in the @code{From} field.
+
 @end table
 
 

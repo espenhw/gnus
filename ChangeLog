@@ -33,3 +33,6 @@
 	* xemacs.mak: New NMAKE file to support build and install on
 	Windows NT.
 
+;; Local Variables:
+;; coding: iso-2022-7bit
+;; End:

@@ -903,7 +903,7 @@ should be sent in several parts. If it is nil, the size is unlimited."
 
 (defcustom message-alternative-emails nil
   "A regexp to match the alternative email addresses.
-The first matched address (not primary one) is used in From field."
+The first matched address (not primary one) is used in the From field."
   :group 'message-headers
   :type '(choice (const :tag "Always use primary" nil)
 		 regexp))
