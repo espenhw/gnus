@@ -1154,7 +1154,7 @@ variable instead."
 This is a list where each element is a complete select method (see
 `gnus-select-method').
 
-If, for instance, you want to read your mail with the nnml backend,
+If, for instance, you want to read your mail with the nnml back end,
 you could set this variable:
 
 \(setq gnus-secondary-select-methods '((nnml \"\")))"
@@ -1803,7 +1803,7 @@ Putting (gnus-agentize) in ~/.gnus is obsolete by (setq gnus-agent t)."
 (defvar gnus-agent-covered-methods nil)
 
 (defvar gnus-command-method nil
-  "Dynamically bound variable that says what the current backend is.")
+  "Dynamically bound variable that says what the current back end is.")
 
 (defvar gnus-current-select-method nil
   "The current method for selecting a newsgroup.")
@@ -1864,12 +1864,13 @@ Putting (gnus-agentize) in ~/.gnus is obsolete by (setq gnus-agent t)."
 ;; `download' is a agent flag private to each gnus installation
 ;; `unsend' are for nndraft groups only
 ;; `score' is not a proper mark
+;; `bookmark': don't propagated it, or fix the bug in update-mark.
 (defconst gnus-article-unpropagated-mark-lists
-  '(seen cache download unsend score)
-  "Marks that shouldn't be propagated to backends.
-Typical marks are those that make no sense in a standalone backend,
+  '(seen cache download unsend score bookmark)
+  "Marks that shouldn't be propagated to back ends.
+Typical marks are those that make no sense in a standalone back end,
 such as a mark that says whether an article is stored in the cache
-\(which doesn't make sense in a standalone backend).")
+\(which doesn't make sense in a standalone back end).")
 
 (defvar gnus-headers-retrieved-by nil)
 (defvar gnus-article-reply nil)

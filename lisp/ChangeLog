@@ -1,3 +1,8 @@
+2002-02-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-article-unpropagated-mark-lists): Don't propagate
+	bookmark, because update-mark doesn't handle it correctly.
+
 2002-02-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-soup.el (gnus-soup-send-packet): Send news and mail
