@@ -1,5 +1,5 @@
 ;;; gnus-agent.el --- unplugged support for Gnus
-;; Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1852,54 +1852,56 @@ modified) original contents, they are first saved to their own file."
 
 (defun gnus-agent-read-local (file)
   "Load FILE and do a `read' there."
-  (let ((obarray (gnus-make-hashtable (count-lines (point-min) (point-max))))
+  (let ((my-obarray (gnus-make-hashtable (count-lines (point-min) 
+                                                      (point-max))))
         (line 1))
-        (with-temp-buffer
-          (condition-case nil
-              (nnheader-insert-file-contents file)
-            (file-error))
+    (with-temp-buffer
+      (condition-case nil
+          (nnheader-insert-file-contents file)
+        (file-error))
 
-          (goto-char (point-min))
-          ;; Skip any comments at the beginning of the file (the only place where they may appear)
-          (while (= (following-char) ?\;)
-            (forward-line 1)
-            (setq line (1+ line)))
+      (goto-char (point-min))
+      ;; Skip any comments at the beginning of the file (the only place where they may appear)
+      (while (= (following-char) ?\;)
+        (forward-line 1)
+        (setq line (1+ line)))
 
-          (while (not (eobp))
-            (condition-case err
-                (let (group 
-                      min
-                      max
-                      (cur (current-buffer)))
-                  (setq group (read cur)
-                        min (read cur)
-                        max (read cur))
+      (while (not (eobp))
+        (condition-case err
+            (let (group 
+                  min
+                  max
+                  (cur (current-buffer)))
+              (setq group (read cur)
+                    min (read cur)
+                    max (read cur))
 
-                  (when (stringp group)
-                    (setq group (intern group obarray)))
+              (when (stringp group)
+                (setq group (intern group my-obarray)))
 
-                  ;; NOTE: The '+ 0' ensure that min and max are both numerics.
-                  (set group (cons (+ 0 min) (+ 0 max))))
-              (error
-               (gnus-message 3 "Warning - invalid agent local: %s on line %d: " file line (error-message-string err))))
-            (forward-line 1)
-            (setq line (1+ line))))
+              ;; NOTE: The '+ 0' ensure that min and max are both numerics.
+              (set group (cons (+ 0 min) (+ 0 max))))
+          (error
+           (gnus-message 3 "Warning - invalid agent local: %s on line %d: "
+                         file line (error-message-string err))))
+        (forward-line 1)
+        (setq line (1+ line))))
       
-    (set (intern "+dirty" obarray) nil)
-    (set (intern "+method" obarray) gnus-command-method)
-    obarray))
+    (set (intern "+dirty" my-obarray) nil)
+    (set (intern "+method" my-obarray) gnus-command-method)
+    my-obarray))
 
 (defun gnus-agent-save-local (&optional force)
   "Save gnus-agent-article-local under it method's agent.lib directory."
-  (let ((obarray gnus-agent-article-local))
-    (when (and obarray
-               (or force (symbol-value (intern "+dirty" obarray))))
-      (let* ((gnus-command-method (symbol-value (intern "+method" obarray)))
+  (let ((my-obarray gnus-agent-article-local))
+    (when (and my-obarray
+               (or force (symbol-value (intern "+dirty" my-obarray))))
+      (let* ((gnus-command-method (symbol-value (intern "+method" my-obarray)))
              ;; NOTE: gnus-command-method is used within gnus-agent-lib-file.
              (dest (gnus-agent-lib-file "local")))
         (gnus-make-directory (gnus-agent-lib-file ""))
         (with-temp-file dest
-          (let ((gnus-command-method (symbol-value (intern "+method" obarray)))
+          (let ((gnus-command-method (symbol-value (intern "+method" my-obarray)))
                 (file-name-coding-system nnmail-pathname-coding-system)
                 (coding-system-for-write
                  gnus-agent-file-coding-system)
@@ -1917,7 +1919,8 @@ modified) original contents, they are first saved to their own file."
                                  (princ (car range))
                                  (princ " ")
                                  (princ (cdr range))
-                                 (princ "\n"))))))))))))
+                                 (princ "\n"))))) 
+                      my-obarray)))))))
 
 (defun gnus-agent-get-local (group)
   (let* ((gmane (gnus-group-real-name group))
