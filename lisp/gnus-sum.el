@@ -295,13 +295,16 @@ This variable can either be the symbols `first' (place point on the
 first subject), `unread' (place point on the subject line of the first
 unread article), `best' (place point on the subject line of the
 higest-scored article), `unseen' (place point on the subject line of
-the first unseen article), or a function to be called to place point on
-some subject line.."
+the first unseen article), 'unseen-or-unread' (place point on the subject
+line of the first unseen article or, if all article have been seen, on the
+subject line of the first unread article), or a function to be called to
+place point on some subject line.."
   :group 'gnus-group-select
   :type '(choice (const best)
 		 (const unread)
 		 (const first)
-		 (const unseen)))
+		 (const unseen)
+	         (const unseen-or-unread)))
 
 (defcustom gnus-auto-select-next t
   "*If non-nil, offer to go to the next group from the end of the previous.
@@ -3327,6 +3330,8 @@ If NO-DISPLAY, don't generate a summary buffer."
     (gnus-summary-first-unread-subject))
    ((eq gnus-auto-select-subject 'unseen)
     (gnus-summary-first-unseen-subject))
+   ((eq gnus-auto-select-subject 'unseen-or-unread)
+    (gnus-summary-first-unseen-or-unread-subject))
    ((eq gnus-auto-select-subject 'first)
     ;; Do nothing.
     )
@@ -4982,6 +4987,10 @@ If SELECT-ARTICLES, only select those articles from GROUP."
        ((eq mark-type 'range)
 	(cond
 	 ((eq mark 'seen)
+	  ;; Fix the record for `seen' if it looks like (seen NUM1 . NUM2).
+	  ;; It should be (seen (NUM1 . NUM2)).
+	  (when (numberp (cddr marks))
+	    (setcdr marks (list (cdr marks))))
 	  (setq articles (cdr marks))
 	  (while (and articles
 		      (or (and (consp (car articles))
@@ -6850,6 +6859,19 @@ Return nil if there are no unseen articles."
       (when (gnus-summary-first-subject t t t)
 	(gnus-summary-show-thread)
 	(gnus-summary-first-subject t t t))
+    (gnus-summary-position-point)))
+
+(defun gnus-summary-first-unseen-or-unread-subject ()
+  "Place the point on the subject line of the first unseen article.
+Return nil if there are no unseen articles."
+  (interactive)
+  (prog1
+      (unless (when (gnus-summary-first-subject t t t)
+		(gnus-summary-show-thread)
+		(gnus-summary-first-subject t t t))
+	(when (gnus-summary-first-subject t)
+	  (gnus-summary-show-thread)
+	  (gnus-summary-first-subject t)))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-first-article ()

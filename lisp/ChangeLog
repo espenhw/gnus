@@ -1,4 +1,41 @@
+2002-01-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnkiboze.el (nnkiboze-generate-group): Make sure the directory
+	exists. 
+
+	* gnus-spec.el (gnus-string-width-function): New function.
+	(gnus-tilde-cut-form): Use it.
+	(gnus-tilde-max-form): Ditto.
+	(gnus-use-correct-string-widths): Default to (featurep 'xemacs). 
+	(gnus-substring-function): Use it.
+	(gnus-tilde-cut-form): Ditto.
+	(gnus-substring-function): New function.
+
+	* message.el (message-check-news-header-syntax): New message.
+
+	* gnus.el (gnus-slave-no-server): Doc fix.
+
+	* gnus-spec.el (gnus-use-correct-string-widths): Default to t.
+
+2002-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-adjust-marked-articles): Fix the record for
+	`seen' if it looks like (seen NUM1 . NUM2).  It should be
+	(seen (NUM1 . NUM2)).
+
+2002-01-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-topic.el (gnus-topic-catchup-articles): Update article
+	number in closed topics.
+
+2002-01-19  Daniel Pittman  <daniel@rimspace.net>
+
+	* gnus-sum.el (gnus-summary-first-unseen-or-unread-subject): New
+	functions. 
+
 2002-01-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-group-find-parameter): Clean up.	
 
 	* gnus-sum.el (gnus-summary-goto-subject): Error on non-numerical
 	articles. 

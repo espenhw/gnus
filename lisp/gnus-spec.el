@@ -307,15 +307,29 @@
     (setq wend seek)
     (substring string wstart (1- wend))))
 
+(defun gnus-string-width-function ()
+  (cond
+   (gnus-use-correct-string-widths
+    'gnus-correct-length)
+   ((fboundp 'string-width)
+    'string-width)
+   (t
+    'length)))
+
+(defun gnus-substring-function ()
+  (cond
+   (gnus-use-correct-string-widths
+    'gnus-correct-substring)
+   ((fboundp 'string-width)
+    'gnus-correct-substring)
+   (t
+    'substring)))
+
 (defun gnus-tilde-max-form (el max-width)
   "Return a form that limits EL to MAX-WIDTH."
   (let ((max (abs max-width))
-	(length-fun (if gnus-use-correct-string-widths
-			'gnus-correct-length
-		      'length))
-	(substring-fun (if gnus-use-correct-string-widths
-			   'gnus-correct-substring
-			 'substring)))
+	(length-fun (gnus-string-width-function))
+	(substring-fun (gnus-substring-function)))
     (if (symbolp el)
 	`(if (> (,length-fun ,el) ,max)
 	     ,(if (< max-width 0)
@@ -332,12 +346,8 @@
 (defun gnus-tilde-cut-form (el cut-width)
   "Return a form that cuts CUT-WIDTH off of EL."
   (let ((cut (abs cut-width))
-	(length-fun (if gnus-use-correct-string-widths
-		      'gnus-correct-length
-		    'length))
-	(substring-fun (if gnus-use-correct-string-widths
-		       'gnus-correct-substring
-		     'substring)))
+	(length-fun (gnus-string-width-function))
+	(substring-fun (gnus-substring-function)))
     (if (symbolp el)
 	`(if (> (,length-fun ,el) ,cut)
 	     ,(if (< cut-width 0)

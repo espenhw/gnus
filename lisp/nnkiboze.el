@@ -252,11 +252,12 @@ Finds out what articles are to be part of the nnkiboze groups."
     (when (file-exists-p newsrc-file)
       (load newsrc-file))
     (let ((coding-system-for-write nnkiboze-file-coding-system))
+      (gnus-make-directory (file-name-directory nov-file))
       (with-temp-file nov-file
 	(when (file-exists-p nov-file)
 	  (insert-file-contents nov-file))
 	(setq nov-buffer (current-buffer))
- ;; Go through the active hashtb and add new all groups that match the
+	;; Go through the active hashtb and add new all groups that match the
 	;; kiboze regexp.
 	(mapatoms
 	 (lambda (group)
@@ -273,7 +274,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 		      nnkiboze-newsrc)))
 	 gnus-active-hashtb)
 	;; `newsrc' is set to the list of groups that possibly are
-     ;; component groups to this kiboze group.  This list has elements
+	;; component groups to this kiboze group.  This list has elements
 	;; on the form `(GROUP . NUMBER)', where NUMBER is the highest
 	;; number that has been kibozed in GROUP in this kiboze group.
 	(setq newsrc nnkiboze-newsrc)
@@ -294,13 +295,13 @@ Finds out what articles are to be part of the nnkiboze groups."
 						gnus-newsrc-hashtb)))
 	    (unwind-protect
 		(progn
-	 ;; We set all list of article marks to nil.  Since we operate
-	    ;; on copies of the real lists, we can destroy anything we
+		  ;; We set all list of article marks to nil.  Since we operate
+		  ;; on copies of the real lists, we can destroy anything we
 		  ;; want here.
 		  (when (nth 3 ginfo)
 		    (setcar (nthcdr 3 ginfo) nil))
-	  ;; We set the list of read articles to be what we expect for
-		 ;; this kiboze group -- either nil or `(1 . LOWEST)'.
+		  ;; We set the list of read articles to be what we expect for
+		  ;; this kiboze group -- either nil or `(1 . LOWEST)'.
 		  (when ginfo
 		    (setcar (nthcdr 2 ginfo)
 			    (and (not (= lowest 1)) (cons 1 lowest))))
@@ -320,7 +321,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 		    ;; We go through the list of scored articles.
 		    (while gnus-newsgroup-scored
 		      (when (> (caar gnus-newsgroup-scored) lowest)
-		 ;; If it has a good score, then we enter this article
+			;; If it has a good score, then we enter this article
 			;; into the kiboze group.
 			(nnkiboze-enter-nov
 			 nov-buffer
@@ -340,6 +341,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	  (gnus-message 3 "nnkiboze: Checking %s...done" (caar newsrc))
 	  (setq newsrc (cdr newsrc)))))
     ;; We save the kiboze newsrc for this group.
+    (gnus-make-directory (file-name-directory newsrc-file))
     (with-temp-file newsrc-file
       (insert "(setq nnkiboze-newsrc '")
       (gnus-prin1 nnkiboze-newsrc)

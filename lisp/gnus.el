@@ -2936,12 +2936,10 @@ If you call this function inside a loop, consider using the faster
     (set-buffer gnus-group-buffer)
     (if symbol
 	(gnus-group-fast-parameter group symbol allow-list)
-      (let ((parameters
-	     (nconc
-	      (copy-sequence
-	       (funcall gnus-group-get-parameter-function group))
-	      (gnus-parameters-get-parameter group))))
-	parameters))))
+      (nconc
+       (copy-sequence
+	(funcall gnus-group-get-parameter-function group))
+       (gnus-parameters-get-parameter group)))))
 
 (defun gnus-group-get-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.
@@ -3287,18 +3285,19 @@ Allow completion over sensible values."
 
 ;;;###autoload
 (defun gnus-slave-no-server (&optional arg)
-  "Read network news as a slave, without connecting to local server."
+  "Read network news as a slave, without connecting to the local server."
   (interactive "P")
   (gnus-no-server arg t))
 
 ;;;###autoload
 (defun gnus-no-server (&optional arg slave)
   "Read network news.
-If ARG is a positive number, Gnus will use that as the
-startup level.	If ARG is nil, Gnus will be started at level 2.
-If ARG is non-nil and not a positive number, Gnus will
-prompt the user for the name of an NNTP server to use.
-As opposed to `gnus', this command will not connect to the local server."
+If ARG is a positive number, Gnus will use that as the startup
+level. If ARG is nil, Gnus will be started at level 2.  If ARG is
+non-nil and not a positive number, Gnus will prompt the user for the
+name of an NNTP server to use.
+As opposed to `gnus', this command will not connect to the local
+server."
   (interactive "P")
   (gnus-no-server-1 arg slave))
 

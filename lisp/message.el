@@ -3174,7 +3174,7 @@ Otherwise, generate and save a value for `canlock-password' first."
 		   (zerop
 		    (length
 		     (setq to (completing-read
-			       "Followups to: (default all groups) "
+			       "Followups to (default: no Followup-To header) "
 			       (mapcar (lambda (g) (list g))
 				       (cons "poster"
 					     (message-tokenize-header
@@ -3620,7 +3620,7 @@ If NOW, use that time instead."
 	     (aset user (match-beginning 0) ?_))
 	   user)
        (message-number-base36 (user-uid) -1))
-     (message-number-base36 (+ (car   tm)
+     (message-number-base36 (+ (car tm)
 			       (lsh (% message-unique-id-char 25) 16)) 4)
      (message-number-base36 (+ (nth 1 tm)
 			       (lsh (/ message-unique-id-char 25) 16)) 4)
