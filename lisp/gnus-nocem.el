@@ -51,7 +51,7 @@
 (defvar gnus-nocem-expiry-wait 15
   "*Number of days to keep NoCeM headers in the cache.")
 
-(defvar gnus-nocem-verifyer nil
+(defvar gnus-nocem-verifyer 'mc-verify
   "*Function called to verify that the NoCeM message is valid.
 One likely value is `mc-verify'.  If the function in this variable
 isn't bound, the message will be used unconditionally.")
@@ -147,13 +147,13 @@ isn't bound, the message will be used unconditionally.")
 	;; We get the name of the issuer.
 	(narrow-to-region b e)
 	(setq issuer (mail-fetch-field "issuer"))
+	(widen)
 	(and (member issuer gnus-nocem-issuers) ; We like her...
 	     (gnus-nocem-verify-issuer issuer) ; She is who she says she is..
 	     (gnus-nocem-enter-article)))))) ; We gobble the message.
   
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
-  (widen)
   (if (fboundp gnus-nocem-verifyer)
       (funcall gnus-nocem-verifyer)
     ;; If we don't have Mailcrypt, then we use the message anyway.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.41 Manual
+@settitle Red Gnus 0.42 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.41 Manual
+@title Red Gnus 0.42 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -527,8 +527,8 @@ your mail without bothering with the server at all, you can use the
 @code{gnus-no-server} command to start Gnus.  That might come in handy
 if you're in a hurry as well.  This command will not attempt to contact
 your primary server---instead, it will just activate all groups on level
-@code{1} and @code{2}.  (You should preferably keep no native groups on
-those two levels.)
+1 and 2.  (You should preferably keep no native groups on those two
+levels.)
 
 
 @node Slave Gnusae
@@ -545,7 +545,7 @@ The problem appears when you want to run two Gnusae that use the same
 
 To work around that problem some, we here at the Think-Tank at the Gnus
 Towers have come up with a new concept: @dfn{Masters} and
-@dfn{servants}.  (We have applied for a patent on this concept, and have
+@dfn{slaves}.  (We have applied for a patent on this concept, and have
 taken out a copyright on those words.  If you wish to use those words in
 conjunction with each other, you have to send $1 per usage instance to
 me.  Usage of the patent (@dfn{Master/Slave Relationships In Computer
@@ -644,9 +644,9 @@ are:
 
 @item gnus-subscribe-zombies
 @vindex gnus-subscribe-zombies
-Make all new groups zombies.  You can browse the zombies later (with
-@kbd{A z}) and either kill them all off properly, or subscribe to them.
-This is the default.
+Make all new groups zombies.  This is the default.  You can browse the
+zombies later (with @kbd{A z}) and either kill them all off properly
+(with @kbd{S z}), or subscribe to them (with @kbd{u}).
 
 @item gnus-subscribe-randomly
 @vindex gnus-subscribe-randomly
@@ -914,7 +914,7 @@ you actually subscribe to.
 Note that if you subscribe to lots and lots of groups, setting this
 variable to @code{nil} will probably make Gnus slower, not faster.  At
 present, having this variable @code{nil} will slow Gnus down
-considerably, unless you read news over a @code{2400} baud modem.  
+considerably, unless you read news over a 2400 baud modem.  
 
 This variable can also have the value @code{some}.  Gnus will then
 attempt to read active info only on the subscribed groups.  On some
@@ -1025,7 +1025,7 @@ Here's a couple of example group lines:
 
 Quite simple, huh?
 
-You can see that there are @code{25} unread articles in
+You can see that there are 25 unread articles in
 @samp{news.announce.newusers}.  There are no unread articles, but some
 ticked articles, in @samp{alt.fan.andrea-dworkin} (see that little
 asterisk at the beginning of the line?)
@@ -1076,7 +1076,7 @@ Number of read articles.
 
 @item t
 Estimated total number of articles.  (This is really @var{max-number}
-minus @var{min-number} plus @code{1}.)
+minus @var{min-number} plus 1.)
 
 @item y
 Number of unread, unticked, non-dormant articles.
@@ -1116,7 +1116,7 @@ Indentation based on the level of the topic (@pxref{Group Topics}).
 @vindex gnus-group-uncollapsed-levels
 Short (collapsed) group name.  The @code{gnus-group-uncollapsed-levels}
 variable says how many levels to leave at the end of the group name.
-The default is @code{1}---this will mean that group names like
+The default is 1---this will mean that group names like
 @samp{gnu.emacs.gnus} will be shortened to @samp{g.emacs.gnus}.
 
 @item u
@@ -1329,7 +1329,7 @@ This does the same as the command above, but tries to do it with the
 minimum amount of fuzz (@code{gnus-group-quick-select-group}).  No
 scoring/killing will be performed, there will be no highlights and no
 expunging.  This might be useful if you're in a real hurry and have to
-enter some humongous group.  If you give a @code{0} prefix to this command
+enter some humongous group.  If you give a 0 prefix to this command
 (i.e., @kbd{0 M-RET}), Gnus won't even generate the summary buffer.
 This might be useful if you want to toggle threading before entering the
 group.
@@ -1345,8 +1345,8 @@ command, but this one does it without expunging and hiding dormants
 
 @vindex gnus-large-newsgroup
 The @code{gnus-large-newsgroup} variable says what Gnus should consider
-to be a big group.  This is @code{200} by default.  If the group has
-more (unread and/or ticked) articles than this, Gnus will query the user
+to be a big group.  This is 200 by default.  If the group has more
+(unread and/or ticked) articles than this, Gnus will query the user
 before entering the group.  The user can then specify how many articles
 should be fetched from the server.  If the user specifies a negative
 number (@code{-n}), the @code{n} oldest articles will be fetched.  If it
@@ -1441,7 +1441,7 @@ Kill all groups on a certain level (@code{gnus-group-kill-level}).
 These groups can't be yanked back after killing, so this command should
 be used with some caution.  The only time where this command comes in
 really handy is when you have a @file{.newsrc} with lots of unsubscribed
-groups that you want to get rid off.  @kbd{S C-k} on level @code{7} will
+groups that you want to get rid off.  @kbd{S C-k} on level 7 will
 kill off all unsubscribed groups that do not have message numbers in the
 @file{.newsrc} file.  
 
@@ -1493,7 +1493,7 @@ caution.
 @cindex level
 
 All groups have a level of @dfn{subscribedness}.  For instance, if a
-group is on level @code{2}, it is more subscribed than a group on level @code{5}.  You
+group is on level 2, it is more subscribed than a group on level 5.  You
 can ask Gnus to just list groups on a given level or lower
 (@pxref{Listing Groups}), or to just check for new articles in groups on
 a given level or lower (@pxref{Scanning New Messages}).
@@ -1514,12 +1514,12 @@ prompted for a level.
 @vindex gnus-level-zombie
 @vindex gnus-level-unsubscribed
 @vindex gnus-level-subscribed
-Gnus considers groups on between levels @code{1} and
-@code{gnus-level-subscribed} (inclusive) (default @code{5}) to be subscribed,
+Gnus considers groups on between levels 1 and
+@code{gnus-level-subscribed} (inclusive) (default 5) to be subscribed,
 @code{gnus-level-subscribed} (exclusive) and
-@code{gnus-level-unsubscribed} (inclusive) (default @code{7}) to be
+@code{gnus-level-unsubscribed} (inclusive) (default 7) to be
 unsubscribed, @code{gnus-level-zombie} to be zombies (walking dead)
-(default @code{8}) and @code{gnus-level-killed} to be killed (default @code{9}),
+(default 8) and @code{gnus-level-killed} to be killed (default 9),
 completely dead.  Gnus treats subscribed and unsubscribed groups exactly
 the same, but zombie and killed groups have no information on what
 articles you have read, etc, stored.  This distinction between dead and
@@ -1527,7 +1527,7 @@ living groups isn't done because it is nice or clever, it is done purely
 for reasons of efficiency.
 
 It is recommended that you keep all your mail groups (if any) on quite
-low levels (e.g. @code{1} or @code{2}).
+low levels (e.g. 1 or 2).
 
 If you want to play with the level variables, you should show some care.
 Set them once, and don't touch them ever again.  Better yet, don't touch
@@ -1536,7 +1536,7 @@ them at all unless you know exactly what you're doing.
 @vindex gnus-level-default-unsubscribed
 @vindex gnus-level-default-subscribed
 Two closely related variables are @code{gnus-level-default-subscribed}
-(default @code{3}) and @code{gnus-level-default-unsubscribed} (default @code{6}),
+(default 3) and @code{gnus-level-default-unsubscribed} (default 6),
 which are the levels that new groups will be put on if they are
 (un)subscribed.  These two variables should, of course, be inside the
 relevant legal ranges.
@@ -1569,7 +1569,7 @@ use this level as the ``work'' level.
 Gnus will normally just activate groups that are on level
 @code{gnus-activate-level} or less.  If you don't want to activate
 unsubscribed groups, for instance, you might set this variable to
-@code{5}.  The default is @code{6}.
+5.  The default is 6.
 
 
 @node Group Score
@@ -1585,8 +1585,8 @@ This is what @dfn{group score} is for.  You can assign a score to each
 group.  You can then sort the group buffer based on this score.
 Alternatively, you can sort on score and then level.  (Taken together,
 the level and the score is called the @dfn{rank} of the group.  A group
-that is on level @code{4} and has a score of @code{1} has a higher rank than a group
-on level @code{5} that has a score of @code{300}.  (The level is the most significant
+that is on level 4 and has a score of 1 has a higher rank than a group
+on level 5 that has a score of 300.  (The level is the most significant
 part and the score is the least significant part.))
 
 @findex gnus-summary-bubble-group
@@ -2009,7 +2009,7 @@ List groups that match a regexp (@code{gnus-group-list-all-matching}).
 List absolutely all groups that are in the active file(s) of the
 server(s) you are connected to (@code{gnus-group-list-active}).  This
 might very well take quite a while.  It might actually be a better idea
-to do a @kbd{A m} to list all matching, and just give @samp{.} as the
+to do a @kbd{A M} to list all matching, and just give @samp{.} as the
 thing to match on.  Also note that this command may list group that
 don't exist (yet)---these will be listed as if they are killed groups.
 Take the output with some grains of salt.
@@ -2319,7 +2319,7 @@ trying to customize meta-variables.
 Note:
 
 @quotation
-Miss Lisa Cannifax, while sitting in English class, feels her feet go
+Miss Lisa Cannifax, while sitting in English class, felt her feet go
 numbly heavy and herself fall into a hazy trance as the boy sitting
 behind her drew repeated lines with his pencil across the back of her
 plastic chair.
@@ -2412,7 +2412,7 @@ Number of unread articles in the topic and all its subtopics.
 @vindex gnus-topic-indent-level
 Each sub-topic (and the groups in the sub-topics) will be indented with
 @code{gnus-topic-indent-level} times the topic level number of spaces.
-The default is @code{2}.
+The default is 2.
 
 @vindex gnus-topic-mode-hook
 @code{gnus-topic-mode-hook} is called in topic minor mode buffers. 
@@ -2504,13 +2504,15 @@ previous topic (@code{gnus-topic-indent}).  If given a prefix,
 @item C-k
 @kindex C-k (Topic)
 @findex gnus-topic-kill-group
-Kill a group or topic (@code{gnus-topic-kill-group}).  
+Kill a group or topic (@code{gnus-topic-kill-group}).  All groups in the
+topic will be removed along with the topic.
 
 @item C-y
 @kindex C-y (Topic)
 @findex gnus-topic-yank-group
-Yank the previously killed group or topic (@code{gnus-topic-yank-group}).
-Note that all topics will be yanked before all groups.
+Yank the previously killed group or topic
+(@code{gnus-topic-yank-group}).  Note that all topics will be yanked
+before all groups. 
 
 @item T r
 @kindex T r (Topic)
@@ -2610,9 +2612,10 @@ Gnus
     13: comp.sources.unix
 @end example
 
-So, here we have one top-level topic, two topics under that, and one
-sub-topic under one of the sub-topics.  (There is always just one (@code{1})
-top-level topic).  This topology can be expressed as follows:
+So, here we have one top-level topic (@samp{Gnus}), two topics under
+that, and one sub-topic under one of the sub-topics.  (There is always
+just one (1) top-level topic).  This topology can be expressed as
+follows:
 
 @lisp
 (("Gnus" visible)
@@ -2883,6 +2886,11 @@ file(s) whether Gnus thinks it is necessary or not.
 A line for each article is displayed in the summary buffer.  You can
 move around, read articles, post articles and reply to articles.
 
+The most common way to a summary buffer is to select a group from the
+group buffer (@pxref{Selecting a Group}).  
+
+You can have as many summary buffers open as you wish.
+
 @menu
 * Summary Buffer Format::       Deciding how the summary buffer is to look.
 * Summary Maneuvering::         Moving around the summary buffer.
@@ -2969,8 +2977,9 @@ Full @code{From} header.
 The name (from the @code{From} header).
 @item a
 The name (from the @code{From} header).  This differs from the @code{n}
-spec in that it uses @code{gnus-extract-address-components}, which is
-slower, but may be more thorough.
+spec in that it uses the function designated by the
+@code{gnus-extract-address-components} variable, which is slower, but
+may be more thorough.
 @item A
 The address (from the @code{From} header).  This works the same way as
 the @code{a} spec.
@@ -3494,7 +3503,7 @@ This command is mainly used if you have several accounts and want to
 ship a mail to a different account of yours.  (If you're both
 @code{root} and @code{postmaster} and get a mail for @code{postmaster}
 to the @code{root} account, you may want to resend it to
-@code{postmaster}.  Ordnung muss sein!
+@code{postmaster}.  Ordnung muﬂ sein!
 
 @item S O m
 @kindex S O m (Summary)
@@ -3526,7 +3535,7 @@ command understands the process/prefix convention
 @cindex post
 @cindex composing news
 
-Commands for posting an article:
+Commands for posting a news article:
 
 @table @kbd
 @item S p
@@ -3777,7 +3786,7 @@ You can set a bookmark in the current article.  Say you are reading a
 long thesis on cats' urinary tracts, and have to go home for dinner
 before you've finished reading the thesis.  You can then set a bookmark
 in the article, and Gnus will jump to this bookmark the next time it
-encounters the article.
+encounters the article.  @xref{Setting Marks}
 
 @item
 @vindex gnus-replied-mark
@@ -4226,8 +4235,8 @@ variable is @code{nil}, Gnus requires an exact match between the
 subjects of the loose threads before gathering them into one big
 super-thread.  This might be too strict a requirement, what with the
 presence of stupid newsreaders that chop off long subjects lines.  If
-you think so, set this variable to, say, @code{20} to require that only the
-first @code{20} characters of the subjects have to match.  If you set this
+you think so, set this variable to, say, 20 to require that only the
+first 20 characters of the subjects have to match.  If you set this
 variable to a really low number, you'll find that Gnus will gather
 everything in sight into one thread, which isn't very helpful.
 
@@ -4244,7 +4253,7 @@ simplification is used.
 @item gnus-simplify-ignored-prefixes
 @vindex gnus-simplify-ignored-prefixes
 If you set @code{gnus-summary-gather-subject-limit} to something as low
-as @code{10}, you might consider setting this variable to something sensible:
+as 10, you might consider setting this variable to something sensible:
 
 @c Written by Michael Ernst <mernst@cs.rice.edu>
 @lisp
@@ -4374,7 +4383,7 @@ in a new thread.
 @item gnus-thread-indent-level
 @vindex gnus-thread-indent-level
 This is a number that says how much each sub-thread should be indented.
-The default is @code{4}.
+The default is 4.
 @end table
 
 
@@ -4606,10 +4615,10 @@ while you are reading the previous one?  Why not, indeed.
 First, some caveats.  There are some pitfalls to using asynchronous
 article fetching, especially the way Gnus does it.  
 
-Let's say you are reading article @code{1}, which is short, and article @code{2} is
+Let's say you are reading article 1, which is short, and article 2 is
 quite long, and you are not interested in reading that.  Gnus does not
-know this, so it goes ahead and fetches article @code{2}.  You decide to read
-article @code{3}, but since Gnus is in the process of fetching article @code{2}, the
+know this, so it goes ahead and fetches article 2.  You decide to read
+article 3, but since Gnus is in the process of fetching article 2, the
 connection is blocked.
 
 To avoid these situations, Gnus will open two (count 'em two)
@@ -4632,9 +4641,9 @@ happen automatically.
 
 @vindex gnus-use-article-prefetch
 You can control how many articles that are to be pre-fetched by setting
-@code{gnus-use-article-prefetch}.  This is @code{30} by default, which means
+@code{gnus-use-article-prefetch}.  This is 30 by default, which means
 that when you read an article in the group, the backend will pre-fetch
-the next @code{30} articles.  If this variable is @code{t}, the backend will
+the next 30 articles.  If this variable is @code{t}, the backend will
 pre-fetch all the articles that it can without bound.  If it is
 @code{nil}, no pre-fetching will be made.
 
@@ -4649,7 +4658,7 @@ pre-fetched.  The default is @code{gnus-async-read-p}, which returns
 data structure as the only parameter.
 
 If, for instance, you wish to pre-fetch only unread articles that are
-shorter than @code{100} lines, you could say something like:
+shorter than 100 lines, you could say something like:
 
 @lisp
 (defun my-async-short-unread-p (data)
@@ -4730,9 +4739,9 @@ symbols in these two lists are @code{ticked}, @code{dormant},
 So where does the massive article-fetching and storing come into the
 picture?  The @code{gnus-jog-cache} command will go through all
 subscribed newsgroups, request all unread articles, and store them in
-the cache.  You should only ever, ever ever ever, use this command if @code{1})
+the cache.  You should only ever, ever ever ever, use this command if 1)
 your connection to the @sc{nntp} server is really, really, really slow
-and @code{2}) you have a really, really, really huge disk.  Seriously.
+and 2) you have a really, really, really huge disk.  Seriously.
 
 @vindex gnus-uncacheable-groups
 It is likely that you do not want caching on some groups.  For instance,
@@ -5811,7 +5820,7 @@ external reference.  Here's a typical regexp that match embedded URLs:
 @item button-par
 Gnus has to know which parts of the match is to be highlighted.  This is
 a number that says what sub-expression of the regexp that is to be
-highlighted.  If you want it all highlighted, you use @code{0} here.
+highlighted.  If you want it all highlighted, you use 0 here.
 
 @item use-p
 This form will be @code{eval}ed, and if the result is non-@code{nil},
@@ -6336,7 +6345,7 @@ Expire all expirable articles in the group
 @item B M-C-e
 @kindex B M-C-e (Summary)
 @findex gnus-summary-expire-articles-now
-Expunge all the expirable articles in the group
+Delete all the expirable articles in the group
 (@code{gnus-summary-expire-articles-now}).  This means that @strong{all}
 articles that are eligible for expiry in the current group will
 disappear forever into that big @file{/dev/null} in the sky.
@@ -7624,7 +7633,7 @@ use, and what parameters to set by specifying a @dfn{select method}.
 
 These select methods specifications can sometimes become quite
 complicated---say, for instance, that you want to read from the
-@sc{nntp} server @samp{news.funet.fi} on port number @code{13}, which
+@sc{nntp} server @samp{news.funet.fi} on port number 13, which
 hangs if queried for @sc{nov} headers and has a buggy select.  Ahem.
 Anyways, if you had to specify that for each group that used this
 server, that would be too much work, so Gnus offers a way of naming
@@ -7765,7 +7774,7 @@ After these two elements, there may be a arbitrary number of
 @var{(variable form)} pairs.
 
 To go back to the first example---imagine that you want to read from
-port @code{15} from that machine.  This is what the select method should
+port 15 from that machine.  This is what the select method should
 look like then:
 
 @lisp
@@ -12433,7 +12442,7 @@ time.  Modified by the @var{idle} parameter, of course.
 
 @vindex gnus-demon-timestep
 (When I say ``minute'' here, I really mean @code{gnus-demon-timestep}
-seconds.  This is @code{60} by default.  If you change that variable,
+seconds.  This is 60 by default.  If you change that variable,
 all the timings in the handlers will be affected.)
 
 @vindex gnus-use-demon
@@ -12902,7 +12911,7 @@ to the Gnus backends instead of Gnus proper.
 @item nnheader-max-head-length
 @vindex nnheader-max-head-length
 When the backends read straight heads of articles, they all try to read
-as little as possible.  This variable (default @code{4096}) specifies
+as little as possible.  This variable (default 4096) specifies
 the absolute max length the backends will try to read before giving up
 on finding a separator line between the head and the body.  If this
 variable is @code{nil}, there is no upper read bound.  If it is
@@ -14608,7 +14617,7 @@ Here's an example of some result data and a definition of the same:
 211 56 1000 1059 ifi.discussion
 @end example
 
-The first number is the status, which should be @code{211}.  Next is the
+The first number is the status, which should be 211.  Next is the
 total number of articles in the group, the lowest article number, the
 highest article number, and finally the group name.  Note that the total
 number of articles may be less than one might think while just

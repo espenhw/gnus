@@ -6544,8 +6544,8 @@ groups."
       (goto-char (point-min))
       (search-forward "\n\n")
       (narrow-to-region (point-min) (point))
-      (pp-eval-expression
-       (list 'quote (mapcar 'car (nnmail-article-group 'identity)))))))
+      (message "This message would go to %s"
+	       (mapconcat 'car (nnmail-article-group 'identity) ", ")))))
 
 ;; Summary marking commands.
 

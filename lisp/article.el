@@ -221,7 +221,7 @@ always hide."
 		(props (nconc (list 'article-type 'headers)
 			      gnus-hidden-properties))
 		(max (1+ (length gnus-sorted-header-list)))
-		(ignored (when (not (stringp gnus-visible-headers))
+		(ignored (when (not gnus-visible-headers)
 			   (cond ((stringp gnus-ignored-headers)
 				  gnus-ignored-headers)
 				 ((listp gnus-ignored-headers)

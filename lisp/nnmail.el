@@ -1147,6 +1147,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (run-hooks 'nnmail-prepare-incoming-message-hook)
   ;; If this is a duplicate message, then we do not save it.
   (let* ((duplication (nnmail-cache-id-exists-p message-id))
+	 (case-fold-search t)
 	 (action (when duplication
 		   (cond
 		    ((memq nnmail-treat-duplicates '(warn delete))

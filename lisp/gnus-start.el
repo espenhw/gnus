@@ -546,7 +546,7 @@ prompt the user for the name of an NNTP server to use."
     (gnus-read-init-file)
     (setq gnus-slave slave)
 
-    (when (string-match "xemacs" (emacs-version))
+    (when (string-match "XEmacs" (emacs-version))
       (gnus-splash))
 
     (let ((level (and (numberp arg) (> arg 0) arg))

@@ -16,16 +16,19 @@ gnus: gnus.texi
 message: message.texi
 	$(MAKEINFO) message.texi $(INFOSWI)
 
-dvi: gnus.texi
-	$(PERL) -n -e 'if (/\@iflatex/) { $$latex=1; } if (!$$latex) { print; } if (/\@end iflatex/) { $$latex=0; }' gnus.texi > gnus.tmptexi
-	$(TEXI2DVI) gnus.tmptexi
+dvi: gnus.dvi message.dvi
+
+.texi.dvi :
+	$(PERL) -n -e 'print unless (/\@iflatex/ .. /\@end iflatex/)' $< > gnustmp.texi
+	$(TEXI2DVI) gnustmp.texi
 
 refcard.dvi: refcard.tex gnuslogo.refcard gnusref.tex
 	$(LATEX) refcard.tex
 
 sclean:
-	rm -f gnus.*.bak gnus.ky gnus.cp gnus.fn gnus.cps gnus.kys *.log \
-	gnus.log gnus.pg gnus.tp gnus.vr gnus.toc *.aux gnus.[cgk]idx \
+	rm -f gnus.*.bak *.ky *.cp *.fn *.cps *.kys *.log *.aux *.dvi *.vr \
+	*.tp *.toc \
+	*.pg gnus.latexi *.aux *.[cgk]idx \
 	gnus.ilg gnus.ind gnus.[cgk]ind gnus.idx \
 	gnus.tmptexi gnus.tmplatexi gnus.tmplatexi1 texput.log *.orig *.rej \
 	gnus.latexi*~*

@@ -1,3 +1,33 @@
+Wed Sep 25 19:40:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-header-newsgroups-face): Yucky on light
+	backgrounds. 
+
+Wed Sep 25 19:25:27 1996  Michael R. Cook  <mcook@cognex.com>
+
+	* message.el (message-ignored-news-headers): Strip Resent-Fcc.
+
+Wed Sep 25 19:12:59 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-group.el (gnus-group-jump-to-group): Use
+	`gnus-group-goto-group'. 
+
+	* gnus-xmas.el (gnus-xmas-mode-line-buffer-identification): Don't
+	chop off half line when no colon.
+
+Mon Sep 23 22:12:10 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-nocem.el (gnus-nocem-verifyer): Change to `mc-verify'.
+
+Mon Sep 23 21:43:47 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.41 is released.
+
+Mon Sep 23 21:10:37 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* article.el (article-hide-headers): Don't ignore
+	gnus-visible-headers. 
+
 Mon Sep 23 19:10:20 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus-sum.el (gnus-summary-goto-subject): Made into command.
@@ -5,6 +35,18 @@ Mon Sep 23 19:10:20 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 Mon Sep 23 18:26:47 1996  Tonny Madsen  <Tonny.Madsen@netman.dk>
 
 	* nnmail.el (nnmail-default-file-modes): Use integer.
+
+Tue Sep 24 18:39:41 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-summary-respool-query): Better message.
+
+Sun Sep 22 15:12:54 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-art.el: Customized.
+
+	* gnus.el (gnus-inhibit-startup-message): Changed type to
+	boolean. 
+	(gnus-play-startup-jingle): Ditto.
 
 Sun Sep 22 12:58:57 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 

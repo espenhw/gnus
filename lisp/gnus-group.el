@@ -1459,29 +1459,14 @@ Return the name of the group is selection was successful."
   (when (equal group "")
     (error "Empty group name"))
 
-  (when (string-match "[\000-\032]" group)
-    (error "Control characters in group: %s" group))
-
-  (let ((b (text-property-any
-	    (point-min) (point-max)
-	    'gnus-group (gnus-intern-safe group gnus-active-hashtb))))
-    (unless (gnus-ephemeral-group-p group)
-      (if b
-	  ;; Either go to the line in the group buffer...
-	  (goto-char b)
-	;; ... or insert the line.
-	(or
-	 t;; Don't activate group.
-	 (gnus-active group)
-	 (gnus-activate-group group)
-	 (error "%s error: %s" group (gnus-status-message group)))
-
-	(gnus-group-update-group group)
-	(goto-char (text-property-any
-		    (point-min) (point-max)
-		    'gnus-group (gnus-intern-safe group gnus-active-hashtb)))))
-    ;; Adjust cursor point.
-    (gnus-group-position-point)))
+  (unless (gnus-ephemeral-group-p group)
+    ;; Either go to the line in the group buffer...
+    (unless (gnus-group-goto-group group)
+      ;; ... or insert the line.
+      (gnus-group-update-group group)
+      (gnus-group-goto-group group)))
+  ;; Adjust cursor point.
+  (gnus-group-position-point))
 
 (defun gnus-group-goto-group (group &optional far)
   "Goto to newsgroup GROUP.

@@ -469,13 +469,13 @@ less space and be faster as a result.")
 	      (or gnus-mouse-face 'highlight)
 	    'highlight)
 	'default)
-    (error nil))
+    (error 'highlight))
   "Face used for group or summary buffer mouse highlighting.
 The line beneath the mouse pointer will be highlighted with this
 face.")
 
 (defvar gnus-article-display-hook
-  (if (and (string-match "xemacs" emacs-version)
+  (if (and (string-match "XEmacs" emacs-version)
 	   (featurep 'xface))
       '(gnus-article-hide-headers-if-wanted
 	gnus-article-hide-boring-headers

@@ -788,14 +788,13 @@ If HIDE, hide the text instead."
 	chop)
     (if (not (stringp line))
 	(list line)
-      (if (setq chop (string-match ":" line))
-	  (incf chop)
-	(setq chop (/ (length line) 2)))
-      (list 
-       (if gnus-xmas-modeline-glyph
-	   (cons gnus-xmas-modeline-left-extent gnus-xmas-modeline-glyph)
-	 (cons gnus-xmas-modeline-left-extent (substring line 0 chop)))
-       (cons gnus-xmas-modeline-right-extent (substring line chop))))))
+      (when (string-match "^Gnus:" line)
+	(setq chop (match-end 0))
+	(list 
+	 (if gnus-xmas-modeline-glyph
+	     (cons gnus-xmas-modeline-left-extent gnus-xmas-modeline-glyph)
+	   (cons gnus-xmas-modeline-left-extent (substring line 0 chop)))
+	 (cons gnus-xmas-modeline-right-extent (substring line chop)))))))
 
 (provide 'gnus-xmas)
 

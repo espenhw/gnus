@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.41"
+(defconst gnus-version-number "0.42"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -51,12 +51,12 @@
 (defcustom gnus-inhibit-startup-message nil
   "*If non-nil, the startup message will not be displayed."
   :group 'gnus-start
-  :type 'toggle)
+  :type 'boolean)
 
 (defcustom gnus-play-startup-jingle nil
   "If non-nil, play the Gnus jingle at startup."
   :group 'gnus-start
-  :type 'toggle)
+  :type 'boolean)
 
 ;;; Kludges to help the transition from the old `custom.el'.
 

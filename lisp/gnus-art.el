@@ -32,29 +32,39 @@
 (require 'gnus-int)
 (require 'browse-url)
 
-(defvar gnus-article-save-directory gnus-directory
-  "*Name of the directory articles will be saved in (default \"~/News\").")
+(defcustom gnus-article-save-directory gnus-directory
+  "*Name of the directory articles will be saved in (default \"~/News\")."
+  :group 'article
+  :type 'directory)
 
-(defvar gnus-save-all-headers t
-  "*If non-nil, don't remove any headers before saving.")
+(defcustom gnus-save-all-headers t
+  "*If non-nil, don't remove any headers before saving."
+  :group 'article
+  :type 'boolean)
 
-(defvar gnus-prompt-before-saving 'always
+(defcustom gnus-prompt-before-saving 'always
   "*This variable says how much prompting is to be done when saving articles.
 If it is nil, no prompting will be done, and the articles will be
 saved to the default files.  If this variable is `always', each and
 every article that is saved will be preceded by a prompt, even when
 saving large batches of articles.  If this variable is neither nil not
 `always', there the user will be prompted once for a file name for
-each invocation of the saving commands.")
+each invocation of the saving commands."
+  :group 'article
+  :type '(choice (item always)
+		 (item :tag "never" nil)
+		 (sexp :tag "once" :format "%t")))
 
-(defvar gnus-saved-headers gnus-visible-headers
-  "*Headers to keep if `gnus-save-all-headers' is nil.
+(defcustom gnus-saved-headers gnus-visible-headers
+  "Headers to keep if `gnus-save-all-headers' is nil.
 If `gnus-save-all-headers' is non-nil, this variable will be ignored.
 If that variable is nil, however, all headers that match this regexp
-will be kept while the rest will be deleted before saving.")
+will be kept while the rest will be deleted before saving."
+  :group 'article
+  :type '(repeat string))
 
-(defvar gnus-default-article-saver 'gnus-summary-save-in-rmail
-  "*A function to save articles in your favourite format.
+(defcustom gnus-default-article-saver 'gnus-summary-save-in-rmail
+  "A function to save articles in your favourite format.
 The function must be interactively callable (in other words, it must
 be an Emacs command).
 
@@ -64,28 +74,42 @@ Gnus provides the following functions:
 * gnus-summary-save-in-mail (Unix mail format)
 * gnus-summary-save-in-folder (MH folder)
 * gnus-summary-save-in-file (article format).
-* gnus-summary-save-in-vm (use VM's folder format).")
+* gnus-summary-save-in-vm (use VM's folder format)."
+  :group 'article
+  :type '(radio (function-item gnus-summary-save-in-rmail)
+		(function-item gnus-summary-save-in-mail)
+		(function-item gnus-summary-save-in-folder)
+		(function-item gnus-summary-save-in-file)
+		(function-item gnus-summary-save-in-vm)))
 
-(defvar gnus-rmail-save-name 'gnus-plain-save-name
-  "*A function generating a file name to save articles in Rmail format.
-The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE.")
+(defcustom gnus-rmail-save-name 'gnus-plain-save-name
+  "A function generating a file name to save articles in Rmail format.
+The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE."
+  :group 'article
+  :type 'function)
 
-(defvar gnus-mail-save-name 'gnus-plain-save-name
-  "*A function generating a file name to save articles in Unix mail format.
-The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE.")
+(defcustom gnus-mail-save-name 'gnus-plain-save-name
+  "A function generating a file name to save articles in Unix mail format.
+The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE."
+  :group 'article
+  :type 'function)
 
-(defvar gnus-folder-save-name 'gnus-folder-save-name
-  "*A function generating a file name to save articles in MH folder.
-The function is called with NEWSGROUP, HEADERS, and optional LAST-FOLDER.")
+(defcustom gnus-folder-save-name 'gnus-folder-save-name
+  "A function generating a file name to save articles in MH folder.
+The function is called with NEWSGROUP, HEADERS, and optional LAST-FOLDER."
+  :group 'article
+  :type 'function)
 
-(defvar gnus-file-save-name 'gnus-numeric-save-name
-  "*A function generating a file name to save articles in article format.
+(defcustom gnus-file-save-name 'gnus-numeric-save-name
+  "A function generating a file name to save articles in article format.
 The function is called with NEWSGROUP, HEADERS, and optional
-LAST-FILE.")
+LAST-FILE."
+  :group 'article
+  :type 'function)
 
-(defvar gnus-split-methods
+(defcustom gnus-split-methods
   '((gnus-article-archive-name))
-  "*Variable used to suggest where articles are to be saved.
+  "Variable used to suggest where articles are to be saved.
 For instance, if you would like to save articles related to Gnus in
 the file \"gnus-stuff\", and articles related to VM in \"vm-stuff\",
 you could set this variable to something like:
@@ -103,107 +127,162 @@ parameter.  If it is a list, it will be evaled in the same buffer.
 
 If this form or function returns a string, this string will be used as
 a possible file name; and if it returns a non-nil list, that list will
-be used as possible file names.")
+be used as possible file names."
+  :group 'article
+  :type '(repeat (choice (list function)
+			 (cons regexp (repeat string))
+			 sexp)))
 
-(defvar gnus-strict-mime t
-  "*If nil, MIME-decode even if there is no Mime-Version header in the article.")
+(defcustom gnus-strict-mime t
+  "*If nil, MIME-decode even if there is no Mime-Version header."
+  :group 'article
+  :type 'boolean)
 
-(defvar gnus-show-mime-method 'metamail-buffer
-  "*Function to process a MIME message.
-The function is called from the article buffer.")
+(defcustom gnus-show-mime-method 'metamail-buffer
+  "Function to process a MIME message.
+The function is called from the article buffer."
+  :group 'article
+  :type 'function)
 
-(defvar gnus-decode-encoded-word-method (lambda ())
+(defcustom gnus-decode-encoded-word-method (lambda ())
   "*Function to decode a MIME encoded-words.
-The function is called from the article buffer.")
+The function is called from the article buffer."
+  :group 'article
+  :type 'function)
 
-(defvar gnus-page-delimiter "^\^L"
+(defcustom gnus-page-delimiter "^\^L"
   "*Regexp describing what to use as article page delimiters.
 The default value is \"^\^L\", which is a form linefeed at the
-beginning of a line.")
+beginning of a line."
+  :type 'regexp
+  :group 'article)
 
-(defvar gnus-article-mode-line-format "Gnus: %%b %S"
+(defcustom gnus-article-mode-line-format "Gnus: %%b %S"
   "*The format specification for the article mode line.
-See `gnus-summary-mode-line-format' for a closer description.")
+See `gnus-summary-mode-line-format' for a closer description."
+  :type 'string
+  :group 'article)
 
-(defvar gnus-article-mode-hook nil
-  "*A hook for Gnus article mode.")
+(defcustom gnus-article-mode-hook nil
+  "*A hook for Gnus article mode."
+  :type 'hook
+  :group 'article)
 
-(defvar gnus-article-menu-hook nil
-  "*Hook run after the creation of the article mode menu.")
+(defcustom gnus-article-menu-hook nil
+  "*Hook run after the creation of the article mode menu."
+  :type 'hook
+  :group 'article)
 
-(defvar gnus-article-prepare-hook nil
+(defcustom gnus-article-prepare-hook nil
   "*A hook called after an article has been prepared in the article buffer.
-If you want to run a special decoding program like nkf, use this hook.")
+If you want to run a special decoding program like nkf, use this hook."
+  :type 'hook
+  :group 'article)
 
-(defvar gnus-article-button-face 'bold
+(defcustom gnus-article-button-face 'bold
   "Face used for highlighting buttons in the article buffer.
 
 An article button is a piece of text that you can activate by pressing
-`RET' or `mouse-2' above it.")
+`RET' or `mouse-2' above it."
+  :type 'face
+  :group 'article)
 
-(defvar gnus-article-mouse-face 'highlight
+(defcustom gnus-article-mouse-face 'highlight
   "Face used for mouse highlighting in the article buffer.
 
 Article buttons will be displayed in this face when the cursor is
-above them.")
+above them."
+  :type 'face
+  :group 'article)
 
-(defvar gnus-signature-face 'italic
-  "Face used for highlighting a signature in the article buffer.")
+(defcustom gnus-signature-face 'italic
+  "Face used for highlighting a signature in the article buffer."
+  :type 'face
+  :group 'article)
 
-(defvar gnus-header-face-alist
-  (cond 
-   ((not (eq gnus-display-type 'color))
-    '(("" bold italic)))
-   ((eq gnus-background-mode 'dark)
-    (list 
-     (list "From" nil 
-	   (custom-face-lookup "light blue" nil nil t t nil))
-     (list "Subject" nil 
-	   (custom-face-lookup "pink" nil nil t t nil))
-     (list "Newsgroups:.*," nil
-	   (custom-face-lookup "yellow" nil nil t t nil))
-     (list 
-      "" 
-      (custom-face-lookup "cyan" nil nil t nil nil)
-      (custom-face-lookup "forestgreen" nil nil nil t 
-			  nil))))
-   (t
-    (list
-     (list "From" nil
-	   (custom-face-lookup "MidnightBlue" nil nil t t nil))
-     (list "Subject" nil 
-	   (custom-face-lookup "firebrick" nil nil t t nil))
-     (list "Newsgroups:.*," nil
-	   (custom-face-lookup "indianred" nil nil t t nil))
-     (list ""
-	   (custom-face-lookup 
-	    "DarkGreen" nil nil t nil nil)
-	   (custom-face-lookup "DarkGreen" nil nil
-			       nil t nil)))))
+(defface gnus-header-from-face 
+  '((((class color)
+      (background dark))
+     (:foreground "light-blue" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "MidnightBlue" :bold t :italic t))
+    (t 
+     (:bold t :italic t)))
+  "Face used for displaying from headers."
+  :group 'article)
+
+(defface gnus-header-subject-face 
+  '((((class color)
+      (background dark))
+     (:foreground "pink" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "firebrick" :bold t :italic t))
+    (t 
+     (:bold t :italic t)))
+  "Face used for displaying subject headers."
+  :group 'article)
+
+(defface gnus-header-newsgroups-face 
+  '((((class color)
+      (background dark))
+     (:foreground "yellow" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "indianred" :bold t :italic t))
+    (t 
+     (:bold t :italic t)))
+  "Face used for displaying newsgroups headers."
+  :group 'article)
+
+(defface gnus-header-name-face 
+  '((((class color)
+      (background dark))
+     (:foreground "cyan" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for displaying header names."
+  :group 'article)
+
+(defface gnus-header-content-face
+  '((((class color)
+      (background dark))
+     (:foreground "foerestgreen" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :italic t))
+    (t 
+     (:italic t)))  "Face used for displaying header content."
+  :group 'article)
+
+(defcustom gnus-header-face-alist
+  '(("From" nil gnus-header-from-face)
+    ("Subejct" nil gnus-header-subject-face)
+    ("Newsgroups:.*," nil gnus-header-newsgroups-face)
+    ("" gnus-header-name-face gnus-header-content-face))
   "Controls highlighting of article header.
 
-[ This needs to be rewritten in lisp-talk ]
+An alist of the form (HEADER NAME CONTENT). 
 
-Below is a list of article header names, and the faces used for
-displaying the name and content of the header.  The `Header' field
-should contain the name of the header.  The field actually contains a
-regular expression that should match the beginning of the header line,
-but if you don't know what a regular expression is, just write the
-name of the header.  The second field is the `Name' field, which
-determines how the header name (i. e., the part of the header left
-of the `:') is displayed.  The third field is the `Content' field,
-which determines how the content (i. e., the part of the header right of
-the `:') is displayed.  
+HEADER is a regular expression which should match the name of an
+header header and NAME and CONTENT are either face names or nil.
 
-If you leave the last `Header' field in the list empty, the `Name' and
-`Content' fields will determine how headers not listed above are
-displayed.  
-
-If you only want to change the display of the name part for a specific
-header, specify `None' in the `Content' field.  Similarly, specify
-`None' in the `Name' field if you only want to leave the name part
-alone.")
-
+The name of each header field will be displayed using the face
+specified by the first element in the list where HEADER match the
+header name and NAME is non-nil.  Similarly, the content will be
+displayed by the first non-nil matching CONTENT face."
+  :group 'article
+  :type '(repeat (list (regexp :tag "Header")
+		       (choice :tag "Name"
+			       (item :tag "skip" nil)
+			       (face :value default))
+		       (choice :tag "Content"
+			       (item :tag "skip" nil)
+			       (face :value default)))))
 
 ;;; Internal variables
 
@@ -1253,8 +1332,10 @@ how much time has lapsed since DATE."
 ;;; Article editing
 ;;;
 
-(defvar gnus-article-edit-mode-hook nil
-  "*Hook run in article edit mode buffers.")
+(defcustom gnus-article-edit-mode-hook nil
+  "Hook run in article edit mode buffers."
+  :group 'article
+  :type 'hook)
 
 (defvar gnus-article-edit-done-function nil)
 
@@ -1378,10 +1459,12 @@ groups."
 
 ;;; Internal Variables:
 
-(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-\\wa-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]*[-\\wa-zA-Z0-9_=#$@~`%&*+|\\/]"
-  "*Regular expression that matches URLs.")
+(defcustom gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-\\wa-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]*[-\\wa-zA-Z0-9_=#$@~`%&*+|\\/]"
+  "Regular expression that matches URLs."
+  :group 'article
+  :type 'regexp)
 
-(defvar gnus-button-alist 
+(defcustom gnus-button-alist 
   `(("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
      t gnus-button-message-id 3)
     ("\\(<?\\(url: ?\\)?news://\\([^>\n\t ]*\\)>?\\)" 1 t
@@ -1405,9 +1488,17 @@ CALLBACK: is the function to call when the user push this button, and each
 PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 
 CALLBACK can also be a variable, in that case the value of that
-variable it the real callback function.")
+variable it the real callback function."
+  :group 'article
+  :type '(repeat (list regexp 
+		       (integer :tag "Button")
+		       (sexp :tag "Form")
+		       (function :tag "Callback")
+		       (repeat :tag "Par"
+			       :inline t
+			       (integer :tag "Regexp group")))))
 
-(defvar gnus-header-button-alist 
+(defcustom gnus-header-button-alist 
   `(("^\\(References\\|Message-I[Dd]\\):" "<[^>]+>"
      0 t gnus-button-message-id 0)
     ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$" 1 t gnus-button-reply 1)
@@ -1425,7 +1516,16 @@ alist has an additional HEADER element first in each entry:
 \(HEADER REGEXP BUTTON FORM CALLBACK PAR)
 
 HEADER is a regexp to match a header.  For a fuller explanation, see
-`gnus-button-alist'.")
+`gnus-button-alist'."
+  :group 'article
+  :type '(repeat (list (regexp :tag "Header")
+		       regexp 
+		       (integer :tag "Button")
+		       (sexp :tag "Form")
+		       (function :tag "Callback")
+		       (repeat :tag "Par"
+			       :inline t
+			       (integer :tag "Regexp group")))))
 
 (defvar gnus-button-regexp nil)
 (defvar gnus-button-marker-list nil)

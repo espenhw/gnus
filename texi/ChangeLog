@@ -1,3 +1,7 @@
+Mon Sep 23 22:17:44 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (The Summary Buffer): Addition.
+
 Mon Sep 23 18:25:38 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.texi (Thread Commands): Correction.

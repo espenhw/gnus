@@ -119,11 +119,11 @@ included.  Organization, Lines and X-Mailer are optional.")
 
 ;;;###autoload
 (defvar message-ignored-news-headers 
-  "^NNTP-Posting-Host:\\|^Xref:\\|^Bcc:\\|^Gcc:\\|^Fcc:"
+  "^NNTP-Posting-Host:\\|^Xref:\\|^Bcc:\\|^Gcc:\\|^Fcc:\\|^Resent-Fcc:"
   "*Regexp of headers to be removed unconditionally before posting.")
 
 ;;;###autoload
-(defvar message-ignored-mail-headers "^Gcc:\\|^Fcc:"
+(defvar message-ignored-mail-headers "^Gcc:\\|^Fcc:\\|^Resent-Fcc:"
   "*Regexp of headers to be removed unconditionally before mailing.")
 
 ;;;###autoload
