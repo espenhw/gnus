@@ -724,11 +724,6 @@ might set this variable to '(\"-f\" \"you@some.where\")."
   :type '(choice (function)
 		 (repeat string)))
 
-(defvar message-cater-to-broken-inn t
-  "Non-nil means Gnus should not fold the `References' header.
-Folding `References' makes ancient versions of INN create incorrect
-NOV lines.")
-
 (eval-when-compile
   (defvar gnus-post-method)
   (defvar gnus-select-method))
@@ -5184,8 +5179,9 @@ If the current line has `message-yank-prefix', insert it on the new line."
 
 (defun message-shorten-references (header references)
   "Trim REFERENCES to be 21 Message-ID long or less, and fold them.
-If folding is disallowed, also check that the REFERENCES are less
-than 988 characters long, and if they are not, trim them until they are."
+When sending via news, also check that the REFERENCES are less
+than 988 characters long, and if they are not, trim them until
+they are."
   (let ((maxcount 21)
 	(count 0)
 	(cut 2)
@@ -5207,33 +5203,25 @@ than 988 characters long, and if they are not, trim them until they are."
 	(message-shorten-1 refs cut surplus)
 	(decf count surplus)))
 
-    ;; If folding is disallowed, make sure the total length (including
-    ;; the spaces between) will be less than MAXSIZE characters.
+    ;; When sending via news, make sure the total folded length will
+    ;; be less than 998 characters.  This is to cater to broken INN
+    ;; 2.3 which counts the total number of characters in a header
+    ;; rather than the physical line length of each line, as it shuld.
     ;;
-    ;; Only disallow folding for News messages. At this point the headers
-    ;; have not been generated, thus we use message-this-is-news directly.
-    (when (and message-this-is-news message-cater-to-broken-inn)
-      (let ((maxsize 988)
-	    (totalsize (+ (apply #'+ (mapcar #'length refs))
-			  (1- count)))
-	    (surplus 0)
-	    (ptr (nthcdr (1- cut) refs)))
-	;; Decide how many elements to cut off...
-	(while (> totalsize maxsize)
-	  (decf totalsize (1+ (length (car ptr))))
-	  (incf surplus)
-	  (setq ptr (cdr ptr)))
-	;; ...and do it.
-	(when (> surplus 0)
-	  (message-shorten-1 refs cut surplus))))
-
+    ;; This hack should be removed when it's believed than INN 2.3 is
+    ;; no longer widely used.
+    ;;
+    ;; At this point the headers have not been generated, thus we use
+    ;; message-this-is-news directly.
+    (when message-this-is-news
+      (while (< 998
+		(with-temp-buffer
+		  (message-fill-header header (mapconcat #'identity refs " "))
+		  (buffer-size)))
+	(message-shorten-1 refs cut 1)))
     ;; Finally, collect the references back into a string and insert
     ;; it into the buffer.
-    (let ((refstring (mapconcat #'identity refs " ")))
-      (if (and message-this-is-news message-cater-to-broken-inn)
-	  (insert (capitalize (symbol-name header)) ": "
-		  refstring "\n")
-	(message-fill-header header refstring)))))
+    (message-fill-header header (mapconcat #'identity refs " "))))
 
 (defun message-position-point ()
   "Move point to where the user probably wants to find it."
