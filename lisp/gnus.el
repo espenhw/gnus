@@ -1234,7 +1234,8 @@ slower."
     ("nngateway" post-mail address prompt-address physical-address)
     ("nnweb" none)
     ("nnlistserv" none)
-    ("nnagent" post-mail))
+    ("nnagent" post-mail)
+    ("nnimap" post-mail address prompt-address physical-address))
   "*An alist of valid select methods.
 The first element of each list lists should be a string with the name
 of the select method.  The other elements may be the category of
