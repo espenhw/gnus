@@ -1885,7 +1885,8 @@ Return the name of the group if selection was successful."
 	  (,(intern (format "%s-address" (car method))) ,(cadr method))
 	  ,@(cddr method)))
   (let ((group (if (gnus-group-foreign-p group) group
-		 (gnus-group-prefixed-name group method))))
+		 (gnus-group-prefixed-name (gnus-group-real-name group) 
+					   method))))
     (gnus-sethash
      group
      `(-1 nil (,group

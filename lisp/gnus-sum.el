@@ -1276,7 +1276,7 @@ These variables can be used to set variables in the group parameters
 while still allowing them to affect operations done in other
 buffers. For example:
 
-(setq gnus-newsgroup-variables
+\(setq gnus-newsgroup-variables
      '(message-use-followup-to
        (gnus-visible-headers .
 	 \"^From:\\\\|^Newsgroups:\\\\|^Subject:\\\\|^Date:\\\\|^To:\")))
@@ -1291,13 +1291,13 @@ buffers. For example:
   '(mail-decode-encoded-word-string)
   "List of methods used to decode encoded words.
 
-This variable is a list of FUNCTION or (REGEXP . FUNCTION).  If item is
-FUNCTION, FUNCTION will be apply to all newsgroups.  If item is a
-(REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
+This variable is a list of FUNCTION or (REGEXP . FUNCTION).  If item
+is FUNCTION, FUNCTION will be apply to all newsgroups.  If item is a
+\(REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
 whose names match REGEXP.
 
 For example:
-((\"chinese\" . gnus-decode-encoded-word-string-by-guess)
+\((\"chinese\" . gnus-decode-encoded-word-string-by-guess)
  mail-decode-encoded-word-string
  (\"chinese\" . rfc1843-decode-string))")
 
@@ -1855,8 +1855,9 @@ increase the score of each group you read."
 	  ["Increase score..." gnus-summary-increase-score t]
 	  ["Lower score..." gnus-summary-lower-score t]))))
 
-;; Define both the Article menu in the summary buffer and the equivalent
-    ;; Commands menu in the article buffer here for consistency.
+    ;; Define both the Article menu in the summary buffer and the
+    ;; equivalent Commands menu in the article buffer here for
+    ;; consistency.
     (let ((innards
 	   `(("Hide"
 	      ["All" gnus-article-hide t]

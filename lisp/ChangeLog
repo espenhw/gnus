@@ -1,5 +1,11 @@
 2001-12-22 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-group.el (gnus-group-read-ephemeral-group): Call
+	gnus-group-real-name.
+
+	* gnus-sum.el (gnus-decode-encoded-word-methods): Backslash paren.
+	(gnus-newsgroup-variables): Ditto.
+
 	* gnus.el (gnus-group-prefixed-name): If group name is prefixed,
 	return it.
 
