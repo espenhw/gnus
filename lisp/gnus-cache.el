@@ -29,11 +29,8 @@
 (eval-when-compile (require 'cl))
 
 (require 'gnus)
-(require 'gnus-int)
-(require 'gnus-range)
-(require 'gnus-start)
 (eval-when-compile
-  (if (not (fboundp 'gnus-agent-load-alist))
+  (unless (fboundp 'gnus-agent-load-alist)
       (defun gnus-agent-load-alist (group)))
   (require 'gnus-sum))
 
@@ -91,6 +88,7 @@ it's not cached."
 (defvar gnus-cache-buffer nil)
 (defvar gnus-cache-active-hashtb nil)
 (defvar gnus-cache-active-altered nil)
+(defvar gnus-cache-total-fetched-hashtb nil)
 
 (eval-and-compile
   (autoload 'nnml-generate-nov-databases-1 "nnml")
@@ -141,7 +139,10 @@ it's not cached."
 		;; of any inconsistencies (articles w/o nov entries?).
 		;; for now, just be conservative...delete only if safe -- sj
 		(delete-directory (file-name-directory overview-file))
-	      (error nil)))))
+	      (error)))
+
+	  (gnus-cache-update-overview-total-fetched-for (car gnus-cache-buffer) 
+							overview-file)))
       ;; Kill the buffer -- it's either unmodified or saved.
       (gnus-kill-buffer buffer)
       (setq gnus-cache-buffer nil))))
@@ -179,7 +180,8 @@ it's not cached."
 	      (gnus-request-article-this-buffer number group))
 	    (when (> (buffer-size) 0)
 	      (let ((coding-system-for-write gnus-cache-coding-system))
-		(gnus-write-buffer file))
+		(gnus-write-buffer file)
+		(gnus-cache-update-file-total-fetched-for group file))
 	      (nnheader-remove-body)
 	      (setq headers (nnheader-parse-naked-head))
 	      (mail-header-set-number headers number)
@@ -466,13 +468,15 @@ Returns the list of articles removed."
 		   (gnus-cache-member-of-class
 		    gnus-cache-remove-articles ticked dormant unread)))
       (save-excursion
+	(gnus-cache-update-file-total-fetched-for group file t)
 	(delete-file file)
+
 	(set-buffer (cdr gnus-cache-buffer))
 	(goto-char (point-min))
 	(when (or (looking-at (concat (int-to-string number) "\t"))
 		  (search-forward (concat "\n" (int-to-string number) "\t")
 				  (point-max) t))
-	  (gnus-delete-line)))
+	    (gnus-delete-line)))
       (unless (setq gnus-newsgroup-cached
 		    (delq article gnus-newsgroup-cached))
 	(gnus-sethash gnus-newsgroup-name nil gnus-cache-active-hashtb)
@@ -706,6 +710,9 @@ If LOW, update the lower bound instead."
   (gnus-cache-close)
   (let ((nnml-generate-active-function 'identity))
     (nnml-generate-nov-databases-1 dir))
+
+  (setq gnus-cache-total-fetched-hashtb nil)
+
   (gnus-cache-open))
 
 (defun gnus-cache-move-cache (dir)
@@ -725,6 +732,126 @@ If GROUP is non-nil, also cater to `gnus-cacheable-groups' and
 		  (string-match gnus-cacheable-groups group))
 	      (or (not gnus-uncacheable-groups)
 		  (not (string-match gnus-uncacheable-groups group)))))))
+
+;;;###autoload
+(defun gnus-cache-rename-group (old-group new-group)
+  "Rename OLD-GROUP as NEW-GROUP.  Always updates the cache, even when
+disabled, as the old cache files would corrupt gnus when the cache was
+next enabled. Depends upon the caller to determine whether group renaming is supported."
+  (let ((old-dir (gnus-cache-file-name old-group ""))
+	(new-dir (gnus-cache-file-name new-group "")))
+    (gnus-rename-file old-dir new-dir t))
+
+  (gnus-cache-rename-group-total-fetched-for old-group new-group)
+
+  (let ((no-save gnus-cache-active-hashtb))
+    (unless gnus-cache-active-hashtb
+      (gnus-cache-read-active))
+    (let* ((old-group-hash-value (gnus-gethash old-group gnus-cache-active-hashtb))
+	   (new-group-hash-value (gnus-gethash new-group gnus-cache-active-hashtb))
+	   (delta                (or old-group-hash-value new-group-hash-value)))
+      (gnus-sethash new-group old-group-hash-value gnus-cache-active-hashtb)
+      (gnus-sethash old-group nil gnus-cache-active-hashtb)
+
+      (if no-save
+	  (setq gnus-cache-active-altered delta)
+	(gnus-cache-write-active delta)))))
+
+;;;###autoload
+(defun gnus-cache-delete-group (group)
+  "Delete GROUP.  Always updates the cache, even when
+disabled, as the old cache files would corrupt gnus when the cache was
+next enabled. Depends upon the caller to determine whether group deletion is supported."
+  (let ((dir (gnus-cache-file-name group "")))
+    (gnus-delete-file dir))
+
+  (gnus-cache-delete-group-total-fetched-for group)
+
+  (let ((no-save gnus-cache-active-hashtb))
+    (unless gnus-cache-active-hashtb
+      (gnus-cache-read-active))
+    (let* ((group-hash-value (gnus-gethash group gnus-cache-active-hashtb)))
+      (gnus-sethash group nil gnus-cache-active-hashtb)
+
+      (if no-save
+	  (setq gnus-cache-active-altered group-hash-value)
+	(gnus-cache-write-active group-hash-value)))))
+
+(defvar gnus-cache-inhibit-update-total-fetched-for nil)
+(defvar gnus-cache-need-update-total-fetched-for nil)
+
+(defmacro gnus-cache-with-refreshed-group (group &rest body)
+  `(prog1 (let ((gnus-cache-inhibit-update-total-fetched-for t))
+	    ,@body)
+     (when (and gnus-cache-need-update-total-fetched-for
+		(not gnus-cache-inhibit-update-total-fetched-for))
+	(save-excursion
+	  (set-buffer gnus-group-buffer)
+	  (setq gnus-cache-need-update-total-fetched-for nil)
+	  (gnus-group-update-group ,group t)))))
+
+(defun gnus-cache-update-file-total-fetched-for (group file &optional subtract)
+  (when gnus-cache-total-fetched-hashtb
+    (gnus-cache-with-refreshed-group
+     group
+     (let* ((entry (or (gnus-gethash group gnus-cache-total-fetched-hashtb)
+		       (gnus-sethash group (make-vector 2 0)
+				     gnus-cache-total-fetched-hashtb)))
+	    size)
+
+       (if file
+	   (setq size (or (nth 7 (file-attributes file)) 0))
+	 (let ((files (directory-files (gnus-cache-file-name group "") 
+				       t nil t))
+	       file attrs)
+	   (setq size 0.0)
+	   (while (setq file (pop files))
+	     (setq attrs (file-attributes file))
+	     (unless (nth 0 attrs)
+	       (incf size (float (nth 7 attrs)))))))	     
+
+       (setq gnus-cache-need-update-total-fetched-for t)
+
+       (incf (nth 1 entry) (if subtract (- size) size))))))
+
+(defun gnus-cache-update-overview-total-fetched-for (group file)
+  (when gnus-cache-total-fetched-hashtb
+    (gnus-cache-with-refreshed-group
+     group
+     (let* ((entry (or (gnus-gethash group gnus-cache-total-fetched-hashtb)
+		       (gnus-sethash group (make-list 2 0) 
+				     gnus-cache-total-fetched-hashtb)))
+	    (size (or (nth 7 (file-attributes 
+			      (or file
+				  (gnus-cache-file-name group ".overview"))))
+		      0)))
+       (setq gnus-cache-need-update-total-fetched-for t)
+       (setf (nth 0 entry) size)))))
+
+(defun gnus-cache-rename-group-total-fetched-for (old-group new-group)
+  "Record of disk space used by OLD-GROUP now associated with NEW-GROUP."
+  (when gnus-cache-total-fetched-hashtb
+    (let ((entry (gnus-gethash old-group gnus-cache-total-fetched-hashtb)))
+      (gnus-sethash new-group entry gnus-cache-total-fetched-hashtb)
+      (gnus-sethash old-group nil gnus-cache-total-fetched-hashtb))))
+
+(defun gnus-cache-delete-group-total-fetched-for (group)
+  "Delete record of disk space used by GROUP being deleted."
+  (when gnus-cache-total-fetched-hashtb
+      (gnus-sethash group nil gnus-cache-total-fetched-hashtb)))
+
+(defun gnus-cache-total-fetched-for (group &optional no-inhibit)
+  "Get total disk space used by the cache for the specified GROUP."
+  (unless gnus-cache-total-fetched-hashtb
+    (setq gnus-cache-total-fetched-hashtb (gnus-make-hashtable 1024)))
+
+  (let* ((entry (gnus-gethash group gnus-cache-total-fetched-hashtb)))
+    (if entry
+	(apply '+ entry)
+      (let ((gnus-cache-inhibit-update-total-fetched-for (not no-inhibit)))
+	(+ 
+	 (gnus-cache-update-overview-total-fetched-for group nil)
+	 (gnus-cache-update-file-total-fetched-for     group nil))))))
 
 (provide 'gnus-cache)
 
