@@ -2208,6 +2208,22 @@ to find out how to use this."
 	 (y-or-n-p
 	  (format "The %s header looks odd: \"%s\".  Really post? "
 		  (car headers) header)))))
+   (message-check 'repeated-newsgroups
+     (let ((case-fold-search t)
+	   (headers '("Newsgroups" "Followup-To"))
+	   header error groups group)
+       (while (and headers
+		   (not error))
+	 (when (setq header (mail-fetch-field (pop headers)))
+	   (setq groups (message-tokenize-header header ","))
+	   (while (setq group (pop groups))
+	     (when (member group groups)
+	       (setq error group
+		     groups nil)))))
+       (if (not error)
+	   t
+	 (y-or-n-p
+	  (format "Group %s is repeated in headers.  Really post? " error)))))
    ;; Check the From header.
    (message-check 'from
      (let* ((case-fold-search t)

@@ -1275,8 +1275,7 @@ SCORE is the score to add."
 	  (erase-buffer)
 	  (let (emacs-lisp-mode-hook)
 	    (if (string-match
-		 (concat (regexp-quote gnus-adaptive-file-suffix)
-			 "$")
+		 (concat (regexp-quote gnus-adaptive-file-suffix) "$")
 		 file)
 		;; This is an adaptive score file, so we do not run
 		;; it through `pp'.  These files can get huge, and

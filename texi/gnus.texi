@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.62 Manual
+@settitle Gnus 5.4.63 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.62 Manual
+@title Gnus 5.4.63 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.62.
+This manual corresponds to Gnus 5.4.63.
 
 @end ifinfo
 
@@ -610,9 +610,9 @@ you can set @code{gnus-check-new-newsgroups} to @code{nil}.  This will
 also save you some time at startup.  Even if this variable is
 @code{nil}, you can always subscribe to the new groups just by pressing
 @kbd{U} in the group buffer (@pxref{Group Maintenance}).  This variable
-is @code{t} by default.  If you set this variable to @code{always}, then
-Gnus will query the backends for new groups even when you do the @kbd{g}
-command (@pxref{Scanning New Messages}).
+is @code{ask-server} by default.  If you set this variable to
+@code{always}, then Gnus will query the backends for new groups even
+when you do the @kbd{g} command (@pxref{Scanning New Messages}).
 
 @menu
 * Checking New Groups::      Determining what groups are new.
@@ -8511,7 +8511,8 @@ server:
 is run after a connection has been made.  It can be used to send
 commands to the @sc{nntp} server after it has been contacted.  By
 default it sends the command @code{MODE READER} to the server with the
-@code{nntp-send-mode-reader} function.
+@code{nntp-send-mode-reader} function.  This function should always be
+present in this hook.
 
 @item nntp-authinfo-function 
 @vindex nntp-authinfo-function 
@@ -10816,17 +10817,6 @@ after editing score files.
 Customize a score file in a visually pleasing manner
 (@code{gnus-score-customize}). 
 
-@item I C-i
-@kindex I C-i (Summary)
-@findex gnus-summary-raise-score
-Increase the score of the current article
-(@code{gnus-summary-raise-score}).
-
-@item L C-l
-@kindex L C-l (Summary)
-@findex gnus-summary-lower-score
-Lower the score of the current article
-(@code{gnus-summary-lower-score}). 
 @end table
 
 The rest of these commands modify the local score file.
@@ -12402,7 +12392,6 @@ four days, Gnus will decay the scores four times, for instance.
 * Buttons::                    Get tendonitis in ten easy steps!
 * Daemons::                    Gnus can do things behind your back.
 * NoCeM::                      How to avoid spam and other fatty foods.
-* Picons::                     How to display pictures of what your reading.
 * Undo::                       Some actions can be undone.
 * Moderation::                 What to do if you're a moderator.
 * XEmacs Enhancements::        There are more pictures and stuff under XEmacs.
@@ -13324,216 +13313,6 @@ big.  If this is a problem, you should kill off all (or most) of your
 unsubscribed groups (@pxref{Subscription Commands}).
 
 
-@node Picons
-@section Picons
-
-@iftex
-@iflatex
-\gnuspicon{tmp/picons-att.ps}
-\gnuspicon{tmp/picons-berkeley.ps}
-\gnuspicon{tmp/picons-caltech.ps}
-\gnuspicon{tmp/picons-canada.ps}
-\gnuspicon{tmp/picons-cr.ps}
-\gnuspicon{tmp/picons-cygnus.ps}
-\gnuspicon{tmp/picons-gov.ps}
-\gnuspicon{tmp/picons-mit.ps}
-\gnuspicon{tmp/picons-nasa.ps}
-\gnuspicon{tmp/picons-qmw.ps}
-\gnuspicon{tmp/picons-rms.ps}
-\gnuspicon{tmp/picons-ruu.ps}
-@end iflatex
-@end iftex
-
-So...  You want to slow down your news reader even more!  This is a
-good way to do so.  Its also a great way to impress people staring
-over your shoulder as you read news.
-
-@menu
-* Picon Basics::           What are picons and How do I get them.
-* Picon Requirements::     Don't go further if you aren't using XEmacs.
-* Easy Picons::            Displaying Picons---the easy way.
-* Hard Picons::            The way you should do it.  You'll learn something.
-* Picon Configuration::    Other variables you can trash/tweak/munge/play with.
-@end menu
-
-
-@node Picon Basics
-@subsection Picon Basics
-
-What are Picons?  To quote directly from the Picons Web site:
-
-@quotation 
-@dfn{Picons} is short for ``personal icons''.  They're small,
-constrained images used to represent users and domains on the net,
-organized into databases so that the appropriate image for a given
-e-mail address can be found.  Besides users and domains, there are picon
-databases for Usenet newsgroups and weather forecasts.  The picons are
-in either monochrome @code{XBM} format or color @code{XPM} and
-@code{GIF} formats.
-@end quotation
-
-For instructions on obtaining and installing the picons databases, point
-your Web browser at
-@file{http://www.cs.indiana.edu/picons/ftp/index.html}.
-
-@vindex gnus-picons-database
-Gnus expects picons to be installed into a location pointed to by
-@code{gnus-picons-database}.
-
-
-@node Picon Requirements
-@subsection Picon Requirements
-
-To have Gnus display Picons for you, you must be running XEmacs
-19.13 or greater since all other versions of Emacs aren't yet able to
-display images.
-
-Additionally, you must have @code{xpm} support compiled into XEmacs.
-
-@vindex gnus-picons-convert-x-face
-If you want to display faces from @code{X-Face} headers, you must have
-the @code{netpbm} utilities installed, or munge the
-@code{gnus-picons-convert-x-face} variable to use something else.
-
-
-@node Easy Picons
-@subsection Easy Picons
-
-To enable displaying picons, simply put the following line in your
-@file{~/.gnus} file and start Gnus.
-
-@lisp
-(setq gnus-use-picons t)
-(add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-(add-hook 'gnus-summary-prepare-hook 'gnus-group-display-picons t)
-(add-hook 'gnus-article-display-hook 'gnus-picons-article-display-x-face)
-@end lisp
-
-
-@node Hard Picons
-@subsection Hard Picons 
-
-Gnus can display picons for you as you enter and leave groups and
-articles.  It knows how to interact with three sections of the picons
-database.  Namely, it can display the picons newsgroup pictures,
-author's face picture(s), and the authors domain.  To enable this
-feature, you need to first decide where to display them.
-
-@table @code 
-
-@item gnus-picons-display-where 
-@vindex gnus-picons-display-where 
-Where the picon images should be displayed.  It is @code{picons} by
-default (which by default maps to the buffer @samp{*Picons*}).  Other
-valid places could be @code{article}, @code{summary}, or
-@samp{*scratch*} for all I care.  Just make sure that you've made the
-buffer visible using the standard Gnus window configuration
-routines---@pxref{Windows Configuration}.
-
-@end table
-
-@iftex
-@iflatex
-\gnuspicon{tmp/picons-seuu.ps}
-\gnuspicon{tmp/picons-stanford.ps}
-\gnuspicon{tmp/picons-sun.ps}
-\gnuspicon{tmp/picons-ubc.ps}
-\gnuspicon{tmp/picons-ufl.ps}
-\gnuspicon{tmp/picons-uio.ps}
-\gnuspicon{tmp/picons-unit.ps}
-\gnuspicon{tmp/picons-upenn.ps}
-\gnuspicon{tmp/picons-wesleyan.ps}
-@end iflatex
-@end iftex
-
-Note: If you set @code{gnus-use-picons} to @code{t}, it will set up your
-window configuration for you to include the @code{picons} buffer.
-
-Now that you've made that decision, you need to add the following
-functions to the appropriate hooks so these pictures will get
-displayed at the right time.
-
-@vindex gnus-article-display-hook
-@vindex gnus-picons-display-where
-@table @code
-@item gnus-article-display-picons
-@findex gnus-article-display-picons
-Looks up and displays the picons for the author and the author's domain
-in the @code{gnus-picons-display-where} buffer.  Should be added to the
-@code{gnus-article-display-hook}.
-
-@item gnus-group-display-picons
-@findex gnus-article-display-picons
-Displays picons representing the current group.  This function should
-be added to the @code{gnus-summary-prepare-hook} or to the
-@code{gnus-article-display-hook} if @code{gnus-picons-display-where}
-is set to @code{article}.
-
-@item gnus-picons-article-display-x-face
-@findex gnus-article-display-picons
-Decodes and displays the X-Face header if present.  This function
-should be added to @code{gnus-article-display-hook}.
-
-@end table
-
-Note:  You must append them to the hook, so make sure to specify 't'
-for the append flag of @code{add-hook}:
-
-@lisp
-(add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-@end lisp
-
-
-@node Picon Configuration
-@subsection Picon Configuration
-
-The following variables offer further control over how things are
-done, where things are located, and other useless stuff you really
-don't need to worry about.
-
-@table @code
-@item gnus-picons-database
-@vindex gnus-picons-database
-The location of the picons database.  Should point to a directory
-containing the @file{news}, @file{domains}, @file{users} (and so on)
-subdirectories.  Defaults to @file{/usr/local/faces}.
-
-@item gnus-picons-news-directory
-@vindex gnus-picons-news-directory
-Sub-directory of the faces database containing the icons for
-newsgroups.
-
-@item gnus-picons-user-directories
-@vindex gnus-picons-user-directories
-List of subdirectories to search in @code{gnus-picons-database} for user
-faces.  @code{("local" "users" "usenix" "misc")} is the default.
-
-@item gnus-picons-domain-directories
-@vindex gnus-picons-domain-directories
-List of subdirectories to search in @code{gnus-picons-database} for
-domain name faces.  Defaults to @code{("domains")}.  Some people may
-want to add @samp{unknown} to this list.
-
-@item gnus-picons-convert-x-face
-@vindex gnus-picons-convert-x-face
-The command to use to convert the @code{X-Face} header to an X bitmap
-(@code{xbm}).  Defaults to @code{(format "@{ echo '/* Width=48,
-Height=48 */'; uncompface; @} | icontopbm | pbmtoxbm > %s"
-gnus-picons-x-face-file-name)}
-
-@item gnus-picons-x-face-file-name
-@vindex gnus-picons-x-face-file-name
-Names a temporary file to store the @code{X-Face} bitmap in.  Defaults
-to @code{(format "/tmp/picon-xface.%s.xbm" (user-login-name))}.
-
-@item gnus-picons-buffer
-@vindex gnus-picons-buffer
-The name of the buffer that @code{picons} points to.  Defaults to
-@samp{*Icon Buffer*}.
-
-@end table
-
-
 @node Undo
 @section Undo
 @cindex undo
@@ -13621,7 +13400,342 @@ To use moderation mode in these two groups, say:
 @cindex XEmacs
 
 XEmacs is able to display pictures and stuff, so Gnus has taken
-advantage of that.  Relevant variables include:
+advantage of that.
+
+@menu
+* Picons::    How to display pictures of what your reading.
+* Smileys::   Show all those happy faces the way they were meant to be shown.
+* Toolbar::   Click'n'drool.
+* XVarious::  Other XEmacsy Gnusey variables.
+@end menu
+
+
+@node Picons
+@subsection Picons
+
+@iftex
+@iflatex
+\gnuspicon{tmp/picons-att.ps}
+\gnuspicon{tmp/picons-berkeley.ps}
+\gnuspicon{tmp/picons-caltech.ps}
+\gnuspicon{tmp/picons-canada.ps}
+\gnuspicon{tmp/picons-cr.ps}
+\gnuspicon{tmp/picons-cygnus.ps}
+\gnuspicon{tmp/picons-gov.ps}
+\gnuspicon{tmp/picons-mit.ps}
+\gnuspicon{tmp/picons-nasa.ps}
+\gnuspicon{tmp/picons-qmw.ps}
+\gnuspicon{tmp/picons-rms.ps}
+\gnuspicon{tmp/picons-ruu.ps}
+@end iflatex
+@end iftex
+
+So...  You want to slow down your news reader even more!  This is a
+good way to do so.  Its also a great way to impress people staring
+over your shoulder as you read news.
+
+@menu
+* Picon Basics::           What are picons and How do I get them.
+* Picon Requirements::     Don't go further if you aren't using XEmacs.
+* Easy Picons::            Displaying Picons---the easy way.
+* Hard Picons::            The way you should do it.  You'll learn something.
+* Picon Configuration::    Other variables you can trash/tweak/munge/play with.
+@end menu
+
+
+@node Picon Basics
+@subsubsection Picon Basics
+
+What are Picons?  To quote directly from the Picons Web site:
+
+@quotation 
+@dfn{Picons} is short for ``personal icons''.  They're small,
+constrained images used to represent users and domains on the net,
+organized into databases so that the appropriate image for a given
+e-mail address can be found.  Besides users and domains, there are picon
+databases for Usenet newsgroups and weather forecasts.  The picons are
+in either monochrome @code{XBM} format or color @code{XPM} and
+@code{GIF} formats.
+@end quotation
+
+For instructions on obtaining and installing the picons databases, point
+your Web browser at
+@file{http://www.cs.indiana.edu/picons/ftp/index.html}.
+
+@vindex gnus-picons-database
+Gnus expects picons to be installed into a location pointed to by
+@code{gnus-picons-database}.
+
+
+@node Picon Requirements
+@subsubsection Picon Requirements
+
+To have Gnus display Picons for you, you must be running XEmacs
+19.13 or greater since all other versions of Emacs aren't yet able to
+display images.
+
+Additionally, you must have @code{xpm} support compiled into XEmacs.
+
+@vindex gnus-picons-convert-x-face
+If you want to display faces from @code{X-Face} headers, you must have
+the @code{netpbm} utilities installed, or munge the
+@code{gnus-picons-convert-x-face} variable to use something else.
+
+
+@node Easy Picons
+@subsubsection Easy Picons
+
+To enable displaying picons, simply put the following line in your
+@file{~/.gnus} file and start Gnus.
+
+@lisp
+(setq gnus-use-picons t)
+(add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
+(add-hook 'gnus-summary-prepare-hook 'gnus-group-display-picons t)
+(add-hook 'gnus-article-display-hook 'gnus-picons-article-display-x-face)
+@end lisp
+
+
+@node Hard Picons
+@subsubsection Hard Picons 
+
+Gnus can display picons for you as you enter and leave groups and
+articles.  It knows how to interact with three sections of the picons
+database.  Namely, it can display the picons newsgroup pictures,
+author's face picture(s), and the authors domain.  To enable this
+feature, you need to first decide where to display them.
+
+@table @code 
+
+@item gnus-picons-display-where 
+@vindex gnus-picons-display-where 
+Where the picon images should be displayed.  It is @code{picons} by
+default (which by default maps to the buffer @samp{*Picons*}).  Other
+valid places could be @code{article}, @code{summary}, or
+@samp{*scratch*} for all I care.  Just make sure that you've made the
+buffer visible using the standard Gnus window configuration
+routines---@pxref{Windows Configuration}.
+
+@end table
+
+@iftex
+@iflatex
+\gnuspicon{tmp/picons-seuu.ps}
+\gnuspicon{tmp/picons-stanford.ps}
+\gnuspicon{tmp/picons-sun.ps}
+\gnuspicon{tmp/picons-ubc.ps}
+\gnuspicon{tmp/picons-ufl.ps}
+\gnuspicon{tmp/picons-uio.ps}
+\gnuspicon{tmp/picons-unit.ps}
+\gnuspicon{tmp/picons-upenn.ps}
+\gnuspicon{tmp/picons-wesleyan.ps}
+@end iflatex
+@end iftex
+
+Note: If you set @code{gnus-use-picons} to @code{t}, it will set up your
+window configuration for you to include the @code{picons} buffer.
+
+Now that you've made that decision, you need to add the following
+functions to the appropriate hooks so these pictures will get
+displayed at the right time.
+
+@vindex gnus-article-display-hook
+@vindex gnus-picons-display-where
+@table @code
+@item gnus-article-display-picons
+@findex gnus-article-display-picons
+Looks up and displays the picons for the author and the author's domain
+in the @code{gnus-picons-display-where} buffer.  Should be added to the
+@code{gnus-article-display-hook}.
+
+@item gnus-group-display-picons
+@findex gnus-article-display-picons
+Displays picons representing the current group.  This function should
+be added to the @code{gnus-summary-prepare-hook} or to the
+@code{gnus-article-display-hook} if @code{gnus-picons-display-where}
+is set to @code{article}.
+
+@item gnus-picons-article-display-x-face
+@findex gnus-article-display-picons
+Decodes and displays the X-Face header if present.  This function
+should be added to @code{gnus-article-display-hook}.
+
+@end table
+
+Note:  You must append them to the hook, so make sure to specify 't'
+for the append flag of @code{add-hook}:
+
+@lisp
+(add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
+@end lisp
+
+
+@node Picon Configuration
+@subsubsection Picon Configuration
+
+The following variables offer further control over how things are
+done, where things are located, and other useless stuff you really
+don't need to worry about.
+
+@table @code
+@item gnus-picons-database
+@vindex gnus-picons-database
+The location of the picons database.  Should point to a directory
+containing the @file{news}, @file{domains}, @file{users} (and so on)
+subdirectories.  Defaults to @file{/usr/local/faces}.
+
+@item gnus-picons-news-directory
+@vindex gnus-picons-news-directory
+Sub-directory of the faces database containing the icons for
+newsgroups.
+
+@item gnus-picons-user-directories
+@vindex gnus-picons-user-directories
+List of subdirectories to search in @code{gnus-picons-database} for user
+faces.  @code{("local" "users" "usenix" "misc")} is the default.
+
+@item gnus-picons-domain-directories
+@vindex gnus-picons-domain-directories
+List of subdirectories to search in @code{gnus-picons-database} for
+domain name faces.  Defaults to @code{("domains")}.  Some people may
+want to add @samp{unknown} to this list.
+
+@item gnus-picons-convert-x-face
+@vindex gnus-picons-convert-x-face
+The command to use to convert the @code{X-Face} header to an X bitmap
+(@code{xbm}).  Defaults to @code{(format "@{ echo '/* Width=48,
+Height=48 */'; uncompface; @} | icontopbm | pbmtoxbm > %s"
+gnus-picons-x-face-file-name)}
+
+@item gnus-picons-x-face-file-name
+@vindex gnus-picons-x-face-file-name
+Names a temporary file to store the @code{X-Face} bitmap in.  Defaults
+to @code{(format "/tmp/picon-xface.%s.xbm" (user-login-name))}.
+
+@item gnus-picons-buffer
+@vindex gnus-picons-buffer
+The name of the buffer that @code{picons} points to.  Defaults to
+@samp{*Icon Buffer*}.
+
+@end table
+
+
+@node Smileys
+@subsection Smileys
+@cindex smileys
+
+@dfn{Smiley} is a package separate from Gnus, but since Gnus is
+currently the only package that uses Smiley, it is documented here.
+
+In short---to use Smiley in Gnus, put the following in your
+@file{.gnus.el} file:
+
+@lisp
+(add-hook 'gnus-article-display-hook 'gnus-smiley-display t)
+@end lisp
+
+Smiley maps text smiley faces---@samp{:-)}, @samp{:-=}, @samp{:-(} and
+the like---to pictures and displays those instead of the text smiley
+faces.  The conversion is controlled by a list of regexps that matches
+text and maps that to file names.
+
+@vindex smiley-nosey-regexp-alist
+@vindex smiley-deformed-regexp-alist
+Smiley supplies two example conversion alists by default:
+@code{smiley-deformed-regexp-alist} (which matches @samp{:)}, @samp{:(}
+and so on), and @code{smiley-nosey-regexp-alist} (which matches
+@samp{:-)}, @samp{:-(} and so on).
+
+The alist used is specified by the @code{smiley-regexp-alist} variable,
+which defaults to the value of @code{smiley-deformed-regexp-alist}.
+
+Here's the default value of @code{smiley-smiley-regexp-alist}:
+
+@lisp
+(setq smiley-nosey-regexp-alist
+      '(("\\(:-+[<«]+\\)\\W" 1 "FaceAngry.xpm")
+        ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
+        ("\\(:-+D\\)\\W" 1 "FaceGrinning.xpm")
+        ("\\(:-+[@}»]+\\)\\W" 1 "FaceHappy.xpm")
+        ("\\(:-*)+\\)\\W" 1 "FaceHappy.xpm")        
+        ("\\(:-+[/\\\"]+\\)\\W" 1 "FaceIronic.xpm")
+        ("\\([8|]-+[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
+        ("\\([:|]-+#+\\)\\W" 1 "FaceNyah.xpm")
+        ("\\(:-+[(@{]+\\)\\W" 1 "FaceSad.xpm")
+        ("\\(:-+[Oo\*]\\)\\W" 1 "FaceStartled.xpm")
+        ("\\(:-+|\\)\\W" 1 "FaceStraight.xpm")
+        ("\\(:-+p\\)\\W" 1 "FaceTalking.xpm")
+        ("\\(:-+d\\)\\W" 1 "FaceTasty.xpm")
+        ("\\(;-+[>)@}»]+\\)\\W" 1 "FaceWinking.xpm")
+        ("\\(:-+[Vvµ]\\)\\W" 1 "FaceWry.xpm")
+        ("\\(][:8B]-[)>]\\)\\W" 1 "FaceDevilish.xpm")
+        ("\\([:|]-+P\\)\\W" 1 "FaceYukky.xpm")))
+@end lisp
+
+The first item in each element is the regexp to be matched; the second
+element is the regexp match group that is to be replaced by the picture;
+and the third element is the name of the file to be displayed.
+
+The following variables customize where Smiley will look for these
+files, as well as the color to be used and stuff:
+
+@table @code
+
+@item smiley-data-directory
+@vindex smiley-data-directory
+Where Smiley will look for smiley faces files.
+
+@item smiley-flesh-color
+@vindex smiley-flesh-color
+Skin color.  The default is @samp{yellow}, which is really racist.
+
+@item smiley-features-color
+@vindex smiley-features-color
+Color of the features of the face.  The default is @samp{black}.
+
+@item smiley-tongue-color
+@vindex smiley-tongue-color
+Color of the tongue.  The default is @samp{red}.
+
+@item smiley-circle-color
+@vindex smiley-circle-color
+Color of the circle around the face.  The default is @samp{black}.
+
+@item smiley-mouse-face
+@vindex smiley-mouse-face
+Face used for mouse highlighting over the smiley face.
+
+@end table
+
+
+@node Toolbar
+@subsection Toolbar
+
+@table @code
+
+@item gnus-use-toolbar
+@vindex gnus-use-toolbar
+If @code{nil}, don't display toolbars.  If non-@code{nil}, it should be
+one of @code{default-toolbar}, @code{top-toolbar}, @code{bottom-toolbar},
+@code{right-toolbar}, or @code{left-toolbar}.
+
+@item gnus-group-toolbar
+@vindex gnus-group-toolbar
+The toolbar in the group buffer.
+
+@item gnus-summary-toolbar
+@vindex gnus-summary-toolbar
+The toolbar in the summary buffer.
+
+@item gnus-summary-mail-toolbar
+@vindex gnus-summary-mail-toolbar
+The toolbar in the summary buffer of mail groups.
+
+@end table
+
+
+@node XVarious
+@subsection Various XEmacs Variables
 
 @table @code
 @item gnus-xmas-glyph-directory
@@ -13641,24 +13755,6 @@ This is the key used to look up the color in the alist described above.
 Legal values include @code{flame}, @code{pine}, @code{moss},
 @code{irish}, @code{sky}, @code{tin}, @code{velvet}, @code{grape},
 @code{labia}, @code{berry}, @code{neutral}, and @code{september}.
-
-@item gnus-use-toolbar
-@vindex gnus-use-toolbar
-If @code{nil}, don't display toolbars.  If non-@code{nil}, it should be
-one of @code{default-toolbar}, @code{top-toolbar}, @code{bottom-toolbar},
-@code{right-toolbar}, or @code{left-toolbar}.
-
-@item gnus-group-toolbar
-@vindex gnus-group-toolbar
-The toolbar in the group buffer.
-
-@item gnus-summary-toolbar
-@vindex gnus-summary-toolbar
-The toolbar in the summary buffer.
-
-@item gnus-summary-mail-toolbar
-@vindex gnus-summary-mail-toolbar
-The toolbar in the summary buffer of mail groups.
 
 @item gnus-xmas-modeline-glyph
 @vindex gnus-xmas-modeline-glyph
@@ -15494,7 +15590,7 @@ the physical server is @samp{ifi.uio.no}.
 
 The backends should be able to switch between several virtual servers.
 The standard backends implement this by keeping an alist of virtual
-server environments that they pull down/pushe up when needed.  
+server environments that they pull down/push up when needed.  
 
 There are two groups of interface functions: @dfn{required functions},
 which must be present, and @dfn{optional functions}, which Gnus will
@@ -16300,7 +16396,7 @@ left up to the programmer---if it's simpler to just spew it all out on
 one looong line, then that's ok.
 
 The meaning of the various atoms are explained elsewhere in this
-manual (@pxref{Score File Atoms}).
+manual (@pxref{Score File Format}).
 
 
 @node Headers

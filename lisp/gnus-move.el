@@ -59,15 +59,18 @@ Update the .newsrc.eld file to reflect the change of nntp server."
   "Move group INFO from FROM-SERVER to TO-SERVER."
   (let ((group (gnus-info-group info))
 	to-active hashtb type mark marks
-	to-article to-reads to-marks article)
+	to-article to-reads to-marks article
+	act-articles)
     (gnus-message 7 "Translating %s..." group)
     (when (gnus-request-group group nil to-server)
       (setq to-active (gnus-parse-active)
-	    hashtb (gnus-make-hashtable 1024))
+	    hashtb (gnus-make-hashtable 1024)
+	    act-articles (gnus-uncompress-range to-active))
       ;; Fetch the headers from the `to-server'.
       (when (and to-active
+		 act-articles
 		 (setq type (gnus-retrieve-headers
-			     (gnus-uncompress-range to-active)
+			     act-articles
 			     group to-server)))
 	;; Convert HEAD headers.  I don't care.
 	(when (eq type 'headers)

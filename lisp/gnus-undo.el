@@ -95,12 +95,7 @@
     ;; Set up the menu.
     (when (gnus-visual-p 'undo-menu 'menu)
       (gnus-undo-make-menu-bar))
-    ;; Don't display anything in the mode line -- too annoying.
-    ;;(unless (assq 'gnus-undo-mode minor-mode-alist)
-    ;;  (push '(gnus-undo-mode " Undo") minor-mode-alist))
-    (unless (assq 'gnus-undo-mode minor-mode-map-alist)
-      (push (cons 'gnus-undo-mode gnus-undo-mode-map)
-	    minor-mode-map-alist))
+    (gnus-add-minor-mode 'gnus-undo-mode "" gnus-undo-mode-map)
     (make-local-hook 'post-command-hook)
     (add-hook 'post-command-hook 'gnus-undo-boundary nil t)
     (run-hooks 'gnus-undo-mode-hook)))

@@ -5018,11 +5018,8 @@ which existed when entering the ephemeral is reset."
 	  (if (null arg) (not gnus-dead-summary-mode)
 	    (> (prefix-numeric-value arg) 0)))
     (when gnus-dead-summary-mode
-      (unless (assq 'gnus-dead-summary-mode minor-mode-alist)
-	(push '(gnus-dead-summary-mode " Dead") minor-mode-alist))
-      (unless (assq 'gnus-dead-summary-mode minor-mode-map-alist)
-	(push (cons 'gnus-dead-summary-mode gnus-dead-summary-mode-map)
-	      minor-mode-map-alist)))))
+      (gnus-add-minor-mode
+       'gnus-dead-summary-mode " Dead" gnus-dead-summary-mode-map))))
 
 (defun gnus-deaden-summary ()
   "Make the current summary buffer into a dead summary buffer."

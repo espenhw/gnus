@@ -1,3 +1,50 @@
+Sat Jul 12 19:46:22 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.63 is released.
+
+Sat Jul 12 17:02:30 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-undo.el (gnus-undo-mode): Use it.
+
+	* gnus-salt.el (gnus-pick-mode): Use it.
+
+	* gnus-gl.el (gnus-grouplens-mode): Use it.
+
+	* gnus-ems.el (gnus-add-minor-mode): New function.
+
+Sat Jul 12 16:21:41 1997  Michael R. Cook  <mcook@cognex.com>
+
+	* gnus-topic.el (gnus-topic-toggle-display-empty-topics): List
+	groups. 
+
+Fri Jul 11 21:12:07 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-art.el (gnus-article-treat-html): Use `w3-region'.
+
+Fri Jul 11 13:20:58 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-check-news-header-syntax): Check repeated
+	groups. 
+
+	* gnus-move.el (gnus-move-group-to-server): Protect against nil
+	articles. 
+
+Thu Jul 10 20:01:44 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-check-first-time-used): Force reading the
+	active file the first time Gnus is used.
+
+	* gnus-group.el (gnus-group-set-mode-line): Conditionalize
+	modified. 
+
+	* gnus-ems.el (gnus-mode-line-modified): New variable.
+
+	* gnus-xmas.el (gnus-summary-toolbar): Typo fix.
+
+Mon Jul  7 11:06:32 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-check-new-newsgroups): New default.
+
 Sun Jul  6 17:22:47 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.62 is released.

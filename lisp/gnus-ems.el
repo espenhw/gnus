@@ -34,6 +34,11 @@
 
 (defvar gnus-mouse-2 [mouse-2])
 (defvar gnus-down-mouse-2 [down-mouse-2])
+(defvar gnus-mode-line-modified
+  (if (and (not gnus-xemacs)
+	   (< emacs-major-version 20))
+      '("--**-" . "-----")
+    '("**" "--")))
 
 (eval-and-compile
   (autoload 'gnus-xmas-define "gnus-xmas")
@@ -196,6 +201,15 @@
        transient-mark-mode
        (boundp 'mark-active)
        mark-active))
+
+(defun gnus-add-minor-mode (mode name map)
+  (if (fboundp 'add-minor-mode)
+      (add-minor-mode mode name map)
+    (unless (assq mode minor-mode-alist)
+      (push `(,mode ,name) minor-mode-alist))
+    (unless (assq mode minor-mode-map-alist)
+      (push (cons mode map)
+	    minor-mode-map-alist))))
 
 (provide 'gnus-ems)
 

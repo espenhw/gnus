@@ -1126,7 +1126,7 @@ Put point at the beginning of the signature separator."
       nil)))
 
 (eval-and-compile
-  (autoload 'w3-parse-buffer "w3-parse")
+  (autoload 'w3-display "w3-parse")
   (autoload 'w3-do-setup "w3" "" t))
 
 (defun gnus-article-treat-html ()
@@ -1146,8 +1146,8 @@ Put point at the beginning of the signature separator."
 	(insert-buffer-substring gnus-article-buffer b e)
 	(require 'url)
 	(save-window-excursion
-	  (w3-parse-buffer (current-buffer))
-	  (setq buf (buffer-string))))
+	  (w3-region (point-min) (point-max))
+	  (setq buf (buffer-substring-no-properties (point-min) (point-max)))))
       (when buf
 	(delete-region (point-min) (point-max))
 	(insert buf))

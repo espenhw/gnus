@@ -945,11 +945,7 @@ articles in the topic and its subtopics."
       (setq gnus-topic-line-format-spec
 	    (gnus-parse-format gnus-topic-line-format
 			       gnus-topic-line-format-alist t))
-      (unless (assq 'gnus-topic-mode minor-mode-alist)
-	(push '(gnus-topic-mode " Topic") minor-mode-alist))
-      (unless (assq 'gnus-topic-mode minor-mode-map-alist)
-	(push (cons 'gnus-topic-mode gnus-topic-mode-map)
-	      minor-mode-map-alist))
+      (gnus-add-minor-mode 'gnus-topic-mode " Topic" gnus-topic-mode-map)
       (add-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
       (add-hook 'gnus-group-catchup-group-hook 'gnus-topic-update-topic)
       (set (make-local-variable 'gnus-group-prepare-function)
@@ -1307,6 +1303,7 @@ If FORCE, always re-read the active file."
   (interactive)
   (setq gnus-topic-display-empty-topics
 	(not gnus-topic-display-empty-topics))
+  (gnus-group-list-groups)
   (message "%s empty topics"
 	   (if gnus-topic-display-empty-topics
 	       "Showing" "Hiding")))

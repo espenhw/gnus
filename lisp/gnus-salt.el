@@ -130,11 +130,7 @@ It accepts the same format specs that `gnus-summary-line-format' does."
       ;; Set up the menu.
       (when (gnus-visual-p 'pick-menu 'menu)
 	(gnus-pick-make-menu-bar))
-      (unless (assq 'gnus-pick-mode minor-mode-alist)
-	(push '(gnus-pick-mode " Pick") minor-mode-alist))
-      (unless (assq 'gnus-pick-mode minor-mode-map-alist)
-	(push (cons 'gnus-pick-mode gnus-pick-mode-map)
-	      minor-mode-map-alist))
+      (gnus-add-minor-mode 'gnus-pick-mode " Pick" gnus-pick-mode-map)
       (run-hooks 'gnus-pick-mode-hook))))
 
 (defun gnus-pick-setup-message ()
@@ -337,11 +333,7 @@ This must be bound to a button-down mouse event."
       ;; Set up the menu.
       (when (gnus-visual-p 'binary-menu 'menu)
 	(gnus-binary-make-menu-bar))
-      (unless (assq 'gnus-binary-mode minor-mode-alist)
-	(push '(gnus-binary-mode " Binary") minor-mode-alist))
-      (unless (assq 'gnus-binary-mode minor-mode-map-alist)
-	(push (cons 'gnus-binary-mode gnus-binary-mode-map)
-	      minor-mode-map-alist))
+      (gnus-add-minor-mode 'gnus-binary-mode " Binary" gnus-binary-mode-map)
       (run-hooks 'gnus-binary-mode-hook))))
 
 (defun gnus-binary-display-article (article &optional all-header)

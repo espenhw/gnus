@@ -1,3 +1,5 @@
+gnus dir file is bogus
+
 .gnus repository:
 http://superdave.socom.com/gnus/
 
@@ -735,3 +737,11 @@ Selv ville jeg nok ha valgt å slette den dersom teksten matcher
 	 "\\(This\s+\\)?[^ ]+ has been automatically signed by"
 og det er maks hundre tegn mellom match-end og ----linja.  Men -det-
 er min type heuristikk og langt fra alles.
+
+* `gnus-subscribe-sorted' -- insert new groups where they would have been
+sorted to if `gnus-group-sort-function' were run.
+
+* gnus-{group,summary}-highlight should respect any `face' text props set
+on the lines.
+
+* `L M' command for lowering a moron in the all.SCORE file.

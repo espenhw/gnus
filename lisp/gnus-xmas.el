@@ -646,7 +646,7 @@ If it is non-nil, it must be a toolbar.  The five legal values are
     [gnus-summary-save-article
      gnus-summary-save-article t "Save article"]
     [gnus-uu-post-news
-     gnus-uu-post-news t "Post an uuencoded article"]
+     gnus-uu-post-news t "Post a uuencoded article"]
     [gnus-summary-cancel-article
      gnus-summary-cancel-article t "Cancel article"]
     [gnus-summary-catchup

@@ -342,7 +342,7 @@
   (goto-char (point-min))
   (while (re-search-forward "&\\([a-z]+\\);" nil t)
     (replace-match (char-to-string (or (cdr (assq (intern (match-string 1))
-						  w3-html-entities ))
+						  w3-html-entities))
 				       ?#))
 		   t t)))
 

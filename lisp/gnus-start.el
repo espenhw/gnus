@@ -79,7 +79,7 @@ saved will be used."
   :group 'gnus-dribble-file
   :type '(choice directory (const nil)))
 
-(defcustom gnus-check-new-newsgroups t
+(defcustom gnus-check-new-newsgroups 'ask-server
   "*Non-nil means that Gnus will run gnus-find-new-newsgroups at startup.
 This normally finds new newsgroups by comparing the active groups the
 servers have already reported with those Gnus already knows, either alive
@@ -840,7 +840,7 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     ;; done in `gnus-get-unread-articles'.
     (and gnus-read-active-file
 	 (not level)
-	 (gnus-read-active-file))
+	 (gnus-read-active-file nil dont-connect))
 
     (unless gnus-active-hashtb
       (setq gnus-active-hashtb (gnus-make-hashtable 4096)))
@@ -897,8 +897,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
   "Search for new newsgroups and add them.
 Each new newsgroup will be treated with `gnus-subscribe-newsgroup-method.'
 The `-n' option line from .newsrc is respected.
-If ARG (the prefix), use the `ask-server' method to query
-the server for new groups."
+If ARG (the prefix), use the `ask-server' method to query the server
+for new groups."
   (interactive "P")
   (let ((check (if (or (and arg (not (listp gnus-check-new-newsgroups)))
 		       (null gnus-read-active-file)
@@ -1052,7 +1052,8 @@ the server for new groups."
       nil
     (gnus-message 6 "First time user; subscribing you to default groups")
     (unless (gnus-read-active-file-p)
-      (gnus-read-active-file))
+      (let ((gnus-read-active-file t))
+	(gnus-read-active-file)))
     (setq gnus-newsrc-last-checked-date (current-time-string))
     (let ((groups gnus-default-subscribed-newsgroups)
 	  group)
@@ -1561,11 +1562,12 @@ newsgroup."
   (gnus-dribble-touch))
 
 ;; Get the active file(s) from the backend(s).
-(defun gnus-read-active-file (&optional force)
+(defun gnus-read-active-file (&optional force not-native)
   (gnus-group-set-mode-line)
   (let ((methods
 	 (append
-	  (if (gnus-check-server gnus-select-method)
+	  (if (and (not not-native)
+		   (gnus-check-server gnus-select-method))
 	      ;; The native server is available.
 	      (cons gnus-select-method gnus-secondary-select-methods)
 	    ;; The native server is down, so we just do the

@@ -1386,7 +1386,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 	(if (not (looking-at gnus-uu-begin-string))
 	    (setq state (list 'middle))
-	  ;; This is the beginning of an uuencoded article.
+	  ;; This is the beginning of a uuencoded article.
 	  ;; We replace certain characters that could make things messy.
 	  (setq gnus-uu-file-name
 		(let ((nnheader-file-name-translation-alist

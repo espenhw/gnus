@@ -1,3 +1,12 @@
+Sat Jul 12 16:29:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Picon Configuration): Moved Picons to under XEmacs. 
+	(Smileys): New section.
+
+Fri Jul 11 11:58:20 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (NNTP): Addition.
+
 Tue Jun 17 23:52:17 1997  Justin Sheehy  <dworkin@ccs.neu.edu>
 
 	* gnus.texi (Group Parameters): Addition.
