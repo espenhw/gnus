@@ -1,5 +1,10 @@
 1999-12-04 01:34:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nntp.el (nntp-retrieve-headers-with-xover): Make sure the entire 
+	status line has arrived before we count it.
+
+	* mailcap.el (mailcap-mime-data): Removed save-file from audio/*. 
+
 	* gnus-sum.el (gnus-thread-header): Fixed after indent.
 	Whitespace problems.
 

@@ -119,12 +119,6 @@
       (viewer . "maplay %s")
       (type   . "audio/x-mpeg"))
      (".*"
-      (viewer . mailcap-save-binary-file)
-      (non-viewer . t)
-      (test   . (or (featurep 'nas-sound)
-		    (featurep 'native-sound)))
-      (type   . "audio/*"))
-     (".*"
       (viewer . "showaudio")
       (type   . "audio/*")))
     ("message"

@@ -482,7 +482,7 @@ noticing asynchronous data.")
   (nntp-possibly-change-group nil server)
   (when (nntp-find-connection-buffer nntp-server-buffer)
     (save-excursion
-      ;; Erase nntp-sever-buffer before nntp-inhibit-erase.
+      ;; Erase nntp-server-buffer before nntp-inhibit-erase.
       (set-buffer nntp-server-buffer)
       (erase-buffer)
       (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
@@ -1111,7 +1111,7 @@ password contained in '~/.nntp-authinfo'."
      (car (last articles)) 'wait)
 
     (goto-char (point-min))
-    (when (looking-at "[1-5][0-9][0-9] ")
+    (when (looking-at "[1-5][0-9][0-9] .*\n")
       (delete-region (point) (progn (forward-line 1) (point))))
     (while (search-forward "\r" nil t)
       (replace-match "" t t))
@@ -1158,16 +1158,16 @@ password contained in '~/.nntp-authinfo'."
 		    (zerop (% count nntp-maximum-request)))
 
 	    (nntp-accept-response)
-	    ;; On some Emacs versions the preceding function has
-	    ;; a tendency to change the buffer.  Perhaps.  It's
-	    ;; quite difficult to reproduce, because it only
-	    ;; seems to happen once in a blue moon.
+	    ;; On some Emacs versions the preceding function has a
+	    ;; tendency to change the buffer.  Perhaps.  It's quite
+	    ;; difficult to reproduce, because it only seems to happen
+	    ;; once in a blue moon.
 	    (set-buffer process-buffer)
 	    (while (progn
 		     (goto-char (or last-point (point-min)))
 		     ;; Count replies.
-		     (while (re-search-forward "^[0-9][0-9][0-9] " nil t)
-		       (setq received (1+ received)))
+		     (while (re-search-forward "^[0-9][0-9][0-9] .*\n" nil t)
+		       (incf received))
 		     (setq last-point (point))
 		     (< received count))
 	      (nntp-accept-response)
@@ -1179,7 +1179,9 @@ password contained in '~/.nntp-authinfo'."
 	  (set-buffer process-buffer)
 	  ;; Wait for the reply from the final command.
 	  (goto-char (point-max))
-	  (re-search-backward "^[0-9][0-9][0-9] " nil t)
+	  (while (not (re-search-backward "^[0-9][0-9][0-9] " nil t))
+	    (nntp-accept-response)
+	    (set-buffer process-buffer))
 	  (when (looking-at "^[23]")
 	    (while (progn
 		     (goto-char (point-max))
