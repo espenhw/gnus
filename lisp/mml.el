@@ -433,7 +433,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		  (let (use-hard-newlines)
 		    (when (and (string= type "text/plain")
 			       (or (null (assq 'format cont))
-				   (string= (assq 'format cont) "flowed"))
+				   (string= (cdr (assq 'format cont))
+					    "flowed"))
 			       (setq use-hard-newlines
 				     (text-property-any
 				      (point-min) (point-max) 'hard 't)))

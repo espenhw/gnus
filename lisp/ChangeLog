@@ -1,5 +1,8 @@
 2002-02-23  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mml.el (mml-generate-mime-1): Add cdr.
+	From: andre@slamdunknetworks.com
+
 	* mm-view.el (mm-text-html-renderer-alist): Add html2text.
 	(mm-text-html-washer-alist): Ditto.
 
