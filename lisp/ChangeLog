@@ -1,3 +1,7 @@
+2000-11-04 10:11:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2231.el (rfc2231-decode-encoded-string): Test mm-multibyte-p.
+
 2000-11-04 09:53:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-decode-text): Delete bogus status lines.

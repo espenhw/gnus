@@ -147,7 +147,8 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
 	     (string-to-number (buffer-substring (point) (+ (point) 2)) 16)
 	   (delete-region (1- (point)) (+ (point) 2)))))
       ;; Encode using the charset, if any.
-      (when (and (> (length elems) 1)
+      (when (and (mm-multibyte-p)
+		 (> (length elems) 1)
 		 (not (equal (intern (car elems)) 'us-ascii)))
 	(mm-decode-coding-region (point-min) (point-max)
 				 (intern (car elems))))
