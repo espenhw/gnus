@@ -472,7 +472,8 @@ By default, the string is treated as containing addresses (see
 If it is nil, encoded-words will not be folded.  Too small value may
 cause an error.  Don't change this for no particular reason.")
 
-(defun rfc2047-encode-1 (column string cs encoder start space &optional eword)
+(defun rfc2047-encode-1 (column string cs encoder start crest tail
+				&optional eword)
   "Subroutine used by `rfc2047-encode'."
   (cond ((string-equal string "")
 	 (or eword ""))
@@ -483,17 +484,21 @@ cause an error.  Don't change this for no particular reason.")
 				    string))
 		 "?="))
 	((>= column rfc2047-encode-max-chars)
-	 (when (and eword
-		    (string-match "\n[ \t]+\\'" eword))
-	   ;; Reomove a superfluous empty line.
-	   (setq eword (substring eword 0 (match-beginning 0))))
-	 (rfc2047-encode-1 (length space) string cs encoder start " "
-			   (concat eword "\n" space)))
+	 (when eword
+	   (cond ((string-match "\n[ \t]+\\'" eword)
+		  ;; Reomove a superfluous empty line.
+		  (setq eword (substring eword 0 (match-beginning 0))))
+		 ((string-match "(+\\'" eword)
+		  ;; Break the line before the open parenthesis.
+		  (setq crest (concat crest (match-string 0 eword))
+			eword (substring eword 0 (match-beginning 0))))))
+	 (rfc2047-encode-1 (length crest) string cs encoder start " " tail
+			   (concat eword "\n" crest)))
 	(t
 	 (let ((index 0)
 	       (limit (1- (length string)))
 	       (prev "")
-	       next)
+	       next len)
 	   (while (and prev
 		       (<= index limit))
 	     (setq next (concat start
@@ -503,27 +508,48 @@ cause an error.  Don't change this for no particular reason.")
 					      (substring string 0 (1+ index))
 					      cs)
 					   (substring string 0 (1+ index))))
-				"?="))
-	     (if (<= (+ column (length next)) rfc2047-encode-max-chars)
-		 (setq prev next
-		       index (1+ index))
-	       (setq next prev
-		     prev nil)))
-	   (setq eword (concat eword next))
+				"?=")
+		   len (+ column (length next)))
+	     (if (> len rfc2047-encode-max-chars)
+		 (setq next prev
+		       prev nil)
+	       (if (or (< index limit)
+		       (<= (+ len (or (string-match "\n" tail)
+				      (length tail)))
+			   rfc2047-encode-max-chars))
+		   (setq prev next
+			 index (1+ index))
+		 (if (string-match "\\`)+" tail)
+		     ;; Break the line after the close parenthesis.
+		     (setq tail (concat (substring tail 0 (match-end 0))
+					"\n "
+					(substring tail (match-end 0)))
+			   prev next
+			   index (1+ index))
+		   (setq next prev
+			 prev nil)))))
 	   (if (> index limit)
-	       eword
+	       (concat eword next tail)
+	     (if (= 0 index)
+		 (if (and eword
+			  (string-match "(+\\'" eword))
+		     (setq crest (concat crest (match-string 0 eword))
+			   eword (substring eword 0 (match-beginning 0)))
+		   (setq eword (concat eword next)))
+	       (setq crest " "
+		     eword (concat eword next)))
 	     (when (string-match "\n[ \t]+\\'" eword)
 	       ;; Reomove a superfluous empty line.
 	       (setq eword (substring eword 0 (match-beginning 0))))
-	     (rfc2047-encode-1 (length space) (substring string index)
-			       cs encoder start " "
-			       (concat eword "\n" space)))))))
+	     (rfc2047-encode-1 (length crest) (substring string index)
+			       cs encoder start " " tail
+			       (concat eword "\n" crest)))))))
 
 (defun rfc2047-encode (b e)
   "Encode the word(s) in the region B to E.
 Point moves to the end of the region."
   (let ((mime-charset (or (mm-find-mime-charset-region b e) (list 'us-ascii)))
-	cs encoding space eword)
+	cs encoding tail crest eword)
     (cond ((> (length mime-charset) 1)
 	   (error "Can't rfc2047-encode `%s'"
 		  (buffer-substring-no-properties b e)))
@@ -544,12 +570,19 @@ Point moves to the end of the region."
 			   'B
 			 'Q)))
 	     (widen)
+	     (goto-char e)
+	     (skip-chars-forward "^ \t\n")
+	     ;; `tail' may contain a close parenthesis.
+	     (setq tail (buffer-substring-no-properties e (point)))
 	     (goto-char b)
 	     (setq b (point-marker)
 		   e (set-marker (make-marker) e))
 	     (rfc2047-fold-region (point-at-bol) b)
+	     (goto-char b)
+	     (skip-chars-backward "^ \t\n")
 	     (unless (= 0 (skip-chars-backward " \t"))
-	       (setq space (buffer-substring-no-properties (point) b)))
+	       ;; `crest' may contain whitespace and an open parenthesis.
+	       (setq crest (buffer-substring-no-properties (point) b)))
 	     (setq eword (rfc2047-encode-1
 			  (- b (point-at-bol))
 			  (mm-replace-in-string
@@ -561,16 +594,20 @@ Point moves to the end of the region."
 			      'identity)
 			  (concat "=?" (downcase (symbol-name mime-charset))
 				  "?" (upcase (symbol-name encoding)) "?")
-			  (or space " ")))
+			  (or crest " ")
+			  tail))
 	     (delete-region (if (eq (aref eword 0) ?\n)
-				(point)
+				(if (bolp)
+				    ;; The line was folded before encoding.
+				    (1- (point))
+				  (point))
 			      (goto-char b))
-			    e)
+			    (+ e (length tail)))
+	     ;; `eword' contains `crest' and `tail'.
 	     (insert eword)
 	     (set-marker b nil)
 	     (set-marker e nil)
-	     (unless (or (eolp)
-			 (looking-at "[ \t\n)]"))
+	     (unless (looking-at "[ \t\n)]")
 	       (insert " "))))
 	  (t
 	   (goto-char e)))))
