@@ -520,41 +520,49 @@ noticing asynchronous data.")
 (defvar nntp-with-open-group-first-pass nil)
 
 (defmacro nntp-with-open-group (group server &optional connectionless &rest forms)
-  "Protect against servers that don't like clients that keep idle connections opens.  The problem
-being that these servers may either close a connection or simply ignore any further requests on a
-connection.  Closed connections are not detected until accept-process-output has updated the
-process-status.  Dropped connections are not detected until the connection timeouts (which may be
-several minutes) or nntp-connection-timeout has expired.  When these occur nntp-with-open-group,
-opens a new connection then re-issues the NNTP command whose response triggered the error."
+  "Protect against servers that don't like clients that keep idle connections opens.
+The problem being that these servers may either close a connection or
+simply ignore any further requests on a connection.  Closed
+connections are not detected until accept-process-output has updated
+the process-status.  Dropped connections are not detected until the
+connection timeouts (which may be several minutes) or
+nntp-connection-timeout has expired.  When these occur
+nntp-with-open-group, opens a new connection then re-issues the NNTP
+command whose response triggered the error."
   (when (and (listp connectionless)
              (not (eq connectionless nil)))
     (setq forms (cons connectionless forms)
           connectionless nil))
   `(let ((nntp-with-open-group-first-pass t)
          nntp-with-open-group-internal)
-     (while (catch 'nntp-with-open-group-error
-              ;; Open the connection to the server
-              ;; NOTE: Existing connections are NOT tested.
-              (nntp-possibly-change-group ,group ,server ,connectionless)
+     (while
+	 (catch 'nntp-with-open-group-error
+	   ;; Open the connection to the server
+	   ;; NOTE: Existing connections are NOT tested.
+	   (nntp-possibly-change-group ,group ,server ,connectionless)
               
-              (let ((timer
-                     (and nntp-connection-timeout
-                          (nnheader-run-at-time
-                           nntp-connection-timeout nil
-                           '(lambda ()
-                              (let ((process (nntp-find-connection nntp-server-buffer))
-                                    (buffer  (and process (process-buffer process))))
-                                        ; when I an able to identify the connection to the server AND I've received NO 
-                                        ; reponse for nntp-connection-timeout seconds.
-                                (when (and buffer (eq 0 (buffer-size buffer)))
-                                        ; Close the connection.  Take no other action as the accept input code will
-                                        ; handle the closed connection.
-                                  (nntp-kill-buffer buffer))))))))
-                (unwind-protect
-                    (setq nntp-with-open-group-internal (progn ,@forms))
-                  (when timer
-                    (nnheader-cancel-timer timer)))
-                nil))
+	   (let ((timer
+		  (and
+		   nntp-connection-timeout
+		   (nnheader-run-at-time
+		    nntp-connection-timeout nil
+		    '(lambda ()
+		       (let ((process (nntp-find-connection
+				       nntp-server-buffer))
+			     (buffer (and process (process-buffer process))))
+			 ;; when I an able to identify the connection
+			 ;; to the server AND I've received NO reponse
+			 ;; for nntp-connection-timeout seconds.
+			 (when (and buffer (eq 0 (buffer-size buffer)))
+			   ;; Close the connection.  Take no other
+			   ;; action as the accept input code will
+			   ;; handle the closed connection.
+			   (nntp-kill-buffer buffer))))))))
+	     (unwind-protect
+		 (setq nntp-with-open-group-internal (progn ,@forms))
+	       (when timer
+		 (nnheader-cancel-timer timer)))
+	     nil))
        (setq nntp-with-open-group-first-pass nil))
      nntp-with-open-group-internal))
 
