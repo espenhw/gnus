@@ -28,6 +28,7 @@
 
 (eval-when-compile (require 'cl))
 
+(require 'gnus)				; for macro gnus-kill-buffer, at least
 (require 'nnheader)
 (require 'message)
 (require 'custom)
