@@ -1,3 +1,8 @@
+2003-08-24  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-header-button-alist, gnus-button-alist): Fix
+	type.
+
 2003-08-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-make-forward-subject-function): Fix

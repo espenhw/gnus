@@ -6116,7 +6116,7 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function."
   :group 'gnus-article-buttons
-  :type '(repeat (list (choice regexp variable)
+  :type '(repeat (list (choice regexp variable sexp)
 		       (integer :tag "Button")
 		       (sexp :tag "Form")
 		       (function :tag "Callback")
@@ -6153,7 +6153,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
   :group 'gnus-article-buttons
   :group 'gnus-article-headers
   :type '(repeat (list (regexp :tag "Header")
-		       regexp
+		       (choice regexp variable)
 		       (integer :tag "Button")
 		       (sexp :tag "Form")
 		       (function :tag "Callback")
