@@ -1,3 +1,7 @@
+2003-10-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* spam.el (spam-install-hooks-function): Added Autoload cookie.
+
 2003-10-02  Jesper Harder  <harder@ifa.au.dk>
 
 	* pgg-def.el (pgg-default-keyserver-address): Change to

@@ -1222,6 +1222,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 
 ;;;; Hooks
 
+;;;###autoload
 (defun spam-install-hooks-function ()
   "Install the spam.el hooks"
   (interactive)
