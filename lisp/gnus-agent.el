@@ -1659,7 +1659,9 @@ of FILE placing the combined headers in nntp-server-buffer."
                             (gnus-summary-set-agent-mark article t)))
                         (dolist (article fetched-articles)
                           (if gnus-agent-mark-unread-after-downloaded
-                              (gnus-summary-mark-article article gnus-unread-mark)))
+                              (gnus-summary-mark-article article gnus-unread-mark))
+                          (when (gnus-summary-goto-subject article nil t)
+                            (gnus-summary-update-download-mark article)))
                         (dolist (article unfetched-articles)
                           (gnus-summary-mark-article article gnus-canceled-mark)))
                     ;; When some, or all, of the marked articles came

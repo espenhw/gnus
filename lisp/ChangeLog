@@ -3,6 +3,9 @@
 	* gnus-agent.el (gnus-agent-check-overview-buffer): This data
 	integrity checker was incorrectly flagging, and removing, articles
 	whose article number was negative.
+	(gnus-agent-fetch-group-1): When executed in the group's summary
+	buffer, refresh each downloaded line to update the status flag and
+	font.
 
 2003-01-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
