@@ -908,11 +908,16 @@ check twice.")
   (let ((file-name-coding-system nnmail-pathname-coding-system)
 	(file (expand-file-name nnml-marks-file-name
 				(nnmail-group-pathname group nnml-directory))))
-    (nnml-possibly-create-directory group)
-    (with-temp-file file
-      (erase-buffer)
-      (princ nnml-marks (current-buffer))
-      (insert "\n"))))
+    (condition-case err
+	(progn
+	  (nnml-possibly-create-directory group)
+	  (with-temp-file file
+	    (erase-buffer)
+	    (princ nnml-marks (current-buffer))
+	    (insert "\n")))
+      (error (or (gnus-yes-or-no-p
+		  (format "Could not write to %s (%s).  Continue? " file err))
+		 (error "Cannot write to %s (%s)" err))))))
 
 (defun nnml-open-marks (group server)
   (let ((file (expand-file-name 
