@@ -866,19 +866,20 @@ used to 899, you would say something along these lines:
 		 (kill-buffer (current-buffer))))))))
 
 (defcustom gnus-select-method
-  (ignore-errors
-    (nconc
-     (list 'nntp (or (ignore-errors
-		       (gnus-getenv-nntpserver))
-		     (when (and gnus-default-nntp-server
-				(not (string= gnus-default-nntp-server "")))
-		       gnus-default-nntp-server)
-		     "news"))
-     (if (or (null gnus-nntp-service)
-	     (equal gnus-nntp-service "nntp"))
-	 nil
-       (list gnus-nntp-service))))
-  "*Default method for selecting a newsgroup.
+  (condition-case nil
+      (nconc
+       (list 'nntp (or (ignore-errors
+			 (gnus-getenv-nntpserver))
+		       (when (and gnus-default-nntp-server
+				  (not (string= gnus-default-nntp-server "")))
+			 gnus-default-nntp-server)
+		       "news"))
+       (if (or (null gnus-nntp-service)
+	       (equal gnus-nntp-service "nntp"))
+	   nil
+	 (list gnus-nntp-service)))
+    (error nil))
+  "Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address.
 
