@@ -1,3 +1,11 @@
+2004-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2231.el (rfc2231-parse-string): Decode encoded value after
+	concatenating segments rather than before concatenating them.
+	Suggested by ARISAWA Akihiro <ari@mbf.ocn.ne.jp>.
+
+	* message.el (message-get-reply-headers): Bind `extra'.
+
 2004-12-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-extra-wide-headers): New variable.
