@@ -1,6 +1,11 @@
+2002-10-11  Jesper harder  <harder@ifa.au.dk>
+
+	* gnus-spec.el (gnus-balloon-face-function): Use the help-echo
+	text property in Emacs.
+
 2002-10-11  Simon Josefsson  <jas@extundo.com>
 
-	* mml2015.el (mml2015-pgg-decrypt, mml2015-pgg-clear-decrypt) 
+	* mml2015.el (mml2015-pgg-decrypt, mml2015-pgg-clear-decrypt)
 	(mml2015-pgg-verify, mml2015-pgg-clear-verify): Remove CR.
 
 	* mml1991.el (mml1991-pgg-sign): Remove CR.
@@ -15,11 +20,12 @@
 	(mml2015-gpg-extract-signature-details): Use it.
 
 2002-10-10  Ted Zlatanov <tzz@lifelogs.com>
-        * spam.el: compilation fixes, spam-check-bbdb function is nil if no
-        BBDB installed
-    
-        * spam-stat.el: added code from Alex Schroeder <alex@gnu.org> to do
-        statistical analysis of spam in Lisp only
+
+	* spam.el: compilation fixes, spam-check-bbdb function is nil if no
+	BBDB installed
+
+	* spam-stat.el: added code from Alex Schroeder <alex@gnu.org> to do
+	statistical analysis of spam in Lisp only
 
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
@@ -154,7 +160,7 @@
 	(pgg-scheme-snarf-keys-region): Use pgg-temporary-file-directory.
 
 	* pgg-parse.el (pgg-char-int): Defalias.
-	(pgg-format-key-identifier, pgg-byte-after, pgg-read-byte) 
+	(pgg-format-key-identifier, pgg-byte-after, pgg-read-byte)
 	(pgg-read-bytes, pgg-read-body): Use it.
 	(pgg-decode-packets): Don't use MEL, use base64-*.
 	(pgg-parse-armor): Don't assume set-buffer-multibyte exists.

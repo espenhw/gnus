@@ -258,7 +258,9 @@
 (defun gnus-balloon-face-function (form type)
   `(gnus-put-text-property
     (point) (progn ,@form (point))
-    'balloon-help
+    ,(if (fboundp 'balloon-help-mode)
+	 ''balloon-help
+       ''help-echo)
     ,(intern (format "gnus-balloon-face-%d" type))))
 
 (defun gnus-spec-tab (column)
