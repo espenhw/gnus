@@ -1,3 +1,9 @@
+2001-09-27 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Gerd M,Av(Bllmann <gerd@gnu.org>.
+
+	* gnus-ems.el (gnus-article-display-xface): Insert xface after
+	previous ones.
+
 2001-09-27 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Daiki Ueno  <ueno@unixuser.org>
 
