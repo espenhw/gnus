@@ -1,5 +1,10 @@
 2002-02-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-group.el (gnus-group-sort-groups-by-real-name): New
+	function.
+	(gnus-group-sort-selected-groups-by-real-name): New function.
+	(gnus-group-make-menu-bar): Add sort by real name.
+
 	* gnus-sum.el (gnus-dependencies-add-header): If replaced, don't
 	rebuild.
 	(gnus-summary-edit-article-done): Gnus-get-newsgroup-headers takes

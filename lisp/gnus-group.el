@@ -787,7 +787,8 @@ simple manner.")
 	["Sort by score" gnus-group-sort-groups-by-score t]
 	["Sort by level" gnus-group-sort-groups-by-level t]
 	["Sort by unread" gnus-group-sort-groups-by-unread t]
-	["Sort by name" gnus-group-sort-groups-by-alphabet t])
+	["Sort by name" gnus-group-sort-groups-by-alphabet t]
+	["Sort by real name" gnus-group-sort-groups-by-real-name t])
        ("Sort process/prefixed"
 	["Default sort" gnus-group-sort-selected-groups
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
@@ -802,6 +803,8 @@ simple manner.")
 	["Sort by unread" gnus-group-sort-selected-groups-by-unread
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
 	["Sort by name" gnus-group-sort-selected-groups-by-alphabet
+	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	["Sort by real name" gnus-group-sort-selected-groups-by-real-name
 	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))])
        ("Mark"
 	["Mark group" gnus-group-mark-group
@@ -2688,6 +2691,12 @@ If REVERSE, sort in reverse order."
   (interactive "P")
   (gnus-group-sort-groups 'gnus-group-sort-by-alphabet reverse))
 
+(defun gnus-group-sort-groups-by-real-name (&optional reverse)
+  "Sort the group buffer alphabetically by real (unprefixed) group name.
+If REVERSE, sort in reverse order."
+  (interactive "P")
+  (gnus-group-sort-groups 'gnus-group-sort-by-real-name reverse))
+
 (defun gnus-group-sort-groups-by-unread (&optional reverse)
   "Sort the group buffer by number of unread articles.
 If REVERSE, sort in reverse order."
@@ -2765,6 +2774,13 @@ Obeys the process/prefix convention.  If REVERSE (the symbolic prefix),
 sort in reverse order."
   (interactive (gnus-interactive "P\ny"))
   (gnus-group-sort-selected-groups n 'gnus-group-sort-by-alphabet reverse))
+
+(defun gnus-group-sort-selected-groups-by-real-name (&optional n reverse)
+  "Sort the group buffer alphabetically by real group name.
+Obeys the process/prefix convention.  If REVERSE (the symbolic prefix),
+sort in reverse order."
+  (interactive (gnus-interactive "P\ny"))
+  (gnus-group-sort-selected-groups n 'gnus-group-sort-by-real-name reverse))
 
 (defun gnus-group-sort-selected-groups-by-unread (&optional n reverse)
   "Sort the group buffer by number of unread articles.
