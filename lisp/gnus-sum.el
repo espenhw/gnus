@@ -6720,12 +6720,6 @@ If FORCE (the prefix), also save the .newsrc file(s)."
 	  (gnus-summary-clear-local-variables))
 	(when (get-buffer gnus-article-buffer)
 	  (bury-buffer gnus-article-buffer))
-	;; We clear the global counterparts of the buffer-local
-	;; variables as well, just to be on the safe side.
-	(set-buffer gnus-group-buffer)
-	(gnus-summary-clear-local-variables)
-	(let ((gnus-summary-local-variables gnus-newsgroup-variables))
-	  (gnus-summary-clear-local-variables))
 	;; Return to group mode buffer.
 	(when (eq mode 'gnus-summary-mode)
 	  (gnus-kill-buffer buf)))

@@ -1,3 +1,8 @@
+2004-11-16  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-sum.el (gnus-summary-exit): Don't clear the global
+	counterparts of the buffer-local variables.
+
 2004-11-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-forbidden-properties): Fixed typo in doc
