@@ -1,6 +1,15 @@
+1999-12-04 07:35:51  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Setting Process Marks): Addition.
+
+1999-12-04 05:09:46  Manoj Srivastava  <srivasta@golden-gryphon.com>
+
+	* gnus.texi: Use defface instead of face-spec-set.
+
 1999-12-04 02:31:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (extension): Posting server fix.
+	Url update.
 
 1999-12-04 01:16:52  Yoshiki Hayashi  <t90553@m.ecc.u-tokyo.ac.jp>
 
