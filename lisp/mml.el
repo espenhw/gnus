@@ -27,7 +27,7 @@
 (require 'mm-bodies)
 (require 'mm-encode)
 (require 'mm-decode)
-(eval-when-compile 'cl)
+(eval-when-compile (require 'cl))
 
 (eval-and-compile
   (autoload 'message-make-message-id "message")
@@ -132,7 +132,7 @@ The function is called with one parameter, which is the generated part.")
 	(when (and (not raw) (memq nil charsets))
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
 		  (y-or-n-p
-		   "Warning: You message contains characters with unknown encoding. Really send?"))
+		   "Message contains characters with unknown encoding.  Really send?"))
 	      (if (setq use-ascii 
 			(or (memq 'use-ascii mml-confirmation-set)
 			    (y-or-n-p "Use ASCII as charset?")))
