@@ -1,3 +1,8 @@
+1999-12-13 10:59:42  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (nnweb-insert): Follow refresh url.
+	* nnslashdot.el: Use it.
+
 1999-12-13 10:39:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnweb.el (nnweb-decode-entities): Decode numerical entities.

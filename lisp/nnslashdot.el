@@ -104,7 +104,7 @@
       (let ((case-fold-search t))
 	(erase-buffer)
 	(when (= start 1)
-	  (nnweb-insert (format nnslashdot-article-url sid))
+	  (nnweb-insert (format nnslashdot-article-url sid) t)
 	  (goto-char (point-min))
 	  (search-forward "Posted by ")
 	  (when (looking-at "<a[^>]+>\\([^<]+\\)")
@@ -128,7 +128,8 @@
 		    (< start last))
 	  (setq point (goto-char (point-max)))
 	  (nnweb-insert
-	   (format nnslashdot-comments-url sid nnslashdot-threshold 0 start))
+	   (format nnslashdot-comments-url sid nnslashdot-threshold 0 start)
+	   t)
 	  (when first-comments
 	    (setq first-comments nil)
 	    (goto-char (point-max))
@@ -203,13 +204,13 @@
       (set-buffer nnslashdot-buffer)
       (erase-buffer)
       (when (= start 1)
-	(nnweb-insert (format nnslashdot-article-url sid))
+	(nnweb-insert (format nnslashdot-article-url sid) t)
 	(goto-char (point-min))
 	(search-forward "Posted by ")
 	(when (looking-at "<a[^>]+>\\([^<]+\\)")
 	  (setq from (nnweb-decode-entities-string (match-string 1))))
 	(search-forward " on ")
-	(setq date (nnslashdot-date-to-date
+	(setq date (nnslashdot-date-to-dat
 		    (buffer-substring (point) (1- (search-forward "<")))))
 	(forward-line 2)
 	(setq lines (count-lines (point)
@@ -229,7 +230,8 @@
 	  (setq start (1+ article)))
 	(setq point (goto-char (point-max)))
 	(nnweb-insert
-	 (format nnslashdot-comments-url sid nnslashdot-threshold 4 start))
+	 (format nnslashdot-comments-url sid nnslashdot-threshold 4 start)
+	 t)
 	(goto-char point)
 	(while (re-search-forward
 		"<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score:\\([^)]+\\))"
@@ -369,7 +371,7 @@
         ;; First we do the Ultramode to get info on all the latest groups.
 	(progn 
 	  (mm-with-unibyte-buffer
-	    (nnweb-insert "http://slashdot.org/slashdot.xml")
+	    (nnweb-insert "http://slashdot.org/slashdot.xml" t)
 	    (goto-char (point-min))
 	    (while (search-forward "<story>" nil t)
 	      (narrow-to-region (point) (search-forward "</story>"))
@@ -392,7 +394,7 @@
 	  (while (> (- nnslashdot-group-number number) 0)
 	    (mm-with-unibyte-buffer
 	      (let ((case-fold-search t))
-		(nnweb-insert (format nnslashdot-active-url number))
+		(nnweb-insert (format nnslashdot-active-url number) t)
 		(goto-char (point-min))
 		(while (re-search-forward
 			"article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>" nil t)
