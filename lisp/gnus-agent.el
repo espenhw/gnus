@@ -1236,6 +1236,9 @@ article numbers will be returned."
             ;; that no headers need to be fetched. -- Kevin
             (setq articles (gnus-list-range-intersection
                             articles (list (cons low high)))))))
+
+      (gnus-message 10 "gnus-agent-fetch-headers: undownloaded articles are '%s'" (gnus-compress-sequence articles t))
+
       (save-excursion
         (set-buffer nntp-server-buffer)
 
@@ -2179,15 +2182,15 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 				     (alist (list nil))
 				     (tail-alist alist))
 				(while dlist
-				  (let ((new-completed (* 100.0 (/ (setq cnt (1+ cnt)) len))))
+				  (let ((new-completed (truncate (* 100.0 (/ (setq cnt (1+ cnt)) len)))))
 				    (when (> new-completed completed)
 				      (setq completed new-completed)
 				      (gnus-message 9 "%3d%% completed..."  completed)))
-				  (let* ((entry (car dlist))
+				  (let* ((entry          (car dlist))
 					 (article-number (nth 0 entry))
-					 (fetch-date (nth 1 entry))
-					 (keep (nth 2 entry))
-					 (marker (nth 3 entry)))
+					 (fetch-date     (nth 1 entry))
+					 (keep           (nth 2 entry))
+					 (marker         (nth 3 entry)))
 
 				    (cond
 				     ;; Kept articles are unread, marked, or special.
@@ -2238,7 +2241,7 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 					  )
 
 					(when marker
-					  (push "NOV entry removed" article)
+					  (push "NOV entry removed" actions)
 					  (goto-char marker)
 					  (gnus-delete-line))
 
@@ -2250,6 +2253,8 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 					  (push (format "Removed %s article number from article alist" type) actions))
 
 					(gnus-message 7 "gnus-agent-expire: Article %d: %s" article-number (mapconcat 'identity actions ", "))))
+                                     (t
+                                      (gnus-agent-append-to-list tail-alist (cons article-number fetch-date)))
 				     )
 
 				    ;; Clean up markers as I want to recycle this buffer over several groups.
@@ -2389,9 +2394,10 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
                        
                        ;; Get the list of articles that were fetched
                        (goto-char (point-min))
-                       (ignore-errors 
-                         (while t
-			   (gnus-agent-append-to-list tail-fetched-articles (read (current-buffer)))
+                       (let ((pm (point-max)))
+                         (while (< (point) pm)
+                           (when (looking-at "[0-9]+\t")
+                             (gnus-agent-append-to-list tail-fetched-articles (read (current-buffer))))
                            (forward-line 1)))
                        
                        ;; Clip this list to the headers that will actually be returned
