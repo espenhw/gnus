@@ -6688,7 +6688,9 @@ Number of lines of hidden text.
 
 @item gnus-cited-lines-visible
 @vindex gnus-cited-lines-visible
-The number of lines at the beginning of the cited text to leave shown.
+The number of lines at the beginning of the cited text to leave
+shown. This can also be a cons cell with the number of lines at the top
+and bottom of the text, respectively, to remain visible.
 
 @end table
 
@@ -12921,7 +12923,7 @@ support for Gnus has to do it's own splitting.
 
 And it does.
 
-There are three variables of interest:
+Here are the variables of interest:
 
 @table @code
 
@@ -12997,9 +12999,36 @@ These rules are processed from the beginning of the alist toward the
 end.  The first rule to make a match will "win", unless you have
 crossposting enabled.  In that case, all matching rules will "win".
 
+This variable can also have a function as its value, the function will
+be called with the headers narrowed and should return a group where it
+thinks the article should be splitted to.
+
 The splitting code tries to create mailboxes if it need too.
 
 Nnmail equivalent: @code{nnmail-split-methods}.
+
+@item nnimap-split-fancy
+@cindex splitting, fancy
+@findex nnimap-split-fancy
+@vindex nnimap-split-fancy
+
+It's possible to set @code{nnimap-split-rule} to
+@code{nnmail-split-fancy} if you want to use fancy
+splitting. @xref{Fancy Mail Splitting}
+
+However, to be able to have different fancy split rules for nnmail and
+nnimap backends you can set @code{nnimap-split-rule} to
+@code{nnimap-split-fancy} and define the nnimap specific fancy split
+rule in @code{nnimap-split-fancy}.
+
+Example:
+
+@lisp
+(setq nnimap-split-rule 'nnimap-split-fancy
+      nnimap-split-fancy ...)
+@end lisp
+
+Nnmail equivalent: @code{nnmail-split-fancy}.
 
 @end table
 
