@@ -1,9 +1,11 @@
-;;; starttls.el --- STARTTLS support via wrapper around GNU TLS
+;;; starttls.el --- STARTTLS functions
 
-;; Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2004 Free Software Foundation, Inc.
 
+;; Author: Daiki Ueno <ueno@unixuser.org>
 ;; Author: Simon Josefsson <simon@josefsson.org>
-;; Keywords: comm, tls, gnutls, ssl
+;; Created: 1999/11/20
+;; Keywords: TLS, SSL, OpenSSL, GNUTLS, mail, news
 
 ;; This file is part of GNU Emacs.
 
@@ -24,53 +26,84 @@
 
 ;;; Commentary:
 
-;; This package implements a simple wrapper around the GNU TLS command
-;; line application "gnutls-cli" to make Emacs support STARTTLS.  It
-;; is backwards compatible (same API functions) with the "starttls.el"
-;; that is part of Emacs 21 written by Daiki Ueno <ueno@unixuser.org>.
-;; (That version used an external program "starttls" that isn't widely
-;; installed, and was based on OpenSSL.)
+;; This module defines some utility functions for STARTTLS profiles.
 
-;; This package require GNUTLS 0.9.90 (released 2003-10-08) or later.
+;; [RFC 2595] "Using TLS with IMAP, POP3 and ACAP"
+;;	by Chris Newman <chris.newman@innosoft.com> (1999/06)
 
-;; Usage is similar to `open-network-stream'.  Evaluating the following:
+;; This file now contain a combination of the two previous
+;; implementations both called "starttls.el".  The first one is Daiki
+;; Ueno's starttls.el which uses his own "starttls" command line tool,
+;; and the second one is Simon Josefsson's starttls.el which uses
+;; "gnutls-cli" from GNUTLS.
 ;;
-;; (progn
-;;   (setq tmp (open-starttls-stream "test" (current-buffer) "mail.example.com" 143))
-;;   (process-send-string tmp ". starttls\n")
-;;   (sit-for 4)
-;;   (message "STARTTLS output:\n%s" (negotiate-starttls tmp))
-;;   (process-send-string tmp ". capability\n"))
+;; If "gnutls-cli" is available, it is prefered by the code over
+;; "starttls".  Use `starttls-use-gnutls' to toggle between
+;; implementations if you have both tools installed.
+
+;; The GNUTLS support require GNUTLS 0.9.90 (released 2003-10-08) or
+;; later, from <http://www.gnu.org/software/gnutls/>, or "starttls"
+;; from <ftp://ftp.opaopa.org/pub/elisp/>.
+
+;; Usage is similar to `open-network-stream'.  For example:
 ;;
-;; in, e.g., the *scratch* buffer, yields the following output:
+;; (when (setq tmp (starttls-open-stream
+;;			"test" (current-buffer) "yxa.extundo.com" 25))
+;;   (accept-process-output tmp 15)
+;;   (process-send-string tmp "STARTTLS\n")
+;;   (accept-process-output tmp 15)
+;;   (message "STARTTLS output:\n%s" (starttls-negotiate tmp))
+;;   (process-send-string tmp "EHLO foo\n"))
+
+;; An example run yield the following output:
 ;;
-;; * OK imap.example.com Cyrus IMAP4 v2.1.15 server ready
-;; . OK Begin TLS negotiation now
-;; * CAPABILITY IMAP4 IMAP4rev1 ACL QUOTA ...
-;; . OK Completed
+;; 220 yxa.extundo.com ESMTP Sendmail 8.12.11/8.12.11/Debian-3; Wed, 26 May 2004 19:12:29 +0200; (No UCE/UBE) logging access from: c494102a.s-bi.bostream.se(OK)-c494102a.s-bi.bostream.se [217.215.27.65]
+;; 220 2.0.0 Ready to start TLS
+;; 250-yxa.extundo.com Hello c494102a.s-bi.bostream.se [217.215.27.65], pleased to meet you
+;; 250-ENHANCEDSTATUSCODES
+;; 250-PIPELINING
+;; 250-EXPN
+;; 250-VERB
+;; 250-8BITMIME
+;; 250-SIZE
+;; 250-DSN
+;; 250-ETRN
+;; 250-AUTH DIGEST-MD5 CRAM-MD5 PLAIN LOGIN
+;; 250-DELIVERBY
+;; 250 HELP
 ;; nil
 ;;
-;; And the message buffer contains:
+;; With the message buffer containing:
 ;;
 ;; STARTTLS output:
 ;; *** Starting TLS handshake
 ;; - Server's trusted authorities:
-;;    [0]: O=Sendmail,OU=Sendmail Server,CN=imap.example.com,EMAIL=admin@imap.example.com
+;;    [0]: C=SE,ST=Stockholm,L=Stockholm,O=YXA,OU=CA,CN=yxa.extundo.com,EMAIL=staff@yxa.extundo.com
 ;; - Certificate type: X.509
-;;  - Got a certificate list of 1 certificates.
+;;  - Got a certificate list of 2 certificates.
 ;;
 ;;  - Certificate[0] info:
-;;  # The hostname in the certificate matches 'imap.example.com'.
-;;  # valid since: Wed Aug 28 12:47:00 CEST 2002
-;;  # expires at: Thu Aug 28 12:47:00 CEST 2003
+;;  # The hostname in the certificate matches 'yxa.extundo.com'.
+;;  # valid since: Wed May 26 12:16:00 CEST 2004
+;;  # expires at: Wed Jul 26 12:16:00 CEST 2023
+;;  # serial number: 04
+;;  # fingerprint: 7c 04 4b c1 fa 26 9b 5d 90 22 52 3c 65 3d 85 3a
+;;  # version: #1
+;;  # public key algorithm: RSA
+;;  #   Modulus: 1024 bits
+;;  # Subject's DN: C=SE,ST=Stockholm,L=Stockholm,O=YXA,OU=Mail server,CN=yxa.extundo.com,EMAIL=staff@yxa.extundo.com
+;;  # Issuer's DN: C=SE,ST=Stockholm,L=Stockholm,O=YXA,OU=CA,CN=yxa.extundo.com,EMAIL=staff@yxa.extundo.com
+;;
+;;  - Certificate[1] info:
+;;  # valid since: Sun May 23 11:35:00 CEST 2004
+;;  # expires at: Sun Jul 23 11:35:00 CEST 2023
 ;;  # serial number: 00
-;;  # fingerprint: 06 3f 25 cb 44 aa 5c 1e 79 d7 63 86 f8 b1 9a cf
+;;  # fingerprint: fc 76 d8 63 1a c9 0b 3b fa 40 fe ed 47 7a 58 ae
 ;;  # version: #3
 ;;  # public key algorithm: RSA
 ;;  #   Modulus: 1024 bits
-;;  # Subject's DN: O=Sendmail,OU=Sendmail Server,CN=imap.example.com,EMAIL=admin@imap.example.com
-;;  # Issuer's DN: O=Sendmail,OU=Sendmail Server,CN=imap.example.com,EMAIL=admin@imap.example.com
-;;
+;;  # Subject's DN: C=SE,ST=Stockholm,L=Stockholm,O=YXA,OU=CA,CN=yxa.extundo.com,EMAIL=staff@yxa.extundo.com
+;;  # Issuer's DN: C=SE,ST=Stockholm,L=Stockholm,O=YXA,OU=CA,CN=yxa.extundo.com,EMAIL=staff@yxa.extundo.com
 ;;
 ;; - Peer's certificate issuer is unknown
 ;; - Peer's certificate is NOT trusted
@@ -80,32 +113,47 @@
 ;; - MAC: SHA
 ;; - Compression: NULL
 
-;; Revision history:
-;;
-;; 2003-09-20: Added to Gnus CVS.
-;; 2003-10-02: Minor fixes.
-;; 2003-11-15: Cleanup, and posted to gnu.emacs.sources.
-;; 2003-11-28: Fixes variable name conflicts, various other fixes, posted g.e.s.
-
 ;;; Code:
 
 (defgroup starttls nil
-  "Negotiated Transport Layer Security (STARTTLS) parameters."
-  :group 'comm)
+  "Support for `Transport Layer Security' protocol."
+  :version "21.1"
+  :group 'mail)
 
-(defcustom starttls-file-name "gnutls-cli"
-  "Name of the program to run in a subprocess to open an STARTTLS connection.
-The program should read input on stdin, write output to stdout,
-and initiate TLS negotiation when receiving the SIGALRM signal.
-Also see `starttls-connect', `starttls-failure', and
-`starttls-success' for what the program should output after
-initial connection and successful negotiation respectively."
+(defcustom starttls-gnutls-program "gnutls-cli"
+  "Name of GNUTLS command line tool.
+This program is used when GNUTLS is used, i.e. when
+`starttls-use-gnutls' is non-nil."
   :type 'string
   :group 'starttls)
 
+(defcustom starttls-program "starttls"
+  "The program to run in a subprocess to open an TLSv1 connection.
+This program is used when the `starttls' command is used,
+i.e. when `starttls-use-gnutls' is nil."
+  :type 'string
+  :group 'starttls)
+
+(defcustom starttls-use-gnutls (not (executable-find starttls-program))
+  "*Whether to use GNUTLS instead of the `starttls' command."
+  :type 'boolean
+  :group 'starttls)
+
+(defcustom starttls-extra-args nil
+  "Extra arguments to `starttls-program'.
+This program is used when the `starttls' command is used,
+i.e. when `starttls-use-gnutls' is nil."
+  :type '(repeat string)
+  :group 'starttls)
+
 (defcustom starttls-extra-arguments nil
-  "List of extra arguments to `starttls-file-name'.
-E.g., (\"--protocols\" \"ssl3\")."
+  "Extra arguments to `starttls-program'.
+This program is used when GNUTLS is used, i.e. when
+`starttls-use-gnutls' is non-nil.
+
+For example, non-TLS compliant servers may require
+'(\"--protocols\" \"ssl3\").  Invoke \"gnutls-cli --help\" to
+find out which parameters are available."
   :type '(repeat string)
   :group 'starttls)
 
@@ -141,7 +189,7 @@ The default is what GNUTLS's \"gnutls-cli\" outputs."
   :type 'regexp
   :group 'starttls)
 
-(defun negotiate-starttls (process)
+(defun starttls-negotiate-gnutls (process)
   "Negotiate TLS on process opened by `open-starttls-stream'.
 This should typically only be done once.  It typically return a
 multi-line informational message with information about the
@@ -173,24 +221,18 @@ handshake, or NIL on failure."
 	    (message "STARTTLS negotiation failed: %s" info)
 	    nil))))))
 
-(defun open-starttls-stream (name buffer host service)
-  "Open a TLS connection for a service to a host.
-Returns a subprocess-object to represent the connection.
-Input and output work as for subprocesses; `delete-process' closes it.
-Args are NAME BUFFER HOST SERVICE.
-NAME is name for process.  It is modified if necessary to make it unique.
-BUFFER is the buffer (or buffer-name) to associate with the process.
- Process output goes at end of that buffer, unless you specify
- an output stream or filter function to handle the output.
-Third arg is name of the host to connect to, or its IP address.
-Fourth arg SERVICE is name of the service desired, or an integer
-specifying a port number to connect to."
+(defun starttls-negotiate (process)
+  (if starttls-use-gnutls
+      (starttls-negotiate-gnutls process)
+    (signal-process (process-id process) 'SIGALRM)))
+
+(defun starttls-open-stream-gnutls (name buffer host service)
   (message "Opening STARTTLS connection to `%s'..." host)
   (let* (done
 	 (old-max (with-current-buffer buffer (point-max)))
 	 (process-connection-type starttls-process-connection-type)
 	 (process (apply #'start-process name buffer
-			 starttls-file-name "-s" host
+			 starttls-gnutls-program "-s" host
 			 "-p" (if (integerp service)
 				  (int-to-string service)
 				service)
@@ -214,15 +256,31 @@ specifying a port number to connect to."
 	     host (if done "done" "failed"))
     process))
 
-;; Compatibility with starttls.el by Daiki Ueno <ueno@unixuser.org>:
-(defvaralias 'starttls-program 'starttls-file-name)
-(make-obsolete-variable 'starttls-program 'starttls-file-name)
-(defvaralias 'starttls-extra-args 'starttls-extra-arguments)
-(make-obsolete-variable 'starttls-extra-args 'starttls-extra-arguments)
-(defalias 'starttls-open-stream 'open-starttls-stream)
-(defalias 'starttls-negotiate 'negotiate-starttls)
+(defun starttls-open-stream (name buffer host service)
+  "Open a TLS connection for a service to a host.
+Returns a subprocess-object to represent the connection.
+Input and output work as for subprocesses; `delete-process' closes it.
+Args are NAME BUFFER HOST SERVICE.
+NAME is name for process.  It is modified if necessary to make it unique.
+BUFFER is the buffer (or `buffer-name') to associate with the process.
+ Process output goes at end of that buffer, unless you specify
+ an output stream or filter function to handle the output.
+ BUFFER may be also nil, meaning that this process is not associated
+ with any buffer
+Third arg is name of the host to connect to, or its IP address.
+Fourth arg SERVICE is name of the service desired, or an integer
+specifying a port number to connect to."
+  (if starttls-use-gnutls
+      (starttls-open-stream-gnutls name buffer host service)
+    (let* ((process-connection-type starttls-process-connection-type)
+	   (process (apply #'start-process
+			   name buffer starttls-program
+			   host (format "%s" service)
+			   starttls-extra-args)))
+      (process-kill-without-query process)
+      process)))
 
 (provide 'starttls)
 
-;;; arch-tag: 1955b2ca-0cb2-47ad-bb95-47b43e5a15f5
+;;; arch-tag: 648b3bd8-63bd-47f5-904c-7c819aea2297
 ;;; starttls.el ends here
