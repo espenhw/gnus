@@ -1,3 +1,10 @@
+2003-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-msg.el (gnus-user-agent): New variable.
+	(gnus-version-expose-system): Removed.  Obsoleted by
+	`gnus-user-agent'.
+	(gnus-extended-version): Use `gnus-user-agent'.
+
 2003-02-24  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-stat-register-spam-routine,

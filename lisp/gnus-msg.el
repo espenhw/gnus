@@ -283,10 +283,21 @@ If nil, the address field will always be empty after invoking
   :group 'gnus-message
   :type 'boolean)
 
-(defcustom gnus-version-expose-system nil
-  "If non-nil, `system-configuration' is exposed in `gnus-extended-version'."
+(defcustom gnus-user-agent 'full
+  "Which information should be exposed in the User-Agent header.
+
+It can be one of the symbols `full' \(show full information, i.e. Emacs and
+Gnus version and system configuration\), `emacs-gnus' \(show only Emacs and
+Gnus version\), `emacs-gnus-type' \(same as `emacs-gnus' plus system type\),
+`gnus' \(show only Gnus version\) or a custom string.  If you set it to a
+string, be sure to use a valid format, see RFC 2616."
   :group 'gnus-message
-  :type 'boolean)
+  :type '(choice (item :tag "Show full info" full)
+		 (item :tag "Show Gnus and Emacs versions and system type"
+		       emacs-gnus-type)
+		 (item :tag "Show Gnus and Emacs versions" emacs-gnus)
+		 (item :tag "Show only Gnus version" gnus)
+		 (string :tag "Other")))
 
 ;;; Internal variables.
 
@@ -1026,31 +1037,51 @@ If SILENT, don't prompt the user."
   (defvar xemacs-codename))
 
 (defun gnus-extended-version ()
-  "Stringified Gnus version and Emacs version."
+  "Stringified Gnus version and Emacs version.
+See the variable `gnus-user-agent'."
   (interactive)
-  (concat
-   "Gnus/" (gnus-prin1-to-string (gnus-continuum-version gnus-version))
-   " (" gnus-version ")"
-   " "
-   (cond
-    ((string-match "^\\(\\([.0-9]+\\)*\\)\\.[0-9]+$" emacs-version)
-     (concat "Emacs/" (match-string 1 emacs-version)
-	     (if gnus-version-expose-system
-		 " (" system-configuration ")"
-	       "")))
-    ((string-match "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)[^(]*\\(\\((beta.*)\\|'\\)\\)?"
-		   emacs-version)
-     (concat (match-string 1 emacs-version)
+  (let* ((gnus-v
+	  (concat "Gnus/"
+		  (prin1-to-string (gnus-continuum-version gnus-version) t)
+		  " (" gnus-version ")"))
+	 (system-v
+	  (cond
+	   ((eq gnus-user-agent 'full)
+	    system-configuration)
+	   ((eq gnus-user-agent 'emacs-gnus-type)
+	    (symbol-name system-type))
+	   (t nil)))
+	 (emacs-v
+	  (cond
+	   ((eq gnus-user-agent 'gnus)
+	    nil)
+	   ((string-match "^\\(\\([.0-9]+\\)*\\)\\.[0-9]+$" emacs-version)
+	    (concat "Emacs/" (match-string 1 emacs-version)
+		    (if system-v
+			(concat " (" system-v ")")
+		      "")))
+	   ((string-match
+	     "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)[^(]*\\(\\((beta.*)\\|'\\)\\)?"
+	     emacs-version)
+	    (concat
+	     (match-string 1 emacs-version)
 	     (format "/%d.%d" emacs-major-version emacs-minor-version)
 	     (if (match-beginning 3)
 		 (match-string 3 emacs-version)
 	       "")
 	     (if (boundp 'xemacs-codename)
-	     (if gnus-version-expose-system
-		 (concat " (" xemacs-codename ", " system-configuration ")")
-	       (concat " (" xemacs-codename ")"))
-	     "")))
-    (t emacs-version))))
+		 (concat
+		  " (" xemacs-codename
+		  (if system-v
+		      (concat ", " system-v ")")
+		    ")"))
+	       "")))
+	   (t emacs-version))))
+    (if (stringp gnus-user-agent)
+	gnus-user-agent
+      (concat gnus-v
+	      (when emacs-v
+		(concat " " emacs-v))))))
 
 
 ;;;
