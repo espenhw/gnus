@@ -44,13 +44,13 @@
 (eval-when-compile (require 'mm-url))
 
 (defcustom gnus-group-archive-directory
-  "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
+  "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
   "*The address of the (ding) archives."
   :group 'gnus-group-foreign
   :type 'directory)
 
 (defcustom gnus-group-recent-archive-directory
-  "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list-recent/"
+  "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list-recent/"
   "*The address of the most recent (ding) articles."
   :group 'gnus-group-foreign
   :type 'directory)
@@ -3127,7 +3127,7 @@ or nil if no action could be taken."
   (let* ((entry (gnus-group-entry group))
 	 (num (car entry))
 	 (marks (gnus-info-marks (nth 2 entry)))
-	 (unread (gnus-list-of-unread-articles group)))
+	 (unread (gnus-sequence-of-unread-articles group)))
     ;; Remove entries for this group.
     (nnmail-purge-split-history (gnus-group-real-name group))
     ;; Do the updating only if the newsgroup isn't killed.
@@ -3140,16 +3140,17 @@ or nil if no action could be taken."
 						 'del '(tick))
 					   (list (cdr (assq 'dormant marks))
 						 'del '(dormant))))
-	(setq unread (gnus-uncompress-range
-		      (gnus-range-add (gnus-range-add
-				       unread (cdr (assq 'dormant marks)))
-				      (cdr (assq 'tick marks)))))
+	(setq unread (gnus-range-add (gnus-range-add
+                                      unread (cdr (assq 'dormant marks)))
+                                     (cdr (assq 'tick marks))))
 	(gnus-add-marked-articles group 'tick nil nil 'force)
 	(gnus-add-marked-articles group 'dormant nil nil 'force))
       ;; Do auto-expirable marks if that's required.
       (when (gnus-group-auto-expirable-p group)
-	(gnus-add-marked-articles group 'expire unread)
-	(gnus-request-set-mark group (list (list unread 'add '(expire)))))
+        (gnus-range-map (lambda (article)
+                          (gnus-add-marked-articles group 'expire (list article))
+                          (gnus-request-set-mark group (list (list (list article) 'add '(expire)))))
+                        unread))
       (let ((gnus-newsgroup-name group))
 	(gnus-run-hooks 'gnus-group-catchup-group-hook))
       num)))
