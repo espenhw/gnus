@@ -1,6 +1,6 @@
 ;;; gnus-msg.el --- mail and post interface for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
-;;        Free Software Foundation, Inc.
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+;;        2005 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -1039,17 +1039,18 @@ If SILENT, don't prompt the user."
   "Stringified Gnus version and Emacs version.
 See the variable `gnus-user-agent'."
   (interactive)
-  (let* ((float-output-format nil)
-	 (gnus-v
-	  (concat "Gnus/"
-		  (prin1-to-string (gnus-continuum-version gnus-version) t)
-		  " (" gnus-version ")"))
-	 (emacs-v (gnus-emacs-version)))
-    (if (stringp gnus-user-agent)
-	gnus-user-agent
-      (concat gnus-v
-	      (when emacs-v
-		(concat " " emacs-v))))))
+  (if (stringp gnus-user-agent)
+      gnus-user-agent
+    ;; `gnus-user-agent' is a list:
+    (let* ((float-output-format nil)
+	   (gnus-v
+	    (when (memq 'gnus gnus-user-agent)
+	      (concat "Gnus/"
+		      (prin1-to-string (gnus-continuum-version gnus-version) t)
+		      " (" gnus-version ")")))
+	   (emacs-v (gnus-emacs-version)))
+      (concat gnus-v (when (and gnus-v emacs-v) " ")
+	      emacs-v))))
 
 
 ;;;

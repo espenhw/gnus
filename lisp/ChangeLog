@@ -1,3 +1,15 @@
+2005-01-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.el (gnus-user-agent): Use list of symbols instead of
+	symbols.  Display full version number for (S)XEmacs.  Optionally
+	display (S)XEmacs codename.
+
+	* gnus-util.el (gnus-emacs-version): Update for new
+	`gnus-user-agent'.
+
+	* gnus-msg.el (gnus-extended-version): Make it possible to omit
+	Gnus version.
+
 2005-01-05  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam.el (spam-face): New face.  Don't use `gnus-splash-face'

@@ -1,7 +1,7 @@
 ;;; gnus.el --- a newsreader for GNU Emacs
 
 ;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996, 1997,
-;; 1998, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+;; 1998, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -2391,24 +2391,45 @@ This should be an alist for Emacs, or a plist for XEmacs."
 			 (symbol :tag "Parameter")
 			 (sexp :tag "Value")))))
 
-(defcustom gnus-user-agent 'emacs-gnus-type
+(defcustom gnus-user-agent '(emacs gnus type)
   "Which information should be exposed in the User-Agent header.
 
-It can be one of the symbols `gnus' \(show only Gnus version\), `emacs-gnus'
-\(show only Emacs and Gnus versions\), `emacs-gnus-config' \(same as
-`emacs-gnus' plus system configuration\), `emacs-gnus-type' \(same as
-`emacs-gnus' plus system type\) or a custom string.  If you set it to a
-string, be sure to use a valid format, see RFC 2616."
+Can be a list of symbols or a string.  Valid symbols are `gnus'
+\(show Gnus version\) and `emacs' \(show Emacs version\).  In
+addition to the Emacs version, you can add `codename' \(show
+\(S\)XEmacs codename\) or either `config' \(show system
+configuration\) or `type' \(show system type\).  If you set it to
+a string, be sure to use a valid format, see RFC 2616."
+
   :version "21.4"
   :group 'gnus-message
-  :type '(choice
-	  (item :tag "Show Gnus and Emacs versions and system type"
-		emacs-gnus-type)
-	  (item :tag "Show Gnus and Emacs versions and system configuration"
-		emacs-gnus-config)
-	  (item :tag "Show Gnus and Emacs versions" emacs-gnus)
-	  (item :tag "Show only Gnus version" gnus)
-	  (string :tag "Other")))
+  :type '(choice (list (set :inline t
+			    (const gnus  :tag "Gnus version")
+			    (const emacs :tag "Emacs version")
+			    (choice :tag "system"
+				    (const type   :tag "system type")
+				    (const config :tag "system configuration"))
+			    (const codename :tag "Emacs codename")))
+		 (string)))
+
+;; Convert old (< 2005-01-10) symbol type values:
+(when (symbolp gnus-user-agent)
+  (setq gnus-user-agent
+	(cond ((eq gnus-user-agent 'emacs-gnus-config)
+	       '(emacs gnus config))
+	      ((eq gnus-user-agent 'emacs-gnus-type)
+	       '(emacs gnus type))
+	      ((eq gnus-user-agent 'emacs-gnus)
+	       '(emacs gnus))
+	      ((eq gnus-user-agent 'gnus)
+	       '(gnus))
+	      (t gnus-user-agent)))
+  (gnus-message 1 "Converted `gnus-user-agent' to `%s'." gnus-user-agent)
+  (sit-for 1)
+  (if (get 'gnus-user-agent 'saved-value)
+      (customize-save-variable 'gnus-user-agent gnus-user-agent)
+    (gnus-message 1 "Edit your init file to make this change permanent.")
+    (sit-for 2)))
 
 
 ;;; Internal variables
