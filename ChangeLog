@@ -1,3 +1,11 @@
+2000-05-07  Pavel Janik  <Pavel.Janik@inet.cz>
+
+	* gnus.texi: direntry added.
+
+	* message.texi: direntry added.
+
+	* emacs-mime.texi: direntry added.
+
 2000-07-13 10:09:52  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_CHECK_W3): Fix typo.
