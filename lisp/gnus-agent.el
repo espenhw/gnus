@@ -153,7 +153,7 @@ this limit."
 
 (defcustom gnus-agent-enable-expiration 'ENABLE
   "The default expiration state for each group.
-When set to ENABLE, the default, gnus-agent-expire will expire old
+When set to ENABLE, the default, `gnus-agent-expire' will expire old
 contents from a group's local storage.  This value may be overridden
 to disable expiration in specific categories, topics, and groups.  Of
 course, you could change gnus-agent-enable-expiration to DISABLE then
@@ -167,7 +167,7 @@ enable expiration per categories, topics, and groups."
 (defvar gnus-agent-history-buffers nil)
 (defvar gnus-agent-buffer-alist nil)
 (defvar gnus-agent-article-alist nil
-"An assoc list identifying the articles whose headers have been fetched.  
+  "An assoc list identifying the articles whose headers have been fetched.  
 If successfully fetched, these headers will be stored in the group's overview
 file.  The key of each assoc pair is the article ID, the value of each assoc
 pair is a flag indicating whether the identified article has been downloaded
@@ -176,8 +176,7 @@ NOTES:
 1) The last element of this list can not be expired as some 
    routines (for example, get-agent-fetch-headers) use the last
    value to track which articles have had their headers retrieved.
-2) The gnus-agent-regenerate may destructively modify the value.
-")
+2) The function `gnus-agent-regenerate' may destructively modify the value.")
 (defvar gnus-agent-group-alist nil)
 (defvar gnus-category-alist nil)
 (defvar gnus-agent-current-history nil)
@@ -275,7 +274,7 @@ node `(gnus)Server Buffer'.")
 
 (defmacro gnus-agent-cat-defaccessor (name prop-name)
   "Define accessor and setter methods for manipulating a list of the form
-(NAME (PROPERTY1 VALUE1) ... (PROPERTY_N VALUE_N)).
+\(NAME (PROPERTY1 VALUE1) ... (PROPERTY_N VALUE_N)).
 Given the call (gnus-agent-cat-defaccessor func PROPERTY1), the list may be
 manipulated as follows:
   (func LIST): Returns VALUE1

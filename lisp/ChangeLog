@@ -1,3 +1,9 @@
+2003-03-04  John Paul Wallington  <jpw@gnu.org>
+
+	* gnus-agent.el (gnus-agent-enable-expiration)
+	(gnus-agent-article-alist, gnus-agent-article-alist)
+	(gnus-agent-cat-defaccessor): Doc fixes.
+
 2003-03-04  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-agent.el (gnus-function-implies-unread-1): Grok
