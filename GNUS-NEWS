@@ -8,6 +8,8 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Gnus supports server-side mail filtering using Sieve.
+
 ** Extended format specs.
 
 Format spec "%&user-date;" is added into
