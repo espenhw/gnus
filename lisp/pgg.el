@@ -46,7 +46,7 @@
 ;;;
 
 (defvar pgg-fetch-key-function (if (fboundp 'url-insert-file-contents)
-				   function pgg-fetch-key-with-w3))
+				   (function pgg-fetch-key-with-w3)))
 
 (defun pgg-invoke (func scheme &rest args)
   (progn
