@@ -1,5 +1,11 @@
 2004-09-25  Kevin Greiner  <kgreiner@compsol.cc>
 
+	* gnus-agent.el (gnus-agent-check-overview-buffer): Fixed range of
+	deletion to remove entire duplicate line.  Fixes merged article
+	number bug.
+	
+2004-09-25  Kevin Greiner  <kgreiner@compsol.cc>
+
 	* gnus-agent.el (gnus-agent-possibly-synchronize-flags): Ignore
 	servers that are offline.  Avoids having gnus-agent-toggle-plugged
 	first ask if you want to open a server and then, even when you

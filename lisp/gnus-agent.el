@@ -1647,7 +1647,7 @@ and that there are no duplicates."
                   (setq backed-up (gnus-agent-backup-overview-buffer)))
               (gnus-message 1
 			    "Duplicate overview line for %d" cur)
-	      (delete-region (point) (progn (forward-line 1) (point))))
+	      (delete-region p (progn (forward-line 1) (point))))
 	     ((< cur prev-num)
 	      (or backed-up
                   (setq backed-up (gnus-agent-backup-overview-buffer)))
