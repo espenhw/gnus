@@ -41,6 +41,9 @@
 ;; PKCSx or similar, it's intended to perform common operations
 ;; done on messages encoded in these formats.  The terminology chosen
 ;; reflect this.
+;;
+;; The home of this file is in Gnus CVS, but also available from
+;; http://josefsson.org/smime.html.
 
 ;;; Quick introduction:
 
@@ -93,7 +96,7 @@
 ;;
 ;; Suggestions and comments are appreciated, mail me at simon@josefsson.org.
 
-;; <rant>
+;; begin rant
 ;;
 ;; I would include pointers to introductory text on concepts used in
 ;; this library here, but the material I've read are so horrible I
@@ -105,11 +108,13 @@
 ;; Also, I'm not going to mention anything about the wonders of
 ;; cryptopolitics.  Oops, I just did.
 ;;
-;; </rant>
+;; end rant
 
 ;;; Revision history:
 
-;; version 0 not released
+;; 2000-06-05  initial version, committed to Gnus CVS contrib/
+;; 2000-10-28  retrieve certificates via DNS CERT RRs
+;; 2001-10-14  posted to gnu.emacs.sources
 
 ;;; Code:
 

@@ -1,5 +1,7 @@
 2001-10-14  Simon Josefsson  <jas@extundo.com>
 
+	* smime.el: Doc fix.
+
 	* gnus-msg.el (gnus-inews-do-gcc): Port header encoded-word
 	charset magic from message.el.
 
