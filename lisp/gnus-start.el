@@ -1178,10 +1178,8 @@ for new groups, and subscribe the new groups as zombies."
   (catch 'ended
     ;; First check if any of the following files exist.  If they do,
     ;; it's not the first time the user has used Gnus.
-    (dolist (file (list gnus-current-startup-file
-			(concat gnus-current-startup-file ".el")
+    (dolist (file (list (concat gnus-current-startup-file ".el")
 			(concat gnus-current-startup-file ".eld")
-			gnus-startup-file
 			(concat gnus-startup-file ".el")
 			(concat gnus-startup-file ".eld")))
       (when (file-exists-p file)
