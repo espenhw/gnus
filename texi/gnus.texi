@@ -5340,6 +5340,13 @@ religiously) are marked with an @samp{S} in the second column
 (@code{gnus-saved-mark}).
 
 @item
+@vindex gnus-recent-mark
+Articles that according to the backend haven't been seen by the user
+before are marked with a @samp{N} in the second column
+(@code{gnus-recent-mark}).  Note that not all backends support this
+mark, in which case it simply never appear.
+
+@item
 @vindex gnus-unseen-mark
 Articles that haven't been seen by the user before are marked with a
 @samp{.} in the second column (@code{gnus-unseen-mark}). 
