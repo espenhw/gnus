@@ -2981,7 +2981,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
 	 (mm-user-display-methods nil)
-	 (mm-inline-large-images nil)
+	 (mm-inlined-types nil)
 	 (mail-parse-charset gnus-newsgroup-charset)
 	 (mail-parse-ignored-charsets 
 	  (save-excursion (set-buffer gnus-summary-buffer)
