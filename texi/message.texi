@@ -996,7 +996,7 @@ address (not primary one) is used in the @code{From} field.
 @item message-ignored-mail-headers
 @vindex message-ignored-mail-headers
 Regexp of headers to be removed before mailing.  The default is
-@samp{^[GF]cc:\\|^Resent-Fcc:}.
+@samp{^[GF]cc:\\|^Resent-Fcc:\\|^Xref:\\|^X-Draft-From:}.
 
 @item message-default-mail-headers
 @vindex message-default-mail-headers
@@ -1205,7 +1205,7 @@ All these conditions are checked by default.
 @item message-ignored-news-headers
 @vindex message-ignored-news-headers
 Regexp of headers to be removed before posting.  The default is@*
-@samp{^NNTP-Posting-Host:\\|^Xref:\\|^[BGF]cc:\\|^Resent-Fcc:}.
+@samp{^NNTP-Posting-Host:\\|^Xref:\\|^[BGF]cc:\\|^Resent-Fcc:\\|^X-Draft-From:}.
 
 @item message-default-news-headers
 @vindex message-default-news-headers

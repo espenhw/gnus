@@ -1,3 +1,8 @@
+2001-01-23 23:28:08  Satomi Suzuki  <pan@mba.nifty.ne.jp>
+
+	* message.texi (message-ignored-news-headers): Add "X-Draft-From:".
+	(message-ignored-mail-headers): Ditto.
+	
 2001-01-21  Raymond Scholz <ray-2001@zonix.de>
 
 	* message.texi: Rename X-Mailer and X-Newsreader to User-Agent.
