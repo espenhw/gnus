@@ -1,3 +1,7 @@
+Wed May 17 19:38:43 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
+
+	* gnus.el: 0.71 is released.
+
 Mon May 15 15:53:00 1995  Scott Byer  <byer@mv.us.adobe.com>
 
 	* nnfolder.el (nnfolder-possibly-activate-groups) New function.

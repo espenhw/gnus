@@ -912,7 +912,8 @@ It will prompt for a password."
 	(re-search-backward "^[0-9][0-9][0-9] " nil t)
 	(if (looking-at "^[23]")
 	    (while (progn
-		     (goto-char (- (point-max) 3))
+		     (goto-char (point-max))
+		     (forward-line -1)
 		     (not (looking-at "^\\.\r?$")))
 	      (nntp-accept-response)))
 	

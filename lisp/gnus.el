@@ -1209,7 +1209,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.71"
+(defconst gnus-version "(ding) Gnus v0.72"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5018,7 +5018,9 @@ The following commands are available:
   (setq selective-display-ellipses t)	;Display `...'
   ;; Change the display table.  Odd characters have a tendency to mess
   ;; up nicely formatted displays.
-  (setq buffer-display-table (copy-sequence standard-display-table))
+  (setq buffer-display-table (if (vectorp standard-display-table)
+				 (copy-sequence standard-display-table)
+			       (make-vector 261 nil)))
   (let ((i 32))
     (while (>= (setq i (1- i)) 0)
       (aset buffer-display-table i [??])))

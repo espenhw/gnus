@@ -67,7 +67,7 @@ messages will be shown to indicate the current status.")
 (defvar nnspool-nov-is-evil nil
   "Non-nil means that nnspool will never return NOV lines instead of headers.")
 
-(defvar nnspool-sift-nov-with-sed t
+(defconst nnspool-sift-nov-with-sed nil
   "If non-nil, use sed to get the relevant portion from the overview file.
 If nil, nnspool will load the entire file into a buffer and process it
 there.")
