@@ -1,3 +1,7 @@
+2001-12-06 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-url.el (mm-url-insert-file-contents): Support file:.
+
 2001-12-05 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el: Lower case for the description line. Sync from the

@@ -248,7 +248,9 @@ This is taken from RFC 2396.")
 
 (defun mm-url-insert-file-contents (url)
   (if mm-url-use-external
-      (mm-url-insert-file-contents-external url)
+      (if (string-match "^file:/+" url)
+	  (insert-file-contents (substring url (1- (match-end 0))))
+	(mm-url-insert-file-contents-external url))
     (url-insert-file-contents url)))
 
 (defun mm-url-insert-file-contents-external (url)
