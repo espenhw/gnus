@@ -75,17 +75,14 @@ corresponding marks file (usually named `.marks' in the nnml group
 directory, but see `nnml-marks-file-name') for the group.  Then the
 marks file will be regenerated properly by Gnus.")
 
-(defvoo nnml-filenames-are-evil t
-  "If non-nil, Gnus will not assume that the articles file name 
-is the same as the article number listed in the nov database.  This 
-variable should be set if any of the files are compressed.")
-
 (defvoo nnml-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
 
 (defvoo nnml-inhibit-expiry nil
   "If non-nil, inhibit expiry.")
 
+(defvoo nnml-use-compressed-files nil
+  "If non-nil, allow using compressed message files.")
 
 
 
@@ -517,16 +514,19 @@ variable should be set if any of the files are compressed.")
 (defun nnml-article-to-file (article)
   (nnml-update-file-alist)
   (let (file)
-    (if (setq file (cdr (assq article nnml-article-file-alist)))
+    (if (setq file
+	      (if nnml-use-compressed-files
+		  (cdr (assq article nnml-article-file-alist))
+		(number-to-string article)))
 	(expand-file-name file nnml-current-directory)
-      (if (not nnheader-directory-files-is-safe)
-	  ;; Just to make sure nothing went wrong when reading over NFS --
-	  ;; check once more.
-	  (when (file-exists-p
-		 (setq file (expand-file-name (number-to-string article)
-					      nnml-current-directory)))
-	    (nnml-update-file-alist t)
-	    file)))))
+      (when (not nnheader-directory-files-is-safe)
+	;; Just to make sure nothing went wrong when reading over NFS --
+ 	;; check once more.
+	(when (file-exists-p
+	       (setq file (expand-file-name (number-to-string article)
+					    nnml-current-directory)))
+	  (nnml-update-file-alist t)
+	  file)))))
 
 (defun nnml-deletable-article-p (group article)
   "Say whether ARTICLE in GROUP can be deleted."
@@ -861,10 +861,11 @@ variable should be set if any of the files are compressed.")
     t))
 
 (defun nnml-update-file-alist (&optional force)
-  (when (or (not nnml-article-file-alist)
-	    force)
-    (setq nnml-article-file-alist
-	  (nnml-current-group-article-to-file-alist))))
+  (when nnml-use-compressed-files
+    (when (or (not nnml-article-file-alist)
+	      force)
+      (setq nnml-article-file-alist
+	    (nnml-current-group-article-to-file-alist)))))
 
 (defun nnml-directory-articles (dir)
   "Return a list of all article files in a directory.
@@ -893,7 +894,6 @@ Use the nov database for that directory if available."
 Use the nov database for the current group if available."
   (if (or gnus-nov-is-evil 
 	  nnml-nov-is-evil
-	  nnml-filenames-are-evil
 	  (not (file-exists-p
 		(expand-file-name nnml-nov-file-name
 				  nnml-current-directory))))
@@ -901,8 +901,8 @@ Use the nov database for the current group if available."
     ;; build list from .overview if available
     (save-excursion
       (let ((alist nil)
-	    art
-	    (buffer (nnml-get-nov-buffer nnml-current-group)))
+	    (buffer (nnml-get-nov-buffer nnml-current-group))
+	    art)
 	(set-buffer buffer)
 	(goto-char (point-min))
 	(while (not (eobp))

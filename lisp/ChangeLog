@@ -1,3 +1,11 @@
+2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnml.el (nnml-use-compressed-files): New variable.
+	(nnml-filenames-are-evil): Removed.
+	(nnml-current-group-article-to-file-alist): Don't use.
+	(nnml-update-file-alist): Inhibit.
+	(nnml-article-to-file): Use new var.
+
 2002-01-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-parse-without-error): Add edebug-form-spec.
