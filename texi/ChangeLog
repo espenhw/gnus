@@ -1,3 +1,32 @@
+2002-02-13  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	Reinstate some changes to make latexpdf work.
+
+	* message.texi (Security): Don't use @key.
+	(Various Commands): Don't use @point.
+
+	* gnus.texi (Mail Source Specifiers): Use @uref.
+
+2002-02-13  Jesper Harder <harder@ifa.au.dk>
+
+	* message.texi, gnus.texi, emacs-mime.texi: Use small caps
+	consistently.  MIME, NOV, NNTP, HTML, IMAP are written with @sc
+	most places -- it looks better if it's the same *everywhere*.
+	@kbd instead of @code for key sequences. @file instead of @code
+	for files.
+
+	* message.texi (Various Commands): use the proper @point glyph.
+
+	* gnus.texi (Summary Mail Commands): ,A_(B doesn't work.  A German
+	spelling reform changed the correct spelling to "muss" anyway (I
+	think).
+
+	* gnus.texi (Mail sources): ,A'(B doesn't work. Use "section" instead.
+
+	* gnus.texi (Mail Source Specifiers): use @url.
+
+	* message.texi, emacs-mime.texi: update copyright year.
+
 2002-02-12  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus.texi (Required Back End Functions): specify the lowest and

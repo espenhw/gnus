@@ -47,7 +47,8 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1998, 1999, 2000 Free Software Foundation, Inc.
+Copyright @copyright{} 1998, 1999, 2000, 2001, 2002 Free Software
+Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -92,7 +93,7 @@ read at least RFC2045 and RFC2047.
 * Interface Functions::   An abstraction over the basic functions.
 * Basic Functions::       Utility and basic parsing functions.
 * Decoding and Viewing::  A framework for decoding and viewing.
-* Composing::             MML; a language for describing MIME parts.
+* Composing::             MML; a language for describing @sc{mime} parts.
 * Standards::             A summary of RFCs and working documents used.
 * Index::                 Function and variable index.
 @end menu
@@ -119,16 +120,16 @@ both the old syntax as well as the new syntax, and if there is only one
 library, one must choose between the old version of the library and the
 new version of the library.
 
-The Emacs MIME library takes a different tack.  It defines a series of
-low-level libraries (@file{rfc2047.el}, @file{rfc2231.el} and so on)
-that parses strictly according to the corresponding standard.  However,
-normal programs would not use the functions provided by these libraries
-directly, but instead use the functions provided by the
-@code{mail-parse} library.  The functions in this library are just
-aliases to the corresponding functions in the latest low-level
-libraries.  Using this scheme, programs get a consistent interface they
-can use, and library developers are free to create write code that
-handles new standards.
+The Emacs @sc{mime} library takes a different tack.  It defines a
+series of low-level libraries (@file{rfc2047.el}, @file{rfc2231.el}
+and so on) that parses strictly according to the corresponding
+standard.  However, normal programs would not use the functions
+provided by these libraries directly, but instead use the functions
+provided by the @code{mail-parse} library.  The functions in this
+library are just aliases to the corresponding functions in the latest
+low-level libraries.  Using this scheme, programs get a consistent
+interface they can use, and library developers are free to create
+write code that handles new standards.
 
 The following functions are defined by this library:
 
@@ -856,10 +857,10 @@ descend the message, following the structure, and return a tree of
 @node Non-MIME
 @section Non-MIME
 
-Gnus also understands some non-MIME attachments, such as postscript,
-uuencode, binhex, shar, forward, gnatsweb, pgp.  Each of these features
-can be disabled by add an item into @code{mm-uu-configure-list}.
-For example,
+Gnus also understands some non-@sc{mime} attachments, such as
+postscript, uuencode, binhex, shar, forward, gnatsweb, pgp.  Each of
+these features can be disabled by add an item into
+@code{mm-uu-configure-list}.  For example,
 
 @lisp
 (require 'mm-uu)
@@ -1065,22 +1066,23 @@ variable will cause @samp{text/html} parts to be treated as attachments.
 @item mm-inline-text-html-renderer
 @findex mm-inline-text-html-render-with-w3
 @findex mm-inline-text-html-render-with-w3m
-This function will be used to convert the HTML to the text.  There are
+This function will be used to convert the @sc{html} to the text.  There are
 two pre-defined functions: @code{mm-inline-text-html-render-with-w3},
 which uses Emacs/w3; and @code{mm-inline-text-html-render-with-w3m},
 which uses emacs-w3m (see @uref{http://emacs-w3m.namazu.org/} for more
-information about emacs-w3m).  The function will be called with a MIME
-handle as the argument.
+information about emacs-w3m).  The function will be called with a
+@sc{mime} handle as the argument.
 
 @item mm-inline-text-html-with-images
-Some HTML mails might have the trick of spammers using @samp{<img>} tags.
-It is likely to be intended to verify whether you have read the mail.
-You can prevent your personal informations from leaking by setting this
-option to @code{nil} (which is the default).  It is currently ignored by
-Emacs/w3.  For emacs-w3m, you may use the command @kbd{t} on the image
-anchor to show an image even if it is @code{nil}.@footnote{The command
-@kbd{T} will load all images.  If you have set the option
-@code{w3m-key-binding} to @code{info}, use @kbd{i} or @kbd{I} instead.}
+Some @sc{html} mails might have the trick of spammers using
+@samp{<img>} tags.  It is likely to be intended to verify whether you
+have read the mail.  You can prevent your personal informations from
+leaking by setting this option to @code{nil} (which is the default).
+It is currently ignored by Emacs/w3.  For emacs-w3m, you may use the
+command @kbd{t} on the image anchor to show an image even if it is
+@code{nil}.@footnote{The command @kbd{T} will load all images.  If you
+have set the option @code{w3m-key-binding} to @code{info}, use @kbd{i}
+or @kbd{I} instead.}
 
 @item mm-inline-text-html-with-w3m-keymap
 You can use emacs-w3m command keys in the inlined text/html part by
@@ -1138,7 +1140,7 @@ string containing the @sc{mime} message.
 * Simple MML Example::             An example MML document.
 * MML Definition::                 All valid MML elements.
 * Advanced MML Example::           Another example MML document.
-* Charset Translation::            How charsets are mapped from @sc{mule} to MIME.
+* Charset Translation::            How charsets are mapped from @sc{mule} to @sc{mime}.
 * Conversion::                     Going from @sc{mime} to MML and vice versa.
 * Flowed text::                    Soft and hard newlines.
 @end menu
@@ -1510,7 +1512,7 @@ Registration Procedures
 Conformance Criteria and Examples
 
 @item RFC2231
-MIME Parameter Value and Encoded Word Extensions: Character Sets,
+@sc{mime} Parameter Value and Encoded Word Extensions: Character Sets,
 Languages, and Continuations
 
 @item RFC1843
@@ -1521,7 +1523,7 @@ ASCII characters
 Draft for the successor of RFC822
 
 @item RFC2112
-The MIME Multipart/Related Content-type
+The @sc{mime} Multipart/Related Content-type
 
 @item RFC1892
 The Multipart/Report Content Type for the Reporting of Mail System

@@ -47,7 +47,7 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997, 1998, 1999, 2000 
+Copyright @copyright{} 1996, 1997, 1998, 1999, 2000, 2001, 2002 
      Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -282,9 +282,9 @@ constructed.  The default value is @code{nil}.
 @item message-forward-as-mime
 @vindex message-forward-as-mime
 If this variable is @code{t} (the default), forwarded messages are
-included as inline MIME RFC822 parts.  If it's @code{nil}, forwarded
+included as inline @sc{mime} RFC822 parts.  If it's @code{nil}, forwarded
 messages will just be copied inline to the new message, like previous,
-non MIME-savvy versions of gnus would do.
+non @sc{mime}-savvy versions of gnus would do.
 @end table
 
 
@@ -663,7 +663,7 @@ automatically add the @code{Content-Type} and
 
 The most typical thing users want to use the multipart things in
 @sc{mime} for is to add ``attachments'' to mail they send out.  This can
-be done with the @code{C-c C-a} command, which will prompt for a file
+be done with the @kbd{C-c C-a} command, which will prompt for a file
 name and a @sc{mime} type.
 
 You can also create arbitrarily complex multiparts using the MML
@@ -682,10 +682,10 @@ Manual}).
 
 Using the MML language, Message is able to create digitally signed and
 digitally encrypted messages.  Message (or rather MML) currently
-support PGP (RFC 1991), PGP/MIME (RFC 2015/3156) and S/MIME.
-Instructing MML to perform security operations on a MIME part is done
-using the @code{C-c C-m s} key map for signing and the @code{C-c C-m
-c} key map for encryption, as follows.
+support PGP (RFC 1991), @sc{pgp/mime} (RFC 2015/3156) and @sc{s/mime}.
+Instructing MML to perform security operations on a @sc{mime} part is
+done using the @kbd{C-c C-m s} key map for signing and the @kbd{C-c
+C-m c} key map for encryption, as follows.
 
 @table @kbd
 
@@ -693,7 +693,7 @@ c} key map for encryption, as follows.
 @kindex C-c C-m s s
 @findex mml-secure-message-sign-smime
 
-Digitally sign current message using S/MIME.
+Digitally sign current message using @sc{s/mime}.
 
 @item C-c C-m s o
 @kindex C-c C-m s o
@@ -705,13 +705,13 @@ Digitally sign current message using PGP.
 @kindex C-c C-m s p
 @findex mml-secure-message-sign-pgp
 
-Digitally sign current message using PGP/MIME.
+Digitally sign current message using @sc{pgp/mime}.
 
 @item C-c C-m c s
 @kindex C-c C-m c s
 @findex mml-secure-message-encrypt-smime
 
-Digitally encrypt current message using S/MIME.
+Digitally encrypt current message using @sc{s/mime}.
 
 @item C-c C-m c o
 @kindex C-c C-m c o
@@ -723,34 +723,34 @@ Digitally encrypt current message using PGP.
 @kindex C-c C-m c p
 @findex mml-secure-message-encrypt-pgpmime
 
-Digitally encrypt current message using PGP/MIME.
+Digitally encrypt current message using @sc{pgp/mime}.
 
 @end table
 
 These commands do not immediately sign or encrypt the message, they
 merely insert the proper MML secure tag to instruct the MML engine to
 perform that operation when the message is actually sent. They may
-perform other operations too, such as locating and retrieving a S/MIME
-certificate of the person you wish to send encrypted mail to.  When the
-mml parsing engine converts your MML into a properly encoded MIME
-message, the secure tag will be replaced with either a part or a
-multipart tag.  If your message contains other mml parts, a multipart
-tag will be used; if no other parts are present in your message a single
-part tag will be used.  This way, message mode will do the Right Thing
-(TM) with signed/encrypted multipart messages.
+perform other operations too, such as locating and retrieving a
+@sc{s/mime} certificate of the person you wish to send encrypted mail
+to.  When the mml parsing engine converts your MML into a properly
+encoded @sc{mime} message, the secure tag will be replaced with either
+a part or a multipart tag.  If your message contains other mml parts,
+a multipart tag will be used; if no other parts are present in your
+message a single part tag will be used.  This way, message mode will
+do the Right Thing (TM) with signed/encrypted multipart messages.
 
 Since signing and especially encryption often is used when sensitive
 information is sent, you may want to have some way to ensure that your
 mail is actually signed or encrypted.  After invoking the above
 sign/encrypt commands, it is possible to preview the raw article by
-using @code{C-u C-m P} (@code{mml-preview}).  Then you can verify that
-your long rant about what your ex-significant other or whomever actually
-did with that funny looking person at that strange party the other
-night, actually will be sent encrypted.
+using @kbd{C-u C-c RET P} (@code{mml-preview}).  Then you can
+verify that your long rant about what your ex-significant other or
+whomever actually did with that funny looking person at that strange
+party the other night, actually will be sent encrypted.
 
-@emph{Note!}  Neither PGP/MIME nor S/MIME encrypt/signs RFC822 headers.
-They only operate on the MIME object.  Keep this in mind before sending
-mail with a sensitive Subject line.
+@emph{Note!}  Neither @sc{pgp/mime} nor @sc{s/mime} encrypt/signs
+RFC822 headers.  They only operate on the @sc{mime} object.  Keep this
+in mind before sending mail with a sensitive Subject line.
 
 Actually using the security commands above is not very difficult.  At
 least not compared with making sure all involved programs talk with each
@@ -760,52 +760,54 @@ programs are required to make things work, and some small general hints.
 @subsection Using S/MIME
 
 @emph{Note!}  This section assume you have a basic familiarity with
-modern cryptography, S/MIME, various PKCS standards, OpenSSL and so on.
+modern cryptography, @sc{s/mime}, various PKCS standards, OpenSSL and
+so on.
 
-The S/MIME support in Message (and MML) require OpenSSL.  OpenSSL
-perform the actual S/MIME sign/encrypt operations.  OpenSSL can be found
-at @uref{http://www.openssl.org/}.  OpenSSL 0.9.6 and later should work.
-Version 0.9.5a cannot extract mail addresses from certificates, and it
-insert a spurious CR character into MIME separators so you may wish to
-avoid it if you would like to avoid being regarded as someone who send
-strange mail. (Although by sending S/MIME messages you've probably
-already lost that contest.)
+The @sc{s/mime} support in Message (and MML) require OpenSSL.  OpenSSL
+perform the actual @sc{s/mime} sign/encrypt operations.  OpenSSL can
+be found at @uref{http://www.openssl.org/}.  OpenSSL 0.9.6 and later
+should work.  Version 0.9.5a cannot extract mail addresses from
+certificates, and it insert a spurious CR character into @sc{mime}
+separators so you may wish to avoid it if you would like to avoid
+being regarded as someone who send strange mail. (Although by sending
+@sc{s/mime} messages you've probably already lost that contest.)
 
 To be able to send encrypted mail, a personal certificate is not
 required.  Message (MML) need a certificate for the person to whom you
 wish to communicate with though.  You're asked for this when you type
-@code{C-c C-m c s}.  Currently there are two ways to retrieve this
-certificate, from a local file or from DNS.  If you chose a local file,
-it need to contain a X.509 certificate in PEM format.  If you chose DNS,
-you're asked for the domain name where the certificate is stored, the
-default is a good guess.  To my belief, Message (MML) is the first mail
-agent in the world to support retrieving S/MIME certificates from DNS,
-so you're not likely to find very many certificates out there.  At least
-there should be one, stored at the domain @code{simon.josefsson.org}.
-LDAP is a more popular method of distributing certificates, support for
-it is planned.  (Meanwhile, you can use @code{ldapsearch} from the
-command line to retrieve a certificate into a file and use it.)
+@kbd{C-c C-m c s}.  Currently there are two ways to retrieve this
+certificate, from a local file or from DNS.  If you chose a local
+file, it need to contain a X.509 certificate in PEM format.  If you
+chose DNS, you're asked for the domain name where the certificate is
+stored, the default is a good guess.  To my belief, Message (MML) is
+the first mail agent in the world to support retrieving @sc{s/mime}
+certificates from DNS, so you're not likely to find very many
+certificates out there.  At least there should be one, stored at the
+domain @code{simon.josefsson.org}.  LDAP is a more popular method of
+distributing certificates, support for it is planned.  (Meanwhile, you
+can use @code{ldapsearch} from the command line to retrieve a
+certificate into a file and use it.)
 
 As for signing messages, OpenSSL can't perform signing operations
 without some kind of configuration.  Especially, you need to tell it
 where your private key and your certificate is stored.  MML uses an
-Emacs interface to OpenSSL, aptly named @code{smime.el}, and it contain
-a @code{custom} group used for this configuration.  So, try @code{M-x
-customize-group RET smime RET} and look around.
+Emacs interface to OpenSSL, aptly named @code{smime.el}, and it
+contain a @code{custom} group used for this configuration.  So, try
+@kbd{M-x customize-group RET smime RET} and look around.
 
-Currently there is no support for talking to a CA (or RA) to create your
-own certificate.  None is planned either.  You need to do this manually
-with OpenSSL or using some other program.  I used Netscape and got a
-free S/MIME certificate from one of the big CA's on the net.  Netscape
-is able to export your private key and certificate in PKCS #12 format.
-Use OpenSSL to convert this into a plain X.509 certificate in PEM format
-as follows.
+Currently there is no support for talking to a CA (or RA) to create
+your own certificate.  None is planned either.  You need to do this
+manually with OpenSSL or using some other program.  I used Netscape
+and got a free @sc{s/mime} certificate from one of the big CA's on the
+net.  Netscape is able to export your private key and certificate in
+PKCS #12 format.  Use OpenSSL to convert this into a plain X.509
+certificate in PEM format as follows.
 
 @example
 $ openssl pkcs12 -in ns.p12 -clcerts -nodes > key+cert.pem
 @end example
 
-The @code{key+cert.pem} file should be pointed to from the
+The @file{key+cert.pem} file should be pointed to from the
 @code{smime-keys} variable.  You should now be able to send signed mail.
 
 @emph{Note!}  Your private key is store unencrypted in the file, so take
@@ -813,9 +815,9 @@ care in handling it.
 
 @subsection Using PGP/MIME
 
-PGP/MIME requires an external OpenPGP implementation, such as GNU
-Privacy Guard (@uref{http://www.gnupg.org/}).  It also requires an Emacs
-interface to it, such as Mailcrypt (available from
+@sc{pgp/mime} requires an external OpenPGP implementation, such as GNU
+Privacy Guard (@uref{http://www.gnupg.org/}).  It also requires an
+Emacs interface to it, such as Mailcrypt (available from
 @uref{http://www.nb.net/~lbudney/linux/software/mailcrypt.html}) or
 Florian Weimer's @code{gpg.el}.
 
@@ -1461,7 +1463,7 @@ If this variable is @code{nil}, no signature will be inserted at all.
 @item message-signature-file
 @vindex message-signature-file
 File containing the signature to be inserted at the end of the buffer.
-The default is @samp{~/.signature}.
+The default is @file{~/.signature}.
 
 @end table
 
@@ -1717,7 +1719,7 @@ a form to be @code{eval}ed.
 
 Message uses virtually only its own variables---older @code{mail-}
 variables aren't consulted.  To force Message to take those variables
-into account, you can put the following in your @code{.emacs} file:
+into account, you can put the following in your @file{.emacs} file:
 
 @lisp
 (require 'messcompat)

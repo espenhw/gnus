@@ -1756,13 +1756,13 @@ Number of read articles.
 Estimated total number of articles.  (This is really @var{max-number}
 minus @var{min-number} plus 1.)
 
-Gnus uses this estimation because the NNTP protocol provides efficient
-access to @var{max-number} and @var{min-number} but getting the true
-unread message count is not possible efficiently.  For hysterical
-raisins, even the mail back ends, where the true number of unread
-messages might be available efficiently, use the same limited
-interface.  To remove this restriction from Gnus means that the
-back end interface has to be changed, which is not an easy job.  If you
+Gnus uses this estimation because the @sc{nntp} protocol provides
+efficient access to @var{max-number} and @var{min-number} but getting
+the true unread message count is not possible efficiently.  For
+hysterical raisins, even the mail back ends, where the true number of
+unread messages might be available efficiently, use the same limited
+interface.  To remove this restriction from Gnus means that the back
+end interface has to be changed, which is not an easy job.  If you
 want to work on this, please contact the Gnus mailing list.
 
 @item y
@@ -5036,11 +5036,12 @@ Forward the current article to some other person
 is forwarded according to the value of (@code{message-forward-as-mime})
 and (@code{message-forward-show-mml}); if the prefix is 1, decode the
 message and forward directly inline; if the prefix is 2, forward message
-as an rfc822 MIME section; if the prefix is 3, decode message and
-forward as an rfc822 MIME section; if the prefix is 4, forward message
+as an rfc822 @sc{mime} section; if the prefix is 3, decode message and
+forward as an rfc822 @sc{mime} section; if the prefix is 4, forward message
 directly inline; otherwise, the message is forwarded as no prefix given
 but use the flipped value of (@code{message-forward-as-mime}).  By
-default, the message is decoded and forwarded as an rfc822 MIME section.
+default, the message is decoded and forwarded as an rfc822 @sc{mime} 
+section.
 
 @item S m
 @itemx m
@@ -5096,7 +5097,7 @@ This command is mainly used if you have several accounts and want to
 ship a mail to a different account of yours.  (If you're both
 @code{root} and @code{postmaster} and get a mail for @code{postmaster}
 to the @code{root} account, you may want to resend it to
-@code{postmaster}.  Ordnung muﬂ sein!
+@code{postmaster}.  Ordnung muss sein!
 
 This command understands the process/prefix convention
 (@pxref{Process/Prefix}).
@@ -5188,11 +5189,11 @@ Forward the current article to a newsgroup
 of (@code{message-forward-as-mime}) and
 (@code{message-forward-show-mml}); if the prefix is 1, decode the
 message and forward directly inline; if the prefix is 2, forward message
-as an rfc822 MIME section; if the prefix is 3, decode message and
-forward as an rfc822 MIME section; if the prefix is 4, forward message
+as an rfc822 @sc{mime} section; if the prefix is 3, decode message and
+forward as an rfc822 @sc{mime} section; if the prefix is 4, forward message
 directly inline; otherwise, the message is forwarded as no prefix given
 but use the flipped value of (@code{message-forward-as-mime}).  By
-default, the message is decoded and forwarded as an rfc822 MIME section.
+default, the message is decoded and forwarded as an rfc822 @sc{mime} section.
 
 @item S O p
 @kindex S O p (Summary)
@@ -8149,16 +8150,16 @@ the newlines (@code{gnus-article-unsplit-urls}).
 @item W h
 @kindex W h (Summary)
 @findex gnus-article-wash-html
-Treat HTML (@code{gnus-article-wash-html}).  Note that the this is
+Treat @sc{html} (@code{gnus-article-wash-html}).  Note that the this is
 usually done automatically by Gnus if the message in question has a
-@code{Content-Type} header that says that the message is HTML.
+@code{Content-Type} header that says that the message is @sc{html}.
 
 If a prefix is given, a charset will be asked for.
 
 @vindex gnus-article-wash-function
-The default is to use w3 to convert the HTML, but this is controlled
-by the @code{gnus-article-wash-function} variable.  Pre-defined
-functions you can use include:
+The default is to use w3 to convert the @sc{html}, but this is
+controlled by the @code{gnus-article-wash-function} variable.
+Pre-defined functions you can use include:
 
 @table @code
 @item gnus-article-wash-html-with-w3
@@ -8196,7 +8197,7 @@ message.@footnote{PGP keys for many hierarchies are available at
 @item W s
 @kindex W s (Summary)
 @findex gnus-summary-force-verify-and-decrypt
-Verify a signed (PGP, PGP/MIME or S/MIME) message
+Verify a signed (PGP, @sc{pgp/mime} or @sc{s/mime}) message
 (@code{gnus-summary-force-verify-and-decrypt}). @xref{Security}.
 
 @item W W H
@@ -8670,9 +8671,9 @@ Decode encoded article bodies as well as charsets
 This command looks in the @code{Content-Type} header to determine the
 charset.  If there is no such header in the article, you can give it a
 prefix, which will prompt for the charset to decode as.  In regional
-groups where people post using some common encoding (but do not include
-MIME headers), you can set the @code{charset} group/topic parameter to
-the required charset (@pxref{Group Parameters}).
+groups where people post using some common encoding (but do not
+include @sc{mime} headers), you can set the @code{charset} group/topic
+parameter to the required charset (@pxref{Group Parameters}).
 
 @item W M v
 @kindex W M v (Summary)
@@ -9932,8 +9933,8 @@ to you to figure out, I think.
 @section Security
 
 Gnus is able to verify signed messages or decrypt encrypted messages.
-The formats that are supported are PGP, PGP/MIME and S/MIME, however
-you need some external programs to get things to work:
+The formats that are supported are PGP, @sc{pgp/mime} and @sc{s/mime},
+however you need some external programs to get things to work:
 
 @enumerate
 @item
@@ -9941,7 +9942,7 @@ To handle PGP messages, you have to install mailcrypt or gpg.el as
 well as a OpenPGP implementation (such as GnuPG).
 
 @item
-To handle S/MIME message, you need to install OpenSSL.  OpenSSL 0.9.6
+To handle @sc{s/mime} message, you need to install OpenSSL.  OpenSSL 0.9.6
 or newer is recommended.
 
 @end enumerate
@@ -10266,8 +10267,8 @@ Interactively run an action on the @sc{mime} object
 @end table
 
 Gnus will display some @sc{mime} objects automatically.  The way Gnus
-determines which parts to do this with is described in the Emacs MIME
-manual.
+determines which parts to do this with is described in the Emacs
+@sc{mime} manual.
 
 It might be best to just use the toggling functions from the article
 buffer to avoid getting nasty surprises.  (For instance, you enter the
@@ -11123,17 +11124,17 @@ typically enter that group and send all the articles off.
 @cindex using smime
 
 Gnus can digitally sign and encrypt your messages, using vanilla PGP
-format or PGP/MIME or S/MIME.  For decoding such messages, see the
-@code{mm-verify-option} and @code{mm-decrypt-option} options
+format or @sc{pgp/mime} or @sc{s/mime}.  For decoding such messages,
+see the @code{mm-verify-option} and @code{mm-decrypt-option} options
 (@pxref{Security}).
 
 For PGP, Gnus supports two external libraries, @sc{gpg.el} and
-@sc{Mailcrypt}, you need to install at least one of them.  The S/MIME
-support in Gnus requires the external program OpenSSL.
+@sc{Mailcrypt}, you need to install at least one of them.  The
+@sc{s/mime} support in Gnus requires the external program OpenSSL.
 
-Instructing MML to perform security operations on a MIME part is done
-using the @code{C-c C-m s} key map for signing and the @code{C-c C-m
-c} key map for encryption, as follows.
+Instructing MML to perform security operations on a @sc{mime} part is
+done using the @kbd{C-c C-m s} key map for signing and the @kbd{C-c
+C-m c} key map for encryption, as follows.
 
 @table @kbd
 
@@ -11141,37 +11142,37 @@ c} key map for encryption, as follows.
 @kindex C-c C-m s s
 @findex mml-secure-sign-smime
 
-Digitally sign current MIME part using S/MIME.
+Digitally sign current @sc{mime} part using @sc{s/mime}.
 
 @item C-c C-m s o
 @kindex C-c C-m s o
 @findex mml-secure-sign-pgp
 
-Digitally sign current MIME part using PGP.
+Digitally sign current @sc{mime} part using PGP.
 
 @item C-c C-m s p
 @kindex C-c C-m s p
 @findex mml-secure-sign-pgp
 
-Digitally sign current MIME part using PGP/MIME.
+Digitally sign current @sc{mime} part using @sc{pgp/mime}.
 
 @item C-c C-m c s
 @kindex C-c C-m c s
 @findex mml-secure-encrypt-smime
 
-Digitally encrypt current MIME part using S/MIME.
+Digitally encrypt current @sc{mime} part using @sc{s/mime}.
 
 @item C-c C-m c o
 @kindex C-c C-m c o
 @findex mml-secure-encrypt-pgp
 
-Digitally encrypt current MIME part using PGP.
+Digitally encrypt current @sc{mime} part using PGP.
 
 @item C-c C-m c p
 @kindex C-c C-m c p
 @findex mml-secure-encrypt-pgpmime
 
-Digitally encrypt current MIME part using PGP/MIME.
+Digitally encrypt current @sc{mime} part using @sc{pgp/mime}.
 
 @end table
 
@@ -12664,13 +12665,13 @@ UNDELETED}, is probably the best choice for most people, but if you
 sometimes peek in your mailbox with a @sc{imap} client and mark some
 articles as read (or; SEEN) you might want to set this to @samp{nil}.
 Then all articles in the mailbox is fetched, no matter what.  For a
-complete list of predicates, see RFC 2060 ß6.4.4.
+complete list of predicates, see RFC 2060 section 6.4.4.
 
 @item :fetchflag
 How to flag fetched articles on the server, the default @samp{\Deleted}
 will mark them as deleted, an alternative would be @samp{\Seen} which
 would simply mark them as read.  These are the two most likely choices,
-but more flags are defined in RFC 2060 ß2.3.2.
+but more flags are defined in RFC 2060 section 2.3.2.
 
 @item :dontexpunge
 If non-nil, don't remove all articles marked as deleted in the mailbox
@@ -12687,10 +12688,11 @@ An example @sc{imap} mail source:
 @end lisp
 
 @item webmail
-Get mail from a webmail server, such as www.hotmail.com,
-webmail.netscape.com, www.netaddress.com, www.my-deja.com.
+Get mail from a webmail server, such as @uref{www.hotmail.com},
+@uref{webmail.netscape.com}, @uref{www.netaddress.com},
+@uref{www.my-deja.com}.
 
-NOTE: Now mail.yahoo.com provides POP3 service, so @sc{pop} mail source
+NOTE: Now @uref{mail.yahoo.com} provides POP3 service, so @sc{pop} mail source
 is suggested.
 
 NOTE: Webmail largely depends cookies. A "one-line-cookie" patch is
@@ -14215,7 +14217,7 @@ the article marks with each group.  For these servers, archiving and
 restoring a group while preserving marks is fairly simple.
 
 (Preserving the group level and group parameters as well still
-requires ritual dancing and sacrifices to the @code{.newsrc.eld} deity
+requires ritual dancing and sacrifices to the @file{.newsrc.eld} deity
 though.)
 
 To archive an entire @code{nnml} or @code{nnfolder} server, take a
@@ -14230,8 +14232,8 @@ restore the data.
 It is also possible to archive individual @code{nnml} or
 @code{nnfolder} groups, while preserving marks.  For @code{nnml}, you
 copy all files in the group's directory.  For @code{nnfolder} you need
-to copy both the base folder file itself (@code{FOO}, say), and the
-marks file (@code{FOO.mrk} in this example).  Restoring the group is
+to copy both the base folder file itself (@file{FOO}, say), and the
+marks file (@file{FOO.mrk} in this example).  Restoring the group is
 done with @kbd{G m} from the Group buffer.  The last step makes Gnus
 notice the new directory.
 
@@ -14669,7 +14671,7 @@ Example server specification:
 @vindex nnimap-stream
 The type of stream used to connect to your server.  By default, nnimap
 will detect and automatically use all of the below, with the exception
-of SSL/TLS. (IMAP over SSL/TLS is being replaced by STARTTLS, which
+of SSL/TLS. (@sc{imap} over SSL/TLS is being replaced by STARTTLS, which
 can be automatically detected, but it's not widely deployed yet.)
 
 Example server specification:
@@ -14707,7 +14709,7 @@ using @samp{imtest} from Cyrus IMAPD < 2.0.14 (which includes version
 1.5.x and 1.6.x) you need to frob @code{imap-process-connection-type}
 to make @code{imap.el} use a pty instead of a pipe when communicating
 with @samp{imtest}.  You will then suffer from a line length
-restrictions on IMAP commands, which might make Gnus seem to hang
+restrictions on @sc{imap} commands, which might make Gnus seem to hang
 indefinitely if you have many articles in a mailbox.  The variable
 @code{imap-kerberos4-program} contain parameters to pass to the imtest
 program.
@@ -14799,11 +14801,11 @@ articles or not.
 @item nnimap-importantize-dormant
 @vindex nnimap-importantize-dormant
 
-If non-nil, marks dormant articles as ticked (as well), for other IMAP
-clients. Within Gnus, dormant articles will naturally still (only) be
-marked as ticked.  This is to make dormant articles stand out, just
-like ticked articles, in other IMAP clients. (In other words, Gnus has
-two ``Tick'' marks and IMAP has only one.)
+If non-nil, marks dormant articles as ticked (as well), for other
+@sc{imap} clients. Within Gnus, dormant articles will naturally still
+(only) be marked as ticked.  This is to make dormant articles stand
+out, just like ticked articles, in other @sc{imap} clients. (In other
+words, Gnus has two ``Tick'' marks and @sc{imap} has only one.)
 
 Probably the only reason for frobing this would be if you're trying
 enable per-user persistant dormant flags, using something like:
@@ -14822,7 +14824,7 @@ as ticked for other users.
 @cindex Expunging
 @vindex nnimap-expunge-search-string
 
-This variable contain the IMAP search command sent to server when
+This variable contain the @sc{imap} search command sent to server when
 searching for articles eligible for expiring.  The default is
 @code{"UID %s NOT SINCE %s"}, where the first @code{%s} is replaced by
 UID set and the second @code{%s} is replaced by a date.
@@ -15202,13 +15204,13 @@ Forwarded articles.
 Netscape mail boxes.
 
 @item mime-parts
-MIME multipart messages.
+@sc{mime} multipart messages.
 
 @item standard-digest
 The standard (RFC 1153) digest format.
 
 @item mime-digest
-A MIME digest of messages.
+A @sc{mime} digest of messages.
 
 @item lanl-gov-announce
 Announcement messages from LANL Gov Announce.
@@ -16710,7 +16712,7 @@ Hook run when after finishing fetching articles.
 
 @item gnus-agent-cache
 @vindex gnus-agent-cache
-Variable to control whether use the locally stored NOV and articles when
+Variable to control whether use the locally stored @sc{nov} and articles when
 plugged.
 
 @item gnus-agent-go-online
@@ -16989,7 +16991,7 @@ Score on the @code{Message-ID} header.
 
 @item e
 Score on an "extra" header, that is, one of those in gnus-extra-headers,
-if your NNTP server tracks additional header data in overviews.
+if your @sc{nntp} server tracks additional header data in overviews.
 
 @item f
 Score on followups---this matches the author name, and adds scores to
@@ -17403,7 +17405,7 @@ gnus-extra-headers, you can score on these headers' values.  In this
 case, there is a 5th element in the score entry, being the name of the
 header to be scored.  The following entry is useful in your
 @file{all.SCORE} file in case of spam attacks from a single origin host,
-if your NNTP server tracks NNTP-Posting-Host in overviews:
+if your @sc{nntp} server tracks NNTP-Posting-Host in overviews:
 
 @lisp
 ("111.222.333.444" -1000 nil s "NNTP-Posting-Host")
@@ -20967,7 +20969,7 @@ look into implementing the changes when the draft is accepted as an RFC.
 
 @item MIME - RFC 2045-2049 etc
 @cindex MIME
-All the various MIME RFCs are supported.
+All the various @sc{mime} RFCs are supported.
 
 @item Disposition Notifications - RFC 2298
 Message Mode is able to request notifications from the receiver.
@@ -20977,25 +20979,25 @@ Message Mode is able to request notifications from the receiver.
 @cindex RFC 2440
 RFC 1991 is the original PGP message specification, published as a
 Information RFC.  RFC 2440 was the follow-up, now called Open PGP, and
-put on the Standards Track.  Both document a non-MIME aware PGP
+put on the Standards Track.  Both document a non-@sc{mime} aware PGP
 format.  Gnus supports both encoding (signing and encryption) and
 decoding (verification and decryption).
 
 @item PGP/MIME - RFC 2015/3156
 RFC 2015 (superceded by 3156 which references RFC 2440 instead of RFC
-1991) describes the MIME-wrapping around the RF 1991/2440 format.
+1991) describes the @sc{mime}-wrapping around the RF 1991/2440 format.
 Gnus supports both encoding and decoding.
 
 @item S/MIME - RFC 2633
-RFC 2633 describes the S/MIME format.
+RFC 2633 describes the @sc{s/mime} format.
 
 @item IMAP - RFC 1730/2060, RFC 2195, RFC 2086, RFC 2359, RFC 2595, RFC 1731
-RFC 1730 is IMAP version 4, updated somewhat by RFC 2060 (IMAP 4
-revision 1).  RFC 2195 describes CRAM-MD5 authentication for IMAP. RFC
-2086 describes access control lists (ACLs) for IMAP. RFC 2359
-describes a IMAP protocol enhancement.  RFC 2595 describes the proper
-TLS integration (STARTTLS) with IMAP.  RFC 1731 describes the
-GSSAPI/Kerberos4 mechanisms for IMAP.
+RFC 1730 is @sc{imap} version 4, updated somewhat by RFC 2060 (@sc{imap} 4
+revision 1).  RFC 2195 describes CRAM-MD5 authentication for @sc{imap}. RFC
+2086 describes access control lists (ACLs) for @sc{imap}. RFC 2359
+describes a @sc{imap} protocol enhancement.  RFC 2595 describes the proper
+TLS integration (STARTTLS) with @sc{imap}.  RFC 1731 describes the
+GSSAPI/Kerberos4 mechanisms for @sc{imap}.
 
 @end table
 
@@ -22083,7 +22085,7 @@ More information is available in the info doc at Select Methods ->
 Getting Mail -> Mail Sources
 
 @item
-Gnus is now a MIME-capable reader.  This affects many parts of
+Gnus is now a @sc{mime}-capable reader.  This affects many parts of
 Gnus, and adds a slew of new commands.  See the manual for details.
 
 @item
@@ -22096,7 +22098,7 @@ called to position point.
 
 @item
 The user can now decide which extra headers should be included in
-summary buffers and NOV files.
+summary buffers and @sc{nov} files.
 
 @item
 @code{gnus-article-display-hook} has been removed.  Instead, a number
@@ -22112,7 +22114,7 @@ New web-based back ends have been added: @code{nnslashdot},
 again, to keep up with ever-changing layouts.
 
 @item
-Gnus can now read IMAP mail via @code{nnimap}.
+Gnus can now read @sc{imap} mail via @code{nnimap}.
 
 @end itemize
 
@@ -22849,10 +22851,10 @@ In the examples and definitions I will refer to the imaginary back end
 sequences (lists) of article numbers, and most back ends do not support
 retrieval of @code{Message-ID}s.  But they should try for both.
 
-The result data should either be HEADs or NOV lines, and the result
+The result data should either be HEADs or @sc{nov} lines, and the result
 value should either be @code{headers} or @code{nov} to reflect this.
 This might later be expanded to @code{various}, which will be a mixture
-of HEADs and NOV lines, but this is currently not supported by Gnus.
+of HEADs and @sc{nov} lines, but this is currently not supported by Gnus.
 
 If @var{fetch-old} is non-@code{nil} it says to try fetching "extra
 headers", in some meaning of the word.  This is generally done by
