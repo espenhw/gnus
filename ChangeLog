@@ -1,3 +1,8 @@
+2001-12-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* make-x.bat: Ensure nonempty variable value.  Reported by Frank
+	Haun <pille3000@gmx.net>.
+
 2001-12-18 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* ChangeLog, todo: Add `coding'.

@@ -11,6 +11,7 @@ set PWD=
 if "%1" == "" goto usage
 
 set emacs=xemacs.exe
+if "%2" == "" set copy="false"
 if "%2" == "copy" set copy=true
 if "%2" == "/copy" set copy=true
 
