@@ -707,6 +707,9 @@ If RAW, don't highlight the article."
                                "*MIME preview of ") (buffer-name))))
    (erase-buffer)
    (insert-buffer buf)
+   (if (re-search-forward
+	(concat "^" (regexp-quote mail-header-separator) "\n") nil t)
+       (replace-match "\n"))
    (mml-to-mime)
    (unless raw
      (run-hooks 'gnus-article-decode-hook)
