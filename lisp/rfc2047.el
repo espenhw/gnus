@@ -285,25 +285,36 @@ Should be called narrowed to the head of the message."
   (save-restriction
     (narrow-to-region b e)
     (goto-char (point-min))
-    (let ((break nil))
+    (let ((break nil)
+	  (bol (save-restriction
+		 (widen)
+		 (gnus-point-at-bol))))
       (while (not (eobp))
-	(when (and break
-		 (> (- (point) (save-restriction
-				 (widen)
-				 (gnus-point-at-bol))) 76))
-	      (goto-char break)
-	      (setq break nil)
-	      (insert "\n ")
-	      ;; Don't break before the first non-LWSP characters.
-	      (skip-chars-forward " \t")
-	      (forward-char 1))
+	(when (and break (> (- (point) bol) 76))
+	  (goto-char break)
+	  (setq break nil)
+	  (insert "\n ")
+	  (setq bol (1- (point)))
+	  ;; Don't break before the first non-LWSP characters.
+	  (skip-chars-forward " \t")
+	  (forward-char 1))
 	(cond
+	 ((eq (char-after) ?\n)
+	  (forward-char 1)
+	  (setq bol (point))
+	  (skip-chars-forward " \t")
+	  (unless (or (eobp) (eq (char-after) ?\n))
+	    (forward-char 1)))
+	 ((eq (char-after) ?\r)
+	  (forward-char 1))
 	 ((memq (char-after) '(?  ?\t))
 	  (skip-chars-forward " \t")
 	  (setq break (1- (point))))
 	 ((not break)
 	  (if (not (looking-at "=\\?"))
-	      (skip-chars-forward "^ \t=")
+	      (if (eq (char-after) ?=)
+		  (forward-char 1)
+		(skip-chars-forward "^ \t="))
 	    (setq break (point))
 	    (skip-chars-forward "^ \t")))
 	 (t
