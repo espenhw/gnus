@@ -1,3 +1,13 @@
+2001-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-request-newgroups): Use UTC date for NEWGROUPS
+	command.
+
+	* gnus-start.el (gnus-find-new-newsgroups): Use
+	`message-make-date' instead of `current-time-string'.
+	(gnus-ask-server-for-new-groups): Ditto.
+	(gnus-check-first-time-used): Ditto.
+
 2001-07-20 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-score.el (gnus-home-score-file): nnheader-translate-file-chars.
