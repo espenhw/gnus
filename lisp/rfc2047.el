@@ -668,7 +668,20 @@ By default, the region is treated as containing addresses (see
 	       mail-parse-charset
 	       (not (eq mail-parse-charset 'us-ascii))
 	       (not (eq mail-parse-charset 'gnus-decoded)))
-	  (mm-decode-coding-string string mail-parse-charset)
+	  ;; `decode-coding-string' in Emacs offers a third optional
+	  ;; arg NOCOPY to avoid consing a new string if the decoding
+	  ;; is "trivial".  Unfortunately it currently doesn't
+	  ;; consider anything else than a `nil' coding system
+	  ;; trivial.
+	  ;; `rfc2047-decode-string' is called multiple times for each
+	  ;; article during summary buffer generation, and we really
+	  ;; want to avoid unnecessary consing.  So we bypass
+	  ;; `decode-coding-string' if the string is purely ASCII.
+	  (if (and (fboundp 'detect-coding-string)
+		   ;; string is purely ASCII
+		   (eq (detect-coding-string string t) 'undecided))
+	      string
+	    (mm-decode-coding-string string mail-parse-charset))
 	(mm-string-as-multibyte string)))))
 
 (defun rfc2047-parse-and-decode (word)
