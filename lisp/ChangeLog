@@ -1,3 +1,9 @@
+2002-10-17    Ted Zlatanov <tzz@lifelogs.com>
+
+	* spam.el (spam-display-buffer-contents): New function.
+	(spam-bogofilter-score): use spam-display-buffer-contents, patch
+	from Katsumi Yamaoka <yamaoka@jpl.org>.
+
 2002-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* nnheader.el (nnheader-parse-naked-head): New function.
