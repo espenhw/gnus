@@ -119,11 +119,11 @@ STRING should be given if the last search was by `string-match' on STRING."
 (or (fboundp 'facep)
     ;; Introduced in Emacs 19.29.
     (defun facep (x)
-  "Return t if X is a face name or an internal face vector."
-  (and (or (internal-facep x)
-	   (and (symbolp x) (assq x global-face-data)))
-       t)))
-      
+      "Return t if X is a face name or an internal face vector."
+      (and (or (and (fboundp 'internal-facep) (internal-facep x))
+	       (and (symbolp x) (assq x global-face-data)))
+	   t)))
+
 (if (facep 'underline)
     ()
   ;; No underline face in XEmacs 19.12.

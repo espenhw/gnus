@@ -1059,6 +1059,10 @@ which to perform auto-expiry.  This only makes sense for mail groups.")
 (defvar gnus-hidden-properties '(invisible t intangible t)
   "Property list to use for hiding text.")
 
+(defvar gnus-modtime-botch nil
+  "*Non-nil means .newsrc should be deleted prior to save.  Its use is
+due to the bogus appearance that .newsrc was modified on disc.")
+
 ;; Hooks.
 
 (defvar gnus-group-mode-hook nil
@@ -1339,7 +1343,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.20"
+(defconst gnus-version "(ding) Gnus v0.99.21"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -13462,7 +13466,12 @@ If FORCE is non-nil, the .newsrc file is read."
       ;; file seems to be off. We really do want to overwrite it, so
       ;; we clear the modtime here before saving. It's a bit odd,
       ;; though... 
-      (clear-visited-file-modtime)
+      ;; sometimes the modtime clear isn't sufficient.  most brute force:
+      ;; delete the silly thing entirely first.  but this fails to provide
+      ;; such niceties as .newsrc~ creation.
+      (if gnus-modtime-botch
+	  (delete-file gnus-startup-file)
+	(clear-visited-file-modtime))
       (save-buffer)
       (kill-buffer (current-buffer)))))
 

@@ -1,3 +1,11 @@
+Fri Aug 25 06:03:51 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-modtime-botch): New variable.
+
+Fri Aug 25 05:44:07 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.99.20 is released.
+
 Fri Aug 25 02:57:19 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
 
 	* nndir.el (nndir-status-message): Wrong number of arguments.
