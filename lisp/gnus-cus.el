@@ -1,6 +1,6 @@
 ;;; gnus-cus.el --- customization commands for Gnus
 ;;
-;; Copyright (C) 1996,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1996,1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: news
@@ -52,6 +52,21 @@ if that value is non-nil."
   (setq major-mode 'gnus-custom-mode
 	mode-name "Gnus Customize")
   (use-local-map widget-keymap)
+  ;; Emacs 21 stuff:
+  (when (and (facep 'custom-button-face)
+	     (facep 'custom-button-pressed-face))
+    (set (make-local-variable 'widget-button-face)
+	 'custom-button-face)
+    (set (make-local-variable 'widget-button-pressed-face)
+	 'custom-button-pressed-face)
+    (set (make-local-variable 'widget-mouse-face)
+	 'custom-button-pressed-face))
+  (when (and (boundp 'custom-raised-buttons)
+	     (symbol-value 'custom-raised-buttons))
+    (set (make-local-variable 'widget-push-button-prefix) "")
+    (set (make-local-variable 'widget-push-button-suffix) "")
+    (set (make-local-variable 'widget-link-prefix) "")
+    (set (make-local-variable 'widget-link-suffix) ""))
   (gnus-run-hooks 'gnus-custom-mode-hook))
 
 ;;; Group Customization:
@@ -137,7 +152,7 @@ listserv has inserted `Reply-To' headers that point back to the
 listserv itself.  This is broken behavior.  So there!")
 
     (to-group (string :tag "To Group") "\
-All posts will be send to the specified group.")
+All posts will be sent to the specified group.")
 
     (gcc-self (choice :tag  "GCC"
 		      :value t
@@ -305,6 +320,7 @@ DOC is a documentation string for the parameter.")
     (setq gnus-custom-group group)
     (make-local-variable 'gnus-custom-topic)
     (setq gnus-custom-topic topic)
+    (buffer-disable-undo)
     (widget-insert "Customize the ")
     (if group
 	(widget-create 'info-link
@@ -375,6 +391,7 @@ form, but who cares?"
 			   :value (gnus-info-method info))))
     (use-local-map widget-keymap)
     (widget-setup)
+    (buffer-enable-undo)
     (goto-char (point-min))))
 
 (defun gnus-group-customize-done (&rest ignore)
