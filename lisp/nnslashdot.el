@@ -539,10 +539,12 @@
 (defun nnslashdot-lose (why)
   (error "Slashdot HTML has changed; please get a new version of nnslashdot"))
 
-(defun nnslashdot-sid-strip (sid)
-  (if (string-match "^00/" sid)
-      (substring sid (match-end 0))
-    sid))
+;(defun nnslashdot-sid-strip (sid)
+;  (if (string-match "^00/" sid)
+;      (substring sid (match-end 0))
+;    sid))
+
+(defalias 'nnslashdot-sid-strip 'identity)
 
 (provide 'nnslashdot)
 

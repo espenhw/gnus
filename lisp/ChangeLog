@@ -1,3 +1,7 @@
+2000-07-04 15:17:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-sid-strip): To strip or not to strip?
+
 2000-07-03  Stainless Steel Rat <ratinox@peorth.gweep.net>
 
 	* gnus-sum.el (gnus-recenter): Fix horizontal recenter.
