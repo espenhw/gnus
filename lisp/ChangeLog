@@ -1,3 +1,7 @@
+2004-08-16  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mailcap.el (mailcap-mime-data): Mark as risky.
+
 2004-08-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-region): Assume the close parenthesis
