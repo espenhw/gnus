@@ -539,8 +539,9 @@ Pass INFO on to CALLBACK."
 		  (goto-char (point-min))
 		  (when (looking-at "movemail: ")
 		    (delete-region (point-min) (match-end 0)))
+		  ;; Result may be a signal description string.
 		  (unless (yes-or-no-p
-			   (format "movemail: %s (%d return).  Continue? "
+			   (format "movemail: %s (%s return).  Continue? "
 				   (buffer-string) result))
 		    (error "%s" (buffer-string)))
 		  (setq to nil)))))))

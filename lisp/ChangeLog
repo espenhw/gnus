@@ -1,5 +1,11 @@
 2001-04-29 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mail-source.el (mail-source-movemail): Call-process may return a
+	signal description string.
+
+	* gnus-start.el (gnus-read-newsrc-el-file):
+	gnus-newsrc-file-version may be nil.
+
 	* nnmail.el (nnmail-get-new-mail): Use the exact file only.
 	Suggested by Michael Sperber [Mr. Preprocessor]  
 	<sperber@informatik.uni-tuebingen.de>.
