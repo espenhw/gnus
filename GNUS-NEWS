@@ -36,6 +36,9 @@ customize it via the variable `nnimap-id'.
 
 ** The prompt for creating new groups (`G m') now auto complete known groups.
 
+** Gnus now MIME decode articles even when they lack "MIME-Version" header.
+This changes the default of `gnus-article-loose-mime'.
+
 
 * For older news, see Gnus info node "New Features".
 
