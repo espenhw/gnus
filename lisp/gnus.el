@@ -1,5 +1,5 @@
 ;;; gnus.el --- a newsreader for GNU Emacs
-;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996,
+;; Copyright (C) 1987, 1988, 1989, 1990, 1993, 1994, 1995, 1996, 2001,
 ;;        1997, 1998, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -1590,9 +1590,8 @@ posting an article."
  :variable-group gnus-group-foreign
  :parameter-type
  '(choice :tag "Posting Method"
-	  (const nil)
-	  (const current)
-	  (const native)
+	  (const :tag "Use native server" nil)
+	  (const :tag "Use current server" current)
 	  (list :convert-widget
 		(lambda (widget)
 		  (list 'sexp :tag "Methods"

@@ -1,3 +1,10 @@
+2001-10-22  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (post-method): Customization fix: `native' is not a
+	valid value.
+	* gnus-msg.el (gnus-post-method): Doc and customization fix:
+	`native' is not a valid value.
+
 2001-10-21  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap): Defgroup
