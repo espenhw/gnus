@@ -1,3 +1,8 @@
+2003-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-delay.el (gnus-delay-article): Fix binding of the
+	nndraft:delayed group.
+
 2003-02-04  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.el (spam group parameters): change 'other to 'const in

@@ -80,8 +80,7 @@ DELAY is a string, giving the length of the time.  Possible values are:
    (list (read-string
 	  "Target date (YYYY-MM-DD) or length of delay (units in [mhdwMY]): "
 	  gnus-delay-default-delay)))
-  (let ((group (format "nndraft:%s" gnus-delay-group))
-	num unit days year month day hour minute deadline)
+  (let (num unit days year month day hour minute deadline)
     (cond ((string-match
 	    "\\([0-9][0-9][0-9]?[0-9]?\\)-\\([0-9]+\\)-\\([0-9]+\\)"
 	    delay)
@@ -134,10 +133,11 @@ DELAY is a string, giving the length of the time.  Possible values are:
     (message-add-header (format "%s: %s" gnus-delay-header deadline)))
   (set-buffer-modified-p t)
   ;; If group does not exist, create it.
-  (unless (gnus-gethash group gnus-newsrc-hashtb)
-    (nndraft-request-create-group gnus-delay-group)
-    ;; Make it active.
-    (gnus-set-active group (cons 1 0)))
+  (let ((group (format "nndraft:%s" gnus-delay-group)))
+    (unless (gnus-gethash group gnus-newsrc-hashtb)
+      (nndraft-request-create-group gnus-delay-group)
+      ;; Make it active.
+      (gnus-set-active group (cons 1 0))))
   (message-disassociate-draft)
   (nndraft-request-associate-buffer gnus-delay-group)
   (save-buffer 0)
