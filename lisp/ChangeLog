@@ -1,5 +1,12 @@
 2004-01-20  Teodor Zlatanov  <tzz@lifelogs.com>  
-	From Hubert Chan <hubert@uhoreg.ca>.
+
+	* spam.el (gnus-summary-mode-map): make spam-generic-score the
+	default scoring function
+	(spam-generic-score): calls spam-spamassassin-score if
+	spam-use-spamassassin or spam-use-spamassassin-headers is on;
+	spam-bogofilter-score otherwise.
+
+	From Hubert Chan <hubert@uhoreg.ca>:
 
 	* spam.el (spam-use-spamassassin, spam-use-spamassassin-headers)
 	(spam-install-hooks, spam-spamassassin, spam-spamassassin-path)

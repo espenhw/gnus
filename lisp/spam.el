@@ -499,9 +499,9 @@ order for SpamAssassin to recognize the new registered spam."
 ;;; Key bindings for spam control.
 
 (gnus-define-keys gnus-summary-mode-map
-  "St" spam-bogofilter-score
+  "St" spam-generic-score
   "Sx" gnus-summary-mark-as-spam
-  "Mst" spam-bogofilter-score
+  "Mst" spam-generic-score
   "Msx" gnus-summary-mark-as-spam
   "\M-d" gnus-summary-mark-as-spam)
 
@@ -666,6 +666,15 @@ Respects the process/prefix convention."
   (dolist (article (gnus-summary-work-articles n))
     (gnus-summary-remove-process-mark article)
     (spam-report-gmane article)))
+
+(defun spam-generic-score ()
+  (interactive)
+  "Invoke whatever scoring method we can."
+  (if (or
+       spam-use-spamassassin
+       spam-use-spamassassin-headers)
+      (spam-spamassassin-score)
+    (spam-bogofilter-score)))
 
 ;;; Summary entry and exit processing.
 
