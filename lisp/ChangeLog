@@ -1,8 +1,44 @@
+Sun Dec 10 10:38:47 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-backlog-shutdown): New function.
+	(gnus-backlog-buffer): Would return a list the first time called. 
+
+	* gnus-msg.el (gnus-summary-send-draft): Didn't manage to actually
+	post anything.
+	(gnus-summary-cancel-article): Would bug out when canceling
+	canceled articles.
+
+	* gnus.el (gnus-create-xref-hashtb): Wouldn't mark component
+	groups as read. 
+	(gnus-method-option-p): Only checked 'post.
+
+Sun Dec 10 07:18:56 1995  David K}gedal  <davidk@lysator.liu.se>
+
+	* gnus-cache.el (gnus-cache-generate-active): Didn't work.
+
+Sun Dec 10 10:01:06 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus-setup.el (gnus-use-bbdb): `gnus-startup-hook' wasn't
+	quoted. 
+
+Sun Dec 10 06:37:45 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nndoc.el: Reimplemented most of this file.
+
+Sat Dec  9 16:35:54 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-setup-buffer): Didn't set
+	`gnus-summary-buffer' reliably. 
+	(gnus-summary-enter-digest-group): Use the original article
+	buffer. 
+
 Sat Dec  9 10:59:52 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
 
 	* gnus.el (gnus-group-expire-articles): Wrong arguments.
 
 	* nnmail.el (nnmail-time-less): Didn't return proper times.
+
+	* gnus.el: 0.20 is released.
 
 Sat Dec  9 08:50:34 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 

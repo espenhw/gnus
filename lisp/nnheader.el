@@ -37,6 +37,7 @@
 ;;; Code:
 
 (require 'mail-utils)
+(require 'sendmail)
 (eval-when-compile (require 'cl))
 
 (defvar nnheader-max-head-length 4096

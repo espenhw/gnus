@@ -446,30 +446,32 @@ If LOW, update the lower bound instead."
 (defun gnus-cache-generate-active (&optional directory)
   "Generate the cache active file."
   (let* ((top (null directory))
-	 (directory (or directory gnus-cache-directory))
-	 (files (directory-files directory))
+	 (directory (or directory (expand-file-name gnus-cache-directory)))
+	 (files (directory-files directory 'full))
 	 (group 
 	  (progn
 	    (string-match (concat "^" (expand-file-name gnus-cache-directory))
 			  directory)
 	    (gnus-replace-chars-in-string 
-	     (substring (expand-file-name gnus-cache-directory) (match-end 0))
+	     (substring directory (match-end 0))
 	     ?/ ?.)))
 	 nums alphs)
     (when top
       (setq gnus-cache-active-hashtb (gnus-make-hashtable 123)))
     ;; Separate articles from all other files and directories.
     (while files
-      (if (string-match "^[0-9]$" (car files))
-	  (push (string-to-int (pop files)) nums)
+      (if (string-match "^[0-9]+$" (file-name-nondirectory (car files)))
+	  (push (string-to-int (file-name-nondirectory (pop files))) nums)
 	(push (pop files) alphs)))
     ;; If we have nums, then this is probably a valid group.
     (setq nums (sort nums '<))
-    (gnus-sethash group (cons (car nums) (gnus-last-element nums))
-		  gnus-cache-active-hashtb)
+    (if nums
+	(gnus-sethash group (cons (car nums) (gnus-last-element nums))
+		      gnus-cache-active-hashtb))
     ;; Go through all the other files.
     (while alphs
-      (when (file-directory-p (car alphs))
+      (when (and (file-directory-p (car alphs))
+		 (not (string-match "^\\.\\.?$" (file-name-nondirectory (car alphs)))))
 	;; We descend directories.
 	(gnus-cache-generate-active (car alphs)))
       (setq alphs (cdr alphs)))

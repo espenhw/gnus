@@ -1,3 +1,7 @@
+Sat Dec  9 16:55:29 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (nndoc): Change.
+
 Fri Dec  8 06:25:29 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Group Buffer Format): Addition.

@@ -1039,7 +1039,7 @@ with some simple extensions.
     ("nnmbox" mail respool) 
     ("nnml" mail respool)
     ("nnmh" mail respool) 
-    ("nndir" none prompt-address address)
+    ("nndir" post-mail prompt-address address)
     ("nneething" none prompt-address)
     ("nndoc" none prompt-address) 
     ("nnbabyl" mail respool) 
@@ -1439,7 +1439,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.20"
+(defconst gnus-version "September Gnus v0.21"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1771,7 +1771,7 @@ Thank you for your help in stamping out bugs.
      ("gnus-msg" (gnus-summary-send-map keymap)
       gnus-mail-yank-original gnus-mail-send-and-exit
       gnus-sendmail-setup-mail gnus-article-mail 
-      gnus-inews-message-id)
+      gnus-inews-message-id gnus-news-mail gnus-mail-reply)
      ("gnus-msg" :interactive t
       gnus-group-post-news gnus-group-mail gnus-summary-post-news
       gnus-summary-followup gnus-summary-followup-with-original
@@ -2807,6 +2807,8 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
   (if (get-file-buffer (gnus-newsgroup-kill-file nil))
       (kill-buffer (get-file-buffer (gnus-newsgroup-kill-file nil))))
   (gnus-kill-buffer nntp-server-buffer)
+  ;; Backlog.
+  (and gnus-keep-backlog (gnus-backlog-shutdown))
   ;; Kill Gnus buffers.
   (while gnus-buffer-list
     (gnus-kill-buffer (car gnus-buffer-list))
@@ -4645,7 +4647,8 @@ Returns whether the fetching was successful or not."
 (defun gnus-group-read-ephemeral-group 
   (group method &optional activate quit-config)
   (let ((group (if (gnus-group-foreign-p group) group
-		 (gnus-group-prefixed-name group method))))
+		 (gnus-group-prefixed-name group method)))
+	(cur (current-buffer)))
     (gnus-sethash 
      group
      (list t nil (list group gnus-level-default-subscribed nil nil 
@@ -4664,7 +4667,8 @@ Returns whether the fetching was successful or not."
 	(gnus-group-read-group t t group)
       (error nil)
       (quit nil))
-    (not (equal major-mode 'gnus-group-mode))))
+;    (debug (current-buffer))
+    (not (equal (current-buffer) cur))))
   
 (defun gnus-group-jump-to-group (group)
   "Jump to newsgroup GROUP."
@@ -6859,6 +6863,7 @@ article number."
     (if (get-buffer buffer)
 	(progn
 	  (set-buffer buffer)
+	  (setq gnus-summary-buffer (current-buffer))
 	  (not gnus-newsgroup-prepared))
       ;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
       (setq gnus-summary-buffer (set-buffer (get-buffer-create buffer)))
@@ -8083,7 +8088,11 @@ If WHERE is `summary', the summary mode line format will be used."
   "Go through the HEADERS list and add all Xrefs to a hash table.
 The resulting hash table is returned, or nil if no Xrefs were found."
   (let* ((from-method (gnus-find-method-for-group from-newsgroup))
-	 (prefix (gnus-group-real-prefix from-newsgroup))
+	 (virtual (memq 'virtual 
+			(assoc (symbol-name (car (gnus-find-method-for-group 
+						  from-newsgroup)))
+			       gnus-valid-select-methods)))	
+	 (prefix (if virtual "" (gnus-group-real-prefix from-newsgroup)))
 	 (xref-hashtb (make-vector 63 0))
 	 start group entry number xrefs header)
     (while headers
@@ -9796,25 +9805,33 @@ Return how many articles were fetched."
   (interactive "P")
   (gnus-set-global-variables)
   (gnus-summary-select-article)
-  ;; We do not want a narrowed article.
-  (gnus-summary-stop-page-breaking)
   (let ((name (format "%s-%d" 
 		      (gnus-group-prefixed-name 
 		       gnus-newsgroup-name (list 'nndoc "")) 
 		      gnus-current-article))
 	(ogroup gnus-newsgroup-name)
 	(buf (current-buffer)))
-    (if (gnus-group-read-ephemeral-group 
-	 name `(nndoc ,name (nndoc-address ,(get-buffer gnus-article-buffer))
-		      (nndoc-article-type ,(if force 'digest 'guess))) t)
-	;; Make all postings to this group go to the parent group.
-	(setcdr (nthcdr 4 (gnus-get-info name))
-		(list (list (cons 'to-group ogroup))))
-      ;; Couldn't select this doc group.
-      (switch-to-buffer buf)
-      (gnus-set-global-variables)
-      (gnus-configure-windows 'summary)
-      (gnus-message 3 "Article not a digest?"))))
+    (save-excursion
+      (set-buffer gnus-original-article-buffer)
+      (goto-char (point-min))
+      (search-forward "\n\n" nil t)
+      (narrow-to-region (point) (point-max)))
+    (unwind-protect
+	(if (gnus-group-read-ephemeral-group 
+	     name `(nndoc ,name (nndoc-address 
+				 ,(get-buffer gnus-original-article-buffer))
+			  (nndoc-article-type ,(if force 'digest 'guess))) t)
+	    ;; Make all postings to this group go to the parent group.
+	    (setcdr (nthcdr 4 (gnus-get-info name))
+		    (list (list (cons 'to-group ogroup))))
+	  ;; Couldn't select this doc group.
+	  (switch-to-buffer buf)
+	  (gnus-set-global-variables)
+	  (gnus-configure-windows 'summary)
+	  (gnus-message 3 "Article couldn't be entered?"))
+      (save-excursion
+	(set-buffer gnus-original-article-buffer)
+	(widen)))))
 
 (defun gnus-summary-isearch-article (&optional regexp-p)
   "Do incremental search forward on the current article.
@@ -10844,8 +10861,8 @@ returned."
 
 (defun gnus-summary-mark-article (&optional article mark no-expire)
   "Mark ARTICLE with MARK.  MARK can be any character.
-Four MARK strings are reserved: `? ' (unread), `?!' (ticked), `??'
-(dormant) and `?E' (expirable).
+Four MARK strings are reserved: `? ' (unread), `?!' (ticked), 
+`??' (dormant) and `?E' (expirable).
 If MARK is nil, then the default character `?D' is used.
 If ARTICLE is nil, then the article on the current line will be
 marked." 
@@ -13427,10 +13444,12 @@ If GROUP is nil, all groups on METHOD are scanned."
      (force-group-method group-method)
      ;; Override normal method.
      ((and gnus-post-method
-	   (gnus-method-option-p group-method 'post))
+	   (or (gnus-method-option-p group-method 'post)
+	       (gnus-method-option-p group-method 'post-mail)))
       gnus-post-method)
      ;; Perhaps this is a mail group?
-     ((not (gnus-member-of-valid 'post group))
+     ((and (not (gnus-member-of-valid 'post group))
+	   (not (gnus-method-option-p group-method 'post-mail)))
       group-method)
      ;; Use the normal select method.
      (t gnus-select-method))))
@@ -13443,8 +13462,8 @@ If GROUP is nil, all groups on METHOD are scanned."
 
 (defun gnus-method-option-p (method option)
   "Return non-nil if select METHOD has OPTION as a parameter."
-  (memq 'post (assoc (format "%s" (car method))
-		     gnus-valid-select-methods)))
+  (memq option (assoc (format "%s" (car method))
+		      gnus-valid-select-methods)))
 
 (defmacro gnus-server-equal (ss1 ss2)
   "Say whether two servers are equal."
@@ -14145,7 +14164,7 @@ newsgroup."
 	   t)
 	 (condition-case ()
 	     (gnus-request-group group)
-	   (error nil)
+	;   (error nil)
 	   (quit nil))
 	 (save-excursion
 	   (set-buffer nntp-server-buffer)
@@ -15077,12 +15096,20 @@ If FORCE is non-nil, the .newsrc file is read."
 	(set-buffer (get-buffer-create gnus-backlog-buffer))
 	(buffer-disable-undo (current-buffer))
 	(setq buffer-read-only t)
-	(gnus-add-current-to-buffer-list))))
+	(gnus-add-current-to-buffer-list)
+	(get-buffer gnus-backlog-buffer))))
 
 (defun gnus-backlog-setup ()
   "Initialize backlog variables."
   (unless gnus-backlog-hashtb
     (setq gnus-backlog-hashtb (make-vector 1023 0))))
+
+(defun gnus-backlog-shutdown ()
+  "Clear all backlog variables and buffers."
+  (when (get-buffer gnus-backlog-buffer)
+    (kill-buffer gnus-backlog-buffer))
+  (setq gnus-backlog-hashtb nil
+	gnus-backlog-articles nil))
 
 (defun gnus-backlog-enter-article (group number buffer)
   (gnus-backlog-setup)
@@ -15145,7 +15172,8 @@ If FORCE is non-nil, the .newsrc file is read."
 		 (1+ beg) 'gnus-backlog (current-buffer) (point-max)))))
       (let ((buffer-read-only nil))
 	(erase-buffer)
-	(insert-buffer-substring gnus-backlog-buffer beg end)))))
+	(insert-buffer-substring gnus-backlog-buffer beg end)
+	t))))
 
 ;; Allow redefinition of Gnus functions.
 

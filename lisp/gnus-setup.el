@@ -148,7 +148,7 @@
 
       (autoload 'bbdb-insinuate-gnus "bbdb-gnus"
 	"Hook BBDB into Gnus" t)
-      (add-hook gnus-startup-hook 'bbdb-insinuate-gnus)
+      (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
 
       (if gnus-use-sendmail
 	  (progn

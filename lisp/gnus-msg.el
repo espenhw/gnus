@@ -424,14 +424,15 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   "Cancel an article you posted."
   (interactive "P")
   (gnus-set-global-variables)
-  (let ((articles (gnus-summary-work-articles n)))
-    (while articles
-      (gnus-summary-select-article t nil nil (car articles))
-      (and (gnus-eval-in-buffer-window gnus-article-buffer (gnus-cancel-news))
-	   (gnus-summary-mark-as-read (car articles) gnus-canceled-mark))
-      (gnus-summary-remove-process-mark (car articles))
-      (gnus-article-hide-headers-if-wanted)
-      (setq articles (cdr articles)))))
+  (let ((articles (gnus-summary-work-articles n))
+	article)
+    (while (setq article (pop articles))
+      (when (gnus-summary-select-article t nil nil article)
+	(when (gnus-eval-in-buffer-window 
+	       gnus-original-article-buffer (gnus-cancel-news))
+	  (gnus-summary-mark-as-read article gnus-canceled-mark))
+	(gnus-article-hide-headers-if-wanted))
+      (gnus-summary-remove-process-mark article))))
 
 (defun gnus-summary-supersede-article ()
   "Compose an article that will supersede a previous article.
@@ -2546,17 +2547,22 @@ Headers will be generated before sending."
     (erase-buffer)
     ;; Set proper mode.
     (funcall (car type))
-    (and (eq major-mode 'mail-mode)
-	 (gnus-inews-modify-mail-mode-map))
+    (gnus-inews-modify-mail-mode-map)
+    (when (eq major-mode 'news-reply-mode)
+      (local-set-key "\C-c\C-c" 'gnus-inews-news))
     ;; Arrange for deletion of the draft after successful sending.
     (make-local-variable 'gnus-message-sent-hook)
     (setq gnus-message-sent-hook
 	  (list
-	   (`
-	    (lambda ()
+	   `(lambda ()
 	      (gnus-request-expire-articles 
-	       (quote (, (list (cdr gnus-article-current))))
-	       (, gnus-newsgroup-name) t)))))
+	       (quote ,(list (cdr gnus-article-current)))
+	       ,gnus-newsgroup-name t)
+		(and (buffer-name ,gnus-summary-buffer)
+		     (save-excursion
+		       (set-buffer ,gnus-summary-buffer)
+		       (gnus-summary-mark-article 
+			,(cdr gnus-article-current) gnus-canceled-mark))))))
     ;; Insert the draft.
     (insert-buffer-substring gnus-article-buffer)
     ;; Insert the separator.
