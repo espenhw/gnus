@@ -1,3 +1,7 @@
+2002-03-23  Jesper Harder <harder@ifa.au.dk>
+
+	* gnusref.tex, refcard.tex: Addition. 
+
 2002-03-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.texi (Sending Variables): Fix typo.
