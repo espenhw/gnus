@@ -21635,6 +21635,13 @@ The list of servers to consult for blackhole checks.
 
 @end defvar
 
+@defvar spam-blackhole-good-server-regex
+
+A regular expression for IPs that should not be checked against the
+blackhole server list.  When set to nil, it has no effect.
+
+@end defvar
+
 @defvar spam-use-dig
 
 Use the @code{dig.el} package instead of the @code{dns.el} package.
