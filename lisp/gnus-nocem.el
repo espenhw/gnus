@@ -35,11 +35,13 @@
   "*List of groups that will be searched for NoCeM messages.")
 
 (defvar gnus-nocem-issuers 
-  '("Automoose-1" ; The CancelMoose[tm] on autopilot.
-    "clewis@ferret.ocunix.on.ca;" ; Chris Lewis -- Canadian angel & despammer.
-    "jem@xpat.com;"  ; John Milburn -- despammer in Korea.
-    "red@redpoll.mrfs.oh.us (Richard E. Depew)" ; Spew/bincancel guy.
-    )
+ '("AutoMoose-1" "Automoose-1"   ; CancelMoose[tm]
+   "rbraver@ohww.norman.ok.us"   ; Robert Braver
+   "clewis@ferret.ocunix.on.ca;" ; Chris Lewis
+   "jem@xpat.com;"		 ; Korean DeSpammer 
+   "snowhare@xmission.com" ; Benjamin "Snowhare" Franz
+   "red@redpoll.mrfs.oh.us (Richard E. Depew)"
+   )
   "*List of NoCeM issuers to pay attention to.")
 
 (defvar gnus-nocem-directory 

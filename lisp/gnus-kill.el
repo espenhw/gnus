@@ -667,39 +667,33 @@ Newsgroups is a list of strings in Bnews format.  If you want to score
 the comp hierarchy, you'd say \"comp.all\".  If you would not like to
 score the alt hierarchy, you'd say \"!alt.all\"."
   (interactive)
-  (let* ((yes-and-no
+  (let* ((gnus-newsrc-options-n    
 	  (gnus-newsrc-parse-options
-	   (apply (function concat)
-		  (mapcar (lambda (g) (concat g " "))
-			  command-line-args-left))))
+	   (concat "options -n "
+		   (mapconcat 'identity command-line-args-left " "))))
 	 (gnus-expert-user t)
 	 (nnmail-spool-file nil)
 	 (gnus-use-dribble-file nil)
-	 (yes (car yes-and-no))
-	 (no (cdr yes-and-no))
 	 group newsrc entry
 	 ;; Disable verbose message.
-	 gnus-novice-user gnus-large-newsgroup)
+	 gnus-novice-user gnus-large-newsgroup
+	 gnus-options-subscribe gnus-auto-subscribed-groups
+	 gnus-options-not-subscribe)
     ;; Eat all arguments.
     (setq command-line-args-left nil)
-    ;; Start Gnus.
     (gnus)
     ;; Apply kills to specified newsgroups in command line arguments.
     (setq newsrc (cdr gnus-newsrc-alist))
-    (while newsrc
-      (setq group (caar newsrc))
+    (while (setq group (car (pop newsrc)))
       (setq entry (gnus-gethash group gnus-newsrc-hashtb))
-      (if (and (<= (nth 1 (car newsrc)) gnus-level-subscribed)
-	       (and (car entry)
-		    (or (eq (car entry) t)
-			(not (zerop (car entry)))))
-	       (if yes (string-match yes group) t)
-	       (or (null no) (not (string-match no group))))
-	  (progn
-	    (gnus-summary-read-group group nil t nil t)
-	    (and (eq (current-buffer) (get-buffer gnus-summary-buffer))
-		 (gnus-summary-exit))))
-      (setq newsrc (cdr newsrc)))
+      (when (and (<= (nth 1 (car newsrc)) gnus-level-subscribed)
+		 (and (car entry)
+		      (or (eq (car entry) t)
+			  (not (zerop (car entry)))))
+		 (eq (gnus-matches-options-n group) 'subscribe))
+	(gnus-summary-read-group group nil t nil t)
+	(when (eq (current-buffer) (get-buffer gnus-summary-buffer))
+	  (gnus-summary-exit))))
     ;; Exit Emacs.
     (switch-to-buffer gnus-group-buffer)
     (gnus-group-save-newsrc)))

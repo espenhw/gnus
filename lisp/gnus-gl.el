@@ -141,10 +141,15 @@
   "Port where the bbbd is listening" )
 
 (defvar grouplens-newsgroups 
-  '("comp.lang.c++" "rec.humor" "rec.food.recipes" "comp.groupware"
+  '("comp.groupware" "comp.human-factors" "comp.lang.c++"
+    "comp.lang.java" "comp.os.linux.admin" "comp.os.linux.advocacy"
+    "comp.os.linux.announce" "comp.os.linux.answers"
+    "comp.os.linux.development" "comp.os.linux.development.apps"
+    "comp.os.linux.development.system" "comp.os.linux.hardware"
+    "comp.os.linux.help" "comp.os.linux.m68k" "comp.os.linux.misc"
+    "comp.os.linux.networking" "comp.os.linux.setup" "comp.os.linux.x"
     "mn.general" "rec.arts.movies" "rec.arts.movies.current-films"
-    "comp.lang.java" "comp.os.linux.announce" "comp.os.linux.misc"
-    "comp.os.linux.development.apps" "comp.os.linux.development.system")
+    "rec.food.recipes" "rec.humor") 
   "*Groups that are part of the GroupLens experiment.")
 
 (defvar grouplens-prediction-display 'prediction-spot

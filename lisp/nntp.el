@@ -54,7 +54,9 @@ do on servers that use strict access control.")
 
 (defvoo nntp-server-action-alist 
   '(("nntpd 1\\.5\\.11t" 
-     (remove-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)))
+     (remove-hook 'nntp-server-opened-hook 'nntp-send-mode-reader))
+    ("NNRP server Netscape" 
+     (setq nntp-server-list-active-group nil)))
   "Alist of regexps to match on server types and actions to be taken.
 For instance, if you want Gnus to beep every time you connect
 to innd, you could say something like:

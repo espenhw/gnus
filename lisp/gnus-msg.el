@@ -330,7 +330,8 @@ header line with the old Message-ID."
 	  (delete-region (goto-char (point-min))
 			 (or (search-forward "\n\n" nil t) (point)))
 	  ;; Insert the original article headers.
-	  (insert-buffer-substring gnus-original-article-buffer beg end)))
+	  (insert-buffer-substring gnus-original-article-buffer beg end)
+	  (article-decode-rfc1522)))
       gnus-article-copy)))
 
 (defun gnus-post-news (post &optional group header article-buffer yank subject
@@ -584,7 +585,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (gnus-summary-mail-forward t))
 
 (defvar gnus-nastygram-message 
-  "The following article was inappropriately posted to %s.\n"
+  "The following article was inappropriately posted to %s.\n\n"
   "Format string to insert in nastygrams.
 The current group name will be inserted at \"%s\".")
 
@@ -597,6 +598,7 @@ The current group name will be inserted at \"%s\".")
       (let ((group gnus-newsgroup-name))
 	(gnus-summary-reply-with-original n)
 	(set-buffer gnus-message-buffer)
+	(message-goto-body)
 	(insert (format gnus-nastygram-message group))
 	(message-send-and-exit))))
 

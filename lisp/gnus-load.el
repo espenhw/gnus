@@ -622,7 +622,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-score-raise-thread gnus-score-lower-same-subject-and-select
       gnus-score-lower-same-subject gnus-score-lower-thread
       gnus-possibly-score-headers gnus-summary-raise-score 
-      gnus-summary-set-score gnus-summary-current-score)
+      gnus-summary-set-score gnus-summary-current-score
+      gnus-score-followup-article)
      ("gnus-score"
       (gnus-summary-score-map keymap) gnus-score-save gnus-score-headers
       gnus-current-score-file-nondirectory gnus-score-adaptive

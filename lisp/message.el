@@ -501,7 +501,7 @@ The cdr of ech entry is a function for applying the face to a region.")
     (Lines)
     (Expires)
     (Message-ID)
-    (References . message-fill-header)
+    (References)
     (X-Mailer)
     (X-Newsreader))
   "Alist used for formatting headers.")
@@ -1256,8 +1256,9 @@ The text will also be indented the normal way."
 (defun message-dont-send ()
   "Don't send the message you have been editing."
   (interactive)
-  (message-bury (current-buffer))
-  (message-do-actions message-postpone-actions))
+  (let ((actions message-postpone-actions))
+    (message-bury (current-buffer))
+    (message-do-actions actions)))
 
 (defun message-kill-buffer ()
   "Kill the current buffer."

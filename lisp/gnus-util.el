@@ -520,7 +520,7 @@ Timezone package is used."
    ((null funs) funs)
    ((cdr funs)
     `(lambda (t1 t2)
-       ,(gnus-make-sort-function-1 (nreverse funs))))
+       ,(gnus-make-sort-function-1 (reverse funs))))
    (t
     (car funs))))
 
