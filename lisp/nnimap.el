@@ -75,6 +75,10 @@
 
 (defconst nnimap-version "nnimap 1.0")
 
+(defgroup nnimap nil
+  "Reading IMAP mail with Gnus."
+  :group 'gnus)
+
 (defvoo nnimap-address nil
   "Address of physical IMAP server.  If nil, use the virtual server's name.")
 
@@ -84,20 +88,36 @@ If nil, defaults to 993 for SSL connections and 143 otherwise.")
 
 ;; Splitting variables
 
-(defvar nnimap-split-crosspost t
+(defcustom nnimap-split-crosspost t
   "If non-nil, do crossposting if several split methods match the mail.
-If nil, the first match found will be used.")
+If nil, the first match found will be used."
+  :group 'nnimap
+  :type 'boolean)
 
-(defvar nnimap-split-inbox nil
+(defcustom nnimap-split-inbox nil
   "*Name of mailbox to split mail from.
 
 Mail is read from this mailbox and split according to rules in
 `nnimap-split-rule'.
 
-This can be a string or a list of strings.")
+This can be a string or a list of strings."
+  :group 'nnimap
+  :type '(choice (string)
+		 (repeat string)))
 
-(defvar nnimap-split-rule nil
-  "*Mail will be split according to theese rules.
+(define-widget 'nnimap-strict-function 'function
+  "This widget only matches values that are functionp.
+
+Warning: This means that a value that is the symbol of a not yet
+loaded function will not match.  Use with care."
+  :match 'nnimap-strict-function-match)
+
+(defun nnimap-strict-function-match (widget value)
+  "Ignoring WIDGET, match if VALUE is a function."
+  (functionp value))
+
+(defcustom nnimap-split-rule nil
+  "Mail will be split according to theese rules.
 
 Mail is read from mailbox(es) specified in `nnimap-split-inbox'.
 
@@ -106,7 +126,7 @@ If you'd like, for instance, one mail group for mail from the
 everything else in the incoming mailbox, you could do something like
 this:
 
-(setq nnimap-split-rule '((\"INBOX.gnus-imap\"   \"From:.*gnus-imap\")
+\(setq nnimap-split-rule '((\"INBOX.gnus-imap\"   \"From:.*gnus-imap\")
 			  (\"INBOX.junk\"        \"Subject:.*buy\")))
 
 As you can see, `nnimap-split-rule' is a list of lists, where the first
@@ -127,7 +147,7 @@ To allow for different split rules on different virtual servers, and
 even different split rules in different inboxes on the same server,
 the syntax of this variable have been extended along the lines of:
 
-(setq nnimap-split-rule
+\(setq nnimap-split-rule
       '((\"my1server\"    (\".*\"    ((\"ding\"    \"ding@gnus.org\")
 				  (\"junk\"    \"From:.*Simon\")))
 	(\"my2server\"    (\"INBOX\" nnimap-split-fancy))
@@ -139,17 +159,43 @@ may apply to several servers.  In the example, the servers
 \"my3server\" and \"my4server\" both use the same rules.  Similarly,
 the inbox string is also a regexp.  The actual splitting rules are as
 before, either a function, or a list with group/regexp or
-group/function elements.")
+group/function elements."
+  :group 'nnimap
+  :type '(choice :tag "Rule type"
+		 (repeat :menu-tag "Single-server"
+			 :tag "Single-server list"
+			 (list (string :tag "Mailbox")
+			       (choice :tag "Predicate"
+				       (regexp :tag "A regexp")
+				       (nnimap-strict-function :tag "A function"))))
+		 (choice :menu-tag "A function"
+			 :tag "A function"
+			 (function-item nnimap-split-fancy)
+			 (function-item nnmail-split-fancy)
+			 (nnimap-strict-function :tag "User-defined function"))
+		 (repeat :menu-tag "Multi-server (extended)"
+			 :tag "Multi-server list"
+			 (list (regexp :tag "Server regexp") 
+			       (list (regexp :tag "Incoming Mailbox regexp")
+				     (repeat :tag "Rules for matching server(s) and mailbox(es)"
+					     (list (string :tag "Destination mailbox")
+						   (choice :tag "Predicate"
+							   (regexp :tag "A Regexp")
+							   (nnimap-strict-function :tag "A Function")))))))))
 
-(defvar nnimap-split-predicate "UNSEEN UNDELETED"
+(defcustom nnimap-split-predicate "UNSEEN UNDELETED"
   "The predicate used to find articles to split.
 If you use another IMAP client to peek on articles but always would
 like nnimap to split them once it's started, you could change this to
 \"UNDELETED\". Other available predicates are available in
-RFC2060 section 6.4.4.")
+RFC2060 section 6.4.4."
+  :group 'nnimap
+  :type 'string)
 
-(defvar nnimap-split-fancy nil
-  "Like `nnmail-split-fancy', which see.")
+(defcustom nnimap-split-fancy nil
+  "Like `nnmail-split-fancy', which see."
+  :group 'nnimap
+  :type 'sexp)
 
 ;; Authorization / Privacy variables
 

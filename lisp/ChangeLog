@@ -1,3 +1,12 @@
+2001-10-21  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap): Defgroup
+	(nnimap-strict-function, nnimap-strict-function-match): New
+	widget, from Per Abrahamsen  <abraham@dina.kvl.dk>.
+	(nnimap-split-crosspost, nnimap-split-inbox)
+	(nnimap-split-rule, nnimap-split-predicate) 
+	(nnimap-split-predicate): Defcustom.
+
 2001-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-sum.el (gnus-summary-limit-to-score): Prompt for score if
