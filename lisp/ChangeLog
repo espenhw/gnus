@@ -1,7 +1,3 @@
-2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* pop3.el (pop3-md5): Define it before being used.
-
 2004-11-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-forbidden-properties): Fixed typo in doc

@@ -2451,11 +2451,7 @@ See also `message-forbidden-properties'."
 	     (message-tamago-not-in-use-p begin))
     (let ((buffer-read-only nil)
 	  (inhibit-read-only t))
-      (while (not (= begin end))
-	(when (not (get-text-property begin 'message-hidden))
-	  (remove-text-properties begin (1+ begin)
-				  message-forbidden-properties))
-	(incf begin)))))
+      (remove-text-properties begin end message-forbidden-properties))))
 
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"

@@ -136,13 +136,6 @@ way."
   :type '(radio (const :format "Unlimited " nil)
 		(integer :format "Maximum number: %v")))
 
-;; Function(s) missing in Emacs 20
-(when (memq nil (mapcar 'fboundp '(puthash)))
-  (require 'cl)
-  (unless (fboundp 'puthash)
-    ;; alias puthash is missing from Emacs 20 cl-extra.el
-    (defalias 'puthash 'cl-puthash)))
-
 (defun gnus-registry-track-subject-p ()
   (memq 'subject gnus-registry-track-extra))
 
