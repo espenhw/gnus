@@ -1,3 +1,9 @@
+2004-05-24  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam-report.el (spam-report-resend): spam-report-resend takes a
+	list of articles, not separate article numbers.  From Daniel
+	Pittman <daniel@rimspace.net>.
+
 2004-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-text-html-renderer): Make sure w3m exists in

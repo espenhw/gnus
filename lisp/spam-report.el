@@ -93,7 +93,7 @@ This variable will store the value of `spam-report-url-ping-function' from
 before `spam-report-agentize' was run, so that `spam-report-deagentize' can
 undo that change.")
 
-(defun spam-report-resend (&rest articles)
+(defun spam-report-resend (articles)
   "Report an article as spam by resending via email."
   (dolist (article articles)
     (gnus-message 6 
