@@ -1,3 +1,7 @@
+2001-01-07 18:18:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (myself): Quote .
+
 2001-01-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Choosing Commands): Add xref for redisplaying the
