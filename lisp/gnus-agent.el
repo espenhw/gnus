@@ -2091,7 +2091,6 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
                                         day
                                       (let (found
                                             (days gnus-agent-expire-days))
-                                        (debug)
                                         (catch 'found
                                           (while (and (not found)
                                                       days)
@@ -2505,6 +2504,15 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 
 (defun gnus-agent-regenerate-group (group &optional reread)
   "Regenerate GROUP.  If REREAD is t, all articles in the .overview are marked as unread.  If REREAD is not nil, downloaded articles are marked as unread."
+  (interactive (list (let ((def (or (gnus-group-group-name)
+                                    gnus-newsgroup-name)))
+                       (let ((select (read-string (if def (concat "Group Name (" def "): ")
+                                          "Group Name: "))))
+                         (if (and (equal "" select)
+                                  def)
+                             def
+                           select)))
+                     (intern-soft (read-string "Reread (nil)? (t=>all, nil=>none, some=>all downloaded): "))))
   (gnus-message 5 "Regenerating in %s" group)
   (let* ((gnus-command-method (or gnus-command-method
                                   (gnus-find-method-for-group group)))
