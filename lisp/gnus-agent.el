@@ -114,7 +114,7 @@ If nil, only read articles will be expired."
   :group 'gnus-agent
   :type 'function)
 
-(defcustom gnus-agent-synchronize-flags 'ask
+(defcustom gnus-agent-synchronize-flags nil
   "Indicate if flags are synchronized when you plug in.
 If this is `ask' the hook will query the user."
   :version "21.1"
@@ -847,7 +847,8 @@ be a select method."
 		(delete-file (gnus-agent-lib-file "flags")))
 	       (error
 		(let ((file (gnus-agent-lib-file "flags")))
-		  (write-file file)
+		  (write-region (point-min) (point-max)
+				(gnus-agent-lib-file "flags") nil 'silent)
 		  (error "Couldn't set flags from file %s due to %s"
 			 file (error-message-string err)))))))
       (kill-buffer nil))))

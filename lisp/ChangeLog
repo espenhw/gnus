@@ -1,3 +1,14 @@
+2004-10-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* spam-report.el (spam-report-gmane): Fix interactive.
+
+	* gnus-art.el (gnus-treat-body-boundary): Only do stuff under X. 
+
+	* gnus-agent.el (gnus-agent-synchronize-flags-server): Be silent
+	when writing file.
+	(gnus-agent-synchronize-flags): Don't default to being
+	interactive. 
+
 2004-09-30  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-generate-hashcash): Add.

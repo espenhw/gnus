@@ -1287,9 +1287,10 @@ See Info node `(gnus)Customizing Articles' and Info node
 (put 'gnus-treat-newsgroups-picon 'highlight t)
 
 (defcustom gnus-treat-body-boundary
-  (if (or gnus-treat-newsgroups-picon
-	  gnus-treat-mail-picon
-	  gnus-treat-from-picon)
+  (if (and (eq window-system 'x)
+	   (or gnus-treat-newsgroups-picon
+	       gnus-treat-mail-picon
+	       gnus-treat-from-picon))
       'head nil)
   "Draw a boundary at the end of the headers.
 Valid values are nil and `head'.
