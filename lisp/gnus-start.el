@@ -1523,8 +1523,8 @@ newsgroup."
 		       (setq method (gnus-server-get-method nil method)))))
 	       (not (gnus-secondary-method-p method)))
 	  ;; These groups are foreign.  Check the level.
-	  (when (<= (gnus-info-level info) foreign-level)
-	    (setq active (gnus-activate-group group 'scan))
+	  (when (and (<= (gnus-info-level info) foreign-level)
+                     (setq active (gnus-activate-group group 'scan)))
 	    ;; Let the Gnus agent save the active file.
 	    (when (and gnus-agent gnus-plugged active)
 	      (gnus-agent-save-group-info
@@ -1565,7 +1565,8 @@ newsgroup."
 		(setq active (gnus-activate-group group))
 	      (setq active (gnus-activate-group group 'scan))
 	      (push method scanned-methods))
-	    (inline (gnus-close-group group))))))
+            (when active
+              (gnus-close-group group))))))
 
       ;; Get the number of unread articles in the group.
       (cond
@@ -1587,23 +1588,23 @@ newsgroup."
       (let* ((mg (pop retrievegroups))
 	     (method (or (car mg) gnus-select-method))
 	     (groups (cdr mg)))
-	(gnus-check-server method)
-	;; Request that the backend scan its incoming messages.
-	(when (gnus-check-backend-function 'request-scan (car method))
-	  (gnus-request-scan nil method))
-	(gnus-read-active-file-2 (mapcar (lambda (group)
-					   (gnus-group-real-name group))
-					 groups) method)
-	(dolist (group groups)
-	  (cond
-	   ((setq active (gnus-active (gnus-info-group
-				       (setq info (gnus-get-info group)))))
-	    (inline (gnus-get-unread-articles-in-group info active t)))
-	   (t
-	    ;; The group couldn't be reached, so we nix out the number of
-	    ;; unread articles and stuff.
-	    (gnus-set-active group nil)
-	    (setcar (gnus-gethash group gnus-newsrc-hashtb) t))))))
+	(when (gnus-check-server method)
+          ;; Request that the backend scan its incoming messages.
+          (when (gnus-check-backend-function 'request-scan (car method))
+            (gnus-request-scan nil method))
+          (gnus-read-active-file-2 (mapcar (lambda (group)
+                                             (gnus-group-real-name group))
+                                           groups) method)
+          (dolist (group groups)
+            (cond
+             ((setq active (gnus-active (gnus-info-group
+                                         (setq info (gnus-get-info group)))))
+              (inline (gnus-get-unread-articles-in-group info active t)))
+             (t
+              ;; The group couldn't be reached, so we nix out the number of
+              ;; unread articles and stuff.
+              (gnus-set-active group nil)
+              (setcar (gnus-gethash group gnus-newsrc-hashtb) t)))))))
 
     (gnus-message 5 "Checking new news...done")))
 

@@ -1,3 +1,9 @@
+2000-05-30  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-start.el (gnus-get-unread-articles): If
+	`gnus-activate-group' and/or `gnus-check-server' return nil, don't
+	try to do anything on that server.
+	
 2000-05-25  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-group.el (gnus-group-nnimap-edit-acl): Help text updated
