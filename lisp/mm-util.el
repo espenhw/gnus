@@ -755,11 +755,12 @@ If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'."
 (defun mm-image-load-path (&optional package)
   (let (dir result)
     (dolist (path load-path (nreverse result))
-      (if (file-directory-p
-	   (setq dir (concat (file-name-directory
-			      (directory-file-name path))
-			     "etc/" (or package "gnus/"))))
-	  (push dir result))
+      (when (and path
+		 (file-directory-p
+		  (setq dir (concat (file-name-directory
+				     (directory-file-name path))
+				    "etc/" (or package "gnus/")))))
+	(push dir result))
       (push path result))))
 
 ;; Fixme: This doesn't look useful where it's used.

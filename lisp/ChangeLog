@@ -1,3 +1,8 @@
+2004-04-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-util.el (mm-image-load-path): Handle nil in load-path.
+	From Christian Neukirchen <chneukirchen@yahoo.de>.
+
 2004-04-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-cache.el (gnus-cache-save-buffers): Check if buffer is
