@@ -1177,7 +1177,7 @@ is run."
   "Delete by side effect any elements of LIST whose car is `equal' to KEY.
 The modified LIST is returned.  If the first member
 of LIST has a car that is `equal' to KEY, there is no way to remove it
-by side effect; therefore, write `(setq foo (remassoc key foo))' to be
+by side effect; therefore, write `(setq foo (gnus-remassoc key foo))' to be
 sure of changing the value of `foo'."
   (when alist
     (if (equal key (caar alist))
