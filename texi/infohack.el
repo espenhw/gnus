@@ -41,6 +41,7 @@
 	(max-lisp-eval-depth (max max-lisp-eval-depth 600))
 	coding-system)
     (find-file file)
+    (setq buffer-read-only nil)
     (setq coding-system buffer-file-coding-system)
     (infohack-remove-unsupported)
     (texinfo-every-node-update) 
