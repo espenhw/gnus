@@ -1,3 +1,7 @@
+2001-12-31  Rui Zhu  <sprache@iname.com>
+
+	* emacs-mime.texi (Customization): Typo fix.
+
 2001-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Article Display): Addition.
