@@ -1,4 +1,8 @@
 2001-08-25  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Mail Spool): Add marks.
+
+2001-08-25  Simon Josefsson  <jas@extundo.com>
 	From Henrik Enberg <henrik@enberg.org>
 
 	* gnus.texi (Group Parameters): Fix.

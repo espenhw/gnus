@@ -13068,6 +13068,16 @@ splitting.  It has to create lots of files, and it also generates
 @sc{nov} databases for the incoming mails.  This makes it the fastest
 backend when it comes to reading mail.
 
+@cindex self contained nnml servers
+When the marks file is used (which it is by default), @code{nnml}
+servers have the property that you may backup them using @code{tar} or
+similar, and later be able to restore them into Gnus (by adding the
+proper @code{nnml} server) and have all your marks be preserved.  Marks
+for a group is usually stored in the @code{.marks} file (but see
+@code{nnml-marks-file-name}) within the @code{nnml} directory.
+Individual @code{nnml} groups are also possible to backup, restore it
+using @kbd{G m} to subscribe to the group.
+
 Virtual server settings:
 
 @table @code
@@ -13075,7 +13085,7 @@ Virtual server settings:
 @vindex nnml-directory
 All @code{nnml} directories will be placed under this directory.
 The default is the value of `message-directory' (whose default value is
-@file{~/Mail})
+@file{~/Mail}).
 
 @item nnml-active-file
 @vindex nnml-active-file
@@ -13090,12 +13100,12 @@ Format}.  The default is @file{~/Mail/newsgroups"}.
 @item nnml-get-new-mail
 @vindex nnml-get-new-mail
 If non-@code{nil}, @code{nnml} will read incoming mail.  The default is
-@code{t}
+@code{t}.
 
 @item nnml-nov-is-evil
 @vindex nnml-nov-is-evil
 If non-@code{nil}, this backend will ignore any @sc{nov} files.  The
-default is @code{nil}
+default is @code{nil}.
 
 @item nnml-nov-file-name
 @vindex nnml-nov-file-name
@@ -13104,6 +13114,15 @@ The name of the @sc{nov} files.  The default is @file{.overview}.
 @item nnml-prepare-save-mail-hook
 @vindex nnml-prepare-save-mail-hook
 Hook run narrowed to an article before saving.
+
+@item nnml-marks-is-evil
+@vindex nnml-marks-is-evil
+If non-@code{nil}, this backend will ignore any @sc{marks} files.  The
+default is @code{nil}.
+
+@item nnml-marks-file-name
+@vindex nnml-marks-file-name
+The name of the @sc{marks} files.  The default is @file{.marks}.
 
 @end table
 
