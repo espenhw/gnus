@@ -1,3 +1,8 @@
+2000-10-04 11:45:04  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-inline-part): Use prefix argument only
+	when it is called interactively.
+
 2000-10-03 21:20:31  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-action-alist): New variable.
