@@ -183,7 +183,7 @@
 	     article subject
 	     from (or date "")
 	     (concat "<" (number-to-string sid) "%"
-		     (number-to-string article) 
+		     (number-to-string article)
 		     "@ultimate>")
 	     "" 0
 	     (/ (length (mapconcat
