@@ -279,6 +279,7 @@ This is taken from RFC 2396.")
 	(list url (buffer-size)))
     (mm-url-load-url)
     (let ((name buffer-file-name)
+	  (url-request-extra-headers (list (cons "Connection" "Close")))
 	  (url-package-name (or mm-url-package-name
 				url-package-name))
 	  (url-package-version (or mm-url-package-version
@@ -331,6 +332,11 @@ If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
 		  (delete-region (point-min) (point-max))
 		  (setq result (mm-url-insert url t)))))
 	  (setq result (mm-url-insert-file-contents url)))
+	(if (fboundp 'url-generic-parse-url)
+	    (setq url-current-object (url-generic-parse-url
+				      (if (listp result)
+					  (car result)
+					result))))
 	(setq done t)))
     result))
 

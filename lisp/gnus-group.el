@@ -625,6 +625,7 @@ simple manner.")
     "f" gnus-group-make-doc-group
     "w" gnus-group-make-web-group
     "r" gnus-group-rename-group
+    "R" gnus-group-make-rss-group
     "c" gnus-group-customize
     "x" gnus-group-nnimap-expunge
     "\177" gnus-group-delete-group
@@ -2523,6 +2524,32 @@ If SOLID (the prefix), create a solid group."
        group method t
        (cons (current-buffer)
 	     (if (eq major-mode 'gnus-summary-mode) 'summary 'group))))))
+
+(eval-when-compile (defvar nnrss-group-alist)
+		   (defun nnrss-discover-feed (arg))
+		   (defun nnrss-save-server-data (arg)))
+(defun gnus-group-make-rss-group (&optional url)
+  "Given a URL, discover if there is an RSS feed.  If there is,
+use Gnus' to create an nnrss group"
+  (interactive)
+  (require 'nnrss)
+  (if (not url)
+      (setq url (read-from-minibuffer "URL to Search for RSS: ")))
+  (let ((feedinfo (nnrss-discover-feed url)))
+    (if feedinfo
+	(let ((title (read-from-minibuffer "Title: " 
+					   (cdr (assoc 'title 
+						       feedinfo))))
+	      (desc  (read-from-minibuffer "Description: " 
+					   (cdr (assoc 'description
+						       feedinfo))))
+	      (href (cdr (assoc 'href feedinfo))))
+	  (push (list title href desc)
+		nnrss-group-alist)
+	  (gnus-group-unsubscribe-group
+	   (concat "nnrss:" title))
+	  (nnrss-save-server-data nil))
+      (error "No feeds found for %s" url))))
 
 (defvar nnwarchive-type-definition)
 (defvar gnus-group-warchive-type-history nil)

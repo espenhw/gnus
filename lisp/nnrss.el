@@ -59,106 +59,7 @@
 
 (defconst nnrss-version "nnrss 1.0")
 
-(defvar nnrss-group-alist
-  '(("MacWeek"
-     "http://macweek.zdnet.com/macweek.xml"
-     "The Macintosh news authority.")
-    ("Linux.Weekly.News"
-     "http://lwn.net/headlines/rss")
-    ("Motley.Fool"
-     "http://www.fool.com/About/headlines/rss_headlines.asp")
-    ("NewsForge.rdf"
-     "http://www.newsforge.com/newsforge.rdf")
-    ("Slashdot"
-     "http://www.slashdot.com/slashdot.rdf")
-    ("CNN"
-     "http://www.cnn.com/cnn.rss"
-     "The world's news leader.")
-    ("FreshMeat"
-     "http://freshmeat.net/backend/fm-releases.rdf"
-     "The one-stop-shop for all your Linux software needs.")
-    ("The.Guardian.newspaper"
-     "http://www.guardianunlimited.co.uk/rss/1,,,00.xml"
-     "Intelligent news and comment throughout the day from The Guardian newspaper.")
-    ("MonkeyFist.rdf"
-     "http://monkeyfist.com/rdf.php3"
-     "News and opinion on politics, technology, and eclectic miscellany.")
-    ("NewsForge"
-     "http://www.newsforge.com/newsforge.rss")
-    ("Reuters.Health"
-     "http://www.reutershealth.com/eline.rss"
-     "Consumer-oriented health-related news stories.")
-    ("Salon"
-     "http://www.salon.com/feed/RDF/salon_use.rdf")
-    ("Wired"
-     "http://www.wired.com/news_drop/netcenter/netcenter.rdf")
-    ("ITN"
-     "http://www.itn.co.uk/itn.rdf")
-    ("Meerkat"
-     "http://www.oreillynet.com/meerkat/?_fl=rss10"
-     "An Open Wire Service")
-    ("MonkeyFist"
-     "http://monkeyfist.com/rss1.php3"
-     "News and opinion on politics, technology, and eclectic miscellany.")
-    ("Reuters.Health.rdf"
-     "http://www.reutershealth.com/eline.rdf"
-     "Consumer-oriented health-related news stories.")
-    ("Aaronland" "http://aaronland.net/xml/abhb.rdf" "A boy and his basement.")
-    ("Art of the Mix" "http://www.artofthemix.org/xml/rss.asp" "A website devoted to the art of making mixed tapes and cds.")
-    ("Dave Beckett's RDF Resource Guide" "http://www.ilrt.bristol.ac.uk/discovery/rdf/resources/rss.rdf" "A comprehensive guide to resources about RDF.")
-    ("David Chess" "http://www.davidchess.com/words/log.rss" "Mostly-daily musings on philosophy, children, culture, technology, the emergence of life from matter, chocolate, Nomic, and all that sort of thing.")
-    ("Figby Articles" "http://www.figby.com/index-rss.php" "A weblog with daily stories about technology, books and publishing, privacy, science, and occasional humor.")
-    ("Figby Quickies" "http://www.figby.com/quickies-rss.php" "Quick commented links to other sites from Figby.com.")
-    ("Flutterby!" "http://www.flutterby.com/main.rdf" "News and views from Dan Lyke.")
-    ("Groovelog" 
-     "http://groovelog.agora.co.uk/groove+log/groovelog.nsf/today.rss.xml"
-     "The open-access groove users' weblog.")
-    ("Hit or Miss" "http://hit-or-miss.org/rss/" "Daily weblog and journal.")
-    ("Larkfarm News" "http://www.larkfarm.com/Larkfarm.rdf" "Mike Gunderloy's web site.")
-    ("Latest RFCs" "http://x42.com/rss/rfc.rss")
-    ("Linux Today" "http://linuxtoday.com/backend/biglt.rss")
-    ("Linux Today.rdf" "http://linuxtoday.com/backend/my-netscape10.rdf")
-    ("More Like This WebLog" "http://www.whump.com/moreLikeThis/RSS" "Because the more you know, the more jokes you get.")
-    ("Motivational Quotes of the Day" "http://www.quotationspage.com/data/mqotd.rss" "Four motivational quotations each day from the Quotations Page.")
-    ("Network World Fusion NetFlash" "http://www.nwfusion.com/netflash.rss" "Daily breaking news about networking products, technologies and services.")
-    ("News Is Free" "http://www.newsisfree.com/news.rdf.php3")
-    ("O'Reilly Network Articles" "http://www.oreillynet.com/cs/rss/query/q/260?x-ver=1.0")
-    ("Quotes of the Day" "http://www.quotationspage.com/data/qotd.rss" "Four humorous quotations each day from the Quotations Page.")
-    ("RDF Interest Group" "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=www-rdf-interest" "An experimental channel scraped from the RDF Interest Group mail archives.")
-    ("RDF Logic List" "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=www-rdf-logic" "An experimental channel scraped from the RDF Logic mail archives.")
-    ("RSS Info" "http://www.blogspace.com/rss/rss10" "News and information on the RSS format")
-    ("Semantic Web List"
-     "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=semantic-web"
-     "An experimental channel scraped from the W3C's Semantic Web mail archives.")
-    ("W3C"
-     "http://www.w3.org/2000/08/w3c-synd/home.rss"
-     "The latest news at the World Wide Web Consortium.")
-    ("|fr| XMLfr" "http://xmlfr.org/actualites/general.rss10"
-     "French speaking portal site dedicated to XML.")
-    ("XMLhack" "http://xmlhack.com/rss10.php"
-     "Developer news from the XML community.")
-    ("The Register"
-     "http://www.theregister.co.uk/tonys/slashdot.rdf"
-     "The Register -- Biting the hand that feeds IT.")
-    ("|de| Heise-Ticker"
-     "http://www.heise.de/newsticker/heise.rdf"
-     "German news ticker about technology.")
-    ("|de| Telepolis News"
-     "http://www.heise.de/tp/news.rdf"
-     "German background news about technology.")
-    ("Kuro5hin"
-     "http://www.kuro5hin.org/backend.rdf"
-     "Technology and culture, from the trenches.")
-    ("Jabber Software Foundation News"
-     "http://www.jabber.org/news/rss.xml"
-     "News and announcements from the Jabber Software Foundation.")
-    ("MacRumors"
-     "http://www.macrumors.com/macrumors.xml"
-     "The mac news you care about.")
-    ("Mac OS X Hints"
-     "http://www.macosxhints.com/backend/geeklog.rdf"
-     "Mac OS X Hits.")
-    )
+(defvar nnrss-group-alist '()
   "List of RSS addresses.")
 
 (defvar nnrss-use-local nil)
@@ -248,6 +149,7 @@ ARTICLE is the article number of the current headline.")
 	(with-current-buffer nntp-server-buffer
 	  (erase-buffer)
 	  (goto-char (point-min))
+	  (insert "Mime-Version: 1.0\nContent-Type: text/html\n")
 	  (if group
 	      (insert "Newsgroups: " group "\n"))
 	  (if (nth 3 e)
@@ -262,23 +164,23 @@ ARTICLE is the article number of the current headline.")
 	      (let ((point (point)))
 		(insert (nnrss-string-as-multibyte (nth 6 e)))
 		(goto-char point)
-		(while (search-forward "\n" nil t)
-		  (delete-char -1))
+		(while (re-search-forward "\n" nil t)
+		  (replace-match " "))
 		(goto-char (point-max))
 		(insert "\n\n")
 		(fill-region point (point))))
 	  (if (nth 2 e)
-	      (insert (nth 2 e) "\n"))
+	      (insert "<p><a href='" (nth 2 e) "'>link</a></p>\n"))
 	  (if nnrss-content-function
 	      (funcall nnrss-content-function e group article)))))
     (cond
      (err
       (nnheader-report 'nnrss err))
      ((not e)
-      (nnheader-report 'nnrss "No such id: %d" article))
+      (nnheader-report 'nnrss "no such id: %d" article))
      (t
-      (nnheader-report 'nnrss "Article %s retrieved" (car e))
-      ;; We return the article number.
+      (nnheader-report 'nnrss "article %s retrieved" (car e))
+      ;; we return the article number.
       (cons nnrss-group (car e))))))
 
 (deffoo nnrss-request-list (&optional server)
@@ -337,6 +239,32 @@ ARTICLE is the article number of the current headline.")
 (nnoo-define-skeleton nnrss)
 
 ;;; Internal functions
+(eval-when-compile (defun xml-rpc-method-call (&rest args)))
+(defun nnrss-fetch (url)
+  "Fetch the url and put it in a the expected lisp structure."
+  (with-temp-buffer
+  ;some CVS versions of url.el need this to close the connection quickly
+    (let* (xmlform htmlform)
+      ;; bit o' work necessary for w3 pre-cvs and post-cvs
+      (mm-url-insert url)
+
+;; Because xml-parse-region can't deal with anything that isn't
+;; xml and w3-parse-buffer can't deal with some xml, we have to
+;; parse with xml-parse-region first and, if that fails, parse
+;; with w3-parse-buffer.  Yuck.  Eventually, someone should find out
+;; why w3-parse-buffer fails to parse some well-formed xml and
+;; fix it.
+
+    (condition-case err
+	(setq xmlform (xml-parse-region (point-min) (point-max)))
+      (error (if (fboundp 'w3-parse-buffer)
+		 (setq htmlform (caddar (w3-parse-buffer
+					 (current-buffer))))
+	       (message "nnrss: Not valid XML and w3 parse not available (%s)"
+			url))))
+    (if htmlform
+	htmlform
+      xmlform))))
 
 (defun nnrss-possibly-change-group (&optional group server)
   (when (and server
@@ -349,7 +277,7 @@ ARTICLE is the article number of the current headline.")
 (defvar nnrss-extra-categories '(nnrss-snarf-moreover-categories))
 
 (defun nnrss-generate-active ()
-  (if (y-or-n-p "Fetch extra categories? ")
+  (if (y-or-n-p "fetch extra categories? ")
       (dolist (func nnrss-extra-categories)
 	(funcall func)))
   (save-excursion
@@ -361,7 +289,7 @@ ARTICLE is the article number of the current headline.")
       (unless (assoc (car elem) nnrss-group-alist)
 	(insert (prin1-to-string (car elem)) " 0 1 y\n")))))
 
-;;; Data functions
+;;; data functions
 
 (defun nnrss-read-server-data (server)
   (setq nnrss-server-data nil)
@@ -455,10 +383,11 @@ ARTICLE is the article number of the current headline.")
     (mm-url-insert url)))
 
 (defun nnrss-decode-entities-unibyte-string (string)
-  (mm-with-unibyte-buffer
-    (insert string)
-    (mm-url-decode-entities-nbsp)
-    (buffer-string)))
+  (if string
+      (mm-with-unibyte-buffer
+	(insert string)
+	(mm-url-decode-entities-nbsp)
+	(buffer-string))))
 
 (defalias 'nnrss-insert 'nnrss-insert-w3)
 
@@ -469,50 +398,44 @@ ARTICLE is the article number of the current headline.")
 ;;; Snarf functions
 
 (defun nnrss-check-group (group server)
-  (let (file xml subject url extra changed author date)
-    (condition-case err
-	(mm-with-unibyte-buffer
-	  (if (and nnrss-use-local
-		   (file-exists-p (setq file (expand-file-name
-					      (nnrss-translate-file-chars
-					       (concat group ".xml"))
-					      nnrss-directory))))
-	      (insert-file-contents file)
-	    (setq url (or (nth 2 (assoc group nnrss-server-data))
-			  (second (assoc group nnrss-group-alist))))
-	    (unless url
-	      (setq url
-		    (read-string (format "RSS url of %s: " group "http://")))
-	      (let ((pair (assoc group nnrss-server-data)))
-		(if pair
-		    (setcdr (cdr pair) (list url))
-		  (push (list group nnrss-group-max url) nnrss-server-data)))
-	      (setq changed t))
-	    (nnrss-insert url))
-	  (goto-char (point-min))
-	  (while (re-search-forward "\r\n?" nil t)
-	    (replace-match "\n"))
-	  (goto-char (point-min))
-	  (if (re-search-forward "<rdf\\|<rss" nil t)
-	      (goto-char (match-beginning 0)))
-	  (setq xml (xml-parse-region (point) (point-max))))
-      (error
-       (nnheader-message 1 "Error in group %s: %s" group (cadr err))))
-    (while (and xml (not (assq 'item xml)))
-      (setq xml (cddar xml))
-      (while (not (listp (car xml)))
-	(setq xml (cdr xml))))
-    (dolist (item (nreverse xml))
+  (let (file xml subject url extra changed author date rss-ns rdf-ns content-ns dc-ns)
+    (if (and nnrss-use-local
+	     (file-exists-p (setq file (expand-file-name
+					(nnrss-translate-file-chars
+					 (concat group ".xml"))
+					nnrss-directory))))
+	(insert-file-contents file)
+      (setq url (or (nth 2 (assoc group nnrss-server-data))
+		    (second (assoc group nnrss-group-alist))))
+      (unless url
+	(setq url
+	      (nnrss-discover-feed (read-string (format "URL to search for %s: " group) "http://")))
+	(let ((pair (assoc group nnrss-server-data)))
+	  (if pair
+	      (setcdr (cdr pair) (list url))
+	    (push (list group nnrss-group-max url) nnrss-server-data)))
+	(setq changed t))
+      (setq xml (nnrss-fetch url)))
+    ;; See
+    ;; http://feeds.archive.org/validator/docs/howto/declare_namespaces.html
+    ;; for more RSS namespaces.
+    (setq dc-ns (nnrss-get-namespace-prefix xml "http://purl.org/dc/elements/1.1/")
+	  rdf-ns (nnrss-get-namespace-prefix xml "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+	  rss-ns (nnrss-get-namespace-prefix xml "http://purl.org/rss/1.0/")
+	  content-ns (nnrss-get-namespace-prefix xml "http://purl.org/rss/1.0/modules/content/"))
+    (dolist (item (nreverse (nnrss-find-el (intern (concat rss-ns "item")) xml)))
       (when (and (listp item)
-		 (eq 'item (car item))
-		 (setq url (nnrss-node-text (assq 'link (cddr item))))
-		 (setq url (nnrss-decode-entities-unibyte-string url))
+		 (eq (intern (concat rss-ns "item")) (car item))
+		 (setq url (nnrss-decode-entities-unibyte-string
+			    (nnrss-node-text rss-ns 'link (cddr item))))
 		 (not (gnus-gethash url nnrss-group-hashtb)))
-	(setq subject (nnrss-node-text (assq 'title (cddr item))))
-	(setq extra (or (nnrss-node-text (assq 'description (cddr item)))
-			(nnrss-node-text (assq 'dc:description (cddr item)))))
-	(setq author (nnrss-node-text (assq 'dc:creator (cddr item))))
-	(setq date (or (nnrss-node-text (assq 'dc:date (cddr item)))
+	(setq subject (nnrss-node-text rss-ns 'title item))
+	(setq extra (or (nnrss-node-text content-ns 'encoded item)
+			(nnrss-node-text rss-ns 'description item)))
+	(setq author (or (nnrss-node-text rss-ns 'author item)
+			 (nnrss-node-text dc-ns 'creator item)))
+	(setq date (or (nnrss-node-text dc-ns 'date item)
+		       (nnrss-node-text rss-ns 'pubDate item)
 		       (message-make-date)))
 	(push
 	 (list
@@ -565,7 +488,7 @@ It is useful when `(setq nnrss-use-local t)'."
       (nnrss-insert nnrss-moreover-url)
       (goto-char (point-min))
       (while (re-search-forward
-	      "<A NAME=\"\\([^\"]+\\)\">\\|<A HREF=\"\\(http://[^\"]*moreover\\.com[^\"]+page\\?c=\\([^\"&]+\\)&o=rss\\)" nil t)
+	      "<a name=\"\\([^\"]+\\)\">\\|<a href=\"\\(http://[^\"]*moreover\\.com[^\"]+page\\?c=\\([^\"&]+\\)&o=rss\\)" nil t)
 	(if (match-string 1)
 	    (setq category (match-string 1))
 	  (setq url (match-string 2)
@@ -583,11 +506,240 @@ It is useful when `(setq nnrss-use-local t)'."
 (defun nnrss-format-string (string)
   (gnus-replace-in-string (nnrss-string-as-multibyte string) " *\n *" " "))
 
-(defun nnrss-node-text (node)
+(defun nnrss-node-text (namespace local-name element)
+  (let* ((node (assq (intern (concat namespace (symbol-name local-name))) element))
+	 (text (if (and node (listp node))
+		   (nnrss-node-just-text node)
+		 node))
+	 (cleaned-text (if text
+			   (replace-regexp-in-string 
+			    " *$" "" (replace-regexp-in-string
+				      "^ *" "" (replace-regexp-in-string
+						"^[[:cntrl:]]+" "" text))))))
+    (if (string-equal "" cleaned-text)
+	nil
+      cleaned-text)))
+
+(defun nnrss-node-just-text (node)
   (if (and node (listp node))
-      (mapconcat 'nnrss-node-text (cddr node) "")
+      (mapconcat 'nnrss-node-just-text (cddr node) " ")
     node))
+
+(defun nnrss-find-el (tag data &optional found-list)
+  "Find the all matching elements in the data.  Careful with this on
+large documents!"
+  (if (listp data)
+      (mapcar (lambda (bit)
+		(if (car-safe bit)
+		    (progn (if (equal tag (car bit))
+			       (setq found-list
+				     (append found-list
+					     (list bit))))
+			   (if (and (listp (car-safe (caddr bit)))
+				    (not (stringp (caddr bit))))
+			       (setq found-list
+				     (append found-list
+					     (nnrss-find-el
+					      tag (caddr bit))))
+			     (setq found-list
+				   (append found-list
+					   (nnrss-find-el
+					    tag (cddr bit))))))))
+		data))
+  found-list)
+
+(defun nnrss-rsslink-p (el)
+  "Test if the element we are handed is an RSS autodiscovery link."
+  (and (eq (car-safe el) 'link)
+       (string-equal (cdr (assoc 'rel (cadr el))) "alternate")
+       (or (string-equal (cdr (assoc 'type (cadr el))) 
+			 "application/rss+xml")
+	   (string-equal (cdr (assoc 'type (cadr el))) "text/xml"))))
+
+(defun nnrss-get-rsslinks (data)
+  "Extract the <link> elements that are links to RSS from the parsed data."
+  (delq nil (mapcar 
+	     (lambda (el)
+	       (if (nnrss-rsslink-p el) el))
+	     (nnrss-find-el 'link data))))
+
+(defun nnrss-extract-hrefs (data)
+  "Recursively extract hrefs from a page's source.  DATA should be
+the output of xml-parse-region or w3-parse-buffer."
+  (mapcar (lambda (ahref)
+	    (cdr (assoc 'href (cadr ahref))))
+	  (nnrss-find-el 'a data)))
+
+(defmacro nnrss-match-macro (base-uri item 
+					   onsite-list offsite-list)
+  `(cond ((or (string-match (concat "^" ,base-uri) ,item)
+	       (not (string-match "://" ,item)))
+	   (setq ,onsite-list (append ,onsite-list (list ,item))))
+	  (t (setq ,offsite-list (append ,offsite-list (list ,item))))))
+
+(defun nnrss-order-hrefs (base-uri hrefs)
+  "Given a list of hrefs, sort them using the following priorities:
+  1. links ending in .rss
+  2. links ending in .rdf
+  3. links ending in .xml
+  4. links containing the above
+  5. offsite links
+
+BASE-URI is used to determine the location of the links and
+whether they are `offsite' or `onsite'."
+  (let (rss-onsite-end  rdf-onsite-end  xml-onsite-end
+	rss-onsite-in   rdf-onsite-in   xml-onsite-in
+	rss-offsite-end rdf-offsite-end xml-offsite-end
+	rss-offsite-in rdf-offsite-in xml-offsite-in)
+    (mapcar (lambda (href)
+	      (if (not (null href))
+	      (cond ((string-match "\\.rss$" href)
+		     (nnrss-match-macro
+		      base-uri href rss-onsite-end rss-offsite-end))
+		    ((string-match "\\.rdf$" href)
+		     (nnrss-match-macro 
+		      base-uri href rdf-onsite-end rdf-offsite-end))
+		    ((string-match "\\.xml$" href)
+		     (nnrss-match-macro
+		      base-uri href xml-onsite-end xml-offsite-end))
+		    ((string-match "rss" href)
+		     (nnrss-match-macro
+		      base-uri href rss-onsite-in rss-offsite-in))
+		    ((string-match "rdf" href)
+		     (nnrss-match-macro
+		      base-uri href rdf-onsite-in rdf-offsite-in))
+		    ((string-match "xml" href)
+		     (nnrss-match-macro
+		      base-uri href xml-onsite-in xml-offsite-in)))))
+	    hrefs)
+    (append 
+     rss-onsite-end  rdf-onsite-end  xml-onsite-end
+     rss-onsite-in   rdf-onsite-in   xml-onsite-in
+     rss-offsite-end rdf-offsite-end xml-offsite-end
+     rss-offsite-in rdf-offsite-in xml-offsite-in)))
+
+(defun nnrss-discover-feed (url)
+  "Given a page, find an RSS feed using Mark Pilgrim's
+`ultra-liberal rss locator' (http://diveintomark.org/2002/08/15.html)."
+
+  (let ((parsed-page (nnrss-fetch url)))
+
+;;    1. if this url is the rss, use it.
+    (if (nnrss-rss-p parsed-page)
+	(let ((rss-ns (nnrss-get-namespace-prefix parsed-page "http://purl.org/rss/1.0/")))
+	  (nnrss-rss-title-description rss-ns parsed-page url))
+
+;;    2. look for the <link rel="alternate"
+;;    type="application/rss+xml" and use that if it is there.
+      (let ((links (nnrss-get-rsslinks parsed-page)))
+	(if links
+	    (let* ((xml (nnrss-fetch
+			 (cdr (assoc 'href (cadar links)))))
+		   (rss-ns (nnrss-get-namespace-prefix xml "http://purl.org/rss/1.0/")))
+	      (nnrss-rss-title-description rss-ns xml (cdr (assoc 'href (cadar links)))))
+
+;;    3. look for links on the site in the following order:
+;;       - onsite links ending in .rss, .rdf, or .xml
+;;       - onsite links containing any of the above
+;;       - offsite links ending in .rss, .rdf, or .xml
+;;       - offsite links containing any of the above
+	  (let* ((base-uri (progn (string-match ".*://[^/]+/?" url)
+				  (match-string 0 url)))
+		 (hrefs (nnrss-order-hrefs 
+			 base-uri (nnrss-extract-hrefs parsed-page)))
+		 (rss-link nil))
+	  (while (and (eq rss-link nil) (not (eq hrefs nil)))
+	    (let ((href-data (nnrss-fetch (car hrefs))))
+	      (if (nnrss-rss-p href-data)
+		  (let* ((rss-ns (nnrss-get-namespace-prefix href-data "http://purl.org/rss/1.0/")))
+		    (setq rss-link (nnrss-rss-title-description
+				    rss-ns href-data (car hrefs))))
+		(setq hrefs (cdr hrefs)))))
+	  (if rss-link rss-link
+
+;;    4. check syndic8
+	    (nnrss-find-rss-via-syndic8 url))))))))
+
+(defun nnrss-find-rss-via-syndic8 (url)
+  "query syndic8 for the rss feeds it has for the url."
+  (condition-case nil
+      (progn (require 'xml-rpc)
+	     (let ((feedid (xml-rpc-method-call
+			    "http://www.syndic8.com/xmlrpc.php"
+			    'syndic8.FindSites
+			    url)))
+	       (if feedid
+		   (let* ((feedinfo (xml-rpc-method-call 
+				     "http://www.syndic8.com/xmlrpc.php"
+				     'syndic8.GetFeedInfo
+				     feedid))
+			  (urllist
+			   (delq nil 
+				 (mapcar
+				  (lambda (listinfo)
+				    (if (string-equal 
+					 (cdr (assoc "status" listinfo))
+					 "Syndicated")
+					(cons
+					 (cdr (assoc "sitename" listinfo))
+					 (list
+					  (cons 'title
+						(cdr (assoc 
+						      "sitename" listinfo)))
+					  (cons 'href
+						(cdr (assoc
+						      "dataurl" listinfo)))))))
+				  feedinfo))))
+		     (if (> (length urllist) 1)
+			 (let ((completion-ignore-case t)
+			       (selection 
+				(mapcar (lambda (listinfo)
+					  (cons (cdr (assoc "sitename" listinfo)) 
+						(string-to-int 
+						 (cdr (assoc "feedid" listinfo)))))
+					feedinfo)))
+			   (cdr (assoc 
+				 (completing-read
+				  "Multiple feeds found.  Select one: "
+				  selection nil t) urllist)))
+		       (cdar urllist))))))
+    (message "XML-RPC is not available... not checking Syndic8.")))
+
+(defun nnrss-rss-p (data)
+  "Test if data is an RSS feed.  Simply ensures that the first
+element is rss or rdf."
+  (or (eq (caar data) 'rss)
+      (eq (caar data) 'rdf:RDF)))
+
+(defun nnrss-rss-title-description (rss-namespace data url)
+  "Return the title of an RSS feed."
+  (if (nnrss-rss-p data)
+      (let ((description (intern (concat rss-namespace "description")))
+	    (title (intern (concat rss-namespace "title")))
+	    (channel (nnrss-find-el (intern (concat rss-namespace "channel"))
+				    data)))
+	(list
+	 (cons 'description (caddr (nth 0 (nnrss-find-el description channel))))
+	 (cons 'title (caddr (nth 0 (nnrss-find-el title channel))))
+	 (cons 'href url)))))
+
+(defun nnrss-get-namespace-prefix (el uri)
+  "Given EL (containing a parsed element) and URI (containing a string
+that gives the URI for which you want to retrieve the namespace
+prefix), return the prefix."
+  (let* ((prefix (car (rassoc uri (cadar el))))
+	 (nslist (if prefix 
+		     (split-string (symbol-name prefix) ":")))
+	 (ns (cond ((eq (length nslist) 1) ; no prefix given
+		    "")
+		   ((eq (length nslist) 2) ; extract prefix
+		    (cadr nslist)))))
+    (if (and ns (not (eq ns "")))
+	(concat ns ":")
+      ns)))
 
 (provide 'nnrss)
 
+
 ;;; nnrss.el ends here
+

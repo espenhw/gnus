@@ -1,3 +1,30 @@
+2003-03-20 Mark A. Hershberger  <mah@everybody.org> 
+
+	* nnrss.el: Primitive XML Name-space support.  This means that RSS
+	feeds like Kevin Burton's[1] can now be read in Gnus.
+
+ 	Implemented support for Mark Pilgrim's RSS Autodiscovery.[2] This
+	means that if you want to read the RSS feed for example.com, all
+	you have to do is hit "G R http://www.example.com/ RET" and
+	nnrss.el will find and the feed listed on the site or (if you have
+	loaded xml-rpc.el) look it up on syndic8.com.
+
+ 	Marked the message as HTML (by adding a Content-Type header) so
+	that Gnus will render it as html if the user wants that.
+
+ 	Implemented the ability to save nnrss-group-alist so that any new
+	feeds the you subscribe to will be found the next time you start
+	up.
+
+ 	Implemented support for RSS 2.0 elements (author, pubDate).
+
+	Prefer for <content:encoded> over <description> where both
+	elements exist.
+
+	* mm-url.el (mm-url-insert): Set url-current-object.
+
+	* gnus-group.el (gnus-group-make-rss-group): New function.
+
 2003-03-20  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* message.el (message-idna-to-ascii-rhs-1): Don't use replace-*
