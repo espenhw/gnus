@@ -296,27 +296,28 @@
   (let (contents)
     (save-excursion
       (set-buffer nnslashdot-buffer)
-      (goto-char (point-min))
-      (when (and (stringp article)
-		 (string-match "%\\([0-9]+\\)@" article))
-	(setq article (string-to-number (match-string 1 article))))
-      (when (numberp article)
-	(if (= article 1)
-	    (progn
-	      (re-search-forward "Posted by .* on ")
-	      (forward-line 1)
-	      (setq contents
-		    (buffer-substring
-		     (point)
-		     (progn
-		       (re-search-forward
-			"^<p>.*A href=http://slashdot.org/article.pl")
-		       (match-beginning 0)))))
-	  (search-forward (format "<a name=\"%d\">" (1- article)))
-	  (setq contents
-		(buffer-substring
-		 (re-search-forward "<td[^>]+>")
-		 (search-forward "</td>"))))))
+      (let ((case-fold-search t))
+	(goto-char (point-min))
+	(when (and (stringp article)
+		   (string-match "%\\([0-9]+\\)@" article))
+	  (setq article (string-to-number (match-string 1 article))))
+	(when (numberp article)
+	  (if (= article 1)
+	      (progn
+		(re-search-forward "Posted by .* on ")
+		(forward-line 1)
+		(setq contents
+		      (buffer-substring
+		       (point)
+		       (progn
+			 (re-search-forward
+			  "^<p>.*A href=http://slashdot.org/article.pl")
+			 (match-beginning 0)))))
+	    (search-forward (format "<a name=\"%d\">" (1- article)))
+	    (setq contents
+		  (buffer-substring
+		   (re-search-forward "<td[^>]+>")
+		   (search-forward "</td>")))))))
     (when contents
       (save-excursion
 	(set-buffer (or buffer nntp-server-buffer))
