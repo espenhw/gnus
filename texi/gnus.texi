@@ -21230,11 +21230,11 @@ ACTION is a list of mark setting requests, having this format:
 (RANGE ACTION MARK)
 @end example
 
-Range is a range of articles you wish to update marks on.  Action is
+RANGE is a range of articles you wish to update marks on.  ACTION is
 @code{set}, @code{add} or @code{del}, respectively used for removing all
 existing marks and setting them as specified, adding (preserving the
 marks not mentioned) mark and removing (preserving the marks not
-mentioned) marks.  Mark is a list of marks; where each mark is a symbol.
+mentioned) marks.  MARK is a list of marks; where each mark is a symbol.
 Currently used marks are @code{read}, @code{tick}, @code{reply},
 @code{expire}, @code{killed}, @code{dormant}, @code{save},
 @code{download} and @code{unsend}, but your backend should, if possible,

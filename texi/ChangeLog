@@ -1,3 +1,7 @@
+2001-02-16  Simon Josefsson  <sjosefsson@rsasecurity.com>
+
+	* gnus.texi (Optional Backend Functions): Fix case.
+
 2001-02-14  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Unread Articles): Say that Gnus itself never expires
