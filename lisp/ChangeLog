@@ -1,5 +1,8 @@
 2003-01-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-cite.el (gnus-cite-delete-overlays): Protect against
+	errors when deleting overlays.
+
 	* gnus-score.el (gnus-score-followup): Allow tracing.
 
 	* gnus-art.el (gnus-treat-display-face): New variable.

@@ -85,7 +85,7 @@ Output to the current buffer, replace text, and don't mingle error."
   (when (file-exists-p file)
     (let ((done nil)
 	  (attempt "")
-	  (quant 4))
+	  (quant 16))
       (while (and (not done)
 		  (> quant 1))
 	(setq attempt
@@ -94,7 +94,10 @@ Output to the current buffer, replace text, and don't mingle error."
 		       (shell-quote-argument file)
 		       quant)))
 	(if (> (length attempt) 740)
-	    (setq quant (/ quant 2))
+	    (progn
+	      (setq quant (- quant 2))
+	      (message "Length %d; trying quant %d"
+		       (length attempt) quant))
 	  (setq done t)))
       (if done
 	  (mm-with-unibyte-buffer	
