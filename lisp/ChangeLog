@@ -1,5 +1,13 @@
 2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-picon.el (gnus-picons-news-directories): Removed obsolete
+	alias. 
+	(gnus-picons-database): Default to list.
+	(gnus-picons-lookup-internal): Use it.
+
+	* nnmail.el (nnmail-article-group): Default nnmail-split-methods
+	to "bogus".
+
 	* gnus-win.el (gnus-configure-windows-hook): New hook.
 
 2001-12-29  Sascha L,A|(Bdecke  <sascha@meta-x.de>

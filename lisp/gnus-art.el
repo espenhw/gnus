@@ -139,7 +139,8 @@
     "^X-BeenThere:" "^X-Mailman-Version:" "^List-Help:" "^List-Post:"
     "^List-Subscribe:" "^List-Id:" "^List-Unsubscribe:" "^List-Archive:"
      "^X-Content-length:" "^X-Posting-Agent:" "^Original-Received:"
-     "^X-Request-PGP:" "^X-Fingerprint:" "^X-WRIEnvto:" "^X-WRIEnvfrom:"g)
+     "^X-Request-PGP:" "^X-Fingerprint:" "^X-WRIEnvto:" "^X-WRIEnvfrom:"
+     "^X-Virus-Scanned:" "^X-Delivery-Agent:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -1049,7 +1050,12 @@ See the manual for details."
   :type gnus-article-treat-custom)
 (put 'gnus-treat-display-smileys 'highlight t)
 
-(defcustom gnus-treat-display-picons (if (featurep 'xemacs) 'head nil)
+(defcustom gnus-treat-display-picons
+  (if (or (and (featurep 'xemacs)
+	       (featurep 'xpm))
+	  (and (fboundp 'image-type-available-p)
+	       (image-type-available-p 'pbm)))
+      'head nil)
   "Display picons.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."

@@ -29,7 +29,7 @@
 
 (require 'gnus)
 ;; (require 'xpm)
-(require 'annotations)
+;; (require 'annotations)
 (require 'custom)
 (require 'gnus-art)
 (require 'gnus-win)
@@ -54,7 +54,7 @@ This is only useful if `gnus-picons-display-where' is `picons'."
   :type 'boolean
   :group 'picons)
 
-(defcustom gnus-picons-database "/usr/local/faces"
+(defcustom gnus-picons-database '("/usr/local/faces" "/usr/lib/picon")
   "*Defines the location of the faces database.
 For information on obtaining this database of pretty pictures, please
 see http://www.cs.indiana.edu/picons/ftp/index.html"
@@ -65,8 +65,6 @@ see http://www.cs.indiana.edu/picons/ftp/index.html"
   "*List of directories to search for newsgroups faces."
   :type '(repeat string)
   :group 'picons)
-(define-obsolete-variable-alias 'gnus-picons-news-directory
-  'gnus-picons-news-directories)
 
 (defcustom gnus-picons-user-directories '("local" "users" "usenix" "misc")
   "*List of directories to search for user faces."
@@ -173,8 +171,8 @@ arguments necessary for the job.")
 (defun gnus-picons-remove-all ()
   "Removes all picons from the Gnus display(s)."
   (interactive)
-  (map-extents (function (lambda (ext unused) (delete-annotation ext) nil))
-	       nil nil nil nil nil 'gnus-picon)
+  ;;(map-extents (function (lambda (ext unused) (delete-annotation ext) nil))
+;;	       nil nil nil nil nil 'gnus-picon)
   (setq gnus-picons-jobs-alist '())
   ;; notify running job that it may have been preempted
   (if (and (listp gnus-picons-job-already-running)
@@ -249,12 +247,15 @@ arguments necessary for the job.")
     (set-extent-property annot 'duplicable t)
     annot))
 
+(defun gnus-picons-make-annotation (&rest args)
+  nil)
+
+
 (defun gnus-article-display-picons ()
   "Display faces for an author and her domain in gnus-picons-display-where."
   (interactive)
   (let (from at-idx)
-    (when (and (featurep 'xpm)
-	       (or (not (fboundp 'device-type)) (equal (device-type) 'x))
+    (when (and (or (not (fboundp 'device-type)) (equal (device-type) 'x))
 	       (setq from (mail-fetch-field "from"))
 	       (setq from (downcase (or (cadr (mail-extract-address-components
 					       from))
@@ -344,10 +345,19 @@ arguments necessary for the job.")
 
 	  (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all))))))
 
-(defun gnus-picons-lookup-internal (addrs dir)
-  (setq dir (expand-file-name dir gnus-picons-database))
-  (gnus-picons-try-face (dolist (part (reverse addrs) dir)
-			  (setq dir (expand-file-name part dir)))))
+(defun gnus-picons-lookup-internal (addrs directory)
+  (let ((dbs gnus-picons-database)
+	result db dir)
+    (unless (listp dbs)
+      (setq dbs (list dbs)))
+    (while (and (not result)
+		(setq db (pop dbs)))
+      (setq dir (expand-file-name directory gnus-picons-database))
+      (setq result
+	    (gnus-picons-try-face
+	     (dolist (part (reverse addrs) dir)
+	       (setq dir (expand-file-name part dir))))))
+    result))
 
 (defun gnus-picons-lookup (addrs dirs)
   "Lookup the picon for ADDRS in databases DIRS.

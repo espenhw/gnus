@@ -77,8 +77,7 @@
   "Various mail options."
   :group 'nnmail)
 
-(defcustom nnmail-split-methods
-  '(("mail.misc" ""))
+(defcustom nnmail-split-methods '(("mail.misc" ""))
   "*Incoming mail will be split according to this variable.
 
 If you'd like, for instance, one mail group for mail from the
@@ -975,7 +974,7 @@ FUNC will be called with the buffer narrowed to each mail."
 (defun nnmail-article-group (func &optional trace)
   "Look at the headers and return an alist of groups that match.
 FUNC will be called with the group name to determine the article number."
-  (let ((methods nnmail-split-methods)
+  (let ((methods (or nnmail-split-methods '(("bogus" ""))))
 	(obuf (current-buffer))
 	(beg (point-min))
 	end group-art method grp)
