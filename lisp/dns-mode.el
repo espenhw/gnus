@@ -190,4 +190,5 @@ Turning on DNS mode runs `dns-mode-hook'."
 
 (provide 'dns-mode)
 
+;; arch-tag: 6a179f0a-072f-49db-8b01-37b8f23998c0
 ;;; dns-mode.el ends here
