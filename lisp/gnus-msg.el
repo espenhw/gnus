@@ -1241,10 +1241,29 @@ this is a reply."
 	      (message-encode-message-body)
 	      (save-restriction
 		(message-narrow-to-headers)
-		(let ((mail-parse-charset message-default-charset)
-		      (rfc2047-header-encoding-alist
-		       (cons '("Newsgroups" . default)
-			     rfc2047-header-encoding-alist)))
+		(let* ((mail-parse-charset message-default-charset)
+		       (newsgroups-field (save-restriction
+					   (message-narrow-to-headers-or-head)
+					   (message-fetch-field "Newsgroups")))
+		       (followup-field (save-restriction
+					 (message-narrow-to-headers-or-head)
+					 (message-fetch-field "Followup-To")))
+		       ;; BUG: We really need to get the charset for
+		       ;; each name in the Newsgroups and Followup-To
+		       ;; lines to allow crossposting between group
+		       ;; namess with incompatible character sets.  
+		       ;; -- Per Abrahamsen <abraham@dina.kvl.dk> 2001-10-08.
+		       (group-field-charset
+			(gnus-group-name-charset method newsgroups-field))
+		       (followup-field-charset 
+			(gnus-group-name-charset method (or followup-field "")))
+		       (rfc2047-header-encoding-alist
+			(append
+			 (when group-field-charset
+			   (list (cons "Newsgroups" group-field-charset)))
+			 (when followup-field-charset
+			   (list (cons "Followup-To" followup-field-charset)))
+			 rfc2047-header-encoding-alist)))
 		  (mail-encode-encoded-word-buffer)))
 	      (goto-char (point-min))
 	      (when (re-search-forward

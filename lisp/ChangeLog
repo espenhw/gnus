@@ -1,3 +1,8 @@
+2001-10-14  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-msg.el (gnus-inews-do-gcc): Port header encoded-word
+	charset magic from message.el.
+
 2001-10-12  Simon Josefsson  <jas@extundo.com>
 	Suggested by david.goldberg6@verizon.net (David S. Goldberg)
 
