@@ -1526,7 +1526,7 @@ If FORCE, decode the article whether it is marked as base64 not."
 	  (type (gnus-fetch-field "content-transfer-encoding"))
 	  (charset gnus-newsgroup-charset))
       (when (or force
-		(and type (string-match "quoted-printable" (downcase type))))
+		(and type (string-match "base64" (downcase type))))
 	(article-goto-body)
 	(save-restriction
 	  (narrow-to-region (point) (point-max))

@@ -1,3 +1,7 @@
+2000-07-12 10:12:31  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-de-base64-unreadable): Typo.
+
 2000-07-12  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-agent.el (require): Require timer.
