@@ -2857,10 +2857,10 @@ sort in reverse order."
 
 (defun gnus-group-sort-by-method (info1 info2)
   "Sort alphabetically by backend name."
-  (string< (symbol-name (car (gnus-find-method-for-group
-			      (gnus-info-group info1) info1)))
-	   (symbol-name (car (gnus-find-method-for-group
-			      (gnus-info-group info2) info2)))))
+  (string< (car (gnus-find-method-for-group
+		 (gnus-info-group info1) info1))
+	   (car (gnus-find-method-for-group
+		 (gnus-info-group info2) info2))))
 
 (defun gnus-group-sort-by-server (info1 info2)
   "Sort alphabetically by server name."

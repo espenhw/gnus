@@ -1,3 +1,10 @@
+2002-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-sort-by-method): Remove `symbol-name'
+	because the function `string<' allows symbols.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Ditto.
+
 2002-09-25  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-forward-make-body): Revert an early change
@@ -7,7 +14,7 @@
 
 	* gnus-agent.el (gnus-category-line-format): Doc fixes (mostly added
 	links to Info)
-	* gnus-art.el (gnus-treat-highlight-signature): 
+	* gnus-art.el (gnus-treat-highlight-signature):
 	* gnus-art.el (gnus-treat-buttonize):
 	* gnus-art.el (gnus-treat-buttonize-head):
 	* gnus-art.el (gnus-treat-emphasize):
@@ -88,12 +95,12 @@
 
 	* gnus-art.el (gnus-button-handle-apropos-variable): Fall back to
 	apropos if apropos-variable does not exist.
-	(gnus-button-guessed-mid-regexp) 
+	(gnus-button-guessed-mid-regexp)
 	(gnus-button-handle-describe-prefix, gnus-button-alist): Better
 	regexes.  From Reiner Steib.
-	(gnus-button-handle-describe-function) 
+	(gnus-button-handle-describe-function)
 	(gnus-button-handle-describe-variable): Doc fix.  From Reiner Steib.
-	(gnus-button-handle-describe-key, gnus-button-handle-apropos) 
+	(gnus-button-handle-describe-key, gnus-button-handle-apropos)
 	(gnus-button-handle-apropos-command): Doc fix.  From Reiner Steib.
 
 2002-09-25  Mark A. Hershberger  <mah@everybody.org>
@@ -113,8 +120,8 @@
 	(mml2015-gpg-extract-signature-details): Check mml2015-use too.
 	(mml2015-gpg-extract-signature-details): PGG strips "gpg: "
 	prefix, make regexp optionally skip it.
-	(mml2015-pgg-decrypt, mml2015-pgg-clear-decrypt) 
-	(mml2015-pgg-verify, mml2015-pgg-clear-verify, mml2015-pgg-sign) 
+	(mml2015-pgg-decrypt, mml2015-pgg-clear-decrypt)
+	(mml2015-pgg-verify, mml2015-pgg-clear-verify, mml2015-pgg-sign)
 	(mml2015-pgg-encrypt): New functions.
 	(defvar, autoload): Prevent byte-compile warnings.
 
@@ -150,7 +157,7 @@
 	Trivial fix from beaker@iavmb.pl (Krzysztof J,Bj(Bdruczyk).
 
 	* smime.el (smime-sign-buffer): Get key and extra certs.
-	(smime-get-key-with-certs-by-email): Utility function.  
+	(smime-get-key-with-certs-by-email): Utility function.
 
 2002-09-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	Trivial patch from Micha Wiedenmann <mw-u1@gmx.de>
@@ -177,7 +184,7 @@
 2002-09-18  Juanma Barranquero  <lektu@terra.es>
 
 	* gnus-int.el (gnus-status-message): Fix spacing.
-	
+
 	* imap.el (imap-continuation): Fix typos.
 
 2002-09-18  ShengHuo ZHU  <zsh@cs.rochester.edu>

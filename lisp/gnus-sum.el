@@ -2043,9 +2043,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 		   (sort (if (fboundp 'coding-system-list)
 			     (coding-system-list)
 			   (mapcar 'car mm-mime-mule-charset-alist))
-			 (lambda (a b)
-			   (string< (symbol-name a)
-				    (symbol-name b))))))))
+			 'string<)))))
 	     ("Washing"
 	      ("Remove Blanks"
 	       ["Leading" gnus-article-strip-leading-blank-lines t]
