@@ -1,3 +1,28 @@
+Sun Feb  4 15:33:40 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-update-read-articles): Remove duplicated article
+	numbers. 
+	(gnus-request-accept-article): Make sure there's a newline at the
+	end of the buffer.
+
+Sat Feb  3 14:51:36 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus-msg.el (gnus-mail-reply-using-mail): Use the local keymap
+	instead of `mail-mode-map'.
+
+	* gnus.el (gnus-gnus-to-newsrc-format): Turn off version-control
+	before saving the .newsrc file.
+
+Tue Jan 16 23:47:24 1996  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-group-make-help-group): Check whether
+	`installation-directory' is nil before using it.
+
+Tue Jan 16 23:33:21 1996  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* nntp.el (nntp-accept-response): Add a timeout parameter to
+	`accept-process-output'. 
+
 Tue Dec  5 04:05:27 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el (gnus-summary-set-process-mark): Make sure each article

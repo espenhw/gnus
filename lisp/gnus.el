@@ -973,13 +973,13 @@ with some simple extensions.
 
 %S  The subject")
 
-(defvar gnus-summary-mode-line-format "Gnus  %G/%A %Z"
+(defvar gnus-summary-mode-line-format "Gnus: %b [%A] %Z"
   "*The format specification for the summary mode line.")
 
-(defvar gnus-article-mode-line-format "Gnus  %G/%A %S"
+(defvar gnus-article-mode-line-format "Gnus: %b %S"
   "*The format specification for the article mode line.")
 
-(defvar gnus-group-mode-line-format "Gnus  List of groups   {%M:%S}  "
+(defvar gnus-group-mode-line-format "Gnus: %b {%M:%S}  "
   "*The format specification for the group mode line.")
 
 (defvar gnus-valid-select-methods
@@ -1013,7 +1013,7 @@ updated with information that may be pertinent.
 If this variable is nil, screen refresh may be quicker.")
 
 ;; Added by Keinonen Kari <kk85613@cs.tut.fi>.
-(defvar gnus-mode-non-string-length 21
+(defvar gnus-mode-non-string-length nil
   "*Max length of mode-line non-string contents.
 If this is nil, Gnus will take space as is needed, leaving the rest
 of the modeline intact.")
@@ -1339,11 +1339,13 @@ variable (string, integer, character, etc).")
 	(list ?S 'subject ?s)
 	(list ?e 'unselected ?d)
 	(list ?u 'user-defined ?s)
+	(list ?b 'buffer-name ?s)
 	(list ?s '(gnus-current-score-file-nondirectory) ?s)))
 
 (defconst gnus-group-mode-line-format-alist 
   (list (list ?S 'news-server ?s)
 	(list ?M 'news-method ?s)
+	(list ?b '(buffer-name) ?s)
 	(list ?u 'user-defined ?s)))
 
 (defvar gnus-have-read-active-file nil)
@@ -4254,7 +4256,9 @@ ADDRESS."
 (defun gnus-group-make-help-group ()
   "Create the Gnus documentation group."
   (interactive)
-  (let ((path (cons (concat installation-directory "etc/") load-path))
+  (let ((path (if installation-directory
+		  (cons (concat installation-directory "etc/") load-path)
+	        (cons data-directory load-path)))
 	(name (gnus-group-prefixed-name "gnus-help" '(nndoc "gnus-help")))
 	file)
     (and (gnus-gethash name gnus-newsrc-hashtb)
@@ -6976,6 +6980,10 @@ If WHERE is `summary', the summary mode line format will be used."
 	  (let* ((mformat (if (eq where 'article) 
 			      gnus-article-mode-line-format-spec
 			    gnus-summary-mode-line-format-spec))
+		 (buffer-name (if (eq where 'article)
+				  (buffer-name
+				   (get-buffer gnus-article-buffer))
+				(buffer-name)))
 		 (group-name gnus-newsgroup-name)
 		 (article-number (or gnus-current-article 0))
 		 (unread (- (length gnus-newsgroup-unreads)
@@ -9769,7 +9777,7 @@ even ticked and dormant ones."
   (gnus-set-global-variables)
   (let ((buffer-read-only nil)
 	(orig-article 
-	 (progn
+	 (let ((gnus-summary-check-current t))
 	   (gnus-summary-search-forward t)
 	   (gnus-summary-article-number)))
 	(marks (concat "^[" marks "]")))
@@ -11938,6 +11946,8 @@ is returned insted of the status string."
 	     (nth 1 method) accept-function last)))
 
 (defun gnus-request-accept-article (group &optional last)
+  (goto-char (point-max))
+  (or (bolp) (insert "\n"))
   (let ((func (if (symbolp group) group
 		(car (gnus-find-method-for-group group)))))
     (funcall (intern (format "%s-request-accept-article" func))
@@ -12697,6 +12707,12 @@ Returns whether the updating was successful."
       (while (and dormant (< (car dormant) (car active)))
 	(setq dormant (cdr dormant)))
       (setq unread (sort (append unselected unread) '<))
+      ;; Weed out duplicates.
+      (let ((un unread))
+	(while (cdr un)
+	  (if (eq (car un) (car (cdr un)))
+	      (setcdr un (cdr (cdr un)))
+	    (setq un (cdr un)))))
       ;; Compute the ranges of read articles by looking at the list of
       ;; unread articles.  
       (while unread
@@ -13395,6 +13411,8 @@ If FORCE is non-nil, the .newsrc file is read."
 				 gnus-current-startup-file)))
 	     ;; Quickly loadable .newsrc.
 	     (set-buffer (get-buffer-create " *Gnus-newsrc*"))
+	     (make-local-variable 'version-control)
+	     (setq version-control 'never)
 	     (setq buffer-file-name (concat gnus-current-startup-file ".eld"))
 	     (gnus-add-current-to-buffer-list)
 	     (buffer-disable-undo (current-buffer))
@@ -13469,6 +13487,8 @@ If FORCE is non-nil, the .newsrc file is read."
 			(if ranges (insert ","))))))
 	      (insert "\n")))
 	(setq newsrc (cdr newsrc)))
+      (make-local-variable 'version-control)
+      (setq version-control 'never)
       ;; It has been reported that sometime the modtime on the .newsrc
       ;; file seems to be off. We really do want to overwrite it, so
       ;; we clear the modtime here before saving. It's a bit odd,
