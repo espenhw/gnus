@@ -242,7 +242,9 @@ The buffer may be narrowed."
 	 (mm-find-mime-charset-region (point-min) (point-max))))
     (goto-char (point-min))
     (or (and rfc2047-encode-encoded-words
-	     (search-forward "=?" nil t))
+	     (prog1
+		 (search-forward "=?" nil t)
+	       (goto-char (point-min))))
 	(and charsets
 	     (not (equal charsets (list (car message-posting-charset))))))))
 
