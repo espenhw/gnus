@@ -1,3 +1,8 @@
+2000-11-01 08:01:03  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el (mml2015-mailcrypt-encrypt): Use from and sign parameter.
+	* mml.el (mml-generate-mime-1): Add sender and recipients attribute.
+
 2000-11-01 07:39:24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): New function.

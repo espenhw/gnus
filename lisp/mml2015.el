@@ -59,6 +59,7 @@
 (eval-and-compile
   (autoload 'mailcrypt-decrypt "mailcrypt")
   (autoload 'mailcrypt-verify "mailcrypt")
+  (autoload 'mc-pgp-always-sign "mailcrypt")
   (autoload 'mc-encrypt-generic "mc-toplev")
   (autoload 'mc-cleanup-recipient-headers "mc-toplev")
   (autoload 'mc-sign-generic "mc-toplev"))
@@ -156,7 +157,15 @@
    (or (message-options-get 'message-recipients)
        (message-options-set 'message-recipients
 			    (mc-cleanup-recipient-headers 
-			     (read-string "Recipients: ")))))
+			     (read-string "Recipients: "))))
+   nil nil nil
+   (message-options-get 'message-sender)
+   (or mc-pgp-always-sign
+       (eq t
+	   (or (message-options-get 'message-sign-encrypt)
+	       (message-options-set 'message-sign-encrypt
+				    (or (y-or-n-p "Sign the message? ")
+					'not))))))
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number))))
     (goto-char (point-min))
