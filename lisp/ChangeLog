@@ -1,3 +1,8 @@
+2004-01-16  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-msg.el (gnus-post-news): Use blank Newsgroups line if
+	GROUP is a virtual group.
+
 2004-01-16  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* gnus.el: Autoload `message-y-or-n-p'.
