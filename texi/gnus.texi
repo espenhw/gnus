@@ -6365,6 +6365,22 @@ slower and more awkward.
 If non-@code{nil}, all threads will be hidden when the summary buffer is
 generated.
 
+This can also be a predicate specifier (@pxref{Predicate Specifiers}).
+Avaliable predicates are @code{gnus-article-unread-p} and
+@code{gnus-article-unseen-p}).
+
+Here's an example:
+
+@lisp
+(setq gnus-thread-hide-subtree
+      '(or gnus-article-unread-p
+           gnus-article-unseen-p))
+@end lisp
+
+(It's a pretty nonsensical example, since all unseen articles are also
+unread, but you get my drift.)
+
+
 @item gnus-thread-expunge-below
 @vindex gnus-thread-expunge-below
 All threads that have a total score (as defined by
@@ -22365,21 +22381,6 @@ want to read them anyway.
 @item gnus-thread-hide-subtree
 If this is non-@code{nil}, all threads in the summary buffer will be
 hidden initially.
-
-This can also be a predicate specifier (@pxref{Predicate Specifiers}).
-Avaliable predicates are @code{gnus-article-unread-p} and
-@code{gnus-article-unseen-p}).
-
-Here's an example:
-
-@lisp
-(setq gnus-thread-hide-subtree
-      '(or gnus-article-unread-p
-           gnus-article-unseen-p))
-@end lisp
-
-(It's a pretty nonsensical example, since all unseen articles are also
-unread, but you get my drift.)
 
 
 @item gnus-updated-mode-lines
