@@ -1,6 +1,6 @@
 ;;; gnus-cite.el --- parse citations in articles for Gnus
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Per Abhiddenware
@@ -40,19 +40,6 @@
   :prefix "gnus-cite-"
   :link '(custom-manual "(gnus)Article Highlighting")
   :group 'gnus-article)
-
-(defcustom gnus-cite-reply-regexp
-  "^\\(Subject: Re\\|In-Reply-To\\|References\\):"
-  "*If headers match this regexp it is reasonable to believe that
-article has citations."
-  :group 'gnus-cite
-  :type 'string)
-
-(defcustom gnus-cite-always-check nil
-  "Check article always for citations.  Set it t to check all articles."
-  :group 'gnus-cite
-  :type '(choice (const :tag "no" nil)
-		 (const :tag "yes" t)))
 
 (defcustom gnus-cited-opened-text-button-line-format "%(%{[-]%}%)\n"
   "Format of opened cited text buttons."
