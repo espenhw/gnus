@@ -10504,6 +10504,22 @@ and @code{gpg} are also supported although deprecated.
 
 @end table
 
+@cindex snarfing keys
+@cindex importing PGP keys
+@cindex PGP key ring import
+Snarfing OpenPGP keys (i.e., importing keys from articles into your
+key ring) is not supported explicitly through a menu item or command,
+rather Gnus do detect and label keys as @samp{application/pgp-keys},
+allowing you to specify whatever action you think is appropriate
+through the usual MIME infrastructure.  You can use a
+@file{~/.mailcap} entry (@pxref{mailcap, , mailcap, emacs-mime, The
+Emacs MIME Manual}) such as the following to import keys using GNU
+Privacy Guard when you click on the MIME button (@pxref{Using MIME}).
+
+@example
+application/pgp-keys; gpg --import --interactive --verbose; needsterminal
+@end example
+
 @node Mailing List
 @section Mailing List
 
