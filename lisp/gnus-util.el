@@ -479,10 +479,13 @@ jabbering all the time."
 If N, return the Nth ancestor instead."
   (when (and references
 	     (not (zerop (length references))))
-    (let ((ids (inline (gnus-split-references references))))
-      (while (nthcdr (or n 1) ids)
-	(setq ids (cdr ids)))
-      (car ids))))
+    (if n
+	(let ((ids (inline (gnus-split-references references))))
+	  (while (nthcdr n ids)
+	    (setq ids (cdr ids)))
+	  (car ids))
+      (when (string-match "<[^> \t]+>\\'" references)
+	(match-string 0 references)))))
 
 (defun gnus-buffer-live-p (buffer)
   "Say whether BUFFER is alive or not."
