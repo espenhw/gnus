@@ -1,3 +1,9 @@
+2005-03-13  Steve Youngs  <steve@sxemacs.org>
+
+	* lisp/gnus.el: Don't try and mark `gnus-agent-save-groups' as an
+	autoloaded function.
+	From: Andrey Slusar <anrays@gmail.com>.
+
 2005-03-10  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* nnimap.el (nnimap-retrieve-headers-from-server): Fix last change.
