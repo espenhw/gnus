@@ -453,7 +453,8 @@ nn*-request-list should have been called before calling this function."
 	  nnmail-use-procmail)
       (cond (group group)
 	    ((string-match (concat "^" (expand-file-name
-					nnmail-procmail-directory)
+					(file-name-as-directory
+					 nnmail-procmail-directory))
 				   "\\(.*\\)" nnmail-procmail-suffix "$")
 			   (expand-file-name file))
 	     (substring (expand-file-name file)

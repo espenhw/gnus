@@ -386,7 +386,6 @@ all. This may very well take some time.")
 	  (beginning-of-line)
 	  (insert (int-to-string article) nov-line)
 	  (nnml-save-nov)
-	  (kill-buffer (current-buffer))
 	  t)))))
 
 

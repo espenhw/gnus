@@ -393,6 +393,11 @@ Just like killed groups, only slightly less dead.
 The news server has to keep track of what articles it carries, and what
 groups exist.  All this information in stored in the active file, which
 is rather large, as you might surmise.
+@item bogus groups
+@cindex bogus groups
+A group that exists in the @file{.newsrc} file, but isn't known to the
+server (i. e.,  it isn't in the active file), is a @emph{bogus group}.
+This means that the group probably doesn't exist (any more).
 @end table
 
 @node Starting Up

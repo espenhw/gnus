@@ -170,7 +170,7 @@ This will most commonly be on a remote machine, and the file will be
 fetched by ange-ftp.")
 
 (defvar gnus-group-archive-directory
-  "/ftp@sina.tcamc.uh.edu:/pub/emacs/ding-list/" 
+  "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/" 
   "*The address of the (ding) archives.")
 
 (defvar gnus-default-subscribed-newsgroups nil
@@ -1835,32 +1835,36 @@ Thank you for your help in stamping out bugs.
 	 (1- (point))
        (point-max)))))
 
+(defvar gnus-old-specs nil)
+
 (defun gnus-update-format-specifications ()
   (gnus-make-thread-indent-array)
-  (setq gnus-summary-line-format-spec 
-	(gnus-parse-format
-	 gnus-summary-line-format gnus-summary-line-format-alist))
+
+  (let ((formats '(summary summary-dummy group 
+			   summary-mode group-mode article-mode))
+	old-format new-format)
+    (while formats
+      (setq new-format (symbol-value
+			(intern (format "gnus-%s-line-format" (car formats)))))
+      (or (and (setq old-format (cdr (assq (car formats) gnus-old-specs)))
+	       (equal old-format new-format))
+	  (set (intern (format "gnus-%s-line-format-spec" (car formats)))
+	       (gnus-parse-format
+		new-format
+		(symbol-value 
+		 (intern (format "gnus-%s-line-format-alist"
+				 (if (eq (car formats) 'article-mode)
+				     'summary-mode (car formats))))))))
+      (setq gnus-old-specs (cons (cons (car formats) new-format)
+				 (delq (car formats) gnus-old-specs)))
+      (setq formats (cdr formats))))
+      
   (gnus-update-summary-mark-positions)
-  (setq gnus-summary-dummy-line-format-spec 
-	(gnus-parse-format gnus-summary-dummy-line-format 
-			   gnus-summary-dummy-line-format-alist))
-  (setq gnus-group-line-format-spec
-	(gnus-parse-format 
-	 gnus-group-line-format 
-	 gnus-group-line-format-alist))
+
   (if (and (string-match "%D" gnus-group-line-format)
 	   (not gnus-description-hashtb)
 	   gnus-read-active-file)
-      (gnus-read-all-descriptions-files))
-  (setq gnus-summary-mode-line-format-spec 
-	(gnus-parse-format gnus-summary-mode-line-format 
-			   gnus-summary-mode-line-format-alist))
-  (setq gnus-article-mode-line-format-spec 
-	(gnus-parse-format gnus-article-mode-line-format 
-			   gnus-summary-mode-line-format-alist))
-  (setq gnus-group-mode-line-format-spec 
-	(gnus-parse-format gnus-group-mode-line-format 
-			   gnus-group-mode-line-format-alist)))
+      (gnus-read-all-descriptions-files)))
 
 (defun gnus-update-summary-mark-positions ()
   (save-excursion
@@ -3732,8 +3736,9 @@ If UNMARK, remove the mark instead."
 
 (defun gnus-group-read-group (all &optional no-article group)
   "Read news in this newsgroup.
-If argument ALL is non-nil, already read articles become readable.
-If optional argument NO-ARTICLE is non-nil, no article body is displayed."
+If the prefix argument ALL is non-nil, already read articles become
+readable. If the optional argument NO-ARTICLE is non-nil, no article
+will be auto-selected upon group entry."
   (interactive "P")
   (let ((group (or group (gnus-group-group-name)))
 	number active marked entry)
@@ -4813,8 +4818,7 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 (defun gnus-group-describe-briefly ()
   "Give a one line description of the group mode commands."
   (interactive)
-  (gnus-message 6
-   (substitute-command-keys "\\<gnus-group-mode-map>\\[gnus-group-read-group]:Select  \\[gnus-group-next-unread-group]:Forward  \\[gnus-group-prev-unread-group]:Backward  \\[gnus-group-exit]:Exit  \\[gnus-info-find-node]:Run Info  \\[gnus-group-describe-briefly]:This help")))
+  (gnus-message 7 (substitute-command-keys "\\<gnus-group-mode-map>\\[gnus-group-read-group]:Select  \\[gnus-group-next-unread-group]:Forward  \\[gnus-group-prev-unread-group]:Backward  \\[gnus-group-exit]:Exit  \\[gnus-info-find-node]:Run Info  \\[gnus-group-describe-briefly]:This help")))
 
 (defun gnus-group-browse-foreign-server (method)
   "Browse a foreign news server.
@@ -5752,6 +5756,7 @@ If NO-ARTICLE is non-nil, no article is selected initially."
       (run-hooks 'gnus-select-group-hook)
       ;; Do score processing.
       (and gnus-use-scoring (gnus-possibly-score-headers))
+      (gnus-update-format-specifications)
       ;; Generate the summary buffer.
       (gnus-summary-prepare)
       (if (zerop (buffer-size))
@@ -8773,7 +8778,7 @@ This will have permanent effect only in mail groups."
       (use-local-map gnus-article-mode-map)
       (setq buffer-read-only t)
       (buffer-disable-undo (current-buffer))
-      (pop-to-buffer gnus-summary-buffer)))      )
+      (gnus-configure-windows 'summary))))
 
 (defun gnus-summary-fancy-query ()
   "Query where the fancy respool algorithm would put this article."
@@ -9148,13 +9153,14 @@ returned."
     t))
 
 (defun gnus-summary-mark-article (&optional article mark no-expire)
-  "Mark ARTICLE with MARK.
-MARK can be any character.
-Five MARK strings are reserved: ?  (unread), 
-?! (ticked), ?? (dormant), ?D (read), ?E (expirable).
-If MARK is nil, then the default character ?D is used.
+  "Mark ARTICLE with MARK.  MARK can be any character.
+Four MARK strings are reserved: `? ' (unread), `?!' (ticked), `??'
+(dormant) and `?E' (expirable).
+If MARK is nil, then the default character `?D' is used.
 If ARTICLE is nil, then the article on the current line will be
 marked." 
+  (and (stringp mark)
+       (setq mark (aref mark 0)))
   ;; If no mark is given, then we check auto-expiring.
   (and (not no-expire)
        gnus-newsgroup-auto-expire 
@@ -9535,9 +9541,11 @@ The number of articles marked as read is returned."
 	    ;; We actually mark all articles as canceled, which we
 	    ;; have to do when using auto-expiry or adaptive scoring. 
 	    (let ((unreads (length gnus-newsgroup-unreads)))
+	      (gnus-summary-show-all-threads)
 	      (if (gnus-summary-first-subject (not all))
 		  (while (and (if to-here (< (point) to-here) t)
-			      (gnus-summary-mark-article-as-read gnus-catchup-mark)
+			      (gnus-summary-mark-article-as-read
+			       gnus-catchup-mark)
 			      (gnus-summary-search-subject nil (not all)))))
 	      (- unreads (length gnus-newsgroup-unreads))
 	      (or to-here
@@ -9893,7 +9901,8 @@ The variable `gnus-default-article-saver' specifies the saver function."
       (let ((header (gnus-get-header-by-num (car articles))))
 	(if (vectorp header)
 	    (progn
-	      (gnus-summary-select-article t nil nil (car articles))
+	      (save-window-excursion
+		(gnus-summary-select-article t nil nil (car articles)))
 	      (or gnus-save-all-headers
 		  (gnus-article-hide-headers t))
 	      ;; Remove any X-Gnus lines.
@@ -9909,7 +9918,7 @@ The variable `gnus-default-article-saver' specifies the saver function."
 		      (delete-region (point)
 				     (progn (forward-line 1) (point))))
 		    (widen))))
-	      (save-excursion
+	      (save-window-excursion
 		(if gnus-default-article-saver
 		    (funcall gnus-default-article-saver)
 		  (error "No default saver is defined."))))
