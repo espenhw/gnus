@@ -1,5 +1,8 @@
 2003-06-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-topic.el (gnus-group-prepare-topics): Update topic line
+	format specs.
+
 	* gnus-picon.el: Written by moi, moi, moi.
 
 	* gnus-group.el (gnus-group-kill-group): Clean up.
