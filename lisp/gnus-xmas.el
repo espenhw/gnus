@@ -35,9 +35,10 @@
 If this variable is nil, Gnus will try to locate the directory
 automatically.")
 
-;;; Internal variables.
+(defvar gnus-xmas-logo-colors '("#bf9900" "#ffcc00")
+  "Colors user for the Gnus logo.")
 
-(defvar gnus-xmas-logo (make-glyph (make-specifier 'image)))
+;;; Internal variables.
 
 ;; Don't warn about these undefined variables.
 
@@ -481,19 +482,22 @@ pounce directly on the real variables themselves.")
   ;; Insert the message.
   (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory "gnus"))
   (erase-buffer)
-  (let ((file (and gnus-xmas-glyph-directory
+  (let ((logo (and gnus-xmas-glyph-directory
 		   (concat 
 		    (file-name-as-directory gnus-xmas-glyph-directory)
-		    "gnus.xpm"))))
+		    "gnus.xpm")))
+	(xpm-color-symbols 
+	 (append `(("thing" ,(car gnus-xmas-logo-colors))
+		   ("shadow" ,(cadr gnus-xmas-logo-colors)))
+		 xpm-color-symbols)))
     (if (and (featurep 'xpm)
 	     (not (equal (device-type) 'tty))
-	     file (file-exists-p file))
+	     logo
+	     (file-exists-p logo))
 	(progn
-	  (set-glyph-property gnus-xmas-logo 'image file)
-	  (set-glyph-image gnus-xmas-logo file 'global 'x)
-
+	  (setq logo (make-glyph logo))
 	  (insert " ")
-	  (set-extent-begin-glyph (make-extent (point) (point)) gnus-xmas-logo)
+	  (set-extent-begin-glyph (make-extent (point) (point)) logo)
 	  (goto-char (point-min))
 	  (while (not (eobp))
 	    (insert (make-string (/ (max (- (window-width) (or x 35)) 0) 2)
