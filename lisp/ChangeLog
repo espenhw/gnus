@@ -1,5 +1,9 @@
 2002-02-22  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-sum.el: Add gnus-article-outlook-deuglify-article.
+
+	* deuglify.el: Change copy right. Add autoload. Add coding-system.
+	
 	* deuglify.el: New file. The original file name is
 	gnus-outlook-deuglify.el from Raymond Scholz <rscholz@zonix.de>.
 
