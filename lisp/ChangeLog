@@ -1,5 +1,15 @@
 2002-05-01  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-art.el (gnus-button-alist): Don't inline
+	gnus-button-url-regexp.  This makes it possible to change g-b-u-r
+	without also modifying g-button-alist.
+	(gnus-button-alist): Fix type to allow variable as well as regexp.
+	(gnus-article-add-buttons): Evaluate regexp.  Strings evaluate to
+	themselves, variables to its contents.
+	(gnus-button-entry): Ditto.
+
+2002-05-01  Simon Josefsson  <jas@extundo.com>
+
 	* imap.el (imap-parse-resp-text-code, imap-parse-status): Treat
 	UIDNEXT as a string.
 

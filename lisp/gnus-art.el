@@ -5228,7 +5228,7 @@ groups."
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^<>]*\\)>" 1 t gnus-button-embedded-url 1)
     ;; Raw URLs.
-    (,gnus-button-url-regexp 0 t browse-url 0))
+    (gnus-button-url-regexp 0 t browse-url 0))
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -5242,7 +5242,7 @@ PAR: is a number of a regexp grouping whose text will be passed to CALLBACK.
 CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function."
   :group 'gnus-article-buttons
-  :type '(repeat (list regexp
+  :type '(repeat (list (choice regexp variable)
 		       (integer :tag "Button")
 		       (sexp :tag "Form")
 		       (function :tag "Callback")
@@ -5429,7 +5429,7 @@ specified by `gnus-button-alist'."
       (article-goto-body)
       (setq beg (point))
       (while (setq entry (pop alist))
-	(setq regexp (car entry))
+	(setq regexp (eval (car entry)))
 	(goto-char beg)
 	(while (re-search-forward regexp nil t)
 	  (let* ((start (and entry (match-beginning (nth 1 entry))))
@@ -5534,7 +5534,7 @@ specified by `gnus-button-alist'."
 	(entry nil))
     (while alist
       (setq entry (pop alist))
-      (if (looking-at (car entry))
+      (if (looking-at (eval (car entry)))
 	  (setq alist nil)
 	(setq entry nil)))
     entry))
