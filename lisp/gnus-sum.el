@@ -1914,18 +1914,20 @@ increase the score of each group you read."
 
 (defvar gnus-article-post-menu nil)
 
+(defconst gnus-summary-menu-maxlen 20)
+
 (defun gnus-summary-menu-split (menu)
   ;; If we have lots of elements, divide them into groups of 20
   ;; and make a pane (or submenu) for each one.
-  (if (> (length menu) (/ (* mouse-buffer-menu-maxlen 3) 2))
+  (if (> (length menu) (/ (* gnus-summary-menu-maxlen 3) 2))
       (let ((menu menu) sublists next
 	    (i 1))
 	(while menu
-	  ;; Pull off the next mouse-buffer-menu-maxlen elements
+	  ;; Pull off the next gnus-summary-menu-maxlen elements
 	  ;; and make them the next element of sublist.
-	  (setq next (nthcdr mouse-buffer-menu-maxlen menu))
+	  (setq next (nthcdr gnus-summary-menu-maxlen menu))
 	  (if next
-	      (setcdr (nthcdr (1- mouse-buffer-menu-maxlen) menu)
+	      (setcdr (nthcdr (1- gnus-summary-menu-maxlen) menu)
 		      nil))
 	  (setq sublists (cons (cons (format "%s ... %s" (aref (car menu) 0)
 					     (aref (car (last menu)) 0)) menu)

@@ -2,6 +2,8 @@
 
 	* gnus-sum.el (gnus-summary-menu-split): New function.
 	(gnus-summary-make-menu-bar): Split charset submenu.
+	(gnus-summary-menu-maxlen): New variable.
+	(gnus-summary-menu-split): Use it.
 
 2002-05-25  Simon Josefsson  <jas@extundo.com>
 
