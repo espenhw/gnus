@@ -1,3 +1,8 @@
+2004-02-05  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* spam-report.el (spam-report-process-queue): New function.
+	Process requests from `spam-report-requests-file'.
+
 2004-02-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-register-routine)

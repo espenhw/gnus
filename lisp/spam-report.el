@@ -125,6 +125,48 @@ the function specified by `spam-report-url-ping-function'."
        (format "GET %s HTTP/1.1\nUser-Agent: %s (spam-report.el)\nHost: %s\n\n"
 	       report (gnus-emacs-version) host)))))
 
+(defun spam-report-process-queue (&optional file keep)
+  "Report all queued requests from `spam-report-requests-file'.
+
+If KEEP is t, leave old requests in the file.  If KEEP is
+the symbol `ask', query before flushing the queue file."
+  (interactive
+   (list (read-file-name
+	  "File: "
+	  (file-name-directory spam-report-requests-file)
+	  spam-report-requests-file
+	  nil
+	  (file-name-nondirectory spam-report-requests-file)
+	  spam-report-requests-file)
+	 current-prefix-arg))
+  (if (eq spam-report-url-ping-function 'spam-report-url-to-file)
+      (error (concat "Cannot process requests when "
+		     "`spam-report-url-ping-function' is "
+		     "`spam-report-url-to-file'"))
+    (gnus-message 7 "Processing requests using `%s'."
+		  spam-report-url-ping-function))
+  (or file (setq file spam-report-requests-file))
+  (save-excursion
+    (set-buffer (find-file-noselect file))
+    (goto-char (point-min))
+    (while (and (not (eobp))
+		(re-search-forward
+		 "http://\\([^/]+\\)\\(/.*\\) *$" (point-at-eol) t))
+      (funcall spam-report-url-ping-function (match-string 1) (match-string 2))
+      (forward-line 1))
+    (if (or (eq keep nil)
+	    (and (eq keep 'ask)
+		 (y-or-n-p
+		  (format
+		   "Flush requests from `%s'? " (current-buffer)))))
+	(progn
+	  (gnus-message 7 "Flushing request file `%s'"
+			spam-report-requests-file)
+	  (erase-buffer)
+	  (save-buffer)
+	  (kill-buffer (current-buffer)))
+      (gnus-message 7 "Keeping requests in `%s'" spam-report-requests-file))))
+
 (defun spam-report-url-ping-mm-url (host report)
   "Ping a host through HTTP, addressing a specific GET resource. Use
 the external program specified in `mm-url-program' to connect to
