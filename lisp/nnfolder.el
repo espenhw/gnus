@@ -795,6 +795,7 @@ deleted.  Point is left where the deleted region was."
 		  (let ((nnheader-file-coding-system 
 			 nnfolder-file-coding-system))
 		    (nnheader-find-file-noselect file)))))
+    (mm-enable-multibyte) ;; Use multibyte buffer for future copying.
     (if (equal (cadr (assoc group nnfolder-scantime-alist))
 	       (nth 5 (file-attributes file)))
 	;; This looks up-to-date, so we don't do any scanning.
