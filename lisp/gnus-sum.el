@@ -8284,7 +8284,7 @@ Obeys the standard process/prefix convention."
 	    ;; the wrong guess.
 	    (message-narrow-to-head)
 	    (goto-char (point-min))
-	    (delete-matching-lines "^\\(Path\\):\\|^From ")
+	    (delete-matching-lines "^Path:\\|^From ")
 	    (widen)
 	    (if (setq egroup
 		      (gnus-group-read-ephemeral-group

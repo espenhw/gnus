@@ -160,9 +160,8 @@ one charsets.")
 	       (method (cdr (assq 'method taginfo)))
 	       tags)
 	  (save-excursion
-	    (if
-		(re-search-forward
-		 "<#\\(/\\)?\\(multipart\\|part\\|external\\|mml\\)." nil t)
+	    (if (re-search-forward
+		 "<#/?\\(multipart\\|part\\|external\\|mml\\)." nil t)
 		(setq secure-mode "multipart")
 	      (setq secure-mode "part")))
 	  (save-excursion

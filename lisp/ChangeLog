@@ -1,3 +1,18 @@
+2004-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* canlock.el (canlock-insert-header): Remove excessive grouping in
+	regexp.
+
+	* gnus-sum.el (gnus-summary-read-document): Ditto.
+
+	* gnus-uu.el (gnus-uu-part-number): Ditto.
+
+	* html2text.el (html2text-remove-tags): Ditto.
+	(html2text-format-tags): Ditto.
+	(html2text-format-single-elements): Ditto.
+
+	* mml.el (mml-parse-1): Ditto.
+
 2004-01-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-update-mark): Revert previous change.

@@ -159,9 +159,8 @@ message."
 	  (unless id-for-key
 	    (setq id-for-key (canlock-fetch-id-for-key)))
 	  (if (and (setq control (mail-fetch-field "Control"))
-		   (string-match
-		    "^cancel[\t ]+\\(<[^\t\n @<>]+@[^\t\n @<>]+>\\)"
-		    control))
+		   (string-match "^cancel[\t ]+<[^\t\n @<>]+@[^\t\n @<>]+>"
+				 control))
 	      (setq id-for-lock nil)
 	    (unless id-for-lock
 	      (setq id-for-lock (mail-fetch-field "Message-ID"))))
