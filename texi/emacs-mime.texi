@@ -345,9 +345,10 @@ variable will cause @samp{text/html} parts to be treated as attachments.
 This selects the function used to render @sc{html}.  The predefined
 renderers are selected by the symbols @code{w3},
 @code{w3m}@footnote{See @uref{http://emacs-w3m.namazu.org/} for more
-information about emacs-w3m}, @code{links}, @code{lynx} or
-@code{html2text}.  You can also specify a function, which will be
-called with a @sc{mime} handle as the argument.
+information about emacs-w3m}, @code{links}, @code{lynx},
+@code{w3m-standalone} or @code{html2text}.  You can also specify a
+function, which will be called with a @sc{mime} handle as the
+argument.
 
 @item mm-inline-text-html-with-images
 Some @sc{html} mails might have the trick of spammers using
