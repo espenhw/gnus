@@ -1017,8 +1017,8 @@ that were fetched.  Say, for nnultimate groups."
   :group 'gnus-summary
   :type 'string)
 
-(defcustom gnus-article-no-strict-mime nil
-  "If non-nil, don't require strict MIME.
+(defcustom gnus-article-loose-mime nil
+  "If non-nil, don't require MIME-Version header.
 Some brain-damaged MUA/MTA, e.g. Lotus Domino 5.0.6 clients, does not
 supply the MIME-Version header or deliberately strip it From the mail.
 Set it to non-nil, Gnus will treat some articles as MIME even if
@@ -10322,8 +10322,7 @@ If REVERSE, save parts that do not match TYPE."
     (save-excursion
       (set-buffer gnus-article-buffer)
       (let ((handles (or gnus-article-mime-handles
-			 (mm-dissect-buffer
-			  gnus-article-no-strict-mime)
+			 (mm-dissect-buffer nil gnus-article-loose-mime)
 			 (mm-uu-dissect))))
 	(when handles
 	  (gnus-summary-save-parts-1 type dir handles reverse)

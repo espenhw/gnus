@@ -1,3 +1,15 @@
+2002-02-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-dissect-buffer): Add loose-mime parameter.
+
+	* gnus-art.el (gnus-display-mime): Use it.
+
+	* mm-partial.el (mm-partial-find-parts): Use it.
+
+	* gnus-sum.el (gnus-article-loose-mime): Rename from
+	gnus-article-no-strict-mime.
+	(gnus-summary-save-parts): Use it.
+
 2002-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Remove unused

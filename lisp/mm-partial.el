@@ -43,7 +43,7 @@
 					    gnus-newsgroup-name)
 	  (when (search-forward id nil t)
 	    (let ((nhandles (mm-dissect-buffer 
-			     gnus-article-no-strict-mime)) nid)
+			     nil gnus-article-loose-mime)) nid)
 	      (if (consp (car nhandles))
 		  (mm-destroy-parts nhandles)
 		(setq nid (cdr (assq 'id
