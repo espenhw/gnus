@@ -4,6 +4,9 @@
 
 2004-05-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-msg.el (gnus-inews-do-gcc): Don't use read-only-p to see
+	whether backend can accept message.
+
 	* message.el (message-idna-to-ascii-rhs-1): Don't use equalp. 
 
 2004-05-18  Kai Grossjohann  <kgrossjo@eu.uu.net>

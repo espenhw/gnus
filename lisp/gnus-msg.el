@@ -1632,7 +1632,8 @@ this is a reply."
 		     (concat "^" (regexp-quote mail-header-separator) "$")
 		     nil t)
 		(replace-match "" t t ))
-	      (when (or (gnus-group-read-only-p group)
+	      (when (or (not (gnus-check-backend-function
+			      'request-accept-article group))
 			(not (setq group-art
 				   (gnus-request-accept-article
 				    group method t t))))
