@@ -60,7 +60,7 @@ If successful, the MIME charset is returned.
 If no encoding was done, nil is returned."
   (if (not (featurep 'mule))
       ;; In the non-Mule case, we search for non-ASCII chars and
-      ;; return the value of `mm-default-charset' if any are found.
+      ;; return the value of `mail-parse-charset' if any are found.
       (save-excursion
 	(goto-char (point-min))
 	(if (re-search-forward "[^\x0-\x7f]" nil t)
