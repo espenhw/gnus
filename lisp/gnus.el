@@ -2862,11 +2862,11 @@ As opposed to `gnus', this command will not connect to the local server."
     (cond (window
 	   (select-frame (window-frame window)))
  	  (t
- 	   (select-frame (make-frame)))
+ 	   (select-frame (make-frame)))))
   (gnus arg))
 
-(setq thing ?				; this is a comment
-      more 'yes)
+;;(setq thing ?				; this is a comment
+;;      more 'yes)
     
 ;;;###autoload
 (defun gnus (&optional arg dont-connect slave)

@@ -1,3 +1,7 @@
+2000-01-09 22:52:35  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-other-frame): Fix typo.
+
 1999-06-25  Andreas Jaeger  <aj@arthur.rhein-neckar.de>
 
 	* gnus-cus.el (gnus-group-customize): Fix typo.
