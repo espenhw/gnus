@@ -26,7 +26,7 @@ warn: clean-some gnus-load.el
 
 # The "clever" rule is unsafe, since redefined macros are loaded from
 # .elc files, and not the .el file.
-clever some: gnus-load.el
+clever some l: gnus-load.el
 	$(EMACS_COMP) -f dgnushack-compile
 
 install: install-el install-elc 

@@ -124,7 +124,6 @@ If this is `ask' the hook will query the user."
 (defvar gnus-agent-buffer-alist nil)
 (defvar gnus-agent-article-alist nil)
 (defvar gnus-agent-group-alist nil)
-(defvar gnus-agent-covered-methods nil)
 (defvar gnus-category-alist nil)
 (defvar gnus-agent-current-history nil)
 (defvar gnus-agent-overview-buffer nil)
@@ -666,7 +665,7 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-get-undownloaded-list ()
   "Mark all unfetched articles as read."
   (let ((gnus-command-method (gnus-find-method-for-group gnus-newsgroup-name)))
-    (when (and (not gnus-plugged)
+    (when (and (not (gnus-online gnus-command-method))
 	       (gnus-agent-method-p gnus-command-method))
       (gnus-agent-load-alist gnus-newsgroup-name)
       ;; First mark all undownloaded articles as undownloaded.
@@ -804,17 +803,11 @@ the actual number of articles toggled is returned."
 
 
 
-(defun gnus-agent-method-p (method)
-  "Say whether METHOD is covered by the agent."
-  (member method gnus-agent-covered-methods))
-
 (defun gnus-agent-get-function (method)
-  (if (and (not gnus-plugged)
-	   (gnus-agent-method-p method))
-      (progn
-	(require 'nnagent)
-	'nnagent)
-    (car method)))
+  (if (gnus-online method)
+      (car method)
+    (require 'nnagent)
+    'nnagent))
 
 ;;; History functions
 

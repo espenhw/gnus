@@ -121,6 +121,7 @@ If nil, a faster, but more primitive, buffer is used instead."
      '("Connections"
        ["Open" gnus-server-open-server t]
        ["Close" gnus-server-close-server t]
+       ["Offline" gnus-server-offline-server t]
        ["Deny" gnus-server-deny-server t]
        "---"
        ["Open All" gnus-server-open-all-servers t]
@@ -154,6 +155,7 @@ If nil, a faster, but more primitive, buffer is used instead."
     "C" gnus-server-close-server
     "\M-c" gnus-server-close-all-servers
     "D" gnus-server-deny-server
+    "L" gnus-server-offline-server
     "R" gnus-server-remove-denials
 
     "n" next-line
@@ -193,6 +195,13 @@ If nil, a faster, but more primitive, buffer is used instead."
   "Face used for displaying DENIED servers"
   :group 'gnus-server-visual)
 
+(defface gnus-server-offline-face
+  '((((class color) (background light)) (:foreground "Orange" :bold t))
+    (((class color) (background dark)) (:foreground "Yellow" :bold t))
+    (t (:inverse-video t :bold t)))
+  "Face used for displaying OFFLINE servers"
+  :group 'gnus-server-visual)
+
 (defcustom gnus-server-agent-face 'gnus-server-agent-face
   "Face name to use on AGENTIZED servers."
   :group 'gnus-server-visual
@@ -213,11 +222,17 @@ If nil, a faster, but more primitive, buffer is used instead."
   :group 'gnus-server-visual
   :type 'face)
 
+(defcustom gnus-server-offline-face 'gnus-server-offline-face
+  "Face name to use on OFFLINE servers."
+  :group 'gnus-server-visual
+  :type 'face)
+
 (defvar gnus-server-font-lock-keywords
   (list
    '("(\\(agent\\))" 1 gnus-server-agent-face)
    '("(\\(opened\\))" 1 gnus-server-opened-face)
    '("(\\(closed\\))" 1 gnus-server-closed-face)
+   '("(\\(offline\\))" 1 gnus-server-offline-face)
    '("(\\(denied\\))" 1 gnus-server-denied-face)))
 
 (defun gnus-server-mode ()
@@ -255,14 +270,16 @@ The following commands are available:
 	 (gnus-tmp-where (nth 1 method))
 	 (elem (assoc method gnus-opened-servers))
  	 (gnus-tmp-status
- 	  (if (eq (nth 1 elem) 'denied)
- 	      "(denied)"
+ 	  (cond 
+	   ((eq (nth 1 elem) 'denied) "(denied)")
+	   ((eq (nth 1 elem) 'offline) "(offline)")
+	   (t
  	    (condition-case nil
  		(if (or (gnus-server-opened method)
  			(eq (nth 1 elem) 'ok))
 		    "(opened)"
  		  "(closed)")
- 	      ((error) "(error)"))))
+ 	      ((error) "(error)")))))
 	 (gnus-tmp-agent (if (and gnus-agent
 				  (member method
 					  gnus-agent-covered-methods))
@@ -478,6 +495,18 @@ The following commands are available:
     (gnus-server-set-status method 'closed)
     (prog1
 	(gnus-close-server method)
+      (gnus-server-update-server server)
+      (gnus-server-position-point))))
+
+(defun gnus-server-offline-server (server)
+  "Set SERVER to offline."
+  (interactive (list (gnus-server-server-name)))
+  (let ((method (gnus-server-to-method server)))
+    (unless method
+      (error "No such server: %s" server))
+    (prog1
+	(gnus-close-server method)
+      (gnus-server-set-status method 'offline)
       (gnus-server-update-server server)
       (gnus-server-position-point))))
 

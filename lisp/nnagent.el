@@ -1,6 +1,6 @@
 ;;; nnagent.el --- offline backend for Gnus
 
-;; Copyright (C) 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -130,8 +130,11 @@
 
 (deffoo nnagent-retrieve-headers (articles &optional group server fetch-old)
   (let ((file (gnus-agent-article-name ".overview" group))
-	(arts articles) n)
+	arts n)
     (save-excursion
+      (gnus-agent-load-alist group)
+      (setq arts (gnus-set-difference articles 
+				      (mapcar 'car gnus-agent-article-alist)))
       (set-buffer nntp-server-buffer)
       (erase-buffer)
       (nnheader-insert-file-contents file)
@@ -147,7 +150,7 @@
 		     "%d\t[Undownloaded article %d]\tGnus Agent\t\t\t\n"
 		     (car arts) (car arts)))
 	    (pop arts))
-	  (if (= n (car arts))
+	  (if (and arts (= n (car arts)))
 	    (pop arts))))
 	(forward-line 1))
       (while (and arts)

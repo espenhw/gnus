@@ -1788,6 +1788,8 @@ covered by that variable."
 (defvar gnus-agent-fetching nil
   "Whether Gnus agent is in fetching mode.")
 
+(defvar gnus-agent-covered-methods nil)
+
 (defvar gnus-command-method nil
   "Dynamically bound variable that says what the current backend is.")
 
@@ -3258,6 +3260,18 @@ Allow completion over sensible values."
       method)
      (t
       (list (intern method) "")))))
+
+;;; Agent functions
+
+(defun gnus-agent-method-p (method)
+  "Say whether METHOD is covered by the agent."
+  (member method gnus-agent-covered-methods))
+
+(defun gnus-online (method)
+  (not
+   (if gnus-plugged
+       (eq (cadr (assoc method gnus-opened-servers)) 'offline)
+     (gnus-agent-method-p method))))
 
 ;;; User-level commands.
 

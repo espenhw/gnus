@@ -1,5 +1,32 @@
 2002-01-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus.el (gnus-agent-covered-methods): Move here.
+	(gnus-online): New function.
+	(gnus-agent-method-p): Move here.
+
+	* nnagent.el (nnagent-retrieve-headers): Check whether arts is
+	nil. Remove articles-alist.
+
+	* gnus-start.el (gnus-get-unread-articles): Check online.
+	(gnus-groups-to-gnus-format): Ditto.
+	(gnus-active-to-gnus-format): Ditto.
+
+	* gnus-agent.el (gnus-agent-get-function): Use it.
+	(gnus-agent-get-undownloaded-list): Ditto.
+
+	* gnus-srvr.el (gnus-server-make-menu-bar): Add offline.
+	(gnus-server-mode-map): Ditto.
+	(gnus-server-offline-face): New face.
+	(gnus-server-offline-face): New variable.
+	(gnus-server-font-lock-keywords): Add offline.
+	(gnus-server-insert-server-line): Ditto.
+	(gnus-server-offline-server): New function.
+
+	* gnus-int.el (gnus-open-server): Turn to offline.
+	(gnus-server-unopen-status): New variable.
+
+2002-01-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
 	* nnkiboze.el (nnkiboze-request-article): Use
 	gnus-agent-request-article.
 

@@ -1590,7 +1590,7 @@ newsgroup."
 	  (when (and (<= (gnus-info-level info) foreign-level)
 		     (setq active (gnus-activate-group group 'scan)))
 	    ;; Let the Gnus agent save the active file.
-	    (when (and gnus-agent gnus-plugged active)
+	    (when (and gnus-agent active (gnus-online method))
 	      (gnus-agent-save-group-info
 	       method (gnus-group-real-name group) active))
 	    (unless (inline (gnus-virtual-group-p group))
@@ -1897,7 +1897,7 @@ newsgroup."
 	(insert ?\\)))
 
     ;; Let the Gnus agent save the active file.
-    (when (and gnus-agent real-active gnus-plugged)
+    (when (and gnus-agent real-active (gnus-online method))
       (gnus-agent-save-active method))
 
     ;; If these are groups from a foreign select method, we insert the
@@ -1973,7 +1973,7 @@ newsgroup."
     ;; Let the Gnus agent save the active file.
     (if (and gnus-agent
 	     real-active
-	     gnus-plugged
+	     (gnus-online method)
 	     (gnus-agent-method-p method))
 	(progn
 	  (gnus-agent-save-groups method)
