@@ -4748,19 +4748,15 @@ Argument LINES specifies lines to be scrolled down."
 Something \"interesting\" is a word of at least two letters that does
 not have a face in `gnus-article-boring-faces'."
   (when (and gnus-article-skip-boring
-	     gnus-article-boring-faces)
+	     (boundp 'gnus-article-boring-faces)
+	     (symbol-value 'gnus-article-boring-faces))
     (save-excursion
       (catch 'only-boring
 	(while (re-search-forward "\\b\\w\\w" nil t)
 	  (forward-char -1)
 	  (when (not (gnus-intersection
-		      (cons (plist-get (text-properties-at (point))
-				       'face)
-			    (mapcar-extents
-			     '(lambda (extent)
-				(extent-property extent 'face))
-			     nil (current-buffer) (point) (point)))
-		      gnus-article-boring-faces))
+		      (gnus-faces-at (point))
+		      (symbol-value 'gnus-article-boring-faces)))
 	    (throw 'only-boring nil)))
 	(throw 'only-boring t)))))
 

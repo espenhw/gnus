@@ -1,3 +1,10 @@
+2003-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-only-boring-p): Make sure that the
+	gnus-article-boring-faces variable is bound; use gnus-faces-at.
+
+	* gnus-util.el (gnus-faces-at): New macro.
+
 2003-02-13  Michael Shields  <shields@msrl.com>
 
 	* gnus-cite.el
