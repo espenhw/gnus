@@ -1,5 +1,7 @@
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-agent.el (gnus-agent-read-servers): Remove sit-for.
+
 	* gnus-art.el (article-treat-dumbquotes): Doc fix.
 
 	* message.el (message-field-value): New function.

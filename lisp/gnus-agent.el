@@ -826,8 +826,7 @@ be a select method."
 	      (if method
                   (unless (member method gnus-agent-covered-methods)
                     (push method gnus-agent-covered-methods))
-		(gnus-message 1 "Ignoring disappeared server `%s'" m)
-		(sit-for 1))))
+		(gnus-message 1 "Ignoring disappeared server `%s'" m))))
 	  (gnus-agent-read-file
 	   (nnheader-concat gnus-agent-directory "lib/servers"))))
 
