@@ -201,7 +201,7 @@ Also see `message-required-news-headers' and
   :group 'message-headers
   :type '(repeat sexp))
 
-(defcustom message-draft-headers '(References)
+(defcustom message-draft-headers '(References From)
   "*Headers to be generated when saving a draft message."
   :group 'message-news
   :group 'message-headers
