@@ -350,6 +350,10 @@ perfomed.")
 			     (file-name-nondirectory tofile))))
     ;; Make the filename unique.
     (setq tofile (nnmail-make-complex-temp-name (expand-file-name tofile)))
+    ;; We create the directory the tofile is to reside in if it
+    ;; doesn't exist.
+    (or (file-exists-p (file-name-directory tofile))
+	(make-directory tofile 'parents))
     ;; If getting from mail spool directory,
     ;; use movemail to move rather than just renaming,
     ;; so as to interlock with the mailer.

@@ -1,3 +1,20 @@
+Mon Aug 21 20:47:08 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-group-list-groups): Didn't use default-list-level.
+
+	* nntp.el (nntp-retrieve-groups): Did not delete error messages. 
+
+	* gnus.el (gnus-offer-save-summaries): Use `map-y-or-n-p'. 
+	(gnus-update-group-mark-positions): Bind "dummy.group" in the
+	active hashtb.
+	(gnus-gnus-to-newsrc-format): Avoid `set-visited-file-name'.
+	(gnus-save-newsrc-file): Ditto.
+	(gnus-window-top-edge): Renamed from `gnus-window-left-corner'. 
+	(gnus-remove-some-windows): Don't rely on `frame-height'.
+
+	* nnmail.el (nnmail-move-inbox): Make sure the directory we move
+	to exists. 
+
 Sun Aug 20 16:04:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
 	* gnus.el: 0.99.15 is released.

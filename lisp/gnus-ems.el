@@ -484,7 +484,7 @@ call it with the value of the `gnus-data' text property."
 			(and data (list 'gnus-data data))
 			(list 'highlight t))))
 
-(defun gnus-window-left-corner-xemacs (&optional window)
+(defun gnus-window-top-edge-xemacs (&optional window)
   (nth 1 (window-pixel-edges window)))
 
 (defun gnus-ems-redefine ()
@@ -505,7 +505,7 @@ call it with the value of the `gnus-data' text property."
     (fset 'gnus-article-push-button 'gnus-article-push-button-xemacs)
     (fset 'gnus-rebuild-thread 'gnus-rebuild-thread-xemacs)
     (fset 'gnus-article-add-button 'gnus-article-add-button-xemacs)
-    (fset 'gnus-window-left-corner 'gnus-window-left-corner-xemacs)
+    (fset 'gnus-window-top-edge 'gnus-window-top-edge-xemacs)
 
     (if (not gnus-visual)
 	()

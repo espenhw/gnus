@@ -371,29 +371,30 @@ Returns the number of articles marked as read."
  	  (setq files (cdr files)))))
     (if (not gnus-newsgroup-kill-headers)
 	()
-      (save-excursion
-	(while kill-files
-	  (if (not (file-exists-p (car kill-files)))
-	      ()
-	    (message "Processing kill file %s..." (car kill-files))
-	    (find-file (car kill-files))
-	    (gnus-add-current-to-buffer-list)
-	    (goto-char (point-min))
+      (save-window-excursion
+	(save-excursion
+	  (while kill-files
+	    (if (not (file-exists-p (car kill-files)))
+		()
+	      (message "Processing kill file %s..." (car kill-files))
+	      (find-file (car kill-files))
+	      (gnus-add-current-to-buffer-list)
+	      (goto-char (point-min))
 
-	    (if (consp (condition-case nil (read (current-buffer)) 
-			 (error nil)))
-		(gnus-kill-parse-gnus-kill-file)
-	      (gnus-kill-parse-rn-kill-file))
+	      (if (consp (condition-case nil (read (current-buffer)) 
+			   (error nil)))
+		  (gnus-kill-parse-gnus-kill-file)
+		(gnus-kill-parse-rn-kill-file))
 	    
-	    (message "Processing kill file %s...done" (car kill-files)))
-	  (setq kill-files (cdr kill-files)))))
+	      (message "Processing kill file %s...done" (car kill-files)))
+	    (setq kill-files (cdr kill-files)))))
 
-    (if beg
-	(let ((nunreads (- unreads (length gnus-newsgroup-unreads))))
-	  (or (eq nunreads 0)
-	      (message "Marked %d articles as read" nunreads))
-	  nunreads)
-      0)))
+      (if beg
+	  (let ((nunreads (- unreads (length gnus-newsgroup-unreads))))
+	    (or (eq nunreads 0)
+		(message "Marked %d articles as read" nunreads))
+	    nunreads)
+	0))))
 
 ;; Parse a Gnus killfile.
 (defun gnus-score-insert-help (string alist idx)
@@ -478,54 +479,56 @@ If optional 2nd argument ALL is non-nil, articles marked are also applied to.
 If FIELD is an empty string (or nil), entire article body is searched for.
 COMMAND must be a lisp expression or a string representing a key sequence."
   ;; We don't want to change current point nor window configuration.
-  (save-excursion
-    (save-window-excursion
-      ;; Selected window must be summary buffer to execute keyboard
-      ;; macros correctly. See command_loop_1.
-      (switch-to-buffer gnus-summary-buffer 'norecord)
-      (goto-char (point-min))		;From the beginning.
-      (let ((kill-list regexp)
-	    (date (current-time-string))
-	    (command (or exe-command '(gnus-summary-mark-as-read 
-				       nil gnus-kill-file-mark)))
-	    kill kdate prev)
-	(if (listp kill-list)
-	    ;; It is a list.
-	    (if (not (consp (cdr kill-list)))
-		;; It's on the form (regexp . date).
-		(if (zerop (gnus-execute field (car kill-list) 
-					 command nil (not all)))
-		    (if (> (gnus-days-between date (cdr kill-list))
-			   gnus-kill-expiry-days)
-			(setq regexp nil))
-		  (setcdr kill-list date))
-	      (while (setq kill (car kill-list))
-		(if (consp kill)
-		    ;; It's a temporary kill.
-		    (progn
-		      (setq kdate (cdr kill))
-		      (if (zerop (gnus-execute 
-				  field (car kill) command nil (not all)))
-			  (if (> (gnus-days-between date kdate)
-				 gnus-kill-expiry-days)
-			      ;; Time limit has been exceeded, so we
-			      ;; remove the match.
-			      (if prev
-				  (setcdr prev (cdr kill-list))
-				(setq regexp (cdr regexp))))
-			;; Successful kill. Set the date to today.
-			(setcdr kill date)))
-		  ;; It's a permanent kill.
-		  (gnus-execute field kill command nil (not all)))
-		(setq prev kill-list)
-		(setq kill-list (cdr kill-list))))
-	  (gnus-execute field kill-list command nil (not all))))))
-  (if (and (eq major-mode 'gnus-kill-file-mode) regexp (not silent))
-      (gnus-pp-gnus-kill
-       (nconc (list 'gnus-kill field 
-		    (if (consp regexp) (list 'quote regexp) regexp))
-	      (if (or exe-command all) (list (list 'quote exe-command)))
-	      (if all (list t) nil)))))
+  (let ((old-buffer (current-buffer)))
+    (save-excursion
+      (save-window-excursion
+	;; Selected window must be summary buffer to execute keyboard
+	;; macros correctly. See command_loop_1.
+	(switch-to-buffer gnus-summary-buffer 'norecord)
+	(goto-char (point-min))		;From the beginning.
+	(let ((kill-list regexp)
+	      (date (current-time-string))
+	      (command (or exe-command '(gnus-summary-mark-as-read 
+					 nil gnus-kill-file-mark)))
+	      kill kdate prev)
+	  (if (listp kill-list)
+	      ;; It is a list.
+	      (if (not (consp (cdr kill-list)))
+		  ;; It's on the form (regexp . date).
+		  (if (zerop (gnus-execute field (car kill-list) 
+					   command nil (not all)))
+		      (if (> (gnus-days-between date (cdr kill-list))
+			     gnus-kill-expiry-days)
+			  (setq regexp nil))
+		    (setcdr kill-list date))
+		(while (setq kill (car kill-list))
+		  (if (consp kill)
+		      ;; It's a temporary kill.
+		      (progn
+			(setq kdate (cdr kill))
+			(if (zerop (gnus-execute 
+				    field (car kill) command nil (not all)))
+			    (if (> (gnus-days-between date kdate)
+				   gnus-kill-expiry-days)
+				;; Time limit has been exceeded, so we
+				;; remove the match.
+				(if prev
+				    (setcdr prev (cdr kill-list))
+				  (setq regexp (cdr regexp))))
+			  ;; Successful kill. Set the date to today.
+			  (setcdr kill date)))
+		    ;; It's a permanent kill.
+		    (gnus-execute field kill command nil (not all)))
+		  (setq prev kill-list)
+		  (setq kill-list (cdr kill-list))))
+	    (gnus-execute field kill-list command nil (not all))))))
+    (switch-to-buffer old-buffer)
+    (if (and (eq major-mode 'gnus-kill-file-mode) regexp (not silent))
+	(gnus-pp-gnus-kill
+	 (nconc (list 'gnus-kill field 
+		      (if (consp regexp) (list 'quote regexp) regexp))
+		(if (or exe-command all) (list (list 'quote exe-command)))
+		(if all (list t) nil))))))
 
 (defun gnus-pp-gnus-kill (object)
   (if (or (not (consp (nth 2 object)))

@@ -520,7 +520,7 @@ variable to nil.")
 (defvar gnus-interactive-exit t
   "*If non-nil, require your confirmation when exiting Gnus.")
 
-(defvar gnus-kill-killed nil
+(defvar gnus-kill-killed t
   "*If non-nil, Gnus will apply kill files to already killed articles.
 If it is nil, Gnus will never apply kill files to articles that have
 already been through the scoring process, which might very well save lots
@@ -1316,7 +1316,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.15"
+(defconst gnus-version "(ding) Gnus v0.99.16"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1910,6 +1910,7 @@ Thank you for your help in stamping out bugs.
   (save-excursion
     (let ((gnus-process-mark 128)
 	  (gnus-group-marked '("dummy.group")))
+      (gnus-sethash "dummy.group" '(0 . 0) gnus-active-hashtb)
       (gnus-set-work-buffer)
       (gnus-group-insert-group-line nil "dummy.group" 0 nil 0 nil)
       (goto-char (point-min))
@@ -2568,13 +2569,12 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	(setq hor (cdr hor))))
     (and (not invisible) jump-buffer)))
 
-(defun gnus-window-left-corner (&optional window)
+(defun gnus-window-top-edge (&optional window)
   (nth 1 (window-edges window)))
 
 (defun gnus-remove-some-windows ()
   (let ((buffers gnus-window-to-buffer)
-	(lowest (frame-height))
-	buf bufs lowest-buf)
+	buf bufs lowest-buf lowest)
     (save-excursion
       ;; Remove windows on all known Gnus buffers.
       (while buffers
@@ -2586,9 +2586,10 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	     (progn
 	       (setq bufs (cons buf bufs))
 	       (pop-to-buffer buf)
-	       (if (< (gnus-window-left-corner) lowest)
+	       (if (or (not lowest)
+		       (< (gnus-window-top-edge) lowest))
 		   (progn
-		     (setq lowest (gnus-window-left-corner))
+		     (setq lowest (gnus-window-top-edge))
 		     (setq lowest-buf buf)))))
 	(setq buffers (cdr buffers)))
       ;; Remove windows on *all* summary buffers.
@@ -2600,10 +2601,11 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	     (progn
 	       (setq bufs (cons buf bufs))
 	       (pop-to-buffer buf)
-	       (if (< (gnus-window-left-corner) lowest)
+	       (if (or (not lowest)
+		       (< (gnus-window-top-edge) lowest))
 		   (progn
 		     (setq lowest-buf buf)
-		     (setq lowest (gnus-window-left-corner))))))))))
+		     (setq lowest (gnus-window-top-edge))))))))))
       (and lowest-buf 
 	   (progn
 	     (pop-to-buffer lowest-buf)
@@ -2769,24 +2771,6 @@ If nothing is specified, use the variable gnus-overload-functions."
     (while (gnus-gethash name gnus-newsrc-hashtb)
       (setq name (concat leaf "<" (int-to-string (setq num (1+ num))) ">")))
     name))
-
-(defun gnus-find-file-noselect (file &optional force)
-  "Does vaguely the same as find-file-noselect. No hooks are run."
-  (let (buf insert)
-    (if (setq buf (get-file-buffer file))
-	(setq insert force)
-      (setq buf (create-file-buffer file))
-      (setq insert t))
-    (if (not insert)
-	buf
-      (save-excursion
-	(set-buffer buf)
-	(erase-buffer)
-	(and (file-readable-p file)
-	     (insert-file-contents file))
-	(set-visited-file-name file)
-	(set-buffer-modified-p nil)
-	(current-buffer)))))
 
 ;;; List and range functions
 
@@ -3363,7 +3347,8 @@ listed."
 			 (prefix-numeric-value current-prefix-arg)
 		       (or
 			(gnus-group-default-level nil t)
-			gnus-level-subscribed))))
+			gnus-group-default-list-level
+			level-subscribed))))
   (or level
       (setq level (car gnus-group-list-mode)
 	    unread (cdr gnus-group-list-mode)))
@@ -4925,30 +4910,21 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 	(gnus-clear-system))))
 
 (defun gnus-offer-save-summaries ()
-  (let ((buffers (buffer-list))
-	answer)
-    (save-excursion
-      (while (and buffers (not (eq answer ?q)))
-	(and 
-	 ;; We look for buffers with "Summary" in the name.
-	 (string-match "Summary" (or (buffer-name (car buffers)) ""))
-	 (progn
-	   (set-buffer (car buffers))
-	   ;; We check that this is, indeed, a summary buffer.
-	   (eq major-mode 'gnus-summary-mode)) 
-	 ;; We ask the user whether she wants to save the info.
-	 (or (eq answer ?!)
-	     (progn
-	       (setq answer nil)
-	       (while (not (memq answer '(?y ?n ?! ?q)))
-		 (message (format "%sUpdate summary buffer %s? (y, n, !, q)"
-				  (if answer "Illegal char. " "")
-				  (buffer-name)))
-		 (setq answer (read-char)))
-	       (or (eq answer ?y) (eq answer ?!))))
-	 ;; We do it by simply exiting.
-	 (gnus-summary-exit))
-	(setq buffers (cdr buffers))))))
+  (save-excursion
+    (let ((buflist (buffer-list)) buffers bufname)
+      (while buflist
+	(and (setq bufname (buffer-name (car buflist)))
+	     (string-match "Summary" bufname)
+	     (setq buffers (cons bufname buffers)))
+	(setq buflist (cdr buflist)))
+      (map-y-or-n-p "Update summary buffer %s? "
+		    (lambda (buf)
+		      (set-buffer buf)
+		      (and
+		       ;; We check that this is, indeed, a summary buffer.
+		       (eq major-mode 'gnus-summary-mode)
+		       (gnus-summary-exit)))
+		    buffers))))
 
 (defun gnus-group-describe-briefly ()
   "Give a one line description of the group mode commands."
@@ -8589,9 +8565,6 @@ article. If BACKWARD (the prefix) is non-nil, search backward instead."
   "Force re-fetching of the current article."
   (interactive)
   (gnus-set-global-variables)
-  (or gnus-current-article
-      (error "There is no current article"))
-  (gnus-summary-goto-subject gnus-current-article)
   (gnus-summary-select-article nil 'force)
   (gnus-configure-windows 'article)
   (gnus-summary-position-cursor))
@@ -13357,7 +13330,7 @@ If FORCE is non-nil, the .newsrc file is read."
 				 gnus-current-startup-file)))
 	     ;; Quickly loadable .newsrc.
 	     (set-buffer (get-buffer-create " *Gnus-newsrc*"))
-	     (set-visited-file-name (concat gnus-current-startup-file ".eld"))
+	     (setq buffer-file-name (concat gnus-current-startup-file ".eld"))
 	     (gnus-add-current-to-buffer-list)
 	     (buffer-disable-undo (current-buffer))
 	     (erase-buffer)
@@ -13399,7 +13372,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	info ranges range)
     (save-excursion
       (set-buffer (create-file-buffer gnus-current-startup-file))
-      (set-visited-file-name gnus-current-startup-file)
+      (setq buffer-file-name gnus-current-startup-file)
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       ;; Write options.

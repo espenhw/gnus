@@ -271,7 +271,7 @@ The headers will be included in the sequence they are matched.")
 (defvar gnus-uu-mark-map nil)
 
 (define-prefix-command 'gnus-uu-mark-map)
-(define-key gnus-summary-mark-map "p" 'gnus-uu-mark-map)
+(define-key gnus-summary-mark-map "P" 'gnus-uu-mark-map)
 (define-key gnus-uu-mark-map "p" 'gnus-summary-mark-as-processable)
 (define-key gnus-uu-mark-map "u" 'gnus-summary-unmark-as-processable)
 (define-key gnus-uu-mark-map "U" 'gnus-summary-unmark-all-processable)
