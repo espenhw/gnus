@@ -298,7 +298,7 @@
 
 ;;; Setup Code:
 
-(defconst nnir-version "$Id: nnir.el,v 7.2 2004/01/16 22:16:40 rsteib Exp $"
+(defconst nnir-version "$Id: nnir.el,v 7.3 2004/03/15 09:43:20 rsteib Exp $"
   "Version of NNIR.")
 
 (require 'cl)
@@ -692,7 +692,17 @@ that it is for Namazu, not Glimpse."
     'gnus-group-make-nnir-group))
 (add-hook 'gnus-group-mode-hook 'nnir-group-mode-hook)
 
-
+(defmacro nnir-group-server (group)
+  "Return the server for a foreign newsgroup GROUP.
+The returned format is as `gnus-server-to-method' needs it.  See
+`gnus-group-real-prefix' and `gnus-group-real-name'."
+  `(let ((gname ,group))
+     (if (string-match "^\\([^:]+\\):" gname)
+	 (setq gname (match-string 1 gname))
+       nil)
+     (if (string-match "^\\([^+]+\\)\\+\\(.+\\)$" gname)
+	 (format "%s:%s" (match-string 1 gname) (match-string 2 gname))
+       (concat gname ":"))))
 
 ;; Summary mode commands.
 
@@ -1485,17 +1495,6 @@ form 'backend:name'."
 ;; 	(symbol-value key))
 ;;       (symbol-value key))
 ;;     ))
-
-(defmacro nnir-group-server (group)
-  "Returns the server for a foreign newsgroup in the format as gnus-server-to-method needs it. Compare to gnus-group-real-prefix and gnus-group-real-name."
-  `(let ((gname ,group))
-    (if (string-match "^\\([^:]+\\):" gname)
-	(setq gname (match-string 1 gname))
-      nil)
-    (if (string-match "^\\([^+]+\\)\\+\\(.+\\)$" gname)
-	(format "%s:%s" (match-string 1 gname) (match-string 2 gname))
-      (concat gname ":"))
-    ))
 
 (defun nnir-group-full-name (shortname server)
   "For the given group name, return a full Gnus group name.
