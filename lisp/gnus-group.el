@@ -3087,7 +3087,8 @@ sort in reverse order."
 ;;; Clearing data
 
 (defun gnus-group-clear-data (&optional arg)
-  "Clear all marks and read ranges from the current group."
+  "Clear all marks and read ranges from the current group.
+Obeys the process/prefix convention."
   (interactive "P")
   (gnus-group-iterate arg
     (lambda (group)

@@ -1,7 +1,16 @@
 2005-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* nnheader.el (nnheader-find-file-noselect): Added doc string.
+
+	* nnfolder.el (nnfolder-read-folder): Use RAWFILE for
+	`nnheader-find-file-noselect' to avoid
+	`large-file-warning-threshold'.
+
 	* gnus-sum.el (gnus-summary-caesar-message): Apply
 	`gnus-treat-article' after rotation.
+
+	* gnus-group.el (gnus-group-clear-data): Mention process/prefix in
+	doc string.
 
 2005-02-22  Simon Josefsson  <jas@extundo.com>
 
