@@ -141,6 +141,7 @@
 (eval-and-compile
   (autoload 'starttls-open-stream "starttls")
   (autoload 'starttls-negotiate "starttls")
+  (autoload 'sasl-find-mechanism "sasl")
   (autoload 'digest-md5-parse-digest-challenge "digest-md5")
   (autoload 'digest-md5-digest-response "digest-md5")
   (autoload 'digest-md5-digest-uri "digest-md5")
@@ -291,6 +292,7 @@ stream.")
 			      kerberos4
 			      digest-md5
 			      cram-md5
+			      sasl
 			      login
 			      anonymous)
   "Priority of authenticators to consider when authenticating to server.")
@@ -298,6 +300,7 @@ stream.")
 (defvar imap-authenticator-alist
   '((gssapi     imap-gssapi-auth-p    imap-gssapi-auth)
     (kerberos4  imap-kerberos4-auth-p imap-kerberos4-auth)
+    (sasl	imap-sasl-auth-p      imap-sasl-auth)
     (cram-md5   imap-cram-md5-p       imap-cram-md5-auth)
     (login      imap-login-p          imap-login-auth)
     (anonymous  imap-anonymous-p      imap-anonymous-auth)
@@ -903,6 +906,61 @@ Returns t if login was successful, nil otherwise."
     (imap-ok-p (imap-send-command-wait
 		(concat "LOGIN anonymous \"" (concat (user-login-name) "@"
 						     (system-name)) "\"")))))
+
+(defun imap-sasl-make-mechanisms (buffer)
+  (let ((mecs '()))
+    (mapc (lambda (sym)
+	    (let ((name (symbol-name sym)))
+	      (if (and (> (length name) 5)
+		       (string-equal "AUTH=" (substring name 0 5 )))
+		  (setq mecs (cons (substring name 5) mecs)))))
+	  (imap-capability nil buffer))
+    mecs))
+
+(defun imap-sasl-auth-p (buffer)
+  (and (condition-case ()
+	   (require 'sasl)
+	 (error nil))
+       (sasl-find-mechanism (imap-sasl-make-mechanisms buffer))))
+
+(defun imap-sasl-auth (buffer)
+  "Login to server using the SASL method."
+  (message "imap: Authenticating using SASL...")
+  (with-current-buffer buffer
+    (make-local-variable 'imap-username)
+    (make-local-variable 'imap-sasl-client)
+    (make-local-variable 'imap-sasl-step)
+    (let ((mechanism (sasl-find-mechanism (imap-sasl-make-mechanisms buffer)))
+	  logged user)
+      (while (not logged)
+	(setq user (or imap-username
+		       (read-from-minibuffer
+			(concat "IMAP username for " imap-server " using SASL "
+				(sasl-mechanism-name mechanism) ": ")
+			(or user imap-default-user))))
+	(when user
+	  (setq imap-sasl-client (sasl-make-client mechanism user "imap2" imap-server)
+		imap-sasl-step (sasl-next-step imap-sasl-client nil))
+	  (let ((tag (imap-send-command
+		      (if (sasl-step-data imap-sasl-step)
+			  (format "AUTHENTICATE %s %s"
+				  (sasl-mechanism-name mechanism)
+				  (sasl-step-data imap-sasl-step))
+			(format "AUTHENTICATE %s" (sasl-mechanism-name mechanism)))
+		      buffer)))
+	    (while (eq (imap-wait-for-tag tag) 'INCOMPLETE)
+	      (sasl-step-set-data imap-sasl-step (base64-decode-string imap-continuation))
+	      (setq imap-continuation nil
+		    imap-sasl-step (sasl-next-step imap-sasl-client imap-sasl-step))
+	      (imap-send-command-1 (if (sasl-step-data imap-sasl-step)
+				       (base64-encode-string (sasl-step-data imap-sasl-step) t)
+				     "")))
+	    (if (imap-ok-p (imap-wait-for-tag tag))
+		(setq imap-username user
+		      logged t)
+	      (message "Login failed...")
+	      (sit-for 1)))))
+      logged)))
 
 (defun imap-digest-md5-p (buffer)
   (and (imap-capability 'AUTH=DIGEST-MD5 buffer)
