@@ -2331,6 +2331,24 @@ This should be an alist for Emacs, or a plist for XEmacs."
 			 (symbol :tag "Parameter")
 			 (sexp :tag "Value")))))
 
+(defcustom gnus-user-agent 'emacs-gnus-type
+  "Which information should be exposed in the User-Agent header.
+
+It can be one of the symbols `gnus' \(show only Gnus version\), `emacs-gnus'
+\(show only Emacs and Gnus versions\), `emacs-gnus-config' \(same as
+`emacs-gnus' plus system configuration\), `emacs-gnus-type' \(same as
+`emacs-gnus' plus system type\) or a custom string.  If you set it to a
+string, be sure to use a valid format, see RFC 2616."
+  :group 'gnus-message
+  :type '(choice
+	  (item :tag "Show Gnus and Emacs versions and system type"
+		emacs-gnus-type)
+	  (item :tag "Show Gnus and Emacs versions and system configuration"
+		emacs-gnus-config)
+	  (item :tag "Show Gnus and Emacs versions" emacs-gnus)
+	  (item :tag "Show only Gnus version" gnus)
+	  (string :tag "Other")))
+
 
 ;;; Internal variables
 

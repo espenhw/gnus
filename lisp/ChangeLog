@@ -1,5 +1,9 @@
 2004-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el (gnus-user-agent): Moved here.
+
+	* gnus-msg.el (gnus-user-agent): Moved from here.
+
 	* gnus.el (gnus-version-number): Bump.
 
 2004-01-03 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
