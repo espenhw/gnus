@@ -547,12 +547,12 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
   (if (not force)
       ()				; Don't delete the articles.
     ;; Delete the file that holds the group.
-    (ignore-errors
-      (delete-file (nnfolder-group-pathname group))
-      (when (file-exists-p (nnfolder-group-nov-pathname group))
-	(delete-file (nnfolder-group-nov-pathname group)))
-      (when (file-exists-p (nnfolder-group-marks-pathname group))
-	(delete-file (nnfolder-group-marks-pathname group)))))
+    (let ((data (nnfolder-group-pathname group))
+	  (nov (nnfolder-group-nov-pathname group))
+	  (mrk (nnfolder-group-marks-pathname group)))
+      (ignore-errors (delete-file data))
+      (ignore-errors (delete-file nov))
+      (ignore-errors (delete-file mrk))))
   ;; Remove the group from all structures.
   (setq nnfolder-group-alist
 	(delq (assoc group nnfolder-group-alist) nnfolder-group-alist)

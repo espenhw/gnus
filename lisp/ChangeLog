@@ -1,5 +1,9 @@
 2002-05-01  Simon Josefsson  <jas@extundo.com>
 
+	* nnfolder.el (nnfolder-request-delete-group): Figure out nov/mrk
+	filename before deleting the group itself, because the presence of
+	a group filename decides if long filenames are used or not.
+
 	* gnus-art.el (gnus-button-alist): Don't inline
 	gnus-button-url-regexp.  This makes it possible to change g-b-u-r
 	without also modifying g-button-alist.
