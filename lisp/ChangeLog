@@ -1,4 +1,16 @@
+2003-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-generate-headers-first): Added customization
+	if variable is a list.
+
+2003-01-07  Michael Shields  <shields@msrl.com>
+
+	* gnus-art.el (gnus-article-next-page): Correctly handle the case
+	where the last line of the article is the last line of the window.
+
 2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-debug): Use ignore-errors.
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Use
 	`gnus-summary-update-line'. 

@@ -4732,7 +4732,7 @@ Argument LINES specifies lines to be scrolled up."
   (if (save-excursion
 	(end-of-line)
 	(and (pos-visible-in-window-p)	;Not continuation line.
-	     (eobp)))
+	     (>= (1+ (point)) (point-max)))) ;Allow for trailing newline.
       ;; Nothing in this page.
       (if (or (not gnus-page-broken)
 	      (save-excursion

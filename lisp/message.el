@@ -690,7 +690,9 @@ Note that the variable `message-deletable-headers' specifies headers which
 are to be deleted and then re-generated before sending, so this variable
 will not have a visible effect for those headers."
   :group 'message-headers
-  :type 'boolean)
+  :type '(choice (const :tag "None" nil)
+                 (const :tag "All" t)
+                 (repeat (sexp :tag "Header"))))
 
 (defcustom message-setup-hook nil
   "Normal hook, run each time a new outgoing message is initialized.
