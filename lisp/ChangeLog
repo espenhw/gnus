@@ -2,6 +2,13 @@
 
 	* imap.el (imap-kerberos4-open): Erase more (fixes race condition?).
 
+	* nnimap.el (nnimap-request-update-info-internal): Remove tick
+	marks from dormant articles. (See nnimap-request-set-mark.)
+	(nnimap-retrieve-headers-progress): Demule.
+	(nnimap-open-server): Call nnoo-change-server twice, once for
+	getting the nnimap-server-buffer and once for letting n-c-s set
+	the variables in that buffer.
+
 2000-09-08  David Edmondson <dme@dme.org>
 
 	* gnus.el (gnus-short-group-name): Guess separator.

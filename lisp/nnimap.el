@@ -396,11 +396,12 @@ If EXAMINE is non-nil the group is selected read-only."
       (with-current-buffer nnimap-server-buffer
 	(setq uid imap-current-message
 	      mbx imap-current-mailbox
-	      headers (if (imap-capability 'IMAP4rev1)
-			  ;; xxx don't just use car? alist doesn't contain
-			  ;; anything else now, but it might...
-			  (nth 2 (car (imap-message-get uid 'BODYDETAIL)))
-			(imap-message-get uid 'RFC822.HEADER))
+	      headers (nnimap-demule
+		       (if (imap-capability 'IMAP4rev1)
+			   ;; xxx don't just use car? alist doesn't contain
+			   ;; anything else now, but it might...
+			   (nth 2 (car (imap-message-get uid 'BODYDETAIL)))
+			 (imap-message-get uid 'RFC822.HEADER)))
 	      lines (imap-body-lines (imap-message-body imap-current-message))
 	      chars (imap-message-get imap-current-message 'RFC822.SIZE)))
       (nnheader-insert-nov
@@ -578,6 +579,8 @@ If EXAMINE is non-nil the group is selected read-only."
 		      (cadr (assq 'nnimap-server-address defs))) defs)
 	(push (list 'nnimap-address server) defs)))
     (nnoo-change-server 'nnimap server defs)
+    (with-current-buffer (get-buffer-create nnimap-server-buffer)
+      (nnoo-change-server 'nnimap server defs))
     (or (and nnimap-server-buffer
 	     (imap-opened nnimap-server-buffer))
 	(nnimap-open-connection server))))
@@ -843,6 +846,18 @@ function is generally only called when Gnus is shutting down."
 		      (gnus-info-marks info))
 		     t)))
 		gnus-article-mark-lists)
+
+	;; nnimap mark dormant article as ticked too (for other clients)
+	;; so we remove that mark for gnus since we support dormant
+	(gnus-info-set-marks
+	 info 
+	 (nnimap-update-alist-soft
+	  'tick
+	  (gnus-remove-from-range
+	   (cdr-safe (assoc 'tick (gnus-info-marks info)))
+	   (cdr-safe (assoc 'dormant (gnus-info-marks info))))
+	  (gnus-info-marks info))
+	 t)
 	
 	(gnus-message 5 "nnimap: Updating info for %s...done"
 		      (gnus-info-group info))
