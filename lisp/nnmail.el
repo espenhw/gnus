@@ -520,24 +520,18 @@ by anything."
 (defvar nnmail-split-history nil
   "List of group/article elements that say where the previous split put messages.")
 
-(defvar nnmail-split-fancy-syntax-table nil
+(defvar nnmail-split-fancy-syntax-table
+  (let ((table (make-syntax-table)))
+    ;; support the %-hack
+    (modify-syntax-entry ?\% "." table)
+    table)
   "Syntax table used by `nnmail-split-fancy'.")
-(unless (syntax-table-p nnmail-split-fancy-syntax-table)
-  (setq nnmail-split-fancy-syntax-table
-	(copy-syntax-table (standard-syntax-table)))
-  ;; support the %-hack
-  (modify-syntax-entry ?\% "." nnmail-split-fancy-syntax-table))
 
 (defvar nnmail-prepare-save-mail-hook nil
   "Hook called before saving mail.")
 
 (defvar nnmail-split-tracing nil)
 (defvar nnmail-split-trace nil)
-
-
-
-(defconst nnmail-version "nnmail 1.0"
-  "nnmail version.")
 
 
 
@@ -1609,7 +1603,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		   (cond
 		    ((memq nnmail-treat-duplicates '(warn delete))
 		     nnmail-treat-duplicates)
-		    ((nnheader-functionp nnmail-treat-duplicates)
+		    ((functionp nnmail-treat-duplicates)
 		     (funcall nnmail-treat-duplicates message-id))
 		    (t
 		     nnmail-treat-duplicates))))
@@ -1775,7 +1769,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (let (nnmail-cache-accepted-message-ids)
     ;; Don't enter Message-IDs into cache.
     ;; Let users hack it in TARGET function.
-    (when (nnheader-functionp target)
+    (when (functionp target)
       (setq target (funcall target group)))
     (unless (eq target 'delete)
       (when (or (gnus-request-group target)
