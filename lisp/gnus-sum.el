@@ -2683,7 +2683,7 @@ The following commands are available:
   `(assq ,number gnus-newsgroup-data))
 
 (defmacro gnus-data-find-list (number &optional data)
-  `(let ((bdata ,(or data 'gnus-newsgroup-data)))
+  `(let* ((bdata ,(or data 'gnus-newsgroup-data)))
      (memq (assq ,number bdata)
 	   bdata)))
 
@@ -6717,36 +6717,16 @@ Returns the article selected or nil if there are no matching articles."
     (gnus-data-number (car gnus-newsgroup-data)))
    ;; Find the first unread article.
    (t
-    (let ((data gnus-newsgroup-data)
-          (gnus-newsgroup-unreads gnus-newsgroup-unreads)
-          (gnus-newsgroup-undownloaded gnus-newsgroup-undownloaded)
-          (gnus-newsgroup-unseen gnus-newsgroup-unseen)
-          (gnus-newsgroup-unfetched gnus-newsgroup-unfetched))
+    (let ((data gnus-newsgroup-data))
       (while (and data
-                  (not (let ((num (gnus-data-number (car data)))
-                             (matched nil))
-                         (while (> num (or (car gnus-newsgroup-unfetched)
-                                           (1+ num)))
-                           (pop gnus-newsgroup-unfetched))
-                         (unless (eq num (car gnus-newsgroup-unfetched))
-                           (when unread
-                             (while (> num (or (car gnus-newsgroup-unreads)
-                                               (1+ num)))
-                               (pop gnus-newsgroup-unreads))
-                             (setq matched (eq num (car gnus-newsgroup-unreads))))
-                           (unless matched
-                             (when undownloaded
-                               (while (> num (or (car gnus-newsgroup-undownloaded)
-                                                 (1+ num)))
-                                 (pop gnus-newsgroup-undownloaded))
-                               (setq matched (eq num (car gnus-newsgroup-undownloaded))))
-                             (unless matched
-                               (when unseen
-                                 (while (> num (or (car gnus-newsgroup-unseen)
-                                                   (1+ num)))
-                                   (pop gnus-newsgroup-unseen))
-                                 (setq matched (eq num (car gnus-newsgroup-unseen)))))))
-                         matched)))
+                  (let ((num (gnus-data-number (car data))))
+                    (or (memq num gnus-newsgroup-unfetched)
+                        (not (or (and unread
+                                      (memq num gnus-newsgroup-unreads))
+                                 (and undownloaded
+                                      (memq num gnus-newsgroup-undownloaded))
+                                 (and unseen
+                                      (memq num gnus-newsgroup-unseen)))))))
         (setq data (cdr data)))
       (prog1 
           (if data
@@ -7229,13 +7209,14 @@ Return nil if there are no unseen articles."
     (gnus-summary-position-point)))
 
 (defun gnus-summary-first-unseen-or-unread-subject ()
-  "Place the point on the subject line of the first unseen article.
-Return nil if there are no unseen articles."
+  "Place the point on the subject line of the first unseen article or,
+if all article have been seen, on the subject line of the first unread
+article."
   (interactive)
   (prog1
-      (unless (when (gnus-summary-first-subject t nil t)
+      (unless (when (gnus-summary-first-subject nil nil t)
 		(gnus-summary-show-thread)
-		(gnus-summary-first-subject t nil t))
+		(gnus-summary-first-subject nil nil t))
 	(when (gnus-summary-first-subject t)
 	  (gnus-summary-show-thread)
 	  (gnus-summary-first-subject t)))

@@ -1,3 +1,9 @@
+2002-01-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-sum.el (gnus-summary-first-subject): Fixed bug that I
+	introduced on 2002-01-22.
+	(gnus-summary-first-unseen-or-unread-subject): Ditto.
+
 2003-01-23  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-regex-headers, spam-list-of-checks) 
