@@ -1,4 +1,11 @@
+Fri Jun  7 22:08:53 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-summary-refer-article): Would bug out when
+	referring non-sparse articles.
+
 Fri Jun  7 19:59:45 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.11 is released.
 
 	* gnus.el (gnus-summary-save-article): Would set
 	`gnus-original-article-buffer' to a bogus value.

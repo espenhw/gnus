@@ -1728,7 +1728,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.11"
+(defconst gnus-version-number "5.2.12"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -11084,7 +11084,9 @@ Return how many articles were fetched."
     (unless (string-match ">$" message-id)
       (setq message-id (concat message-id ">")))
     (let* ((header (gnus-id-to-header message-id))
-	   (sparse (memq (mail-header-number header) gnus-newsgroup-sparse)))
+	   (sparse (and header
+			(memq (mail-header-number header)
+			      gnus-newsgroup-sparse))))
       (if header
 	  (prog1
 	      ;; The article is present in the buffer, to we just go to it.
