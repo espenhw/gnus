@@ -2136,6 +2136,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
 				    (nnmail-fetch-field "Followup-To"))
 				  gnus-newsgroup-name method))))))
 
+(autoload 'idna-to-unicode "idna")
+
 (defun article-decode-idna-rhs ()
   "Decode IDNA strings in RHS in From:, To: and Cc: headers in current buffer."
   (when gnus-use-idna
