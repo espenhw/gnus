@@ -228,7 +228,7 @@ Which version of Emacs do I need?
 Answer: 
 
  Gnus 5.10.0 requires an Emacs version that is greater
- than or equal to Emacs 20.3 or XEmacs 20.1.
+ than or equal to Emacs 20.7 or XEmacs 21.1.
  
 @ifnottex
 @node [1.6],  , [1.5], FAQ 1 - Installation
