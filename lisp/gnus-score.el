@@ -781,8 +781,9 @@ If optional argument `EXTRA' is non-nil, it's a non-standard overview header."
 	((eq type 'f)
 	 (setq match (gnus-simplify-subject-fuzzy match))))
   (let ((score (gnus-score-delta-default score))
-	(header (format "%s" (downcase header)))
+	(header (downcase header))
 	new)
+    (set-text-properties 0 (length header) nil header)
     (when prompt
       (setq match (read-string
 		   (format "Match %s on %s, %s: "
@@ -797,8 +798,7 @@ If optional argument `EXTRA' is non-nil, it's a non-standard overview header."
 		       (int-to-string match)
 		     match))))
 
-    ;; Get rid of string props.
-    (setq match (format "%s" match))
+    (set-text-properties 0 (length match) nil match)
 
     ;; If this is an integer comparison, we transform from string to int.
     (when (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)
