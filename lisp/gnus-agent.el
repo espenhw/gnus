@@ -59,14 +59,14 @@
   :group 'gnus-agent
   :type 'integer)
 
-(defcustom gnus-agent-expire-days nil
+(defcustom gnus-agent-expire-days 7
   "Read articles older than this will be expired.
 This can also be a list of regexp/day pairs.  The regexps will be
 matched against group names.  If nil, articles in the agent cache are
 never expired."
   :group 'gnus-agent
   :type '(choice (number :tag "days")
-		 (const :tag "never" nil)))
+		 (sexp :tag "List" nil)))
 
 (defcustom gnus-agent-expire-all nil
   "If non-nil, also expire unread, ticked and dormant articles.
@@ -1530,7 +1530,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
       (insert "\n"))))
 
 (defun gnus-agent-article-name (article group)
-  (expand-file-name (if (stringp article) article (string-to-number article))
+  (expand-file-name article
 		    (file-name-as-directory
 		     (expand-file-name (gnus-agent-group-path group)
 				       (gnus-agent-directory)))))
@@ -1613,9 +1613,9 @@ FILE and places the combined headers into `nntp-server-buffer'."
       (let ((marked-articles gnus-newsgroup-downloadable))
         ;; Identify the articles marked for download
         (unless gnus-newsgroup-active
-	  ;; This needs to be a gnus-summary local variable that is
-          ;; NOT bound to any value above (its global value should
-          ;; default to nil).
+	  ;; The variable gnus-newsgroup-active was selected as I need
+	  ;; a gnus-summary local variable that is NOT bound to any
+	  ;; value (its global value should default to nil).
           (dolist (mark gnus-agent-download-marks)
             (let ((arts (cdr (assq mark (gnus-info-marks
                                          (setq info (gnus-get-info group)))))))
@@ -2447,14 +2447,13 @@ The articles on which the expiration process runs are selected as follows:
 Setting GROUP will limit expiration to that group.
 FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
   (interactive)
-  (if (and (not gnus-agent-expire-days)
-	   (or (not (eq articles t))
-	       (yes-or-no-p (concat "Are you sure that you want to expire all "
-				    "articles in " (if group group
-						     "every agentized group")
-				    "."))))
-      (gnus-agent-expire-1 articles group force)
-    (gnus-message 4 "Expiry...done")))
+  (if (or (not (eq articles t))
+          (yes-or-no-p (concat "Are you sure that you want to expire all "
+                               "articles in " (if group group
+                                                "every agentized group")
+                               ".")))
+      (gnus-agent-expire-1 articles group force))
+  (gnus-message 4 "Expiry...done"))
 
 ;;;###autoload
 (defun gnus-agent-batch ()
@@ -2705,7 +2704,8 @@ If REREAD is not nil, downloaded articles are marked as unread."
          (setq load nil)
          (goto-char (point-min))
          (while (< (point) (point-max))
-	   (cond ((looking-at "[0-9]+\t")
+	   (cond ((and (looking-at "[0-9]+\t")
+                       (<= (- (match-end 0) (match-beginning 0)) 9))
                   (push (read (current-buffer)) nov-arts)
                   (forward-line 1)
                   (let ((l1 (car nov-arts))
@@ -2800,9 +2800,10 @@ If REREAD is not nil, downloaded articles are marked as unread."
        ;; Restore the last article ID if it is not already in the new alist
        (let ((n (last alist))
              (o (last (gnus-agent-load-alist group))))
-         (cond ((not n)
-                (when o
-                  (push (cons (caar o) nil) alist)))
+         (cond ((not o)
+                nil)
+               ((not n)
+                (push (cons (caar o) nil) alist))
                ((< (caar n) (caar o))
                 (setcdr n (list (car o)))))))
                      
