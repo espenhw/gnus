@@ -852,6 +852,7 @@ external if displayed external."
 	    (quit)
 	    (error))
 	  (ignore-errors (and (cdr object) (kill-buffer (cdr object))))
+	  (message "Waiting for external displayer to die...done")
 	  (ignore-errors (delete-file (car object)))
 	  (ignore-errors (delete-directory (file-name-directory
 					    (car object)))))
