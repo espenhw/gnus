@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.7 2002/05/04 14:20:42 jas Exp $
+;; RCS: $Id: mml1991.el,v 6.8 2002/09/29 20:33:02 jas Exp $
 
 ;;; Code:
 
@@ -230,10 +230,12 @@
       (kill-region (point-min) (point)))
     (unless (pgg-encrypt-region
 	     (point-min) (point-max) 
-	     (list (or
-		    (message-options-get 'message-recipients)
-		    (message-options-set 'message-recipients
-					 (read-string "Recipients: ")))))
+	     (split-string
+	      (or
+	       (message-options-get 'message-recipients)
+	       (message-options-set 'message-recipients
+				    (read-string "Recipients: ")))
+	      "[ \f\t\n\r\v,]+"))
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
     (kill-region (point-min) (point-max))
