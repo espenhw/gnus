@@ -168,7 +168,9 @@ handshake, or NIL on failure."
 	  (if (or (and done-ok (not done-bad))
 		  ;; prevent mitm that fake success msg after failure msg.
 		  (and done-ok done-bad (< done-ok done-bad)))
-	      info))))))
+	      info
+	    (message "STARTTLS negotiation failed: %s" info)
+	    nil))))))
 
 (defun open-starttls-stream (name buffer host service)
   "Open a TLS connection for a service to a host.
@@ -179,13 +181,13 @@ NAME is name for process.  It is modified if necessary to make it unique.
 BUFFER is the buffer (or buffer-name) to associate with the process.
  Process output goes at end of that buffer, unless you specify
  an output stream or filter function to handle the output.
- BUFFER may be also nil, meaning that this process is not associated
- with any buffer
 Third arg is name of the host to connect to, or its IP address.
 Fourth arg SERVICE is name of the service desired, or an integer
 specifying a port number to connect to."
-  (let ((cmds starttls-programs) cmd done)
+  (let ((cmds starttls-programs) cmd done old-max)
     (message "Opening STARTTLS connection to `%s'..." host)
+    (with-current-buffer buffer
+      (setq old-max (point-max)))
     (while (and (not done) (setq cmd (pop cmds)))
       (message "Opening STARTTLS connection with `%s'..." cmd)
       (let* ((process-connection-type starttls-process-connection-type)
@@ -211,7 +213,10 @@ specifying a port number to connect to."
 	(message "Opening STARTTLS connection with `%s'...%s" cmd
 		 (if done "done" "failed"))
 	(if done
-	    (setq done process)
+	    (progn
+	      (with-current-buffer buffer
+		(delete-region old-max (point-max)))
+	      (setq done process))
 	  (delete-process process))))
     (message "Opening STARTTLS connection to `%s'...%s"
 	     host (if done "done" "failed"))
