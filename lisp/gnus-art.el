@@ -2593,11 +2593,14 @@ should replace the \"Date:\" one, or should be added below it."
 			     date)))
 	 ;; Let the user define the format.
 	 ((eq type 'user)
-	  (if (gnus-functionp gnus-article-time-format)
-	      (funcall gnus-article-time-format time)
-	    (concat
-	     "Date: "
-	     (format-time-string gnus-article-time-format time))))
+	  (let ((format (or (condition-case nil
+				(with-current-buffer gnus-summary-buffer
+				  gnus-article-time-format)
+			      (error nil))
+			    gnus-article-time-format)))
+	    (if (gnus-functionp format)
+		(funcall format time)
+	      (concat "Date: " (format-time-string format time)))))
 	 ;; ISO 8601.
 	 ((eq type 'iso8601)
 	  (let ((tz (car (current-time-zone time))))
