@@ -2097,10 +2097,10 @@ REMOVE not nil, remove the ADDRESSES."
 (defun spam-spamassassin-register-ham-routine (articles &optional unregister)
   (spam-spamassassin-register-with-sa-learn articles nil unregister))
 
-(defun spam-spamassassin-register-spam-routine (articles)
+(defun spam-spamassassin-unregister-spam-routine (articles)
   (spam-spamassassin-register-with-sa-learn articles t t))
 
-(defun spam-spamassassin-register-ham-routine (articles)
+(defun spam-spamassassin-unregister-ham-routine (articles)
   (spam-spamassassin-register-with-sa-learn articles nil t))
 
 ;;;; Hooks
