@@ -1317,7 +1317,7 @@ addition to the set values for the group."
 
     ;; before we begin, remove any article limits
     (ignore-errors
-      (universal-argument (gnus-summary-pop-limit)))
+      (gnus-summary-pop-limit t))
 
     ;; first of all, unregister any articles that are no longer ham or spam
     ;; we have to iterate over the processors, or else we'll be too slow
