@@ -131,6 +131,7 @@ Common keywords should be listed here.")
        (:subtype hotmail)
        (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
        (:password)
+       (:dontexpunge)
        (:authentication password)))
     "Mapping from keywords to default values.
 All keywords that can be used must be listed here."))
@@ -670,7 +671,9 @@ This only works when `display-time' is enabled."
 (defun mail-source-fetch-webmail (source callback)
   "Fetch for webmail source."
   (mail-source-bind (webmail source)
-    (let ((mail-source-string (format "webmail:%s:%s" subtype user)))
+    (let ((mail-source-string (format "webmail:%s:%s" subtype user))
+	  (webmail-newmail-only dontexpunge)
+	  (webmail-move-to-trash-can (not dontexpunge)))
       (when (eq authentication 'password)
 	(setq password
 	      (or password
