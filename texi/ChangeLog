@@ -1,3 +1,9 @@
+2004-04-14  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus.texi (Agent Visuals): Referenced new F(etched) group line
+	format.
+	(Group Line Specification): Added F(etched) group line format.
+
 2004-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Indirect Functions): Add

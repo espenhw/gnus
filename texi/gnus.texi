@@ -1896,6 +1896,12 @@ the group lately.
 A string that says when you last read the group (@pxref{Group
 Timestamp}).
 
+@item F
+The disk space used by the articles fetched by both the cache and
+agent.  The value is automatically scaled to bytes(B), kilobytes(K),
+megabytes(M), or gigabytes(G) to minimize the column width.  A format
+of %7F is sufficient for a fixed-width column.
+
 @item u
 User defined specifier.  The next character in the format string should
 be a letter.  Gnus will call the function
@@ -18364,6 +18370,15 @@ group parameter to t.  This parameter, like all other agent
 parameters, may be set on an Agent Category (@pxref{Agent
 Categories}), a Group Topic (@pxref{Topic Parameters}), or an
 individual group (@pxref{Group Parameters}).
+
+The one problem common to all users using the agent is how quickly it
+can consume disk space.  If you using the agent on many groups, it is
+even more difficult to effectively recover disk space.  One solution
+is the @samp{%F} format available in @code{gnus-group-line-format}.
+This format will display the actual disk space used by articles
+fetched into both the agent and cache.  By knowing which groups use
+the most space, users know where to focus their efforts when ``agent
+expiring'' articles.
 
 @node Agent as Cache
 @subsection Agent as Cache
