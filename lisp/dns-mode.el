@@ -41,7 +41,8 @@
 
 ;;; Release history:
 
-;; 2004-09-11  posted on gnu.emacs.sources
+;; 2004-09-11  Posted on gnu.emacs.sources.
+;; 2004-09-13  Ported to XEmacs.
 
 ;;; Code:
 
