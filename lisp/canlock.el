@@ -46,6 +46,7 @@
   (require 'cl))
 
 (autoload 'sha1-binary "sha1-el")
+(autoload 'base64-encode-string "base64")
 
 (defgroup canlock nil
   "The Cancel-Lock feature."
