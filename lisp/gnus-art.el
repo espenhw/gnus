@@ -5295,7 +5295,8 @@ guessing."
 (defcustom gnus-button-guessed-mid-regexp
   (concat
    "^<?\\(slrn\\|Pine\\.\\)"
-   "\\|\\.fsf@\\|\\.ln@\\|@4ax\\.com\\|@ID-[0-9]+\\.[a-zA-Z]+\\.dfncis\\.de"
+   "\\|\\.fsf@\\|\\.fsf_-_@\\|\\.ln@"
+   "\\|@4ax\\.com\\|@ID-[0-9]+\\.[a-zA-Z]+\\.dfncis\\.de"
 	  "\\|^<?.*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*@")
   "Regular expression that matches message IDs and not mail addresses."
   ;; TODO: Incorporate more matches from
@@ -5331,16 +5332,16 @@ guessing."
   "Follow a Custom URL."
   (customize-apropos (gnus-url-unhex-string url)))
 
-(defvar gnus-button-handle-describe-prefix "^\\(C-h\\|<?[F1]1>?\\)")
+(defvar gnus-button-handle-describe-prefix "^\\(C-h\\|<?[Ff]1>?\\)")
 
 (defun gnus-button-handle-describe-function (url)
-  "Call describe-function when pushing the corresponing URL button."
+  "Call describe-function when pushing the corresponding URL button."
   (describe-function
    (intern
     (gnus-replace-in-string url gnus-button-handle-describe-prefix ""))))
 
 (defun gnus-button-handle-describe-variable (url)
-  "Call describe-variable when pushing the corresponing URL button."
+  "Call describe-variable when pushing the corresponding URL button."
   (describe-variable
    (intern
     (gnus-replace-in-string url gnus-button-handle-describe-prefix ""))))
@@ -5416,18 +5417,18 @@ positves are possible."
     ("M-x[ \t\n]customize-[^ ]+[ \t\n]RET[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
      (>= gnus-button-emacs-level 1) gnus-button-handle-custom 1)
     ;; Emacs help commands
-    ("M-x[ \t\n]apropos[ \t\n]\\([^ ]+\\)[ \t\n]RET"
+    ("M-x[ \t\n]+apropos[ \t\n]+RET[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      ;; regexp doesn't match arguments containing ` '.
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos 1)
-    ("M-x[ \t\n]apropos-command[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
-     (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-command 1)
-    ("M-x[ \t\n]apropos-variable[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
-     (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-variable 1)
-    ("\\W\\(C-h\\|<?[F1]1>?\\)[ \t\n]f[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
-     (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
-    ("\\W\\(C-h\\|<?[F1]1>?\\)[ \t\n]v[ \t\n]\\([^ ]+\\)[ \t\n]RET" 0
-     (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 2)
-    ("\\W\\(C-h\\|<?[F1]1>?\\)[ \t\n]k[ \t\n]\\([^ ]+\\)[ \t\n]" 0
+    ("M-x[ \t\n]+apropos-command[ \t\n]+RET[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-command 1)
+    ("M-x[ \t\n]+apropos-variable[ \t\n]+RET[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-apropos-variable 1)
+    ("\\W\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+f[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
+    ("\\W\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+v[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 2)
+    ("\\W\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+" 0
      ;; this regexp needs to be fixed!
      (>= gnus-button-emacs-level 9) gnus-button-handle-describe-key 2)
     ;; This is how URLs _should_ be embedded in text...
