@@ -1153,7 +1153,7 @@ this is a reply."
 	    (while (setq group (pop groups))
 	      (gnus-check-server
 	       (setq method (gnus-inews-group-method group)))
-	      (unless (gnus-request-group group t method)
+	      (unless (gnus-request-group group nil method)
 		(gnus-request-create-group group method))
 	      (save-excursion
 		(nnheader-set-temp-buffer " *acc*")

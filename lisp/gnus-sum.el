@@ -1012,7 +1012,7 @@ when prompting the user for which type of files to save."
     (?M ,(macroexpand '(mail-header-id gnus-tmp-header)) ?s)
     (?r ,(macroexpand '(mail-header-references gnus-tmp-header)) ?s)
     (?c (or (mail-header-chars gnus-tmp-header) 0) ?d)
-    (?L gnus-tmp-lines ?d)
+    (?L gnus-tmp-lines ?s)
     (?I gnus-tmp-indentation ?s)
     (?T (if (= gnus-tmp-level 0) "" (make-string (frame-width) ? )) ?s)
     (?R gnus-tmp-replied ?c)
@@ -2889,7 +2889,9 @@ buffer that was in action when the last article was fetched."
     (when (string= gnus-tmp-name "")
       (setq gnus-tmp-name gnus-tmp-from))
     (unless (numberp gnus-tmp-lines)
-      (setq gnus-tmp-lines 0))
+      (setq gnus-tmp-lines -1))
+    (when (= gnus-tmp-lines -1)
+      (setq gnus-tmp-lines "?"))
     (gnus-put-text-property
      (point)
      (progn (eval gnus-summary-line-format-spec) (point))
@@ -4257,7 +4259,9 @@ or a straight list of headers."
 	    (when (string= gnus-tmp-name "")
 	      (setq gnus-tmp-name gnus-tmp-from))
 	    (unless (numberp gnus-tmp-lines)
-	      (setq gnus-tmp-lines 0))
+	      (setq gnus-tmp-lines -1))
+	    (when (= gnus-tmp-lines -1)
+	      (setq gnus-tmp-lines "?"))
 	    (gnus-put-text-property
 	     (point)
 	     (progn (eval gnus-summary-line-format-spec) (point))
@@ -5028,15 +5032,15 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	      (goto-char p)
 	      (if (search-forward "\nchars: " nil t)
 		  (if (numberp (setq chars (ignore-errors (read cur))))
-		      chars 0)
-		0))
+		      chars -1)
+		-1))
 	    ;; Lines.
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nlines: " nil t)
 		  (if (numberp (setq lines (ignore-errors (read cur))))
-		      lines 0)
-		0))
+		      lines -1)
+		-1))
 	    ;; Xref.
 	    (progn
 	      (goto-char p)
@@ -7505,7 +7509,7 @@ to save in."
 		(save-excursion
 		  (if window-system
 		      (ps-spool-buffer-with-faces)
-		    (ps-spool-buffer))))
+		    (ps-spool-buffer)))))
 	  (kill-buffer buffer))))
     (gnus-summary-remove-process-mark article))
   (ps-despool filename))
@@ -8987,7 +8991,8 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
 
 (defun gnus-summary-catchup-and-exit (&optional all quietly)
   "Mark all unread articles in this group as read, then exit.
-If prefix argument ALL is non-nil, all articles are marked as read."
+If prefix argument ALL is non-nil, all articles are marked as read.
+If QUIETLY is non-nil, no questions will be asked."
   (interactive "P")
   (when (gnus-summary-catchup all quietly nil 'fast)
     ;; Select next newsgroup or exit.
