@@ -1,3 +1,13 @@
+2004-01-03  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Spam ELisp Package Sequence of Events): explain more
+	about the sequence of events and what happens with read-only
+	backends
+	(Spam ELisp Package Global Variables): explain what happens with
+	read-only backends
+	(Spam ELisp Package Configuration Examples): added Reiner Steib
+	and Ted Zlatanov's setups
+
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* emacs-mime.texi (Display Customization): Add mm-enable-external.
