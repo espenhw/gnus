@@ -85,6 +85,10 @@
 ;; that decision.  One might think that this even influenced were I
 ;; store my keys, and one would probably be right. :-)
 ;;
+;; Update: Mathias Herberts sent the patch.  However, it uses
+;; environment variables to pass the password to OpenSSL, which is
+;; slightly insecure. Hence a new todo: use a better -passin method.
+;;
 ;; Suggestions and comments are appreciated, mail me at simon@josefsson.org.
 
 ;; <rant>
@@ -108,6 +112,7 @@
 ;;; Code:
 
 (require 'dig)
+(require 'comint)
 (eval-when-compile (require 'cl))
 
 (defgroup smime nil
@@ -159,6 +164,17 @@ and the files themself should be in PEM format."
   :type 'string
   :group 'smime)
 
+;; OpenSSL option to select the encryption cipher
+
+(defcustom smime-encrypt-cipher "-des3"
+  "Cipher algorithm used for encryption."
+  :type '(choice (const :tag "Triple DES" "-des3")
+		 (const :tag "DES"  "-des")
+		 (const :tag "RC2 40 bits" "-rc2-40")
+		 (const :tag "RC2 64 bits" "-rc2-64")
+		 (const :tag "RC2 128 bits" "-rc2-128"))
+  :group 'smime)
+  
 (defcustom smime-dns-server nil
   "DNS server to query certificates from.
 If nil, use system defaults."
@@ -167,6 +183,17 @@ If nil, use system defaults."
   :group 'dig)
 
 (defvar smime-details-buffer "*OpenSSL output*")
+
+;; Password dialog function
+
+(defun smime-ask-passphrase ()
+  "Asks the passphrase to unlock the secret key."
+  (let ((passphrase
+	 (comint-read-noecho
+	  "Passphrase for secret key (RET for no passphrase): " t)))
+    (if (string= passphrase "")
+	nil
+      passphrase)))
 
 ;; OpenSSL wrappers.
 
@@ -186,15 +213,22 @@ If nil, use system defaults."
 If signing fails, the buffer is not modified.  Region is assumed to
 have proper MIME tags.  KEYFILE is expected to contain a PEM encoded
 private key and certificate."
-  (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*"))))
+  (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
+	(passphrase (smime-ask-passphrase)))
+    (if passphrase
+	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (prog1
-	(when (smime-call-openssl-region b e buffer "smime" "-sign"
-					 "-signer" (expand-file-name keyfile))
+	(when (apply 'smime-call-openssl-region b e buffer "smime" "-sign" 
+		     "-signer" (expand-file-name keyfile)
+		     (if passphrase
+			 (list "-passin" "env:GNUS_SMIME_PASSPHRASE")))
 	  (delete-region b e)
 	  (insert-buffer buffer)
 	  (when (looking-at "^MIME-Version: 1.0$")
 	    (delete-region (point) (progn (forward-line 1) (point))))
 	  t)
+      (if passphrase
+	  (setenv "GNUS_SMIME_PASSPHRASE" "" t))
       (with-current-buffer (get-buffer-create smime-details-buffer)
 	(goto-char (point-max))
 	(insert-buffer buffer))
@@ -208,7 +242,7 @@ is expected to contain of a PEM encoded certificate."
   (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*"))))
     (prog1
 	(when (apply 'smime-call-openssl-region b e buffer "smime" "-encrypt"
-		     (mapcar 'expand-file-name certfiles))
+		     smime-encrypt-cipher (mapcar 'expand-file-name certfiles))
 	  (delete-region b e)
 	  (insert-buffer buffer)
 	  (when (looking-at "^MIME-Version: 1.0$")
@@ -277,11 +311,17 @@ nil."
 
 (defun smime-decrypt-region (b e keyfile)
   (let ((buffer (generate-new-buffer (generate-new-buffer-name "*smime*")))
-	CAs)
-    (when (apply 'smime-call-openssl-region b e buffer "smime" "-decrypt"
-		 "-recip" (list keyfile))
-
+	CAs (passphrase (smime-ask-passphrase)))
+    (if passphrase
+	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
+    (when (apply 'smime-call-openssl-region
+		 b e buffer "smime" "-decrypt" 
+		 "-recip" (list keyfile)
+		 (if passphrase
+		     (list "-passin" "env:GNUS_SMIME_PASSPHRASE" )))
       )
+    (if passphrase
+	(setenv "GNUS_SMIME_PASSPHRASE" "" t))
     (with-current-buffer (get-buffer-create smime-details-buffer)
       (goto-char (point-max))
       (insert-buffer buffer))
