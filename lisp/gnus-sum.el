@@ -822,7 +822,7 @@ which it may alter in any way.")
 		       (symbol :tag "Charset")))
   :group 'gnus-charset)
 
-(defcustom gnus-newsgroup-ignored-charsets '(unknown-8bit)
+(defcustom gnus-newsgroup-ignored-charsets '(unknown-8bit x-unknown)
   "List of charsets that should be ignored.
 When these charsets are used in the \"charset\" parameter, the
 default charset will be used instead."

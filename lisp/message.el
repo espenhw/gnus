@@ -1617,10 +1617,12 @@ With the prefix argument FORCE, insert the header anyway."
 	quoted)
     (save-excursion
       (beginning-of-line)
-      (setq quoted (looking-at (regexp-quote message-yank-prefix))))
+      (if (looking-at (sc-cite-regexp))
+	  (setq quoted (buffer-substring (match-beginning 0) (match-end 0)))))
     (insert "\n\n\n\n")
+    (delete-region (point) (re-search-forward "[ \t]*"))
     (when quoted
-      (insert message-yank-prefix))
+      (insert quoted))
     (fill-paragraph nil)
     (goto-char point)
     (forward-line 2)))

@@ -103,6 +103,7 @@ the second with the current group name.")
 (defcustom gnus-group-posting-charset-alist
   '(("^no\\." iso-8859-1)
     (message-this-is-mail nil)
+    ("^de\\." nil)
     (".*" iso-8859-1)
     (message-this-is-news iso-8859-1))
   "Alist of regexps (to match group names) and default charsets to be unencoded when posting."

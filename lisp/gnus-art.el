@@ -1086,6 +1086,7 @@ Initialized from `text-mode-syntax-table.")
 	  (when (setq beg (text-property-any
 			   (point-min) (point-max) 'message-rank (+ 2 max)))
 	    ;; We delete the unwanted headers.
+	    (push 'headers gnus-article-wash-types)
 	    (add-text-properties (point-min) (+ 5 (point-min))
 				 '(article-type headers dummy-invisible t))
 	    (delete-region beg (point-max))))))))
@@ -2043,6 +2044,7 @@ This format is defined by the `gnus-article-time-format' variable."
 		face (nth 3 elem))
 	  (while (re-search-forward regexp nil t)
  	    (when (and (match-beginning visible) (match-beginning invisible))
+	      (push 'emphasis gnus-article-wash-types)
  	      (gnus-article-hide-text
  	       (match-beginning invisible) (match-end invisible) props)
  	      (gnus-article-unhide-text-type
