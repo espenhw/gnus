@@ -2,7 +2,6 @@ TEXI2DVI=texi2dvi
 EMACS=emacs
 MAKEINFO=$(EMACS) -batch -q -no-site-file
 INFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-# MAKEINFO=makeinfo -o gnus.info gnus.texi
 LATEX=latex
 DVIPS=dvips
 PERL=perl
@@ -31,6 +30,7 @@ clean:
 
 makeinfo: 
 	makeinfo -o gnus.info gnus.texi	
+	makeinfo -o message.info message.texi	
 
 texi2latexi.elc:
 	$(EMACS) -batch -l bytecomp -f batch-byte-recompile-directory

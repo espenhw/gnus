@@ -193,14 +193,10 @@ virtual group.")
     (let ((newsrc (cdr gnus-newsrc-alist))
 	  group)
       (while (setq group (car (pop newsrc)))
-	(and (string-match nnvirtual-component-regexp group) ; Match
-	     ;; Add this group to the list of component groups.
-	     (setq nnvirtual-component-groups
-		   (cons group 
-			 (delete group nnvirtual-component-groups)))))
-      (setq nnvirtual-component-groups
-	    (delete (nnvirtual-current-group)
-		    nnvirtual-component-groups)))
+	(when (string-match nnvirtual-component-regexp group) ; Match
+	  ;; Add this group to the list of component groups.
+	  (setq nnvirtual-component-groups
+		(cons group (delete group nnvirtual-component-groups))))))
     (if (not nnvirtual-component-groups)
 	(nnheader-report 'nnvirtual "No component groups: %s" server)
       t)))
@@ -213,6 +209,8 @@ virtual group.")
     (nnheader-report 'nnvirtual "No component groups in %s" group))
    (t
     (unless dont-check
+      (setq nnvirtual-component-groups
+	    (delete (nnvirtual-current-group) nnvirtual-component-groups))
       (nnvirtual-create-mapping))
     (setq nnvirtual-current-group group)
     (let ((len (length nnvirtual-mapping)))

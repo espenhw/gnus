@@ -1,4 +1,28 @@
+Fri May 24 21:27:49 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* nnvirtual.el (nnvirtual-request-group): Don't include itself in
+	its component groups.
+
+	* gnus.el (gnus-summary-mark-below): Changed default.
+
+Fri May 24 19:29:17 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-check-news-syntax): Check invalid Newsgroups
+	syntax. 
+	(message-mode-menu): Added spellcheck.
+
+	* nntp.el (nntp-wait-for-response): Peel off ^Ms.
+
+	* message.el (message-fix-before-sending): New function.
+	(message-send): Use it.
+	(message-check-news-syntax): Check for invalid group names.
+
+	* gnus.el (gnus-summary-number-of-articles-in-thread): Return 0 if
+	not included.
+
 Thu May 23 23:32:43 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.93 is released.
 
 	* nnbabyl.el (nnbabyl-read-mbox): Would bogously increase the
  	number in groups.

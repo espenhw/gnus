@@ -724,6 +724,7 @@ Return the number of headers removed."
     ;;  ["Insert Signature"         news-reply-signature     t]
     ["Caesar (rot13) Message" message-caesar-buffer-body t]
     ["Rename buffer" message-rename-buffer t]
+    ["Spellcheck" ispell-message t]
     "----"
     ["Send Message" message-send-and-exit t]
     ["Abort Message" message-dont-send t]))
@@ -1194,6 +1195,7 @@ the user from the mailer."
 	      (y-or-n-p "No changes in the buffer; really send? ")))
     ;; Make it possible to undo the coming changes.
     (undo-boundary)
+    (message-fix-before-sending)
     (run-hooks 'message-send-hook)
     (message "Sending...")
     (when (and (or (not (message-news-p))
@@ -1218,6 +1220,13 @@ the user from the mailer."
       (message-do-actions message-send-actions)
       ;; Return success.
       t)))
+
+(defun message-fix-before-sending ()
+  "Do various things to make the message nice before sending it."
+  ;; Make sure there's a newline at the end of the message.
+  (goto-char (point-max))
+  (unless (bolp)
+    (insert "\n")))
 
 (defun message-add-action (action &rest types)
   "Add ACTION to be performed when doing an exit of type TYPES."
@@ -1491,30 +1500,82 @@ the user from the mailer."
 		(message 
 		 "The subject field is empty or missing.  Posting is denied.")
 		nil)))))
+	;; Check the Newsgroups & Followup-To headers.
+	(or
+	 (message-check-element 'existing-newsgroups)
+	 (let* ((case-fold-search t)
+		(newsgroups (message-fetch-field "newsgroups"))
+		(followup-to (message-fetch-field "followup-to"))
+		(groups (message-tokenize-header
+			 (if followup-to
+			     (concat newsgroups "," followup-to)
+			   newsgroups)))
+		(hashtb (and (boundp 'gnus-active-hashtb)
+			     gnus-active-hashtb))
+		errors)
+	   (if (not hashtb)
+	       t
+	     (while groups
+	       (unless (boundp (intern (car groups) hashtb))
+		 (push (car groups) errors))
+	       (pop groups))
+	     (if (not errors)
+		 t
+	       (y-or-n-p
+		(format
+		 "Really post to %s unknown group%s: %s "
+		 (if (= (length errors) 1) "this" "these")
+		 (if (= (length errors) 1) "" "s")
+		 (mapconcat 'identity errors ", ")))))))
+	;; Check the Newsgroups & Followup-To headers for syntax errors.
+	(or
+	 (message-check-element 'valid-newsgroups)
+	 (let ((case-fold-search t)
+	       (headers '("Newsgroups" "Followup-To"))
+	       header error)
+	   (while (and headers (not error))
+	     (when (setq header (mail-fetch-field (car headers)))
+	       (if (or
+		    (not (string-match
+			  "\\`\\([-.a-zA-Z0-9]+\\)?\\(,[-.a-zA-Z0-9]+\\)*\\'"
+			  header))
+		    (memq 
+		     nil (mapcar 
+			  (lambda (g)
+			    (not (string-match "\\.\\'\\|\\.\\." g)))
+			  (message-tokenize-header header ","))))
+		   (setq error t)))
+	     (unless error
+	       (pop headers)))
+	   (if (not error)
+	       t
+	     (y-or-n-p
+	      (format "The %s header looks odd: \"%s\".  Really post? "
+		      (car headers) header)))))
 	;; Check the From header.
-	(or (message-check-element 'from)
-	    (save-excursion
-	      (let* ((case-fold-search t)
-		     (from (message-fetch-field "from")))
-		(cond
-		 ((not from)
-		  (message "There is no From line.  Posting is denied.")
-		  nil)
-		 ((not (string-match "@[^\\.]*\\." from))
-		  (message
-		   "Denied posting -- the From looks strange: \"%s\"." from)
-		  nil)
-		 ((string-match "@[^@]*@" from)
-		  (message 
-		   "Denied posting -- two \"@\"'s in the From header: %s."
-		   from)
-		  nil)
-		 ((string-match "(.*).*(.*)" from)
-		  (message
-		   "Denied posting -- the From header looks strange: \"%s\"." 
-		   from)
-		  nil)
-		 (t t))))))))
+	(or 
+	 (message-check-element 'from)
+	 (save-excursion
+	   (let* ((case-fold-search t)
+		  (from (message-fetch-field "from")))
+	     (cond
+	      ((not from)
+	       (message "There is no From line.  Posting is denied.")
+	       nil)
+	      ((not (string-match "@[^\\.]*\\." from))
+	       (message
+		"Denied posting -- the From looks strange: \"%s\"." from)
+	       nil)
+	      ((string-match "@[^@]*@" from)
+	       (message 
+		"Denied posting -- two \"@\"'s in the From header: %s." from)
+	       nil)
+	      ((string-match "(.*).*(.*)" from)
+	       (message
+		"Denied posting -- the From header looks strange: \"%s\"." 
+		from)
+	       nil)
+	      (t t))))))))
    ;; Check for long lines.
    (or (message-check-element 'long-lines)
        (save-excursion

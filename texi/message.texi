@@ -783,6 +783,12 @@ something only moderators should include.
 Check whether the article is empty.
 @item empty-headers
 Check whether any of the headers are empty.
+@item existing-newsgroups
+Check whether the newsgroups mentioned in the Newsgroups and 
+Followup-To headers exist.
+@item valid-newsgroups
+Check whether the @code{Newsgroups} and @code{Followup-To} headers
+are valid syntactially.
 @end table
 
 All these conditions are checked by default.

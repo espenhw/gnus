@@ -831,7 +831,8 @@ It will prompt for a password."
       ;; Save status message.
       (end-of-line)
       (setq nntp-status-string
-	    (buffer-substring (point-min) (point)))
+	    (nnheader-replace-chars-in-string 
+	     (buffer-substring (point-min) (point)) ?\r ? ))
       (when status
 	(setq wait t)
 	(while wait

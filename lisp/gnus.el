@@ -1259,7 +1259,7 @@ of the modeline intact.")
 ;  "*Face used for mouse highlighting in Gnus.
 ;No mouse highlights will be done if `gnus-visual' is nil.")
 
-(defvar gnus-summary-mark-below nil
+(defvar gnus-summary-mark-below 0
   "*Mark all articles with a score below this variable as read.
 This variable is local to each summary buffer and usually set by the
 score file.")
@@ -1722,7 +1722,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.93"
+(defconst gnus-version "September Gnus v0.94"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1930,7 +1930,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
     gnus-newsgroup-scored gnus-newsgroup-kill-headers
     gnus-newsgroup-async gnus-thread-expunge-below
     gnus-score-alist gnus-current-score-file gnus-summary-expunge-below
-    gnus-summary-mark-below gnus-newsgroup-active gnus-scores-exclude-files
+    (gnus-summary-mark-below . 0)
+    gnus-newsgroup-active gnus-scores-exclude-files
     gnus-newsgroup-history gnus-newsgroup-ancient
     gnus-newsgroup-sparse
     (gnus-newsgroup-adaptive . gnus-use-adaptive-scoring)
@@ -7609,7 +7610,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 	    1)
 	   ((memq (mail-header-number (car thread)) gnus-newsgroup-limit)
 	    1)
-	   (t 1))))
+	   (t 0))))
     (when (and level (zerop level) gnus-tmp-new-adopts)
       (incf number
 	    (apply '+ (mapcar
@@ -14158,19 +14159,19 @@ always hide."
 	(narrow-to-region
 	 (funcall (intern "mime::preview-content-info/point-min") pcinfo)
 	 (point-max))
-	t)
-    (goto-char (point-max))
-    (when (re-search-backward gnus-signature-separator nil t)
-      (forward-line 1)
-      (when (or (null gnus-signature-limit)
-		(and (numberp gnus-signature-limit)
-		     (< (- (point-max) (point)) gnus-signature-limit))
-		(and (gnus-functionp gnus-signature-limit)
-		     (funcall gnus-signature-limit))
-		(and (stringp gnus-signature-limit)
-		     (not (re-search-forward gnus-signature-limit nil t))))
-	(narrow-to-region (point) (point-max))
-	t))))
+	t))
+  (goto-char (point-max))
+  (when (re-search-backward gnus-signature-separator nil t)
+    (forward-line 1)
+    (when (or (null gnus-signature-limit)
+	      (and (numberp gnus-signature-limit)
+		   (< (- (point-max) (point)) gnus-signature-limit))
+	      (and (gnus-functionp gnus-signature-limit)
+		   (funcall gnus-signature-limit))
+	      (and (stringp gnus-signature-limit)
+		   (not (re-search-forward gnus-signature-limit nil t))))
+      (narrow-to-region (point) (point-max))
+      t)))
 
 (defun gnus-article-check-hidden-text (type arg)
   "Return nil if hiding is necessary."
