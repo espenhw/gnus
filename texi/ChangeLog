@@ -1,3 +1,8 @@
+2003-12-31  Steve Youngs  <sryoungs@bigpond.net.au>
+
+	* gnus.texi (XEmacs): Update list of Gnus XEmacs package
+	requirements. 
+
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Canceling and Superseding): Mention `Cancel-Lock'.

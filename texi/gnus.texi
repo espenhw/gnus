@@ -23753,10 +23753,10 @@ but at the common table.@*
 
 XEmacs is distributed as a collection of packages.  You should install
 whatever packages the Gnus XEmacs package requires.  The current
-requirements are @samp{gnus}, @samp{w3}, @samp{mh-e},
-@samp{mailcrypt}, @samp{rmail}, @samp{eterm}, @samp{mail-lib},
-@samp{xemacs-base}, @samp{sh-script} and @samp{fsf-compat}.  The
-@samp{misc-games} package is required for Morse decoding.
+requirements are @samp{gnus}, @samp{mail-lib}, @samp{xemacs-base},
+@samp{eterm}, @samp{sh-script}, @samp{net-utils}, @samp{os-utils},
+@samp{dired}, @samp{mh-e}, @samp{sieve}, @samp{ps-print}, @samp{w3},
+@samp{pgg}, @samp{mailcrypt}, @samp{ecrypto}, and @samp{sasl}.
 
 
 @node History
