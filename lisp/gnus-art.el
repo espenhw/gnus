@@ -3917,8 +3917,7 @@ General format specifiers can also be used.  See Info node
 (defun gnus-mime-view-all-parts (&optional handles)
   "View all the MIME parts."
   (interactive)
-  (save-current-buffer
-    (set-buffer gnus-article-buffer)
+  (with-current-buffer gnus-article-buffer
     (let ((handles (or handles gnus-article-mime-handles))
 	  (mail-parse-charset gnus-newsgroup-charset)
 	  (mail-parse-ignored-charsets
@@ -4316,8 +4315,7 @@ If no internal viewer is available, use an external viewer."
 	(funcall (cdr action-pair)))))
 
 (defun gnus-article-part-wrapper (n function)
-  (save-current-buffer
-    (set-buffer gnus-article-buffer)
+  (with-current-buffer gnus-article-buffer
     (when (> n (length gnus-article-mime-handle-alist))
       (error "No such part"))
     (gnus-article-goto-part n)
@@ -4383,8 +4381,7 @@ N is the numerical prefix."
 (defun gnus-article-view-part (&optional n)
   "View MIME part N, which is the numerical prefix."
   (interactive "P")
-  (save-current-buffer
-    (set-buffer gnus-article-buffer)
+  (with-current-buffer gnus-article-buffer
     (or (numberp n) (setq n (gnus-article-mime-match-handle-first
 			     gnus-article-mime-match-handle-function)))
     (when (> n (length gnus-article-mime-handle-alist))

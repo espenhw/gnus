@@ -1,3 +1,9 @@
+2004-01-08  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-mime-view-all-parts)
+	(gnus-article-part-wrapper, gnus-article-view-part): Use
+	with-current-buffer.
+
 2004-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-disable-spam-split-during-ham-respool)
