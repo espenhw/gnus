@@ -538,7 +538,7 @@ spamicity coefficient of each, and the overall article spamicity."
 	      (message "%s %d" prefix counter))
 	    (setq article (pop articles))
 	    (gnus-summary-goto-subject article)
-	    (gnus-summary-select-article)
+	    (gnus-summary-show-article t)
 	    (gnus-eval-in-buffer-window article-copy
 	      (insert-buffer-substring gnus-original-article-buffer)
 	      ;; Remove spam classification redundant headers: they may induce

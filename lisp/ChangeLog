@@ -1,3 +1,11 @@
+2002-12-31  Teodor Zlatanov  <tzz@lifelogs.com>
+	patch from Michael Shields  <shields@msrl.com>
+
+	* spam.el (spam-bogofilter-articles): Select the article
+	body using gnus-summary-show-article t instead of
+	gnus-summary-select-article; this presents the raw text
+	without running any hooks.
+
 2002-12-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-load): Replace `ding-file' with `file'.
