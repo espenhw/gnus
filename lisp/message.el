@@ -2640,7 +2640,7 @@ to find out how to use this."
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
     ;; we have to look at the retval instead
     (0 nil)
-    (1   (error "qmail-inject reported permanent failure"))
+    (100 (error "qmail-inject reported permanent failure"))
     (111 (error "qmail-inject reported transient failure"))
     ;; should never happen
     (t   (error "qmail-inject reported unknown failure"))))

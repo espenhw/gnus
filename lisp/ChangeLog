@@ -1,3 +1,8 @@
+2001-06-15 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail-with-qmail): wrong exit status is
+	100 not 1. Reported by Paul Jarc <prj@po.cwru.edu>.
+
 2001-06-15 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-strip-multiple-blank-lines): Use
