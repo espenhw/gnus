@@ -54,6 +54,12 @@ These parameters are generated in Content-Disposition header if exists."
   :type '(repeat (symbol :tag "Parameter"))
   :group 'message)
 
+(defcustom mml-insert-mime-headers-always nil
+  "If non-nil, always put Content-Type: text/plain at top of empty parts.
+It is necessary to work against a bug in certain clients."
+  :type 'boolean
+  :group 'message)
+
 (defvar mml-tweak-type-alist nil
   "A list of (TYPE . FUNCTION) for tweaking MML parts.
 TYPE is a string containing a regexp to match the MIME type.  FUNCTION
@@ -608,7 +614,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
     (when (or charset
 	      parameters
 	      flowed
-	      (not (equal type mml-generate-default-type)))
+	      (not (equal type mml-generate-default-type))
+	      mml-insert-mime-headers-always)
       (when (consp charset)
 	(error
 	 "Can't encode a part with several charsets"))

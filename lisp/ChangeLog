@@ -1,3 +1,9 @@
+2003-09-01  Simon Josefsson  <jas@extundo.com>
+
+	* mml.el (mml-insert-mime-headers-always): New variable.
+	(mml-insert-mime-headers): Use it.  Based on patch from Lars
+	Balker Rasmussen <lars@balker.org>.
+
 2003-08-30  Simon Josefsson  <jas@extundo.com>
 
 	* mail-source.el (mail-source-fetch-imap): Pass correct buffer to
