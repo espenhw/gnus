@@ -1,5 +1,8 @@
 2002-02-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-soup.el (gnus-soup-send-packet): Send news and mail
+	directly instead of calling message-send-mail.
+
 	* gnus-start.el (gnus-read-descriptions-file): Use
 	gnus-default-charset.
 

@@ -540,26 +540,35 @@ Return whether the unpacking was successful."
 				     (match-beginning 1) (match-end 1)))))
 	      (switch-to-buffer tmp-buf)
 	      (erase-buffer)
+	      (mm-disable-multibyte)
 	      (insert-buffer-substring msg-buf beg end)
-	      (goto-char (point-min))
-	      (search-forward "\n\n")
-	      (forward-char -1)
-	      (insert mail-header-separator)
-	      (setq message-newsreader (setq message-mailer
-					     (gnus-extended-version)))
 	      (cond
 	       ((string= (gnus-soup-reply-kind (car replies)) "news")
 		(gnus-message 5 "Sending news message to %s..."
 			      (mail-fetch-field "newsgroups"))
 		(sit-for 1)
 		(let ((message-syntax-checks
-		       'dont-check-for-anything-just-trust-me))
-		  (funcall message-send-news-function)))
+		       'dont-check-for-anything-just-trust-me)
+		      (method (if (message-functionp message-post-method)
+				  (funcall message-post-method)
+				message-post-method))
+		      result)
+		  (run-hooks 'message-send-news-hook)
+		  (gnus-open-server method)
+		  (message "Sending news with %s..." 
+			   (gnus-server-string method))
+		  (unless (let ((mail-header-separator ""))
+			    (gnus-request-post method))
+		    (message "Couldn't send message via news: %s"
+			     (nnheader-get-report (car method))))))
 	       ((string= (gnus-soup-reply-kind (car replies)) "mail")
 		(gnus-message 5 "Sending mail to %s..."
 			      (mail-fetch-field "to"))
 		(sit-for 1)
-		(message-send-mail))
+		(let ((mail-header-separator ""))
+		  (mm-with-unibyte-current-buffer
+		    (funcall (or message-send-mail-real-function
+				 message-send-mail-function)))))
 	       (t
 		(error "Unknown reply kind")))
 	      (set-buffer msg-buf)
