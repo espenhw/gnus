@@ -1475,9 +1475,10 @@ support the @code{LIST ACTIVE group} command), on others this isn't fast
 at all.  In any case, @code{some} should be faster than @code{nil}, and
 is certainly faster than @code{t} over slow lines.
 
-Some news servers (Leafnode and old versions of INN, for instance) do
-not support the @code{LIST ACTIVE group}.  For these servers, @code{nil}
-is probably the most efficient value for this variable.
+Some news servers (old versions of Leafnode and old versions of INN, for
+instance) do not support the @code{LIST ACTIVE group}.  For these
+servers, @code{nil} is probably the most efficient value for this
+variable.
 
 If this variable is @code{nil}, Gnus will ask for group info in total
 lock-step, which isn't very fast.  If it is @code{some} and you use an

@@ -1,3 +1,8 @@
+2001-01-15 16:15:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (The Active File): Only old versionf of leafnode
+	doesn't do some.
+
 2001-01-23 23:28:08  Satomi Suzuki  <pan@mba.nifty.ne.jp>
 
 	* message.texi (message-ignored-news-headers): Add "X-Draft-From:".
