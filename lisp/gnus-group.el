@@ -1146,8 +1146,12 @@ if it is a string, only list groups matching REGEXP."
 ;;; 	       'gnus-level level))
 	(gnus-group-insert-group-line 
 	 group level nil
-	 (if gnus-server-browse-hashtb
-	     (gnus-gethash group gnus-server-browse-hashtb) t)
+	 (let ((active (gnus-active group)))
+	   (if active
+	       (if (zerop (cdr active))
+		   0
+		 (- (1+ (cdr active)) (car active)))
+	     nil))
 	 (gnus-method-simplify (gnus-find-method-for-group group)))))))
 
 (defun gnus-group-update-group-line ()
@@ -1191,7 +1195,7 @@ if it is a string, only list groups matching REGEXP."
 	       0
 	     (- (1+ (cdr active)) (car active)))
 	 nil)
-       nil))))
+       (gnus-method-simplify (gnus-find-method-for-group group))))))
 
 (defun gnus-group-insert-group-line (gnus-tmp-group gnus-tmp-level
 						    gnus-tmp-marked number

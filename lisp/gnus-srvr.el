@@ -618,7 +618,8 @@ The following commands are available:
 			   (setq name (concat name (buffer-substring
 						    p (point)))))
 			 name))
-		     (max 0 (- (1+ (read cur)) (read cur))))
+		     (let ((last (read cur)))
+		       (cons (read cur) last)))
 		    groups))
 	    (forward-line))))
       (setq groups (sort groups
@@ -626,15 +627,12 @@ The following commands are available:
 			   (string< (car l1) (car l2)))))
       (if gnus-server-browse-in-group-buffer
 	  (let* ((gnus-select-method orig-select-method)
-		 (gnus-server-browse-hashtb 
-		  (gnus-make-hashtable (length groups)))
 		 (gnus-group-listed-groups 
 		  (mapcar (lambda (group) 
 			    (let ((name
 				   (gnus-group-prefixed-name 
 				    (car group) method)))
-			      (gnus-sethash name (cdr group)
-					    gnus-server-browse-hashtb)
+			      (gnus-set-active name (cdr group))
 			      name))
 			  groups)))
 	    (gnus-configure-windows 'group)
@@ -669,7 +667,7 @@ The following commands are available:
 			 ((<= level gnus-level-unsubscribed) ?U)
 			 ((= level gnus-level-zombie) ?Z)
 			 (t ?K)))
-			(cdr group)
+			(max 0 (- (1+ (cddr group)) (cadr group)))
 			(gnus-group-name-decode (car group) charset))))
 	     (list 'gnus-group (car group)))
 	    (setq groups (cdr groups))))

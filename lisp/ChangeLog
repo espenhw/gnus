@@ -1,3 +1,10 @@
+2000-10-30 08:17:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-server-browse-hashtb): Removed.
+	* gnus-group.el (gnus-group-prepare-flat-list-dead): Use gnus-active.
+	(gnus-group-insert-group-line-info): Use simplified method.
+	* gnus-srvr.el (gnus-browse-foreign-server): Use gnus-set-active.
+
 2000-10-30 01:52:40  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-union): Renamed from gnus-agent-union, and

@@ -1636,9 +1636,6 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar gnus-moderated-hashtb nil
   "Hashtable of moderated newsgroups.")
 
-(defvar gnus-server-browse-hashtb nil
-  "Hashtable of existing articles.")
-
 ;; Save window configuration.
 (defvar gnus-prev-winconf nil)
 
