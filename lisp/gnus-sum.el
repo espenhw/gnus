@@ -679,6 +679,41 @@ score file."
   :group 'gnus-score-default
   :type 'integer)
 
+(defun gnus-widget-reversible-match (widget value)
+  "Ignoring WIDGET, convert VALUE to internal form.
+VALUE should have the form `FOO' or `(not FOO)', where FOO is an symbol."
+  ;; (debug value)
+  (or (symbolp value)
+      (and (listp value)
+           (eq (length value) 2)
+           (eq (nth 0 value) 'not)
+           (symbolp (nth 1 value)))))
+
+(defun gnus-widget-reversible-to-internal (widget value)
+  "Ignoring WIDGET, convert VALUE to internal form.
+VALUE should have the form `FOO' or `(not FOO)', where FOO is an atom.
+FOO is converted to (FOO nil) and (not FOO) is converted to (FOO t)."
+  ;; (debug value)
+  (if (atom value)
+      (list value nil)
+    (list (nth 1 value) t)))
+
+(defun gnus-widget-reversible-to-external (widget value)
+  "Ignoring WIDGET, convert VALUE to external form.
+VALUE should have the form `(FOO nil)' or `(FOO t)', where FOO is an atom.
+\(FOO  nil) is converted to FOO and (FOO t) is converted to (not FOO)."
+  ;; (debug value)
+  (if (nth 1 value)
+      (list 'not (nth 0 value))
+    (nth 0 value)))
+
+(define-widget 'gnus-widget-reversible 'group
+  "A `group' that convert values."
+  :match 'gnus-widget-reversible-match
+  :value-to-internal 'gnus-widget-reversible-to-internal
+  :value-to-external 'gnus-widget-reversible-to-external)
+                        
+
 (defcustom gnus-article-sort-functions '(gnus-article-sort-by-number)
   "*List of functions used for sorting articles in the summary buffer.
 
@@ -702,13 +737,16 @@ and `gnus-article-sort-by-score'.
 When threading is turned on, the variable `gnus-thread-sort-functions'
 controls how articles are sorted."
   :group 'gnus-summary-sort
-  :type '(repeat (choice (function-item gnus-article-sort-by-number)
-			 (function-item gnus-article-sort-by-author)
-			 (function-item gnus-article-sort-by-subject)
-			 (function-item gnus-article-sort-by-date)
-			 (function-item gnus-article-sort-by-score)
-			 (function-item gnus-article-sort-by-random)
-			 (function :tag "other"))))
+  :type '(repeat (gnus-widget-reversible
+                  (choice (function-item gnus-article-sort-by-number)
+                          (function-item gnus-article-sort-by-author)
+                          (function-item gnus-article-sort-by-subject)
+                          (function-item gnus-article-sort-by-date)
+                          (function-item gnus-article-sort-by-score)
+                          (function-item gnus-article-sort-by-random)
+                          (function :tag "other"))
+                  (boolean :tag "Reverse order"))))
+
 
 (defcustom gnus-thread-sort-functions '(gnus-thread-sort-by-number)
   "*List of functions used for sorting threads in the summary buffer.
@@ -737,16 +775,19 @@ Ready-made functions include `gnus-thread-sort-by-number',
 When threading is turned off, the variable
 `gnus-article-sort-functions' controls how articles are sorted."
   :group 'gnus-summary-sort
-  :type '(repeat (choice (function-item gnus-thread-sort-by-number)
-			 (function-item gnus-thread-sort-by-author)
-			 (function-item gnus-thread-sort-by-subject)
-			 (function-item gnus-thread-sort-by-date)
-			 (function-item gnus-thread-sort-by-score)
-                         (function-item gnus-thread-sort-by-most-recent-number)
-                         (function-item gnus-thread-sort-by-most-recent-date)
-			 (function-item gnus-thread-sort-by-random)
-			 (function-item gnus-thread-sort-by-total-score)
-			 (function :tag "other"))))
+  :type '(repeat 
+          (gnus-widget-reversible
+           (choice (function-item gnus-thread-sort-by-number)
+                   (function-item gnus-thread-sort-by-author)
+                   (function-item gnus-thread-sort-by-subject)
+                   (function-item gnus-thread-sort-by-date)
+                   (function-item gnus-thread-sort-by-score)
+                   (function-item gnus-thread-sort-by-most-recent-number)
+                   (function-item gnus-thread-sort-by-most-recent-date)
+                   (function-item gnus-thread-sort-by-random)
+                   (function-item gnus-thread-sort-by-total-score)
+                   (function :tag "other"))
+           (boolean :tag "Reverse order"))))
 
 (defcustom gnus-thread-score-function '+
   "*Function used for calculating the total score of a thread.

@@ -1,3 +1,11 @@
+2004-03-05  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-sum.el (gnus-widget-reversible-match) 
+	(gnus-widget-reversible-to-internal) 
+	(gnus-widget-reversible-to-external): New functions.
+	(gnus-widget-reversible): New widget.
+	(gnus-article-sort-functions, gnus-thread-sort-functions): Use it.
+
 2004-03-05  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* gnus-sum.el (gnus-thread-sort-functions)
