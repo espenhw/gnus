@@ -513,18 +513,20 @@ Article Highlighting, gnus}, for details.
 @cindex quoting
 When you are replying to or following up an article, you normally want
 to quote the person you are answering.  Inserting quoted text is done
-by @dfn{yanking}, and each quoted line you yank (except earlier
-quotes, see @code{message-yank-cited-prefix}) will have
-@code{message-yank-prefix} prepended to it.  The default is @samp{> }.
+by @dfn{yanking}, and each line you yank will have
+@code{message-yank-prefix} prepended to it (except for quoted and
+empty lines which uses @code{message-yank-cited-prefix}). The default
+is @samp{> }.
 
 @item message-yank-cited-prefix
 @vindex message-yank-cited-prefix
 @cindex yanking
 @cindex cited
 @cindex quoting
-The @code{message-yank-prefix} prefix is not used on already cited
-lines, instead the contents of this variable is used as yank prefix.
-The default is @samp{>}.
+When yanking text from a article which contains no text or already
+cited text, each line will be prefixed with the contents of this
+variable.  The default is @samp{>}.  See also
+@code{message-yank-prefix}.
 
 @item message-indentation-spaces
 @vindex message-indentation-spaces

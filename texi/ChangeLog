@@ -1,3 +1,7 @@
+2001-10-27  Simon Josefsson  <jas@extundo.com>
+
+	* message.texi (Insertion): Fix message-yank*-prefix.
+
 2001-10-25  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Mail Source Specifiers): More info on SSL, kerberos etc.
