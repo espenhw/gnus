@@ -118,6 +118,7 @@
     ("text/x-patch" mm-display-patch-inline
      (lambda (handle)
        (locate-library "diff-mode")))
+    ("application/emacs-lisp" mm-display-elisp-inline identity)
     ("text/html"
      mm-inline-text
      (lambda (handle)
@@ -152,7 +153,7 @@
 
 (defcustom mm-inlined-types
   '("image/.*" "text/.*" "message/delivery-status" "message/rfc822"
-    "message/partial"
+    "message/partial" "application/emacs-lisp"
     "application/pgp-signature")
   "List of media types that are to be displayed inline."
   :type '(repeat string)
@@ -161,7 +162,8 @@
 (defcustom mm-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
-    "message/rfc822" "text/x-patch" "application/pgp-signature")
+    "message/rfc822" "text/x-patch" "application/pgp-signature" 
+    "application/emacs-lisp")
   "A list of MIME types to be displayed automatically."
   :type '(repeat string)
   :group 'mime-display)

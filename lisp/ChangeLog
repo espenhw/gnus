@@ -1,3 +1,13 @@
+2000-09-15 21:10:20  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-inlined-types): Add application/emacs-lisp.
+	(mm-inline-media-tests): Ditto.
+	(mm-automatic-display): Ditto.
+	* mm-view.el (mm-display-inline-fontify): Generalize from 
+	mm-display-patch-inline. 
+	(mm-display-patch-inline): Use it.
+	(mm-display-elisp-inline): Ditto.
+	
 2000-09-15 14:03:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-topic.el (gnus-topic-find-groups): Add recursive parameter.
