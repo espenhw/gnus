@@ -1,3 +1,7 @@
+2003-01-10  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-select-article-hook): Add :option.
+
 2003-01-10  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-use-stat): new variable
