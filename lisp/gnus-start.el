@@ -1498,7 +1498,7 @@ newsgroup."
 		  gnus-activate-foreign-newsgroups)
 		 (t 0))
 	   level))
-	 info group active method retrievegroups)
+	 scanned-methods info group active method retrievegroups)
     (gnus-message 5 "Checking new news...")
 
     (while newsrc
@@ -1542,7 +1542,10 @@ newsgroup."
 		  (setcdr (assoc method retrievegroups)
 			  (cons group (cdr (assoc method retrievegroups))))
 		(push (list method group) retrievegroups))
-	  (setq active (gnus-activate-group group 'scan))
+	    (if (member method scanned-methods)
+		(setq active (gnus-activate-group group))
+	      (setq active (gnus-activate-group group 'scan))
+	      (push method scanned-methods))
 	    (inline (gnus-close-group group))))))
 
       ;; Get the number of unread articles in the group.

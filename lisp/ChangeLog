@@ -1,3 +1,8 @@
+1999-11-20  Simon Josefsson  <jas@pdc.kth.se>
+
+        * gnus-start.el (gnus-get-unread-articles): Scan each method only
+	once.
+
 1999-12-01 17:37:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-enter-digest-group): Have the digest
