@@ -1,3 +1,7 @@
+2001-02-26 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-mime-part-status): 1 part.
+
 2001-02-25 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From NAGY Andras <nagya@inf.elte.hu>.
 

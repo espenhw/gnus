@@ -3255,7 +3255,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-article-mime-part-status ()
   (if gnus-article-mime-handle-alist-1
-      (format " (%d parts)" (length gnus-article-mime-handle-alist-1))
+      (if (eq 1 (length gnus-article-mime-handle-alist-1))
+	  " (1 part)"
+	(format " (%d parts)" (length gnus-article-mime-handle-alist-1)))
     ""))
 
 (defvar gnus-mime-button-map
