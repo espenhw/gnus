@@ -1,3 +1,15 @@
+2004-01-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.el (gnus-tmp-grouplens): Remove.
+	(gnus-summary-line-format): Remove grouplens.
+
+	* gnus-group.el (gnus-group-line-format): Ditto.
+
+	* gnus-spec.el (gnus-format-specs): Ditto.
+	(gnus-update-format-specifications): Flush the group format spec
+	cache if there's the grouplens stuff.
+	(gnus-parse-simple-format): Replace %l with the empty string.
+
 2004-01-27  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* gnus-spec.el (gnus-parse-simple-format): Fix setq value

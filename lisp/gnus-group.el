@@ -145,7 +145,7 @@ list."
 			 (function-item gnus-group-sort-by-rank)
 			 (function :tag "other" nil))))
 
-(defcustom gnus-group-line-format "%M\%S\%p\%P\%5y:%B%(%g%)%l %O\n"
+(defcustom gnus-group-line-format "%M\%S\%p\%P\%5y:%B%(%g%)%O\n"
   "*Format of group lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -173,7 +173,6 @@ with some simple extensions.
 %O    Moderated group (string, \"(m)\" or \"\")
 %P    Topic indentation (string)
 %m    Whether there is new(ish) mail in the group (char, \"%\")
-%l    Whether there are GroupLens predictions for this group (string)
 %n    Select from where (string)
 %z    A string that look like `<%s:%n>' if a foreign select method is used
 %d    The date the group was last entered.
