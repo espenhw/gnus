@@ -169,6 +169,15 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
     status))
 
 ;;;###autoload
+(defun pgg-encrypt (rcpts &optional sign start end)
+  "Encrypt the current buffer for RCPTS.
+If optional argument SIGN is non-nil, do a combined sign and encrypt.
+If optional arguments START and END are specified, only encrypt within
+the region."
+  (interactive (list (split-string (read-string "Recipients: ") "[ \t,]+")))
+  (pgg-encrypt-region (or start (point-min)) (or end (point-max)) rcpts sign))
+
+;;;###autoload
 (defun pgg-decrypt-region (start end)
   "Decrypt the current region between START and END."
   (interactive "r")
@@ -191,6 +200,14 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
     status))
 
 ;;;###autoload
+(defun pgg-decrypt (&optional start end)
+  "Decrypt the current buffer.
+If optional arguments START and END are specified, only decrypt within
+the region."
+  (interactive "")
+  (pgg-decrypt-region (or start (point-min)) (or end (point-max))))
+
+;;;###autoload
 (defun pgg-sign-region (start end &optional cleartext)
   "Make the signature from text between START and END.
 If the optional 3rd argument CLEARTEXT is non-nil, it does not create
@@ -204,6 +221,16 @@ a detached signature."
       (pgg-display-output-buffer start end status))
     status))
 
+;;;###autoload
+(defun pgg-sign (&optional cleartext start end)
+  "Sign the current buffer.
+If the optional argument CLEARTEXT is non-nil, it does not create a
+detached signature.
+If optional arguments START and END are specified, only sign data
+within the region."
+  (interactive "")
+  (pgg-sign-region (or start (point-min)) (or end (point-max)) cleartext))
+  
 ;;;###autoload
 (defun pgg-verify-region (start end &optional signature fetch)
   "Verify the current region between START and END.
@@ -248,6 +275,19 @@ signer's public key from `pgg-default-keyserver-address'."
     status))
 
 ;;;###autoload
+(defun pgg-verify (&optional signature fetch start end)
+  "Verify the current buffer.
+If the optional argument SIGNATURE is non-nil, it is treated as
+the detached signature of the current region.
+If the optional argument FETCH is non-nil, we attempt to fetch the
+signer's public key from `pgg-default-keyserver-address'.
+If optional arguments START and END are specified, only verify data
+within the region."
+  (interactive "")
+  (pgg-verify-region (or start (point-min)) (or end (point-max))
+		     signature fetch))
+
+;;;###autoload
 (defun pgg-insert-key ()
   "Insert the ASCII armored public key."
   (interactive)
@@ -260,6 +300,12 @@ signer's public key from `pgg-default-keyserver-address'."
   (pgg-save-coding-system start end
     (pgg-invoke "snarf-keys-region" (or pgg-scheme pgg-default-scheme)
 		start end)))
+
+;;;###autoload
+(defun pgg-snarf-keys ()
+  "Import public keys in the current buffer."
+  (interactive "")
+  (pgg-snarf-keys-region (or start (point-min)) (or end (point-max))))
 
 (defun pgg-lookup-key (string &optional type)
   (pgg-invoke "lookup-key" (or pgg-scheme pgg-default-scheme) string type))
