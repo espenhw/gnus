@@ -28,6 +28,6 @@ GNUS_CHECK_FONTS
 
 AC_OUTPUT(Makefile etc/Makefile lisp/Makefile texi/Makefile texi/gnusconfig.tex texi/ps/Makefile)
 
-m4_if(dnl	Do not change this comment
+ifelse(dnl	Do not change this comment
    arch-tag: 4fda042e-c632-45be-867f-4d90bc87746b
 )dnl
