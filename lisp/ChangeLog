@@ -1,7 +1,7 @@
 2000-05-16  Simon Josefsson  <jas@pdc.kth.se>
 
 	* nnimap.el (nnimap-request-accept-article): Don't unselect
-	mailbox if no select is selected.
+	mailbox if no mailbox is selected.
 
 2000-05-15  Per Abrahamsen  <abraham@dina.kvl.dk>
 
