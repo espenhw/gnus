@@ -1,5 +1,8 @@
 2001-05-27  Simon Josefsson  <simon@josefsson.org>
 
+	* message.el (message-yank-cited-prefix): New variable.
+	(message-indent-citation): Use it.
+
 	* mml2015.el (mml2015-mailcrypt-verify): Store gpg stderr output
 	as details.
 	(mml2015-mailcrypt-clear-verify): Ditto.

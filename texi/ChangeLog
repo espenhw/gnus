@@ -1,3 +1,7 @@
+2001-05-27  Simon Josefsson  <simon@josefsson.org>
+
+	* message.texi (Insertion): Add message-yank-cited-prefix.
+
 2001-05-22  Simon Josefsson  <simon@josefsson.org>
 	From Jesper Harder <harder@ifa.au.dk>
 

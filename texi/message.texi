@@ -505,9 +505,19 @@ function is called.
 @cindex yanking
 @cindex quoting
 When you are replying to or following up an article, you normally want
-to quote the person you are answering.  Inserting quoted text is done by
-@dfn{yanking}, and each quoted line you yank will have
+to quote the person you are answering.  Inserting quoted text is done
+by @dfn{yanking}, and each quoted line you yank (except earlier
+quotes, see @code{message-yank-cited-prefix}) will have
 @code{message-yank-prefix} prepended to it.  The default is @samp{> }.
+
+@item message-yank-cited-prefix
+@vindex message-yank-cited-prefix
+@cindex yanking
+@cindex cited
+@cindex quoting
+The @code{message-yank-prefix} prefix is not used on already cited
+lines, instead the contents of this variable is used as yank prefix.
+The default is @samp{>}.
 
 @item message-indentation-spaces
 @vindex message-indentation-spaces
