@@ -1210,7 +1210,9 @@ function is generally only called when Gnus is shutting down."
 	       (setq result (eval accept-form))
 	       (kill-buffer buf)
 	       result)
-	     (nnimap-request-expire-articles (list article) group server t))
+	     (imap-message-flags-add
+	      (imap-range-to-message-set (list article))
+	      "\\Deleted" 'silent nnimap-server-buffer))
 	result))))
 
 (deffoo nnimap-request-accept-article (group &optional server last)
