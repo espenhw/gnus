@@ -959,6 +959,7 @@ For example:
      (\"mail\\\\.me\" (gnus-use-scoring  t))
      (\"list\\\\..*\" (total-expire . t)
 		  (broken-reply-to . t)))"
+  :version "21.4"
   :group 'gnus-group-various
   :type '(repeat (cons regexp
 		       (repeat sexp))))
@@ -2343,7 +2344,7 @@ face."
 When set, Gnus will prefer using the locally stored content rather
 than re-fetching it from the server.  You also need to enable
 `gnus-agent' for this to have any affect."
-  :version "21.3"
+  :version "21.4"
   :group 'gnus-agent
   :type 'boolean)
 
@@ -2362,7 +2363,7 @@ covered by that variable."
 You may customize gnus-agent to disable its use.  However, some
 back ends have started to use the agent as a client-side cache.
 Disabling the agent may result in noticeable loss of performance."
-  :version "21.3"
+  :version "21.4"
   :group 'gnus-agent
   :type 'boolean)
 
@@ -2394,6 +2395,7 @@ It can be one of the symbols `gnus' \(show only Gnus version\), `emacs-gnus'
 `emacs-gnus' plus system configuration\), `emacs-gnus-type' \(same as
 `emacs-gnus' plus system type\) or a custom string.  If you set it to a
 string, be sure to use a valid format, see RFC 2616."
+  :version "21.4"
   :group 'gnus-message
   :type '(choice
 	  (item :tag "Show Gnus and Emacs versions and system type"

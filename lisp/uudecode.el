@@ -50,6 +50,7 @@ input and write the converted data to its standard output."
 (defcustom uudecode-use-external
   (executable-find uudecode-decoder-program)
   "*Use external uudecode program."
+  :version "21.4"
   :group 'gnus-extract
   :type 'boolean)
 
