@@ -768,6 +768,13 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-hide-citation-maybe nil
+  "Hide cited text.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 (defcustom gnus-treat-strip-list-identifiers 'head
   "Strip list identifiers from `gnus-list-identifiers`.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -974,6 +981,7 @@ See the manual for details."
     (gnus-treat-hide-boring-headers gnus-article-hide-boring-headers)
     (gnus-treat-hide-signature gnus-article-hide-signature)
     (gnus-treat-hide-citation gnus-article-hide-citation)
+    (gnus-treat-hide-citation-maybe gnus-article-hide-citation-maybe)
     (gnus-treat-strip-list-identifiers gnus-article-hide-list-identifiers)
     (gnus-treat-strip-pgp gnus-article-hide-pgp)
     (gnus-treat-strip-pem gnus-article-hide-pem)

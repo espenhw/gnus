@@ -53,11 +53,12 @@ nnmail-pre-get-new-mail-hook."
 ;;;###autoload
 (defun gnus-group-split-update (&optional catch-all)
   "Computes nnmail-split-fancy from group params.
-It does this by calling \(gnus-group-split-fancy nil nil DEFAULTGROUP)."
+It does this by calling \(gnus-group-split-fancy nil CROSSPOST DEFAULTGROUP)."
   (interactive)
   (setq nnmail-split-fancy
 	(gnus-group-split-fancy
-	 nil nil (or catch-all gnus-group-split-default-catch-all-group)))
+	 nil (null nnmail-crosspost)
+	 (or catch-all gnus-group-split-default-catch-all-group)))
   (run-hooks 'gnus-group-split-updated-hook))
 
 ;;;###autoload
@@ -193,7 +194,7 @@ Calling (gnus-group-split-fancy nil nil \"mail.misc\") returns:
 		    (setq catch-all nil)))))))))
     ;; Add catch-all if not crossposting
     (if (and catch-all no-crosspost)
-	(push split catch-all))
+	(push catch-all split))
     ;; Move it to the tail, while arranging that SPLITs appear in the
     ;; same order as groups.
     (setq split (reverse split))
