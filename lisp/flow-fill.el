@@ -35,7 +35,7 @@
 ;; paragraph and we let `fill-region' fill the long line into several
 ;; lines with the quote prefix as `fill-prefix'.
 
-;; Todo: encoding, implement basic `fill-region' (Emacs and XEmacs
+;; Todo: implement basic `fill-region' (Emacs and XEmacs
 ;;       implementations differ..)
 
 ;;; History:
@@ -46,6 +46,7 @@
 ;; 2000-03-26  commited to gnus cvs
 ;; 2000-10-23  don't flow "-- " lines, make "quote-depth wins" rule
 ;;             work when first line is at level 0.
+;; 2002-01-12  probably incomplete encoding support
 
 ;;; Code:
 
@@ -61,6 +62,27 @@
 	(if (fboundp 'point-at-eol)
 	    'point-at-eol
 	  'line-end-position)))
+
+(defun fill-flowed-encode (&optional buffer)
+  (with-current-buffer (or buffer (current-buffer))
+    ;; No point in doing this unless hard newlines is used.
+    (when use-hard-newlines
+      (let ((start (point-min)) end)
+	;; Go through each paragraph, filling it and adding SPC
+	;; as the last character on each line.
+	(while (setq end (text-property-any start (point-max) 'hard 't))
+	  (let ((fill-column 66))
+	    (fill-region start end t 'nosqueeze 'to-eop))
+	  (goto-char start)
+	  ;; `fill-region' probably distorted end.
+	  (setq end (text-property-any start (point-max) 'hard 't))
+	  (while (and (< (point) end)
+		      (re-search-forward "$" (1- end) t))
+	    (insert " ")
+	    (setq end (1+ end))
+	    (forward-char))
+	  (goto-char (setq start (1+ end)))))
+      t)))
 
 (defun fill-flowed (&optional buffer)
   (save-excursion
@@ -79,6 +101,7 @@
 	      (beginning-of-line)
 	      (when (> (skip-chars-forward ">") 0)
 		(insert " "))))
+	  ;; XXX slightly buggy handling of "-- "
 	  (while (and (save-excursion
 			(ignore-errors (backward-char 3))
 			(setq sig (looking-at "-- "))
@@ -93,7 +116,8 @@
 	    (backward-delete-char -1)
 	    (end-of-line))
 	  (unless sig
-	    (let ((fill-prefix (when quote (concat quote " "))))
+	    (let ((fill-prefix (when quote (concat quote " ")))
+		  (fill-column (1- (window-width))))
 	      (fill-region (fill-flowed-point-at-bol)
 			   (min (1+ (fill-flowed-point-at-eol)) (point-max))
 			   'left 'nosqueeze))))))))

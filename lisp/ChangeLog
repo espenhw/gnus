@@ -1,3 +1,15 @@
+2002-01-12  Simon Josefsson  <jas@extundo.com>
+
+	* mml.el (autoload): Autoload fill-flowed-encode.
+	(mml-buffer-substring-no-properties-except-hard-newlines): New
+	function.
+	(mml-read-part): Use it.
+	(mml-generate-mime-1): Encode format=flowed if appropriate.
+	(mml-insert-mime-headers): Insert format=flowed.
+
+	* flow-fill.el (fill-flowed-encode): New function.
+	(fill-flowed): Bind fill-column to window width.
+
 2002-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-buffer-name): Return the dead name if
