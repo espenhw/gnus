@@ -3,6 +3,7 @@
 	* gnus-agent.el (gnus-agent-regenerate-group): New function.
 	(gnus-agent-regenerate): New function.
 	(gnus-agent-save-alist): Sort.
+	(gnus-agent-copy-nov-line): Test eobp.
 
 2002-01-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

@@ -1038,14 +1038,15 @@ the actual number of articles toggled is returned."
 (defsubst gnus-agent-copy-nov-line (article)
   (let (b e)
     (set-buffer gnus-agent-overview-buffer)
-    (setq b (point))
-    (if (eq article (read (current-buffer)))
-	(setq e (progn (forward-line 1) (point)))
-      (progn
-	(beginning-of-line)
-	(setq e b)))
-    (set-buffer nntp-server-buffer)
-    (insert-buffer-substring gnus-agent-overview-buffer b e)))
+    (unless (eobp)
+      (setq b (point))
+      (if (eq article (read (current-buffer)))
+	  (setq e (progn (forward-line 1) (point)))
+	(progn
+	  (beginning-of-line)
+	  (setq e b)))
+      (set-buffer nntp-server-buffer)
+      (insert-buffer-substring gnus-agent-overview-buffer b e))))
 
 (defun gnus-agent-braid-nov (group articles file)
   (set-buffer gnus-agent-overview-buffer)
