@@ -858,7 +858,7 @@ used."
 (defvar gnus-inhibit-treatment nil
   "Whether to inhibit treatment.")
 
-(defcustom gnus-treat-highlight-signature '(or last (typep "text/x-vcard"))
+(defcustom gnus-treat-highlight-signature '(or t (typep "text/x-vcard"))
   "Highlight the signature.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See Info node `(gnus)Customizing Articles'."
