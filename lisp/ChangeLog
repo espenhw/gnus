@@ -1,5 +1,9 @@
 2004-01-13  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-score.el (gnus-score-edit-all-score): Fix prototype.
+	Invoke gnus-score-mode.  Reported by
+	bojohan+news@dd.chalmers.se (Johan Bockg,Ae(Brd).
+
 	* gnus-range.el (gnus-compress-sequence): Doc fix.  Suggested by
 	Jim Blandy <jimb@redhat.com> (tiny change).
 

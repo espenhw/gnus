@@ -1088,10 +1088,11 @@ EXTRA is the possible non-standard header."
      4 (substitute-command-keys
 	"\\<gnus-score-mode-map>\\[gnus-score-edit-exit] to save edits"))))
 
-(defun gnus-score-edit-all-score (file)
+(defun gnus-score-edit-all-score ()
   "Edit the all.SCORE file."
   (interactive)
-  (find-file (gnus-score-file-name "all")))
+  (find-file (gnus-score-file-name "all"))
+  (gnus-score-mode))
 
 (defun gnus-score-edit-file (file)
   "Edit a score file."
