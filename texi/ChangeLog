@@ -1,4 +1,9 @@
-2003-03-09  Paul Jarc  <prj@po.cwru.edu>
+2003-03-18  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus.texi (Maildir): More info for expire-group; add
+	distrust-Lines:.
+
+2003-03-17  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus.texi (Comparing Mail Back Ends): nnmaildir fixes.
 

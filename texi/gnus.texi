@@ -14648,7 +14648,12 @@ articles will be moved to the specified group during expiry before
 being deleted.  @emph{If this is set to an nnmaildir group, the
 article will be just as old in the destination group as it was in the
 source group.} So be careful with @code{expire-age} in the destination
-group.
+group.  If this is set to the name of the same group that the
+parameter belongs to, then the article is not expired at all.  If you
+use the vector form, the first element is evaluated once for each
+article.  So that form can refer to
+@code{nnmaildir-article-file-name}, etc., to decide where to put the
+article.
 
 @item read-only
 If this is set to @code{t}, nnmaildir will treat the articles in this
@@ -14668,6 +14673,11 @@ A function with the same interface as @code{directory-files}.  It is
 used to scan the directories in the maildir corresponding to this
 group to find articles.  The default is the function specified by the
 server's @code{directory-files} parameter.
+
+@item distrust-Lines:
+If non-@code{nil}, nnmaildir will always count the lines of an
+article, rather than use the @code{Lines:} header field.  If
+@code{nil}, the header field will be used if present.
 
 @item always-marks
 A list of mark symbols, such as
