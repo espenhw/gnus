@@ -1,3 +1,8 @@
+2004-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* run-at-time.el: Remove useless (require 'itimer),
+	eval-and-compile and (featurep 'xemacs).
+
 2004-01-16  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-post-news): Use blank Newsgroups line if
