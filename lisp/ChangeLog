@@ -1,3 +1,7 @@
+2000-12-04  Andreas Jaeger  <aj@suse.de>
+
+	* gnus-msg.el (gnus-summary-mail-forward): Fix typos in description.
+
 2000-12-03 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-fix-micalg): Alg might be nil.
