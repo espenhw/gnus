@@ -4079,13 +4079,10 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		  (gnus-group-make-articles-read name idlist))))
 	 xref-hashtb)))))
 
-(defun gnus-group-make-articles-read (group articles)
-  "Update the info of GROUP to say that ARTICLES are read."
-  (let* ((num 0)
-	 (entry (gnus-gethash group gnus-newsrc-hashtb))
+(defun gnus-compute-read-articles (group articles)
+  (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
 	 (info (nth 2 entry))
-	 (active (gnus-active group))
-	 range)
+	 (active (gnus-active group)))
     (when entry
       ;; First peel off all illegal article numbers.
       (when active
@@ -4106,6 +4103,25 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (when (or (> id (cdr active))
 		      (< id (car active)))
 	      (setq articles (delq id articles))))))
+      ;; If the read list is nil, we init it.
+      (if (and active
+	       (null (gnus-info-read info))
+	       (> (car active) 1))
+	  (setq ninfo (cons 1 (1- (car active))))
+	(setq ninfo (gnus-info-read info)))
+      ;; Then we add the read articles to the range.
+      (gnus-add-to-range
+       ninfo (setq articles (sort articles '<))))))
+  
+(defun gnus-group-make-articles-read (group articles)
+  "Update the info of GROUP to say that ARTICLES are read."
+  (let* ((num 0)
+	 (entry (gnus-gethash group gnus-newsrc-hashtb))
+	 (info (nth 2 entry))
+	 (active (gnus-active group))
+	 range)
+    (when entry
+      (setq range (gnus-compute-read-articles group articles))
       (save-excursion
 	(set-buffer gnus-group-buffer)
 	(gnus-undo-register
@@ -4114,17 +4130,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	     (gnus-info-set-read ',info ',(gnus-info-read info))
 	     (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
 	     (gnus-group-update-group ,group t))))
-      ;; If the read list is nil, we init it.
-      (and active
-	   (null (gnus-info-read info))
-	   (> (car active) 1)
-	   (gnus-info-set-read info (cons 1 (1- (car active)))))
-      ;; Then we add the read articles to the range.
-      (gnus-info-set-read
-       info
-       (setq range
-	     (gnus-add-to-range
-	      (gnus-info-read info) (setq articles (sort articles '<)))))
+      ;; Add the read articles to the range.
+      (gnus-info-set-read info range)
       ;; Then we have to re-compute how many unread
       ;; articles there are in this group.
       (when active
@@ -5693,21 +5700,25 @@ Return nil if there are no articles."
       (gnus-summary-goto-subject article))))
 
 (defun gnus-summary-goto-article (article &optional all-headers force)
-  "Fetch ARTICLE and display it if it exists.
+  "Fetch ARTICLE (article number or Message-ID) and display it if it exists.
 If ALL-HEADERS is non-nil, no header lines are hidden."
   (interactive
    (list
-    (string-to-int
-     (completing-read
-      "Article number: "
-      (mapcar (lambda (number) (list (int-to-string number)))
-	      gnus-newsgroup-limit)))
+    (completing-read
+     "Article number or Message-ID: "
+     (mapcar (lambda (number) (list (int-to-string number)))
+	     gnus-newsgroup-limit))
     current-prefix-arg
     t))
   (prog1
-      (if (gnus-summary-goto-subject article force)
-	  (gnus-summary-display-article article all-headers)
-	(gnus-message 4 "Couldn't go to article %s" article) nil)
+      (if (and (stringp article)
+	       (string-match "@" article))
+	  (gnus-summary-refer-article article)
+	(when (stringp article)
+	  (setq article (string-to-number article)))
+	(if (gnus-summary-goto-subject article force)
+	    (gnus-summary-display-article article all-headers)
+	  (gnus-message 4 "Couldn't go to article %s" article) nil))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-goto-last-article ()
@@ -8692,7 +8703,7 @@ save those articles instead."
 	  (funcall gnus-summary-highlight-line-function article face))))
     (goto-char p)))
 
-(defun gnus-update-read-articles (group unread)
+(defun gnus-update-read-articles (group unread &optional compute)
   "Update the list of read articles in GROUP."
   (let* ((active (or gnus-newsgroup-active (gnus-active group)))
 	 (entry (gnus-gethash group gnus-newsrc-hashtb))
@@ -8724,20 +8735,22 @@ save those articles instead."
 	(setq unread (cdr unread)))
       (when (<= prev (cdr active))
 	(push (cons prev (cdr active)) read))
-      (save-excursion
-	(set-buffer gnus-group-buffer)
-	(gnus-undo-register
-	  `(progn
-	     (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
-	     (gnus-info-set-read ',info ',(gnus-info-read info))
-	     (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
-	     (gnus-group-update-group ,group t))))
-      ;; Enter this list into the group info.
-      (gnus-info-set-read
-       info (if (> (length read) 1) (nreverse read) read))
-      ;; Set the number of unread articles in gnus-newsrc-hashtb.
-      (gnus-get-unread-articles-in-group info (gnus-active group))
-      t)))
+      (if compute
+	  (if (> (length read) 1) (nreverse read) read)
+	(save-excursion
+	  (set-buffer gnus-group-buffer)
+	  (gnus-undo-register
+	    `(progn
+	       (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
+	       (gnus-info-set-read ',info ',(gnus-info-read info))
+	       (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
+	       (gnus-group-update-group ,group t))))
+	;; Enter this list into the group info.
+	(gnus-info-set-read
+	 info (if (> (length read) 1) (nreverse read) read))
+	;; Set the number of unread articles in gnus-newsrc-hashtb.
+	(gnus-get-unread-articles-in-group info (gnus-active group))
+	t))))
 
 (defun gnus-offer-save-summaries ()
   "Offer to save all active summary buffers."

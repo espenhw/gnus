@@ -1,3 +1,11 @@
+Sun Sep 14 21:59:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Outgoing Messages): New.
+	(Score File Format): Note.
+	(Subscription Methods): Fix.
+	(Starting Up): Fix.
+	(Threading): Add.
+
 Sat Jul 19 23:02:03 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Followups To Yourself): \\(_-_\\)?

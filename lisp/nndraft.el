@@ -46,7 +46,7 @@
 (defvoo nndraft-get-new-mail nil nil nnmh-get-new-mail)
 
 (defconst nndraft-version "nndraft 1.0")
-(defvoo nndraft-status-string "" nnmh-status-string)
+(defvoo nndraft-status-string "" nil nnmh-status-string)
 
 
 
@@ -133,7 +133,9 @@
     t))
 
 (deffoo nndraft-request-update-info (group info &optional server)
-  (setcar (cddr info) nil)
+  (gnus-info-set-read
+   info
+   (gnus-update-read-articles "nndraft:draft" (nndraft-articles) t))
   (let (marks)
     (when (setq marks (nth 3 info))
       (setcar (nthcdr 3 info)
@@ -213,6 +215,15 @@
 	  (setq buffer-file-name file)
 	  (make-auto-save-file-name))
       (kill-buffer (current-buffer)))))
+
+(defun nndraft-articles ()
+  "Return the list of messages in the group."
+  (sort
+   (mapcar
+    (lambda (file)
+      (string-to-int file))
+    (directory-files nndraft-directory nil "^[0-9]+$" t))
+   '<))
 
 (nnoo-map-functions nndraft
   (nnmh-retrieve-headers 0 nndraft-current-group 0 0)

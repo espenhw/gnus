@@ -1508,7 +1508,10 @@ If ALL is a number, fetch this number of articles."
   "Select the current group \"quickly\".
 This means that no highlighting or scoring will be performed.
 If ALL (the prefix argument) is 0, don't even generate the summary
-buffer."
+buffer.
+
+This might be useful if you want to toggle threading
+before entering the group."
   (interactive "P")
   (require 'gnus-score)
   (let (gnus-visual

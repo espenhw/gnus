@@ -1746,7 +1746,8 @@ or error messages, and inform user.
 Otherwise any failure is reported in a message back to
 the user from the mailer."
   (interactive "P")
-  (when (if buffer-file-name
+  ;; Disabled test.
+  (when (if (and nil buffer-file-name)
 	    (y-or-n-p (format "Send buffer contents as %s message? "
 			      (if (message-mail-p)
 				  (if (message-news-p) "mail and news" "mail")

@@ -244,7 +244,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.3"
+(defconst gnus-version-number "0.4"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -1699,10 +1699,10 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-agent" gnus-open-agent gnus-agent-get-function
       gnus-agent-save-groups gnus-agent-save-active gnus-agent-method-p)
      ("gnus-agent" :interactive t
-      gnus-unplugged)
+      gnus-unplugged gnus-agentize)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm)
-     ("gnus-draft" :interactive t gnus-draft-mode))))
+     ("gnus-draft" :interactive t gnus-draft-mode gnus-group-send-drafts))))
 
 ;;; gnus-sum.el thingies
 

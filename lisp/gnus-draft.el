@@ -122,13 +122,28 @@
   (gnus-uu-mark-buffer)
   (gnus-draft-send-message))
 
+(defun gnus-group-send-drafts ()
+  "Send all sendable articles from the draft group."
+  (interactive)
+  (gnus-request-group "nndraft:draft")
+  (save-excursion
+    (let ((articles (nndraft-articles))
+	  (unsendable (gnus-uncompress-range
+		       (cdr (assq 'unsend (gnus-info-marks
+					   (gnus-get-info "nndraft:draft"))))))
+	  article)
+      (while (setq article (pop articles))
+	(unless (memq article unsendable)
+	  (gnus-draft-send article))))))
+
 ;;; Utility functions
 
-(defun gnus-draft-setup (article)
+(defun gnus-draft-setup (article &optional group)
   (gnus-setup-message 'forward
     (message-mail)
     (erase-buffer)
-    (if (not (gnus-request-restore-buffer article gnus-newsgroup-name))
+    (if (not (gnus-request-restore-buffer
+	      article (or gnus-newsgroup-name "nndraft:draft")))
 	(error "Couldn't restore the article")
       ;; Insert the separator.
       (goto-char (point-min))

@@ -1,3 +1,26 @@
+Mon Sep 15 00:40:09 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.4 is released.
+
+Mon Sep 15 00:19:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-goto-article): Accept Message-ID's.
+
+Sun Sep 14 21:41:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-group-make-articles-read): No params.
+
+	* nndraft.el (nndraft-status-string): Fix.
+
+	* gnus-draft.el (gnus-group-send-drafts): New command.
+
+	* gnus-sum.el (gnus-compute-read-articles): Separated.
+	(gnus-update-read-articles): Allow computation.
+
+	* nndraft.el (nndraft-articles): New function.
+
+	* message.el (message-send): Disabled test.
+
 Sun Sep 14 21:17:34 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.3 is released.

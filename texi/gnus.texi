@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.3 Manual
+@settitle Quassia Gnus 0.4 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.3 Manual
+@title Quassia Gnus 0.4 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.3.
+This manual corresponds to Quassia Gnus 0.4.
 
 @end ifinfo
 
@@ -408,7 +408,8 @@ If you want to start Gnus in a different frame, you can use the command
 @kbd{M-x gnus-other-frame} instead.
 
 If things do not go smoothly at startup, you have to twiddle some
-variables. 
+variables in your @file{~/.gnus} file.  This file is similar to
+@file{~/.emacs}, but is read when gnus starts.
 
 @menu
 * Finding the News::    Choosing a method for getting news.
@@ -677,11 +678,12 @@ zombies later (with @kbd{A z}) and either kill them all off properly
 
 @item gnus-subscribe-randomly
 @vindex gnus-subscribe-randomly
-Subscribe all new groups randomly.
+Subscribe all new groups in arbitrary order.  This really means that all
+new groups will be added at ``the top'' of the grop buffer.
 
 @item gnus-subscribe-alphabetically
 @vindex gnus-subscribe-alphabetically
-Subscribe all new groups alphabetically.
+Subscribe all new groups in alphabetical order.
 
 @item gnus-subscribe-hierarchically
 @vindex gnus-subscribe-hierarchically
@@ -696,7 +698,8 @@ up.  Or something like that.
 @item gnus-subscribe-interactively
 @vindex gnus-subscribe-interactively
 Subscribe new groups interactively.  This means that Gnus will ask
-you about @strong{all} new groups.
+you about @strong{all} new groups.  The groups you choose to subscribe
+to will be subscribed hierarchically.
 
 @item gnus-subscribe-killed
 @vindex gnus-subscribe-killed
@@ -1412,9 +1415,9 @@ minimum amount of fuzz (@code{gnus-group-quick-select-group}).  No
 scoring/killing will be performed, there will be no highlights and no
 expunging.  This might be useful if you're in a real hurry and have to
 enter some humongous group.  If you give a 0 prefix to this command
-(i.e., @kbd{0 M-RET}), Gnus won't even generate the summary buffer.
-This might be useful if you want to toggle threading before entering the
-group.
+(i.e., @kbd{0 M-RET}), Gnus won't even generate the summary buffer,
+which is useful if you want to toggle threading before generating the
+summary buffer (@pxref{Summary Generation Commands}).
 
 @item M-SPACE
 @kindex M-SPACE (Group)
@@ -1660,10 +1663,10 @@ give a level prefix to @kbd{g} or @kbd{l}, all subsequent commands will
 use this level as the ``work'' level.
 
 @vindex gnus-activate-level
-Gnus will normally just activate groups on level
-@code{gnus-activate-level} or less.  If you don't want to activate
-unsubscribed groups, for instance, you might set this variable to
-5.  The default is 6.
+Gnus will normally just activate (i. e., query the server about) groups
+on level @code{gnus-activate-level} or less.  If you don't want to
+activate unsubscribed groups, for instance, you might set this variable
+to 5.  The default is 6.
 
 
 @node Group Score
@@ -1886,7 +1889,8 @@ This function will delete the current group
 (@code{gnus-group-delete-group}).  If given a prefix, this function will
 actually delete all the articles in the group, and forcibly remove the
 group itself from the face of the Earth.  Use a prefix only if you are
-absolutely sure of what you are doing.
+absolutely sure of what you are doing.  This command can't be used on
+read-only groups (like @code{nntp} group), though.
 
 @item G V
 @kindex G V (Group)
@@ -1979,8 +1983,9 @@ If this symbol is present in the group parameter list and set to
 @code{t}, newly composed messages will be @code{Gcc}'d to the current
 group. If it is present and set to @code{none}, no @code{Gcc:} header
 will be generated, if it is present and a string, this string will be
-inserted literally as a @code{gcc} header (this symbol takes precedence over
-any default @code{Gcc} rules as described later).
+inserted literally as a @code{gcc} header (this symbol takes precedence
+over any default @code{Gcc} rules as described later).  @xref{Archived
+Messages}
 
 @item auto-expire
 @cindex auto-expire
@@ -2852,8 +2857,8 @@ Enter the server buffer (@code{gnus-group-enter-server-mode}).
 @item a
 @kindex a (Group)
 @findex gnus-group-post-news
-Post an article to a group (@code{gnus-group-post-news}).  The current
-group name will be used as the default.
+Post an article to a group (@code{gnus-group-post-news}).  If given a
+prefix, the current group name will be used as the default.
 
 @item m
 @kindex m (Group)
@@ -3169,8 +3174,8 @@ Article number.
 @item S
 Subject string.
 @item s
-Subject if the article is the root or the previous article had a
-different subject, @code{gnus-summary-same-subject} otherwise.
+Subject if the article is the root of the thread or the previous article
+had a different subject, @code{gnus-summary-same-subject} otherwise.
 (@code{gnus-summary-same-subject} defaults to @samp{}.)
 @item F
 Full @code{From} header.
@@ -3208,7 +3213,7 @@ Unread.
 @item R
 Replied.
 @item i
-Score as a number.
+Score as a number (@pxref{Scoring}).
 @item z
 @vindex gnus-summary-zcore-fuzz
 Zcore, @samp{+} if above the default level and @samp{-} if below the
@@ -3283,7 +3288,8 @@ Gnus version.
 @item U
 Number of unread articles in this group.
 @item e
-Number of unselected articles in this group.
+Number of unread articles in this group that aren't displayed in the
+summary buffer.
 @item Z
 A string with the number of unread and unselected articles represented
 either as @samp{<%U(+%e) more>} if there are both unread and unselected
@@ -3295,13 +3301,13 @@ shortened to @samp{r.a.anime}.
 @item S
 Subject of the current article.
 @item u
-User-defined spec.
+User-defined spec (@pxref{User-Defined Specs}).
 @item s
-Name of the current score file.
+Name of the current score file (@pxref{Scoring}).
 @item d
-Number of dormant articles.
+Number of dormant articles (@pxref{Unread Articles}).
 @item t
-Number of ticked articles.
+Number of ticked articles (@pxref{Unread Articles}).
 @item r
 Number of articles that have been marked as read in this session. 
 @item E
@@ -3376,8 +3382,8 @@ Go to the previous summary line of an unread article
 @kindex j (Summary)
 @kindex G j (Summary)
 @findex gnus-summary-goto-article
-Ask for an article number and then go to that article
-(@code{gnus-summary-goto-article}). 
+Ask for an article number or @code{Message-ID}, and then go to that
+article (@code{gnus-summary-goto-article}).
 
 @item G g
 @kindex G g (Summary)
@@ -3527,10 +3533,13 @@ Go to the previous article read (@code{gnus-summary-goto-last-article}).
 @item G o
 @kindex G o (Summary)
 @findex gnus-summary-pop-article
+@cindex history
+@cindex article history
 Pop an article off the summary history and go to this article
 (@code{gnus-summary-pop-article}).  This command differs from the
 command above in that you can pop as many previous articles off the
-history as you like.
+history as you like.  For a somewhat related issue (if you use this
+command a lot), @pxref{Article Backlog}.
 @end table
 
 
@@ -3737,9 +3746,9 @@ This command understands the process/prefix convention
 @item S O m
 @kindex S O m (Summary)
 @findex gnus-uu-digest-mail-forward
-Digest the current series and forward the result using mail
-(@code{gnus-uu-digest-mail-forward}).  This command uses the
-process/prefix convention (@pxref{Process/Prefix}). 
+Digest the current series (@pxref{Decoding Articles}) and forward the
+result using mail (@code{gnus-uu-digest-mail-forward}).  This command
+uses the process/prefix convention (@pxref{Process/Prefix}).
 
 @item S M-c
 @kindex S M-c (Summary)
@@ -3937,7 +3946,8 @@ Articles}).
 Marked as dormant (@code{gnus-dormant-mark}).  
 
 @dfn{Dormant articles} will only appear in the summary buffer if there
-are followups to it.
+are followups to it.  If you want to see them even if they don't have
+followups, you can use the @kbd{/ D} command (@pxref{Limiting}).
 
 @item SPACE
 @vindex gnus-unread-mark
@@ -4048,8 +4058,8 @@ answered) will be marked with an @samp{A} in the second column
 
 @item 
 @vindex gnus-cached-mark
-Articles stored in the article cache will be marked with an
-@samp{*} in the second column (@code{gnus-cached-mark}).
+Articles stored in the article cache will be marked with an @samp{*} in
+the second column (@code{gnus-cached-mark}).  @xref{Article Caching}
 
 @item 
 @vindex gnus-saved-mark
@@ -4090,12 +4100,23 @@ you'll only see the cache mark and not the replied mark.
 All the marking commands understand the numeric prefix.
 
 @table @kbd
+@item M c
+@itemx M-u
+@kindex M c (Summary)
+@kindex M-u (Summary)
+@findex gnus-summary-clear-mark-forward
+@cindex mark as unread
+Clear all readedness-marks from the current article
+(@code{gnus-summary-clear-mark-forward}).  In other words, mark the
+article as unread.
+
 @item M t
 @itemx !
 @kindex ! (Summary)
 @kindex M t (Summary)
 @findex gnus-summary-tick-article-forward
 Tick the current article (@code{gnus-summary-tick-article-forward}).
+@xref{Article Caching} 
 
 @item M ?
 @itemx ?
@@ -4103,7 +4124,7 @@ Tick the current article (@code{gnus-summary-tick-article-forward}).
 @kindex M ? (Summary)
 @findex gnus-summary-mark-as-dormant
 Mark the current article as dormant
-(@code{gnus-summary-mark-as-dormant}).
+(@code{gnus-summary-mark-as-dormant}).  @xref{Article Caching} 
 
 @item M d
 @itemx d
@@ -4165,15 +4186,6 @@ Mark all articles between point and mark as read
 @findex gnus-summary-kill-below
 Kill all articles with scores below the default score (or below the
 numeric prefix) (@code{gnus-summary-kill-below}).
-
-@item M c
-@itemx M-u
-@kindex M c (Summary)
-@kindex M-u (Summary)
-@findex gnus-summary-clear-mark-forward
-@cindex mark as unread
-Clear all readedness-marks from the current article
-(@code{gnus-summary-clear-mark-forward}).
 
 @item M e
 @itemx E
@@ -4439,6 +4451,43 @@ also mark excluded ticked and dormant articles as read.
 Gnus threads articles by default.  @dfn{To thread} is to put responses
 to articles directly after the articles they respond to---in a
 hierarchical fashion.
+
+Threading is done by looking at the @code{References} headers of the
+articles.  In a perfect world, this would be enough to build pretty
+trees, but unfortunately, the @code{References} header is often broken
+or simply missing.  Weird news propagration excarcerbates the problem,
+so one has to employ other heuristics to get pleasing results.  A
+plethora of approaches exists, as detailed in horrible detail in
+@pxref{Customizing Threading}. 
+
+First, a quick overview of the concepts:
+
+@table @dfn
+@item root
+The top-most article in a thread; the first article in the thread.
+
+@item thread
+A tree-like article structure.
+
+@item sub-thread
+A small(er) section of this tree-like structure.
+
+@item loose threads
+Threads often lose their roots due to article expiry, or due to the root
+already having been read in a previous session, and not displayed in the
+summary buffer.  We then typicall have many sub-threads that really
+belong to one thread, but are without connecting roots.  These are
+called loose threads.
+
+@item thread gathering
+An attempt to gather loose threads into bigger threads.
+
+@item sparse threads
+A thread where the missing articles have been ``guessed'' at, and are
+displayed as empty lines in the summary buffer.
+
+@end table
+
 
 @menu
 * Customizing Threading::     Variables you can change to affect the threading.
@@ -5025,10 +5074,11 @@ symbols in these two lists are @code{ticked}, @code{dormant},
 @findex gnus-jog-cache
 So where does the massive article-fetching and storing come into the
 picture?  The @code{gnus-jog-cache} command will go through all
-subscribed newsgroups, request all unread articles, and store them in
-the cache.  You should only ever, ever ever ever, use this command if 1)
-your connection to the @sc{nntp} server is really, really, really slow
-and 2) you have a really, really, really huge disk.  Seriously.
+subscribed newsgroups, request all unread articles, score them, and
+store them in the cache.  You should only ever, ever ever ever, use this
+command if 1) your connection to the @sc{nntp} server is really, really,
+really slow and 2) you have a really, really, really huge disk.
+Seriously.
 
 @vindex gnus-uncacheable-groups
 It is likely that you do not want caching on some groups.  For instance,
@@ -5392,13 +5442,15 @@ encoded in some way or other.  Gnus can decode them for you.
 
 @menu 
 * Uuencoded Articles::    Uudecode articles.
-* Shared Articles::       Unshar articles.
+* Shell Archives::        Unshar articles.
 * PostScript Files::      Split PostScript.
 * Other Files::           Plain save and binhex.
 * Decoding Variables::    Variables for a happy decoding.
 * Viewing Files::         You want to look at the result of the decoding?
 @end menu
 
+@cindex series
+@cindex article series
 All these functions use the process/prefix convention
 (@pxref{Process/Prefix}) for finding out what articles to work on, with
 the extension that a ``single article'' means ``a single series''.  Gnus
@@ -5471,10 +5523,15 @@ you have just viewed the file in question.  This feature can't be turned
 off.
 
 
-@node Shared Articles
-@subsection Shared Articles
+@node Shell Archives
+@subsection Shell Archives
 @cindex unshar
+@cindex shell archives
 @cindex shared articles
+
+Shell archives (``shar files'') used to be a popular way to distribute
+sources, but it isn't used all that much today.  In any case, we have
+some commands to deal with these:
 
 @table @kbd
 
@@ -6117,12 +6174,17 @@ when filling.
 @item W c
 @kindex W c (Summary)
 @findex gnus-article-remove-cr
-Remove CR (@code{gnus-article-remove-cr}).
+Remove CR (i. e., @samp{^M}s on the end of the lines)
+(@code{gnus-article-remove-cr}).
 
 @item W q
 @kindex W q (Summary)
 @findex gnus-article-de-quoted-unreadable
 Treat quoted-printable (@code{gnus-article-de-quoted-unreadable}).
+Quoted-Printable is one common @sc{mime} encoding employed when sending
+non-ASCII (i. e., 8-bit) articles.  It typically makes strings like
+@samp{déjà vu} look like @samp{d=E9j=E0 vu}, which doesn't look very
+readable to me.
 
 @item W f
 @kindex W f (Summary)
@@ -6157,7 +6219,8 @@ last.
 @item W b
 @kindex W b (Summary)
 @findex gnus-article-add-buttons
-Add clickable buttons to the article (@code{gnus-article-add-buttons}). 
+Add clickable buttons to the article (@code{gnus-article-add-buttons}).
+@xref{Article Buttons}
 
 @item W B
 @kindex W B (Summary)
@@ -6205,7 +6268,8 @@ body (@code{gnus-article-strip-leading-space}).
 
 People often include references to other stuff in articles, and it would
 be nice if Gnus could just fetch whatever it is that people talk about
-with the minimum of fuzz.
+with the minimum of fuzz when you hit @kbd{RET} or use the middle mouse
+button on these references.
 
 Gnus adds @dfn{buttons} to certain standard references by default:
 Well-formed URLs, mail addresses and Message-IDs.  This is controlled by
@@ -6380,7 +6444,17 @@ in question is not a signature.
 @end enumerate
 
 This variable can also be a list where the elements may be of the types
-listed above.  
+listed above.  Here's an example:
+
+@lisp
+(setq gnus-signature-limit
+      '(200.0 "^---*Forwarded article"))
+@end lisp
+
+This means that if there are more than 200 lines after the signature
+separator, or the text after the signature separator is matched by
+the regular expression @samp{^---*Forwarded article}, then it isn't a
+signature after all.
 
 
 @node Article Commands
@@ -8020,9 +8094,9 @@ but the latter is the preferred method.
 
 If you are writing a message (mail or news) and suddenly remember that
 you have a steak in the oven (or some pesto in the food processor, you
-craazy vegetarians), you'll probably wish there was a method to save the
-message you are writing so that you can continue editing it some other
-day, and send it when you feel its finished.
+craaazy vegetarians), you'll probably wish there was a method to save
+the message you are writing so that you can continue editing it some
+other day, and send it when you feel its finished.
 
 Well, don't worry about it.  Whenever you start composing a message of
 some sort using the Gnus mail and post commands, the buffer you get will
@@ -8032,51 +8106,58 @@ article will be saved there.  (Auto-save files also go to the draft
 group.) 
 
 @cindex nndraft
-@vindex gnus-draft-group-directory
+@vindex nndraft-directory
 The draft group is a special group (which is implemented as an
 @code{nndraft} group, if you absolutely have to know) called
-@samp{nndraft:drafts}.  The variable @code{gnus-draft-group-directory}
-controls both the name of the group and the location---the leaf element
-in the path will be used as the name of the group.  What makes this
-group special is that you can't tick any articles in it or mark any
-articles as read---all articles in the group are permanently unread.
+@samp{nndraft:drafts}.  The variable @code{nndraft-directory} says where
+@code{nndraft} is to store its files.  What makes this group special is
+that you can't tick any articles in it or mark any articles as
+read---all articles in the group are permanently unread.
 
 If the group doesn't exist, it will be created and you'll be subscribed
-to it.
+to it.  The only way to make it disappear from the Group buffer is to
+unsubscribe it. 
 
-@findex gnus-dissociate-buffer-from-draft
-@kindex C-c M-d (Mail)
-@kindex C-c M-d (Post)
-@findex gnus-associate-buffer-with-draft
-@kindex C-c C-d (Mail)
-@kindex C-c C-d (Post)
-If you're writing some super-secret message that you later want to
-encode with PGP before sending, you may wish to turn the auto-saving
-(and association with the draft group) off.  You never know who might be
-interested in reading all your extremely valuable and terribly horrible
-and interesting secrets.  The @kbd{C-c M-d}
-(@code{gnus-dissociate-buffer-from-draft}) command does that for you.
-If you change your mind and want to turn the auto-saving back on again,
-@kbd{C-c C-d} (@code{gnus-associate-buffer-with-draft} does that.
+@c @findex gnus-dissociate-buffer-from-draft
+@c @kindex C-c M-d (Mail)
+@c @kindex C-c M-d (Post)
+@c @findex gnus-associate-buffer-with-draft
+@c @kindex C-c C-d (Mail)
+@c @kindex C-c C-d (Post)
+@c If you're writing some super-secret message that you later want to
+@c encode with PGP before sending, you may wish to turn the auto-saving
+@c (and association with the draft group) off.  You never know who might be
+@c interested in reading all your extremely valuable and terribly horrible
+@c and interesting secrets.  The @kbd{C-c M-d}
+@c (@code{gnus-dissociate-buffer-from-draft}) command does that for you.
+@c If you change your mind and want to turn the auto-saving back on again,
+@c @kbd{C-c C-d} (@code{gnus-associate-buffer-with-draft} does that.
+@c 
+@c @vindex gnus-use-draft
+@c To leave association with the draft group off by default, set
+@c @code{gnus-use-draft} to @code{nil}.  It is @code{t} by default. 
 
-@vindex gnus-use-draft
-To leave association with the draft group off by default, set
-@code{gnus-use-draft} to @code{nil}.  It is @code{t} by default. 
-
-@findex gnus-summary-send-draft
-@kindex S D c (Summary)
+@findex gnus-draft-edit-message
+@kindex D e (Draft)
 When you want to continue editing the article, you simply enter the
-draft group and push @kbd{S D c} (@code{gnus-summary-send-draft}) to do
+draft group and push @kbd{D e} (@code{gnus-draft-edit-message}) to do
 that.  You will be placed in a buffer where you left off.
 
 Rejected articles will also be put in this draft group (@pxref{Rejected
 Articles}).
 
-@findex gnus-summary-send-all-drafts
+@findex gnus-draft-send-all-messages
+@findex gnus-draft-send-message
 If you have lots of rejected messages you want to post (or mail) without
-doing further editing, you can use the @kbd{S D a} command
-(@code{gnus-summary-send-all-drafts}).  This command understands the
-process/prefix convention (@pxref{Process/Prefix}).  
+doing further editing, you can use the @kbd{D s} command
+(@code{gnus-draft-send-message}).  This command understands the
+process/prefix convention (@pxref{Process/Prefix}).  The @kbd{D S}
+command (@code{gnus-draft-send-all-messages}) will ship off all messages
+in the buffer.
+
+If you have some messages that you wish not to send, you can use the
+@kbd{D t} (@code{gnus-draft-toggle-sending}) command to mark the message
+as unsendable.  This is a toggling command.
 
 
 @node Rejected Articles
@@ -10766,6 +10847,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent Basics::           How it all is supposed to work.
 * Agent Categories::       How to tell the Gnus Agent what to download.
 * Agent Commands::         New commands for all the buffers.
+* Outgoing Messages::      What happens when you post/mail something?
 * Agent Variables::        Customizing is fun.
 @end menu
 
@@ -10813,6 +10895,26 @@ then you read the news offline.
 
 @item
 And then you go to step 2.
+@end itemize
+
+Here are some things you should do the first time (or so) that you use
+the Agent.
+
+@itemize @bullet
+
+@item
+Decide which servers should be covered by the Agent.  If you have a mail
+backend, it would probably be nonsensical to have it covered by the
+Agent.  Go to the server buffer (@kbd{^} in the group buffer) and press
+@kbd{J a} the server (or servers) that you wish to have covered by the
+Agent (@pxref{Server Agent Commands}).  This will typically be only the
+primary select method, which is listed on the bottom in the buffer.
+
+@item
+Decide on download policy.  @xref{Agent Categories}
+
+@item
+Uhm... that's it.
 @end itemize
 
 
@@ -11068,6 +11170,12 @@ Enter the Agent category buffer (@code{gnus-enter-category-buffer}).
 Fetch all eligible articles in all groups
 (@code{gnus-agent-fetch-session}).
 
+@item J S
+@kindex J S (Agent Group)
+@findex gnus-group-send-drafts
+Send all sendable messages in the draft group
+(@code{gnus-agent-fetch-session}).  @xref{Drafts}
+
 @item J a
 @kindex J a (Agent Group)
 @findex gnus-agent-add-group
@@ -11122,6 +11230,20 @@ Remove the current server from the list of servers covered by the Gnus
 Agent (@code{gnus-agent-remove-server}).
 
 @end table
+
+
+@node Outgoing Messages
+@subsection Outgoing Messages
+
+When Gnus is unplugged, all outgoing messages (both mail and news) are
+stored in the draft groups (@pxref{Drafts}).  You can view them there
+after posting, and edit them at will.
+
+When Gnus is plugged again, you can send the messages either from the
+draft group with the special commands available there, or you can use
+the @kbd{J S} command in the group buffer to send all the sendable
+messages in the draft group.
+
 
 
 @node Agent Variables
@@ -11610,7 +11732,7 @@ Anyway, if you'd like to dig into it yourself, here's an example:
  (files "/hom/larsi/News/gnu.SCORE")
  (exclude-files "all.SCORE")
  (local (gnus-newsgroup-auto-expire t)
-        (gnus-summary-make-false-root 'empty))
+        (gnus-summary-make-false-root empty))
  (eval (ding)))
 @end lisp
 
@@ -11826,7 +11948,7 @@ The value of this entry should be a list of @code{(VAR VALUE)} pairs.
 Each @var{var} will be made buffer-local to the current summary buffer,
 and set to the value specified.  This is a convenient, if somewhat
 strange, way of setting variables in some groups if you don't like hooks
-much.
+much.  Note that the @var{value} won't be evaluated.
 @end table
 
 
@@ -15675,6 +15797,30 @@ group buffer are solid groups.
 @cindex sparse articles
 These are article placeholders shown in the summary buffer when
 @code{gnus-build-sparse-threads} has been switched on.
+
+@item threading
+@cindex threading
+To put responses to articles directly after the articles they respond
+to---in a hierarchical fashion.
+
+@item root
+@cindex root
+@cindex thread root
+The first article in a thread is the root.  It is the ancestor of all
+articles in the thread.
+
+@item parent
+@cindex parent
+An article that has responses.
+
+@item child
+@cindex child
+An article that responds to a different article---its parent.
+
+@item digest
+@cindex digest
+A collection of messages in one file.  The most common digest format is
+specified by RFC1153.
 
 @end table
 

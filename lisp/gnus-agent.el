@@ -155,6 +155,7 @@
   "Jc" gnus-enter-category-buffer
   "Jj" gnus-agent-toggle-plugged
   "Js" gnus-agent-fetch-session
+  "JS" gnus-group-send-drafts
   "Ja" gnus-agent-add-group)
 
 (defun gnus-agent-group-make-menu-bar ()
