@@ -2,6 +2,7 @@
 
 	* gnus-agent.el (gnus-agentize): Improve auto-agentizing logic.
 	Suggested by Steinar Bang <sb@dod.no>.
+	(gnus-agent-auto-agentize-methods): Customize.
 
 2003-12-29  Kevin Greiner <kgreiner@xpediantsolutions.com>
 	* gnus.el (gnus-server-to-method): Fixed bug in 2003-12-22

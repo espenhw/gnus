@@ -181,6 +181,13 @@ When found, offer to remove them."
   :type 'boolean
   :group 'gnus-agent)
 
+(defcustom gnus-agent-auto-agentize-methods '(nntp nnimap)
+  "Initially, all servers from these methods are agentized.
+The user may remove or add servers using the Server buffer.
+See Info node `(gnus)Server Buffer'."
+  :type '(repeat symbol)
+  :group 'gnus-agent)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -208,11 +215,6 @@ NOTES:
 (defvar gnus-agent-file-coding-system 'raw-text)
 (defvar gnus-agent-file-loading-cache nil)
 (defvar gnus-agent-file-header-cache nil)
-
-(defvar gnus-agent-auto-agentize-methods '(nntp nnimap)
-  "Initially, all servers from these methods are agentized.
-The user may remove or add servers using the Server buffer.  See Info
-node `(gnus)Server Buffer'.")
 
 ;; Dynamic variables
 (defvar gnus-headers)
