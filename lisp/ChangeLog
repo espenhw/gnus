@@ -1,3 +1,8 @@
+2001-06-19  Matt Armstrong <matt@lickey.com>
+
+	* imap.el (imap-parse-flag-list): Workaround bug in Courier IMAP
+	server.
+
 2001-06-19 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-article-buffer): New variable.

@@ -2241,7 +2241,11 @@ Return nil if no complete line has arrived."
   (let (flag-list start)
     (assert (eq (char-after) ?\())
     (while (and (not (eq (char-after) ?\)))
-		(setq start (progn (imap-forward) (point)))
+		(setq start (progn
+			      (imap-forward)
+			      ;; next line for Courier IMAP bug.
+			      (skip-chars-forward " ")
+			      (point)))
 		(> (skip-chars-forward "^ )" (imap-point-at-eol)) 0))
       (push (buffer-substring start (point)) flag-list))
     (assert (eq (char-after) ?\)))
