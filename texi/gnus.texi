@@ -2285,8 +2285,8 @@ visible) or unfolded (if it was folded already).  So it's basically a
 toggling command on topics.  In addition, if you give a numerical
 prefix, group on that level (and lower) will be displayed.
 
-@item TAB
-@kindex TAB (Group)
+@item T TAB
+@kindex T TAB (Group)
 @findex gnus-topic-indent
 ``Indent'' the current topic so that it becomes a sub-topic of the
 previous topic (@code{gnus-topic-indent}).  If given a prefix,

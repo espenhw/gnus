@@ -1,4 +1,35 @@
+Sun Mar 24 00:00:33 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-insert-topic-line): Would mess up the
+	`.' command.
+	(gnus-topic-mode-map): Moved `gnus-topic-indent' to `T TAB'.
+
+	* gnus-msg.el (gnus-summary-resend-bounced-mail): Would do odd
+	things. 
+
+	* gnus.el (gnus-buffer-configuration): Add compose-bounce.
+
+	* nnspool.el (nnspool-find-nov-line): Would cut off ends of NOV
+	files. 
+
+Fri Mar 22 21:46:18 1996  David Kågedal  <davidk@lysator.liu.se>
+
+	* gnus.el (gnus-group-best-unread-group): Didn't work with topics.
+
+Sat Mar 23 05:45:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-get-unread-articles): Inline
+	`gnus-get-unread-articles-in-group'. 
+	(gnus-get-unread-articles-in-group): Inline
+	`gnus-cache-possibly-alter-active'. 
+
+Sat Mar 23 01:26:10 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-summary-insert-pseudos): Would print out tabs.
+
 Sat Mar 23 00:01:56 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.56 is released.
 
 	* gnus.el (gnus-group-add-score): Would bug out on dead groups.
 

@@ -2678,9 +2678,10 @@ this is a reply."
   ;; Create a mail buffer.
   (gnus-new-empty-mail)
   (erase-buffer)
-  (insert-buffer-substring gnus-article-buffer)
+  (insert-buffer-substring gnus-original-article-buffer)
   (goto-char (point-min))
-  (or (re-search-forward mail-unsent-separator nil t)
+  (or (and (re-search-forward mail-unsent-separator nil t)
+	   (forward-line 1))
       (and (search-forward "\n\n" nil t)
 	   (re-search-forward "^Return-Path:.*\n" nil t)))
   ;; We remove everything before the bounced mail.

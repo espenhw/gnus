@@ -87,7 +87,7 @@ with some simple extensions.
 
 (defun gnus-group-topic-unread ()
   "The number of unread articles in topic on the current line."
-  (get-text-property (gnus-point-at-bol) 'gnus-unread))
+  (get-text-property (gnus-point-at-bol) 'gnus-topic-unread))
 
 (defun gnus-topic-init-alist ()
   "Initialize the topic structures."
@@ -300,7 +300,7 @@ articles in the topic and its subtopics."
        (gnus-topic-remove-excess-properties))
      (list 'gnus-topic (intern name)
 	   'gnus-topic-level level
-	   'gnus-unread unread
+	   'gnus-topic-unread unread
 	   'gnus-active active-topic
 	   'gnus-topic-visible visiblep))))
 
@@ -564,7 +564,6 @@ articles in the topic and its subtopics."
    "\C-k" gnus-topic-kill-group
    "\C-y" gnus-topic-yank-group
    "\M-g" gnus-topic-get-new-news-this-topic
-   "\C-i" gnus-topic-indent
    "AT" gnus-topic-list-active
    gnus-mouse-2 gnus-mouse-pick-topic)
 
@@ -581,6 +580,8 @@ articles in the topic and its subtopics."
    "s" gnus-topic-show-topic
    "M" gnus-topic-move-matching
    "C" gnus-topic-copy-matching
+   "\C-i" gnus-topic-indent
+   [tab] gnus-topic-indent
    "r" gnus-topic-rename
    "\177" gnus-topic-delete))
 

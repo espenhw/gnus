@@ -932,6 +932,10 @@ beginning of a line.")
 	       (summary 0.25 point)
 	       (if gnus-carpal '(summary-carpal 4))
 	       ("*Shell Command Output*" 1.0)))
+    (compose-bounce
+     (vertical 1.0
+	       (article 0.5)
+	       (mail 1.0 point)))
     (followup
      (vertical 1.0
 	       (article-copy 0.5)
@@ -1715,7 +1719,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.56"
+(defconst gnus-version "September Gnus v0.57"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2283,6 +2287,25 @@ Thank you for your help in stamping out bugs.
 
 (require 'gnus-cus)
 (require 'gnus-ems)
+
+
+;;;
+;;; Shutdown
+;;;
+
+(defvar gnus-shutdown-alist nil)
+
+(defun gnus-add-shutdown (function &rest symbols)
+  "Run FUNCTION whenever one of SYMBOLS is shut down."
+  (push (cons function symbols) gnus-shutdown-alist))
+
+(defun gnus-shutdown (symbol)
+  "Shut down everything that waits for SYMBOL."
+  (let ((alist gnus-shutdown-alist)
+	entry)
+    (while (setq entry (pop alist))
+      (when (memq symbol (cdr entry))
+	(funcall (car entry))))))
 
 
 
@@ -4791,9 +4814,9 @@ increase the score of each group you read."
 	   (- (1+ (cdr active)) (car active)) 0)
        nil))))
 
-(defun gnus-group-insert-group-line
-  (gnus-tmp-group gnus-tmp-level gnus-tmp-marked number
-		  gnus-tmp-method)
+(defun gnus-group-insert-group-line (gnus-tmp-group gnus-tmp-level 
+						    gnus-tmp-marked number
+						    gnus-tmp-method)
   "Insert a group line in the group buffer."
   (let* ((gnus-tmp-active (gnus-active gnus-tmp-group))
 	 (gnus-tmp-number-total
@@ -4856,7 +4879,7 @@ increase the score of each group you read."
        gnus-marked ,gnus-tmp-marked-mark
        gnus-indentation ,gnus-group-indentation
        gnus-level ,gnus-tmp-level))
-    (when (gnus-visual-p 'group-highlight 'highlight)
+    (when (inline (gnus-visual-p 'group-highlight 'highlight))
       (forward-line -1)
       (run-hooks 'gnus-group-update-hook)
       (forward-line))
@@ -5331,7 +5354,8 @@ If EXCLUDE-GROUP, do not go to that group."
     (while (setq unread (get-text-property (point) 'gnus-unread))
       (if (and (numberp unread) (> unread 0))
 	  (progn
-	    (if (and (< (get-text-property (point) 'gnus-level) best)
+	    (if (and (get-text-property (point) 'gnus-level)
+		     (< (get-text-property (point) 'gnus-level) best)
 		     (or (not exclude-group)
 			 (not (equal exclude-group (gnus-group-group-name)))))
 		(progn
@@ -6280,8 +6304,7 @@ entail asking the server for the groups."
 	(buffer-read-only nil))
     (erase-buffer)
     (while groups
-      (gnus-group-insert-group-line-info (car groups))
-      (setq groups (cdr groups)))
+      (gnus-group-insert-group-line-info (pop groups)))
     (goto-char (point-min))))
 
 (defun gnus-activate-all-groups (level)
@@ -13046,7 +13069,7 @@ is initialized from the SAVEDIR environment variable."
 	  (gnus-summary-goto-subject after-article)
 	  (forward-line 1)
 	  (setq b (point))
-	  (insert "	     " (file-name-nondirectory
+	  (insert "    " (file-name-nondirectory
 				(cdr (assq 'name (car pslist))))
 		  ": " (or (cdr (assq 'execute (car pslist))) "") "\n")
 	  (setq e (point))
@@ -15427,89 +15450,10 @@ newsgroup."
       (setcdr killed (delete (car killed) (cdr killed)))
       (setq killed (cdr killed)))))
 
-;; Go though `gnus-newsrc-alist' and compare with `gnus-active-hashtb'
-;; and compute how many unread articles there are in each group.
-(defun gnus-get-unread-articles (&optional level)
-  (let* ((newsrc (cdr gnus-newsrc-alist))
-	 (level (or level gnus-activate-level (1+ gnus-level-subscribed)))
-	 (foreign-level
-	  (min
-	   (cond ((and gnus-activate-foreign-newsgroups
-		       (not (numberp gnus-activate-foreign-newsgroups)))
-		  (1+ gnus-level-subscribed))
-		 ((numberp gnus-activate-foreign-newsgroups)
-		  gnus-activate-foreign-newsgroups)
-		 (t 0))
-	   level))
-	 info group active method)
-    (gnus-message 5 "Checking new news...")
-
-    (while newsrc
-      (setq active (gnus-active (setq group (gnus-info-group
-					     (setq info (pop newsrc))))))
-
-      ;; Check newsgroups.  If the user doesn't want to check them, or
-      ;; they can't be checked (for instance, if the news server can't
-      ;; be reached) we just set the number of unread articles in this
-      ;; newsgroup to t.  This means that Gnus thinks that there are
-      ;; unread articles, but it has no idea how many.
-      (if (and (setq method (gnus-info-method info))
-	       (not (gnus-server-equal
-		     gnus-select-method
-		     (gnus-server-get-method nil method)))
-	       (not (gnus-secondary-method-p method)))
-	  ;; These groups are foreign.  Check the level.
-	  (when (<= (gnus-info-level info) foreign-level)
-	    (setq active (gnus-activate-group group 'scan))
-	    (gnus-close-group group))
-
-	;; These groups are native or secondary.
-	(when (and (<= (gnus-info-level info) level)
-		   (not gnus-read-active-file))
-	  (setq active (gnus-activate-group group 'scan))
-	  (gnus-close-group group)))
-
-      (if active
-	  (gnus-get-unread-articles-in-group info active t)
-	;; The group couldn't be reached, so we nix out the number of
-	;; unread articles and stuff.
-	(gnus-set-active group nil)
-	(setcar (gnus-gethash group gnus-newsrc-hashtb) t)))
-
-    (gnus-message 5 "Checking new news...done")))
-
-;; Create a hash table out of the newsrc alist.  The `car's of the
-;; alist elements are used as keys.
-(defun gnus-make-hashtable-from-newsrc-alist ()
-  (let ((alist gnus-newsrc-alist)
-	(ohashtb gnus-newsrc-hashtb)
-	prev)
-    (setq gnus-newsrc-hashtb (gnus-make-hashtable (length alist)))
-    (setq alist
-	  (setq prev (setq gnus-newsrc-alist
-			   (if (equal (caar gnus-newsrc-alist)
-				      "dummy.group")
-			       gnus-newsrc-alist
-			     (cons (list "dummy.group" 0 nil) alist)))))
-    (while alist
-      (gnus-sethash
-       (caar alist)
-       (cons (and ohashtb (car (gnus-gethash (caar alist) ohashtb)))
-	     prev)
-       gnus-newsrc-hashtb)
-      (setq prev alist
-	    alist (cdr alist)))))
-
-(defun gnus-make-hashtable-from-killed ()
-  "Create a hash table from the killed and zombie lists."
-  (let ((lists '(gnus-killed-list gnus-zombie-list))
-	list)
-    (setq gnus-killed-hashtb
-	  (gnus-make-hashtable
-	   (+ (length gnus-killed-list) (length gnus-zombie-list))))
-    (while (setq list (symbol-value (pop lists)))
-      (while list
-	(gnus-sethash (car list) (pop list) gnus-killed-hashtb)))))
+;; We want to inline a function from gnus-cache, so we cheat here:
+(eval-when-compile
+  (provide 'gnus)
+  (require 'gnus-cache))
 
 (defun gnus-get-unread-articles-in-group (info active &optional update)
   (when active
@@ -15522,7 +15466,8 @@ newsgroup."
 	   (num 0))
       ;; If a cache is present, we may have to alter the active info.
       (when (and gnus-use-cache info)
-	(gnus-cache-possibly-alter-active (gnus-info-group info) active))
+	(inline (gnus-cache-possibly-alter-active 
+		 (gnus-info-group info) active)))
       ;; Modify the list of read articles according to what articles
       ;; are available; then tally the unread articles and add the
       ;; number to the group hash table entry.
@@ -15591,6 +15536,94 @@ newsgroup."
       (when info
 	(setcar (gnus-gethash (gnus-info-group info) gnus-newsrc-hashtb) num))
       num)))
+
+;; Go though `gnus-newsrc-alist' and compare with `gnus-active-hashtb'
+;; and compute how many unread articles there are in each group.
+(defun gnus-get-unread-articles (&optional level)
+  (let* ((newsrc (cdr gnus-newsrc-alist))
+	 (level (or level gnus-activate-level (1+ gnus-level-subscribed)))
+	 (foreign-level
+	  (min
+	   (cond ((and gnus-activate-foreign-newsgroups
+		       (not (numberp gnus-activate-foreign-newsgroups)))
+		  (1+ gnus-level-subscribed))
+		 ((numberp gnus-activate-foreign-newsgroups)
+		  gnus-activate-foreign-newsgroups)
+		 (t 0))
+	   level))
+	 info group active method)
+    (gnus-message 5 "Checking new news...")
+
+    (while newsrc
+      (setq active (gnus-active (setq group (gnus-info-group
+					     (setq info (pop newsrc))))))
+
+      ;; Check newsgroups.  If the user doesn't want to check them, or
+      ;; they can't be checked (for instance, if the news server can't
+      ;; be reached) we just set the number of unread articles in this
+      ;; newsgroup to t.  This means that Gnus thinks that there are
+      ;; unread articles, but it has no idea how many.
+      (if (and (setq method (gnus-info-method info))
+	       (not (gnus-server-equal
+		     gnus-select-method
+		     (setq method (gnus-server-get-method nil method))))
+	       (not (gnus-secondary-method-p method)))
+	  ;; These groups are foreign.  Check the level.
+	  (when (<= (gnus-info-level info) foreign-level)
+	    (setq active (gnus-activate-group group 'scan))
+	    (gnus-close-group group))
+
+	;; These groups are native or secondary.
+	(when (and (<= (gnus-info-level info) level)
+		   (not gnus-read-active-file))
+	  (setq active (gnus-activate-group group 'scan))
+	  (gnus-close-group group)))
+
+      (if active
+	  (inline (gnus-get-unread-articles-in-group 
+		   info active
+		   (and method
+			(fboundp (intern (concat (symbol-name (car method))
+						 "-request-scan"))))))
+	;; The group couldn't be reached, so we nix out the number of
+	;; unread articles and stuff.
+	(gnus-set-active group nil)
+	(setcar (gnus-gethash group gnus-newsrc-hashtb) t)))
+
+    (gnus-message 5 "Checking new news...done")))
+
+;; Create a hash table out of the newsrc alist.  The `car's of the
+;; alist elements are used as keys.
+(defun gnus-make-hashtable-from-newsrc-alist ()
+  (let ((alist gnus-newsrc-alist)
+	(ohashtb gnus-newsrc-hashtb)
+	prev)
+    (setq gnus-newsrc-hashtb (gnus-make-hashtable (length alist)))
+    (setq alist
+	  (setq prev (setq gnus-newsrc-alist
+			   (if (equal (caar gnus-newsrc-alist)
+				      "dummy.group")
+			       gnus-newsrc-alist
+			     (cons (list "dummy.group" 0 nil) alist)))))
+    (while alist
+      (gnus-sethash
+       (caar alist)
+       (cons (and ohashtb (car (gnus-gethash (caar alist) ohashtb)))
+	     prev)
+       gnus-newsrc-hashtb)
+      (setq prev alist
+	    alist (cdr alist)))))
+
+(defun gnus-make-hashtable-from-killed ()
+  "Create a hash table from the killed and zombie lists."
+  (let ((lists '(gnus-killed-list gnus-zombie-list))
+	list)
+    (setq gnus-killed-hashtb
+	  (gnus-make-hashtable
+	   (+ (length gnus-killed-list) (length gnus-zombie-list))))
+    (while (setq list (symbol-value (pop lists)))
+      (while list
+	(gnus-sethash (car list) (pop list) gnus-killed-hashtb)))))
 
 (defun gnus-activate-group (group &optional scan)
   ;; Check whether a group has been activated or not.
@@ -16539,25 +16572,6 @@ If FORCE is non-nil, the .newsrc file is read."
       (goto-char (point-min))
       (when (looking-at "[^ \t]+[ \t]+\\(.*\\)")
 	(match-string 1)))))
-
-
-;;;
-;;; Shutdown
-;;;
-
-(defvar gnus-shutdown-alist nil)
-
-(defun gnus-add-shutdown (function &rest symbols)
-  "Run FUNCTION whenever one of SYMBOLS is shut down."
-  (push (cons function symbols) gnus-shutdown-alist))
-
-(defun gnus-shutdown (symbol)
-  "Shut down everything that waits for SYMBOL."
-  (let ((alist gnus-shutdown-alist)
-	entry)
-    (while (setq entry (pop alist))
-      (when (memq symbol (cdr entry))
-	(funcall (car entry))))))
 
 
 ;;;

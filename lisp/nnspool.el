@@ -412,16 +412,21 @@ there.")
 	       (setq min (point)))
 	      (t
 	       (setq found t)))))
+    ;; Now we may have found the article we're looking for, or we
+    ;; may be somewhere near it.
     (when (not (eq num article))
       (setq found (point))
-      (forward-line 1)
-      (or (eobp)
-	  (= (setq num (read cur)) article)
-	  (goto-char found)))
+      (while (and (< (point) max)
+		  (< num article))
+	(forward-line 1)
+	(setq found (point))
+	(or (eobp)
+	    (= (setq num (read cur)) article)))
+      (unless (eq num article)
+	(goto-char found)))
     (beginning-of-line)
     (eq num article)))
     
-
 (defun nnspool-sift-nov-with-sed (articles file)
   (let ((first (car articles))
 	(last (progn (while (cdr articles) (setq articles (cdr articles)))
