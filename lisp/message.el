@@ -863,7 +863,7 @@ The cdr of ech entry is a function for applying the face to a region.")
      "\\(remote from .*\\)?"
 
      "\n"))
-  nil)
+  "Regexp matching the delimiter of messages in UNIX mail format.")
 
 (defvar message-unsent-separator
   (concat "^ *---+ +Unsent message follows +---+ *$\\|"

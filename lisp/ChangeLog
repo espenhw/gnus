@@ -1,8 +1,28 @@
+Sun Sep 14 00:26:47 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.2 is released.
+
+Sun Sep 14 00:24:52 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-headers): Make sure the summary buffer
+	exists.
+
+Sat Sep 13 23:35:28 1997  Greg Stark  <gsstark@mit.edu>
+
+	* gnus-ems.el (gnus-x-splash): New function.
+
+Sat Sep 13 22:46:16 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-1): Use it.
+
+	* gnus-ems.el (gnus-decode-coding-string): New alias.
+
+	* message.el (message-unix-mail-delimiter): Dox fox.
+
+	* nnmh.el (nnmh-request-list-1): Don't use coding system.
+
+	* gnus-sum.el (gnus-summary-catchup): Reverse logic.
+
 Sat Sep 13 21:21:38 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.1 is released.
-
-Sat Sep 13 21:16:07 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
-
-	* gnus.el: Quassia Gnus v0.1 is released.
-

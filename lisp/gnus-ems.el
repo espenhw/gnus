@@ -78,6 +78,9 @@
 (defun gnus-encode-coding-string (string system)
   string)
 
+(defun gnus-decode-coding-string (string system)
+  string)
+
 (eval-and-compile
   (if (string-match "XEmacs\\|Lucid" emacs-version)
       nil
@@ -174,6 +177,7 @@
     (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
     (fset 'gnus-summary-set-display-table 'ignore)
     (fset 'gnus-encode-coding-string 'encode-coding-string)
+    (fset 'gnus-decode-coding-string 'decode-coding-string)
 
     (when (boundp 'gnus-check-before-posting)
       (setq gnus-check-before-posting
@@ -214,6 +218,41 @@
     (unless (assq mode minor-mode-map-alist)
       (push (cons mode map)
 	    minor-mode-map-alist))))
+
+(defun gnus-x-splash ()
+  "Show a splash screen using a pixmap in the current buffer."
+  (let ((dir (nnheader-find-etc-directory "gnus"))
+	pixmap file height beg i)
+    (save-excursion
+      (switch-to-buffer gnus-group-buffer)
+      (let ((buffer-read-only nil))
+	(erase-buffer)
+	(when (and dir
+		   (file-exists-p (setq file (concat dir "x-splash"))))
+	  (nnheader-temp-write nil
+	    (insert-file-contents file)
+	    (goto-char (point-min))
+	    (ignore-errors
+	      (setq pixmap (read (current-buffer))))))
+	(when pixmap
+	  (erase-buffer)
+	  (unless (facep 'gnus-splash)
+	    (make-face 'gnus-splash))
+	  (setq height (/ (car pixmap) (frame-char-height))
+		width (/ (cadr pixmap) (frame-char-width)))
+	  (set-face-foreground 'gnus-splash "green")
+	  (set-face-stipple 'gnus-splash pixmap)
+	  (insert-char ?\n (* (/ (window-height) 2 height) height))
+	  (setq i height)
+	  (while (> i 0)
+	    (insert-char ?  (* (+ (/ (window-width) 2 width) 1) width))
+	    (setq beg (point))
+	    (insert-char ?  width)
+	    (set-text-properties beg (point) '(face gnus-splash))
+	    (insert "\n")
+	    (decf i))
+	  (goto-char (point-min))
+	  (sit-for 0))))))
 
 (provide 'gnus-ems)
 

@@ -653,10 +653,14 @@ prompt the user for the name of an NNTP server to use."
     (setq gnus-slave slave)
     (gnus-read-init-file)
 
-    (when (and (string-match "XEmacs" (emacs-version))
-	       gnus-simple-splash)
+    (when gnus-simple-splash
       (setq gnus-simple-splash nil)
-      (gnus-xmas-splash))
+      (cond
+       (gnus-xemacs
+	(gnus-xmas-splash))
+       ((and (eq window-system 'x)
+	     (= (frame-height) (1+ (window-height))))
+	(gnus-x-splash))))
 
     (let ((level (and (numberp arg) (> arg 0) arg))
 	  did-connect)

@@ -7795,7 +7795,7 @@ The number of articles marked as read is returned."
 		   (not gnus-newsgroup-auto-expire)
 		   (not gnus-suppress-duplicates)
 		   (or (not gnus-use-cache)
-		       (not (eq gnus-use-cache 'passive))))
+		       (eq gnus-use-cache 'passive)))
 	      (progn
 		(when all
 		  (setq gnus-newsgroup-marked nil
