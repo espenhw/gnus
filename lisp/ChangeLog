@@ -1,3 +1,8 @@
+2003-04-08  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-bodies.el (mm-decode-body): Use the supplied charset
+	unconditionally if `code-pages' hasn't been loaded.
+
 2003-04-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (article-verify-x-pgp-sig): Don't use
