@@ -1,3 +1,8 @@
+2000-11-19 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-read-summary-keys): lookup-key may
+	return a number.
+
 2000-11-19 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-newline-and-reformat): Typo.

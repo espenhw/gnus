@@ -4019,26 +4019,28 @@ Argument LINES specifies lines to be scrolled down."
           (switch-to-buffer summary 'norecord))
         (setq in-buffer (current-buffer))
         ;; We disable the pick minor mode commands.
-        (if (setq func (let (gnus-pick-mode)
-                         (lookup-key (current-local-map) keys)))
+        (if (and (setq func (let (gnus-pick-mode)
+			      (lookup-key (current-local-map) keys)))
+		 (functionp func))
             (progn
               (call-interactively func)
-              (setq new-sum-point (point)))
-          (ding))
-        (when (eq in-buffer (current-buffer))
-          (setq selected (gnus-summary-select-article))
-          (set-buffer obuf)
-          (unless not-restore-window
-            (set-window-configuration owin))
-          (when (eq selected 'old)
-	    (article-goto-body)
-            (set-window-start (get-buffer-window (current-buffer))
-                              1)
-            (set-window-point (get-buffer-window (current-buffer))
-                              (point)))
-          (let ((win (get-buffer-window gnus-article-current-summary)))
-            (when win
-              (set-window-point win new-sum-point))))))))
+              (setq new-sum-point (point))
+	      (when (eq in-buffer (current-buffer))
+		(setq selected (gnus-summary-select-article))
+		(set-buffer obuf)
+		(unless not-restore-window
+		  (set-window-configuration owin))
+		(when (eq selected 'old)
+		  (article-goto-body)
+		  (set-window-start (get-buffer-window (current-buffer))
+				    1)
+		  (set-window-point (get-buffer-window (current-buffer))
+				    (point)))
+		(let ((win (get-buffer-window gnus-article-current-summary)))
+		  (when win
+		    (set-window-point win new-sum-point))))    )
+	  (switch-to-buffer gnus-article-buffer)
+          (ding))))))
 
 (defun gnus-article-hide (&optional arg force)
   "Hide all the gruft in the current article.
