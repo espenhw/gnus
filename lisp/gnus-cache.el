@@ -610,13 +610,14 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
 The update is performed if ACTIVE contains a higher or lower bound
 than the current."
   (let ((lower t) (higher t))
-    (when gnus-cache-active-hashtb
-      (let ((cache-active (gnus-gethash group gnus-cache-active-hashtb)))
-        (when cache-active
-          (unless (< (car active) (car cache-active))
-            (setq lower nil))
-          (unless (> (cdr active) (cdr cache-active))
-            (setq higher nil)))))
+    (if gnus-cache-active-hashtb
+	(let ((cache-active (gnus-gethash group gnus-cache-active-hashtb)))
+	  (when cache-active
+	    (unless (< (car active) (car cache-active))
+	      (setq lower nil))
+	    (unless (> (cdr active) (cdr cache-active))
+	      (setq higher nil))))
+      (gnus-cache-read-active))
     (when lower
       (gnus-cache-update-active group (car active) t))
     (when higher
