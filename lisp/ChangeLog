@@ -2,6 +2,10 @@
 
 	* spam.el (spam-split): allow a particular check as a parameter,
 	e.g. (: spam-split 'spam-use-bogofilter)
+	(spam-mark-only-unseen-as-spam): new parameter, see doc
+	(spam-mark-junk-as-spam-routine): use
+	spam-mark-only-unseen-as-spam, simplify routine to take advantage
+	of gnus-newsgroup-unread as well as gnus-newsgroup-unseen
 
 2003-04-17  Teodor Zlatanov  <tzz@lifelogs.com>
 
