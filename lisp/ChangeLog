@@ -1,3 +1,7 @@
+2002-03-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-request-article): Remove IFRAME.
+
 2002-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* pop3.el (pop3-open-server): Set process buffer unibyte.
