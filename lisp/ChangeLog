@@ -1,3 +1,7 @@
+2003-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el (bbdb-records): Fbind it for both Emacs and XEmacs.
+
 2003-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-ifile): fixed the spam-ifile-all-categories
