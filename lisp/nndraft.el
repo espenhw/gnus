@@ -111,7 +111,7 @@
       (when (and (file-exists-p newest)
 		 (let ((nnmail-file-coding-system
 			(if (file-newer-than-file-p file auto)
-			    (if (equal group "drafts")
+			    (if (member group '("drafts" "delayed"))
 				message-draft-coding-system
 			      mm-text-coding-system)
 			  mm-auto-save-coding-system)))

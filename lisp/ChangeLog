@@ -1,3 +1,8 @@
+2002-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nndraft.el (nndraft-request-article): Treat delayed articles
+	like drafts.
+
 2002-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-load-alist): Fix parenthesis.
