@@ -1,3 +1,11 @@
+2003-08-27  Simon Josefsson  <jas@extundo.com>
+
+	* mm-decode.el (mm-remove-part): Try to kill external displayers
+	cleanly first (if it refuses, C-g aborts loop and kill process
+	unconditionally).  Also make sure process is dead before we remove
+	the files it may be using.  Reported by David Coe
+	<davidc@debian.org>.
+
 2003-08-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-cache.el (gnus-cache-generate-active): Fix bug in
