@@ -1,3 +1,11 @@
+2002-03-28  Paul Jarc <prj@po.cwru.edu>
+
+	* nnmaildir.el: Cosmetic changes.
+	(nnmaildir--with-nntp-buffer, nnmaildir--with-work-buffer,
+	nnmaildir--with-nov-buffer, nnmaildir--with-move-buffer,
+	nnmaildir--group-ls): New macros/functions.  Use them.
+	(nnmaildir--unlink): Evalutate argument only once.
+
 2002-03-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-highlight): Use `eq' when comparing
