@@ -532,16 +532,24 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-save-group-info (method group active)
   (when (gnus-agent-method-p method)
     (let* ((gnus-command-method method)
-	   (file (gnus-agent-lib-file "active")))
+	   (file (if nntp-server-list-active-group
+		     (gnus-agent-lib-file "active")
+		   (gnus-agent-lib-file "groups"))))
       (gnus-make-directory (file-name-directory file))
       (nnheader-temp-write file
 	(when (file-exists-p file)
 	  (insert-file-contents file))
 	(goto-char (point-min))
-	(when (re-search-forward (concat "^" (regexp-quote group) " ") nil t)
-	  (gnus-delete-line))
-	(insert group " " (number-to-string (cdr active)) " "
-		(number-to-string (car active)) "\n")))))
+	(if nntp-server-list-active-group
+	    (progn
+	      (when (re-search-forward
+		     (concat "^" (regexp-quote group) " ") nil t)
+		(gnus-delete-line))
+	      (insert group " " (number-to-string (cdr active)) " "
+		      (number-to-string (car active)) "\n"))
+	  (when (re-search-forward (concat (regexp-quote group) " ") nil t)
+	    (gnus-delete-line))
+	  (insert-buffer-substring nntp-server-buffer))))))
 
 (defun gnus-agent-group-path (group)
   "Translate GROUP into a path."

@@ -188,7 +188,7 @@ Thank you for your help in stamping out bugs.
 	    (copy-sequence message-header-setup-hook)))
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
-       (add-hook 'message-setup-hook 'gnus-configure-posting-styles)
+       (add-hook 'message-mode-hook 'gnus-configure-posting-styles)
        (unwind-protect
 	   (progn
 	     ,@forms)

@@ -473,17 +473,15 @@ from the document.")
     (goto-char (point-min))
     (nndoc-generate-mime-parts-head article t)))
 
-(defun nndoc-generate-mime-parts-head (article &optional full-subject)
-  (let ((entry (cdr (assq article nndoc-dissection-alist))))
-    (let ((subject (concat "<" (nth 5 entry) ">"))
+(defun nndoc-generate-mime-parts-head (article &optional body-present)
+  (let ((entry (cdr (assq (if body-present 1 article) nndoc-dissection-alist))))
+    (let ((subject (if body-present
+		       nndoc-mime-subject
+		     (concat "<" (nth 5 entry) ">")))
 	  (message-id (nth 6 entry))
 	  (references (nth 7 entry)))
-      (insert nndoc-mime-header
-	      "Subject: "
-	      (cond ((not full-subject) subject)
-		    (nndoc-mime-subject (concat nndoc-mime-subject " " subject))
-		    (t subject))
-	      "\n")
+      (insert nndoc-mime-header)
+      (and subject (insert "Subject: " subject "\n"))
       (and message-id (insert "Message-ID: " message-id "\n"))
       (and references (insert "References: " references "\n")))))
 

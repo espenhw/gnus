@@ -1980,6 +1980,7 @@ and NEW-NAME will be prompted for."
     (gnus-group-position-point)))
 
 (defun gnus-group-make-useful-group (group method)
+  "Create one of the groups described in `gnus-useful-groups'."
   (interactive
    (let ((entry (assoc (completing-read "Create group: " gnus-useful-groups
 					nil t)

@@ -1,3 +1,44 @@
+Sun Aug 16 18:59:41 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.37 is released.
+
+1998-08-16 14:52:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Autoload gnus-summary-wide-reply.
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Return the value of
+	In-Reply-To. 
+
+	* gnus-msg.el (gnus-setup-message): Posting styles have to be
+	configured in message-mode-hook.
+
+	* nntp.el (nntp-connection-timeout): Restored.
+	(nntp-open-connection): Use it.
+
+1998-08-15 22:46:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-make-useful-group): Doc fix.
+
+	* gnus-art.el (gnus-article-push-button): Place point where you
+	click.
+
+1998-08-15  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-save-group-info): Update "groups" file 
+	if `nntp-server-list-active-group' is nil.
+
+1998-08-15 00:35:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-score.el (gnus-summary-increase-score): Swap t and r.
+
+	* gnus-sum.el (gnus-remove-thread): Didn't work with sparse
+	threads. 
+
+1998-08-14  François Pinard  <pinard@iro.umontreal.ca>
+
+	* nndoc.el (nndoc-generate-mime-parts-head): Use original Subject,
+	Message-ID, and References in fully blown articles.
+
 Fri Aug 14 23:03:51 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.36 is released.

@@ -179,6 +179,10 @@ server there that you can connect to.  See also
 
 
 
+(defvoo nntp-connection-timeout nil
+  "*Number of seconds to wait before an nntp connection times out.
+If this variable is nil, which is the default, no timers are set.")
+
 ;;; Internal variables.
 
 (defvar nntp-record-commands nil
@@ -684,6 +688,10 @@ server there that you can connect to.  See also
 	(ignore-errors
 	  (nntp-send-string process "QUIT")
 	  (unless (eq nntp-open-connection-function 'nntp-open-network-stream)
+	    ;; Ok, this is evil, but when using telnet and stuff
+	    ;; as the connection method, it's important that the
+	    ;; QUIT command actually is sent out before we kill
+	    ;; the process.  
 	    (sleep-for 1))))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process)))
@@ -830,6 +838,13 @@ password contained in '~/.nntp-authinfo'."
   "Open a connection to PORT on ADDRESS delivering output to BUFFER."
   (run-hooks 'nntp-prepare-server-hook)
   (let* ((pbuffer (nntp-make-process-buffer buffer))
+	 (timer 
+	  (and nntp-connection-timeout 
+	       (nnheader-run-at-time
+		nntp-connection-timeout nil
+		`(lambda ()
+		   (when (buffer-name ,pbuffer)
+		     (kill-buffer ,pbuffer))))))
 	 (process
 	  (condition-case ()
 	      (let ((coding-system-for-read nntp-coding-system-for-read)
@@ -837,7 +852,10 @@ password contained in '~/.nntp-authinfo'."
 		(funcall nntp-open-connection-function pbuffer))
 	    (error nil)
 	    (quit nil))))
-    (when process
+    (when timer 
+      (nnheader-cancel-timer timer))
+    (when (and (buffer-name pbuffer)
+	       process)
       (process-kill-without-query process)
       (nntp-wait-for process "^.*\n" buffer nil t)
       (if (memq (process-status process) '(open run))

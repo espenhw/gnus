@@ -285,6 +285,13 @@ subject.
 Subject of article with @samp{Fwd:} prepended to it.
 @end table
 
+@item message-wash-forwarded-subjects
+@vindex message-wash-forwarded-subjects
+If this variable is @code{t}, the subjects of forwarded messages have
+the evidence of previous forwards (such as @samp{Fwd:}, @samp{Re:}, 
+@samp{(fwd)}) removed before the new subject is
+constructed.  The default value is @code{nil}.
+
 @end table
 
 
