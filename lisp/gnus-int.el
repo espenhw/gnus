@@ -496,13 +496,15 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 			 group 'force))
     not-deleted))
 
-(defun gnus-request-move-article
-  (article group server accept-function &optional last)
-  (let ((gnus-command-method (gnus-find-method-for-group group)))
-    (funcall (gnus-get-function gnus-command-method 'request-move-article)
-	     article (gnus-group-real-name group)
-	     (nth 1 gnus-command-method) accept-function last)))
-
+(defun gnus-request-move-article (article group server accept-function &optional last)
+  (let* ((gnus-command-method (gnus-find-method-for-group group))
+	 (result (funcall (gnus-get-function gnus-command-method 'request-move-article)
+			  article (gnus-group-real-name group)
+			  (nth 1 gnus-command-method) accept-function last)))
+    (when (and result gnus-agent gnus-agent-cache)
+      (gnus-agent-expire article group 'force))
+    result))
+    
 (defun gnus-request-accept-article (group &optional gnus-command-method last
 					  no-encode)
   ;; Make sure there's a newline at the end of the article.

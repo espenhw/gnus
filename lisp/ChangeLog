@@ -1,5 +1,8 @@
 2002-06-11  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-int.el (gnus-request-move-article): Agent expire article if
+	successfuly moved.
+
 	* nnweb.el (nnweb-google-create-mapping): Honors the value of
 	nnweb-max-hits.  From Niklas Morberg <niklas.morberg@axis.com>.
 
