@@ -43,8 +43,6 @@
 ;; Todo:
 ;; * Add a hook for when moving messages from new/ to cur/, to support
 ;;   nnmail's duplicate detection.
-;; * Allow each mark directory in a group to have its own inode for mark
-;;   files, to accommodate AFS.
 ;; * Improve generated Xrefs, so crossposts are detectable.
 ;; * Improve code readability.
 
@@ -1485,7 +1483,7 @@ by nnmaildir-request-article.")
 	(file-coding-system-alist nil)
 	del-mark del-action add-action set-action marksdir markfile nlist
 	ranges begin end article all-marks todo-marks did-marks mdir mfile
-	pgname ls markfilenew deactivate-mark)
+	pgname ls permarkfile deactivate-mark)
     (setq del-mark
 	  (lambda (mark)
 	    (setq mfile (nnmaildir--subdir marksdir (symbol-name mark))
@@ -1497,20 +1495,19 @@ by nnmaildir-request-article.")
 	    (mapcar
 	     (lambda (mark)
 	       (setq mdir (nnmaildir--subdir marksdir (symbol-name mark))
+		     permarkfile (concat mdir ":")
 		     mfile (concat mdir (nnmaildir--art-prefix article)))
 	       (unless (memq mark did-marks)
+		 (setq did-marks (cons mark did-marks))
 		 (nnmaildir--mkdir mdir)
-		 (setq did-marks (cons mark did-marks)))
+		 (unless (file-attributes permarkfile)
+		   (condition-case nil
+		       (add-name-to-file markfile permarkfile)
+		     (file-error
+		      ;; AFS can't make hard links in separate directories
+		      (write-region "" nil permarkfile nil 'no-message)))))
 	       (unless (file-exists-p mfile)
-		 (condition-case nil
-		     (add-name-to-file markfile mfile)
-		   (file-error
-		    (unless (file-exists-p mfile)
-		      ;; too many links, maybe
-		      (write-region "" nil markfilenew nil 'no-message)
-		      (add-name-to-file markfilenew mfile
-					'ok-if-already-exists)
-		      (rename-file markfilenew markfile 'replace))))))
+		 (add-name-to-file permarkfile mfile)))
 	     todo-marks))
 	  set-action (lambda (article)
 		       (funcall add-action)
@@ -1531,7 +1528,6 @@ by nnmaildir-request-article.")
 	    marksdir (nnmaildir--srvgrp-dir marksdir gname)
 	    marksdir (nnmaildir--nndir marksdir)
 	    markfile (concat marksdir "markfile")
-	    markfilenew (concat markfile "{new}")
 	    marksdir (nnmaildir--marks-dir marksdir)
 	    gname (nnmaildir--grp-name group)
             pgname (nnmaildir--pgname nnmaildir--cur-server gname)
@@ -1588,7 +1584,7 @@ by nnmaildir-request-article.")
 	       dir (file-name-as-directory (car dir)))
 	 (mapcar
 	  (lambda (file)
-	    (unless (intern-soft file flist)
+	    (unless (or (intern-soft file flist) (string= file ":"))
 	      (setq file (concat dir file))
 	      (delete-file file)))
 	  files))

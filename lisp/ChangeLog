@@ -1,10 +1,16 @@
+2003-03-28  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-set-mark,
+	nnmaildir-close-group): Allow each mark directory in a group to
+	have its own inode for mark files, to accommodate AFS.
+
 2003-03-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-start.el (gnus-read-newsrc-el-hook): new hook called by gnus-read-newsrc-el-file
 	(gnus-read-newsrc-el-file): call the gnus-read-newsrc-el-hook
 
-	* gnus-registry.el (gnus-registry-translate-to-alist) 
-	(gnus-registry-translate-from-alist, alist-to-hashtable) 
+	* gnus-registry.el (gnus-registry-translate-to-alist)
+	(gnus-registry-translate-from-alist, alist-to-hashtable)
 	(hashtable-to-alist): new functions
 	(gnus-register-spool-action): add a spool item to the registry
 
@@ -159,32 +165,32 @@
 2003-03-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2231.el (rfc2231-decode-encoded-string): Downcase charset.
-	
+
 	* mm-url.el (mm-url-insert): Move url-current-object stuff into
 	mm-url-insert-file-contents.
 
 	* nnrss.el (nnrss-fetch): Fetch the local stuff.
 	(nnrss-check-group): Use it.
 
-2003-03-20 Mark A. Hershberger  <mah@everybody.org> 
+2003-03-20 Mark A. Hershberger  <mah@everybody.org>
 
 	* nnrss.el: Primitive XML Name-space support.  This means that RSS
 	feeds like Kevin Burton's[1] can now be read in Gnus.
 
- 	Implemented support for Mark Pilgrim's RSS Autodiscovery.[2] This
+	Implemented support for Mark Pilgrim's RSS Autodiscovery.[2] This
 	means that if you want to read the RSS feed for example.com, all
 	you have to do is hit "G R http://www.example.com/ RET" and
 	nnrss.el will find and the feed listed on the site or (if you have
 	loaded xml-rpc.el) look it up on syndic8.com.
 
- 	Marked the message as HTML (by adding a Content-Type header) so
+	Marked the message as HTML (by adding a Content-Type header) so
 	that Gnus will render it as html if the user wants that.
 
- 	Implemented the ability to save nnrss-group-alist so that any new
+	Implemented the ability to save nnrss-group-alist so that any new
 	feeds the you subscribe to will be found the next time you start
 	up.
 
- 	Implemented support for RSS 2.0 elements (author, pubDate).
+	Implemented support for RSS 2.0 elements (author, pubDate).
 
 	Prefer for <content:encoded> over <description> where both
 	elements exist.
@@ -212,7 +218,7 @@
 
 2003-03-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* spam.el (spam-group-ham-mark-p, spam-group-spam-mark-p) 
+	* spam.el (spam-group-ham-mark-p, spam-group-spam-mark-p)
 	(spam-group-ham-marks, spam-group-spam-marks): new functions
 	(spam-spam-marks, spam-ham-marks): removed in favor of the
 	spam-marks and ham-marks parameters
