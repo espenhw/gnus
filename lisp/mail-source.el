@@ -263,7 +263,21 @@ If non-nil, this maildrop will be checked periodically for new mail."
   :type 'integer)
 
 (defcustom mail-source-delete-incoming nil
-  "*If non-nil, delete incoming files after handling."
+  "*If non-nil, delete incoming files after handling.
+If t, delete immediately, if nil, never delete.  If a positive number, delete
+files older than number of days."
+  ;; Note: The removing happens in `mail-source-callback', i.e. no old
+  ;; incoming files will be deleted, unless you receive new mail.
+  ;;
+  ;; You may also set this to `nil' and call `mail-source-delete-old-incoming'
+  ;; from a hook or interactively.
+  :group 'mail-source
+  :type '(choice (const :tag "immediately" t)
+		 (const :tag "never" nil)
+		 (integer :tag "days")))
+
+(defcustom mail-source-delete-old-incoming-confirm t
+  "*If non-nil, ask for for confirmation before deleting old incoming files."
   :group 'mail-source
   :type 'boolean)
 
@@ -506,6 +520,34 @@ Return the number of files that were found."
 	  (setq newname (make-temp-name newprefix)))
 	newname))))
 
+(defun mail-source-delete-old-incoming (&optional age confirm)
+  "Remove incoming files older than AGE days.
+If CONFIRM is non-nil, ask for confirmation before removing a file."
+  (interactive "P")
+  (let* ((high2days (/ 65536.0 60 60 24));; convert high bits to days
+	 (low2days  (/ 1.0 65536.0))     ;; convert low bits to days
+	 (diff (if (natnump age) age 30));; fallback, if no valid AGE given
+	 currday files)
+    (setq files (directory-files
+		 mail-source-directory t 
+		 (concat mail-source-incoming-file-prefix "*"))
+	  currday (* (car (current-time)) high2days)
+	  currday (+ currday (* low2days (nth 1 (current-time)))))
+    (while files
+      (let* ((ffile (car files))
+	     (bfile (gnus-replace-in-string
+		     ffile "\\`.*/\\([^/]+\\)\\'" "\\1"))
+	     (filetime (nth 5 (file-attributes ffile)))
+	     (fileday (* (car filetime) high2days))
+	     (fileday (+ fileday (* low2days (nth 1 filetime)))))
+	(setq files (cdr files))
+	(when (and (> (- currday fileday) diff)
+		   (gnus-message 8 "File `%s' is older than %s day(s)"
+				 bfile diff)
+		   (or (not confirm)
+		       (y-or-n-p (concat "Remove file `" bfile "'? "))))
+	  (delete-file ffile))))))
+
 (defun mail-source-callback (callback info)
   "Call CALLBACK on the mail file, and then remove the mail file.
 Pass INFO on to CALLBACK."
@@ -519,7 +561,7 @@ Pass INFO on to CALLBACK."
 	(funcall callback mail-source-crash-box info)
       (when (file-exists-p mail-source-crash-box)
 	;; Delete or move the incoming mail out of the way.
-	(if mail-source-delete-incoming
+	(if (eq mail-source-delete-incoming t)
 	    (delete-file mail-source-crash-box)
 	  (let ((incoming
 		 (mail-source-make-complex-temp-name
@@ -528,8 +570,13 @@ Pass INFO on to CALLBACK."
 		   mail-source-directory))))
 	    (unless (file-exists-p (file-name-directory incoming))
 	      (make-directory (file-name-directory incoming) t))
-	    (rename-file mail-source-crash-box incoming t)))))))
-
+	    (rename-file mail-source-crash-box incoming t)
+	    ;; remove old incoming files?
+	    (when (natnump mail-source-delete-incoming)
+	      (mail-source-delete-old-incoming
+	       mail-source-delete-incoming
+	       mail-source-delete-old-incoming-confirm))))))))
+  
 (defun mail-source-movemail (from to)
   "Move FROM to TO using movemail."
   (if (not (file-writable-p to))

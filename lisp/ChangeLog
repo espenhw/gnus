@@ -1,3 +1,11 @@
+2003-02-24  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mail-source.el (mail-source-delete-incoming): Allow integer value.
+	(mail-source-delete-old-incoming-confirm): New variable.
+	(mail-source-delete-old-incoming): Use it.  New function.
+	(mail-source-callback): Call `mail-source-delete-old-incoming' if
+	`mail-source-delete-incoming' is a nonnegative integer.
+
 2003-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-msg.el (gnus-extended-version): Fix for 'emacs-gnus-config.
