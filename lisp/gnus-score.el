@@ -146,6 +146,17 @@ will be expired along with non-matching score entries."
   :type 'boolean)
 
 (defcustom gnus-decay-scores nil
+  "*If non-nil, decay non-permanent scores.
+
+If it is a regexp, only decay score files matching regexp."
+  :group 'gnus-score-decay
+  :type `(choice (const :tag "never" nil)
+		 (const :tag "always" t)
+		 (const :tag "adaptive score files"
+			,(concat "\\." gnus-adaptive-file-suffix "\\'"))
+		 (regexp)))
+
+(defcustom gnus-decay-scores nil
   "*If non-nil, decay non-permanent scores."
   :group 'gnus-score-decay
   :type 'boolean)
@@ -1210,7 +1221,9 @@ If FORMAT, also format the current score file."
 	  (decay (car (gnus-score-get 'decay alist)))
 	  (eval (car (gnus-score-get 'eval alist))))
       ;; Perform possible decays.
-      (when (and gnus-decay-scores
+      (when (and (if (stringp gnus-decay-scores)
+		     (string-match gnus-decay-scores file)
+		   gnus-decay-scores)
 		 (or cached (file-exists-p file))
 		 (or (not decay)
 		     (gnus-decay-scores alist decay)))
