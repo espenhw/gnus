@@ -1,3 +1,8 @@
+2002-11-18  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-request-expire-articles): Compress sequence
+	before storing \Deleted mark on expired articles.
+
 2002-11-17   Markus Rost  <rost@math.ohio-state.edu>
 
 	* gnus-sum.el (gnus-summary-goto-unread): Doc fix - escape open

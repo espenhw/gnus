@@ -1366,7 +1366,8 @@ function is generally only called when Gnus is shutting down."
 		   (when oldarts
 		     (nnimap-expiry-target oldarts group server)
 		     (when (imap-message-flags-add
-			    (imap-range-to-message-set oldarts) "\\Deleted")
+			    (imap-range-to-message-set 
+			     (gnus-compress-sequence oldarts)) "\\Deleted")
 		       (setq articles (gnus-set-difference
 				       articles oldarts))))))
 		((numberp days)
@@ -1379,7 +1380,8 @@ function is generally only called when Gnus is shutting down."
 		   (when oldarts
 		     (nnimap-expiry-target oldarts group server)
 		     (when (imap-message-flags-add
-			    (imap-range-to-message-set oldarts) "\\Deleted")
+			    (imap-range-to-message-set 
+			     (gnus-compress-sequence oldarts)) "\\Deleted")
 		       (setq articles (gnus-set-difference 
 				       articles oldarts)))))))))))
   ;; return articles not deleted
