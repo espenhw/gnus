@@ -1,3 +1,8 @@
+2003-02-04  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.el (spam group parameters): change 'other to 'const in
+	the group parameter definitions to soothe XEmacs
+
 2003-02-04  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-delay.el (gnus-delay-article): Really create

@@ -1787,13 +1787,13 @@ This only makes sense for mail groups."
 			  (choice
 			   (variable-item gnus-group-spam-classification-spam)
 			   (variable-item gnus-group-spam-classification-ham)
-			   (other :tag "Unclassified" nil))))
+			   (const :tag "Unclassified" nil))))
 
    :parameter-type '(list :tag "Group contents spam/ham classification"
 			  (choice :tag "Group contents classification for spam sorting"
 				  (variable-item gnus-group-spam-classification-spam)
 				  (variable-item gnus-group-spam-classification-ham)
-				  (other :tag "Unclassified" nil)))
+				  (const :tag "Unclassified" nil)))
    :parameter-document
    "The spam classification (spam, ham, or neither) of this group.
 When a spam group is entered, all unread articles are marked as spam.")
@@ -1881,7 +1881,7 @@ for mail groups."
    spam-process-destination
    :parameter-type '(choice :tag "Destination for spam-processed articles at summary exit"
 			    (string :tag "Move to a group")
-			    (other :tag "Expire" nil))
+			    (const :tag "Expire" nil))
    :function-document
    "Where spam-processed articles will go at summary exit."
    :variable gnus-spam-process-destinations
@@ -1901,7 +1901,7 @@ mail groups."
 		     (choice 
 		      :tag "Destination for spam-processed articles at summary exit"
 		      (string :tag "Move to a group")
-		      (other :tag "Expire" nil))))
+		      (const :tag "Expire" nil))))
    :parameter-document
    "Where spam-processed articles will go at summary exit.")
 
@@ -1910,7 +1910,7 @@ mail groups."
    :parameter-type '(choice 
 		     :tag "Destination for ham articles at summary exit from a spam group"
 		     (string :tag "Move to a group")
-		     (other :tag "Do nothing" nil))
+		     (const :tag "Do nothing" nil))
    :function-document
    "Where ham articles will go at summary exit from a spam group."
    :variable gnus-ham-process-destinations
@@ -1930,7 +1930,7 @@ mail groups, and only works in spam groups."
 		     (choice 
 		      :tag "Destination for ham articles at summary exit from spam group"
 		      (string :tag "Move to a group")
-		      (other :tag "Expire" nil))))
+		      (const :tag "Expire" nil))))
    :parameter-document
    "Where ham articles will go at summary exit from a spam group."))
 
