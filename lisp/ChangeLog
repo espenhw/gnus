@@ -1,3 +1,7 @@
+2000-10-05  Stefan Monnier <monnier+gnu/emacs@rum.cs.yale.edu>
+
+       * nnimap.el (require): cl.
+
 2000-10-04 15:24:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-prepare): Configure windows before
