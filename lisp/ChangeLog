@@ -1,3 +1,8 @@
+2002-01-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-start.el (gnus-read-init-file): Don't force coding system
+	for ~/.gnus.  From Dave Love <fx@gnu.org>.
+
 2002-01-03  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-send-buffer): Use mm-with-unibyte-current-buffer.
