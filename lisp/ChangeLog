@@ -1,3 +1,8 @@
+2001-03-15 09:47:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-retrieve-headers): Understand
+	long-form month names.
+
 2001-03-18 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	
 	* gnus-sum.el (gnus-summary-show-all-headers):
