@@ -32,6 +32,7 @@
 
 (eval-when-compile
   (require 'cl)
+  (defvar gnus-message-group-art)
   (defvar gnus-list-identifiers)) ; gnus-sum is required where necessary
 (require 'canlock)
 (require 'mailheader)
@@ -46,7 +47,9 @@
 (require 'mml)
 (require 'rfc822)
 (eval-and-compile
-  (autoload 'sha1 "sha1-el"))
+  (autoload 'sha1 "sha1-el")
+  (autoload 'gnus-find-method-for-group "gnus")
+  (autoload 'nnvirtual-find-group-art "nnvirtual"))
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -190,7 +193,8 @@ Checks include `subject-cmsg', `multiple-headers', `sendsys',
 `approved', `sender', `empty', `empty-headers', `message-id', `from',
 `subject', `shorten-followup-to', `existing-newsgroups',
 `buffer-file-name', `unchanged', `newsgroups', `reply-to',
-'continuation-headers', and `long-header-lines'."
+`continuation-headers', `long-header-lines', `invisible-text' and
+`illegible-text'."
   :group 'message-news
   :type '(repeat sexp))			; Fixme: improve this
 
@@ -455,24 +459,27 @@ The provided functions are:
 		(repeat :tag "List of functions" function)))
 
 (defcustom message-forward-as-mime t
-  "*If non-nil, forward messages as an inline/rfc822 MIME section.  Otherwise, directly inline the old message in the forwarded message."
+  "*Non-nil means forward messages as an inline/rfc822 MIME section.
+Otherwise, directly inline the old message in the forwarded message."
   :version "21.1"
   :group 'message-forwarding
   :type 'boolean)
 
 (defcustom message-forward-show-mml t
-  "*If non-nil, forward messages are shown as mml.  Otherwise, forward messages are unchanged."
+  "*Non-nil means show forwarded messages as mml.
+Otherwise, forwarded messages are unchanged."
   :version "21.1"
   :group 'message-forwarding
   :type 'boolean)
 
 (defcustom message-forward-before-signature t
-  "*If non-nil, put forwarded message before signature, else after."
+  "*Non-nil means put forwarded message before signature, else after."
   :group 'message-forwarding
   :type 'boolean)
 
 (defcustom message-wash-forwarded-subjects nil
-  "*If non-nil, try to remove as much old cruft as possible from the subject of messages before generating the new subject of a forward."
+  "*Non-nil means try to remove as much cruft as possible from the subject.
+Done before generating the new subject of a forward."
   :group 'message-forwarding
   :type 'boolean)
 
@@ -1593,12 +1600,6 @@ function `message-narrow-to-headers-or-head'."
       (mail-narrow-to-head)
       (message-fetch-field header))))
 
-(defun message-functionp (form)
-  "Return non-nil if FORM is funcallable."
-  (or (and (symbolp form) (fboundp form))
-      (and (listp form) (eq (car form) 'lambda))
-      (byte-code-function-p form)))
-
 (defun message-strip-list-identifiers (subject)
   "Remove list identifiers in `gnus-list-identifiers' from string SUBJECT."
   (require 'gnus-sum)			; for gnus-list-identifiers
@@ -2119,11 +2120,11 @@ Point is left at the beginning of the narrowed-to region."
     ["Insert Signature" message-insert-signature t]
     ["Caesar (rot13) Message" message-caesar-buffer-body t]
     ["Caesar (rot13) Region" message-caesar-region (message-mark-active-p)]
-    ["Elide Region" message-elide-region 
+    ["Elide Region" message-elide-region
      :active (message-mark-active-p)
      ,@(if (featurep 'xemacs) nil
 	 '(:help "Replace text in region with an ellipsis"))]
-    ["Delete Outside Region" message-delete-not-region 
+    ["Delete Outside Region" message-delete-not-region
      :active (message-mark-active-p)
      ,@(if (featurep 'xemacs) nil
 	 '(:help "Delete all quoted text outside region"))]
@@ -2350,7 +2351,8 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (when (eq message-mail-alias-type 'abbrev)
     (if (fboundp 'mail-abbrevs-setup)
 	(mail-abbrevs-setup)
-      (mail-aliases-setup)))
+      (if (fboundp 'mail-aliases-setup)	; warning avoidance
+	  (mail-aliases-setup))))
   (unless buffer-file-name
     (message-set-auto-save-file-name))
   (unless (buffer-base-buffer)
@@ -2751,7 +2753,7 @@ Prefix arg means justify as well."
 	   ((and (null message-signature)
 		 force)
 	    t)
-	   ((message-functionp message-signature)
+	   ((functionp message-signature)
 	    (funcall message-signature))
 	   ((listp message-signature)
 	    (eval message-signature))
@@ -3300,11 +3302,10 @@ It should typically alter the sending method in some way or other."
       (when points
 	(goto-char (car points))
 	(dolist (point points)
-	  (add-text-properties point (1+ point)
-			       '(invisible nil face highlight
-					   font-lock-face highlight)))
+	  (message-overlay-put (message-make-overlay point (1+ point))
+			       'face 'highlight))
 	(unless (yes-or-no-p
-		 "Invisible text found and made visible; continue posting? ")
+		 "Invisible text found and made visible; continue sending? ")
 	  (error "Invisible text found and made visible")))))
   (message-check 'illegible-text
     (let (found choice)
@@ -3314,36 +3315,38 @@ It should typically alter the sending method in some way or other."
 	(when (let ((char (char-after)))
 		(or (< (mm-char-int char) 128)
 		    (and (mm-multibyte-p)
-			 (memq (char-charset char)
-			       '(eight-bit-control eight-bit-graphic
-						   control-1)))))
-	  (add-text-properties (point) (1+ (point))
-			       '(font-lock-face highlight face highlight))
+			 (> (length (mm-find-mime-charset-region
+				     (point) (point-max)))
+			    1))))
+	  (message-overlay-put (message-make-overlay (point) (1+ (point)))
+			       'face 'highlight)
 	  (setq found t))
 	(forward-char)
 	(skip-chars-forward mm-7bit-chars))
       (when found
 	(setq choice
 	      (gnus-multiple-choice
-	       "Illegible text found.  Continue posting?"
-	       '((?d "Remove and continue posting")
-		 (?r "Replace with dots and continue posting")
-		 (?i "Ignore and continue posting")
+	       "Non-printable characters found.  Continue sending?"
+	       '((?d "Remove non-printable characters and send")
+		 (?r "Replace non-printable characters with dots and send")
+		 (?i "Ignore non-printable characters and send")
 		 (?e "Continue editing"))))
 	(if (eq choice ?e)
-	  (error "Illegible text found"))
+	  (error "Non-printable characters"))
 	(message-goto-body)
 	(skip-chars-forward mm-7bit-chars)
 	(while (not (eobp))
 	  (when (let ((char (char-after)))
 		  (or (< (mm-char-int char) 128)
 		      (and (mm-multibyte-p)
+			   ;; Fixme: Wrong for Emacs 22 and for things
+			   ;; like undecable utf-8.  Should at least
+			   ;; use find-coding-systems-region.
 			   (memq (char-charset char)
 				 '(eight-bit-control eight-bit-graphic
 						     control-1)))))
 	    (if (eq choice ?i)
-		(remove-text-properties (point) (1+ (point))
-					'(font-lock-face highlight face highlight))
+		(message-kill-all-overlays)
 	      (delete-char 1)
 	      (when (eq choice ?r)
 		(insert "."))))
@@ -3370,7 +3373,7 @@ It should typically alter the sending method in some way or other."
     (ignore-errors
       (cond
        ;; A simple function.
-       ((message-functionp (car actions))
+       ((functionp (car actions))
 	(funcall (car actions)))
        ;; Something to be evaled.
        (t
@@ -3518,7 +3521,7 @@ It should typically alter the sending method in some way or other."
 			(or
 			 (not content-type)
 			 (string= "text/plain"
-				  (car 
+				  (car
 				   (mail-header-parse-content-type
 				    content-type))))
 			(not
@@ -3663,7 +3666,7 @@ to find out how to use this."
 	 ;; free for -inject-arguments -- a big win for the user and for us
 	 ;; since we don't have to play that double-guessing game and the user
 	 ;; gets full control (no gestapo'ish -f's, for instance).  --sj
-         (if (message-functionp message-qmail-inject-args)
+         (if (functionp message-qmail-inject-args)
              (funcall message-qmail-inject-args)
            message-qmail-inject-args)))
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
@@ -3727,7 +3730,7 @@ Otherwise, generate and save a value for `canlock-password' first."
 (defun message-send-news (&optional arg)
   (let* ((tembuf (message-generate-new-buffer-clone-locals " *message temp*"))
 	 (case-fold-search nil)
-	 (method (if (message-functionp message-post-method)
+	 (method (if (functionp message-post-method)
 		     (funcall message-post-method arg)
 		   message-post-method))
 	 (newsgroups-field (save-restriction
@@ -3974,7 +3977,7 @@ Otherwise, generate and save a value for `canlock-password' first."
 		     (if followup-to
 			 (concat newsgroups "," followup-to)
 		       newsgroups)))
-	    (post-method (if (message-functionp message-post-method)
+	    (post-method (if (functionp message-post-method)
 			     (funcall message-post-method)
 			   message-post-method))
 	    ;; KLUDGE to handle nnvirtual groups.  Doing this right
@@ -4413,7 +4416,7 @@ If NOW, use that time instead."
   "Make an Organization header."
   (let* ((organization
 	  (when message-user-organization
-	    (if (message-functionp message-user-organization)
+	    (if (functionp message-user-organization)
 		(funcall message-user-organization)
 	      message-user-organization))))
     (with-temp-buffer
@@ -4468,7 +4471,7 @@ If NOW, use that time instead."
 (defun message-make-distribution ()
   "Make a Distribution header."
   (let ((orig-distribution (message-fetch-reply-field "distribution")))
-    (cond ((message-functionp message-distribution-function)
+    (cond ((functionp message-distribution-function)
 	   (funcall message-distribution-function))
 	  (t orig-distribution))))
 
@@ -4807,7 +4810,7 @@ Headers already prepared in the buffer are not modified."
 		  ;; is something that is nil, then we do not insert
 		  ;; this header.
 		  (setq header (cdr elem))
-		  (or (and (message-functionp (cdr elem))
+		  (or (and (functionp (cdr elem))
 			   (funcall (cdr elem)))
 		      (and (boundp (cdr elem))
 			   (symbol-value (cdr elem)))))
@@ -4818,7 +4821,7 @@ Headers already prepared in the buffer are not modified."
 		  ;; this function.
 		  (or (and (stringp (cdr elem))
 			   (cdr elem))
-		      (and (message-functionp (cdr elem))
+		      (and (functionp (cdr elem))
 			   (funcall (cdr elem)))))
 		 ((and (boundp header)
 		       (symbol-value header))
@@ -5088,7 +5091,7 @@ than 988 characters long, and if they are not, trim them until they are."
 	     "*")))
    ;; Check whether `message-generate-new-buffers' is a function,
    ;; and if so, call it.
-   ((message-functionp message-generate-new-buffers)
+   ((functionp message-generate-new-buffers)
     (funcall message-generate-new-buffers type to group))
    ((eq message-generate-new-buffers 'unsent)
     (generate-new-buffer-name
@@ -5505,11 +5508,11 @@ responses here are directed to other addresses.")))
       ;; Allow customizations to have their say.
       (if (not wide)
 	  ;; This is a regular reply.
-	  (when (message-functionp message-reply-to-function)
+	  (when (functionp message-reply-to-function)
 	    (save-excursion
 	      (setq follow-to (funcall message-reply-to-function))))
 	;; This is a followup.
-	(when (message-functionp message-wide-reply-to-function)
+	(when (functionp message-wide-reply-to-function)
 	  (save-excursion
 	    (setq follow-to
 		  (funcall message-wide-reply-to-function)))))
@@ -5569,7 +5572,7 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
        (if (search-forward "\n\n" nil t)
 	   (1- (point))
 	 (point-max)))
-      (when (message-functionp message-followup-to-function)
+      (when (functionp message-followup-to-function)
 	(setq follow-to
 	      (funcall message-followup-to-function)))
       (setq from (message-fetch-field "from")
@@ -5902,7 +5905,7 @@ the message."
 	;; Apply funcs in order, passing subject generated by previous
 	;; func to the next one.
 	(while funcs
-	  (when (message-functionp (car funcs))
+	  (when (functionp (car funcs))
 	    (setq subject (funcall (car funcs) subject)))
 	  (setq funcs (cdr funcs)))
 	subject))))
@@ -6005,9 +6008,12 @@ Optional DIGEST will use digest to forward."
 	(rmail-msg-restore-non-pruned-header)))
   (message-forward-make-body forward-buffer))
 
+(eval-when-compile (defvar rmail-enable-mime-composing))
+
+;; Fixme: Should have defcustom.
 ;;;###autoload
 (defun message-insinuate-rmail ()
-  "Let RMAIL uses message to forward."
+  "Let RMAIL use message to forward."
   (interactive)
   (setq rmail-enable-mime-composing t)
   (setq rmail-insert-mime-forwarded-message-function
@@ -6207,6 +6213,10 @@ which specify the range to operate on."
 (defalias 'message-make-overlay 'make-overlay)
 (defalias 'message-delete-overlay 'delete-overlay)
 (defalias 'message-overlay-put 'overlay-put)
+(defun message-kill-all-overlays ()
+  (if (featurep 'xemacs)
+      (map-extents (lambda (extent ignore) (delete-extent extent)))
+    (mapcar #'delete-overlay (overlays-in (point-min) (point-max)))))
 
 ;; Support for toolbar
 (eval-when-compile
