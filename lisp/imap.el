@@ -628,7 +628,7 @@ sure of changing the value of `foo'."
       (let* ((port (or port imap-default-ssl-port))
 	     (coding-system-for-read imap-coding-system-for-read)
 	     (coding-system-for-write imap-coding-system-for-write)
-	     (process-connection-type nil)
+	     (process-connection-type imap-process-connection-type)
 	     process)
 	(when (progn
 		(setq process (start-process
