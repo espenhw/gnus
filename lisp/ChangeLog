@@ -1,3 +1,8 @@
+2002-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-treat-body-boundary): Don't quote a
+	value for gnus-decoration property.
+
 2002-09-06  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* nnmail.el (nnmail-cache-fetch-group): Don't return "" (empty
@@ -28,12 +33,12 @@
 	* mml.el (mml-parse-1): Correct small typo which preventing
 	setting recipients in a secure tag.
 
-2002-09-03  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-util.el (mm-coding-system-priorities): Default to a list of
 	iso-2022-jp and others for the Japanese environment.
 
-2002-09-03  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-util.el (gnus-frame-or-window-display-name): Exclude
 	invalid display names.
@@ -52,7 +57,7 @@
 	(gnus-group-fetch-control): New function.
 	Add them to the keymap and menu. Require mm-url.
 
-2002-08-30  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-mlspl.el (gnus-group-split-fancy): Doc fix.
 	From Alex Schroeder <alex@emacswiki.org>.
@@ -70,7 +75,7 @@
 
 	* mml.el (mml-menu): do.
 
-2002-08-28  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mail-source.el (mail-source-touch-pop): New function.
 
@@ -92,7 +97,7 @@
 	(gnus-agent-possibly-save-gcc): Autoload.
 	Suggested by (KOSEKI Yoshinori) <kose@meadowy.org>.
 
-2002-08-26  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-other-frame-function): New user option.
 	(gnus-other-frame): Use it; add a doc-string; make it work with
@@ -108,11 +113,11 @@
 	* gnus-art.el (gnus-emphasis-alist): Strikethru had a lot of false
 	positives, make it stricter.  From Jochen Hein (trivial change).
 
-2002-08-21  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-other-frame): Trivial fix.
 
-2002-08-21  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el (gnus-other-frame-parameters): New user option.
 	(gnus-other-frame-object): New variable.
@@ -123,7 +128,7 @@
 
 	* lpath.el: Fbind w32-focus-frame and x-focus-frame.
 
-2002-08-20  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 	From 小関 吉則 (KOSEKI Yoshinori) <kose@meadowy.org>.
 
 	* message.el (message-set-auto-save-file-name): Add support for
@@ -137,11 +142,11 @@
 	* nnmh.el (nnmh-request-list-1): Use %.0f instead of %d to
 	avoid arithmetic errors.
 
-2002-08-20  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el: Don't fbind `gnus-article-replace-with-quoted-text'.
 
-2002-08-19  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-ignored-supersedes-headers): Add X-Hashcash.
 	(message-ignored-resent-headers): Add envelope From.
@@ -155,7 +160,7 @@
 	* gnus-sum.el (gnus-summary-line-message-size): New function.
 	(gnus-summary-line-format-alist): Use it.
 
-2002-08-15  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-make-date-line): Refer to the value for
 	`gnus-article-time-format' in the summary buffer.
@@ -174,12 +179,12 @@
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Add MIME button option.
 
-2002-08-14  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-font-lock-keywords): Refer to the value for
 	`message-cite-prefix-regexp' dynamically.
 
-2002-08-13  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-decode-header-methods): Doc fix.
 
@@ -287,7 +292,7 @@
 	(sieve-help): Fix help.
 	All suggested by Ned Ludd.
 
-2002-07-24  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-inline-text-html-with-images): Doc fix.
 	(mm-w3m-safe-url-regexp): New user option.
@@ -370,7 +375,7 @@
 	* nnsoup.el (nnsoup-retrieve-headers, nnsoup-request-type)
 	(nnsoup-read-active-file, nnsoup-article-to-area): Ditto.
 
-2002-07-05  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-07-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-toggle-header): Show headers anyway;
 	don't break a narrowed article.
@@ -392,7 +397,7 @@
 	* gnus-msg.el (gnus-summary-resend-default-address): New user option.
 	(gnus-summary-resend-message): Use it.
 
-2002-06-28  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-via-rlogin-command-switches): New variable.
 	(nntp-open-via-rlogin-and-telnet): Re-revert; use the var above.
@@ -405,11 +410,11 @@
 	message-font-lock-keywords.
 	From Katsumi Yamaoka <yamaoka@jpl.org>.
 
-2002-06-28  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-open-via-rlogin-and-telnet): Revert last change.
 
-2002-06-28  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-open-via-rlogin-and-telnet): Hide commandline args.
 
@@ -450,7 +455,7 @@
 	* gnus-delay.el (gnus-delay-send-queue): Delete the delay header
 	before sending.  Suggested by Jan Rychter.
 
-2002-06-18  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el (remove): New compiler macro.
 	(last, coerce, subseq): Remove compiler macros for those built-in
@@ -482,7 +487,7 @@
 
 	* gnus-ems.el (nnheader-file-name-translation-alist): Removed.
 
-2002-06-14  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-beginning-of-line): Keep the region active
 	in XEmacs.  Suggested by TAKAHASHI Kaoru <kaoru@kaisei.org>.
@@ -493,7 +498,7 @@
 	* gnus-msg.el (gnus-summary-reply): Ditto.
 	* gnus-msg.el (gnus-summary-handle-replysign): New.
 
-2002-06-12  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-send-mail-with-sendmail): Kill errbuf even
 	if sending failed.
@@ -549,7 +554,7 @@
 	style match to use data from last viewed article.
 	Suggested by Hrvoje Niksic.
 
-2002-06-04  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* spam.el (spam-point-at-eol): New alias.
 	(spam-parse-whitelist): Use it.
@@ -840,7 +845,7 @@
 	* gnus-msg.el (gnus-article-mail): Use gnus-msg-mail instead.
 	Trivial change from Karl Pfl,Adsterer <sigurd@12move.de>.
 
-2002-04-27  Katsumi Yamaoka <yamaoka@jpl.org>
+2002-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dns.el (dns-make-network-process): New macro.
 	(query-dns): Use it.
@@ -4193,7 +4198,7 @@
 
 	* message.el (message-mode): Use `make-local-hook' unless
 	obsolete.
-	Patch by Katsumi Yamaoka  <yamaoka@jpl.org>.
+	Patch by Katsumi Yamaoka <yamaoka@jpl.org>.
 
 2001-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -4909,7 +4914,7 @@
 	`active' to `current' and one `null' to `not'.
 
 2001-10-16  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
-	From Katsumi Yamaoka  <yamaoka@jpl.org>.
+	From Katsumi Yamaoka <yamaoka@jpl.org>.
 
 	* message.el (message-setup-fill-variables): Use
 	`normal-auto-fill-function' instead of `auto-fill-function'.
@@ -6773,7 +6778,7 @@
 
 	* mm-decode.el (mm-attachment-override-p): Fix typo.
 
-2001-03-19 05:28:00  Katsumi Yamaoka <yamaoka@jpl.org>
+2001-03-19 05:28:00  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-kill.el (gnus-execute): Work with the extra headers.
 	* gnus-sum.el (gnus-summary-execute-command): Ditto.
@@ -7391,7 +7396,7 @@
 
 	* gnus-sum.el (gnus-summary-insert-new-articles): Reverse the articles.
 
-2001-04-10 08:01:15  Katsumi Yamaoka <yamaoka@jpl.org>
+2001-04-10 08:01:15  Katsumi Yamaoka  <yamaoka@jpl.org>
 	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-post-news): Fill the Newsgroups header by the
@@ -7422,7 +7427,7 @@
 	* imap.el (imap-message-copy): Work around buggy servers that
 	doesn't send TRYCREATE tags.
 
-2001-04-09 01:15:54  Katsumi Yamaoka <yamaoka@jpl.org>
+2001-04-09 01:15:54  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-read-newsrc-el-file): Work with Semi-gnusae.
 
@@ -7682,7 +7687,7 @@
 
 	* nnrss.el: New file.
 
-2001-03-08 02:41:36  Katsumi Yamaoka <yamaoka@jpl.org>
+2001-03-08 02:41:36  Katsumi Yamaoka  <yamaoka@jpl.org>
 	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-unfold-region): Fix arg of
@@ -7913,7 +7918,7 @@
 	server. Don't open server if it is opened.
 	(nnml-request-regenerate): Use it. Change to deffoo.
 
-2001-02-14  Katsumi Yamaoka <yamaoka@jpl.org>
+2001-02-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-define-group-parameter): Fix.
@@ -8371,7 +8376,7 @@
 	(gnus-button-mailto): Setup message. Moved to gnus-msg.el.
 	(gnus-button-reply): Ditto.
 
-2001-01-16  Katsumi Yamaoka <yamaoka@jpl.org>
+2001-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-display-x-face): Fix.
 
@@ -8673,7 +8678,7 @@
 	* nnwfm.el (nnwfm-create-mapping): Remove quote marks and
 	backslashes.
 
-2000-12-26  Katsumi Yamaoka <yamaoka@jpl.org>
+2000-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-banner-alist): Remove duplicate
 	definition.

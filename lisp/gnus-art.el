@@ -1760,7 +1760,7 @@ unfolded."
 		    (setq str (concat str gnus-body-boundary-delimiter)))
 		  (substring str 0 (1- (window-width))))
 		"\n")
-	(gnus-add-text-properties start (point) '(gnus-decoration 'header))))))
+	(gnus-put-text-property start (point) 'gnus-decoration 'header)))))
 
 (defun article-fill-long-lines ()
   "Fill lines that are wider than the window width."
