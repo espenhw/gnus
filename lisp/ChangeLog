@@ -1,5 +1,7 @@
 2001-01-05 06:49:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-agent.el (gnus-agent-fetch-session): Say what we quit.
+
 	* time-date.el (time-to-number-of-days): New function.
 
 2001-01-04 11:06:14  Gregory Chernov  <greg@visiontech-dml.com>
@@ -84,7 +86,7 @@
 	* nnfolder.el (nnfolder-existing-articles): Reversed, i.e. sorted.
 	(nnfolder-request-expire-articles): Use gnus-sorted-intersection.
 	(nnfolder-retrieve-headers): Use intersection. Suggested by Jonas
-	Kvarnstr,Av(Bm <jonkv@ida.liu.se>.
+	KvarnstrÅ,Av(Bm <jonkv@ida.liu.se>.
 
 2000-12-30 00:17:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -290,7 +292,7 @@
 
 	* message.el (message-forward): Save-restriction.
 
-2000-12-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-12-21  Kai GroÅ,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-art.el (article-treat-dumbquotes): More doc, provided by
 	Paul Stevenson <p.stevenson@surrey.ac.uk>
@@ -1383,10 +1385,10 @@
 	* message.el (message-font-lock-keywords): use
 	message-cite-prefix-regexp.
 
-2000-11-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-11-15  Kai GroÅ,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-group.el (gnus-group-jump-to-group-prompt): New variable by
-	Stein Arild Str,Ax(Bmme.
+	Stein Arild StrÅ,Ax(Bmme.
 	(gnus-group-jump-to-group): Use it.
 	(gnus-group-jump-to-group-prompt): Customize.
 
@@ -1518,7 +1520,7 @@
 	* gnus-art.el (gnus-mime-display-alternative): Show button if no
 	preferred part.
 
-2000-11-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-11-07  Kai GroÅ,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-sum.el (gnus-move-split-methods): Say that
 	`gnus-split-methods' uses file names, whereas this uses group
