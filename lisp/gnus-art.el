@@ -5579,8 +5579,8 @@ groups."
 
 (defcustom gnus-button-url-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
-      "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?[-a-z0-9_=!?#$@~%&*+\\/:;.,[:word:]]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)"
-    "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\([-a-z0-9_=!?#$@~%&*+\\/:;.,]\\|\\w\\)+\\([-a-z0-9_=#$@~%&*+\\/]\\|\\w\\)\\)")
+      "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?[-a-z0-9_=!?#$@~%&*+\\/:;.,[:word:]]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)"
+    "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\([-a-z0-9_=!?#$@~%&*+\\/:;.,]\\|\\w\\)+\\([-a-z0-9_=#$@~%&*+\\/]\\|\\w\\)\\)")
   "Regular expression that matches URLs."
   :group 'gnus-article-buttons
   :type 'regexp)
@@ -5944,9 +5944,9 @@ positives are possible."
      0 (>= gnus-button-message-level 0) gnus-button-handle-news 3)
     ("\\b\\(nntp\\|news\\):\\([^>\n\t ]*@[^>)!;:,\n\t ]*\\)" 0 t
      gnus-button-handle-news 2)
-    ("\\(\\b<\\(url:[>\n\t ]*\\)?\\(news\\|nntp\\):[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"
+    ("\\(\\b<\\(url:[>\n\t ]*\\)?\\(nntp\\|news\\):[>\n\t ]*\\(//\\)?\\([^>\n\t ]*\\)>\\)"
      1 (>= gnus-button-message-level 0) gnus-button-fetch-group 5)
-    ("\\b\\(news\\|nntp\\):\\(//\\)?\\([^'\">\n\t ]+\\)"
+    ("\\b\\(nntp\\|news\\):\\(//\\)?\\([^'\">\n\t ]+\\)"
      0 (>= gnus-button-message-level 0) gnus-button-fetch-group 3)
     ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)"
      2 (>= gnus-button-message-level 0) gnus-button-message-id 3)
@@ -6073,7 +6073,7 @@ variable it the real callback function."
      0 (>= gnus-button-browse-level 0) browse-url 0)
     ("^[^:]+:" "\\bmailto:\\([-a-z.@_+0-9%=?]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
-    ("^[^:]+:" "\\(<\\(url: \\)?\\(news\\|nntp\\):\\([^>\n ]*\\)>\\)"
+    ("^[^:]+:" "\\(<\\(url: \\)?\\(nntp\\|news\\):\\([^>\n ]*\\)>\\)"
      1 (>= gnus-button-message-level 0) gnus-button-message-id 4))
   "*Alist of headers and regexps to match buttons in article heads.
 

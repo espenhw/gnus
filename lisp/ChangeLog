@@ -1,5 +1,7 @@
 2003-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-button-url-regexp): Added nntp.
+
 	* message.el (message-generate-headers-first): Default to
 	'(references).
 
