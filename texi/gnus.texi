@@ -847,9 +847,12 @@ Picons
 
 Thwarting Email Spam
 
+* The problem of spam::         Some background, and some solutions
 * Anti-Spam Basics::            Simple steps to reduce the amount of spam.
 * SpamAssassin::                How to use external anti-spam tools.
 * Hashcash::                    Reduce spam by burning CPU time.
+* Filtering Spam Using spam.el::  
+* Filtering Spam Using Statistics (spam-stat.el)::  
 
 Appendices
 
@@ -20988,13 +20991,84 @@ mail group, only to find two pyramid schemes, seven advertisements
 (``New!  Miracle tonic for growing full, lustrous hair on your toes!'')
 and one mail asking me to repent and find some god.
 
-This is annoying.
+This is annoying.  Here's what you can do about it.
 
 @menu
+* The problem of spam::         Some background, and some solutions
 * Anti-Spam Basics::            Simple steps to reduce the amount of spam.
 * SpamAssassin::                How to use external anti-spam tools.
 * Hashcash::                    Reduce spam by burning CPU time.
+* Filtering Spam Using spam.el::  
+* Filtering Spam Using Statistics (spam-stat.el)::  
 @end menu
+
+@node The problem of spam
+@subsection The problem of spam
+@cindex email spam
+@cindex spam filtering approaches
+@cindex filtering approaches, spam
+@cindex UCE
+@cindex unsolicited commercial email
+
+First, some background on spam.
+
+If you have access to e-mail, you are familiar with spam (technically
+termed @acronym{UCE}, Unsolicited Commercial E-mail).  Simply put, it exists
+because e-mail delivery is very cheap compared to paper mail, so only
+a very small percentage of people need to respond to an UCE to make it
+worthwhile to the advertiser.  Ironically, one of the most common
+spams is the one offering a database of e-mail addresses for further
+spamming.  Senders of spam are usually called @emph{spammers}, but terms like
+@emph{vermin}, @emph{scum}, and @emph{morons} are in common use as well.
+
+Spam comes from a wide variety of sources.  It is simply impossible to
+dispose of all spam without discarding useful messages.  A good
+example is the TMDA system, which requires senders
+unknown to you to confirm themselves as legitimate senders before
+their e-mail can reach you.  Without getting into the technical side
+of TMDA, a downside is clearly that e-mail from legitimate sources may
+be discarded if those sources can't or won't confirm themselves
+through the TMDA system.  Another problem with TMDA is that it
+requires its users to have a basic understanding of e-mail delivery
+and processing.
+
+The simplest approach to filtering spam is filtering.  If you get 200
+spam messages per day from @email{random-address@@vmadmin.com}, you
+block @samp{vmadmin.com}.  If you get 200 messages about
+@samp{VIAGRA}, you discard all messages with @samp{VIAGRA} in the
+message.  This, unfortunately, is a great way to discard legitimate
+e-mail.  For instance, the very informative and useful RISKS digest
+has been blocked by overzealous mail filters because it
+@strong{contained} words that were common in spam messages.
+Nevertheless, in isolated cases, with great care, direct filtering of
+mail can be useful.
+
+Another approach to filtering e-mail is the distributed spam
+processing, for instance DCC implements such a system.  In essence,
+@code{N} systems around the world agree that a machine @samp{X} in
+China, Ghana, or California is sending out spam e-mail, and these
+@code{N} systems enter @samp{X} or the spam e-mail from @samp{X} into
+a database.  The criteria for spam detection vary - it may be the
+number of messages sent, the content of the messages, and so on.  When
+a user of the distributed processing system wants to find out if a
+message is spam, he consults one of those @code{N} systems.
+
+Distributed spam processing works very well against spammers that send
+a large number of messages at once, but it requires the user to set up
+fairly complicated checks.  There are commercial and free distributed
+spam processing systems.  Distributed spam processing has its risks as
+well.  For instance legitimate e-mail senders have been accused of
+sending spam, and their web sites have been shut down for some time
+because of the incident.
+
+The statistical approach to spam filtering is also popular.  It is
+based on a statistical analysis of previous spam messages.  Usually
+the analysis is a simple word frequency count, with perhaps pairs or
+words or 3-word combinations thrown into the mix.  Statistical
+analysis of spam works very well in most of the cases, but it can
+classify legitimate e-mail as spam in some cases.  It takes time to
+run the analysis, the full message must be analyzed, and the user has
+to store the database of spam analyses.
 
 @node Anti-Spam Basics
 @subsection Anti-Spam Basics
@@ -21218,6 +21292,531 @@ Currently there is no built in functionality in Gnus to verify
 hashcash cookies, it is expected that this is performed by your hand
 customized mail filtering scripts.  Improvements in this area would be
 a useful contribution, however.
+
+@node Filtering Spam Using spam.el
+@subsection Filtering Spam Using spam.el
+@cindex spam filtering
+@cindex spam.el
+
+The idea behind @code{spam.el} is to have a control center for spam detection
+and filtering in Gnus.  To that end, @code{spam.el} does two things: it
+filters incoming mail, and it analyzes mail known to be spam.
+
+So, what happens when you load @code{spam.el}?  First of all, you get
+the following keyboard commands:
+
+@table @kbd
+
+@item M-d
+@itemx S x
+@kindex M-d
+@kindex S x
+@findex gnus-summary-mark-as-spam
+(@code{gnus-summary-mark-as-spam})
+
+Mark current article as spam, showing it with the @samp{H} mark.
+Whenever you see a spam article, make sure to mark its summary line
+with @kbd{M-d} before leaving the group.
+
+@item S t
+@kindex S t
+@findex spam-bogofilter-score
+(@code{spam-bogofilter-score}
+
+You must have bogofilter processing enabled for that command to work
+properly.
+
+@xref{Bogofilter}.
+
+@end table
+
+@strong{FIXME!  The justification for @kbd{M-d} is that this is what Paul Graham
+suggests in his original article, and what Eric Raymond's patch for Mutt
+uses.  But more importantly, that binding was still free in Summary mode!}
+
+@strong{FIXME!  Lars has not blessed the following key bindings yet.  It looks
+convenient that the score analysis command uses a sequence ending with the
+letter @kbd{t}, so it nicely parallels @kbd{B t} or @kbd{V t}.  @kbd{M-d} is a kind of
+"alternate" @kbd{d}, it is also the sequence suggested in Paul Graham article,
+and also in Eric Raymond's patch for Mutt.  @kbd{S x} might be the more
+official key binding for @kbd{M-d}.}
+
+Gnus can learn from the spam you get.  All you have to do is collect
+your spam in one or more spam groups, and set the variable
+@code{spam-junk-mailgroups} as appropriate.  In these groups, all messages
+are considered to be spam by default: they get the @samp{H} mark.  You must
+review these messages from time to time and remove the @samp{H} mark for
+every message that is not spam after all.  When you leave a a spam
+group, all messages that continue with the @samp{H} mark, are passed on to
+the spam-detection engine (bogofilter, ifile, and others).  To remove
+the @samp{H} mark, you can use @kbd{M-u} to "unread" the article, or @kbd{d} for
+declaring it read the non-spam way.  When you leave a group, all @samp{H}
+marked articles, saved or unsaved, are sent to Bogofilter or ifile
+(depending on @code{spam-use-bogofilter} and @code{spam-use-ifile}), which will study
+them as spam samples.
+
+Messages may also be deleted in various other ways, and unless
+@code{`spam-ham-marks-form} gets overridden below, marks @samp{R} and @samp{r} for
+default read or explicit delete, marks @samp{X} and @samp{K} for automatic or
+explicit kills, as well as mark @samp{Y} for low scores, are all considered
+to be associated with articles which are not spam.  This assumption
+might be false, in particular if you use kill files or score files as
+means for detecting genuine spam, you should then adjust
+@code{spam-ham-marks-form}.  When you leave a group, all _unsaved_ articles
+bearing any the above marks are sent to Bogofilter or ifile, which
+will study these as not-spam samples.  If you explicit kill a lot, you
+might sometimes end up with articles marked @samp{K} which you never saw,
+and which might accidentally contain spam.  Best is to make sure that
+real spam is marked with @samp{H}, and nothing else.
+
+All other marks do not contribute to Bogofilter or ifile
+pre-conditioning.  In particular, ticked, dormant or souped articles
+are likely to contribute later, when they will get deleted for real,
+so there is no need to use them prematurely.  Explicitly expired
+articles do not contribute, command @kbd{E} is a way to get rid of an
+article without Bogofilter or ifile ever seeing it.
+
+@strong{TODO: @code{spam-use-ifile} does not process spam articles on group exit.
+I'm waiting for info from the author of @code{ifile-gnus.el}, because I think
+that functionality should go in @code{ifile-gnus.el} rather than @code{spam.el}.}
+
+To use the @code{spam.el} facilities for incoming mail filtering, you
+must add the following to your fancy split list
+(@code{nnmail-split-fancy} or @code{nnimap-split-fancy}:
+
+@example
+(: spam-split)
+@end example
+
+Note that the fancy split may be called @code{nnmail-split-fancy} or
+@code{nnimap-split-fancy}, depending on whether you use the nnmail or
+nnimap backends to retrieve your mail.
+
+The @code{spam-split} function will process incoming mail and send the mail
+considered to be spam into the group name given by the variable
+@code{spam-split-group}.  Usually that group name is @samp{spam}.
+
+The following are the methods you can use to control the behavior of
+@code{spam-split}:
+
+@menu
+* Blacklists and Whitelists::   
+* BBDB Whitelists::             
+* Blackholes::                  
+* Bogofilter::                  
+* Ifile spam filtering::        
+* Extending spam.el::           
+@end menu
+
+@node Blacklists and Whitelists
+@subsubsection Blacklists and Whitelists
+@cindex spam filtering
+@cindex whitelists, spam filtering
+@cindex blacklists, spam filtering
+@cindex spam.el
+
+@defvar spam-use-blacklist
+Set this variables to t (the default) if you want to use blacklists.
+@end defvar
+
+@defvar spam-use-whitelist
+Set this variables to t if you want to use whitelists.
+@end defvar
+
+Blacklists are lists of regular expressions matching addresses you
+consider to be spam senders.  For instance, to block mail from any
+sender at @samp{vmadmin.com}, you can put @samp{vmadmin.com} in your
+blacklist.  Since you start out with an empty blacklist, no harm is
+done by having the @code{spam-use-blacklist} variable set, so it is
+set by default.  Blacklist entries use the Emacs regular expression
+syntax.
+
+Conversely, whitelists tell Gnus what addresses are considered
+legitimate.  All non-whitelisted addresses are considered spammers.
+This option is probably not useful for most Gnus users unless the
+whitelists is very comprehensive.  Also see @ref{BBDB Whitelists}.
+Whitelist entries use the Emacs regular expression syntax.
+
+The Blacklist and whitelist location can be customized with the
+@code{spam-directory} variable (@file{~/News/spam} by default).  The whitelist
+and blacklist files will be in that directory, named @file{whitelist} and
+@file{blacklist} respectively.
+
+@node BBDB Whitelists
+@subsubsection BBDB Whitelists
+@cindex spam filtering
+@cindex BBDB whitelists, spam filtering
+@cindex BBDB, spam filtering
+@cindex spam.el
+
+@defvar spam-use-bbdb
+
+Analogous to @code{spam-use-whitelist} (@pxref{Blacklists and
+Whitelists}), but uses the BBDB as the source of whitelisted addresses,
+without regular expressions.  You must have the BBDB loaded for
+@code{spam-use-bbdb} to work properly.  Only addresses in the BBDB
+will be allowed through; all others will be classified as spam.
+
+@end defvar
+
+@node Blackholes
+@subsubsection Blackholes
+@cindex spam filtering
+@cindex blackholes, spam filtering
+@cindex spam.el
+
+@defvar spam-use-blackholes
+
+You can let Gnus consult the blackhole-type distributed spam
+processing systems (DCC, for instance) when you set this option.  The
+variable @code{spam-blackhole-servers} holds the list of blackhole servers
+Gnus will consult.
+
+This variable is disabled by default.  It is not recommended at this
+time because of bugs in the @code{dns.el} code.
+
+@end defvar
+
+@node Bogofilter
+@subsubsection Bogofilter
+@cindex spam filtering
+@cindex bogofilter, spam filtering
+@cindex spam.el
+
+@defvar spam-use-bogofilter
+
+Set this variable if you want to use Eric Raymond's speedy Bogofilter.
+This has been tested with a locally patched copy of version 0.4.  Make
+sure to read the installation comments in @code{spam.el}.
+
+With a minimum of care for associating the @samp{H} mark for spam
+articles only, Bogofilter training all gets fairly automatic.  You
+should do this until you get a few hundreds of articles in each
+category, spam or not.  The shell command @command{head -1
+~/.bogofilter/*} shows both article counts.  The command @kbd{S t} in
+summary mode, either for debugging or for curiosity, triggers
+Bogofilter into displaying in another buffer the @emph{spamicity}
+score of the current article (between 0.0 and 1.0), together with the
+article words which most significantly contribute to the score.
+
+@end defvar
+
+@node Ifile spam filtering
+@subsubsection Ifile spam filtering
+@cindex spam filtering
+@cindex ifile, spam filtering
+@cindex spam.el
+
+@defvar spam-use-ifile
+
+Enable this variable if you want to use Ifile, a statistical analyzer
+similar to Bogofilter.  Currently you must have @code{ifile-gnus.el}
+loaded.  The integration of Ifile with @code{spam.el} is not finished
+yet, but you can use @code{ifile-gnus.el} on its own if you like.
+
+@end defvar
+
+@node Extending spam.el
+@subsubsection Extending spam.el
+@cindex spam filtering
+@cindex spam.el, extending
+@cindex extending spam.el
+
+Say you want to add a new backend called blackbox.  Provide the following:
+
+@enumerate
+@item documentation
+
+@item code
+
+@example
+(defvar spam-use-blackbox nil
+  "True if blackbox should be used.")
+@end example
+
+Add
+@example
+    (spam-use-blackbox	 . spam-check-blackbox)
+@end example
+to @code{spam-list-of-checks}.
+
+@item functionality
+Write the @code{spam-check-blackbox} function.  It should return
+@samp{nil} or @code{spam-split-group}.  See the existing
+@code{spam-check-*} functions for examples of what you can do.
+@end enumerate
+
+@node Filtering Spam Using Statistics (spam-stat.el)
+@subsection Filtering Spam Using Statistics (spam-stat.el)
+@cindex Paul Graham
+@cindex Graham, Paul
+@cindex naive Bayesian spam filtering
+@cindex Bayesian spam filtering, naive
+@cindex spam filtering, naive Bayesian
+
+Paul Graham has written an excellent essay about spam filterung using
+statisticts: @uref{http://www.paulgraham.com/spam.html,A Plan for
+Spam}.  In it he describes the inherent deficiency of rule-based
+filtering as used by SpamAssassin, for example: Somebody has to write
+the rules, and everybody else has to install these rules.  You are
+always late.  It would be much better, he argues, to filter mail based
+on wether it somehow resembles spam or non-spam.  One way to measure
+this is word distribution.  He then goes on to describe a solution
+that checks wether a new mail resembles any of your other spam mails
+or not.
+
+The basic idea is this:  Create a two collections of your mail, one
+with spam, one with non-spam.  Count how often each word appears in
+either collection, weight this by the total number of mails in the
+collections, and store this information in a dictionary.  For every
+word in a new mail, determine its probability to belong to a spam or a
+non-spam mail.  Use the 15 most conspicuous words, compute the total
+probability of the mail being spam.  If this probability is higher
+than a certain threshold, the mail is considered to be spam.
+
+Gnus supports this kind of filtering.  But it needs some setting up.
+First, you need two collections of your mail, one with spam, one with
+non-spam.  Then you need to create a dictionary using these two
+collections, and save it.  And last but not least, you need to use
+this dictionary in your fancy mail splitting rules.
+
+@menu
+* Creating a spam-stat dictionary::  
+* Splitting mail using spam-stat::  
+* Low-level interface to the spam-stat dictionary::  
+@end menu
+
+@node Creating a spam-stat dictionary
+@subsubsection Creating a spam-stat dictionary
+
+Before you can begin to filter spam based on statistics, you must
+create these statistics based on two mail collections, one with spam,
+one with non-spam.  These statistics are then stored in a dictionary
+for later use.  In order for these statistics to be meaningfull, you
+need several hundred emails in both collections.
+
+Gnus currently supports only the nnml backend for automated dictionary
+creation.  The nnml backend stores all mails in a directory, one file
+per mail.  Use the following 
+
+@defun spam-stat-process-spam-directory
+Create spam statistics for every file in this directory.  Every file
+is treated as one spam mail.
+@end defun
+
+@defun spam-stat-process-non-spam-directory
+Create non-spam statistics for every file in this directory.  Every
+file is treated as one non-spam mail.
+@end defun
+
+Usually you would call @code{spam-stat-process-spam-directory} on a
+directory such as @file{~/Mail/mail/spam} (this usually corresponds
+the the group @samp{nnml:mail.spam}), and you would call
+@code{spam-stat-process-non-spam-directory} on a directory such as
+@file{~/Mail/mail/misc} (this usually corresponds the the group
+@samp{nnml:mail.misc}).
+
+@defvar spam-stat
+This variable holds the hash-table with all the statistics -- the
+dictionary we have been talking about.  For every word in either
+collection, this hash-table stores a vector describing how often the
+word appeared in spam and often it appeared in non-spam mails.
+
+If you want to regenerate the statistics from scratch, you need to
+reset the dictionary.
+
+@end defvar
+
+@defun spam-stat-reset
+Reset the @code{spam-stat} hash-table, deleting all the statistics.
+
+When you are done, you must save the dictionary.  The dictionary may
+be rather large.  If you will not update the dictionary incrementally
+(instead, you will recreate it once a month, for example), then you
+can reduce the size of the dictionary by deleting all words that did
+not appear often enough or that do not clearly belong to only spam or
+only non-spam mails.
+@end defun
+
+@defun spam-stat-reduce-size
+Reduce the size of the dictionary.  Use this only if you do not want
+to update the dictionary incrementally.
+@end defun
+
+@defun spam-stat-save
+Save the dictionary.
+@end defun
+
+@defvar spam-stat-file
+The filename used to store the dictionary.  This defaults to
+@file{~/.spam-stat.el}.
+@end defvar
+
+@node Splitting mail using spam-stat
+@subsubsection Splitting mail using spam-stat
+
+In order to use @code{spam-stat} to split your mail, you need to add the
+following to your @file{~/.gnus} file:
+
+@example
+(require 'spam-stat)
+(spam-stat-load)
+@end example
+
+This will load the necessary Gnus code, and the dictionary you
+created.
+
+Next, you need to adapt your fancy splitting rules:  You need to
+determine how to use @code{spam-stat}.  In the simplest case, you only have
+two groups, @samp{mail.misc} and @samp{mail.spam}.  The following expression says
+that mail is either spam or it should go into @samp{mail.misc}.  If it is
+spam, then @code{spam-stat-split-fancy} will return @samp{mail.spam}.
+
+@example
+(setq nnmail-split-fancy
+      `(| (: spam-stat-split-fancy)
+	  "mail.misc"))
+@end example
+
+@defvar spam-stat-split-fancy-spam-group
+The group to use for spam.  Default is @samp{mail.spam}.
+@end defvar
+
+If you also filter mail with specific subjects into other groups, use
+the following expression.  It only the mails not matching the regular
+expression are considered potential spam.
+
+@example
+(setq nnmail-split-fancy
+      `(| ("Subject" "\\bspam-stat\\b" "mail.emacs")
+	  (: spam-stat-split-fancy)
+	  "mail.misc"))
+@end example
+
+If you want to filter for spam first, then you must be careful when
+creating the dictionary.  Note that @code{spam-stat-split-fancy} must
+consider both mails in @samp{mail.emacs} and in @samp{mail.misc} as
+non-spam, therefore both should be in your collection of non-spam
+mails, when creating the dictionary!
+
+@example
+(setq nnmail-split-fancy
+      `(| (: spam-stat-split-fancy)
+          ("Subject" "\\bspam-stat\\b" "mail.emacs")
+	  "mail.misc"))
+@end example
+
+You can combine this with traditional filtering.  Here, we move all
+HTML-only mails into the @samp{mail.spam.filtered} group.  Note that since
+@code{spam-stat-split-fancy} will never see them, the mails in
+@samp{mail.spam.filtered} should be neither in your collection of spam mails,
+nor in your collection of non-spam mails, when creating the
+dictionary!
+
+@example
+(setq nnmail-split-fancy
+      `(| ("Content-Type" "text/html" "mail.spam.filtered")
+	  (: spam-stat-split-fancy)
+          ("Subject" "\\bspam-stat\\b" "mail.emacs")
+	  "mail.misc"))
+@end example
+
+
+@node Low-level interface to the spam-stat dictionary
+@subsubsection Low-level interface to the spam-stat dictionary
+
+The main interface to using @code{spam-stat}, are the following functions:
+
+@defun spam-stat-buffer-is-spam
+called in a buffer, that buffer is considered to be a new spam mail;
+use this for new mail that has not been processed before
+
+@end defun
+
+@defun spam-stat-buffer-is-no-spam
+called in a buffer, that buffer is considered to be a new non-spam
+mail; use this for new mail that has not been processed before
+
+@end defun
+
+@defun spam-stat-buffer-change-to-spam
+called in a buffer, that buffer is no longer considered to be normal
+mail but spam; use this to change the status of a mail that has
+already been processed as non-spam
+
+@end defun
+
+@defun spam-stat-buffer-change-to-non-spam
+called in a buffer, that buffer is no longer considered to be spam but
+normal mail; use this to change the status of a mail that has already
+been processed as spam
+
+@end defun
+
+@defun spam-stat-save
+save the hash table to the file; the filename used is stored in the
+variable @code{spam-stat-file}
+
+@end defun
+
+@defun spam-stat-load
+load the hash table from a file; the filename used is stored in the
+variable @code{spam-stat-file}
+
+@end defun
+
+@defun spam-stat-score-word
+return the spam score for a word
+
+@end defun
+
+@defun spam-stat-score-buffer
+return the spam score for a buffer
+
+@end defun
+
+@defun spam-stat-split-fancy
+for fancy mail splitting; add the rule @samp{(: spam-stat-split-fancy)} to
+@code{nnmail-split-fancy}
+
+This requires the following in your @file{~/.gnus} file:
+
+@example
+(require 'spam-stat)
+(spam-stat-load)
+@end example
+
+@end defun
+
+Typical test will involve calls to the following functions:
+
+@example
+Reset: (setq spam-stat (make-hash-table :test 'equal))
+Learn spam: (spam-stat-process-spam-directory "~/Mail/mail/spam")
+Learn non-spam: (spam-stat-process-non-spam-directory "~/Mail/mail/misc")
+Save table: (spam-stat-save)
+File size: (nth 7 (file-attributes spam-stat-file))
+Number of words: (hash-table-count spam-stat)
+Test spam: (spam-stat-test-directory "~/Mail/mail/spam")
+Test non-spam: (spam-stat-test-directory "~/Mail/mail/misc")
+Reduce table size: (spam-stat-reduce-size)
+Save table: (spam-stat-save)
+File size: (nth 7 (file-attributes spam-stat-file))
+Number of words: (hash-table-count spam-stat)
+Test spam: (spam-stat-test-directory "~/Mail/mail/spam")
+Test non-spam: (spam-stat-test-directory "~/Mail/mail/misc")
+@end example
+
+Here is how you would create your dictionary:
+
+@example
+Reset: (setq spam-stat (make-hash-table :test 'equal))
+Learn spam: (spam-stat-process-spam-directory "~/Mail/mail/spam")
+Learn non-spam: (spam-stat-process-non-spam-directory "~/Mail/mail/misc")
+Repeat for any other non-spam group you need...
+Reduce table size: (spam-stat-reduce-size)
+Save table: (spam-stat-save)
+@end example
 
 @node Various Various
 @section Various Various
