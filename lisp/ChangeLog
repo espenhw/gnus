@@ -1,3 +1,8 @@
+2003-12-28  Jesper Harder  <harder@ifa.au.dk>
+
+	* mml1991.el (mml1991-pgg-sign): Use unibyte when re-encoding.
+	From Ivan Boldyrev <boldyrev@uiggm.nsc.ru> (tiny change).
+
 2003-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el: Add an advice to byte-optimize-form-code-walker to
