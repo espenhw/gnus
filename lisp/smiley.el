@@ -33,6 +33,8 @@
 ;; (require 'smiley)
 ;; (add-hook 'gnus-article-display-hook 'gnus-smiley-display t)
 
+;; The smilies were drawn by Joe Reiss <joe@jreiss.async.vt.edu>. 
+
 (require 'annotations)
 (eval-when-compile (require 'cl))
 

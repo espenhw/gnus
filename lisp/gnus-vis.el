@@ -989,13 +989,13 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	 (score (or (cdr (assq (or article gnus-current-article)
 			       gnus-newsgroup-scored))
 		    gnus-summary-default-score 0))
-	 (default gnus-summary-default-score)
 	 (mark (or (gnus-summary-article-mark) gnus-unread-mark))
 	 (inhibit-read-only t))
     ;; Eval the cars of the lists until we find a match.
-    (while (and list
-		(not (eval (caar list))))
-      (setq list (cdr list)))
+    (let ((default gnus-summary-default-score))
+      (while (and list
+		  (not (eval (caar list))))
+	(setq list (cdr list))))
     (let ((face (cdar list)))
       (unless (eq face (get-text-property beg 'face))
 	(gnus-put-text-property 

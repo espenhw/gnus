@@ -1413,6 +1413,11 @@ the user from the mailer."
 		    (funcall message-post-method arg)
 		  message-post-method))
 	(messbuf (current-buffer))
+	(message-syntax-checks
+	 (if arg
+	     (cons '(existing-newsgroups . disabled)
+		   message-syntax-checks)
+	   message-syntax-checks))
 	result)
     (save-restriction
       (message-narrow-to-headers)

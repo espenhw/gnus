@@ -1,3 +1,30 @@
+Tue Jun 25 21:13:37 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.26 is released.
+
+Tue Jun 25 20:58:40 1996  Richard Stallman  <rms@gnu.ai.mit.edu>
+
+	* gnus-ems.el: Multiply color value by .6 instead of dividing by
+	3. 
+
+Tue Jun 25 12:34:24 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* message.el (message-send-news): Disable `existing-groups' check
+	when given a prefix.
+
+Mon Jun 24 16:54:26 1996  Alastair Burt  <burt@dfki.uni-kl.de>
+
+	* gnus-vis.el (gnus-summary-highlight-line): `default' mixed up
+	with fonts.
+
+Sat Jun 22 13:56:49 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cite.el (gnus-cache-close): New function.
+
+Sat Jun 22 11:33:42 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uiof.no>
+
+	* gnus.el: Gnus v5.2.25 is released.
+
 Sat Jun 22 11:16:57 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el (gnus-adjust-marked-articles): Would bug out on some

@@ -1730,7 +1730,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.25"
+(defconst gnus-version-number "5.2.26"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -3212,6 +3212,9 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 	gnus-server-alist nil
 	gnus-group-list-mode nil
 	gnus-opened-servers nil
+	gnus-group-mark-positions nil
+	gnus-newsgroup-data nil
+	gnus-newsgroup-unreads nil
 	gnus-current-select-method nil)
   (gnus-shutdown 'gnus)
   ;; Kill the startup file.
@@ -4187,7 +4190,7 @@ Note: LIST has to be sorted over `<'."
     "V" gnus-version
     "s" gnus-group-save-newsrc
     "z" gnus-group-suspend
-    "Z" gnus-group-clear-dribble
+;    "Z" gnus-group-clear-dribble
     "q" gnus-group-exit
     "Q" gnus-group-quit
     "?" gnus-group-describe-briefly

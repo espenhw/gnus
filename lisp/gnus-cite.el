@@ -720,6 +720,11 @@ See also the documentation for `gnus-article-highlight-citation'."
 	  (setq prefix (car entry))))
     prefix))
 
+(gnus-add-shutdown 'gnus-cache-close 'gnus)
+
+(defun gnus-cache-close ()
+  (setq gnus-cite-prefix-alist nil))
+
 (gnus-ems-redefine)
 
 (provide 'gnus-cite)

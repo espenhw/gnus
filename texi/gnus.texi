@@ -1539,6 +1539,7 @@ group will be created from from @code{gnus-group-archive-directory}.
 Make a kiboze group.  You will be prompted for a name, for a regexp to
 match groups to be ``included'' in the kiboze group, and a series of
 strings to match on headers (@code{gnus-group-make-kiboze-group}).
+@xref{Kibozed Groups}
 
 @item G D
 @kindex G D (Group)
@@ -2459,10 +2460,10 @@ Save the @file{.newsrc.eld} file (and @file{.newsrc} if wanted)
 (@code{gnus-group-save-newsrc}).  If given a prefix, force saving the
 file(s) whether Gnus thinks it is necessary or not.
 
-@item Z
-@kindex Z (Group)
-@findex gnus-group-clear-dribble
-Clear the dribble buffer (@code{gnus-group-clear-dribble}).
+@c @item Z
+@c @kindex Z (Group)
+@c @findex gnus-group-clear-dribble
+@c Clear the dribble buffer (@code{gnus-group-clear-dribble}).
 
 @end table
 
@@ -8727,6 +8728,10 @@ you enter it---it'll have much the same effect.
 the news feed''.  @code{nnkiboze} is a backend that will do this for
 you.  Oh joy!  Now you can grind any @sc{nntp} server down to a halt
 with useless requests!  Oh happiness!
+
+@kindex G k (Group)
+To create a kibozed group, use the @kbd{G k} command in the group
+buffer. 
 
 The address field of the @code{nnkiboze} method is, as with
 @code{nnvirtual}, a regexp to match groups to be ``included'' in the

@@ -397,7 +397,8 @@ servers."
 	     (buffer-name proc)
 	     (kill-buffer proc))))
     (nnoo-close-server 'nntp)
-    (setq nntp-async-group-alist nil)))
+    (setq nntp-async-group-alist nil
+	  nntp-async-articles nil)))
 
 (deffoo nntp-server-opened (&optional server)
   "Say whether a connection to SERVER has been opened."
