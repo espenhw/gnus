@@ -366,6 +366,9 @@ cache to the full extent of the law.")
 (defvar gnus-use-trees nil
   "*If non-nil, display a thread tree buffer.")
 
+(defvar gnus-use-grouplens nil
+  "*If non-nil, use GroupLens ratings.")
+
 (defvar gnus-keep-backlog nil
   "*If non-nil, Gnus will keep read articles for later re-retrieval.
 If it is a number N, then Gnus will only keep the last N articles
@@ -1070,7 +1073,7 @@ list of parameters to that command.")
 (defvar gnus-insert-pseudo-articles t
   "*If non-nil, insert pseudo-articles when decoding articles.")
 
-(defvar gnus-group-line-format "%M%S%p%P%5y: %(%g%)\n"
+(defvar gnus-group-line-format "%M%S%p%P%5y: %(%g%)%l\n"
   "*Format of group lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -1093,6 +1096,7 @@ with some simple extensions.
 %p    Process mark (char)
 %O    Moderated group (string, \"(m)\" or \"\")
 %P    Topic indentation (string)
+%l    Whether there are GroupLens predictions for this group (string)
 %n    Select from where (string)
 %z    A string that look like `<%s:%n>' if a foreign select method is used
 %u    User defined specifier.  The next character in the format string should
@@ -1150,6 +1154,7 @@ with some simple extensions.
 %z   Article zcore (character)
 %t   Number of articles under the current thread (number).
 %e   Whether the thread is empty or not (character).
+%l   GroupLens score (number)
 %u   User defined specifier.  The next character in the format string should
      be a letter.  Gnus will call the function gnus-user-format-function-X,
      where X is the letter following %u.  The function will be passed the
@@ -1608,6 +1613,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
     (?s gnus-tmp-news-server ?s)
     (?n gnus-tmp-news-method ?s)
     (?P gnus-group-indentation ?s)
+    (?l gnus-tmp-grouplens ?s)
     (?z gnus-tmp-news-method-string ?s)
     (?u gnus-tmp-user-defined ?s)))
 
@@ -1637,6 +1643,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
     (?\< (make-string (max 0 (- 20 gnus-tmp-level)) ? ) ?s)
     (?i gnus-tmp-score ?d)
     (?z gnus-tmp-score-char ?c)
+    (?l (bbb-grouplens-score gnus-tmp-header) ?s)
     (?V (gnus-thread-total-score (and (boundp 'thread) (car thread))) ?d)
     (?U gnus-tmp-unread ?c)
     (?t (gnus-summary-number-of-articles-in-thread
@@ -1686,7 +1693,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.42"
+(defconst gnus-version "September Gnus v0.43"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2048,6 +2055,8 @@ Thank you for your help in stamping out bugs.
       gnus-bug)
      ("gnus-picon" :interactive t gnus-article-display-picons
       gnus-group-display-picons gnus-picons-article-display-x-face)
+     ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p 
+      gnus-grouplens-mode)
      ("gnus-vm" gnus-vm-mail-setup)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm gnus-yank-article))))
@@ -2433,8 +2442,18 @@ Thank you for your help in stamping out bugs.
 			 summary-mode group-mode article-mode))
 	new-format entry type val)
     (while (setq type (pop types))
-      (setq new-format (symbol-value
-			(intern (format "gnus-%s-line-format" type))))
+      ;; Jump to the proper buffer to find out the value of
+      ;; the variable, if possible.  (It may be buffer-local.)
+      (save-excursion
+	(let ((buffer (intern (format "gnus-%s-buffer" type)))
+	      val)
+	  (when (and (boundp buffer)
+		     (setq val (symbol-value buffer))
+		     (get-buffer val)
+		     (buffer-name (get-buffer val)))
+	    (set-buffer (get-buffer val)))
+	  (setq new-format (symbol-value
+			    (intern (format "gnus-%s-line-format" type))))))
       (setq entry (cdr (assq type gnus-format-specs)))
       (if (and entry
 	       (equal (car entry) new-format))
@@ -4190,6 +4209,11 @@ prompt the user for the name of an NNTP server to use."
 	  ;; Read the dribble file.
 	  (and (or gnus-slave gnus-use-dribble-file) (gnus-dribble-read-file))
 
+	  ;; Allow using GroupLens predictions.
+	  (when gnus-use-grouplens
+	    (bbb-login)
+	    (add-hook 'gnus-summary-mode-hook 'gnus-grouplens-mode))
+
 	  (gnus-summary-make-display-table)
 	  ;; Do the actual startup.
 	  (gnus-setup-news nil level)
@@ -4740,8 +4764,12 @@ increase the score of each group you read."
 	 (gnus-tmp-process-marked
 	  (if (member gnus-tmp-group gnus-group-marked)
 	      gnus-process-mark ? ))
+	 (gnus-tmp-grouplens
+	  (or (and gnus-use-grouplens
+		   (bbb-grouplens-group-p gnus-tmp-group))
+	      ""))
 	 (buffer-read-only nil)
-	 header gnus-tmp-header)			; passed as parameter to user-funcs.
+	 header gnus-tmp-header)	; passed as parameter to user-funcs.
     (beginning-of-line)
     (add-text-properties
      (point)
@@ -6436,6 +6464,9 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 	  gnus-expert-user
 	  (gnus-y-or-n-p "Are you sure you want to quit reading news? "))
     (run-hooks 'gnus-exit-gnus-hook)
+    ;; Close down GroupLens.
+    (when gnus-use-grouplens
+      (bbb-logout))
     ;; Offer to save data from non-quitted summary buffers.
     (gnus-offer-save-summaries)
     ;; Save the newsrc file(s).
@@ -8179,7 +8210,9 @@ or a straight list of headers."
 	   ((and gnus-summary-mark-below
 		 (< (or (cdr (assq number gnus-newsgroup-scored))
 			default-score)
-		    gnus-summary-mark-below))
+		    gnus-summary-mark-below)
+		 ;; Don't touch sparse articles.
+		 (not (memq number gnus-newsgroup-sparse)))
 	    (setq gnus-newsgroup-unreads
 		  (delq number gnus-newsgroup-unreads))
 	    (if gnus-newsgroup-auto-expire
@@ -14710,8 +14743,8 @@ If GROUP is nil, all groups on METHOD are scanned."
 		      ((stringp (car method))
 		       (gnus-server-extend-method group method))
 		      (t
-		       method))))
-	(gnus-server-add-address method))))
+		       method)))
+	  (gnus-server-add-address method)))))
 
 (defun gnus-check-backend-function (func group)
   "Check whether GROUP supports function FUNC."
@@ -14891,6 +14924,7 @@ the server for new groups."
     ;; Go through both primary and secondary select methods and
     ;; request new newsgroups.
     (while (setq method (gnus-server-get-method nil (pop methods)))
+      (setq new-newsgroups nil)
       (setq gnus-override-subscribe-method method)
       (when (and (gnus-check-server method)
 		 (gnus-request-newgroups date method))

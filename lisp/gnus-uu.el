@@ -270,7 +270,7 @@ The headers will be included in the sequence they are matched.")
 
 (defconst gnus-uu-output-buffer-name " *Gnus UU Output*")
 
-(defvar gnus-uu-default-dir default-directory)
+(defvar gnus-uu-default-dir gnus-article-save-directory)
 (defvar gnus-uu-digest-from-subject nil)
 
 ;; Keymaps
@@ -334,12 +334,12 @@ The headers will be included in the sequence they are matched.")
 	  (read-file-name "Uudecode and save in dir: "
 			  gnus-uu-default-dir
 			  gnus-uu-default-dir t))))
-  (gnus-uu-decode-with-method 'gnus-uu-uustrip-article n dir))
+  (gnus-uu-decode-with-method 'gnus-uu-uustrip-article n dir nil nil t))
 
 (defun gnus-uu-decode-unshar (n)
   "Unshars the current article."
   (interactive "P")
-  (gnus-uu-decode-with-method 'gnus-uu-unshar-article n nil nil 'scan))
+  (gnus-uu-decode-with-method 'gnus-uu-unshar-article n nil nil 'scan t))
 
 (defun gnus-uu-decode-unshar-and-save (n dir)
   "Unshars and saves the current article."
@@ -349,7 +349,7 @@ The headers will be included in the sequence they are matched.")
 	  (read-file-name "Unshar and save in dir: "
 			  gnus-uu-default-dir
 			  gnus-uu-default-dir t))))
-  (gnus-uu-decode-with-method 'gnus-uu-unshar-article n dir nil 'scan))
+  (gnus-uu-decode-with-method 'gnus-uu-unshar-article n dir nil 'scan t))
 
 (defun gnus-uu-decode-save (n file)
   "Saves the current article."
@@ -642,8 +642,8 @@ The headers will be included in the sequence they are matched.")
 	  (read-file-name "Save in dir: "
 			  gnus-uu-default-dir
 			  gnus-uu-default-dir t))))
-  (gnus-uu-decode-with-method 'gnus-uu-decode-postscript-article n dir))
-
+  (gnus-uu-decode-with-method 'gnus-uu-decode-postscript-article 
+			      n dir nil nil t))
 
 (defun gnus-uu-decode-postscript-and-save-view (n dir)
   "Decodes, views and saves the resulting file."
@@ -658,9 +658,14 @@ The headers will be included in the sequence they are matched.")
 
 ;; Internal functions.
 
-(defun gnus-uu-decode-with-method (method n &optional save not-insert scan)
+(defun gnus-uu-decode-with-method (method n &optional save not-insert 
+					  scan cdir)
   (gnus-uu-initialize scan)
   (if save (setq gnus-uu-default-dir save))
+  ;; Create the directory we save to.
+  (when (and scan cdir
+	     (not (file-exists-p save)))
+    (make-directory save t))
   (let ((articles (gnus-uu-get-list-of-articles n))
 	files)
     (setq files (gnus-uu-grab-articles articles method t))

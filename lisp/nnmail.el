@@ -981,7 +981,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			  t))
       (write-region (point-min) (point-max)
 		    nnmail-message-id-cache-file nil 'silent)
-      (set-buffer-modified-p nil))))
+      (set-buffer-modified-p nil)
+      (setq nnmail-cache-buffer nil)
+      (kill-buffer (current-buffer)))))
 
 (defun nnmail-cache-insert (id)
   (when nnmail-treat-duplicates

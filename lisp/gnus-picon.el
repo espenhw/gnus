@@ -102,8 +102,10 @@ Some people may want to add \"unknown\" to this list."
   (interactive)
   (gnus-picons-remove gnus-article-annotations)
   (gnus-picons-remove gnus-group-annotations)
+  (gnus-picons-remove gnus-x-face-annotations)
   (setq gnus-article-annotations nil
-        gnus-group-annotations nil)
+        gnus-group-annotations nil
+	gnus-x-face-annotations nil)
   (if (bufferp gnus-picons-buffer)
       (kill-buffer gnus-picons-buffer))
 )

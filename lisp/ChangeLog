@@ -1,4 +1,76 @@
+Sun Feb 25 01:37:49 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-prepare-topic): Would bug out on dead
+	groups. 
+	(gnus-topic-grok-active): Read the active file if it hasn't been
+	read yet.
+
+	* nnfolder.el (nnfolder-close-group): Always kill the folder. 
+	(nnfolder-always-close): Removed variable.
+
+	* gnus.el (gnus-update-format-specifications): Try to be in the
+	proper buffer before updating.
+
+Sat Feb 24 22:35:56 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-group-exit): BBB logout.
+
+	* gnus-gl.el (bbb-grouplens-group-p): New function.
+
+	* gnus.el: Autoload the GroupLens functions.
+	(gnus-use-grouplens): New variable.
+	(gnus): Use it.
+	(gnus-group-line-format): Changed default to include GroupLens.
+	(gnus-group-insert-group-line): GroupLens enhanced.
+
+	* gnus-gl.el: New version.
+
+Sat Feb 24 07:35:03 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-cache-close): Kill the cache buffer.
+
+	* gnus-msg.el (gnus-post-news-buffer): Changed name.
+
+	* nndir.el (nndir-execute-nnmh-command): Wouldn't allow entry into
+	nndir groups.
+
+	* gnus.el (gnus-summary-prepare-threads): Don't low-mark sparse
+	articles. 
+
+Sat Feb 24 07:24:03 1996  Mark Borges  <mdb@cdc.noaa.gov>
+
+	* gnus-edit.el: Replaced "~/News" with the proper variable. 
+
+Thu Feb 22 14:27:58 1996  Wes Hardaker  <hardaker@ece.ucdavis.edu>
+
+	* gnus.el (gnus-ask-server-for-new-groups): Reset new-newsgroups
+	  so it doesn't *censored*ing subscribe to newsgroups more than once.
+
+	* gnus-picon.el (gnus-picons-remove-all): remove x-face icon on exit.
+
+Sat Feb 24 05:55:06 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-find-method-for-group): Reply with the proper
+	method. 
+
+	* nnmbox.el (nnmbox-request-post): Removed function.
+	* nnmh.el (nnmh-request-post): Ditto.
+	* nnml.el (nnml-request-post): Ditto.
+	* nnfolder.el (nnfolder-request-post): Ditto.
+	* nnbabyl.el (nnbabyl-request-post): Ditto.
+
+	* gnus-uu.el (gnus-uu-decode-with-method): Create directory if it
+	doesn't exist.
+	(gnus-uu-default-dir): New default.
+
+Thu Feb 22 20:19:47 1996  Steven L. Baur  <steve@miranova.com>
+
+	* nnbabyl.el (nnbabyl-request-expire-articles): set-text-properties
+	should be called as gnus-set-text-properties.
+
 Sat Feb 24 01:08:55 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* gnus.el: 0.42 is released.
 
 	* nnml.el (nnml-find-id): Make sure the .overview file exists
 	before reading it.

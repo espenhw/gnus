@@ -53,16 +53,6 @@ Note that the active file is still saved, but it's values are not
 used.  This costs some extra time when scanning an mbox when opening
 it.")
 
-;; Note that this variable may not be completely implemented yet. -SLB
-
-(defvar nnfolder-always-close nil
-  "If non-nil, nnfolder attempts to only ever have one mbox open at a time.  
-This is a straight space/performance trade off, as the mboxes will have to 
-be scanned every time they are read in.  If nil (default), nnfolder will
-attempt to keep the buffers around (saving the nnfolder's buffer upon group 
-close, but not killing it), speeding some things up tremendously, especially
-such things as moving mail.  All buffers always get killed upon server close.")
-
 (defvar nnfolder-newsgroups-file 
   (concat (file-name-as-directory nnfolder-directory) "newsgroups")
   "Mail newsgroups description file.")
@@ -270,24 +260,19 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-close-group (group &optional server force)
   ;; Make sure we _had_ the group open.
-  (if (or (assoc group nnfolder-buffer-alist)
-	  (equal group nnfolder-current-group))
-      (progn
-	(nnfolder-possibly-change-group group server)
-	(save-excursion
-	  (set-buffer nnfolder-current-buffer)
-	  ;; If the buffer was modified, write the file out now.
-	  (and (buffer-modified-p) (save-buffer))
-	  (if (or force
-		  nnfolder-always-close)
-	      ;; If we're shutting the server down, we need to kill the
-	      ;; buffer and remove it from the open buffer list.  Or, of
-	      ;; course, if we're trying to minimize our space impact.
-	      (progn
-		(kill-buffer (current-buffer))
-		(setq nnfolder-buffer-alist (delq (assoc group 
-							 nnfolder-buffer-alist)
-						  nnfolder-buffer-alist)))))))
+  (when (or (assoc group nnfolder-buffer-alist)
+	    (equal group nnfolder-current-group))
+    (nnfolder-possibly-change-group group server)
+    (save-excursion
+      (set-buffer nnfolder-current-buffer)
+      ;; If the buffer was modified, write the file out now.
+      (and (buffer-modified-p) (save-buffer))
+      ;; If we're shutting the server down, we need to kill the
+      ;; buffer and remove it from the open buffer list.  Or, of
+      ;; course, if we're trying to minimize our space impact.
+      (kill-buffer (current-buffer))
+      (setq nnfolder-buffer-alist (delq (assoc group nnfolder-buffer-alist)
+					nnfolder-buffer-alist))))
   (setq nnfolder-current-group nil
 	nnfolder-current-buffer nil)
   t)
@@ -310,9 +295,6 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defun nnfolder-request-list-newsgroups (&optional server)
   (save-excursion
     (nnmail-find-file nnfolder-newsgroups-file)))
-
-(defun nnfolder-request-post (&optional server)
-  (mail-send-and-exit nil))
 
 (defun nnfolder-request-expire-articles 
   (articles newsgroup &optional server force)

@@ -139,10 +139,11 @@
 
 (defun nndir-execute-nnmh-command (command)
   (let ((dir (file-name-as-directory (expand-file-name nndir-directory))))
-    (if (or (file-directory-p (concat dir nndir-group))
-	    (file-directory-p
-	     (concat dir (nnheader-replace-chars-in-string 
-			  nndir-group ?. ?/))))
+    (if (and (not (file-directory-p nndir-group))
+	     (or (file-directory-p (concat dir nndir-group))
+		 (file-directory-p
+		  (concat dir (nnheader-replace-chars-in-string 
+			       nndir-group ?. ?/)))))
 	(let ((nnmh-directory nndir-directory)
 	      (nnmh-get-new-mail nil))
 	  (eval command))
@@ -155,10 +156,11 @@
 
 (defun nndir-execute-nnml-command (command)
   (let ((dir (file-name-as-directory (expand-file-name nndir-directory))))
-    (if (or (file-directory-p (concat dir nndir-group))
-	    (file-directory-p
-	     (concat dir (nnheader-replace-chars-in-string 
-			  nndir-group ?. ?/))))
+    (if (and (not (file-directory-p nndir-group))
+	     (or (file-directory-p (concat dir nndir-group))
+		 (file-directory-p
+		  (concat dir (nnheader-replace-chars-in-string 
+			       nndir-group ?. ?/)))))
 	(let ((nnml-directory nndir-directory)
 	      (nnml-nov-is-evil nndir-nov-is-evil)
 	      (nnml-get-new-mail nil))

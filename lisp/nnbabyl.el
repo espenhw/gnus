@@ -61,6 +61,9 @@
 
 (defvar nnbabyl-previous-buffer-mode nil)
 
+(eval-and-compile
+  (autoload 'gnus-set-text-properties "gnus-ems"))
+
 
 
 (defvar nnbabyl-current-server nil)
@@ -261,9 +264,6 @@
 (defun nnbabyl-request-list-newsgroups (&optional server)
   (nnheader-report 'nnbabyl "nnbabyl: LIST NEWSGROUPS is not implemented."))
 
-(defun nnbabyl-request-post (&optional server)
-  (mail-send-and-exit nil))
-
 (defun nnbabyl-request-expire-articles
   (articles newsgroup &optional server force)
   (nnbabyl-possibly-change-newsgroup newsgroup)
@@ -273,7 +273,7 @@
 
     (save-excursion 
       (set-buffer nnbabyl-mbox-buffer)
-      (set-text-properties (point-min) (point-max) nil)
+      (gnus-set-text-properties (point-min) (point-max) nil)
       (while (and articles is-old)
 	(goto-char (point-min))
 	(if (search-forward (nnbabyl-article-string (car articles)) nil t)

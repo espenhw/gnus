@@ -324,7 +324,7 @@ headers.")
 
 ;;; Internal variables.
 
-(defvar gnus-post-news-buffer "*post-news*")
+(defvar gnus-post-news-buffer "*Post Gnus*")
 (defvar gnus-mail-buffer "*Mail Gnus*")
 (defvar gnus-article-copy nil)
 (defvar gnus-reply-subject nil)
@@ -484,7 +484,7 @@ header line with the old Message-ID."
 		      (mail-header-from gnus-current-headers)))
 	   (downcase (mail-strip-quoted-names (gnus-inews-user-name))))
     (error "This article is not yours."))
-  ;; Get a normal *post-news* buffer.
+  ;; Get a normal *Post News* buffer.
   (gnus-new-news gnus-newsgroup-name t)
   (erase-buffer)
   (insert-buffer-substring gnus-original-article-buffer)
@@ -2029,7 +2029,7 @@ mailer."
     accumulated))
 
 (defun gnus-new-news (&optional group inhibit-prompt)
-  "Set up a *post-news* buffer that points to GROUP.
+  "Set up a *Post Gnus* buffer that points to GROUP.
 If INHIBIT-PROMPT, never prompt for a Subject."
   (let ((winconf (current-window-configuration))
 	subject)

@@ -239,9 +239,6 @@
 (defun nnmh-request-newgroups (date &optional server)
   (nnmh-request-list server))
 
-(defun nnmh-request-post (&optional server)
-  (mail-send-and-exit nil))
-
 (defun nnmh-request-expire-articles (articles newsgroup &optional server force)
   (nnmh-possibly-change-directory newsgroup)
   (let* ((active-articles 

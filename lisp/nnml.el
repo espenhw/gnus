@@ -271,9 +271,6 @@ all. This may very well take some time.")
   (save-excursion
     (nnmail-find-file nnml-newsgroups-file)))
 
-(defun nnml-request-post (&optional server)
-  (mail-send-and-exit nil))
-
 (defun nnml-request-expire-articles (articles newsgroup &optional server force)
   (nnml-possibly-change-directory newsgroup)
   (let* ((active-articles 

@@ -173,7 +173,8 @@ articles in the topic and its subtopics."
 	     (gnus-info-group info)
 	     (gnus-info-level info) (gnus-info-marks info) 
 	     (car entry) (gnus-info-method info)))))
-      (when (numberp (car entry))
+      (when (and (listp entry)
+		 (numberp (car entry)))
 	(incf unread (car entry))))
     (goto-char beg)
     ;; Insert the topic line.
@@ -471,7 +472,7 @@ articles in the topic and its subtopics."
   (when (or force
 	    (not gnus-topic-active-alist))
     (when (or force
-	      (not gnus-have-read-active-file))
+	      (not (member gnus-select-method gnus-have-read-active-file)))
       (let ((gnus-read-active-file t))
 	(gnus-read-active-file)))
     (let (topology groups alist)

@@ -230,9 +230,6 @@
 (defun nnmbox-request-list-newsgroups (&optional server)
   (nnheader-report 'nnmbox "LIST NEWSGROUPS is not implemented."))
 
-(defun nnmbox-request-post (&optional server)
-  (mail-send-and-exit nil))
-
 (defun nnmbox-request-expire-articles 
   (articles newsgroup &optional server force)
   (nnmbox-possibly-change-newsgroup newsgroup)
