@@ -12340,6 +12340,10 @@ where re-spooling messages would put the messages, you can use
 @code{gnus-summary-respool-trace} and related commands (@pxref{Mail
 Group Commands}).
 
+@vindex nnmail-split-header-length-limit
+Header lines longer than this limit are excluded from the split
+function.
+
 Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
 all the mail you get from your boss.  And then you accidentally
