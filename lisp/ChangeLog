@@ -1,3 +1,7 @@
+2001-02-12  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-cus.el (gnus-score-customize): Doc fix.
+
 2001-02-11  Jesper Harder <harder@ifa.au.dk>
 
 	* dgnushack.el (my-getenv): Typo.
