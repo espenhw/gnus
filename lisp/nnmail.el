@@ -94,7 +94,7 @@ Eg.:
       (lambda (newsgroup)
         (cond ((string-match \"private\" newsgroup) 31)
               ((string-match \"junk\" newsgroup) 1)
-	      ((string-match \"important\" 'never))
+	      ((string-match \"important\" newsgroup) 'never)
 	      (t 7))))")
 
 (defvar nnmail-spool-file 

@@ -1877,7 +1877,7 @@ If no file has been included, the user will be asked for a file."
 	  (progn
 	    (end-of-line)
 	    (insert (format " (0/%d)" parts))))
-      (gnus-inews-news))
+      (message-send))
 
     (save-excursion
       (setq i 1)
@@ -1940,7 +1940,8 @@ If no file has been included, the user will be asked for a file."
 	      (forward-line 1)))
 	(insert beg-line)
 	(insert "\n")
-	(gnus-inews-news)))
+	(let (message-sent-message-via)
+	  (message-send))))
 
     (and (setq buf (get-buffer send-buffer-name))
 	 (kill-buffer buf))

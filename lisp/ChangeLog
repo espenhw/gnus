@@ -1,4 +1,41 @@
+Fri May 17 16:27:42 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-article-hide-headers): Would make headers
+	iinvisible under XEmacs.
+
+Fri May 17 11:38:52 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-summary-edit-article-done): Remove article from
+	backlog. 
+	(gnus-group-update-group-line): Would indent oddly.
+
+	* gnus-uu.el (gnus-uu-post-encoded): Use message.
+	(gnus-uu-post-encoded): Don't double-prompt.
+
+	* message.el (message-mode): Do mailabbrev things here.
+
+	* nntp.el (nntp-default-sentinel): Reset nntp-current-group when
+	losing connection.
+
+	* gnus-score.el (gnus-score-load-file): Dumb downcasing.
+
+Fri May 17 06:16:00 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-delete-article): Better prompt.
+
+	* gnus-score.el (gnus-score-load-file): Downcase all header
+	names. 
+
+Thu May 16 14:04:30 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-make-date-line): Separated into own function
+	and don't reply "Now" to bogus dates.
+	(gnus-summary-search-article): Bind `gnus-article-display-hook' to
+	nil.
+
 Thu May 16 07:40:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: September Gnus v0.86 is released.
 
 	* gnus-xmas.el (gnus-xmas-topic-remove-excess-properties): Remove
 	more excess props.

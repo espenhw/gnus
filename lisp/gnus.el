@@ -1718,7 +1718,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.86"
+(defconst gnus-version "September Gnus v0.87"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -4844,7 +4844,6 @@ increase the score of each group you read."
   "Update the current line in the group buffer."
   (let* ((buffer-read-only nil)
 	 (group (gnus-group-group-name))
-	 (gnus-group-indentation (gnus-group-group-indentation))
 	 (entry (and group (gnus-gethash group gnus-newsrc-hashtb))))
     (and entry
 	 (not (gnus-ephemeral-group-p group))
@@ -4860,7 +4859,6 @@ increase the score of each group you read."
   "Insert GROUP on the current line."
   (let ((entry (gnus-gethash group gnus-newsrc-hashtb))
 	active info)
-    (setq gnus-group-indentation (gnus-group-group-indentation))
     (if entry
 	(progn
 	  ;; (Un)subscribed group.
@@ -11006,6 +11004,7 @@ If BACKWARD, search backward instead."
 Optional argument BACKWARD means do search for backward.
 gnus-select-article-hook is not called during the search."
   (let ((gnus-select-article-hook nil)	;Disable hook.
+	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
 	(re-search
 	 (if backward
@@ -11571,7 +11570,8 @@ delete these instead."
     (if (and gnus-novice-user
 	     (not (gnus-y-or-n-p
 		   (format "Do you really want to delete %s forever? "
-			   (if (> (length articles) 1) "these articles"
+			   (if (> (length articles) 1) 
+			       (format "these %s articles" (length articles))
 			     "this article")))))
 	()
       ;; Delete the articles.
@@ -11636,7 +11636,10 @@ groups."
 	(gnus-summary-update-article (cdr gnus-article-current))
 	(when gnus-use-cache
 	  (gnus-cache-update-article 
-	   (cdr gnus-article-current) (car gnus-article-current))))
+	   (cdr gnus-article-current) (car gnus-article-current)))
+	(when gnus-keep-backlog
+	  (gnus-backlog-remove-article 
+	   (car gnus-article-current) (cdr gnus-article-current))))
       (save-excursion
 	(when (get-buffer gnus-original-article-buffer)
 	  (set-buffer gnus-original-article-buffer)
@@ -13777,7 +13780,9 @@ always hide."
 	      (if delete
 		  (delete-region beg (point-max))
 		;; Suggested by Sudish Joseph <joseph@cis.ohio-state.edu>.
-		(gnus-hide-text-type beg (point-max) 'headers)))))))))
+		(gnus-hide-text-type beg (point-max) 'headers))
+	      ;; Work around XEmacs lossage.
+	      (put-text-property (point-min) beg 'invisible nil))))))))
 
 (defun gnus-article-hide-boring-headers (&optional arg)
   "Toggle hiding of headers that aren't very interesting.
@@ -14177,77 +14182,7 @@ how much time has lapsed since DATE."
 		  (message-remove-header date-regexp t)
 		  (beginning-of-line))
 	      (goto-char (point-max)))
-	    (insert
-	     (cond
-	      ;; Convert to the local timezone.	 We have to slap a
-	      ;; `condition-case' round the calls to the timezone
-	      ;; functions since they aren't particularly resistant to
-	      ;; buggy dates.
-	      ((eq type 'local)
-	       (concat "Date: " (condition-case ()
-				    (timezone-make-date-arpa-standard date)
-				  (error date))
-		       "\n"))
-	      ;; Convert to Universal Time.
-	      ((eq type 'ut)
-	       (concat "Date: "
-		       (condition-case ()
-			   (timezone-make-date-arpa-standard date nil "UT")
-			 (error date))
-		       "\n"))
-	      ;; Get the original date from the article.
-	      ((eq type 'original)
-	       (concat "Date: " date "\n"))
-	      ;; Do an X-Sent lapsed format.
-	      ((eq type 'lapsed)
-	       ;; If the date is seriously mangled, the timezone
-	       ;; functions are liable to bug out, so we condition-case
-	       ;; the entire thing.
-	       (let* ((real-time
-		       (condition-case ()
-			   (gnus-time-minus
-			    (gnus-encode-date
-			     (timezone-make-date-arpa-standard
-			      (current-time-string now)
-			      (current-time-zone now) "UT"))
-			    (gnus-encode-date
-			     (timezone-make-date-arpa-standard
-			      date nil "UT")))
-			 (error '(0 0))))
-		      (real-sec (+ (* (float (car real-time)) 65536)
-				   (cadr real-time)))
-		      (sec (abs real-sec))
-		      num prev)
-		 (if (zerop sec)
-		     "X-Sent: Now\n"
-		   (concat
-		    "X-Sent: "
-		    ;; This is a bit convoluted, but basically we go
-		    ;; through the time units for years, weeks, etc,
-		    ;; and divide things to see whether that results
-		    ;; in positive answers.
-		    (mapconcat
-		     (lambda (unit)
-		       (if (zerop (setq num (ffloor (/ sec (cdr unit)))))
-			   ;; The (remaining) seconds are too few to
-			   ;; be divided into this time unit.
-			   ""
-			 ;; It's big enough, so we output it.
-			 (setq sec (- sec (* num (cdr unit))))
-			 (prog1
-			     (concat (if prev ", " "") (int-to-string
-							(floor num))
-				     " " (symbol-name (car unit))
-				     (if (> num 1) "s" ""))
-			   (setq prev t))))
-		     gnus-article-time-units "")
-		    ;; If dates are odd, then it might appear like the
-		    ;; article was sent in the future.
-		    (if (> real-sec 0)
-			" ago\n"
-		      " in the future\n")))))
-	      (t
-	       (error "Unknown conversion type: %s" type))))
+	    (insert (gnus-make-date-line date type))
 	    ;; Do highlighting.
 	    (forward-line -1)
 	    (when (and (gnus-visual-p 'article-highlight 'highlight)
@@ -14256,6 +14191,84 @@ how much time has lapsed since DATE."
 				 'face bface)
 	      (put-text-property (match-beginning 2) (match-end 2)
 				 'face eface))))))))
+
+(defun gnus-make-date-line (date type)
+  "Return a DATE line of TYPE."
+  (cond
+   ;; Convert to the local timezone.	 We have to slap a
+   ;; `condition-case' round the calls to the timezone
+   ;; functions since they aren't particularly resistant to
+   ;; buggy dates.
+   ((eq type 'local)
+    (concat "Date: " (condition-case ()
+			 (timezone-make-date-arpa-standard date)
+		       (error date))
+	    "\n"))
+   ;; Convert to Universal Time.
+   ((eq type 'ut)
+    (concat "Date: "
+	    (condition-case ()
+		(timezone-make-date-arpa-standard date nil "UT")
+	      (error date))
+	    "\n"))
+   ;; Get the original date from the article.
+   ((eq type 'original)
+    (concat "Date: " date "\n"))
+   ;; Do an X-Sent lapsed format.
+   ((eq type 'lapsed)
+    ;; If the date is seriously mangled, the timezone
+    ;; functions are liable to bug out, so we condition-case
+    ;; the entire thing.
+    (let* ((now (current-time))
+	   (real-time
+	    (condition-case ()
+		(gnus-time-minus
+		 (gnus-encode-date
+		  (timezone-make-date-arpa-standard
+		   (current-time-string now)
+		   (current-time-zone now) "UT"))
+		 (gnus-encode-date
+		  (timezone-make-date-arpa-standard
+		   date nil "UT")))
+	      (error '(0 0))))
+	   (real-sec (+ (* (float (car real-time)) 65536)
+			(cadr real-time)))
+	   (sec (abs real-sec))
+	   num prev)
+      (cond
+       ((equal real-time '(0 0))
+	"X-Sent: Unknown\n")
+       ((zerop sec)
+	"X-Sent: Now\n")
+       (t
+	(concat
+	 "X-Sent: "
+	 ;; This is a bit convoluted, but basically we go
+	 ;; through the time units for years, weeks, etc,
+	 ;; and divide things to see whether that results
+	 ;; in positive answers.
+	 (mapconcat
+	  (lambda (unit)
+	    (if (zerop (setq num (ffloor (/ sec (cdr unit)))))
+		;; The (remaining) seconds are too few to
+		;; be divided into this time unit.
+		""
+	      ;; It's big enough, so we output it.
+	      (setq sec (- sec (* num (cdr unit))))
+	      (prog1
+		  (concat (if prev ", " "") (int-to-string
+					     (floor num))
+			  " " (symbol-name (car unit))
+			  (if (> num 1) "s" ""))
+		(setq prev t))))
+	  gnus-article-time-units "")
+	 ;; If dates are odd, then it might appear like the
+	 ;; article was sent in the future.
+	 (if (> real-sec 0)
+	     " ago\n"
+	   " in the future\n"))))))
+   (t
+    (error "Unknown conversion type: %s" type))))
 
 (defun gnus-article-date-local (&optional highlight)
   "Convert the current article date to the local timezone."
@@ -16858,6 +16871,28 @@ If FORCE is non-nil, the .newsrc file is read."
 	(delete-region
 	 (point) (next-single-property-change
 		  (1+ (point)) 'gnus-backlog nil (point-max)))))))
+
+(defun gnus-backlog-remove-article (group number)
+  "Remove article NUMBER in GROUP from the backlog."
+  (when (numberp number)
+    (gnus-backlog-setup)
+    (let ((ident (intern (concat group ":" (int-to-string number))
+			 gnus-backlog-hashtb))
+	  beg end)
+      (when (memq ident gnus-backlog-articles)
+	;; It was in the backlog.
+	(save-excursion
+	  (set-buffer (gnus-backlog-buffer))
+	  (when (setq beg (text-property-any
+			   (point-min) (point-max) 'gnus-backlog
+			   ident))
+	    ;; Find the end (i. e., the beginning of the next article).
+	    (setq end
+		  (next-single-property-change
+		   (1+ beg) 'gnus-backlog (current-buffer) (point-max)))
+	    (delete-region beg end)
+	    ;; Return success.
+	    t))))))
 
 (defun gnus-backlog-request-article (group number buffer)
   (when (numberp number)

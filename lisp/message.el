@@ -765,6 +765,10 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (when (string-match "XEmacs\\|Lucid" emacs-version)
     (message-setup-toolbar))
   (easy-menu-add message-mode-menu message-mode-map)
+  ;; Allow mail alias things.
+  (if (fboundp 'mail-abbrevs-setup)
+      (mail-abbrevs-setup)
+    (funcall (intern "mail-aliases-setup")))
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -2033,10 +2037,6 @@ Headers already prepared in the buffer are not modified."
   (save-restriction
     (message-narrow-to-headers)
     (run-hooks 'message-header-setup-hook))
-  ;; Allow mail alias things.
-  (if (fboundp 'mail-abbrevs-setup)
-      (mail-abbrevs-setup)
-    (funcall (intern "mail-aliases-setup")))
   (set-buffer-modified-p nil)
   (run-hooks 'message-setup-hook)
   (message-position-point)

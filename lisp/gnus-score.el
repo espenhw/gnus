@@ -218,8 +218,25 @@ of the last successful match.")
 
 (defvar gnus-score-cache nil)
 (defvar gnus-scores-articles nil)
-(defvar gnus-header-index nil)
 (defvar gnus-score-index nil)
+
+
+(defconst gnus-header-index
+  ;; Name to index alist.
+  '(("number" 0 gnus-score-integer)
+    ("subject" 1 gnus-score-string)
+    ("from" 2 gnus-score-string)
+    ("date" 3 gnus-score-date)
+    ("message-id" 4 gnus-score-string) 
+    ("references" 5 gnus-score-string) 
+    ("chars" 6 gnus-score-integer) 
+    ("lines" 7 gnus-score-integer) 
+    ("xref" 8 gnus-score-string)
+    ("head" -1 gnus-score-body)
+    ("body" -1 gnus-score-body)
+    ("all" -1 gnus-score-body)
+    ("followup" 2 gnus-score-followup)
+    ("thread" 5 gnus-score-thread)))
 
 (eval-and-compile
   (autoload 'gnus-uu-ctl-map "gnus-uu" nil nil 'keymap))
@@ -792,10 +809,18 @@ SCORE is the score to add."
 	   (setq alist (cons (list 'read-only t) alist)))
       (setq gnus-score-cache
 	    (cons (cons file alist) gnus-score-cache)))
-    ;; If there are actual scores in the alist, we add it to the
-    ;; return value of this function.
-    (if (memq t (mapcar (lambda (e) (stringp (car e))) alist))
-	(setq lists (list alist)))
+    (let ((a alist)
+	  found)
+      (while a
+	;; Downcase all header names.
+	(when (stringp (caar a))
+	  (setcar (car a) (downcase (caar a)))
+	  (setq found t))
+	(pop a))
+      ;; If there are actual scores in the alist, we add it to the
+      ;; return value of this function.
+      (when found
+	(setq lists (list alist))))
     ;; Treat the other possible atoms in the score alist.
     (let ((mark (car (gnus-score-get 'mark alist)))
 	  (expunge (car (gnus-score-get 'expunge alist)))
@@ -1085,10 +1110,9 @@ SCORE is the score to add."
 	      (gnus-score-orphans gnus-orphan-score))
 	    ;; Run each header through the score process.
 	    (while entries
-	      (setq entry (car entries)
-		    header (downcase (nth 0 entry))
-		    entries (cdr entries))
-	      (setq gnus-score-index (nth 1 (assoc header gnus-header-index)))
+	      (setq entry (pop entries)
+		    header (nth 0 entry)
+		    gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	      (when (< 0 (apply 'max (mapcar
 				      (lambda (score)
 					(length (gnus-score-get header score)))
@@ -1303,9 +1327,9 @@ SCORE is the score to add."
       (let* ((buffer-read-only nil)
 	     (articles gnus-scores-articles)
 	     (all-scores scores)
-	     (request-func (cond ((string= "head" (downcase header))
+	     (request-func (cond ((string= "head" header)
 				  'gnus-request-head)
-				 ((string= "body" (downcase header))
+				 ((string= "body" header)
 				  'gnus-request-body)
 				 (t 'gnus-request-article)))
 	     entries alist ofunc article last)
@@ -1711,23 +1735,6 @@ SCORE is the score to add."
 (defun gnus-score-build-cons (article)
   ;; Build a `gnus-newsgroup-scored' type cons from ARTICLE.
   (cons (mail-header-number (car article)) (cdr article)))
-
-(defconst gnus-header-index
-  ;; Name to index alist.
-  '(("number" 0 gnus-score-integer)
-    ("subject" 1 gnus-score-string)
-    ("from" 2 gnus-score-string)
-    ("date" 3 gnus-score-date)
-    ("message-id" 4 gnus-score-string) 
-    ("references" 5 gnus-score-string) 
-    ("chars" 6 gnus-score-integer) 
-    ("lines" 7 gnus-score-integer) 
-    ("xref" 8 gnus-score-string)
-    ("head" -1 gnus-score-body)
-    ("body" -1 gnus-score-body)
-    ("all" -1 gnus-score-body)
-    ("followup" 2 gnus-score-followup)
-    ("thread" 5 gnus-score-thread)))
 
 (defun gnus-current-score-file-nondirectory (&optional score-file)
   (let ((score-file (or score-file gnus-current-score-file)))

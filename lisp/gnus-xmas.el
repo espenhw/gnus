@@ -151,7 +151,11 @@ displayed, no centering will be performed."
     (remove-text-properties 
      beg end 
      '(gnus-topic nil gnus-topic-level nil gnus-topic-visible nil))
-    (goto-char end)))
+    (goto-char end)
+    (map-extents 
+     (lambda (e ma)
+       (set-extent-property e 'start-closed t))
+     (current-buffer) beg end)))
 		  
 (defun gnus-xmas-topic-remove-excess-properties ()
   (let ((end (point))

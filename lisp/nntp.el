@@ -660,6 +660,7 @@ It will prompt for a password."
     (when (and server
 	       nntp-warn-about-losing-connection)
       (message "nntp: Connection closed to server %s" server)
+      (setq nntp-current-group "")
       (ding))))
 
 (defun nntp-kill-connection (server)
@@ -1261,14 +1262,14 @@ defining this function as macro."
 
 (defun nntp-possibly-change-server (newsgroup server &optional connectionless)
   "Check whether the virtual server needs changing."
-  (if (and server
- 	   (not (nntp-server-opened server)))
-      ;; This virtual server isn't open, so we (re)open it here.
-      (nntp-open-server server nil t))
-  (if (and newsgroup 
- 	   (not (equal newsgroup nntp-current-group)))
-      ;; Set the proper current group.
-      (nntp-request-group newsgroup server)))
+  (when (and server
+	     (not (nntp-server-opened server)))
+    ;; This virtual server isn't open, so we (re)open it here.
+    (nntp-open-server server nil t))
+  (when (and newsgroup 
+	     (not (equal newsgroup nntp-current-group)))
+    ;; Set the proper current group.
+    (nntp-request-group newsgroup server)))
  
 (defun nntp-try-list-active (group)
   (nntp-list-active-group group)
