@@ -3688,14 +3688,14 @@ If given a prefix argument, prompt for a group."
       (setq hierarchy (match-string 1 name))
       (if gnus-group-fetch-control-use-browse-url
 	  (browse-url (concat "ftp://ftp.isc.org/usenet/control/"
-			      hierarchy "/" name ".Z"))
+			      hierarchy "/" name ".gz"))
 	(let ((enable-local-variables nil))
 	  (gnus-group-read-ephemeral-group
 	   group
 	   `(nndoc ,group (nndoc-address
 			   ,(find-file-noselect
 			     (concat "/ftp@ftp.isc.org:/usenet/control/"
-				     hierarchy "/" name ".Z")))
+				     hierarchy "/" name ".gz")))
 		   (nndoc-article-type mbox)) t nil nil))))))
 
 (defun gnus-group-describe-group (force &optional group)
