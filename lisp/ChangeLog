@@ -1,3 +1,8 @@
+2002-10-09  Simon Josefsson  <jas@extundo.com>
+
+	* pgg.el (pgg-insert-url-with-w3): Ignore errors.
+	(pgg-fetch-key-function): Nil if w3 is not installed.
+
 2002-10-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Bind

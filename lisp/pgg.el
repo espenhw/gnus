@@ -45,7 +45,8 @@
 ;;; @ utility functions
 ;;;
 
-(defvar pgg-fetch-key-function (function pgg-fetch-key-with-w3))
+(defvar pgg-fetch-key-function (if (fboundp 'url-insert-file-contents)
+				   function pgg-fetch-key-with-w3))
 
 (defun pgg-invoke (func scheme &rest args)
   (progn
@@ -255,10 +256,11 @@ signer's public key from `pgg-default-keyserver-address'."
 (defvar pgg-insert-url-function  (function pgg-insert-url-with-w3))
 
 (defun pgg-insert-url-with-w3 (url)
-  (require 'w3)
-  (require 'url)
-  (let (buffer-file-name)
-    (url-insert-file-contents url)))
+  (ignore-errors
+    (require 'w3)
+    (require 'url)
+    (let (buffer-file-name)
+      (url-insert-file-contents url))))
 
 (defvar pgg-insert-url-extra-arguments nil)
 (defvar pgg-insert-url-program nil)
