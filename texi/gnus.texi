@@ -1685,6 +1685,15 @@ Number of read articles.
 Estimated total number of articles.  (This is really @var{max-number}
 minus @var{min-number} plus 1.)
 
+Gnus uses this estimation because the NNTP protocol provides efficient
+access to @var{max-number} and @var{min-number} but getting the true
+unread message count is not possible efficiently.  For hysterical
+raisins, even the mail backends, where the true number of unread
+messages might be available efficiently, use the same limited
+interface.  To remove this restriction from Gnus means that the
+backend interface has to be changed, which is not an easy job.  If you
+want to work on this, please contact the Gnus mailing list.
+
 @item y
 Number of unread, unticked, non-dormant articles.
 
