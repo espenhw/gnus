@@ -301,8 +301,8 @@ tracked this way."
   (let* ((id (mail-header-id data-header))
 	 (subject (gnus-registry-simplify-subject 
 		   (mail-header-subject data-header)))
-	(from (gnus-group-guess-full-name from))
-	(to (if to (gnus-group-guess-full-name to) nil))
+	(from (gnus-group-guess-full-name-from-command-method from))
+	(to (if to (gnus-group-guess-full-name-from-command-method to) nil))
 	(to-name (if to to "the Bit Bucket"))
 	(old-entry (gethash id gnus-registry-hashtb)))
     (gnus-message 5 "Registry: article %s %s from %s to %s"
@@ -320,16 +320,13 @@ tracked this way."
     (gnus-registry-add-group id to subject)))
 
 (defun gnus-registry-spool-action (id group &optional subject)
-  ;; do not process the draft IDs
-;  (unless (string-match "totally-fudged-out-message-id" id)
-;    (let ((group (gnus-group-guess-full-name group)))
-  (when (and (stringp id) (string-match "\r$" id))
-    (setq id (substring id 0 -1)))
-  (gnus-message 5 "Registry: article %s spooled to %s"
-		id
-		group)
-  (gnus-registry-add-group id group subject))
-;)
+  (let ((group (gnus-group-guess-full-name-from-command-method group)))
+    (when (and (stringp id) (string-match "\r$" id))
+      (setq id (substring id 0 -1)))
+    (gnus-message 5 "Registry: article %s spooled to %s"
+		  id
+		  group)
+    (gnus-registry-add-group id group subject)))
 
 ;; Function for nn{mail|imap}-split-fancy: look up all references in
 ;; the cache and if a match is found, return that group.
@@ -379,7 +376,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		   (setq res (gnus-registry-fetch-group key))
 		   (gnus-message
 		    ;; raise level of messaging if gnus-registry-track-extra
-		    (if gnus-registry-track-extra 5 9) 
+		    (if gnus-registry-track-extra 5 9)
 		    "%s (extra tracking) traced subject %s to group %s"
 		    "gnus-registry-split-fancy-with-parent"
 		    subject
@@ -389,6 +386,26 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
      5 
      "gnus-registry-split-fancy-with-parent traced %s to group %s"
      refstr (if res res "nil"))
+
+    (when (and res gnus-registry-use-long-group-names)
+      (let ((m1 (gnus-find-method-for-group res))
+	    (m2 (or gnus-command-method 
+		    (gnus-find-method-for-group gnus-newsgroup-name)))
+	    (short-res (gnus-group-short-name res)))
+      (if (gnus-methods-equal-p m1 m2)
+	  (progn
+	    (gnus-message
+	     9 
+	     "gnus-registry-split-fancy-with-parent stripped group %s to %s"
+	     res
+	     short-res)
+	    (setq res short-res))
+	;; else...
+	(gnus-message
+	 5 
+	 "gnus-registry-split-fancy-with-parent ignored foreign group %s"
+	 res)
+	(setq res nil))))
     res))
 
 (defun gnus-registry-register-message-ids ()
@@ -506,7 +523,9 @@ Returns the first place where the trail finds a group name."
     (let ((trail (gethash id gnus-registry-hashtb)))
       (dolist (crumb trail)
 	(when (stringp crumb)
-	  (return (gnus-group-short-name crumb)))))))
+	  (return (if gnus-registry-use-long-group-names 
+		       crumb 
+		     (gnus-group-short-name crumb))))))))
 
 (defun gnus-registry-group-count (id)
   "Get the number of groups of a message, based on the message ID."
@@ -543,7 +562,6 @@ Returns the first place where the trail finds a group name."
 
 (defun gnus-registry-add-group (id group &optional subject)
   "Add a group for a message, based on the message ID."
-  ;; make sure there are no duplicate entries
   (when group
     (when (and id
 	       (not (string-match "totally-fudged-out-message-id" id)))
@@ -552,8 +570,10 @@ Returns the first place where the trail finds a group name."
 		       group 
 		     (gnus-group-short-name group))))
 	(gnus-registry-delete-group id group)
-	(unless gnus-registry-use-long-group-names 
+
+	(unless gnus-registry-use-long-group-names ;; unnecessary in this case
 	  (gnus-registry-delete-group id full-group))
+
 	(let ((trail (gethash id gnus-registry-hashtb)))
 	  (puthash id (if trail
 			  (cons group trail)

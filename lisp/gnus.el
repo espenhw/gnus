@@ -3266,6 +3266,12 @@ server is native)."
       group
     (gnus-group-full-name group (gnus-find-method-for-group group))))
 
+(defun gnus-group-guess-full-name-from-command-method (group)
+  "Guess the full name from GROUP, even if the method is native."
+  (if (gnus-group-prefixed-p group)
+      group
+    (gnus-group-full-name group gnus-command-method)))
+
 (defun gnus-group-real-prefix (group)
   "Return the prefix of the current group name."
   (if (string-match "^[^:]+:" group)

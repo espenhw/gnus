@@ -1,13 +1,25 @@
-2003-11-06  Teodor Zlatanov  <tzz@lifelogs.com> suggested by Jean-Marc Lasgouttes <Jean-Marc.Lasgouttes@inria.fr>
+2003-11-06  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.el (gnus-group-guess-full-name-from-command-method): new	function
+
+	* gnus-registry.el (gnus-registry-fetch-group): use long names if
+	requested 
+	(gnus-registry-split-fancy-with-parent): when long names are in
+	use, strip the name if we're in the native server, or else return nothing
+	(gnus-registry-spool-action, gnus-registry-action): use
+	gnus-group-guess-full-name-from-command-method instead of
+	gnus-group-guess-full-name
 
 	* spam.el (spam-mark-spam-as-expired-and-move-routine)
 	(spam-ham-copy-or-move-routine): prevent article deletions or
 	moves unless the backend allows it
 
 	* gnus.el (gnus-install-group-spam-parameters): fixed parameters
-	to list spamoracle as well
+	to list spamoracle as well, suggested by Jean-Marc Lasgouttes
+	<Jean-Marc.Lasgouttes@inria.fr>
 
-	* spam.el (spam-spamoracle): doc change
+	* spam.el (spam-spamoracle): doc change, suggested by Jean-Marc
+	Lasgouttes <Jean-Marc.Lasgouttes@inria.fr>
 
 2003-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
