@@ -8,6 +8,14 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** gnus-group-charset-alist and gnus-group-ignored-charsets-alist
+
+The regexps in these variables are compared with full group names
+instead of real group names in 5.8.  Users who customize these
+variables should change those regexps accordingly. For example:
+
+   ("^han\\>" euc-kr) -> ("\\(^\\|:\\)han\\>" euc-kr)
+
 ** Gnus now supports PGP-MIME (RFC2015) and SMIME.
 
 ** Gnus inlines external parts (message/external).
