@@ -1,3 +1,10 @@
+2003-01-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi: Change .gnus to .gnus.el.
+	(Agent Commands): Remove batch here.
+
+	* message.texi (Canceling News): Document canlock.
+
 2003-01-10  Alex Schroeder  <alex@emacswiki.org>
 
 	* gnus.texi (Creating a spam-stat dictionary): Explain how using

@@ -235,6 +235,23 @@ The value of @code{message-cancel-message} is inserted in the body of
 the cancel message.  The default is @samp{I am canceling my own
 article.}.
 
+@cindex Cancel Locks
+@vindex message-insert-canlock
+@cindex canlock
+When Message posts news messages, it inserts @code{Cancel-Lock}
+headers by default.  This is a cryptographic header that ensures that
+only you can cancel your own messages, which is nice.  The downside
+is that if you lose your @file{.emacs} file (which is where Gnus
+stores the secret cancel lock password (which is generated
+automatically the first time you use this feature)), you won't be
+able to cancel your message.
+
+Whether to insert the header or not is controlled by the
+@code{message-insert-canlock} variable.
+
+Not many news servers respect the @code{Cancel-Lock} header yet, but
+this is expected to change in the future.
+
 
 @node Superseding
 @section Superseding

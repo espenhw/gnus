@@ -9027,7 +9027,7 @@ such unenlightened users, you can make live easier by adding
 @end lisp
 
 @noindent
-to your @file{.gnus} file.
+to your @file{.gnus.el} file.
 
 @end table
 
@@ -12565,7 +12565,7 @@ mail back end of your choice into @code{gnus-secondary-select-methods},
 and things will happen automatically.
 
 For instance, if you want to use @code{nnml} (which is a "one file per
-mail" back end), you could put the following in your @file{.gnus} file:
+mail" back end), you could put the following in your @file{.gnus.el} file:
 
 @lisp
 (setq gnus-secondary-select-methods '((nnml "")))
@@ -13626,7 +13626,7 @@ However, if you change group parameters, you'd have to update
 @code{nnmail-split-fancy} manually.  You can do it by running
 @code{gnus-group-split-update}.  If you'd rather have it updated
 automatically, just tell @code{gnus-group-split-setup} to do it for
-you.  For example, add to your @file{.gnus}:
+you.  For example, add to your @file{.gnus.el}:
 
 @lisp
 (gnus-group-split-setup AUTO-UPDATE CATCH-ALL)
@@ -13756,7 +13756,7 @@ By default, if you have auto expiry switched on, Gnus will mark all the
 articles you read as expirable, no matter if they were read or unread
 before.  To avoid having articles marked as read marked as expirable
 automatically, you can put something like the following in your
-@file{.gnus} file:
+@file{.gnus.el} file:
 
 @vindex gnus-mark-article-hook
 @lisp
@@ -16974,13 +16974,6 @@ toggles the plugged/unplugged state of the Gnus Agent.
 * Server Agent Commands::       
 @end menu
 
-You can run a complete batch command from the command line with the
-following incantation:
-
-@cindex gnus-agent-batch
-@example
-$ emacs -batch -l ~/.gnus.el -f gnus-agent-batch
-@end example
 
 
 
@@ -17321,9 +17314,12 @@ Having the Gnus Agent fetch articles (and post whatever messages you've
 written) is quite easy once you've gotten things set up properly.  The
 following shell script will do everything that is necessary:
 
+You can run a complete batch command from the command line with the
+following incantation:
+
 @example
 #!/bin/sh
-emacs -batch -l ~/.emacs -f gnus-agent-batch >/dev/null
+emacs -batch -l ~/.emacs -f -l ~/.gnus.el gnus-agent-batch >/dev/null 2>&1
 @end example
 
 
@@ -20233,7 +20229,7 @@ seconds.  This is 60 by default.  If you change that variable,
 all the timings in the handlers will be affected.)
 
 So, if you want to add a handler, you could put something like this in
-your @file{.gnus} file:
+your @file{.gnus.el} file:
 
 @findex gnus-demon-add-handler
 @lisp
@@ -20250,7 +20246,7 @@ Some ready-made functions to do this have been created:
 @code{gnus-demon-add-nntp-close-connection},
 @code{gnus-demon-add-scan-timestamps}, @code{gnus-demon-add-rescan}, and
 @code{gnus-demon-add-scanmail}.  Just put those functions in your
-@file{.gnus} if you want those abilities.
+@file{.gnus.el} if you want those abilities.
 
 @findex gnus-demon-init
 @findex gnus-demon-cancel
@@ -23031,7 +23027,7 @@ manner, so it should be difficult to lose much data on what you have
 read if your machine should go down (@pxref{Auto Save}).
 
 @item
-Gnus now has its own startup file (@file{.gnus}) to avoid cluttering up
+Gnus now has its own startup file (@file{.gnus.el}) to avoid cluttering up
 the @file{.emacs} file.
 
 @item
