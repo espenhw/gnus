@@ -1,5 +1,8 @@
 2002-09-29  Simon Josefsson  <jas@extundo.com>
 
+	* mml1991.el (pgg-output-buffer, pgg-errors-buffer): Prevent byte
+	compile warnings.
+
 	* mml1991.el (mml1991-function-alist): Add pgg.
 	(mml1991-pgg-sign, mml1991-pgg-encrypt): New functions.
 	(mml1991-pgg-encrypt): Fix recipients querying.

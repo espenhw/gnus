@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.8 2002/09/29 20:33:02 jas Exp $
+;; RCS: $Id: mml1991.el,v 6.9 2002/09/29 20:37:10 jas Exp $
 
 ;;; Code:
 
@@ -197,6 +197,9 @@
 	(goto-char (point-max))))))
 
 ;; pgg wrapper
+
+(defvar pgg-output-buffer)
+(defvar pgg-errors-buffer)
 
 (defun mml1991-pgg-sign (cont)
   (let (headers)
