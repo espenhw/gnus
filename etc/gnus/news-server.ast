@@ -8,7 +8,8 @@
         (condition-case err
 	    (open-network-stream "nntpd" nil server port)
           (error (setq error err)))))
-   (if (memq (process-status stream) '(open run))
+   (if (and (processp stream)
+            (memq (process-status stream) '(open run)))
        (progn
          (delete-process stream)
          nil)
