@@ -1,6 +1,9 @@
 2003-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-group-expire-articles): Doc fix.
+	(gnus-group-line-format): %U.
+	(gnus-group-line-format-alist): ?U.
+	(gnus-number-of-unseen-articles-in-group): New function.
 
 	* nntp.el (nntp-accept-process-output): Use a 0.1 second timeout. 
 
