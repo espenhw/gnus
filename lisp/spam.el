@@ -39,7 +39,8 @@
 (require 'dns)
 (require 'message)
 
-(autoload 'bbdb-records "bbdb-com")
+(eval-and-compile
+  (autoload 'bbdb-records "bbdb-com"))
 
 ;; Attempt to load BBDB macros
 (eval-when-compile

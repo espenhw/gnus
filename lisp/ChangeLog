@@ -1,7 +1,7 @@
 2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* spam.el: Wrap autoload settings for executable-find and
-	ifile-spam-filter with eval-and-compile.
+	* spam.el: Wrap autoload settings for bbdb-records,
+	executable-find and ifile-spam-filter with eval-and-compile.
 	(spam-display-buffer-contents): Remove.
 	(spam-bogofilter-score): Merge spam-display-buffer-contents.
 
