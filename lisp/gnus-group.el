@@ -497,9 +497,9 @@ simple manner.")
     (?T (gnus-range-length (cdr (assq 'tick gnus-tmp-marked))) ?d)
     (?i (+ (gnus-range-length (cdr (assq 'dormant gnus-tmp-marked)))
 	   (gnus-range-length (cdr (assq 'tick gnus-tmp-marked)))) ?d)
-    (?g gnus-tmp-group ?s)
+    (?g gnus-tmp-decoded-group ?s)
     (?G gnus-tmp-qualified-group ?s)
-    (?c (gnus-short-group-name gnus-tmp-group) ?s)
+    (?c (gnus-short-group-name gnus-tmp-decoded-group) ?s)
     (?C gnus-tmp-comment ?s)
     (?D gnus-tmp-newsgroup-description ?s)
     (?o gnus-tmp-moderated ?c)
@@ -1455,8 +1455,8 @@ if it is a string, only list groups matching REGEXP."
      (point)
      (prog1 (1+ (point))
        ;; Insert the text.
-       (let ((gnus-tmp-group (gnus-group-name-decode
-			      gnus-tmp-group group-name-charset)))
+       (let ((gnus-tmp-decoded-group (gnus-group-name-decode
+				      gnus-tmp-group group-name-charset)))
 	 (eval gnus-group-line-format-spec)))
      `(gnus-group ,(gnus-intern-safe gnus-tmp-group gnus-active-hashtb)
 		  gnus-unread ,(if (numberp number)

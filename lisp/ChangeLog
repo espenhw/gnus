@@ -1,6 +1,10 @@
 2004-12-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-group.el (gnus-group-make-rss-group): Exclude `/'s.
+	* gnus-group.el (gnus-group-line-format-alist): Use decoded group
+	name for only %g and %c.
+	(gnus-group-insert-group-line): Bind gnus-tmp-decoded-group instead
+	of gnus-tmp-group to decoded group name.
+	(gnus-group-make-rss-group): Exclude `/'s from group names.
 
 2004-12-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
