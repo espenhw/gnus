@@ -75,6 +75,13 @@ parameter -- the gateway address.")
     (insert "To: " (nnheader-replace-chars-in-string newsgroups ?. ?-)
 	    "@" gateway "\n")))
 
+(defun nngateway-mail2news-header-transformation (gateway)
+  "Transform the headers for sending to a mail2news gateway."
+  (message-remove-header "to")
+  (message-remove-header "cc")
+  (goto-char (point-min))
+  (insert "To: mail2news@" gateway "\n"))
+
 (nnoo-define-skeleton nngateway)
 
 (provide 'nngateway)

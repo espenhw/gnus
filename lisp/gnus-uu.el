@@ -54,8 +54,8 @@
 ;; Default viewing action rules
 
 (defcustom gnus-uu-default-view-rules
-  '(("\\.te?xt$\\|\\.doc$\\|read.*me\\|\\.c?$\\|\\.h$\\|\\.bat$\\|\\.asm$\\|makefile" "cat %s | sed s/\r//g")
-    ("\\.pas$" "cat %s | sed s/\r//g")
+  '(("\\.te?xt$\\|\\.doc$\\|read.*me\\|\\.c?$\\|\\.h$\\|\\.bat$\\|\\.asm$\\|makefile" "cat %s | sed 's/\r$//'")
+    ("\\.pas$" "cat %s | sed 's/\r$//'")
     ("\\.[1-9]$" "groff -mandoc -Tascii %s | sed s/\b.//g")
     ("\\.\\(jpe?g\\|gif\\|tiff?\\|p[pgb]m\\|xwd\\|xbm\\|pcx\\)$" "xv")
     ("\\.tga$" "tgatoppm %s | xv -")

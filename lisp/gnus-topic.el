@@ -166,9 +166,10 @@ with some simple extensions.
     (when result
       (symbol-name result))))
 
-(defun gnus-current-topics ()
-  "Return a list of all current topics, lowest in hierarchy first."
-  (let ((topic (gnus-current-topic))
+(defun gnus-current-topics (&optional topic)
+  "Return a list of all current topics, lowest in hierarchy first.
+If TOPIC, start with that topic."
+  (let ((topic (or topic (gnus-current-topic)))
 	topics)
     (while topic
       (push topic topics)
@@ -199,7 +200,8 @@ with some simple extensions.
 			      active
 			      (- (1+ (cdr active)) (car active))))
 	      clevel (or (gnus-info-level info)
-			 (if (member group gnus-zombie-list) gnus-level-zombie gnus-level-killed))))
+			 (if (member group gnus-zombie-list)
+			     gnus-level-zombie gnus-level-killed))))
       (and
        unread				; nil means that the group is dead.
        (<= clevel level)
@@ -324,27 +326,32 @@ with some simple extensions.
 
 (defun gnus-group-topic-parameters (group)
   "Compute the group parameters for GROUP taking into account inheritance from topics."
-  (let ((params-list (list (gnus-group-get-parameter group)))
-	topics params param out)
+  (let ((params-list (list (gnus-group-get-parameter group))))
     (save-excursion
       (gnus-group-goto-group group)
-      (setq topics (gnus-current-topics))
-      (while topics
-	(push (gnus-topic-parameters (pop topics)) params-list))
-      ;; We probably have lots of nil elements here, so
-      ;; we remove them.  Probably faster than doing this "properly".
-      (setq params-list (delq nil params-list))
-      ;; Now we have all the parameters, so we go through them
-      ;; and do inheritance in the obvious way.
-      (while (setq params (pop params-list))
-	(while (setq param (pop params))
-	  (when (atom param)
-	    (setq param (cons param t)))
-	  ;; Override any old versions of this param.
-	  (setq out (delq (assq (car param) out) out))
-	  (push param out)))
-      ;; Return the resulting parameter list.
-      out)))
+      (nconc params-list
+	     (gnus-topic-hierarchical-parameters (gnus-current-topic))))))
+
+(defun gnus-topic-hierarchical-parameters (topic)
+  "Return a topic list computed for TOPIC."
+  (let ((topics (gnus-current-topics topic))
+	params-list param out params)
+    (while topics
+      (push (gnus-topic-parameters (pop topics)) params-list))
+    ;; We probably have lots of nil elements here, so
+    ;; we remove them.  Probably faster than doing this "properly".
+    (setq params-list (delq nil params-list))
+    ;; Now we have all the parameters, so we go through them
+    ;; and do inheritance in the obvious way.
+    (while (setq params (pop params-list))
+      (while (setq param (pop params))
+	(when (atom param)
+	  (setq param (cons param t)))
+	;; Override any old versions of this param.
+	(setq out (delq (assq (car param) out) out))
+	(push param out)))
+    ;; Return the resulting parameter list.
+    out))
 
 ;;; General utility functions
 
@@ -406,7 +413,13 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 If SILENT, don't insert anything.  Return the number of unread
 articles in the topic and its subtopics."
   (let* ((type (pop topicl))
-	 (entries (gnus-topic-find-groups (car type) list-level all lowest))
+	 (entries (gnus-topic-find-groups
+		   (car type) list-level
+		   (or all
+		       (cdr (assq 'visible 
+				  (gnus-topic-hierarchical-parameters
+				   (car type)))))
+		   lowest))
 	 (visiblep (and (eq (nth 1 type) 'visible) (not silent)))
 	 (gnus-group-indentation
 	  (make-string (* gnus-topic-indent-level level) ? ))

@@ -158,9 +158,7 @@
      (let ((files (nconc
 		   (nnkiboze-score-file group)
 		   (list (nnkiboze-nov-file-name)
-			 (concat nnkiboze-directory
-				 (nnheader-translate-file-chars
-				  (concat group ".newsrc")))))))
+			 (nnkiboze-nov-file-name ".newsrc")))))
        (while files
 	 (and (file-exists-p (car files))
 	      (file-writable-p (car files))
@@ -358,10 +356,11 @@ Finds out what articles are to be part of the nnkiboze groups."
 	(goto-char (1+ (match-beginning 0)))
 	(insert prefix)))))
 
-(defun nnkiboze-nov-file-name ()
+(defun nnkiboze-nov-file-name (&optional suffix)
   (concat (file-name-as-directory nnkiboze-directory)
 	  (nnheader-translate-file-chars
-	   (concat (nnkiboze-prefixed-name nnkiboze-current-group) ".nov"))))
+	   (concat (nnkiboze-prefixed-name nnkiboze-current-group)
+		   (or suffix ".nov")))))
 
 (provide 'nnkiboze)
 

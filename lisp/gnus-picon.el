@@ -184,8 +184,9 @@ arguments necessary for the job.")
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
-  (let ((buf (get-buffer (gnus-window-to-buffer-helper
-			    (cdr (assq variable gnus-window-to-buffer))))))
+  (let ((buf (get-buffer-create (gnus-window-to-buffer-helper
+				 (cdr 
+				  (assq variable gnus-window-to-buffer))))))
     (and buf
 	 (buffer-name buf))))
 

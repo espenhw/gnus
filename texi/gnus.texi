@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.11 Manual
+@settitle Gnus 5.6.12 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.11 Manual
+@title Gnus 5.6.12 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.11.
+This manual corresponds to Gnus 5.6.12.
 
 @end ifinfo
 
@@ -930,6 +930,10 @@ this variable is @code{nil}, which it is by default, Gnus will dribble
 into the directory where the @file{.newsrc} file is located.  (This is
 normally the user's home directory.)  The dribble file will get the same
 file permissions as the @code{.newsrc} file.
+
+@vindex gnus-always-read-dribble-file
+If @code{gnus-always-read-dribble-file} is non-@code{nil}, Gnus will
+read the dribble file on startup without querying the user.
 
 
 @node The Active File
@@ -9029,14 +9033,18 @@ server.
 @findex nntp-open-network-stream
 @item nntp-open-connection-function
 @vindex nntp-open-connection-function
-This function is used to connect to the remote system.  Three pre-made
-functions are @code{nntp-open-network-stream}, which is the default, and
-simply connects to some port or other on the remote system.  The other
-two are @code{nntp-open-rlogin}, which does an @samp{rlogin} on the
+This function is used to connect to the remote system.  Four pre-made
+functions are supplied:
+
+@table @code
+@item nntp-open-network-stream
+This is the default, and simply connects to some port or other on the
+remote system.
+
+@item nntp-open-rlogin
+Does an @samp{rlogin} on the
 remote system, and then does a @samp{telnet} to the @sc{nntp} server
-available there, and @code{nntp-open-telnet}, which does a @samp{telnet}
-to the remote system and then another @samp{telnet} to get to the
-@sc{nntp} server.
+available there.
 
 @code{nntp-open-rlogin}-related variables:
 
@@ -9056,6 +9064,10 @@ This list will be used as the parameter list given to @code{rsh}.
 User name on the remote system.
 
 @end table
+
+@item nntp-open-telnet
+Does a @samp{telnet} to the remote system and then another @samp{telnet}
+to get to the @sc{nntp} server.
 
 @code{nntp-open-telnet}-related variables:
 
@@ -9091,6 +9103,27 @@ Regexp matching the shell prompt on the remote machine.  The default is
 If non-@code{nil}, the @code{telnet} session (client and server both)
 will support the @code{ENVIRON} option and not prompt for login name.
 This works for Solaris @code{telnet}, for instance.
+
+@end table
+
+@findex nntp-open-ssl-stream
+@item nntp-open-ssl-stream
+Opens a connection to a server over a @dfn{secure} channel.  To use this
+you must have SSLay installed
+(@file{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}, and you also need
+@file{ssl.el} (from the W3 distributeion, for instance).  You then
+define a server as follows:
+
+@lisp
+;; Type `C-c C-c' after you've finished editing.
+;;
+;; "snews" is port 563 and is predefined in our /etc/services
+;;
+(nntp "snews.bar.com"
+      (nntp-open-connection-function nntp-open-ssl-stream)
+      (nntp-port-number "snews")
+      (nntp-address "snews.bar.com"))
+@end lisp
 
 @end table
 
@@ -11018,6 +11051,24 @@ will get this @code{From} header inserted:
 @example
 To: alt-religion-emacs@@GATEWAY
 @end example
+
+The following pre-defined functions exist:
+
+@findex nngateway-simple-header-transformation
+@table @code
+
+@item nngateway-simple-header-transformation
+Creates a @code{To} header that looks like
+@var{newsgroup}@@@code{nngateway-address}.
+
+@findex nngateway-mail2news-header-transformation
+
+@item nngateway-mail2news-header-transformation
+Creates a @code{To} header that looks like
+@samp{mail2news}@@@code{nngateway-address}.
+
+@end table
+
 
 @end table
 
@@ -15728,7 +15779,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.11.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.12.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16263,7 +16314,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.11:
+New features in Gnus 5.6.12:
 
 @itemize @bullet
 

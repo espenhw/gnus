@@ -722,7 +722,7 @@ is a spool.  If not using procmail, return GROUP."
 				      (file-name-as-directory
 				       nnmail-procmail-directory)))
 				"\\([^/]*\\)"
-				(regexp-quote nnmail-procmail-suffix) "$")
+				nnmail-procmail-suffix "$")
 			(expand-file-name file))
 	  (let ((procmail-group (substring (expand-file-name file)
 					   (match-beginning 1)
@@ -1069,7 +1069,18 @@ FUNC will be called with the group name to determine the article number."
 	(goto-char (point-min))
 	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	  (replace-match " " t t))
+	;; Nuke pathologically long headers.  Since Gnus applies
+	;; pathologically complex regexps to the buffer, lines
+	;; that are looong will take longer than the Universe's
+	;; existence to process.
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (end-of-line)
+	  (if (> (current-column) 1024)
+	      (gnus-delete-line)
+	    (forward-line 1)))
 	;; Allow washing.
+	(goto-char (point-min))
 	(run-hooks 'nnmail-split-hook)
 	(if (and (symbolp nnmail-split-methods)
 		 (fboundp nnmail-split-methods))

@@ -383,10 +383,12 @@ Can be used to turn version control on or off."
   :group 'gnus-newsrc
   :type 'hook)
 
-;;; Internal variables
+(defcustom gnus-always-read-dribble-file nil
+  "Uncoditionally read the dribble file."
+  :group 'gnus-newsrc
+  :type 'boolean)
 
-(defvar gnus-always-read-dribble-file nil
-  "Uncoditionally read the dribble file.")
+;;; Internal variables
 
 (defvar gnus-newsrc-file-version nil)
 (defvar gnus-override-subscribe-method nil)

@@ -1,3 +1,71 @@
+Wed Jun 24 03:27:44 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.12 is released.
+
+Wed Jun 10 11:06:35 1998  Andreas Schwab  <schwab@issan.informatik.uni-dortmund.de>
+
+	* message.el (message-mail-other-window): Bind message-this-is-mail.
+	(message-mail-other-frame): Likewise.
+	(message-news-other-window): Bind message-this-is-news.
+	(message-news-other-frame): Likewise.
+
+1998-06-09  Sam Steingold  <sds@goems.com>
+
+        * gnus-uu.el (gnus-uu-default-view-rules): make sed kill ^M only
+        at the end of line.
+
+1998-06-05  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* nnmail.el (nnmail-get-split-group): Don't regexp-quote
+ 	nnmail-procmail-suffix.
+
+Wed Jun 24 03:04:05 1998  Kim-Minh Kaplan  <kaplan@sky.fr>
+
+	* gnus-sum.el (gnus-build-get-header): Fix obarray.
+
+Wed Jun 24 02:49:57 1998  Castor  <castor@my-dejanews.com>
+
+	* nntp.el (nntp-open-ssl-stream): 
+
+Wed Jun 24 02:31:46 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-nov-parse-line): Cleaned up.
+	(gnus-build-all-threads): Put things in the wrong obarray.
+
+Wed Jun 24 01:43:26 1998  Decklin Foster  <djarum@base.org>
+
+	* nngateway.el (nngateway-mail2news-header-transformation): New
+	function. 
+
+Wed Jun 24 00:25:45 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-shorten-references): New function.
+	(message-header-format-alist): Use it.
+
+	* gnus-start.el (gnus-always-read-dribble-file): Customized.
+
+	* message.el (message-generate-new-buffers): Dox fox.
+
+Tue Jun 23 23:58:48 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-prepare-topic): Respect visible topic
+	param. 
+	(gnus-topic-hierarchical-parameters): New function.
+
+1998-06-02  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus-picon.el (gnus-get-buffer-name): use get-buffer-create
+	instead of get-buffer 
+
+Wed Jun  3 04:41:45 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnkiboze.el (nnkiboze-request-delete-group): Delete .newsrc
+	file. 
+
+	* nnmail.el (nnmail-article-group): Nuke looong lines.
+
+	* gnus-art.el (gnus-button-alist): Buggy default.
+
 Wed Jun  3 04:03:37 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.11 is released.

@@ -1,3 +1,9 @@
+Wed Jun 24 00:37:32 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Auto Save): Addition.
+	(Mail-To-News Gateways): Addition.
+	(NNTP): Addition.
+
 Wed Jun  3 03:30:47 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.texi (Message Headers): Addition.

@@ -211,7 +211,8 @@ server there that you can connect to.  See also
 (defvoo nntp-server-list-active-group 'try)
 
 (eval-and-compile
-  (autoload 'nnmail-read-passwd "nnmail"))
+  (autoload 'nnmail-read-passwd "nnmail")
+  (autoload 'open-ssl-stream "ssl"))
 
 
 
@@ -844,6 +845,16 @@ password contained in '~/.nntp-authinfo'."
 
 (defun nntp-open-network-stream (buffer)
   (open-network-stream "nntpd" buffer nntp-address nntp-port-number))
+
+(defun nntp-open-ssl-stream (buffer)
+  (let* ((ssl-program-arguments '("-connect" (concat host ":" service)))
+	 (proc (open-ssl-stream "nntpd" buffer nntp-address nntp-port-number)))
+    (save-excursion
+      (set-buffer buffer)
+      (nntp-wait-for-string "^\r*20[01]")
+      (beginning-of-line)
+      (delete-region (point-min) (point))
+      proc)))
 
 (defun nntp-read-server-type ()
   "Find out what the name of the server we have connected to is."
