@@ -570,6 +570,14 @@ spam-use-* variable.")
 (defun spam-group-ham-processor-spamoracle-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-spamoracle))
 
+(defun spam-report-articles-gmane (n)
+  "Report the current message as spam.
+Respects the process/prefix convention."
+  (interactive "P")
+  (dolist (article (gnus-summary-work-articles n))
+    (gnus-summary-remove-process-mark article)
+    (spam-report-gmane article)))
+
 ;;; Summary entry and exit processing.
 
 (defun spam-summary-prepare ()

@@ -1,3 +1,7 @@
+2004-01-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* spam.el (spam-report-articles-gmane): New command.
+
 2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el: Don't make unnecessary *Group* buffer when loading.
