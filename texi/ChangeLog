@@ -1,3 +1,13 @@
+Thu Mar 19 13:02:20 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (NNTP): Addition.
+	Removed spurious white space.
+
+Fri Mar 13 21:05:47 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Quassia Gnus): Fix.
+	(Agent Expiry): Addition.
+
 Sun Mar  8 13:56:37 1998  James Troup  <J.J.Troup@scm.brad.ac.uk>
 
 	* gnus.texi (Group Highlighting): Removed old example.

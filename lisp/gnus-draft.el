@@ -144,7 +144,9 @@
 ;;; Utility functions
 
 ;;;!!!If this is byte-compiled, it fails miserably.
-;;;!!!I have no idea why.
+;;;!!!This is because `gnus-setup-message' uses uninterned symbols.
+;;;!!!This has been fixed in recent versions of Emacs and XEmacs,
+;;;!!!but for the time being, we'll just run this tiny function uncompiled.
 
 (progn
 (defun gnus-draft-setup (narticle group)

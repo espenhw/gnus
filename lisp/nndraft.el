@@ -30,7 +30,10 @@
 (require 'gnus-start)
 (require 'nnmh)
 (require 'nnoo)
-(eval-when-compile (require 'cl))
+(eval-when-compile
+  (require 'cl)
+  ;; This is just to shut up the byte-compiler.
+  (fset 'nndraft-request-group 'ignore))
 
 (nnoo-declare nndraft
   nnmh)

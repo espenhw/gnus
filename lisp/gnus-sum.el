@@ -5448,6 +5448,7 @@ returned."
 		(if backward
 		    (gnus-summary-find-prev unread)
 		  (gnus-summary-find-next unread)))
+      (gnus-summary-show-thread)
       (setq n (1- n)))
     (when (/= 0 n)
       (gnus-message 7 "No more%s articles"
@@ -7393,7 +7394,7 @@ groups."
       (gnus-run-hooks 'gnus-visual-mark-article-hook))))
 
 (defun gnus-summary-edit-wash (key)
-  "Perform editing command in the article buffer."
+  "Perform editing command KEY in the article buffer."
   (interactive
    (list
     (progn
@@ -8066,7 +8067,8 @@ If prefix argument ALL is non-nil, all articles are marked as read."
   (interactive "P")
   (when (gnus-summary-catchup all quietly nil 'fast)
     ;; Select next newsgroup or exit.
-    (if (eq gnus-auto-select-next 'quietly)
+    (if (and (not (gnus-group-quit-config gnus-newsgroup-name))
+	     (eq gnus-auto-select-next 'quietly))
 	(gnus-summary-next-group nil)
       (gnus-summary-exit))))
 

@@ -745,31 +745,31 @@ It will make innd servers spawn an nnrpd process to allow actual article
 reading."
   (nntp-send-command "^.*\r?\n" "MODE READER"))
 
-(defun nntp-send-authinfo ()
+(defun nntp-send-authinfo (&optional send-if-force)
   "Send the AUTHINFO to the nntp server.
-This function is supposed to be called from `nntp-server-opened-hook'.
 It will look in the \"~/.authinfo\" file for matching entries.  If
 nothing suitable is found there, it will prompt for a user name
 and a password."
   (let* ((list (gnus-parse-netrc nntp-authinfo-file))
 	 (alist (gnus-netrc-machine list nntp-address))
+	 (force (gnus-netrc-get alist "force"))
 	 (user (gnus-netrc-get alist "login"))
 	 (passwd (gnus-netrc-get alist "password")))
-    (nntp-send-command
-     "^3.*\r?\n" "AUTHINFO USER"
-     (or user (read-string (format "NNTP (%s) user name: " nntp-address))))
-    (nntp-send-command
-     "^2.*\r?\n" "AUTHINFO PASS"
-     (or passwd
-	 nntp-authinfo-password
-	 (setq nntp-authinfo-password
-	       (nnmail-read-passwd (format "NNTP (%s) password: "
-					   nntp-address)))))))
+    (when (or (not send-if-force)
+	      force)
+      (nntp-send-command
+       "^3.*\r?\n" "AUTHINFO USER"
+       (or user (read-string (format "NNTP (%s) user name: " nntp-address))))
+      (nntp-send-command
+       "^2.*\r?\n" "AUTHINFO PASS"
+       (or passwd
+	   nntp-authinfo-password
+	   (setq nntp-authinfo-password
+		 (nnmail-read-passwd (format "NNTP (%s) password: "
+					     nntp-address))))))))
 
 (defun nntp-send-nosy-authinfo ()
-  "Send the AUTHINFO to the nntp server.
-This function is supposed to be called from `nntp-server-opened-hook'.
-It will prompt for a password."
+  "Send the AUTHINFO to the nntp server."
   (nntp-send-command
    "^3.*\r?\n" "AUTHINFO USER"
    (read-string (format "NNTP (%s) user name: " nntp-address)))
@@ -779,7 +779,6 @@ It will prompt for a password."
 
 (defun nntp-send-authinfo-from-file ()
   "Send the AUTHINFO to the nntp server.
-This function is supposed to be called from `nntp-server-opened-hook'.
 
 The authinfo login name is taken from the user's login name and the
 password contained in '~/.nntp-authinfo'."
@@ -845,7 +844,8 @@ password contained in '~/.nntp-authinfo'."
 	      (erase-buffer)
 	      (set-buffer nntp-server-buffer)
 	      (let ((nnheader-callback-function nil))
-		(run-hooks 'nntp-server-opened-hook))))
+		(run-hooks 'nntp-server-opened-hook)
+		(nntp-send-authinfo t))))
 	(when (buffer-name (process-buffer process))
 	  (kill-buffer (process-buffer process)))
 	nil))))

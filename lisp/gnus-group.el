@@ -2717,7 +2717,8 @@ of groups killed."
 		(delq (assoc group gnus-newsrc-alist)
 		      gnus-newsrc-alist))
 	  (when gnus-group-change-level-function
-	    (funcall gnus-group-change-level-function group gnus-level-killed 3))
+	    (funcall gnus-group-change-level-function
+		     group gnus-level-killed 3))
 	  (cond
 	   ((setq entry (gnus-gethash group gnus-newsrc-hashtb))
 	    (push (cons (car entry) (nth 2 entry))

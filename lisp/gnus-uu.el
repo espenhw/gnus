@@ -290,7 +290,7 @@ so I simply dropped them."
 
 (defcustom gnus-uu-digest-headers
   '("^Date:" "^From:" "^To:" "^Cc:" "^Subject:" "^Message-ID:" "^Keywords:"
-    "^Summary:" "^References:")
+    "^Summary:" "^References:" "^Content-Type:" "^Content-Transfer-Encoding:")
   "*List of regexps to match headers included in digested messages.
 The headers will be included in the sequence they are matched."
   :group 'gnus-extract

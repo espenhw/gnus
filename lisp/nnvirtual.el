@@ -261,7 +261,9 @@ to virtual article number.")
    (t
     (when (or (not dont-check)
 	      nnvirtual-always-rescan)
-      (nnvirtual-create-mapping))
+      (nnvirtual-create-mapping)
+      (when nnvirtual-always-rescan
+	(nnvirtual-request-update-info group (gnus-get-info group))))
     (setq nnvirtual-current-group group)
     (nnheader-insert "211 %d 1 %d %s\n"
 		     nnvirtual-mapping-len nnvirtual-mapping-len group))))

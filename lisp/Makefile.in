@@ -5,7 +5,7 @@ srcdir = @srcdir@
 subdir = lisp
 top_srcdir = @top_srcdir@
 
-EMACS = emacs
+EMACS = @EMACS@
 FLAGS = -batch -q -no-site-file -l ./dgnushack.el
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@

@@ -1,3 +1,86 @@
+Thu Mar 19 15:18:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.3 is released.
+
+Thu Mar 19 15:09:14 1998  Wes Hardaker  <wjhardaker@ucdavis.edu>
+
+	* gnus-win.el (gnus-delete-windows-in-gnusey-frames): Make sure
+	there are no nil buffers.
+
+1998-03-17  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-uu.el (gnus-uu-digest-headers): Add `Content-Type' and
+	`Content-Transfer-Encoding'. 
+
+1998-03-18  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-header-lines): Added `:format'.
+
+1998-03-18  Simon Josefsson  <jas@pdc.kth.se>
+
+       * nndoc.el: dummy request-accept-article
+
+Thu Mar 19 14:10:25 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-next-subject): Expand threads.
+
+	* gnus-agent.el (gnus-agent-group-mode-hook,
+	gnus-agent-summary-mode-hook): New variables.
+	(gnus-agent-mode): Run them.
+
+1998-03-14  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus-xmas.el (gnus-xmas-group-startup-message): Tell gnus-start
+	we've already drawn the pretty Gnu graphic.
+
+Thu Mar 19 12:44:12 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el: Would use nil group names.
+
+	* nntp.el (nntp-send-authinfo): Send authinfo to "force"d
+	servers. 
+
+	* gnus-util.el (gnus-parse-netrc): Accept the "force" token.
+
+	* message.el (message-cancel-news): Compare Sender header, not
+	From header.
+
+Tue Mar 17 15:07:18 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (article-hide-headers): Fold case.
+
+Sat Mar 14 17:57:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-horizontal-recenter): New window-end may
+	return nil.
+
+Fri Mar 13 22:12:30 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-fetch-session): Check whether server
+	is up before fetching.
+
+	* gnus-win.el (gnus-window-frame-focus): New variable.
+	(gnus-configure-windows): Use it.
+
+	* gnus-sum.el (gnus-summary-catchup-and-exit): Don't select next
+	when in an ephemeral group.
+
+	* gnus-agent.el (gnus-agent-expire): Message end.
+	(gnus-agent-expire-all): New variable.
+	(gnus-agent-expire): Use it.
+
+Fri Mar 13 22:07:17 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-high-scored-p): Wrong value.
+
+Fri Mar 13 21:10:24 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnvirtual.el (nnvirtual-request-group): Force updating of info. 
+
+Sun Mar  8 20:46:51 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-delete-incoming): Changed default.
+
 Sun Mar  8 14:05:25 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.2 is released.

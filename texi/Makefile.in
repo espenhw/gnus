@@ -109,7 +109,7 @@ veryclean:
 
 distclean:
 	make clean
-	rm -f *.orig *.rej *.elc *~ gnus gnus-[0-9] gnus-[0-9][0-9]
+	rm -f *.orig *.rej *.elc *~ gnus gnus-[0-9] gnus-[0-9][0-9] Makefile
 	rm -f message message-[0-9]
 
 install:

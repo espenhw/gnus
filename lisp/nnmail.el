@@ -407,7 +407,7 @@ Example:
   :group 'nnmail-split
   :type '(repeat (cons :format "%v" symbol regexp)))
 
-(defcustom nnmail-delete-incoming nil
+(defcustom nnmail-delete-incoming t
   "*If non-nil, the mail backends will delete incoming files after
 splitting."
   :group 'nnmail-retrieve

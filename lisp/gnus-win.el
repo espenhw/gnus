@@ -197,6 +197,7 @@ See the Gnus manual for an explanation of the syntax used.")
   "The most recently set window configuration.")
 
 (defvar gnus-created-frames nil)
+(defvar gnus-window-frame-focus nil)
 
 (defun gnus-kill-gnus-frames ()
   "Kill all frames Gnus has created."
@@ -315,6 +316,8 @@ See the Gnus manual for an explanation of the syntax used.")
 	  (error "Illegal buffer type: %s" type))
 	(switch-to-buffer (get-buffer-create
 			   (gnus-window-to-buffer-helper buffer)))
+	(when (memq 'frame-focus split)
+	  (setq gnus-window-frame-focus window))
 	;; We return the window if it has the `point' spec.
 	(and (memq 'point split) window)))
      ;; This is a frame split.
@@ -438,14 +441,19 @@ See the Gnus manual for an explanation of the syntax used.")
 	  (select-frame frame)))
 
       (switch-to-buffer nntp-server-buffer)
-      (gnus-configure-frame split (get-buffer-window (current-buffer))))))
+      (let (gnus-window-frame-focus)
+	(gnus-configure-frame split (get-buffer-window (current-buffer)))
+	(when gnus-window-frame-focus
+	  (select-frame (window-frame gnus-window-frame-focus)))))))
 
 (defun gnus-delete-windows-in-gnusey-frames ()
   "Do a `delete-other-windows' in all frames that have Gnus windows."
   (let ((buffers
 	 (mapcar
 	  (lambda (elem)
-	    (get-buffer (gnus-window-to-buffer-helper (cdr elem))))
+	    (let ((buf (gnus-window-to-buffer-helper (cdr elem))))
+	      (if (not (null buf))
+		  (get-buffer buf))))
 	  gnus-window-to-buffer)))
     (mapcar
      (lambda (frame)

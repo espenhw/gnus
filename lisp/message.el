@@ -544,6 +544,7 @@ If stringp, use this; if non-nil, use no host name (user name only)."
 
 (define-widget 'message-header-lines 'text
   "All header lines must be LFD terminated."
+  :format "%t:%n%v"
   :valid-regexp "^\\'"
   :error "All header lines must be newline terminated")
 
@@ -3388,18 +3389,20 @@ responses here are directed to other newsgroups."))
   (unless (message-news-p)
     (error "This is not a news article; canceling is impossible"))
   (when (yes-or-no-p "Do you really want to cancel this article? ")
-    (let (from newsgroups message-id distribution buf)
+    (let (from newsgroups message-id distribution buf sender)
       (save-excursion
 	;; Get header info. from original article.
 	(save-restriction
 	  (message-narrow-to-head)
 	  (setq from (message-fetch-field "from")
+		sender (message-fetch-field "sender")
 		newsgroups (message-fetch-field "newsgroups")
 		message-id (message-fetch-field "message-id" t)
 		distribution (message-fetch-field "distribution")))
 	;; Make sure that this article was written by the user.
 	(unless (string-equal
-		 (downcase (cadr (mail-extract-address-components from)))
+		 (downcase
+		  (or sender (cadr (mail-extract-address-components from))))
 		 (downcase (message-make-address)))
 	  (error "This article is not yours"))
 	;; Make control message.

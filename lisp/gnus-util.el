@@ -473,22 +473,23 @@ If N, return the Nth ancestor instead."
     (let* ((orig (point))
 	   (end (window-end (get-buffer-window (current-buffer) t)))
 	   (max 0))
-      ;; Find the longest line currently displayed in the window.
-      (goto-char (window-start))
-      (while (and (not (eobp))
-		  (< (point) end))
-	(end-of-line)
-	(setq max (max max (current-column)))
-	(forward-line 1))
-      (goto-char orig)
-      ;; Scroll horizontally to center (sort of) the point.
-      (if (> max (window-width))
-	  (set-window-hscroll
-	   (get-buffer-window (current-buffer) t)
-	   (min (- (current-column) (/ (window-width) 3))
-		(+ 2 (- max (window-width)))))
-	(set-window-hscroll (get-buffer-window (current-buffer) t) 0))
-      max)))
+      (when end
+	;; Find the longest line currently displayed in the window.
+	(goto-char (window-start))
+	(while (and (not (eobp))
+		    (< (point) end))
+	  (end-of-line)
+	  (setq max (max max (current-column)))
+	  (forward-line 1))
+	(goto-char orig)
+	;; Scroll horizontally to center (sort of) the point.
+	(if (> max (window-width))
+	    (set-window-hscroll
+	     (get-buffer-window (current-buffer) t)
+	     (min (- (current-column) (/ (window-width) 3))
+		  (+ 2 (- max (window-width)))))
+	  (set-window-hscroll (get-buffer-window (current-buffer) t) 0))
+	max))))
 
 (defun gnus-read-event-char ()
   "Get the next event."
@@ -868,7 +869,7 @@ ARG is passed to the first function."
       ()
     (save-excursion
       (let ((tokens '("machine" "default" "login"
-		      "password" "account" "macdef"))
+		      "password" "account" "macdef" "force"))
 	    alist elem result pair)
 	(nnheader-set-temp-buffer " *netrc*")
 	(set-syntax-table gnus-netrc-syntax-table)

@@ -54,6 +54,27 @@
   :group 'gnus-agent
   :type 'integer)
 
+(defcustom gnus-agent-expire-all nil
+  "If non-nil, also expire unread, ticked and dormant articles.
+If nil, only read articles will be expired."
+  :group 'gnus-agent
+  :type 'boolean)
+
+(defcustom gnus-agent-group-mode-hook nil
+  "Hook run in Agent group minor modes."
+  :group 'gnus-agent
+  :type 'hook)
+
+(defcustom gnus-agent-summary-mode-hook nil
+  "Hook run in Agent summary minor modes."
+  :group 'gnus-agent
+  :type 'hook)
+
+(defcustom gnus-agent-server-mode-hook nil
+  "Hook run in Agent summary minor modes."
+  :group 'gnus-agent
+  :type 'hook)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -181,7 +202,8 @@
 						     buffer))))
 	    minor-mode-map-alist))
     (gnus-agent-toggle-plugged gnus-plugged)
-    (gnus-run-hooks 'gnus-agent-mode-hook)))
+    (gnus-run-hooks 'gnus-agent-mode-hook
+		    (intern (format "gnus-agent-%s-mode-hook" buffer)))))
 
 (defvar gnus-agent-group-mode-map (make-sparse-keymap))
 (gnus-define-keys gnus-agent-group-mode-map
@@ -811,12 +833,14 @@ the actual number of articles toggled is returned."
 	groups group gnus-command-method)
     (save-excursion
       (while methods
-	(setq gnus-command-method (car methods)
-	      groups (gnus-groups-from-server (pop methods)))
-	(gnus-agent-with-fetch
-	  (while (setq group (pop groups))
-	    (when (<= (gnus-group-level group) gnus-agent-handle-level)
-	      (gnus-agent-fetch-group-1 group gnus-command-method)))))
+	(setq gnus-command-method (car methods))
+	(when (or (gnus-server-opened gnus-command-method)
+		  (gnus-open-server gnus-command-method))
+	  (setq groups (gnus-groups-from-server (pop methods)))
+	  (gnus-agent-with-fetch
+	    (while (setq group (pop groups))
+	      (when (<= (gnus-group-level group) gnus-agent-handle-level)
+		(gnus-agent-fetch-group-1 group gnus-command-method))))))
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
 
 (defun gnus-agent-fetch-group-1 (group method)
@@ -1138,7 +1162,7 @@ The following commands are available:
 
 (defun gnus-agent-high-scored-p ()
   "Say whether an article has a high score or not."
-  (> gnus-score gnus-agent-low-score))
+  (> gnus-score gnus-agent-high-score))
 
 (defun gnus-category-make-function (cat)
   "Make a function from category CAT."
@@ -1248,6 +1272,7 @@ The following commands are available:
 	     (setq article (car elem))
 	     (when (or (null low)
 		       (< article low)
+		       gnus-agent-expire-all
 		       (and (not (memq article unreads))
 			    (not (memq article marked))))
 	       ;; Find and nuke the NOV line.
@@ -1273,7 +1298,8 @@ The following commands are available:
 	  (goto-char (pop histories))
 	  (gnus-delete-line))
 	(gnus-agent-save-history)
-	(gnus-agent-close-history)))))
+	(gnus-agent-close-history))
+      (gnus-message 4 "Expiry...done"))))
 
 ;;;###autoload
 (defun gnus-agent-batch ()

@@ -638,6 +638,7 @@ always hide."
       (save-excursion
 	(save-restriction
 	  (let ((buffer-read-only nil)
+		(case-fold-search t)
 		(props (nconc (list 'article-type 'headers)
 			      gnus-hidden-properties))
 		(max (1+ (length gnus-sorted-header-list)))

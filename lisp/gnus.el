@@ -246,7 +246,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.2"
+(defconst gnus-version-number "5.6.3"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -701,7 +701,7 @@ All other Gnus path variables are initialized from this variable."
   :type 'directory)
 
 (defcustom gnus-directory (or (getenv "SAVEDIR")
-		      (nnheader-concat gnus-home-directory "News/"))
+			      (nnheader-concat gnus-home-directory "News/"))
   "*Directory variable from which all other Gnus file variables are derived."
   :group 'gnus-files
   :type 'directory)

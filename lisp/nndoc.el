@@ -536,6 +536,9 @@ from the document.")
     (insert "From: "  (or from "unknown")
  	    "\nSubject: " (or subject "(no subject)") "\n")))
 
+(deffoo nndoc-request-accept-article (group &optional server last)
+  nil)
+
 
 
 ;;;
