@@ -1,3 +1,8 @@
+2002-09-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-srvr.el (gnus-browse-describe-group): New command and
+	keystroke. 
+
 2002-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-treat-body-boundary): Don't quote a

@@ -662,6 +662,7 @@ The following commands are available:
     "L" gnus-browse-exit
     "q" gnus-browse-exit
     "Q" gnus-browse-exit
+    "d" gnus-server-describe-group
     "\C-c\C-c" gnus-browse-exit
     "?" gnus-browse-describe-briefly
 
@@ -878,6 +879,11 @@ buffer.
 	     (match-string-no-properties 1))
 	 gnus-browse-current-method)))))
 
+(defun gnus-browse-describe-group (group)
+  "Describe the current group."
+  (interactive (list (gnus-browse-group-name)))
+  (gnus-group-describe-group nil group))
+
 (defun gnus-browse-unsubscribe-group ()
   "Toggle subscription of the current group in the browse buffer."
   (let ((sub nil)
@@ -889,10 +895,6 @@ buffer.
       (unless (eq (char-after) ? )
 	(setq sub t))
       (setq group (gnus-browse-group-name))
-      ;;;;
-      ;;(when (and sub
-      ;;		 (cadr (gnus-gethash group gnus-newsrc-hashtb)))
-      ;;(error "Group already subscribed"))
       (if sub
 	  (progn
 	    ;; Make sure the group has been properly removed before we
