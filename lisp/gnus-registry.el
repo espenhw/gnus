@@ -33,6 +33,9 @@
 (require 'gnus-sum)
 (require 'nnmail)
 
+(defvar gnus-registry-dirty t
+ "Boolean set to t when the registry is modified")
+
 (defgroup gnus-registry nil
   "The Gnus registry."
   :group 'gnus)
@@ -77,7 +80,6 @@ The group names are matched, they don't have to be fully qualified."
   (interactive)
   (let ((file gnus-registry-cache-file))
     (save-excursion
-      ;; Save .newsrc.eld.
       (set-buffer (gnus-get-buffer-create " *Gnus-registry-cache*"))
       (make-local-variable 'version-control)
     (setq version-control gnus-backup-startup-file)
@@ -148,12 +150,16 @@ The group names are matched, they don't have to be fully qualified."
       (replace-match "" t t))))
 
 (defun gnus-registry-save ()
-  (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb))
-  (gnus-registry-cache-save))
+;; TODO: delete entries with 0 groups
+  (when gnus-registry-dirty
+    (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb))
+    (gnus-registry-cache-save)
+    (setq gnus-registry-dirty nil)))
 
 (defun gnus-registry-read ()
   (gnus-registry-cache-read)
-  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist)))
+  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist))
+  (setq gnus-registry-dirty nil))
 
 (defun alist-to-hashtable (alist)
   "Build a hashtable from the values in ALIST."
@@ -294,7 +300,8 @@ The message must have at least one group name."
     (let ((trail (gethash id gnus-registry-hashtb))
 	  (old-extra (gnus-registry-fetch-extra id)))
       (puthash id (cons extra (delete old-extra trail))
-	       gnus-registry-hashtb))))
+	       gnus-registry-hashtb)
+      (setq gnus-registry-dirty t))))
 
 (defun gnus-registry-store-extra-entry (id key value)
   "Put a specific entry in the extras field of the registry entry for id."
@@ -355,7 +362,8 @@ Returns the first place where the trail finds a group name."
   "Clear the Gnus registry."
   (interactive)
   (setq gnus-registry-alist nil)
-  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist)))
+  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist))
+  (setq gnus-registry-dirty t))
 
 (defun gnus-registry-install-hooks ()
   "Install the registry hooks."

@@ -1,3 +1,11 @@
+2003-05-28  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+
+	* gnus-registry.el (gnus-registry-dirty): flag for modified registry
+	(gnus-registry-save, gnus-registry-read) 
+	(gnus-registry-store-extra, gnus-registry-clear): use it (note
+	that gnus-registry-store-extra is invoked for all modifications to
+	set the mtime, so gnus-registry-dirty only needs to be set there)
+
 2003-05-23  Simon Josefsson  <jas@extundo.com>
 
 	* mml1991.el (mml1991-pgg-sign): Use mml-sender instead of
