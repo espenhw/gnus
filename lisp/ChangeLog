@@ -1,3 +1,7 @@
+2000-07-03  Stainless Steel Rat <ratinox@peorth.gweep.net>
+
+	* gnus-sum.el (gnus-recenter): Fix horizontal recenter.
+
 2000-07-03  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus-sum.el (gnus-update-marks): Don't propagate download and
