@@ -5676,6 +5676,23 @@ with a @samp{.} in the second column (@code{gnus-unseen-mark}).
 Compare with @code{gnus-recent-mark}.
 
 @item
+@vindex gnus-undownloaded-mark
+When using the Gnus agent @pxref{Agent Basics}, some articles might not
+have been downloaded.  Such articles cannot be viewed while you are
+offline (unplugged).  These articles get the @samp{@@} mark in the
+first column.  (The variable @code{gnus-undownloaded-mark} controls
+which character to use.)
+
+@item
+@vindex gnus-downloadable-mark
+The Gnus agent @pxref{Agent Basics} downloads some articles
+automatically, but it is also possible to explicitly mark articles for
+download, even if they would not be downloaded automatically.  Such
+explicitly-marked articles get the @samp{%} mark in the first column.
+(The variable @code{gnus-downloadable-mark} controls which character to
+use.)
+
+@item
 @vindex gnus-not-empty-thread-mark
 @vindex gnus-empty-thread-mark
 If the @samp{%e} spec is used, the presence of threads or not will be
