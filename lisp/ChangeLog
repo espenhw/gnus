@@ -1,3 +1,7 @@
+2004-03-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nndoc.el (nndoc-forward-type-p): Recognize envelope From_.
+
 2004-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-recompute-hierarchical-structure): Remove.
