@@ -1082,7 +1082,9 @@ password contained in '~/.nntp-authinfo'."
       (delete-char 2))
     ;; Delete status line.
     (goto-char (point-min))
-    (delete-region (point) (progn (forward-line 1) (point)))
+    (while (looking-at "[1-5][0-9][0-9] .*\n")
+      ;; For some unknown reason, there are more than one status lines.
+      (delete-region (point) (progn (forward-line 1) (point))))
     ;; Remove "." -> ".." encoding.
     (while (search-forward "\n.." nil t)
       (delete-char -1))))

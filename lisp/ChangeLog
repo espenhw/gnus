@@ -1,3 +1,7 @@
+2000-11-04 09:53:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-decode-text): Delete bogus status lines.
+
 2000-11-03  Stefan Monnier  <monnier@cs.yale.edu>
 
 	* message.el (message-font-lock-keywords): Match a final newline
