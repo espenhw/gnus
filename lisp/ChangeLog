@@ -1,3 +1,15 @@
+2000-06-26 11:18:57  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnimap.el (nnimap-request-post): Fix parenthesis.
+
+2000-06-26  Paul Stodghill <stodghil@CS.Cornell.EDU>
+
+	* message.el (message-unquote-tokens): New function.
+
+	* gnus-msg.el (gnus-inews-do-gcc): Unquote gcc tokens.
+
+	* nnimap.el (nnimap-request-post): Ditto.
+
 2000-06-21  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus.el (gnus-asynchronous): Removed (defined in gnus-async.el).
