@@ -1,3 +1,11 @@
+2003-02-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Startup Files): Addition.
+
+2003-02-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Mail Source Specifiers): Addition.
+
 2003-02-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* emacs-mime.texi (Files and Directories): New node.

@@ -1444,9 +1444,14 @@ saving.  This can be useful in certain obscure situations that involve
 several servers where not all servers support @code{ask-server}.
 
 @vindex gnus-startup-file
+@vindex gnus-backup-startup-file
+@vindex version-control
 The @code{gnus-startup-file} variable says where the startup files are.
 The default value is @file{~/.newsrc}, with the Gnus (El Dingo) startup
 file being whatever that one is, with a @samp{.eld} appended.
+If you want version control for this file, set
+@code{gnus-backup-startup-file}.  It respects the same values as the
+@code{version-control} variable.
 
 @vindex gnus-save-newsrc-hook
 @vindex gnus-save-quick-newsrc-hook
@@ -12907,6 +12912,10 @@ Keywords:
 The file name.  Defaults to the value of the @code{MAIL}
 environment variable or the value of @code{rmail-spool-directory}
 (usually something like @file{/usr/mail/spool/user-name}).
+
+@item :prescript
+@itemx :postscript
+Script run before/after fetching mail.
 @end table
 
 An example file mail source:
