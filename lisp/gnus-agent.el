@@ -142,7 +142,9 @@ If this is `ask' the hook will query the user."
   :group 'gnus-agent)
 
 (defcustom gnus-agent-max-fetch-size 10000000 ;; 10 Mb
-  "gnus-agent-fetch-session is required to split its article fetches into chunks smaller than this limit."
+  "Chunk size for `gnus-agent-fetch-session'.
+The function will split its article fetches into chunks smaller than
+this limit."
   :group 'gnus-agent
   :type 'integer)
 
@@ -152,16 +154,15 @@ If this is `ask' the hook will query the user."
 (defvar gnus-agent-buffer-alist nil)
 (defvar gnus-agent-article-alist nil
 "An assoc list identifying the articles whose headers have been fetched.  
- If successfully fetched, these headers will be stored in the group's overview file.
- The key of each assoc pair is the article ID.
- The value of each assoc pair is a flag indicating 
- whether the identified article has been downloaded (gnus-agent-fetch-articles
- sets the value to the day of the download).
- NOTES:
- 1) The last element of this list can not be expired as some 
-    routines (for example, get-agent-fetch-headers) use the last
-    value to track which articles have had their headers retrieved.
- 2) The gnus-agent-regenerate may destructively modify the value.
+If successfully fetched, these headers will be stored in the group's overview
+file.  The key of each assoc pair is the article ID, the value of each assoc
+pair is a flag indicating whether the identified article has been downloaded
+\(gnus-agent-fetch-articles sets the value to the day of the download).
+NOTES:
+1) The last element of this list can not be expired as some 
+   routines (for example, get-agent-fetch-headers) use the last
+   value to track which articles have had their headers retrieved.
+2) The gnus-agent-regenerate may destructively modify the value.
 ")
 (defvar gnus-agent-group-alist nil)
 (defvar gnus-category-alist nil)
@@ -757,9 +758,11 @@ article's mark is toggled."
 	  (let ((a (caar alist))
 		(h (mail-header-number (car headers))))
 	    (cond ((< a h)
-		   (pop alist)) ; ignore IDs in the alist that are not being displayed in the summary
+		   ;; Ignore IDs in the alist that are not being
+		   ;; displayed in the summary.
+		   (pop alist))
 		  ((> a h)
-                   ;; headers that are not in the alist should be
+                   ;; Headers that are not in the alist should be
                    ;; fictious (see nnagent-retrieve-headers); they
                    ;; imply that this article isn't in the agent.
 		   (gnus-agent-append-to-list tail-undownloaded h)
@@ -784,13 +787,19 @@ article's mark is toggled."
               gnus-newsgroup-unfetched    (cdr unfetched))))))
 
 (defun gnus-agent-catchup ()
-  "Mark all articles as read that are neither cached, downloaded, nor downloadable."
+  "Mark as read all unhandled articles.
+An article is unhandled if it is neither cached, nor downloaded, nor
+downloadable."
   (interactive)
   (save-excursion
     (let ((articles gnus-newsgroup-undownloaded))
       (when (or gnus-newsgroup-downloadable
                 gnus-newsgroup-cached)
-        (setq articles (gnus-sorted-ndifference (gnus-sorted-ndifference (copy-sequence articles) gnus-newsgroup-downloadable) gnus-newsgroup-cached)))
+        (setq articles (gnus-sorted-ndifference
+			(gnus-sorted-ndifference
+			 (copy-sequence articles)
+			 gnus-newsgroup-downloadable)
+			gnus-newsgroup-cached)))
 
       (while articles
         (gnus-summary-mark-article
@@ -802,7 +811,8 @@ article's mark is toggled."
   (when gnus-newsgroup-processable
     (setq gnus-newsgroup-downloadable
           (let* ((dl gnus-newsgroup-downloadable)
-                 (gnus-newsgroup-downloadable (sort (copy-sequence gnus-newsgroup-processable) '<))
+                 (gnus-newsgroup-downloadable
+		  (sort (copy-sequence gnus-newsgroup-processable) '<))
                  (fetched-articles (gnus-agent-summary-fetch-group)))
             ;; The preceeding call to (gnus-agent-summary-fetch-group)
             ;; updated gnus-newsgroup-downloadable to remove each
@@ -834,8 +844,11 @@ Optional arg ALL, if non-nil, means to fetch all articles."
 	    (error "No articles to download"))
 	  (gnus-agent-with-fetch
             (setq gnus-newsgroup-undownloaded
-                  (gnus-sorted-ndifference gnus-newsgroup-undownloaded
-                                           (setq fetched-articles (gnus-agent-fetch-articles gnus-newsgroup-name articles)))))
+                  (gnus-sorted-ndifference
+		   gnus-newsgroup-undownloaded
+		   (setq fetched-articles
+			 (gnus-agent-fetch-articles
+			  gnus-newsgroup-name articles)))))
 	  (save-excursion
 
             (dolist (article articles)
@@ -1024,9 +1037,11 @@ This can be added to `gnus-select-article-hook' or
           ;; new one.  I do this after adding the article as I want at
           ;; least one article in each set.
           (when (< gnus-agent-max-fetch-size
-                   (setq current-set-size (+ current-set-size (if (= header-number article)
-                                                                  (mail-header-chars (car headers))
-                                                                0))))
+                   (setq current-set-size
+			 (+ current-set-size
+			    (if (= header-number article)
+				(mail-header-chars (car headers))
+			      0))))
             (setcar selected-sets (nreverse (car selected-sets)))
             (setq selected-sets (cons nil selected-sets)
                   current-set-size 0))))
@@ -1064,7 +1079,8 @@ This can be added to `gnus-select-article-hook' or
                           (goto-char (point-max))
                           (push (cons article (point)) pos)
                           (insert-buffer-substring nntp-server-buffer)))
-                      (copy-to-buffer nntp-server-buffer (point-min) (point-max))
+                      (copy-to-buffer
+		       nntp-server-buffer (point-min) (point-max))
                       (setq pos (nreverse pos)))))
                 ;; Then save these articles into the Agent.
                 (save-excursion
@@ -1083,8 +1099,9 @@ This can be added to `gnus-select-article-hook' or
                           (while (looking-at "\\([^: \n]+\\):\\([0-9]+\\) *")
                             (push (cons (buffer-substring (match-beginning 1)
                                                           (match-end 1))
-                                        (string-to-int (buffer-substring (match-beginning 2)
-                                                                         (match-end 2))))
+                                        (string-to-int
+					 (buffer-substring (match-beginning 2)
+							   (match-end 2))))
                                   crosses)
                             (goto-char (match-end 0)))
                           (gnus-agent-crosspost crosses (caar pos) date)))
@@ -1092,14 +1109,16 @@ This can be added to `gnus-select-article-hook' or
                       (if (not (re-search-forward
                                 "^Message-ID: *<\\([^>\n]+\\)>" nil t))
                           (setq id "No-Message-ID-in-article")
-                        (setq id (buffer-substring (match-beginning 1) (match-end 1))))
+                        (setq id (buffer-substring
+				  (match-beginning 1) (match-end 1))))
                       (let ((coding-system-for-write
                              gnus-agent-file-coding-system))
                         (write-region (point-min) (point-max)
                                       (concat dir (number-to-string (caar pos)))
                                       nil 'silent))
 
-                      (gnus-agent-append-to-list tail-fetched-articles (caar pos)))
+                      (gnus-agent-append-to-list
+		       tail-fetched-articles (caar pos)))
                     (widen)
                     (pop pos))))
 
@@ -1141,11 +1160,11 @@ This can be added to `gnus-select-article-hook' or
     (let ((root (gnus-agent-article-name ".overview" gnus-newsgroup-name))
           (cnt 0)
           name)
-      (while (file-exists-p (setq name (concat root "~" (int-to-string (setq cnt (1+ cnt))) "~"))))
+      (while (file-exists-p
+	      (setq name (concat root "~"
+				 (int-to-string (setq cnt (1+ cnt))) "~"))))
       (write-region (point-min) (point-max) name nil 'no-msg)
-      (gnus-message 1 "Created backup copy of overview in %s." name)
-      )
-    )
+      (gnus-message 1 "Created backup copy of overview in %s." name)))
   t)
 
 (defun gnus-agent-check-overview-buffer (&optional buffer)
@@ -1204,7 +1223,8 @@ and that there are no duplicates."
 		      nil 'silent))
       (pop gnus-agent-buffer-alist))
     (while gnus-agent-group-alist
-      (with-temp-file (gnus-agent-article-name ".agentview" (caar gnus-agent-group-alist))
+      (with-temp-file (gnus-agent-article-name
+		       ".agentview" (caar gnus-agent-group-alist))
 	(princ (cdar gnus-agent-group-alist))
 	(insert "\n")
         (princ 1 (current-buffer))
@@ -1240,34 +1260,43 @@ article numbers will be returned."
           (setq articles (gnus-range-add articles (cdr arts)))))
       (setq articles (sort (gnus-uncompress-sequence articles) '<)))
 
-    ;; At this point, I have the list of articles to consider for fetching.  
-    ;; This is the list that I'll return to my caller. Some of these articles may have already 
-    ;; been fetched.  That's OK as the fetch article code will filter those out.
-    ;; Internally, I'll filter this list to just those articles whose headers need to be fetched.
+    ;; At this point, I have the list of articles to consider for
+    ;; fetching.  This is the list that I'll return to my caller. Some
+    ;; of these articles may have already been fetched.  That's OK as
+    ;; the fetch article code will filter those out.  Internally, I'll
+    ;; filter this list to just those articles whose headers need to
+    ;; be fetched.
     (let ((articles articles))
       ;; Remove known articles.
       (when (gnus-agent-load-alist group)
         ;; Remove articles marked as downloaded.
         (if fetch-all
-            ;; I want to fetch all headers in the active range.  
-            ;; Therefore, exclude only those headers that are in the article alist.
-            ;; NOTE: This is probably NOT what I want to do after agent expiration in this group.
+            ;; I want to fetch all headers in the active range.
+            ;; Therefore, exclude only those headers that are in the
+            ;; article alist.
+            ;; NOTE: This is probably NOT what I want to do after
+            ;; agent expiration in this group.
             (setq articles (gnus-agent-uncached-articles articles group))
 
-          ;; I want to only fetch those headers that have never been fetched. 
-          ;; Therefore, exclude all headers that are, or WERE, in the article alist.
+          ;; I want to only fetch those headers that have never been
+          ;; fetched.  Therefore, exclude all headers that are, or
+          ;; WERE, in the article alist.
           (let ((low (1+ (caar (last gnus-agent-article-alist))))
                 (high (cdr (gnus-active group))))
-            ;; Low can be greater than High when the same group is fetched twice
-            ;; in the same session {The first fetch will fill the article alist 
-            ;; such that (last gnus-agent-article-alist) equals (cdr (gnus-active group))}.  
-            ;; The addition of one(the 1+ above) then forces Low to be greater than High.  
-            ;; When this happens, gnus-list-range-intersection returns nil which indicates 
-            ;; that no headers need to be fetched. -- Kevin
+            ;; Low can be greater than High when the same group is
+            ;; fetched twice in the same session {The first fetch will
+            ;; fill the article alist such that (last
+            ;; gnus-agent-article-alist) equals (cdr (gnus-active
+            ;; group))}.  The addition of one(the 1+ above) then
+            ;; forces Low to be greater than High.  When this happens,
+            ;; gnus-list-range-intersection returns nil which
+            ;; indicates that no headers need to be fetched. -- Kevin
             (setq articles (gnus-list-range-intersection
                             articles (list (cons low high)))))))
 
-      (gnus-message 10 "gnus-agent-fetch-headers: undownloaded articles are '%s'" (gnus-compress-sequence articles t))
+      (gnus-message
+       10 "gnus-agent-fetch-headers: undownloaded articles are '%s'"
+       (gnus-compress-sequence articles t))
 
       (save-excursion
         (set-buffer nntp-server-buffer)
@@ -1283,9 +1312,11 @@ article numbers will be returned."
               (unless (eq 'nov (gnus-retrieve-headers articles group))
                 (nnvirtual-convert-headers))
               (gnus-agent-check-overview-buffer)
-              ;; Move these headers to the overview buffer so that gnus-agent-braid-nov can merge them
-              ;; with the contents of FILE.
-              (copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
+              ;; Move these headers to the overview buffer so that
+              ;; gnus-agent-braid-nov can merge them with the contents
+              ;; of FILE.
+              (copy-to-buffer
+	       gnus-agent-overview-buffer (point-min) (point-max))
               (when (file-exists-p file)
                 (gnus-agent-braid-nov group articles file))
               (let ((coding-system-for-write
@@ -1316,8 +1347,9 @@ article numbers will be returned."
       (insert-buffer-substring gnus-agent-overview-buffer b e))))
 
 (defun gnus-agent-braid-nov (group articles file)
-  "Merges the article headers identified by ARTICLES from gnus-agent-overview-buffer with the contents
-of FILE placing the combined headers in nntp-server-buffer."
+  "Merge agent overview data with given file.
+Takes headers for ARTICLES from `gnus-agent-overview-buffer' and the given
+FILE and places the combined headers into `nntp-server-buffer'."
   (let (start last)
     (set-buffer gnus-agent-overview-buffer)
     (goto-char (point-min))
@@ -1328,7 +1360,8 @@ of FILE placing the combined headers in nntp-server-buffer."
     (forward-line -1)
     (unless (looking-at "[0-9]+\t")
       ;; Remove corrupted lines
-      (gnus-message 1 "Overview %s is corrupted. Removing corrupted lines..." file)
+      (gnus-message
+       1 "Overview %s is corrupted. Removing corrupted lines..." file)
       (goto-char (point-min))
       (while (not (eobp))
 	(if (looking-at "[0-9]+\t")
@@ -1351,7 +1384,8 @@ of FILE placing the combined headers in nntp-server-buffer."
                           t)
                          ((= art (car articles))
                           (beginning-of-line)
-                          (delete-region (point) (progn (forward-line 1) (point)))
+                          (delete-region
+			   (point) (progn (forward-line 1) (point)))
                           nil)
                          (t
                           (beginning-of-line)
@@ -1373,19 +1407,24 @@ of FILE placing the combined headers in nntp-server-buffer."
 	(set-buffer nntp-server-buffer))
       (insert-buffer-substring gnus-agent-overview-buffer start))))
 
-(eval-when-compile ; Keeps the compiler from warning about the free variable in gnus-agent-read-agentview
+;; Keeps the compiler from warning about the free variable in
+;; gnus-agent-read-agentview.
+(eval-when-compile
   (defvar gnus-agent-read-agentview))
 
 (defun gnus-agent-load-alist (group)
-  (let ((gnus-agent-read-agentview group)) ; Binds free variable that's used in gnus-agent-read-agentview
-    "Load the article-state alist for GROUP."
+  "Load the article-state alist for GROUP."
+  ;; Bind free variable that's used in `gnus-agent-read-agentview'.
+  (let ((gnus-agent-read-agentview group))
     (setq gnus-agent-article-alist
           (gnus-cache-file-contents
            (gnus-agent-article-name ".agentview" group)
            'gnus-agent-file-loading-cache
            'gnus-agent-read-agentview))))
 
-;; Save format may be either 1 or 2.  Two is the new, compressed format that is still being tested.  Format 1 is uncompressed but known to be reliable.
+;; Save format may be either 1 or 2.  Two is the new, compressed
+;; format that is still being tested.  Format 1 is uncompressed but
+;; known to be reliable.
 (defconst gnus-agent-article-alist-save-format 2)
 
 (defun gnus-agent-read-agentview (file)
@@ -1399,34 +1438,39 @@ of FILE placing the combined headers in nntp-server-buffer."
                        (end-of-file 0)))
             changed-version)
 
-        (cond ((= version 0)
-               (let ((inhibit-quit t)
-                     entry)
-                 (gnus-agent-open-history)
-                 (set-buffer (gnus-agent-history-buffer))
-                 (goto-char (point-min))
-                 (while (not (eobp))
-                   (if (and (looking-at
-                             "[^\t\n]+\t\\([0-9]+\\)\t\\([^ \n]+\\) \\([0-9]+\\)")
-                            (string= (match-string 2)
-                                     gnus-agent-read-agentview)
-                            (setq entry (assoc (string-to-number (match-string 3)) alist)))
-                       (setcdr entry (string-to-number (match-string 1))))
-                   (forward-line 1))
-                 (gnus-agent-close-history)
-                 (setq changed-version t)))
-              ((= version 1)
-               (setq changed-version (not (= 1 gnus-agent-article-alist-save-format))))
-              ((= version 2)
-               (let (uncomp)
-                 (mapcar (lambda (comp-list)
-                           (let ((state (car comp-list))
-                                 (sequence (gnus-uncompress-sequence (cdr comp-list))))
-                             (mapcar (lambda (article-id)
-                                       (setq uncomp (cons (cons article-id state) uncomp))) sequence))) alist)
-                 (setq alist (sort uncomp (lambda (first second) (< (car first) (car second)))))
-                 )
-               ))
+        (cond
+	 ((= version 0)
+	  (let ((inhibit-quit t)
+		entry)
+	    (gnus-agent-open-history)
+	    (set-buffer (gnus-agent-history-buffer))
+	    (goto-char (point-min))
+	    (while (not (eobp))
+	      (if (and (looking-at
+			"[^\t\n]+\t\\([0-9]+\\)\t\\([^ \n]+\\) \\([0-9]+\\)")
+		       (string= (match-string 2)
+				gnus-agent-read-agentview)
+		       (setq entry (assoc (string-to-number (match-string 3)) alist)))
+		  (setcdr entry (string-to-number (match-string 1))))
+	      (forward-line 1))
+	    (gnus-agent-close-history)
+	    (setq changed-version t)))
+	 ((= version 1)
+	  (setq changed-version (not (= 1 gnus-agent-article-alist-save-format))))
+	 ((= version 2)
+	  (let (uncomp)
+	    (mapcar
+	     (lambda (comp-list)
+	       (let ((state (car comp-list))
+		     (sequence (gnus-uncompress-sequence
+				(cdr comp-list))))
+		 (mapcar (lambda (article-id)
+			   (setq uncomp (cons (cons article-id state) uncomp)))
+			 sequence)))
+	     alist)
+	    (setq alist (sort uncomp
+			      (lambda (first second)
+				(< (car first) (car second))))))))
         (when changed-version
           (let ((gnus-agent-article-alist alist))
             (gnus-agent-save-alist gnus-agent-read-agentview)))
@@ -1466,14 +1510,18 @@ of FILE placing the combined headers in nntp-server-buffer."
                                 (day-of-download (cdr pair))
                                 (comp-list (assq day-of-download compressed)))
                            (if comp-list
-                               (setcdr comp-list (cons article-id (cdr comp-list)))
-                             (setq compressed (cons (list day-of-download article-id) compressed)))
+                               (setcdr comp-list
+				       (cons article-id (cdr comp-list)))
+                             (setq compressed
+				   (cons (list day-of-download article-id)
+					 compressed)))
                            nil)) gnus-agent-article-alist)
-               (mapcar (lambda (comp-list) (setcdr comp-list (gnus-compress-sequence (nreverse (cdr comp-list))))) compressed)
-               (princ compressed (current-buffer))
-               )
-             )
-            )
+               (mapcar (lambda (comp-list)
+			 (setcdr comp-list
+				 (gnus-compress-sequence
+				  (nreverse (cdr comp-list)))))
+		       compressed)
+               (princ compressed (current-buffer)))))
       (insert "\n")
       (princ gnus-agent-article-alist-save-format (current-buffer))
       (insert "\n"))))
@@ -1561,11 +1609,10 @@ of FILE placing the combined headers in nntp-server-buffer."
               (gnus-activate-group group))
       (let ((marked-articles gnus-newsgroup-downloadable))
         ;; Identify the articles marked for download
-        (unless gnus-newsgroup-active ;; This needs to be a
-          ;; gnus-summary local variable
-          ;; that is NOT bound to any
-          ;; value above (It's global
-          ;; value should default to nil).
+        (unless gnus-newsgroup-active
+	  ;; This needs to be a gnus-summary local variable that is
+          ;; NOT bound to any value above (its global value should
+          ;; default to nil).
           (dolist (mark gnus-agent-download-marks)
             (let ((arts (cdr (assq mark (gnus-info-marks
                                          (setq info (gnus-get-info group)))))))
@@ -1645,7 +1692,8 @@ of FILE placing the combined headers in nntp-server-buffer."
                       ;; predicate, add it to the download list
                       (when (or (eq num (car marked-articles))
                                 (let ((gnus-score
-                                       (or (cdr (assq num gnus-newsgroup-scored))
+                                       (or (cdr
+					    (assq num gnus-newsgroup-scored))
                                            gnus-summary-default-score)))
                                   (funcall predicate)))
                         (gnus-agent-append-to-list arts-tail num))))))
@@ -1653,10 +1701,15 @@ of FILE placing the combined headers in nntp-server-buffer."
               (let (fetched-articles)
                 ;; Fetch all selected articles
                 (setq gnus-newsgroup-undownloaded
-                      (gnus-sorted-ndifference gnus-newsgroup-undownloaded
-                                               (setq fetched-articles (if (cdr arts) (gnus-agent-fetch-articles group (cdr arts)) nil))))
+                      (gnus-sorted-ndifference
+		       gnus-newsgroup-undownloaded
+		       (setq fetched-articles
+			     (if (cdr arts)
+				 (gnus-agent-fetch-articles group (cdr arts))
+			       nil))))
 
-                (let ((unfetched-articles (gnus-sorted-ndifference (cdr arts) fetched-articles)))
+                (let ((unfetched-articles
+		       (gnus-sorted-ndifference (cdr arts) fetched-articles)))
                   (if gnus-newsgroup-active
                       ;; Update the summary buffer
                       (progn
@@ -1665,11 +1718,13 @@ of FILE placing the combined headers in nntp-server-buffer."
                             (gnus-summary-set-agent-mark article t)))
                         (dolist (article fetched-articles)
                           (if gnus-agent-mark-unread-after-downloaded
-                              (gnus-summary-mark-article article gnus-unread-mark))
+                              (gnus-summary-mark-article
+			       article gnus-unread-mark))
                           (when (gnus-summary-goto-subject article nil t)
                             (gnus-summary-update-download-mark article)))
                         (dolist (article unfetched-articles)
-                          (gnus-summary-mark-article article gnus-canceled-mark)))
+                          (gnus-summary-mark-article
+			   article gnus-canceled-mark)))
 
                     ;; Update the group buffer.
 
@@ -1680,13 +1735,17 @@ of FILE placing the combined headers in nntp-server-buffer."
 
                     (dolist (mark gnus-agent-download-marks)
                       (when (eq mark 'download)
-                        (let ((marked-arts (assq mark (gnus-info-marks
-                                                       (setq info (gnus-get-info group))))))
+                        (let ((marked-arts
+			       (assq mark (gnus-info-marks
+					   (setq info (gnus-get-info group))))))
                           (when (cdr marked-arts)
-                            (setq marks (delq marked-arts (gnus-info-marks info)))
+                            (setq marks
+				  (delq marked-arts (gnus-info-marks info)))
                             (gnus-info-set-marks info marks)))))
-                    (let ((read (gnus-info-read (or info (setq info (gnus-get-info group))))))
-                      (gnus-info-set-read info (gnus-add-to-range read unfetched-articles)))
+                    (let ((read (gnus-info-read
+				 (or info (setq info (gnus-get-info group))))))
+                      (gnus-info-set-read
+		       info (gnus-add-to-range read unfetched-articles)))
 
                     (gnus-group-update-group group t)
                     (sit-for 0)
@@ -2081,17 +2140,20 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 	      (while (setq gnus-command-method (pop methods))
 		(when (file-exists-p (gnus-agent-lib-file "active"))
 		  (with-temp-buffer
-		    (nnheader-insert-file-contents (gnus-agent-lib-file "active"))
+		    (nnheader-insert-file-contents
+		     (gnus-agent-lib-file "active"))
 		    (gnus-active-to-gnus-format
 		     gnus-command-method
 		     (setq orig (gnus-make-hashtable
 				 (count-lines (point-min) (point-max))))))
-		  (dolist (expiring-group (gnus-groups-from-server gnus-command-method))
+		  (dolist (expiring-group (gnus-groups-from-server
+					   gnus-command-method))
 		    (if (or (not group)
 			    (equal group expiring-group))
 			(let* ((dir (concat
 				     (gnus-agent-directory)
-				     (gnus-agent-group-path expiring-group) "/"))
+				     (gnus-agent-group-path expiring-group)
+				     "/"))
 			       (active
 				(gnus-gethash-safe expiring-group orig))
                                (day (if (numberp day)
@@ -2099,12 +2161,13 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
                                       (let (found
                                             (days gnus-agent-expire-days))
                                         (catch 'found
-                                          (while (and (not found)
-                                                      days)
+                                          (while (and (not found) days)
                                             (when (eq 0 (string-match (caar days) expiring-group))
                                               (throw 'found (- (time-to-days (current-time)) (cadar days))))
                                             (pop days))
-                                          ;; No regexp matched so set a limit that will block expiration in this group
+                                          ;; No regexp matched so set
+                                          ;; a limit that will block
+                                          ;; expiration in this group.
                                           0)))))
                                         
 			  (when active
@@ -2152,16 +2215,29 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 				   dlist
 				   type)
 
-			      ;; The normal article alist contains elements that look like (article# . fetch_date)
-			      ;; I need to combine other information with this list.  For example, a flag indicating that a particular article MUST BE KEPT.
-			      ;; To do this, I'm going to transform the elements to look like (article# fetch_date keep_flag NOV_entry_marker)
-			      ;; Later, I'll reverse the process to generate the expired article alist.
+			      ;; The normal article alist contains
+			      ;; elements that look like (article# .
+			      ;; fetch_date) I need to combine other
+			      ;; information with this list.  For
+			      ;; example, a flag indicating that a
+			      ;; particular article MUST BE KEPT.  To
+			      ;; do this, I'm going to transform the
+			      ;; elements to look like (article#
+			      ;; fetch_date keep_flag
+			      ;; NOV_entry_marker) Later, I'll reverse
+			      ;; the process to generate the expired
+			      ;; article alist.
 
-			      ;; Convert the alist elements to (article# fetch_date nil nil).
+			      ;; Convert the alist elements to
+			      ;; (article# fetch_date nil nil).
 			      (setq dlist (mapcar (lambda (e) (list (car e) (cdr e) nil nil)) alist))
 
-			      ;; Convert the keep lists to elements that look like (article# nil keep_flag nil) then append it to the expanded dlist
-			      ;; These statements are sorted by ascending precidence of the keep_flag.
+			      ;; Convert the keep lists to elements
+			      ;; that look like (article# nil
+			      ;; keep_flag nil) then append it to the
+			      ;; expanded dlist These statements are
+			      ;; sorted by ascending precidence of the
+			      ;; keep_flag.
 			      (setq dlist (nconc dlist
 						 (mapcar (lambda (e) (list e nil 'unread  nil)) unreads)))
 			      (setq dlist (nconc dlist
@@ -2179,18 +2255,30 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 				(let (p)
 				  (while (< (setq p (point)) (point-max))
 				    (condition-case nil
-					;; If I successfully read an integer (the plus zero ensures a numeric type), prepend a marker entry to the list
+					;; If I successfully read an
+					;; integer (the plus zero
+					;; ensures a numeric type),
+					;; prepend a marker entry to
+					;; the list
 					(push (list (+ 0 (read (current-buffer))) nil nil (set-marker (make-marker) p)) dlist)
 				      (error
 				       (gnus-message 1 "gnus-agent-expire: read error occurred when reading expression at %s in %s.  Skipping to next line." (point) nov-file)))
-				    ;; Whether I succeeded, or failed, it doesn't matter.  Move to the next line then try again.
+				    ;; Whether I succeeded, or failed,
+				    ;; it doesn't matter.  Move to the
+				    ;; next line then try again.
 				    (forward-line 1)))
 				(gnus-message 7 "gnus-agent-expire: Loading overview... Done"))
 			      (set-buffer-modified-p nil)
 
-			      ;; At this point, all of the information is in dlist.  The only problem is that much of it is spread across multiple entries.  Sort then MERGE!!
+			      ;; At this point, all of the information
+			      ;; is in dlist.  The only problem is
+			      ;; that much of it is spread across
+			      ;; multiple entries.  Sort then MERGE!!
 			      (gnus-message 7 "gnus-agent-expire: Sorting entries... ")
-			      (let ((special 0)	; If two entries have the same article-number then sort by ascending keep_flag.
+			      ;; If two entries have the same
+			      ;; article-number then sort by ascending
+			      ;; keep_flag.
+			      (let ((special 0)
 				    (marked 1)
 				    (unread 2))
 				(setq dlist
@@ -2350,11 +2438,16 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
     (cdr unread)))
 
 (defun gnus-agent-uncached-articles (articles group &optional cached-header)
-  "Constructs sublist of ARTICLES that excludes those articles ids in GROUP that have already been fetched.
- If CACHED-HEADER is nil, articles are only excluded if the article itself has been fetched."
+  "Restrict ARTICLES to numbers already fetched.
+Returns a sublist of ARTICLES that excludes thos article ids in GROUP
+that have already been fetched.
+If CACHED-HEADER is nil, articles are only excluded if the article itself
+has been fetched."
 
-;; Logically equivalent to: (gnus-sorted-difference articles (mapcar 'car gnus-agent-article-alist))
-;; Functionally, I don't need to construct a temp list using mapcar.
+  ;; Logically equivalent to: (gnus-sorted-difference articles (mapcar
+  ;; 'car gnus-agent-article-alist))
+
+  ;; Functionally, I don't need to construct a temp list using mapcar.
 
   (if (gnus-agent-load-alist group)
     (let* ((ref gnus-agent-article-alist)
@@ -2407,14 +2500,19 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
                                     uncached-articles group fetch-old)))
                      (nnvirtual-convert-headers))
                     ((eq 'nntp (car gnus-current-select-method))
-                     ;; The author of gnus-get-newsgroup-headers-xover reports that the XOVER command
-                     ;; is commonly unreliable. The problem is that recently posted articles may not 
-                     ;; be entered into the NOV database in time to respond to my XOVER query.
+                     ;; The author of gnus-get-newsgroup-headers-xover
+                     ;; reports that the XOVER command is commonly
+                     ;; unreliable. The problem is that recently
+                     ;; posted articles may not be entered into the
+                     ;; NOV database in time to respond to my XOVER
+                     ;; query.
                      ;;
-                     ;; I'm going to use his assumption that the NOV database is updated in order 
-                     ;; of ascending article ID.  Therefore, a response containing article ID N 
-                     ;; implies that all articles from 1 to N-1 are up-to-date.  Therefore, 
-                     ;; missing articles in that range have expired.
+                     ;; I'm going to use his assumption that the NOV
+                     ;; database is updated in order of ascending
+                     ;; article ID.  Therefore, a response containing
+                     ;; article ID N implies that all articles from 1
+                     ;; to N-1 are up-to-date.  Therefore, missing
+                     ;; articles in that range have expired.
                      
                      (set-buffer nntp-server-buffer)
                      (let* ((fetched-articles (list nil))
@@ -2435,21 +2533,25 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
                              (gnus-agent-append-to-list tail-fetched-articles (read (current-buffer))))
                            (forward-line 1)))
                        
-                       ;; Clip this list to the headers that will actually be returned
+                       ;; Clip this list to the headers that will
+                       ;; actually be returned
                        (setq fetched-articles (gnus-list-range-intersection
                                                (cdr fetched-articles)
                                                (cons min max)))
 
-                       ;; Clip the uncached articles list to exclude IDs after the last FETCHED header.  
-                       ;; The excluded IDs may be fetchable using HEAD.
+                       ;; Clip the uncached articles list to exclude
+                       ;; IDs after the last FETCHED header.  The
+                       ;; excluded IDs may be fetchable using HEAD.
 		       (if (car tail-fetched-articles)
                            (setq uncached-articles (gnus-list-range-intersection 
                                                     uncached-articles 
 						    (cons (car uncached-articles) (car tail-fetched-articles)))))
 
-                       ;; Create the list of articles that were "successfully" fetched.  Success, in
-                       ;; this case, means that the ID should not be fetched again.  In the case of 
-                       ;; an expired article, the header will not be fetched.
+                       ;; Create the list of articles that were
+                       ;; "successfully" fetched.  Success, in this
+                       ;; case, means that the ID should not be
+                       ;; fetched again.  In the case of an expired
+                       ;; article, the header will not be fetched.
                        (setq uncached-articles (gnus-sorted-nunion fetched-articles uncached-articles))
                        ))))
 
@@ -2461,7 +2563,8 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 	    (set-buffer nntp-server-buffer)
 	    (copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
 
-            ;; Merge the temp buffer with the known headers (found on disk in FILE) into the nntp-server-buffer
+            ;; Merge the temp buffer with the known headers (found on
+            ;; disk in FILE) into the nntp-server-buffer
 	    (when (and uncached-articles (file-exists-p file))
 	      (gnus-agent-braid-nov group uncached-articles file))
 
@@ -2472,7 +2575,8 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
 	      (gnus-agent-check-overview-buffer)
 	      (write-region (point-min) (point-max) file nil 'silent))
             
-            ;; Update the group's article alist to include the newly fetched articles.
+            ;; Update the group's article alist to include the newly
+            ;; fetched articles.
 	    (gnus-agent-load-alist group)
 	    (gnus-agent-save-alist group uncached-articles nil)
             )
@@ -2510,7 +2614,9 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
       t)))
 
 (defun gnus-agent-regenerate-group (group &optional reread)
-  "Regenerate GROUP.  If REREAD is t, all articles in the .overview are marked as unread.  If REREAD is not nil, downloaded articles are marked as unread."
+  "Regenerate GROUP.
+If REREAD is t, all articles in the .overview are marked as unread.
+If REREAD is not nil, downloaded articles are marked as unread."
   (interactive (list (let ((def (or (gnus-group-group-name)
                                     gnus-newsgroup-name)))
                        (let ((select (read-string (if def (concat "Group Name (" def "): ")
@@ -2542,7 +2648,8 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
            (nnheader-insert-file-contents file)))
      (set-buffer-modified-p nil)
 
-     ;; Load the article IDs found in the overview file.  As a side-effect, validate the file contents.
+     ;; Load the article IDs found in the overview file.  As a
+     ;; side-effect, validate the file contents.
      (let ((load t))
        (while load
          (setq load nil)
@@ -2557,7 +2664,8 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
                            nil)
                           ((< l1 l2)
 			   (gnus-message 3 "gnus-agent-regenerate-group: NOV entries are NOT in ascending order.")
-                           ;; Don't sort now as I haven't verified that every line begins with a number
+                           ;; Don't sort now as I haven't verified
+                           ;; that every line begins with a number
                            (setq load t))
                           ((= l1 l2)
                            (forward-line -1)
@@ -2574,8 +2682,9 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
                     (setq nov-arts nil)))))
      (gnus-agent-check-overview-buffer)
 
-     ;; Construct a new article alist whose nodes match every header in the .overview file.  
-     ;; As a side-effect, missing headers are reconstructed from the downloaded article file.
+     ;; Construct a new article alist whose nodes match every header
+     ;; in the .overview file.  As a side-effect, missing headers are
+     ;; reconstructed from the downloaded article file.
      (while (or downloaded nov-arts)
        (cond ((and downloaded 
                    (or (not nov-arts)
@@ -2606,14 +2715,18 @@ FORCE is equivalent to setting gnus-agent-expire-days to zero(0)."
               (push (cons (car nov-arts) nil) alist)
               (pop nov-arts))))
 
-     ;; When gnus-agent-consider-all-articles is set, gnus-agent-regenerate-group should NOT remove article IDs 
-     ;; from the alist.  Those IDs serve as markers to indicate that an attempt has been made to fetch that 
-     ;; article's header.
+     ;; When gnus-agent-consider-all-articles is set,
+     ;; gnus-agent-regenerate-group should NOT remove article IDs from
+     ;; the alist.  Those IDs serve as markers to indicate that an
+     ;; attempt has been made to fetch that article's header.
 
-     ;; When gnus-agent-consider-all-articles is NOT set, gnus-agent-regenerate-group can remove the article
-     ;; ID of every article (with the exception of the last ID in the list - it's special) that no longer appears in the overview.
-     ;; In this situtation, the last article ID in the list implies that it, and every article ID preceeding it, 
-     ;; have been fetched from the server.
+     ;; When gnus-agent-consider-all-articles is NOT set,
+     ;; gnus-agent-regenerate-group can remove the article ID of every
+     ;; article (with the exception of the last ID in the list - it's
+     ;; special) that no longer appears in the overview.  In this
+     ;; situtation, the last article ID in the list implies that it,
+     ;; and every article ID preceeding it, have been fetched from the
+     ;; server.
      (if gnus-agent-consider-all-articles
          ;; Restore all article IDs that were not found in the overview file.
          (let* ((n (cons nil alist))

@@ -1,3 +1,20 @@
+2003-01-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-agent.el (gnus-agent-max-fetch-size)
+	(gnus-agent-article-alist, gnus-agent-get-undownloaded-list)
+	(gnus-agent-catchup, gnus-agent-summary-fetch-group)
+	(gnus-agent-fetch-articles, gnus-agent-backup-overview-buffer)
+	(gnus-agent-flush-cache, gnus-agent-fetch-headers)
+	(gnus-agent-braid-nov, gnus-agent-load-alist)
+	(gnus-agent-article-alist-save-format)
+	(gnus-agent-read-agentview, gnus-agent-save-alist)
+	(gnus-agent-fetch-group-1, gnus-agent-expire)
+	(gnus-agent-uncached-articles, gnus-agent-retrieve-headers)
+	(gnus-agent-regenerate-group): Reformat to keep under eighty
+	columns.  Reword docstrings so that first line is under eighty
+	chars and a complete sentence.  Still need to work on the rear
+	end of the file, in particular gnus-agent-expire.	
+
 2003-01-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bumped.
