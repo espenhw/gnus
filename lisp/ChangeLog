@@ -1,3 +1,8 @@
+2004-01-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* spam-stat.el (spam-stat-to-hash-table): Use :size argument in
+	make-hash-table.
+
 2004-01-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* canlock.el (base64-encode-string): Don't autoload it.

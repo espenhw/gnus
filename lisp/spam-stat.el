@@ -399,7 +399,8 @@ the word string, NGOOD is the number of good mails it has appeared in,
 NBAD is the number of bad mails it has appeared in, GOOD is the number
 of times it appeared in good mails, and BAD is the number of times it
 has appeared in bad mails."
-  (let ((table (make-hash-table :test 'equal)))
+  (let ((table (make-hash-table :size (length entries)
+				:test 'equal)))
     (mapc (lambda (l)
 	    (puthash (car l)
 		     (spam-stat-make-entry (nth 1 l) (nth 2 l))
