@@ -2,6 +2,7 @@
 
 	* message.el (message-cite-original-without-signature): Don't peel
 	off the blank line.
+	(message-get-reply-headers): Add Cc if it is not in follow-to.
 
 2001-01-20  Simon Josefsson  <sj@extundo.com>
 

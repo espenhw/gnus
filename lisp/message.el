@@ -1,5 +1,5 @@
 ;;; message.el --- composing mail and news messages  -*- coding: iso-latin-1 -*-
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -495,7 +495,7 @@ the signature is inserted."
   :group 'message-various
   :type 'hook)
 
-(defcustom message-minibuffer-local-map 
+(defcustom message-minibuffer-local-map
   (let ((map (make-sparse-keymap 'message-minibuffer-local-map)))
     (set-keymap-parent map minibuffer-local-map)
     map)
@@ -712,7 +712,7 @@ A value of nil means exclude your own name only."
 		 regexp))
 
 (defvar message-shoot-gnksa-feet nil
-  "*A list of GNKSA feet you are allowed to shoot.  
+  "*A list of GNKSA feet you are allowed to shoot.
 Gnus gives you all the opportunity you could possibly want for
 shooting yourself in the foot.  Also, Gnus allows you to shoot the
 feet of Good Net-Keeping Seal of Approval. The following are foot
@@ -1601,7 +1601,7 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (let ((quote-prefix-regexp
 	 ;; User should change message-cite-prefix-regexp if
 	 ;; message-yank-prefix is set to an abnormal value.
-         (concat "\\(" message-cite-prefix-regexp "\\)[ \t]*")))      
+         (concat "\\(" message-cite-prefix-regexp "\\)[ \t]*")))
     (setq paragraph-start
           (concat
            (regexp-quote mail-header-separator) "$\\|"
@@ -1799,7 +1799,7 @@ With the prefix argument FORCE, insert the header anyway."
     (setq beg (point))
     ;; Find first line of the paragraph.
     (if not-break
-	(while (and (not (eobp)) 
+	(while (and (not (eobp))
 		    (not (looking-at message-cite-prefix-regexp))
 		(looking-at paragraph-start))
 	  (forward-line 1)))
@@ -1860,9 +1860,9 @@ With the prefix argument FORCE, insert the header anyway."
 	(when quoted
 	  (insert quoted leading-space)))
       (if quoted
-	  (let* ((adaptive-fill-regexp 
+	  (let* ((adaptive-fill-regexp
 		 (regexp-quote (concat quoted leading-space)))
-		 (adaptive-fill-first-line-regexp 
+		 (adaptive-fill-first-line-regexp
 		  adaptive-fill-regexp ))
 	    (fill-paragraph nil))
 	(fill-paragraph nil))
@@ -3913,7 +3913,8 @@ OTHER-HEADERS is an alist of header/value pairs."
 	    to-address)
 	(progn
 	  (setq follow-to (list (cons 'To (or to-address mrt reply-to from))))
-	  (when (and wide (or mft mct))
+	  (when (and (and wide (or mft mct))
+		     (not (member (cons 'To (or mft mct)) follow-to)))
 	    (push (cons 'Cc (or mft mct)) follow-to)))
       (let (ccalist)
 	(save-excursion
@@ -4602,7 +4603,7 @@ which specify the range to operate on."
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
 
 ;; Support for toolbar
-(eval-when-compile 
+(eval-when-compile
   (defvar tool-bar-map)
   (defvar tool-bar-mode))
 
@@ -4615,7 +4616,7 @@ which specify the range to operate on."
 		       (load-path (mm-image-load-path)))
 		   ;; Zap some items which aren't so relevant and take
 		   ;; up space.
-		   (dolist (key '(print-buffer kill-buffer save-buffer 
+		   (dolist (key '(print-buffer kill-buffer save-buffer
 					       write-file dired open-file))
 		     (define-key tool-bar-map (vector key) nil))
 		   (tool-bar-add-item-from-menu
@@ -4833,7 +4834,7 @@ regexp varstr."
 (defun message-options-set (symbol value)
   (let ((the-cons (assq symbol message-options)))
     (if the-cons
-	(if value 
+	(if value
 	    (setcdr the-cons value)
 	  (setq message-options (delq the-cons message-options)))
       (and value
@@ -4844,10 +4845,10 @@ regexp varstr."
   (save-restriction
     (message-narrow-to-headers-or-head)
     (message-options-set 'message-sender
-			 (mail-strip-quoted-names 
+			 (mail-strip-quoted-names
 			  (message-fetch-field "from")))
     (message-options-set 'message-recipients
-			  (mail-strip-quoted-names 
+			  (mail-strip-quoted-names
 			   (message-fetch-field "to")))))
 
 (when (featurep 'xemacs)
