@@ -786,7 +786,9 @@ If SOURCE is a directory spec, try to return the group name component."
     (if (not (and (re-search-forward "^From " nil t)
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
-	(error "Error, unknown mail format! (Possibly corrupted.)")
+	(error "Error, unknown mail format! (Possibly corrupted %s `%s'.)"
+	       (if (buffer-file-name) "file" "buffer")
+	       (or (buffer-file-name) (buffer-name)))
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point)
