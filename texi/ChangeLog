@@ -1,3 +1,8 @@
+2002-02-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Group Parameters): Addition.
+	From: Steinar Bang <steinar@bang.priv.no>
+	
 2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Article Washing): Addition.
