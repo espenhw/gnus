@@ -3941,13 +3941,13 @@ than 988 characters long, and if they are not, trim them until they are."
   (when message-default-headers
     (insert message-default-headers)
     (or (bolp) (insert ?\n)))
+  (put-text-property (point-min) (point) 'field 'header)
   (put-text-property
    (point)
    (progn
      (insert mail-header-separator "\n")
      (1- (point)))
    'read-only nil)
-  (put-text-property (point-min) (1- (point)) 'field 'header)
   (forward-line -1)
   (when (message-news-p)
     (when message-default-news-headers
