@@ -1,3 +1,23 @@
+2000-10-11  John Wiegley  <johnw@gnu.org>
+
+	* gnus-topic.el (gnus-topic-mode): Use `setq' to clear
+	`gnus-group-change-level-function', instead of `remove-hook',
+	because it's not a hook!
+
+	* gnus-mlspl.el (gnus-group-split-update): Check the value of
+	`nnmail-crosspost', and use it to set the `no-crosspost'
+	argument when calling `gnus-group-split-fancy'.  Otherwise, it
+	assumes that cross-posting is always OK, no matter what
+	`nmail-crosspost' is set to.
+	(gnus-group-split-fancy): The argument order in the
+	second-to-last `push' call was wrong, but since `no-crosspost'
+	was always nil, it was never being triggered.
+
+	* gnus-art.el (gnus-treat-hide-citation-maybe): Added this
+	variable to correspond with `gnus-article-hide-citation-maybe'.
+	(gnus-treatment-function-alist): Added entry for the above
+	correlation.
+
 2000-10-12 08:26:30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-with-unibyte-current-buffer): Revert to old.
