@@ -41,16 +41,16 @@
 ;;   copying, restoring, etc.
 ;;
 ;; Todo:
-;; * Merge the information from <URL:http://multivac.cwru.edu./nnmaildir/>
-;;   into the Gnus manual.
-;; * Allow create-directory = ".", and configurable prefix of maildir names,
-;;   stripped off to produce group names.
+;; * Artificially add nonexistent article to the 'read range, to fix the
+;;   wrong-count problem.
+;; * Replace create-directory with target-prefix, so the maildirs can be in
+;;   the same directory as the symlinks, starting with, e.g., ".".
 ;; * Add a hook for when moving messages from new/ to cur/, to support
 ;;   nnmail's duplicate detection.
 ;; * Allow each mark directory in a group to have its own inode for mark
 ;;   files, to accommodate AFS.
 ;; * Improve generated Xrefs, so crossposts are detectable.
-;; * Improve readability.
+;; * Improve code readability.
 
 ;;; Code:
 
@@ -86,8 +86,8 @@ by nnmaildir-request-article.")
 
 ;; Variables to generate filenames of messages being delivered:
 (defvar   nnmaildir--delivery-time "")
-(defconst nnmaildir--delivery-pid  (number-to-string (emacs-pid)))
-(defvar   nnmaildir--delivery-ct   nil)
+(defconst nnmaildir--delivery-pid (concat "P" (number-to-string (emacs-pid))))
+(defvar   nnmaildir--delivery-count nil)
 
 ;; An obarry containing symbols whose names are server names and whose values
 ;; are servers:
@@ -620,17 +620,13 @@ by nnmaildir-request-article.")
 (defun nnmaildir--parse-filename (file)
   (let ((prefix (car file))
 	timestamp len)
-    (if (string-match
-	 "\\`\\([0-9]+\\)\\.\\([0-9]+\\)\\(_\\([0-9]+\\)\\)?\\(\\..*\\)\\'"
-	 prefix)
+    (if (string-match "\\`\\([0-9]+\\)\\(\\..*\\)\\'" prefix)
 	(progn
 	  (setq timestamp (concat "0000" (match-string 1 prefix))
 		len (- (length timestamp) 4))
 	  (vector (string-to-number (substring timestamp 0 len))
 		  (string-to-number (substring timestamp len))
-		  (string-to-number (match-string 2 prefix))
-		  (string-to-number (or (match-string 4 prefix) "-1"))
-		  (match-string 5 prefix)
+		  (match-string 2 prefix)
 		  file))
       file)))
 
@@ -643,11 +639,7 @@ by nnmaildir-request-article.")
     (if (> (aref a 0) (aref b 0)) (throw 'return nil))
     (if (< (aref a 1) (aref b 1)) (throw 'return t))
     (if (> (aref a 1) (aref b 1)) (throw 'return nil))
-    (if (< (aref a 2) (aref b 2)) (throw 'return t))
-    (if (> (aref a 2) (aref b 2)) (throw 'return nil))
-    (if (< (aref a 3) (aref b 3)) (throw 'return t))
-    (if (> (aref a 3) (aref b 3)) (throw 'return nil))
-    (string-lessp (aref a 4) (aref b 4))))
+    (string-lessp (aref a 2) (aref b 2))))
 
 (defun nnmaildir--scan (gname scan-msgs groups method srv-dir srv-ls)
   (catch 'return
@@ -703,7 +695,9 @@ by nnmaildir-request-article.")
 	(when (or isnew nattr)
 	  (mapcar
 	   (lambda (file)
-	     (rename-file (concat ndir file) (concat cdir file ":2,")))
+	     (let ((path (concat ndir file)))
+	       (and (time-less-p (nth 5 (file-attributes path)) (current-time))
+		    (rename-file path (concat cdir file ":2,")))))
 	   (funcall ls ndir nil "\\`[^.]" 'nosort))
 	  (setf (nnmaildir--grp-new group) nattr))
 	(setq cattr (nth 5 (file-attributes cdir)))
@@ -751,7 +745,7 @@ by nnmaildir-request-article.")
 	    files (sort files 'nnmaildir--sort-files))
       (mapcar
        (lambda (file)
-	 (setq file (if (consp file) file (aref file 5))
+	 (setq file (if (consp file) file (aref file 3))
 	       x (make-nnmaildir--art :prefix (car file) :suffix (cdr file)))
 	 (nnmaildir--grp-add-art nnmaildir--cur-server group x))
        files)
@@ -1265,7 +1259,7 @@ by nnmaildir-request-article.")
 	(coding-system-for-write nnheader-file-coding-system)
 	(buffer-file-coding-system nil)
 	(file-coding-system-alist nil)
-	srv-dir dir file tmpfile curfile 24h article)
+	srv-dir dir file time tmpfile curfile 24h article)
     (catch 'return
       (unless group
 	(setf (nnmaildir--srv-error nnmaildir--cur-server)
@@ -1279,15 +1273,17 @@ by nnmaildir-request-article.")
 	(throw 'return nil))
       (setq srv-dir (nnmaildir--srv-dir nnmaildir--cur-server)
 	    dir (nnmaildir--srvgrp-dir srv-dir gname)
-	    file (format-time-string "%s" nil))
+	    time (current-time)
+	    file (format-time-string "%s." time))
       (unless (string-equal nnmaildir--delivery-time file)
 	(setq nnmaildir--delivery-time file
-	      nnmaildir--delivery-ct 0))
-      (setq file (concat file "." nnmaildir--delivery-pid))
-      (unless (zerop nnmaildir--delivery-ct)
-	(setq file (concat file "_"
-			   (number-to-string nnmaildir--delivery-ct))))
-      (setq file (concat file "." (system-name))
+	      nnmaildir--delivery-count 0))
+      (when (and (consp (cdr time))
+		 (consp (cddr time)))
+	(setq file (concat file "M" (number-to-string (caddr time)))))
+      (setq file (concat file nnmaildir--delivery-pid)
+	    file (concat file "Q" (number-to-string nnmaildir--delivery-count))
+	    file (concat file "." (system-name)) ;;;; FIXME: encode / and :
 	    tmpfile (concat (nnmaildir--tmp dir) file)
 	    curfile (concat (nnmaildir--cur dir) file ":2,"))
       (when (file-exists-p tmpfile)
@@ -1298,7 +1294,7 @@ by nnmaildir-request-article.")
 	(setf (nnmaildir--srv-error nnmaildir--cur-server)
 	      (concat "File exists: " curfile))
 	(throw 'return nil))
-      (setq nnmaildir--delivery-ct (1+ nnmaildir--delivery-ct)
+      (setq nnmaildir--delivery-count (1+ nnmaildir--delivery-count)
 	    24h (run-with-timer 86400 nil
 				(lambda ()
 				  (nnmaildir--unlink tmpfile)
