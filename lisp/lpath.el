@@ -17,7 +17,7 @@
 	       propertize put-image replace-regexp-in-string
 	       rmail-msg-is-pruned rmail-msg-restore-non-pruned-header
 	       sort-coding-systems spam-BBDB-register-routine
-	       spam-enter-ham-BBDB tool-bar-add-item
+	       spam-enter-ham-BBDB string-to-multibyte tool-bar-add-item
 	       tool-bar-add-item-from-menu tool-bar-local-item-from-menu
 	       url-http-file-exists-p vcard-pretty-print w32-focus-frame
 	       w3m-charset-to-coding-system x-focus-frame))

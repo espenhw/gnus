@@ -1,3 +1,7 @@
+2003-04-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind string-to-multibyte.
+
 2003-04-30  Steve Youngs  <youngs@xemacs.org>
 
 	* dgnushack.el: Add some missing autoloads for XEmacs 21.1.
