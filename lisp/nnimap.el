@@ -95,7 +95,7 @@ If nil, the first match found will be used."
   :type 'boolean)
 
 (defcustom nnimap-split-inbox nil
-  "*Name of mailbox to split mail from.
+  "Name of mailbox to split mail from.
 
 Mail is read from this mailbox and split according to rules in
 `nnimap-split-rule'.
@@ -300,7 +300,7 @@ similar which you wouldn't want to set up a mailing list for, you can
 use this to make replies go directly to the group.")
 
 (defvoo nnimap-expunge-search-string "UID %s NOT SINCE %s"
-  "*IMAP search command to use for articles that are to be expired.
+  "IMAP search command to use for articles that are to be expired.
 The first %s is replaced by a UID set of articles to search on,
 and the second %s is replaced by a date criterium.
 
@@ -310,7 +310,7 @@ instead of the internal date of messages.  See section 6.4.4 of RFC
 2060 for more information on valid strings.")
 
 (defvoo nnimap-importantize-dormant t
-  "*If non-nil, mark \"dormant\" articles as \"ticked\" for other IMAP clients.
+  "If non-nil, mark \"dormant\" articles as \"ticked\" for other IMAP clients.
 Note that within Gnus, dormant articles will still (only) be
 marked as ticked.  This is to make \"dormant\" articles stand out,
 just like \"ticked\" articles, in other IMAP clients.")

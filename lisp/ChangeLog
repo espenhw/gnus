@@ -6,6 +6,8 @@
 	(nnimap-split-crosspost, nnimap-split-inbox)
 	(nnimap-split-rule, nnimap-split-predicate) 
 	(nnimap-split-predicate): Defcustom.
+	(nnimap-split-inbox, nnimap-expunge-search-string) 
+	(nnimap-importantize-dormant): Remove "*" from doc.
 
 2001-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
