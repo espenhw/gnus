@@ -658,6 +658,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	       (goto-char (point-max))
 	       (gnus-article-search-signature)
 	       (point)))
+	(prefix-regexp (concat "^\\(" message-cite-prefix-regexp "\\)"))
 	alist entry start begin end numbers prefix)
     ;; Get all potential prefixes in `alist'.
     (while (< (point) max)
@@ -674,7 +675,7 @@ See also the documentation for `gnus-article-highlight-citation'."
       ;; Ignore very long prefixes.
       (when (> end (+ (point) gnus-cite-max-prefix))
 	(setq end (+ (point) gnus-cite-max-prefix)))
-      (while (re-search-forward message-cite-prefix-regexp (1- end) t)
+      (while (re-search-forward prefix-regexp (1- end) t)
 	;; Each prefix.
 	(setq end (match-end 0)
 	      prefix (buffer-substring begin end))

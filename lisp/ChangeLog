@@ -4,6 +4,7 @@
 	constituent as in articles.
 	(message-setup-fill-variables): Add -_. as supercite-style prefix.
 	* gnus-art.el (gnus-article-mode-syntax-table): Remove ?-.
+	* gnus-cite.el (gnus-cite-parse): Match from the beginning of line.
 
 2000-11-15 13:21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
