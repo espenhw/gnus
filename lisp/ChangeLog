@@ -1,3 +1,7 @@
+2000-11-11 15:55:35  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-type-alist): Stricter shar regexp.
+
 2000-11-11  Simon Josefsson  <sj@extundo.com>
 
 	* mml2015.el (mml2015-gpg-verify): Set "OK" security status.

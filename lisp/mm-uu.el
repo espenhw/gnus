@@ -85,7 +85,7 @@ This can be either \"inline\" or \"attachment\".")
      mm-uu-binhex-filename)
     (shar 
      "^#! */bin/sh"
-     "^exit 0\\|^$"
+     "^exit 0$"
      mm-uu-shar-extract)
     (forward 
 ;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and 
