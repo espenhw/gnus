@@ -30,15 +30,14 @@
 
 (if (featurep 'xemacs)
     (progn
-      (maybe-fbind '(ccl-execute-on-string
-		     Info-directory Info-menu
-		     char-charset charsetp coding-system-get
-		     coding-system-list coding-system-p decode-coding-region
-		     decode-coding-string define-ccl-program delete-overlay
-		     detect-coding-region encode-coding-region
-		     encode-coding-string event-click-count event-end
-		     event-start find-charset-region
-		     find-coding-systems-for-charsets
+      (maybe-fbind '(Info-directory
+		     Info-menu ccl-execute-on-string char-charset charsetp
+		     coding-system-get coding-system-list coding-system-p
+		     compare-strings decode-coding-region decode-coding-string
+		     define-ccl-program delete-overlay detect-coding-region
+		     encode-coding-region encode-coding-string
+		     event-click-count event-end event-start
+		     find-charset-region find-coding-systems-for-charsets
 		     find-coding-systems-region find-coding-systems-string
 		     get-charset-property mail-abbrevs-setup
 		     mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
