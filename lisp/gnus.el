@@ -3869,7 +3869,9 @@ Allow completion over sensible values."
   (or (eq (car gnus-agent-method-p-cache) method)
       (setq gnus-agent-method-p-cache 
             (cons method
-                  (member (gnus-method-to-server method) gnus-agent-covered-methods))))
+                  (member (if (stringp method) 
+                              method 
+                            (gnus-method-to-server method)) gnus-agent-covered-methods))))
   (cdr gnus-agent-method-p-cache))
 
 (defun gnus-online (method)
