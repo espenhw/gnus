@@ -1,5 +1,32 @@
 2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-mime-display-alternative): Use
+	gnus-local-map-property. 
+	(gnus-mime-display-alternative): Ditto.
+	(gnus-insert-mime-security-button): Ditto.
+	(gnus-insert-next-page-button): Ditto.
+	(gnus-button-prev-page): Take optional args.
+	(gnus-insert-prev-page-button): widget-convert.
+
+	* gnus-util.el (gnus-local-map-property): New function.
+
+	* gnus-art.el (gnus-prev-page-map): Use parent map.
+	(gnus-next-page-map): Ditto.
+
+	* gnus-spec.el (gnus-parse-format): Clean up.
+	(gnus-parse-format): Do complex formatting for %=.
+
+	* gnus-fun.el (gnus-display-x-face-in-from): Add the string
+	"X-Face: " to the data in the built-in scenario.
+
+	* gnus-spec.el (gnus-parse-simple-format): Use gnus-pad-form.
+	(gnus-correct-pad-form): Renamed.
+	(gnus-tilde-max-form): Clean up.
+	(gnus-pad-form): Use gnus-use-correct-string-widths.
+
+	* gnus-fun.el (gnus-display-x-face-in-from): Use native xface
+	support if that is available.
+
 	* gnus-sum.el (gnus-thread-highest-number): New function.
 	(gnus-thread-sort-by-most-recent-thread): New function.
 	(gnus-thread-sort-functions): Doc fix.

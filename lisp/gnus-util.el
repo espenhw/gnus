@@ -1220,7 +1220,17 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
     (if (memq (car spec) '(or and not))
 	`(,(car spec) ,@(mapcar 'gnus-make-predicate-1 (cdr spec)))
       (error "Invalid predicate specifier: %s" spec)))))
-  
+
+(defun gnus-local-map-property (map)
+  "Return a list suitable for a text property list specifying keymap MAP."
+  (cond
+   ((featurep 'xemacs)
+    (list 'keymap map))
+   ((>= emacs-major-version 21)
+    nil)
+   (t
+    (list 'local-map map))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

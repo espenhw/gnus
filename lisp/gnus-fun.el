@@ -169,17 +169,22 @@ colors of the displayed X-Faces."
   "Display the X-Face DATA in the From header."
   (let ((default-enable-multibyte-characters nil)
 	pbm)
-    (when (and (gnus-image-type-available-p 'pbm)
-	       (setq pbm (uncompface data)))
+    (when (or (gnus-image-type-available-p 'xface)
+	      (and (gnus-image-type-available-p 'pbm)
+		   (setq pbm (uncompface data))))
       (save-excursion
 	(save-restriction
 	  (article-narrow-to-head)
 	  (gnus-article-goto-header "from")
-	  (gnus-add-image 'xface (gnus-put-image
-				  (gnus-create-image
-				   pbm 'pbm t
-				   :ascent 'center
-				   :face 'gnus-x-face)))
+	  (gnus-add-image
+	   'xface
+	   (gnus-put-image
+	    (if (gnus-image-type-available-p 'xface)
+		(gnus-create-image
+		 (concat "X-Face: " data)
+		 'xface t :ascent 'center :face 'gnus-x-face)
+	      (gnus-create-image
+	       pbm 'pbm t :ascent 'center :face 'gnus-x-face))))
 	  (gnus-add-wash-type 'xface))))))
 
 (provide 'gnus-fun)

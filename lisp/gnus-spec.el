@@ -30,7 +30,7 @@
 
 (require 'gnus)
 
-(defcustom gnus-use-correct-string-widths t
+(defcustom gnus-use-correct-string-widths (featurep 'xemacs)
   "*If non-nil, use correct functions for dealing with wide characters."
   :group 'gnus-format
   :type 'boolean)
@@ -296,11 +296,11 @@
   "Return a form that limits EL to MAX-WIDTH."
   (let ((max (abs max-width))
 	(length-fun (if gnus-use-correct-string-widths
-		      'gnus-correct-length
-		    'length))
+			'gnus-correct-length
+		      'length))
 	(substring-fun (if gnus-use-correct-string-widths
-		       'gnus-correct-substring
-		     'substring)))
+			   'gnus-correct-substring
+			 'substring)))
     (if (symbolp el)
 	`(if (> (,length-fun ,el) ,max)
 	     ,(if (< max-width 0)
@@ -345,21 +345,26 @@
        (if (equal val ,ignore-value)
 	   "" val))))
 
-(defun gnus-correct-pad-form (el pad-width)
+(defun gnus-pad-form (el pad-width)
   "Return a form that pads EL to PAD-WIDTH accounting for multi-column
 characters correctly. This is because `format' may pad to columns or to
 characters when given a pad value."
   (let ((pad (abs pad-width))
 	(side (< 0 pad-width)))
     (if (symbolp el)
-	`(let ((need (- ,pad (gnus-correct-length ,el))))
+	`(let ((need (- ,pad (,(if gnus-use-correct-string-widths
+				   'gnus-correct-length
+				 'length)
+			      ,el))))
 	   (if (> need 0)
 	       (concat ,(when side '(make-string need ?\ ))
 		       ,el
 		       ,(when (not side) '(make-string need ?\ )))
 	     ,el))
       `(let* ((val (eval ,el))
-	      (need (- ,pad (gnus-correct-length ,el))))
+	      (need (- ,pad (,(if gnus-use-correct-string-widths
+				  'gnus-correct-length
+				'length) ,el))))
 	 (if (> need 0)
 	     (concat ,(when side '(make-string need ?\ ))
 		     ,el
@@ -375,9 +380,9 @@ characters when given a pad value."
   ;; them will have the balloon-help text property.
   (let ((case-fold-search nil))
     (if (string-match
-       "\\`\\(.*\\)%[0-9]?[{(«]\\(.*\\)%[0-9]?[»})]\\(.*\n?\\)\\'"
-       format)
-      (gnus-parse-complex-format format spec-alist)
+	 "\\`\\(.*\\)%[0-9]?[{(«]\\(.*\\)%[0-9]?[»})]\\(.*\n?\\)\\'\\|%[-0-9]*="
+	 format)
+	(gnus-parse-complex-format format spec-alist)
       ;; This is a simple format.
       (gnus-parse-simple-format format spec-alist insert))))
 
@@ -572,7 +577,7 @@ characters when given a pad value."
 		  (when max-width
 		    (setq el (gnus-tilde-max-form el max-width)))
 		  (when pad-width
-		    (setq el (gnus-correct-pad-form el pad-width)))
+		    (setq el (gnus-pad-form el pad-width)))
 		  (push el flist)))
 	    (insert elem-type)
 	    (push (car elem) flist))))

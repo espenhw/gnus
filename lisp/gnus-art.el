@@ -3972,14 +3972,11 @@ If no internal viewer is available, use an external viewer."
     (setq b (point))
     (gnus-eval-format
      gnus-mime-button-line-format gnus-mime-button-line-format-alist
-     `(keymap ,gnus-mime-button-map
-	      ,@(if (>= (string-to-number emacs-version) 21)
-		    nil
-		  (list 'local-map gnus-mime-button-map))
-	      gnus-callback gnus-mm-display-part
-	      gnus-part ,gnus-tmp-id
-	      article-type annotation
-	      gnus-data ,handle))
+     `(,@(gnus-local-map-property gnus-mime-button-map)
+	 gnus-callback gnus-mm-display-part
+	 gnus-part ,gnus-tmp-id
+	 article-type annotation
+	 gnus-data ,handle))
     (setq e (point))
     (widget-convert-button
      'link b e
@@ -4232,12 +4229,9 @@ If no internal viewer is available, use an external viewer."
 		       ',gnus-article-mime-handle-alist))
 	       (gnus-mime-display-alternative
 		',ihandles ',not-pref ',begend ,id))
-	     ,@(if (>= (string-to-number emacs-version) 21)
-		   nil ;; XEmacs doesn't care
-		 (list 'local-map gnus-mime-button-map))
+	     ,@(gnus-local-map-property gnus-mime-button-map)
 	     ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	     face ,gnus-article-button-face
-	     keymap ,gnus-mime-button-map
 	     gnus-part ,id
 	     gnus-data ,handle))
 	  (widget-convert-button 'link from (point)
@@ -4259,12 +4253,9 @@ If no internal viewer is available, use an external viewer."
 			 ',gnus-article-mime-handle-alist))
 		 (gnus-mime-display-alternative
 		  ',ihandles ',handle ',begend ,id))
-	       ,@(if (>= (string-to-number emacs-version) 21)
-		     nil ;; XEmacs doesn't care
-		   (list 'local-map gnus-mime-button-map))
+	       ,@(gnus-local-map-property gnus-mime-button-map)
 	       ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	       face ,gnus-article-button-face
-	       keymap ,gnus-mime-button-map
 	       gnus-part ,id
 	       gnus-data ,handle))
 	    (widget-convert-button 'link from (point)
@@ -5518,28 +5509,48 @@ specified by `gnus-button-alist'."
 (defvar gnus-next-page-line-format "%{%(Next page...%)%}\n")
 (defvar gnus-prev-page-line-format "%{%(Previous page...%)%}\n")
 
-(defvar gnus-prev-page-map nil)
-(unless gnus-prev-page-map
-  (setq gnus-prev-page-map (make-sparse-keymap))
-  (define-key gnus-prev-page-map gnus-mouse-2 'gnus-button-prev-page)
-  (define-key gnus-prev-page-map "\r" 'gnus-button-prev-page))
+(defvar gnus-prev-page-map
+  (let ((map (make-sparse-keymap)))
+    (unless (>= emacs-major-version 21)
+      ;; XEmacs doesn't care.
+      (set-keymap-parent map gnus-article-mode-map))
+    (define-key map gnus-mouse-2 'gnus-button-prev-page)
+    (define-key map "\r" 'gnus-button-prev-page)
+    map))
 
 (defun gnus-insert-prev-page-button ()
-  (let ((buffer-read-only nil))
+  (let ((b (point))
+	(buffer-read-only nil))
     (gnus-eval-format
      gnus-prev-page-line-format nil
-     `(gnus-prev t local-map ,gnus-prev-page-map
-		 gnus-callback gnus-article-button-prev-page
-		 article-type annotation))))
+     `(,@(gnus-local-map-property gnus-prev-page-map)
+	 gnus-prev t 
+	 gnus-callback gnus-article-button-prev-page
+	 article-type annotation))
+    (widget-convert-button
+     'link b (point)
+     :action 'gnus-button-prev-page
+     :button-keymap gnus-prev-page-map)))
 
-(defvar gnus-next-page-map nil)
-(unless gnus-next-page-map
-  (setq gnus-next-page-map (make-keymap))
-  (suppress-keymap gnus-prev-page-map)
-  (define-key gnus-next-page-map gnus-mouse-2 'gnus-button-next-page)
-  (define-key gnus-next-page-map "\r" 'gnus-button-next-page))
+(defvar gnus-prev-page-map
+  (let ((map (make-sparse-keymap)))
+    (unless (>= emacs-major-version 21)
+      ;; XEmacs doesn't care.
+      (set-keymap-parent map gnus-article-mode-map))
+    (define-key map gnus-mouse-2 'gnus-button-prev-page)
+    (define-key map "\r" 'gnus-button-prev-page)
+    map))
 
-(defun gnus-button-next-page ()
+(defvar gnus-next-page-map
+  (let ((map (make-sparse-keymap)))
+    (unless (>= emacs-major-version 21)
+      ;; XEmacs doesn't care.
+      (set-keymap-parent map gnus-article-mode-map))
+    (define-key map gnus-mouse-2 'gnus-button-next-page)
+    (define-key map "\r" 'gnus-button-next-page)
+    map))
+
+(defun gnus-button-next-page (&optional args more-args)
   "Go to the next page."
   (interactive)
   (let ((win (selected-window)))
@@ -5547,7 +5558,7 @@ specified by `gnus-button-alist'."
     (gnus-article-next-page)
     (select-window win)))
 
-(defun gnus-button-prev-page ()
+(defun gnus-button-prev-page (&optional args more-args)
   "Go to the prev page."
   (interactive)
   (let ((win (selected-window)))
@@ -5556,12 +5567,17 @@ specified by `gnus-button-alist'."
     (select-window win)))
 
 (defun gnus-insert-next-page-button ()
-  (let ((buffer-read-only nil))
+  (let ((b (point))
+	(buffer-read-only nil))
     (gnus-eval-format gnus-next-page-line-format nil
-		      `(gnus-next
-			t local-map ,gnus-next-page-map
-			gnus-callback gnus-article-button-next-page
-			article-type annotation))))
+		      `(,@(gnus-local-map-property gnus-next-page-map)
+			  gnus-next t 
+			  gnus-callback gnus-article-button-next-page
+			  article-type annotation))
+    (widget-convert-button
+     'link b (point)
+     :action 'gnus-button-next-page
+     :button-keymap gnus-next-page-map)))
 
 (defun gnus-article-button-next-page (arg)
   "Go to the next page."
@@ -5890,14 +5906,11 @@ For example:
     (gnus-eval-format
      gnus-mime-security-button-line-format
      gnus-mime-security-button-line-format-alist
-     `(keymap ,gnus-mime-security-button-map
-	      ,@(if (>= (string-to-number emacs-version) 21)
-		    nil ;; XEmacs doesn't care
-		  (list 'local-map gnus-mime-security-button-map))
-	      gnus-callback gnus-mime-security-press-button
-	      gnus-line-format ,gnus-mime-security-button-line-format
-	      article-type annotation
-	      gnus-data ,handle))
+     `(,@(gnus-local-map-property gnus-mime-security-button-map)
+	 gnus-callback gnus-mime-security-press-button
+	 gnus-line-format ,gnus-mime-security-button-line-format
+	 article-type annotation
+	 gnus-data ,handle))
     (setq e (point))
     (widget-convert-button
      'link b e
