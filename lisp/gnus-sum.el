@@ -2022,7 +2022,7 @@ increase the score of each group you read."
 	 gnus-summary-limit-exclude-childless-dormant t]
 	;;["Hide thread" gnus-summary-limit-exclude-thread t]
 	["Hide marked" gnus-summary-limit-exclude-marks t]
-	["Show expunged" gnus-summary-show-all-expunged t])
+	["Show expunged" gnus-summary-limit-include-expunged t])
        ("Process Mark"
 	["Set mark" gnus-summary-mark-as-processable t]
 	["Remove mark" gnus-summary-unmark-as-processable t]
@@ -8893,8 +8893,8 @@ even ticked and dormant ones."
     (let ((scored gnus-newsgroup-scored)
 	  headers h)
       (while scored
-	(unless (gnus-number-to-header (caar scored))
-	  (and (setq h (gnus-summary-article-header (caar scored)))
+	(unless (gnus-summary-article-header (caar scored))
+	  (and (setq h (gnus-number-to-header (caar scored)))
 	       (< (cdar scored) gnus-summary-expunge-below)
 	       (push h headers)))
 	(setq scored (cdr scored)))
@@ -8902,6 +8902,11 @@ even ticked and dormant ones."
 	  (when (not no-error)
 	    (error "No expunged articles hidden"))
 	(goto-char (point-min))
+	(push gnus-newsgroup-limit gnus-newsgroup-limits)
+	(setq gnus-newsgroup-limit (copy-sequence gnus-newsgroup-limit))
+	(mapcar (lambda (x) (push (mail-header-number x) 
+				  gnus-newsgroup-limit))
+		headers)
 	(gnus-summary-prepare-unthreaded (nreverse headers))
 	(goto-char (point-min))
 	(gnus-summary-position-point)
