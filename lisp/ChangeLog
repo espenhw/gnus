@@ -1,7 +1,7 @@
 2005-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-mime-jka-compr-maybe-uncompress): Remove;
-	merge in into mm-decompress-buffer.
+	merge it into mm-decompress-buffer.
 	(gnus-mime-copy-part): Use the MIME part charset, the value which
 	a user specified or gnus-newsgroup-charset for decoding, like
 	gnus-mime-inline-part does; set buffer-file-coding-system to tell
