@@ -96,7 +96,16 @@
 	  "Prompt the user for a coding system."
 	  (completing-read
 	   prompt (mapcar (lambda (s) (list (symbol-name (car s))))
-			  mm-mime-mule-charset-alist)))))))
+			  mm-mime-mule-charset-alist))))
+     (read-charset
+      . (lambda (prompt)
+	  "Return a charset."
+	  (intern
+	   (completing-read
+	    prompt
+	    (mapcar (lambda (e) (list (symbol-name (car e))))
+		    mm-mime-mule-charset-alist)
+	    nil t)))))))
 
 (eval-and-compile
   (defalias 'mm-char-or-char-int-p
@@ -191,17 +200,20 @@ used as the line break code type of the coding system."
    (t
     nil)))
 
-(defun mm-replace-chars-in-string (string from to)
-  "Replace characters in STRING from FROM to TO."
-  (let ((string (substring string 0))	;Copy string.
-	(len (length string))
-	(idx 0))
-    ;; Replace all occurrences of FROM with TO.
-    (while (< idx len)
-      (when (= (aref string idx) from)
-	(aset string idx to))
-      (setq idx (1+ idx)))
-    string))
+(if (fboundp 'subst-char-in-string)
+    (defsubst mm-replace-chars-in-string (string from to)
+      (subst-char-in-string from to string))
+  (defun mm-replace-chars-in-string (string from to)
+    "Replace characters in STRING from FROM to TO."
+    (let ((string (substring string 0))	;Copy string.
+	  (len (length string))
+	  (idx 0))
+      ;; Replace all occurrences of FROM with TO.
+      (while (< idx len)
+	(when (= (aref string idx) from)
+	  (aset string idx to))
+	(setq idx (1+ idx)))
+      string)))
 
 (defsubst mm-enable-multibyte ()
   "Enable multibyte in the current buffer."
@@ -290,18 +302,13 @@ If the charset is `composition', return the actual one."
 
 (defsubst mm-multibyte-p ()
   "Say whether multibyte is enabled."
-  (or (string-match "XEmacs\\|Lucid" emacs-version)
+  (or (featurep 'xemacs)
       (and (boundp 'enable-multibyte-characters)
 	   enable-multibyte-characters)))
 
 (defmacro mm-with-unibyte-buffer (&rest forms)
   "Create a temporary buffer, and evaluate FORMS there like `progn'.
-See also `with-temp-file' and `with-output-to-string'."
-  (let ((temp-buffer (make-symbol "temp-buffer"))
-	(multibyte (make-symbol "multibyte")))
-    `(if (or (string-match "XEmacs\\|Lucid" emacs-version)
-	     (not (boundp 'enable-multibyte-characters)))
-	 (with-temp-buffer ,@forms)
+Use unibyte mode for this."
        (let ((,multibyte (default-value 'enable-multibyte-characters))
 	     ,temp-buffer)
 	 (unwind-protect
@@ -324,7 +331,7 @@ See also `with-temp-file' and `with-output-to-string'."
 (defmacro mm-with-unibyte-current-buffer (&rest forms)
   "Evaluate FORMS there like `progn' in current buffer."
   (let ((multibyte (make-symbol "multibyte")))
-    `(if (or (string-match "XEmacs\\|Lucid" emacs-version)
+    `(if (or (featurep 'xemacs)
 	     (not (fboundp 'set-buffer-multibyte)))
 	 (progn
 	   ,@forms)
@@ -344,7 +351,7 @@ See also `with-temp-file' and `with-output-to-string'."
 (defmacro mm-with-unibyte (&rest forms)
   "Set default `enable-multibyte-characters' to `nil', eval the FORMS."
   (let ((multibyte (make-symbol "multibyte")))
-    `(if (or (string-match "XEmacs\\|Lucid" emacs-version)
+    `(if (or (featurep 'xemacs)
 	     (not (boundp 'enable-multibyte-characters)))
 	 (progn ,@forms)
        (let ((,multibyte (default-value 'enable-multibyte-characters)))
@@ -390,27 +397,20 @@ See also `with-temp-file' and `with-output-to-string'."
 			    (or (car (last (assq 'charset entry)))
 				'latin-iso8859-1))))))))))
 
-(defun mm-read-charset (prompt)
-  "Return a charset."
-  (intern
-   (completing-read
-    prompt
-    (mapcar (lambda (e) (list (symbol-name (car e))))
-	    mm-mime-mule-charset-alist)
-    nil t)))
-
-(defun mm-quote-arg (arg)
-  "Return a version of ARG that is safe to evaluate in a shell."
-  (let ((pos 0) new-pos accum)
-    ;; *** bug: we don't handle newline characters properly
-    (while (setq new-pos (string-match "[]*[;!'`\"$\\& \t{} |()<>]" arg pos))
-      (push (substring arg pos new-pos) accum)
-      (push "\\" accum)
-      (push (list (aref arg new-pos)) accum)
-      (setq pos (1+ new-pos)))
-    (if (= pos 0)
-        arg
-      (apply 'concat (nconc (nreverse accum) (list (substring arg pos)))))))
+(if (fboundp 'shell-quote-argument)
+    (defalias 'mm-quote-arg 'shell-quote-argument)
+  (defun mm-quote-arg (arg)
+    "Return a version of ARG that is safe to evaluate in a shell."
+    (let ((pos 0) new-pos accum)
+      ;; *** bug: we don't handle newline characters properly
+      (while (setq new-pos (string-match "[]*[;!'`\"$\\& \t{} |()<>]" arg pos))
+	(push (substring arg pos new-pos) accum)
+	(push "\\" accum)
+	(push (list (aref arg new-pos)) accum)
+	(setq pos (1+ new-pos)))
+      (if (= pos 0)
+	  arg
+	(apply 'concat (nconc (nreverse accum) (list (substring arg pos))))))))
 
 (defun mm-auto-mode-alist ()
   "Return an `auto-mode-alist' with only the .gz (etc) thingies."
