@@ -152,7 +152,8 @@
 
 (defvar mm-auto-save-coding-system
   (if (mm-coding-system-p 'iso-2022-7bit)
-      'iso-2022-7bit)
+      'iso-2022-7bit
+    mm-binary-coding-system)
   "Coding system of auto save file.
 Note that the default value for this variable was emacs-mule for Emacs
 or escape-quoted for XEmacs-MULE in the past.")
