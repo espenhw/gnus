@@ -672,7 +672,8 @@ If ARGS, PROMPT is used as an argument to `format'."
   nil)
 
 (defun imap-shell-open (name buffer server port)
-  (let ((cmds imap-shell-program)
+  (let ((cmds (if (listp imap-shell-program) imap-shell-program
+		(list imap-shell-program)))
 	cmd done)
     (while (and (not done) (setq cmd (pop cmds)))
       (message "imap: Opening IMAP connection with `%s'..." cmd)
@@ -692,7 +693,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(when process
 	  (while (and (memq (process-status process) '(open run))
 		      (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
-		      (goto-char (point-min))
+		      (goto-char (point-max))
+		      (forward-line -1)
 		      (not (imap-parse-greeting)))
 	    (accept-process-output process 1)
 	    (sit-for 1))
