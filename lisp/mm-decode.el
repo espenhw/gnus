@@ -100,7 +100,7 @@
     ("message/delivery-status" . inline)))
 
 (defvar mm-user-automatic-display
-  '("text/plain" "text/enriched" "text/richtext" "text/html" 
+  '("text/plain" "text/enriched" "text/richtext" "text/html"
     "image/.*" "message/delivery-status" "multipart/.*"))
 
 (defvar mm-user-automatic-external-display nil
@@ -195,8 +195,8 @@
   (goto-char (point-min))
   (let* ((boundary (concat "\n--" (mail-content-type-get ctl 'boundary)))
 	(close-delimiter (concat (regexp-quote boundary) "--[ \t]*$"))
-	start parts 
-	(end (save-excursion	
+	start parts
+	(end (save-excursion
 	       (goto-char (point-max))
 	       (if (re-search-backward close-delimiter nil t)
 		   (match-beginning 0)
@@ -290,7 +290,8 @@ external if displayed external."
 		(if method
 		    (funcall method)
 		  (mm-save-part handle))
-	      (unless non-viewer
+	      (when (and (not non-viewer)
+			 method)
 		(mm-handle-set-undisplayer handle mm)))))
       ;; The function is a string to be executed.
       (mm-insert-part handle)
@@ -454,7 +455,7 @@ This overrides entries in the mailcap file."
 (defun mm-handle-displayed-p (handle)
   "Say whether HANDLE is displayed or not."
   (mm-handle-undisplayer handle))
-  
+
 (defun mm-quote-arg (arg)
   "Return a version of ARG that is safe to evaluate in a shell."
   (let ((pos 0) new-pos accum)
@@ -489,7 +490,7 @@ This overrides entries in the mailcap file."
 	 (car (mm-handle-type handle)))
 	(let ((temp (current-buffer)))
 	  (set-buffer cur)
-	  (insert-buffer temp))))))
+	  (insert-buffer-substring temp))))))
 
 (defvar mm-default-directory nil)
 

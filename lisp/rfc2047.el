@@ -284,7 +284,7 @@ Should be called narrowed to the head of the message."
       (inline
 	(rfc2047-decode-region (point-min) (point-max)))
       (buffer-string))))
- 
+
 (defun rfc2047-parse-and-decode (word)
   "Decode WORD and return it if it is an encoded word.
 Return WORD if not."

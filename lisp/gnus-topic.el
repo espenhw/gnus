@@ -416,7 +416,7 @@ articles in the topic and its subtopics."
 	 (entries (gnus-topic-find-groups
 		   (car type) list-level
 		   (or all
-		       (cdr (assq 'visible 
+		       (cdr (assq 'visible
 				  (gnus-topic-hierarchical-parameters
 				   (car type)))))
 		   lowest))

@@ -686,8 +686,8 @@ deleted.  Point is left where the deleted region was."
 
 (defun nnfolder-read-folder (group)
   (let* ((file (nnfolder-group-pathname group))
-	 (buffer (set-buffer 
-		  (let ((nnmail-file-coding-system 
+	 (buffer (set-buffer
+		  (let ((nnmail-file-coding-system
 			 nnfolder-file-coding-system))
 		    (nnheader-find-file-noselect file)))))
     (if (equal (cadr (assoc group nnfolder-scantime-alist))

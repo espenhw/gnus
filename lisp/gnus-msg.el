@@ -108,9 +108,10 @@ the second with the current group name.")
     (name . user-full-name))
   "*Mapping from style parameters to variables.")
 
-(defcustom gnus-group-posting-charset-alist 
+(defcustom gnus-group-posting-charset-alist
   '(("^no\\." iso-8859-1)
     (".*" iso-8859-1)
+    (message-this-is-news iso-8859-1)
     (message-this-is-mail nil)
     )
   "Alist of regexps (to match group names) and default charsets to be unencoded when posting."
@@ -223,13 +224,13 @@ Thank you for your help in stamping out bugs.
 	elem)
     (catch 'found
       (while (setq elem (pop alist))
-	(when (or (and (stringp (car alist))
-		       (string-match (car alist) group))
-		  (and (gnus-functionp (car alist))
-		       (funcall (car alist) group))
-		  (and (symbolp (car alist))
-		       (symbol-value (car alist))))
-	  (throw 'found (cadr alist)))))))
+	(when (or (and (stringp (car elem))
+		       (string-match (car elem) group))
+		  (and (gnus-functionp (car elem))
+		       (funcall (car elem) group))
+		  (and (symbolp (car elem))
+		       (symbol-value (car elem))))
+	  (throw 'found (cadr elem)))))))
 
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (make-local-hook 'message-sent-hook)

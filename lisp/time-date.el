@@ -79,7 +79,7 @@
 (defun date-to-day (date)
   "Return the number of days between year 1 and DATE."
   (time-to-days (date-to-time date)))
-  
+
 (defun days-between (date1 date2)
   "Return the number of days between DATE1 and DATE2."
   (- (date-to-day date1) (date-to-day date2)))

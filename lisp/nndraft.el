@@ -109,7 +109,7 @@
 	   (newest (if (file-newer-than-file-p file auto) file auto))
 	   (nntp-server-buffer (or buffer nntp-server-buffer)))
       (when (and (file-exists-p newest)
-		 (let ((nnmail-file-coding-system 
+		 (let ((nnmail-file-coding-system
 			message-draft-coding-system))
 		   (nnmail-find-file newest)))
 	(save-excursion
@@ -153,7 +153,7 @@
 	(buf (current-buffer))
 	 article file)
     (with-temp-buffer
-      (insert-buffer buf)
+      (insert-buffer-substring buf)
       (setq article (nndraft-request-accept-article
 		     group (nnoo-current-server 'nndraft) t 'noinsert)
 	    file (nndraft-article-filename article)))
@@ -235,7 +235,7 @@
    nnmh-retrieve-headers
    nnmh-request-group
    nnmh-close-group
-   nnmh-request-list 
+   nnmh-request-list
    nnmh-request-newsgroups
    nnmh-request-move-article
    nnmh-request-replace-article))

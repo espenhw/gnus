@@ -26,17 +26,17 @@
 
 (defvar mm-running-xemacs (string-match "XEmacs" emacs-version))
 
-(defvar mm-running-ntemacs 
-  (and (not mm-running-xemacs) 
+(defvar mm-running-ntemacs
+  (and (not mm-running-xemacs)
        (string-match "nt" system-configuration)))
 
-(defvar mm-binary-coding-system 
+(defvar mm-binary-coding-system
   (if mm-running-xemacs
       'binary 'no-conversion)
-  "100% binary coding system.")   
+  "100% binary coding system.")
 
-(defvar mm-text-coding-system 
-  (cond 
+(defvar mm-text-coding-system
+  (cond
    ((not (fboundp 'coding-system-p)) nil)
    (mm-running-xemacs  ;; XEmacs
     (and (coding-system-p 'no-conversion) 'no-conversion))
@@ -118,20 +118,12 @@
   (or mm-coding-system-list
       (setq mm-coding-system-list (mm-coding-system-list))))
 
-(defvar mm-charset-coding-system-alist
-  (let ((rest
-	 '((gb2312 . cn-gb-2312)
-	   (iso-2022-jp-2 . iso-2022-7bit-ss2)
-	   (x-ctext . ctext)))
-	(systems (mm-get-coding-system-list))
-	dest)
-    (while rest
-      (let ((pair (car rest)))
-	(unless (memq (car pair) systems)
-	  (setq dest (cons pair dest))))
-      (setq rest (cdr rest)))
-    dest)
-  "Charset/coding system alist.")
+(defvar mm-charset-synonym-alist
+  '((big5 . cn-big5)
+    (gb2312 . cn-gb-2312)
+    (iso-2022-jp-2 . iso-2022-7bit-ss2)
+    (x-ctext . ctext))
+  "A mapping from invalid charset names to the real charset names.")
 
 ;;; Internal variables:
 
@@ -156,7 +148,7 @@ used as the line break code type of the coding system."
   (when (stringp charset)
     (setq charset (intern (downcase charset))))
   (setq charset
-	(or (cdr (assq charset mm-charset-coding-system-alist))
+	(or (cdr (assq charset mm-charset-synonym-alist))
 	    charset))
   (when lbt
     (setq charset (intern (format "%s-%s" charset lbt))))
@@ -253,8 +245,7 @@ See also `with-temp-file' and `with-output-to-string'."
 	(skip-chars-forward "\0-\177")
 	(if (eobp)
 	    '(ascii)
-	  ;;;!!!bogus
-	  (list 'ascii 'latin-iso8859-1)))))
+	  (delq nil (list 'ascii mail-parse-charset))))))
    (t
     ;; We are in a unibyte buffer, so we futz around a bit.
     (save-excursion
@@ -270,7 +261,11 @@ See also `with-temp-file' and `with-output-to-string'."
 
 (defun mm-read-charset (prompt)
   "Return a charset."
-  (completing-read prompt mm-mime-mule-charset-alist nil t))
+  (completing-read
+   prompt
+   (mapcar (lambda (e) (list (symbol-name (car e))))
+	   mm-mime-mule-charset-alist)
+   nil t))
 
 (provide 'mm-util)
 

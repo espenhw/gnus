@@ -501,7 +501,7 @@ parameter.  It should return nil, `warn' or `delete'."
 (defvar nnmail-file-coding-system 'binary
   "Coding system used in nnmail.")
 
-(defvar nnmail-file-coding-system-1 
+(defvar nnmail-file-coding-system-1
   (if (string-match "nt" system-configuration)
       'raw-text-dos 'binary)
   "Another coding system used in nnmail.")

@@ -200,7 +200,7 @@ DOC is a documentation string for the parameter.")
     (make-local-variable 'gnus-custom-topic)
     (setq gnus-custom-topic topic)
     (widget-insert "Customize the ")
-    (if group 
+    (if group
 	(widget-create 'info-link
 		       :help-echo "Push me to learn more."
 		       :tag "group parameters"
@@ -220,7 +220,7 @@ DOC is a documentation string for the parameter.")
     (make-local-variable 'gnus-custom-params)
     (setq gnus-custom-params
 	  (widget-create 'group
-			 :value (if group 
+			 :value (if group
 				    (gnus-info-params info)
 				  (gnus-topic-parameters topic))
 			 `(set :inline t
@@ -274,7 +274,7 @@ form, but who cares?"
   "Apply changes and bury the buffer."
   (interactive)
   (if gnus-custom-topic
-      (gnus-topic-set-parameters gnus-custom-topic 
+      (gnus-topic-set-parameters gnus-custom-topic
 				 (widget-value gnus-custom-params))
     (gnus-group-edit-group-done 'params gnus-custom-group
 				(widget-value gnus-custom-params))

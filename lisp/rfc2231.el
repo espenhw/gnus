@@ -197,7 +197,7 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
        (t
 	(goto-char (point-min))
 	(insert param "=")))
-      (buffer-string))))	
+      (buffer-string))))
 
 (provide 'rfc2231)
 

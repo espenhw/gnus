@@ -209,7 +209,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 
 (defun nnkiboze-generate-group (group)
   (let* ((info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
-	 (newsrc-file (concat nnkiboze-directory 
+	 (newsrc-file (concat nnkiboze-directory
                               (nnheader-translate-file-chars
                                (concat group ".newsrc"))))
 	 (nov-file (concat nnkiboze-directory
@@ -287,7 +287,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 					   (car ginfo)))
 				  0))
 			   (progn
-			     (ignore-errors 
+			     (ignore-errors
 			       (gnus-group-select-group nil))
 			     (eq major-mode 'gnus-summary-mode)))
 		  ;; We are now in the group where we want to be.

@@ -173,7 +173,7 @@ article number, then stay on current line."
     (if (not pos)
 	(gnus-error 2 "No such line: %s" arg)
       (goto-char pos))))
-    
+
 (defun gnus-pick-article (&optional arg)
     "Pick the article on the current line.
 If ARG, pick the article on that line instead."
@@ -192,7 +192,7 @@ If ARG, pick the article/thread on that line instead."
   (if gnus-thread-hide-subtree
       (gnus-uu-mark-thread)
     (gnus-summary-mark-as-processable 1)))
-		  
+
 (defun gnus-pick-unmark-article-or-thread (&optional arg)
   "If gnus-thread-hide-subtree is t, then unmark the thread on current line.
 Otherwise unmark the article on current line.
@@ -203,7 +203,7 @@ If ARG, unmark thread/article on that line instead."
   (if gnus-thread-hide-subtree
       (gnus-uu-unmark-thread)
     (gnus-summary-unmark-as-processable 1)))
-  
+
 (defun gnus-pick-mouse-pick (e)
   (interactive "e")
   (mouse-set-point e)
@@ -483,7 +483,7 @@ Two predefined functions are available:
   (interactive "P")
   (let ((buf (current-buffer))
 	win)
-    (set-buffer gnus-article-buffer)      
+    (set-buffer gnus-article-buffer)
     (gnus-article-read-summary-keys arg nil t)
     (when (setq win (get-buffer-window buf))
       (select-window win)

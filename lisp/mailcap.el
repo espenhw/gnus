@@ -598,6 +598,19 @@ If FORCE, re-parse even if already parsed."
 	 (t
 	  (setcdr old-major (cons (cons minor info) (cdr old-major)))))))))
 
+(defun mailcap-add (type viewer &optional test)
+  "Add VIEWER as a handler for TYPE.
+If TEST is not given, it defaults to t."
+  (let ((tl (split-string type "/")))
+    (when (or (not (car tl))
+	      (not (cadr tl)))
+      (error "%s is not a valid MIME type" type))
+    (mailcap-add-mailcap-entry
+     (car tl) (cadr tl)
+     `((viewer . ,viewer)
+       (test . ,(if test test t))
+       (type . ,type)))))
+
 ;;;
 ;;; The main whabbo
 ;;;

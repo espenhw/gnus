@@ -25,7 +25,7 @@
 		     run-with-idle-timer mouse-minibuffer-check window-edges
 		     event-click-count track-mouse read-event mouse-movement-p
 		     event-end mouse-scroll-subr overlay-lists delete-overlay
-		     set-face-stipple mail-abbrevs-setup 
+		     set-face-stipple mail-abbrevs-setup
 		     make-char-table set-char-table-range font-create-object
 		     x-color-values widget-make-intangible error-message-string
 		     w3-form-encode-xwfu gnus-mule-get-coding-system
@@ -34,11 +34,12 @@
 		     set-buffer-multibyte
 		     find-non-ascii-charset-region char-charset
 		     mule-write-region-no-coding-system
-		     find-charset-region 
+		     find-charset-region
 		     find-coding-systems-region get-charset-property
 		     coding-system-get w3-region
 		     rmail-summary-exists rmail-select-summary
 		     rmail-update-summary url-retrieve
+		     temp-directory
 		     ))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
@@ -69,13 +70,13 @@
 		 widget-make-intangible glyphp make-glyph set-glyph-image
 		 set-glyph-property event-glyph glyph-property event-point
 		 device-on-window-system-p make-gui-button Info-goto-node
-		 pp-to-string color-name 
+		 pp-to-string color-name
 		 gnus-mule-get-coding-system decode-coding-string
 		 mail-aliases-setup
 		 mm-copy-tree url-view-url w3-prepare-buffer
 		 mule-write-region-no-coding-system char-int
 		 annotationp delete-annotation make-image-specifier
-		 make-annotation 
+		 make-annotation
 		 w3-do-setup w3-region
 		 rmail-summary-exists rmail-select-summary rmail-update-summary
 		 url-generic-parse-url

@@ -89,7 +89,7 @@
   "If t, the expiry date for a given article will be set to the time
 it was marked as expireable; otherwise the date will be the time the
 article was posted to nndb")
-  
+
 ;; Variables copied from nntp
 
 (defvoo nndb-server-opened-hook '(nntp-send-authinfo-from-file)
@@ -139,7 +139,7 @@ article was posted to nndb")
 	(push art rest)))
     rest))
 
-      
+
 ;;
 (deffoo nndb-request-type (group &optional article)
   nndb-article-type)
@@ -187,12 +187,12 @@ article was posted to nndb")
 	      (setq num-delete  (1+ num-delete)))
 	  (push art rest))))
     (if (> (length delete-list) 0)
-	(progn 
+	(progn
 	  (nnheader-message 5 "Deleting %s article(s) from %s"
 			    (int-to-string num-delete) group)
 	  (nntp-send-command "^[23].*\n" "X-DELETE" delete-list))
       )
-	
+
     (nnheader-message 5 "")
     (nconc rest articles)))
 
@@ -214,7 +214,7 @@ article was posted to nndb")
   "Let the nndb backend expire articles"
   (let (days art-string delete-list (num-delete 0))
     (nntp-possibly-change-group group server)
-    
+
     ;; first calculate the wait period in days
     (setq days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function group))
@@ -227,12 +227,12 @@ article was posted to nndb")
 	   (setq days -1))
 	  ((eq days 'immediate)
 	   (setq days 0)))
-    
+
 
     ;; build article string
     (setq art-string (concat days " " (nndb-build-article-string articles)))
     (nntp-send-command "^\.\r?\n\\|^[345].*\n" "X-EXPIRE" art-string)
-    
+
     (setq delete-list (nndb-get-remote-expire-response))
     (setq num-delete (length delete-list))
     (if (> num-delete 0)
@@ -259,7 +259,7 @@ Optional LAST is ignored."
   ;; which it will be for nndb, which is all that matters anyway
   (let ((new-group (nth 1 accept-form)) result)
     (nntp-possibly-change-group group server)
-    
+
     ;; use the move command for nndb-to-nndb moves
     (if (string-match "^nndb" new-group)
 	(let ((new-group-name (gnus-group-real-name new-group)))
@@ -281,7 +281,7 @@ Optional LAST is ignored."
 				       t))
 	result)
       )))
-  
+
 (deffoo nndb-request-accept-article (group server &optional last)
   "The article in the current buffer is put into GROUP."
   (nntp-possibly-change-group group server)
@@ -289,7 +289,7 @@ Optional LAST is ignored."
     (when (nntp-send-command "^[23].*\r?\n" "ACCEPT" group)
       (nnheader-insert "")
       (nntp-send-buffer "^[23].*\n"))
-    
+
     (set-buffer nntp-server-buffer)
     (setq msg (buffer-substring (point-min) (point-max)))
     (or (string-match "^\\([0-9]+\\)" msg)
@@ -299,7 +299,7 @@ Optional LAST is ignored."
     (list art)))
 
 (deffoo nndb-request-replace-article (article group buffer)
-  "ARTICLE is the number of the article in GROUP to be replaced 
+  "ARTICLE is the number of the article in GROUP to be replaced
 with the contents of the BUFFER."
   (set-buffer buffer)
   (when (nntp-send-command "^[23].*\r?\n" "X-REPLACE" (int-to-string article))
@@ -326,6 +326,3 @@ with the contents of the BUFFER."
   (nntp))
 
 (provide 'nndb)
-
-
-

@@ -52,7 +52,7 @@
 	  (set-syntax-table mml-syntax-table)
 	  (mml-parse-1))
       (set-syntax-table table))))
-  
+
 (defun mml-parse-1 ()
   "Parse the current buffer as an MML document."
   (let (struct tag point contents charsets warn)
@@ -346,7 +346,7 @@
 	value type)
     (while (setq type (pop types))
       (when (setq value (cdr (assq type cont)))
-	;; Strip directory component from the filename parameter. 
+	;; Strip directory component from the filename parameter.
 	(when (eq type 'filename)
 	  (setq value (file-name-nondirectory value)))
 	(setq string (concat string ";\n "

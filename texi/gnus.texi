@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.71 Manual
+@settitle Pterodactyl Gnus 0.72 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.71 Manual
+@title Pterodactyl Gnus 0.72 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.71.
+This manual corresponds to Pterodactyl Gnus 0.72.
 
 @end ifinfo
 
@@ -6256,11 +6256,6 @@ Do much highlighting of the current article
 (@code{gnus-article-highlight}).  This function highlights header, cited
 text, the signature, and adds buttons to the body and the head.
 
-Most users would prefer using @code{gnus-article-maybe-highlight} in
-@code{gnus-article-display-hook} (@pxref{Customizing Articles}) instead.
-This is a bit less agressive---it highlights only the headers, the
-signature and adds buttons.
-
 @item W H h
 @kindex W H h (Summary)
 @findex gnus-article-highlight-headers
@@ -6447,7 +6442,7 @@ articles that have signatures in them do:
 @lisp
 ;;; Hide pgp cruft if any.
 
-(add-hook 'gnus-article-display-hook 'gnus-article-hide-pgp)
+(setq gnus-treat-strip-pgp t)
 
 ;;; After hiding pgp, verify the message;
 ;;; only happens if pgp signature is found.
@@ -6524,7 +6519,7 @@ is hidden.
 Hide cited text in articles that aren't roots
 (@code{gnus-article-hide-citation-in-followups}).  This isn't very
 useful as an interactive command, but might be a handy function to stick
-in @code{gnus-article-display-hook} (@pxref{Customizing Articles}).
+have happen automatically (@pxref{Customizing Articles}).
 
 @end table
 
@@ -6613,9 +6608,7 @@ interactively.
 @item W w
 @kindex W w (Summary)
 @findex gnus-article-fill-cited-article
-Do word wrap (@code{gnus-article-fill-cited-article}).  If you use this
-function in @code{gnus-article-display-hook}, it should be run fairly
-late and certainly after any highlighting.
+Do word wrap (@code{gnus-article-fill-cited-article}).  
 
 You can give the command a numerical prefix to specify the width to use
 when filling.
@@ -8098,14 +8091,13 @@ Any headers that are to remain visible, but are not listed in this
 variable, will be displayed in random order after all the headers listed in this variable.
 
 @findex gnus-article-hide-boring-headers
-@vindex gnus-article-display-hook
 @vindex gnus-boring-article-headers
-You can hide further boring headers by entering
-@code{gnus-article-hide-boring-headers} into
-@code{gnus-article-display-hook}.  What this function does depends on
-the @code{gnus-boring-article-headers} variable.  It's a list, but this
-list doesn't actually contain header names.  Instead is lists various
-@dfn{boring conditions} that Gnus can check and remove from sight.
+You can hide further boring headers by setting
+@code{gnus-treat-hide-boring-header} to @code{head}.  What this function
+does depends on the @code{gnus-boring-article-headers} variable.  It's a
+list, but this list doesn't actually contain header names.  Instead is
+lists various @dfn{boring conditions} that Gnus can check and remove
+from sight.
 
 These conditions are:
 @table @code
@@ -8212,29 +8204,91 @@ Any similarity to real events and people is purely coincidental.  Ahem.
 @section Customizing Articles
 @cindex article customization
 
-@vindex gnus-article-display-hook
-The @code{gnus-article-display-hook} is called after the article has
-been inserted into the article buffer.  It is meant to handle all
-treatment of the article before it is displayed.
+A slew of functions for customizing how the articles are to look like
+exist.  You can call these functions interactively, or you can have them 
+called automatically when you select the articles.
 
-@findex gnus-article-maybe-highlight
-@findex gnus-article-maybe-hide-headers
-By default this hook just contains
-@code{gnus-article-maybe-hide-headers},
-@code{gnus-hide-boring-headers}, @code{gnus-article-treat-overstrike},
-and @code{gnus-article-maybe-highlight} (and under XEmacs,
-@code{gnus-article-display-x-face}), but there are thousands, nay
-millions, of functions you can put in this hook.  For an overview of
-functions @pxref{Article Highlighting}, @pxref{Article Hiding},
-@pxref{Article Washing}, @pxref{Article Buttons} and @pxref{Article
-Date}.  Note that the order of functions in this hook might affect
-things, so you may have to fiddle a bit to get the desired results.
+To have them called automatically, you should set the corresponding
+``treatment'' variable.  For instance, to have headers hidden, you'd set 
+@code{gnus-treat-hide-headers}.  Below is a list of variables that can
+be set, but first we discuss the values these variables can have.
 
-You can, of course, write your own functions.  The functions are called
-from the article buffer, and you can do anything you like, pretty much.
-There is no information that you have to keep in the buffer---you can
-change everything.  However, you shouldn't delete any headers.  Instead
-make them invisible if you want to make them go away.
+@enumerate
+@item
+@code{nil}: Don't do this treatment.
+
+@item
+@code{t}: Do this treatment on all body parts.
+
+@item
+@code{head}: Do the treatment on the headers.
+
+@item
+@code{last}: Do this treatment on the last part.
+
+@item
+An integer: Do this treatment on all body parts that have a length less
+than this number.
+
+@item
+A sexp: Do this treatment on all body parts where the sexp evals to a
+non-@code{nil} value.
+
+@end enumerate
+
+You may have noticed that the word @dfn{part} is used here.  This refers
+to the fact that some messages are @sc{mime} multipart articles that may
+be divided into several parts.  Articles that are not multiparts are
+considered to contain just a single part.
+
+@vindex gnus-article-treat-types
+Are the treatments applied to all sorts of multipart parts?  Yes, if you 
+want to, but by default, only @samp{text/plain} parts are given the
+treatment.  This is controlled by the @code{gnus-article-treat-types}
+variable, which is a list of regular expressions that are matched to the 
+type of the part.
+
+The following treatment options are available.  The easiest way to
+customize this is to examine the @code{gnus-article-treat} customization 
+group.
+
+@table @code
+@item gnus-treat-highlight-signature
+@item gnus-treat-buttonize
+@item gnus-treat-buttonize-head
+@item gnus-treat-emphasize
+@item gnus-treat-fill-article
+@item gnus-treat-strip-cr
+@item gnus-treat-hide-headers
+@item gnus-treat-hide-boring-headers
+@item gnus-treat-hide-signature
+@item gnus-treat-hide-citation
+@item gnus-treat-strip-pgp
+@item gnus-treat-strip-pem
+@item gnus-treat-highlight-headers
+@item gnus-treat-highlight-citation
+@item gnus-treat-highlight-signature 
+@item gnus-treat-date-ut 
+@item gnus-treat-date-local 
+@item gnus-treat-date-lapsed 
+@item gnus-treat-date-original 
+@item gnus-treat-strip-trailing-blank-lines
+@item gnus-treat-strip-leading-blank-lines
+@item gnus-treat-strip-multiple-blank-lines
+@item gnus-treat-strip-blank-lines 
+@item gnus-treat-overstrike 
+@item gnus-treat-display-xface 
+@item gnus-treat-display-smileys 
+@item gnus-treat-display-picons
+@end table
+
+@vindex gnus-part-display-hook
+You can, of course, write your own functions to be called from
+@code{gnus-part-display-hook}.  The functions are called narrowed to the
+part, and you can do anything you like, pretty much.  There is no
+information that you have to keep in the buffer---you can change
+everything.  However, you shouldn't delete any headers.  Instead make
+them invisible if you want to make them go away.
 
 
 @node Article Keymap
@@ -8322,12 +8376,6 @@ This hook is called right after the article has been inserted into the
 article buffer.  It is mainly intended for functions that do something
 depending on the contents; it should probably not be used for changing
 the contents of the article buffer.
-
-@vindex gnus-article-display-hook
-@item gnus-article-display-hook
-This hook is called as the last thing when displaying an article, and is
-intended for modifying the contents of the buffer, doing highlights,
-hiding headers, and the like.
 
 @item gnus-article-mode-hook
 @vindex gnus-article-mode-hook
@@ -14914,8 +14962,7 @@ Do highlights in the group buffer.
 @item summary-highlight
 Do highlights in the summary buffer.
 @item article-highlight
-Do highlights according to @code{gnus-article-display-hook} in the
-article buffer.
+Do highlights in the article buffer.
 @item highlight
 Turn on highlighting in all buffers.
 @item group-menu
@@ -15453,10 +15500,7 @@ To enable displaying picons, simply put the following line in your
 
 @lisp
 (setq gnus-use-picons t)
-(add-hook 'gnus-article-display-hook
-          'gnus-article-display-picons t)
-(add-hook 'gnus-article-display-hook
-          'gnus-picons-article-display-x-face)
+(setq gnus-treat-display-picons t)
 @end lisp
 
 and make sure @code{gnus-picons-database} points to the directory
@@ -15527,28 +15571,19 @@ Now that you've made those decision, you need to add the following
 functions to the appropriate hooks so these pictures will get displayed
 at the right time.
 
-@vindex gnus-article-display-hook
 @vindex gnus-picons-display-where
 @table @code
 @item gnus-article-display-picons
 @findex gnus-article-display-picons
 Looks up and displays the picons for the author and the author's domain
-in the @code{gnus-picons-display-where} buffer.  Should be added to the
-@code{gnus-article-display-hook}.
+in the @code{gnus-picons-display-where} buffer.  
 
 @item gnus-picons-article-display-x-face
 @findex gnus-article-display-picons
-Decodes and displays the X-Face header if present.  This function
-should be added to @code{gnus-article-display-hook}.
+Decodes and displays the X-Face header if present.  
 
 @end table
 
-Note:  You must append them to the hook, so make sure to specify 't'
-for the append flag of @code{add-hook}:
-
-@lisp
-(add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-@end lisp
 
 
 @node Picon Useless Configuration
@@ -15665,7 +15700,7 @@ In short---to use Smiley in Gnus, put the following in your
 @file{.gnus.el} file:
 
 @lisp
-(add-hook 'gnus-article-display-hook 'gnus-smiley-display t)
+(setq gnus-treat-display-smiley t)
 @end lisp
 
 Smiley maps text smiley faces---@samp{:-)}, @samp{:-=}, @samp{:-(} and
@@ -16833,11 +16868,6 @@ All functions for hiding article elements are now toggles.
 @item
 Article headers can be buttonized (@pxref{Article Washing}).
 
-@lisp
-(add-hook 'gnus-article-display-hook
-          'gnus-article-add-buttons-to-head)
-@end lisp
-
 @item
 All mail backends support fetching articles by @code{Message-ID}.
 
@@ -16934,11 +16964,6 @@ cited text to hide is now customizable (@pxref{Article Hiding}).
 
 @item
 Boring headers can be hidden (@pxref{Article Hiding}).
-
-@lisp
-(add-hook 'gnus-article-display-hook
-          'gnus-article-hide-boring-headers t)
-@end lisp
 
 @item
 Default scoring values can now be set from the menu bar.
@@ -17103,11 +17128,6 @@ mail before saving the mail (@pxref{Washing Mail}).
 
 @item
 Emphasized text can be properly fontisized:
-
-@lisp
-(add-hook 'gnus-article-display-hook
-          'gnus-article-emphasize)
-@end lisp
 
 @end itemize
 
@@ -18800,13 +18820,11 @@ minimum.  You can, in fact, make do without them altogether---most of the
 useful data is in the summary buffer, anyway.  Set this variable to
 @samp{^NEVVVVER} or @samp{From:}, or whatever you feel you need.
 
-@item gnus-article-display-hook
 Set this hook to all the available hiding commands:
 @lisp
-(setq gnus-article-display-hook
-      '(gnus-article-hide-headers
-        gnus-article-hide-signature
-        gnus-article-hide-citation))
+(setq gnus-treat-hide-headers 'head
+      gnus-treat-hide-signature t
+      gnus-treat-hide-citation t)
 @end lisp
 
 @item gnus-use-full-window
@@ -18862,9 +18880,6 @@ Set @code{gnus-check-new-newsgroups} and
 Set @code{gnus-show-threads}, @code{gnus-use-cross-reference} and
 @code{gnus-nov-is-evil} to @code{nil} to make entering and exiting the
 summary buffer faster.
-
-Set @code{gnus-article-display-hook} to @code{nil} to make article
-processing a bit faster.
 
 
 @page

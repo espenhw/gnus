@@ -112,7 +112,7 @@
 	(let (buffer-read-only)
 	  (delete-region ,(set-marker (make-marker) b)
 			 ,(set-marker (make-marker) (point))))))))
-  
+
 (defun mm-inline-audio (handle)
   (message "Not implemented"))
 

@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.3 $
+;; $Revision: 5.4 $
 ;; Keywords: uudecode
 
 ;; This file is not part of GNU Emacs, but the same permissions
@@ -63,7 +63,7 @@ input and write the converted data to its standard output.")
 
 If FILE-NAME is non-nil, save the result to FILE-NAME."
   (interactive "r\nP")
-  (let ((cbuf (current-buffer)) tempfile firstline work-buffer status) 
+  (let ((cbuf (current-buffer)) tempfile firstline work-buffer status)
     (save-excursion
       (goto-char start)
       (when (re-search-forward uudecode-begin-line nil t)
@@ -71,9 +71,9 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	(setq firstline (point))
 	(cond ((null file-name))
 	      ((stringp file-name))
-	      (t 
-	       (setq file-name (read-file-name "File to Name:" 
-					       nil nil nil 
+	      (t
+	       (setq file-name (read-file-name "File to Name:"
+					       nil nil nil
 					       (match-string 1)))))
 	(setq tempfile (expand-file-name
 			(or file-name (concat uudecode-temporary-file-directory
@@ -81,7 +81,7 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	(let ((cdir default-directory) default-process-coding-system)
 	  (unwind-protect
 	      (progn
-		(set-buffer (setq work-buffer 
+		(set-buffer (setq work-buffer
 				  (generate-new-buffer " *uudecode-work*")))
 		(buffer-disable-undo work-buffer)
 		(insert "begin 600 " (file-name-nondirectory tempfile) "\n")
@@ -90,7 +90,7 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 		(apply 'call-process-region
 		       (point-min)
 		       (point-max)
-		       uudecode-decoder-program 
+		       uudecode-decoder-program
 		       nil
 		       nil
 		       nil
@@ -136,10 +136,10 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	  (when (re-search-forward uudecode-begin-line nil t)
 	    (cond ((null file-name))
 		  ((stringp file-name))
-		  (t 
-		   (setq file-name (expand-file-name 
-				    (read-file-name "File to Name:" 
-						    nil nil nil 
+		  (t
+		   (setq file-name (expand-file-name
+				    (read-file-name "File to Name:"
+						    nil nil nil
 						    (match-string 1))))))
 	    (setq work-buffer (generate-new-buffer " *uudecode-work*"))
 	    (buffer-disable-undo work-buffer)
@@ -151,22 +151,22 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 	      (cond
 	       ((> (skip-chars-forward uudecode-alphabet end) 0)
 		(setq lim (point))
-		(setq remain 
+		(setq remain
 		      (logand (- (char-int (char-after inputpos)) 32) 63))
 		(setq inputpos (1+ inputpos))
 		(if (= remain 0) (setq done t))
 		(while (and (< inputpos lim) (> remain 0))
-		  (setq bits (+ bits 
-				(logand 
-				 (- 
+		  (setq bits (+ bits
+				(logand
+				 (-
 				  (char-int (char-after inputpos)) 32) 63)))
 		  (if (/= counter 0) (setq remain (1- remain)))
 		  (setq counter (1+ counter)
 			inputpos (1+ inputpos))
 		  (cond ((= counter 4)
-			 (uudecode-insert-char 
+			 (uudecode-insert-char
 			  (lsh bits -16) 1 nil work-buffer)
-			 (uudecode-insert-char 
+			 (uudecode-insert-char
 			  (logand (lsh bits -8) 255) 1 nil work-buffer)
 			 (uudecode-insert-char (logand bits 255) 1 nil
 					 work-buffer)
@@ -181,12 +181,12 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
 		  ;(error "uucode ends unexpectly")
 		  (setq done t))
 		 ((= counter 3)
-		  (uudecode-insert-char (logand (lsh bits -16) 255) 1 nil 
+		  (uudecode-insert-char (logand (lsh bits -16) 255) 1 nil
 				  work-buffer)
 		  (uudecode-insert-char (logand (lsh bits -8) 255) 1 nil
 				  work-buffer))
 		 ((= counter 2)
-		  (uudecode-insert-char (logand (lsh bits -10) 255) 1 nil 
+		  (uudecode-insert-char (logand (lsh bits -10) 255) 1 nil
 				  work-buffer)))
 	      (skip-chars-forward non-data-chars end))
 	    (if file-name

@@ -580,7 +580,7 @@ Bind `print-quoted' and `print-readably' to t while printing."
 	(gnus-put-text-property
 	 b (setq b (next-single-property-change b 'gnus-face nil end))
 	 prop val)))))
-  
+
 ;;; Protected and atomic operations.  dmoore@ucsd.edu 21.11.1996
 ;;; The primary idea here is to try to protect internal datastructures
 ;;; from becoming corrupted when the user hits C-g, or if a hook or
@@ -792,7 +792,7 @@ ARG is passed to the first function."
     (unwind-protect
 	(apply 'run-hooks funcs)
       (set-buffer buf))))
-  
+
 ;;;
 ;;; .netrc and .authinforc parsing
 ;;;
@@ -936,7 +936,7 @@ ARG is passed to the first function."
 
 (defun gnus-annotation-in-region-p (b e)
   (if (= b e)
-      (eq (cadr (memq 'gnus-undeletable (text-properties-at b))) t) 
+      (eq (cadr (memq 'gnus-undeletable (text-properties-at b))) t)
     (text-property-any b e 'gnus-undeletable t)))
 
 (provide 'gnus-util)

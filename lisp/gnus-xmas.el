@@ -468,7 +468,7 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-region-active-p 'region-active-p)
   (fset 'gnus-annotation-in-region-p 'gnus-xmas-annotation-in-region-p)
   (fset 'gnus-mime-button-menu 'gnus-xmas-mime-button-menu)
-  
+
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
   (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)
@@ -702,24 +702,25 @@ XEmacs compatibility workaround."
   "Display any XFace headers in the current article."
   (save-excursion
     (let ((xface-glyph
-	   (cond ((featurep 'xface)
-		  (make-glyph (vector 'xface :data
-				      (concat "X-Face: "
-					      (buffer-substring beg end)))))
-		 ((featurep 'xpm)
-		  (let ((cur (current-buffer)))
-		    (save-excursion
-		      (gnus-set-work-buffer)
-		      (insert (format "%s" (buffer-substring beg end cur)))
-		      (gnus-xmas-call-region "uncompface")
-		      (goto-char (point-min))
-		      (insert "/* Width=48, Height=48 */\n")
-		      (gnus-xmas-call-region "icontopbm")
-		      (gnus-xmas-call-region "ppmtoxpm")
-		      (make-glyph
-		       (vector 'xpm :data (buffer-string))))))
-		 (t
-		  (make-glyph [nothing]))))
+	   (cond
+	    ((featurep 'xface)
+	     (make-glyph (vector 'xface :data
+				 (concat "X-Face: "
+					 (buffer-substring beg end)))))
+	    ((featurep 'xpm)
+	     (let ((cur (current-buffer)))
+	       (save-excursion
+		 (gnus-set-work-buffer)
+		 (insert (format "%s" (buffer-substring beg end cur)))
+		 (gnus-xmas-call-region "uncompface")
+		 (goto-char (point-min))
+		 (insert "/* Width=48, Height=48 */\n")
+		 (gnus-xmas-call-region "icontopbm")
+		 (gnus-xmas-call-region "ppmtoxpm")
+		 (make-glyph
+		  (vector 'xpm :data (buffer-string))))))
+	    (t
+	     (make-glyph [nothing]))))
 	  (ext (make-extent (progn
 			      (goto-char (point-min))
 			      (re-search-forward "^From:" nil t)
@@ -729,26 +730,12 @@ XEmacs compatibility workaround."
       (set-extent-begin-glyph ext xface-glyph)
       (set-extent-property ext 'duplicable t))))
 
-;;(defvar gnus-xmas-pointer-glyph
-;;  (progn
-;;    (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory
-;;                                     "gnus"))
-;;    (let ((file-xpm (expand-file-name "gnus-pointer.xpm"
-;;				      gnus-xmas-glyph-directory))
-;;	  (file-xbm (expand-file-name "gnus-pointer.xbm"
-;;				      gnus-xmas-glyph-directory)))
-;;      (make-pointer-glyph
-;;       (list (vector 'xpm ':file file-xpm)
-;;	     (vector 'xbm ':file file-xbm))))))
-
 (defvar gnus-xmas-modeline-left-extent
   (let ((ext (copy-extent modeline-buffer-id-left-extent)))
-;    (set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
     ext))
 
 (defvar gnus-xmas-modeline-right-extent
   (let ((ext (copy-extent modeline-buffer-id-right-extent)))
-;    (set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
     ext))
 
 (defvar gnus-xmas-modeline-glyph
@@ -765,7 +752,7 @@ XEmacs compatibility workaround."
 			  `[xpm :file ,file-xpm])
 			 ((featurep 'xbm)
 			  ;; Then a not-so-nifty XBM
-			  [xbm :file ,file-xbm])
+			  `[xbm :file ,file-xbm])
 			 ;; Then the simple string
 			 (t [string :data "Gnus:"])))))
       (set-glyph-face glyph 'modeline-buffer-id)
@@ -797,7 +784,7 @@ XEmacs compatibility workaround."
 (defun gnus-xmas-annotation-in-region-p (b e)
   (or (map-extents (lambda (e u) t) nil b e nil nil 'mm t)
       (if (= b e)
-	  (eq (cadr (memq 'gnus-undeletable (text-properties-at b))) t) 
+	  (eq (cadr (memq 'gnus-undeletable (text-properties-at b))) t)
 	(text-property-any b e 'gnus-undeletable t))))
 
 (defun gnus-xmas-mime-button-menu (event)

@@ -233,7 +233,7 @@ RANGE1. The returned range is always a list."
       (setq range1 (if (listp (cdr range1)) range1 (list range1))
 	    range2 (if (listp (cdr range2)) range2 (list range2))
 	    r1 (car range1)
-	    r2 (car range2) 
+	    r2 (car range2)
 	    r1_min (if (consp r1) (car r1) r1)
 	    r1_max (if (consp r1) (cdr r1) r1)
 	    r2_min (if (consp r2) (car r2) r2)

@@ -240,7 +240,7 @@
     '(gnus-face t face ,(symbol-value (intern (format "gnus-face-%d" type))))))
 
 (defun gnus-balloon-face-function (form type)
-  `(gnus-put-text-property 
+  `(gnus-put-text-property
     (point) (progn ,@form (point))
     'balloon-help
     ,(intern (format "gnus-balloon-face-%d" type))))
@@ -316,7 +316,7 @@
 	(if (or (= delim ?\()
 		(= delim ?\{)
 		(= delim ?\<))
-	    (replace-match (concat "\"(" 
+	    (replace-match (concat "\"("
 				   (cond ((= delim ?\() "mouse")
 					 ((= delim ?\{) "face")
 					 (t "balloon"))
@@ -545,7 +545,7 @@ If PROPS, insert the result."
 	(symbol-value (intern (format "gnus-%s-line-format" type)))
 	(symbol-value (intern (format "gnus-%s-line-format-alist" type)))
 	insertable)))
-	
+
 
 (provide 'gnus-spec)
 

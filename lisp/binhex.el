@@ -3,10 +3,10 @@
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Create Date: Oct 1, 1998
-;; $Revision: 5.3 $
+;; $Revision: 5.4 $
 ;; Time-stamp: <Tue Oct  6 23:48:38 EDT 1998 zsh>
 ;; Keywords: binhex
-  
+
 ;; This file is not part of GNU Emacs, but the same permissions
 ;; apply.
 
@@ -77,44 +77,44 @@ input and write the converted data to its standard output.")
 	(insert-char char count)))))
 
 (defvar binhex-crc-table
-  [0  4129  8258  12387  16516  20645  24774  28903 
-      33032  37161  41290  45419  49548  53677  57806  61935 
-      4657  528  12915  8786  21173  17044  29431  25302 
-      37689  33560  45947  41818  54205  50076  62463  58334 
-      9314  13379  1056  5121  25830  29895  17572  21637 
-      42346  46411  34088  38153  58862  62927  50604  54669 
-      13907  9842  5649  1584  30423  26358  22165  18100 
-      46939  42874  38681  34616  63455  59390  55197  51132 
-      18628  22757  26758  30887  2112  6241  10242  14371 
-      51660  55789  59790  63919  35144  39273  43274  47403 
-      23285  19156  31415  27286  6769  2640  14899  10770 
-      56317  52188  64447  60318  39801  35672  47931  43802 
-      27814  31879  19684  23749  11298  15363  3168  7233 
-      60846  64911  52716  56781  44330  48395  36200  40265 
-      32407  28342  24277  20212  15891  11826  7761  3696 
-      65439  61374  57309  53244  48923  44858  40793  36728 
-      37256  33193  45514  41451  53516  49453  61774  57711 
-      4224  161  12482  8419  20484  16421  28742  24679 
-      33721  37784  41979  46042  49981  54044  58239  62302 
-      689  4752  8947  13010  16949  21012  25207  29270 
-      46570  42443  38312  34185  62830  58703  54572  50445 
-      13538  9411  5280  1153  29798  25671  21540  17413 
-      42971  47098  34713  38840  59231  63358  50973  55100 
-      9939  14066  1681  5808  26199  30326  17941  22068 
-      55628  51565  63758  59695  39368  35305  47498  43435 
-      22596  18533  30726  26663  6336  2273  14466  10403 
-      52093  56156  60223  64286  35833  39896  43963  48026 
-      19061  23124  27191  31254  2801  6864  10931  14994 
-      64814  60687  56684  52557  48554  44427  40424  36297 
-      31782  27655  23652  19525  15522  11395  7392  3265 
-      61215  65342  53085  57212  44955  49082  36825  40952 
+  [0  4129  8258  12387  16516  20645  24774  28903
+      33032  37161  41290  45419  49548  53677  57806  61935
+      4657  528  12915  8786  21173  17044  29431  25302
+      37689  33560  45947  41818  54205  50076  62463  58334
+      9314  13379  1056  5121  25830  29895  17572  21637
+      42346  46411  34088  38153  58862  62927  50604  54669
+      13907  9842  5649  1584  30423  26358  22165  18100
+      46939  42874  38681  34616  63455  59390  55197  51132
+      18628  22757  26758  30887  2112  6241  10242  14371
+      51660  55789  59790  63919  35144  39273  43274  47403
+      23285  19156  31415  27286  6769  2640  14899  10770
+      56317  52188  64447  60318  39801  35672  47931  43802
+      27814  31879  19684  23749  11298  15363  3168  7233
+      60846  64911  52716  56781  44330  48395  36200  40265
+      32407  28342  24277  20212  15891  11826  7761  3696
+      65439  61374  57309  53244  48923  44858  40793  36728
+      37256  33193  45514  41451  53516  49453  61774  57711
+      4224  161  12482  8419  20484  16421  28742  24679
+      33721  37784  41979  46042  49981  54044  58239  62302
+      689  4752  8947  13010  16949  21012  25207  29270
+      46570  42443  38312  34185  62830  58703  54572  50445
+      13538  9411  5280  1153  29798  25671  21540  17413
+      42971  47098  34713  38840  59231  63358  50973  55100
+      9939  14066  1681  5808  26199  30326  17941  22068
+      55628  51565  63758  59695  39368  35305  47498  43435
+      22596  18533  30726  26663  6336  2273  14466  10403
+      52093  56156  60223  64286  35833  39896  43963  48026
+      19061  23124  27191  31254  2801  6864  10931  14994
+      64814  60687  56684  52557  48554  44427  40424  36297
+      31782  27655  23652  19525  15522  11395  7392  3265
+      61215  65342  53085  57212  44955  49082  36825  40952
       28183  32310  20053  24180  11923  16050  3793  7920])
 
 (defun binhex-update-crc (crc char &optional count)
   (if (null count) (setq count 1))
   (while (> count 0)
-    (setq crc (logxor (logand (lsh crc 8) 65280) 
-		      (aref binhex-crc-table 
+    (setq crc (logxor (logand (lsh crc 8) 65280)
+		      (aref binhex-crc-table
 			    (logxor (logand (lsh crc -8) 255)
 				    char)))
 	  count (1- count)))
@@ -148,7 +148,7 @@ input and write the converted data to its standard output.")
 (defun binhex-header (buffer)
   (with-current-buffer buffer
     (let ((pos (point-min)) len)
-      (vector 
+      (vector
        (prog1
 	   (setq len (char-int (char-after pos)))
 	 (setq pos (1+ pos)))
@@ -158,23 +158,23 @@ input and write the converted data to its standard output.")
 	 (setq pos (1+ pos)))
        (buffer-substring pos (setq pos (+ pos 4)))
        (buffer-substring pos (setq pos (+ pos 4)))
-       (binhex-string-big-endian 
+       (binhex-string-big-endian
 	(buffer-substring pos (setq pos (+ pos 2))))
-       (binhex-string-big-endian 
+       (binhex-string-big-endian
 	(buffer-substring pos (setq pos (+ pos 4))))
-       (binhex-string-big-endian 
+       (binhex-string-big-endian
 	(buffer-substring pos (setq pos (+ pos 4))))))))
 
 (defvar binhex-last-char)
 (defvar binhex-repeat)
 
 (defun binhex-push-char (char &optional count ignored buffer)
-  (cond 
-   (binhex-repeat 
+  (cond
+   (binhex-repeat
     (if (eq char 0)
-	(binhex-insert-char (setq binhex-last-char 144) 1 
+	(binhex-insert-char (setq binhex-last-char 144) 1
 			    ignored buffer)
-      (binhex-insert-char binhex-last-char (- char 1) 
+      (binhex-insert-char binhex-last-char (- char 1)
 			  ignored buffer)
       (setq binhex-last-char nil))
     (setq binhex-repeat nil))
@@ -190,7 +190,7 @@ If HEADER-ONLY is non-nil only decode header and return filename."
   (let ((work-buffer nil)
 	(counter 0)
 	(bits 0) (tmp t)
-	(lim 0) inputpos 
+	(lim 0) inputpos
 	(non-data-chars " \t\n\r:")
 	file-name-length data-fork-start
 	header
@@ -200,10 +200,10 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 	  (goto-char start)
 	  (when (re-search-forward binhex-begin-line end t)
 	    (if (boundp 'enable-multibyte-characters)
-		(let ((multibyte 
+		(let ((multibyte
 		       (default-value 'enable-multibyte-characters)))
 		  (setq-default enable-multibyte-characters nil)
-		  (setq work-buffer 
+		  (setq work-buffer
 			(generate-new-buffer " *binhex-work*"))
 		  (setq-default enable-multibyte-characters multibyte))
 	      (setq work-buffer (generate-new-buffer " *binhex-work*")))
@@ -233,31 +233,31 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 		    (setq file-name-length (char-after (point-min))
 			  data-fork-start (+ (point-min)
 					     file-name-length 22))))
-	      (if (and (null header) 
+	      (if (and (null header)
 		       (with-current-buffer work-buffer
 			 (>= (buffer-size) data-fork-start)))
 		  (progn
-		    (binhex-verify-crc work-buffer 
+		    (binhex-verify-crc work-buffer
 				       1 data-fork-start)
 		    (setq header (binhex-header work-buffer))
 		    (if header-only (setq tmp nil counter 0))))
 	      (setq tmp (and tmp (not (eq inputpos end)))))
 	    (cond
 	     ((= counter 3)
-	      (binhex-push-char (logand (lsh bits -16) 255) 1 nil 
+	      (binhex-push-char (logand (lsh bits -16) 255) 1 nil
 				work-buffer)
 	      (binhex-push-char (logand (lsh bits -8) 255) 1 nil
 				work-buffer))
 	     ((= counter 2)
-	      (binhex-push-char (logand (lsh bits -10) 255) 1 nil 
+	      (binhex-push-char (logand (lsh bits -10) 255) 1 nil
 				work-buffer))))
       (if header-only nil
 	(binhex-verify-crc work-buffer
-			   data-fork-start 
+			   data-fork-start
 			   (+ data-fork-start (aref header 6) 2))
 	(or (markerp end) (setq end (set-marker (make-marker) end)))
 	(goto-char start)
-	(insert-buffer-substring work-buffer 
+	(insert-buffer-substring work-buffer
 				 data-fork-start (+ data-fork-start
 						    (aref header 6)))
 	(delete-region (point) end)))
@@ -268,7 +268,7 @@ If HEADER-ONLY is non-nil only decode header and return filename."
   "Binhex decode region between START and END using external decoder"
   (interactive "r")
   (let ((cbuf (current-buffer)) firstline work-buffer status
-	(file-name (concat binhex-temporary-file-directory 
+	(file-name (concat binhex-temporary-file-directory
 			   (binhex-decode-region start end t)
 			   ".data")))
     (save-excursion
@@ -277,7 +277,7 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 	(let ((cdir default-directory) default-process-coding-system)
 	  (unwind-protect
 	      (progn
-		(set-buffer (setq work-buffer 
+		(set-buffer (setq work-buffer
 				  (generate-new-buffer " *binhex-work*")))
 		(buffer-disable-undo work-buffer)
 		(insert-buffer-substring cbuf firstline end)
@@ -285,7 +285,7 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 		(apply 'call-process-region
 		       (point-min)
 		       (point-max)
-		       binhex-decoder-program 
+		       binhex-decoder-program
 		       nil
 		       nil
 		       nil
@@ -307,5 +307,3 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 (provide 'binhex)
 
 ;;; binhex.el ends here
-
-

@@ -267,7 +267,7 @@ on your system, you could say something like:
 	     (goto-char p)
 	     (and (search-forward "\nxref: " nil t)
 		  (nnheader-header-value)))
-	   
+
 	   ;; Extra.
 	   (when nnmail-extra-headers
 	     (let ((extra nnmail-extra-headers)

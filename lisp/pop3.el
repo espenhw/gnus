@@ -113,7 +113,7 @@ Returns the process associated with the connection."
 	 (get-buffer-create (format "trace of POP session to %s" mailhost)))
 	(process)
 	(coding-system-for-read 'binary)   ;; because FSF Emacs 20 and
-	(coding-system-for-write 'binary)  ;; XEmacs 20/1 are st00pid 
+	(coding-system-for-write 'binary)  ;; XEmacs 20/1 are st00pid
     )
     (save-excursion
       (set-buffer process-buffer)

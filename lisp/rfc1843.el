@@ -2,10 +2,10 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.1 $
-;; Keywords: news HZ 
+;; $Revision: 5.2 $
+;; Keywords: news HZ
 ;; Time-stamp: <Tue Oct  6 23:48:49 EDT 1998 zsh>
-  
+
 ;; This file is not part of GNU Emacs, but the same permissions
 ;; apply.
 
@@ -37,13 +37,13 @@
 
 (require 'mm-util)
 
-(defvar rfc1843-word-regexp 
+(defvar rfc1843-word-regexp
   "~\\({\\([\041-\167][\041-\176]\\| \\)+\\(~}\\|$\\)")
 
 (defvar rfc1843-word-regexp-strictly
       "~\\({\\([\041-\167][\041-\176]\\)+\\(~}\\|$\\)")
 
-(defvar rfc1843-hzp-word-regexp 
+(defvar rfc1843-hzp-word-regexp
   "~\\({\\([\041-\167][\041-\176]\\| \\)+\\|\
 [<>]\\([\041-\175][\041-\176]\\| \\)+\\)\\(~}\\|$\\)")
 
@@ -53,7 +53,7 @@
 
 (defcustom rfc1843-decode-loosely nil
   "Loosely check HZ encoding if non-nil.
-When it is set non-nil, only buffers or strings with strictly 
+When it is set non-nil, only buffers or strings with strictly
 HZ-encoded are decoded."
   :type 'boolean
   :group 'gnus)
@@ -62,7 +62,7 @@ HZ-encoded are decoded."
   "HZ+ decoding support if non-nil.
 HZ+ specification (also known as HZP) is to provide a standardized
 7-bit representation of mixed Big5, GB, and ASCII text for convenient
-e-mail transmission, news posting, etc. 
+e-mail transmission, news posting, etc.
 The document of HZ+ 0.78 specification can be found at
 ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
   :type 'boolean
@@ -79,27 +79,27 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
   (let (str firstc)
     (save-excursion
       (goto-char from)
-      (if (or rfc1843-decode-loosely 
-	      (re-search-forward (if rfc1843-decode-hzp 
-				     rfc1843-hzp-word-regexp-strictly 
+      (if (or rfc1843-decode-loosely
+	      (re-search-forward (if rfc1843-decode-hzp
+				     rfc1843-hzp-word-regexp-strictly
 				   rfc1843-word-regexp-strictly) to t))
-	  (save-restriction 
+	  (save-restriction
 	    (narrow-to-region from to)
 	    (goto-char (point-min))
 	    (while (re-search-forward (if rfc1843-decode-hzp
 					  rfc1843-hzp-word-regexp
-					rfc1843-word-regexp) (point-max) t)  
+					rfc1843-word-regexp) (point-max) t)
 	      (setq str (match-string 1))
-	      (setq firstc (aref str 0)) 
-	      (insert (mm-decode-coding-string 
+	      (setq firstc (aref str 0))
+	      (insert (mm-decode-coding-string
 		       (rfc1843-decode
-			(prog1 
+			(prog1
 			    (substring str 1)
 			  (delete-region (match-beginning 0) (match-end 0)))
 			firstc)
 		       (if (eq firstc ?{) 'cn-gb-2312 'cn-big5))))
 	    (goto-char (point-min))
-	    (while (search-forward "~" (point-max) t)  
+	    (while (search-forward "~" (point-max) t)
 	      (cond ((eq (char-after) ?\n)
 		     (delete-char -1)
 		     (delete-char 1))
@@ -138,7 +138,7 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
 		     gnus-newsgroup-name)
        (save-excursion
 	 (save-restriction
-	   (message-narrow-to-head)	
+	   (message-narrow-to-head)
 	   (goto-char (point-max))
 	   (widen)
 	   (rfc1843-decode-region (point) (point-max))))))
@@ -152,19 +152,19 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
   (require 'gnus-art)
   (require 'gnus-sum)
   (add-hook 'gnus-article-decode-hook 'rfc1843-decode-article-body t)
-  (setq gnus-decode-encoded-word-function 
+  (setq gnus-decode-encoded-word-function
 	'gnus-multi-decode-encoded-word-string
-	gnus-decode-header-function 
+	gnus-decode-header-function
 	'gnus-multi-decode-header
-	gnus-decode-encoded-word-methods 
-	(nconc gnus-decode-encoded-word-methods 
-	       (list 
-		(cons (concat "\\<\\(" rfc1843-newsgroups-regexp "\\)\\>") 
+	gnus-decode-encoded-word-methods
+	(nconc gnus-decode-encoded-word-methods
+	       (list
+		(cons (concat "\\<\\(" rfc1843-newsgroups-regexp "\\)\\>")
 		      'rfc1843-decode-string)))
-	gnus-decode-header-methods 
-	(nconc gnus-decode-header-methods 
-	       (list 
-		(cons (concat "\\<\\(" rfc1843-newsgroups-regexp "\\)\\>") 
+	gnus-decode-header-methods
+	(nconc gnus-decode-header-methods
+	       (list
+		(cons (concat "\\<\\(" rfc1843-newsgroups-regexp "\\)\\>")
 		      'rfc1843-decode-region)))))
 
 (provide 'rfc1843)

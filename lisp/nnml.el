@@ -185,8 +185,8 @@ all.  This may very well take some time.")
       (nnheader-report 'nnml "No such file: %s" path))
      ((file-directory-p path)
       (nnheader-report 'nnml "File is a directory: %s" path))
-     ((not (save-excursion (let ((nnmail-file-coding-system 
-				  nnml-file-coding-system)) 
+     ((not (save-excursion (let ((nnmail-file-coding-system
+				  nnml-file-coding-system))
 			     (nnmail-find-file path))))
       (nnheader-report 'nnml "Couldn't read file: %s" path))
      (t
@@ -254,7 +254,7 @@ all.  This may very well take some time.")
 (deffoo nnml-request-list (&optional server)
   (save-excursion
     (let ((nnmail-file-coding-system nnmail-active-file-coding-system)
-	  (pathname-coding-system 'binary)) 
+	  (pathname-coding-system 'binary))
       (nnmail-find-file nnml-active-file))
     (setq nnml-group-alist (nnmail-get-active))
     t))

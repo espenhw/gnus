@@ -2,9 +2,9 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.6 $
+;; $Revision: 5.7 $
 ;; Keywords: news postscript uudecode binhex shar
-  
+
 ;; This file is not part of GNU Emacs, but the same permissions
 ;; apply.
 ;;
@@ -59,7 +59,7 @@
 (defconst mm-uu-shar-begin-line "^#! */bin/sh")
 (defconst mm-uu-shar-end-line "^exit 0")
 
-(defvar mm-uu-begin-line 
+(defvar mm-uu-begin-line
   (concat mm-uu-postscript-begin-line "\\|"
 	  mm-uu-uu-begin-line "\\|"
 	  mm-uu-binhex-begin-line "\\|"
@@ -76,7 +76,7 @@ This can be either \"inline\" or \"attachment\".")
 
 (defun mm-uu-dissect ()
   "Dissect the current buffer and return a list of uu handles."
-  (let (ct ctl cte charset text-start start-char end-char 
+  (let (ct ctl cte charset text-start start-char end-char
 	   type file-name end-line result text-plain-type)
     (save-excursion
       (save-restriction
@@ -87,79 +87,79 @@ This can be either \"inline\" or \"attachment\".")
 		ctl (condition-case () (mail-header-parse-content-type ct)
 		      (error nil))
 		charset (and ctl (mail-content-type-get ctl 'charset)))
-	  (if (stringp cte) 
+	  (if (stringp cte)
 	      (setq cte (intern (downcase (mail-header-remove-whitespace
 					   (mail-header-remove-comments
 					    cte)))))))
 	(goto-char (point-max)))
       (forward-line)
       (setq text-start (point)
-	    text-plain-type (cons "text/plain" 
-				  (if charset 
+	    text-plain-type (cons "text/plain"
+				  (if charset
 				      (list (cons 'charset charset)))))
       (while (re-search-forward mm-uu-begin-line nil t)
 	(beginning-of-line)
 	(setq start-char (point))
 	(forward-line) ;; in case of failure
-	(setq type (cdr (assq (aref (match-string 0) 0) 
+	(setq type (cdr (assq (aref (match-string 0) 0)
 			      mm-uu-identifier-alist)))
-	(setq file-name 
+	(setq file-name
 	      (if (eq type 'uu)
 		  (and (match-string 1)
 		       (let ((nnheader-file-name-translation-alist
 			      '((?/ . ?,) (? . ?_) (?* . ?_) (?$ . ?_))))
 			 (nnheader-translate-file-chars (match-string 1))))))
-	(setq end-line (symbol-value 
-			(intern (concat "mm-uu-" (symbol-name type) 
+	(setq end-line (symbol-value
+			(intern (concat "mm-uu-" (symbol-name type)
 					"-end-line"))))
 	(when (re-search-forward end-line nil t)
 	  (forward-line)
 	  (setq end-char (point))
 	  (when (or (not (eq type 'binhex))
-		    (setq file-name 
+		    (setq file-name
 			  (condition-case nil
 			      (binhex-decode-region start-char end-char t)
 			    (error nil))))
 	    (if (> start-char text-start)
 		(push
-		 (mm-make-handle (mm-uu-copy-to-buffer text-start start-char) 
-		       text-plain-type cte) 
+		 (mm-make-handle (mm-uu-copy-to-buffer text-start start-char)
+		       text-plain-type cte)
 		 result))
-	    (push 
+	    (push
 	     (cond
 	      ((eq type 'postscript)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char) 
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
 		     '("application/postscript")))
 	      ((eq type 'uu)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char) 
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
 		     (list (or (and file-name
-				    (string-match "\\.[^\\.]+$" file-name) 
-				    (mailcap-extension-to-mime 
+				    (string-match "\\.[^\\.]+$" file-name)
+				    (mailcap-extension-to-mime
 				     (match-string 0 file-name)))
 			       "application/octet-stream"))
-		     'x-uuencode nil 
+		     'x-uuencode nil
 		     (if (and file-name (not (equal file-name "")))
 			 (list mm-dissect-disposition (cons 'filename file-name)))))
 	      ((eq type 'binhex)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char) 
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
 		     (list (or (and file-name
-				    (string-match "\\.[^\\.]+$" file-name) 
-				    (mailcap-extension-to-mime 
+				    (string-match "\\.[^\\.]+$" file-name)
+				    (mailcap-extension-to-mime
 				     (match-string 0 file-name)))
 			       "application/octet-stream"))
-		     'x-binhex nil 
+		     'x-binhex nil
 		     (if (and file-name (not (equal file-name "")))
 			 (list mm-dissect-disposition (cons 'filename file-name)))))
 	      ((eq type 'shar)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char) 
-		     '("application/x-shar")))) 
+	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
+		     '("application/x-shar"))))
 	     result)
 	    (setq text-start end-char))))
       (when result
 	(if (> (point-max) (1+ text-start))
 	    (push
-	     (mm-make-handle (mm-uu-copy-to-buffer text-start (point-max)) 
-		   text-plain-type cte) 
+	     (mm-make-handle (mm-uu-copy-to-buffer text-start (point-max))
+		   text-plain-type cte)
 	     result))
 	(setq result (cons "multipart/mixed" (nreverse result))))
       result)))
@@ -174,11 +174,11 @@ This can be either \"inline\" or \"attachment\".")
     (forward-line)
     (let (type end-line result)
       (while (and (not result) (re-search-forward mm-uu-begin-line nil t))
-	(forward-line) 
-	(setq type (cdr (assq (aref (match-string 0) 0) 
+	(forward-line)
+	(setq type (cdr (assq (aref (match-string 0) 0)
 			      mm-uu-identifier-alist)))
-	(setq end-line (symbol-value 
-			(intern (concat "mm-uu-" (symbol-name type) 
+	(setq end-line (symbol-value
+			(intern (concat "mm-uu-" (symbol-name type)
 					"-end-line"))))
 	(if (re-search-forward end-line nil t)
 	    (setq result t)))

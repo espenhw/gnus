@@ -654,7 +654,7 @@ buffer.
 	  (error "Couldn't enter %s" group))
       (unless (gnus-group-read-group nil no-article group)
 	(error "Couldn't enter %s" group)))))
-      
+
 (defun gnus-browse-select-group ()
   "Select the current group."
   (interactive)

@@ -162,7 +162,7 @@ above them."
 (defun smiley-popup-menu (e)
   (interactive "e")
   (popup-menu
-   `("Smilies" 
+   `("Smilies"
      ["Toggle This Smiley" (smiley-toggle-extent ,e) t]
      ["Toggle All Smilies" (smiley-toggle-extents ,e) t])))
 

@@ -1251,7 +1251,7 @@ for new groups, and subscribe the new groups as zombies."
 		  (if active (- (1+ (cdr active)) (car active)) t))
            ;; Shorten the select method if possible, if we need to
            ;; store it at all (native groups).
-           (let ((method (gnus-method-simplify 
+           (let ((method (gnus-method-simplify
                           (or gnus-override-subscribe-method
                               (gnus-group-method group)))))
              (if method
@@ -1810,7 +1810,7 @@ newsgroup."
     ;; Let the Gnus agent save the active file.
     (when (and gnus-agent real-active)
       (gnus-agent-save-groups method))
-    
+
     (goto-char (point-min))
     ;; We split this into to separate loops, one with the prefix
     ;; and one without to speed the reading up somewhat.

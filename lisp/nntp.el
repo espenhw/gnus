@@ -583,7 +583,7 @@ noticing asynchronous data.")
       (and (numberp nntp-large-newsgroup)
 	   (> number nntp-large-newsgroup)
 	   (nnheader-message 6 "NNTP: Receiving articles...done"))
-      
+
       ;; Now we have all the responses.  We go through the results,
       ;; wash it and copy it over to the server buffer.
       (set-buffer nntp-server-buffer)
@@ -692,7 +692,7 @@ noticing asynchronous data.")
 	    ;; Ok, this is evil, but when using telnet and stuff
 	    ;; as the connection method, it's important that the
 	    ;; QUIT command actually is sent out before we kill
-	    ;; the process.  
+	    ;; the process.
 	    (sleep-for 1))))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process)))
@@ -709,7 +709,7 @@ noticing asynchronous data.")
 	    ;; Ok, this is evil, but when using telnet and stuff
 	    ;; as the connection method, it's important that the
 	    ;; QUIT command actually is sent out before we kill
-	    ;; the process.  
+	    ;; the process.
 	    (sleep-for 1))))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process))))))
@@ -839,8 +839,8 @@ password contained in '~/.nntp-authinfo'."
   "Open a connection to PORT on ADDRESS delivering output to BUFFER."
   (run-hooks 'nntp-prepare-server-hook)
   (let* ((pbuffer (nntp-make-process-buffer buffer))
-	 (timer 
-	  (and nntp-connection-timeout 
+	 (timer
+	  (and nntp-connection-timeout
 	       (nnheader-run-at-time
 		nntp-connection-timeout nil
 		`(lambda ()
@@ -853,7 +853,7 @@ password contained in '~/.nntp-authinfo'."
 		(funcall nntp-open-connection-function pbuffer))
 	    (error nil)
 	    (quit nil))))
-    (when timer 
+    (when timer
       (nnheader-cancel-timer timer))
     (when (and (buffer-name pbuffer)
 	       process)

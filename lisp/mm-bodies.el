@@ -69,7 +69,7 @@ If no encoding was done, nil is returned."
 	  charsets)
 	 ;; We encode.
 	 (t
-	  (let ((mime-charset 
+	  (let ((mime-charset
 		 (mm-mime-charset (car charsets) (point-min) (point-max)))
 		start)
 	    (when (or t
@@ -160,7 +160,7 @@ The characters in CHARSET should then be decoded."
       (let (mule-charset)
 	(when (and charset
 		   (setq mule-charset (mm-charset-to-coding-system charset))
-		   ;; buffer-file-coding-system 
+		   ;; buffer-file-coding-system
 					;Article buffer is nil coding system
 					;in XEmacs
 		   enable-multibyte-characters

@@ -765,7 +765,7 @@ If prefix argument ALL is non-nil, all articles are marked as read."
 (defun gnus-gl-get-trace ()
   "Insert the contents of the BBBD trace buffer."
   (when grouplens-bbb-buffer
-    (insert-buffer grouplens-bbb-buffer)))
+    (insert-buffer-substring grouplens-bbb-buffer)))
 
 ;;
 ;; GroupLens minor mode

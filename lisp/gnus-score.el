@@ -387,7 +387,7 @@ If nil, the user will be asked for a duration."
 (defcustom gnus-score-thread-simplify nil
   "If non-nil, subjects will simplified as in threading."
   :group 'gnus-score-various
-  :type 'boolean) 
+  :type 'boolean)
 
 
 
@@ -672,7 +672,7 @@ used as score."
 	   current-score-file)
 	  (t
 	   (gnus-score-file-name "all"))))))
-    
+
     (gnus-summary-score-entry
      (nth 1 entry)			; Header
      match				; Match
@@ -682,7 +682,7 @@ used as score."
 	 nil
        temporary)
      (not (nth 3 entry))		; Prompt
-     nil				; not silent 
+     nil				; not silent
      extra)				; non-standard overview.
 
     (when (eq symp 'a)
@@ -1029,7 +1029,7 @@ EXTRA is the possible non-standard header."
     (let ((buffer-read-only nil))
       ;; Set score.
       (gnus-summary-update-mark
-       (if (= n (or gnus-summary-default-score 0)) ? 
+       (if (= n (or gnus-summary-default-score 0)) ? ;Whitespace
 	 (if (< n (or gnus-summary-default-score 0))
 	     gnus-score-below-mark gnus-score-over-mark))
        'score))
@@ -2299,7 +2299,7 @@ EXTRA is the possible non-standard header."
 	  (let ((ignored (append gnus-ignored-adaptive-words
 				 (if gnus-adaptive-word-no-group-words
 				     (message-tokenize-header
-				      (gnus-group-real-name 
+				      (gnus-group-real-name
 				       gnus-newsgroup-name)
 				      "."))
 				 gnus-default-ignored-adaptive-words)))
@@ -2553,6 +2553,7 @@ GROUP using BNews sys file syntax."
 	 (klen (length kill-dir))
 	 (score-regexp (gnus-score-file-regexp))
 	 (trans (cdr (assq ?: nnheader-file-name-translation-alist)))
+	 (group-trans (nnheader-translate-file-chars group t))
 	 ofiles not-match regexp)
     (save-excursion
       (set-buffer (gnus-get-buffer-create "*gnus score files*"))
@@ -2599,16 +2600,18 @@ GROUP using BNews sys file syntax."
 	  (if (looking-at "not.")
 	      (progn
 		(setq not-match t)
-		(setq regexp (concat "^" (buffer-substring 5 (point-max)) "$")))
+		(setq regexp
+		      (concat "^" (buffer-substring 5 (point-max)) "$")))
 	    (setq regexp (concat "^" (buffer-substring 1 (point-max)) "$"))
 	    (setq not-match nil))
 	  ;; Finally - if this resulting regexp matches the group name,
 	  ;; we add this score file to the list of score files
 	  ;; applicable to this group.
 	  (when (or (and not-match
-			 (not (string-match regexp group)))
-		    (and (not not-match)
-			 (string-match regexp group)))
+ 			 (ignore-errors
+			   (not (string-match regexp group-trans))))
+  		    (and (not not-match)
+ 			 (ignore-errors (string-match regexp group-trans))))
 	    (push (car sfiles) ofiles)))
 	(setq sfiles (cdr sfiles)))
       (kill-buffer (current-buffer))
@@ -2902,7 +2905,7 @@ If ADAPT, return the home adaptive file instead."
 		    n times)
 	      (while (natnump (decf n))
 		(setq score (funcall gnus-decay-score-function score)))
-	      (setcdr kill (cons score 
+	      (setcdr kill (cons score
 				 (cdr (cdr kill)))))))))
     ;; Return whether this score file needs to be saved.  By Je-haysuss!
     updated))

@@ -141,7 +141,7 @@
 
 (defun nnlistserv-kk-search (search)
   (url-insert-file-contents
-   (concat (format (nnweb-definition 'address) search) 
+   (concat (format (nnweb-definition 'address) search)
 	   (nnweb-definition 'index)))
   t)
 

@@ -256,8 +256,8 @@ If this variable is `best', select the highest-scored unread article
 in the group.  If t, select the first unread article.
 
 This variable can also be a function to place point on a likely
-subject line.  Useful values include `gnus-summary-first-unread-subject', 
-`gnus-summary-first-unread-article' and 
+subject line.  Useful values include `gnus-summary-first-unread-subject',
+`gnus-summary-first-unread-article' and
 `gnus-summary-best-unread-article'.
 
 If you want to prevent automatic selection of the first unread article
@@ -345,7 +345,7 @@ It uses the same syntax as the `gnus-split-methods' variable."
 			 (cons :value ("" "") regexp (repeat string))
 			 (sexp :value nil))))
 
-(defcustom gnus-unread-mark ? 
+(defcustom gnus-unread-mark ? ;Whitespace
   "*Mark used for unread articles."
   :group 'gnus-summary-marks
   :type 'character)
@@ -460,7 +460,7 @@ It uses the same syntax as the `gnus-split-methods' variable."
   :group 'gnus-summary-marks
   :type 'character)
 
-(defcustom gnus-empty-thread-mark ? 
+(defcustom gnus-empty-thread-mark ? ;Whitespace
   "*There is no thread under the article."
   :group 'gnus-summary-marks
   :type 'character)
@@ -797,7 +797,7 @@ which it may alter in any way.")
   :group 'gnus-summary
   :type 'regexp)
 
-(defcustom gnus-group-charset-alist 
+(defcustom gnus-group-charset-alist
   '(("^hk\\>\\|^tw\\>\\|\\<big5\\>" cn-big5)
     ("^cn\\>\\|\\<chinese\\>" cn-gb-2312)
     ("^fj\\>\\|^japan\\>" iso-2022-jp-2)
@@ -1046,9 +1046,9 @@ FUNCTION, FUNCTION will be apply to all newsgroups. If item is a
 (REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
 whose names match REGEXP.
 
-For example: 
+For example:
 ((\"chinese\" . gnus-decode-encoded-word-string-by-guess)
- mail-decode-encoded-word-string 
+ mail-decode-encoded-word-string
  (\"chinese\" . rfc1843-decode-string))
 ")
 
@@ -1057,15 +1057,15 @@ For example:
 (defun gnus-multi-decode-encoded-word-string (string)
   "Apply the functions from `gnus-encoded-word-methods' that match."
   (unless (and gnus-decode-encoded-word-methods-cache
-	       (eq gnus-newsgroup-name 
+	       (eq gnus-newsgroup-name
 		   (car gnus-decode-encoded-word-methods-cache)))
     (setq gnus-decode-encoded-word-methods-cache (list gnus-newsgroup-name))
-    (mapc '(lambda (x) 
+    (mapc '(lambda (x)
 	     (if (symbolp x)
 		 (nconc gnus-decode-encoded-word-methods-cache (list x))
-	       (if (and gnus-newsgroup-name 
+	       (if (and gnus-newsgroup-name
 			(string-match (car x) gnus-newsgroup-name))
-		   (nconc gnus-decode-encoded-word-methods-cache 
+		   (nconc gnus-decode-encoded-word-methods-cache
 			  (list (cdr x))))))
 	  gnus-decode-encoded-word-methods))
   (let ((xlist gnus-decode-encoded-word-methods-cache))
@@ -1314,7 +1314,7 @@ increase the score of each group you read."
 
     "b" gnus-article-view-part
     "\M-t" gnus-summary-toggle-display-buttonized
-    
+
     "V" gnus-summary-score-map
     "X" gnus-uu-extract-map
     "S" gnus-summary-send-map)
@@ -2527,7 +2527,7 @@ marks of articles."
 	  (if (or (null gnus-summary-default-score)
 		  (<= (abs (- gnus-tmp-score gnus-summary-default-score))
 		      gnus-summary-zcore-fuzz))
-	      ? 
+	      ? ;Whitespace
 	    (if (< gnus-tmp-score gnus-summary-default-score)
 		gnus-score-below-mark gnus-score-over-mark)))
 	 (gnus-tmp-replied
@@ -2592,7 +2592,7 @@ marks of articles."
 	 (if (or (null gnus-summary-default-score)
 		 (<= (abs (- score gnus-summary-default-score))
 		     gnus-summary-zcore-fuzz))
-	     ? 
+	     ? ;Whitespace
 	   (if (< score gnus-summary-default-score)
 	       gnus-score-below-mark gnus-score-over-mark))
 	 'score))
@@ -3893,7 +3893,7 @@ or a straight list of headers."
 	     (if (or (null gnus-summary-default-score)
 		     (<= (abs (- gnus-tmp-score gnus-summary-default-score))
 			 gnus-summary-zcore-fuzz))
-		 ? 
+		 ? ;Whitespace
 	       (if (< gnus-tmp-score gnus-summary-default-score)
 		   gnus-score-below-mark gnus-score-over-mark))
 	     gnus-tmp-replied
@@ -4283,7 +4283,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		(setq arts (cdr arts)))
 	      (setq list (cdr all))))
 
-         (when (gnus-check-backend-function 'request-set-mark 
+         (when (gnus-check-backend-function 'request-set-mark
                                             gnus-newsgroup-name)
            ;; score & bookmark are not proper flags (they are cons cells)
            ;; cache is a internal gnus flag
@@ -4295,7 +4295,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
                    (push (list add 'add (list (cdr type))) delta-marks))
                (if del
                    (push (list del 'del (list (cdr type))) delta-marks)))))
-         
+
 	  (push (cons (cdr type)
 		      (if (memq (cdr type) uncompressed) list
 			(gnus-compress-sequence
@@ -5325,7 +5325,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	      (gnus-y-or-n-p "Discard changes to this group and exit? "))
       (gnus-async-halt-prefetch)
       (mapcar 'funcall
-	      (delq 'gnus-summary-expire-articles 
+	      (delq 'gnus-summary-expire-articles
 		    (copy-list gnus-summary-prepare-exit-hook)))
       (when (gnus-buffer-live-p gnus-article-buffer)
 	(save-excursion
@@ -7529,7 +7529,7 @@ groups."
   ;; Replace the article.
   (let ((buf (current-buffer)))
     (with-temp-buffer
-      (insert-buffer buf)
+      (insert-buffer-substring buf)
       (if (and (not read-only)
 	       (not (gnus-request-replace-article
 		     (cdr gnus-article-current) (car gnus-article-current)
@@ -9172,7 +9172,7 @@ save those articles instead."
     (setq gnus-newsgroup-charset
 	  (or (and gnus-newsgroup-name
 		   (or (gnus-group-find-parameter gnus-newsgroup-name 'charset)
-		       (let ((alist gnus-group-charset-alist) 
+		       (let ((alist gnus-group-charset-alist)
 			     elem (charset nil))
 			 (while (setq elem (pop alist))
 			   (when (and name
@@ -9181,13 +9181,13 @@ save those articles instead."
 				   charset (cadr elem))))
 			 charset)))
 	      gnus-default-charset))))
-  
+
 ;;;
 ;;; Mime Commands
 ;;;
 
 (defun gnus-summary-display-buttonized (&optional show-all-parts)
-  "Display the current article buffer fully MIME-buttonized.  
+  "Display the current article buffer fully MIME-buttonized.
 If SHOW-ALL-PARTS (the prefix) is non-nil, all multipart/* parts are
 treated as multipart/mixed."
   (interactive "P")
@@ -9225,7 +9225,7 @@ treated as multipart/mixed."
       (let ((gnus-unbuttonized-mime-types nil))
 	(gnus-summary-show-article))
     (gnus-summary-show-article)))
-    
+
 (gnus-ems-redefine)
 
 (provide 'gnus-sum)

@@ -150,7 +150,7 @@
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)
     (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
     (fset 'gnus-summary-set-display-table (lambda ()))
-    
+
     (when (boundp 'gnus-check-before-posting)
       (setq gnus-check-before-posting
 	    (delq 'long-lines

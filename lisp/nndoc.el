@@ -47,7 +47,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defvoo nndoc-open-document-hook 'nnheader-ms-strip-cr
   "Hook run after opening a document.
 The default function removes all trailing carriage returns
-from the document.")  
+from the document.")
 
 (defvar nndoc-type-alist
   `((mmdf
