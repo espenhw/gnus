@@ -2438,7 +2438,7 @@ to find out how to use this."
    (message-check 'new-text
      (or
       (not message-checksum)
-      (not (eq (message-checksum) (car message-checksum)))
+      (not (eq (message-checksum) message-checksum))
       (y-or-n-p
        "It looks like no new text has been added.  Really post? ")))
    ;; Check the length of the signature.
