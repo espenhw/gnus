@@ -1,3 +1,14 @@
+2005-02-14  Arne J,Ax(Brgensen <arne@arnested.dk>
+
+	* smime.el: Require smime-ldap.
+	(smime-ldap-host-list): New variable.
+	(smime-cert-by-ldap, smime-cert-by-ldap-1): Likewise.
+
+	* mml-smime.el (mml-smime-encrypt-query): New function.
+	(mml-smime-encrypt-query): Use it.
+
+	* smime-ldap.el: New file.
+
 2005-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el: Remove garbage made while merging the Emacs trunk.

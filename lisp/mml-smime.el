@@ -1,5 +1,5 @@
 ;;; mml-smime.el --- S/MIME support for MML
-;; Copyright (c) 2000, 2001, 2003 Free Software Foundation, Inc.
+;; Copyright (c) 2000, 2001, 2003, 2005 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: Gnus, MIME, S/MIME, MML
@@ -115,6 +115,25 @@
       (quit))
     result))
 
+(defun mml-smime-get-dns-ldap ()
+  ;; todo: deal with comma separated multiple recipients
+  (let (result who bad cert)
+    (condition-case ()
+	(while (not result)
+	  (setq who (read-from-minibuffer
+		     (format "%sLookup certificate for: " (or bad ""))
+		     (cadr (funcall gnus-extract-address-components
+				    (or (save-excursion
+					  (save-restriction
+					    (message-narrow-to-headers)
+					    (message-fetch-field "to")))
+					"")))))
+	  (if (setq cert (smime-cert-by-ldap who))
+	      (setq result (list 'certfile (buffer-name cert)))
+	    (setq bad (format "`%s' not found. " who))))
+      (quit))
+    result))
+
 (defun mml-smime-encrypt-query ()
   ;; todo: add ldap support (xemacs ldap api?)
   ;; todo: try dns/ldap automatically first, before prompting user
@@ -122,9 +141,11 @@
     (while (not done)
       (ecase (read (gnus-completing-read-with-default
 		    "dns" "Fetch certificate from"
-		    '(("dns") ("file")) nil t))
+		    '(("dns") ("ldap") ("file")) nil t))
 	(dns (setq certs (append certs
 				 (mml-smime-get-dns-cert))))
+	(ldap (setq certs (append certs
+				 (mml-smime-get-dns-ldap))))
 	(file (setq certs (append certs
 				  (mml-smime-get-file-cert)))))
       (setq done (not (y-or-n-p "Add more recipients? "))))

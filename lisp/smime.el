@@ -1,5 +1,5 @@
 ;;; smime.el --- S/MIME support library
-;; Copyright (c) 2000, 2001, 2003 Free Software Foundation, Inc.
+;; Copyright (c) 2000, 2001, 2003, 2005 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: SMIME X.509 PEM OpenSSL
@@ -26,7 +26,7 @@
 ;; This library perform S/MIME operations from within Emacs.
 ;;
 ;; Functions for fetching certificates from public repositories are
-;; provided, currently only from DNS.  LDAP support (via EUDC) is planned.
+;; provided, currently from DNS and LDAP.
 ;;
 ;; It uses OpenSSL (tested with version 0.9.5a and 0.9.6) for signing,
 ;; encryption and decryption.
@@ -115,10 +115,12 @@
 ;; 2000-06-05  initial version, committed to Gnus CVS contrib/
 ;; 2000-10-28  retrieve certificates via DNS CERT RRs
 ;; 2001-10-14  posted to gnu.emacs.sources
+;; 2005-02-13  retrieve certificates via LDAP
 
 ;;; Code:
 
 (require 'dig)
+(require 'smime-ldap)
 (eval-when-compile (require 'cl))
 
 (defgroup smime nil
@@ -213,6 +215,11 @@ If nil, use system defaults."
   :version "22.1"
   :type '(choice (const :tag "System defaults")
 		 string)
+  :group 'smime)
+
+(defcustom smime-ldap-host-list nil
+  "A list of LDAP hosts with S/MIME user certificates."
+  :type '(repeat (string :tag "Host name"))
   :group 'smime)
 
 (defvar smime-details-buffer "*OpenSSL output*")
@@ -555,6 +562,33 @@ A string or a list of strings is returned."
       (kill-buffer digbuf)
       retbuf))
 
+(defun smime-cert-by-ldap-1 (mail host)
+  "Get cetificate for MAIL from the ldap server at HOST."
+  (let ((ldapresult (smime-ldap-search (concat "mail=" mail) host '("userCertificate") nil))
+	(retbuf (generate-new-buffer (format "*certificate for %s*" mail))))
+    (if (> (length ldapresult) 1)
+	(with-current-buffer retbuf
+	  (set-buffer-multibyte nil)
+	  (insert (nth 1 (car (nth 1 ldapresult))))
+	  (goto-char (point-min))
+	  (if (smime-call-openssl-region (point-min) (point-max) t "x509" "-inform" "DER" "-outform" "PEM")
+	      (progn 
+		(delete-region (point) (point-max))
+		retbuf)
+	    (kill-buffer retbuf)
+	    nil))
+      (kill-buffer retbuf)
+      nil)))
+
+(defun smime-cert-by-ldap (mail)
+  "Find certificate for MAIL."
+  (if smime-ldap-host-list
+      (catch 'certbuf
+	(dolist (host smime-ldap-host-list)
+	  (let ((retbuf (smime-cert-by-ldap-1 mail host)))
+	    (when retbuf 
+	      (throw 'certbuf retbuf)))))))
+  
 ;; User interface.
 
 (defvar smime-buffer "*SMIME*")
