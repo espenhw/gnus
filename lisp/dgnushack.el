@@ -187,6 +187,7 @@ fixed in Emacs after 21.3."
     (autoload 'apropos-command "apropos" nil t)
     (autoload 'bbdb-complete-name "bbdb-com" nil t)
     (autoload 'browse-url "browse-url" nil t)
+    (autoload 'c-mode "cc-mode" nil t)
     (autoload 'customize-apropos "cus-edit" nil t)
     (autoload 'customize-save-variable "cus-edit" nil t)
     (autoload 'customize-variable "cus-edit" nil t)

@@ -32,7 +32,6 @@
 		   (require 'term))
 
 (eval-and-compile
-  (autoload 'executable-find "executable")
   (autoload 'mm-inline-partial "mm-partial")
   (autoload 'mm-inline-external-body "mm-extern")
   (autoload 'mm-insert-inline "mm-view"))

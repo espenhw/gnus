@@ -36,8 +36,6 @@
 (require 'message)
 (require 'score-mode)
 
-(autoload 'ffap-string-at-point "ffap")
-
 (defcustom gnus-global-score-files nil
   "List of global score files and directories.
 Set this variable if you want to use people's score files.  One entry

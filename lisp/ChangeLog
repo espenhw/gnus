@@ -1,3 +1,43 @@
+2004-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* binhex.el: Don't autoload executable-find.
+
+	* canlock.el: Don't autoload mail-fetch-field.
+
+	* dgnushack.el: Autoload c-mode for XEmacs.
+
+	* gnus-ems.el: Don't autoload appt-select-lowest-window.
+
+	* gnus-msg.el: Don't autoload news-reply-mode, news-setup,
+	rmail-dont-reply-to and rmail-output.
+
+	* gnus-score.el: Don't autoload ffap-string-at-point.
+
+	* gnus-setup.el: Don't autoload sc-cite-original.
+
+	* imap.el: Don't autoload base64-decode-string,
+	base64-encode-string and md5.
+
+	* message.el: Autoload rmail-dont-reply-to, rmail-msg-is-pruned
+	and rmail-msg-restore-non-pruned-header.
+
+	* mm-decode.el: Don't autoload executable-find.
+
+	* mm-url.el: Don't autoload executable-find.
+
+	* mm-view.el: Don't autoload diff-mode.
+
+	* nndb.el: Don't autoload news-reply-mode, news-setup,
+	cancel-timer and telnet.
+
+	* password.el: Don't autoload run-at-time for Emacs.
+
+	* sha1-el.el: Don't autoload executable-find.
+
+	* sieve-mode.el: Don't autoload c-mode.
+
+	* uudecode.el: Don't autoload executable-find.
+
 2004-03-02  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
         * gnus-agent.el (gnus-agent-file-header-cache): Removed.
@@ -646,7 +686,7 @@
 
 2004-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* mm-decoce.el (mm-multiple-handles): Recognize a string as a mime
+	* mm-decode.el (mm-multiple-handles): Recognize a string as a mime
 	handle, as well as a list.
 
 	* mm-view.el (mm-w3m-cid-retrieve-1): Call itself recursively.

@@ -35,9 +35,7 @@
   (autoload 'vcard-parse-string "vcard")
   (autoload 'vcard-format-string "vcard")
   (autoload 'fill-flowed "flow-fill")
-  (autoload 'html2text "html2text")
-  (unless (fboundp 'diff-mode)
-    (autoload 'diff-mode "diff-mode" "" t nil)))
+  (autoload 'html2text "html2text"))
 
 (defvar mm-text-html-renderer-alist
   '((w3  . mm-inline-text-html-render-with-w3)

@@ -318,11 +318,7 @@ Thank you for your help in stamping out bugs.
 ")
 
 (eval-and-compile
-  (autoload 'gnus-uu-post-news "gnus-uu" nil t)
-  (autoload 'news-setup "rnewspost")
-  (autoload 'news-reply-mode "rnewspost")
-  (autoload 'rmail-dont-reply-to "mail-utils")
-  (autoload 'rmail-output "rmailout"))
+  (autoload 'gnus-uu-post-news "gnus-uu" nil t))
 
 
 ;;;

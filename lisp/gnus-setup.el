@@ -1,6 +1,6 @@
 ;;; gnus-setup.el --- Initialization & Setup for Gnus 5
 
-;; Copyright (C) 1995, 1996, 2000, 2001
+;; Copyright (C) 1995, 1996, 2000, 2001, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Steven L. Baur <steve@miranova.com>
@@ -140,8 +140,7 @@
 
 (when gnus-use-sc
   (add-hook 'mail-citation-hook 'sc-cite-original)
-  (setq message-cite-function 'sc-cite-original)
-  (autoload 'sc-cite-original "supercite"))
+  (setq message-cite-function 'sc-cite-original))
 
 ;;;### (autoloads (gnus gnus-slave gnus-no-server) "gnus" "lisp/gnus.el" (12473 2137))
 ;;; Generated autoloads from lisp/gnus.el

@@ -1,6 +1,6 @@
 ;;; nndb.el --- nndb access for Gnus
 
-;; Copyright (C) 1997, 1998, 2000, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 1997, 1998, 2000, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;         Kai Grossjohann <grossjohann@ls6.informatik.uni-dortmund.de>
@@ -66,10 +66,6 @@
 (eval-when-compile (require 'cl))
 
 (eval-and-compile
-  (autoload 'news-setup "rnewspost")
-  (autoload 'news-reply-mode "rnewspost")
-  (autoload 'cancel-timer "timer")
-  (autoload 'telnet "telnet" nil t)
   (autoload 'telnet-send-input "telnet" nil t)
   (autoload 'gnus-declare-backend "gnus-start"))
 

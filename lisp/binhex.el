@@ -1,5 +1,6 @@
 ;;; binhex.el --- elisp native binhex decode
-;; Copyright (c) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000, 2001, 2002, 2004
+;;        Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: binhex news
@@ -24,8 +25,6 @@
 ;;; Commentary:
 
 ;;; Code:
-
-(autoload 'executable-find "executable")
 
 (eval-when-compile (require 'cl))
 

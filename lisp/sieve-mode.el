@@ -1,5 +1,5 @@
 ;;; sieve-mode.el --- Sieve code editing commands for Emacs
-;; Copyright (C) 2001, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 
@@ -49,7 +49,6 @@
 
 (autoload 'sieve-manage "sieve")
 (autoload 'sieve-upload "sieve")
-(autoload 'c-mode "cc-mode")
 (require 'easymenu)
 (eval-when-compile
   (require 'font-lock))

@@ -54,8 +54,6 @@
 
 (require 'hex-util)
 
-(autoload 'executable-find "executable")
-
 ;;;
 ;;; external SHA1 function.
 ;;;

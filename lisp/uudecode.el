@@ -1,6 +1,7 @@
 ;;; uudecode.el -- elisp native uudecode
 
-;; Copyright (c) 1998, 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000, 2001, 2003, 2004
+;;        Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: uudecode news
@@ -25,8 +26,6 @@
 ;;; Commentary:
 
 ;;; Code:
-
-(autoload 'executable-find "executable")
 
 (eval-when-compile (require 'cl))
 
