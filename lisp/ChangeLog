@@ -1,3 +1,8 @@
+2001-10-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-msg.el (gnus-summary-mail-forward): Doc fix: add pointer to
+	variable `message-forward-ignored-headers'.
+
 2001-10-24  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus.el (gnus-expand-group-parameter): New function.

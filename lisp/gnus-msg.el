@@ -871,7 +871,9 @@ if ARG is 2, forward message as an rfc822 MIME section;
 if ARG is 3, decode message and forward as an rfc822 MIME section;
 if ARG is 4, forward message directly inline;
 otherwise, use flipped `message-forward-as-mime'.
-If POST, post instead of mail."
+If POST, post instead of mail.
+For the `inline' alternatives, also see the variable
+`message-forward-ignored-headers'."
   (interactive "P")
   (let ((message-forward-as-mime message-forward-as-mime)
 	(message-forward-show-mml message-forward-show-mml))
