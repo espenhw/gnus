@@ -179,8 +179,12 @@ Calling (gnus-group-split-fancy nil nil \"mail.misc\") returns:
 			 (list 'any split-regexp)
 			 ;; Generate RESTRICTs for SPLIT-EXCLUDEs.
 			 (if (listp split-exclude)
-			     (mapcon (lambda (arg) (cons '- arg))
-				     split-exclude)
+			     (let ((seq split-exclude)
+				   res)
+			       (while seq
+				 (push (cons '- (pop seq))
+				       res))
+			       (apply #'nconc (nreverse res)))
 			   (list '- split-exclude))
 			 (list group-clean))
 			split)
