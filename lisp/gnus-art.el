@@ -2448,17 +2448,6 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 	default
       (or last-file default))))
 
-(defun gnus-Plain-save-name (newsgroup headers &optional last-file)
-  "Generate file name from NEWSGROUP, HEADERS, and optional LAST-FILE.
-If variable `gnus-use-long-file-name' is non-nil, it is
-~/News/News.group.  Otherwise, it is like ~/News/news/group/news."
-  (or last-file
-      (expand-file-name
-       (if (gnus-use-long-file-name 'not-save)
-	   (gnus-capitalize-newsgroup newsgroup)
-	 (concat (gnus-newsgroup-directory-form newsgroup) "/news"))
-       gnus-article-save-directory)))
-
 (defun gnus-plain-save-name (newsgroup headers &optional last-file)
   "Generate file name from NEWSGROUP, HEADERS, and optional LAST-FILE.
 If variable `gnus-use-long-file-name' is non-nil, it is
@@ -2500,7 +2489,6 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-de-base64-unreadable
      article-decode-HZ
      article-wash-html
-     article-mime-decode-quoted-printable
      article-hide-list-identifiers
      article-hide-pgp
      article-strip-banner
