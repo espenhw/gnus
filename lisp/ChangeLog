@@ -1,3 +1,7 @@
+2001-02-02  Karl Kleinpaste <karl@charcoal.com>
+
+	* mml.el (mml-preview): Bind `q'.
+
 2001-02-02 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-mime-mule-charset-alist): non-Mule case.

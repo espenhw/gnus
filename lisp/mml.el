@@ -891,6 +891,7 @@ If RAW, don't highlight the article."
 	  (gnus-article-prepare-display))))
     (fundamental-mode)
     (setq buffer-read-only t)
+    (local-set-key "q" (lambda () (interactive) (kill-buffer nil)))
     (goto-char (point-min))))
 
 (defun mml-validate ()
