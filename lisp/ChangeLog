@@ -1,5 +1,7 @@
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-required-headers): Remove In-Reply-To.
+
 	* gnus-int.el (gnus-open-server): Revert changes.
 
 2003-04-30  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>

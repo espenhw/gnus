@@ -194,7 +194,7 @@ Checks include `subject-cmsg', `multiple-headers', `sendsys',
   :type '(repeat sexp))			; Fixme: improve this
 
 (defcustom message-required-headers '((optional . References)
-				      From (optional . In-Reply-To))
+				      From)
   "*Headers to be generated or prompted for when sending a message.
 Also see `message-required-news-headers' and
 `message-required-mail-headers'."
