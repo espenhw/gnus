@@ -1496,7 +1496,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       (mapcar (lambda (x)
 		(setq res (or (nnmail-cache-fetch-group x) res))
 		(when (or (string= "drafts" res)
-			  (and regexp (string-match regexp res)))
+			  (and regexp res (string-match regexp res)))
 		  (setq res nil)))
 	      references)
       res)))
