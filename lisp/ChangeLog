@@ -1,3 +1,19 @@
+2002-07-14  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Ted Zlatanov <teodor.zlatanov@divine.com>.
+
+	* gnus-sum.el (gnus-auto-expirable-marks): Remove `spam'.
+	(gnus-summary-mode-line-format-alist): Add %h for number of
+	spams.
+	(gnus-newsgroup-spam-marked): New variable.
+	(gnus-summary-local-variables): Add gnus-newsgroup-spam-marked.
+	(gnus-article-read-p, gnus-article-mark) 
+	(gnus-set-global-variables, gnus-set-global-variables) 
+	(gnus-article-marked-p, gnus-summary-mark-article-as-read) 
+	(gnus-summary-mark-article-as-unread) 
+	(gnus-summary-mark-article-as-unread, gnus-summary-mark-article) 
+	(gnus-mark-article-as-read, gnus-mark-article-as-unread) 
+	(gnus-mark-article-as-unread, gnus-summary-catchup): Grok spam.
+
 2002-07-10  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-split-to-groups): Allow group string to be a

@@ -542,7 +542,7 @@ this variable specifies group names."
   :type 'boolean)
 
 (defcustom gnus-auto-expirable-marks
-  (list gnus-spam-mark gnus-killed-mark gnus-del-mark gnus-catchup-mark
+  (list gnus-killed-mark gnus-del-mark gnus-catchup-mark
 	gnus-low-score-mark gnus-ancient-mark gnus-read-mark
 	gnus-souped-mark gnus-duplicate-mark)
   "*The list of marks converted into expiration if a group is auto-expirable."
@@ -1133,6 +1133,7 @@ the type of the variable (string, integer, character, etc).")
     (?u gnus-tmp-user-defined ?s)
     (?d (length gnus-newsgroup-dormant) ?d)
     (?t (length gnus-newsgroup-marked) ?d)
+    (?h (length gnus-newsgroup-spam-marked) ?d)
     (?r (length gnus-newsgroup-reads) ?d)
     (?z (gnus-summary-article-score gnus-tmp-article-number) ?d)
     (?E gnus-newsgroup-expunged-tally ?d)
@@ -1171,6 +1172,9 @@ the type of the variable (string, integer, character, etc).")
 
 (defvar gnus-newsgroup-marked nil
   "Sorted list of ticked articles in the current newsgroup (a subset of unread art).")
+
+(defvar gnus-newsgroup-spam-marked nil
+  "List of ranges of articles that have been marked as spam.")
 
 (defvar gnus-newsgroup-killed nil
   "List of ranges of articles that have been through the scoring process.")
@@ -1257,6 +1261,7 @@ the type of the variable (string, integer, character, etc).")
     gnus-newsgroup-last-folder gnus-newsgroup-last-file
     gnus-newsgroup-auto-expire gnus-newsgroup-unreads
     gnus-newsgroup-unselected gnus-newsgroup-marked
+    gnus-newsgroup-spam-marked
     gnus-newsgroup-reads gnus-newsgroup-saved
     gnus-newsgroup-replied gnus-newsgroup-forwarded
     gnus-newsgroup-recent
@@ -2730,6 +2735,7 @@ The following commands are available:
 (defun gnus-article-read-p (article)
   "Say whether ARTICLE is read or not."
   (not (or (memq article gnus-newsgroup-marked)
+	   (memq article gnus-newsgroup-spam-marked)
 	   (memq article gnus-newsgroup-unreads)
 	   (memq article gnus-newsgroup-unselected)
 	   (memq article gnus-newsgroup-dormant))))
@@ -2835,6 +2841,7 @@ marks of articles."
     ((memq ,number gnus-newsgroup-downloadable) gnus-downloadable-mark)
     ((memq ,number gnus-newsgroup-unreads) gnus-unread-mark)
     ((memq ,number gnus-newsgroup-marked) gnus-ticked-mark)
+    ((memq ,number gnus-newsgroup-spam-marked) gnus-spam-mark)
     ((memq ,number gnus-newsgroup-dormant) gnus-dormant-mark)
     ((memq ,number gnus-newsgroup-expirable) gnus-expirable-mark)
     (t (or (cdr (assq ,number gnus-newsgroup-reads))
@@ -2975,6 +2982,7 @@ buffer that was in action when the last article was fetched."
     (setq gnus-summary-buffer (current-buffer))
     (let ((name gnus-newsgroup-name)
 	  (marked gnus-newsgroup-marked)
+	  (spam gnus-newsgroup-spam-marked)
 	  (unread gnus-newsgroup-unreads)
 	  (headers gnus-current-headers)
 	  (data gnus-newsgroup-data)
@@ -2997,6 +3005,7 @@ buffer that was in action when the last article was fetched."
 	(set-buffer gnus-group-buffer)
 	(setq gnus-newsgroup-name name
 	      gnus-newsgroup-marked marked
+	      gnus-newsgroup-spam-marked spam
 	      gnus-newsgroup-unreads unread
 	      gnus-current-headers headers
 	      gnus-newsgroup-data data
@@ -4950,6 +4959,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (cond
      ((eq type 'tick)
       (memq article gnus-newsgroup-marked))
+     ((eq type 'spam)
+      (memq article gnus-newsgroup-spam-marked))
      ((eq type 'unsend)
       (memq article gnus-newsgroup-unsendable))
      ((eq type 'undownload)
@@ -9314,6 +9325,7 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
   (let ((article (gnus-summary-article-number)))
     (setq gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
     (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
+    (setq gnus-newsgroup-spam-marked (delq article gnus-newsgroup-spam-marked))
     (setq gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant))
     (push (cons article mark) gnus-newsgroup-reads)
     ;; Possibly remove from cache, if that is used.
@@ -9345,12 +9357,17 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	    (gnus-error 1 "Can't mark negative article numbers")
 	    nil)
 	(setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
+	(setq gnus-newsgroup-spam-marked (delq article gnus-newsgroup-spam-marked))
 	(setq gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant))
 	(setq gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable))
 	(setq gnus-newsgroup-reads (delq article gnus-newsgroup-reads))
 	(cond ((= mark gnus-ticked-mark)
 	       (setq gnus-newsgroup-marked
 		     (gnus-add-to-sorted-list gnus-newsgroup-marked
+					      article)))
+	      ((= mark gnus-spam-mark)
+	       (setq gnus-newsgroup-spam-marked
+		     (gnus-add-to-sorted-list gnus-newsgroup-spam-marked
 					      article)))
 	      ((= mark gnus-dormant-mark)
 	       (setq gnus-newsgroup-dormant
@@ -9403,6 +9420,7 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	(error "No article on current line"))
       (if (not (if (or (= mark gnus-unread-mark)
 		       (= mark gnus-ticked-mark)
+		       (= mark gnus-spam-mark)
 		       (= mark gnus-dormant-mark))
 		   (gnus-mark-article-as-unread article mark)
 		 (gnus-mark-article-as-read article mark)))
@@ -9476,6 +9494,7 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
     ;; Remove from unread and marked lists.
     (setq gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
     (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
+    (setq gnus-newsgroup-spam-marked (delq article gnus-newsgroup-spam-marked))
     (setq gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant))
     (push (cons article mark) gnus-newsgroup-reads)
     ;; Possibly remove from cache, if that is used.
@@ -9491,6 +9510,7 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
 	  (gnus-error 1 "Can't mark negative article numbers")
 	  nil)
       (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked)
+	    gnus-newsgroup-spam-marked (delq article gnus-newsgroup-spam-marked)
 	    gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant)
 	    gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable)
 	    gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
@@ -9502,6 +9522,9 @@ Iff NO-EXPIRE, auto-expiry will be inhibited."
       (cond ((= mark gnus-ticked-mark)
 	     (setq gnus-newsgroup-marked
 		   (gnus-add-to-sorted-list gnus-newsgroup-marked article)))
+	    ((= mark gnus-spam-mark)
+	     (setq gnus-newsgroup-spam-marked
+		   (gnus-add-to-sorted-list gnus-newsgroup-spam-marked article)))
 	    ((= mark gnus-dormant-mark)
 	     (setq gnus-newsgroup-dormant
 		   (gnus-add-to-sorted-list gnus-newsgroup-dormant article)))
@@ -9715,6 +9738,7 @@ The number of articles marked as read is returned."
 	      (progn
 		(when all
 		  (setq gnus-newsgroup-marked nil
+			gnus-newsgroup-spam-marked nil
 			gnus-newsgroup-dormant nil))
 		(setq gnus-newsgroup-unreads gnus-newsgroup-downloadable))
 	    ;; We actually mark all articles as canceled, which we
