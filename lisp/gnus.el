@@ -1260,7 +1260,7 @@ list, Gnus will try all the methods in the list until it finds a match."
     "/ftp@rtfm.mit.edu:/pub/usenet/"
     "/ftp@ftp.uni-paderborn.de:/pub/FAQ/"
     "/ftp@ftp.sunet.se:/pub/usenet/"
-    "/ftp@nctuccca.edu.tw:/USENET/FAQ/"
+    "/ftp@nctuccca.nctu.edu.tw:/pub/Documents/rtfm/usenet-by-group/"
     "/ftp@hwarang.postech.ac.kr:/pub/usenet/"
     "/ftp@ftp.hk.super.net:/mirror/faqs/")
   "*Directory where the group FAQs are stored.
@@ -1284,7 +1284,7 @@ If the default site is too slow, try one of these:
 		  src.doc.ic.ac.uk               /usenet/news-FAQS
 		  ftp.sunet.se			 /pub/usenet
 		  ftp.pasteur.fr                 /pub/FAQ
-   Asia:	  nctuccca.edu.tw		 /USENET/FAQ
+   Asia:	  nctuccca.nctu.edu.tw		 /pub/Documents/rtfm/usenet-by-group/
 		  hwarang.postech.ac.kr		 /pub/usenet
 		  ftp.hk.super.net		 /mirror/faqs"
   :group 'gnus-group-various

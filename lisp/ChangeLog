@@ -1,3 +1,8 @@
+2003-10-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.el (gnus-group-faq-directory): Update .tw entry.  From
+	Albert Chun-Chieh Huang <mr894348@cs.nthu.edu.tw>
+
 2003-10-03  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-blackholes): exit the loop if matches are
