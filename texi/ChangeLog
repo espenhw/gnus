@@ -1,3 +1,7 @@
+2003-01-02  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Troubleshooting): Add.
+
 2003-01-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Article Buttons): Regexps are case insensitive here.

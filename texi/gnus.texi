@@ -23924,6 +23924,28 @@ evaluate expressions using @kbd{M-:} or inspect variables using
 @kbd{C-h v}, abort execution with @kbd{q}, and resume execution with
 @kbd{c} or @kbd{g}.
 
+@cindex elp
+@cindex profile
+@cindex slow
+Sometimes, a problem do not directly generate a elisp error but
+manifests itself by causing Gnus to be very slow.  In these cases, you
+can use @kbd{M-x toggle-debug-on-quit} and press C-j when things are
+slow, and then try to analyze the backtrace (repeating the procedure
+helps isolating the real problem areas).  A fancier approach is to use
+the elisp profiler, ELP.  The profiler is (or should be) fully
+documented elsewhere, but to get you started there are a few steps
+that need to be followed.  First, instrument the part of Gnus you are
+interested in for profiling, e.g. @kbd{M-x elp-instrument-package RET
+gnus} or @kbd{M-x elp-instrument-packagre RET message}.  Then perform
+the operation that is slow and press @kbd{M-x elp-results}.  You will
+then see which operations that takes time, and can debug them further.
+If the entire operation takes much longer than the time spent in the
+slowest function in the profiler output, you probably profiled the
+wrong part of Gnus.  To reset profiling statistics, use @kbd{M-x
+elp-reset-all}.  @kbd{M-x elp-restore-all} is supposed to remove
+profiling, but given the complexities and dynamic code generation in
+Gnus, it might not always work perfectly.
+
 If you just need help, you are better off asking on
 @samp{gnu.emacs.gnus}.  I'm not very helpful.
 
