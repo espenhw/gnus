@@ -7040,6 +7040,7 @@ If ARG is a negative number, hide the unwanted header lines."
 	(insert-buffer-substring gnus-original-article-buffer 1 e)
 	(save-restriction
 	  (narrow-to-region (point-min) (point))
+	  (article-decode-encoded-words)
 	  (if (or hidden
 		  (and (numberp arg) (< arg 0)))
 	      (let ((gnus-treat-hide-headers nil)

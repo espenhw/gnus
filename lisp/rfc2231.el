@@ -60,57 +60,60 @@ The list will be on the form
 	  (unless (eq c ?\;)
 	    (error "Invalid header: %s" string))
 	  (forward-char 1)
-	  (setq c (char-after))
-	  (if (and (memq c ttoken)
-		   (not (memq c stoken)))
-	      (setq attribute
-		    (intern
-		     (downcase
-		      (buffer-substring
-		       (point) (progn (forward-sexp 1) (point))))))
-	    (error "Invalid header: %s" string))
-	  (setq c (char-after))
-	  (setq encoded nil)
-	  (when (eq c ?*)
+	  ;; If c in nil, then this is an invalid header, but
+	  ;; since elm generates invalid headers on this form,
+	  ;; we allow it.
+	  (when (setq c (char-after))
+	    (if (and (memq c ttoken)
+		     (not (memq c stoken)))
+		(setq attribute
+		      (intern
+		       (downcase
+			(buffer-substring
+			 (point) (progn (forward-sexp 1) (point))))))
+	      (error "Invalid header: %s" string))
+	    (setq c (char-after))
+	    (setq encoded nil)
+	    (when (eq c ?*)
+	      (forward-char 1)
+	      (setq c (char-after))
+	      (when (memq c ntoken)
+		(setq number
+		      (string-to-number
+		       (buffer-substring
+			(point) (progn (forward-sexp 1) (point)))))
+		(setq c (char-after))
+		(when (eq c ?*)
+		  (setq encoded t)
+		  (forward-char 1)
+		  (setq c (char-after)))))
+	    ;; See if we have any previous continuations.
+	    (when (and prev-attribute
+		       (not (eq prev-attribute attribute)))
+	      (push (cons prev-attribute prev-value) parameters)
+	      (setq prev-attribute nil
+		    prev-value ""))
+	    (unless (eq c ?=)
+	      (error "Invalid header: %s" string))
 	    (forward-char 1)
 	    (setq c (char-after))
-	    (when (memq c ntoken)
-	      (setq number
-		    (string-to-number
-		     (buffer-substring
-		      (point) (progn (forward-sexp 1) (point)))))
-	      (setq c (char-after))
-	      (when (eq c ?*)
-		(setq encoded t)
-		(forward-char 1)
-		(setq c (char-after)))))
-	  ;; See if we have any previous continuations.
-	  (when (and prev-attribute
-		     (not (eq prev-attribute attribute)))
-	    (push (cons prev-attribute prev-value) parameters)
-	    (setq prev-attribute nil
-		  prev-value ""))
-	  (unless (eq c ?=)
-	    (error "Invalid header: %s" string))
-	  (forward-char 1)
-	  (setq c (char-after))
-	  (cond
-	   ((eq c ?\")
-	    (setq value
-		  (buffer-substring (1+ (point))
-				    (progn (forward-sexp 1) (1- (point))))))
-	   ((and (memq c ttoken)
-		 (not (memq c stoken)))
-	    (setq value (buffer-substring
-			 (point) (progn (forward-sexp 1) (point)))))
-	   (t
-	    (error "Invalid header: %s" string)))
-	  (when encoded
-	    (setq value (rfc2231-decode-encoded-string value)))
-	  (if number
-	      (setq prev-attribute attribute
-		    prev-value (concat prev-value value))
-	    (push (cons attribute value) parameters)))
+	    (cond
+	     ((eq c ?\")
+	      (setq value
+		    (buffer-substring (1+ (point))
+				      (progn (forward-sexp 1) (1- (point))))))
+	     ((and (memq c ttoken)
+		   (not (memq c stoken)))
+	      (setq value (buffer-substring
+			   (point) (progn (forward-sexp 1) (point)))))
+	     (t
+	      (error "Invalid header: %s" string)))
+	    (when encoded
+	      (setq value (rfc2231-decode-encoded-string value)))
+	    (if number
+		(setq prev-attribute attribute
+		      prev-value (concat prev-value value))
+	      (push (cons attribute value) parameters))))
 
 	;; Take care of any final continuations.
 	(when prev-attribute

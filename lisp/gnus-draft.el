@@ -73,6 +73,7 @@
       (when (gnus-visual-p 'draft-menu 'menu)
 	(gnus-draft-make-menu-bar))
       (gnus-add-minor-mode 'gnus-draft-mode " Draft" gnus-draft-mode-map)
+      (mml-mode)
       (gnus-run-hooks 'gnus-draft-mode-hook))))
 
 ;;; Commands
@@ -123,7 +124,7 @@
   (gnus-draft-setup article (or group "nndraft:queue"))
   (let ((message-syntax-checks (if interactive nil
 				 'dont-check-for-anything-just-trust-me))
-	(messgage-inhibit-body-encoding t)
+	(message-inhibit-body-encoding t)
 	message-send-hook type method)
     ;; We read the meta-information that says how and where
     ;; this message is to be sent.

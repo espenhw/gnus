@@ -882,7 +882,7 @@ See the manual for details."
     (gnus-treat-fill-long-lines gnus-article-fill-long-lines)
     (gnus-treat-strip-cr gnus-article-remove-cr)
     (gnus-treat-emphasize gnus-article-emphasize)
-    (gnus-treat-hide-headers gnus-article-hide-headers)
+    (gnus-treat-hide-headers gnus-article-maybe-hide-headers)
     (gnus-treat-hide-boring-headers gnus-article-hide-boring-headers)
     (gnus-treat-hide-signature gnus-article-hide-signature)
     (gnus-treat-hide-citation gnus-article-hide-citation)
@@ -1298,7 +1298,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
   (save-excursion
     (let ((buffer-read-only nil))
       (goto-char (point-min))
-      (while (search-forward "\r+$" nil t)
+      (while (re-search-forward "\r+$" nil t)
 	(replace-match "" t t))
       (goto-char (point-min))
       (while (search-forward "\r" nil t)
@@ -2561,8 +2561,6 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		(when (gnus-visual-p 'article-highlight 'highlight)
 		  (gnus-run-hooks 'gnus-visual-mark-article-hook))
 		;; Set the global newsgroup variables here.
-		;; Suggested by Jim Sisolak
-		;; <sisolak@trans4.neep.wisc.edu>.
 		(gnus-set-global-variables)
 		(setq gnus-have-all-headers
 		      (or all-headers gnus-show-all-headers))))
@@ -2717,23 +2715,19 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (setq buffer-file-name nil))
     (goto-char (point-min))))
 
-(defun gnus-mime-inline-part (&optional charset)
+(defun gnus-mime-inline-part (&optional handle)
   "Insert the MIME part under point into the current buffer."
-  (interactive "P") ; For compatibility reasons we are not using "z".
+  (interactive)
   (gnus-article-check-buffer)
-  (let* ((data (get-text-property (point) 'gnus-data))
+  (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
 	 contents
 	 (b (point))
 	 buffer-read-only)
-    (if (mm-handle-undisplayer data)
-	(mm-remove-part data)
-      (setq contents (mm-get-part data))
+    (if (mm-handle-undisplayer handle)
+	(mm-remove-part handle)
+      (setq contents (mm-get-part handle))
       (forward-line 2)
-      (when charset
-	(unless (symbolp charset)
-	  (setq charset (mm-read-coding-system "Charset: ")))
-	(setq contents (mm-decode-coding-string contents charset)))
-      (mm-insert-inline data contents)
+      (mm-insert-inline handle contents)
       (goto-char b))))
 
 (defun gnus-mime-externalize-part (&optional handle)

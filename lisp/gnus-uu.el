@@ -621,10 +621,11 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 (defun gnus-uu-mark-thread ()
   "Marks all articles downwards in this thread."
   (interactive)
-  (let ((level (gnus-summary-thread-level)))
-    (while (and (gnus-summary-set-process-mark (gnus-summary-article-number))
-		(zerop (gnus-summary-next-subject 1))
-		(> (gnus-summary-thread-level) level))))
+  (gnus-save-hidden-threads
+    (let ((level (gnus-summary-thread-level)))
+      (while (and (gnus-summary-set-process-mark (gnus-summary-article-number))
+		  (zerop (gnus-summary-next-subject 1))
+		  (> (gnus-summary-thread-level) level)))))
   (gnus-summary-position-point))
 
 (defun gnus-uu-unmark-thread ()

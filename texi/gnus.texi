@@ -2,7 +2,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.82 Manual
+@settitle Pterodactyl Gnus 0.83 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.82 Manual
+@title Pterodactyl Gnus 0.83 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.82.
+This manual corresponds to Pterodactyl Gnus 0.83.
 
 @end ifinfo
 
@@ -707,7 +707,7 @@ Subscribe all new groups in alphabetical order.
 Subscribe all new groups hierarchically.  The difference between this
 function and @code{gnus-subscribe-alphabetically} is slight.
 @code{gnus-subscribe-alphabetically} will subscribe new groups in a strictly
-alphabetical fashion, while this function will enter groups into it's
+alphabetical fashion, while this function will enter groups into its
 hierarchy.  So if you want to have the @samp{rec} hierarchy before the
 @samp{comp} hierarchy, this function will not mess that configuration
 up.  Or something like that.
@@ -859,11 +859,15 @@ never delete the @file{.newsrc.eld} file---it contains much information
 not stored in the @file{.newsrc} file.
 
 @vindex gnus-save-newsrc-file
+@vindex gnus-read-newsrc-file
 You can turn off writing the @file{.newsrc} file by setting
 @code{gnus-save-newsrc-file} to @code{nil}, which means you can delete
 the file and save some space, as well as exiting from Gnus faster.
 However, this will make it impossible to use other newsreaders than
-Gnus.  But hey, who would want to, right?
+Gnus.  But hey, who would want to, right?  Similarly, setting
+@code{gnus-read-newsrc-file} to @code{nil} makes Gnus ignore the
+@file{.newsrc} file and any @file{.newsrc-SERVER} files, which is
+convenient if you have a tendency to use Netscape once in a while.
 
 @vindex gnus-save-killed-list
 If @code{gnus-save-killed-list} (default @code{t}) is @code{nil}, Gnus
@@ -1027,8 +1031,8 @@ A hook run as the very last thing after starting up Gnus
 A hook that is run as the very last thing after starting up Gnus
 successfully.
 
-@item gnus-started-hook
-@vindex gnus-started-hook
+@item gnus-setup-news-hook
+@vindex gnus-setup-news-hook
 A hook that is run after reading the @file{.newsrc} file(s), but before
 generating the group buffer.
 
@@ -10828,6 +10832,11 @@ Gnus will read the mail spool when you activate a mail group.  The mail
 file is first copied to your home directory.  What happens after that
 depends on what format you want to store your mail in.
 
+There are five different mail backends in the standard Gnus, and more
+backends are available separately.  The mail backend most people use
+(because it is the fastest and most flexible) is @code{nnml}
+(@pxref{Mail Spool}).  
+
 @menu
 * Unix Mail Box::               Using the (quite) standard Un*x mbox.
 * Rmail Babyl::                 Emacs programs use the rmail babyl format.
@@ -12952,7 +12961,7 @@ Score on the body.
 Score on the head.
 
 @item t
-Score on thead.
+Score on thread.
 
 @end table
 
@@ -19162,6 +19171,12 @@ sizes a bit if you are running out of space.
 @item gnus-save-newsrc-file
 If this is @code{nil}, Gnus will never save @file{.newsrc}---it will
 only save @file{.newsrc.eld}.  This means that you will not be able to
+use any other newsreaders than Gnus.  This variable is @code{t} by
+default.
+
+@item gnus-read-newsrc-file
+If this is @code{nil}, Gnus will never read @file{.newsrc}---it will
+only read @file{.newsrc.eld}.  This means that you will not be able to
 use any other newsreaders than Gnus.  This variable is @code{t} by
 default.
 

@@ -362,6 +362,15 @@ to virtual article number.")
 		       (cdr gnus-message-group-art)))))
       (gnus-request-post (gnus-find-method-for-group group)))))
 
+
+(deffoo nnvirtual-request-expire-articles (articles group 
+						    &optional server force)
+  (nnvirtual-possibly-change-server server)
+  (setq nnvirtual-component-groups
+	(delete (nnvirtual-current-group) nnvirtual-component-groups))
+  (dolist (group nnvirtual-component-groups)
+    (gnus-group-expire-articles-1 group)))
+
 
 ;;; Internal functions.
 

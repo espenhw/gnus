@@ -460,7 +460,7 @@ This overrides entries in the mailcap file."
   "Return a version of ARG that is safe to evaluate in a shell."
   (let ((pos 0) new-pos accum)
     ;; *** bug: we don't handle newline characters properly
-    (while (setq new-pos (string-match "[;!`\"$\\& \t{} |()<>]" arg pos))
+    (while (setq new-pos (string-match "[;!'`\"$\\& \t{} |()<>]" arg pos))
       (push (substring arg pos new-pos) accum)
       (push "\\" accum)
       (push (list (aref arg new-pos)) accum)
@@ -483,14 +483,24 @@ This overrides entries in the mailcap file."
   "Insert the contents of HANDLE in the current buffer."
   (let ((cur (current-buffer)))
     (save-excursion
-      (mm-with-unibyte-buffer
-	(insert-buffer-substring (mm-handle-buffer handle))
-	(mm-decode-content-transfer-encoding
-	 (mm-handle-encoding handle)
-	 (car (mm-handle-type handle)))
-	(let ((temp (current-buffer)))
-	  (set-buffer cur)
-	  (insert-buffer-substring temp))))))
+      (if (member (car (split-string (car (mm-handle-type handle)) "/"))
+		  '("text" "message"))
+	  (with-temp-buffer
+	    (insert-buffer-substring (mm-handle-buffer handle))
+	    (mm-decode-content-transfer-encoding
+	     (mm-handle-encoding handle)
+	     (car (mm-handle-type handle)))
+	    (let ((temp (current-buffer)))
+	      (set-buffer cur)
+	      (insert-buffer-substring temp)))
+	(mm-with-unibyte-buffer
+	  (insert-buffer-substring (mm-handle-buffer handle))
+	  (mm-decode-content-transfer-encoding
+	   (mm-handle-encoding handle)
+	   (car (mm-handle-type handle)))
+	  (let ((temp (current-buffer)))
+	    (set-buffer cur)
+	    (insert-buffer-substring temp)))))))
 
 (defvar mm-default-directory nil)
 

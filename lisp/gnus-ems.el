@@ -187,7 +187,6 @@
 	    (ignore-errors
 	      (setq pixmap (read (current-buffer))))))
 	(when pixmap
-	  (erase-buffer)
 	  (unless (facep 'gnus-splash)
 	    (make-face 'gnus-splash))
 	  (setq height (/ (car pixmap) (frame-char-height))
@@ -197,7 +196,7 @@
 	  (insert-char ?\n (* (/ (window-height) 2 height) height))
 	  (setq i height)
 	  (while (> i 0)
-	    (insert-char ?  (* (+ (/ (window-width) 2 width) 1) width))
+	    (insert-char ?  (* (/ (window-width) 2 width) width))
 	    (setq beg (point))
 	    (insert-char ?  width)
 	    (set-text-properties beg (point) '(face gnus-splash))

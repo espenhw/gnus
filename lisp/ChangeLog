@@ -1,3 +1,57 @@
+Sun Apr 18 12:40:04 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.83 is released.
+
+1999-04-18 10:55:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-draft.el (gnus-draft-mode): Use mml minor mode.
+
+	* gnus-cite.el (gnus-dissect-cited-text): Off-by-one error.
+
+	* gnus-uu.el (gnus-uu-mark-thread): Save hidden threads.
+
+	* gnus-art.el (gnus-mime-inline-part): Don't do a charset param. 
+
+	* gnus-msg.el (gnus-bug): Use application/x-emacs-lisp.
+
+	* message.el (message-generate-headers): Accept continuation
+	headers. 
+
+1999-04-18 10:48:57  Renaud Rioboo  <Renaud.Rioboo@lip6.fr>
+
+	* gnus-demon.el (gnus-demon-time-to-step): Not strings.
+
+1999-04-18 08:21:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treatment-function-alist): use
+	maybe-hide-headers.
+
+	* message.el (message-inhibit-body-encoding): Typo.
+	(message-resend): Inhibit encoding.
+
+	* gnus-sum.el (gnus-summary-toggle-header): Decode rfc2047. 
+
+	* gnus-art.el (article-remove-cr): Use re-search.
+
+	* rfc2231.el (rfc2231-parse-string): Allow broken elm MIME
+	headers. 
+
+	* mm-decode.el (mm-quote-arg): Quote '.
+
+	* gnus-ems.el (gnus-x-splash): Would place splash wrongly.
+
+	* mm-decode.el (mm-insert-part): Use multibyte for text.
+
+	* gnus-start.el (gnus-read-newsrc-file): New variable.
+	(gnus-read-newsrc-file): Use it.
+
+1999-04-17 18:51:54  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnvirtual.el (nnvirtual-request-expire-articles): New function. 
+
+	* gnus-group.el (gnus-group-expire-articles-1): Made into own
+	function. 
+
 Sat Apr 17 16:41:30 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.82 is released.

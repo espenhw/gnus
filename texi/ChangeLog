@@ -1,3 +1,20 @@
+1999-04-18 12:46:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Summary Score Commands): Typo.
+	(Choosing a Mail Backend): Addition.
+
+1999-04-18 09:24:51  Yoshiki Hayashi  <g740685@komaba.ecc.u-tokyo.ac.jp>
+
+	* gnus.texi (Startup Variables): Fix.
+
+1999-04-18 09:12:28  Starback  <starback@ling.uu.se>
+
+	* gnus.texi (Subscription Methods): Typo.
+
+1999-04-18 08:22:27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Little Disk Space): Addition.
+
 1999-03-25  Erik Toubro Nielsen  <erik@ifad.dk>
 
 	* gnus.texi (gnus-thread-sort-functions). 'reverse' => 'not'

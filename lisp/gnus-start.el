@@ -196,6 +196,16 @@ groups."
   :type '(choice integer
 		 (const :tag "none" nil)))
 
+(defcustom gnus-read-newsrc-file t
+  "*Non-nil means that Gnus will read the `.newsrc' file.
+Gnus always reads its own startup file, which is called
+\".newsrc.eld\".  The file called \".newsrc\" is in a format that can
+be readily understood by other newsreaders.  If you don't plan on
+using other newsreaders, set this variable to nil to save some time on
+entry."
+  :group 'gnus-newsrc
+  :type 'boolean)
+
 (defcustom gnus-save-newsrc-file t
   "*Non-nil means that Gnus will save the `.newsrc' file.
 Gnus always saves its own startup file, which is called
@@ -1868,7 +1878,8 @@ If FORCE is non-nil, the .newsrc file is read."
       ;; file (ticked articles, killed groups, foreign methods, etc.)
       (gnus-read-newsrc-el-file quick-file)
 
-      (when (and (file-exists-p gnus-current-startup-file)
+      (when (and gnus-read-newsrc-file
+		 (file-exists-p gnus-current-startup-file)
 		 (or force
 		     (and (file-newer-than-file-p newsrc-file quick-file)
 			  (file-newer-than-file-p newsrc-file

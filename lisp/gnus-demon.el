@@ -152,8 +152,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
            (nowParts (decode-time now))
            ;; obtain THEN as discrete components
            (thenParts (parse-time-string time))
-           (thenHour (string-to-int (elt thenParts 0)))
-           (thenMin (string-to-int (elt thenParts 1)))
+           (thenHour (elt thenParts 0))
+           (thenMin (elt thenParts 1))
            ;; convert time as elements into number of seconds since EPOCH.
            (then (encode-time 0
                               thenMin

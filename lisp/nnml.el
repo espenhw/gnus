@@ -264,8 +264,7 @@ all.  This may very well take some time.")
   (save-excursion
     (nnmail-find-file nnml-newsgroups-file)))
 
-(deffoo nnml-request-expire-articles (articles group
-					       &optional server force)
+(deffoo nnml-request-expire-articles (articles group &optional server force)
   (nnml-possibly-change-directory group server)
   (let ((active-articles
 	 (nnheader-directory-articles nnml-current-directory))

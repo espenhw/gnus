@@ -852,7 +852,7 @@ If YANK is non-nil, include the original article."
     (save-excursion
       (set-buffer (gnus-get-buffer-create " *gnus environment info*"))
       (gnus-debug))
-    (insert "<#part type=application/emacs-lisp buffer=\" *gnus environment info*\" disposition=inline description=\"User settings\"><#/part>")
+    (insert "<#part type=application/x-emacs-lisp buffer=\" *gnus environment info*\" disposition=inline description=\"User settings\"><#/part>")
     (goto-char (point-min))
     (search-forward "Subject: " nil t)
     (message "")))

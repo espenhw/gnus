@@ -2988,7 +2988,7 @@ Headers already prepared in the buffer are not modified."
 		    ;; colon, if there is none.
 		    (if (/= (char-after) ? ) (insert " ") (forward-char 1))
 		    ;; Find out whether the header is empty...
-		    (looking-at "[ \t]*$")))
+		    (looking-at "[ \t]*\n[^ \t]")))
 	  ;; So we find out what value we should insert.
 	  (setq value
 		(cond
@@ -3830,7 +3830,8 @@ Optional NEWS will use news to forward instead of mail."
       (when (looking-at "From ")
 	(replace-match "X-From-Line: "))
       ;; Send it.
-      (let (message-required-mail-headers)
+      (let ((message-inhibit-body-encoding t)
+	    message-required-mail-headers)
 	(message-send-mail))
       (kill-buffer (current-buffer)))
     (message "Resending message to %s...done" address)))
@@ -4105,10 +4106,10 @@ regexp varstr."
 ;;; MIME functions
 ;;;
 
-(defvar messgage-inhibit-body-encoding nil)
+(defvar message-inhibit-body-encoding nil)
 
 (defun message-encode-message-body ()
-  (unless messgage-inhibit-body-encoding 
+  (unless message-inhibit-body-encoding 
     (let ((mail-parse-charset (or mail-parse-charset
 				  message-default-charset
 				  message-posting-charset))

@@ -376,7 +376,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	(while numbers
 	  (setq number (pop numbers))
 	  (goto-char (point-min))
-	  (forward-line (1- number))
+	  (forward-line number)
 	  (push (cons (point-marker) "") marks)
 	  (while (and numbers
 		      (= (1- number) (car numbers)))

@@ -2524,31 +2524,34 @@ or nil if no action could be taken."
       (error "No groups to expire"))
     (while (setq group (pop groups))
       (gnus-group-remove-mark group)
-      (when (gnus-check-backend-function 'request-expire-articles group)
-	(gnus-message 6 "Expiring articles in %s..." group)
-	(let* ((info (gnus-get-info group))
-	       (expirable (if (gnus-group-total-expirable-p group)
-			      (cons nil (gnus-list-of-read-articles group))
-			    (assq 'expire (gnus-info-marks info))))
-	       (expiry-wait (gnus-group-find-parameter group 'expiry-wait)))
-	  (when expirable
-	    (setcdr
-	     expirable
-	     (gnus-compress-sequence
-	      (if expiry-wait
-		  ;; We set the expiry variables to the group
-		  ;; parameter.
-		  (let ((nnmail-expiry-wait-function nil)
-			(nnmail-expiry-wait expiry-wait))
-		    (gnus-request-expire-articles
-		     (gnus-uncompress-sequence (cdr expirable)) group))
-		;; Just expire using the normal expiry values.
-		(gnus-request-expire-articles
-		 (gnus-uncompress-sequence (cdr expirable)) group))))
-	    (gnus-close-group group))
-	  (gnus-message 6 "Expiring articles in %s...done" group)))
+      (gnus-group-expire-articles-1 group)
       (gnus-dribble-touch)
       (gnus-group-position-point))))
+
+(defun gnus-group-expire-articles-1 (group)
+  (when (gnus-check-backend-function 'request-expire-articles group)
+    (gnus-message 6 "Expiring articles in %s..." group)
+    (let* ((info (gnus-get-info group))
+	   (expirable (if (gnus-group-total-expirable-p group)
+			  (cons nil (gnus-list-of-read-articles group))
+			(assq 'expire (gnus-info-marks info))))
+	   (expiry-wait (gnus-group-find-parameter group 'expiry-wait)))
+      (when expirable
+	(setcdr
+	 expirable
+	 (gnus-compress-sequence
+	  (if expiry-wait
+	      ;; We set the expiry variables to the group
+	      ;; parameter.
+	      (let ((nnmail-expiry-wait-function nil)
+		    (nnmail-expiry-wait expiry-wait))
+		(gnus-request-expire-articles
+		 (gnus-uncompress-sequence (cdr expirable)) group))
+	    ;; Just expire using the normal expiry values.
+	    (gnus-request-expire-articles
+	     (gnus-uncompress-sequence (cdr expirable)) group))))
+	(gnus-close-group group))
+      (gnus-message 6 "Expiring articles in %s...done" group))))
 
 (defun gnus-group-expire-all-groups ()
   "Expire all expirable articles in all newsgroups."
