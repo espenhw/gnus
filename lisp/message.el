@@ -4549,6 +4549,16 @@ If NOW, use that time instead."
 			 (aset tmp (1- (match-end 0)) ?-))
 		       (string-match "[\\()]" tmp)))))
 	(insert fullname)
+	(goto-char (point-min))
+ 	;; Look for a character that cannot appear unquoted
+ 	;; according to RFC 822.
+ 	(when (re-search-forward "[^- !#-'*+/-9=?A-Z^-~]" nil 1)
+ 	  ;; Quote fullname, escaping specials.
+ 	  (goto-char (point-min))
+ 	  (insert "\"")
+ 	  (while (re-search-forward "[\"\\]" nil 1)
+ 	    (replace-match "\\\\\\&" t))
+ 	  (insert "\""))
 	(insert " <" login ">"))
        (t				; 'parens or default
 	(insert login " (")

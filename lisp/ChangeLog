@@ -1,3 +1,7 @@
+2003-07-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-make-from): Revert change from 2002-01-08.
+
 2003-06-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnheader.el (nnheader-init-server-buffer): Don't add
