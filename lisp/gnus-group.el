@@ -523,7 +523,7 @@ ticked: The number of ticked articles."
     "r" gnus-group-sort-groups-by-rank
     "m" gnus-group-sort-groups-by-method)
 
-  (gnus-define-keys (gnus-group-sort-map "P" gnus-group-group-map)
+  (gnus-define-keys (gnus-group-sort-selected-map "P" gnus-group-group-map)
     "s" gnus-group-sort-selected-groups
     "a" gnus-group-sort-selected-groups-by-alphabet
     "u" gnus-group-sort-selected-groups-by-unread
@@ -2184,7 +2184,7 @@ If REVERSE (the prefix), reverse the sorting order."
 (defun gnus-group-sort-flat (func reverse)
   ;; We peel off the dummy group from the alist.
   (when func
-    (when (equal (car (gnus-info-group gnus-newsrc-alist)) "dummy.group")
+    (when (equal (gnus-info-group (car gnus-newsrc-alist)) "dummy.group")
       (pop gnus-newsrc-alist))
     ;; Do the sorting.
     (setq gnus-newsrc-alist

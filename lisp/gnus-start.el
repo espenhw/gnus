@@ -1467,6 +1467,7 @@ newsgroup."
     (while alist
       (gnus-sethash
        (caar alist)
+       ;; Preserve number of unread articles in groups.
        (cons (and ohashtb (car (gnus-gethash (caar alist) ohashtb)))
 	     prev)
        gnus-newsrc-hashtb)
