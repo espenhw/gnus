@@ -1,3 +1,8 @@
+2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-braid-nov): Find the first article to
+	copy.
+
 2002-02-07  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus-util.el (gnus-split-references): Allow (broken) Message-IDs
