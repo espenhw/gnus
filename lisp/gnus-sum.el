@@ -8018,7 +8018,8 @@ The difference between N and the number of articles fetched is returned."
 	    (set-buffer gnus-original-article-buffer)
 	    (nnheader-narrow-to-headers)
 	    (unless (setq ref (message-fetch-field "references"))
-	      (setq ref (message-fetch-field "in-reply-to")))
+	      (when (setq ref (message-fetch-field "in-reply-to"))
+		(setq ref (gnus-extract-message-id-from-in-reply-to ref))))
 	    (widen))
 	(setq ref
 	      ;; It's not the current article, so we take a bet on

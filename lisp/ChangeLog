@@ -1,5 +1,10 @@
 2003-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-sum.el (gnus-summary-refer-parent-article): Extract
+	Message-ID from In-Reply-To header.
+
+2003-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* message.el (message-is-yours-p): Narrow to head; extract from
 	and sender by itself.
 	(message-cancel-news, message-supersede): Remove useless things.
