@@ -1,3 +1,9 @@
+2004-04-02  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-set-difference): new function to replace
+	gnus-set-difference in spam.el
+	(spam-summary-prepare-exit): use spam-set-difference
+
 2004-03-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-cache-file): updated to use
