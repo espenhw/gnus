@@ -1,3 +1,13 @@
+2002-04-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Dan Christensen <jdc+news@uwo.ca>.
+	
+	* nndoc.el (nndoc-type-alist, nndoc-lanl-gov-announce-type-p)
+	(nndoc-transform-lanl-gov-announce, nndoc-generate-lanl-gov-head):
+	Recognize math postings properly.  Extract Date and email address
+	correctly.  Create Date and From header for revised versions.  Get
+	rid of spurious \\ lines.  Detect end of message correctly.
+	Correctly rephrase the URL.
+
 2002-04-23  Simon Josefsson  <jas@extundo.com>
 
 	* netrc.el: New file, functions copied from gnus-util.el by Ted
