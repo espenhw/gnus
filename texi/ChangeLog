@@ -1,3 +1,7 @@
+2004-10-02  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (documentencoding): Add, to avoid warnings.
+
 2004-09-30  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-news.texi: Add.
