@@ -418,6 +418,16 @@ The original alist is not modified.  See also `destructive-alist-to-plist'."
       (insert-buffer-substring obuf beg)
       (current-buffer))))
 
+(defun mm-display-parts (handle &optional no-default)
+  (if (stringp (car handle))
+      (mapcar 'mm-display-parts (cdr handle))
+    (if (bufferp (car handle))
+	(save-restriction
+	  (narrow-to-region (point) (point))
+	  (mm-display-part handle)
+	  (goto-char (point-max)))
+      (mapcar 'mm-display-parts handle))))
+
 (defun mm-display-part (handle &optional no-default)
   "Display the MIME part represented by HANDLE.
 Returns nil if the part is removed; inline if displayed inline;

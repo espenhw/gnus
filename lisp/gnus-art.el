@@ -2983,11 +2983,14 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (let ((handles (or handles gnus-article-mime-handles))
 	  (mail-parse-charset gnus-newsgroup-charset)
 	  (mail-parse-ignored-charsets 
-	   (save-excursion (set-buffer gnus-summary-buffer)
-			   gnus-newsgroup-ignored-charsets)))
-      (if (stringp (car handles))
-	  (gnus-mime-view-all-parts (cdr handles))
-	(mapcar 'mm-display-part handles)))))
+	   (with-current-buffer gnus-summary-buffer
+	     gnus-newsgroup-ignored-charsets)))
+      (mm-remove-parts handles)
+      (goto-char (point-min))
+      (or (search-forward "\n\n") (goto-char (point-max)))
+      (let (buffer-read-only)
+	(delete-region (point) (point-max)))
+      (mm-display-parts handles))))
 
 (defun gnus-mime-save-part-and-strip ()
   "Save the MIME part under point then replace it with an external body."
