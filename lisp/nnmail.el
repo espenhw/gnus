@@ -1077,7 +1077,6 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(apply 'concat (nreverse expanded))
       newtext)))
 
-
 ;; Get a list of spool files to read.
 (defun nnmail-get-spool-files (&optional group)
   (if (null nnmail-spool-file)

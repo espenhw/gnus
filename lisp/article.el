@@ -120,7 +120,7 @@ asynchronously.	 The compressed face will be piped to this command."
 
 (defcustom gnus-emphasis-alist
   (let ((format
-	 "\\(\\s-\\|^\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*\\)%s\\)\\(\\s-\\|[?!.,;)]\\)")
+	 "\\(\\s-\\|^\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*\\)%s\\)\\(\\s-\\|[?!.,;:\")]\\)")
 	(types
 	 '(("_" "_" underline)
 	   ("/" "/" italic)
@@ -166,7 +166,7 @@ is the face used for highlighting."
   "Face used for displaying underlined emphasized text (_word_)."
   :group 'article)
 
-(defface gnus-emphasis-bold-underline '((t (:bold t :underline t)))
+(defface gnus-emphasis-underline-bold '((t (:bold t :underline t)))
   "Face used for displaying underlined bold emphasized text (_*word*_)."
   :group 'article)
 

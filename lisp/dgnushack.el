@@ -37,6 +37,22 @@
 (defalias 'efs-re-read-dir 'ignore)
 (defalias 'ange-ftp-re-read-dir 'ignore)
 
+(defadvice require (before require-avoid-compiled activate)
+  ;; (feature filename)
+  "Avoid loading .elc files."
+  ;; Ensure a second argument to require is supplied that explicitly
+  ;; specifies loading the .el version of the file.
+  (let ((filename (ad-get-arg 1)))
+    (or filename (setq filename (symbol-name (ad-get-arg 0))))
+    (save-match-data
+      (cond ((string-match "\\.el\\'" filename)
+             nil)
+            ((string-match "\\.elc\\'" filename)
+             (setq filename (replace-match ".el" t t filename)))
+            (t
+             (setq filename (concat filename ".el")))))
+    (ad-set-arg 1 filename)))
+
 (eval-and-compile
   (unless (string-match "XEmacs" emacs-version)
     (fset 'get-popup-menu-response 'ignore)
@@ -53,9 +69,7 @@
     (condition-case ()
 	(require 'w3-forms)
       (error (setq files (delete "nnweb.el" files))))
-    (while files
-      (setq file (car files)
-	    files (cdr files))
+    (while (setq file (pop files))
       (cond 
        ((or (string= file "custom.el") (string= file "browse-url.el"))
 	(setq byte-compile-warnings nil))
@@ -69,9 +83,11 @@
 				    "messagexmas.el" "nnheaderxm.el"
 				    "smiley.el")))
 		xemacs)
-	(condition-case ()
-	    (byte-compile-file file)
-	  (error nil))))))
+	(when (or (not (file-exists-p (concat file "c")))
+		  (file-newer-than-file-p file (concat file "c")))
+	  (condition-case ()
+	      (byte-compile-file file)
+	    (error nil)))))))
 
 (defun dgnushack-recompile ()
   (require 'gnus)

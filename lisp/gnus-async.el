@@ -235,9 +235,10 @@ It should return non-nil if the article is to be prefetched."
 
 (defun gnus-async-delete-prefected-entry (entry)
   "Delete ENTRY from buffer and alist."
-  (delete-region (cadr entry) (caddr entry))
-  (set-marker (cadr entry) nil)
-  (set-marker (caddr entry) nil)
+  (ignore-errors
+    (delete-region (cadr entry) (caddr entry))
+    (set-marker (cadr entry) nil)
+    (set-marker (caddr entry) nil))
   (gnus-async-with-semaphore
    (setq gnus-async-article-alist 
 	 (delq entry gnus-async-article-alist))))

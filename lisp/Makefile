@@ -2,8 +2,11 @@ SHELL = /bin/sh
 EMACS=emacs
 FLAGS=-batch -q -no-site-file -l ./dgnushack.el
 
-all:
+total:
 	rm -f *.elc ; $(EMACS) $(FLAGS) -f dgnushack-compile
+
+all:
+	$(EMACS) $(FLAGS) -f dgnushack-compile
 
 some:
 	$(EMACS) $(FLAGS) -f dgnushack-recompile

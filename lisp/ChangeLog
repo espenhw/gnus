@@ -1,3 +1,68 @@
+Tue Nov 12 17:55:17 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-set-timestamp): Removed reference to
+	free variable `group'.
+
+Mon Nov 11 16:29:00 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-group.el (gnus-group-timestamp-delta): New function.
+
+	* gnus-demon.el (gnus-demon-add-scan-timestamps,
+	gnus-demon-scan-timestamps): New functions.
+
+Mon Nov 11 05:27:20 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* article.el (gnus-emphasis-alist): Added ":" as sentence-end. 
+
+Mon Nov 11 05:14:02 1996  David Moore  <dmoore@ucsd.edu>
+
+	* nnvirtual.el: New version.
+
+Mon Nov 11 05:09:14 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* article.el (gnus-emphasis-underline-bold): Renamed.
+
+Mon Nov 11 05:05:09 1996  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* nntp.el (nntp-possibly-change-group): Bind
+	`nnheader-callback-function' to nil.
+
+Sun Nov 10 12:13:08 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-parse-active): Give correct answer.
+
+	* nntp.el (nntp-snarf-error-message): Massage the message.
+
+Sun Nov 10 11:49:33 1996  Joe Wells  <jbw@cs.bu.edu>
+
+	* dgnushack.el (require): Load .el files only.
+
+Sun Nov 10 10:06:12 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-move.el (gnus-move-group-to-server): Would pass wrong
+	params to `gnus-retrieve-headers'.
+
+	* nntp.el (nntp-wait-for): Accept a `discard' param.
+	(nntp-open-connection): Would mix it up when establishing asynch
+	connections. 
+
+	* nnml.el (nnml-find-id): Would report false positives.
+
+	* gnus-spec.el (gnus-update-format-specifications): Do all
+	computations in the right buffer.
+
+	* nnweb.el (nnweb-type-definition): Moved search engine.
+	(nnweb-fetch-form): Use "POST" instead of `POST'.
+
+	* gnus-undo.el (gnus-undo-register): Entered malformed undo
+	statements. 
+
+	* smiley.el (smiley-nosey-regexp-alist): Add a devilish face.
+
+Sun Nov 10 06:38:38 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.60 is released.
+
 Sun Nov 10 06:31:36 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
 
 	* gnus.el: Red Gnus v0.59 is released.

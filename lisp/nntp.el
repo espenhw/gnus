@@ -575,18 +575,18 @@ It will prompt for a password."
 	    (funcall nntp-open-connection-function pbuffer))))
     (when process
       (process-kill-without-query process)
-      (nntp-wait-for process "^.*\n" buffer)
+      (nntp-wait-for process "^.*\n" buffer nil t)
       (if (memq (process-status process) '(open run))
 	  (prog1
-	      (caar (push (list process buffer nil)
-			  nntp-connection-alist))
+	      (caar (push (list process buffer nil) nntp-connection-alist))
 	    (push process nntp-connection-list)
 	    (save-excursion
-	      (set-buffer nntp-server-buffer)
+	      (set-buffer pbuffer)
 	      (nntp-read-server-type)
-	      (run-hooks 'nntp-server-opened-hook)
-	      (set-buffer buffer)
-	      (erase-buffer)))
+	      (erase-buffer)
+	      (set-buffer nntp-server-buffer)
+	      (let ((nnheader-callback-function nil))
+		(run-hooks 'nntp-server-opened-hook))))
 	(when (buffer-name (process-buffer process))
 	  (kill-buffer (process-buffer process)))
 	nil))))
@@ -682,7 +682,7 @@ It will prompt for a password."
   "Send STRING to PROCESS."
   (process-send-string process (concat string nntp-end-of-line)))
 
-(defun nntp-wait-for (process wait-for buffer &optional decode)
+(defun nntp-wait-for (process wait-for buffer &optional decode discard)
   "Wait for WAIT-FOR to arrive from PROCESS."
   (save-excursion
     (set-buffer (process-buffer process))
@@ -704,18 +704,24 @@ It will prompt for a password."
 	    (nntp-accept-process-output process)
 	    (goto-char (point-max)))
 	  (nntp-decode-text (not decode))
-	  (save-excursion
-	    (set-buffer buffer)
-	    (goto-char (point-max))
-	    (insert-buffer-substring (process-buffer process))
-	    ;; Nix out "nntp reading...." message.
-	    (message "")
-	    t))
-      (erase-buffer))))
+	  (unless discard
+	    (save-excursion
+	      (set-buffer buffer)
+	      (goto-char (point-max))
+	      (insert-buffer-substring (process-buffer process))
+	      ;; Nix out "nntp reading...." message.
+	      (message "")
+	      t)))
+      (unless discard
+	(erase-buffer)))))
 
 (defun nntp-snarf-error-message ()
   "Save the error message in the current buffer."
-  (setq nntp-status-string (buffer-string)))
+  (let ((message (buffer-string)))
+    (while (string-match "[\r\n]+" message)
+      (setq message (replace-match " " t t message)))
+    (nnheader-report 'nntp message)
+    message))
 
 (defun nntp-accept-process-output (process)
   "Wait for output from PROCESS and message some dots."
@@ -732,18 +738,18 @@ It will prompt for a password."
   (nntp-accept-process-output (nntp-find-connection nntp-server-buffer)))
 
 (defun nntp-possibly-change-group (group server &optional connectionless)
-  (when server
-    (or (nntp-server-opened server)
-	(nntp-open-server server nil connectionless)))
+  (let ((nnheader-callback-function nil))
+    (when server
+      (or (nntp-server-opened server)
+	  (nntp-open-server server nil connectionless)))
 
-  (unless connectionless
-    (or (nntp-find-connection nntp-server-buffer)
-	(nntp-open-connection nntp-server-buffer)))
+    (unless connectionless
+      (or (nntp-find-connection nntp-server-buffer)
+	  (nntp-open-connection nntp-server-buffer)))
 
-  (when group
-    (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
-      (when (not (equal group (caddr entry)))
-	(let ((nnheader-callback-function nil))
+    (when group
+      (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
+	(when (not (equal group (caddr entry)))
 	  (nntp-request-group group)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)

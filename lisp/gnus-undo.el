@@ -125,7 +125,7 @@ FORMS may use backtick quote syntax."
   (when gnus-undo-mode
     (gnus-undo-register-1
      `(lambda ()
-	,@form))))
+	,form))))
 
 (put 'gnus-undo-register 'lisp-indent-function 0)
 (put 'gnus-undo-register 'edebug-form-spec '(body))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.60 Manual
+@settitle Red Gnus 0.61 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.60 Manual
+@title Red Gnus 0.61 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -13594,6 +13594,9 @@ Hallvard B Furuseth---various bits and pieces, especially dealing with
 @item 
 Brian Edmonds---@file{gnus-bbdb.el}.
 
+@item
+David Moore---rewrite of @file{nnvirtual.el} and many other things. 
+
 @item 
 Ricardo Nassif, Mark Borges, and Jost Krieger---proof-reading.
 
@@ -13661,7 +13664,6 @@ Shlomo Mahlab,
 Nat Makarevitch,
 Timo Metzemakers,
 Richard Mlynarik,
-David Moore,
 Lantz Moore,
 Morioka Tomohiko, @c Morioka
 Hrvoje Niksic,

@@ -58,7 +58,7 @@
     ("\\(:-*p\\)\\W" 1 "FaceTalking.xpm")
     ("\\(:-*d\\)\\W" 1 "FaceTasty.xpm")
     ("\\(;-*[>)}»]+\\)\\W" 1 "FaceWinking.xpm")
-    ("\\(:-*[Vvµ]\\)\\W" 1 "FaceWry.xpm")
+    ("\\(:-*[Vvµ]\\)\\W" 1 "FaceWry.xpm")  
     ("\\([:|]-*P\\)\\W" 1 "FaceYukky.xpm"))
   "Normal and deformed faces for smilies.")
 
@@ -67,7 +67,7 @@
     ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
     ("\\(:-+D\\)\\W" 1 "FaceGrinning.xpm")
     ("\\(:-+[}»]+\\)\\W" 1 "FaceHappy.xpm")
-    ("\\(:-*)+\\)\\W" 1 "FaceHappy.xpm") ;; The exception that confirms the rule
+    ("\\(:-*)+\\)\\W" 1 "FaceHappy.xpm")
     ("\\(:-+[/\\\"]+\\)\\W" 1 "FaceIronic.xpm")
     ("\\([8|]-+[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
     ("\\([:|]-+#+\\)\\W" 1 "FaceNyah.xpm")
@@ -78,6 +78,7 @@
     ("\\(:-+d\\)\\W" 1 "FaceTasty.xpm")
     ("\\(;-+[>)}»]+\\)\\W" 1 "FaceWinking.xpm")
     ("\\(:-+[Vvµ]\\)\\W" 1 "FaceWry.xpm")
+    ("\\(][:8B]-[)>]\\)\\W" 1 "FaceDevilish.xpm")
     ("\\([:|]-+P\\)\\W" 1 "FaceYukky.xpm"))
   "Smileys with noses.  These get less false matches.")
 

@@ -1274,6 +1274,7 @@ If REGEXP, only list groups matching REGEXP."
 	 (level (or (gnus-info-level info) 9))
 	 (score (or (gnus-info-score info) 0))
 	 (ticked (gnus-range-length (cdr (assq 'tick marked))))
+	 (group-age (gnus-group-timestamp-delta group))
 	 (inhibit-read-only t))
     ;; Eval the cars of the lists until we find a match.
     (while (and list
@@ -3390,7 +3391,8 @@ and the second element is the address."
 
 (defun gnus-group-set-timestamp ()
   "Change the timestamp of the current group to the current time.
-This function can be used in hooks like `gnus-select-group-hook'."
+This function can be used in hooks like `gnus-select-group-hook'
+or `gnus-group-catchup-group-hook'."
   (let ((time (current-time)))
     (setcdr (cdr time) nil)
     (gnus-group-set-parameter gnus-newsgroup-name 'timestamp time)))
@@ -3398,6 +3400,14 @@ This function can be used in hooks like `gnus-select-group-hook'."
 (defsubst gnus-group-timestamp (group)
   "Return the timestamp for GROUP."
   (gnus-group-get-parameter group 'timestamp))
+
+(defun gnus-group-timestamp-delta (group)
+  "Return the offset in seconds from the timestamp for GROUP to the current time, as a floating point number."
+  (let* ((time (or (gnus-group-timestamp group)
+		  (list 0 0)))
+         (delta (gnus-time-minus (current-time) time)))
+    (+ (* (nth 0 delta) 65536.0)
+       (nth 1 delta))))
 
 (defun gnus-group-timestamp-string (group)
   "Return a string of the timestamp for GROUP."

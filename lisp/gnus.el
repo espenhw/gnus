@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.60"
+(defconst gnus-version-number "0.61"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -1057,6 +1057,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-Folder-save-name gnus-folder-save-name)
      ("gnus-mh" :interactive t gnus-summary-save-in-folder)
      ("gnus-demon" gnus-demon-add-nocem gnus-demon-add-scanmail
+      gnus-demon-add-rescan gnus-demon-add-scan-timestamps
       gnus-demon-add-disconnection gnus-demon-add-handler
       gnus-demon-remove-handler)
      ("gnus-demon" :interactive t
@@ -1947,7 +1948,7 @@ Disallow illegal group names."
 	group)
     (while (not group)
       (when (string-match
-	     "[ `'\"/]"
+	     "[ `'\"/]\\|^$"
 	     (setq group (read-string (concat prefix prompt)
 				      "" 'gnus-group-history)))
 	(setq prefix (format "Illegal group name: \"%s\".  " group)

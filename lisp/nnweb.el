@@ -49,7 +49,7 @@
      (article . nnweb-dejanews-wash-article)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanews-search)
-     (address . "http://search.dejanews.com/dnquery.xp"))
+     (address . "http://xp9.dejanews.com/dnquery.xp"))
     (reference
      (article . nnweb-reference-wash-article)
      (map . nnweb-reference-create-mapping)
@@ -322,7 +322,7 @@
 
 (defun nnweb-fetch-form (url pairs)
   (let ((url-request-data (nnweb-encode-www-form-urlencoded pairs))
-	(url-request-method 'POST)
+	(url-request-method "POST")
 	(url-request-extra-headers 
 	 '(("Content-type" . "application/x-www-form-urlencoded"))))
     (url-insert-file-contents url)

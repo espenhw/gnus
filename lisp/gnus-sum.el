@@ -8148,8 +8148,7 @@ save those articles instead."
     (gnus-summary-position-point)
     ;; If all commands are to be bunched up on one line, we collect
     ;; them here.
-    (if gnus-view-pseudos-separately
-	()
+    (unless gnus-view-pseudos-separately
       (let ((ps (setq pslist (sort pslist 'gnus-pseudos<)))
 	    files action)
 	(while ps
@@ -8160,17 +8159,16 @@ save those articles instead."
 			       (or (cdr (assq 'action (cadr ps))) "2")))
 	    (push (cdr (assq 'name (cadr ps))) files)
 	    (setcdr ps (cddr ps)))
-	  (if (not files)
-	      ()
+	  (when files
 	    (when (not (string-match "%s" action))
 	      (push " " files))
 	    (push " " files)
-	    (and (assq 'execute (car ps))
-		 (setcdr (assq 'execute (car ps))
-			 (funcall (if (string-match "%s" action)
-				      'format 'concat)
-				  action
-				  (mapconcat (lambda (f) f) files " ")))))
+	    (when (assq 'execute (car ps))
+	      (setcdr (assq 'execute (car ps))
+		      (funcall (if (string-match "%s" action)
+				   'format 'concat)
+			       action
+			       (mapconcat (lambda (f) f) files " ")))))
 	  (setq ps (cdr ps)))))
     (if (and gnus-view-pseudos (not not-view))
 	(while pslist

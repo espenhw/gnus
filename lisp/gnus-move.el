@@ -66,7 +66,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	    hashtb (make-vector 1023 0))
       ;; Fetch the headers from the `to-server'.
       (when (setq type (gnus-retrieve-headers
-			(car to-active) (cdr to-active)))
+			(gnus-uncompress-range to-active) group to-server))
 	;; Convert HEAD headers.  I don't care.
 	(when (eq type 'headers)
 	  (nnvirtual-convert-headers))
@@ -85,8 +85,9 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	(when (and (gnus-request-group group nil from-server)
 		   (gnus-active group)
 		   (setq type (gnus-retrieve-headers
-			       (car (gnus-active group))
-			       (cdr (gnus-active group)))))
+			       (gnus-uncompress-range 
+				(gnus-active group))
+			       group from-server)))
 	  ;; Make it easier to map marks.
 	  (let ((mark-lists (gnus-info-marks info))
 		ms type m)

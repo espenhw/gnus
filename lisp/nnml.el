@@ -509,8 +509,9 @@ all.  This may very well take some time.")
       (while (and (not found)
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.
-	(when (search-backward 
-	       "\t" (save-excursion (beginning-of-line) (point)) t 4)
+	(if (not (and (search-backward "\t" nil t 4)
+		      (not (search-backward"\t" (gnus-point-at-bol) t))))
+	    (forward-line 1)
 	  (beginning-of-line)
 	  (setq found t)
 	  ;; We return the article number.

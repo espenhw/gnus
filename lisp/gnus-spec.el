@@ -184,33 +184,33 @@
 		     (buffer-name (get-buffer val)))
 	    (set-buffer (get-buffer val)))
 	  (setq new-format (symbol-value
-			    (intern (format "gnus-%s-line-format" type))))))
-      (setq entry (cdr (assq type gnus-format-specs)))
-      (if (and (car entry)
-	       (equal (car entry) new-format))
-	  ;; Use the old format.
-	  (set (intern (format "gnus-%s-line-format-spec" type))
-	       (cadr entry))
-	;; This is a new format.
-	(setq val
-	      (if (not (stringp new-format))
-		  ;; This is a function call or something.
-		  new-format
-		;; This is a "real" format.
-		(gnus-parse-format
-		 new-format
-		 (symbol-value
-		  (intern (format "gnus-%s-line-format-alist"
-				  (if (eq type 'article-mode)
-				      'summary-mode type))))
-		 (not (string-match "mode$" (symbol-name type))))))
-	;; Enter the new format spec into the list.
-	(if entry
-	    (progn
-	      (setcar (cdr entry) val)
-	      (setcar entry new-format))
-	  (push (list type new-format val) gnus-format-specs))
-	(set (intern (format "gnus-%s-line-format-spec" type)) val))))
+			    (intern (format "gnus-%s-line-format" type)))))
+	(setq entry (cdr (assq type gnus-format-specs)))
+	(if (and (car entry)
+		 (equal (car entry) new-format))
+	    ;; Use the old format.
+	    (set (intern (format "gnus-%s-line-format-spec" type))
+		 (cadr entry))
+	  ;; This is a new format.
+	  (setq val
+		(if (not (stringp new-format))
+		    ;; This is a function call or something.
+		    new-format
+		  ;; This is a "real" format.
+		  (gnus-parse-format
+		   new-format
+		   (symbol-value
+		    (intern (format "gnus-%s-line-format-alist"
+				    (if (eq type 'article-mode)
+					'summary-mode type))))
+		   (not (string-match "mode$" (symbol-name type))))))
+	  ;; Enter the new format spec into the list.
+	  (if entry
+	      (progn
+		(setcar (cdr entry) val)
+		(setcar entry new-format))
+	    (push (list type new-format val) gnus-format-specs))
+	  (set (intern (format "gnus-%s-line-format-spec" type)) val)))))
 
   (unless (assq 'version gnus-format-specs)
     (push (cons 'version emacs-version) gnus-format-specs)))

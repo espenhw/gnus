@@ -256,6 +256,25 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	(set-buffer gnus-group-buffer)
 	(gnus-group-get-new-news)))))
 
+(defun gnus-demon-add-scan-timestamps ()
+  "Add daemonic updating of timestamps in empty newgroups."
+  (gnus-demon-add-handler 'gnus-demon-scan-timestamps nil 30))
+
+(defun gnus-demon-scan-timestamps ()
+  "Set the timestamp on all newsgroups with no unread and no ticked articles."
+  (when (gnus-alive-p)
+    (let ((cur-time (current-time))
+	  (newsrc (cdr gnus-newsrc-alist))
+	  info group unread has-ticked)
+      (while (setq info (pop newsrc))
+	(setq group (gnus-info-group info)
+	      unread (gnus-group-unread group)
+	      has-ticked (cdr (assq 'tick (gnus-info-marks info))))
+	(when (and (numberp unread)
+		   (= unread 0)
+		   (not has-ticked))
+	  (gnus-group-set-parameter group 'timestamp cur-time))))))
+
 (provide 'gnus-demon)
 
 ;;; gnus-demon.el ends here
