@@ -1,3 +1,10 @@
+2003-08-30  Simon Josefsson  <jas@extundo.com>
+
+	* mail-source.el (mail-source-fetch-imap): Pass correct buffer to
+	imap-open, reverts 2003-03-17 change.  Reverse remove before
+	calling gnus-compress-sequence.  From Gaute Strokkenes
+	<gs234@srcf.ucam.org> (tiny change).
+
 2003-08-29  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-group.el (gnus-group-delete-group): Doc fix.  Suggested by
