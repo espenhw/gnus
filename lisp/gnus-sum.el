@@ -7158,7 +7158,9 @@ If CIRCULAR is non-nil, go to the start of the article instead of
 selecting the next article when reaching the end of the current
 article.
 
-If STOP is non-nil, just stop when reaching the end of the message."
+If STOP is non-nil, just stop when reaching the end of the message.
+
+Also see the variable `gnus-article-skip-boring'."
   (interactive "P")
   (setq gnus-summary-buffer (current-buffer))
   (gnus-set-global-variables)
