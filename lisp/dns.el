@@ -263,7 +263,7 @@
   "Query a DNS server for NAME of TYPE."
   (setq type (or type 'A))
   (mm-with-unibyte-buffer
-    (let ((coding-system-for-read 'binary)
+    (let ((coding-system-for-read 'binary) 
 	  (coding-system-for-write 'binary))
       (let ((process
 	     (make-network-process

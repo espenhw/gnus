@@ -1,3 +1,7 @@
+2002-03-31  Lars Magne Ingebrigtsen  <larsi@quimbies.gnus.org>
+
+	* dns.el (query-dns): Test.
+
 2002-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* lpath.el (featurep): Bind make-network-process.
