@@ -1724,7 +1724,7 @@ With the prefix argument FORCE, insert the header anyway."
     (insert "\n\n\n")
     (delete-region (point) (re-search-forward "[ \t]*"))
     (when quoted
-      (insert quoted " "))
+      (insert quoted))
     (fill-paragraph nil)
     (goto-char point)
     (forward-line 1)))
