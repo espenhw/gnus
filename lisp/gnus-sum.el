@@ -375,7 +375,7 @@ current article is unread."
   :group 'gnus-summary-maneuvering
   :type 'boolean)
 
-(defcustom gnus-auto-center-summary t
+(defcustom gnus-auto-center-summary 2
   "*If non-nil, always center the current summary buffer.
 In particular, if `vertical' do only vertical recentering.  If non-nil
 and non-`vertical', do both horizontal and vertical recentering."
