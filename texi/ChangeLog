@@ -1,3 +1,12 @@
+2003-10-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.texi (Mailing Lists): Add Mail-Followup-To to index.
+
+	* gnus.texi (Group Parameters): Add Mail-Followup-To to index.
+	(Emacsen): Fixed typo.
+	(Oort Gnus): Mention message-forward-show-mml change (Sync with
+	GNUS-NEWS).
+
 2003-10-12  Adrian Aichner  <adrian@xemacs.org>
 
 	* gnus.texi (Mail Source Specifiers): uref fixes.

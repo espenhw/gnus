@@ -353,6 +353,7 @@ will be removed before popping up the buffer.  The default is
 @node Mailing Lists
 @section Mailing Lists
 
+@cindex Mail-Followup-To
 Sometimes while posting to mailing lists, the poster needs to direct
 followups to the post to specific places.  The Mail-Followup-To (MFT)
 was created to enable just this.  Two example scenarios where this is

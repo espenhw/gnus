@@ -2760,6 +2760,7 @@ See also @code{gnus-parameter-to-list-alist}.
 @anchor{subscribed}
 @item subscribed
 @cindex subscribed
+@cindex Mail-Followup-To
 If this parameter is set to @code{t}, Gnus will consider the
 to-address and to-list parameters for this group as addresses of
 mailing lists you are subscribed to.  Giving Gnus this information is
@@ -23897,7 +23898,7 @@ know.
 @cindex Mule
 @cindex Emacs
 
-Gnus should work on :
+Gnus should work on:
 
 @itemize @bullet
 
@@ -25560,6 +25561,14 @@ C-m}.
 
 This change was made to avoid conflict with the standard binding of
 @code{back-to-indentation}, which is also useful in message mode.
+
+@item
+The default for message-forward-show-mml changed to symbol @code{best}.
+
+The behaviour for the @code{best} value is to show MML (i.e., convert MIME
+to MML) when appropriate.  MML will not be used when forwarding signed
+or encrypted messages, as the conversion invalidate the digital
+signature.
 @end itemize
 
 @iftex
