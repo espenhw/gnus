@@ -29,6 +29,7 @@
 
 (require 'wid-edit)
 (require 'gnus)
+(require 'gnus-agent)
 (require 'gnus-score)
 (require 'gnus-topic)
 (require 'gnus-art)
@@ -263,6 +264,62 @@ Server-assigned value attached to IMAP groups, used to maintain consistency."))
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter
 itself (a symbol), TYPE is the parameters type (a sexp widget), and
 DOC is a documentation string for the parameter.")
+
+(eval-and-compile
+  (defconst gnus-agent-parameters
+    '((agent-predicate
+       (sexp :tag "Selection Predicate" :value false)
+       "Predicate used to automatically select articles for downloading."
+       gnus-agent-cat-predicate)
+      (agent-score
+       (choice :tag "Score File" :value nil
+               (const file :tag "Use group's score files")
+               (repeat (list (string :format "%v" :tag "File name"))))
+       "Which score files to use when using score to select articles to fetch.
+
+    `nil'
+         All articles will be scored to zero (0).
+
+    `file'
+         The group's score files will be used to score the articles.
+
+    `List'
+         A list of score file names."
+       gnus-agent-cat-score-file)
+      (agent-short-article
+       (integer :tag "Max Length of Short Article" :value "")
+       "The SHORT predicate will evaluate to true when the article is
+shorter than this length."  gnus-agent-cat-length-when-short)
+      (agent-long-article
+       (integer :tag "Min Length of Long Article" :value "")
+       "The LONG predicate will evaluate to true when the article is
+longer than this length."  gnus-agent-cat-length-when-long)
+      (agent-low-score
+       (integer :tag "Low Score Limit" :value "")
+       "The LOW predicate will evaluate to true when the article scores
+lower than this limit."  gnus-agent-cat-low-score)
+      (agent-high-score
+       (integer :tag "High Score Limit" :value "")
+       "The HIGH predicate will evaluate to true when the article scores
+higher than this limit."  gnus-agent-cat-high-score)
+      (agent-days-until-old
+       (integer :tag "Days Until Old" :value "")
+       "The OLD predicate will evaluate to true when the fetched article
+has been stored locally for at least this many days."
+       gnus-agent-cat-days-until-old)
+      (agent-enable-expiration
+       (radio :tag "Expire in this Group or Topic" :value nil
+;              (const :format "Inherit " nil)
+              (const :format "Enable " ENABLE)
+              (const :format "Disable " DISABLE))
+       "\nEnable, or disable, agent expiration in this group or topic."
+       gnus-agent-cat-enable-expiration) )
+    "Alist of group parameters that are not also topic parameters.
+
+Each entry has the form (NAME TYPE DOC), where NAME is the parameter
+itself (a symbol), TYPE is the parameters type (a sexp widget), and
+DOC is a documentation string for the parameter."))
+
 (defvar gnus-custom-params)
 (defvar gnus-custom-method)
 (defvar gnus-custom-group)
@@ -281,7 +338,25 @@ DOC is a documentation string for the parameter.")
 			       gnus-group-parameters
 			       (if group
 				   gnus-extra-group-parameters
-				 gnus-extra-topic-parameters)))))
+				 gnus-extra-topic-parameters))))
+	(agent (mapcar (lambda (entry)
+                         (let ((type (nth 1 entry))
+                               vcons)
+                           (if (listp type)
+                               (setq type (copy-sequence type)))
+
+                           (setq vcons (cdr (memq :value type)))
+
+                           (if (symbolp (car vcons))
+                               (condition-case nil
+                                   (setcar vcons (symbol-value (car vcons)))
+                                 (error)))
+                           `(cons :format "%v%h\n"
+                                  :doc ,(nth 2 entry)
+                                  (const :format "" ,(nth 0 entry))
+                                  ,type)))
+		       (if gnus-agent
+                           gnus-agent-parameters))))
     (unless (or group topic)
       (error "No group on current line"))
     (when (and group topic)
@@ -289,7 +364,7 @@ DOC is a documentation string for the parameter.")
     (unless (or topic (setq info (gnus-get-info group)))
       (error "Killed group; can't be edited"))
     ;; Ready.
-    (kill-buffer (gnus-get-buffer-create "*Gnus Customize*"))
+    (gnus-kill-buffer (gnus-get-buffer-create "*Gnus Customize*"))
     (switch-to-buffer (gnus-get-buffer-create "*Gnus Customize*"))
     (gnus-custom-mode)
     (make-local-variable 'gnus-custom-group)
@@ -316,24 +391,57 @@ DOC is a documentation string for the parameter.")
 		   :action 'gnus-group-customize-done)
     (widget-insert ".\n\n")
     (make-local-variable 'gnus-custom-params)
-    (setq gnus-custom-params
-	  (widget-create 'group
-			 :value (if group
-				    (gnus-info-params info)
-				  (gnus-topic-parameters topic))
-			 `(set :inline t
-			       :greedy t
-			       :tag "Parameters"
-			       :format "%t:\n%h%v"
-			       :doc "\
+
+    (let* ((values (if group
+                           (gnus-info-params info)
+                         (gnus-topic-parameters topic))))
+
+      ;; The parameters in values may contain duplicates.  This is
+      ;; normally OK as assq returns the first. However, right here
+      ;; every duplicate ends up being displayed.  So, rather than
+      ;; display them, remove them from the list.
+
+      (let (tmp)
+        (setq values (gnus-copy-sequence values)
+              tmp values)
+
+        (while tmp
+          (setcdr tmp (delete-if (lambda (testing) (eq (caar tmp)
+                                                       (car testing))) 
+                                 (cdr tmp)))
+          (setq tmp (cdr tmp))))
+
+      (setq gnus-custom-params
+            (apply 'widget-create 'group
+                   :value values
+                   (delq nil
+                         (list `(set :inline t
+                                     :greedy t
+                                     :tag "Parameters"
+                                     :format "%t:\n%h%v"
+                                     :doc "\
 These special parameters are recognized by Gnus.
 Check the [ ] for the parameters you want to apply to this group or
 to the groups in this topic, then edit the value to suit your taste."
-			       ,@types)
-			 '(repeat :inline t
-				  :tag "Variables"
-				  :format "%t:\n%h%v%i\n\n"
-				  :doc "\
+                                     ,@types)
+                               (when gnus-agent
+                                 `(set :inline t
+                                       :greedy t
+                                       :tag "Agent Parameters"
+                                       :format "%t:\n%h%v"
+                                       :doc "\ These agent parameters are
+recognized by Gnus.  They control article selection and expiration for
+use in the unplugged cache.  Check the [ ] for the parameters you want
+to apply to this group or to the groups in this topic, then edit the
+value to suit your taste.
+
+For those interested, group parameters override topic parameters while
+topic parameters override agent category parameters.  Underlying
+category parameters are the customizable variables."  ,@agent))
+                               '(repeat :inline t
+                                        :tag "Variables"
+                                        :format "%t:\n%h%v%i\n\n"
+                                        :doc "\
 Set variables local to the group you are entering.
 
 If you want to turn threading off in `news.answers', you could put
@@ -346,14 +454,14 @@ like.  If you want to hear a beep when you enter a group, you could
 put something like `(dummy-variable (ding))' in the parameters of that
 group.  `dummy-variable' will be set to the result of the `(ding)'
 form, but who cares?"
-				  (list :format "%v" :value (nil nil)
-					(symbol :tag "Variable")
-					(sexp :tag
-					      "Value")))
+                                        (list :format "%v" :value (nil nil)
+                                              (symbol :tag "Variable")
+                                              (sexp :tag
+                                                    "Value")))
 
-			 '(repeat :inline t
-				  :tag "Unknown entries"
-				  sexp)))
+                               '(repeat :inline t
+                                        :tag "Unknown entries"
+                                        sexp))))))
     (when group
       (widget-insert "\n\nYou can also edit the ")
       (widget-create 'info-link
@@ -770,6 +878,163 @@ articles in the thread.
     (setcdr alist (cdr value))
     (gnus-score-set 'touched '(t) alist))
   (bury-buffer))
+
+(eval-when-compile
+  (defvar category-fields nil)
+  (defvar gnus-agent-cat-predicate nil)
+  (defvar gnus-agent-cat-score-file nil)
+  (defvar gnus-agent-cat-length-when-short nil)
+  (defvar gnus-agent-cat-length-when-long nil)
+  (defvar gnus-agent-cat-low-score nil)
+  (defvar gnus-agent-cat-high-score nil)
+  (defvar gnus-agent-cat-groups nil)
+  (defvar gnus-agent-cat-enable-expiration nil)
+  (defvar gnus-agent-cat-days-until-old nil)
+  (defvar gnus-agent-cat-name nil)
+)
+
+(defun gnus-trim-whitespace (s)
+  (when (string-match "\\`[ \n\t]+" s)
+    (setq s (substring s (match-end 0))))
+  (when (string-match "[ \n\t]+\\'" s)
+    (setq s (substring s 0 (match-beginning 0))))
+  s)
+
+(defmacro gnus-agent-cat-prepare-category-field (parameter)
+  (let* ((entry (assq parameter gnus-agent-parameters))
+         (field (nth 3 entry)))
+    `(let* ((type (copy-sequence
+                   (nth 1 (assq ',parameter gnus-agent-parameters))))
+            (val (,field info))
+            (deflt (if (,field defaults)
+                       (concat " [" (gnus-trim-whitespace
+                                     (pp-to-string (,field defaults))) "]"))))
+
+       (if (eq (car type) 'radio)
+           (let* ((rtype (nreverse type))
+                  (rt rtype))
+             (while (listp (or (cadr rt) 'not-list))
+               (setq rt (cdr rt)))
+
+             (setcdr rt (cons '(const :format "Inherit " nil) (cdr rt)))
+             (setq type (nreverse rtype))))
+
+       (if deflt
+           (let ((tag (cdr (memq :tag type))))
+             (if (string-match "\n" deflt)
+                 (progn (while (progn (setq deflt (replace-match "\n " t t
+                                                                 deflt))
+                                      (string-match "\n" deflt (match-end 0))))
+                        (setq deflt (concat "\n" deflt))))
+
+             (setcar tag (concat (car tag) deflt))))
+
+       (widget-insert "\n")
+
+       (set (make-local-variable ',field)
+            (if val
+                (widget-create type :value val)
+              (widget-create type)))
+       (widget-put ,field :default val)
+       (widget-put ,field :accessor ',field)
+       (push ,field category-fields))))
+
+(defun gnus-agent-customize-category (category)
+  "Edit the CATEGORY."
+  (interactive (list (gnus-category-name)))
+  (let ((info (assq category gnus-category-alist))
+        (defaults (list nil '(agent-predicate . false)
+                        (cons 'agent-enable-expiration
+                              gnus-agent-enable-expiration)
+                        '(agent-days-until-old . 7)
+                        (cons 'agent-length-when-short
+                              gnus-agent-short-article)
+                        (cons 'agent-length-when-long gnus-agent-long-article)
+                        (cons 'agent-low-score gnus-agent-low-score)
+                        (cons 'agent-high-score gnus-agent-high-score))))
+
+    (let ((old (get-buffer "*Gnus Agent Category Customize*")))
+      (when old
+        (gnus-kill-buffer old)))
+    (switch-to-buffer (gnus-get-buffer-create
+                       "*Gnus Agent Category Customize*"))
+
+    (let ((inhibit-read-only t))
+      (gnus-custom-mode)
+      (buffer-disable-undo)
+
+      (let* ((name (gnus-agent-cat-name info)))
+        (widget-insert "Customize the Agent Category '")
+        (widget-insert (symbol-name name))
+        (widget-insert "' and press ")
+        (widget-create
+         'push-button
+         :notify
+         '(lambda (&rest ignore)
+            (let* ((info (assq gnus-agent-cat-name gnus-category-alist))
+                   (widgets category-fields))
+              (while widgets
+                (let* ((widget (pop widgets))
+                       (value (ignore-errors (widget-value widget))))
+                  (eval `(setf (,(widget-get widget :accessor) ',info)
+                               ',value)))))
+            (gnus-category-write)
+            (gnus-kill-buffer (current-buffer))
+            (when (get-buffer gnus-category-buffer)
+              (switch-to-buffer (get-buffer gnus-category-buffer))
+              (gnus-category-list)))
+                       "Done")
+        (widget-insert
+         "\n    Note: Empty fields default to the customizable global\
+ variables.\n\n")
+
+        (set (make-local-variable 'gnus-agent-cat-name)
+             name))
+
+      (set (make-local-variable 'category-fields) nil)
+      (gnus-agent-cat-prepare-category-field agent-predicate)
+
+      (gnus-agent-cat-prepare-category-field agent-score)
+      (gnus-agent-cat-prepare-category-field agent-short-article)
+      (gnus-agent-cat-prepare-category-field agent-long-article)
+      (gnus-agent-cat-prepare-category-field agent-low-score)
+      (gnus-agent-cat-prepare-category-field agent-high-score)
+
+      ;; The group list is NOT handled with
+      ;; gnus-agent-cat-prepare-category-field as I don't want the
+      ;; group list to appear when customizing a topic.
+      (widget-insert "\n")
+      (set (make-local-variable 'gnus-agent-cat-groups)
+           (widget-create
+            `(choice
+              :format "%[Select Member Groups%]\n%v" :value ignore
+              (const :menu-tag "do not change" :tag "" :value ignore)
+              (checklist :entry-format "%b %v"
+                         :menu-tag "display group selectors"
+                         :greedy t
+                         :value ,(delq nil
+                                       (mapcar
+                                        (lambda (newsrc)
+                                          (car (member
+                                                (gnus-info-group newsrc)
+                                                (gnus-agent-cat-groups info))))
+                                        (cdr gnus-newsrc-alist)))
+                         ,@(mapcar (lambda (newsrc)
+                                     `(const ,(gnus-info-group newsrc)))
+                                   (cdr gnus-newsrc-alist))))))
+
+      (widget-put gnus-agent-cat-groups :default (gnus-agent-cat-groups info))
+      (widget-put gnus-agent-cat-groups :accessor 'gnus-agent-cat-groups)
+      (push gnus-agent-cat-groups category-fields)
+
+      (widget-insert "\nExpiration Settings ")
+
+      (gnus-agent-cat-prepare-category-field agent-enable-expiration)
+      (gnus-agent-cat-prepare-category-field agent-days-until-old)
+
+      (use-local-map widget-keymap)
+      (widget-setup)
+      (buffer-enable-undo))))
 
 ;;; The End:
 
