@@ -351,8 +351,9 @@ times, you will get back the un-edited message you're responding to.
 @node Header Commands
 @section Header Commands
 
-All these commands move to the header in question.  If it doesn't exist,
-it will be inserted.
+All these commands move to the header in question (except for the
+@samp{Importance:} related commands).  If it doesn't exist, it will be
+inserted.
 
 @table @kbd
 
@@ -415,6 +416,27 @@ Go to the @code{Keywords} header (@code{message-goto-keywords}).
 @kindex C-c C-f C-u
 @findex message-goto-summary
 Go to the @code{Summary} header (@code{message-goto-summary}).
+
+@item C-c C-f C-i
+@kindex C-c C-f C-i
+@findex message-insert-or-toggle-importance
+This inserts the @samp{Importance:} header with a value of
+@samp{high}.  This header is used to signal the importance of the
+message to the receiver.  If the header is already present in the
+buffer, it cycles between the three valid values according to RFC
+1376: @samp{low}, @samp{normal} and @samp{high}.
+
+@item M-x message-insert-importance-high
+@kindex M-x message-insert-importance-high
+@findex message-insert-importance-high
+Insert a @samp{Importance:} header with a value of @samp{high},
+deleting headers if necessary.
+
+@item M-x message-insert-importance-low
+@kindex M-x message-insert-importance-low
+@findex message-insert-importance-low
+Insert a @samp{Importance:} header with a value of @samp{low},
+deleting headers if necessary.
 
 @end table
 
@@ -480,27 +502,6 @@ Insert a signature at the end of the buffer
 @kindex C-c M-h
 @findex message-insert-headers
 Insert the message headers (@code{message-insert-headers}).
-
-@item C-c C-u
-@kindex C-c C-u
-@findex message-insert-or-toggle-importance
-This inserts the @samp{Importance:} header with a value of
-@samp{high}.  This header is used to signal the importance of the
-message to the receiver.  If the header is already present in the
-buffer, it cycles between the three valid values according to RFC
-1376: @samp{low}, @samp{normal} and @samp{high}.
-
-@item M-x message-insert-importance-high
-@kindex M-x message-insert-importance-high
-@findex message-insert-importance-high
-Insert a @samp{Importance:} header with a value of @samp{high},
-deleting headers if necessary.
-
-@item M-x message-insert-importance-low
-@kindex M-x message-insert-importance-low
-@findex message-insert-importance-low
-Insert a @samp{Importance:} header with a value of @samp{low},
-deleting headers if necessary.
 
 @end table
 
