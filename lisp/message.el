@@ -2426,7 +2426,7 @@ message composition doesn't break too bad."
   ;; fontified: is used by font-lock.
   ;; syntax-table, local-map: I dunno.
   ;; We need to add XEmacs names to the list.
-  "Property list of with properties.forbidden in message buffers.
+  "Property list of with properties forbidden in message buffers.
 The values of the properties are ignored, only the property names are used.")
 
 (defun message-tamago-not-in-use-p (pos)
@@ -2451,7 +2451,11 @@ See also `message-forbidden-properties'."
 	     (message-tamago-not-in-use-p begin))
     (let ((buffer-read-only nil)
 	  (inhibit-read-only t))
-      (remove-text-properties begin end message-forbidden-properties))))
+      (while (not (= begin end))
+	(when (not (get-text-property begin 'message-hidden))
+	  (remove-text-properties begin (1+ begin)
+				  message-forbidden-properties))
+	(incf begin)))))
 
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"

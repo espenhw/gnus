@@ -1,3 +1,24 @@
+2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* pop3.el (pop3-md5): Define it before being used.
+
+2004-11-25  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-forbidden-properties): Fixed typo in doc
+	string.
+
+2004-11-25  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-util.el (gnus-replace-in-string): Added doc string.
+
+	* nnmail.el (nnmail-split-header-length-limit): Increase to 2048
+	to avoid problems when splitting mails with many recipients.
+
+2004-11-22  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-sum.el (gnus-summary-exit): Remove redundant and harmful
+	pop-to-buffer, covered by the subsequent gnus-configure-windows.
+
 2004-12-05  Nelson Ferreira  <nelson.ferreira@ieee.org>
 
 	* spam-stat.el (spam-stat-save): Load the hashtable from disk only
@@ -270,8 +291,8 @@
 
 	* sieve.el (sieve): Add :version.
 
-	* sha1.el (sha1): Added :version.
-	(sha1-use-external): Removed redundant version.
+	* sha1.el (sha1): Add :version.
+	(sha1-use-external): Remove redundant version.
 
 	* nnmail.el (nnmail-split-fancy-with-parent-ignore-groups)
 	(nnmail-cache-ignore-groups, nnmail-spool-hook)
@@ -283,8 +304,8 @@
 	* mml2015.el (mml2015-unabbrev-trust-alist): Add :version.
 
 	* mml-sec.el (mml-default-sign-method)
-	(mml-default-encrypt-method, mml-signencrypt-style-alist): Add
-	:version.
+	(mml-default-encrypt-method, mml-signencrypt-style-alist):
+	Add :version.
 
 	* mm-uu.el (mm-uu-diff-groups-regexp): Add :version.
 
@@ -345,8 +366,8 @@
 	* html2text.el: Beautify code.  Improve doc strings.  Some checkdoc
 	cleanup.
 	(html2text-get-attr, html2text-fix-paragraph): Simplify code.
-	(html2text-format-tag-list): Added "strong" and "em".  From
-	"Alfred M. Szmidt" <ams@kemisten.nu> (tiny change).
+	(html2text-format-tag-list): Add "strong" and "em".
+	From "Alfred M. Szmidt" <ams@kemisten.nu> (tiny change).
 
 2004-10-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
@@ -368,8 +389,8 @@
 	<srivasta@golden-gryphon.com>.
 
 	* mm-util.el (mm-coding-system-priorities): Prefer iso-8859-1 than
-	iso-2022-jp even in the Japanese language environment.  Suggested
-	by Jason Rumney <jasonr@gnu.org>.
+	iso-2022-jp even in the Japanese language environment.
+	Suggested by Jason Rumney <jasonr@gnu.org>.
 
 2004-10-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -411,7 +432,7 @@
 
 2004-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* html2text.el (html2text-buffer-head): Removed.  Use `goto-char'
+	* html2text.el (html2text-buffer-head): Remove.  Use `goto-char'
 	instead.
 
 2004-10-25  Teodor Zlatanov  <tzz@lifelogs.com>
