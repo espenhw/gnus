@@ -1,3 +1,8 @@
+2004-10-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-check-reasonable-setup): Use fboundp instead
+	of boundp to check if display-warning is available.
+
 2004-10-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* nnimap.el (nnimap-open-connection): fixed prog1/prog2 bug

@@ -3109,7 +3109,7 @@ Would otherwise be an alias for `display-time-event-handler'." nil))))
 (defun gnus-check-reasonable-setup ()
   ;; Check whether nnml and nnfolder share a directory.
   (let ((display-warn
-	 (if (boundp 'display-warning)
+	 (if (fboundp 'display-warning)
 	     'display-warning
 	   (lambda (type message)
 	     (if noninteractive
