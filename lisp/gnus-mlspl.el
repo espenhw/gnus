@@ -27,10 +27,13 @@
 (require 'nnmail)
 
 (defvar gnus-group-split-updated-hook nil
-  "Hook called just after nnmail-split-fancy is updated by gnus-group-split-update.")
+  "Hook called just after nnmail-split-fancy is updated by
+gnus-group-split-update.")
 
 (defvar gnus-group-split-default-catch-all-group "mail.misc"
-  "Group used by gnus-group-split and gnus-group-split-update as default catch-all group.")
+  "Group name (or arbitrary fancy split) with default splitting rules.
+Used by gnus-group-split and gnus-group-split-update as a fallback
+split, in case none of the group-based splits matches.")
 
 ;;;###autoload
 (defun gnus-group-split-setup (&optional auto-update catch-all)
@@ -42,7 +45,18 @@ group parameters.
 If AUTO-UPDATE is non-nil (prefix argument accepted, if called
 interactively), it makes sure nnmail-split-fancy is re-computed before
 getting new mail, by adding gnus-group-split-update to
-nnmail-pre-get-new-mail-hook."
+nnmail-pre-get-new-mail-hook.
+
+A non-nil CATCH-ALL replaces the current value of
+gnus-group-split-default-catch-all-group.  This variable is only used
+by gnus-group-split-update, and only when its CATCH-ALL argument is
+nil.  This argument may contain any fancy split, that will be added as
+the last split in a `|' split produced by gnus-group-split-fancy,
+unless overridden by any group marked as a catch-all group.  Typical
+uses are as simple as the name of a default mail group, but more
+elaborate fancy splits may also be useful to split mail that doesn't
+match any of the group-specified splitting rules.  See
+gnus-group-split-fancy for details."
   (interactive "P")
   (setq nnmail-split-methods 'nnmail-split-fancy)
   (when catch-all
@@ -53,8 +67,11 @@ nnmail-pre-get-new-mail-hook."
 
 ;;;###autoload
 (defun gnus-group-split-update (&optional catch-all)
-  "Computes nnmail-split-fancy from group params.
-It does this by calling \(gnus-group-split-fancy nil CROSSPOST DEFAULTGROUP)."
+  "Computes nnmail-split-fancy from group params and CATCH-ALL, by
+calling (gnus-group-split-fancy nil nil CATCH-ALL).
+
+If CATCH-ALL is nil, gnus-group-split-default-catch-all-group is used
+instead.  This variable is set by gnus-group-split-setup."
   (interactive)
   (setq nnmail-split-fancy
 	(gnus-group-split-fancy
@@ -67,13 +84,9 @@ It does this by calling \(gnus-group-split-fancy nil CROSSPOST DEFAULTGROUP)."
   "Uses information from group parameters in order to split mail.
 See gnus-group-split-fancy for more information.
 
-If no group is defined as catch-all, the value of
-gnus-group-split-default-catch-all-group is used.
-
 gnus-group-split is a valid value for nnmail-split-methods."
   (let (nnmail-split-fancy)
-    (gnus-group-split-update
-     gnus-group-split-default-catch-all-group)
+    (gnus-group-split-update)
     (nnmail-split-fancy)))
 
 ;;;###autoload
@@ -92,11 +105,6 @@ if NO-CROSSPOST is ommitted or nil, a & split will be returned,
 otherwise, a | split, that does not allow crossposting, will be
 returned.
 
-if CATCH-ALL is not nil, and there is no selected group whose
-SPLIT-REGEXP matches the empty string, nor is there a selected group
-whose SPLIT-SPEC is 'catch-all, this group name will be appended to
-the returned SPLIT list, as the last element in a '| SPLIT.
-
 For each selected group, a SPLIT is composed like this: if SPLIT-SPEC
 is specified, this split is returned as-is (unless it is nil: in this
 case, the group is ignored).  Otherwise, if TO-ADDRESS, TO-LIST and/or
@@ -105,6 +113,13 @@ constructed (extra-aliases may be a list).  Additionally, if
 SPLIT-REGEXP is specified, the regexp will be extended so that it
 matches this regexp too, and if SPLIT-EXCLUDE is specified, RESTRICT
 clauses will be generated.
+
+If CATCH-ALL is nil, no catch-all handling is performed, regardless of
+catch-all marks in group parameters.  Otherwise, if there is no
+selected group whose SPLIT-REGEXP matches the empty string, nor is
+there a selected group whose SPLIT-SPEC is 'catch-all, this fancy
+split (say, a group name) will be appended to the returned SPLIT list,
+as the last element of a '| SPLIT.
 
 For example, given the following group parameters:
 

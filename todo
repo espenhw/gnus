@@ -44,6 +44,10 @@
   should go for both Gnus' own folders and the folders Gnus reads from
   (e.g. /var/spool/mail/${USER}). All backends this makes sense for.
 
+  [John Wiegley's article <200011030445.VAA08277@localhost.dynodns.net>,
+   posted on gnu.emacs.gnus does this.
+   Also, gnus-article-encrypt `K E' encrypts the article body.]
+
 * The stuff on "Newest Features" in the manual should be implemented
   and the node updated (it maybe is?).
 

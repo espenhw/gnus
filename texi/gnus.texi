@@ -11854,9 +11854,13 @@ by defining a single @code{&} fancy split containing one split for each
 group.  If a message doesn't match any split, it will be stored in the
 group named in @code{gnus-group-split-default-catch-all-group}, unless
 some group has @var{split-spec} set to @code{catch-all}, in which case
-that group is used as the catch-all group.  Note that, in this case,
-there's no cross-posting, as a @code{|} fancy split encloses the
-@code{&} split and the catch-all group.
+that group is used as the catch-all group.  Even though this variable is
+often used just to name a group, it may also be set to an arbitrarily
+complex fancy split (after all, a group name is a fancy split), and this
+may be useful to split mail that doesn't go to any mailing list to
+personal mail folders.  Note that this fancy split is added as the last
+element of a @code{|} split list that also contains a @code{&} split
+with the rules extracted from group parameters.
 
 It's time for an example.  Assume the following group parameters have
 been defined:
@@ -11897,9 +11901,9 @@ splits like this:
 @var{groups} may be a regular expression or a list of group names whose
 parameters will be scanned to generate the output split.
 @var{no-crosspost} can be used to disable cross-posting; in this case, a
-single @code{|} split will be output.  @var{catch-all} may be the name
-of a group to be used as the default catch-all group.  If
-@var{catch-all} is @code{nil}, or if @var{split-regexp} matches the
+single @code{|} split will be output.  @var{catch-all} is the fallback
+fancy split, used like @var{gnus-group-split-default-catch-all-group}.
+If @var{catch-all} is @code{nil}, or if @var{split-regexp} matches the
 empty string in any selected group, no catch-all split will be issued.
 Otherwise, if some group has @var{split-spec} set to @code{catch-all},
 this group will override the value of the @var{catch-all} argument.
@@ -11908,14 +11912,14 @@ this group will override the value of the @var{catch-all} argument.
 Unfortunately, scanning all groups and their parameters can be quite
 slow, especially considering that it has to be done for every message.
 But don't despair!  The function @code{gnus-group-split-setup} can be
-used to select @code{gnus-group-split} in a much more efficient way.  It
+used to enable @code{gnus-group-split} in a much more efficient way.  It
 sets @code{nnmail-split-methods} to @code{nnmail-split-fancy} and sets
 @code{nnmail-split-fancy} to the split produced by
 @code{gnus-group-split-fancy}.  Thus, the group parameters are only
 scanned once, no matter how many messages are split.
 
 @findex gnus-group-split-update
-However, if you change group parameters, you have to update
+However, if you change group parameters, you'd have to update
 @code{nnmail-split-fancy} manually.  You can do it by running
 @code{gnus-group-split-update}.  If you'd rather have it updated
 automatically, just tell @code{gnus-group-split-setup} to do it for
@@ -11928,7 +11932,7 @@ you.  For example, add to your @file{.gnus}:
 If @var{auto-update} is non-@code{nil}, @code{gnus-group-split-update}
 will be added to @code{nnmail-pre-get-new-mail-hook}, so you won't ever
 have to worry about updating @code{nnmail-split-fancy} again.  If you
-don't omit @var{catch-all} (it's optional),
+don't omit @var{catch-all} (it's optional; same as nil),
 @code{gnus-group-split-default-catch-all-group} will be set to its
 value.
 
