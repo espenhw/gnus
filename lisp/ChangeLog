@@ -1,3 +1,16 @@
+2002-03-04  Simon Josefsson  <jas@extundo.com>
+
+	* smime.el (smime-sign-region): Rename argument keyfiles to
+	keyfile. You only sign something with one key.
+	(smime-sign-buffer): Better completing-read prompt.
+	(smime-decrypt-buffer): Ditto.
+
+	* smime.el (smime-make-temp-file): Make it work under XEmacs.
+
+	* mm-view.el (mm-view-pkcs7-decrypt): Better prompt for
+	completing-read.
+	(mm-view-pkcs7-decrypt): CRLF->LF.
+
 2002-03-04  Paul Jarc  <prj@po.cwru.edu>
 
 	* message.el (message-hierarchical-addresses): New variable.

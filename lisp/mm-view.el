@@ -601,10 +601,15 @@ will not be substituted.")
    (if (= (length smime-keys) 1)
        (cadar smime-keys)
      (smime-get-key-by-email
-      (completing-read "Decrypt this part with which key? "
-		       smime-keys nil nil
-		       (and (listp (car-safe smime-keys))
-			    (caar smime-keys)))))))
+      (completing-read
+       (concat "Decipher using which key? "
+	       (if smime-keys (concat "(default " (caar smime-keys) ") ")
+		 ""))
+       smime-keys nil nil nil nil (car-safe (car-safe smime-keys))))))
+  (goto-char (point-min))
+  (while (search-forward "\r\n" nil t)
+    (replace-match "\n"))
+  (goto-char (point-min)))
 
 (provide 'mm-view)
 
