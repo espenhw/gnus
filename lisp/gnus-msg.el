@@ -1639,6 +1639,8 @@ this is a reply."
 			      group (gnus-status-message method))
 		(sit-for 2))
 	      (when (and group-art
+			 ;; FIXME: Should gcc-mark-as-read work when
+			 ;; Gnus is not running?
 			 (gnus-alive-p)
 			 (or gnus-gcc-mark-as-read
 			     gnus-inews-mark-gcc-as-read))
