@@ -22631,10 +22631,10 @@ Take these split rules (with @code{spam-use-regex-headers} and
 
 @example
  nnimap-split-fancy '(|
-		      (any "ding" "ding")
-		      (: spam-split)
-		      ;; default mailbox
-		      "mail")
+                      (any "ding" "ding")
+                      (: spam-split)
+                      ;; default mailbox
+                      "mail")
 @end example
 
 Now, the problem is that you want all ding messages to make it to the
@@ -22651,12 +22651,12 @@ regex-headers check) will be after the ding rule:
 @example
  nnimap-split-fancy '(|
 ;;; all spam detected by spam-use-regex-headers goes to "regex-spam"
-		      (: spam-split "regex-spam" 'spam-use-regex-headers)
-		      (any "ding" "ding")
+                      (: spam-split "regex-spam" 'spam-use-regex-headers)
+                      (any "ding" "ding")
 ;;; all other spam detected by spam-split goes to spam-split-group
-		      (: spam-split)
-		      ;; default mailbox
-		      "mail")
+                      (: spam-split)
+                      ;; default mailbox
+                      "mail")
 @end example
 
 Basically, this lets you invoke specific @code{spam-split} checks
@@ -23240,7 +23240,7 @@ code
 
 Add
 @example
-    (spam-use-blackbox	 . spam-check-blackbox)
+    (spam-use-blackbox   . spam-check-blackbox)
 @end example
 to @code{spam-list-of-checks}.
 
@@ -23288,7 +23288,7 @@ functionality
    (lambda (article)
      (let ((from (spam-fetch-field-from-fast article)))
        (when (stringp from)
-	   (blackbox-do-something-with-this-spammer from))))
+           (blackbox-do-something-with-this-spammer from))))
    ;; @r{the ham function}
    nil))
 
@@ -23300,7 +23300,7 @@ functionality
    (lambda (article)
      (let ((from (spam-fetch-field-from-fast article)))
        (when (stringp from)
-	   (blackbox-do-something-with-this-ham-sender from))))))
+           (blackbox-do-something-with-this-ham-sender from))))))
 @end lisp
 
 Write the @code{blackbox-do-something-with-this-ham-sender} and
@@ -23451,7 +23451,7 @@ spam or it should go into @samp{mail.misc}.  If it is spam, then
 @lisp
 (setq nnmail-split-fancy
       `(| (: spam-stat-split-fancy)
-	  "mail.misc"))
+          "mail.misc"))
 @end lisp
 
 @defvar spam-stat-split-fancy-spam-group
@@ -23465,8 +23465,8 @@ expression are considered potential spam.
 @lisp
 (setq nnmail-split-fancy
       `(| ("Subject" "\\bspam-stat\\b" "mail.emacs")
-	  (: spam-stat-split-fancy)
-	  "mail.misc"))
+          (: spam-stat-split-fancy)
+          "mail.misc"))
 @end lisp
 
 If you want to filter for spam first, then you must be careful when
@@ -23479,7 +23479,7 @@ mails, when creating the dictionary!
 (setq nnmail-split-fancy
       `(| (: spam-stat-split-fancy)
           ("Subject" "\\bspam-stat\\b" "mail.emacs")
-	  "mail.misc"))
+          "mail.misc"))
 @end lisp
 
 You can combine this with traditional filtering.  Here, we move all
@@ -23492,9 +23492,9 @@ dictionary!
 @lisp
 (setq nnmail-split-fancy
       `(| ("Content-Type" "text/html" "mail.spam.filtered")
-	  (: spam-stat-split-fancy)
+          (: spam-stat-split-fancy)
           ("Subject" "\\bspam-stat\\b" "mail.emacs")
-	  "mail.misc"))
+          "mail.misc"))
 @end lisp
 
 
@@ -25356,10 +25356,10 @@ parameters, a'la:
 @lisp
 (setq gnus-parameters
       '(("mail\\..*"
-	 (gnus-show-threads nil)
-	 (gnus-use-scoring nil))
-	("^nnimap:\\(foo.bar\\)$"
-	 (to-group . "\\1"))))
+         (gnus-show-threads nil)
+         (gnus-use-scoring nil))
+        ("^nnimap:\\(foo.bar\\)$"
+         (to-group . "\\1"))))
 @end lisp
 
 @item
@@ -25550,7 +25550,7 @@ Add a new format of match like
 The old format like the lines below is obsolete, but still accepted.
 @lisp
 (header "to" "larsi.*org"
-	(Organization "Somewhere, Inc."))
+        (Organization "Somewhere, Inc."))
 @end lisp
 
 @item
