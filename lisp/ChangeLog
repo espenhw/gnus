@@ -1,3 +1,9 @@
+2003-12-10  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-parse.el (pgg-decode-packets): Rewrite to handle corrupt
+	input.
+	(pgg-decode-armor-region): Don't parse packet if decoding fail.
+
 2003-12-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-bogofilter): run in the correct buffer.

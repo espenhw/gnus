@@ -47,21 +47,21 @@
   '((1 . RSA) (2 . RSA-E) (3 . RSA-S) (16 . ELG-E) (17 . DSA) (20 . ELG))
   "Alist of the assigned number to the public key algorithm."
   :group 'pgg-parse
-  :type '(repeat 
+  :type '(repeat
 	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-parse-symmetric-key-algorithm-alist
   '((1 . IDEA) (2 . 3DES) (4 . CAST5) (5 . SAFER-SK128))
   "Alist of the assigned number to the simmetric key algorithm."
   :group 'pgg-parse
-  :type '(repeat 
+  :type '(repeat
 	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-parse-hash-algorithm-alist
   '((1 . MD5) (2 . SHA1) (3 . RIPEMD160) (5 . MD2))
   "Alist of the assigned number to the cryptographic hash algorithm."
   :group 'pgg-parse
-  :type '(repeat 
+  :type '(repeat
 	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-parse-compression-algorithm-alist
@@ -70,7 +70,7 @@
     (2 . ZLIB))
   "Alist of the assigned number to the compression algorithm."
   :group 'pgg-parse
-  :type '(repeat 
+  :type '(repeat
 	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-parse-signature-type-alist
@@ -89,7 +89,7 @@
     (64 . "Timestamp signature."))
   "Alist of the assigned number to the signature type."
   :group 'pgg-parse
-  :type '(repeat 
+  :type '(repeat
 	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-ignore-packet-checksum t; XXX
@@ -276,7 +276,7 @@
     (list (pgg-byte-after (+ (cdr length-type) (point)))
 	  (1- (car length-type))
 	  (1+ (cdr length-type)))))
-	
+
 (defun pgg-parse-signature-subpacket (ptag)
   (case (car ptag)
     (2 ;signature creation time
@@ -293,7 +293,7 @@
      (cons 'trust-level (pgg-read-byte)))
     (6 ;regular expression
      (cons 'regular-expression
- 	   (pgg-read-body-string ptag)))
+	   (pgg-read-body-string ptag)))
     (7 ;revocable
      (cons 'revocability (pgg-read-byte)))
     (9 ;key expiration time
@@ -303,13 +303,13 @@
     ;; 10 = placeholder for backward compatibility
     (11 ;preferred symmetric algorithms
      (cons 'preferred-symmetric-key-algorithm
- 	   (cdr (assq (pgg-read-byte)
- 		      pgg-parse-symmetric-key-algorithm-alist))))
+	   (cdr (assq (pgg-read-byte)
+		      pgg-parse-symmetric-key-algorithm-alist))))
     (12 ;revocation key
      )
     (16 ;issuer key ID
      (cons 'key-identifier
- 	   (pgg-format-key-identifier (pgg-read-body-string ptag))))
+	   (pgg-format-key-identifier (pgg-read-body-string ptag))))
     (20 ;notation data
      (pgg-skip-bytes 4)
      (cons 'notation
@@ -323,12 +323,12 @@
 			    (nth 1 value-bytes)))))))
     (21 ;preferred hash algorithms
      (cons 'preferred-hash-algorithm
- 	   (cdr (assq (pgg-read-byte)
- 		      pgg-parse-hash-algorithm-alist))))
+	   (cdr (assq (pgg-read-byte)
+		      pgg-parse-hash-algorithm-alist))))
     (22 ;preferred compression algorithms
      (cons 'preferred-compression-algorithm
- 	   (cdr (assq (pgg-read-byte)
- 		      pgg-parse-compression-algorithm-alist))))
+	   (cdr (assq (pgg-read-byte)
+		      pgg-parse-compression-algorithm-alist))))
     (23 ;key server preferences
      (cons 'key-server-preferences
 	   (pgg-read-body ptag)))
@@ -381,7 +381,7 @@
       (when (>= 10000 (setq n (pgg-read-bytes 2)
 			    n (logior (lsh (car n) 8)
 				      (nth 1 n))))
- 	(save-restriction
+	(save-restriction
 	  (narrow-to-region (point)(+ n (point)))
 	  (nconc result
 		 (mapcar (function cdr) ;remove packet types
@@ -462,22 +462,25 @@
 	    (cdr (assq (cdr field)
 		       pgg-parse-public-key-algorithm-alist)))
     result))
-     
+
 (defun pgg-decode-packets ()
-  (let* ((marker
-	  (set-marker (make-marker)
-		      (and (re-search-forward "^=")
-			   (match-beginning 0))))
-	 (checksum (buffer-substring (point) (+ 4 (point)))))
-    (delete-region marker (point-max))
-    (base64-decode-region (point-min) marker)
-    (when (fboundp 'pgg-parse-crc24-string)
-      (or pgg-ignore-packet-checksum
-	  (string-equal
-	   (base64-encode-string (pgg-parse-crc24-string
-				  (buffer-string)))
-	   checksum)
-	  (error "PGP packet checksum does not match")))))
+  (if (re-search-forward "^=\\([A-Za-z0-9+/]\\{4\\}\\)$" nil t)
+      (let ((p (match-beginning 0))
+	    (checksum (match-string 1)))
+	(delete-region p (point-max))
+	(if (ignore-errors (base64-decode-region (point-min) p))
+	    (or (not (fboundp 'pgg-parse-crc24-string))
+		pgg-ignore-packet-checksum
+		(string-equal (base64-encode-string (pgg-parse-crc24-string
+						     (buffer-string)))
+			      checksum)
+		(progn
+		  (message "PGP packet checksum does not match")
+		  nil))
+	  (message "PGP packet contain invalid base64")
+	  nil))
+    (message "PGP packet checksum not found")
+    nil))
 
 (defun pgg-decode-armor-region (start end)
   (save-restriction
@@ -487,9 +490,9 @@
     (delete-region (point-min)
 		   (and (search-forward "\n\n")
 			(match-end 0)))
-    (pgg-decode-packets)
-    (goto-char (point-min))
-    (pgg-parse-packets)))
+    (when (pgg-decode-packets)
+      (goto-char (point-min))
+      (pgg-parse-packets))))
 
 (defun pgg-parse-armor (string)
   (with-temp-buffer
