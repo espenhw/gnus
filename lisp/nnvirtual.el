@@ -289,7 +289,7 @@ virtual group.")
 
 (deffoo nnvirtual-catchup-group (group &optional server all)
   (nnvirtual-possibly-change-server server)
-  (let ((gnus-group-marked nnvirtual-component-groups)
+  (let ((gnus-group-marked (copy-sequence nnvirtual-component-groups))
 	(gnus-expert-user t))
     ;; Make sure all groups are activated.
     (mapcar

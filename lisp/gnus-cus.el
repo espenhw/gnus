@@ -31,7 +31,7 @@
 (require 'browse-url)
 (eval-when-compile (require 'cl))
 
-;; The following is just helper functions and data, not ment to be set
+;; The following is just helper functions and data, not meant to be set
 ;; by the user.
 (defun gnus-make-face (color)
   ;; Create entry for face with COLOR.
@@ -43,27 +43,26 @@
     "turquoise"))
 
 (defvar gnus-face-dark-name-list
-  '("RoyalBlue" "firebrick"
-    "dark green" "OrangeRed" "dark khaki" "dark violet"
-    "SteelBlue4"))
+  '("RoyalBlue" "firebrick" "dark green" "OrangeRed" 
+    "dark khaki" "dark violet" "SteelBlue4"))
 ; CornflowerBlue SeaGreen OrangeRed SteelBlue4 DeepPink3
 ; DarkOlviveGreen4 
 
 (custom-declare '()
-  '((tag . "GNUS")
+  '((tag . "Gnus")
     (doc . "\
 The coffee-brewing, all singing, all dancing, kitchen sink newsreader.")
     (type . group)
     (data
      ((tag . "Visual")
       (doc . "\
-GNUS can be made colorful and fun or grey and dull as you wish.")
+Gnus can be made colorful and fun or grey and dull as you wish.")
       (type . group)
       (data
        ((tag . "Visual")
 	(doc . "Enable visual features.
 If `visual' is disabled, there will be no menus and few faces.  Most of
-the visual customization options below will be ignored.  GNUS will use
+the visual customization options below will be ignored.  Gnus will use
 less space and be faster as a result.")
 	(default . 
 	  (summary-highlight group-highlight
@@ -563,6 +562,77 @@ mark:    The article's mark.")
 		      ((type . face)
 		       (tag . "Face"))
 		      "\n")))))
+
+       ((tag . "Group Line Highlighting")
+	(doc . "\
+Controls the highlighting of group buffer lines. 
+
+Below is a list of `Form'/`Face' pairs.  When deciding how a a
+particular group line should be displayed, each form is
+evaluated. The content of the face field after the first true form is
+used.  You can change how those group lines are displayed by
+editing the face field.  
+
+It is also possible to change and add form fields, but currently that
+requires an understanding of Lisp expressions.  Hopefully this will
+change in a future release.  For now, you can use the following
+variables in the Lisp expression:
+
+group: The name of the group.
+unread: The number of unread articles in the group.
+method: The select method used.
+mailp: Whether it's a mail group or not.
+level: The level of the group.
+score: The score of the group.
+ticked: The number of ticked articles.")
+	(name . gnus-group-highlight)
+	(type . list)
+	(calculate 
+	 . (cond 
+	    ((not (eq gnus-display-type 'color))
+	     '((mailp . bold)
+	       ((= unread 0) . italic)))
+	    ((eq gnus-background-mode 'dark)
+	     `(((> unread 200) .
+		,(custom-face-lookup "Red" nil nil t nil nil))
+	       ((and (< level 3) (zerop unread)) . 
+		,(custom-face-lookup "SeaGreen" nil nil t nil nil))
+	       ((< level 3) .
+		,(custom-face-lookup "SpringGreen" nil nil t nil nil))
+	       ((zerop unread) . 
+		,(custom-face-lookup "SteelBlue" nil nil t nil nil))
+	       (t . ,(custom-face-lookup "SkyBlue" nil nil t nil nil))))
+	    (t
+	     `(((and (not mailp) (<= level 3)) .
+		,(custom-face-lookup "ForestGreen" nil nil t nil nil))
+	       ((and (not mailp) (eq level 4)) .
+		,(custom-face-lookup "DarkGreen" nil nil t nil nil))
+	       ((and (not mailp) (eq level 5)) .
+		,(custom-face-lookup "Red" nil nil t nil nil))
+	       ((and mailp (eq level 1)) .
+		,(custom-face-lookup "DeepPink3" nil nil t nil nil))
+	       ((and mailp (eq level 2)) .
+		,(custom-face-lookup "HotPink3" nil nil t nil nil))
+	       ((and mailp (eq level 3)) .
+		,(custom-face-lookup "dark magenta" nil nil t nil nil))
+	       ((and mailp (eq level 4)) .
+		,(custom-face-lookup "DeepPink4" nil nil t nil nil))
+	       ((and mailp (> level 4)) .
+		,(custom-face-lookup "DarkOrchid4" nil nil t nil nil))
+	       ))))
+	(data
+	 ((type . repeat)
+	  (header . nil)
+	  (data (type . pair)
+		(compact . t)
+		(data ((type . sexp)
+		       (width . 60)
+		       (tag . "Form"))
+		      "\n            "
+		      ((type . face)
+		       (tag . "Face"))
+		      "\n")))))
+
        ;; Do not define `gnus-button-alist' before we have
        ;; some `complexity' attribute so we can hide it from
        ;; beginners. 
@@ -575,16 +645,6 @@ mark:    The article's mark.")
 	((eq alist 'dark)
 	 (setq alist (mapcar 'gnus-make-face gnus-face-dark-name-list))))
   (funcall (custom-super custom 'import) custom alist))
-
-;(defun gnus-custom-import-swap-alist (custom alist)
-;  ;; Swap key and value in CUSTOM ALIST.
-;  (let ((swap (mapcar (lambda (e) (cons (cdr e) (car e))) alist)))
-;    (funcall (custom-super custom 'import) custom swap)))
-
-;(defun gnus-custom-export-swap-alist (custom alist)
-;  ;; Swap key and value in CUSTOM ALIST.
-;  (let ((swap (mapcar (lambda (e) (cons (cdr e) (car e))) alist)))
-;    (funcall (custom-super custom 'export) custom swap)))
 
 (provide 'gnus-cus)
 

@@ -881,7 +881,9 @@ If COPYP, copy the groups instead."
   "Yank the last topic."
   (interactive "p")
   (if gnus-topic-killed-topics
-      (let ((previous (gnus-group-parent-topic))
+      (let ((previous 
+	     (or (gnus-group-topic-name)
+		 (gnus-topic-next-topic (gnus-group-parent-topic))))
 	    (item (cdr (pop gnus-topic-killed-topics))))
 	(gnus-topic-create-topic
 	 (caar item) (gnus-topic-parent-topic previous) previous

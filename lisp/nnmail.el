@@ -27,7 +27,6 @@
 
 (require 'nnheader)
 (require 'timezone)
-(require 'sendmail)
 (require 'message)
 (eval-when-compile (require 'cl))
 

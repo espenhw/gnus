@@ -261,24 +261,8 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 
 ;;; Group mode highlighting.
 
-(defvar gnus-group-highlight
-  (cond 
-   ((not (eq gnus-display-type 'color))
-    '((mailp . bold)
-      ((= unread 0) . italic)))
-   ((eq gnus-background-mode 'dark)
-    `(((> unread 200) . ,(custom-face-lookup "Red" nil nil t nil nil))
-      ((and (< level 3) (zerop unread)) . 
-       ,(custom-face-lookup "SeaGreen" nil nil t nil nil))
-      ((< level 3) . ,(custom-face-lookup "SpringGreen" nil nil t nil nil))
-      ((zerop unread) . ,(custom-face-lookup "SteelBlue" nil nil t nil nil))
-      (t . ,(custom-face-lookup "SkyBlue" nil nil t nil nil))
-      ))
-   (t
-    `(((not mailp) .
-       ,(custom-face-lookup "ForestGreen" nil nil t nil nil))
-      ((zerop unread) .
-       ,(custom-face-lookup "Blue" nil nil t nil nil)))))
+;see gnus-cus.el
+(defvar gnus-group-highlight nil
   "Group lines are highlighted with the FACE for the first FORM which
 evaluate to a non-nil value.  
 

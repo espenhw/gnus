@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus.info
-@settitle September Gnus Manual
+@settitle Gnus 5.2 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title September Gnus Manual
+@title Gnus Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -11130,8 +11130,8 @@ renamed it back again to ``Gnus''.  But in mixed case.  ``Gnus'' vs.
 The first ``proper'' release of Gnus 5 was done in November 1995 when it
 was included in the Emacs 19.30 distribution.
 
-Incidentally, the next Gnus generation will be called ``September
-Gnus'', and won't be released until April 1996.  Confused?  You will be.
+In May 1996 the next Gnus generation (aka.  ``September Gnus'') was
+released under the name ``Gnus 5.2''.  
 
 @menu
 * Why?::                What's the point of Gnus?

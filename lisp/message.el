@@ -39,8 +39,12 @@
     (require 'mail-abbrevs)
   (require 'mailabbrev))
 
+;;;###autoload
 (defvar message-directory "~/Mail/"
   "*Directory from which all other mail file variables are derived.")
+
+(defvar message-max-buffers 10
+  "*How many buffers to keep before starting to kill them off.")
 
 ;;;###autoload
 (defvar message-fcc-handler-function 'rmail-output
@@ -134,7 +138,7 @@ any confusion.")
 nil means let mailer mail back a message to report errors.")
 
 ;;;###autoload
-(defvar message-generate-new-buffers nil
+(defvar message-generate-new-buffers t
   "*Non-nil means that a new message buffer will be created whenever `mail-setup' is called.")
 
 ;;;###autoload
@@ -396,6 +400,8 @@ The cdr of ech entry is a function for applying the face to a region.")
   "Hook run after sending messages.")
 
 ;;; Internal variables.
+
+(defvar message-buffer-list nil)
 
 ;;; Regexp matching the delimiter of messages in UNIX mail format
 ;;; (UNIX From lines), minus the initial ^.  
@@ -1224,6 +1230,8 @@ the user from the mailer."
       (unless buffer-file-name
 	(set-buffer-modified-p nil)
 	(delete-auto-save-file-if-necessary t))
+      ;; Delete other mail buffers and stuff.
+      (message-do-send-housekeeping)
       (message-do-actions message-send-actions)
       ;; Return success.
       t)))
@@ -1879,7 +1887,10 @@ the user from the mailer."
 (defun message-make-from ()
   "Make a From header."
   (let* ((login (message-make-address))
-	 (fullname (user-full-name)))
+	 (fullname 
+	  (or (and (boundp 'user-full-name)
+		   user-full-name)
+	      (user-full-name))))
     (when (string= fullname "&")
       (setq fullname (user-login-name)))
     (save-excursion
@@ -2154,22 +2165,55 @@ Headers already prepared in the buffer are not modified."
       (forward-line 2)))
    (sit-for 0)))
 
+(defun message-buffer-name (type &optional to group)
+  "Return a new (unique) buffer name based on TYPE and TO."
+  (if message-generate-new-buffers
+      (generate-new-buffer-name
+       (concat "*" type
+	       (if (or to group)
+		   (concat " to "
+			   (or (car (mail-extract-address-components to))
+			       to)
+			   (if group (concat " on " group) ""))
+		 "")
+	       "*"))
+    (format "*%s message*" type)))
+
 (defun message-pop-to-buffer (name)
   "Pop to buffer NAME, and warn if it already exists and is modified."
-  (if message-generate-new-buffers
-      (set-buffer (pop-to-buffer (generate-new-buffer name)))
-    (let ((buffer (get-buffer name)))
-      (if (and buffer
-	       (buffer-name buffer))
-	  (progn
-	    (set-buffer (pop-to-buffer buffer))
-	    (when (and (buffer-modified-p)
-		       (not (y-or-n-p
-			     "Message already being composed; erase? ")))
-	      (error "Message being composed")))
-	(set-buffer (pop-to-buffer name)))))
+  (let ((buffer (get-buffer name)))
+    (if (and buffer
+	     (buffer-name buffer))
+	(progn
+	  (set-buffer (pop-to-buffer buffer))
+	  (when (and (buffer-modified-p)
+		     (not (y-or-n-p
+			   "Message already being composed; erase? ")))
+	    (error "Message being composed")))
+      (set-buffer (pop-to-buffer name))))
   (erase-buffer)
   (message-mode))
+
+(defun message-do-send-housekeeping ()
+  "Kill old message buffers."
+  ;; We might have sent this buffer already.  Delete it from the
+  ;; list of buffers.
+  (setq message-buffer-list (delq (current-buffer) message-buffer-list))
+  (when (and message-max-buffers
+	     (>= (length message-buffer-list) message-max-buffers))
+    ;; Kill the oldest buffer -- unless it has been changed.
+    (let ((buffer (pop message-buffer-list)))
+      (when (and (buffer-name buffer)
+		 (not (buffer-modified-p buffer)))
+	(kill-buffer buffer))))
+  ;; Rename the buffer.
+  (when (string-match "\\`\\*" (buffer-name))
+    (rename-buffer 
+     (concat "*sent " (substring (buffer-name) (match-end 0))) t))
+  ;; Push the current buffer onto the list.
+  (when message-max-buffers
+    (setq message-buffer-list 
+	  (nconc message-buffer-list (list (current-buffer))))))
 
 (defun message-setup (headers &optional replybuffer actions)
   (when actions
@@ -2189,7 +2233,12 @@ Headers already prepared in the buffer are not modified."
   (forward-line -1)
   (when message-default-headers
     (insert message-default-headers))
-  (insert mail-header-separator "\n")
+  (put-text-property
+   (point)
+   (progn
+     (insert mail-header-separator "\n")
+     (point))
+   'read-only nil)
   (forward-line -1)
   (when (message-news-p)
     (when message-default-news-headers
@@ -2245,14 +2294,14 @@ Headers already prepared in the buffer are not modified."
 (defun message-mail (&optional to subject)
   "Start editing a mail message to be sent."
   (interactive)
-  (message-pop-to-buffer "*mail message*")
+  (message-pop-to-buffer (message-buffer-name "mail" to))
   (message-setup `((To . ,(or to "")) (Subject . ,(or subject "")))))
 
 ;;;###autoload
 (defun message-news (&optional newsgroups subject)
   "Start editing a news article to be sent."
   (interactive)
-  (message-pop-to-buffer "*news message*")
+  (message-pop-to-buffer (message-buffer-name "news" nil newsgroups))
   (message-setup `((Newsgroups . ,(or newsgroups "")) 
 		   (Subject . ,(or subject "")))))
 
@@ -2340,7 +2389,7 @@ Headers already prepared in the buffer are not modified."
 		    follow-to)))))
       (widen))
 
-    (message-pop-to-buffer "*mail message*")
+    (message-pop-to-buffer (message-buffer-name "reply" from))
 
     (setq message-reply-headers
 	  (vector 0 subject from date message-id references 0 0 ""))
@@ -2399,7 +2448,7 @@ Headers already prepared in the buffer are not modified."
       (setq subject (concat "Re: " subject))
       (widen))
 
-    (message-pop-to-buffer "*news message*")
+    (message-pop-to-buffer (message-buffer-name "followup" from newsgroups))
 
     (message-setup
      `((Subject . ,subject)
@@ -2511,7 +2560,7 @@ header line with the old Message-ID."
 	     (downcase (message-make-address)))
       (error "This article is not yours"))
     ;; Get a normal message buffer.
-    (message-pop-to-buffer "*supersede message*")
+    (message-pop-to-buffer (message-buffer-name "supersede"))
     (insert-buffer-substring cur)
     (message-narrow-to-head)
     ;; Remove unwanted headers.
@@ -2637,7 +2686,7 @@ you."
   (interactive)
   (let ((cur (current-buffer))
 	boundary)
-    (message-pop-to-buffer "*mail message*")
+    (message-pop-to-buffer (message-buffer-name "bounce"))
     (insert-buffer-substring cur)
     (undo-boundary)
     (message-narrow-to-head)
@@ -2683,7 +2732,7 @@ you."
 	(special-display-regexps nil)
 	(same-window-buffer-names nil)
 	(same-window-regexps nil))
-    (message-pop-to-buffer "*mail message*"))
+    (message-pop-to-buffer (message-buffer-name "mail" to)))
   (message-setup `((To . ,(or to "")) (Subject . ,(or subject "")))))
 
 ;;;###autoload
@@ -2695,7 +2744,7 @@ you."
 	(special-display-regexps nil)
 	(same-window-buffer-names nil)
 	(same-window-regexps nil))
-    (message-pop-to-buffer "*mail message*"))
+    (message-pop-to-buffer (message-buffer-name "mail" to)))
   (message-setup `((To . ,(or to "")) (Subject . ,(or subject "")))))
 
 ;;;###autoload
@@ -2707,7 +2756,7 @@ you."
 	(special-display-regexps nil)
 	(same-window-buffer-names nil)
 	(same-window-regexps nil))
-    (message-pop-to-buffer "*news message*"))
+    (message-pop-to-buffer (message-buffer-name "news" nil newsgroups)))
   (message-setup `((Newsgroups . ,(or newsgroups "")) 
 		   (Subject . ,(or subject "")))))
 
@@ -2720,7 +2769,7 @@ you."
 	(special-display-regexps nil)
 	(same-window-buffer-names nil)
 	(same-window-regexps nil))
-    (message-pop-to-buffer "*news message*"))
+    (message-pop-to-buffer (message-buffer-name "news" nil newsgroups)))
   (message-setup `((Newsgroups . ,(or newsgroups "")) 
 		   (Subject . ,(or subject "")))))
 

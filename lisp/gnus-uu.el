@@ -1124,8 +1124,8 @@ The headers will be included in the sequence they are matched.")
 ;; 
 ;; This function returns a list of files decoded if the grabbing and
 ;; the process-function has been successful and nil otherwise.
-(defun gnus-uu-grab-articles 
-  (articles process-function &optional sloppy limit no-errors)
+(defun gnus-uu-grab-articles (articles process-function 
+				       &optional sloppy limit no-errors)
   (let ((state 'first) 
 	has-been-begin article result-file result-files process-state
 	gnus-summary-display-article-function
@@ -1640,9 +1640,6 @@ The headers will be included in the sequence they are matched.")
 ;;;
 ;;; uuencoded posting
 ;;;
-
-(require 'sendmail)
-(require 'rnews)
 
 ;; Any function that is to be used as and encoding method will take two
 ;; parameters: PATH-NAME and FILE-NAME. (E.g. "/home/gaga/spiral.jpg"

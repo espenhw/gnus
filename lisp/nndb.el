@@ -37,8 +37,6 @@
 
 ;;; Code:
 
-(require 'rnews)
-(require 'sendmail)
 (require 'nnheader)
 (require 'nntp)
 (eval-when-compile (require 'cl))

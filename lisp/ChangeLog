@@ -1,4 +1,78 @@
+Tue Jun  4 11:11:13 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-summary-make-local-variables): Set local variables
+	correctly.
+
+Tue Jun  4 07:51:02 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus-cus.el (()): New "light' group highlighting.
+
+Tue Jun  4 07:26:10 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-subscribe-hierarchical-interactive): Don't accept
+	wrong characters.
+
+	* message.el (message-directory): Autoload.
+
+Mon Jun  3 07:30:18 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-make-local-variables): Separated into own
+	function. 
+	(gnus-summary-make-local-variables): Respect global values.
+
+	* nnheader.el (sendmail): Unrequired.
+	(backquote): Ditto.
+
+	* nntp.el (rnews): Unrequired.
+
+	* gnus-msg.el (gnus-group-post-news): `C-u a' posts to the group
+	under point, `C-u 1 a' prompts, `a' uses an empty group name.
+
+	* message.el (message-setup): Make separator read-only.
+
+	* gnus-cus.el (()): Define `gnus-group-highlight'.
+
+	* gnus-vis.el (gnus-group-highlight): Commented out.
+
+	* gnus-topic.el (gnus-topic-yank-group): Yank topics at the end of
+	the buffer correctly.
+
+	* gnus-score.el (gnus-score-adaptive): Make sure we use the
+	buffer-local adaptive score variable.
+
+	* gnus-msg.el (gnus-group-post-news): Prompt when given a prefix.
+
+	* nnvirtual.el (nnvirtual-catchup-group): Might have corrupted the
+	list of component groups.
+
+	* gnus-ems.el: Work under OS/2 again.
+
+	* gnus.el (gnus-remove-header): New function.
+	(gnus-read-header): Use it.
+	(gnus-summary-insert-subject): Didn't work when editing articles
+	in a non-threaded display.
+	(gnus-summary-update-article): Would create multiple root
+	threads when editing.
+
+	* message.el (message-do-send-housekeeping): Reverse check. 
+
+	* nnheader.el (backquote): Required.
+
+	* gnus.el (backquote): Required.
+
+	* message.el (message-make-from): Use the `user-full-name'
+	variable. 
+
+Sun Jun  2 16:50:49 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-number-of-buffers): New variable.
+	(message-generate-new-buffers): Changed default.
+	(message-do-send-housekeeping): New function.
+	(message-buffer-name): New function.
+
 Sun Jun  2 07:41:20 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.5 is released.
 
 	* gnus-topic.el (gnus-topic-remove-group): Only delete first
 	instance. 

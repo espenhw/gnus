@@ -27,7 +27,6 @@
 ;;; Code:
 
 (require 'gnus)
-(require 'sendmail)
 (require 'gnus-ems)
 (require 'message)
 (eval-when-compile (require 'cl))
@@ -164,14 +163,21 @@ the group.")
   (gnus-setup-message 'message
     (message-mail)))
 
-(defun gnus-group-post-news ()
+(defun gnus-group-post-news (&optional arg)
   "Start composing a news message.
-The newsgroup under the cursor is used as the group to post to."
-  (interactive)
+If ARG, post to the group under point.
+If ARG is 1, prompt for a group name."
+  (interactive "P")
   ;; Bind this variable here to make message mode hooks
   ;; work ok.
-  (let ((gnus-newsgroup-name (gnus-group-group-name)))
-    (gnus-post-news 'post (gnus-group-group-name))))
+  (let ((gnus-newsgroup-name
+	 (if arg
+	     (if (= 1 (prefix-numeric-value arg))
+		 (completing-read "Newsgroup: " gnus-active-hashtb nil
+				  (gnus-read-active-file-p))
+	       (gnus-group-group-name))
+	   "")))
+    (gnus-post-news 'post gnus-newsgroup-name)))
 
 (defun gnus-summary-post-news ()
   "Start composing a news message."

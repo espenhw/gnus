@@ -1,3 +1,9 @@
+Mon Jun  3 07:37:34 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (History): Change.
+
+	* message.texi (Wide Reply): Addition.
+
 Fri May 31 08:58:16 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Summary Mail and Post Commands): Removed.

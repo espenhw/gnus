@@ -177,6 +177,10 @@ but you can change the behavior to suit your needs by fiddling with the
 @code{message-wide-reply-to-function}.  It is used in the same way as
 @code{message-reply-to-function} (@pxref{Reply}). 
 
+@findex rmail-dont-reply-to-names
+Addresses that matches the @code{rmail-dont-reply-to-names} regular
+expression will be removed from the @code{Cc} header.
+
 
 @node Followup
 @section Followup
@@ -888,6 +892,33 @@ function is @code{rmail-output} which saves in Unix mailbox format.
 When sending combined messages, this string is inserted at the start of
 the mailed copy.  If this variable is @code{nil}, no such courtesy
 message will be added.
+
+@end table
+
+
+@node Message Buffers
+@section Message Buffers
+
+Message will generate new buffers with unique buffer names when you
+request a message buffer.  When you send the message, the buffer isn't
+normally killed off.  It's name is changed and a certain number of old
+message buffers are kept alive.
+
+@table @code
+@item message-generate-new-buffers
+@findex message-generate-new-buffers
+If non-@code{nil}, generate new buffers.  The default is @code{t}.
+
+@item message-max-buffers
+@findex message-max-buffers
+This variable says how many old message buffers to keep.  If there are
+more message buffers than this, the oldest buffer will be killed.  The
+default is 10.  If this variable is @code{nil}, no old message buffers
+will ever be killed.
+
+@item message-kill-buffer-on-exit
+@findex message-kill-buffer-on-exit
+If non-@code{nil}, kill the buffer immediately on exit.
 
 @end table
 

@@ -1807,10 +1807,12 @@ SCORE is the score to add."
 	  (setq elem (cdr elem)))
 	(setq malist (cdr malist)))
       ;; We change the score file to the adaptive score file.
-      (gnus-score-load-file 
-       (or gnus-newsgroup-adaptive-score-file
-	   (gnus-score-file-name 
-	    gnus-newsgroup-name gnus-adaptive-file-suffix)))
+      (save-excursion
+	(set-buffer gnus-summary-buffer)
+	(gnus-score-load-file 
+	 (or gnus-newsgroup-adaptive-score-file
+	     (gnus-score-file-name 
+	      gnus-newsgroup-name gnus-adaptive-file-suffix))))
       ;; The we score away.
       (while data
 	(setq elem (cdr (assq (gnus-data-mark (car data)) alist)))
