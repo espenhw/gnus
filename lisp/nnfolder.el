@@ -447,33 +447,34 @@ all.  This may very well take some time.")
       (goto-char (point-min))
       (when (looking-at "X-From-Line: ")
 	(replace-match "From "))
-      (and
-       (nnfolder-request-list)
-       (save-excursion
-	 (set-buffer buf)
-	 (goto-char (point-min))
-	 (if (search-forward "\n\n" nil t)
-	     (forward-line -1)
-	   (goto-char (point-max)))
-	 (while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
-	   (delete-region (point) (progn (forward-line 1) (point))))
-	 (when nnmail-cache-accepted-message-ids
-	   (nnmail-cache-insert (nnmail-fetch-field "message-id")))
-	 (setq result (if (stringp group)
-			  (list (cons group (nnfolder-active-number group)))
-			(setq art-group
-			      (nnmail-article-group 'nnfolder-active-number))))
-	 (if (and (null result)
-		  (yes-or-no-p "Moved to `junk' group; delete article? "))
-	     (setq result 'junk)
-	   (setq result
-		 (car (nnfolder-save-mail result)))))
-       (when last
-	 (save-excursion
-	   (nnfolder-possibly-change-folder (or (caar art-group) group))
-	   (nnfolder-save-buffer)
-	   (when nnmail-cache-accepted-message-ids
-	     (nnmail-cache-close)))))
+      (let ((nnmail-file-coding-system nnfolder-active-file-coding-system))
+	(with-temp-buffer
+	  (nnmail-find-file nnfolder-active-file)
+	  (setq nnfolder-group-alist (nnmail-parse-active))))
+      (save-excursion
+	(goto-char (point-min))
+	(if (search-forward "\n\n" nil t)
+	    (forward-line -1)
+	  (goto-char (point-max)))
+	(while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
+	  (delete-region (point) (progn (forward-line 1) (point))))
+	(when nnmail-cache-accepted-message-ids
+	  (nnmail-cache-insert (nnmail-fetch-field "message-id")))
+	(setq result (if (stringp group)
+			 (list (cons group (nnfolder-active-number group)))
+		       (setq art-group
+			     (nnmail-article-group 'nnfolder-active-number))))
+	(if (and (null result)
+		 (yes-or-no-p "Moved to `junk' group; delete article? "))
+	    (setq result 'junk)
+	  (setq result
+		(car (nnfolder-save-mail result)))))
+      (when last
+	(save-excursion
+	  (nnfolder-possibly-change-folder (or (caar art-group) group))
+	  (nnfolder-save-buffer)
+	  (when nnmail-cache-accepted-message-ids
+	    (nnmail-cache-close))))
       (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
       (unless result
 	(nnheader-report 'nnfolder "Couldn't store article"))
@@ -647,15 +648,15 @@ deleted.  Point is left where the deleted region was."
 	  (setq nnfolder-current-group group
 		nnfolder-current-buffer nil)
 	(let (inf file)
-      ;; If we have to change groups, see if we don't already have the
-	;; folder in memory.  If we do, verify the modtime and destroy
-	  ;; the folder if needed so we can rescan it.
+	  ;; If we have to change groups, see if we don't already have
+	  ;; the folder in memory.  If we do, verify the modtime and
+	  ;; destroy the folder if needed so we can rescan it.
 	  (setq nnfolder-current-buffer
 		(nth 1 (assoc group nnfolder-buffer-alist)))
 
- ;; If the buffer is not live, make sure it isn't in the alist.  If it
-   ;; is live, verify that nobody else has touched the file since last
-	  ;; time.
+	  ;; If the buffer is not live, make sure it isn't in the
+	  ;; alist.  If it is live, verify that nobody else has
+	  ;; touched the file since last time.
 	  (when (and nnfolder-current-buffer
 		     (not (gnus-buffer-live-p nnfolder-current-buffer)))
 	    (setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist)
@@ -773,20 +774,21 @@ deleted.  Point is left where the deleted region was."
       (push (list group (nnfolder-read-folder group))
 	    nnfolder-buffer-alist))))
 
-;; This method has a problem if you've accidentally let the active list get
-;; out of sync with the files.  This could happen, say, if you've
-;; accidentally gotten new mail with something other than Gnus (but why
-;; would _that_ ever happen? :-).  In that case, we will be in the middle of
-;; processing the file, ready to add new X-Gnus article number markers, and
-;; we'll run across a message with no ID yet - the active list _may_not_ be
-;; ready for us yet.
+;; This method has a problem if you've accidentally let the active
+;; list get out of sync with the files.  This could happen, say, if
+;; you've accidentally gotten new mail with something other than Gnus
+;; (but why would _that_ ever happen? :-).  In that case, we will be
+;; in the middle of processing the file, ready to add new X-Gnus
+;; article number markers, and we'll run across a message with no ID
+;; yet - the active list _may_not_ be ready for us yet.
 
-;; To handle this, I'm modifying this routine to maintain the maximum ID seen
-;; so far, and when we hit a message with no ID, we will _manually_ scan the
-;; rest of the message looking for any more, possibly higher IDs.  We'll
-;; assume the maximum that we find is the highest active.  Note that this
-;; shouldn't cost us much extra time at all, but will be a lot less
-;; vulnerable to glitches between the mbox and the active file.
+;; To handle this, I'm modifying this routine to maintain the maximum
+;; ID seen so far, and when we hit a message with no ID, we will
+;; _manually_ scan the rest of the message looking for any more,
+;; possibly higher IDs.  We'll assume the maximum that we find is the
+;; highest active.  Note that this shouldn't cost us much extra time
+;; at all, but will be a lot less vulnerable to glitches between the
+;; mbox and the active file.
 
 (defun nnfolder-read-folder (group)
   (let* ((file (nnfolder-group-pathname group))
@@ -839,12 +841,12 @@ deleted.  Point is left where the deleted region was."
 	      (setq articles (nreverse articles))))
 	  (goto-char (point-min))
 
-       ;; Anytime the active number is 1 or 0, it is suspect.  In that
-     ;; case, search the file manually to find the active number.  Or,
-       ;; of course, if we're being paranoid.  (This would also be the
-	;; place to build other lists from the header markers, such as
-      ;; expunge lists, etc., if we ever desired to abandon the active
-	  ;; file entirely for mboxes.)
+	  ;; Anytime the active number is 1 or 0, it is suspect.  In
+	  ;; that case, search the file manually to find the active
+	  ;; number.  Or, of course, if we're being paranoid.  (This
+	  ;; would also be the place to build other lists from the
+	  ;; header markers, such as expunge lists, etc., if we ever
+	  ;; desired to abandon the active file entirely for mboxes.)
 	  (when (or nnfolder-ignore-active-file
 		    novbuf
 		    (< maxid 2))
@@ -871,10 +873,11 @@ deleted.  Point is left where the deleted region was."
 	    (setcdr active (max maxid (cdr active)))
 	    (goto-char (point-min)))
 
-   ;; As long as we trust that the user will only insert unmarked mail
-	;; at the end, go to the end and search backwards for the last
-   ;; marker.  Find the start of that message, and begin to search for
-	  ;; unmarked messages from there.
+	  ;; As long as we trust that the user will only insert
+	  ;; unmarked mail at the end, go to the end and search
+	  ;; backwards for the last marker.  Find the start of that
+	  ;; message, and begin to search for unmarked messages from
+	  ;; there.
 	  (when (not (or nnfolder-distrust-mbox
 			 (< maxid 2)))
 	    (goto-char (point-max))
@@ -884,9 +887,9 @@ deleted.  Point is left where the deleted region was."
 	    ;;  (goto-char (point-min)))
 	    )
 
-     ;; Keep track of the active number on our own, and insert it back
-     ;; into the active list when we're done.  Also, prime the pump to
-	  ;; cut down on the number of searches we do.
+	  ;; Keep track of the active number on our own, and insert it
+	  ;; back into the active list when we're done.  Also, prime
+	  ;; the pump to cut down on the number of searches we do.
 	  (unless (nnmail-search-unix-mail-delim)
 	    (goto-char (point-max)))
 	  (setq end (point-marker))
@@ -917,7 +920,8 @@ deleted.  Point is left where the deleted region was."
 	      (widen)))
 
 	  (set-marker end nil)
-	;; Make absolutely sure that the active list reflects reality!
+	  ;; Make absolutely sure that the active list reflects
+	  ;; reality!
 	  (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
 
 	  ;; Set the scantime for this group.
