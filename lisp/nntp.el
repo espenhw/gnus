@@ -107,8 +107,8 @@ This command is used by the `nntp-open-via-rlogin-and-netcat' method.")
 
 (defvoo nntp-end-of-line "\r\n"
   "*String to use on the end of lines when talking to the NNTP server.
-This is \"\\r\\n\" by default, but should be \"\\n\" when
-using and indirect connection method (nntp-open-via-*).")
+This is \"\\r\\n\" by default, but should be \"\\n\" when using and
+indirect telnet connection method (nntp-open-via-*-and-telnet).")
 
 (defvoo nntp-via-rlogin-command "rsh"
   "*Rlogin command used to connect to an intermediate host.

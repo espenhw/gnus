@@ -5,6 +5,7 @@
 	(nntp-open-via-rlogin-and-netcat): New function.
 	(nntp-open-connection-function): Doc fix.
 	(nntp-telnet-command): Doc fix.
+	(nntp-end-of-line): Doc fix.
 	(nntp-via-rlogin-command): Doc fix.
 	(nntp-via-user-name): Doc fix.
 	(nntp-via-address): Doc fix.
