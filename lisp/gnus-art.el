@@ -660,19 +660,19 @@ Obsolete; use the face `gnus-signature-face' for customizations instead."
 (defcustom gnus-header-face-alist
   '(("From" nil gnus-header-from-face)
     ("Subject" nil gnus-header-subject-face)
-    ("Newsgroups:.*," nil gnus-header-newsgroups-face)
+    ("Newsgroups" nil gnus-header-newsgroups-face)
     ("" gnus-header-name-face gnus-header-content-face))
-  "*Controls highlighting of article header.
+  "*Controls highlighting of article headers.
 
 An alist of the form (HEADER NAME CONTENT).
 
-HEADER is a regular expression which should match the name of an
-header header and NAME and CONTENT are either face names or nil.
+HEADER is a regular expression which should match the name of a
+header and NAME and CONTENT are either face names or nil.
 
 The name of each header field will be displayed using the face
-specified by the first element in the list where HEADER match the
-header name and NAME is non-nil.  Similarly, the content will be
-displayed by the first non-nil matching CONTENT face."
+specified by the first element in the list where HEADER matches
+the header name and NAME is non-nil.  Similarly, the content will
+be displayed by the first non-nil matching CONTENT face."
   :group 'gnus-article-headers
   :group 'gnus-article-highlight
   :type '(repeat (list (regexp :tag "Header")
