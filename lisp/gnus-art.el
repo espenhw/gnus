@@ -1786,14 +1786,15 @@ always hide."
 	  (forward-line 1))))))
 
 (defun article-treat-dumbquotes ()
-  "Translate M****s*** sm*rtq**t*s into proper text.
+  "Translate M****s*** sm*rtq**t*s and other symbols into proper text.
 Note that this function guesses whether a character is a sm*rtq**t* or
 not, so it should only be used interactively.
 
-Sm*rtq**t*s are M****s***'s unilateral extension to the character map
-in an attempt to provide more quoting characters.  If you see
-something like \\222 or \\264 where you're expecting some kind of
-apostrophe or quotation mark, then try this wash."
+Sm*rtq**t*s are M****s***'s unilateral extension to the
+iso-8859-1 character map in an attempt to provide more quoting
+characters.  If you see something like \\222 or \\264 where
+you're expecting some kind of apostrophe or quotation mark, then
+try this wash."
   (interactive)
   (article-translate-strings gnus-article-dumbquotes-map))
 
