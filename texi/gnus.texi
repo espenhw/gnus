@@ -9949,15 +9949,23 @@ So here's a new example:
         ((message-news-p)
          (signature my-news-signature))
         (header "From\\|To" "larsi.*org"
-         (Organization "Somewhere, Inc."))
+                (Organization "Somewhere, Inc."))
         ((posting-from-work-p)
          (signature-file "~/.work-signature")
          (address "user@@bar.foo")
          (body "You are fired.\n\nSincerely, your boss.")
          (organization "Important Work, Inc"))
+        ("nnml:.*"
+         (From (save-excursion
+                 (set-buffer gnus-article-buffer)
+                 (message-fetch-field "to"))))
         ("^nn.+:"
          (signature-file "~/.mail-signature"))))
 @end lisp
+
+The @samp{nnml:.*} rule means that you use the @code{To} address as the
+@code{From} address in all your outgoing replies, which might be handy
+if you fill many roles.
 
 
 @node Drafts
