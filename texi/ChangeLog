@@ -1,4 +1,11 @@
 2001-05-16  Simon Josefsson  <simon@josefsson.org>
+	From Jesper Harder <harder@ifa.au.dk>
+
+	* texi2latex.el (latexi-translate-file): Also exchange ref.
+
+	* gnus.texi: Add \gnusref and \gnusuref.
+
+2001-05-16  Simon Josefsson  <simon@josefsson.org>
 	From Raymond Scholz <ray-2001@zonix.de>
 
 	* gnus.texi (Using MIME): Add and fix.

@@ -221,7 +221,7 @@
 	  (cond 
 	   ((member command '("anchor"))
 	    (latexi-strip-line))
-	   ((member command '("xref" "pxref"))
+	   ((member command '("ref" "xref" "pxref"))
 	    (latexi-exchange-command (concat "gnus" command) arg))
 	   ((member command '("sc" "file" "dfn" "emph" "kbd" "uref"
 			      "code" "samp" "var" "strong" "i"

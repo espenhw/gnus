@@ -31,6 +31,8 @@
 
 \newcommand{\gnusbackslash}{/}
 
+\newcommand{\gnusref}[1]{``#1'' on page \pageref{#1}}
+\newcommand{\gnusuref}[1]{\gnustt{#1}}
 \newcommand{\gnusxref}[1]{See ``#1'' on page \pageref{#1}}
 \newcommand{\gnuspxref}[1]{see ``#1'' on page \pageref{#1}}
 
