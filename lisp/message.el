@@ -1093,6 +1093,8 @@ Puts point before the text and mark after.
 Normally indents each nonblank line ARG spaces (default 3).  However,
 if `message-yank-prefix' is non-nil, insert that prefix on each line.
 
+This function uses `message-cite-function' to do the actual citing.
+
 Just \\[universal-argument] as argument means don't indent, insert no
 prefix, and don't delete any headers."
   (interactive "P")

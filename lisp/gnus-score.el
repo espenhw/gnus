@@ -720,11 +720,11 @@ SCORE is the score to add."
   (setq score (gnus-score-default score))
   (when (gnus-buffer-live-p gnus-summary-buffer)
     (save-excursion
-      (set-buffer gnus-summary-buffer)
       (save-restriction
 	(goto-char (point-min))
 	(let ((id (mail-fetch-field "message-id")))
 	  (when id
+	    (set-buffer gnus-summary-buffer)
 	    (gnus-summary-score-entry
 	     "references" (concat id "[ \t]*$") 'r
 	     score (current-time-string) nil t)))))))
@@ -735,11 +735,11 @@ SCORE is the score to add."
   (setq score (gnus-score-default score))
   (when (gnus-buffer-live-p gnus-summary-buffer)
     (save-excursion
-      (set-buffer gnus-summary-buffer)
       (save-restriction
 	(goto-char (point-min))
 	(let ((id (mail-fetch-field "message-id")))
 	  (when id
+	    (set-buffer gnus-summary-buffer)
 	    (gnus-summary-score-entry
 	     "references" id 's
 	     score (current-time-string))))))))

@@ -1,3 +1,37 @@
+Fri Jun 28 04:02:25 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.29 is released.
+
+Thu Jun 27 23:14:54 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* browse-url.el: Removed from distribution.
+
+	* nnmh.el (nnmh-request-group): Re-read dir.
+
+Thu Jun 27 23:13:17 1996  Andy Norman  <ange@hplb.hpl.hp.com>
+
+	* nnheader.el (nnheader-re-read-dir): New function.
+
+Thu Jun 27 21:50:16 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-next-article): Would stall on canceled
+	articles. 
+	(gnus-dribble-enter): Would bury the wrong buffer.
+
+	* gnus-score.el (gnus-score-followup-thread,
+	gnus-score-followup-article): Would switch to wrong buffer.
+
+	* gnus.el (gnus-adjust-marked-articles): Possible fix for killed
+	articles. 
+	(gnus-subscribe-hierarchically): Kill .newsrc buffer.
+
+	* gnus-nocem.el (gnus-nocem-check-article): Would not search
+	properly. 
+
+Thu Jun 27 21:50:16 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.28 is released.
+
 Thu Jun 27 23:33:18 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* nnmail.el (nnmail-get-spool-files): Wouldn't get much mail. 

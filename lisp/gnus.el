@@ -1750,7 +1750,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.28"
+(defconst gnus-version-number "5.2.29"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -3034,7 +3034,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 	(setq groupkey
 	      (if (string-match "^\\(.*\\)\\.[^.]+$" groupkey)
 		  (substring groupkey (match-beginning 1) (match-end 1)))))
-      (gnus-subscribe-newsgroup newgroup before))))
+      (gnus-subscribe-newsgroup newgroup before))
+    (kill-buffer (current-buffer))))
 
 (defun gnus-subscribe-interactively (group)
   "Subscribe the new GROUP interactively.
@@ -8983,7 +8984,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	 (min (car active))
 	 (max (cdr active))
 	 (types gnus-article-mark-lists)
-	 (uncompressed '(score bookmark))
+	 (uncompressed '(score bookmark killed))
 	 marks var articles article mark)
 
     (while marked-lists
@@ -8999,12 +9000,12 @@ If READ-ALL is non-nil, all articles in the group are selected."
       ;; All articles have to be subsets of the active articles.
       (cond
        ;; Adjust "simple" lists.
-       ((memq mark '(tick dormant expirable reply killed save))
+       ((memq mark '(tick dormant expirable reply save))
 	(while articles
 	  (when (or (< (setq article (pop articles)) min) (> article max))
 	    (set var (delq article (symbol-value var))))))
        ;; Adjust assocs.
-       ((memq mark '(score bookmark))
+       ((memq mark uncompressed)
 	(while articles
 	  (when (or (not (consp (setq article (pop articles))))
 		    (< (car article) min)
@@ -10447,8 +10448,7 @@ If BACKWARD, the previous article is selected instead of the next."
    ;; If not, we try the first unread, if that is wanted.
    ((and subject
 	 gnus-auto-select-same
-	 (or (gnus-summary-first-unread-article)
-	     (eq (gnus-summary-article-mark) gnus-canceled-mark)))
+	 (gnus-summary-first-unread-article))
     (gnus-summary-position-point)
     (gnus-message 6 "Wrapped"))
    ;; Try to get next/previous article not displayed in this group.
@@ -14955,7 +14955,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	(set-buffer gnus-dribble-buffer)
 	(insert string "\n")
 	(set-window-point (get-buffer-window (current-buffer)) (point-max))
-	(bury-buffer)
+	(bury-buffer gnus-dribble-buffer)
 	(set-buffer obuf))))
 
 (defun gnus-dribble-read-file ()

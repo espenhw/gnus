@@ -10135,7 +10135,7 @@ spec, and pad with spaces to get a 5-character field''.  Just like a
 normal format spec, almost.
 
 You can also say @samp{%6,4y}, which means that the field will never be
-more than 6 characters wide and never less than 4 characters wide.
+more than 4 characters wide and never less than 6 characters wide.
 
 There are also specs for highlighting, and these are shared by all the
 format variables.  Text inside the @samp{%(} and @samp{%)} specifiers
