@@ -4,7 +4,7 @@
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: DNS BIND dig
 
-;; This file is not a part of GNU Emacs, but the same permissions apply.
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published

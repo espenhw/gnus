@@ -1,5 +1,8 @@
 2003-04-20  Simon Josefsson  <jas@extundo.com>
 
+	* mml-smime.el, rfc1843.el, dig.el, smime.el, uudecode.el: Fix
+	license template.
+
 	* mml-sec.el: Fix license template.
 
 	* gnus-sieve.el, sieve.el, sieve-manage.el, sieve-mode.el: Fix
