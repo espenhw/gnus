@@ -482,6 +482,7 @@ the line could be found."
 ;; Various cruft the backends and Gnus need to communicate.
 
 (defvar nntp-server-buffer nil)
+(defvar nntp-process-response nil)
 (defvar news-reply-yank-from nil)
 (defvar news-reply-yank-message-id nil)
 
@@ -497,6 +498,7 @@ the line could be found."
     (erase-buffer)
     (kill-all-local-variables)
     (setq case-fold-search t)		;Should ignore case.
+    (set (make-local-variable 'nntp-process-response) nil)
     t))
 
 ;;; Various functions the backends use.

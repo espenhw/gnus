@@ -196,6 +196,10 @@ server there that you can connect to.  See also
 If this variable is nil, which is the default, no timers are set.
 NOTE: This variable is never seen to work in Emacs 20 and XEmacs 21.")
 
+(defvoo nntp-prepare-post-hook nil
+  "*Hook run just before posting an article.  It is supposed to be used
+to insert Cancel-Lock headers.")
+
 ;;; Internal variables.
 
 (defvar nntp-record-commands nil
@@ -289,19 +293,23 @@ noticing asynchronous data.")
 	  (nnheader-report 'nntp "Server closed connection"))
 	 (t
 	  (goto-char (point-max))
-	  (let ((limit (point-min)))
+	  (let ((limit (point-min))
+		response)
 	    (while (not (re-search-backward wait-for limit t))
 	      (nntp-accept-process-output process)
 	      ;; We assume that whatever we wait for is less than 1000
 	      ;; characters long.
 	      (setq limit (max (- (point-max) 1000) (point-min)))
-	      (goto-char (point-max))))
+	      (goto-char (point-max)))
+	    (setq response (match-string 0))
+	    (with-current-buffer nntp-server-buffer
+	      (setq nntp-process-response response)))
 	  (nntp-decode-text (not decode))
 	  (unless discard
 	    (save-excursion
- 	      (set-buffer buffer)
- 	      (goto-char (point-max))
- 	      (insert-buffer-substring (process-buffer process))
+	      (set-buffer buffer)
+	      (goto-char (point-max))
+	      (insert-buffer-substring (process-buffer process))
 	      ;; Nix out "nntp reading...." message.
 	      (when nntp-have-messaged
 		(setq nntp-have-messaged nil)
@@ -837,7 +845,23 @@ noticing asynchronous data.")
 (deffoo nntp-request-post (&optional server)
   (nntp-possibly-change-group nil server)
   (when (nntp-send-command "^[23].*\r?\n" "POST")
-    (nntp-send-buffer "^[23].*\n")))
+    (let ((response (with-current-buffer nntp-server-buffer
+		      nntp-process-response))
+	  server-id)
+      (when (and response
+		 (string-match "^[23].*\\(<[^\t\n @<>]+@[^\t\n @<>]+>\\)"
+			       response))
+	(setq server-id (match-string 1 response))
+	(narrow-to-region (goto-char (point-min))
+			  (if (search-forward "\n\n" nil t)
+			      (1- (point))
+			    (point-max)))
+	(unless (mail-fetch-field "Message-ID")
+	  (goto-char (point-min))
+	  (insert "Message-ID: " server-id "\n"))
+	(widen))
+      (run-hooks 'nntp-prepare-post-hook)
+      (nntp-send-buffer "^[23].*\n"))))
 
 (deffoo nntp-request-type (group article)
   'news)
@@ -1077,6 +1101,9 @@ password contained in '~/.nntp-authinfo'."
 	(goto-char (point-max))
 	(when (re-search-backward
 	       nntp-process-wait-for nntp-process-start-point t)
+	  (let ((response (match-string 0)))
+	    (with-current-buffer nntp-server-buffer
+	      (setq nntp-process-response response)))
 	  (nntp-async-stop process)
 	  ;; convert it.
 	  (when (gnus-buffer-exists-p nntp-process-to-buffer)

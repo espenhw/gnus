@@ -1,3 +1,17 @@
+2001-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (article-verify-cancel-lock): New function.
+
+	* nnheader.el (nntp-process-response): New variable.
+	(nnheader-init-server-buffer): Make `nntp-process-response'
+	buffer-local in `nntp-server-buffer'.
+
+	* nntp.el (nntp-prepare-post-hook): New hook.
+	(nntp-wait-for): Save a server's ID in `nntp-process-response'.
+	(nntp-async-trigger): Ditto.
+	(nntp-request-post): Insert a server's ID if there's no Message-ID
+	header; run `nntp-prepare-post-hook'.
+	
 2001-10-30 04:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-decode-group-name): Use nnmail-fetch-field
