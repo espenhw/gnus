@@ -1387,7 +1387,8 @@ C-c C-e  message-elide-region (elide the text between point and mark).
 C-c C-v  message-delete-not-region (remove the text outside the region).
 C-c C-z  message-kill-to-signature (kill the text up to the signature).
 C-c C-r  message-caesar-buffer-body (rot13 the message body).
-C-c C-a  mml-attach-file (attach a file as MIME)."
+C-c C-a  mml-attach-file (attach a file as MIME).
+M-RET    message-newline-and-reformat (break the line and reformat)."
   (interactive)
   (kill-all-local-variables)
   (set (make-local-variable 'message-reply-buffer) nil)
