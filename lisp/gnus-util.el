@@ -1065,7 +1065,7 @@ Return the modified alist."
 
 (defcustom gnus-use-byte-compile t
   "If non-nil, byte-compile crucial run-time codes.
-Setting it to `nil' has no effect after first time running
+Setting it to nil has no effect after first time running
 `gnus-byte-compile'."
   :type 'boolean
   :version "21.1"

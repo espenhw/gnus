@@ -1,3 +1,32 @@
+2003-02-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* spam.el (spam-list-of-checks): Don't quote nil and t in
+	docstrings.  From the elisp manual:
+
+	   When a documentation string refers to a Lisp symbol, write
+	   it [..] with single-quotes around it.  [..] There are two
+	   exceptions: write t and nil without single-quotes.
+
+	* messcompat.el (message-from-style): do.
+
+	* message.el (message-send-mail): do.
+
+	* gnus-util.el (gnus-use-byte-compile): do.
+
+	* gnus-score.el (gnus-score-lower-thread): do.
+
+	* gnus-int.el (gnus-server-unopen-status): do.
+
+	* gnus.el (gnus-define-group-parameter, gnus-large-newsgroup)
+	(large-newsgroup-initial, gnus-install-group-spam-parameters): do.
+
+	* gnus-cus.el (gnus-group-customize, gnus-score-parameters)
+	(gnus-group-parameters): do.
+
+	* gnus-art.el (gnus-article-mime-match-handle-function): do.
+
+	* mm-decode.el (mm-text-html-renderer): do.
+
 2003-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnheader.el (nnheader-directory-separator-character): Change the

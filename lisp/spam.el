@@ -514,9 +514,9 @@ your main source of newsgroup names."
 "The spam-list-of-checks list contains pairs associating a parameter
 variable with a spam checking function.  If the parameter variable is
 true, then the checking function is called, and its value decides what
-happens.  Each individual check may return `nil', `t', or a mailgroup
-name.  The value `nil' means that the check does not yield a decision,
-and so, that further checks are needed.  The value `t' means that the
+happens.  Each individual check may return nil, t, or a mailgroup
+name.  The value nil means that the check does not yield a decision,
+and so, that further checks are needed.  The value t means that the
 message is definitely not spam, and that further spam checks should be
 inhibited.  Otherwise, a mailgroup name is returned where the mail
 should go, and further checks are also inhibited.  The usual mailgroup

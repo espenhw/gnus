@@ -3467,7 +3467,7 @@ sent in one piece.
 
 The size limit is controlled by `message-send-mail-partially-limit'.
 If you always want Gnus to send messages in one piece, set
-`message-send-mail-partially-limit' to `nil'.
+`message-send-mail-partially-limit' to nil.
 ")))
 	      (mm-with-unibyte-current-buffer
 		(message "Sending via mail...")

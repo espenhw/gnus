@@ -40,7 +40,7 @@
 (defvar message-from-style mail-from-style
   "*Specifies how \"From\" headers look.
 
-If `nil', they contain just the return address like:
+If nil, they contain just the return address like:
 	king@grassland.com
 If `parens', they look like:
 	king@grassland.com (Elvis Parsley)

@@ -110,7 +110,7 @@ The defined renderer types are:
 `links': using links;
 `lynx' : using lynx;
 `html2text' : using html2text;
-`nil'  : using external viewer."
+nil    : using external viewer."
   :type '(choice (const w3)
 		 (const w3m)
 		 (const links)
