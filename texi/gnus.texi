@@ -8479,6 +8479,22 @@ If it is @code{nil} (which is the default), Gnus will rename the
 any other article.  If this variable is @code{t}, it won't display the
 article---it'll be as if it never existed.
 
+@vindex gnus-alter-articles-to-read-function
+@item gnus-alter-articles-to-read-function
+This function, which takes two parameters (the group name and the list
+of articles to be selected), is called to allow the user to alter the
+list of articles to be selected.
+
+For instance, the following function adds the list of cached articles to
+the list in one particular group:
+
+@lisp
+(defun my-add-cached-articles (group articles)
+  (if (string= group "some.group")
+      (append gnus-newsgroup-cached articles)
+    articles))
+@end lisp
+
 @end table
 
 
@@ -20784,6 +20800,9 @@ Perhaps there should be a command to "attach" a buffer of comments to
 a message?  That is, `B WHATEVER', you're popped into a buffer, write
 something, end with `C-c C-c', and then the thing you've written gets
 to be the child of the message you're commenting.
+
+@item
+Handle external-body parts.
 
 @item
 Solve the halting problem.
