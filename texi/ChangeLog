@@ -1,3 +1,7 @@
+2001-02-17 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Posting Styles): Doc fix.
+
 2001-02-16  Simon Josefsson  <sjosefsson@rsasecurity.com>
 
 	* gnus.texi (Optional Backend Functions): Fix case.

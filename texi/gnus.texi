@@ -9941,13 +9941,13 @@ signature and the @samp{What me?} @code{Organization} header.
 
 The first element in each style is called the @code{match}.  If it's a
 string, then Gnus will try to regexp match it against the group name.
-If it is the symbol @code{header}, then Gnus will look for header that
-match the next element in the match, and compare that to the last header
-in the match.  If it's a function symbol, that function will be called
-with no arguments.  If it's a variable symbol, then the variable will be
-referenced.  If it's a list, then that list will be @code{eval}ed.  In
-any case, if this returns a non-@code{nil} value, then the style is said
-to @dfn{match}.
+If it is the symbol @code{header}, then Gnus will look for header (the
+next element in the match) in the original article , and compare that to
+the last regexp in the match.  If it's a function symbol, that function
+will be called with no arguments.  If it's a variable symbol, then the
+variable will be referenced.  If it's a list, then that list will be
+@code{eval}ed.  In any case, if this returns a non-@code{nil} value,
+then the style is said to @dfn{match}.
 
 Each style may contain a arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @code{(@var{name} . @var{value})} pair.  The
@@ -9988,7 +9988,7 @@ So here's a new example:
          (signature my-quote-randomizer))
         ((message-news-p)
          (signature my-news-signature))
-        (header "From\\|To" "larsi.*org"
+        (header "to" "larsi.*org"
                 (Organization "Somewhere, Inc."))
         ((posting-from-work-p)
          (signature-file "~/.work-signature")
