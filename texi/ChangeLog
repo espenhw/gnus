@@ -1,3 +1,10 @@
+2003-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Filtering Spam Using spam.el, ifile spam filtering) 
+	(spam-stat spam filtering): added new functionality and explained
+	old functionality better, especially where it has changed in
+	ham/spam/unclassified group exit processing.
+
 2003-01-09  Alex Schroeder  <alex@emacswiki.org>
 
 	* gnus.texi (Splitting mail using spam-stat): Fix typo.
