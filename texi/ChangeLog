@@ -1,3 +1,11 @@
+2002-04-08  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus.texi (Group Parameters): Point to the message manual for a
+	full explanation of MFT.
+	* message.texi (Mailing Lists): Mention
+	message-gen-unsubscribed-mft.
+	From Karra <karra@cs.utah.edu>.
+
 2002-04-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Saving Articles): Add xref to Mail Group Commands
@@ -31,7 +39,7 @@
 2002-03-24  Raymond Scholz <rscholz@zonix.de>
 
 	* gnus.texi (Summary Buffer Lines): Fix doc.
-	
+
 2002-03-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in (booklet.dvi, booklet.pdf): Support booklet.
@@ -40,7 +48,7 @@
 
 	* booklet.tex, bk-at.tex, bk-lt.tex, gnuslog-booklet.eps: New file.
 	* gnusref.tex, refcard.tex: Support booklet.
-	
+
 2002-03-24  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnusref.tex: Addition.
@@ -68,7 +76,7 @@
 
 2002-03-23  Jesper Harder <harder@ifa.au.dk>
 
-	* gnusref.tex, refcard.tex: Addition. 
+	* gnusref.tex, refcard.tex: Addition.
 
 2002-03-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -280,7 +288,7 @@
 2002-01-19  Lars Magne Ingebrigtsen  <karra@cs.utah.edu>
 
 	* gnus.texi (Mail Spool): Note that the .marks files can be
-	removed. 
+	removed.
 
 2002-01-17  Paul Jarc  <prj@po.cwru.edu>
 
@@ -312,7 +320,7 @@
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.texi (Mailing Lists): Addition.
-	* gnus.texi (Group Parameters): Addition. 
+	* gnus.texi (Group Parameters): Addition.
 	From Sriram Karra <karra@cs.utah.edu>.
 
 2002-01-10  Colin Marquardt  <c.marquardt@alcatel.de>
@@ -369,7 +377,7 @@
 2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Group Timestamp): Addition.  Example from Andras
-	BALI. 
+	BALI.
 	(X-Face): Addition.
 	(Advanced Formatting): Add example.
 
