@@ -5212,10 +5212,10 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (setq gnus-newsgroup-unselected
 	    (gnus-sorted-difference gnus-newsgroup-unreads articles))
       (when gnus-alter-articles-to-read-function
-	(setq gnus-newsgroup-unreads
+	(setq articles
 	      (sort
 	       (funcall gnus-alter-articles-to-read-function
-			gnus-newsgroup-name gnus-newsgroup-unreads)
+			gnus-newsgroup-name articles)
 	       '<)))
       articles)))
 

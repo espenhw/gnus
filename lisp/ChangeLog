@@ -1,3 +1,8 @@
+2003-01-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-articles-to-read): Don't just apply
+	gnus-alter-articles-to-read-function to the unread articles. 
+
 2003-01-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* deuglify.el (gnus-article-outlook-unwrap-lines)
