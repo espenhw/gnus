@@ -1,3 +1,8 @@
+2003-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Article Button Levels): New node.
+	(Article Buttons): Additions.
+
 2003-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Exiting Gnus): Removed gnus-unload.
