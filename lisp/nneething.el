@@ -128,9 +128,20 @@ included.")
 	 (save-excursion
 	   (nnmail-find-file file)  ; Insert the file in the nntp buf.
 	   (unless (nnheader-article-p)	; Either it's a real article...
-	     (goto-char (point-min))
-	     (nneething-make-head
-	      file (current-buffer))	; ... or we fake some headers.
+	     (let ((type
+		    (unless (file-directory-p file)
+		      (or (cdr (assoc (concat "." (file-name-extension file))
+				      mailcap-mime-extensions))
+			  "text/plain")))
+		   (charset
+		    (mm-detect-mime-charset-region (point-min) (point-max)))
+		   (encoding))
+	       (unless (string-match "\\`text/" type)
+		 (base64-encode-region (point-min) (point-max))
+		 (setq encoding "base64"))
+	       (goto-char (point-min))
+	       (nneething-make-head file (current-buffer)
+				    nil type charset encoding))
 	     (insert "\n"))
 	   t))))
 
@@ -272,7 +283,8 @@ included.")
     (insert-buffer-substring nneething-work-buffer)
     (goto-char (point-max))))
 
-(defun nneething-make-head (file &optional buffer extra-msg)
+(defun nneething-make-head (file &optional buffer extra-msg
+				 mime-type mime-charset mime-encoding)
   "Create a head by looking at the file attributes of FILE."
   (let ((atts (file-attributes file)))
     (insert
@@ -297,6 +309,19 @@ included.")
 	   (concat "Lines: " (int-to-string
 			      (count-lines (point-min) (point-max)))
 		   "\n"))
+       "")
+     (if mime-type
+	 (concat "Content-Type: " mime-type
+		 (if mime-charset
+		     (concat "; charset="
+			     (if (stringp mime-charset)
+				 mime-charset
+			       (symbol-name mime-charset)))
+		   "")
+		 (if mime-encoding
+		     (concat "\nContent-Transfer-Encoding: " mime-encoding)
+		   "")
+		 "\nMIME-Version: 1.0\n")
        ""))))
 
 (defun nneething-from-line (uid &optional file)
