@@ -5144,11 +5144,13 @@ not have a face in `gnus-article-boring-faces'."
       (let ((obuf (current-buffer))
 	    (owin (current-window-configuration))
 	    (opoint (point))
-	    (summary gnus-article-current-summary)
-	    func in-buffer selected)
-	(if not-restore-window
-	    (pop-to-buffer summary 'norecord)
-	  (switch-to-buffer summary 'norecord))
+	    win func in-buffer selected new-sum-start new-sum-hscroll)
+	(cond (not-restore-window
+	       (pop-to-buffer gnus-article-current-summary 'norecord))
+	      ((setq win (get-buffer-window gnus-article-current-summary))
+	       (select-window win))
+	      (t
+	       (switch-to-buffer gnus-article-current-summary 'norecord)))
 	(setq in-buffer (current-buffer))
 	;; We disable the pick minor mode commands.
 	(if (and (setq func (let (gnus-pick-mode)
@@ -5156,7 +5158,10 @@ not have a face in `gnus-article-boring-faces'."
 		 (functionp func))
 	    (progn
 	      (call-interactively func)
-	      (setq new-sum-point (point))
+	      (when (eq win (selected-window))
+		(setq new-sum-point (point)
+		      new-sum-start (window-start win)
+		      new-sum-hscroll (window-hscroll win))
 	      (when (eq in-buffer (current-buffer))
 		(setq selected (gnus-summary-select-article))
 		(set-buffer obuf)
@@ -5168,10 +5173,12 @@ not have a face in `gnus-article-boring-faces'."
 				    1)
 		  (set-window-point (get-buffer-window (current-buffer))
 				    (point)))
-		(let ((win (get-buffer-window gnus-article-current-summary)))
-		  (when win
-		    (set-window-point win new-sum-point))))    )
-	  (switch-to-buffer gnus-article-buffer)
+		(when (and (not not-restore-window)
+			   new-sum-point)
+		  (set-window-point win new-sum-point)
+		  (set-window-start win new-sum-start)
+		  (set-window-hscroll win new-sum-hscroll)))))
+	  (set-window-configuration owin)
 	  (ding))))))
 
 (defun gnus-article-describe-key (key)
