@@ -40,7 +40,7 @@ articles you have read and marked.  The data in @file{~/News/marks}
 has priority over the same data in @file{~/.newsrc.eld}.
 
 @item
-Picons can displayed right from the textual address, see
+Picons can be displayed right from the textual address, see
 @code{gnus-picon-style}
 
 @item

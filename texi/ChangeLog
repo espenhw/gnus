@@ -1,5 +1,7 @@
 2004-09-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-news.texi: Fix typo in previous commit.
+
 	* gnus-news.el (gnus-news-makeinfo-switches): Add --no-validate to
 	allow unresolved references.
 
