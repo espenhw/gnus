@@ -1,3 +1,19 @@
+2000-10-02  Dave Love  <fx@gnu.org>
+
+	* mail-source.el (mail-sources): Revert to nil.
+
+	* nnmail.el (nnmail-spool-file): Revert previous change.
+
+	* gnus.el: Don't require custom, message.
+	(gnus-message-archive-method): Wrap initializer in progn and
+	require message here.
+
+2000-10-02  Gerd Moellmann  <gerd@gnu.org>
+
+	* gnus.el (gnus-mode-line-buffer-identification) [Emacs]: Change
+	image's :ascent to 80.  That gives a mode-line which is approx.
+	as tall as the normal one.
+
 2000-10-02 08:04:48  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el (webmail-hotmail-list): Fix.
@@ -133,9 +149,10 @@
 
 2000-09-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* gnus-art.el (article-strip-banner): elkin@tverd.astro.spbu.ru:
-	use gnus-group-find-parameter rather than
-	gnus-group-get-parameter, to allow inheritance on the banner.
+	* gnus-art.el (article-strip-banner): Use
+	gnus-group-find-parameter rather than gnus-group-get-parameter, to
+	allow inheritance on the banner.
+	From elkin@tverd.astro.spbu.ru.
 
 2000-09-26  Richard M. Alderson III <alderson@netcom2.netcom.com> 
 
