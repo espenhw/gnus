@@ -1548,18 +1548,6 @@ be used in a STORE FLAGS command."
   "Return t iff MARK can be permanently (between IMAP sessions) saved on articles, in GROUP."
   (imap-message-flag-permanent-p (nnimap-mark-to-flag mark)))
 
-;;;###autoload
-(defun nnimap-fixup-unread-after-getting-new-news ()
-  (let (server group info)
-    (mapatoms
-     (lambda (sym)
-       (when (and (setq group (symbol-name sym))
-		  (gnus-group-entry group)
-		  (setq info (symbol-value sym)))
-	 (gnus-sethash group (cons (nth 2 info) (cdr (gnus-group-entry group)))
-		       gnus-newsrc-hashtb)))
-     nnimap-mailbox-info)))
-
 (when nnimap-debug
   (require 'trace)
   (buffer-disable-undo (get-buffer-create nnimap-debug))

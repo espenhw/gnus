@@ -363,7 +363,8 @@ This hook is called as the first thing when Gnus is started."
   :group 'gnus-start
   :type 'hook)
 
-(defcustom gnus-setup-news-hook '(nnimap-fixup-unread-after-getting-new-news)
+(defcustom gnus-setup-news-hook 
+  '(gnus-fixup-nnimap-unread-after-getting-new-news)
   "A hook after reading the .newsrc file, but before generating the buffer."
   :group 'gnus-start
   :type 'hook)
@@ -375,7 +376,7 @@ This hook is called as the first thing when Gnus is started."
 
 (defcustom gnus-after-getting-new-news-hook
   '(gnus-display-time-event-handler 
-    nnimap-fixup-unread-after-getting-new-news)
+    gnus-fixup-nnimap-unread-after-getting-new-news)
   "*A hook run after Gnus checks for new news when Gnus is already running."
   :group 'gnus-group-new
   :type 'hook)
@@ -2758,6 +2759,23 @@ If this variable is nil, don't do anything."
   "Like `display-time-event-handler', but test `display-time-timer'."
   (when (gnus-boundp 'display-time-timer)
     (display-time-event-handler)))
+
+;; Byte-compiler warning.
+(eval-when-compile
+  (defvar nnimap-mailbox-info))
+
+;;;###autoload
+(defun gnus-fixup-nnimap-unread-after-getting-new-news ()
+  (let (server group info)
+    (mapatoms
+     (lambda (sym)
+       (when (and (setq group (symbol-name sym))
+		  (gnus-group-entry group)
+		  (setq info (symbol-value sym)))
+	 (gnus-sethash group (cons (nth 2 info) (cdr (gnus-group-entry group)))
+		       gnus-newsrc-hashtb)))
+     nnimap-mailbox-info)))
+
 
 (provide 'gnus-start)
 
