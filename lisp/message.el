@@ -3907,17 +3907,15 @@ Otherwise, generate and save a value for `canlock-password' first."
    ;; Check continuation headers.
    (message-check 'continuation-headers
      (goto-char (point-min))
-     (if (not (re-search-forward "^[^ \\n][^:\\n]*$" nil t))
-	 t
-       (while (re-search-forward "^[^ \\n][^:\\n]*$" nil t)
-	 (if (y-or-n-p "You have line in your headers without : and not \
-beginning by a continuation caracter. Add one ?")
+     (let ((do-posting t))
+       (while (re-search-forward "^[^ \t\n][^:\n]*$" nil t)
+	 (if (y-or-n-p "Fix continuation lines? ")
 	     (progn
 	       (goto-char (match-beginning 0))
 	       (insert " "))
-	   (if (y-or-n-p "Send anyway ?")
-	       t
-	     nil)))))
+	   (unless (y-or-n-p "Send anyway? ")
+	     (setq do-posting nil))))
+       do-posting))
    ;; Check the Newsgroups & Followup-To headers for syntax errors.
    (message-check 'valid-newsgroups
      (let ((case-fold-search t)

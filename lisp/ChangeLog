@@ -1,6 +1,8 @@
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-check-news-header-syntax): Allow posting. 
+	(message-check-news-header-syntax): Fix logic for sure, this
+	time. 
 
 2003-01-02  Matthieu Moy  <Matthieu.Moy@imag.fr>
 
