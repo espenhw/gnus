@@ -421,9 +421,10 @@ If FETCH-OLD, retrieve all headers (or some subset thereof) in the group."
 (defun gnus-request-set-mark (group action)
   "Set marks on articles in the back end."
   (let* ((gnus-command-method (gnus-find-method-for-group group))
-	 (gnus-plugged (or gnus-plugged 
-			   (member (car gnus-command-method)
-				   gnus-servers-that-use-local-marks))))
+	 (gnus-agent (if (member (car gnus-command-method)
+				      gnus-servers-that-use-local-marks)
+			    nil
+			    gnus-agent)))
     (if (not (gnus-check-backend-function
 	      'request-set-mark (car gnus-command-method)))
 	action
@@ -434,9 +435,10 @@ If FETCH-OLD, retrieve all headers (or some subset thereof) in the group."
 (defun gnus-request-update-mark (group article mark)
   "Allow the back end to change the mark the user tries to put on an article."
   (let* ((gnus-command-method (gnus-find-method-for-group group))
-	 (gnus-plugged (or gnus-plugged 
-			   (member (car gnus-command-method)
-				   gnus-servers-that-use-local-marks))))
+	 (gnus-agent (if (member (car gnus-command-method)
+				      gnus-servers-that-use-local-marks)
+			    nil
+			    gnus-agent)))
     (if (not (gnus-check-backend-function
 	      'request-update-mark (car gnus-command-method)))
 	mark
