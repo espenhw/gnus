@@ -180,11 +180,11 @@ This is set by hooking into Gnus.")
 
 ;; Functions missing in Emacs 20
 
-(eval-and-compile
-  (when (and (not (featurep 'xemacs))
-	     (= emacs-major-version 20))
-    ;; gethash, hash-table-count, make-hash-table, mapc
-    (require 'cl)
+(when (memq nil (mapcar 'fboundp
+			'(gethash hash-table-count make-hash-table
+				  mapc puthash)))
+  (require 'cl)
+  (unless (fboundp 'puthash)
     ;; alias puthash is missing from Emacs 20 cl-extra.el
     (defalias 'puthash 'cl-puthash)))
 

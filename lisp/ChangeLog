@@ -1,3 +1,9 @@
+2002-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* spam-stat.el: Check for the existence of hash functions instead
+	of the Emacs version to decide whether to load cl.  Suggested by
+	Kai Gro,A_(Bjohann.
+
 2002-10-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Open history
