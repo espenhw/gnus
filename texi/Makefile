@@ -4,6 +4,7 @@ MAKEINFO=$(EMACS) -batch -q -no-site-file gnus.texi -l texinfmt -f texinfo-every
 # MAKEINFO=makeinfo -o gnus.info gnus.texi
 LATEX=latex
 DVIPS=dvips
+PERL=perl
 
 all: gnus.info refcard.dvi
 
@@ -13,7 +14,7 @@ gnus.info: gnus.texi
 	$(MAKEINFO)
 
 dvi: gnus.texi
-	perl -n -e ' if (/@iflatex/) { $$latex=1; } if (!$$latex) { print; } if (/@end iflatex/) { $$latex=0; }' gnus.texi > gnus.tmptexi
+	$(PERL) -n -e 'if (/\@iflatex/) { $$latex=1; } if (!$$latex) { print; } if (/\@end iflatex/) { $$latex=0; }' gnus.texi > gnus.tmptexi
 	$(TEXI2DVI) gnus.tmptexi
 
 refcard.dvi: refcard.tex

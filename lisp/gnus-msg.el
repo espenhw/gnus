@@ -239,6 +239,9 @@ included.  Organization, Lines and X-Mailer are optional.")
 (defvar gnus-removable-headers '(NNTP-Posting-Host Xref)
   "*Headers to be removed unconditionally before posting.")
 
+(defvar gnus-ignored-resent-headers "^Return-receipt"
+  "*All headers that match this regexp will be deleted when resending a message.")
+
 (defvar gnus-article-expires 14
   "*Number of days before your article expires.
 This variable isn't used unless you have the `Expires' element in
@@ -306,6 +309,14 @@ Three pre-made functions are `gnus-mail-other-window-using-mail'
 
 (defvar gnus-bounced-headers-junk "^\\(Received\\):"
   "*Regexp that matches headers to be removed in resent bounced mail.")
+
+(defvar gnus-sent-message-ids-file 
+  (concat (file-name-as-directory gnus-article-save-directory)
+	  "Sent-Message-IDs")
+  "File where Gnus saves a cache of sent message ids.")
+
+(defvar gnus-sent-message-ids-length 1000
+  "The number of sent Message-IDs to save.")
 
 (defvar gnus-inews-article-hook (list 'gnus-inews-do-fcc)
   "*A hook called before finally posting an article.
@@ -388,7 +399,8 @@ headers.")
    ;; We might want to prompt here.
    (when (and gnus-interactive-post
 	      (not gnus-expert-user))
-     (read-string "To: "))))
+     (read-string "To: ")))
+  (gnus-configure-windows 'group-mail 'force))
 
 (defun gnus-group-post-news (&optional arg)
   "Post an article.
@@ -408,7 +420,10 @@ buffer."
 	    (setq group 
 		  (completing-read "Group: " gnus-active-hashtb nil nil
 				   (cons (or group "") 0)))))
-    (gnus-post-news 'post group nil gnus-article-buffer)))
+    (gnus-post-news 'post group nil gnus-article-buffer)
+    (if (eq major-mode 'news-reply-mode)
+	(gnus-configure-windows 'group-post t)
+      (gnus-configure-windows 'group-mail t))))
 
 (defun gnus-summary-post-news ()
   "Post an article."
@@ -434,7 +449,9 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 		 (not (gnus-y-or-n-p 
 		       "Do you want to ignore `Followup-To: poster'? "))))
 	;; Mail to the poster. 
-	(gnus-summary-reply yank)
+	(progn
+	  (set-buffer gnus-summary-buffer)
+	  (gnus-summary-reply yank))
       ;; Send a followup.
       (gnus-post-news nil gnus-newsgroup-name
 		      headers gnus-article-buffer 
@@ -977,6 +994,33 @@ called."
 		  "Your .sig is %d lines; it should be max 4.  Really post? "
 		  (count-lines (point) (point-max))))
 	      t)))))))
+
+(defvar gnus-inews-sent-ids nil)
+
+(defun gnus-inews-reject-message ()
+  "Check whether this message has already been sent."
+  (when gnus-sent-message-ids-file
+    (let ((message-id (save-restriction (gnus-inews-narrow-to-headers)
+					(mail-fetch-field "message-id")))
+	  end)
+      (when message-id
+	(unless gnus-inews-sent-ids
+	  (condition-case ()
+	      (load  t t t)
+	    (error nil)))
+	(if (member message-id gnus-inews-sent-ids)
+	    ;; Reject this message.
+	    (not (gnus-yes-or-no-p 
+		  (format "Message %s already sent.  Send anyway? "
+			  message-id)))
+	  (push message-id gnus-inews-sent-ids)
+	  ;; Chop off the last Message-IDs.
+	  (when (setq end (nthcdr gnus-sent-message-ids-length 
+				  gnus-inews-sent-ids))
+	    (setcdr end nil))
+	  (nnheader-temp-write gnus-sent-message-ids-file
+	    (prin1 `(setq gnus-inews-sent-ids ',gnus-inews-sent-ids)))
+	  nil)))))
 
 (defun gnus-tokenize-header (header &optional separator)
   "Split HEADER into a list of header elements.
@@ -1768,6 +1812,9 @@ Customize the variable gnus-mail-forward-method to use another mailer."
       (goto-char (point-min))
       (search-forward "\n\n")
       (forward-char -1)
+      (save-restriction
+	(narrow-to-region beg (point))
+	(nnheader-remove-header gnus-ignored-resent-headers t))
       (insert mail-header-separator)
       ;; Rename all old ("Also-")Resent headers.
       (while (re-search-backward "^\\(Also-\\)?Resent-" beg t)
@@ -2173,13 +2220,15 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	  (news-setup
 	   nil subject nil 
 	   (or sendto 
-	       (and followup-to
-		    gnus-use-followup-to
-		    (or (not (eq gnus-use-followup-to 'ask))
-			(equal followup-to newsgroups)
-			(gnus-y-or-n-p 
-			 (format "Use Followup-To %s? " followup-to)))
-		    followup-to)
+	       (if (equal followup-to "poster")
+		   (or newsgroups group "")
+		 (and followup-to
+		      gnus-use-followup-to
+		      (or (not (eq gnus-use-followup-to 'ask))
+			  (equal followup-to newsgroups)
+			  (gnus-y-or-n-p 
+			   (format "Use Followup-To %s? " followup-to)))
+		      followup-to))
 	       newsgroups group "")
 	   gnus-article-copy)
 
@@ -2651,23 +2700,24 @@ Headers will be generated before sending."
 	(gnus-inews-insert-headers gnus-required-mail-headers)
 	(gnus-inews-remove-empty-headers))))
   (widen)
-  ;; Remove the header separator.
-  (goto-char (point-min))
-  (and (re-search-forward
-	(concat "^" (regexp-quote mail-header-separator) "$") nil t)
-       (replace-match "" t t))
-  ;; Run final inews hooks.  This hook may do FCC.
-  (run-hooks 'gnus-inews-article-hook)
-  (gnus-inews-do-gcc)
-  (nnheader-narrow-to-headers)
-  (nnheader-remove-header "^[gf]cc:" t)
-  (widen)
-  (goto-char (point-min))
-  (search-forward "\n\n")
-  (forward-char -1)
-  (insert mail-header-separator)
-  (mail-send)
-  (run-hooks 'gnus-message-sent-hook))
+  (when (not (gnus-inews-reject-message))
+    ;; Remove the header separator.
+    (goto-char (point-min))
+    (and (re-search-forward
+	  (concat "^" (regexp-quote mail-header-separator) "$") nil t)
+	 (replace-match "" t t))
+    ;; Run final inews hooks.  This hook may do FCC.
+    (run-hooks 'gnus-inews-article-hook)
+    (gnus-inews-do-gcc)
+    (nnheader-narrow-to-headers)
+    (nnheader-remove-header "^[gf]cc:" t)
+    (widen)
+    (goto-char (point-min))
+    (search-forward "\n\n")
+    (forward-char -1)
+    (insert mail-header-separator)
+    (mail-send)
+    (run-hooks 'gnus-message-sent-hook)))
 
 (defun gnus-inews-modify-mail-mode-map ()
   (use-local-map (copy-keymap (current-local-map)))
@@ -3008,7 +3058,8 @@ Headers will be generated before sending."
     (widen)
     (forward-line 1)
     (unless (looking-at "$")
-      (forward-line 2)))))
+      (forward-line 2)))
+   (sit-for 0)))
   
 ;;; Allow redefinition of functions.
 

@@ -89,6 +89,17 @@ The SOUP packet file name will be inserted at the %s.")
     (nnsoup-active-file ,nnsoup-active-file)
     (nnsoup-status-string "")
     (nnsoup-current-prefix 0)
+    (nnsoup-current-group nil)
+    (nnsoup-buffers nil)
+    (nnsoup-replies-list nil)
+    (nnsoup-packet-regexp ,nnsoup-packet-regexp)
+    (nnsoup-packet-directory ,nnsoup-packet-directory)
+    (nnsoup-unpacker ,nnsoup-unpacker)
+    (nnsoup-packer ,nnsoup-packer)
+    (nnsoup-replies-index-type ,nnsoup-replies-index-type)
+    (nnsoup-replies-format-type ,nnsoup-replies-format-type)
+    (nnsoup-replies-directory ,nnsoup-replies-directory)
+    (nnsoup-tmp-directory ,nnsoup-tmp-directory)
     (nnsoup-group-alist nil)))
 
 
@@ -628,7 +639,8 @@ The SOUP packet file name will be inserted at the %s.")
 	(search-forward "\n\n" nil t))
       (backward-char 1)
       (setq delimline (point-marker))
-      (if mail-aliases (expand-mail-aliases (point-min) delimline))
+      (if (and mail-aliases (fboundp 'expand-mail-aliases))
+	  (expand-mail-aliases (point-min) delimline))
       (goto-char (point-min))
       ;; ignore any blank lines in the header
       (while (and (re-search-forward "\n\n\n*" delimline t)
@@ -652,7 +664,8 @@ The SOUP packet file name will be inserted at the %s.")
 	;; Insert an extra newline if we need it to work around
 	;; Sun's bug that swallows newlines.
 	(goto-char (1+ delimline))
-	(if (eval mail-mailer-swallows-blank-line)
+	(if (and (boundp 'mail-mailer-swallows-blank-line)
+		 (eval mail-mailer-swallows-blank-line))
 	    (newline)))
       (let ((msg-buf
 	     (gnus-soup-store 

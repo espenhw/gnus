@@ -88,6 +88,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (article-begin . ,(concat "\n\n" (make-string 30 ?-) "\n\n+"))
      (prepare-body . nndoc-prepare-digest-body)
      (body-end-function . nndoc-digest-body-end)
+     (head-end . "^ ?$")
+     (body-begin . "^ ?\n")
      (file-end . "^End of .*digest.*[0-9].*\n\\*\\*\\|^End of.*Digest *$"))
     (guess 
      (guess . nndoc-guess-type))
@@ -113,6 +115,14 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defvar nndoc-generate-head nil)
 (defvar nndoc-article-transform nil)
 
+(defvar nndoc-status-string "")
+(defvar nndoc-group-alist nil)
+(defvar nndoc-current-buffer nil
+  "Current nndoc news buffer.")
+(defvar nndoc-address nil)
+
+
+
 (defvar nndoc-current-server nil)
 (defvar nndoc-server-alist nil)
 (defvar nndoc-server-variables
@@ -132,21 +142,18 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (nndoc-body-end-function nil)
     (nndoc-prepare-body nil)
     (nndoc-body-begin-function nil)
+    (nndoc-status-string ,nndoc-status-string)
+    (nndoc-body-end ,nndoc-body-end)
+    (nndoc-file-end ,nndoc-file-end)
+    (nndoc-file-begin ,nndoc-file-begin)
+    (nndoc-type-alist ,nndoc-type-alist)
+    (nndoc-post-type ,nndoc-post-type)
     (nndoc-address nil)))
 
 (defconst nndoc-version "nndoc 1.0"
   "nndoc version.")
 
-(defvar nndoc-current-buffer nil
-  "Current nndoc news buffer.")
-
-(defvar nndoc-address nil)
-
 
-
-(defvar nndoc-status-string "")
-
-(defvar nndoc-group-alist nil)
 
 ;;; Interface functions
 

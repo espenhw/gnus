@@ -60,18 +60,30 @@ If this variable is nil, no files will be excluded.")
 (defvar nneething-message-id-number 0)
 (defvar nneething-work-buffer " *nneething work*")
 
-
-
 (defvar nneething-directory nil)
 (defvar nneething-group nil)
 (defvar nneething-map nil)
 (defvar nneething-read-only nil)
 (defvar nneething-active nil)
+
+
+
+(defvar nneething-current-server nil)
+(defvar nneething-server-alist)
 (defvar nneething-server-variables 
   `((nneething-directory ,nneething-directory)
     (nneething-current-directory nil)
     (nneething-status-string "")
-    (nneething-group-alist)))
+    (nneething-active nil)
+    (nneething-read-only nil)
+    (nneething-map nil)
+    (nneething-group nil)
+    (nneething-work-buffer ,nneething-work-buffer)
+    (nneething-message-id-number ,nneething-message-id-number)
+    (nneething-exclude-files nil)
+    (nneething-map-file ,nneething-map-file)
+    (nneething-map-file-directory ,nneething-map-file-directory)
+    (nneething-group-alist nil)))
 
 
 

@@ -58,7 +58,7 @@ with some simple extensions.
 
 (defvar gnus-topic-killed-topics nil)
 (defvar gnus-topic-inhibit-change-level nil)
-
+(defvar gnus-topic-tallied-groups nil)
 
 (defconst gnus-topic-line-format-alist
   `((?n name ?s)
@@ -70,8 +70,6 @@ with some simple extensions.
     (?l level ?d)))
 
 (defvar gnus-topic-line-format-spec nil)
-(defvar gnus-topic-active-topology nil)
-(defvar gnus-topic-active-alist nil)
 
 ;; Functions.
 
@@ -107,6 +105,9 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
         (lowest (or lowest 1))
 	tlist info)
 
+    (unless gnus-topic-alist
+      (gnus-topic-check-topology))
+
     (unless list-topic 
       (erase-buffer))
     
@@ -122,7 +123,8 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
        (setq gnus-killed-list (sort gnus-killed-list 'string<))
        gnus-level-killed ?K
        regexp))
-    
+
+    (setq gnus-topic-tallied-groups nil)
     ;; Use topics.
     (when (< lowest gnus-level-zombie)
       (if list-topic
@@ -174,7 +176,10 @@ articles in the topic and its subtopics."
 	     (gnus-info-level info) (gnus-info-marks info) 
 	     (car entry) (gnus-info-method info)))))
       (when (and (listp entry)
-		 (numberp (car entry)))
+		 (numberp (car entry))
+		 (not (member (gnus-info-group info)
+			      gnus-topic-tallied-groups)))
+	(push (gnus-info-group info) gnus-topic-tallied-groups)
 	(incf unread (car entry))))
     (goto-char beg)
     ;; Insert the topic line.
@@ -412,10 +417,11 @@ articles in the topic and its subtopics."
   (when (and (eq major-mode 'gnus-group-mode)
 	     gnus-topic-mode)
     (let ((group (gnus-group-group-name)))
-      (gnus-topic-goto-topic (gnus-group-parent-topic))
-      (gnus-topic-update-topic-line)
-      (gnus-group-goto-group group)
-      (gnus-group-position-point))))
+      (when (and group (gnus-get-info group))
+	(gnus-topic-goto-topic (gnus-group-parent-topic))
+	(gnus-topic-update-topic-line)
+	(gnus-group-goto-group group)
+	(gnus-group-position-point)))))
 
 (defun gnus-topic-goto-missing-group (group) 
   "Place point where GROUP is supposed to be inserted."
@@ -553,6 +559,7 @@ articles in the topic and its subtopics."
   (gnus-define-keys
    (gnus-group-topic-map "T" gnus-group-mode-map)
    "#" gnus-topic-mark-topic
+   "\M-#" gnus-topic-unmark-topic
    "n" gnus-topic-create-topic
    "m" gnus-topic-move-group
    "D" gnus-topic-remove-group
@@ -586,7 +593,6 @@ articles in the topic and its subtopics."
 	["Indent" gnus-topic-indent t])
        ["List active" gnus-topic-list-active t]))))
 
-
 (defun gnus-topic-mode (&optional arg redisplay)
   "Minor mode for topicsifying Gnus group buffers."
   (interactive (list current-prefix-arg t))
@@ -617,9 +623,9 @@ articles in the topic and its subtopics."
 	    'gnus-topic-goto-next-group)
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
-      (run-hooks 'gnus-topic-mode-hook)
       ;; We check the topology.
-      (gnus-topic-check-topology))
+      (gnus-topic-check-topology)
+      (run-hooks 'gnus-topic-mode-hook))
     ;; Remove topic infestation.
     (unless gnus-topic-mode
       (remove-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
@@ -723,6 +729,7 @@ group."
 (defun gnus-topic-change-level (group level oldlevel)
   "Run when changing levels to enter/remove groups from topics."
   (when (and gnus-topic-mode 
+	     gnus-topic-alist
 	     (not gnus-topic-inhibit-change-level))
     ;; Remove the group from the topics.
     (when (and (< oldlevel gnus-level-zombie)
@@ -813,7 +820,8 @@ group."
 (defun gnus-topic-hide-topic ()
   "Hide all subtopics under the current topic."
   (interactive)
-  (when (gnus-group-topic-p)
+  (when (gnus-group-parent-topic)
+    (gnus-topic-goto-topic (gnus-group-parent-topic))
     (gnus-topic-remove-topic nil nil 'hidden)))
 
 (defun gnus-topic-show-topic ()
@@ -822,12 +830,19 @@ group."
   (when (gnus-group-topic-p)
     (gnus-topic-remove-topic t nil 'shown)))
 
-(defun gnus-topic-mark-topic (topic)
+(defun gnus-topic-mark-topic (topic &optional unmark)
   "Mark all groups in the topic with the process mark."
   (interactive (list (gnus-group-parent-topic)))
-  (let ((groups (cdr (gnus-topic-find-groups topic))))
-    (while groups
-      (gnus-group-set-mark (gnus-info-group (nth 2 (pop groups)))))))
+  (save-excursion
+    (let ((groups (gnus-topic-find-groups topic)))
+      (while groups
+	(funcall (if unmark 'gnus-group-remove-mark 'gnus-group-set-mark)
+		 (gnus-info-group (nth 2 (pop groups))))))))
+
+(defun gnus-topic-unmark-topic (topic &optional unmark)
+  "Remove the process mark from all groups in the topic."
+  (interactive (list (gnus-group-parent-topic)))
+  (gnus-topic-mark-topic topic t))
 
 (defun gnus-topic-get-new-news-this-topic (&optional n)
   "Check for new news in the current topic."
@@ -925,7 +940,7 @@ If UNINDENT, remove an indentation."
   "List all groups that Gnus knows about in a topicsified fashion.
 If FORCE, always re-read the active file."
   (interactive "P")
-  (gnus-topic-grok-active force)
+  (gnus-topic-grok-active force force)
   (let ((gnus-topic-topology gnus-topic-active-topology)
 	(gnus-topic-alist gnus-topic-active-alist)
 	gnus-killed-list gnus-zombie-list)

@@ -71,6 +71,7 @@ virtual group.")
 		     (get-buffer-create " *virtual headers*")))
 	      (unfetched (mapcar (lambda (g) (list g))
 				 nnvirtual-component-groups))
+	      (system-name (system-name))
 	      beg cgroup active article result prefix)
 	  (while articles
 	    (setq article (assq (pop articles) nnvirtual-mapping))
@@ -95,7 +96,7 @@ virtual group.")
 		  (while (not (eobp))
 		    (delete-region 
 		     (point) (progn (read nntp-server-buffer) (point)))
-		    (insert (int-to-string (car article)))
+		    (princ (car article) (current-buffer))
 		    (beginning-of-line)
 		    (looking-at 
 		     "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
@@ -111,10 +112,12 @@ virtual group.")
 			  (end-of-line)
 			  (or (= (char-after (1- (point))) ?\t)
 			      (insert ?\t))
-			  (insert (format "Xref: %s %s:%d\t" (system-name) 
-					  cgroup (caddr article))))
-		      (insert (format "Xref: %s %s:%d " (system-name) 
-				      cgroup (caddr article)))
+			  (insert "Xref: " system-name " " cgroup ":")
+			  (princ (caddr article) (current-buffer))
+			  (insert "\t"))
+		      (insert "Xref: " system-name " " cgroup ":")
+		      (princ (caddr article) (current-buffer))
+		      (insert " ")
 		      (if (not (string= "" prefix))
 			  (while (re-search-forward 
 				  "[^ ]+:[0-9]+"
@@ -194,7 +197,7 @@ virtual group.")
   (cond
    ((null (nnvirtual-possibly-change-group
 	   group server 
-	   (if nnvirtual-always-rescan nil dont-check)))
+	   (if nnvirtual-always-rescan nil (not dont-check))))
     (setq nnvirtual-current-group nil)
     (nnheader-report 'nnvirtual "No component groups in %s" group))
    (t
@@ -307,41 +310,40 @@ virtual group.")
 		    (concat "Xref: " (mail-header-xref header) "\t")
 		  "") "\n")))))
 
-(defun nnvirtual-possibly-change-group (group regexp &optional dont-check)
+(defun nnvirtual-possibly-change-group (group regexp &optional check)
   (let ((inf t))
-    (unless (equal group nnvirtual-current-group)
+    (when (or (not (equal group nnvirtual-current-group))
+	      check)
       (and (setq inf (assoc group nnvirtual-group-alist))
 	   regexp
 	   (string= (nth 3 inf) regexp)
 	   (progn
 	     (setq nnvirtual-current-group (car inf))
 	     (setq nnvirtual-component-groups (nth 1 inf))
-	     (setq nnvirtual-mapping (nth 2 inf)))))
-    (when (and regexp
-	       (or (not inf)
-		   (not dont-check)))
-      (and inf (setq nnvirtual-group-alist 
-		     (delq inf nnvirtual-group-alist)))
-      (setq nnvirtual-mapping nil)
-      (setq nnvirtual-current-group group)
-      (let ((newsrc gnus-newsrc-alist)
-	    (virt-group (gnus-group-prefixed-name 
-			 nnvirtual-current-group '(nnvirtual ""))))
-	(setq nnvirtual-component-groups nil)
-	(while newsrc
-	  (and (string-match regexp (caar newsrc))
-	       (not (string= (caar newsrc) virt-group))
-	       (setq nnvirtual-component-groups
-		     (cons (caar newsrc) nnvirtual-component-groups)))
-	  (setq newsrc (cdr newsrc))))
-      (if nnvirtual-component-groups
-	  (progn
-	    (nnvirtual-create-mapping)
-	    (setq nnvirtual-group-alist
-		  (cons (list group nnvirtual-component-groups 
-			      nnvirtual-mapping regexp)
-			nnvirtual-group-alist)))
-	(nnheader-report 'nnvirtual "No component groups: %s" group))))
+	     (setq nnvirtual-mapping (nth 2 inf))))
+      (when (and regexp (not inf))
+	(and inf (setq nnvirtual-group-alist 
+		       (delq inf nnvirtual-group-alist)))
+	(setq nnvirtual-mapping nil)
+	(setq nnvirtual-current-group group)
+	(let ((newsrc gnus-newsrc-alist)
+	      (virt-group (gnus-group-prefixed-name 
+			   nnvirtual-current-group '(nnvirtual ""))))
+	  (setq nnvirtual-component-groups nil)
+	  (while newsrc
+	    (and (string-match regexp (caar newsrc))
+		 (not (string= (caar newsrc) virt-group))
+		 (setq nnvirtual-component-groups
+		       (cons (caar newsrc) nnvirtual-component-groups)))
+	    (setq newsrc (cdr newsrc))))
+	(if nnvirtual-component-groups
+	    (progn
+	      (nnvirtual-create-mapping)
+	      (setq nnvirtual-group-alist
+		    (cons (list group nnvirtual-component-groups 
+				nnvirtual-mapping regexp)
+			  nnvirtual-group-alist)))
+	  (nnheader-report 'nnvirtual "No component groups: %s" group)))))
   nnvirtual-component-groups)
 
 (defun nnvirtual-update-marked ()
@@ -364,7 +366,7 @@ virtual group.")
 	 (caar cgroups) type (cdar cgroups) nil t)
 	(gnus-group-update-group (car (pop cgroups)) t)))))
 
-(defun nnvirtual-marks (article marks)
+(defsubst nnvirtual-marks (article marks)
   "Return a list of mark types for ARTICLE."
   (let (out)
     (while marks

@@ -52,7 +52,8 @@
 (defvar nndir-server-variables 
   `((nndir-directory nil)
     (nndir-status-string "")
-    (nndir-group-alist)))
+    (nndir-nov-is-evil ,nndir-nov-is-evil)
+    (nndir-group-alist nil)))
 
 
 

@@ -70,6 +70,8 @@
     (nnmbox-active-file ,nnmbox-active-file)
     (nnmbox-get-new-mail ,nnmbox-get-new-mail)
     (nnmbox-current-group nil)
+    (nnmbox-active-timestamp nil)
+    (nnmbox-prepare-save-mail-hook nil)
     (nnmbox-status-string "")
     (nnmbox-group-alist nil)))
 

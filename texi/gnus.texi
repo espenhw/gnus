@@ -1163,7 +1163,7 @@ This does the same as the command above, but tries to do it with the
 minimum amount off fuzz (@code{gnus-group-quick-select-group}).  No
 scoring/killing will be performed, there will be no highlights and no
 expunging.  This might be useful if you're in a real hurry and have to
-enter some humongous groups.
+enter some humongous group.
 
 @item M-SPACE
 @kindex M-RET (Group)
@@ -2262,6 +2262,18 @@ Move all groups that match some regular expression to a topic
 Copy all groups that match some regular expression to a topic
 (@code{gnus-topic-copy-matching}). 
 
+@item T #
+@kindex T # (Group)
+@findex gnus-topic-mark-topic
+Mark all groups in the current topic with the process mark
+(@code{gnus-topic-mark-topic}). 
+
+@item T M-#
+@kindex T M-# (Group)
+@findex gnus-topic-unmark-topic
+Remove the process mark from all groups in the current topic
+(@code{gnus-topic-unmark-topic}). 
+
 @item RET
 @kindex RET (Group)
 @findex gnus-topic-select-group
@@ -2798,13 +2810,19 @@ Go to the next summary line of an unread article
 Go to the previous summary line of an unread article
 (@code{gnus-summary-prev-unread-subject}). 
 
-@item G g
+@item G j
 @itemx j
 @kindex j (Summary)
+@kindex G j (Summary)
+@findex gnus-summary-goto-article
+Ask for an article number and then go that article
+(@code{gnus-summary-goto-article}). 
+
+@item G g
 @kindex G g (Summary)
 @findex gnus-summary-goto-subject
-Ask for an article number and then go to this summary line
-(@code{gnus-summary-goto-subject}). 
+Ask for an article number and then go the summary line of that article
+(@code{gnus-summary-goto-subject}).
 @end table
 
 If Gnus asks you to press a key to confirm going to the next group, you
@@ -3097,6 +3115,7 @@ very well fail, though.
 @item S D r
 @kindex S D r (Summary)
 @findex gnus-summary-resend-message
+@vindex gnus-ignored-resent-headers
 Not to be confused with the previous command,
 @code{gnus-summary-resend-message} will prompt you for an address to
 send the current message off to, and then send it to that place.  The
@@ -3104,7 +3123,10 @@ headers of the message won't be altered---but lots of headers that say
 @code{Resent-To}, @code{Resent-From} and so on will be added.  This
 means that you actually send a mail to someone that has a @code{To}
 header that (probably) points to yourself.  This will confuse people.
-So, natcherly you'll only do that if you're really eVIl.  
+So, natcherly you'll only do that if you're really eVIl.  All old
+headers that match the regular expression
+@code{gnus-ignored-resent-headers} will be deleted before resending the
+message.  The default is @samp{"^Return-receipt"}.
 
 This command is mainly used if you have several accounts and want to
 ship a mail to a different account of yours.  (If you're both
@@ -4345,6 +4367,12 @@ Save the current article body in plain file format
 Save the current article in mh folder format
 (@code{gnus-summary-save-article-folder}). 
 
+@item O v
+@kindex O v (Summary)
+@findex gnus-summary-save-article-vm
+Save the current article in a VM folder
+(@code{gnus-summary-save-article-vm}).
+
 @item O p
 @kindex O p (Summary)
 @findex gnus-summary-pipe-output
@@ -5161,8 +5189,8 @@ Treat overstrike (@code{gnus-article-treat-overstrike}).
 
 @item W w
 @kindex W w (Summary)
-@findex gnus-article-word-wrap
-Do word wrap (@code{gnus-article-word-wrap}).
+@findex gnus-article-fill-cited-article
+Do word wrap (@code{gnus-article-fill-cited-article}).
 
 @item W c
 @kindex W c (Summary)
@@ -5751,10 +5779,10 @@ editing and make the changes permanent, type @kbd{C-c C-c}
 
 @item B q
 @kindex B q (Summary)
-@findex gnus-summary-fancy-query
+@findex gnus-summary-respool-query
 If you want to re-spool an article, you might be curious as to what group
 the article will end up in before you do the re-spooling.  This command
-will tell you (@code{gnus-summary-fancy-query}). 
+will tell you (@code{gnus-summary-respool-query}). 
 @end table
 
 @vindex gnus-move-split-methods
@@ -6833,6 +6861,22 @@ Check whether any of the headers are empty.
 
 All these conditions are checked by default.
 
+@item gnus-sent-message-ids-file
+@vindex gnus-sent-message-ids-file
+Gnus will keep a @code{Message-ID} history file of all the mails it has
+sent.  If it discovers that it has already sent a mail, it will ask the
+user whether to re-send the mail.  (This is primarily useful when
+dealing with @sc{soup} packets and the like where one is apt to sent the
+same packet multiple times.)  This variable says what the name of this
+history file is.  It is @file{~/News/Sent-Message-IDs} by default.  Set
+this variable to @code{nil} if you don't want Gnus to keep a history
+file.
+
+@item gnus-sent-message-ids-length
+@vindex gnus-sent-message-ids-length
+This variable says how many @code{Message-ID}s to keep in the history
+file.  It is 1000 by default.
+
 @end table
 
 
@@ -7783,26 +7827,32 @@ described above.
 This hook is run as the last step when connecting to an @sc{nntp}
 server.
 
-@c @findex nntp-open-rlogin
-@c @findex nntp-open-network-stream
-@c @item nntp-open-server-function
-@c @vindex nntp-open-server-function
-@c This function is used to connect to the remote system.  Two pre-made
-@c functions are @code{nntp-open-network-stream}, which is the default, and
-@c simply connects to some port or other on the remote system.  The other
-@c is @code{nntp-open-rlogin}, which does an rlogin on the remote system,
-@c and then does a telnet to the @sc{nntp} server available there.
-@c 
-@c @item nntp-rlogin-parameters
-@c @vindex nntp-rlogin-parameters
-@c If you use @code{nntp-open-rlogin} as the
-@c @code{nntp-open-server-function}, this list will be used as the
-@c parameter list given to @code{rsh}.
-@c 
-@c @item nntp-rlogin-user-name
-@c @vindex nntp-rlogin-user-name
-@c User name on the remote system when using the @code{rlogin} connect
-@c function. 
+@findex nntp-open-rlogin
+@findex nntp-open-network-stream
+@item nntp-open-server-function
+@vindex nntp-open-server-function
+This function is used to connect to the remote system.  Two pre-made
+functions are @code{nntp-open-network-stream}, which is the default, and
+simply connects to some port or other on the remote system.  The other
+is @code{nntp-open-rlogin}, which does an rlogin on the remote system,
+and then does a telnet to the @sc{nntp} server available there.
+
+@item nntp-rlogin-parameters
+@vindex nntp-rlogin-parameters
+If you use @code{nntp-open-rlogin} as the
+@code{nntp-open-server-function}, this list will be used as the
+parameter list given to @code{rsh}.
+
+@item nntp-end-of-line
+@vindex nntp-end-of-line
+String to use as end-of-line markers when talking to the @sc{nntp}
+server.  This is @samp{\r\n} by default, but should be @samp{\n} when
+using @code{rlogin} to talk to the server.
+
+@item nntp-rlogin-user-name
+@vindex nntp-rlogin-user-name
+User name on the remote system when using the @code{rlogin} connect
+function. 
 
 @item nntp-address
 @vindex nntp-address
@@ -9907,7 +9957,26 @@ should feature this atom (@pxref{Global Score Files}).
 
 @item orphan
 The value of this entry should be a number.  Articles that do not have
-parents will get this number added to their scores.
+parents will get this number added to their scores.  Imagine you follow
+some high-volume newsgroup, like @samp{comp.lang.c}.  Most likely you
+will only follow a few of the threads, also want to see any new threads.
+
+You can do this with the following two score file entries:
+
+@example
+	(orphan -500)
+	(mark-and-expunge -100)
+@end example
+
+When you enter the group the first time, you will only see the new
+threads.  You then raise the score of the threads that you find
+interesting (with @kbd{I T} or @kbd{I S}), and ignore (@kbd{C y}) the
+rest.  Next time you enter the group, you will see new articles in the
+interesting threads, plus any new threads.
+
+I.e. -- the orphan score atom is for high-volume groups where there
+exist a few interesting threads which can't be found automatically by
+ordinary scoring rules.
 
 @item adapt
 This entry controls the adaptive scoring.  If it is @code{t}, the
@@ -10276,7 +10345,7 @@ Other programs use a totally different kill file syntax.  If Gnus
 encounters what looks like a @code{rn} kill file, it will take a stab at
 interpreting it. 
 
-Two functions for editing a GNUS kill file:
+Two summary functions for editing a GNUS kill file:
 
 @table @kbd
 
@@ -10289,6 +10358,21 @@ Edit this group's kill file (@code{gnus-summary-edit-local-kill}).
 @kindex M-K (Summary)
 @findex gnus-summary-edit-global-kill
 Edit the general kill file (@code{gnus-summary-edit-global-kill}).
+@end table
+
+Two group mode functions for editing the kill files:
+
+@table @kbd
+
+@item M-k
+@kindex M-k (Group)
+@findex gnus-group-edit-local-kill
+Edit this group's kill file (@code{gnus-group-edit-local-kill}).
+
+@item M-K
+@kindex M-K (Group)
+@findex gnus-group-edit-global-kill
+Edit the general kill file (@code{gnus-group-edit-global-kill}).
 @end table
 
 Kill file variables:
@@ -10329,7 +10413,7 @@ A hook called in kill-file mode buffers.
 * Interactive::                Making Gnus ask you many questions.
 * Formatting Variables::       You can specify what buffers should look like.
 * Windows Configuration::      Configuring the Gnus buffer windows.
-* Compilation and Init File::  How to speed Gnus up.
+* Compilation::                How to speed Gnus up.
 * Mode Lines::                 Displaying information in the mode lines.
 * Highlighting and Menus::     Making buffers look all nice and cozy.
 * Buttons::                    Get tendonitis in ten easy steps!
@@ -10701,21 +10785,12 @@ You'd typically stick these @code{gnus-add-configuration} calls in your
 Gnus has been loaded.
 
 
-@node Compilation and Init File
-@section Compilation and Init File
+@node Compilation 
+@section Compilation 
 @cindex compilation
-@cindex init file
 @cindex byte-compilation
 
-@vindex gnus-init-file
 @findex gnus-compile
-When Gnus starts up, it will read the Gnus init file
-@code{gnus-init-file}, which is @file{.gnus} by default.  It is
-recommended that you keep any Gnus-related functions that you have
-written in that file.  If you want to byte-compile the file, Gnus offers
-the handy @kbd{M-x gnus-compile} function that will do that for you. 
-
-That's not really why that function was written, though.
 
 Remember all those line format specification variables?
 @code{gnus-summary-line-format}, @code{gnus-group-line-format}, and so
@@ -10725,17 +10800,10 @@ unfortunately, changing them will mean a quite significant slow-down.
 associated with them, while the user-generated versions do not, of
 course.) 
 
-To help with this, you can run @code{gnus-compile} after you've fiddled
-around with the variables and feel that you're (kind of) satisfied.
-This will result in the new specs being byte-compiled, and you'll get
-top speed again.
-
-The result of these byte-compilations will be written to
-@file{.gnus.elc} by default.
-
-Note that Gnus will read @file{.gnus.elc} instead of @file{.gnus} if
-@file{.gnus.elc} exists, so if you change @file{.gnus}, you should
-remove @file{.gnus.elc}.
+To help with this, you can run @kbd{M-x gnus-compile} after you've
+fiddled around with the variables and feel that you're (kind of)
+satisfied.  This will result in the new specs being byte-compiled, and
+you'll get top speed again.
 
 
 @node Mode Lines

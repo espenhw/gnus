@@ -66,6 +66,8 @@
 (defvar nnmh-server-variables 
   `((nnmh-directory ,nnmh-directory)
     (nnmh-get-new-mail ,nnmh-get-new-mail)
+    (nnmh-be-safe nil)
+    (nnmh-prepare-save-mail-hook nil)
     (nnmh-current-directory nil)
     (nnmh-status-string "")
     (nnmh-group-alist)))

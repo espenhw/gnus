@@ -529,7 +529,9 @@ nn*-request-list should have been called before calling this function."
 	found)
     (while (not found)
       (if (re-search-forward delim nil t)
-	  (when (looking-at "[^\000-\037\177-\377\ :]+:")
+	  (when (or (looking-at "[^\n :]+ *:")
+		    (looking-at delim)
+		    (looking-at (concat ">" delim)))
 	    (forward-line -1)
 	    (setq found 'yes))
 	(setq found 'no)))
@@ -585,15 +587,36 @@ nn*-request-list should have been called before calling this function."
 	(goto-char (point-max))
 	(widen)
 	(setq head-end (point))
-	;; We try the Content-Length value.
+	;; We try the Content-Length value.  The idea: skip over the header
+	;; separator, then check what happens content-length bytes into the
+	;; message body.  This should be either the end ot the buffer, the
+	;; message separator or a blank line followed by the separator.
+	;; The blank line should probably be deleted.  If neither of the
+	;; three is met, the content-length header is probably invalid.
 	(when content-length
 	  (forward-line 1)
 	  (setq skip (+ (point) content-length))
 	  (when (or (= skip (point-max))
 		    (and (< skip (point-max))
 			 (goto-char skip)
-			 (looking-at delim)))
+			 (or (looking-at delim)
+			     (and (looking-at 
+				   (concat "[ \t]*\n\\(" delim "\\)"))
+				  (setq skip (match-beginning 1))))))
 	    (setq end skip)))
+	(when content-length
+	  (forward-line 1)
+	  (setq skip (+ (point) content-length))
+	  (goto-char skip)
+	  (cond ((or (= skip (point-max))
+		     (= (1+ skip) (point-max)))
+		 (setq end (point-max)))
+		((looking-at delim)
+		 (setq end skip))
+		((looking-at
+		  (concat "[ \t]*\n\\(" delim "\\)"))
+		 (setq end (match-beginning 1)))
+		(t (setq end nil))))
 	(if end
 	    (goto-char end)
 	  ;; No Content-Length, so we find the beginning of the next 

@@ -665,7 +665,7 @@ The headers will be included in the sequence they are matched.")
   (gnus-uu-initialize scan)
   (if save (setq gnus-uu-default-dir save))
   ;; Create the directory we save to.
-  (when (and scan cdir
+  (when (and scan cdir save
 	     (not (file-exists-p save)))
     (make-directory save t))
   (let ((articles (gnus-uu-get-list-of-articles n))

@@ -174,7 +174,7 @@ If NEWSGROUP is nil, the global kill file is selected."
     (gnus-kill-file-mode)
     (bury-buffer buffer)))
 
-(defun gnus-kill-file-enter-kill (field regexp)
+(defun gnus-kill-file-enter-kill (field regexp &optional dont-move)
   ;; Enter kill file entry.
   ;; FIELD: String containing the name of the header field to kill.
   ;; REGEXP: The string to kill.
@@ -182,8 +182,8 @@ If NEWSGROUP is nil, the global kill file is selected."
     (let (string)
       (or (eq major-mode 'gnus-kill-file-mode)
 	  (gnus-kill-set-kill-buffer))
-      (current-buffer)
-      (goto-char (point-max))
+      (unless dont-move
+	(goto-char (point-max)))
       (insert (setq string (format "(gnus-kill %S %S)\n" field regexp)))
       (gnus-kill-file-apply-string string))))
     
@@ -195,7 +195,7 @@ If NEWSGROUP is nil, the global kill file is selected."
    (if (vectorp gnus-current-headers)
        (regexp-quote 
 	(gnus-simplify-subject (mail-header-subject gnus-current-headers)))
-     "")))
+     "") t))
   
 (defun gnus-kill-file-kill-by-author ()
   "Kill by author."
@@ -204,7 +204,7 @@ If NEWSGROUP is nil, the global kill file is selected."
    "From" 
    (if (vectorp gnus-current-headers)
        (regexp-quote (mail-header-from gnus-current-headers))
-     "")))
+     "") t))
  
 (defun gnus-kill-file-kill-by-thread ()
   "Kill by author."
@@ -230,8 +230,8 @@ If NEWSGROUP is nil, the global kill file is selected."
 			  (substring xref (match-beginning 1) (match-end 1)))
 		    gnus-newsgroup-name))
 	      (gnus-kill-file-enter-kill 
-	       "Xref" (concat " " (regexp-quote group) ":"))))
-      (gnus-kill-file-enter-kill "Xref" ""))))
+	       "Xref" (concat " " (regexp-quote group) ":") t)))
+      (gnus-kill-file-enter-kill "Xref" "" t))))
 
 (defun gnus-kill-file-raise-followups-to-author (level)
   "Raise score for all followups to the current author."

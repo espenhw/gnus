@@ -166,7 +166,7 @@ Uses the process/prefix convention."
   (let ((groups (gnus-group-process-prefix n)))
     (while groups
       (gnus-group-remove-mark (car groups))
-      (gnus-soup-group-brew (car groups))
+      (gnus-soup-group-brew (car groups) t)
       (setq groups (cdr groups)))
     (gnus-soup-save-areas)))
 
@@ -177,7 +177,7 @@ Uses the process/prefix convention."
 	(newsrc (cdr gnus-newsrc-alist)))
     (while newsrc
       (and (<= (nth 1 (car newsrc)) level)
-	   (gnus-soup-group-brew (caar newsrc)))
+	   (gnus-soup-group-brew (caar newsrc) t))
       (setq newsrc (cdr newsrc)))
     (gnus-soup-save-areas)))
 
@@ -261,15 +261,23 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
   "Enter GROUP and add all articles to a SOUP package.
 If NOT-ALL, don't pack ticked articles."
   (let ((gnus-expert-user t)
-	(gnus-large-newsgroup nil))
-    (when (gnus-summary-read-group group nil t)
-      (let ((gnus-newsgroup-processable
-	     (if (not not-all)
-		 (reverse (append gnus-newsgroup-marked
-				  gnus-newsgroup-unreads))
-	       (reverse gnus-newsgroup-unreads))))
-	(gnus-soup-add-article nil))
-      (gnus-summary-exit))))
+	(gnus-large-newsgroup nil)
+	(entry (gnus-gethash group gnus-newsrc-hashtb)))
+    (when (or (null entry)
+	      (eq (car entry) t)
+	      (and (car entry)
+		   (> (car entry) 0))
+	      (and (not not-all)
+		   (gnus-range-length (cdr (assq 'tick (gnus-info-marks 
+							(nth 2 entry)))))))
+      (when (gnus-summary-read-group group nil t)
+	(let ((gnus-newsgroup-processable
+	       (if (not not-all)
+		   (reverse (append gnus-newsgroup-marked
+				    gnus-newsgroup-unreads))
+		 (reverse gnus-newsgroup-unreads))))
+	  (gnus-soup-add-article nil))
+	(gnus-summary-exit)))))
 
 (defun gnus-soup-insert-idx (offset header)
   ;; [number subject from date id references chars lines xref]

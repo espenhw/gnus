@@ -289,6 +289,7 @@ Returns the list of articles entered."
 	(push article out))
       (gnus-summary-remove-process-mark article)
       (gnus-summary-update-secondary-mark article))
+    (gnus-summary-next-subject 1)
     (gnus-summary-position-point)
     (nreverse out)))
 
@@ -556,10 +557,9 @@ If LOW, update the lower bound instead."
 	  (push (string-to-int (file-name-nondirectory (pop files))) nums)
 	(push (pop files) alphs)))
     ;; If we have nums, then this is probably a valid group.
-    (setq nums (sort nums '<))
-    (if nums
-	(gnus-sethash group (cons (car nums) (gnus-last-element nums))
-		      gnus-cache-active-hashtb))
+    (when (setq nums (sort nums '<))
+      (gnus-sethash group (cons (car nums) (gnus-last-element nums))
+		    gnus-cache-active-hashtb))
     ;; Go through all the other files.
     (while alphs
       (when (and (file-directory-p (car alphs))

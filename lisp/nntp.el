@@ -106,6 +106,11 @@ case, this list will be used as the parameter list given to rsh.")
 (defvar nntp-port-number "nntp"
   "*Port number to connect to.")
 
+(defvar nntp-end-of-line "\r\n"
+  "String to use on the end of lines when talking to the NNTP server.
+This is \"\\r\\n\" by default, but should be \"\\n\" when
+using rlogin to communicate with the server.")
+
 (defvar nntp-large-newsgroup 50
   "*The number of the articles which indicates a large newsgroup.
 If the number of the articles is greater than the value, verbose
@@ -201,8 +206,8 @@ instead call function `nntp-status-message' to get status message.")
 (defvar nntp-async-fetched nil)
 (defvar nntp-async-group-alist nil)
 
-
 
+
 (defvar nntp-current-server nil)
 (defvar nntp-server-alist nil)
 (defvar nntp-server-variables 
@@ -220,6 +225,14 @@ instead call function `nntp-status-message' to get status message.")
     (nntp-news-default-headers ,nntp-news-default-headers)
     (nntp-prepare-server-hook ,nntp-prepare-server-hook) 
     (nntp-async-number ,nntp-async-number)
+    (nntp-open-server-function ,nntp-open-server-function)
+    (nntp-warn-about-losing-connection ,nntp-warn-about-losing-connection)
+    (nntp-retry-on-break nil)
+    (nntp-command-timeout nil)
+    (nntp-nov-gap ,nntp-nov-gap)
+    (nntp-rlogin-parameters ,nntp-rlogin-parameters)
+    (nntp-rlogin-user-name ,nntp-rlogin-user-name)
+    (nntp-end-of-line ,nntp-end-of-line)
     (nntp-server-type nil)
     (nntp-async-process nil)
     (nntp-async-buffer nil)
@@ -415,7 +428,7 @@ servers."
      (while nntp-opened-connections
        (when (setq proc (pop nntp-opened-connections))
 	 (condition-case ()
-	     (process-send-string proc "QUIT\r\n")
+	     (process-send-string proc (concat "QUIT" nntp-end-of-line))
 	   (error nil))
 	 (delete-process proc)))
      (and nntp-async-buffer
@@ -749,7 +762,7 @@ It will prompt for a password."
     ;; Insert newline at end of buffer.
     (or (bolp) (insert "\n"))
     ;; Insert `.' at end of buffer (end of text mark).
-    (insert ".\r\n")))
+    (insert "." nntp-end-of-line)))
 
 
 ;;;
@@ -1063,7 +1076,7 @@ It will prompt for a password."
 
 (defun nntp-send-strings-to-server (&rest strings)
   "Send STRINGS to the server."
-  (let ((cmd (concat (mapconcat 'identity strings " ") "\r\n")))
+  (let ((cmd (concat (mapconcat 'identity strings " ") nntp-end-of-line)))
     ;; We open the nntp server if it is down.
     (or (nntp-server-opened nntp-current-server)
 	(nntp-open-server nntp-current-server)
@@ -1187,7 +1200,7 @@ If SERVICE, this this as the port number."
 (defun nntp-read-server-type ()
   "Find out what the name of the server we have connected to is."
   ;; Wait for the status string to arrive.
-  (nntp-wait-for-response "^.*\n")
+  (nntp-wait-for-response "^.*\n" t)
   (setq nntp-server-type (buffer-string))
   (let ((alist nntp-server-action-alist)
 	entry)
@@ -1205,10 +1218,18 @@ If SERVICE, this this as the port number."
    "nntpd" nntp-server-buffer server nntp-port-number))
 
 (defun nntp-open-rlogin (server)
-  (let ((proc (start-process "nntpd" nntp-server-buffer "rsh" server)))
-    (process-send-string proc (mapconcat 'identity nntp-rlogin-parameters
-					 " "))
-    (process-send-string proc "\n")))
+  (let ((proc (if nntp-rlogin-user-name
+		  (start-process "nntpd" nntp-server-buffer "rsh"
+				 "-l"
+				 nntp-rlogin-user-name
+				 server
+				 (mapconcat 'identity
+					    nntp-rlogin-parameters " "))
+		(start-process "nntpd" nntp-server-buffer "rsh"
+			       server
+			       (mapconcat 'identity
+					  nntp-rlogin-parameters " ")))))
+    proc))
 
 (defun nntp-telnet-to-machine ()
   (let (b)
@@ -1332,7 +1353,7 @@ defining this function as macro."
 	(setq articles (cdr articles))))))
 
 (defun nntp-async-send-strings (&rest strings)
-  (let ((cmd (concat (mapconcat 'identity strings " ") "\r\n")))
+  (let ((cmd (concat (mapconcat 'identity strings " ") nntp-end-of-line)))
     (or (nntp-async-server-opened)
 	(nntp-async-open-server)
 	(error (nntp-status-message)))

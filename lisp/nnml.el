@@ -89,6 +89,9 @@ all. This may very well take some time.")
     (nnml-nov-is-evil ,nnml-nov-is-evil)
     (nnml-nov-file-name ,nnml-nov-file-name)
     (nnml-current-directory nil)
+    (nnml-generate-active-function ,nnml-generate-active-function)
+    (nnml-article-file-alist nil)
+    (nnml-prepare-save-mail-hook nil)
     (nnml-current-group nil)
     (nnml-status-string "")
     (nnml-nov-buffer-alist nil)
@@ -433,7 +436,12 @@ all. This may very well take some time.")
   ;; Rename directory.
   (and (file-writable-p nnml-current-directory)
        (condition-case ()
-	   (progn
+	   (let ((parent 
+		  (file-name-directory
+		   (directory-file-name 
+		    (nnmail-group-pathname new-name nnml-directory)))))
+	     (unless (file-exists-p parent)
+	       (make-directory parent t))
 	     (rename-file 
 	      (directory-file-name nnml-current-directory)
 	      (directory-file-name 
@@ -779,8 +787,8 @@ all. This may very well take some time.")
 	      (set-buffer nov-buffer)
 	      (goto-char (point-max))
 	      (insert (int-to-string (car files)) nov-line)))
-	  (widen)
-	  (setq files (cdr files))))
+	  (widen))
+	(setq files (cdr files)))
       (save-excursion
 	(set-buffer nov-buffer)
 	(write-region 1 (point-max) (expand-file-name nov) nil
