@@ -1,3 +1,31 @@
+2000-10-09  Dave Love  <fx@gnu.org>
+
+	* gnus-audio.el: Don't require cl.
+	(gnus-audio): New custom group.
+	(gnus-audio-inline-sound): Change to work with Emacs.
+	(gnus-audio-directory, gnus-audio-directory) 
+	(gnus-audio-au-player):  Customize.
+	(gnus-audio-play): Try external player if play-sound-file fails.
+	Use file-name-extension, not string-match.
+
+	* gnus-art.el (article-de-quoted-unreadable)
+	(article-de-base64-unreadable): Fold search case rather than
+	downcasing string.  Apply mm-charset-to-coding-system to arg of
+	quoted-printable-decode-region.
+	(gnus-article-dumbquotes-map): Fix dashes.
+	(gnus-button-mailto, gnus-button-embedded-url): Doc fix.
+	(gnus-button-reply): Just alias it.
+
+2000-10-09  Stefan Monnier  <monnier@cs.yale.edu>
+
+	* mm-encode.el: Require CL.  At least, for `incf'.
+
+	* nnfolder.el (nnfolder-ignore-active-file): Typos.
+
+	* gnus-mh.el (gnus-summary-save-in-folder): Obey mh-lib-progs.
+
+	* gnus-kill.el (gnus-kill): Typo.
+
 2000-10-09  Gerd Moellmann  <gerd@gnu.org>
 
 	* smiley-ems.el (smiley-update-cache):  Use `:ascent center'.
