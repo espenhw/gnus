@@ -213,11 +213,10 @@
   (unless (or (featurep 'xemacs)
 	      (>= emacs-major-version 21))
     (defvar mm-w3m-mode-map nil
-      "Keymap for text/html part rendered by `mm-w3m-preview-text/html'.
-This map is overwritten by `mm-w3m-local-map-property' based on the
-value of `w3m-minor-mode-map'.  Therefore, in order to add some
-commands to this map, add them to `w3m-minor-mode-map' instead of this
-map.")))
+      "Keymap for text/html parts rendered by emacs-w3m.
+This keymap will be bound only when Emacs 20 is running and overwritten
+by the value of `w3m-minor-mode-map'.  In order to add some commands to
+this keymap, add them to `w3m-minor-mode-map' instead of this keymap.")))
 
 (defun mm-w3m-local-map-property ()
   (when (and (boundp 'w3m-minor-mode-map) w3m-minor-mode-map)
@@ -255,6 +254,7 @@ map.")))
 	  (add-text-properties
 	   (point-min) (point-max)
 	   (nconc (mm-w3m-local-map-property)
+		  ;; Put the mark meaning this part was rendered by emacs-w3m.
 		  '(mm-inline-text-html-with-w3m t)))))
       (mm-handle-set-undisplayer
        handle

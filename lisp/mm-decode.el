@@ -134,14 +134,17 @@ the documentation for the option `mm-w3m-safe-url-regexp'."
   :group 'mime-display)
 
 (defcustom mm-w3m-safe-url-regexp "\\`cid:"
-  "Regexp that matches safe url names.
-Some HTML mails might have a trick of spammers using <img> tags.
-It is likely to be intended to verify whether you have read the
-mail.  You can prevent your personal informations from leaking by
-setting this to the regexp which matches the safe url names.  The
-value of the variable `w3m-safe-url-regexp' will be bound with
-this value.  You may set this value to nil if you consider all
-urls to be safe."
+  "Regexp matching URLs which are considered to be safe.
+Some HTML mails might contain a nasty trick used by spammers, using
+the <img> tag which is far more evil than the [Click Here!] button.
+It is most likely intended to check whether the ominous spam mail has
+reached your eyes or not, in which case the spammer knows for sure
+that your email address is valid.  It is done by embedding an
+identifier string into a URL that you might automatically retrieve
+when displaying the image.  By default, the
+`mm-inline-text-html-with-images' variable is nil and Gnus will never
+connect to the spammer's site arbitrarily.  You may set this value to
+nil if you consider all urls to be safe."
   :type '(choice (regexp :tag "Regexp")
 		 (const :tag "All URLs are safe" nil))
   :group 'mime-display)
