@@ -1,5 +1,8 @@
 2002-07-27  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-sieve.el (gnus-sieve-guess-rule-for-article): Don't
+	regexp-quote, Cyrus Sieve is fixed.
+
 	* sieve-manage.el (sieve-manage-deletescript): New function.
 
 	* sieve.el (sieve-manage-mode-map): Fix down-mouse-2 and down-mouse-3.  

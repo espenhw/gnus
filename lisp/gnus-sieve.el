@@ -118,7 +118,7 @@ See the documentation for these variables and functions for details."
   "Guess a sieve rule based on RFC822 article in buffer.
 Return nil if no rule could be guessed."
   (when (message-fetch-field "sender")
-    `(sieve address "sender" ,(regexp-quote (message-fetch-field "sender")))))
+    `(sieve address "sender" ,(message-fetch-field "sender"))))
 
 ;;;###autoload
 (defun gnus-sieve-article-add-rule ()
