@@ -1,5 +1,9 @@
 2002-06-28  Katsumi Yamaoka <yamaoka@jpl.org>
 
+	* nntp.el (nntp-open-via-rlogin-and-telnet): Revert last change.
+
+2002-06-28  Katsumi Yamaoka <yamaoka@jpl.org>
+
 	* nntp.el (nntp-open-via-rlogin-and-telnet): Hide commandline args.
 
 2002-06-26  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>

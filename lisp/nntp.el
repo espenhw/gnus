@@ -1605,7 +1605,8 @@ Please refer to the following variables to customize the connection:
 - `nntp-end-of-line'."
   (let ((command `(,nntp-via-address
 		   ,nntp-telnet-command
-		   ,@nntp-telnet-switches))
+		   ,@nntp-telnet-switches
+		   ,nntp-address ,nntp-port-number))
 	proc)
     (and nntp-via-user-name
 	 (setq command `("-l" ,nntp-via-user-name ,@command)))
@@ -1615,9 +1616,6 @@ Please refer to the following variables to customize the connection:
     (setq proc (apply 'start-process "nntpd" buffer command))
     (save-excursion
       (set-buffer buffer)
-      (nntp-wait-for-string "^r?telnet")
-      (process-send-string proc (concat "open " nntp-address
-					" " nntp-port-number "\n"))
       (nntp-wait-for-string "^\r*20[01]")
       (beginning-of-line)
       (delete-region (point-min) (point))
