@@ -1,5 +1,7 @@
 2003-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el (gnus-variable-list): Write gnus-format-specs last. 
+
 	* gnus-sum.el (gnus-summary-goto-subjects): Fix typo.
 
 2003-01-04  Kevin Ryde  <user42@zip.com.au>
