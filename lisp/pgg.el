@@ -30,12 +30,19 @@
 (require 'pgg-def)
 (require 'pgg-parse)
 
+;; Don't merge these two `eval-when-compile's.
 (eval-when-compile
-  (require 'cl)
+  (require 'cl))
+;; Fixme: This would be better done with an autoload for
+;; `url-insert-file-contents', and the url stuff rationalized.
+;; (`locate-library' can say whether the url code is available.)
+(eval-when-compile
   (ignore-errors
     (require 'w3)
     (require 'url)))
 
+;; Fixme: Avoid this and use mm-make-temp-file (especially for
+;; something sensitive like pgp).
 (defvar pgg-temporary-file-directory
   (cond ((fboundp 'temp-directory) (temp-directory))
 	((boundp 'temporary-file-directory) temporary-file-directory)
