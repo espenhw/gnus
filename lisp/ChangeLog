@@ -1,5 +1,8 @@
 2003-05-23  Simon Josefsson  <jas@extundo.com>
 
+	* mml1991.el (mml1991-pgg-sign): Use mml-sender instead of
+	message-sender.
+
 	* gnus-art.el (gnus-use-idna): Check if idna-program is installed.
 
 	* message.el (message-use-idna): Ditto.

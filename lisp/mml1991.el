@@ -234,7 +234,7 @@
       (delete-region (point-min) (point)))
     (quoted-printable-decode-region (point-min) (point-max))
     (unless (let ((pgg-default-user-id
-		   (or (message-options-get 'message-sender)
+		   (or (message-options-get 'mml-sender)
 		       pgg-default-user-id)))
 	      (pgg-sign-region (point-min) (point-max) t))
       (pop-to-buffer pgg-errors-buffer)
