@@ -50,11 +50,11 @@
   "Parse the current buffer as an MML document."
   (let (struct)
     (while (and (not (eobp))
-		(not (looking-at "</multipart")))
+		(not (looking-at "</#multipart")))
       (cond
-       ((looking-at "<multipart")
+       ((looking-at "<#multipart")
 	(push (nconc (mml-read-tag) (mml-parse-1)) struct))
-       ((looking-at "<part")
+       ((looking-at "<#part")
 	(push (nconc (mml-read-tag) (list (cons 'contents (mml-read-part))))
 	      struct))
        (t
@@ -67,7 +67,7 @@
 (defun mml-read-tag ()
   "Read a tag and return the contents."
   (let (contents name elem val)
-    (forward-char 1)
+    (forward-char 2)
     (setq name (buffer-substring (point) (progn (forward-sexp 1) (point))))
     (skip-chars-forward " \t\n")
     (while (not (looking-at ">"))
@@ -84,10 +84,10 @@
 (defun mml-read-part ()
   "Return the buffer up till the next part, multipart or closing part or multipart."
   (let ((beg (point)))
-    (if (re-search-forward "</?\\(multi\\)?part." nil t)
+    (if (re-search-forward "<#/?\\(multi\\)?part." nil t)
 	(prog1
 	    (buffer-substring beg (match-beginning 0))
-	  (unless (equal (match-string 0) "</part>")
+	  (unless (equal (match-string 0) "<#/part>")
 	    (goto-char (match-beginning 0))))
       (buffer-substring beg (goto-char (point-max))))))
 
@@ -113,7 +113,13 @@
       (with-temp-buffer
 	(if (setq filename (cdr (assq 'filename cont)))
 	    (insert-file-contents-literally filename)
-	  (insert (cdr (assq 'contents cont))))
+	  (save-restriction
+	    (narrow-to-region (point) (point))
+	    (insert (cdr (assq 'contents cont)))
+	    (goto-char (point-min))
+	    (while (re-search-forward "<#!+\\(part\\|multipart\\)" nil t)
+	      (delete-region (+ (match-beginning 0) 2)
+			     (+ (match-beginning 0) 3)))))
 	(if (equal (car (split-string type "/")) "text")
 	    (setq charset (mm-encode-body)
 		  encoding (mm-body-encoding))
@@ -141,7 +147,7 @@
 	(mml-generate-mime-1 (pop cont)))
       (insert "--" mml-boundary "--\n")))
    (t
-    (error "%S" cont))))
+    (error "Invalid element: %S" cont))))
 
 (provide 'mml)
 

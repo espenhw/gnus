@@ -4087,23 +4087,29 @@ regexp varstr."
 	    (format "MIME type for %s: " file)
 	    (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions)
 	    nil nil type))))
-  (insert (format "<part type=%s filename=\"%s\"></part>\n"
+  (insert (format "<#part type=%s filename=\"%s\"><#/part>\n"
 		  type file)))
 
 (defun message-encode-message-body ()
   (message-goto-body)
-  (narrow-to-region (point) (point-max))
-  (let ((new (mml-generate-mime)))
-    (delete-region (point-min) (point-max))
-    (insert new)
-    (goto-char (point-min))
-    (widen)
-    (forward-line -1)
-    (let ((beg (point))
-	  (line (buffer-substring (point) (progn (forward-line 1) (point)))))
-      (delete-region beg (point))
-      (insert "Mime-Version: 1.0\n")
-      (insert line))))
+  (save-restriction
+    (narrow-to-region (point) (point-max))
+    (let ((new (mml-generate-mime)))
+      (delete-region (point-min) (point-max))
+      (insert new)
+      (goto-char (point-min))
+      (widen)
+      (forward-line -1)
+      (let ((beg (point))
+	    (line (buffer-substring (point) (progn (forward-line 1) (point)))))
+	(delete-region beg (point))
+	(insert "Mime-Version: 1.0\n")
+	(search-forward "\n\n")
+	(insert line)
+	(when (save-excursion
+		(re-search-backward "^Content-Type: multipart/" nil t))
+	  (insert "This is a MIME multipart message.  If you are reading\n")
+	  (insert "this, you shouldn't.\n\n"))))))
     
 (run-hooks 'message-load-hook)
 

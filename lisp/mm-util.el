@@ -224,7 +224,8 @@ See also `with-temp-file' and `with-output-to-string'."
 
 (defun mm-find-charset-region (b e)
   "Return a list of charsets in the region."
-  (if enable-multibyte-characters
+  (if (and (boundp 'enable-multibyte-characters)
+	   enable-multibyte-characters)
       (find-charset-region b e)
     ;; We are in a unibyte buffer, so we futz around a bit.
     (save-excursion

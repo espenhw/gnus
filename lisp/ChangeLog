@@ -1,3 +1,16 @@
+Sun Nov 15 22:01:55 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.47 is released.
+
+1998-11-15 20:11:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-encode-message-body): Insert MIME warning. 
+
+	* mml.el (mml-read-tag): Look for #tag.
+
+	* mm-util.el (mm-find-charset-region): Check whether
+	enable-multibyte-characters is bound. 
+
 Sun Nov 15 02:01:31 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.46 is released.
