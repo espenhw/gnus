@@ -1,3 +1,11 @@
+2004-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-util.el (gnus-delete-directory): New function.
+
+	* gnus-agent.el (gnus-agent-delete-group): Use it.
+
+	* gnus-cache.el (gnus-cache-delete-group): Use it.
+
 2004-12-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-group-make-rss-group): Unify non-ASCII group
