@@ -1,3 +1,7 @@
+2002-01-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-articles): Don't save empty articles.
+
 2002-01-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-util.el (gnus-cache-file-contents): Don't use equalp. 
