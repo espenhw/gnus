@@ -1,3 +1,22 @@
+2001-07-24 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-bounce): If no Return-Path, the whole
+	content is considered as the original message.
+
+	* nnml.el (nnml-check-directory-twice): New.
+	(nnml-article-to-file): Use it.
+	(nnml-retrieve-headers): Hack it.
+
+2001-07-24 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-win.el (gnus-buffer-configuration): New configure.
+
+	* gnus-art.el (gnus-mm-display-part): Don't select-window if it is
+	not alive.
+
+	* mm-decode.el (mm-remove-part): Don't murder the current window (nil).
+	(mm-display-external): Use display-term configure.
+
 2001-07-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-delay.el (gnus-delay-default-hour): New variable.

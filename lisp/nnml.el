@@ -86,6 +86,9 @@ all.  This may very well take some time.")
 (defvoo nnml-generate-active-function 'nnml-generate-active-info)
 
 (defvar nnml-nov-buffer-file-name nil)
+(defvar nnml-check-directory-twice t
+  "If t, to make sure nothing went wrong when reading over NFS --
+check twice.")
 
 (defvoo nnml-file-coding-system nnmail-file-coding-system)
 
@@ -100,11 +103,16 @@ all.  This may very well take some time.")
     (save-excursion
       (set-buffer nntp-server-buffer)
       (erase-buffer)
-      (let ((file nil)
-	    (number (length sequence))
-	    (count 0)
-	    (file-name-coding-system nnmail-pathname-coding-system)
-	    beg article)
+      (let* ((file nil)
+             (number (length sequence))
+             (count 0)
+             (file-name-coding-system nnmail-pathname-coding-system)
+             beg article
+             (nnml-check-directory-twice 
+              (and nnml-check-directory-twice 
+                   ;; To speed up, disable it in some case.
+                   (or (not (numberp nnmail-large-newsgroup))
+                       (<= number nnmail-large-newsgroup)))))
 	(if (stringp (car sequence))
 	    'headers
 	  (if (nnml-retrieve-headers-with-nov sequence fetch-old)
@@ -490,13 +498,14 @@ all.  This may very well take some time.")
   (let (file)
     (if (setq file (cdr (assq article nnml-article-file-alist)))
 	(expand-file-name file nnml-current-directory)
-      ;; Just to make sure nothing went wrong when reading over NFS --
-      ;; check once more.
-      (when (file-exists-p
-	     (setq file (expand-file-name (number-to-string article)
-					  nnml-current-directory)))
-	(nnml-update-file-alist t)
-	file))))
+      (if nnml-check-directory-twice
+          ;; Just to make sure nothing went wrong when reading over NFS --
+          ;; check once more.
+          (when (file-exists-p
+                 (setq file (expand-file-name (number-to-string article)
+                                              nnml-current-directory)))
+            (nnml-update-file-alist t)
+            file)))))
 
 (defun nnml-deletable-article-p (group article)
   "Say whether ARTICLE in GROUP can be deleted."

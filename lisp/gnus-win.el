@@ -165,7 +165,10 @@
     (compose-bounce
      (vertical 1.0
 	       (article 0.5)
-	       (message 1.0 point))))
+	       (message 1.0 point)))
+    (display-term
+      (vertical 1.0
+                ("*display*" 1.0))))
   "Window configuration for all possible Gnus buffers.
 See the Gnus manual for an explanation of the syntax used.")
 

@@ -3676,7 +3676,8 @@ If no internal viewer is available, use an external viewer."
 		       nil id
 		       (gnus-article-mime-total-parts)
 		       (mm-handle-media-type handle)))))
-	      (select-window window))))
+              (if (window-live-p window)
+                  (select-window window)))))
       (goto-char point)
       (delete-region (gnus-point-at-bol) (progn (forward-line 1) (point)))
       (gnus-insert-mime-button

@@ -627,15 +627,25 @@ external if displayed external."
                                         (mm-mailcap-command
                                          method file (mm-handle-type handle)))
                        (require 'term)
-                       (switch-to-buffer 
-                        (make-term "display"
-                                   shell-file-name
-                                   nil
-                                   shell-command-switch
-                                   (mm-mailcap-command
-                                    method file (mm-handle-type handle))))
+                       (require 'gnus-win)
+                       (set-buffer
+                        (setq buffer
+                              (make-term "display"
+                                         shell-file-name
+                                         nil
+                                         shell-command-switch
+                                         (mm-mailcap-command
+                                          method file 
+                                          (mm-handle-type handle)))))
                        (term-mode)
-                       (term-char-mode))
+                       (term-char-mode)
+                       (set-process-sentinel 
+                        (get-buffer-process buffer)
+                        `(lambda (process state)
+                           (if (eq 'exit (process-status process))
+                               (gnus-configure-windows 
+                                ',gnus-current-window-configuration))))
+                       (gnus-configure-windows 'display-term))
 		   (mm-handle-set-external-undisplayer handle (cons file buffer)))
 		 (message "Displaying %s..." (format method file))
 		 'external)
@@ -754,7 +764,7 @@ external if displayed external."
 	 ((consp object)
 	  (ignore-errors (delete-file (car object)))
 	  (ignore-errors (delete-directory (file-name-directory (car object))))
-	  (ignore-errors (kill-buffer (cdr object))))
+	  (ignore-errors (and (cdr object) (kill-buffer (cdr object)))))
 	 ((bufferp object)
 	  (when (buffer-live-p object)
 	    (kill-buffer object)))))
