@@ -296,7 +296,7 @@ ARTICLE is the article number of the current headline.")
   (goto-char (point-min))
   (mm-coding-system-p
    (if (re-search-forward
-	"<\\?[^>]*encoding=\\(?:\"\\([^>]+\\)\"\\|'\\([^>]+\\)'\\)"
+	"<\\?[^>]*encoding=\\(?:\"\\([^\">]+\\)\"\\|'\\([^'>]+\\)'\\)"
 	nil t)
        (intern-soft (downcase (or (match-string-no-properties 1)
 				  (match-string-no-properties 2))))

@@ -1,3 +1,7 @@
+2004-12-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnrss.el (nnrss-get-encoding): Fix regexp.
+
 2004-12-27  Simon Josefsson  <jas@extundo.com>
 
 	* mm-bodies.el (mm-body-encoding): Don't permit 7-bit to be used
