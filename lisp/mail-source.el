@@ -277,7 +277,9 @@ files older than number of days."
 		 (integer :tag "days")))
 
 (defcustom mail-source-delete-old-incoming-confirm t
-  "*If non-nil, ask for for confirmation before deleting old incoming files."
+  "*If non-nil, ask for for confirmation before deleting old incoming files.
+This variable only applies when `mail-source-delete-incoming' is a positive
+number."
   :group 'mail-source
   :type 'boolean)
 
@@ -529,7 +531,7 @@ If CONFIRM is non-nil, ask for confirmation before removing a file."
 	 (diff (if (natnump age) age 30));; fallback, if no valid AGE given
 	 currday files)
     (setq files (directory-files
-		 mail-source-directory t 
+		 mail-source-directory t
 		 (concat mail-source-incoming-file-prefix "*"))
 	  currday (* (car (current-time)) high2days)
 	  currday (+ currday (* low2days (nth 1 (current-time)))))
@@ -576,7 +578,7 @@ Pass INFO on to CALLBACK."
 	      (mail-source-delete-old-incoming
 	       mail-source-delete-incoming
 	       mail-source-delete-old-incoming-confirm))))))))
-  
+
 (defun mail-source-movemail (from to)
   "Move FROM to TO using movemail."
   (if (not (file-writable-p to))

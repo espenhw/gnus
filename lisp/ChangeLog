@@ -1,3 +1,8 @@
+2003-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mail-source.el (mail-source-delete-old-incoming-confirm): Fixed
+	doc-string.
+
 2003-03-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnrss.el (nnrss-decode-entities-unibyte-string): Use `buffer-string'.
