@@ -28,17 +28,18 @@
 (eval-when-compile (require 'cl))
 (require 'mm-decode)
 
-(defvar mml2015-use (or (progn (ignore-errors
-				 (load "mc-toplev"))
-			       (and (fboundp 'mc-encrypt-generic)
-				    (fboundp 'mc-sign-generic)
-				    (fboundp 'mc-cleanup-recipient-headers)
-				    'mailcrypt))
-			(progn
-			  (ignore-errors
-			    (require 'gpg))
-			  (and (fboundp 'gpg-sign-detached)
-			       'gpg)))
+(defvar mml2015-use (or 
+		     (progn
+		       (ignore-errors
+			 (require 'gpg))
+		       (and (fboundp 'gpg-sign-detached)
+			    'gpg))
+		     (progn (ignore-errors
+			      (load "mc-toplev"))
+			    (and (fboundp 'mc-encrypt-generic)
+				 (fboundp 'mc-sign-generic)
+				 (fboundp 'mc-cleanup-recipient-headers)
+				 'mailcrypt)))
   "The package used for PGP/MIME.")
 
 ;; Something is not RFC2015.
@@ -292,6 +293,7 @@
 (eval-and-compile
   (autoload 'gpg-decrypt "gpg")
   (autoload 'gpg-verify "gpg")
+  (autoload 'gpg-verify-cleartext "gpg")
   (autoload 'gpg-sign-detached "gpg")
   (autoload 'gpg-sign-encrypt "gpg")
   (autoload 'gpg-passphrase-read "gpg"))
@@ -306,6 +308,10 @@
 	  (prog1
 	      (gpg-decrypt cipher (setq plain (current-buffer))  
 			   mml2015-result-buffer nil)
+	    (mm-set-handle-multipart-parameter 
+	     mm-security-handle 'gnus-details 
+	     (with-current-buffer mml2015-result-buffer
+	       (buffer-string)))
 	    (set-buffer cipher)
 	    (erase-buffer)
 	    (insert-buffer plain)))
@@ -313,10 +319,6 @@
       ;; Some wrong with the return value, check plain text buffer.
       (if (> (point-max) (point-min))
 	  '(t)
-	(mm-set-handle-multipart-parameter 
-	 mm-security-handle 'gnus-details 
-	 (with-current-buffer mml2015-result-buffer
-	   (buffer-string)))
 	nil))))
 
 (defun mml2015-gpg-decrypt (handle ctl)
@@ -355,7 +357,12 @@
 	    (throw 'error handle))
 	  (mm-insert-part part)
 	  (unless (condition-case err
-		      (gpg-verify message signature mml2015-result-buffer)
+		      (prog1
+			  (gpg-verify message signature mml2015-result-buffer)
+			(mm-set-handle-multipart-parameter 
+			 mm-security-handle 'gnus-details 
+			 (with-current-buffer mml2015-result-buffer
+			   (buffer-string))))
 		    (error 
 		     (mm-set-handle-multipart-parameter 
 		      mm-security-handle 'gnus-details (cadr err)) 
@@ -365,10 +372,6 @@
 		      mm-security-handle 'gnus-details "Quit.") 
 		     nil))
 	    (mm-set-handle-multipart-parameter 
-	     mm-security-handle 'gnus-details 
-	     (with-current-buffer mml2015-result-buffer
-	       (buffer-string)))
-	    (mm-set-handle-multipart-parameter 
 	     mm-security-handle 'gnus-info "Failed")
 	    (throw 'error handle)))
 	(mm-set-handle-multipart-parameter 
@@ -377,7 +380,12 @@
 
 (defun mml2015-gpg-clear-verify ()
   (if (condition-case err
-	  (funcall mml2015-verify-function)
+	  (prog1
+	      (gpg-verify-cleartext (current-buffer) mml2015-result-buffer)
+	    (mm-set-handle-multipart-parameter 
+	     mm-security-handle 'gnus-details 
+	     (with-current-buffer mml2015-result-buffer
+	       (buffer-string))))
 	(error 
 	 (mm-set-handle-multipart-parameter 
 	  mm-security-handle 'gnus-details (cadr err)) 

@@ -5108,19 +5108,25 @@ For example:
 	    (gnus-cache-update-article
 	     (car gnus-article-current) (cdr gnus-article-current))))))))
 
-(defvar gnus-mime-security-button-line-format "%{%([[%t:%i]]%)%}\n"
+(defvar gnus-mime-security-button-line-format "%{%([[%t:%i]%D]%)%}\n"
   "The following specs can be used:
 %t  The security MIME type
-%i  Additional info")
+%i  Additional info
+%d  Details
+%D  Details if button is pressed")
 
-(defvar gnus-mime-security-button-end-line-format "%{%([[End of %t]]%)%}\n"
+(defvar gnus-mime-security-button-end-line-format "%{%([[End of %t]%D]%)%}\n"
   "The following specs can be used:
 %t  The security MIME type
-%i  Additional info")
+%i  Additional info
+%d  Details
+%D  Details if button is pressed")
 
 (defvar gnus-mime-security-button-line-format-alist
   '((?t gnus-tmp-type ?s)
-    (?i gnus-tmp-info ?s)))
+    (?i gnus-tmp-info ?s)
+    (?d gnus-tmp-details ?s)
+    (?D gnus-tmp-pressed-details ?s)))
 
 (defvar gnus-mime-security-button-map
   (let ((map (make-sparse-keymap)))
@@ -5130,6 +5136,11 @@ For example:
     map))
 
 (defvar gnus-mime-security-details-buffer nil)
+
+(defvar gnus-mime-security-button-pressed nil)
+
+(defvar gnus-mime-security-show-details-inline t
+  "If non-nil, show details in the article buffer.")
 
 (defun gnus-mime-security-verify-or-decrypt (handle)
   (mm-remove-parts (cdr handle))
@@ -5154,7 +5165,23 @@ For example:
 (defun gnus-mime-security-show-details (handle)
   (let ((details (mm-handle-multipart-ctl-parameter handle 'gnus-details)))
     (if details
-	(progn
+	(if gnus-mime-security-show-details-inline
+	    (let ((gnus-mime-security-button-pressed t)
+		  (gnus-mime-security-button-line-format 
+		   (get-text-property (point) 'gnus-line-format))
+		buffer-read-only)
+	      (forward-char -1)
+	      (while (eq (get-text-property (point) 'gnus-line-format)
+			 gnus-mime-security-button-line-format)
+		(forward-char -1))
+	      (forward-char)
+	      (delete-region (point)
+			     (or (text-property-not-all 
+				  (point) (point-max)
+				'gnus-line-format   
+				gnus-mime-security-button-line-format)
+				 (point-max)))
+	      (gnus-insert-mime-security-button handle))
 	  (if (gnus-buffer-live-p gnus-mime-security-details-buffer)
 	      (with-current-buffer gnus-mime-security-details-buffer
 		(erase-buffer)
@@ -5185,7 +5212,15 @@ For example:
 	 (gnus-tmp-info
 	  (or (mm-handle-multipart-ctl-parameter handle 'gnus-info)
 	      "Undecided"))
+	 (gnus-tmp-details
+	  (mm-handle-multipart-ctl-parameter handle 'gnus-details))
+	 gnus-tmp-pressed-details
 	 b e)
+    (setq gnus-tmp-details
+	  (if gnus-tmp-details
+	      (concat "\n" gnus-tmp-details) ""))
+    (setq gnus-tmp-pressed-details 
+	  (if gnus-mime-security-button-pressed gnus-tmp-details ""))
     (unless (bolp)
       (insert "\n"))
     (setq b (point))
@@ -5195,6 +5230,7 @@ For example:
      `(local-map ,gnus-mime-security-button-map
 		 keymap ,gnus-mime-security-button-map
 		 gnus-callback gnus-mime-security-press-button
+		 gnus-line-format ,gnus-mime-security-button-line-format 
 		 article-type annotation
 		 gnus-data ,handle))
     (setq e (point))

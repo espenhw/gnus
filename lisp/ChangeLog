@@ -1,3 +1,17 @@
+2000-11-30 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-security-button-line-format-alist): Add
+	?d and ?D.
+	(gnus-mime-security-show-details-inline): New variable.
+	(gnus-mime-security-show-details): Use them.
+	(gnus-insert-mime-security-button): Ditto.
+
+	* mml2015.el (mml2015-gpg-verify): Set details when succeed.
+	Suggest by Michael Duggan (md5i@cs.cmu.edu).
+	(mml2015-gpg-clear-verify): Ditto.
+	(mml2015-gpg-decrypt-1): Ditto.
+	(mml2015-use): Prefer 'gpg.
+
 2000-11-30 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-add-text-properties-when): New function.
