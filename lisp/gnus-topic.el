@@ -1103,7 +1103,7 @@ articles in the topic and its subtopics."
 	["Move..." gnus-topic-move-group t]
 	["Remove" gnus-topic-remove-group t]
 	["Copy matching..." gnus-topic-copy-matching t]
-	["Move matching" gnus-topic-move-matching t])
+	["Move matching..." gnus-topic-move-matching t])
        ("Topics"
 	["Goto..." gnus-topic-jump-to-topic t]
 	["Show" gnus-topic-show-topic t]

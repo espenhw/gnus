@@ -1,3 +1,7 @@
+2003-02-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-topic.el (gnus-topic-make-menu-bar): Add ellipsis.
+
 2003-02-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-cite.el (gnus-cite-unsightly-citation-regexp)
