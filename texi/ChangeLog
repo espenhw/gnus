@@ -1,5 +1,7 @@
 2001-11-07  Simon Josefsson  <jas@extundo.com>
 
+	* sieve.texi (Examples): Add.
+
 	* gnus.texi (Saving Articles): Add gnus-summary-write-to-file.
 
 2001-11-07  Simon Josefsson  <jas@extundo.com>

@@ -87,6 +87,7 @@ the language, so keep RFC 3028 around.
 * Installation::          Getting ready to use the package.
 * Sieve Mode::            Editing Sieve scripts.
 * Managing Sieve::        Managing Sieve scripts on a remote server.
+* Examples ::             A few Sieve code snippets.
 * Manage Sieve API ::     Interfacing to the Manage Sieve Protocol API.
 * Standards::             A summary of RFCs and working documents used.
 * Index::                 Function and variable index.
@@ -229,6 +230,49 @@ Bury the Manage Sieve buffer without closing the connection.
 Displays help in the minibuffer. 
 
 @end table
+
+@node Examples
+@chapter Examples
+
+If you are not familiar with Sieve, this chapter contains a few simple
+code snippets that you can cut'n'paste and modify at will, until you
+feel more comfortable with the Sieve language to write the rules from
+scratch.
+
+The following complete Sieve script places all messages with a matching
+@samp{Sender:} header into the given mailbox.  Many mailing lists uses
+this format.  The first line makes sure your Sieve server understands
+the @code{fileinto} command.
+
+@example
+require "fileinto";
+
+if address "sender" "owner-w3-beta@@xemacs.org" @{
+	fileinto "INBOX.w3-beta";
+@}
+@end example
+
+A few mailing lists do not use the @samp{Sender:} header, but does
+contain some unique identifier in some other header.  The following is
+not a complete script, it assumes that @code{fileinto} has already been
+required.
+
+@example
+if header :contains "Delivered-To" "auc-tex@@sunsite.dk" @{
+	fileinto "INBOX.auc-tex";
+@}
+@end example
+
+At last, we have the hopeless mailing lists that does not have any
+unique identifier and you are forced to match on the @samp{To:} and
+@samp{Cc} headers.  As before, this snippet assumes that @code{fileinto}
+has been required.
+
+@example
+if address ["to", "cc"] "kerberos@@mit.edu" @{
+	fileinto "INBOX.kerberos";
+@}
+@end example
 
 @node Manage Sieve API
 @chapter Manage Sieve API
