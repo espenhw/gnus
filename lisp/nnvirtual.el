@@ -334,7 +334,7 @@ If the stream is opened, return T, otherwise return NIL."
 	(if (null active)
 	    ()
 	  ;; And then we do the mapping for this component group. If
-	  ;; you feel tempte to cast your eyes to the soup below -
+	  ;; you feel tempted to cast your eyes to the soup below -
 	  ;; don't. It'll hurt your soul. Suffice to say that it
 	  ;; assigns ranges of nnvirtual article numbers to the
 	  ;; different component groups. To get the article number
@@ -343,7 +343,7 @@ If the stream is opened, return T, otherwise return NIL."
 	  ;; slice the mess below assigns, and active is the lowest
 	  ;; active article in the component group. 
 	  (setq itotal (1+ (- (cdr active) (car active))))
-	  (if (setq ireads (nth 2 info))
+ 	  (if (setq ireads (nth 2 info))
 	      (let ((itreads
 		     (if (not (listp (cdr ireads)))
 			 (setq ireads (list (cons (car ireads) (cdr ireads))))
@@ -359,8 +359,12 @@ If the stream is opened, return T, otherwise return NIL."
 		(while itreads
 		  (setcar (or (and (numberp (car itreads)) itreads)
 			      (car itreads))
-			  (+ (- (or (and (numberp (car itreads)) (car itreads))
-				    (car (car itreads))) (car active)) offset))
+			  (+ (max 
+			      1 (- (if (numberp (car itreads)) 
+				       (car itreads)
+				     (car (car itreads)))
+				   (car active)))
+			     offset))
 		  (if (not (numberp (car itreads)))
 		      (setcdr (car itreads)
 			      (+ (- (cdr (car itreads)) (car active)) offset)))
@@ -373,7 +377,9 @@ If the stream is opened, return T, otherwise return NIL."
 	(setq groups (cdr groups))))
     (setq nnvirtual-current-mapping
 	  (nreverse nnvirtual-current-mapping))
-    (gnus-sethash group (cons 1 offset) gnus-active-hashtb)
+    ;; Set Gnus active info.
+    (gnus-sethash group (cons 1 (1- offset)) gnus-active-hashtb)
+    ;; Set Gnus read info.
     (setcar (nthcdr 2 info) reads)
 
     ;; Then we deal with the marks.

@@ -226,6 +226,9 @@ headers.")
 (defvar gnus-article-copy nil)
 (defvar gnus-reply-subject nil)
 
+(eval-and-compile
+  (autoload 'gnus-uu-post-news "gnus-uu" nil t))
+
 
 ;;;
 ;;; Gnus Posting Functions
@@ -653,6 +656,7 @@ will attempt to use the foreign server to post the article."
 		;; We generate a Message-ID so that the mail and the
 		;; news copy of the message both get the same ID.
 		(or (mail-fetch-field "message-id")
+		    (not (memq 'Message-ID gnus-required-headers))
 		    (progn
 		      (goto-char (point-max))
 		      (insert "Message-ID: " (gnus-inews-message-id) "\n")))

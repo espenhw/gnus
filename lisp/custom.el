@@ -129,7 +129,8 @@ STRING should be given if the last search was by `string-match' on STRING."
 (if (facep 'underline)
     ()
   ;; No underline face in XEmacs 19.12.
-  (funcall (intern "make-face") 'underline)
+  (and (fboundp 'make-face)
+       (funcall (intern "make-face") 'underline))
   ;; Must avoid calling set-face-underline-p directly, because it
   ;; is a defsubst in emacs19, and will make the .elc files non
   ;; portable!
@@ -1373,7 +1374,8 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 			      (or bg "default")
 			      (or stipple "default")
 			      bold italic underline))))
-    (if (facep name)
+    (if (and (facep name)
+	     (fboundp 'make-face))
 	()
       (make-face name)
       (modify-face name

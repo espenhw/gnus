@@ -1601,7 +1601,7 @@ is nil, the description the user enters will be included at the
 beginning of the first article, which will be numbered (1/x). Default 
 is t.")
 
-(defconst gnus-uu-post-binary-separator "--binary follows this line--")
+(defvar gnus-uu-post-binary-separator "--binary follows this line--")
 (defvar gnus-uu-post-message-id nil)
 (defvar gnus-uu-post-inserted-file-name nil)
 (defvar gnus-uu-winconf-post-news nil)

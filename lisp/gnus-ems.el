@@ -124,7 +124,8 @@ pounce directly on the real variables themselves."))
       (setq gnus-easymenu 'auc-menu)
 
       (or (memq 'underline (list-faces))
-	  (funcall (intern "make-face") 'underline))
+	  (and (fboundp 'make-face)
+	       (funcall (intern "make-face") 'underline)))
       ;; Must avoid calling set-face-underline-p directly, because it
       ;; is a defsubst in emacs19, and will make the .elc files non
       ;; portable!

@@ -1,4 +1,22 @@
+Sun Aug 27 05:05:05 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* nnvirtual.el (nnvirtual-create-mapping): Numbering
+ 	irregularities - would be off by 1 for each of some component
+ 	groups.
+
+	* custom.el: make-face does not exist on non-X Emacsen.
+
+	* gnus-vm.el (gnus-vm-make-folder): Removed the removal of the
+	toolbar since that led to other problems later.
+
+	* gnus-msg.el (gnus-inews-news): Don't insert Message-ID on BCC if
+	that's not required.
+
+	* gnus-msg.el: Autoload gnus-uu-post-news.
+
 Sat Aug 26 03:18:39 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.23 is released.
 
 	* gnus-uu.el (gnus-uu-grab-articles): Didn't update mode line.
 
@@ -60,7 +78,7 @@ Fri Aug 25 06:03:51 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
 Fri Aug 25 05:44:07 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
 
-	* gnus.el: 0.99.20 is released.
+	* gnus.el: 0.99.20-22 is released.
 
 Fri Aug 25 02:57:19 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
 

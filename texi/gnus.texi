@@ -1015,8 +1015,8 @@ articles will be fetched.  If it is positive, the @samp{n} articles that
 have arrived most recently will be fetched.
 
 @vindex gnus-select-group-hook
-@vindex gnus-auto-select-newsgroup
-If @code{gnus-auto-select-newsgroup} is non-@code{nil}, the first unread
+@vindex gnus-auto-select-first
+If @code{gnus-auto-select-first} is non-@code{nil}, the first unread
 article in the group will be displayed when you enter the group.  If you
 want to prevent automatic selection in some group (say, in a binary
 group with Huge articles) you can set this variable to @code{nil} in
