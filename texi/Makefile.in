@@ -20,8 +20,9 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
 PAPERTYPE=a4
+INFO_DEPS=gnus message emacs-mime
 
-all: gnus message emacs-mime
+all: $(INFO_DEPS)
 
 most: texi2latex.elc latex latexps
 
@@ -37,7 +38,7 @@ most: texi2latex.elc latex latexps
 dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi
 
 pdf: gnus.pdf message.pdf refcard.pdf emacs-mime.pdf
- 
+
 .texi.dvi :
 	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
 	$(TEXI2DVI) gnustmp.texi
@@ -126,20 +127,29 @@ veryclean:
 
 distclean:
 	make clean
-	rm -f *.orig *.rej *.elc *~ gnus gnus-[0-9] gnus-[0-9][0-9] Makefile
-	rm -f message message-[0-9]
-	rm -f emacs-mime
+	rm -f *.orig *.rej *.elc *~ gnus-[0-9] gnus-[0-9][0-9] Makefile
+	rm -f message-[0-9]
+	rm -f $(INFO_DEPS)
 
-install:
+install: $(INFO_DEPS)
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(infodir)
-	@for file in gnus message emacs-mime; do \
-	  for ifile in `echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do \
-	    if test -f $$ifile; then \
-	      echo " $(INSTALL_DATA) $$ifile $(infodir)/$$ifile"; \
-	      $(INSTALL_DATA) $$ifile $(infodir)/$$ifile; \
+	@list='$(INFO_DEPS)'; \
+	for file in $$list; do \
+	  d=$(srcdir); \
+	  for ifile in `CDPATH=: && cd $$d && echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do \
+	    if test -f $$d/$$ifile; then \
+	      echo " $(INSTALL_DATA) $$d/$$ifile $(infodir)/$$ifile"; \
+	      $(INSTALL_DATA) $$d/$$ifile $(infodir)/$$ifile; \
 	    else : ; fi; \
 	  done; \
 	done
+	@if $(SHELL) -c 'install-info --version | sed 1q | fgrep -s -v -i debian' >/dev/null 2>&1; then \
+	  list='$(INFO_DEPS)'; \
+	  for file in $$list; do \
+	    echo " install-info --info-dir=$(infodir) $(infodir)/$$file";\
+	    install-info --info-dir=$(infodir) $(infodir)/$$file || :;\
+	  done; \
+	else : ; fi
 
 tmps:
 	if [ ! -e tmp ]; then mkdir tmp; fi
