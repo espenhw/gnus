@@ -531,9 +531,9 @@ If N, return the Nth ancestor instead."
 	  (set-window-hscroll (gnus-get-buffer-window (current-buffer) t) 0))
 	max))))
 
-(defun gnus-read-event-char ()
+(defun gnus-read-event-char (&optional prompt)
   "Get the next event."
-  (let ((event (read-event)))
+  (let ((event (read-event prompt)))
     ;; should be gnus-characterp, but this can't be called in XEmacs anyway
     (cons (and (numberp event) event) event)))
 

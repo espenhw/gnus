@@ -2591,6 +2591,17 @@ Originally it is hide instead of DUMMY."
     (second . 1))
   "Mapping from time units to seconds.")
 
+(defun gnus-article-forward-header ()
+  "Move point to the start of the next header.
+If the current header is a continuation header, this can be several
+lines forward."
+  (let ((ended nil))
+    (while (not ended)
+      (forward-line 1)
+      (if (looking-at "[ \t]+[^ \t]")
+	  (forward-line 1)
+	(setq ended t)))))
+
 (defun article-date-ut (&optional type highlight header)
   "Convert DATE date to universal time in the current article.
 If TYPE is `local', convert to local time; if it is `lapsed', output
@@ -2632,15 +2643,20 @@ should replace the \"Date:\" one, or should be added below it."
 	    (while (re-search-forward date-regexp nil t)
 	      (if pos
 		  (delete-region (progn (beginning-of-line) (point))
-				 (progn (forward-line 1) (point)))
+				 (progn (gnus-article-forward-header)
+					(point)))
 		(delete-region (progn (beginning-of-line) (point))
-			       (progn (end-of-line) (point)))
+				 (progn (gnus-article-forward-header)
+					(forward-char -1)
+					(point)))
 		(setq pos (point))))
-	    (when (and (not pos) (re-search-forward tdate-regexp nil t))
+	    (when (and (not pos)
+		       (re-search-forward tdate-regexp nil t))
 	      (forward-line 1))
-	    (if pos (goto-char pos))
+	    (when pos
+	      (goto-char pos))
 	    (insert (article-make-date-line date (or type 'ut)))
-	    (when (not pos)
+	    (unless pos
 	      (insert "\n")
 	      (forward-line -1))
 	    ;; Do highlighting.
@@ -2766,8 +2782,8 @@ should replace the \"Date:\" one, or should be added below it."
 	     (format "%02d" (nth 2 dtime))
 	     ":"
 	     (format "%02d" (nth 1 dtime)))))))
-	(error
-	 (format "Date: %s (from Gnus)" date))))
+    (error
+     (format "Date: %s (from Gnus)" date))))
 
 (defun article-date-local (&optional highlight)
   "Convert the current article date to the local timezone."
@@ -3011,7 +3027,7 @@ This format is defined by the `gnus-article-time-format' variable."
 			 (car (push result file-name-history)))))))
 	       ;; Create the directory.
 	       (gnus-make-directory (file-name-directory file))
-      ;; If we have read a directory, we append the default file name.
+	       ;; If we have read a directory, we append the default file name.
 	       (when (file-directory-p file)
 		 (setq file (expand-file-name (file-name-nondirectory
 					       default-name)

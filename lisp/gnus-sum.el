@@ -6914,7 +6914,7 @@ If BACKWARD, the previous article is selected instead of the next."
   (let ((keystrokes '((?\C-n (gnus-group-next-unread-group 1))
 		      (?\C-p (gnus-group-prev-unread-group 1))))
 	(cursor-in-echo-area t)
-	keve key group ended)
+	keve key group ended prompt)
     (save-excursion
       (set-buffer gnus-group-buffer)
       (goto-char start)
@@ -6923,19 +6923,20 @@ If BACKWARD, the previous article is selected instead of the next."
 		(gnus-summary-best-group gnus-newsgroup-name)
 	      (gnus-summary-search-group backward gnus-keep-same-level))))
     (while (not ended)
-      (gnus-message
-       5 "No more%s articles%s" (if unread " unread" "")
-       (if (and group
-		(not (gnus-ephemeral-group-p gnus-newsgroup-name)))
-	   (format " (Type %s for %s [%s])"
-		   (single-key-description cmd) group
-		   (car (gnus-gethash group gnus-newsrc-hashtb)))
-	 (format " (Type %s to exit %s)"
-		 (single-key-description cmd)
-		 gnus-newsgroup-name)))
+      (setq prompt
+	    (format
+	     "No more%s articles%s " (if unread " unread" "")
+	     (if (and group
+		      (not (gnus-ephemeral-group-p gnus-newsgroup-name)))
+		 (format " (Type %s for %s [%s])"
+			 (single-key-description cmd) group
+			 (car (gnus-gethash group gnus-newsrc-hashtb)))
+	       (format " (Type %s to exit %s)"
+		       (single-key-description cmd)
+		       gnus-newsgroup-name))))
       ;; Confirm auto selection.
-      (setq key (car (setq keve (gnus-read-event-char))))
-      (setq ended t)
+      (setq key (car (setq keve (gnus-read-event-char prompt)))
+	    ended t)
       (cond
        ((assq key keystrokes)
 	(let ((obuf (current-buffer)))
@@ -9392,10 +9393,7 @@ ARTICLE can also be a list of articles."
 	    (not (equal gnus-newsgroup-name (car gnus-article-current))))
     (error "No current article selected"))
   ;; Remove old bookmark, if one exists.
-  (let ((old (assq article gnus-newsgroup-bookmarks)))
-    (when old
-      (setq gnus-newsgroup-bookmarks
-	    (delq old gnus-newsgroup-bookmarks))))
+  (gnus-pull article gnus-newsgroup-bookmarks)
   ;; Set the new bookmark, which is on the form
   ;; (article-number . line-number-in-body).
   (push
@@ -9405,8 +9403,7 @@ ARTICLE can also be a list of articles."
 	   (count-lines
 	    (min (point)
 		 (save-excursion
-		   (goto-char (point-min))
-		   (search-forward "\n\n" nil t)
+		   (article-goto-body)
 		   (point)))
 	    (point))))
    gnus-newsgroup-bookmarks)
@@ -9416,13 +9413,10 @@ ARTICLE can also be a list of articles."
   "Remove the bookmark from the current article."
   (interactive (list (gnus-summary-article-number)))
   ;; Remove old bookmark, if one exists.
-  (let ((old (assq article gnus-newsgroup-bookmarks)))
-    (if old
-	(progn
-	  (setq gnus-newsgroup-bookmarks
-		(delq old gnus-newsgroup-bookmarks))
-	  (gnus-message 6 "Removed bookmark."))
-      (gnus-message 6 "No bookmark in current article."))))
+  (if (not (assq article gnus-newsgroup-bookmarks))
+      (gnus-message 6 "No bookmark in current article.")
+    (gnus-pull article gnus-newsgroup-bookmarks)
+    (gnus-message 6 "Removed bookmark.")))
 
 ;; Suggested by Daniel Quinlan <quinlan@best.com>.
 (defun gnus-summary-mark-as-dormant (n)

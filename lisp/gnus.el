@@ -868,6 +868,7 @@ be set in `.emacs' instead."
 			     :color-symbols
 			     (("thing" . ,(car gnus-logo-colors))
 			      ("shadow" . ,(cadr gnus-logo-colors))
+			      ("oort" . "#eeeeee")
 			      ("background" . ,(face-background 'default))))
 		      (:type pbm :file "gnus.pbm"
 			     ;; Account for the pbm's blackground.
