@@ -4037,7 +4037,8 @@ If no internal viewer is available, use an external viewer."
 	 (mail-parse-charset gnus-newsgroup-charset)
 	 (mail-parse-ignored-charsets
 	  (save-excursion (set-buffer gnus-summary-buffer)
-			  gnus-newsgroup-ignored-charsets)))
+			  gnus-newsgroup-ignored-charsets))
+	 buffer-read-only)
     (when handle
       (if (mm-handle-undisplayer handle)
 	  (mm-remove-part handle)

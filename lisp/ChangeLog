@@ -1,3 +1,8 @@
+2003-02-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-view-part-internally): Bind
+	buffer-read-only to nil.
+
 2003-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-agent.el (gnus-agent-expire-1,2): Pass the dir argument
