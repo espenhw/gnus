@@ -239,11 +239,14 @@ to:
 (autoload 'mml2015-verify "mml2015")
 (autoload 'mml2015-verify-test "mml2015")
 (autoload 'mml-smime-verify "mml-smime")
+(autoload 'mml-smime-verify-test "mml-smime")
 
 (defvar mm-verify-function-alist
   '(("application/pgp-signature" mml2015-verify "PGP" mml2015-verify-test)
-    ("application/pkcs7-signature" mml-smime-verify "S/MIME" nil)
-    ("application/x-pkcs7-signature" mml-smime-verify "S/MIME" nil)))
+    ("application/pkcs7-signature" mml-smime-verify "S/MIME" 
+     mml-smime-verify-test)
+    ("application/x-pkcs7-signature" mml-smime-verify "S/MIME" 
+     mml-smime-verify-test)))
 
 (defcustom mm-verify-option nil
   "Option of verifying signed parts.

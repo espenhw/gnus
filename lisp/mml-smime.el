@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'smime)
+(require 'mm-decode)
 
 (defun mml-smime-verify (handle ctl)
   (with-current-buffer (mm-handle-multipart-original-buffer ctl)
@@ -53,6 +54,9 @@
        mm-security-handle 'gnus-details (with-current-buffer smime-details-buffer 
 					  (buffer-string))))
     handle))
+
+(defun mml-smime-verify-test (handle ctl)
+  smime-openssl-program)
 
 (provide 'mml-smime)
 

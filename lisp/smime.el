@@ -140,7 +140,11 @@ manually."
   :type 'directory
   :group 'smime)
 
-(defcustom smime-openssl-program "openssl"
+(defcustom smime-openssl-program 
+  (and (condition-case () 
+	   (eq 0 (call-process "openssl" nil nil nil "version"))
+	 (error nil))
+       "openssl")
   "Name of OpenSSL binary."
   :type 'string
   :group 'smime)
