@@ -1,3 +1,8 @@
+2002-10-19  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-open-server): Check imap-state in IMAP server
+	buffer.
+
 2002-10-18  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-spec.el (gnus-make-format-preserve-properties) 
