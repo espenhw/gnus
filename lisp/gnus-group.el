@@ -478,6 +478,7 @@ ticked: The number of ticked articles.")
     "f" gnus-score-flush-cache)
 
   (gnus-define-keys (gnus-group-help-map "H" gnus-group-mode-map)
+    "d" gnus-group-describe-group
     "f" gnus-group-fetch-faq)
 
   (gnus-define-keys (gnus-group-sub-map "S" gnus-group-mode-map)

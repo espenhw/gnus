@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.40 Manual
+@settitle Red Gnus 0.41 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.40 Manual
+@title Red Gnus 0.41 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -738,7 +738,7 @@ don't like that, just set this variable to @code{nil}.
 
 Sometimes it is necessary to move from one @sc{nntp} server to another.
 This happens very rarely, but perhaps you change jobs, or one server is
-very flakey and you want to use another.  
+very flaky and you want to use another.  
 
 Changing the server is pretty easy, right?  You just change
 @code{gnus-select-method} to point to the new server?  
@@ -812,7 +812,7 @@ Gnus.  But hey, who would want to, right?
 If @code{gnus-save-killed-list} (default @code{t}) is @code{nil}, Gnus
 will not save the list of killed groups to the startup file.  This will
 save both time (when starting and quitting) and space (on disk).  It
-will also means that Gnus has no record of what groups are new or old,
+will also mean that Gnus has no record of what groups are new or old,
 so the automatic new groups subscription methods become meaningless.
 You should always set @code{gnus-check-new-newsgroups} to @code{nil} or
 @code{ask-server} if you set this variable to @code{nil} (@pxref{New
@@ -982,6 +982,7 @@ long as Gnus is active.
 * Group Buffer Format::    Information listed and how you can change it.
 * Group Maneuvering::      Commands for moving in the group buffer.
 * Selecting a Group::      Actually reading news.
+* Group Data::             Changing the info for a group.
 * Subscription Commands::  Unsubscribing, killing, subscribing.
 * Group Levels::           Levels? What are those, then?
 * Group Score::            A mechanism for finding out what groups you like.
@@ -1115,21 +1116,23 @@ Indentation based on the level of the topic (@pxref{Group Topics}).
 @vindex gnus-group-uncollapsed-levels
 Short (collapsed) group name.  The @code{gnus-group-uncollapsed-levels}
 variable says how many levels to leave at the end of the group name.
-The default is @code{1}.
+The default is @code{1}---this will mean that group names like
+@samp{gnu.emacs.gnus} will be shortened to @samp{g.emacs.gnus}.
 
 @item u
 User defined specifier.  The next character in the format string should
 be a letter.  @sc{gnus} will call the function
 @code{gnus-user-format-function-}@samp{X}, where @samp{X} is the letter
-following @samp{%u}.  The function will be passed the current headers as
-argument.  The function should return a string, which will be inserted
-into the buffer just like information from any other specifier.
+following @samp{%u}.  The function will be passed a single dummy
+paratere as argument.  The function should return a string, which will
+be inserted into the buffer just like information from any other
+specifier.
 @end table
 
 @cindex *
 All the ``number-of'' specs will be filled with an asterisk (@samp{*})
 if no info is available---for instance, if it is a non-activated foreign
-group, or a bogus (or semi-bogus) native group.
+group, or a bogus native group.
 
 
 @node Group Modeline Specification
@@ -1305,10 +1308,10 @@ Select the current group, switch to the summary buffer and display the
 first unread article (@code{gnus-group-read-group}).  If there are no
 unread articles in the group, or if you give a non-numerical prefix to
 this command, Gnus will offer to fetch all the old articles in this
-group from the server.  If you give a numerical prefix @var{N}, Gnus
-will fetch @var{N} number of articles.  If @var{N} is positive, fetch
-the @var{N} newest articles, if @var{N} is negative, fetch the
-@var{abs(N)} oldest articles.
+group from the server.  If you give a numerical prefix @var{N}, @var{N}
+determines the number of articles Gnus will fetch.  If @var{N} is
+positive, Gnus fetches the @var{N} newest articles, if @var{N} is
+negative, Gnus fetches the @var{abs(N)} oldest articles.
 
 @item RET
 @kindex RET (Group)
@@ -1334,54 +1337,26 @@ group.
 @item M-SPACE
 @kindex M-SPACE (Group)
 @findex gnus-group-visible-select-group
-This is yet one more command that does the same as the one above, but
-this one does it without expunging and hiding dormants
-(@code{gnus-group-visible-select-group}).  
-
-@item c
-@kindex c (Group)
-@findex gnus-group-catchup-current
-@vindex gnus-group-catchup-group-hook
-Mark all unticked articles in this group as read
-(@code{gnus-group-catchup-current}).
-@code{gnus-group-catchup-group-hook} is called when catching up a group from
-the group buffer.
-
-@item C
-@kindex C (Group)
-@findex gnus-group-catchup-current-all
-Mark all articles in this group, even the ticked ones, as read
-(@code{gnus-group-catchup-current-all}).   
-
-@item M-c
-@kindex M-c (Group)
-@findex gnus-group-clear-data
-Clear the data from the current group---nix out marks and the list of
-read articles (@code{gnus-group-clear-data}).
-
-@item M-x gnus-group-clear-data-on-native-groups
-@kindex M-x gnus-group-clear-data-on-native-groups
-@findex gnus-group-clear-data-on-native-groups
-If you have switched from one @sc{nntp} server to another, all your marks
-and read ranges have become worthless.  You can use this command to
-clear out all data that you have on your native groups.  Use with
-caution. 
+This is yet one more command that does the same as the @kbd{RET}
+command, but this one does it without expunging and hiding dormants
+(@code{gnus-group-visible-select-group}).
 
 @end table
 
 @vindex gnus-large-newsgroup
 The @code{gnus-large-newsgroup} variable says what Gnus should consider
-to be a big group.  This is @code{200} by default.  If the group has more
-unread articles than this, Gnus will query the user before entering the
-group.  The user can then specify how many articles should be fetched
-from the server.  If the user specifies a negative number (@code{-n}),
-the @code{n} oldest articles will be fetched.  If it is positive, the
-@code{n} articles that have arrived most recently will be fetched.
+to be a big group.  This is @code{200} by default.  If the group has
+more (unread and/or ticked) articles than this, Gnus will query the user
+before entering the group.  The user can then specify how many articles
+should be fetched from the server.  If the user specifies a negative
+number (@code{-n}), the @code{n} oldest articles will be fetched.  If it
+is positive, the @code{n} articles that have arrived most recently will
+be fetched.
 
 @vindex gnus-select-group-hook
 @vindex gnus-auto-select-first
 @code{gnus-auto-select-first} control whether any articles are selected
-automatically when entering a group.  
+automatically when entering a group with the @kbd{SPACE} command.
 
 @table @code
 
@@ -1464,7 +1439,7 @@ Kill all zombie groups (@code{gnus-group-kill-all-zombies}).
 @findex gnus-group-kill-level
 Kill all groups on a certain level (@code{gnus-group-kill-level}).
 These groups can't be yanked back after killing, so this command should
-be used with some caution.  The only thing where this command comes in
+be used with some caution.  The only time where this command comes in
 really handy is when you have a @file{.newsrc} with lots of unsubscribed
 groups that you want to get rid off.  @kbd{S C-k} on level @code{7} will
 kill off all unsubscribed groups that do not have message numbers in the
@@ -1473,6 +1448,43 @@ kill off all unsubscribed groups that do not have message numbers in the
 @end table
 
 Also @pxref{Group Levels}.
+
+
+@node Group Data
+@section Group Data
+
+@table @kbd
+
+@item c
+@kindex c (Group)
+@findex gnus-group-catchup-current
+@vindex gnus-group-catchup-group-hook
+Mark all unticked articles in this group as read
+(@code{gnus-group-catchup-current}).
+@code{gnus-group-catchup-group-hook} is called when catching up a group from
+the group buffer.
+
+@item C
+@kindex C (Group)
+@findex gnus-group-catchup-current-all
+Mark all articles in this group, even the ticked ones, as read
+(@code{gnus-group-catchup-current-all}).   
+
+@item M-c
+@kindex M-c (Group)
+@findex gnus-group-clear-data
+Clear the data from the current group---nix out marks and the list of
+read articles (@code{gnus-group-clear-data}).
+
+@item M-x gnus-group-clear-data-on-native-groups
+@kindex M-x gnus-group-clear-data-on-native-groups
+@findex gnus-group-clear-data-on-native-groups
+If you have switched from one @sc{nntp} server to another, all your marks
+and read ranges have become worthless.  You can use this command to
+clear out all data that you have on your native groups.  Use with
+caution. 
+
+@end table
 
 
 @node Group Levels
@@ -1575,7 +1587,7 @@ Alternatively, you can sort on score and then level.  (Taken together,
 the level and the score is called the @dfn{rank} of the group.  A group
 that is on level @code{4} and has a score of @code{1} has a higher rank than a group
 on level @code{5} that has a score of @code{300}.  (The level is the most significant
-part and the score is the least significant part.)
+part and the score is the least significant part.))
 
 @findex gnus-summary-bubble-group
 If you want groups you read often to get higher scores than groups you
@@ -1792,7 +1804,7 @@ Add the current group to an @code{nnvirtual} group
 methods. 
 
 @vindex gnus-activate-foreign-newsgroups
-If the @code{gnus-activate-foreign-newsgroups} is a positive number,
+If @code{gnus-activate-foreign-newsgroups} is a positive number,
 Gnus will check all foreign groups with this level or lower at startup.
 This might take quite a while, especially if you subscribe to lots of
 groups from different @sc{nntp} servers.
@@ -1906,7 +1918,7 @@ ticked articles.
 @end table
 
 @item comment
-This parameter allows you to enter a arbitrary comment on the group.
+This parameter allows you to enter an arbitrary comment on the group.
 
 @item @var{(variable form)}
 You can use the group parameters to set variables local to the group you
@@ -1945,7 +1957,9 @@ These commands all list various slices of the groups that are available.
 List all groups that have unread articles
 (@code{gnus-group-list-groups}).  If the numeric prefix is used, this
 command will list only groups of level ARG and lower.  By default, it
-only lists groups of level five or lower (i.e., just subscribed groups).
+only lists groups of level five (i. e.,
+@code{gnus-group-default-list-level}) or lower (i.e., just subscribed
+groups).
 
 @item L
 @itemx A u
@@ -2069,7 +2083,7 @@ Sort by number of unread articles.
 
 @item gnus-group-sort-by-method
 @findex gnus-group-sort-by-method
-Sort by alphabetically on the select method.
+Sort alphabetically on the select method.
 
 
 @end table
@@ -2110,7 +2124,7 @@ Sort the group buffer by group score
 @item G S r
 @kindex G S r (Group)
 @findex gnus-group-sort-groups-by-rank
-Sort the group buffer by group level
+Sort the group buffer by group rank
 (@code{gnus-group-sort-groups-by-rank}). 
 
 @item G S m
@@ -2153,7 +2167,7 @@ Sort the process/prefixed groups in the group buffer by group score
 @item G P r
 @kindex G P r (Group)
 @findex gnus-group-sort-selected-groups-by-rank
-Sort the process/prefixed groups in the group buffer by group level
+Sort the process/prefixed groups in the group buffer by group rank
 (@code{gnus-group-sort-selected-groups-by-rank}).
 
 @item G P m
@@ -2562,7 +2576,7 @@ Sort the current topic by group score
 @item T S r
 @kindex T S r (Topic)
 @findex gnus-topic-sort-groups-by-rank
-Sort the current topic by group level
+Sort the current topic by group rank
 (@code{gnus-topic-sort-groups-by-rank}). 
 
 @item T S m
@@ -2796,8 +2810,10 @@ for fetching the file.
 If fetching from the first site is unsuccessful, Gnus will attempt to go
 through @code{gnus-group-faq-directory} and try to open them one by one.
 
-@item D
-@kindex D (Group)
+@item H d
+@itemx C-c C-d
+@kindex H d (Group)
+@kindex C-c C-d (Group)
 @cindex describing groups
 @cindex group description
 @findex gnus-group-describe-group
@@ -2967,11 +2983,11 @@ Indentation based on thread level (@pxref{Customizing Threading}).
 @item T
 Nothing if the article is a root and lots of spaces if it isn't (it
 pushes everything after it off the screen).
-@item \[
-Opening bracket, which is normally @samp{\[}, but can also be @samp{<}
+@item [
+Opening bracket, which is normally @samp{[}, but can also be @samp{<}
 for adopted articles (@pxref{Customizing Threading}).
-@item \]
-Closing bracket, which is normally @samp{\]}, but can also be @samp{>}
+@item ]
+Closing bracket, which is normally @samp{]}, but can also be @samp{>}
 for adopted articles.
 @item >
 One space for each thread level.
@@ -3007,7 +3023,8 @@ The @code{Date} in @code{YYYYMMDDTHHMMSS} format.
 Number of articles in the current sub-thread.  Using this spec will slow
 down summary buffer generation somewhat.
 @item e
-A single character will be displayed if the article has any children. 
+An @samp{=} (@code{gnus-not-empty-thread-mark}) will be displayed if the
+article has any children.
 @item P
 The line number.
 @item u
@@ -3057,7 +3074,7 @@ Number of unread articles in this group.
 Number of unselected articles in this group.
 @item Z
 A string with the number of unread and unselected articles represented
-either as @samp{<%U(+%u) more>} if there are both unread and unselected
+either as @samp{<%U(+%e) more>} if there are both unread and unselected
 articles, and just as @samp{<%U more>} if there are just unread articles
 and no unselected ones.
 @item g
@@ -3066,7 +3083,7 @@ shortened to @samp{r.a.anime}.
 @item S
 Subject of the current article.
 @item u
-Used-defined spec.
+User-defined spec.
 @item s
 Name of the current score file.
 @item d
@@ -3147,14 +3164,14 @@ Go to the previous summary line of an unread article
 @kindex j (Summary)
 @kindex G j (Summary)
 @findex gnus-summary-goto-article
-Ask for an article number and then go that article
+Ask for an article number and then go to that article
 (@code{gnus-summary-goto-article}). 
 
 @item G g
 @kindex G g (Summary)
 @findex gnus-summary-goto-subject
 Ask for an article number and then go the summary line of that article
-(@code{gnus-summary-goto-subject}).
+without displaying the article (@code{gnus-summary-goto-subject}).
 @end table
 
 If Gnus asks you to press a key to confirm going to the next group, you
@@ -3168,18 +3185,18 @@ Variables related to summary movement:
 
 @vindex gnus-auto-select-next
 @item gnus-auto-select-next
-If you are at the end of the group and issue one of the movement
-commands, Gnus will offer to go to the next group.  If this variable is
-@code{t} and the next group is empty, Gnus will exit summary mode and
-return to the group buffer.  If this variable is neither @code{t} nor
-@code{nil}, Gnus will select the next group, no matter whether it has
-any unread articles or not.  As a special case, if this variable is
-@code{quietly}, Gnus will select the next group without asking for
-confirmation.  If this variable is @code{almost-quietly}, the same will
-happen only if you are located on the last article in the group.
-Finally, if this variable is @code{slightly-quietly}, the @kbd{Z n}
-command will go to the next group without confirmation.  Also
-@pxref{Group Levels}.
+If you issue one of the movement commands (like @kbd{n}) and there are
+no more unread articles after the current one, Gnus will offer to go to
+the next group.  If this variable is @code{t} and the next group is
+empty, Gnus will exit summary mode and return to the group buffer.  If
+this variable is neither @code{t} nor @code{nil}, Gnus will select the
+next group, no matter whether it has any unread articles or not.  As a
+special case, if this variable is @code{quietly}, Gnus will select the
+next group without asking for confirmation.  If this variable is
+@code{almost-quietly}, the same will happen only if you are located on
+the last article in the group.  Finally, if this variable is
+@code{slightly-quietly}, the @kbd{Z n} command will go to the next group
+without confirmation.  Also @pxref{Group Levels}.
 
 @item gnus-auto-select-same
 @vindex gnus-auto-select-same
@@ -4372,7 +4389,7 @@ The default is @code{4}.
 @kindex T k (Summary)
 @kindex M-C-k (Summary)
 @findex gnus-summary-kill-thread
-Mark all articles in the current sub-thread as read
+Mark all articles in the current (sub-)thread as read
 (@code{gnus-summary-kill-thread}).  If the prefix argument is positive,
 remove all marks instead.  If the prefix argument is negative, tick
 articles instead.
@@ -4382,25 +4399,25 @@ articles instead.
 @kindex T l (Summary)
 @kindex M-C-l (Summary)
 @findex gnus-summary-lower-thread
-Lower the score of the current thread
+Lower the score of the current (sub-)thread
 (@code{gnus-summary-lower-thread}). 
 
 @item T i
 @kindex T i (Summary)
 @findex gnus-summary-raise-thread
-Increase the score of the current thread
+Increase the score of the current (sub-)thread
 (@code{gnus-summary-raise-thread}).
 
 @item T #
 @kindex T # (Summary)
 @findex gnus-uu-mark-thread
-Set the process mark on the current thread
+Set the process mark on the current (sub-)thread
 (@code{gnus-uu-mark-thread}).
 
 @item T M-#
 @kindex T M-# (Summary)
 @findex gnus-uu-unmark-thread
-Remove the process mark from the current thread
+Remove the process mark from the current (sub-)thread
 (@code{gnus-uu-unmark-thread}).
 
 @item T T
@@ -4411,13 +4428,13 @@ Toggle threading (@code{gnus-summary-toggle-threads}).
 @item T s
 @kindex T s (Summary)
 @findex gnus-summary-show-thread
-Expose the thread hidden under the current article, if any
+Expose the (sub-)thread hidden under the current article, if any
 (@code{gnus-summary-show-thread}).
 
 @item T h
 @kindex T h (Summary)
 @findex gnus-summary-hide-thread
-Hide the current (sub)thread (@code{gnus-summary-hide-thread}).
+Hide the current (sub-)thread (@code{gnus-summary-hide-thread}).
 
 @item T S
 @kindex T S (Summary)

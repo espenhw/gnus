@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.94
+;; Version: 0.96
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -16,8 +16,8 @@
 (require 'custom)
 (require 'widget-edit)
 
-(define-widget-keywords :custom-show :custom-doc :custom-magic
-  :custom-state :custom-documentation-property :custom-level :custom-form
+(define-widget-keywords :custom-show :custom-magic
+  :custom-state :custom-level :custom-form
   :custom-apply :custom-set-default :custom-reset)
 
 ;;; Utilities.
@@ -47,7 +47,14 @@
 ;; widgets to be hidden.
 
 (widget-put (get 'item 'widget-type) :custom-show t)
-(widget-put (get 'editable-field 'widget-type) :custom-show t)
+(widget-put (get 'editable-field 'widget-type)
+	    :custom-show (lambda (widget value)
+			   (let ((pp (pp-to-string value)))
+			     (cond ((string-match "\n" pp)
+				    nil)
+				   ((> (length pp) 40)
+				    nil)
+				   (t t)))))
 (widget-put (get 'menu-choice 'widget-type) :custom-show t)
 
 ;;; The `custom-magic' Widget
@@ -177,22 +184,6 @@ The list should be sorted most significant first."
 	   (widget-put parent :custom-state 'hidden)))
     (custom-redraw parent)))
 
-;;; The `custom-help' Widget.
-
-(define-widget 'custom-help 'push-button
-  "The custom documentation button."
-  :format "%[[%t]%] %d"
-  :help-echo "Push me to toggle the documentation."
-  :action 'custom-help-action)
-
-(defun custom-help-action (widget &optional event)
-  "Toggle documentation for WIDGET."
-  (let ((old (widget-get widget :doc))
-	(new (widget-get widget :custom-doc)))
-    (widget-put widget :doc new)
-    (widget-put widget :custom-doc old))
-  (widget-value-set widget (widget-value widget)))
-
 ;;; The `custom' Widget.
 
 (define-widget 'custom 'default
@@ -203,7 +194,7 @@ The list should be sorted most significant first."
   :notify 'custom-notify
   :custom-level 1
   :custom-state 'hidden
-  :custom-documentation-property 'widget-subclass-responsibility
+  :documentation-property 'widget-subclass-responsibility
   :value-create 'widget-subclass-responsibility
   :value-delete 'widget-radio-value-delete
   :value-get 'widget-item-value-get
@@ -214,19 +205,14 @@ The list should be sorted most significant first."
   ;; We recognize extra escape sequences.
   (let* ((symbol (widget-get widget :value))
 	 (buttons (widget-get widget :buttons))
-	 (level (widget-get widget :custom-level))
-	 (doc-property (widget-get widget :custom-documentation-property))
-	 (doc-try (or (widget-get widget :doc)
-		      (documentation-property symbol doc-property)))
-	 (doc-text (and (stringp doc-try)
-			(> (length doc-try) 1)
-			doc-try)))
+	 (level (widget-get widget :custom-level)))
     (cond ((eq escape ?l)
 	   (when level 
 	     (push (widget-create-child-and-convert
 		    widget 'custom-level (make-string level ?*))
 		   buttons)
-	     (widget-insert " ")))
+	     (widget-insert " ")
+	     (widget-put widget :buttons buttons)))
 	  ((eq escape ?m)
 	   (and (eq (preceding-char) ?\n)
 		(widget-get widget :indent)
@@ -234,34 +220,10 @@ The list should be sorted most significant first."
 	   (let ((magic (widget-create-child-and-convert
 			 widget 'custom-magic nil)))
 	     (widget-put widget :custom-magic magic)
-	     (push magic buttons)))
-	  ((eq escape ?h)
-	   (when doc-text
-	     (and (eq (preceding-char) ?\n)
-		  (widget-get widget :indent)
-		  (insert-char ?  (widget-get widget :indent)))
-	     ;; The `*' in the beginning is redundant.
-	     (when (eq (aref doc-text  0) ?*)
-	       (setq doc-text (substring doc-text 1)))
-	     ;; Get rid of trailing newlines.
-	     (when (string-match "\n+\\'" doc-text)
-	       (setq doc-text (substring doc-text 0 (match-beginning 0))))
-	     (push (if (string-match "\n." doc-text)
-		       ;; Allow multiline doc to be hiden.
-		       (widget-create-child-and-convert
-			widget 'custom-help 
-			:doc (progn
-			       (string-match "\\`.*" doc-text)
-			       (match-string 0 doc-text))
-			:custom-doc doc-text
-			"?")
-		     ;; A single line is just inserted.
-		     (widget-create-child-and-convert
-		      widget 'item :format "%d" :doc doc-text nil))
-		   buttons)))
+	     (push magic buttons)
+	     (widget-put widget :buttons buttons)))
 	  (t 
-	   (widget-default-format-handler widget escape)))
-    (widget-put widget :buttons buttons)))
+	   (widget-help-format-handler widget escape)))))
 
 (defun custom-notify (widget &rest args)
   "Keep track of changes."
@@ -286,13 +248,23 @@ The list should be sorted most significant first."
 	(custom-group-state-update widget))))
   (widget-setup))
 
+(defun custom-show (widget value)
+  "Non-nil if WIDGET should be shown with VALUE by default."
+  (let ((show (widget-get widget :custom-show)))
+    (cond ((null show)
+	   nil)
+	  ((eq t show)
+	   t)
+	  (t
+	   (funcall show widget value)))))
+
 ;;; The `custom-variable' Widget.
 
 (define-widget 'custom-variable 'custom
   "Customize variable."
   :format "%l%v%m %h"
   :help-echo "Push me to set or reset this variable."
-  :custom-documentation-property 'variable-documentation
+  :documentation-property 'variable-documentation
   :custom-state nil
   :custom-form 'edit
   :value-create 'custom-variable-value-create
@@ -312,19 +284,16 @@ The list should be sorted most significant first."
 	 (type (if (listp child-type)
 		   child-type
 		 (list child-type)))
-	 conv value)
+	 (conv (widget-convert type))
+	 (value (if (boundp symbol)
+		    (symbol-value symbol)
+		  (widget-get conv :value))))
     ;; If the widget is new, the child determine whether it is hidden.
     (cond (state)
-	  ((widget-get type :custom-show)
+	  ((custom-show type value)
 	   (setq state 'unknown))
 	  (t
 	   (setq state 'hidden)))
-    ;; If the widget is not hidden, we will need its value.
-    (unless (eq state 'hidden)
-      (setq conv (widget-convert type)
-	    value  (if (boundp symbol)
-		       (symbol-value symbol)
-		     (widget-get conv :value))))
     ;; If we don't know the state, see if we need to edit it in lisp form.
     (when (eq state 'unknown)
       (unless (widget-apply (widget-convert type) :match value)
@@ -371,20 +340,23 @@ The list should be sorted most significant first."
 (defun custom-variable-state-set (widget)
   "Set the state of WIDGET."
   (let* ((symbol (widget-value widget))
-	 (value (symbol-value symbol)))
-    (widget-put widget
-		:custom-state (if (get symbol 'saved-value)
-				  (if (equal (custom-quote value)
-					     (car (get symbol 'saved-value)))
-				      'saved
-				    'applied)
-				(if (get symbol 'factory-value)
-				    (if (equal (custom-quote value)
-					       (car (get symbol
-							 'factory-value)))
-					'factory
-				      'applied)
-				  'rogue)))))
+	 (value (symbol-value symbol))
+	 (state (if (get symbol 'saved-value)
+		    (if (condition-case nil
+			    (equal value
+				   (eval (car (get symbol 'saved-value))))
+			  (error nil))
+			'saved
+		      'applied)
+		  (if (get symbol 'factory-value)
+		      (if (condition-case nil
+			      (equal value
+				     (eval (car (get symbol 'factory-value))))
+			    (error nil))
+			  'factory
+			'applied)
+		    'rogue))))
+    (widget-put widget :custom-state state)))
 
 (defvar custom-variable-menu 
   '(("Edit" . custom-variable-edit)
@@ -542,7 +514,7 @@ Optional EVENT is the location for the menu."
   :format "%l%[%t%]: %s%m %h%v"
   :format-handler 'custom-face-format-handler
   :help-echo "Push me to set or reset this face."
-  :custom-documentation-property 'face-documentation
+  :documentation-property 'face-documentation
   :value-create 'custom-face-value-create
   :action 'custom-face-action
   :custom-apply 'custom-face-apply
@@ -690,7 +662,7 @@ Optional EVENT is the location for the menu."
 (define-widget 'custom-group 'custom
   "Customize group."
   :format "%l%[%t%]:\n%m %h%v"
-  :custom-documentation-property 'group-documentation
+  :documentation-property 'group-documentation
   :help-echo "Push me to set or reset all members of this group."
   :value-create 'custom-group-value-create
   :action 'custom-group-action
@@ -1001,7 +973,7 @@ OPTIONS should be an alist of the form ((SYMBOL WIDGET)...), where
 SYMBOL is a customization option, and WIDGET is a widget for editing
 that option."
   (kill-buffer (get-buffer-create "*Customization*"))
-  (switch-to-buffer-other-window (get-buffer-create "*Customization*"))
+  (switch-to-buffer (get-buffer-create "*Customization*"))
   (custom-mode)
   (widget-insert "This is a customization buffer. 
 Press `C-h m' for to get help.

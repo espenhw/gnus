@@ -2146,10 +2146,12 @@ This is all marks except unread, ticked, dormant, and expirable."
    (point) (progn (eval gnus-summary-dummy-line-format-spec) (point))
    (list 'gnus-number gnus-tmp-number 'gnus-intangible gnus-tmp-number)))
 
-(defun gnus-summary-insert-line
-  (gnus-tmp-header gnus-tmp-level gnus-tmp-current gnus-tmp-unread
-		   gnus-tmp-replied gnus-tmp-expirable gnus-tmp-subject-or-nil
-		   &optional gnus-tmp-dummy gnus-tmp-score gnus-tmp-process)
+(defun gnus-summary-insert-line (gnus-tmp-header 
+				 gnus-tmp-level gnus-tmp-current 
+				 gnus-tmp-unread gnus-tmp-replied 
+				 gnus-tmp-expirable gnus-tmp-subject-or-nil
+				 &optional gnus-tmp-dummy gnus-tmp-score 
+				 gnus-tmp-process)
   (let* ((gnus-tmp-indentation (aref gnus-thread-indent-array gnus-tmp-level))
 	 (gnus-tmp-lines (mail-header-lines gnus-tmp-header))
 	 (gnus-tmp-score (or gnus-tmp-score gnus-summary-default-score 0))
@@ -4851,6 +4853,7 @@ If optional argument UNREAD is non-nil, only unread article is selected."
 (defun gnus-summary-goto-subject (article &optional force silent)
   "Go the subject line of ARTICLE.
 If FORCE, also allow jumping to articles not currently shown."
+  (interactive "nArticle number: ")
   (let ((b (point))
 	(data (gnus-data-find article)))
     ;; We read in the article if we have to.

@@ -27,7 +27,8 @@ sclean:
 	rm -f gnus.*.bak gnus.ky gnus.cp gnus.fn gnus.cps gnus.kys *.log \
 	gnus.log gnus.pg gnus.tp gnus.vr gnus.toc *.aux gnus.[cgk]idx \
 	gnus.ilg gnus.ind gnus.[cgk]ind gnus.idx \
-	gnus.tmptexi gnus.tmplatexi gnus.tmplatexi1 texput.log *.orig *.rej
+	gnus.tmptexi gnus.tmplatexi gnus.tmplatexi1 texput.log *.orig *.rej \
+	gnus.latexi*~*
 
 clean:
 	make sclean 
@@ -80,3 +81,7 @@ out:
 	/local/ftp/pub/emacs/gnus/manual
 	mv gnus-manual-standard.ps.gz gnus-manual-a4.ps.gz \
 	/hom/larsi/www_docs/gnus/manual
+
+veryclean:
+	make clean
+	rm -f gnus.dvi gnus.ps

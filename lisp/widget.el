@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, extensions, faces, hypermedia
-;; Version: 0.94
+;; Version: 0.96
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -26,7 +26,7 @@
 	     (set (car keywords) (car keywords)))
 	 (setq keywords (cdr keywords))))))
 
-(define-widget-keywords
+(define-widget-keywords :widget-doc
   :create :convert-widget :format :value-create :offset :extra-offset
   :tag :doc :from :to :args :value :value-from :value-to :action
   :value-set :value-delete :match :parent :delete :menu-tag-get
@@ -36,7 +36,8 @@
   :indent :size :value-to-external :validate :error :directory
   :must-match :type-error :value-inline :inline :match-inline :greedy
   :button-face-get :button-face :value-face :keymap :entry-from
-  :entry-to :help-echo) 
+  :entry-to :help-echo :documentation-property :hide-front-space
+  :hide-rear-space) 
 
 ;; These autoloads should be deleted when the file is added to Emacs.
 (autoload 'widget-create "widget-edit")

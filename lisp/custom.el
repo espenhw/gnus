@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.94
+;; Version: 0.96
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -238,22 +238,24 @@ If there already is an entry for that option, overwrite it."
 
 ;;; Face Utilities.
 
-(make-face 'custom-face-empty)
+(and (fboundp 'make-face)
+     (make-face 'custom-face-empty))
 
 (defun custom-face-display-set (face spec &optional frame)
   "Set FACE to the attributes to the first matching entry in SPEC.
 Iff optional FRAME is non-nil, set it for that frame only.
 See `defface' for information about SPEC."
-  (make-face face)
-  (copy-face 'custom-face-empty face)
-  (while spec 
-    (let* ((entry (car spec))
-	   (display (nth 0 entry))
-	   (atts (nth 1 entry)))
-      (setq spec (cdr spec))
-      (when (custom-display-match-frame display frame)
-	(apply 'custom-face-attribites-set face frame atts)
-	(setq spec nil)))))
+  (when (fboundp 'make-face)
+    (make-face face)
+    (copy-face 'custom-face-empty face)
+    (while spec 
+      (let* ((entry (car spec))
+	     (display (nth 0 entry))
+	     (atts (nth 1 entry)))
+	(setq spec (cdr spec))
+	(when (custom-display-match-frame display frame)
+	  (apply 'custom-face-attribites-set face frame atts)
+	  (setq spec nil))))))
 
 (defcustom custom-background-mode nil
   "The brightness of the background.

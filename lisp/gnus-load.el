@@ -466,7 +466,7 @@ less space and be faster as a result.")
   (condition-case ()
       (if (gnus-visual-p 'mouse-face 'highlight)
 	  (if (boundp 'gnus-mouse-face)
-	      gnus-mouse-face
+	      (or gnus-mouse-face 'highlight)
 	    'highlight)
 	'default)
     (error nil))

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 0.94
+;; Version: 0.96
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -14,9 +14,23 @@
 ;;; Code:
 
 (require 'widget)
-(require 'custom)
 (require 'cl)
 (autoload 'pp-to-string "pp")
+
+;; The following should go away when bundled with Emacs.
+(require 'custom)
+(eval-and-compile
+  (unless (fboundp 'custom-declare-variable)
+    ;; We have the old custom-library, hack around it!
+    (defmacro defgroup (&rest args) nil)
+    (defmacro defcustom (&rest args) nil)
+    (defmacro defface (&rest args) nil)
+    (when (fboundp 'copy-face)
+      (copy-face 'default 'widget-documentation-face)
+      (copy-face 'bold 'widget-button-face)
+      (copy-face 'italic 'widget-field-face))
+    (defvar widget-mouse-face 'highlight)
+    (defvar widget-menu-max-size 40)))
 
 ;;; Compatibility.
 
@@ -151,13 +165,32 @@ minibuffer."
 (defun widget-specify-field (widget from to)
   ;; Specify editable button for WIDGET between FROM and TO.
   (widget-specify-field-update widget from to)
-  ;; Make it possible to edit both end of the field.
-  (put-text-property (- from 2) from 'intangible t)
+
+  ;; Make it possible to edit the front end of the field.
   (add-text-properties (1- from) from (list 'rear-nonsticky t
 					    'end-open t
 					    'invisible t))
+  (when (or (string-match ".%v" (widget-get widget :format))
+	    (widget-get widget :hide-front-space))
+    ;; WARNING: This is going to lose horrible if the character just
+    ;; before the field can be modified (e.g. if it belongs to a
+    ;; choice widget).  We try to compensate by checking the format
+    ;; string, and hope the user hasn't changed the :create method.
+    (put-text-property (- from 2) from 'intangible 'front))
+  
+  ;; Make it possible to edit back end of the field.
   (add-text-properties to (1+ to) (list 'front-sticky nil
-					'start-open t)))
+					'start-open t))
+
+  (when (widget-get widget :size)
+    (put-text-property to (1+ to) 'invisible t)
+    (when (or (string-match "%v." (widget-get widget :format))
+	      (widget-get widget :hide-rear-space))
+      ;; WARNING: This is going to lose horrible if the character just
+      ;; after the field can be modified (e.g. if it belongs to a
+      ;; choice widget).  We try to compensate by checking the format
+      ;; string, and hope the user hasn't changed the :create method.
+      (put-text-property to (+ to 2) 'intangible 'rear))))
 
 (defun widget-specify-field-update (widget from to)
   ;; Specify editable button for WIDGET between FROM and TO.
@@ -168,7 +201,9 @@ minibuffer."
 				       'read-only nil
 				       'keymap map
 				       'local-map map
-				       'face face))))
+				       'face face))
+    (unless (widget-get widget :size)
+      (put-text-property to (1+ to) 'face face))))
 
 (defun widget-specify-button (widget from to)
   ;; Specify button for WIDGET between FROM and TO.
@@ -527,7 +562,10 @@ With optional ARG, move across that many fields."
 			      ;; Field too small.
 			      (save-excursion
 				(goto-char end)
-				(insert-char ?\  (- (+ begin size) end))))
+				(insert-char ?\  (- (+ begin size) end))
+				(widget-specify-field-update field 
+							     begin
+							     (+ begin size))))
 			     ((> (- end begin) size)
 			      ;; Field too large and
 			      (if (or (< (point) (+ begin size))
@@ -766,19 +804,21 @@ With optional ARG, move across that many fields."
 	(value (widget-get widget :value))
 	(from (point)))
     (if (null size)
-	(insert value "  ")
+	(if (zerop (length value))
+	    (insert "")
+	  (insert value))
       (insert value)
       (if (< (length value) size)
 	  (insert-char ?\  (- size (length value)))))
     (unless (memq widget widget-field-list)
       (setq widget-field-new (cons widget widget-field-new)))
-    (widget-put widget :value-from (copy-marker from))
-    (set-marker-insertion-type (widget-get widget :value-from) t)
     (widget-put widget :value-to (copy-marker (point)))
     (set-marker-insertion-type (widget-get widget :value-to) nil)
     (if (null size)
 	(insert ?\n)
-      (insert ?\ ))))
+      (insert ?\ ))
+    (widget-put widget :value-from (copy-marker from))
+    (set-marker-insertion-type (widget-get widget :value-from) t)))
 
 (defun widget-field-value-delete (widget)
   ;; Remove the widget from the list of active editing fields.
@@ -790,13 +830,15 @@ With optional ARG, move across that many fields."
   ;; Return current text in editing field.
   (let ((from (widget-get widget :value-from))
 	(to (widget-get widget :value-to))
+	(size (widget-get widget :size))
 	(old (current-buffer)))
     (if (and from to)
 	(progn 
 	  (set-buffer (marker-buffer from))
 	  (setq from (1+ from)
 		to (1- to))
-	  (while (and (> to from)
+	  (while (and size
+		      (> to from)
 		      (eq (char-after (1- to)) ?\ ))
 	    (setq to (1- to)))
 	  (prog1 (buffer-substring-no-properties from to)
@@ -832,6 +874,12 @@ With optional ARG, move across that many fields."
 
 (defun widget-choice-convert-widget (widget)
   ;; Expand type args into widget objects.
+;  (widget-put widget :args (mapcar (lambda (child)
+;				     (if (widget-get child ':converted)
+;					 child
+;				       (widget-put child ':converted t)
+;				       (widget-convert child)))
+;				   (widget-get widget :args)))
   (widget-put widget :args (mapcar 'widget-convert (widget-get widget :args)))
   widget)
 
@@ -1567,11 +1615,87 @@ With optional ARG, move across that many fields."
 	(cons found vals)
       nil)))
 
+;;; The `widget-help' Widget.
+
+(define-widget 'widget-help 'push-button
+  "The widget documentation button."
+  :format "%[[%t]%] %d"
+  :help-echo "Push me to toggle the documentation."
+  :action 'widget-help-action)
+
+(defun widget-help-action (widget &optional event)
+  "Toggle documentation for WIDGET."
+  (let ((old (widget-get widget :doc))
+	(new (widget-get widget :widget-doc)))
+    (widget-put widget :doc new)
+    (widget-put widget :widget-doc old))
+  (widget-value-set widget (widget-value widget)))
+
+(defun widget-help-format-handler (widget escape)
+  ;; We recognize extra escape sequences.
+  (let* ((symbol (widget-get widget :value))
+	 (buttons (widget-get widget :buttons))
+	 (doc-property (widget-get widget :documentation-property))
+	 (doc-try (cond ((widget-get widget :doc))
+			((symbolp doc-property)
+			 (documentation-property symbol doc-property))
+			(t
+			 (funcall doc-property symbol))))
+	 (doc-text (and (stringp doc-try)
+			(> (length doc-try) 1)
+			doc-try)))
+    (cond ((eq escape ?h)
+	   (when doc-text
+	     (and (eq (preceding-char) ?\n)
+		  (widget-get widget :indent)
+		  (insert-char ?  (widget-get widget :indent)))
+	     ;; The `*' in the beginning is redundant.
+	     (when (eq (aref doc-text  0) ?*)
+	       (setq doc-text (substring doc-text 1)))
+	     ;; Get rid of trailing newlines.
+	     (when (string-match "\n+\\'" doc-text)
+	       (setq doc-text (substring doc-text 0 (match-beginning 0))))
+	     (push (if (string-match "\n." doc-text)
+		       ;; Allow multiline doc to be hiden.
+		       (widget-create-child-and-convert
+			widget 'widget-help 
+			:doc (progn
+			       (string-match "\\`.*" doc-text)
+			       (match-string 0 doc-text))
+			:widget-doc doc-text
+			"?")
+		     ;; A single line is just inserted.
+		     (widget-create-child-and-convert
+		      widget 'item :format "%d" :doc doc-text nil))
+		   buttons)))
+	  (t 
+	   (widget-default-format-handler widget escape)))
+    (widget-put widget :buttons buttons)))
+
 ;;; The Sexp Widgets.
 
 (define-widget 'const 'item
   "An immutable sexp."
   :format "%t\n")
+
+(define-widget 'function-item 'item
+  "An immutable function name."
+  :format "%v\n%h"
+  :format-handler 'widget-help-format-handler
+  :documentation-property (lambda (symbol)
+			    (condition-case nil
+				(documentation symbol t)
+			      (error nil)))
+  :value-delete 'widget-radio-value-delete
+  :match (lambda (widget value) (symbolp value)))
+
+(define-widget 'variable-item 'item
+  "An immutable variable name."
+  :format "%v\n%h"
+  :format-handler 'widget-help-format-handler
+  :documentation-property 'variable-documentation
+  :value-delete 'widget-radio-value-delete
+  :match (lambda (widget value) (symbolp value)))
 
 (define-widget 'string 'editable-field
   "A string"
@@ -1611,8 +1735,10 @@ It will read a directory name from the minibuffer when activated."
   :value nil
   :tag "Symbol"
   :match (lambda (widget value) (symbolp value))
-  :value-to-internal (lambda (widget value) (symbol-name value))
-  :value-to-external (lambda (widget value) (intern value)))
+  :value-to-internal (lambda (widget value) (and (symbolp value)
+						 (symbol-name value)))
+  :value-to-external (lambda (widget value) (and (stringp value)
+						 (intern value))))
 
 (define-widget 'function 'symbol
   ;; Should complete on functions.
@@ -1679,6 +1805,10 @@ It will read a directory name from the minibuffer when activated."
   :type-error "This field should contain a number"
   :match (lambda (widget value) (numberp value)))
 
+(define-widget 'hook 'sexp 
+  "A emacs lisp hook"
+  :tag "Hook")
+
 (define-widget 'list 'group
   "A lisp list."
   :tag "List"
@@ -1716,7 +1846,12 @@ It will read a directory name from the minibuffer when activated."
   "A union of several sexp types."
   :tag "Choice"
   :format "%[%t%]: %v")
-  
+
+(define-widget 'radio 'radio-button-choice
+  "A union of several sexp types."
+  :tag "Choice"
+  :format "%t:\n%v")
+
 (define-widget 'repeat 'editable-list
   "A variable length homogeneous list."
   :tag "Repeat"
