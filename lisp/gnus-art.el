@@ -810,7 +810,7 @@ always hide."
 (defun article-treat-dumbquotes ()
   "Translate M******** sm*rtq**t*s into proper text."
   (interactive)
-  (article-translate-characters "\221\222\223\223" "`'\"\""))
+  (article-translate-characters "\221\222\223\224" "`'\"\""))
 
 (defun article-translate-characters (from to)
   "Translate all characters in the body of the article according to FROM and TO.

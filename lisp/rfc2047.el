@@ -255,16 +255,16 @@ Should be called narrowed to the head of the message."
 		   (prog1
 		       (match-string 0)
 		     (delete-region (match-beginning 0) (match-end 0)))))
-	  (when enable-multibyte-characters
+	  (when (mm-multibyte-p)
 	    (mm-decode-coding-region b e rfc2047-default-charset))
 	  (setq b (point)))
-	(when enable-multibyte-characters
+	(when (mm-multibyte-p)
 	  (mm-decode-coding-region b (point-max) rfc2047-default-charset))))))
 
 ;;;###autoload
 (defun rfc2047-decode-string (string)
   "Decode the quoted-printable-encoded STRING and return the results."
-  (let ((m enable-multibyte-characters))
+  (let ((m (mm-multibyte-p)))
     (with-temp-buffer
       (when m
 	(mm-enable-multibyte))

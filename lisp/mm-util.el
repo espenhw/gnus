@@ -196,6 +196,11 @@ used as the line break code type of the coding system."
 			   (point-min) (point-max)))))
     (mm-mule-charset-to-mime-charset charset)))
 
+(defun mm-multibyte-p ()
+  "Say whether multibyte is enabled."
+  (and (fboundp 'enable-multibyte-characters)
+       enable-multibyte-characters))
+
 (provide 'mm-util)
 
 ;;; mm-util.el ends here

@@ -1,3 +1,15 @@
+Tue Sep  8 22:25:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.21 is released.
+
+1998-09-08  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-art.el (article-treat-dumbquotes): Handle \224 correctly.
+
+1998-09-08 22:18:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-multibyte-p): New function.
+
 Tue Sep  8 21:43:03 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.20 is released.
