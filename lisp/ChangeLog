@@ -1,5 +1,12 @@
 2002-01-31  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-msg.el (gnus-posting-styles): Add new format of header.
+	(gnus-configure-posting-styles): Support the new format.
+
+	* mail-source.el (mail-source-bind, mail-source-bind-common): Set
+	edebug-form-spec to (sexp body).
+	Suggested by Joe Wells <jbw@izanami.cee.hw.ac.uk>.
+
 	* message.el (message-reply-headers): Add doc.
 
 2002-01-30  ShengHuo ZHU  <zsh@cs.rochester.edu>

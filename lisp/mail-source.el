@@ -378,7 +378,7 @@ the `mail-source-keyword-map' variable."
      ,@body))
 
 (put 'mail-source-bind 'lisp-indent-function 1)
-(put 'mail-source-bind 'edebug-form-spec '(form body))
+(put 'mail-source-bind 'edebug-form-spec '(sexp body))
 
 (defun mail-source-set-1 (source)
   (let* ((type (pop source))
@@ -421,7 +421,7 @@ See `mail-source-bind'."
      ,@body))
 
 (put 'mail-source-bind-common 'lisp-indent-function 1)
-(put 'mail-source-bind-common 'edebug-form-spec '(form body))
+(put 'mail-source-bind-common 'edebug-form-spec '(sexp body))
 
 (defun mail-source-value (value)
   "Return the value of VALUE."
