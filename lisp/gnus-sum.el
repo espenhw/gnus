@@ -7690,7 +7690,10 @@ without any article massaging functions being run."
 	 (gnus-data-find (cdr gnus-article-current))
 	 header)
 	(gnus-summary-update-article-line
-	 (cdr gnus-article-current) header))))
+	 (cdr gnus-article-current) header)
+	(if (gnus-summary-goto-subject (cdr gnus-article-current) nil t)
+	    (gnus-summary-update-secondary-mark
+	     (cdr gnus-article-current))))))
    ((not arg)
     ;; Select the article the normal way.
     (gnus-summary-select-article nil 'force))
@@ -8412,10 +8415,17 @@ groups."
 		       (gnus-data-find (cdr gnus-article-current))
 		       header)
 		      (gnus-summary-update-article-line
-		       (cdr gnus-article-current) header))))))
+		       (cdr gnus-article-current) header)
+		      (if (gnus-summary-goto-subject
+			   (cdr gnus-article-current) nil t)
+			  (gnus-summary-update-secondary-mark
+			   (cdr gnus-article-current))))))))
 	  ;; Update threads.
 	  (set-buffer (or buffer gnus-summary-buffer))
-	  (gnus-summary-update-article (cdr gnus-article-current)))
+	  (gnus-summary-update-article (cdr gnus-article-current))
+	  (if (gnus-summary-goto-subject (cdr gnus-article-current) nil t)
+	      (gnus-summary-update-secondary-mark
+	       (cdr gnus-article-current))))
 	;; Prettify the article buffer again.
 	(unless no-highlight
 	  (save-excursion
@@ -9311,6 +9321,8 @@ is non-nil or the Subject: of both articles are the same."
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-unmark-all-processable)
 	(gnus-summary-update-article current-article)
+	(if (gnus-summary-goto-subject (cdr gnus-article-current) nil t)
+	    (gnus-summary-update-secondary-mark (cdr gnus-article-current)))
 	(gnus-summary-rethread-current)
 	(gnus-message 3 "Article %d is now the child of article %d"
 		      current-article parent-article)))))

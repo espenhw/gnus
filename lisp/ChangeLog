@@ -1,3 +1,11 @@
+2001-08-04  Nuutti Kotivuori  <nuutti.kotivuori@smarttrust.com>
+	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-show-article): Call
+	gnus-summary-update-secondary-secondary-mark.
+	* gnus-sum.el (gnus-summary-edit-article-done): Ditto.
+	* gnus-sum.el (gnus-summary-reparent-thread): Ditto.
+	
 2001-08-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Misc -> Gnus.
