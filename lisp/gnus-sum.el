@@ -951,7 +951,8 @@ default:      The default article score.
 default-high: The default score for high scored articles.
 default-low:  The default score for low scored articles.
 below:        The score below which articles are automatically marked as read.
-mark:         The articles mark."
+mark:         The article's mark.
+uncached:     Non-nil if the article is uncached."
   :group 'gnus-summary-visual
   :type '(repeat (cons (sexp :tag "Form" nil)
 		       face)))

@@ -139,8 +139,8 @@ If non-nil, there will be no prompt for a login name.")
 This variable is used by the `nntp-open-via-telnet-and-telnet' method.")
 
 (defvoo nntp-large-newsgroup 50
-  "*The number of the articles which indicates a large newsgroup.
-If the number of the articles is greater than the value, verbose
+  "*The number of articles which indicates a large newsgroup.
+If the number of articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
 
 (defvoo nntp-maximum-request 400

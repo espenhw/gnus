@@ -72,8 +72,8 @@ If you are using Cnews, you probably should set this variable to nil.")
   "Local news active date file.")
 
 (defvoo nnspool-large-newsgroup 50
-  "The number of the articles which indicates a large newsgroup.
-If the number of the articles is greater than the value, verbose
+  "The number of articles which indicates a large newsgroup.
+If the number of articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
 
 (defvoo nnspool-nov-is-evil nil

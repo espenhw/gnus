@@ -356,8 +356,8 @@ discarded after running the split process."
   :type 'hook)
 
 (defcustom nnmail-large-newsgroup 50
-  "*The number of the articles which indicates a large newsgroup or nil.
-If the number of the articles is greater than the value, verbose
+  "*The number of articles which indicates a large newsgroup or nil.
+If the number of articles is greater than the value, verbose
 messages will be shown to indicate the current status."
   :group 'nnmail-various
   :type '(choice (const :tag "infinite" nil)
