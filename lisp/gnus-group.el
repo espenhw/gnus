@@ -1450,7 +1450,7 @@ if it is a string, only list groups matching REGEXP."
   "Highlight the current line according to `gnus-group-highlight'."
   (let* ((list gnus-group-highlight)
 	 (p (point))
-	 (end (progn (end-of-line) (point)))
+	 (end (gnus-point-at-eol))
 	 ;; now find out where the line starts and leave point there.
 	 (beg (progn (beginning-of-line) (point)))
 	 (group (gnus-group-group-name))

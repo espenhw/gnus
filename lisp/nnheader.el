@@ -497,8 +497,7 @@ the line could be found."
 	(setq prev (point))
 	(while (and (not (numberp (setq num (read cur))))
 		    (not (eobp)))
-	  (delete-region (progn (beginning-of-line) (point))
-			 (progn (forward-line 1) (point))))
+	  (gnus-delete-line))
 	(cond ((> num article)
 	       (setq max (point)))
 	      ((< num article)
@@ -600,7 +599,7 @@ the line could be found."
       ;; This is invalid, but not all articles have Message-IDs.
       ()
     (mail-position-on-field "References")
-    (let ((begin (save-excursion (beginning-of-line) (point)))
+    (let ((begin (gnus-point-at-bol))
 	  (fill-column 78)
 	  (fill-prefix "\t"))
       (when references

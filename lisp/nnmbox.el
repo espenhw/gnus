@@ -297,8 +297,7 @@
        (while (re-search-forward
 	       "^X-Gnus-Newsgroup:"
 	       (save-excursion (search-forward "\n\n" nil t) (point)) t)
-	 (delete-region (progn (beginning-of-line) (point))
-			(progn (forward-line 1) (point))))
+	 (gnus-delete-line))
        (setq result (eval accept-form))
        (kill-buffer buf)
        result)
@@ -423,9 +422,7 @@
   (if (not force)
       (nnmbox-record-deleted-article (nnmbox-article-group-number t)))
   (or force
-      (delete-region
-       (progn (beginning-of-line) (point))
-       (progn (forward-line 1) (point))))
+      (gnus-delete-line))
   ;; Beginning of the article.
   (save-excursion
     (save-restriction

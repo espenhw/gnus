@@ -1818,7 +1818,7 @@ score in `gnus-newsgroup-scored' by SCORE."
 	    (goto-char (point-min))
 	    (if (= dmt ?e)
 		(while (funcall search-func match nil t)
-		  (and (= (progn (beginning-of-line) (point))
+		  (and (= (gnus-point-at-bol)
 			  (match-beginning 0))
 		       (= (progn (end-of-line) (point))
 			  (match-end 0))

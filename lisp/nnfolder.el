@@ -202,7 +202,7 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 			(goto-char (match-end 0))
 			(setq num (string-to-int
 				   (buffer-substring
-				    (point) (progn (end-of-line) (point)))))
+				    (point) (gnus-point-at-eol))))
 			(goto-char start)
 			(< num article)))
 		      ;; Check that we are before an article with a
@@ -212,7 +212,7 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 		      (progn
 			(setq num (string-to-int
 				   (buffer-substring
-				    (point) (progn (end-of-line) (point)))))
+				    (point) (gnus-point-at-eol))))
 			(> num article))
 		      ;; Discard any article numbers before the one we're
 		      ;; now looking at.
@@ -285,9 +285,8 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 	    (cons nnfolder-current-group
 		  (if (search-forward (concat "\n" nnfolder-article-marker)
 				      nil t)
-		      (string-to-int
-		       (buffer-substring
-			(point) (progn (end-of-line) (point))))
+		      (string-to-int (buffer-substring
+				      (point) (gnus-point-at-eol)))
 		    -1))))))))
 
 (deffoo nnfolder-request-group (group &optional server dont-check)
@@ -483,8 +482,7 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 		 (concat "^" nnfolder-article-marker)
 		 (save-excursion (and (search-forward "\n\n" nil t) (point)))
 		 t)
-	   (delete-region (progn (beginning-of-line) (point))
-			  (progn (forward-line 1) (point))))
+	   (gnus-delete-line))
 	 (setq result (eval accept-form))
 	 (kill-buffer buf)
 	 result)

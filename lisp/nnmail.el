@@ -1038,7 +1038,7 @@ FUNC will be called with the group name to determine the article number."
 	(while (not (eobp))
 	  (unless (< (move-to-column nnmail-split-header-length-limit)
 		     nnmail-split-header-length-limit)
-	    (delete-region (point) (progn (end-of-line) (point))))
+	    (delete-region (point) (gnus-point-at-eol)))
 	  (forward-line 1))
 	;; Allow washing.
 	(goto-char (point-min))
@@ -1532,8 +1532,7 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 	(skip-chars-forward "^\n\r\t")
 	(unless (looking-at "[\r\n]")
 	  (forward-char 1)
-	  (buffer-substring (point)
-			    (progn (end-of-line) (point))))))))
+	  (buffer-substring (point) (gnus-point-at-eol)))))))
 
 ;; Function for nnmail-split-fancy: look up all references in the
 ;; cache and if a match is found, return that group.

@@ -1074,7 +1074,7 @@ password contained in '~/.nntp-authinfo'."
       (nntp-send-command "^3.*\r?\n" "AUTHINFO USER" (user-login-name))
       (nntp-send-command
        "^2.*\r?\n" "AUTHINFO PASS"
-       (buffer-substring (point) (progn (end-of-line) (point)))))))
+       (buffer-substring (point) (gnus-point-at-eol))))))
 
 ;;; Internal functions.
 

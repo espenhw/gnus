@@ -728,7 +728,7 @@ XEmacs compatibility workaround."
 (defun gnus-group-add-icon ()
   "Add an icon to the current line according to `gnus-group-icon-list'."
   (let* ((p (point))
-	 (end (progn (end-of-line) (point)))
+	 (end (gnus-point-at-eol))
 	 ;; now find out where the line starts and leave point there.
 	 (beg (progn (beginning-of-line) (point))))
     (save-restriction

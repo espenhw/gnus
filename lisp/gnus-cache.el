@@ -462,8 +462,7 @@ Returns the list of articles removed."
 	(when (or (looking-at (concat (int-to-string number) "\t"))
 		  (search-forward (concat "\n" (int-to-string number) "\t")
 				  (point-max) t))
-	  (delete-region (progn (beginning-of-line) (point))
-			 (progn (forward-line 1) (point)))))
+	  (gnus-delete-line)))
       (unless (setq gnus-newsgroup-cached
 		    (delq article gnus-newsgroup-cached))
 	(gnus-sethash gnus-newsgroup-name nil gnus-cache-active-hashtb)
@@ -514,7 +513,7 @@ Returns the list of articles removed."
       (set-buffer cache-buf)
       (if (search-forward (concat "\n" (int-to-string (car cached)) "\t")
 			  nil t)
-	  (setq beg (progn (beginning-of-line) (point))
+	  (setq beg (gnus-point-at-bol)
 		end (progn (end-of-line) (point)))
 	(setq beg nil))
       (set-buffer nntp-server-buffer)

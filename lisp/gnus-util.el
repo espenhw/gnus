@@ -148,7 +148,7 @@
 
 ;; Delete the current line (and the next N lines).
 (defmacro gnus-delete-line (&optional n)
-  `(delete-region (progn (beginning-of-line) (point))
+  `(delete-region (gnus-point-at-bol)
 		  (progn (forward-line ,(or n 1)) (point))))
 
 (defun gnus-byte-code (func)

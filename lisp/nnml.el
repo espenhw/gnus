@@ -418,8 +418,7 @@ marks file will be regenerated properly by Gnus.")
 	  (if (or (looking-at art)
 		  (search-forward (concat "\n" art) nil t))
 	      ;; Delete the old NOV line.
-	      (delete-region (progn (beginning-of-line) (point))
-			     (progn (forward-line 1) (point)))
+	      (gnus-delete-line)
 	    ;; The line isn't here, so we have to find out where
 	    ;; we should insert it.  (This situation should never
 	    ;; occur, but one likes to make sure...)
@@ -692,7 +691,7 @@ marks file will be regenerated properly by Gnus.")
     (nnheader-insert-nov headers)))
 
 (defsubst nnml-header-value ()
-  (buffer-substring (match-end 0) (progn (end-of-line) (point))))
+  (buffer-substring (match-end 0) (gnus-point-at-eol)))
 
 (defun nnml-parse-head (chars &optional number)
   "Parse the head of the current buffer."

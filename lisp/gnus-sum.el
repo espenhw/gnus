@@ -5862,8 +5862,7 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 			   (looking-at "Xref:"))
 		      (search-forward "\nXref:" nil t))
 	      (goto-char (1+ (match-end 0)))
-	      (setq xref (buffer-substring (point)
-					   (progn (end-of-line) (point))))
+	      (setq xref (buffer-substring (point) (gnus-point-at-eol)))
 	      (mail-header-set-xref headers xref)))))))
 
 (defun gnus-summary-insert-subject (id &optional old-header use-old-header)
@@ -10303,8 +10302,8 @@ Returns nil if no thread was there to be shown."
   (interactive)
   (let ((buffer-read-only nil)
 	(orig (point))
-	;; first goto end then to beg, to have point at beg after let
-	(end (progn (end-of-line) (point)))
+	(end (gnus-point-at-eol))
+	;; Leave point at bol
 	(beg (progn (beginning-of-line) (point))))
     (prog1
 	;; Any hidden lines here?
@@ -11055,8 +11054,8 @@ If REVERSE, save parts that do not match TYPE."
   ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
   (when gnus-summary-selected-face
     (save-excursion
-      (let* ((beg (progn (beginning-of-line) (point)))
-	     (end (progn (end-of-line) (point)))
+      (let* ((beg (gnus-point-at-bol))
+	     (end (gnus-point-at-eol))
 	     ;; Fix by Mike Dugan <dugan@bucrf16.bu.edu>.
 	     (from (if (get-text-property beg gnus-mouse-face-prop)
 		       beg

@@ -1588,7 +1588,7 @@ always hide."
 	      (while (re-search-forward "^[^: \t]+:[ \t]*\n[^ \t]" nil t)
 		(forward-line -1)
 		(gnus-article-hide-text-type
-		 (progn (beginning-of-line) (point))
+		 (gnus-point-at-bol)
 		 (progn
 		   (end-of-line)
 		   (if (re-search-forward "^[^ \t]" nil t)
@@ -1704,7 +1704,7 @@ always hide."
     (goto-char (point-min))
     (when (re-search-forward (concat "^" header ":") nil t)
       (gnus-article-hide-text-type
-       (progn (beginning-of-line) (point))
+       (gnus-point-at-bol)
        (progn
 	 (end-of-line)
 	 (if (re-search-forward "^[^ \t]" nil t)
@@ -4239,16 +4239,14 @@ If no internal viewer is available, use an external viewer."
 	      (if (window-live-p window)
 		  (select-window window)))))
       (goto-char point)
-      (delete-region (gnus-point-at-bol) (progn (forward-line 1) (point)))
+      (gnus-delete-line)
       (gnus-insert-mime-button
        handle id (list (mm-handle-displayed-p handle)))
       (goto-char point))))
 
 (defun gnus-article-goto-part (n)
   "Go to MIME part N."
-  (let ((point (text-property-any (point-min) (point-max) 'gnus-part n)))
-    (when point
-      (goto-char point))))
+  (gnus-goto-char (text-property-any (point-min) (point-max) 'gnus-part n)))
 
 (defun gnus-insert-mime-button (handle gnus-tmp-id &optional displayed)
   (let ((gnus-tmp-name
