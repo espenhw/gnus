@@ -3425,14 +3425,15 @@ In no internal viewer is available, use an external viewer."
 	    ;(gnus-article-insert-newline)
 	    (gnus-insert-mime-button
 	     handle id (list (or display (and not-attachment text))))
-	    (gnus-article-insert-newline)
-	    ;(gnus-article-insert-newline)
+	    (gnus-article-insert-newline) 
+	    ;(gnus-article-insert-newline) 
+	    ;; Remember modify the number of forward lines.
 	    (setq move t))
 	  (setq beg (point))
 	  (cond
 	   (display
 	    (when move
-	      (forward-line -2)
+	      (forward-line -1)
 	      (setq beg (point)))
 	    (let ((mail-parse-charset gnus-newsgroup-charset)
 		  (mail-parse-ignored-charsets 
@@ -3444,7 +3445,7 @@ In no internal viewer is available, use an external viewer."
 	    (goto-char (point-max)))
 	   ((and text not-attachment)
 	    (when move
-	      (forward-line -2)
+	      (forward-line -1)
 	      (setq beg (point)))
 	    (gnus-article-insert-newline)
 	    (mm-insert-inline handle (mm-get-part handle))

@@ -14,6 +14,7 @@
 (maybe-fbind '(babel-fetch
 	       babel-wash create-image decode-coding-string display-graphic-p
 	       find-image font-create-object gnus-mule-get-coding-system
+	       font-lock-set-defaults
 	       image-size image-type-available-p insert-image
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image

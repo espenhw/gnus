@@ -1,3 +1,9 @@
+2000-10-31 08:36:03  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-display-single): Forward line -1.
+	* mml.el (mml-read-tag): Don't skip the leading space.
+	* lpath.el (font-lock-set-defaults): Shut up.
+
 2000-10-31 00:04:35  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el: Fix doc. Remove bogus mml2015-setup.

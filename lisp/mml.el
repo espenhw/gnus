@@ -230,7 +230,8 @@ one charsets.")
       (push (cons (intern elem) val) contents)
       (skip-chars-forward " \t\n"))
     (forward-char 1)
-    (skip-chars-forward " \t\n")
+    ;; Don't skip the leading space.
+    ;;(skip-chars-forward " \t\n")
     (cons (intern name) (nreverse contents))))
 
 (defun mml-read-part (&optional mml)
