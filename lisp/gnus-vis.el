@@ -207,7 +207,7 @@
 ;(defvar gnus-signature-face 'italic
 ;  "Face used for signature.")
 
-(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[\\w-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[\\w-a-zA-Z0-9_=#$@~`%&*+|\\/]"
+(defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-\\wa-zA-Z0-9_=!?#$@~`%&*+|\\/.,]*[-\\wa-zA-Z0-9_=#$@~`%&*+|\\/]"
   "*Regular expression that matches URLs.")
 
 (defvar gnus-button-alist 
@@ -805,8 +805,6 @@ ticked: The number of ticked articles in the group.
        ["Resend message" gnus-summary-resend-message t]
        ["Send bounced mail" gnus-summary-resend-bounced-mail t]
        ["Send a mail" gnus-summary-mail-other-window t]
-       ["Reply & followup" gnus-summary-followup-and-reply t]
-       ["Reply & followup and yank" gnus-summary-followup-and-reply-with-original t]
        ["Uuencode and post" gnus-uu-post-news t]
        ("Draft"
 	["Send" gnus-summary-send-draft t]
@@ -1479,8 +1477,8 @@ specified by `gnus-button-alist'."
 		  (fboundp (symbol-value fun)))
 	     (apply (symbol-value fun) args))
 	    (t
-	     (message "You must define `%S' to use this button"
-		      (cons fun args)))))))
+	     (gnus-message 1 "You must define `%S' to use this button"
+			   (cons fun args)))))))
 
 (defun gnus-button-message-id (message-id)
   "Fetch MESSAGE-ID."

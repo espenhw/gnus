@@ -608,7 +608,10 @@ The SOUP packet file name will be inserted at the %s.")
 	  (save-restriction
 	    (message-narrow-to-headers)
 	    ;; Remove some headers.
-	    (message-remove-header message-ignored-mail-headers t))
+	    (message-remove-header message-ignored-mail-headers t)
+	    (if (equal kind "mail")
+		(message-generate-headers message-required-mail-headers)
+	      (message-generate-headers message-required-news-headers)))
 	  (goto-char (point-max))
 	  ;; require one newline at the end.
 	  (or (= (preceding-char) ?\n)

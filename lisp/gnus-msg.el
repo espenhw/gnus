@@ -128,7 +128,8 @@ the group.")
     `(let ((,winconf (current-window-configuration))
 	   (,buffer (current-buffer))
 	   (,article (and gnus-article-reply (gnus-summary-article-number)))
-	   message-header-setup-hook)
+	   (message-header-setup-hook
+	    (copy-sequence message-header-setup-hook)))
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
        ,@forms
@@ -344,7 +345,7 @@ If SILENT, don't prompt the user."
 	       (when gnus-post-method
 		 (if (listp (car gnus-post-method))
 		     gnus-post-method
-		   (listp gnus-post-method)))
+		   (list gnus-post-method)))
 	       gnus-secondary-select-methods
 	       (list gnus-select-method)
 	       (list group-method)))
@@ -501,7 +502,8 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
     (gnus-setup-message (if yank 'reply-yank 'reply)
       (gnus-summary-select-article)
       (set-buffer (gnus-copy-article-buffer))
-      (message-reply)
+      (message-reply nil nil (gnus-group-get-parameter
+			      gnus-newsgroup-name 'broken-reply-to))
       (when yank
 	(gnus-inews-yank-articles yank)))))
 
@@ -683,7 +685,7 @@ The source file has to be in the Emacs load path."
   (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el" "nnmail.el"
 		 "message.el"))
 	file dirs expr olist sym)
-    (message "Please wait while we snoop your variables...")
+    (gnus-message 4 "Please wait while we snoop your variables...")
     (sit-for 0)
     (save-excursion
       (set-buffer (get-buffer-create " *gnus bug info*"))
@@ -702,7 +704,7 @@ The source file has to be in the Emacs load path."
 	    (insert-file-contents file)
 	    (goto-char (point-min))
 	    (if (not (re-search-forward "^;;* *Internal variables" nil t))
-		(message "Malformed sources in file %s" file)
+		(gnus-message 4 "Malformed sources in file %s" file)
 	      (narrow-to-region (point-min) (point))
 	      (goto-char (point-min))
 	      (while (setq expr (condition-case () 

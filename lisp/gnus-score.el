@@ -2171,8 +2171,8 @@ The list is determined from the variable gnus-score-file-alist."
   (interactive)
   (setq gnus-score-default-fold (not gnus-score-default-fold))
   (if gnus-score-default-fold
-      (message "New score file entries will be case insensitive.")
-    (message "New score file entries will be case sensitive.")))
+      (gnus-message 1 "New score file entries will be case insensitive.")
+    (gnus-message 1 "New score file entries will be case sensitive.")))
 
 (provide 'gnus-score)
 

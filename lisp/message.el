@@ -124,6 +124,14 @@ any confusion.")
   "Non-nil means when sending a message wait for and display errors.
 nil means let mailer mail back a message to report errors.")
 
+;;;###autoload
+(defvar message-generate-new-buffers nil
+  "*Non-nil means that a new message buffer will be created whenever `mail-setup' is called.")
+
+;;;###autoload
+(defvar message-kill-buffer-on-exit nil
+  "*Non-nil means that the message buffer will be killed after sending a message.")
+
 (defvar gnus-local-organization)
 ;;;###autoload
 (defvar message-user-organization 
@@ -956,9 +964,11 @@ The text will also be indented the normal way."
   (let ((buf (current-buffer)))
     (when (and (message-send arg)
 	       (buffer-name buf))
-      (bury-buffer buf)
-      (when (eq buf (current-buffer))
-	(message-bury buf)))))
+      (if message-kill-buffer-on-exit
+	  (kill-buffer buf)
+	(bury-buffer buf)
+	(when (eq buf (current-buffer))
+	  (message-bury buf))))))
 
 (defun message-dont-send ()
   "Don't send the message you have been editing."
@@ -1030,11 +1040,11 @@ the user from the mailer."
 	(tembuf (generate-new-buffer " message temp"))
 	(case-fold-search nil)
 	(news (message-news-p))
-	(resend-to-addresses (mail-fetch-field "resent-to"))
-	delimline
+	resend-to-addresses delimline
 	(mailbuf (current-buffer)))
     (save-restriction
       (message-narrow-to-headers)
+      (setq resend-to-addresses (mail-fetch-field "resent-to"))
       ;; Insert some headers.
       (message-generate-headers message-required-mail-headers)
       ;; Let the user do all of the above.
@@ -1623,10 +1633,8 @@ give as trustworthy answer as possible."
 
 (defun message-user-mail-address ()
   "Return the pertinent part of `user-mail-address'."
-  (when (string-match
-	 "\\(\\`\\|[ <\t]\\)\\([^ \t@]+@[^ \t]+\\)\\(\\'\\|[> \t]\\)" 
-	 user-mail-address)
-    (match-string 2 user-mail-address)))
+  (when user-mail-address
+    (nth 1 (mail-extract-address-components user-mail-address))))
 
 (defun message-make-fqdm ()
   "Return user's fully qualified domain name."
@@ -1838,18 +1846,20 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-pop-to-buffer (name)
   "Pop to buffer NAME, and warn if it already exists and is modified."
-  (let ((buffer (get-buffer name)))
-    (if (and buffer
-	     (buffer-name buffer))
-	(progn
-	  (set-buffer (pop-to-buffer buffer))
-	  (when (and (buffer-modified-p)
-		     (not (y-or-n-p
-			   "Message already being composed; erase? ")))
-	    (error "Message being composed")))
-      (set-buffer (pop-to-buffer name)))
-    (erase-buffer)
-    (message-mode)))
+  (if message-generate-new-buffers
+      (set-buffer (pop-to-buffer (generate-new-buffer name)))
+    (let ((buffer (get-buffer name)))
+      (if (and buffer
+	       (buffer-name buffer))
+	  (progn
+	    (set-buffer (pop-to-buffer buffer))
+	    (when (and (buffer-modified-p)
+		       (not (y-or-n-p
+			     "Message already being composed; erase? ")))
+	      (error "Message being composed")))
+	(set-buffer (pop-to-buffer name)))))
+  (erase-buffer)
+  (message-mode))
 
 (defun message-setup (headers &optional replybuffer actions)
   (setq message-send-actions actions)
@@ -1934,7 +1944,7 @@ Headers already prepared in the buffer are not modified."
 		   (Subject . ,(or subject "")))))
 
 ;;;###autoload
-(defun message-reply (&optional to-address wide)
+(defun message-reply (&optional to-address wide ignore-reply-to)
   "Start editing a reply to the article in the current buffer."
   (interactive)
   (let ((cur (current-buffer))
@@ -1965,7 +1975,7 @@ Headers already prepared in the buffer are not modified."
 	    to (mail-fetch-field "to")
 	    cc (mail-fetch-field "cc")
 	    mct (mail-fetch-field "mail-copies-to")
-	    reply-to (mail-fetch-field "reply-to")
+	    reply-to (unless ignore-reply-to (mail-fetch-field "reply-to"))
 	    references (mail-fetch-field "references")
 	    message-id (mail-fetch-field "message-id"))
       ;; Remove any (buggy) Re:'s that are present and make a
@@ -2086,13 +2096,14 @@ Headers already prepared in the buffer are not modified."
 	    (cond 
 	     ((equal (downcase followup-to) "poster")
 	      (if (or (eq message-use-followup-to 'use)
-		      (y-or-n-p "Use Followup-To \"poster\"? "))
+		      (yes-or-no-p "Use Followup-To \"poster\"? "))
 		  (cons 'To (or reply-to from ""))
 		(cons 'Newsgroups newsgroups)))
 	     (t
 	      (if (or (equal followup-to newsgroups)
 		      (not (eq message-use-followup-to 'ask))
-		      (y-or-n-p (format "Use Followup-To %s? " followup-to)))
+		      (yes-or-no-p 
+		       (format "Use Followup-To %s? " followup-to)))
 		  (cons 'Newsgroups followup-to)
 		(cons 'Newsgroups newsgroups))))))
 	  (t

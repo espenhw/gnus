@@ -36,7 +36,7 @@
 (defvar gnus-nocem-issuers 
   '("Automoose-1" ; The CancelMoose[tm] on autopilot.
     "clewis@ferret.ocunix.on.ca;" ; Chris Lewis -- Canadian angel & despammer.
-    "jem@xpat.com;"  ; Jem -- Korean despammer.
+    "jem@xpat.com;"  ; John Milburn -- despammer in Korea.
     "red@redpoll.mrfs.oh.us (Richard E. Depew)" ; Spew/bincancel guy.
     )
   "*List of NoCeM issuers to pay attention to.")
@@ -160,7 +160,9 @@
       (narrow-to-region b (1+ (match-beginning 0)))
       (goto-char (point-min))
       (while (search-forward "\t" nil t)
-	(when (boundp (let ((obarray gnus-active-hashtb)) (read buf)))
+	(when (condition-case nil
+		  (boundp (let ((obarray gnus-active-hashtb)) (read buf)))
+		(error nil))
 	  (beginning-of-line)
 	  (while (= (following-char) ?\t)
 	    (forward-line -1))

@@ -66,7 +66,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (head-begin . "^[0-9].*\n"))
     (forward
      (article-begin . "^-+ Start of forwarded message -+\n+")
-     (body-end . "^-+ End of forwarded message -+\n")
+     (body-end . "^-+ End of forwarded message -+$")
      (prepare-body . nndoc-unquote-dashes))
     (clari-briefs
      (article-begin . "^ \\*")

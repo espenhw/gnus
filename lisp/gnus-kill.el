@@ -336,8 +336,8 @@ If NEWSGROUP is nil, return the global kill file instead."
   (cond ((file-exists-p (gnus-score-file-name gnus-newsgroup-name))
          ;; Ignores global KILL.
          (if (file-exists-p (gnus-newsgroup-kill-file gnus-newsgroup-name))
-             (message "Note: Ignoring %s.KILL; preferring .SCORE"
-                      gnus-newsgroup-name))
+             (gnus-message 3 "Note: Ignoring %s.KILL; preferring .SCORE"
+			     gnus-newsgroup-name))
          0)
         ((or (file-exists-p (gnus-newsgroup-kill-file nil))
              (file-exists-p (gnus-newsgroup-kill-file gnus-newsgroup-name)))

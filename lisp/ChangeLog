@@ -1,7 +1,108 @@
+Thu Apr 18 20:10:11 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-show-article): Stop page breaking when
+	given a prefix.
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Removed obsolete
+	functions. 
+
+	* gnus-msg.el (gnus-summary-reply): Pass on `broken-reply-to'.
+
+	* message.el (message-reply): Allow broken reply-to.
+
+	* gnus.el (gnus-group-jump-to-group): Refuse to treat groups that
+	have control characters in them.
+
+Thu Apr 18 18:47:16 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-vis.el (gnus-button-url-regexp): Allow "!" in URLs.
+
+	* gnus.el (gnus-summary-exit): Always run
+	`gnus-summary-prepare-exit-hook'. 
+
+Thu Apr 18 12:15:27 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.74 is released.
+
+	* gnus.el (gnus-summary-update-mark): Would but out on eob.
+
+	* gnus-msg.el (gnus-post-method): Would bug out.
+
+Thu Apr 18 09:08:53 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-get-newsgroup-headers-xover): Deleted duplicate
+	line. 
+
+Thu Apr 18 11:06:10 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* gnus.el (gnus-parse-headers-hook): Enable de-QP by default.
+
+Wed Apr 17 08:59:20 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* gnus-nocem.el (gnus-nocem-enter-article): added some simple
+	  error recovery for read calls on article content. 
+
+Wed Apr 17 00:51:19 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-error): New function.
+
+	* nnsoup.el: Generate headers.
+
+Tue Apr 16 08:06:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-user-mail-address): Use
+	`mail-extract-address-components'. 
+
+	* gnus.el (gnus-group-make-group): Use method history.
+	(gnus-group-browse-foreign-server): Ditto.
+	(gnus-ask-server-for-new-groups): Make sure symbols are bound.
+
+Tue Apr 16 00:07:47 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-completing-read): New function.
+	(gnus-method-history): New variable.
+	(gnus-summary-respool-default-method): New user option.
+	(gnus-summary-respool-article): Use them.
+
+Tue Apr 16 07:36:18 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-mode): Make line format bufffer local. 
+
+Mon Apr 15 08:41:35 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-vis.el (gnus-button-url-regexp): "-" was not in the regexp.
+
+	* nntp.el (nntp-open-server): Would choke on port numbers.
+
+	* gnus-soup.el (gnus-soup-send-packet): Insert
+	X-Newsreader/X-Mailer. 
+
+	* nntp.el (nntp-open-server-semi-internal): Clear the server
+	buffer. 
+
+Sun Apr 14 17:11:49 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-setup-message): Don't clobber
+	message-header-setup-hook. 
+
+	* nndoc.el (nndoc-type-alist): Would show end line in forwards.
+
+	* gnus.el (gnus-window-to-buffer): Allow `mail' value.
+
+	* message.el (message-send-mail): Would choke on Resent-to.
+	(message-generate-new-buffers): New variable.
+	(message-pop-to-buffer): Use it.
+	(message-kill-buffer-on-exit): New variable.
+	(message-send-and-exit): Use it.
+
 Sun Apr 14 08:54:37 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: September Gnus v0.73 is released.
 
 	* message.el (message-mode): Mail-hist isn't defined in XEmacs
 	19.13. 
+
+	* gnus.el: September Gnus v0.72 is released.
 
 	* nnoo.el (defvoo): Didn't work under XEmacs.
 

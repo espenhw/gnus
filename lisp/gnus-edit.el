@@ -605,7 +605,7 @@ groups matched by the current score file.")
     (gnus-score-load file)
     (setq gnus-score-custom-file file)
     (custom-reset-all)
-    (message "Loaded")))
+    (gnus-message 4 "Loaded")))
 
 (defun gnus-score-custom-save ()
   (interactive)
@@ -622,7 +622,7 @@ groups matched by the current score file.")
       (gnus-make-directory (file-name-directory file))
       (write-region (point-min) (point-max) file nil 'silent)
       (kill-buffer (current-buffer))))
-  (message "Saved"))
+  (gnus-message 4 "Saved"))
 
 (provide 'gnus-edit)
 

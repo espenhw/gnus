@@ -345,13 +345,13 @@ If NOT-ALL, don't pack ticked articles."
     (or (file-directory-p dir)
 	(gnus-make-directory dir))
     (setq gnus-soup-areas nil)
-    (message "Packing %s..." packer)
+    (gnus-message 4 "Packing %s..." packer)
     (if (zerop (call-process "sh" nil nil nil "-c" 
 			     (concat "cd " dir " ; " packer)))
 	(progn
 	  (call-process "sh" nil nil nil "-c" 
 			(concat "cd " dir " ; rm " files))
-	  (message "Packing...done" packer))
+	  (gnus-message 4 "Packing...done" packer))
       (error "Couldn't pack packet."))))
 
 (defun gnus-soup-parse-areas (file)
@@ -485,13 +485,13 @@ file. The vector contain three strings, [prefix name encoding]."
   "Unpack PACKET into DIR using UNPACKER.
 Return whether the unpacking was successful."
   (gnus-make-directory dir)
-  (message "Unpacking: %s" (format unpacker packet))
+  (gnus-message 4 "Unpacking: %s" (format unpacker packet))
   (prog1
       (zerop (call-process
 	      "sh" nil nil nil "-c"
 	      (format "cd %s ; %s" (expand-file-name dir) 
 		      (format unpacker packet))))
-    (message "Unpacking...done")))
+    (gnus-message 4 "Unpacking...done")))
 
 (defun gnus-soup-send-packet (packet)
   (gnus-soup-unpack-packet 
@@ -533,14 +533,16 @@ Return whether the unpacking was successful."
 	      (search-forward "\n\n")
 	      (forward-char -1)
 	      (insert mail-header-separator)
+	      (setq message-newsreader (setq message-mailer
+					     (gnus-extended-version)))
 	      (cond 
 	       ((string= (gnus-soup-reply-kind (car replies)) "news")
-		(message "Sending news message to %s..."
-			 (mail-fetch-field "newsgroups"))
+		(gnus-message 5 "Sending news message to %s..."
+			      (mail-fetch-field "newsgroups"))
 		(sit-for 1)
 		(funcall message-send-news-function))
 	       ((string= (gnus-soup-reply-kind (car replies)) "mail")
-		(message "Sending mail to %s..."
+		(gnus-message 5 "Sending mail to %s..."
 			 (mail-fetch-field "to"))
 		(sit-for 1)
 		(funcall message-send-mail-function))
@@ -551,7 +553,7 @@ Return whether the unpacking was successful."
 	    (delete-file (buffer-file-name))
 	    (kill-buffer msg-buf)
 	    (kill-buffer tmp-buf)
-	    (message "Sent packet"))))
+	    (gnus-message 4 "Sent packet"))))
 	(setq replies (cdr replies)))
       t)))
 		   

@@ -708,7 +708,7 @@ The headers will be included in the sequence they are matched.")
 	  (when (or (not (file-exists-p to-file))
 		    (gnus-y-or-n-p (format "%s exists; overwrite? " to-file)))
 	    (copy-file file to-file t t)))))
-    (message "Saved %d file%s" len (if (= len 1) "" "s"))))
+    (gnus-message 5 "Saved %d file%s" len (if (= len 1) "" "s"))))
 
 ;; Functions for saving and possibly digesting articles without
 ;; any decoding.
@@ -1147,8 +1147,8 @@ The headers will be included in the sequence they are matched.")
 	  (setq state 'last)))
 
       (let ((part (gnus-uu-part-number article)))
-	(message "Getting article %d%s..." 
-		 article (if (string= part "") "" (concat ", " part))))
+	(gnus-message 6 "Getting article %d%s..." 
+		      article (if (string= part "") "" (concat ", " part))))
       (gnus-summary-display-article article)
       
       ;; Push the article to the processing function.
@@ -1224,7 +1224,7 @@ The headers will be included in the sequence they are matched.")
 		   (memq 'middle process-state)))
 	  (progn
 	    (setq process-state (list 'error))
-	    (message "No begin part at the beginning")
+	    (gnus-message 2 "No begin part at the beginning")
 	    (sleep-for 2))
 	(setq state 'middle)))
 
@@ -1233,12 +1233,12 @@ The headers will be included in the sequence they are matched.")
 	(message "")
       (cond
        ((not has-been-begin)
-	(message "Wrong type file"))
+	(gnus-message 2 "Wrong type file"))
        ((memq 'error process-state)
-	(message "An error occurred during decoding"))
+	(gnus-message 2 "An error occurred during decoding"))
        ((not (or (memq 'ok process-state) 
 		 (memq 'end process-state)))
-	(message "End of articles reached before end of file")))
+	(gnus-message 2 "End of articles reached before end of file")))
       ;; Make unsuccessfully decoded articles unread.
       (when gnus-uu-unmark-articles-not-decoded
 	(while article-series
@@ -1352,7 +1352,7 @@ The headers will be included in the sequence they are matched.")
 	      (error 
 	       (progn 
 		 (delete-process gnus-uu-uudecode-process)
-		 (message "gnus-uu: Couldn't uudecode")
+		 (gnus-message 2 "gnus-uu: Couldn't uudecode")
 		 (setq state (list 'wrong-type)))))
 
 	    (if (memq 'end state)
@@ -1450,13 +1450,13 @@ The headers will be included in the sequence they are matched.")
       (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
       (erase-buffer))
 
-    (message "Unpacking: %s..." (gnus-uu-command action file-path))
+    (gnus-message 5 "Unpacking: %s..." (gnus-uu-command action file-path))
 
     (if (= 0 (call-process "sh" nil 
 			   (get-buffer-create gnus-uu-output-buffer-name)
 			   nil "-c" command))
 	(message "")
-      (message "Error during unpacking of archive")
+      (gnus-message 2 "Error during unpacking of archive")
       (setq did-unpack nil))
 
     (if (member action gnus-uu-destructive-archivers)
@@ -1488,7 +1488,7 @@ The headers will be included in the sequence they are matched.")
 	  (progn
 	    (setq did-unpack (cons file did-unpack))
 	    (or (gnus-uu-treat-archive file)
-		(message "Error during unpacking of %s" file))
+		(gnus-message 2 "Error during unpacking of %s" file))
 	    (let* ((newfiles (gnus-uu-ls-r gnus-uu-work-dir))
 		   (nfiles newfiles))
 	      (gnus-uu-add-file newfiles)

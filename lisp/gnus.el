@@ -949,6 +949,8 @@ buffer configuration.")
     (browse-carpal . gnus-carpal-browse-buffer)
     (edit-score . gnus-score-edit-buffer)
     (message . gnus-message-buffer)
+    (mail . gnus-message-buffer)
+    (post-news . gnus-message-buffer)
     (faq . gnus-faq-buffer)
     (picons . "*Picons*")
     (tree . gnus-tree-buffer)
@@ -1466,6 +1468,7 @@ is not run if `gnus-visual' is nil.")
 
 (defvar gnus-parse-headers-hook nil
   "*A hook called before parsing the headers.")
+(add-hook 'gnus-parse-headers-hook 'gnus-headers-decode-quoted-printable)
 
 (defvar gnus-exit-group-hook nil
   "*A hook called when exiting (not quitting) summary mode.")
@@ -1522,12 +1525,16 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 	    (remove-hook 'gnus-summary-prepare-hook
 			 'hilit-rehighlight-buffer-quietly)
 	    (remove-hook 'gnus-summary-prepare-hook 'hilit-install-line-hooks)
-	    (setq gnus-mark-article-hook '(gnus-summary-mark-read-and-unread-as-read))
+	    (setq gnus-mark-article-hook
+		  '(gnus-summary-mark-read-and-unread-as-read))
 	    (remove-hook 'gnus-article-prepare-hook
 			 'hilit-rehighlight-buffer-quietly)))
 
 
 ;; Internal variables
+
+(defvar gnus-method-history nil)
+;; Variable holding the user answers to all method prompts.
 
 (defvar gnus-server-alist nil
   "List of available servers.")
@@ -1695,7 +1702,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.73"
+(defconst gnus-version "September Gnus v0.75"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3613,6 +3620,14 @@ simple-first is t, first argument is already simplified."
 	(push group groups)))
     (nreverse groups)))
 
+(defun gnus-completing-read (default prompt &rest args)
+  ;; Like `completing-read', except that DEFAULT is the default argument.
+  (let* ((prompt (concat prompt " (default " default ") "))
+	 (answer (apply 'completing-read prompt args)))
+    (if (or (null answer) (zerop (length answer)))
+	default
+      answer)))
+
 ;; Two silly functions to ensure that all `y-or-n-p' questions clear
 ;; the echo area.
 (defun gnus-y-or-n-p (prompt)
@@ -3676,6 +3691,17 @@ simple-first is t, first argument is already simplified."
     ;; shown - the return value has to be the same as the return value
     ;; from `message'.
     (apply 'format args)))
+
+(defun gnus-error (level &rest args)
+  "Beep an error if `gnus-verbose' is on LEVEL or less."
+  (when (<= (floor level) gnus-verbose)
+    (apply 'message args)
+    (ding)
+    (let (duration)
+      (when (and (floatp level)
+		 (not (zerop (setq duration (* 10 (- level (floor level)))))))
+	(sit-for duration))))
+  nil)
 
 ;; Generate a unique new group name.
 (defun gnus-generate-new-group-name (leaf)
@@ -5114,9 +5140,7 @@ Return nil if the group isn't displayed."
 			     (substitute-command-keys
 			      "\\<gnus-group-mode-map>\\[gnus-group-universal-argument]")))))
 	    'undefined)
-	(progn
-	  (message "Undefined key")
-	  (ding))
+	(gnus-error 1 "Undefined key")
       (while groups
 	(gnus-group-remove-mark (setq group (pop groups)))
 	(command-execute func))))
@@ -5253,8 +5277,11 @@ Returns whether the fetching was successful or not."
 	  "Group: " gnus-active-hashtb nil
 	  (memq gnus-select-method gnus-have-read-active-file))))
 
-  (if (equal group "")
-      (error "Empty group name"))
+  (when (equal group "")
+    (error "Empty group name"))
+
+  (when (string-match "[\000-\032]" group)
+    (error "Control characters in group: %s" group))
 
   (let ((b (text-property-any
 	    (point-min) (point-max)
@@ -5397,7 +5424,7 @@ ADDRESS."
     (let ((method
 	   (completing-read
 	    "Method: " (append gnus-valid-select-methods gnus-server-alist)
-	    nil t)))
+	    nil t nil 'gnus-method-history)))
       (cond ((assoc method gnus-valid-select-methods)
 	     (list method
 		   (if (memq 'prompt-address
@@ -5458,9 +5485,7 @@ of the Earth\".	 There is no undo."
 	  () ; Whew!
 	(gnus-message 6 "Deleting group %s..." group)
 	(if (not (gnus-request-delete-group group force))
-	    (progn
-	      (gnus-message 3 "Couldn't delete group %s" group)
-	      (ding))
+	    (gnus-error 3 "Couldn't delete group %s" group)
 	  (gnus-message 6 "Deleting group %s...done" group)
 	  (gnus-group-goto-group group)
 	  (gnus-group-kill-group 1 t)
@@ -5494,9 +5519,7 @@ of the Earth\".	 There is no undo."
   (gnus-message 6 "Renaming group %s to %s..." group new-name)
   (prog1
       (if (not (gnus-request-rename-group group new-name))
-	  (progn
-	    (gnus-message 3 "Couldn't rename group %s to %s" group new-name)
-	    (ding))
+	  (gnus-error 3 "Couldn't rename group %s to %s" group new-name)
 	;; We rename the group internally by killing it...
 	(gnus-group-goto-group group)
 	(gnus-group-kill-group)
@@ -5621,7 +5644,7 @@ of the Earth\".	 There is no undo."
 				    "etc/gnus-tut.txt"))))
 	(setq path nil)))
     (if (not file)
-	(message "Couldn't find doc group")
+	(gnus-message 1 "Couldn't find doc group")
       (gnus-group-make-group
        (gnus-group-real-name name)
        (list 'nndoc "gnus-help"
@@ -6364,8 +6387,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
 	    (unless (gnus-virtual-group-p group)
 	      (gnus-close-group group))
 	    (gnus-group-update-group group))
-	(ding)
-	(gnus-message 3 "%s error: %s" group (gnus-status-message group))))
+	(gnus-error 3 "%s error: %s" group (gnus-status-message group))))
     (when beg (goto-char beg))
     (when gnus-goto-next-group-when-activating
       (gnus-group-next-unread-group 1 t))
@@ -6407,7 +6429,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
 		   gnus-description-hashtb))
 	     (setq desc (gnus-group-get-description group))
 	     (gnus-read-descriptions-file method))
-	 (message
+	 (gnus-message 1
 	  (or desc (gnus-gethash group gnus-description-hashtb)
 	      "No description available")))))
 
@@ -6679,7 +6701,7 @@ and the second element is the address."
    (list (let ((how (completing-read
 		     "Which backend: "
 		     (append gnus-valid-select-methods gnus-server-alist)
-		     nil t (cons "nntp" 0))))
+		     nil t (cons "nntp" 0) 'gnus-method-history)))
 	   ;; We either got a backend name or a virtual server name.
 	   ;; If the first, we also need an address.
 	   (if (assoc how gnus-valid-select-methods)
@@ -7035,6 +7057,8 @@ The following commands are available:
   (setq selective-display-ellipses t)	;Display `...'
   (setq buffer-display-table gnus-summary-display-table)
   (setq gnus-newsgroup-name group)
+  (make-local-variable 'gnus-summary-line-format)
+  (make-local-variable 'gnus-summary-line-format-spec)
   (run-hooks 'gnus-summary-mode-hook))
 
 (defun gnus-summary-make-display-table ()
@@ -9143,8 +9167,6 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
       (set-buffer nntp-server-buffer)
       ;; Allow the user to mangle the headers before parsing them.
       (run-hooks 'gnus-parse-headers-hook)
-      ;; Allow the user to mangle the headers before parsing them.
-      (run-hooks 'gnus-parse-headers-hook)
       (goto-char (point-min))
       (while (and sequence (not (eobp)))
 	(setq number (read cur))
@@ -9203,8 +9225,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 		 (gnus-nov-field))	; misc
 	       ))
       (error (progn
-	       (ding)
-	       (gnus-message 4 "Strange nov line")
+	       (gnus-error 4 "Strange nov line")
 	       (setq header nil)
 	       (goto-char eol))))
 
@@ -9600,9 +9621,7 @@ displayed, no centering will be performed."
 	     "\\<gnus-summary-mode-map>\\[gnus-summary-universal-argument]"
 	     ))))
 	 'undefined)
-	(progn
-	  (message "Undefined key")
-	  (ding))
+	(gnus-error 1 "Undefined key")
       (save-excursion
 	(while articles
 	  (gnus-summary-goto-subject (setq article (pop articles)))
@@ -9689,8 +9708,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	 (quit-config (gnus-group-quit-config gnus-newsgroup-name))
 	 (mode major-mode)
 	 (buf (current-buffer)))
-    (unless temporary
-      (run-hooks 'gnus-summary-prepare-exit-hook))
+    (run-hooks 'gnus-summary-prepare-exit-hook)
     ;; If we have several article buffers, we kill them at exit.
     (unless gnus-single-article-buffer
       (gnus-kill-buffer gnus-article-buffer)
@@ -11073,6 +11091,7 @@ article massaging functions being run."
     (let ((gnus-have-all-headers t)
 	  gnus-article-display-hook
 	  gnus-article-prepare-hook
+	  gnus-break-pages
 	  gnus-visual)
       (gnus-summary-select-article nil 'force)))
 ;  (gnus-configure-windows 'article)
@@ -11347,6 +11366,10 @@ re-spool using this method."
   (interactive "P")
   (gnus-summary-move-article n nil nil 'crosspost))
 
+(defvar gnus-summary-respool-default-method nil
+  "Default method for respooling an article.  
+If nil, use to the current newsgroup method.")
+
 (defun gnus-summary-respool-article (&optional n method)
   "Respool the current article.
 The article will be squeezed through the mail spooling process again,
@@ -11365,12 +11388,13 @@ latter case, they will be copied into the relevant groups."
    (list current-prefix-arg
 	 (let* ((methods (gnus-methods-using 'respool))
 		(methname
-		 (symbol-name (car (gnus-find-method-for-group
-				    gnus-newsgroup-name))))
+		 (symbol-name (or gnus-summary-respool-default-method
+				  (car (gnus-find-method-for-group
+					gnus-newsgroup-name)))))
 		(method
-		 (completing-read
-		  "What backend do you want to use when respooling? "
-		  methods nil t (cons methname 0)))
+		 (gnus-completing-read 
+		  methname "What backend do you want to use when? "
+		  methods nil t nil 'gnus-method-history))
 		ms)
 	   (cond
 	    ((zerop (length (setq ms (gnus-servers-using-backend method))))
@@ -11546,9 +11570,8 @@ groups."
   (if (gnus-group-read-only-p)
       (progn
 	(gnus-summary-edit-article-postpone)
-	(gnus-message
-	 1 "The current newsgroup does not support article editing.")
-	(ding))
+	(gnus-error
+	 1 "The current newsgroup does not support article editing."))
     (let ((buf (format "%s" (buffer-string))))
       (erase-buffer)
       (insert buf)
@@ -11627,7 +11650,7 @@ groups."
   "Return the score of the current article."
   (interactive)
   (gnus-set-global-variables)
-  (message "%s" (gnus-summary-article-score)))
+  (gnus-message 1 "%s" (gnus-summary-article-score)))
 
 ;; Summary marking commands.
 
@@ -11981,9 +12004,10 @@ marked."
   (beginning-of-line)
   (let ((forward (cdr (assq type gnus-summary-mark-positions)))
 	(buffer-read-only nil))
-    (when forward
+    (when (and forward
+	       (<= (+ forward (point)) (point-max)))
       ;; Go to the right position on the line.
-      (forward-char forward)
+      (goto-char (+ forward (point)))
       ;; Replace the old mark with the new mark.
       (subst-char-in-region (point) (1+ (point)) (following-char) mark)
       ;; Optionally update the marks by some user rule.
@@ -12374,8 +12398,8 @@ is non-nil or the Subject: of both articles are the same."
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-unmark-all-processable)
 	(gnus-summary-rethread-current)
-	(message "Article %d is now the child of article %d."
-		 current-article parent-article)))))
+	(gnus-message 3 "Article %d is now the child of article %d."
+		      current-article parent-article)))))
 
 (defun gnus-summary-toggle-threads (&optional arg)
   "Toggle showing conversation threads.
@@ -13491,10 +13515,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		(setq gnus-current-article article)
 		(gnus-summary-mark-article article gnus-canceled-mark))
 	      (unless (memq article gnus-newsgroup-sparse)
-		(gnus-message
-		 1 "No such article (may have expired or been canceled)")
-		(ding)
-		nil))
+		(gnus-error
+		 1 "No such article (may have expired or been canceled)")))
 	  (if (or (eq result 'pseudo) (eq result 'nneething))
 	      (progn
 		(save-excursion
@@ -14675,11 +14697,8 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
 	 "%s (%s) open error: '%s'.	Continue? "
 	 (car gnus-select-method) (cadr gnus-select-method)
 	 (gnus-status-message gnus-select-method)))
-       (progn
-	 (gnus-message 1 "Couldn't open server on %s"
-		       (nth 1 gnus-select-method))
-	 (ding)
-	 nil)))))
+       (gnus-error 1 "Couldn't open server on %s"
+		   (nth 1 gnus-select-method))))))
 
 (defun gnus-check-group (group)
   "Try to make sure that the server where GROUP exists is alive."
@@ -15220,6 +15239,7 @@ the server for new groups."
       (mapatoms
        (lambda (group-sym)
 	 (if (or (null (setq group (symbol-name group-sym)))
+		 (not (boundp group-sym))
 		 (null (symbol-value group-sym))
 		 (gnus-gethash group gnus-newsrc-hashtb)
 		 (member group gnus-zombie-list)
@@ -15805,22 +15825,18 @@ Returns whether the updating was successful."
 		  (setq list-type (gnus-retrieve-groups groups method))
 		  (cond
 		   ((not list-type)
-		    (gnus-message
-		     1 "Cannot read partial active file from %s server."
-		     (car method))
-		    (ding)
-		    (sit-for 2))
+		    (gnus-error
+		     1.2 "Cannot read partial active file from %s server."
+		     (car method)))
 		   ((eq list-type 'active)
 		    (gnus-active-to-gnus-format method gnus-active-hashtb))
 		   (t
 		    (gnus-groups-to-gnus-format method gnus-active-hashtb))))))
 	     (t
 	      (if (not (gnus-request-list method))
-		  (progn
-		    (unless (equal method gnus-message-archive-method)
-		      (gnus-message 1 "Cannot read active file from %s server."
-				    (car method))
-		      (ding)))
+		  (unless (equal method gnus-message-archive-method)
+		    (gnus-error 1 "Cannot read active file from %s server."
+				(car method)))
 		(gnus-active-to-gnus-format method)
 		;; We mark this active file as read.
 		(push method gnus-have-read-active-file)
@@ -16028,8 +16044,7 @@ If FORCE is non-nil, the .newsrc file is read."
       (condition-case nil
 	  (load ding-file t t t)
 	(error
-	 (gnus-message 1 "Error in %s" ding-file)
-	 (ding)))
+	 (gnus-error 1 "Error in %s" ding-file)))
       (when gnus-newsrc-assoc
 	(setq gnus-newsrc-alist gnus-newsrc-assoc)))
     (gnus-make-hashtable-from-newsrc-alist)
@@ -16218,11 +16233,9 @@ If FORCE is non-nil, the .newsrc file is read."
 		  (progn
 		    ;; The line was buggy.
 		    (setq group nil)
-		    (gnus-message 3 "Mangled line: %s"
-				  (buffer-substring (gnus-point-at-bol)
-						    (gnus-point-at-eol)))
-		    (ding)
-		    (sit-for 1)))
+		    (gnus-error 3.1 "Mangled line: %s"
+				(buffer-substring (gnus-point-at-bol)
+						  (gnus-point-at-eol)))))
 	      nil))
 	  ;; Skip past ", ".  Spaces are illegal in these ranges, but
 	  ;; we allow them, because it's a common mistake to put a
@@ -16513,9 +16526,7 @@ If FORCE is non-nil, the .newsrc file is read."
 		    (eval-buffer (current-buffer))
 		    t)
 		(error
-		 (gnus-message 3 "Possible error in %s" file)
-		 (ding)
-		 (sit-for 2)
+		 (gnus-error 3.2 "Possible error in %s" file)
 		 nil))
 	      (or gnus-slave ; Slaves shouldn't delete these files.
 		  (condition-case ()

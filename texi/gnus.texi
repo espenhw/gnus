@@ -7287,7 +7287,7 @@ Save to different groups based on what group you are in:
 More complex stuff:
 @lisp
 (setq gnus-message-archive-group 
-      '((if (eq major-mode news-reply-mode) 
+      '((if (message-news-p)
             "misc-news" 
           "misc-mail")))
 @end lisp       
@@ -7299,7 +7299,7 @@ messages in one file per month:
 
 @lisp
 (setq gnus-message-archive-group
-      '((if (eq major-mode news-reply-mode) 
+      '((if (message-news-p)
             "misc-news" 
           (concat "mail." (format-time-string 
                            "%Y-%m" (current-time))))))

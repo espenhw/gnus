@@ -343,14 +343,15 @@ instead use `nntp-server-buffer'.")
   "Open the virtual server SERVER.
 If CONNECTIONLESS is non-nil, don't attempt to connect to any physical
 servers."
+  ;; Called with just a port number as the defs.
+  (when (or (stringp (car defs))
+	    (numberp (car defs)))
+    (setq defs `((nntp-port-number ,(car defs)))))
+  (unless (assq 'nntp-address defs)
+    (setq defs (append defs `((nntp-address ,server)))))
   (nnoo-change-server 'nntp server defs)
   (if (nntp-server-opened server)
       t
-    (if (or (stringp (car defs))
-	    (numberp (car defs)))
-	(setq defs (cons (list 'nntp-port-number (car defs)) (cdr defs))))
-    (or (assq 'nntp-address defs)
-	(setq defs (append defs (list (list 'nntp-address server)))))
     (or (nntp-server-opened server)
 	connectionless
 	(prog2
@@ -383,11 +384,11 @@ servers."
 	  (error nil))
 	(delete-process proc)))
     (and nntp-async-buffer
-	 (get-buffer nntp-async-buffer)
+	 (buffer-name nntp-async-buffer)
 	 (kill-buffer nntp-async-buffer))
     (let ((alist (cddr (assq 'nntp nnoo-state-alist))))
       (while (setq entry (pop alist))
-	(and (setq proc (nth 1 (assq 'nntp-async-buffer entry)))
+	(and (setq proc (cdr (assq 'nntp-async-buffer entry)))
 	     (buffer-name proc)
 	     (kill-buffer proc))))
     (nnoo-close-server 'nntp)
@@ -1068,6 +1069,7 @@ It will prompt for a password."
   "Open SERVER.
 If SERVER is nil, use value of environment variable `NNTPSERVER'.
 If SERVICE, this this as the port number."
+  (nnheader-insert "")
   (let ((server (or server (getenv "NNTPSERVER")))
 	(status nil)
 	(timer 
