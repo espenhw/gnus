@@ -1684,7 +1684,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.37"
+(defconst gnus-version "September Gnus v0.38"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5782,19 +5782,21 @@ or nil if no action could be taken."
 			    (assq 'expire (gnus-info-marks info))))
 	       (expiry-wait (gnus-group-get-parameter group 'expiry-wait)))
 	  (when expirable
-	    (setcdr expirable
-		    (gnus-compress-sequence
-		     (if expiry-wait
-			 (let ((nnmail-expiry-wait-function nil)
-			       (nnmail-expiry-wait expiry-wait))
-			   (gnus-request-expire-articles
-			    (gnus-uncompress-sequence (cdr expirable)) group))
-		       (gnus-request-expire-articles
-			(gnus-uncompress-sequence (cdr expirable))
-			group)))))
+	    (setcdr
+	     expirable
+	     (gnus-compress-sequence
+	      (if expiry-wait
+		  ;; We set the expiry variables to the groupp
+		  ;; parameter. 
+		  (let ((nnmail-expiry-wait-function nil)
+			(nnmail-expiry-wait expiry-wait))
+		    (gnus-request-expire-articles
+		     (gnus-uncompress-sequence (cdr expirable)) group))
+		;; Just expire using the normal expiry values.
+		(gnus-request-expire-articles
+		 (gnus-uncompress-sequence (cdr expirable)) group)))))
 	  (gnus-message 6 "Expiring articles in %s...done" group)))
       (gnus-group-position-point))))
-
 
 (defun gnus-group-expire-all-groups ()
   "Expire all expirable articles in all newsgroups."
@@ -10192,7 +10194,8 @@ If given a prefix, remove all limits."
     (setq header "subject"))
   (when (not (equal "" subject))
     (prog1
-	(let ((articles (gnus-summary-find-matching "subject" subject 'all)))
+	(let ((articles (gnus-summary-find-matching
+			 (or header "subject") subject 'all)))
 	  (or articles (error "Found no matches for \"%s\"" subject))
 	  (gnus-summary-limit articles))
       (gnus-summary-position-point))))
@@ -10322,7 +10325,6 @@ If ALL, mark even excluded ticked and dormants as read."
 	(unless (or (memq article gnus-newsgroup-dormant)
 		    (memq article gnus-newsgroup-marked))
 	  (push (cons article gnus-catchup-mark) gnus-newsgroup-reads))))))
-
 
 (defun gnus-summary-limit (articles &optional pop)
   (if pop

@@ -313,8 +313,10 @@ parameter.  It should return nil, `warn' or `delete'.")
   "Convert DAYS into time."
   (let* ((seconds (* 1.0 days 60 60 24))
 	 (rest (expt 2 16))
-	 (ms (round (/ seconds rest))))
-    (list ms (round (- seconds (* ms rest))))))
+	 (ms (condition-case nil (round (/ seconds rest)) 
+	       (range-error (expt 2 16)))))
+    (list ms (condition-case nil (round (- seconds (* ms rest)))
+	       (range-error (expt 2 16))))))
 
 (defun nnmail-time-since (time)
   "Return the time since TIME, which is either an internal time or a date."

@@ -302,7 +302,9 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-overlay-end 'extent-end-position)
   (fset 'gnus-extent-detached-p 'extent-detached-p)
       
-  (fset 'set-text-properties 'gnus-xmas-set-text-properties)
+  (require 'text-props)
+  (if (< emacs-minor-version 14)
+      (fset 'set-text-properties 'gnus-xmas-set-text-properties))
 
   (fset 'nnheader-find-file-noselect 'gnus-xmas-find-file-noselect)
 

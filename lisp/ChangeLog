@@ -1,13 +1,35 @@
+Sun Feb 11 04:49:16 1996  Mark Borges  <mdb@cdc.noaa.gov>
+
+	* gnus-xmas.el (gnus-xmas-define): Conditionally redefine
+	`set-text-properties'. 
+
+Sun Feb 11 04:40:39 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-limit-to-subject): Limit to any header. 
+
+Sat Feb 10 03:26:10 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-days-to-time): Don't bug out on large
+	numbers. 
+
+Fri Feb  9 22:17:55 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-forward-included-headers): Include Message-ID
+	and References.
+	(gnus-post-news): Make sure the parent group is a news group.
+
 Fri Feb  9 09:56:45 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-picon.el (gnus-picons-convert-x-face): Changed to use
-	pbmplus, 
+	pbmplus.
 
 	* gnus.el (gnus-buffer-configuration): One quote too many.
 
 	* gnus-kill.el (gnus-execute): Allow searching bodies.
 
 	* gnus.el (gnus-summary-execute-command): Accept "Body" searches.
+
+	* gnus.el: 0.37 is released.
 
 Fri Feb  9 09:44:04 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
 

@@ -1,6 +1,4 @@
-@tex
 \input texinfo                  @c -*-texinfo-*-
-@end tex
 
 @setfilename gnus.info
 @settitle September Gnus Manual
@@ -56,8 +54,8 @@
 \newcommand{\gnusampersand}{\&}
 \newcommand{\gnuspercent}{\%}
 \newcommand{\gnushash}{\#}
-\newcommand{\gnushat}{\%}
-\newcommand{\gnustilde}{\%}
+\newcommand{\gnushat}{\symbol{"5E}}
+\newcommand{\gnustilde}{\symbol{"7E}}
 \newcommand{\gnusless}{{$<$}}
 \newcommand{\gnusgreater}{{$>$}}
 
@@ -67,6 +65,7 @@
 }
 
 \newcommand{\gnuschapter}[1]{
+\renewcommand{\gnussectionname}{}
 \chapter{#1}
 \renewcommand{\gnuschaptername}{#1}
 \thispagestyle{empty}
@@ -117,13 +116,6 @@
 }
 }{\end{list}}
 
-\newlength{\headrulewidth}
-\setlength{\headrulewidth}{\headtextwidth}
-\addtolength{\headrulewidth}{-2.6ex}
-\newlength{\headwrule}
-\setlength{\headwrule}{\headrulewidth}
-\addtolength{\headwrule}{-0ex}
-
 \newpagestyle{gnus}%
 {
 {
@@ -132,24 +124,18 @@
 \hspace*{-2ex}
 \underline{
 \makebox[\headtextwidth]{
-\hspace*{-2.1ex}
-%\ifnum chapter=0\else
+\hspace*{-2.3ex}
 \textbf{\arabic{chapter}.\arabic{section}}
-%\fi
 \textbf{\gnussectionname\hfill\arabic{page}}
 }}
-%\hspace*{-\headrulewidth}
-%\raisebox{-3pt}{\rule{\headwrule}{0.5pt}}
 }
 \else
 {
-\hspace*{-2.1cm}
+\hspace*{-2.25cm}
 \underline{
-\hspace*{-2ex}
+\hspace*{-2.3ex}
 \makebox[\headtextwidth]{
 \textbf{\arabic{page}\hfill\gnuschaptername}
-%\hspace*{-\headrulewidth}
-%\raisebox{-3pt}{\rule{\headwrule}{0.5pt}}
 }}
 }
 \fi
@@ -282,6 +268,10 @@ luck.
 
 @iftex
 
+@iflatex
+\thispagestyle{empty}
+@end iflatex
+
 Gnus is the advanced, self-documenting, customizable, extensible
 unreal-time newsreader for GNU Emacs.  
 
@@ -357,6 +347,7 @@ and won't be released until February.  Confused?  You will be.
 * Contributors::        Oodles of people.  
 * New Features::        Pointers to some of the new stuff in Gnus.
 * Newest Features::     Features so new that they haven't been written yet.
+* Censorship::          This manual has been censored.
 @end menu
 
 
@@ -762,6 +753,21 @@ implemented.  (But that's always true, isn't it?)
 @code{<URL:http://www.ifi.uio.no/~larsi/sgnus/todo>} is where the actual
 up-to-the-second todo list is located, so if you're really curious, you
 could point your Web browser over that-a-way.
+
+
+@node Censorship
+@section Censorship
+@cindex censorship
+
+This version of the Gnus manual (as well as Gnus itself) has been
+censored in accord with the Communications Decency Act.  This law was
+described by its proponents as a ban on pornography---which was a
+deception, since it prohibits far more than that.  This manual did not
+contain pornography, but part of it was prohibited nonetheless.
+
+For information on US government censorship of the Internet, and
+what you can do to bring back freedom of the press, see the web
+site @samp{http://www.vtw.org/}.
 
 
 @node Terminology
@@ -1400,7 +1406,7 @@ ticked articles, in @samp{alt.fan.andrea-dworkin} (see that little
 asterisk at the beginning of the line?)
 
 @vindex gnus-group-line-format
-You can fuck that up to your heart's delight by fiddling with the
+You can change that format to whatever you want by fiddling with the
 @code{gnus-group-line-format} variable.  This variable works along the
 lines of a @code{format} specification, which is pretty much the same as
 a @code{printf} specifications, for those of you who use (feh!) C.

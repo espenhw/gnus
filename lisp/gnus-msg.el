@@ -214,7 +214,8 @@ be used instead.")
 (defvar gnus-signature-before-forwarded-message t
   "*If non-nil, put the signature before any included forwarded message.")
 
-(defvar gnus-forward-included-headers gnus-visible-headers
+(defvar gnus-forward-included-headers 
+  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-\\:^Message-ID:\\|^References:"
   "*Regexp matching headers to be included in forwarded messages.")
 
 (defvar gnus-required-headers
@@ -539,7 +540,8 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	    mailing-list (when gnus-mailing-list-groups
 			   (string-match gnus-mailing-list-groups group))
 	    group (gnus-group-real-name group)))
-    (if (or to-group
+    (if (or (and to-group
+		 (gnus-news-group-p to-group))
 	    (and (gnus-news-group-p 
 		  (or pgroup gnus-newsgroup-name)
 		  (if header (mail-header-number header) gnus-current-article))
@@ -2683,7 +2685,7 @@ Headers will be generated before sending."
 	(when gcc
 	  (nnheader-remove-header "gcc")
 	  (widen)
-	  (setq groups (gnus-tokenize-header gcc " "))
+	  (setq groups (gnus-tokenize-header gcc " ,"))
 	  ;; Copy the article over to some group(s).
 	  (while (setq group (pop groups))
 	    (gnus-check-server 

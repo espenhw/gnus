@@ -162,10 +162,12 @@ articles in the topic and its subtopics."
     (while (setq entry (pop entries))
       (when visiblep 
 	(if (stringp entry)
+	    ;; Dead groups.
 	    (gnus-group-insert-group-line
 	     entry (if (member entry gnus-zombie-list) 8 9)
 	     nil (- (1+ (cdr (setq active (gnus-active entry))))
 		    (car active)) nil)
+	  ;; Living groups.
 	  (when (setq info (nth 2 entry))
 	    (gnus-group-insert-group-line 
 	     (gnus-info-group info)
