@@ -2918,15 +2918,19 @@ If ADAPT, return the home adaptive file instead."
 
 (defun gnus-decay-score (score)
   "Decay SCORE according to `gnus-score-decay-constant' and `gnus-score-decay-scale'."
-  (condition-case nil
-      (floor
-       (- score
-	  (* (if (< score 0) -1 1)
-	     (min (abs score)
-		  (max gnus-score-decay-constant
-		       (* (abs score)
-			  gnus-score-decay-scale))))))
-    (arith-error (lsh -1 -1))))
+  (let ((n (- score
+	      (* (if (< score 0) -1 1)
+		 (min (abs score)
+		      (max gnus-score-decay-constant
+			   (* (abs score)
+			      gnus-score-decay-scale)))))))
+    (if (and (featurep 'xemacs)
+	     ;; XEmacs' floor can handle only the floating point
+	     ;; number below the half of the maximum integer.
+	     (> (abs n) (lsh -1 -2)))
+	(string-to-number
+	 (car (split-string (number-to-string n) "\\.")))
+      (floor n))))
 
 (defun gnus-decay-scores (alist day)
   "Decay non-permanent scores in ALIST."

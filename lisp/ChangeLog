@@ -1,3 +1,8 @@
+2003-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-score.el (gnus-decay-score): Return a surely smaller value
+	than the argument in XEmacs.
+
 2003-11-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-insert-to): Don't use `gnus-message'.
