@@ -3,6 +3,7 @@
 	* gnus-ems.el (gnus-put-image): Really return glyph.
 
 	* gnus-art.el (gnus-article-x-face-command): Fix :type.
+	(gnus-treat-smiley): Don't take "P" in the interactive form.
 
 2002-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

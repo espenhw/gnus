@@ -1668,7 +1668,7 @@ unfolded."
 
 (defun gnus-treat-smiley ()
   "Display textual emoticons (\"smileys\") as small graphical icons."
-  (interactive "P")
+  (interactive)
   (gnus-with-article-buffer
     (if (memq 'smiley gnus-article-wash-types)
 	(gnus-delete-images 'smiley)
