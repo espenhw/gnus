@@ -145,6 +145,7 @@
                                   message-setup-hook))
          (gnus-agent-queue-mail (and (not is-queue)
                                      gnus-agent-queue-mail))
+	 (rfc2047-encode-encoded-words nil)
          type method move-to)
     (gnus-draft-setup article (or group "nndraft:queue"))
     ;; We read the meta-information that says how and where

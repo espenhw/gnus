@@ -93,6 +93,9 @@ quoted-printable and base64 respectively.")
     (nil . ignore))
   "Alist of RFC2047 encodings to encoding functions.")
 
+(defvar rfc2047-encode-encoded-words t
+  "Whether encoded words should be encoded again.")
+
 ;;;
 ;;; Functions for encoding RFC2047 messages
 ;;;
@@ -236,7 +239,8 @@ The buffer may be narrowed."
   (let ((charsets
 	 (mm-find-mime-charset-region (point-min) (point-max))))
     (goto-char (point-min))
-    (or (search-forward "=?" nil t)
+    (or (and rfc2047-encode-encoded-words
+	     (search-forward "=?" nil t))
 	(and charsets
 	     (not (equal charsets (list (car message-posting-charset))))))))
 
@@ -286,7 +290,10 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 	;; is relevant for instance in Subject headers with `Re:' for
 	;; interoperability with non-MIME clients, and we might as
 	;; well avoid the tail too.
-	(let ((encodable-regexp "[^\000-\177]\\|=\\?"))
+	(let ((encodable-regexp
+	       (if rfc2047-encode-encoded-words
+		   "[^\000-\177]\\|=\\?"
+		 "[^\000-\177]")))
 	  (goto-char (point-min))
 	  ;; Does it need encoding?
 	  (re-search-forward encodable-regexp (point-max) 'move)
