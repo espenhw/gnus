@@ -333,8 +333,10 @@ variables should change those regexps accordingly. For example:
 
 ** Gnus supports PGP (RFC 1991/2440), PGP/MIME (RFC 2015/3156) and
 ** S/MIME (RFC 2630-2633).
-It needs an external S/MIME and OpenPGP implementation, but no additional
-lisp libraries.
+It needs an external S/MIME and OpenPGP implementation, but no
+additional lisp libraries.  This add several menu items to the
+Attachments menu, and C-c RET key bindings, when composing messages.
+This also obsoletes `gnus-article-hide-pgp-hook'.
 
 ** Gnus inlines external parts (message/external).
 

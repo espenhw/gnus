@@ -1,3 +1,7 @@
+2003-04-27  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Fix PGP entry.
+
 2003-04-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* make.bat: Flag as binary to ensure DOS line terminators.  Delete
