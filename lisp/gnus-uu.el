@@ -1466,8 +1466,7 @@ When called interactively, prompt for REGEXP."
 			 "*uudecode*"
 			 (gnus-get-buffer-create gnus-uu-output-buffer-name)
 			 shell-file-name shell-command-switch
-			 ;;;(format "cd %s %s uudecode" gnus-uu-work-dir
-			 (format "cd %s %s java com.compsol.Uu -d" gnus-uu-work-dir
+			 (format "cd %s %s uudecode" gnus-uu-work-dir
 				 gnus-shell-command-separator))))
 	      (cd cdir)))
 	  (set-process-sentinel

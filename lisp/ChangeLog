@@ -10,6 +10,9 @@
 	Reports length of series so that the user can compare N with a
 	subject that should, if the entire series is present, contain
 	'(.../N)'.
+	(gnus-uu-delete-work-dir): Avoid hanging when O/S forbids deletion
+	of temp file (Win-XP may leave the temp file locked when the
+	uudecode process fails).
 
 2003-03-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
