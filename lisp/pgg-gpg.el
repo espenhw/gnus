@@ -43,6 +43,12 @@
   :group 'pgg-gpg
   :type '(repeat (string :tag "Argument")))
 
+(defcustom pgg-gpg-recipient-arg "--recipient"
+  "Recipient option for gpg."
+  :group 'pgg-gpg
+  :type '(choice (const :tag "New `--recipient' option" "--recipient")
+		 (const :tag "Old `--remote-user' option" "--remote-user")))
+
 (defvar pgg-gpg-user-id nil
   "GnuPG ID of your default identity.")
 
@@ -154,7 +160,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 	   (if recipients
 	       (apply #'nconc
 		      (mapcar (lambda (rcpt)
-				(list "--remote-user" rcpt))
+				(list pgg-gpg-recipient-arg rcpt))
 			      (append recipients
 				      (if pgg-encrypt-for-me
 					  (list pgg-gpg-user-id)))))))))

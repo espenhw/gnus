@@ -1,3 +1,9 @@
+2003-12-07  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-gpg.el (pgg-gpg-recipient-arg): Add.
+	(pgg-gpg-encrypt-region): Use it.  Tiny patch from Lloyd Zusman
+	<ljz@asfast.com>.
+
 2003-12-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* spam.el (spam-check-spamoracle, spam-spamoracle-learn): Don't
