@@ -31,7 +31,8 @@
 (eval-and-compile
   (autoload 'gnus-article-prepare-display "gnus-art")
   (autoload 'vcard-parse-string "vcard")
-  (autoload 'vcard-format-string "vcard"))
+  (autoload 'vcard-format-string "vcard")
+  (autoload 'diff-mode "diff-mode"))
 
 ;;;
 ;;; Functions for displaying various formats inline
