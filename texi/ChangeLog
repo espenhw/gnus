@@ -1,3 +1,7 @@
+2004-06-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.texi (Various Message Variables): Add.
+
 2004-06-02  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Mail Source Customization): Clarify

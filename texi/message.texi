@@ -1964,6 +1964,12 @@ Hook run when canceling news articles.
 @vindex message-mode-syntax-table
 Syntax table used in message mode buffers.
 
+@item message-cite-articles-with-x-no-archive
+@vindex message-cite-articles-with-x-no-archive
+If non-@code{nil}, don't strip quoted text from articles that have
+@samp{X-No-Archive} set.  Even if this variable isn't set, you can
+undo the stripping by hitting the @code{undo} keystroke.
+
 @item message-strip-special-text-properties
 @vindex message-strip-special-text-properties
 Emacs has a number of special text properties which can break message
@@ -1999,7 +2005,6 @@ A function to be called if @var{predicate} returns non-@code{nil}.
 ((news message-news-p message-send-via-news)
  (mail message-mail-p message-send-via-mail))
 @end lisp
-
 
 
 @end table
