@@ -112,7 +112,8 @@ the second with the current group name."
   :type 'boolean)
 
 (defcustom gnus-posting-styles nil
-  "*Alist of styles to use when posting."
+  "*Alist of styles to use when posting.
+See Info node `(gnus)Posting Styles'."
   :group 'gnus-message
   :type '(repeat (cons (choice (regexp)
 			       (function)

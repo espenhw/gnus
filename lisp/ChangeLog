@@ -1,3 +1,7 @@
+2001-11-08  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-msg.el (gnus-posting-styles): Add doc.
+
 2001-11-07  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sieve.el (gnus-sieve-generate): Don't invoke sieve-mode.
