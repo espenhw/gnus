@@ -1272,6 +1272,7 @@ password contained in '~/.nntp-authinfo'."
 		 "nntpd" buffer nntp-telnet-command nntp-telnet-switches))
 	  (case-fold-search t))
       (when (memq (process-status proc) '(open run))
+	(nntp-wait-for-string "^r?telnet")
 	(process-send-string proc "set escape \^X\n")
 	(cond
 	 ((and nntp-open-telnet-envuser nntp-telnet-user-name)
@@ -1301,7 +1302,7 @@ password contained in '~/.nntp-authinfo'."
 	(beginning-of-line)
 	(delete-region (point-min) (point))
 	(process-send-string proc "\^]")
-	(nntp-wait-for-string "^telnet")
+	(nntp-wait-for-string "^r?telnet")
 	(process-send-string proc "mode character\n")
 	(accept-process-output proc 1)
 	(sit-for 1)
