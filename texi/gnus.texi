@@ -7172,9 +7172,9 @@ instance, @kbd{3 b} means ``view the third @sc{mime} part''.
 
 @table @kbd
 @item b
-@itemx K b
+@itemx K v
 @kindex b (Summary)
-@kindex K b (Summary)
+@kindex K v (Summary)
 View the @sc{mime} part.
 
 @item K o
