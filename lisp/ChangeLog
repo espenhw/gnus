@@ -1,6 +1,6 @@
-2001-04-09 03:55:09  Katsumi Yamaoka  <yamaoka@jpl.org>
+2001-04-09 01:15:54  Katsumi Yamaoka <yamaoka@jpl.org>
 
-	* gnus-start.el (gnus-read-newsrc-el-file): Work with Semi-gnus. 
+	* gnus-start.el (gnus-read-newsrc-el-file): Work with Semi-gnusae.
 
 2001-04-05 21:43:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
