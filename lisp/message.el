@@ -1812,6 +1812,11 @@ prefix, and don't delete any headers."
 	   (if (listp message-indent-citation-function)
 	       message-indent-citation-function
 	     (list message-indent-citation-function)))))
+    (goto-char start)
+    ;; Quote parts.
+    (while (re-search-forward "<#/?!*\\(multi\\|part\\)>" end t)
+      (goto-char (match-beginning 1))
+      (insert "!"))
     (goto-char end)
     (when (re-search-backward "^-- $" start t)
       ;; Also peel off any blank lines before the signature.
@@ -1835,11 +1840,17 @@ prefix, and don't delete any headers."
 	   mail-citation-hook)
       (run-hooks 'mail-citation-hook)
     (let ((start (point))
+	  (end (mark t))
 	  (functions
 	   (when message-indent-citation-function
 	     (if (listp message-indent-citation-function)
 		 message-indent-citation-function
 	       (list message-indent-citation-function)))))
+      (goto-char start)
+      ;; Quote parts.
+      (while (re-search-forward "<#/?!*\\(multi\\|part\\)>" end t)
+	(goto-char (match-beginning 1))
+	(insert "!"))
       (goto-char start)
       (while functions
 	(funcall (pop functions)))

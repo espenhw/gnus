@@ -40,46 +40,49 @@ If there is more than one non-ASCII MULE charset, then list of found
 MULE charsets are returned.
 If successful, the MIME charset is returned.
 If no encoding was done, nil is returned."
-  (save-excursion
-    (goto-char (point-min))
-    (let ((charsets
-	   (delq 'ascii (mm-find-charset-region (point-min) (point-max))))
-	  charset)
-      (cond
-       ;; No encoding.
-       ((null charsets)
-	nil)
-       ;; Too many charsets.
-       ((> (length charsets) 1)
-	charsets)
-       ;; We encode.
-       (t
-	(let ((mime-charset 
-	       (mm-mime-charset (car charsets) (point-min) (point-max)))
-	      start)
-	  (when (or t
-		    ;; We always decode.
-		    (not (mm-coding-system-equal
-			  mime-charset buffer-file-coding-system)))
-	    (while (not (eobp))
-	      (if (eq (char-charset (char-after)) 'ascii)
-		  (when start
-		    (save-restriction
-		      (narrow-to-region start (point))
-		      (mm-encode-coding-region start (point) mime-charset)
-		      (goto-char (point-max)))
-		    (setq start nil))
-		(unless start
-		  (setq start (point))))
-	      (forward-char 1))
-	    (when start
-	      (mm-encode-coding-region start (point) mime-charset)
-	      (setq start nil)))
-	  mime-charset))))))
+  (if (not (featurep 'mule))
+      'iso-8859-1
+    (save-excursion
+      (goto-char (point-min))
+      (let ((charsets
+	     (delq 'ascii (mm-find-charset-region (point-min) (point-max))))
+	    charset)
+	(cond
+	 ;; No encoding.
+	 ((null charsets)
+	  nil)
+	 ;; Too many charsets.
+	 ((> (length charsets) 1)
+	  charsets)
+	 ;; We encode.
+	 (t
+	  (let ((mime-charset 
+		 (mm-mime-charset (car charsets) (point-min) (point-max)))
+		start)
+	    (when (or t
+		      ;; We always decode.
+		      (not (mm-coding-system-equal
+			    mime-charset buffer-file-coding-system)))
+	      (while (not (eobp))
+		(if (eq (char-charset (char-after)) 'ascii)
+		    (when start
+		      (save-restriction
+			(narrow-to-region start (point))
+			(mm-encode-coding-region start (point) mime-charset)
+			(goto-char (point-max)))
+		      (setq start nil))
+		  (unless start
+		    (setq start (point))))
+		(forward-char 1))
+	      (when start
+		(mm-encode-coding-region start (point) mime-charset)
+		(setq start nil)))
+	    mime-charset)))))))
 
 (defun mm-body-encoding ()
   "Return the encoding of the current buffer."
-  (if (and  
+  (if (and
+       (featurep 'mule)
        (null (delq 'ascii (find-charset-region (point-min) (point-max))))
        ;;;!!!The following is necessary because the function
        ;;;!!!above seems to return the wrong result under Emacs 20.3.

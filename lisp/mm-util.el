@@ -224,9 +224,21 @@ See also `with-temp-file' and `with-output-to-string'."
 
 (defun mm-find-charset-region (b e)
   "Return a list of charsets in the region."
-  (if (and (boundp 'enable-multibyte-characters)
-	   enable-multibyte-characters)
-      (find-charset-region b e)
+  (cond
+   ((and (boundp 'enable-multibyte-characters)
+	 enable-multibyte-characters)
+    (find-charset-region b e))
+   ((not (boundp 'current-language-environment))
+    (save-excursion
+      (save-restriction
+	(narrow-to-region b e)
+	(goto-char (point-min))
+	(skip-chars-forward "\0-\177")
+	(if (eobp)
+	    '(ascii)
+	  ;;;!!!bogus
+	  (list 'ascii 'latin-iso8859-1)))))
+   (t
     ;; We are in a unibyte buffer, so we futz around a bit.
     (save-excursion
       (save-restriction
@@ -237,7 +249,7 @@ See also `with-temp-file' and `with-output-to-string'."
 	  (skip-chars-forward "\0-\177")
 	  (if (eobp)
 	      '(ascii)
-	    (list 'ascii (car (last (assq 'charset entry))))))))))
+	    (list 'ascii (car (last (assq 'charset entry)))))))))))
 
 (provide 'mm-util)
 
