@@ -29,7 +29,6 @@
 (eval-when-compile (require 'cl))
 
 (require 'gnus)
-(require 'gnus-art)
 (require 'gnus-range)
 (require 'message)	; for message-cite-prefix-regexp
 
@@ -250,6 +249,17 @@ This should make it easier to see who wrote what."
   "If non-nil, put a blank line between the citation header and the button."
   :group 'gnus-cite
   :type 'boolean)
+
+;; This has to go here because its default value depends on
+;; gnus-cite-face-list.
+(defcustom gnus-article-boring-faces (cons 'gnus-signature-face
+					   gnus-cite-face-list)
+  "List of faces that are not worth reading.
+If an article has more pages below the one you are looking at, but
+nothing on those pages is a word of at least three letters that is not
+in a boring face, then the pages will be skipped."
+  :type '(repeat face)
+  :group 'gnus-article-hiding)
 
 ;;; Internal Variables:
 

@@ -7098,7 +7098,8 @@ If STOP is non-nil, just stop when reaching the end of the message."
 	  (gnus-summary-display-article article)
 	(when article-window
 	  (gnus-eval-in-buffer-window gnus-article-buffer
-	    (setq endp (gnus-article-next-page lines)))
+	    (setq endp (or (gnus-article-next-page lines)
+			   (gnus-article-only-boring-p))))
 	  (when endp
 	    (cond (stop
 		   (gnus-message 3 "End of message"))
