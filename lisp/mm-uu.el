@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.2 $
+;; $Revision: 5.3 $
 ;; Keywords: news postscript uudecode binhex shar
   
 ;; This file is not part of GNU Emacs, but the same permissions
@@ -72,13 +72,27 @@
 
 (defun mm-uu-dissect ()
   "Dissect the current buffer and return a list of uu handles."
-  (save-excursion
-    (save-restriction
-      (mail-narrow-to-head)
-      (goto-char (point-max)))
-    (forward-line)
-    (let ((text-start (point)) start-char end-char 
-	  type file-name end-line result)
+  (let (ct ctl cte charset text-start start-char end-char 
+	   type file-name end-line result text-plain-type)
+    (save-excursion
+      (save-restriction
+	(mail-narrow-to-head)
+	(when (and (mail-fetch-field "mime-version")
+		   (setq ct (mail-fetch-field "content-type")))
+	  (setq cte (message-fetch-field "content-transfer-encoding" t)
+		ctl (condition-case () (mail-header-parse-content-type ct)
+		      (error nil))
+		charset (and ctl (mail-content-type-get ctl 'charset)))
+	  (if (stringp cte) 
+	      (setq cte (intern (downcase (mail-header-remove-whitespace
+					   (mail-header-remove-comments
+					    cte)))))))
+	(goto-char (point-max)))
+      (forward-line)
+      (setq text-start (point)
+	    text-plain-type (cons "text/plain" 
+				  (if charset 
+				      (list (cons 'charset charset)))))
       (while (re-search-forward mm-uu-begin-line nil t)
 	(beginning-of-line)
 	(setq start-char (point))
@@ -93,7 +107,7 @@
 			 (nnheader-translate-file-chars (match-string 1))))))
 	(setq end-line (symbol-value 
 			(intern (concat "mm-uu-" (symbol-name type) 
-				       "-end-line"))))
+					"-end-line"))))
 	(when (re-search-forward end-line nil t)
 	  (forward-line)
 	  (setq end-char (point))
@@ -105,7 +119,7 @@
 	    (if (> start-char text-start)
 		(push
 		 (list (mm-uu-copy-to-buffer text-start start-char) 
-		       '("text/plain") nil nil nil nil) 
+		       text-plain-type cte nil nil nil) 
 		 result))
 	    (push 
 	     (cond
@@ -143,9 +157,29 @@
 	(if (> (point-max) (1+ text-start))
 	    (push
 	     (list (mm-uu-copy-to-buffer text-start (point-max)) 
-		   '("text/plain") nil nil nil nil) 
+		   text-plain-type cte nil nil nil) 
 	     result))
 	(setq result (cons "multipart/mixed" (nreverse result))))
+      result)))
+
+;;;### autoload
+(defun mm-uu-test ()
+  "Check whether the current buffer contains uu stuffs."
+  (save-excursion
+    (save-restriction
+      (mail-narrow-to-head)
+      (goto-char (point-max)))
+    (forward-line)
+    (let (type end-line result)
+      (while (and (not result) (re-search-forward mm-uu-begin-line nil t))
+	(forward-line) 
+	(setq type (cdr (assq (aref (match-string 0) 0) 
+			      mm-uu-identifier-alist)))
+	(setq end-line (symbol-value 
+			(intern (concat "mm-uu-" (symbol-name type) 
+					"-end-line"))))
+	(if (re-search-forward end-line nil t)
+	    (setq result t)))
       result)))
 
 (provide 'mm-uu)

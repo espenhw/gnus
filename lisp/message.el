@@ -873,6 +873,11 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar message-send-coding-system 'binary
   "Coding system to encode outgoing mail.")
 
+(defvar message-draft-coding-system 
+  (if (string-match "XEmacs\\|Lucid" emacs-version)
+      'escape-quoted 'emacs-mule)
+  "Coding system to compose mail.")
+
 ;;; Internal variables.
 
 (defvar message-default-charset nil)
@@ -2253,59 +2258,61 @@ to find out how to use this."
 		   message-syntax-checks)
 	   message-syntax-checks))
 	result)
-    (message-encode-message-body)
-    (save-restriction
-      (message-narrow-to-headers)
-      ;; Insert some headers.
-      (message-generate-headers message-required-news-headers)
-      (mail-encode-encoded-word-buffer)
-      ;; Let the user do all of the above.
-      (run-hooks 'message-header-hook))
-    (message-cleanup-headers)
-    (if (not (message-check-news-syntax))
+    (if (not (message-check-news-body-syntax))
 	nil
-      (unwind-protect
-	  (save-excursion
-	    (set-buffer tembuf)
-	    (buffer-disable-undo)
-	    (erase-buffer)
-	    ;; Avoid copying text props.
-	    (insert (format
-		     "%s" (save-excursion
-			    (set-buffer messbuf)
-			    (buffer-string))))
-	    ;; Remove some headers.
-	    (save-restriction
-	      (message-narrow-to-headers)
+      (message-encode-message-body)
+      (save-restriction
+	(message-narrow-to-headers)
+	;; Insert some headers.
+	(message-generate-headers message-required-news-headers)
+	(mail-encode-encoded-word-buffer)
+	;; Let the user do all of the above.
+	(run-hooks 'message-header-hook))
+      (message-cleanup-headers)
+      (if (not (message-check-news-syntax))
+	  nil
+	(unwind-protect
+	    (save-excursion
+	      (set-buffer tembuf)
+	      (buffer-disable-undo)
+	      (erase-buffer)
+	      ;; Avoid copying text props.
+	      (insert (format
+		       "%s" (save-excursion
+			      (set-buffer messbuf)
+			      (buffer-string))))
 	      ;; Remove some headers.
-	      (message-remove-header message-ignored-news-headers t))
-	    (goto-char (point-max))
-	    ;; require one newline at the end.
-	    (or (= (preceding-char) ?\n)
-		(insert ?\n))
-	    (let ((case-fold-search t))
-	      ;; Remove the delimiter.
-	      (goto-char (point-min))
-	      (re-search-forward
-	       (concat "^" (regexp-quote mail-header-separator) "\n"))
-	      (replace-match "\n")
-	      (backward-char 1))
-	    (run-hooks 'message-send-news-hook)
-	    ;;(require (car method))
-	    ;;(funcall (intern (format "%s-open-server" (car method)))
-	    ;;(cadr method) (cddr method))
-	    ;;(setq result
-	    ;;	  (funcall (intern (format "%s-request-post" (car method)))
-	    ;;		   (cadr method)))
-	    (gnus-open-server method)
-	    (setq result (gnus-request-post method)))
-	(kill-buffer tembuf))
-      (set-buffer messbuf)
-      (if result
-	  (push 'news message-sent-message-via)
-	(message "Couldn't send message via news: %s"
-		 (nnheader-get-report (car method)))
-	nil))))
+	      (save-restriction
+		(message-narrow-to-headers)
+		;; Remove some headers.
+		(message-remove-header message-ignored-news-headers t))
+	      (goto-char (point-max))
+	      ;; require one newline at the end.
+	      (or (= (preceding-char) ?\n)
+		  (insert ?\n))
+	      (let ((case-fold-search t))
+		;; Remove the delimiter.
+		(goto-char (point-min))
+		(re-search-forward
+		 (concat "^" (regexp-quote mail-header-separator) "\n"))
+		(replace-match "\n")
+		(backward-char 1))
+	      (run-hooks 'message-send-news-hook)
+	      ;;(require (car method))
+	      ;;(funcall (intern (format "%s-open-server" (car method)))
+	      ;;(cadr method) (cddr method))
+	      ;;(setq result
+	      ;;	  (funcall (intern (format "%s-request-post" (car method)))
+	      ;;		   (cadr method)))
+	      (gnus-open-server method)
+	      (setq result (gnus-request-post method)))
+	  (kill-buffer tembuf))
+	(set-buffer messbuf)
+	(if result
+	    (push 'news message-sent-message-via)
+	  (message "Couldn't send message via news: %s"
+		   (nnheader-get-report (car method)))
+	  nil)))))
 
 ;;;
 ;;; Header generation & syntax checking.
@@ -2324,14 +2331,11 @@ to find out how to use this."
   (save-excursion
     (save-restriction
       (widen)
-      (and
-       ;; We narrow to the headers and check them first.
-       (save-excursion
-	 (save-restriction
-	   (message-narrow-to-headers)
-	   (message-check-news-header-syntax)))
-       ;; Check the body.
-       (message-check-news-body-syntax)))))
+      ;; We narrow to the headers and check them first.
+      (save-excursion
+	(save-restriction
+	  (message-narrow-to-headers)
+	  (message-check-news-header-syntax))))))
 
 (defun message-check-news-header-syntax ()
   (and
@@ -3311,7 +3315,8 @@ Headers already prepared in the buffer are not modified."
       (setq buffer-file-name (expand-file-name "*message*"
 					       message-auto-save-directory))
       (setq buffer-auto-save-file-name (make-auto-save-file-name)))
-    (clear-visited-file-modtime)))
+    (clear-visited-file-modtime)
+    (setq buffer-file-coding-system message-draft-coding-system)))
 
 (defun message-disassociate-draft ()
   "Disassociate the message buffer from the drafts directory."

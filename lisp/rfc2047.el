@@ -270,10 +270,10 @@ Should be called narrowed to the head of the message."
 		   (prog1
 		       (match-string 0)
 		     (delete-region (match-beginning 0) (match-end 0)))))
-	  (when (mm-multibyte-p)
+	  (when (and (mm-multibyte-p) rfc2047-default-charset)
 	    (mm-decode-coding-region b e rfc2047-default-charset))
 	  (setq b (point)))
-	(when (mm-multibyte-p)
+	(when (and (mm-multibyte-p) rfc2047-default-charset)
 	  (mm-decode-coding-region b (point-max) rfc2047-default-charset))))))
 
 (defun rfc2047-decode-string (string)

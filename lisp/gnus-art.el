@@ -386,7 +386,7 @@ beginning of a line."
   :type 'regexp
   :group 'gnus-article-various)
 
-(defcustom gnus-article-mode-line-format "Gnus: %g %S"
+(defcustom gnus-article-mode-line-format "Gnus: %g %S%m"
   "*The format specification for the article mode line.
 See `gnus-summary-mode-line-format' for a closer description."
   :type 'string
@@ -594,6 +594,7 @@ displayed by the first non-nil matching CONTENT face."
 
 ;;; Internal variables
 
+(defvar gnus-article-mime-handle-alist-1 nil)
 (defvar gnus-treatment-function-alist 
   '((gnus-treat-body-highlight-signature gnus-article-highlight-signature nil)
     ))
@@ -614,7 +615,8 @@ Initialized from `text-mode-syntax-table.")
 (defvar gnus-save-article-buffer nil)
 
 (defvar gnus-article-mode-line-format-alist
-  (nconc '((?w (gnus-article-wash-status) ?s))
+  (nconc '((?w (gnus-article-wash-status) ?s)
+	   (?m (gnus-article-mime-part-status) ?s))
 	 gnus-summary-mode-line-format-alist))
 
 (defvar gnus-number-of-articles-to-be-saved nil)
@@ -1018,7 +1020,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
     (set-buffer gnus-article-buffer)
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only
-	  (rfc2047-default-charset gnus-newsgroup-coding-system)
+	  (rfc2047-default-charset gnus-newsgroup-default-charset)
 	  (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
       (mail-decode-encoded-word-region (point-min) (point-max)))))
 
@@ -1040,17 +1042,17 @@ If PROMPT (the prefix), prompt for a coding system to use."
 		       (prompt
 			(mm-read-coding-system "Charset to decode: "))
 		       (ctl
-			(mail-content-type-get ctl 'charset))
-		       (t
-			gnus-newsgroup-coding-system)))
+			(mail-content-type-get ctl 'charset))))
+	     (rfc2047-default-charset gnus-newsgroup-default-charset)
 	     (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced)
 	     buffer-read-only)
 	(goto-char (point-max))
 	(widen)
 	(forward-line 1)
 	(narrow-to-region (point) (point-max))
-	(when (or (not ctl)
-		  (equal (car ctl) "text/plain"))
+	(when (and (or (not ctl)
+		       (equal (car ctl) "text/plain"))
+		   (not (mm-uu-test)))
 	  (mm-decode-body
 	   charset (and cte (intern (downcase
 				     (gnus-strip-whitespace cte))))
@@ -1060,7 +1062,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
   "Remove encoded-word encoding from headers."
   (let ((inhibit-point-motion-hooks t)
 	buffer-read-only
-	(rfc2047-default-charset gnus-newsgroup-coding-system)
+	(rfc2047-default-charset gnus-newsgroup-default-charset)
 	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (save-restriction
       (message-narrow-to-head)
@@ -1075,7 +1077,7 @@ or not."
     (let ((buffer-read-only nil)
 	  (type (gnus-fetch-field "content-transfer-encoding"))
 	  (charset
-	   (or gnus-newsgroup-coding-system mm-default-coding-system))
+	   (or gnus-newsgroup-default-charset mm-default-coding-system))
 	  (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
       (when (or force
 		(and type (string-match "quoted-printable" (downcase type))))
@@ -2142,7 +2144,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		      (gnus-configure-windows 'summary)
 		    (gnus-configure-windows 'article))
 		  (gnus-set-global-variables))
-		(gnus-set-mode-line 'article))
+		(let ((gnus-article-mime-handle-alist-1
+		       gnus-article-mime-handle-alist))
+		  (gnus-set-mode-line 'article)))
 	    ;; The result from the `request' was an actual article -
 	    ;; or at least some text that is now displayed in the
 	    ;; article buffer.
@@ -2187,7 +2191,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		    (when gnus-break-pages
 		      (gnus-narrow-to-page)
 		      t)))
-	    (gnus-set-mode-line 'article)
+	    (let ((gnus-article-mime-handle-alist-1
+		   gnus-article-mime-handle-alist))
+	      (gnus-set-mode-line 'article))
 	    (gnus-configure-windows 'article)
 	    (article-goto-body)
 	    (set-window-point (get-buffer-window (current-buffer)) (point))
@@ -2241,6 +2247,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-mime-externalize-part	"e"	"View Externally")
     (gnus-mime-pipe-part	"|"	"Pipe To Command...")))
 
+(defun gnus-article-mime-part-status ()
+  (if gnus-article-mime-handle-alist-1
+      (format " (%d parts)" (length gnus-article-mime-handle-alist-1))
+    ""))
+
 (defvar gnus-mime-button-map nil)
 (unless gnus-mime-button-map
   (setq gnus-mime-button-map (make-sparse-keymap))
@@ -2271,7 +2282,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive)
   (gnus-article-check-buffer)
   (let ((handles gnus-article-mime-handles)
-	(rfc2047-default-charset gnus-newsgroup-coding-system)
+	(rfc2047-default-charset gnus-newsgroup-default-charset)
 	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (while handles
       (mm-display-part (pop handles)))))
@@ -2298,11 +2309,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(url-standalone-mode (not gnus-plugged)))
     (mm-interactively-view-part data)))
 
-(defun gnus-mime-copy-part ()
+(defun gnus-mime-copy-part (&optional handle)
   "Put the the MIME part under point into a new buffer."
   (interactive)
   (gnus-article-check-buffer)
-  (let* ((handle (get-text-property (point) 'gnus-data))
+  (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
 	 (contents (mm-get-part handle))
 	 (buffer (generate-new-buffer
 		       (file-name-nondirectory
@@ -2318,7 +2329,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defun gnus-mime-inline-part (&optional charset)
   "Insert the MIME part under point into the current buffer."
-  (interactive "P") ; For compatible reason, not using "z".
+  (interactive "P") ; For compatibility reasons we are not using "z".
   (gnus-article-check-buffer)
   (let* ((data (get-text-property (point) 'gnus-data))
 	 (contents (mm-get-part data))
@@ -2335,19 +2346,52 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (mm-insert-inline data contents)
       (goto-char b))))
 
-(defun gnus-mime-externalize-part ()
+(defun gnus-mime-externalize-part (&optional handle)
   "Insert the MIME part under point into the current buffer."
   (interactive)
   (gnus-article-check-buffer)
-  (let* ((handle (get-text-property (point) 'gnus-data))
+  (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
 	 (url-standalone-mode (not gnus-plugged))
 	 (mm-user-display-methods nil)
-	 (rfc2047-default-charset gnus-newsgroup-coding-system)
+	 (rfc2047-default-charset gnus-newsgroup-default-charset)
 	 (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (if (mm-handle-undisplayer handle)
 	(mm-remove-part handle)
       (mm-display-part handle))))
 
+(defun gnus-article-part-wrapper (n function)
+  (save-current-buffer
+    (set-buffer gnus-article-buffer)
+    (when (> n (length gnus-article-mime-handle-alist))
+      (error "No such part"))
+    (let ((handle (cdr (assq n gnus-article-mime-handle-alist))))
+      (funcall function handle))))
+
+(defun gnus-article-pipe-part (n)
+  "Pipe MIME part N, which is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'mm-pipe-part))
+  
+(defun gnus-article-save-part (n)
+  "Save MIME part N, which is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'mm-save-part))
+  
+(defun gnus-article-interactively-view-part (n)
+  "Pipe MIME part N, which is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'mm-interactively-view-part))
+  
+(defun gnus-article-copy-part (n)
+  "Pipe MIME part N, which is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'gnus-mime-copy-part))
+
+(defun gnus-article-externalize-part (n)
+  "Pipe MIME part N, which is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'gnus-mime-externalize-part))
+  
 (defun gnus-article-view-part (n)
   "View MIME part N, which is the numerical prefix."
   (interactive "p")
@@ -2372,7 +2416,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
      handle id (list (not (mm-handle-displayed-p handle))))
     (prog1
 	(let ((window (selected-window))
-	      (rfc2047-default-charset gnus-newsgroup-coding-system)
+	      (rfc2047-default-charset gnus-newsgroup-default-charset)
 	      (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
 	  (save-excursion
 	    (unwind-protect
@@ -2497,11 +2541,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(let ((id (1+ (length gnus-article-mime-handle-alist))))
 	  (push (cons id handle) gnus-article-mime-handle-alist)
 	  (when (or (not display)
-		    (not (catch 'found
-			   (let ((types gnus-unbuttonized-mime-types))
-			     (while types
-			       (when (string-match (pop types) type)
-				 (throw 'found t)))))))
+		    (not (gnus-unbuttonized-mime-type-p type)))
 	    (gnus-article-insert-newline)
 	    (gnus-insert-mime-button
 	     handle id (list (or display
@@ -2511,7 +2551,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(cond
 	 (display
 	  (forward-line -2)
-	  (let ((rfc2047-default-charset gnus-newsgroup-coding-system)
+	  (let ((rfc2047-default-charset gnus-newsgroup-default-charset)
 		(mm-charset-iso-8859-1-forced 
 		 gnus-newsgroup-iso-8859-1-forced))
 	    (mm-display-part handle t))
@@ -2521,6 +2561,14 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (gnus-article-insert-newline)
 	  (mm-insert-inline handle (mm-get-part handle))
 	  (goto-char (point-max))))))))
+
+(defun gnus-unbuttonized-mime-type-p (type)
+  "Say whether TYPE is to be unbuttonized."
+  (catch 'found
+    (let ((types gnus-unbuttonized-mime-types))
+      (while types
+	(when (string-match (pop types) type)
+	  (throw 'found t))))))
 
 (defun gnus-article-insert-newline ()
   "Insert a newline, but mark it as undeletable."
@@ -2535,44 +2583,25 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (save-window-excursion
       (save-restriction
 	(when ibegend
-	  (narrow-to-region (car ibegend) (cdr ibegend))
+	  (narrow-to-region (car ibegend)
+			    (or (cdr ibegend)
+				(progn
+				  (goto-char (car ibegend))
+				  (forward-line 2)
+				  (point))))
 	  (delete-region (point-min) (point-max))
 	  (mm-remove-parts handles))
 	(setq begend (list (point-marker)))
 	;; Do the toggle.
 	(unless (setq not-pref (cadr (member preferred ihandles)))
 	  (setq not-pref (car ihandles)))
-	(gnus-add-text-properties
-	 (setq from (point))
-	 (progn
-	   (insert (format "%d.  " id))
-	   (point))
-	 `(gnus-callback
-	   (lambda (handles)
-	     (unless ,(not ibegend)
-	       (setq gnus-article-mime-handle-alist
-		     ',gnus-article-mime-handle-alist))
-	     (gnus-mime-display-alternative
-	      ',ihandles ',not-pref ',begend ,id))
-	   local-map ,gnus-mime-button-map
-	   ,gnus-mouse-face-prop ,gnus-article-mouse-face
-	   face ,gnus-article-button-face
-	   keymap ,gnus-mime-button-map
-	   gnus-part ,id
-	   gnus-data ,handle))
-	(widget-convert-button 'link from (point)
-			       :action 'gnus-widget-press-button
-			       :button-keymap gnus-widget-button-keymap)
-	;; Do the handles
-	(while (setq handle (pop handles))
+	(when (or ibegend
+		  (not (gnus-unbuttonized-mime-type-p
+			"multipart/alternative")))
 	  (gnus-add-text-properties
 	   (setq from (point))
 	   (progn
-	     (insert (format "[%c] %-18s"
-			     (if (equal handle preferred) ?* ? )
-			     (if (stringp (car handle))
-				 (car handle)
-			       (car (mm-handle-type handle)))))
+	     (insert (format "%d.  " id))
 	     (point))
 	   `(gnus-callback
 	     (lambda (handles)
@@ -2580,7 +2609,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		 (setq gnus-article-mime-handle-alist
 		       ',gnus-article-mime-handle-alist))
 	       (gnus-mime-display-alternative
-		',ihandles ',handle ',begend ,id))
+		',ihandles ',not-pref ',begend ,id))
 	     local-map ,gnus-mime-button-map
 	     ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	     face ,gnus-article-button-face
@@ -2590,12 +2619,39 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (widget-convert-button 'link from (point)
 				 :action 'gnus-widget-press-button
 				 :button-keymap gnus-widget-button-keymap)
-	  (insert "  "))
-	(insert "\n\n")
+	  ;; Do the handles
+	  (while (setq handle (pop handles))
+	    (gnus-add-text-properties
+	     (setq from (point))
+	     (progn
+	       (insert (format "[%c] %-18s"
+			       (if (equal handle preferred) ?* ? )
+			       (if (stringp (car handle))
+				   (car handle)
+				 (car (mm-handle-type handle)))))
+	       (point))
+	     `(gnus-callback
+	       (lambda (handles)
+		 (unless ,(not ibegend)
+		   (setq gnus-article-mime-handle-alist
+			 ',gnus-article-mime-handle-alist))
+		 (gnus-mime-display-alternative
+		  ',ihandles ',handle ',begend ,id))
+	       local-map ,gnus-mime-button-map
+	       ,gnus-mouse-face-prop ,gnus-article-mouse-face
+	       face ,gnus-article-button-face
+	       keymap ,gnus-mime-button-map
+	       gnus-part ,id
+	       gnus-data ,handle))
+	    (widget-convert-button 'link from (point)
+				   :action 'gnus-widget-press-button
+				   :button-keymap gnus-widget-button-keymap)
+	    (insert "  "))
+	  (insert "\n\n"))
 	(when preferred
 	  (if (stringp (car preferred))
 	      (gnus-display-mime preferred)
-	    (let ((rfc2047-default-charset gnus-newsgroup-coding-system)
+	    (let ((rfc2047-default-charset gnus-newsgroup-default-charset)
 		  (mm-charset-iso-8859-1-forced 
 		   gnus-newsgroup-iso-8859-1-forced))
 	      (mm-display-part preferred)))

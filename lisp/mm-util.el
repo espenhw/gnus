@@ -220,7 +220,7 @@ See also `with-temp-file' and `with-output-to-string'."
 		     (get-buffer-create (generate-new-buffer-name " *temp*")))
 	       (unwind-protect
 		   (with-current-buffer ,temp-buffer
-		     (let (buffer-file-coding-system)
+		     (let ((buffer-file-coding-system 'binary))
 		       ,@forms))
 		 (and (buffer-name ,temp-buffer)
 		      (kill-buffer ,temp-buffer))))

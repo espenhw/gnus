@@ -1,3 +1,91 @@
+Tue Nov 24 10:43:06 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.54 is released.
+
+1998-11-24 11:21:32  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-newsgroup-default-charset-alist): Note fj. 
+
+1998-11-24 11:14:54  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-save-part): Unquote.
+
+1998-11-24 11:14:39  Matt Armstrong  <matta@geoworks.com>
+
+	* mm-decode.el (mm-save-part): Bind coding system for write. 
+
+1998-11-24 10:42:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-mode-line-format): New default.
+	(gnus-article-mime-part-status): New function.
+
+	* message.el (message-send-news): Check the body syntax before
+	encoding. 
+
+	* gnus-art.el (gnus-unbuttonized-mime-type): New function.
+	(gnus-mime-display-single): Use it.
+	(gnus-mime-display-alternative): Ditto.
+
+	* mm-decode.el: Check for whether we are running under a term.
+
+1998-11-22 08:12:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-preferred-alternative): Default to first
+	alternative. 
+	(mm-preferred-alternative): No, we dont.
+
+Tue Nov 24 03:01:48 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-display-external): Use binary instead of
+	no-conversion.
+	* gnus-agent.el (gnus-agent-file-coding-system): Ditto.
+	* nnheader.el (nnheader-file-coding-system): Ditto.
+	* mm-util.el (mm-with-unibyte-buffer): Use binary instead of nil.
+
+Mon Nov 23 01:51:57 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-newsgroup-setup-default-charset): Use group
+	name without method.
+
+Mon Nov 23 01:26:40 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-newsgroup-default-charset): Rename 
+	coding-system -> default-charset. 
+	(gnus-newsgroup-default-charset-alist): Ditto.
+	(gnus-summary-local-variables): Ditto.
+	(gnus-set-global-variables): Ditto.
+	(gnus-get-newsgroup-headers): Ditto.
+	(gnus-summary-from-or-to-or-newsgroups): Ditto.
+	(gnus-get-newsgroup-headers-xover): Ditto.
+	(gnus-newsgroup-setup-default-charset): Ditto.
+	(article-decode-mime-words): Ditto.
+	(article-decode-charset): Ditto.
+	(article-decode-encoded-words): Ditto.
+	(article-de-quoted-unreadable): Ditto.
+	(gnus-mime-view-all-parts): Ditto.
+	(gnus-mime-externalize-part): Ditto.
+	(gnus-mm-display-part): Ditto.
+	(gnus-mime-display-single): Ditto.
+	(gnus-mime-display-alternative): Ditto.
+	* lpath.el : Ditto.
+
+Mon Nov 23 00:54:33 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-decode-region): Do not decode nil charset.
+	* gnus-art.el (article-decode-charset): Overlay
+	rfc2047-default-charset.
+	* message.el (message-draft-coding-system): New variable.
+	(message-set-auto-save-file-name): Use message-draft-coding-system. 
+	* nndraft.el (nndraft-request-article): Ditto.
+	* gnus-start.el (gnus-start-draft-setup): Set charset nil.
+	* gnus-agent.el (gnus-agent-queue-setup): Ditto.
+
+Sun Nov 22 04:42:22 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-test): New function.
+	(mm-uu-dissect): Inherit charset and cte from head.
+	* gnus-art.el (article-decode-charset): Use mm-uu-test.
+
 Sat Nov 21 09:57:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.53 is released.

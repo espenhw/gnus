@@ -92,7 +92,7 @@ If nil, only read articles will be expired."
 (defvar gnus-agent-spam-hashtb nil)
 (defvar gnus-agent-file-name nil)
 (defvar gnus-agent-send-mail-function nil)
-(defvar gnus-agent-file-coding-system 'no-conversion)
+(defvar gnus-agent-file-coding-system 'binary)
 
 (defconst gnus-agent-scoreable-headers
   (list
@@ -332,6 +332,7 @@ agent minor mode in all Gnus buffers."
     (gnus-request-create-group "queue" '(nndraft ""))
     (let ((gnus-level-default-subscribed 1))
       (gnus-subscribe-group "nndraft:queue" nil '(nndraft "")))
+    (gnus-group-set-parameter "nndraft:queue" 'charset "nil")
     (gnus-group-set-parameter
      "nndraft:queue" 'gnus-dummy '((gnus-draft-mode)))))
 

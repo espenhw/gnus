@@ -47,17 +47,20 @@
 
 (defvar mm-inline-media-tests
   '(("image/jpeg" mm-inline-image
-     (and (featurep 'jpeg) (mm-image-fit-p handle)))
+     (and window-system (featurep 'jpeg) (mm-image-fit-p handle)))
     ("image/png" mm-inline-image
-     (and (featurep 'png) (mm-image-fit-p handle)))
+     (and window-system (featurep 'png) (mm-image-fit-p handle)))
     ("image/gif" mm-inline-image
-     (and (featurep 'gif) (mm-image-fit-p handle)))
+     (and window-system (featurep 'gif) (mm-image-fit-p handle)))
     ("image/tiff" mm-inline-image
-     (and (featurep 'tiff) (mm-image-fit-p handle)))
-    ("image/xbm" mm-inline-image (and (fboundp 'device-type)
-				      (eq (device-type) 'x)))
-    ("image/xpm" mm-inline-image (featurep 'xpm))
-    ("image/bmp" mm-inline-image (featurep 'bmp))
+     (and window-system (featurep 'tiff) (mm-image-fit-p handle)))
+    ("image/xbm" mm-inline-image
+     (and window-system (fboundp 'device-type)
+	  (eq (device-type) 'x)))
+    ("image/xpm" mm-inline-image
+     (and window-system (featurep 'xpm)))
+    ("image/bmp" mm-inline-image
+     (and window-system (featurep 'bmp)))
     ("text/plain" mm-inline-text t)
     ("text/enriched" mm-inline-text t)
     ("text/richtext" mm-inline-text t)
@@ -81,7 +84,8 @@
     "image/.*" "message/delivery-status" "multipart/.*"))
 
 (defvar mm-alternative-precedence
-  '("text/html" "text/enriched" "text/richtext" "text/plain")
+  '("image/jpeg" "image/gif" "text/html" "text/enriched"
+    "text/richtext" "text/plain")
   "List that describes the precedence of alternative parts.")
 
 (defvar mm-tmp-directory "/tmp/"
@@ -237,7 +241,7 @@ external if displayed external."
 		(select-window win)))
 	    (switch-to-buffer (generate-new-buffer "*mm*")))
 	  (buffer-disable-undo)
-	  (mm-set-buffer-file-coding-system 'no-conversion)
+	  (mm-set-buffer-file-coding-system 'binary)
 	  (insert-buffer-substring cur)
 	  (message "Viewing with %s" method)
 	  (let ((mm (current-buffer)))
@@ -261,7 +265,7 @@ external if displayed external."
 					 dir))
 	  (setq file (make-temp-name (expand-file-name "mm." dir))))
 	(write-region (point-min) (point-max)
-		      file nil 'nomesg nil 'no-conversion)
+		      file nil 'nomesg nil 'binary)
 	(message "Viewing with %s" method)
 	(unwind-protect
 	    (setq process
@@ -447,7 +451,12 @@ This overrides entries in the mailcap file."
       (when (or (not (file-exists-p file))
 		(yes-or-no-p (format "File %s already exists; overwrite? "
 				     file)))
-	(write-region (point-min) (point-max) file)))))
+      (let ((coding-system-for-write
+             (if (equal "text" (car (split-string
+                                     (car (mm-handle-type handle)) "/")))
+                 buffer-file-coding-system
+               'binary)))
+        (write-region (point-min) (point-max) file))))))
 
 (defun mm-pipe-part (handle)
   "Pipe HANDLE to a process."
@@ -473,7 +482,7 @@ This overrides entries in the mailcap file."
 (defun mm-preferred-alternative (handles &optional preferred)
   "Say which of HANDLES are preferred."
   (let ((prec (if preferred (list preferred) mm-alternative-precedence))
-	p h result type)
+	p h result type handle)
     (while (setq p (pop prec))
       (setq h handles)
       (while h
@@ -481,6 +490,7 @@ This overrides entries in the mailcap file."
 	      (if (stringp (caar h))
 		  (caar h)
 		(car (mm-handle-type (car h)))))
+	(setq handle (car h))
 	(when (and (equal p type)
 		   (mm-automatic-display-p type)
 		   (or (stringp (caar h))
@@ -510,12 +520,11 @@ This overrides entries in the mailcap file."
 
 (defun mm-image-fit-p (handle)
   "Say whether the image in HANDLE will fit the current window."
-  (or t
-      (let ((image (make-image-instance (mm-get-image handle))))
-	(and (< (image-instance-width image)
-		(window-pixel-width))
-	     (< (image-instance-height image)
-		(window-pixel-height))))))
+  (let ((image (make-annotation (mm-get-image handle))))
+    (and (< (glyph-width (annotation-glyph image))
+	    (window-pixel-width))
+	 (< (glyph-height (annotation-glyph image))
+	    (window-pixel-height)))))
 
 (provide 'mm-decode)
 

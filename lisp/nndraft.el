@@ -109,7 +109,9 @@
 	   (newest (if (file-newer-than-file-p file auto) file auto))
 	   (nntp-server-buffer (or buffer nntp-server-buffer)))
       (when (and (file-exists-p newest)
-		 (nnmail-find-file newest))
+		 (let ((nnmail-file-coding-system 
+			message-draft-coding-system))
+		   (nnmail-find-file newest)))
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
 	  (goto-char (point-min))

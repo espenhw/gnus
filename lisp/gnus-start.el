@@ -721,6 +721,7 @@ prompt the user for the name of an NNTP server to use."
   (unless (gnus-gethash "nndraft:drafts" gnus-newsrc-hashtb)
     (let ((gnus-level-default-subscribed 1))
       (gnus-subscribe-group "nndraft:drafts" nil '(nndraft "")))
+    (gnus-group-set-parameter "nndraft:drafts" 'charset "nil")
     (gnus-group-set-parameter
      "nndraft:drafts" 'gnus-dummy '((gnus-draft-mode)))))
 
