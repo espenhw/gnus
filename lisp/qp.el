@@ -99,55 +99,52 @@ encode lines starting with \"From\"."
   (save-excursion
     (save-restriction
       (narrow-to-region from to)
-      (mm-with-unibyte-current-buffer-mule4
-	(if (and (not (featurep 'xemacs)) ;; Don't check XEmacs Mule.
-		 (fboundp 'find-charset-region))
-	    (if (delq 'unknown		; Emacs 20 unibyte
-		      (delq 'eight-bit-graphic ; Emacs 21
-			    (delq 'eight-bit-control
-				  (delq 'ascii 
-					(find-charset-region from to)))))
-		(error "Multibyte character in QP encoding region")))
-	;; Encode all the non-ascii and control characters.
-	(goto-char (point-min))
-	(while (and (skip-chars-forward class)
-		    (not (eobp)))
+      ;; We can live with characters between 00-FF.
+      (goto-char (point-min))
+      (while (not (eobp))
+	(if (>= (char-after) 256)
+	    (error "Multibyte character in QP encoding region"))
+	(forward-char))
+      ;; Encode all the non-ascii and control characters.
+      (goto-char (point-min))
+      (while (and (skip-chars-forward class)
+		  (not (eobp)))
+	(insert
+	 (prog1
+	     (format "=%02X" (char-after))
+	   (delete-char 1))))
+      ;; Encode white space at the end of lines.
+      (goto-char (point-min))
+      (while (re-search-forward "[ \t]+$" nil t)
+	(goto-char (match-beginning 0))
+	(while (not (eolp))
 	  (insert
 	   (prog1
 	       (format "=%02X" (char-after))
-	     (delete-char 1))))
-	;; Encode white space at the end of lines.
-	(goto-char (point-min))
-	(while (re-search-forward "[ \t]+$" nil t)
-	  (goto-char (match-beginning 0))
-	  (while (not (eolp))
-	    (insert
-	     (prog1
-		 (format "=%02X" (char-after))
-	       (delete-char 1)))))
-	(let ((mm-use-ultra-safe-encoding
-	       (and (boundp 'mm-use-ultra-safe-encoding)
-		    mm-use-ultra-safe-encoding)))
-	  (when (or fold mm-use-ultra-safe-encoding)
-	    (let ((tab-width 1))	; HTAB is one character.
-	      (goto-char (point-min))
-	      (while (not (eobp))
-		;; In ultra-safe mode, encode "From " at the beginning
-		;; of a line.
-		(when mm-use-ultra-safe-encoding
-		  (if (looking-at "From ")
-		      (replace-match "From=20" nil t)
-		    (if (looking-at "-")
+	     (delete-char 1)))))
+      (let ((mm-use-ultra-safe-encoding
+	     (and (boundp 'mm-use-ultra-safe-encoding)
+		  mm-use-ultra-safe-encoding)))
+	(when (or fold mm-use-ultra-safe-encoding)
+	  (let ((tab-width 1))	; HTAB is one character.
+	    (goto-char (point-min))
+	    (while (not (eobp))
+	      ;; In ultra-safe mode, encode "From " at the beginning
+	      ;; of a line.
+	      (when mm-use-ultra-safe-encoding
+		(if (looking-at "From ")
+		    (replace-match "From=20" nil t)
+		  (if (looking-at "-")
 			(replace-match "=2D" nil t))))
-		(end-of-line)
-		;; Fold long lines.
-		(while (> (current-column) 76) ; tab-width must be 1.
-		  (beginning-of-line)
-		  (forward-char 75)	; 75 chars plus an "="
-		  (search-backward "=" (- (point) 2) t)
-		  (insert "=\n")
-		  (end-of-line))
-		(forward-line)))))))))
+	      (end-of-line)
+	      ;; Fold long lines.
+	      (while (> (current-column) 76) ; tab-width must be 1.
+		(beginning-of-line)
+		(forward-char 75)	; 75 chars plus an "="
+		(search-backward "=" (- (point) 2) t)
+		(insert "=\n")
+		(end-of-line))
+	      (forward-line))))))))
 
 (defun quoted-printable-encode-string (string)
   "Encode the STRING as quoted-printable and return the result."

@@ -413,7 +413,9 @@ The buffer may be narrowed."
 		   (gnus-point-at-bol))))
 	(while alist
 	  (when (looking-at (caar alist))
-	    (quoted-printable-encode-region b e nil (cdar alist))
+	    (mm-with-unibyte-current-buffer-mule4
+	      (quoted-printable-encode-region 
+	       (point-min) (point-max) nil (cdar alist)))
 	    (subst-char-in-region (point-min) (point-max) ?  ?_)
 	    (setq alist nil))
 	  (pop alist))

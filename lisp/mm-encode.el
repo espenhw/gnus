@@ -85,7 +85,8 @@ This variable should never be set directly, but bound before a call to
 (defun mm-encode-content-transfer-encoding (encoding &optional type)
   (cond
    ((eq encoding 'quoted-printable)
-    (quoted-printable-encode-region (point-min) (point-max) t))
+    (mm-with-unibyte-current-buffer-mule4
+      (quoted-printable-encode-region (point-min) (point-max) t)))
    ((eq encoding 'base64)
     (when (equal type "text/plain")
       (goto-char (point-min))
