@@ -1200,7 +1200,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "Lars Magne Ingebrigtsen <larsi@ifi.uio.no>"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.42"
+(defconst gnus-version "(ding) Gnus v0.43"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5639,17 +5639,20 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		     ;; articles there are in this group.
 		     (if active
 			 (progn
-			   (if (atom (cdr range))
-			       (if (not range)
-				   (setq num (- (1+ (cdr active)) 
-						(car active)))
-				 (setq num (- (cdr active) (- (1+ (cdr range)) 
-							      (car range)))))
+			   (cond 
+			    ((not range)
+			     (setq num (- (1+ (cdr active)) (car active))))
+			    ((not (listp (cdr range)))
+			     (setq num (- (cdr active) (- (1+ (cdr range)) 
+							  (car range)))))
+			    (t
 			     (while range
-			       (setq num (+ num (- (1+ (or (and (numberp (car range)) (car range)) (cdr (car range))))
-						   (or (and (numberp (car range)) (car range)) (car (car range))))))
+			       (if (numberp (car range))
+				   (setq num (1+ num))
+				 (setq num (+ num (- (1+ (cdr (car range)))
+						     (car (car range))))))
 			       (setq range (cdr range)))
-			     (setq num (- (cdr active) num)))
+			     (setq num (- (cdr active) num))))
 			   ;; Update the number of unread articles.
 			   (setcar 
 			    entry 
