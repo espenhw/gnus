@@ -681,6 +681,8 @@ exceeding lisp nesting on huge groups.
 
 *  a way to tick/mark as read Gcc'd articles.
 
+   [done, (setq gnus-inews-mark-gcc-as-read t)]
+
 *  a way to say that all groups within a specific topic comes from a
  particular server?  Hm.
 
