@@ -1,3 +1,13 @@
+2002-10-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el (nnslashdot-generate-active): Ignore any bogus
+	entries. 
+
+	* gnus-group.el (gnus-fetch-group): Allow an optional
+	specification of the articles to select.
+
+	* gnus-srvr.el (gnus-server-prepare): Removed superfluous cdr. 
+
 2002-10-20  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): After fetching

@@ -499,8 +499,9 @@
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (dolist (elem nnslashdot-groups)
-      (insert (prin1-to-string (car elem))
-	      " " (number-to-string (cadr elem)) " 1 y\n"))))
+      (when (numberp (cadr elem))
+	(insert (prin1-to-string (car elem))
+		" " (number-to-string (cadr elem)) " 1 y\n")))))
 
 (defun nnslashdot-lose (why)
   (error "Slashdot HTML has changed; please get a new version of nnslashdot"))

@@ -1861,13 +1861,13 @@ be permanent."
      (gnus-group-prefixed-name group method) method)))
 
 ;;;###autoload
-(defun gnus-fetch-group (group)
+(defun gnus-fetch-group (group &optional articles)
   "Start Gnus if necessary and enter GROUP.
 Returns whether the fetching was successful or not."
   (interactive (list (completing-read "Group name: " gnus-active-hashtb)))
   (unless (get-buffer gnus-group-buffer)
     (gnus-no-server))
-  (gnus-group-read-group nil nil group))
+  (gnus-group-read-group articles nil group))
 
 ;;;###autoload
 (defun gnus-fetch-group-other-frame (group)
