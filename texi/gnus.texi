@@ -22516,7 +22516,6 @@ If you wish to call hashcash for each message you send, say something
 like:
 
 @lisp
-(require 'hashcash)
 (add-hook 'message-send-hook 'mail-add-payment)
 @end lisp
 
