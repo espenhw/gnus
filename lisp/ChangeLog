@@ -1,5 +1,8 @@
 2002-10-05  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-agent.el (gnus-agent-read-servers): If getting method from
+	a named server fails, ignore the server.
+
 	* mml1991.el (mml1991-pgg-sign): Do QP.
 
 	* pgg-gpg.el (pgg-gpg-encrypt-region): Make signencrypt really

@@ -640,13 +640,16 @@ be a select method."
 
 (defun gnus-agent-read-servers ()
   "Read the alist of covered servers."
-  (setq gnus-agent-covered-methods
-	(mapcar (lambda (m)
-		  (gnus-server-get-method
-		   nil
-		   (or m "native")))
-		(gnus-agent-read-file
-		 (nnheader-concat gnus-agent-directory "lib/servers")))))
+  (mapcar (lambda (m)
+	    (let ((server (gnus-server-get-method
+			   nil
+			   (or m "native"))))
+	      (if server
+		  (push server gnus-agent-covered-methods)
+		(message "Ignoring disappeared server `%s'" m)
+		(sit-for 1))))
+	  (gnus-agent-read-file
+	   (nnheader-concat gnus-agent-directory "lib/servers"))))
 
 (defun gnus-agent-write-servers ()
   "Write the alist of covered servers."
