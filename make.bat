@@ -35,7 +35,7 @@ if exist %1\bin\emacs.bat set emacs=emacs.bat
 
 cd lisp
 call %1\bin\%emacs% -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
-if not "%2" == "copy" goto info
+if not "%2" == "/copy" goto info
 attrib -r %1\lisp\gnus\*
 copy *.el* %1\lisp\gnus
 
@@ -45,7 +45,7 @@ cd ..\texi
 %EMACSINFO% message.texi
 %EMACSINFO% emacs-mime.texi
 %EMACSINFO% gnus.texi
-if not "%2" == "copy" goto done
+if not "%2" == "/copy" goto done
 copy gnus %1\info
 copy gnus-?? %1\info
 copy message %1\info
@@ -60,11 +60,11 @@ cd ..
 goto end
 
 :usage
-echo Usage: make :emacs-dir: [copy]
+echo Usage: make :emacs-dir: [/copy]
 echo.
 echo where: :emacs-dir: is the directory you installed emacs in
 echo                    eg. d:\emacs\20.4
-echo        copy indicates that the compiled files should be copied to your
+echo        /copy indicates that the compiled files should be copied to your
 echo             emacs lisp, info, and etc directories
 echo.
 echo Note: If you have Emacs/w3 you should set the environment variable 

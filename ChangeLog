@@ -1,3 +1,8 @@
+2001-09-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* make.bat: Use parameter "/copy" rather than "copy" for increased
+	dwimishness for old-time DOS users.
+
 2001-09-18 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* make-x.bat: New.
