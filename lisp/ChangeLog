@@ -1,5 +1,8 @@
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnrss.el (nnrss-find-rss-via-syndic8): Return nil if xml-rpc
+	isn't available.
+
 	* message.el (message-hidden-headers): Doc fix.
 
 2003-10-18  Jesper Harder  <harder@ifa.au.dk>

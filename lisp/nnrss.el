@@ -685,7 +685,9 @@ whether they are `offsite' or `onsite'."
 (defun nnrss-find-rss-via-syndic8 (url)
   "query syndic8 for the rss feeds it has for the url."
   (if (not (locate-library "xml-rpc"))
-      (message "XML-RPC is not available... not checking Syndic8.")
+      (progn
+	(message "XML-RPC is not available... not checking Syndic8.")
+	nil)
     (require 'xml-rpc)
     (let ((feedid (xml-rpc-method-call
 		   "http://www.syndic8.com/xmlrpc.php"
