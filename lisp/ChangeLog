@@ -1,3 +1,9 @@
+2004-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-coding-system-priorities): Prefer iso-8859-1 than
+	iso-2022-jp even in the Japanese language environment.  Suggested
+	by Jason Rumney <jasonr@gnu.org>.
+
 2004-10-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-update-summary-mark-positions): Allow users to
