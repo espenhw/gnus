@@ -242,12 +242,10 @@ it's not cached."
 (defun gnus-cache-possibly-remove-articles-1 ()
   "Possibly remove some of the removable articles."
   (when (gnus-cache-fully-p gnus-newsgroup-name)
-    (let ((articles gnus-cache-removable-articles)
-	  (cache-articles gnus-newsgroup-cached)
-	  article)
+    (let ((cache-articles gnus-newsgroup-cached))
       (gnus-cache-change-buffer gnus-newsgroup-name)
-      (while articles
-	(when (memq (setq article (pop articles)) cache-articles)
+      (dolist (article gnus-cache-removable-articles)
+	(when (memq article cache-articles)
 	  ;; The article was in the cache, so we see whether we are
 	  ;; supposed to remove it from the cache.
 	  (gnus-cache-possibly-remove-article
@@ -331,9 +329,8 @@ it's not cached."
 If not given a prefix, use the process marked articles instead.
 Returns the list of articles entered."
   (interactive "P")
-  (let ((articles (gnus-summary-work-articles n))
-	article out)
-    (while (setq article (pop articles))
+  (let (out)
+    (dolist (article (gnus-summary-work-articles n))
       (gnus-summary-remove-process-mark article)
       (if (natnump article)
 	  (when (gnus-cache-possibly-enter-article
@@ -354,10 +351,8 @@ If not given a prefix, use the process marked articles instead.
 Returns the list of articles removed."
   (interactive "P")
   (gnus-cache-change-buffer gnus-newsgroup-name)
-  (let ((articles (gnus-summary-work-articles n))
-	article out)
-    (while articles
-      (setq article (pop articles))
+  (let (out)
+    (dolist (article (gnus-summary-work-articles n))
       (gnus-summary-remove-process-mark article)
       (when (gnus-cache-possibly-remove-article article nil nil nil t)
         (when gnus-newsgroup-agentized
@@ -544,24 +539,23 @@ Returns the list of articles removed."
 
 (defun gnus-cache-braid-heads (group cached)
   (let ((cache-buf (gnus-get-buffer-create " *gnus-cache*")))
-    (save-excursion
-      (set-buffer cache-buf)
+    (with-current-buffer cache-buf
       (erase-buffer))
     (set-buffer nntp-server-buffer)
     (goto-char (point-min))
-    (while cached
+    (dolist (entry cached)
       (while (and (not (eobp))
 		  (looking-at "2.. +\\([0-9]+\\) ")
 		  (< (progn (goto-char (match-beginning 1))
 			    (read (current-buffer)))
-		     (car cached)))
+		     entry))
 	(search-forward "\n.\n" nil 'move))
       (beginning-of-line)
       (set-buffer cache-buf)
       (erase-buffer)
       (let ((coding-system-for-read
 	     gnus-cache-coding-system))
-	(insert-file-contents (gnus-cache-file-name group (car cached))))
+	(insert-file-contents (gnus-cache-file-name group entry)))
       (goto-char (point-min))
       (insert "220 ")
       (princ (car cached) (current-buffer))
@@ -571,8 +565,7 @@ Returns the list of articles removed."
       (forward-char -1)
       (insert ".")
       (set-buffer nntp-server-buffer)
-      (insert-buffer-substring cache-buf)
-      (setq cached (cdr cached)))
+      (insert-buffer-substring cache-buf))
     (kill-buffer cache-buf)))
 
 ;;;###autoload
@@ -696,13 +689,12 @@ If LOW, update the lower bound instead."
       (gnus-sethash group (cons (car nums) (gnus-last-element nums))
 		    gnus-cache-active-hashtb))
     ;; Go through all the other files.
-    (while alphs
-      (when (and (file-directory-p (car alphs))
+    (dolist (file alphs)
+      (when (and (file-directory-p file)
 		 (not (string-match "^\\."
-				    (file-name-nondirectory (car alphs)))))
+				    (file-name-nondirectory file))))
 	;; We descend directories.
-	(gnus-cache-generate-active (car alphs)))
-      (setq alphs (cdr alphs)))
+	(gnus-cache-generate-active file)))
     ;; Write the new active file.
     (when top
       (gnus-cache-write-active t)

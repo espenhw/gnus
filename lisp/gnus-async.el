@@ -306,13 +306,11 @@ It should return non-nil if the article is to be prefetched."
   "Remove all articles belonging to GROUP from the prefetch buffer."
   (when (and (gnus-group-asynchronous-p group)
 	     (memq 'exit gnus-prefetched-article-deletion-strategy))
-    (let ((alist gnus-async-article-alist))
-      (save-excursion
-	(gnus-async-set-buffer)
-	(while alist
-	  (when (equal group (nth 3 (car alist)))
-	    (gnus-async-delete-prefetched-entry (car alist)))
-	  (pop alist))))))
+    (save-excursion
+      (gnus-async-set-buffer)
+      (dolist (entry gnus-async-article-alist)
+	(when (equal group (nth 3 entry))
+	  (gnus-async-delete-prefetched-entry entry))))))
 
 (defun gnus-async-prefetched-article-entry (group article)
   "Return the entry for ARTICLE in GROUP iff it has been prefetched."

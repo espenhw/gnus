@@ -1,3 +1,17 @@
+2004-09-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-cache.el (gnus-cache-possibly-remove-articles-1)
+	(gnus-cache-enter-article, gnus-cache-remove-article)
+	(gnus-cache-braid-heads, gnus-cache-generate-active): Use dolist.
+
+	* gnus-async.el (gnus-async-prefetch-remove-group): do.
+
+	* gnus-art.el (article-hide-boring-headers)
+	(article-translate-strings, article-display-face)
+	(gnus-article-mime-match-handle-first)
+	(gnus-article-highlight-headers)
+	(gnus-article-add-buttons-to-head): do.
+
 2004-09-27  Simon Josefsson  <jas@extundo.com>
 
 	* hashcash.el: New version, from

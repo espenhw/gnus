@@ -1659,12 +1659,9 @@ always hide."
     (save-excursion
       (save-restriction
 	(let ((inhibit-read-only t)
-	      (list gnus-boring-article-headers)
-	      (inhibit-point-motion-hooks t)
-	      elem)
+	      (inhibit-point-motion-hooks t))
 	  (article-narrow-to-head)
-	  (while list
-	    (setq elem (pop list))
+	  (dolist (elem gnus-boring-article-headers)
 	    (goto-char (point-min))
 	    (cond
 	     ;; Hide empty headers.
@@ -1872,9 +1869,8 @@ characters to translate to."
 MAP is an alist where the elements are on the form (\"from\" \"to\")."
   (save-excursion
     (when (article-goto-body)
-      (let ((inhibit-read-only t)
-	    elem)
-	(while (setq elem (pop map))
+      (let ((inhibit-read-only t))
+	(dolist (elem map)
 	  (save-excursion
 	    (while (search-forward (car elem) nil t)
 	      (replace-match (cadr elem)))))))))
@@ -2083,7 +2079,7 @@ unfolded."
 	      (mail-narrow-to-head)
 	      (while (gnus-article-goto-header "Face")
 		(setq faces (nconc faces (list (mail-header-field-value)))))))
-	  (while (setq face (pop faces))
+	  (dolist (face faces)
 	    (let ((png (gnus-convert-face-to-png face))
 		  image)
 	      (when png
@@ -4375,8 +4371,8 @@ N is the numerical prefix."
 
 (defun gnus-article-mime-match-handle-first (condition)
   (if condition
-      (let ((alist gnus-article-mime-handle-alist) ihandle n)
-	(while (setq ihandle (pop alist))
+      (let (n)
+	(dolist (ihandle gnus-article-mime-handle-alist)
 	  (if (and (cond
 		    ((functionp condition)
 		     (funcall condition (cdr ihandle)))
@@ -6300,9 +6296,8 @@ do the highlighting.  See the documentation for those functions."
   "Highlight article headers as specified by `gnus-header-face-alist'."
   (interactive)
   (gnus-with-article-headers
-    (let ((alist gnus-header-face-alist)
-	  entry regexp header-face field-face from hpoints fpoints)
-      (while (setq entry (pop alist))
+    (let (regexp header-face field-face from hpoints fpoints)
+      (dolist (entry gnus-header-face-alist)
 	(goto-char (point-min))
 	(setq regexp (concat "^\\("
 			     (if (string-equal "" (nth 0 entry))
@@ -6400,11 +6395,9 @@ specified by `gnus-button-alist'."
   "Add buttons to the head of the article."
   (interactive)
   (gnus-with-article-headers
-    (let ((alist gnus-header-button-alist)
-	  entry beg end)
-      (while alist
+    (let (beg end)
+      (dolist (entry gnus-header-button-alist)
 	;; Each alist entry.
-	(setq entry (pop alist))
 	(goto-char (point-min))
 	(while (re-search-forward (car entry) nil t)
 	  ;; Each header matching the entry.
