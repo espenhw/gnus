@@ -1,3 +1,14 @@
+2004-09-23  Kevin Greiner  <kgreiner@compsol.cc>
+
+	* gnus-agent.el (gnus-agent-synchronize-flags-server): Do nothing
+	unless plugged.  Disable the agent so that an open failure causes
+	an error.
+
+	* gnus-int.el (gnus-request-set-mark, gnus-request-update-mark):
+	Reverted 2004-09-21 change.  The backend must be opened while
+	synchronizing flags even when the backend stores the flags
+	locally.
+
 2004-09-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-cite-original): Fix use of
