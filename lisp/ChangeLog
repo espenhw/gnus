@@ -1,3 +1,7 @@
+2000-07-06 14:17:48  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-dissect-multipart): Match the EOL of boundary.
+
 2000-07-05 21:19:22  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnheader.el (nnheader-insert-nov): Remove EOLs of all fields.

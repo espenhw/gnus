@@ -295,7 +295,8 @@ to:
 		(if (re-search-backward close-delimiter nil t)
 		    (match-beginning 0)
 		  (point-max)))))
-    (while (search-forward boundary end t)
+    (setq boundary (concat (regexp-quote boundary) "[ \t]*$"))
+    (while (re-search-forward boundary end t)
       (goto-char (match-beginning 0))
       (when start
 	(save-excursion
