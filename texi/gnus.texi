@@ -14160,7 +14160,8 @@ already fetched while in this mode.
 You then decide to see whether any new news has arrived.  You connect
 your machine to the net (using PPP or whatever), and then hit @kbd{J j}
 to make Gnus become @dfn{plugged} and use @kbd{g} to check for new mail
-as usual.
+as usual.  To check for new mail in unplugged mode, see (@pxref{Mail
+Source Specifiers}).
 
 @item
 You can then read the new news immediately, or you can download the news
