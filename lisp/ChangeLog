@@ -1,3 +1,7 @@
+2002-05-01 20:09:21 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.06 is released.
+
 2002-05-01  Lars Magne Ingebrigtsen  <>
 
 	* lpath.el: Bind url-package-version.
