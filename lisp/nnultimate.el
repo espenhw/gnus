@@ -85,6 +85,8 @@
       (setq map mapping)
       (while (and (setq article (car articles))
 		  map)
+	;; Skip past the articles in the map until we reach the
+	;; article we're looking for.
 	(while (and map
 		    (or (> article (caar map))
 			(< (cadar map) (caar map))))
@@ -138,14 +140,21 @@
 	      (setq contents (cdr (nth 2 (car (nth 2 table)))))
 	      (setq total-contents (nconc total-contents contents))
 	      (incf current-page))
-	    ;;(setq total-contents (nreverse total-contents))
-	    (dolist (art (cdr elem))
-	      (if (not (nth (1- (cdr art)) total-contents))
-		  ()			;(debug)
-		(push (list (car art)
-			    (nth (1- (cdr art)) total-contents)
-			    subject)
-		      nnultimate-articles)))))
+	    (when t
+	      (let ((i 0))
+		(dolist (co total-contents)
+		  (push (list (or (nnultimate-topic-article-to-article
+				   group (car elem) (incf i))
+				  1)
+			      co subject)
+			nnultimate-articles))))
+	    (when nil
+	      (dolist (art (cdr elem))
+		(when (nth (1- (cdr art)) total-contents)
+		  (push (list (car art)
+			      (nth (1- (cdr art)) total-contents)
+			      subject)
+			nnultimate-articles))))))
 	(setq nnultimate-articles
 	      (sort nnultimate-articles 'car-less-than-car))
 	;; Now we have all the articles, conveniently in an alist
@@ -190,7 +199,7 @@
 	     from (or date "")
 	     (concat "<" (number-to-string sid) "%"
 		     (number-to-string article)
-		     "@ultimate>")
+		     "@ultimate." server ">")
 	     "" 0
 	     (/ (length (mapconcat
 			 'identity
@@ -208,6 +217,16 @@
 	    (dolist (header nnultimate-headers)
 	      (nnheader-insert-nov (cdr header))))))
       'nov)))
+
+(defun nnultimate-topic-article-to-article (group topic article)
+  (catch 'found
+    (dolist (elem (nth 5 (assoc group nnultimate-groups)))
+      (when (and (= topic (nth 2 elem))
+		 (>= article (nth 3 elem))
+		 (< article (+ (- (nth 1 elem) (nth 0 elem)) 1
+			       (nth 3 elem))))
+	(throw 'found
+	       (+ (nth 0 elem) (- article (nth 3 elem))))))))
 
 (deffoo nnultimate-request-group (group &optional server dont-check)
   (nnultimate-possibly-change-server nil server)

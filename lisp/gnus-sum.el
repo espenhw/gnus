@@ -956,6 +956,13 @@ when prompting the user for which type of files to save."
   :group 'gnus-summary
   :type 'regexp)
 
+(defcustom gnus-read-all-available-headers nil
+  "Whether Gnus should parse all headers made available to it.
+This is mostly relevant for slow backends where the user may
+wish to widen the summary buffer to include all headers
+that were fetched.  Say, for nnultimate groups."
+  :group 'gnus-summary
+  :type '(choice boolean regexp))
 
 ;;; Internal variables
 
@@ -5094,6 +5101,13 @@ Return a list of headers that match SEQUENCE (see
 	(mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets)
 	(cur nntp-server-buffer)
 	(dependencies (or dependencies gnus-newsgroup-dependencies))
+	(allp (cond
+	       ((eq gnus-read-all-available-headers t)
+		t)
+	       ((stringp gnus-read-all-available-headers)
+		(string-match gnus-read-all-available-headers group))
+	       (t
+		nil)))
 	number headers header)
     (save-excursion
       (set-buffer nntp-server-buffer)
@@ -5103,19 +5117,22 @@ Return a list of headers that match SEQUENCE (see
       (goto-char (point-min))
       (while (not (eobp))
 	(condition-case ()
-	    (while (and sequence (not (eobp)))
+	    (while (and (or sequence allp)
+			(not (eobp)))
 	      (setq number (read cur))
-	      (while (and sequence
-			  (< (car sequence) number))
-		(setq sequence (cdr sequence)))
-	      (and sequence
-		   (eq number (car sequence))
-		   (progn
-		     (setq sequence (cdr sequence))
-		     (setq header (inline
-				    (gnus-nov-parse-line
-				     number dependencies force-new))))
-		   (push header headers))
+	      (when (not allp)
+		(while (and sequence
+			    (< (car sequence) number))
+		  (setq sequence (cdr sequence))))
+	      (when (and (or allp
+			     (and sequence
+				  (eq number (car sequence))))
+			 (progn
+			   (setq sequence (cdr sequence))
+			   (setq header (inline
+					  (gnus-nov-parse-line
+					   number dependencies force-new)))))
+		(push header headers))
 	      (forward-line 1))
 	  (error
 	   (gnus-error 4 "Strange nov line (%d)"

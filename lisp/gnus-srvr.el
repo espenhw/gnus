@@ -189,7 +189,7 @@ The following commands are available:
 	 (gnus-tmp-agent (if (and gnus-agent
 				  (member method
 					  gnus-agent-covered-methods))
-			     "(agent)"
+			     " (agent)"
 			   "")))
     (beginning-of-line)
     (gnus-add-text-properties
