@@ -38,7 +38,7 @@ most: texi2latex.elc latex latexps
 gnus.texi: gnus-faq.texi gnus-news.texi
 
 # FIXME: A cvs commit script could automatically create it.
-GNUS-NEWS:	gnus-news.texi
+GNUS-NEWS:	gnus-news.texi gnus-news.el
 	$(EMACSCOMP) -l $(srcdir)/gnus-news.el -f batch-gnus-news $< $@
 	mv $@ ../$@
 

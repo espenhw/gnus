@@ -66,6 +66,7 @@ paragraph-separate: \"[ 	]*$\"\nend:\n")
 
 (defvar gnus-news-makeinfo-switches
   (concat " --no-headers --paragraph-indent=0"
+	  " --no-validate" ;; Allow unresolved references.
 	  " --fill-column=" (number-to-string
 			     (+ 3 ;; will strip leading spaces later
 				(or gnus-news-fill-column 80)))))

@@ -1,3 +1,12 @@
+2004-09-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-news.el (gnus-news-makeinfo-switches): Add --no-validate to
+	allow unresolved references.
+
+	* gnus-news.texi: Use xref.
+
+	* Makefile.in (GNUS-NEWS): Depend on gnus-news.el.
+
 2004-09-02  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-news.texi: Comment out comment stuff.
