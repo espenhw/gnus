@@ -1,3 +1,8 @@
+2004-07-26  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-group.el (gnus-group-group-map, gnus-group-make-menu-bar):
+	Revert part of 2004-07-17 change below.
+
 2004-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-region): Don't infloop.  Suggested by
