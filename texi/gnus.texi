@@ -411,7 +411,7 @@ files during startup (if that's required), and new newsgroups that
 appear on these servers will be subscribed (or not) just as native
 groups are.
 
-For instance, if you use the @code{nnmbox} backend to read you mail, you
+For instance, if you use the @code{nnmbox} backend to read your mail, you
 would typically set this variable to
 
 @lisp
@@ -1640,7 +1640,7 @@ This function will delete the current group
 (@code{gnus-group-delete-group}).  If given a prefix, this function will
 actually delete all the articles in the group, and forcibly remove the
 group itself from the face of the Earth.  Use a prefix only if you are
-aboslutely sure of what you are doing.
+absolutely sure of what you are doing.
 
 @item G V
 @kindex G V (Group)
@@ -2513,7 +2513,7 @@ Read the init file (@code{gnus-init-file}, which defaults to
 @item s
 @kindex s (Group)
 @findex gnus-group-save-newsrc
-@cindex savind .newsrc
+@cindex saving .newsrc
 Save the @file{.newsrc.eld} file (and @file{.newsrc} if wanted)
 (@code{gnus-group-save-newsrc}).  If given a prefix, force saving the
 file(s) whether Gnus thinks it is necessary or not.
@@ -3250,7 +3250,7 @@ Just remember, kids: There is no 'c' in 'supersede'.
 
 There are several marks you can set on an article. 
 
-You have marks that decide the @dfn{readed-ness} (whoo, neato-keano
+You have marks that decide the @dfn{readedness} (whoo, neato-keano
 neologism ohoy!) of the article.  Alphabetic marks generally mean
 @dfn{read}, while non-alphabetic characters generally mean @dfn{unread}.
 
@@ -4410,7 +4410,7 @@ Save the article to an MH folder using @code{rcvstore} from the MH
 library.  Uses the function in the @code{gnus-folder-save-name} variable
 to get a file name to save the article in.  The default is
 @code{gnus-folder-save-name}, but you can also use
-@code{gnus-Folder-save-name}.  The former creates capitilized names, and
+@code{gnus-Folder-save-name}.  The former creates capitalized names, and
 the latter does not.
 
 @item gnus-summary-save-in-vm
@@ -4449,7 +4449,7 @@ Generates file names that look like @file{~/News/alt.andrea-dworkin}.
 @end table
 
 @vindex gnus-split-methods
-You can have Gnus suggest where to save articles by plonking regexp into
+You can have Gnus suggest where to save articles by plonking a regexp into
 the @code{gnus-split-methods} alist.  For instance, if you would like to
 save articles related to Gnus in the file @file{gnus-stuff}, and articles
 related to VM in @code{vm-stuff}, you could set this variable to something
@@ -4578,7 +4578,7 @@ Uudecodes, views and saves the current series
 @end table
 
 Remember that these all react to the presence of articles marked with
-the process mark.  If, for instance, you'd like to uncode and save an
+the process mark.  If, for instance, you'd like to decode and save an
 entire newsgroup, you'd typically do @kbd{M P a}
 (@code{gnus-uu-mark-all}) and then @kbd{X U}
 (@code{gnus-uu-decode-uu-and-save}).
@@ -6978,10 +6978,10 @@ still a pain, though.
 
 @item mail-citation-hook
 @vindex mail-citation-hook
-This hook is run after yankning a message, both in mail and post
+This hook is run after yanking a message, both in mail and post
 buffers.  Point will be at the beginning of the yanked message and mark
 will be at the end.  If this hook is non-@code{nil} the yanked text
-won't be indended automatically---you have to do that explicitly. 
+won't be indented automatically---you have to do that explicitly. 
 
 For instance, if you want to remove signatures automatically, you could
 say something like:
@@ -10743,7 +10743,7 @@ strings won't be chopped off, and they won't be padded either.
 @cindex menus
 
 @vindex gnus-visual
-The @code{gnus-visual} variable controls most of the prettyfying Gnus
+The @code{gnus-visual} variable controls most of the prettifying Gnus
 aspects.  If @code{nil}, Gnus won't attempt to create menus or use fancy
 colors or fonts.  This will also inhibit loading the @file{gnus-vis.el}
 file.
@@ -10792,7 +10792,7 @@ If you want only highlighting and no menus whatsoever, you'd say:
 If @code{gnus-visual} is @code{t}, highlighting and menus will be used
 in all Gnus buffers.
 
-Other general variables that incluence the look of all buffers include:
+Other general variables that influence the look of all buffers include:
 
 @table @code
 @item gnus-mouse-face
@@ -11002,7 +11002,7 @@ Spamming is bad.  Spamming is evil.
 
 Spamming is usually canceled within a day or so by various anti-spamming
 agencies.  These agencies usually also send out @dfn{NoCeM} messages.
-NoCeM is pronouced ``no see-'em'', and means what the name
+NoCeM is pronounced ``no see-'em'', and means what the name
 implies---these are messages that make the offending articles, like, go
 away.  
 
@@ -11053,7 +11053,7 @@ Jem---Korean despammer who is getting very busy these days.
 
 @item red@@redpoll.mrfs.oh.us (Richard E. Depew)
 Richard E. Depew---lone American despammer.  He mostly cancels binary
-postings to non-binary groups and removes spews (regurgitaed articles).
+postings to non-binary groups and removes spews (regurgitated articles).
 @end table
 
 You do not have to heed NoCeM messages from all these people---just the
@@ -11125,7 +11125,7 @@ Windows (phooey) systems.
 @vindex gnus-hidden-properties
 This is a list of properties to use to hide ``invisible'' text.  It is
 @code{(invisible t intangible t)} by default on most systems, which
-makes invisble text invisible and intangible.
+makes invisible text invisible and intangible.
 
 @item gnus-parse-header-hook
 @vindex gnus-parse-header-hook

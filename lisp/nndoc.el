@@ -126,6 +126,12 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (nndoc-group-alist nil)
     (nndoc-end-of-file nil)
     (nndoc-body-begin nil)
+    (nndoc-dissection-alist nil)
+    (nndoc-generate-head nil)
+    (nndoc-article-transform nil)
+    (nndoc-body-end-function nil)
+    (nndoc-prepare-body nil)
+    (nndoc-body-begin-function nil)
     (nndoc-address nil)))
 
 (defconst nndoc-version "nndoc 1.0"

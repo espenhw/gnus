@@ -241,6 +241,7 @@
     (string-match "/[^/]+$" dir)
     (let ((group (substring dir (1+ (match-beginning 0))))
           (nnmh-directory (substring dir 0 (1+ (match-beginning 0))))
+	  (nnmail-keep-last-article nil)
 	  (nnmh-get-new-mail nil))
       (eval command))))
 

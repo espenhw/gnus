@@ -118,20 +118,22 @@
   "Check whether the current article is an NCM article and that we want it."
   (nnheader-temp-write nil
     ;; Get the article.
+    (gnus-message 7 "Check in article %d in %s for NoCeM..."
+		  number group)
     (gnus-request-article-this-buffer number group)
     (nnheader-narrow-to-headers)
     (let ((date (mail-fetch-field "date"))
-	  issuer b)
+	  issuer b e)
       (widen)
       ;; The article has to have proper NoCeM headers.
       (when (and (setq b (search-forward "\n@@BEGIN NCM HEADERS\n" nil t))
-		 (search-forward "\n@@BEGIN NCM BODY\n" nil t)
+		 (setq e (search-forward "\n@@BEGIN NCM BODY\n" nil t))
 		 (or (not date)
 		     (nnmail-time-less 
 		      (nnmail-time-since (nnmail-date-to-time date))
 		      (nnmail-days-to-time gnus-nocem-expiry-wait))))
 	;; We get the name of the issuer.
-	(narrow-to-region b (match-beginning 0))
+	(narrow-to-region b e)
 	(setq issuer (mail-fetch-field "issuer"))
 	(and (member issuer gnus-nocem-issuers) ; We like her...
 	     (gnus-nocem-verify-issuer issuer) ; She is who she says she is...

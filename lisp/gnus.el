@@ -1686,7 +1686,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.41"
+(defconst gnus-version "September Gnus v0.42"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -7044,10 +7044,22 @@ The following commands are available:
 
 (defun gnus-article-parent-p (number)
   "Say whether this article is a parent or not."
-  (let* ((data (gnus-data-find-list number)))
+  (let ((data (gnus-data-find-list number)))
     (and (cdr data)			; There has to be an article after...
 	 (< (gnus-data-level (car data)) ; And it has to have a higher level.
 	    (gnus-data-level (nth 1 data))))))
+
+(defun gnus-article-children (number)
+  "Return a list of all children to NUMBER."
+  (let* ((data (gnus-data-find-list number))
+	 (level (gnus-data-level (car data)))
+	 children)
+    (setq data (cdr data))
+    (while (and data		
+		(= (gnus-data-level (car data)) (1+ level)))
+      (push (gnus-data-number (car data)) children)
+      (setq data (cdr data)))
+    children))
 
 (defmacro gnus-summary-skip-intangible ()
   "If the current article is intangible, then jump to a different article."
@@ -7336,6 +7348,8 @@ This is all marks except unread, ticked, dormant, and expirable."
       (and (consp elem)			; Has to be a cons.
 	   (consp (cdr elem))		; The cdr has to be a list.
 	   (symbolp (car elem))		; Has to be a symbol in there.
+	   (not (memq (car elem) 
+		      '(quit-config to-address to-list to-group)))
 	   (progn			; So we set it.
 	     (make-local-variable (car elem))
 	     (set (car elem) (eval (nth 1 elem))))))))
@@ -9516,7 +9530,8 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (when gnus-use-trees
       (gnus-tree-close group))
     ;; Make all changes in this group permanent.
-    (gnus-summary-update-info)
+    (unless quit-config
+      (gnus-summary-update-info))
     ;; Make sure where I was, and go to next newsgroup.
     (set-buffer gnus-group-buffer)
     (unless quit-config
@@ -10348,16 +10363,22 @@ Returns how many articles were removed."
   "Hide all dormant articles that have no children."
   (interactive)
   (gnus-set-global-variables)
-  (let ((data gnus-newsgroup-data)
-	articles)
+  (let ((data (gnus-data-list t))
+	articles d children)
     ;; Find all articles that are either not dormant or have
     ;; children.
-    (while data
-      (and (or (not (= (gnus-data-mark (car data)) gnus-dormant-mark))
-	       (gnus-article-parent-p (gnus-data-number (car data))))
-	   (setq articles (cons (gnus-data-number (car data))
-				articles)))
-      (setq data (cdr data)))
+    (while (setq d (pop data))
+      (when (or (not (= (gnus-data-mark d) gnus-dormant-mark))
+		(and (setq children 
+			   (gnus-article-children (gnus-data-number d)))
+		     (let (found)
+		       (while children
+			 (when (memq (car children) articles)
+			   (setq children nil
+				 found t))
+			 (pop children))
+		       found)))
+	(push (gnus-data-number d) articles)))
     ;; Do the limiting.
     (prog1
 	(gnus-summary-limit articles)
@@ -10676,8 +10697,8 @@ Return how many articles were fetched."
 				 ,(get-buffer dig))
 			  (nndoc-article-type ,(if force 'digest 'guess))) t)
 	    ;; Make all postings to this group go to the parent group.
-	    (setcdr (nthcdr 4 (gnus-get-info name))
-		    (list (list (cons 'to-group ogroup))))
+	    (nconc (gnus-info-params (gnus-get-info name))
+		   (list (cons 'to-group ogroup)))
 	  ;; Couldn't select this doc group.
 	  (switch-to-buffer buf)
 	  (gnus-set-global-variables)

@@ -1,4 +1,31 @@
+Sat Feb 24 01:08:55 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* nnml.el (nnml-find-id): Make sure the .overview file exists
+	before reading it.
+
+	* gnus.el (gnus-article-children): New function.
+	(gnus-summary-limit-exclude-childless-dormant): Use it to exclude
+	all childless dormants.
+
+	* gnus-nocem.el (gnus-nocem-check-article): Would narrow to wrong
+	region. 
+
+	* nndraft.el (nndraft-execute-nnmh-command): Make sure
+	`nnmail-keep-last-article' is nil.
+
+Sat Feb 24 00:27:34 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-summary-set-local-parameters): Don't set
+	`to-address' local parameters etc.
+	(gnus-summary-exit): Would insert dummy lines in the group
+	buffer. 
+	(gnus-summary-enter-digest-group): Would wipe out the quirt-config.
+
+	* nndoc.el (nndoc-server-variables): Didn't save all variables. 
+
 Fri Feb 23 00:24:55 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: 0.41 is released.
 
 	* gnus.el (gnus-read-active-file): Would put wrong method on
 	`gnus-have-read-active-file'. 

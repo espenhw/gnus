@@ -489,24 +489,25 @@ all. This may very well take some time.")
 
 (defun nnml-find-id (group id)
   (erase-buffer)
-  (insert-file-contents 
-   (concat (nnmail-group-pathname group nnml-directory)
-	   nnml-nov-file-name))
-  (let (number found)
-    (while (and (not found) 
-		(search-forward id nil t)) ; We find the ID.
-      ;; And the id is in the fourth field.
-      (if (search-backward 
-	   "\t" (save-excursion (beginning-of-line) (point)) t 4)
-	  (progn
-	    (beginning-of-line)
-	    (setq found t)
-	    ;; We return the article number.
-	    (setq number
-		  (condition-case ()
-		      (read (current-buffer))
-		    (error nil))))))
-    number))
+  (let ((nov (concat (nnmail-group-pathname group nnml-directory)
+		     nnml-nov-file-name))
+	number found)
+    (when (file-exists-p nov)
+      (insert-file-contents nov)
+      (while (and (not found) 
+		  (search-forward id nil t)) ; We find the ID.
+	;; And the id is in the fourth field.
+	(if (search-backward 
+	     "\t" (save-excursion (beginning-of-line) (point)) t 4)
+	    (progn
+	      (beginning-of-line)
+	      (setq found t)
+	      ;; We return the article number.
+	      (setq number
+		    (condition-case ()
+			(read (current-buffer))
+		      (error nil))))))
+      number)))
 
 (defun nnml-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnml-nov-is-evil)
