@@ -1,3 +1,7 @@
+2003-12-02  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Agent Variables): Fix.
+
 2003-12-01  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi: Add missing mode to some @kindex'es.

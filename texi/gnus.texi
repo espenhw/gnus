@@ -18404,8 +18404,13 @@ read.  The default is t.
 @item gnus-agent-consider-all-articles
 @vindex gnus-agent-consider-all-articles
 If @code{gnus-agent-consider-all-articles} is non-@code{nil}, the
-agent will fetch all missing headers.  When @code{nil}, the agent will
-fetch only new headers.  The default is @code{nil}.
+agent will let the agent predicate decide whether articles need to be
+downloaded or not, for all articles.  When @code{nil}, the default,
+the agent will only let the predicate decide whether unread articles
+are downloaded or not.  If you enable this, you may also want to look
+into the agent expiry settings (@pxref{Category Variables}), so that
+the agent doesn't download article which the agent will later expire,
+over and over again.
 
 @item gnus-agent-max-fetch-size
 @vindex gnus-agent-max-fetch-size
