@@ -549,6 +549,8 @@ If SILENT, don't prompt the user."
 
 ;; Written by "Mr. Per Persson" <pp@gnu.ai.mit.edu>.
 (defun gnus-inews-insert-mime-headers ()
+  "Insert MIME headers.  
+Assumes ISO-Latin-1 is used iff 8-bit characters are present."
   (goto-char (point-min))
   (let ((mail-header-separator
 	 (progn
@@ -563,7 +565,7 @@ If SILENT, don't prompt the user."
 	(cond ((save-restriction
 		 (widen)
 		 (goto-char (point-min))
-		 (re-search-forward "[\200-\377]" nil t))
+		 (re-search-forward "[^\000-\177]" nil t))
 	       (or (mail-position-on-field "Content-Type")
 		   (insert "text/plain; charset=ISO-8859-1"))
 	       (or (mail-position-on-field "Content-Transfer-Encoding")
@@ -572,6 +574,8 @@ If SILENT, don't prompt the user."
 		     (insert "text/plain; charset=US-ASCII"))
 		 (or (mail-position-on-field "Content-Transfer-Encoding")
 		     (insert "7bit")))))))
+
+(custom-add-option 'message-header-hook 'gnus-inews-insert-mime-headers)
 
 
 ;;;

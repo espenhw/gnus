@@ -348,6 +348,18 @@ call it with the value of the `gnus-data' text property."
   (gnus-xmas-menu-add binary
     gnus-binary-menu))
 
+(defun gnus-xmas-agent-summary-menu-add ()
+  (gnus-xmas-menu-add agent-summary
+    gnus-agent-summary-menu))
+
+(defun gnus-xmas-agent-group-menu-add ()
+  (gnus-xmas-menu-add agent-group
+    gnus-agent-group-menu))
+
+(defun gnus-xmas-agent-server-menu-add ()
+  (gnus-xmas-menu-add agent-server
+    gnus-agent-server-menu))
+
 (defun gnus-xmas-tree-menu-add ()
   (gnus-xmas-menu-add tree
     gnus-tree-menu))
@@ -500,6 +512,10 @@ call it with the value of the `gnus-data' text property."
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
 
+  (add-hook 'gnus-agent-summary-mode-hook 'gnus-xmas-agent-summary-menu-add)
+  (add-hook 'gnus-agent-group-mode-hook 'gnus-xmas-agent-group-menu-add)
+  (add-hook 'gnus-agent-server-mode-hook 'gnus-xmas-agent-server-menu-add)
+  
   (add-hook 'gnus-summary-mode-hook
 	    'gnus-xmas-switch-horizontal-scrollbar-off)
   (add-hook 'gnus-tree-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off))

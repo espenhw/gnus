@@ -112,7 +112,8 @@
 (defun gnus-draft-send (article &optional group)
   "Send message ARTICLE."
   (gnus-draft-setup article (or group "nndraft:queue"))
-  (let ((message-syntax-checks 'dont-check-for-anything-just-trust-me))
+  (let ((message-syntax-checks 'dont-check-for-anything-just-trust-me)
+	message-send-hook)
     (message-send-and-exit)))
 
 (defun gnus-draft-send-all-messages ()

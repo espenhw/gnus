@@ -145,6 +145,7 @@
 	 (string-to-int (file-name-nondirectory file)))))
 
 (deffoo nnmh-request-group (group &optional server dont-check)
+  (nnheader-init-server-buffer)
   (nnmh-possibly-change-directory group server)
   (let ((pathname (nnmail-group-pathname group nnmh-directory))
 	(pathname-coding-system 'binary)

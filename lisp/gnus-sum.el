@@ -333,9 +333,9 @@ The articles will simply be fed to the function given by
   "*Variable used to suggest where articles are to be moved to.
 It uses the same syntax as the `gnus-split-methods' variable."
   :group 'gnus-summary-mail
-  :type '(repeat (choice (list function)
-			 (cons regexp (repeat string))
-			 sexp)))
+  :type '(repeat (choice (list :value (fun) function)
+			 (cons :value ("" "") regexp (repeat string))
+			 (sexp :value nil))))
 
 (defcustom gnus-unread-mark ? 
   "*Mark used for unread articles."
@@ -730,7 +730,8 @@ automatically when it is selected."
      . gnus-summary-high-unread-face)
     ((and (< score default) (= mark gnus-unread-mark))
      . gnus-summary-low-unread-face)
-    ((and (= mark gnus-unread-mark))
+    ((memq mark (list gnus-unread-mark gnus-downloadable-mark
+		      gnus-undownloaded-mark))
      . gnus-summary-normal-unread-face)
     ((> score default)
      . gnus-summary-high-read-face)
@@ -7937,7 +7938,7 @@ The number of articles marked as read is returned."
 		(when all
 		  (setq gnus-newsgroup-marked nil
 			gnus-newsgroup-dormant nil))
-		(setq gnus-newsgroup-unreads nil))
+		(setq gnus-newsgroup-unreads gnus-newsgroup-downloadable))
 	    ;; We actually mark all articles as canceled, which we
 	    ;; have to do when using auto-expiry or adaptive scoring.
 	    (gnus-summary-show-all-threads)

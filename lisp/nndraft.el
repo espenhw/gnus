@@ -147,6 +147,8 @@
 
 (deffoo nndraft-request-associate-buffer (group)
   "Associate the current buffer with some article in the draft group."
+  (nndraft-open-server "")
+  (nndraft-request-group group)
   (nndraft-possibly-change-group group)
   (let ((gnus-verbose-backends nil)
 	(buf (current-buffer))

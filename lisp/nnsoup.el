@@ -666,6 +666,7 @@ backend for the messages.")
   (require 'mail-utils)
   (let ((tembuf (generate-new-buffer " message temp"))
 	(case-fold-search nil)
+	(mail-header-separator "")
 	delimline
 	(mailbuf (current-buffer)))
     (unwind-protect

@@ -189,7 +189,9 @@
 	    (nconc bvariables
  		   (list (cons (car def) (and (boundp (car def))
  					      (symbol-value (car def)))))))
-	  (set (car def) (cadr def))))
+	  (if (equal server "*internal-non-initialized-backend*")
+	      (set (car def) (symbol-value (cadr def)))
+	    (set (car def) (cadr def)))))
       (while parents
 	(nnoo-change-server
 	 (caar parents) (format "%s+%s" backend server)

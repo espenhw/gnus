@@ -38,7 +38,7 @@
 (require 'gnus-util)
 (require 'gnus-start)
 (require 'gnus-sum)
-(eval-when-compile (require 'cl))
+(require 'cl)
 
 (nnoo-declare nnvirtual)
 

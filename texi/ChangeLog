@@ -1,3 +1,7 @@
+Sun Jan  4 12:04:45 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Conformity): Removed GNKSA.
+
 Sun Dec 14 11:06:23 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Adaptive Scoring): Addition.

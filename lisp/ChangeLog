@@ -1,3 +1,69 @@
+Sun Jan  4 14:28:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.20 is released.
+
+1997-12-10  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus/gnus-msg.el (gnus-inews-insert-mime-headers): Added
+	documentation. 
+	(gnus-inews-insert-mime-headers): Made it work with Emacs MULE.
+	(gnus-inews-insert-mime-headers): Added as option to
+	`message-header-hook'. 
+
+1997-12-22  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus/gnus-art.el (gnus-button-alist): Assume msg-id after "in
+	message". 
+
+1997-12-22  Simon Josefsson  <jas@faun.nada.kth.se>
+
+       * nnmail.el (nnmail-get-new-mail): Make nnmail-tmp-directory
+
+1997-12-28  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus/gnus-group.el (gnus-group-fetch-faq): Convert `.' in group
+	name to `/'.
+
+Sun Jan  4 13:35:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nndraft.el (nndraft-request-associate-buffer): Open the damn
+	server first.  Sheesh.
+
+	* gnus-draft.el (gnus-draft-send): Bind message-send-hook to nil. 
+
+	* gnus-sum.el (gnus-summary-catchup): Don't nix out downloadable. 
+	(gnus-summary-highlight): Highlight down/un as unread.
+
+Sun Jan  4 13:27:31 1998  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* gnus-start.el (gnus-strip-killed-list): Fix syntax.
+
+Sun Jan  4 13:18:04 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnsoup.el (nnsoup-store-reply): Bind mail-header-separator to
+	"". 
+
+	* gnus-xmas.el (gnus-xmas-agent-server-menu-add): New.
+
+	* nnoo.el (nnoo-change-server): Get the right values.
+
+1998-01-04  Aki Vehtari  <Aki.Vehtari@hut.fi>
+
+	* gnus-art.el (gnus-signature-limit): Add default values for
+	choices suggested by Per Abrahamsen <abraham@dina.kvl.dk>.
+	(gnus-prompt-before-saving): Add :value t for sexp tag.
+	(gnus-split-methods): Add default values for choices.
+
+	* gnus-score.el (gnus-home-score-file): Add non-nil default for
+ 	function.
+	(gnus-home-adapt-file): Ditto.
+
+	* gnus-sum.el (gnus-move-split-methods): Add default values for
+	choices.
+
+	* nnmail.el (nnmail-list-identifiers): Add default values for
+	choices suggested by Per Abrahamsen <abraham@dina.kvl.dk>.
+
 Sun Jan  4 11:31:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.19 is released.

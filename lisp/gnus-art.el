@@ -155,7 +155,10 @@ longer (in lines) than that number.  If it is a function, the function
 will be called without any parameters, and if it returns nil, there is
 no signature in the buffer.  If it is a string, it will be used as a
 regexp.  If it matches, the text in question is not a signature."
-  :type '(choice integer number function regexp)
+  :type '(choice (integer :value 200)
+		 (number :value 4.0)
+		 (function :value fun)
+		 (regexp :value ".*"))
   :group 'gnus-article-signature)
 
 (defcustom gnus-hidden-properties '(invisible t intangible t)
@@ -270,7 +273,7 @@ each invocation of the saving commands."
   :group 'gnus-article-saving
   :type '(choice (item always)
 		 (item :tag "never" nil)
-		 (sexp :tag "once" :format "%t")))
+		 (sexp :tag "once" :format "%t\n" :value t)))
 
 (defcustom gnus-saved-headers gnus-visible-headers
   "Headers to keep if `gnus-save-all-headers' is nil.
@@ -349,9 +352,9 @@ If this form or function returns a string, this string will be used as
 a possible file name; and if it returns a non-nil list, that list will
 be used as possible file names."
   :group 'gnus-article-saving
-  :type '(repeat (choice (list function)
-			 (cons regexp (repeat string))
-			 sexp)))
+  :type '(repeat (choice (list :value (fun) function)
+			 (cons :value ("" "") regexp (repeat string))
+			 (sexp :value nil))))
 
 (defcustom gnus-strict-mime t
   "*If nil, MIME-decode even if there is no Mime-Version header."
@@ -2667,7 +2670,7 @@ groups."
     ("\\(\\b<\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>\\)" 1 t
      gnus-button-fetch-group 4)
     ("\\bnews:\\(//\\)?\\([^'\">\n\t ]+\\)" 0 t gnus-button-fetch-group 2)
-    ("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2
+    ("\\bin\\( +article\\| +message\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2
      t gnus-button-message-id 3)
     ("\\(<URL: *\\)mailto: *\\([^> \n\t]+\\)>" 0 t gnus-url-mailto 2)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)

@@ -2288,7 +2288,7 @@ If FORCE is non-nil, the .newsrc file is read."
   (let ((list gnus-killed-list)
 	olist)
     (while list
-      (when (string-match gnus-save-killed-list)
+      (when (string-match gnus-save-killed-list (car list))
 	(push (car list) olist))
       (pop list))
     (nreverse olist)))
