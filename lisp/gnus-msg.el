@@ -1685,9 +1685,9 @@ If YANK is non-nil, include the original article."
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line 1)
     (insert (format "%s\n%s\n\n\n\n\n" (gnus-version) (emacs-version)))
-    (let ((b (point)))
-      (gnus-debug)
-      (goto-char (- b 3)))
+    (gnus-debug)
+    (goto-char (point-min))
+    (search-forward "Subject: " nil t)
     (message "")))
 
 (defun gnus-bug-mail-send-and-exit ()

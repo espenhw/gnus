@@ -3,7 +3,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: help
-;; Version: 0.3
+;; Version: 0.4
 
 ;;; Commentary:
 ;;
@@ -1555,6 +1555,7 @@ If the optional argument GET is non-nil, use that to get external data."
     (custom-text-insert "This is a customization buffer.\n")
     (custom-help-insert "\n")
     (custom-help-button 'custom-forward-field)
+    (custom-help-button 'custom-backward-field)
     (custom-help-button 'custom-enter-value)
     (custom-help-button 'custom-field-factory-reset)
     (custom-help-button 'custom-field-reset)
@@ -1630,6 +1631,7 @@ If the optional argument GET is non-nil, use that to get external data."
   (setq custom-mode-map (make-sparse-keymap))
   (define-key custom-mode-map (if (string-match "XEmacs" emacs-version) [button2] [mouse-2]) 'custom-push-button)
   (define-key custom-mode-map "\t" 'custom-forward-field)
+  (define-key custom-mode-map "\M-\t" 'custom-backward-field)
   (define-key custom-mode-map "\r" 'custom-enter-value)
   (define-key custom-mode-map "\C-k" 'custom-kill-line)
   (define-key custom-mode-map "\C-c\C-r" 'custom-field-reset)
@@ -1676,7 +1678,24 @@ With optional ARG, move across that many fields."
 		     (next-single-property-change (point-min) 'custom-tag)))
       (if next
 	  (goto-char next)
+	(error "No customization fields in this buffer."))))
+  (while (< arg 0)
+    (setq arg (1+ arg))
+    (let ((previous (if (get-text-property (1- (point)) 'custom-tag)
+			(previous-single-property-change (point) 'custom-tag)
+		      (point))))
+      (setq previous
+	    (or (previous-single-property-change previous 'custom-tag)
+		(previous-single-property-change (point-max) 'custom-tag)))
+      (if previous
+	  (goto-char previous)
 	(error "No customization fields in this buffer.")))))
+
+(defun custom-backward-field (arg)
+  "Move point to the previous field or button.
+With optional ARG, move across that many fields."
+  (interactive "p")
+  (custom-forward-field (- arg)))
 
 (defun custom-toggle-documentation (&optional arg)
   "Toggle display of documentation text.

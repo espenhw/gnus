@@ -167,7 +167,20 @@ instead.")
   "/anonymous@rtfm.mit.edu:/pub/usenet-by-group/"
   "*Directory where the group FAQs are stored.
 This will most commonly be on a remote machine, and the file will be
-fetched by ange-ftp.")
+fetched by ange-ftp.
+
+If the default site is too slow, try one of these:
+
+   North America: ftp.uu.net                     /usenet/news.answers
+		  mirrors.aol.com                /pub/rtfm/usenet
+		  ftp.seas.gwu.edu               /pub/rtfm
+                  rtfm.mit.edu                   /pub/usenet/news.answers
+   Europe:        ftp.uni-paderborn.de           /pub/FAQ
+		  ftp.Germany.EU.net             /pub/newsarchive/news.answers
+		  ftp.sunet.se                   /pub/usenet
+   Asia:          nctuccca.edu.tw                /USENET/FAQ
+		  hwarang.postech.ac.kr          /pub/usenet/news.answers
+		  ftp.hk.super.net               /mirror/faqs")
 
 (defvar gnus-group-archive-directory
   "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/" 
@@ -1316,7 +1329,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.17"
+(defconst gnus-version "(ding) Gnus v0.99.18"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -4665,7 +4678,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
   "Fetch the FAQ for the current group."
   (interactive (list (gnus-group-real-name (gnus-group-group-name))))
   (or group (error "No group name given"))
-  (let ((file (concat gnus-group-faq-directory group))) 
+  (let ((file (concat gnus-group-faq-directory (gnus-group-real-name group))))
     (if (not (file-exists-p file))
 	(error "No such file: %s" file)
       (find-file file))))
@@ -4911,20 +4924,24 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 
 (defun gnus-offer-save-summaries ()
   (save-excursion
-    (let ((buflist (buffer-list)) buffers bufname)
+    (let ((buflist (buffer-list)) 
+	  buffers bufname)
       (while buflist
 	(and (setq bufname (buffer-name (car buflist)))
 	     (string-match "Summary" bufname)
+	     (save-excursion
+	       (set-buffer bufname)
+	       ;; We check that this is, indeed, a summary buffer.
+	       (eq major-mode 'gnus-summary-mode))
 	     (setq buffers (cons bufname buffers)))
 	(setq buflist (cdr buflist)))
-      (map-y-or-n-p "Update summary buffer %s? "
-		    (lambda (buf)
-		      (set-buffer buf)
-		      (and
-		       ;; We check that this is, indeed, a summary buffer.
-		       (eq major-mode 'gnus-summary-mode)
-		       (gnus-summary-exit)))
-		    buffers))))
+      (and buffers
+	   (map-y-or-n-p 
+	    "Update summary buffer %s? "
+	    (lambda (buf)
+	      (set-buffer buf)
+	      (gnus-summary-exit))
+	    buffers)))))
 
 (defun gnus-group-describe-briefly ()
   "Give a one line description of the group mode commands."
@@ -7747,10 +7764,8 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 (defun gnus-summary-fetch-faq (group)
   "Fetch the FAQ for the current group."
   (interactive (list gnus-newsgroup-name))
-  (let ((gnus-faq-buffer 
-	 (find-file (concat gnus-group-faq-directory 
-			    (gnus-group-real-name group)))))
-  (and gnus-faq-buffer (gnus-configure-windows 'summary-faq))))
+  (and (gnus-group-fetch-faq group)
+       (gnus-configure-windows 'summary-faq)))
 
 ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
 (defun gnus-summary-describe-group (&optional force)
@@ -10879,7 +10894,7 @@ Provided for backwards compatability."
 	;; Hide any "From " lines at the beginning of (mail) articles. 
 	(while (looking-at "From ")
 	  (forward-line 1))
-	(if (bobp) 
+	(or (bobp) 
 	    (add-text-properties (point-min) (point) gnus-hidden-properties))
 	;; Then treat the rest of the header lines.
 	(narrow-to-region 
@@ -12019,6 +12034,9 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 	 (not level)
 	 (gnus-read-active-file))
 
+    (or gnus-active-hashtb
+	(setq gnus-active-hashtb (make-vector 4095 0)))
+
     ;; Possibly eval the dribble file.
     (and init gnus-use-dribble-file (gnus-dribble-eval-file))
 
@@ -12431,11 +12449,12 @@ newsgroup."
 		     ;; Close the groups as we look at them!
 		     (gnus-close-group group))))
 
-	(or gnus-read-active-file (gnus-check-server method))
 	;; These groups are native or secondary. 
 	(if (and (not gnus-read-active-file)
 		 (<= (nth 1 info) level))
-	    (setq active (gnus-activate-group (car info)))))
+	    (progn
+	      (or gnus-read-active-file (gnus-check-server method))
+	      (setq active (gnus-activate-group (car info))))))
       
       (if active
 	  (gnus-get-unread-articles-in-group info active)
@@ -12830,7 +12849,8 @@ Returns whether the updating was successful."
 		      (setq gnus-moderated-list 
 			    (cons (symbol-name group) gnus-moderated-list))))
 	      (error 
-	       (and (symbolp group)
+	       (and group
+		    (symbolp group)
 		    (set group nil))))
 	    (widen)
 	    (forward-line 1)))
@@ -12856,14 +12876,13 @@ Returns whether the updating was successful."
 		  (set group nil)))
 	    (error 
 	     (progn 
-	       (and (symbolp group)
+	       (and group
+		    (symbolp group)
 		    (set group nil))
-	       (if ignore-errors
-		   ()
-		 (gnus-message 3 "Warning - illegal active: %s"
-			       (buffer-substring 
-				(gnus-point-at-bol) (gnus-point-at-eol)))
-		 nil))))
+	       (or ignore-errors
+		   (gnus-message 3 "Warning - illegal active: %s"
+				 (buffer-substring 
+				  (gnus-point-at-bol) (gnus-point-at-eol)))))))
 	  (widen)
 	  (forward-line 1))))))
 
@@ -12876,7 +12895,10 @@ Returns whether the updating was successful."
 		      (setq gnus-active-hashtb
 			    (gnus-make-hashtable 
 			     (count-lines (point-min) (point-max)))))))
-	(prefix (and method (not (eq method gnus-select-method))
+	(prefix (and method 
+		     (not (gnus-server-equal
+			   (gnus-server-get-method nil method)
+			   (gnus-server-get-method nil gnus-select-method)))
 		     (gnus-group-prefixed-name "" method))))
 
     (goto-char (point-min))
@@ -12896,7 +12918,7 @@ Returns whether the updating was successful."
 		  (goto-char opoint)
 		  (set (let ((obarray hashtb)) (read cur)) 
 		       (cons min max)))
-	      (error (if group (set group nil))))
+	      (error (and group (symbolp group) (set group nil))))
 	    (forward-line 1)))
       (let (min max group)
 	(while (not (eobp))
@@ -12908,7 +12930,7 @@ Returns whether the updating was successful."
 			  max (read cur))
 		    (set (setq group (let ((obarray hashtb)) (read cur)))
 			 (cons min max))))
-	    (error (if group (set group nil))))
+	    (error (and group (symbolp group) (set group nil))))
 	  (forward-line 1))))))
 
 (defun gnus-read-newsrc-file (&optional force)
@@ -13076,8 +13098,8 @@ If FORCE is non-nil, the .newsrc file is read."
     (goto-char (point-min))
     ;; We intern the symbol `options' in the active hashtb so that we
     ;; can `eq' against it later.
-    (setq options-symbol (intern "options" gnus-active-hashtb))
-    (setq Options-symbol (intern "Options" gnus-active-hashtb))
+    (set (setq options-symbol (intern "options" gnus-active-hashtb)) nil)
+    (set (setq Options-symbol (intern "Options" gnus-active-hashtb)) nil)
   
     (while (not (eobp))
       ;; We first read the first word on the line by narrowing and
@@ -13404,6 +13426,11 @@ If FORCE is non-nil, the .newsrc file is read."
 			(if ranges (insert ","))))))
 	      (insert "\n")))
 	(setq newsrc (cdr newsrc)))
+      ;; It has been reported that sometime the modtime on the .newsrc
+      ;; file seems to be off. We really do want to overwrite it, so
+      ;; we clear the modtime here before saving. It's a bit odd,
+      ;; though... 
+      (clear-visited-file-modtime)
       (save-buffer)
       (kill-buffer (current-buffer)))))
 

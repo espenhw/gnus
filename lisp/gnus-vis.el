@@ -146,7 +146,7 @@ The latter can be used like this:
 	 '(("" bold italic)))
 	((eq gnus-background-mode 'dark)
 	 (list (list "From" nil 
-		     (custom-face-lookup "SkyeBlue" nil nil t t nil))
+		     (custom-face-lookup "SkyBlue" nil nil t t nil))
 	       (list "Subject" nil 
 		     (custom-face-lookup "pink" nil nil t t nil))
 	       (list "Newsgroups:.*," nil

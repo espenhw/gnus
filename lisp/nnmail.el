@@ -603,7 +603,13 @@ FUNC will be called with the group name to determine the article number."
 	    (setq group-art
 		  (mapcar
 		   (lambda (group) (cons group (funcall func group)))
-		   (funcall nnmail-split-methods)))
+		   (condition-case nil
+		       (funcall nnmail-split-methods)
+		     (error
+		      (message "\
+Problems with `nnmail-split-methods', using `bogus' mail group")
+		      (sit-for 1)
+		      '("bogus")))))
 	  ;; Go throught the split methods to find a match.
 	  (while (and methods (or nnmail-crosspost (not group-art)))
 	    (goto-char (point-max))

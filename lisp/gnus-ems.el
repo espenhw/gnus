@@ -197,9 +197,8 @@ pounce directly on the real variables themselves.")
      ((and (not (string-match "28.9" emacs-version)) 
 	   (not (string-match "29" emacs-version)))
       ;; Remove the `intangible' prop.
-      (eval-when-compile 
-	(setq gnus-hidden-properties nil))
-      (let ((props gnus-hidden-properties))
+      (let ((props (and (boundp 'gnus-hidden-properties) 
+			gnus-hidden-properties)))
 	(while (and props (not (eq (car (cdr props)) 'intangible)))
 	  (setq props (cdr props)))
 	(and props (setcdr props (cdr (cdr (cdr props))))))

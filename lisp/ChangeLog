@@ -1,4 +1,55 @@
+Tue Aug 22 22:20:06 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-forward-field): Allow negative args.
+	(custom-backward-field): New function.
+	(custom-mode-map): Bind it.
+	(custom-buffer-create): Document it.
+
+Tue Aug 22 21:05:42 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-gnus-to-newsrc-format): Clear modtime.
+	(gnus-offer-save-summaries): Don't prompt for any summary buffers
+	that aren't Gnus summary buffers.
+	(gnus-setup-news): Would bug out when started with
+	`gnus-no-server'. 
+	(gnus-get-unread-articles): Would always connect to the server. 
+	(gnus-groups-to-gnus-format): Really find out whether the server
+	is native or not.
+	(gnus-article-hide-headers): Would never hide "From " lines. 
+
+	* gnus-msg.el (gnus-bug): Put point on Subject line.
+
+	* gnus-ems.el: Would set invisible props to nil in 19.28.
+
+	* gnus.el (gnus-summary-fetch-faq): Use `gnus-group-fetch-faq'.
+
+Tue Aug 22 15:16:15 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-article-group): Protect call to
+	`nnmail-split-methods' against errors.  We don't wan't the user to
+	lose mail if he made an error in `nnmail-split-methods'.
+
+Tue Aug 22 04:37:27 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-vis.el (gnus-header-face-alist): SkyeBlue.
+
+	* gnus.el (gnus-newsrc-to-gnus-format): Would later cause bugouts
+	in a different function.
+
+Tue Aug 22 03:08:09 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-offer-save-summaries): Would bug out under XEmacs
+	when there was no buffers to update.
+
+Tue Aug 22 02:31:52 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.17 is released.
+
+	* gnus.el: Bugged out during 19.28 compilation.
+
 Mon Aug 21 20:47:08 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.16 is releaed.
 
 	* gnus.el (gnus-group-list-groups): Didn't use default-list-level.
 
