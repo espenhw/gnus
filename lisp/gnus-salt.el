@@ -950,7 +950,7 @@ The following commands are available:
 \\{gnus-carpal-mode-map}"
   (interactive)
   (kill-all-local-variables)
-  (setq mode-line-modified "-- ")
+  (setq mode-line-modified (cdr gnus-mode-line-modified))
   (setq major-mode 'gnus-carpal-mode)
   (setq mode-name "Gnus Carpal")
   (setq mode-line-process nil)

@@ -2668,6 +2668,8 @@ Headers already prepared in the buffer are not modified."
 	   header value elem)
       ;; First we remove any old generated headers.
       (let ((headers message-deletable-headers))
+	(unless (buffer-modified-p)
+	  (setq headers (delq 'Message-ID (copy-sequence headers))))
 	(while headers
 	  (goto-char (point-min))
 	  (and (re-search-forward

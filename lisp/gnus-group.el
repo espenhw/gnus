@@ -1451,7 +1451,9 @@ and with point over the group in question."
 	group)
     (while (setq group (pop groups))
       (gnus-group-remove-mark group)
-      (funcall function group))))
+      (save-excursion
+	(save-selected-window
+	  (funcall function group))))))
 
 (put 'gnus-group-iterate 'lisp-indent-function 1)
 

@@ -694,7 +694,9 @@ buffer.
       ;; If this group it killed, then we want to subscribe it.
       (when (= (following-char) ?K)
 	(setq sub t))
-      (setq group (gnus-browse-group-name))
+      (when (gnus-gethash (setq group (gnus-browse-group-name))
+			  gnus-newsrc-hashtb)
+	(error "Group already subscribed"))
       ;; Make sure the group has been properly removed before we
       ;; subscribe to it.
       (gnus-kill-ephemeral-group group)

@@ -1,3 +1,7 @@
+Sat Jul 19 23:02:03 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Followups To Yourself): \\(_-_\\)?
+
 Sat Jul 12 16:29:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Picon Configuration): Moved Picons to under XEmacs. 

@@ -35,8 +35,8 @@
 (defvar gnus-mouse-2 [mouse-2])
 (defvar gnus-down-mouse-2 [down-mouse-2])
 (defvar gnus-mode-line-modified
-  (if (and (not gnus-xemacs)
-	   (< emacs-major-version 20))
+  (if (or gnus-xemacs
+	  (< emacs-major-version 20))
       '("--**-" . "-----")
     '("**" "--")))
 

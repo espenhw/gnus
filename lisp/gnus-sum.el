@@ -6053,8 +6053,8 @@ fetch-old-headers verbiage, and so on."
 		     (gnus-nocem-unwanted-article-p
 		      (mail-header-id (car thread))))
 		(progn
-		  (setq gnus-newsgroup-reads
-			(delq number gnus-newsgroup-reads))
+		  (setq gnus-newsgroup-unreads
+			(delq number gnus-newsgroup-unreads))
 		  t))))
 	  ;; Nope, invisible article.
 	  0

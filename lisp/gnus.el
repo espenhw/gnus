@@ -238,7 +238,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.63"
+(defconst gnus-version-number "5.4.64"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -267,7 +267,6 @@ be set in `.emacs' instead."
   (defalias 'gnus-extent-start-open 'ignore)
   (defalias 'gnus-set-text-properties 'set-text-properties)
   (defalias 'gnus-group-remove-excess-properties 'ignore)
-  (defalias 'gnus-topic-remove-excess-properties 'ignore)
   (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
   (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
   (defalias 'gnus-character-to-event 'identity)
@@ -2077,7 +2076,7 @@ that that variable is buffer-local to the summary buffers."
 
 (defun gnus-simplify-mode-line ()
   "Make mode lines a bit simpler."
-  (setq mode-line-modified "-- ")
+  (setq mode-line-modified (cdr gnus-mode-line-modified))
   (when (listp mode-line-format)
     (make-local-variable 'mode-line-format)
     (setq mode-line-format (copy-sequence mode-line-format))

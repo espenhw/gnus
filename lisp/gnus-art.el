@@ -2180,6 +2180,7 @@ Argument LINES specifies lines to be scrolled down."
   (interactive)
   (if (not (gnus-buffer-live-p gnus-summary-buffer))
       (error "There is no summary buffer for this article buffer")
+    (gnus-article-set-globals)
     (gnus-configure-windows 'article)
     (gnus-summary-goto-subject gnus-current-article)))
 
@@ -2875,6 +2876,11 @@ specified by `gnus-button-alist'."
 	  (and data (list 'gnus-data data)))))
 
 ;;; Internal functions:
+
+(defun gnus-article-set-globals ()
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (gnus-set-global-variables)))
 
 (defun gnus-signature-toggle (end)
   (save-excursion

@@ -512,8 +512,7 @@ articles in the topic and its subtopics."
     (gnus-add-text-properties
      (point)
      (prog1 (1+ (point))
-       (eval gnus-topic-line-format-spec)
-       (gnus-topic-remove-excess-properties)1)
+       (eval gnus-topic-line-format-spec))
      (list 'gnus-topic (intern name)
 	   'gnus-topic-level level
 	   'gnus-topic-unread unread
@@ -722,10 +721,11 @@ articles in the topic and its subtopics."
 	(push (cons topic-name (nreverse filtered-topic)) result)))
     (setq gnus-topic-alist (nreverse result))))
 
-(defun gnus-topic-change-level (group level oldlevel)
+(defun gnus-topic-change-level (group level oldlevel previous)
   "Run when changing levels to enter/remove groups from topics."
   (save-excursion
     (set-buffer gnus-group-buffer)
+    (gnus-group-goto-group (or (car (nth 2 previous)) group))
     (when (and gnus-topic-mode
 	       gnus-topic-alist
 	       (not gnus-topic-inhibit-change-level))

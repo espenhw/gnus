@@ -1,10 +1,10 @@
 ;;; pop3.el --- Post Office Protocol (RFC 1460) interface
 
-;; Copyright (C) 1996, Free Software Foundation, Inc.
+;; Copyright (C) 1996,1997 Free Software Foundation, Inc.
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3e
+;; Version: 1.3g
 
 ;; This file is part of GNU Emacs.
 
@@ -37,7 +37,7 @@
 (require 'mail-utils)
 (provide 'pop3)
 
-(defconst pop3-version "1.3c")
+(defconst pop3-version "1.3g")
 
 (defvar pop3-maildrop (or user-login-name (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
@@ -77,7 +77,7 @@ Used for APOP authentication.")
 	  ((equal 'pass pop3-authentication-scheme)
 	   (pop3-user process pop3-maildrop)
 	   (pop3-pass process))
-	  (t (error "Invalid POP3 authentication scheme")))
+	  (t (error "Invalid POP3 authentication scheme.")))
     (setq message-count (car (pop3-stat process)))
     (while (<= n message-count)
       (message (format "Retrieving message %d of %d from %s..."
@@ -201,6 +201,7 @@ Return the response string if optional second argument is non-nil."
 
 (defun pop3-munge-message-separator (start end)
   "Check to see if a message separator exists.  If not, generate one."
+  (if (not (fboundp 'message-make-date)) (autoload 'message-make-date "message"))
   (save-excursion
     (save-restriction
       (narrow-to-region start end)
@@ -210,7 +211,8 @@ Return the response string if optional second argument is non-nil."
 		   (looking-at "BABYL OPTIONS:") ; Babyl
 		   ))
 	  (let ((from (mail-strip-quoted-names (mail-fetch-field "From")))
-		(date (pop3-string-to-list (mail-fetch-field "Date")))
+		(date (pop3-string-to-list (or (mail-fetch-field "Date")
+					       (message-make-date))))
 		(From_))
 	    ;; sample date formats I have seen
 	    ;; Date: Tue, 9 Jul 1996 09:04:21 -0400 (EDT)

@@ -1212,7 +1212,8 @@ for new groups."
 	   (format
 	    "(gnus-group-set-info '%S)" info)))))
       (when gnus-group-change-level-function
-	(funcall gnus-group-change-level-function group level oldlevel)))))
+	(funcall gnus-group-change-level-function
+		 group level oldlevel previous)))))
 
 (defun gnus-kill-newsgroup (newsgroup)
   "Obsolete function.  Kills a newsgroup."
@@ -1314,12 +1315,13 @@ newsgroup."
 	 ;; command may have responded with the `(0 . 0)'.  We
 	 ;; ignore this if we already have an active entry
 	 ;; for the group.
-	 (unless (and (zerop (car active))
-		      (zerop (cdr active))
-		      (gnus-active group))
-	   (gnus-set-active group active))
-	 ;; Return the new active info.
-	 active)))
+	 (if (and (zerop (car active))
+		  (zerop (cdr active))
+		  (gnus-active group))
+	     (gnus-active group)
+	   (gnus-set-active group active)
+	   ;; Return the new active info.
+	   active))))
 
 (defun gnus-get-unread-articles-in-group (info active &optional update)
   (when active

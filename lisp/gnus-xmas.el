@@ -371,26 +371,6 @@ call it with the value of the `gnus-data' text property."
 	       (event-to-character event))
 	  event)))
 
-(defun gnus-xmas-group-remove-excess-properties ()
-  (let ((end (point))
-	(beg (progn (forward-line -1) (point))))
-    (remove-text-properties (1+ beg) end '(gnus-group nil))
-    (remove-text-properties
-     beg end
-     '(gnus-topic nil gnus-topic-level nil gnus-topic-visible nil))
-    (goto-char end)
-    (map-extents
-     (lambda (e ma)
-       (set-extent-property e 'start-closed t))
-     (current-buffer) beg end)))
-
-(defun gnus-xmas-topic-remove-excess-properties ()
-  (let ((end (point))
-	(beg (progn (forward-line -1) (point))))
-    (remove-text-properties beg end '(gnus-group nil gnus-unread nil))
-    (remove-text-properties (1+ beg) end '(gnus-topic nil))
-    (goto-char end)))
-
 (defun gnus-xmas-seconds-since-epoch (date)
   "Return a floating point number that says how many seconds have lapsed between Jan 1 12:00:00 1970 and DATE."
   (let* ((tdate (mapcar (lambda (ti) (and ti (string-to-int ti)))

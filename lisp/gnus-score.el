@@ -29,6 +29,7 @@
 (require 'gnus)
 (require 'gnus-sum)
 (require 'gnus-range)
+(require 'message)
 
 (defcustom gnus-global-score-files nil
   "List of global score files and directories.
@@ -1083,7 +1084,7 @@ SCORE is the score to add."
       ;; Perform possible decays.
       (when gnus-decay-scores
 	(when (or (not decay)
-		  (gnus-decay-scores alist (gnus-time-to-day (current-time))))
+		  (gnus-decay-scores alist decay))
 	  (gnus-score-set 'touched '(t) alist)
 	  (gnus-score-set 'decay (list (gnus-time-to-day (current-time))))))
       ;; We do not respect eval and files atoms from global score
@@ -2730,7 +2731,7 @@ If ADAPT, return the home adaptive file instead."
   "Decay SCORE according to `gnus-score-decay-constant' and `gnus-score-decay-scale'."
   (floor
    (- score
-      (* (if (< score 0) 1 -1)
+      (* (if (< score 0) -1 1)
 	 (min (abs score)
 	      (max gnus-score-decay-constant
 		   (* (abs score)
