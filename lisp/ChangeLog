@@ -1,3 +1,8 @@
+2000-10-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-sum.el (gnus-get-split-value): Use first match only (Ed L
+	Cashin <ecashin@coe.uga.edu>).
+
 2000-10-13 10:52:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-ems.el (gnus-article-compface-xbm): Ignore errors.
