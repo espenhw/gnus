@@ -723,8 +723,7 @@ If POST, post instead of mail."
 	    text)
 	(save-excursion
 	  (set-buffer gnus-original-article-buffer)
-	  (mm-with-unibyte-current-buffer
-	    (setq text (buffer-string))))
+	  (setq text (buffer-string)))
 	(set-buffer 
 	 (gnus-get-buffer-create
 	  (generate-new-buffer-name " *Gnus forward*")))

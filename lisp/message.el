@@ -4101,8 +4101,7 @@ Optional DIGEST will use digest to forward."
 	    (mml-insert-buffer cur))
 	(if message-forward-show-mml
 	    (insert-buffer-substring cur)
-	  (mm-with-unibyte-current-buffer
-	    (mml-insert-buffer cur))))
+	  (mml-insert-buffer cur)))
       (setq e (point))
       (if message-forward-as-mime
 	  (if digest

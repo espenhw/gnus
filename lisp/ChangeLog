@@ -1,3 +1,11 @@
+2000-09-15 00:09:56  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-preview): Reinsert unibyte content. 
+	(mml-parse-1): Remove with-unibyte-current-buffer.
+	(mml-generate-mime-1): Ditto.
+	* gnus-msg.el (gnus-summary-mail-forward): Ditto.
+	* message.el (message-forward): Ditto.
+
 2000-09-14 23:13:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (article-de-quoted-unreadable): Guess charset from
