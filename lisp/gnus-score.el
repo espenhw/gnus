@@ -1117,9 +1117,9 @@ If FORMAT, also format the current score file."
 	 (reg " -> +")
 	 (file (save-excursion
 		 (end-of-line)
-		 (if (and (re-search-backward reg (point-at-bol) t)
-			  (re-search-forward  reg (point-at-eol) t))
-		     (buffer-substring (point) (point-at-eol))
+		 (if (and (re-search-backward reg (gnus-point-at-bol) t)
+			  (re-search-forward  reg (gnus-point-at-eol) t))
+		     (buffer-substring (point) (gnus-point-at-eol))
 		   nil))))
     (if (or (not file)
 	    (string-match "non-file" file)
