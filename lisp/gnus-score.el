@@ -201,6 +201,8 @@ It can be:
 		 (repeat (choice string
 				 (cons regexp (repeat file))
 				 (function :value fun)))
+		 (function-item gnus-hierarchial-home-score-file)
+		 (function-item gnus-current-home-score-file)
 		 (function :value fun)))
 
 (defcustom gnus-home-adapt-file nil
