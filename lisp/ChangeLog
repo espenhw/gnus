@@ -1,3 +1,8 @@
+2003-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-attachment-file-modes): Change the default
+	value into 384 from ?\600 which doesn't mean an integer in XEmacs.
+
 2003-10-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-decode.el (mm-file-name-delete-control)

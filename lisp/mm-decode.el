@@ -355,7 +355,7 @@ If not set, `default-directory' will be used."
   :type '(choice directory (const :tag "Default" nil))
   :group 'mime-display)
 
-(defcustom mm-attachment-file-modes ?\600
+(defcustom mm-attachment-file-modes 384
   "Set the mode bits of saved attachments to this integer."
   :type 'integer
   :group 'mime-display)
