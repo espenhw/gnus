@@ -453,7 +453,7 @@ If EXAMINE is non-nil the group is selected read-only."
 			   articles)))))
       (mapcar (lambda (msgid)
 		(imap-search
-		 (format "HEADER Message-Id %s" msgid)))
+		 (format "HEADER Message-Id \"%s\"" msgid)))
 	      articles))))
 
 (defun nnimap-group-overview-filename (group server)
@@ -696,7 +696,7 @@ function is generally only called when Gnus is shutting down."
   (when (nnimap-possibly-change-group group server)
     (let ((article (if (stringp article)
 		       (car-safe (imap-search
-				  (format "HEADER Message-Id %s" article)
+				  (format "HEADER Message-Id \"%s\"" article)
 				  nnimap-server-buffer))
 		     article)))
       (when article
