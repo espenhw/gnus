@@ -2281,7 +2281,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Unread" gnus-summary-limit-to-unread t]
 	 ["Unseen" gnus-summary-limit-to-unseen t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
-	 ["Articles" gnus-summary-limit-to-articles t]
+	 ["Next articles" gnus-summary-limit-to-articles t]
 	 ["Pop limit" gnus-summary-pop-limit t]
 	 ["Show dormant" gnus-summary-limit-include-dormant t]
 	 ["Hide childless dormant"
@@ -7307,8 +7307,9 @@ articles that are younger than AGE days."
 	 days)
      (while (not days-got)
        (setq days (if younger
-		      (read-string "Limit to articles within (in days): ")
-		    (read-string "Limit to articles older than (in days): ")))
+		      (read-string "Limit to articles younger than (in days, older when negative): ")
+		    (read-string
+		     "Limit to articles older than (in days, younger when negative): ")))
        (when (> (length days) 0)
 	 (setq days (read days)))
        (if (numberp days)

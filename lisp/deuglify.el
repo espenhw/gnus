@@ -280,7 +280,6 @@
 
 ;; Functions
 
-;; TODO: don't kill MIME parts
 ;;;###autoload
 (defun gnus-outlook-unwrap-lines ()
   "Unwrap lines that appear to be wrapped citation lines.
@@ -311,19 +310,18 @@ length of an unwrapped citation line."
 		  (replace-match "\\1\\2 \\3")
 		  (goto-char (match-beginning 0))))))))))
 
-;; TODO: respect signatures, don't kill MIME parts
 (defun gnus-outlook-rearrange-article (from-where)
-  "Put the text from `from-where' to the end of buffer at the top of the article buffer."
+  "Put the text from `from-where' to the end of buffer at the top of
+the article buffer."
   (save-excursion
     (let ((inhibit-read-only t)
 	  (cite-marks gnus-outlook-deuglify-cite-marks))
       (gnus-with-article-buffer
-	(unless (search-forward-regexp
-		   (concat "^[ \t]*[^" cite-marks "\n]") nil t)
-	  (kill-region from-where (point-max))
-	  (article-goto-body)
-	  (yank)
-	  (insert "\n"))))))
+	(beginning-of-buffer)
+	(re-search-forward "^$")
+	(transpose-regions (point) (- from-where 1)
+			   from-where (point-max) t)))))
+
 
 ;; John Doe <john.doe@some.domain> wrote in message
 ;; news:a87usw8$dklsssa$2@some.news.server...
@@ -425,7 +423,7 @@ length of an unwrapped citation line."
   (interactive)
   (gnus-outlook-deuglify-article)
   (with-current-buffer (or gnus-article-buffer (current-buffer))
-    (gnus-article-prepare-display)))
+    (gnus-article-highlight t)))
 
 (provide 'deuglify)
 

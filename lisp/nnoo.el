@@ -254,7 +254,7 @@
 	(setcdr bstate (delq defs (cdr bstate)))
 	(pop defs)
 	(while defs
-	  (set (car (pop defs)) nil)))))
+	  (set (car (pop defs)) nil))))) 
   t)
 
 (defun nnoo-close (backend)

@@ -1,3 +1,15 @@
+2002-12-31  Reiner Steib  <4uce.02.r.steib@gmx.net>
+
+	* gnus-sum.el (gnus-summary-limit-to-age): Make prompt string
+	mention negatives.
+
+2002-12-31  Raymond Scholz  <ray-2002@zonix.de>
+
+	* deuglify.el (gnus-outlook-rearrange-article): Use
+	`transpose-regions' instead of tempering the kill-ring.
+	(gnus-article-outlook-deuglify-article): Rehighlight article
+	instead of a complete redisplay.
+
 2002-12-31  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: most defvars are defcustoms now
