@@ -1,5 +1,5 @@
 ;;; gnus-art.el --- article mode commands for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -3907,6 +3907,36 @@ General format specifiers can also be used.  See Info node
 	    (mm-merge-handles gnus-article-mime-handles handle))
       (gnus-mm-display-part handle))))
 
+(eval-when-compile
+  (require 'jka-compr))
+
+;; jka-compr.el uses a "sh -c" to direct stderr to err-file, but these days
+;; emacs can do that itself.
+;;
+(defun gnus-mime-jka-compr-maybe-uncompress ()
+  "Uncompress the current buffer if `auto-compression-mode' is enabled.
+The uncompress method used is derived from `buffer-file-name'."
+  (when (and (fboundp 'jka-compr-installed-p)
+             (jka-compr-installed-p))
+    (let ((info (jka-compr-get-compression-info buffer-file-name)))
+      (when info
+        (let ((basename (file-name-nondirectory buffer-file-name))
+              (args     (jka-compr-info-uncompress-args    info))
+              (prog     (jka-compr-info-uncompress-program info))
+              (message  (jka-compr-info-uncompress-message info))
+              (err-file (jka-compr-make-temp-name)))
+          (if message
+              (message "%s %s..." message basename))
+          (unwind-protect
+              (unless (memq (apply 'call-process-region
+                                   (point-min) (point-max) 
+                                   prog
+                                   t (list t err-file) nil
+                                   args)
+                            jka-compr-acceptable-retval-list)
+                (jka-compr-error prog args basename message err-file))
+            (jka-compr-delete-temp-file err-file)))))))
+
 (defun gnus-mime-copy-part (&optional handle)
   "Put the MIME part under point into a new buffer."
   (interactive)
@@ -3928,6 +3958,7 @@ General format specifiers can also be used.  See Info node
       (unwind-protect
 	  (progn
 	    (setq buffer-file-name (expand-file-name base))
+	    (gnus-mime-jka-compr-maybe-uncompress)
 	    (normal-mode))
 	(setq buffer-file-name nil))
       (goto-char (point-min)))))

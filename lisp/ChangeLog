@@ -1,3 +1,8 @@
+2003-01-04  Kevin Ryde  <user42@zip.com.au>
+
+	* gnus-art.el (gnus-mime-jka-compr-maybe-uncompress): New
+	function. 
+
 2003-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-exit): Bind gnus-group-is-exiting-p. 
