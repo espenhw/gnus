@@ -313,7 +313,7 @@ string).")
   "Non-nil indicates that the server emitted a continuation request. The
 actually value is really the text on the continuation line.")
 
-(defvar imap-log "*imap-log*"
+(defvar imap-log nil
   "Imap session trace.")
 
 (defvar imap-debug nil;"*imap-debug*"
