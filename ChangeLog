@@ -1,3 +1,7 @@
+2004-01-07  Hiroshi Fujishima  <pooh@nature.tsukuba.ac.jp>
+
+	* etc/gnus-tut.txt: `G m' instead of `G V' (tiny patch).
+
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
 	* make.bat: Add missing parens.  From Robert Marshall
