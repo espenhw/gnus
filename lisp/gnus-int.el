@@ -484,16 +484,16 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 	     info (nth 1 gnus-command-method))))
 
 (defun gnus-request-expire-articles (articles group &optional force)
-  (let ((gnus-command-method (gnus-find-method-for-group group))
-	(not-deleted 
-	 (funcall 
-	  (gnus-get-function gnus-command-method 'request-expire-articles)
-	  articles (gnus-group-real-name group) (nth 1 gnus-command-method)
-	  force)))
+  (let* ((gnus-command-method (gnus-find-method-for-group group))
+	 (not-deleted 
+	  (funcall 
+	   (gnus-get-function gnus-command-method 'request-expire-articles)
+	   articles (gnus-group-real-name group) (nth 1 gnus-command-method)
+	   force)))
     (when (and gnus-agent gnus-agent-cache
 	       (gnus-sorted-difference articles not-deleted))
       (gnus-agent-expire (gnus-sorted-difference articles not-deleted)
-			 gnus-newsgroup-name 'force))
+			 group 'force))
     not-deleted))
 
 (defun gnus-request-move-article

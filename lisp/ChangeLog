@@ -1,3 +1,7 @@
+2002-06-10  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-int.el (gnus-request-expire-articles): Fix last change?
+
 2002-06-09  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-delete-article): Don't agent expire here.
