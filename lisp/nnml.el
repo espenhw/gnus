@@ -197,7 +197,7 @@ all. This may very well take some time.")
 		(> (nth 1 timestamp) (nth 1 nnml-active-timestamp)))
 	    (progn
 	      (setq nnml-active-timestamp timestamp)
-	      (nnmail-activate 'nnml)))
+	      (nnmail-activate 'nnml 'force)))
 	(let ((active (nth 1 (assoc group nnml-group-alist))))
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)

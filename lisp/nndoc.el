@@ -37,7 +37,7 @@
 	      (concat "^" rmail-unix-mail-delimiter)
 	      (concat "^" rmail-unix-mail-delimiter)
 	      nil "^$" nil nil nil)
-	(list 'babyl "\^_\^L *\n" "\^_" nil "^$" nil nil
+	(list 'babyl "\^_\^L *\n" "\^_" "^[0-9].*\n" "^$" nil nil
 	      "\\*\\*\\* EOOH \\*\\*\\*\n\\(^.+\n\\)*")
 	(list 'digest
 	      "^------------------------------*[\n \t]+"

@@ -1054,6 +1054,8 @@ External references are things like message-ids and URLs, as specified by
 	  (inhibit-point-motion-hooks t)
 	  (case-fold-search t))
       (goto-char (point-min))
+      (or (search-forward "\n\n" nil t)
+	  (goto-char (point-max)))
       (while (re-search-forward gnus-button-regexp nil t)
 	(goto-char (match-beginning 0))
 	(let* ((from (point))

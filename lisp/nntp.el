@@ -1204,15 +1204,17 @@ defining this function as macro."
   (if (string= group nntp-current-group)
       ()
     (let ((asyncs (assoc group nntp-async-group-alist)))
-      (if (not asyncs)
-	  ()
-	;; A new group has been selected, so we push the current state
-	;; of async articles on an alist, and pull the old state off.
-	(setq nntp-async-group-alist 
-	      (cons (list group nntp-async-articles nntp-async-fetched)
-		    (delq asyncs nntp-async-group-alist)))
-	(setq nntp-async-articles (nth 1 asyncs))
-	(setq nntp-async-fetched (nth 2 asyncs))))))
+      ;; A new group has been selected, so we push the current state
+      ;; of async articles on an alist, and pull the old state off.
+      (setq nntp-async-group-alist 
+	    (cons (list nntp-current-group
+			nntp-async-articles nntp-async-fetched)
+		  (delq asyncs nntp-async-group-alist)))
+      (setq nntp-current-group group)
+      (or asyncs
+	  (progn
+	    (setq nntp-async-articles (nth 1 asyncs))
+	    (setq nntp-async-fetched (nth 2 asyncs)))))))
 
 (provide 'nntp)
 

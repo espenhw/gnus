@@ -1,4 +1,37 @@
+Sat Jul 22 00:26:49 1995  Lars INGEBRIGTSEN UiO  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-summary-mark-unread-as-read): Don't mark already
+	marked articles.
+	(gnus-summary-edit-article): Widen before editing.
+	(gnus-summary-edit-article-done): Remove all text properties.
+	(gnus-summary-prepare-threads): Inline `gnus-summary-insert-line'.
+	(gnus-summary-mark-article-as-read): Faster, simpler function for
+	marking an article.
+	(gnus-summary-mark-same-subject): Faster implementation.
+	(gnus-summary-search-forward): Changed to macro.
+	(gnus-summary-search-backward): Ditto.
+	(gnus-summary-thread-level): Ditto.
+	(gnus-summary-article-number): Ditto.
+	(gnus-summary-article-mark): Ditto.
+
+	* gnus-uu.el (gnus-uu-grab-articles): Disable async.
+
+Fri Jul 21 22:00:03 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nndoc.el (nndoc-type-to-regexp): Use the new default to avoud
+	the 1,, line in babyl files.
+
+	* nnml.el (nnml-request-group): Force re-reading of the active
+	file if the file is new.
+
+	* gnus-vis.el (gnus-article-add-buttons): Turn off the header
+	buttonizing again.
+
+	* nntp.el (nntp-async-request-group): Really save async state.
+
 Thu Jul 20 00:02:30 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.98 is released.
 
 	* gnus-vis.el (gnus-article-add-buttons): Buttonize the headers. 
 

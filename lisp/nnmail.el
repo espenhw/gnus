@@ -711,11 +711,16 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  (t
 	   procmails))))
 
-(defun nnmail-activate (backend)
-  (if (not (symbol-value (intern (format "%s-group-alist" backend))))
+;; Activate a backend only if it isn't already activated. 
+;; If FORCE, re-read the active file even if the backend is 
+;; already activated.
+(defun nnmail-activate (backend &optional force)
+  (if (or (not (symbol-value (intern (format "%s-group-alist" backend))))
+	  force)
       (save-excursion
 	(funcall (intern (format "%s-request-list" backend)))
-	(set (intern (format "%s-group-alist" backend)) (nnmail-get-active)))))
+	(set (intern (format "%s-group-alist" backend)) (nnmail-get-active))))
+  t)
 
 
 (provide 'nnmail)

@@ -488,6 +488,60 @@ call it with the value of the `gnus-data' text property."
 	       (easy-menu-add gnus-article-treatment-menu))
 	     gnus-article-mode-hook)))
 
+    (defvar gnus-logo (make-glyph (make-specifier 'image)))
+
+    (defun gnus-group-startup-xmessage (&optional x y)
+      "Insert startup message in current buffer."
+      ;; Insert the message.
+      (erase-buffer)
+      (if (featurep 'xpm)
+	  (progn
+	    (set-glyph-property gnus-logo 'image  "~/tmp/gnus.xpm")
+	    (set-glyph-image gnus-logo "~/tmp/gnus.xpm" 'global 'x)
+
+	    (insert " ")
+	    (set-extent-begin-glyph (make-extent (point) (point)) gnus-logo)
+	    (insert "
+   Gnus * A newsreader for Emacsen
+ A Praxis Release * larsi@ifi.uio.no")
+	    (goto-char (point-min))
+	    (while (not (eobp))
+	      (insert (make-string (/ (max (- (window-width) (or x 35)) 0) 2)
+				   ? ))
+	      (forward-line 1))
+	    (goto-char (point-min))
+	    ;; +4 is fuzzy factor.
+	    (insert-char ?\n (/ (max (- (window-height) (or y 24)) 0) 2)))
+
+	(insert
+	 (format "
+     %s
+           A newsreader 
+      for GNU Emacs
+
+        Based on GNUS 
+             written by 
+     Masanobu UMEDA
+
+       A Praxis Release
+      larsi@ifi.uio.no
+" 
+		 gnus-version))
+	;; And then hack it.
+	;; 18 is the longest line.
+	(indent-rigidly (point-min) (point-max) 
+			(/ (max (- (window-width) (or x 28)) 0) 2))
+	(goto-char (point-min))
+	;; +4 is fuzzy factor.
+	(insert-char ?\n (/ (max (- (window-height) (or y 12)) 0) 2)))
+
+      ;; Fontify some.
+      (goto-char (point-min))
+      (search-forward "Praxis")
+      (put-text-property (match-beginning 0) (match-end 0) 'face 'bold)
+      (goto-char (point-min)))
+
+
 
     )
 

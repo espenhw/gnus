@@ -1060,7 +1060,7 @@ The headers will be included in the sequence they are matched.")
       (message "Getting article %d, %s" article (gnus-uu-part-number article))
 
       (if (not (= (or gnus-current-article 0) article))
-	  (progn
+	  (let ((nntp-async-number nil))
 	    (gnus-request-article article gnus-newsgroup-name
 				  nntp-server-buffer)
 	    (setq gnus-last-article gnus-current-article)
