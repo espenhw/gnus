@@ -1,3 +1,24 @@
+2000-08-21  Dave Love  <fx@gnu.org>
+
+	* mm-util.el (mm-read-charset): Maybe use builtin.
+	(mm-replace-chars-in-string): Maybe use subst-char-in-string.
+	(mm-multibyte-p, mm-with-unibyte-current-buffer)
+	(mm-with-unibyte): Use featurep, not string-match.
+	(mm-with-unibyte-buffer): Simplify.
+	(mm-quote-arg): Maybe use shell-quote-argument.
+
+	* mml.el (mml-make-string): Deleted (unused).
+
+	* gnus.el (gnus-mode-line-buffer-identification): Supply
+	definition for Emacs 21.
+
+	* gnus-salt.el: Small doc fixes.
+	(gnus-pick-mode, gnus-binary-mode): Supply a toggle-func arg to
+	gnus-add-minor-mode.
+
+	* gnus-topic.el (gnus-topic-mode): Supply a toggle-func arg to
+	gnus-add-minor-mode.
+
 2000-08-20  Simon Josefsson  <simon@josefsson.org>
 
 	* nnimap.el (nnimap-before-find-minmax-bugworkaround): New
