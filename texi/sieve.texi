@@ -129,7 +129,7 @@ runs the hook @code{sieve-mode-hook}.
 @vindex sieve-mode-syntax-table
 Sieve mode is derived from @code{c-mode}, and is very similar except
 for the syntax of comments.  The keymap (@code{sieve-mode-map}) is
-inherited from @code{c-mode}, as are the the variables for customizing
+inherited from @code{c-mode}, as are the variables for customizing
 indentation.  Sieve mode has its own abbrev table
 (@code{sieve-mode-abbrev-table}) and syntax table
 (@code{sieve-mode-syntax-table}).
