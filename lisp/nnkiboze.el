@@ -335,7 +335,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 		;; Restore the proper info.
 		(when ginfo
 		  (setcdr ginfo (cdr orig-info)))
-		(setcar (gnus-active (caar newsrc)) num-unread)))
+		(setcar (gnus-group-entry (caar newsrc)) num-unread)))
 	    (setcdr (car newsrc) (cdr active))
 	    (gnus-message 3 "nnkiboze: Checking %s...done" (caar newsrc))
 	    (setq newsrc (cdr newsrc)))))
