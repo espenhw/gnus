@@ -132,13 +132,10 @@ This can be either \"inline\" or \"attachment\".")
   "A list of mm-uu configuration.
 To disable dissecting shar codes, for instance, add
 `(shar . disabled)' to this list."
-  :type `(repeat (cons
-		  ,(cons 'choice
-			 (mapcar
-			  (lambda (entry)
-			    (cons 'item (car entry)))
-			  mm-uu-type-alist))
-		  (choice (item disabled))))
+  :type 'alist
+  :options (mapcar (lambda (entry)
+		     (list (car entry) '(const disabled)))
+		   mm-uu-type-alist)
   :group 'gnus-article-mime)
 
 ;; functions
