@@ -2708,7 +2708,7 @@ An item like @code{(banner . "regex")} causes any part of an article
 that matches the regular expression "regex" to be stripped. Instead of
 "regex", you can also use the symbol @code{signature} which strips the
 last signature or any of the elements of the alist
-@var{gnus-article-banner-alist}.
+@code{gnus-article-banner-alist}.
 
 @end table
 
