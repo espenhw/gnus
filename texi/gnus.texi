@@ -14543,18 +14543,14 @@ Virtual server settings:
 @item directory
 For each of your nnmaildir servers (it's very unlikely that you'd need
 more than one), you need to create a directory and populate it with
-symlinks to maildirs (and nothing else; do not choose a directory
-already used for other purposes).  You could also put maildirs
-themselves (instead of symlinks to them) directly in the server
-directory, but that would break @code{nnmaildir-request-delete-group},
-so you wouldn't be able to delete those groups from within Gnus.  (You
-could still delete them from your shell with @code{rm -r foo}.)  Each
-maildir will be represented in Gnus as a newsgroup on that server; the
-filename of the symlink will be the name of the group.  Any filenames
-in the directory starting with `.' are ignored.  The directory is
-scanned when you first start Gnus, and each time you type @kbd{g} in
-the group buffer; if any maildirs have been removed or added,
-nnmaildir notices at these times.
+maildirs or symlinks to maildirs (and nothing else; do not choose a
+directory already used for other purposes).  Each maildir will be
+represented in Gnus as a newsgroup on that server; the filename of the
+symlink will be the name of the group.  Any filenames in the directory
+starting with `.' are ignored.  The directory is scanned when you
+first start Gnus, and each time you type @kbd{g} in the group buffer;
+if any maildirs have been removed or added, nnmaildir notices at these
+times.
 
 The value of the @code{directory} parameter should be a Lisp form
 which is processed by @code{eval} and @code{expand-file-name} to get
@@ -14562,23 +14558,38 @@ the path of the directory for this server.  The form is @code{eval}ed
 only when the server is opened; the resulting string is used until the
 server is closed.  (If you don't know about forms and @code{eval},
 don't worry - a simple string will work.)  This parameter is not
-optional; you must specify it.  I don't recommend using @file{~/Mail}
-or a subdirectory of it; several other parts of Gnus use that
-directory by default for various things, and may get confused if
-nnmaildir uses it too.  @file{~/.nnmaildir} is a typical value.
+optional; you must specify it.  I don't recommend using
+@code{"~/Mail"} or a subdirectory of it; several other parts of Gnus
+use that directory by default for various things, and may get confused
+if nnmaildir uses it too.  @code{"~/.nnmaildir"} is a typical value.
 
-@item create-directory
+@item target-prefix
 This should be a Lisp form which is processed by @code{eval} and
-@code{expand-file-name} to get the name of the directory where new
-maildirs are created.  The form is @code{eval}ed only when the server
-is opened; the resulting string is used until the server is closed.
-This parameter is optional, but if you do not supply it, you cannot
-create new groups from within Gnus.  (You could still create them from
-your shell with @code{mkdir -m 0700 foo foo/tmp foo/new foo/cur}.)  A
-relative path is interpreted as relative to the @code{directory} path.
-@code{create-directory} and @code{directory} must be different;
-otherwise, group creation and deletion will break.  (If you don't need
-those features, you can omit @code{create-directory} entirely.)
+@code{expand-file-name}.  The form is @code{eval}ed only when the
+server is opened; the resulting string is used until the server is
+closed.
+
+When you create a group on an nnmaildir server, the maildir is created
+with @code{target-prefix} prepended to its name, and a symlink
+pointing to that maildir is created, named with the plain group name.
+So if @code{directory} is @code{"~/.nnmaildir"} and
+@code{target-prefix} is @code{"../maildirs/"}, then when you create
+the group @code{foo}, nnmaildir will create
+@file{~/.nnmaildir/../maildirs/foo} as a maildir, and will create
+@file{~/.nnmaildir/foo} as a symlink pointing to
+@file{../maildirs/foo}.
+
+You can set @code{target-prefix} to a string without any slashes to
+create both maildirs and symlinks in the same @code{directory}; in
+this case, any maildirs found in @code{directory} whose names start
+with @code{target-prefix} will not be listed as groups (but the
+symlinks pointing to them will be).
+
+As a special case, if @code{target-prefix} is @code{""} (the default),
+then when you create a group, the maildir will be created in
+@code{directory} without a corresponding symlink.  Beware that you
+cannot use @code{gnus-group-delete-group} on such groups without the
+@code{force} argument.
 
 @item directory-files
 This should be a function with the same interface as

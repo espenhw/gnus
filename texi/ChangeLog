@@ -1,5 +1,10 @@
 2003-03-18  Paul Jarc  <prj@po.cwru.edu>
 
+	* gnus.texi (Maildir): Replace create-directory with
+	target-prefix.
+
+2003-03-18  Paul Jarc  <prj@po.cwru.edu>
+
 	* gnus.texi (Maildir): More info for expire-group; add
 	distrust-Lines:.
 
