@@ -19806,6 +19806,11 @@ Remove list identifiers from the subject in the summary when doing `^'
 and the like.
 
 @item
+Have the Agent write out articles, one by one, as it retrieves them,
+to avoid having to re-fetch them all if Emacs should crash while
+fetching. 
+
+@item
 Solve the halting problem.
 
 @c TODO
