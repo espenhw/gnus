@@ -4,6 +4,9 @@
 
 2003-01-08  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* spam.el: fixed the BBDB autoloads again, using
+	bbdb-search-simple now (which is not a macro, thank god)
+
 	* lpath.el (bbdb-search): removed function from maybe-fbind list
 
 	* gnus.el (ham-process-destination): added new parameter for

@@ -497,48 +497,54 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (when matches
       spam-split-group)))
 
-;;;; BBDB original idea for spam-check-BBDB from Alexander Kotelnikov
+;;;; BBDB 
+
+;;; original idea for spam-check-BBDB from Alexander Kotelnikov
 ;;; <sacha@giotto.sj.ru>
 
 ;; all this is done inside a condition-case to trap errors
+
 (condition-case nil
     (progn
-
+      (require 'bbdb)
       (require 'bbdb-com)
+      
+  (defun spam-enter-ham-BBDB (from)
+    "Enter an address into the BBDB; implies ham (non-spam) sender"
+    (when (stringp from)
+      (let* ((parsed-address (gnus-extract-address-components from))
+	     (name (or (car parsed-address) "Ham Sender"))
+	     (net-address (car (cdr parsed-address))))
+	(message "Adding address %s to BBDB" from)
+	(when (and net-address
+		   (not (bbdb-search-simple nil net-address)))
+	  (bbdb-create-internal name nil net-address nil nil 
+				"ham sender added by spam.el")))))
 
-      (defun spam-enter-ham-BBDB (from)
-	"Enter an address into the BBDB; implies ham (non-spam) sender"
-	(when (stringp from)
-	  (let* ((parsed-address (gnus-extract-address-components from))
-		 (name (or (car parsed-address) "Ham Sender"))
-		 (net-address (car (cdr parsed-address))))
-	    (message "Adding address %s to BBDB" from)
-	    (when (and net-address
-		       (not (bbdb-search (bbdb-records) nil nil net-address)))
-	      (bbdb-create-internal name nil net-address nil nil 
-				    "ham sender added by spam.el")))))
+  (defun spam-BBDB-register-routine ()
+    (spam-generic-register-routine 
+     ;; spam function
+     nil
+     ;; ham function
+     (lambda (article)
+       (spam-enter-ham-BBDB (spam-fetch-field-from-fast article)))))
 
-      (defun spam-BBDB-register-routine ()
-	(spam-generic-register-routine 
-	 ;; spam function
-	 nil
-	 ;; ham function
-	 (lambda (article)
-	   (spam-enter-ham-BBDB (spam-fetch-field-from-fast article)))))
-
-      (defun spam-check-BBDB ()
-	"Mail from people in the BBDB is never considered spam"
-	(let ((who (message-fetch-field "from")))
-	  (when who
-	    (setq who (regexp-quote (cadr 
-				     (gnus-extract-address-components who))))
-	    (if (bbdb-search (bbdb-records) nil nil who) 
-		nil spam-split-group)))))
+  (defun spam-check-BBDB ()
+    "Mail from people in the BBDB is never considered spam"
+    (let ((who (message-fetch-field "from")))
+      (when who
+	(setq who (regexp-quote (cadr
+				 (gnus-extract-address-components who))))
+	(if (bbdb-search-simple nil who)
+	    nil spam-split-group)))))
 
   (file-error (progn
-		(setq spam-list-of-checks
-		      (delete (assoc 'spam-use-BBDB spam-list-of-checks)
-			      spam-list-of-checks)))))
+		(defalias 'bbdb-search-simple 'ignore)
+		(defalias 'spam-check-BBDB 'ignore)
+		(defalias 'spam-BBDB-register-routine 'ignore)
+		(defalias 'spam-enter-ham-BBDB 'ignore)
+		(defalias 'bbdb-create-internal 'ignore)
+		(defalias 'bbdb-records 'ignore))))
 
 
 ;;;; ifile
