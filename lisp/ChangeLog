@@ -1,3 +1,8 @@
+2000-09-29  Florian Weimer  <fw@deneb.enyo.de>
+
+	* qp.el (quoted-printable-encode-region): Wrap with
+	`mm-with-unibyte-current-buffer'.
+
 2000-09-29 12:12:49  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): Reimplement Mike

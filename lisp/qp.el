@@ -92,49 +92,50 @@ If `mm-use-ultra-safe-encoding' is set, fold unconditionally and
 encode lines starting with \"From\"."
   (interactive "r")
   (save-excursion
-    (save-restriction
-      (narrow-to-region from to)
-      ;;      (mm-encode-body)
-      ;; Encode all the non-ascii and control characters.
-      (goto-char (point-min))
-      (while (and (skip-chars-forward
-		   ;; Avoid using 8bit characters. = is \075.
-		   ;; Equivalent to "^\000-\007\013\015-\037\200-\377="
-		   (or class "\010-\012\014\040-\074\076-\177"))
-		  (not (eobp)))
-	(insert
-	 (prog1
-	     (upcase (format "=%02x" (char-after)))
-	   (delete-char 1))))
-      ;; Encode white space at the end of lines.
-      (goto-char (point-min))
-      (while (re-search-forward "[ \t]+$" nil t)
-	(goto-char (match-beginning 0))
-	(while (not (eolp))
+    (mm-with-unibyte-current-buffer
+      (save-restriction
+	(narrow-to-region from to)
+	;;      (mm-encode-body)
+	;; Encode all the non-ascii and control characters.
+	(goto-char (point-min))
+	(while (and (skip-chars-forward
+		     ;; Avoid using 8bit characters. = is \075.
+		     ;; Equivalent to "^\000-\007\013\015-\037\200-\377="
+		     (or class "\010-\012\014\040-\074\076-\177"))
+		    (not (eobp)))
 	  (insert
 	   (prog1
 	       (upcase (format "=%02x" (char-after)))
-	     (delete-char 1)))))
-      (when (or fold mm-use-ultra-safe-encoding)
-	;; Fold long lines.
-	(let ((tab-width 1)) ;; HTAB is one character.
-	  (goto-char (point-min))
-	  (while (not (eobp))
-	    ;; In ultra-safe mode, encode "From " at the beginning of a
-	    ;; line.
-	    (when mm-use-ultra-safe-encoding
-	      (beginning-of-line)
-	      (when (looking-at "From ")
-		(replace-match "From=20" nil t)))
-	    (end-of-line)
-	    (while (> (current-column) 76) ;; tab-width must be 1.
-	      (beginning-of-line)
-	      (forward-char 75);; 75 chars plus an "="
-	      (search-backward "=" (- (point) 2) t)
-	      (insert "=\n")
-	      (end-of-line))
-	    (unless (eobp)
-	      (forward-line))))))))
+	     (delete-char 1))))
+	;; Encode white space at the end of lines.
+	(goto-char (point-min))
+	(while (re-search-forward "[ \t]+$" nil t)
+	  (goto-char (match-beginning 0))
+	  (while (not (eolp))
+	    (insert
+	     (prog1
+		 (upcase (format "=%02x" (char-after)))
+	       (delete-char 1)))))
+	(when (or fold mm-use-ultra-safe-encoding)
+	  ;; Fold long lines.
+	  (let ((tab-width 1));; HTAB is one character.
+	    (goto-char (point-min))
+	    (while (not (eobp))
+	      ;; In ultra-safe mode, encode "From " at the beginning of a
+	      ;; line.
+	      (when mm-use-ultra-safe-encoding
+		(beginning-of-line)
+		(when (looking-at "From ")
+		  (replace-match "From=20" nil t)))
+	      (end-of-line)
+	      (while (> (current-column) 76);; tab-width must be 1.
+		(beginning-of-line)
+		(forward-char 75);; 75 chars plus an "="
+		(search-backward "=" (- (point) 2) t)
+		(insert "=\n")
+		(end-of-line))
+	      (unless (eobp)
+		(forward-line)))))))))
 
 (defun quoted-printable-encode-string (string)
   "QP-encode STRING and return the results."
