@@ -1,3 +1,8 @@
+2002-03-13  Josh Huber  <huber@alum.wpi.edu>
+
+	* message.el (message-make-mft): Set case-fold-search while
+	generating the MFT.  Also, a little cleanup in the MFT code.
+
 2002-03-12  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-qmail-inject-args): May be function.

@@ -3942,7 +3942,8 @@ give as trustworthy answer as possible."
 
 (defun message-make-mft ()
   "Return the Mail-Followup-To header."
-  (let* ((msg-recipients (message-options-get 'message-recipients))
+  (let* ((case-fold-search t)
+	 (msg-recipients (message-options-get 'message-recipients))
 	 (recipients
 	  (mapcar 'mail-strip-quoted-names
 		  (message-tokenize-header msg-recipients)))
@@ -3968,15 +3969,15 @@ give as trustworthy answer as possible."
 			     (mapcar 'funcall
 				     message-subscribed-address-functions))))
     (save-match-data
-      (when (eval (apply 'append '(or)
+      (when (eval
+	     (apply 'append '(or)
+		    (mapcar
+		     #'(lambda (regexp)
 			 (mapcar
-			  (function (lambda (regexp)
-				      (mapcar
-				       (function (lambda (recipient)
-						   `(string-match ,regexp
-								  ,recipient)))
-				       recipients)))
-			  mft-regexps)))
+			  #'(lambda (recipient)
+			      `(string-match ,regexp ,recipient))
+			  recipients))
+		     mft-regexps)))
 	msg-recipients))))
 
 (defun message-generate-headers (headers)
