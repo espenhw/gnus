@@ -131,31 +131,19 @@ To disable dissecting shar codes, for instance, add
 
 (defun mm-uu-dissect ()
   "Dissect the current buffer and return a list of uu handles."
-  (let (ct ctl cte charset text-start start-char end-char
-	   type file-name end-line result text-plain-type 
-	   start-char-1 end-char-1
-	   (case-fold-search t))
+  (let (text-start start-char end-char
+		   type file-name end-line result text-plain-type 
+		   start-char-1 end-char-1
+		   (case-fold-search t))
     (save-excursion
       (save-restriction
 	(mail-narrow-to-head)
-	(when (and (mail-fetch-field "mime-version")
-		   (setq ct (mail-fetch-field "content-type")))
-	  (setq cte (message-fetch-field "content-transfer-encoding" t)
-		ctl (ignore-errors (mail-header-parse-content-type ct))
-		charset (and ctl (mail-content-type-get ctl 'charset)))
-	  (if (stringp cte)
-	      (setq cte (intern (downcase (mail-header-remove-whitespace
-					   (mail-header-remove-comments
-					    cte))))))
-	  (if (memq cte '(base64 quoted-printable))
-	      (setq charset 'gnus-encoded ;; a fake charset
-		    cte nil)))
 	(goto-char (point-max)))
       (forward-line)
+      ;;; gnus-decoded is a fake charset, which means no further
+      ;;; decoding.
       (setq text-start (point)
-	    text-plain-type (cons "text/plain"
-				  (if charset
-				      (list (cons 'charset charset)))))
+	    text-plain-type '("text/plain"  (charset . gnus-decoded)))
       (while (re-search-forward mm-uu-begin-line nil t)
 	(setq start-char (match-beginning 0))
 	(setq type (cdr (assq (aref (match-string 0) 0)
@@ -173,9 +161,7 @@ To disable dissecting shar codes, for instance, add
 			(intern (concat "mm-uu-" (symbol-name type)
 					"-end-line"))))
 	(when (and (re-search-forward end-line nil t)
-		   (not (eq (match-beginning 0) (match-end 0)))
-		   ;; Do not dissect base64 forward. 
-		   (not (and (eq charset 'gnus-encoded) (eq type 'forward))))
+		   (not (eq (match-beginning 0) (match-end 0))))
 	  (setq end-char-1 (match-beginning 0))
 	  (forward-line)
 	  (setq end-char (point))
@@ -186,7 +172,7 @@ To disable dissecting shar codes, for instance, add
 	    (if (> start-char text-start)
 		(push
 		 (mm-make-handle (mm-uu-copy-to-buffer text-start start-char)
-		       text-plain-type cte)
+		       text-plain-type)
 		 result))
 	    (push
 	     (cond
@@ -195,7 +181,7 @@ To disable dissecting shar codes, for instance, add
 		     '("application/postscript")))
 	      ((eq type 'forward)
 	       (mm-make-handle (mm-uu-copy-to-buffer start-char-1 end-char-1)
-		     '("message/rfc822")))
+			       '("message/rfc822" (charset . gnus-decoded))))
 	      ((eq type 'uu)
 	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
 		     (list (or (and file-name
@@ -227,7 +213,7 @@ To disable dissecting shar codes, for instance, add
 	(if (> (point-max) (1+ text-start))
 	    (push
 	     (mm-make-handle (mm-uu-copy-to-buffer text-start (point-max))
-		   text-plain-type cte)
+		   text-plain-type)
 	     result))
 	(setq result (cons "multipart/mixed" (nreverse result))))
       result)))
@@ -236,10 +222,7 @@ To disable dissecting shar codes, for instance, add
 (defun mm-uu-test ()
   "Check whether the current buffer contains uu stuffs."
   (save-excursion
-    (save-restriction
-      (mail-narrow-to-head)
-      (goto-char (point-max)))
-    (forward-line)
+    (goto-char (point-min))
     (let (type end-line result
 	       (case-fold-search t))
       (while (and mm-uu-begin-line

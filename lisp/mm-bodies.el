@@ -193,7 +193,8 @@ The characters in CHARSET should then be decoded."
 		   ;;in XEmacs
 		   (mm-multibyte-p)
 		   (or (not (eq mule-charset 'ascii))
-		       (setq mule-charset mail-parse-charset)))
+		       (setq mule-charset mail-parse-charset))
+		   (not (eq mule-charset 'gnus-decoded)))
 	  (mm-decode-coding-region (point-min) (point-max) mule-charset))))))
 
 (defun mm-decode-string (string charset)

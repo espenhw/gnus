@@ -359,7 +359,7 @@ and `altavista'.")
 	    (active (or (cadr (assoc nnweb-group nnweb-group-alist))
 			(cons 1 0)))
 	    subject date from
-	    map url parse a table group)
+	    map url parse a table group text)
 	(while more
 	  ;; Go through all the article hits on this page.
 	  (goto-char (point-min))

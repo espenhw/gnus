@@ -1,3 +1,21 @@
+1999-11-18 14:52:05  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (nnweb-dejanews-create-mapping): Bind `text'.
+
+1999-11-18 14:35:01  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-dissect): Use fake charset `gnus-decoded'.
+	(mm-uu-test): Now it is in restricted region.
+	
+	* gnus-art.el (article-decode-charset): Don't mm-uu-test.
+	
+	* mm-view.el (mm-view-message): Fix buffer leak.
+	(mm-inline-message): Support 'gnus-decoded.
+	
+	* mm-bodies.el (mm-decode-body): Ditto.
+
+	* rfc2047.el (rfc2047-decode-region): Ditto.
+	
 1999-11-18  Matthias Andree  <ma@dt.e-technik.uni-dortmund.de>
 
 	* imap.el (require): Added autoload for base64-encode-string.

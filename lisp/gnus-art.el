@@ -1444,8 +1444,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	(forward-line 1)
 	(narrow-to-region (point) (point-max))
 	(when (and (or (not ctl)
-		       (equal (car ctl) "text/plain"))
-		   (not (mm-uu-test)))
+		       (equal (car ctl) "text/plain")))
 	  (mm-decode-body
 	   charset (and cte (intern (downcase
 				     (gnus-strip-whitespace cte))))

@@ -168,19 +168,31 @@
 
 (defun mm-view-message ()
   (mm-enable-multibyte)
-  (gnus-article-prepare-display)
-  (run-hooks 'gnus-article-decode-hook)
+  (let (handles)
+    (let (gnus-article-mime-handles)
+      ;; Double decode problem may happen. See mm-inline-message.
+      (run-hooks 'gnus-article-decode-hook)
+      (gnus-article-prepare-display)
+      (setq handles gnus-article-mime-handles))
+    (when handles
+      (setq gnus-article-mime-handles
+	    (nconc gnus-article-mime-handles 
+		   (if (listp (car handles)) 
+		       handles (list handles))))))
   (fundamental-mode)
   (goto-char (point-min)))
 
 (defun mm-inline-message (handle)
   (let ((b (point))
+	(charset (mail-content-type-get
+		  (mm-handle-type handle) 'charset))
 	gnus-displaying-mime handles)
     (save-excursion
       (save-restriction
 	(narrow-to-region b b)
 	(mm-insert-part handle)
-	(let (gnus-article-mime-handles)
+	(let (gnus-article-mime-handles
+	      (gnus-newsgroup-charset (or charset gnus-newsgroup-charset)))
 	  (run-hooks 'gnus-article-decode-hook)
 	  (gnus-article-prepare-display)
 	  (setq handles gnus-article-mime-handles))

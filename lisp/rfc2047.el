@@ -297,12 +297,14 @@ Should be called narrowed to the head of the message."
 		       (match-string 0)
 		     (delete-region (match-beginning 0) (match-end 0)))))
 	  (when (and (mm-multibyte-p)
-		     mail-parse-charset)
+		     mail-parse-charset
+		     (not (eq mail-parse-charset 'gnus-decoded)))
 	    (mm-decode-coding-region b e mail-parse-charset))
 	  (setq b (point)))
 	(when (and (mm-multibyte-p)
 		   mail-parse-charset
-		   (not (eq mail-parse-charset 'us-ascii)))
+		   (not (eq mail-parse-charset 'us-ascii))
+		   (not (eq mail-parse-charset 'gnus-decoded)))
 	  (mm-decode-coding-region b (point-max) mail-parse-charset))))))
 
 (defun rfc2047-decode-string (string)
