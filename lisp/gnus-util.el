@@ -484,8 +484,8 @@ If N, return the Nth ancestor instead."
 	  (while (nthcdr n ids)
 	    (setq ids (cdr ids)))
 	  (car ids))
-      (when (string-match "<[^<]+\\'" references)
-	(match-string 0 references)))))
+      (when (string-match "\\(<[^<]+>\\)[ \t]*\\'" references)
+	(match-string 1 references)))))
 
 (defun gnus-buffer-live-p (buffer)
   "Say whether BUFFER is alive or not."
