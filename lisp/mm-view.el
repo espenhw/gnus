@@ -326,8 +326,8 @@
   (mm-string-as-unibyte
    (apply 'concat
 	  (mapcar 'char-to-string
-		  (list ?\x30 ?\x82 ?\x01 ?\x91 ?\x06 ?\x09 ?\x2a ?\x86 ?\x48
-			?\x86 ?\xf7 ?\x0d ?\x01 ?\x07 ?\x02)))))
+		  (list ?\x30 ?\x82 ?\x2e ?\x2e ?\x06 ?\x09 ?\x5c ?\x2a
+			?\x86 ?\x48 ?\x86 ?\xf7 ?\x0d ?\x01 ?\x07 ?\x02)))))
   
 ;;      id-envelopedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
 ;;          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 3 }
@@ -335,15 +335,15 @@
   (mm-string-as-unibyte
    (apply 'concat
 	  (mapcar 'char-to-string
-		  (list ?\x30 ?\x82 ?\x01 ?\x91 ?\x06 ?\x09 ?\x2a ?\x86 ?\x48
-			?\x86 ?\xf7 ?\x0d ?\x01 ?\x07 ?\x03)))))
+		  (list ?\x30 ?\x82 ?\x2e ?\x2e ?\x06 ?\x09 ?\x5c ?\x2a
+			?\x86 ?\x48 ?\x86 ?\xf7 ?\x0d ?\x01 ?\x07 ?\x03)))))
   
 (defun mm-view-pkcs7-get-type (handle)
-  (with-temp-buffer
+  (mm-with-unibyte-buffer
     (mm-insert-part handle)
-    (cond ((looking-at (regexp-quote mm-pkcs7-enveloped-magic))
+    (cond ((looking-at mm-pkcs7-enveloped-magic)
 	   'enveloped)
-	  ((looking-at (regexp-quote mm-pkcs7-signed-magic))
+	  ((looking-at mm-pkcs7-signed-magic)
 	   'signed)
 	  (t
 	   (error "Could not identify PKCS#7 type")))))

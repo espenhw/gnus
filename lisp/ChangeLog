@@ -1,3 +1,10 @@
+2001-08-02  Simon Josefsson  <jas@extundo.com>
+
+	* mm-view.el (mm-pkcs7-signed-magic): Make it a regexp.  Don't
+	match the ASN.1 length bytes.
+	(mm-pkcs7-enveloped-magic): Ditto.
+	(mm-view-pkcs7-get-type): Don't regexp quote.
+
 2001-08-01 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Andreas Fuchs <asf@void.at>
 
