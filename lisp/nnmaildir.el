@@ -547,6 +547,15 @@ by nnmaildir-request-article.")
 (defun nnmaildir--up2-1 (n)
   (if (zerop n) 1 (1- (lsh 1 (1+ (logb n))))))
 
+(defun nnmaildir--system-name ()
+  (gnus-replace-in-string
+   (gnus-replace-in-string
+    (gnus-replace-in-string
+     (system-name)
+     "\\\\" "\\134" 'literal)
+    "/" "\\057" 'literal)
+   ":" "\\072" 'literal))
+
 (defun nnmaildir-request-type (group &optional article)
   'mail)
 
@@ -1310,7 +1319,7 @@ by nnmaildir-request-article.")
 	(setq file (concat file "M" (number-to-string (caddr time)))))
       (setq file (concat file nnmaildir--delivery-pid)
 	    file (concat file "Q" (number-to-string nnmaildir--delivery-count))
-	    file (concat file "." (system-name)) ;;;; FIXME: encode / and :
+	    file (concat file "." (nnmaildir--system-name))
 	    tmpfile (concat (nnmaildir--tmp dir) file)
 	    curfile (concat (nnmaildir--cur dir) file ":2,"))
       (when (file-exists-p tmpfile)
