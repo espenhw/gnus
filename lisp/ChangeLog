@@ -1,6 +1,7 @@
 2003-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bump.
+	(gnus-secondary-method-p): Extend servers to methods before comparing.
 
 2003-12-30 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 

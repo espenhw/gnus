@@ -3494,7 +3494,7 @@ You should probably use `gnus-find-method-for-group' instead."
     (while (and methods
 		(not (gnus-method-equal
 		      (gnus-server-get-method nil (car methods))
-		      gmethod)))
+		      (gnus-server-get-method nil gmethod))))
       (setq methods (cdr methods)))
     methods))
 
