@@ -4578,7 +4578,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 			 (read-string
 			  (format
 			   "How many articles from %s (default %d): "
-			   (gnus-limit-string gnus-newsgroup-name 35)
+			   (gnus-limit-string 
+                            (gnus-group-decoded-name gnus-newsgroup-name)
+                            35)	
 			   number))))
 		    (if (string-match "^[ \t]*$" input) number input)))
 		 ((and (> scored marked) (< scored number)
@@ -4587,7 +4589,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 			 (read-string
 			  (format "%s %s (%d scored, %d total): "
 				  "How many articles from"
-				  group scored number))))
+				  (gnus-group-decoded-name group)
+                                  scored number))))
 		    (if (string-match "^[ \t]*$" input)
 			number input)))
 		 (t number))

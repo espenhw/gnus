@@ -239,10 +239,12 @@ as unread by Gnus.")
 		(file-truename (file-name-as-directory
 				(expand-file-name nnmh-toplev))))
 	       dir)
-	      (nnheader-replace-chars-in-string
-	       (mm-decode-coding-string (substring dir (match-end 0))
-					nnmail-pathname-coding-system)
-	       ?/ ?.))
+              (mm-string-as-multibyte
+	       (mm-encode-coding-string 
+                (nnheader-replace-chars-in-string
+                 (substring dir (match-end 0))
+                 ?/ ?.)
+                nnmail-pathname-coding-system)))
 	    (apply 'max files)
 	    (apply 'min files)))))))
   t)

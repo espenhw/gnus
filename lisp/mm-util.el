@@ -122,6 +122,7 @@
 	      (setq idx (1+ idx)))
 	    string)))
      (string-as-unibyte . identity)
+     (string-as-multibyte . identity)
      (multibyte-string-p . ignore))))
 
 (eval-and-compile
@@ -195,6 +196,9 @@
    ((mm-coding-system-p 'escape-quoted) 'escape-quoted)
    (t mm-binary-coding-system))
   "Coding system of auto save file.")
+
+(defvar mm-universal-coding-system mm-auto-save-coding-system
+  "The universal Coding system.")
 
 ;;; Internal variables:
 

@@ -1,3 +1,19 @@
+2001-07-23 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-articles-to-read): Use gnus-group-decoded-name.
+
+	* mm-util.el (mm-string-as-multibyte): New.
+
+	* nnmh.el (nnmh-request-list-1): Encode, not decode!
+
+2001-07-23 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-universal-coding-system): New.
+
+	* gnus-start.el (gnus-startup-file-coding-system): Use it.
+
+	* score-mode.el (score-mode-coding-system): Use it.
+
 2001-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-setup-news): Call
