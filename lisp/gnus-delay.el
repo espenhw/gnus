@@ -41,22 +41,33 @@
 (defun gnus-delay-article (delay)
   "Delay this article by some time.
 DELAY is a string, giving the length of the time.  Possible values are
-like 3d (meaning 3 days) or 2w (meaning two weeks)."
+<digits><units> for <units> in minutes (`m'), hours (`h'), days (`d'),
+weeks (`w'), months (`M'), or years (`Y')."
   (interactive
-   (list (read-string (format "Length of delay (default `%s'): "
-                              gnus-delay-default-delay)
-                      nil nil gnus-delay-default-delay nil)))
+   (list (read-string "Length of delay (units in [mhdwMY]): "
+                      gnus-delay-default-delay)))
   (let (num unit days deadline)
-    (unless (string-match "\\([0-9]+\\)\\s-*\\([dw]\\)" delay)
+    (unless (string-match "\\([0-9]+\\)\\s-*\\([mhdwMY]\\)" delay)
       (error "Malformed delay `%s'" delay))
     (setq num (match-string 1 delay))
     (setq unit (match-string 2 delay))
-    (if (string= unit "w")
-        (setq delay (* 7 (string-to-number num)))
-      (setq delay (string-to-number num)))
+    ;; Start from seconds, then multiply into needed units.
+    (setq num (string-to-number num))
+    (cond ((string= unit "Y")
+           (setq delay (* num 60 60 24 365)))
+          ((string= unit "M")
+           (setq delay (* num 60 60 24 30)))
+          ((string= unit "w")
+           (setq delay (* num 60 60 24 7)))
+          ((string= unit "d")
+           (setq delay (* num 60 60 24)))
+          ((string= unit "h")
+           (setq delay (* num 60 60)))
+          (t
+           (setq delay (* num 60))))
     (setq deadline (message-make-date
                     (seconds-to-time (+ (time-to-seconds (current-time))
-                                        (* delay 24 60 60)))))
+                                        delay))))
     (message-add-header (format "%s: %s" gnus-delay-header deadline)))
   (set-buffer-modified-p t)
   (nndraft-request-create-group gnus-delay-group)

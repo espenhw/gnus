@@ -1,5 +1,9 @@
 2001-07-22  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* gnus-delay.el (gnus-delay-article): Fix `read-string' for
+	XEmacs.  Allow more units.  Submitted by Karl Kleinpaste
+	<karl@charcoal.com>, slightly changed by Kai.
+
 	* message.el (message-check-news-header-syntax): When checking
 	whether the groups exist, check the right server based on
 	`gnus-post-method'.
