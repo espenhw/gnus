@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.36 Manual
+@settitle Quassia Gnus 0.37 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.36 Manual
+@title Quassia Gnus 0.37 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.36.
+This manual corresponds to Quassia Gnus 0.37.
 
 @end ifinfo
 
@@ -11154,6 +11154,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent Basics::           How it all is supposed to work.
 * Agent Categories::       How to tell the Gnus Agent what to download.
 * Agent Commands::         New commands for all the buffers.
+* Agent Expiry::           How to make old articles go away.
 * Outgoing Messages::      What happens when you post/mail something?
 * Agent Variables::        Customizing is fun.
 * Example Setup::          An example @file{.gnus.el} file for offline people.
@@ -11548,6 +11549,21 @@ Remove the current server from the list of servers covered by the Gnus
 Agent (@code{gnus-agent-remove-server}).
 
 @end table
+
+
+@node Agent Expiry
+@subsection Agent Expiry
+
+@vindex gnus-agent-expiry-days
+@findex gnus-agent-expiry
+@kindex M-x gnus-agent-expiry
+
+@code{nnagent} doesn't handle expiry.  Instead, there's a special
+@code{gnus-agent-expiry} command that will expire all read articles that
+are older than @code{gnus-agent-expiry-days} days.  It can be run
+whenever you feel that you're running out of space.  It's not
+particularly fast or efficient, and it's not a particularly good idea to
+interrupt it (with @kbd{C-g} or anything else) once you've started it.
 
 
 @node Outgoing Messages
@@ -15489,6 +15505,7 @@ Geoffrey T. Dairiki,
 Andre Deparade,
 Ulrik Dickow,
 Dave Disser,
+Rui-Tao Dong, @c ?
 Joev Dubach,
 Michael Welsh Duggan,
 Dave Edmondson,
@@ -15540,6 +15557,7 @@ Shlomo Mahlab,
 Nat Makarevitch,
 Istvan Marko,
 David Martin,
+Jason R Mastaler,
 Gordon Matzigkeit,
 Timo Metzemakers,
 Richard Mlynarik,
@@ -15556,9 +15574,11 @@ Masaharu Onishi, @c Onishi
 Hideki Ono, @c Ono
 William Perry,
 Stephen Peters,
+Jens-Ulrik Holger Petersen,
 Ulrich Pfeifer,
 John McClary Prevost,
 Colin Rafferty,
+Lasse Rasinen,
 Lars Balker Rasmussen,
 Joe Reiss,
 Renaud Rioboo,

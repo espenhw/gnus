@@ -49,6 +49,11 @@
   :group 'gnus-agent
   :type 'integer)
 
+(defcustom gnus-agent-expire-days 7
+  "Read articles older than this will be expired."
+  :group 'gnus-agent
+  :type 'integer)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -546,7 +551,7 @@ the actual number of articles toggled is returned."
     (goto-char (point-max))
     (insert id "\t" (number-to-string date) "\t")
     (while group-arts
-      (insert (caar group-arts) "/" (number-to-string (cdr (pop group-arts)))
+      (insert (caar group-arts) " " (number-to-string (cdr (pop group-arts)))
 	      " "))
     (insert "\n")))
 
@@ -1189,6 +1194,88 @@ The following commands are available:
       (assq 'default gnus-category-alist)))
 
 (defun gnus-agent-expire ()
+  "Expire all old articles."
+  (interactive)
+  (let ((methods gnus-agent-covered-methods)
+	(day (- (gnus-time-to-day (current-time)) gnus-agent-expire-days))
+	(expiry-hashtb (gnus-make-hashtable 1023))
+	gnus-command-method sym group articles
+	history overview file histories elem art nov-file low info
+	unreads marked article)
+    (save-excursion
+      (setq overview (get-buffer-create " *expire overview*"))
+      (while (setq gnus-command-method (pop methods))
+	(gnus-agent-open-history)
+	(set-buffer
+	 (setq gnus-agent-current-history
+	       (setq history (gnus-agent-history-buffer))))
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (skip-chars-forward "^\t")
+	  (if (> (read (current-buffer)) day)
+	      ;; New article; we don't expire it.
+	      (forward-line 1)
+	    ;; Old article.  Schedule it for possible nuking.
+	    (while (not (eolp))
+	      (setq sym (let ((obarray expiry-hashtb))
+			  (read (current-buffer))))
+	      (if (boundp sym)
+		  (set sym (cons (cons (read (current-buffer)) (point))
+				 (symbol-value sym)))
+		(set sym (list (cons (read (current-buffer)) (point)))))
+	      (skip-chars-forward " "))
+	    (forward-line 1)))
+	;; We now have all articles that can possibly be expired.
+	(mapatoms
+	 (lambda (sym)
+	   (setq group (symbol-name sym)
+		 articles (sort (symbol-value sym) 'car-less-than-car)
+		 low (car (gnus-active group))
+		 info (gnus-get-info group)
+		 unreads (ignore-errors (gnus-list-of-unread-articles group))
+		 marked (nconc (gnus-uncompress-range
+				(cdr (assq 'ticked (gnus-info-marks info))))
+			       (gnus-uncompress-range
+				(cdr (assq 'dormant (gnus-info-marks info)))))
+		 nov-file (gnus-agent-article-name ".overview" group))
+	   (gnus-message 5 "Expiring articles in %s" group)
+	   (set-buffer overview)
+	   (erase-buffer)
+	   (when (file-exists-p nov-file)
+	     (insert-file-contents nov-file))
+	   (goto-char (point-min))
+	   (while (setq elem (pop articles))
+	     (setq article (car elem))
+	     (when (or (null low)
+		       (< article low)
+		       (and (not (memq article unreads))
+			    (not (memq article marked))))
+	       ;; Find and nuke the NOV line.
+	       (while (and (not (eobp))
+			   (< (setq art (read (current-buffer))) article))
+		 (forward-line 1))
+	       (if (or (eobp)
+		       (/= art article))
+		   (beginning-of-line)
+		 (gnus-delete-line))
+	       ;; Nuke the article.
+	       (when (file-exists-p (setq file (gnus-agent-article-name
+						(number-to-string article)
+						group)))
+		 (delete-file file))
+	       ;; Schedule the history line for nuking.
+	       (push (cdr elem) histories)))
+	   (write-region (point-min) (point-max) nov-file nil 'silent))
+	 expiry-hashtb)
+	(set-buffer history)
+	(setq histories (nreverse (sort histories '<)))
+	(while histories
+	  (goto-char (pop histories))
+	  (gnus-delete-line))
+	(gnus-agent-save-history)
+	(gnus-agent-close-history)))))
+  
+(defun gnus-agent-expire-old ()
   "Expire all old articles."
   (interactive)
   (let ((methods gnus-agent-covered-methods)

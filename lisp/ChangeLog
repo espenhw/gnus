@@ -1,3 +1,12 @@
+Sat Mar  7 21:59:18 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.37 is released.
+
+Sat Mar  7 20:10:42 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-expire-days): New variable.
+	(gnus-agent-expire): New function.
+
 Sat Mar  7 17:35:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.36 is released.
