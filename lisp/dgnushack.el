@@ -132,11 +132,6 @@ than subr.el."
 
 (eval-and-compile
   (when (featurep 'xemacs)
-    ;; XEmacs 21.1 needs some extra hand holding
-    (when (eq emacs-minor-version 1)
-      (autoload 'custom-declare-face "cus-face" nil t)
-      (autoload 'cl-compile-time-init "cl-macs" nil t)
-      (autoload 'defadvice "advice" nil nil 'macro))
     (unless (fboundp 'defadvice)
       (autoload 'defadvice "advice" nil nil 'macro))
     (autoload 'Info-directory "info" nil t)

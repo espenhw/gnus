@@ -103,20 +103,6 @@ Possibly the `etc' directory has not been installed.")))
 (defvar standard-display-table)
 (defvar gnus-tree-minimize-window)
 
-(defun gnus-xmas-set-text-properties (start end props &optional buffer)
-  "You should NEVER use this function.  It is ideologically blasphemous.
-It is provided only to ease porting of broken FSF Emacs programs."
-  (if (stringp buffer)
-      nil
-    (map-extents (lambda (extent ignored)
-		   (remove-text-properties
-		    start end
-		    (list (extent-property extent 'text-prop) nil)
-		    buffer)
-		   nil)
-		 buffer start end nil nil 'text-prop)
-    (gnus-add-text-properties start end props buffer)))
-
 (defun gnus-xmas-highlight-selected-summary ()
   ;; Highlight selected article in summary buffer
   (when gnus-summary-selected-face
@@ -400,10 +386,6 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-window-edges 'window-pixel-edges)
   (defalias 'gnus-assq-delete-all 'gnus-xmas-assq-delete-all)
 
-  (if (and (<= emacs-major-version 19)
-	   (< emacs-minor-version 14))
-      (defalias 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
-
   (unless (boundp 'standard-display-table)
     (setq standard-display-table nil))
 
@@ -455,11 +437,6 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-put-image 'gnus-xmas-put-image)
   (defalias 'gnus-create-image 'gnus-xmas-create-image)
   (defalias 'gnus-remove-image 'gnus-xmas-remove-image)
-
-  (when (or (< emacs-major-version 21)
-	    (and (= emacs-major-version 21)
-		 (< emacs-minor-version 3)))
-    (defalias 'gnus-completing-read 'gnus-xmas-completing-read))
 
   ;; These ones are not defcutom'ed, sometimes not even defvar'ed. They
   ;; probably should. If that is done, the code below should then be moved
@@ -871,31 +848,6 @@ Warning: Don't insert text immediately after the image."
        (set-extent-property ext 'end-glyph nil))
      nil)
    nil nil nil nil nil 'gnus-image category))
-
-(defun gnus-xmas-completing-read (prompt table &optional
-					 predicate require-match history)
-  (when (and history
-	     (not (boundp history)))
-    (set history nil))
-  (completing-read
-   (if (symbol-value history)
-       (concat prompt " (" (car (symbol-value history)) "): ")
-     (concat prompt ": "))
-   table
-   predicate
-   require-match
-   nil
-   history))
-
-;; This macro is because XEmacs versions prior to 21.2 do not have the
-;; PROTOCOL argument to `open-network-stream'.
-(defmacro gnus-xmas-open-network-stream (name buffer host service &optional protocol)
-  "Like `open-network-stream' but take into account older XEmacs versions."
-  (if (and (featurep 'xemacs)
-	   (fboundp 'open-network-stream)
-	   (emacs-version>= 21 2))
-      `(open-network-stream ,name ,buffer ,host ,service ,protocol)
-    `(open-network-stream ,name ,buffer ,host ,service)))
 
 (defun gnus-xmas-assq-delete-all (key alist)
   (let ((elem nil))

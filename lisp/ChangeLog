@@ -1,3 +1,28 @@
+2004-01-06  Steve Youngs  <sryoungs@bigpond.net.au>
+
+	* messagexmas.el (message-xmas-redefine): Alias
+	`message-make-caesar-translation-table' to
+	``message-xmas-make-caesar-translation-table' regardless of XEmacs
+	version.
+
+	* gnus-xmas.el (gnus-xmas-set-text-properties): Removed.
+	(gnus-xmas-define): Don't alias `gnus-set-text-properties' to
+	`gnus-xmas-set-text-properties'.
+	(gnus-xmas-redefine): Don't alias `gnus-completing-read' to
+	`gnus-xmas-completing-read'. 
+	(gnus-xmas-completing-read): Removed.
+	(gnus-xmas-open-network-stream): Removed.
+
+	* gnus-ems.el (gnus-mode-line-modified): Don't conditionalise on
+	XEmacs version.
+
+	* dns.el (dns-make-network-process): Use `open-network-stream'
+	instead of `gnus-xmas-open-network-stream'.
+
+	* dgnushack.el: Remove some XEmacs 21.1 specific stuff.
+
+	* .cvsignore: Add auto-autoloads.el, custom-load.el.
+
 2004-01-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-mime-display-alternative)

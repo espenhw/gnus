@@ -37,8 +37,7 @@
 (defvar gnus-down-mouse-2 [down-mouse-2])
 (defvar gnus-widget-button-keymap nil)
 (defvar gnus-mode-line-modified
-  (if (or (featurep 'xemacs)
-	  (< emacs-major-version 20))
+  (if (featurep 'xemacs)
       '("--**-" . "-----")
     '("**" "--")))
 
