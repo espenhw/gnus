@@ -1,3 +1,8 @@
+2005-02-14  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.el (spam-contents): improve docs for spam-contents
+	parameter in its variable incarnation
+
 2005-02-14  Simon Josefsson  <jas@extundo.com>
 
 	* smime-ldap.el: Use require instead of load-library for ldap.
