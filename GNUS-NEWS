@@ -8,6 +8,24 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Better handling of Microsoft citation styles
+
+Gnus now tries to recognize the mangled header block that some
+Microsoft mailers use to indicate that the rest of the message is a
+citation, even though it is not quoted in any way.  The variable
+`gnus-unsightly-citation-regexp' matches the start of these citations.
+
+** gnus-article-skip-boring
+
+If you set `gnus-article-skip-boring' to t, then Gnus will not scroll
+down to show you a page that contains only boring text, which by
+default means cited text and signature.  You can customize what is
+skippable using `gnus-article-boring-faces'.
+
+This feature is especially useful if you read many articles that
+consist of a little new content at the top with a long, untrimmed
+message cited below.
+
 ** The format spec %C for positioning point has changed to %*.
 
 ** The new variable `gnus-parameters' can be used to set group parameters.
