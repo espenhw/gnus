@@ -1,3 +1,7 @@
+2000-10-28  Simon Josefsson  <sj@extundo.com>
+
+	* dig.el: New file.
+
 2000-10-28 10:09:41  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-options): New variable.
