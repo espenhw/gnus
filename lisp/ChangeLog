@@ -1,3 +1,16 @@
+2001-06-19  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-process-connection-type): New variable.
+	(imap-kerberos4-open, imap-gssapi-open): Use it.  This makes
+	recent `imtest's work completely (no line length issues), while
+	making making old `imtest's unusable.  Thanks to NAGY Andras
+	<nagya@inf.elte.hu> for his work.
+
+2000-12-30  NAGY Andras <nagya@inf.elte.hu>
+
+	* imap.el (imap-ssl-program): Add -quiet to shut up
+	OpenSSL/SSLeay's internal debug talk.
+
 2001-06-19  Matt Armstrong <matt@lickey.com>
 
 	* imap.el (imap-parse-flag-list): Workaround bug in Courier IMAP

@@ -188,10 +188,10 @@ the list is tried until a successful connection is made."
   :group 'imap
   :type '(repeat string))
 
-(defcustom imap-ssl-program '("openssl s_client -ssl3 -connect %s:%p"
-			      "openssl s_client -ssl2 -connect %s:%p"
-			      "s_client -ssl3 -connect %s:%p"
-			      "s_client -ssl2 -connect %s:%p")
+(defcustom imap-ssl-program '("openssl s_client -quiet -ssl3 -connect %s:%p"
+			      "openssl s_client -quiet -ssl2 -connect %s:%p"
+			      "s_client -quiet -ssl3 -connect %s:%p"
+			      "s_client -quiet -ssl2 -connect %s:%p")
   "A string, or list of strings, containing commands for SSL connections.
 Within a string, %s is replaced with the server address and %p with
 port number on server.  The program should accept IMAP commands on
@@ -213,6 +213,11 @@ and write IMAP response to stdout. Each entry in the list is tried
 until a successful connection is made."
   :group 'imap
   :type '(repeat string))
+
+(defcustom imap-process-connection-type nil
+  "*Value for `process-connection-type' to use for Kerberos4 and GSSAPI."
+  :group 'imap
+  :type 'boolean)
 
 (defvar imap-shell-host "gateway"
   "Hostname of rlogin proxy.")
@@ -448,6 +453,7 @@ If ARGS, PROMPT is used as an argument to `format'."
       (let* ((port (or port imap-default-port))
 	     (coding-system-for-read imap-coding-system-for-read)
 	     (coding-system-for-write imap-coding-system-for-write)
+	     (process-connection-type imap-process-connection-type)
 	     (process (start-process 
 		       name buffer shell-file-name shell-command-switch
 		       (format-spec
@@ -511,6 +517,7 @@ If ARGS, PROMPT is used as an argument to `format'."
       (let* ((port (or port imap-default-port))
 	     (coding-system-for-read imap-coding-system-for-read)
 	     (coding-system-for-write imap-coding-system-for-write)
+	     (process-connection-type imap-process-connection-type)
 	     (process (start-process 
 		       name buffer shell-file-name shell-command-switch
 		       (format-spec
