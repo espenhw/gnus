@@ -2804,6 +2804,15 @@ You should probably use `gnus-find-method-for-group' instead."
 		     params-list))))
     params-list))
 
+(defun gnus-expand-group-parameter (match value group)
+  "Use MATCH to expand VALUE in GROUP."
+  (with-temp-buffer
+    (insert group)
+    (goto-char (point-min))
+    (while (re-search-forward match nil t)
+      (replace-match value))
+    (buffer-string)))
+
 (defun gnus-expand-group-parameters (match parameters group)
   "Go through PARAMETERS and expand them according to the match data."
   (let (new)
@@ -2811,28 +2820,58 @@ You should probably use `gnus-find-method-for-group' instead."
       (if (and (stringp (cdr elem))
 	       (string-match "\\\\" (cdr elem)))
 	  (push (cons (car elem)
-		      (with-temp-buffer
-			(insert group)
-			(goto-char (point-min))
-			(while (re-search-forward match nil t)
-			  (replace-match (cdr elem)))
-			(buffer-string)))
+		      (gnus-expand-group-parameter match (cdr elem) group))
 		new)
 	(push elem new)))
     new))
 
+(defun gnus-group-fast-parameter (group symbol &optional allow-list)
+  "For GROUP, return the value of SYMBOL.
+
+You should call this in the `gnus-group-buffer' buffer.  
+The function `gnus-group-find-parameter' will do that for you."
+  ;; The speed trick:  No cons'ing and quit early.
+  (or (let ((params (funcall gnus-group-get-parameter-function group)))
+	;; Start easy, check the "real" group parameters.
+	(gnus-group-parameter-value params symbol allow-list))
+      ;; We didn't found it there, try `gnus-parameters'.
+      (let ((result nil)
+	    (head nil)
+	    (tail gnus-parameters))
+	;; A good old-fashioned non-cl loop.
+	(while tail
+	  (setq head (car tail)
+		tail (cdr tail))
+	  ;; The car is regexp matching for matching the group name.
+	  (when (string-match (car head) group)
+	    ;; The cdr is the parameters.
+	    (setq result (gnus-group-parameter-value (cdr head) 
+						     symbol allow-list))
+	    (when result
+	      ;; Expand if necessary.
+	      (if (and (stringp result) (string-match "\\\\" result))
+		  (setq result (gnus-expand-group-parameter (car head)
+							    result group)))
+	      ;; Exit the loop early.
+	      tail nil)))
+	;; Done.
+	result)))
+
 (defun gnus-group-find-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.
-If SYMBOL, return the value of that symbol in the group parameters."
+If SYMBOL, return the value of that symbol in the group parameters.
+
+If you call this function inside a loop, consider using the faster
+`gnus-group-fast-parameter' instead."
   (save-excursion
     (set-buffer gnus-group-buffer)
-    (let ((parameters
-	   (nconc
-	    (copy-sequence
-	     (funcall gnus-group-get-parameter-function group))
-	    (gnus-parameters-get-parameter group))))
-      (if symbol
-	  (gnus-group-parameter-value parameters symbol allow-list)
+    (if symbol
+	(gnus-group-fast-parameter group symbol allow-list)
+      (let ((parameters
+	     (nconc
+	      (copy-sequence
+	       (funcall gnus-group-get-parameter-function group))
+	      (gnus-parameters-get-parameter group))))
 	parameters))))
 
 (defun gnus-group-get-parameter (group &optional symbol allow-list)

@@ -1,3 +1,10 @@
+2001-10-24  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-expand-group-parameter): New function.
+	(gnus-expand-group-parameters): Call it.
+	(gnus-group-fast-parameter): New function.
+	(gnus-group-find-parameter): Call it.
+
 2001-10-23  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus.el (gnus-news-group-p): Rewrote.  Now accepts a header
