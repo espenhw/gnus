@@ -1,3 +1,8 @@
+2005-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Score Decays): `gnus-decay-scores' can be a regexp
+	matching score files as well.
+
 2005-01-02  Romain Francoise  <romain@orebokech.com>
 
 	* gnus-news.texi: Mention the new method used to hide headers.
