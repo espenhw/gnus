@@ -1,3 +1,8 @@
+2001-10-10 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail-partially): Insert an empty line
+	first, because of the change of message-make-lines.
+
 2001-10-10  Florian Weimer  <fw@deneb.enyo.de>
 
 	* mm-util.el (mm-charset-synonym-alist): If Emacs doesn't support

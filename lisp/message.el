@@ -2487,19 +2487,17 @@ It should typically alter the sending method in some way or other."
 	      (insert "Mime-Version: 1.0\n")
 	      (setq header (buffer-substring (point-min) (point-max))))
 	    (goto-char (point-max))
-	    (insert (format "Content-Type: message/partial; id=\"%s\"; number=%d; total=%d\n"
+	    (insert (format "Content-Type: message/partial; id=\"%s\"; number=%d; total=%d\n\n"
 			    id n total))
+	    (forward-char -1)
 	    (let ((mail-header-separator ""))
 	      (when (memq 'Message-ID message-required-mail-headers)
 		(insert "Message-ID: " (message-make-message-id) "\n"))
 	      (when (memq 'Lines message-required-mail-headers)
-		(let ((mail-header-separator ""))
-		  (insert "Lines: " (message-make-lines) "\n")))
+		(insert "Lines: " (message-make-lines) "\n"))
 	      (message-goto-subject)
 	      (end-of-line)
 	      (insert (format " (%d/%d)" n total))
-	      (goto-char (point-max))
-	      (insert "\n")
 	      (widen)
 	      (mm-with-unibyte-current-buffer
 		(funcall (or message-send-mail-real-function
