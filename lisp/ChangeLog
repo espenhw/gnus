@@ -1,5 +1,8 @@
 2000-12-19 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nnmbox.el (nnmbox-file-coding-system): Use binary.
+	(nnmbox-active-file-coding-system): Ditto.
+
 	* gnus-cus.el (gnus-group-parameters): Add posting-style.
 
 2000-12-19 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
