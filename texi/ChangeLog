@@ -1,3 +1,7 @@
+2002-05-01  Simon Josefsson  <jas@extundo.com>
+
+	* message.texi (Message Headers): Fix example.
+
 2002-04-26  Steve Youngs  <youngs@xemacs.org>
 
 	* Makefile.in (infodir): Set to '@info_dir@' so we can separate

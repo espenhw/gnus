@@ -1150,7 +1150,7 @@ responding to a message:
 
 @lisp
 (setq message-subject-re-regexp
-     "^\\(\\(\\([Rr][Ee]\\|[Ss][Vv]\\|[Aa][Ww]\\): *\\)+\\))
+     "^\\(\\(\\([Rr][Ee]\\|[Ss][Vv]\\|[Aa][Ww]\\): *\\)+\\)")
 @end lisp
 
 @item message-alternative-emails
