@@ -1416,6 +1416,13 @@ hidden when composing a message.
       '(not "From" "Subject" "To" "Cc" "Newsgroups"))
 @end lisp
 
+@item message-header-synonyms
+@vindex message-header-synonyms
+A list of lists of header synonyms.  E.g., if this list contains a
+member list with elements @code{Cc} and @code{To}, then
+@code{message-carefully-insert-headers} will not insert a @code{To}
+header when the message is already @code{Cc}ed to the recipient.
+
 @end table
 
 

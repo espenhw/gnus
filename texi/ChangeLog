@@ -1,5 +1,7 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.texi (Message Headers): Add message-header-synonyms.
+
 	* gnus.texi (Other modes): New node.
 	(Oort Gnus): Refer to the above in "Dired integration".
 
