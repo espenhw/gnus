@@ -315,7 +315,7 @@ See also `with-temp-file' and `with-output-to-string'."
 	  (skip-chars-forward "\0-\177")
 	  (if (eobp)
 	      '(ascii)
-	    (delq nil (list 'ascii (cadr (assq 'charset entry)))))))))))
+	    (delq nil (list 'ascii (car (last (assq 'charset entry))))))))))))
 
 (defun mm-read-charset (prompt)
   "Return a charset."

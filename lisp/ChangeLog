@@ -1,3 +1,12 @@
+1999-12-09 10:20:07  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Binding
+	nnmail-fetched-sources.
+
+1999-12-09 10:19:01  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-find-charset-region): Use the last charset.
+
 1999-12-08  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus.el (gnus-select-method): Made the option list prettier.

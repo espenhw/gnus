@@ -3047,7 +3047,12 @@ If N is negative, this group and the N-1 previous groups will be checked."
 	 (ret (if (numberp n) (- n (length groups)) 0))
 	 (beg (unless n
 		(point)))
-	 group method)
+	 group method
+	 (gnus-inhibit-demon t)
+	 ;; Binding this variable will inhibit multiple fetchings
+	 ;; of the same mail source.
+	 (nnmail-fetched-sources (list t)))
+    (gnus-run-hooks 'gnus-get-new-news-hook)
     (while (setq group (pop groups))
       (gnus-group-remove-mark group)
       ;; Bypass any previous denials from the server.
