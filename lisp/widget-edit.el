@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 0.98
+;; Version: 0.991
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -760,7 +760,7 @@ With optional ARG, move across that many fields."
   :match 'widget-item-match
   :match-inline 'widget-item-match-inline
   :action 'widget-item-action
-  :format "%t")
+  :format "%t\n")
 
 (defun widget-item-convert-widget (widget)
   ;; Initialize :value and :tag from :args in WIDGET.
@@ -861,6 +861,7 @@ With optional ARG, move across that many fields."
 						  :value-to-internal
 						  (widget-value widget))
 						 'widget-field-history)))
+    (widget-apply widget :notify widget event)
     (widget-setup)))
 
 (defun widget-field-value-create (widget)
@@ -904,6 +905,7 @@ With optional ARG, move across that many fields."
 	  (setq from (1+ from)
 		to (1- to))
 	  (while (and size
+		      (not (zerop size))
 		      (> to from)
 		      (eq (char-after (1- to)) ?\ ))
 	    (setq to (1- to)))
@@ -926,6 +928,7 @@ With optional ARG, move across that many fields."
   "A menu of options."
   :convert-widget  'widget-choice-convert-widget
   :format "%[%t%]: %v"
+  :case-fold t
   :tag "choice"
   :void '(item :format "invalid (%t)\n")
   :value-create 'widget-choice-value-create
@@ -940,12 +943,12 @@ With optional ARG, move across that many fields."
 
 (defun widget-choice-convert-widget (widget)
   ;; Expand type args into widget objects.
-					;  (widget-put widget :args (mapcar (lambda (child)
-					;				     (if (widget-get child ':converted)
-					;					 child
-					;				       (widget-put child ':converted t)
-					;				       (widget-convert child)))
-					;				   (widget-get widget :args)))
+;  (widget-put widget :args (mapcar (lambda (child)
+;				     (if (widget-get child ':converted)
+;					 child
+;				       (widget-put child ':converted t)
+;				       (widget-convert child)))
+;				   (widget-get widget :args)))
   (widget-put widget :args (mapcar 'widget-convert (widget-get widget :args)))
   widget)
 
@@ -982,6 +985,7 @@ With optional ARG, move across that many fields."
   (let ((args (widget-get widget :args))
 	(old (widget-get widget :choice))
 	(tag (widget-apply widget :menu-tag-get))
+	(completion-ignore-case (widget-get widget :case-fold))
 	current choices)
     ;; Remember old value.
     (if (and old (not (widget-apply widget :validate)))
@@ -1012,7 +1016,8 @@ With optional ARG, move across that many fields."
       (widget-value-set widget 
 			(widget-apply current :value-to-external
 				      (widget-get current :value)))
-      (widget-setup)))
+    (widget-apply widget :notify widget event)
+    (widget-setup)))
   ;; Notify parent.
   (widget-apply widget :notify widget event)
   (widget-clear-undo))
@@ -1460,7 +1465,7 @@ With optional ARG, move across that many fields."
 	(t 
 	 (widget-default-format-handler widget escape))))
 
-					;(defun widget-editable-list-format-handler (widget escape)
+;(defun widget-editable-list-format-handler (widget escape)
 ;  ;; We recognize the insert button.
 ;  (cond ((eq escape ?i)
 ;	 (insert " ")			
@@ -1726,8 +1731,9 @@ With optional ARG, move across that many fields."
   :format "%[%t%]: %v")
 
 (define-widget 'regexp 'string
+  "A regular expression."
   ;; Should do validation.
-  "A regular expression.")
+  :tag "Regexp")
 
 (define-widget 'file 'string
   "A file widget.  
@@ -1746,6 +1752,7 @@ It will read a file name from the minibuffer when activated."
 	 (answer (read-file-name (concat menu-tag ": (defalt `" value "') ")
 				 dir nil must-match file)))
     (widget-value-set widget (abbreviate-file-name answer))
+    (widget-apply widget :notify widget event)
     (widget-setup)))
 
 (define-widget 'directory 'file
@@ -1968,13 +1975,15 @@ It will read a directory name from the minibuffer when activated."
 		       (t
 			(read-string prompt (widget-value widget))))))
     (unless (zerop (length answer))
-      (widget-value-set widget answer))))
+      (widget-value-set widget answer)
+      (widget-apply widget :notify widget event)
+      (widget-setup))))
 
 ;;; The Help Echo
 
 (defun widget-echo-help-mouse ()
   "Display the help message for the widget under the mouse.
-Enable with (run-with-idle-timer 2 t 'widget-echo-help-mouse)"
+Enable with (run-with-idle-timer 1 t 'widget-echo-help-mouse)"
   (let* ((pos (mouse-position))
 	 (frame (car pos))
 	 (x (car (cdr pos)))

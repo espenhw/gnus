@@ -7786,7 +7786,7 @@ save those articles instead."
 	(article (gnus-summary-article-number))
 	after-article b e)
     (unless (gnus-summary-goto-subject article)
-      (error (format "No such article: %d" article)))
+      (error "No such article: %d" article))
     (gnus-summary-position-point)
     ;; If all commands are to be bunched up on one line, we collect
     ;; them here.
@@ -7912,10 +7912,8 @@ save those articles instead."
       ;; We have to really fetch the header to this article.
       (save-excursion
 	(set-buffer nntp-server-buffer)
-	(when (setq where (gnus-request-article-this-buffer id group))
-	  (goto-char (point-min))
-	  (when (search-forward "\n\n" nil t)
-	    (delete-region (1- (point)) (point-max)))
+	(when (setq where (gnus-request-head id group))
+	  (goto-char (point-max))
 	  (insert ".\n")
 	  (goto-char (point-min))
 	  (insert "211 ")

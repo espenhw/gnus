@@ -103,7 +103,8 @@
 
 (deffoo nnweb-request-group (group &optional server dont-check)
   (nnweb-possibly-change-server nil server)
-  (when (and (not (equal group nnweb-group))
+  (when (and group 
+	     (not (equal group nnweb-group))
 	     (not nnweb-ephemeral-p))
     (let ((info (assoc group nnweb-group-alist)))
       (setq nnweb-group group)

@@ -121,6 +121,7 @@ with some simple extensions.
 %l    Whether there are GroupLens predictions for this group (string)
 %n    Select from where (string)
 %z    A string that look like `<%s:%n>' if a foreign select method is used
+?d    The date the group was last entered.
 %u    User defined specifier.  The next character in the format string should
       be a letter.  Gnus will call the function gnus-user-format-function-X,
       where X is the letter following %u.  The function will be passed the
@@ -324,6 +325,7 @@ ticked: The number of ticked articles.")
     (?l gnus-tmp-grouplens ?s)
     (?z gnus-tmp-news-method-string ?s)
     (?m (gnus-group-new-mail gnus-tmp-group) ?c)
+    (?d (gnus-group-timestamp-string gnus-tmp-group) ?s)
     (?u gnus-tmp-user-defined ?s)))
 
 (defvar gnus-group-mode-line-format-alist
@@ -3126,6 +3128,28 @@ and the second element is the address."
 	  (setcdr m (gnus-compress-sequence
 		     (sort (nconc (gnus-uncompress-range (cdr m))
 				  (copy-sequence articles)) '<) t))))))
+
+;;;
+;;; Group timestamps
+;;;
+
+(defun gnus-group-set-timestamp ()
+  "Change the timestamp of the current group to the current time.
+This function can be used in hooks like `gnus-select-group-hook'."
+  (let ((time (current-time)))
+    (setcdr (cdr time) nil)
+    (gnus-group-set-parameter gnus-newsgroup-name 'timestamp time)))
+
+(defsubst gnus-group-timestamp (group)
+  "Return the timestamp for GROUP."
+  (gnus-group-get-parameter group 'timestamp))
+
+(defun gnus-group-timestamp-string (group)
+  "Return a string of the timestamp for GROUP."
+  (let ((time (gnus-group-timestamp group)))
+    (if (not time)
+	""
+      (gnus-time-iso8601 time))))
 
 (provide 'gnus-group)
 

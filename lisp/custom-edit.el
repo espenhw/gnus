@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.98
+;; Version: 0.991
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -33,10 +33,6 @@
 	  (numberp sexp))
       sexp
     (list 'quote sexp)))
-
-(defun custom-unimplemented (&rest ignore)
-  "Apologize for my laziness."
-  (error "Sorry, not implemented"))
 
 ;;; Modification of Basic Widgets.
 ;;
@@ -135,15 +131,15 @@ MAGIC is a string used to present that state.
 FACE is a face used to present the state.
 
 The list should be sorted most significant first."
-  :type '(repeat (list (choice (item nil)
-			       (item unknown)
-			       (item hidden)
-			       (item invalid)
-			       (item modified)
-			       (item applied)
-			       (item saved)
-			       (item rogue)
-			       (item factory))
+  :type '(repeat (list (choice (const nil)
+			       (const unknown)
+			       (const hidden)
+			       (const invalid)
+			       (const modified)
+			       (const applied)
+			       (const saved)
+			       (const rogue)
+			       (const factory))
 		       string face))
   :group 'customize)
 
@@ -186,6 +182,16 @@ The list should be sorted most significant first."
 
 ;;; The `custom' Widget.
 
+(defvar custom-save-needed-p nil
+  "Non-nil if any customizations need to be saved.")
+
+(add-hook 'kill-emacs-hook 'custom-save-maybe)
+
+(defun custom-save-maybe ()
+  (and custom-save-needed-p
+       (y-or-n-p "You have unsaved customizations, save them now? ")
+       (custom-save)))
+
 (define-widget 'custom 'default
   "Customize a user option."
   :convert-widget 'widget-item-convert-widget
@@ -203,8 +209,7 @@ The list should be sorted most significant first."
 
 (defun custom-format-handler (widget escape)
   ;; We recognize extra escape sequences.
-  (let* ((symbol (widget-get widget :value))
-	 (buttons (widget-get widget :buttons))
+  (let* ((buttons (widget-get widget :buttons))
 	 (level (widget-get widget :custom-level)))
     (cond ((eq escape ?l)
 	   (when level 
@@ -403,7 +408,7 @@ Optional EVENT is the location for the menu."
     (cond ((eq state 'hidden)
 	   (error "Cannot apply hidden variable."))
 	  ((setq val (widget-apply child :validate))
-	   (error "Invalid %S"))
+	   (error "Invalid %S" val))
 	  ((eq form 'lisp)
 	   (set symbol (eval (widget-value child))))
 	  (t
@@ -421,11 +426,13 @@ Optional EVENT is the location for the menu."
     (cond ((eq state 'hidden)
 	   (error "Cannot apply hidden variable."))
 	  ((setq val (widget-apply child :validate))
-	   (error "Invalid %S"))
+	   (error "Invalid %S" val))
 	  ((eq form 'lisp)
+	   (setq custom-save-needed-p (cons symbol custom-save-needed-p))
 	   (put symbol 'saved-value (list (widget-value child)))
 	   (set symbol (eval (widget-value child))))
 	  (t
+	   (setq custom-save-needed-p (cons symbol custom-save-needed-p))
 	   (put symbol
 		'saved-value (list (custom-quote (widget-value
 						  child))))
@@ -446,9 +453,10 @@ Optional EVENT is the location for the menu."
   "Restore the factory setting for the variable being edited by WIDGET."
   (let ((symbol (widget-value widget)))
     (if (get symbol 'factory-value)
-	(set symbol (car (get symbol 'factory-value)))
+	(set symbol (eval (car (get symbol 'factory-value))))
       (error "No factory default for %S" symbol))
     (when (get symbol 'saved-value)
+      (setq custom-save-needed-p (cons symbol custom-save-needed-p))
       (put symbol 'saved-value nil))
     (widget-put widget :custom-state 'unknown)
     (custom-redraw widget)))
@@ -607,7 +615,7 @@ Optional EVENT is the location for the menu."
 	 (child (car (widget-get widget :children))))
     (unless (get symbol 'saved-face)
       (error "No saved value for this face")
-      (widget-value-set child (get symbol 'saved-face)))))
+    (widget-value-set child (get symbol 'saved-face)))))
 
 (defun custom-face-factory (widget)
   "Restore WIDGET to the face's factory settings."
@@ -624,7 +632,8 @@ Optional EVENT is the location for the menu."
 (define-widget 'face 'default
   "Select and customize a face."
   :convert-widget 'widget-item-convert-widget
-  :format "%[%t%]%v"
+  :format "%[%t%]: %v"
+  :tag "Face"
   :value 'default
   :value-create 'widget-face-value-create
   :value-delete 'widget-radio-value-delete
@@ -638,8 +647,8 @@ Optional EVENT is the location for the menu."
   (let* ((symbol (widget-value widget))
 	 (child (widget-create-child-and-convert
 		 widget 'custom-face
+		 :format "%t %s%m %h%v"
 		 :custom-level nil
-		 :tag ""
 		 :value symbol)))
     (custom-magic-reset child)
     (widget-put widget :children (list child))))
@@ -657,6 +666,7 @@ Optional EVENT is the location for the menu."
 				 'face-history)))
     (unless (zerop (length answer))
       (widget-value-set widget (intern answer))
+      (widget-apply widget :notify widget event)
       (widget-setup))))
 
 ;;; The `custom-group' Widget.
@@ -825,6 +835,7 @@ Leave point at the location of the call, or after the last expression."
   (interactive)
   (custom-save-variables)
   (custom-save-faces)
+  (setq custom-save-needed-p nil)
   (save-excursion
     (set-buffer (find-file-noselect custom-file))
     (save-buffer)))

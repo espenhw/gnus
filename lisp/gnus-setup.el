@@ -31,6 +31,8 @@
 
 ;;; Code:
 
+(require 'cl)
+
 (defvar running-xemacs (string-match "XEmacs\\|Lucid" emacs-version))
 
 (defvar gnus-emacs-lisp-directory (if running-xemacs

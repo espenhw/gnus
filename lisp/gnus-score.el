@@ -182,9 +182,7 @@ This variable allows the same syntax as `gnus-home-score-file'.")
     "right" "before" "our" "without" "too" "those" "why" "must" "part"
     "being" "current" "back" "still" "go" "point" "value" "each" "did"
     "both" "true" "off" "say" "another" "state" "might" "under" "start"
-    "try"
-
-    "re")
+    "try" "re")
   "Default list of words to be ignored when doing adaptive word scoring.")
 
 (defvar gnus-default-adaptive-word-score-alist  

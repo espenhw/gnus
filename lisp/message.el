@@ -2869,6 +2869,7 @@ Optional NEWS will use news to forward instead of mail."
 (defun message-resend (address)
   "Resend the current article to ADDRESS."
   (interactive "sResend message to: ")
+  (message "Resending message to %s..." address)
   (save-excursion
     (let ((cur (current-buffer))
 	  beg)
@@ -2904,7 +2905,8 @@ Optional NEWS will use news to forward instead of mail."
 	(insert "Also-"))
       ;; Send it.
       (message-send-mail)
-      (kill-buffer (current-buffer)))))
+      (kill-buffer (current-buffer)))
+    (message "Resending message to %s...done" address)))
 
 ;;;###autoload
 (defun message-bounce ()

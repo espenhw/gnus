@@ -1,3 +1,7 @@
+Wed Oct  2 01:32:49 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Timestamps): New.
+
 Tue Oct  1 01:34:45 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
 
 	* gnus.texi (Expiring Mail): Addition.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.46 Manual
+@settitle Red Gnus 0.47 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.46 Manual
+@title Red Gnus 0.47 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -1124,6 +1124,10 @@ The default is 1---this will mean that group names like
 @cindex %
 @samp{%} (@code{gnus-new-mail-mark}) if there has arrived new mail to
 the group lately.
+
+@item d
+A string that says when you last read the group (@pxref{Group
+Timestamp}). 
 
 @item u
 User defined specifier.  The next character in the format string should
@@ -2705,6 +2709,7 @@ happens.  You just have to be careful if you do stuff like that.
 @menu
 * Scanning New Messages:: Asking Gnus to see whether new messages have arrived.
 * Group Information::     Information and help on groups and Gnus.
+* Group Timestamp::       Making Gnus keep track of when you last read a group.
 * File Commands::         Reading and writing the Gnus files.
 @end menu
 
@@ -2859,6 +2864,46 @@ Give a very short help message (@code{gnus-group-describe-briefly}).
 @findex gnus-info-find-node
 Go to the Gnus info node (@code{gnus-info-find-node}).
 @end table
+
+
+@node Group Timestamp
+@subsection Group Timestamp
+@cindex timestamps
+@cindex group timestamps
+
+It can be convenient to let Gnus keep track of when you last read a
+group.  To set the ball rolling, you should add
+@code{gnus-group-set-timestamp} to @code{gnus-select-group-hook}:
+
+@lisp
+(add-hook 'gnus-select-group-hook 'gnus-group-set-timestamp)
+@end lisp
+
+After doing this, each time you enter a group, it'll be recorded.
+
+This information can be displayed in various ways---the easiest is to
+use the @samp{%d} spec in the group line format:
+
+@lisp
+(setq gnus-group-line-format 
+      "%M\%S\%p\%P\%5y: %(%-40,40g%) %d\n")
+@end lisp
+
+This will result in lines looking like:
+
+@example
+*        0: mail.ding                                19961002T012943
+         0: custom                                   19961002T012713
+@end example
+
+As you can see, the date is displayed in compact ISO 8601 format.  This
+may be a bit too much, so to just display the date, you could say
+something like:
+
+@lisp
+(setq gnus-group-line-format 
+      "%M\%S\%p\%P\%5y: %(%-40,40g%) %6,6~(cut 2)d\n")
+@end lisp
 
 
 @node File Commands
@@ -8391,7 +8436,7 @@ password, you can either set @code{nnmail-pop-password-required} to
 @code{t} and be prompted for the password, or set
 @code{nnmail-pop-password} to the password itself.
 
-Your Emacs has to have been configured with @samp{--use-pop} before
+Your Emacs has to have been configured with @samp{--with-pop} before
 compilation.  This is the default, but some installations have it
 switched off.
 

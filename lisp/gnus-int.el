@@ -283,18 +283,31 @@ If BUFFER, insert the article in that group."
 (defun gnus-request-head (article group)
   "Request the head of ARTICLE in GROUP."
   (let* ((method (gnus-find-method-for-group group))
-	 (head (gnus-get-function method 'request-head t)))
-    (if (fboundp head)
-	(funcall head article (gnus-group-real-name group) (nth 1 method))
-      (let ((res (gnus-request-article article group)))
-	(when res
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (goto-char (point-min))
-	    (when (search-forward "\n\n" nil t)
-	      (delete-region (1- (point)) (point-max)))
-	    (nnheader-fold-continuation-lines)))
-	res))))
+	 (head (gnus-get-function method 'request-head t))
+	 res clean-up)
+    (cond
+     ;; Check the cache.
+     ((and gnus-use-cache
+	   (numberp article)
+	   (gnus-cache-request-article article group))
+      (setq res (cons group article)
+	    clean-up t))
+     ;; Use `head' function.
+     ((fboundp head)
+      (setq res (funcall head article (gnus-group-real-name group)
+			 (nth 1 method))))
+     ;; Use `article' function.
+     (t
+      (setq res (gnus-request-article article group)
+	    clean-up t)))
+    (when clean-up
+      (save-excursion
+	(set-buffer nntp-server-buffer)
+	(goto-char (point-min))
+	(when (search-forward "\n\n" nil t)
+	  (delete-region (1- (point)) (point-max)))
+	(nnheader-fold-continuation-lines)))
+    res))
 
 (defun gnus-request-body (article group)
   "Request the body of ARTICLE in GROUP."

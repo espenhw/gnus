@@ -628,6 +628,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
     "\C-c\C-b" gnus-bug
 
     "\C-d" gnus-article-read-summary-keys
+    "\M-*" gnus-article-read-summary-keys
     "\M-g" gnus-article-read-summary-keys)
 
   (substitute-key-definition
@@ -1195,7 +1196,8 @@ If given a prefix, show the hidden text instead."
 
 	  ;; We only request an article by message-id when we do not have the
 	  ;; headers for it, so we'll have to get those.
-	  (when (stringp article)
+	  (when (and (not gnus-doing-request-article)
+		     (stringp article))
 	    (let ((gnus-override-method gnus-refer-article-method))
 	      (gnus-read-header article)))
 
