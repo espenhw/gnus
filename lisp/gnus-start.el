@@ -1462,7 +1462,7 @@ newsgroup."
     ;; Parse the result we got from `gnus-request-group'.
     (when (looking-at "[0-9]+ [0-9]+ \\([0-9]+\\) [0-9]+")
       (goto-char (match-beginning 1))
-      (cons (1+ (read (current-buffer)))
+      (cons (read (current-buffer))
 	    (read (current-buffer))))))
 
 (defun gnus-make-articles-unread (group articles)

@@ -286,14 +286,14 @@ displayed by the first non-nil matching CONTENT face."
 			       (item :tag "skip" nil)
 			       (face :value default)))))
 
+;;; Internal variables
+
 (defvar gnus-article-mode-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
     ;;(modify-syntax-entry ?_ "w" table)
     table)
   "Syntax table used in article mode buffers.
 Initialized from `text-mode-syntax-table.")
-
-;;; Internal variables
 
 (defvar gnus-save-article-buffer nil)
 
@@ -345,6 +345,8 @@ Initialized from `text-mode-syntax-table.")
      (article-show-all . gnus-article-show-all-headers))))
 
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
+
+(defvar gnus-summary-article-menu)
 
 ;;; Saving functions.
 
@@ -675,10 +677,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]))
 
-    (when nil
-    (define-key gnus-article-mode-map 
-      (vector 'menu-bar (car gnus-summary-article-menu))
-      gnus-summary-article-menu))
+    (define-key gnus-article-mode-map [Article] gnus-summary-article-menu)
 
     (run-hooks 'gnus-article-menu-hook)))
 

@@ -242,11 +242,10 @@ If this times out we give up and assume that something has died..." )
 
   ;; if an old process is still running for some reason, kill it
   (when grouplens-bbb-process
-    (condition-case ()
-	(when (eq 'open (process-status grouplens-bbb-process))
-	  (set-process-buffer grouplens-bbb-process nil)
-	  (delete-process grouplens-bbb-process))
-      (error nil)))
+    (ignore-errors
+      (when (eq 'open (process-status grouplens-bbb-process))
+	(set-process-buffer grouplens-bbb-process nil)
+	(delete-process grouplens-bbb-process))))
 
   ;; clear the trace buffer of old output
   (save-excursion
@@ -325,14 +324,14 @@ If this times out we give up and assume that something has died..." )
 
 (defun bbb-logout ()
   "logout of bbb session"
-  (let ((bbb-process
-	 (bbb-connect-to-bbbd grouplens-bbb-host grouplens-bbb-port)))
-    (if bbb-process
+  (when grouplens-bbb-token
+    (let ((bbb-process
+	   (bbb-connect-to-bbbd grouplens-bbb-host grouplens-bbb-port)))
+      (when bbb-process
 	(save-excursion
 	  (set-buffer (process-buffer bbb-process))
 	  (bbb-send-command bbb-process (concat "logout " grouplens-bbb-token))
-	  (bbb-read-response bbb-process))
-      nil)))
+	  (bbb-read-response bbb-process))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;       Get Predictions
@@ -612,7 +611,8 @@ recommend using both scores and grouplens predictions together."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun bbb-put-ratings ()
-  (if (and grouplens-rating-alist 
+  (if (and grouplens-bbb-token
+	   grouplens-rating-alist 
 	   (member gnus-newsgroup-name grouplens-newsgroups))
       (let ((bbb-process (bbb-connect-to-bbbd grouplens-bbb-host 
 					      grouplens-bbb-port))

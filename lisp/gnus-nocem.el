@@ -72,12 +72,20 @@ isn't bound, the message will be used unconditionally."
   :type '(radio (function-item mc-verify)
 		(function :tag "other")))
 
+(defcustom gnus-nocem-liberal-fetch nil
+  "*If t try to fetch all messages which have @@NCM in the subject.
+Otherwise don't fetch messages which have references or whose messsage-id
+matches an previously scanned and verified nocem message."
+  :group 'gnus-nocem
+  :type 'boolean)
+
 ;;; Internal variables
 
 (defvar gnus-nocem-active nil)
 (defvar gnus-nocem-alist nil)
 (defvar gnus-nocem-touched-alist nil)
 (defvar gnus-nocem-hashtb nil)
+(defvar gnus-nocem-seen-message-ids nil)
 
 ;;; Functions
 
@@ -113,7 +121,7 @@ isn't bound, the message will be used unconditionally."
 	  ;; headers.
 	  (save-excursion
 	    (let ((dependencies (make-vector 10 nil))
-		  headers)
+		  headers header)
 	      (nnheader-temp-write nil
 		(setq headers
 		      (if (eq 'nov
@@ -128,13 +136,18 @@ isn't bound, the message will be used unconditionally."
 			  (gnus-get-newsgroup-headers-xover 
 			   articles nil dependencies)
 			(gnus-get-newsgroup-headers dependencies)))
-		(while headers
+		(while (setq header (pop headers))
 		  ;; We take a closer look on all articles that have
-		  ;; "@@NCM" in the subject.  
-		  (when (string-match "@@NCM"
-				      (mail-header-subject (car headers)))
-		    (gnus-nocem-check-article group (car headers)))
-		  (setq headers (cdr headers)))))))
+		  ;; "@@NCM" in the subject.  Unless we already read
+		  ;; this cross posted message.  Nocem messages
+		  ;; are not allowed to have references, so we can
+		  ;; ignore scanning followups.
+		  (and (string-match "@@NCM" (mail-header-subject header))
+		       (or gnus-nocem-liberal-fetch
+			   (and (string= "" (mail-header-references header))
+				(not (member (mail-header-message-id header)
+					     gnus-nocem-seen-message-ids))))
+		       (gnus-nocem-check-article group header)))))))
 	(setq gnus-nocem-active
 	      (cons (list group gactive)
 		    (delq (assoc group gnus-nocem-active)
@@ -168,9 +181,12 @@ isn't bound, the message will be used unconditionally."
 	(narrow-to-region b e)
 	(setq issuer (mail-fetch-field "issuer"))
 	(widen)
-	(and (member issuer gnus-nocem-issuers) ; We like her...
-	     (gnus-nocem-verify-issuer issuer) ; She is who she says she is..
-	     (gnus-nocem-enter-article)))))) ; We gobble the message.
+	(and (member issuer gnus-nocem-issuers) ; We like her....
+	     (gnus-nocem-verify-issuer issuer) ; She is who she says she is...
+	     (gnus-nocem-enter-article)	; We gobble the message..
+	     (push (mail-header-message-id header) ; But don't come back for
+		   gnus-nocem-seen-message-ids)))))) ; second helpings.
+
   
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
@@ -201,8 +217,10 @@ isn't bound, the message will be used unconditionally."
 		(while (= (following-char) ?\t)
 		  (forward-line -1))
 		(setq id (buffer-substring (point) (1- (search-forward "\t"))))
-		(push id ncm)
-		(gnus-sethash id t gnus-nocem-hashtb)
+		(unless (gnus-gethash id gnus-nocem-hashtb)
+		  ;; only store if not already present
+		  (gnus-sethash id t gnus-nocem-hashtb)
+		  (push id ncm))
 		(forward-line 1)
 		(while (= (following-char) ?\t)
 		  (forward-line 1))))))
@@ -210,7 +228,8 @@ isn't bound, the message will be used unconditionally."
 	(setq gnus-nocem-touched-alist t)
 	(push (cons (let ((time (current-time))) (setcdr (cdr time) nil) time)
 		    ncm)
-	      gnus-nocem-alist)))))
+	      gnus-nocem-alist))
+      t)))
 
 (defun gnus-nocem-load-cache ()
   "Load the NoCeM cache."
@@ -261,7 +280,8 @@ isn't bound, the message will be used unconditionally."
   (setq gnus-nocem-alist nil
 	gnus-nocem-hashtb nil
 	gnus-nocem-active nil
-	gnus-nocem-touched-alist nil))
+	gnus-nocem-touched-alist nil
+	gnus-nocem-seen-message-ids nil))
 
 (defun gnus-nocem-unwanted-article-p (id)
   "Say whether article ID in the current group is wanted."

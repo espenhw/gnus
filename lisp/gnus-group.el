@@ -195,6 +195,7 @@ with some simple extensions:
 (defcustom gnus-group-mode-hook nil
   "Hook for Gnus group mode."
   :group 'gnus-group
+  :options '(gnus-topic-mode)
   :type 'hook)
 
 (defcustom gnus-group-menu-hook nil
@@ -2485,8 +2486,8 @@ If REVERSE, sort in reverse order."
   (let ((group (gnus-info-group info)))
     (gnus-undo-register
       `(progn
-	 (gnus-info-set-marks ,info ,(gnus-info-marks info))
-	 (gnus-info-set-read ,info ,(gnus-info-read info))
+	 (gnus-info-set-marks ',info ',(gnus-info-marks info))
+	 (gnus-info-set-read ',info ',(gnus-info-read info))
 	 (when (gnus-group-goto-group ,group)
 	   (gnus-group-update-group-line))))
     (gnus-info-set-read info nil)

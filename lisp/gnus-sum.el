@@ -6634,9 +6634,11 @@ re-spool using this method."
   (interactive "P")
   (gnus-summary-move-article n nil nil 'crosspost))
 
-(defvar gnus-summary-respool-default-method nil
+(defcustom gnus-summary-respool-default-method nil
   "Default method for respooling an article.  
-If nil, use to the current newsgroup method.")
+If nil, use to the current newsgroup method."
+  :type 'gnus-select-method-name
+  :group 'gnus-summary)
 
 (defun gnus-summary-respool-article (&optional n method)
   "Respool the current article.

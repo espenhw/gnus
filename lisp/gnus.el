@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.61"
+(defconst gnus-version-number "0.62"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -284,17 +284,18 @@ used to 899, you would say something along these lines:
 		 (kill-buffer (current-buffer))))))))
 
 (defcustom gnus-select-method
-  (nconc
-   (list 'nntp (or (ignore-errors
-		     (gnus-getenv-nntpserver))
-		   (when (and gnus-default-nntp-server
-			      (not (string= gnus-default-nntp-server "")))
-		     gnus-default-nntp-server)
-		   (system-name)))
-   (if (or (null gnus-nntp-service)
-	   (equal gnus-nntp-service "nntp"))
-       nil
-     (list gnus-nntp-service)))
+  (ignore-errors
+    (nconc
+     (list 'nntp (or (ignore-errors
+		       (gnus-getenv-nntpserver))
+		     (when (and gnus-default-nntp-server
+				(not (string= gnus-default-nntp-server "")))
+		       gnus-default-nntp-server)
+		     (system-name)))
+     (if (or (null gnus-nntp-service)
+	     (equal gnus-nntp-service "nntp"))
+	 nil
+       (list gnus-nntp-service))))
   "Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address.
@@ -836,10 +837,12 @@ face."
 	gnus-article-hide-boring-headers
 	gnus-article-treat-overstrike
 	gnus-article-maybe-highlight
+	gnus-article-de-quoted-unreadable
 	gnus-article-display-x-face)
     '(gnus-article-hide-headers-if-wanted
       gnus-article-hide-boring-headers
       gnus-article-treat-overstrike
+      gnus-article-de-quoted-unreadable
       gnus-article-maybe-highlight))
   "Controls how the article buffer will look.
 
@@ -1047,6 +1050,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("rmailout" rmail-output)
      ("rmail" rmail-insert-rmail-file-header rmail-count-new-messages
       rmail-show-message)
+     ("gnus-audio" :interactive t gnus-audio-play)
      ("gnus-xmas" gnus-xmas-splash)
      ("gnus-soup" :interactive t
       gnus-group-brew-soup gnus-brew-soup gnus-soup-add-article
@@ -1178,7 +1182,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 ;;; gnus-sum.el thingies
 
 
-(defvar gnus-summary-line-format "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
+(defcustom gnus-summary-line-format "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
   "*The format specification of the lines in the summary buffer.
 
 It works along the same lines as a normal formatting string,
@@ -1234,7 +1238,9 @@ which is bad enough.
 The smart choice is to have these specs as for to the left as
 possible.
 
-This restriction may disappear in later versions of Gnus.")
+This restriction may disappear in later versions of Gnus."
+  :type 'string
+  :group 'gnus-summary)
 
 ;;;
 ;;; Skeleton keymaps

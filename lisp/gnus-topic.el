@@ -30,11 +30,17 @@
 (require 'gnus-group)
 (require 'gnus-start)
 
+(defgroup gnus-topic nil
+  "Group topics."
+  :group 'gnus-group)
+
 (defvar gnus-topic-mode nil
   "Minor mode for Gnus group buffers.")
 
-(defvar gnus-topic-mode-hook nil
-  "Hook run in topic mode buffers.")
+(defcustom gnus-topic-mode-hook nil
+  "Hook run in topic mode buffers."
+  :type 'hook
+  :group 'gnus-topic)
 
 (defvar gnus-topic-line-format "%i[ %(%{%n%}%) -- %A ]%v\n"
   "Format of topic lines.
@@ -49,11 +55,15 @@ with some simple extensions.
 %A  Number of unread articles in the groups in the topic and its subtopics.
 ")
 
-(defvar gnus-topic-indent-level 2
-  "*How much each subtopic should be indented.")
+(defcustom gnus-topic-indent-level 2
+  "*How much each subtopic should be indented."
+  :type 'integer
+  :group 'gnus-topic)
 
-(defvar gnus-topic-display-empty-topics t
-  "*If non-nil, display the topic lines even of topics that have no unread articles.")
+(defcustom gnus-topic-display-empty-topics t
+  "*If non-nil, display the topic lines even of topics that have no unread articles."
+  :type 'boolean
+  :group 'gnus-topic)
 
 ;; Internal variables.
 

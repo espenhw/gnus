@@ -273,7 +273,7 @@ Example:
 
 (defvar nnmail-split-abbrev-alist
   '((any . "from\\|to\\|cc\\|sender\\|apparently-to\\|resent-from\\|resent-to\\|resent-cc")
-    (mail . "mailer-daemon\\|postmaster"))
+    (mail . "mailer-daemon\\|postmaster\\|uucp"))
   "*Alist of abbreviations allowed in `nnmail-split-fancy'.")
 
 (defvar nnmail-delete-incoming nil
@@ -401,6 +401,10 @@ parameter.  It should return nil, `warn' or `delete'.")
   (if (not (file-writable-p nnmail-crash-box))
       (gnus-error 1 "Can't write to crash box %s.  Not moving mail."
 		  nnmail-crash-box)
+    ;; If the crash box exists and is empty, we delete it.
+    (when (and (file-exists-p nnmail-crash-box)
+	       (zerop (nnheader-file-size (file-truename nnmail-crash-box))))
+      (delete-file nnmail-crash-box))
     (let ((inbox (file-truename (expand-file-name inbox)))
 	  (tofile (file-truename (expand-file-name nnmail-crash-box)))
 	  movemail popmail errors)
@@ -639,6 +643,8 @@ is a spool.  If not using procmail, return GROUP."
 			   (= (following-char) ?\n)))
 		     (save-excursion
 		       (forward-line 1)
+		       (while (looking-at ">From ")
+			 (forward-line 1))
 		       (looking-at "[^ \t:]+[ \t]*:")))
 	    (setq found 'yes)))))
     (beginning-of-line)

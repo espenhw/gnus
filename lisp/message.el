@@ -944,6 +944,10 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 (defun message-insert-to ()
   "Insert a To header that points to the author of the article being replied to."
   (interactive)
+  (let ((co (message-fetch-field "courtesy-copies-to")))
+    (when (and co 
+	       (equal (downcase co) "never"))
+      (error "The user has requested not to have copies sent via mail")))
   (when (and (message-position-on-field "To")
 	     (mail-fetch-field "to")
 	     (not (string-match "\\` *\\'" (mail-fetch-field "to"))))

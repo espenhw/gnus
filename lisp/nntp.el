@@ -447,7 +447,7 @@ This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
   (nntp-send-command 
    "^.*\r?\n" "AUTHINFO USER"
-   (read-string "NNTP (%s) user name: " nntp-address))
+   (read-string (format "NNTP (%s) user name: " nntp-address)))
   (nntp-send-command 
    "^.*\r?\n" "AUTHINFO PASS" 
    (nnmail-read-passwd "NNTP (%s) password: " nntp-address)))
@@ -459,7 +459,7 @@ It will prompt for a password."
   (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
   (nntp-send-command
    "^.*\r?\n" "AUTHINFO PASS" 
-   (read-string "NNTP (%s) password: " nntp-address)))
+   (nnmail-read-passwd (format "NNTP (%s) password: " nntp-address))))
 
 (defun nntp-send-authinfo-from-file ()
   "Send the AUTHINFO to the nntp server.

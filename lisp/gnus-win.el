@@ -147,19 +147,7 @@
 	       (article 0.5)
 	       (message 1.0 point))))
   "Window configuration for all possible Gnus buffers.
-This variable is a list of lists.  Each of these lists has a NAME and
-a RULE.	 The NAMEs are commonsense names like `group', which names a
-rule used when displaying the group buffer; `summary', which names a
-rule for what happens when you enter a group and do not display an
-article buffer; and so on.  See the value of this variable for a
-complete list of NAMEs.
-
-Each RULE is a list of vectors.	 The first element in this vector is
-the name of the buffer to be displayed; the second element is the
-percentage of the screen this buffer is to occupy (a number in the
-0.0-0.99 range); the optional third element is `point', which should
-be present to denote which buffer point is to go to after making this
-buffer configuration.")
+See the Gnus manual for an explanation of the syntax used.")
 
 (defvar gnus-window-to-buffer
   '((group . gnus-group-buffer)
