@@ -519,13 +519,15 @@ the signature is inserted."
 ;;;###autoload
 (defcustom message-yank-prefix "> "
   "*Prefix inserted on the lines of yanked messages.
-Fix `message-cite-prefix-regexp' if it is set to an abnormal value."
+Fix `message-cite-prefix-regexp' if it is set to an abnormal value.
+See also `message-yank-cited-prefix'."
   :type 'string
   :group 'message-insertion)
 
 (defcustom message-yank-cited-prefix ">"
   "*Prefix inserted on cited lines of yanked messages.
-Fix `message-cite-prefix-regexp' if it is set to an abnormal value."
+Fix `message-cite-prefix-regexp' if it is set to an abnormal value.
+See also `message-yank-prefix'."
   :type 'string
   :group 'message-insertion)
 
@@ -1796,17 +1798,25 @@ With the prefix argument FORCE, insert the header anyway."
 (defun message-delete-not-region (beg end)
   "Delete everything in the body of the current message outside of the region."
   (interactive "r")
-  (save-excursion
-    (goto-char end)
-    (delete-region (point) (if (not (message-goto-signature))
-			       (point)
-			     (forward-line -2)
-			     (point)))
-    (insert "\n")
-    (goto-char beg)
-    (delete-region beg (progn (message-goto-body)
-			      (forward-line 2)
-			      (point))))
+  (let (citeprefix)
+    (save-excursion
+      (goto-char beg)
+      ;; snarf citation prefix, if appropriate
+      (unless (eq (point) (progn (beginning-of-line) (point)))
+	(when (looking-at message-cite-prefix-regexp)
+	  (setq citeprefix (match-string 0))))
+      (goto-char end)
+      (delete-region (point) (if (not (message-goto-signature))
+				 (point)
+			       (forward-line -2)
+			       (point)))
+      (insert "\n")
+      (goto-char beg)
+      (delete-region beg (progn (message-goto-body)
+				(forward-line 2)
+				(point)))
+      (when citeprefix
+	(insert citeprefix))))
   (when (message-goto-signature)
     (forward-line -2)))
 

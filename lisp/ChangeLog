@@ -1,5 +1,12 @@
 2001-06-19  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-yank-prefix): Doc fix.
+	(message-yank-cited-prefix): Ditto.
+	(message-delete-not-region): Keep citation prefix on first line,
+	if possible and appropriate.
+
+2001-06-19  Simon Josefsson  <jas@extundo.com>
+
 	* imap.el (imap-process-connection-type): New variable.
 	(imap-kerberos4-open, imap-gssapi-open): Use it.  This makes
 	recent `imtest's work completely (no line length issues), while
