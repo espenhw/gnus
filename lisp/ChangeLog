@@ -1,3 +1,15 @@
+2000-09-14 14:48:57  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-save-parts-type-history): New.
+	(gnus-summary-save-parts-last-directory): New.
+	(gnus-summary-save-parts): Save history.
+
+2000-09-14 Ben Gertzfield <che@debian.org>
+
+	* gnus-sum.el (gnus-summary-save-parts-default-mime): New
+	variable.
+	(gnus-summary-save-parts): Use it.
+
 2000-09-14 11:31:28  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-setup-buffer): Clean handle-alist.
