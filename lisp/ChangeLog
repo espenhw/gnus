@@ -1,5 +1,8 @@
 2001-09-14  Simon Josefsson  <jas@extundo.com>
 
+	* nnimap.el (nnimap-request-set-mark): Do not store bookmark,
+	killed or unsent marks.
+
 	* gnus-draft.el (gnus-draft-setup): Don't set mark when there
 	isn't an article to set it on (e.g. when you `a' in a group).
 

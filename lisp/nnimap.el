@@ -953,6 +953,12 @@ function is generally only called when Gnus is shutting down."
 		(what  (nth 1 action))
 		(cmdmarks (nth 2 action))
 		marks)
+	    ;; bookmark can't be stored (not list/range
+	    (setq cmdmarks (delq 'bookmark cmdmarks))
+	    ;; killed can't be stored (not list/range
+	    (setq cmdmarks (delq 'killed cmdmarks))
+	    ;; unsent are for nndraft groups only
+	    (setq cmdmarks (delq 'unsent cmdmarks))
 	    ;; cache flags are pointless on the server
 	    (setq cmdmarks (delq 'cache cmdmarks))
 	    ;; seen flags are local to each gnus
