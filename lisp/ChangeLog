@@ -1,5 +1,7 @@
 2001-09-15  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-group.el (gnus-group-line-format): Document %c.
+
 	* nnml.el (nnml-parse-head): Handle CRLF files.
 	(nnml-generate-nov-file): Ditto.
 	(nnml-retrieve-headers): Ditto.

@@ -153,6 +153,7 @@ with some simple extensions.
 %y    Number of unread, unticked articles (integer)
 %G    Group name (string)
 %g    Qualified group name (string)
+%c    Short (collapsed) group name.  See `gnus-group-uncollapsed-levels'.
 %D    Group description (string)
 %s    Select method (string)
 %o    Moderated group (char, \"m\")
