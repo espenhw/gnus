@@ -2,6 +2,7 @@
 
 	* spam-report.el (spam-report-process-queue): New function.
 	Process requests from `spam-report-requests-file'.
+	(spam-report-process-queue): Doc fix.
 
 2004-02-05  Teodor Zlatanov  <tzz@lifelogs.com>
 

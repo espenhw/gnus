@@ -128,8 +128,9 @@ the function specified by `spam-report-url-ping-function'."
 (defun spam-report-process-queue (&optional file keep)
   "Report all queued requests from `spam-report-requests-file'.
 
-If KEEP is t, leave old requests in the file.  If KEEP is
-the symbol `ask', query before flushing the queue file."
+If FILE is given, use it instead of `spam-report-requests-file'.
+If KEEP is t, leave old requests in the file.  If KEEP is the
+symbol `ask', query before flushing the queue file."
   (interactive
    (list (read-file-name
 	  "File: "
@@ -142,7 +143,7 @@ the symbol `ask', query before flushing the queue file."
   (if (eq spam-report-url-ping-function 'spam-report-url-to-file)
       (error (concat "Cannot process requests when "
 		     "`spam-report-url-ping-function' is "
-		     "`spam-report-url-to-file'"))
+		     "`spam-report-url-to-file'."))
     (gnus-message 7 "Processing requests using `%s'."
 		  spam-report-url-ping-function))
   (or file (setq file spam-report-requests-file))
