@@ -1,3 +1,8 @@
+2002-02-22  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-list): Report the highest
+	article number, not the total number of articles.
+
 2002-02-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el: Move uu key map here.

@@ -804,7 +804,10 @@ by nnmaildir-request-article.")
 					     'read-only)
 			ct-min (nnmaildir--article-count group))
 		  (insert (nnmaildir--grp-get-name group) " ")
-		  (princ (car ct-min) nntp-server-buffer)
+                  (princ (nnmaildir--nlist-last-num
+                           (nnmaildir--lists-get-nlist
+                             (nnmaildir--grp-get-lists group)))
+                         nntp-server-buffer)
 		  (insert " ")
 		  (princ (cdr ct-min) nntp-server-buffer)
 		  (insert " " (if ro "n" "y") "\n"))
@@ -832,8 +835,8 @@ by nnmaildir-request-article.")
 	  (princ (cdr ct-min) nntp-server-buffer)
 	  (insert " ")
 	  (princ (nnmaildir--nlist-last-num
-		  (nnmaildir--lists-get-nlist
-		   (nnmaildir--grp-get-lists group)))
+		   (nnmaildir--lists-get-nlist
+		     (nnmaildir--grp-get-lists group)))
 		 nntp-server-buffer)
 	  (insert " " gname "\n")))))
   'group)
