@@ -88,14 +88,10 @@ on your system, you could say something like:
 
 \(setq nnheader-file-name-translation-alist '((?: . ?_)))")
 
-(defvar nnheader-directory-separator-character 
-  (let ((case-fold-search t))
-    (cond
-     ((string-match "windows-nt\\|os/2\\|emx\\|cygwin"
-		    (symbol-name system-type))
-      ?\\)
-     (t ?/))))
-  
+(defvar nnheader-directory-separator-character
+  (string-to-char (substring (file-name-as-directory ".") -1))
+  "*A character used to a directory separator.")
+
 (eval-and-compile
   (autoload 'nnmail-message-id "nnmail")
   (autoload 'mail-position-on-field "sendmail")
