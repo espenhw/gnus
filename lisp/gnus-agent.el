@@ -229,7 +229,6 @@ NOTES:
 (defvar gnus-agent-send-mail-function nil)
 (defvar gnus-agent-file-coding-system 'raw-text)
 (defvar gnus-agent-file-loading-cache nil)
-(defvar gnus-agent-file-header-cache nil)
 
 ;; Dynamic variables
 (defvar gnus-headers)
@@ -1135,8 +1134,8 @@ downloaded into the agent."
                                   (gnus-find-method-for-group group))))
     (when (gnus-agent-method-p gnus-command-method)
       (let* ((local (gnus-agent-get-local group))
-             (active-min (car active))
-             (active-max (cdr active))
+             (active-min (or (car active) 0))
+             (active-max (or (cdr active) 0))
              (agent-min (or (car local) active-min))
              (agent-max (or (cdr local) active-max)))
 
@@ -1733,47 +1732,47 @@ FILE and places the combined headers into `nntp-server-buffer'."
   "Load FILE and do a `read' there."
   (with-temp-buffer
     (ignore-errors
-      (nnheader-insert-file-contents file)
-      (goto-char (point-min))
-      (let ((alist (read (current-buffer)))
-            (version (condition-case nil (read (current-buffer))
-                       (end-of-file 0)))
-            changed-version)
+        (nnheader-insert-file-contents file)
+        (goto-char (point-min))
+        (let ((alist (read (current-buffer)))
+              (version (condition-case nil (read (current-buffer))
+                         (end-of-file 0)))
+              changed-version)
 
-        (cond
-	 ((= version 0)
-	  (let ((inhibit-quit t)
-		entry)
-	    (gnus-agent-open-history)
-	    (set-buffer (gnus-agent-history-buffer))
-	    (goto-char (point-min))
-	    (while (not (eobp))
-	      (if (and (looking-at
-			"[^\t\n]+\t\\([0-9]+\\)\t\\([^ \n]+\\) \\([0-9]+\\)")
-		       (string= (match-string 2)
-				gnus-agent-read-agentview)
-		       (setq entry (assoc (string-to-number (match-string 3)) alist)))
-		  (setcdr entry (string-to-number (match-string 1))))
-	      (forward-line 1))
-	    (gnus-agent-close-history)
-	    (setq changed-version t)))
-	 ((= version 1)
-	  (setq changed-version (not (= 1 gnus-agent-article-alist-save-format))))
-	 ((= version 2)
-	  (let (uncomp)
-	    (mapcar
-	     (lambda (comp-list)
-	       (let ((state (car comp-list))
-		     (sequence (gnus-uncompress-sequence
-				(cdr comp-list))))
-		 (mapcar (lambda (article-id)
-			   (setq uncomp (cons (cons article-id state) uncomp)))
-			 sequence)))
-	     alist)
-	    (setq alist (sort uncomp 'car-less-than-car)))))
-        (when changed-version
-          (let ((gnus-agent-article-alist alist))
-            (gnus-agent-save-alist gnus-agent-read-agentview)))
+          (cond
+           ((= version 0)
+            (let ((inhibit-quit t)
+                  entry)
+              (gnus-agent-open-history)
+              (set-buffer (gnus-agent-history-buffer))
+              (goto-char (point-min))
+              (while (not (eobp))
+                (if (and (looking-at
+                          "[^\t\n]+\t\\([0-9]+\\)\t\\([^ \n]+\\) \\([0-9]+\\)")
+                         (string= (match-string 2)
+                                  gnus-agent-read-agentview)
+                         (setq entry (assoc (string-to-number (match-string 3)) alist)))
+                    (setcdr entry (string-to-number (match-string 1))))
+                (forward-line 1))
+              (gnus-agent-close-history)
+              (setq changed-version t)))
+           ((= version 1)
+            (setq changed-version (not (= 1 gnus-agent-article-alist-save-format))))
+           ((= version 2)
+            (let (uncomp)
+              (mapcar
+               (lambda (comp-list)
+                 (let ((state (car comp-list))
+                       (sequence (gnus-uncompress-sequence
+                                  (cdr comp-list))))
+                   (mapcar (lambda (article-id)
+                             (setq uncomp (cons (cons article-id state) uncomp)))
+                           sequence)))
+               alist)
+              (setq alist (sort uncomp 'car-less-than-car)))))
+          (when changed-version
+            (let ((gnus-agent-article-alist alist))
+              (gnus-agent-save-alist gnus-agent-read-agentview)))
         alist))))
 
 (defun gnus-agent-save-alist (group &optional articles state)
@@ -1957,7 +1956,7 @@ modified) original contents, they are first saved to their own file."
                t)
               (minmax
                nil)
-              (t
+              ((and min max)
                (set symb (cons min max))
                t))
         (set (intern "+dirty" local) t))))
@@ -3431,6 +3430,9 @@ has been fetched."
 (defun gnus-agent-regenerate-group (group &optional reread)
   "Regenerate GROUP.
 If REREAD is t, all articles in the .overview are marked as unread.
+If REREAD is a list, the specified articles will be marked as unread.
+In addition, their NOV entries in .overview will be refreshed using
+the articles' current headers.
 If REREAD is not nil, downloaded articles are marked as unread."
   (interactive
    (list (let ((def (or (gnus-group-group-name)
@@ -3496,7 +3498,12 @@ If REREAD is not nil, downloaded articles are marked as unread."
                        (forward-line 1)
                        (let ((l1 (car nov-arts))
                              (l2 (cadr nov-arts)))
-                         (cond ((not l2)
+                         (cond ((and (listp reread) (memq l1 reread))
+                                (gnus-delete-line)
+                                (setq nov-arts (cdr nov-arts))
+                                (gnus-message 4 "gnus-agent-regenerate-group: NOV\
+entry of article %s deleted." l1))
+                               ((not l2)
                                 nil)
                                ((< l1 l2)
                                 (gnus-message 3 "gnus-agent-regenerate-group: NOV\
@@ -3629,12 +3636,14 @@ If REREAD is not nil, downloaded articles are marked as unread."
         (when (and reread gnus-agent-article-alist)
           (gnus-make-ascending-articles-unread
            group
-           (delq nil (mapcar (function (lambda (c)
-                                         (cond ((eq reread t)
-                                                (car c))
-                                               ((cdr c)
-                                                (car c)))))
-                             gnus-agent-article-alist)))
+           (if (listp reread)
+               reread
+             (delq nil (mapcar (function (lambda (c)
+                                           (cond ((eq reread t)
+                                                  (car c))
+                                                 ((cdr c)
+                                                  (car c)))))
+                               gnus-agent-article-alist))))
 
           (when (gnus-buffer-live-p gnus-group-buffer)
             (gnus-group-update-group group t)
