@@ -2825,8 +2825,8 @@ display on entering the group.  Valid values are:
 Display all articles, both read and unread.
 
 @item an integer
-Display the last INTEGER articles in the group.  This is the same as
-entering the group with C-u INTEGER.
+Display the last @var{integer} articles in the group.  This is the same as
+entering the group with C-u @var{integer}.
 
 @item default
 Display the default visible articles, which normally includes unread and
@@ -24388,7 +24388,7 @@ the elisp profiler, ELP.  The profiler is (or should be) fully
 documented elsewhere, but to get you started there are a few steps
 that need to be followed.  First, instrument the part of Gnus you are
 interested in for profiling, e.g. @kbd{M-x elp-instrument-package RET
-gnus} or @kbd{M-x elp-instrument-packagre RET message}.  Then perform
+gnus} or @kbd{M-x elp-instrument-package RET message}.  Then perform
 the operation that is slow and press @kbd{M-x elp-results}.  You will
 then see which operations that takes time, and can debug them further.
 If the entire operation takes much longer than the time spent in the
