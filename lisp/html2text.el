@@ -1,5 +1,5 @@
 ;;; html2text.el --- a simple html to plain text converter
-;; Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Joakim Hove <hove@phys.ntnu.no>
 
@@ -42,7 +42,8 @@
 (defvar html2text-format-single-element-list '(("hr" . html2text-clean-hr)))
 
 (defvar html2text-replace-list
-  '(("&nbsp;" . " ") ("&gt;" . ">") ("&lt;" . "<") ("&quot;" . "\""))
+  '(("&nbsp;" . " ") ("&gt;" . ">") ("&lt;" . "<") ("&quot;" . "\"")
+    ("&amp;" . "&") ("&apos;" . "'"))
   "The map of entity to text.
 
 This is an alist were each element is a dotted pair consisting of an
@@ -118,9 +119,7 @@ formatting, and then moved afterward.")
 (defun html2text-buffer-head ()
   (if (string= mode-name "Article")
       (beginning-of-buffer)
-    (beginning-of-buffer)
-    )
-  )
+    (beginning-of-buffer)))
 
 (defun html2text-replace-string (from-string to-string p1 p2)
   (goto-char p1)
@@ -128,11 +127,8 @@ formatting, and then moved afterward.")
 	(change 0))
     (while (search-forward from-string p2 t)
       (replace-match to-string)
-      (setq change (+ change delta))
-      )
-    change
-    )
-  )
+      (setq change (+ change delta)))
+    change))
 
 ;;
 ;; </Utility functions>
@@ -146,93 +142,26 @@ formatting, and then moved afterward.")
 ;;
 
 (defun html2text-attr-value (attr-list attr)
-  (nth 1 (assoc attr attr-list))
-  )
+  (nth 1 (assoc attr attr-list)))
 
-(defun html2text-get-attr (p1 p2 tag)
-  (goto-char p1)
-  (re-search-forward " +[^ ]" p2 t)
-  (let* ((attr-string (buffer-substring-no-properties (1- (point)) (1- p2)))
-	 (tmp-list (split-string attr-string))
-	 (attr-list)
-	 (counter 0)
-	 (prev (car tmp-list))
-	 (this (nth 1 tmp-list))
-	 (next (nth 2 tmp-list))
-	 (index 1))
-
-    (cond
-     ;; size=3
-     ((string-match "[^ ]=[^ ]" prev)
-      (let ((attr  (nth 0 (split-string prev "=")))
-	    (value (nth 1 (split-string prev "="))))
-	(setq attr-list (cons (list attr value) attr-list))
-	)
-      )
-     ;; size= 3
-     ((string-match "[^ ]=\\'" prev)
-      (setq attr-list (cons (list (substring prev 0 -1) this) attr-list))
-      )
-     )
-
-    (while (< index (length tmp-list))
-      (cond
-       ;; size=3
-       ((string-match "[^ ]=[^ ]" this)
-	(let ((attr  (nth 0 (split-string this "=")))
-	      (value (nth 1 (split-string this "="))))
-	  (setq attr-list (cons (list attr value) attr-list))
-	  )
-	)
-       ;; size =3
-       ((string-match "\\`=[^ ]" this)
-	(setq attr-list (cons (list prev (substring this 1)) attr-list)))
-
-       ;; size= 3
-       ((string-match "[^ ]=\\'" this)
-	(setq attr-list (cons (list (substring this 0 -1) next) attr-list))
-	)
-
-       ;; size = 3
-       ((string= "=" this)
-	(setq attr-list (cons (list prev next) attr-list))
-	)
-       )
-      (setq index (1+ index))
-      (setq prev this)
-      (setq this next)
-      (setq next (nth (1+ index) tmp-list))
-      )
-
-    ;;
-    ;; Tags with no accompanying "=" i.e. value=nil
-    ;;
-    (setq prev (car tmp-list))
-    (setq this (nth 1 tmp-list))
-    (setq next (nth 2 tmp-list))
-    (setq index 1)
-
-    (unless (string-match "=" prev)
-      (unless (string= (substring this 0 1) "=")
-	(setq attr-list (cons (list prev nil) attr-list))))
-
-    (while (< index (1- (length tmp-list)))
-      (if (not (string-match "=" this))
-	  (if (not (or (string= (substring next 0 1) "=")
-		       (string= (substring prev -1) "=")))
-	      (setq attr-list (cons (list this nil) attr-list))))
-      (setq index (1+ index))
-      (setq prev this)
-      (setq this next)
-      (setq next (nth (1+ index) tmp-list)))
-
-    (when this
-      (unless (string-match "=" this)
-	(unless (string= (substring prev -1) "=")
-	  (setq attr-list (cons (list this nil) attr-list)))))
-    attr-list)) ;; return - value
-    
-
+(defun html2text-get-attr (p1 p2)
+  (save-restriction
+    (narrow-to-region p1 p2)
+    (let (result)
+      (goto-char (point-min))
+      (while (not (eobp))
+	(when (re-search-forward "[^= ]+" nil t)
+	  (push
+	   (list
+	    (match-string 0)
+	    (when (looking-at " *= *")
+	      (goto-char (match-end 0))
+	      (buffer-substring 
+	       (point)
+	       (goto-char (or (ignore-errors (scan-sexps (point) 1))
+			      (point-max))))))
+	   result)))
+      result)))
 ;;
 ;; </Functions related to attributes>
 ;;
@@ -256,10 +185,7 @@ formatting, and then moved afterward.")
       (cond
        ((string= list-type "ul") (insert " o "))
        ((string= list-type "ol") (insert (format " %s: " item-nr)))
-       (t (insert " x ")))
-      )
-    )
-  )
+       (t (insert " x "))))))
 
 (defun html2text-clean-dtdd (p1 p2)
   (goto-char p1)
@@ -298,62 +224,50 @@ formatting, and then moved afterward.")
   (html2text-delete-single-tag p1 p2)
   (goto-char p1)
   (newline 1)
-  (insert (make-string fill-column ?-))
-  )
+  (insert (make-string fill-column ?-)))
 
 (defun html2text-clean-ul (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
-  (html2text-clean-list-items p1 (- p3 (- p1 p2)) "ul")
-  )
+  (html2text-clean-list-items p1 (- p3 (- p1 p2)) "ul"))
 
 (defun html2text-clean-ol (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
-  (html2text-clean-list-items p1 (- p3 (- p1 p2)) "ol")
-  )
+  (html2text-clean-list-items p1 (- p3 (- p1 p2)) "ol"))
 
 (defun html2text-clean-dl (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
-  (html2text-clean-dtdd p1 (- p3 (- p1 p2)))
-  )
+  (html2text-clean-dtdd p1 (- p3 (- p1 p2))))
 
 (defun html2text-clean-center (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
-  (center-region p1 (- p3 (- p2 p1)))
-  )
+  (center-region p1 (- p3 (- p2 p1))))
 
 (defun html2text-clean-bold (p1 p2 p3 p4)
   (put-text-property p2 p3 'face 'bold)
-  (html2text-delete-tags p1 p2 p3 p4)
-  )
+  (html2text-delete-tags p1 p2 p3 p4))
 
 (defun html2text-clean-title (p1 p2 p3 p4)
   (put-text-property p2 p3 'face 'bold)
-  (html2text-delete-tags p1 p2 p3 p4)
-  )
+  (html2text-delete-tags p1 p2 p3 p4))
 
 (defun html2text-clean-underline (p1 p2 p3 p4)
   (put-text-property p2 p3 'face 'underline)
-  (html2text-delete-tags p1 p2 p3 p4)
-  )
+  (html2text-delete-tags p1 p2 p3 p4))
 
 (defun html2text-clean-italic (p1 p2 p3 p4)
   (put-text-property p2 p3 'face 'italic)
-  (html2text-delete-tags p1 p2 p3 p4)
-  )
+  (html2text-delete-tags p1 p2 p3 p4))
 
 (defun html2text-clean-font (p1 p2 p3 p4)
-  (html2text-delete-tags p1 p2 p3 p4)
-  )
+  (html2text-delete-tags p1 p2 p3 p4))
 
 (defun html2text-clean-blockquote (p1 p2 p3 p4)
-  (html2text-delete-tags p1 p2 p3 p4)
-  )
+  (html2text-delete-tags p1 p2 p3 p4))
 
 (defun html2text-clean-anchor (p1 p2 p3 p4)
   ;; If someone can explain how to make the URL clickable I will
   ;; surely improve upon this.
-  (let* ((attr-list (html2text-get-attr p1 p2 "a"))
-	 (href (html2text-attr-value attr-list "href")))
+  (let ((href (html2text-attr-value (html2text-get-attr p1 p2) "href")))
     (delete-region p1 p4)
     (when href
       (goto-char p1)
@@ -462,11 +376,7 @@ See the documentation for that variable."
 	  (setq p3 (point))
 	  (funcall function p1 p2 p3 p4)
 	  (goto-char p1)
-	  )
-	)
-      )
-    )
-  )
+	  )))))
 
 (defun html2text-substitute ()
   "See the variable \"html2text-replace-list\" for documentation"
@@ -475,10 +385,8 @@ See the documentation for that variable."
     (html2text-buffer-head)
     (let ((old-string (car e))
 	  (new-string (cdr e)))
-      (html2text-replace-string old-string new-string (point-min) (point-max))
-      )
-    )
-  )
+      (html2text-replace-string old-string new-string (point-min) (point-max)))
+    ))
 
 (defun html2text-format-single-elements ()
   ""
@@ -493,12 +401,7 @@ See the documentation for that variable."
 	      (p2 (point)))
 	  (search-backward "<" (point-min) t)
 	  (setq p1 (point))
-	  (funcall function p1 p2)
-	  )
-	)
-      )
-    )
-  )
+	  (funcall function p1 p2))))))
 
 ;;
 ;; Main function
