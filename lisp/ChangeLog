@@ -1,3 +1,10 @@
+2003-10-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-mode-field-menu): Added
+	message-generate-unsubscribed-mail-followup-to.
+	(message-forward-subject-fwd): Avoid double "Fwd: "
+	(message-change-subject): Added comment.
+
 2003-10-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mml.el (mml-insert-mime): Quote mml.

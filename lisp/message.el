@@ -1679,6 +1679,10 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 ;;;###autoload
 (defun message-change-subject (new-subject)
   "Ask for NEW-SUBJECT header, append (was: <Old Subject>)."
+  ;; <URL:http://www.karlsruhe.org/rfc/son1036.txt>
+  ;; <URL:http://www.karlsruhe.org/rfc/draft-ietf-usefor-article-09.txt>
+  ;; But not mentioned in...
+  ;; <URL:http://www.karlsruhe.org/rfc/draft-ietf-usefor-article-11.txt>
   (interactive
    (list
     (read-from-minibuffer "New subject: ")))
@@ -1713,7 +1717,7 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 See `message-mark-insert-begin' and `message-mark-insert-end'."
   (interactive "r")
   (save-excursion
-    ; add to the end of the region first, otherwise end would be invalid
+    ;; add to the end of the region first, otherwise end would be invalid
     (goto-char end)
     (insert message-mark-insert-end)
     (goto-char beg)
@@ -2223,6 +2227,9 @@ Point is left at the beginning of the narrowed-to region."
     ;; (typical) mailing-lists stuff
     ["Send to list only" message-to-list-only t]
     ["Mail-Followup-To" message-goto-mail-followup-to t]
+    ["Unsubscribed list post" message-generate-unsubscribed-mail-followup-to
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Insert a reasonable `Mail-Followup-To:' header."))]
     ["Reduce To: to Cc:" message-reduce-to-to-cc t]
     "----"
     ["Sort Headers" message-sort-headers t]
@@ -5939,7 +5946,9 @@ news, Source is the list of newsgroups is was posted to."
   "Generate a SUBJECT for a forwarded message.
 The form is: Fwd: Subject, where Subject is the original subject of
 the message."
-  (concat "Fwd: " subject))
+  (if (string-match "^Fwd: " subject)
+      subject
+    (concat "Fwd: " subject)))
 
 (defun message-make-forward-subject ()
   "Return a Subject header suitable for the message in the current buffer."
