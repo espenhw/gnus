@@ -1496,30 +1496,31 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 (defvar group-art-list)
 (defvar group-art)
 (defun nnmail-cache-insert (id grp &optional subject)
-  (run-hook-with-args 'nnmail-spool-hook 
-		      id grp subject)
-  (when nnmail-treat-duplicates
-    ;; Store some information about the group this message is written
-    ;; to.  This is passed in as the grp argument -- all locations this
-    ;; has been called from have been checked and the group is available.
-    ;; The only ambiguous case is nnmail-check-duplication which will only
-    ;; pass the first (of possibly >1) group which matches. -Josh
-    (unless (gnus-buffer-live-p nnmail-cache-buffer)
-      (nnmail-cache-open))
-    (save-excursion
-      (set-buffer nnmail-cache-buffer)
-      (goto-char (point-max))
-      (if (and grp (not (string= "" grp))
-	       (gnus-methods-equal-p gnus-command-method
-				     (nnmail-cache-primary-mail-backend)))
-	  (let ((regexp (if (consp nnmail-cache-ignore-groups)
-			    (mapconcat 'identity nnmail-cache-ignore-groups
-				       "\\|")
-			  nnmail-cache-ignore-groups)))
-	    (unless (and regexp (string-match regexp grp))
-	      (insert id "\t" grp "\n")))
-	(insert id "\n")))))
-
+  (when (stringp id)
+    (run-hook-with-args 'nnmail-spool-hook 
+			id grp subject)
+    (when nnmail-treat-duplicates
+      ;; Store some information about the group this message is written
+      ;; to.  This is passed in as the grp argument -- all locations this
+      ;; has been called from have been checked and the group is available.
+      ;; The only ambiguous case is nnmail-check-duplication which will only
+      ;; pass the first (of possibly >1) group which matches. -Josh
+      (unless (gnus-buffer-live-p nnmail-cache-buffer)
+	(nnmail-cache-open))
+      (save-excursion
+	(set-buffer nnmail-cache-buffer)
+	(goto-char (point-max))
+	(if (and grp (not (string= "" grp))
+		 (gnus-methods-equal-p gnus-command-method
+				       (nnmail-cache-primary-mail-backend)))
+	    (let ((regexp (if (consp nnmail-cache-ignore-groups)
+			      (mapconcat 'identity nnmail-cache-ignore-groups
+					 "\\|")
+			    nnmail-cache-ignore-groups)))
+	      (unless (and regexp (string-match regexp grp))
+		(insert id "\t" grp "\n")))
+	  (insert id "\n"))))))
+  
 (defun nnmail-cache-primary-mail-backend ()
   (let ((be-list (cons gnus-select-method gnus-secondary-select-methods))
 	(be nil)

@@ -324,7 +324,7 @@ tracked this way."
   ;; do not process the draft IDs
 ;  (unless (string-match "totally-fudged-out-message-id" id)
 ;    (let ((group (gnus-group-guess-full-name group)))
-  (when (string-match "\r$" id)
+  (when (and (stringp id) (string-match "\r$" id))
     (setq id (substring id 0 -1)))
   (gnus-message 5 "Registry: article %s spooled to %s"
 		id

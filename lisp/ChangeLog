@@ -1,3 +1,11 @@
+2003-10-27  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* nnmail.el (nnmail-cache-insert): protect from nil message IDs,
+	but should we do something else?
+
+	* gnus-registry.el (gnus-registry-spool-action): protect from nil
+	message IDs
+
 2003-10-26  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (gnus-button-alist): Allow & in mailto URLs.
