@@ -1,3 +1,11 @@
+2001-02-07 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-make-forward-subject): Argument decoded.
+	(message-forward): Use it when digest.
+
+	* gnus-uu.el (gnus-uu-grab-articles): Shoot down original article
+	buffer.
+
 2001-02-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-generate-headers-first): Doc fix.
