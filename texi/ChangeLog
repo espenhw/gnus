@@ -1,3 +1,9 @@
+2000-10-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Windows Configuration): add examples; first example
+	suggested by Stein A. Str,Ax(Bmme <stromme@mi.uib.no>.  (The actual
+	Lisp code is also from him.)
+
 2000-10-07  Dave Love  <fx@gnu.org>
 
 	* doclicense.texi: New file.

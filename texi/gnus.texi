@@ -17359,6 +17359,43 @@ window is displayed vertically next to another window, you may also want
 to fiddle with @code{gnus-tree-minimize-window} to avoid having the
 windows resized.
 
+@subsection Example Window Configurations
+
+@itemize @bullet
+@item 
+Narrow left hand side occupied by group buffer.  Right hand side split
+between summary buffer (top one-sixth) and article buffer (bottom).
+
+@ifinfo
+@example
++---+---------+
+| G | Summary |
+| r +---------+
+| o |         |
+| u | Article |
+| p |         |
++---+---------+
+@end example
+@end ifinfo
+
+@lisp
+(gnus-add-configuration
+ '(article
+   (horizontal 1.0
+               (vertical 25 (group 1.0))
+               (vertical 1.0
+                         (summary 0.16 point)
+                         (article 1.0)))))
+
+(gnus-add-configuration
+ '(summary
+   (horizontal 1.0
+               (vertical 25 (group 1.0))
+               (vertical 1.0 (summary 1.0 point)))))
+@end lisp
+
+@end itemize
+
 
 @node Faces and Fonts
 @section Faces and Fonts
