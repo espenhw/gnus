@@ -200,8 +200,7 @@ regexp.  If it matches, the text in question is not a signature."
 
 (defcustom gnus-article-x-face-command
   (if (and (fboundp 'image-type-available-p)
-	   (or (image-type-available-p 'xpm)
-	       (image-type-available-p 'xbm)))
+	   (image-type-available-p 'xbm))
       'gnus-article-display-xface
     "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | display -")
   "*String or function to be executed to display an X-Face header.
@@ -2474,17 +2473,16 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 		 gfunc (cdr func))
 	 (setq afunc func
 	       gfunc (intern (format "gnus-%s" func))))
-       (fset gfunc
-	     (if (not (fboundp afunc))
-		 nil
-	       `(lambda (&optional interactive &rest args)
-		  ,(documentation afunc t)
-		  (interactive (list t))
-		  (save-excursion
-		    (set-buffer gnus-article-buffer)
-		    (if interactive
-			(call-interactively ',afunc)
-		      (apply ',afunc args))))))))
+       (defalias gfunc
+	 (if (fboundp afunc)
+	   `(lambda (&optional interactive &rest args)
+	      ,(documentation afunc t)
+	      (interactive (list t))
+	      (save-excursion
+		(set-buffer gnus-article-buffer)
+		(if interactive
+		    (call-interactively ',afunc)
+		  (apply ',afunc args))))))))
    '(article-hide-headers
      article-hide-boring-headers
      article-treat-overstrike
@@ -3461,7 +3459,7 @@ In no internal viewer is available, use an external viewer."
 	      (if overstrike ?o ? )
 	      (if emphasis ?e ? )))))
 
-(fset 'gnus-article-hide-headers-if-wanted 'gnus-article-maybe-hide-headers)
+(defalias 'gnus-article-hide-headers-if-wanted 'gnus-article-maybe-hide-headers)
 
 (defun gnus-article-maybe-hide-headers ()
   "Hide unwanted headers if `gnus-have-all-headers' is nil.
@@ -3545,6 +3543,9 @@ Argument LINES specifies lines to be scrolled up."
   (move-to-window-line -1)
   (if (save-excursion
 	(end-of-line)
+	;; Redisplay before the visibility test; else we don't DTRT
+	;; with Emacs 21 images, for instance.
+	(sit-for 0)
 	(and (pos-visible-in-window-p)	;Not continuation line.
 	     (eobp)))
       ;; Nothing in this page.
