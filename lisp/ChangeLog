@@ -1,5 +1,7 @@
 2002-10-05  Simon Josefsson  <jas@extundo.com>
 
+	* mml1991.el (mml1991-pgg-sign): Do QP.
+
 	* pgg-gpg.el (pgg-gpg-encrypt-region): Make signencrypt really
 	work.
 

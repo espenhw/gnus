@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.9 2002/09/29 20:37:10 jas Exp $
+;; RCS: $Id: mml1991.el,v 6.10 2002/09/29 21:24:45 jas Exp $
 
 ;;; Code:
 
@@ -211,14 +211,17 @@
       (setq headers (buffer-substring (point-min) (point)))
       (forward-line) ;; skip header/body separator
       (kill-region (point-min) (point)))
+    (quoted-printable-decode-region (point-min) (point-max))
     (unless (let ((pgg-gpg-user-id (message-options-get 'message-sender)))
 	      (pgg-sign-region (point-min) (point-max) t))
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
     (kill-region (point-min) (point-max))
+    (insert-buffer pgg-output-buffer)
+    (quoted-printable-encode-region (point-min) (point-max))
+    (goto-char (point-min))
     (if headers (insert headers))
     (insert "\n")
-    (insert-buffer pgg-output-buffer)
     t))
 
 (defun mml1991-pgg-encrypt (cont)
