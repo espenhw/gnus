@@ -5719,28 +5719,32 @@ regexp to match all of yours addresses."
   ;;     error: cancellock: article is not yours
   ;; ELSE
   ;;   Use old rules, comparing sender...
-  (if (message-fetch-field "Cancel-Lock")
-      (if (null (canlock-verify))
-	  t
-	(error "Failed to verify Cancel-lock: This article is not yours"))
-    (or
-     (message-gnksa-enable-p 'cancel-messages)
-     (and sender
-	  (string-equal
-	   (downcase sender)
-	   (downcase (message-make-sender))))
-     ;; Email address in From field equals to our address
-     (string-equal
-      (downcase (cadr (mail-extract-address-components from)))
-      (downcase (cadr (mail-extract-address-components
-		       (message-make-from)))))
-     ;; Email address in From field matches
-     ;; 'message-alternative-emails' regexp
-     (and message-alternative-emails
-	  (string-match
-	   message-alternative-emails
-	   (cadr (mail-extract-address-components from)))))))
-
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-head-1)
+      (if (message-fetch-field "Cancel-Lock")
+	  (if (null (canlock-verify))
+	      t
+	    (error "Failed to verify Cancel-lock: This article is not yours"))
+	(let (sender from)
+	  (or
+	   (message-gnksa-enable-p 'cancel-messages)
+	   (and (setq sender (message-fetch-field "sender"))
+		(string-equal (downcase sender)
+			      (downcase (message-make-sender))))
+	   ;; Email address in From field equals to our address
+	   (and (setq from (message-fetch-field "from"))
+		(string-equal
+		 (downcase (cadr (mail-extract-address-components from)))
+		 (downcase (cadr (mail-extract-address-components
+				  (message-make-from))))))
+	   ;; Email address in From field matches
+	   ;; 'message-alternative-emails' regexp
+	   (and from
+		message-alternative-emails
+		(string-match
+		 message-alternative-emails
+		 (cadr (mail-extract-address-components from))))))))))
 
 ;;;###autoload
 (defun message-cancel-news (&optional arg)
@@ -5749,13 +5753,12 @@ If ARG, allow editing of the cancellation message."
   (interactive "P")
   (unless (message-news-p)
     (error "This is not a news article; canceling is impossible"))
-  (let (from newsgroups message-id distribution buf sender)
+  (let (from newsgroups message-id distribution buf)
     (save-excursion
       ;; Get header info from original article.
       (save-restriction
 	(message-narrow-to-head-1)
 	(setq from (message-fetch-field "from")
-	      sender (message-fetch-field "sender")
 	      newsgroups (message-fetch-field "newsgroups")
 	      message-id (message-fetch-field "message-id" t)
 	      distribution (message-fetch-field "distribution")))
@@ -5792,9 +5795,7 @@ If ARG, allow editing of the cancellation message."
 This is done simply by taking the old article and adding a Supersedes
 header line with the old Message-ID."
   (interactive)
-  (let ((cur (current-buffer))
-	(sender (message-fetch-field "sender"))
-	(from (message-fetch-field "from")))
+  (let ((cur (current-buffer)))
     ;; Check whether the user owns the article that is to be superseded.
     (unless (message-is-yours-p)
       (error "This article is not yours"))

@@ -1,3 +1,9 @@
+2003-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-is-yours-p): Narrow to head; extract from
+	and sender by itself.
+	(message-cancel-news, message-supersede): Remove useless things.
+
 2003-06-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): Bind
