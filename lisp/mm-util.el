@@ -28,7 +28,7 @@
 
 (defvar mm-running-ntemacs
   (and (not mm-running-xemacs)
-       (string-match "nt" system-configuration)))
+       (string-match "nt\\|windows" system-configuration)))
 
 (defvar mm-binary-coding-system
   (if mm-running-xemacs

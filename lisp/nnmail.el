@@ -424,7 +424,7 @@ parameter.  It should return nil, `warn' or `delete'."
   "Coding system used in nnmail.")
 
 (defvar nnmail-file-coding-system-1
-  (if (string-match "nt" system-configuration)
+  (if (string-match "nt\\|windows" system-configuration)
       'raw-text-dos 'binary)
   "Another coding system used in nnmail.")
 

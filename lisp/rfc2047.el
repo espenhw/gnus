@@ -326,6 +326,10 @@ Return WORD if not."
   "Decode STRING that uses CHARSET with ENCODING.
 Valid ENCODINGs are \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, it returns nil."
+  (if (stringp charset)
+    (setq charset (intern (downcase charset))))
+  (if (or (not charset) (memq charset mail-parse-ignored-charsets))
+      (setq charset mail-parse-charset))
   (let ((cs (mm-charset-to-coding-system charset)))
     (when cs
       (when (and (eq cs 'ascii)

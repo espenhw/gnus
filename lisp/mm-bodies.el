@@ -194,7 +194,10 @@ If no encoding was done, nil is returned."
 (defun mm-decode-body (charset &optional encoding type)
   "Decode the current article that has been encoded with ENCODING.
 The characters in CHARSET should then be decoded."
-  (setq charset (or charset mail-parse-charset))
+  (if (stringp charset)
+    (setq charset (intern (downcase charset))))
+  (if (or (not charset) (memq charset mail-parse-ignored-charsets))
+      (setq charset mail-parse-charset))
   (save-excursion
     (when encoding
       (mm-decode-content-transfer-encoding encoding type))
@@ -212,7 +215,10 @@ The characters in CHARSET should then be decoded."
 
 (defun mm-decode-string (string charset)
   "Decode STRING with CHARSET."
-  (setq charset (or charset mail-parse-charset))
+  (if (stringp charset)
+    (setq charset (intern (downcase charset))))
+  (if (or (not charset) (memq charset mail-parse-ignored-charsets))
+      (setq charset mail-parse-charset))
   (or
    (when (featurep 'mule)
      (let (mule-charset)

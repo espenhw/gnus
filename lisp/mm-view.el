@@ -38,9 +38,17 @@
 ;;;
 
 (defun mm-inline-image (handle)
-  (let ((annot (make-annotation (mm-get-image handle) nil 'text))
+  (let ((b (point))
+	(annot (make-annotation (mm-get-image handle) nil 'text))
 	buffer-read-only)
-    (mm-insert-inline handle "\n")
+    (insert "\n")
+    (mm-handle-set-undisplayer
+     handle
+     `(lambda ()
+	(let (buffer-read-only)
+	  (delete-annotation ,annot)
+	  (delete-region ,(set-marker (make-marker) b)
+			 ,(set-marker (make-marker) (point))))))
     (set-extent-property annot 'mm t)
     (set-extent-property annot 'duplicable t)))
 
@@ -73,28 +81,34 @@
 	  (save-restriction
 	    (narrow-to-region b (point))
 	    (goto-char (point-min))
-	    (if (or (re-search-forward w3-meta-content-type-charset-regexp nil t)
-		    (re-search-forward w3-meta-charset-content-type-regexp nil t))
+	    (if (or (re-search-forward
+		     w3-meta-content-type-charset-regexp nil t)
+		    (re-search-forward
+		     w3-meta-charset-content-type-regexp nil t))
 		(setq charset (w3-coding-system-for-mime-charset 
 			       (buffer-substring-no-properties 
 				(match-beginning 2) 
 				(match-end 2)))))
 	    (mm-decode-body charset)
 	    (save-window-excursion
-	      (let ((w3-strict-width width)
-		    (url-standalone-mode t))
-		(w3-region (point-min) (point-max)))))
-	  (narrow-to-region (1+ (point-min)) (point-max))
-	  (mm-handle-set-undisplayer
-	   handle
-	   `(lambda ()
-	      (let (buffer-read-only)
-		(mapc (lambda (prop)
-			(remove-specifier
-			 (face-property 'default prop) (current-buffer)))
-			'(background background-pixmap foreground))
-		(delete-region ,(point-min-marker)
-			       ,(point-max-marker))))))))
+	      (save-restriction
+		(let ((w3-strict-width width)
+		      (url-standalone-mode t))
+		  (condition-case var
+		      (w3-region (point-min) (point-max))
+		    (error)))))
+;;;	    (narrow-to-region (1+ (point-min)) (point-max))
+	    (mm-handle-set-undisplayer
+	     handle
+	     `(lambda ()
+		(let (buffer-read-only)
+		  (if (functionp 'remove-specifier)
+		      (mapc (lambda (prop)
+			      (remove-specifier
+			       (face-property 'default prop) (current-buffer)))
+			    '(background background-pixmap foreground)))
+		  (delete-region ,(point-min-marker)
+				 ,(point-max-marker)))))))))
      ((or (equal type "enriched")
 	  (equal type "richtext"))
       (save-excursion
@@ -157,13 +171,18 @@
   (goto-char (point-min)))
 
 (defun mm-inline-message (handle)
-  (let ((b (point)))
+  (let ((b (point)) gnus-displaying-mime handles)
     (save-excursion
       (save-restriction
 	(narrow-to-region b b)
 	(mm-insert-part handle)
-	(run-hooks 'gnus-article-decode-hook)
-	(gnus-article-prepare-display)
+	(let (gnus-article-mime-handles)
+	  (run-hooks 'gnus-article-decode-hook)
+	  (gnus-article-prepare-display)
+	  (setq handles gnus-article-mime-handles))
+	(if handles
+	    (setq gnus-article-mime-handles
+		  (append gnus-article-mime-handles handles)))
 	(mm-handle-set-undisplayer
 	 handle
 	 `(lambda ()

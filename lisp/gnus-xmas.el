@@ -177,7 +177,7 @@ displayed, no centering will be performed."
     (sit-for 0))
   (when gnus-auto-center-summary
     (let* ((height (if (fboundp 'window-displayed-height)
-		       (window-displayed-height)
+		       (1- (window-displayed-height))
 		     (- (window-height) 2)))
 	   (top (cond ((< height 4) 0)
 		      ((< height 7) 1)

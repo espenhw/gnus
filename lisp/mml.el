@@ -26,6 +26,7 @@
 (require 'mm-util)
 (require 'mm-bodies)
 (require 'mm-encode)
+(require 'mm-decode)
 
 (eval-and-compile
   (autoload 'message-make-message-id "message"))
@@ -617,7 +618,7 @@
 	(when (string-match "[\"\\~/* \t\n]" value)
 	  (setq value (prin1-to-string value)))
 	(insert (format " %s=%s" key value)))))
-  (insert ">\n<#/part>\n"))
+  (insert ">\n<#/" name ">\n"))
 
 ;;; Attachment functions.
 
@@ -661,14 +662,13 @@ TYPE is the MIME type to use."
 		  'description description))
 
 (defun mml-insert-multipart (&optional type)
-  (interactive (list (completing-read "Multipart type (default mixed): ")
-		     "mixed"
+  (interactive (list (completing-read "Multipart type (default mixed): "
 		     '(("mixed") ("alternative") ("digest") ("parallel")
-		       ("signed") ("encrypted"))))
+		       ("signed") ("encrypted"))
+		     nil nil "mixed")))
   (or type
       (setq type "mixed"))
   (mml-insert-tag "multipart" 'type type)
-  (insert "<#/!multipart>\n")
   (forward-line -1))
 
 (defun mml-preview (&optional raw)

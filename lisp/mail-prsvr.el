@@ -29,6 +29,12 @@ This variable should never be set.  Instead, it should be bound by
 functions that wish to call mail-parse functions and let them know
 what the desired charset is to be.")
 
+(defvar mail-parse-ignored-charsets nil
+  "Ignored charsets used by low-level libraries.
+This variable should never be set.  Instead, it should be bound by
+functions that wish to call mail-parse functions and let them know
+what the desired charsets is to be ignored.")
+
 (provide 'mail-prsvr)
 
 ;;; mail-prsvr.el ends here

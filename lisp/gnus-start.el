@@ -952,7 +952,7 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 
 (defun gnus-find-new-newsgroups (&optional arg)
   "Search for new newsgroups and add them.
-Each new newsgroup will be treated with `gnus-subscribe-newsgroup-method.'
+Each new newsgroup will be treated with `gnus-subscribe-newsgroup-method'.
 The `-n' option line from .newsrc is respected.
 
 With 1 C-u, use the `ask-server' method to query the server for new

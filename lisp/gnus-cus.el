@@ -170,6 +170,15 @@ in it..")
     (charset (symbol :tag "Charset") "\
 The default charset to use in the group.")
 	     
+    (ignored-charsets 
+     (choice :tag "Ignored charsets" 
+	     :value nil
+	     (repeat (symbol))) "\
+List of charsets that should be ignored.
+
+When these charsets are used in the \"charset\" parameter, the
+default charset will be used instead.")
+	     
     (highlight-words 
      (choice :tag "Highlight words"
 	     :value nil

@@ -819,6 +819,15 @@ default charset will be used instead."
   :type '(repeat symbol)
   :group 'gnus-charset)
 
+(defcustom gnus-group-ignored-charsets-alist 
+  '(("alt\\.chinese\\.text" iso-8859-1))
+  "Alist of regexps (to match group names) and charsets that should be ignored.
+When these charsets are used in the \"charset\" parameter, the
+default charset will be used instead."
+  :type '(repeat (cons (regexp :tag "Group")
+		       (repeat symbol)))
+  :group 'gnus-charset)
+
 (defcustom gnus-group-highlight-words-alist nil
   "Alist of group regexps and highlight regexps.
 This variable uses the same syntax as `gnus-emphasis-alist'."
@@ -1539,6 +1548,7 @@ increase the score of each group you read."
     "\M-\C-e" gnus-summary-expire-articles-now
     "\177" gnus-summary-delete-article
     [delete] gnus-summary-delete-article
+    [backspace] gnus-summary-delete-article
     "m" gnus-summary-move-article
     "r" gnus-summary-respool-article
     "w" gnus-summary-edit-article
@@ -2529,7 +2539,10 @@ marks of articles."
 (defun gnus-summary-from-or-to-or-newsgroups (header)
   (let ((to (cdr (assq 'To (mail-header-extra header))))
 	(newsgroups (cdr (assq 'Newsgroups (mail-header-extra header))))
-	(mail-parse-charset gnus-newsgroup-charset))
+	(mail-parse-charset gnus-newsgroup-charset)
+	(mail-parse-ignored-charsets 
+	 (save-excursion (set-buffer gnus-summary-buffer)
+			 gnus-newsgroup-ignored-charsets)))
     (cond
      ((and to
 	   gnus-ignored-from-addresses
@@ -4554,7 +4567,10 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	     (save-excursion (set-buffer gnus-summary-buffer)
 			     gnus-newsgroup-dependencies)))
 	headers id end ref
-	(mail-parse-charset gnus-newsgroup-charset))
+	(mail-parse-charset gnus-newsgroup-charset)
+	(mail-parse-ignored-charsets 
+	     (save-excursion (set-buffer gnus-summary-buffer)
+			     gnus-newsgroup-ignored-charsets)))
     (save-excursion
       (set-buffer nntp-server-buffer)
       ;; Translate all TAB characters into SPACE characters.
@@ -4708,6 +4724,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
   ;; NNTP servers do not include Xrefs when using XOVER.
   (setq gnus-article-internal-prepare-hook '(gnus-article-get-xrefs))
   (let ((mail-parse-charset gnus-newsgroup-charset)
+	(mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets)
 	(cur nntp-server-buffer)
 	(dependencies (or dependencies gnus-newsgroup-dependencies))
 	number headers header)
@@ -7553,9 +7570,10 @@ This will have permanent effect only in mail groups.
 If FORCE is non-nil, allow editing of articles even in read-only
 groups."
   (interactive "P")
-  (let ((mail-parse-charset gnus-newsgroup-charset))
-    (save-excursion
-      (set-buffer gnus-summary-buffer)
+  (save-excursion
+    (set-buffer gnus-summary-buffer)
+    (let ((mail-parse-charset gnus-newsgroup-charset)
+	  (mail-parse-ignored-charsets gnus-newsgroup-ignored-charsets))
       (gnus-set-global-variables)
       (when (and (not force)
 		 (gnus-group-read-only-p))
@@ -7564,7 +7582,9 @@ groups."
       (gnus-article-edit-article
        'mime-to-mml
        `(lambda (no-highlight)
-	  (let ((mail-parse-charset ',gnus-newsgroup-charset))
+	  (let ((mail-parse-charset ',gnus-newsgroup-charset)
+		(mail-parse-ignored-charsets 
+		 ',gnus-newsgroup-ignored-charsets))
 	    (mml-to-mime)
 	    (gnus-summary-edit-article-done
 	     ,(or (mail-header-references gnus-current-headers) "")
@@ -9254,8 +9274,22 @@ If REVERSE, save parts that do not match TYPE."
 
 (defun gnus-summary-setup-default-charset ()
   "Setup newsgroup default charset."
-  (let ((name (and gnus-newsgroup-name
-		   (gnus-group-real-name gnus-newsgroup-name))))
+  (let* ((name (and gnus-newsgroup-name
+		   (gnus-group-real-name gnus-newsgroup-name)))
+	 (ignored-charsets 
+	  (append
+	   (and gnus-newsgroup-name
+		(or (gnus-group-find-parameter gnus-newsgroup-name
+					       'ignored-charsets t)
+		    (let ((alist gnus-group-ignored-charsets-alist)
+			  elem (charsets nil))
+		      (while (setq elem (pop alist))
+			(when (and name
+				   (string-match (car elem) name))
+			 (setq alist nil
+			       charsets (cdr elem))))
+		      charsets)))
+	   gnus-newsgroup-ignored-charsets)))
     (setq gnus-newsgroup-charset
 	  (or (and gnus-newsgroup-name
 		   (or (gnus-group-find-parameter gnus-newsgroup-name
@@ -9268,7 +9302,9 @@ If REVERSE, save parts that do not match TYPE."
 			     (setq alist nil
 				   charset (cadr elem))))
 			 charset)))
-	      gnus-default-charset))))
+	      gnus-default-charset))
+    (set (make-local-variable 'gnus-newsgroup-ignored-charsets) 
+	 ignored-charsets)))
 
 ;;;
 ;;; Mime Commands

@@ -1,3 +1,67 @@
+Mon Jun 28 17:54:01 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.89 is released.
+
+1999-06-24  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-file-coding-system-1): For NTEmacs in Windows.
+	* message.el (message-draft-coding-system): Ditto.
+	* mm-util.el (mm-running-ntemacs): Ditto.
+
+1999-06-23  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-xmas.el (gnus-xmas-summary-recenter): A blank line may
+ 	cause problem.
+
+1999-06-23  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-text): Ignore error in w3-region.
+
+1999-06-23  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el: require mm-decode.
+
+1999-06-23  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-display-mime): Treat as head only if necessary.
+
+1999-06-23  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-image): Fix image undisplayer.
+
+1999-06-22  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-insert-multipart): Error in compeling-read.
+	(mml-insert-tag): Match tags.
+
+1999-06-19  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cache.el (gnus-cache-braid-nov): Fix coding-system bug.
+	(gnus-cache-braid-heads): Ditto.
+	(gnus-cache-retrieve-headers): Ditto.
+
+1999-06-16  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-draft.el (gnus-draft-send): Fix encoding bug.
+
+1999-06-16 10:17:29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-read-summary-keys): Convert key events
+	to string under XEmacs.
+
+1999-06-28 19:34:03  Petersen Jens-Ulrik  <jens-ulrik.petersen@nokia.com>
+
+	* gnus-start.el (gnus-find-new-newsgroups): Doc fix.
+
+1999-06-22  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-message): Fix message view bug.
+	* gnus-art.el (gnus-article-prepare): Ditto.
+
+1999-06-16  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Fetch headers.
+
 Tue Jun 15 04:13:01 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.88 is released.

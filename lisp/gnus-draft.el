@@ -124,8 +124,12 @@
   (gnus-draft-setup article (or group "nndraft:queue"))
   (let ((message-syntax-checks (if interactive nil
 				 'dont-check-for-anything-just-trust-me))
-	(message-inhibit-body-encoding t)
-	message-send-hook type method)
+	(message-inhibit-body-encoding (or (not group) 
+					   (equal group "nndraft:queue")
+					   message-inhibit-body-encoding))
+	(message-send-hook (and group (not (equal group "nndraft:queue"))
+				message-send-hook))
+	type method)
     ;; We read the meta-information that says how and where
     ;; this message is to be sent.
     (save-restriction
