@@ -1,3 +1,7 @@
+2001-08-18 00:40:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Wide Characters): New section.
+
 2001-08-17  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi: Replace 20,20 with 23,23 for

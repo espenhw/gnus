@@ -17742,6 +17742,7 @@ lots of percentages everywhere.
 * Advanced Formatting::   Modifying output in various ways.
 * User-Defined Specs::    Having Gnus call your own functions.
 * Formatting Fonts::      Making the formatting look colorful and nice.
+* Wide Characters::       Dealing with wide characters.
 @end menu
 
 Currently Gnus uses the following formatting variables:
@@ -17940,6 +17941,24 @@ and extremely vulgar displays.  Have fun!
 
 Note that the @samp{%(} specs (and friends) do not make any sense on the
 mode-line variables.
+
+
+@node Wide Characters
+@subsection Wide Characters
+
+Proportional fonts in most countries have characters of the same width.
+Some countries, however, use Latin characters mixed with wider
+characters---most notable East Asian countries.
+
+The problem is that when formatting, Gnus assumes that if a string is 10
+characters wide, it'll be 10 Latin characters wide on the screen.  In
+these coutries, that's not true.
+
+@vindex gnus-use-correct-string-widths
+To help fix this, you can set @code{gnus-use-correct-string-widths} to
+@code{t}.  This makes buffer generation slower, but the results will be
+prettieer.  The default value is @code{nil}.
+
 
 
 @node Window Layout
