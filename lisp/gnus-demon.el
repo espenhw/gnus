@@ -272,7 +272,8 @@ minutes, the connection is closed."
 (defun gnus-demon-scan-mail ()
   (save-window-excursion
     (let ((servers gnus-opened-servers)
-	  server)
+	  server
+	  (nnmail-fetched-sources (list t)))
       (while (setq server (car (pop servers)))
 	(and (gnus-check-backend-function 'request-scan (car server))
 	     (or (gnus-server-opened server)
