@@ -6763,21 +6763,35 @@ of what's specified by the `gnus-refer-thread-limit' variable."
        (t
 	;; We fetch the article.
 	(catch 'found
-	  (dolist (gnus-override-method
-		   (cond ((null gnus-refer-article-method)
-			  (list 'current gnus-select-method))
-			 ((consp (car gnus-refer-article-method))
-			  gnus-refer-article-method)
-			 (t
-			  (list gnus-refer-article-method))))
-	    (when (eq 'current gnus-override-method)
-	      (setq gnus-override-method gnus-current-select-method))
+	  (dolist (gnus-override-method (gnus-refer-article-methods))
 	    (gnus-check-server gnus-override-method)
 	    ;; Fetch the header, and display the article.
 	    (when (setq number (gnus-summary-insert-subject message-id))
 	      (gnus-summary-select-article nil nil nil number)
 	      (throw 'found t)))
 	  (gnus-message 3 "Couldn't fetch article %s" message-id)))))))
+
+(defun gnus-refer-article-methods ()
+  "Return a list of referrable methods."
+  (cond
+   ;; No method, so we default to current and native.
+   ((null gnus-refer-article-method)
+    (list gnus-current-select-method gnus-select-method))
+   ;; Current.
+   ((eq 'current gnus-refer-article-method)
+    (list gnus-current-select-method))
+   ;; List of select methods.
+   ((not (stringp (cadr gnus-refer-article-method)))
+    (let (out)
+      (dolist (method gnus-refer-article-method)
+	(push (if (eq 'current method)
+		  gnus-current-select-method
+		method)
+	      out))
+      (nreverse out)))
+   ;; One single select method.
+   (t
+    (list gnus-refer-article-method))))
 
 (defun gnus-summary-edit-parameters ()
   "Edit the group parameters of the current group."
@@ -7555,12 +7569,11 @@ latter case, they will be copied into the relevant groups."
       (kill-buffer (current-buffer)))))
 
 (defun gnus-summary-article-posted-p ()
-  "Say whether the current (mail) article is available from `gnus-select-method' as well.
+  "Say whether the current (mail) article is available from news as well.
 This will be the case if the article has both been mailed and posted."
   (interactive)
   (let ((id (mail-header-references (gnus-summary-article-header)))
-	(gnus-override-method
-	 (or gnus-refer-article-method gnus-select-method)))
+	(gnus-override-method (car (gnus-refer-article-methods))))
     (if (gnus-request-head id "")
 	(gnus-message 2 "The current message was found on %s"
 		      gnus-override-method)
@@ -9152,8 +9165,10 @@ If REVERSE, save parts that do not match TYPE."
   "Read the headers of article ID and enter them into the Gnus system."
   (let ((group gnus-newsgroup-name)
 	(gnus-override-method
-	 (and (gnus-news-group-p gnus-newsgroup-name)
-	      gnus-refer-article-method))
+	 (or
+	  gnus-override-method
+	  (and (gnus-news-group-p gnus-newsgroup-name)
+	       (car (gnus-refer-article-methods)))))
 	where)
     ;; First we check to see whether the header in question is already
     ;; fetched.

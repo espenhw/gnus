@@ -3652,8 +3652,7 @@ If given a prefix, show the hidden text instead."
 	  ;; We only request an article by message-id when we do not have the
 	  ;; headers for it, so we'll have to get those.
 	  (when (stringp article)
-	    (let ((gnus-override-method gnus-refer-article-method))
-	      (gnus-read-header article)))
+	    (gnus-read-header article))
 
 	  ;; If the article number is negative, that means that this article
 	  ;; doesn't belong in this newsgroup (possibly), so we find its
@@ -3671,8 +3670,7 @@ If given a prefix, show the hidden text instead."
 		    ;; This is a sparse gap article.
 		    (setq do-update-line article)
 		    (setq article (mail-header-id header))
-		    (let ((gnus-override-method gnus-refer-article-method))
-		      (setq sparse-header (gnus-read-header article)))
+		    (setq sparse-header (gnus-read-header article))
 		    (setq gnus-newsgroup-sparse
 			  (delq article gnus-newsgroup-sparse)))
 		   ((vectorp header)
@@ -3734,7 +3732,7 @@ If given a prefix, show the hidden text instead."
 	   ;; Get the article and put into the article buffer.
 	   ((or (stringp article) (numberp article))
 	    (let ((gnus-override-method
-		   (and (stringp article) gnus-refer-article-method))
+		   (and (stringp article) (car (gnus-refer-article-methods))))
 		  (buffer-read-only nil))
 	      (erase-buffer)
 	      (gnus-kill-all-overlays)

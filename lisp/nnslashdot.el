@@ -461,6 +461,12 @@
        ("postercomment" . ,body)
        ("posttype" . "html")))))
 
+(deffoo nnslashdot-request-delete-group (group &optional force server)
+  (nnslashdot-possibly-change-server group server)
+  (setq nnslashdot-groups (delq (assoc group nnslashdot-groups)
+				nnslashdot-groups))
+  (nnslashdot-write-groups))
+
 (nnoo-define-skeleton nnslashdot)
 
 ;;; Internal functions
