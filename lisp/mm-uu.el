@@ -163,6 +163,10 @@ To disable dissecting shar codes, for instance, add
 		   mm-uu-type-alist)
   :group 'gnus-article-mime)
 
+(defvar mm-uu-text-plain-type '("text/plain" (charset . gnus-decoded))
+  "MIME type and parameters for text/plain parts.
+`gnus-decoded' is a fake charset, which means no further decoding.")
+
 ;; functions
 
 (defsubst mm-uu-type (entry)
@@ -363,7 +367,7 @@ Return that buffer."
       (while (re-search-forward "^- " nil t)
 	(replace-match "" t t)
 	(forward-line 1)))
-    (list (mm-make-handle buf '("text/plain" (charset . gnus-decoded))))))
+    (list (mm-make-handle buf mm-uu-text-plain-type))))
 
 (defun mm-uu-pgp-signed-extract ()
   (let ((mm-security-handle (list (format "multipart/signed"))))
@@ -395,9 +399,7 @@ Return that buffer."
 	(with-current-buffer buf
 	  (mml2015-clean-buffer)
 	  (funcall (mml2015-clear-decrypt-function))))
-    (list
-     (mm-make-handle buf
-		     '("text/plain"  (charset . gnus-decoded))))))
+    (list (mm-make-handle buf mm-uu-text-plain-type))))
 
 (defun mm-uu-pgp-encrypted-extract ()
   (let ((mm-security-handle (list (format "multipart/encrypted"))))
@@ -431,12 +433,14 @@ Return that buffer."
 		    '("application/pgp-keys"))))
 
 ;;;###autoload
-(defun mm-uu-dissect (&optional noheader)
+(defun mm-uu-dissect (&optional noheader mime-type)
   "Dissect the current buffer and return a list of uu handles.
-The optional NOHEADER means there's no header in the buffer."
+The optional NOHEADER means there's no header in the buffer.
+MIME-TYPE specifies a MIME type and parameters, which defaults to the
+value of `mm-uu-text-plain-type'."
   (let ((case-fold-search t)
-	text-start start-point end-point file-name result
-	text-plain-type entry func)
+	(mm-uu-text-plain-type (or mime-type mm-uu-text-plain-type))
+	text-start start-point end-point file-name result entry func)
     (save-excursion
       (goto-char (point-min))
       (cond
@@ -446,10 +450,7 @@ The optional NOHEADER means there's no header in the buffer."
        ((search-forward "\n\n" nil t)
 	t)
        (t (goto-char (point-max))))
-      ;;; gnus-decoded is a fake charset, which means no further
-      ;;; decoding.
-      (setq text-start (point)
-	    text-plain-type '("text/plain"  (charset . gnus-decoded)))
+      (setq text-start (point))
       (while (re-search-forward mm-uu-beginning-regexp nil t)
 	(setq start-point (match-beginning 0))
 	(let ((alist mm-uu-type-alist)
@@ -478,7 +479,7 @@ The optional NOHEADER means there's no header in the buffer."
 		     (re-search-forward "." start-point t)))
 	      (push
 	       (mm-make-handle (mm-uu-copy-to-buffer text-start start-point)
-			       text-plain-type)
+			       mm-uu-text-plain-type)
 	       result))
 	  (push
 	   (funcall (mm-uu-function-extract entry))
@@ -491,7 +492,7 @@ The optional NOHEADER means there's no header in the buffer."
 		   (re-search-forward "." nil t)))
 	    (push
 	     (mm-make-handle (mm-uu-copy-to-buffer text-start (point-max))
-			     text-plain-type)
+			     mm-uu-text-plain-type)
 	     result))
 	(setq result (cons "multipart/mixed" (nreverse result))))
       result)))
@@ -505,7 +506,8 @@ The optional NOHEADER means there's no header in the buffer."
 	  ((bufferp buffer)
 	   (when (and (equal "text/plain" (mm-handle-media-type handle))
 		      (with-current-buffer buffer
-			(setq children (mm-uu-dissect t))))
+			(setq children
+			      (mm-uu-dissect t (mm-handle-type handle)))))
 	     (kill-buffer buffer)
 	     (setcar handle (car children))
 	     (setcdr handle (cdr children))))
