@@ -1,3 +1,16 @@
+2004-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-mime-mule-charset-alist): Use shift_jis instead
+	of iso-2022-jp-2 for the katakana-jisx0201 mule charset; add new
+	entries for the mime charsets iso-2022-jp-3 and shift_jis.
+	(mm-coding-system-priorities): Use shift_jis and iso-8859-1
+	instead of japanese-shift-jis and iso-latin-1 respectively in
+	order to share the default value with both Emacs and XEmacs-mule.
+	(mm-mule-charset-to-mime-charset): Make
+	mm-coding-system-priorities effective.
+	(mm-sort-coding-systems-predicate): Canonicalize coding-systems
+	while predicating of candidates upon the priorities.
+
 2004-06-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Add

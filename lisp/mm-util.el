@@ -230,8 +230,7 @@ In XEmacs, also return non-nil if CS is a coding system object."
     (iso-2022-jp-2 latin-iso8859-1 greek-iso8859-7
 		   latin-jisx0201 japanese-jisx0208-1978
 		   chinese-gb2312 japanese-jisx0208
-		   korean-ksc5601 japanese-jisx0212
-		   katakana-jisx0201)
+		   korean-ksc5601 japanese-jisx0212)
     (iso-2022-int-1 latin-iso8859-1 greek-iso8859-7
 		    latin-jisx0201 japanese-jisx0208-1978
 		    chinese-gb2312 japanese-jisx0208
@@ -246,6 +245,9 @@ In XEmacs, also return non-nil if CS is a coding system object."
 		    chinese-cns11643-3 chinese-cns11643-4
 		    chinese-cns11643-5 chinese-cns11643-6
 		    chinese-cns11643-7)
+    (iso-2022-jp-3 latin-jisx0201 japanese-jisx0208-1978 japanese-jisx0208
+		   japanese-jisx0213-1 japanese-jisx0213-2)
+    (shift_jis latin-jisx0201 katakana-jisx0201 japanese-jisx0208)
     ,(if (or (not (fboundp 'charsetp)) ;; non-Mule case
 	     (charsetp 'unicode-a)
 	     (not (mm-coding-system-p 'mule-utf-8)))
@@ -309,9 +311,8 @@ Valid elements include:
   (if (boundp 'current-language-environment)
       (let ((lang (symbol-value 'current-language-environment)))
 	(cond ((string= lang "Japanese")
-	       ;; Japanese users may prefer iso-2022-jp to shift-jis.
-	       '(iso-2022-jp iso-2022-jp-2 japanese-shift-jis
-			     iso-latin-1 utf-8)))))
+	       ;; Japanese users may prefer iso-2022-jp to shift_jis.
+	       '(iso-2022-jp iso-2022-jp-2 shift_jis iso-8859-1 utf-8)))))
   "Preferred coding systems for encoding outgoing messages.
 
 More than one suitable coding system may be found for some text.
@@ -337,16 +338,20 @@ mail with multiple parts is preferred to sending a Unicode one.")
   "Return the MIME charset corresponding to the given Mule CHARSET."
   (if (and (fboundp 'find-coding-systems-for-charsets)
 	   (fboundp 'sort-coding-systems))
-      (let (mime)
-	(dolist (cs (sort-coding-systems
-		     (copy-sequence
-		      (find-coding-systems-for-charsets (list charset)))))
-	  (unless mime
-	    (when cs
-	      (setq mime (or (coding-system-get cs :mime-charset)
-			     (coding-system-get cs 'mime-charset))))))
+      (let ((css (sort (sort-coding-systems
+			(find-coding-systems-for-charsets (list charset)))
+		       'mm-sort-coding-systems-predicate))
+	    cs mime)
+	(while (and (not mime)
+		    css)
+	  (when (setq cs (pop css))
+	    (setq mime (or (coding-system-get cs :mime-charset)
+			   (coding-system-get cs 'mime-charset)))))
 	mime)
-    (let ((alist mm-mime-mule-charset-alist)
+    (let ((alist (mapcar (lambda (cs)
+			   (assq cs mm-mime-mule-charset-alist))
+			 (sort (mapcar 'car mm-mime-mule-charset-alist)
+			       'mm-sort-coding-systems-predicate)))
 	  out)
       (while alist
 	(when (memq charset (cdar alist))
@@ -536,11 +541,14 @@ This affects whether coding conversion should be attempted generally."
   (let ((priorities
 	 (mapcar (lambda (cs)
 		   ;; Note: invalid entries are dropped silently
-		   (and (coding-system-p cs)
+		   (and (mm-coding-system-p cs)
 			(coding-system-base cs)))
 		 mm-coding-system-priorities)))
-    (> (length (memq a priorities))
-       (length (memq b priorities)))))
+    (and (mm-coding-system-p a)
+	 (if (mm-coding-system-p b)
+	     (> (length (memq (coding-system-base a) priorities))
+		(length (memq (coding-system-base b) priorities)))
+	   t))))
 
 (defun mm-find-mime-charset-region (b e &optional hack-charsets)
   "Return the MIME charsets needed to encode the region between B and E.
