@@ -1,5 +1,12 @@
 2001-07-04  Didier Verna  <didier@lrde.epita.fr>
 
+	* nntp.el (nntp-send-command): don't pass a buffer argument to
+	`point'. Only XEmacs accepts this.
+	* nntp.el (nntp-send-command-nodelete): ditto.
+	* nntp.el (nntp-send-command-and-decode): ditto.
+
+2001-07-04  Didier Verna  <didier@lrde.epita.fr>
+
 	* nntp.el (nntp-open-connection-function): doc update.
 	* nntp.el (nntp-pre-command): New.
 	* nntp.el (nntp-via-rlogin-command): New.

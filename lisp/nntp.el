@@ -382,7 +382,7 @@ noticing asynchronous data.")
       (erase-buffer)))
   (let* ((command (mapconcat 'identity strings " "))
 	 (buffer (process-buffer (nntp-find-connection nntp-server-buffer)))
-	 (pos (point buffer)))
+	 (pos (with-current-buffer buffer (point))))
     (prog1
 	(nntp-retrieve-data command
 			    nntp-address nntp-port-number nntp-server-buffer
@@ -402,7 +402,7 @@ noticing asynchronous data.")
   "Send STRINGS to server and wait until WAIT-FOR returns."
   (let* ((command (mapconcat 'identity strings " "))
 	 (buffer (process-buffer (nntp-find-connection nntp-server-buffer)))
-	 (pos (point buffer)))
+	 (pos (with-current-buffer buffer (point))))
     (prog1
 	(nntp-retrieve-data command
 			    nntp-address nntp-port-number nntp-server-buffer
@@ -427,7 +427,7 @@ noticing asynchronous data.")
       (erase-buffer)))
   (let* ((command (mapconcat 'identity strings " "))
 	 (buffer (process-buffer (nntp-find-connection nntp-server-buffer)))
-	 (pos (point buffer)))
+	 (pos (with-current-buffer buffer (point))))
     (prog1
 	(nntp-retrieve-data command
 			    nntp-address nntp-port-number nntp-server-buffer
