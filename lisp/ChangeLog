@@ -1,5 +1,8 @@
 2001-09-29  Simon Josefsson  <jas@extundo.com>
 
+	* mm-util.el (mm-mime-mule-charset-alist): Encode mule-utf-8 as
+	utf-8, not eight-bit-control.
+
 	* imap.el (imap-shell-host, imap-default-user, imap-use-utf7) 
 	(imap-log, imap-debug): Custom.
 	(imap-log-buffer, imap-debug-buffer): New constants.

@@ -77,7 +77,9 @@
 	     (not (coding-system-p 'mule-utf-8)))
 	 '(utf-8 unicode-a unicode-b unicode-c unicode-d unicode-e)
        ;; If we have utf-8 we're in Mule 5+.
-       (delete 'ascii (coding-system-get 'mule-utf-8 'safe-charsets))))
+       (append '(utf-8)
+	       (delete 'ascii
+		       (coding-system-get 'mule-utf-8 'safe-charsets)))))
   "Alist of MIME-charset/MULE-charsets.")
 
 (eval-and-compile
