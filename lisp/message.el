@@ -4005,9 +4005,10 @@ the message."
 	subject))))
 
 ;;;###autoload
-(defun message-forward (&optional news)
+(defun message-forward (&optional news digest)
   "Forward the current message via mail.
-Optional NEWS will use news to forward instead of mail."
+Optional NEWS will use news to forward instead of mail.
+Optional DIGEST will use digest to forward."
   (interactive "P")
   (let* ((cur (current-buffer))
 	 (subject (if message-forward-show-mml
@@ -4024,22 +4025,29 @@ Optional NEWS will use news to forward instead of mail."
         (message-goto-body)
       (goto-char (point-max)))
     (if message-forward-as-mime
-	(if message-forward-show-mml
-	    (insert "\n\n<#mml type=message/rfc822 disposition=inline>\n")
-	  (insert "\n\n<#part type=message/rfc822 disposition=inline"
-		  " buffer=\"" (buffer-name cur) "\">\n"))
+	(if digest
+	    (insert "\n<#multipart type=digest>\n")
+	  (if message-forward-show-mml
+	      (insert "\n\n<#mml type=message/rfc822 disposition=inline>\n")
+	    (insert "\n\n<#part type=message/rfc822 disposition=inline"
+		    " buffer=\"" (buffer-name cur) "\">\n")))
       (insert "\n-------------------- Start of forwarded message --------------------\n"))
-    (let ((b (point))
-	  e)
-      (if message-forward-show-mml
-	  (insert-buffer-substring cur)
-	(unless message-forward-as-mime
-	  (mml-insert-buffer cur)))
+    (let ((b (point)) e)
+      (if digest
+	  (if message-forward-as-mime
+	      (insert-buffer-substring cur)
+	    (mml-insert-buffer cur))
+	(if message-forward-show-mml
+	    (insert-buffer-substring cur)
+	  (unless message-forward-as-mime
+	    (mml-insert-buffer cur))))
       (setq e (point))
       (if message-forward-as-mime
-	  (if message-forward-show-mml
-	      (insert "<#/mml>\n")
-	    (insert "<#/part>\n"))
+	  (if digest
+	      (insert "<#/multipart>\n")
+	    (if message-forward-show-mml
+		(insert "<#/mml>\n")
+	      (insert "<#/part>\n")))
 	(insert "\n-------------------- End of forwarded message --------------------\n"))
       (when (and (or message-forward-show-mml
 		     (not message-forward-as-mime))
@@ -4049,7 +4057,9 @@ Optional NEWS will use news to forward instead of mail."
 	  (narrow-to-region b e)
 	  (goto-char b)
 	  (narrow-to-region (point) (or (search-forward "\n\n" nil t) (point)))
-	  (message-remove-header message-forward-ignored-headers t))))
+	  (if (and digest message-forward-as-mime)
+	      (delete-region (point-min) (point-max))
+	    (message-remove-header message-forward-ignored-headers t)))))
     (message-position-point)))
 
 ;;;###autoload

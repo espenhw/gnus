@@ -210,6 +210,11 @@ to:
 (defvar mm-last-shell-command "")
 (defvar mm-content-id-alist nil)
 
+;; According to RFC2046, in particular, in a digest, the default
+;; Content-Type value for a body part is changed from "text/plain" to
+;; "message/rfc822".
+(defvar mm-dissect-default-type "text/plain")
+
 ;;; The functions.
 
 (defun mm-dissect-buffer (&optional no-strict-mime)
@@ -231,7 +236,7 @@ to:
       (if (or (not ctl)
 	      (not (string-match "/" (car ctl))))
 	  (mm-dissect-singlepart
-	   '("text/plain")
+	   (list mm-dissect-default-type)
 	   (and cte (intern (downcase (mail-header-remove-whitespace
 				       (mail-header-remove-comments
 					cte)))))
@@ -245,7 +250,10 @@ to:
 	 result
 	 (cond
 	  ((equal type "multipart")
-	   (cons (car ctl) (mm-dissect-multipart ctl)))
+	   (let ((mm-dissect-default-type (if (equal subtype "digest")
+					      "message/rfc822"
+					    "text/plain")))
+	     (cons (car ctl) (mm-dissect-multipart ctl))))
 	  (t
 	   (mm-dissect-singlepart
 	    ctl

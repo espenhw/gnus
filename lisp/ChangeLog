@@ -1,3 +1,18 @@
+2000-05-12 15:15:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-type-alist): mime-digest head-begin.
+	(nndoc-mime-digest-type-p): Locate article head precisely.
+	* mml.el (mml-generate-default-type): New variable.
+	(mml-generate-mime-1): Use it.
+	(mml-insert-mime-headers): Use it.
+	* gnus-uu.el (gnus-uu-digest-buffer): New variable.
+	(gnus-uu-digest-mail-forward): Use it and call message-forward 
+	with argument digest.
+	(gnus-uu-save-article): Support message-forward-as-mime.
+	* message.el (message-forward): Add parameter digest.
+	* mm-decode.el (mm-dissect-default-type): New variable.
+	(mm-dissect-buffer): Use it.
+
 2000-05-11 11:08:03  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-parse-singlepart-with-multiple-charsets): Set space,
