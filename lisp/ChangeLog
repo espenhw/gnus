@@ -1,5 +1,7 @@
 2001-10-14  Simon Josefsson  <jas@extundo.com>
 
+	* dig.el: Doc fix.
+
 	* smime.el: Doc fix.
 
 	* gnus-msg.el (gnus-inews-do-gcc): Port header encoded-word

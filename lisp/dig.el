@@ -31,6 +31,10 @@
 ;; For use in elisp programs, call `dig-invoke' and use
 ;; `dig-extract-rr' to extract resource records.
 
+;;; Release history:
+
+;; 2000-10-28  posted on gnu.emacs.sources
+
 ;;; Code:
 
 (eval-when-compile (require 'cl))
