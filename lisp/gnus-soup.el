@@ -374,7 +374,7 @@ though the two last may be nil if they are missing."
     (when (file-exists-p file)
       (save-excursion
 	(set-buffer (nnheader-find-file-noselect file 'force))
-	(buffer-disable-undo (current-buffer))
+	(buffer-disable-undo)
 	(goto-char (point-min))
 	(while (not (eobp))
 	  (push (vector (gnus-soup-field)
@@ -397,7 +397,7 @@ file.  The vector contain three strings, [prefix name encoding]."
   (let (replies)
     (save-excursion
       (set-buffer (nnheader-find-file-noselect file))
-      (buffer-disable-undo (current-buffer))
+      (buffer-disable-undo)
       (goto-char (point-min))
       (while (not (eobp))
 	(push (vector (gnus-soup-field) (gnus-soup-field)

@@ -530,7 +530,7 @@ backend for the messages.")
 	(when (file-exists-p (concat nnsoup-directory file))
 	  (save-excursion		; Load the file.
 	    (set-buffer (get-buffer-create buffer-name))
-	    (buffer-disable-undo (current-buffer))
+	    (buffer-disable-undo)
 	    (push (cons nnsoup-current-group (current-buffer)) nnsoup-buffers)
 	    (nnheader-insert-file-contents (concat nnsoup-directory file))
 	    (current-buffer))))))

@@ -672,7 +672,7 @@ used as score."
   (setq gnus-score-help-winconf (current-window-configuration))
   (save-excursion
     (set-buffer (gnus-get-buffer-create "*Score Help*"))
-    (buffer-disable-undo (current-buffer))
+    (buffer-disable-undo)
     (delete-windows-on (current-buffer))
     (erase-buffer)
     (insert string ":\n\n")
@@ -1406,7 +1406,7 @@ SCORE is the score to add."
 
 	  (save-excursion
 	    (set-buffer (gnus-get-buffer-create "*Headers*"))
-	    (buffer-disable-undo (current-buffer))
+	    (buffer-disable-undo)
 	    (when (gnus-buffer-live-p gnus-summary-buffer)
 	      (message-clone-locals gnus-summary-buffer))
 
@@ -2507,7 +2507,7 @@ GROUP using BNews sys file syntax."
 	 ofiles not-match regexp)
     (save-excursion
       (set-buffer (gnus-get-buffer-create "*gnus score files*"))
-      (buffer-disable-undo (current-buffer))
+      (buffer-disable-undo)
       ;; Go through all score file names and create regexp with them
       ;; as the source.
       (while sfiles

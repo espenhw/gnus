@@ -25,7 +25,7 @@
 ;;; Code:
 
 (eval-and-compile
-  (or (fboundp  'base64-encode-region)
+  (or (fboundp  'base64-decode-region)
       (autoload 'base64-decode-region "base64" nil t)))
 (require 'mm-util)
 (require 'rfc2047)
@@ -120,9 +120,8 @@ The characters in CHARSET should then be decoded."
 	(when (and charset
 		   (setq mule-charset (mm-charset-to-coding-system charset))
 		   buffer-file-coding-system
-		   ;;(not (mm-coding-system-equal
-		   ;;	 buffer-file-coding-system mule-charset))
-		   )
+		   (or (not (eq mule-charset 'ascii))
+		       (setq mule-charset rfc2047-default-charset)))
 	  (mm-decode-coding-region (point-min) (point-max) mule-charset))))))
 
 (provide 'mm-bodies)

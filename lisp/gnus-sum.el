@@ -767,6 +767,7 @@ which it may alter in any way.")
 ;;; Internal variables
 
 (defvar gnus-article-mime-handles nil)
+(defvar gnus-article-decoded-p nil)
 (defvar gnus-scores-exclude-files nil)
 (defvar gnus-page-broken nil)
 
@@ -1878,7 +1879,7 @@ The following commands are available:
   (setq mode-name "Summary")
   (make-local-variable 'minor-mode-alist)
   (use-local-map gnus-summary-mode-map)
-  (buffer-disable-undo (current-buffer))
+  (buffer-disable-undo)
   (setq buffer-read-only t)		;Disable modification
   (setq truncate-lines t)
   (setq selective-display t)
@@ -3911,6 +3912,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       ;; Init the dependencies hash table.
       (setq gnus-newsgroup-dependencies
 	    (gnus-make-hashtable (length articles)))
+      (gnus-set-global-variables)
       ;; Retrieve the headers and read them in.
       (gnus-message 5 "Fetching headers for %s..." gnus-newsgroup-name)
       (setq gnus-newsgroup-headers
@@ -5103,9 +5105,10 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (setq group-point (point))
     (if temporary
 	nil				;Nothing to do.
-      (save-excursion
-	(set-buffer gnus-article-buffer)
-	(mapcar 'mm-destroy-part gnus-article-mime-handles))
+      (when (gnus-buffer-live-p gnus-article-buffer)
+	(save-excursion
+	  (set-buffer gnus-article-buffer)
+	  (mapcar 'mm-destroy-part gnus-article-mime-handles)))
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
 	(gnus-kill-buffer gnus-article-buffer)
@@ -5150,9 +5153,10 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	      (gnus-y-or-n-p "Discard changes to this group and exit? "))
       (gnus-async-halt-prefetch)
       (gnus-run-hooks 'gnus-summary-prepare-exit-hook)
-      (save-excursion
-	(set-buffer gnus-article-buffer)
-	(mapcar 'mm-destroy-part gnus-article-mime-handles))
+      (when (gnus-buffer-live-p gnus-article-buffer)
+	(save-excursion
+	  (set-buffer gnus-article-buffer)
+	  (mapcar 'mm-destroy-part gnus-article-mime-handles)))
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
 	(gnus-kill-buffer gnus-article-buffer)
@@ -7330,7 +7334,8 @@ groups."
       (if (and (not read-only)
 	       (not (gnus-request-replace-article
 		     (cdr gnus-article-current) (car gnus-article-current)
-		     (current-buffer))))
+		     (current-buffer)
+		     (not gnus-article-decoded-p))))
 	  (error "Couldn't replace article")
 	;; Update the summary buffer.
 	(if (and references
@@ -8681,7 +8686,7 @@ save those articles instead."
 				(lambda (f)
 				  (if (equal f " ")
 				      f
-				    (gnus-quote-arg-for-sh-or-csh f)))
+				    (mm-quote-arg f)))
 				files " ")))))
 	  (setq ps (cdr ps)))))
     (if (and gnus-view-pseudos (not not-view))

@@ -494,7 +494,7 @@ the line could be found."
 (defun nnheader-set-temp-buffer (name &optional noerase)
   "Set-buffer to an empty (possibly new) buffer called NAME with undo disabled."
   (set-buffer (get-buffer-create name))
-  (buffer-disable-undo (current-buffer))
+  (buffer-disable-undo)
   (unless noerase
     (erase-buffer))
   (current-buffer))

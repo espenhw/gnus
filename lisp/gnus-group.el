@@ -764,7 +764,7 @@ The following commands are available:
   (gnus-group-set-mode-line)
   (setq mode-line-process nil)
   (use-local-map gnus-group-mode-map)
-  (buffer-disable-undo (current-buffer))
+  (buffer-disable-undo)
   (setq truncate-lines t)
   (setq buffer-read-only t)
   (gnus-set-default-directory)
@@ -3064,7 +3064,7 @@ to use."
       ;; Print out all the groups.
       (save-excursion
 	(pop-to-buffer "*Gnus Help*")
-	(buffer-disable-undo (current-buffer))
+	(buffer-disable-undo)
 	(erase-buffer)
 	(setq groups (sort groups 'string<))
 	(while groups

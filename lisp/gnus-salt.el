@@ -131,7 +131,8 @@ It accepts the same format specs that `gnus-summary-line-format' does."
 	       (set-buffer gnus-summary-buffer)
 	       gnus-pick-mode))
     (message-add-action
-     '(gnus-configure-windows 'pick t) 'send 'exit 'postpone 'kill)))
+     '(gnus-configure-windows ,gnus-current-window-configuration t)
+     'send 'exit 'postpone 'kill)))
 
 (defvar gnus-pick-line-number 1)
 (defun gnus-pick-line-number ()
@@ -468,7 +469,7 @@ Two predefined functions are available:
   (setq mode-name "Tree")
   (setq major-mode 'gnus-tree-mode)
   (use-local-map gnus-tree-mode-map)
-  (buffer-disable-undo (current-buffer))
+  (buffer-disable-undo)
   (setq buffer-read-only t)
   (setq truncate-lines t)
   (save-excursion
@@ -969,7 +970,7 @@ The following commands are available:
   (setq mode-name "Gnus Carpal")
   (setq mode-line-process nil)
   (use-local-map gnus-carpal-mode-map)
-  (buffer-disable-undo (current-buffer))
+  (buffer-disable-undo)
   (setq buffer-read-only t)
   (make-local-variable 'gnus-carpal-attached-buffer)
   (gnus-run-hooks 'gnus-carpal-mode-hook))

@@ -1507,9 +1507,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
     ;; Let the backend save the article (or not).
     (cond
      ((not duplication)
-      (nnmail-cache-insert message-id)
       (funcall func (setq group-art
-			  (nreverse (nnmail-article-group artnum-func)))))
+			  (nreverse (nnmail-article-group artnum-func))))
+      (nnmail-cache-insert message-id))
      ((eq action 'delete)
       (setq group-art nil))
      ((eq action 'warn)

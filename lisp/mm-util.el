@@ -84,6 +84,7 @@
      (device-type . ignore)
      (coding-system-equal . equal)
      (annotationp . ignore)
+     (set-buffer-file-coding-system . ignore)
      (make-char
       . (lambda (charset int)
 	  (int-to-char int)))
@@ -96,8 +97,7 @@
 
 (defvar mm-charset-coding-system-alist
   (let ((rest
-	 '((us-ascii . iso-8859-1)
-	   (gb2312 . cn-gb-2312)
+	 '((gb2312 . cn-gb-2312)
 	   (iso-2022-jp-2 . iso-2022-7bit-ss2)
 	   (x-ctext . ctext)))
 	(systems (mm-coding-system-list))
@@ -139,6 +139,9 @@ used as the line break code type of the coding system."
    ((and (null (mm-coding-system-list))
 	 (memq charset mm-known-charsets))
     charset)
+   ;; ascii
+   ((eq charset 'us-ascii)
+    'ascii)
    ;; Check to see whether we can handle this charset.
    ((memq charset (mm-coding-system-list))
     charset)

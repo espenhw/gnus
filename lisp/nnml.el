@@ -771,7 +771,7 @@ all.  This may very well take some time.")
     (save-excursion
       ;; Init the nov buffer.
       (set-buffer nov-buffer)
-      (buffer-disable-undo (current-buffer))
+      (buffer-disable-undo)
       (erase-buffer)
       (set-buffer nntp-server-buffer)
       ;; Delete the old NOV file.

@@ -574,7 +574,7 @@
 	      (cons (cons (point-min) (point-max))
 		    major-mode))
 
-	(buffer-disable-undo (current-buffer))
+	(buffer-disable-undo)
 	(widen)
 	(setq buffer-read-only nil)
 	(fundamental-mode)

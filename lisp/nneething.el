@@ -314,7 +314,7 @@ If this variable is nil, no files will be excluded.")
   (save-excursion
     (set-buffer (get-buffer-create nneething-work-buffer))
     (setq case-fold-search nil)
-    (buffer-disable-undo (current-buffer))
+    (buffer-disable-undo)
     (erase-buffer)
     (cond
      ((not (file-exists-p file))

@@ -2220,7 +2220,7 @@ to find out how to use this."
       (unwind-protect
 	  (save-excursion
 	    (set-buffer tembuf)
-	    (buffer-disable-undo (current-buffer))
+	    (buffer-disable-undo)
 	    (erase-buffer)
 	    ;; Avoid copying text props.
 	    (insert (format
@@ -3964,7 +3964,7 @@ Do a `tab-to-tab-stop' if not in those headers."
 	  (message "No matching groups")
 	(save-selected-window
 	  (pop-to-buffer "*Completions*")
-	  (buffer-disable-undo (current-buffer))
+	  (buffer-disable-undo)
 	  (let ((buffer-read-only nil))
 	    (erase-buffer)
 	    (let ((standard-output (current-buffer)))
@@ -4048,27 +4048,31 @@ regexp varstr."
 (defun message-encode-message-body ()
   "Examine the message body, encode it, and add the requisite headers."
   (when (featurep 'mule)
-    (save-excursion
-      (save-restriction
-	(message-narrow-to-headers-or-head)
-	(message-remove-header
-	 "^Content-Transfer-Encoding:\\|^Content-Type:\\|^Mime-Version:" t)
-	(goto-char (point-max))
-	(widen)
-	(narrow-to-region (point) (point-max))
-	(let* ((charset (mm-encode-body))
-	       (encoding (mm-body-encoding)))
-	  (when (consp charset)
-	    (error "Can't encode messages with multiple charsets (yet)"))
-	  (widen)
+    (let (old-headers)
+      (save-excursion
+	(save-restriction
 	  (message-narrow-to-headers-or-head)
+	  (unless (setq old-headers (message-fetch-field "mime-version"))
+	    (message-remove-header
+	     "^Content-Transfer-Encoding:\\|^Content-Type:\\|^Mime-Version:" t))
 	  (goto-char (point-max))
-	  (setq charset (or charset (mm-mule-charset-to-mime-charset 'ascii)))
-	  ;; We don't insert MIME headers if they only say the default.
-	  (unless (and (eq charset 'us-ascii)
-		       (eq encoding '7bit))
-	    (mm-insert-rfc822-headers charset encoding))
-	  (mm-encode-body))))))
+	  (widen)
+	  (narrow-to-region (point) (point-max))
+	  (let* ((charset (mm-encode-body))
+		 (encoding (mm-body-encoding)))
+	    (when (consp charset)
+	      (error "Can't encode messages with multiple charsets (yet)"))
+	    (widen)
+	    (message-narrow-to-headers-or-head)
+	    (goto-char (point-max))
+	    (setq charset (or charset
+			      (mm-mule-charset-to-mime-charset 'ascii)))
+	    ;; We don't insert MIME headers if they only say the default.
+	    (when (and (not old-headers)
+		       (not (and (eq charset 'us-ascii)
+				 (eq encoding '7bit))))
+	      (mm-insert-rfc822-headers charset encoding))
+	    (mm-encode-body)))))))
 
 (run-hooks 'message-load-hook)
 

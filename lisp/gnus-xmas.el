@@ -28,6 +28,7 @@
 (require 'text-props)
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
+(require 'wid-edit)
 
 (defgroup gnus-xmas nil
   "XEmacsoid support for Gnus"
@@ -400,6 +401,7 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-xmas-define ()
   (setq gnus-mouse-2 [button2])
+  (setq gnus-widget-button-keymap widget-button-keymap)
 
   (unless (memq 'underline (face-list))
     (and (fboundp 'make-face)

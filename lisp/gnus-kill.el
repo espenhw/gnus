@@ -429,7 +429,7 @@ Returns the number of articles marked as read."
 (defun gnus-score-insert-help (string alist idx)
   (save-excursion
     (pop-to-buffer "*Score Help*")
-    (buffer-disable-undo (current-buffer))
+    (buffer-disable-undo)
     (erase-buffer)
     (insert string ":\n\n")
     (while alist
@@ -566,7 +566,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
       (concat "\n" (gnus-prin1-to-string object))
     (save-excursion
       (set-buffer (gnus-get-buffer-create "*Gnus PP*"))
-      (buffer-disable-undo (current-buffer))
+      (buffer-disable-undo)
       (erase-buffer)
       (insert (format "\n(%S %S\n  '(" (nth 0 object) (nth 1 object)))
       (let ((klist (cadr (nth 2 object)))
@@ -702,7 +702,9 @@ Usage: emacs -batch -l ~/.emacs -l gnus -f gnus-batch-score"
 		 (and (car entry)
 		      (or (eq (car entry) t)
 			  (not (zerop (car entry))))))
-	(gnus-summary-read-group group nil t nil t)
+	(condition-case ()
+	    (gnus-summary-read-group group nil t nil t)
+	  (error nil))
 	(when (eq (current-buffer) (get-buffer gnus-summary-buffer))
 	  (gnus-summary-exit))))
     ;; Exit Emacs.

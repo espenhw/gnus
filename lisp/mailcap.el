@@ -271,6 +271,7 @@ not.")
       (expand-file-name fname mailcap-temporary-directory))))
 
 (defun mailcap-save-binary-file ()
+  (goto-char (point-min))
   (let ((file (read-file-name
 	       "Filename to save as: "
 	       (or mailcap-download-directory "~/")))
@@ -299,7 +300,7 @@ not.")
 (defun mailcap-parse-mailcaps (&optional path force)
   "Parse out all the mailcaps specified in a unix-style path string PATH.
 If FORCE, re-parse even if already parsed."
-  (interactive)
+  (interactive (list nil t))
   (when (or (not mailcap-parsed-p)
 	    force)
     (cond
@@ -631,7 +632,7 @@ this type is returned."
 	    (if (mailcap-viewer-passes-test (car viewers) info)
 		(setq passed (cons (car viewers) passed)))
 	    (setq viewers (cdr viewers)))
-	  (setq passed (sort (nreverse passed) 'mailcap-viewer-lessp))
+	  (setq passed (sort passed 'mailcap-viewer-lessp))
 	  (setq viewer (car passed))))
       (when (and (stringp (cdr (assq 'viewer viewer)))
 		 passed)
@@ -820,16 +821,26 @@ correspond to.")
       (setq extn (concat "." extn)))
   (cdr (assoc (downcase extn) mailcap-mime-extensions)))
 
+(defvar mailcap-binary-suffixes
+  (if (memq system-type '(ms-dos windows-nt))
+      '(".exe" ".com" ".bat" ".cmd" ".btm" "")
+    '("")))
+
 (defun mailcap-command-p (command)
-  "Say whether COMMAND is in the exec path."
+  "Say whether COMMAND is in the exec path.
+The path of COMMAND will be returned iff COMMAND is a command."
   (let ((path (if (file-name-absolute-p command) '(nil) exec-path))
- 	file)
+ 	file dir)
     (catch 'found
-      (while path
- 	(when (and (file-executable-p
-		    (setq file (expand-file-name command (pop path))))
-		   (not (file-directory-p file)))
- 	  (throw 'found file))))))
+      (while (setq dir (pop path))
+	(let ((suffixes mailcap-binary-suffixes))
+	  (while suffixes
+	    (when (and (file-executable-p
+			(setq file (expand-file-name
+				    (concat command (pop suffixes))
+				    dir)))
+		       (not (file-directory-p file)))
+	      (throw 'found file))))))))
 
 (provide 'mailcap)
 

@@ -1025,7 +1025,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   ;; finally just replaces the next to last number with "[0-9]+".
   (save-excursion
     (set-buffer (gnus-get-buffer-create gnus-uu-output-buffer-name))
-    (buffer-disable-undo (current-buffer))
+    (buffer-disable-undo)
     (erase-buffer)
     (insert (regexp-quote string))
 
@@ -1125,7 +1125,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	string)
     (save-excursion
       (set-buffer (gnus-get-buffer-create gnus-uu-output-buffer-name))
-      (buffer-disable-undo (current-buffer))
+      (buffer-disable-undo)
       (while string-list
 	(erase-buffer)
 	(insert (caar string-list))

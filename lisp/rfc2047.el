@@ -59,7 +59,7 @@ The values can be:
     (iso-8859-3 . Q)
     (iso-8859-4 . Q)
     (iso-8859-5 . B)
-    (koi8-r . Q)
+    (koi8-r . B)
     (iso-8859-7 . Q)
     (iso-8859-8 . Q)
     (iso-8859-9 . Q)
@@ -232,7 +232,7 @@ Should be called narrowed to the head of the message."
 	(goto-char (point-min))
 	(while (not (eobp))
 	  (goto-char (min (point-max) (+ 64 (point))))
-	  (search-backward "=" nil (- (point) 2))
+	  (search-backward "=" (- (point) 2) t)
 	  (unless (eobp)
 	    (insert "\n")))))))
 
@@ -304,6 +304,8 @@ Valid ENCODINGs are \"B\" and \"Q\".
 If your Emacs implementation can't decode CHARSET, it returns nil."
   (let ((cs (mm-charset-to-coding-system charset)))
     (when cs
+      (when (eq cs 'ascii)
+	(setq cs rfc2047-default-charset))
       (mm-decode-coding-string
        (cond
 	((equal "B" encoding)

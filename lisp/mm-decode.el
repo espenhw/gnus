@@ -192,16 +192,37 @@
     (if (functionp method)
 	(let ((cur (current-buffer)))
 	  (switch-to-buffer (generate-new-buffer "*mm*"))
+	  (buffer-disable-undo)
+	  (mm-set-buffer-file-coding-system 'no-conversion)
 	  (insert-buffer-substring cur)
 	  (funcall method)
 	  (mm-handle-set-undisplayer handle (current-buffer)))
-      (let* ((file (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
-	     process)
+      (let* ((dir (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
+	     (filename (mail-content-type-get
+			(mm-handle-disposition handle) 'filename))
+	     (needsterm (assoc "needsterm"
+			       (mailcap-mime-info
+				(car (mm-handle-type handle)) t)))
+	     process file)
+	;; We create a private sub-directory where we store our files.
+	(make-directory dir)
+	(set-file-modes dir 448)
+	(if filename
+	    (setq file (expand-file-name (or filename "mm.") dir))
+	  (setq file (make-temp-name (expand-file-name "mm." dir))))
 	(write-region (point-min) (point-max)
 		      file nil 'nomesg nil 'no-conversion)
 	(setq process
-	      (start-process "*display*" nil shell-file-name
-			     "-c" (format method file)))
+	      (if needsterm
+		  (start-process "*display*" nil
+				 "xterm"
+				 "-e" (format method file))
+		(switch-to-buffer (generate-new-buffer "*mm*"))
+		(buffer-disable-undo)
+		(mm-set-buffer-file-coding-system 'no-conversion)
+		(start-process "*display*" (current-buffer)
+			       shell-file-name
+			       "-c" (format method file))))
 	(mm-handle-set-undisplayer handle (cons file process))
 	(message "Displaying %s..." (format method file))))))
 
@@ -221,6 +242,9 @@
 	 ((consp object)
 	  (condition-case ()
 	      (delete-file (car object))
+	    (error nil))
+	  (condition-case ()
+	      (delete-directory (file-name-directory (car object)))
 	    (error nil))
 	  (condition-case ()
 	      (kill-process (cdr object))
@@ -305,6 +329,8 @@ This overrides entries in the mailcap file."
     (mm-decode-content-transfer-encoding (mm-handle-encoding handle))
     (buffer-string)))
 
+(defvar mm-default-directory nil)
+
 (defun mm-save-part (handle)
   "Write HANDLE to a file."
   (let* ((name (mail-content-type-get (mm-handle-type handle) 'name))
@@ -316,7 +342,9 @@ This overrides entries in the mailcap file."
     (setq file
 	  (read-file-name "Save MIME part to: "
 			  (expand-file-name
-			   (or filename name "") default-directory)))
+			   (or filename name "")
+			   (or mm-default-directory default-directory))))
+    (setq mm-default-directory (file-name-directory file))
     (mm-with-unibyte-buffer
       (insert-buffer-substring (mm-handle-buffer handle))
       (mm-decode-content-transfer-encoding (mm-handle-encoding handle))

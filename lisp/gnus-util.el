@@ -639,6 +639,61 @@ with potentially long computations."
 
 ;;; Functions for saving to babyl/mail files.
 
+(defvar rmail-default-rmail-file)
+(defun gnus-output-to-rmail (filename &optional ask)
+  "Append the current article to an Rmail file named FILENAME."
+  (require 'rmail)
+  ;; Most of these codes are borrowed from rmailout.el.
+  (setq filename (expand-file-name filename))
+  (setq rmail-default-rmail-file filename)
+  (let ((artbuf (current-buffer))
+	(tmpbuf (gnus-get-buffer-create " *Gnus-output*")))
+    (save-excursion
+      (or (get-file-buffer filename)
+	  (file-exists-p filename)
+	  (if (or (not ask)
+		  (gnus-yes-or-no-p
+		   (concat "\"" filename "\" does not exist, create it? ")))
+	      (let ((file-buffer (create-file-buffer filename)))
+		(save-excursion
+		  (set-buffer file-buffer)
+		  (rmail-insert-rmail-file-header)
+		  (let ((require-final-newline nil))
+		    (gnus-write-buffer filename)))
+		(kill-buffer file-buffer))
+	    (error "Output file does not exist")))
+      (set-buffer tmpbuf)
+      (erase-buffer)
+      (insert-buffer-substring artbuf)
+      (gnus-convert-article-to-rmail)
+      ;; Decide whether to append to a file or to an Emacs buffer.
+      (let ((outbuf (get-file-buffer filename)))
+	(if (not outbuf)
+	    (append-to-file (point-min) (point-max) filename)
+	  ;; File has been visited, in buffer OUTBUF.
+	  (set-buffer outbuf)
+	  (let ((buffer-read-only nil)
+		(msg (and (boundp 'rmail-current-message)
+			  (symbol-value 'rmail-current-message))))
+	    ;; If MSG is non-nil, buffer is in RMAIL mode.
+	    (when msg
+	      (widen)
+	      (narrow-to-region (point-max) (point-max)))
+	    (insert-buffer-substring tmpbuf)
+	    (when msg
+	      (goto-char (point-min))
+	      (widen)
+ 	      (search-backward "\n\^_")
+ 	      (narrow-to-region (point) (point-max))
+ 	      (rmail-count-new-messages t)
+ 	      (when (rmail-summary-exists)
+		(rmail-select-summary
+		 (rmail-update-summary)))
+	      (rmail-count-new-messages t)
+	      (rmail-show-message msg))
+	    (save-buffer)))))
+    (kill-buffer tmpbuf)))
+
 (defun gnus-output-to-mail (filename &optional ask)
   "Append the current article to a mail file named FILENAME."
   (setq filename (expand-file-name filename))

@@ -785,7 +785,7 @@ prompt the user for the name of an NNTP server to use."
       (erase-buffer)
       (setq buffer-file-name dribble-file)
       (auto-save-mode t)
-      (buffer-disable-undo (current-buffer))
+      (buffer-disable-undo)
       (bury-buffer (current-buffer))
       (set-buffer-modified-p nil)
       (let ((auto (make-auto-save-file-name))
@@ -1877,7 +1877,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	(save-excursion
 	  (gnus-message 5 "Reading %s..." newsrc-file)
 	  (set-buffer (nnheader-find-file-noselect newsrc-file))
-	  (buffer-disable-undo (current-buffer))
+	  (buffer-disable-undo)
 	  (gnus-newsrc-to-gnus-format)
 	  (kill-buffer (current-buffer))
 	  (gnus-message 5 "Reading %s...done" newsrc-file)))
@@ -2274,7 +2274,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (setq buffer-file-name
 		(concat gnus-current-startup-file ".eld"))
 	  (setq default-directory (file-name-directory buffer-file-name))
-	  (buffer-disable-undo (current-buffer))
+	  (buffer-disable-undo)
 	  (erase-buffer)
 	  (gnus-message 5 "Saving %s.eld..." gnus-current-startup-file)
 	  (gnus-gnus-to-quick-newsrc-format)
@@ -2338,7 +2338,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	  info ranges range method)
       (setq buffer-file-name gnus-current-startup-file)
       (setq default-directory (file-name-directory buffer-file-name))
-      (buffer-disable-undo (current-buffer))
+      (buffer-disable-undo)
       (erase-buffer)
       ;; Write options.
       (when gnus-newsrc-options

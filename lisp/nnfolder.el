@@ -704,7 +704,7 @@ deleted.  Point is left where the deleted region was."
 	      (minid (lsh -1 -1))
 	      maxid start end newscantime
 	      buffer-read-only)
-	  (buffer-disable-undo (current-buffer))
+	  (buffer-disable-undo)
 	  (setq maxid (cdr active))
 	  (goto-char (point-min))
 

@@ -1,3 +1,121 @@
+Thu Sep 24 02:29:57 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.32 is released.
+
+1998-09-24 00:27:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-kill.el (gnus-batch-score): Protect against errors.
+
+	* gnus-art.el: Protect against broken headers.
+
+	* mm-decode.el (mm-display-external): Respect needsterm.
+	(mm-display-external): Create buffer for external commands. 
+
+1998-09-23 22:04:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mailcap.el (mailcap-mime-info): Return the proper viewer.
+
+	* mm-decode.el (mm-display-external): Use file name.
+
+1998-09-22  Markus Rost  <markus.rost@mathematik.uni-regensburg.de>
+
+	* gnus-util.el (gnus-output-to-rmail):  adjust to
+          `rmail-output-to-rmail-file'
+
+1998-09-23 20:07:00  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-util.el (gnus-output-to-rmail): Reinstated function.
+
+	* gnus-sum.el (gnus-select-newsgroup): Set global variables before
+	headers. 
+
+	* gnus-art.el (article-decode-charset): Fold case.
+
+1998-09-17 15:49:10  Simon Josefsson  <jas@pdc.kth.se>
+
+        * mailcap.el (mailcap-save-binary-file): Goto point-min.
+
+1998-09-23 19:48:52  Aaron M. Ucko  <amu@mit.edu>
+
+	* nnmail.el (nnmail-check-duplication): Enter into duplicate list
+	after being stored.
+
+Tue Sep 15 16:15:16 1998  Kurt Swanson  <ksw@dna.lth.se>
+
+	* gnus-salt.el (gnus-pick-setup-message): Return from whence ye
+	come.
+
+1998-09-23 19:42:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-xmas.el (wid-edit): Required.
+
+	* gnus-ems.el (gnus-widget-button-keymap): New variable.
+
+Sun Sep 20 00:27:55 1998  ZHU Shenghuo  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-inline-part): remove part if necessary
+
+1998-09-23 19:30:52  Matt Armstrong  <matta@geoworks.com>
+
+	* gnus-art.el (article-decode-charset): Narrow to the correct
+	region. 
+
+	* mm-bodies.el: Fix autoload.
+
+1998-09-22 18:35:12  Lee Willis  <lee@gbdirect.co.uk>
+
+	* gnus-art.el (gnus-mime-button-line-format): Doc fix.
+
+1998-09-22 14:53:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2047.el (rfc2047-decode): Use rfc2047-default-charset. 
+
+1998-09-19 13:58:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-insert-mime-button): Specify keymap.
+	(gnus-article-add-button): Ditto.
+
+	* gnus-sum.el (gnus-summary-insert-pseudos): Use mm.
+
+	* gnus-art.el (gnus-article-prepare-display): Make article mode. 
+	(gnus-article-prepare-display): Bind url-standalone-mode.
+
+	* mm-decode.el (mm-remove-part): Also delete directory.
+	(mm-display-external): Create a private sub-dir.
+
+	* mailcap.el (mailcap-binary-suffixes): New variable.
+	(mailcap-command-p): Use it.
+
+1998-09-16 10:38:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmbox.el (nnmbox-request-group): Change server.
+	(nnmbox-possibly-change-newsgroup): Enable multibyte.
+
+	* message.el (message-encode-message-body): Don't stomp MIME
+	headers. 
+
+	* gnus-sum.el (gnus-summary-edit-article-done): Don't encode
+	unless useful.
+	(gnus-summary-exit): Check for a live article buffer.
+	(gnus-summary-exit-no-update): Ditto.
+
+	* gnus-int.el (gnus-request-replace-article): Accept no-encode
+	param.
+
+	* gnus-sum.el (gnus-article-decoded-p): New variable.
+
+	* mm-decode.el (mm-display-external): Use no-conv.
+
+	* rfc2047.el (rfc2047-q-encode-region): Bound properly. 
+	(rfc2047-charset-encoding-alist): Use B encoding for koi8-r.
+
+	* gnus-art.el (gnus-article-mode-map): Bind button2 to
+	mouse-click. 
+
+1998-09-15 14:38:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-expire): Protect against nil infos.
+
 Mon Sep 14 18:55:38 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.31 is released.
