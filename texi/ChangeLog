@@ -1,3 +1,7 @@
+2002-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Article Washing): Addition.
+
 2002-01-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Document Groups): Added info on more doc types.

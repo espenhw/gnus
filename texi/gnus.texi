@@ -2884,9 +2884,9 @@ translating the group parameter into a Sieve script (@pxref{Sieve
 Commands}) the following Sieve code is generated:
 
 @example
-  if address \"sender\" \"sieve-admin@@extundo.com\" @{
-          fileinto \"INBOX.list.sieve\";
-  @}
+if address \"sender\" \"sieve-admin@@extundo.com\" @{
+        fileinto \"INBOX.list.sieve\";
+@}
 @end example
 
 The Sieve language is described in RFC 3028.  @xref{Top, , Top, sieve,
@@ -8128,11 +8128,26 @@ makes strings look like @samp{~@{<:Ky2;S@{#,NpJ)l6HK!#~@}}.
 @item W h
 @kindex W h (Summary)
 @findex gnus-article-wash-html
-Treat HTML (@code{gnus-article-wash-html}).
-Note that the this is usually done automatically by Gnus if the message
-in question has a @code{Content-Type} header that says that this type
-has been done.
+Treat HTML (@code{gnus-article-wash-html}).  Note that the this is
+usually done automatically by Gnus if the message in question has a
+@code{Content-Type} header that says that the message is HTML.
+
 If a prefix is given, a charset will be asked for.
+
+@vindex gnus-article-wash-function
+The default is to use w3 to convert the HTML, but this is controlled
+by the @code{gnus-article-wash-function} variable.  Pre-defined
+functions you can use include:
+
+@table @code
+@item gnus-article-wash-html-with-w3
+@findex gnus-article-wash-html-with-w3
+Use w3 (this is the default).
+
+@item gnus-article-wash-html-with-w3m
+@item gnus-article-wash-html-with-w3m
+Use the external @samp{w3m} program.
+@end table
 
 @item W b
 @kindex W b (Summary)
