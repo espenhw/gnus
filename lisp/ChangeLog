@@ -1,3 +1,10 @@
+2000-10-09 17:12:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-open-connection): Kill process buffer when quit.
+	(nntp-connection-timeout): Add a note. SIGALRM is ignored in both
+	FSF Emacs 20 and XEmacs 21.
+	* gnus-agent.el (gnus-agent-fetch-session): Catch quit.
+
 2000-10-09  Dave Love  <fx@gnu.org>
 
 	* gnus-audio.el: Don't require cl.

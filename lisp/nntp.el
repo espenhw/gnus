@@ -180,7 +180,8 @@ server there that you can connect to.  See also
 
 (defvoo nntp-connection-timeout nil
   "*Number of seconds to wait before an nntp connection times out.
-If this variable is nil, which is the default, no timers are set.")
+If this variable is nil, which is the default, no timers are set.
+NOTE: This variable is never seen to work in FSF Emacs 20 and XEmacs 21.")
 
 ;;; Internal variables.
 
@@ -879,6 +880,7 @@ password contained in '~/.nntp-authinfo'."
 	    (error nil)
 	    (quit
 	     (message "Quit opening connection")
+	     (nntp-kill-buffer pbuffer)
 	     (signal 'quit nil)
 	     nil))))
     (when timer
