@@ -12271,6 +12271,11 @@ relevant if @code{mail-source-delete-incoming} is @code{nil}.
 @vindex mail-source-default-file-modes
 All new mail files will get this file mode.  The default is 384.
 
+@item mail-source-movemail-program
+@vindex mail-source-movemail-program
+If non-nil, name of program for fetching new mail.  If nil,
+@code{movemail} in @var{exec-directory}.
+
 @end table
 
 

@@ -1,3 +1,7 @@
+2001-10-04  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Mail Source Customization): Add.
+
 2001-10-04 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in (dvi): Don't depend on tmps.
