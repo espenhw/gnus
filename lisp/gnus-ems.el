@@ -30,8 +30,9 @@
 
 ;;; Function aliases later to be redefined for XEmacs usage.
 
-(defvar gnus-xemacs (string-match "XEmacs\\|Lucid" emacs-version)
-  "Non-nil if running under XEmacs.")
+(eval-and-compile
+  (defvar gnus-xemacs (string-match "XEmacs" emacs-version)
+    "Non-nil if running under XEmacs."))
 
 (defvar gnus-mouse-2 [mouse-2])
 (defvar gnus-down-mouse-3 [down-mouse-3])
@@ -59,18 +60,10 @@
        valstr)))
 
 (eval-and-compile
-  (if (string-match "XEmacs\\|Lucid" emacs-version)
-      nil
-
+  (if gnus-xemacs
+      (gnus-xmas-define)
     (defvar gnus-mouse-face-prop 'mouse-face
-      "Property used for highlighting mouse regions."))
-
-  (cond
-   ((string-match "XEmacs\\|Lucid" emacs-version)
-    (gnus-xmas-define))
-
-   ((boundp 'MULE)
-    (provide 'gnusutil))))
+      "Property used for highlighting mouse regions.")))
 
 (eval-and-compile
   (cond
@@ -80,7 +73,7 @@
 				   set-face-background x-popup-menu)))
       (while funcs
 	(unless (fboundp (car funcs))
-	  (fset (car funcs) 'gnus-dummy-func))
+	  (defalias (car funcs) 'gnus-dummy-func))
 	(setq funcs (cdr funcs)))))))
 
 (eval-and-compile
@@ -106,32 +99,32 @@
 
 (defun gnus-ems-redefine ()
   (cond
-   ((string-match "XEmacs\\|Lucid" emacs-version)
+   (gnus-xemacs
     (gnus-xmas-redefine))
 
    ((featurep 'mule)
     ;; Mule and new Emacs definitions
 
     ;; [Note] Now there are three kinds of mule implementations,
-    ;; original MULE, XEmacs/mule and beta version of Emacs including
-    ;; some mule features.  Unfortunately these API are different.  In
+    ;; original MULE, XEmacs/mule and Emacs 20+ including
+    ;; MULE features.  Unfortunately these API are different.  In
     ;; particular, Emacs (including original MULE) and XEmacs are
-    ;; quite different.
+    ;; quite different.  Howvere, this version of Gnus doesn't support
+    ;; anything other than XEmacs 20+ and Emacs 20.3+.
+
     ;; Predicates to check are following:
     ;; (boundp 'MULE) is t only if MULE (original; anything older than
     ;;                     Mule 2.3) is running.
     ;; (featurep 'mule) is t when every mule variants are running.
 
-    ;; These implementations may be able to share between original
-    ;; MULE and beta version of new Emacs.  In addition, it is able to
-    ;; detect XEmacs/mule by (featurep 'mule) and to check variable
-    ;; `emacs-version'.  In this case, implementation for XEmacs/mule
-    ;; may be able to share between XEmacs and XEmacs/mule.
+    ;; It is possible to detect XEmacs/mule by (featurep 'mule) and
+    ;; checking `emacs-version'.  In this case, the implementation for
+    ;; XEmacs/mule may be shareable between XEmacs and XEmacs/mule.
 
     (defvar gnus-summary-display-table nil
       "Display table used in summary mode buffers.")
-    (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
-    (fset 'gnus-summary-set-display-table (lambda ()))
+    (defalias 'gnus-max-width-function 'gnus-mule-max-width-function)
+    (defalias 'gnus-summary-set-display-table (lambda ()))
 
     (when (boundp 'gnus-check-before-posting)
       (setq gnus-check-before-posting
@@ -206,6 +199,41 @@
 	    (decf i))
 	  (goto-char (point-min))
 	  (sit-for 0))))))
+
+(defun gnus-article-display-xface (beg end)
+  "Display an XFace header from between BEG and END in the current article.
+This requires support for XPM or XBM images in your Emacs and the
+external programs `uncompface', `icontopbm' and either `ppmtoxpm' (for
+XPM support) or `ppmtoxbm' (for XBM support).  On a GNU/Linux system
+these might be in packages with names like `compface' or `faces-xface'
+and `netpbm' or `libgr-progs', for instance.
+
+This function is for Emacs 21+.  See `gnus-xmas-article-display-xface'
+for XEmacs."
+  (save-excursion
+    (let ((cur (current-buffer))
+	  image type)
+      (when (and (fboundp 'image-type-available-p)
+		 (cond ((image-type-available-p 'xpm) (setq type 'xpm))
+		       ((image-type-available-p 'xbm) (setq type 'xbm))))
+	(with-temp-buffer
+	  (insert-buffer-substring cur beg end)
+	  (call-process-region (point-min) (point-max) "uncompface"
+			       'delete '(t nil))
+	  (goto-char (point-min))
+	  (insert "/* Width=48, Height=48 */\n")
+	  (and (eq 0 (call-process-region (point-min) (point-max) "icontopbm"
+					  'delete '(t nil)))
+	       (eq 0 (call-process-region (point-min) (point-max)
+					  (if (eq type 'xpm)
+					      "ppmtoxpm"
+					    "pbmtoxbm")
+					  'delete '(t nil)))
+	       (setq image (create-image (buffer-string) type t))))
+	(when image
+	  (goto-char (point-min))
+	  (re-search-forward "^From:" nil 'move)
+	    (insert-image image " "))))))
 
 (provide 'gnus-ems)
 
