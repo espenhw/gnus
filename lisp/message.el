@@ -42,6 +42,7 @@
 (require 'mail-parse)
 (require 'mml)
 (require 'rfc822)
+(autoload 'sha1 "sha1-el")
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -2806,10 +2807,10 @@ to find out how to use this."
 (defun message-canlock-generate ()
   "Return a string that is non-trival to guess.
 Do not use this for anything important, it is cryptographically weak."
-  (md5 (concat (message-unique-id)
-	       (format "%x%x%x" (random) (random t) (random))
-	       (prin1-to-string (recent-keys))
-	       (prin1-to-string (garbage-collect)))))
+  (sha1 (concat (message-unique-id)
+		(format "%x%x%x" (random) (random t) (random))
+		(prin1-to-string (recent-keys))
+		(prin1-to-string (garbage-collect)))))
 
 (defun message-canlock-password ()
   "The password used by message for cancel locks.

@@ -1,3 +1,10 @@
+2001-11-11  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (top-level): Autoload sha1.
+	(message-canlock-generate): Use sha1 instead of md5 (sha1 used by
+	canlock, no need to require two different hash algs).  Suggested
+	by Ferenc Wagner <wferi@bolyai1.elte.hu>.
+
 2001-11-09  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.el (gnus-local-domain): Fix doc.  From Pavel Jan,Bm(Bk
