@@ -1458,11 +1458,13 @@ password contained in '~/.nntp-authinfo'."
 
 (defun nntp-wait-for-string (regexp)
   "Wait until string arrives in the buffer."
-  (let ((buf (current-buffer)))
+  (let ((buf (current-buffer))
+	proc)
     (goto-char (point-min))
-    (while (and (nntp-find-connection nntp-server-buffer)
+    (while (and (setq proc (get-buffer-process buf))
+		(memq (process-status proc) '(open run))
 		(not (re-search-forward regexp nil t)))
-      (accept-process-output (nntp-find-connection nntp-server-buffer))
+      (accept-process-output proc)
       (set-buffer buf)
       (goto-char (point-min)))))
 

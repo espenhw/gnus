@@ -1,3 +1,8 @@
+2002-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-wait-for-string): Check for a process in the
+	current buffer instead of `nntp-server-buffer'.
+
 2002-09-09  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (gnus-button-man-handler): New variable.
@@ -17,10 +22,10 @@
 	* gnus-srvr.el (gnus-browse-make-menu-bar): Add "d".
 
 	* gnus-sum.el (gnus-summary-limit-to-unseen): New command and
-	keystroke. 
+	keystroke.
 
 	* gnus-srvr.el (gnus-browse-describe-group): New command and
-	keystroke. 
+	keystroke.
 
 2002-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
