@@ -1,3 +1,8 @@
+2003-02-26  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el: add spam-stat-load to gnus-get-new-news-hook
+	(spam-split): remove spam-stat-load call
+
 2003-02-26  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-toggle-header): Run

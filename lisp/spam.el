@@ -570,9 +570,6 @@ example like this: (: spam-split)
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (interactive)
   
-  ;; load the spam-stat tables if needed
-  (when spam-use-stat (spam-stat-load))
-
   (let ((list-of-checks spam-list-of-checks)
 	decision)
     (while (and list-of-checks (not decision))
@@ -792,8 +789,10 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	       (insert article-string)
 	       (spam-stat-buffer-is-non-spam))))))
 
+      ;; Add hooks for loading and saving the spam stats
       (when spam-use-stat
-	(add-hook 'gnus-save-newsrc-hook 'spam-stat-save)))
+	(add-hook 'gnus-save-newsrc-hook 'spam-stat-save)
+	(add-hook 'gnus-get-new-news-hook 'spam-stat-load)))
 
   (file-error (progn
 		(defalias 'spam-stat-register-ham-routine 'ignore)
