@@ -34,6 +34,7 @@
 (require 'gnus-util)
 (autoload 'message-make-date "message")
 (autoload 'gnus-agent-read-servers-validate "gnus-agent")
+(autoload 'gnus-agent-load-alist "gnus-agent")
 (eval-when-compile (require 'cl))
 
 (defcustom gnus-startup-file (nnheader-concat gnus-home-directory ".newsrc")
@@ -1506,6 +1507,19 @@ newsgroup."
 		    (zerop (cdr active))
 		    (gnus-active group))
 	       (gnus-active group)
+
+             (when (and gnus-agent
+                        (gnus-agent-method-p method))
+               ;; The agent may be storing articles that are no longer in the
+               ;; server's active range.  If that is the case, the active range
+               ;; needs to be expanded such that the agent's articles can be
+               ;; included in the summary.
+               (let* ((gnus-command-method method)
+                      (alist (gnus-agent-load-alist group)))
+                 (if (and (car alist)
+                          (< (caar alist) (car active)))
+                     (setcar active (caar alist)))))
+
 	     (gnus-set-active group active)
 	     ;; Return the new active info.
 	     active)))))
