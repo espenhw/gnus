@@ -227,6 +227,7 @@ If nil, only read articles will be expired."
   "Jc" gnus-enter-category-buffer
   "Jj" gnus-agent-toggle-plugged
   "Js" gnus-agent-fetch-session
+  "JY" gnus-agent-synchronize
   "JS" gnus-group-send-drafts
   "Ja" gnus-agent-add-group
   "Jr" gnus-agent-remove-group)
@@ -417,6 +418,27 @@ be a select method."
 	(when (cadddr (setq c (gnus-group-category group)))
 	  (setf (cadddr c) (delete group (cadddr c))))))
     (gnus-category-write)))
+
+(defun gnus-agent-synchronize ()
+  "Synchronize local, unplugged, data with backend.
+Currently sends flag setting requests, if any."
+  (interactive)
+  (save-excursion
+    (dolist (gnus-command-method gnus-agent-covered-methods)
+      (when (file-exists-p (gnus-agent-lib-file "flags"))
+	(set-buffer (get-buffer-create " *Gnus Agent flag synchronize*"))
+	(erase-buffer)
+	(insert-file-contents (gnus-agent-lib-file "flags"))
+	(if (null (gnus-check-server gnus-command-method))
+	    (message "Couldn't open server %s" (nth 1 gnus-command-method))
+	  (while (not (eobp))
+	    (if (null (eval (read (current-buffer))))
+		(progn (forward-line)
+		       (kill-line -1))
+	      (write-file (gnus-agent-lib-file "flags"))
+	      (error "Couldn't set flags from file %s"
+		     (gnus-agent-lib-file "flags"))))
+	  (write-file (gnus-agent-lib-file "flags")))))))
 
 ;;;
 ;;; Server mode commands
@@ -955,6 +977,8 @@ the actual number of articles toggled is returned."
 	gnus-newsgroup-scored gnus-headers gnus-score
 	gnus-use-cache articles arts
 	category predicate info marks score-param)
+    (unless (gnus-check-group group)
+      (error "Can't open server for %s" group))
     ;; Fetch headers.
     (when (and (or (gnus-active group) (gnus-activate-group group))
 	       (setq articles (gnus-agent-fetch-headers group))
