@@ -3615,7 +3615,7 @@ happens.  You just have to be careful if you do stuff like that.
 @kindex ^ (Group)
 @findex gnus-group-enter-server-mode
 Enter the server buffer (@code{gnus-group-enter-server-mode}).
-@xref{The Server Buffer}.
+@xref{Server Buffer}.
 
 @item a
 @kindex a (Group)
@@ -10181,7 +10181,7 @@ name}.  There may be additional elements in the select method, where the
 value may have special meaning for the backend in question.
 
 One could say that a select method defines a @dfn{virtual server}---so
-we do just that (@pxref{The Server Buffer}).
+we do just that (@pxref{Server Buffer}).
 
 The @dfn{name} of the group is the name the backend will recognize the
 group as.
@@ -10532,7 +10532,7 @@ it will regard that server as ``down''.
 So, what happens if the machine was only feeling unwell temporarily?
 How do you test to see whether the machine has come up again?
 
-You jump to the server buffer (@pxref{The Server Buffer}) and poke it
+You jump to the server buffer (@pxref{Server Buffer}) and poke it
 with the following commands:
 
 @table @kbd
