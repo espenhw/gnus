@@ -90,7 +90,7 @@
 		enable-multibyte-characters help-echo-owns-message))
   (maybe-fbind '(Info-goto-node
 		 add-submenu annotation-glyph annotationp babel-as-string
-		 button-press-event-p char-int characterp color-instance-name
+		 button-press-event-p characterp color-instance-name
 		 color-instance-rgb-components color-name delete-annotation
 		 device-class device-on-window-system-p device-type
 		 display-error event-glyph event-object event-point

@@ -1,5 +1,7 @@
 2001-08-23 18:43:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* lpath.el (featurep): Don't fbind char-int.
+
 	* gnus-util.el (gnus-create-info-command): New function.
 
 	* gnus-group.el (gnus-group-edit-group): Make C-c C-i go to the
