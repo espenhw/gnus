@@ -4,7 +4,7 @@
 
 ;; Author: Alex Schroeder <alex@gnu.org>
 ;; Maintainer: Alex Schroeder <alex@gnu.org>
-;; Version: 0.3.4
+;; Version: 0.3.5
 ;; Keywords: spam filtering gnus
 ;; URL: http://www.emacswiki.org/cgi-bin/wiki.pl?SpamStat
 
@@ -435,7 +435,6 @@ The default score for unknown words is stored in
 `spam-stat-unknown-word-score'."
   (spam-stat-score (gethash word spam-stat)))
 
-
 (defun spam-stat-buffer-words-with-scores ()
   "Process current buffer, return the 15 most conspicuous words.
 These are the words whose spam-stat differs the most from 0.5.
@@ -491,7 +490,7 @@ check the variable `spam-stat-score-data'."
 	(when (and (file-readable-p f)
 		   (file-regular-p f))
 	  (setq count (1+ count))
-	  (message "Reading %.2f%%" (/ count max))
+	  (message "Reading %s: %.2f%%" dir (/ count max))
 	  (insert-file-contents f)
 	  (funcall func)
 	  (erase-buffer))))))
@@ -537,25 +536,19 @@ You can use this to determine error rates."
 
 ;; Shrinking the dictionary
 
-(defun spam-stat-reduce-size (&optional count distance)
+(defun spam-stat-reduce-size (&optional count)
   "Reduce the size of `spam-stat'.
 This removes all words that occur less than COUNT from the dictionary.
-COUNT defaults to 5.  It also removes all words whose spam score
-is less than DISTANCE from 0.5.  DISTANCE defaults to 0.1, meaning that
-all words with score between 0.4 and 0.6 are removed."
+COUNT defaults to 5"
   (interactive)
-  (setq count (or count 5)
-	distance (or distance 0.1))
+  (setq count (or count 5))
   (maphash (lambda (key entry)
-	     (when (or (< (+ (spam-stat-good entry)
-			     (spam-stat-bad entry))
-			  count)
-		       (< (abs (- (spam-stat-score entry) 0.5))
-			  distance))
+	     (when (< (+ (spam-stat-good entry)
+			 (spam-stat-bad entry))
+		      count)
 	       (remhash key spam-stat)))
 	   spam-stat))
 
 (provide 'spam-stat)
 
 ;;; spam-stat.el ends here
-
