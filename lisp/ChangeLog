@@ -1,3 +1,8 @@
+2002-01-28  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-retrieve-headers): Use
+	nnheader-find-nov-line to speed up.
+
 2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-inline-text-html-with-images): New user option.

@@ -1841,7 +1841,7 @@ The following commands are available:
 	  (let ((nnheader-file-coding-system
 		 gnus-agent-file-coding-system))
 	    (nnheader-insert-file-contents file))
-	  (goto-char (point-min)) 
+	  (nnheader-find-nov-line (car articles))
 	  (while (not (eobp))
 	    (when (looking-at "[0-9]")
 	      (push (read (current-buffer)) cached-articles))
