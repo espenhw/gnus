@@ -11569,7 +11569,7 @@ Otherwise, bind it dynamically only when performing the
             (let ((mail-source-primary-source
                    '(pop :server "pop3.mail.server"
                          :password "secret")))
-              mail-source-touch-pop)))
+              (mail-source-touch-pop))))
 @end lisp
 
 @node Mail and Post
