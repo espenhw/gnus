@@ -300,7 +300,7 @@ The message must have at least one group name."
   "Put a specific entry in the extras field of the registry entry for id."
   (let* ((extra (gnus-registry-fetch-extra id))
 	 (alist (cons (cons key value)
-		 (assq-delete-all key (gnus-registry-fetch-extra id)))))
+		 (gnus-assq-delete-all key (gnus-registry-fetch-extra id)))))
     (gnus-registry-store-extra id alist)))
 
 (defun gnus-registry-fetch-group (id)

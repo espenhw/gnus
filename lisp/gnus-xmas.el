@@ -390,6 +390,7 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-put-text-property 'gnus-xmas-put-text-property)
   (defalias 'gnus-deactivate-mark 'ignore)
   (defalias 'gnus-window-edges 'window-pixel-edges)
+  (defalias 'gnus-assq-delete-all 'gnus-xmas-assq-delete-all)
 
   (if (and (<= emacs-major-version 19)
 	   (< emacs-minor-version 14))
@@ -884,6 +885,12 @@ Warning: Don't insert text immediately after the image."
 	   (emacs-version>= 21 2))
       `(open-network-stream ,name ,buffer ,host ,service ,protocol)
     `(open-network-stream ,name ,buffer ,host ,service)))
+
+(defun gnus-xmas-assq-delete-all (key alist)
+  (let ((elem nil))
+    (while (setq elem (assq key alist))
+      (setq alist (delq elem alist)))
+    alist))
 
 (provide 'gnus-xmas)
 

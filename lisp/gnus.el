@@ -319,6 +319,7 @@ be set in `.emacs' instead."
   (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
   (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
   (defalias 'gnus-character-to-event 'identity)
+  (defalias 'gnus-assq-delete-all 'assq-delete-all)
   (defalias 'gnus-add-text-properties 'add-text-properties)
   (defalias 'gnus-put-text-property 'put-text-property)
   (defvar gnus-mode-line-image-cache t)

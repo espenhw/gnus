@@ -1,5 +1,10 @@
 2003-05-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-registry.el (gnus-registry-store-extra-entry): Use
+	gnus-assq-delete-all. 
+
+	* gnus-xmas.el (gnus-xmas-assq-delete-all): New function.
+
 	* message.el (message-ignored-bounced-headers): Add Delivered-To. 
 
 	* gnus-sum.el (gnus-summary-find-next): Indent.
