@@ -240,7 +240,16 @@ at the beginning of the narrowed buffer.
 
 @item mail-header-narrow-to-field
 @findex mail-header-narrow-to-field
-Narrow the buffer to the header under point.
+Narrow the buffer to the header under point.  Understands continuation
+headers. 
+
+@item mail-header-fold-field
+@findex mail-header-fold-field
+Fold the header under point.
+
+@item mail-header-unfold-field
+@findex mail-header-unfold-field
+Unfold the header under point.
 
 @item mail-encode-encoded-word-region
 @findex mail-encode-encoded-word-region

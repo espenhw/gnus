@@ -1,5 +1,7 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* emacs-mime.texi (Interface Functions): Addition.
+
 	* message.texi (Message Headers): Addition.
 
 2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
