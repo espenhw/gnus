@@ -3875,7 +3875,8 @@ You can have as many summary buffers open as you wish.
 * Tree Display::                A more visual display of threads.
 * Mail Group Commands::         Some commands can only be used in mail groups.
 * Various Summary Stuff::       What didn't fit anywhere else.
-* Exiting the Summary Buffer::  Returning to the Group buffer.
+* Exiting the Summary Buffer::  Returning to the Group buffer,
+                                or reselecting the current group.
 * Crosspost Handling::          How crossposted articles are dealt with.
 * Duplicate Suppression::       An alternative when crosspost handling fails.
 * Security::                    Decrypt and Verify.
@@ -4326,6 +4327,9 @@ the given number of lines from the top.
 
 None of the following movement commands understand the numeric prefix,
 and they all select and display an article.
+
+If you want to fetch new articles or redisplay the group, see
+@ref{Exiting the Summary Buffer}.
 
 @table @kbd
 @item SPACE
@@ -16272,7 +16276,11 @@ your own article.
 
 @vindex message-sent-hook
 These two functions are both primarily meant to be used in hooks like
-@code{message-sent-hook}.
+@code{message-sent-hook}, like this:
+@lisp
+(add-hook 'message-sent-hook 'gnus-score-followup-thread)
+@end lisp
+
 
 If you look closely at your own @code{Message-ID}, you'll notice that
 the first two or three characters are always the same.  Here's two of

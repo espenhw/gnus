@@ -1,3 +1,11 @@
+2001-01-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Choosing Commands): Add xref for redisplaying the
+	group.  Suggestion from Galen Boyer <galenboyer@yahoo.com>.
+	(The Summary Buffer): Mention reselecting the current group in the
+	menu.  Suggestion from Galen Boyer <galenboyer@yahoo.com>.
+	(Followups To Yourself): Add Lisp example.
+
 2001-01-05 06:53:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* emacs-mime.texi (time-date): Addition.
