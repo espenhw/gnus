@@ -269,7 +269,7 @@ to:
      mm-uu-pgp-encrypted-test)))
 
 (defcustom mm-decrypt-option nil
-  "Option of decrypting signed parts.
+  "Option of decrypting encrypted parts.
 `never', not decrypt; `always', always decrypt; 
 `known', only decrypt known protocols. Otherwise, ask user."
   :type '(choice (item always)

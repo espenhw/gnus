@@ -1,5 +1,7 @@
 2000-11-19 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-decode.el (mm-decrypt-option): Doc typo.
+
 	* gnus-art.el (gnus-article-read-summary-keys): lookup-key may
 	return a number.
 
