@@ -28,7 +28,7 @@
 
 (eval-when-compile (require 'cl))
 
-(eval-when-compile
+(eval-and-compile
   (defalias 'binhex-char-int
     (if (fboundp 'char-int)
 	'char-int

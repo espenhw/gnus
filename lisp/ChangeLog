@@ -1,3 +1,13 @@
+2000-12-20 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* uudecode.el (uudecode-decode-region-external): make-temp-file
+	may not be defined.
+
+	* binhex.el (defalias): eval-and-compile.
+
+	* message.el (message-tool-bar-map): New function.
+	(message-mode): Use it.
+
 2000-12-20 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-find-connection): Remove the entry.

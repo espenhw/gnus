@@ -102,9 +102,13 @@ used is specified by `uudecode-decoder-program'."
 					       (match-string 1)))))
 	(setq tempfile (if file-name
 			   (expand-file-name file-name)
-			 (let ((temporary-file-directory
-				uudecode-temporary-file-directory))
-			   (make-temp-file "uu"))))
+			   (if (fboundp 'make-temp-file)
+			       (let ((temporary-file-directory
+				      uudecode-temporary-file-directory))
+				 (make-temp-file "uu"))
+			     (expand-file-name
+			      (make-temp-name "uu")
+			      uudecode-temporary-file-directory))))
 	(let ((cdir default-directory)
 	      default-process-coding-system)
 	  (unwind-protect

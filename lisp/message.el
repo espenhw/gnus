@@ -1458,10 +1458,11 @@ Point is left at the beginning of the narrowed-to region."
    ["Body" message-goto-body t]
    ["Signature" message-goto-signature t]))
 
+(defvar message-tool-bar-map 'unset)
+
 (eval-when-compile
   (defvar facemenu-add-face-function)
-  (defvar facemenu-remove-face-function)
-  (defvar message-tool-bar-map))
+  (defvar facemenu-remove-face-function))
 
 ;;;###autoload
 (defun message-mode ()
@@ -1532,7 +1533,7 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
     (set (make-local-variable 'font-lock-defaults)
 	 '(message-font-lock-keywords t))
     (if (boundp 'tool-bar-map)
-	(set (make-local-variable 'tool-bar-map) message-tool-bar-map)))
+	(set (make-local-variable 'tool-bar-map) (message-tool-bar-map))))
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
   ;; Allow mail alias things.
@@ -4492,33 +4493,37 @@ which specify the range to operate on."
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
 
 ;; Support for toolbar
+(if (featurep 'xemacs)
+    (require 'messagexmas))
+
 (eval-when-compile 
   (defvar tool-bar-map)
   (defvar tool-bar-mode))
-(if (featurep 'xemacs)
-    (require 'messagexmas)
-  (when (and (>= (string-to-int emacs-version) 21)
-	     ;; I hate warnings --zsh.
-	     (fboundp 'tool-bar-add-item-from-menu)
-	     tool-bar-mode)
-    (defvar message-tool-bar-map
-      (let ((tool-bar-map (copy-keymap tool-bar-map)))
-	;; Zap some items which aren't so relevant and take up space.
-	(dolist (key '(print-buffer kill-buffer save-buffer write-file
-				    dired open-file))
-	  (define-key tool-bar-map (vector key) nil))
-	
-	(tool-bar-add-item-from-menu
-	 'message-send-and-exit "mail_send" message-mode-map)
-	(tool-bar-add-item-from-menu
-	 'message-kill-buffer "close" message-mode-map)
-	(tool-bar-add-item-from-menu
-	 'message-dont-send "cancel" message-mode-map)
-	(tool-bar-add-item-from-menu
-	 'mml-attach-file "attach" message-mode-map)
-	(tool-bar-add-item-from-menu
-	 'ispell-message "spell" message-mode-map)
-	tool-bar-map))))
+
+(defun message-tool-bar-map ()
+  (if (eq message-tool-bar-map 'unset)
+      (setq message-tool-bar-map
+	    (if (and (fboundp 'tool-bar-add-item-from-menu)
+		     tool-bar-mode)
+		(let ((tool-bar-map (copy-keymap tool-bar-map)))
+		  ;; Zap some items which aren't so relevant and take up space.
+		  (dolist (key '(print-buffer kill-buffer save-buffer 
+					      write-file dired open-file))
+		    (define-key tool-bar-map (vector key) nil))
+		  
+		  (tool-bar-add-item-from-menu
+		   'message-send-and-exit "mail_send" message-mode-map)
+		  (tool-bar-add-item-from-menu
+		   'message-kill-buffer "close" message-mode-map)
+		  (tool-bar-add-item-from-menu
+		   'message-dont-send "cancel" message-mode-map)
+		  (tool-bar-add-item-from-menu
+		   'mml-attach-file "attach" message-mode-map)
+		  (tool-bar-add-item-from-menu
+		   'ispell-message "spell" message-mode-map)
+		  tool-bar-map)
+	      nil))
+    message-tool-bar-map))
 
 ;;; Group name completion.
 
