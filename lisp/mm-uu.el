@@ -104,13 +104,13 @@ This can be either \"inline\" or \"attachment\".")
      "^-----END PGP SIGNATURE-----"
      mm-uu-pgp-signed-extract
      nil
-     mm-uu-pgp-signed-test)
+     nil)
     (pgp-encrypted
      "^-----BEGIN PGP MESSAGE-----"
      "^-----END PGP MESSAGE-----"
      mm-uu-pgp-encrypted-extract
      nil
-     mm-uu-pgp-encrypted-test)
+     nil)
     (pgp-key
      "^-----BEGIN PGP PUBLIC KEY BLOCK-----"
      "^-----END PGP PUBLIC KEY BLOCK-----"
@@ -262,7 +262,9 @@ To disable dissecting shar codes, for instance, add
     (mm-set-handle-multipart-parameter 
      mm-security-handle 'protocol "application/pgp-signature")
     (with-current-buffer buf
-      (funcall (mml2015-clear-verify-function))
+      (when (mm-uu-pgp-signed-test)
+	(mml2015-clean-buffer)
+	(funcall (mml2015-clear-verify-function)))
       (goto-char (point-min))
       (if (search-forward "\n\n" nil t)
 	  (delete-region (point-min) (point)))
@@ -289,8 +291,10 @@ To disable dissecting shar codes, for instance, add
 	(mm-security-handle (list (format "multipart/encrypted"))))
     (mm-set-handle-multipart-parameter 
      mm-security-handle 'protocol "application/pgp-encrypted")
-    (with-current-buffer buf
-      (funcall (mml2015-clear-decrypt-function)))
+    (if (mm-uu-pgp-encrypted-test)
+	(with-current-buffer buf
+	  (mml2015-clean-buffer)
+	  (funcall (mml2015-clear-decrypt-function))))
     (setcdr mm-security-handle
 	    (list
 	     (mm-make-handle buf
