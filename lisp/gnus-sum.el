@@ -2462,6 +2462,21 @@ the thread are to be displayed."
 If SHOW-ALL is non-nil, already read articles are also listed.
 If NO-ARTICLE is non-nil, no article is selected initially.
 If NO-DISPLAY, don't generate a summary buffer."
+  (let (result)
+    (while (and group
+		(null (setq result
+			    (gnus-summary-read-group-1
+			     group show-all no-article
+			     kill-buffer no-display)))
+		(eq gnus-auto-select-next 'quietly))
+      (set-buffer gnus-group-buffer)
+      (if (not (equal group (gnus-group-group-name)))
+	  (setq group (gnus-group-group-name))
+	(setq group nil)))
+    result))
+
+(defun gnus-summary-read-group-1 (group show-all no-article
+					kill-buffer no-display)
   ;; Killed foreign groups can't be entered.
   (when (and (not (gnus-group-native-p group))
 	     (not (gnus-gethash group gnus-newsrc-hashtb)))
@@ -2562,7 +2577,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	       (not no-display))
 	  (progn
 	    ;; This newsgroup is empty.
-	    (gnus-summary-catchup-and-exit nil t) ;Without confirmations.
+	    (gnus-summary-catchup-and-exit nil t)
 	    (gnus-message 6 "No unread news")
 	    (when kill-buffer
 	      (gnus-kill-or-deaden-summary kill-buffer))
@@ -2918,17 +2933,18 @@ If NO-DISPLAY, don't generate a summary buffer."
        (memq article gnus-newsgroup-expirable)
        ;; Only insert the Subject string when it's different
        ;; from the previous Subject string.
-       (unless (gnus-subject-equal
-		(condition-case ()
-		    (mail-header-subject
-		     (gnus-data-header
-		      (cadr
-		       (gnus-data-find-list
-			article
-			(gnus-data-list t)))))
-		  (error ""))
-		(mail-header-subject header))
-	 (mail-header-subject header))
+       (if (gnus-subject-equal
+	    (condition-case ()
+		(mail-header-subject
+		 (gnus-data-header
+		  (cadr
+		   (gnus-data-find-list
+		    article
+		    (gnus-data-list t)))))
+	      (error ""))
+	    (mail-header-subject header))
+	   (mail-header-subject header)
+	 "")
        nil (cdr (assq article gnus-newsgroup-scored))
        (memq article gnus-newsgroup-processable))
       (when length
@@ -3834,7 +3850,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 		     gnus-save-score
 		     list)
 	    (let* ((arts list)
-		   (prev (cons nil articles))
+		   (prev (cons nil list))
 		   (all prev))
 	      (while arts
 		(if (or (not (consp (car arts)))
