@@ -213,52 +213,66 @@ If it is down, start it up (again)."
 	  (gnus-message 1 "Denied server")
 	  nil)
       ;; Open the server.
-      (let ((result
-	     (condition-case err
-		 (funcall (gnus-get-function gnus-command-method 'open-server)
-			  (nth 1 gnus-command-method)
-			  (nthcdr 2 gnus-command-method))
+      (let* ((open-server-function (gnus-get-function gnus-command-method 'open-server))
+             (result
+             (condition-case err
+                 (funcall open-server-function
+                          (nth 1 gnus-command-method)
+                          (nthcdr 2 gnus-command-method))
                (error
                 (gnus-message 1 (format
                                  "Unable to open server due to: %s"
                                  (error-message-string err)))
                 nil)
-	       (quit
-		(gnus-message 1 "Quit trying to open server")
-		nil))))
+               (quit
+                (gnus-message 1 "Quit trying to open server")
+                nil)))
+            open-offline)
 	;; If this hasn't been opened before, we add it to the list.
 	(unless elem
 	  (setq elem (list gnus-command-method nil)
 		gnus-opened-servers (cons elem gnus-opened-servers)))
 	;; Set the status of this server.
-	(setcar (cdr elem)
-		(if result
-		    (if (eq (cadr elem) 'offline)
-			'offline
-		      'ok)
-		  (if (and gnus-agent
-			   (not (eq (cadr elem) 'offline))
-			   (gnus-agent-method-p gnus-command-method))
-		      (or gnus-server-unopen-status
-			  (if (gnus-y-or-n-p
-			       (format "Unable to open %s:%s, go offline? "
-				       (car gnus-command-method)
-				       (cadr gnus-command-method)))
-                              'offline
-			    'denied))
-		    'denied)))
-	;; Return the result from the "open" call.
-        (cond ((eq (cadr elem) 'offline)
-               ;; I'm avoiding infinite recursion by binding unopen
-               ;; status to denied (The logic of this routine
-               ;; guarantees that I can't get to this point with
-               ;; unopen status already bound to denied).
-               (unless (eq gnus-server-unopen-status 'denied)
-                 (let ((gnus-server-unopen-status 'denied))
-                   (gnus-open-server gnus-command-method)))
-               t)
-              (t
-               result))))))
+        (setcar (cdr elem)
+                (cond (result
+                       (if (eq open-server-function #'nnagent-open-server)
+                           ;; The agent's backend has a "special" status
+                           'offline
+                         'ok))
+                      ((and gnus-agent
+                            (gnus-agent-method-p gnus-command-method))
+                       (cond (gnus-server-unopen-status
+                              ;; Set the server's status to the unopen
+                              ;; status.  If that status is offline,
+                              ;; recurse to open the agent's backend.
+                              (setq open-offline (eq gnus-server-unopen-status 'offline))
+                              gnus-server-unopen-status)
+                             ((gnus-y-or-n-p
+                               (format "Unable to open %s:%s, go offline? "
+                                       (car gnus-command-method)
+                                       (cadr gnus-command-method)))
+                              (setq open-offline t)
+                              'offline)
+                             (t
+                              ;; This agentized server was still denied
+                              'denied)))
+                      (t
+                       ;; This unagentized server must be denied
+                       'denied)))
+
+        ;; NOTE: I MUST set the server's status to offline before this
+        ;; recursive call as this status will drive the
+        ;; gnus-get-function (called above) to return the agent's
+        ;; backend.
+        (if open-offline
+            ;; Recursively open this offline server to perform the
+            ;; open-server function of the agent's backend.
+            (let ((gnus-server-unopen-status 'denied))
+              ;; Bind gnus-server-unopen-status to avoid recursively
+              ;; prompting with "go offline?".  This is only a concern
+              ;; when the agent's backend fails to open the server.
+              (gnus-open-server gnus-command-method))
+          result)))))
 
 (defun gnus-close-server (gnus-command-method)
   "Close the connection to GNUS-COMMAND-METHOD."
