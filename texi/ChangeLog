@@ -1,3 +1,11 @@
+Wed Jun 19 16:30:55 1996  Lars Magne Ingebrigtsen  <larsi@nipling.ifi.uio.no>
+
+	* gnus.texi (Censorship): Removed.
+
+Wed Jun 19 15:03:35 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Group Levels): Addition.
+
 Sun Jun 16 08:13:44 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Saving Articles): Fix.

@@ -110,9 +110,17 @@ Some people may want to add \"unknown\" to this list."
   "Command to convert the x-face header into a xbm file."
 )
 
-(defvar gnus-picons-get-maximum-picons t
-  "*If non-nil, display all picons that apply to the article.
-If this is nil, use just the \"best\" (or most relevant) picon.")
+(defvar gnus-picons-file-suffixes
+  (when (featurep 'x)
+    (let ((types (list "xbm")))
+      (when (featurep 'gif)
+	(push "gif" types))
+      (when (featurep 'xpm)
+	(push "xpm" types))
+      types))
+  "List of suffixes on picon file names to try.")
+
+;;; Internal variables.
        
 (defvar gnus-group-annotations nil)
 (defvar gnus-article-annotations nil)
@@ -180,16 +188,13 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 				    gnus-picons-display-where)))
     (gnus-add-current-to-buffer-list)
     (goto-char (point-min))
-    (let ((iconpoint (point))
-	  buffer-read-only)
+    (let (buffer-read-only)
       (unless (looking-at "$")
-	(insert "\n")
-	(forward-line -1))
+	(open-line 1))
       ;; append the annotation to gnus-article-annotations for deletion.
       (setq gnus-x-face-annotations 
 	    (append
-	     (gnus-picons-try-to-find-face
-	      gnus-picons-x-face-file-name iconpoint)
+	     (gnus-picons-try-to-find-face gnus-picons-x-face-file-name)
 	     gnus-x-face-annotations)))
     ;; delete the tmp file
     (delete-file gnus-picons-x-face-file-name)))
@@ -236,8 +241,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 			    (concat 
 			     (file-name-as-directory 
 			      gnus-picons-database) pathpart)
-			    (concat hostpath username) 
-			    (point))
+			    (concat hostpath username))
 			   gnus-article-annotations))) 
                   gnus-picons-user-directories)
           (mapcar (lambda (pathpart) 
@@ -246,12 +250,10 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 			   (gnus-picons-insert-face-if-exists 
 			    (concat (file-name-as-directory 
 				     gnus-picons-database) pathpart)
-			    (concat hostpath "unknown") 
-			    (point))
+			    (concat hostpath))
 			   gnus-article-annotations))) 
 		  gnus-picons-domain-directories)
-          (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all)
-          ))))
+          (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all)))))
 
 (defun gnus-group-display-picons ()
   "Display icons for the group in the gnus-picons-display-where buffer." 
@@ -284,36 +286,56 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 		     gnus-picons-news-directory)
 	     (concat (replace-in-string gnus-newsgroup-name "\\." "/") 
 		     "/unknown")
-	     (point) t))
+	     t))
       (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all))))
 
-(defun gnus-picons-insert-face-if-exists (path filename ipoint &optional rev)
+(defsubst gnus-picons-try-suffixes (file)
+  (let ((suffixes gnus-picons-file-suffixes)
+	f)
+    (while (and suffixes
+		(not (file-exists-p (setq f (concat file (pop suffixes))))))
+      (setq f nil))
+    f))
+
+(defun gnus-picons-insert-face-if-exists (path filename &optional rev)
   "Inserts a face at point if I can find one"
-  (let ((file (concat path "/" filename))
-	(xpm (if (featurep 'xpm) "xpm" "xbm"))
+  (let ((files (message-tokenize-header filename "/"))
 	picons found)
-    (while (and (or (not found)
-		    gnus-picons-get-maximum-picons)
-		(>= (length file) (length path)))
-      (or (file-exists-p (setq found (concat file "/face." xpm)))
-	  (file-exists-p (setq found (concat file "/unknown/face." xpm)))
-	  (setq found nil))
-      (when found
-	(setq picons (nconc (gnus-picons-try-to-find-face found ipoint)
-			    picons)))
-      (setq file (directory-file-name (file-name-directory file))))
+    (while (and files
+		(file-exists-p path))
+      (setq path (concat path "/" (pop files)))
+      (when (setq found
+		  (or 
+		   (gnus-picons-try-suffixes (concat path "/face."))
+		   (gnus-picons-try-suffixes (concat path "/unknown/face."))))
+	(setq picons (nconc (gnus-picons-try-to-find-face found)
+			    picons))))
     (nreverse picons)))
+
+(defvar gnus-picons-glyph-alist nil)
       
-(defun gnus-picons-try-to-find-face (path ipoint)
+(defun gnus-picons-try-to-find-face (path)
   "If PATH exists, display it as a bitmap.  Returns t if succedded."
-  (when (file-exists-p path)
-    (let ((gl (make-glyph path)))
-      (set-glyph-face gl 'default)
-      (list (make-annotation gl ipoint 'text)))))
+  (let ((glyph (cdr (assoc path gnus-picons-glyph-alist))))
+    (when (or glyph (file-exists-p path))
+      (unless glyph
+	(push (cons path (setq glyph (make-glyph path)))
+	      gnus-picons-glyph-alist)
+	(set-glyph-face glyph 'default))
+      (nconc
+       (list (make-annotation glyph (point) 'text))
+       (when (eq major-mode 'gnus-article-mode)
+	 (list (make-annotation " " (point) 'text)))))))
 
 (defun gnus-picons-reverse-domain-path (str)
   "a/b/c/d -> d/c/b/a"
   (mapconcat 'identity (nreverse (message-tokenize-header str "/")) "/"))
+
+(gnus-add-shutdown 'gnus-picons-close 'gnus)
+
+(defun gnus-picons-close ()
+  "Shut down the picons."
+  (setq gnus-picons-glyph-alist nil))
 
 (provide 'gnus-picon)
 

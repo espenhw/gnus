@@ -1307,6 +1307,8 @@ can ask Gnus to just list groups on a given level or lower
 (@pxref{Listing Groups}), or to just check for new articles in groups on
 a given level or lower (@pxref{Scanning New Messages}).
 
+Remember:  The higher the level of the group, the less important it is. 
+
 @table @kbd
 
 @item S l
@@ -11113,7 +11115,6 @@ released under the name ``Gnus 5.2''.
 * Contributors::        Oodles of people.  
 * New Features::        Pointers to some of the new stuff in Gnus.
 * Newest Features::     Features so new that they haven't been written yet.
-* Censorship::          This manual has been censored.
 @end menu
 
 
@@ -11546,21 +11547,6 @@ implemented.  (But that's always true, isn't it?)
 @code{<URL:http://www.ifi.uio.no/~larsi/sgnus/todo>} is where the actual
 up-to-the-second todo list is located, so if you're really curious, you
 could point your Web browser over that-a-way.
-
-
-@node Censorship
-@subsection Censorship
-@cindex censorship
-
-This version of the Gnus manual (as well as Gnus itself) has been
-censored in accord with the Communications Decency Act.  This law was
-described by its proponents as a ban on pornography---which was a
-deception, since it prohibits far more than that.  This manual did not
-contain pornography, but part of it was prohibited nonetheless.
-
-For information on US government censorship of the Internet, and
-what you can do to bring back freedom of the press, see the web
-site @samp{http://www.vtw.org/}.
 
 
 @node Terminology

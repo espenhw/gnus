@@ -491,7 +491,9 @@ servers."
 	  ;; We find out what the article number was.
 	  (nntp-find-group-and-number)))
     (nntp-decode-text)
-    (nnheader-fold-continuation-lines)))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (nnheader-fold-continuation-lines))))
 
 (deffoo nntp-request-stat (id &optional group server)
   "Request STAT of article ID (Message-ID or number)."

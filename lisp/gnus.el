@@ -1730,7 +1730,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.20"
+(defconst gnus-version-number "5.2.21"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1739,7 +1739,11 @@ variable (string, integer, character, etc).")
 (defvar gnus-info-nodes
   '((gnus-group-mode "(gnus)The Group Buffer")
     (gnus-summary-mode "(gnus)The Summary Buffer")
-    (gnus-article-mode "(gnus)The Article Buffer"))
+    (gnus-article-mode "(gnus)The Article Buffer")
+    (gnus-server-mode "(gnus)The Server Buffer")
+    (gnus-browse-mode "(gnus)Browse Foreign Server")
+    (gnus-tree-mode "(gnus)Tree Display")
+    )
   "Alist of major modes and related Info nodes.")
 
 (defvar gnus-group-buffer "*Group*")
@@ -3261,13 +3265,15 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 	(or (not (numberp (nth i elem)))
 	    (zerop (nth i elem))
 	    (progn
-	      (setq perc  (/ (float (nth 0 elem)) total))
+	      (setq perc (if (= i 2)
+			     1.0
+			   (/ (float (nth 0 elem)) total)))
 	      (setq out (cons (if (eq pbuf (nth i types))
-				  (vector (nth i types) perc 'point)
-				(vector (nth i types) perc))
+				  (list (nth i types) perc 'point)
+				(list (nth i types) perc))
 			      out))))
 	(setq i (1+ i)))
-      (list (nreverse out)))))
+      `(vertical 1.0 ,@(nreverse out)))))
 
 ;;;###autoload
 (defun gnus-add-configuration (conf)
@@ -5098,16 +5104,17 @@ already."
 	     (max-len 60)
 	     gnus-tmp-header		;Dummy binding for user-defined formats
 	     ;; Get the resulting string.
+	     (modified 
+	      (and gnus-dribble-buffer
+		   (buffer-name gnus-dribble-buffer)
+		   (buffer-modified-p gnus-dribble-buffer)
+		   (save-excursion
+		     (set-buffer gnus-dribble-buffer)
+		     (not (zerop (buffer-size))))))
 	     (mode-string (eval gformat)))
 	;; Say whether the dribble buffer has been modified.
 	(setq mode-line-modified
-	      (if (and gnus-dribble-buffer
-		       (buffer-name gnus-dribble-buffer)
-		       (buffer-modified-p gnus-dribble-buffer)
-		       (save-excursion
-			 (set-buffer gnus-dribble-buffer)
-			 (not (zerop (buffer-size)))))
-		  "---*- " "----- "))
+	      (if modified "---*- " "----- "))
 	;; If the line is too long, we chop it off.
 	(when (> (length mode-string) max-len)
 	  (setq mode-string (substring mode-string 0 (- max-len 4))))
@@ -5115,7 +5122,7 @@ already."
 	    (setq mode-line-buffer-identification 
 		  (gnus-mode-line-buffer-identification
 		   (list mode-string)))
-	  (set-buffer-modified-p t))))))
+	  (set-buffer-modified-p modified))))))
 
 (defun gnus-group-group-name ()
   "Get the name of the newsgroup on the current line."
@@ -6158,7 +6165,8 @@ or nil if no action could be taken."
 		     (gnus-uncompress-sequence (cdr expirable)) group))
 		;; Just expire using the normal expiry values.
 		(gnus-request-expire-articles
-		 (gnus-uncompress-sequence (cdr expirable)) group)))))
+		 (gnus-uncompress-sequence (cdr expirable)) group))))
+	    (gnus-close-group group))
 	  (gnus-message 6 "Expiring articles in %s...done" group)))
       (gnus-group-position-point))))
 
@@ -11652,7 +11660,7 @@ latter case, they will be copied into the relevant groups."
 					gnus-newsgroup-name)))))
 		(method
 		 (gnus-completing-read 
-		  methname "What backend do you want to use when? "
+		  methname "What backend do you want to use when respooling?"
 		  methods nil t nil 'gnus-method-history))
 		ms)
 	   (cond
@@ -13141,7 +13149,8 @@ save those articles instead."
 	  (gnus-activate-group to-newsgroup)
 	  (if (gnus-y-or-n-p (format "No such group: %s.  Create it? "
 				     to-newsgroup))
-	      (or (gnus-request-create-group to-newsgroup)
+	      (or (gnus-request-create-group 
+		   to-newsgroup (gnus-group-name-to-method to-newsgroup))
 		  (error "Couldn't create group %s" to-newsgroup)))
 	  (error "No such group: %s" to-newsgroup)))
     to-newsgroup))
@@ -13463,6 +13472,8 @@ The directory to save in defaults to `gnus-article-save-directory'."
     "\r" gnus-article-press-button
     "\t" gnus-article-next-button
     "\M-\t" gnus-article-prev-button
+    "<" beginning-of-bnuffer
+    ">" end-of-bnuffer
     "\C-c\C-b" gnus-bug)
 
   (substitute-key-definition
@@ -15346,6 +15357,16 @@ If GROUP is nil, all groups on METHOD are scanned."
 	    (cdr (assoc (car method) gnus-server-alist))))))
     (setcar (cdr entry) (concat (nth 1 entry) "+" group))
     (nconc entry (cdr method))))
+
+(defun gnus-group-name-to-method (group)
+  "Return a select method suitable for GROUP."
+  (if (string-match ":" group)
+      (let ((server (substring group 0 (match-beginning 0))))
+	(if (string-match "\\+" server)
+	    (list (intern (substring server 0 (match-beginning 0)))
+		  (substring server (match-end 0)))
+	  (list (intern server) "")))
+    gnus-select-method))
 
 (defun gnus-find-method-for-group (group &optional info)
   "Find the select method that GROUP uses."

@@ -146,9 +146,7 @@ displayed, no centering will be performed."
   ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
   (when gnus-auto-center-summary
     (let* ((height (if (fboundp 'window-displayed-height)
-		       (progn
-			 (sit-for 0)
-			 (window-displayed-height))
+		       (window-displayed-height)
 		     (- (window-height) 2)))
 	   (top (cond ((< height 4) 0)
 		      ((< height 7) 1)
@@ -524,7 +522,9 @@ pounce directly on the real variables themselves.")
     (fset 'gnus-group-remove-excess-properties
 	  'gnus-xmas-group-remove-excess-properties)
     (fset 'gnus-topic-remove-excess-properties
-	  'gnus-xmas-topic-remove-excess-properties)))
+	  'gnus-xmas-topic-remove-excess-properties)
+    (fset 'gnus-mode-line-buffer-identification 'identity)
+    ))
 
 
 ;;; XEmacs logo and toolbar.

@@ -247,7 +247,9 @@ Two predefined functions are available:
    gnus-tree-mode-map
    "\r" gnus-tree-select-article
    gnus-mouse-2 gnus-tree-pick-article
-   "\C-?" gnus-tree-read-summary-keys)
+   "\C-?" gnus-tree-read-summary-keys
+
+   "\C-c\C-i" gnus-info-find-node)
 
   (substitute-key-definition
    'undefined 'gnus-tree-read-summary-keys gnus-tree-mode-map))

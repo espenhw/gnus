@@ -116,7 +116,9 @@ with some simple extensions.")
    "O" gnus-server-open-server
    "C" gnus-server-close-server
    "D" gnus-server-deny-server
-   "R" gnus-server-remove-denials))
+   "R" gnus-server-remove-denials
+
+    "\C-c\C-i" gnus-info-find-node))
 
 (defun gnus-server-mode ()
   "Major mode for listing and editing servers.
@@ -496,6 +498,7 @@ The following commands are available:
    "Q" gnus-browse-exit
    "\C-c\C-c" gnus-browse-exit
    "?" gnus-browse-describe-briefly
+
    "\C-c\C-i" gnus-info-find-node))
 
 (defun gnus-browse-make-menu-bar ()
