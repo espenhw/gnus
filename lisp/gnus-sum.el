@@ -5076,6 +5076,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	     (gnus-group-update-group ,group t))))
       ;; Add the read articles to the range.
       (gnus-info-set-read info range)
+      (gnus-request-set-mark group (list (list range 'add '(read))))
       ;; Then we have to re-compute how many unread
       ;; articles there are in this group.
       (when active
