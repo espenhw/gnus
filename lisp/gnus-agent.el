@@ -1156,7 +1156,9 @@ This can be added to `gnus-select-article-hook' or
   ;; nnagent uses nnmail-group-pathname to read articles while
   ;; unplugged.  The agent must, therefore, use the same directory
   ;; while plugged.
-  (nnmail-group-pathname (gnus-group-real-name group) (gnus-agent-directory)))
+  (let ((gnus-command-method (or gnus-command-method
+                                 (gnus-find-method-for-group group))))
+    (nnmail-group-pathname (gnus-group-real-name group) (gnus-agent-directory))))
 
 (defun gnus-agent-get-function (method)
   (if (gnus-online method)
