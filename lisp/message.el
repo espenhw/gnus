@@ -5842,6 +5842,14 @@ which specify the range to operate on."
   (defvar tool-bar-map)
   (defvar tool-bar-mode))
 
+(defun message-tool-bar-local-item-from-menu (command icon in-map &optional from-map &rest props)
+  ;; We need to make tool bar entries in local keymaps with
+  ;; `tool-bar-local-item-from-menu' in Emacs > 21.3
+  (if (fboundp 'tool-bar-local-item-from-menu)
+      ;; This is for Emacs 21.3
+      (tool-bar-local-item-from-menu command icon in-map from-map props)
+    (tool-bar-add-item-from-menu command icon from-map props)))
+
 (defun message-tool-bar-map ()
   (or message-tool-bar-map
       (setq message-tool-bar-map
@@ -5856,25 +5864,25 @@ which specify the range to operate on."
 	       (dolist (key '(print-buffer kill-buffer save-buffer
 					   write-file dired open-file))
 		 (define-key tool-bar-map (vector key) nil))
-	       (tool-bar-add-item-from-menu
-		'message-send-and-exit "mail_send" message-mode-map)
-	       (tool-bar-add-item-from-menu
-		'message-kill-buffer "close" message-mode-map)
-	       (tool-bar-add-item-from-menu
-		    'message-dont-send "cancel" message-mode-map)
-	       (tool-bar-add-item-from-menu
-		'mml-attach-file "attach" mml-mode-map)
-	       (tool-bar-add-item-from-menu
-		'ispell-message "spell" message-mode-map)
-	       (tool-bar-add-item-from-menu
+	       (message-tool-bar-local-item-from-menu
+		'message-send-and-exit "mail_send" tool-bar-map message-mode-map)
+	       (message-tool-bar-local-item-from-menu
+		'message-kill-buffer "close" tool-bar-map message-mode-map)
+	       (message-tool-bar-local-item-from-menu
+		    'message-dont-send "cancel" tool-bar-map message-mode-map)
+	       (message-tool-bar-local-item-from-menu
+		'mml-attach-file "attach" tool-bar-map mml-mode-map)
+	       (message-tool-bar-local-item-from-menu
+		'ispell-message "spell" tool-bar-map message-mode-map)
+	       (message-tool-bar-local-item-from-menu
 		'message-insert-importance-high "important"
-		    message-mode-map)
-	       (tool-bar-add-item-from-menu
+		tool-bar-map message-mode-map)
+	       (message-tool-bar-local-item-from-menu
 		'message-insert-importance-low "unimportant"
-		message-mode-map)
-	       (tool-bar-add-item-from-menu
+		tool-bar-map message-mode-map)
+	       (message-tool-bar-local-item-from-menu
 		'message-insert-disposition-notification-to "receipt"
-		message-mode-map)
+		tool-bar-map message-mode-map)
 	       tool-bar-map)))))
 
 ;;; Group name completion.

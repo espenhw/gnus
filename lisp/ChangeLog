@@ -1,3 +1,10 @@
+2002-12-17  Jesper Harder  <harder@ifa.au.dk>
+
+	* lpath.el: Add tool-bar-local-item-from-menu.
+
+	* message.el (message-tool-bar-local-item-from-menu): New function.
+	(message-tool-bar-map): Use it.
+
 2002-12-14  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-uu.el (gnus-uu-digest-headers): Mention nil value in docstring.

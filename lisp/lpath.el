@@ -9,14 +9,15 @@
 (defun maybe-bind (args)
   (mapcar (lambda (var) (unless (boundp var) (set var nil))) args))
 
-(maybe-fbind '(create-image
-	       display-graphic-p display-time-event-handler find-image
-	       image-size image-type-available-p insert-image
-	       make-mode-line-mouse-map make-temp-file propertize put-image
-	       replace-regexp-in-string rmail-msg-is-pruned
+(maybe-fbind '(create-image display-graphic-p
+	       display-time-event-handler find-image image-size
+	       image-type-available-p insert-image
+	       make-mode-line-mouse-map make-temp-file propertize
+	       put-image replace-regexp-in-string rmail-msg-is-pruned
 	       rmail-msg-restore-non-pruned-header sort-coding-systems
 	       tool-bar-add-item tool-bar-add-item-from-menu
-	       vcard-pretty-print w32-focus-frame w3m-charset-to-coding-system
+	       tool-bar-local-item-from-menu vcard-pretty-print
+	       w32-focus-frame w3m-charset-to-coding-system
 	       x-focus-frame))
 (maybe-bind '(filladapt-mode
 	      mc-pgp-always-sign rmail-enable-mime-composing
