@@ -7,7 +7,7 @@
 ;; Keywords: extensions
 ;; Created: 1997-09-27
 
-;; $Id: vcard.el,v 1.1 1999/11/15 20:50:18 larsi Exp $
+;; $Id: vcard.el,v 6.0 2000/10/27 23:10:33 zsh Exp $
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -307,4 +307,4 @@ presentation buffer."
 
 (provide 'vcard)
 
-;;; vcard.el ends here.
+;;; vcard.el ends here

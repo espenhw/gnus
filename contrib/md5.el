@@ -406,4 +406,4 @@ hash of a portion of OBJECT."
 
 (provide 'md5)
 
-;;; md5.el ends here ----------------------------------------------------------
+;;; md5.el ends here
