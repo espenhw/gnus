@@ -992,8 +992,8 @@ This only works when `display-time' is enabled."
 	      (mm-disable-multibyte)
 	      ;; remember password
 	      (with-current-buffer buf
-		(when (or imap-password
-			  (assoc from mail-source-password-cache))
+		(when (and imap-password
+			   (not (assoc from mail-source-password-cache)))
 		  (push (cons from imap-password) mail-source-password-cache)))
 	      ;; if predicate is nil, use all uids
 	      (dolist (uid (imap-search (or predicate "1:*") buf))

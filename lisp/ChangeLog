@@ -1,3 +1,11 @@
+2003-12-28  Adrian Lanz  <lanz@fowi.ethz.ch>
+
+	* mail-source.el (mail-source-fetch-imap): This small patch
+	(against a recent CVS version of mail-source.el) prevents storing
+	identical entries for imap mail sources, when retrieving mail
+	messages from an imap server within the same Gnus session several
+	times.
+
 2003-12-28  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-view.el (mm-text-html-washer-alist): Use
