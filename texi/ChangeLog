@@ -1,5 +1,7 @@
 2003-03-19  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.texi (Misc Article): Add.
+
 	* message.texi (IDNA): New.
 
 2003-03-18  Kevin Greiner <kgreiner@xpediantsolutions.com>
