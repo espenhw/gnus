@@ -56,7 +56,7 @@ The following specs are understood:
 (defvar gnus-server-exit-hook nil
   "*Hook run when exiting the server buffer.")
 
-(defvar gnus-server-browse-in-group-buffer t
+(defvar gnus-server-browse-in-group-buffer nil
   "Whether browse server in group buffer.")
 
 ;;; Internal variables.

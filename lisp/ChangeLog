@@ -1,3 +1,8 @@
+2001-05-21 17:11:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-srvr.el (gnus-server-browse-in-group-buffer): Default to
+	nil. 
+
 2001-08-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-delay.el (gnus-delay-article): Allow "01:23" time spec,
