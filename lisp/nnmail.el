@@ -348,6 +348,11 @@ discarded after running the split process."
   :group 'nnmail-split
   :type 'hook)
 
+(defcustom nnmail-spool-hook nil
+  "*A hook called when a new article is spooled."
+  :group 'nnmail
+  :type 'hook)
+
 (defcustom nnmail-large-newsgroup 50
   "*The number of the articles which indicates a large newsgroup or nil.
 If the number of the articles is greater than the value, verbose
@@ -1478,6 +1483,8 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 (defvar group-art-list)
 (defvar group-art)
 (defun nnmail-cache-insert (id grp)
+  (run-hook-with-args 'nnmail-spool-hook 
+		      id grp)
   (when nnmail-treat-duplicates
     ;; Store some information about the group this message is written
     ;; to.  This is passed in as the grp argument -- all locations this

@@ -59,6 +59,10 @@
   :link '(custom-manual "(gnus)Article Caching")
   :group 'gnus)
 
+(defgroup gnus-registry nil
+  "Article Registry."
+  :group 'gnus)
+
 (defgroup gnus-start nil
   "Starting your favorite newsreader."
   :group 'gnus)
@@ -3111,14 +3115,29 @@ that that variable is buffer-local to the summary buffers."
 (defsubst gnus-method-to-full-server-name (method)
   (format "%s+%s" (car method) (nth 1 method)))
 
-(defun gnus-group-prefixed-name (group method)
-  "Return the whole name from GROUP and METHOD."
+(defun gnus-group-prefixed-name (group method &optional full)
+  "Return the whole name from GROUP and METHOD.  Call with full set to
+get the fully qualified group name (even if the server is native)."
   (and (stringp method) (setq method (gnus-server-to-method method)))
   (if (or (not method)
-	  (gnus-server-equal method "native")
+	  (and (not full) (gnus-server-equal method "native"))
 	  (string-match ":" group))
       group
     (concat (gnus-method-to-server-name method) ":" group)))
+
+(defun gnus-group-guess-prefixed-name (group)
+  "Guess the whole name from GROUP and METHOD."
+  (gnus-group-prefixed-name group (gnus-find-method-for-group
+			       group)))
+
+(defun gnus-group-full-name (group method)
+  "Return the full name from GROUP and METHOD, even if the method is
+native."
+  (gnus-group-prefixed-name group method t))
+
+(defun gnus-group-guess-full-name (group)
+  "Guess the full name from GROUP, even if the method is native."
+  (gnus-group-full-name group (gnus-find-method-for-group group)))
 
 (defun gnus-group-real-prefix (group)
   "Return the prefix of the current group name."

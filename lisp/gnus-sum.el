@@ -847,6 +847,21 @@ automatically when it is selected."
   :group 'gnus-summary
   :type 'hook)
 
+(defcustom gnus-summary-article-move-hook nil
+  "*A hook called after an article is moved, copied, respooled, or crossposted."
+  :group 'gnus-summary
+  :type 'hook)
+
+(defcustom gnus-summary-article-delete-hook nil
+  "*A hook called after an article is deleted."
+  :group 'gnus-summary
+  :type 'hook)
+
+(defcustom gnus-summary-article-expire-hook nil
+  "*A hook called after an article is expired."
+  :group 'gnus-summary
+  :type 'hook)
+
 (defcustom gnus-summary-display-arrow
   (and (fboundp 'display-graphic-p)
        (display-graphic-p))
@@ -8760,8 +8775,14 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		      (nnheader-get-report (car to-method))))
        ((eq art-group 'junk)
 	(when (eq action 'move)
-	  (gnus-summary-mark-article article gnus-canceled-mark)
-	  (gnus-message 4 "Deleted article %s" article)))
+	  (let ((id (mail-header-id (gnus-data-header 
+				     (assoc article (gnus-data-list nil))))))
+	    (gnus-summary-mark-article article gnus-canceled-mark)
+	    (gnus-message 4 "Deleted article %s" article)
+	    ;; run the move/copy/crosspost/respool hook
+	    (run-hook-with-args 'gnus-summary-article-delete-hook 
+				action id gnus-newsgroup-name nil
+				select-method))))
        (t
 	(let* ((pto-group (gnus-group-prefixed-name
 			   (car art-group) to-method))
@@ -8839,7 +8860,14 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	      (gnus-request-article-this-buffer article gnus-newsgroup-name)
 	      (nnheader-replace-header "Xref" new-xref)
 	      (gnus-request-replace-article
-	       article gnus-newsgroup-name (current-buffer)))))
+	       article gnus-newsgroup-name (current-buffer))))
+
+	  ;; run the move/copy/crosspost/respool hook
+	  (let ((id (mail-header-id (gnus-data-header 
+				   (assoc article (gnus-data-list nil))))))
+	  (run-hook-with-args 'gnus-summary-article-move-hook 
+			      action id gnus-newsgroup-name to-newsgroup
+			      select-method)))
 
 	;;;!!!Why is this necessary?
 	(set-buffer gnus-summary-buffer)
@@ -9060,7 +9088,13 @@ This will be the case if the article has both been mailed and posted."
 	      (dolist (article expirable)
 		(when (and (not (memq article es))
 			   (gnus-data-find article))
-		  (gnus-summary-mark-article article gnus-canceled-mark))))))
+		  (gnus-summary-mark-article article gnus-canceled-mark)
+		  (let ((id (mail-header-id (gnus-data-header 
+					     (assoc article 
+						    (gnus-data-list nil))))))
+		    (run-hook-with-args 'gnus-summary-article-expire-hook
+					'delete id gnus-newsgroup-name nil
+					nil)))))))
 	(gnus-message 6 "Expiring articles...done")))))
 
 (defun gnus-summary-expire-articles-now ()
@@ -9109,6 +9143,12 @@ delete these instead."
 	;; after all.
 	(unless (memq (car articles) not-deleted)
 	  (gnus-summary-mark-article (car articles) gnus-canceled-mark))
+	(let* ((article (car articles))
+	       (id (mail-header-id (gnus-data-header 
+				    (assoc article (gnus-data-list nil))))))
+	  (run-hook-with-args 'gnus-summary-article-delete-hook
+			      'delete id gnus-newsgroup-name nil
+			      nil))
 	(setq articles (cdr articles)))
       (when not-deleted
 	(gnus-message 4 "Couldn't delete articles %s" not-deleted)))

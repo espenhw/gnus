@@ -1,3 +1,24 @@
+2003-02-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* nnmail.el (nnmail-spool-hook): new hook
+	(nnmail-cache-insert): call nnmail-spool-hook
+
+	* gnus-registry.el: new file with examples of using the hooks
+
+	* gnus.el (gnus-registry): added registry customization group
+	(gnus-group-prefixed-name): improve function to return full group
+	name optionally
+	(gnus-group-guess-prefixed-name): shortcut to
+	gnus-group-prefixed-name, using just the group name
+	(gnus-group-full-name): always get a group's full name
+	(gnus-group-guess-full-name): shortcut, using just the group name
+
+	* gnus-sum.el (gnus-summary-article-move-hook) 
+	(gnus-summary-article-delete-hook) 
+	(gnus-summary-article-expire-hook): new hooks
+	(gnus-summary-move-article, gnus-summary-expire-articles) 
+	(gnus-summary-delete-article): invoke the new hooks
+
 2003-02-07  Frank Weinberg  <frank@usenet-rundfahrt.de>
 
         * gnus-art.el (gnus-article-refer-article): Strip leading "news:"
