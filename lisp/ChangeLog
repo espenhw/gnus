@@ -1,5 +1,9 @@
 2001-07-06  Simon Josefsson  <jas@extundo.com>
 
+	* imap.el (imap-parse-address-list, imap-parse-flag-list)
+	(imap-parse-body-extension, imap-parse-body-ext, imap-parse-body):
+	Add information in `assert's.
+
 	* nnimap.el (nnimap-possibly-change-group): Ignore uidvalidity
 	changes. (From nnimaps' point of view, `nnimap-verify-uidvalidity'
 	and `nnimap-group-overview-filename', should handle all
