@@ -1,3 +1,75 @@
+2004-01-21  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-queue-mail,
+	gnus-agent-prompt-send-queue): New variables.
+	(gnus-agent-send-mail): Use gnus-agent-queue-mail.
+	* gnus-draft.el (gnus-group-send-queue): Pass the group name
+	"nndraft:queue" along to gnus-draft-send.  Use
+	gnus-agent-prompt-send-queue.
+	(gnus-draft-send): Rebind gnus-agent-queue-mail to nil when group
+	is "nndraft:queue".  Suggested by Gaute Strokkenes
+	<gs234@srcf.ucam.org>
+
+	* gnus-agent.el (agent-disable-undownloaded-faces): Removed
+	(agent-enable-undownloaded-faces): Added
+	(gnus-agent-cat-groups): Use eval-and-compile, not
+	eval-when-compile, to define gnus-agent-set-cat-groups as the setf
+	method of gnus-agent-cat-groups even when the buffer has been
+	evaled.
+	(gnus-agent-save-active,gnus-agent-save-active-1): Merged to
+	delete gnus-agent-save-active-1.
+	(gnus-agent-save-groups): Deleted. Identical to
+	gnus-agent-save-active.
+	(gnus-agent-write-active): No longer adjust agent's copy of active
+	file as agent's adjustments are now stored in their own
+	file. Removed optional parameter.
+	(gnus-agent-possibly-alter-active): Ignore groups of unagentized
+	servers.  Add use of min/max range limits from server's local
+	file.
+	(gnus-agent-save-alist): Removed unused optional argument.
+	(gnus-agent-load-local,gnus-agent-read-and-cache-local),
+	(gnus-agent-read-local,gnus-agent-save-local,gnus-agent-get-local),
+	(gnus-agent-set-local): A per-server file that keeps min/max range
+	limits for articles known to the agent.	 Provides a fast mechanism
+	for altering many active ranges.
+	(gnus-agent-expire-group,gnus-agent-expire): No longer save the
+	active file (local makes it unnecessary).
+	(gnus-agent-regenerate-group): Fixed XEmacs compatibility.
+
+	* gnus-cus.el (agent-disable-undownloaded-faces): Removed
+	(agent-enable-undownloaded-faces): Added
+
+	* gnus-draft.el (gnus-draft-send): Bind gnus-agent-queue-mail to
+	disable it when sending to "nndraft:queue".
+	(gnus-group-send-queue): Add safety check to avoid sending queue
+	when unplugged.
+
+	* gnus-group.el (gnus-group-catchup): Use new
+	gnus-sequence-of-unread-articles, not
+	gnus-list-of-unread-articles, to avoid exhausting memory with huge
+	numbers of articles.  Use gnus-range-map to avoid having to
+	uncompress the unread list.
+	(gnus-group-archive-directory,
+	gnus-group-recent-archive-directory): Fixed invalid ange-ftp
+	reference.
+
+	* gnus-range.el (gnus-range-map): Iterate over list or sequence.
+	(gnus-sorted-range-intersection): Intersection of two ranges
+	without requiring that they first be uncompressed.
+
+	* gnus-start.el (gnus-activate-group): Unless blocked by the
+	caller, possibly expand the active range to include both cached
+	and agentized articles.
+	(gnus-convert-old-newsrc): Rewrote in anticipation of having
+	multiple version-dependent converters.
+	(gnus-groups-to-gnus-format): Replaced gnus-agent-save-groups with
+	gnus-agent-save-active.
+	(gnus-save-newsrc-file): Save dirty agent range limits.
+
+	* gnus-sum.el (gnus-select-newgroup): Replaced inline code with
+	gnus-agent-possibly-alter-active.
+	(gnus-adjust-marked-articles): Faster handling of simple lists
+	
 2004-01-21  Jesper Harder  <harder@ifa.au.dk>
 
 	* spam-stat.el (spam-stat-test-directory): New optional argument
