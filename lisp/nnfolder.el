@@ -447,8 +447,9 @@ all.  This may very well take some time.")
       (goto-char (point-min))
       (when (looking-at "X-From-Line: ")
 	(replace-match "From "))
-      (let ((nnmail-file-coding-system nnfolder-active-file-coding-system))
-	(with-temp-buffer
+      (with-temp-buffer
+	(let ((nnmail-file-coding-system nnfolder-active-file-coding-system)
+	      (nntp-server-buffer (current-buffer)))
 	  (nnmail-find-file nnfolder-active-file)
 	  (setq nnfolder-group-alist (nnmail-parse-active))))
       (save-excursion

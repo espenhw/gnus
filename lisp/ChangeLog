@@ -1,5 +1,8 @@
 2001-07-27 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nnfolder.el (nnfolder-request-accept-article): Bind
+	nntp-server-buffer.
+
 	* nnmail.el (nnmail-parse-active): Read from buffer instead of
 	nntp-server-buffer.
 
