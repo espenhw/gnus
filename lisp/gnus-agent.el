@@ -2891,7 +2891,7 @@ articles in every agentized group."))
                                   (push r to-remove))))
                            ((file-directory-p (setq file (nnheader-concat d file)))
                             (funcall checker file)))))))))
-        (funcall checker gnus-agent-directory)
+        (funcall checker (expand-file-name gnus-agent-directory))
 
         (when (and to-remove
                    (or gnus-expert-user

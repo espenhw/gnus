@@ -10,6 +10,9 @@
 	nnmail-group-pathname.
 	(gnus-agent-expire-unagentized-dirs): New variable.  May be
 	customized to disable gnus-agent-expire-unagentized-dirs.
+	(gnus-agent-expire-unagentized-dirs): Expand gnus-agent-directory
+	as the directories in gnus-agent-expire-current-dirs were
+	expanded.
 
 2003-04-10  Jesper Harder  <harder@ifa.au.dk>
 
