@@ -582,7 +582,8 @@ header line with the old Message-ID."
 	    (insert-buffer-substring gnus-original-article-buffer beg end)
 	    ;; Decode charsets.
 	    (let ((gnus-article-decode-hook
-		   (delq 'article-decode-charset gnus-article-decode-hook)))
+		   (delq 'article-decode-charset 
+			 (copy-sequence gnus-article-decode-hook))))
 	      (run-hooks 'gnus-article-decode-hook)))))
       gnus-article-copy)))
 
