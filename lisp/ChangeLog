@@ -1,3 +1,21 @@
+2004-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-hidden-headers): Default to "^References:".
+	From Reiner Steib <Reiner.Steib@gmx.de>; improve customization type.
+	(message-strip-forbidden-properties): Remove check for obsolete
+	`message-hidden' text property, hidden headers are not accessible
+	in the buffer anymore.  From Romain Francoise on January 11, 2004.
+
+2004-11-22  Romain Francoise  <romain@orebokech.com>
+
+	* message.el (message-header-format-alist): Add `From' in list
+	so that it can be sorted.
+	(message-fix-before-sending): Widen and sort headers before
+	sending.
+	(message-hide-headers): Use narrowing to hide headers by moving
+	them to the top of the buffer and narrowing to the region
+	underneath.
+
 2004-11-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-strip-forbidden-properties): Bind

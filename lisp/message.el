@@ -1109,14 +1109,21 @@ candidates:
   (or (not (listp message-shoot-gnksa-feet))
       (memq feature message-shoot-gnksa-feet)))
 
-(defcustom message-hidden-headers nil
+(defcustom message-hidden-headers "^References:"
   "Regexp of headers to be hidden when composing new messages.
 This can also be a list of regexps to match headers.  Or a list
 starting with `not' and followed by regexps."
   :version "21.4"
   :group 'message
   :link '(custom-manual "(message)Message Headers")
-  :type '(repeat regexp))
+  :type '(choice
+	  (regexp :tag "regexp" :format "%t\nRegexp: %v" :size 1)
+	  (group :tag "(regexp ...)" :format "(regexp ...)\n%v" :inline t
+		 (repeat :format "%v%i" (regexp :format "%t: %v\n" :size 1)))
+	  (cons :tag "(not regexp ...)"
+		(const not)
+		(repeat :format "%v%i"
+			(regexp :format "%t: %v\n" :size 1)))))
 
 (defcustom message-cite-articles-with-x-no-archive t
   "If non-nil, cite text from articles that has X-No-Archive set."
@@ -1548,7 +1555,8 @@ You must have the \"hashcash\" binary installed, see `hashcash-path'."
   "Alist of header names/filler functions.")
 
 (defvar message-header-format-alist
-  `((Newsgroups)
+  `((From)
+    (Newsgroups)
     (To)
     (Cc)
     (Subject)
@@ -2440,14 +2448,11 @@ These properties are essential to work, so we should never strip them."
   "Strip forbidden properties between BEGIN and END, ignoring the third arg.
 This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
-  (let ((buffer-read-only nil)
-	(inhibit-read-only t))
-    (when (and message-strip-special-text-properties
-	       (message-tamago-not-in-use-p begin))
-      (dolist (from-to (message-text-with-property 'message-hidden
-						   begin end t))
-	(remove-text-properties (car from-to) (cdr from-to)
-				message-forbidden-properties)))))
+  (when (and message-strip-special-text-properties
+	     (message-tamago-not-in-use-p begin))
+    (let ((buffer-read-only nil)
+	  (inhibit-read-only t))
+      (remove-text-properties begin end message-forbidden-properties))))
 
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"
@@ -3582,9 +3587,9 @@ not have PROP."
   (unless (bolp)
     (insert "\n"))
   ;; Make the hidden headers visible.
-  (dolist (from-to (message-text-with-property 'message-hidden))
-    (add-text-properties (car from-to) (cdr from-to)
-			 '(invisible nil intangible nil)))
+  (widen)
+  ;; Sort headers before sending the message.
+  (message-sort-headers)
   ;; Make invisible text visible.
   ;; It doesn't seem as if this is useful, since the invisible property
   ;; is clobbered by an after-change hook anyhow.
@@ -6916,7 +6921,8 @@ regexp VARSTR."
 		     (list message-hidden-headers)
 		   message-hidden-headers))
 	(inhibit-point-motion-hooks t)
-	(after-change-functions nil))
+	(after-change-functions nil)
+	(end-of-headers 0))
     (when regexps
       (save-excursion
 	(save-restriction
@@ -6925,11 +6931,17 @@ regexp VARSTR."
 	  (while (not (eobp))
 	    (if (not (message-hide-header-p regexps))
 		(message-next-header)
-	      (let ((begin (point)))
+	      (let ((begin (point))
+		    header header-len)
 		(message-next-header)
-		(add-text-properties
-		 begin (point)
-		 '(invisible t message-hidden t))))))))))
+		(setq header (buffer-substring begin (point))
+		      header-len (- (point) begin))
+		(delete-region begin (point))
+		(goto-char (1+ end-of-headers))
+		(insert header)
+		(setq end-of-headers
+		      (+ end-of-headers header-len))))))))
+    (narrow-to-region (1+ end-of-headers) (point-max))))
 
 (defun message-hide-header-p (regexps)
   (let ((result nil)
