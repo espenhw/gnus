@@ -372,6 +372,22 @@
        (if (equal val ,ignore-value)
 	   "" val))))
 
+(defun gnus-correct-pad-form (el pad-width)
+  "Return a form that pads EL to PAD-WIDTH accounting for multi-column
+characters correctly. This is because `format' may pad to columns or to
+characters when given a pad value."
+  (let ((pad (abs pad-width)))
+    (if (symbolp el)
+	`(let ((need (- ,pad (gnus-correct-length ,el))))
+	   (if (> need 0)
+	       (concat ,el (make-string need ?\ ))
+	     ,el))
+      `(let* ((val (eval ,el))
+	      (need (- ,pad (gnus-correct-length ,el))))
+	 (if (> need 0)
+	     (concat ,el (make-string need ?\ ))
+	   ,el)))))
+
 (defun gnus-parse-format (format spec-alist &optional insert)
   ;; This function parses the FORMAT string with the help of the
   ;; SPEC-ALIST and returns a list that can be eval'ed to return the
@@ -536,10 +552,14 @@
 	    (setq elem '("*" ?s))))
 	  (setq elem-type (cadr elem))
 	  ;; Insert the new format elements.
-	  (when pad-width
+	  (when (and pad-width
+		     (not (and (featurep 'xemacs)
+			       gnus-use-correct-string-widths)))
 	    (insert (number-to-string pad-width)))
 	  ;; Create the form to be evaled.
-	  (if (or max-width cut-width ignore-value)
+	  (if (or max-width cut-width ignore-value
+		  (and (featurep 'xemacs)
+		       gnus-use-correct-string-widths))
 	      (progn
 		(insert ?s)
 		(let ((el (car elem)))
@@ -553,6 +573,8 @@
 		    (setq el (gnus-tilde-cut-form el cut-width)))
 		  (when max-width
 		    (setq el (gnus-tilde-max-form el max-width)))
+		  (when pad-width
+		    (setq el (gnus-correct-pad-form el pad-width)))
 		  (push el flist)))
 	    (insert elem-type)
 	    (push (car elem) flist))))

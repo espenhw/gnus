@@ -1,3 +1,9 @@
+2001-09-08  Simon Josefsson  <jas@extundo.com>
+	From Daniel Pittman <daniel@rimspace.net>
+
+	* gnus-spec.el (gnus-correct-pad-form): New function.
+	(gnus-parse-simple-format): Use it.
+
 2001-09-07  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-group.el (gnus-group-sort-groups): Unmark all groups.
