@@ -796,8 +796,9 @@ deleted.  Point is left where the deleted region was."
 	    (goto-char (point-max))
 	    (unless (re-search-backward marker nil t)
 	      (goto-char (point-min)))
-	    (when (nnmail-search-unix-mail-delim)
-	      (goto-char (point-min))))
+	    ;;(when (nnmail-search-unix-mail-delim)
+	    ;;  (goto-char (point-min)))
+	    )
 
 	  ;; Keep track of the active number on our own, and insert it back
 	  ;; into the active list when we're done.  Also, prime the pump to

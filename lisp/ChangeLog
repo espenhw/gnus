@@ -1,3 +1,7 @@
+2000-10-29 08:28:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-read-folder): Don't goto point-min.
+
 2000-10-28 19:11:01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-verify-function-alist): New variable.
