@@ -1,3 +1,8 @@
+2000-04-26 02:17:44  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Just remove the
+	header if nil.
+
 2000-04-26 00:23:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el (mm-inline-text): Insert directly if decoded.

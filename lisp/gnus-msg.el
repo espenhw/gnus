@@ -1233,8 +1233,10 @@ this is a reply."
 		      `(lambda ()
 			 (save-excursion
 			   (message-remove-header ,header)
-			   (message-goto-eoh)
-			   (insert ,header ": " ,(cdr result) "\n"))))))))
+			   (let ((value ,(cdr result)))
+			     (when value
+			       (message-goto-eoh)
+			       (insert ,header ": " value "\n"))))))))))
       (when (or name address)
 	(add-hook 'message-setup-hook
 		  `(lambda ()

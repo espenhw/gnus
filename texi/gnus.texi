@@ -9700,8 +9700,9 @@ attribute name can be one of @code{signature}, @code{signature-file},
 @code{organization}, @code{address}, @code{name} or @code{body}.  The
 attribute name can also be a string.  In that case, this will be used as
 a header name, and the value will be inserted in the headers of the
-article.  If the attribute name is @code{eval}, the form is evaluated,
-and the result is thrown away.
+article; if the value is @code{nil}, the header name will be removed.
+If the attribute name is @code{eval}, the form is evaluated, and the
+result is thrown away.
 
 The attribute value can be a string (used verbatim), a function with
 zero arguments (the return value will be used), a variable (its value
