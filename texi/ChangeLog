@@ -1,3 +1,9 @@
+2003-02-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (BBDB Whitelists, Blacklists and Whitelists):
+	corrected existing docs, added spam-use-whitelist-exclusive and
+	spam-use-BBDB-exclusive to list of variables
+
 2003-02-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (The problem of spam): Don't use @email for examples

@@ -21559,30 +21559,45 @@ The following are the methods you can use to control the behavior of
 @cindex spam
 
 @defvar spam-use-blacklist
+
 Set this variable to @code{t} if you want to use blacklists when
 splitting incoming mail.  Messages whose senders are in the blacklist
 will be sent to the @code{spam-split-group}.  This is an explicit
 filter, meaning that it acts only on mail senders @emph{declared} to
 be spammers.
+
 @end defvar
 
 @defvar spam-use-whitelist
+
 Set this variable to @code{t} if you want to use whitelists when
 splitting incoming mail.  Messages whose senders are not in the
-whitelist will be sent to the @code{spam-split-group}.  This is an
-implicit filter, meaning it believes everyone to be a spammer unless
-told otherwise.  Use with care.
+whitelist will be sent to the next spam-split rule.  This is an
+explicit filter, meaning that unless someone is in the whitelist, their
+messages are not assumed to be spam or ham.
+
+@end defvar
+
+@defvar spam-use-whitelist-exclusive
+
+Set this variable to @code{t} if you want to use whitelists as an
+implicit filter, meaning that every message will be considered spam
+unless the sender is in the whitelist.  Use with care.
+
 @end defvar
 
 @defvar gnus-group-spam-exit-processor-blacklist
+
 Add this symbol to a group's @code{spam-process} parameter by
 customizing the group parameters or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is
 added to a group's @code{spam-process} parameter, the senders of
 spam-marked articles will be added to the blacklist.
+
 @end defvar
 
 @defvar gnus-group-ham-exit-processor-whitelist
+
 Add this symbol to a group's @code{spam-process} parameter by
 customizing the group parameters or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is
@@ -21590,6 +21605,7 @@ added to a group's @code{spam-process} parameter, the senders of
 ham-marked articles in @emph{ham} groups will be added to the
 whitelist.  Note that this ham processor has no effect in @emph{spam}
 or @emph{unclassified} groups.
+
 @end defvar
 
 Blacklists are lists of regular expressions matching addresses you
@@ -21599,11 +21615,9 @@ blacklist.  You start out with an empty blacklist.  Blacklist entries
 use the Emacs regular expression syntax.
 
 Conversely, whitelists tell Gnus what addresses are considered
-legitimate.  All non-whitelisted addresses are considered spammers.
-This option is probably not useful for most Gnus users unless the
-whitelists is very comprehensive or permissive.  Also see @ref{BBDB
-Whitelists}.  Whitelist entries use the Emacs regular expression
-syntax.
+legitimate.  All messages from whitelisted addresses are considered
+non-spam.  Also see @ref{BBDB Whitelists}.  Whitelist entries use the
+Emacs regular expression syntax.
 
 The blacklist and whitelist file locations can be customized with the
 @code{spam-directory} variable (@file{~/News/spam} by default), or
@@ -21622,14 +21636,27 @@ directly.  The whitelist and blacklist files will by default be in the
 @defvar spam-use-BBDB
 
 Analogous to @code{spam-use-whitelist} (@pxref{Blacklists and
-Whitelists}), but uses the BBDB as the source of whitelisted addresses,
-without regular expressions.  You must have the BBDB loaded for
-@code{spam-use-BBDB} to work properly.  Only addresses in the BBDB
-will be allowed through; all others will be classified as spam.
+Whitelists}), but uses the BBDB as the source of whitelisted
+addresses, without regular expressions.  You must have the BBDB loaded
+for @code{spam-use-BBDB} to work properly.  Messages whose senders are
+not in the BBDB will be sent to the next spam-split rule.  This is an
+explicit filter, meaning that unless someone is in the BBDB, their
+messages are not assumed to be spam or ham.
+
+@end defvar
+
+@defvar spam-use-BBDB-exclusive
+
+Set this variable to @code{t} if you want to use the BBDB as an
+implicit filter, meaning that every message will be considered spam
+unless the sender is in the BBDB.  Use with care.  Only sender
+addresses in the BBDB will be allowed through; all others will be
+classified as spammers.
 
 @end defvar
 
 @defvar gnus-group-ham-exit-processor-BBDB
+
 Add this symbol to a group's @code{spam-process} parameter by
 customizing the group parameters or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is
@@ -21637,6 +21664,7 @@ added to a group's @code{spam-process} parameter, the senders of
 ham-marked articles in @emph{ham} groups will be added to the
 BBDB.  Note that this ham processor has no effect in @emph{spam}
 or @emph{unclassified} groups.
+
 @end defvar
 
 @node Blackholes
