@@ -1,5 +1,5 @@
 ;;; gnus-srvr.el --- virtual server support for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -37,7 +37,7 @@
 (defvar gnus-server-mode-hook nil
   "Hook run in `gnus-server-mode' buffers.")
 
-(defconst gnus-server-line-format "     {%(%h:%w%)} %s\n"
+(defconst gnus-server-line-format "     {%(%h:%w%)} %s%a\n"
   "Format of server lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -47,7 +47,8 @@ The following specs are understood:
 %h backend
 %n name
 %w address
-%s status")
+%s status
+%a agent covered")
 
 (defvar gnus-server-mode-line-format "Gnus: %%b"
   "The format specification for the server mode line.")
@@ -66,7 +67,8 @@ The following specs are understood:
   `((?h gnus-tmp-how ?s)
     (?n gnus-tmp-name ?s)
     (?w gnus-tmp-where ?s)
-    (?s gnus-tmp-status ?s)))
+    (?s gnus-tmp-status ?s)
+    (?a gnus-tmp-agent ?s)))
 
 (defvar gnus-server-mode-line-format-alist
   `((?S gnus-tmp-news-server ?s)
@@ -141,7 +143,7 @@ The following specs are understood:
 
     "n" next-line
     "p" previous-line
-    
+
     "g" gnus-server-regenerate-server
 
     "\C-c\C-i" gnus-info-find-node
@@ -183,7 +185,12 @@ The following commands are available:
 				     (eq (nth 1 elem) 'ok))
 				 "(opened)")
 				(t
-				 "(closed)"))))
+				 "(closed)")))
+	 (gnus-tmp-agent (if (and gnus-agent
+				  (member method
+					  gnus-agent-covered-methods))
+			     "(agent)"
+			   "")))
     (beginning-of-line)
     (gnus-add-text-properties
      (point)
@@ -603,9 +610,9 @@ The following commands are available:
 	  (goto-char (point-min))
 	  (unless (string= gnus-ignored-newsgroups "")
 	    (delete-matching-lines gnus-ignored-newsgroups))
-	  (while (not (eobp)) 
+	  (while (not (eobp))
 	    (ignore-errors
-	      (push (cons 
+	      (push (cons
 		     (if (eq (char-after) ?\")
 			 (read cur)
 		       (let ((p (point)) (name ""))
@@ -627,16 +634,16 @@ The following commands are available:
 			   (string< (car l1) (car l2)))))
       (if gnus-server-browse-in-group-buffer
 	  (let* ((gnus-select-method orig-select-method)
-		 (gnus-group-listed-groups 
-		  (mapcar (lambda (group) 
+		 (gnus-group-listed-groups
+		  (mapcar (lambda (group)
 			    (let ((name
-				   (gnus-group-prefixed-name 
+				   (gnus-group-prefixed-name
 				    (car group) method)))
 			      (gnus-set-active name (cdr group))
 			      name))
 			  groups)))
 	    (gnus-configure-windows 'group)
-	    (funcall gnus-group-prepare-function 
+	    (funcall gnus-group-prepare-function
 		     gnus-level-killed 'ignore 1 'ingore))
 	(gnus-get-buffer-create gnus-browse-buffer)
 	(when gnus-carpal
@@ -658,13 +665,13 @@ The following commands are available:
 	     (point)
 	     (prog1 (1+ (point))
 	       (insert
-		(format "%c%7d: %s\n" 
+		(format "%c%7d: %s\n"
 			(let ((level
 			       (let ((gnus-select-method orig-select-method))
 				 (gnus-group-level
-				  (gnus-group-prefixed-name (car group) 
+				  (gnus-group-prefixed-name (car group)
 							    method)))))
-			      (cond 
+			      (cond
 			       ((<= level gnus-level-subscribed) ? )
 			       ((<= level gnus-level-unsubscribed) ?U)
 			       ((= level gnus-level-zombie) ?Z)
@@ -791,7 +798,7 @@ buffer.
 		   nil nil (if (gnus-server-equal
 				gnus-browse-current-method "native")
 			       nil
-			     (gnus-method-simplify 
+			     (gnus-method-simplify
 			      gnus-browse-current-method)))
 	     gnus-level-default-subscribed (gnus-group-level group)
 	     (and (car (nth 1 gnus-newsrc-alist))
