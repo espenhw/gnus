@@ -13329,6 +13329,10 @@ insert sub-expressions from the matched text.  For instance:
 ("list.\\1" "From:.* \\(.*\\)-list@@majordomo.com")
 @end lisp
 
+@noindent
+In that case, @code{nnmail-split-lowercase-expanded} controls whether
+the inserted text should be made lowercase.  @xref{Fancy Mail Splitting}.
+
 The second element can also be a function.  In that case, it will be
 called narrowed to the headers with the first element of the rule as the
 argument.  It should return a non-@code{nil} value if it thinks that the
@@ -14204,6 +14208,14 @@ If the string contains the element @samp{\&}, then the previously
 matched string will be substituted.  Similarly, the elements @samp{\\1}
 up to @samp{\\9} will be substituted with the text matched by the
 groupings 1 through 9.
+
+@vindex nnmail-split-lowercase-expanded
+Where @code{nnmail-split-lowercase-expanded} controls whether the
+lowercase of the matched string should be used for the substitution.
+Setting it as non-@code{nil} is useful to avoid the creation of multiple
+groups when users send to an address using different case
+(i.e. mailing-list@@domain vs Mailing-List@@Domain).  The default value
+is @code{t}.
 
 @vindex nnmail-split-fancy-match-partial-words
 @code{nnmail-split-fancy-match-partial-words} controls whether partial

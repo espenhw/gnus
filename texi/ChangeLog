@@ -1,3 +1,8 @@
+2004-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Splitting Mail): Add nnmail-split-lowercase-expanded.
+	(Fancy Mail Splitting): Ditto.
+
 2004-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Encoding Customization): Addition.
