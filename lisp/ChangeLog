@@ -1,8 +1,13 @@
+2002-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-user-date-format-alist): Typo.
+	From: Frank Schmitt <usereplyto@Frank-Schmitt.net>
+
 2002-01-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-        * nneething.el (nneething-request-article): Set
-        `nnmail-file-coding-system' to `binary' locally, in order to
-        read files without any conversion.
+	* nneething.el (nneething-request-article): Set
+	`nnmail-file-coding-system' to `binary' locally, in order to read
+	files without any conversion.
 
 2002-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

@@ -343,7 +343,8 @@
     (604800 . "%a %k:%M")                   ;;that's one week
     ((gnus-seconds-month) . "%a %d")
     ((gnus-seconds-year) . "%b %d")
-    (t . "%b %m '%y"))                      ;;this one is used when no other does match
+    (t . "%b %d '%y"))                      ;;this one is used when no
+					    ;;other does match
   "Alist of time in seconds and format specification used to display dates not older.
 The first element must be a number or a function returning a
 number. The second element is a format-specification as described in
