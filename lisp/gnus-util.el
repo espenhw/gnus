@@ -1145,6 +1145,11 @@ sure of changing the value of `foo'."
 (defun gnus-not-ignore (&rest args)
   t)
 
+(defvar gnus-directory-sep-char-regexp "/"
+  "The regexp of directory separator character.
+If you find some problem with the directory separator character, try
+\"[/\\\\\]\" for some systems.")
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

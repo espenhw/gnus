@@ -2567,7 +2567,7 @@ GROUP using BNews sys file syntax."
 	      ;; too much.
 	      (delete-char (min (1- (point-max)) klen))
 	    (goto-char (point-max))
-	    (if (search-backward (string directory-sep-char) nil t)
+	    (if (re-search-backward gnus-directory-sep-char-regexp nil t)
 		(delete-region (1+ (point)) (point-min))
 	      (gnus-message 1 "Can't find directory separator in %s"
 			    (car sfiles))))
