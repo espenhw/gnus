@@ -1,3 +1,8 @@
+2000-06-01  Florian Weimer  <fw@deneb.cygnus.argh.org>
+
+	* mm-bodies.el (mm-body-encoding): Always encoded if
+	`mm-use-ultra-safe-encoding' is set.
+
 2000-05-31 14:50:52  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (ange-ftp-name-format): Typo.
