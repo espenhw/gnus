@@ -29,7 +29,8 @@
 (require 'mail-parse)
 (require 'mailcap)
 (eval-and-compile
-  (autoload 'mm-body-7-or-8 "mm-bodies"))
+  (autoload 'mm-body-7-or-8 "mm-bodies")
+  (autoload 'mm-long-lines-p "mm-bodies"))
 
 (defcustom mm-content-transfer-encoding-defaults
   '(("text/x-patch" 8bit)
@@ -85,7 +86,7 @@ This variable should never be set directly, but bound before a call to
     (mailcap-extension-to-mime (match-string 0 file))))
 
 (defun mm-safer-encoding (encoding)
-  "Return a safer but similar encoding."
+  "Return an encoding similar to ENCODING but safer than it."
   (cond
    ((memq encoding '(7bit 8bit quoted-printable)) 'quoted-printable)
    ;; The remaining encodings are binary and base64 (and perhaps some
@@ -93,33 +94,38 @@ This variable should never be set directly, but bound before a call to
    (t 'base64)))
 
 (defun mm-encode-content-transfer-encoding (encoding &optional type)
+  "Encode the current buffer with ENCODING for MIME type TYPE.
+ENCODING can be: nil (do nothing); one of `quoted-printable', `base64';
+`7bit', `8bit' or `binary' (all do nothing); a function to do the encoding."
   (cond
    ((eq encoding 'quoted-printable)
-    (mm-with-unibyte-current-buffer-mule4
-      (quoted-printable-encode-region (point-min) (point-max) t)))
+    ;; This used to try to make a multibyte buffer unibyte.  That's
+    ;; completely wrong, since you'd get QP-encoded emacs-mule.  If
+    ;; this gets run on multibyte text it's an error that needs
+    ;; fixing, and the encoding function will signal an error.
+    ;; Likewise base64 below.
+    (quoted-printable-encode-region (point-min) (point-max) t))
    ((eq encoding 'base64)
     (when (equal type "text/plain")
       (goto-char (point-min))
       (while (search-forward "\n" nil t)
 	(replace-match "\r\n" t t)))
-    (condition-case error
-	(base64-encode-region (point-min) (point-max))
-      (error
-       (message "Error while decoding: %s" error)
-       nil)))
+    (base64-encode-region (point-min) (point-max)))
    ((memq encoding '(7bit 8bit binary))
     ;; Do nothing.
     )
    ((null encoding)
     ;; Do nothing.
     )
+   ;; Fixme: Ignoring errors here looks bogus.
    ((functionp encoding)
     (ignore-errors (funcall encoding (point-min) (point-max))))
    (t
-    (message "Unknown encoding %s; treating it as 8bit" encoding))))
+    (error "Unknown encoding %s" encoding))))
 
 (defun mm-encode-buffer (type)
-  "Encode the buffer which contains data of TYPE.
+  "Encode the buffer which contains data of MIME type TYPE.
+TYPE is a string or a list of the components.
 The encoding used is returned."
   (let* ((mime-type (if (stringp type) type (car type)))
 	 (encoding
@@ -165,6 +171,8 @@ The encoding used is returned."
 	(pop rules)))))
 
 (defun mm-qp-or-base64 ()
+  "Return the type with which to encode the buffer.
+This is either `base64' or `quoted-printable'."
   (if (equal mm-use-ultra-safe-encoding '(sign . "pgp"))
       ;; perhaps not always accurate?
       'quoted-printable
