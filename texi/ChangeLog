@@ -1,3 +1,8 @@
+2000-07-03 00:24:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Splitting Mail): Mention gnus-summary-respool-trace. 
+	(Searching for Articles): Fix.
+
 2000-06-28  Simon Josefsson  <simon@josefsson.org>
 
 	* gnus.texi (Splitting in IMAP): Update.
