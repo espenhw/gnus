@@ -1,3 +1,12 @@
+2003-01-17  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-mime-print-part): Use mm-save-part-to-file to
+	avoid encoding problems.
+
+	* mailcap.el (mailcap-ps-command): New variable.
+	(mailcap-mime-data): Add print entry where applicable.  Use
+	pdftotext on a tty.
+
 2003-01-16  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-alter-header-function): Add type and group.

@@ -1,5 +1,6 @@
 ;;; mailcap.el --- MIME media types configuration
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+;;       Free Software Foundation, Inc.
 
 ;; Author: William M. Perry <wmperry@aventail.com>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -48,12 +49,21 @@
     table)
   "A syntax table for parsing sgml attributes.")
 
+(defvar mailcap-print-command
+  (mapconcat 'identity
+	     (cons lpr-command
+		   (if (stringp lpr-switches)
+		       (list lpr-switches)
+		     lpr-switches))
+	     " ")
+  "Shell command (including switches) used to print Postscript files.")
+
 ;; Postpone using defcustom for this as it's so big and we essentially
 ;; have to have two copies of the data around then.  Perhaps just
 ;; customize the Lisp viewers and rely on the normal configuration
 ;; files for the rest?  -- fx
 (defvar mailcap-mime-data
-  '(("application"
+  `(("application"
      ("vnd.ms-excel"
       (viewer . "gnumeric %s")
       (test   . (getenv "DISPLAY"))
@@ -70,20 +80,17 @@
       (viewer . mailcap-save-binary-file)
       (non-viewer . t)
       (type . "application/octet-stream"))
-;;; XEmacs says `ns' device-type not implemented.
-;;      ("dvi"
-;;       (viewer . "open %s")
-;;       (type   . "application/dvi")
-;;       (test   . (eq (mm-device-type) 'ns)))
      ("dvi"
       (viewer . "xdvi -safer %s")
       (test   . (eq window-system 'x))
       ("needsx11")
-      (type   . "application/dvi"))
+      (type   . "application/dvi")
+      ("print" . "dvips -qRP %s"))
      ("dvi"
       (viewer . "dvitty %s")
       (test   . (not (getenv "DISPLAY")))
-      (type   . "application/dvi"))
+      (type   . "application/dvi")
+      ("print" . "dvips -qRP %s"))
      ("emacs-lisp"
       (viewer . mailcap-maybe-eval)
       (type   . "application/emacs-lisp"))
@@ -123,33 +130,41 @@
      ("pdf"
       (viewer . "gv -safer %s")
       (type . "application/pdf")
-      (test . window-system))
+      (test . window-system)
+      ("print" . ,(concat "pdf2ps %s - | " mailcap-print-command)))
      ("pdf"
       (viewer . "xpdf %s")
       (type . "application/pdf")
+      ("print" . ,(concat "pdftops %s - | " mailcap-print-command))
       (test . (eq window-system 'x)))
      ("pdf"
       (viewer . "acroread %s")
-      (type   . "application/pdf"))
-;;; XEmacs says `ns' device-type not implemented.
-;;      ("postscript"
-;;       (viewer . "open %s")
-;;       (type   . "application/postscript")
-;;       (test   . (eq (mm-device-type) 'ns)))
+      (type   . "application/pdf")
+      ("print" . ,(concat "cat %s | acroread -toPostScript | "
+			  mailcap-print-command))
+      (test . window-system))
+     ("pdf"
+      (viewer . ,(concat "pdftotext %s - | "))
+      (type   . "application/pdf")
+      ("print" . ,(concat "pdftops %s - | " mailcap-print-command))
+      ("copiousoutput"))
      ("postscript"
       (viewer . "gv -safer %s")
       (type . "application/postscript")
       (test   . window-system)
+      ("print" . ,(concat mailcap-print-command " %s"))
       ("needsx11"))
      ("postscript"
       (viewer . "ghostview -dSAFER %s")
       (type . "application/postscript")
       (test   . (eq window-system 'x))
+      ("print" . ,(concat mailcap-print-command " %s"))
       ("needsx11"))
      ("postscript"
       (viewer . "ps2ascii %s")
       (type . "application/postscript")
       (test . (not (getenv "DISPLAY")))
+      ("print" . ,(concat mailcap-print-command " %s"))
       ("copiousoutput"))
      ("sieve"
       (viewer . sieve-mode)
@@ -198,11 +213,6 @@
       ("compose" . "xwd -frame > %s")
       (test   . (eq window-system 'x))
       ("needsx11"))
-;;; XEmacs says `ns' device-type not implemented.
-;;      (".*"
-;;       (viewer . "aopen %s")
-;;       (type   . "image/*")
-;;       (test   . (eq (mm-device-type) 'ns)))
      (".*"
       (viewer . "display %s")
       (type . "image/*")

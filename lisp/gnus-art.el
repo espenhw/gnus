@@ -4025,8 +4025,7 @@ are decompressed."
 	(if printer
 	    (unwind-protect
 		(progn
-		  (with-temp-file file
-		    (insert contents))
+		  (mm-save-part-to-file handle file)
 		  (call-process shell-file-name nil
 				(generate-new-buffer " *mm*")
 				nil
