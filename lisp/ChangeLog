@@ -1,3 +1,13 @@
+2000-11-01 01:12:29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-create-mapping): Use nreverse. 
+
+2000-10-31 23:45:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnwfm.el: New file.
+
+	* nnweb.el (nnweb-replace-in-string): New function.
+
 2000-10-31 17:32:02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el: Wrap gpg.el.

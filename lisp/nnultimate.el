@@ -165,7 +165,7 @@
 	      (setq date (substring (car datel) (match-end 0))
 		    datel nil))
 	    (pop datel))
-	  (setq date (delete "" (split-string date "[- \n\t\r †††]")))
+	  (setq date (delete "" (split-string date "[- \n\t\r Å†Å†Å†]")))
 	  (if (or (member "AM" date)
 		  (member "PM" date))
 	      (setq date (format "%s %s %s %s"
@@ -334,7 +334,7 @@
       ;; the group is entered, there's 2 new articles in topic one
       ;; and 1 in topic three.  Then Gnus article number 8-9 be 5-6
       ;; in topic one and 10 will be the 2 in topic three.
-      (dolist (row (reverse forum-contents))
+      (dolist (row (nreverse forum-contents))
 	(setq row (nth 2 row))
 	(when (setq a (nnweb-parse-find 'a row))
 	  (setq subject (car (last (nnweb-text a)))
