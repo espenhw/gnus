@@ -6,6 +6,7 @@
 	(spam-necessary-extra-headers): add spam-use-bogofilter as an option
 	(spam-user-format-function-S): check spam-summary-score-preferred-header
 	(spam-extra-header-to-number): add X-Bogosity header parsing
+	(spam-user-format-function-S): format the score correctly
 
 2004-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 

@@ -1138,7 +1138,8 @@ backends)."
 
 (defun spam-user-format-function-S (headers)
   (when headers
-    (spam-summary-score headers spam-summary-score-preferred-header)))
+    (format "%3.2f"
+	    (spam-summary-score headers spam-summary-score-preferred-header))))
 
 (defun spam-article-sort-by-spam-status (h1 h2)
   "Sort articles by score."
