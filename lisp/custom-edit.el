@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.9
+;; Version: 0.94
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -16,15 +16,9 @@
 (require 'custom)
 (require 'widget-edit)
 
-(let ((keywords '(:custom-show 
-		  :custom-documentation-show 
-		  :custom-documentation-property 
-		  :custom-level
-		  :custom-status)))
-  (while keywords
-    (or (boundp (car keywords))
-	(set (car keywords) (car keywords)))
-    (setq keywords (cdr keywords))))
+(define-widget-keywords :custom-show :custom-doc :custom-magic
+  :custom-state :custom-documentation-property :custom-level :custom-form
+  :custom-apply :custom-set-default :custom-reset)
 
 ;;; Utilities.
 
@@ -40,6 +34,129 @@
       sexp
     (list 'quote sexp)))
 
+(defun custom-unimplemented (&rest ignore)
+  "Apologize for my laziness."
+  (error "Sorry, not implemented"))
+
+;;; Modification of Basic Widgets.
+;;
+;; We add extra properties to the basic widgets needed here.  This is
+;; fine, as long as we are careful to stay within out own namespace.
+;;
+;; We want simple widgets to be displayed by default, but complex
+;; widgets to be hidden.
+
+(widget-put (get 'item 'widget-type) :custom-show t)
+(widget-put (get 'editable-field 'widget-type) :custom-show t)
+(widget-put (get 'menu-choice 'widget-type) :custom-show t)
+
+;;; The `custom-magic' Widget
+
+(define-widget 'custom-magic 'item
+  "Status feedback for customization option."
+  :format "%[%v%]"
+  :action 'widget-choice-item-action
+  :value-create 'custom-magic-value-create)
+
+(defface custom-invalid-face '((((class color))
+				(:foreground "yellow" :background "red"))
+			       (t
+				(:bold t :italic t :underline t)))
+  "Face used when the customize item is invalid."
+  :group 'customize)
+
+(defface custom-rogue-face '((((class color))
+			      (:foreground "pink" :background "black"))
+			     (t
+			      (:underline t)))
+  "Face used when the customize item is not defined for customization."
+  :group 'customize)
+
+(defface custom-modified-face '((((class color)) 
+				 (:foreground "white" :background "blue"))
+				(t
+				 (:italic t :bold)))
+  "Face used when the customize item has been modified."
+  :group 'customize)
+
+(defface custom-applied-face '((((class color)) 
+				(:foreground "blue" :background "white"))
+			       (t
+				(:italic t)))
+  "Face used when the customize item has been applied."
+  :group 'customize)
+
+(defface custom-saved-face '((t (:underline t)))
+  "Face used when the customize item has been saved."
+  :group 'customize)
+
+(defcustom custom-magic-alist '((nil "#" underline)
+				(unknown "?" italic)
+				(hidden "-" default)
+				(invalid "x" custom-invalid-face)
+				(modified "*" custom-modified-face)
+				(applied "+" custom-applied-face)
+				(saved "!" custom-saved-face)
+				(rogue "@" custom-rogue-face)
+				(factory " " nil))
+  "Alist of magic representing a customize items status.
+Each entry is of the form (STATE MAGIC FACE), where 
+
+STATE is one of the following symbols:
+
+`nil'
+   For internal use, should never occur.
+`unknown'
+   For internal use, should never occur.
+`hidden'
+   This item is not being displayed. 
+`invalid'
+   This item is modified, but has an invalid form.
+`modified'
+   This item is modified, and has a valid form.
+`applied'
+   This items current value has been changed temporarily.
+`saved'
+   This item is marked for saving.
+`rogue'
+   This item has no customization information.
+`factory'
+   This item is unchanged from the factory default.
+
+MAGIC is a string used to present that state.
+
+FACE is a face used to present the state.
+
+The list should be sorted most significant first."
+  :type '(repeat (list (choice (item nil)
+			       (item unknown)
+			       (item hidden)
+			       (item invalid)
+			       (item modified)
+			       (item applied)
+			       (item saved)
+			       (item rogue)
+			       (item factory))
+		       string face))
+  :group 'customize)
+
+(defun custom-magic-value-create (widget)
+  ;; Create compact status report for WIDGET.
+  (let* ((parent (widget-get widget :parent))
+	 (state (widget-get parent :custom-state))
+	 (entry (assq state custom-magic-alist))
+	 (magic (nth 1 entry))
+	 (face (nth 2 entry)))
+    (if (eq (widget-get parent :custom-form) 'lisp)
+	(widget-insert "(" magic ")")
+      (widget-insert "[" magic "]"))
+    (widget-put widget :button-face face)))
+
+(defun custom-magic-reset (widget)
+  "Redraw the :custom-magic property of WIDGET."
+  (let ((magic (widget-get widget :custom-magic)))
+    (widget-value-set magic (widget-value magic))))
+
 ;;; The `custom-level' Widget.
 
 (define-widget 'custom-level 'item
@@ -51,173 +168,230 @@
 (defun custom-level-action (widget &optional event)
   "Toggle visibility for parent to WIDGET."
   (let* ((parent (widget-get widget :parent))
-	 (show (widget-get parent :custom-show)))
-    (widget-apply parent :validate)
-    (widget-put parent :custom-show (not show))
-    (custom-reset parent)))
+	 (state (widget-get parent :custom-state)))
+    (cond ((memq state '(invalid modified))
+	   (error "There are unapplied changes"))
+	  ((eq state 'hidden)
+	   (widget-put parent :custom-state 'unknown))
+	  (t
+	   (widget-put parent :custom-state 'hidden)))
+    (custom-redraw parent)))
 
 ;;; The `custom-help' Widget.
 
-(define-widget 'custom-help 'push
+(define-widget 'custom-help 'push-button
   "The custom documentation button."
+  :format "%[[%t]%] %d"
   :help-echo "Push me to toggle the documentation."
   :action 'custom-help-action)
 
-(defun custom-help-action (widget  &optional event)
-  "Toggle documentation visibility for parent to WIDGET."
-  (let* ((parent (widget-get widget :parent))
-	 (symbol (widget-get parent :value))
-	 (property (widget-get parent :custom-documentation-property))
-	 (text (or (widget-get parent :doc)
-		   (documentation-property symbol property)))
-	 (newline (string-match "\n." text))
-	 (old (widget-get parent :custom-documentation-show))
-	 (new (cond ((eq old t)
-		     nil)
-		    ((null old)
-		     (if newline 
-			 'first-line
-		       t))
-		    (t 
-		     (if newline
-			 t
-		       nil)))))
-    (widget-apply parent :validate)
-    (widget-put parent :custom-documentation-show new)
-    (custom-reset parent)))
+(defun custom-help-action (widget &optional event)
+  "Toggle documentation for WIDGET."
+  (let ((old (widget-get widget :doc))
+	(new (widget-get widget :custom-doc)))
+    (widget-put widget :doc new)
+    (widget-put widget :custom-doc old))
+  (widget-value-set widget (widget-value widget)))
 
 ;;; The `custom' Widget.
 
 (define-widget 'custom 'default
   "Customize a user option."
   :convert-widget 'widget-item-convert-widget
-  :format "%l%h%[%t%]: %v%x"
+  :format "%l%[%t%]: %v%m %h"
   :format-handler 'custom-format-handler
+  :notify 'custom-notify
   :custom-level 1
-  :custom-show nil
-  :custom-documentation-show 'first-line
+  :custom-state 'hidden
   :custom-documentation-property 'widget-subclass-responsibility
   :value-create 'widget-subclass-responsibility
   :value-delete 'widget-radio-value-delete
   :value-get 'widget-item-value-get
-  :validate 'widget-repeat-validate
+  :validate 'widget-editable-list-validate
   :match (lambda (widget value) (symbolp value)))
 
 (defun custom-format-handler (widget escape)
   ;; We recognize extra escape sequences.
-  (let* (child 
-	 (symbol (widget-get widget :value))
+  (let* ((symbol (widget-get widget :value))
+	 (buttons (widget-get widget :buttons))
 	 (level (widget-get widget :custom-level))
 	 (doc-property (widget-get widget :custom-documentation-property))
 	 (doc-try (or (widget-get widget :doc)
 		      (documentation-property symbol doc-property)))
 	 (doc-text (and (stringp doc-try)
 			(> (length doc-try) 1)
-			doc-try))
-	 (doc-show (widget-get widget :custom-documentation-show)))
+			doc-try)))
     (cond ((eq escape ?l)
 	   (when level 
-	     (setq child
-		   (widget-create 'custom-level
-				  :parent widget
-				  (make-string level ?*)))
+	     (push (widget-create-child-and-convert
+		    widget 'custom-level (make-string level ?*))
+		   buttons)
 	     (widget-insert " ")))
+	  ((eq escape ?m)
+	   (and (eq (preceding-char) ?\n)
+		(widget-get widget :indent)
+		(insert-char ?  (widget-get widget :indent)))
+	   (let ((magic (widget-create-child-and-convert
+			 widget 'custom-magic nil)))
+	     (widget-put widget :custom-magic magic)
+	     (push magic buttons)))
 	  ((eq escape ?h)
 	   (when doc-text
-	     (setq child (widget-create 'custom-help 
-					:parent widget
-					"?"))
-	     (widget-insert " ")))
-	  ((eq escape ?x)
-	   (and doc-text doc-show
-		(let ((start (point)))
-		  ;; The first "*" in a doc string means interactively
-		  ;; user editable.  Since we are providing a facility
-		  ;; for the user to interactively edit the variable,
-		  ;; that information is redundant.  Remove it.
-		  (cond ((eq doc-show t)
-			 (if (eq (aref doc-text  0) ?*)
-			     (widget-insert (substring doc-text 1))
-			   (widget-insert doc-text)))
-			((eq (aref doc-text 0) ?*)
-			 (string-match "\\`.\\(.*\\)" doc-text)
-			 (widget-insert (match-string 1 doc-text)))
-			(t
-			 (string-match "\\`.*" doc-text)
-			 (widget-insert (match-string 0 doc-text))))
-		  (unless (eq (preceding-char) ?\n)
-		    (widget-insert "\n"))
-		  (widget-specify-doc widget start (point)))))
+	     (and (eq (preceding-char) ?\n)
+		  (widget-get widget :indent)
+		  (insert-char ?  (widget-get widget :indent)))
+	     ;; The `*' in the beginning is redundant.
+	     (when (eq (aref doc-text  0) ?*)
+	       (setq doc-text (substring doc-text 1)))
+	     ;; Get rid of trailing newlines.
+	     (when (string-match "\n+\\'" doc-text)
+	       (setq doc-text (substring doc-text 0 (match-beginning 0))))
+	     (push (if (string-match "\n." doc-text)
+		       ;; Allow multiline doc to be hiden.
+		       (widget-create-child-and-convert
+			widget 'custom-help 
+			:doc (progn
+			       (string-match "\\`.*" doc-text)
+			       (match-string 0 doc-text))
+			:custom-doc doc-text
+			"?")
+		     ;; A single line is just inserted.
+		     (widget-create-child-and-convert
+		      widget 'item :format "%d" :doc doc-text nil))
+		   buttons)))
 	  (t 
 	   (widget-default-format-handler widget escape)))
-    (when child
-      (widget-put widget
-		  :buttons (cons child (widget-get widget :buttons))))))
+    (widget-put widget :buttons buttons)))
 
-(defun custom-unimplemented (&rest ignore)
-  "Apologize for my laziness."
-  (error "Sorry, not implemented"))
+(defun custom-notify (widget &rest args)
+  "Keep track of changes."
+  (widget-put widget :custom-state 'modified)
+  (let ((buffer-undo-list t))
+    (custom-magic-reset widget))
+  (apply 'widget-default-notify widget args))
 
-(defun custom-reset (widget)
+(defun custom-redraw (widget)
   "Redraw WIDGET with current settings."
   (widget-value-set widget (widget-value widget))
+  (custom-redraw-magic widget))
+
+(defun custom-redraw-magic (widget)
+  "Redraw WIDGET state with current settings."
+  (while widget 
+    (let ((magic (widget-get widget :custom-magic)))
+      (unless magic 
+	(debug))
+      (widget-value-set magic (widget-value magic))
+      (when (setq widget (widget-get widget :group))
+	(custom-group-state-update widget))))
   (widget-setup))
 
 ;;; The `custom-variable' Widget.
 
 (define-widget 'custom-variable 'custom
   "Customize variable."
+  :format "%l%v%m %h"
   :help-echo "Push me to set or reset this variable."
   :custom-documentation-property 'variable-documentation
-  :custom-show 'child
-  :custom-status 'edit
+  :custom-state nil
+  :custom-form 'edit
   :value-create 'custom-variable-value-create
-  :action 'custom-variable-action)
-
-(widget-put (get 'default 'widget-type) :custom-show t)
+  :action 'custom-variable-action
+  :custom-apply 'custom-variable-apply
+  :custom-set-default 'custom-variable-set-default
+  :custom-reset 'custom-redraw)
 
 (defun custom-variable-value-create (widget)
   "Here is where you edit the variables value."
-  (let* ((status (widget-get widget :custom-status))
-	 (child-show (widget-get widget :custom-show))
+  (let* ((buttons (widget-get widget :buttons))
+	 (children (widget-get widget :children))
+	 (form (widget-get widget :custom-form))
+	 (state (widget-get widget :custom-state))
 	 (symbol (widget-get widget :value))
 	 (child-type (or (get symbol 'custom-type) 'sexp))
-	 (type (if (listp child-type) child-type (list child-type)))
-	 (show (if (eq child-show 'child)
-		   (widget-get type :custom-show)
-		 child-show))
-	 (dummy (widget-put widget :custom-show show))
-	 (child (cond ((not show)
-		       (widget-create 'custom-level
-				      "[show]"))
-		      ((eq status 'lisp)
-		       (let ((value (cond ((get symbol 'saved-value)
-					   (car (get symbol 'saved-value)))
-					  ((get symbol 'factory-value)
-					   (car (get symbol 'factory-value)))
-					  ((boundp symbol)
-					   (custom-quote
-					    (symbol-value symbol)))
-					  (t
-					   (custom-quote
-					    (widget-get type :value))))))
-			 (widget-create 'sexp :value value)))
-		      (t
-		       (let ((value (if (boundp symbol)
-					(symbol-value symbol)
-				      (widget-get type :value))))
-			 (widget-create type :value value))))))
+	 (type (if (listp child-type)
+		   child-type
+		 (list child-type)))
+	 conv value)
+    ;; If the widget is new, the child determine whether it is hidden.
+    (cond (state)
+	  ((widget-get type :custom-show)
+	   (setq state 'unknown))
+	  (t
+	   (setq state 'hidden)))
+    ;; If the widget is not hidden, we will need its value.
+    (unless (eq state 'hidden)
+      (setq conv (widget-convert type)
+	    value  (if (boundp symbol)
+		       (symbol-value symbol)
+		     (widget-get conv :value))))
+    ;; If we don't know the state, see if we need to edit it in lisp form.
+    (when (eq state 'unknown)
+      (unless (widget-apply (widget-convert type) :match value)
+	(setq form 'lisp)))
+    ;; Now we can create the child widget.
+    (cond ((eq state 'hidden)
+	   ;; Make hidden value easy to show.
+	   (push (widget-create-child-and-convert
+		  widget 'custom-level
+		  :tag (symbol-name symbol)
+		  :format "%t: %[show%]")
+		 buttons))
+	  ((eq form 'lisp)
+	   ;; In lisp mode edit the saved value when possible.
+	   (let* ((value (cond ((get symbol 'saved-value)
+				(car (get symbol 'saved-value)))
+			       ((get symbol 'factory-value)
+				(car (get symbol 'factory-value)))
+			       ((boundp symbol)
+				(custom-quote (symbol-value symbol)))
+			       (t
+				(custom-quote (widget-get conv :value))))))
+	     (push (widget-create-child-and-convert widget 'sexp 
+						    :tag (symbol-name symbol)
+						    :parent widget
+						    :value value)
+		   children)))
+	  (t
+	   ;; Edit mode.
+	   (push (widget-create-child-and-convert widget type 
+						  :tag (symbol-name symbol)
+						  :value value)
+		 children)))
+    ;; Now update the state.
     (unless (eq (preceding-char) ?\n)
       (widget-insert "\n"))
-    (widget-put child :parent widget)
-    (widget-put widget :children (list child))))
+    (if (eq state 'hidden)
+	(widget-put widget :custom-state state)
+      (custom-variable-state-set widget))
+    (widget-put widget :custom-form form)	     
+    (widget-put widget :buttons buttons)
+    (widget-put widget :children children)))
+
+(defun custom-variable-state-set (widget)
+  "Set the state of WIDGET."
+  (let* ((symbol (widget-value widget))
+	 (value (symbol-value symbol)))
+    (widget-put widget
+		:custom-state (if (get symbol 'saved-value)
+				  (if (equal (custom-quote value)
+					     (car (get symbol 'saved-value)))
+				      'saved
+				    'applied)
+				(if (get symbol 'factory-value)
+				    (if (equal (custom-quote value)
+					       (car (get symbol
+							 'factory-value)))
+					'factory
+				      'applied)
+				  'rogue)))))
 
 (defvar custom-variable-menu 
   '(("Edit" . custom-variable-edit)
-    ("Edit Lisp" . custom-variable-edit-lisp)
+    ("Edit Default" . custom-variable-edit-lisp)
     ("Apply" . custom-variable-apply)
     ("Set Default" . custom-variable-set-default)
-    ("Reset" . custom-reset)
+    ("Reset" . custom-redraw)
     ("Reset to Default" . custom-variable-default)
     ("Reset to Factory Settings" . custom-variable-factory))
   "Alist of actions for the `custom-variable' widget.
@@ -237,62 +411,73 @@ Optional EVENT is the location for the menu."
 
 (defun custom-variable-edit (widget)
   "Edit value of WIDGET."
-  (custom-variable-apply widget)
-  (widget-put widget :custom-show t)
-  (widget-put widget :custom-status 'edit)
-  (custom-reset widget))
+  (widget-put widget :custom-state 'unknown)
+  (widget-put widget :custom-form 'edit)
+  (custom-redraw widget))
 
 (defun custom-variable-edit-lisp (widget)
   "Edit the lisp representation of the value of WIDGET."
-  (custom-variable-apply widget)
-  (widget-put widget :custom-show t)
-  (widget-put widget :custom-status 'lisp)
-  (custom-reset widget))
+  (widget-put widget :custom-state 'unknown)
+  (widget-put widget :custom-form 'lisp)
+  (custom-redraw widget))
 
 (defun custom-variable-apply (widget)
   "Set the current value for the variable being edited by WIDGET."
-  (let ((status (widget-get widget :custom-status))
-	(show (widget-get widget :custom-show))
+  (let ((form (widget-get widget :custom-form))
+	(state (widget-get widget :custom-state))
 	(child (car (widget-get widget :children)))
-	(symbol (widget-value widget)))
-    (unless show
-      (error "You can only apply visible options"))
-    (widget-apply child :validate)
-    (if (eq status 'lisp)
-	(set symbol (eval (widget-value child)))
-      (set symbol (widget-value child)))))
+	(symbol (widget-value widget))
+	val)
+    (cond ((eq state 'hidden)
+	   (error "Cannot apply hidden variable."))
+	  ((setq val (widget-apply child :validate))
+	   (error "Invalid %S"))
+	  ((eq form 'lisp)
+	   (set symbol (eval (widget-value child))))
+	  (t
+	   (set symbol (widget-value child))))
+    (custom-variable-state-set widget)
+    (custom-redraw-magic widget)))
 
 (defun custom-variable-set-default (widget)
   "Set the default value for the variable being edited by WIDGET."
-  (let ((status (widget-get widget :custom-status))
-	(show (widget-get widget :custom-show))
+  (let ((form (widget-get widget :custom-form))
+	(state (widget-get widget :custom-state))
 	(child (car (widget-get widget :children)))
-	(symbol (widget-value widget)))
-    (unless show
-      (error "Can't apply hidden value."))
-    (widget-apply child :validate)
-    (if (eq status 'lisp)
-	(put symbol 'saved-value (list (widget-value child)))
-      (put symbol 'saved-value (list (custom-quote (widget-value child)))))))
+	(symbol (widget-value widget))
+	val)
+    (cond ((eq state 'hidden)
+	   (error "Cannot apply hidden variable."))
+	  ((setq val (widget-apply child :validate))
+	   (error "Invalid %S"))
+	  ((eq form 'lisp)
+	   (put symbol 'saved-value (list (widget-value child))))
+	  (t
+	   (put symbol
+		'saved-value (list (custom-quote (widget-value
+						  child))))))
+    (custom-variable-state-set widget)
+    (custom-redraw-magic widget)))
 
 (defun custom-variable-default (widget)
   "Restore the default value for the variable being edited by WIDGET."
   (let ((symbol (widget-value widget)))
-    (cond ((get symbol 'saved-value)
-	   (set symbol (car (get symbol 'saved-value))))
-	  ((get symbol 'factory-value)
-	   (set symbol (car (get symbol 'factory-value))))
-	  (t
-	   (error "No default value for %s" symbol))))
-  (custom-reset widget))
+    (if (get symbol 'saved-value)
+	(set symbol (car (get symbol 'saved-value)))
+      (error "No default value for %s" symbol))
+    (widget-put widget :custom-state 'unknown)
+    (custom-redraw widget)))
 
 (defun custom-variable-factory (widget)
   "Restore the factory setting for the variable being edited by WIDGET."
   (let ((symbol (widget-value widget)))
     (if (get symbol 'factory-value)
 	(set symbol (car (get symbol 'factory-value)))
-      (error "No factory default for %S" symbol)))
-  (custom-reset widget))
+      (error "No factory default for %S" symbol))
+    (when (get symbol 'saved-value)
+      (put symbol 'saved-value nil))
+    (widget-put widget :custom-state 'unknown)
+    (custom-redraw widget)))
 
 ;;; The `custom-face-edit' Widget.
 
@@ -306,8 +491,9 @@ Optional EVENT is the location for the menu."
 
 (define-widget 'custom-face-edit 'checklist
   "Edit face attributes."
-  :format "%t:\n%v"
+  :format "%t: %v"
   :tag "Attributes"
+  :extra-offset 12
   :args (mapcar (lambda (att)
 		  (list 'group 
 			:inline t
@@ -317,54 +503,61 @@ Optional EVENT is the location for the menu."
 
 ;;; The `custom-display' Widget.
 
-(define-widget 'custom-display 'choice
+(define-widget 'custom-display 'menu-choice
   "Select a display type."
   :tag "Display"
   :value t
   :args '((const :tag "all" t)
-	  (checklist :entry-format "\n%b %v"
-		     :args ((list (const :format "Type: " type)
-				  (checklist :inline t
-					     (const :format "X "
-						    x)
-					     (const :format "TTY"
-						    tty)))
-			    (list (const :format "Class: " class)
-				  (checklist :inline t
-					     (const :format "Color "
-						    color)
-					     (const :format
-						    "Grayscale "
-						    grayscale)
-					     (const :format "Monochrome"
-						    mono)))
-			    (list (const :format "Background: " background)
-				  (checklist :inline t
-					     (const :format "Light "
-						    light)
-					     (const :format "Dark\n"
-						    dark)))))))
+	  (checklist :offset 0
+		     :extra-offset 9
+		     :args ((group (const :format "Type: " type)
+				   (checklist :inline t
+					      :offset 0
+					      (const :format "X "
+						     x)
+					      (const :format "TTY%n"
+						     tty)))
+			    (group (const :format "Class: " class)
+				   (checklist :inline t
+					      :offset 0
+					      (const :format "Color "
+						     color)
+					      (const :format
+						     "Grayscale "
+						     grayscale)
+					      (const :format "Monochrome%n"
+						     mono)))
+			    (group  (const :format "Background: " background)
+				    (checklist :inline t
+					       :offset 0
+					       (const :format "Light "
+						      light)
+					       (const :format "Dark\n"
+						      dark)))))))
 
 ;;; The `custom-face' Widget.
 
 (define-widget 'custom-face 'custom
   "Customize face."
-  :format "%l%h%[%t%]: %s%x%v"
+  :format "%l%[%t%]: %s%m %h%v"
   :format-handler 'custom-face-format-handler
   :help-echo "Push me to set or reset this face."
   :custom-documentation-property 'face-documentation
   :value-create 'custom-face-value-create
-  :action 'custom-face-action)
+  :action 'custom-face-action
+  :custom-apply 'custom-face-apply
+  :custom-set-default 'custom-face-set-default
+  :custom-reset 'custom-redraw)
 
 (defun custom-face-format-handler (widget escape)
   ;; We recognize extra escape sequences.
   (let* (child 
 	 (symbol (widget-get widget :value)))
     (cond ((eq escape ?s)
-	   (setq child (widget-create 'choice-item
-				      :parent widget
-				      :format "(%[sample%])\n"
-				      :button-face symbol)))
+	   (setq child (widget-create-child-and-convert 
+			widget 'custom-level
+			:format "(%[sample%])\n"
+			:button-face symbol)))
 	  (t 
 	   (custom-format-handler widget escape)))
     (when child
@@ -373,40 +566,55 @@ Optional EVENT is the location for the menu."
 
 (defun custom-face-value-create (widget)
   ;; Create a list of the display specifications.
-  (when (widget-get widget :custom-show)
+  (unless (eq (preceding-char) ?\n)
+    (insert "\n"))
+  (when (not (eq (widget-get widget :custom-state) 'hidden))
     (let* ((symbol (widget-value widget))
-	   (edit (widget-create 'repeat 
-				:entry-format "%i %d %v"
-				:parent widget
-				:value (or (get symbol 'saved-face)
-					   (get symbol 'factory-face))
-				'(list custom-display custom-face-edit))))
+	   (edit (widget-create-child-and-convert
+		  widget 'editable-list
+		  :entry-format "%i %d %v"
+		  :value (or (get symbol 'saved-face)
+			     (get symbol 'factory-face))
+		  '(group :format "%v"
+			  custom-display custom-face-edit))))
+      (custom-face-state-set widget)
       (widget-put widget :children (list edit)))))
 
 (defvar custom-face-menu 
   '(("Apply" . custom-face-apply)
     ("Set Default" . custom-face-set-default)
-    ("Default" . custom-face-default)
-    ("Factory" . custom-face-factory))
+    ("Reset to Default" . custom-face-default)
+    ("Reset to Factory Setting" . custom-face-factory))
   "Alist of actions for the `custom-face' widget.
 The key is a string containing the name of the action, the value is a
 lisp function taking the widget as an element which will be called
 when the action is chosen.")
 
+(defun custom-face-state-set (widget)
+  "Set the state of WIDGET."
+  (let ((symbol (widget-value widget)))
+    (widget-put widget :custom-state (cond ((get symbol 'saved-face)
+					    'saved)
+					   ((get symbol 'factory-face)
+					    'factory)
+					   (t 
+					    'rogue)))))
+
 (defun custom-face-action (widget &optional event)
   "Show the menu for `custom-face' WIDGET.
 Optional EVENT is the location for the menu."
+  (when (eq (widget-get widget :custom-state) 'hidden)
+    (error "You cannot edit a hidden face"))
   (let* ((completion-ignore-case t)
-	 (answer (widget-choose (symbol-name (widget-get widget :value))
-				custom-face-menu
-			       event)))
+	 (symbol (widget-get widget :value))
+	 (answer (widget-choose (symbol-name symbol) custom-face-menu event)))
     (if answer
-	(funcall answer widget))))
+	(funcall answer widget))
+    (custom-face-state-set widget)
+    (custom-redraw-magic widget)))
 
 (defun custom-face-apply (widget)
   "Make the face attributes in WIDGET take effect."
-  (unless (widget-get widget :custom-show)
-    (error "You cannot apply hidden face"))
   (let* ((symbol (widget-value widget))
 	 (child (car (widget-get widget :children)))
 	 (value (widget-value child)))
@@ -414,8 +622,6 @@ Optional EVENT is the location for the menu."
 
 (defun custom-face-set-default (widget)
   "Make the face attributes in WIDGET default."
-  (unless (widget-get widget :custom-show)
-    (error "You cannot set default for hidden face"))
   (let* ((symbol (widget-value widget))
 	 (child (car (widget-get widget :children)))
 	 (value (widget-value child)))
@@ -423,46 +629,45 @@ Optional EVENT is the location for the menu."
 
 (defun custom-face-default (widget)
   "Restore WIDGET to the face's default attributes."
-  (unless (widget-get widget :custom-show)
-    (error "You cannot reset to default for hidden face"))
   (let* ((symbol (widget-value widget))
 	 (child (car (widget-get widget :children))))
-    (widget-value-set child (or (get symbol 'saved-face)
-				 (get symbol 'factory-face)))
-    (widget-setup)))
+    (unless (get symbol 'saved-face)
+      (error "No saved value for this face")
+    (widget-value-set child (get symbol 'saved-face)))))
 
 (defun custom-face-factory (widget)
   "Restore WIDGET to the face's factory settings."
-  (unless (widget-get widget :custom-show)
-    (error "You cannot reset to factory setting for hidden face"))
   (let* ((symbol (widget-value widget))
 	 (child (car (widget-get widget :children))))
-    (widget-value-set child (or (get symbol 'factory-face)
-				 (get symbol 'saved-face)))
-    (widget-setup)))
+    (unless (get symbol 'factory-face)
+      (error "No factory default for this face"))
+    (when (get symbol 'saved-face)
+      (put symbol 'saved-face nil))
+    (widget-value-set child (get symbol 'factory-face))))
 
 ;;; The `face' Widget.
 
 (define-widget 'face 'default
   "Select and customize a face."
   :convert-widget 'widget-item-convert-widget
-  :custom-show nil
-  :format "%[%t%]\n%v"
+  :format "%[%t%]%v"
+  :value 'default
   :value-create 'widget-face-value-create
   :value-delete 'widget-radio-value-delete
   :value-get 'widget-item-value-get
-  :validate 'widget-repeat-validate
+  :validate 'widget-editable-list-validate
   :action 'widget-face-action
   :match '(lambda (widget value) (symbolp value)))
 
 (defun widget-face-value-create (widget)
   ;; Create a `custom-face' child.
   (let* ((symbol (widget-value widget))
-	 (child (widget-create 'custom-face
-			       :custom-level nil
-			       :custom-show t
-			       :tag "Face"
-			       :value symbol)))
+	 (child (widget-create-child-and-convert
+		 widget 'custom-face
+		 :custom-level nil
+		 :tag ""
+		 :value symbol)))
+    (custom-magic-reset child)
     (widget-put widget :children (list child))))
 
 (defvar face-history nil
@@ -484,37 +689,40 @@ Optional EVENT is the location for the menu."
 
 (define-widget 'custom-group 'custom
   "Customize group."
-  :format "%l%h%[%t%]:\n%x%v"
+  :format "%l%[%t%]:\n%m %h%v"
   :custom-documentation-property 'group-documentation
   :help-echo "Push me to set or reset all members of this group."
   :value-create 'custom-group-value-create
-  :action 'custom-group-action)
+  :action 'custom-group-action
+  :custom-apply 'custom-group-apply
+  :custom-set-default 'custom-group-set-default
+  :custom-reset 'custom-group-reset)
 
 (defun custom-group-value-create (widget)
-  (let* ((show (widget-get widget :custom-show))
+  (let* ((state (widget-get widget :custom-state))
 	 (level (widget-get widget :custom-level))
 	 (symbol (widget-value widget))
 	 (members (get symbol 'custom-group)))
-    (when show
-      (widget-put widget
-		  :children (mapcar (lambda (entry)
-				      (widget-insert "\n")
-				      (prog1
-					  (widget-create (nth 1 entry)
-							 :parent widget
-							 :custom-level 
-							 (1+ level)
-							 :value (nth 0 entry))
-					(unless (eq (preceding-char) ?\n)
-					  (widget-insert "\n"))))
-				    members)))))
+    (unless (eq state 'hidden)
+      (let* ((children (mapcar (lambda (entry)
+				 (widget-insert "\n")
+				 (prog1
+				     (widget-create-child-and-convert
+				      widget (nth 1 entry)
+				      :group widget
+				      :custom-level (1+ level)
+				      :value (nth 0 entry))
+				   (unless (eq (preceding-char) ?\n)
+				     (widget-insert "\n"))))
+			       members)))
+	(mapcar 'custom-magic-reset children)
+	(widget-put widget :children children)
+	(custom-group-state-update widget)))))
 
 (defvar custom-group-menu 
-  '(("Apply" . custom-unimplemented)
-    ("Set Default" . custom-unimplemented)
-    ("Reset" . custom-reset)
-    ("Reset to Default" . custom-unimplemented)
-    ("Reset to Factory Settings" . custom-unimplemented))
+  '(("Apply" . custom-group-apply)
+    ("Set Default" . custom-group-set-default)
+    ("Reset" . custom-group-reset))
   "Alist of actions for the `custom-group' widget.
 The key is a string containing the name of the action, the value is a
 lisp function taking the widget as an element which will be called
@@ -530,12 +738,57 @@ Optional EVENT is the location for the menu."
     (if answer
 	(funcall answer widget))))
 
+(defun custom-group-apply (widget)
+  "Apply changes in all modified group members."
+  (let ((children (widget-get widget :children)))
+    (mapcar (lambda (child)
+	      (when (eq (widget-get child :custom-state) 'modified)
+		(widget-apply child :custom-apply)))
+	    children )))
+
+(defun custom-group-set-default (widget)
+  "Set default in all modified group members."
+  (let ((children (widget-get widget :children)))
+    (mapcar (lambda (child)
+	      (when (eq (widget-get child :custom-state) 'modified)
+		(widget-apply child :custom-set-default)))
+	    children )))
+
+(defun custom-group-reset (widget)
+  "Reset all modified group members."
+  (let ((children (widget-get widget :children)))
+    (mapcar (lambda (child)
+	      (when (eq (widget-get child :custom-state) 'modified)
+		(widget-apply child :custom-reset)))
+	    children )))
+
+(defun custom-group-state-update (widget)
+  "Update magic."
+  (unless (eq (widget-get widget :custom-state) 'hidden)
+    (let* ((children (widget-get widget :children))
+	   (states (mapcar (lambda (child)
+			     (widget-get child :custom-state))
+			   children))
+	   (magics custom-magic-alist)
+	   (found 'factory))
+      (while magics
+	(let ((magic (car (car magics))))
+	  (if (and (not (eq magic 'hidden))
+		   (memq magic states))
+	      (setq found magic
+		    magics nil)
+	    (setq magics (cdr magics)))))
+      (widget-put widget :custom-state found)))
+  (custom-magic-reset widget))
+
 ;;; The `custom-save' Command.
 
 (defcustom custom-file "~/.emacs"
+  "File used for storing customization information.
+If you change this from the default \"~/.emacs\" you need to
+explicitly load that file for the settings to take effect."
   :type 'file
-  :group 'customize
-  "File used for storing customization information.")
+  :group 'customize)
 
 (defun custom-save-delete (symbol)
   "Delete the call to SYMBOL form `custom-file'.
@@ -614,17 +867,66 @@ Leave point at the location of the call, or after the last expression."
   (setq custom-mode-map (make-sparse-keymap))
   (set-keymap-parent custom-mode-map widget-keymap))
 
+(easy-menu-define custom-mode-menu 
+    custom-mode-map
+  "Menu used in customization buffers."
+    '("Custom"
+      ["Apply" custom-apply t]
+      ["Set Default" custom-set-default t]
+      ["Reset" custom-reset t]
+      ["Save" custom-save t]))
+
 (defun custom-mode ()
   "Major mode for editing customization buffers.
 
 Read the non-existing manual for information about how to use it.
 
-\\{custom-mode-map}"
+\\[widget-forward]		Move to next button or editable field.
+\\[widget-backward]		Move to previous button or editable field.
+\\[widget-button-click]		Activate button under the mouse pointer.
+\\[widget-button-press]		Activate button under point.
+\\[custom-apply]		Apply all modifications.
+\\[custom-set-default]		Make all modifications default.
+\\[custom-reset]		Undo all modifications.
+\\[custom-save]			Save defaults for future emacs sessions.
+
+Entry to this mode calls the value of `custom-mode-hook'
+if that value is non-nil."
   (kill-all-local-variables)
   (setq major-mode 'custom-mode
 	mode-name "Custom")
   (use-local-map custom-mode-map)
-  (make-local-variable 'custom-options))
+  (make-local-variable 'custom-options)
+  (run-hooks 'custom-mode-hook))
+
+;;; Custom Mode Commands.
+
+(defun custom-apply ()
+  "Apply changes in all modified options."
+  (interactive)
+  (let ((children custom-options))
+    (mapcar (lambda (child)
+	      (when (eq (widget-get child :custom-state) 'modified)
+		(widget-apply child :custom-apply)))
+	    children)))
+
+(defun custom-set-default ()
+  "Set default in all modified group members."
+  (interactive)
+  (let ((children custom-options))
+    (mapcar (lambda (child)
+	      (when (eq (widget-get child :custom-state) 'modified)
+		(widget-apply child :custom-set-default)))
+	    children)))
+
+(defun custom-reset ()
+  "Reset all modified group members."
+  (interactive)
+  (let ((children custom-options))
+    (mapcar (lambda (child)
+	      (when (eq (widget-get child :custom-state) 'modified)
+		(widget-apply child :custom-reset)))
+	    children)))
 
 ;;; The Customize Commands
 
@@ -669,9 +971,11 @@ Read the non-existing manual for information about how to use it.
   (custom-buffer-create (list (list symbol 'custom-face))))
 
 ;;;###autoload
-(defun customize-apropos (regexp)
-  "Customize all user options matching REGEXP"
-  (interactive "sCustomize regexp: ")
+(defun customize-apropos (regexp &optional all)
+  "Customize all user options matching REGEXP.
+If ALL (e.g., started with a prefix key), include options which are not
+user-settable."
+  (interactive "sCustomize regexp: \nP")
   (let ((found nil))
     (mapatoms (lambda (symbol)
 		(when (string-match regexp (symbol-name symbol))
@@ -682,7 +986,9 @@ Read the non-existing manual for information about how to use it.
 		  (when (and (boundp symbol)
 			     (or (get symbol 'default-value)
 				 (get symbol 'factory-value)
-				 (get symbol 'variable-documentation)))
+				 (if all
+				     (get symbol 'variable-documentation)
+				   (user-variable-p symbol))))
 		    (setq found
 			  (cons (list symbol 'custom-variable) found))))))
     (if found 
@@ -703,16 +1009,37 @@ Press `C-h m' for to get help.
 ")
   (setq custom-options 
 	(mapcar (lambda (entry)
-		  (widget-create (nth 1 entry)
-				 :value (nth 0 entry))
-		  (unless (eq (preceding-char) ?\n)
-		    (widget-insert "\n"))
-		  (widget-insert "\n"))
+		  (prog1 
+		      (widget-create (nth 1 entry)
+				     :value (nth 0 entry))
+		    (unless (eq (preceding-char) ?\n)
+		      (widget-insert "\n"))
+		    (widget-insert "\n")))
 		options))
-  (widget-create 'push 
+  (widget-create 'push-button
+		 :tag "Apply"
+		 :help-echo "Push me to apply all modifications,"
+		 :action (lambda (widget &optional event)
+			   (custom-apply)))
+  (widget-insert " ")
+  (widget-create 'push-button
+		 :tag "Set Default"
+		 :help-echo "Push me to make the modifications default."
+		 :action (lambda (widget &optional event)
+			   (custom-set-default)))
+  (widget-insert " ")
+  (widget-create 'push-button
+		 :tag "Reset"
+		 :help-echo "Push me to undo all modifications.."
+		 :action (lambda (widget &optional event)
+			   (custom-reset)))
+  (widget-insert " ")
+  (widget-create 'push-button
 		 :tag "Save"
 		 :help-echo "Push me to store the new defaults permanently."
-		 :action (lambda (widget &optional event) (custom-save)))
+		 :action (lambda (widget &optional event)
+			   (custom-save)))
+  (widget-insert "\n")
   (widget-setup))
 
 ;;; The End.

@@ -66,19 +66,19 @@ Gnus provides the following functions:
 * gnus-summary-save-in-file (article format).
 * gnus-summary-save-in-vm (use VM's folder format).")
 
-(defvar gnus-rmail-save-name (function gnus-plain-save-name)
+(defvar gnus-rmail-save-name 'gnus-plain-save-name
   "*A function generating a file name to save articles in Rmail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE.")
 
-(defvar gnus-mail-save-name (function gnus-plain-save-name)
+(defvar gnus-mail-save-name 'gnus-plain-save-name
   "*A function generating a file name to save articles in Unix mail format.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FILE.")
 
-(defvar gnus-folder-save-name (function gnus-folder-save-name)
+(defvar gnus-folder-save-name 'gnus-folder-save-name
   "*A function generating a file name to save articles in MH folder.
 The function is called with NEWSGROUP, HEADERS, and optional LAST-FOLDER.")
 
-(defvar gnus-file-save-name (function gnus-numeric-save-name)
+(defvar gnus-file-save-name 'gnus-numeric-save-name
   "*A function generating a file name to save articles in article format.
 The function is called with NEWSGROUP, HEADERS, and optional
 LAST-FILE.")

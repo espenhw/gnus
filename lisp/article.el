@@ -28,64 +28,97 @@
 (require 'nnheader)
 (require 'gnus-util)
 (require 'message)
+(require 'custom)
 
-(defvar gnus-ignored-headers
-   "^Path:\\|^Posting-Version:\\|^Article-I.D.:\\|^Expires:\\|^Date-Received:\\|^References:\\|^Control:\\|^Xref:\\|^Lines:\\|^Posted:\\|^Relay-Version:\\|^Message-ID:\\|^Nf-ID:\\|^Nf-From:\\|^Approved:\\|^Sender:\\|^Received:\\|^Mail-from:"
-  "*All headers that match this regexp will be hidden.
+(defgroup article nil
+  "Article display."
+  :group 'gnus)
+
+(defcustom gnus-ignored-headers
+  '("^Path:" "^Posting-Version:" "^Article-I.D.:" "^Expires:"
+    "^Date-Received:" "^References:" "^Control:" "^Xref:" "^Lines:"
+    "^Posted:" "^Relay-Version:" "^Message-ID:" "^Nf-ID:" "^Nf-From:"
+    "^Approved:" "^Sender:" "^Received:" "^Mail-from:") 
+  "All headers that match this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
-If `article-visible-headers' is non-nil, this variable will be ignored.")
+If `article-visible-headers' is non-nil, this variable will be ignored."
+  :type '(repeat string)		;Leave monster regexp to lisp.
+  :group 'article)
 
-(defvar gnus-visible-headers "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-"
-  "*All headers that do not match this regexp will be hidden.
+(defcustom gnus-visible-headers 
+  '("^From:" "^Newsgroups:" "^Subject:" "^Date:" "^Followup-To:"
+    "^Reply-To:" "^Organization:" "^Summary:" "^Keywords:" "^To:"
+    "^Cc:" "^Posted-To:" "^Mail-Copies-To:" "^Apparently-To:"
+    "^Gnus-Warning:" "^Resent-")
+  "All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
-If this variable is non-nil, `article-ignored-headers' will be ignored.")
+If this variable is non-nil, `article-ignored-headers' will be ignored."
+  :type '(repeat string)		;Leave monster regexp to lisp.
+  :group 'article)
 
-(defvar gnus-sorted-header-list
+(defcustom gnus-sorted-header-list
   '("^From:" "^Subject:" "^Summary:" "^Keywords:" "^Newsgroups:" "^To:"
     "^Cc:" "^Date:" "^Organization:")
-  "*This variable is a list of regular expressions.
+  "This variable is a list of regular expressions.
 If it is non-nil, headers that match the regular expressions will
 be placed first in the article buffer in the sequence specified by
-this list.")
+this list."
+  :type '(repeat string)
+  :group 'article)
 
-(defvar gnus-boring-article-headers
-  '(empty followup-to reply-to)
-  "*Headers that are only to be displayed if they have interesting data.
+(defcustom gnus-boring-article-headers '(empty followup-to reply-to)
+  "Headers that are only to be displayed if they have interesting data.
 Possible values in this list are `empty', `newsgroups', `followup-to',
-`reply-to', and `date'.")
+`reply-to', and `date'."
+  :type '(set (item :tag "Headers with no content." empty)
+	      (item :tag "Newsgroups with only one group." newsgroups)
+	      (item :tag "Followup-to identical to newsgroups." followup-to)
+	      (item :tag "Reply-to identical to from." reply-to)
+	      (item :tag "Date less than four days old." date))
+  :group 'article)
 
-(defvar gnus-signature-separator '("^-- $" "^-- *$")
+(defcustom gnus-signature-separator '("^-- $" "^-- *$")
   "Regexp matching signature separator.
 This can also be a list of regexps.  In that case, it will be checked
 from head to tail looking for a separator.  Searches will be done from
-the end of the buffer.")
+the end of the buffer."
+  :type '(repeat string)
+  :group 'article)
 
-(defvar gnus-signature-limit nil
-  "Provide a limit to what is considered a signature.
+(defcustom gnus-signature-limit nil
+   "Provide a limit to what is considered a signature.
 If it is a number, no signature may not be longer (in characters) than
 that number.  If it is a floating point number, no signature may be
 longer (in lines) than that number.  If it is a function, the function
 will be called without any parameters, and if it returns nil, there is
 no signature in the buffer.  If it is a string, it will be used as a
-regexp.  If it matches, the text in question is not a signature.")
+regexp.  If it matches, the text in question is not a signature."
+  :type '(choice integer number function string)
+  :group 'article)
 
-(defvar gnus-hidden-properties '(invisible t intangible t)
-  "Property list to use for hiding text.")
+(defcustom gnus-hidden-properties '(invisible t intangible t)
+  "Property list to use for hiding text."
+  :type 'sexp 
+  :group 'article)
 
-(defvar gnus-article-x-face-command
+(defcustom gnus-article-x-face-command
   "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
   "String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
-asynchronously.	 The compressed face will be piped to this command.")
+asynchronously.	 The compressed face will be piped to this command."
+  :type 'string				;Leave function case to Lisp.
+  :group 'article)
 
-(defvar gnus-article-x-face-too-ugly nil
-  "Regexp matching posters whose face shouldn't be shown automatically.")
+(defcustom gnus-article-x-face-too-ugly nil
+  "Regexp matching posters whose face shouldn't be shown automatically."
+  :type 'regexp
+  :group 'article)
 
-(defvar gnus-emphasis-alist
-  '(("_\\(\\w+\\)_" 0 1 'underline)
-    ("\\W\\(/\\(\\w+\\)/\\)\\W" 1 2 'italic)
-    ("\\(_\\*\\|\\*_\\)\\(\\w+\\)\\(_\\*\\|\\*_\\)" 0 2 'bold-underline)
-    ("\\*\\(\\w+\\)\\*" 0 1 'bold))
+(defcustom gnus-emphasis-alist
+  '(("_\\(\\w+\\)_" 0 1 underline)
+    ("\\W\\(/\\(\\w+\\)/\\)\\W" 1 2 italic)
+    ("\\(_\\*\\|\\*_\\)\\(\\w+\\)\\(_\\*\\|\\*_\\)" 0 2 bold-underline)
+    ("\\*\\(\\w+\\)\\*" 0 1 bold))
   "Alist that says how to fontify certain phrases.
 Each item looks like this:
 
@@ -95,7 +128,13 @@ The first element is a regular expression to be matched.  The second
 is a number that says what regular expression grouping used to find
 the entire emphasized word.  The third is a number that says what
 regexp grouping should be displayed and highlighted.  The fourth
-is the face used for highlighting.")
+is the face used for highlighting."
+  :type '(repeat (list :value ("" 0 0 default)
+		       regexp
+		       (integer :tag "Match group")
+		       (integer :tag "Emphasize group")
+		       face))
+  :group 'article)
 
 (eval-and-compile
   (autoload 'hexl-hex-string-to-integer "hexl")
@@ -576,8 +615,8 @@ always hide."
 	(replace-match "" nil t))
       ;; Then replace multiple empty lines with a single empty line.
       (goto-char (point-min))
-      (while (re-search-forward "\n\n+" nil t)
-	(replace-match "\n" nil t)))))
+      (while (re-search-forward "\n\n\n+" nil t)
+	(replace-match "\n\n" t t)))))
 
 (defun article-strip-blank-lines ()
   "Strip leading, trailing and multiple blank lines."
@@ -688,7 +727,7 @@ If HIDE, hide the text instead."
 	(setq beg (point)))
       t)))
 
-(defvar article-time-units
+(defconst article-time-units
   `((year . ,(* 365.25 24 60 60))
     (week . ,(* 7 24 60 60))
     (day . ,(* 24 60 60))

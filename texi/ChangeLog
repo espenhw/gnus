@@ -1,3 +1,9 @@
+Sat Sep 21 08:11:43 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (New Groups): Split into three nodes.
+	(Group Parameters): Shortened.
+	(Browse Foreign Server): Corrected.
+
 Thu Sep 19 18:45:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Mail and Procmail): Addition.

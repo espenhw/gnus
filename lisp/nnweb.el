@@ -553,8 +553,7 @@
 	   ("r" . "")
 	   ("d0" . "")
 	   ("d1" . "")))))
-    (setq buffer-file-name nil))
-  )t
+    (setq buffer-file-name nil)))
 
 (provide 'nnweb)
 

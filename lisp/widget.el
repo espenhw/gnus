@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, extensions, faces, hypermedia
-;; Version: 0.9
+;; Version: 0.94
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -18,22 +18,25 @@
 
 (eval-when-compile (require 'cl))
 
-(let ((keywords 
-       '(:create :convert-widget :format :value-create :tag :doc :from :to
-		 :args :value :value-from :value-to :action :value-set
-		 :value-delete :match :parent :delete :menu-tag-get
-		 :value-get :choice :void :menu-tag :on :off :on-type 
-		 :off-type :notify :entry-format :button :children
-		 :buttons :insert-before :delete-at :format-handler
-		 :widget :value-pos :value-to-internal :indent :size
-		 :value-to-external :validate :error :directory :must-match
-		 :type-error :value-inline :inline :match-inline
-		 :greedy :button-face-get :button-face :value-face :keymap
-		 :entry-from :entry-to :help-echo)))
-  (while keywords
-    (or (boundp (car keywords))
-	(set (car keywords) (car keywords)))
-    (setq keywords (cdr keywords))))
+(defmacro define-widget-keywords (&rest keys)
+  `(eval-and-compile
+     (let ((keywords (quote ,keys)))
+       (while keywords
+	 (or (boundp (car keywords))
+	     (set (car keywords) (car keywords)))
+	 (setq keywords (cdr keywords))))))
+
+(define-widget-keywords
+  :create :convert-widget :format :value-create :offset :extra-offset
+  :tag :doc :from :to :args :value :value-from :value-to :action
+  :value-set :value-delete :match :parent :delete :menu-tag-get
+  :value-get :choice :void :menu-tag :on :off :on-type :off-type
+  :notify :entry-format :button :children :buttons :insert-before
+  :delete-at :format-handler :widget :value-pos :value-to-internal
+  :indent :size :value-to-external :validate :error :directory
+  :must-match :type-error :value-inline :inline :match-inline :greedy
+  :button-face-get :button-face :value-face :keymap :entry-from
+  :entry-to :help-echo) 
 
 ;; These autoloads should be deleted when the file is added to Emacs.
 (autoload 'widget-create "widget-edit")

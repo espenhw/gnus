@@ -31,32 +31,32 @@
 (require 'custom)
 
 (defgroup gnus nil
-  :group 'emacs
-  "The coffee-brewing, all singing, all dancing, kitchen sink newsreader.")
+  "The coffee-brewing, all singing, all dancing, kitchen sink newsreader."
+  :group 'emacs)
 
 (defgroup gnus-start nil
-  :group 'gnus
-  "Starting your favorite newsreader.")
+  "Starting your favorite newsreader."
+  :group 'gnus)
 
 (defgroup gnus-score nil
-  :group 'gnus 
-  "Score and kill file handling.")
+  "Score and kill file handling."
+  :group 'gnus )
 
-(defconst gnus-version-number "0.39"
+(defconst gnus-version-number "0.40"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
 (defcustom gnus-inhibit-startup-message nil
+  "*If non-nil, the startup message will not be displayed."
   :group 'gnus-start
-  :type 'toggle
-  "*If non-nil, the startup message will not be displayed.")
+  :type 'toggle)
 
 (defcustom gnus-play-startup-jingle nil
+  "If non-nil, play the Gnus jingle at startup."
   :group 'gnus-start
-  :type 'toggle
-  "If non-nil, play the Gnus jingle at startup.")
+  :type 'toggle)
 
 ;;; Kludges to help the transition from the old `custom.el'.
 
@@ -775,9 +775,9 @@ Returns the number of articles marked as read."
 	(kill-buffer (current-buffer))))))
 
 (defcustom gnus-kill-file-name "KILL"
+  "Suffix of the kill files."
   :group 'gnus-score
-  :type 'string
-  "Suffix of the kill files.")
+  :type 'string)
 
 (defun gnus-newsgroup-kill-file (newsgroup)
   "Return the name of a kill file name for NEWSGROUP.

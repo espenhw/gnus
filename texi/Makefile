@@ -53,7 +53,17 @@ latexps:
 	egrep -v "end{document}" gnus.tmplatexi1 > gnus.tmplatexi
 	cat postamble.tex >> gnus.tmplatexi
 	$(LATEX) gnus.tmplatexi 
+	$(LATEX) gnus.tmplatexi 
 	$(DVIPS) -f gnus.dvi > gnus.ps
+
+pss:	
+	make latex
+	make latexps
+
+psout:
+	make latex
+	make latexboth
+	make out
 
 latexboth: 
 	rm -f gnus-manual-a4.ps.gz gnus-manual-standard.ps.gz 
@@ -66,5 +76,7 @@ latexboth:
 	gzip gnus-manual-standard.ps 
 
 out:
+	cp gnus-manual-standard.ps.gz gnus-manual-a4.ps.gz \
+	/local/ftp/pub/emacs/gnus/manual
 	mv gnus-manual-standard.ps.gz gnus-manual-a4.ps.gz \
 	/hom/larsi/www_docs/gnus/manual

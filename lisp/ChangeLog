@@ -1,10 +1,28 @@
-Thu Sep 19 03:05:01 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+Sun Sep 22 11:48:02 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
 
-	* gnus.el: Red Gnus v0.37 is released.
+	* custom.el (defcustom): Eval and compile.
+	* widget.el (define-widget-keywords): Ditto.
+
+Sat Sep 21 09:29:54 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* article.el (article-strip-multiple-blank-lines): Would strip all
+	blank lines.
+
+Fri Sep 20 06:52:07 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.39 is released.
 
 Thu Sep 19 18:57:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* message.el (message-ignored-cited-headers): Doc fix.
+
+Thu Sep 19 03:05:01 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.38 is released.
+
+Thu Sep 19 03:05:01 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.37 is released.
 
 Wed Sep 18 10:36:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 

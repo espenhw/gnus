@@ -30,14 +30,14 @@
 (require 'nnheader)
 
 (defcustom gnus-directory (or (getenv "SAVEDIR") "~/News/")
-  :group 'gnus
-  :type 'directory
-  "*Directory variable from which all other Gnus file variables are derived.")
+  "*Directory variable from which all other Gnus file variables are derived."
+  :group 'gnus-start
+  :type 'directory)
 
 (defcustom gnus-default-directory nil
-  :group 'gnus
-  :type 'directory
-  "*Default directory for all Gnus buffers.")
+  "*Default directory for all Gnus buffers."
+  :group 'gnus-start
+  :type 'directory)
 
 ;; Site dependent variables.  These variables should be defined in
 ;; paths.el.
@@ -91,12 +91,6 @@ used to 899, you would say something along these lines:
 	   (equal gnus-nntp-service "nntp"))
        nil
      (list gnus-nntp-service)))
-  :group 'gnus
-  :type '(list
-	  (choice
-	   (item :tag "NNTP server" nntp)
-	   (item :tag "Local spool" nnspool))
-	  (field :tag "The name of server"))
   "*Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address.

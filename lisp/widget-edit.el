@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 0.9
+;; Version: 0.94
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -16,6 +16,7 @@
 (require 'widget)
 (require 'custom)
 (require 'cl)
+(autoload 'pp-to-string "pp")
 
 ;;; Compatibility.
 
@@ -31,37 +32,39 @@ into the buffer visible in the event's window."
 ;;; Customization.
 
 (defgroup widgets nil
-  :group 'emacs
-  "Customization support for the Widget Library.")
+  "Customization support for the Widget Library."
+  :group 'emacs)
 
-(defface widget-button-face 
-  '((t (:bold t)))
-  :group 'widgets
-  "Face used for widget buttons.")
+(defface widget-documentation-face '((t ()))
+  "Face used for documentation text."
+  :group 'widgets)
+
+(defface widget-button-face '((t (:bold t)))
+  "Face used for widget buttons."
+  :group 'widgets)
 
 (defcustom widget-mouse-face 'highlight
+  "Face used for widget buttons when the mouse is above them."
   :type 'face
-  :group 'widgets
-  "Face used for widget buttons when the mouse is above them.")
+  :group 'widgets)
 
-(defface widget-field-face 
-  '((((type x)
-      (class grayscale color)
-      (background light))
-     (:background "light gray"))
-    (((type x)
-      (class grayscale color)
-      (background dark))
-     (:background "dark gray"))
-    (t 
-     (:italic t)))
-  :group 'widgets
-  "Face used for editable fields.")
+(defface widget-field-face '((((type x)
+			       (class grayscale color)
+			       (background light))
+			      (:background "light gray"))
+			     (((type x)
+			       (class grayscale color)
+			       (background dark))
+			      (:background "dark gray"))
+			     (t 
+			      (:italic t)))
+  "Face used for editable fields."
+  :group 'widgets)
 
 (defcustom widget-menu-max-size 40
-  :type 'integer
   "Largest number of items allowed in a popup-menu.
-Larger menus are read through the minibuffer.")
+Larger menus are read through the minibuffer."
+  :type 'integer)
 
 ;;; Utility functions.
 ;;
@@ -176,8 +179,8 @@ minibuffer."
 
 (defun widget-specify-doc (widget from to)
   ;; Specify documentation for WIDGET between FROM and TO.
-  (put-text-property from to 'widget-doc widget))
-
+  (add-text-properties from to (list 'widget-doc widget
+				     'face 'widget-documentation-face)))
 
 (defmacro widget-specify-insert (&rest form)
   ;; Execute FORM without inheriting any text properties.
@@ -252,6 +255,28 @@ ARGS are passed as extra argments to the function."
   "Create widget of TYPE.  
 The optional ARGS are additional keyword arguments."
   (let ((widget (apply 'widget-convert type args)))
+    (widget-apply widget :create)
+    widget))
+
+(defun widget-create-child-and-convert (parent type &rest args)
+  "As part of the widget PARENT, create a child widget TYPE.
+The child is converted, using the keyword arguments ARGS."
+  (let ((widget (apply 'widget-convert type args)))
+    (widget-put widget :parent parent)
+    (unless (widget-get widget :indent)
+      (widget-put widget :indent (+ (or (widget-get parent :indent) 0)
+				    (or (widget-get widget :extra-offset) 0)
+				    (widget-get parent :offset))))
+    (widget-apply widget :create)
+    widget))
+
+(defun widget-create-child (parent type)
+  "Create widget of TYPE.  "
+  (let ((widget (copy-list type)))
+    (widget-put widget :parent parent)
+    (unless (widget-get widget :indent)
+      (widget-put widget :indent (+ (or (widget-get parent :indent) 0)
+				    (widget-get parent :offset))))
     (widget-apply widget :create)
     widget))
 
@@ -527,13 +552,15 @@ With optional ARG, move across that many fields."
   :value-to-internal (lambda (widget value) value)
   :value-to-external (lambda (widget value) value)
   :create 'widget-default-create
+  :indent nil
+  :offset 0
   :format-handler 'widget-default-format-handler
   :button-face-get 'widget-default-button-face-get 
   :delete 'widget-default-delete
   :value-set 'widget-default-value-set
   :value-inline 'widget-default-value-inline
   :menu-tag-get 'widget-default-menu-tag-get
-  :validate (lambda (widget) t)
+  :validate (lambda (widget) nil)
   :action 'widget-default-action
   :notify 'widget-default-notify)
 
@@ -558,6 +585,10 @@ With optional ARG, move across that many fields."
 		(setq button-begin (point)))
 	       ((eq escape ?\])
 		(setq button-end (point)))
+	       ((eq escape ?n)
+		(when (widget-get widget :indent)
+		  (insert "\n")
+		  (insert-char ?  (widget-get widget :indent))))
 	       ((eq escape ?t)
 		(if tag
 		    (insert tag)
@@ -653,7 +684,7 @@ With optional ARG, move across that many fields."
   :match 'widget-item-match
   :match-inline 'widget-item-match-inline
   :action 'widget-item-action
-  :format "%t\n")
+  :format "%t\n%d")
 
 (defun widget-item-convert-widget (widget)
   ;; Initialize :value and :tag from :args in WIDGET.
@@ -690,9 +721,9 @@ With optional ARG, move across that many fields."
   ;; Items are simple.
   (widget-get widget :value))
 
-;;; The `push' Widget.
+;;; The `push-button' Widget.
 
-(define-widget 'push 'item
+(define-widget 'push-button 'item
   "A pushable button."
   :format "%[[%t]%]%d")
 
@@ -702,18 +733,31 @@ With optional ARG, move across that many fields."
   "An embedded link."
   :format "%[_%t_%]%d")
 
-;;; The `field' Widget.
+;;; The `editable-field' Widget.
 
-(define-widget 'field 'default
+(define-widget 'editable-field 'default
   "An editable text field."
   :convert-widget 'widget-item-convert-widget
   :format "%v"
   :value ""
-  :tag "field"
+  :action 'widget-field-action
   :value-create 'widget-field-value-create
   :value-delete 'widget-field-value-delete
   :value-get 'widget-field-value-get
   :match 'widget-field-match)
+
+;; History of field minibuffer edits.
+(defvar widget-field-history nil)
+
+(defun widget-field-action (widget &optional event)
+  ;; Edit the value in the minibuffer.
+  (let ((tag (widget-apply widget :menu-tag-get))
+	(invalid (widget-apply widget :validate)))
+    (when invalid
+      (error (widget-get invalid :error)))
+    (widget-value-set widget (read-string (concat tag ": ") 
+					  (widget-get widget :value)
+					  'widget-field-history))))
 
 (defun widget-field-value-create (widget)
   ;; Create an editable text field.
@@ -768,9 +812,9 @@ With optional ARG, move across that many fields."
 (define-widget 'text 'field
   "A multiline text area.")
 
-;;; The `choice' Widget.
+;;; The `menu-choice' Widget.
 
-(define-widget 'choice 'default
+(define-widget 'menu-choice 'default
   "A menu of options."
   :convert-widget  'widget-choice-convert-widget
   :format "%[%t%]: %v"
@@ -800,17 +844,15 @@ With optional ARG, move across that many fields."
       (setq current (car args)
 	    args (cdr args))
       (when (widget-apply current :match value)
-	(widget-put widget :children (list (widget-create current
-							  :parent widget
-							  :value value)))
+	(widget-put widget :children (list (widget-create-child-and-convert
+					    widget current :value value)))
 	(widget-put widget :choice current)
 	(setq args nil
 	      current nil)))
     (when current
       (let ((void (widget-get widget :void)))
-	(widget-put widget :children (list (widget-create void
-							  :parent widget
-							  :value value)))
+	(widget-put widget :children (list (widget-create-child-and-convert
+					    widget void :value value)))
 	(widget-put widget :choice void)))))
 
 (defun widget-choice-value-get (widget)
@@ -892,7 +934,7 @@ With optional ARG, move across that many fields."
 
 ;;; The `toggle' Widget.
 
-(define-widget 'toggle 'choice
+(define-widget 'toggle 'menu-choice
   "Toggle between two states."
   :convert-widget 'widget-toggle-convert-widget
   :format "%v"
@@ -929,6 +971,7 @@ With optional ARG, move across that many fields."
   "A multiple choice widget."
   :convert-widget 'widget-choice-convert-widget
   :format "%v"
+  :offset 4
   :entry-format "%b %v"
   :menu-tag "checklist"
   :greedy nil
@@ -951,6 +994,9 @@ With optional ARG, move across that many fields."
 (defun widget-checklist-add-item (widget type chosen)
   ;; Create checklist item in WIDGET of type TYPE.
   ;; If the item is checked, CHOSEN is a cons whose cdr is the value.
+  (and (eq (preceding-char) ?\n)
+       (widget-get widget :indent)
+       (insert-char ?  (widget-get widget :indent)))
   (widget-specify-insert 
    (let* ((children (widget-get widget :children))
 	  (buttons (widget-get widget :buttons))
@@ -965,21 +1011,18 @@ With optional ARG, move across that many fields."
 	 (cond ((eq escape ?%)
 		(insert "%"))
 	       ((eq escape ?b)
-		(setq button (widget-create 'checkbox
-					    :parent widget
-					    :value (not (null chosen)))))
+		(setq button (widget-create-child-and-convert
+			      widget 'checkbox :value (not (null chosen)))))
 	       ((eq escape ?v)
 		(setq child
 		      (cond ((not chosen)
-			     (widget-create type :parent widget))
+			     (widget-create-child widget type))
 			    ((widget-get type :inline)
-			     (widget-create type
-					    :parent widget
-					    :value (cdr chosen)))
+			     (widget-create-child-and-convert
+			      widget type :value (cdr chosen)))
 			    (t
-			     (widget-create type
-					    :parent widget
-					    :value (car (cdr chosen)))))))
+			     (widget-create-child-and-convert
+			      widget type :value (car (cdr chosen)))))))
 	       (t 
 		(error "Unknown escape `%c'" escape)))))
      ;; Update properties.
@@ -1092,11 +1135,12 @@ With optional ARG, move across that many fields."
   ;; Notify the parent.
   (widget-apply (widget-get widget :parent) :action widget event))
 
-;;; The `radio' Widget.
+;;; The `radio-button-choice' Widget.
 
-(define-widget 'radio 'default
+(define-widget 'radio-button-choice 'default
   "Select one of multiple options."
   :convert-widget 'widget-choice-convert-widget
+  :offset 4
   :format "%v"
   :entry-format "%b %v"
   :menu-tag "radio"
@@ -1114,17 +1158,18 @@ With optional ARG, move across that many fields."
 (defun widget-radio-value-create (widget)
   ;; Insert all values
   (let ((args (widget-get widget :args))
-	(indent (widget-get widget :indent))
 	arg)
     (while args 
       (setq arg (car args)
 	    args (cdr args))
-      (widget-radio-add-item widget arg)
-      (and indent args (insert-char ?\  indent)))))
+      (widget-radio-add-item widget arg))))
 
 (defun widget-radio-add-item (widget type)
   "Add to radio widget WIDGET a new radio button item of type TYPE."
-  (setq type (widget-convert type))
+  ;; (setq type (widget-convert type))
+  (and (eq (preceding-char) ?\n)
+       (widget-get widget :indent)
+       (insert-char ?  (widget-get widget :indent)))
   (widget-specify-insert 
    (let* ((value (widget-get widget :value))
 	  (children (widget-get widget :children))
@@ -1142,15 +1187,14 @@ With optional ARG, move across that many fields."
 	 (cond ((eq escape ?%)
 		(insert "%"))
 	       ((eq escape ?b)
-		(setq button (widget-create 'radio-button
-					    :parent widget
-					    :value (not (null chosen)))))
+		(setq button (widget-create-child-and-convert
+			      widget 'radio-button 
+			      :value (not (null chosen)))))
 	       ((eq escape ?v)
 		(setq child (if chosen
-				(widget-create type
-					       :parent widget
-					       :value value)
-			      (widget-create type :parent widget))))
+				(widget-create-child-and-convert
+				 widget type :value value)
+			      (widget-create-child widget type))))
 	       (t 
 		(error "Unknown escape `%c'" escape)))))
      ;; Update properties.
@@ -1252,8 +1296,8 @@ With optional ARG, move across that many fields."
 
 ;;; The `insert-button' Widget.
 
-(define-widget 'insert-button 'push
-  "An insert button for the `repeat' widget."
+(define-widget 'insert-button 'push-button
+  "An insert button for the `editable-list' widget."
   :tag "INS"
   :action 'widget-insert-button-action)
 
@@ -1264,8 +1308,8 @@ With optional ARG, move across that many fields."
 
 ;;; The `delete-button' Widget.
 
-(define-widget 'delete-button 'push
-  "A delete button for the `repeat' widget."
+(define-widget 'delete-button 'push-button
+  "A delete button for the `editable-list' widget."
   :tag "DEL"
   :action 'widget-delete-button-action)
 
@@ -1274,38 +1318,48 @@ With optional ARG, move across that many fields."
   (widget-apply (widget-get widget :parent) 
 		:delete-at (widget-get widget :widget)))
 
-;;; The `repeat' Widget.
+;;; The `editable-list' Widget.
 
-(define-widget 'repeat 'default
+(define-widget 'editable-list 'default
   "A variable list of widgets of the same type."
   :convert-widget 'widget-choice-convert-widget
+  :offset 12
   :format "%v%i\n"
-  :format-handler 'widget-repeat-format-handler
+  :format-handler 'widget-editable-list-format-handler
   :entry-format "%i %d %v"
-  :menu-tag "repeat"
-  :value-create 'widget-repeat-value-create
+  :menu-tag "editable-list"
+  :value-create 'widget-editable-list-value-create
   :value-delete 'widget-radio-value-delete
-  :value-get 'widget-repeat-value-get
-  :validate 'widget-repeat-validate
-  :match 'widget-repeat-match
-  :match-inline 'widget-repeat-match-inline
-  :insert-before 'widget-repeat-insert-before
-  :delete-at 'widget-repeat-delete-at)
+  :value-get 'widget-editable-list-value-get
+  :validate 'widget-editable-list-validate
+  :match 'widget-editable-list-match
+  :match-inline 'widget-editable-list-match-inline
+  :insert-before 'widget-editable-list-insert-before
+  :delete-at 'widget-editable-list-delete-at)
 
-(defun widget-repeat-format-handler (widget escape)
+(defun widget-editable-list-format-handler (widget escape)
   ;; We recognize the insert button.
   (cond ((eq escape ?i)
-	 (insert " ")			
-	 (backward-char 1)
-	 (let* ((from (point))
-		(button (widget-create (list 'insert-button 
-					     :parent widget))))
-	   (widget-specify-button button from (point)))
-	 (forward-char 1))
+	 (and (widget-get widget :indent)
+	      (insert-char ?  (widget-get widget :indent)))
+	 (widget-create-child-and-convert widget 'insert-button))
 	(t 
 	 (widget-default-format-handler widget escape))))
 
-(defun widget-repeat-value-create (widget)
+;(defun widget-editable-list-format-handler (widget escape)
+;  ;; We recognize the insert button.
+;  (cond ((eq escape ?i)
+;	 (insert " ")			
+;	 (backward-char 1)
+;	 (let* ((from (point))
+;		(button (widget-create-child-and-convert
+;			 widget 'insert-button)))
+;	   (widget-specify-button button from (point)))
+;	 (forward-char 1))
+;	(t 
+;	 (widget-default-format-handler widget escape))))
+
+(defun widget-editable-list-value-create (widget)
   ;; Insert all values
   (let* ((value (widget-get widget :value))
 	 (type (nth 0 (widget-get widget :args)))
@@ -1316,21 +1370,23 @@ With optional ARG, move across that many fields."
     (while value
       (let ((answer (widget-match-inline type value)))
 	(if answer
-	    (setq children (cons (widget-repeat-entry-create
-				  widget (if inlinep
-					     (car answer)
-					   (car (car answer))))
+	    (setq children (cons (widget-editable-list-entry-create
+				  widget
+				  (if inlinep
+				      (car answer)
+				    (car (car answer)))
+				  t)
 				 children)
 		  value (cdr answer))
 	  (setq value nil))))
     (widget-put widget :children (nreverse children))))
 
-(defun widget-repeat-value-get (widget)
+(defun widget-editable-list-value-get (widget)
   ;; Get value of the child widget.
   (apply 'append (mapcar (lambda (child) (widget-apply child :value-inline))
 			 (widget-get widget :children))))
 
-(defun widget-repeat-validate (widget)
+(defun widget-editable-list-validate (widget)
   ;; All the chilren must be valid.
   (let ((children (widget-get widget :children))
 	child found)
@@ -1340,12 +1396,12 @@ With optional ARG, move across that many fields."
 	    found (widget-apply child :validate)))
     found))
 
-(defun widget-repeat-match (widget value)
-  ;; Value must be a list and all the members must match the repeat type.
+(defun widget-editable-list-match (widget value)
+  ;; Value must be a list and all the members must match the type.
   (and (listp value)
-       (null (cdr (widget-repeat-match-inline widget value)))))
+       (null (cdr (widget-editable-list-match-inline widget value)))))
 
-(defun widget-repeat-match-inline (widget value)
+(defun widget-editable-list-match-inline (widget value)
   (let ((type (nth 0 (widget-get widget :args)))
 	(ok t)
 	found)
@@ -1357,7 +1413,7 @@ With optional ARG, move across that many fields."
 	  (setq ok nil))))
     (cons found value)))
 
-(defun widget-repeat-insert-before (widget before)
+(defun widget-editable-list-insert-before (widget before)
   ;; Insert a new child in the list of children.
   (save-excursion
     (let ((children (widget-get widget :children))
@@ -1367,9 +1423,11 @@ With optional ARG, move across that many fields."
 	     (goto-char (widget-get before :entry-from)))
 	    (t
 	     (goto-char (widget-get widget :value-pos))))
-      (let ((child (widget-repeat-entry-create 
-		    widget (widget-get (nth 0 (widget-get widget :args))
-				       :value))))
+      (let ((child (widget-editable-list-entry-create 
+		    widget nil nil)))
+	(when (< (widget-get child :entry-from) (widget-get widget :from))
+	  (set-marker (widget-get widget :from)
+		      (widget-get child :entry-from)))
 	(widget-specify-text (widget-get child :entry-from)
 			     (widget-get child :entry-to))
 	(if (eq (car children) before)
@@ -1380,7 +1438,7 @@ With optional ARG, move across that many fields."
   (widget-setup)
   (widget-apply widget :notify widget))
 
-(defun widget-repeat-delete-at (widget child)
+(defun widget-editable-list-delete-at (widget child)
   ;; Delete child from list of children.
   (save-excursion
     (let ((buttons (copy-list (widget-get widget :buttons)))
@@ -1406,16 +1464,15 @@ With optional ARG, move across that many fields."
   (widget-setup)
   (widget-apply widget :notify widget))
 
-(defun widget-repeat-entry-create (widget value)
+(defun widget-editable-list-entry-create (widget value conv)
   ;; Create a new entry to the list.
   (let ((type (nth 0 (widget-get widget :args)))
-	(indent (widget-get widget :indent))
 	child delete insert)
     (widget-specify-insert 
      (save-excursion
-       (insert (widget-get widget :entry-format))
-       (if indent
-	   (insert-char ?\  indent)))
+       (and (widget-get widget :indent)
+	    (insert-char ?  (widget-get widget :indent)))
+       (insert (widget-get widget :entry-format)))
      ;; Parse % escapes in format.
      (while (re-search-forward "%\\(.\\)" nil t)
        (let ((escape (aref (match-string 1) 0)))
@@ -1423,15 +1480,16 @@ With optional ARG, move across that many fields."
 	 (cond ((eq escape ?%)
 		(insert "%"))
 	       ((eq escape ?i)
-		(setq insert (widget-create 'insert-button 
-					    :parent widget)))
+		(setq insert (widget-create-child-and-convert
+			      widget 'insert-button)))
 	       ((eq escape ?d)
-		(setq delete (widget-create 'delete-button 
-					    :parent widget)))
+		(setq delete (widget-create-child-and-convert
+			      widget 'delete-button)))
 	       ((eq escape ?v)
-		(setq child (widget-create type
-					   :parent widget
-					   :value value)))
+		(if conv
+		    (setq child (widget-create-child-and-convert 
+				 widget type :value value))
+		  (setq child (widget-create-child widget type))))
 	       (t 
 		(error "Unknown escape `%c'" escape)))))
      (widget-put widget 
@@ -1457,8 +1515,8 @@ With optional ARG, move across that many fields."
   :format "%v"
   :value-create 'widget-group-value-create
   :value-delete 'widget-radio-value-delete
-  :value-get 'widget-repeat-value-get
-  :validate 'widget-repeat-validate
+  :value-get 'widget-editable-list-value-get
+  :validate 'widget-editable-list-validate
   :match 'widget-group-match
   :match-inline 'widget-group-match-inline)
 
@@ -1466,25 +1524,24 @@ With optional ARG, move across that many fields."
   ;; Create each component.
   (let ((args (widget-get widget :args))
 	(value (widget-get widget :value))
-	(indent (widget-get widget :indent))
 	arg answer children)
     (while args
       (setq arg (car args)
 	    args (cdr args)
 	    answer (widget-match-inline arg value)
-	    value (cdr answer)
-	    children (cons (cond ((null answer)
-				  (widget-create arg :parent widget))
-				 ((widget-get arg :inline)
-				  (widget-create arg
-						 :parent widget
-						 :value (car answer)))
-				 (t
-				  (widget-create arg
-						 :parent widget
-						 :value (car (car answer)))))
-			   children))
-      (and args indent (insert-char ?\  indent)))
+	    value (cdr answer))
+      (and (eq (preceding-char) ?\n)
+	   (widget-get widget :indent)
+	   (insert-char ?  (widget-get widget :indent)))
+      (push (cond ((null answer)
+		   (widget-create-child widget arg))
+		  ((widget-get arg :inline)
+		   (widget-create-child-and-convert
+		    widget arg :value (car answer)))
+		  (t
+		   (widget-create-child-and-convert
+		    widget arg :value (car (car answer)))))
+	    children))
     (widget-put widget :children (nreverse children))))
 
 (defun widget-group-match (widget values)
@@ -1516,8 +1573,14 @@ With optional ARG, move across that many fields."
   "An immutable sexp."
   :format "%t\n")
 
-(define-widget 'string 'field
-  "A string")
+(define-widget 'string 'editable-field
+  "A string"
+  :tag "String"
+  :format "%[%t%]: %v")
+
+(define-widget 'regexp 'string
+  ;; Should do validation.
+  "A regular expression.")
 
 (define-widget 'file 'string
   "A file widget.  
@@ -1546,56 +1609,85 @@ It will read a directory name from the minibuffer when activated."
 (define-widget 'symbol 'string
   "A lisp symbol."
   :value nil
+  :tag "Symbol"
   :match (lambda (widget value) (symbolp value))
   :value-to-internal (lambda (widget value) (symbol-name value))
   :value-to-external (lambda (widget value) (intern value)))
 
+(define-widget 'function 'symbol
+  ;; Should complete on functions.
+  "A lisp function."
+  :tag "Function")
+
+(define-widget 'variable 'symbol
+  ;; Should complete on variables.
+  "A lisp variable."
+  :tag "Variable")
+
 (define-widget 'sexp 'string
   "An arbitrary lisp expression."
+  :tag "Lisp expression"
   :value nil
   :validate 'widget-sexp-validate
-  :match (lambda  (widget value) t)
-  :value-to-internal (lambda (widget value) (pp-to-string value))
+  :match (lambda (widget value) t)
+  :value-to-internal 'widget-sexp-value-to-internal
   :value-to-external (lambda (widget value) (read value)))
+
+(defun widget-sexp-value-to-internal (widget value)
+  ;; Use pp for printer representation.
+  (let ((pp (pp-to-string value)))
+    (while (string-match "\n\\'" pp)
+      (setq pp (substring pp 0 -1)))
+    (if (or (string-match "\n\\'" pp)
+	    (> (length pp) 40))
+	(concat "\n" pp)
+      pp)))
 
 (defun widget-sexp-validate (widget)
   ;; Valid if we can read the string and there is no junk left after it.
   (save-excursion
-    (set-buffer (get-buffer-create " *Widget Scratch*"))
-    (erase-buffer)
-    (insert (widget-apply widget :value-get))
-    (goto-char (point-min))
-    (condition-case data
-	(let ((value (read (current-buffer))))
-	  (if (eobp)
-	      (if (widget-apply widget :match value)
-		  t
-		(widget-put widget :error (widget-get widget :type-error))
-		nil)
-	    (widget-put widget
-			:error (format "Junk at end of expression: %s"
-				       (buffer-substring (point) (point-max))))
-	    nil))
-      (error (widget-put widget :error (error-message-string data))
-	     nil))))
+    (let ((buffer (set-buffer (get-buffer-create " *Widget Scratch*"))))
+      (erase-buffer)
+      (insert (widget-apply widget :value-get))
+      (goto-char (point-min))
+      (condition-case data
+	  (let ((value (read buffer)))
+	    (if (eobp)
+		(if (widget-apply widget :match value)
+		    nil
+		  (widget-put widget :error (widget-get widget :type-error))
+		  widget)
+	      (widget-put widget
+			  :error (format "Junk at end of expression: %s"
+					 (buffer-substring (point)
+							   (point-max))))
+	      widget))
+	(error (widget-put widget :error (error-message-string data))
+	       widget)))))
 
 (define-widget 'integer 'sexp
   "An integer."
+  :tag "Integer"
   :value 0
   :type-error "This field should contain an integer"
   :match (lambda (widget value) (integerp value)))
 
 (define-widget 'number 'sexp
   "A floating point number."
+  :tag "Number"
   :value 0.0
   :type-error "This field should contain a number"
   :match (lambda (widget value) (numberp value)))
 
 (define-widget 'list 'group
-  "A lisp list.")
+  "A lisp list."
+  :tag "List"
+  :format "%t:\n%v")
 
 (define-widget 'vector 'group
   "A lisp vector."
+  :tag "Vector"
+  :format "%t:\n%v"
   :match 'widget-vector-match
   :value-to-internal (lambda (widget value) (append value nil))
   :value-to-external (lambda (widget value) (apply 'vector value)))
@@ -1607,6 +1699,8 @@ It will read a directory name from the minibuffer when activated."
 
 (define-widget 'cons 'group
   "A cons-cell."
+  :tag "Cons-cell"
+  :format "%t:\n%v"
   :match 'widget-cons-match
   :value-to-internal (lambda (widget value)
 		       (list (car value) (cdr value)))
@@ -1617,6 +1711,26 @@ It will read a directory name from the minibuffer when activated."
   (and (consp value)
        (widget-group-match widget
 			   (widget-apply :value-to-internal widget value))))
+
+(define-widget 'choice 'menu-choice
+  "A union of several sexp types."
+  :tag "Choice"
+  :format "%[%t%]: %v")
+  
+(define-widget 'repeat 'editable-list
+  "A variable length homogeneous list."
+  :tag "Repeat"
+  :format "%[%t%]:\n%v%i\n")
+
+(define-widget 'set 'checklist
+  "A list of members from a fixed set."
+  :tag "Set"
+  :format "%[%t%]:\n%v")
+
+(define-widget 'boolean 'toggle
+  "To be nil or non-nil, that is the question."
+  :tag "Boolean"
+  :format "%t: %v")
 
 ;;; The `color' Widget.
 
@@ -1632,9 +1746,10 @@ It will read a directory name from the minibuffer when activated."
       (facemenu-get-face (intern (concat "fg:" (widget-value widget))))
     (error 'default)))
 
-(define-widget 'color 'push
+(define-widget 'color 'push-button
   "Choose a color name (with sample)."
   :format "%[%t%]: %v"
+  :tag "Color"
   :value "default"
   :value-create 'widget-color-value-create
   :value-delete 'widget-radio-value-delete
@@ -1655,9 +1770,8 @@ It will read a directory name from the minibuffer when activated."
   widget-color-choice-list)
 
 (defun widget-color-value-create (widget)
-  (let ((child (widget-create 'color-item 
-			      :parent widget
-			      (widget-get widget :value))))
+  (let ((child (widget-create-child-and-convert
+		widget 'color-item (widget-get widget :value))))
     (widget-put widget :children (list child))))
 
 (defun widget-color-value-get (widget)
