@@ -1,3 +1,8 @@
+2001-12-26  Florian Weimer  <fw@deneb.enyo.de>
+
+	* gpg.el (gpg-command-default-alist): Using gpg-2comp is no longer
+	the default.
+
 2001-12-18  Josh Huber  <huber@alum.wpi.edu>
 
 	* ChangeLog: changed buffer-file-coding-system back to
