@@ -1,3 +1,7 @@
+2003-01-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* etc/gnus/preview.xbm: Add.
+
 2003-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* etc/gnus/gnus.xpm (oort): Make the color replaceable.
