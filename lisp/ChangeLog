@@ -1,4 +1,45 @@
+Sun May 21 00:11:00 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-cache.el (gnus-cache-retrieve-headers): Don't bug out on
+	changed source groups. 
+
+	* gnus.el (gnus-matches-options-n): Did not find matching options. 
+	(gnus-configure-windows): Signal error with missing point.
+	(gnus-narrow-to-headers): Don't bug out on malformed mail. 
+
+	* gnus-uu.el: Made prompts more explicit.
+
+	* gnus.el (gnus-article-prepare): Show thread before doing visual
+	marks. 
+	(gnus-summary-scroll-up): Would recenter oddly.
+
+Sat May 20 23:37:42 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-score.el (gnus-score-headers): gnus-current-score-file
+	would be nil.
+
+	* gnus-cite.el (gnus-supercite-regexp): New value.
+
+Sat May 20 04:56:14 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnbabyl.el (nnbabyl-retrieve-headers): Faster routine.
+
+	* nnheader.el (nnheader-insert-head): New function to speed up
+	HEADer reading.
+
+	* nnspool.el (nnspool-retrieve-headers): Use it.
+	* nnmh.el (nnmh-retrieve-headers): Ditto.
+	* nnml.el (nnml-retrieve-headers): Ditto.
+
+	* nnmh.el (nnmh-be-safe): New variable and serious speedup. 
+
+Sat May 20 17:11:50 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: 0.74 is released. 
+
 Sat May 20 00:11:59 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: 0.73 is released.
 
 	* gnus-msg.el (gnus-mail-reply-using-mail): Don't barf wifout a
 	message-id. 

@@ -137,7 +137,7 @@ Newsgroup must be selected before calling this function."
 		   (progn
 		     (insert (format "221 %d Article retrieved.\n" article))
 		     (setq beg (point))
-		     (insert-file-contents file)
+		     (nnheader-insert-head file)
 		     (goto-char beg)
 		     (search-forward "\n\n" nil t)
 		     (forward-char -1)

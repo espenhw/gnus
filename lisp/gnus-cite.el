@@ -33,7 +33,8 @@
 
 ;;; Customization:
 
-(defvar gnus-cite-prefix-regexp "^[^\n]*[]>|:}+]"
+(defvar gnus-cite-prefix-regexp 
+    "^[]>|:}+ ]*[]>|:}+]\\(.*>\\)?\\|^.*>"
   "Regexp matching the longest possible citation prefix on a line.")
 
 (defvar gnus-cite-max-prefix 20
@@ -43,8 +44,7 @@
   (concat "^\\(" gnus-cite-prefix-regexp "\\)? *"
 	  ">>>>> +\"\\([^\"\n]+\\)\" +==")
   "Regexp matching normal SuperCite attribution lines.
-The first regexp group should match a prefix added by another package.
-The second regexp group should match the SuperCite attribution itself.")
+The first regexp group should match a prefix added by another package.")
 
 (defvar gnus-supercite-secondary-regexp "^.*\"\\([^\"\n]+\\)\" +=="
   "Regexp matching mangled SuperCite attribution lines.

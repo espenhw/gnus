@@ -489,7 +489,8 @@ slower.")
 If this variable is nil, scoring will be disabled.")
 
 (defvar gnus-group-default-list-level gnus-level-subscribed
-  "*Default listing level.")
+  "*Default listing level. 
+Ignored if `gnus-group-use-permanent-levels' is nil.")
 
 (defvar gnus-group-use-permanent-levels nil
   "*If non-nil, once you set a level, Gnus will use this level.")
@@ -1212,7 +1213,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.74"
+(defconst gnus-version "(ding) Gnus v0.75"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1678,9 +1679,11 @@ Thank you for your help in stamping out bugs.
 (defun gnus-narrow-to-headers ()
   (widen)
   (save-excursion
-    (goto-char (point-min))
-    (if (search-forward "\n\n")
-	(narrow-to-region 1 (1- (point))))))
+    (narrow-to-region
+     (goto-char (point-min))
+     (if (search-forward "\n\n" nil t)
+	 (1- (point))
+       (point-max)))))
 
 (defun gnus-update-format-specifications ()
   (gnus-make-thread-indent-array)
@@ -2316,6 +2319,8 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
       (setq rule (cdr rule)))
 
     ;; Finally, we pop to the buffer that's supposed to have point. 
+    (or jump-buffer (error "Missing `point' in spec for %s" setting))
+
     (pop-to-buffer jump-buffer)
     jump-buffer))
       
@@ -7338,6 +7343,7 @@ current article."
       (gnus-eval-in-buffer-window
        gnus-article-buffer
        (setq endp (gnus-article-next-page lines)))
+      (gnus-summary-recenter)
       (if endp
  	  (cond (circular
  		 (gnus-summary-beginning-of-article))
@@ -7359,6 +7365,7 @@ Argument LINES specifies lines to be scrolled down."
 	;; Selected subject is different from current article's.
 	(gnus-summary-display-article article)
       (gnus-configure-windows 'article)
+      (gnus-summary-recenter)
       (gnus-eval-in-buffer-window gnus-article-buffer
 	(gnus-article-prev-page lines))))
   (gnus-summary-position-cursor))
@@ -7376,6 +7383,7 @@ Argument LINES specifies lines to be scrolled up (or down if negative)."
 		  (gnus-message 3 "End of message")))
 	     ((< lines 0)
 	      (gnus-article-prev-page (- lines))))))
+  (gnus-summary-recenter)
   (gnus-summary-position-cursor))
 
 (defun gnus-summary-next-same-subject ()
@@ -9676,6 +9684,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			(gnus-get-header-by-number gnus-current-article)
 			gnus-article-current 
 			(cons gnus-newsgroup-name gnus-current-article))
+		  (gnus-summary-show-thread)
 		  (run-hooks 'gnus-mark-article-hook)
 		  (gnus-set-mode-line 'summary)
 		  (and gnus-visual 
@@ -10975,7 +10984,7 @@ The `-n' option line from .newsrc is respected."
    (t
     (let ((regs gnus-newsrc-options-n))
       (while (and regs
-		  (not (string-match (car (car gnus-newsrc-options-n)) group)))
+		  (not (string-match (car (car regs)) group)))
 	(setq regs (cdr regs)))
       (and regs (cdr (car regs)))))))
 

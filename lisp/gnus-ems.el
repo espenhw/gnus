@@ -48,9 +48,12 @@
 	      (put-text-property start end (car props) (cadr props) buffer)
 	    (remove-text-properties start end ()))))
     
-    (or (fboundp 'make-overlay (fset 'make-overlay 'make-extent)))
-    (or (fboundp 'over-lay-put (fset 'overlay-put 'set-extent-property)))
-    (or (boundp 'standard-display-table (setq standard-display-table nil)))
+    (or (fboundp 'make-overlay) (fset 'make-overlay 'make-extent))
+    (or (fboundp 'overlay-put) (fset 'overlay-put 'set-extent-property))
+    (or (fboundp 'move-overlay) 
+        (defun move-overlay (extent start end &optional buffer)
+          (set-extent-endpoints extent start end)))
+    (or (boundp 'standard-display-table) (setq standard-display-table nil))
 
     (if (not gnus-visual)
 	()

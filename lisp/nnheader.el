@@ -181,6 +181,15 @@
     (set (car (car state)) (nth 1 (car state)))
     (setq state (cdr state))))
 
+;; Read the head of an article.
+(defun nnheader-insert-head (file)
+  (let ((beg 0)
+	found)
+    (while (and (eq 1024 (nth 1 (insert-file-contents 
+				 file nil beg (setq beg (+ 1024 beg)))))
+		(search-backward "\n\n" nil t)))))
+    
+
 (provide 'nnheader)
 
 ;;; nnheader.el ends here

@@ -113,7 +113,7 @@ all. This may very well take some time.")
 	      (progn
 		(insert (format "221 %d Article retrieved.\n" article))
 		(setq beg (point))
-		(insert-file-contents file)
+		(nnheader-insert-head file)
 		(goto-char beg)
 		(if (search-forward "\n\n" nil t)
 		    (forward-char -1)

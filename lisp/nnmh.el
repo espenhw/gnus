@@ -35,13 +35,16 @@
 (require 'gnus)
 
 (defvar nnmh-directory "~/Mail/"
-  "Mail directory.")
+  "*Mail spool directory.")
 
 (defvar nnmh-get-new-mail t
-  "If non-nil, nnmh will check the incoming mail file and split the mail.")
+  "*If non-nil, nnmh will check the incoming mail file and split the mail.")
 
 (defvar nnmh-prepare-save-mail-hook nil
-  "Hook run narrowed to an article before saving.")
+  "*Hook run narrowed to an article before saving.")
+
+(defvar nnmh-be-safe nil
+  "*If non-nil, nnmh will check all articles to make sure whether they are new or not.")
 
 
 
@@ -88,7 +91,7 @@
 	    (progn
 	      (insert (format "221 %d Article retrieved.\n" article))
 	      (setq beg (point))
-	      (insert-file-contents file)
+	      (nnheader-insert-head file)
 	      (goto-char beg)
 	      (if (search-forward "\n\n" nil t)
 		  (forward-char -1)
@@ -162,7 +165,9 @@
     (if (file-directory-p pathname)
 	(progn
 	  (setq nnmh-current-directory pathname)
-	  (and nnmh-get-new-mail (nnmh-update-gnus-unreads group))
+	  (and nnmh-get-new-mail 
+	       nnmh-be-safe
+	       (nnmh-update-gnus-unreads group))
 	  (or dont-check
 	      (progn
 		(setq dir 

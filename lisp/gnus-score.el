@@ -686,7 +686,7 @@ SCORE is the score to add."
 	     (now (gnus-day-number (current-time-string)))
 	     (expire (- now gnus-score-expiry-days))
 	     (headers gnus-newsgroup-headers)
-	     (gnus-current-score-file gnus-current-score-file)
+	     (current-score-file gnus-current-score-file)
 	     entry header)
 	(gnus-message 5 "Scoring...")
 	;; Create articles, an alist of the form `(HEADER . SCORE)'.
@@ -704,6 +704,9 @@ SCORE is the score to add."
 	(save-excursion
 	  (set-buffer (get-buffer-create "*Headers*"))
 	  (buffer-disable-undo (current-buffer))
+
+	  ;; Set the global variant of this variable.
+	  (setq gnus-current-score-file current-score-file)
           ;; score orphans
           (if gnus-orphan-score 
               (progn
@@ -997,7 +1000,7 @@ SCORE is the score to add."
 
 
 
-(defun gnus-score-followup (scores header now expire)
+(defun gnus-score-followup (scores header now expire &optional trace)
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	(current-score-file gnus-current-score-file)

@@ -655,7 +655,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	   (cons nnmail-spool-file procmails))
 	  (t
 	   procmails))))
-					    
+
 (provide 'nnmail)
 
 ;;; nnml.el ends here

@@ -487,11 +487,16 @@ highlight-headers-follow-url-netscape:
 		 ;; Fix by Mike Dugan <dugan@bucrf16.bu.edu>.
 		 (from (if (get-text-property beg 'mouse-face) 
 			   beg
-			 (next-single-property-change
-			  beg 'mouse-face nil end)))
-		 (to (next-single-property-change
-		      from 'mouse-face nil end)))
-	    (if (< to beg)
+			 (1+ (or (next-single-property-change 
+				  beg 'mouse-face nil end) 
+				 end))))
+		 (to (1- (or (next-single-property-change
+			      from 'mouse-face nil end)
+			     end))))
+            ;; If no mouse-face prop on line (e.g. xemacs) we 
+            ;; will have to = from = end, so we highlight the
+            ;; entire line instead.
+	    (if (= to from)
 		(progn
 		  (setq from beg)
 		  (setq to end)))

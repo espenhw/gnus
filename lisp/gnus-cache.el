@@ -194,7 +194,7 @@
 	 (cache-file (gnus-cache-file-name group ".overview"))
 	 type)
     (let ((gnus-use-cache nil))
-      (setq type (gnus-retrieve-headers articles group)))
+      (setq type (and articles (gnus-retrieve-headers articles group))))
     (gnus-cache-save-buffers)
     (save-excursion
       (cond ((not (file-exists-p cache-file))
