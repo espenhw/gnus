@@ -1,3 +1,9 @@
+2004-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* pgg.el (pgg-passphrase-cache, pgg-run-at-time): Remove.
+	(pgg-add-passphrase-cache, pgg-remove-passphrase-cache): Use
+	the password package.
+
 2003-02-19  Simon Josefsson  <jas@extundo.com>
 
 	* sieve-manage.el (sieve-sasl-auth): Quote optional initial SASL
