@@ -1,3 +1,7 @@
+2003-03-09  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus.texi (Comparing Mail Back Ends): nnmaildir fixes.
+
 2003-03-17  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Using MIME): Added gnus-mime-delete-part.

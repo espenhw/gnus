@@ -14991,16 +14991,8 @@ require one set of mailboxes for spooling deliveries (in mbox format,
 thus damaging message bodies), and another set to be used as groups (in
 whatever format you like).  A maildir has a built-in spool, in the
 @code{new/} subdirectory.  Beware that currently, mail moved from
-@code{new/} to @code{cur/} instead of via mail splitting will undergo
-treatment such as duplicate checking.
-
-An article will not necessarily keep the same number across Gnus
-sessions; articles are renumbered starting from 1 for each Gnus session
-(more precisely, each time you open the @code{nnmaildir} server).  This
-way, you don't get gaps in your article number ranges, and when entering
-large groups, Gnus is likely to give a more accurate article count.  The
-price is that @code{nnmaildir} doesn't work with the cache or agent.
-This will probably be changed in the future.
+@code{new/} to @code{cur/} instead of via mail splitting will not
+undergo treatment such as duplicate checking.
 
 @code{nnmaildir} stores article marks for a given group in the
 corresponding maildir, in a way designed so that it's easy to manipulate
@@ -15017,11 +15009,12 @@ parameters slightly different from those of other mail back ends.
 and that @code{nnmh} repeatedly parses out of message files.)  If this
 is a problem for you, you can set the @code{nov-cache-size} group
 parameter to something small (0 would probably not work, but 1 probably
-would) to make it use less memory.
+would) to make it use less memory.  This caching will probably be
+removed in the future.
 
-Startup and shutdown are likely to be slower with @code{nnmaildir} than
-with other back ends.  Everything in between is likely to be faster,
-depending in part on your file system.
+Startup is likely to be slower with @code{nnmaildir} than with other
+back ends.  Everything in between is likely to be faster, depending in
+part on your file system.
 
 @code{nnmaildir} does not use @code{nnoo}, so you cannot use @code{nnoo}
 to write an @code{nnmaildir}-derived back end.
