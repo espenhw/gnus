@@ -991,7 +991,7 @@ Use the nov database for the current group if available."
 	  (nnml-possibly-create-directory group)
 	  (with-temp-file file
 	    (erase-buffer)
-	    (gnus-prin1 nnml-marks (current-buffer))
+	    (gnus-prin1 nnml-marks)
 	    (insert "\n"))
 	  (gnus-sethash file
 			(nth 5 (file-attributes file))

@@ -1,3 +1,10 @@
+2001-11-15 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-save-marks): gnus-prin1 takes one argument.
+	* nnml.el (nnml-save-marks): Ditto.
+	
+	* gnus-sum.el (gnus-newsgroup-variables): Fix doc.
+
 2001-11-15  Simon Josefsson  <jas@extundo.com>
 
 	* nnml.el (nnml-save-marks):
