@@ -22527,8 +22527,8 @@ You will need to set up some additional variables as well:
 @item hashcash-default-payment
 @vindex hashcash-default-payment
 This variable indicates the default number of bits the hash collision
-should consist of.  By default this is 0, meaning nothing will be
-done.  Suggested useful values include 17 to 29.
+should consist of.  By default this is 10, which is a rather low
+value.  Suggested useful values include 17 to 29.
 
 @item hashcash-payment-alist
 @vindex hashcash-payment-alist
