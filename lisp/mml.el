@@ -720,7 +720,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 
 (easy-menu-define
   mml-menu mml-mode-map ""
-  '("MML"
+  '("Mime"
     ("Attach"
      ["File" mml-attach-file t]
      ["Buffer" mml-attach-buffer t]
@@ -729,12 +729,10 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
      ["Multipart" mml-insert-multipart t]
      ["Part" mml-insert-part t])
     ("Security"
-     ("Sign"
-      ["PGP/MIME" mml-secure-sign-pgpmime t]
-      ["S/MIME" mml-secure-sign-smime t])
-     ("Encrypt"
-      ["PGP/MIME" mml-secure-encrypt-pgpmime t]
-      ["S/MIME" mml-secure-encrypt-smime t]))
+     ["Sign PGP/MIME" mml-secure-sign-pgpmime t]
+     ["Sign S/MIME" mml-secure-sign-smime t]
+     ["Encrypt PGP/MIME" mml-secure-encrypt-pgpmime t]
+     ["Encrypt S/MIME" mml-secure-encrypt-smime t])
     ;;["Narrow" mml-narrow-to-part t]
     ["Quote" mml-quote-region t]
     ["Validate" mml-validate t]
