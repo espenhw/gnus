@@ -376,7 +376,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		  ;; Skip one ASCII word, or encode continuous words
 		  ;; in which all those contain non-ASCII characters.
 		  (setq end nil)
-		  (while (not end)
+		  (while (not (or end (eobp)))
 		    (when (looking-at "[\000-\177]+")
 		      (setq begin (point)
 			    end (match-end 0))

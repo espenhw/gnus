@@ -1,3 +1,8 @@
+2004-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-region): Don't infloop.  Suggested by
+	Hiroshi Fujishima <pooh@nature.tsukuba.ac.jp>.
+
 2004-07-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* flow-fill.el (fill-flowed): Remove space stuffing, and only do
