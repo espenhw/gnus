@@ -1449,18 +1449,19 @@ newsgroup."
 	   (quit
 	    (message "Quit activating %s" group)
 	    nil))
-	 (setq active (gnus-parse-active))
-	 ;; If there are no articles in the group, the GROUP
-	 ;; command may have responded with the `(0 . 0)'.  We
-	 ;; ignore this if we already have an active entry
-	 ;; for the group.
-	 (if (and (zerop (car active))
-		  (zerop (cdr active))
-		  (gnus-active group))
-	     (gnus-active group)
-	   (gnus-set-active group active)
-	   ;; Return the new active info.
-	   active))))
+	 (unless dont-check
+	   (setq active (gnus-parse-active))
+	   ;; If there are no articles in the group, the GROUP
+	   ;; command may have responded with the `(0 . 0)'.  We
+	   ;; ignore this if we already have an active entry
+	   ;; for the group.
+	   (if (and (zerop (car active))
+		    (zerop (cdr active))
+		    (gnus-active group))
+	       (gnus-active group)
+	     (gnus-set-active group active)
+	     ;; Return the new active info.
+	     active)))))
 
 (defun gnus-get-unread-articles-in-group (info active &optional update)
   (when active

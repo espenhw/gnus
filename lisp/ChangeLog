@@ -1,3 +1,8 @@
+2001-08-20 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-activate-group): If dont-check, don't update
+	active.
+
 2001-08-20 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-retrieve-headers-1): Replace
