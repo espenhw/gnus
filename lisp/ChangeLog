@@ -1,3 +1,8 @@
+2005-02-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-inline-part): Show the raw contents if a
+	prefix arg is neither nil nor a number, as info specifies.
+
 2005-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-marks-changed-p): Use time-less-p to compare the
