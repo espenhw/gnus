@@ -1,3 +1,7 @@
+2001-01-21 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-forward): Use mule4.
+	
 2001-01-20 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-string-as-unibyte): New.
@@ -299,7 +303,7 @@
 	* nnfolder.el (nnfolder-existing-articles): Reversed, i.e. sorted.
 	(nnfolder-request-expire-articles): Use gnus-sorted-intersection.
 	(nnfolder-retrieve-headers): Use intersection. Suggested by Jonas
-	KvarnstrÅ,Av(Bm <jonkv@ida.liu.se>.
+	Kvarnstr,Av(Bm <jonkv@ida.liu.se>.
 
 2000-12-30 00:17:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -505,7 +509,7 @@
 
 	* message.el (message-forward): Save-restriction.
 
-2000-12-21  Kai GroÅ,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-12-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-art.el (article-treat-dumbquotes): More doc, provided by
 	Paul Stevenson <p.stevenson@surrey.ac.uk>
@@ -1598,10 +1602,10 @@
 	* message.el (message-font-lock-keywords): use
 	message-cite-prefix-regexp.
 
-2000-11-15  Kai GroÅ,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-11-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-group.el (gnus-group-jump-to-group-prompt): New variable by
-	Stein Arild StrÅ,Ax(Bmme.
+	Stein Arild Str,Ax(Bmme.
 	(gnus-group-jump-to-group): Use it.
 	(gnus-group-jump-to-group-prompt): Customize.
 
@@ -1733,7 +1737,7 @@
 	* gnus-art.el (gnus-mime-display-alternative): Show button if no
 	preferred part.
 
-2000-11-07  Kai GroÅ,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-11-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-sum.el (gnus-move-split-methods): Say that
 	`gnus-split-methods' uses file names, whereas this uses group

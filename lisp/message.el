@@ -4368,11 +4368,11 @@ Optional DIGEST will use digest to forward."
 	(if message-forward-show-mml
 	    (insert
 	     (with-temp-buffer
-	       (mm-disable-multibyte) ;; Must copy buffer in unibyte mode
+	       (mm-disable-multibyte-mule4) ;; Must copy buffer in unibyte mode
 	       (insert
 		(with-current-buffer cur
 		  (mm-string-as-unibyte (buffer-string))))
-	       (mm-enable-multibyte)
+	       (mm-enable-multibyte-mule4)
 	       (mime-to-mml)
 	       (goto-char (point-min))
 	       (when (looking-at "From ")
