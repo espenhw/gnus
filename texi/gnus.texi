@@ -13574,11 +13574,11 @@ An example @acronym{IMAP} mail source:
 @end lisp
 
 @item webmail
-Get mail from a webmail server, such as @uref{www.hotmail.com},
-@uref{webmail.netscape.com}, @uref{www.netaddress.com},
-@uref{mail.yahoo.com}.
+Get mail from a webmail server, such as @uref{http://www.hotmail.com/},
+@uref{http://webmail.netscape.com/}, @uref{http://www.netaddress.com/},
+@uref{http://mail.yahoo.com/}.
 
-NOTE: Webmail largely depends cookies.  A "one-line-cookie" patch is
+NOTE: Webmail largely depends on cookies.  A "one-line-cookie" patch is
 required for url "4.0pre.46".
 
 WARNING: Mails may be lost.  NO WARRANTY.

@@ -1,3 +1,7 @@
+2003-10-12  Adrian Aichner  <adrian@xemacs.org>
+
+	* gnus.texi (Mail Source Specifiers): uref fixes.
+
 2003-10-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Group Mail Splitting)
