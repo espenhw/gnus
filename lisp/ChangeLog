@@ -1,3 +1,7 @@
+1999-12-11 14:42:26  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el: Require url-cookie.
+
 1999-12-11 14:21:23  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnwarchive.el (nnwarchive-make-caesar-translation-table): A

@@ -24,18 +24,13 @@
 ;;; Commentary:
 
 ;; Note: You need to have `url' and `w3' installed for this backend to
-;; work.
+;; work. `w3' must be 4.0pre46+one-line-cookie patch or standalone
+;; `url'.
 
 ;; Todo: To support more web mail servers.
 
 ;; Known bugs: 
-;; 1. In w3, there are two copies of url-maybe-relative.
-;;    If it is loaded from w3.el, (load-library "url"). 
-;;    Fixed in w3 4.0pre46.
-;; 2. Hotmail only accept one line cookie, while w3 breaks cookies 
-;;    into lines.
-;;    Maybe fixed in w3 4.0pre47+?.
-;; 3. Net@ddress may corrupt `X-Face'.
+;; 1. Net@ddress may corrupt `X-Face'.
 
 ;; Warning:
 ;; Webmail is an experimental function, which means NO WARRANTY.
@@ -55,12 +50,14 @@
   (ignore-errors
     (require 'w3)
     (require 'url)
+    (require 'url-cookie)
     (require 'w3-forms)
     (require 'nnweb)))
 ;; Report failure to find w3 at load time if appropriate.
 (eval '(progn
 	 (require 'w3)
 	 (require 'url)
+	 (require 'url-cookie)
 	 (require 'w3-forms)
 	 (require 'nnweb)))
 
@@ -71,7 +68,7 @@
      ;; Hotmail hate other HTTP user agents and use one line cookie
      (paranoid agent cookie post)
      (address . "www.hotmail.com")
-     (open-url "http://www.hotmail.com")
+     (open-url "http://www.hotmail.com/")
      (open-snarf . webmail-hotmail-open)
      ;; W3 hate redirect POST
      (login-url
@@ -85,7 +82,7 @@
     (yahoo
      (paranoid cookie post)
      (address . "mail.yahoo.com")
-     (open-url "http://mail.yahoo.com")
+     (open-url "http://mail.yahoo.com/")
      (open-snarf . webmail-yahoo-open)
      (login-url;; yahoo will not accept GET
       content 
@@ -102,7 +99,7 @@
     (netaddress
      (paranoid cookie post)
      (address . "www.netaddress.com")
-     (open-url "http://www.netaddress.com")
+     (open-url "http://www.netaddress.com/")
      (open-snarf . webmail-netaddress-open)
      (login-url;; yahoo will not accept GET
       content 
