@@ -1,3 +1,25 @@
+2003-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.texi: Updated copyright line.
+	(Mailing Lists): Updated (renamed) function names.
+	(Header Commands): Updated (renamed) function names.
+	(Header Commands): Added message-to-list-only,
+	message-change-subject, message-cross-post-followup-to,
+	message-reduce-to-to-cc and message-add-archive-header.  Moved
+	message-sort-headers, message-insert-to, message-insert-newsgroups
+	and message-insert-disposition-notification-to from other
+	sections.
+	(Insertion): Added message-mark-inserted-region,
+	message-mark-insert-file.  Moved
+	message-insert-disposition-notification-to to section (Header
+	Commands).
+	(Various Commands): Moved message-insert-wide-reply,
+	message-insert-to, message-insert-newsgroups and
+	message-sort-headers to (Header Commands) section.
+	(Message Headers): Added message-subject-trailing-was-query.
+	(Insertion Variables): Added message-mark-insert-begin and
+	message-mark-insert-end.
+
 2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Optional Back End Functions): Addition.
