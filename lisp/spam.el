@@ -966,7 +966,6 @@ backends)."
 (spam-install-checkonly-backend 'spam-use-blackholes
 				'spam-check-blackholes)
 
-;; TODO: does anyone use hashcash?  We should remove it if not.
 (spam-install-checkonly-backend 'spam-use-hashcash
 				'spam-check-hashcash)
 

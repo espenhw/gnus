@@ -111,7 +111,8 @@ is used instead.")
 
 (defun hashcash-generate-payment (str val)
   "Generate a hashcash payment by finding a VAL-bit collison on STR."
-  (if (> val 0)
+  (if (and (> val 0) 
+	   hashcash-path)
       (save-excursion
 	(set-buffer (get-buffer-create " *hashcash*"))
 	(erase-buffer)
@@ -119,15 +120,23 @@ is used instead.")
 		      "-m" "-q" "-b" (number-to-string val) str)
 	(goto-char (point-min))
 	(hashcash-token-substring))
-    nil))
+    (progn
+      (message "No hashcash binary found")
+      (sleep-for 1)
+      nil)))
 
 (defun hashcash-check-payment (token str val)
   "Check the validity of a hashcash payment."
-  (zerop (call-process hashcash-path nil nil nil "-c"
-		       "-d" "-f" hashcash-double-spend-database
-		       "-b" (number-to-string val)
-		       "-r" str
-		       token)))
+  (if hashcash-path
+      (zerop (call-process hashcash-path nil nil nil "-c"
+			   "-d" "-f" hashcash-double-spend-database
+			   "-b" (number-to-string val)
+			   "-r" str
+			   token))
+    (progn
+      (message "No hashcash binary found")
+      (sleep-for 1)
+      nil)))
 
 (defun hashcash-version (token)
   "Find the format version of a hashcash token."

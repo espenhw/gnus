@@ -1,3 +1,11 @@
+2004-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* hashcash.el (hashcash-generate-payment)
+	(hashcash-check-payment): do the right thing if hashcash-path is
+	nil (because the hashcash program could not be found)
+
+	* spam.el (spam-use-hashcash): remove comment
+
 2004-09-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-cache.el (gnus-cache-possibly-remove-articles-1)
