@@ -189,6 +189,21 @@ server there that you can connect to.  See also
 (defvoo nntp-coding-system-for-write 'binary
   "*Coding system to write to NNTP.")
 
+;; Marks
+(defvoo nntp-marks-is-evil nil
+  "*If non-nil, GNus will never generate and use marks file for nntp groups.
+See `nnml-marks-is-evil' for more information.")
+
+(defvoo nntp-marks-file-name ".marks")
+(defvoo nntp-marks nil)
+(defvar nntp-marks-modtime (gnus-make-hashtable))
+
+(defcustom nntp-marks-directory
+  (nnheader-concat gnus-directory "marks/")
+  "*The directory where marks for nntp groups will be stored."
+  :group 'gnus
+  :type 'directory)
+
 (defcustom nntp-authinfo-file "~/.authinfo"
   ".netrc-like file that holds nntp authinfo passwords."
   :type
@@ -1008,6 +1023,53 @@ command whose response triggered the error."
 
 (deffoo nntp-asynchronous-p ()
   t)
+
+(deffoo nntp-request-set-mark (group actions &optional server)
+  (nntp-possibly-change-group group server)
+  (unless nntp-marks-is-evil
+    (nntp-open-marks group server)
+    (dolist (action actions)
+      (let ((range (nth 0 action))
+	    (what  (nth 1 action))
+	    (marks (nth 2 action)))
+	(assert (or (eq what 'add) (eq what 'del)) nil
+		"Unknown request-set-mark action: %s" what)
+	(dolist (mark marks)
+	  (setq nntp-marks (gnus-update-alist-soft
+			    mark
+			    (funcall (if (eq what 'add) 'gnus-range-add
+				       'gnus-remove-from-range)
+				     (cdr (assoc mark nntp-marks)) range)
+			    nntp-marks)))))
+    (nntp-save-marks group server))
+  nil)
+
+(deffoo nntp-request-update-info (group info &optional server)
+  (nntp-possibly-change-group group server)
+  (when (and (not nntp-marks-is-evil) (nntp-marks-changed-p group))
+    (nnheader-message 8 "Updating marks for %s..." group)
+    (nntp-open-marks group server)
+    ;; Update info using `nntp-marks'.
+    (mapc (lambda (pred)
+	    (unless (memq (cdr pred) gnus-article-unpropagated-mark-lists)
+	      (gnus-info-set-marks
+	       info
+	       (gnus-update-alist-soft
+		(cdr pred)
+		(cdr (assq (cdr pred) nntp-marks))
+		(gnus-info-marks info))
+	       t)))
+	  gnus-article-mark-lists)
+    (let ((seen (cdr (assq 'read nntp-marks))))
+      (gnus-info-set-read info
+			  (if (and (integerp (car seen))
+				   (null (cdr seen)))
+			      (list (cons (car seen) (car seen)))
+			    seen)))
+    (nnheader-message 8 "Updating marks for %s...done" group))
+  info)
+
+
 
 ;;; Hooky functions.
 
@@ -1905,6 +1967,72 @@ Please refer to the following variables to customize the connection:
 	(forward-line 1)
 	(delete-region (point) (point-max)))
       proc)))
+
+;; Marks handling
+
+(defun nntp-possibly-create-directory (group)
+  (let ((dir (nnmail-group-pathname group nntp-marks-directory)))
+    (unless (file-exists-p dir)
+      (make-directory (directory-file-name dir) t)
+      (nnheader-message 5 "Creating nntp marks directory %s" dir))))
+
+(defun nntp-marks-changed-p (group)
+  (let ((file (expand-file-name
+	       nntp-marks-file-name 
+	       (nnmail-group-pathname group nntp-marks-directory))))
+    (if (null (gnus-gethash file nntp-marks-modtime))
+	t ;; never looked at marks file, assume it has changed
+      (not (equal (gnus-gethash file nntp-marks-modtime)
+		  (nth 5 (file-attributes file)))))))
+
+(defun nntp-save-marks (group server)
+  (let ((file-name-coding-system nnmail-pathname-coding-system)
+	(file (expand-file-name
+	       nntp-marks-file-name 
+	       (nnmail-group-pathname group nntp-marks-directory))))
+    (condition-case err
+	(progn
+	  (nntp-possibly-create-directory group)
+	  (with-temp-file file
+	    (erase-buffer)
+	    (gnus-prin1 nntp-marks)
+	    (insert "\n"))
+	  (gnus-sethash file
+			(nth 5 (file-attributes file))
+			nntp-marks-modtime))
+      (error (or (gnus-yes-or-no-p
+		  (format "Could not write to %s (%s).  Continue? " file err))
+		 (error "Cannot write to %s (%s)" file err))))))
+
+(defun nntp-open-marks (group server)
+  (let ((file (expand-file-name
+	       nntp-marks-file-name
+	       (nnmail-group-pathname group nntp-marks-directory))))
+    (if (file-exists-p file)
+	(condition-case err
+	    (with-temp-buffer
+	      (gnus-sethash file (nth 5 (file-attributes file))
+			    nntp-marks-modtime)
+	      (nnheader-insert-file-contents file)
+	      (setq nntp-marks (read (current-buffer)))
+	      (dolist (el gnus-article-unpropagated-mark-lists)
+		(setq nntp-marks (gnus-remassoc el nntp-marks))))
+	  (error (or (gnus-yes-or-no-p
+		      (format "Error reading nntp marks file %s (%s).  Continuing will use marks from .newsrc.eld.  Continue? " file err))
+		     (error "Cannot read nntp marks file %s (%s)" file err))))
+      ;; User didn't have a .marks file.  Probably first time
+      ;; user of the .marks stuff.  Bootstrap it from .newsrc.eld.
+      (let ((info (gnus-get-info
+		   (gnus-group-prefixed-name
+		    group
+		    (gnus-server-to-method (format "nntp:%s" server))))))
+	(nnheader-message 7 "Bootstrapping marks for %s..." group)
+	(setq nntp-marks (gnus-info-marks info))
+	(push (cons 'read (gnus-info-read info)) nntp-marks)
+	(dolist (el gnus-article-unpropagated-mark-lists)
+	  (setq nntp-marks (gnus-remassoc el nntp-marks)))
+	(nntp-save-marks group server)
+	(nnheader-message 7 "Bootstrapping marks for %s...done" group)))))
 
 (provide 'nntp)
 
