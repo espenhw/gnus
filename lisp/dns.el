@@ -348,12 +348,19 @@ If TCP-P, the first two bytes of the package with be the length field."
 	 ;; connection to the DNS server.
 	 (open-network-stream "dns" (current-buffer) server "domain")))))
 
-(defun query-dns (name &optional type fullp)
+(defun query-dns (name &optional type fullp reversep)
   "Query a DNS server for NAME of TYPE.
-If FULLP, return the entire record returned."
+If FULLP, return the entire record returned.
+If REVERSEP, look up an IP address."
   (setq type (or type 'A))
   (unless dns-servers
     (dns-parse-resolv-conf))
+
+  (when reversep
+    (setq name (concat
+		(mapconcat 'identity (nreverse (split-string name "\\.")) ".")
+		".in-addr.arpa")
+	  type 'PTR))
 
   (if (not dns-servers)
       (message "No DNS server configuration found")
