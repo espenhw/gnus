@@ -2049,7 +2049,7 @@ unfolded."
 (defun article-display-face ()
   "Display any Face headers in the header."
   (interactive)
-  (let ((wash-face-p (inhibit-read-only t)))
+  (let ((wash-face-p buffer-read-only))
     (gnus-with-article-headers
       ;; When displaying parts, this function can be called several times on
       ;; the same article, without any intended toggle semantic (as typing `W
@@ -2089,7 +2089,7 @@ unfolded."
 (defun article-display-x-face (&optional force)
   "Look for an X-Face header and display it if present."
   (interactive (list 'force))
-  (let ((wash-face-p (inhibit-read-only t)))	;; When type `W f'
+  (let ((wash-face-p buffer-read-only))	;; When type `W f'
     (gnus-with-article-headers
       ;; Delete the old process, if any.
       (when (process-status "article-x-face")
