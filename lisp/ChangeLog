@@ -1,8 +1,20 @@
+2002-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-auto-save-coding-system): Default to
+	iso-2022-7bit.
+
+	* nndraft.el (nndraft-request-article): Decode an article using
+	the coding-system emacs-mule if it seems to have been saved using
+	emacs-mule.
+	(nndraft-request-replace-article): Use message-draft-coding-system
+	instead of mm-auto-save-coding-system for the draft or delayed
+	group.
+
 2002-10-28  Josh  <huber@alum.wpi.edu>
 
 	* mml.el (mml-mode-map): Fixed keybindings for mml-secure-*
 	functions.
-	
+
 2002-10-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 	From mah@everybody.org (Mark A. Hershberger).
 

@@ -107,17 +107,35 @@
     (let* ((file (nndraft-article-filename id))
 	   (auto (nndraft-auto-save-file-name file))
 	   (newest (if (file-newer-than-file-p file auto) file auto))
-	   (nntp-server-buffer (or buffer nntp-server-buffer)))
+	   (nntp-server-buffer (or buffer nntp-server-buffer))
+	   ;; The default value for `message-draft-coding-system' was
+	   ;; `emacs-mule' for Emacs in the past, and the existing draft
+	   ;; files may have been saved using that coding-system.
+	   (maybe-emacs-mule-p (and (not (featurep 'xemacs))
+				    (eq message-draft-coding-system
+					;; The present default value.
+					'iso-2022-7bit)
+				    (mm-coding-system-p 'emacs-mule))))
       (when (and (file-exists-p newest)
 		 (let ((nnmail-file-coding-system
 			(if (file-newer-than-file-p file auto)
 			    (if (member group '("drafts" "delayed"))
-				message-draft-coding-system
+				(if maybe-emacs-mule-p
+				    mm-text-coding-system
+				  message-draft-coding-system)
 			      mm-text-coding-system)
 			  mm-auto-save-coding-system)))
 		   (nnmail-find-file newest)))
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
+	  (when maybe-emacs-mule-p
+	    (goto-char (point-min))
+	    (if (re-search-forward "[^\000-\177]" nil t)
+		;; Consider the file has been saved using `emacs-mule'.
+		(mm-decode-coding-region (point-min) (point-max)
+					 'emacs-mule)
+	      (mm-decode-coding-region (point-min) (point-max)
+				       message-draft-coding-system)))
 	  (goto-char (point-min))
 	  ;; If there's a mail header separator in this file,
 	  ;; we remove it.
@@ -219,8 +237,8 @@
 (deffoo nndraft-request-replace-article (article group buffer)
   (nndraft-possibly-change-group group)
   (let ((nnmail-file-coding-system
-	 (if (equal group "drafts")
-	     mm-auto-save-coding-system
+	 (if (member group '("drafts" "delayed"))
+	     message-draft-coding-system
 	   mm-text-coding-system)))
     (nnoo-parent-function 'nndraft 'nnmh-request-replace-article
 			  (list article group buffer))))

@@ -151,15 +151,11 @@
   "Text coding system for write.")
 
 (defvar mm-auto-save-coding-system
-  (cond
-   ((mm-coding-system-p 'emacs-mule)
-    (if (memq system-type '(windows-nt ms-dos ms-windows))
-	(if (mm-coding-system-p 'emacs-mule-dos)
-	    'emacs-mule-dos mm-binary-coding-system)
-      'emacs-mule))
-   ((mm-coding-system-p 'escape-quoted) 'escape-quoted)
-   (t mm-binary-coding-system))
-  "Coding system of auto save file.")
+  (if (mm-coding-system-p 'iso-2022-7bit)
+      'iso-2022-7bit)
+  "Coding system of auto save file.
+Note that the default value for this variable was emacs-mule for Emacs
+or escape-quoted for XEmacs-MULE in the past.")
 
 (defvar mm-universal-coding-system mm-auto-save-coding-system
   "The universal coding system.")
