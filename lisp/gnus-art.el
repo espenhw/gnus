@@ -2205,7 +2205,7 @@ If READ-CHARSET, ask for a coding system."
 	(save-restriction
 	  (narrow-to-region (point) (point-max))
 	  (let* ((func (or gnus-article-wash-function mm-text-html-renderer))
-		 (entry (assq func mm-text-html-washer-alistq)))
+		 (entry (assq func mm-text-html-washer-alist)))
 	    (when entry
 	      (setq func (cdr entry)))
 	    (cond
