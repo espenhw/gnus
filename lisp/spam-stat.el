@@ -193,16 +193,6 @@ This is set by hooking into Gnus.")
 (defvar spam-stat-buffer-name " *spam stat buffer*"
   "Name of the `spam-stat-buffer'.")
 
-;; Functions missing in Emacs 20
-
-(when (memq nil (mapcar 'fboundp
-			'(gethash hash-table-count make-hash-table
-				  mapc puthash)))
-  (require 'cl)
-  (unless (fboundp 'puthash)
-    ;; alias puthash is missing from Emacs 20 cl-extra.el
-    (defalias 'puthash 'cl-puthash)))
-
 ;; Hooking into Gnus
 
 (defun spam-stat-store-current-buffer ()

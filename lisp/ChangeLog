@@ -2,6 +2,7 @@
 
 	* spam-stat.el (with-syntax-table): Remove with-syntax-table
 	definition.
+	Remove Emacs 20 hash table compatibility code.
 
 	* rfc2047.el (with-syntax-table): Remove with-syntax-table Emacs
 	20 compatibility code.
