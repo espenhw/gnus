@@ -1,3 +1,9 @@
+2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Summary Score Commands): Add `f' to
+	`gnus-score-find-trace'.
+	(Score File Editing): Added `V t'.
+
 2003-12-31  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* gnus.texi (XEmacs): Update list of Gnus XEmacs package

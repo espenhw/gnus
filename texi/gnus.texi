@@ -18663,9 +18663,9 @@ Display the score of the current article
 @findex gnus-score-find-trace
 Display all score rules that have been used on the current article
 (@code{gnus-score-find-trace}).  In the @code{*Score Trace*} buffer, you
-can use @kbd{q} to quit.  @kbd{e} edits the corresponding score file.
-When point is on a string within the match element, @kbd{e} will try to
-bring you to this string in the score file.
+may type @kbd{e} to edit score file corresponding to the score rule on
+current line and @kbd{f} to format (@code{gnus-score-pretty-print}) the
+score file and edit it.
 
 @item V w
 @kindex V w (Summary)
@@ -19405,8 +19405,8 @@ Type @kbd{M-x gnus-score-mode} to use this mode.
 @vindex gnus-score-mode-hook
 @code{gnus-score-menu-hook} is run in score mode buffers.
 
-In the summary buffer you can use commands like @kbd{V f} and @kbd{V
-e} to begin editing score files.
+In the summary buffer you can use commands like @kbd{V f}, @kbd{V e} and
+@kbd{V t} to begin editing score files.
 
 
 @node Adaptive Scoring
