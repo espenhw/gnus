@@ -14693,13 +14693,15 @@ the name of the same group that the parameter belongs to, then
 articles will be moved to the specified group during expiry before
 being deleted.  @emph{If this is set to an nnmaildir group, the
 article will be just as old in the destination group as it was in the
-source group.} So be careful with @code{expire-age} in the destination
-group.  If this is set to the name of the same group that the
-parameter belongs to, then the article is not expired at all.  If you
-use the vector form, the first element is evaluated once for each
+source group.}  So be careful with @code{expire-age} in the
+destination group.  If this is set to the name of the same group that
+the parameter belongs to, then the article is not expired at all.  If
+you use the vector form, the first element is evaluated once for each
 article.  So that form can refer to
 @code{nnmaildir-article-file-name}, etc., to decide where to put the
-article.
+article.  @emph{If this parameter is not set, nnmaildir does not fall
+back to the @code{expiry-target} group parameter or the
+@code{nnmail-expiry-target} variable.}
 
 @item read-only
 If this is set to @code{t}, nnmaildir will treat the articles in this

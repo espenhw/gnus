@@ -1,3 +1,7 @@
+2003-03-27  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus.texi (Maildir): Note nnmail-expiry-target incompatibility.
+
 2003-03-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Adaptive Scoring): Fix.
@@ -39,11 +43,11 @@
 	(Agent Expiry): Expanded description.
 	(Agent Variables): Fixed and new descriptions.
 
-        * infohack.el (batch-makeinfo): Provide local implementation of
+	* infohack.el (batch-makeinfo): Provide local implementation of
 	subst-char-in-region as the built-in implementation is unreliable
 	on Windows XP (Intermittent failure results in build looping
 	forever).
-	
+
 2003-03-18  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus.texi (Maildir): Replace create-directory with
@@ -217,7 +221,7 @@
 	(Mail Group Commands): do.
 
 	* gnus.texi: Mark-up fixes.
-	
+
 2003-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi: replace `H' mark with `$' mark
@@ -275,7 +279,7 @@
 	(gnus-agent-mark-unread-after-downloaded): New variable.
 	(gnus-agent-consider-all-articles): New variable.
 	(gnus-agent-max-fetch-size): New variable.
-	
+
 2003-01-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnusref.tex (subsection*{Notes}): do.
@@ -296,11 +300,11 @@
 
 	* gnus.texi: Markup fixes: use @code for nil and t, use @file for
 	files.
-	
+
 	* message.texi: do.
 
 	* emacs-mime.texi: do.
-	
+
 2003-01-19  Jesper Harder  <harder@ifa.au.dk>
 
 	* dir (File): Add pgg.
@@ -325,9 +329,9 @@
 
 2003-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus.texi: Don't use `path' in some cases. 
+	* gnus.texi: Don't use `path' in some cases.
 	From the GNU coding standards:
-	
+
 	    Please do not use the term ``pathname'' that is used in Unix
 	    documentation; use ``file name'' (two words) instead.  We use
 	    the term ``path'' only for search paths, which are lists of
@@ -402,7 +406,7 @@
 
 2003-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus.texi (Filtering Spam Using spam.el, ifile spam filtering) 
+	* gnus.texi (Filtering Spam Using spam.el, ifile spam filtering)
 	(spam-stat spam filtering): added new functionality and explained
 	old functionality better, especially where it has changed in
 	ham/spam/unclassified group exit processing.
@@ -454,8 +458,8 @@
 
 2003-01-05  Teodor Zlatanov  <tzz@lifelogs.com>
 
-	* gnus.texi (Filtering Spam Using spam.el) 
-	(Blacklists and Whitelists, BBDB Whitelists, Blackholes) 
+	* gnus.texi (Filtering Spam Using spam.el)
+	(Blacklists and Whitelists, BBDB Whitelists, Blackholes)
 	(Bogofilter, Ifile spam filtering, Extending spam.el): updated
 	documentation for the new spam.el functionality
 
@@ -518,7 +522,7 @@
 2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Loose Threads): add
-	gnus-summary-make-false-root-always. 
+	gnus-summary-make-false-root-always.
 	(Finding the Parent): Change name of nnweb server.
 
 2002-12-22  Jesper Harder  <harder@ifa.au.dk>
@@ -536,7 +540,7 @@
 
 	* gnus.texi (Optional Back End Functions):
 	nnchoke-request-update-info need not return the info object.
-	
+
 2002-12-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnusref.tex: Additions.
