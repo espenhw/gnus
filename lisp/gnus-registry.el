@@ -369,7 +369,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	     nnmail-split-fancy-with-parent-ignore-groups
 	   (list nnmail-split-fancy-with-parent-ignore-groups)))
 	references res)
-    (if refstr
+    ;; the references string must be valid and parse to valid references
+    (if (and refstr (gnus-extract-references refstr))
 	(progn
 	  (setq references (nreverse (gnus-extract-references refstr)))
 	  (mapcar (lambda (x)

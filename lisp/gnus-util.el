@@ -474,6 +474,7 @@ inside loops."
 (defun gnus-split-references (references)
   "Return a list of Message-IDs in REFERENCES."
   (let ((beg 0)
+	(references (or references ""))
 	ids)
     (while (string-match "<[^<]+[^< \t]" references beg)
       (push (substring references (match-beginning 0) (setq beg (match-end 0)))

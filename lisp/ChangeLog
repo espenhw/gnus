@@ -1,5 +1,11 @@
 2004-10-18  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-util.el (gnus-split-references): accept a nil references
+	string and go on blissfully
+
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): catch
+	cases where the references string is non-nil but has no references
+
 	* encrypt.el: add autoload tags
 
 	* spam.el (spam-resolve-registrations-routine): remove article
