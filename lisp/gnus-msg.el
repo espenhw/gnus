@@ -246,6 +246,13 @@ news."
   :group 'gnus-message
   :type 'boolean)
 
+(defcustom gnus-summary-resend-default-address t
+  "If non-nil, Gnus tries to suggest a default address to resend to.
+If nil, the address field will always be empty after invoking
+`gnus-summary-resend-message'."
+  :group 'gnus-message
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar gnus-inhibit-posting-styles nil
@@ -1161,7 +1168,8 @@ For the `inline' alternatives, also see the variable
   (interactive
    (list (message-read-from-minibuffer
 	  "Resend message(s) to: "
-	  (when (gnus-buffer-live-p gnus-original-article-buffer)
+	  (when (and gnus-summary-resend-default-address
+		     (gnus-buffer-live-p gnus-original-article-buffer))
 	    ;; If some other article is currently selected, the
 	    ;; initial-contents is wrong. Whatever, it is just the
 	    ;; initial-contents.
