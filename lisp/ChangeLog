@@ -1,3 +1,9 @@
+1999-12-05  Simon Josefsson  <jas@pdc.kth.se>
+
+	* imap.el: Use format-spec for ssl program.
+	* imap.el (imap-ssl-arguments): Removed.
+	(imap-ssl-open-{1,2}): Removed.
+
 1999-12-04  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-start.el (gnus-site-init-file): Use `condition-case'

@@ -123,7 +123,6 @@
 ;; o Accept list of articles instead of message set string in most
 ;;   imap-message-* functions.
 ;; o Cyrus IMAPd 1.6.x `imtest' support in the imtest wrapper
-;; o Format-spec'ify the ssl horror
 ;;
 ;; Revision history:
 ;;
@@ -152,27 +151,14 @@
 program should accept IMAP commands on stdin and return responses to
 stdout.")
 
-(defvar imap-ssl-program 'auto
-  "Program to use for SSL connections.
-It is called like this:
-
-`imap-ssl-program' `imap-ssl-arguments' -ssl2 -connect host:port
-
-where -ssl2 can also be -ssl3 to indicate which ssl version to use.  It
-should accept IMAP commands on stdin and return responses to stdout.
-
-For SSLeay set this to \"s_client\" and `imap-ssl-arguments' to nil,
-for OpenSSL set this to \"openssl\" and `imap-ssl-arguments' to
-\"s_client\".
-
-If 'auto it tries s_client first and then openssl.")
-
-(defvar imap-ssl-arguments nil
-  "Arguments to pass to `imap-ssl-program'.
-
-For SSLeay set this to nil, for OpenSSL to \"s_client\".
-
-If `imap-ssl-program' is 'auto this variable has no effect.")
+(defvar imap-ssl-program '("openssl s_client -ssl3 -connect %s:%p"
+			   "openssl s_client -ssl2 -connect %s:%p"
+			   "s_client -ssl3 -connect %s:%p"
+			   "s_client -ssl2 -connect %s:%p")
+  "A string, or list of strings, containing commands for SSL connections.
+Within a string, %s is replaced with the server address and %p with
+port number on server.  The program should accept IMAP commands on
+stdin and return responses to stdout.")
 
 (defvar imap-default-user (user-login-name)
   "Default username to use.")
@@ -422,55 +408,48 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defun imap-ssl-p (buffer)
   nil)
 
-(defun imap-ssl-open-2 (name buffer server port &optional extra-ssl-args)
-  (let* ((port (or port imap-default-ssl-port))
-	 (coding-system-for-read imap-coding-system-for-read)
-	 (coding-system-for-write imap-coding-system-for-write)
-	 (ssl-program-name imap-ssl-program)
-	 (ssl-program-arguments (append imap-ssl-arguments extra-ssl-args
-					(list "-connect" 
-					      (format "%s:%d" server port))))
-	 (process (ignore-errors (open-ssl-stream name buffer server port))))
-    (when process
-      (with-current-buffer buffer
-	(goto-char (point-min))
-	(while (and (memq (process-status process) '(open run))
-		    (goto-char (point-max))
-		    (forward-line -1)
-		    (not (imap-parse-greeting)))
-	  (accept-process-output process 1)
-	  (sit-for 1))
-	(and imap-log
-	     (with-current-buffer (get-buffer-create imap-log)
-	       (imap-disable-multibyte)
-	       (buffer-disable-undo)
-	       (goto-char (point-max))
-	       (insert-buffer-substring buffer)))
-	(erase-buffer))
-      (when (memq (process-status process) '(open run))
-	process))))
-
-(defun imap-ssl-open-1 (name buffer server port &optional extra-ssl-args)
-  (or (and (eq imap-ssl-program 'auto)
-	   (let ((imap-ssl-program "s_client")
-		 (imap-ssl-arguments nil))
-	     (message "imap: Opening IMAP connection with %s %s..."
-		      imap-ssl-program (car-safe extra-ssl-args))
-	     (imap-ssl-open-2 name buffer server port extra-ssl-args)))
-      (and (eq imap-ssl-program 'auto)
-	   (let ((imap-ssl-program "openssl")
-		 (imap-ssl-arguments '("s_client")))
-	     (message "imap: Opening IMAP connection with %s %s..."
-		      imap-ssl-program (car-safe extra-ssl-args))
-	     (imap-ssl-open-2 name buffer server port extra-ssl-args)))
-      (and (not (eq imap-ssl-program 'auto))
-	   (progn (message "imap: Opening IMAP connection with %s %s..."
-			   imap-ssl-program (car-safe extra-ssl-args))
-		  (imap-ssl-open-2 name buffer server port extra-ssl-args)))))
-	   
 (defun imap-ssl-open (name buffer server port)
-  (or (imap-ssl-open-1 name buffer server port '("-ssl3"))
-      (imap-ssl-open-1 name buffer server port '("-ssl2"))))
+  "Open a SSL connection to server."
+  (let ((cmds (if (listp imap-ssl-program) imap-ssl-program
+		(list imap-ssl-program)))
+	cmd done)
+    (while (and (not done) (setq cmd (pop cmds)))
+      (message "imap: Opening SSL connection with `%s'..." cmd)
+      (let* ((port (or port imap-default-ssl-port))
+	     (coding-system-for-read imap-coding-system-for-read)
+	     (coding-system-for-write imap-coding-system-for-write)
+	     (ssl-program-name shell-file-name)
+	     (ssl-program-arguments
+	      (list shell-command-switch
+		    (format-spec cmd (format-spec-make
+				      ?s server
+				      ?p (number-to-string port)))))
+	     process)
+	(when (setq process (ignore-errors (open-ssl-stream
+					    name buffer server port)))
+	  (with-current-buffer buffer
+	    (goto-char (point-min))
+	    (while (and (memq (process-status process) '(open run))
+			(goto-char (point-max))
+			(forward-line -1)
+			(not (imap-parse-greeting)))
+	      (accept-process-output process 1)
+	      (sit-for 1))
+	    (and imap-log
+		 (with-current-buffer (get-buffer-create imap-log)
+		   (imap-disable-multibyte)
+		   (buffer-disable-undo)
+		   (goto-char (point-max))
+		   (insert-buffer-substring buffer)))
+	    (erase-buffer)
+	    (when (memq (process-status process) '(open run))
+	      (setq done process))))))
+    (if done
+	(progn
+	  (message "imap: Opening SSL connection with `%s'...done" cmd)
+	  done)
+      (message "imap: Failed opening SSL connection")
+      nil)))
 
 (defun imap-network-p (buffer)
   t)
@@ -2185,8 +2164,6 @@ Return nil if no complete line has arrived."
 	    imap-kerberos4s-p
 	    imap-kerberos4-open
 	    imap-ssl-p
-	    imap-ssl-open-2
-	    imap-ssl-open-1
 	    imap-ssl-open
 	    imap-network-p
 	    imap-network-open
