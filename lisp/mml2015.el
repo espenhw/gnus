@@ -77,27 +77,49 @@
 (defvar mml2015-verify-function 'mailcrypt-verify)
 
 (defun mml2015-mailcrypt-decrypt (handle ctl)
-  (let (child handles result)
-    (unless (setq child (mm-find-part-by-type 
-			 (cdr handle) 
-			 "application/octet-stream" nil t))
-      (error "Corrupted pgp-encrypted part."))
-    (with-temp-buffer
-      (mm-insert-part child)
-      (setq result (funcall mml2015-decrypt-function))
-      (unless (car result)
-	(error "Decrypting error."))
-      (setq handles (mm-dissect-buffer t)))
-    (mm-destroy-parts handle)
-    (if (listp (car handles))
-	handles
-      (list handles))))
+  (catch 'error
+    (let (child handles result)
+      (unless (setq child (mm-find-part-by-type 
+			   (cdr handle) 
+			   "application/octet-stream" nil t))
+	(mm-set-handle-multipart-parameter 
+	 mm-security-handle 'gnus-info "Corrupted")
+	(throw 'error handle))
+      (with-temp-buffer
+	(mm-insert-part child)
+	(setq result 
+	      (condition-case err
+		  (funcall mml2015-decrypt-function)
+		(error 
+		 (mm-set-handle-multipart-parameter 
+		  mm-security-handle 'gnus-details (cadr err)) 
+		 nil)))
+	(unless (car result)
+	  (mm-set-handle-multipart-parameter 
+	   mm-security-handle 'gnus-info "Failed")
+	  (throw 'error handle))
+	(setq handles (mm-dissect-buffer t)))
+      (mm-destroy-parts handle)
+      (mm-set-handle-multipart-parameter 
+       mm-security-handle 'gnus-info "OK")
+      (if (listp (car handles))
+	  handles
+	(list handles)))))
 
 (defun mml2015-mailcrypt-clear-decrypt ()
   (let (result)
-    (setq result (funcall mml2015-decrypt-function))
-    (unless (car result)
-      (error "Decrypting error."))))
+    (setq result 
+	  (condition-case err
+	      (funcall mml2015-decrypt-function)
+	    (error 
+	     (mm-set-handle-multipart-parameter 
+	      mm-security-handle 'gnus-details (cadr err)) 
+	     nil)))
+    (if (car result)
+	(mm-set-handle-multipart-parameter 
+	 mm-security-handle 'gnus-info "OK")
+      (mm-set-handle-multipart-parameter 
+       mm-security-handle 'gnus-info "Failed"))))
 
 (defun mml2015-fix-micalg (alg)
   (upcase
@@ -106,31 +128,53 @@
      alg)))
 
 (defun mml2015-mailcrypt-verify (handle ctl)
-  (let (part)
-    (unless (setq part (mm-find-raw-part-by-type 
-			 ctl (or (mail-content-type-get ctl 'protocol)
-				 "application/pgp-signature")
-			 t))
-      (error "Corrupted pgp-signature part."))
-    (with-temp-buffer
-      (insert "-----BEGIN PGP SIGNED MESSAGE-----\n")
-      (insert (format "Hash: %s\n\n" 
-		      (or (mml2015-fix-micalg
-			   (mail-content-type-get ctl 'micalg))
-			  "SHA1")))
-      (insert part "\n")
-      (goto-char (point-max))
-      (unless (setq part (mm-find-part-by-type 
-			   (cdr handle) "application/pgp-signature" nil t))
-	(error "Corrupted pgp-signature part."))
-      (mm-insert-part part)
-      (unless (funcall mml2015-verify-function)
-	(error "Verify error.")))
-    handle))
+  (catch 'error
+    (let (part)
+      (unless (setq part (mm-find-raw-part-by-type 
+			  ctl (or (mail-content-type-get ctl 'protocol)
+				  "application/pgp-signature")
+			  t))
+	(mm-set-handle-multipart-parameter 
+	 mm-security-handle 'gnus-info "Corrupted")
+	(throw 'error handle))
+      (with-temp-buffer
+	(insert "-----BEGIN PGP SIGNED MESSAGE-----\n")
+	(insert (format "Hash: %s\n\n" 
+			(or (mml2015-fix-micalg
+			     (mail-content-type-get ctl 'micalg))
+			    "SHA1")))
+	(insert part "\n")
+	(goto-char (point-max))
+	(unless (setq part (mm-find-part-by-type 
+			    (cdr handle) "application/pgp-signature" nil t))
+	  (mm-set-handle-multipart-parameter 
+	   mm-security-handle 'gnus-info "Corrupted")
+	  (throw 'error handle))
+	(mm-insert-part part)
+	(unless (condition-case err
+		    (funcall mml2015-verify-function)
+		  (error 
+		   (mm-set-handle-multipart-parameter 
+		    mm-security-handle 'gnus-details (cadr err)) 
+		   nil))
+	  (mm-set-handle-multipart-parameter 
+	   mm-security-handle 'gnus-info "Failed")
+	  (throw 'error handle)))
+      (mm-set-handle-multipart-parameter 
+       mm-security-handle 'gnus-info "OK")
+      handle)))
 
 (defun mml2015-mailcrypt-clear-verify ()
-  (unless (funcall mml2015-verify-function)
-    (error "Verify error.")))
+  (if (condition-case err
+	  (funcall mml2015-verify-function)
+	(error 
+	 (mm-set-handle-multipart-parameter 
+	  mm-security-handle 'gnus-details (cadr err)) 
+	 nil))
+      (mm-set-handle-multipart-parameter 
+       mm-security-handle 'gnus-info "OK")
+    (mm-set-handle-multipart-parameter 
+     mm-security-handle 'gnus-info "Failed")))
 
 (defun mml2015-mailcrypt-sign (cont)
   (mc-sign-generic (message-options-get 'message-sender)
@@ -227,7 +271,9 @@
       ;; Some wrong with the return value, check plain text buffer.
       (if (> (point-max) (point-min))
 	  '(t)
-	(pop-to-buffer mml2015-result-buffer)
+	(mm-set-handle-multipart-parameter 
+	 mm-security-handle 'gnus-details 
+	 (buffer-string mml2015-result-buffer))
 	nil))))
 
 (defun mml2015-gpg-decrypt (handle ctl)
@@ -237,29 +283,41 @@
 (defun mml2015-gpg-clear-decrypt ()
   (let (result)
     (setq result (mml2015-gpg-decrypt-1))
-    (unless (car result)
-      (error "Decrypting error."))))
+    (if (car result)
+	(mm-set-handle-multipart-parameter 
+	 mm-security-handle 'gnus-info "OK")
+      (mm-set-handle-multipart-parameter 
+       mm-security-handle 'gnus-info "Failed"))))
 
 (defun mml2015-gpg-verify (handle ctl)
-  (let (part message signature)
-    (unless (setq part (mm-find-raw-part-by-type 
-			 ctl (or (mail-content-type-get ctl 'protocol)
-				 "application/pgp-signature")
-			 t))
-      (error "Corrupted pgp-signature part."))
-    (with-temp-buffer
-      (setq message (current-buffer))
-      (insert part)
+  (catch 'error
+    (let (part message signature)
+      (unless (setq part (mm-find-raw-part-by-type 
+			  ctl (or (mail-content-type-get ctl 'protocol)
+				  "application/pgp-signature")
+			  t))
+	(mm-set-handle-multipart-parameter 
+	 mm-security-handle 'gnus-info "Corrupted")
+	(throw 'error handle))
       (with-temp-buffer
-	(setq signature (current-buffer))
-	(unless (setq part (mm-find-part-by-type 
-			    (cdr handle) "application/pgp-signature" nil t))
-	  (error "Corrupted pgp-signature part."))
-	(mm-insert-part part)
-	(unless (gpg-verify message signature mml2015-result-buffer)
-	  (pop-to-buffer mml2015-result-buffer)
-	  (error "Verify error.")))))
-  handle)
+	(setq message (current-buffer))
+	(insert part)
+	(with-temp-buffer
+	  (setq signature (current-buffer))
+	  (unless (setq part (mm-find-part-by-type 
+			      (cdr handle) "application/pgp-signature" nil t))
+	    (mm-set-handle-multipart-parameter 
+	     mm-security-handle 'gnus-info "Corrupted")
+	    (throw 'error handle))
+	  (mm-insert-part part)
+	  (unless (gpg-verify message signature mml2015-result-buffer)
+	    (mm-set-handle-multipart-parameter 
+	     mm-security-handle 'gnus-details 
+	     (buffer-string mml2015-result-buffer))
+	    (mm-set-handle-multipart-parameter 
+	     mm-security-handle 'gnus-info "Failed")
+	    (throw 'error handle))))
+      handle)))
 
 (defun mml2015-gpg-sign (cont)
   (let ((boundary 

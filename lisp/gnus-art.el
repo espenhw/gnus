@@ -3491,10 +3491,12 @@ In no internal viewer is available, use an external viewer."
    ((equal (car handle) "multipart/signed")
     (or (memq 'signed gnus-article-wash-types)
 	(push 'signed gnus-article-wash-types))
+    (gnus-insert-mime-security-button handle)
     (gnus-mime-display-mixed (cdr handle)))
    ((equal (car handle) "multipart/encrypted")
     (or (memq 'encrypted gnus-article-wash-types)
 	(push 'encrypted gnus-article-wash-types))
+    (gnus-insert-mime-security-button handle)
     (gnus-mime-display-mixed (cdr handle)))
    (t
     (gnus-mime-display-mixed (cdr handle)))))
@@ -4979,6 +4981,79 @@ For example:
 	  (when gnus-use-cache
 	    (gnus-cache-update-article
 	     (car gnus-article-current) (cdr gnus-article-current))))))))
+
+(defvar gnus-mime-security-button-line-format "%{%([[%t:%i]]%)%}\n"
+  "The following specs can be used:
+%t  The security MIME type
+%i  Additional info")
+
+(defvar gnus-mime-security-button-line-format-alist
+  '((?t gnus-tmp-type ?s)
+    (?i gnus-tmp-info ?s)))
+
+(defvar gnus-mime-security-button-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map gnus-article-mode-map)
+    (define-key map gnus-mouse-2 'gnus-article-push-button)
+    (define-key map "\r" 'gnus-article-press-button)
+    map))
+
+(defvar gnus-mime-security-details-buffer nil)
+
+(defun gnus-mime-security-show-details (handle)
+  (let ((details (mm-handle-multipart-ctl-parameter handle 'gnus-details)))
+    (if details
+	(progn
+	  (if (gnus-buffer-live-p gnus-mime-security-details-buffer)
+	      (with-current-buffer gnus-mime-security-details-buffer
+		(erase-buffer)
+		t)
+	    (setq gnus-mime-security-details-buffer
+		  (gnus-get-buffer-create "*MIME Security Details*")))
+	  (with-current-buffer gnus-mime-security-details-buffer
+	    (insert details))
+	  (pop-to-buffer gnus-mime-security-details-buffer))
+      (gnus-message 5 "No details."))))
+
+(defun gnus-insert-mime-security-button (handle &optional displayed)
+  (let* ((protocol (mm-handle-multipart-ctl-parameter handle 'protocol))
+	 (gnus-tmp-type
+	  (concat 
+	   (or (nth 2 (assoc protocol mm-verify-function-alist))
+	       (nth 2 (assoc protocol mm-decrypt-function-alist))
+	       "Unknown")
+	   (if (equal (car handle) "multipart/signed")
+	       " Signed" " Encrypted")))
+	 (gnus-tmp-info
+	  (or (mm-handle-multipart-ctl-parameter handle 'gnus-info)
+	      "Undecided"))
+	 b e)
+    (unless (bolp)
+      (insert "\n"))
+    (setq b (point))
+    (gnus-eval-format
+     gnus-mime-security-button-line-format 
+     gnus-mime-security-button-line-format-alist
+     `(local-map ,gnus-mime-security-button-map
+		 keymap ,gnus-mime-security-button-map
+		 gnus-callback gnus-mime-security-show-details
+		 article-type annotation
+		 gnus-data ,handle))
+    (setq e (point))
+    (widget-convert-button
+     'link b e
+     :mime-handle handle
+     :action 'gnus-widget-press-button
+     :button-keymap gnus-mime-security-button-map
+     :help-echo
+     (lambda (widget/window &optional overlay pos)
+       ;; Needed to properly clear the message due to a bug in
+       ;; wid-edit (XEmacs only).
+       (if (boundp 'help-echo-owns-message)
+	   (setq help-echo-owns-message t))
+       (format
+	"%S: show detail"
+	(aref gnus-mouse-2 0))))))
 
 (gnus-ems-redefine)
 

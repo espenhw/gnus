@@ -257,23 +257,22 @@ To disable dissecting shar codes, for instance, add
     (t (y-or-n-p "Verify pgp signed part?")))))
 
 (defun mm-uu-pgp-signed-extract ()
-  (or (memq 'signed gnus-article-wash-types)
-      (push 'signed gnus-article-wash-types))
-  (let ((buf (mm-uu-copy-to-buffer start-point end-point)))
+  (let ((buf (mm-uu-copy-to-buffer start-point end-point))
+	(mm-security-handle (list (format "multipart/signed"))))
+    (mm-set-handle-multipart-parameter 
+     mm-security-handle 'protocol "application/pgp-signature")
     (with-current-buffer buf
-      (condition-case err
-	  (funcall (mml2015-clear-verify-function))
-	(error
-	 (unless (y-or-n-p (format "%s, continue?" err))
-	   (kill-buffer buf)
-	   (error "Verify failure."))))
+      (funcall (mml2015-clear-verify-function))
       (goto-char (point-min))
       (if (search-forward "\n\n" nil t)
 	  (delete-region (point-min) (point)))
       (if (re-search-forward mm-uu-pgp-beginning-signature nil t)
 	  (delete-region (match-beginning 0) (point-max))))
-    (mm-make-handle buf
-		    '("text/plain"  (charset . gnus-decoded)))))
+    (setcdr mm-security-handle
+	    (list
+	     (mm-make-handle buf
+			     '("text/plain"  (charset . gnus-decoded)))))
+    mm-security-handle))
 
 (defun mm-uu-pgp-encrypted-test ()
   (and
@@ -286,18 +285,17 @@ To disable dissecting shar codes, for instance, add
     (t (y-or-n-p "Decrypt pgp encrypted part?")))))
 
 (defun mm-uu-pgp-encrypted-extract ()
-  (or (memq 'encrypted gnus-article-wash-types)
-      (push 'encrypted gnus-article-wash-types))
-  (let ((buf (mm-uu-copy-to-buffer start-point end-point)))
+  (let ((buf (mm-uu-copy-to-buffer start-point end-point))
+	(mm-security-handle (list (format "multipart/encrypted"))))
+    (mm-set-handle-multipart-parameter 
+     mm-security-handle 'protocol "application/pgp-encrypted")
     (with-current-buffer buf
-      (condition-case err
-	  (funcall (mml2015-clear-decrypt-function))
-	(error
-	 (unless (y-or-n-p (format "%s, continue?" err))
-	   (kill-buffer buf)
-	   (error "Decrypt failure.")))))
-    (mm-make-handle buf
-		    '("text/plain"  (charset . gnus-decoded)))))
+      (funcall (mml2015-clear-decrypt-function)))
+    (setcdr mm-security-handle
+	    (list
+	     (mm-make-handle buf
+			     '("text/plain"  (charset . gnus-decoded)))))
+    mm-security-handle))
 
 (defun mm-uu-gpg-key-skip-to-last ()
   (let ((point (point))

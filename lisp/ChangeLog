@@ -1,3 +1,12 @@
+2000-11-07 14:33:19  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-display-part): Show MIME security button.
+	(gnus-insert-mime-security-button): New function.
+	* mm-decode.el (mm-possibly-verify-or-decrypt): Add security info.
+	* mml2015.el:  Add security info when verify or decrypt.
+	* mm-uu.el (mm-uu-pgp-signed-extract): Use multipart.
+	(mm-uu-pgp-encrypted-extract): Ditto.
+
 2000-11-07 08:49:36  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-display-parts): New function.
