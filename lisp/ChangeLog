@@ -1,3 +1,22 @@
+2004-10-15  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-backend-article-list-property)
+	(spam-backend-get-article-todo-list)
+	(spam-backend-put-article-todo-list, )
+	(spam-summary-prepare-exit, spam-resolve-registrations-routine):
+	resolve registrations separately
+	(spam-register-routine): format comments
+	(spam-unregister-routine, spam-register-routine): always call with
+	specific-articles, no default list
+	(spam-summary-prepare-exit): use the spam-classifications function
+
+	* netrc.el (autoload, netrc-parse): use encrypt.el instead of
+	gnus-encrypt.el
+
+	* encrypt.el: copied from gnus-encrypt.el
+
+	* gnus-encrypt.el: commented that it's obsolete
+
 2004-10-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-score.el (gnus-adaptive-pretty-print): New variable.

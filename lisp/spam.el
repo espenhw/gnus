@@ -877,6 +877,32 @@ CLASSIFICATION is 'ham or 'spam."
      classification
      type)))
 
+(defun spam-backend-article-list-property (classification 
+					   &optional unregister)
+  "Property name of article list with CLASSIFICATION and UNREGISTER."
+  (let* ((r (if unregister "unregister" "register"))
+	 (prop (format "%s-%s" classification r)))
+    prop))
+
+(defun spam-backend-get-article-todo-list (backend 
+					   classification 
+					   &optional unregister)
+  "Get the articles to be processed for BACKEND and CLASSIFICATION.  
+With UNREGISTER, get articles to be unregistered.
+This is a temporary storage function - nothing here persists."
+  (get
+   backend 
+   (intern (spam-backend-article-list-property classification unregister))))
+
+(defun spam-backend-put-article-todo-list (backend classification list &optional unregister)
+  "Set the LIST of articles to be processed for BACKEND and CLASSIFICATION.
+With UNREGISTER, set articles to be unregistered.
+This is a temporary storage function - nothing here persists."
+  (put
+   backend
+   (intern (spam-backend-article-list-property classification unregister))
+   list))
+
 (defun spam-backend-ham-registration-function (backend)
   "Get the ham registration function for BACKEND."
   (get backend 'hrf))
@@ -1290,27 +1316,26 @@ addition to the set values for the group."
 	    ;; call spam-register-routine with specific articles to unregister,
 	    ;; when there are articles to unregister and the check is enabled
 	    (when (and unregister-list (symbol-value backend))
-	      (spam-unregister-routine 
-	       classification 
-	       backend 
-	       unregister-list))))))
+	      (spam-backend-put-article-todo-list backend 
+						  classification 
+						  unregister-list
+						  t))))))
 
     ;; do the non-moving backends first, then the moving ones
     (dolist (backend-type '(non-mover mover))
-      (dolist (classification '(spam ham))
+      (dolist (classification (spam-classifications))
 	(dolist (backend (spam-backend-list backend-type))
 	  (when (spam-group-processor-p
 		 gnus-newsgroup-name
 		 backend
 		 classification)
-	    (let ((num (spam-register-routine classification backend)))
-	      (when (> num 0)
-		(gnus-message 
-		 6
-		 "%d %s messages were processed by backend %s."
-		 num
-		 classification
-		 backend)))))))
+	    (spam-backend-put-article-todo-list backend 
+						classification
+						(spam-list-articles
+						 gnus-newsgroup-articles
+						 classification))))))
+
+    (spam-resolve-registrations-routine) ; do the registrations now
 
     ;; we mark all the leftover spam articles as expired at the end
     (dolist (article (spam-list-articles
@@ -1657,15 +1682,70 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 ;;{{{ registration/unregistration functions
 
+(defun spam-resolve-registrations-routine ()
+  "Go through the backends and register or unregister articles as needed."
+  (dolist (backend-type '(non-mover mover))
+    (dolist (classification (spam-classifications))
+      (dolist (backend (spam-backend-list backend-type))
+	(let ((rlist (spam-backend-get-article-todo-list
+		      backend classification))
+	      (ulist (spam-backend-get-article-todo-list
+		      backend classification t))
+	      (delcount 0))
+
+	  ;; clear the old lists right away
+	  (spam-backend-put-article-todo-list backend 
+					      classification
+					      nil
+					      nil)
+	  (spam-backend-put-article-todo-list backend 
+					      classification
+					      nil
+					      t)
+
+	  ;; eliminate duplicates
+	  (dolist (article ulist)
+	    (when (assq article rlist)
+	      (incf delcount)
+	      (setq rlist (delq article rlist))))
+	  
+	  (unless (zerop delcount)
+	    (gnus-message 
+	     9 
+	     "%d messages were saved the trouble of unregistering and then registering"
+	     delcount))
+	  
+	  ;; unregister articles
+	  (unless (zerop (length ulist))
+	    (let ((num (spam-unregister-routine classification backend ulist)))
+	      (when (> num 0)
+		(gnus-message 
+		 6
+		 "%d %s messages were unregistered by backend %s."
+		 num
+		 classification
+		 backend))))
+	    
+	    ;; register articles
+	    (unless (zerop (length rlist))
+	      (let ((num (spam-register-routine classification backend rlist)))
+		(when (> num 0)
+		  (gnus-message 
+		   6
+		   "%d %s messages were registered by backend %s."
+		   num
+		   classification
+		   backend)))))))))
+
 (defun spam-unregister-routine (classification
-				backend
-				&optional specific-articles)
-  (spam-register-routine classification backend t specific-articles))
+				backend 
+				specific-articles)
+  (spam-register-routine classification backend specific-articles t))
 
 (defun spam-register-routine (classification
-			      backend
-			      &optional unregister
-			      specific-articles)
+			      backend 
+			      specific-articles
+			      &optional unregister)
   (when (and (spam-classification-valid-p classification)
 	     (spam-backend-valid-p backend))
     (let* ((register-function
@@ -1695,7 +1775,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			classification
 			backend)
 	  (funcall run-function articles)
-	  ;; now log all the registrations (or undo them, depending on unregister)
+	  ;; now log all the registrations (or undo them, depending on
+	  ;; unregister)
 	  (dolist (article articles)
 	    (funcall log-function
 		     (spam-fetch-field-message-id-fast article)

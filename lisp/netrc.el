@@ -34,10 +34,10 @@
 ;;; .netrc and .authinfo rc parsing
 ;;;
 
-;; autoload gnus-encrypt
+;; autoload encrypt
 (eval-and-compile
-  (autoload 'gnus-encrypt-find-model "gnus-encrypt")
-  (autoload 'gnus-encrypt-insert-file-contents "gnus-encrypt"))
+  (autoload 'encrypt-find-model "encrypt")
+  (autoload 'encrypt-insert-file-contents "encrypt"))
 
 (defgroup netrc nil
  "Netrc configuration.")
@@ -53,11 +53,11 @@
       (let ((tokens '("machine" "default" "login"
 		      "password" "account" "macdef" "force"
 		      "port"))
-	    (encryption-model (gnus-encrypt-find-model file))
+	    (encryption-model (encrypt-find-model file))
 	    alist elem result pair)
 
 	(if encryption-model
-	    (gnus-encrypt-insert-file-contents file encryption-model)
+	    (encrypt-insert-file-contents file encryption-model)
 	  (insert-file-contents file))
 
 	(goto-char (point-min))
