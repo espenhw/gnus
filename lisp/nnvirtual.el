@@ -33,6 +33,7 @@
 (require 'nntp)
 (require 'nnheader)
 (require 'gnus)
+(eval-when-compile (require 'cl))
 
 (defvar nnvirtual-always-rescan nil
   "*If non-nil, always scan groups for unread articles when entering a group.
@@ -345,20 +346,18 @@ virtual group.")
 	type list calist mart cgroups)
     (while mark-lists
       (setq type (cdar mark-lists))
-      (when (setq list (symbol-value (intern (format "gnus-newsgroup-%s"
-						     (car (pop mark-lists))))))
-	(setq cgroups 
-	      (mapcar (lambda (g) (list g)) nnvirtual-component-groups))
-	(while list
-	  (nconc (assoc (cadr (setq mart (assq (pop list) nnvirtual-mapping)))
-			cgroups)
-		 (list (caddr mart))))
-	(while cgroups
-	  (when (cdar cgroups)
-	    (gnus-add-marked-articles 
-	     (caar cgroups) type (cdar cgroups) nil t)
-	    (gnus-group-update-group (caar cgroups) t))
-	  (setq cgroups (cdr cgroups)))))))
+      (setq list (symbol-value (intern (format "gnus-newsgroup-%s"
+					       (car (pop mark-lists))))))
+      (setq cgroups 
+	    (mapcar (lambda (g) (list g)) nnvirtual-component-groups))
+      (while list
+	(nconc (assoc (cadr (setq mart (assq (pop list) nnvirtual-mapping)))
+		      cgroups)
+	       (list (caddr mart))))
+      (while cgroups
+	(gnus-add-marked-articles 
+	 (caar cgroups) type (cdar cgroups) nil t)
+	(gnus-group-update-group (car (pop cgroups)) t)))))
 
 (defun nnvirtual-marks (article marks)
   "Return a list of mark types for ARTICLE."

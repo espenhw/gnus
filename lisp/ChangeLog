@@ -1,3 +1,39 @@
+Mon Feb  5 17:54:07 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* nnvirtual.el (nnvirtual-update-marked): Copy empty mark lists.
+
+	* gnus.el (gnus-summary-read-group): Allow entry with no-display. 
+
+Sat Feb  3 11:56:53 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus-uu.el (gnus-uu-default-view-rules): Added rule for playing of
+	decoded midi files.
+
+Mon Feb  5 05:08:54 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-mode-map): Move `v' to `W v'.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Request the
+	buffer to the nntp buffer.
+
+	* gnus.el (gnus-recenter): Allow a prefix.
+
+Mon Feb  5 04:56:35 1996  Michael Cook  <mcook@cognex.com>
+
+	* gnus.el (gnus-configure-windows): Return to the original frame. 
+
+Mon Feb  5 03:49:34 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-topic.el (gnus-topic-kill-group): Update topics.
+	(gnus-topic-yank-group): Ditto.
+
+	* nnfolder.el (nnfolder-directory): Doc fix.
+
+	* gnus.el (gnus-summary-move-article): Add marks when moving
+	articles. 
+	(gnus-summary-recenter): Don't do horizontal recenter unless the
+	buffer is visible.
+
 Sun Feb  4 16:22:20 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* gnus.el (gnus-summary-edit-article): Make sure we're in the

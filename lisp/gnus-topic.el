@@ -392,6 +392,7 @@ articles in the topic and its subtopics."
 	  nil))))
   
 (defun gnus-topic-update-topic ()
+  "Update all parent topics to the current group."
   (when (and (eq major-mode 'gnus-group-mode)
 	     gnus-topic-mode)
     (let ((group (gnus-group-group-name)))
@@ -723,7 +724,8 @@ group."
 	(gnus-topic-remove-topic nil t)
 	(push (gnus-topic-find-topology topic nil nil gnus-topic-topology)
 	      gnus-topic-killed-topics))
-    (gnus-group-kill-group n discard)))
+    (gnus-group-kill-group n discard)
+    (gnus-topic-update-topic)))
   
 (defun gnus-topic-yank-group (&optional arg)
   "Yank the last topic."
@@ -760,7 +762,8 @@ group."
 	    (when (equal (car (cdr alist)) prev)
 	      (setcdr alist (nconc yanked (cdr alist)))
 	      (setq alist nil))
-	    (setq alist (cdr alist))))))))
+	    (setq alist (cdr alist))))))
+    (gnus-topic-update-topic)))
 
 (defun gnus-topic-hide-topic ()
   "Hide all subtopics under the current topic."

@@ -320,7 +320,7 @@ parameter.  It should return nil, `warn' or `delete'.")
 	    (error 0)))))
 
 (defun nnmail-time-since (time)
-  "Return the time since DATE."
+  "Return the time since TIME, which is either an internal time or a date."
   (let* ((current (current-time))
 	 rest)
     (when (stringp time)

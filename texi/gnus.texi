@@ -7931,6 +7931,12 @@ the way it came from the server.
 Toggle whether to display all headers in the article buffer
 (@code{gnus-summary-toggle-header}). 
 
+@item W v
+@kindex W v (Summary)
+@findex gnus-summary-verbose-header
+Toggle whether to display all headers in the article buffer permanently
+(@code{gnus-summary-verbose-header}).
+
 @item W m
 @kindex W m (Summary)
 @findex gnus-summary-toggle-mime
@@ -8957,7 +8963,7 @@ To enter the server buffer, user the @kbd{^}
 * Server Buffer Format::   You can customize the look of this buffer.
 * Server Commands::        Commands to manipulate servers.
 * Example Methods::        Examples server specifications.
-* Servers ant Methods::    You can use server names as select methods.
+* Servers and Methods::    You can use server names as select methods.
 * Unavailable Servers::    Some servers you try to contact may be down.
 @end menu
 

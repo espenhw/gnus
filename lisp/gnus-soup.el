@@ -260,7 +260,7 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
   "Enter GROUP and add all articles to a SOUP package."
   (let ((gnus-expert-user t)
 	(gnus-large-newsgroup nil))
-    (when (gnus-summary-read-group group nil nil nil t)
+    (when (gnus-summary-read-group group)
       (let ((gnus-newsgroup-processable 
 	     (nreverse
 	      (gnus-sorted-complement 

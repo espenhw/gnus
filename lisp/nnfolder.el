@@ -38,7 +38,7 @@
 (eval-when-compile (require 'cl))
 
 (defvar nnfolder-directory (expand-file-name "~/Mail/")
-  "The name of the mail box file in the users home directory.")
+  "The name of the nnfolder directory.")
 
 (defvar nnfolder-active-file 
   (concat (file-name-as-directory nnfolder-directory) "active")

@@ -133,10 +133,10 @@ variable to \"^nnml\".")
 	;; Save the article in the cache.
 	(if (file-exists-p file)
 	    t				; The article already is saved.
-	  (let ((gnus-use-cache nil))
-	    (gnus-summary-select-article))
 	  (save-excursion
-	    (set-buffer gnus-original-article-buffer)
+	    (set-buffer nntp-server-buffer)
+	    (let ((gnus-use-cache nil))
+	      (gnus-request-article-this-buffer article group))
 	    (when (> (buffer-size) 0)
 	      (write-region (point-min) (point-max) file nil 'quiet)
 	      (gnus-cache-change-buffer group)

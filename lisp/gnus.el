@@ -1682,7 +1682,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.35"
+(defconst gnus-version "September Gnus v0.36"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3271,13 +3271,16 @@ If RE-ONLY is non-nil, strip leading `Re:'s only."
 	(select-window all-visible)
 
       ;; Either remove all windows or just remove all Gnus windows.
-      (if gnus-use-full-window
-	  (mapcar (lambda (frame)
-		    (select-frame frame)
-		    (delete-other-windows)) 
-		  (frame-list))
-	(gnus-remove-some-windows)
-	(switch-to-buffer nntp-server-buffer))
+      (let ((frame (selected-frame)))
+	(unwind-protect
+	    (if gnus-use-full-window
+		(mapcar (lambda (frame)
+			  (select-frame frame)
+			  (delete-other-windows)) 
+			(frame-list))
+	      (gnus-remove-some-windows)
+	      (switch-to-buffer nntp-server-buffer))
+	  (select-frame frame)))
 
       (switch-to-buffer nntp-server-buffer)
       (gnus-configure-frame split (get-buffer-window (current-buffer))))))
@@ -6557,7 +6560,6 @@ and the second element is the address."
    "l" gnus-summary-goto-last-article
    "\C-c\C-v\C-v" gnus-uu-decode-uu-view
    "\C-d" gnus-summary-enter-digest-group
-   "v" gnus-summary-verbose-headers
    "\C-c\C-b" gnus-bug
    "*" gnus-cache-enter-article
    "\M-*" gnus-cache-remove-article
@@ -6698,6 +6700,7 @@ and the second element is the address."
    "l" gnus-summary-stop-page-breaking
    "r" gnus-summary-caesar-message
    "t" gnus-summary-toggle-header
+   "v" gnus-summary-verbose-headers
    "m" gnus-summary-toggle-mime)
 
   (gnus-define-keys
@@ -7333,14 +7336,16 @@ If NO-DISPLAY, don't generate a summary buffer."
       ;; If the summary buffer is empty, but there are some low-scored
       ;; articles or some excluded dormants, we include these in the
       ;; buffer.
-      (when (zerop (buffer-size))
+      (when (and (zerop (buffer-size))
+		 (not no-display))
 	(cond (gnus-newsgroup-dormant
 	       (gnus-summary-limit-include-dormant))
 	      ((and gnus-newsgroup-scored show-all)
 	       (gnus-summary-limit-include-expunged))))
       ;; Function `gnus-apply-kill-file' must be called in this hook.
       (run-hooks 'gnus-apply-kill-hook)
-      (if (zerop (buffer-size))
+      (if (and (zerop (buffer-size))
+	       (not no-display))
 	  (progn
 	    ;; This newsgroup is empty.
 	    (gnus-summary-catchup-and-exit nil t) ;Without confirmations.
@@ -7357,6 +7362,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	     (gnus-summary-hide-all-threads))
 	;; Show first unread article if requested.
 	(if (and (not no-article)
+		 (not no-display)
 		 gnus-newsgroup-unreads
 		 gnus-auto-select-first)
 	    (if (eq gnus-auto-select-first 'best)
@@ -9148,12 +9154,12 @@ If EXCLUDE-GROUP, do not go to this group."
 	(t
 	 (gnus-summary-find-next unread))))
 
-(defun gnus-recenter ()
+(defun gnus-recenter (&optional n)
   "Center point in window and redisplay frame.
 Also do horizontal recentering."
   (interactive)
   (gnus-horizontal-recenter)
-  (recenter))
+  (recenter n))
 
 (defun gnus-summary-recenter ()
   "Center point in the summary window.
@@ -9180,11 +9186,12 @@ displayed, no centering will be performed."
 	window (min bottom (save-excursion 
 			     (forward-line (- top)) (point)))))
       ;; Do horizontal recentering while we're at it.
-      (let ((selected (selected-window)))
-	(select-window (get-buffer-window (current-buffer) t))
-	(gnus-summary-position-point)
-	(gnus-horizontal-recenter)
-	(select-window selected)))))
+      (when (get-buffer-window (current-buffer) t)
+	(let ((selected (selected-window)))
+	  (select-window (get-buffer-window (current-buffer) t))
+	  (gnus-summary-position-point)
+	  (gnus-horizontal-recenter)
+	  (select-window selected))))))
 
 (defun gnus-horizontal-recenter ()
   "Recenter the current buffer horizontally."
@@ -10911,16 +10918,16 @@ and `request-accept' functions."
 	;; Move the article.
 	((eq action 'move)
 	 (gnus-request-move-article
-	  article		; Article to move
-	  gnus-newsgroup-name	; From newsgrouo
+	  article			; Article to move
+	  gnus-newsgroup-name		; From newsgrouo
 	  (nth 1 (gnus-find-method-for-group
 		  gnus-newsgroup-name)) ; Server
 	  (list 'gnus-request-accept-article
 		(if select-method
 		    (list 'quote select-method)
 		  to-newsgroup)
-		(not articles)) ; Accept form
-	  (not articles)))	; Only save nov last time
+		(not articles))		; Accept form
+	  (not articles)))		; Only save nov last time
 	;; Copy the article.
 	((eq action 'copy)
 	 (save-excursion
@@ -10983,14 +10990,14 @@ and `request-accept' functions."
 		 (memq article gnus-newsgroup-dormant)
 		 (memq article gnus-newsgroup-unreads)))
 
-		(while marks
-		  (when (memq article (symbol-value
-				       (intern (format "gnus-newsgroup-%s"
-						       (caar marks)))))
-		    (gnus-add-marked-articles
-		     (gnus-info-group info) (caar marks)
-		     (list to-article) info))
-		  (setq marks (cdr marks)))))
+	      (while marks
+		(when (memq article (symbol-value
+				     (intern (format "gnus-newsgroup-%s"
+						     (caar marks)))))
+		  (gnus-add-marked-articles
+		   (gnus-info-group info) (cdar marks)
+		   (list to-article) info))
+		(setq marks (cdr marks)))))
 
 	  ;; Update the Xref header in this article to point to
 	  ;; the new crossposted article we have just created.
@@ -11009,6 +11016,7 @@ and `request-accept' functions."
 	(gnus-summary-mark-article article gnus-canceled-mark))
       (gnus-summary-remove-process-mark article))
     (gnus-kill-buffer copy-buf)
+    (gnus-summary-position-point)
     (gnus-set-mode-line 'summary)))
 
 (defun gnus-summary-copy-article (&optional n to-newsgroup select-method)
@@ -12901,14 +12909,8 @@ The following commands are available:
   "Get an article and insert it into this buffer."
   (prog1
       (save-excursion
-	(if (get-buffer gnus-original-article-buffer)
-	    (set-buffer (get-buffer gnus-original-article-buffer))
-	  (set-buffer (get-buffer-create gnus-original-article-buffer))
-	  (buffer-disable-undo (current-buffer))
-	  (setq major-mode 'gnus-original-article-mode)
-	  (setq buffer-read-only t)
-	  (gnus-add-current-to-buffer-list))
-
+	(erase-buffer)
+	(gnus-kill-all-overlays)
 	(setq group (or group gnus-newsgroup-name))
 
 	;; Open server if it has closed.
@@ -12959,8 +12961,7 @@ The following commands are available:
 	 ;; We first check `gnus-original-article-buffer'.
 	 ((and (equal (car gnus-original-article) group)
 	       (eq (cdr gnus-original-article) article))
-	  ;; We don't have to do anything, since it's already where we
-	  ;; want it.
+	  (insert-buffer-substring gnus-original-article-buffer)
 	  'article)
 	 ;; Check the backlog.
 	 ((and gnus-keep-backlog
@@ -12990,12 +12991,19 @@ The following commands are available:
     ;; Take the article from the original article buffer
     ;; and place it in the buffer it's supposed to be in.
     (setq gnus-original-article (cons group article))
-    (unless (equal (buffer-name (current-buffer))
-		   (buffer-name (get-buffer gnus-original-article-buffer)))
-      (let (buffer-read-only)
-	(erase-buffer)
-	(gnus-kill-all-overlays)
-	(insert-buffer-substring gnus-original-article-buffer)))
+    (when (equal (buffer-name (current-buffer))
+		 (buffer-name (get-buffer gnus-article-buffer)))
+      (save-excursion
+	(if (get-buffer gnus-original-article-buffer)
+	    (set-buffer (get-buffer gnus-original-article-buffer))
+	  (set-buffer (get-buffer-create gnus-original-article-buffer))
+	  (buffer-disable-undo (current-buffer))
+	  (setq major-mode 'gnus-original-article-mode)
+	  (setq buffer-read-only t)
+	  (gnus-add-current-to-buffer-list))
+	(let (buffer-read-only)
+	  (erase-buffer)
+	  (insert-buffer-substring gnus-article-buffer))))
     
     ;; Update sparse articles.
     (when (memq article gnus-newsgroup-sparse)
