@@ -439,10 +439,11 @@ minor mode in all Gnus buffers."
   (gnus-open-agent)
   (add-hook 'gnus-setup-news-hook 'gnus-agent-queue-setup)
   (unless gnus-agent-send-mail-function
-    (setq gnus-agent-send-mail-function (or
-					 message-send-mail-real-function
-					 message-send-mail-function)
+    (setq gnus-agent-send-mail-function
+	  (or message-send-mail-real-function
+	      message-send-mail-function)
 	  message-send-mail-real-function 'gnus-agent-send-mail))
+
   (unless gnus-agent-covered-methods
     (mapcar
      (lambda (server)

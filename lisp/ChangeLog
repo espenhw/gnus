@@ -17,6 +17,8 @@
 
 2003-01-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-agent.el (gnus-agentize): Indent.
+
 	* gnus.el (gnus-version-number): Bumped.
 
 2003-01-24 20:32:44 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
