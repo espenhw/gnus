@@ -891,6 +891,7 @@ simple manner.")
 	["Make a kiboze group..." gnus-group-make-kiboze-group t]
 	["Make a virtual group..." gnus-group-make-empty-virtual t]
 	["Add a group to a virtual..." gnus-group-add-to-virtual t]
+	["Make an ephemeral group..." gnus-group-read-ephemeral-group t]
 	["Make an RSS group..." gnus-group-make-rss-group t]
 	["Rename group..." gnus-group-rename-group
 	 (gnus-check-backend-function
@@ -1985,6 +1986,14 @@ If SELECT-ARTICLES, only select those articles.
 If PARAMETERS, use those as the group parameters.
 
 Return the name of the group if selection was successful."
+  (interactive
+   (list
+    ;; (gnus-read-group "Group name: ")
+    (completing-read
+     "Group: " gnus-active-hashtb
+     nil nil nil
+     'gnus-group-history)
+    (gnus-read-method "From method: ")))
   ;; Transform the select method into a unique server.
   (when (stringp method)
     (setq method (gnus-server-to-method method)))

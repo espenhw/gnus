@@ -1,6 +1,10 @@
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-group.el: Removed `(when t ...)' around `gnus-define-keys'.
+	(gnus-group-group-map): Added `gnus-group-read-ephemeral-group'
+	(already in previous commit inadvertently).
+	(gnus-group-make-menu-bar): Added `gnus-group-read-ephemeral-group'.
+	(gnus-group-read-ephemeral-group): Made interactive.
 
 	* gnus-score.el (gnus-score-find-trace): Added comment on sync
 	with `gnus-score-edit-file-at-point'.
