@@ -2870,7 +2870,27 @@ It should typically alter the sending method in some way or other."
 	    (message-insert-courtesy-copy))
 	  (if (or (not message-send-mail-partially-limit)
 		  (< (point-max) message-send-mail-partially-limit)
-		  (not (y-or-n-p "Message exceeds message-send-mail-partially-limit, send in parts? ")))
+		  (not (message-y-or-n-p 
+			"The message size is too large, split? "
+			t 
+			"\
+The message size exceeds " (/ message-send-mail-partially-limit 1000) "KB.
+
+Some mail gateways (MTA's) bounce large messages.  To avoid the
+problem, answer `y', and the message will be split into several
+smaller pieces, the size of each is about "
+(/ message-send-mail-partially-limit 1000)
+"KB except the last 
+one.
+
+However, some mail readers (MUA's) can't read split messages, i.e.,
+mails in message/partially format. Answer `n', and the message will be
+sent in one piece.
+
+The size limit is controlled by `message-send-mail-partially-limit'.
+If you always want Gnus to send messages in one piece, set
+`message-send-mail-partially-limit' to `nil'.
+")))
 	      (mm-with-unibyte-current-buffer
 		(message "Sending via mail...")
 		(funcall (or message-send-mail-real-function
