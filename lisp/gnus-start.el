@@ -2568,7 +2568,7 @@ If FORCE is non-nil, the .newsrc file is read."
 ;; Never delete this file -- if you want to force Gnus to read the
 ;; .newsrc file (if you have one), touch .newsrc instead.\n")
     (insert "(setq gnus-newsrc-file-version "
-	    (prin1-to-string gnus-version) ")\n")
+	    (gnus-prin1-to-string gnus-version) ")\n")
     (let* ((gnus-killed-list
 	    (if (and gnus-save-killed-list
 		     (stringp gnus-save-killed-list))

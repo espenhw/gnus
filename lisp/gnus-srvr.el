@@ -359,7 +359,7 @@ The following commands are available:
       (when entry
 	(gnus-dribble-enter
 	 (concat "(gnus-server-set-info \"" server "\" '"
-		 (prin1-to-string (cdr entry)) ")\n")))
+		 (gnus-prin1-to-string (cdr entry)) ")\n")))
       (when (or entry oentry)
 	;; Buffer may be narrowed.
 	(save-restriction
@@ -378,7 +378,7 @@ The following commands are available:
   (when (and server info)
     (gnus-dribble-enter
      (concat "(gnus-server-set-info \"" server "\" '"
-	     (prin1-to-string info) ")"))
+	     (gnus-prin1-to-string info) ")"))
     (let* ((server (nth 1 info))
 	   (entry (assoc server gnus-server-alist))
 	   (cached (assoc server gnus-server-method-cache)))

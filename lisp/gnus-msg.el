@@ -1022,7 +1022,7 @@ If SILENT, don't prompt the user."
   "Stringified Gnus version and Emacs version."
   (interactive)
   (concat
-   "Gnus/" (prin1-to-string (gnus-continuum-version gnus-version) t)
+   "Gnus/" (gnus-prin1-to-string (gnus-continuum-version gnus-version))
    " (" gnus-version ")"
    " "
    (cond

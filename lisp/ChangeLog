@@ -1,5 +1,10 @@
 2003-02-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el: Use gnus-prin1-to-string throughout.
+
+	* gnus-util.el (gnus-prin1-to-string): Bind print-length and
+	print-level. 
+
 	* gnus-art.el (article-display-x-face): Removed grey x-face stuff.
 	(gnus-treat-display-grey-xface): Removed.
 

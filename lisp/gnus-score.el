@@ -1916,7 +1916,7 @@ score in `gnus-newsgroup-scored' by SCORE."
       ;; with working on them as a group.  What a hassle.
       ;; Just wait 'til you see what horrors we commit against `match'...
       (if (= gnus-score-index 9)
-	  (setq this (prin1-to-string this))) ; ick.
+	  (setq this (gnus-prin1-to-string this))) ; ick.
 
       (if simplify
 	  (setq this (gnus-map-function gnus-simplify-subject-functions this)))

@@ -629,9 +629,13 @@ Bind `print-quoted' and `print-readably' to t while printing."
     (prin1 form (current-buffer))))
 
 (defun gnus-prin1-to-string (form)
-  "The same as `prin1', but bind `print-quoted' and `print-readably' to t."
+  "The same as `prin1'.
+Bind `print-quoted' and `print-readably' to t, and `print-length'
+and `print-level' to nil."
   (let ((print-quoted t)
-	(print-readably t))
+	(print-readably t)
+	(print-length nil)
+	(print-level nil))
     (prin1-to-string form)))
 
 (defun gnus-make-directory (directory)
