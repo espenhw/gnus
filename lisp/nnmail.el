@@ -522,6 +522,19 @@ nn*-request-list should have been called before calling this function."
 	  (setq end (point-max))))
       (goto-char end))))
 
+(defun nnmail-search-unix-mail-delim ()
+  "Put point at the beginning of the next message."
+  (let ((case-fold-search t)
+	(delim (concat "^" rmail-unix-mail-delimiter))
+	found)
+    (while (not found)
+      (if (re-search-forward delim nil t)
+	  (when (looking-at "[^ :]+:")
+	    (forward-line -1)
+	    (setq found 'yes))
+	(setq found 'no)))
+    (eq found 'yes)))
+
 (defun nnmail-process-unix-mail-format (func)
   (let ((case-fold-search t)
 	(delim (concat "^" rmail-unix-mail-delimiter))
@@ -559,7 +572,8 @@ nn*-request-list should have been called before calling this function."
 	  (insert "Message-ID: " (setq message-id (nnmail-message-id)) "\n"))
 	;; Look for a Content-Length header.
 	(goto-char (point-min))
-	(if (not (re-search-forward "^Content-Length:[ \t]*\\([0-9]+\\)" nil t))
+	(if (not (re-search-forward
+		  "^Content-Length:[ \t]*\\([0-9]+\\)" nil t))
 	    (setq content-length nil)
 	  (setq content-length (string-to-int (match-string 1)))
 	  ;; We destroy the header, since none of the backends ever 
@@ -585,9 +599,8 @@ nn*-request-list should have been called before calling this function."
 	  ;; No Content-Length, so we find the beginning of the next 
 	  ;; article or the end of the buffer.
 	  (goto-char head-end)
-	  (if (re-search-forward delim nil t)
-	      (goto-char (match-beginning 0))
-	    (goto-char (point-max))))
+	  (or (nnmail-search-unix-mail-delim)
+	      (goto-char (point-max))))
 	;; Allow the backend to save the article.
 	(save-excursion
 	  (save-restriction

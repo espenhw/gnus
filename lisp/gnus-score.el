@@ -1391,8 +1391,10 @@ SCORE is the score to add."
     ;; this function makes will be put into this file.
     (save-excursion
       (set-buffer gnus-summary-buffer)
-      (gnus-score-load-file (gnus-score-file-name 
-			     gnus-newsgroup-name gnus-adaptive-file-suffix)))
+      (gnus-score-load-file
+       (or gnus-newsgroup-adaptive-score-file
+	   (gnus-score-file-name 
+	    gnus-newsgroup-name gnus-adaptive-file-suffix))))
 
     (setq gnus-scores-articles (sort gnus-scores-articles 'gnus-score-string<)
 	  articles gnus-scores-articles)
@@ -2089,7 +2091,8 @@ GROUP using BNews sys file syntax."
 
 (defun gnus-score-find-single (group)
   "Return list containing the score file for GROUP."
-  (list (gnus-score-file-name group gnus-adaptive-file-suffix)
+  (list (or gnus-newsgroup-adaptive-score-file
+	    (gnus-score-file-name group gnus-adaptive-file-suffix))
 	(gnus-score-file-name group)))
 
 (defun gnus-score-find-hierarchical (group)

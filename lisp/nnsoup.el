@@ -333,7 +333,7 @@ The SOUP packet file name will be inserted at the %s.")
 		    (when (file-exists-p (nnsoup-file prefix))
 		      (delete-file (nnsoup-file prefix)))
 		    (nnheader-message 
-		     5 "Deleting %s in group..." (nnsoup-file prefix t)
+		     5 "Deleting %s in group %s..." (nnsoup-file prefix t)
 		     group)
 		    (when (file-exists-p (nnsoup-file prefix t))
 		      (delete-file (nnsoup-file prefix t)))

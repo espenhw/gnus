@@ -256,7 +256,8 @@ The function will only be called if you have the `Distribution' header in
 (defvar gnus-check-before-posting 
   '(subject-cmsg multiple-headers sendsys message-id from
 		 long-lines control-chars size new-text
-		 redirected-followup signature approved sender empty)
+		 redirected-followup signature approved sender 
+		 empty empty-headers)
   "In non-nil, Gnus will attempt to run some checks on outgoing posts.
 If this variable is t, Gnus will check everything it can.  If it is a
 list, then those elements in that list will be checked.")
@@ -644,6 +645,8 @@ function will attempt to use the foreign server to post the article.
 If given an zero prefix, the user will be prompted for a posting
 method to use."
   (interactive "P")
+  (unless (gnus-alive-p)
+    (error "Gnus is dead; you can't post anything."))
   (or gnus-current-select-method
       (setq gnus-current-select-method gnus-select-method))
   (let* ((case-fold-search nil)
@@ -798,14 +801,7 @@ called."
     ;; We narrow to the headers and check them first.
     (save-excursion
       (save-restriction
-	(goto-char (point-min))
-	(narrow-to-region 
-	 (point) 
-	 (progn
-	   (re-search-forward 
-	    (concat "^" (regexp-quote mail-header-separator) "$"))
-	   (match-beginning 0)))
-	(goto-char (point-min))
+	(gnus-inews-narrow-to-headers)
 	(and 
 	 ;; Check for commands in Subject.
 	 (or 
@@ -819,8 +815,8 @@ called."
 	 (or (gnus-check-before-posting 'multiple-headers)
 	     (save-excursion
 	       (let (found)
-		 (while (and (not found) (re-search-forward "^[^ \t:]+: "
-							    nil t))
+		 (while (and (not found) 
+			     (re-search-forward "^[^ \t:]+: " nil t))
 		   (save-excursion
 		     (or (re-search-forward 
 			  (concat "^" (setq found
@@ -878,6 +874,20 @@ called."
 		      (format 
 		       "The Message-ID looks strange: \"%s\". Really post? "
 		       message-id))))))
+	 ;; Check whether any headers are empty.
+	 (or (gnus-check-before-posting 'empty-headers)
+	     (save-excursion
+	       (let ((post t))
+		 (goto-char (point-min))
+		 (while (and post (not (eobp)))
+		   (when (looking-at "\\([^ :]+\\):[ \t]\n[^ \t]")
+		     (setq post
+			   (gnus-y-or-n-p
+			    (format
+			     "The %s header is empty.  Really post? "
+			     (match-string 1)))))
+		   (forward-line 1))
+		 post)))
 	 ;; Check the From header.
 	 (or 
 	  (gnus-check-before-posting 'from)
@@ -1110,8 +1120,7 @@ This function can be used in `mail-citation-hook', for instance."
       (setq gcc (mail-fetch-field "gcc"))
       (widen))
     ;; Check whether the article is a good Net Citizen.
-    (if (and gnus-article-check-size
-	     (not (gnus-inews-check-post)))
+    (if (not (gnus-inews-check-post))
 	;; Aber nein!
 	'illegal
       ;; We fudge a hook for nnspool.
@@ -1165,6 +1174,12 @@ This function can be used in `mail-citation-hook', for instance."
       result)))
 
 (defun gnus-inews-cleanup-headers ()
+  ;; Remove empty lines in the header.
+  (save-restriction
+    (gnus-inews-narrow-to-headers)
+    (while (re-search-forward "^[ \t]*\n" nil t)
+      (replace-match "" t t)))
+
   ;; Correct newsgroups field: change sequence of spaces to comma and 
   ;; eliminate spaces around commas.  Eliminate imbedded line breaks.
   (goto-char (point-min))
@@ -1821,7 +1836,7 @@ mailer."
 	  (winconf (current-window-configuration))
 	  from subject date reply-to message-of to cc
 	  references message-id sender follow-to sendto elt new-cc new-to
-	  mct mctdo)
+	  mct mctdo gnus-warning)
       (set-buffer (get-buffer-create gnus-mail-buffer))
       (mail-mode)
       (if (and (buffer-modified-p)
@@ -1863,6 +1878,9 @@ mailer."
 		    (mail-fetch-field "reply-to")))
 	    (setq references (mail-fetch-field "references"))
 	    (setq message-id (mail-fetch-field "message-id"))
+	    (when (and (setq gnus-warning (mail-fetch-field "gnus-warning"))
+		       (string-match "<[^>]+>" gnus-warning))
+	      (setq message-id (match-string 0 gnus-warning)))
 	    
 	    (setq mctdo (not (equal mct "never")))
 
@@ -2079,7 +2097,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	    (winconf (current-window-configuration))
 	    from subject date reply-to message-of
 	    references message-id sender follow-to sendto elt 
-	    followup-to distribution newsgroups)
+	    followup-to distribution newsgroups gnus-warning)
 	(set-buffer (get-buffer-create gnus-post-news-buffer))
 	(news-reply-mode)
 	;; Associate this buffer with the draft group.
@@ -2111,6 +2129,9 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	      (setq subject (concat "Re: " subject))
 	      (setq references (mail-fetch-field "references"))
 	      (setq message-id (mail-fetch-field "message-id"))
+	      (when (and (setq gnus-warning (mail-fetch-field "gnus-warning"))
+			 (string-match "<[^>]+>" gnus-warning))
+		(setq message-id (match-string 0 gnus-warning)))
 	      (setq followup-to (mail-fetch-field "followup-to"))
 	      (setq newsgroups (mail-fetch-field "newsgroups"))
 	      (setq distribution (mail-fetch-field "distribution"))
@@ -2292,27 +2313,27 @@ If INHIBIT-PROMPT, never prompt for a Subject."
     (let ((buffer-file-name nil))
       (or dont-send (gnus-mail-send)))
     (bury-buffer)
-    ;; This mail group doesn't have a `to-list', so we add one
-    ;; here.  Magic!  
-    (and to-address
-	 (gnus-group-add-parameter 
-	  address-group (cons 'to-list to-address)))
-    (if (get-buffer gnus-group-buffer)
-	(progn
-	  (if (gnus-buffer-exists-p (car-safe reply))
-	      (progn
-		(set-buffer (car reply))
-		(and (cdr reply)
-		     (gnus-summary-mark-article-as-replied 
-		      (cdr reply)))))
-	  (and winconf (set-window-configuration winconf))))))
+    (when (gnus-alive-p)
+      ;; This mail group doesn't have a `to-list', so we add one
+      ;; here.  Magic!  
+      (when to-address
+	(gnus-group-add-parameter address-group (cons 'to-list to-address)))
+      (when (and (gnus-buffer-exists-p (car reply))
+		 (cdr reply))
+	(save-excursion
+	  (set-buffer (car reply))
+	  (gnus-summary-mark-article-as-replied (cdr reply))))
+      (and winconf (set-window-configuration winconf)))))
 
 (defun gnus-kill-message-buffer ()
   "Kill the current buffer after dissociating it from the draft group."
   (interactive)
   (when (gnus-y-or-n-p "Dissociate and kill the current buffer? ")
     (gnus-dissociate-buffer-from-draft)
-    (kill-buffer (current-buffer))))
+    (let ((winconf gnus-prev-winconf))
+      (kill-buffer (current-buffer))
+      (when winconf 
+	(set-window-configuration winconf)))))
 
 (defun gnus-put-message ()
   "Put the current message in some group and return to Gnus."
@@ -2540,7 +2561,7 @@ The source file has to be in the Emacs load path."
 			    (and (symbolp sym)
 				 (not (or (eq sym nil)
 					  (eq sym t)))))
-			(cons 'quote (symbol-value (car olist)))
+			(list 'quote (symbol-value (car olist)))
 		      (symbol-value (car olist)))
 		   "\n")))
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
@@ -2631,11 +2652,12 @@ Headers will be generated before sending."
 
 (defun gnus-inews-modify-mail-mode-map ()
   (use-local-map (copy-keymap (current-local-map)))
-  (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
-  (local-set-key "\C-c\M-\C-p" 'gnus-put-message)
-  (local-set-key "\C-c\C-k" 'gnus-kill-message-buffer)
-  (local-set-key "\C-c\M-d" 'gnus-dissociate-buffer-from-draft)
-  (local-set-key "\C-c\C-d" 'gnus-associate-buffer-with-draft))
+  (gnus-local-set-keys
+   "\C-c\C-c" gnus-mail-send-and-exit
+   "\C-c\M-\C-p" gnus-put-message
+   "\C-c\C-q" gnus-kill-message-buffer
+   "\C-c\M-d" gnus-dissociate-buffer-from-draft
+   "\C-c\C-d" gnus-associate-buffer-with-draft))
 
 (defun gnus-mail-setup (type &optional to subject in-reply-to cc
 			     replybuffer actions)
@@ -2889,7 +2911,7 @@ Headers will be generated before sending."
       (insert mail-header-separator)
       ;; Configure windows.
       (let ((gnus-draft-buffer (current-buffer)))
-	(gnus-configure-windows 'draft)
+	(gnus-configure-windows 'draft t)
 	(goto-char (point))))))
   
 (defun gnus-configure-posting-styles ()

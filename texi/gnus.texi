@@ -6823,7 +6823,11 @@ Check whether the article has an @code{Approved} header, which is
 something only moderators should include.
 @item empty
 Check whether the article is empty.
+@item empty-headers
+Check whether any of the headers are empty.
 @end table
+
+All these conditions are checked by default.
 
 @end table
 
@@ -7749,6 +7753,22 @@ somewhat by setting @code{nntp-connection-timeout}.  This is an integer
 that says how many seconds the @code{nntp} backend should wait for a
 connection before giving up.  If it is @code{nil}, which is the default,
 no timeouts are done.
+
+@item nntp-command-timeout
+@vindex nntp-command-timeout
+@cindex PPP connections
+@cindex dynamic IP addresses
+If you're running Gnus on a machine that has a dynamically assigned
+address, Gnus may become confused.  If the address of your machine
+changes after connecting to the @sc{nntp} server, Gnus will simply sit
+waiting forever for replies from the server.  To help with this
+unfortunate problem, you can set this command to a number.  Gnus will
+then, if it sits waiting longer than that number of seconds for a reply
+from the server, shut down the connection, start a new one, and resend
+the command.  This should hopefully be transparent to the user.  A
+likely number is 30 seconds.  (You can also @kbd{C-g} if Gnus hangs in
+this manner.  The same thing will hopefully happen, but it can be
+somewhat unsafe.)
 
 @item nntp-server-hook
 @vindex nntp-server-hook

@@ -194,7 +194,7 @@ The following commands are available:
     ;; First we do the real list of servers.
     (while alist
       (push (cdr (setq server (pop alist))) done)
-      (when (and server (car server))
+      (when (and server (car server) (cdr server))
 	(gnus-server-insert-server-line (car server) (cdr server))))
     ;; Then we insert the list of servers that have been opened in
     ;; this session.

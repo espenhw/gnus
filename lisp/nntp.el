@@ -145,6 +145,10 @@ variable, split the XOVER request into two requests.")
   "*Number of seconds to wait before an nntp connection times out.
 If this variable is nil, which is the default, no timers are set.")
 
+(defvar nntp-command-timeout nil
+  "*Number of seconds to wait for a response when sending a command.
+If this variable is nil, which is the default, no timers are set.")
+
 (defvar nntp-news-default-headers nil
   "*If non-nil, override `mail-default-headers' when posting news.")
 
@@ -382,9 +386,10 @@ servers."
     (setq nntp-current-server server)
     (or (nntp-server-opened server)
 	connectionless
-	(progn
-	  (run-hooks 'nntp-prepare-server-hook)
-	  (nntp-open-server-semi-internal nntp-address nntp-port-number)))))
+	(prog2
+	    (run-hooks 'nntp-prepare-server-hook)
+	    (nntp-open-server-semi-internal nntp-address nntp-port-number)
+	  (nnheader-insert "")))))
 
 (defun nntp-close-server (&optional server)
   "Close connection to SERVER."
@@ -401,26 +406,22 @@ servers."
 	  (nntp-send-command nil "QUIT")))
     (nntp-close-server-internal server)))
 
-(defalias 'nntp-request-quit (symbol-function 'nntp-close-server))
-
 (defun nntp-request-close ()
   "Close all server connections."
-  (let (proc)
+  (let (proc entry)
      (while nntp-opened-connections
        (when (setq proc (pop nntp-opened-connections))
 	 (condition-case ()
-	     (process-send-string proc "QUIT\n")
+	     (process-send-string proc "QUIT\r\n")
 	   (error nil))
 	 (delete-process proc)))
      (and nntp-async-buffer
 	  (get-buffer nntp-async-buffer)
 	  (kill-buffer nntp-async-buffer))
-    (while nntp-server-alist
-      (and (setq proc (nth 1 (assq 'nntp-async-buffer
-				   (car nntp-server-alist))))
+    (while (setq entry (pop nntp-server-alist))
+      (and (setq proc (nth 1 (assq 'nntp-async-buffer entry)))
 	   (buffer-name proc)
-	   (kill-buffer proc))
-      (setq nntp-server-alist (cdr nntp-server-alist)))
+	   (kill-buffer proc)))
     (setq nntp-current-server nil
 	  nntp-async-group-alist nil)))
 
@@ -509,11 +510,11 @@ servers."
   "Request head of article ID (Message-ID or number)."
   (nntp-possibly-change-server group server)
   (prog1
-      (and (nntp-send-command 
-	    "^\\.\r?\n" "HEAD" (if (numberp id) (int-to-string id) id))
-	   (if (numberp id) id
-	     ;; We find out what the article number was.
-	     (nntp-find-group-and-number)))
+      (when (nntp-send-command 
+	     "^\\.\r?\n" "HEAD" (if (numberp id) (int-to-string id) id))
+	(if (numberp id) id
+	  ;; We find out what the article number was.
+	  (nntp-find-group-and-number)))
     (nntp-decode-text)))
 
 (defun nntp-request-stat (id &optional group server)
@@ -527,6 +528,7 @@ servers."
 
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
+  (nntp-possibly-change-server nil server)
   (setq nntp-current-group
 	(when (nntp-send-command "^2.*\r?\n" "GROUP" group)
 	  group)))
@@ -751,7 +753,57 @@ It will prompt for a password."
 ;;; Synchronous Communication with NNTP servers.
 ;;;
 
+(defvar nntp-retry-command)
+
 (defun nntp-send-command (response cmd &rest args)
+  "Wait for server RESPONSE after sending CMD and optional ARGS to server."
+  (let ((timer 
+	 (and nntp-command-timeout 
+   	      (cond
+   	       ((fboundp 'run-at-time)
+		(run-at-time nntp-command-timeout
+   			     nil 'nntp-kill-command nntp-current-server))
+   	       ((fboundp 'start-itimer)
+   		;; Not sure if this will work or not, only one way to
+   		;; find out
+   		(eval '(start-itimer "nntp-timeout"
+				     (lambda ()
+				       (nntp-kill-command nntp-current-server))
+				     nntp-command-timeout nil))))))
+	(nntp-retry-command t)
+	result)
+    (unwind-protect
+	(save-excursion
+	  (while nntp-retry-command
+	    (setq nntp-retry-command nil)
+	    ;; Clear communication buffer.
+	    (set-buffer nntp-server-buffer)
+	    (erase-buffer)
+	    (condition-case ()
+		(progn
+		  (apply 'nntp-send-strings-to-server cmd args)
+		  (setq result
+			(if response
+			    (nntp-wait-for-response response)
+			  t)))
+	      (quit (setq nntp-retry-command t))))
+	  result)
+      (when timer 
+	(cancel-timer timer)))))
+
+(defun nntp-kill-command (server)
+  "Kill and restart the connection to SERVER."
+  (let ((proc (nth 1 (assq 'nntp-server-process 
+			   (assoc server nntp-server-alist)))))
+    (when proc 
+      (delete-process (process-name proc)))
+    (nntp-close-server server)
+    (nntp-open-server server)
+    (when nntp-current-group
+      (nntp-request-group nntp-current-group))
+    (setq nntp-retry-command t)))
+
+(defun nntp-send-command-old (response cmd &rest args)
   "Wait for server RESPONSE after sending CMD and optional ARGS to server."
   (save-excursion
     ;; Clear communication buffer.
@@ -1054,7 +1106,7 @@ If SERVICE, this this as the port number."
     (save-excursion
       (set-buffer nntp-server-buffer)
       (setq nntp-status-string "")
-      (message "nntp: Connecting to server on %s..." server)
+      (message "nntp: Connecting to server on %s..." nntp-address)
       (cond ((and server (nntp-open-server-internal server service))
 	     (setq nntp-address server)
 	     (setq status
@@ -1065,7 +1117,7 @@ If SERVICE, this this as the port number."
 	     (unless status
 	       (nntp-close-server-internal server)
 	       (nnheader-report 
-		'nntp "Couldn't open connection to %s" server))
+		'nntp "Couldn't open connection to %s" nntp-address))
 	     (when nntp-server-process
 	       (set-process-sentinel 
 		nntp-server-process 'nntp-default-sentinel)

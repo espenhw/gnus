@@ -1,4 +1,70 @@
+Tue Feb 27 03:49:45 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-vis.el (gnus-article-highlight-signature): Use a marker for
+	the signature.
+
+Tue Feb 27 01:29:53 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-article): Always check all headers.
+	(gnus-mail-reply): Use the Gnus-Warning Message-ID, if possible.
+	(gnus-news-followup): Ditto.
+
+	* gnus.el (gnus-summary-hide-thread): Would infloop on article
+	with no ":".
+
+	* gnus-msg.el (gnus-mail-send-and-exit): Make sure we're in the
+	right buffer.
+
+Mon Feb 26 01:57:17 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-srvr.el (gnus-server-prepare): Do more checking for nil
+	methods. 
+
+	* nnsoup.el (nnsoup-request-expire-articles): Better message.
+
+	* gnus-salt.el (gnus-generate-horizontal-tree): Use <> brackets on
+	adopted articles.
+
+	* gnus-msg.el (gnus-inews-news): Don't allow posting when Gnus is
+	dead. 
+
+	* gnus.el (gnus-alive-p): New function.
+
+	* gnus-msg.el (gnus-inews-modify-mail-mode-map): Use new macro;
+	moved `C-c C-k' to `C-c C-q'.
+	(gnus-kill-message-buffer): Return to the buffer from whence we
+	came. 
+
+	* gnus.el (gnus-created-frames): New variable.
+	(gnus-clear-system): Remove created frames.
+	(gnus-local-set-keys): New macro.
+
+	* gnus-msg.el (gnus-inews-cleanup-headers): Remove empty lines.
+	(gnus-inews-check-post): Warn about empty headers.
+	(gnus-check-before-posting): New default.
+
+	* nnmail.el (nnmail-search-unix-mail-delim): New function.
+	(nnmail-process-unix-mail-format): Use it.
+
+	* nntp.el (nntp-open-server): Clear the nntp-server-buffer after
+	opening a connection.
+	(nntp-request-quit): Removed.
+	(nntp-request-group): Change server.
+	(nntp-kill-command): New function.
+	(nntp-send-command): Use it.
+	(nntp-command-timeout): New variable.
+	(nntp-send-command): Retry commands if `C-g'.
+
+	* gnus.el (gnus-summary-mark-read-and-unread-as-read): Changed
+	name. 
+
+	* nntp.el (nntp-open-server-semi-internal): Better messages.
+
+	* gnus-msg.el (gnus-debug): Did `quote' wrong.
+
 Sun Feb 25 01:37:49 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: 0.43 is released.
 
 	* gnus-topic.el (gnus-topic-prepare-topic): Would bug out on dead
 	groups. 

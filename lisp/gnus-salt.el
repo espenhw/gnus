@@ -196,7 +196,8 @@ lines.")
 (defvar gnus-selected-tree-face 'modeline
   "*Face used for highlighting selected articles in the thread tree.")
 
-(defvar gnus-tree-brackets '((?\[ . ?\]) (?\( . ?\)) (?\{ . ?\}))
+(defvar gnus-tree-brackets '((?\[ . ?\]) (?\( . ?\))
+			     (?\{ . ?\}) (?< . ?>))
   "Brackets used in tree nodes.")
 
 (defvar gnus-tree-parent-child-edges '(?- ?\\ ?|)
@@ -374,7 +375,7 @@ Two predefined functions are available:
 
 ;;; Generating the tree.
 
-(defun gnus-tree-node-insert (header sparse)
+(defun gnus-tree-node-insert (header sparse &optional adopted)
   (let* ((dummy (stringp header))
 	 (header (if (vectorp header) header
 		   (progn
@@ -404,10 +405,12 @@ Two predefined functions are available:
 	  (cond ((memq gnus-tmp-number sparse) 
 		 (caadr gnus-tree-brackets))
 		(dummy (caaddr gnus-tree-brackets))
+		(adopted (car (nth 3 gnus-tree-brackets)))
 		(t (caar gnus-tree-brackets))))
 	 (gnus-tmp-close-bracket
 	  (cond ((memq gnus-tmp-number sparse)
 		 (cdadr gnus-tree-brackets))
+		(adopted (cdr (nth 3 gnus-tree-brackets)))
 		(dummy
 		 (cdaddr gnus-tree-brackets))
 		(t (cdar gnus-tree-brackets))))
@@ -464,7 +467,7 @@ Two predefined functions are available:
 	  (gnus-horizontal-recenter)
 	  (select-window selected))))))
 
-(defun gnus-generate-horizontal-tree (thread level &optional dummyp)
+(defun gnus-generate-horizontal-tree (thread level &optional dummyp adopted)
   "Generate a horizontal tree."
   (let* ((dummy (stringp (car thread)))
 	 (do (or dummy
@@ -491,7 +494,7 @@ Two predefined functions are available:
 	  (goto-char beg)))
       (setq dummyp nil)
       ;; Insert the article node.
-      (gnus-tree-node-insert (pop thread) gnus-tmp-sparse))
+      (gnus-tree-node-insert (pop thread) gnus-tmp-sparse adopted))
     (if (null thread)
 	;; End of the thread, so we go to the next line.
 	(unless (bolp)
@@ -500,7 +503,7 @@ Two predefined functions are available:
       (while thread
 	(gnus-generate-horizontal-tree
 	 (pop thread) (if do (1+ level) level) 
-	 (or dummyp dummy))))))
+	 (or dummyp dummy) dummy)))))
 
 (defsubst gnus-tree-indent-vertical ()
   (let ((len (- (* (1+ gnus-tree-node-length) gnus-tmp-indent) 
@@ -515,7 +518,7 @@ Two predefined functions are available:
       (insert "\n")))
   (end-of-line))
 
-(defun gnus-generate-vertical-tree (thread level &optional dummyp)
+(defun gnus-generate-vertical-tree (thread level &optional dummyp adopted)
   "Generate a vertical tree."
   (let* ((dummy (stringp (car thread)))
 	 (do (or dummy
@@ -549,7 +552,7 @@ Two predefined functions are available:
       (setq dummyp nil)
       ;; Insert the article node.
       (gnus-tree-indent-vertical)
-      (gnus-tree-node-insert (pop thread) gnus-tmp-sparse)
+      (gnus-tree-node-insert (pop thread) gnus-tmp-sparse adopted)
       (gnus-tree-forward-line 1))
     (if (null thread)
 	;; End of the thread, so we go to the next line.
@@ -561,7 +564,7 @@ Two predefined functions are available:
       (while thread
 	(gnus-generate-vertical-tree
 	 (pop thread) (if do (1+ level) level) 
-	 (or dummyp dummy))))))
+	 (or dummyp dummy) dummy)))))
 
 ;;; Interface functions.
 
@@ -628,7 +631,6 @@ Two predefined functions are available:
 	(put-text-property (car region) (cdr region) 'face face)
 	(set-window-point 
 	 (get-buffer-window (current-buffer) t) (cdr region))))))
-
 
 ;;; Allow redefinition of functions.
 (gnus-ems-redefine)

@@ -1323,7 +1323,7 @@ It does this by highlighting everything after
 	  (widen)
 	  (re-search-backward gnus-signature-separator nil t)
 	  (let ((start (match-beginning 0))
-		(end (match-end 0)))
+		(end (set-marker (make-marker) (match-end 0))))
 	    (gnus-article-add-button start end 'gnus-signature-toggle
 				     end)))))))
 
@@ -1422,25 +1422,18 @@ specified by `gnus-button-alist'."
 (defun gnus-signature-toggle (end)
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (let ((buffer-read-only nil))
+    (let ((buffer-read-only nil)
+	  (inhibit-point-motion-hooks t))
       (if (get-text-property end 'invisible)
 	  (remove-text-properties end (point-max) gnus-hidden-properties)
 	(add-text-properties end (point-max) gnus-hidden-properties)))))
-
-;see gnus-cus.el
-;(defun gnus-make-face (color)
-;  ;; Create entry for face with COLOR.
-;  (if gnus-make-foreground
-;      (custom-face-lookup color nil nil nil nil nil)
-;    (custom-face-lookup nil color nil nil nil nil)))
 
 (defun gnus-button-entry ()
   ;; Return the first entry in `gnus-button-alist' matching this place.
   (let ((alist gnus-button-alist)
 	(entry nil))
     (while alist
-      (setq entry (car alist)
-	    alist (cdr alist))
+      (setq entry (pop alist))
       (if (looking-at (car entry))
 	  (setq alist nil)
 	(setq entry nil)))
