@@ -1,5 +1,5 @@
 ;;; mml.el --- A package for parsing and validating MML documents
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -939,7 +939,9 @@ See Info node `(emacs-mime)Composing'.
       (when value
 	;; Quote VALUE if it contains suspicious characters.
 	(when (string-match "[\"'\\~/*;() \t\n]" value)
-	  (setq value (prin1-to-string value)))
+	  (setq value (with-output-to-string
+			(let (print-escape-nonascii)
+			  (prin1 value)))))
 	(insert (format " %s=%s" key value)))))
   (insert ">\n"))
 
