@@ -1,5 +1,8 @@
 2003-04-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnrss.el (nnrss-node-text): Use only one
+	gnus-replace-in-string. 
+
 	* gnus.el: Remove gnus-functionp throughout.
 
 	* gnus-util.el (gnus-functionp): Removed.

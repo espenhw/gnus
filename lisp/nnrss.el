@@ -519,11 +519,7 @@ It is useful when `(setq nnrss-use-local t)'."
 		   (nnrss-node-just-text node)
 		 node))
 	 (cleaned-text (if text (gnus-replace-in-string
-				 (gnus-replace-in-string
-				  (gnus-replace-in-string
-				   text "^[[:cntrl:]]+" "")
-				  "^ +" "")
-				 " +$" ""))))
+				 text "^[[:cntrl:]]+\\|^ +\\| +$" ""))))
     (if (string-equal "" cleaned-text)
 	nil
       cleaned-text)))
