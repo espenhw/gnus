@@ -1,3 +1,7 @@
+2001-10-09 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* dgnushack.el (dgnushack-compile): Detect mh-e and xml.
+
 2001-10-09  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* message.el (message-send-news): Oops, missed case with no

@@ -239,6 +239,16 @@ Modify to suit your needs."))
 		       "nnslashdot.el" "nnwarchive.el" "webmail.el"
 		       "nnwfm.el" "nnrss.el"))
 	 (setq files (delete file files)))))
+    (condition-case code
+	(require 'mh-e)
+      (error
+       (message "No mh-e: %s %s" code (locate-library "mh-e"))
+       (setq files (delete "gnus-mh.el" files))))
+    (condition-case code
+	(require 'xml)
+      (error
+       (message "No xml: %s %s" code (locate-library "xml"))
+       (setq files (delete "nnrss.el" files))))
     (dolist (file
 	     (if (featurep 'xemacs)
 		 '("md5.el" "smiley-ems.el")
