@@ -174,7 +174,7 @@ Otherwise, most addresses look like `angles', but they look like
   :group 'message-headers
   :type 'boolean)
 
-(defcustom message-syntax-checks 
+(defcustom message-syntax-checks
   (if message-insert-canlock '((sender . disabled)) nil)
   ;; Guess this one shouldn't be easy to customize...
   "*Controls what syntax checks should not be performed on outgoing posts.
@@ -328,7 +328,7 @@ Archives \(such as groups.googgle.com\) respect this header."
 ;;;###autoload
 (defcustom message-archive-note
   "X-No-Archive: Yes - save http://groups.google.com/"
-  "Note to insert why you wouldn't want this posting archived. 
+  "Note to insert why you wouldn't want this posting archived.
 If nil, don't insert any text in the body."
   :type 'string
   :group 'message-various)
@@ -367,7 +367,7 @@ Note that you can explicitly override this setting by calling
 ;;;###autoload
 (defcustom message-cross-post-note-function
   'message-cross-post-insert-note
-  "Function to use to insert note about Crosspost or Followup-To.  
+  "Function to use to insert note about Crosspost or Followup-To.
 The function will be called with four arguments.  The function should not only
 insert a note, but also ensure old notes are deleted.  See the documentation
 for `message-cross-post-insert-note'. "
@@ -963,7 +963,7 @@ candidates:
 `empty-article'     Allow you to post an empty article;
 `quoted-text-only'  Allow you to post quoted text only;
 `multiple-copies'   Allow you to post multiple copies;
-`cancel-messages'   Allow you to cancel or supersede messages from 
+`cancel-messages'   Allow you to cancel or supersede messages from
                     your other email addresses.")
 
 (defsubst message-gnksa-enable-p (feature)
@@ -1558,13 +1558,13 @@ is used by default."
 ;;; Start of functions adopted from `message-utils.el'.
 
 (defun message-strip-subject-trailing-was (subject)
-  "Remove trailing \"(Was: <old subject>)\" from subject lines.   
+  "Remove trailing \"(Was: <old subject>)\" from subject lines.
 Leading \"Re: \" is not stripped by this function.  Use the function
 `message-strip-subject-re' for this."
   (let* ((query message-subject-trailing-was-query)
 	 (new) (found))
     (setq found
-	  (string-match 
+	  (string-match
 	   (if (eq query 'ask)
 	       message-subject-trailing-was-ask-regexp
 	     message-subject-trailing-was-regexp)
@@ -1576,7 +1576,7 @@ Leading \"Re: \" is not stripped by this function.  Use the function
       (if (eq query 'ask)
 	  (if (message-y-or-n-p
 	       "Strip `(was: <old subject>)' in subject? " t
-	       (concat 
+	       (concat
 		"Strip `(was: <old subject>)' in subject "
 		"and use the new one instead?\n\n"
 		"Current subject is:   \""
@@ -1690,7 +1690,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
   ;; add target-group to Newsgroups line.
   (cond ((and (or
 	       ;; def: cross-post, req:no
-	       (and message-cross-post-default (not current-prefix-arg))  
+	       (and message-cross-post-default (not current-prefix-arg))
 	       ;; def: no-cross-post, req:yes
 	       (and (not message-cross-post-default) current-prefix-arg))
 	      (not (string-match "poster" target-group))
@@ -1759,7 +1759,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
 	 (save-excursion
 	   (let* ((old-groups (message-fetch-field "Newsgroups"))
 		  (in-old (string-match
-			   (regexp-quote target-group) 
+			   (regexp-quote target-group)
 			   (or old-groups ""))))
 	     ;; check whether target exactly matches old Newsgroups
 	     (cond ((not old-groups)
@@ -1772,7 +1772,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
 			      old-groups)))
 		    ;; yes, Newsgroups line must change
 		    (message-cross-post-followup-to-header target-group)
-		    ;; insert note whether we do cross-post or fup2
+		    ;; insert note whether we do cross-post or followup-to
 		    (funcall message-cross-post-note-function
 			     target-group
 			     (if (or (and message-cross-post-default
@@ -2003,7 +2003,7 @@ Point is left at the beginning of the narrowed-to region."
   ;; mark inserted text
   (define-key message-mode-map "\C-c\M-m" 'message-mark-inserted-region)
   (define-key message-mode-map "\C-c\M-f" 'message-mark-insert-file)
-  
+
   (define-key message-mode-map "\C-c\C-b" 'message-goto-body)
   (define-key message-mode-map "\C-c\C-i" 'message-goto-signature)
 
@@ -2070,10 +2070,10 @@ Point is left at the beginning of the narrowed-to region."
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Spellcheck this message"))]
     "----"
-    ["Insert Region Marked" message-mark-inserted-region 
+    ["Insert Region Marked" message-mark-inserted-region
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Mark region with enclosing tags"))]
-    ["Insert File Marked..." message-mark-insert-file 
+    ["Insert File Marked..." message-mark-insert-file
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Insert file at point marked with enclosing tags"))]
     "----"
@@ -3221,7 +3221,7 @@ It should typically alter the sending method in some way or other."
 		(or (< (mm-char-int char) 128)
 		    (and (mm-multibyte-p)
 			 (memq (char-charset char)
-			       '(eight-bit-control eight-bit-graphic 
+			       '(eight-bit-control eight-bit-graphic
 						   control-1)))))
 	  (add-text-properties (point) (1+ (point)) '(highlight t))
 	  (setq found t))
@@ -3229,7 +3229,7 @@ It should typically alter the sending method in some way or other."
 	(skip-chars-forward mm-7bit-chars))
       (when found
 	(setq choice
-	      (gnus-multiple-choice 
+	      (gnus-multiple-choice
 	       "Illegible text found. Continue posting? "
 	       '((?d "Remove and continue posting")
 		 (?r "Replace with dots and continue posting")
@@ -5356,7 +5356,7 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 
     (setq message-reply-headers
 	  (vector 0 subject from date message-id references 0 0 ""))
-    
+
     (message-setup
      `((Subject . ,subject)
        ,@(cond
@@ -5953,7 +5953,7 @@ which specify the range to operate on."
 (defun message-tool-bar-map ()
   (or message-tool-bar-map
       (setq message-tool-bar-map
-	    (and 
+	    (and
 	     (condition-case nil (require 'tool-bar) (error nil))
 	     (fboundp 'tool-bar-add-item-from-menu)
 	     tool-bar-mode
@@ -5996,9 +5996,9 @@ which specify the range to operate on."
 (defcustom message-completion-alist
   (list (cons message-newgroups-header-regexp 'message-expand-group)
 	'("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . message-expand-name)
-	'("^\\(Reply-To\\|From\\|Mail-Followup-To\\|Mail-Copies-To\\):" 
+	'("^\\(Reply-To\\|From\\|Mail-Followup-To\\|Mail-Copies-To\\):"
 	  . message-expand-name)
-	'("^\\(Disposition-Notification-To\\|Return-Receipt-To\\):" 
+	'("^\\(Disposition-Notification-To\\|Return-Receipt-To\\):"
 	  . message-expand-name))
   "Alist of (RE . FUN).  Use FUN for completion on header lines matching RE."
   :group 'message

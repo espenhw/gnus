@@ -1,3 +1,7 @@
+2003-01-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-cross-post-followup-to): Fix comment.
+
 2003-01-01  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-ham-marks, spam-spam-marks): changed list
@@ -9,7 +13,7 @@
 
 2003-01-01  Raymond Scholz  <ray-2002@zonix.de>
 
-	* message.el (message-signature-insert-empty-line): New variable. 
+	* message.el (message-signature-insert-empty-line): New variable.
 
 2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -37,17 +41,17 @@
 	* dns.el (dns-make-network-process): Comment.
 
 	* gnus-sum.el (gnus-summary-display-while-building): Default to
-	nil. 
+	nil.
 
 2003-01-01  Wes Hardaker  <wes@hardakers.net>
 
 	* gnus-sum.el (gnus-summary-display-while-building): New
-	variable. 
+	variable.
 
 2002-01-01  Raymond Scholz  <ray-2003@zonix.de>
 
 	* deuglify.el (gnus-outlook-rearrange-article): Kill overlays
-          before rearranging the article.
+	before rearranging the article.
 
 2003-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -60,12 +64,12 @@
 	(message-draft-headers): New variable.
 
 	* gnus-msg.el (gnus-inews-make-draft-meta-information): New
-	function. 
+	function.
 	(gnus-setup-message): Use it.
 
 	* message.el (message-generate-headers-first): Doc fix.
 	(message-setup-1): Use new function for getting which headers to
-	generate. 
+	generate.
 	(message-headers-to-generate): New function.
 
 2003-01-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -129,13 +133,13 @@
 	when sorting by date.
 
 	* gnus-art.el (gnus-article-edit-mode): New variable.
-	(gnus-article-setup-buffer): Warn user about discarding edits. 
+	(gnus-article-setup-buffer): Warn user about discarding edits.
 
 	* gnus-sum.el (gnus-summary-pipe-output): Clean up.
 	(gnus-summary-pipe-output): Take a symbolic prefix to save all
-	headers. 
+	headers.
 
-	* mm-uu.el (mm-uu-configure-list): Default to (shar . disabled). 
+	* mm-uu.el (mm-uu-configure-list): Default to (shar . disabled).
 
 2002-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
@@ -175,13 +179,13 @@
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* flow-fill.el (fill-flowed): Don't infloop on too long fill
-	prefixes. 
+	prefixes.
 
 	* dns.el (query-dns): Protect against errors.
 
 	* gnus-msg.el (gnus-article-yanked-articles): New variable.
 	(gnus-inews-add-send-actions): Mark all answered messages as
-	answered. 
+	answered.
 
 2002-08-10  Jari Aalto  <jari.aalto@poboxes.com>
 
@@ -200,7 +204,7 @@
 
 2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-topic.el (gnus-topic-display-missing-topic): Bind entry. 
+	* gnus-topic.el (gnus-topic-display-missing-topic): Bind entry.
 
 	* message.el (message-with-reply-buffer): New macro.
 	(message-fetch-reply-field): Use it.
@@ -221,7 +225,7 @@
 2002-12-29  Jesper Harder  <harder@ifa.au.dk>
 
 	* mml.el (mml-generate-mime-1): Reverse the order of
-	encoding/flowing. 
+	encoding/flowing.
 
 2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -241,9 +245,9 @@
 	* gnus.el (gnus-keep-backlog): Change default to 20.
 
 	* gnus-agent.el (gnus-agent-check-overview-buffer): Start from
-	start. 
+	start.
 	(gnus-agent-check-overview-buffer): Remove negative article
-	numbers. 
+	numbers.
 
 	* nnmail.el (nnmail-split-fancy-with-parent-ignore-groups): Doc fix.
 	(nnmail-cache-ignore-groups): Doc fix.
@@ -254,7 +258,7 @@
 
 2002-12-28  Lars Magne Ingebrigtsen  <kgreiner@xpediantsolutions.com>
 
-	* gnus.el (gnus-summary-high-uncached-face): New color scheme. 
+	* gnus.el (gnus-summary-high-uncached-face): New color scheme.
 
 2002-12-28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -280,7 +284,7 @@
 
 	* mm-decode.el (mm-mailcap-command): Do not backslash-quote
 	special chars if the mailcap file uses single quotes around %s.
-	From Laurent Martelli <laurent@bearteam.org>.	
+	From Laurent Martelli <laurent@bearteam.org>.
 
 2002-12-19  Paul Jarc  <prj@po.cwru.edu>
 
