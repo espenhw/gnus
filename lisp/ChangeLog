@@ -1,3 +1,9 @@
+2001-05-07  Simon Josefsson  <simon@josefsson.org>
+
+	* message.el (message-get-reply-headers):
+	(message-followup): Fix typo, suggested by David Green
+	<dgreen@uab.edu>
+
 2001-05-05 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-request-expire-articles): Fix.

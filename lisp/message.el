@@ -4002,7 +4002,7 @@ often used to direct the following discussion to one list only,
 because discussions that are spread over several lists tend to be
 fragmented and very difficult to follow.
 
-Also, some source/announcement lists are not indented for discussion;
+Also, some source/announcement lists are not intended for discussion;
 responses here are directed to other addresses.")))
               (insert mft)
 	    (unless never-mct
@@ -4190,7 +4190,7 @@ used to direct the following discussion to one newsgroup only,
 because discussions that are spread over several newsgroup tend to
 be fragmented and very difficult to follow.
 
-Also, some source/announcement newsgroups are not indented for discussion;
+Also, some source/announcement newsgroups are not intended for discussion;
 responses here are directed to other newsgroups."))
 		  (cons 'Newsgroups followup-to)
 		(cons 'Newsgroups newsgroups))))))
