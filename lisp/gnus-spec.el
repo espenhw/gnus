@@ -123,7 +123,7 @@
     (group "%M\%S\%p\%P\%5y: %(%g%)%l\n" ,gnus-group-line-format-spec)
     (summary-dummy "*  %(:                          :%) %S\n"
 		   ,gnus-summary-dummy-line-format-spec)
-    (summary "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
+    (summary "%U\%R\%z\%I\%(%[%4L: %-23,23n%]%) %s\n"
 	     ,gnus-summary-line-format-spec))
   "Alist of format specs.")
 

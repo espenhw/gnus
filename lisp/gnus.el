@@ -856,7 +856,7 @@ For example:
    ((\"mail\\\\..*\"  (gnus-show-threads nil)
 		  (gnus-use-scoring nil)
 		  (gnus-summary-line-format
-			\"%U%R%z%I%(%[%d:%ub%-20,20f%]%) %s\\n\")
+			\"%U%R%z%I%(%[%d:%ub%-23,23f%]%) %s\\n\")
 		  (gcc-self . t)
 		  (display . all))
      (\"mail\\\\.me\" (gnus-use-scoring  t))
@@ -2067,7 +2067,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 ;;; gnus-sum.el thingies
 
 
-(defcustom gnus-summary-line-format "%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n"
+(defcustom gnus-summary-line-format "%U%R%z%I%(%[%4L: %-23,23n%]%) %s\n"
   "*The format specification of the lines in the summary buffer.
 
 It works along the same lines as a normal formatting string,
