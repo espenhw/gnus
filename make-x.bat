@@ -14,13 +14,13 @@ if "%1" == "" goto usage
 set emacs=xemacs.exe
 
 cd lisp
-call %1\%emacs% -batch -nw -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
+call %1\%emacs% -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
 if not "%2" == "copy" goto info
 attrib -r %1\..\..\xemacs-packages\lisp\gnus\*.*
 copy *.el* %1\..\..\xemacs-packages\lisp\gnus
 
 :info
-set EMACSINFO=call %1\%emacs% -no-site-file -no-init-file -batch -nw -q -l infohack.el -f batch-makeinfo
+set EMACSINFO=call %1\%emacs% -no-site-file -no-init-file -batch -q -l infohack.el -f batch-makeinfo
 cd ..\texi
 %EMACSINFO% message.texi
 %EMACSINFO% emacs-mime.texi
