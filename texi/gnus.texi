@@ -8558,7 +8558,7 @@ Copy the @sc{mime} object to a fresh buffer and display this buffer
 @findex gnus-mime-view-part-as-type
 @item t (Article)
 View the @sc{mime} object as if it were a different @sc{mime} media type
-(@code{gnus-mime-view-part-as-type}. 
+(@code{gnus-mime-view-part-as-type}). 
 
 @findex gnus-mime-pipe-part
 @item | (Article)

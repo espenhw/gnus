@@ -1,3 +1,7 @@
+2000-01-02 08:39:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi: Closing paren.
+
 1999-12-28  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus.texi (Article Hiding): Addition.
