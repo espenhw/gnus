@@ -756,6 +756,12 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 ;;;; Blackholes.
 
+(defun spam-reverse-ip-string (ip)
+  (when (stringp ip)
+    (mapconcat 'identity
+	       (nreverse (split-string ip "\\."))
+	       ".")))
+
 (defun spam-check-blackholes ()
   "Check the Received headers for blackholed relays."
   (let ((headers (nnmail-fetch-field "received"))
@@ -768,14 +774,15 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	(while (re-search-forward
 		"\\[\\([0-9]+.[0-9]+.[0-9]+.[0-9]+\\)\\]" nil t)
 	  (gnus-message 9 "Blackhole search found host IP %s." (match-string 1))
-	  (push (mapconcat 'identity
-			   (nreverse (split-string (match-string 1) "\\."))
-			   ".")
+	  (push (spam-reverse-ip-string (match-string 1))
 		ips)))
       (dolist (server spam-blackhole-servers)
 	(dolist (ip ips)
 	  (unless (and spam-blackhole-good-server-regex
-		       (string-match spam-blackhole-good-server-regex ip))
+		       ;; match the good-server-regex against the reversed (again) IP string
+		       (string-match 
+			spam-blackhole-good-server-regex
+			(spam-reverse-ip-string ip)))
 	    (unless matches
 	      (let ((query-string (concat ip "." server)))
 		(if spam-use-dig

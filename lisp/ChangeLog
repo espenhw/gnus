@@ -1,3 +1,9 @@
+2003-10-21  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-reverse-ip-string): new function to reverse an IP
+	address in a string
+	(spam-check-blackholes): use spam-reverse-ip-string
+
 2003-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-narrow-to-page): Clear as well as set the
