@@ -262,7 +262,7 @@ If non-nil, this maildrop will be checked periodically for new mail."
   :group 'mail-source
   :type 'integer)
 
-(defcustom mail-source-delete-incoming nil
+(defcustom mail-source-delete-incoming t
   "*If non-nil, delete incoming files after handling.
 If t, delete immediately, if nil, never delete.  If a positive number, delete
 files older than number of days."

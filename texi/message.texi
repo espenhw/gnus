@@ -88,7 +88,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message v5.10.3.  Message is distributed
+This manual corresponds to Message v5.10.4.  Message is distributed
 with the Gnus distribution bearing the same version number as this
 manual.
 
