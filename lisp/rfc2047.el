@@ -80,7 +80,7 @@ Valid encodings are nil, `Q' and `B'.")
 
 (defvar rfc2047-q-encoding-alist
   '(("\\(From\\|Cc\\|To\\|Bcc\||Reply-To\\):" . "-A-Za-z0-9!*+/=_")
-    ("." . "^\000-\007\013\015-\037\200-\377=_?"))
+    ("." . "^\000-\007\011\013\015-\037\200-\377=_?"))
   "Alist of header regexps and valid Q characters.")
 
 ;;;

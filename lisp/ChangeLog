@@ -1,3 +1,7 @@
+2000-04-28 21:14:21  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-q-encoding-alist): Encode HTAB.
+
 2000-04-28 16:37:09  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-send-mail-partially): Use forward-line.
