@@ -1,5 +1,8 @@
 2002-02-04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-url.el (mm-url-load-url): New function.
+	(mm-url-insert-file-contents): Use it.
+
 	* gnus-msg.el (gnus-summary-mail-forward): Use gnus-article-charset.
 
 	* message.el (message-forward-make-body): Correctly copy

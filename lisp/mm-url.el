@@ -34,8 +34,7 @@
 (require 'mm-util)
 
 (eval-and-compile
-  (autoload 'executable-find "executable")
-  (autoload 'url-insert-file-contents "url-handlers"))
+  (autoload 'executable-find "executable"))
 
 (defgroup mm-url nil
   "A wrapper of url package and external url command for Gnus."
@@ -43,7 +42,7 @@
 
 (defcustom mm-url-use-external (not
 				(condition-case nil
-				    (require 'url-handlers)
+				    (require 'url)
 				  (error nil)))
   "*If not-nil, use external grab program `mm-url-program'."
   :type 'boolean
@@ -75,6 +74,9 @@
   "The arguments for `mm-url-program'."
   :type '(repeat string)
   :group 'mm-url)
+
+
+;;; Internal variables
 
 ;; Stolen from w3.
 (defvar mm-url-html-entities
@@ -249,12 +251,19 @@
   "A list of characters that are _NOT_ reserved in the URL spec.
 This is taken from RFC 2396.")
 
+(defun mm-url-load-url ()
+  "Load `url-insert-file-contents'."
+  (condition-case ()
+      (require 'url-handlers)
+    (error nil))
+  (require 'url))
+
 (defun mm-url-insert-file-contents (url)
   (if mm-url-use-external
       (if (string-match "^file:/+" url)
 	  (insert-file-contents (substring url (1- (match-end 0))))
 	(mm-url-insert-file-contents-external url))
-    (require 'url-handlers)
+    (mm-url-load-url)
     (let ((name buffer-file-name))
       (prog1
 	  (url-insert-file-contents url)
@@ -347,7 +356,7 @@ spaces.  Die Die Die."
 
 (defun mm-url-fetch-form (url pairs)
   "Fetch a form from URL with PAIRS as the data using the POST method."
-  (require 'url-handlers)
+  (mm-url-load-url)
   (let ((url-request-data (mm-url-encode-www-form-urlencoded pairs))
 	(url-request-method "POST")
 	(url-request-extra-headers
@@ -357,7 +366,7 @@ spaces.  Die Die Die."
   t)
 
 (defun mm-url-fetch-simple (url content)
-  (require 'url-handlers)
+  (mm-url-load-url)
   (let ((url-request-data content)
 	(url-request-method "POST")
 	(url-request-extra-headers
