@@ -1,3 +1,7 @@
+2003-04-28  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* GNUS-NEWS: Fixed X-Draft-Headers entry.
+
 2003-04-27  Simon Josefsson  <jas@extundo.com>
 
 	* GNUS-NEWS: Fix PGP entry.  Doc GCC variable change.

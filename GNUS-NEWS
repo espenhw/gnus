@@ -101,7 +101,7 @@ note in the body for cross-postings and followups (see the variables
 `message-cross-post-*').
 
 ** References and X-Draft-Headers are no longer generated when you
-   start composing messages.
+   start composing messages and `message-generate-headers-first' is nil.
 
 ** Improved anti-spam features.
 
