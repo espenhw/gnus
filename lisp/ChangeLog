@@ -1,3 +1,8 @@
+2000-10-29 17:23:15  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el: Add NOV. Set version to 2.0.
+	(nnfolder-nov-is-evil): If non-nil, nnfolder acts like 1.0.
+
 2000-10-29 10:35:08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-mailcrypt-sign): Use mc-sign-generic.

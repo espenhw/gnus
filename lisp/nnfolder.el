@@ -2,7 +2,8 @@
 ;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
 ;;        Free Software Foundation, Inc.
 
-;; Author: Scott Byer <byer@mv.us.adobe.com>
+;; Author: ShengHuo Zhu <zsh@cs.rochester.edu> (adding NOV)
+;;      Scott Byer <byer@mv.us.adobe.com>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: mail
@@ -39,6 +40,10 @@
 
 (defvoo nnfolder-directory (expand-file-name message-directory)
   "The name of the nnfolder directory.")
+
+(defvoo nnfolder-nov-directory nil
+  "The name of the nnfolder NOV directory.
+If nil, `nnfolder-directory' is used.")
 
 (defvoo nnfolder-active-file
     (nnheader-concat nnfolder-directory "active")
@@ -80,7 +85,7 @@ message, a huge time saver for large mailboxes.")
 
 
 
-(defconst nnfolder-version "nnfolder 1.0"
+(defconst nnfolder-version "nnfolder 2.0"
   "nnfolder version.")
 
 (defconst nnfolder-article-marker "X-Gnus-Article-Number: "
@@ -101,6 +106,21 @@ message, a huge time saver for large mailboxes.")
   "Coding system for save nnfolder file.
 If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 
+(defvoo nnfolder-nov-is-evil nil
+  "If non-nil, Gnus will never generate and use nov databases for mail groups.
+Using nov databases will speed up header fetching considerably.
+This variable shouldn't be flipped much.  If you have, for some reason,
+set this to t, and want to set it to nil again, you should always run
+the `nnfolder-generate-active-file' command.  The function will go
+through all nnfolder directories and generate nov databases for them
+all.  This may very well take some time.")
+
+(defvoo nnfolder-nov-file-suffix ".nov")
+
+(defvoo nnfolder-nov-buffer-alist nil)
+
+(defvar nnfolder-nov-buffer-file-name nil)
+
 
 
 ;;; Interface functions
@@ -118,27 +138,30 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 	(goto-char (point-min))
 	(if (stringp (car articles))
 	    'headers
-	  (while (setq article (pop articles))
-	    (set-buffer nnfolder-current-buffer)
-	    (when (nnfolder-goto-article article)
-	      (setq start (point))
-	      (setq stop (if (search-forward "\n\n" nil t)
-			     (1- (point))
-			   (point-max)))
-	      (set-buffer nntp-server-buffer)
-	      (insert (format "221 %d Article retrieved.\n" article))
-	      (insert-buffer-substring nnfolder-current-buffer start stop)
-	      (goto-char (point-max))
-	      (insert ".\n")))
-
-	  (set-buffer nntp-server-buffer)
-	  (nnheader-fold-continuation-lines)
-	  'headers)))))
+	  (if (nnfolder-retrieve-headers-with-nov articles fetch-old)
+	      'nov
+	    (while (setq article (pop articles))
+	      (set-buffer nnfolder-current-buffer)
+	      (when (nnfolder-goto-article article)
+		(setq start (point))
+		(setq stop (if (search-forward "\n\n" nil t)
+			       (1- (point))
+			     (point-max)))
+		(set-buffer nntp-server-buffer)
+		(insert (format "221 %d Article retrieved.\n" article))
+		(insert-buffer-substring nnfolder-current-buffer start stop)
+		(goto-char (point-max))
+		(insert ".\n")))
+	    (set-buffer nntp-server-buffer)
+	    (nnheader-fold-continuation-lines)
+	    'headers))))))
 
 (deffoo nnfolder-open-server (server &optional defs)
   (nnoo-change-server 'nnfolder server defs)
   (nnmail-activate 'nnfolder t)
   (gnus-make-directory nnfolder-directory)
+  (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
+    (gnus-make-directory nnfolder-nov-directory))
   (cond
    ((not (file-exists-p nnfolder-directory))
     (nnfolder-close-server)
@@ -352,6 +375,8 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 	    (nnheader-message 5 "Deleting article %d..."
 			      (car maybe-expirable) newsgroup)
 	    (nnfolder-delete-mail)
+	    (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
+	      (nnfolder-nov-delete-article newsgroup (car maybe-expirable)))
 	    ;; Must remember which articles were actually deleted
 	    (push (car maybe-expirable) deleted-articles)))
 	(setq maybe-expirable (cdr maybe-expirable)))
@@ -389,6 +414,8 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 	 (goto-char (point-min))
 	 (when (nnfolder-goto-article article)
 	   (nnfolder-delete-mail))
+	 (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
+	   (nnfolder-nov-delete-article group article))
 	 (when last
 	   (nnfolder-save-buffer)
 	   (nnfolder-adjust-min-active group)
@@ -457,6 +484,15 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 	nil
       (nnfolder-delete-mail)
       (insert-buffer-substring buffer)
+      (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
+	(save-excursion
+	  (set-buffer buffer)
+	  (let ((headers (nnfolder-parse-head article 
+					      (point-min) (point-max))))
+	    (with-current-buffer (nnfolder-open-nov group)
+	      (if (nnheader-find-nov-line article)
+		  (delete-region (point) (progn (forward-line 1) (point))))
+	      (nnheader-insert-nov headers)))))
       (nnfolder-save-buffer)
       t)))
 
@@ -467,7 +503,8 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
       ()				; Don't delete the articles.
     ;; Delete the file that holds the group.
     (ignore-errors
-      (delete-file (nnfolder-group-pathname group))))
+      (delete-file (nnfolder-group-pathname group))
+      (delete-file (nnfolder-group-nov-pathname group))))
   ;; Remove the group from all structures.
   (setq nnfolder-group-alist
 	(delq (assoc group nnfolder-group-alist) nnfolder-group-alist)
@@ -483,11 +520,12 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
     (set-buffer nnfolder-current-buffer)
     (and (file-writable-p buffer-file-name)
 	 (ignore-errors
-	   (rename-file
-	    buffer-file-name
-	    (let ((new-file (nnfolder-group-pathname new-name)))
-	      (gnus-make-directory (file-name-directory new-file))
-	      new-file))
+	   (let ((new-file (nnfolder-group-pathname new-name)))
+	     (gnus-make-directory (file-name-directory new-file))
+	     (rename-file buffer-file-name new-file)
+	     (setq new-file (nnfolder-group-nov-pathname new-name))
+	     (rename-file (nnfolder-group-nov-pathname group)
+			  new-file))
 	   t)
 	 ;; That went ok, so we change the internal structures.
 	 (let ((entry (assoc group nnfolder-group-alist)))
@@ -673,7 +711,11 @@ deleted.  Point is left where the deleted region was."
 	  (nnfolder-possibly-change-folder (car group-art))
 	  (let ((buffer-read-only nil))
 	    (nnfolder-normalize-buffer)
-	    (insert-buffer-substring obuf beg end)))))
+	    (insert-buffer-substring obuf beg end))
+	  (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
+	    (set-buffer obuf)
+	    (nnfolder-add-nov (car group-art) (cdr group-art)
+			      (nnfolder-parse-head nil beg end))))))
 
     ;; Did we save it anywhere?
     save-list))
@@ -736,6 +778,7 @@ deleted.  Point is left where the deleted region was."
 
 (defun nnfolder-read-folder (group)
   (let* ((file (nnfolder-group-pathname group))
+	 (nov  (nnfolder-group-nov-pathname group))
 	 (buffer (set-buffer
 		  (let ((nnheader-file-coding-system 
 			 nnfolder-file-coding-system))
@@ -764,9 +807,23 @@ deleted.  Point is left where the deleted region was."
 	      (scantime (assoc group nnfolder-scantime-alist))
 	      (minid (lsh -1 -1))
 	      maxid start end newscantime
+	      novbuf articles newnum
 	      buffer-read-only)
 	  (buffer-disable-undo)
 	  (setq maxid (cdr active))
+
+	  (unless (or gnus-nov-is-evil nnfolder-nov-is-evil
+		      (and (file-exists-p nov)
+			   (file-newer-than-file-p nov file)))
+	    (unless (file-exists-p nov)
+	      (gnus-make-directory (file-name-directory nov)))
+	    (with-current-buffer
+		(setq novbuf (nnfolder-open-nov group))
+	      (goto-char (point-min))
+	      (while (not (eobp))
+		(push (read novbuf) articles)
+		(forward-line 1))
+	      (setq articles (nreverse articles))))
 	  (goto-char (point-min))
 
 	  ;; Anytime the active number is 1 or 0, it is suspect.  In that
@@ -776,13 +833,27 @@ deleted.  Point is left where the deleted region was."
 	  ;; expunge lists, etc., if we ever desired to abandon the active
 	  ;; file entirely for mboxes.)
 	  (when (or nnfolder-ignore-active-file
+		    novbuf
 		    (< maxid 2))
 	    (while (and (search-forward marker nil t)
-			(re-search-forward number nil t))
-	      (let ((newnum (string-to-number (match-string 0))))
-		(if (nnmail-within-headers-p)
-		    (setq maxid (max maxid newnum)
-		          minid (min minid newnum)))))
+			(looking-at number))
+	      (setq newnum (string-to-number (match-string 0)))
+	      (when (nnmail-within-headers-p)
+		(setq maxid (max maxid newnum)
+		      minid (min minid newnum))
+		(when novbuf
+		  (if (memq newnum articles)
+		      (setq articles (delq newnum articles))
+		    (let ((headers (nnfolder-parse-head newnum)))
+		      (with-current-buffer novbuf
+			(nnheader-find-nov-line newnum)
+			(nnheader-insert-nov headers)))))))
+	    (when (and novbuf articles)
+	      (with-current-buffer novbuf
+		(dolist (article articles)
+		  (when (nnheader-find-nov-line article)
+		    (delete-region (point) 
+				   (progn (forward-line 1) (point)))))))
 	    (setcar active (max 1 (min minid maxid)))
 	    (setcdr active (max maxid (cdr active)))
 	    (goto-char (point-min)))
@@ -821,18 +892,30 @@ deleted.  Point is left where the deleted region was."
 	      (narrow-to-region start end)
 	      (nnmail-insert-lines)
 	      (nnfolder-insert-newsgroup-line
-	       (cons nil (nnfolder-active-number nnfolder-current-group)))
+	       (cons nil 
+		     (setq newnum
+			   (nnfolder-active-number nnfolder-current-group))))
+	      (when novbuf
+		(let ((headers (nnfolder-parse-head newnum (point-min)
+						      (point-max))))
+		  (with-current-buffer novbuf
+		    (goto-char (point-max))
+		    (nnheader-insert-nov headers))))
 	      (widen)))
 
 	  (set-marker end nil)
 	  ;; Make absolutely sure that the active list reflects reality!
 	  (nnfolder-save-active nnfolder-group-alist nnfolder-active-file)
+
 	  ;; Set the scantime for this group.
 	  (setq newscantime (visited-file-modtime))
 	  (if scantime
 	      (setcdr scantime (list newscantime))
 	    (push (list nnfolder-current-group newscantime)
 		  nnfolder-scantime-alist))
+	  ;; Save nov.
+	  (when novbuf
+	    (nnfolder-save-nov))
 	  (current-buffer))))))
 
 ;;;###autoload
@@ -841,6 +924,16 @@ deleted.  Point is left where the deleted region was."
 This command does not work if you use short group names."
   (interactive)
   (nnmail-activate 'nnfolder)
+  (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
+    (dolist (file (directory-files (or nnfolder-nov-directory 
+				       nnfolder-directory)
+				   t 
+				   (concat 
+				    (regexp-quote nnfolder-nov-file-suffix)
+				    "$")))
+      (when (not (message-mail-file-mbox-p file))
+	(ignore-errors
+	  (delete-file file)))))
   (let ((files (directory-files nnfolder-directory))
         file)
     (while (setq file (pop files))
@@ -872,6 +965,12 @@ This command does not work if you use short group names."
       ;; If not, we translate dots into slashes.
       (concat dir (nnheader-replace-chars-in-string group ?. ?/)))))
 
+(defun nnfolder-group-nov-pathname (group)
+  "Make pathname for GROUP NOV."
+  (let ((nnfolder-directory
+	 (or nnfolder-nov-directory nnfolder-directory)))
+    (concat (nnfolder-group-pathname group) nnfolder-nov-file-suffix)))
+
 (defun nnfolder-save-buffer ()
   "Save the buffer."
   (when (buffer-modified-p)
@@ -880,13 +979,103 @@ This command does not work if you use short group names."
     (let ((coding-system-for-write 
 	   (or nnfolder-file-coding-system-for-write
 	       nnfolder-file-coding-system)))
-      (save-buffer))))
+      (save-buffer)))
+  (unless (or gnus-nov-is-evil nnfolder-nov-is-evil)
+    (nnfolder-save-nov)))
 
 (defun nnfolder-save-active (group-alist active-file)
   (let ((nnmail-active-file-coding-system
 	 (or nnfolder-active-file-coding-system-for-write
 	     nnfolder-active-file-coding-system)))
     (nnmail-save-active group-alist active-file)))
+
+(defun nnfolder-open-nov (group)
+  (or (cdr (assoc group nnfolder-nov-buffer-alist))
+      (let ((buffer (get-buffer-create (format " *nnfolder overview %s*" group))))
+	(save-excursion
+	  (set-buffer buffer)
+	  (set (make-local-variable 'nnfolder-nov-buffer-file-name)
+	       (nnfolder-group-nov-pathname nnfolder-current-group))
+	  (erase-buffer)
+	  (when (file-exists-p nnfolder-nov-buffer-file-name)
+	    (nnheader-insert-file-contents nnfolder-nov-buffer-file-name)))
+	(push (cons group buffer) nnfolder-nov-buffer-alist)
+	buffer)))
+
+(defun nnfolder-save-nov ()
+  (save-excursion
+    (while nnfolder-nov-buffer-alist
+      (when (buffer-name (cdar nnfolder-nov-buffer-alist))
+	(set-buffer (cdar nnfolder-nov-buffer-alist))
+	(when (buffer-modified-p)
+	  (gnus-make-directory (file-name-directory 
+				nnfolder-nov-buffer-file-name))
+	  (nnmail-write-region 1 (point-max) nnfolder-nov-buffer-file-name
+			       nil 'nomesg))
+	(set-buffer-modified-p nil)
+	(kill-buffer (current-buffer)))
+      (setq nnfolder-nov-buffer-alist (cdr nnfolder-nov-buffer-alist)))))
+
+(defun nnfolder-nov-delete-article (group article)
+  (save-excursion
+    (set-buffer (nnfolder-open-nov group))
+    (when (nnheader-find-nov-line article)
+      (delete-region (point) (progn (forward-line 1) (point))))
+    t))
+
+(defun nnfolder-retrieve-headers-with-nov (articles &optional fetch-old)
+  (if (or gnus-nov-is-evil nnfolder-nov-is-evil)
+      nil
+    (let ((nov (nnfolder-group-nov-pathname nnfolder-current-group)))
+      (when (file-exists-p nov)
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer)
+	  (nnheader-insert-file-contents nov)
+	  (if (and fetch-old
+		   (not (numberp fetch-old)))
+	      t				; Don't remove anything.
+	    (nnheader-nov-delete-outside-range
+	     (if fetch-old (max 1 (- (car articles) fetch-old))
+	       (car articles))
+	     (car (last articles)))
+	    t))))))
+
+(defun nnfolder-parse-head (&optional number b e)
+  "Parse the head of the current buffer."
+  (let ((buf (current-buffer))
+	chars)
+  (save-excursion
+    (unless b
+      (setq b (if (nnmail-search-unix-mail-delim-backward)
+		  (point) (point-min)))
+      (forward-line 1)
+      (setq e (if (nnmail-search-unix-mail-delim)
+		  (point) (point-max))))
+    (setq chars (- e b))
+    (unless (zerop chars)
+      (goto-char b)
+      (if (search-forward "\n\n" e t) (setq e (1- (point)))))
+    (with-temp-buffer
+      (insert-buffer-substring buf b e)
+      ;; Fold continuation lines.
+      (goto-char (point-min))
+      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	(replace-match " " t t))
+      ;; Remove any tabs; they are too confusing.
+      (subst-char-in-region (point-min) (point-max) ?\t ? )
+      (let ((headers (nnheader-parse-head t)))
+	(mail-header-set-chars headers chars)
+	(mail-header-set-number headers number)
+	headers)))))
+
+(defun nnfolder-add-nov (group article headers)
+  "Add a nov line for the GROUP base."
+  (save-excursion
+    (set-buffer (nnfolder-open-nov group))
+    (goto-char (point-max))
+    (mail-header-set-number headers article)
+    (nnheader-insert-nov headers)))
 
 (provide 'nnfolder)
 
