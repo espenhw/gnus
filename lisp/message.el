@@ -2870,9 +2870,9 @@ It should typically alter the sending method in some way or other."
 	    (message-insert-courtesy-copy))
 	  (if (or (not message-send-mail-partially-limit)
 		  (< (point-max) message-send-mail-partially-limit)
-		  (not (message-y-or-n-p 
+		  (not (message-y-or-n-p
 			"The message size is too large, split? "
-			t 
+			t
 			"\
 The message size, " (/ (point-max) 1000) "KB, is too large.
 
@@ -2880,7 +2880,7 @@ Some mail gateways (MTA's) bounce large messages.  To avoid the
 problem, answer `y', and the message will be split into several
 smaller pieces, the size of each is about "
 (/ message-send-mail-partially-limit 1000)
-"KB except the last 
+"KB except the last
 one.
 
 However, some mail readers (MUA's) can't read split messages, i.e.,
