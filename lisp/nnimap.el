@@ -190,7 +190,7 @@ RFC2060 section 6.4.4."
   :type 'string)
 
 (defcustom nnimap-split-fancy nil
-  "Like `nnmail-split-fancy', which see."
+  "Like the variable `nnmail-split-fancy', which see."
   :group 'nnimap
   :type 'sexp)
 
@@ -209,6 +209,18 @@ However, it increases speed."
 This increases the speed of closing mailboxes (quiting group) but may
 decrease the speed of selecting another mailbox later.  Re-selecting
 the same mailbox will be faster though."
+  :type 'boolean
+  :group 'nnimap)
+
+(defcustom nnimap-retrieve-groups-asynchronous t
+  "Send asynchronous STATUS commands for each mailbox before checking mail.
+If you have mailboxes that rarely receives mail, this speeds up new
+mail checking.  It works by first sending STATUS commands for each
+mailbox, and then only checking groups which has a modified UIDNEXT
+more carefully for new mail.
+
+In summary, the default is O((1-p)*k+p*n) and changing it to nil makes
+it O(n).  If p is small, then the default is probably faster."
   :type 'boolean
   :group 'nnimap)
 
@@ -365,6 +377,7 @@ restrict visible folders.")
 
 ;; Internal variables:
 
+(defvoo nnimap-mailbox-info (gnus-make-hashtable 997))
 (defvar nnimap-debug nil
   "Name of buffer to record debugging info.
 For example: (setq nnimap-debug \"*nnimap-debug*\")")
@@ -657,7 +670,7 @@ If EXAMINE is non-nil the group is selected read-only."
 		    (nnimap-retrieve-headers-from-server
 		     (cons (1+ (cdr cached)) high) group server))
 		  (when nnimap-prune-cache
-	      ;; remove nov's for articles which has expired on server
+		    ;; remove nov's for articles which has expired on server
 		    (goto-char (point-min))
 		    (dolist (uid (gnus-set-difference articles uids))
 		      (when (re-search-forward (format "^%d\t" uid) nil t)
@@ -931,18 +944,49 @@ function is generally only called when Gnus is shutting down."
     (with-current-buffer nntp-server-buffer
       (erase-buffer)
       (nnimap-before-find-minmax-bugworkaround)
-      (dolist (group groups)
-	(gnus-message 7 "nnimap: Checking mailbox %s" group)
-	(or (member "\\NoSelect"
-		    (imap-mailbox-get 'list-flags group nnimap-server-buffer))
-	    (let ((info (nnimap-find-minmax-uid group 'examine)))
-	      (when (> (or (imap-mailbox-get 'recent group
-					     nnimap-server-buffer) 0)
-		       0)
-		(push (list (cons group 0)) nnmail-split-history))
-	      (insert (format "\"%s\" %d %d y\n" group
-			      (or (nth 2 info) 0)
-			      (max 1 (or (nth 1 info) 1))))))))
+      (let (asyncgroups slowgroups)
+	(if (null nnimap-retrieve-groups-asynchronous)
+	    (setq slowgroups groups)
+	  (dolist (group groups)
+	    (gnus-message 7 "nnimap: Checking mailbox %s" group)
+	    (add-to-list (if (gnus-gethash-safe group nnimap-mailbox-info)
+			     'asyncgroups
+			   'slowgroups)
+			 (list group (imap-mailbox-status-asynch
+				      group 'uidnext nnimap-server-buffer))))
+	  (dolist (asyncgroup asyncgroups)
+	    (let ((group (nth 0 asyncgroup))
+		  (tag   (nth 1 asyncgroup))
+		  new old)
+	      (when (imap-ok-p (imap-wait-for-tag tag nnimap-server-buffer))
+		(if (< (car (gnus-gethash group nnimap-mailbox-info))
+		       (imap-mailbox-get 'uidnext group nnimap-server-buffer))
+		    (push (list group) slowgroups)
+		  (insert (cdr (gnus-gethash group nnimap-mailbox-info))))))))
+	(dolist (group slowgroups)
+	  (if nnimap-retrieve-groups-asynchronous
+	      (setq group (car group)))
+	  (gnus-message 7 "nnimap: Rechecking mailbox %s" group)
+	  (imap-mailbox-put 'uidnext nil group nnimap-server-buffer)
+	  (or (member "\\NoSelect" (imap-mailbox-get 'list-flags group
+						     nnimap-server-buffer))
+	      (let ((info (nnimap-find-minmax-uid group 'examine)))
+		(when (> (or (imap-mailbox-get 'recent group
+					       nnimap-server-buffer) 0)
+			 0)
+		  (push (list (cons group 0)) nnmail-split-history))
+		(insert
+		 (cdr
+		  (gnus-sethash
+		   group
+		   (cons (or (imap-mailbox-get
+			      'uidnext group nnimap-server-buffer)
+			     (imap-mailbox-status
+			      group 'uidnext nnimap-server-buffer))
+			 (format "\"%s\" %d %d y\n" group
+				 (or (nth 2 info) 0)
+				 (max 1 (or (nth 1 info) 1))))
+		   nnimap-mailbox-info))))))))
     (gnus-message 5 "nnimap: Checking mailboxes...done")
     'active))
 
@@ -991,7 +1035,7 @@ function is generally only called when Gnus is shutting down."
 		gnus-article-mark-lists)
 
 	(when nnimap-importantize-dormant
-      ;; nnimap mark dormant article as ticked too (for other clients)
+	  ;; nnimap mark dormant article as ticked too (for other clients)
 	  ;; so we remove that mark for gnus since we support dormant
 	  (gnus-info-set-marks
 	   info
@@ -1062,7 +1106,7 @@ function is generally only called when Gnus is shutting down."
   nil)
 
 (defun nnimap-split-fancy ()
-  "Like nnmail-split-fancy, but uses nnimap-split-fancy."
+  "Like the function `nnmail-split-fancy', but uses `nnimap-split-fancy'."
   (let ((nnmail-split-fancy nnimap-split-fancy))
     (nnmail-split-fancy)))
 
@@ -1087,7 +1131,7 @@ function is generally only called when Gnus is shutting down."
 			       (setq regrepp (string-match "\\\\[0-9&]" group))
 			       (re-search-forward regexp nil t))
 			   (funcall regexp group))
-		 ;; Don't enter the article into the same group twice.
+			 ;; Don't enter the article into the same group twice.
 			 (not (assoc group to-groups)))
 		(push (if regrepp
 			  (nnmail-expand-newtext group)
@@ -1141,6 +1185,10 @@ function is generally only called when Gnus is shutting down."
 			 (message "IMAP split moved %s:%s:%d to %s" server
 				  inbox article to-group)
 			 (setq removeorig t)
+			 (when nnmail-cache-accepted-message-ids
+			   (with-current-buffer nntp-server-buffer
+			     (nnmail-cache-insert (nnmail-fetch-field
+						   "message-id") to-group)))
 			 ;; Add the group-art list to the history list.
 			 (push (list (cons to-group 0)) nnmail-split-history))
 			(t
@@ -1154,6 +1202,8 @@ function is generally only called when Gnus is shutting down."
 	    ;; todo: UID EXPUNGE (if available) to remove splitted articles
 	    (imap-mailbox-expunge)
 	    (imap-mailbox-close)))
+	(when nnmail-cache-accepted-message-ids
+	  (nnmail-cache-close))
 	t))))
 
 (deffoo nnimap-request-scan (&optional group server)
@@ -1213,7 +1263,6 @@ function is generally only called when Gnus is shutting down."
 (defun nnimap-request-expire-articles-progress ()
   (gnus-message 5 "nnimap: Marking article %d for deletion..."
 		imap-current-message))
-
 
 (defun nnimap-expiry-target (arts group server)
   (unless (eq nnmail-expiry-target 'delete)
@@ -1293,7 +1342,7 @@ function is generally only called when Gnus is shutting down."
     (let (uid)
       (if (setq uid
 		(if (string= nnimap-current-server nnimap-current-move-server)
-		  ;; moving article within same server, speed it up...
+		    ;; moving article within same server, speed it up...
 		    (and (nnimap-possibly-change-group
 			  nnimap-current-move-group)
 			 (imap-message-copy (number-to-string
@@ -1302,13 +1351,17 @@ function is generally only called when Gnus is shutting down."
 					    nnimap-server-buffer))
 		  (with-current-buffer (current-buffer)
 		    (goto-char (point-min))
-		  ;; remove any 'From blabla' lines, some IMAP servers
+		    ;; remove any 'From blabla' lines, some IMAP servers
 		    ;; reject the entire message otherwise.
 		    (when (looking-at "^From[^:]")
 		      (kill-region (point) (progn (forward-line) (point))))
 		    ;; turn into rfc822 format (\r\n eol's)
 		    (while (search-forward "\n" nil t)
-		      (replace-match "\r\n")))
+		      (replace-match "\r\n"))
+		    (when nnmail-cache-accepted-message-ids
+		      (nnmail-cache-insert (nnmail-fetch-field "message-id"))))
+		  (when (and last nnmail-cache-accepted-message-ids)
+		    (nnmail-cache-close))
 		  ;; this 'or' is for Cyrus server bug
 		  (or (null (imap-current-mailbox nnimap-server-buffer))
 		      (imap-mailbox-unselect nnimap-server-buffer))

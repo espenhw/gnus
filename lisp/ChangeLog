@@ -1,3 +1,18 @@
+2002-04-29  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-split-fancy): Fix doc.
+	(nnimap-split-fancy): Fix doc.
+
+	* nnimap.el (nnimap-retrieve-groups-asynchronous): New variable.
+	(nnimap-mailbox-info): New internal variable.
+	(nnimap-retrieve-groups): Implement faster new mail check.
+
+	* nnimap.el (nnimap-split-articles): Support
+	nnmail-cache-accepted-message-ids.
+	(nnimap-request-accept-article): Ditto.
+
+	* imap.el (imap-mailbox-status-asynch): New command.
+
 2002-04-29  Nevin Kapur  <nevin@jhu.edu>
 
 	* gnus.el (gnus-find-subscribed-addresses): Return nil when there

@@ -1318,6 +1318,20 @@ returned, if ITEMS is a symbol only it's value is returned."
 		  items)
 	(imap-mailbox-get items mailbox)))))
 
+(defun imap-mailbox-status-asynch (mailbox items &optional buffer)
+  "Send status item request ITEM on MAILBOX to server in BUFFER.
+ITEMS can be a symbol or a list of symbols, valid symbols are one of
+the STATUS data items -- ie 'messages, 'recent, 'uidnext, 'uidvalidity
+or 'unseen.  The IMAP command tag is returned."
+  (with-current-buffer (or buffer (current-buffer))
+    (imap-send-command (list "STATUS \""
+			     (imap-utf7-encode mailbox)
+			     "\" "
+			     (format "%s"
+				     (if (listp items)
+					 items
+				       (list items)))))))
+
 (defun imap-mailbox-acl-get (&optional mailbox buffer)
   "Get ACL on mailbox from server in BUFFER."
   (let ((mailbox (imap-utf7-encode mailbox)))
