@@ -2820,6 +2820,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	      (let ((gnus-newsgroup-dormant nil))
 		(gnus-summary-initial-limit show-all))
 	    (gnus-summary-initial-limit show-all))
+	;; When untreaded, all articles are always shown.
 	(setq gnus-newsgroup-limit
 	      (mapcar
 	       (lambda (header) (mail-header-number header))

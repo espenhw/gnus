@@ -1,4 +1,4 @@
-;;; gnus-ems.el --- functions for making Gnus work under different Emacsen
+cccc;;; gnus-ems.el --- functions for making Gnus work under different Emacsen
 ;; Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -50,12 +50,12 @@
 ;;; Mule functions.
 
 (defun gnus-mule-max-width-function (el max-width)
-  (` (let* ((val (eval (, el)))
-	    (valstr (if (numberp val)
-			(int-to-string val) val)))
-       (if (> (length valstr) (, max-width))
-	   (truncate-string-to-width valstr (, max-width))
-	 valstr))))
+  `(let* ((val (eval (, el)))
+	  (valstr (if (numberp val)
+		      (int-to-string val) val)))
+     (if (> (length valstr) ,max-width)
+	 (truncate-string-to-width valstr ,max-width)
+       valstr)))
 
 (eval-and-compile
   (if (string-match "XEmacs\\|Lucid" emacs-version)

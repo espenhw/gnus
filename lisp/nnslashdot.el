@@ -69,7 +69,7 @@
 (defvoo nnslashdot-threaded t
   "Whether the nnslashdot groups should be threaded or not.")
 
-(defvoo nnslashdot-group-number 30
+(defvoo nnslashdot-group-number 0
   "The number of non-fresh groups to keep updated.")
 
 ;;; Internal variables

@@ -1,5 +1,12 @@
 1999-11-12 05:04:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-ems.el (gnus-mule-max-width-function): New backquote
+	syntax. 
+
+	* nndoc.el (nndoc-mime-digest-type-p): Reinstated.
+
+	* nnslashdot.el (nnslashdot-group-number): Changed default.
+
 	* nnweb.el (nnweb-dejanews-create-mapping): Work with new deja. 
 	(nnweb-dejanews-wash-article): Removed.
 	(nnweb-type-definition): Fetch by id.

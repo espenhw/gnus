@@ -1,3 +1,11 @@
+1999-11-12 18:00:56  Eli Zaretskii  <eliz@is.elta.co.il>
+
+	* gnus.texi (Fancy Mail Splitting): Fix @vars.
+
+1999-11-12 17:08:35  Gunnar Evermann  <ge204@eng.cam.ac.uk>
+
+	* gnus.texi (Splitting in IMAP): @@ fix.
+
 1999-11-12 08:17:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Mail Source Specifiers): Addition.
