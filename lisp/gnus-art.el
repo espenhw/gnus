@@ -3878,7 +3878,7 @@ General format specifiers can also be used.  See Info node
 		    (file-name-nondirectory
 		     (or
 		      (mail-content-type-get (mm-handle-type handle) 'name)
-		      (mail-content-type-get (mm-handle-type handle)
+		      (mail-content-type-get (mm-handle-disposition handle)
 					     'filename)
 		      "*decoded*"))))
 	 (buffer (and base (generate-new-buffer base))))
