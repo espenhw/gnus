@@ -1,3 +1,8 @@
+2002-04-26  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile.in (infodir): Set to '@info_dir@' so we can separate
+	defaults for XEmacs and Emacs.
+
 2002-04-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* emacs-mime.texi (Customization): Update info on HTML renderers.

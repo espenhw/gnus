@@ -108,15 +108,36 @@ AC_DEFUN(AC_PATH_ETCDIR, [
   AC_ARG_WITH(etcdir,[  --with-etcdir=DIR       Where to install etc files], etcdir=${withval})
   AC_MSG_CHECKING([where etc files should go])
   if test -z "$etcdir"; then
-    dnl Set default value
+    dnl Set default value.
     if test "$EMACS_FLAVOR" = "xemacs"; then
-      etcdir="\$(lispdir)/../etc/gnus"
+      etcdir="\$(lispdir)/../../etc"
     else
     etcdir="\$(lispdir)/../etc"
     fi
   fi
   AC_MSG_RESULT($etcdir)
   AC_SUBST(etcdir)
+])
+
+dnl 
+dnl This is a bit on the "evil hack" side of things.  It is so we can
+dnl have a different default infodir for XEmacs.  A user can still specify
+dnl someplace else with '--infodir=DIR'.
+dnl
+AC_DEFUN(AC_PATH_INFO_DIR, [
+  AC_MSG_CHECKING([where the TeXinfo docs should go])
+  dnl Set default value.  This must be an absolute path.
+  if test "$infodir" = "\${prefix}/info"; then
+    if test "$EMACS_FLAVOR" = "xemacs"; then
+      info_dir="\$(prefix)/${thedir}/${EMACS_FLAVOR}/site-packages/info"
+    else
+      info_dir="\$(prefix)/info"
+    fi
+  else
+    info_dir=$infodir
+  fi
+  AC_MSG_RESULT($info_dir)
+  AC_SUBST(info_dir)
 ])
 
 dnl

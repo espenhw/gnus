@@ -1,3 +1,12 @@
+2002-04-26  Steve Youngs  <youngs@xemacs.org>
+
+	* aclocal.m4 (AC_PATH_INFODIR): New.  Defaults to '$prefix/info'
+	for Emacs and 'site-packages/info' for XEmacs.
+	(AC_PATH_ETCDIR): Drop 'gnus' off the end of the default directory
+	for XEmacs.
+
+	* configure.in: Use 'AC_PATH_INFO_DIR'.
+
 2002-02-22  Steve Youngs  <youngs@xemacs.org>
 
 	* aclocal.m4 (AC_PATH_LISPDIR): Default to
