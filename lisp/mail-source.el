@@ -1019,7 +1019,7 @@ This only works when `display-time' is enabled."
 	(setq mail-source-password-cache
 	      (delq (assoc from mail-source-password-cache)
 		    mail-source-password-cache))
-	(error (imap-error-text buf)))
+	(error "IMAP error: %s" (imap-error-text buf)))
       (kill-buffer buf)
       found)))
 

@@ -1,3 +1,8 @@
+2003-07-14  Simon Josefsson  <jas@extundo.com>
+
+	* mail-source.el (mail-source-fetch-imap): Don't assume
+	imap-error-text returns something.
+
 2003-07-12  Nevin Kapur  <kapur@mts.jhu.edu>
 
 	* nnimap.el (nnimap-request-newgroups): Use the pattern in
