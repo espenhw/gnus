@@ -699,17 +699,12 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 
 \\{mml-mode-map}"
   (interactive "P")
-  (if (not (set (make-local-variable 'mml-mode)
-		(if (null arg) (not mml-mode)
-		  (> (prefix-numeric-value arg) 0))))
-      nil
-    (set (make-local-variable 'mml-mode) t)
-    (unless (assq 'mml-mode minor-mode-alist)
-      (push `(mml-mode " MML") minor-mode-alist))
-    (unless (assq 'mml-mode minor-mode-map-alist)
-      (push (cons 'mml-mode mml-mode-map)
-	    minor-mode-map-alist)))
-  (run-hooks 'mml-mode-hook))
+  (when (set (make-local-variable 'mml-mode)
+	     (if (null arg) (not mml-mode)
+	       (> (prefix-numeric-value arg) 0)))
+    (gnus-add-minor-mode 'mml-mode " MML" mml-mode-map)
+    (easy-menu-add mml-menu mml-mode-map)
+    (run-hooks 'mml-mode-hook)))
 
 ;;;
 ;;; Helper functions for reading MIME stuff from the minibuffer and

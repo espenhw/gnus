@@ -1,3 +1,7 @@
+2000-10-30 01:23:49  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-mode): Show menu in XEmacs.
+
 2000-10-30 00:49:33  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-srvr.el (gnus-server-browse-in-group-buffer): New variable.
