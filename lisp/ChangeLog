@@ -12,7 +12,7 @@
 
 2002-06-16  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* gnus-agent.el (gnus-agent-read-servers) 
+	* gnus-agent.el (gnus-agent-read-servers)
 	(gnus-agent-write-servers): Put server name (string like
 	"nnchoke:frumple") in the file instead of a server specification
 	(Lisp expression like (nnchoke "frumple" ...parameters...)).
@@ -27,7 +27,7 @@
 
 	* nnheader.el (nnheader-file-name-translation-alist): Set the
 	default value for MS Windows systems.
-	
+
 	* gnus-ems.el (nnheader-file-name-translation-alist): Removed.
 
 2002-06-14  Katsumi Yamaoka <yamaoka@jpl.org>
