@@ -21259,7 +21259,7 @@ Emacs is idle:
 (gnus-demon-scan-pgp 60 t)
 @end lisp
 
-This @var{time} parameter and than @var{idle} parameter work together
+This @var{time} parameter and that @var{idle} parameter work together
 in a strange, but wonderful fashion.  Basically, if @var{idle} is
 @code{nil}, then the function will be called every @var{time} minutes.
 
