@@ -8172,14 +8172,14 @@ the sender of an article has a certain mail address specified in
 @item gnus-article-address-banner-alist
 @vindex gnus-article-address-banner-alist
 Alist of mail addresses and banners.  Each element has the form
-@code{(ADDRESS . BANNER)}, where ADDRESS is a regexp matching a mail
-address in the From header, BANNER is one of a symbol @code{signature},
-an item in @code{gnus-article-banner-alist}, a regexp and @code{nil}.
-If ADDRESS matches author's mail address, it will remove things like
-advertisements.  For example, if a sender has the mail address
-@samp{hail@@yoo-hoo.co.jp} and there is a banner something like
-@samp{Do You Yoo-hoo!?} in all articles he sends, you can use the
-following element to remove them:
+@code{(@var{address} . @var{banner})}, where @var{address} is a regexp
+matching a mail address in the From header, @var{banner} is one of a
+symbol @code{signature}, an item in @code{gnus-article-banner-alist},
+a regexp and @code{nil}.  If @var{address} matches author's mail
+address, it will remove things like advertisements.  For example, if a
+sender has the mail address @samp{hail@@yoo-hoo.co.jp} and there is a
+banner something like @samp{Do You Yoo-hoo!?} in all articles he
+sends, you can use the following element to remove them:
 
 @lisp
 ("@@yoo-hoo\\.co\\.jp\\'" . "\n_+\nDo You Yoo-hoo!\\?\n.*\n.*\n")
@@ -12848,7 +12848,7 @@ function.
 
 @vindex nnmail-mail-splitting-charset
 @vindex nnmail-mail-splitting-decodes
-By default the splitting codes MIME decodes headers so you can match
+By default the splitting codes @sc{mime} decodes headers so you can match
 on non-ASCII strings.  The @code{nnmail-mail-splitting-charset}
 variable specifies the default charset for decoding.  The behaviour
 can be turned off completely by binding
@@ -13601,10 +13601,10 @@ The @samp{" *nnmail incoming*"} is narrowed to the message in question
 when the @code{:} function is run.
 
 @item
-@code{(! @var{func} @var{split})}: If the split is a list, and the first
-element is @code{!}, then SPLIT will be processed, and FUNC will be
-called as a function with the result of SPLIT as argument.  FUNC should
-return a split.
+@code{(! @var{func} @var{split})}: If the split is a list, and the
+first element is @code{!}, then @var{split} will be processed, and
+@var{func} will be called as a function with the result of @var{split}
+as argument.  @var{func} should return a split.
 
 @item
 @code{nil}: If the split is @code{nil}, it is ignored.
@@ -16118,15 +16118,17 @@ the head from the body may contain a single space; and that the body is
 run through @code{nndoc-unquote-dashes} before being delivered.
 
 To hook your own document definition into @code{nndoc}, use the
-@code{nndoc-add-type} function.  It takes two parameters---the first is
-the definition itself and the second (optional) parameter says where in
-the document type definition alist to put this definition.  The alist is
-traversed sequentially, and @code{nndoc-TYPE-type-p} is called for a given type @code{TYPE}.  So @code{nndoc-mmdf-type-p} is called to see whether a document
-is of @code{mmdf} type, and so on.  These type predicates should return
-@code{nil} if the document is not of the correct type; @code{t} if it is
-of the correct type; and a number if the document might be of the
-correct type.  A high number means high probability; a low number means
-low probability with @samp{0} being the lowest valid number.
+@code{nndoc-add-type} function.  It takes two parameters---the first
+is the definition itself and the second (optional) parameter says
+where in the document type definition alist to put this definition.
+The alist is traversed sequentially, and @code{nndoc-TYPE-type-p} is
+called for a given type @code{TYPE}.  So @code{nndoc-mmdf-type-p} is
+called to see whether a document is of @code{mmdf} type, and so on.
+These type predicates should return @code{nil} if the document is not
+of the correct type; @code{t} if it is of the correct type; and a
+number if the document might be of the correct type.  A high number
+means high probability; a low number means low probability with
+@samp{0} being the lowest valid number.
 
 
 @node SOUP
@@ -17981,14 +17983,15 @@ This is @file{~/News/} by default.
 @item gnus-score-file-suffix
 @vindex gnus-score-file-suffix
 Suffix to add to the group name to arrive at the score file name
-(@samp{SCORE} by default.)
+(@file{SCORE} by default.)
 
 @item gnus-score-uncacheable-files
 @vindex gnus-score-uncacheable-files
 @cindex score cache
 All score files are normally cached to avoid excessive re-loading of
 score files.  However, if this might make your Emacs grow big and
-bloated, so this regexp can be used to weed out score files unlikely to be needed again.  It would be a bad idea to deny caching of
+bloated, so this regexp can be used to weed out score files unlikely
+to be needed again.  It would be a bad idea to deny caching of
 @file{all.SCORE}, while it might be a good idea to not cache
 @file{comp.infosystems.www.authoring.misc.ADAPT}.  In fact, this
 variable is @samp{ADAPT$} by default, so no adaptive score files will
@@ -18533,7 +18536,7 @@ let you use different rules in different groups.
 @vindex gnus-adaptive-file-suffix
 The adaptive score entries will be put into a file where the name is the
 group name with @code{gnus-adaptive-file-suffix} appended.  The default
-is @samp{ADAPT}.
+is @file{ADAPT}.
 
 @vindex gnus-score-exact-adapt-limit
 When doing adaptive scoring, substring or fuzzy matching would probably
@@ -20957,7 +20960,7 @@ external programs from the @code{pbmplus} package and
 friends.@footnote{On a GNU/Linux system look for packages with names
 like @code{netpbm}, @code{libgr-progs} and @code{compface}.})
 
-(NOTE: @code{x-face} is used in the variable/function names, not
+(Note: @code{x-face} is used in the variable/function names, not
 @code{xface}).
 
 Gnus provides a few convenience functions and variables to allow
@@ -21391,11 +21394,12 @@ done.  Suggested useful values include 17 to 29.
 @item hashcash-payment-alist
 @vindex hashcash-payment-alist
 Some receivers may require you to spend burn more CPU time than the
-default.  This variable contains a list of @samp{(ADDR AMOUNT)} cells,
-where ADDR is the receiver (email address or newsgroup) and AMOUNT is
-the number of bits in the collision that is needed.  It can also
-contain @samp{(ADDR STRING AMOUNT)} cells, where the STRING is the
-string to use (normally the email address or newsgroup name is used).
+default.  This variable contains a list of @samp{(@var{addr}
+@var{amount})} cells, where @var{addr} is the receiver (email address
+or newsgroup) and @var{amount} is the number of bits in the collision
+that is needed.  It can also contain @samp{(@var{addr} @var{string}
+@var{amount})} cells, where the @var{string} is the string to use
+(normally the email address or newsgroup name is used).
 
 @item hashcash
 @vindex hashcash

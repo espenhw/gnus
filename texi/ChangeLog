@@ -2,6 +2,9 @@
 
 	* gnus.texi (Troubleshooting): Fix typo.
 	(Group Parameters): Markup fix.
+	(Article Hiding, Splitting Mail, Fancy Mail Splitting)
+	(Document Server Internals, Score Variables, Adaptive Scoring)
+	(X-Face, Hashcash): do.
 
 2003-02-28  Vasily Korytov <deskpot@myrealbox.com>
 
