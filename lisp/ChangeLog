@@ -25,7 +25,6 @@
 	* hashcash.el: Fix URL in comment, reported by Cheng Gao
 	<chenggao@gmail.com>.
 
->>>>>>> 7.511
 2004-10-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* html2text.el (html2text-buffer-head): Removed.  Use `goto-char'
