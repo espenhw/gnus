@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.47 Manual
+@settitle Gnus 5.4.48 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.47 Manual
+@title Gnus 5.4.48 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.47.
+This manual corresponds to Gnus 5.4.48.
 
 @end ifinfo
 
@@ -14066,6 +14066,7 @@ Michael Ernst,
 Luc Van Eycken,
 Sam Falkner,
 Paul Franklin, 
+Arne Georg Gleditsch,
 David S. Goldberg,
 D. Hall, 
 Magnus Hammerin,

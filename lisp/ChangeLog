@@ -1,3 +1,13 @@
+Sun Apr 27 23:15:58 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.48 is released.
+
+Sun Apr 27 11:40:57 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* gnus-xmas.el (gnus-art): (require 'gnus-art) introduces a
+	circular dependency on gnus-xmas-define and gnus-xmas-redefine.
+	Brute force it away.
+
 Sun Apr 27 12:32:13 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.47 is released.
