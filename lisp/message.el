@@ -303,6 +303,7 @@ The provided functions are:
 
 (defcustom message-forward-show-mml t
   "*If non-nil, forward messages are shown as mml.  Otherwise, forward messages are unchanged."
+  :version "21.1"
   :group 'message-forwarding
   :type 'boolean)
 
@@ -952,6 +953,7 @@ Except if it is `nil', use Gnus native MUA; if it is t, use
 			       :format "%t\n"
 			       mh-e-user-agent)
 		(function :tag "Other"))
+  :version "21.1"
   :group 'message)
 
 ;;; Internal variables.
@@ -1549,6 +1551,8 @@ M-RET    message-newline-and-reformat (break the line and reformat)."
   (set (make-local-variable 'message-checksum) nil)
   (set (make-local-variable 'message-mime-part) 0)
   (message-setup-fill-variables)
+  ;; Allow using comment commands to add/remove quoting.
+  (set (make-local-variable 'comment-start) message-yank-prefix)
   ;;(when (fboundp 'mail-hist-define-keys)
   ;;  (mail-hist-define-keys))
   (if (featurep 'xemacs)
