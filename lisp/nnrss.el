@@ -27,6 +27,7 @@
 
 (eval-when-compile (require 'cl))
 
+(require 'gnus)
 (require 'nnoo)
 (require 'nnmail)
 (require 'message)
@@ -34,18 +35,12 @@
 (require 'gnus-util)
 (require 'time-date)
 (require 'rfc2231)
+(require 'mm-url)
 (eval-when-compile
   (ignore-errors
-    (require 'xml)
-    (require 'w3)
-    (require 'w3-forms)
-    (require 'nnweb)))
+    (require 'xml)))
 ;; Report failure to find w3 at load time if appropriate.
-(eval '(progn
-	 (require 'xml)
-	 (require 'w3)
-	 (require 'w3-forms)
-	 (require 'nnweb)))
+(eval '(require 'xml))
 
 (nnoo-declare nnrss)
 
@@ -447,23 +442,14 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 (defun nnrss-no-cache (url)
   "")
 
-;; TODO:: disable cache.
-;;
-;; (defun nnrss-insert-w3 (url)
-;;   (require 'url)
-;;   (require 'url-cache)
-;;   (let ((url-cache-creation-function 'nnrss-no-cache))
-;;     (mm-with-unibyte-current-buffer
-;;       (nnweb-insert url))))
-
 (defun nnrss-insert-w3 (url)
   (mm-with-unibyte-current-buffer
-    (nnweb-insert url)))
+    (mm-url-insert url)))
 
 (defun nnrss-decode-entities-unibyte-string (string)
   (mm-with-unibyte-buffer
     (insert string)
-    (nnweb-decode-entities)
+    (mm-url-decode-entities)
     (buffer-substring (point-min) (point-max))))
 
 (defalias 'nnrss-insert 'nnrss-insert-w3)
@@ -475,7 +461,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 ;;; Snarf functions
 
 (defun nnrss-check-group (group server)
-  (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities))
+  (let ((mm-url-html-entities (cons '(nbsp . 32) mm-url-html-entities))
 	file xml subject url extra changed author date)
     (condition-case err
 	(mm-with-unibyte-buffer
@@ -575,7 +561,7 @@ It is useful when `(setq nnrss-use-local t)'."
 	(if (match-string 1)
 	    (setq category (match-string 1))
 	  (setq url (match-string 2)
-		name (nnweb-decode-entities-string
+		name (mm-url-decode-entities-string
 		      (rfc2231-decode-encoded-string
 		       (match-string 3))))
 	  (if category
@@ -586,8 +572,13 @@ It is useful when `(setq nnrss-use-local t)'."
     (if changed
 	(nnrss-save-server-data ""))))
 
+(defun nnrss-replace-in-string (string match newtext)
+  (while (string-match match string)
+    (setq string (replace-match newtext t t string)))
+  string)
+
 (defun nnrss-format-string (string)
-  (nnweb-replace-in-string (nnrss-string-as-multibyte string) " *\n *" " "))
+  (nnrss-replace-in-string (nnrss-string-as-multibyte string) " *\n *" " "))
 
 (defun nnrss-node-text (node)
   (if (and node (listp node))
