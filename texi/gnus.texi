@@ -13311,6 +13311,10 @@ File where mail will be stored while processing it.  The default is
 @vindex mail-source-delete-incoming
 If non-@code{nil}, delete incoming files after handling them.
 
+@item mail-source-ignore-errors
+@vindex mail-source-ignore-errors
+If non-@code{nil}, ignore errors when reading mail from a mail source.
+
 @item mail-source-directory
 @vindex mail-source-directory
 Directory where files (if any) will be stored.  The default is
