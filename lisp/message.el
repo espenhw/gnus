@@ -40,6 +40,7 @@
     (require 'mail-abbrevs))
 (require 'mail-parse)
 (require 'mml)
+(require 'rfc822)
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -3010,6 +3011,14 @@ to find out how to use this."
 	     (string-match "(.*).*(.*)" from)) ;(lars) (lars)
 	 (message
 	  "Denied posting -- the From looks strange: \"%s\"." from)
+	 nil)
+	((let ((addresses (rfc822-addresses from)))
+	   (while (and addresses
+		       (not (eq (string-to-char (car addresses)) ?\()))
+	     (setq addresses (cdr addresses)))
+	   addresses)
+	 (message
+	  "Denied posting -- bad From address: \"%s\"." from)
 	 nil)
 	(t t))))
    ;; Check the Reply-To header.

@@ -1,3 +1,7 @@
+2001-08-17 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-check-news-header-syntax): Check bad From.
+
 2001-08-18 00:14:45  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-spec.el (gnus-correct-length): New function.
