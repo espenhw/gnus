@@ -1,3 +1,18 @@
+2002-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-picon-databases): Moved here.
+	(gnus-picons-installed-p): Moved here.
+	(gnus-article-reply-with-original): Use `mark'.
+
+	* gnus.el (gnus-picon): Moved here and renamed.
+
+	* gnus-art.el (gnus-treat-from-picon): Only be on if picons are
+	installed.
+	(gnus-treat-mail-picon): Ditto.
+	(gnus-treat-newsgroups-picon): Ditto.
+
+	* gnus-picon.el (gnus-picons-installed-p): New function.
+
 2002-01-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-go-online): Fix doc.

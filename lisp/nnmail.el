@@ -702,7 +702,7 @@ If SOURCE is a directory spec, try to return the group name component."
 
 (defsubst nnmail-search-unix-mail-delim ()
   "Put point at the beginning of the next Unix mbox message."
-  ;; Algorithm used to find the the next article in the
+  ;; Algorithm used to find the next article in the
   ;; brain-dead Unix mbox format:
   ;;
   ;; 1) Search for "^From ".
@@ -731,7 +731,7 @@ If SOURCE is a directory spec, try to return the group name component."
 
 (defun nnmail-search-unix-mail-delim-backward ()
   "Put point at the beginning of the current Unix mbox message."
-  ;; Algorithm used to find the the next article in the
+  ;; Algorithm used to find the next article in the
   ;; brain-dead Unix mbox format:
   ;;
   ;; 1) Search for "^From ".
@@ -1266,10 +1266,10 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    (push (cdr cached-pair) nnmail-split-trace))
 	  (let ((split-rest (cddr split))
 		(end (match-end 0))
-	      ;; The searched regexp is \(\(FIELD\).*\)\(VALUE\).  So,
-		;; start-of-value is the the point just before the
-	       ;; beginning of the value, whereas after-header-name is
-		;; the point just after the field name.
+		;; The searched regexp is \(\(FIELD\).*\)\(VALUE\).
+		;; So, start-of-value is the point just before the
+		;; beginning of the value, whereas after-header-name
+		;; is the point just after the field name.
 		(start-of-value (match-end 1))
 		(after-header-name (match-end 2)))
 	    ;; Start the next search just before the beginning of the

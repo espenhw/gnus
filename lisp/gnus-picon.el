@@ -44,32 +44,21 @@
 
 ;;; User variables:
 
-(defgroup picon nil
-  "Show pictures of people, domains, and newsgroups."
-  :group 'gnus-visual)
-
-(defcustom gnus-picon-databases '("/usr/lib/picon" "/usr/local/faces")
-  "*Defines the location of the faces database.
-For information on obtaining this database of pretty pictures, please
-see http://www.cs.indiana.edu/picons/ftp/index.html"
-  :type 'directory
-  :group 'picon)
-
 (defcustom gnus-picon-news-directories '("news")
   "*List of directories to search for newsgroups faces."
   :type '(repeat string)
-  :group 'picon)
+  :group 'gnus-picon)
 
 (defcustom gnus-picon-user-directories '("users" "usenix" "local" "misc")
   "*List of directories to search for user faces."
   :type '(repeat string)
-  :group 'picon)
+  :group 'gnus-picon)
 
 (defcustom gnus-picon-domain-directories '("domains")
   "*List of directories to search for domain faces.
 Some people may want to add \"unknown\" to this list."
   :type '(repeat string)
-  :group 'picon)
+  :group 'gnus-picon)
 
 (defcustom gnus-picon-file-types
   (let ((types (list "xbm")))
@@ -80,15 +69,15 @@ Some people may want to add \"unknown\" to this list."
     types)
   "*List of suffixes on picon file names to try."
   :type '(repeat string)
-  :group 'picon)
+  :group 'gnus-picon)
 
 (defface gnus-picon-xbm-face '((t (:foreground "black" :background "white")))
   "Face to show xbm picon in."
-  :group 'picon)
+  :group 'gnus-picon)
 
 (defface gnus-picon-face '((t (:foreground "black" :background "white")))
   "Face to show picon in."
-  :group 'picon)
+  :group 'gnus-picon)
 
 ;;; Internal variables:
 

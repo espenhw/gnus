@@ -704,6 +704,21 @@ be controlled by `gnus-treat-body-boundary'."
   :type '(choice (item :tag "None" :value nil)
 		 string))
 
+(defcustom gnus-picon-databases '("/usr/lib/picon" "/usr/local/faces")
+  "*Defines the location of the faces database.
+For information on obtaining this database of pretty pictures, please
+see http://www.cs.indiana.edu/picons/ftp/index.html"
+  :type 'directory
+  :group 'gnus-picon)
+
+(defun gnus-picons-installed-p ()
+  "Say whether picons are installed on your machine."
+  (let ((installed nil))
+    (dolist (database gnus-picon-databases)
+      (when (file-exists-p database)
+	(setq installed t)))
+    installed))
+
 (defcustom gnus-article-mime-part-function nil
   "Function called with a MIME handle as the argument.
 This is meant for people who want to do something automatic based
@@ -1079,7 +1094,8 @@ See Info node `(gnus)Customizing Articles' and Info node
 (put 'gnus-treat-display-smileys 'highlight t)
 
 (defcustom gnus-treat-from-picon
-  (if (gnus-image-type-available-p 'xpm)
+  (if (and (gnus-image-type-available-p 'xpm)
+	   (gnus-picons-installed-p))
       'head nil)
   "Display picons in the From header.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1090,7 +1106,8 @@ See Info node `(gnus)Customizing Articles' and Info node
 (put 'gnus-treat-from-picon 'highlight t)
 
 (defcustom gnus-treat-mail-picon
-  (if (gnus-image-type-available-p 'xpm)
+  (if (and (gnus-image-type-available-p 'xpm)
+	   (gnus-picons-installed-p))
       'head nil)
   "Display picons in To and Cc headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1101,7 +1118,8 @@ See Info node `(gnus)Customizing Articles' and Info node
 (put 'gnus-treat-mail-picon 'highlight t)
 
 (defcustom gnus-treat-newsgroups-picon
-  (if (gnus-image-type-available-p 'xpm)
+  (if (and (gnus-image-type-available-p 'xpm)
+	   (gnus-picons-installed-p))
       'head nil)
   "Display picons in the Newsgroups and Followup-To headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -4680,7 +4698,7 @@ The text in the region will be yanked.  If the region isn't active,
 the entire article will be yanked."
   (interactive "P")
   (let ((article (cdr gnus-article-current)) cont)
-    (if (not mark-active)
+    (if (not (mark))
 	(gnus-summary-reply (list (list article)) wide)
       (setq cont (buffer-substring (point) (mark)))
       ;; Deactivate active regions.

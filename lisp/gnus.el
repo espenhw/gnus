@@ -139,6 +139,10 @@
   :link '(custom-manual "(gnus)Summary Maneuvering")
   :group 'gnus-summary)
 
+(defgroup gnus-picon nil
+  "Show pictures of people, domains, and newsgroups."
+  :group 'gnus-visual)
+
 (defgroup gnus-summary-mail nil
   "Mail group commands."
   :link '(custom-manual "(gnus)Mail Group Commands")

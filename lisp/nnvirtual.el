@@ -521,14 +521,15 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
 
 
 ;;; We map between virtual articles and real articles in a manner
-;;; which keeps the size of the virtual active list the same as
-;;; the sum of the component active lists.
-;;; To achieve fair mixing of the groups, the last article in
-;;; each of N component groups will be in the the last N articles
-;;; in the virtual group.
+;;; which keeps the size of the virtual active list the same as the
+;;; sum of the component active lists.
 
-;;; If you have 3 components A, B and C, with articles 1-8, 1-5, and 6-7
-;;; resprectively, then the virtual article numbers look like:
+;;; To achieve fair mixing of the groups, the last article in each of
+;;; N component groups will be in the last N articles in the virtual
+;;; group.
+
+;;; If you have 3 components A, B and C, with articles 1-8, 1-5, and
+;;; 6-7 resprectively, then the virtual article numbers look like:
 ;;;
 ;;;  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15
 ;;;  A1 A2 A3 A4 B1 A5 B2 A6 B3 A7 B4 C6 A8 B5 C7
