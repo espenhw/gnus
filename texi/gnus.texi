@@ -5069,6 +5069,19 @@ Mail a very wide reply to the author of the current article and include the
 original message (@code{gnus-summary-very-wide-reply-with-original}).  This
 command uses the process/prefix convention.
 
+@item S B r
+@kindex S B r (Summary)
+@findex gnus-summary-reply-broken-reply-to
+Mail a reply to the author of the current article but ignore the
+@code{Reply-To} field (@code{gnus-summary-reply-broken-reply-to}).
+
+@item S B R
+@kindex S B R (Summary)
+@findex gnus-summary-reply-broken-reply-to-with-original
+Mail a reply to the author of the current article and include the
+original message but ignore the @code{Reply-To} field
+(@code{gnus-summary-reply-broken-reply-to-with-original}).
+
 @item S o m
 @itemx C-c C-f
 @kindex S o m (Summary)
@@ -5887,6 +5900,11 @@ expression (@code{gnus-uu-unmark-by-regexp}).
 @kindex M P r (Summary)
 @findex gnus-uu-mark-region
 Mark articles in region (@code{gnus-uu-mark-region}).
+
+@item M P g
+@kindex M P g
+@findex gnus-uu-unmark-region
+Unmark articles in region (@code{gnus-uu-unmark-region}).
 
 @item M P t
 @kindex M P t (Summary)
@@ -8346,7 +8364,7 @@ Fold the @code{Newsgroups} and @code{Followup-To} headers
 
 @item W G f
 @kindex W G f (Summary)
-@findex gnus-article-treat-fold-header
+@findex gnus-article-treat-fold-headers
 Fold all the message headers
 (@code{gnus-article-treat-fold-headers}).
 
@@ -8733,17 +8751,19 @@ convention (@pxref{Process/Prefix}).
 
 @item M-t
 @kindex M-t (Summary)
-@findex gnus-summary-display-buttonized
+@findex gnus-summary-toggle-display-buttonized
 Toggle the buttonized display of the article buffer
 (@code{gnus-summary-toggle-display-buttonized}).
 
 @item W M w
 @kindex W M w (Summary)
+@findex gnus-article-decode-mime-words
 Decode RFC 2047-encoded words in the article headers
 (@code{gnus-article-decode-mime-words}).
 
 @item W M c
 @kindex W M c (Summary)
+@findex gnus-article-decode-charset
 Decode encoded article bodies as well as charsets
 (@code{gnus-article-decode-charset}).
 
@@ -8756,6 +8776,7 @@ parameter to the required charset (@pxref{Group Parameters}).
 
 @item W M v
 @kindex W M v (Summary)
+@findex gnus-mime-view-all-parts
 View all the @sc{mime} parts in the current article
 (@code{gnus-mime-view-all-parts}).
 
