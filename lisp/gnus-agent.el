@@ -310,29 +310,31 @@ manipulated as follows:
                               value))
                       (list (quote ,name) --category--temp--) ; access-form
                       )))))
-
-  (defmacro gnus-agent-cat-name (category)
-    `(car ,category))
   )
 
+(defmacro gnus-agent-cat-name (category)
+  `(car ,category))
+
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-days-until-old    agent-days-until-old)
+ gnus-agent-cat-days-until-old             agent-days-until-old)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-enable-expiration agent-enable-expiration)
+ gnus-agent-cat-enable-expiration          agent-enable-expiration)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-groups            agent-groups)
+ gnus-agent-cat-groups                     agent-groups)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-high-score        agent-high-score)
+ gnus-agent-cat-high-score                 agent-high-score)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-length-when-long  agent-length-when-long)
+ gnus-agent-cat-length-when-long           agent-length-when-long)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-length-when-short agent-length-when-short)
+ gnus-agent-cat-length-when-short          agent-length-when-short)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-low-score         agent-low-score)
+ gnus-agent-cat-low-score                  agent-low-score)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-predicate         agent-predicate)
+ gnus-agent-cat-predicate                  agent-predicate)
 (gnus-agent-cat-defaccessor
- gnus-agent-cat-score-file        agent-score-file)
+ gnus-agent-cat-score-file                 agent-score-file)
+(gnus-agent-cat-defaccessor
+ gnus-agent-cat-disable-undownloaded-faces agent-disable-undownloaded-faces)
 
 (eval-when-compile
   (defsetf gnus-agent-cat-groups (category) (groups)
@@ -1453,14 +1455,14 @@ variables.  Returns the first non-nil value found."
       (symbol-value
        (cdr
         (assq symbol
-         '((agent-short-article . gnus-agent-short-article)
-           (agent-long-article . gnus-agent-long-article)
-           (agent-low-score . gnus-agent-low-score)
-           (agent-high-score . gnus-agent-high-score)
-           (agent-days-until-old . gnus-agent-expire-days)
-           (agent-enable-expiration
-            . gnus-agent-enable-expiration)
-           (agent-predicate . gnus-agent-predicate)))))))
+              '((agent-short-article . gnus-agent-short-article)
+                (agent-long-article . gnus-agent-long-article)
+                (agent-low-score . gnus-agent-low-score)
+                (agent-high-score . gnus-agent-high-score)
+                (agent-days-until-old . gnus-agent-expire-days)
+                (agent-enable-expiration
+                 . gnus-agent-enable-expiration)
+                (agent-predicate . gnus-agent-predicate)))))))
 
 (defun gnus-agent-fetch-headers (group &optional force)
   "Fetch interesting headers into the agent.  The group's overview
