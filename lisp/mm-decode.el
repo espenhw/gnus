@@ -333,10 +333,10 @@ Ready-made functions include
 `upcase-initials'.")
 
 (defvar mm-path-name-rewrite-functions nil
-  "*List of functions used for rewriting path names of MIME parts.
-This is used when viewing parts externally , and is meant for
-transforming the path name so that non-compliant programs can
-find the file where it's saved.
+  "*List of functions for rewriting the full file names of MIME parts.
+This is used when viewing parts externally, and is meant for
+transforming the absolute name so that non-compliant programs can find
+the file where it's saved.
 
 Each function takes a file name as input and returns a file name.")
 
