@@ -1,3 +1,8 @@
+2001-06-15  Eli Zaretskii  <eliz@is.elta.co.il>
+
+	* qp.el (quoted-printable-decode-region): If called interactively,
+	use coding-system-for-read.
+
 2001-06-16 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-check-news-header-syntax): Check Reply-To.
