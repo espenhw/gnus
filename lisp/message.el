@@ -2389,9 +2389,23 @@ The text will also be indented the normal way."
   (interactive)
   (when (or (not (buffer-modified-p))
 	    (yes-or-no-p "Message modified; kill anyway? "))
-    (let ((actions message-kill-actions))
+    (let ((actions message-kill-actions)
+	  (draft-article message-draft-article)
+	  (auto-save-file-name buffer-auto-save-file-name)
+	  (file-name buffer-file-name)
+	  (modified (buffer-modified-p)))
       (setq buffer-file-name nil)
       (kill-buffer (current-buffer))
+      (when (and (or (and auto-save-file-name
+			  (file-exists-p auto-save-file-name))
+		     (and file-name
+			  (file-exists-p file-name)))
+	       (yes-or-no-p (format "Remove the backup file%s? "
+				    (if modified " too" ""))))
+	(ignore-errors
+	  (delete-file auto-save-file-name))
+	(let ((message-draft-article draft-article))
+	  (message-disassociate-draft)))
       (message-do-actions actions))))
 
 (defun message-bury (buffer)
@@ -2589,23 +2603,26 @@ It should typically alter the sending method in some way or other."
 	 (message-posting-charset
 	  (if (fboundp 'gnus-setup-posting-charset)
 	      (gnus-setup-posting-charset nil)
-	    message-posting-charset)))
+	    message-posting-charset))
+	 (headers message-required-mail-headers))
     (save-restriction
       (message-narrow-to-headers)
-      ;; Insert some headers.
-      (let ((message-deletable-headers
-	     (if news nil message-deletable-headers)))
-	(message-generate-headers message-required-mail-headers))
       ;; Generate the Mail-Followup-To header if the header is not there...
       (if (and (or message-subscribed-regexps
 		   message-subscribed-addresses
 		   message-subscribed-address-functions)
 	       (not (mail-fetch-field "mail-followup-to")))
-	  (message-generate-headers
-	   `(("Mail-Followup-To" . ,(message-make-mft))))
+	  (setq headers
+		(cons
+		 (cons "Mail-Followup-To" (message-make-mft))
+		 message-required-mail-headers))
 	;; otherwise, delete the MFT header if the field is empty
 	(when (equal "" (mail-fetch-field "mail-followup-to"))
-	  (message-remove-header "Mail-Followup-To")))
+	  (message-remove-header "^Mail-Followup-To:")))
+      ;; Insert some headers.
+      (let ((message-deletable-headers
+	     (if news nil message-deletable-headers)))
+	(message-generate-headers headers))
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (unwind-protect
