@@ -1711,7 +1711,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
 	      (not (string-match (regexp-quote target-group)
 				 (message-fetch-field "Newsgroups"))))
 	 (end-of-line)
-	 (insert-string (concat "," target-group))))
+	 (insert (concat "," target-group))))
   (end-of-line) ; ensure Followup: comes after Newsgroups:
   ;; unless new followup would be identical to Newsgroups line
   ;; make a new Followup-To line

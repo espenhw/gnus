@@ -494,7 +494,7 @@ are supported for %s."
   (let ((re "%%\\|%\\(-\\)?\\([1-9][0-9]*\\)?s")
 	(n (length args)))
     (with-temp-buffer
-      (insert-string fstring)
+      (insert fstring)
       (goto-char (point-min))
       (while (re-search-forward re nil t)
 	(goto-char (match-end 0))

@@ -1,5 +1,15 @@
 2003-02-20  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-spec.el (gnus-xmas-format): Use insert instead of
+	insert-string which is obsolete in Emacs 21.4.
+
+	* message.el (message-cross-post-followup-to-header): do.
+	
+	* spam.el (spam-ifile-register-with-ifile)
+	(spam-stat-register-spam-routine)
+	(spam-stat-register-ham-routine)
+	(spam-bogofilter-register-with-bogofilter): do.
+
 	* mailcap.el (mailcap-mime-data): Fix typo.
 
 	* gnus-topic.el (gnus-topic-make-menu-bar): Add ellipsis.

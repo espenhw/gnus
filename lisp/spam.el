@@ -722,7 +722,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
     (let ((category (or category gnus-newsgroup-name))
           (db-param (spam-get-ifile-database-parameter)))
       (with-temp-buffer
-	(insert-string article-string)
+	(insert article-string)
 	(if db-param
             (call-process-region (point-min) (point-max) spam-ifile-path 
                                  nil nil nil 
@@ -765,7 +765,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	 (lambda (article)
 	   (let ((article-string (spam-get-article-as-string article)))
 	     (with-temp-buffer
-	       (insert-string article-string)
+	       (insert article-string)
 	       (spam-stat-buffer-is-spam))))
 	 nil)
 	(spam-stat-save))
@@ -776,7 +776,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	 (lambda (article)
 	   (let ((article-string (spam-get-article-as-string article)))
 	     (with-temp-buffer
-	       (insert-string article-string)
+	       (insert article-string)
 	       (spam-stat-buffer-is-non-spam)))))
 	(spam-stat-save)))
 
@@ -930,7 +930,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
   (when (stringp article-string)
     (let ((switch (if spam "-s" "-n")))
       (with-temp-buffer
-	(insert-string article-string)
+	(insert article-string)
 	(if spam-bogofilter-database-directory
 	    (call-process-region (point-min) (point-max) 
 				 spam-bogofilter-path
