@@ -797,6 +797,10 @@ which it may alter in any way.")
   :group 'gnus-summary
   :type 'regexp)
 
+(defcustom gnus-default-charset 'iso-8859-1
+  "Default charset assumed to be used when viewing non-ASCII characters.
+This variable is used only in non-Mule Emacsen.")
+
 (defcustom gnus-newsgroup-default-charset-alist 
   '(("^hk\\>\\|^tw\\>\\|\\<big5\\>" . cn-big5)
     ("^cn\\>\\|\\<chinese\\>" . cn-gb-2312)
@@ -9174,7 +9178,7 @@ save those articles instead."
 			       (setq alist nil
 				     charset (cdr elem))))
 			 charset)))
-	      rfc2047-default-charset))
+	      gnus-default-charset))
     (setq gnus-newsgroup-iso-8859-1-forced 
 	  (and gnus-newsgroup-name
 	       (or (gnus-group-find-parameter

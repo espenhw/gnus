@@ -24,8 +24,10 @@
 
 ;;; Code:
 
+(defvar mm-running-xemacs (string-match "XEmacs" emacs-version))
+
 (defvar mm-binary-coding-system 
-    (if (string-match "XEmacs" emacs-version)
+    (if mm-running-xemacs
 	'binary 'no-conversion)
     "100% binary coding system.")   
 
@@ -33,7 +35,13 @@
   "The default coding system to use.")  
 
 (defvar mm-known-charsets '(iso-8859-1)
-  "List of known charsets.")
+  "List of known charsets.
+Use this under non-Mule Emacsen to specify which charsets your Emacs
+can display.  Also see `mm-default-charset'.")
+
+(defvar mm-default-charset 'iso-8859-1
+  "Default charset assumed to be used when viewing non-ASCII characters.
+This variable is used only in non-Mule Emacsen.")
 
 (defvar mm-mime-mule-charset-alist
   '((us-ascii ascii)
@@ -154,7 +162,8 @@ used as the line break code type of the coding system."
   (cond
    ;; Running in a non-MULE environment.
    ((and (null (mm-get-coding-system-list))
-	 (memq charset mm-known-charsets))
+	 (or (eq charset mm-default-charset)
+	     (memq charset mm-known-charsets)))
     charset)
    ;; ascii
    ((eq charset 'us-ascii)

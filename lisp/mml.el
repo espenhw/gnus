@@ -27,6 +27,9 @@
 (require 'mm-bodies)
 (require 'mm-encode)
 
+(eval-and-compile
+  (autoload 'message-make-message-id "message"))
+
 (defvar mml-syntax-table
   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
     (modify-syntax-entry ?\\ "/" table)
@@ -61,6 +64,9 @@
        ((looking-at "<#part")
 	(push (nconc (mml-read-tag) (list (cons 'contents (mml-read-part))))
 	      struct))
+       ((looking-at "<#external")
+	(push (nconc (mml-read-tag) (list (cons 'contents (mml-read-part))))
+	      struct))
        (t
 	(push (list 'part '(type . "text/plain")
 		    (cons 'contents (mml-read-part))) struct))))
@@ -91,10 +97,10 @@
     ;; If the tag ended at the end of the line, we go to the next line.
     (when (looking-at "[ \t]*\n")
       (forward-line 1))
-    (if (re-search-forward "<#/?\\(multi\\)?part." nil t)
+    (if (re-search-forward "<#/?\\(multipart\\|part\\|external\\)." nil t)
 	(prog1
 	    (buffer-substring beg (match-beginning 0))
-	  (if (not (equal (match-string 0) "<#/part>"))
+	  (if (equal (match-string 0) "<#/multipart>")
 	      (goto-char (match-beginning 0))
 	    (when (looking-at "[ \t]*\n")
 	      (forward-line 1))))
@@ -108,18 +114,20 @@
   "Generate a MIME message based on the current MML document."
   (let ((cont (mml-parse))
 	(mml-multipart-number 0))
-    (with-temp-buffer
-      (if (and (consp (car cont))
-	       (= (length cont) 1))
-	  (mml-generate-mime-1 (car cont))
-	(mml-generate-mime-1 (nconc (list 'multipart '(type . "mixed"))
-				    cont)))
-      (buffer-string))))
+    (if (not cont)
+	nil
+      (with-temp-buffer
+	(if (and (consp (car cont))
+		 (= (length cont) 1))
+	    (mml-generate-mime-1 (car cont))
+	  (mml-generate-mime-1 (nconc (list 'multipart '(type . "mixed"))
+				      cont)))
+	(buffer-string)))))
 
 (defun mml-generate-mime-1 (cont)
   (cond
    ((eq (car cont) 'part)
-    (let (coded encoding charset filename type)
+    (let (coded encoding charset filename type parameters)
       (setq type (or (cdr (assq 'type cont)) "text/plain"))
       (if (equal (car (split-string type "/")) "text")
 	  (with-temp-buffer
@@ -130,7 +138,8 @@
 		(insert (cdr (assq 'contents cont)))
 		;; Remove quotes from quoted tags.
 		(goto-char (point-min))
-		(while (re-search-forward "<#!+\\(part\\|multipart\\)" nil t)
+		(while (re-search-forward
+			"<#!+\\(part\\|multipart\\|external\\)" nil t)
 		  (delete-region (+ (match-beginning 0) 2)
 				 (+ (match-beginning 0) 3)))))
 	    (setq charset (mm-encode-body)
@@ -142,16 +151,38 @@
 	    (insert (cdr (assq 'contents cont))))
 	  (setq encoding (mm-encode-buffer type)
 		coded (buffer-string))))
-      (when (or charset
-		(not (equal type "text/plain")))
-	(insert "Content-Type: " type)
-	(when charset
-	  (insert (format "; charset=\"%s\"" charset)))
-	(insert "\n"))
-      (unless (eq encoding '7bit)
-	(insert (format "Content-Transfer-Encoding: %s\n" encoding)))
+      (mml-insert-mime-headers cont type charset encoding)
       (insert "\n")
       (insert coded)))
+   ((eq (car cont) 'external)
+    (insert "Content-Type: message/external-body")
+    (let ((parameters (mml-parameter-string
+		       cont '(expiration size permission)))
+	  (name (cdr (assq 'name cont))))
+      (when name
+	(setq name (mml-parse-file-name name))
+	(if (stringp name)
+	    (insert ";\n name=\"" (prin1-to-string name)
+		    "\";\n access-type=local-file")
+	  (insert
+	   (format ";\n name=%S;\n site=%S;\n directory=%S"
+		   (file-name-nondirectory (nth 2 name))
+		   (nth 1 name)
+		   (file-name-directory (nth 2 name))))
+	  (insert ";\n access-type="
+		  (if (member (nth 0 name) '("ftp@" "anonymous@"))
+		      "anon-ftp"
+		    "ftp"))))
+      (when parameters
+	(insert parameters)))
+    (insert "\n\n")
+    (insert "Content-Type: " (cdr (assq 'type cont)) "\n")
+    (insert "Content-ID: " (message-make-message-id) "\n")
+    (insert "Content-Transfer-Encoding: "
+	    (or (cdr (assq 'encoding cont)) "binary"))
+    (insert "\n\n")
+    (insert (or (cdr (assq 'contents cont))))
+    (insert "\n"))
    ((eq (car cont) 'multipart)
     (let ((mml-boundary (mml-compute-boundary cont)))
       (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
@@ -192,7 +223,7 @@
     t))
 
 (defun mml-make-boundary ()
-  (concat (mml-make-string (% (incf mml-multipart-number) 60) "=")
+  (concat (make-string (% (incf mml-multipart-number) 60) ?=)
 	  (if (> mml-multipart-number 17)
 	      (format "%x" mml-multipart-number)
 	    "")
@@ -203,6 +234,57 @@
     (while (not (zerop (decf num)))
       (setq out (concat out string)))
     out))
+
+(defun mml-insert-mime-headers (cont type charset encoding)
+  (let (parameters disposition description)
+    (when (or charset
+	      (setq parameters
+		    (mml-parameter-string
+		     cont '(name access-type expiration size permission)))
+	      (not (equal type "text/plain")))
+      (insert "Content-Type: " type)
+      (when charset
+	(insert (format "; charset=\"%s\"" charset)))
+      (when parameters
+	(insert parameters))
+      (insert "\n"))
+    (when (or (setq disposition (cdr (assq 'disposition cont)))
+	      (setq parameters
+		    (mml-parameter-string
+		     cont '(filename creation-date modification-date
+				     read-date))))
+      (insert "Content-Disposition: " (or disposition "inline"))
+      (when parameters
+	(insert parameters))
+      (insert "\n"))
+    (unless (eq encoding '7bit)
+      (insert (format "Content-Transfer-Encoding: %s\n" encoding)))
+    (when (setq description (cdr (assq 'description cont)))
+      (insert "Content-Description: " description "\n"))
+    ))
+
+(defun mml-parameter-string (cont types)
+  (let ((string "")
+	value type)
+    (while (setq type (pop types))
+      (when (setq value (cdr (assq type cont)))
+	(setq string (concat string ";\n " (symbol-name type) "="
+			     (if (string-match "[^_0-9A-Za-z]" value)
+				 (prin1-to-string value)
+			       value)))))
+    (when (not (zerop (length string)))
+      string)))
+
+(defvar ange-ftp-path-format)
+(defvar efs-path-regexp)
+(defun mml-parse-file-name (path)
+  (if (if (boundp 'efs-path-regexp)
+	  (string-match efs-path-regexp path)
+	(if (boundp 'ange-ftp-path-format)
+	    (string-match (car ange-ftp-path-format))))
+      (list (match-string 1 path) (match-string 2 path)
+	    (substring path (1+ (match-end 2))))
+    path))
 
 (provide 'mml)
 

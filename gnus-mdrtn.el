@@ -25,7 +25,7 @@
 
 ;; This package is designed for enabling moderators to do various
 ;; spiffy things while moderating groups.  Some of these things are
-;; rather evil if done by non-moderators -- canceling other people's
+;; rather evil if done by non-moderators -- cancelling other people's
 ;; articles, including Approved headers and so on.  So while this file
 ;; is GPL'd and there therefore is no distribution restriction --
 ;; please do not put this file at any public sites.  All people who
@@ -66,7 +66,7 @@
 (defvar gnus-moderated-groups nil
   "Regexp that match groups you moderate.")
 
-(defvar gnus-moderation-ignored-headers "^\\(Received\\|To\\|Cc\\|X-From-Line\\|Return-Path\\|Xref\\|NNTP-Posting-Host\\):"
+(defvar gnus-moderation-ignored-headers "^\\(Received\\|To\\|Cc\\|X-From-Line\\|Return-Path\\|Xref\\|NNTP-Posting-Host\\|X-Trace\\NNTP-Posting-Date\\):"
   "Headers to be removed before posting an approved article.")
 
 (defvar gnus-moderation-mode nil
@@ -140,9 +140,13 @@
 		(let ((user-mail-address
 		       (nth 1 (mail-extract-address-components
 			       (mail-fetch-field "from"))))
+		      (message-cancel-hook
+		       (lambda ()
+			 (goto-char (point-min))
+			 (insert "Approved: " (message-make-from) "\n")))
 		      (message-cancel-message
 		       (format
-			"Moderator %s canceling a message in a group I moderate.\n"
+			"Moderator %s cancelling a message in a group I moderate.\n"
 			(message-make-from))))
 		  (message-cancel-news)))
 	  (gnus-summary-mark-as-read article gnus-canceled-mark)
@@ -159,7 +163,7 @@
     ;; Select article if needed.
     (gnus-summary-show-article t)
     (gnus-article-edit-article
-     `(lambda ()
+     `(lambda (&optional arg)
 	(gnus-moderation-send-buffer)))))
 
 (defun gnus-moderation-send-article ()

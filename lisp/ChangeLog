@@ -1,3 +1,43 @@
+Sun Nov 29 15:12:52 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.56 is released.
+
+1998-11-29 00:52:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-display-part): New function.
+	(gnus-mime-display-mixed): Use it.
+
+	* mm-view.el (mm-setup-w3): Don't register.
+
+	* message.el (message-cite-original): Cite parts.
+
+1998-11-28 23:51:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-parameter-string): New function.
+	(mml-insert-mime-headers): Separated into new function.
+
+1998-11-28  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mml.el (mml-make-boundary): Use `make-string'.
+
+1998-11-27  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* binhex.el (binhex-insert-char): Ditto.
+
+	* base64.el (base64-insert-char): Ditto.
+
+	* uudecode.el (uudecode-insert-char): Code correctly.
+
+1998-11-28 01:08:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-generate-mime): Don't generate multiparts for
+	empties.
+
+	* gnus-art.el (gnus-display-mime): Save excursion.
+
+	* message.el (message-remove-first-header): New function.
+	(message-encode-message-body): Use it.
+
 Fri Nov 27 12:26:10 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.55 is released.

@@ -33,6 +33,10 @@
 (require 'qp)
 (require 'uudecode)
 
+;; 8bit treatment gets any char except: 0x32 - 0x7f, CR, LF, TAB, BEL,
+;; BS, vertical TAB, form feed, and ^_
+(defvar mm-8bit-char-regexp "[^\x20-\x7f\r\n\t\x7\x8\xb\xc\x1f]")
+
 (defun mm-encode-body ()
   "Encode a body.
 Should be called narrowed to the body that is to be encoded.
@@ -41,7 +45,15 @@ MULE charsets are returned.
 If successful, the MIME charset is returned.
 If no encoding was done, nil is returned."
   (if (not (featurep 'mule))
-      'iso-8859-1
+      ;; In the non-Mule case, we search for non-ASCII chars and
+      ;; return the value of `mm-default-charset' if any are found.
+      (save-excursion
+	(goto-char (point-min))
+	(if (re-search-forward "[^\x0-\x7f]" nil t)
+	    mm-default-charset
+	  ;; The logic in `mml-generate-mime-1' confirms that it's OK
+	  ;; to return nil here.
+	  nil))
     (save-excursion
       (goto-char (point-min))
       (let ((charsets
@@ -81,18 +93,24 @@ If no encoding was done, nil is returned."
 
 (defun mm-body-encoding ()
   "Return the encoding of the current buffer."
-  (if (and
-       (featurep 'mule)
-       (null (delq 'ascii (find-charset-region (point-min) (point-max))))
-       ;;;!!!The following is necessary because the function
-       ;;;!!!above seems to return the wrong result under Emacs 20.3.
-       ;;;!!!Sometimes.
-       (save-excursion
-	 (goto-char (point-min))
-	 (skip-chars-forward "\0-\177")
-	 (eobp)))
-      '7bit
-    '8bit))
+  (cond ((not (featurep 'mule))
+	 (if (save-excursion
+	       (goto-char (point-min))
+	       (re-search-forward mm-8bit-char-regexp nil t))
+	     '8bit
+	   '7bit))
+	(t
+	 ;; Mule version
+	 (if (and (null (delq 'ascii (find-charset-region (point-min) (point-max))))
+		  ;;!!!The following is necessary because the function
+		  ;;!!!above seems to return the wrong result under
+		  ;;!!!Emacs 20.3.  Sometimes.
+		  (save-excursion
+		    (goto-char (point-min))
+		    (skip-chars-forward "\0-\177")
+		    (eobp)))
+	     '7bit
+	   '8bit))))
 
 ;;;
 ;;; Functions for decoding

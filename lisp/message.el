@@ -448,6 +448,11 @@ The function `message-setup' runs this hook."
   :group 'message-various
   :type 'hook)
 
+(defcustom message-cancel-hook nil
+  "Hook run when cancelling articles."
+  :group 'message-various
+  :type 'hook)
+
 (defcustom message-signature-setup-hook nil
   "Normal hook, run each time a new outgoing message is initialized.
 It is run after the headers have been inserted and before
@@ -832,7 +837,7 @@ Defaults to `text-mode-abbrev-table'.")
 		"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
 		"[:>|}].*")
        (0 'message-cited-text-face))
-      ("<#/?\\(multi\\)part.*>"
+      ("<#/?\\(multipart\\|part\\|external\\).*>"
        (0 'message-mml-face))))
   "Additional expressions to highlight in Message mode.")
 
@@ -878,9 +883,12 @@ The cdr of ech entry is a function for applying the face to a region.")
       'escape-quoted 'emacs-mule)
   "Coding system to compose mail.")
 
+(defvar message-default-charset 'iso-8859-1
+  "Default charset assumed to be used when viewing non-ASCII characters.
+This variable is used only in non-Mule Emacsen.")
+
 ;;; Internal variables.
 
-(defvar message-default-charset nil)
 (defvar message-buffer-list nil)
 (defvar message-this-is-news nil)
 (defvar message-this-is-mail nil)
@@ -1147,6 +1155,18 @@ Return the number of headers removed."
 	  (goto-char (point-max)))))
     number))
 
+(defun message-remove-first-header (header)
+  "Remove the first instance of HEADER if there is more than one."
+  (let ((count 0)
+	(regexp (concat "^" (regexp-quote header) ":")))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward regexp nil t)
+	(incf count)))
+    (while (> count 1)
+      (message-remove-header header nil t)
+      (decf count))))
+
 (defun message-narrow-to-headers ()
   "Narrow the buffer to the head of the message."
   (widen)
@@ -1297,6 +1317,8 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\M-\r" 'message-newline-and-reformat)
 
   (define-key message-mode-map "\C-c\C-a" 'message-insert-mime-part)
+  (define-key message-mode-map "\C-c\C-m\C-a" 'message-insert-mime-part)
+  (define-key message-mode-map "\C-c\C-m\C-e" 'message-mime-insert-external)
 
   (define-key message-mode-map "\t" 'message-tab))
 
@@ -1833,7 +1855,7 @@ prefix, and don't delete any headers."
 	     (list message-indent-citation-function)))))
     (goto-char start)
     ;; Quote parts.
-    (while (re-search-forward "<#/?!*\\(multi\\|part\\)>" end t)
+    (while (re-search-forward "<#/?!*\\(multipart\\|part\\|external\\)" end t)
       (goto-char (match-beginning 1))
       (insert "!"))
     (goto-char end)
@@ -1867,7 +1889,8 @@ prefix, and don't delete any headers."
 	       (list message-indent-citation-function)))))
       (goto-char start)
       ;; Quote parts.
-      (while (re-search-forward "<#/?!*\\(multi\\|part\\)>" end t)
+      (while (re-search-forward
+	      "<#/?!*\\(multipart\\|part\\|external\\)" end t)
 	(goto-char (match-beginning 1))
 	(insert "!"))
       (goto-char start)
@@ -3620,6 +3643,7 @@ responses here are directed to other newsgroups."))
 		  "")
 		mail-header-separator "\n"
 		message-cancel-message)
+	(run-hooks 'message-cancel-hook)
 	(message "Canceling your article...")
 	(if (let ((message-syntax-checks
 		   'dont-check-for-anything-just-trust-me))
@@ -4107,7 +4131,7 @@ regexp varstr."
 ;;; MIME functions
 ;;;
 
-(defun message-insert-mime-part (file type)
+(defun message-insert-mime-part (file type description)
   "Insert a multipart/alternative part into the buffer."
   (interactive
    (let* ((file (read-file-name "Insert file: " nil nil t))
@@ -4117,24 +4141,45 @@ regexp varstr."
 	    (format "MIME type for %s: " file)
 	    (delete-duplicates
 	     (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions))
+	    nil nil type)
+	   (read-string "Description: "))))
+  (insert (format "<#part type=%s filename=\"%s\"%s><#/part>\n"
+		  type file
+		  (if (zerop (length description))
+		      ""
+		    (format " description=%s"
+			    (prin1-to-string description))))))
+
+(defun message-mime-insert-external (file type)
+  "Insert a message/external-body part into the buffer."
+  (interactive
+   (let* ((file (read-file-name "Insert file: "))
+	  (type (mm-default-file-encoding file)))
+     (list file
+	   (completing-read
+	    (format "MIME type for %s: " file)
+	    (delete-duplicates
+	     (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions))
 	    nil nil type))))
-  (insert (format "<#part type=%s filename=\"%s\"><#/part>\n"
+  (insert (format "<#external type=%s name=\"%s\"><#/external>\n"
 		  type file)))
 
 (defun message-encode-message-body ()
-  (let (lines multipart-p)
+  (let ((mm-default-charset message-default-charset)
+	lines multipart-p)
     (message-goto-body)
     (save-restriction
       (narrow-to-region (point) (point-max))
       (let ((new (mml-generate-mime)))
-	(delete-region (point-min) (point-max))
-	(insert new)
-	(goto-char (point-min))
-	(if (eq (aref new 0) ?\n)
-	    (delete-char 1)
-	  (search-forward "\n\n")
-	  (setq lines (buffer-substring (point-min) (1- (point))))
-	  (delete-region (point-min)  (point)))))
+	(when new
+	  (delete-region (point-min) (point-max))
+	  (insert new)
+	  (goto-char (point-min))
+	  (if (eq (aref new 0) ?\n)
+	      (delete-char 1)
+	    (search-forward "\n\n")
+	    (setq lines (buffer-substring (point-min) (1- (point))))
+	    (delete-region (point-min)  (point))))))
     (save-restriction
       (message-narrow-to-headers-or-head)
       (message-remove-header "Mime-Version")
@@ -4145,6 +4190,10 @@ regexp varstr."
       (setq multipart-p 
 	    (re-search-backward "^Content-Type: multipart/" nil t)))
     (when multipart-p
+      (save-restriction
+	(message-narrow-to-headers-or-head)
+	(message-remove-first-header "Content-Type")
+	(message-remove-first-header "Content-Transfer-Encoding"))
       (message-goto-body)
       (insert "This is a MIME multipart message.  If you are reading\n")
       (insert "this, you shouldn't.\n"))))

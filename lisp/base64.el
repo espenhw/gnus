@@ -98,21 +98,13 @@ base64-encoder-program.")
 	  (delete-file tempfile)
 	(error nil)))))
 
-(defun base64-insert-char (char &optional count ignored buffer)
-  (condition-case nil
-      (progn
-	(insert-char char count ignored buffer)
-	(fset 'base64-insert-char 'insert-char))
-    (wrong-number-of-arguments
-     (fset 'base64-insert-char 'base64-xemacs-insert-char)
-     (base64-insert-char char count ignored buffer))))
-
-(defun base64-xemacs-insert-char (char &optional count ignored buffer)
-  (if (or (null buffer) (eq buffer (current-buffer)))
-      (insert-char char count)
-    (save-excursion
-      (set-buffer buffer)
-      (insert-char char count))))
+(if (string-match "XEmacs" emacs-version)
+    (defalias 'base64-insert-char 'insert-char)
+  (defun base64-insert-char (char &optional count ignored buffer)
+    (if (or (null buffer) (eq buffer (current-buffer)))
+	(insert-char char count)
+      (with-current-buffer buffer
+	(insert-char char count)))))
 
 (defun base64-decode-region (start end)
   (interactive "r")

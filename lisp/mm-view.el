@@ -45,7 +45,7 @@
     (w3-do-setup)
     (require 'url)
     (require 'w3-vars)
-    (url-register-protocol 'cid nil 'url-identity-expander)
+    (load "url-misc.el")
     (setq mm-w3-setup t)))
 
 (defun mm-inline-text (handle)

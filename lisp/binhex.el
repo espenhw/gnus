@@ -3,7 +3,7 @@
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Create Date: Oct 1, 1998
-;; $Revision: 5.1 $
+;; $Revision: 5.2 $
 ;; Time-stamp: <Tue Oct  6 23:48:38 EDT 1998 zsh>
 ;; Keywords: binhex
   
@@ -65,21 +65,13 @@ input and write the converted data to its standard output.")
 
 (defvar binhex-temporary-file-directory "/tmp/")
 
-(defun binhex-insert-char (char &optional count ignored buffer)
-  (condition-case nil
-      (progn
-	(insert-char char count ignored buffer)
-	(fset 'binhex-insert-char 'insert-char))
-    (wrong-number-of-arguments
-     (fset 'binhex-insert-char 'binhex-xemacs-insert-char)
-     (binhex-insert-char char count ignored buffer))))
-
-(defun binhex-xemacs-insert-char (char &optional count ignored buffer)
-  (if (or (null buffer) (eq buffer (current-buffer)))
-      (insert-char char count)
-    (save-excursion
-      (set-buffer buffer)
-      (insert-char char count))))
+(if (string-match "XEmacs" emacs-version)
+    (defalias 'binhex-insert-char 'insert-char)
+  (defun binhex-insert-char (char &optional count ignored buffer)
+    (if (or (null buffer) (eq buffer (current-buffer)))
+	(insert-char char count)
+      (with-current-buffer buffer
+	(insert-char char count)))))
 
 (defvar binhex-crc-table
   [0  4129  8258  12387  16516  20645  24774  28903 

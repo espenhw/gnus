@@ -529,30 +529,6 @@ This overrides entries in the mailcap file."
 	 (< (glyph-height (annotation-glyph image))
 	    (window-pixel-height)))))
 
-(defun url-cid (url)
-  (set-buffer (get-buffer-create url-working-buffer))
-  (let ((content-type nil)
-	(encoding nil)
-	(part nil)
-	(data nil))
-    (if (not (string-match "^cid:\\(.*\\)" url))
-	(message "Malformed CID URL: %s" url)
-      (setq url (url-unhex-string (match-string 1 url))
-	    part (mm-get-content-id url))
-      (if (not part)
-	  (message "Unknown CID encounterred: %s" url)
-	(setq data (buffer-string nil nil (mm-handle-buffer part))
-	      content-type (mm-handle-type part)
-	      encoding (symbol-name (mm-handle-encoding part)))
-	(if (= 0 (length content-type)) (setq content-type "text/plain"))
-	(if (= 0 (length encoding)) (setq encoding "8bit"))
-	(setq url-current-content-length (length data)
-	      url-current-mime-type content-type
-	      url-current-mime-encoding encoding
-	      url-current-mime-headers (list (cons "content-type" content-type)
-					     (cons "content-encoding" encoding)))
-	(and data (insert data))))))
-
 (provide 'mm-decode)
 
 ;; mm-decode.el ends here
