@@ -647,7 +647,7 @@ Answer:
 (eval-after-load "mail-source"
   '(add-to-list 'mail-sources '(pop :server "pop.YourProvider.net"
                                     :user "yourUserName"
-                                    :password "yourPassword"))
+                                    :password "yourPassword")))
 @end example
 
 @noindent

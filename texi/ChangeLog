@@ -1,3 +1,7 @@
+2003-07-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-faq.texi ([3.8]): Fixed example.
+
 2003-07-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package):
