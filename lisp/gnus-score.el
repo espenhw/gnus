@@ -526,7 +526,8 @@ used as score."
 
 	  (gnus-score-kill-help-buffer)
 	  (unless (setq entry (assq (downcase hchar) char-to-header))
-	    (if mimic (error "%c %c" prefix hchar) (error "")))
+	    (if mimic (error "%c %c" prefix hchar)
+	      (error "Illegal header type")))
 
 	  (when (/= (downcase hchar) hchar)
 	    ;; This was a majuscule, so we end reading and set the defaults.
@@ -558,7 +559,8 @@ used as score."
 
 	    (gnus-score-kill-help-buffer)
 	    (unless (setq type (nth 1 (assq (downcase tchar) legal-types)))
-	      (if mimic (error "%c %c" prefix hchar) (error ""))))
+	      (if mimic (error "%c %c" prefix hchar)
+		(error "Illegal match type"))))
 
 	  (when (/= (downcase tchar) tchar)
 	    ;; It was a majuscule, so we end reading and use the default.
@@ -591,7 +593,7 @@ used as score."
 	      (error "You rang?"))
 	    (if mimic
 		(error "%c %c %c %c" prefix hchar tchar pchar)
-	      (error ""))))
+	      (error "Illegal match duration"))))
       ;; Always kill the score help buffer.
       (gnus-score-kill-help-buffer))
 
@@ -2450,8 +2452,8 @@ GROUP using BNews sys file syntax."
 	  (if (looking-at "not.")
 	      (progn
 		(setq not-match t)
-		(setq regexp (concat "^" (buffer-substring 5 (point-max)))))
-	    (setq regexp (concat "^" (buffer-substring 1 (point-max))))
+		(setq regexp (concat "^" (buffer-substring 5 (point-max)) "$")))
+	    (setq regexp (concat "^" (buffer-substring 1 (point-max)) "$"))
 	    (setq not-match nil))
 	  ;; Finally - if this resulting regexp matches the group name,
 	  ;; we add this score file to the list of score files

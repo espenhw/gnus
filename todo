@@ -665,3 +665,6 @@ to be able to post in them (using the current select method).
 * be able to post via DejaNews.
 
 * `x' should retain any sortings that have been performed.
+
+* allow the user to specify the presedence of the secondary marks.  Also
+allow them to be displayed separately.

@@ -547,12 +547,14 @@ articles in the topic and its subtopics."
   (when (and (eq major-mode 'gnus-group-mode)
 	     gnus-topic-mode)
     (let ((group (gnus-group-group-name))
+          (m (point-marker))
 	  (buffer-read-only nil))
       (when (and group
 		 (gnus-get-info group)
 		 (gnus-topic-goto-topic (gnus-current-topic)))
 	(gnus-topic-update-topic-line (gnus-group-topic-name))
-	(gnus-group-goto-group group)
+	(goto-char m)
+	(set-marker m nil)
 	(gnus-group-position-point)))))
 
 (defun gnus-topic-goto-missing-group (group)

@@ -1,3 +1,7 @@
+Thu May  1 14:06:57 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Score File Format): Fix.
+
 Sun Apr 27 11:11:43 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (NNTP): Addition.

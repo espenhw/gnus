@@ -29,126 +29,6 @@
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
 
-(defun gnus-xmas-redefine ()
-  "Redefine lots of Gnus functions for XEmacs."
-  (fset 'gnus-summary-set-display-table 'gnus-xmas-summary-set-display-table)
-  (fset 'gnus-visual-turn-off-edit-menu 'identity)
-  (fset 'gnus-summary-recenter 'gnus-xmas-summary-recenter)
-  (fset 'gnus-extent-start-open 'gnus-xmas-extent-start-open)
-  (fset 'gnus-article-push-button 'gnus-xmas-article-push-button)
-  (fset 'gnus-article-add-button 'gnus-xmas-article-add-button)
-  (fset 'gnus-window-top-edge 'gnus-xmas-window-top-edge)
-  (fset 'gnus-read-event-char 'gnus-xmas-read-event-char)
-  (fset 'gnus-group-startup-message 'gnus-xmas-group-startup-message)
-  (fset 'gnus-tree-minimize 'gnus-xmas-tree-minimize)
-  (fset 'gnus-appt-select-lowest-window
-	'gnus-xmas-appt-select-lowest-window)
-  (fset 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
-  (fset 'gnus-character-to-event 'character-to-event)
-  (fset 'gnus-mode-line-buffer-identification
-	'gnus-xmas-mode-line-buffer-identification)
-  (fset 'gnus-key-press-event-p 'key-press-event-p)
-  (fset 'gnus-region-active-p 'region-active-p)
-
-  (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
-  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
-  (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)
-  (add-hook 'gnus-score-mode-hook 'gnus-xmas-score-menu-add)
-
-  (add-hook 'gnus-pick-mode-hook 'gnus-xmas-pick-menu-add)
-  (add-hook 'gnus-topic-mode-hook 'gnus-xmas-topic-menu-add)
-  (add-hook 'gnus-tree-mode-hook 'gnus-xmas-tree-menu-add)
-  (add-hook 'gnus-binary-mode-hook 'gnus-xmas-binary-menu-add)
-  (add-hook 'gnus-grouplens-mode-hook 'gnus-xmas-grouplens-menu-add)
-  (add-hook 'gnus-server-mode-hook 'gnus-xmas-server-menu-add)
-  (add-hook 'gnus-browse-mode-hook 'gnus-xmas-browse-menu-add)
-
-  (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
-  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
-
-  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off)
-
-  (when (and (<= emacs-major-version 19)
-	     (<= emacs-minor-version 13))
-    (setq gnus-article-x-face-too-ugly (when (eq (device-type) 'tty)
-					 "."))
-    (fset 'gnus-highlight-selected-summary
-	  'gnus-xmas-highlight-selected-summary)
-    (fset 'gnus-group-remove-excess-properties
-	  'gnus-xmas-group-remove-excess-properties)
-    (fset 'gnus-topic-remove-excess-properties
-	  'gnus-xmas-topic-remove-excess-properties)
-    (fset 'gnus-mode-line-buffer-identification 'identity)
-    (unless (boundp 'shell-command-switch)
-      (setq shell-command-switch "-c"))))
-
-(defun gnus-xmas-define ()
-  (setq gnus-mouse-2 [button2])
-
-  (unless (memq 'underline (face-list))
-    (and (fboundp 'make-face)
-	 (funcall (intern "make-face") 'underline)))
-  ;; Must avoid calling set-face-underline-p directly, because it
-  ;; is a defsubst in emacs19, and will make the .elc files non
-  ;; portable!
-  (unless (face-differs-from-default-p 'underline)
-    (funcall (intern "set-face-underline-p") 'underline t))
-
-  (cond
-   ((fboundp 'char-or-char-int-p)
-    ;; Handle both types of marks for XEmacs-20.x.
-    (fset 'gnus-characterp 'char-or-char-int-p))
-   ;; V19 of XEmacs, probably.
-   (t
-    (fset 'gnus-characterp 'characterp)))
-
-  (fset 'gnus-make-overlay 'make-extent)
-  (fset 'gnus-overlay-put 'set-extent-property)
-  (fset 'gnus-move-overlay 'gnus-xmas-move-overlay)
-  (fset 'gnus-overlay-end 'extent-end-position)
-  (fset 'gnus-extent-detached-p 'extent-detached-p)
-  (fset 'gnus-add-text-properties 'gnus-xmas-add-text-properties)
-  (fset 'gnus-put-text-property 'gnus-xmas-put-text-property)
-
-  (require 'text-props)
-  (if (and (<= emacs-major-version 19)
- 	   (< emacs-minor-version 14))
-      (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
-
-  (when (fboundp 'turn-off-scroll-in-place)
-    (add-hook 'gnus-article-mode-hook 'turn-off-scroll-in-place))
-
-  (unless (boundp 'standard-display-table)
-    (setq standard-display-table nil))
-
-  (defvar gnus-mouse-face-prop 'highlight)
-
-  (unless (fboundp 'encode-time)
-    (defun encode-time (sec minute hour day month year &optional zone)
-      (let ((seconds
-	     (gnus-xmas-seconds-since-epoch
-	      (timezone-make-arpa-date
-	       year month day (timezone-make-time-string hour minute sec)
-	       zone))))
-	(list (floor (/ seconds (expt 2 16)))
-	      (round (mod seconds (expt 2 16)))))))
-
-  (defun gnus-byte-code (func)
-    "Return a form that can be `eval'ed based on FUNC."
-    (let ((fval (symbol-function func)))
-      (if (compiled-function-p fval)
-	  (list 'funcall fval)
-	(cons 'progn (cdr (cdr fval))))))
-
-  (fset 'gnus-x-color-values
-	(if (fboundp 'x-color-values)
-	    'x-color-values
-	  (lambda (color)
-	    (color-instance-rgb-components
-	     (make-color-instance color))))))
-
-(require 'gnus-art) ;; Circular
-
 (defgroup gnus-xmas nil
   "XEmacsoid support for Gnus"
   :group 'gnus)
@@ -525,6 +405,125 @@ call it with the value of the `gnus-data' text property."
        (* (nth 1 ttime) 60)
        (* (float (nth 0 ttime)) 60 60)
        (* (float tday) 60 60 24))))
+
+(defun gnus-xmas-define ()
+  (setq gnus-mouse-2 [button2])
+
+  (unless (memq 'underline (face-list))
+    (and (fboundp 'make-face)
+	 (funcall (intern "make-face") 'underline)))
+  ;; Must avoid calling set-face-underline-p directly, because it
+  ;; is a defsubst in emacs19, and will make the .elc files non
+  ;; portable!
+  (unless (face-differs-from-default-p 'underline)
+    (funcall (intern "set-face-underline-p") 'underline t))
+
+  (cond
+   ((fboundp 'char-or-char-int-p)
+    ;; Handle both types of marks for XEmacs-20.x.
+    (fset 'gnus-characterp 'char-or-char-int-p))
+   ;; V19 of XEmacs, probably.
+   (t
+    (fset 'gnus-characterp 'characterp)))
+
+  (fset 'gnus-make-overlay 'make-extent)
+  (fset 'gnus-overlay-put 'set-extent-property)
+  (fset 'gnus-move-overlay 'gnus-xmas-move-overlay)
+  (fset 'gnus-overlay-end 'extent-end-position)
+  (fset 'gnus-extent-detached-p 'extent-detached-p)
+  (fset 'gnus-add-text-properties 'gnus-xmas-add-text-properties)
+  (fset 'gnus-put-text-property 'gnus-xmas-put-text-property)
+
+  (require 'text-props)
+  (if (and (<= emacs-major-version 19)
+ 	   (< emacs-minor-version 14))
+      (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
+
+  (when (fboundp 'turn-off-scroll-in-place)
+    (add-hook 'gnus-article-mode-hook 'turn-off-scroll-in-place))
+
+  (unless (boundp 'standard-display-table)
+    (setq standard-display-table nil))
+
+  (defvar gnus-mouse-face-prop 'highlight)
+
+  (unless (fboundp 'encode-time)
+    (defun encode-time (sec minute hour day month year &optional zone)
+      (let ((seconds
+	     (gnus-xmas-seconds-since-epoch
+	      (timezone-make-arpa-date
+	       year month day (timezone-make-time-string hour minute sec)
+	       zone))))
+	(list (floor (/ seconds (expt 2 16)))
+	      (round (mod seconds (expt 2 16)))))))
+
+  (defun gnus-byte-code (func)
+    "Return a form that can be `eval'ed based on FUNC."
+    (let ((fval (symbol-function func)))
+      (if (compiled-function-p fval)
+	  (list 'funcall fval)
+	(cons 'progn (cdr (cdr fval))))))
+
+  (fset 'gnus-x-color-values
+	(if (fboundp 'x-color-values)
+	    'x-color-values
+	  (lambda (color)
+	    (color-instance-rgb-components
+	     (make-color-instance color))))))
+
+(defun gnus-xmas-redefine ()
+  "Redefine lots of Gnus functions for XEmacs."
+  (fset 'gnus-summary-set-display-table 'gnus-xmas-summary-set-display-table)
+  (fset 'gnus-visual-turn-off-edit-menu 'identity)
+  (fset 'gnus-summary-recenter 'gnus-xmas-summary-recenter)
+  (fset 'gnus-extent-start-open 'gnus-xmas-extent-start-open)
+  (fset 'gnus-article-push-button 'gnus-xmas-article-push-button)
+  (fset 'gnus-article-add-button 'gnus-xmas-article-add-button)
+  (fset 'gnus-window-top-edge 'gnus-xmas-window-top-edge)
+  (fset 'gnus-read-event-char 'gnus-xmas-read-event-char)
+  (fset 'gnus-group-startup-message 'gnus-xmas-group-startup-message)
+  (fset 'gnus-tree-minimize 'gnus-xmas-tree-minimize)
+  (fset 'gnus-appt-select-lowest-window
+	'gnus-xmas-appt-select-lowest-window)
+  (fset 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
+  (fset 'gnus-character-to-event 'character-to-event)
+  (fset 'gnus-mode-line-buffer-identification
+	'gnus-xmas-mode-line-buffer-identification)
+  (fset 'gnus-key-press-event-p 'key-press-event-p)
+  (fset 'gnus-region-active-p 'region-active-p)
+
+  (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
+  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
+  (add-hook 'gnus-article-mode-hook 'gnus-xmas-article-menu-add)
+  (add-hook 'gnus-score-mode-hook 'gnus-xmas-score-menu-add)
+
+  (add-hook 'gnus-pick-mode-hook 'gnus-xmas-pick-menu-add)
+  (add-hook 'gnus-topic-mode-hook 'gnus-xmas-topic-menu-add)
+  (add-hook 'gnus-tree-mode-hook 'gnus-xmas-tree-menu-add)
+  (add-hook 'gnus-binary-mode-hook 'gnus-xmas-binary-menu-add)
+  (add-hook 'gnus-grouplens-mode-hook 'gnus-xmas-grouplens-menu-add)
+  (add-hook 'gnus-server-mode-hook 'gnus-xmas-server-menu-add)
+  (add-hook 'gnus-browse-mode-hook 'gnus-xmas-browse-menu-add)
+
+  (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
+  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
+
+  (add-hook 'gnus-summary-mode-hook 'gnus-xmas-switch-horizontal-scrollbar-off)
+
+  (when (and (<= emacs-major-version 19)
+	     (<= emacs-minor-version 13))
+    (setq gnus-article-x-face-too-ugly (when (eq (device-type) 'tty)
+					 "."))
+    (fset 'gnus-highlight-selected-summary
+	  'gnus-xmas-highlight-selected-summary)
+    (fset 'gnus-group-remove-excess-properties
+	  'gnus-xmas-group-remove-excess-properties)
+    (fset 'gnus-topic-remove-excess-properties
+	  'gnus-xmas-topic-remove-excess-properties)
+    (fset 'gnus-mode-line-buffer-identification 'identity)
+    (unless (boundp 'shell-command-switch)
+      (setq shell-command-switch "-c"))))
+
 
 ;;; XEmacs logo and toolbar.
 

@@ -1,3 +1,37 @@
+Thu May  1 17:56:05 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.49 is released.
+
+Sat Apr 19 16:13:03 1997  Erik Toubro Nielsen  <erik@ifad.dk>
+
+	* gnus-sum.el (gnus-summary-exit): Returned to the wrong topic in
+ 	certain obscure cases if selected group occured in multiple
+ 	topics.
+
+	* gnus-topic.el (gnus-topic-update-topic): Did not preserve point
+ 	on the same instance of a group if group occured in multiple
+ 	topics. Caused gnus-summary-exit to return to wrong topic if the
+ 	selected group was in more than one topic.
+
+	Above two bugs happened only if the window configuration for
+ 	summary mode caused the group buffer not to be shown in a window.
+
+Thu May  1 14:28:20 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-send): Would pretend to have sent.
+
+	* nnmh.el (nnmh-request-list-1): Don't use truename.
+
+Sun Apr 27 15:16:16 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* gnus-xmas.el: Undo previous change, and restore the version from 
+	5.4.46 (without the require 'gnus-art).
+
+Tue Apr 29 11:08:27 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-summary-increase-score): Better error
+	messages. 
+
 Sun Apr 27 23:15:58 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.48 is released.
