@@ -85,17 +85,17 @@ Output to the current buffer, replace text, and don't mingle error."
 
 ;;;###autoload
 (defun gnus-x-face-from-file (file)
-  "Insert an X-Face header based on an image file."
-  (interactive "fImage file name:" )
+  "Insert an X-Face header based on a GIF image file."
+  (interactive "fImage file name: ")
   (when (file-exists-p file)
     (gnus-shell-command-to-string
      (format gnus-convert-image-to-x-face-command
-	     (shell-quote-argument file)))))
+	     (shell-quote-argument (expand-file-name file))))))
 
 ;;;###autoload
 (defun gnus-face-from-file (file)
-  "Return an Face header based on an image file."
-  (interactive "fImage file name:" )
+  "Return an Face header based on a JPEG image file."
+  (interactive "fImage file name: ")
   (when (file-exists-p file)
     (let ((done nil)
 	  (attempt "")
@@ -106,7 +106,7 @@ Output to the current buffer, replace text, and don't mingle error."
 	(setq attempt
 	      (gnus-shell-command-to-string
 	       (format gnus-convert-image-to-face-command
-		       (shell-quote-argument file)
+		       (shell-quote-argument (expand-file-name file))
 		       quant)))
 	(if (> (length attempt) 740)
 	    (progn

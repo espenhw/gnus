@@ -1,3 +1,8 @@
+2003-01-13  Romain FRANCOISE  <romain@orebokech.com>
+
+	* gnus-fun.el (gnus-x-face-from-file): Quote file name. 
+	(gnus-face-from-file): Ditto.
+
 2003-01-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-articles-to-read): Don't just apply
