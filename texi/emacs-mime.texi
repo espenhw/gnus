@@ -796,10 +796,12 @@ Here's an example file:
 @example
 image/*; gimp -8 %s
 audio/wav; wavplayer %s
+application/msword; catdoc %s ; copiousoutput ; nametemplate=%s.doc
 @end example
 
-This says that all image files should be displayed with @code{gimp}, and
-that WAVE audio files should be played by @code{wavplayer}.
+This says that all image files should be displayed with @code{gimp},
+that WAVE audio files should be played by @code{wavplayer}, and that
+MS-WORD files should be inlined by @code{catdoc}.
 
 The @code{mailcap} library parses this file, and provides functions for
 matching types.

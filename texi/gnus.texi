@@ -10180,7 +10180,10 @@ The following commands are available when you have placed point over a
 @kindex RET (Article)
 @itemx BUTTON-2 (Article)
 Toggle displaying of the @sc{mime} object
-(@code{gnus-article-press-button}).
+(@code{gnus-article-press-button}). If builtin viewers can not display
+the object, Gnus resorts to external viewers in the @file{mailcap}
+files.  If a viewer has the @samp{copiousoutput} specification, the
+object is displayed inline.
 
 @findex gnus-mime-view-part
 @item M-RET (Article)
