@@ -234,6 +234,7 @@ simplification is selected."
 
 (defcustom gnus-thread-hide-subtree nil
   "*If non-nil, hide all threads initially.
+This can be a predicate specifier which says which threads to hide.
 If threads are hidden, you have to run the command
 `gnus-summary-show-thread' by hand or use `gnus-select-article-hook'
 to expose hidden threads."
@@ -1726,8 +1727,6 @@ increase the score of each group you read."
     "r" gnus-summary-caesar-message
     "t" gnus-summary-toggle-header
     "g" gnus-treat-smiley
-    "u" gnus-article-treat-unfold-headers
-    "n" gnus-article-treat-fold-newsgroups
     "v" gnus-summary-verbose-headers
     "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
     "p" gnus-article-verify-x-pgp-sig
@@ -1751,6 +1750,11 @@ increase the score of each group you read."
     "h" gnus-article-highlight-headers
     "c" gnus-article-highlight-citation
     "s" gnus-article-highlight-signature)
+
+  (gnus-define-keys (gnus-summary-wash-header-map "G" gnus-summary-wash-map)
+    "f" gnus-article-treat-fold-headers
+    "u" gnus-article-treat-unfold-headers
+    "n" gnus-article-treat-fold-newsgroups)
 
   (gnus-define-keys (gnus-summary-wash-display-map "D" gnus-summary-wash-map)
     "x" gnus-article-display-x-face
@@ -3266,9 +3270,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	;; Hide conversation thread subtrees.  We cannot do this in
 	;; gnus-summary-prepare-hook since kill processing may not
 	;; work with hidden articles.
-	(and gnus-show-threads
-	     gnus-thread-hide-subtree
-	     (gnus-summary-hide-all-threads))
+	(gnus-summary-maybe-hide-threads)
 	(when kill-buffer
 	  (gnus-kill-or-deaden-summary kill-buffer))
 	(gnus-summary-auto-select-subject)
@@ -6152,10 +6154,11 @@ The state which existed when entering the ephemeral is reset."
   (suppress-keymap gnus-dead-summary-mode-map)
   (substitute-key-definition
    'undefined 'gnus-summary-wake-up-the-dead gnus-dead-summary-mode-map)
-  (let ((keys '("\C-d" "\r" "\177" [delete])))
-    (while keys
-      (define-key gnus-dead-summary-mode-map
-	(pop keys) 'gnus-summary-wake-up-the-dead))))
+  (dolist (key '("\C-d" "\r" "\177" [delete]))
+    (define-key gnus-dead-summary-mode-map
+      key 'gnus-summary-wake-up-the-dead))
+  (dolist (key '("q" "Q"))
+    (define-key gnus-dead-summary-mode-map key 'bury-buffer)))
 
 (defvar gnus-dead-summary-mode nil
   "Minor mode for Gnus summary buffers.")
@@ -7212,9 +7215,7 @@ If ALL, mark even excluded ticked and dormants as read."
     ;; according to the new limit.
     (gnus-summary-prepare)
     ;; Hide any threads, possibly.
-    (and gnus-show-threads
-	 gnus-thread-hide-subtree
-	 (gnus-summary-hide-all-threads))
+    (gnus-summary-maybe-hide-threads)
     ;; Try to return to the article you were at, or one in the
     ;; neighborhood.
     (when data
@@ -9686,18 +9687,49 @@ Returns nil if no thread was there to be shown."
       (goto-char orig)
       (gnus-summary-position-point))))
 
-(defun gnus-summary-hide-all-threads ()
-  "Hide all thread subtrees."
+(defun gnus-summary-maybe-hide-threads ()
+  "If requested, hide the threads that should be hidden."
+  (when (and gnus-show-threads
+	     gnus-thread-hide-subtree)
+    (gnus-summary-hide-all-threads
+     (if (or (consp gnus-thread-hide-subtree)
+	     (gnus-functionp gnus-thread-hide-subtree))
+	 (gnus-make-predicate gnus-thread-hide-subtree)
+       nil))))
+
+;;; Hiding predicates.
+
+(defun gnus-article-unread-p (header)
+  (memq (mail-header-number header) gnus-newsgroup-unreads))
+
+(defun gnus-article-unseen-p (header)
+  (memq (mail-header-number header) gnus-newsgroup-unseen))
+
+(defun gnus-map-articles (predicate articles)
+  "Map PREDICATE over ARTICLES and return non-nil if any predicate is non-nil."
+  (apply 'gnus-or (mapcar predicate
+			  (mapcar 'gnus-summary-article-header articles))))
+
+(defun gnus-summary-hide-all-threads (&optional predicate)
+  "Hide all thread subtrees.
+If PREDICATE is supplied, threads that satisfy this predicate
+will not be hidden."
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (gnus-summary-hide-thread)
-    (while (zerop (gnus-summary-next-thread 1 t))
-      (gnus-summary-hide-thread)))
+    (let ((end nil))
+      (while (not end)
+	(when (or (not predicate)
+		  (gnus-map-articles
+		   predicate (gnus-summary-article-children)))
+	    (gnus-summary-hide-thread))
+	(setq end (zerop (gnus-summary-next-thread 1 t))))))
   (gnus-summary-position-point))
 
 (defun gnus-summary-hide-thread ()
   "Hide thread subtrees.
+If PREDICATE is supplied, threads that satisfy this predicate
+will not be hidden.
 Returns nil if no threads were there to be hidden."
   (interactive)
   (let ((buffer-read-only nil)
@@ -9893,8 +9925,7 @@ Argument REVERSE means reverse order."
     ;; We do the sorting by regenerating the threads.
     (gnus-summary-prepare)
     ;; Hide subthreads if needed.
-    (when (and gnus-show-threads gnus-thread-hide-subtree)
-      (gnus-summary-hide-all-threads))))
+    (gnus-summary-maybe-hide-threads)))
 
 (defun gnus-summary-sort (predicate reverse)
   "Sort summary buffer by PREDICATE.  REVERSE means reverse order."
@@ -9917,8 +9948,7 @@ Argument REVERSE means reverse order."
     ;; We do the sorting by regenerating the threads.
     (gnus-summary-prepare)
     ;; Hide subthreads if needed.
-    (when (and gnus-show-threads gnus-thread-hide-subtree)
-      (gnus-summary-hide-all-threads))))
+    (gnus-summary-maybe-hide-threads)))
 
 ;; Summary saving commands.
 

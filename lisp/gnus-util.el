@@ -1206,6 +1206,21 @@ forbidden in URL encoding."
     (setq tmp (concat tmp str))
     tmp))
 
+(defun gnus-make-predicate (spec)
+  "Transform SPEC into a function that can be called.
+SPEC is a predicate specifier that contains stuff like `or', `and',
+`not', lists and functions.  The functions all take one parameter."
+  `(lambda (elem) ,(gnus-make-predicate-1 spec)))
+  
+(defun gnus-make-predicate-1 (spec)
+  (cond
+   ((symbolp spec)
+    `(,spec elem))
+   ((listp spec)
+    (if (memq (car spec) '(or and not))
+	`(,(car spec) ,@(mapcar 'gnus-make-predicate-1 (cdr spec)))
+      (error "Invalid predicate specifier: %s" spec)))))
+  
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

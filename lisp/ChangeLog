@@ -1,3 +1,23 @@
+2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-maybe-hide-threads): Use predicate
+	function. 
+	(gnus-article-unread-p): New function.
+	(gnus-article-unseen-p): New function.
+	(gnus-dead-summary-mode-map): Typo.
+
+	* gnus-util.el (gnus-make-predicate): New function.
+	(gnus-make-predicate-1): New function.
+
+	* gnus-sum.el: New function.
+	(gnus-map-articles): New function.
+
+	* gnus-art.el (gnus-treat-fold-headers): New variable.
+	(gnus-article-treat-fold-headers): New command and keystroke. 
+
+	* gnus-sum.el (gnus-dead-summary-mode-map): Clean up.
+	(gnus-dead-summary-mode-map): Bind q to bury-buffer. 
+
 2002-01-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-fcc-externalize-attachments): New variable.

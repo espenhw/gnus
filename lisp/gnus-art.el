@@ -141,7 +141,8 @@
      "^X-Content-length:" "^X-Posting-Agent:" "^Original-Received:"
      "^X-Request-PGP:" "^X-Fingerprint:" "^X-WRIEnvto:" "^X-WRIEnvfrom:"
      "^X-Virus-Scanned:" "^X-Delivery-Agent:" "^Posted-Date:" "^X-Gateway:"
-     "^X-Local-Origin:" "^X-Local-Destination:" "^X-UserInfo1:")
+     "^X-Local-Origin:" "^X-Local-Destination:" "^X-UserInfo1:"
+     "^X-Received-Date:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -1021,6 +1022,13 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-fold-headers nil
+  "Fold headers.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 (defcustom gnus-treat-fold-newsgroups 'head
   "Fold the Newsgroups and Followup-To headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1209,6 +1217,7 @@ It is a string, such as \"PGP\". If nil, ask user."
      gnus-article-strip-multiple-blank-lines)
     (gnus-treat-overstrike gnus-article-treat-overstrike)
     (gnus-treat-unfold-headers gnus-article-treat-unfold-headers)
+    (gnus-treat-fold-headers gnus-article-treat-fold-headers)
     (gnus-treat-fold-newsgroups gnus-article-treat-fold-newsgroups)
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-smileys gnus-treat-smiley)
@@ -1638,6 +1647,16 @@ unfolded."
 	    (while (re-search-forward "[\t ]*\n[\t ]+" nil t)
 	      (replace-match " " t t)))
 	  (goto-char (point-max)))))))
+
+(defun gnus-article-treat-fold-headers ()
+  "Fold message headers."
+  (interactive)
+  (gnus-with-article-headers
+    (while (not (eobp))
+      (save-restriction
+	(mail-header-narrow-to-field)
+	(mail-header-fold-field)
+	(goto-char (point-max))))))
 
 (defun gnus-treat-smiley ()
   "Display textual emoticons (\"smileys\") as small graphical icons."
