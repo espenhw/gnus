@@ -35,6 +35,8 @@
 	* nnimap.el (nnimap-group-overview-filename): Create directory for
 	newfile (when use long filenames is nil).  Copy+delete file if
 	rename didn't work.
+	(nnimap-group-overview-filename): `rename-file' and `copy-file'
+	doesn't return anything useful, use ignore-errors instead.
 
 2000-10-08 13:05:11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
