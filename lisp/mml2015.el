@@ -1,18 +1,17 @@
-;;; rfc2015.el --- MIME Security with Pretty Good Privacy (PGP)
-;; Copyright (c) 2000 Shenghuo Zhu
+;;; mml2015.el --- MIME Security with Pretty Good Privacy (PGP)
+;; Copyright (C) 2000 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; Keywords: PGP MIME
+;; Keywords: PGP MIME MML
 
-;; This file is not (yet) a part of GNU Emacs. Hope it 
-;; will be a part of oGnus distribution, then GNU Emacs.
+;; This file is part of GNU Emacs.
 
-;; This file is free software; you can redistribute it and/or modify
+;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
 ;; by the Free Software Foundation; either version 2, or (at your
 ;; option) any later version.
 
-;; This file is distributed in the hope that it will be useful, but
+;; GNU Emacs is distributed in the hope that it will be useful, but
 ;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ;; General Public License for more details.
@@ -25,9 +24,9 @@
 ;;; Commentary:
 
 ;; Installation: put the following statements in ~/.gnus:
-;;    (require 'rfc2015)
+;;    (require 'mml2015)
 ;;    (require 'gnus-art)
-;;    (rfc2015-setup)
+;;    (mml2015-setup)
 ;; You may have to make sure that the directory where this file lives
 ;; is mentioned in `load-path'.
 ;; 
@@ -36,10 +35,10 @@
 
 ;;; Code:
 
-(defvar rfc2015-decrypt-function 'mailcrypt-decrypt)
-(defvar rfc2015-verify-function 'mailcrypt-verify)
+(defvar mml2015-decrypt-function 'mailcrypt-decrypt)
+(defvar mml2015-verify-function 'mailcrypt-verify)
 
-(defun rfc2015-decrypt (handle)
+(defun mml2015-decrypt (handle)
   (let (child)
     (cond 
      ((setq child (mm-find-part-by-type (cdr handle) 
@@ -47,7 +46,7 @@
       (let (handles result)
 	(with-temp-buffer
 	  (mm-insert-part child)
-	  (setq result (funcall rfc2015-decrypt-function))
+	  (setq result (funcall mml2015-decrypt-function))
 	  (unless (car result)
 	    (error "Decrypting error."))
 	  (setq handles (mm-dissect-buffer t)))
@@ -67,7 +66,7 @@
 ;; FIXME: mm-dissect-buffer loses information of micalg and the
 ;; original header of signed part.
 
-(defun rfc2015-verify (handle)
+(defun mml2015-verify (handle)
   (if (y-or-n-p "Verify signed part?" )
       (let (child result hash)
 	(with-temp-buffer
@@ -84,17 +83,17 @@
 			       (cdr handle) "application/pgp-signature"))
 	    (error "Corrupted pgp-signature part."))
 	  (mm-insert-part child)
-	  (setq result (funcall rfc2015-verify-function))
+	  (setq result (funcall mml2015-verify-function))
 	  (unless result
 	    (error "Verify error.")))))
   (gnus-mime-display-part 
    (mm-find-part-by-type 
     (cdr handle) "application/pgp-signature" t)))
 
-(defvar rfc2015-mailcrypt-prefix 0)
+(defvar mml2015-mailcrypt-prefix 0)
 
-(defun rfc2015-mailcrypt-sign (cont)
-  (mailcrypt-sign rfc2015-mailcrypt-prefix)
+(defun mml2015-mailcrypt-sign (cont)
+  (mailcrypt-sign mml2015-mailcrypt-prefix)
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number)))
 	(scheme-alist (funcall (or mc-default-scheme 
@@ -130,10 +129,10 @@
     (insert (format "--%s--\n" boundary))
     (goto-char (point-max))))
 
-(defun rfc2015-mailcrypt-encrypt (cont)
+(defun mml2015-mailcrypt-encrypt (cont)
   ;; FIXME:
   ;; You have to input the receiptant.
-  (mailcrypt-encrypt rfc2015-mailcrypt-prefix)
+  (mailcrypt-encrypt mml2015-mailcrypt-prefix)
   (let ((boundary 
 	 (funcall mml-boundary-function (incf mml-multipart-number))))
     (goto-char (point-min))
@@ -152,8 +151,8 @@
 ;; The following code might be moved into mml.el or gnus-art.el.
 
 (defvar mml-postprocess-alist
-  '(("pgp-sign" . rfc2015-mailcrypt-sign)
-    ("pgp-encrypt" . rfc2015-mailcrypt-encrypt))
+  '(("pgp-sign" . mml2015-mailcrypt-sign)
+    ("pgp-encrypt" . mml2015-mailcrypt-encrypt))
   "Alist of postprocess functions.")
 
 (defun mml-postprocess (cont)
@@ -163,11 +162,11 @@
     (if (and pp (setq item (assoc pp mml-postprocess-alist)))
 	(funcall (cdr item) cont))))
 
-(defun rfc2015-setup ()
+(defun mml2015-setup ()
   (setq mml-generate-mime-postprocess-function 'mml-postprocess)
-;  (push '("multipart/signed" . rfc2015-verify)
+;  (push '("multipart/signed" . mml2015-verify)
 ;  	gnus-mime-multipart-functions)
-  (push '("multipart/encrypted" . rfc2015-decrypt)
+  (push '("multipart/encrypted" . mml2015-decrypt)
 	gnus-mime-multipart-functions))
 
 ;; The following code might be moved into mm-decode.el.
@@ -183,6 +182,6 @@
       (setq handles (cdr handles)))
     handle))
 
-(provide 'rfc2015)
+(provide 'mml2015)
 
-;;; rfc2015.el ends here
+;;; mml2015.el ends here
