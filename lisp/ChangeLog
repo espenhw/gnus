@@ -1,3 +1,8 @@
+2004-11-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-clear-local-variables): Use symbolp.
+	From Stefan Wiens <s.wi@gmx.net>.
+
 2004-11-04  Richard M. Stallman  <rms@gnu.org>
 
 	* spam.el (spam group): Add :version.

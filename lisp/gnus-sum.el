@@ -2807,9 +2807,9 @@ The following commands are available:
   (let ((locals gnus-summary-local-variables))
     (while locals
       (if (consp (car locals))
-	  (and (vectorp (caar locals))
+	  (and (symbolp (caar locals))
 	       (set (caar locals) nil))
-	(and (vectorp (car locals))
+	(and (symbolp (car locals))
 	     (set (car locals) nil)))
       (setq locals (cdr locals)))))
 
