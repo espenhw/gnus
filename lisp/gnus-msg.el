@@ -212,7 +212,7 @@ use this option with care."
   :type '(repeat (symbol :tab "Variable")))
 
 (defcustom gnus-discouraged-post-methods 
-  '(nndraft nnml nnimap nnmaildir)
+  '(nndraft nnml nnimap nnmaildir nnmh nnfolder nndir)
   "A list of back ends that are not used in \"real\" newsgroups.
 This variable is used only when `gnus-post-method' is `current'."
   :version "21.3"
