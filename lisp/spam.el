@@ -579,12 +579,12 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	    (if spam-use-dig
 		(let ((query-result (query-dig query-string)))
 		  (when query-result
-		    (gnus-message 5 "spam (DIG): positive blackhole check '%s'" query-result)
+		    (gnus-message 5 "(DIG): positive blackhole check '%s'" query-result)
 		    (push (list ip server query-result)
 			  matches)))
 	      ;; else, if not using dig.el
 	      (when (query-dns query-string)
-		(gnus-message 5 "spam: positive blackhole check '%s'" query-result)
+		(gnus-message 5 "positive blackhole check")
 		(push (list ip server (query-dns query-string 'TXT))
 		      matches)))))))
     (when matches
