@@ -18926,7 +18926,7 @@ Each article can have only one mark, so just a single of these rules
 will be applied to each article.
 
 To take @code{gnus-del-mark} as an example---this alist says that all
-articles that have that mark (i.e., are marked with @samp{D}) will have a
+articles that have that mark (i.e., are marked with @samp{e}) will have a
 score entry added to lower based on the @code{From} header by -4, and
 lowered by @code{Subject} by -1.  Change this to fit your prejudices.
 

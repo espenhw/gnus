@@ -1,3 +1,7 @@
+2003-03-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Adaptive Scoring): Fix.
+
 2003-03-23  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Direct Functions, Common Variables)
