@@ -5660,15 +5660,17 @@ religiously) are marked with an @samp{S} in the second column
 
 @item
 @vindex gnus-recent-mark
-Articles that according to the back end haven't been seen by the user
+Articles that according to the server haven't been shown to the user
 before are marked with a @samp{N} in the second column
-(@code{gnus-recent-mark}).  Note that not all back ends support this
-mark, in which case it simply never appears.
+(@code{gnus-recent-mark}).  Note that not all servers support this
+mark, in which case it simply never appears. Compare with
+@code{gnus-unseen-mark}.
 
 @item
 @vindex gnus-unseen-mark
-Articles that haven't been seen by the user before are marked with a
-@samp{.} in the second column (@code{gnus-unseen-mark}).
+Articles that haven't been seen before in Gnus by the user are marked
+with a @samp{.} in the second column (@code{gnus-unseen-mark}).
+Compare with @code{gnus-recent-mark}.
 
 @item
 @vindex gnus-not-empty-thread-mark
