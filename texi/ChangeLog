@@ -1,3 +1,8 @@
+2001-07-25 22:22:22  Raymond Scholz  <rscholz@zonix.de>
+
+	* gnus.texi (Fancy Mail Splitting): New variable
+        nnmail-split-fancy-with-parent-ignore-groups
+	
 2001-07-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Duplicates): Make split method regexp more specific,
