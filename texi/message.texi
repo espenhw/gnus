@@ -774,6 +774,19 @@ a multipart tag will be used; if no other parts are present in your
 message a single part tag will be used.  This way, message mode will
 do the Right Thing (TM) with signed/encrypted multipart messages.
 
+By default, when encrypting a message, Gnus will use the "signencrypt"
+mode.  If you would like to disable this for a particular message,
+give the mml-secure-message-encrypt-* command a prefix argument. (for
+example, C-u C-c C-m c p).  Additionally, by default Gnus will
+separately sign, then encrypt a message which has the mode
+signencrypt.  If you would like to change this behavior use the
+@code{mml-signencrypt-style} function.  For example
+
+@code{(mml-signencrypt-style "pgpmime" 'combined)}
+
+Will cause Gnus to sign and encrypt in one pass, thus generating a
+single signed and encrypted part.
+
 Since signing and especially encryption often is used when sensitive
 information is sent, you may want to have some way to ensure that your
 mail is actually signed or encrypted.  After invoking the above

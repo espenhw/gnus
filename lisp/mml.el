@@ -540,8 +540,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	      (message-options-set 'message-sender sender))
 	  (if (setq recipients (cdr (assq 'recipients cont)))
 	      (message-options-set 'message-recipients recipients))
-	  (let ((style (second (assoc (first sign-item)
-				      mml-signencrypt-style))))
+	  (let ((style (mml-signencrypt-style (first encrypt-item))))
 	    ;; check if: we're both signing & encrypting, both methods
 	    ;; are the same (why would they be different?!), and that
 	    ;; the signencrypt style allows for combined operation.

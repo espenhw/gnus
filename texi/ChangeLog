@@ -1,3 +1,8 @@
+2002-05-08  Josh Huber  <huber@alum.wpi.edu>
+
+	* message.texi (Security): Added a note about the signencrypt
+	style, and how to change it using `mml-signencrypt-style.'
+
 2002-05-04  Simon Josefsson  <jas@extundo.com>
 
 	* emacs-mime.texi (Encoding Customization): Fix.

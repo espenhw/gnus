@@ -1,3 +1,12 @@
+2002-05-08  Josh Huber  <huber@alum.wpi.edu>
+
+	* mml-sec.el (mml-signencrypt-style-alist): Rename.  Also, changed
+	the default for pgpmime to support pgp v2.
+	* mml-sec.el (mml-signencrypt-style): New accessor function to
+	allow users to get/set the signencrypt style more easily without
+	frobbing the alist directly.
+	* mml.el (mml-generate-mime-1): Use accessor function.
+
 2002-05-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-art.el (gnus-article-mode-syntax-table): Specify matching

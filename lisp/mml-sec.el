@@ -46,12 +46,36 @@
 (defvar mml-default-encrypt-method (caar mml-encrypt-alist)
   "Default encryption method.")
 
-(defvar mml-signencrypt-style
+(defvar mml-signencrypt-style-alist
   '(("smime"   separate)
     ("pgp"     separate)
-    ("pgpmime" combined))
+    ("pgpmime" separate))
   "Alist specifying whether or not a single sign & encrypt
-operation should be perfomed when requesting signencrypt.")
+operation should be perfomed when requesting signencrypt.
+Note that combined sign & encrypt is NOT supported by pgp v2!
+Also note that you should access this with mml-signencrypt-style")
+
+;;; Configuration/helper functions
+
+(defun mml-signencrypt-style (method &optional style)
+  "Function for setting/getting the signencrypt-style used.  Takes two
+arguments, the method (e.g. \"pgp\") and optionally the mode
+(e.g. combined).  If the mode is omitted, the current value is returned.
+
+For example, if you prefer to use combined sign & encrypt with
+smime, putting the following in your Gnus startup file will
+enable that behavior:
+
+ (mml-set-signencrypt-style \"smime\" combined)"
+  (let ((style-item (assoc method mml-signencrypt-style-alist)))
+    (if style-item
+	(if (or (eq style 'separate)
+		(eq style 'combined))
+	    ;; valid style setting?
+	    (setf (second style-item) style)
+	  ;; otherwise, just return the current value
+	  (second style-item))
+      (gnus-message 3 "Warning, attempt to set invalid signencrypt-style"))))
 
 ;;; Security functions
 
