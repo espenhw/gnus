@@ -1,5 +1,31 @@
 2003-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.el (message-cross-post-default)
+	(message-cross-post-note-function, message-shoot-gnksa-feet)
+	(message-strip-subject-trailing-was, message-change-subject)
+	(message-mark-insert-file, message-cross-post-followup-to)
+	(message-cross-post-followup-to, message-mode-map)
+	(message-generate-unsubscribed-mail-followup-to)
+	(message-make-mail-followup-to): Minor changes to doc-strings and
+	error messages.  Updated copyright line.
+
+	* message.el (message-make-mail-followup-to,
+	message-generate-unsubscribed-mail-followup-to): New function
+	names.  Renamed functions: "-mft" -> "-mail-followup-to".
+	(message-make-mft, message-gen-unsubscribed-mft): Removed function
+	names.
+
+	* mml.el (mml-preview-insert-mail-followup-to): New function name.
+	(mml-preview-insert-mft): Removed function name.
+	(mml-preview): Use new function names.
+
+	* gnus-art.el (gnus-article-edit-mode-map): Use new function names.
+
+	* message.el (message-mode-field-menu): Moved header related
+	commands from "Message" to "Field" menu.
+
+2003-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
+
 	* message.el (message-generate-headers-first): Added customization
 	if variable is a list.
 

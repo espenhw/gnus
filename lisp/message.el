@@ -1,5 +1,5 @@
 ;;; message.el --- composing mail and news messages
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -344,9 +344,9 @@ If nil, don't insert any text in the body."
 
 ;;;###autoload
 (defcustom message-cross-post-default t
-  "When non-nil `message-cross-post-followup-to' will normally perform a
-crosspost.  If nil, `message-cross-post-followup-to' will only do a followup.
-Note that you can explicitly override this setting by calling
+  "When non-nil `message-cross-post-followup-to' will perform a crosspost.
+If nil, `message-cross-post-followup-to' will only do a followup.  Note that
+you can explicitly override this setting by calling
 `message-cross-post-followup-to' with a prefix."
   :type 'boolean
   :group 'message-various)
@@ -371,7 +371,7 @@ Note that you can explicitly override this setting by calling
   "Function to use to insert note about Crosspost or Followup-To.
 The function will be called with four arguments.  The function should not only
 insert a note, but also ensure old notes are deleted.  See the documentation
-for `message-cross-post-insert-note'. "
+for `message-cross-post-insert-note'."
   :type 'function
   :group 'message-various)
 
@@ -961,7 +961,7 @@ A value of nil means exclude your own user name only."
   "*A list of GNKSA feet you are allowed to shoot.
 Gnus gives you all the opportunity you could possibly want for
 shooting yourself in the foot.  Also, Gnus allows you to shoot the
-feet of Good Net-Keeping Seal of Approval. The following are foot
+feet of Good Net-Keeping Seal of Approval.  The following are foot
 candidates:
 `empty-article'     Allow you to post an empty article;
 `quoted-text-only'  Allow you to post quoted text only;
@@ -1561,7 +1561,7 @@ is used by default."
 ;;; Start of functions adopted from `message-utils.el'.
 
 (defun message-strip-subject-trailing-was (subject)
-  "Remove trailing \"(Was: <old subject>)\" from subject lines.
+  "Remove trailing \"(Was: <old subject>)\" from SUBJECT lines.
 Leading \"Re: \" is not stripped by this function.  Use the function
 `message-strip-subject-re' for this."
   (let* ((query message-subject-trailing-was-query)
@@ -1596,7 +1596,7 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 
 ;;;###autoload
 (defun message-change-subject (new-subject)
-  "Ask for new Subject: header, append (was: <Old Subject>)."
+  "Ask for NEW-SUBJECT header, append (was: <Old Subject>)."
   (interactive
    (list
     (read-from-minibuffer "New subject: ")))
@@ -1606,7 +1606,7 @@ Leading \"Re: \" is not stripped by this function.  Use the function
 	 (save-excursion
 	   (let ((old-subject (message-fetch-field "Subject")))
 	     (cond ((not old-subject)
-		    (error "No current subject."))
+		    (error "No current subject"))
 		   ((not (string-match
 			  (concat "^[ \t]*"
 				  (regexp-quote new-subject)
@@ -1636,7 +1636,7 @@ See `message-mark-insert-begin' and `message-mark-insert-end'."
 
 ;;;###autoload
 (defun message-mark-insert-file (file)
-  "Inserts FILE at point, marking it with enclosing tags.
+  "Insert FILE at point, marking it with enclosing tags.
 See `message-mark-insert-begin' and `message-mark-insert-end'."
   (interactive "fFile to insert: ")
     ;; reverse insertion to get correct result.
@@ -1746,7 +1746,7 @@ been made to before the user asked for a Crosspost."
 
 ;;;###autoload
 (defun message-cross-post-followup-to (target-group)
-  "Crossposts message and sets Followup-To to TARGET-GROUP.
+  "Crossposts message and set Followup-To to TARGET-GROUP.
 With prefix-argument just set Follow-Up, don't cross-post."
   (interactive
    (list ; Completion based on Gnus
@@ -1766,7 +1766,7 @@ With prefix-argument just set Follow-Up, don't cross-post."
 			   (or old-groups ""))))
 	     ;; check whether target exactly matches old Newsgroups
 	     (cond ((not old-groups)
-		    (error "No current newsgroup."))
+		    (error "No current newsgroup"))
 		   ((or (not in-old)
 			(not (string-match
 			      (concat "^[ \t]*"
@@ -1993,8 +1993,10 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-f\C-m" 'message-goto-mail-followup-to)
   (define-key message-mode-map "\C-c\C-f\C-k" 'message-goto-keywords)
   (define-key message-mode-map "\C-c\C-f\C-u" 'message-goto-summary)
-  (define-key message-mode-map "\C-c\C-f\C-i" 'message-insert-or-toggle-importance)
-  (define-key message-mode-map "\C-c\C-f\C-a" 'message-gen-unsubscribed-mft)
+  (define-key message-mode-map "\C-c\C-f\C-i"
+    'message-insert-or-toggle-importance)
+  (define-key message-mode-map "\C-c\C-f\C-a"
+    'message-generate-unsubscribed-mail-followup-to)
 
   ;; modify headers (and insert notes in body)
   (define-key message-mode-map "\C-c\C-fs"    'message-change-subject)
@@ -2016,7 +2018,8 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-l" 'message-to-list-only)
 
   (define-key message-mode-map "\C-c\C-u" 'message-insert-or-toggle-importance)
-  (define-key message-mode-map "\C-c\M-n" 'message-insert-disposition-notification-to)
+  (define-key message-mode-map "\C-c\M-n"
+    'message-insert-disposition-notification-to)
 
   (define-key message-mode-map "\C-c\C-y" 'message-yank-original)
   (define-key message-mode-map "\C-c\M-\C-y" 'message-yank-buffer)
@@ -2048,7 +2051,6 @@ Point is left at the beginning of the narrowed-to region."
 (easy-menu-define
   message-mode-menu message-mode-map "Message Menu."
   `("Message"
-    ["Sort Headers" message-sort-headers t]
     ["Yank Original" message-yank-original t]
     ["Fill Yanked Message" message-fill-yanked-message t]
     ["Insert Signature" message-insert-signature t]
@@ -2059,16 +2061,6 @@ Point is left at the beginning of the narrowed-to region."
     ["Kill To Signature" message-kill-to-signature t]
     ["Newline and Reformat" message-newline-and-reformat t]
     ["Rename buffer" message-rename-buffer t]
-    ["Flag As Important" message-insert-importance-high
-     ,@(if (featurep 'xemacs) '(t)
-	 '(:help "Mark this message as important"))]
-    ["Flag As Unimportant" message-insert-importance-low
-     ,@(if (featurep 'xemacs) '(t)
-	 '(:help "Mark this message as unimportant"))]
-    ["Request Receipt"
-     message-insert-disposition-notification-to
-     ,@(if (featurep 'xemacs) '(t)
-	 '(:help "Request a receipt notification"))]
     ["Spellcheck" ispell-message
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Spellcheck this message"))]
@@ -2107,6 +2099,16 @@ Point is left at the beginning of the narrowed-to region."
     ["Bcc" message-goto-bcc t]
     ["Fcc" message-goto-fcc t]
     ["Reply-To" message-goto-reply-to t]
+    ["Flag As Important" message-insert-importance-high
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Mark this message as important"))]
+    ["Flag As Unimportant" message-insert-importance-low
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Mark this message as unimportant"))]
+    ["Request Receipt"
+     message-insert-disposition-notification-to
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Request a receipt notification"))]
     "----"
     ;; (typical) news stuff
     ["Summary" message-goto-summary t]
@@ -2123,8 +2125,9 @@ Point is left at the beginning of the narrowed-to region."
     ["Mail-Followup-To" message-goto-mail-followup-to t]
     ["Reduce To: to Cc:" message-reduce-to-to-cc t]
     "----"
-    ["Body" message-goto-body t]
-    ["Signature" message-goto-signature t]))
+    ["Sort Headers" message-sort-headers t]
+    ["Goto Body" message-goto-body t]
+    ["Goto Signature" message-goto-signature t]))
 
 (defvar message-tool-bar-map nil)
 
@@ -2421,15 +2424,15 @@ return nil."
     (goto-char (point-max))
     nil))
 
-(defun message-gen-unsubscribed-mft (&optional include-cc)
+(defun message-generate-unsubscribed-mail-followup-to (&optional include-cc)
   "Insert a reasonable MFT header in a post to an unsubscribed list.
 When making original posts to a mailing list you are not subscribed to,
 you have to type in a MFT header by hand.  The contents, usually, are
 the addresses of the list and your own address.  This function inserts
 such a header automatically.  It fetches the contents of the To: header
-in the current mail buffer, and appends the current user-mail-address.
+in the current mail buffer, and appends the current `user-mail-address'.
 
-If the optional argument `include-cc' is non-nil, the addresses in the
+If the optional argument INCLUDE-CC is non-nil, the addresses in the
 Cc: header are also put into the MFT."
 
   (interactive "P")
@@ -3374,7 +3377,7 @@ It should typically alter the sending method in some way or other."
 	       (not (mail-fetch-field "mail-followup-to")))
 	  (setq headers
 		(cons
-		 (cons "Mail-Followup-To" (message-make-mft))
+		 (cons "Mail-Followup-To" (message-make-mail-followup-to))
 		 message-required-mail-headers))
 	;; otherwise, delete the MFT header if the field is empty
 	(when (equal "" (mail-fetch-field "mail-followup-to"))
@@ -4490,7 +4493,7 @@ give as trustworthy answer as possible."
   "Send a message to the list only.
 Remove all addresses but the list address from To and Cc headers."
   (interactive)
-  (let ((listaddr (message-make-mft t)))
+  (let ((listaddr (message-make-mail-followup-to t)))
     (when listaddr
       (save-excursion
 	(message-remove-header "to")
@@ -4498,10 +4501,10 @@ Remove all addresses but the list address from To and Cc headers."
 	(message-position-on-field "To" "X-Draft-From")
 	(insert listaddr)))))
 
-(defun message-make-mft (&optional only-show-subscribed)
-  "Return the Mail-Followup-To header. If passed the optional
-argument `only-show-subscribed' only return the subscribed address (and
-not the additional To and Cc header contents)."
+(defun message-make-mail-followup-to (&optional only-show-subscribed)
+  "Return the Mail-Followup-To header.
+If passed the optional argument ONLY-SHOW-SUBSCRIBED only return the
+subscribed address (and not the additional To and Cc header contents)."
   (let* ((case-fold-search t)
 	 (to (message-fetch-field "To"))
 	 (cc (message-fetch-field "cc"))

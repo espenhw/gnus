@@ -5223,7 +5223,7 @@ If given a prefix, show the hidden text instead."
     "\C-c\C-f\C-k" message-goto-keywords
     "\C-c\C-f\C-u" message-goto-summary
     "\C-c\C-f\C-i" message-insert-or-toggle-importance
-    "\C-c\C-f\C-a" message-gen-unsubscribed-mft
+    "\C-c\C-f\C-a" message-generate-unsubscribed-mail-followup-to
     "\C-c\C-b" message-goto-body
     "\C-c\C-i" message-goto-signature
 
