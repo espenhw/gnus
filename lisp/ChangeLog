@@ -1,3 +1,11 @@
+2003-01-13  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-ems.el (gnus-mark-active-p): New function.
+
+	* gnus-group.el (gnus-topic-mode-p): New function.
+	(gnus-group-make-menu-bar): Show more key bindings in topic mode.
+	Deactivate items if mark is not active.
+
 2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bumped version.

@@ -726,6 +726,11 @@ simple manner.")
     "\C-k" gnus-group-kill-level
     "z" gnus-group-kill-all-zombies))
 
+(defun gnus-topic-mode-p ()
+  "Return non-nil in `gnus-topic-mode'."
+  (and (boundp 'gnus-topic-mode) 
+       gnus-topic-mode))
+
 (defun gnus-group-make-menu-bar ()
   (gnus-turn-off-edit-menu 'group)
   (unless (boundp 'gnus-group-reading-menu)
@@ -733,19 +738,38 @@ simple manner.")
     (easy-menu-define
      gnus-group-reading-menu gnus-group-mode-map ""
      `("Group"
-       ["Read" gnus-group-read-group (gnus-group-group-name)]
-       ["Select" gnus-group-select-group (gnus-group-group-name)]
+       ["Read" gnus-group-read-group
+	:included (not (gnus-topic-mode-p))
+	:active (gnus-group-group-name)]
+       ["Read " gnus-topic-read-group
+	:included (gnus-topic-mode-p)]
+       ["Select" gnus-group-select-group
+	:included (not (gnus-topic-mode-p))
+	:active (gnus-group-group-name)]
+       ["Select " gnus-topic-select-group 
+	:included (gnus-topic-mode-p)]
        ["See old articles" (gnus-group-select-group 'all)
 	:keys "C-u SPC" :active (gnus-group-group-name)]
-       ["Catch up" gnus-group-catchup-current :active (gnus-group-group-name)
+       ["Catch up" gnus-group-catchup-current
+	:included (not (gnus-topic-mode-p))
+	:active (gnus-group-group-name)
 	,@(if (featurep 'xemacs) nil
 	    '(:help "Mark unread articles in the current group as read"))]
+       ["Catch up " gnus-topic-catchup-articles 
+	:included (gnus-topic-mode-p)
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Mark unread articles in the current group or topic as read"))]
        ["Catch up all articles" gnus-group-catchup-current-all
 	(gnus-group-group-name)]
        ["Check for new articles" gnus-group-get-new-news-this-group
+	:included (not (gnus-topic-mode-p))
 	:active (gnus-group-group-name)
 	,@(if (featurep 'xemacs) nil
 	    '(:help "Check for new messages in current group"))]
+       ["Check for new articles " gnus-topic-get-new-news-this-topic
+	:included (gnus-topic-mode-p)
+	,@(if (featurep 'xemacs) nil
+	    '(:help "Check for new messages in current group or topic"))]
        ["Toggle subscription" gnus-group-unsubscribe-current-group
 	(gnus-group-group-name)]
        ["Kill" gnus-group-kill-group :active (gnus-group-group-name)
@@ -756,26 +780,34 @@ simple manner.")
 	,@(if (featurep 'xemacs) nil
 	    '(:help "Display description of the current group"))]
        ["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
-       ["Fetch charter" gnus-group-fetch-charter :active (gnus-group-group-name)
+       ["Fetch charter" gnus-group-fetch-charter
+	:active (gnus-group-group-name)
 	,@(if (featurep 'xemacs) nil
 	    '(:help "Display the charter of the current group"))]
-       ["Fetch control message" gnus-group-fetch-control :active (gnus-group-group-name)
+       ["Fetch control message" gnus-group-fetch-control
+	:active (gnus-group-group-name)
 	,@(if (featurep 'xemacs) nil
 	    '(:help "Display the archived control message for the current group"))]
        ;; Actually one should check, if any of the marked groups gives t for
        ;; (gnus-check-backend-function 'request-expire-articles ...)
-       ["Expire articles" gnus-group-expire-articles
-	(or (and (gnus-group-group-name)
-		 (gnus-check-backend-function
-		  'request-expire-articles
-		  (gnus-group-group-name))) gnus-group-marked)]
+       ["Expire articles" gnus-group-expire-articles 
+	:included (not (gnus-topic-mode-p))
+	:active (or (and (gnus-group-group-name)
+			 (gnus-check-backend-function
+			  'request-expire-articles
+			  (gnus-group-group-name))) gnus-group-marked)]
+       ["Expire articles " gnus-topic-expire-articles 
+	:included (gnus-topic-mode-p)]
        ["Set group level..." gnus-group-set-current-level
 	(gnus-group-group-name)]
        ["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
        ["Customize" gnus-group-customize (gnus-group-group-name)]
        ("Edit"
 	["Parameters" gnus-group-edit-group-parameters
-	 (gnus-group-group-name)]
+	 :included (not (gnus-topic-mode-p))
+	 :active (gnus-group-group-name)]
+	["Parameters " gnus-topic-edit-parameters
+	 :included (gnus-topic-mode-p)]
 	["Select method" gnus-group-edit-group-method
 	 (gnus-group-group-name)]
 	["Info" gnus-group-edit-group (gnus-group-group-name)]
@@ -810,21 +842,21 @@ simple manner.")
 	["Sort by real name" gnus-group-sort-groups-by-real-name t])
        ("Sort process/prefixed"
 	["Default sort" gnus-group-sort-selected-groups
-	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	 (not (gnus-topic-mode-p))]
 	["Sort by method" gnus-group-sort-selected-groups-by-method
-	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	 (not (gnus-topic-mode-p))]
 	["Sort by rank" gnus-group-sort-selected-groups-by-rank
-	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	 (not (gnus-topic-mode-p))]
 	["Sort by score" gnus-group-sort-selected-groups-by-score
-	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	 (not (gnus-topic-mode-p))]
 	["Sort by level" gnus-group-sort-selected-groups-by-level
-	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	 (not (gnus-topic-mode-p))]
 	["Sort by unread" gnus-group-sort-selected-groups-by-unread
-	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	 (not (gnus-topic-mode-p))]
 	["Sort by name" gnus-group-sort-selected-groups-by-alphabet
-	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))]
+	 (not (gnus-topic-mode-p))]
 	["Sort by real name" gnus-group-sort-selected-groups-by-real-name
-	 (or (not (boundp 'gnus-topic-mode)) (not gnus-topic-mode))])
+	 (not (gnus-topic-mode-p))])
        ("Mark"
 	["Mark group" gnus-group-mark-group
 	 (and (gnus-group-group-name)
@@ -834,13 +866,14 @@ simple manner.")
 	      (memq (gnus-group-group-name) gnus-group-marked))]
 	["Unmark all" gnus-group-unmark-all-groups gnus-group-marked]
 	["Mark regexp..." gnus-group-mark-regexp t]
-	["Mark region" gnus-group-mark-region t]
+	["Mark region" gnus-group-mark-region :active (gnus-mark-active-p)]
 	["Mark buffer" gnus-group-mark-buffer t]
 	["Execute command" gnus-group-universal-argument
 	 (or gnus-group-marked (gnus-group-group-name))])
        ("Subscribe"
 	["Subscribe to a group..." gnus-group-unsubscribe-group t]
-	["Kill all newsgroups in region" gnus-group-kill-region t]
+	["Kill all newsgroups in region" gnus-group-kill-region
+	 :active (gnus-mark-active-p)]
 	["Kill all zombie groups" gnus-group-kill-all-zombies
 	 gnus-zombie-list]
 	["Kill all groups on level..." gnus-group-kill-level t])
