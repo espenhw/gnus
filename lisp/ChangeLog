@@ -1,3 +1,8 @@
+2003-03-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-agent.el (gnus-agent-synchronize-flags-server): Don't use
+	kill-line.
+
 2003-03-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-inews-insert-archive-gcc): Don't use

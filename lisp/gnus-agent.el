@@ -750,8 +750,7 @@ be a select method."
 	  (gnus-message 1 "Couldn't open server %s" (nth 1 gnus-command-method))
 	(while (not (eobp))
 	  (if (null (eval (read (current-buffer))))
-	      (progn (forward-line)
-		     (kill-line -1))
+	      (gnus-delete-line)
 	    (write-file (gnus-agent-lib-file "flags"))
 	    (error "Couldn't set flags from file %s"
 		   (gnus-agent-lib-file "flags"))))
