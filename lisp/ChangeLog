@@ -1,3 +1,7 @@
+2002-12-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-load): Replace `ding-file' with `file'.
+
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-start.el (gnus-load): New function.
