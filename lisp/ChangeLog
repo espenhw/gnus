@@ -1,3 +1,9 @@
+2000-04-27 00:58:43  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-inline-media-tests): Add message/partial.
+	(mm-inlined-types): Ditto.
+	* mm-partial.el: New file.
+
 2000-04-27  Dave Love  <fx@gnu.org>
 
 	* mailcap.el (mailcap-mime-data): Fix octet-stream syntax -- might

@@ -28,6 +28,9 @@
 (require 'mailcap)
 (require 'mm-bodies)
 
+(eval-and-compile
+  (autoload 'mm-inline-partial "mm-partial"))
+
 (defvar mm-xemacs-p (string-match "XEmacs" (emacs-version)))
 
 (defgroup mime-display ()
@@ -126,6 +129,7 @@
 	   (locate-library "vcard"))))
     ("message/delivery-status" mm-inline-text identity)
     ("message/rfc822" mm-inline-message identity)
+    ("message/partial" mm-inline-partial identity)
     ("text/.*" mm-inline-text identity)
     ("audio/wav" mm-inline-audio
      (lambda (handle)
@@ -148,6 +152,7 @@
 
 (defcustom mm-inlined-types
   '("image/.*" "text/.*" "message/delivery-status" "message/rfc822"
+    "message/partial"
     "application/pgp-signature")
   "List of media types that are to be displayed inline."
   :type '(repeat string)
