@@ -294,7 +294,8 @@ This means that the group \"nnimap+server:INBOX.group\" is placed in
 	   (push (cons gnus-namazu/group-name-regexp
 		       gnus-namazu-coding-system)
 		 gnus-group-name-charset-group-alist))))
-  (gnus-namazu-update-all-indices))
+  (unless gnus-namazu-command-prefix
+    (gnus-namazu-update-all-indices)))
 
 (defun gnus-namazu/server-directory (server)
   "Return the top directory of the server SERVER."
