@@ -1,3 +1,17 @@
+2001-09-08 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnml.el (nnml-marks-changed-p): Typo.
+	(nnml-save-marks, nnml-open-marks): Use gnus-sethash.
+	(nnml-marks-changed-p): Use gnus-gethash.
+	(nnml-marks-modtime): Use gnus-make-hashtable.
+
+	* nnfolder.el (nnfolder-marks-changed-p): Typo.
+	(nnfolder-request-expire-articles, nnfolder-save-marks) 
+	(nnfolder-open-marks): Typo.
+	(nnfolder-save-marks, nnfolder-open-marks): Use gnus-sethash.
+	(nnfolder-marks-changed-p): Use gnus-gethash.
+	(nnfolder-marks-modtime): Use gnus-make-hashtable.
+
 2001-09-08  Simon Josefsson  <jas@extundo.com>
 
 	* nnfolder.el (nnfolder-marks-modtime): New variable.

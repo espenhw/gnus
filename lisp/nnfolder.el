@@ -161,7 +161,7 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnfolder-marks-file-suffix ".mrk")
 
-(defvar nnfolder-marks-modtime (makehash))
+(defvar nnfolder-marks-modtime (gnus-make-hashtable))
 
 
 
@@ -426,7 +426,7 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 	      (with-temp-buffer
 		(nnfolder-request-article (car maybe-expirable)
 					  newsgroup server (current-buffer))
-		(let ((nnml-current-directory nil))
+		(let ((nnfolder-current-directory nil))
 		  (nnmail-expiry-target-group
 		   nnmail-expiry-target newsgroup))))
 	    (nnheader-message 5 "Deleting article %d in %s..."
@@ -1200,9 +1200,9 @@ This command does not work if you use short group names."
 
 (defun nnfolder-marks-changed-p (group)
   (let ((file (nnfolder-group-marks-pathname group)))
-    (if (null (gethash file nnfolder-marks-modtime))
+    (if (null (gnus-gethash file nnfolder-marks-modtime))
 	t ;; never looked at marks file, assume it has changed
-      (not (eq (gethash fil nnfolder-marks-modtime)
+      (not (eq (gnus-gethash file nnfolder-marks-modtime)
 	       (nth 5 (file-attributes file)))))))
 
 (defun nnfolder-save-marks (group server)
@@ -1214,9 +1214,9 @@ This command does not work if you use short group names."
 	    (erase-buffer)
 	    (princ nnfolder-marks (current-buffer))
 	    (insert "\n"))
-	  (puthash file
-		   (nth 5 (file-attributes file))
-		   nnml-marks-modtime))
+	  (gnus-sethash file
+			(nth 5 (file-attributes file))
+			nnfolder-marks-modtime))
       (error (or (gnus-yes-or-no-p
 		  (format "Could not write to %s (%s).  Continue? " file err))
 		 (error "Cannot write to %s (%s)" err))))))
@@ -1226,9 +1226,9 @@ This command does not work if you use short group names."
     (if (file-exists-p file)
 	(setq nnfolder-marks (condition-case err
 				 (with-temp-buffer
-				   (puthash file
-					    (nth 5 (file-attributes file))
-					    nnml-marks-modtime)
+				   (gnus-sethash file
+						 (nth 5 (file-attributes file))
+						 nnfolder-marks-modtime)
 				   (nnheader-insert-file-contents file)
 				   (read (current-buffer)))
 			       (error (or (gnus-yes-or-no-p

@@ -126,7 +126,7 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-marks nil)
 
-(defvar nnml-marks-modtime (makehash))
+(defvar nnml-marks-modtime (gnus-make-hashtable))
 
 
 ;;; Interface functions.
@@ -970,9 +970,9 @@ Use the nov database for the current group if available."
 (defun nnml-marks-changed-p (group)
   (let ((file (expand-file-name nnml-marks-file-name
 				(nnmail-group-pathname group nnml-directory))))
-    (if (null (gethash file nnml-marks-modtime))
+    (if (null (gnus-gethash file nnml-marks-modtime))
 	t ;; never looked at marks file, assume it has changed
-      (not (eq (gethash fil nnml-marks-modtime)
+      (not (eq (gnus-gethash file nnml-marks-modtime)
 	     (nth 5 (file-attributes file)))))))
 
 (defun nnml-save-marks (group server)
@@ -986,9 +986,9 @@ Use the nov database for the current group if available."
 	    (erase-buffer)
 	    (princ nnml-marks (current-buffer))
 	    (insert "\n"))
-	  (puthash file
-		   (nth 5 (file-attributes file))
-		   nnml-marks-modtime))
+	  (gnus-sethash file
+			(nth 5 (file-attributes file))
+			nnml-marks-modtime))
       (error (or (gnus-yes-or-no-p
 		  (format "Could not write to %s (%s).  Continue? " file err))
 		 (error "Cannot write to %s (%s)" err))))))
@@ -1000,9 +1000,9 @@ Use the nov database for the current group if available."
     (if (file-exists-p file)
 	(setq nnml-marks (condition-case err
 			     (with-temp-buffer
-			       (puthash file
-					(nth 5 (file-attributes file))
-					nnml-marks-modtime)
+			       (gnus-sethash file
+					     (nth 5 (file-attributes file))
+					     nnml-marks-modtime)
 			       (nnheader-insert-file-contents file)
 			       (read (current-buffer)))
 			   (error (or (gnus-yes-or-no-p
