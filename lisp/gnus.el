@@ -2404,11 +2404,13 @@ with a `subscribed' parameter."
     (dolist (entry (cdr gnus-newsrc-alist))
       (setq group (car entry))
       (when (gnus-group-find-parameter group 'subscribed)
-	(setq address (or (gnus-group-fast-parameter group 'to-address)
-			  (gnus-group-fast-parameter group 'to-list)))
+	(setq address (mail-strip-quoted-names
+		       (or (gnus-group-fast-parameter group 'to-address)
+			   (gnus-group-fast-parameter group 'to-list))))
 	(when address
 	  (push address addresses))))
-    (list (mapconcat 'regexp-quote addresses "\\|"))))
+    (when addresses
+      (list (mapconcat 'regexp-quote addresses "\\|")))))
 
 (defmacro gnus-string-or (&rest strings)
   "Return the first element of STRINGS that is a non-blank string.

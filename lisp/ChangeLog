@@ -1,3 +1,9 @@
+2002-04-29  Nevin Kapur  <nevin@jhu.edu>
+
+	* gnus.el (gnus-find-subscribed-addresses): Return nil when there
+	are no subscribed mail groups.
+        - Strip quoted names when comparing addresses
+
 2002-04-28  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-decode.el (mm-text-html-renderer): Change customize type to
