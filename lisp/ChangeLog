@@ -1,3 +1,10 @@
+2003-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Remove display-time-event-handler and open-ssl-stream;
+	add delete-extent for Emacs; rearrange bindings assuming w3 may
+	not be available and XEmacs without the file-coding feature may be
+	used.
+
 2003-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el (dgnushack-compile): Increase the value for
