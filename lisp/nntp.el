@@ -405,8 +405,12 @@ noticing asynchronous data.")
 				nntp-address nntp-port-number
 				nntp-server-buffer
 				wait-for nnheader-callback-function)
-	  ;; If nothing to wait for, still remove possibly echo'ed commands
-	  (unless wait-for
+	  ;; If nothing to wait for, still remove possibly echo'ed commands.
+	  ;; We don't have echos if nntp-open-connection-function
+	  ;; is `nntp-open-network-stream', so we skip this in that case.
+	  (unless (and wait-for
+		       (equal nntp-open-connection-function
+			      'nntp-open-network-stream))
 	    (nntp-accept-response)
 	    (save-excursion
 	      (set-buffer buffer)

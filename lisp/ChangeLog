@@ -1,3 +1,9 @@
+2002-12-08  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* nntp.el (nntp-send-command): Assume that echo does not happen
+	when nntp-open-connection-function is nntp-open-network-stream.
+	Suggested by Sebastian D.B. Krause <krause@my.gnus.org>.
+
 2002-12-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-retrieve-headers-1): Update the parser.
