@@ -1,5 +1,10 @@
 2003-04-06  Jesper Harder  <harder@ifa.au.dk>
 
+	* mm-uu.el (mm-uu-copy-to-buffer): Copy
+	`buffer-file-coding-system' to the new buffer.
+	(mm-uu-pgp-signed-extract-1): Don't copy
+	`buffer-file-coding-system' here.
+
 	* mm-bodies.el (mm-decode-body): last-coding-system-used doesn't
 	exist in XEmacs.
 	(mm-decode-body): Add missing quote.

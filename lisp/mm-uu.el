@@ -175,8 +175,10 @@ To disable dissecting shar codes, for instance, add
   "Copy the contents of the current buffer to a fresh buffer.
 Return that buffer."
   (save-excursion
-    (let ((obuf (current-buffer)))
+    (let ((obuf (current-buffer))
+	  (coding-system buffer-file-coding-system))
       (set-buffer (generate-new-buffer " *mm-uu*"))
+      (setq buffer-file-coding-system coding-system)
       (insert-buffer-substring obuf from to)
       (current-buffer))))
 
@@ -316,10 +318,8 @@ Return that buffer."
   (defvar gnus-newsgroup-charset))
 
 (defun mm-uu-pgp-signed-extract-1 (handles ctl)
-  (let ((buf (mm-uu-copy-to-buffer (point-min) (point-max)))
-	(coding-system buffer-file-coding-system))
+  (let ((buf (mm-uu-copy-to-buffer (point-min) (point-max))))
     (with-current-buffer buf
-      (setq buffer-file-coding-system coding-system)
       (if (mm-uu-pgp-signed-test)
 	  (progn
 	    (mml2015-clean-buffer)
