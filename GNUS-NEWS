@@ -23,12 +23,12 @@ in general.
 ** The nntp back end store article marks in `~/News/marks'.
 
 The directory can be changed using the (customizable) variable
-`nntp-marks-directory', and marks can be disabled using the (backend)
-variable `nntp-marks-is-evil'.  The advantage of this is that you can
-copy `~/News/marks' (using rsync, scp or whatever) to another Gnus
-installation, and it will realize what articles you have read and
-marked.  The data in `~/News/marks' has priority over the same data
-in `~/.newsrc.eld'.
+`nntp-marks-directory', and marks can be disabled using the (back
+end) variable `nntp-marks-is-evil'.  The advantage of this is that
+you can copy `~/News/marks' (using rsync, scp or whatever) to another
+Gnus installation, and it will realize what articles you have read
+and marked.  The data in `~/News/marks' has priority over the same
+data in `~/.newsrc.eld'.
 
 ** Picons can be displayed right from the textual address, see
 `gnus-picon-style'
@@ -64,7 +64,7 @@ when the server support it.
 
 It is enabled by default (see `password-cache'), with a short timeout
 of 16 seconds (see `password-cache-expiry').  If PGG is used as the
-PGP backend, the PGP passphrase is managed by this mechanism.
+PGP back end, the PGP passphrase is managed by this mechanism.
 Passwords for ManageSieve connections are managed by this mechanism,
 after quering the user about whether to do so.
 
@@ -83,6 +83,13 @@ header.  This changes the default of `gnus-article-loose-mime'.
 ** Gnus now support the "hashcash" client puzzle anti-spam idea.  See
 the Gnus manual, section Hashcash, for more information.  Use (setq
 message-generate-hashcash t) to enable.
+
+** Gnus supports new limiting commands in the Summary buffer: `/ r'
+(`gnus-summary-limit-to-replied') and `/ R'
+(`gnus-summary-limit-to-recipient').
+
+** Gnus supports a new sort command in the Summary buffer: `C-c C-s C-t'
+(`gnus-summary-sort-by-recipient').
 
 
 * For older news, see Gnus info node "New Features".
