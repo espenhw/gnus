@@ -1,3 +1,8 @@
+2000-03-21 10:32:44  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el (nnslashdot-request-list): Fudge new-style
+	slashdot ids.
+
 2000-03-20 00:12:42  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-request-list): Use the new slashdot
