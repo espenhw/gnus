@@ -1,5 +1,7 @@
 2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus.el: Don't make unnecessary *Group* buffer when loading.
+
 	* run-at-time.el (run-at-time-saved): Remove.
 	(run-at-time): Doc fix.
 
