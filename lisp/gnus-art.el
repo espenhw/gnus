@@ -705,10 +705,13 @@ be controlled by `gnus-treat-body-boundary'."
 		 string))
 
 (defcustom gnus-picon-databases '("/usr/lib/picon" "/usr/local/faces")
-  "*Defines the location of the faces database.
+  "Defines the location of the faces database.
 For information on obtaining this database of pretty pictures, please
 see http://www.cs.indiana.edu/picons/ftp/index.html"
-  :type 'directory
+  :type '(repeat directory)
+  :link '(url-link :tag "download" 
+		   "http://www.cs.indiana.edu/picons/ftp/index.html")
+  :link '(custom-manual "(gnus)Picons")
   :group 'gnus-picon)
 
 (defun gnus-picons-installed-p ()
@@ -1106,6 +1109,9 @@ Valid values are nil, t, `head', `last', an integer or a predicate.
 See Info node `(gnus)Customizing Articles' and Info node
 `(gnus)Picons' for details."
   :group 'gnus-article-treat
+  :group 'gnus-picon
+  :link '(info-link "(gnus)Customizing Articles")
+  :link '(info-link "(gnus)Picons")
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-from-picon 'highlight t)
 
@@ -1118,6 +1124,9 @@ Valid values are nil, t, `head', `last', an integer or a predicate.
 See Info node `(gnus)Customizing Articles' and Info node
 `(gnus)Picons' for details."
   :group 'gnus-article-treat
+  :group 'gnus-picon
+  :link '(info-link "(gnus)Customizing Articles")
+  :link '(info-link "(gnus)Picons")
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-mail-picon 'highlight t)
 
@@ -1130,6 +1139,9 @@ Valid values are nil, t, `head', `last', an integer or a predicate.
 See Info node `(gnus)Customizing Articles' and Info node
 `(gnus)Picons' for details."
   :group 'gnus-article-treat
+  :group 'gnus-picon
+  :link '(info-link "(gnus)Customizing Articles")
+  :link '(info-link "(gnus)Picons")
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-newsgroups-picon 'highlight t)
 

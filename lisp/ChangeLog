@@ -1,3 +1,10 @@
+2002-04-05  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-art.el (gnus-treat-from-picon): Add to gnus-picon group.
+	(gnus-treat-mail-picon): Ditto.
+	(gnus-picon-databases): Fix custom type.
+	(gnus-picon-databases): Add link.
+
 2002-04-01  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-buffer-naming-style): Remove.
