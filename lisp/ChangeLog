@@ -1,3 +1,8 @@
+2002-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-decode-region): Remove newlines between
+	decoded words.
+
 2002-12-03  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.el (fboundp): After loading mm-util, make sure it was the
@@ -8,8 +13,8 @@
 	* gnus-art.el (gnus-inhibit-mime-unbuttonizing): Moved here from
 	gnus-sum.  Made into a user option.
 
-	* gnus-sum.el (gnus-simplify-ignored-prefixes) 
-	(gnus-summary-mark-article-as-unread) 
+	* gnus-sum.el (gnus-simplify-ignored-prefixes)
+	(gnus-summary-mark-article-as-unread)
 
 2002-11-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -21,7 +26,7 @@
 
 	* nnmail.el (nnmail-split, nnmail-process-unix-mail-format): Typos.
 
-	* nnimap.el: 
+	* nnimap.el:
 	(nnimap-split-rule, nnimap-find-minmax-uid): Typos.
 
 	* mm-encode.el (mm-safer-encoding): Typo.
@@ -42,8 +47,8 @@
 
 	* gnus-topic.el (gnus-topic-sort-topics): Typo.
 
-	* gnus-sum.el (gnus-summary-article-number) 
-	(gnus-summary-read-group-1, gnus-summary-mark-article) 
+	* gnus-sum.el (gnus-summary-article-number)
+	(gnus-summary-read-group-1, gnus-summary-mark-article)
 	(gnus-summary-fetch-faq, gnus-refer-article-methods): Typos.
 
 	* gnus-mule.el (gnus-mule-add-group): Typo.
@@ -57,9 +62,9 @@
 	* flow-fill.el: Typo.
 
 2002-11-19  Stefan Monnier  <monnier@cs.yale.edu>
- 
+
 	* binhex.el (binhex-decode-region): Don't hardcode point-min == 1.
-	
+
 2002-11-29  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-simplify-ignored-prefixes)
@@ -219,8 +224,8 @@
 	* nnimap.el (nnimap-request-expire-articles): Compress sequence
 	before storing \Deleted mark on expired articles.
 
-2002-11-17  Shenghuo Zhu <zsh@cs.rochester.edu> 
-	Trivial patch from Markus Rost  <rost@math.ohio-state.edu>
+2002-11-17  Shenghuo Zhu <zsh@cs.rochester.edu>
+	Trivial patch from Markus Rost <rost@math.ohio-state.edu>
 
 	* gnus-sum.el (gnus-summary-goto-unread): Doc fix - escape open
 	parens in column 0.

@@ -520,6 +520,14 @@ The buffer may be narrowed."
 		   (prog1
 		       (match-string 0)
 		     (delete-region (match-beginning 0) (match-end 0)))))
+	  ;; Remove newlines between decoded words.  Though such things
+	  ;; must not be essentially there.
+	  (save-restriction
+	    (narrow-to-region e (point))
+	    (goto-char e)
+	    (while (re-search-forward "[\n\r]+" nil t)
+	      (replace-match " "))
+	    (goto-char (point-max)))
 	  (when (and (mm-multibyte-p)
 		     mail-parse-charset
 		     (not (eq mail-parse-charset 'us-ascii))
