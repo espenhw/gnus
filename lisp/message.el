@@ -670,9 +670,9 @@ these lines."
 		   (let ((case-fold-search nil))
 		     (re-search-forward "^OR\\>" nil t)))
 	       (kill-buffer buffer))))
- ;; According to RFC822, "The field-name must be composed of printable
-;; ASCII characters (i. e., characters that have decimal values between
-     ;; 33 and 126, except colon)", i. e., any chars except ctl chars,
+      ;; According to RFC822, "The field-name must be composed of printable
+      ;; ASCII characters (i. e., characters that have decimal values between
+      ;; 33 and 126, except colon)", i. e., any chars except ctl chars,
       ;; space, or colon.
       '(looking-at "[ \t]\\|[][!\"#$%&'()*+,-./0-9;<=>?@A-Z\\\\^_`a-z{|}~]+:"))
   "*Set this non-nil if the system's mailer runs the header and body together.
@@ -1036,14 +1036,14 @@ no, only reply back to the author."
     (concat
      "From "
 
- ;; Many things can happen to an RFC 822 mailbox before it is put into
+     ;; Many things can happen to an RFC 822 mailbox before it is put into
      ;; a `From' line.  The leading phrase can be stripped, e.g.
-;; `Joe <@w.x:joe@y.z>' -> `<@w.x:joe@y.z>'.  The <> can be stripped, e.g.
-;; `<@x.y:joe@y.z>' -> `@x.y:joe@y.z'.  Everything starting with a CRLF
+     ;; `Joe <@w.x:joe@y.z>' -> `<@w.x:joe@y.z>'.  The <> can be stripped, e.g.
+     ;; `<@x.y:joe@y.z>' -> `@x.y:joe@y.z'.  Everything starting with a CRLF
      ;; can be removed, e.g.
      ;;		From: joe@y.z (Joe	K
      ;;			User)
- ;; can yield `From joe@y.z (Joe 	K Fri Mar 22 08:11:15 1996', and
+     ;; can yield `From joe@y.z (Joe 	K Fri Mar 22 08:11:15 1996', and
      ;;		From: Joe User
      ;;			<joe@y.z>
      ;; can yield `From Joe User Fri Mar 22 08:11:15 1996'.
@@ -1051,7 +1051,7 @@ no, only reply back to the author."
      ;;		From: "Joe User"{space}{tab}
      ;;			<joe@y.z>
      ;; can yield `From {space}{tab} Fri Mar 22 08:11:15 1996',
-;; where {space} and {tab} represent the Ascii space and tab characters.
+     ;; where {space} and {tab} represent the Ascii space and tab characters.
      ;; We want to match the results of any of these manglings.
      ;; The following regexp rejects names whose first characters are
      ;; obviously bogus, but after that anything goes.
@@ -1308,7 +1308,7 @@ Return the number of headers removed."
 	      (setq last t))
 	    (delete-region
 	     (point)
-	 ;; There might be a continuation header, so we have to search
+	     ;; There might be a continuation header, so we have to search
 	     ;; until we find a new non-continuation line.
 	     (progn
 	       (forward-line 1)
@@ -1976,7 +1976,7 @@ text was killed."
       (prefix-numeric-value current-prefix-arg))))
 
   (setq n (if (numberp n) (mod n 26) 13)) ;canonize N
-  (unless (or (zerop n)		     ; no action needed for a rot of 0
+  (unless (or (zerop n)		        ; no action needed for a rot of 0
 	      (= b e))			; no region to rotate
     ;; We build the table, if necessary.
     (when (or (not message-caesar-translation-table)
@@ -2630,23 +2630,23 @@ to find out how to use this."
 	(apply
 	 'call-process-region 1 (point-max) message-qmail-inject-program
 	 nil nil nil
-   ;; qmail-inject's default behaviour is to look for addresses on the
+	 ;; qmail-inject's default behaviour is to look for addresses on the
 	 ;; command line; if there're none, it scans the headers.
-	;; yes, it does The Right Thing w.r.t. Resent-To and it's kin.
+	 ;; yes, it does The Right Thing w.r.t. Resent-To and it's kin.
 	 ;;
-  ;; in general, ALL of qmail-inject's defaults are perfect for simply
-    ;; reading a formatted (i. e., at least a To: or Resent-To header)
+	 ;; in general, ALL of qmail-inject's defaults are perfect for simply
+	 ;; reading a formatted (i. e., at least a To: or Resent-To header)
 	 ;; message from stdin.
 	 ;;
 	 ;; qmail also has the advantage of not having been raped by
-     ;; various vendors, so we don't have to allow for that, either --
+	 ;; various vendors, so we don't have to allow for that, either --
 	 ;; compare this with message-send-mail-with-sendmail and weep
 	 ;; for sendmail's lost innocence.
 	 ;;
-    ;; all this is way cool coz it lets us keep the arguments entirely
-    ;; free for -inject-arguments -- a big win for the user and for us
- ;; since we don't have to play that double-guessing game and the user
-       ;; gets full control (no gestapo'ish -f's, for instance).  --sj
+	 ;; all this is way cool coz it lets us keep the arguments entirely
+	 ;; free for -inject-arguments -- a big win for the user and for us
+	 ;; since we don't have to play that double-guessing game and the user
+	 ;; gets full control (no gestapo'ish -f's, for instance).  --sj
 	 message-qmail-inject-args))
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
     ;; we have to look at the retval instead
@@ -3254,7 +3254,7 @@ If NOW, use that time instead."
 ;; You might for example insert a "." somewhere (not next to another dot
 ;; or string boundary), or modify the "fsf" string.
 (defun message-unique-id ()
-;; Don't use microseconds from (current-time), they may be unsupported.
+  ;; Don't use microseconds from (current-time), they may be unsupported.
   ;; Instead we use this randomly inited counter.
   (setq message-unique-id-char
 	(% (1+ (or message-unique-id-char (logand (random t) (1- (lsh 1 20)))))
@@ -3378,7 +3378,7 @@ If NOW, use that time instead."
 	(insert login))
        ((or (eq style 'angles)
 	    (and (not (eq style 'parens))
-	     ;; Use angles if no quoting is needed, or if parens would
+		 ;; Use angles if no quoting is needed, or if parens would
 		 ;; need quoting too.
 		 (or (not (string-match "[^- !#-'*+/-9=?A-Z^-~]" fullname))
 		     (let ((tmp (concat fullname nil)))
@@ -3501,7 +3501,7 @@ Headers already prepared in the buffer are not modified."
 	       (get-text-property (1+ (match-beginning 0)) 'message-deletable)
 	       (message-delete-line))
 	  (pop headers)))
-     ;; Go through all the required headers and see if they are in the
+      ;; Go through all the required headers and see if they are in the
       ;; articles already.  If they are not, or are empty, they are
       ;; inserted automatically - except for Subject, Newsgroups and
       ;; Distribution.
@@ -3523,7 +3523,7 @@ Headers already prepared in the buffer are not modified."
 				":")
 			nil t))
 		  (progn
-		 ;; The header was found.  We insert a space after the
+		    ;; The header was found.  We insert a space after the
 		    ;; colon, if there is none.
 		    (if (/= (char-after) ? ) (insert " ") (forward-char 1))
 		    ;; Find out whether the header is empty...
@@ -3569,7 +3569,7 @@ Headers already prepared in the buffer are not modified."
 		;; totally and insert the new value.
 		(delete-region (point) (gnus-point-at-eol))
 		(insert value))
-	 ;; Add the deletable property to the headers that require it.
+	      ;; Add the deletable property to the headers that require it.
 	      (and (memq header message-deletable-headers)
 		   (progn (beginning-of-line) (looking-at "[^:]+: "))
 		   (add-text-properties
@@ -3706,8 +3706,8 @@ than 988 characters long, and if they are not, trim them until they are."
     ;; If folding is disallowed, make sure the total length (including
     ;; the spaces between) will be less than MAXSIZE characters.
     ;;
- ;; Only disallow folding for News messages. At this point the headers
-;; have not been generated, thus we use message-this-is-news directly.
+    ;; Only disallow folding for News messages. At this point the headers
+    ;; have not been generated, thus we use message-this-is-news directly.
     (when (and message-this-is-news message-cater-to-broken-inn)
       (let ((maxsize 988)
 	    (totalsize (+ (apply #'+ (mapcar #'length refs))
@@ -4353,7 +4353,7 @@ header line with the old Message-ID."
   (let ((cur (current-buffer))
 	(sender (message-fetch-field "sender"))
 	(from (message-fetch-field "from")))
-  ;; Check whether the user owns the article that is to be superseded.
+    ;; Check whether the user owns the article that is to be superseded.
     (unless (or (message-gnksa-enable-p 'cancel-messages)
 		(and sender
 		     (string-equal
@@ -4956,8 +4956,8 @@ regexp varstr."
 	(message-narrow-to-headers-or-head)
 	(message-remove-first-header "Content-Type")
 	(message-remove-first-header "Content-Transfer-Encoding"))
-    ;; We always make sure that the message has a Content-Type header.
-     ;; This is because some broken MTAs and MUAs get awfully confused
+      ;; We always make sure that the message has a Content-Type header.
+      ;; This is because some broken MTAs and MUAs get awfully confused
       ;; when confronted with a message with a MIME-Version header and
       ;; without a Content-Type header.  For instance, Solaris'
       ;; /usr/bin/mail.
