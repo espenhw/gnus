@@ -378,8 +378,9 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 			    end (1+ end)))
 		    (rfc2047-encode start end)
 		    (setq last-encoded t)))))
-	    (error (error "Invalid data for rfc2047 encoding: %s"
-			  (buffer-substring b e)))))))
+	    (error
+	     (message "Invalid data for rfc2047 encoding: %s"
+		      (buffer-substring b e)))))))
     (rfc2047-fold-region b (point))))
 
 (defun rfc2047-encode-string (string)
