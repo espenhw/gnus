@@ -1,3 +1,8 @@
+2000-04-21  Florian Weimer  <fw@deneb.cygnus.argh.org>
+
+	* mm-util.el (mm-mime-mule-charset-alist): Add support for UTF-8
+	in conjunction with MULE-UCS.
+
 1999-12-13  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* rfc2047.el (rfc2047-fold-region): Don't use the same break twice.
