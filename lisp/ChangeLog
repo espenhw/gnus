@@ -1,3 +1,13 @@
+2004-02-12  TAKAI Kousuke  <tak@kmc.gr.jp>
+
+	* compface.el: Merge the ELisp-based uncompface program.
+	(compface): New customization group.
+	(uncompface-use-external): New user option.
+	(uncompface): Call uncompface-internal if uncompface-use-external
+	is nil.
+	(uncompface-internal): New function.  Note that there are also
+	some other functions and variables added for this function.
+
 2004-02-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnrss.el (nnrss-read-group-data): Initialize nnrss-group-hashtb
