@@ -1314,10 +1314,12 @@ if it is a string, only list groups matching REGEXP."
 	 (marked (gnus-info-marks info))
 	 (seen (cdr (assq 'seen marked)))
 	 (active (gnus-active group)))
-    (length (gnus-uncompress-range
-	     (gnus-range-difference
-	      (gnus-range-difference (list active) (gnus-info-read info))
-	      seen)))))
+    (if (not active)
+	0
+      (length (gnus-uncompress-range
+	       (gnus-range-difference
+		(gnus-range-difference (list active) (gnus-info-read info))
+		seen))))))
 
 (defun gnus-group-insert-group-line (gnus-tmp-group gnus-tmp-level
 						    gnus-tmp-marked number
