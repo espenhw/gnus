@@ -4020,7 +4020,7 @@ are decompressed."
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
 	 (contents (and handle (mm-get-part handle)))
 	 (file (mm-make-temp-file (expand-file-name "mm." mm-tmp-directory)))
-	 (printer (mailcap-mime-info (mm-handle-type handle) "print")))
+	 (printer (mailcap-mime-info (mm-handle-media-type handle) "print")))
     (when contents
 	(if printer
 	    (unwind-protect

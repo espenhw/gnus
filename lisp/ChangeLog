@@ -26,6 +26,8 @@
  
 2003-01-16  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-art.el (gnus-mime-print-part): Use mm-handle-media-type.
+
 	* message.el (message-mode-menu): Use it.
 	(message-mode-menu): Deactivate "Yank Original" if there's no
 	reply buffer.
