@@ -974,6 +974,22 @@ Entries without port tokens default to DEFAULTPORT."
       (while (search-backward "\\." nil t)
 	(delete-char 1)))))
 
+(if (fboundp 'union)
+    (defalias 'gnus-union 'union)
+  (defun gnus-union (l1 l2)
+    "Set union of lists L1 and L2."
+    (cond ((null l1) l2)
+	  ((null l2) l1)
+	  ((equal l1 l2) l1)
+	  (t
+	   (or (>= (length l1) (length l2))
+	       (setq l1 (prog1 l2 (setq l2 l1))))
+	   (while l2
+	     (or (member (car l2) l1)
+		 (push (car l2) l1))
+	     (pop l2))
+	   l1))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

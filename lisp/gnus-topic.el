@@ -396,7 +396,6 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
         (lowest (or lowest 1))
 	(not-in-list 
 	 (and gnus-group-listed-groups
-	      (not (eq gnus-group-list-option 'limit))
 	      (copy-sequence gnus-group-listed-groups))))
 
     (when (or (not gnus-topic-alist)
@@ -419,11 +418,12 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	       (and (>= level gnus-level-killed) 
 		    (<= lowest gnus-level-killed)))
       (gnus-group-prepare-flat-list-dead
-       (if not-in-list 
-	   (gnus-delete-if (lambda (group)
-			     (< (gnus-group-level group) gnus-level-killed))
-			   not-in-list)
-	 (setq gnus-killed-list (sort gnus-killed-list 'string<)))
+       (gnus-union
+	(and not-in-list 
+	     (gnus-delete-if (lambda (group)
+			       (< (gnus-group-level group) gnus-level-killed))
+			     not-in-list))
+	(setq gnus-killed-list (sort gnus-killed-list 'string<)))
        gnus-level-killed ?K
        regexp))
 

@@ -1053,8 +1053,7 @@ if it is a string, only list groups matching REGEXP."
 	(newsrc (cdr gnus-newsrc-alist))
 	(lowest (or lowest 1))
 	(not-in-list (and gnus-group-listed-groups
-		       (not (eq gnus-group-list-option 'limit))
-		       (copy-sequence gnus-group-listed-groups)))
+			  (copy-sequence gnus-group-listed-groups)))
 	info clevel unread group params)
     (erase-buffer)
     (when (or (< lowest gnus-level-zombie)
@@ -1113,8 +1112,9 @@ if it is a string, only list groups matching REGEXP."
     (if (or gnus-group-listed-groups
 	    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)))
 	(gnus-group-prepare-flat-list-dead
-	 (or not-in-list
-	     (setq gnus-killed-list (sort gnus-killed-list 'string<)))
+	 (gnus-union 
+	  not-in-list
+	  (setq gnus-killed-list (sort gnus-killed-list 'string<)))
 	 gnus-level-killed ?K regexp))
 
     (gnus-group-set-mode-line)

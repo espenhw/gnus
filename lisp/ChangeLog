@@ -1,3 +1,11 @@
+2000-10-30 01:52:40  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-union): Renamed from gnus-agent-union, and
+	moved here.
+	* gnus-agent.el (gnus-agent-fetch-headers): Use it.
+	* gnus-group.el (gnus-group-prepare-flat): Use it.
+	* gnus-topic.el (gnus-group-prepare-topics): Use it.
+
 2000-10-30 01:23:49  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-mode): Show menu in XEmacs.
