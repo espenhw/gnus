@@ -5,6 +5,8 @@
 
 2004-12-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-faq.texi ([5.1]): Added missing bracket.
+
 	* message.texi (Various Message Variables): Mention that all mail
 	file variables are derived from `message-directory'.
 
