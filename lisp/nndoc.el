@@ -1,5 +1,5 @@
 ;;; nndoc.el --- single file access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -58,6 +58,13 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
     (forward
      (article-begin . "^-+ Start of forwarded message -+\n+")
      (body-end . "^-+ End of forwarded message -+\n"))
+    (clari-briefs
+     (article-begin . "^ \\*")
+     (body-end . "^\t------*[ \t]^*\n^ \\*")
+     (body-begin . "^\t")
+     (head-end . "^\t")
+     (generate-head . nndoc-generate-clari-briefs-head)
+     (article-transform . nndoc-transform-clari-briefs))
     (slack-digest
      (article-begin . "^------------------------------*[\n \t]+")
      (head-end . "^ ?$")
@@ -95,6 +102,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 (defvar nndoc-body-end nil)
 (defvar nndoc-dissection-alist nil)
 (defvar nndoc-prepare-body nil)
+(defvar nndoc-generate-head nil)
+(defvar nndoc-article-transform nil)
 
 (defvar nndoc-current-server nil)
 (defvar nndoc-server-alist nil)
@@ -140,17 +149,16 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 	    (setq entry (cdr (assq (setq article (pop articles))
 				   nndoc-dissection-alist)))
 	    (insert (format "221 %d Article retrieved.\n" article))
-	    (insert-buffer-substring
-	     nndoc-current-buffer (car entry) (nth 1 entry))
+	    (if nndoc-generate-head
+		(funcall nndoc-generate-head article)
+	      (insert-buffer-substring
+	       nndoc-current-buffer (car entry) (nth 1 entry)))
 	    (goto-char (point-max))
 	    (or (= (char-after (1- (point))) ?\n) (insert "\n"))
 	    (insert (format "Lines: %d\n" (nth 4 entry)))
 	    (insert ".\n"))
 
-	  ;; Fold continuation lines.
-	  (goto-char (point-min))
-	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	    (replace-match " " t t))
+	  (nnheader-fold-continuation-lines)
 	  'headers)))))
 
 (defun nndoc-open-server (server &optional defs)
@@ -201,27 +209,30 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 	(goto-char beg)
 	(when nndoc-prepare-body
 	  (funcall nndoc-prepare-body))
+	(when nndoc-article-transform
+	  (funcall nndoc-article-transform article))
 	t))))
 
 (defun nndoc-request-group (group &optional server dont-check)
   "Select news GROUP."
   (save-excursion
-    (if (not (nndoc-possibly-change-buffer group server))
-	(progn
-	  (setq nndoc-status-string "No such file or buffer")
-	  nil)
-      (if dont-check
-	  t
+    (let (number)
+      (cond 
+       ((not (nndoc-possibly-change-buffer group server))
+	(nnheader-report 'nndoc "No such file or buffer: %s"
+			 nndoc-address))
+       (dont-check
+	(nnheader-report 'nndoc "Selected group %s" group)
+	t)
+       ((zerop (setq number (length nndoc-dissection-alist)))
+	(nndoc-close-group group)
+	(nnheader-report 'nndoc "No articles in group %s" group))
+       (t
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
 	  (erase-buffer)
-	  (let ((number (length nndoc-dissection-alist)))
-	    (if (zerop number)
-		(progn
-		  (nndoc-close-group group)
-		  nil)
-	      (insert (format "211 %d %d %d %s\n" number 1 number group))
-	      t)))))))
+	  (insert (format "211 %d %d %d %s\n" number 1 number group))
+	  t))))))
 
 (defun nndoc-close-group (group &optional server)
   (nndoc-possibly-change-buffer group server)
@@ -285,8 +296,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(nndoc-set-delims)
-	(nndoc-dissect-buffer))
-      t)))
+	(nndoc-dissect-buffer)))
+    t))
 
 ;; MIME (RFC 1341) digest hack by Ulrik Dickow <dickow@nbi.dk>.
 (defun nndoc-guess-digest-type ()
@@ -332,12 +343,15 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
     'mmdf)
    ((looking-at "^Path:.*\n")
     'rnews)
+   ((re-search-forward "\^_\^L *\n" nil t)
+    'babyl)
    ((save-excursion
       (and (re-search-forward "^-+ Start of forwarded message -+\n+" nil t)
 	   (not (re-search-forward "^Subject:.*digest" nil t))))
     'forward)
-   ((re-search-forward "\^_\^L *\n" nil t)
-    'babyl)
+   ((let ((case-fold-search nil))
+      (re-search-forward "^\t[^a-z]+ ([^a-z]+) --" nil t))
+    'clari-briefs)
    ((re-search-forward "^Path: .*!" nil t)
     'news)
    (t 
@@ -349,7 +363,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
 		nndoc-article-end nndoc-head-begin nndoc-head-end
 		nndoc-file-end nndoc-article-begin
 		nndoc-body-begin nndoc-body-end-function nndoc-body-end
-		nndoc-prepare-body)))
+		nndoc-prepare-body nndoc-article-transform
+		nndoc-generate-head)))
     (while vars
       (set (pop vars) nil)))
   (let* (defs guess)
@@ -434,6 +449,30 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf',
   (save-excursion
     (and (re-search-backward nndoc-article-begin nil t)
 	 (goto-char (+ (point) (string-to-int (match-string 1)))))))  
+
+(defun nndoc-transform-clari-briefs (article)
+  (goto-char (point-min))
+  (when (looking-at " *\\*\\(.*\\)\n")
+    (replace-match "" t t))
+  (nndoc-generate-clari-briefs-head article))
+
+(defun nndoc-generate-clari-briefs-head (article)
+  (let ((entry (cdr (assq article nndoc-dissection-alist)))
+	subject from)
+    (save-excursion
+      (set-buffer nndoc-current-buffer)
+      (save-restriction
+	(narrow-to-region (car entry) (nth 3 entry))
+	(goto-char (point-min))
+	(when (looking-at " *\\*\\(.*\\)$")
+	  (setq subject (match-string 1)))
+	(when
+	    (let ((case-fold-search nil))
+	      (re-search-forward
+	       "^\t\\([^a-z]+\\(,[^(]+\\)? ([^a-z]+)\\) --" nil t))
+	  (setq from (match-string 1)))))
+    (insert "From: " "clari@clari.net (" (or from "unknown") ")"
+	    "\nSubject: " (or subject "(no subject)") "\n")))
 
 (provide 'nndoc)
 

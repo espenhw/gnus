@@ -1,5 +1,5 @@
 ;;; nntp.el --- nntp access for Gnus
-;; Copyright (C) 1987,88,89,90,92,93,94,95 Free Software Foundation, Inc.
+;; Copyright (C) 1987,88,89,90,92,93,94,95,96 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -63,6 +63,18 @@ hook might be `nntp-send-authinfo', which will prompt for a password
 to allow posting from the server.  Note that this is only necessary to
 do on servers that use strict access control.")  
 (add-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)
+
+(defvar nntp-server-action-alist 
+  '(("nntpd 1\\.5\\.11t" 
+     (remove-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)))
+  "Alist of regexps to match on server types and actions to be taken.
+For instance, if you want Gnus to beep every time you connect
+to innd, you could say something like:
+
+\(setq nntp-server-action-alist
+       '((\"innd\" (ding))))
+
+You probably don't want to do that, though.")
 
 (defvar nntp-open-server-function 'nntp-open-network-stream
   "*Function used for connecting to a remote system.
@@ -168,6 +180,7 @@ instead call function `nntp-status-message' to get status message.")
 (defvar nntp-server-xover 'try)
 (defvar nntp-server-list-active-group 'try)
 (defvar nntp-current-group "")
+(defvar nntp-server-type nil)
 
 (defvar nntp-async-process nil)
 (defvar nntp-async-buffer nil)
@@ -194,6 +207,7 @@ instead call function `nntp-status-message' to get status message.")
     (nntp-news-default-headers ,nntp-news-default-headers)
     (nntp-prepare-server-hook ,nntp-prepare-server-hook) 
     (nntp-async-number ,nntp-async-number)
+    (nntp-server-type nil)
     (nntp-async-process nil)
     (nntp-async-buffer nil)
     (nntp-async-articles nil)
@@ -499,6 +513,9 @@ servers."
   (nntp-possibly-change-server group server)
   (nntp-send-command 
    "^[23].*\r?\n" "STAT" (or (and (numberp id) (int-to-string id)) id)))
+
+(defun nntp-request-type (group &optional article)
+  'news)
 
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
@@ -1063,27 +1080,38 @@ If SERVICE, this this as the port number."
   "Open connection to news server on SERVER by SERVICE (default is nntp)."
   (let (proc)
     (save-excursion
-      ;; Use TCP/IP stream emulation package if needed.
-      (or (fboundp 'open-network-stream)
-	  (require 'tcp))
-      ;; Initialize communication buffer.
-      (nnheader-init-server-buffer)
       (set-buffer nntp-server-buffer)
-      (if (setq proc
-		(condition-case nil
-		    (funcall nntp-open-server-function server)
-		  (error nil)))
-	  (progn
-	    (setq nntp-server-process proc)
-	    ;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
-	    (process-kill-without-query proc)
-	    (setq nntp-address server)
-	    ;; It is possible to change kanji-fileio-code in this hook.
-	    (run-hooks 'nntp-server-hook)
-	    (push proc nntp-opened-connections)
-	    nntp-server-process)
-	(setq nntp-status-string (format "Couldn't open server %s" server))
-	nil))))
+      (cond
+       ((setq proc
+	      (condition-case nil
+		  (funcall nntp-open-server-function server)
+		(error nil)))
+	(setq nntp-server-process proc)
+	(setq nntp-address server)
+	;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
+	(process-kill-without-query proc)
+	(run-hooks 'nntp-server-hook)
+	(push proc nntp-opened-connections)
+	(nntp-read-server-type)
+	nntp-server-process)
+       (t
+	(nnheader-report 'nntp (format "Couldn't open server %s" server)))))))
+
+(defun nntp-read-server-type ()
+  "Find out what the name of the server we have connected to is."
+  ;; Wait for the status string to arrive.
+  (nntp-wait-for-response "^.*\n")
+  (setq nntp-server-type (buffer-string))
+  (let ((alist nntp-server-action-alist)
+	entry)
+    ;; Run server-specific commmands.
+    (while alist
+      (setq entry (pop alist))
+      (when (string-match (car entry) nntp-server-type)
+	(if (and (listp (cadr entry))
+		 (not (eq 'lambda (caadr entry))))
+	    (eval (cadr entry))
+	  (funcall (cadr entry)))))))
 
 (defun nntp-open-network-stream (server)
   (open-network-stream 
@@ -1143,7 +1171,7 @@ defining this function as macro."
 		(sleep-for 1)
 		(message ""))
 	    (condition-case errorcode
-		(accept-process-output nntp-server-process)
+		(accept-process-output nntp-server-process 1)
 	      (error
 	       (cond ((string-equal "select error: Invalid argument" 
 				    (nth 1 errorcode))

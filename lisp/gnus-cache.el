@@ -1,5 +1,5 @@
 ;;; gnus-cache.el --- cache interface for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -41,7 +41,7 @@
 (defvar gnus-cache-remove-articles '(read)
   "*Classes of articles to remove from the cache.")
 
-(defvar gnus-uncacheable-groups "^nnvirtual"
+(defvar gnus-uncacheable-groups nil
   "*Groups that match this regexp will not be cached.
 
 If you want to avoid caching your nnml groups, you could set this
@@ -56,7 +56,8 @@ variable to \"^nnml\".")
 (defvar gnus-cache-active-altered nil)
 
 (eval-and-compile
-  (autoload 'nnml-generate-nov-databases-1 "nnml"))
+  (autoload 'nnml-generate-nov-databases-1 "nnml")
+  (autoload 'nnvirtual-find-group-art "nnvirtual"))
 
 
 
@@ -106,11 +107,18 @@ variable to \"^nnml\".")
 
 (defun gnus-cache-possibly-enter-article 
   (group article headers ticked dormant unread &optional force)
-  (when (or force (not (eq gnus-use-cache 'passive)))
+  (when (and (or force (not (eq gnus-use-cache 'passive)))
+	     (vectorp headers))	; This might be a dummy article.
+    ;; If this is a virtual group, we find the real group.
+    (when (gnus-virtual-group-p group)
+      (let ((result (nnvirtual-find-group-art group article)))
+	(setq group (car result)
+	      article (cdr result)
+	      headers (copy-sequence headers))
+	(aset headers 0 article)))
     (let ((number (mail-header-number headers))
 	  file dir)
-      (when (and (vectorp headers)	; This might be a dummy article.
-		 (> number 0)		; Reffed article.
+      (when (and (> number 0)		; Reffed article.
 		 (or (not gnus-uncacheable-groups)
 		     (not (string-match gnus-uncacheable-groups group)))
 		 (or force
@@ -170,10 +178,22 @@ variable to \"^nnml\".")
 
 (defun gnus-cache-enter-remove-article (article)
   "Mark ARTICLE for later possible removal."
-  (setq gnus-cache-removeable-articles
-	(cons article gnus-cache-removeable-articles)))
+  (push article gnus-cache-removeable-articles))
 
 (defun gnus-cache-possibly-remove-articles ()
+  "Possibly remove some of the removable articles."
+  (if (not (gnus-virtual-group-p gnus-newsgroup-name))
+      (gnus-cache-possibly-remove-articles-1)
+    (let ((arts gnus-cache-removeable-articles)
+	  ga)
+      (while arts
+	(setq ga (nnvirtual-find-group-art gnus-newsgroup-name (pop arts)))
+	(let ((gnus-cache-removeable-articles (list (cdr ga)))
+	      (gnus-newsgroup-name (car ga)))
+	  (gnus-cache-possibly-remove-articles-1))))
+    (setq gnus-cache-removeable-articles nil)))
+
+(defun gnus-cache-possibly-remove-articles-1 ()
   "Possibly remove some of the removable articles."
   (unless (eq gnus-use-cache 'passive)
     (let ((articles gnus-cache-removeable-articles)
@@ -329,7 +349,7 @@ Returns the list of articles removed."
 	     (let ((group (concat group "")))
 	       (if (string-match ":" group)
 		   (aset group (match-beginning 0) ?/))
-	       (gnus-replace-chars-in-string group ?. ?/))))
+	       (nnheader-replace-chars-in-string group ?. ?/))))
 	  (if (stringp article) article (int-to-string article))))
 
 (defun gnus-cache-possibly-remove-article 
@@ -431,16 +451,16 @@ Returns the list of articles removed."
 	(gnus-cache-enter-articles '(unread))
 	(gnus-mark-article-hook nil)
 	(gnus-expert-user t)
+	(nnmail-spool-file nil)
+	(gnus-use-dribble-file nil)
+	(gnus-novice-user nil)
 	(gnus-large-newsgroup nil))
     (while newsrc
-      (gnus-summary-read-group (car (car newsrc)))
-      (if (not (eq major-mode 'gnus-summary-mode))
-	  ()
+      (gnus-summary-read-group (car (pop newsrc)) nil t)
+      (when (eq major-mode 'gnus-summary-mode)
 	(while gnus-newsgroup-unreads
-	  (gnus-summary-select-article t t nil (car gnus-newsgroup-unreads))
-	  (setq gnus-newsgroup-unreads (cdr gnus-newsgroup-unreads)))
-	(kill-buffer (current-buffer)))
-      (setq newsrc (cdr newsrc)))))
+	  (gnus-summary-select-article t t nil (pop gnus-newsgroup-unreads)))
+	(kill-buffer (current-buffer))))))
 
 (defun gnus-cache-read-active (&optional force)
   "Read the cache active file."
@@ -472,6 +492,7 @@ Returns the list of articles removed."
 			   (symbol-name sym) (cdr (symbol-value sym))
 			   (car (symbol-value sym))))))
        gnus-cache-active-hashtb)
+      (gnus-make-directory (file-name-directory gnus-cache-active-file))
       (write-region 
        (point-min) (point-max) gnus-cache-active-file nil 'silent))
     ;; Mark the active hashtb as unaltered.
@@ -505,7 +526,7 @@ If LOW, update the lower bound instead."
 	     (concat "^" (file-name-as-directory
 			  (expand-file-name gnus-cache-directory)))
 	     (directory-file-name directory))
-	    (gnus-replace-chars-in-string 
+	    (nnheader-replace-chars-in-string 
 	     (substring (directory-file-name directory) (match-end 0))
 	     ?/ ?.)))
 	 nums alphs)

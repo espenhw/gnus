@@ -1,5 +1,5 @@
 ;;; nnmbox.el --- mail mbox access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -109,14 +109,12 @@
 	(and (numberp nnmail-large-newsgroup)
 	     (> number nnmail-large-newsgroup)
 	     (zerop (% count 20))
-	     gnus-verbose-backends
-	     (message "nnmbox: Receiving headers... %d%%"
-		      (/ (* count 100) number))))
+	     (nnheader-message 5 "nnmbox: Receiving headers... %d%%"
+			       (/ (* count 100) number))))
 
       (and (numberp nnmail-large-newsgroup)
 	   (> number nnmail-large-newsgroup)
-	   gnus-verbose-backends
-	   (message "nnmbox: Receiving headers...done"))
+	   (nnheader-message 5 "nnmbox: Receiving headers...done"))
 
       (set-buffer nntp-server-buffer)
       (nnheader-fold-continuation-lines)
@@ -182,21 +180,23 @@
 	      (nnmbox-article-group-number)))))))
 
 (defun nnmbox-request-group (group &optional server dont-check)
-  (save-excursion
-    (if (nnmbox-possibly-change-newsgroup group)
-	(if dont-check
-	    t
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (erase-buffer)
-	    (let ((active (assoc group nnmbox-group-alist)))
-	      (insert (format "211 %d %d %d %s\n" 
-			      (1+ (- (cdr (car (cdr active)))
-				     (car (car (cdr active)))))
-			      (car (car (cdr active)))
-			      (cdr (car (cdr active)))
-			      (car active))))
-	    t)))))
+  (let ((active (assoc group nnmbox-group-alist)))
+    (cond 
+     ((null (nnmbox-possibly-change-newsgroup group))
+      (nnheader-report 'nnmbox "No such group: %s" group))
+     (dont-check
+      (nnheader-report 'nnmbox "Selected group %s" group)
+      (nnheader-insert ""))
+     ((> (car active) (cdr active))
+      (nnheader-report 'nnmbox "Empty group %s" group)
+      (nnheader-insert "211 0 0 0 %s\n" group))
+     (t
+      (nnheader-report 'nnmbox "Selected group %s" group)
+      (nnheader-insert
+       "211 %d %d %d %s\n" 
+       (1+ (- (cdadr active) (caadr active)))
+       (cadr active) (cdadr active) (car active))
+      t))))
 
 (defun nnmbox-request-scan (&optional group server)
   (nnmbox-read-mbox)
@@ -253,9 +253,8 @@
 		       (buffer-substring 
 			(point) (progn (end-of-line) (point))) force))
 		(progn
-		  (and gnus-verbose-backends
-		       (message "Deleting article %d in %s..."
-				(car articles) newsgroup))
+		  (nnheader-message 5 "Deleting article %d in %s..."
+				    (car articles) newsgroup)
 		  (nnmbox-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
@@ -417,8 +416,7 @@
 	  (not (buffer-name nnmbox-mbox-buffer)))
       (save-excursion
 	(set-buffer (setq nnmbox-mbox-buffer 
-			  (nnheader-find-file-noselect
-			   nnmbox-mbox-file nil 'raw)))
+			  (find-file-noselect nnmbox-mbox-file nil 'raw)))
 	(buffer-disable-undo (current-buffer))))
   (if (not nnmbox-group-alist)
       (nnmail-activate 'nnmbox))
@@ -502,8 +500,7 @@
       (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	    start end)
 	(set-buffer (setq nnmbox-mbox-buffer 
-			  (nnheader-find-file-noselect 
-			   nnmbox-mbox-file nil 'raw)))
+			  (find-file-noselect nnmbox-mbox-file nil 'raw)))
 	(buffer-disable-undo (current-buffer))
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)

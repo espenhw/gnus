@@ -1,5 +1,5 @@
 ;;; nnmh.el --- mhspool access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -162,36 +162,35 @@
 (defun nnmh-request-group (group &optional server dont-check)
   (let ((pathname (nnmail-group-pathname group nnmh-directory))
 	dir)
-    (if (file-directory-p pathname)
-	(progn
-	  (setq nnmh-current-directory pathname)
-	  (and nnmh-get-new-mail 
-	       nnmh-be-safe
-	       (nnmh-update-gnus-unreads group))
-	  (or dont-check
-	      (progn
-		(setq dir 
-		      (sort
-		       (mapcar
-			(function
-			 (lambda (name)
-			   (string-to-int name)))
-			(directory-files pathname nil "^[0-9]+$" t))
-		       '<))
-		(save-excursion
-		  (set-buffer nntp-server-buffer)
-		  (erase-buffer)
-		  (if dir
-		      (insert (format "211 %d %d %d %s\n" (length dir) 
-				      (car dir)
-				      (progn (while (cdr dir)
-					       (setq dir (cdr dir)))
-					     (car dir))
-				      group))
-		    (insert (format "211 0 1 0 %s\n" group))))))
-	  t)
-      (setq nnmh-status-string "No such group")
-      nil)))
+    (cond 
+     ((not (file-directory-p pathname))
+      (nnheader-report 
+       'nnmh "Can't select group (no such directory): %s" group))
+     (t
+      (setq nnmh-current-directory pathname)
+      (and nnmh-get-new-mail 
+	   nnmh-be-safe
+	   (nnmh-update-gnus-unreads group))
+      (cond
+       (dont-check
+	(nnheader-report 'nnmh "Selected group %s" group)
+	t)
+       (t
+	(setq dir 
+	      (sort
+	       (mapcar (lambda (name) (string-to-int name))
+		       (directory-files pathname nil "^[0-9]+$" t))
+	       '<))
+	  (cond 
+	   (dir
+	    (nnheader-report 'nnmh "Selected group %s" group)
+	    (nnheader-insert
+	     "211 %d %d %d %s\n" (length dir) (car dir)
+	     (progn (while (cdr dir) (setq dir (cdr dir))) (car dir))
+	     group))
+	   (t
+	    (nnheader-report 'nnmh "Empty group %s" group)
+	    (nnheader-insert (format "211 0 1 0 %s\n" group))))))))))
 
 (defun nnmh-request-scan (&optional group server)
   (nnmail-get-new-mail 'nnmh nil nnmh-directory group))      
@@ -230,7 +229,7 @@
 		(string-match 
 		 (file-truename (file-name-as-directory 
 				 (expand-file-name nnmh-directory))) dir)
-		(nnmail-replace-chars-in-string
+		(nnheader-replace-chars-in-string
 		 (substring dir (match-end 0)) ?/ ?.))
 	      (apply (function max) files) 
 	      (apply (function min) files)))))))
@@ -264,9 +263,8 @@
 		   (setq is-old
 			 (nnmail-expired-article-p newsgroup mod-time force)))
 	      (progn
-		(and gnus-verbose-backends 
-		     (message "Deleting article %s in %s..." 
-			      article newsgroup))
+		(nnheader-message 5 "Deleting article %s in %s..." 
+				  article newsgroup)
 		(condition-case ()
 		    (funcall nnmail-delete-file-function article)
 		  (file-error
@@ -319,7 +317,7 @@
 	(progn
 	  (write-region (point-min) (point-max)
 			(concat nnmh-current-directory (int-to-string article))
-			nil (if gnus-verbose-backends nil 'nomesg))
+			nil (if (nnheader-be-verbose 5) nil 'nomesg))
 	  t)
       (error nil))))
 
@@ -351,9 +349,8 @@
       (while articles 
 	(and (file-writable-p (car articles))
 	     (progn
-	       (and gnus-verbose-backends
-		    (message (message "Deleting article %s in %s..."
-				      (car articles) group)))
+	       (nnheader-message 5 "Deleting article %s in %s..."
+				 (car articles) group)
 	       (funcall nnmail-delete-file-function (car articles))))
 	(setq articles (cdr articles))))
     ;; Try to delete the directory itself.
@@ -403,8 +400,7 @@
     (while dirs
       (if (make-directory (directory-file-name (car dirs)))
 	  (error "Could not create directory %s" (car dirs)))
-      (and gnus-verbose-backends 
-	   (message "Creating mail directory %s" (car dirs)))
+      (nnheader-message 5 "Creating mail directory %s" (car dirs))
       (setq dirs (cdr dirs)))))
 	     
 (defun nnmh-save-mail (&optional noinsert)
@@ -428,7 +424,7 @@
 			    (int-to-string (cdr (car ga))))))
 	  (if first
 	      ;; It was already saved, so we just make a hard link.
-	      (add-name-to-file first file t)
+	      (funcall nnmail-crosspost-link-function first file t)
 	    ;; Save the article.
 	    (write-region (point-min) (point-max) file nil nil)
 	    (setq first file)))

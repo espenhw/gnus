@@ -1,5 +1,5 @@
 ;;; nnbabyl.el --- rmail mbox access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -18,8 +18,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
@@ -108,14 +109,12 @@
 	(and (numberp nnmail-large-newsgroup)
 	     (> number nnmail-large-newsgroup)
 	     (zerop (% count 20))
-	     gnus-verbose-backends
-	     (message "nnbabyl: Receiving headers... %d%%"
-		      (/ (* count 100) number))))
+	     (nnheader-message 5 "nnbabyl: Receiving headers... %d%%"
+			       (/ (* count 100) number))))
 
       (and (numberp nnmail-large-newsgroup)
 	   (> number nnmail-large-newsgroup)
-	   gnus-verbose-backends
-	   (message "nnbabyl: Receiving headers...done"))
+	   (nnheader-message 5 "nnbabyl: Receiving headers...done"))
 
       (set-buffer nntp-server-buffer)
       (nnheader-fold-continuation-lines)
@@ -201,21 +200,28 @@
 	      (nnbabyl-article-group-number)))))))
 
 (defun nnbabyl-request-group (group &optional server dont-check)
-  (save-excursion
-    (if (nnbabyl-possibly-change-newsgroup group)
-	(if dont-check
-	    t
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (erase-buffer)
-	    (let ((active (assoc group nnbabyl-group-alist)))
-	      (insert (format "211 %d %d %d %s\n" 
-			      (1+ (- (cdr (car (cdr active)))
-				     (car (car (cdr active)))))
-			      (car (car (cdr active)))
-			      (cdr (car (cdr active)))
-			      (car active))))
-	    t)))))
+  (let ((active (assoc group nnbabyl-group-alist)))
+    (save-excursion
+      (cond 
+       ((null (nnbabyl-possibly-change-newsgroup group))
+	(nnheader-report 'nnbabyl "No such group: %s" group))
+       (dont-check
+	(nnheader-report 'nnbabyl "Selected group %s" group)
+	t)
+       ((> (car active) (cdr active))
+	(nnheader-report 'nnbabyl "Empty group %s" group))
+       (t
+	(nnheader-report 'nnbabyl "Selected group %s" group)
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer)
+	  (insert (format "211 %d %d %d %s\n" 
+			  (1+ (- (cdr (car (cdr active)))
+				 (car (car (cdr active)))))
+			  (car (car (cdr active)))
+			  (cdr (car (cdr active)))
+			  (car active))))
+	t)))))
 
 (defun nnbabyl-request-scan (&optional group server)
   (nnbabyl-read-mbox)
@@ -287,9 +293,8 @@
 		       (buffer-substring 
 			(point) (progn (end-of-line) (point))) force))
 		(progn
-		  (and gnus-verbose-backends
-		       (message "Deleting article %d in %s..." 
-				(car articles) newsgroup))
+		  (nnheader-message 5 "Deleting article %d in %s..." 
+				    (car articles) newsgroup)
 		  (nnbabyl-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
@@ -561,8 +566,7 @@
       (let ((delim (concat "^" nnbabyl-mail-delimiter))
 	    start end)
 	(set-buffer (setq nnbabyl-mbox-buffer 
-			  (nnheader-find-file-noselect 
-			   nnbabyl-mbox-file nil 'raw)))
+			  (find-file-noselect nnbabyl-mbox-file nil 'raw)))
 	;; Save buffer mode.
 	(setq nnbabyl-previous-buffer-mode 
 	      (cons (cons (point-min) (point-max))

@@ -1,5 +1,5 @@
 ;;; nnfolder.el --- mail folder access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Scott Byer <byer@mv.us.adobe.com>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -63,7 +63,7 @@ close, but not killing it), speeding some things up tremendously, especially
 such things as moving mail.  All buffers always get killed upon server close.")
 
 (defvar nnfolder-newsgroups-file 
-  (concat (file-name-as-directory  nnfolder-directory) "newsgroups")
+  (concat (file-name-as-directory nnfolder-directory) "newsgroups")
   "Mail newsgroups description file.")
 
 (defvar nnfolder-get-new-mail t
@@ -71,6 +71,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defvar nnfolder-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
+
+(defvar nnfolder-inhibit-expiry nil
+  "If non-nil, inhibit expiry.")
 
 
 
@@ -97,6 +100,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
    (list 'nnfolder-active-file nnfolder-active-file)
    (list 'nnfolder-newsgroups-file nnfolder-newsgroups-file)
    (list 'nnfolder-get-new-mail nnfolder-get-new-mail)
+   (list 'nnfolder-inhibit-expiry nnfolder-inhibit-expiry) 
    '(nnfolder-current-group nil)
    '(nnfolder-current-buffer nil)
    '(nnfolder-status-string "")
@@ -219,8 +223,12 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (save-excursion
     (nnmail-activate 'nnfolder)
     (when (assoc group nnfolder-group-alist)
-      (if dont-check
-	  t
+      (nnfolder-possibly-change-group group)
+      (cond 
+       (dont-check
+	(nnheader-report 'nnfolder "Selected group %s" group)
+	t)
+       (t
 	(let* ((active (assoc group nnfolder-group-alist))
 	       (group (car active))
 	       (range (car (cdr active)))
@@ -228,11 +236,15 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	       (maxactive (cdr range)))
 	  (set-buffer nntp-server-buffer)
 	  (erase-buffer)
-	  (when active
+	  (cond 
+	   ((null active)
+	    (nnheader-report 'nnfolder "No such group: %s" group))
+	   (t
+	    (nnheader-report 'nnfolder "Selected group %s" group)
 	    (insert (format "211 %d %d %d %s\n" 
 			    (1+ (- maxactive minactive))
 			    minactive maxactive group))
-	    t))))))
+	    t))))))))
 
 (defun nnfolder-request-scan (&optional group server)
   (nnmail-get-new-mail
@@ -320,11 +332,11 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		      (nnmail-expired-article-p 
 		       newsgroup
 		       (buffer-substring 
-			(point) (progn (end-of-line) (point))) force))
+			(point) (progn (end-of-line) (point))) 
+		       force nnfolder-inhibit-expiry))
 		(progn
-		  (and gnus-verbose-backends
-		       (message "Deleting article %d..." 
-				(car articles) newsgroup))
+		  (nnheader-message 5 "Deleting article %d..." 
+				    (car articles) newsgroup)
 		  (nnfolder-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
@@ -483,7 +495,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-possibly-change-group (group)
   (or (file-exists-p nnfolder-directory)
-      (make-directory (directory-file-name nnfolder-directory)))
+      (make-directory (directory-file-name nnfolder-directory) t))
   (nnfolder-possibly-activate-groups nil)
   (or (assoc group nnfolder-group-alist)
       (not (file-exists-p (concat (file-name-as-directory nnfolder-directory)
@@ -642,7 +654,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
     ;; and add it if it isn't.
     ;;(if (not (assoc nnfoler-current-group nnfolder-group-alist)
     (set-buffer (setq nnfolder-current-buffer 
-		      (nnheader-find-file-noselect file nil 'raw)))
+		      (find-file-noselect file nil 'raw)))
     (buffer-disable-undo (current-buffer))
     (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	  (marker (concat "\n" nnfolder-article-marker))
@@ -704,6 +716,21 @@ such things as moving mail.  All buffers always get killed upon server close.")
       ;; Make absolutely sure that the active list reflects reality!
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       (current-buffer))))
+
+;;;###autoload
+(defun nnfolder-generate-active-file ()
+  "Look for mbox folders in the nnfolder directory and make them into groups."
+  (interactive)
+  (nnmail-activate 'nnfolder)
+  (let ((files (directory-files nnfolder-directory))
+	file group)
+    (while (setq file (pop files))
+      (when (nnheader-mail-file-mbox-p file)
+	(nnheader-message 5 "Adding group %s..." file)
+	(push (list file (cons 1 0)) nnfolder-group-alist)
+	(nnfolder-read-folder file)
+	(nnfolder-close-group file))
+      (message ""))))
 
 (provide 'nnfolder)
 

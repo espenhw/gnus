@@ -1,5 +1,5 @@
 ;;; nnvirtual.el --- virtual newsgroups access for Gnus
-;; Copyright (C) 1994,95 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -33,6 +33,13 @@
 (require 'nnheader)
 (require 'gnus)
 
+(defvar nnvirtual-always-rescan nil
+  "*If non-nil, always scan groups for unread articles when entering a group.
+If this variable is nil (which is the default) and you read articles
+in a component group after the virtual group has been activated, the
+read articles from the component group will show up when you enter the
+virtual group.")
+
 
 
 (defconst nnvirtual-version "nnvirtual 1.0"
@@ -40,69 +47,51 @@
 
 (defvar nnvirtual-group-alist nil)
 (defvar nnvirtual-current-group nil)
-(defvar nnvirtual-current-groups nil)
-(defvar nnvirtual-current-mapping nil)
-
-(defvar nnvirtual-do-not-open nil)
+(defvar nnvirtual-component-groups nil)
+(defvar nnvirtual-mapping nil)
 
 (defvar nnvirtual-status-string "")
+
+(eval-and-compile
+  (autoload 'gnus-cache-articles-in-group "gnus-cache"))
 
 
 
 ;;; Interface functions.
 
-(defun nnvirtual-retrieve-headers (sequence &optional newsgroup server fetch-old)
-  "Retrieve the headers for the articles in SEQUENCE."
-  (nnvirtual-possibly-change-newsgroups newsgroup server t)
-  (save-excursion
-    (set-buffer (get-buffer-create "*virtual headers*"))
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
-    (if (stringp (car sequence))
-	'headers
-      (let ((map nnvirtual-current-mapping)
-	    (offset 0)
-	    articles beg group active top article result prefix
-	    fetched-articles group-method)
-	(while sequence
-	  (while (< (car (car map)) (car sequence))
-	    (setq offset (car (car map)))
-	    (setq map (cdr map)))
-	  (setq top (car (car map)))
-	  (setq group (nth 1 (car map)))
-	  (setq prefix (gnus-group-real-prefix group))
-	  (setq active (nth 2 (car map)))
-	  (setq articles nil)
-	  (while (and sequence (<= (car sequence) top))
-	    (setq articles (cons (- (+ active (car sequence)) offset) 
-				 articles))
-	    (setq sequence (cdr sequence)))
-	  (setq articles (nreverse articles))
-	  (if (and articles
-		   (setq result 
-			 (progn
-			   (setq group-method 
-				 (gnus-find-method-for-group group))
-			   (and (or (gnus-server-opened group-method)
-				    (gnus-open-server group-method))
-				(gnus-request-group group t)
-				(gnus-retrieve-headers articles group)))))
-	      (save-excursion
-		(set-buffer nntp-server-buffer)
+(defun nnvirtual-retrieve-headers (articles &optional newsgroup server fetch-old)
+  (when (nnvirtual-possibly-change-group newsgroup server t)
+    (save-excursion
+      (if (stringp (car articles))
+	  'headers
+	(let ((map nnvirtual-mapping)
+	      (vbuf (nnheader-set-temp-buffer 
+		     (get-buffer-create " *virtual headers*")))
+	      (unfetched (mapcar (lambda (g) (list g))
+				 nnvirtual-component-groups))
+	      beg cgroup active article result prefix)
+	  (while articles
+	    (setq article (assq (pop articles) nnvirtual-mapping))
+	    (setq cgroup (cadr article))
+	    (gnus-request-group cgroup t)
+	    (setq prefix (gnus-group-real-prefix cgroup))
+	    (when (setq result (gnus-retrieve-headers 
+				(list (caddr article)) cgroup))
+	      (set-buffer nntp-server-buffer)
+	      (if (zerop (buffer-size))
+		  (nconc (assq cgroup unfetched) (caddr article))
 		;; If we got HEAD headers, we convert them into NOV
-		;; headers. This is slow, inefficient and, come to think
-		;; of it, downright evil. So sue me. I couldn't be
+		;; headers.  This is slow, inefficient and, come to think
+		;; of it, downright evil.  So sue me.  I couldn't be
 		;; bothered to write a header parse routine that could
 		;; parse a mixed HEAD/NOV buffer.
-		(and (eq result 'headers) (nnvirtual-convert-headers))
+		(when (eq result 'headers)
+		  (nnvirtual-convert-headers))
 		(goto-char (point-min))
-		(setq fetched-articles nil)
 		(while (not (eobp))
-		  (setq beg (point)
-			article (read nntp-server-buffer)
-			fetched-articles (cons article fetched-articles))
-		  (delete-region beg (point))
-		  (insert (int-to-string (+ (- article active) offset)))
+		  (delete-region 
+		   (point) (progn (read nntp-server-buffer) (point)))
+		  (insert (int-to-string (car article)))
 		  (beginning-of-line)
 		  (looking-at 
 		   "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
@@ -119,7 +108,7 @@
 			(or (= (char-after (1- (point))) ?\t)
 			    (insert ?\t))
 			(insert (format "Xref: %s %s:%d\t" (system-name) 
-					group article)))
+					cgroup (caddr article))))
 		    (if (not (string= "" prefix))
 			(while (re-search-forward 
 				"[^ ]+:[0-9]+"
@@ -130,118 +119,162 @@
 		    (end-of-line)
 		    (or (= (char-after (1- (point))) ?\t)
 			(insert ?\t)))
-		  (forward-line 1))))
-	  (goto-char (point-max))
-	  (insert-buffer-substring nntp-server-buffer)
-	  ;; We have now massaged and inserted the headers from one
-	  ;; group. In case some of the articles have expired or been
-	  ;; cancelled, we have to mark them as read in the component
-	  ;; group. 
-	  (let ((unfetched (gnus-sorted-complement 
-			    articles (nreverse fetched-articles))))
-	    (and unfetched
-		 (gnus-group-make-articles-read group unfetched))))
-	;; The headers are ready for reading, so they are inserted into
-	;; the nntp-server-buffer, which is where Gnus expects to find
-	;; them.
-	(prog1
-	    (save-excursion
-	      (set-buffer nntp-server-buffer)
-	      (erase-buffer)
-	      (insert-buffer-substring "*virtual headers*")
-	      'nov)
-	  (kill-buffer (current-buffer)))))))
+		  (forward-line 1))
+		(set-buffer vbuf)
+		(goto-char (point-max))
+		(insert-buffer-substring nntp-server-buffer))))
+	  
+	  ;; In case some of the articles have expired or been
+	  ;; cancelled, we have to mark them as read in the
+	  ;; component group.
+	  (while unfetched
+	    (when (cdar unfetched)
+	      (gnus-group-make-articles-read 
+	       (caar unfetched) (sort (cdar unfetched) '<)))
+	    (setq unfetched (cdr unfetched)))
 
-(defun nnvirtual-open-server (newsgroups &optional something)
-  "Open a virtual newsgroup that contains NEWSGROUPS."
+	  ;; The headers are ready for reading, so they are inserted into
+	  ;; the nntp-server-buffer, which is where Gnus expects to find
+	  ;; them.
+	  (prog1
+	      (save-excursion
+		(set-buffer nntp-server-buffer)
+		(erase-buffer)
+		(insert-buffer-substring vbuf)
+		'nov)
+	    (kill-buffer vbuf)))))))
+
+(defun nnvirtual-open-server (server &optional something)
   (nnheader-init-server-buffer))
 
 (defun nnvirtual-close-server (&rest dum)
-  "Close news server."
   t)
 
 (defun nnvirtual-request-close ()
   (setq nnvirtual-current-group nil
-	nnvirtual-current-groups nil
-	nnvirtual-current-mapping nil
+	nnvirtual-component-groups nil
+	nnvirtual-mapping nil
 	nnvirtual-group-alist nil)
   t)
 
 (defun nnvirtual-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
 (defun nnvirtual-status-message (&optional server)
-  "Return server status response as string."
   nnvirtual-status-string)
 
-(defun nnvirtual-request-article (article &optional newsgroup server buffer)
-  "Select article by message number."
-  (nnvirtual-possibly-change-newsgroups newsgroup server t)
-  (and (numberp article)
-       (let ((map nnvirtual-current-mapping)
-	     (offset 0)
-	     group-method)
-	 (while (< (car (car map)) article)
-	   (setq offset (car (car map)))
-	   (setq map (cdr map)))
-	 (setq group-method (gnus-find-method-for-group (nth 1 (car map))))
-	 (or (gnus-server-opened group-method)
-	     (gnus-open-server group-method))
-	 (gnus-request-group (nth 1 (car map)) t)
-	 (gnus-request-article (- (+ (nth 2 (car map)) article) offset)
-			       (nth 1 (car map)) buffer))))
+(defun nnvirtual-request-article (article &optional group server buffer)
+  (when (and (nnvirtual-possibly-change-group group server t)
+	     (numberp article))
+    (let* ((amap (assq article nnvirtual-mapping))
+	   (cgroup (cadr amap)))
+      (cond
+       ((not amap)
+	(nnheader-report 'nnvirtual "No such article: %s" article))
+       ((not (gnus-check-group cgroup))
+	(nnheader-report
+	 'nnvirtual "Can't open server where %s exists" cgroup))
+       ((not (gnus-request-group cgroup t))
+	(nnheader-report 'nnvirtual "Can't open component group %s" cgroup))
+       (t
+	(if buffer 
+	    (save-excursion
+	      (set-buffer buffer)
+	      (gnus-request-article-this-buffer (caddr amap) cgroup))
+	  (gnus-request-article (caddr amap) cgroup)))))))
 
 (defun nnvirtual-request-group (group &optional server dont-check)
-  "Make GROUP the current newsgroup."
-  (nnvirtual-possibly-change-newsgroups group server dont-check)
-  (let ((map nnvirtual-current-mapping))
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)
-      (if map
-	  (progn
-	    (while (cdr map)
-	      (setq map (cdr map)))
-	    (insert (format "211 %d 1 %d %s\n" (car (car map)) 
-			    (car (car map)) group))
-	    t)
-	(setq nnvirtual-status-string "No component groups")
-	(setq nnvirtual-current-group nil)
-	nil))))
+  (cond
+   ((null (nnvirtual-possibly-change-group
+	   group server 
+	   (if nnvirtual-always-rescan nil dont-check)))
+    (setq nnvirtual-current-group nil)
+    (nnheader-report 'nnvirtual "No component groups in %s" group))
+   (t
+    (let ((len (length nnvirtual-mapping)))
+      (nnheader-insert "211 %d 1 %d %s\n" len len group)))))
 
 (defun nnvirtual-request-type (group &optional article)
-  (nnvirtual-possibly-change-newsgroups group nil)
-  (if (not article)
-      'unknown
-    (gnus-request-type (car (nnvirtual-art-group article)))))
+  (when (nnvirtual-possibly-change-group group nil t)
+    (if (not article)
+	'unknown
+      (let ((mart (assq article nnvirtual-mapping)))
+	(when mart
+	  (gnus-request-type (cadr mart) (car mart)))))))
+
+(defun nnvirtual-request-update-mark (group article mark)
+  (when (nnvirtual-possibly-change-group group nil t)
+    (let* ((nart (assq article nnvirtual-mapping))
+	   (cgroup (cadr nart))
+	   ;; The component group might be a virtual group.
+	   (nmark (gnus-request-update-mark cgroup (caddr nart) mark)))
+      (when (and (= mark nmark)
+		 (gnus-group-auto-expirable-p cgroup))
+	(setq mark gnus-expirable-mark))))
+  mark)
     
 (defun nnvirtual-close-group (group &optional server)
-  (if (not nnvirtual-current-group)
-      ()
-    (nnvirtual-possibly-change-newsgroups group server t)
+  (when (nnvirtual-possibly-change-group group server t)
+    ;; We copy the marks from this group to the component
+    ;; groups here.
     (nnvirtual-update-marked)
+    ;; Reset all relevant variables.
     (setq nnvirtual-current-group nil
-	  nnvirtual-current-groups nil
-	  nnvirtual-current-mapping nil)
+	  nnvirtual-component-groups nil
+	  nnvirtual-mapping nil)
     (setq nnvirtual-group-alist 
-	  (delq (assoc group nnvirtual-group-alist) nnvirtual-group-alist))))
-
+	  (delq (assoc group nnvirtual-group-alist) nnvirtual-group-alist)))
+  t)
+    
 (defun nnvirtual-request-list (&optional server) 
-  (setq nnvirtual-status-string "nnvirtual: LIST is not implemented.")
-  nil)
+  (nnheader-report 'nnvirtual "LIST is not implemented."))
 
 (defun nnvirtual-request-newgroups (date &optional server)
-  "List new groups."
-  (setq nnvirtual-status-string "NEWGROUPS is not supported.")
-  nil)
+  (nnheader-report 'nnvirtual "NEWGROUPS is not supported."))
 
 (defun nnvirtual-request-list-newsgroups (&optional server)
-  (setq nnvirtual-status-string
-	"nnvirtual: LIST NEWSGROUPS is not implemented.")
-  nil)
+  (nnheader-report 'nnvirtual "LIST NEWSGROUPS is not implemented."))
+
+(defun nnvirtual-request-update-info (group info &optional server)
+  (when (nnvirtual-possibly-change-group group server)
+    (let ((map nnvirtual-mapping)
+	  (marks (mapcar (lambda (m) (list (cdr m))) gnus-article-mark-lists))
+	  reads marks mr m op)
+      (while map
+	(setq m (pop map))
+	(unless (nth 3 m)
+	  (push (car m) reads))
+	(when (setq mr (nth 4 m))
+	  (while mr
+	    (setcdr (setq op (assq (pop mr) marks)) (cons (car m) (cdr op))))))
+      (setq mr marks)
+      (while mr
+	(setcdr (car mr) (gnus-compress-sequence (sort (cdar mr) '<)))
+	(setq mr (cdr mr)))
+      (setcar (cddr info) (gnus-compress-sequence (nreverse reads)))
+      
+      ;; Enter these new marks into the info of the group.
+      (if (nthcdr 3 info)
+	  (setcar (nthcdr 3 info) marks)
+	;; Add the marks lists to the end of the info.
+	(when marks
+	  (setcdr (nthcdr 2 info) (list marks))))
+      t)))
+
+(defun nnvirtual-catchup-group (group &optional server all)
+  (nnvirtual-possibly-change-group group server t)
+  (let ((gnus-group-marked nnvirtual-component-groups)
+	(gnus-expert-user t))
+    (save-excursion
+      (set-buffer gnus-group-buffer)
+      (gnus-group-catchup-current nil all))))
+
+(defun nnvirtual-find-group-art (group article)
+  "Return the real group and article for virtual GROUP and ARTICLE."
+  (nnvirtual-possibly-change-group group nil t)
+  (let ((mart (assq article nnvirtual-mapping)))
+    (cons (cadr mart) (caddr mart))))
 
 
 ;;; Internal functions.
@@ -254,8 +287,7 @@ If the stream is opened, return T, otherwise return NIL."
 	   (headers (gnus-get-newsgroup-headers dependencies))
 	   header)
       (erase-buffer)
-      (while headers
-	(setq header (pop headers))
+      (while (setq header (pop headers))
 	(insert (int-to-string (mail-header-number header)) "\t"
 		(or (mail-header-subject header) "") "\t"
 		(or (mail-header-from header) "") "\t"
@@ -268,206 +300,103 @@ If the stream is opened, return T, otherwise return NIL."
 		    (concat "Xref: " (mail-header-xref header) "\t")
 		  "") "\n")))))
 
-(defun nnvirtual-possibly-change-newsgroups (group regexp &optional check)
+(defun nnvirtual-possibly-change-group (group regexp &optional dont-check)
   (let ((inf t))
-    (or (not group)
-	(and nnvirtual-current-group
-	     (string= group nnvirtual-current-group))
-	(and (setq inf (assoc group nnvirtual-group-alist))
-	     (string= (nth 3 inf) regexp)
-	     (progn
-	       (setq nnvirtual-current-group (car inf))
-	       (setq nnvirtual-current-groups (nth 1 inf))
-	       (setq nnvirtual-current-mapping (nth 2 inf)))))
-    (if (or (not check) (not inf))
-	(progn
-	  (and inf (setq nnvirtual-group-alist 
-			 (delq inf nnvirtual-group-alist)))
-	  (setq nnvirtual-current-mapping nil)
-	  (setq nnvirtual-current-group group)
-	  (let ((newsrc gnus-newsrc-alist)
-		(virt-group (gnus-group-prefixed-name 
-			     nnvirtual-current-group '(nnvirtual ""))))
-	    (setq nnvirtual-current-groups nil)
-	    (while newsrc
-	      (and (string-match regexp (car (car newsrc)))
-		   (not (string= (car (car newsrc)) virt-group))
-		   (setq nnvirtual-current-groups
-			 (cons (car (car newsrc)) nnvirtual-current-groups)))
-	      (setq newsrc (cdr newsrc))))
-	  (if nnvirtual-current-groups
-	      (progn
-		(nnvirtual-create-mapping group)
-		(setq nnvirtual-group-alist
-		      (cons (list group nnvirtual-current-groups 
-				  nnvirtual-current-mapping regexp)
-			    nnvirtual-group-alist)))
-	    (setq nnvirtual-status-string 
-		  (format 
-		   "nnvirtual: No newsgroups for this virtual newsgroup"))))))
-  nnvirtual-current-groups)
-
-(defun nnvirtual-create-mapping (group)
-  (let* ((group (gnus-group-prefixed-name group (list 'nnvirtual "")))
-	 (info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
-	 (groups nnvirtual-current-groups)
-	 (offset 0)
-	 reads unread igroup itotal ireads)
-    ;; The virtual group doesn't exist. (?)
-    (or info (error "No such group: %s" group))
-    (setq nnvirtual-current-mapping nil)
-    (while groups
-      ;; Added by Sudish Joseph <joseph@cis.ohio-state.edu>.
-      (setq igroup (car groups))
-      (let ((info (nth 2 (gnus-gethash igroup gnus-newsrc-hashtb)))
-	    (active (gnus-gethash igroup gnus-active-hashtb)))
-	;; See if the group has had its active list read this session
-	;; if not, we do it now.
-	(if (null active)
-	    (if (gnus-activate-group igroup)
-		(progn
-		  (gnus-get-unread-articles-in-group
-		   info (gnus-gethash igroup gnus-active-hashtb))
-		  (setq active (gnus-gethash igroup gnus-active-hashtb)))
-	      (message "Couldn't open component group %s" igroup)))
-	(if (null active)
-	    ()
-	  ;; And then we do the mapping for this component group. If
-	  ;; you feel tempted to cast your eyes to the soup below -
-	  ;; don't.  It'll hurt your soul.  Suffice to say that it
-	  ;; assigns ranges of nnvirtual article numbers to the
-	  ;; different component groups.  To get the article number
-	  ;; from the nnvirtual number, one does something like
-	  ;; (+ (- number offset) (car active)), where `offset' is the
-	  ;; slice the mess below assigns, and active is the lowest
-	  ;; active article in the component group. 
-	  (setq itotal (1+ (- (cdr active) (car active))))
- 	  (if (setq ireads (nth 2 info))
-	      (let ((itreads
-		     (if (not (listp (cdr ireads)))
-			 (setq ireads (list (cons (car ireads) (cdr ireads))))
-		       (setq ireads (copy-alist ireads)))))
-		(if (< (or (and (numberp (car ireads)) (car ireads))
-			   (cdr (car ireads))) (car active))
-		    (setq ireads (setq itreads (cdr ireads))))
-		(if (and ireads (< (or (and (numberp (car ireads))
-					    (car ireads))
-				       (car (car ireads))) (car active)))
-		    (setcar (or (and (numberp (car ireads)) ireads)
-				(car ireads)) (1+ (car active))))
-		(while itreads
-		  (setcar (or (and (numberp (car itreads)) itreads)
-			      (car itreads))
-			  (+ (max 
-			      1 (- (if (numberp (car itreads)) 
-				       (car itreads)
-				     (car (car itreads)))
-				   (car active)))
-			     offset))
-		  (if (not (numberp (car itreads)))
-		      (setcdr (car itreads)
-			      (+ (- (cdr (car itreads)) (car active)) offset)))
-		  (setq itreads (cdr itreads)))
-		(setq reads (nconc reads ireads))))
-	  (setq offset (+ offset (1- itotal)))
-	  (setq nnvirtual-current-mapping
-		(cons (list offset igroup (car active)) 
-		      nnvirtual-current-mapping)))
-	(setq groups (cdr groups))))
-    (setq nnvirtual-current-mapping
-	  (nreverse nnvirtual-current-mapping))
-    ;; Set Gnus active info.
-    (gnus-sethash group (cons 1 (1- offset)) gnus-active-hashtb)
-    ;; Set Gnus read info.
-    (setcar (nthcdr 2 info) reads)
-
-    ;; Then we deal with the marks.
-    (let ((map nnvirtual-current-mapping)
-	  (marks '(tick dormant reply expire score))
-	  (offset 0)
-	  tick dormant reply expire score marked active)
-      (while map
-	(setq igroup (nth 1 (car map)))
-	(setq active (nth 2 (car map)))
-	(setq marked (nth 3 (nth 2 (gnus-gethash igroup gnus-newsrc-hashtb))))
-	(let ((m marks))
-	  (while m
-	    (and (assq (car m) marked)
-		 (set (car m) 
-		      (nconc (mapcar 
-			      (lambda (art) 
-				(if (numberp art)
-				    (if (< art active)
-					0 (+ (- art active) offset))
-				  (cons (+ (- (car art) active) offset)
-					(cdr art))))
-			      (cdr (assq (car m) marked)))
-			     (symbol-value (car m)))))
-	    (setq m (cdr m))))
-	(setq offset (car (car map)))
-	(setq map (cdr map)))
-      ;; Put the list of marked articles in the info of the virtual group.
-      (let ((m marks)
-	    marked)
-	(while m
-	  (and (symbol-value (car m))
-	       (setq marked (cons (cons (car m) (symbol-value (car m)))
-				  marked)))
-	  (setq m (cdr m)))
-	(if (nthcdr 3 info)
-	    (setcar (nthcdr 3 info) marked)
-	  (setcdr (nthcdr 2 info) (list marked)))))))
+    (unless (equal group nnvirtual-current-group)
+      (and (setq inf (assoc group nnvirtual-group-alist))
+	   regexp
+	   (string= (nth 3 inf) regexp)
+	   (progn
+	     (setq nnvirtual-current-group (car inf))
+	     (setq nnvirtual-component-groups (nth 1 inf))
+	     (setq nnvirtual-mapping (nth 2 inf)))))
+    (when (and regexp
+	       (or (not inf)
+		   (not dont-check)))
+      (and inf (setq nnvirtual-group-alist 
+		     (delq inf nnvirtual-group-alist)))
+      (setq nnvirtual-mapping nil)
+      (setq nnvirtual-current-group group)
+      (let ((newsrc gnus-newsrc-alist)
+	    (virt-group (gnus-group-prefixed-name 
+			 nnvirtual-current-group '(nnvirtual ""))))
+	(setq nnvirtual-component-groups nil)
+	(while newsrc
+	  (and (string-match regexp (car (car newsrc)))
+	       (not (string= (car (car newsrc)) virt-group))
+	       (setq nnvirtual-component-groups
+		     (cons (car (car newsrc)) nnvirtual-component-groups)))
+	  (setq newsrc (cdr newsrc))))
+      (if nnvirtual-component-groups
+	  (progn
+	    (nnvirtual-create-mapping)
+	    (setq nnvirtual-group-alist
+		  (cons (list group nnvirtual-component-groups 
+			      nnvirtual-mapping regexp)
+			nnvirtual-group-alist)))
+	(nnheader-report 'nnvirtual "No component groups: %s" group))))
+  nnvirtual-component-groups)
 
 (defun nnvirtual-update-marked ()
-  (let ((mark-lists '((gnus-newsgroup-marked . tick)
-		      (gnus-newsgroup-dormant . dormant)
-		      (gnus-newsgroup-expirable . expire)
-		      (gnus-newsgroup-replied . reply)))
-	marks art-group group-alist g)
+  "Copy marks from the virtual group to the component groups."
+  (let ((mark-lists gnus-article-mark-lists)
+	(uncompressed '(score bookmark))
+	type list calist mart cgroups)
     (while mark-lists
-      (setq marks (symbol-value (car (car mark-lists))))
-      ;; Find out what groups the mark belong to.
-      (while marks
-	(setq art-group (nnvirtual-art-group (car marks)))
-	(if (setq g (assoc (car art-group) group-alist))
-	    (nconc g (list (cdr art-group)))
-	  (setq group-alist (cons (list (car art-group) (cdr art-group)) 
-				  group-alist)))
-	(setq marks (cdr marks)))
-      ;; The groups that don't have marks must have no marks. (Yup.)
-      (let ((groups nnvirtual-current-groups))
-	(while groups
-	  (or (assoc (car groups) group-alist)
-	      (setq group-alist (cons (list (car groups)) group-alist)))
-	  (setq groups (cdr groups))))
-      ;; The we update the list of marks.
-      (while group-alist
-	(gnus-add-marked-articles 
-	 (car (car group-alist)) (cdr (car mark-lists)) 
-	 (cdr (car group-alist)) nil t)
-	(gnus-group-update-group (car (car group-alist)) t)
-	(setq group-alist (cdr group-alist)))
-      (setq mark-lists (cdr mark-lists)))))
+      (setq type (cdar mark-lists))
+      (when (setq list (symbol-value (intern (format "gnus-newsgroup-%s"
+						     (car (pop mark-lists))))))
+	(setq cgroups 
+	      (mapcar (lambda (g) (list g)) nnvirtual-component-groups))
+	(while list
+	  (nconc (assoc (cadr (setq mart (assq (pop list) nnvirtual-mapping)))
+			cgroups)
+		 (list (caddr mart))))
+	(while cgroups
+	  (when (cdar cgroups)
+	    (gnus-add-marked-articles 
+	     (caar cgroups) type (cdar cgroups) nil t)
+	    (gnus-group-update-group (caar cgroups) t))
+	  (setq cgroups (cdr cgroups)))))))
 
-(defun nnvirtual-art-group (article) 
-  (let ((map nnvirtual-current-mapping)
-	(offset 0))
-    (while (< (car (car map)) (if (numberp article) article (car article)))
-      (setq offset (car (car map))
-	    map (cdr map)))
-    (cons (nth 1 (car map))
-	  (if (numberp article)
-	      (- (+ article (nth 2 (car map))) offset)
-	    (cons (- (+ (car article) (nth 2 (car map))) offset)
-		  (cdr article))))))
+(defun nnvirtual-marks (article marks)
+  "Return a list of mark types for ARTICLE."
+  (let (out)
+    (while marks
+      (when (memq article (cdar marks))
+	(push (caar marks) out))
+      (setq marks (cdr marks)))
+    out))
 
-(defun nnvirtual-catchup-group (group &optional server all)
-  (nnvirtual-possibly-change-newsgroups group server)
-  (let ((gnus-group-marked nnvirtual-current-groups)
-	(gnus-expert-user t))
-    (save-excursion
-      (set-buffer gnus-group-buffer)
-      (gnus-group-catchup-current nil all))))
+(defun nnvirtual-create-mapping ()
+  "Create an article mapping for the current group."
+  (let* (div
+	 (map (sort
+	       (apply 
+		'nconc
+		(mapcar
+		 (lambda (g)
+		   (let* ((active (or (gnus-active g) (gnus-activate-group g)))
+			  (unreads (gnus-list-of-unread-articles g))
+			  (marks (gnus-uncompress-marks
+				  (gnus-info-marks (gnus-get-info g)))))
+		     (when gnus-use-cache
+		       (push (cons 'cache (gnus-cache-articles-in-group g))
+			     marks))
+		     (when active
+		       (setq div (/ (float (car active)) (cdr active)))
+		       (mapcar (lambda (n) 
+				 (list (* div (- n (car active)))
+				       g n (and (memq n unreads) t)
+				       (nnvirtual-marks n marks)))
+			       (gnus-uncompress-range active)))))
+		 nnvirtual-component-groups))
+	       (lambda (m1 m2)
+		 (< (car m1) (car m2)))))
+	 (i 0))
+    (setq nnvirtual-mapping map)
+    (while map
+      (setcar (pop map) (incf i)))))
 
 (provide 'nnvirtual)
 

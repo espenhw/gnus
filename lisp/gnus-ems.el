@@ -1,5 +1,5 @@
 ;;; gnus-ems.el --- functions for making Gnus work under different Emacsen
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -134,8 +134,8 @@ pounce directly on the real variables themselves."))
    ((string-match "XEmacs\\|Lucid" emacs-version)
     (gnus-xmas-define))
 
-   ((and (not (string-match "28.9" emacs-version)) 
-	 (not (string-match "29" emacs-version)))
+   ((or (not (boundp 'emacs-minor-version))
+	(< emacs-minor-version 30))
     ;; Remove the `intangible' prop.
     (let ((props (and (boundp 'gnus-hidden-properties) 
 		      gnus-hidden-properties)))
@@ -166,6 +166,15 @@ pounce directly on the real variables themselves."))
 	     (file-exists-p file))))
   (or (fboundp 'face-list)
       (defun face-list (&rest args))))
+
+(eval-and-compile
+  (let ((case-fold-search t))
+    (cond
+     ((string-match "windows-nt\\|os/2" (format "%s" system-type))
+      (setq nnheader-file-name-translation-alist
+	    (append nnheader-file-name-translation-alist
+		    '((?: . ?_)
+		      (?+ . ?-))))))))
 
 (defun gnus-ems-redefine ()
   (cond 

@@ -1,5 +1,5 @@
 ;;; gnus-srvr.el --- virtual server support for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -55,29 +55,64 @@ with some simple extensions.")
 (defvar gnus-server-mode-line-format-spec nil)
 (defvar gnus-server-killed-servers nil)
 
+(defvar gnus-server-mode-map)
+
+(defvar gnus-server-menu-hook nil
+  "*Hook run after the creation of the server mode menu.")
+
+(defun gnus-server-make-menu-bar ()
+  (gnus-visual-turn-off-edit-menu 'server)
+  (or
+   (boundp 'gnus-server-menu)
+   (progn
+     (easy-menu-define
+      gnus-server-menu gnus-server-mode-map ""
+      '("Server"
+	["Add" gnus-server-add-server t]
+	["Browse" gnus-server-read-server t]
+	["List" gnus-server-list-servers t]
+	["Kill" gnus-server-kill-server t]
+	["Yank" gnus-server-yank-server t]
+	["Copy" gnus-server-copy-server t]
+	["Edit" gnus-server-edit-server t]
+	["Exit" gnus-server-exit t]
+	))
+
+     (easy-menu-define
+      gnus-server-menu gnus-server-mode-map ""
+      '("Connections"
+	["Open" gnus-server-open-server t]
+	["Close" gnus-server-close-server t]
+	["Deny" gnus-server-deny-servers t]
+	["Reset" gnus-server-remove-denials t]
+	))
+
+     (run-hooks 'gnus-server-menu-hook))))
+
 (defvar gnus-server-mode-map nil)
 (put 'gnus-server-mode 'mode-class 'special)
 
-(if gnus-server-mode-map
-    nil
+(unless gnus-server-mode-map
   (setq gnus-server-mode-map (make-sparse-keymap))
   (suppress-keymap gnus-server-mode-map)
-  (define-key gnus-server-mode-map " " 'gnus-server-read-server)
-  (define-key gnus-server-mode-map "\r" 'gnus-server-read-server)
-  (define-key gnus-server-mode-map gnus-mouse-2 'gnus-server-pick-server)
-  (define-key gnus-server-mode-map "q" 'gnus-server-exit)
-  (define-key gnus-server-mode-map "l" 'gnus-server-list-servers)
-  (define-key gnus-server-mode-map "k" 'gnus-server-kill-server)
-  (define-key gnus-server-mode-map "y" 'gnus-server-yank-server)
-  (define-key gnus-server-mode-map "c" 'gnus-server-copy-server)
-  (define-key gnus-server-mode-map "a" 'gnus-server-add-server)
-  (define-key gnus-server-mode-map "e" 'gnus-server-edit-server)
 
-  (define-key gnus-server-mode-map "O" 'gnus-server-open-server)
-  (define-key gnus-server-mode-map "C" 'gnus-server-close-server)
-  (define-key gnus-server-mode-map "D" 'gnus-server-deny-server)
-  (define-key gnus-server-mode-map "R" 'gnus-server-remove-denials)
-  )
+  (gnus-define-keys
+   gnus-server-mode-map
+   " " 'gnus-server-read-server
+   "\r" 'gnus-server-read-server
+   gnus-mouse-2 'gnus-server-pick-server
+   "q" 'gnus-server-exit
+   "l" 'gnus-server-list-servers
+   "k" 'gnus-server-kill-server
+   "y" 'gnus-server-yank-server
+   "c" 'gnus-server-copy-server
+   "a" 'gnus-server-add-server
+   "e" 'gnus-server-edit-server
+
+   "O" 'gnus-server-open-server
+   "C" 'gnus-server-close-server
+   "D" 'gnus-server-deny-server
+   "R" 'gnus-server-remove-denials))
 
 (defun gnus-server-mode ()
   "Major mode for listing and editing servers.
@@ -401,5 +436,241 @@ The following commands are available:
   (interactive "e")
   (mouse-set-point e)
   (gnus-server-read-server (gnus-server-server-name)))
+
+
+;;;
+;;; Browse Server Mode
+;;;
+
+(defvar gnus-browse-menu-hook nil
+  "*Hook run after the creation of the browse mode menu.")
+
+(defvar gnus-browse-mode-hook nil)
+(defvar gnus-browse-mode-map nil)
+(put 'gnus-browse-mode 'mode-class 'special)
+
+(unless gnus-browse-mode-map
+  (setq gnus-browse-mode-map (make-keymap))
+  (suppress-keymap gnus-browse-mode-map)
+
+  (gnus-define-keys
+   gnus-browse-mode-map
+   " " gnus-browse-read-group
+   "=" gnus-browse-select-group
+   "n" gnus-browse-next-group
+   "p" gnus-browse-prev-group
+   "\177" gnus-browse-prev-group
+   "N" gnus-browse-next-group
+   "P" gnus-browse-prev-group
+   "\M-n" gnus-browse-next-group
+   "\M-p" gnus-browse-prev-group
+   "\r" gnus-browse-select-group
+   "u" gnus-browse-unsubscribe-current-group
+   "l" gnus-browse-exit
+   "L" gnus-browse-exit
+   "q" gnus-browse-exit
+   "Q" gnus-browse-exit
+   "\C-c\C-c" gnus-browse-exit
+   "?" gnus-browse-describe-briefly
+   "\C-c\C-i" gnus-info-find-node))
+
+(defun gnus-browse-make-menu-bar ()
+  (gnus-visual-turn-off-edit-menu 'browse)
+  (or
+   (boundp 'gnus-browse-menu)
+   (progn
+     (easy-menu-define
+      gnus-browse-menu gnus-browse-mode-map ""
+      '("Browse"
+	["Subscribe" gnus-browse-unsubscribe-current-group t]
+	["Read" gnus-browse-read-group t]
+	["Select" gnus-browse-read-group t]
+	["Next" gnus-browse-next-group t]
+	["Prev" gnus-browse-next-group t]
+	["Exit" gnus-browse-exit t]
+	))
+      (run-hooks 'gnus-browse-menu-hook))))
+
+(defvar gnus-browse-current-method nil)
+(defvar gnus-browse-return-buffer nil)
+
+(defvar gnus-browse-buffer "*Gnus Browse Server*")
+
+(defun gnus-browse-foreign-server (method &optional return-buffer)
+  "Browse the server METHOD."
+  (setq gnus-browse-current-method method)
+  (setq gnus-browse-return-buffer return-buffer)
+  (let ((gnus-select-method method)
+	groups group)
+    (gnus-message 5 "Connecting to %s..." (nth 1 method))
+    (cond
+     ((not (gnus-check-server method))
+      (gnus-message
+       1 "Unable to contact server: %s" (gnus-status-message method))
+      nil)
+     ((not (gnus-request-list method))
+      (gnus-message
+       1 "Couldn't request list: %s" (gnus-status-message method))
+      nil)
+     (t
+      (get-buffer-create gnus-browse-buffer)
+      (gnus-add-current-to-buffer-list)
+      (and gnus-carpal (gnus-carpal-setup-buffer 'browse))
+      (gnus-configure-windows 'browse)
+      (buffer-disable-undo (current-buffer))
+      (let ((buffer-read-only nil))
+	(erase-buffer))
+      (gnus-browse-mode)
+      (setq mode-line-buffer-identification
+	    (list
+	     (format
+	      "Gnus: %%b {%s:%s}" (car method) (car (cdr method)))))
+      (save-excursion
+	(set-buffer nntp-server-buffer)
+	(let ((cur (current-buffer)))
+	  (goto-char (point-min))
+	  (or (string= gnus-ignored-newsgroups "")
+	      (delete-matching-lines gnus-ignored-newsgroups))
+	  (while (re-search-forward
+		  "\\(^[^ \t]+\\)[ \t]+[0-9]+[ \t]+[0-9]+" nil t)
+	    (goto-char (match-end 1))
+	    (setq groups (cons (cons (match-string 1)
+				     (max 0 (- (1+ (read cur)) (read cur))))
+			       groups)))))
+      (setq groups (sort groups
+			 (lambda (l1 l2)
+			   (string< (car l1) (car l2)))))
+      (let ((buffer-read-only nil))
+	(while groups
+	  (setq group (car groups))
+	  (insert
+	   (format "K%7d: %s\n" (cdr group) (car group)))
+	  (setq groups (cdr groups))))
+      (switch-to-buffer (current-buffer))
+      (goto-char (point-min))
+      (gnus-group-position-point)
+      t))))
+
+(defun gnus-browse-mode ()
+  "Major mode for browsing a foreign server.
+
+All normal editing commands are switched off.
+
+\\<gnus-browse-mode-map>
+The only things you can do in this buffer is
+
+1) `\\[gnus-browse-unsubscribe-current-group]' to subscribe to a group.
+The group will be inserted into the group buffer upon exit from this
+buffer.
+
+2) `\\[gnus-browse-read-group]' to read a group ephemerally.
+
+3) `\\[gnus-browse-exit]' to return to the group buffer."
+  (interactive)
+  (kill-all-local-variables)
+  (when (and menu-bar-mode
+	     (gnus-visual-p 'browse-menu 'menu))
+    (gnus-browse-make-menu-bar))
+  (gnus-simplify-mode-line)
+  (setq major-mode 'gnus-browse-mode)
+  (setq mode-name "Browse Server")
+  (setq mode-line-process nil)
+  (use-local-map gnus-browse-mode-map)
+  (buffer-disable-undo (current-buffer))
+  (setq truncate-lines t)
+  (setq buffer-read-only t)
+  (run-hooks 'gnus-browse-mode-hook))
+
+(defun gnus-browse-read-group (&optional no-article)
+  "Enter the group at the current line."
+  (interactive)
+  (let ((group (gnus-browse-group-name)))
+    (or (gnus-group-read-ephemeral-group
+	 group gnus-browse-current-method nil
+	 (cons (current-buffer) 'browse))
+	(error "Couldn't enter %s" group))))
+
+(defun gnus-browse-select-group ()
+  "Select the current group."
+  (interactive)
+  (gnus-browse-read-group 'no))
+
+(defun gnus-browse-next-group (n)
+  "Go to the next group."
+  (interactive "p")
+  (prog1
+      (forward-line n)
+    (gnus-group-position-point)))
+
+(defun gnus-browse-prev-group (n)
+  "Go to the next group."
+  (interactive "p")
+  (gnus-browse-next-group (- n)))
+
+(defun gnus-browse-unsubscribe-current-group (arg)
+  "(Un)subscribe to the next ARG groups."
+  (interactive "p")
+  (and (eobp)
+       (error "No group at current line."))
+  (let ((ward (if (< arg 0) -1 1))
+	(arg (abs arg)))
+    (while (and (> arg 0)
+		(not (eobp))
+		(gnus-browse-unsubscribe-group)
+		(zerop (gnus-browse-next-group ward)))
+      (setq arg (1- arg)))
+    (gnus-group-position-point)
+    (if (/= 0 arg) (gnus-message 7 "No more newsgroups"))
+    arg))
+
+(defun gnus-browse-group-name ()
+  (save-excursion
+    (beginning-of-line)
+    (when (re-search-forward ": \\(.*\\)$" (gnus-point-at-eol) t)
+      (gnus-group-prefixed-name (match-string 1) gnus-browse-current-method))))
+
+(defun gnus-browse-unsubscribe-group ()
+  "Toggle subscription of the current group in the browse buffer."
+  (let ((sub nil)
+	(buffer-read-only nil)
+	group)
+    (save-excursion
+      (beginning-of-line)
+      ;; If this group it killed, then we want to subscribe it.
+      (if (= (following-char) ?K) (setq sub t))
+      (setq group (gnus-browse-group-name))
+      (delete-char 1)
+      (if sub
+	  (progn
+	    (gnus-group-change-level
+	     (list t group gnus-level-default-subscribed
+		   nil nil gnus-browse-current-method)
+	     gnus-level-default-subscribed gnus-level-killed
+	     (and (car (nth 1 gnus-newsrc-alist))
+		  (gnus-gethash (car (nth 1 gnus-newsrc-alist))
+				gnus-newsrc-hashtb))
+	     t)
+	    (insert ? ))
+	(gnus-group-change-level
+	 group gnus-level-killed gnus-level-default-subscribed)
+	(insert ?K)))
+    t))
+
+(defun gnus-browse-exit ()
+  "Quit browsing and return to the group buffer."
+  (interactive)
+  (if (eq major-mode 'gnus-browse-mode)
+      (kill-buffer (current-buffer)))
+  (if gnus-browse-return-buffer
+      (gnus-configure-windows 'server 'force)
+    (gnus-configure-windows 'group 'force)
+    (gnus-group-list-groups nil)))
+
+(defun gnus-browse-describe-briefly ()
+  "Give a one line description of the group mode commands."
+  (interactive)
+  (gnus-message 6
+		(substitute-command-keys "\\<gnus-browse-mode-map>\\[gnus-group-next-group]:Forward  \\[gnus-group-prev-group]:Backward  \\[gnus-browse-exit]:Exit  \\[gnus-info-find-node]:Run Info  \\[gnus-browse-describe-briefly]:This help")))
+
 
 ;;; gnus-srvr.el ends here.

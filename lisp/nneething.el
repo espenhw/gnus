@@ -1,5 +1,5 @@
 ;;; nneething.el --- random file access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -31,12 +31,14 @@
 
 (require 'nnheader)
 (require 'nnmail)
+(eval-when-compile (require 'cl))
 
 (defvar nneething-map-file-directory "~/.nneething/"
   "*Map files directory.")
 
-(defvar nneething-exclude-files "~$"
-  "*Regexp saying what files to exclude from the group.")
+(defvar nneething-exclude-files nil
+  "*Regexp saying what files to exclude from the group.
+If this variable is nil, no files will be excluded.")
 
 (defvar nneething-map-file ".nneething"
   "*Name of map files.")
@@ -60,11 +62,10 @@
 (defvar nneething-read-only nil)
 (defvar nneething-active nil)
 (defvar nneething-server-variables 
-  (list
-   (list 'nneething-directory nneething-directory)
-   '(nneething-current-directory nil)
-   '(nneething-status-string "")
-   '(nneething-group-alist)))
+   `((nneething-directory ,nneething-directory)
+     (nneething-current-directory nil)
+     (nneething-status-string "")
+     (nneething-group-alist)))
 
 
 
@@ -90,7 +91,8 @@
 	  (setq file (nneething-file-name article))
 
 	  (if (and (file-exists-p file)
-		   (not (zerop (nth 7 (file-attributes file)))))
+		   (or (file-directory-p file)
+		       (not (zerop (nth 7 (file-attributes file))))))
 	      (progn
 		(insert (format "221 %d Article retrieved.\n" article))
 		(nneething-insert-head file)
@@ -210,27 +212,43 @@
   ;; Read nneething-active and nneething-map.
   (let ((map-file (nneething-map-file))
 	(files (directory-files nneething-directory))
-	touched)
+	touched map-files)
     (if (file-exists-p map-file)
 	(condition-case nil
 	    (load map-file nil t t)
 	  (error nil)))
     (or nneething-active (setq nneething-active (cons 1 0)))
-    ;; Remove files matching that regexp.
-    (let ((f files)
-	  prev)
-      (while f
-	(if (string-match nneething-exclude-files (car f))
-	    (if prev (setcdr prev (cdr f))
-	      (setq files (cdr files)))
-	  (setq prev f))
-	(setq f (cdr f))))
-    ;; Remove files that have disappeared from the map.
+    ;; Old nneething had a different map format.
+    (when (and (cdr (car nneething-map))
+	       (atom (cdar nneething-map)))
+      (setq nneething-map
+	    (mapcar (lambda (n)
+		      (list (cdr n) (car n) 
+			    (nth 5 (file-attributes 
+				    (nneething-file-name (car n))))))
+		    nneething-map)))
+    ;; Remove files matching the exclusion regexp.
+    (when nneething-exclude-files
+      (let ((f files)
+	    prev)
+	(while f
+	  (if (string-match nneething-exclude-files (car f))
+	      (if prev (setcdr prev (cdr f))
+		(setq files (cdr files)))
+	    (setq prev f))
+	  (setq f (cdr f)))))
+    ;; Remove deleted files from the map.
     (let ((map nneething-map)
 	  prev)
       (while map
-	(if (member (car (car map)) files)
-	    (setq prev map)
+	(if (and (member (cadar map) files)
+		 ;; We also remove files that have changed mod times.
+		 (equal (nth 5 (file-attributes
+				(nneething-file-name (cadar map))))
+			(caddar map)))
+	    (progn
+	      (push (cadar map) map-files)
+	      (setq prev map))
 	  (setq touched t)
 	  (if prev
 	      (setcdr prev (cdr map))
@@ -238,20 +256,19 @@
 	(setq map (cdr map))))
     ;; Find all new files and enter them into the map.
     (while files
-      (or (assoc (car files) nneething-map) ; If already in the map, ignore.
-	  (progn
-	    (setq touched t)
-	    (setcdr nneething-active (1+ (cdr nneething-active)))
-	    (setq nneething-map
-		  (cons (cons (car files) (cdr nneething-active))
-			nneething-map))))
+      (unless (member (car files) map-files) 
+	;; This file is not in the map, so we enter it.
+	(setq touched t)
+	(setcdr nneething-active (1+ (cdr nneething-active)))
+	(push (list (cdr nneething-active) (car files) 
+		    (nth 5 (file-attributes
+			    (nneething-file-name (car files)))))
+	      nneething-map))
       (setq files (cdr files)))
-    (if (or (not touched) nneething-read-only)
-	()
+    (when (and touched 
+	       (not nneething-read-only))
       (save-excursion
-	(set-buffer (get-buffer-create " *nneething map*"))
-	(buffer-disable-undo (current-buffer))
-	(erase-buffer)
+	(nnheader-set-temp-buffer " *nneething map*")
 	(insert "(setq nneething-map '" (prin1-to-string nneething-map) ")\n"
 		"(setq nneething-active '" (prin1-to-string nneething-active)
 		")\n")
@@ -321,12 +338,10 @@
 	(nneething-make-head file))
       t))))
 
-(defun nneething-number-to-file (number)
-  (car (rassq number nneething-map)))
-
 (defun nneething-file-name (article)
   (concat (file-name-as-directory nneething-directory)
-	  (if (numberp article) (nneething-number-to-file article)
+	  (if (numberp article)
+	      (cadr (assq article nneething-map))
 	    article)))
 
 (provide 'nneething)

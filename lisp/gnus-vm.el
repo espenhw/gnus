@@ -1,5 +1,5 @@
 ;;; gnus-vm.el --- vm interface for Gnus
-;; Copyright (C) 1994,95 Free Software Foundation, Inc.
+;; Copyright (C) 1994,95,96 Free Software Foundation, Inc.
 
 ;; Author: Per Persson <pp@solace.mh.se>
 ;; Keywords: news, mail

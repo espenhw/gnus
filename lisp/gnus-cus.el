@@ -1,5 +1,5 @@
 ;;; gnus-cus.el --- User friendly customization of Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: help, news
@@ -65,6 +65,7 @@ less space and be faster as a result.")
 		    (summary-highlight 
 		     article-highlight 
 		     summary-menu group-menu article-menu
+		     tree-highlight menu highlight
 		     browse-menu server-menu
 		     page-marker))
 		  (name . gnus-visual)
@@ -115,6 +116,7 @@ want.")
 		  (name . gnus-article-display-hook)
 		  (type . list)
 		  (default . (gnus-article-hide-headers-if-wanted
+			      gnus-article-hide-boring-headers
 			      gnus-article-treat-overstrike
 			      gnus-article-maybe-highlight))
 		  (data ((type . repeat)
@@ -332,7 +334,7 @@ alone.")
 				     ((eq gnus-background-mode 'dark)
 				      (list (list "From" nil 
 						  (custom-face-lookup 
-						   "dark blue" nil nil t t nil))
+						   "light blue" nil nil t t nil))
 					    (list "Subject" nil 
 						  (custom-face-lookup
 						   "pink" nil nil t t nil))

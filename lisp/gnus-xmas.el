@@ -1,5 +1,5 @@
 ;;; gnus-xmas.el --- Gnus functions for XEmacs
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -228,12 +228,30 @@ call it with the value of the `gnus-data' text property."
   "Get the next event."
   (let ((event (next-event)))
     ;; We junk all non-key events.  Is this naughty?
-    (while (not (key-press-even-p event))
+    (while (not (key-press-event-p event))
       (setq event (next-event)))
     (cons (and (key-press-event-p event) 
 	       (numberp (event-key event))
 	       (event-to-character event)) 
 	  event)))
+
+(defun gnus-xmas-seconds-since-epoch (date)
+  "Return a floating point number that says how many seconds have lapsed between Jan 1 12:00:00 1970 and DATE."
+  (let* ((tdate (mapcar (lambda (ti) (and ti (string-to-int ti)))
+			(timezone-parse-date date)))
+	 (ttime (mapcar (lambda (ti) (and ti (string-to-int ti)))
+			(timezone-parse-time
+			 (aref (timezone-parse-date date) 3))))
+	 (edate (mapcar (lambda (ti) (and ti (string-to-int ti)))
+			(timezone-parse-date "Jan 1 12:00:00 1970")))
+	 (tday (- (timezone-absolute-from-gregorian 
+		   (nth 1 tdate) (nth 2 tdate) (nth 0 tdate))
+		  (timezone-absolute-from-gregorian 
+		   (nth 1 edate) (nth 2 edate) (nth 0 edate)))))
+    (+ (nth 2 ttime)
+       (* (nth 1 ttime) 60)
+       (* (float (nth 0 ttime)) 60 60)
+       (* (float tday) 60 60 24))))
 
 (defun gnus-xmas-define ()
   (setq gnus-mouse-2 [button2])
@@ -257,6 +275,16 @@ call it with the value of the `gnus-data' text property."
 
   (defvar gnus-mouse-face-prop 'highlight)
 
+  (unless (fboundp 'encode-time)
+    (defun encode-time (sec minute hour day month year &optional zone)
+      (let ((seconds
+	     (gnus-xmas-seconds-since-epoch
+	      (timezone-make-arpa-date 
+	       year month day (timezone-make-time-string hour minute sec)
+	       zone))))
+	(list (floor (/ seconds (expt 2 16)))
+	      (round (mod seconds (expt 2 16)))))))
+      
   (defun gnus-byte-code (func)
     "Return a form that can be `eval'ed based on FUNC."
     (let ((fval (symbol-function func)))

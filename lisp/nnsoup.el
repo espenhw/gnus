@@ -1,5 +1,5 @@
 ;;; nnsoup.el --- SOUP access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -330,8 +330,8 @@ The SOUP packet file name will be inserted at the %s.")
 	;; Ok, we delete this file.
 	(when (condition-case nil
 		  (progn
-		    (when gnus-verbose-backends
-		      (message "Deleting %s..." (nnsoup-file prefix t)))
+		    (nnheader-message 
+		     5 "Deleting %s..." (nnsoup-file prefix t))
 		    (sit-for 1)
 		    (when (file-exists-p (nnsoup-file prefix))
 		      (delete-file (nnsoup-file prefix)))
@@ -567,9 +567,10 @@ The SOUP packet file name will be inserted at the %s.")
 	  (insert ?\n))
       ;; Change header-delimiter to be what sendmail expects.
       (goto-char (point-min))
-      (re-search-forward
-	(concat "^" (regexp-quote mail-header-separator) "\n"))
-      (replace-match "\n")
+      (if (re-search-forward
+	   (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
+	  (replace-match "\n")
+	(search-forward "\n\n" nil t))
       (backward-char 1)
       (setq delimline (point-marker))
       (if mail-aliases (expand-mail-aliases (point-min) delimline))
@@ -636,16 +637,14 @@ The SOUP packet file name will be inserted at the %s.")
       (gnus-soup-reply-prefix (car nnsoup-replies-list)))))
 
 (defun nnsoup-make-active ()
+  "(Re-)create the SOUP active file."
+  (interactive)
   (let ((files (sort (directory-files nnsoup-directory t "IDX$")
 		     (lambda (f1 f2)
 		       (< (progn (string-match "/\\([0-9]+\\)\\." f1)
-				 (string-to-int (substring 
-						 f1 (match-beginning 1)
-						 (match-end 1))))
+				 (string-to-int (match-string 1 f1)))
 			  (progn (string-match "/\\([0-9]+\\)\\." f2)
-				 (string-to-int (substring 
-						 f2 (match-beginning 1)
-						 (match-end 1))))))))
+				 (string-to-int (match-string 1 f2)))))))
 	active group lines ident elem min)
     (set-buffer (get-buffer-create " *nnsoup work*"))
     (buffer-disable-undo (current-buffer))
@@ -673,10 +672,12 @@ The SOUP packet file name will be inserted at the %s.")
 				 (vector ident group "ncm" "" lines))
 			   (cdr elem))))
       (setq files (cdr files)))
+    (message "")
     (setq nnsoup-group-alist active)
     (while active
       (setcdr (car active) (nreverse (cdr (car active))))
-      (setq active (cdr active)))))
+      (setq active (cdr active)))
+    (nnsoup-write-active-file)))
 
 (provide 'nnsoup)
 

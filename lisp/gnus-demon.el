@@ -1,5 +1,5 @@
 ;;; gnus-demon.el --- daemonic Gnus behaviour
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -130,8 +130,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
 		   (string-to-number (aref dv 1))
 		   (string-to-number (aref dv 2)) time
 		   (or (aref dv 4) "UT")))
-	   (nseconds (- (gnus-seconds-since-epoch tdate)
-			(gnus-seconds-since-epoch date))))
+	   (nseconds (gnus-time-minus
+		      (gnus-encode-date tdate) (gnus-encode-date date))))
       (round
        (/ (if (< nseconds 0)
 	      (+ nseconds (* 60 60 24))

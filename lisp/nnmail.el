@@ -1,5 +1,5 @@
 ;;; nnmail.el --- mail support functions for the Gnus mail backends
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news, mail
@@ -116,7 +116,7 @@ The file(s) in `nnmail-spool-file' will also be read.")
   "*When using procmail (and the like), incoming mail is put in this directory.
 The Gnus mail backends will read the mail from this directory.")
 
-(defvar nnmail-procmail-suffix ".spool"
+(defvar nnmail-procmail-suffix "\\.spool"
   "*Suffix of files created by procmail (and the like).
 This variable might be a suffix-regexp to match the suffixes of
 several files - eg. \".spool[0-9]*\".")
@@ -126,6 +126,12 @@ several files - eg. \".spool[0-9]*\".")
 
 (defvar nnmail-delete-file-function 'delete-file
   "Function called to delete files in some mail backends.")
+
+(defvar nnmail-crosspost-link-function 'add-name-to-file
+  "Function called to create a copy of a file.
+This is `add-name-to-file' by default, which means that crossposts
+will use hard links.  If your file system doesn't allow hard
+links, you could set this variable to `copy-file' instead.")
 
 (defvar nnmail-movemail-program "movemail"
   "*A command to be executed to move mail from the inbox.
@@ -162,6 +168,12 @@ If you use `display-time', you could use something like this:
 (defvar nnmail-prepare-incoming-hook nil
   "*Hook called before treating incoming mail.
 The hook is run in a buffer with all the new, incoming mail.")
+
+(defvar nnmail-pre-get-new-mail-hook nil
+  "Hook called just before starting to handle new incoming mail.")
+
+(defvar nnmail-post-get-new-mail-hook nil
+  "Hook called just after finishing handling new incoming mail.")
 
 ;; Suggested by Mejia Pablo J <pjm9806@usl.edu>.
 (defvar nnmail-tmp-directory nil
@@ -235,8 +247,12 @@ perfomed.")
 (defvar nnmail-message-id-cache-file "~/.nnmail-cache"
   "*The file name of the nnmail Message-ID cache.")
 
-(defvar nnmail-delete-duplicates nil
-  "*If non-nil, nnmail will delete any duplicate mails it sees.")
+(defvar nnmail-treat-duplicates 'warn
+  "*If non-nil, nnmail keep a cache of Message-IDs to discover mail duplicates.
+Three values are legal: nil, which means that nnmail is not to keep a
+Message-ID cache; `warn', which means that nnmail should insert extra
+headers to warn the user about the duplication (this is the default);
+and `delete', which means that nnmail will delete duplicated mails.")
 
 ;;; Internal variables.
 
@@ -258,28 +274,18 @@ perfomed.")
       (progn (insert-file-contents file) t)
     (file-error nil)))
 
-(defun nnmail-group-pathname (group mail-dir)
+(defun nnmail-group-pathname (group dir &optional file)
   "Make pathname for GROUP."
-  (let ((mail-dir (file-name-as-directory (expand-file-name mail-dir))))
-    ;; If this directory exists, we use it directly.
-    (if (or nnmail-use-long-file-names 
-	    (file-directory-p (concat mail-dir group)))
-	(concat mail-dir group "/")
-      ;; If not, we translate dots into slashes.
-      (concat mail-dir (nnmail-replace-chars-in-string group ?. ?/) "/"))))
-
-(defun nnmail-replace-chars-in-string (string from to)
-  "Replace characters in STRING from FROM to TO."
-  (let ((string (substring string 0))	;Copy string.
-	(len (length string))
-	(idx 0))
-    ;; Replace all occurrences of FROM with TO.
-    (while (< idx len)
-      (if (= (aref string idx) from)
-	  (aset string idx to))
-      (setq idx (1+ idx)))
-    string))
-
+  (concat
+   (let ((dir (file-name-as-directory (expand-file-name dir))))
+     ;; If this directory exists, we use it directly.
+     (if (or nnmail-use-long-file-names 
+	     (file-directory-p (concat dir group)))
+	 (concat dir group "/")
+       ;; If not, we translate dots into slashes.
+       (concat dir (nnheader-replace-chars-in-string group ?. ?/) "/")))
+   (if file file "")))
+  
 (defun nnmail-date-to-time (date)
   "Convert DATE into time."
   (let* ((d1 (timezone-parse-date date))
@@ -429,6 +435,8 @@ nn*-request-list should have been called before calling this function."
 	  (setq group (pop group-assoc))
 	  (insert (format "%s %d %d y\n" (car group) (cdr (car (cdr group)) )
 			  (car (car (cdr group))))))
+	(unless (file-exists-p (file-name-directory file-name))
+	  (make-directory (file-name-directory file-name) t))
 	(write-region 1 (point-max) (expand-file-name file-name) nil 'nomesg)
 	(kill-buffer (current-buffer))))))
 
@@ -451,7 +459,8 @@ nn*-request-list should have been called before calling this function."
   (let (start message-id content-length do-search end)
     (while (not (eobp))
       (goto-char (point-min))
-      (re-search-forward "\n0, *unseen,+\n\\*\\*\\* EOOH \\*\\*\\*\n" nil t)
+      (re-search-forward
+       "\n0, *unseen,+\n\\(\\*\\*\\* EOOH \\*\\*\\*\n\\)?" nil t)
       (goto-char (match-end 0))
       (delete-region (match-beginning 0) (match-end 0))
       (setq start (point))
@@ -465,6 +474,10 @@ nn*-request-list should have been called before calling this function."
 	    (setq message-id (buffer-substring (match-beginning 1)
 					       (match-end 1)))
 	  ;; There is no Message-ID here, so we create one.
+	  (save-excursion
+	    (when (re-search-backward "^Message-ID:" nil t)
+	      (beginning-of-line)
+	      (insert "Original-")))
 	  (forward-line -1)
 	  (insert "Message-ID: " (setq message-id (nnmail-message-id))
 		  "\n")))
@@ -501,11 +514,7 @@ nn*-request-list should have been called before calling this function."
 	(save-restriction
 	  (narrow-to-region start (point))
 	  (goto-char (point-min))
-	  ;; If this is a duplicate message, then we do not save it.
-	  (if (nnmail-cache-id-exists-p message-id)
-	      (delete-region (point-min) (point-max))
-	    (nnmail-cache-insert message-id)
-	    (funcall func))
+	  (nnmail-check-duplication message-id func)
 	  (setq end (point-max))))
       (goto-char end))))
 
@@ -536,6 +545,10 @@ nn*-request-list should have been called before calling this function."
 	(goto-char (point-min))
 	(if (re-search-forward "^Message-ID:[ \t]*\\(<[^>]+>\\)" nil t)
 	    (setq message-id (match-string 1))
+	  (save-excursion
+	    (when (re-search-backward "^Message-ID:" nil t)
+	      (beginning-of-line)
+	      (insert "Original-")))
 	  ;; There is no Message-ID here, so we create one.
 	  (forward-line 1)
 	  (insert "Message-ID: " (setq message-id (nnmail-message-id)) "\n"))
@@ -575,11 +588,7 @@ nn*-request-list should have been called before calling this function."
 	  (save-restriction
 	    (narrow-to-region start (point))
 	    (goto-char (point-min))
-	    ;; If this is a duplicate message, then we do not save it.
-	    (if (nnmail-cache-id-exists-p message-id)
-		(delete-region (point-min) (point-max))
-	      (nnmail-cache-insert message-id)
-	      (funcall func))
+	    (nnmail-check-duplication message-id func)
 	    (setq end (point-max))))
 	(goto-char end)))))
 
@@ -610,6 +619,10 @@ nn*-request-list should have been called before calling this function."
 	(if (re-search-forward "^Message-ID:[ \t]*\\(<[^>]+>\\)" nil t)
 	    (setq message-id (match-string 1))
 	  ;; There is no Message-ID here, so we create one.
+	  (save-excursion
+	    (when (re-search-backward "^Message-ID:" nil t)
+	      (beginning-of-line)
+	      (insert "Original-")))
 	  (forward-line 1)
 	  (insert "Message-ID: " (setq message-id (nnmail-message-id)) "\n"))
 	;; Find the end of this article.
@@ -623,11 +636,7 @@ nn*-request-list should have been called before calling this function."
 	  (save-restriction
 	    (narrow-to-region start (point))
 	    (goto-char (point-min))
-	    ;; If this is a duplicate message, then we do not save it.
-	    (if (nnmail-cache-id-exists-p message-id)
-		(delete-region (point-min) (point-max))
-	      (nnmail-cache-insert message-id)
-	      (funcall func))
+	    (nnmail-check-duplication message-id func)
 	    (setq end (point-max))))
 	(goto-char end)
 	(forward-line 2)))))
@@ -657,7 +666,8 @@ FUNC will be called with the buffer narrowed to each mail."
       ;; Handle both babyl, MMDF and unix mail formats, since movemail will
       ;; use the former when fetching from a mailbox, the latter when
       ;; fetches from a file.
-      (cond ((looking-at "\^L")
+      (cond ((or (looking-at "\^L")
+		 (looking-at "BABYL OPTIONS:"))
 	     (nnmail-process-babyl-mail-format func))
 	    ((looking-at "\^A\^A\^A\^A")
 	     (nnmail-process-mmdf-mail-format func))
@@ -927,7 +937,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 (defvar nnmail-cache-buffer nil)
 
 (defun nnmail-cache-open ()
-  (if (or (not nnmail-delete-duplicates)
+  (if (or (not nnmail-treat-duplicates)
 	  (and nnmail-cache-buffer
 	       (buffer-name nnmail-cache-buffer)))
       ()				; The buffer is open.
@@ -941,11 +951,10 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (current-buffer))))
 
 (defun nnmail-cache-close ()
-  (if (or (not nnmail-cache-buffer)
-	  (not nnmail-delete-duplicates)
-	  (not (buffer-name nnmail-cache-buffer))
-	  (not (buffer-modified-p nnmail-cache-buffer)))
-      ()				; The buffer is closed.
+  (when (and nnmail-cache-buffer
+	     nnmail-treat-duplicates
+	     (buffer-name nnmail-cache-buffer)
+	     (buffer-modified-p nnmail-cache-buffer))
     (save-excursion
       (set-buffer nnmail-cache-buffer)
       ;; Weed out the excess number of Message-IDs.
@@ -963,23 +972,49 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (set-buffer-modified-p nil))))
 
 (defun nnmail-cache-insert (id)
-  (and nnmail-delete-duplicates
-       (save-excursion
-	 (set-buffer nnmail-cache-buffer)
-	 (goto-char (point-max))
-	 (insert id "\n"))))
+  (when nnmail-treat-duplicates
+    (save-excursion
+      (set-buffer nnmail-cache-buffer)
+      (goto-char (point-max))
+      (insert id "\n"))))
 
 (defun nnmail-cache-id-exists-p (id)
-  (and nnmail-delete-duplicates
-       (save-excursion
-	 (set-buffer nnmail-cache-buffer)
-	 (goto-char (point-max))
-	 (search-backward id nil t))))
+  (when nnmail-treat-duplicates
+    (save-excursion
+      (set-buffer nnmail-cache-buffer)
+      (goto-char (point-max))
+      (search-backward id nil t))))
+
+(defun nnmail-check-duplication (message-id func)
+  ;; If this is a duplicate message, then we do not save it.
+  (let ((duplication (nnmail-cache-id-exists-p message-id)))
+    (cond
+     ((not duplication)
+      (nnmail-cache-insert message-id)
+      (funcall func))
+     ((eq nnmail-treat-duplicates 'delete)
+      (delete-region (point-min) (point-max)))
+     (t
+      ;; We insert a warning.
+      (let ((case-fold-search t)
+	    (newid (nnmail-message-id)))
+	(goto-char (point-min))
+	(when (re-search-forward "^message-id:" nil t)
+	  (beginning-of-line)
+	  (insert "Original-"))
+	(beginning-of-line)
+	(insert "Message-ID: " newid "\n")
+	(insert "Gnus-Warning: This is a duplication of message "
+		message-id "\n")
+	(nnmail-cache-insert newid)
+	(funcall func))))))
+
+;;; Get new mail.
 
 (defun nnmail-get-value (&rest args)
   (let ((sym (intern (apply 'format args))))
-    (and (boundp sym)
-	 (symbol-value sym))))
+    (when (boundp sym)
+      (symbol-value sym))))
 
 (defun nnmail-get-new-mail (method exit-func temp
 				   &optional group spool-func)
@@ -991,6 +1026,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	       nnmail-spool-file)
       ;; We first activate all the groups.
       (nnmail-activate method)
+      ;; Allow the user to hook.
+      (run-hooks 'nnmail-pre-get-new-mail-hook)
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools
@@ -1001,8 +1038,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(when (or (string-match "^po:" spool)
 		  (and (file-exists-p spool)
 		       (> (nth 7 (file-attributes (file-truename spool))) 0)))
-	  (when gnus-verbose-backends 
-	    (message "%s: Reading incoming mail..." method))
+	  (nnheader-message 3 "%s: Reading incoming mail..." method)
 	  (when (and (nnmail-move-inbox spool)
 		     (file-exists-p nnmail-crash-box))
 	    ;; There is new mail.  We first find out if all this mail
@@ -1031,8 +1067,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(when exit-func
 	  (funcall exit-func))
 	(run-hooks 'nnmail-read-incoming-hook)
-	(when gnus-verbose-backends
-	  (message "%s: Reading incoming mail...done" method)))
+	(nnheader-message 3 "%s: Reading incoming mail...done" method))
+      ;; Allow the user to hook.
+      (run-hooks 'nnmail-post-get-new-mail-hook)
       ;; Delete all the temporary files.
       (while incomings
 	(setq incoming (pop incomings))
@@ -1041,14 +1078,16 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (file-writable-p incoming)
 	     (delete-file incoming))))))
 
-(defun nnmail-expired-article-p (group time force)
+(defun nnmail-expired-article-p (group time force &optional inhibit)
   "Say whether an article that is TIME old in GROUP should be expired."
   (if force
       t
     (let ((days (or (and nnmail-expiry-wait-function
 			 (funcall nnmail-expiry-wait-function group))
 		    nnmail-expiry-wait)))
-      (cond ((eq days 'never)
+      (cond ((or (eq days 'never)
+		 (and (not force)
+		      inhibit))
 	     ;; This isn't an expirable group.
 	     nil)
 	    ((eq days 'immediate)

@@ -1,5 +1,5 @@
 ;;; nnspool.el --- spool access for GNU Emacs
-;; Copyright (C) 1988,89,90,93,94,95 Free Software Foundation, Inc.
+;; Copyright (C) 1988,89,90,93,94,95,96 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -242,37 +242,36 @@ there.")
   (let ((pathname (nnspool-article-pathname group))
 	dir)
     (if (not (file-directory-p pathname))
-	(progn
-	  (setq nnspool-status-string
-		"Invalid group name (no such directory)")
-	  nil)
+	(nnheader-report 
+	 'nnspool "Invalid group name (no such directory): %s" group)
       (setq nnspool-current-directory pathname)
-      (setq nnspool-status-string "")
-      (if (not dont-check)
+      (nnheader-report 'nnspool "Selected group %s" group)
+      (if dont-check
 	  (progn
-	    (setq dir (directory-files pathname nil "^[0-9]+$" t))
-	    ;; yes, completely empty spool directories *are* possible
-	    ;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
-	    (and dir
-		 (setq dir
-		       (sort 
-			(mapcar
-			 (function
-			  (lambda (name)
-			    (string-to-int name)))
-			 dir)
-			'<)))
-	    (save-excursion
-	      (set-buffer nntp-server-buffer)
-	      (erase-buffer)
-	      (if dir
-		  (insert
-		   (format "211 %d %d %d %s\n" (length dir) (car dir)
-			   (progn (while (cdr dir) (setq dir (cdr dir)))
-				  (car dir))
-			   group))
-		(insert (format "211 0 0 0 %s\n" group))))))
-      t)))
+	    (nnheader-report 'nnspool "Selected group %s" group)
+	    t)
+	;; Yes, completely empty spool directories *are* possible
+	;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
+	(when (setq dir (directory-files pathname nil "^[0-9]+$" t))
+	  (setq dir 
+		(sort (mapcar (lambda (name) (string-to-int name)) dir) '<)))
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer)
+	  (if dir
+	      (progn
+		(insert
+		 (format "211 %d %d %d %s\n" (length dir) (car dir)
+			 (progn (while (cdr dir) (setq dir (cdr dir)))
+				(car dir))
+			 group))
+		t)
+	    (insert (format "211 0 0 0 %s\n" group))
+	    (nnheader-report 'nnspool "Empty group %s" group)
+	    t))))))
+
+(defun nnspool-request-type (group &optional article)
+  'news)
 
 (defun nnspool-close-group (group &optional server)
   t)
@@ -373,10 +372,8 @@ there.")
 (defun nnspool-retrieve-headers-with-nov (articles &optional fetch-old)
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)
       nil
-    (let ((nov (concat (file-name-as-directory nnspool-nov-directory)
-		       (nnspool-replace-chars-in-string
-			nnspool-current-group ?. ?/)
-		       "/.overview")))
+    (let ((nov (nnheader-group-pathname 
+		nnspool-current-group nnspool-nov-directory ".overview")))
       (if (not (file-exists-p nov))
 	  ()
 	(save-excursion
@@ -447,7 +444,9 @@ there.")
     (set-buffer (get-buffer-create " *nnspool work*"))
     (buffer-disable-undo (current-buffer))
     (erase-buffer)
-    (call-process "grep" nil t nil id nnspool-history-file)
+    (condition-case ()
+	(call-process "grep" nil t nil id nnspool-history-file)
+      (error nil))
     (goto-char (point-min))
     (prog1
 	(if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ /\t\n]+\\)/\\([0-9]+\\)[ \t\n]")
@@ -476,37 +475,7 @@ there.")
 
 (defun nnspool-article-pathname (group &optional article)
   "Find the path for GROUP."
-  (concat 
-   (file-name-as-directory nnspool-spool-directory) 
-   (nnspool-replace-chars-in-string group ?. ?/)
-   "/"
-   (if article (int-to-string article) "")))
-
-(defun nnspool-replace-chars-in-string (string from to)
-  "Replace characters in STRING from FROM to TO."
-  (let ((string (substring string 0))	;Copy string.
-	(len (length string))
-	(idx 0))
-    ;; Replace all occurrences of FROM with TO.
-    (while (< idx len)
-      (if (= (aref string idx) from)
-	  (aset string idx to))
-      (setq idx (1+ idx)))
-    string))
-
-(defun nnspool-number-base-10 (num pos)
-  (if (<= pos 0) ""
-    (setcdr num (+ (* (% (car num) 10) 65536) (cdr num)))
-    (apply
-     'concat
-     (reverse
-      (list
-       (char-to-string
-	(aref "0123456789" (% (cdr num) 10)))
-       (progn
-	 (setcdr num (/ (cdr num) 10))
-	 (setcar num (/ (car num) 10))
-	 (nnspool-number-base-10 num (1- pos))))))))
+  (nnheader-group-pathname group nnspool-spool-directory article))
 
 (defun nnspool-seconds-since-epoch (date)
   (let* ((tdate (mapcar (lambda (ti) (and ti (string-to-int ti)))

@@ -1,39 +1,78 @@
-;; gnus-picon.el:  Copyright (C) 1995 Wes Hardaker
-;; Icon hacks for displaying pretty icons in Gnus.
-;;
-;; Author:  Wes hardaker
-;;          hardaker@ece.ucdavis.edu
-;; 
+;;; gnus-picons.el:  Icon hacks for displaying pretty icons in Gnus.
+;; Copyright (C) 1996 Wes Hardaker
+
+;; Author:  Wes hardaker <hardaker@ece.ucdavis.edu>
+;; Keywords:  gnus xpm annotation glyph faces
+
+;;; Commentary:
+
 ;; Usage:
-;;     - You must have XEmacs to use this.
-;;     - (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-;;       This HAS to have the 't' flag above to make sure it appends the hook.
+;;     - You must have XEmacs (19.12 or above I think) to use this.
 ;;     - Read the variable descriptions below.
+;;
+;;     - chose a setup:
+;;
+;;       1) display the icons in its own buffer:
+;;
+;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
+;;          (add-hook 'gnus-summary-display-hook 'gnus-group-display-picons t)
+;;          (setq gnus-picons-display-where 'picons)
+;;
+;;          Then add the picons buffer to your display configuration:
+;;          The picons buffer needs to be at least 48 pixels high,
+;;          which for me is 5 lines:
+;;
+;;          (gnus-add-configuration
+;;           '(article (vertical 1.0 
+;;                             (group 6)
+;;                             (picons 5)
+;;                             (summary .25 point)
+;;                             (article 1.0))))
+;;
+;;          (gnus-add-configuration
+;;           '(summary (vertical 1.0 (group 6)
+;;                      (picons 5)
+;;                      (summary 1.0 point))))
+;;
+;;       2) display the icons in the summary buffer
+;;
+;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
+;;          (add-hook 'gnus-summary-display-hook 'gnus-group-display-picons t)
+;;          (setq gnus-picons-display-where 'summary)
+;;
+;;       3) display the icons in the article buffer
+;;
+;;          (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
+;;          (add-hook 'gnus-article-display-hook 'gnus-group-display-picons t)
+;;          (setq gnus-picons-display-where 'article)
+;;
 ;;
 ;; Warnings:
 ;;     - I'm not even close to being a lisp expert.
+;;     - The 't' (append) flag MUST be in the add-hook line
 ;;
 ;; TODO:
-;;     - Following the Gnus motto: We've got to build him bigger,
-;;       better, stronger, faster than before...  errr....  sorry.
-;;     - Create a seperate frame to store icons in so icons are
-;;       visibile immediately upon entering a group rather than just
-;;       at the top of the article buffer.
+;;     - Remove the TODO section in the headers.
 ;;
-;; 
+
+;;; Code:
 
 (require 'xpm)
 (require 'annotations)
 
+(defvar gnus-picons-buffer "*Icon Buffer*"
+  "Buffer name to display the icons in if gnus-picons-display-where is 'picons.")
+
+(defvar gnus-picons-display-where 'picons
+  "Where to display the group and article icons.")
+
 (defvar gnus-picons-database "/usr/local/faces"
-  "defines the location of the faces database.  For information on
-  obtaining this database of pretty pictures, please see
-  http://www.cs.indiana.edu/picons/ftp/index.html"
-)
+  "Defines the location of the faces database.  
+For information on obtaining this database of pretty pictures, please
+see http://www.cs.indiana.edu/picons/ftp/index.html" )
 
 (defvar gnus-picons-news-directory "news"
-  "Sub-directory of the faces database containing the icons for
-  newsgroups."
+  "Sub-directory of the faces database containing the icons for newsgroups."
 )
 
 (defvar gnus-picons-user-directories '("local" "users" "usenix" "misc/MISC")
@@ -41,81 +80,179 @@
 )
 
 (defvar gnus-picons-domain-directories '("domains")
-  "List of directories to search for domain faces.  Some people may
-  want to add \"unknown\" to this list."
+  "List of directories to search for domain faces.  
+Some people may want to add \"unknown\" to this list."
 )
 
-(defun gnus-article-display-picons ()
-  "prepare article buffer with pretty pictures"
-  (interactive)
-  (if (featurep 'xpm)
-      (save-excursion
-	(beginning-of-buffer)
-	(open-line 1)
-	(let* ((iconpoint (point)) (from (mail-fetch-field "from"))
-	       (username 
-		(progn
-		  (string-match "\\([-_a-zA-Z0-9]+\\)@" from)
-		  (match-string 1 from)))
-	       (hostpath
-		(gnus-picons-reverse-domain-path
-		 (replace-in-string
-		  (replace-in-string from ".*@\\([_a-zA-Z0-9-.]+\\).*" "\\1") 
-		  "\\." "/"))))
-	  (if (equal username from)
-	      (setq username (replace-in-string from 
-						".*<\\([_a-zA-Z0-9-.]+\\)>.*" 
-						"\\1")))
-	  (insert username)
-	  (gnus-picons-insert-face-if-exists 
-	   (concat gnus-picons-database "/" gnus-picons-news-directory)
-	   (concat (replace-in-string gnus-newsgroup-name "\\." "/") "/unknown")
-	   iconpoint)
-	  (mapcar '(lambda (pathpart) 
-		     (gnus-picons-insert-face-if-exists 
-		      (concat gnus-picons-database "/" pathpart)
-		      (concat hostpath "/" username) 
-		      iconpoint)) 
-		  gnus-picons-user-directories)
-	  (mapcar '(lambda (pathpart) 
-		     (gnus-picons-insert-face-if-exists 
-		      (concat gnus-picons-database "/" pathpart)
-		      (concat hostpath "/" "unknown") 
-		      iconpoint)) 
-		  gnus-picons-domain-directories)
-	  ))))
+(setq gnus-group-annotations nil)
+(setq gnus-article-annotations nil)
 
-(defun gnus-picons-insert-face-if-exists (path filename ipoint)
-  "inserts a face at point if I can find one"
-  (let ((pathfile (concat path "/" filename "/face")))
-    (let ((newfilename 
-	   (replace-in-string filename 
-			      "[_a-zA-Z0-9-]+/\\([_A-Za-z0-9-]+\\)$" "\\1")))
-      (if (not (equal filename newfilename))
-	  (gnus-picons-insert-face-if-exists path newfilename ipoint)))
-    (if (not (gnus-picons-try-to-find-face (concat pathfile ".xpm") ipoint))
-	(gnus-picons-try-to-find-face (concat pathfile ".xbm") ipoint))
+(defun gnus-picons-remove (plist)
+  (let ((listitem (car plist)))
+    (while (setq listitem (car plist))
+      (if (annotationp listitem)
+          (delete-annotation listitem))
+      (setq plist (cdr plist))))
+)
+
+(defun gnus-picons-remove-all ()
+  "Removes all picons from the Gnus display(s)."
+  (interactive)
+  (gnus-picons-remove gnus-article-annotations)
+  (gnus-picons-remove gnus-group-annotations)
+  (setq gnus-article-annotations nil
+        gnus-group-annotations nil)
+  (if (bufferp gnus-picons-buffer)
+      (kill-buffer gnus-picons-buffer))
+)
+
+(defun gnus-get-buffer-name (variable)
+  "Returns the buffer name associated with the contents of a variable."
+  (cond ((symbolp variable)
+         (let ((newvar (cdr (assq variable gnus-window-to-buffer))))
+           (cond ((symbolp newvar)
+                  (symbol-value newvar))
+                 ((stringp newvar) newvar))))
+        ((stringp variable)
+         variable)))
+
+(defun gnus-article-display-picons ()
+  "Display faces for an author and his/her domain in gnus-picons-display-where."
+  (interactive)
+  (if (and (featurep 'xpm) 
+           (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
+      (save-excursion
+        (let* ((iconpoint (point)) (from (mail-fetch-field "from"))
+          (username 
+           (progn
+             (string-match "\\([-_a-zA-Z0-9]+\\)@" from)
+             (match-string 1 from)))
+           (hostpath
+            (concat (gnus-picons-reverse-domain-path
+                     (replace-in-string
+                      (replace-in-string from ".*@\\([_a-zA-Z0-9-.]+\\).*" 
+                                         "\\1") 
+                      "\\." "/")) "/")))
+          (switch-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
+          (beginning-of-buffer)
+          (setq iconpoint (point))
+          (if (not (looking-at "^$"))
+              (if buffer-read-only
+                  (progn 
+                    (toggle-read-only)
+                    (open-line 1)
+                    (toggle-read-only)
+                    )
+                (open-line 1)))
+
+          (end-of-line)
+          (gnus-picons-remove gnus-article-annotations)
+          (setq gnus-article-annotations 'nil)
+          (if (equal username from)
+                (setq username (progn
+                                 (string-match "<\\([_a-zA-Z0-9-.]+\\)>" from)
+                                 (match-string 1 from))))
+          (mapcar '(lambda (pathpart) 
+                     (setq gnus-article-annotations
+                           (append
+                                   (gnus-picons-insert-face-if-exists 
+                                    (concat 
+                                     (file-name-as-directory 
+                                      gnus-picons-database) pathpart)
+                                    (concat hostpath username) 
+                                    iconpoint)
+                                    gnus-article-annotations))) 
+                  gnus-picons-user-directories)
+          (mapcar '(lambda (pathpart) 
+                     (setq gnus-article-annotations 
+                           (append
+                                   (gnus-picons-insert-face-if-exists 
+                                    (concat (file-name-as-directory 
+                                             gnus-picons-database) pathpart)
+                                    (concat hostpath "unknown") 
+                                    iconpoint)
+                                    gnus-article-annotations))) 
+                           gnus-picons-domain-directories)
+          (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all)
+          ))))
+
+(defun gnus-group-display-picons ()
+  "Display icons for the group in the gnus-picons-display-where buffer." 
+  (interactive)
+  (if (and (featurep 'xpm) 
+           (or (not (fboundp 'device-type)) (equal (device-type) 'x)))
+      (save-excursion
+      (let
+          ((iconpoint (point)))
+        (switch-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
+        (beginning-of-buffer)
+        (cond 
+         ((listp gnus-group-annotations)
+          (mapcar 'delete-annotation gnus-group-annotations)
+          (setq gnus-group-annotations nil))
+         ((annotationp gnus-group-annotations)
+          (delete-annotation gnus-group-annotations)
+          (setq gnus-group-annotations nil))
+         )
+        (setq iconpoint (point))
+        (if (not (looking-at "^$"))
+            (open-line 1))
+        (gnus-picons-remove gnus-group-annotations)
+        (setq gnus-group-annotations nil)
+        (setq gnus-group-annotations
+              (gnus-picons-insert-face-if-exists 
+               (concat (file-name-as-directory gnus-picons-database)  
+                       gnus-picons-news-directory)
+               (concat (replace-in-string gnus-newsgroup-name "\\." "/") 
+                       "/unknown")
+               iconpoint t))
+        (add-hook 'gnus-summary-exit-hook 'gnus-picons-remove-all)))))
+
+
+(defun gnus-picons-insert-face-if-exists (path filename ipoint &optional rev)
+  "Inserts a face at point if I can find one"
+  (let ((pathfile (concat path "/" filename "/face"))
+        (newfilename 
+         (replace-in-string filename 
+                            "[_a-zA-Z0-9-]+/\\([_A-Za-z0-9-]+\\)$" "\\1"))
+        (annotations nil))
+    (if (and rev
+         (not (equal filename newfilename)))
+        (setq annotations (append
+              (gnus-picons-insert-face-if-exists path newfilename ipoint rev)
+               annotations)))
+    (if (eq (length annotations) (length (setq annotations (append
+          (gnus-picons-try-to-find-face (concat pathfile ".xpm") ipoint)
+           annotations))))
+        (setq annotations (append
+                             (gnus-picons-try-to-find-face 
+                              (concat pathfile ".xbm") ipoint)
+                              annotations)))
+    (if (and (not rev)
+         (not (equal filename newfilename)))
+        (setq annotations (append
+              (gnus-picons-insert-face-if-exists path newfilename ipoint rev)
+               annotations)))
+    annotations
     )
   )
   
 
 (defun gnus-picons-try-to-find-face (path ipoint)
-  "if path exists, display it as a bitmap.  Returns t if succedded."
-    (if (file-exists-p path)
-	(progn
-	  (setq gl (make-glyph path))
-	  (set-glyph-face gl 'default)
-	  (setq annot (make-annotation gl ipoint 'text))
-	  t)
-;      (insert (format "no:  %s\n" path))
-      nil))
+  "If PATH exists, display it as a bitmap.  Returns t if succedded."
+  (if (file-exists-p path)
+      (progn
+;       (insert (format "yes: %s\n" path))
+        (setq gl (make-glyph path))
+        (set-glyph-face gl 'default)
+        (list (make-annotation gl ipoint 'text)))
+;    (insert (format "no:  %s\n" path))
+  nil))
 
 (defun gnus-picons-reverse-domain-path (str)
   "a/b/c/d -> d/c/b/a"
   (if (equal (replace-in-string str "^[^/]*$" "") "")
       str
     (concat (replace-in-string str "^.*/\\([_a-zA-Z0-9-]+\\)$" "\\1") "/"
-	    (gnus-picons-reverse-domain-path 
-	     (replace-in-string str "^\\(.*\\)/[_a-zA-Z0-9-]+$" "\\1")))))
-
-
+            (gnus-picons-reverse-domain-path 
+             (replace-in-string str "^\\(.*\\)/[_a-zA-Z0-9-]+$" "\\1")))))

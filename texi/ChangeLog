@@ -1,3 +1,86 @@
+Tue Jan 16 15:33:04 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Article Hiding): Fix.
+
+Mon Jan 15 21:00:55 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Parameters): Addition.
+	(A Programmer@'s Guide to Gnus): Fix.
+	(Summary Buffer Lines): Addition.
+
+Fri Jan 12 00:33:38 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Summary Maneuvering): Change.
+	(Article Caching): Change.
+	(nnfolder): Addition.
+	(Various Various): Addition.
+	(Tree Display): Addition.
+	(Archived Messages): New.
+
+Thu Jan 11 10:26:31 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Selecting a Group): Addition.
+	(Using MIME): Change.
+	(Customizing Threading): Change.
+
+Wed Jan 10 09:56:34 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Various Various): Addition.
+	(Tree Display): Change.
+	(Reading Mail): Addition.
+	(Reading Mail): Addition.
+
+Tue Jan 09 13:27:06 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Thread Commands): Addition.
+	(Tree Display): New.
+
+Mon Jan 08 00:38:17 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Mail Group Commands): Addition.
+	(Customizing Threading): Addition.
+	(Binary Groups): New.
+	(Alternative Approaches): New.
+
+Sun Jan 07 07:16:43 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Posting Server): Addition.
+	(Limiting): Addition.
+	(Pick and Read): New.
+	(Score File Format): Addition.
+
+Sat Jan 06 14:04:31 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (New Groups): Addition.
+	(Customizing Threading): Addition.
+
+Fri Jan 05 03:52:42 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Topic Commands): Addition.
+	(nntp): Addition.
+	(nnvirtual): Addition.
+	(Reading Mail): Addition.
+
+Thu Jan 04 01:48:22 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Various Various): Addition.
+	(Marking Groups): Addition.
+	(Marking Groups): Addition.
+	(Group Parameters): Addition.
+	(Windows Configuration): Addition.
+	(Starting Up): Addition.
+	(Article Keymap): Addition.
+	(Customizing Threading): Addition.
+
+Wed Jan 03 06:12:24 1996  Lars Magne Ingebrigtsen  <larsi@bjob.no>
+
+	* gnus.texi (Hiding Headers): Addition.
+	(Article Hiding): Addition.
+
+	* gnus.texi (Misc Group Stuff): Addition.
+	(Creating Mail Groups): Addition.
+	(Limiting): Addition.
+
 Wed Dec 20 01:13:35 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Finding the News): Change.

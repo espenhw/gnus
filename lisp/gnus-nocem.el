@@ -1,5 +1,5 @@
 ;;; gnus-nocem.el --- NoCeM pseudo-cancellation treatment
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news

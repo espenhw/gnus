@@ -1,5 +1,5 @@
 ;;; gnus-edit.el --- Gnus SCORE file editing
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: news, help

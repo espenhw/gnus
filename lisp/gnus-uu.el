@@ -1,5 +1,5 @@
 ;;; gnus-uu.el --- extract (uu)encoded files in Gnus
-;; Copyright (C) 1985,86,87,93,94,95 Free Software Foundation, Inc.
+;; Copyright (C) 1985,86,87,93,94,95,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Created: 2 Oct 1993
@@ -273,52 +273,47 @@ The headers will be included in the sequence they are matched.")
 
 ;; Keymaps
 
-(defvar gnus-uu-extract-map nil)
-(defvar gnus-uu-extract-view-map nil)
-(defvar gnus-uu-mark-map nil)
+(gnus-define-keys 
+ (gnus-uu-mark-map "P" gnus-summary-mark-map)
+ "p" gnus-summary-mark-as-processable
+ "u" gnus-summary-unmark-as-processable
+ "U" gnus-summary-unmark-all-processable
+ "s" gnus-uu-mark-series
+ "r" gnus-uu-mark-region
+ "R" gnus-uu-mark-by-regexp
+ "t" gnus-uu-mark-thread
+ "T" gnus-uu-unmark-thread
+ "a" gnus-uu-mark-all
+ "b" gnus-uu-mark-buffer
+ "S" gnus-uu-mark-sparse)
 
-(define-prefix-command 'gnus-uu-mark-map)
-(define-key gnus-summary-mark-map "P" 'gnus-uu-mark-map)
-(define-key gnus-uu-mark-map "p" 'gnus-summary-mark-as-processable)
-(define-key gnus-uu-mark-map "u" 'gnus-summary-unmark-as-processable)
-(define-key gnus-uu-mark-map "U" 'gnus-summary-unmark-all-processable)
-(define-key gnus-uu-mark-map "s" 'gnus-uu-mark-series)
-(define-key gnus-uu-mark-map "r" 'gnus-uu-mark-region)
-(define-key gnus-uu-mark-map "R" 'gnus-uu-mark-by-regexp)
-(define-key gnus-uu-mark-map "t" 'gnus-uu-mark-thread)
-(define-key gnus-uu-mark-map "T" 'gnus-uu-unmark-thread)
-(define-key gnus-uu-mark-map "a" 'gnus-uu-mark-all)
-(define-key gnus-uu-mark-map "b" 'gnus-uu-mark-buffer)
-(define-key gnus-uu-mark-map "S" 'gnus-uu-mark-sparse)
+(gnus-define-keys 
+ (gnus-uu-extract-map "X" gnus-summary-mode-map)
+ ;;"x" gnus-uu-extract-any
+ ;;"m" gnus-uu-extract-mime
+ "u" gnus-uu-decode-uu
+ "U" gnus-uu-decode-uu-and-save
+ "s" gnus-uu-decode-unshar
+ "S" gnus-uu-decode-unshar-and-save
+ "o" gnus-uu-decode-save
+ "O" gnus-uu-decode-save
+ "b" gnus-uu-decode-binhex
+ "B" gnus-uu-decode-binhex
+ "p" gnus-uu-decode-postscript
+ "P" gnus-uu-decode-postscript-and-save)
 
-(define-prefix-command 'gnus-uu-extract-map)
-(define-key gnus-summary-mode-map "X" 'gnus-uu-extract-map)
-;;(define-key gnus-uu-extract-map "x" 'gnus-uu-extract-any)
-;;(define-key gnus-uu-extract-map "m" 'gnus-uu-extract-mime)
-(define-key gnus-uu-extract-map "u" 'gnus-uu-decode-uu)
-(define-key gnus-uu-extract-map "U" 'gnus-uu-decode-uu-and-save)
-(define-key gnus-uu-extract-map "s" 'gnus-uu-decode-unshar)
-(define-key gnus-uu-extract-map "S" 'gnus-uu-decode-unshar-and-save)
-(define-key gnus-uu-extract-map "o" 'gnus-uu-decode-save)
-(define-key gnus-uu-extract-map "O" 'gnus-uu-decode-save)
-(define-key gnus-uu-extract-map "b" 'gnus-uu-decode-binhex)
-(define-key gnus-uu-extract-map "B" 'gnus-uu-decode-binhex)
-(define-key gnus-uu-extract-map "p" 'gnus-uu-decode-postscript)
-(define-key gnus-uu-extract-map "P" 'gnus-uu-decode-postscript-and-save)
-
-(define-prefix-command 'gnus-uu-extract-view-map)
-(define-key gnus-uu-extract-map "v" 'gnus-uu-extract-view-map)
-(define-key gnus-uu-extract-view-map "u" 'gnus-uu-decode-uu-view)
-(define-key gnus-uu-extract-view-map "U" 'gnus-uu-decode-uu-and-save-view)
-(define-key gnus-uu-extract-view-map "s" 'gnus-uu-decode-unshar-view)
-(define-key gnus-uu-extract-view-map "S" 'gnus-uu-decode-unshar-and-save-view)
-(define-key gnus-uu-extract-view-map "o" 'gnus-uu-decode-save-view)
-(define-key gnus-uu-extract-view-map "O" 'gnus-uu-decode-save-view)
-(define-key gnus-uu-extract-view-map "b" 'gnus-uu-decode-binhex-view)
-(define-key gnus-uu-extract-view-map "B" 'gnus-uu-decode-binhex-view)
-(define-key gnus-uu-extract-view-map "p" 'gnus-uu-decode-postscript-view)
-(define-key gnus-uu-extract-view-map "P" 'gnus-uu-decode-postscript-and-save-view)
-
+(gnus-define-keys 
+ (gnus-uu-extract-view-map "v" gnus-uu-extract-map)
+ "u" gnus-uu-decode-uu-view
+ "U" gnus-uu-decode-uu-and-save-view
+ "s" gnus-uu-decode-unshar-view
+ "S" gnus-uu-decode-unshar-and-save-view
+ "o" gnus-uu-decode-save-view
+ "O" gnus-uu-decode-save-view
+ "b" gnus-uu-decode-binhex-view
+ "B" gnus-uu-decode-binhex-view
+ "p" gnus-uu-decode-postscript-view
+ "P" gnus-uu-decode-postscript-and-save-view)
 
 
 ;; Commands.
@@ -492,16 +487,22 @@ The headers will be included in the sequence they are matched.")
 
 ;; Process marking.
 
-(defun gnus-uu-mark-by-regexp (regexp)
+(defun gnus-uu-mark-by-regexp (regexp &optional unmark)
   "Ask for a regular expression and set the process mark on all articles that match."
   (interactive (list (read-from-minibuffer "Mark (regexp): ")))
   (gnus-set-global-variables)
   (let ((articles (gnus-uu-find-articles-matching regexp)))
     (while articles
-      (gnus-summary-set-process-mark (car articles))
-      (setq articles (cdr articles)))
+      (if unmark
+	  (gnus-summary-remove-process-mark (pop articles))
+	(gnus-summary-set-process-mark (pop articles))))
     (message ""))
   (gnus-summary-position-point))
+
+(defun gnus-uu-unmark-by-regexp (regexp &optional unmark)
+  "Ask for a regular expression and remove the process mark on all articles that match."
+  (interactive (list (read-from-minibuffer "Mark (regexp): ")))
+  (gnus-uu-mark-by-regexp regexp t))
 
 (defun gnus-uu-mark-series ()
   "Mark the current series with the process mark."
@@ -514,21 +515,33 @@ The headers will be included in the sequence they are matched.")
     (message ""))
   (gnus-summary-position-point))
 
-(defun gnus-uu-mark-region (beg end)
+(defun gnus-uu-mark-region (beg end &optional unmark)
   "Set the process mark on all articles between point and mark."
   (interactive "r")
   (gnus-set-global-variables)
   (save-excursion
     (goto-char beg)
     (while (< (point) end)
-      (gnus-summary-set-process-mark (gnus-summary-article-number))
+      (if unmark
+	  (gnus-summary-remove-process-mark (gnus-summary-article-number))
+	(gnus-summary-set-process-mark (gnus-summary-article-number)))
       (forward-line 1)))
   (gnus-summary-position-point))
+
+(defun gnus-uu-unmark-region (beg end)
+  "Remove the process mark from all articles between point and mark."
+  (interactive "r")
+  (gnus-uu-mark-region beg end t))
 
 (defun gnus-uu-mark-buffer ()
   "Set the process mark on all articles in the buffer."
   (interactive)
   (gnus-uu-mark-region (point-min) (point-max)))
+      
+(defun gnus-uu-unmark-buffer ()
+  "Remove the process mark on all articles in the buffer."
+  (interactive)
+  (gnus-uu-mark-region (point-min) (point-max) t))
       
 (defun gnus-uu-mark-thread ()
   "Marks all articles downwards in this thread."
@@ -580,13 +593,14 @@ The headers will be included in the sequence they are matched.")
   (gnus-set-global-variables)
   (setq gnus-newsgroup-processable nil)
   (save-excursion
-    (goto-char (point-min))
-    (let (number)
-      (while (and (not (eobp)) 
-		  (setq number (gnus-summary-article-number)))
-	(if (not (memq number gnus-newsgroup-processable))
-	    (save-excursion (gnus-uu-mark-series)))
-	(forward-line 1))))
+    (let ((data gnus-newsgroup-data)
+	  number)
+      (while data
+	(unless (memq (setq number (gnus-data-number (car data)))
+		      gnus-newsgroup-processable)
+	  (gnus-summary-goto-subject number)
+	  (gnus-uu-mark-series))
+	(setq data (cdr data)))))
   (gnus-summary-position-point))
 
 ;; All PostScript functions written by Erik Selberg <speed@cs.washington.edu>. 

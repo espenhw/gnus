@@ -1,5 +1,5 @@
 ;;; gnus-cite.el --- parse citations in articles for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: news, mail
@@ -207,12 +207,74 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	      skip (gnus-cite-find-prefix number))
 	(gnus-cite-add-face number skip gnus-cite-attribution-face)))))
 
-(defun gnus-article-hide-citation (&optional show force)
-  "Hide all cited text except attribution lines.
-See the documentation for `gnus-article-highlight-citation'."
+(defun gnus-article-fill-cited-article (&optional force)
+  "Do word wrapping in the current article."
+  (interactive (list t))
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (gnus-cite-parse-maybe force)
+    (let ((buffer-read-only nil)
+	  (alist gnus-cite-prefix-alist)
+	  (inhibit-point-motion-hooks t)
+	  prefix numbers number marks
+	  (adaptive-fill-mode nil))
+      ;; Loop through citation prefixes.
+      (while alist
+	(setq numbers (pop alist)
+	      prefix (pop numbers))
+	(while numbers
+	  (setq number (pop numbers))
+	  (goto-char (point-min))
+	  (forward-line number)
+	  (push (cons (point-marker) "") marks)
+	  (while (and numbers
+		      (= (1- number) (car numbers)))
+	    (setq number (pop numbers)))
+	  (goto-char (point-min))
+	  (forward-line (1- number))
+	  (push (cons (point-marker) prefix) marks)))
+      (goto-char (point-min))
+      (search-forward "\n\n" nil t)
+      (push (cons (point-marker) "") marks)
+      (goto-char (point-max))
+      (re-search-backward gnus-signature-separator nil t)
+      (push (cons (point-marker) "") marks)
+      (setq marks (sort marks (lambda (m1 m2) (< (car m1) (car m2)))))
+      (let* ((omarks marks))
+	(setq marks nil)
+	(while (cdr omarks)
+	  (if (= (caar omarks) (caadr omarks))
+	      (progn
+		(unless (equal (cdar omarks) "")
+		  (push (car omarks) marks))
+		(unless (equal (cdadr omarks) "")
+		  (push (cadr omarks) marks))
+		(setq omarks (cdr omarks)))
+	    (push (car omarks) marks))
+	  (setq omarks (cdr omarks)))
+	(push (car omarks) marks)
+	(setq marks (nreverse marks)))
+      (save-restriction
+	(while (cdr marks)
+	  (widen)
+	  (narrow-to-region (car (car marks)) (car (cadr marks)))
+	  (let ((adaptive-fill-regexp (concat "^" (regexp-quote
+						   (cdr (car marks)))
+					      " *"))
+		(fill-prefix (cdr (car marks)))
+		)
+	    (fill-region (point-min) (point-max)))
+	  (set-marker (caar marks) nil)
+	  (setq marks (cdr marks)))
+	(set-marker (caar marks) nil)))))
+
+(defun gnus-article-hide-citation (&optional arg force)
+  "Toggle hiding of all cited text except attribution lines.
+See the documentation for `gnus-article-highlight-citation'.
+If given a negative prefix, always show; if given a positive prefix,
+always hide."
   (interactive (list current-prefix-arg 'force))
-  (if show
-      (gnus-article-show-hidden-text 'cite)
+  (unless (gnus-article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
       (gnus-cite-parse-maybe force)
@@ -233,16 +295,17 @@ See the documentation for `gnus-article-highlight-citation'."
 		 (nconc (list 'gnus-type 'cite)
 			gnus-hidden-properties)))))))))
 
-(defun gnus-article-hide-citation-maybe (&optional show force)
-  "Hide cited text that has an attribution line.
+(defun gnus-article-hide-citation-maybe (&optional arg force)
+  "Toggle hiding of cited text that has an attribution line.
+If given a negative prefix, always show; if given a positive prefix,
+always hide.
 This will do nothing unless at least `gnus-cite-hide-percentage'
 percent and at least `gnus-cite-hide-absolute' lines of the body is
 cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."
   (interactive (list current-prefix-arg 'force))
-  (if show
-      (gnus-article-show-hidden-text 'cite)
+  (unless (gnus-article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
       (gnus-cite-parse-maybe force)

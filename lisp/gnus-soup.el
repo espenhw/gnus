@@ -1,5 +1,5 @@
 ;;; gnus-soup.el --- SOUP packet writing support for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -304,6 +304,7 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 	(gnus-set-work-buffer)
 	(insert (format "(setq gnus-soup-prev-prefix %d)\n" 
 			(cdr (car prefix))))
+	(gnus-make-directory (car (car prefix)))
 	(write-region (point-min) (point-max)
 		      (concat (car (car prefix)) 
 			      gnus-soup-prefix-file) 
@@ -420,7 +421,7 @@ file. The vector contain three strings, [prefix name encoding]."
 						    area)))
 					"")) "")))))
       (write-region (point-min) (point-max)
-		    (concat gnus-soup-directory "AREAS"))
+		    (concat gnus-soup-directory "AREAS") nil 'silent)
       (set-buffer-modified-p nil)
       (kill-buffer (current-buffer)))))
 
@@ -439,7 +440,7 @@ file. The vector contain three strings, [prefix name encoding]."
 			(gnus-soup-reply-prefix area)
 			(gnus-soup-reply-kind area) 
 			(gnus-soup-reply-encoding area)))))
-    (write-region (point-min) (point-max) (concat dir "REPLIES"))
+    (write-region (point-min) (point-max) (concat dir "REPLIES") nil 'silent)
     (set-buffer-modified-p nil)
     (kill-buffer (current-buffer))))
 
@@ -473,7 +474,7 @@ file. The vector contain three strings, [prefix name encoding]."
 	()
       (and (file-exists-p (concat dir gnus-soup-prefix-file))
 	   (condition-case nil
-	       (load-file (concat dir gnus-soup-prefix-file))
+	       (load (concat dir gnus-soup-prefix-file) nil t t)
 	     (error nil)))
       (setq gnus-soup-last-prefix 
 	    (cons (setq entry (cons dir (or gnus-soup-prev-prefix 0)))

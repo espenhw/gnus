@@ -1,5 +1,5 @@
 ;;; nnkiboze.el --- select virtual news access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -151,9 +151,9 @@ If the stream is opened, return T, otherwise return NIL."
 (defun nnkiboze-close-group (group &optional server)
   (nnkiboze-possibly-change-newsgroups group)
   ;; Remove NOV lines of articles that are marked as read.
-  (if (or (not (file-exists-p (nnkiboze-nov-file-name)))
-	  (not nnkiboze-remove-read-articles))
-      ()
+  (when (and (file-exists-p (nnkiboze-nov-file-name))
+	     nnkiboze-remove-read-articles
+	     (eq major-mode 'gnus-summary-mode))
     (save-excursion
       (let ((unreads gnus-newsgroup-unreads)
 	    (unselected gnus-newsgroup-unselected)
@@ -237,8 +237,10 @@ Finds out what articles are to be part of the nnkiboze groups."
 
 (defun nnkiboze-score-file (group)
   (list (expand-file-name
-	 (concat gnus-kill-files-directory nnkiboze-current-score-group 
-		 "." gnus-score-file-suffix))))
+	 (concat (file-name-as-directory gnus-kill-files-directory)
+		 (nnheader-translate-file-chars
+		  (concat nnkiboze-current-score-group 
+			  "." gnus-score-file-suffix))))))
 
 (defun nnkiboze-generate-group (group) 
   (let* ((info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
@@ -391,8 +393,9 @@ Finds out what articles are to be part of the nnkiboze groups."
 	    (insert prefix)))))))
 
 (defun nnkiboze-nov-file-name ()
-  (concat nnkiboze-directory
-	  (nnkiboze-prefixed-name nnkiboze-current-group) ".nov"))
+  (concat (file-name-as-directory nnkiboze-directory)
+	  (nnheader-translate-file-chars
+	   (concat (nnkiboze-prefixed-name nnkiboze-current-group) ".nov"))))
 
 (provide 'nnkiboze)
 

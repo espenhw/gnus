@@ -1,5 +1,5 @@
 ;;; nndraft.el --- draft article access for Gnus
-;; Copyright (C) 1995 Free Software Foundation, Inc.
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
@@ -163,11 +163,14 @@
 	 (file (nndraft-article-filename article)))
     (setq buffer-file-name file)
     (setq buffer-auto-save-file-name (make-auto-save-file-name))
+    (clear-visited-file-modtime)
     article))
 
 (defun nndraft-request-group (group &optional server dont-check)
-  (nndraft-execute-nnmh-command
-   (` (nnmh-request-group group "" (, dont-check)))))
+  (prog1
+      (nndraft-execute-nnmh-command
+       (` (nnmh-request-group group "" (, dont-check))))
+    (nnheader-report 'nndraft nnmh-status-string)))
 
 (defun nndraft-request-list (&optional server dir)
   (nndraft-execute-nnmh-command
@@ -202,6 +205,7 @@
   (let* ((point (point))
 	 (mode major-mode)
 	 (name (buffer-name))
+	 (gnus-verbose-backends nil)
 	 (gart (nndraft-execute-nnmh-command
 		(` (nnmh-request-accept-article group (, last) noinsert))))
 	 (state
