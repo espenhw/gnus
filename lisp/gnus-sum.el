@@ -2080,7 +2080,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["Save" gnus-uu-decode-save t]
 	      ["Binhex" gnus-uu-decode-binhex t]
 	      ["Postscript" gnus-uu-decode-postscript t]
-	      ["all MIME parts" gnus-summary-save-parts t])
+	      ["All MIME parts" gnus-summary-save-parts t])
 	     ("Cache"
 	      ["Enter article" gnus-cache-enter-article t]
 	      ["Remove article" gnus-cache-remove-article t])

@@ -1,3 +1,7 @@
+2002-03-26  Pavel@Janik.cz (Pavel Jan,Bm(Bk)
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Fix typo.
+
 2002-03-25  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-mode): Fix doc.
