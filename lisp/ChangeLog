@@ -1,3 +1,10 @@
+2001-09-13  Martin Kretzschmar  <Martin.Kretzschmar@inf.tu-dresden.de>
+
+	* gnus-spec.el (gnus-correct-substring): Still stopped one
+	character before we wanted (never included last character).
+	(gnus-tilde-max-form, gnus-tilde-cut-form) Made readable again,
+	add missing "," (once per function)
+	
 2001-09-14  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-start.el (gnus-group-mode-hook): Moved from gnus-group

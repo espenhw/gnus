@@ -273,94 +273,67 @@
 (defun gnus-correct-substring (string start &optional end)
   (let ((wstart 0)
 	(wend 0)
+	(wseek 0)
 	(seek 0)
-	(length (length string)))
+	(length (length string))
+	(string (concat string "\0"))) 
     ;; Find the start position.
     (while (and (< seek length)
-		(< wstart start))
-      (incf wstart (gnus-char-width (aref string seek)))
+		(< wseek start))
+      (incf wseek (gnus-char-width (aref string seek)))
       (incf seek))
-    (setq wend wstart
-	  wstart seek)
+    (setq wstart seek)
     ;; Find the end position.
-    (while (and (< seek length)
+    (while (and (<= seek length)
 		(or (not end)
-		    (<= wend end)))
-      (incf wend (gnus-char-width (aref string seek)))
+		    (<= wseek end)))
+      (incf wseek (gnus-char-width (aref string seek)))
       (incf seek))
     (setq wend seek)
     (substring string wstart (1- wend))))
 
 (defun gnus-tilde-max-form (el max-width)
   "Return a form that limits EL to MAX-WIDTH."
-  (let ((max (abs max-width)))
-    (if (symbolp el)
-	`(if (> (,(if gnus-use-correct-string-widths
+  (let ((max (abs max-width))
+	(length-fun (if gnus-use-correct-string-widths
 		      'gnus-correct-length
-		    'length) ,el)
-		,max)
-	     ,(if (< max-width 0)
-		  `(,(if gnus-use-correct-string-widths
-			 'gnus-correct-substring
-		       'substring)
-		    ,el (- (,(if gnus-use-correct-string-widths
-				 'gnus-correct-length
-			       'length)
-			    el) ,max))
-		`(,(if gnus-use-correct-string-widths
+		    'length))
+	(substring-fun (if gnus-use-correct-string-widths
 		       'gnus-correct-substring
-		     'substring)
-		  ,el 0 ,max))
+		     'substring)))
+    (if (symbolp el)
+	`(if (> (,length-fun ,el) ,max)
+	     ,(if (< max-width 0)
+		  `(,substring-fun ,el (- (,length-fun ,el) ,max))
+		`(,substring-fun ,el 0 ,max))
 	   ,el)
       `(let ((val (eval ,el)))
-	 (if (> (,(if gnus-use-correct-string-widths
-		      'gnus-correct-length
-		    'length) val) ,max)
+	 (if (> (,length-fun val) ,max)
 	     ,(if (< max-width 0)
-		  `(,(if gnus-use-correct-string-widths
-			 'gnus-correct-substring
-		       'substring)
-		    val (- (,(if gnus-use-correct-string-widths
-				 'gnus-correct-length
-			       'length) val) ,max))
-		`(,(if gnus-use-correct-string-widths
-		       'gnus-correct-substring
-		     'substring)
-		  val 0 ,max))
+		  `(,substring-fun val (- (,length-fun val) ,max))
+		`(,substring-fun val 0 ,max))
 	   val)))))
 
 (defun gnus-tilde-cut-form (el cut-width)
   "Return a form that cuts CUT-WIDTH off of EL."
-  (let ((cut (abs cut-width)))
-    (if (symbolp el)
-	`(if (> (,(if gnus-use-correct-string-widths
+  (let ((cut (abs cut-width))
+	(length-fun (if gnus-use-correct-string-widths
 		      'gnus-correct-length
-		    'length) ,el) ,cut)
-	     ,(if (< cut-width 0)
-		  `(,(if gnus-use-correct-string-widths
-			 'gnus-correct-substring
-		       'substring) ,el 0
-		       (- (,(if gnus-use-correct-string-widths
-				'gnus-correct-length
-			      'length) el) ,cut))
-		`(,(if gnus-use-correct-string-widths
+		    'length))
+	(substring-fun (if gnus-use-correct-string-widths
 		       'gnus-correct-substring
-		     'substring) ,el ,cut))
+		     'substring)))
+    (if (symbolp el)
+	`(if (> (,length-fun ,el) ,cut)
+	     ,(if (< cut-width 0)
+		  `(,substring-fun ,el 0 (- (,length-fun ,el) ,cut))
+		`(,substring-fun ,el ,cut))
 	   ,el)
       `(let ((val (eval ,el)))
-	 (if (> (,(if gnus-use-correct-string-widths
-		      'gnus-correct-length
-		    'length) val) ,cut)
+	 (if (> (,length-fun val) ,cut)
 	     ,(if (< cut-width 0)
-		  `(,(if gnus-use-correct-string-widths
-			 'gnus-correct-substring
-		       'substring) val 0
-		       (- (,(if gnus-use-correct-string-widths
-				'gnus-correct-length
-			      'length) val) ,cut))
-		`(,(if gnus-use-correct-string-widths
-		       'gnus-correct-substring
-		     'substring) val ,cut))
+		  `(,substring-fun val 0 (- (,length-fun val) ,cut))
+		`(,substring-fun val ,cut))
 	   val)))))
 
 (defun gnus-tilde-ignore-form (el ignore-value)
