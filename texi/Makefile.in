@@ -25,10 +25,10 @@ most: texi2latex.elc latex latexps
 .SUFFIXES: .texi .dvi .ps
 
 .texi:
-	if test $(MAKEINFO) = no; then \
-	  $(EMACSINFO) -eval '(find-file "$<")' $(XINFOSWI); \
-	else \
+	if test -x $(MAKEINFO); then \
 	  makeinfo -o $* $<; \
+	else \
+	  $(EMACSINFO) -eval '(find-file "$<")' $(XINFOSWI); \
 	fi
 
 dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi

@@ -353,8 +353,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 		     (if (eq authentication 'apop) 'apop 'pass)))
 		(save-excursion (pop3-movemail mail-source-crash-box))))))
       (if result
-	  (progn
-	    (mail-source-callback callback server)
+	  (prog1
+	      (mail-source-callback callback server)
 	    (when prescript
 	      (if (fboundp prescript)
 		  (funcall prescript)
@@ -364,7 +364,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 			       postscript
 			       (format-spec-make
 				?p password ?t mail-source-crash-box
-				?s server ?P port ?u user))))))
+				?s server ?P port ?u user)))))
+	    1)
 	;; We nix out the password in case the error
 	;; was because of a wrong password being given.
 	(setq mail-source-password-cache

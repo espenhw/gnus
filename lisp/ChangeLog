@@ -1,3 +1,89 @@
+Fri Feb 26 17:00:25 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.78 is released.
+
+1999-02-26 07:45:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-mode): Switch on MML mode.
+
+	* mml.el: Included commands and functions.
+	(mml-mode-map): New keymap.
+
+	* message.el: Removed the insertion commands and functions.
+
+	* gnus-ems.el (gnus-mule-cite-add-face): Removed.
+
+	* gnus-sum.el (gnus-summary-sort-by-chars): New command and
+	keystroke. 
+
+	* gnus-art.el (gnus-narrow-to-page): Revert.
+
+	* gnus-cite.el (gnus-cite-delete-overlays): New function.
+	(gnus-cite-parse-maybe): Always reparse.
+
+	* message.el (message-encode-message-body): Don't insert
+	"multipart warning". 
+
+	* gnus-art.el (gnus-article-treat-head-custom): New variable.
+
+1999-02-25  Miles Bader  <miles@ccs.mt.nec.co.jp>
+
+	* mail-source.el (mail-source-fetch-pop): Return 1 for success.
+
+	* nnmail.el: Require mm-util.
+
+1999-02-26 07:39:33  Justin Sheehy  <justin@linus.mitre.org>
+
+	* nnmail.el (nnmail-get-new-mail): Only get mail for the one
+	group. 
+
+1999-02-26 07:38:08  SeokChan LEE  <chan@smoky-blue.com>
+
+	* mm-bodies.el (mm-body-charset-encoding-alist): Add euc-kr.
+
+1999-02-21  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-msg.el (gnus-extended-version): Better regexp.
+
+1999-02-25  Didier Verna  <verna@inf.enst.fr>
+
+	* nnmail.el (nnmail-split-it): new syntax: `(! FUNC SPLIT)'. FUNC
+	is called with the result of SPLIT and should return a new split.
+
+        * gnus.texi: update the doc.
+
+1999-02-23  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus-picon.el (gnus-picons-display-bar-p): when picons are
+	displayed in the article buffer, output bars if
+	`gnus-picons-display-article-move-p'.
+
+1999-02-20  Aaron M. Ucko  <amu@mit.edu>
+
+	* mail-source.el (mail-source-fetch-pop): Typo.
+
+1999-02-26 07:15:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-toggle-header): Save restriction.
+
+1999-02-23 03:07:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cite.el (gnus-cite-parse-wrapper): Always parse.
+
+1999-02-21 11:11:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-insert-buffer): New function.
+
+	* message.el (message-forward): Insert the buffer in the buffer. 
+
+Sun Feb 21 01:20:50 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-message): Insert part in narrowed region.
+
+Sat Feb 20 23:09:40 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-toggle-header): Save restriction.
+
 Sat Feb 20 21:34:28 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.77 is released.

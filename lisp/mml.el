@@ -380,16 +380,13 @@
 	    (substring path (1+ (match-end 2))))
     path))
 
-(defun mml-quote-region (beg end)
-  "Quote the MML tags in the region."
-  (interactive "r")
-  (save-excursion
-    (goto-char beg)
-    ;; Quote parts.
-    (while (re-search-forward
-	    "<#/?!*\\(multipart\\|part\\|external\\)" end t)
-      (goto-char (match-beginning 1))
-      (insert "!"))))
+(defun mml-insert-buffer (buffer)
+  "Insert BUFFER at point and quote any MML markup."
+  (save-restriction
+    (narrow-to-region (point) (point))
+    (insert-buffer-substring buffer)
+    (mml-quote-region (point-min) (point-max))
+    (goto-char (point-max))))
 
 ;;;
 ;;; Transforming MIME to MML
@@ -455,6 +452,135 @@
       (insert " description=\"" (mm-handle-description handle) "\""))
     (equal (split-string (car (mm-handle-type handle)) "/") "text")
     (insert ">\n")))
+
+;;;
+;;; Mode for inserting and editing MML forms
+;;;
+
+(defvar mml-mode-map
+  (let ((map (make-sparse-keymap))
+	(main (make-sparse-keymap)))
+    (define-key map "f" 'mml-attach-file)
+    (define-key map "b" 'mml-attach-buffer)
+    (define-key map "q" 'mml-quote-region)
+    (define-key map "m" 'mml-insert-multipart)
+    (define-key map "q" 'mml-insert-part)
+    (define-key map "v" 'mml-validate)
+    (define-key main "\M-m" map)
+    main))
+
+(easy-menu-define
+ mml-menu mml-mode-map ""
+ '("MML"
+   ("Attach"
+    ["File" mml-attach-file t]
+    ["Buffer" mml-attach-buffer t])
+   ("Insert"
+    ["Multipart" mml-insert-multipart t]
+    ["Part" mml-insert-part t])
+   ["Quote" mml-quote-region t]
+   ["Validate" mml-validate t]))
+
+(defvar mml-mode nil
+  "Minor mode for editing MML.")
+
+(defun mml-mode (&optional arg)
+  "Minor mode for editing MML.
+
+\\{mml-mode-map}"
+  (interactive "P")
+  (if (not (set (make-local-variable 'mml-mode)
+		(if (null arg) (not mml-mode)
+		  (> (prefix-numeric-value arg) 0))))
+      nil
+    (add-minor-mode 'mml-mode " MML" mml-mode-map)
+    (set (make-local-variable 'mml-mode) t)
+    (unless (assq 'mml-mode minor-mode-alist)
+      (push `(mml-mode " MML") minor-mode-alist))
+    (unless (assq 'mml-mode minor-mode-map-alist)
+      (push (cons 'mml-mode mml-mode-map)
+	    minor-mode-map-alist)))
+  (run-hooks 'mml-mode-hook))
+
+(defun mml-read-file (prompt)
+  (let ((file (read-file-name prompt nil nil t)))
+    ;; Prevent some common errors.  This is inspired by similar code in
+    ;; VM.
+    (when (file-directory-p file)
+      (error "%s is a directory, cannot attach" file))
+    (unless (file-exists-p file)
+      (error "No such file: %s" file))
+    (unless (file-readable-p file)
+      (error "Permission denied: %s" file))
+    file))
+
+(defun mml-read-type (file)
+  (let* ((default (or (mm-default-file-encoding file)
+		      ;; Perhaps here we should check what the file
+		      ;; looks like, and offer text/plain if it looks
+		      ;; like text/plain.
+		      "application/octet-stream"))
+	 (string (completing-read
+		  (format "Content type (default %s): " default)
+		  (delete-duplicates
+		   (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions)
+		   :test 'equal))))
+    (if (not (equal string ""))
+	string
+      default)))
+
+(defun mml-read-description ()
+  (let ((description (read-string "One line description: ")))
+    (when (string-match "\\`[ \t]*\\'" description)
+      (setq description nil))
+    description))
+
+(defun mml-quote-region (beg end)
+  "Quote the MML tags in the region."
+  (interactive "r")
+  (save-excursion
+    (goto-char beg)
+    ;; Quote parts.
+    (while (re-search-forward
+	    "<#/?!*\\(multipart\\|part\\|external\\)" end t)
+      (goto-char (match-beginning 1))
+      (insert "!"))))
+
+(defun mml-attach-file (file &optional type description)
+  "Attach a file to the outgoing MIME message.
+The file is not inserted or encoded until you send the message with
+`\\[message-send-and-exit]' or `\\[message-send]'.
+
+FILE is the name of the file to attach.  TYPE is its content-type, a
+string of the form \"type/subtype\".  DESCRIPTION is a one-line
+description of the attachment."
+  (interactive
+   (let* ((file (mml-read-file "Attach file: "))
+	  (type (mml-read-type file))
+	  (description (mml-read-description)))
+     (list file type description)))
+  (insert
+   (format
+    "<#part type=%s name=%s filename=%s%s disposition=attachment><#/part>\n"
+    type (prin1-to-string (file-name-nondirectory file))
+    (prin1-to-string file)
+    (if description
+	(format " description=%s" (prin1-to-string description))
+      ""))))
+
+(defun mml-attach-external (file &optional type description)
+  "Attach an external file into the buffer.
+FILE is an ange-ftp/efs specification of the part location.
+TYPE is the MIME type to use."
+  (interactive
+   (let* ((file (mml-read-file "Attach external file: "))
+	  (type (mml-read-type file))
+	  (description (mml-read-description)))
+     (list file type description)))
+  (insert (format
+	   "<#external type=%s name=%s disposition=attachment><#/external>\n"
+	   type (prin1-to-string file))))
+
 
 (provide 'mml)
 

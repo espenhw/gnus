@@ -54,7 +54,7 @@
     (gb2312 . base64)
     (cn-gb . base64)
     (cn-gb-2312 . base64)
-    (euc-kr . base64)
+    (euc-kr . 8bit)
     (iso-2022-jp-2 . base64)
     (iso-2022-int-1 . base64))
   "Alist of MIME charsets to encodings.

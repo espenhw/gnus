@@ -32,6 +32,7 @@
 (require 'custom)
 (require 'gnus-util)
 (require 'mail-source)
+(require 'mm-util)
 
 (eval-and-compile
   (autoload 'gnus-error "gnus-util")
@@ -1099,6 +1100,10 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
      ((eq (car split) ':)
       (nnmail-split-it (save-excursion (eval (cdr split)))))
 
+     ;; Builtin ! operation.
+     ((eq (car split) '!)
+      (funcall (cadr split) (nnmail-split-it (caddr split))))
+
      ;; Check the cache for the regexp for this split.
      ((setq cached-pair (assq split nnmail-split-cache))
       (goto-char (point-max))
@@ -1374,8 +1379,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  (setq source (append source
 			       (list :predicate
 				     `(lambda (file)
-					(string-match ,(regexp-quote group)
-						      file))))))
+					(string-match 
+                                         ,(concat (regexp-quote group) "$")
+                                         file))))))
 	(when nnmail-fetched-sources
 	  (if (member source nnmail-fetched-sources)
 	      (setq source nil)

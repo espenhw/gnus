@@ -609,6 +609,10 @@ on parts -- for instance, adding Vcard info to a database."
 	   (integer :tag "Less")
 	   (sexp :tag "Predicate")))
 
+(defvar gnus-article-treat-head-custom
+  '(choice (const :tag "Off" nil)
+	   (const :tag "Header" head)))
+
 (defvar gnus-article-treat-types '("text/plain")
   "Parts to treat.")
 
@@ -628,7 +632,7 @@ on parts -- for instance, adding Vcard info to a database."
 (defcustom gnus-treat-buttonize-head 'head
   "Add buttons to the head."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-emphasize t
   "Emphasize text."
@@ -643,12 +647,12 @@ on parts -- for instance, adding Vcard info to a database."
 (defcustom gnus-treat-hide-headers 'head
   "Hide headers."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-hide-boring-headers nil
   "Hide boring headers."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-hide-signature nil
   "Hide the signature."
@@ -684,7 +688,7 @@ The banner to be stripped is specified in the `banner' group parameter."
 (defcustom gnus-treat-highlight-headers 'head
   "Highlight the headers."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-highlight-citation t
   "Highlight cited text."
@@ -694,33 +698,33 @@ The banner to be stripped is specified in the `banner' group parameter."
 (defcustom gnus-treat-date-ut nil
   "Display the Date in UT (GMT)."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-local nil
   "Display the Date in the local timezone."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-lapsed nil
   "Display the Date header in a way that says how much time has elapsed."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-original nil
   "Display the date in the original timezone."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-iso8601 nil
   "Display the date in the ISO8601 format."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-date-user-defined nil
   "Display the date in a user-defined format.
 The format is defined by the `gnus-article-time-format' variable."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-strip-trailing-blank-lines nil
   "Strip trailing blank lines."
@@ -751,7 +755,7 @@ The format is defined by the `gnus-article-time-format' variable."
 					'head nil)
   "Display X-Face headers."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-display-smileys (if (and gnus-xemacs
 					       (featurep 'xpm))
@@ -763,7 +767,7 @@ The format is defined by the `gnus-article-time-format' variable."
 (defcustom gnus-treat-display-picons (if gnus-xemacs 'head nil)
   "Display picons."
   :group 'gnus-article-treat
-  :type gnus-article-treat-custom)
+  :type gnus-article-treat-head-custom)
 
 (defcustom gnus-treat-capitalize-sentences nil
   "Capitalize sentence-starting words."
@@ -3123,6 +3127,7 @@ If given a numerical ARG, move forward ARG pages."
   (save-excursion
     (set-buffer gnus-article-buffer)
     (goto-char (point-min))
+    (widen)
     ;; Remove any old next/prev buttons.
     (when (gnus-visual-p 'page-marker)
       (let ((buffer-read-only nil))

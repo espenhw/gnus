@@ -49,26 +49,6 @@
 
 ;;; Mule functions.
 
-(defun gnus-mule-cite-add-face (number prefix face)
-  ;; At line NUMBER, ignore PREFIX and add FACE to the rest of the line.
-  (when face
-    (let ((inhibit-point-motion-hooks t)
-	  from to)
-      (goto-line number)
-      (unless (eobp)            ; Sometimes things become confused (broken).
-        (if (boundp 'MULE)
-            (forward-char (chars-in-string prefix))
-          (forward-char (length prefix)))
-        (skip-chars-forward " \t")
-        (setq from (point))
-        (end-of-line 1)
-        (skip-chars-backward " \t")
-        (setq to (point))
-        (when (< from to)
-          (push (setq overlay (gnus-make-overlay from to))
-                gnus-cite-overlay-list)
-          (gnus-overlay-put (gnus-make-overlay from to) 'face face))))))
-
 (defun gnus-mule-max-width-function (el max-width)
   (` (let* ((val (eval (, el)))
 	    (valstr (if (numberp val)
@@ -147,7 +127,6 @@
 
     (defvar gnus-summary-display-table nil
       "Display table used in summary mode buffers.")
-    (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)
     (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
     (fset 'gnus-summary-set-display-table (lambda ()))
 

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.77 Manual
+@settitle Pterodactyl Gnus 0.78 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.77 Manual
+@title Pterodactyl Gnus 0.78 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.77.
+This manual corresponds to Pterodactyl Gnus 0.78.
 
 @end ifinfo
 
@@ -7122,6 +7122,11 @@ Sort by date (@code{gnus-summary-sort-by-date}).
 @findex gnus-summary-sort-by-lines
 Sort by lines (@code{gnus-summary-sort-by-lines}).
 
+@item C-c C-s C-c
+@kindex C-c C-s C-c (Summary)
+@findex gnus-summary-sort-by-chars
+Sort by article length (@code{gnus-summary-sort-by-chars}).
+
 @item C-c C-s C-i
 @kindex C-c C-s C-i (Summary)
 @findex gnus-summary-sort-by-score
@@ -10103,8 +10108,7 @@ Fetch from a named server with a named user and password:
 Use @samp{movemail} to move the mail:
 
 @lisp
-(pop :program "movemail"
-     :args (format "po:%s %s %s" user mail-source-crash-box password))
+(pop :program "movemail po:%u %t %p")
 @end lisp
 
 @item maildir
@@ -10354,6 +10358,11 @@ this message. Use with extreme caution.
 element is @code{:}, then the second element will be called as a
 function with @var{args} given as arguments.  The function should return
 a SPLIT.
+
+@item
+@var{(! FUNC SPLIT)}: If the split is a list, and the first element
+is @code{!}, then SPLIT will be processed, and FUNC will be called as a
+function with the result of SPLIT as argument. FUNC should return a split.
 
 @item
 @code{nil}: If the split is @code{nil}, it is ignored.
@@ -12154,8 +12163,8 @@ something along the lines of the following:
 @lisp
 (defun my-article-old-p ()
   "Say whether an article is old."
-  (< (time-to-day (date-to-time (mail-header-date gnus-headers)))
-     (- (time-to-day (current-time)) gnus-agent-expire-days)))
+  (< (time-to-days (date-to-time (mail-header-date gnus-headers)))
+     (- (time-to-days (current-time)) gnus-agent-expire-days)))
 @end lisp
 
 with the predicate then defined as:

@@ -147,9 +147,9 @@
 (defun mm-inline-message (handle)
   (let ((b (point)))
     (save-excursion
-      (mm-insert-part handle)
       (save-restriction
-	(narrow-to-region b (point))
+	(narrow-to-region b b)
+	(mm-insert-part handle)
 	(run-hooks 'gnus-article-decode-hook)
 	(gnus-article-prepare-display)
 	(mm-handle-set-undisplayer

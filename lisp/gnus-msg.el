@@ -584,7 +584,7 @@ If SILENT, don't prompt the user."
    " (" gnus-version ")"
    " "
    (cond
-    ((string-match "^\\([0-9]+\\.[0-9]+\\)\\.[.0-9]+$" emacs-version)
+    ((string-match "^\\(\\([.0-9]+\\)*\\)\\.[0-9]+$" emacs-version)
      (concat "Emacs/" (match-string 1 emacs-version)))
     ((string-match "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)[^(]*\\(\\((beta.*)\\|'\\)\\)?"
 		   emacs-version)

@@ -804,6 +804,7 @@ which it may alter in any way.")
     ("^relcom\\>" koi8-r)
     ("^\\(cz\\|hun\\|pl\\|sk\\)\\>" iso-8859-2)
     ("^israel\\>" iso-8859-1)
+    ("^han\\>" euc-kr)
     ("^\\(comp\\|rec\\|alt\\|sci\\|soc\\|news\\|gnu\\|bofh\\)\\>" iso-8859-1)
     (".*" iso-8859-1))
   "Alist of regexps (to match group names) and default charsets to be used when reading."
@@ -1274,6 +1275,7 @@ increase the score of each group you read."
     "\C-c\M-\C-s" gnus-summary-limit-include-expunged
     "\C-c\C-s\C-n" gnus-summary-sort-by-number
     "\C-c\C-s\C-l" gnus-summary-sort-by-lines
+    "\C-c\C-s\C-c" gnus-summary-sort-by-chars
     "\C-c\C-s\C-a" gnus-summary-sort-by-author
     "\C-c\C-s\C-s" gnus-summary-sort-by-subject
     "\C-c\C-s\C-d" gnus-summary-sort-by-date
@@ -1830,7 +1832,8 @@ increase the score of each group you read."
 	["Sort by subject" gnus-summary-sort-by-subject t]
 	["Sort by date" gnus-summary-sort-by-date t]
 	["Sort by score" gnus-summary-sort-by-score t]
-	["Sort by lines" gnus-summary-sort-by-lines t])
+	["Sort by lines" gnus-summary-sort-by-lines t]
+	["Sort by characters" gnus-summary-sort-by-chars t])
        ("Help"
 	["Fetch group FAQ" gnus-summary-fetch-faq t]
 	["Describe group" gnus-summary-describe-group t]
@@ -3586,6 +3589,16 @@ If LINE, insert the rebuilt thread starting on line LINE."
 (defun gnus-thread-sort-by-lines (h1 h2)
   "Sort threads by root article Lines header."
   (gnus-article-sort-by-lines
+   (gnus-thread-header h1) (gnus-thread-header h2)))
+
+(defsubst gnus-article-sort-by-chars (h1 h2)
+  "Sort articles by octet length."
+  (< (mail-header-chars h1)
+     (mail-header-chars h2)))
+
+(defun gnus-thread-sort-by-chars (h1 h2)
+  "Sort threads by root article octet length."
+  (gnus-article-sort-by-chars
    (gnus-thread-header h1) (gnus-thread-header h2)))
 
 (defsubst gnus-article-sort-by-author (h1 h2)
@@ -7013,26 +7026,28 @@ If ARG is a negative number, hide the unwanted header lines."
   (interactive "P")
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (let* ((buffer-read-only nil)
-	   (inhibit-point-motion-hooks t)
-	   (hidden (gnus-article-hidden-text-p 'headers))
-	   e)
-      (goto-char (point-min))
-      (when (search-forward "\n\n" nil t)
-	(delete-region (point-min) (1- (point))))
-      (goto-char (point-min))
-      (save-excursion
-	(set-buffer gnus-original-article-buffer)
+    (save-restriction
+      (let* ((buffer-read-only nil)
+	     (inhibit-point-motion-hooks t)
+	     (hidden (gnus-article-hidden-text-p 'headers))
+	     e)
 	(goto-char (point-min))
-	(setq e (1- (or (search-forward "\n\n" nil t) (point-max)))))
-      (insert-buffer-substring gnus-original-article-buffer 1 e)
-      (narrow-to-region (point-min) (point))
-      (if (or hidden
-	      (and (numberp arg) (< arg 0)))
-	  (let ((gnus-treat-hide-headers nil)
-		(gnus-treat-hide-boring-headers nil))
-	    (gnus-treat-article 'head))
-	(gnus-treat-article 'head)))))
+	(when (search-forward "\n\n" nil t)
+	  (delete-region (point-min) (1- (point))))
+	(goto-char (point-min))
+	(save-excursion
+	  (set-buffer gnus-original-article-buffer)
+	  (goto-char (point-min))
+	  (setq e (1- (or (search-forward "\n\n" nil t) (point-max)))))
+	(insert-buffer-substring gnus-original-article-buffer 1 e)
+	(save-restriction
+	  (narrow-to-region (point-min) (point))
+	  (if (or hidden
+		  (and (numberp arg) (< arg 0)))
+	      (let ((gnus-treat-hide-headers nil)
+		    (gnus-treat-hide-boring-headers nil))
+		(gnus-treat-article 'head))
+	    (gnus-treat-article 'head)))))))
 
 (defun gnus-summary-show-all-headers ()
   "Make all header lines visible."
@@ -8588,10 +8603,16 @@ Argument REVERSE means reverse order."
   (gnus-summary-sort 'score reverse))
 
 (defun gnus-summary-sort-by-lines (&optional reverse)
-  "Sort the summary buffer by article length.
+  "Sort the summary buffer by the number of lines.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'lines reverse))
+
+(defun gnus-summary-sort-by-chars (&optional reverse)
+  "Sort the summary buffer by article length.
+Argument REVERSE means reverse order."
+  (interactive "P")
+  (gnus-summary-sort 'chars reverse))	
 
 (defun gnus-summary-sort (predicate reverse)
   "Sort summary buffer by PREDICATE.  REVERSE means reverse order."

@@ -664,8 +664,9 @@ none, and whose CDR is the corresponding element of DOMAINS."
 ;;; search job functions
 
 (defun gnus-picons-display-bar-p ()
-  (and (not (eq gnus-picons-display-where 'article))
-       gnus-picons-display-as-address))
+  (if (eq gnus-picons-display-where 'article)
+      gnus-picons-display-article-move-p
+    gnus-picons-display-as-address))
 
 (defun gnus-picons-network-search-internal (user addrs dbs sym-ann right-p
 						 marker &optional fnames)
