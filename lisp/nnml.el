@@ -897,6 +897,7 @@ check twice.")
 (deffoo nnml-request-update-info (group info &optional server)
   (nnml-possibly-change-directory group server)
   (unless nnml-marks-is-evil
+    (nnheader-message 6 "Updating marks for %s..." group)
     (nnml-open-marks group server)
     ;; Update info using `nnml-marks'.
     (mapcar (lambda (pred)
@@ -949,7 +950,7 @@ check twice.")
 		   (gnus-group-prefixed-name
 		    group
 		    (gnus-server-to-method (format "nnml:%s" server))))))
-	(nnheader-message 6 "Bootstrapping nnml marks...")
+	(nnheader-message 6 "Bootstrapping marks for %s..." group)
 	(setq nnml-marks (gnus-info-marks info))
 	(push (cons 'read (gnus-info-read info)) nnml-marks)
 	(nnml-save-marks group server)))))

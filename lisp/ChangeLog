@@ -1,5 +1,8 @@
 2001-08-27  Simon Josefsson  <jas@extundo.com>
 
+	* nnml.el (nnml-request-update-info): Fix message.
+	(nnml-open-marks): Ditto.
+
 	* nnfolder.el (nnfolder-request-set-mark) 
 	(nnfolder-request-update-info): Don't open group.
 	(nnfolder-open-marks): Fix message.
