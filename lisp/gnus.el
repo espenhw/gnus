@@ -1772,10 +1772,10 @@ covered by that variable."
   "The mail address of the Gnus maintainers.")
 
 (defvar gnus-info-nodes
-  '((gnus-group-mode "(gnus)The Group Buffer")
-    (gnus-summary-mode "(gnus)The Summary Buffer")
-    (gnus-article-mode "(gnus)The Article Buffer")
-    (gnus-server-mode "(gnus)The Server Buffer")
+  '((gnus-group-mode "(gnus)Group Buffer")
+    (gnus-summary-mode "(gnus)Summary Buffer")
+    (gnus-article-mode "(gnus)Article Buffer")
+    (gnus-server-mode "(gnus)Server Buffer")
     (gnus-browse-mode "(gnus)Browse Foreign Server")
     (gnus-tree-mode "(gnus)Tree Display"))
   "Alist of major modes and related Info nodes.")
