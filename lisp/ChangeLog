@@ -1,3 +1,13 @@
+2003-10-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* spam-report.el (spam-report-url-ping-plain): Include a
+	User-Agent. 
+
+	* gnus-msg.el (gnus-extended-version): Use it.
+
+	* gnus-util.el (gnus-emacs-version): Separated out into own
+	function. 
+
 2003-10-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-mode-field-menu): Added
@@ -6,6 +16,8 @@
 	(message-change-subject): Added comment.
 
 2003-10-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-nov-parse-line): Remove condition-cases.
 
 	* mml.el (mml-insert-mime): Quote mml.
 

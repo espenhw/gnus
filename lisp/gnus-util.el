@@ -1432,6 +1432,40 @@ predicate on the elements."
 	  (push (pop list1) res)))
       (nconc (nreverse res) list1 list2))))
 
+(defun gnus-emacs-version ()
+  (let ((system-v
+	 (cond
+	  ((eq gnus-user-agent 'emacs-gnus-config)
+	   system-configuration)
+	  ((eq gnus-user-agent 'emacs-gnus-type)
+	   (symbol-name system-type))
+	  (t nil))))
+    (cond
+     ((eq gnus-user-agent 'gnus)
+      nil)
+     ((string-match "^\\(\\([.0-9]+\\)*\\)\\.[0-9]+$" emacs-version)
+      (concat "Emacs/" (match-string 1 emacs-version)
+	      (if system-v
+		  (concat " (" system-v ")")
+		"")))
+     ((string-match
+       "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)[^(]*\\(\\((beta.*)\\|'\\)\\)?"
+       emacs-version)
+      (concat
+       (match-string 1 emacs-version)
+       (format "/%d.%d" emacs-major-version emacs-minor-version)
+       (if (match-beginning 3)
+	   (match-string 3 emacs-version)
+	 "")
+       (if (boundp 'xemacs-codename)
+	   (concat
+	    " (" xemacs-codename
+	    (if system-v
+		(concat ", " system-v ")")
+	      ")"))
+	 "")))
+     (t emacs-version))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

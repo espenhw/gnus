@@ -108,9 +108,10 @@ the function specified by `spam-report-url-ping-function'."
 		 80))
 	  (error "Could not open connection to %s" host))
       (set-marker (process-mark tcp-connection) (point-min))
-      (process-send-string tcp-connection
-			   (format "GET %s HTTP/1.1\nHost: %s\n\n"
-				   report host)))))
+      (process-send-string
+       tcp-connection
+       (format "GET %s HTTP/1.1\nUser-Agent: %s (spam-report.el)\nHost: %s\n\n"
+	       report (gnus-emacs-version) host)))))
 
 (defun spam-report-url-ping-mm-url (host report)
   "Ping a host through HTTP, addressing a specific GET resource. Use
