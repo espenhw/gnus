@@ -1,3 +1,9 @@
+2002-06-17  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-start.el (gnus-clear-system, gnus-read-newsrc-file): Make
+	sure to write byte-compiled versions of gnus-*-format-alist to
+	.newsrc.eld.  From Simon Josefsson.
+
 2002-06-16  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-read-servers) 
