@@ -325,7 +325,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
     (save-excursion 
       (set-buffer nnfolder-current-buffer)
-      (while articles
+      (while (and articles is-old)
 	(goto-char (point-min))
 	(if (search-forward (nnfolder-article-string (car articles)) nil t)
 	    (if (or force

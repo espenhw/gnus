@@ -156,7 +156,7 @@
   (cond 
    ((string-match "XEmacs\\|Lucid" emacs-version)
     ;; XEmacs definitions.
-    (fset 'gnus-set-mouse-face 'identity)
+    (fset 'gnus-mouse-face-function 'identity)
     (fset 'gnus-summary-make-display-table (lambda () nil))
     (fset 'gnus-visual-turn-off-edit-menu 'identity)
 
@@ -448,14 +448,13 @@ call it with the value of the `gnus-data' text property."
 	    (if (< from to)
 		(overlay-put (make-overlay from to) 'face face)))))
 
-    (fset 
-     'gnus-format-max-width 
-     (lambda (form length)
-       (let* ((val (eval form))
-	      (valstr (if (numberp val) (int-to-string val) val)))
-	 (if (> (length valstr) length)
-	     (truncate-string valstr length)
-	   valstr))))
+    (defun gnus-max-width-function (form)
+      (` (let* ((val (eval (, el)))
+		(valstr (if (numberp val)
+			    (int-to-string val) val)))
+	   (if (> (length valstr) (, max-width))
+	       (truncate-string valstr (, max-width))
+	     valstr))))
 
     (fset 'gnus-summary-make-display-table (lambda () nil))
     )

@@ -66,8 +66,8 @@
 
 
 (defun gnus-cache-save-buffers ()
-;; save the overview buffer if it exists and has been modified
-;; delete empty cache subdirectories
+  ;; save the overview buffer if it exists and has been modified
+  ;; delete empty cache subdirectories
   (if (null gnus-cache-buffer)
       ()
     (let ((buffer (cdr gnus-cache-buffer))
@@ -79,6 +79,7 @@
 	    (set-buffer buffer)
 	    (if (> (buffer-size) 0)
 		;; non-empty overview, write it out
+		(gnus-make-directory (file-name-directory overview-file))
 		(write-region (point-min) (point-max)
 			      overview-file nil 'quietly)
 	      ;; empty overview file, remove it

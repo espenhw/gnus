@@ -1343,7 +1343,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.97.1"
+(defconst gnus-version "(ding) Gnus v0.97.2"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1933,6 +1933,20 @@ Thank you for your help in stamping out bugs.
   (put-text-property 0 (length string) 'mouse-face gnus-mouse-face string)
   string)
 
+
+(defun gnus-mouse-face-function (form)
+  (` (let ((string (, form)))
+       (put-text-property 0 (length string) 'mouse-face gnus-mouse-face string)
+       string)))
+
+(defun gnus-max-width-function (el max-width)
+  (` (let* ((val (eval (, el)))
+	    (valstr (if (numberp val)
+			(int-to-string val) val)))
+       (if (> (length valstr) (, max-width))
+	   (substring valstr 0 (, max-width))
+	 valstr))))
+
 (defun gnus-parse-format (format spec-alist)
   ;; This function parses the FORMAT string with the help of the
   ;; SPEC-ALIST and returns a list that can be eval'ed to return the
@@ -1945,12 +1959,8 @@ Thank you for your help in stamping out bugs.
 		(post (substring format (match-beginning 3) (match-end 3))))
 	    (list 'concat
 		  (gnus-parse-simple-format pre spec-alist)
-		  (` (let ((string (, (gnus-parse-simple-format 
-				       button spec-alist))))
-		       (put-text-property 0 (length string) 
-					  'mouse-face gnus-mouse-face string)
-		       string))
-;			(gnus-parse-simple-format button spec-alist))
+		  (gnus-mouse-face-function 
+		   (gnus-parse-simple-format button spec-alist))
 		  (gnus-parse-simple-format post spec-alist)))
 	(gnus-parse-simple-format
 	 (concat (substring format (match-beginning 1) (match-end 1))
@@ -2003,15 +2013,8 @@ Thank you for your help in stamping out bugs.
 		     (setq el (list 'char-to-string el)))
 		    ((= (car (cdr elem)) ?d)
 		     (numberp el) (setq el (list 'int-to-string el))))
-	      (setq flist (cons 
-			   (` (let* ((val (eval (, el)))
-				     (valstr (if (numberp val)
-						 (int-to-string val) val)))
-				(if (> (length valstr) (, max-width))
-				    (substring valstr 0 (, max-width))
-				  valstr)))
-			    ;(list 'gnus-format-max-width el max-width) 
-			   flist))
+	      (setq flist (cons (gnus-max-width-function el max-width)
+				flist))
 	      (setq newspec ?s))
 	  (setq flist (cons (car elem) flist))
 	  (setq newspec (car (cdr elem))))
@@ -2553,16 +2556,18 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
       (setq hor (car rule)
 	    rule (cdr rule))
       (while (and hor (not invisible))
-	(if (setq val (if (vectorp (car hor)) (car hor) (eval (car hor))))
+	(if (setq val (if (vectorp (car hor)) 
+			  (car hor)
+			(if (not (eq (car (car hor)) 'horizontal))
+			    (eval (car hor)))))
 	    (progn
 	      ;; Expand short buffer name.
 	      (setq buffer (or (cdr (assq (aref val 0) gnus-window-to-buffer))
 			       (aref val 0)))
 	      (setq buffer (if (symbolp buffer) (symbol-value buffer)
 			     buffer))
-	      (setq jump-buffer (and (> (length val) 2)
-				     (eq 'point (aref val 2))
-				     buffer))
+	      (and (> (length val) 2) (eq 'point (aref val 2))
+		   (setq jump-buffer buffer))
 	      (setq invisible (not (and buffer (get-buffer-window buffer))))))
 	(setq hor (cdr hor))))
     (and (not invisible) jump-buffer)))
@@ -5562,8 +5567,9 @@ The following commands are available:
 		 (substring from (1+ (match-beginning 0)) (1- (match-end 0))))
 		((string-match "<[^>]+> *$" from)
 		 (let ((beg (match-beginning 0)))
-		   (or (and (string-match "^\"[^\"]\"" from)
-			    (substring from (1+ (match-beginning 0)) (1- (match-end 0))))
+		   (or (and (string-match "^\"[^\"]*\"" from)
+			    (substring from (1+ (match-beginning 0))
+				       (1- (match-end 0))))
 		       (substring from 0 beg))))
 		(t from)))
 	 (subject (header-subject header))
@@ -6072,57 +6078,54 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	    fun (cdr fun))))
   threads)
 
-(defsubst gnus-thread-header (thread)
+(defmacro gnus-thread-header (thread)
   ;; Return header of first article in THREAD.
-  (if (consp thread)
-      (if (stringp (car thread))
-	  (car (car (cdr thread)))
-	(car thread))
-    thread))
+  (` (if (consp (, thread))
+	 (if (stringp (car (, thread)))
+	     (car (car (cdr (, thread))))
+	   (car (, thread)))
+       (, thread))))
 
 (defun gnus-thread-sort-by-number (h1 h2)
   "Sort threads by root article number."
-  (let ((h1 (gnus-thread-header h1))
-	(h2 (gnus-thread-header h2)))
-    (< (header-number h1) (header-number h2))))
+  (< (header-number (gnus-thread-header h1))
+     (header-number (gnus-thread-header h2))))
 
 (defun gnus-thread-sort-by-author (h1 h2)
   "Sort threads by root author."
-  (let ((h1 (gnus-thread-header h1))
-	(h2 (gnus-thread-header h2)))
-    (string-lessp
-     (let ((extract (funcall 
-		     gnus-extract-address-components (header-from h1))))
-       (or (car extract) (cdr extract)))
-     (let ((extract (funcall
-		     gnus-extract-address-components (header-from h2))))
-       (or (car extract) (cdr extract))))))
+  (string-lessp
+   (let ((extract (funcall 
+		   gnus-extract-address-components
+		   (header-from (gnus-thread-header h1)))))
+     (or (car extract) (cdr extract)))
+   (let ((extract (funcall
+		   gnus-extract-address-components 
+		   (header-from (gnus-thread-header h2)))))
+     (or (car extract) (cdr extract)))))
 
 (defun gnus-thread-sort-by-subject (h1 h2)
   "Sort threads by root subject."
-  (let ((h1 (gnus-thread-header h1))
-	(h2 (gnus-thread-header h2)))
-    (string-lessp
-     (downcase (gnus-simplify-subject (header-subject h1)))
-     (downcase (gnus-simplify-subject (header-subject h2))))))
+  (string-lessp
+   (downcase (gnus-simplify-subject 
+	      (header-subject (gnus-thread-header h1))))
+   (downcase (gnus-simplify-subject 
+	      (header-subject (gnus-thread-header h2))))))
 
 (defun gnus-thread-sort-by-date (h1 h2)
   "Sort threads by root article date."
-  (let ((h1 (gnus-thread-header h1))
-	(h2 (gnus-thread-header h2)))
-    (string-lessp
-     (gnus-sortable-date (header-date h1))
-     (gnus-sortable-date (header-date h2)))))
+  (string-lessp
+   (gnus-sortable-date (header-date (gnus-thread-header h1)))
+   (gnus-sortable-date (header-date (gnus-thread-header h2)))))
 
 (defun gnus-thread-sort-by-score (h1 h2)
   "Sort threads by root article score.
 Unscored articles will be counted as having a score of zero."
-  (let ((h1 (gnus-thread-header h1))
-	(h2 (gnus-thread-header h2)))
-    (let ((s1 (assq (header-number h1) gnus-newsgroup-scored))
-	  (s2 (assq (header-number h2) gnus-newsgroup-scored)))
-      (> (or (cdr s1) gnus-summary-default-score 0)
-	 (or (cdr s2) gnus-summary-default-score 0)))))
+  (let ((s1 (assq (header-number (gnus-thread-header h1))
+		  gnus-newsgroup-scored))
+	(s2 (assq (header-number (gnus-thread-header h2))
+		  gnus-newsgroup-scored)))
+    (> (or (cdr s1) gnus-summary-default-score 0)
+       (or (cdr s2) gnus-summary-default-score 0))))
 
 (defun gnus-thread-sort-by-total-score (h1 h2)
   "Sort threads by the sum of all scores in the thread.

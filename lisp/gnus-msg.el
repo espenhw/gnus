@@ -264,7 +264,6 @@ headers.")
   "Start composing a mail."
   (interactive)
   (funcall gnus-mail-other-window-method)
-  (gnus-configure-windows 'group-mail)
   (run-hooks 'gnus-mail-hook))
 
 (defun gnus-group-post-news ()

@@ -1,4 +1,21 @@
-Tue Jul 18 11:04:02 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+Tue Jul 18 13:38:27 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-thread-header): Define as a macro.
+	(gnus-all-windows-visible-p): Don't barf on horizontal specs. 
+	(gnus-mouse-face-function, gnus-max-width-function): Separate into
+	functions to make it easier for XEmacs and Mule to redefine.
+
+	* gnus-cache.el (gnus-cache-save-buffers): Make sure that the
+	directory exists.
+
+	* gnus-msg.el (gnus-group-mail): Don't do configure.
+
+	* gnus.el (gnus-all-windows-visible-p): Almost always reported
+	nil. 
+
+Tue Jul 18 11:04:02 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.97.1 is released.
 
 	* gnus.el (gnus-parse-format): Use macros instead of defuns.
 
