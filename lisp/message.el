@@ -2618,7 +2618,7 @@ With the prefix argument FORCE, insert the header anyway."
   (let ((point (point)))
     (message-goto-signature)
     (unless (eobp)
-      (forward-line -2))
+      (end-of-line -1))
     (kill-region point (point))
     (unless (bolp)
       (insert "\n"))))
