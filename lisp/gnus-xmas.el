@@ -864,6 +864,12 @@ XEmacs compatibility workaround."
      (set-glyph-face glyph 'default)
      glyph)))
 
+(defun gnus-xmas-mailing-list-menu-add ()
+  (gnus-xmas-menu-add mailing-list
+		      gnus-mailing-list-menu))
+
+(add-hook 'gnus-mailing-list-mode-hook 'gnus-xmas-mailing-list-menu-add)
+
 (provide 'gnus-xmas)
 
 ;;; gnus-xmas.el ends here

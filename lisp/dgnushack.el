@@ -129,9 +129,10 @@ Modify to suit your needs."))
       (when (or (and (not xemacs)
  		     (not (member (file-name-nondirectory file)
  				  '("gnus-xmas.el" "gnus-picon.el"
- 				    "messagexmas.el" "nnheaderxm.el"))))
+ 				    "messagexmas.el" "nnheaderxm.el" 
+				    "smiley.el"))))
  		(and xemacs
-		     (not (member file '("md5.el")))))
+		     (not (member file '("md5.el" "smiley-ems.el")))))
 	(when (or (not (file-exists-p (setq elc (concat file "c"))))
 		  (file-newer-than-file-p file elc))
 	  (ignore-errors

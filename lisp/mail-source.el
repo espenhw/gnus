@@ -721,9 +721,9 @@ This only works when `display-time' is enabled."
 	      (> (prefix-numeric-value arg) 0))))
     (setq mail-source-report-new-mail on)
     (and mail-source-report-new-mail-timer
-	 (cancel-timer mail-source-report-new-mail-timer))
+	 (nnheader-cancel-timer mail-source-report-new-mail-timer))
     (and mail-source-report-new-mail-idle-timer
-	 (cancel-timer mail-source-report-new-mail-idle-timer))
+	 (nnheader-cancel-timer mail-source-report-new-mail-idle-timer))
     (setq mail-source-report-new-mail-timer nil)
     (setq mail-source-report-new-mail-idle-timer nil)
     (if on

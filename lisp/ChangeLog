@@ -1,3 +1,24 @@
+2000-10-01 08:36:09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-report-new-mail): Use
+	nnheader-cancel-timer.
+
+2000-10-01 08:35:38  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* lpath.el (overlay-*): Shut up.
+	* dgnushack.el: Two implementation of smiley.
+
+2000-10-01 08:32:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-ml.el: Usage.
+	(gnus-mailing-list-archive, gnus-mailing-list-owner,
+	gnus-mailing-list-post, gnus-mailing-list-unsubscribe,
+	gnus-mailing-list-subscribe, gnus-mailing-list-help): Bind list-*.
+	(gnus-mailing-list-menu): Define it.
+	(turn-on-gnus-mailing-list-mode, gnus-mailing-list-mode): Autoload.
+	
+	* gnus-xmas.el (gnus-xmas-mailing-list-menu-add): Move here.
+
 2000-09-30 18:52:51  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el (webmail-my-deja-*): Rewrite.
