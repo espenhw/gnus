@@ -1,7 +1,11 @@
 ;; Also know as the "wish list".  Some are done. For the others, no
 ;; promise when to be implemented.
 
+* Multiple charsets for topic names.
+
 * Allow specification of server in Newsgroups header
+  
+  [Kai wrote]
 
   WIBNI I could put `Newsgroups: nntp+quimby:bla' into a message and
   Gnus would know to post this message on my server `nntp:quimby' into
