@@ -142,6 +142,11 @@ If this is `ask' the hook will query the user."
   :type 'boolean
   :group 'gnus-agent)
 
+(defcustom gnus-agent-max-fetch-size 10000000 ;; 10 Mb
+  "gnus-agent-fetch-session is required to split its article fetches into chunks smaller than this limit."
+  :group 'gnus-agent
+  :type 'integer)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -1121,6 +1126,9 @@ and that there are no duplicates."
       (pop gnus-agent-group-alist))))
 
 (defun gnus-agent-fetch-headers (group &optional force)
+  "Fetch interesting headers into the agent.  The group's overview
+file will be updated to include the headers while a list of available
+article numbers will be returned."
   (let* ((fetch-all (and gnus-agent-consider-all-articles
                          ;; Do not fetch all headers if the predicate
                          ;; implies that we only consider unread articles.
@@ -1172,29 +1180,35 @@ and that there are no duplicates."
             ;; that no headers need to be fetched. -- Kevin
             (setq articles (gnus-list-range-intersection
                             articles (list (cons low high)))))))
-      (when articles
-        (gnus-message 7 "Fetching headers for %s..." group)
+      (save-excursion
+        (set-buffer nntp-server-buffer)
 
-        ;; Fetch them.
-        (gnus-make-directory (nnheader-translate-file-chars
-                              (file-name-directory file) t))
+        (if articles
+            (progn
+              (gnus-message 7 "Fetching headers for %s..." group)
 
-        (save-excursion
-          (set-buffer nntp-server-buffer)
-          (unless (eq 'nov (gnus-retrieve-headers articles group))
-            (nnvirtual-convert-headers))
-          (gnus-agent-check-overview-buffer)
-          ;; Move these headers to the overview buffer so that gnus-agent-braid-nov can merge them
-          ;; with the contents of FILE.
-          (copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
-          (when (file-exists-p file)
-            (gnus-agent-braid-nov group articles file))
-          (let ((coding-system-for-write
-                 gnus-agent-file-coding-system))
-	    (gnus-agent-check-overview-buffer)
-	    (write-region (point-min) (point-max) file nil 'silent))
-          (gnus-agent-save-alist group articles nil)
-          articles)))
+              ;; Fetch them.
+              (gnus-make-directory (nnheader-translate-file-chars
+                                    (file-name-directory file) t))
+
+              (unless (eq 'nov (gnus-retrieve-headers articles group))
+                (nnvirtual-convert-headers))
+              (gnus-agent-check-overview-buffer)
+              ;; Move these headers to the overview buffer so that gnus-agent-braid-nov can merge them
+              ;; with the contents of FILE.
+              (copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
+              (when (file-exists-p file)
+                (gnus-agent-braid-nov group articles file))
+              (let ((coding-system-for-write
+                     gnus-agent-file-coding-system))
+                (gnus-agent-check-overview-buffer)
+                (write-region (point-min) (point-max) file nil 'silent))
+              (gnus-agent-save-alist group articles nil)
+              articles)
+          (ignore-errors
+            (erase-buffer)
+            (nnheader-insert-file-contents file))))
+      )
     articles))
 
 (defsubst gnus-agent-copy-nov-line (article)
@@ -1443,78 +1457,125 @@ of FILE placing the combined headers in nntp-server-buffer."
 	)
     (unless (gnus-check-group group)
       (error "Can't open server for %s" group))
-    ;; Fetch headers.
-    (when (and (or (gnus-active group)
-		   (gnus-activate-group group))
-	       (setq articles (gnus-agent-fetch-headers group))
-	       (let ((nntp-server-buffer gnus-agent-overview-buffer))
-		 ;; Parse them and see which articles we want to fetch.
-		 (setq gnus-newsgroup-dependencies
-		       (make-vector (length articles) 0))
-		 (setq gnus-newsgroup-headers
-		       (gnus-get-newsgroup-headers-xover articles nil nil
-							 group))
-		 ;; Some articles may not exist, so update `articles'
-		 ;; from what was actually found.  -- kai
-		 (setq articles
-		       (mapcar (lambda (x) (mail-header-number x))
-			       gnus-newsgroup-headers))
-		 ;; `gnus-agent-overview-buffer' may be killed for
-		 ;; timeout reason.  If so, recreate it.
-		 (gnus-agent-create-buffer)))
-      (setq category (gnus-group-category group))
-      (setq predicate
-	    (gnus-get-predicate
-	     (or (gnus-group-find-parameter group 'agent-predicate t)
-		 (cadr category))))
-      (if (memq predicate '(gnus-agent-true gnus-agent-false))
-	  ;; Simple implementation
-	  (setq arts (and (eq predicate 'gnus-agent-true) articles))
-	(setq arts nil)
-	(setq score-param
-	      (or (gnus-group-get-parameter group 'agent-score t)
-		  (caddr category)))
-	;; Translate score-param into real one
-	(cond
-	 ((not score-param))
-	 ((eq score-param 'file)
-	  (setq score-param (gnus-all-score-files group)))
-	 ((stringp (car score-param)))
-	 (t
-	  (setq score-param (list (list score-param)))))
-	(when score-param
-	  (gnus-score-headers score-param))
-      
-        ;; Construct arts list with same order as gnus-newsgroup-headers
-        (let* ((a (list nil)) 
-               (b a))
-          (while (setq gnus-headers (pop gnus-newsgroup-headers))
-            (setq gnus-score
-                  (or (cdr (assq (mail-header-number gnus-headers)
-                                 gnus-newsgroup-scored))
-                      gnus-summary-default-score))
-            (when (funcall predicate)
-              (setq a (setcdr a (list (mail-header-number gnus-headers))))))
-          (setq arts (cdr b))))
 
-      ;; Fetch the articles.
-      (when arts
-	(gnus-agent-fetch-articles group arts)))
-    ;; Perhaps we have some additional articles to fetch.
-    (dolist (mark gnus-agent-download-marks)
-      (setq arts (assq mark (gnus-info-marks
-			     (setq info (gnus-get-info group)))))
-      (when (cdr arts)
-	(gnus-message 8 "Agent is downloading marked articles...")
-	(gnus-agent-fetch-articles
-	 group (gnus-uncompress-range (cdr arts)))
-	(when (eq mark 'download)
-	  (setq marks (delq arts (gnus-info-marks info)))
-	  (gnus-info-set-marks info marks)
-	  (gnus-dribble-enter
-	   (concat "(gnus-group-set-info '"
-		   (gnus-prin1-to-string info)
-		   ")")))))))
+    ;; Fetch headers.
+    (when (or (gnus-active group)
+              (gnus-activate-group group))
+      (let ((marked-articles nil))
+        ;; Identify the articles marked for download
+        (dolist (mark gnus-agent-download-marks)
+          (let ((arts (cdr (assq mark (gnus-info-marks
+                                       (setq info (gnus-get-info group)))))))
+            (when arts
+              (setq marked-articles (nconc (gnus-uncompress-range arts)
+                                           marked-articles))
+              )))
+        (setq marked-articles (sort marked-articles '<))
+
+        ;; Fetch any new articles from the server
+        (setq articles (gnus-agent-fetch-headers group))
+
+        ;; Merge new articles with marked
+        (setq articles (sort (append marked-articles articles) '<))
+
+        (when articles
+          ;; Parse them and see which articles we want to fetch.
+          (setq gnus-newsgroup-dependencies
+                (make-vector (length articles) 0))
+
+          (setq gnus-newsgroup-headers
+                (gnus-get-newsgroup-headers-xover articles nil nil
+                                                  group))
+          ;; `gnus-agent-overview-buffer' may be killed for
+          ;; timeout reason.  If so, recreate it.
+          (gnus-agent-create-buffer)
+
+          ;; Figure out how to select articles in this group
+          (setq category (gnus-group-category group))
+
+          (setq predicate
+                (gnus-get-predicate
+                 (or (gnus-group-find-parameter group 'agent-predicate t)
+                     (cadr category))))
+
+          ;; If the selection predicate requires scoring, score each header
+          (unless (memq predicate '(gnus-agent-true gnus-agent-false))
+            (let ((score-param
+                   (or (gnus-group-get-parameter group 'agent-score t)
+                       (caddr category))))
+              ;; Translate score-param into real one
+              (cond
+               ((not score-param))
+               ((eq score-param 'file)
+                (setq score-param (gnus-all-score-files group)))
+               ((stringp (car score-param)))
+               (t
+                (setq score-param (list (list score-param)))))
+              (when score-param
+                (gnus-score-headers score-param))))
+
+          (unless (and (eq predicate 'gnus-agent-false)
+                       (not marked-articles))
+            (let* ((arts (list nil))
+                   (arts-tail arts)
+                   (chunk-size 0)
+                   (marked-articles marked-articles)
+                   is-marked)
+              (while (setq gnus-headers (pop gnus-newsgroup-headers))
+                (let ((num (mail-header-number gnus-headers)))
+                  ;; Determine if this article was marked for download.
+                  (while (and marked-articles
+                              (cond ((< num (car marked-articles))
+                                     nil)
+                                    ((= num (car marked-articles))
+                                     (setq is-marked t)
+                                     nil)
+                                    (t
+                                     (setq marked-articles
+                                           (cdr marked-articles))))))
+
+                  ;; When this article is marked, or selected by the
+                  ;; predicate, add it to the download list
+                  (when (or is-marked
+                            (let ((gnus-score
+                                   (or (cdr (assq num gnus-newsgroup-scored))
+                                       gnus-summary-default-score)))
+                              (funcall predicate)))
+                    (gnus-agent-append-to-list arts-tail num)
+
+                    ;; When the expected size of the fetched articles
+                    ;; exceeds gnus-agent-max-fetch-size, perform the
+                    ;; fetch.
+                    (when (< gnus-agent-max-fetch-size
+                             (setq chunk-size
+                                   (+ chunk-size
+                                      (mail-header-chars gnus-headers))))
+                      (gnus-agent-fetch-articles group (cdr arts))
+                      (setcdr arts nil)
+                      (setq arts-tail arts)
+                      (setq chunk-size 0)))))
+
+              ;; Fetch all remaining articles
+              (when (cdr arts)
+                (gnus-agent-fetch-articles group (cdr arts)))))
+
+          ;; When some, or all, of the marked articles came
+          ;; from the download mark.  Remove that mark.  I
+          ;; didn't do this earlier as I only want to remove
+          ;; the marks after the fetch is completed.
+
+          (when marked-articles
+            (dolist (mark gnus-agent-download-marks)
+              (when (eq mark 'download)
+                (setq arts (assq mark (gnus-info-marks
+                                       (setq info (gnus-get-info group)))))
+                (when (cdr arts)
+                  (setq marks (delq arts (gnus-info-marks info)))
+                  (gnus-info-set-marks info marks)
+                  (gnus-dribble-enter
+                   (concat "(gnus-group-set-info '"
+                           (gnus-prin1-to-string info)
+                           ")")))))))))))
 
 ;;;
 ;;; Agent Category Mode

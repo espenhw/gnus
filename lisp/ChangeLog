@@ -1,3 +1,15 @@
+2002-12-13  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-max-fetch-size): New, defcustom.
+	(gnus-agent-fetch-headers): Initialize gnus-agent-overview-buffer
+	even though no headers may have been fetched
+	(gnus-agent-fetch-group-1, and perhaps others, require this
+	behavior).
+	(gnus-agent-fetch-group-1): Fetch articles in chucks so that the
+	server buffer is constrained by gnus-agent-max-fetch-size.
+	Multiple chunks in the same group may perform arbitrarily large
+	updates.
+
 2002-12-12  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Added call to
