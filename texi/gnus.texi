@@ -10287,8 +10287,8 @@ The file contains one or more line, each of which define one server.
 @item
 Each line may contain an arbitrary number of token/value pairs.  The
 valid tokens include @samp{machine}, @samp{login}, @samp{password},
-@samp{default} and @samp{force}.  (The latter is not a valid
-@file{.netrc}/@code{ftp} token, which is the only way the
+@samp{default}, @samp{port} and @samp{force}.  (The latter is not a
+valid @file{.netrc}/@code{ftp} token, which is almost the only way the
 @file{.authinfo} file format deviates from the @file{.netrc} file
 format.)
 
@@ -20753,6 +20753,12 @@ When I type W W c (gnus-article-hide-citation) in the summary
 buffer, the citations are revealed, but the [+] buttons don't turn
 into [-] buttons.  (If I click on one of the [+] buttons, it does
 turn into a [-] button.)
+
+@item
+Perhaps there should be a command to "attach" a buffer of comments to
+a message?  That is, `B WHATEVER', you're popped into a buffer, write
+something, end with `C-c C-c', and then the thing you've written gets
+to be the child of the message you're commenting.
 
 @item
 Solve the halting problem.
