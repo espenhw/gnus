@@ -2887,17 +2887,23 @@ to find out how to use this."
 		     (if followup-to
 			 (concat newsgroups "," followup-to)
 		       newsgroups)))
-	    (hashtb (and (boundp 'gnus-active-hashtb)
-			 gnus-active-hashtb))
+            (known-groups
+             (mapcar '(lambda (n) (gnus-group-real-name n))
+                     (gnus-groups-from-server
+                      (cond ((equal gnus-post-method 'current)
+                             gnus-current-select-method)
+                            (gnus-post-method gnus-post-method)
+                            (t gnus-select-method)))))
 	    errors)
        (while groups
-	 (when (and (not (boundp (intern (car groups) hashtb)))
-		    (not (equal (car groups) "poster")))
-	   (push (car groups) errors))
-	 (pop groups))
+         (unless (or (equal (car groups) "poster")
+                     (member (car groups) known-groups))
+           (push (car groups) errors))
+         (pop groups))
        (cond
 	;; Gnus is not running.
-	((or (not hashtb)
+	((or (not (and (boundp 'gnus-active-hashtb)
+                       gnus-active-hashtb))
 	     (not (boundp 'gnus-read-active-file)))
 	 t)
 	;; We don't have all the group names.

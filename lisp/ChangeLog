@@ -1,3 +1,9 @@
+2001-07-22  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-check-news-header-syntax): When checking
+	whether the groups exist, check the right server based on
+	`gnus-post-method'.
+
 2001-07-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-delay.el: New file.
