@@ -1,3 +1,8 @@
+2002-11-01  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-bodies.el (mm-body-encoding): Don't return 8bit for 7bit
+	charset.
+
 2002-10-31  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-util.el (gnus-user-date-format-alist): Clarify and correct
@@ -5,8 +10,8 @@
 
 2002-10-28  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
-	* gnus-agent.el (gnus-agent-fetched-headers) 
-	(gnus-agent-load-fetched-headers) 
+	* gnus-agent.el (gnus-agent-fetched-headers)
+	(gnus-agent-load-fetched-headers)
 	(gnus-agent-save-fetched-headers): Remove variable and two
 	functions.  Kevin Greiner's version of gnus-agent-fetch-headers
 	works better.
@@ -117,7 +122,7 @@
 
 	* lpath.el: Remove useless bindings.
 
-2002-10-22  Jesper harder  <harder@ifa.au.dk>
+2002-10-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-execute-command): Disable visual
 	features while searching.
@@ -301,7 +306,7 @@
 	(puthash): Alias to cl-puthash for Emacs 20.
 	(with-syntax-table): New macro for Emacs 20.
 
-2002-10-12  Jesper harder  <harder@ifa.au.dk>
+2002-10-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-spec.el (gnus-pad-form): Use gnus-string-width-function.
 
@@ -330,7 +335,7 @@
 
 	* message.el: Autoload gnus-delay-article.
 
-2002-10-11  Jesper harder  <harder@ifa.au.dk>
+2002-10-11  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-spec.el (gnus-balloon-face-function): Use the help-echo
 	text property in Emacs.
@@ -974,7 +979,7 @@
 	* nnmail.el (nnmail-cache-fetch-group): Don't return "" (empty
 	string) as group name in case we have a CRLF in the file.
 
-2002-09-04  Jesper harder  <harder@ifa.au.dk>
+2002-09-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc1843.el (rfc1843-decode-loosely): Move to mime customization
 	group.
@@ -1014,7 +1019,7 @@
 	* gnus-group.el (gnus-group-fetch-control): Fix typo in last
 	commit.  From Reiner Steib <4uce.02.r.steib@gmx.net>.
 
-2002-08-26  Jesper harder  <harder@ifa.au.dk>
+2002-08-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.el (gnus-group-charter-alist): New option.
 	(gnus-group-fetch-control-use-browse-url): New option.
@@ -1028,7 +1033,7 @@
 	* gnus-mlspl.el (gnus-group-split-fancy): Doc fix.
 	From Alex Schroeder <alex@emacswiki.org>.
 
-2002-08-29  Jesper harder  <harder@ifa.au.dk>
+2002-08-29  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-group.el (gnus-group-make-menu-bar): Add ellipses to menu
 	items expecting user interaction.
@@ -1173,7 +1178,7 @@
 	When Emacs is restarted, Custom makes sure this is set, but during
 	the same session we must set it manually.
 
-2002-08-07  Jesper harder  <harder@ifa.au.dk>
+2002-08-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* yenc.el: New file.
 

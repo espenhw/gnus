@@ -143,6 +143,7 @@ If no encoding was done, nil is returned."
       bits)
      ((and (not mm-use-ultra-safe-encoding)
 	   (not longp)
+	   (not (eq '7bit (cdr (assq charset mm-body-charset-encoding-alist))))
 	   (or (eq t (cdr message-posting-charset))
 	       (memq charset (cdr message-posting-charset))
 	       (eq charset mail-parse-charset)))
