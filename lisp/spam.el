@@ -36,6 +36,8 @@
 
 (require 'gnus-sum)
 
+(require 'gnus-uu)			; because of key prefix issues
+
 ;; FIXME!  We should not require `message' until we actually need
 ;; them.  Best would be to declare needed functions as auto-loadable.
 (require 'message)
@@ -140,16 +142,25 @@ All unmarked article in such group receive the spam mark on group entry."
   :type '(repeat (string :tag "Server"))
   :group 'spam)
 
-(defcustom spam-ham-marks (list gnus-del-mark gnus-read-mark gnus-killed-mark gnus-kill-file-mark gnus-low-score-mark)
+(defcustom spam-ham-marks (list 'gnus-del-mark 'gnus-read-mark 'gnus-killed-mark 'gnus-kill-file-mark 'gnus-low-score-mark)
   "Marks considered as being ham (positively not spam).
 Such articles will be processed as ham (non-spam) on group exit."
-  :type '(repeat (character :tag "Mark"))
+  :type '(set
+	  (variable-item gnus-del-mark)
+	  (variable-item gnus-read-mark)
+	  (variable-item gnus-killed-mark)
+	  (variable-item gnus-kill-file-mark)
+	  (variable-item gnus-low-score-mark))
   :group 'spam)
 
-(defcustom spam-spam-marks (list gnus-spam-mark)
+(defcustom spam-spam-marks (list 'gnus-spam-mark)
   "Marks considered as being spam (positively spam).
 Such articles will be transmitted to `bogofilter -s' on group exit."
-  :type '(repeat (character :tag "Mark"))
+  :type '(set 
+	  (variable-item gnus-spam-mark)
+	  (variable-item gnus-killed-mark)
+	  (variable-item gnus-kill-file-mark)
+	  (variable-item gnus-low-score-mark))
   :group 'spam)
 
 (defcustom spam-face 'gnus-splash-face
@@ -516,13 +527,21 @@ spamicity coefficient of each, and the overall article spamicity."
 (defun spam-bogofilter-register-routine ()
   (when (and spam-use-bogofilter spam-bogofilter-path)
     (let ((articles gnus-newsgroup-articles)
-	  article mark ham-articles spam-articles)
+	  article mark ham-articles spam-articles spam-mark-values ham-mark-values)
+
+      ;; marks are stored as symbolic values, so we have to dereference them for memq to work
+      (dolist (mark spam-ham-marks)
+	(push (symbol-value mark) ham-mark-values))
+
+      (dolist (mark spam-spam-marks)
+	(push (symbol-value mark) spam-mark-values))
+
       (while articles
 	(setq article (pop articles)
 	      mark (gnus-summary-article-mark article))
-	(cond ((memq mark spam-spam-marks) (push article spam-articles))
+	(cond ((memq mark spam-mark-values) (push article spam-articles))
 	      ((memq article gnus-newsgroup-saved))
-	      ((memq mark spam-ham-marks) (push article ham-articles))))
+	      ((memq mark ham-mark-values) (push article ham-articles))))
       (when ham-articles
 	(spam-bogofilter-articles "ham" "-n" ham-articles))
       (when spam-articles

@@ -1,3 +1,12 @@
+2003-01-01  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-ham-marks, spam-spam-marks): changed list
+	customization and list itself to store mark symbol rather than
+	mark character.
+	(spam-bogofilter-register-routine): added logic to generate mark
+	values list from spam-ham-marks and spam-spam-marks, so (member)
+	would work.
+
 2003-01-01  Raymond Scholz  <ray-2002@zonix.de>
 
 	* message.el (message-signature-insert-empty-line): New variable. 
