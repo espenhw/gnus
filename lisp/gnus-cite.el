@@ -67,7 +67,8 @@ faces change the foreground or the background colors.")
 (defvar gnus-cite-attribution-prefix "in article\\|in <"
   "Regexp matching the beginning of an attribution line.")
 
-(defvar gnus-cite-attribution-postfix "\\(wrote\\|writes\\|said\\):[ \t]*$"
+(defvar gnus-cite-attribution-postfix
+  "\\(wrote\\|writes\\|said\\|says\\):[ \t]*$"
   "Regexp matching the end of an attribution line.
 The text matching the first grouping will be used as a button.")
 

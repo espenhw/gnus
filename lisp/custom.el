@@ -3,7 +3,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
 ;; Keywords: help
-;; Version: 0.1
+;; Version: 0.2
 
 ;;; Commentary:
 ;;
@@ -65,6 +65,9 @@ into a hook function that will be run only after loading the package.
 other hooks, such as major mode hooks, can do the job."
       (or (member element (symbol-value list-var))
 	  (set list-var (cons element (symbol-value list-var))))))
+
+(defvar intangible nil
+  "The symbol making text intangible")
 
 ;; We can't easily check for a working intangible.
 (if (and (boundp 'emacs-minor-version)
@@ -177,7 +180,6 @@ A custom association list.")
 	    (del-tag . "[DEL]")
 	    (add-tag . "[INS]"))
     (list (type . group)
-	  (accept . custom-list-accept)
 	  (extract . custom-list-extract)
 	  (validate . custom-list-validate)
 	  (check . custom-list-check))
@@ -563,21 +565,6 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	    values (cdr values)))
     result))
 
-(defun custom-list-accept (field value &optional original)
-  "Enter content of editing FIELD with VALUE."
-  (let ((values (custom-field-value field))
-	current)
-    (if original 
-	(custom-field-original-set field value))
-    (while values
-      (setq current (car values)
-	    values (cdr values))
-      (if current
-	  (let* ((custom (custom-field-custom current))
-		 (match (custom-match custom value)))
-	    (setq value (cdr match))
-	    (custom-field-accept current (car match) original))))))
-
 (defun custom-list-extract (custom field)
   "Extract list of childrens values."
   (let ((values (custom-field-value field))
@@ -609,19 +596,17 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 (defun custom-group-accept (field value &optional original)
   "Enter content of editing FIELD with VALUE."
   (let ((values (custom-field-value field))
-	value original)
+	current)
     (if original 
 	(custom-field-original-set field value))
     (while values
       (setq current (car values)
 	    values (cdr values))
-      (if (consp originals)
-	  (setq new (car value)
-		value (cdr value))
-	(setq original custom-nil))
-      (if (null current)
-	  ()
-	(custom-field-accept current new original)))))
+      (if current
+	  (let* ((custom (custom-field-custom current))
+		 (match (custom-match custom value)))
+	    (setq value (cdr match))
+	    (custom-field-accept current (car match) original))))))
 
 (defun custom-group-insert (custom level)
   "Insert field for CUSTOM at nesting LEVEL in customization buffer."
@@ -853,7 +838,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	  ((custom-valid custom value)
 	   nil)
 	  (t
-	   (const start "Wrong type")))))
+	   (cons start "Wrong type")))))
 
 ;;; Create Buffer:
 ;;

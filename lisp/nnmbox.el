@@ -52,7 +52,7 @@
 (defvar nnmbox-current-group nil
   "Current nnmbox news group directory.")
 
-(defconst nnmbox-mbox-buffer " *nnmbox mbox buffer*")
+(defconst nnmbox-mbox-buffer nil)
 
 (defvar nnmbox-status-string "")
 
@@ -149,6 +149,8 @@
 
 (defun nnmbox-server-opened (&optional server)
   (and (equal server nnmbox-current-server)
+       nnmbox-mbox-buffer
+       (buffer-name nnmbox-mbox-buffer)
        nntp-server-buffer
        (buffer-name nntp-server-buffer)))
 
@@ -362,7 +364,8 @@
 	  (delete-region (point-min) (point-max))))))
 
 (defun nnmbox-possibly-change-newsgroup (newsgroup)
-  (if (not (get-buffer nnmbox-mbox-buffer))
+  (if (or (not nnmbox-mbox-buffer)
+	  (not (buffer-name nnmbox-mbox-buffer)))
       (save-excursion
 	(set-buffer (setq nnmbox-mbox-buffer 
 			  (find-file-noselect nnmbox-mbox-file)))
@@ -415,7 +418,6 @@
   (if (not (file-exists-p nnmbox-mbox-file))
       (write-region 1 1 nnmbox-mbox-file t 'nomesg))
   (if (and nnmbox-mbox-buffer
-	   (get-buffer nnmbox-mbox-buffer)
 	   (buffer-name nnmbox-mbox-buffer)
 	   (save-excursion
 	     (set-buffer nnmbox-mbox-buffer)
@@ -479,12 +481,9 @@
 	     (set-buffer nnmbox-mbox-buffer)
 	     (save-buffer)))
       (while incomings
-	;; The following has been commented away, just to make sure
-	;; that nobody ever loses any mail. If you feel safe that
-	;; nnfolder will never do anything strange, just remove those
-	;; two semicolons, and avoid having lots of "Incoming*"
-	;; files. 
-	;; (and (file-writable-p incoming) (delete-file incoming))
+	(and nnmail-delete-incoming
+	     (file-writable-p incoming) 
+	     (delete-file incoming))
 	(setq incomings (cdr incomings))))))
 
 

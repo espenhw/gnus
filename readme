@@ -9,7 +9,7 @@ To use (ding) Gnus you first have to unpack the files, which you've
 obviously done, because you are reading this. 
 
 You should definitely byte-compile the source files. To do that, you
-can simply say "make" in this directory.
+can simply say "gmake" in this directory. (You have to use GNU's make.) 
 
 Then you have to tell Emacs where Gnus is. You might put something
 like

@@ -413,12 +413,9 @@
       (if incoming 
 	  (message "nnmh: Reading incoming mail...done"))
       (while incomings
-	;; The following has been commented away, just to make sure
-	;; that nobody ever loses any mail. If you feel safe that
-	;; nnfolder will never do anything strange, just remove those
-	;; two semicolons, and avoid having lots of "Incoming*"
-	;; files. 
-	;; (and (file-writable-p incoming) (delete-file incoming))
+	(and nnmail-delete-incoming
+	     (file-writable-p incoming)
+	     (delete-file incoming))
 	(setq incomings (cdr incomings))))))
       
 

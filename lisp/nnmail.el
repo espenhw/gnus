@@ -181,6 +181,10 @@ Example:
     (mail . "mailer-daemon\\|postmaster"))
   "*Alist of abbrevations allowed in `nnmail-split-fancy'.")
 
+(defvar nnmail-delete-incoming nil
+  "*If non-nil, the mail backends will delete incoming files after splitting.
+This is nil by default for reasons of security.")
+
 
 
 (defconst nnmail-version "nnml 0.0"

@@ -1,4 +1,97 @@
+Tue May 30 10:59:22 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* gnus-cite.el (gnus-cite-attribution-postfix): Accept VinVN
+	`says' attribution, no matter how stupid it sounds.
+
+Wed May 31 00:46:27 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* gnus.el (gnus-summary-read-group): Recenter in wrong window. 
+
+Tue May 30 10:05:54 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-make-hashtable-from-newsrc-alist): Make sure no
+	new dummy.groups are prepended. 
+	(gnus-make-hashtable-from-newsrc-alist): Would potentially be
+	destructive. 
+
+Mon May 29 09:03:02 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el (gnus-summary-goto-subject): Would not report
+	non-existing numbers. 
+
+	* gnus-msg.el (gnus-inews-insert-signature): Don't do sig if
+	mail-signature is non-nil. 
+	(gnus-post-news): Would set gnus-newsgroup-name to something
+	strange. 
+
+	* gnus.el (gnus-configure-windows): Would, in obscure cases,
+	display a buffer in two windows. 
+
+Mon May 29 09:03:02 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 0.79 is released.
+
+	* nnmail.el (nnmail-delete-incoming): New variable. 
+
+	* gnus.el (gnus-summary-read-group): Would scroll to the end of
+	the article. 
+
+	* gnus-msg.el (gnus-mail-reply-using-mail): Don't run
+	news-reply-header-hook if mail-yank-hooks is non-nil. 
+
+Sun May 28 15:25:02 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-update-mark): Would add unread marks to
+	articles that had been marked with the process mark.
+	(gnus-summary-read-group): Forcibly recenter group buffer if
+	visible. 
+
+	* gnus-score.el (gnus-summary-increase-score): Allow "?"s. 
+
+	* gnus.el (gnus-summary-import-article): New command and
+	keystroke. 
+
+	* gnus-kill.el (gnus-kill-parse-rn-kill-file): Also parse rn
+	killfiles. 
+
+	* gnus.el (gnus-group-get-new-news): Did not use
+	default-list-level properly.
+
+Sun May 28 10:01:10 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el (gnus-article-word-wrap): Use fill-column. 
+
+	* gnus-score.el (gnus-score-remove-lines-adaptive): Would switch
+	score files. 
+
+	* nnspool.el (nnspool-find-article-by-message-id): Did not work. 
+
+	* gnus-score.el (gnus-score-adaptive): Would try to score one too
+	many. 
+
+	* gnus.el (gnus-group-make-help-group): Use new doc backend. 
+
+	* nndoc.el (nndoc-type-to-regexp): Find out when the end of file
+	has been reached in digests. 
+
+Sun May 28 01:30:59 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmbox.el (nnmbox-possibly-change-newsgroup): Act more robustly
+	even if the user kills the mbox buffer.
+
+Sat May 27 20:16:34 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nneething.el (nneething-make-head): Produced buggy From
+	headers. 
+	(nneething-article-p): More strict definition. 
+
+	* gnus.el (gnus-summary-next-page): Would show end of buffer. 
+	(gnus-group-exit): Really offer to save summaries.
+	(gnus-offer-save-summaries): Reverse match.
+
 Sat May 27 09:25:52 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* gnus.el: 0.78 is released.
 
 	* nnmail.el (nnmail-split-incoming): Would bug out on long
 	content-lengths.

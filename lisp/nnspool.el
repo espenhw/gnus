@@ -30,10 +30,12 @@
 (require 'timezone)
 
 (defvar nnspool-inews-program news-inews-program
-  "Program to post news.")
+  "Program to post news.
+This is most commonly `inews' or `injnews'.")
 
 (defvar nnspool-inews-switches '("-h")
-  "Switches for nnspool-request-post to pass to `inews' for posting news.")
+  "Switches for nnspool-request-post to pass to `inews' for posting news.
+If you are using Cnews, you probably should set this variable to nil.")
 
 (defvar nnspool-spool-directory news-path
   "Local news spool directory.")
@@ -129,20 +131,20 @@ Newsgroup must be selected before calling this function."
 	    (setq article (car sequence))
 	    (if (stringp article)
 		(progn
-		  (format "221 %d Article retrieved.\n" 0)
-		  (nnspool-request-article article))
+		  (setq file (nnspool-find-article-by-message-id article))
+		  (setq article 0))
 	      (setq file (concat nnspool-current-directory 
-				 (int-to-string article)))
-	      (and (file-exists-p file)
-		   (progn
-		     (insert (format "221 %d Article retrieved.\n" article))
-		     (setq beg (point))
-		     (nnheader-insert-head file)
-		     (goto-char beg)
-		     (search-forward "\n\n" nil t)
-		     (forward-char -1)
-		     (insert ".\n")
-		     (delete-region (point) (point-max)))))
+				 (int-to-string article))))
+	    (and file (file-exists-p file)
+		 (progn
+		   (insert (format "221 %d Article retrieved.\n" article))
+		   (setq beg (point))
+		   (nnheader-insert-head file)
+		   (goto-char beg)
+		   (search-forward "\n\n" nil t)
+		   (forward-char -1)
+		   (insert ".\n")
+		   (delete-region (point) (point-max))))
 	    (setq sequence (cdr sequence))
 	    
 	    (and do-message
@@ -408,18 +410,20 @@ Newsgroup must be selected before calling this function."
 			  (1- first) (1+ last))
 		  file)))
 
+;; Fixed by fdc@cliwe.ping.de (Frank D. Cringle). 
 (defun nnspool-find-article-by-message-id (id)
   "Return full pathname of an article identified by message-ID."
   (save-excursion
-    (set-buffer nntp-server-buffer)
-    (erase-buffer)
-    (call-process "grep" nil t nil id nnspool-history-file)
-    (goto-char (point-min))
-    (if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\(.*\\)$")
-	(concat nnspool-spool-directory
-		(nnspool-replace-chars-in-string 
-		 (buffer-substring (match-beginning 1) (match-end 1)) 
-		 ?. ?/)))))
+    (let ((buf (get-buffer-create " *nnspool work*")))
+      (set-buffer buf)
+      (erase-buffer)
+      (call-process "grep" nil t nil id nnspool-history-file)
+      (goto-char (point-min))
+      (if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\(.*\\)$")
+	  (concat nnspool-spool-directory
+		  (nnspool-replace-chars-in-string 
+		   (buffer-substring (match-beginning 1) (match-end 1)) 
+		   ?. ?/))))))
 
 (defun nnspool-find-file (file)
   "Insert FILE in server buffer safely."

@@ -275,12 +275,6 @@ highlight-headers-follow-url-netscape:
       ["Set expirable mark" gnus-summary-mark-as-expirable t]
       ["Set bookmark" gnus-summary-set-bookmark t]
       ["Remove bookmark" gnus-summary-remove-bookmark t])
-     ("Score"
-      ["Enter score" gnus-summary-score-entry t]
-      ["Raise score" gnus-summary-raise-score t]
-      ["Lower score" gnus-summary-lower-score t]
-      ["Current score" gnus-summary-current-score t]
-      ["Set score" gnus-summary-set-score t])
      ("Display"
       ["Remove lines marked as read" gnus-summary-remove-lines-marked-as-read t]
       ["Remove lines marked with..." gnus-summary-remove-lines-marked-with t]
@@ -399,7 +393,7 @@ highlight-headers-follow-url-netscape:
       ["Catchup and exit" gnus-summary-catchup-and-exit t]
       ["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
       ["Exit group" gnus-summary-exit t]
-      ["Exit group without updating" gnus-summary-quit t]
+      ["Exit group without updating" gnus-summary-exit-no-update t]
       ["Reselect group" gnus-summary-reselect-current-group t]
       ["Rescan group" gnus-summary-rescan-group t])
      ["Fetch group FAQ" gnus-summary-fetch-faq t]
@@ -438,6 +432,11 @@ highlight-headers-follow-url-netscape:
    gnus-summary-mode-map
    ""
    '("Score"
+     ["Enter score" gnus-summary-score-entry t]
+     ["Raise score" gnus-summary-increase-score t]
+     ["Lower score" gnus-summary-lower-score t]
+     ["Current score" gnus-summary-current-score t]
+     ["Set score" gnus-summary-set-score t]
      ("Score file"
       ["Switch current score file" gnus-score-change-score-file t]
       ["Set mark below" gnus-score-set-mark-below t]

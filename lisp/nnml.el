@@ -500,14 +500,7 @@ all. This may very well take some time.")
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnml-directory "Incoming")))
 	   (nnmail-split-incoming incoming 'nnml-save-mail nil group)
-	   (setq incomings (cons incoming incomings))
-	   ;; The following has been commented away, just to make sure
-	   ;; that nobody ever loses any mail. If you feel safe that
-	   ;; nnml will never do anything strange, just remove those
-	   ;; two semicolons, and avoid having lots of "Incoming*"
-	   ;; files. 
-	   ;; (delete-file incoming)
-	   ))
+	   (setq incomings (cons incoming incomings))))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
       (if incoming 
@@ -518,12 +511,9 @@ all. This may very well take some time.")
 	    (and gnus-verbose-backends
 		 (message "nnml: Reading incoming mail...done"))))
       (while incomings
-	;; The following has been commented away, just to make sure
-	;; that nobody ever loses any mail. If you feel safe that
-	;; nnfolder will never do anything strange, just remove those
-	;; two semicolons, and avoid having lots of "Incoming*"
-	;; files. 
-	;; (and (file-writable-p incoming) (delete-file incoming))
+	(and nnmail-delete-incoming
+	     (file-writable-p incoming)
+	     (delete-file incoming))
 	(setq incomings (cdr incomings))))))
 
 

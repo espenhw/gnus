@@ -812,7 +812,7 @@ will not be asked to confirm the command.")
 If nil, all files that use the same viewing command will be given as a
 list of parameters to that command.")
 
-(defvar gnus-group-line-format "%M%S%5y: %(%g%)\n"
+(defvar gnus-group-line-format "%M%S%p%5y: %(%g%)\n"
   "*Format of group lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -832,6 +832,7 @@ with some simple extensions.
 %D    Group description (string)
 %s    Select method (string)
 %o    Moderated group (char, \"m\")
+%p    Process mark (char)
 %O    Moderated group (string, \"(m)\" or \"\")
 %n    Select from where (string)
 %z    A string that look like `<%s:%n>' if a foreign select method is used
@@ -941,6 +942,7 @@ with some simple extensions.
     ("nndoc" none prompt-address) 
     ("nnbabyl" mail respool) 
     ("nnkiboze" none virtual) 
+    ("nnsoup" post)
     ("nnfolder" mail respool))
   "An alist of valid select methods.
 The first element of each list lists should be a string with the name
@@ -1200,6 +1202,7 @@ automatically when it is selected.")
 	(list ?D 'newsgroup-description ?s)
 	(list ?o 'moderated ?c)
 	(list ?O 'moderated-string ?s)
+	(list ?p 'process-marked ?c)
 	(list ?s 'news-server ?s)
 	(list ?n 'news-method ?s)
 	(list ?z 'news-method-string ?s)
@@ -1272,7 +1275,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.79"
+(defconst gnus-version "(ding) Gnus v0.80"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1514,6 +1517,11 @@ Thank you for your help in stamping out bugs.
   (autoload 'rmail-insert-rmail-file-header "rmail")
   (autoload 'rmail-count-new-messages "rmail")
   (autoload 'rmail-show-message "rmail")
+
+  ;; gnus-soup
+  (autoload 'gnus-group-brew-soup "gnus-soup" nil t)
+  (autoload 'gnus-brew-soup "gnus-soup" nil t)
+  (autoload 'gnus-soup-add-article "gnus-soup" nil t)
 
   ;; gnus-mh
   (autoload 'gnus-mail-reply-using-mhe "gnus-mh")
@@ -2375,7 +2383,7 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	      hor (cdr hor)))
       (setq heights (nreverse heights)
 	    hor (car rule))
-      
+
       ;; We then go through these heighs and create windows for them.
       (while heights
 	(setq height (car heights)
@@ -2403,7 +2411,7 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
     ;; Finally, we pop to the buffer that's supposed to have point. 
     (or jump-buffer (error "Missing `point' in spec for %s" setting))
 
-    (pop-to-buffer jump-buffer)
+    (select-window (get-buffer-window jump-buffer))
     jump-buffer))
       
 (defun gnus-remove-some-windows ()
@@ -3410,6 +3418,8 @@ moves the point to the colon."
 		     ?* ? ))
 	 (number (if (eq number t) "*" (+ number number-of-dormant 
 					  number-of-ticked)))
+	 (process-marked (if (member qualified-group gnus-group-marked)
+			     gnus-process-mark ? ))
 	 (buffer-read-only nil)
 	 b)
     (beginning-of-line)
@@ -3558,14 +3568,15 @@ If FIRST-TOO, the current line is also eligeble as a target."
 	     (setq group (gnus-group-group-name))
 	     (progn
 	       (beginning-of-line)
-	       (forward-char 1)
+	       (forward-char 2)
 	       (delete-char 1)
 	       (if unmark
 		   (progn
 		     (insert " ")
 		     (setq gnus-group-marked (delete group gnus-group-marked)))
 		 (insert "#")
-		 (setq gnus-group-marked (cons group gnus-group-marked)))
+		 (setq gnus-group-marked
+		       (cons group (delete group gnus-group-marked))))
 	       t)
 	     (zerop (gnus-group-next-group 1)))
       (setq n (1- n)))
@@ -5180,6 +5191,7 @@ buffer.
   (define-key gnus-summary-save-map "h" 'gnus-summary-save-article-folder)
   (define-key gnus-summary-save-map "v" 'gnus-summary-save-article-vm)
   (define-key gnus-summary-save-map "p" 'gnus-summary-pipe-output)
+;  (define-key gnus-summary-save-map "s" 'gnus-soup-add-article)
 
   (define-key gnus-summary-mode-map "X" 'gnus-uu-extract-map)
   
@@ -5529,11 +5541,13 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	(gnus-kill-buffer kill-buffer)
 	(if (not (get-buffer-window gnus-group-buffer))
 	    ()
-	  (let ((obuf (current-buffer)))
-	    (set-buffer gnus-group-buffer)
-	    (and (gnus-group-goto-group group)
-		 (recenter))
-	    (set-buffer obuf))))
+	  ;; gotta use windows, because recenter does wierd stuff if
+	  ;; the current buffer ain't the displayed window.
+ 	  (let ((owin (selected-window))) 
+ 	    (select-window (get-buffer-window gnus-group-buffer))
+  	    (and (gnus-group-goto-group group)
+  		 (recenter))
+ 	    (select-window owin))))
       t))))
 
 (defun gnus-summary-prepare ()
@@ -7394,18 +7408,19 @@ If optional argument UNREAD is non-nil, only unread article is selected."
 		      nil 'require-match))))
   (or article (error "No article number"))
   (let ((b (point)))
-    (gnus-goto-char (text-property-any (point-min) (point-max)
-				       'gnus-number article))
-    (gnus-summary-show-thread)
-    ;; Skip dummy articles. 
-    (if (eq (gnus-summary-article-mark) gnus-dummy-mark)
-	(forward-line 1))
-    (prog1
-	(if (not (eobp))
-	    article
-	  (goto-char b)
-	  nil)
-      (gnus-summary-position-cursor))))
+    (if (not (gnus-goto-char (text-property-any (point-min) (point-max)
+						'gnus-number article)))
+	()
+      (gnus-summary-show-thread)
+      ;; Skip dummy articles. 
+      (if (eq (gnus-summary-article-mark) gnus-dummy-mark)
+	  (forward-line 1))
+      (prog1
+	  (if (not (eobp))
+	      article
+	    (goto-char b)
+	    nil)
+	(gnus-summary-position-cursor)))))
 
 ;; Walking around summary lines with displaying articles.
 
@@ -7630,6 +7645,7 @@ Argument LINES specifies lines to be scrolled down."
 Argument LINES specifies lines to be scrolled up (or down if negative)."
   (interactive "p")
   (gnus-set-global-variables)
+  (gnus-configure-windows 'article)
   (or (gnus-summary-select-article nil nil 'pseudo)
       (gnus-eval-in-buffer-window 
        gnus-article-buffer
@@ -11599,15 +11615,22 @@ newsgroup."
 ;; alist elements are used as keys.
 (defun gnus-make-hashtable-from-newsrc-alist ()
   (let ((alist gnus-newsrc-alist)
-	 prev)
+	(ohashtb gnus-newsrc-hashtb)
+	prev)
     (setq gnus-newsrc-hashtb (gnus-make-hashtable (length alist)))
     (setq alist 
 	  (setq prev (setq gnus-newsrc-alist 
-			   (cons (list "dummy.group" 0 nil) alist))))
+			   (if (equal (car (car gnus-newsrc-alist))
+				      "dummy.group")
+			       gnus-newsrc-alist
+			     (cons (list "dummy.group" 0 nil) alist)))))
     (while alist
-      (gnus-sethash (car (car alist)) (cons nil prev) gnus-newsrc-hashtb)
-      (setq prev alist)
-      (setq alist (cdr alist)))))
+      (gnus-sethash (car (car alist)) 
+		    (cons (and ohashtb (car (gnus-gethash 
+					     (car (car alist)) ohashtb))) 
+			  prev) gnus-newsrc-hashtb)
+      (setq prev alist
+	    alist (cdr alist)))))
 
 (defun gnus-make-hashtable-from-killed ()
   "Create a hash table from the killed and zombie lists."

@@ -411,7 +411,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 		   (setq subject (read-string "Subject: ")))))
 	(setq mail-reply-buffer gnus-article-copy)
 
-	(let ((gnus-newsgroup-name (or group gnus-newsgroup-name "")))
+	(let ((newsgroup-name (or group gnus-newsgroup-name "")))
 	  (setq real-group (and group (gnus-group-real-name group)))
 	  (setq gnus-post-news-buffer 
 		(gnus-request-post-buffer 
@@ -419,7 +419,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 		 (nth 2 (and group (gnus-gethash group gnus-newsrc-hashtb)))
 		 (or (cdr (assq 'to-group
 				(nth 5 (nth 2 (gnus-gethash 
-					       gnus-newsgroup-name
+					       newsgroup-name
 					       gnus-newsrc-hashtb)))))
 		     (if (and (boundp 'gnus-followup-to-function)
 			      gnus-followup-to-function
@@ -1040,15 +1040,17 @@ nil."
 			 "^/[^/]+/" (expand-file-name signature)))))
 	  (progn
 	    (goto-char (point-max))
-	    ;; Delete any previous signatures.
 	    (if (and mail-signature (search-backward "\n-- \n" nil t))
-		(delete-region (1+ (point)) (point-max)))
-	    (insert "\n-- \n")
-	    (if (file-exists-p signature)
-		(insert-file-contents signature)
-	      (insert signature))
-	    (goto-char (point-max))
-	    (or (bolp) (insert "\n")))))))
+		()
+	      ;; Delete any previous signatures.
+	      (if (search-backward "\n-- \n" nil t)
+		  (delete-region (1+ (point)) (point-max)))
+	      (insert "\n-- \n")
+	      (if (file-exists-p signature)
+		  (insert-file-contents signature)
+		(insert signature))
+	      (goto-char (point-max))
+	      (or (bolp) (insert "\n"))))))))
 
 (defun gnus-inews-do-fcc ()
   "Process FCC: fields in current article buffer.

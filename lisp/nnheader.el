@@ -194,7 +194,18 @@
 				 file nil beg (setq beg (+ chop beg)))))
 		(prog1 (not (search-backward "\n\n" nil t)) 
 		  (goto-char (point-max)))))))
-    
+
+(defun nnheader-article-p ()
+  (goto-char (point-min))
+  (if (not (search-forward "\n\n" nil t))
+      nil
+    (narrow-to-region (point-min) (1- (point)))
+    (goto-char (point-min))
+    (while (looking-at "[A-Z][^ \t]+:.*\n\\([ \t].*\n\\)*\\|From .*\n")
+      (goto-char (match-end 0)))
+    (prog1
+	(eobp)
+      (widen))))    
 
 (provide 'nnheader)
 

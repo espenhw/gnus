@@ -289,7 +289,7 @@ get the right functions onto the right hooks.
              ;; use this instead.  note that the final t is *essential*,
              ;; this must be the last thing done
              (add-hook 'gnus-article-display-hook
-                       'hilit-rehighlight-buffer-quietly t)))
+                       'gnus-article-highlight t)))
 @end lisp
 
 
@@ -981,15 +981,20 @@ the commands that say they move to the next unread group.
 @findex gnus-group-read-group
 Select the current group, switch to the summary buffer and display the
 first unread article (@code{gnus-group-read-group}).  If there are no
-unread articles in the group, or if you give a prefix to this command,
-Gnus will offer to fetch all the old articles in this group from the
-server.  
+unread articles in the group, or if you give a non-numerical prefix to
+this command, Gnus will offer to fetch all the old articles in this
+group from the server.  If you give a numerical prefix @var{N}, Gnus
+will fetch @var{N} number of articles.  If @var{N} is positive, fetch
+the @var{N} newest articles, if @var{N} is negative, fetch the
+@var{abs(N)} oldest articles.
 @item RET
 @kindex RET (Group)
 @findex gnus-group-select-group
 Select the current group and switch to the summary buffer
-(@code{gnus-group-select-group}).  If you give a prefix to this command,
-Gnus will fetch all available articles in this group.
+(@code{gnus-group-select-group}).  Takes the same aguments as
+@code{gnus-group-read-group} - the only difference is that this command
+does not display the first unread article automatically upon group
+entry. 
 @item c
 @kindex c (Group)
 @findex gnus-group-catchup-current
@@ -1159,6 +1164,11 @@ All groups with a level less than or equal to
 @code{gnus-group-default-list-level} will be listed in the group buffer
 by default.
 
+@vindex gnus-group-use-permament-levels
+If @code{gnus-group-use-permament-levels} is non-@code{nil}, once you
+give a level prefix to @kbd{g} or @kbd{l}, all subsequent commands will
+use this level as the "work" level.
+
 @node Marking Groups
 @section Marking Groups
 @cindex marking groups
@@ -1230,30 +1240,36 @@ and some commands to ease the creation of some special-purpose groups:
 Make a new group (@code{gnus-group-make-group}).  Gnus will prompt you
 for a name, a method and possibly an @dfn{address}.  For an easier way
 to subscribe to @sc{nntp} groups, @xref{Browse Foreign Server}.
+
 @item G e
 @kindex G e (Group)
 @findex gnus-group-edit-group-method
 Enter a buffer where you can edit the select method of the current
 group (@code{gnus-group-edit-group-method}).
+
 @item G p
 @kindex G p (Group)
 @findex gnus-group-edit-group-parameters
 Enter a buffer where you can edit the group parameters
 (@code{gnus-group-edit-group-parameters}). 
+
 @item G E
 @kindex G E (Group)
 @findex gnus-group-edit-group
 Enter a buffer where you can edit the group info
 (@code{gnus-group-edit-group}).
+
 @item G d
 @kindex G d (Group)
 @findex gnus-group-make-directory-group
 Make a directory group.  You will be prompted for a directory name
 (@code{gnus-group-make-directory-group}).  
+
 @item G h 
 @kindex G h (Group)
 @findex gnus-group-make-help-group
 Make the (ding) Gnus help group (@code{gnus-group-make-help-group}).
+
 @item G a
 @kindex G a (Group)
 @findex gnus-group-make-archive-group
@@ -1261,12 +1277,34 @@ Make the (ding) Gnus help group (@code{gnus-group-make-help-group}).
 Make the (ding) Gnus archive group
 (@code{gnus-group-make-archive-group}).  The archive group will be
 fetched from @code{gnus-group-archive-directory}.
+
 @item G k
 @kindex G k (Group)
 @findex gnus-group-make-kiboze-group
 Make a kiboze group.  You will be prompted for a name, for a regexp to
 match groups to be "included" in the kiboze group, and a series of
 strings to match on headers (@code{gnus-group-make-kiboze-group}).
+
+@item G D
+@kindex G D (Group)
+@findex gnus-group-enter-directory
+Read a random directory as if with were a newsgroup with the
+@code{nneething} backend (@code{gnus-group-enter-directory}).
+
+@item G f
+@kindex G f (Group)
+@findex gnus-group-make-doc-group
+Make a group based on some file or other
+(@code{gnus-group-make-doc-group}).  You will be prompted for a file
+name and a file type.  Currently supported types are @code{babyl},
+@code{mbox} and @code{digest}.
+
+@item G V
+@kindex G V (Group)
+@findex gnus-group-make-empty-virtual
+Make a new, fresh, empty @code{nnvirtual} group
+(@code{gnus-group-make-empty-virtual}).
+
 @item G v
 @kindex G v (Group)
 @findex gnus-group-add-to-virtual
@@ -1284,7 +1322,6 @@ The different methods all have their peculiarities, of course.
 * nndir::            You can read a directory as if it was a newsgroup.
 * nneething::          Dired? Who needs dired?
 * nndoc::            Single files can be the basis of a group.
-* nndigest::         Digests can be undigested and treated as a group.
 * Reading Mail::     Reading your personal mail with Gnus.
 @end menu
 
@@ -1601,16 +1638,21 @@ If you have a directory that has lots of articles in separate files in
 it, you might treat it as a newsgroup.  The files have to have numerical
 names, of course.
 
-This might be an opportune moment to mention ange-ftp, that most
-wonderful of all wonderful Emacs packages.  When I wrote nndir, I didn't
-think much about it - a backend to read directories.  Big deal.
+This might be an opportune moment to mention @code{ange-ftp}, that most
+wonderful of all wonderful Emacs packages.  When I wrote @code{nndir}, I
+didn't think much about it - a backend to read directories.  Big deal.
 
-ange-ftp changes that picture dramatically.  For instance, if you enter
-@file{"/ftp@@sina.tcamc.uh.edu:/pub/emacs/ding-list/"} as the the
+@code{ange-ftp} changes that picture dramatically.  For instance, if you
+enter @file{"/ftp@@sina.tcamc.uh.edu:/pub/emacs/ding-list/"} as the the
 directory name, ange-ftp will actually allow you to read this directory
 over at @samp{sina} as a newsgroup.  Distributed news ahoy!
 
-nndir will use @sc{nov} files if they are present.
+@code{nndir} will use @sc{nov} files if they are present.
+
+@code{nndir} is a "read-only" backend - you can't delete or expire
+articles with this method.  You can use @code{nnmh} or @code{nnml} for
+whatever you use @code{nndir} for, so you could switch to any of those
+methods if you feel the need to have a non-read-only @code{nndir}.
 
 @node nneething
 @subsection nneething
@@ -1676,29 +1718,20 @@ Name of the map files.
 @cindex help group
 
 nndoc is a cute little thing that will let you read a single file as a
-newsgroup.  The file has to be divided into articles by the use of Unix
-mbox @samp{From } lines.  nndoc will not try to change the file or
-insert any extra headers into it - it will simply, like, let you use the
-file as the basis for a group.  And that's it.
+newsgroup.  Currently supported file types are @code{babyl}, @code{mbox}
+and @code{digest}. 
 
-@node nndigest
-@subsection nndigest
-@cindex nndigest
-@cindex digest groups
+nndoc will not try to change the file or insert any extra headers into
+it - it will simply, like, let you use the file as the basis for a
+group.  And that's it.
 
-nndigest is a bit odd.  It will use a buffer containing a valid digest
-as the basis for a group.
+Virtual server variables:
 
-These nndigest groups are rather ephemeral.  They will never store
-information on what articles you have read, and you can't really use
-them as foreign groups at all.  The only way to reach an nndigest group
-is to type @kbd{V D} on a digest in the summary buffer.
-
-When you have finished reading the digest and press @kbd{q}, you will be
-returned to the group from whence you came instead of going to the group
-buffer.
-
-Odd all over, as you can see, but somewhat useful.
+@table @code
+@item nndoc-article-type
+@vindex nndoc-article-type
+This should be one of @code{mbox}, @code{babyl} or @code{digest}. 
+@end table
 
 @node Reading Mail
 @subsection Reading Mail
@@ -1755,6 +1788,11 @@ the new incoming mail, and can be used for, well, anything, really.
 while processing it.  This is usually done in the same directory that
 the mail backend habitates (ie. @file{~/Mail/}), but if this variable is
 non-@code{nil}, it will be used instead.
+
+@vindex nnmail-delete-incoming
+If @code{nnmail-delete-incoming} is non-@code{nil}, the mail backends
+will delete the temporary incoming file after splitting mail into the
+proper groups.  This is @code{nil} by default for reasons of security. 
 
 Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
@@ -1826,7 +1864,7 @@ the mail will be "cross-posted" to all those groups.
 If the rather simple, standard method for specifying how to split mail
 doesn't allow you to do what you want, you can set
 @code{nnmail-split-methods} to @code{nnmail-split-fancy}.  Then you can
-play with the @code{nnmail-split-methods} variable. 
+play with the @code{nnmail-split-fancy} variable. 
 
 Let's look at an example value of this variable first:
 
@@ -1998,10 +2036,17 @@ expire the final article in a mail newsgroup.  This is to make life
 easier for procmail users.
 
 By the way, that line up there about Gnus never expiring non-expirable
-articles is a lies.  If you put @code{total-expire} in the group
+articles is a lie.  If you put @code{total-expire} in the group
 parameters, articles will not be marked as expirable, but all read
 articles will be put through the expiry process.  Use with extreme
 caution. 
+
+Note that at present, Gnus will not actually delete any expirable
+articles automatically.  You have to enter one of the expiry functions
+(eg. `C-c M-c-x' in the group buffer) to actually run articles through
+the expiry process.  Or you can add a call to the expiry function in the
+group exit hook.  Gnus will probably do all this automatically in the
+future. 
 
 @node Not Reading Mail
 @subsubsection Not Reading Mail
@@ -2165,10 +2210,21 @@ Virtual server settings:
 
 @table @code
 @item nnmh-directory
+@vindex nnmh-directory
 All @code{nnmh} directories will be located under this directory.
 
 @item nnmh-get-new-mail
+@vindex nnmh-get-new-mail
 If non-@code{nil}, @code{nnmh} will read incoming mail.
+
+@item nnmh-be-safe
+@vindex nnmh-be-safe
+If non-@code{nil}, @code{nnmh} will go to ridiculous lenghts to make
+sure that the articles in the folder is actually what Gnus think they
+are.  It will check date stamps, and stat everything in sight, so
+setting this to @code{t} will mean a serious slow-down.  If you never
+use anything by Gnus to read the nnmh articles, you do not have to set
+this variable to @code{t}. 
 @end table
 
 @node nnfolder
@@ -2185,15 +2241,19 @@ Virtual server settings:
 
 @table @code
 @item nnfolder-directory
+@vindex nnfolder-directory
 All the @code{nnfolder} mail boxes will be stored under this directory. 
 
 @item nnfolder-active-file
+@vindex nnfolder-active-file
 The name of the active file.
 
 @item nnfolder-newsgroups-file
+@vindex nnfolder-newsgroups-file
 The name of the group description file.
 
 @item nnfolder-get-new-mail
+@vindex nnfolder-get-new-mail
 If non-@code{nil}, @code{nnfolder} will read incoming mail.
 @end table
 
@@ -2381,21 +2441,36 @@ Here's a list of keystrokes available in the browse mode:
 @kindex n (Browse)
 @findex gnus-group-next-group
 Go to the next group (@code{gnus-group-next-group}).
+
 @item p
 @kindex p (Browse)
 @findex gnus-group-prev-group
 Go to the previous group (@code{gnus-group-prev-group}).
+
+@item SPC
+@kindex SPC (Browse)
+@findex gnus-browse-read-group
+Enter the current group and display the first article
+(@code{gnus-browse-read-group}). 
+
+@item RET
+@kindex RET (Browse)
+@findex gnus-browse-select-group
+Enter the current group (@code{gnus-browse-select-group}). 
+
 @item u
 @kindex u (Browse)
 @findex gnus-browse-unsubscribe-current-group
 Unsubscribe to the current group, or, as will be the case here,
 subscribe to it (@code{gnus-browse-unsubscribe-current-group}). 
+
 @item l
 @itemx q
 @kindex q (Browse)
 @kindex l (Browse)
 @findex gnus-browse-exit
 Exit browse mode (@code{gnus-browse-exit}).
+
 @item ?
 @kindex ? (Browse)
 @findex gnus-browse-describe-briefly
@@ -2447,12 +2522,9 @@ plastic chair.
 @item g
 @kindex g (Group)
 @findex gnus-group-get-new-news
-@vindex gnus-group-always-list-unread
 Check server for new articles.  If the numeric prefix is used, this
 command will check only groups of level ARG and lower
-(@code{gnus-group-get-new-news}).  If
-@code{gnus-group-always-list-unread} is @code{nil}, only groups of level
-ARG and lower will be displayed.
+(@code{gnus-group-get-new-news}). 
 @item M-g
 @kindex M-g (Group)
 @findex gnus-group-get-new-news-this-group
@@ -3059,6 +3131,9 @@ the @code{send-mail-function} variable as the default.
 List of regexps to match headers included in digested messages.  The
 headers will be included in the sequence they are matched.
 
+@item gnus-mail-hook
+Hook called as the last thing after setting up a mail buffer.
+
 @end table
 
 There are three "methods" for handling all mail.  The default is
@@ -3153,7 +3228,8 @@ process/prefix convention.
 @kindex S u (Summary)
 @findex gnus-uu-post-news
 Uuencode a file, split it into parts, and post it as a series
-(@code{gnus-uu-post-news}) (@pxref{Uuencoding & Posting}). 
+(@code{gnus-uu-post-news}). 
+@c (@pxref{Uuencoding & Posting}). 
 @end table
 
 @vindex gnus-required-headers
@@ -3856,12 +3932,7 @@ to @code{some}.  In either case, fetching old headers only works if the
 select method you are using supports @sc{xover}.  Also remember that if
 the root of the thread has been expired by the server, there's not much
 Gnus can do about that.
-@item gnus-gather-loose-threads
-@vindex gnus-gather-loose-threads
-If non-@code{nil}, Gnus will gather all loose subtrees into one big tree
-and create a dummy root at the top.  (Wait a minute.  Root at the top?
-Yup.)  Loose subtrees occur when the real root has expired, or you've
-read or killed the root in a previous session.
+
 @item gnus-summary-gather-subject-limit
 Loose threads are gathered by comparing subjects of articles.  If this
 variable is @code{nil}, Gnus requires an exact match between the
@@ -3879,6 +3950,11 @@ use a fuzzy string comparison algorithm on the subjects.
 
 @item gnus-summary-make-false-root
 @vindex gnus-summary-make-false-root
+If non-@code{nil}, Gnus will gather all loose subtrees into one big tree
+and create a dummy root at the top.  (Wait a minute.  Root at the top?
+Yup.)  Loose subtrees occur when the real root has expired, or you've
+read or killed the root in a previous session.
+
 When there is no real root of a thread, Gnus will have to fudge
 something.  This variable says what fudging method Gnus should use.
 There are four possible values:
@@ -3899,9 +3975,11 @@ Gnus won't actually make any article the parent, but simply leave the
 subject field of all orphans except the first empty.  (Actually, it will
 use @code{gnus-summary-same-subject} as the subject (@pxref{Summary
 Buffer Format}).)
-@item nil
+@item none
 Don't make any article parent at all.  Just gather the threads and
 display them after one another.
+@item nil
+Don't gather loose threads.
 @end table
 
 @item gnus-thread-hide-subtree
@@ -4899,6 +4977,11 @@ Set the score of the current article (@code{gnus-summary-set-score}).
 @findex gnus-summary-current-score
 Display the score of the current article
 (@code{gnus-summary-current-score}).   
+@item V S t
+@kindex V S t (Summary)
+@findex gnus-score-find-trace
+Display all score rules that have been used on the current article
+(@code{gnus-score-find-trace}).   
 @item V S a
 @kindex V S a (Summary)
 @findex gnus-summary-score-entry
@@ -5016,6 +5099,10 @@ defaults for the remaining one or two keystrokes.  The defaults are
 "substring" and "temporary".  So @kbd{I A} is the same as @kbd{I a s t},
 and @kbd{I a R} is the same as @kbd{I a r t}.
 
+@vindex gnus-score-mimic-keymap
+The @code{gnus-score-mimic-keymap} says whether these commands will
+pretend they are keymaps or not.
+
 @node Score Variables
 @subsection Score Variables
 @cindex score variables
@@ -5121,6 +5208,8 @@ Anyway, if you'd like to dig into it yourself, here's an example:
  (orphan -10)
  (adapt t)
  (files "/hom/larsi/News/gnu.SCORE")
+ (local (gnus-newsgroup-auto-expire t)
+        (gnus-summary-make-false-root 'empty))
  (eval (ding)))
 @end lisp
 
@@ -5237,6 +5326,13 @@ not want adaptive scoring.  If you only want adaptive scoring in a few
 groups, you'd set @code{gnus-use-adaptive-scoring} to @code{nil}, and
 insert @code{(adapt t)} in the score files of the groups where you want
 it. 
+@item local
+@cindex local variables
+The value of this entry should be a list of @code{(VAR VALUE)} pairs.
+Each @var{var} will be made buffer-local to the current summary buffer,
+and set to the value specified.  This is a convenient, if albeit
+strange, way of setting variables in some groups, and you don't like
+hooks much.
 @end table
 
 @node Score File Editing
@@ -5519,26 +5615,38 @@ process/prefix convention (@pxref{Process/Prefix}).
 @findex gnus-summary-expire-articles
 Expire all expirable articles in the group
 (@code{gnus-summary-expire-articles}).
+
 @item B DEL
 @kindex B DEL (Summary)
 @findex gnus-summary-delete-articles
 Delete the mail article.  This is "delete" as in "delete it from your
 disk forever and ever, never to return again." Use with caution.
 (@code{gnus-summary-delete-article}).
+
 @item B m
 @kindex B m (Summary)
 @findex gnus-summary-move-article
 Move the article from one mail group to another
 (@code{gnus-summary-move-article}). 
+
 @item B c
 @kindex B c (Summary)
 @findex gnus-summary-copy-article
 Copy the article from one group (mail group or not) to a mail group
 (@code{gnus-summary-copy-article}).
+
+@item B i
+@kindex B i (Summary)
+@findex gnus-summary-import-article
+Import a random file into the current mail newsgroup
+(@code{gnus-summary-import-article}).  You will be prompted for a file
+name, a @code{From} header and a @code{Subject} header.
+
 @item B r
 @kindex B r (Summary)
 @findex gnus-summary-respool-article
 Respool the mail article (@code{gnus-summary-move-article}).
+
 @item B w
 @itemx e
 @kindex B w (Summary)
@@ -5548,6 +5656,7 @@ Respool the mail article (@code{gnus-summary-move-article}).
 Edit the current article (@code{gnus-summary-edit-article}).  To finish
 editing and make the changes permanent, type @kbd{C-c C-c}
 (@kbd{gnus-summary-edit-article-done}).
+
 @item B q
 @kindex B q (Summary)
 @findex gnus-summary-fancy-query
@@ -5635,7 +5744,7 @@ the process mark (@code{gnus-summary-universal-argument}).
 @findex gnus-summary-enter-digest-group
 If the current article is a digest, you might use this command to enter
 you into a group based on the current digest to ease reading
-(@code{gnus-summary-enter-digest-group}).  @xref{nndigest}.
+(@code{gnus-summary-enter-digest-group}).
 @item V T
 @kindex V T (Summary)
 @findex gnus-summary-toggle-truncation
@@ -6381,9 +6490,9 @@ If all else fails, report the problem as a bug,
 @kindex M-x gnus-bug
 @findex gnus-bug
 If you find a bug in (ding) Gnus, you can report it with the @kbd{M-x
-gnus-bug} command.  @code{(setq debug-on-error t)}, and send me the
-backtrace.  I will fix bugs, but I can only fix them if you send me a
-precise description as to how to reproduce the bug.
+gnus-bug} command. @kbd{M-x set-variable RET debug-on-error RET t RET},
+and send me the backtrace. I will fix bugs, but I can only fix them if
+you send me a precise description as to how to reproduce the bug.
 
 @c If you just need help, you are better off asking on
 @c @samp{gnu.emacs.gnus}.  
