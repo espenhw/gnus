@@ -34,15 +34,20 @@
 (defvar mm-extern-function-alist
   '((local-file . mm-extern-local-file)
     (url . mm-extern-url)
-;;;     (ftp . mm-extern-ftp)
-;;;     (anon-ftp . mm-extern-anon-ftp)
+    (anon-ftp . mm-extern-anon-ftp)
+    (ftp . mm-extern-ftp)
 ;;;     (tftp . mm-extern-tftp)
 ;;;     (mail-server . mm-extern-mail-server))
+;;;     (afs . mm-extern-afs))
     ))
+
+(defvar mm-extern-anonymous "anonymous")
 
 (defun mm-extern-local-file (handle)
   (let ((name (cdr (assq 'name (cdr (mm-handle-type handle)))))
 	(coding-system-for-read mm-binary-coding-system))
+    (unless name
+      (error "The filename is not specified."))
     (mm-disable-multibyte-mule4)
     (mm-insert-file-contents name nil nil nil nil t)))
 
@@ -52,11 +57,30 @@
 	(name buffer-file-name)
 	(coding-system-for-read mm-binary-coding-system))
     (unless url
-      (error "URL is not specified"))
+      (error "URL is not specified."))
     (mm-with-unibyte-current-buffer-mule4
       (url-insert-file-contents url))
     (mm-disable-multibyte-mule4)
     (setq buffer-file-name name)))
+
+(defun mm-extern-anon-ftp (handle)
+  (let* ((params (cdr (mm-handle-type handle)))
+	 (name (cdr (assq 'name params)))
+	 (site (cdr (assq 'site params)))
+	 (directory (cdr (assq 'directory params)))
+	 (mode (cdr (assq 'mode params)))
+	 (path (concat "/" (or mm-extern-anonymous
+			       (read-string (format "ID for %s: " site)))
+		       "@" site ":" directory "/" name))
+	 (coding-system-for-read mm-binary-coding-system))
+    (unless name
+      (error "The filename is not specified."))
+    (mm-disable-multibyte-mule4)
+    (mm-insert-file-contents path nil nil nil nil t)))
+
+(defun mm-extern-ftp (handle)
+  (let (mm-extern-anonymous)
+    (mm-extern-anon-ftp handle)))
 
 ;;;###autoload
 (defun mm-inline-external-body (handle &optional no-display)
@@ -66,7 +90,8 @@ the entire message.
 If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
   (let* ((access-type (cdr (assq 'access-type 
 				 (cdr (mm-handle-type handle)))))
-	 (func (cdr (assq (intern access-type) mm-extern-function-alist)))
+	 (func (cdr (assq (intern (downcase access-type))
+			  mm-extern-function-alist)))
 	 gnus-displaying-mime buf
 	 handles)
     (unless (mm-handle-cache handle)
