@@ -1,3 +1,8 @@
+2001-08-18  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-summary-move-article): Use `add' instead of
+	`set' when setting marks.
+
 2001-08-17 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-info-find-node): Take an argument.
