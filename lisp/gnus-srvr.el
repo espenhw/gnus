@@ -911,6 +911,8 @@ buffer.
       (unless (eq (char-after) ? )
 	(setq sub t))
       (setq group (gnus-browse-group-name))
+      (when (gnus-server-equal gnus-browse-current-method "native")
+	(setq group (gnus-group-real-name group)))
       (if sub
 	  (progn
 	    ;; Make sure the group has been properly removed before we

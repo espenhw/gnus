@@ -1,5 +1,8 @@
 2003-06-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-srvr.el (gnus-browse-unsubscribe-group): Strip prefix from
+	native groups.
+
 	* gnus-topic.el (gnus-group-prepare-topics): Update topic line
 	format specs.
 
