@@ -45,8 +45,7 @@
 (eval-when-compile
   (condition-case nil
       (require 'bbdb-com)
-    (file-error (defalias 'bbdb-search 'ignore))
-    (error)))
+    (file-error (defalias 'bbdb-search 'ignore))))
 
 ;; autoload executable-find
 (autoload 'executable-find "executable")
@@ -65,6 +64,9 @@
 
 (defvar spam-use-bogofilter t
   "True if bogofilter should be used.")
+
+(defvar spam-use-bbdb t
+  "True if BBDB should be used.")
 
 (defvar spam-split-group "spam"
   "Usual group name where spam should be split.")
@@ -154,23 +156,24 @@ Such articles will be transmitted to `bogofilter -s' on group exit.")
 
 ;;;; Spam determination.
 
-;; The following list contains pairs associating a parameter variable with a
-;; spam checking function.  If the parameter variable is true, then the
-;; checking function is called, and its value decides what happens.  Each
-;; individual check may return `nil', `t', or a mailgroup name.  The value
-;; `nil' means that the check does not yield a decision, and so, that further
-;; checks are needed.  The value `t' means that the message is definitely not
-;; spam, and that further spam checks should be inhibited.  Otherwise, a
-;; mailgroup name is returned where the mail should go, and further checks are
-;; also inhibited.  The usual mailgroup name is the value of
-;; `spam-split-group', meaning that the message is definitely a spam.
 
 (defvar spam-list-of-checks
   '((spam-use-blacklist  . spam-check-blacklist)
     (spam-use-whitelist  . spam-check-whitelist)
     (spam-use-bbdb	 . spam-check-bbdb)
     (spam-use-blackholes . spam-check-blackholes)
-    (spam-use-bogofilter . spam-check-bogofilter)))
+    (spam-use-bogofilter . spam-check-bogofilter))
+"The spam-list-of-checks list contains pairs associating a parameter
+variable with a spam checking function.  If the parameter variable is
+true, then the checking function is called, and its value decides what
+happens.  Each individual check may return `nil', `t', or a mailgroup
+name.  The value `nil' means that the check does not yield a decision,
+and so, that further checks are needed.  The value `t' means that the
+message is definitely not spam, and that further spam checks should be
+inhibited.  Otherwise, a mailgroup name is returned where the mail
+should go, and further checks are also inhibited.  The usual mailgroup
+name is the value of `spam-split-group', meaning that the message is
+definitely a spam.")
 
 (defun spam-split ()
   "Split this message into the `spam' group if it is spam.
@@ -272,18 +275,19 @@ The regular expression is matched against the address.")
     (setq spam-whitelist-cache (spam-parse-list spam-whitelist)))
   (if (spam-from-listed-p spam-whitelist-cache) nil spam-split-group))
 
-;;; copied from code by Alexander Kotelnikov <sacha@giotto.sj.ru>
-(defun spam-check-bbdb ()
-  "We want messages from people who are in the BBDB not to be split to spam"
-  (let ((who (message-fetch-field "from")))
-    (when who
-      (setq who (regexp-quote (cadr (gnus-extract-address-components who))))
-      (if (bbdb-search (bbdb-records) nil nil who) nil spam-split-group))))
-
-;; let spam-check-bbdb be nil if the BBDB can't be loaded
 (condition-case nil
-    (require 'bbdb)
-  (file-error (defalias 'spam-check-bbdb 'ignore)))
+    (progn
+      (require 'bbdb-com)
+        ;;; copied from code by Alexander Kotelnikov <sacha@giotto.sj.ru>
+      (defun spam-check-bbdb ()
+	"We want messages from people who are in the BBDB not to be split to spam"
+	(let ((who (message-fetch-field "from")))
+	  (when who
+	    (setq who (regexp-quote (cadr (gnus-extract-address-components who))))
+	    (if (bbdb-search (bbdb-records) nil nil who) nil spam-split-group)))))
+  (file-error (setq spam-list-of-checks
+		    (delete (assoc 'spam-use-bbdb spam-list-of-checks)
+			    spam-list-of-checks))))
 
 (defun spam-check-blacklist ()
   ;; FIXME!  Should it detect when file timestamps change?

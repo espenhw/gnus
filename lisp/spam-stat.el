@@ -4,7 +4,7 @@
 
 ;; Author: Alex Schroeder <alex@gnu.org>
 ;; Maintainer: Alex Schroeder <alex@gnu.org>
-;; Version: 0.3.3
+;; Version: 0.3.4
 ;; Keywords: spam filtering gnus
 ;; URL: http://www.emacswiki.org/cgi-bin/wiki.pl?SpamStat
 
@@ -353,6 +353,7 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 
 (defun spam-stat-save ()
   "Save the `spam-stat' hash table as lisp file."
+  (interactive)
   (with-temp-buffer
     (let ((standard-output (current-buffer)))
       (insert "(setq spam-stat (spam-stat-to-hash-table '(")
@@ -386,6 +387,12 @@ has appeared in bad mails."
 		     table))
 	  entries)
     table))
+
+(defun spam-stat-reset ()
+  "Reset `spam-stat' to an empty hash-table.
+This deletes all the statistics."
+  (interactive)
+  (setq spam-stat (make-hash-table :test 'equal)))
 
 ;; Scoring buffers
 
@@ -506,6 +513,7 @@ This removes all words that occur less than COUNT from the dictionary.
 COUNT defaults to 5.  It also removes all words whose spam score
 is less than DISTANCE from 0.5.  DISTANCE defaults to 0.1, meaning that
 all words with score between 0.4 and 0.6 are removed."
+  (interactive)
   (setq count (or count 5)
 	distance (or distance 0.1))
   (maphash (lambda (key entry)

@@ -1,3 +1,12 @@
+2002-10-11  Ted Zlatanov <tzz@lifelogs.com>
+
+	* spam.el: more compilation fixes for BBDB
+
+        * spam-stat.el added code from Alex Schroeder <alex@gnu.org>
+        (spam-stat-reduce-size): Interactive.
+        (spam-stat-reset): New function.
+        (spam-stat-save): Interactive.
+
 2002-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.el: Autoload gnus-delay-initialize.
