@@ -1,3 +1,20 @@
+2001-08-25  Simon Josefsson  <jas@extundo.com>
+
+	Make nnfolder groups self-contained as far as marks are concerned.
+
+	* nnfolder.el (nnfolder-marks-directory, nnfolder-marks-is-evil)
+	(nnfolder-marks, nnfolder-marks-file-suffix): New variables.
+	(nnfolder-open-server): Make marks directory.
+	(nnfolder-request-delete-group): Delete marks file.
+	(nnfolder-request-delete-group): Check of nov/marks file exist
+	before deleting.
+	(nnfolder-request-rename-group): Rename marks file.
+	(nnfolder-request-rename-group): Only rename nov/mark if they exists.
+	(nnfolder-request-set-mark, nnfolder-request-update-info)
+	(nnfolder-group-marks-pathname, nnfolder-save-marks)
+	(nnfolder-open-marks): New functions.
+	(top-level): Require gnus.
+
 2001-08-25 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnweb.el (nnweb-type-definition): Use google raw file.
