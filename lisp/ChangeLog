@@ -7,6 +7,7 @@
 	(mm-content-transfer-encoding): Use both.
 
 	* mm-bodies.el (mm-body-encoding): Use mm-use-ultra-safe-encoding.
+	* qp.el (quoted-printable-encode-region): Dito.
 
 1999-12-18 14:08:48  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
