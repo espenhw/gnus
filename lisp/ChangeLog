@@ -1,5 +1,18 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (t): New `W D' map.
+
+	* gnus-art.el (gnus-treat-fold-newsgroups): New variable.
+	(gnus-article-treat-body-boundary): Clean up.
+	(gnus-body-boundary-face): Removed.
+	(gnus-article-goto-header): Moved here.
+	(gnus-article-goto-header): Allow better regexps.
+	(gnus-article-treat-fold-newsgroups): New command.
+
+	* gnus-sum.el (gnus-summary-move-article): We have to select an
+	article to give `gnus-read-move-group-name' an opportunity to
+	suggest an appropriate default.
+
 	* rfc2047.el (rfc2047-fold-line): New function.
 	(rfc2047-unfold-line): Ditto.
 	(rfc2047-fold-region): Don't fold just after the header name. 

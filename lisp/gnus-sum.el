@@ -1728,6 +1728,7 @@ increase the score of each group you read."
     "t" gnus-summary-toggle-header
     "g" gnus-summary-toggle-smiley
     "u" gnus-article-treat-unfold-headers
+    "n" gnus-article-treat-fold-newsgroups
     "v" gnus-summary-verbose-headers
     "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
     "p" gnus-article-verify-x-pgp-sig
@@ -1751,6 +1752,13 @@ increase the score of each group you read."
     "h" gnus-article-highlight-headers
     "c" gnus-article-highlight-citation
     "s" gnus-article-highlight-signature)
+
+  (gnus-define-keys (gnus-summary-wash-display-map "D" gnus-summary-wash-map)
+    "x" gnus-article-display-x-face
+    "s" gnus-summary-toggle-smiley
+    "f" gnus-treat-from-picon
+    "m" gnus-treat-mail-picon
+    "n" gnus-treat-newsgroups-picon)
 
   (gnus-define-keys (gnus-summary-wash-mime-map "M" gnus-summary-wash-map)
     "w" gnus-article-decode-mime-words
@@ -1894,6 +1902,12 @@ increase the score of each group you read."
 	      ["Original" gnus-article-date-original t]
 	      ["Lapsed" gnus-article-date-lapsed t]
 	      ["User-defined" gnus-article-date-user t])
+	     ("Display"
+	      ["Toggle smiley" gnus-summary-toggle-smiley t]
+	      ["Show X-Face" gnus-article-display-x-face t]
+	      ["Show picons in From" gnus-treat-from-picon t]
+	      ["Show picons in mail headers" gnus-treat-mail-picon t]
+	      ["Show picons in news headers" gnus-treat-newsgroups-picon t])
 	     ("Washing"
 	      ("Remove Blanks"
 	       ["Leading" gnus-article-strip-leading-blank-lines t]
@@ -1912,7 +1926,6 @@ increase the score of each group you read."
 	      ["Fill long lines" gnus-article-fill-long-lines t]
 	      ["Capitalize sentences" gnus-article-capitalize-sentences t]
 	      ["CR" gnus-article-remove-cr t]
-	      ["Show X-Face" gnus-article-display-x-face t]
 	      ["Quoted-Printable" gnus-article-de-quoted-unreadable t]
 	      ["Base64" gnus-article-de-base64-unreadable t]
 	      ["Rot 13" gnus-summary-caesar-message
@@ -1924,8 +1937,8 @@ increase the score of each group you read."
 	      ["Stop page breaking" gnus-summary-stop-page-breaking t]
 	      ["Verbose header" gnus-summary-verbose-headers t]
 	      ["Toggle header" gnus-summary-toggle-header t]
-	      ["Toggle smiley" gnus-summary-toggle-smiley t]
 	      ["Unfold headers" gnus-article-treat-unfold-headers t]
+	      ["Fold newsgroups" gnus-article-treat-fold-newsgroups t]
 	      ["Html" gnus-article-wash-html t]
 	      ["Verify X-PGP-Sig" gnus-article-verify-x-pgp-sig t]
 	      ["HZ" gnus-article-decode-HZ t])
@@ -8131,6 +8144,11 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	art-group to-method new-xref article to-groups)
     (unless (assq action names)
       (error "Unknown action %s" action))
+    ;; We have to select an article to give
+    ;; `gnus-read-move-group-name' an opportunity to suggest an
+    ;; appropriate default.
+    (unless (gnus-buffer-live-p gnus-original-article-buffer)
+      (gnus-summary-select-article nil nil nil (car articles)))
     ;; Read the newsgroup name.
     (when (and (not to-newsgroup)
 	       (not select-method))
@@ -8735,8 +8753,7 @@ groups."
   (interactive "P")
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-smiley-display arg)
-    ))
+    (gnus-smiley-display arg)))
 
 ;;; Respooling
 

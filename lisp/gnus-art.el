@@ -362,19 +362,6 @@ Esample: (_/*word*/_)."
   "Face used for displaying highlighted words."
   :group 'gnus-article-emphasis)
 
-(defface gnus-body-boundary-face
-  '((((class color)
-      (background dark))
-     (:background "white")
-     (:foreground "black"))
-    (((class color)
-      (background light))
-     (:background "black")
-     (:foreground "white"))
-    (t
-     ()))
-  "Face for the body separator.")
-
 (defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
   "Format for display of Date headers in article bodies.
 See `format-time-string' for the possible values.
@@ -1034,6 +1021,13 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-fold-newsgroups 'head
+  "Fold the Newsgroups and Followup-To headers.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 (defcustom gnus-treat-overstrike t
   "Treat overstrike highlighting.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1046,7 +1040,8 @@ See the manual for details."
   (and (or (and (fboundp 'image-type-available-p)
 		(image-type-available-p 'xbm)
 		(string-match "^0x" (shell-command-to-string "uncompface")))
-	   (and (featurep 'xemacs) (featurep 'xface)))
+	   (and (featurep 'xemacs)
+		(featurep 'xface)))
        'head)
   "Display X-Face headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1214,6 +1209,7 @@ It is a string, such as \"PGP\". If nil, ask user."
      gnus-article-strip-multiple-blank-lines)
     (gnus-treat-overstrike gnus-article-treat-overstrike)
     (gnus-treat-unfold-headers gnus-article-treat-unfold-headers)
+    (gnus-treat-fold-newsgroups gnus-article-treat-fold-newsgroups)
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-smileys gnus-smiley-display)
     (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
@@ -1260,6 +1256,10 @@ Initialized from `text-mode-syntax-table.")
 
 (put 'gnus-with-article-headers 'lisp-indent-function 0)
 (put 'gnus-with-article-headers 'edebug-form-spec '(body))
+
+(defun gnus-article-goto-header (header)
+  "Go to HEADER, which is a regular expression."
+  (re-search-forward (concat "^\\(" header "\\):") nil t))
 
 (defsubst gnus-article-hide-text (b e props)
   "Set text PROPS on the B to E region, extending `intangible' 1 past B."
@@ -1630,6 +1630,19 @@ unfolded."
 	      (replace-match " " t t)))
 	  (goto-char (point-max)))))))
 
+(defun gnus-article-treat-fold-newsgroups ()
+  "Unfold folded message headers.
+Only the headers that fit into the current window width will be
+unfolded."
+  (interactive)
+  (gnus-with-article-headers
+    (while (gnus-article-goto-header "newsgroups\\|followup-to")
+      (save-restriction
+	(mail-header-narrow-to-field)
+	(while (search-forward "," nil t)
+	  (replace-match ", " t t))
+	(mail-header-fold-field)))))
+
 (defun gnus-article-treat-body-boundary ()
   "Place a boundary line at the end of the headers."
   (interactive)
@@ -1639,10 +1652,7 @@ unfolded."
     (insert "X-Boundary: ")
     (gnus-add-text-properties start (point) '(invisible t intangible t))
     (insert (make-string (1- (window-width)) ?-)
-	    "\n")
-    ;;(put-text-property (point) (progn (forward-line -1) (point))
-    ;; 'face 'gnus-body-bondary-face)
-    )))
+	    "\n"))))
 
 (defun article-fill-long-lines ()
   "Fill lines that are wider than the window width."
@@ -5808,9 +5818,6 @@ For example:
      handle 'gnus-region
      (cons (set-marker (make-marker) (point-min))
 	   (set-marker (make-marker) (point-max))))))
-
-(defun gnus-article-goto-header (header)
-  (re-search-forward (concat "^" header ":") nil t))
 
 (gnus-ems-redefine)
 
