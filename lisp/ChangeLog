@@ -1,5 +1,13 @@
 1999-12-01 14:28:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mm-decode.el (mm-inline-media-tests): Check feature vcard.
+
+	* gnus-msg.el (gnus-summary-yank-message): New command and
+	keystroke. 
+
+	* message.el (message-yank-buffer): New command.
+	(message-buffers): New function.
+
 	* gnus-sum.el (gnus-summary-catchup-and-goto-next-group): Select
 	next group in a more normal fasion.
 

@@ -1300,6 +1300,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
 
   (define-key message-mode-map "\C-c\C-y" 'message-yank-original)
+  (define-key message-mode-map "\C-c\C-Y" 'message-yank-buffer)
   (define-key message-mode-map "\C-c\C-q" 'message-fill-yanked-message)
   (define-key message-mode-map "\C-c\C-w" 'message-insert-signature)
   (define-key message-mode-map "\C-c\M-h" 'message-insert-headers)
@@ -1854,6 +1855,24 @@ prefix, and don't delete any headers."
 	(insert ?\n))
       (unless modified
 	(setq message-checksum (message-checksum))))))
+
+(defun message-yank-buffer (buffer)
+  "Insert BUFFER into the current buffer and quote it."
+  (interactive "bYank buffer: ")
+  (let ((message-reply-buffer buffer))
+    (save-window-excursion
+      (message-yank-original))))
+
+(defun message-buffers ()
+  "Return a list of active message buffers."
+  (let (buffers)
+    (save-excursion
+      (dolist (buffer (buffer-list t))
+	(set-buffer buffer)
+	(when (and (eq major-mode 'message-mode)
+		   (null message-sent-message-via))
+	  (push (buffer-name buffer) buffers))))
+    (nreverse buffers)))
 
 (defun message-cite-original-without-signature ()
   "Cite function in the standard Message manner."

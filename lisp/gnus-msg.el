@@ -161,6 +161,7 @@ Thank you for your help in stamping out bugs.
   "c" gnus-summary-cancel-article
   "s" gnus-summary-supersede-article
   "r" gnus-summary-reply
+  "y" gnus-summary-yank-message
   "R" gnus-summary-reply-with-original
   "w" gnus-summary-wide-reply
   "W" gnus-summary-wide-reply-with-original
@@ -859,6 +860,19 @@ If YANK is non-nil, include the original article."
 (defun gnus-bug-kill-buffer ()
   (when (get-buffer "*Gnus Help Bug*")
     (kill-buffer "*Gnus Help Bug*")))
+
+(defun gnus-summary-yank-message (buffer n)
+  "Yank the current article into a composed message."
+  (interactive
+   (list (completing-read "Buffer: " (mapcar 'list (message-buffers)) nil t)
+	 current-prefix-arg))
+  (gnus-summary-iterate n
+    (let ((gnus-display-mime-function nil)
+	  (gnus-inhibit-treatment t))
+      (gnus-summary-select-article))
+    (save-excursion
+      (set-buffer buffer)
+      (message-yank-buffer gnus-article-buffer))))
 
 (defun gnus-debug ()
   "Attempts to go through the Gnus source file and report what variables have been changed.

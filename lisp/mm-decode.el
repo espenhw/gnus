@@ -114,7 +114,8 @@
     ("text/x-vcard"
      mm-inline-text
      (lambda (handle)
-       (locate-library "vcard")))
+       (or (featurep 'vcard)
+	   (locate-library "vcard"))))
     ("message/delivery-status" mm-inline-text identity)
     ("message/rfc822" mm-inline-message identity)
     ("text/.*" mm-inline-text identity)
