@@ -8,6 +8,82 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Dired integration
+`gnus-dired-minor-mode' installs key bindings in dired buffers to send
+a file as an attachment (`C-c C-a'), open a file using the approriate
+mailcap entry (`C-c C-f'), and print a file using the mailcap entry
+(`C-c P').  It is enabled with 
+
+      (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
+
+** Gnus can display RSS newsfeeds as a newsgroup.  To get started do `B
+nnrss RET RET' in the Group buffer.
+
+** Single-part yenc encoded attachments can be decoded.
+
+** Picons
+The picons code has been reimplemented to work in GNU Emacs -- some of
+the previous options have been removed or renamed.
+
+Picons are small "personal icons" representing users, domain and
+newsgroups, which can be displayed in the Article buffer.  To enable
+picons, install the picons database from
+
+      http://www.cs.indiana.edu/picons/ftp/index.html
+
+and point `gnus-picon-databases' to that location.
+
+** If the new option `gnus-treat-body-boundary' is non-nil, a boundary 
+line is drawn at the end of the headers.
+
+** Retrieval of charters and control messages
+There are new commands for fetching newsgroup charters (`H c') and
+control messages (`H C').
+
+** Delayed articles
+You can delay the sending of a message with `C-c C-j' in the Message
+buffer.  The messages are delivered at specified time.  This is useful
+for sending yourself reminders.  Setup with (gnus-delay-initialize).
+
+** If `auto-compression-mode' is enabled, attachments are automatically
+decompressed when activated.
+
+** If the new option `nnml-use-compressed-files' is non-nil, 
+the nnml back end allows compressed message files.
+
+** Signed article headers (X-PGP-Sig) can be verified with `W p'.
+
+** The Summary Buffer uses an arrow in the fringe to indicate the current 
+article.  Use (setq gnus-summary-display-arrow nil) to disable it.
+
+** Warn about email replies to news
+Do you often find yourself replying to news by email by mistake?  Then
+the new option `gnus-confirm-mail-reply-to-news' is just the thing for
+you.
+
+** If the new option `gnus-summary-display-while-building' is non-nil, 
+the summary buffer is shown and updated as it's being built.
+
+** The new `recent' mark "." indicates newly arrived messages (as
+opposed to old but unread messages).
+
+** The new option `gnus-gcc-mark-as-read' automatically marks 
+Gcc articles as read.
+
+** The nndoc back end now supports mailman digests and exim bounces.
+
+** Gnus supports RFC 2369 mailing list headers, and adds a number of 
+related commands in mailing list groups.
+
+** The Date header can be displayed in a format that can be read aloud
+in English, see `gnus-treat-date-english'.
+
+** The envelope sender address can be customized when using Sendmail, see 
+`message-sendmail-envelope-from'.
+
+** diffs are automatically highlighted in groups matching
+`mm-uu-diff-groups-regexp'
+
 ** TLS wrapper shipped with Gnus
 
 TLS/SSL is now supported in IMAP and NNTP via tls.el and GNUTLS.  The
@@ -129,8 +205,6 @@ you have modified those variables from the default, you may want to
 add n-f-u-a-g-n-n again.  If you were happy with the estimate and want
 to save some (minimal) time when getting new mail, remove the
 function.
-
-** gnus-inews-mark-gcc-as-read has been renamed to gnus-gcc-mark-as-read.
 
 ** Group Carbon Copy (GCC) quoting
 
