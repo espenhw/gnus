@@ -1,5 +1,8 @@
 2003-01-10  Simon Josefsson  <jas@extundo.com>
 
+	* nndraft.el (nndraft-request-group): Avoid crash in
+	directory-files when draft directory doesn't exists.
+
 	* gnus-sum.el (gnus-select-article-hook): Add :option.
 
 2003-01-10  Teodor Zlatanov  <tzz@lifelogs.com>

@@ -186,7 +186,8 @@
 	   dir file)
       (nnheader-re-read-dir pathname)
       (setq dir (mapcar (lambda (name) (string-to-int (substring name 1)))
-			(directory-files pathname nil "^#[0-9]+#$" t)))
+			(ignore-errors (directory-files
+					pathname nil "^#[0-9]+#$" t))))
       (dolist (n dir)
 	(unless (file-exists-p
 		 (setq file (expand-file-name (int-to-string n) pathname)))
