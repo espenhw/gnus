@@ -1170,6 +1170,7 @@ This command does not work if you use short group names."
 	     (not (nnfolder-server-opened server)))
     (nnfolder-open-server server))
   (unless nnfolder-marks-is-evil
+    (nnheader-message 8 "Updating marks for %s..." group)
     (nnfolder-open-marks group server)
     ;; Update info using `nnfolder-marks'.
     (mapcar (lambda (pred)
@@ -1222,7 +1223,7 @@ This command does not work if you use short group names."
 		   (gnus-group-prefixed-name
 		    group
 		    (gnus-server-to-method (format "nnfolder:%s" server))))))
-	(nnheader-message 6 "Bootstrapping marks for %s..." group)
+	(nnheader-message 7 "Bootstrapping marks for %s..." group)
 	(setq nnfolder-marks (gnus-info-marks info))
 	(push (cons 'read (gnus-info-read info)) nnfolder-marks)
 	(nnfolder-save-marks group server)))))
