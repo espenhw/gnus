@@ -1,5 +1,7 @@
 2002-10-04  Simon Josefsson  <jas@extundo.com>
 
+	* pgg.texi: Document sign parameter.
+
 	* gnus.texi: Add \gnuskey tex command.
 
 	* texi2latex.el (latexi-translate-file): Do PGG.  (Poor) support

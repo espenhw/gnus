@@ -131,13 +131,16 @@ signer's public key, for example, the function @code{pgg-verify-region}
 fails immediately, but if the function had been called interactively, it
 would ask you to retrieve the signer's public key from the server.
 
-@deffn Command pgg-encrypt-region start end recipients
+@deffn Command pgg-encrypt-region start end recipients &optional sign
 Encrypt the current region between @var{start} and @var{end} for
 @var{recipients}.  When the function were called interactively, you
 would be asked about the recipients.
 
 If encryption is successful, it replaces the current region contents (in
 the accessible portion) with the resulting data.
+
+If optional argument @var{sign} is non-nil, the function is request to
+do a combined sign and encrypt.  This currently only work with GnuPG.
 @end deffn
 
 @deffn Command pgg-decrypt-region start end
@@ -270,10 +273,11 @@ argument @var{type} is non-@code{nil}, it searches from the secret
 keyrings.
 @end deffn
 
-@deffn Method pgg-scheme-encrypt-region scheme start end recipients
+@deffn Method pgg-scheme-encrypt-region scheme start end recipients &optional sign
 Encrypt the current region between @var{start} and @var{end} for
-@var{recipients}.  If encryption is successful, it returns @code{t},
-otherwise @code{nil}.
+@var{recipients}.  If @var{sign} is non-nil, do a combined sign and
+encrypt.  If encryption is successful, it returns @code{t}, otherwise
+@code{nil}.
 @end deffn
 
 @deffn Method pgg-scheme-decrypt-region scheme start end
