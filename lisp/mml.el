@@ -618,6 +618,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ;; Remove them, they are confusing.
     (message-remove-header "Content-Type")
     (message-remove-header "MIME-Version")
+    (message-remove-header "Content-Disposition")
     (message-remove-header "Content-Transfer-Encoding")))
 
 (defun mml-to-mime ()

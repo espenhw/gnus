@@ -1,3 +1,7 @@
+2001-12-10 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mime-to-mml): Remove Content-Disposition too.
+
 2001-12-09 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-buffer-name): Decode group name.
