@@ -95,7 +95,10 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
   (or (mml-smime-sign cont)
       (error "Signing failed... inspect message logs for errors")))
 
-(defun mml-smime-encrypt-buffer (cont)
+(defun mml-smime-encrypt-buffer (cont &optional sign)
+  (when sign
+    (message "Combined sign and encrypt S/MIME not support yet")
+    (sit-for 1))
   (or (mml-smime-encrypt cont)
       (error "Encryption failed... inspect message logs for errors")))
 
@@ -103,8 +106,8 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
   (or (mml1991-sign cont)
       (error "Signing failed... inspect message logs for errors")))
 
-(defun mml-pgp-encrypt-buffer (cont)
-  (or (mml1991-encrypt cont)
+(defun mml-pgp-encrypt-buffer (cont &optional sign)
+  (or (mml1991-encrypt cont sign)
       (error "Encryption failed... inspect message logs for errors")))
 
 (defun mml-pgpmime-sign-buffer (cont)
