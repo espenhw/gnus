@@ -207,7 +207,7 @@ Read `mail-source-bind' for details."
        (t
 	(nnheader-report 'nnwarchive "Opened group %s" group)
 	(nnheader-insert
-	 "211 %d %d %d %s\n" (cadr elem) 1 (cadr elem)
+	 "211 %d %d %d %s\n" (or (cadr elem) 0) 1 (or (cadr elem) 0)
 	 (prin1-to-string group))
 	t)))))
 
