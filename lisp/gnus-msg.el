@@ -1312,7 +1312,7 @@ If YANK is non-nil, include the original article."
 	  (save-excursion (re-search-backward "[ \t\n]" nil t) (1+ (point)))
 	  (save-excursion (re-search-forward "[ \t\n]" nil t) (1- (point))))))
     (when address
-      (message-reply address)
+      (gnus-msg-mail address)
       (when yank
 	(gnus-inews-yank-articles (list (cdr gnus-article-current)))))))
 
