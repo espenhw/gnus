@@ -434,7 +434,12 @@ Thank you for your help in stamping out bugs.
 
 (defun gnus-inews-make-draft-meta-information (group &rest articles)
   (concat "(\"" group "\" "
-	  (if articles (mapconcat #'number-to-string articles " "))
+	  (if articles (mapconcat
+			(lambda (elem)
+			  (if (consp elem)
+			      (car elem)
+			    elem))
+			articles " "))
 	  ")"))
 
 ;;;###autoload

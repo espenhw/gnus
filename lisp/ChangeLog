@@ -1,5 +1,8 @@
 2004-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-msg.el (gnus-inews-make-draft-meta-information): Fix quote
+	stuff. 
+
 	* gnus-start.el (gnus-subscribe-hierarchical-interactive): Match
 	on real group name.
 
