@@ -1,3 +1,8 @@
+2002-01-01  Raymond Scholz  <ray-2003@zonix.de>
+
+	* deuglify.el (gnus-outlook-rearrange-article): Kill overlays
+          before rearranging the article.
+
 2003-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nndraft.el (nndraft-generate-headers): New function.

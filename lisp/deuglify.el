@@ -311,17 +311,17 @@ length of an unwrapped citation line."
 		  (goto-char (match-beginning 0))))))))))
 
 (defun gnus-outlook-rearrange-article (from-where)
-  "Put the text from `from-where' to the end of buffer at the top of
-the article buffer."
+  "Put the text from `from-where' to the end of buffer at the top of the article buffer."
   (save-excursion
     (let ((inhibit-read-only t)
 	  (cite-marks gnus-outlook-deuglify-cite-marks))
       (gnus-with-article-buffer
-	(beginning-of-buffer)
-	(re-search-forward "^$")
-	(transpose-regions (point) (- from-where 1)
-			   from-where (point-max) t)))))
-
+	(article-goto-body)
+	;; attribution out of place?
+	(unless (= (point) from-where)
+	  (gnus-kill-all-overlays)
+	  (transpose-regions (point) (+ from-where 1)
+			     (+ from-where 1) (point-max)))))))
 
 ;; John Doe <john.doe@some.domain> wrote in message
 ;; news:a87usw8$dklsssa$2@some.news.server...
@@ -341,6 +341,7 @@ the article buffer."
 		     "\\(" gnus-outlook-deuglify-attrib-end-regexp "\\)$")
 	     nil t)
 	    (progn
+	      (gnus-kill-all-overlays)
 	      (replace-match "\\1\\2\\4")
 	      (match-beginning 0)))))))
 
@@ -367,6 +368,7 @@ the article buffer."
 		     "[^\n]+: [^\n]+$")
 	     nil t)
 	    (progn
+	      (gnus-kill-all-overlays)
 	      (replace-match "\\1 wrote:")
 	      (match-beginning 0)))))))
 
@@ -387,6 +389,7 @@ the article buffer."
 		     "\\(" gnus-outlook-deuglify-attrib-end-regexp "\\)$")
 	     nil t)
 	    (progn
+	      (gnus-kill-all-overlays)
 	      (replace-match "\\4 \\5\\6\\7")
 	      (match-beginning 0)))))))
 
