@@ -1,3 +1,7 @@
+2002-02-23  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* html2text.el: New file from Joakim Hove <hove@phys.ntnu.no>.
+
 2002-02-22  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el: Add gnus-article-outlook-deuglify-article.
