@@ -4,6 +4,7 @@
 	puthash unless gnus-registry-entry-caching is on
 	(gnus-registry-split-fancy-with-parent): misplaced parenthesis
 	made everything a part of the 'else'
+	(gnus-registry-save): used 'entry-caching' instead of 'caching'
 
 2003-09-05  Jesper Harder  <harder@ifa.au.dk>
 

@@ -236,7 +236,7 @@ tracked this way."
 				 (hashtable-to-alist gnus-registry-hashtb)))
       ;; really save
       (gnus-registry-cache-save)
-      (setq gnus-registry-entry-caching entry-caching)
+      (setq gnus-registry-entry-caching caching)
       (setq gnus-registry-dirty nil))))
 
 (defun gnus-registry-clean-empty-function ()
