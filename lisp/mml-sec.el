@@ -133,8 +133,8 @@
 	insert-loc)
     (mml-unsecure-message)
     (save-excursion
-      (goto-char (point-max))
-      (cond ((re-search-backward
+      (goto-char (point-min))
+      (cond ((re-search-forward
 	      (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
 	     (goto-char (setq insert-loc (match-end 0)))
 	     (unless (looking-at "<#secure")

@@ -1,3 +1,8 @@
+2002-03-28  Simon Josefsson  <jas@extundo.com>
+
+	* mml-sec.el (mml-secure-message): Search after
+	mail-header-separator from top of message.
+
 2002-03-28  Paul Jarc <prj@po.cwru.edu>
 
 	* nnmaildir.el: Cosmetic changes.
