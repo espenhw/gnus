@@ -1,3 +1,9 @@
+2000-08-11  Florian Weimer  <fw@deneb.enyo.de>
+
+	* message.el (message-syntax-checks): New check quotin-style: 
+	Text must be written below quoted text.
+	(message-check-news-body-syntax): Check it.
+
 2000-08-11  Simon Josefsson  <simon@josefsson.org>
 
 	* imap.el (imap-authenticator-alist): Fix typo.
