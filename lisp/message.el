@@ -4728,13 +4728,19 @@ than 988 characters long, and if they are not, trim them until they are."
       (forward-line 2)))
    (sit-for 0)))
 
+(defcustom message-beginning-of-line t
+  "Whether C-a goes to beginning of header values."
+  :group 'message-buffers
+  :type 'boolean)
+
 (defun message-beginning-of-line (&optional n)
   "Move point to beginning of header value or to beginning of line."
   (interactive "p")
   (let ((zrs 'zmacs-region-stays))
     (when (and (interactive-p) (boundp zrs))
       (set zrs t)))
-  (if (message-point-in-header-p)
+  (if (and message-beginning-of-line
+	   (message-point-in-header-p))
       (let* ((here (point))
 	     (bol (progn (beginning-of-line n) (point)))
 	     (eol (gnus-point-at-eol))

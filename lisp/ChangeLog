@@ -1,11 +1,16 @@
+2002-10-12  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-beginning-of-line): New variable.
+	(message-beginning-of-line): Use it.
+
 2002-10-11  Ted Zlatanov <tzz@lifelogs.com>
 
 	* spam.el: more compilation fixes for BBDB
 
-        * spam-stat.el added code from Alex Schroeder <alex@gnu.org>
-        (spam-stat-reduce-size): Interactive.
-        (spam-stat-reset): New function.
-        (spam-stat-save): Interactive.
+	* spam-stat.el added code from Alex Schroeder <alex@gnu.org>
+	(spam-stat-reduce-size): Interactive.
+	(spam-stat-reset): New function.
+	(spam-stat-save): Interactive.
 
 2002-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
