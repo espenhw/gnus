@@ -1,4 +1,19 @@
+2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-ignored-headers): More headers,
+
+	* ietf-drums.el (ietf-drums-parse-addresses): Use `error' instead
+	of `scan-error', since XEmacs doesn't seem to support that. 
+
 2001-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-best-unread-article): Take a prefix
+	arg. 
+	(gnus-summary-best-unread-subject): Ditto.
+	(gnus-summary-best-unread-subject): No, don't.
+	(gnus-summary-better-unread-subject): New command.
+
+	* gnus-xmas.el (gnus-xmas-put-image): Insert the string itself. 
 
 	* lpath.el ((featurep 'xemacs)): fbind url function.
 

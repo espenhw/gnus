@@ -6799,10 +6799,14 @@ Return nil if there are no articles."
 	(gnus-summary-display-article (gnus-summary-article-number)))
     (gnus-summary-position-point)))
 
-(defun gnus-summary-best-unread-article ()
-  "Select the unread article with the highest score."
-  (interactive)
-  (let ((article (gnus-summary-best-unread-subject)))
+(defun gnus-summary-best-unread-article (&optional arg)
+  "Select the unread article with the highest score.
+If given a prefix argument, select the next unread article that has a
+score higher than the default score."
+  (interactive "P")
+  (let ((article (if arg
+		     (gnus-summary-better-unread-subject)
+		   (gnus-summary-best-unread-subject))))
     (if article
 	(gnus-summary-goto-article article)
       (error "No unread articles"))))
@@ -6821,6 +6825,23 @@ Return nil if there are no articles."
 	   (setq best score
 		 article (gnus-data-number (car data))))
       (setq data (cdr data)))
+    (when article
+      (gnus-summary-goto-subject article))
+    (gnus-summary-position-point)
+    article))
+
+(defun gnus-summary-better-unread-subject ()
+  "Select the first unread subject that has a score over the default score."
+  (interactive)
+  (let ((data gnus-newsgroup-data)
+	article score)
+    (while (and (setq article (gnus-data-number (car data)))
+		(or (gnus-data-read-p (car data))
+		    (not (> (gnus-summary-article-score article)
+			    gnus-summary-default-score))))
+      (setq data (cdr data)))
+    (when article
+      (gnus-summary-goto-subject article))
     (gnus-summary-position-point)
     article))
 

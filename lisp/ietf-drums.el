@@ -211,7 +211,7 @@
 	   ((memq c '(?\" ?< ?\())
 	    (condition-case nil
 		(forward-sexp 1)
-	      (scan-error
+	      (error
 	       (skip-chars-forward "^,"))))
 	   ((eq c ?,)
 	    (setq address

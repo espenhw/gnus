@@ -830,7 +830,7 @@ XEmacs compatibility workaround."
 (defun gnus-xmas-put-image (glyph &optional string)
   (let ((begin (point))
 	extent)
-    (insert " ")
+    (insert string)
     (setq extent (make-extent begin (point)))
     (set-extent-property extent 'gnus-image t)
     (set-extent-property extent 'duplicable t)
