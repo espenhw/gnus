@@ -1575,10 +1575,10 @@ Point is left at the beginning of the narrowed-to region."
     ["Kill To Signature" message-kill-to-signature t]
     ["Newline and Reformat" message-newline-and-reformat t]
     ["Rename buffer" message-rename-buffer t]
-    ["Flag as important" message-insert-importance-high
+    ["Flag As Important" message-insert-importance-high
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Mark this message as important"))]
-    ["Flag as unimportant" message-insert-importance-low
+    ["Flag As Unimportant" message-insert-importance-low
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Mark this message as unimportant"))]
     ["Spellcheck" ispell-message
@@ -1692,6 +1692,7 @@ C-c C-f  move to a header field (and create it if there isn't):
 	 C-c C-f C-k  move to Keywords	C-c C-f C-d  move to Distribution
 	 C-c C-f C-f  move to Followup-To
 	 C-c C-f C-m  move to Mail-Followup-To
+	 C-c C-f C-i  cycle through Importance values
 C-c C-t  `message-insert-to' (add a To header to a news followup)
 C-c C-n  `message-insert-newsgroups' (add a Newsgroup header to a news reply)
 C-c C-b  `message-goto-body' (move to beginning of message text).
@@ -1704,7 +1705,7 @@ C-c C-v  `message-delete-not-region' (remove the text outside the region).
 C-c C-z  `message-kill-to-signature' (kill the text up to the signature).
 C-c C-r  `message-caesar-buffer-body' (rot13 the message body).
 C-c C-a  `mml-attach-file' (attach a file as MIME).
-C-c C-u  `message-insert-or-toggle-importance'  (insert or cycle importance)
+C-c C-u  `message-insert-or-toggle-importance'  (insert or cycle importance).
 M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (set (make-local-variable 'message-reply-buffer) nil)
   (make-local-variable 'message-send-actions)

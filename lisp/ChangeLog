@@ -1,3 +1,8 @@
+2002-01-01  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-mode): Fix doc.
+	(message-mode-menu): Fix names.
+
 2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-first-subject): Really go to unseen
