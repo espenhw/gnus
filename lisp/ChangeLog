@@ -1,3 +1,16 @@
+2001-02-22 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-fetch-headers): New.
+	(gnus-select-newsgroup): Use it.
+	(gnus-summary-insert-articles): New.
+	(gnus-summary-insert-old-articles): New.
+	(gnus-summary-insert-new-articles): New.
+
+	* gnus-group.el (gnus-group-prepare-flat-list-dead): Use decoded-name.
+	(gnus-group-list-active): Ditto.
+	* gnus-sum.el (gnus-set-mode-line): Ditto.
+	(gnus-summary-read-group-1): Ditto.
+
 2001-02-21 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-topic.el (gnus-topic-get-new-news-this-topic): Redraw the

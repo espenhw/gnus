@@ -1558,7 +1558,9 @@ increase the score of each group you read."
     "x" gnus-summary-limit-to-extra
     "E" gnus-summary-limit-include-expunged
     "c" gnus-summary-limit-exclude-childless-dormant
-    "C" gnus-summary-limit-mark-excluded-as-read)
+    "C" gnus-summary-limit-mark-excluded-as-read
+    "o" gnus-summary-insert-old-articles
+    "N" gnus-summary-insert-new-articles)
 
   (gnus-define-keys (gnus-summary-goto-map "G" gnus-summary-mode-map)
     "n" gnus-summary-next-unread-article
@@ -2081,6 +2083,8 @@ increase the score of each group you read."
 	["Regenerate" gnus-summary-prepare t]
 	["Insert cached articles" gnus-summary-insert-cached-articles t]
 	["Toggle threading" gnus-summary-toggle-threads t])
+       ["See old articles" gnus-summary-insert-old-articles t]
+       ["See new articles" gnus-summary-insert-new-articles t]
        ["Filter articles..." gnus-summary-execute-command t]
        ["Run command on subjects..." gnus-summary-universal-argument t]
        ["Search articles forward..." gnus-summary-search-article-forward t]
@@ -3012,7 +3016,8 @@ If NO-DISPLAY, don't generate a summary buffer."
   ;;  (when (and (not (gnus-group-native-p group))
   ;;	     (not (gnus-gethash group gnus-newsrc-hashtb)))
   ;;    (error "Dead non-native groups can't be entered"))
-  (gnus-message 5 "Retrieving newsgroup: %s..." group)
+  (gnus-message 5 "Retrieving newsgroup: %s..." 
+		(gnus-group-decoded-name group))
   (let* ((new-group (gnus-summary-setup-buffer group))
 	 (quit-config (gnus-group-quit-config group))
 	 (did-select (and new-group (gnus-select-newsgroup
@@ -3044,7 +3049,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 	  (gnus-handle-ephemeral-exit quit-config)))
       (let ((grpinfo (gnus-get-info group)))
         (if (null (gnus-info-read grpinfo))
-            (gnus-message 3 "Group %s contains no messages" group)
+            (gnus-message 3 "Group %s contains no messages" 
+			  (gnus-group-decoded-name group))
           (gnus-message 3 "Can't select group")))
       nil)
      ;; The user did a `C-g' while prompting for number of articles,
@@ -4335,6 +4341,27 @@ or a straight list of headers."
 	(when changed
 	  (mail-header-set-subject header subject))))))
 
+(defun gnus-fetch-headers (articles)
+  "Fetch headers of ARTICLES."
+  (let ((name (gnus-group-decoded-name gnus-newsgroup-name)))
+    (gnus-message 5 "Fetching headers for %s..." name)
+    (prog1
+	(if (eq 'nov
+		(setq gnus-headers-retrieved-by
+		      (gnus-retrieve-headers
+		       articles gnus-newsgroup-name
+		       ;; We might want to fetch old headers, but
+		       ;; not if there is only 1 article.
+		       (and (or (and
+				 (not (eq gnus-fetch-old-headers 'some))
+				 (not (numberp gnus-fetch-old-headers)))
+				(> (length articles) 1))
+			  gnus-fetch-old-headers))))
+	    (gnus-get-newsgroup-headers-xover
+	     articles nil nil gnus-newsgroup-name t)
+	  (gnus-get-newsgroup-headers))
+      (gnus-message 5 "Fetching headers for %s...done" name))))
+
 (defun gnus-select-newsgroup (group &optional read-all select-articles)
   "Select newsgroup GROUP.
 If READ-ALL is non-nil, all articles in the group are selected.
@@ -4407,23 +4434,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	    (gnus-make-hashtable (length articles)))
       (gnus-set-global-variables)
       ;; Retrieve the headers and read them in.
-      (gnus-message 5 "Fetching headers for %s..." gnus-newsgroup-name)
-      (setq gnus-newsgroup-headers
-	    (if (eq 'nov
-		    (setq gnus-headers-retrieved-by
-			  (gnus-retrieve-headers
-			   articles gnus-newsgroup-name
-			   ;; We might want to fetch old headers, but
-			   ;; not if there is only 1 article.
-			   (and (or (and
-				     (not (eq gnus-fetch-old-headers 'some))
-				     (not (numberp gnus-fetch-old-headers)))
-				    (> (length articles) 1))
-				gnus-fetch-old-headers))))
-		(gnus-get-newsgroup-headers-xover
-		 articles nil nil gnus-newsgroup-name t)
-	      (gnus-get-newsgroup-headers)))
-      (gnus-message 5 "Fetching headers for %s...done" gnus-newsgroup-name)
+      (setq gnus-newsgroup-headers (gnus-fetch-headers articles))
 
       ;; Kludge to avoid having cached articles nixed out in virtual groups.
       (when cached
@@ -4716,11 +4727,8 @@ If WHERE is `summary', the summary mode line format will be used."
 	(let* ((mformat (symbol-value
 			 (intern
 			  (format "gnus-%s-mode-line-format-spec" where))))
-	       (gnus-tmp-group-name (gnus-group-name-decode
-				     gnus-newsgroup-name
-				     (gnus-group-name-charset
-				      nil
-				      gnus-newsgroup-name)))
+	       (gnus-tmp-group-name (gnus-group-decoded-name 
+				     gnus-newsgroup-name))
 	       (gnus-tmp-article-number (or gnus-current-article 0))
 	       (gnus-tmp-unread gnus-newsgroup-unreads)
 	       (gnus-tmp-unread-and-unticked (length gnus-newsgroup-unreads))
@@ -10076,6 +10084,99 @@ returned."
     (gnus-summary-position-point)
     (gnus-set-mode-line 'summary)
     n))
+
+(defun gnus-summary-insert-articles (articles)
+  (setq gnus-newsgroup-headers 
+	(merge 'list
+	       gnus-newsgroup-headers
+	       (gnus-fetch-headers articles)
+	       'gnus-article-sort-by-number))
+  ;; Suppress duplicates?
+  (when gnus-suppress-duplicates
+    (gnus-dup-suppress-articles))
+
+  ;; We might want to build some more threads first.
+  (when (and gnus-fetch-old-headers
+	     (eq gnus-headers-retrieved-by 'nov))
+    (if (eq gnus-fetch-old-headers 'invisible)
+	(gnus-build-all-threads)
+      (gnus-build-old-threads)))
+  ;; Let the Gnus agent mark articles as read.
+  (when gnus-agent
+    (gnus-agent-get-undownloaded-list))
+  ;; Remove list identifiers from subject
+  (when gnus-list-identifiers
+    (gnus-summary-remove-list-identifiers))
+  ;; First and last article in this newsgroup.
+  (when gnus-newsgroup-headers
+    (setq gnus-newsgroup-begin
+	  (mail-header-number (car gnus-newsgroup-headers))
+	  gnus-newsgroup-end
+	  (mail-header-number
+	   (gnus-last-element gnus-newsgroup-headers))))
+  (when gnus-use-scoring
+    (gnus-possibly-score-headers)))
+
+(defun gnus-summary-insert-old-articles (&optional all)
+  "Insert all old articles in this group.
+If ALL is non-nil, already read articles become readable.
+If ALL is a number, fetch this number of articles."
+  (interactive "P")
+  (prog1
+      (let ((old (mapcar 'car gnus-newsgroup-data))
+	    (i (car gnus-newsgroup-active))
+	    older len)
+	(while (<= i (cdr gnus-newsgroup-active))
+	  (or (memq i old) (push i older))
+	  (incf i))
+	(setq len (length older))
+	(cond 
+	 ((null older) nil)
+	 ((numberp all) 
+	  (if (< all len)
+	      (setq older (subseq older 0 all))))
+	 (all nil)
+	 (t
+	  (if (and (numberp gnus-large-newsgroup)
+		   (> len gnus-large-newsgroup))
+	      (let ((input
+		     (read-string
+		      (format
+		       "How many articles from %s (default %d): "
+		       (gnus-limit-string 
+			(gnus-group-decoded-name gnus-newsgroup-name) 35)
+		       len))))
+		(unless (string-match "^[ \t]*$" input) 
+		  (setq all (string-to-number input))
+		  (if (< all len)
+		      (setq older (subseq older 0 all))))))))
+	(if (not older)
+	    (message "No old news.")
+	  (gnus-summary-insert-articles older)
+	  (gnus-summary-limit (gnus-union older old))))
+    (gnus-summary-position-point)))
+
+(defun gnus-summary-insert-new-articles ()
+  "Insert all new articles in this group."
+  (interactive)
+  (prog1
+      (let ((old (mapcar 'car gnus-newsgroup-data))
+	    (old-active gnus-newsgroup-active)
+	    (nnmail-fetched-sources (list t))
+	    i new)
+	(setq gnus-newsgroup-active 
+	      (gnus-activate-group gnus-newsgroup-name 'scan))
+	(setq i (1+ (cdr old-active)))
+	(while (<= i (cdr gnus-newsgroup-active))
+	  (push i new)
+	  (incf i))
+	(if (not new)
+	    (message "No gnus is bad news.")
+	  (gnus-summary-insert-articles new)
+	  (setq gnus-newsgroup-unreads
+		(append gnus-newsgroup-unreads new))
+	  (gnus-summary-limit (gnus-union old new))))
+    (gnus-summary-position-point)))
 
 (gnus-summary-make-all-marking-commands)
 
