@@ -61,46 +61,6 @@
 	   (while (consp (cdr x))
 	     (pop x))
 	   x))))
-
-  (define-compiler-macro mapcon (&whole form fn seq &rest rest)
-    (if (and (fboundp 'mapcon)
-	     (subrp (symbol-function 'mapcon)))
-	form
-      (if rest
-	  `(let (res
-		 (args (list ,seq ,@rest))
-		 p)
-	     (while (not (memq nil args))
-	       (push (apply ,fn args) res)
-	       (setq p args)
-	       (while p
-		 (setcar p (cdr (pop p)))
-		 ))
-	     (apply (function nconc) (nreverse res)))
-	`(let (res
-	       (arg ,seq))
-	   (while arg
-	     (push (funcall ,fn arg) res)
-	     (setq arg (cdr arg)))
-	   (apply (function nconc) (nreverse res))))))
-
-  (define-compiler-macro union (&whole form list1 list2)
-    (if (and (fboundp 'union)
-	     (subrp (symbol-function 'union)))
-	form
-      `(let ((a ,list1)
-	     (b ,list2))
-	 (cond ((null a) b)
-	       ((null b) a)
-	       ((equal a b) a)
-	       (t
-		(or (>= (length a) (length b))
-		    (setq a (prog1 b (setq b a))))
-		(while b
-		  (or (memq (car b) a)
-		      (push (car b) a))
-		  (pop b))
-		a)))))
   )
 
 ;; If we are building w3 in a different directory than the source
