@@ -165,18 +165,29 @@ Should be called narrowed to the head of the message."
 		       mail-parse-charset)
 		  (mm-encode-coding-region (point-min) (point-max)
 					   mail-parse-charset)))
+	     ;; We get this when CC'ing messsages to newsgroups with
+	     ;; 8-bit names.  The group name mail copy just get
+	     ;; unconditionally encoded.  Previously, it would ask
+	     ;; whether to encode, which was quite confusing for the
+	     ;; user.  If the new behaviour is wrong, tell me. I have
+	     ;; left the old code commented out below.
+	     ;; -- Per Abrahamsen <abraham@dina.kvl.dk> Date: 2001-10-07.
 	     ((null method)
-	      (and (delq 'ascii
-			 (mm-find-charset-region (point-min)
-						 (point-max)))
-		   (if (or (message-options-get
-			    'rfc2047-encode-message-header-encode-any)
-			   (message-options-set
-			    'rfc2047-encode-message-header-encode-any
-			    (y-or-n-p
-			     "Some texts are not encoded. Encode anyway?")))
-		       (rfc2047-encode-region (point-min) (point-max))
-		     (error "Cannot send unencoded text"))))
+	      (when (delq 'ascii 
+			  (mm-find-charset-region (point-min) (point-max)))
+		(rfc2047-encode-region (point-min) (point-max))))
+;;;	     ((null method)
+;;;	      (and (delq 'ascii
+;;;			 (mm-find-charset-region (point-min)
+;;;						 (point-max)))
+;;;		   (if (or (message-options-get
+;;;			    'rfc2047-encode-message-header-encode-any)
+;;;			   (message-options-set
+;;;			    'rfc2047-encode-message-header-encode-any
+;;;			    (y-or-n-p
+;;;			     "Some texts are not encoded. Encode anyway?")))
+;;;		       (rfc2047-encode-region (point-min) (point-max))
+;;;		     (error "Cannot send unencoded text"))))
 	     ((mm-coding-system-p method)
 	      (if (and (featurep 'mule)
 		       (if (boundp 'default-enable-multibyte-characters)

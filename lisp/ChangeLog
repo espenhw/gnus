@@ -1,5 +1,8 @@
 2001-10-07  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* rfc2047.el (rfc2047-encode-message-header): Encode without
+	asking for null methods.
+
 	* gnus-group.el (gnus-group-name-charset-group-alist): Make utf-8
 	default charset for newsgroup names in accordance with USEFOR.
 
