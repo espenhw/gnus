@@ -281,8 +281,7 @@ The following commands are available:
 		  "(closed)")
 	      ((error) "(error)")))))
 	 (gnus-tmp-agent (if (and gnus-agent
-				  (member method
-					  gnus-agent-covered-methods))
+				  (gnus-agent-method-p method))
 			     " (agent)"
 			   "")))
     (beginning-of-line)
