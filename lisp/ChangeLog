@@ -1,3 +1,13 @@
+2000-10-30 00:49:33  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-srvr.el (gnus-server-browse-in-group-buffer): New variable.
+	(gnus-server-read-server-in-server-buffer): New function.
+	(gnus-browse-foreign-server): Browse in group buffer.
+	* gnus-group.el (gnus-group-prepare-flat): List group not in list.
+	(gnus-group-prepare-flat-list-dead): Use gnus-group-insert-group-line.
+	* gnus-topic.el (gnus-group-prepare-topics): Ditto.
+	* gnus.el (gnus-server-browse-hashtb): New variable.
+
 2000-10-29 22:31:40  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-open-nov): Use group.

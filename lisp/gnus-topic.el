@@ -393,7 +393,11 @@ if it is t, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (set-buffer gnus-group-buffer)
   (let ((buffer-read-only nil)
-        (lowest (or lowest 1)))
+        (lowest (or lowest 1))
+	(not-in-list 
+	 (and gnus-group-listed-groups
+	      (not (eq gnus-group-list-option 'limit))
+	      (copy-sequence gnus-group-listed-groups))))
 
     (when (or (not gnus-topic-alist)
 	      (not gnus-topology-checked-p))
@@ -415,7 +419,11 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
 	       (and (>= level gnus-level-killed) 
 		    (<= lowest gnus-level-killed)))
       (gnus-group-prepare-flat-list-dead
-       (setq gnus-killed-list (sort gnus-killed-list 'string<))
+       (if not-in-list 
+	   (gnus-delete-if (lambda (group)
+			     (< (gnus-group-level group) gnus-level-killed))
+			   not-in-list)
+	 (setq gnus-killed-list (sort gnus-killed-list 'string<)))
        gnus-level-killed ?K
        regexp))
 

@@ -55,6 +55,9 @@ The following specs are understood:
 (defvar gnus-server-exit-hook nil
   "*Hook run when exiting the server buffer.")
 
+(defvar gnus-server-browse-in-group-buffer t
+  "Whether browse server in group buffer.")
+
 ;;; Internal variables.
 
 (defvar gnus-inserted-opened-servers nil)
@@ -117,7 +120,7 @@ The following specs are understood:
   (suppress-keymap gnus-server-mode-map)
 
   (gnus-define-keys gnus-server-mode-map
-    " " gnus-server-read-server
+    " " gnus-server-read-server-in-server-buffer
     "\r" gnus-server-read-server
     gnus-mouse-2 gnus-server-pick-server
     "q" gnus-server-exit
@@ -489,6 +492,12 @@ The following commands are available:
       (gnus-request-scan nil method)
       (gnus-message 3 "Scanning %s...done" server))))
 
+(defun gnus-server-read-server-in-server-buffer (server)
+  "Browse a server in server buffer."
+  (interactive (list (gnus-server-server-name)))
+  (let (gnus-server-browse-in-group-buffer)
+    (gnus-server-read-server server)))
+
 (defun gnus-server-read-server (server)
   "Browse a server."
   (interactive (list (gnus-server-server-name)))
@@ -569,6 +578,7 @@ The following commands are available:
   (setq gnus-browse-current-method (gnus-server-to-method server))
   (setq gnus-browse-return-buffer return-buffer)
   (let* ((method gnus-browse-current-method)
+	 (orig-select-method gnus-select-method)
 	 (gnus-select-method method)
 	 groups group)
     (gnus-message 5 "Connecting to %s..." (nth 1 method))
@@ -587,18 +597,6 @@ The following commands are available:
        1 "Couldn't request list: %s" (gnus-status-message method))
       nil)
      (t
-      (gnus-get-buffer-create gnus-browse-buffer)
-      (when gnus-carpal
-	(gnus-carpal-setup-buffer 'browse))
-      (gnus-configure-windows 'browse)
-      (buffer-disable-undo)
-      (let ((buffer-read-only nil))
-	(erase-buffer))
-      (gnus-browse-mode)
-      (setq mode-line-buffer-identification
-	    (list
-	     (format
-	      "Gnus: %%b {%s:%s}" (car method) (cadr method))))
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(let ((cur (current-buffer)))
@@ -626,28 +624,56 @@ The following commands are available:
       (setq groups (sort groups
 			 (lambda (l1 l2)
 			   (string< (car l1) (car l2)))))
-      (let ((buffer-read-only nil) charset)
-	(while groups
-	  (setq group (car groups))
-	  (setq charset (gnus-group-name-charset method group))
-	  (gnus-add-text-properties
-	   (point)
-	   (prog1 (1+ (point))
-	     (insert
-	      (format "%c%7d: %s\n" 
-		      (let ((level
-			     (gnus-group-level
-			      (gnus-group-prefixed-name (car group) method))))
+      (if gnus-server-browse-in-group-buffer
+	  (let* ((gnus-select-method orig-select-method)
+		 (gnus-server-browse-hashtb 
+		  (gnus-make-hashtable (length groups)))
+		 (gnus-group-listed-groups 
+		  (mapcar (lambda (group) 
+			    (let ((name
+				   (gnus-group-prefixed-name 
+				    (car group) method)))
+			      (gnus-sethash name (cdr group)
+					    gnus-server-browse-hashtb)
+			      name))
+			  groups)))
+	    (gnus-configure-windows 'group)
+	    (funcall gnus-group-prepare-function 
+		     gnus-level-killed 'ignore 1 'ingore))
+	(gnus-get-buffer-create gnus-browse-buffer)
+	(when gnus-carpal
+	  (gnus-carpal-setup-buffer 'browse))
+	(gnus-configure-windows 'browse)
+	(buffer-disable-undo)
+	(let ((buffer-read-only nil))
+	  (erase-buffer))
+	(gnus-browse-mode)
+	(setq mode-line-buffer-identification
+	      (list
+	       (format
+		"Gnus: %%b {%s:%s}" (car method) (cadr method))))
+	(let ((buffer-read-only nil) charset)
+	  (while groups
+	    (setq group (car groups))
+	    (setq charset (gnus-group-name-charset method group))
+	    (gnus-add-text-properties
+	     (point)
+	     (prog1 (1+ (point))
+	       (insert
+		(format "%c%7d: %s\n" 
+			(let ((level
+			       (gnus-group-level
+				(gnus-group-prefixed-name (car group) method))))
 			(cond 
 			 ((<= level gnus-level-subscribed) ? )
 			 ((<= level gnus-level-unsubscribed) ?U)
 			 ((= level gnus-level-zombie) ?Z)
 			 (t ?K)))
-		      (cdr group)
-		      (gnus-group-name-decode (car group) charset))))
-	   (list 'gnus-group (car group)))
-	  (setq groups (cdr groups))))
-      (switch-to-buffer (current-buffer))
+			(cdr group)
+			(gnus-group-name-decode (car group) charset))))
+	     (list 'gnus-group (car group)))
+	    (setq groups (cdr groups))))
+	(switch-to-buffer (current-buffer)))
       (goto-char (point-min))
       (gnus-group-position-point)
       (gnus-message 5 "Connecting to %s...done" (nth 1 method))

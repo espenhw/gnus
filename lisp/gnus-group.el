@@ -1052,6 +1052,9 @@ if it is a string, only list groups matching REGEXP."
   (let ((buffer-read-only nil)
 	(newsrc (cdr gnus-newsrc-alist))
 	(lowest (or lowest 1))
+	(not-in-list (and gnus-group-listed-groups
+		       (not (eq gnus-group-list-option 'limit))
+		       (copy-sequence gnus-group-listed-groups)))
 	info clevel unread group params)
     (erase-buffer)
     (when (or (< lowest gnus-level-zombie)
@@ -1063,6 +1066,8 @@ if it is a string, only list groups matching REGEXP."
 	      params (gnus-info-params info)
 	      newsrc (cdr newsrc)
 	      unread (car (gnus-gethash group gnus-newsrc-hashtb)))
+	(if not-in-list 
+	    (setq not-in-list (delete group not-in-list)))
 	(and 
 	 (gnus-group-prepare-logic 
 	  group
@@ -1102,10 +1107,14 @@ if it is a string, only list groups matching REGEXP."
 	 (setq gnus-zombie-list (sort gnus-zombie-list 'string<))
 	 gnus-level-zombie ?Z
 	 regexp))
+    (if not-in-list 
+	(dolist (group gnus-zombie-list)
+	  (setq not-in-list (delete group not-in-list))))
     (if (or gnus-group-listed-groups
 	    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)))
 	(gnus-group-prepare-flat-list-dead
-	 (setq gnus-killed-list (sort gnus-killed-list 'string<))
+	 (or not-in-list
+	     (setq gnus-killed-list (sort gnus-killed-list 'string<)))
 	 gnus-level-killed ?K regexp))
 
     (gnus-group-set-mode-line)
@@ -1125,16 +1134,21 @@ if it is a string, only list groups matching REGEXP."
 	     (or (not regexp)
 		 (and (stringp regexp) (string-match regexp group))
 		 (and (functionp regexp) (funcall regexp group))))
-	(gnus-add-text-properties
-	 (point) (prog1 (1+ (point))
-		   (insert " " mark "     *: "
-			   (gnus-group-name-decode group 
-						   (gnus-group-name-charset
-						    nil group)) 
-			   "\n"))
-	 (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
-	       'gnus-unread t
-	       'gnus-level level))))))
+;;; 	(gnus-add-text-properties
+;;; 	 (point) (prog1 (1+ (point))
+;;; 		   (insert " " mark "     *: "
+;;; 			   (gnus-group-name-decode group 
+;;; 						   (gnus-group-name-charset
+;;; 						    nil group)) 
+;;; 			   "\n"))
+;;; 	 (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
+;;; 	       'gnus-unread t
+;;; 	       'gnus-level level))
+	(gnus-group-insert-group-line 
+	 group level nil
+	 (if gnus-server-browse-hashtb
+	     (gnus-gethash group gnus-server-browse-hashtb) t)
+	 (gnus-method-simplify (gnus-find-method-for-group group)))))))
 
 (defun gnus-group-update-group-line ()
   "Update the current line in the group buffer."
