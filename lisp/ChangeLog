@@ -1,3 +1,10 @@
+2003-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dns.el: Fix misplaced eval-when-compile.
+
+	* gnus-util.el: Require alist and provide tm-view when compiling
+	with XEmacs.
+
 2003-12-03  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* gnus-xmas.el: Add autoloads for macros defined in gnus.el.
