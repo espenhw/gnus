@@ -75,7 +75,7 @@
 (defvar spam-use-bbdb t
   "True if BBDB should be used.")
 
-(defvar spam-use-bbdb t
+(defvar spam-use-ifile t
   "True if ifile should be used.")
 
 (defvar spam-split-group "spam"
