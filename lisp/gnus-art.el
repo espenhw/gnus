@@ -1484,6 +1484,17 @@ or not."
 	  (when charset
 	    (mm-decode-body charset)))))))
 
+(eval-when-compile
+  (require 'rfc1843))
+
+(defun article-decode-HZ ()
+  "Translate a HZ-encoded article."
+  (interactive)
+  (require 'rfc1843)
+  (save-excursion
+    (let ((buffer-read-only nil))
+      (rfc1843-decode-region (point-min) (point-max)))))
+
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.
 The `gnus-list-identifiers' variable specifies what to do."
@@ -2415,6 +2426,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-remove-cr
      article-display-x-face
      article-de-quoted-unreadable
+     article-decode-HZ
      article-mime-decode-quoted-printable
      article-hide-list-identifiers
      article-hide-pgp
@@ -2498,7 +2510,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Hide citation" gnus-article-hide-citation t]
        ["Treat overstrike" gnus-article-treat-overstrike t]
        ["Remove carriage return" gnus-article-remove-cr t]
-       ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]))
+       ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
+       ["Decode HZ" gnus-article-decode-HZ t]))
 
     ;; Note "Commands" menu is defined in gnus-sum.el for consistency
 

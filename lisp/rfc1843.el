@@ -35,10 +35,10 @@
 (require 'mm-util)
 
 (defvar rfc1843-word-regexp
-  "~\\({\\([\041-\167][\041-\176]\\| \\)+\\(~}\\|$\\)")
+  "~\\({\\([\041-\167][\041-\176]\\| \\)+\\)\\(~}\\|$\\)")
 
 (defvar rfc1843-word-regexp-strictly
-  "~\\({\\([\041-\167][\041-\176]\\)+\\(~}\\|$\\)")
+  "~\\({\\([\041-\167][\041-\176]\\)+\\)\\(~}\\|$\\)")
 
 (defvar rfc1843-hzp-word-regexp
   "~\\({\\([\041-\167][\041-\176]\\| \\)+\\|\
@@ -86,7 +86,10 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
 	    (while (re-search-forward (if rfc1843-decode-hzp
 					  rfc1843-hzp-word-regexp
 					rfc1843-word-regexp) (point-max) t)
-	      (setq str (match-string 1))
+	      ;;; Text with extents may cause XEmacs crash
+	      (setq str (buffer-substring-no-properties 
+			 (match-beginning 1)
+			 (match-end 1)))
 	      (setq firstc (aref str 0))
 	      (insert (mm-decode-coding-string
 		       (rfc1843-decode

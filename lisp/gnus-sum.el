@@ -1692,7 +1692,8 @@ increase the score of each group you read."
               ["Add buttons to head" gnus-article-add-buttons-to-head t]
               ["Stop page breaking" gnus-summary-stop-page-breaking t]
               ["Verbose header" gnus-summary-verbose-headers t]
-              ["Toggle header" gnus-summary-toggle-header t])
+              ["Toggle header" gnus-summary-toggle-header t]
+	      ["HZ" gnus-article-decode-HZ t])
              ("Output"
               ["Save in default format" gnus-summary-save-article t]
               ["Save in file" gnus-summary-save-article-file t]
