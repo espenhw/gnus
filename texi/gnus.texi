@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-  -*- coding: iso-latin-1 -*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus  Manual
+@settitle Gnus Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus  Manual
+@title Gnus Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus .
+This manual corresponds to Gnus 5.8.0.
 
 @end ifinfo
 
@@ -17555,6 +17555,27 @@ spunky name, we decided that the name was @emph{too} spunky, so we
 renamed it back again to ``Gnus''.  But in mixed case.  ``Gnus'' vs.
 ``@sc{gnus}''.  New vs. old.
 
+@menu
+* Gnus Versions::       What Gnus versions have been released.
+* Other Gnus Versions:: Other Gnus versions that also have been released.
+* Why?::                What's the point of Gnus?
+* Compatibility::       Just how compatible is Gnus with @sc{gnus}?
+* Conformity::          Gnus tries to conform to all standards.
+* Emacsen::             Gnus can be run on a few modern Emacsen.
+* Gnus Development::    How Gnus is developed.
+* Contributors::        Oodles of people.
+* New Features::        Pointers to some of the new stuff in Gnus.
+* Newest Features::     Features so new that they haven't been written yet.
+@end menu
+
+
+@node Gnus Versions
+@subsection Gnus Versions
+@cindex Pterodactyl Gnus
+@cindex ding Gnus
+@cindex September Gnus
+@cindex Quassia Gnus
+
 The first ``proper'' release of Gnus 5 was done in November 1995 when it
 was included in the Emacs 19.30 distribution (132 (ding) Gnus releases
 plus 15 Gnus 5.0 releases).
@@ -17565,8 +17586,12 @@ releases)) was released under the name ``Gnus 5.2'' (40 releases).
 On July 28th 1996 work on Red Gnus was begun, and it was released on
 January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
 
-On September 13th 1997, Quassia Gnus was started and lasted 37
-releases.  If was released as ``Gnus 5.6 on March 8th 1998.
+On September 13th 1997, Quassia Gnus was started and lasted 37 releases.
+If was released as ``Gnus 5.6'' on March 8th 1998 (46 releases).
+
+Gnus 5.6 begat Pterodactyl Gnus on August 29th 1998 and was released as
+``Gnus 5.8'' (after 99 releases and a CVS repository) on December 3rd
+1999. 
 
 If you happen upon a version of Gnus that has a prefixed name --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -17575,16 +17600,21 @@ Slowly.  Whatever you do, don't run.  Walk away, calmly, until you're
 out of its reach.  Find a proper released version of Gnus and snuggle up
 to that instead.
 
-@menu
-* Why?::                What's the point of Gnus?
-* Compatibility::       Just how compatible is Gnus with @sc{gnus}?
-* Conformity::          Gnus tries to conform to all standards.
-* Emacsen::             Gnus can be run on a few modern Emacsen.
-* Gnus Development::    How Gnus is developed.
-* Contributors::        Oodles of people.
-* New Features::        Pointers to some of the new stuff in Gnus.
-* Newest Features::     Features so new that they haven't been written yet.
-@end menu
+
+@node Other Gnus Versions
+@subsection Other Gnus Versions
+@cindex Semi-gnus
+
+In addition to the versions of Gnus which have had their releases
+coordinated by Lars, one major development has been Semi-gnus from
+Japan.  It's based on a library called @sc{semi}, which provides
+@sc{mime} capabilities.
+
+These Gnusae are based mainly on Gnus 5.6 and Pterodactyl Gnus.
+Collectively, they are called ``Semi-gnus'', and different strains are
+called T-gnus, ET-gnus, Nana-gnus and Chaos.  These provide powerful
+@sc{mime} and multilingualization things, especially important for
+Japanese users.
 
 
 @node Why?

@@ -1,6 +1,12 @@
+1999-12-03 00:02:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Other Gnus Versions): New.
+	(Gnus Versions): Made into own node.
+
 1999-12-02 00:00:00  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Paging the Article): Addition.
+	(History): Addition.
 
 1999-11-24  Carsten Leonhardt  <leo@arioch.oche.de>
 
