@@ -763,7 +763,8 @@ Two predefined functions are available:
 	  (setq beg (point))
 	  (forward-char -1)
 	  ;; Draw "-" lines leftwards.
-	  (while (= (char-after (1- (point))) ? )
+	  (while (and (> (point) 1)
+		      (= (char-after (1- (point))) ? ))
 	    (delete-char -1)
 	    (insert (car gnus-tree-parent-child-edges))
 	    (forward-char -1))

@@ -1291,7 +1291,8 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	   (file-exists-p result-file)
 	   (not gnus-uu-be-dangerous)
 	   (or (eq gnus-uu-be-dangerous t)
-	       (gnus-y-or-n-p (format "Delete incomplete file %s? " result-file)))
+	       (gnus-y-or-n-p
+		(format "Delete incomplete file %s? " result-file)))
 	   (delete-file result-file))
 
       ;; If this was a file of the wrong sort, then

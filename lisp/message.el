@@ -1729,6 +1729,11 @@ prefix, and don't delete any headers."
 	     (list message-indent-citation-function)))))
     (goto-char end)
     (when (re-search-backward "^-- $" start t)
+      ;; Also peel off any blank lines before the signature.
+      (forward-line -1)
+      (while (looking-at "^[ \t]*$")
+	(forward-line -1))
+      (forward-line 1)
       (delete-region (point) end))
     (goto-char start)
     (while functions

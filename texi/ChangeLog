@@ -1,3 +1,11 @@
+1998-08-09 15:32:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Hiding Headers): Fix.
+
+1998-08-08 06:06:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Fancy Mail Splitting): Change.
+
 1998-08-06 02:12:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi: De-legalize.

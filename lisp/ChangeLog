@@ -1,3 +1,37 @@
+Sun Aug  9 15:46:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.30 is released.
+
+1998-08-09 10:48:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-cite-original-without-signature): Peel off
+	blank lines.
+
+	* gnus-art.el (gnus-article-maybe-highlight): Doc fix.
+
+	* gnus-sum.el (gnus-data-enter-list): Threw away all new list data
+	at the beginning of the buffer.
+
+1998-08-07 01:41:29  Gareth Jones  <gdj1@gdjones.demon.co.uk>
+
+	* gnus-score.el (gnus-summary-increase-score): Don't downcase
+	before lookin in char-to-header.
+
+1998-08-07 01:33:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-predefined-server-alist): Too many parentheses.
+
+1998-08-06 11:20:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-continuum-version): Include quassia.
+
+	* gnus-sum.el (gnus-data-enter-list): Check before entering list. 
+
+1998-08-06 11:13:56  Francois Felix Ingrand  <felix@dial.oleane.com>
+
+	* gnus-salt.el (gnus-generate-vertical-tree): Don't go too far to
+	the left.
+
 Thu Aug  6 07:58:17 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.29 is released.

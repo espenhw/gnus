@@ -1786,6 +1786,8 @@ ADDRESS."
     (gnus-read-group "Group name: ")
     (gnus-read-method "From method: ")))
 
+  (when (stringp method)
+    (setq method (gnus-server-to-method method)))
   (let* ((meth (when (and method
 			  (not (gnus-server-equal method gnus-select-method)))
 		 (if address (list (intern method) address)

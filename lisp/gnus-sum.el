@@ -1976,21 +1976,26 @@ The following commands are available:
   (when list
     (let ((data (and after-article (gnus-data-find-list after-article)))
 	  (ilist list))
-      (or data (not after-article) (error "No such article: %d" after-article))
-      ;; Find the last element in the list to be spliced into the main
-      ;; list.
-      (while (cdr list)
-	(setq list (cdr list)))
-      (if (not data)
-	  (progn
-	    (setcdr list gnus-newsgroup-data)
-	    (setq gnus-newsgroup-data ilist)
+      (if (not (or data
+		   after-article))
+	  (let ((odata gnus-newsgroup-data))
+	    (setq gnus-newsgroup-data (nconc list gnus-newsgroup-data))
 	    (when offset
-	      (gnus-data-update-list (cdr list) offset)))
-	(setcdr list (cdr data))
-	(setcdr data ilist)
-	(when offset
-	  (gnus-data-update-list (cdr list) offset)))
+	      (gnus-data-update-list odata offset)))
+	;; Find the last element in the list to be spliced into the main
+	;; list.
+	(while (cdr list)
+	  (setq list (cdr list)))
+	(if (not data)
+	    (progn
+	      (setcdr list gnus-newsgroup-data)
+	      (setq gnus-newsgroup-data ilist)
+	      (when offset
+		(gnus-data-update-list (cdr list) offset)))
+	  (setcdr list (cdr data))
+	  (setcdr data ilist)
+	  (when offset
+	    (gnus-data-update-list (cdr list) offset))))
       (setq gnus-newsgroup-data-reverse nil))))
 
 (defun gnus-data-remove (article &optional offset)
@@ -3250,10 +3255,11 @@ If LINE, insert the rebuilt thread starting on line LINE."
       ;;!!! then we want to insert at the beginning of the buffer.
       ;;!!! That happens to be true with Gnus now, but that may
       ;;!!! change in the future.  Perhaps.
-      (gnus-data-enter-list (if line nil current) data (- (point) old-pos))
-      (setq gnus-newsgroup-threads (nconc threads gnus-newsgroup-threads))
-      (when line
-	(gnus-data-compute-positions)))))
+      (gnus-data-enter-list
+       (if line nil current) data (- (point) old-pos))
+      (setq gnus-newsgroup-threads
+	    (nconc threads gnus-newsgroup-threads))
+      (gnus-data-compute-positions))))
 
 (defun gnus-number-to-header (number)
   "Return the header for article NUMBER."

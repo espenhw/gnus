@@ -205,7 +205,9 @@ for matching on group names.
 For instance, if you want to brew on all the nnml groups, as well as
 groups with \"emacs\" in the name, you could say something like:
 
-$ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
+$ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\"
+
+Note -- this function hasn't been implemented yet."
   (interactive)
   nil)
 

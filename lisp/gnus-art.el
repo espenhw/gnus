@@ -2404,7 +2404,7 @@ If given a prefix, show the hidden text instead."
   (gnus-article-hide-signature arg))
 
 (defun gnus-article-maybe-highlight ()
-  "Do some article highlighting if `article-visual' is non-nil."
+  "Do some article highlighting if article highlighting is requested."
   (when (gnus-visual-p 'article-highlight 'highlight)
     (gnus-article-highlight-some)))
 

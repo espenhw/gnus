@@ -550,7 +550,7 @@ used as score."
 	      (gnus-score-insert-help "Match on header" char-to-header 1)))
 
 	  (gnus-score-kill-help-buffer)
-	  (unless (setq entry (assq (downcase hchar) char-to-header))
+	  (unless (setq entry (assq hchar char-to-header))
 	    (if mimic (error "%c %c" prefix hchar)
 	      (error "Illegal header type")))
 
