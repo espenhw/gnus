@@ -56,7 +56,7 @@
 (defvoo nnslashdot-active-url "http://slashdot.org/search.pl?section=&min=%d"
   "Where nnslashdot will fetch the active file from.")
 
-(defvoo nnslashdot-articles-url "http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=4&mode=flat&startat=%d"
+(defvoo nnslashdot-articles-url "http://slashdot.org/article.pl?sid=%s&threshold=%d&commentsort=4&mode=flat&startat=%d"
   "Where nnslashdot will fetch articles from.")
 
 (defvoo nnslashdot-threshold 0
@@ -171,9 +171,10 @@
 	(set-buffer (or buffer nntp-server-buffer))
 	(erase-buffer)
 	(insert contents)
-	(nnweb-remove-markup)
-	(nnweb-decode-entities)
+	;;(nnweb-remove-markup)
+	;;(nnweb-decode-entities)
 	(goto-char (point-min))
+	(insert "Content-Type: text/html\nMIME-Version: 1.0\n")
 	(let ((header (cdr (assq article nnslashdot-headers))))
 	  (nnheader-insert-header header))
 	(nnheader-report 'nnslashdot "Fetched article %s" article)
