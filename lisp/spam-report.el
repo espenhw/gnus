@@ -80,9 +80,10 @@ The function must accept the arguments `host' and `report'."
   :group 'spam-report)
 
 (defvar spam-report-url-ping-temp-agent-function nil
-  "This variable will store the value of
-spam-report-url-ping-function from before spam-report-agentize
-was run, so that spam-report-deagentize can undo that change.")
+  "Internal variable for `spam-report-agentize' and `spam-report-deagentize'.
+This variable will store the value of `spam-report-url-ping-function' from
+before `spam-report-agentize' was run, so that `spam-report-deagentize' can
+undo that change.")
 
 (defun spam-report-gmane (&rest articles)
   "Report an article as spam through Gmane"
@@ -130,6 +131,7 @@ the function specified by `spam-report-url-ping-function'."
        (format "GET %s HTTP/1.1\nUser-Agent: %s (spam-report.el)\nHost: %s\n\n"
 	       report (gnus-emacs-version) host)))))
 
+;;;###autoload
 (defun spam-report-process-queue (&optional file keep)
   "Report all queued requests from `spam-report-requests-file'.
 
@@ -142,8 +144,7 @@ symbol `ask', query before flushing the queue file."
 	  (file-name-directory spam-report-requests-file)
 	  spam-report-requests-file
 	  nil
-	  (file-name-nondirectory spam-report-requests-file)
-	  spam-report-requests-file)
+	  (file-name-nondirectory spam-report-requests-file))
 	 current-prefix-arg))
   (if (eq spam-report-url-ping-function 'spam-report-url-to-file)
       (error (concat "Cannot process requests when "
@@ -173,6 +174,7 @@ symbol `ask', query before flushing the queue file."
 	  (kill-buffer (current-buffer)))
       (gnus-message 7 "Keeping requests in `%s'" spam-report-requests-file))))
 
+;;;###autoload
 (defun spam-report-url-ping-mm-url (host report)
   "Ping a host through HTTP, addressing a specific GET resource. Use
 the external program specified in `mm-url-program' to connect to
@@ -181,6 +183,7 @@ server."
     (let ((url (concat "http://" host report)))
       (mm-url-insert url t))))
 
+;;;###autoload
 (defun spam-report-url-to-file (host report)
   "Collect spam report requests in `spam-report-requests-file'.
 Customize `spam-report-url-ping-function' to use this function."
@@ -193,15 +196,17 @@ Customize `spam-report-url-ping-function' to use this function."
       (newline)
       (append-to-file (point-min) (point-max) file))))
 
+;;;###autoload
 (defun spam-report-agentize ()
   "Add spam-report support to the Agent.
 Spam reports will be queued with \\[spam-report-url-to-file] when
 the Agent is unplugged, and will be submitted in a batch when the
-Agent is plugged.."
+Agent is plugged."
   (interactive)
   (add-hook 'gnus-agent-plugged-hook 'spam-report-plug-agent)
   (add-hook 'gnus-agent-unplugged-hook 'spam-report-unplug-agent))
 
+;;;###autoload
 (defun spam-report-deagentize ()
   "Remove spam-report support from the Agent.
 Spam reports will be queued with the method used when
@@ -211,19 +216,23 @@ Spam reports will be queued with the method used when
   (remove-hook 'gnus-agent-unplugged-hook 'spam-report-unplug-agent))
 
 (defun spam-report-plug-agent ()
-  ;; process the queue, unless the user only wanted to report to a file anyway
-  (unless (equal spam-report-url-ping-temp-agent-function 
+  "Adjust spam report settings for plugged state.
+Process queued spam reports."
+  ;; Process the queue, unless the user only wanted to report to a file
+  ;; anyway.
+  (unless (equal spam-report-url-ping-temp-agent-function
 		 spam-report-url-to-file)
     (spam-report-process-queue))
-  ;; set the reporting function, if we have memorized something
-  ;; otherwise, stick with plain URL reporting
+  ;; Set the reporting function, if we have memorized something otherwise,
+  ;; stick with plain URL reporting.
   (setq spam-report-url-ping-function
 	(or spam-report-url-ping-temp-agent-function
 	    spam-report-url-ping-plain)))
 
 (defun spam-report-unplug-agent ()
+  "Restore spam report settings for unplugged state."
   ;; save the old value
-  (setq spam-report-url-ping-temp-agent-function 
+  (setq spam-report-url-ping-temp-agent-function
 	spam-report-url-ping-function)
   ;; store all reports to file
   (setq spam-report-url-ping-function
