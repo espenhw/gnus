@@ -157,7 +157,7 @@ permitted unencoded charset is us-ascii."
   (let ((all-specials (concat ietf-drums-tspecials " \t\n\r"))
 	(special-list (mapcar 'identity ietf-drums-tspecials))
 	(blank-list '(?  ?\t ?\n ?\r))
-	words current cs state)
+	words current cs state mail-parse-mule-charset)
     (save-restriction
       (narrow-to-region b e)
       (goto-char (point-min))

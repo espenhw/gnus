@@ -1,3 +1,9 @@
+1999-12-18 16:43:37  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-charset-after): Non-MULE case.
+	* mail-prsvr.el (mail-parse-mule-charset): New variable.
+	* rfc2047.el (rfc2047-dissect-region): Bind it.
+
 1999-12-18  Florian Weimer  <fw@s.netic.de>
 
 	* mml.el (mml-generate-multipart-alist): Correct default value.	

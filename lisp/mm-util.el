@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'mail-prsvr)
+
 (defvar mm-mime-mule-charset-alist
   '((us-ascii ascii)
     (iso-8859-1 latin-iso8859-1)
@@ -64,7 +66,6 @@
 		    chinese-cns11643-5 chinese-cns11643-6
 		    chinese-cns11643-7))
   "Alist of MIME-charset/MULE-charsets.")
-
 
 (eval-and-compile
   (mapcar
@@ -213,9 +214,26 @@ used as the line break code type of the coding system."
 If POS is nil, it defauls to the current point.
 If POS is out of range, the value is nil.
 If the charset is `composition', return the actual one."
-  (let ((charset (if (fboundp 'charset-after)
-		     (charset-after pos)
-		   (char-charset (char-after pos)))))
+  (let ((charset (cond 
+		  ((fboundp 'charset-after)
+		   (charset-after pos))
+		  ((fboundp 'char-charset)
+		   (char-charset (char-after pos)))
+		  ((< (mm-char-int (char-after pos)) 128)
+		   'ascii)
+		  (mail-parse-mule-charset ;; cached mule-charset
+		   mail-parse-mule-charset)
+		  ((boundp 'current-language-environment)
+		   (let ((entry (assoc current-language-environment 
+				       language-info-alist)))
+		     (setq mail-parse-mule-charset
+			   (or (car (last (assq 'charset entry)))
+			       'latin-iso8859-1))))
+		  (t                       ;; figure out the charset
+		   (setq mail-parse-mule-charset
+			 (or (car (last (assq mail-parse-charset
+					      mm-mime-mule-charset-alist)))
+			     'latin-iso8859-1))))))
     (if (eq charset 'composition)
 	(let ((p (or pos (point))))
 	  (cadr (find-charset-region p (1+ p))))
