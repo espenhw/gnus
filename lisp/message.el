@@ -4646,16 +4646,21 @@ subscribed address (and not the additional To and Cc header contents)."
   "Return t iff point is inside a RHS (heuristically).
 Only works properly if header contains mailbox-list or address-list.
 I.e., calling it on a Subject: header is useless."
-  (if (re-search-backward
-       "[\\\n\r\t ]" (save-excursion (search-backward "@" nil t)) t)
-      ;; whitespace between @ and point
-      nil
-    (let ((dquote 1) (paren 1))
-      (while (save-excursion (re-search-backward "[^\\]\"" nil t dquote))
-	(incf dquote))
-      (while (save-excursion (re-search-backward "[^\\]\(" nil t paren))
-	(incf paren))
-      (and (= (% dquote 2) 1) (= (% paren 2) 1)))))
+  (save-restriction
+    (narrow-to-region (save-excursion (or (re-search-backward "^[^ \t]" nil t)
+					  (point-min)))
+		      (save-excursion (or (re-search-forward "^[^ \t]" nil t)
+					  (point-max))))
+    (if (re-search-backward "[\\\n\r\t ]"
+			    (save-excursion (search-backward "@" nil t)) t)
+	;; whitespace between @ and point
+	nil
+      (let ((dquote 1) (paren 1))
+	(while (save-excursion (re-search-backward "[^\\]\"" nil t dquote))
+	  (incf dquote))
+	(while (save-excursion (re-search-backward "[^\\]\(" nil t paren))
+	  (incf paren))
+	(and (= (% dquote 2) 1) (= (% paren 2) 1))))))
 
 (autoload 'idna-to-ascii "idna")
 

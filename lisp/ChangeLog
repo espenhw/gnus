@@ -1,3 +1,10 @@
+2003-03-30  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-idna-inside-rhs-p): Narrow to header before
+	searching.
+
+	* gnus-art.el (article-decode-idna-rhs): More restrictive regexp.
+
 2003-03-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-registry.el (gnus-registry-translate-to-alist): Make a
