@@ -1,3 +1,11 @@
+2004-02-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* compface.el (uncompface-use-external): Default to undecided.
+	(uncompface-use-external-threshold): New variable.
+	(uncompface-float-time): New macro.
+	(uncompface): Determine whether to use the external decoder if
+	uncompface-use-external is undecided.
+
 2004-02-15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-view.el (mm-inline-image-emacs): Don't insert blank lines

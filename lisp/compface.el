@@ -30,13 +30,45 @@
   "X-Face image conversion."
   :group 'extensions)
 
-(defcustom uncompface-use-external nil
-  "*nil means use the internal ELisp-based uncompface program.
-If you aren't satisfied with the speed, try to alter the value.  In
-that case, you need to have the external `uncompface' and `icontopbm'
-programs installed."
-  :type 'boolean
+(defcustom uncompface-use-external (and (not noninteractive)
+					(executable-find "uncompface")
+					(executable-find "icontopbm")
+					'undecided)
+  "*Specify which of the internal or the external decoder should be used.
+nil means to use the internal ELisp-based uncompface program.  t means
+to use the external decoder.  In the later case, you need to have the
+external `uncompface' and `icontopbm' programs installed.  The default
+value is nil if those external programs aren't available, otherwise
+`undecided' which means to determine it by checking whether the host
+machine is slow.  See also `uncompface-use-external-threshold'.  You
+can skip that check by setting this value as nil or t explicitly."
+  :type '(choice (const :tag "Use the internal decoder" nil)
+		 (const :tag "Use the external decoder" t)
+		 (const :tag "Autodetection" undecided))
   :group 'compface)
+
+(defcustom uncompface-use-external-threshold 0.1
+  "*Number of seconds to check whether the host machine is slow.
+If the host takes time larger than this value for decoding an X-Face
+using the internal ELisp-based uncompface program, it will be changed
+to using the external `uncompface' and `icontopbm' programs if they
+are available.  Note that the measurement may never be exact."
+  :type 'number
+  :group 'compface)
+
+(eval-when-compile
+  (defmacro uncompface-float-time (&optional specified-time)
+    (if (fboundp 'float-time)
+	`(float-time ,specified-time)
+      `(let ((time (or ,specified-time (current-time))))
+	 (+ (* (car time) 65536.0)
+	    (cadr time)
+	    (cond ((consp (setq time (cddr time)))
+		   (/ (car time) 1000000.0))
+		  (time
+		   (/ time 1000000.0))
+		  (t
+		   0)))))))
 
 (defun uncompface (face)
   "Convert FACE to pbm.
@@ -44,28 +76,41 @@ If `uncompface-use-external' is non-nil, it requires the external
 programs `uncompface', and `icontopbm'.  On a GNU/Linux system these
 might be in packages with names like `compface' or `faces-xface' and
 `netpbm' or `libgr-progs', for instance."
-  (if uncompface-use-external
-      (with-temp-buffer
-	(insert face)
-	(and (eq 0 (apply 'call-process-region (point-min) (point-max)
-			  "uncompface"
-			  'delete '(t nil) nil))
-	     (progn
-	       (goto-char (point-min))
-	       (insert "/* Width=48, Height=48 */\n")
-	       ;; I just can't get "icontopbm" to work correctly on its
-	       ;; own in XEmacs.  And Emacs doesn't understand un-raw pbm
-	       ;; files.
-	       (if (not (featurep 'xemacs))
-		   (eq 0 (call-process-region (point-min) (point-max)
-					      "icontopbm"
-					      'delete '(t nil)))
-		 (shell-command-on-region (point-min) (point-max)
-					  "icontopbm | pnmnoraw"
-					  (current-buffer) t)
-		 t))
-	     (buffer-string)))
-    (uncompface-internal face)))
+  (cond ((eq uncompface-use-external nil)
+	 (uncompface-internal face))
+	((eq uncompface-use-external t)
+	 (with-temp-buffer
+	   (insert face)
+	   (and (eq 0 (apply 'call-process-region (point-min) (point-max)
+			     "uncompface"
+			     'delete '(t nil) nil))
+		(progn
+		  (goto-char (point-min))
+		  (insert "/* Width=48, Height=48 */\n")
+		  ;; I just can't get "icontopbm" to work correctly on its
+		  ;; own in XEmacs.  And Emacs doesn't understand un-raw pbm
+		  ;; files.
+		  (if (not (featurep 'xemacs))
+		      (eq 0 (call-process-region (point-min) (point-max)
+						 "icontopbm"
+						 'delete '(t nil)))
+		    (shell-command-on-region (point-min) (point-max)
+					     "icontopbm | pnmnoraw"
+					     (current-buffer) t)
+		    t))
+		(buffer-string))))
+	(t
+	 (let* ((gc-cons-threshold (eval '(lsh -1 -1)))
+		(start (current-time)))
+	   (prog1
+	       (uncompface-internal face)
+	     (setq uncompface-use-external
+		   (and (> (- (uncompface-float-time (current-time))
+			      (uncompface-float-time start))
+			   uncompface-use-external-threshold)
+			(executable-find "uncompface")
+			(executable-find "icontopbm")
+			t)))))))
 
 ;; The following section is a bug-for-bug compatible version of
 ;; `uncompface' program entirely implemented in Emacs-Lisp.
