@@ -254,7 +254,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.52"
+(defconst gnus-version-number "0.53"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -292,7 +292,6 @@ be set in `.emacs' instead."
   (defalias 'gnus-deactivate-mark 'deactivate-mark)
   (defalias 'gnus-window-edges 'window-edges)
   (defalias 'gnus-key-press-event-p 'numberp)
-  (defalias 'gnus-annotation-in-region-p 'ignore)
   (defalias 'gnus-decode-rfc1522 'ignore))
 
 ;; We define these group faces here to avoid the display

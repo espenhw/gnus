@@ -116,6 +116,9 @@
     dest)
   "Charset/coding system alist.")
 
+;;;Internal variable
+(defvar mm-charset-iso-8859-1-forced nil)
+
 (defun mm-mule-charset-to-mime-charset (charset)
   "Return the MIME charset corresponding to MULE CHARSET."
   (let ((alist mm-mime-mule-charset-alist)
@@ -134,6 +137,9 @@ If optional argument LBT (`unix', `dos' or `mac') is specified, it is
 used as the line break code type of the coding system."
   (when (stringp charset)
     (setq charset (intern (downcase charset))))
+  (if (and mm-charset-iso-8859-1-forced 
+	   (eq charset 'iso-8859-1))
+      (setq charset mm-charset-iso-8859-1-forced))
   (setq charset
 	(or (cdr (assq charset mm-charset-coding-system-alist))
 	    charset))

@@ -33,19 +33,11 @@
 ;;;
 
 (defun mm-inline-image (handle)
-  (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
-	buffer-read-only image)
-    (mm-with-unibyte-buffer
-      (insert-buffer-substring (mm-handle-buffer handle))
-      (mm-decode-content-transfer-encoding
-       (mm-handle-encoding handle)
-       (car (mm-handle-type handle)))
-      (setq image (make-image-specifier
-		   (vector (intern type) :data (buffer-string)))))
-    (let ((annot (make-annotation image nil 'text)))
-      (mm-insert-inline handle ".\n")
-      (set-extent-property annot 'mm t)
-      (set-extent-property annot 'duplicable t))))
+  (let ((annot (make-annotation (mm-get-image handle) nil 'text))
+	buffer-read-only)
+    (mm-insert-inline handle ".\n")
+    (set-extent-property annot 'mm t)
+    (set-extent-property annot 'duplicable t)))
 
 (defun mm-inline-text (handle)
   (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))
@@ -64,8 +56,7 @@
 	  (narrow-to-region b (point))
 	  (let ((charset (mail-content-type-get
 			  (mm-handle-type handle) 'charset)))
-	    (when charset
-	      (mm-decode-body charset nil)))
+	    (mm-decode-body charset nil))
 	  (mm-handle-set-undisplayer
 	   handle
 	   `(lambda ()

@@ -164,6 +164,10 @@ in it..")
 
     (charset (string :tag "Charset") "\
 The default charset to use in the group.") 
+
+    (iso-8859-1-forced (const :tag "Force ISO 8859-1 to default charset" 
+			      t)"\
+Force ISO 8859-1 to default charset in the group.") 
 )
   "Alist of valid group parameters.
 

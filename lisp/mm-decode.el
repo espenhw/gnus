@@ -46,10 +46,14 @@
   `(nth 5 ,handle))
 
 (defvar mm-inline-media-tests
-  '(("image/jpeg" mm-inline-image (featurep 'jpeg))
-    ("image/png" mm-inline-image (featurep 'png))
-    ("image/gif" mm-inline-image (featurep 'gif))
-    ("image/tiff" mm-inline-image (featurep 'tiff))
+  '(("image/jpeg" mm-inline-image
+     (and (featurep 'jpeg) (mm-image-fit-p handle)))
+    ("image/png" mm-inline-image
+     (and (featurep 'png) (mm-image-fit-p handle)))
+    ("image/gif" mm-inline-image
+     (and (featurep 'gif) (mm-image-fit-p handle)))
+    ("image/tiff" mm-inline-image
+     (and (featurep 'tiff) (mm-image-fit-p handle)))
     ("image/xbm" mm-inline-image (and (fboundp 'device-type)
 				      (eq (device-type) 'x)))
     ("image/xpm" mm-inline-image (featurep 'xpm))
@@ -492,6 +496,26 @@ This overrides entries in the mailcap file."
 (defun mm-get-content-id (id)
   "Return the handle(s) referred to by ID."
   (cdr (assoc id mm-content-id-alist)))
+
+(defun mm-get-image (handle)
+  "Return an image instance based on HANDLE."
+  (let ((type (cadr (split-string (car (mm-handle-type handle)) "/"))))
+    (mm-with-unibyte-buffer
+      (insert-buffer-substring (mm-handle-buffer handle))
+      (mm-decode-content-transfer-encoding
+       (mm-handle-encoding handle)
+       (car (mm-handle-type handle)))
+      (make-image-specifier
+       (vector (intern type) :data (buffer-string))))))
+
+(defun mm-image-fit-p (handle)
+  "Say whether the image in HANDLE will fit the current window."
+  (or t
+      (let ((image (make-image-instance (mm-get-image handle))))
+	(and (< (image-instance-width image)
+		(window-pixel-width))
+	     (< (image-instance-height image)
+		(window-pixel-height))))))
 
 (provide 'mm-decode)
 

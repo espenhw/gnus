@@ -865,8 +865,7 @@ always hide."
 FROM is a string of characters to translate from; to is a string of
 characters to translate to."
   (save-excursion
-    (goto-char (point-min))
-    (when (search-forward "\n\n" nil t)
+    (when (article-goto-body)
       (let ((buffer-read-only nil)
 	    (x (make-string 225 ?x))
 	    (i -1))
@@ -882,8 +881,7 @@ characters to translate to."
   "Translate all string in the body of the article according to MAP.
 MAP is an alist where the elements are on the form (\"from\" \"to\")."
   (save-excursion
-    (goto-char (point-min))
-    (when (search-forward "\n\n" nil t)
+    (when (article-goto-body)
       (let ((buffer-read-only nil)
 	    elem)
 	(while (setq elem (pop map))
@@ -895,8 +893,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
   "Translate overstrikes into bold text."
   (interactive)
   (save-excursion
-    (goto-char (point-min))
-    (when (search-forward "\n\n" nil t)
+    (when (article-goto-body)
       (let ((buffer-read-only nil))
 	(while (search-forward "\b" nil t)
 	  (let ((next (char-after))
@@ -924,8 +921,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
   (save-excursion
     (let ((buffer-read-only nil))
       (widen)
-      (goto-char (point-min))
-      (search-forward "\n\n" nil t)
+      (article-goto-body)
       (end-of-line 1)
       (let ((paragraph-start "^[>|#:<;* ]*[ \t]*$")
 	    (adaptive-fill-regexp "[ \t]*\\([|#:<;>*]+ *\\)?")
@@ -1021,7 +1017,9 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
   (save-excursion
     (set-buffer gnus-article-buffer)
     (let ((inhibit-point-motion-hooks t)
-	  buffer-read-only)
+	  buffer-read-only
+	  (rfc2047-default-charset gnus-newsgroup-coding-system)
+	  (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
       (mail-decode-encoded-word-region (point-min) (point-max)))))
 
 (defun article-decode-charset (&optional prompt)
@@ -1043,9 +1041,9 @@ If PROMPT (the prefix), prompt for a coding system to use."
 			(mm-read-coding-system "Charset to decode: "))
 		       (ctl
 			(mail-content-type-get ctl 'charset))
-		       (gnus-newsgroup-name
-			(gnus-group-find-parameter
-			 gnus-newsgroup-name 'charset))))
+		       (t
+			gnus-newsgroup-coding-system)))
+	     (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced)
 	     buffer-read-only)
 	(goto-char (point-max))
 	(widen)
@@ -1061,7 +1059,9 @@ If PROMPT (the prefix), prompt for a coding system to use."
 (defun article-decode-encoded-words ()
   "Remove encoded-word encoding from headers."
   (let ((inhibit-point-motion-hooks t)
-	(buffer-read-only nil))
+	buffer-read-only
+	(rfc2047-default-charset gnus-newsgroup-coding-system)
+	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (save-restriction
       (message-narrow-to-head)
       (funcall gnus-decode-header-function (point-min) (point-max)))))
@@ -1073,16 +1073,18 @@ or not."
   (interactive (list 'force))
   (save-excursion
     (let ((buffer-read-only nil)
-	  (type (gnus-fetch-field "content-transfer-encoding")))
+	  (type (gnus-fetch-field "content-transfer-encoding"))
+	  (charset
+	   (or gnus-newsgroup-coding-system mm-default-coding-system))
+	  (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
       (when (or force
 		(and type (string-match "quoted-printable" (downcase type))))
-	(goto-char (point-min))
-	(search-forward "\n\n" nil 'move)
+	(article-goto-body)
 	(save-restriction
 	  (narrow-to-region (point) (point-max))
 	  (quoted-printable-decode-region (point-min) (point-max))
-	  (when mm-default-coding-system
-	    (mm-decode-body mm-default-coding-system)))))))
+	  (when charset
+	    (mm-decode-body charset)))))))
 
 (defun article-hide-pgp (&optional arg)
   "Toggle hiding of any PGP headers and signatures in the current article.
@@ -1169,11 +1171,18 @@ always hide."
   (save-excursion
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only)
-      (goto-char (point-min))
-      (when (search-forward "\n\n" nil t)
+      (when (article-goto-body)
 	(while (and (not (eobp))
 		    (looking-at "[ \t]*$"))
 	  (gnus-delete-line))))))
+
+(defun article-goto-body ()
+  "Place point at the start of the body."  
+  (goto-char (point-min))
+  (if (search-forward "\n\n" nil t)
+      t
+    (goto-char (point-max))
+    nil))
 
 (defun article-strip-multiple-blank-lines ()
   "Replace consecutive blank lines with one empty line."
@@ -1182,15 +1191,13 @@ always hide."
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only)
       ;; First make all blank lines empty.
-      (goto-char (point-min))
-      (search-forward "\n\n" nil t)
+      (article-goto-body)
       (while (re-search-forward "^[ \t]+$" nil t)
 	(unless (gnus-annotation-in-region-p
 		 (match-beginning 0) (match-end 0))
 	  (replace-match "" nil t)))
       ;; Then replace multiple empty lines with a single empty line.
-      (goto-char (point-min))
-      (search-forward "\n\n" nil t)
+      (article-goto-body)
       (while (re-search-forward "\n\n\n+" nil t)
 	(unless (gnus-annotation-in-region-p
 		 (match-beginning 0) (match-end 0))
@@ -1202,8 +1209,7 @@ always hide."
   (save-excursion
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only)
-      (goto-char (point-min))
-      (search-forward "\n\n" nil t)
+      (article-goto-body)
       (while (re-search-forward "^[ \t]+" nil t)
 	(replace-match "" t t)))))
 
@@ -1220,8 +1226,7 @@ always hide."
   (save-excursion
     (let ((inhibit-point-motion-hooks t)
 	  buffer-read-only)
-      (goto-char (point-min))
-      (search-forward "\n\n" nil t)
+      (article-goto-body)
       (while (re-search-forward "^[ \t]*\n" nil t)
 	(replace-match "" t t)))))
 
@@ -1571,8 +1576,7 @@ This format is defined by the `gnus-article-time-format' variable."
 	    (props (append '(article-type emphasis)
 			   gnus-hidden-properties))
 	    regexp elem beg invisible visible face)
-	(goto-char (point-min))
-	(search-forward "\n\n" nil t)
+	(article-goto-body)
 	(setq beg (point))
 	(while (setq elem (pop alist))
 	  (goto-char beg)
@@ -1783,8 +1787,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
     (save-excursion
       (save-restriction
 	(widen)
-	(goto-char (point-min))
-	(when (search-forward "\n\n" nil t)
+	(when (article-goto-body)
 	  (narrow-to-region (point) (point-max)))
 	(gnus-output-to-file filename))))
   filename)
@@ -2186,8 +2189,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		      t)))
 	    (gnus-set-mode-line 'article)
 	    (gnus-configure-windows 'article)
-	    (goto-char (point-min))
-	    (search-forward "\n\n" nil t)
+	    (article-goto-body)
 	    (set-window-point (get-buffer-window (current-buffer)) (point))
 	    t))))))
 
@@ -2268,7 +2270,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "View all the MIME parts."
   (interactive)
   (gnus-article-check-buffer)
-  (let ((handles gnus-article-mime-handles))
+  (let ((handles gnus-article-mime-handles)
+	(rfc2047-default-charset gnus-newsgroup-coding-system)
+	(mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (while handles
       (mm-display-part (pop handles)))))
 
@@ -2312,9 +2316,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (normal-mode)
     (goto-char (point-min))))
 
-(defun gnus-mime-inline-part ()
+(defun gnus-mime-inline-part (&optional charset)
   "Insert the MIME part under point into the current buffer."
-  (interactive)
+  (interactive "P") ; For compatible reason, not using "z".
   (gnus-article-check-buffer)
   (let* ((data (get-text-property (point) 'gnus-data))
 	 (contents (mm-get-part data))
@@ -2324,6 +2328,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (if (mm-handle-undisplayer data)
 	(mm-remove-part data)
       (forward-line 2)
+      (when charset 
+	(unless (symbolp charset)
+	  (setq charset (mm-read-coding-system "Charset: ")))
+	(setq contents (mm-decode-coding-string contents charset)))
       (mm-insert-inline data contents)
       (goto-char b))))
 
@@ -2333,7 +2341,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (gnus-article-check-buffer)
   (let* ((handle (get-text-property (point) 'gnus-data))
 	 (url-standalone-mode (not gnus-plugged))
-	 (mm-user-display-methods nil))
+	 (mm-user-display-methods nil)
+	 (rfc2047-default-charset gnus-newsgroup-coding-system)
+	 (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
     (if (mm-handle-undisplayer handle)
 	(mm-remove-part handle)
       (mm-display-part handle))))
@@ -2361,7 +2371,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (gnus-insert-mime-button
      handle id (list (not (mm-handle-displayed-p handle))))
     (prog1
-	(let ((window (selected-window)))
+	(let ((window (selected-window))
+	      (rfc2047-default-charset gnus-newsgroup-coding-system)
+	      (mm-charset-iso-8859-1-forced gnus-newsgroup-iso-8859-1-forced))
 	  (save-excursion
 	    (unwind-protect
 		(let ((win (get-buffer-window (current-buffer) t)))
@@ -2436,8 +2448,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		   (cdr handles)))
       (unless ihandles
 	;; Clean up for mime parts.
-	(goto-char (point-min))
-	(search-forward "\n\n" nil t)
+	(article-goto-body)
 	(delete-region (point) (point-max)))
       (if (stringp (car handles))
 	  (if (equal (car handles) "multipart/alternative")
@@ -2491,73 +2502,58 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			     (while types
 			       (when (string-match (pop types) type)
 				 (throw 'found t)))))))
+	    (gnus-article-insert-newline)
 	    (gnus-insert-mime-button
 	     handle id (list (or display
-				 (and (not not-attachment) text))))))
-	(insert "\n\n")
+				 (and (not not-attachment) text))))
+	    (gnus-article-insert-newline)))	
+	(gnus-article-insert-newline)
 	(cond
 	 (display
 	  (forward-line -2)
-	  (mm-display-part handle t)
+	  (let ((rfc2047-default-charset gnus-newsgroup-coding-system)
+		(mm-charset-iso-8859-1-forced 
+		 gnus-newsgroup-iso-8859-1-forced))
+	    (mm-display-part handle t))
 	  (goto-char (point-max)))
 	 ((and text not-attachment)
 	  (forward-line -2)
-	  (insert "\n")
+	  (gnus-article-insert-newline)
 	  (mm-insert-inline handle (mm-get-part handle))
 	  (goto-char (point-max))))))))
+
+(defun gnus-article-insert-newline ()
+  "Insert a newline, but mark it as undeletable."
+  (gnus-put-text-property
+   (point) (progn (insert "\n") (point)) 'gnus-undeletable t))
 
 (defun gnus-mime-display-alternative (handles &optional preferred ibegend id)
   (let* ((preferred (or preferred (mm-preferred-alternative handles)))
 	 (ihandles handles)
 	 (point (point))
 	 handle buffer-read-only from props begend not-pref)
-    (save-restriction
-      (when ibegend
-	(narrow-to-region (car ibegend) (cdr ibegend))
-	(delete-region (point-min) (point-max))
-	(mm-remove-parts handles))
-      (setq begend (list (point-marker)))
-      ;; Do the toggle.
-      (unless (setq not-pref (cadr (member preferred ihandles)))
-	(setq not-pref (car ihandles)))
-      (gnus-add-text-properties
-       (setq from (point))
-       (progn
-	 (insert (format "%d.  " id))
-	 (point))
-       `(gnus-callback
-	 (lambda (handles)
-	   (unless ,(not ibegend)
-	     (setq gnus-article-mime-handle-alist
-		   ',gnus-article-mime-handle-alist))
-	   (gnus-mime-display-alternative
-	    ',ihandles ',not-pref ',begend ,id))
-	 local-map ,gnus-mime-button-map
-	 ,gnus-mouse-face-prop ,gnus-article-mouse-face
-	 face ,gnus-article-button-face
-	 keymap ,gnus-mime-button-map
-	 gnus-part ,id
-	 gnus-data ,handle))
-      (widget-convert-button 'link from (point)
-			     :action 'gnus-widget-press-button
-			     :button-keymap gnus-widget-button-keymap)
-      ;; Do the handles
-      (while (setq handle (pop handles))
+    (save-window-excursion
+      (save-restriction
+	(when ibegend
+	  (narrow-to-region (car ibegend) (cdr ibegend))
+	  (delete-region (point-min) (point-max))
+	  (mm-remove-parts handles))
+	(setq begend (list (point-marker)))
+	;; Do the toggle.
+	(unless (setq not-pref (cadr (member preferred ihandles)))
+	  (setq not-pref (car ihandles)))
 	(gnus-add-text-properties
 	 (setq from (point))
 	 (progn
-	   (insert (format "[%c] %-18s"
-			   (if (equal handle preferred) ?* ? )
-			   (if (stringp (car handle))
-			       (car handle)
-			     (car (mm-handle-type handle)))))
+	   (insert (format "%d.  " id))
 	   (point))
 	 `(gnus-callback
 	   (lambda (handles)
 	     (unless ,(not ibegend)
 	       (setq gnus-article-mime-handle-alist
 		     ',gnus-article-mime-handle-alist))
-	     (gnus-mime-display-alternative ',ihandles ',handle ',begend ,id))
+	     (gnus-mime-display-alternative
+	      ',ihandles ',not-pref ',begend ,id))
 	   local-map ,gnus-mime-button-map
 	   ,gnus-mouse-face-prop ,gnus-article-mouse-face
 	   face ,gnus-article-button-face
@@ -2567,14 +2563,44 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(widget-convert-button 'link from (point)
 			       :action 'gnus-widget-press-button
 			       :button-keymap gnus-widget-button-keymap)
-	(insert "  "))
-      (insert "\n\n")
-      (when preferred
-	(if (stringp (car preferred))
-	    (gnus-display-mime preferred)
-	  (mm-display-part preferred)
-	    (goto-char (point-max)))
-	(setcdr begend (point-marker))))
+	;; Do the handles
+	(while (setq handle (pop handles))
+	  (gnus-add-text-properties
+	   (setq from (point))
+	   (progn
+	     (insert (format "[%c] %-18s"
+			     (if (equal handle preferred) ?* ? )
+			     (if (stringp (car handle))
+				 (car handle)
+			       (car (mm-handle-type handle)))))
+	     (point))
+	   `(gnus-callback
+	     (lambda (handles)
+	       (unless ,(not ibegend)
+		 (setq gnus-article-mime-handle-alist
+		       ',gnus-article-mime-handle-alist))
+	       (gnus-mime-display-alternative
+		',ihandles ',handle ',begend ,id))
+	     local-map ,gnus-mime-button-map
+	     ,gnus-mouse-face-prop ,gnus-article-mouse-face
+	     face ,gnus-article-button-face
+	     keymap ,gnus-mime-button-map
+	     gnus-part ,id
+	     gnus-data ,handle))
+	  (widget-convert-button 'link from (point)
+				 :action 'gnus-widget-press-button
+				 :button-keymap gnus-widget-button-keymap)
+	  (insert "  "))
+	(insert "\n\n")
+	(when preferred
+	  (if (stringp (car preferred))
+	      (gnus-display-mime preferred)
+	    (let ((rfc2047-default-charset gnus-newsgroup-coding-system)
+		  (mm-charset-iso-8859-1-forced 
+		   gnus-newsgroup-iso-8859-1-forced))
+	      (mm-display-part preferred)))
+	  (goto-char (point-max))
+	  (setcdr begend (point-marker)))))
     (when ibegend
       (goto-char point))))
 
@@ -3092,8 +3118,7 @@ groups."
   (save-excursion
     (save-restriction
       (widen)
-      (goto-char (point-min))
-      (when (search-forward "\n\n" nil 1)
+      (when (article-goto-body)
 	(let ((lines (count-lines (point) (point-max)))
 	      (length (- (point-max) (point)))
 	      (case-fold-search t)
@@ -3386,9 +3411,7 @@ specified by `gnus-button-alist'."
 			       'gnus-callback nil))
 	  (set-marker marker nil)))
       ;; We skip the headers.
-      (goto-char (point-min))
-      (unless (search-forward "\n\n" nil t)
-	(goto-char (point-max)))
+      (article-goto-body)
       (setq beg (point))
       (while (setq entry (pop alist))
 	(setq regexp (car entry))

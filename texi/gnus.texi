@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.52 Manual
+@settitle Pterodactyl Gnus 0.53 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.52 Manual
+@title Pterodactyl Gnus 0.53 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.52.
+This manual corresponds to Pterodactyl Gnus 0.53.
 
 @end ifinfo
 

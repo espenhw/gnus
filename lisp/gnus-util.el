@@ -929,6 +929,11 @@ ARG is passed to the first function."
     (when win
       (set-window-start win (or point (point))))))
 
+(defun gnus-annotation-in-region-p (b e)
+  (if (= b e)
+      (eq (cadr (memq 'gnus-undeletable (text-properties-at b))) t) 
+    (text-property-any b e 'gnus-undeletable t)))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

@@ -793,7 +793,10 @@ XEmacs compatibility workaround."
     (gnus-splash)))
 
 (defun gnus-xmas-annotation-in-region-p (b e)
-  (map-extents (lambda (e u) t) nil b e nil nil 'mm t))
+  (or (map-extents (lambda (e u) t) nil b e nil nil 'mm t)
+      (if (= b e)
+	  (eq (cadr (memq 'gnus-undeletable (text-properties-at b))) t) 
+	(text-property-any b e 'gnus-undeletable t))))
 
 (defun gnus-xmas-mime-button-menu (event)
   "Construct a context-sensitive menu of MIME commands."

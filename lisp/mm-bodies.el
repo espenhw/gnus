@@ -137,7 +137,9 @@ The characters in CHARSET should then be decoded."
       (let (mule-charset)
 	(when (and charset
 		   (setq mule-charset (mm-charset-to-coding-system charset))
-		   buffer-file-coding-system
+		   ;; buffer-file-coding-system 
+					;Article buffer is nil coding system
+					;in XEmacs
 		   enable-multibyte-characters
 		   (or (not (eq mule-charset 'ascii))
 		       (setq mule-charset rfc2047-default-charset)))

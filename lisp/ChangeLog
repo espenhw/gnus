@@ -1,3 +1,78 @@
+Sat Nov 21 09:57:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.53 is released.
+
+1998-11-21 05:54:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-get-image): New function.
+	(mm-image-fit-p): New function.
+
+	* gnus-xmas.el (gnus-xmas-annotation-in-region-p): Ditto.
+
+	* gnus-util.el (gnus-annotation-in-region-p): New definition.
+
+	* gnus-art.el (gnus-article-insert-newline): New function.
+	(article-goto-body): New function.
+
+1998-11-20 10:34:04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-display-single): Insert blank line before 
+	buttons.
+
+	* gnus-sum.el (gnus-summary-display-buttonized): New command and
+	keystroke. 
+
+	* gnus-art.el (gnus-mime-display-single): Don't insert a blank
+	line between parts.
+
+	* message.el (message-remove-header): Go to end if wanted.
+
+1998-11-20  Karl Kleinpaste  <karl@justresearch.com>
+
+	* gnus-art.el (gnus-mime-display-alternative): Avoid window
+	movement with save-window-excursion.
+
+Fri Nov 20 03:50:30 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-inline-part): Use argument as charset.
+
+Fri Nov 20 03:37:53 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-decode-body): Remove buffer-file-coding-system. 
+
+Fri Nov 20 01:20:38 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Use 
+	gnus-newsgroup-coding-system.
+	(gnus-get-newsgroup-headers): Ditto.
+	(gnus-get-newsgroup-headers-xover): Ditto.
+	(gnus-set-global-variables): Ditto.
+	* gnus-art.el (article-decode-mime-words): Ditto.
+	(article-decode-charset): Ditto.
+	(article-decode-encoded-words): Ditto.
+	(article-de-quoted-unreadable): Ditto.
+	(gnus-mime-view-all-parts): Ditto.
+	(gnus-mime-externalize-part): Ditto.
+	(gnus-mm-display-part): Ditto.
+	(gnus-mime-display-alternative): Ditto.
+	(gnus-mime-display-single): Ditto.
+	* mm-view.el (mm-inline-text): Use default coding system. 
+
+Fri Nov 20 00:54:37 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-newsgroup-coding-system-alist): New variable.
+	(gnus-newsgroup-iso-8859-1-forced-regexp): New variable.
+	(gnus-newsgroup-coding-system): New local variable.
+	(gnus-newsgroup-iso-8859-1-forced): New local variable.
+	(gnus-summary-local-variables): Add two new local variables.
+	(gnus-newsgroup-setup-coding-system): New function.
+	(gnus-select-newsgroup): Setup coding system.
+	* lpath.el: Add two new variables.
+	* mm-util.el (mm-charset-iso-8859-1-forced): New variable.
+	(mm-charset-to-coding-system): Use mm-charset-iso-8859-1-forced.
+	* gnus-cus.el (gnus-group-parameters): Customizable
+	iso-8859-1-forced.
+	
 Fri Nov 20 05:30:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.52 is released.

@@ -1139,7 +1139,7 @@ Return the number of headers removed."
 	(forward-line 1)
 	(if (re-search-forward "^[^ \t]" nil t)
 	    (goto-char (match-beginning 0))
-	  (point-max))))
+	  (goto-char (point-max)))))
     number))
 
 (defun message-narrow-to-headers ()
