@@ -10105,10 +10105,11 @@ your @file{~/.emacs} or @file{~/.gnus}:
 (setq gpg-command-default-alist (quote ((gpg . "gpg") (gpg-2comp . "gpg"))))
 @end lisp
 
-To sign or encrypt your message you may choose to use the MML Security menu or
-@kbd{M-m s p} to sign your message using PGP/MIME, @kbd{M-m s s} to sign your
-message using S/MIME. There's also @kbd{M-m c p} to encrypt your message with
-PGP/MIME and @kbd{M-m c s} to encrypt using S/MIME.
+To sign or encrypt your message you may choose to use the MML Security
+menu or @kbd{C-c C-m s p} to sign your message using PGP/MIME, @kbd{C-c
+C-m s s} to sign your message using S/MIME. There's also @kbd{C-c C-m c
+p} to encrypt your message with PGP/MIME and @kbd{C-c C-m c s} to
+encrypt using S/MIME.
 
 Gnus will ask for your passphrase and then it will send your message, if
 you've typed it correctly.
