@@ -1349,7 +1349,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.8"
+(defconst gnus-version "Gnus v5.0.9"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1613,7 +1613,7 @@ Thank you for your help in stamping out bugs.
   (autoload 'gnus-mail-reply-using-mhe "gnus-mh")
   (autoload 'gnus-mail-forward-using-mhe "gnus-mh")
   (autoload 'gnus-mail-other-window-using-mhe "gnus-mh")
-  (autoload 'gnus-summary-save-in-folder "gnus-mh")
+  (autoload 'gnus-summary-save-in-folder "gnus-mh" nil t)
   (autoload 'gnus-summary-save-article-folder "gnus-mh")
   (autoload 'gnus-Folder-save-name "gnus-mh")
   (autoload 'gnus-folder-save-name "gnus-mh")
@@ -2468,7 +2468,8 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	   perc
 	   out)
       (while (< i 3)
-	(or (zerop (nth i elem))
+	(or (not (numberp (nth i elem)))
+	    (zerop (nth i elem))
 	    (progn
 	      (setq perc  (/ (* 1.0 (nth 0 elem)) total))
 	      (setq out (cons (if (eq pbuf (nth i types))
@@ -2829,6 +2830,10 @@ that that variable is buffer-local to the summary buffers."
     (while (gnus-gethash name gnus-newsrc-hashtb)
       (setq name (concat leaf "<" (int-to-string (setq num (1+ num))) ">")))
     name))
+
+(defun gnus-ephemeral-group-p (group)
+  "Say whether GROUP is ephemeral or not."
+  (assoc 'quit-config (gnus-find-method-for-group group)))
 
 ;;; List and range functions
 
@@ -9974,7 +9979,8 @@ If prefix argument ALL is non-nil, all articles are marked as read."
   (gnus-set-global-variables)
   (gnus-summary-catchup all quietly nil 'fast)
   ;; Select next newsgroup or exit.
-  (if (eq gnus-auto-select-next 'quietly)
+  (if (and (eq gnus-auto-select-next 'quietly)
+	   (not (gnus-ephemeral-group-p gnus-newsgroup-name)))
       (gnus-summary-next-group nil)
     (gnus-summary-exit)))
 
@@ -10224,6 +10230,7 @@ Argument REVERSE means reverse order."
 		       gnus-extract-address-components
 		       (mail-header-from header))))
 	(concat (or (car extract) (cdr extract))
+		"\r" (int-to-string (mail-header-number header))
 		"\r" (mail-header-subject header))))
     'gnus-thread-sort-by-author)
    reverse))
@@ -10243,6 +10250,7 @@ Argument REVERSE means reverse order."
 		       (mail-header-from header))))
 	(concat 
 	 (downcase (gnus-simplify-subject (gnus-summary-subject-string) t))
+	 "\r" (int-to-string (mail-header-number header))
 	 "\r" (or (car extract) (cdr extract)))))
     'gnus-thread-sort-by-subject)
    reverse))
@@ -13955,6 +13963,10 @@ GROUP using BNews sys file syntax."
 	       (search-forward "+")
 	       (forward-char -1)
 	       (insert "\\")))
+	;; Translate ".all" to "[./].*";
+	(while (search-forward ".all" nil t)
+	  (replace-match "[./].*" t t))
+	(goto-char (point-min))
 	;; Translate "all" to ".*".
 	(while (search-forward "all" nil t)
 	  (replace-match ".*" t t))

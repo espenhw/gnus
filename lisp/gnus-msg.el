@@ -555,6 +555,8 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 If given a prefix, and the group is a foreign group, this function
 will attempt to use the foreign server to post the article."
   (interactive "P")
+  (or gnus-current-select-method
+      (setq gnus-current-select-method gnus-select-method))
   (let* ((case-fold-search nil)
 	 (server-running (gnus-server-opened gnus-current-select-method))
 	 (reply gnus-article-reply)
