@@ -396,19 +396,19 @@ This is copy of the `lazy' widget in Emacs 21.4 provided for compatibility."
   :type '(menu-choice :value (any ".*value.*" "misc")
                       :tag "Type"
                       (string :tag "Destination")
-                      (list :tag "Or" :value (|)
+                      (list :tag "Use first match (|)" :value (|)
                             (const :format "" |)
                             (editable-list :inline t nnmail-split-fancy))
-                      (list :tag "And" :value (&)
+                      (list :tag "Use all matches (&)" :value (&)
                             (const :format "" &)
                             (editable-list :inline t nnmail-split-fancy))
-                      (list :tag "Function with fixed arguments"
+                      (list :tag "Function with fixed arguments (:)"
                             :value (:)
                             (const :format "" :value :)
                             function 
                             (editable-list :inline t (sexp :tag "Arg"))
                             )
-                      (list :tag "Function with split arguments" :value (!)
+                      (list :tag "Function with split arguments (!)" :value (!)
                             (const :format "" !)
                             function
                             (editable-list :inline t nnmail-split-fancy))
@@ -419,7 +419,7 @@ This is copy of the `lazy' widget in Emacs 21.4 provided for compatibility."
                                     regexp 
                                     (symbol :value mail))
                             nnmail-split-fancy)
-                      (const :tag "Junk" junk)))
+                      (const :tag "Junk (delete mail)" junk)))
 
 (defcustom nnmail-split-fancy "mail.misc"
   "Incoming mail can be split according to this fancy variable.
