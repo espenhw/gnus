@@ -1,5 +1,5 @@
 ;;; mm-util.el --- Utility functions for Mule and low level things
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;   Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -626,11 +626,18 @@ Equivalent to `progn' in XEmacs"
 (put 'mm-with-unibyte-current-buffer 'edebug-form-spec '(body))
 
 (defmacro mm-with-unibyte (&rest forms)
-  "Eval the FORMS with the default value of `enable-multibyte-characters' nil, ."
+  "Eval the FORMS with the default value of `enable-multibyte-characters' nil."
   `(let (default-enable-multibyte-characters)
      ,@forms))
 (put 'mm-with-unibyte 'lisp-indent-function 0)
 (put 'mm-with-unibyte 'edebug-form-spec '(body))
+
+(defmacro mm-with-multibyte (&rest forms)
+  "Eval the FORMS with the default value of `enable-multibyte-characters' t."
+  `(let ((default-enable-multibyte-characters t))
+     ,@forms))
+(put 'mm-with-multibyte 'lisp-indent-function 0)
+(put 'mm-with-multibyte 'edebug-form-spec '(body))
 
 (defun mm-find-charset-region (b e)
   "Return a list of Emacs charsets in the region B to E."
