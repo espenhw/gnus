@@ -283,7 +283,10 @@ prefer iso-2022-jp to japanese-shift-jis:
 
 (defvar mm-use-find-coding-systems-region
   (fboundp 'find-coding-systems-region)
-  "Use `find-coding-systems-region' to find proper coding systems.")
+  "Use `find-coding-systems-region' to find proper coding systems.
+
+Setting it to nil is useful on Emacsen supporting Unicode if sending
+mail with multiple parts is preferred to sending a Unicode one.")
 
 ;;; Internal variables:
 

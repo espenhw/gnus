@@ -4870,7 +4870,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	  (if (or read-all
 		  (and (zerop (length gnus-newsgroup-marked))
 		       (zerop (length gnus-newsgroup-unreads)))
-		  (eq gnus-newsgroup-display 'gnus-not-ignore))
+		  ;; Fetch all if the predicate is non-nil.
+		  gnus-newsgroup-display)
 	      ;; We want to select the headers for all the articles in
 	      ;; the group, so we select either all the active
 	      ;; articles in the group, or (if that's nil), the
@@ -4891,6 +4892,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	  (cond
 	   ((numberp read-all)
 	    read-all)
+	   ((numberp gnus-newsgroup-display)
+	    gnus-newsgroup-display)
 	   (t
 	    (condition-case ()
 		(cond
