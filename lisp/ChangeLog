@@ -1,3 +1,8 @@
+2002-07-05  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* nntp.el (nntp-via-rlogin-command-switches): Doc fix.
+	(nntp-open-via-rlogin-and-telnet): Ditto.
+
 2002-07-02  Didier Verna  <didier@xemacs.org>
 
 	* nnmail.el (nnmail-split-methods): fix custom type.

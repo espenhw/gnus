@@ -104,9 +104,10 @@ The default is \"rsh\", but \"ssh\" is a popular alternative.")
 
 (defvoo nntp-via-rlogin-command-switches nil
   "*Switches given to the rlogin command `nntp-via-rlogin-command'.
-Set this to (\"-t\") if you use \"ssh\" for `nntp-via-rlogin-command' and
-the telnet command requires a pseudo-tty allocation on an intermediate
-host.")
+If you use \"ssh\" for `nntp-via-rlogin-command', you may set this to
+\(\"-C\") in order to compress all data connections, otherwise set this
+to \(\"-t\") or (\"-C\" \"-t\") if the telnet command requires a pseudo-tty
+allocation on an intermediate host.")
 
 (defvoo nntp-via-telnet-command "telnet"
   "*Telnet command used to connect to an intermediate host.
@@ -1602,6 +1603,7 @@ from there.
 Please refer to the following variables to customize the connection:
 - `nntp-pre-command',
 - `nntp-via-rlogin-command',
+- `nntp-via-rlogin-command-switches',
 - `nntp-via-user-name',
 - `nntp-via-address',
 - `nntp-telnet-command',
