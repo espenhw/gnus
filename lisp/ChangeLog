@@ -1,3 +1,8 @@
+2003-07-24  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-summary-prepare-exit): use spam-process-ham-in-spam-groups
+	(spam-process-ham-in-spam-groups): new variable
+
 2003-07-24  Jesper Harder  <harder@ifa.au.dk>
 
 	* pgg-gpg.el (pgg-gpg-process-region): Add "--yes" to options.

@@ -85,6 +85,11 @@ spam groups."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-process-ham-in-spam-groups nil
+  "Whether ham should be processed in spam groups."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-mark-only-unseen-as-spam t
   "Whether only unseen articles should be marked as spam in spam
 groups.  When nil, all unread articles in a spam group are marked as
@@ -485,6 +490,8 @@ spamoracle database."
     (spam-mark-spam-as-expired-and-move-routine nil)
 
     (when (or (spam-group-ham-contents-p gnus-newsgroup-name)
+	      (and (spam-group-spam-contents-p gnus-newsgroup-name)
+		   spam-process-ham-in-spam-groups)
 	      spam-process-ham-in-nonham-groups)
       (when (spam-group-ham-processor-whitelist-p gnus-newsgroup-name)
 	(gnus-message 5 "Registering ham with the whitelist")
