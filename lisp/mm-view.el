@@ -159,8 +159,22 @@
 (defun mm-setup-w3m ()
   (unless mm-w3m-setup
     (require 'w3m)
+    (unless (assq 'gnus-article-mode w3m-cid-retrieve-function-alist)
+      (push (cons 'gnus-article-mode 'mm-w3m-cid-retrieve)
+	    w3m-cid-retrieve-function-alist))
     (gnus-add-minor-mode 'mm-w3m-minor-mode " w3m" w3m-mode-map)
     (setq mm-w3m-setup t)))
+
+(defun mm-w3m-cid-retrieve (url &rest args)
+  (when (string-match "\\`cid:" url)
+    (setq url (concat "<" (substring url (match-end 0)) ">"))
+    (catch 'found-handle
+      (dolist (handle (with-current-buffer w3m-current-buffer
+			gnus-article-mime-handles))
+	(when (and (listp handle)
+		   (equal url (mm-handle-id handle)))
+	  (mm-insert-part handle)
+	  (throw 'found-handle (mm-handle-media-type handle)))))))
 
 (defun mm-inline-text-html-render-with-w3m (handle)
   (mm-setup-w3m)
@@ -178,7 +192,8 @@
 	(when charset
 	  (delete-region (point-min) (point-max))
 	  (insert (mm-decode-string text charset)))
-	(w3m-region (point-min) (point-max))
+	(let ((w3m-safe-url-regexp "\\`cid:"))
+	  (w3m-region (point-min) (point-max)))
 	(setq mm-w3m-minor-mode t))
       (mm-handle-set-undisplayer
        handle

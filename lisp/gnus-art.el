@@ -1192,7 +1192,7 @@ It is a string, such as \"PGP\". If nil, ask user."
   :type 'string
   :group 'mime-security)
 
-(defcustom gnus-article-wash-function 
+(defcustom gnus-article-wash-function
   (cond ((locate-library "w3")
 	 'gnus-article-wash-html-with-w3)
 	((locate-library "w3m")
@@ -1731,7 +1731,7 @@ unfolded."
 (defun gnus-article-treat-body-boundary ()
   "Place a boundary line at the end of the headers."
   (interactive)
-  (when (and gnus-body-boundary-delimiter 
+  (when (and gnus-body-boundary-delimiter
 	     (> (length gnus-body-boundary-delimiter) 0))
     (gnus-with-article-headers
       (goto-char (point-max))
@@ -1820,7 +1820,7 @@ unfolded."
 	    (when (and wash-face-p
 		       (progn
 			 (goto-char (point-min))
-			 (not (re-search-forward 
+			 (not (re-search-forward
 			       "^X-Face\\(-[0-9]+\\)?:[\t ]*" nil t)))
 		       (gnus-buffer-live-p gnus-original-article-buffer))
 	      ;; If type `W f', use gnus-original-article-buffer,
@@ -1840,7 +1840,7 @@ unfolded."
 		(when xpm
 		  (setq image (gnus-create-image xpm 'xpm t))
 		  (gnus-article-goto-header "from")
-		  (when (bobp) 
+		  (when (bobp)
 		    (insert "From: [no `from' set]\n")
 		    (forward-char -17))
 		  (gnus-add-wash-type 'xface)
@@ -2089,9 +2089,10 @@ If READ-CHARSET, ask for a coding system."
 (defun gnus-article-wash-html-with-w3m ()
   "Wash the current buffer with w3m."
   (mm-setup-w3m)
-  (w3m-region (point) (point-max))
+  (let ((w3m-safe-url-regexp "\\`cid:"))
+    (w3m-region (point) (point-max)))
   (setq mm-w3m-minor-mode t))
-  
+
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.
 The `gnus-list-identifiers' variable specifies what to do."
@@ -4868,7 +4869,7 @@ If given a prefix, show the hidden text instead."
 		 (gnus-cache-request-article article group))
 	    'article)
 	   ;; Check the agent cache.
-	   ((and gnus-agent gnus-agent-cache gnus-plugged 
+	   ((and gnus-agent gnus-agent-cache gnus-plugged
 		 (numberp article)
 		 (gnus-agent-request-article article group))
 	    'article)
@@ -5597,7 +5598,7 @@ specified by `gnus-button-alist'."
     (gnus-eval-format
      gnus-prev-page-line-format nil
      `(,@(gnus-local-map-property gnus-prev-page-map)
-	 gnus-prev t 
+	 gnus-prev t
 	 gnus-callback gnus-article-button-prev-page
 	 article-type annotation))
     (widget-convert-button
@@ -5644,7 +5645,7 @@ specified by `gnus-button-alist'."
 	(buffer-read-only nil))
     (gnus-eval-format gnus-next-page-line-format nil
 		      `(,@(gnus-local-map-property gnus-next-page-map)
-			  gnus-next t 
+			  gnus-next t
 			  gnus-callback gnus-article-button-next-page
 			  article-type annotation))
     (widget-convert-button
