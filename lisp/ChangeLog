@@ -1,3 +1,7 @@
+2003-04-25  Simon Josefsson  <jas@extundo.com>
+
+	* nnrss.el (nnrss-node-text): Don't use a star.
+
 2003-04-24  Dave Love  <fx@gnu.org>
 
 	* qp.el (quoted-printable-decode-region): Use mm-insert-byte.

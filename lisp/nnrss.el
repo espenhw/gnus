@@ -518,8 +518,8 @@ It is useful when `(setq nnrss-use-local t)'."
 				 (gnus-replace-regexp-in-string
 				  (gnus-replace-regexp-in-string
 				   text "^[[:cntrl:]]+" "")
-				  "^ *" "")
-				 " *$" ""))))
+				  "^ +" "")
+				 " +$" ""))))
     (if (string-equal "" cleaned-text)
 	nil
       cleaned-text)))
