@@ -1,3 +1,10 @@
+2000-10-05 09:41:33  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-multibyte-p): In XEmacs, it is (feature 'mule).
+	(mm-find-charset-region): Merge conditions, delete ascii.
+	(mm-charset-after): Rewrite.
+	* mm-bodies.el (mm-encode-body): Use it.
+
 2000-10-05 09:04:32  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el (webmail-hotmail-list): Fix.
