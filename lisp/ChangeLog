@@ -1,3 +1,9 @@
+2004-12-21  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-BBDB): fix the BBDB caching code to use
+	downcased symbol names; make a new cache instead of reusing
+	bbdb-hashtable
+
 2004-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2231.el (rfc2231-parse-string): Decode encoded value after
