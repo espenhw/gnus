@@ -556,19 +556,22 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   "Get the command-line parameter for ifile's database from spam-ifile-database-path."
   (if spam-ifile-database-path
       (format "--db-file=%s" spam-ifile-database-path)
-    ""))
+    nil))
     
 (defun spam-check-ifile ()
   "Check the ifile backend for the classification of this message"
   (let ((article-buffer-name (buffer-name)) 
 	category return)
     (with-temp-buffer
-      (let ((temp-buffer-name (buffer-name)))
+      (let ((temp-buffer-name (buffer-name))
+	    (db-param (spam-get-ifile-database-parameter)))
 	(save-excursion
 	  (set-buffer article-buffer-name)
-	  (call-process-region (point-min) (point-max) spam-ifile-path 
-			       nil temp-buffer-name nil 
-			       "-q" "-c" (spam-get-ifile-database-parameter)))
+	  (if db-param
+	      (call-process-region (point-min) (point-max) spam-ifile-path
+				   nil temp-buffer-name nil "-q" "-c" db-param)
+	    (call-process-region (point-min) (point-max) spam-ifile-path
+				 nil temp-buffer-name nil "-q" "-c")))
 	(goto-char (point-min))
 	(if (not (eobp))
 	    (setq category (buffer-substring (point) (spam-point-at-eol))))
@@ -578,7 +581,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	    ;; else, if spam-ifile-all-categories is not set...
 	    (when (string-equal spam-ifile-spam-category category)
 	      ;; always accept the ifile category
-	      (setq return spam-split-group))))))	
+	      (setq return spam-split-group))))))
     return))
 
 (defun spam-ifile-register-with-ifile (article-string category)
