@@ -1,3 +1,11 @@
+1999-11-13  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-start.el (gnus-get-unread-articles): Use
+	nnfoo-retrieve-groups to find new news, if available.
+	(gnus-read-active-file-2): New function.
+	(gnus-get-unread-articles): Use it.
+	(gnus-read-active-file-1): Ditto.
+
 1999-11-13 17:59:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-util.el (mm-find-mime-charset-region): Make sure

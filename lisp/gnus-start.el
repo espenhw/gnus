@@ -1498,7 +1498,7 @@ newsgroup."
 		  gnus-activate-foreign-newsgroups)
 		 (t 0))
 	   level))
-	 info group active method)
+	 info group active method retrievegroups)
     (gnus-message 5 "Checking new news...")
 
     (while newsrc
@@ -1535,8 +1535,15 @@ newsgroup."
 	  (setq active 'ignore))
 	 ;; Activate groups.
 	 ((not gnus-read-active-file)
+	  (if (gnus-check-backend-function 'retrieve-groups group)
+	      ;; if server support gnus-retrieve-groups we push
+	      ;; the group onto retrievegroups for later checking
+	      (if (assoc method retrievegroups)
+		  (setcdr (assoc method retrievegroups)
+			  (cons group (cdr (assoc method retrievegroups))))
+		(push (list method group) retrievegroups))
 	  (setq active (gnus-activate-group group 'scan))
-	  (inline (gnus-close-group group)))))
+	    (inline (gnus-close-group group))))))
 
       ;; Get the number of unread articles in the group.
       (cond
@@ -1550,6 +1557,29 @@ newsgroup."
 	;; unread articles and stuff.
 	(gnus-set-active group nil)
 	(setcar (gnus-gethash group gnus-newsrc-hashtb) t))))
+
+    ;; iterate through groups on methods which support gnus-retrieve-groups
+    ;; and fetch a partial active file and use it to find new news.
+    (while retrievegroups
+      (let* ((mg (pop retrievegroups))
+	     (method (or (car mg) gnus-select-method))
+	     (groups (cdr mg)))
+	;; Request that the backend scan its incoming messages.
+	(when (gnus-check-backend-function 'request-scan (car method))
+	  (gnus-request-scan nil method))
+	(gnus-read-active-file-2 (mapcar (lambda (group)
+					   (gnus-group-real-name group))
+					 groups) method)
+	(dolist (group groups)
+	  (cond
+	   ((setq active (gnus-active (gnus-info-group
+				       (setq info (gnus-get-info group)))))
+	    (inline (gnus-get-unread-articles-in-group info active t)))
+	   (t
+	    ;; The group couldn't be reached, so we nix out the number of
+	    ;; unread articles and stuff.
+	    (gnus-set-active group nil)
+	    (setcar (gnus-gethash group gnus-newsrc-hashtb) t))))))
 
     (gnus-message 5 "Checking new news...done")))
 
@@ -1685,7 +1715,7 @@ newsgroup."
 	    (quit nil)))))))
 
 (defun gnus-read-active-file-1 (method force)
-  (let (where mesg list-type)
+  (let (where mesg)
     (setq where (nth 1 method)
 	  mesg (format "Reading active file%s via %s..."
 		       (if (and where (not (zerop (length where))))
@@ -1712,20 +1742,7 @@ newsgroup."
 		     gmethod))
 	      (push (gnus-group-real-name (gnus-info-group info))
 		    groups)))
-	  (when groups
-	    (gnus-check-server method)
-	    (setq list-type (gnus-retrieve-groups groups method))
-	    (cond
-	     ((not list-type)
-	      (gnus-error
-	       1.2 "Cannot read partial active file from %s server."
-	       (car method)))
-	     ((eq list-type 'active)
-	      (gnus-active-to-gnus-format
-	       method gnus-active-hashtb nil t))
-	     (t
-	      (gnus-groups-to-gnus-format
-	       method gnus-active-hashtb t))))))
+	  (gnus-read-active-file-2 groups method)))
        ((null method)
 	t)
        (t
@@ -1739,6 +1756,22 @@ newsgroup."
 	  (push method gnus-have-read-active-file)
 	  (gnus-message 5 "%sdone" mesg)))))))
 
+(defun gnus-read-active-file-2 (groups method)
+  "Read an active file for GROUPS in METHOD using gnus-retrieve-groups."
+  (when groups
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (gnus-check-server method)
+      (let ((list-type (gnus-retrieve-groups groups method)))
+	(cond ((not list-type)
+	       (gnus-error 
+		1.2 "Cannot read partial active file from %s server."
+		(car method)))
+	      ((eq list-type 'active)
+	       (gnus-active-to-gnus-format method gnus-active-hashtb nil t))
+	      (t
+	       (gnus-groups-to-gnus-format method gnus-active-hashtb t)))))))
+  
 ;; Read an active file and place the results in `gnus-active-hashtb'.
 (defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors
 					     real-active)
