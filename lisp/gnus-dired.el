@@ -59,7 +59,9 @@
 
   (gnus-define-keys gnus-dired-mode-map
     "\C-c\C-a" gnus-dired-attach
-    "\C-c\C-f" gnus-dired-find-file-mailcap))
+    "\C-c\C-f" gnus-dired-find-file-mailcap
+    "\C-cP" gnus-dired-print
+    ))
 
 (defun gnus-dired-mode (&optional arg)
   "Minor mode for intersections of gnus and dired.
@@ -138,10 +140,10 @@ If ARG is non-nil, open it in a new buffer."
 		(file-name-sans-versions (dired-get-filename) t)
 		current-prefix-arg))
   (mailcap-parse-mailcaps)
-  (if (and (file-exists-p file-name)
-	   (not (file-directory-p file-name)))
+  (if (file-exists-p file-name)
       (let (mime-type method)
 	(if (and (not arg)
+		 (not (file-directory-p file-name))
 		 (string-match "\\.[^\\.]+$" file-name)
 		 (setq mime-type
 		       (mailcap-extension-to-mime 
@@ -162,6 +164,43 @@ If ARG is non-nil, open it in a new buffer."
     (if (file-symlink-p file-name)
 	(error "File is a symlink to a nonexistent target")
       (error "File no longer exists; type `g' to update Dired buffer"))))
+
+(defun gnus-dired-print (&optional file-name print-to)
+  "In dired, print FILE-NAME according to the mailcap file.
+
+If there is no print command, print in a PostScript image. If the
+optional argument PRINT-TO is nil, send the image to the printer. If
+PRINT-TO is a string, save the PostScript image in a file with that
+name.  If PRINT-TO is a number, prompt the user for the name of the
+file to save in."
+  (interactive (list
+		(file-name-sans-versions (dired-get-filename) t)
+		(ps-print-preprint current-prefix-arg)))
+  (mailcap-parse-mailcaps)
+  (cond 
+   ((file-directory-p file-name)
+    (error "Can't print a directory"))
+   ((file-exists-p file-name)
+    (let (mime-type method)
+      (if (and (string-match "\\.[^\\.]+$" file-name)
+	       (setq mime-type
+		     (mailcap-extension-to-mime 
+		      (match-string 0 file-name)))
+	       (stringp 
+		(setq method (mailcap-mime-info mime-type "print"))))
+	  (call-process shell-file-name nil
+			(generate-new-buffer " *mm*")
+			nil
+			shell-command-switch
+			(mm-mailcap-command method file-name mime-type))
+	(with-temp-buffer
+	  (insert-file-contents file-name)
+	  (gnus-print-buffer))
+	(ps-despool print-to))))
+   ((file-symlink-p file-name)
+     (error "File is a symlink to a nonexistent target"))
+    (t
+     (error "File no longer exists; type `g' to update Dired buffer"))))
 
 (provide 'gnus-dired)
 
