@@ -116,12 +116,15 @@ STRING should be given if the last search was by `string-match' on STRING."
 	  (substring string (match-beginning num) (match-end num))
 	(buffer-substring (match-beginning num) (match-end num))))))
 
+
 (or (fboundp 'facep)
     ;; Introduced in Emacs 19.29.
     (defun facep (x)
       "Return t if X is a face name or an internal face vector."
       (and (or (and (fboundp 'internal-facep) (internal-facep x))
-	       (and (symbolp x) (assq x global-face-data)))
+	       (and 
+		(symbolp x) 
+		(assq x (and (boundp 'global-face-data) global-face-data))))
 	   t)))
 
 (if (facep 'underline)
