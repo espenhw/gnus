@@ -22,6 +22,7 @@
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
 	       ring-elements
+	       propertize make-mode-line-mouse2-map
 	       rmail-select-summary rmail-summary-exists rmail-update-summary
 	       sc-cite-regexp set-font-family set-font-size temp-directory
 	       string-as-multibyte

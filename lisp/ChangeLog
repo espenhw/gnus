@@ -1,3 +1,20 @@
+2001-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-msg.el (gnus-post-method): Refer to `gnus-parameters'.
+	
+2001-07-31 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	Originally from Pavel Jan,Bm(Bk <Pavel@Janik.cz>
+	
+	* gnus-agent.el (gnus-agent-make-mode-line-string): New.
+	(gnus-agent-toggle-plugged): Use it.
+
+2001-07-31  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-startup-file-coding-system): Revert to binary.
+	(gnus-ding-file-coding-system): New variable.
+	(gnus-read-newsrc-el-file, gnus-save-newsrc-file)
+	(gnus-slave-save-newsrc): Use it.
+
 2001-07-31  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-delay.el (gnus-delay-initialize): Use standard define-key

@@ -310,6 +310,13 @@ If this is `ask' the hook will query the user."
        ["Add" gnus-agent-add-server t]
        ["Remove" gnus-agent-remove-server t]))))
 
+(defun gnus-agent-make-mode-line-string (string mouse2-func)
+  (if (and (fboundp 'propertize)
+	   (fboundp 'make-mode-line-mouse2-map))
+      (propertize string 'local-map
+		  (make-mode-line-mouse2-map mouse2-func))
+    string))
+
 (defun gnus-agent-toggle-plugged (plugged)
   "Toggle whether Gnus is unplugged or not."
   (interactive (list (not gnus-plugged)))
@@ -318,11 +325,15 @@ If this is `ask' the hook will query the user."
 	(setq gnus-plugged plugged)
 	(gnus-agent-possibly-synchronize-flags)
 	(gnus-run-hooks 'gnus-agent-plugged-hook)
-	(setcar (cdr gnus-agent-mode-status) " Plugged"))
+	(setcar (cdr gnus-agent-mode-status) 
+		(gnus-agent-make-mode-line-string " Plugged"
+						  'gnus-agent-toggle-plugged)))
     (gnus-agent-close-connections)
     (setq gnus-plugged plugged)
     (gnus-run-hooks 'gnus-agent-unplugged-hook)
-    (setcar (cdr gnus-agent-mode-status) " Unplugged"))
+    (setcar (cdr gnus-agent-mode-status) 
+	    (gnus-agent-make-mode-line-string " Unplugged"
+					      'gnus-agent-toggle-plugged)))
   (set-buffer-modified-p t))
 
 (defun gnus-agent-close-connections ()
