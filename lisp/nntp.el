@@ -207,6 +207,10 @@ NOTE: This variable is never seen to work in Emacs 20 and XEmacs 21.")
   "*Hook run just before posting an article.  It is supposed to be used
 to insert Cancel-Lock headers.")
 
+(defvoo nntp-read-timeout 0.1
+  "How long nntp should wait between checking for the end of output.
+Shorter values mean quicker response, but is more CPU intensive.")
+
 ;;; Internal variables.
 
 (defvar nntp-record-commands nil
@@ -1268,7 +1272,7 @@ password contained in '~/.nntp-authinfo'."
     (nnheader-report 'nntp message)
     message))
 
-(defun nntp-accept-process-output (process &optional timeout)
+(defun nntp-accept-process-output (process)
   "Wait for output from PROCESS and message some dots."
   (save-excursion
     (set-buffer (or (nntp-find-connection-buffer nntp-server-buffer)
@@ -1278,15 +1282,18 @@ password contained in '~/.nntp-authinfo'."
       (unless (< len 10)
 	(setq nntp-have-messaged t)
 	(nnheader-message 7 "nntp read: %dk" len)))
-    (if timeout
-	(accept-process-output process timeout)
-      (accept-process-output process 0 100))
+    (accept-process-output
+     process
+     (truncate nntp-read-timeout)
+     (truncate (* (- nntp-read-timeout
+		     (truncate nntp-read-timeout))
+		  1000)))
     ;; accept-process-output may update status of process to indicate
     ;; that the server has closed the connection.  This MUST be
     ;; handled here as the buffer restored by the save-excursion may
     ;; be the process's former output buffer (i.e. now killed)
     (or (and process 
-            (memq (process-status process) '(open run)))
+	     (memq (process-status process) '(open run)))
         (nntp-report "Server closed connection"))))
 
 (defun nntp-accept-response ()

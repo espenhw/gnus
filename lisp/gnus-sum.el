@@ -2683,7 +2683,7 @@ The following commands are available:
   `(assq ,number gnus-newsgroup-data))
 
 (defmacro gnus-data-find-list (number &optional data)
-  `(let* ((bdata ,(or data 'gnus-newsgroup-data)))
+  `(let ((bdata ,(or data 'gnus-newsgroup-data)))
      (memq (assq ,number bdata)
 	   bdata)))
 

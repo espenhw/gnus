@@ -1,3 +1,14 @@
+2003-01-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-async.el (gnus-async-wait-for-article): Don't use a
+	timeout. 
+
+	* nntp.el (nntp-accept-process-output): Removed timeout. 
+	(nntp-read-timeout): New variable.
+	(nntp-accept-process-output): Use it.
+
+	* gnus-sum.el (gnus-data-find-list): Remove *.
+
 2002-01-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-sum.el (gnus-summary-first-subject): Fixed bug that I

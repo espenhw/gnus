@@ -276,7 +276,7 @@ It should return non-nil if the article is to be prefetched."
 	  ;; needs to be done in nntp.el.
 	  (while (eq article gnus-async-current-prefetch-article)
 	    (incf tries)
-	    (when (nntp-accept-process-output proc 1)
+	    (when (nntp-accept-process-output proc)
 	      (setq tries 0))
 	    (when (and (not nntp-have-messaged)
 		       (= tries 3))
