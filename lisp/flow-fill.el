@@ -1,6 +1,6 @@
 ;;; flow-fill.el --- interprete RFC2646 "flowed" text
 
-;; Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <jas@pdc.kth.se>
 ;; Keywords: mail
@@ -80,6 +80,7 @@ RFC 2646 suggests 66 characters for readability."
 	    'point-at-eol
 	  'line-end-position)))
 
+;;;###autoload
 (defun fill-flowed-encode (&optional buffer)
   (with-current-buffer (or buffer (current-buffer))
     ;; No point in doing this unless hard newlines is used.
@@ -101,6 +102,7 @@ RFC 2646 suggests 66 characters for readability."
 	  (goto-char (setq start (1+ end)))))
       t)))
 
+;;;###autoload
 (defun fill-flowed (&optional buffer)
   (save-excursion
     (set-buffer (or (current-buffer) buffer))
