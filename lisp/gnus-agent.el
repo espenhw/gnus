@@ -609,14 +609,18 @@ minor mode in all Gnus buffers."
 		       gnus-agent-covered-methods ))))
      (append (list gnus-select-method) gnus-secondary-select-methods))))
 
-(defun gnus-agent-queue-setup ()
-  "Make sure the queue group exists."
-  (unless (gnus-gethash "nndraft:queue" gnus-newsrc-hashtb)
-    (gnus-request-create-group "queue" '(nndraft ""))
+(defun gnus-agent-queue-setup (&optional group-name)
+  "Make sure the queue group exists.
+Optional arg GROUP-NAME allows to specify another group."
+  (unless (gnus-gethash (format "nndraft:%s" (or group-name "queue"))
+			gnus-newsrc-hashtb)
+    (gnus-request-create-group (or group-name "queue") '(nndraft ""))
     (let ((gnus-level-default-subscribed 1))
-      (gnus-subscribe-group "nndraft:queue" nil '(nndraft "")))
+      (gnus-subscribe-group (format "nndraft:%s" (or group-name "queue"))
+			    nil '(nndraft "")))
     (gnus-group-set-parameter
-     "nndraft:queue" 'gnus-dummy '((gnus-draft-mode)))))
+     (format "nndraft:%s" (or group-name "queue"))
+     'gnus-dummy '((gnus-draft-mode)))))
 
 (defun gnus-agent-send-mail ()
   (if gnus-plugged

@@ -1,3 +1,11 @@
+2003-04-30  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* gnus-delay.el (gnus-delay-article): Call
+	`gnus-agent-queue-setup' to create the delay group.
+
+	* gnus-agent.el (gnus-agent-queue-setup): Support optional arg
+	for the (queue) group name.
+
 2003-04-30  Simon Josefsson  <jas@extundo.com>
 
 	* mm-util.el (mm-charset-to-coding-system): Use user specified

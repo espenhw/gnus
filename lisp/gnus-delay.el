@@ -134,10 +134,7 @@ DELAY is a string, giving the length of the time.  Possible values are:
   (set-buffer-modified-p t)
   ;; If group does not exist, create it.
   (let ((group (format "nndraft:%s" gnus-delay-group)))
-    (unless (gnus-gethash group gnus-newsrc-hashtb)
-      (nndraft-request-create-group gnus-delay-group)
-      ;; Make it active.
-      (gnus-set-active group (cons 1 0))))
+    (gnus-agent-queue-setup gnus-delay-group))
   (message-disassociate-draft)
   (nndraft-request-associate-buffer gnus-delay-group)
   (save-buffer 0)
