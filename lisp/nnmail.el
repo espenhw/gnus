@@ -503,6 +503,14 @@ parameter.  It should return nil, `warn' or `delete'."
   :group 'nnmail
   :type 'boolean)
 
+(defcustom nnmail-split-fancy-match-partial-words nil
+  "Whether to match partial words when fancy splitting.
+Normally, regexes given in `nnmail-split-fancy' are implicitly surrounded
+by \"\\<...\\>\".  If this is true, they are not implicitly surrounded by
+anything."
+  :group 'nnmail
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar nnmail-article-buffer " *nnmail incoming*"
@@ -1342,8 +1350,9 @@ See the documentation for the variable `nnmail-split-fancy' for details."
      (t
       (let* ((field (nth 0 split))
 	     (value (nth 1 split))
-	     partial-front regexp
-	     partial-rear  regexp)
+	     partial-front
+	     partial-rear
+	     regexp)
 	(if (symbolp value)
 	    (setq value (cdr (assq value nnmail-split-abbrev-alist))))
 	(if (and (>= (length value) 2)
@@ -1355,6 +1364,9 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 		 (string= ".*" (substring value -2)))
 	    (setq value (substring value 0 -2)
 		  partial-rear ""))
+	(when nnmail-split-fancy-match-partial-words
+	  (setq partial-front ""
+		partial-rear ""))
 	(setq regexp (concat "^\\(\\("
 			     (if (symbolp field)
 				 (cdr (assq field nnmail-split-abbrev-alist))

@@ -1,5 +1,9 @@
 2003-06-03  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
+	* nnmail.el (nnmail-split-fancy-match-partial-words): New user
+	option.
+	(nnmail-split-it): Obey it.  Don't let-bind regexp twice.
+
 	* message.el (message-fetch-field): Mention narrow-to-headers
 	requirement.
 
