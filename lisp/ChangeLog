@@ -1,3 +1,10 @@
+2003-10-28  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-forward-subject-name-subject)
+	(message-forward-subject-author-subject): Decode non-ASCII
+	newsgroup names.
+	(autoload): Autoload gnus-group-decoded-name.
+
 2003-10-27  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-gpg.el (pgg-gpg-possibly-cache-passphrase): New optional

@@ -49,7 +49,8 @@
 (eval-and-compile
   (autoload 'sha1 "sha1-el")
   (autoload 'gnus-find-method-for-group "gnus")
-  (autoload 'nnvirtual-find-group-art "nnvirtual"))
+  (autoload 'nnvirtual-find-group-art "nnvirtual")
+  (autoload 'gnus-group-decoded-name "gnus-group"))
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -5911,37 +5912,40 @@ Previous forwarders, replyers, etc. may add it."
 (defvar message-forward-decoded-p nil
   "Non-nil means the original message is decoded.")
 
-(defun message-forward-subject-author-subject (subject)
-  "Generate a SUBJECT for a forwarded message.
-The form is: [Source] Subject, where if the original message was mail,
-Source is the sender, and if the original message was news, Source is
-the list of newsgroups is was posted to."
-  (concat "["
-	  (let ((prefix
-		 (or (message-fetch-field "newsgroups")
-		     (message-fetch-field "from")
-		     "(nowhere)")))
-	    (if message-forward-decoded-p
-		prefix
-	      (mail-decode-encoded-word-string prefix)))
-	  "] " subject))
-
 (defun message-forward-subject-name-subject (subject)
   "Generate a SUBJECT for a forwarded message.
 The form is: [Source] Subject, where if the original message was mail,
 Source is the name of the sender, and if the original message was
 news, Source is the list of newsgroups is was posted to."
-  (concat "["
-	  (let ((prefix
-		 (or (message-fetch-field "newsgroups")
-		     (let ((from (message-fetch-field "from")))
-		       (and from
-			    (cdr (mail-header-parse-address from))))
-		     "(nowhere)")))
+  (let* ((group (message-fetch-field "newsgroups"))
+	 (from (message-fetch-field "from"))
+	 (prefix
+	  (if group
+	      (gnus-group-decoded-name group)
+	    (or (and from (cdr (mail-header-parse-address from)))
+		"(nowhere)"))))
+    (concat "["
 	    (if message-forward-decoded-p
 		prefix
-	      (mail-decode-encoded-word-string prefix)))
-	  "] " subject))
+	      (mail-decode-encoded-word-string prefix))
+	    "] " subject)))
+
+(defun message-forward-subject-author-subject (subject)
+  "Generate a SUBJECT for a forwarded message.
+The form is: [Source] Subject, where if the original message was mail,
+Source is the sender, and if the original message was news, Source is
+the list of newsgroups is was posted to."
+  (let* ((group (message-fetch-field "newsgroups"))
+	 (prefix
+	  (if group
+	      (gnus-group-decoded-name group)
+	    (or (message-fetch-field "from")
+		"(nowhere)"))))
+    (concat "["
+	    (if message-forward-decoded-p
+		prefix
+	      (mail-decode-encoded-word-string prefix))
+	    "] " subject)))
 
 (defun message-forward-subject-fwd (subject)
   "Generate a SUBJECT for a forwarded message.
