@@ -4735,8 +4735,9 @@ Go to the first unread article
 @kindex G b (Summary)
 @kindex , (Summary)
 @findex gnus-summary-best-unread-article
-Go to the article with the highest score
-(@code{gnus-summary-best-unread-article}).
+Go to the unread article with the highest score
+(@code{gnus-summary-best-unread-article}).  If given a prefix argument,
+go to the first unread article that has a score over the default score.
 
 @item G l
 @itemx l
