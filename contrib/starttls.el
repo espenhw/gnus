@@ -85,24 +85,23 @@
   "Negotiated Transport Layer Security (STARTTLS) parameters."
   :group 'comm)
 
-(defcustom starttls-programs '("gnutls-cli -s -p %p %h"
-			       "gnutls-cli -s -p %p %h --protocols ssl3")
-  "List of strings containing commands to open STARTTLS stream to a host.
-Each entry in the list is tried until a connection is successful.
-%s is replaced with server hostname, %p with port to connect to.
+(defcustom starttls-program "gnutls-cli"
+  "The program to run in a subprocess to open an STARTTLS connection.
 The program should read input on stdin and write output to
 stdout.  Also see `starttls-connect' and `starttls-success' for
 what the program should output after initial connection and
 successful negotiation respectively."
+  :type 'string
+  :group 'starttls)
+
+(defcustom starttls-extra-args nil
+  "List of extra arguments to `starttls-program'.
+E.g., (\"--protocols\" \"ssl3\")."
   :type '(repeat string)
   :group 'starttls)
 
-(defcustom starttls-process-connection-type t
-  "*Value for `process-connection-type' to use when starting STARTTLS process.
-Note that setting this to nil likely does not work, as
-`process-send-eof' used in `negotiate-starttls' behave
-differently depending on this setting, and it closes the
-sub-process if this variable is set to nil."
+(defcustom starttls-process-connection-type nil
+  "*Value for `process-connection-type' to use when starting STARTTLS process."
   :type 'boolean
   :group 'starttls)
 
@@ -140,17 +139,12 @@ handshake, or NIL on failure."
   (let (buffer response old-max done-ok done-bad)
     (if (null (setq buffer (process-buffer process)))
 	;; XXX how to remove/extract the TLS negotiation junk?
-	(process-send-eof process)
+	(signal-process (process-id process) 'SIGALRM)
       (with-current-buffer buffer
 	(save-excursion
 	  (goto-char (point-max))
 	  (setq old-max (point))
-	  ;; `process-send-eof' closes sub-process unless we force
-	  ;; `process-connection-type' to non-nil.  A cleaner solution
-	  ;; would be to use:
-	  ;; (process-send-string process (string-as-unibyte (format "%c" 4)))
-	  ;; or something, but I could not get that to work.
-	  (process-send-eof process)
+	  (signal-process (process-id process) 'SIGALRM)
 	  (while (and process
 		      (memq (process-status process) '(open run))
 		      (save-excursion
@@ -184,40 +178,33 @@ BUFFER is the buffer (or buffer-name) to associate with the process.
 Third arg is name of the host to connect to, or its IP address.
 Fourth arg SERVICE is name of the service desired, or an integer
 specifying a port number to connect to."
-  (let ((cmds starttls-programs) cmd done old-max)
-    (message "Opening STARTTLS connection to `%s'..." host)
-    (with-current-buffer buffer
-      (setq old-max (point-max)))
-    (while (and (not done) (setq cmd (pop cmds)))
-      (message "Opening STARTTLS connection with `%s'..." cmd)
-      (let* ((process-connection-type starttls-process-connection-type)
-	     (process (start-process
-		       name buffer shell-file-name shell-command-switch
-		       (format-spec
-			cmd
-			(format-spec-make
-			 ?h host
-			 ?p (if (integerp service)
-				(int-to-string service)
-			      service)))))
-	     response)
-	(while (and process
-		    (memq (process-status process) '(open run))
-		    (save-excursion
-		      (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
-		      (goto-char (point-min))
-		      (not (setq done (re-search-forward
-				       starttls-connect nil t)))))
-	  (accept-process-output process 0 100)
-	  (sit-for 0.1))
-	(message "Opening STARTTLS connection with `%s'...%s" cmd
-		 (if done "done" "failed"))
-	(if done
-	    (progn
-	      (with-current-buffer buffer
-		(delete-region old-max done))
-	      (setq done process))
-	  (delete-process process))))
+  (message "Opening STARTTLS connection to `%s'..." host)
+  (let* (done
+	 (old-max (with-current-buffer buffer (point-max)))
+	 (process-connection-type starttls-process-connection-type)
+	 (process (apply #'start-process name buffer
+			 starttls-program "-s" host
+			 "-p" (if (integerp service)
+				  (int-to-string service)
+				service)
+			 starttls-extra-args))
+	 response)
+    (process-kill-without-query process)
+    (while (and process
+		(memq (process-status process) '(open run))
+		(save-excursion
+		  (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
+		  (goto-char (point-min))
+		  (not (setq done (re-search-forward
+				   starttls-connect nil t)))))
+      (accept-process-output process 0 100)
+      (sit-for 0.1))
+    (if done
+	(progn
+	  (with-current-buffer buffer
+	    (delete-region old-max done))
+	  (setq done process))
+      (delete-process process))
     (message "Opening STARTTLS connection to `%s'...%s"
 	     host (if done "done" "failed"))
     done))
