@@ -556,8 +556,6 @@ opens a new connection then re-issues the NNTP command whose response triggered 
                   (when timer
                     (nnheader-cancel-timer timer)))
                 nil))
-       (message "Appears to have caught nntp-with-open-group-error throw.")
-       (debug)
        (setq nntp-with-open-group-first-pass nil))
      nntp-with-open-group-internal))
 
