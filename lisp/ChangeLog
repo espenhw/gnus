@@ -2,6 +2,7 @@
 
 	* gnus-msg.el (gnus-discouraged-post-methods): New variable.
 	(gnus-post-method): Use it.
+	(gnus-summary-cancel-article): Find the correct post-method.
 
 	* gnus-soup.el (gnus-soup-send-packet): Via ... using ...
 	* message.el (message-send-news): Ditto.
