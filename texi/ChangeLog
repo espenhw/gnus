@@ -1,5 +1,7 @@
 2003-10-27  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnusref.tex (subsection*{Notes}): do.
+
 	* gnus.texi (Exiting the Summary Buffer): Add keybinding.
 
 2003-10-23  Reiner Steib  <Reiner.Steib@gmx.de>

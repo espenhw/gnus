@@ -10312,8 +10312,10 @@ group and return you to the group buffer.
 @table @kbd
 
 @item Z Z
+@itemx Z Q
 @itemx q
 @kindex Z Z (Summary)
+@kindex Z Q (Summary)
 @kindex q (Summary)
 @findex gnus-summary-exit
 @vindex gnus-summary-exit-hook
