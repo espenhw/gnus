@@ -149,7 +149,7 @@
      "X-Virus-Scanned" "X-Delivery-Agent" "Posted-Date" "X-Gateway"
      "X-Local-Origin" "X-Local-Destination" "X-UserInfo1"
      "X-Received-Date" "X-Hashcash" "Face" "X-DMCA-Notifications"
-     "X-Abuse-and-DMCA-Info" "X-Postfilter"))
+     "X-Abuse-and-DMCA-Info" "X-Postfilter" "X-Gpg-.*" "X-Disclaimer"))
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."

@@ -8188,6 +8188,7 @@ to guess what the document format is."
 	   (ogroup gnus-newsgroup-name)
 	   (params (append (gnus-info-params (gnus-get-info ogroup))
 			   (list (cons 'to-group ogroup))
+			   (list (cons 'parent-group group))
 			   (list (cons 'save-article-group ogroup))))
 	   (case-fold-search t)
 	   (buf (current-buffer))
