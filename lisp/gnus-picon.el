@@ -108,10 +108,10 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 		base (expand-file-name directory database))
 	  (while address
 	    (when (setq result (gnus-picon-find-image
-				(concat base "/" (mapconcat 'identity
+				(concat base "/" (mapconcat 'downcase
 							    (reverse address)
 							    "/")
-					"/" user "/")))
+					"/" (downcase user) "/")))
 	      (throw 'found result))
 	    (if exact
 		(setq address nil)
