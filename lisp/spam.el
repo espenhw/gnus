@@ -783,19 +783,20 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	(dolist (ip ips)
 	  (unless (and spam-blackhole-good-server-regex
 		       (string-match spam-blackhole-good-server-regex ip))
-	    (let ((query-string (concat ip "." server)))
-	      (if spam-use-dig
-		  (let ((query-result (query-dig query-string)))
-		    (when query-result
-		      (gnus-message 5 "(DIG): positive blackhole check '%s'" 
-				    query-result)
-		      (push (list ip server query-result)
-			    matches)))
-		;; else, if not using dig.el
-		(when (query-dns query-string)
-		  (gnus-message 5 "positive blackhole check")
-		  (push (list ip server (query-dns query-string 'TXT))
-			matches))))))))
+	    (unless matches
+	      (let ((query-string (concat ip "." server)))
+		(if spam-use-dig
+		    (let ((query-result (query-dig query-string)))
+		      (when query-result
+			(gnus-message 5 "(DIG): positive blackhole check '%s'" 
+				      query-result)
+			(push (list ip server query-result)
+			      matches)))
+		  ;; else, if not using dig.el
+		  (when (query-dns query-string)
+		    (gnus-message 5 "positive blackhole check")
+		    (push (list ip server (query-dns query-string 'TXT))
+			  matches)))))))))
     (when matches
       spam-split-group)))
 

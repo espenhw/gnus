@@ -1,3 +1,8 @@
+2003-10-03  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-blackholes): exit the loop if matches are
+	found (idea from Adrian Lanz <lanz@fowi.ethz.ch>)
+
 2003-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-attachment-file-modes): Change the default
