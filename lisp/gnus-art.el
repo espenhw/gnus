@@ -567,16 +567,20 @@ Initialized from `text-mode-syntax-table.")
 (defun gnus-article-delete-text-of-type (type)
   "Delete text of TYPE in the current buffer."
   (save-excursion
-    (let ((b (point-min)))
-      (while (setq b (text-property-any b (point-max) 'article-type type))
-	(delete-region b (incf b))))))
+    (let ((e (point-min))
+	  b)
+      (while (setq b (text-property-any e (point-max) 'article-type type))
+	(setq e (text-property-not-all b (point-max) 'article-type type))
+	(delete-region b e)))))
 
 (defun gnus-article-delete-invisible-text ()
   "Delete all invisible text in the current buffer."
   (save-excursion
-    (let ((b (point-min)))
-      (while (setq b (text-property-any b (point-max) 'invisible t))
-	(delete-region b (incf b))))))
+    (let ((e (point-min))
+	  b)
+      (while (setq b (text-property-any e (point-max) 'invisible t))
+	(setq e (text-property-not-all b (point-max) 'invisible t))
+	(delete-region b e)))))
 
 (defun gnus-article-text-type-exists-p (type)
   "Say whether any text of type TYPE exists in the buffer."

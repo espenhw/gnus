@@ -1,7 +1,5 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.98 1997/04/02 16:26:18 abraham Exp $
-
 @c %**start of header
 @setfilename widget
 @settitle The Emacs Widget Library
@@ -15,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 1.70
+Version: 1.82
 
 @menu
 * Introduction::                
@@ -642,6 +640,18 @@ TYPE ::= (push-button [KEYWORD ARGUMENT]...  [ VALUE ])
 The @var{value}, if present, is used to initialize the @code{:value}
 property. The value should be a string, which will be inserted in the
 buffer. 
+
+The following extra properties are recognized.
+
+@table @code
+@item :text-format
+The format string used when the push button cannot be displayed
+graphically.  There are two escapes, @code{%s}, which must be present
+exactly once, will be substituted with the tag, and @code{%%} will be
+substituted with a singe @samp{%}.
+@end table
+
+By default the tag will be shown in brackets.
 
 @node editable-field, text, push-button, Basic Types
 @comment  node-name,  next,  previous,  up

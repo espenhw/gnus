@@ -1,3 +1,23 @@
+Sat Apr 12 01:42:42 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.44 is released.
+
+Sat Apr 12 01:10:31 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnweb.el (nnweb-request-scan): Init nnweb-hashtb.
+
+Thu Apr 10 20:05:13 1997  Sudish Joseph  <sj@eng.mindspring.net>
+
+	* gnus-art.el (gnus-article-delete-invisible-text): Do an entire
+ 	region instead a single char in each pass.  It's faster and
+ 	doesn't confuse ps-print.
+	(gnus-article-delete-text-of-type): Ditto.
+
+Sat Apr 12 00:35:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-adjust-marked-articles): Wouldn't remove
+	`expire' marks.
+
 Thu Apr 10 22:07:46 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.43 is released.

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.70
+;; Version: 1.82
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -33,9 +33,13 @@
       (color-instance-name (specifier-instance (face-foreground face) frame)))
   (defalias 'custom-face-foreground 'face-foreground))
 
+(defalias 'custom-face-font-name (if (string-match "XEmacs" emacs-version)
+				     'face-font-name
+				   'face-font))
+
 (eval-and-compile
   (unless (fboundp 'frame-property)
-    ;; XEmacs function missing in Emacs 19.34.
+    ;; XEmacs function missing in Emacs.
     (defun frame-property (frame property &optional default)
       "Return FRAME's value for property PROPERTY."
       (or (cdr (assq property (frame-parameters frame)))
@@ -45,44 +49,13 @@
     ;; XEmacs function missing in Emacs.
     (defun face-doc-string (face)
       "Get the documentation string for FACE."
-      (get face 'face-doc-string)))
+      (get face 'face-documentation)))
 
   (unless (fboundp 'set-face-doc-string)
     ;; XEmacs function missing in Emacs.
     (defun set-face-doc-string (face string)
       "Set the documentation string for FACE to STRING."
-      (put face 'face-doc-string string)))
-
-  (when (and (not (fboundp 'set-face-stipple))
-	     (fboundp 'set-face-background-pixmap))
-    ;; Emacs function missing in XEmacs 19.15.
-    (defun set-face-stipple (face pixmap &optional frame)
-      ;; Written by Kyle Jones.
-      "Change the stipple pixmap of face FACE to PIXMAP.
-PIXMAP should be a string, the name of a file of pixmap data.
-The directories listed in the `x-bitmap-file-path' variable are searched.
-
-Alternatively, PIXMAP may be a list of the form (WIDTH HEIGHT DATA)
-where WIDTH and HEIGHT are the size in pixels,
-and DATA is a string, containing the raw bits of the bitmap.  
-
-If the optional FRAME argument is provided, change only
-in that frame; otherwise change each frame."
-      (while (not (find-face face))
-	(setq face (signal 'wrong-type-argument (list 'facep face))))
-      (while (cond ((stringp pixmap)
-		    (unless (file-readable-p pixmap)
-		      (setq pixmap (vector 'xbm ':file pixmap)))
-		    nil)
-		   ((and (consp pixmap) (= (length pixmap) 3))
-		    (setq pixmap (vector 'xbm ':data pixmap))
-		    nil)
-		   (t t))
-	(setq pixmap (signal 'wrong-type-argument
-			     (list 'stipple-pixmap-p pixmap))))
-      (while (and frame (not (framep frame)))
-	(setq frame (signal 'wrong-type-argument (list 'framep frame))))
-      (set-face-background-pixmap face pixmap frame))))
+      (put face 'face-documentation string))))
 
 (unless (fboundp 'x-color-values)
   ;; Emacs function missing in XEmacs 19.14.
@@ -276,11 +249,13 @@ examine the brightness for you."
 (defconst custom-face-attributes
   '((:bold (toggle :format "Bold: %[%v%]\n"
 		   :help-echo "Control whether a bold font should be used.")
-	   custom-set-face-bold)
+	   custom-set-face-bold 
+	   custom-face-bold)
     (:italic (toggle :format "Italic: %[%v%]\n"
 		     :help-echo "\
 Control whether an italic font should be used.")
-	     custom-set-face-italic)
+	     custom-set-face-italic
+	     custom-face-italic)
     (:underline (toggle :format "Underline: %[%v%]\n"
 			:help-echo "\
 Control whether the text should be underlined.")
@@ -306,7 +281,7 @@ Control whether the text should be underlined.")
     ;;	       (custom-invert-face face frame)))
     (:stipple (editable-field :format "Stipple: %v"
 			      :help-echo "Name of background bitmap file.")
-	      set-face-stipple))
+	      set-face-stipple custom-face-stipple))
   "Alist of face attributes. 
 
 The elements are of the form (KEY TYPE SET GET) where KEY is a symbol
@@ -339,6 +314,10 @@ If FRAME is nil, set the default face."
 Each keyword should be listed in `custom-face-attributes'.
 
 If FRAME is nil, use the default face."
+  (condition-case nil
+      ;; Attempt to get `font.el' from w3.
+      (require 'font)
+    (error nil))
   (let ((atts custom-face-attributes)
 	att result get)
     (while atts
@@ -358,43 +337,80 @@ If FRAME is nil, use the default face."
       (make-face-bold face frame)
     (make-face-unbold face frame)))
 
+(defun custom-face-bold (face &rest args)
+  "Return non-nil if the font of FACE is bold."
+  (let* ((font (apply 'custom-face-font-name face args))
+	 (fontobj (font-create-object font)))
+    (font-bold-p fontobj)))
+
 (defun custom-set-face-italic (face value &optional frame)
   "Set the italic property of FACE to VALUE."
   (if value
       (make-face-italic face frame)
     (make-face-unitalic face frame)))
 
+(defun custom-face-italic (face &rest args)
+  "Return non-nil if the font of FACE is italic."
+  (let* ((font (apply 'custom-face-font-name face args))
+	 (fontobj (font-create-object font)))
+    (font-italic-p fontobj)))
+
+(defun custom-face-stipple (face &rest args)
+  "Return the name of the stipple file used for FACE."
+  (if (string-match "XEmacs" emacs-version)
+      (let ((image  (apply 'specifier-instance 
+			   (face-background-pixmap face) args)))
+	(when image 
+	  (image-instance-file-name image)))
+    (apply 'face-stipple face args)))
+
 (when (string-match "XEmacs" emacs-version)
   ;; Support for special XEmacs font attributes.
   (autoload 'font-create-object "font" nil)
 
-  (unless (fboundp 'face-font-name)
-    (defun face-font-name (face &rest args)
-      (apply 'face-font face args)))
-
   (defun custom-set-face-font-size (face size &rest args)
     "Set the font of FACE to SIZE"
-    (let* ((font (apply 'face-font-name face args))
+    (let* ((font (apply 'custom-face-font-name face args))
 	   (fontobj (font-create-object font)))
       (set-font-size fontobj size)
       (apply 'font-set-face-font face fontobj args)))
 
+  (defun custom-face-font-size (face &rest args)
+    "Return the size of the font of FACE as a string."
+    (let* ((font (apply 'custom-face-font-name face args))
+	   (fontobj (font-create-object font)))
+      (format "%d" (font-size fontobj))))
+
   (defun custom-set-face-font-family (face family &rest args)
-    "Set the font of FACE to FAMILY"
-    (let* ((font (apply 'face-font-name face args))
+    "Set the font of FACE to FAMILY."
+    (let* ((font (apply 'custom-face-font-name face args))
 	   (fontobj (font-create-object font)))
       (set-font-family fontobj family)
       (apply 'font-set-face-font face fontobj args)))
 
-  (nconc custom-face-attributes
-	 '((:family (editable-field :format "Font Family: %v"
-				    :help-echo "\
+  (defun custom-face-font-family (face &rest args)
+    "Return the name of the font family of FACE."
+    (let* ((font (apply 'custom-face-font-name face args))
+	   (fontobj (font-create-object font)))
+      (font-family fontobj)))
+
+  (setq custom-face-attributes
+	(append '((:family (editable-field :format "Font Family: %v"
+					  :help-echo "\
 Name of font family to use (e.g. times).") 
-		    custom-set-face-font-family)
-	   (:size (editable-field :format "Size: %v"
-				  :help-echo "\
+			  custom-set-face-font-family
+			  custom-face-font-family)
+		  (:size (editable-field :format "Size: %v"
+					 :help-echo "\
 Text size (e.g. 9pt or 2mm).")
-		  custom-set-face-font-size))))
+			 custom-set-face-font-size
+			 custom-face-font-size)
+		  (:strikethru (toggle :format "Strikethru: %[%v%]\n"
+				      :help-echo "\
+Control whether the text should be strikethru.")
+			       set-face-strikethru-p
+			       face-strikethru-p))
+		custom-face-attributes)))
 
 ;;; Frames.
 
@@ -493,6 +509,7 @@ If FRAME is nil or omitted, initialize them for all frames."
 		(initialize-face-resources symbol frame))))
 	  (face-list)))
 
+;;;###autoload
 (defun custom-initialize-frame (&optional frame)
   "Initialize local faces for FRAME if necessary.
 If FRAME is missing or nil, the first member of (frame-list) is used."
@@ -501,10 +518,6 @@ If FRAME is missing or nil, the first member of (frame-list) is used."
   (unless (equal (custom-get-frame-properties) 
 		 (custom-get-frame-properties frame))
     (custom-initialize-faces frame)))
-
-;; Enable.  This should go away when bundled with Emacs.
-(unless (string-match "XEmacs" emacs-version)
-  (add-hook 'after-make-frame-hook 'custom-initialize-frame))
 
 ;;; Initializing.
 

@@ -3817,7 +3817,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
       ;; All articles have to be subsets of the active articles.
       (cond
        ;; Adjust "simple" lists.
-       ((memq mark '(tick dormant expirable reply save))
+       ((memq mark '(tick dormant expire reply save))
 	(while articles
 	  (when (or (< (setq article (pop articles)) min) (> article max))
 	    (set var (delq article (symbol-value var))))))
@@ -4867,7 +4867,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
       (run-hooks 'gnus-exit-group-hook)
       (gnus-summary-update-info))
     (gnus-close-group group)
-    ;; Make sure where I was, and go to next newsgroup.
+    ;; Make sure where we were, and go to next newsgroup.
     (set-buffer gnus-group-buffer)
     (unless quit-config
       (gnus-group-jump-to-group group))

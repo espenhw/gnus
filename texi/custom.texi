@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.70
+Version: 1.82
 
 @menu
 * Introduction::                
@@ -407,6 +407,10 @@ the buffer.  @samp{[Done]} will bury the buffer.
 @comment  node-name,  next,  previous,  up
 @section Declarations
 
+This section describes how to declare customization groups, variables,
+and faces.  It doesn't contain any examples, but please look at the file
+@file{cus-edit.el} which contains many declarations you can learn from.
+
 @menu
 * Declaring Groups::            
 * Declaring Variables::         
@@ -659,6 +663,10 @@ Support undo using lmi's @file{gnus-undo.el}.
 Make it possible to append to `choice', `radio', and `set' options.
 
 @item
+Make it possible to customize code, for example to enable or disable a
+global minor mode.
+
+@item
 Ask whether set or modified variables should be saved in
 @code{kill-buffer-hook}. 
 
@@ -675,10 +683,11 @@ Suggested by Jens Lautenbacher
 @samp{<jens@@lemming0.lem.uni-karlsruhe.de>}.@refill
 
 @item
-Use @file{font.el} to extract font attributes from rogue faces.
+Empty customization groups should start open (harder than it looks).
 
 @item
-Empty customization groups should start open (harder than it looks).
+Make it possible to include a comment/remark/annotation when saving an
+option.
 
 @end itemize
 

@@ -102,6 +102,7 @@
 
 (deffoo nnweb-request-scan (&optional group server)
   (nnweb-possibly-change-server group server)
+  (setq nnweb-hashtb (gnus-make-hashtable 4095))
   (funcall (nnweb-definition 'map))
   (unless nnweb-ephemeral-p
     (nnweb-write-active)
@@ -211,8 +212,6 @@
     (nnheader-temp-write nil
       (nnheader-insert-file-contents (nnweb-overview-file group))
       (goto-char (point-min))
-      (setq nnweb-hashtb (gnus-make-hashtable
-			  (count-lines (point-min) (point-max))))
       (let (header)
 	(while (not (eobp))
 	  (setq header (nnheader-parse-nov))
