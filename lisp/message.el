@@ -33,7 +33,8 @@
 (eval-when-compile
   (require 'cl)
   (defvar gnus-message-group-art)
-  (defvar gnus-list-identifiers)) ; gnus-sum is required where necessary
+  (defvar gnus-list-identifiers) ; gnus-sum is required where necessary
+  (require 'hashcash))
 (require 'canlock)
 (require 'mailheader)
 (require 'nnheader)
