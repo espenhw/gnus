@@ -1,3 +1,8 @@
+2000-04-24 16:51:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-score.el (gnus-score-headers): Copy gnus-newsgrou-scored
+	back.
+
 2000-04-24 16:01:15  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-treat-article): Make sure that the summary

@@ -1462,6 +1462,10 @@ EXTRA is the possible non-standard header."
 		(when (setq new (funcall (nth 2 entry) scores header
 					 now expire trace))
 		  (push new news))))
+	    (when (gnus-buffer-live-p gnus-summary-buffer)
+	      (let ((scored gnus-newsgroup-scored))
+		(with-current-buffer gnus-summary-buffer
+		  (setq gnus-newsgroup-scored scored))))
 	    ;; Remove the buffer.
 	    (kill-buffer (current-buffer)))
 
