@@ -1,5 +1,5 @@
 ;;; mml2015.el --- MIME Security with Pretty Good Privacy (PGP)
-;; Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: PGP MIME MML
@@ -36,7 +36,10 @@
 (defvar mml2015-use (or
 		     (progn
 		       (ignore-errors
-			 (require 'pgg))
+			;; Avoid the "Recursive load suspected" error
+			;; in Emacs 21.1.
+			(let ((recursive-load-depth-limit 100))
+			  (require 'pgg)))
 		       (and (fboundp 'pgg-sign-region)
 			    'pgg))
 		     (progn
@@ -50,7 +53,8 @@
 				 (fboundp 'mc-sign-generic)
 				 (fboundp 'mc-cleanup-recipient-headers)
 				 'mailcrypt)))
-  "The package used for PGP/MIME.")
+  "The package used for PGP/MIME.
+Valid packages include `pgg', `gpg' and `mailcrypt'.")
 
 ;; Something is not RFC2015.
 (defvar mml2015-function-alist

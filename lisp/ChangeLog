@@ -1,3 +1,8 @@
+2004-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml2015.el (mml2015-use): Avoid the "Recursive load suspected"
+	error in Emacs 21.1.
+
 2004-04-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-start.el (gnus-get-unread-articles): Fix last commit.
