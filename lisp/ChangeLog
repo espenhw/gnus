@@ -1,3 +1,8 @@
+2004-01-02  Kai Grossjohann  <kai@emptydomain.de>
+
+	* nnml.el (nnml-save-mail): Grok compressed articles.  From
+	Michael Albinus <Michael.Albinus@alcatel.de>.
+
 2004-01-02  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-ham-copy-or-move-routine): use spam-list-articles

@@ -621,8 +621,12 @@ marks file will be regenerated properly by Gnus.")
 
 (defun nnml-save-mail (group-art)
   "Called narrowed to an article."
-  (let (chars headers)
+  (let (chars headers extension)
     (setq chars (nnmail-insert-lines))
+    (setq extension
+         (and nnml-use-compressed-files
+              (> chars 1000)
+              ".gz"))
     (nnmail-insert-xref group-art)
     (run-hooks 'nnmail-prepare-save-mail-hook)
     (run-hooks 'nnml-prepare-save-mail-hook)
@@ -637,7 +641,8 @@ marks file will be regenerated properly by Gnus.")
 	(nnml-possibly-create-directory (caar ga))
 	(let ((file (concat (nnmail-group-pathname
 			     (caar ga) nnml-directory)
-			    (int-to-string (cdar ga)))))
+			    (int-to-string (cdar ga))
+			    extension)))
 	  (if first
 	      ;; It was already saved, so we just make a hard link.
 	      (funcall nnmail-crosspost-link-function first file t)
