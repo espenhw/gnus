@@ -1575,25 +1575,34 @@ Initialized from `text-mode-syntax-table.")
   (interactive)
   ;; This function might be inhibited.
   (unless gnus-inhibit-hiding
-    (save-excursion
-      (save-restriction
-	(let ((buffer-read-only nil)
-	      (case-fold-search t)
-	      (max (1+ (length gnus-sorted-header-list)))
-	      (ignored (when (not gnus-visible-headers)
-			 (cond ((stringp gnus-ignored-headers)
-				gnus-ignored-headers)
-			       ((listp gnus-ignored-headers)
-				(mapconcat 'identity gnus-ignored-headers
-					   "\\|")))))
-	      (visible
-	       (cond ((stringp gnus-visible-headers)
-		      gnus-visible-headers)
-		     ((and gnus-visible-headers
-			   (listp gnus-visible-headers))
-		      (mapconcat 'identity gnus-visible-headers "\\|"))))
-	      (inhibit-point-motion-hooks t)
-	      beg)
+    (let ((buffer-read-only nil)
+	  (case-fold-search t)
+	  (max (1+ (length gnus-sorted-header-list)))
+	  (inhibit-point-motion-hooks t)
+	  ignored visible beg)
+      (save-excursion
+	;; `gnus-ignored-headers' and `gnus-visible-headers' may be
+	;; group parameters, so we should go to the summary buffer.
+	(when (prog1
+		  (condition-case nil
+		      (progn (set-buffer gnus-summary-buffer) t)
+		    (error nil))
+		(setq ignored (when (not gnus-visible-headers)
+				(cond ((stringp gnus-ignored-headers)
+				       gnus-ignored-headers)
+				      ((listp gnus-ignored-headers)
+				       (mapconcat 'identity
+						  gnus-ignored-headers
+						  "\\|"))))
+		      visible (cond ((stringp gnus-visible-headers)
+				     gnus-visible-headers)
+				    ((and gnus-visible-headers
+					  (listp gnus-visible-headers))
+				     (mapconcat 'identity
+						gnus-visible-headers
+						"\\|")))))
+	  (set-buffer gnus-article-buffer))
+	(save-restriction
 	  ;; First we narrow to just the headers.
 	  (article-narrow-to-head)
 	  ;; Hide any "From " lines at the beginning of (mail) articles.
