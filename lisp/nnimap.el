@@ -1298,11 +1298,8 @@ function is generally only called when Gnus is shutting down."
 (defun nnimap-expiry-target (arts group server)
   (unless (eq nnmail-expiry-target 'delete)
     (with-temp-buffer
-      (dolist (art (imap-search (concat "UID " 
-					(imap-range-to-message-set
-					 (gnus-uncompress-sequence arts)))
-		    nnimap-server-buffer))
-	(nnimap-request-article art group server  (current-buffer))
+      (dolist (art arts)
+	(nnimap-request-article art group server (current-buffer))
 	;; hints for optimization in `nnimap-request-accept-article'
 	(let ((nnimap-current-move-article art)
 	      (nnimap-current-move-group group)
@@ -1320,16 +1317,16 @@ function is generally only called when Gnus is shutting down."
 	(let ((days (or (and nnmail-expiry-wait-function
 			     (funcall nnmail-expiry-wait-function group))
 			nnmail-expiry-wait)))
-	  (cond (force
-		 (nnimap-expiry-target artseq group server)
-		 (when (imap-message-flags-add
-			(imap-range-to-message-set artseq) "\\Deleted")
-		   (setq articles nil)))
-		((eq days 'immediate)
-		 (nnimap-expiry-target artseq group server)
-		 (when (imap-message-flags-add
-			(imap-range-to-message-set artseq) "\\Deleted")
-		   (setq articles nil)))
+	  (cond ((or force (eq days 'immediate))
+		 (let ((oldarts (imap-search
+				 (concat "UID " 
+					 (imap-range-to-message-set artseq)))))
+		   (when oldarts
+		     (nnimap-expiry-target oldarts group server))
+		   (when (imap-message-flags-add
+			  (imap-range-to-message-set oldarts) "\\Deleted")
+		     (setq articles (gnus-set-difference
+				     articles oldarts)))))
 		((numberp days)
 		 (let ((oldarts (imap-search
 				 (format nnimap-expunge-search-string
@@ -1337,14 +1334,12 @@ function is generally only called when Gnus is shutting down."
 					 (nnimap-date-days-ago days))))
 		       (imap-fetch-data-hook
 			'(nnimap-request-expire-articles-progress)))
-		   (nnimap-expiry-target oldarts group server)
-		   (and oldarts
-			(imap-message-flags-add
-			 (imap-range-to-message-set
-			  (gnus-compress-sequence oldarts))
-			 "\\Deleted")
-			(setq articles (gnus-set-difference
-					articles oldarts))))))))))
+		   (when oldarts
+		     (nnimap-expiry-target oldarts group server))
+		   (when (imap-message-flags-add
+			  (imap-range-to-message-set oldarts) "\\Deleted")
+		     (setq articles (gnus-set-difference 
+				     articles oldarts))))))))))
   ;; return articles not deleted
   articles)
 
