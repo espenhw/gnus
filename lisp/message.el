@@ -4233,14 +4233,9 @@ the message."
 Optional NEWS will use news to forward instead of mail.
 Optional DIGEST will use digest to forward."
   (interactive "P")
-  (when (and message-forward-show-mml
-	     (not digest))
-    (mime-to-mml))
   (let* ((cur (current-buffer))
-	 (subject (if message-forward-show-mml
-		      (message-make-forward-subject)
-		    (mail-decode-encoded-word-string
-		     (message-make-forward-subject))))
+	 (subject (mail-decode-encoded-word-string
+		   (message-make-forward-subject)))
 	 art-beg)
     (if news
 	(message-news nil subject)
@@ -4263,7 +4258,11 @@ Optional DIGEST will use digest to forward."
 	      (insert-buffer-substring cur)
 	    (mml-insert-buffer cur))
 	(if message-forward-show-mml
-	    (insert-buffer-substring cur)
+	    (save-restriction
+	      (narrow-to-region (point) (point))
+	      (insert-buffer-substring cur)
+	      (mime-to-mml)
+	      (goto-char (point-max)))
 	  (mml-insert-buffer cur)))
       (setq e (point))
       (if message-forward-as-mime
