@@ -2221,7 +2221,9 @@ ADDRESS."
       (require backend))
     (gnus-check-server meth)
     (when (gnus-check-backend-function 'request-create-group nname)
-      (gnus-request-create-group nname nil args))
+      (unless (gnus-request-create-group nname nil args)
+	(error "Could not create group on server: %s"
+	       (nnheader-get-report backend))))
     t))
 
 (defun gnus-group-delete-groups (&optional arg)

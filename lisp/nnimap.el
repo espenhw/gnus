@@ -1327,7 +1327,9 @@ function is generally only called when Gnus is shutting down."
 (deffoo nnimap-request-create-group (group &optional server args)
   (when (nnimap-possibly-change-server server)
     (or (imap-mailbox-status group 'uidvalidity nnimap-server-buffer)
-	(imap-mailbox-create group nnimap-server-buffer))))
+	(imap-mailbox-create group nnimap-server-buffer)
+	(nnheader-report 'nnimap "%S"
+			 (imap-error-text nnimap-server-buffer)))))
 
 (defun nnimap-time-substract (time1 time2)
   "Return TIME for TIME1 - TIME2."
