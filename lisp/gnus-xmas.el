@@ -128,28 +128,15 @@ It is provided only to ease porting of broken FSF Emacs programs."
       window (min bottom (save-excursion
 			   (forward-line (- top)) (point)))))))
 
-(defun gnus-xmas-group-insert-group-line-info (group)
-  (let ((entry (gnus-gethash group gnus-newsrc-hashtb)) 
-	(beg (point))
-	active info)
-    (if entry
-	(progn
-	  (setq info (nth 2 entry))
-	  (gnus-group-insert-group-line 
-	   group (gnus-info-level info) (gnus-info-marks info)
-	   (car entry) (gnus-info-method info)))
-      (setq active (gnus-gethash group gnus-active-hashtb))
-	  
-      (gnus-group-insert-group-line 
-       group (if (member group gnus-zombie-list) gnus-level-zombie
-		   gnus-level-killed)
-       nil (if active (- (1+ (cdr active)) (car active)) 0) nil))
-    (save-excursion
-      (goto-char beg)
-      (remove-text-properties 
-       (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
-       '(gnus-group nil)))))
-
+(defun gnus-xmas-group-remove-excess-properties ()
+  (let ((end (point))
+	(beg (progn (forward-line -1) (point))))
+    (remove-text-properties (1+ beg) end '(gnus-group nil))
+    (remove-text-properties 
+     beg end 
+     '(gnus-topic nil gnus-topic-level nil gnus-topic-visible nil))
+    (goto-char end)))
+		  
 (defun gnus-xmas-copy-article-buffer (&optional article-buffer)
   (setq gnus-article-copy (get-buffer-create " *gnus article copy*"))
   (buffer-disable-undo gnus-article-copy)
@@ -260,6 +247,13 @@ call it with the value of the `gnus-data' text property."
   (or (boundp 'read-event) (fset 'read-event 'next-command-event))
 
   (defvar gnus-mouse-face-prop 'highlight)
+
+  (defun gnus-byte-code (func)
+    "Return a form that can be `eval'ed based on FUNC."
+    (let ((fval (symbol-function func)))
+      (if (byte-code-function-p fval)
+	  (list 'funcall fval)
+	(cons 'progn (cdr (cdr fval))))))
       
   ;; Fix by "jeff (j.d.) sparkes" <jsparkes@bnr.ca>.
   (defvar gnus-display-type (device-class)
@@ -315,8 +309,8 @@ pounce directly on the real variables themselves.")
   (fset 'gnus-highlight-selected-summary
 	'gnus-xmas-highlight-selected-summary)
   (fset 'gnus-summary-recenter 'gnus-xmas-summary-recenter)
-  (fset 'gnus-group-insert-group-line-info
-	'gnus-xmas-group-insert-group-line-info)
+  (fset 'gnus-group-remove-excess-properties
+	'gnus-xmas-group-remove-excess-properties)
   (fset 'gnus-copy-article-buffer 'gnus-xmas-copy-article-buffer)
   (fset 'gnus-article-push-button 'gnus-xmas-article-push-button)
   (fset 'gnus-article-add-button 'gnus-xmas-article-add-button)

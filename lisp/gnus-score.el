@@ -569,7 +569,14 @@ SCORE is the score to add."
   (gnus-score-set 'mark (list score))
   (gnus-score-set 'touched '(t))
   (setq gnus-summary-mark-below score)
-  (gnus-summary-update-lines))
+  (gnus-score-update-lines))
+
+(defun gnus-score-update-lines ()
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (eobp))
+      (gnus-summary-update-line)
+      (forward-line 1))))
 
 (defun gnus-score-set-expunge-below (score)
   "Automatically expunge articles with score below SCORE."
