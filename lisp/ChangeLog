@@ -1,5 +1,12 @@
 2003-11-30  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-agent.el (gnus-agent-expire-group-1): Bind message-log-max
+	when messaging "X % completed" to inhibit logging them to the
+	message buffer.
+	(gnus-agent-expire-group-1): Mention group name in messages.
+	(gnus-agent-expire-group-1): Only print a message for an article
+	when there actually was something done to it.
+
 	* mm-util.el (mm-enable-multibyte): Call set-buffer-multibyte with
 	'to argument.  Fixes something or other in Emacs 22, and is
 	backwards compatible.  From Kenichi Handa <handa@m17n.org>.
