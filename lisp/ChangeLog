@@ -1,3 +1,8 @@
+2003-01-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-read-newsrc-el-file): Make sure the .eld
+	file exists.
+
 2003-01-10  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-read-group-1): Don't select first
