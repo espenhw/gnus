@@ -1,3 +1,8 @@
+2003-05-05  Dave Love  <fx@gnu.org>
+
+	* mm-util.el (mm-default-multibyte-p): New.
+	(mm-coding-system-p): Maybe use find-coding-systems.
+
 2003-05-04  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (with-syntax-table): Define if necessary.
