@@ -1,3 +1,9 @@
+2001-07-04  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-importantize-dormant): New variable.
+	(nnimap-request-update-info-internal): Use it.
+	(nnimap-request-set-mark): Ditto.
+
 2001-07-04  Didier Verna  <didier@lrde.epita.fr>
 
 	* nntp.el (nntp-send-command): don't pass a buffer argument to

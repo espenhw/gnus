@@ -263,6 +263,12 @@ be `UID %s NOT SENTSINCE %s' to make nnimap use the Date: header
 instead of the internal date of messages.  See section 6.4.4 of RFC
 2060 for more information on valid strings.")
 
+(defvoo nnimap-importantize-dormant t
+  "*If non-nil, mark \"dormant\" articles as \"ticked\" for other IMAP clients.
+Note that within Gnus, dormant articles will still (only) be
+marked as ticked.  This is to make \"dormant\" articles stand out,
+just like \"ticked\" articles, in other IMAP clients.")
+
 (defvoo nnimap-server-address nil
   "Obsolete.  Use `nnimap-address'.")
 
@@ -905,17 +911,18 @@ function is generally only called when Gnus is shutting down."
 		     t)))
 		gnus-article-mark-lists)
 
-	;; nnimap mark dormant article as ticked too (for other clients)
-	;; so we remove that mark for gnus since we support dormant
-	(gnus-info-set-marks
-	 info 
-	 (nnimap-update-alist-soft
-	  'tick
-	  (gnus-remove-from-range
-	   (cdr-safe (assoc 'tick (gnus-info-marks info)))
-	   (cdr-safe (assoc 'dormant (gnus-info-marks info))))
-	  (gnus-info-marks info))
-	 t)
+	(when nnimap-importantize-dormant
+	  ;; nnimap mark dormant article as ticked too (for other clients)
+	  ;; so we remove that mark for gnus since we support dormant
+	  (gnus-info-set-marks
+	   info 
+	   (nnimap-update-alist-soft
+	    'tick
+	    (gnus-remove-from-range
+	     (cdr-safe (assoc 'tick (gnus-info-marks info)))
+	     (cdr-safe (assoc 'dormant (gnus-info-marks info))))
+	    (gnus-info-marks info))
+	   t))
 	
 	(gnus-message 5 "nnimap: Updating info for %s...done"
 		      (gnus-info-group info))
@@ -939,9 +946,10 @@ function is generally only called when Gnus is shutting down."
 		marks)
 	    ;; cache flags are pointless on the server
 	    (setq cmdmarks (delq 'cache cmdmarks))
-	    ;; flag dormant articles as ticked
-	    (if (memq 'dormant cmdmarks)
-		(setq cmdmarks (cons 'tick cmdmarks)))
+	    (when nnimap-importantize-dormant
+	      ;; flag dormant articles as ticked
+	      (if (memq 'dormant cmdmarks)
+		  (setq cmdmarks (cons 'tick cmdmarks))))
 	    ;; remove stuff we are forbidden to store
 	    (mapcar (lambda (mark)
 		      (if (imap-message-flag-permanent-p
