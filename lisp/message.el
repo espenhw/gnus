@@ -2020,7 +2020,7 @@ Prefix arg means justify as well."
 
 (defun message-do-auto-fill ()
   "Like `do-auto-fill', but don't fill in message header."
-  (when (message-point-in-header-p)
+  (unless (message-point-in-header-p)
     (do-auto-fill)))
 
 (defun message-insert-signature (&optional force)
