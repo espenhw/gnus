@@ -781,7 +781,7 @@ spam-use-* variable.")
     nil))
 
 (defun spam-fetch-field-message-id-fast (article)
-  "Fetch the `subject' field quickly, using the internal
+  "Fetch the `Message-ID' field quickly, using the internal
   gnus-data-list function"
   (if (and (numberp article)
 	   (assoc article (gnus-data-list nil)))
@@ -1539,8 +1539,8 @@ REMOVE not nil, remove the ADDRESSES."
 		 (point-min) (point-max) 
 		 spam-bogofilter-path
 		 nil temp-buffer-name nil
-		 (if db `("-d" ,db "-v") `("-v")))
-	  (setq return (spam-check-bogofilter-headers score)))))
+		 (if db `("-d" ,db "-v") `("-v"))))
+	(setq return (spam-check-bogofilter-headers score))))
     return))
 
 (defun spam-bogofilter-register-with-bogofilter (articles 

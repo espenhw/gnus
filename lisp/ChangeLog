@@ -1,3 +1,10 @@
+2003-12-01  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-bogofilter): check the bogofilter headers
+	AFTER the save-excursion scope is over.  From Adrian Lanz
+	<lanz@fowi.ethz.ch>.
+	(spam-fetch-field-message-id-fast): doc fix
+
 2003-12-01  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-agent.el (gnus-agent-expire-days): Doc fix.
