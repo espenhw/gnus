@@ -818,6 +818,7 @@ used."
 (defcustom gnus-mime-action-alist
   '(("save to file" . gnus-mime-save-part)
     ("save and strip" . gnus-mime-save-part-and-strip)
+    ("delete part" . gnus-mime-delete-part)
     ("display as text" . gnus-mime-inline-part)
     ("view the part" . gnus-mime-view-part)
     ("pipe to command" . gnus-mime-pipe-part)
@@ -3734,6 +3735,7 @@ General format specifiers can also be used.  See Info node
     (gnus-mime-view-part-as-charset "C" "View As charset...")
     (gnus-mime-save-part "o" "Save...")
     (gnus-mime-save-part-and-strip "\C-o" "Save and Strip")
+    (gnus-mime-delete-part "d" "Delete part")
     (gnus-mime-copy-part "c" "View As Text, In Other Buffer")
     (gnus-mime-inline-part "i" "View As Text, In This Buffer")
     (gnus-mime-view-part-internally "E" "View Internally")
@@ -3872,6 +3874,87 @@ General format specifiers can also be used.  See Info node
 	   ,(or (mail-header-references gnus-current-headers) "")
 	   ,(gnus-group-read-only-p)
 	   ,gnus-summary-buffer no-highlight))))))
+
+(defun gnus-mime-delete-part ()
+  "Delete the MIME part under point.
+Replace it with some information about the removed part."
+  (interactive)
+  (gnus-article-check-buffer)
+  (let* ((data (get-text-property (point) 'gnus-data))
+	 (handles gnus-article-mime-handles)
+	 (none "(none)")
+	 (description
+	  (or
+	   (mail-decode-encoded-word-string (or (mm-handle-description data)
+						none))))
+	 (filename
+	  (or (mail-content-type-get (mm-handle-disposition data) 'filename)
+	      none))
+	 (type (mm-handle-media-type data)))
+    (if (mm-multiple-handles gnus-article-mime-handles)
+	(error "This function is not implemented"))
+    (with-current-buffer (mm-handle-buffer data)
+      (let ((bsize (format "%s" (buffer-size))))
+	(erase-buffer)
+	(insert
+	 (concat
+	  "<#part type=text/plain nofile=yes disposition=attachment"
+	  " description=\"Deleted attachment (" bsize " Byte)\">"
+	  ",----\n"
+	  "| The following attachment has been deleted:\n"
+	  "|\n"
+	  "| Type:           " type "\n"
+	  "| Filename:       " filename "\n"
+	  "| Size (encoded): " bsize " Byte\n"
+	  "| Description:    " description "\n"
+	  "`----\n"
+	  "<#/part>"))
+	(setcdr data
+		(cdr (mm-make-handle nil `("text/plain"))))))
+    (set-buffer gnus-summary-buffer)
+    ;; FIXME: maybe some of the following code (borrowed from
+    ;; `gnus-mime-save-part-and-strip') isn't necessary?
+    (gnus-article-edit-article
+     `(lambda ()
+	(erase-buffer)
+	(let ((mail-parse-charset (or gnus-article-charset
+				      ',gnus-newsgroup-charset))
+	      (mail-parse-ignored-charsets
+	       (or gnus-article-ignored-charsets
+		   ',gnus-newsgroup-ignored-charsets))
+	      (mbl mml-buffer-list))
+	  (setq mml-buffer-list nil)
+	  (insert-buffer gnus-original-article-buffer)
+	  (mime-to-mml ',handles)
+	  (setq gnus-article-mime-handles nil)
+	  (let ((mbl1 mml-buffer-list))
+	    (setq mml-buffer-list mbl)
+	    (set (make-local-variable 'mml-buffer-list) mbl1))
+	  ;; LOCAL argument of add-hook differs between GNU Emacs
+	  ;; and XEmacs. make-local-hook makes sure they are local.
+	  (make-local-hook 'kill-buffer-hook)
+	  (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t)))
+     `(lambda (no-highlight)
+	(let ((mail-parse-charset (or gnus-article-charset
+				      ',gnus-newsgroup-charset))
+	      (message-options message-options)
+	      (message-options-set-recipient)
+	      (mail-parse-ignored-charsets
+	       (or gnus-article-ignored-charsets
+		   ',gnus-newsgroup-ignored-charsets)))
+	  (mml-to-mime)
+	  (mml-destroy-buffers)
+	  (remove-hook 'kill-buffer-hook
+		       'mml-destroy-buffers t)
+	  (kill-local-variable 'mml-buffer-list))
+	(gnus-summary-edit-article-done
+	 ,(or (mail-header-references gnus-current-headers) "")
+	 ,(gnus-group-read-only-p)
+	 ,gnus-summary-buffer no-highlight))))
+  ;; Not in `gnus-mime-save-part-and-strip':
+  (gnus-article-edit-done)
+  (gnus-summary-expand-window)
+  (gnus-summary-show-article))
 
 (defun gnus-mime-save-part ()
   "Save the MIME part under point."
