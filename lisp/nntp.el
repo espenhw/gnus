@@ -1243,7 +1243,9 @@ password contained in '~/.nntp-authinfo'."
       (unless (< len 10)
 	(setq nntp-have-messaged t)
 	(nnheader-message 7 "nntp read: %dk" len)))
-    (accept-process-output process (or timeout 1))
+    (if timeout
+	(accept-process-output process timeout)
+      (accept-process-output process 0 100))
     ;; accept-process-output may update status of process to indicate
     ;; that the server has closed the connection.  This MUST be
     ;; handled here as the buffer restored by the save-excursion may

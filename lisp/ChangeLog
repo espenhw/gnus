@@ -1,5 +1,9 @@
 2003-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-group.el (gnus-group-expire-articles): Doc fix.
+
+	* nntp.el (nntp-accept-process-output): Use a 0.1 second timeout. 
+
 	* gnus.el (gnus-version-number): Bump version number.
 
 2003-01-05 01:53:30 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
