@@ -283,14 +283,20 @@ This is taken from RFC 2396.")
 	  (url-package-name (or mm-url-package-name
 				url-package-name))
 	  (url-package-version (or mm-url-package-version
-				   url-package-version)))
-      (prog1
-	  (url-insert-file-contents url)
-	(save-excursion
-	  (goto-char (point-min))
-	  (while (re-search-forward "\r 1000\r ?" nil t)
-	    (replace-match "")))
-	(setq buffer-file-name name)))))
+				   url-package-version))
+	  result)
+      (setq result (url-insert-file-contents url))
+      (save-excursion
+	(goto-char (point-min))
+	(while (re-search-forward "\r 1000\r ?" nil t)
+	  (replace-match "")))
+      (setq buffer-file-name name)
+      (if (fboundp 'url-generic-parse-url)
+	  (setq url-current-object (url-generic-parse-url
+				    (if (listp result)
+					(car result)
+				      result))))
+      result)))
 
 (defun mm-url-insert-file-contents-external (url)
   (let (program args)
@@ -332,11 +338,6 @@ If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
 		  (delete-region (point-min) (point-max))
 		  (setq result (mm-url-insert url t)))))
 	  (setq result (mm-url-insert-file-contents url)))
-	(if (fboundp 'url-generic-parse-url)
-	    (setq url-current-object (url-generic-parse-url
-				      (if (listp result)
-					  (car result)
-					result))))
 	(setq done t)))
     result))
 

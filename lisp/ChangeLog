@@ -1,5 +1,8 @@
 2003-03-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-url.el (mm-url-insert): Move url-current-object stuff into
+	mm-url-insert-file-contents.
+
 	* nnrss.el (nnrss-fetch): Fetch the local stuff.
 	(nnrss-check-group): Use it.
 
