@@ -4600,7 +4600,8 @@ give as trustworthy answer as possible."
       user-domain)
      ;; Default to this bogus thing.
      (t
-      (concat system-name ".i-did-not-set--mail-host-address--so-tickle-me")))))
+      (concat system-name
+	      ".i-did-not-set--mail-host-address--so-tickle-me")))))
 
 (defun message-make-host-name ()
   "Return the name of the host."
