@@ -55,7 +55,7 @@
 (defvoo nnmbox-current-group nil
   "Current nnmbox news group directory.")
 
-(defconst nnmbox-mbox-buffer nil)
+(defvar nnmbox-mbox-buffer nil)
 
 (defvoo nnmbox-status-string "")
 

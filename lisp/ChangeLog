@@ -1,3 +1,10 @@
+2003-04-13  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-local-variables): Use defvar since
+	we're let-binding it.
+
+	* nnmbox.el (nnmbox-mbox-buffer): It's not a constant.
+
 2003-04-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-group-prefixed-name): Comment out the test for

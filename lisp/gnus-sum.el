@@ -1327,7 +1327,7 @@ This list will always be a subset of gnus-newsgroup-undownloaded.")
 
 (defvar gnus-article-before-search nil)
 
-(defconst gnus-summary-local-variables
+(defvar gnus-summary-local-variables
   '(gnus-newsgroup-name
     gnus-newsgroup-begin gnus-newsgroup-end
     gnus-newsgroup-last-rmail gnus-newsgroup-last-mail
