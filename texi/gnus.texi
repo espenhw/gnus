@@ -12907,7 +12907,7 @@ which normally is the mailbox which receive incoming mail.
 The predicate used to find articles to fetch.  The default, @samp{UNSEEN
 UNDELETED}, is probably the best choice for most people, but if you
 sometimes peek in your mailbox with a @sc{imap} client and mark some
-articles as read (or; SEEN) you might want to set this to @samp{nil}.
+articles as read (or; SEEN) you might want to set this to @samp{1:*}.
 Then all articles in the mailbox is fetched, no matter what.  For a
 complete list of predicates, see RFC 2060 section 6.4.4.
 
