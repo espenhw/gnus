@@ -192,7 +192,7 @@ If this is `ask' the hook will query the user."
 (defmacro gnus-agent-with-fetch (&rest forms)
   "Do FORMS safely."
   `(unwind-protect
-       (progn
+       (let ((gnus-agent-fetching t))
 	 (gnus-agent-start-fetch)
 	 ,@forms)
      (gnus-agent-stop-fetch)))

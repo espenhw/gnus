@@ -1,3 +1,11 @@
+2000-10-07 09:18:53  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-agent-fetching): New variable.
+	* gnus-agent.el (gnus-agent-with-fetch): Bind it.
+	* gnus-score.el (gnus-score-body): Don't score body when
+	agent-fetching.
+	(gnus-score-followup): Don't score followup either. 
+
 2000-10-07 08:19:17  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el: Define dynamic variables in eval-when-compile.
