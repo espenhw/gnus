@@ -8944,7 +8944,8 @@ This is a list of regexps.  @sc{mime} types that match a regexp from
 this list won't have @sc{mime} buttons inserted unless they aren't
 displayed or this variable is overridden by
 @code{gnus-buttonized-mime-types}.  The default value is
-@code{(".*/.*")}.
+@code{(".*/.*")}.  This variable is only used when
+@code{gnus-inhibit-mime-unbuttonizing} is nil.
 
 @item gnus-buttonized-mime-types
 @vindex gnus-buttonized-mime-types
@@ -8952,6 +8953,8 @@ This is a list of regexps.  @sc{mime} types that match a regexp from
 this list will have @sc{mime} buttons inserted unless they aren't
 displayed.  This variable overrides
 @code{gnus-unbuttonized-mime-types}.  The default value is @code{nil}.
+This variable is only used when @code{gnus-inhibit-mime-unbuttonizing}
+is nil.
 
 To see e.g. security buttons but no other buttons, you could set this
 variable to @code{("multipart/signed")} and leave

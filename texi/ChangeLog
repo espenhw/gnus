@@ -1,3 +1,7 @@
+2003-01-08  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (MIME Commands): Add.
+
 2003-01-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Various Commands): Addition.
