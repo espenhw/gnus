@@ -1,5 +1,9 @@
 2003-04-08  Jesper Harder  <harder@ifa.au.dk>
 
+	* mm-uu.el (mm-uu-diff-groups-regexp, mm-uu-type-alist)
+	(mm-uu-diff-extract, mm-uu-diff-test): New functionality:
+	recognize diffs.
+
 	* mm-bodies.el (mm-decode-body): Use the supplied charset
 	unconditionally if `code-pages' hasn't been loaded.
 

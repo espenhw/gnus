@@ -135,8 +135,8 @@ descend the message, following the structure, and return a tree of
 @vindex mm-uu-configure-list
 
 Gnus also understands some non-@sc{mime} attachments, such as
-postscript, uuencode, binhex, yenc, shar, forward, gnatsweb, pgp.
-Each of these features can be disabled by add an item into
+postscript, uuencode, binhex, yenc, shar, forward, gnatsweb, pgp,
+diff.  Each of these features can be disabled by add an item into
 @code{mm-uu-configure-list}.  For example,
 
 @lisp
@@ -187,8 +187,16 @@ PGP public keys.
 
 @item emacs-sources
 @findex emacs-sources
+@vindex mm-uu-emacs-sources-regexp
 Emacs source code.  This item works only in the groups matching
 @code{mm-uu-emacs-sources-regexp}.
+
+@item diff
+@vindex diff
+@vindex mm-uu-diff-groups-regexp
+Patches.  This is intended for groups where diffs of committed files
+are automatically sent to.  It only works in groups matching
+@code{mm-uu-diff-groups-regexp}.
 
 @end table
 
