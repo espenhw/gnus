@@ -43,12 +43,12 @@
 ;;; Code:
 
 (eval-and-compile
-  (fset 'fill-flowed-point-at-bol
+  (defalias 'fill-flowed-point-at-bol
 	(if (fboundp 'point-at-bol)
 	    'point-at-bol
 	  'line-beginning-position))
   
-  (fset 'fill-flowed-point-at-eol
+  (defalias 'fill-flowed-point-at-eol
 	(if (fboundp 'point-at-eol)
 	    'point-at-eol
 	  'line-end-position)))
