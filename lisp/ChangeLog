@@ -1,3 +1,9 @@
+2000-07-10 22:41:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-threaded-retrieve-headers): Save point.
+	* webmail.el (webmail-fetch): Bind 
+	url-http-silence-on-insecure-redirection.
+
 2000-07-10 11:43:22  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-threaded-retrieve-headers): Use

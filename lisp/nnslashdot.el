@@ -155,11 +155,14 @@
 	    (forward-line 1)
 	    (if (looking-at
 		 "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
-		(setq from (concat (nnweb-decode-entities-string (match-string 1))
-				   " <" (match-string 2) ">"))
+		(setq point (match-end 0) 
+		      from (concat 
+			    (nnweb-decode-entities-string (match-string 1))
+			    " <" (match-string 2) ">"))
 	      (looking-at "by \\(.+\\) on ")
-	      (setq from (nnweb-decode-entities-string (match-string 1))))
-	    (goto-char (- (match-end 0) 5))
+	      (setq point (match-end 0) 
+		    from (nnweb-decode-entities-string (match-string 1))))
+	    (goto-char (- point 5))
 	    (search-forward " on ")
 	    (setq date
 		  (nnslashdot-date-to-date

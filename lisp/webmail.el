@@ -278,7 +278,7 @@
       (webmail-fetch-form (car xurl) (webmail-eval (cdr xurl))))
      (t
       (nnweb-insert (apply 'format (webmail-eval xurl)))))))
-  
+
 (defun webmail-init ()
   "Initialize buffers and such."
   (if (gnus-buffer-live-p webmail-buffer)
@@ -337,6 +337,7 @@
 	  (url-confirmation-func (if (memq 'post webmail-paranoid)
 				     'webmail-url-confirmation-func
 				   url-confirmation-func))
+	  (url-http-silence-on-insecure-redirection t)
 	  url-cookie-storage url-cookie-secure-storage
 	  url-cookie-confirmation
 	  item id (n 0))
