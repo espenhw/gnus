@@ -1626,10 +1626,13 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (ignore-errors (time-less-p days (time-since time))))))))
 
 (defun nnmail-expiry-target-group (target group)
-  (when (nnheader-functionp target)
-    (setq target (funcall target group)))
-  (unless (eq target 'delete)
-    (gnus-request-accept-article target nil nil t)))
+  (let (nnmail-cache-accepted-message-ids)
+    ;; Don't enter Message-IDs into cache.
+    ;; Let users hack it in TARGET function.
+    (when (nnheader-functionp target)
+      (setq target (funcall target group)))
+    (unless (eq target 'delete)
+      (gnus-request-accept-article target nil nil t))))
 
 (defun nnmail-check-syntax ()
   "Check (and modify) the syntax of the message in the current buffer."

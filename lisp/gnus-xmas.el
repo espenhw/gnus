@@ -703,13 +703,15 @@ XEmacs compatibility workaround."
 	       (save-excursion
 		 (gnus-set-work-buffer)
 		 (insert-buffer-substring cur beg end)
-		 (gnus-xmas-call-region "uncompface")
-		 (goto-char (point-min))
-		 (insert "/* Width=48, Height=48 */\n")
-		 (gnus-xmas-call-region "icontopbm")
-		 (gnus-xmas-call-region "ppmtoxpm")
-		 (make-glyph
-		  (vector 'xpm :data (buffer-string))))))
+		 (let ((coding-system-for-read 'binary)
+		       (coding-system-for-write 'binary))
+		   (gnus-xmas-call-region "uncompface")
+		   (goto-char (point-min))
+		   (insert "/* Width=48, Height=48 */\n")
+		   (gnus-xmas-call-region "icontopbm")
+		   (gnus-xmas-call-region "ppmtoxpm")
+		   (make-glyph
+		    (vector 'xpm :data (buffer-string)))))))
 	    (t
 	     (make-glyph [nothing]))))
 	  (ext (make-extent (progn
