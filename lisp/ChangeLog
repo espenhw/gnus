@@ -1,3 +1,19 @@
+2003-03-23  Simon Josefsson  <jas@extundo.com>
+
+	* tls.el: New file.
+
+	* nnimap.el (nnimap-server-port, nnimap-stream): Say TLS/SSL
+	instead of SSL.
+	(nnimap-stream): Add other streams, link to imap variables.
+	(nnimap-authenticator): Add other authenticator, link to imap
+	variables.
+
+	* imap.el: Autoload open-tls-stream.
+	(imap-streams): Add tls in front of ssl.
+	(imap-stream-alist): Add tls.
+	(imap-default-tls-port): New variable.
+	(imap-tls-p, imap-tls-open): New functions.
+
 2003-03-22  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-url.el (mm-url-insert-file-contents): parse url only if

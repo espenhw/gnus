@@ -83,7 +83,7 @@
 
 (defvoo nnimap-server-port nil
   "Port number on physical IMAP server.
-If nil, defaults to 993 for SSL connections and 143 otherwise.")
+If nil, defaults to 993 for TLS/SSL connections and 143 otherwise.")
 
 ;; Splitting variables
 
@@ -260,14 +260,16 @@ handle.
 
 Change this if
 
-1) you want to connect with SSL.  The SSL integration with IMAP is
-   brain-dead so you'll have to tell it specifically.
+1) you want to connect with TLS/SSL.  The TLS/SSL integration
+   with IMAP is suboptimal so you'll have to tell it
+   specifically.
 
 2) your server is more capable than your environment -- i.e. your
    server accept Kerberos login's but you haven't installed the
    `imtest' program or your machine isn't configured for Kerberos.
 
-Possible choices: kerberos4, ssl, network")
+Possible choices: gssapi, kerberos4, starttls, tls, ssl, network, shell.
+See also `imap-streams' and `imap-stream-alist'.")
 
 (defvoo nnimap-authenticator nil
   "How nnimap authenticate itself to the server.
@@ -281,7 +283,8 @@ connect to a server that accept Kerberos login's but you haven't
 installed the `imtest' program or your machine isn't configured for
 Kerberos.
 
-Possible choices: kerberos4, cram-md5, login, anonymous.")
+Possible choices: gssapi, kerberos4, digest-md5, cram-md5, login, anonymous.
+See also `imap-authenticators' and `imap-authenticator-alist'")
 
 (defvoo nnimap-directory (nnheader-concat gnus-directory "overview/")
   "Directory to keep NOV cache files for nnimap groups.

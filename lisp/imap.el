@@ -152,6 +152,7 @@
   (autoload 'utf7-decode "utf7")
   (autoload 'format-spec "format-spec")
   (autoload 'format-spec-make "format-spec")
+  (autoload 'open-tls-stream "tls")
   ;; Avoid use gnus-point-at-eol so we're independent of Gnus.  These
   ;; days we have point-at-eol anyhow.
   (if (fboundp 'point-at-eol)
@@ -251,12 +252,13 @@ encoded mailboxes which doesn't translate into ISO-8859-1."
 (defvar imap-fetch-data-hook nil
   "Hooks called after receiving each FETCH response.")
 
-(defvar imap-streams '(gssapi kerberos4 starttls ssl network shell)
+(defvar imap-streams '(gssapi kerberos4 starttls tls ssl network shell)
   "Priority of streams to consider when opening connection to server.")
 
 (defvar imap-stream-alist
   '((gssapi    imap-gssapi-stream-p    imap-gssapi-open)
     (kerberos4 imap-kerberos4-stream-p imap-kerberos4-open)
+    (tls       imap-tls-p              imap-tls-open)
     (ssl       imap-ssl-p              imap-ssl-open)
     (network   imap-network-p          imap-network-open)
     (shell     imap-shell-p            imap-shell-open)
@@ -299,6 +301,7 @@ for doing the actual authentication.")
 
 (defconst imap-default-port 143)
 (defconst imap-default-ssl-port 993)
+(defconst imap-default-tls-port 993)
 (defconst imap-default-stream 'network)
 (defconst imap-coding-system-for-read 'binary)
 (defconst imap-coding-system-for-write 'binary)
@@ -625,6 +628,31 @@ sure of changing the value of `foo'."
 	  done)
       (message "imap: Opening SSL connection with `%s'...failed" cmd)
       nil)))
+
+(defun imap-tls-p (buffer)
+  nil)
+
+(defun imap-tls-open (name buffer server port)
+  (let* ((port (or port imap-default-tls-port))
+	 (coding-system-for-read imap-coding-system-for-read)
+	 (coding-system-for-write imap-coding-system-for-write)
+	 (process (open-tls-stream name buffer server port)))
+    (when process
+      (while (and (memq (process-status process) '(open run))
+		  (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
+		  (goto-char (point-max))
+		  (forward-line -1)
+		  (not (imap-parse-greeting)))
+	(accept-process-output process 1)
+	(sit-for 1))
+      (and imap-log
+	   (with-current-buffer (get-buffer-create imap-log-buffer)
+	     (imap-disable-multibyte)
+	     (buffer-disable-undo)
+	     (goto-char (point-max))
+	     (insert-buffer-substring buffer)))
+      (when (memq (process-status process) '(open run))
+	process))))
 
 (defun imap-network-p (buffer)
   t)
