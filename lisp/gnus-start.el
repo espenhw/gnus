@@ -718,6 +718,10 @@ prompt the user for the name of an NNTP server to use."
       (bury-buffer gnus-dribble-buffer)
       (set-buffer obuf))))
 
+(defun gnus-dribble-touch ()
+  "Touch the dribble buffer."
+  (gnus-dribble-enter ""))
+
 (defun gnus-dribble-read-file ()
   "Read the dribble file from disk."
   (let ((dribble-file (gnus-dribble-file-name)))
@@ -833,7 +837,9 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
       (gnus-cache-open))
 
     ;; Possibly eval the dribble file.
-    (and init (or gnus-use-dribble-file gnus-slave) (gnus-dribble-eval-file))
+    (and init 
+	 (or gnus-use-dribble-file gnus-slave) 
+	 (gnus-dribble-eval-file))
 
     ;; Slave Gnusii should then clear the dribble buffer.
     (when (and init gnus-slave)
@@ -1523,7 +1529,7 @@ newsgroup."
 	     (push group gnus-killed-list)
 	     (gnus-sethash group group gnus-killed-hashtb))))))
    gnus-active-hashtb)
-  (gnus-dribble-enter ""))
+  (gnus-dribble-touch))
 
 ;; Get the active file(s) from the backend(s).
 (defun gnus-read-active-file ()
@@ -2187,6 +2193,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	      (delq 'gnus-killed-list (copy-sequence gnus-variable-list))))
 	   ;; Peel off the "dummy" group.
 	   (gnus-newsrc-alist (cdr gnus-newsrc-alist))
+	   ;; Make sure the printing isn't abbreviated.
+	   (print-length nil)
 	   variable)
       ;; Insert the variables into the file.
       (while variables
@@ -2313,6 +2321,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	      (ignore-errors
 		(delete-file file))))
 	  (setq slave-files (cdr slave-files))))
+      (gnus-dribble-touch)
       (gnus-message 7 "Reading slave newsrcs...done"))))
 
 

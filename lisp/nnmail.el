@@ -502,7 +502,7 @@ parameter.  It should return nil, `warn' or `delete'."
 	(when (file-directory-p inbox)
 	  (setq inbox (expand-file-name (user-login-name) inbox))))
       (if (member inbox nnmail-moved-inboxes)
-	  ;; We don't try to move an already moced inbox.
+	  ;; We don't try to move an already moved inbox.
 	  nil
 	(if popmail
 	    (progn
@@ -640,8 +640,8 @@ is a spool.  If not using procmail, return GROUP."
 (defun nnmail-process-babyl-mail-format (func artnum-func)
   (let ((case-fold-search t)
 	start message-id content-length do-search end)
+    (goto-char (point-min))
     (while (not (eobp))
-      (goto-char (point-min))
       (re-search-forward
        "\n0, *unseen,+\n\\(\\*\\*\\* EOOH \\*\\*\\*\n\\)?" nil t)
       (goto-char (match-end 0))

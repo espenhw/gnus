@@ -206,24 +206,31 @@ matches an previously scanned and verified nocem message."
       (narrow-to-region b (1+ (match-beginning 0)))
       (goto-char (point-min))
       (while (search-forward "\t" nil t)
-	(if (ignore-errors
-	      (setq group (let ((obarray gnus-active-hashtb)) (read buf))))
-	    (if (not (boundp group))
-		;; Make sure all entries in the hashtb are bound.
-		(set group nil)
-	      (when (gnus-gethash (symbol-name group) gnus-newsrc-hashtb)
-		;; Valid group.
-		(beginning-of-line)
-		(while (= (following-char) ?\t)
-		  (forward-line -1))
-		(setq id (buffer-substring (point) (1- (search-forward "\t"))))
-		(unless (gnus-gethash id gnus-nocem-hashtb)
-		  ;; only store if not already present
-		  (gnus-sethash id t gnus-nocem-hashtb)
-		  (push id ncm))
-		(forward-line 1)
-		(while (= (following-char) ?\t)
-		  (forward-line 1))))))
+	(cond
+	 ((not (ignore-errors
+		 (setq group (let ((obarray gnus-active-hashtb)) (read buf)))))
+	  ;; An error.
+	  )
+	 ((not (symbolp group))
+	  ;; Ignore invalid entries.
+	  )
+	 ((not (boundp group))
+	  ;; Make sure all entries in the hashtb are bound.
+	  (set group nil))
+	 (t
+	  (when (gnus-gethash (symbol-name group) gnus-newsrc-hashtb)
+	    ;; Valid group.
+	    (beginning-of-line)
+	    (while (= (following-char) ?\t)
+	      (forward-line -1))
+	    (setq id (buffer-substring (point) (1- (search-forward "\t"))))
+	    (unless (gnus-gethash id gnus-nocem-hashtb)
+	      ;; only store if not already present
+	      (gnus-sethash id t gnus-nocem-hashtb)
+	      (push id ncm))
+	    (forward-line 1)
+	    (while (= (following-char) ?\t)
+	      (forward-line 1))))))
       (when ncm
 	(setq gnus-nocem-touched-alist t)
 	(push (cons (let ((time (current-time))) (setcdr (cdr time) nil) time)

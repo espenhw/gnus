@@ -778,7 +778,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 (defun message-fetch-field (header)
   "The same as `mail-fetch-field', only remove all newlines."
-  (let ((value (mail-fetch-field header)))
+  (let ((value (mail-fetch-field header nil t)))
     (when value
       (nnheader-replace-chars-in-string value ?\n ? ))))
 

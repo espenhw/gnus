@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.71"
+(defconst gnus-version-number "0.72"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -1034,6 +1034,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("info" Info-goto-node)
      ("hexl" hexl-hex-string-to-integer)
      ("pp" pp pp-to-string pp-eval-expression)
+     ("ps-print" ps-print-preprint)
      ("mail-extr" mail-extract-address-components)
      ("message" :interactive t
       message-send-and-exit message-yank-original)

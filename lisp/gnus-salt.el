@@ -682,7 +682,9 @@ Two predefined functions are available:
   "Generate a vertical tree."
   (let* ((dummy (stringp (car thread)))
 	 (do (or dummy
-		 (memq (mail-header-number (car thread)) gnus-tmp-limit)))
+		 (and (car thread)
+		      (memq (mail-header-number (car thread))
+			    gnus-tmp-limit))))
 	 beg)
     (if (not do)
 	;; We don't want this article.

@@ -594,6 +594,7 @@ ticked: The number of ticked articles."
     "=" gnus-group-select-group
     "\r" gnus-group-select-group
     "\M-\r" gnus-group-quick-select-group
+    [(meta control return)] gnus-group-select-group-ephemerally
     "j" gnus-group-jump-to-group
     "n" gnus-group-next-unread-group
     "p" gnus-group-prev-unread-group
@@ -1668,6 +1669,26 @@ buffer."
   (interactive "P")
   (let ((gnus-inhibit-limiting t))
     (gnus-group-read-group all t)))
+
+(defun gnus-group-select-group-ephemerally ()
+  "Select the current group without doing any processing whatsoever.
+You will actually be entered into a group that's a copy of
+the current group; no changes you make while in this group will 
+be permanent."
+  (interactive)
+  (require 'gnus-score)
+  (let* (gnus-visual
+	 gnus-score-find-score-files-function gnus-apply-kill-hook
+	 gnus-summary-expunge-below gnus-show-threads gnus-suppress-duplicates
+	 gnus-summary-mode-hook gnus-select-group-hook
+	 (group (gnus-group-group-name))
+	 (method (gnus-find-method-for-group group)))
+    (setq method
+	  `(,(car method) ,(concat (cadr method) "-ephemeral")
+	    (,(intern (format "%s-address" (car method))) ,(cadr method))
+	    ,@(cddr method)))
+    (gnus-group-read-ephemeral-group 
+     (gnus-group-prefixed-name group method) method)))
 
 ;;;###autoload
 (defun gnus-fetch-group (group)

@@ -33,18 +33,25 @@
 ;; (require 'smiley)
 ;; (add-hook 'gnus-article-display-hook 'gnus-smiley-display t)
 
-;; The smilies were drawn by Joe Reiss <joe@jreiss.async.vt.edu>. 
+;; The smilies were drawn by Joe Reiss <jreiss@vt.edu>. 
 
 (require 'annotations)
 (require 'messagexmas)
 (require 'cl)
+(require 'custom)
 
-(defvar smiley-data-directory (message-xmas-find-glyph-directory "smilies")
-  "Location of the smiley faces files.")
+(defgroup smiley nil
+  "Turn :-)'s into real images (XEmacs)."
+  :group 'gnus-visual)
+
+(defcustom smiley-data-directory (message-xmas-find-glyph-directory "smilies")
+  "Location of the smiley faces files."
+  :type 'directory
+  :group 'smiley)
 
 ;; Notice the subtle differences in the regular expressions in the two alists below
 
-(defvar smiley-deformed-regexp-alist
+(defcustom smiley-deformed-regexp-alist
   '(("\\(:-*[<«]+\\)\\W" 1 "FaceAngry.xpm")
     ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
     ("\\(:-*D\\)\\W" 1 "FaceGrinning.xpm")
@@ -60,9 +67,13 @@
     ("\\(;-*[>)}»]+\\)\\W" 1 "FaceWinking.xpm")
     ("\\(:-*[Vvµ]\\)\\W" 1 "FaceWry.xpm")  
     ("\\([:|]-*P\\)\\W" 1 "FaceYukky.xpm"))
-  "Normal and deformed faces for smilies.")
+  "Normal and deformed faces for smilies."
+  :type '(repeat (list regexp 
+		       (integer :tag "Match")
+		       (string :tag "Image")))
+  :group 'smiley)
 
-(defvar smiley-nosey-regexp-alist
+(defcustom smiley-nosey-regexp-alist
   '(("\\(:-+[<«]+\\)\\W" 1 "FaceAngry.xpm")
     ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
     ("\\(:-+D\\)\\W" 1 "FaceGrinning.xpm")
@@ -80,26 +91,45 @@
     ("\\(:-+[Vvµ]\\)\\W" 1 "FaceWry.xpm")
     ("\\(][:8B]-[)>]\\)\\W" 1 "FaceDevilish.xpm")
     ("\\([:|]-+P\\)\\W" 1 "FaceYukky.xpm"))
-  "Smileys with noses.  These get less false matches.")
+  "Smileys with noses.  These get less false matches."
+  :type '(repeat (list regexp 
+		       (integer :tag "Match")
+		       (string :tag "Image")))
+  :group 'smiley)
 
-(defvar smiley-regexp-alist smiley-deformed-regexp-alist
+(defcustom smiley-regexp-alist smiley-deformed-regexp-alist
   "A list of regexps to map smilies to real images.
 Defaults to the content of smiley-deformed-regexp-alist.
 An alternative smiley-nosey-regexp-alist that
 matches less aggressively is available.
-If this is a symbol, take its value.")
+If this is a symbol, take its value."
+  :type '(radio (variable-item smiley-deformed-regexp-alist)
+		(variable-item smiley-nosey-regexp-alist)
+		symbol 
+		(repeat (list regexp 
+			      (integer :tag "Match")
+			      (string :tag "Image"))))
+  :group 'smiley)
 
-(defvar smiley-flesh-color "yellow"
-  "Flesh color.")
+(defcustom smiley-flesh-color "yellow"
+  "Flesh color."
+  :type 'string
+  :group 'smiley)
 
-(defvar smiley-features-color "black"
-  "Features color.")
+(defcustom smiley-features-color "black"
+  "Features color."
+  :type 'string
+  :group 'smiley)
 
-(defvar smiley-tongue-color "red"
-  "Tongue color.")
+(defcustom smiley-tongue-color "red"
+  "Tongue color."
+  :type 'string
+  :group 'smiley)
 
-(defvar smiley-circle-color "black"
-  "Circle color.")
+(defcustom smiley-circle-color "black"
+  "Circle color."
+  :type 'string
+  :group 'smiley)
 
 (defvar smiley-glyph-cache nil)
 (defvar smiley-running-xemacs (string-match "XEmacs" emacs-version))

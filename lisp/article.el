@@ -799,8 +799,9 @@ If HIDE, hide the text instead."
 If TYPE is `local', convert to local time; if it is `lapsed', output
 how much time has lapsed since DATE."
   (interactive (list 'ut t))
-  (let* ((header (or header (message-fetch-field "date")
+  (let* ((header (or header 
 		     (mail-header-date gnus-current-headers)
+		     (message-fetch-field "date")
 		     ""))
 	 (date (if (vectorp header) (mail-header-date header)
 		 header))

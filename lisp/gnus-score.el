@@ -2559,10 +2559,10 @@ The list is determined from the variable gnus-score-file-alist."
       (push (cons group score-files) gnus-score-file-alist-cache)
       score-files)))
 
-(defun gnus-all-score-files ()
+(defun gnus-all-score-files (&optional group)
   "Return a list of all score files for the current group."
   (let ((funcs gnus-score-find-score-files-function)
-	(group gnus-newsgroup-name)
+	(group (or group gnus-newsgroup-name))
 	score-files)
     ;; Make sure funcs is a list.
     (and funcs

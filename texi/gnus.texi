@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.71 Manual
+@settitle Red Gnus 0.72 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.71 Manual
+@title Red Gnus 0.72 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.71
+This manual corresponds to Red Gnus 0.72
 
 @end ifinfo
 
@@ -1367,6 +1367,15 @@ group.
 This is yet one more command that does the same as the @kbd{RET}
 command, but this one does it without expunging and hiding dormants
 (@code{gnus-group-visible-select-group}).
+
+@item M-C-RET
+@kindex M-C-RET (Group)
+@findex gnus-group-select-group-ephemerally
+Finally, this command selects the current group ephemerally without
+doing any processing of its contents
+(@code{gnus-group-select-group-ephemerally}).  Even threading has been
+turned off.  Everything you do in the group after selecting it in this
+manner will have no permanent effects.
 
 @end table
 
@@ -6623,6 +6632,13 @@ suggest where to put the articles.  @code{gnus-move-split-methods} is a
 variable that uses the same syntax as @code{gnus-split-methods}
 (@pxref{Saving Articles}).  You may customize that variable to create
 suggestions you find reasonable.
+
+@lisp
+(setq gnus-move-split-methods
+      '(("^From:.*Lars Magne" "nnml:junk")
+        ("^Subject:.*gnus" "nnfolder:important")
+        (".*" "nnml:misc")))
+@end lisp
 
 
 @node Various Summary Stuff
@@ -14489,6 +14505,11 @@ group, it'll disappear into the aether.
 @cindex solid groups
 This is the opposite of ephemeral groups.  All groups listed in the
 group buffer are solid groups.
+
+@item sparse articles
+@cindex sparse articles
+These are article placeholders shown in the summary buffer when
+@code{gnus-build-sparse-threads} has been switched on.
 
 @end table
 
