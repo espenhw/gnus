@@ -45,9 +45,13 @@
 (eval-and-compile
   (autoload 'gnus-xmas-define "gnus-xmas")
   (autoload 'gnus-xmas-redefine "gnus-xmas")
-  (autoload 'appt-select-lowest-window "appt"))
+  (autoload 'appt-select-lowest-window "appt")
+  (autoload 'gnus-get-buffer-create "gnus")
+  (autoload 'nnheader-find-etc-directory "nnheader"))
 
 (autoload 'smiley-region "smiley")
+;; Fixme: shouldn't require message
+(autoload 'message-text-with-property "message")
 
 (defun gnus-kill-all-overlays ()
   "Delete all overlays in the current buffer."
@@ -79,16 +83,19 @@
     (defvar gnus-mouse-face-prop 'mouse-face
       "Property used for highlighting mouse regions.")))
 
-(defvar gnus-tmp-unread)
-(defvar gnus-tmp-replied)
-(defvar gnus-tmp-score-char)
-(defvar gnus-tmp-indentation)
-(defvar gnus-tmp-opening-bracket)
-(defvar gnus-tmp-lines)
-(defvar gnus-tmp-name)
-(defvar gnus-tmp-closing-bracket)
-(defvar gnus-tmp-subject-or-nil)
-(defvar gnus-check-before-posting)
+(eval-when-compile
+  (defvar gnus-tmp-unread)
+  (defvar gnus-tmp-replied)
+  (defvar gnus-tmp-score-char)
+  (defvar gnus-tmp-indentation)
+  (defvar gnus-tmp-opening-bracket)
+  (defvar gnus-tmp-lines)
+  (defvar gnus-tmp-name)
+  (defvar gnus-tmp-closing-bracket)
+  (defvar gnus-tmp-subject-or-nil)
+  (defvar gnus-check-before-posting)
+  (defvar gnus-mouse-face)
+  (defvar gnus-group-buffer))
 
 (defun gnus-ems-redefine ()
   (cond
