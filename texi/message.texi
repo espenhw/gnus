@@ -1004,10 +1004,10 @@ care in handling it.
 @subsection Using PGP/MIME
 
 @sc{pgp/mime} requires an external OpenPGP implementation, such as GNU
-Privacy Guard (@uref{http://www.gnupg.org/}).  It also requires an
-Emacs interface to it, such as Mailcrypt (available from
-@uref{http://www.nb.net/~lbudney/linux/software/mailcrypt.html}) or
-Florian Weimer's @code{gpg.el}.
+Privacy Guard (@uref{http://www.gnupg.org/}).  One Emacs interface to
+OpenPGP implementations, PGG (@pxref{Top, ,PGG, pgg, PGG Manual}), is
+included, but Mailcrypt and Florian Weimer's @code{gpg.el} are also
+supported.
 
 @vindex gpg-temp-directory
 Note, if you are using the @code{gpg.el} you must make sure that the

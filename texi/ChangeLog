@@ -1,3 +1,10 @@
+2003-01-13  Simon Josefsson  <jas@extundo.com>
+
+	* message.texi (Security): Fix.
+
+	* gnus.texi (Security): Fix.
+	(Signing and encrypting): Fix.
+
 2003-01-12  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package): removed
