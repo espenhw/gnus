@@ -1,5 +1,8 @@
 2003-07-23  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus.el (gnus-install-group-spam-parameters): add the
+	gnus-ticked-mark to the possible choices of ham marks
+
 	* spam.el (spam-process-ham-in-nonham-groups): new variable
 	(spam-summary-prepare-exit): use spam-process-ham-in-nonham-groups
 

@@ -1986,6 +1986,7 @@ mail groups, and only works in spam groups."
 			  (set
 			   (variable-item gnus-del-mark)
 			   (variable-item gnus-read-mark)
+			   (variable-item gnus-ticked-mark)
 			   (variable-item gnus-killed-mark)
 			   (variable-item gnus-kill-file-mark)
 			   (variable-item gnus-low-score-mark)))
