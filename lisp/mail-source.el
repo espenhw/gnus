@@ -194,8 +194,8 @@ the `mail-source-keyword-map' variable."
       (set (mail-source-strip-keyword (setq keyword (car default)))
 	   (if (setq value (plist-get source keyword))
 	       (mail-source-value value)
-	     (if (setq value (plist-get defaults-1 keyword))
-		 (mail-source-value value)
+	     (if (setq value (assq  keyword defaults-1))
+		 (mail-source-value (cadr value))
 	       (mail-source-value (cadr default))))))))
 
 (defmacro mail-source-bind-common (source &rest body)

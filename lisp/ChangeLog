@@ -1,3 +1,8 @@
+1999-12-01 23:02:48  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-set-common-1): Fix to get the
+ 	default value.
+
 1999-12-02 00:27:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-read-groups): Unibyte.
