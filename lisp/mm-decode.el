@@ -897,7 +897,8 @@ external if displayed external."
 	  (read-string "Shell command on MIME part: " mm-last-shell-command)))
     (mm-with-unibyte-buffer
       (mm-insert-part handle)
-      (shell-command-on-region (point-min) (point-max) command nil))))
+      (let ((coding-system-for-write 'binary))
+	(shell-command-on-region (point-min) (point-max) command nil)))))
 
 (defun mm-interactively-view-part (handle)
   "Display HANDLE using METHOD."
