@@ -8126,6 +8126,14 @@ Treat HZ or HZP (@code{gnus-article-decode-HZ}).  HZ (or HZP) is one
 common encoding employed when sending Chinese articles.  It typically
 makes strings look like @samp{~@{<:Ky2;S@{#,NpJ)l6HK!#~@}}.
 
+@item W u
+@kindex W u (Summary)
+@findex gnus-article-unsplit-urls
+Remove newlines from within URLs.  Some mailers insert newlines into
+outgoing email messages to keep lines short.  This reformatting can
+split long URLs onto multiple lines.  Repair those URLs by removing
+the newlines (@code{gnus-article-unsplit-urls}).
+
 @item W h
 @kindex W h (Summary)
 @findex gnus-article-wash-html
@@ -10349,6 +10357,7 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-strip-pem (t, last, integer)
 @item gnus-treat-strip-pgp (t, last, integer)
 @item gnus-treat-strip-trailing-blank-lines (t, last, integer)
+@item gnus-treat-unsplit-urls (t, integer)
 
 @xref{Article Washing}.
 

@@ -1,3 +1,8 @@
+2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Article Washing): Addition.
+	From: Michael Cook <michael.cook@cisco.com>
+
 2002-02-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Gnus Unplugged): Use (setq gnus-agent t).
