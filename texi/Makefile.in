@@ -10,9 +10,6 @@ TEXI2PDF=texi2pdf
 MAKEINFO=@MAKEINFO@
 EMACS=@EMACS@
 EMACSINFO=$(EMACS) -batch -q -no-site-file
-INFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-XINFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
-EMACSINFOHACK=-eval '(while (re-search-forward "@\\(end \\)?ifnottex" nil t) (replace-match ""))'
 PDFLATEX=pdflatex
 LATEX=latex
 DVIPS=dvips
@@ -30,9 +27,9 @@ most: texi2latex.elc latex latexps
 
 .texi:
 	if test "x$(MAKEINFO)" != "xno" ; then \
-	  makeinfo -I $(srcdir) -o $* $<; \
+	  $(MAKEINFO) -I $(srcdir) -o $* $<; \
 	else \
-	  $(EMACSINFO) -eval '(find-file "$<")' $(EMACSINFOHACK) $(XINFOSWI); \
+	  $(EMACSINFO) -l $(srcdir)/infohack.el -eval '(infohack "$<")'; \
 	fi
 
 dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi
