@@ -856,9 +856,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     (when gnus-message-archive-method
       (setq gnus-server-alist (delq (assoc "archive" gnus-server-alist)
 				    gnus-server-alist))
-      (when (gnus-archive-server-wanted-p)
-	(push (cons "archive" gnus-message-archive-method)
-	      gnus-server-alist)))
+      (push (cons "archive" gnus-message-archive-method)
+	    gnus-server-alist))
 
     ;; If we don't read the complete active file, we fill in the
     ;; hashtb here.
@@ -2484,7 +2483,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	      (let ((str (buffer-substring
 			  (point) (progn (end-of-line) (point))))
 		    (coding
-		     (and (boundp enable-multibyte-characters)
+		     (and (boundp 'enable-multibyte-characters)
 			  enable-multibyte-characters
 			  (gnus-mule-get-coding-system (symbol-name group)))))
 		(if coding

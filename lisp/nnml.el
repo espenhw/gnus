@@ -659,11 +659,10 @@ all.  This may very well take some time.")
   "Parse the head of the current buffer."
   (save-excursion
     (save-restriction
-      (goto-char (point-min))
       (unless (zerop (buffer-size))
 	(narrow-to-region
-	 (point)
-	 (1- (or (search-forward "\n\n" nil t) (point-max)))))
+	 (goto-char (point-min))
+	 (if (search-forward "\n\n" nil t) (1- (point)) (point-max))))
       ;; Fold continuation lines.
       (goto-char (point-min))
       (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)

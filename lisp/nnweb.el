@@ -53,13 +53,13 @@
      (article . nnweb-dejanews-wash-article)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanews-search)
-     (address . "http://xp9.dejanews.com/dnquery.xp")
+     (address . "http://x5.dejanews.com/dnquery.xp")
      (identifier . nnweb-dejanews-identity))
     (dejanewsold
      (article . nnweb-dejanews-wash-article)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanewsold-search)
-     (address . "http://xp9.dejanews.com/dnquery.xp")
+     (address . "http://x5.dejanews.com/dnquery.xp")
      (identifier . nnweb-dejanews-identity))
     (reference
      (article . nnweb-reference-wash-article)

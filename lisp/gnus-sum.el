@@ -1116,6 +1116,7 @@ increase the score of each group you read."
     " " gnus-summary-next-page
     "\177" gnus-summary-prev-page
     [delete] gnus-summary-prev-page
+    [backspace] gnus-summary-prev-page
     "\r" gnus-summary-scroll-up
     "n" gnus-summary-next-unread-article
     "p" gnus-summary-prev-unread-article
@@ -5220,25 +5221,26 @@ which existed when entering the ephemeral is reset."
 
 (defun gnus-kill-or-deaden-summary (buffer)
   "Kill or deaden the summary BUFFER."
-  (when (and (buffer-name buffer)
-	     (not gnus-single-article-buffer))
-    (save-excursion
-      (set-buffer buffer)
-      (gnus-kill-buffer gnus-article-buffer)
-      (gnus-kill-buffer gnus-original-article-buffer)))
-  (cond (gnus-kill-summary-on-exit
-	 (when (and gnus-use-trees
-		    (and (get-buffer buffer)
-			 (buffer-name (get-buffer buffer))))
+  (save-excursion
+    (when (and (buffer-name buffer)
+	       (not gnus-single-article-buffer))
+      (save-excursion
+	(set-buffer buffer)
+	(gnus-kill-buffer gnus-article-buffer)
+	(gnus-kill-buffer gnus-original-article-buffer)))
+    (cond (gnus-kill-summary-on-exit
+	   (when (and gnus-use-trees
+		      (and (get-buffer buffer)
+			   (buffer-name (get-buffer buffer))))
+	     (save-excursion
+	       (set-buffer (get-buffer buffer))
+	       (gnus-tree-close gnus-newsgroup-name)))
+	   (gnus-kill-buffer buffer))
+	  ((and (get-buffer buffer)
+		(buffer-name (get-buffer buffer)))
 	   (save-excursion
-	     (set-buffer (get-buffer buffer))
-	     (gnus-tree-close gnus-newsgroup-name)))
-	 (gnus-kill-buffer buffer))
-	((and (get-buffer buffer)
-	      (buffer-name (get-buffer buffer)))
-	 (save-excursion
-	   (set-buffer buffer)
-	   (gnus-deaden-summary)))))
+	     (set-buffer buffer)
+	     (gnus-deaden-summary))))))
 
 (defun gnus-summary-wake-up-the-dead (&rest args)
   "Wake up the dead summary buffer."
@@ -8679,10 +8681,12 @@ save those articles instead."
       ;; previous entry in the thread hashtb.
       (when (and header
 		 (gnus-summary-article-sparse-p (mail-header-number header)))
-	(let ((thread (gnus-gethash
-		       (gnus-parent-id (mail-header-references header))
-		       gnus-newsgroup-dependencies)))
-	  (delq (assq header thread) thread)))
+	(let* ((parent (gnus-parent-id (mail-header-references header)))
+	       (thread
+		(and parent
+		     (gnus-gethash parent gnus-newsgroup-dependencies))))
+	  (when thread
+	    (delq (assq header thread) thread))))
       ;; We have to really fetch the header to this article.
       (save-excursion
 	(set-buffer nntp-server-buffer)

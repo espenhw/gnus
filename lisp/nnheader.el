@@ -746,7 +746,7 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
 	(ange-ftp-re-read-dir path)))))
 
 ;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
-(defvar nnheader-file-coding-system nil
+(defvar nnheader-file-coding-system 'raw-text
   "Coding system used in file backends of Gnus.")
 
 (defun nnheader-insert-file-contents (filename &optional visit beg end replace)

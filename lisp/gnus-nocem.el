@@ -56,7 +56,7 @@
 
 This can also be a list of `(ISSUER CONDITIONS)' elements."
   :group 'gnus-nocem
-  :type '(repeat string))
+  :type '(repeat (choice string sexp)))
 
 (defcustom gnus-nocem-directory
   (nnheader-concat gnus-article-save-directory "NoCeM/")
@@ -228,7 +228,7 @@ active file."
       (while (setq condition (pop conditions))
 	(cond
 	 ((stringp condition)
-	  (setq wanted (string-match condition) type))
+	  (setq wanted (string-match condition type)))
 	 ((and (consp condition)
 	       (eq (car condition) 'not)
 	       (stringp (cadr condition)))

@@ -31,7 +31,9 @@
 (eval-when-compile (require 'cl))
 
 (require 'custom)
-(require 'gnus-load)
+(eval-and-compile
+  (if (< emacs-major-version 20)
+      (require 'gnus-load)))
 (require 'message)
 
 (defgroup gnus nil
@@ -244,7 +246,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.17"
+(defconst gnus-version-number "0.18"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -1745,7 +1747,7 @@ This restriction may disappear in later versions of Gnus."
 
 (defun gnus-suppress-keymap (keymap)
   (suppress-keymap keymap)
-  (let ((keys `([delete] "\177" "\M-u"))) ;gnus-mouse-2
+  (let ((keys `([backspace] [delete] "\177" "\M-u"))) ;gnus-mouse-2
     (while keys
       (define-key keymap (pop keys) 'undefined))))
 

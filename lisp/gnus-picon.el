@@ -184,7 +184,8 @@ This function is careful to set it to nil before removing anything so that
 asynchronous process don't get crazy."
   (setq gnus-picons-jobs-alist (remassq symbol gnus-picons-jobs-alist))
   ;; notify running job that it may have been preempted
-  (if (eq (car gnus-picons-job-already-running) symbol)
+  (if (and (listp gnus-picons-job-already-running)
+	   (eq (car gnus-picons-job-already-running) symbol))
       (setq gnus-picons-job-already-running t))
   ;; clear all annotations
   (mapc (function (lambda (item)

@@ -275,6 +275,10 @@ above them."
 		  (set-extent-property ant 'smiley-extent ext)
 		  (set-extent-property ext 'smiley-annotation ant)
 		  ;; Help
+		  (set-extent-property ext 'help-echo
+				       "button2 toggles smiley, button3 pops up menu")
+		  (set-extent-property ant 'help-echo
+				       "button2 toggles smiley, button3 pops up menu")
 		  (set-extent-property ext 'balloon-help
 				       "Mouse button2 - toggle smiley
 Mouse button3 - menu")

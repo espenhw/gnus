@@ -412,9 +412,13 @@ the actual number of articles toggled is returned."
   (let ((unmark (if (and (not (null unmark)) (not (eq t unmark)))
 		    (memq article gnus-newsgroup-downloadable)
 		  unmark)))
-    (setq gnus-newsgroup-downloadable
-	  (delq article gnus-newsgroup-downloadable))
-    (unless unmark
+    (if unmark
+	(progn
+	  (setq gnus-newsgroup-downloadable
+		(delq article gnus-newsgroup-downloadable))
+	  (push article gnus-newsgroup-undownloaded))
+      (setq gnus-newsgroup-undownloaded
+	    (delq article gnus-newsgroup-undownloaded))
       (push article gnus-newsgroup-downloadable))
     (gnus-summary-update-mark
      (if unmark gnus-undownloaded-mark gnus-downloadable-mark)

@@ -4,7 +4,7 @@
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3h
+;; Version: 1.3j
 
 ;; This file is part of GNU Emacs.
 
@@ -37,7 +37,7 @@
 (require 'mail-utils)
 (provide 'pop3)
 
-(defconst pop3-version "1.3h")
+(defconst pop3-version "1.3j")
 
 (defvar pop3-maildrop (or user-login-name (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
@@ -59,9 +59,6 @@ values are 'apop.")
 (defvar pop3-timestamp nil
   "Timestamp returned when initially connected to the POP server.
 Used for APOP authentication.")
-
-(defvar pop3-movemail-file-coding-system nil
-  "Crashbox made by pop3-movemail with this coding system.")
 
 (defvar pop3-read-point nil)
 (defvar pop3-debug nil)
@@ -94,8 +91,7 @@ Used for APOP authentication.")
       (pop3-retr process n crashbuf)
       (save-excursion
 	(set-buffer crashbuf)
-	(let ((coding-system-for-write pop3-movemail-file-coding-system))
-	  (append-to-file (point-min) (point-max) crashbox))
+	(append-to-file (point-min) (point-max) crashbox)
 	(set-buffer (process-buffer process))
 	(while (> (buffer-size) 5000)
 	  (goto-char (point-min))
@@ -118,10 +114,11 @@ Returns the process associated with the connection."
 	(process))
     (save-excursion
       (set-buffer process-buffer)
-      (erase-buffer))
+      (erase-buffer)
+      (setq pop3-read-point (point-min))
+      )
     (setq process
 	  (open-network-stream "POP" process-buffer mailhost port))
-    (setq pop3-read-point (point-min))
     (let ((response (pop3-read-response process t)))
       (setq pop3-timestamp
 	    (substring response (or (string-match "<" response) 0)
@@ -298,13 +295,15 @@ This function currently does nothing.")
       (set-buffer (process-buffer process))
       (while (not (re-search-forward "^\\.\r\n" nil t))
 	(accept-process-output process 3)
-	;; bill@att.com ... to save wear and tear on the heap
-	(if (> (buffer-size)  20000) (sleep-for 1))
-	(if (> (buffer-size)  50000) (sleep-for 1))
-	(if (> (buffer-size) 100000) (sleep-for 1))
-	(if (> (buffer-size) 200000) (sleep-for 1))
-	(if (> (buffer-size) 500000) (sleep-for 1))
-	;; bill@att.com
+;	;; bill@att.com ... to save wear and tear on the heap
+;	(if (> (buffer-size)  20000) (sleep-for 1))
+;	(if (> (buffer-size)  50000) (sleep-for 1))
+;	(if (> (buffer-size) 100000) (sleep-for 1))
+;	(if (> (buffer-size) 200000) (sleep-for 1))
+;	(if (> (buffer-size) 500000) (sleep-for 1))
+;	;; bill@att.com
+	;; condensed into:
+	(if (> (buffer-size) 20000) (sleep-for (/ (buffer-size) 20000)))
 	(goto-char start))
       (setq pop3-read-point (point-marker))
 ;; this code does not seem to work for some POP servers...

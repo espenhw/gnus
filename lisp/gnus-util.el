@@ -760,7 +760,8 @@ with potentially long computations."
 	      (narrow-to-region (point) (point-max))
 	      (goto-char (1+ (point-min)))
 	      (rmail-count-new-messages t)
-	      (rmail-show-message msg))))))
+	      (rmail-show-message msg))
+	    (save-buffer)))))
     (kill-buffer tmpbuf)))
 
 (defun gnus-output-to-mail (filename &optional ask)

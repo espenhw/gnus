@@ -1,3 +1,95 @@
+Sat Dec  6 17:40:33 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.18 is released.
+
+Sat Dec  6 17:27:04 1997  Kim-Minh Kaplan  <KimMinh.Kaplan@Utopia.EUnet.fr>
+
+	* gnus-picon.el (gnus-picons-remove): Race condition.
+
+Sat Dec  6 17:23:26 1997  Christian von Roques  <roques@scalar.pond.sub.org>
+
+	* gnus-start.el (gnus-read-descriptions-file): Fix
+	enable-multibyte-characters. 
+
+1997-12-05  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-nocem.el (gnus-nocem-message-wanted-p): Fix paren typpo.
+	(gnus-nocem-issuers): Allow sexp alternative in :type for alists.
+
+1997-12-05  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-art.el (gnus-visible-headers): Add X-sent:.
+
+Sat Dec  6 17:16:28 1997  Lars Balker Rasmussen  <lbr@mjolner.dk>
+
+	* gnus-art.el (article-make-date-line): Don't add extra newlines. 
+
+1997-11-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
+
+	* nnmail.el (nnmail-file-coding-system): Use `raw-text' in
+ 	default.
+
+	* nnheader.el (nnheader-file-coding-system): Use `raw-text' in
+ 	default.
+
+Sat Dec  6 17:04:40 1997  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* nnml.el (nnml-parse-head): Out-of-bounds fix.
+
+	* nndraft.el (nndraft-request-associate-buffer): Get proper file
+	name. 
+
+Sat Dec  6 15:35:37 1997  Gary D. Foster  <Gary.Foster@Corp.Sun.COM>
+
+	* gnus-group.el: Added backspace.
+
+Thu Nov 27 19:56:59 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-summary-set-agent-mark): Remove marks
+	properly. 
+
+1997-11-27  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* smiley.el (smiley-buffer): Provide `help-echo'.
+
+Thu Nov 27 17:33:45 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-output-to-rmail): Always save buffer.
+
+	* nntp.el (nntp-close-server): Don't sleep for me, Argentina.
+	(nntp-request-close): You neither.
+
+1997-11-19  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-header-lines): New widget.
+	(message-default-headers): Use it.
+	(message-default-mail-headers): Use it.
+	(message-default-news-headers): Use it.
+
+1997-11-24  Andreas Jaeger  <aj@arthur.rhein-neckar.de>
+
+	* gnus-start.el (gnus-read-descriptions-file): Add missing quote.
+
+Wed Nov 26 18:19:29 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnweb.el (nnweb-type-definition): Rescued dejanewsold.
+
+	* gnus-mh.el (gnus-summary-save-in-folder): Reverted to old
+	version. 
+
+	* gnus-sum.el (gnus-kill-or-deaden-summary): Save excursion.
+
+	* gnus.el: Only require gnus-load in Emacsen 19.
+
+	* gnus-start.el (gnus-setup-news): Always push archive server.
+
+	* gnus-sum.el (gnus-read-header): Would bug out on sparse
+	articles. 
+
+Wed Nov 26 17:50:41 1997  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-ems.el (gnus-mule-cite-add-face): Work.
+
 Wed Nov 26 17:40:57 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.17 is released.

@@ -779,3 +779,6 @@ X characters in the body.
 * command to display all dormant articles.
 
 * gnus-auto-select-next makeover -- list of things it should do.
+
+* a score match type that adds scores matching on From if From has replied
+to something someone else has said.

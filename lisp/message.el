@@ -539,7 +539,6 @@ If stringp, use this; if non-nil, use no host name (user name only)."
 (define-widget 'message-header-lines 'text
   "All header lines must be LFD terminated."
   :valid-regexp "^\\'"
-  :format "%t:\n%v"
   :error "All header lines must be newline terminated")
 
 (defcustom message-default-headers ""

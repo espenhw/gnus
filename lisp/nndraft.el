@@ -156,7 +156,7 @@
       (setq article (nndraft-request-accept-article
 		     group (nnoo-current-server 'nndraft) t 'noinsert))
       (setq file (nndraft-article-filename article)))
-    (setq buffer-file-name file)
+    (setq buffer-file-name (expand-file-name file))
     (setq buffer-auto-save-file-name (make-auto-save-file-name))
     (clear-visited-file-modtime)
     article))

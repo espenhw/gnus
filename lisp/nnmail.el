@@ -477,7 +477,7 @@ parameter.  It should return nil, `warn' or `delete'."
   (mail-send-and-exit nil))
 
 ;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
-(defvar nnmail-file-coding-system nil
+(defvar nnmail-file-coding-system 'raw-text
   "Coding system used in nnmail.")
 
 (defun nnmail-find-file (file)

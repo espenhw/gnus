@@ -28,7 +28,7 @@
 		     set-face-stipple mail-abbrevs-setup char-int
 		     make-char-table set-char-table-range font-create-object
 		     x-color-values widget-make-intangible error-message-string
-		     w3-form-encode-xwfu md5 gnus-mule-get-coding-system
+		     w3-form-encode-xwfu gnus-mule-get-coding-system
 		     decode-coding-string))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
@@ -36,7 +36,8 @@
 		    font-lock-defaults user-full-name user-login-name
 		    gnus-newsgroup-name gnus-article-x-face-too-ugly
 		    mail-mode-hook enable-multibyte-characters)))
-  (defvar browse-url-browser-function nil)
+  (maybe-bind '(mail-mode-hook
+		enable-multibyte-characters browse-url-browser-function))
   (maybe-fbind '(color-instance-rgb-components
 		 make-color-instance color-instance-name specifier-instance
 		 device-type device-class get-popup-menu-response event-object
@@ -48,9 +49,13 @@
 		 widget-make-intangible glyphp make-glyph set-glyph-image
 		 set-glyph-property event-glyph glyph-property event-point
 		 device-on-window-system-p make-gui-button Info-goto-node
-		 pp-to-string color-name)))
+		 pp-to-string color-name 
+		 gnus-mule-get-coding-system decode-coding-string)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)
+
+(defun md5 (a &optional b c)
+  )
 
 (provide 'lpath)

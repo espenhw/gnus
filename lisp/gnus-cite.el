@@ -571,7 +571,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 (defun gnus-cite-parse-maybe (&optional force)
   ;; Parse if the buffer has changes since last time.
-  (if (equal gnus-cite-article gnus-article-current)
+  (if (and (not force) (equal gnus-cite-article gnus-article-current))
       ()
     ;;Reset parser information.
     (setq gnus-cite-prefix-alist nil
