@@ -1,0 +1,5 @@
+1999-11-13  Adrian Aichner  <aichner@ecf.teradyne.com>
+
+	* xemacs.mak: New NMAKE file to support build and install on
+	Windows NT.
+
