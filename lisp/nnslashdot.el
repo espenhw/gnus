@@ -356,16 +356,12 @@
 	    (push (list gname articles sid) nnslashdot-groups))))
       (incf number 30))
     (nnslashdot-write-groups)
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)
-      (dolist (elem nnslashdot-groups)
-	(insert (prin1-to-string (car elem))
-		" " (number-to-string (cadr elem)) " 1 y\n")))
+    (nnslashdot-generate-active)
     t))
 
 (deffoo nnslashdot-request-newgroups (date &optional server)
-  (nnslashdot-request-list server))
+  (nnslashdot-possibly-change-server nil server)
+  (nnslashdot-generate-active))
 
 (deffoo nnslashdot-asynchronous-p ()
   nil)
@@ -448,6 +444,14 @@
 	    (substring (nth 3 elem) 1 6) " "
 	    (format-time-string "%Y") " "
 	    (nth 4 elem))))
+
+(defun nnslashdot-generate-active ()
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (erase-buffer)
+    (dolist (elem nnslashdot-groups)
+      (insert (prin1-to-string (car elem))
+	      " " (number-to-string (cadr elem)) " 1 y\n"))))
 
 (provide 'nnslashdot)
 

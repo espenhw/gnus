@@ -2,6 +2,8 @@
 
 	* nnslashdot.el (nnslashdot-retrieve-headers): Don't fetch too
 	many articles.
+	(nnslashdot-generate-active): New function.
+	(nnslashdot-request-newgroups): Use it.
 
 	* gnus-start.el (gnus-active-to-gnus-format): Intern strings group 
 	names.
