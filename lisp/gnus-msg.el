@@ -1809,6 +1809,8 @@ this is a reply."
       (setq results (delq name (delq address results)))
       ;; make-local-hook is not obsolete in Emacs 20 or XEmacs.
       (make-local-hook 'message-setup-hook)
+      (setq results (sort results (lambda (x y) 
+				    (string-lessp (car x) (car y)))))
       (dolist (result results)
 	(add-hook 'message-setup-hook
 		  (cond

@@ -1,6 +1,8 @@
 2002-09-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-art.el (gnus-article-reply-with-original): Fix
+	* gnus-msg.el (gnus-configure-posting-styles): Sort results.
+
+	* gnus-art.el (gnus-article-reply-with-original): Correct
 	with-current-buffer scope.
 
 	* message.el (message-completion-alist): Add Reply-To, From, etc.
