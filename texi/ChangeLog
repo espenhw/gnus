@@ -1,3 +1,7 @@
+2004-01-06  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (SpamOracle): Fixed typo.
+
 2004-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi: Fix the last commit.

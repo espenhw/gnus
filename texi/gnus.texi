@@ -23657,7 +23657,7 @@ the same way, we promise.
 Add this symbol to a group's @code{spam-process} parameter by
 customizing the group parameter or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is added
-to a grup's @code{spam-process} parameter, the ham-marked articles in
+to a group's @code{spam-process} parameter, the ham-marked articles in
 @emph{ham} groups will be sent to the SpamOracle as samples of ham
 messages.  Note that this ham processor has no effect in @emph{spam} or
 @emph{unclassified} groups.
