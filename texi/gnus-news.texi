@@ -12,17 +12,29 @@
 @c    under the above conditions, provided also that they
 @c    carry prominent notices stating who last changed them.
 
-This file contains a list of news features Gnus.  It is supposed to be
-included in `gnus.texi'.  `GNUS-NEWS' is automatically generated from
-this file (see `gnus-news.el').
+@c This file contains a list of news features Gnus.  It is supposed to be
+@c included in `gnus.texi'.  `GNUS-NEWS' is automatically generated from
+@c this file (see `gnus-news.el').
 
 @itemize @bullet
 
+@item The nntp back end store article marks in @file{~/News/marks}.
+The directory can be changed using the (customizable) variable
+@code{nntp-marks-directory}, and marks can be disabled using the
+(backend) variable @code{nntp-marks-is-evil}.  The advantage of this
+is that you can copy @file{~/News/marks} (using rsync, scp or
+whatever) to another Gnus installation, and it will realize what
+articles you have read and marked.  The data in @file{~/News/marks}
+has priority over the same data in @file{~/.newsrc.eld}.  This means
+that if you downgrade to, say, Gnus 5.10 and read mail and later come
+back to this Gnus version, your marks will be stale.  You can remove
+the @file{~/News/marks} content (even selectively) to remedy this.
+
 @item
 You can import and export your @acronym{RSS} subscriptions from
-@acronym{OPML} files.  @xref{RSS}.
+@acronym{OPML} files.
 
-@item 
+@item
 The option @code{mm-fill-flowed} can be used to disable treatment of
 format=flowed messages.  Also, flowed text is disabled when sending
 inline @acronym{PGP} signed messages.
