@@ -828,7 +828,7 @@ If EXAMINE is non-nil the group is selected read-only."
     (or (and nnimap-server-buffer
 	     (imap-opened nnimap-server-buffer)
 	     (if (with-current-buffer nnimap-server-buffer
-		   (memq imap-state '(auth select examine)))
+		   (memq imap-state '(auth selected examine)))
 		 t
 	       (imap-close nnimap-server-buffer)
 	       (nnimap-open-connection server)))
