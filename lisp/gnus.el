@@ -2777,7 +2777,7 @@ You should probably use `gnus-find-method-for-group' instead."
   "Go through PARAMETERS and expand them according to the match data."
   (dolist (elem parameters)
     (when (stringp (cdr elem))
-      (setcdr elem (replace-match elem nil nil group)))))
+      (setcdr elem (replace-match (cdr elem) nil nil group)))))
 
 (defun gnus-group-find-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.

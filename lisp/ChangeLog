@@ -1,5 +1,7 @@
 2001-08-18 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus.el (gnus-expand-group-parameters): Fix.
+
 	* gnus-spec.el (gnus-char-width): New.
 	(gnus-correct-substring, gnus-correct-length): Use it.
 
