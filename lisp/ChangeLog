@@ -1,3 +1,33 @@
+2000-11-18  Simon Josefsson  <sj@extundo.com>
+
+	* mml2015.el (mml2015-mailcrypt-clear-verify): New function.
+	(mml2015-function-alist): Use it.
+
+	* mml-sec.el (mml-sign-alist): Update names.
+	(mml-encrypt-alist): Ditto.
+	(mml-secure-part-smime-sign): Moved to mml-smime.el
+	as `mml-smime-sign-query'.
+	(mml-secure-part-smime-encrypt-by-file): Moved to mml-smime.el as
+	`mml-smime-get-file-cert'.
+	(mml-secure-part-smime-encrypt-by-dns): Moved to mml-smime.el as
+	`mml-smime-get-dns-cert'.
+	(mml-secure-part-smime-encrypt): Moved to mml-smime.el as
+	`mml-smime-encrypt-query'.
+	(mml-smime-sign-buffer): Use mml-smime-sign.
+	(mml-smime-encrypt-buffer): Use mml-smime-encrypt.
+
+	* mml-smime.el (mml-smime-sign): New function.
+	(mml-smime-encrypt): 
+	(mml-smime-sign-query): 
+	(mml-smime-get-file-cert): 
+	(mml-smime-get-dns-cert): 
+	(mml-smime-encrypt-query): Moved from mml-sec.el.
+
+2000-11-16  Simon Josefsson  <sj@extundo.com>
+
+	* mml2015.el (mml2015-gpg-clear-verify): New function.
+	(mml2015-function-alist): Add it.
+
 2000-11-17 14:21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-setup-fill-variables): Use

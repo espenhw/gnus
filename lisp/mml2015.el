@@ -53,7 +53,7 @@
 	 mml2015-gpg-encrypt
 	 mml2015-gpg-verify
 	 mml2015-gpg-decrypt
-	 nil
+	 mml2015-gpg-clear-verify
 	 mml2015-gpg-clear-decrypt))
   "Alist of PGP/MIME functions.")
 
@@ -368,6 +368,22 @@
 	(mm-set-handle-multipart-parameter 
 	 mm-security-handle 'gnus-info "OK"))
       handle)))
+
+(defun mml2015-gpg-clear-verify ()
+  (if (condition-case err
+	  (funcall mml2015-verify-function)
+	(error 
+	 (mm-set-handle-multipart-parameter 
+	  mm-security-handle 'gnus-details (cadr err)) 
+	 nil)
+	(quit
+	 (mm-set-handle-multipart-parameter 
+	  mm-security-handle 'gnus-details "Quit.") 
+	 nil))
+      (mm-set-handle-multipart-parameter 
+       mm-security-handle 'gnus-info "OK")
+    (mm-set-handle-multipart-parameter 
+     mm-security-handle 'gnus-info "Failed")))
 
 (defun mml2015-gpg-sign (cont)
   (let ((boundary 

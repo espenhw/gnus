@@ -25,10 +25,11 @@
 
 (require 'smime)
 (require 'mml2015)
+(require 'mml-smime)
 (eval-when-compile (require 'cl))
 
 (defvar mml-sign-alist
-  '(("smime"     mml-smime-sign-buffer     mml-secure-part-smime-sign)
+  '(("smime"     mml-smime-sign-buffer     mml-smime-sign-query)
     ("pgpmime"   mml-pgpmime-sign-buffer   list))
   "Alist of MIME signer functions.")
 
@@ -36,7 +37,7 @@
   "Default sign method.")
 
 (defvar mml-encrypt-alist
-  '(("smime"     mml-smime-encrypt-buffer mml-secure-part-smime-encrypt)
+  '(("smime"     mml-smime-encrypt-buffer     mml-smime-encrypt-query)
     ("pgpmime"   mml-pgpmime-encrypt-buffer   list))
   "Alist of MIME encryption functions.")
 
@@ -46,29 +47,12 @@
 ;;; Security functions
 
 (defun mml-smime-sign-buffer (cont)
-  (or (smime-sign-buffer (cdr (assq 'keyfile cont)))
+  (or (mml-smime-sign cont)
       (error "Signing failed... inspect message logs for errors")))
 
 (defun mml-smime-encrypt-buffer (cont)
-  (let (certnames certfiles tmp file tmpfiles)
-    (while (setq tmp (pop cont))
-      (if (and (consp tmp) (eq (car tmp) 'certfile))
-	  (push (cdr tmp) certnames)))
-    (while (setq tmp (pop certnames))
-      (if (not (and (not (file-exists-p tmp))
-		    (get-buffer tmp)))
-	  (push tmp certfiles)
-	(setq file (make-temp-name mm-tmp-directory))
-	(with-current-buffer tmp
-	  (write-region (point-min) (point-max) file))
-	(push file certfiles)
-	(push file tmpfiles)))
-    (if (smime-encrypt-buffer certfiles)
-	(while (setq tmp (pop tmpfiles))
-	  (delete-file tmp))
-      (while (setq tmp (pop tmpfiles))
-	(delete-file tmp))
-      (error "Encryption failed... inspect message logs for errors"))))
+  (or (mml-smime-encrypt cont)
+      (error "Encryption failed... inspect message logs for errors")))
 
 (defun mml-pgpmime-sign-buffer (cont)
   (or (mml2015-sign cont)
@@ -77,66 +61,6 @@
 (defun mml-pgpmime-encrypt-buffer (cont)
   (or (mml2015-encrypt cont)
       (error "Encryption failed... inspect message logs for errors")))
-
-(defun mml-secure-part-smime-sign ()
-  (when (null smime-keys)
-    (customize-variable 'smime-keys)
-    (error "No S/MIME keys configured, use customize to add your key"))
-  (list 'keyfile
-	(if (= (length smime-keys) 1)
-	    (cadar smime-keys)
-	  (or (let ((from (cadr (funcall gnus-extract-address-components 
-					 (or (save-excursion
-					       (save-restriction
-						 (message-narrow-to-headers)
-						 (message-fetch-field "from")))
-					     "")))))
-		(and from (smime-get-key-by-email from)))
-	      (smime-get-key-by-email
-	       (completing-read "Sign this part with what signature? "
-				smime-keys nil nil
-				(and (listp (car-safe smime-keys)) 
-				     (caar smime-keys))))))))
-
-(defun mml-secure-part-smime-encrypt-by-file ()
-  (ignore-errors
-    (list 'certfile (read-file-name
-		     "File with recipient's S/MIME certificate: "
-		     smime-certificate-directory nil t ""))))
-
-
-(defun mml-secure-part-smime-encrypt-by-dns ()
-  ;; todo: deal with comma separated multiple recipients
-  (let (result who bad cert)
-    (condition-case ()
-	(while (not result)
-	  (setq who (read-from-minibuffer
-		     (format "%sLookup certificate for: " (or bad ""))
-		     (cadr (funcall gnus-extract-address-components 
-				    (or (save-excursion
-					  (save-restriction
-					    (message-narrow-to-headers)
-					    (message-fetch-field "to")))
-					"")))))
-	  (if (setq cert (smime-cert-by-dns who))
-	      (setq result (list 'certfile (buffer-name cert)))
-	    (setq bad (format "`%s' not found. " who))))
-      (quit))
-    result))
-
-(defun mml-secure-part-smime-encrypt ()
-  ;; todo: add ldap support (xemacs ldap api?)
-  ;; todo: try dns/ldap automatically first, before prompting user
-  (let (certs done)
-    (while (not done)
-      (ecase (read (gnus-completing-read "dns" "Fetch certificate from"
-					 '(("dns") ("file")) nil t))
-	(dns (setq certs (append certs
-				 (mml-secure-part-smime-encrypt-by-dns))))
-	(file (setq certs (append certs
-				  (mml-secure-part-smime-encrypt-by-file)))))
-      (setq done (not (y-or-n-p "Add more recipients? "))))
-    certs))
 
 (defun mml-secure-part (method &optional sign)
   (save-excursion

@@ -2,7 +2,7 @@
 ;; Copyright (c) 2000 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
-;; Keywords: Gnus, MIME, SMIME, MML
+;; Keywords: Gnus, MIME, S/MIME, MML
 
 ;; This file is a part of GNU Emacs.
 
@@ -23,12 +23,98 @@
 
 ;;; Commentary:
 
-;; todo: move s/mime code from mml-sec.el here.
-
 ;;; Code:
 
 (require 'smime)
 (require 'mm-decode)
+
+(defun mml-smime-sign (cont)
+  (smime-sign-buffer (cdr (assq 'keyfile cont))))
+
+(defun mml-smime-encrypt (cont)
+  (let (certnames certfiles tmp file tmpfiles)
+    ;; xxx tmp files are always an security issue
+    (while (setq tmp (pop cont))
+      (if (and (consp tmp) (eq (car tmp) 'certfile))
+	  (push (cdr tmp) certnames)))
+    (while (setq tmp (pop certnames))
+      (if (not (and (not (file-exists-p tmp))
+		    (get-buffer tmp)))
+	  (push tmp certfiles)
+	(setq file (make-temp-name mm-tmp-directory))
+	(with-current-buffer tmp
+	  (write-region (point-min) (point-max) file))
+	(push file certfiles)
+	(push file tmpfiles)))
+    (if (smime-encrypt-buffer certfiles)
+	(progn
+	  (while (setq tmp (pop tmpfiles))
+	    (delete-file tmp))
+	  t)
+      (while (setq tmp (pop tmpfiles))
+	(delete-file tmp))
+      nil)))
+
+(defun mml-smime-sign-query ()
+  ;; query information (what certificate) from user when MML tag is
+  ;; added, for use later by the signing process
+  (when (null smime-keys)
+    (customize-variable 'smime-keys)
+    (error "No S/MIME keys configured, use customize to add your key"))
+  (list 'keyfile
+	(if (= (length smime-keys) 1)
+	    (cadar smime-keys)
+	  (or (let ((from (cadr (funcall gnus-extract-address-components
+					 (or (save-excursion
+					       (save-restriction
+						 (message-narrow-to-headers)
+						 (message-fetch-field "from")))
+					     "")))))
+		(and from (smime-get-key-by-email from)))
+	      (smime-get-key-by-email
+	       (completing-read "Sign this part with what signature? "
+				smime-keys nil nil
+				(and (listp (car-safe smime-keys)) 
+				     (caar smime-keys))))))))
+
+(defun mml-smime-get-file-cert ()
+  (ignore-errors
+    (list 'certfile (read-file-name
+		     "File with recipient's S/MIME certificate: "
+		     smime-certificate-directory nil t ""))))
+
+(defun mml-smime-get-dns-cert ()
+  ;; todo: deal with comma separated multiple recipients
+  (let (result who bad cert)
+    (condition-case ()
+	(while (not result)
+	  (setq who (read-from-minibuffer
+		     (format "%sLookup certificate for: " (or bad ""))
+		     (cadr (funcall gnus-extract-address-components 
+				    (or (save-excursion
+					  (save-restriction
+					    (message-narrow-to-headers)
+					    (message-fetch-field "to")))
+					"")))))
+	  (if (setq cert (smime-cert-by-dns who))
+	      (setq result (list 'certfile (buffer-name cert)))
+	    (setq bad (format "`%s' not found. " who))))
+      (quit))
+    result))
+
+(defun mml-smime-encrypt-query ()
+  ;; todo: add ldap support (xemacs ldap api?)
+  ;; todo: try dns/ldap automatically first, before prompting user
+  (let (certs done)
+    (while (not done)
+      (ecase (read (gnus-completing-read "dns" "Fetch certificate from"
+					 '(("dns") ("file")) nil t))
+	(dns (setq certs (append certs
+				 (mml-smime-get-dns-cert))))
+	(file (setq certs (append certs
+				  (mml-smime-get-file-cert)))))
+      (setq done (not (y-or-n-p "Add more recipients? "))))
+    certs))
 
 (defun mml-smime-verify (handle ctl)
   (with-current-buffer (mm-handle-multipart-original-buffer ctl)
@@ -51,8 +137,9 @@
       (mm-set-handle-multipart-parameter 
        mm-security-handle 'gnus-info "Failed")
       (mm-set-handle-multipart-parameter
-       mm-security-handle 'gnus-details (with-current-buffer smime-details-buffer 
-					  (buffer-string))))
+       mm-security-handle 'gnus-details 
+       (with-current-buffer smime-details-buffer 
+	 (buffer-string))))
     handle))
 
 (defun mml-smime-verify-test (handle ctl)
