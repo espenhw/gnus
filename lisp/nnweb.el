@@ -299,19 +299,26 @@ and `altavista'.")
   (unless (gnus-buffer-live-p nnweb-buffer)
     (setq nnweb-buffer
 	  (save-excursion
-	    (nnheader-set-temp-buffer
-	     (format " *nnweb %s %s %s*" nnweb-type nnweb-search server))))))
+	    (let ((multibyte (default-value 'enable-multibyte-characters)))
+	      (unwind-protect
+		  (progn
+		    (setq-default enable-multibyte-characters nil)
+		    (nnheader-set-temp-buffer
+		     (format " *nnweb %s %s %s*"
+			     nnweb-type nnweb-search server)))
+		(setq-default enable-multibyte-characters multibyte))
+	      (current-buffer))))))
 
 (defun nnweb-fetch-url (url)
   (save-excursion
     (if (not nnheader-callback-function)
-	(let ((buf (current-buffer)))
-	  (save-excursion
-	    (set-buffer nnweb-buffer)
-	    (erase-buffer)
-	    (url-insert-file-contents url)
-	    (copy-to-buffer buf (point-min) (point-max))
-	    t))
+	(progn
+	  (mm-with-unibyte-buffer
+	    (nnweb-insert url)
+	    (setq buf (buffer-string)))
+	  (erase-buffer)
+	  (insert buf)
+	  t)
       (nnweb-url-retrieve-asynch
        url 'nnweb-callback (current-buffer) nnheader-callback-function)
       t)))

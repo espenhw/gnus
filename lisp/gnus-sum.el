@@ -9402,10 +9402,9 @@ If REVERSE, save parts that do not match TYPE."
     (setq gnus-newsgroup-charset
 	  (or gnus-newsgroup-ephemeral-charset
 	      (and gnus-newsgroup-name
-		   (or (gnus-group-find-parameter gnus-newsgroup-name
-						  'charset)
+		   (or (gnus-group-find-parameter gnus-newsgroup-name 'charset)
 		       (let ((alist gnus-group-charset-alist)
-			     elem (charset nil))
+			     elem charset)
 			 (while (setq elem (pop alist))
 			   (when (and name
 				      (string-match (car elem) name))
