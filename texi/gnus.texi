@@ -2769,7 +2769,7 @@ See also @code{gnus-group-charset-alist}.
 
 @item ignored-charsets
 @cindex ignored-charset
-Elements that look like @code{(ignored-charsets x-known iso-8859-1)}
+Elements that look like @code{(ignored-charsets x-unknown iso-8859-1)}
 will make @code{iso-8859-1} and @code{x-unknown} ignored; that is, the
 default charset will be used for decoding articles.
 

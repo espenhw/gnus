@@ -1,3 +1,8 @@
+2001-08-29  Simon Josefsson  <jas@extundo.com>
+	From Anders Jackson <jackson@hig.se>
+
+	* gnus.texi (Group Parameters): Fix.
+
 2001-08-27  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Archiving Mail): Add.
