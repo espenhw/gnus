@@ -94,6 +94,9 @@ message-generate-hashcash t) to enable.
 ** The `nnrss' back end now supports multilingual text.  Non-ASCII group
 names for the `nnrss' groups are also supported.  *Note RSS::.
 
+** URLs inside OpenPGP: headers are retrieved and imported to your PGP
+key ring when you click on them.
+
 
 * For older news, see Gnus info node "New Features".
 
