@@ -8633,12 +8633,10 @@ This will be the case if the article has both been mailed and posted."
 	  ;; really expired articles as nonexistent.
 	  (unless (eq es expirable) ;If nothing was expired, we don't mark.
 	    (let ((gnus-use-cache nil))
-	      (while expirable
-		(unless (memq (car expirable) es)
-		  (when (gnus-data-find (car expirable))
-		    (gnus-summary-mark-article
-		     (car expirable) gnus-canceled-mark)))
-		(setq expirable (cdr expirable))))))
+	      (dolist (article expirable)
+		(when (and (not (memq article es))
+			   (gnus-data-find article))
+		  (gnus-summary-mark-article article gnus-canceled-mark))))))
 	(gnus-message 6 "Expiring articles...done")))))
 
 (defun gnus-summary-expire-articles-now ()

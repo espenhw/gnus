@@ -1,5 +1,10 @@
 2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnheader.el (nnheader-insert-nov-file): Increased cutoff to
+	32K.
+
+	* gnus-sum.el (gnus-summary-expire-articles): Clean up.
+
 	* nnmail.el (nnmail-article-group): Decode headers before running
 	split rules over them.
 	(nnmail-mail-splitting-charset): New variable.
