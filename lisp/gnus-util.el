@@ -165,8 +165,8 @@
 	(and (string-match "(.*" from)
 	     (setq name (substring from (1+ (match-beginning 0))
 				   (match-end 0)))))
-    ;; Fix by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
-    (list (or name from) (or address from))))
+    (list (if (string= name "") nil name) (or address from))))
+
 
 (defun gnus-fetch-field (field)
   "Return the value of the header FIELD of current article."

@@ -894,13 +894,13 @@ The cdr of ech entry is a function for applying the face to a region.")
   mm-auto-save-coding-system
   "Coding system to compose mail.")
 
-(defcustom message-send-mail-partially-limit nil
+(defcustom message-send-mail-partially-limit 1000000
   "The limitation of messages sent as message/partial.
 The lower bound of message size in characters, beyond which the message 
-should be sent in several parts. *Nil means unlimited."
+should be sent in several parts. If it is nil, the size is unlimited."
   :group 'message-buffers
   :type '(choice (const :tag "unlimited" nil)
-		 (integer 50000)))
+		 (integer 1000000)))
 
 ;;; Internal variables.
 

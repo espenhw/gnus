@@ -1,3 +1,13 @@
+2000-04-27 21:57:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail-partially-limit): Change the
+	default value.
+
+2000-04-27 21:53:32  Erik Toubro Nielsen <erik@ifad.dk>
+
+	* gnus-util.el (gnus-extract-address-components): Name might be
+	"".
+
 2000-04-27 20:32:06  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-summary-mail-forward): Use ARG.
