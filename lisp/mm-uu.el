@@ -264,7 +264,9 @@ To disable dissecting shar codes, for instance, add
     (with-current-buffer buf
       (when (mm-uu-pgp-signed-test)
 	(mml2015-clean-buffer)
-	(funcall (mml2015-clear-verify-function)))
+	(let ((coding-system-for-write (or gnus-newsgroup-charset
+					   'iso-8859-1)))
+	  (funcall (mml2015-clear-verify-function))))
       (goto-char (point-min))
       (if (search-forward "\n\n" nil t)
 	  (delete-region (point-min) (point)))

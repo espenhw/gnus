@@ -2,6 +2,7 @@
 
 	* mm-uu.el (mm-uu-type-alist): Don't test pgp stuff.
 	(mm-uu-pgp-encrypted-extract): Clean mml2015 buffer.
+	(mm-uu-pgp-signed-extract): Use coding-system.
 
 2000-11-07 14:33:19  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
