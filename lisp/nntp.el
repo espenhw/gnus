@@ -1014,7 +1014,7 @@ It will prompt for a password."
 	  (process-send-region nntp-server-process (point) last)
 	  ;; I don't know whether the next codes solve the known
 	  ;;  problem of communication error of GNU Emacs.
-	  (nntp-accept-response)
+	  (accept-process-output)
 	  ;;(sit-for 0)
 	  (goto-char last))))
     ;; We cannot erase buffer, because reply may be received.

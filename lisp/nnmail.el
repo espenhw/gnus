@@ -195,8 +195,7 @@ Example:
   "*Alist of abbreviations allowed in `nnmail-split-fancy'.")
 
 (defvar nnmail-delete-incoming t
-  "*If non-nil, the mail backends will delete incoming files after splitting.
-This is nil by default for reasons of security.")
+  "*If non-nil, the mail backends will delete incoming files after splitting.")
 
 (defvar nnmail-message-id-cache-length 1000
   "*The approximate number of Message-IDs nnmail will keep in its cache.

@@ -1343,7 +1343,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.25"
+(defconst gnus-version "(ding) Gnus v0.99.26"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1511,8 +1511,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar gnus-summary-expunge-below nil)
 (defvar gnus-reffed-article-number nil)
 
-(defvar rmail-default-file (expand-file-name "~/XMBOX"))
-(defvar rmail-default-rmail-file (expand-file-name "~/XNEWS"))
+; Let the byte-compiler know that we know about this variable.
+(defvar rmail-default-file)
 
 (defvar gnus-cache-removeable-articles nil)
 

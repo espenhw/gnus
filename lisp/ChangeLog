@@ -1,5 +1,16 @@
 Mon Aug 28 05:09:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
+	* nntp.el (nntp-send-region-to-server): Would hang.
+
+	* nnmail.el (nnmail-delete-incoming): Doc fix.
+
+	* gnus.el (rmail-default-file, rmail-default-rmail-file): Don't
+	init these variables. 
+
+Mon Aug 28 05:09:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.25 is released.
+	
 	* gnus-vis.el (gnus-summary-make-menu-bar): Date menu was odd.
 
 	* custom.el: Choked under non-X Emacs.
