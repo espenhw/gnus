@@ -737,7 +737,7 @@ be controlled by `gnus-treat-body-boundary'."
 For information on obtaining this database of pretty pictures, please
 see http://www.cs.indiana.edu/picons/ftp/index.html"
   :type '(repeat directory)
-  :link '(url-link :tag "download" 
+  :link '(url-link :tag "download"
 		   "http://www.cs.indiana.edu/picons/ftp/index.html")
   :link '(custom-manual "(gnus)Picons")
   :group 'gnus-picon)
@@ -5281,6 +5281,7 @@ groups."
       (if (gnus-buffer-live-p gnus-original-article-buffer)
 	  (insert-buffer gnus-original-article-buffer))
       (let ((winconf gnus-prev-winconf))
+	(kill-all-local-variables)
 	(gnus-article-mode)
 	(set-window-configuration winconf)
 	;; Tippy-toe some to make sure that point remains where it was.
@@ -5306,7 +5307,7 @@ groups."
 
 ;;; Internal Variables:
 
-(defcustom gnus-button-url-regexp 
+(defcustom gnus-button-url-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
       "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,[:word:]]+[-a-zA-Z0-9_=#$@~`%&*+|\\/[:word:]]\\)"
     "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?\\([-a-zA-Z0-9_=!?#$@~`%&*+|\\/:;.,]\\|\\w\\)+\\([-a-zA-Z0-9_=#$@~`%&*+|\\/]\\|\\w\\)\\)")
@@ -5405,7 +5406,7 @@ guessing."
 
 (defun gnus-button-handle-apropos-command (url)
   "Call apropos when pushing the corresponding URL button."
-  (apropos-command 
+  (apropos-command
    (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
 (defun gnus-button-handle-apropos-variable (url)
@@ -5426,7 +5427,7 @@ how to set variables in specific groups."
   :type 'integer)
 
 (defcustom gnus-button-emacs-level 5
-  "*Integer that says how many emacs-related buttons Gnus will show.  
+  "*Integer that says how many emacs-related buttons Gnus will show.
 The higher the number, the more buttons will appear and the more false
 positves are possible.  Note that you can set this variable local to
 specifific groups.  Setting it higher in Emacs or Gnus related groups is
@@ -5458,7 +5459,7 @@ positves are possible."
     ("mailto:\\([-a-zA-Z.@_+0-9%=?]+\\)" 0 t gnus-url-mailto 1)
     ("\\bmailto:\\([^ \n\t]+\\)" 0 t gnus-url-mailto 1)
     ;; This is info
-    ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)" 0 
+    ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)" 0
      (>= gnus-button-emacs-level 1) gnus-button-handle-info 2)
     ;; This is custom
     ("\\bcustom:\\(//\\)?\\([^'\">\n\t ]+\\)" 0
@@ -5505,7 +5506,7 @@ positves are possible."
   "*Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
-REGEXP: is the string matching text around the button (can also be lisp 
+REGEXP: is the string matching text around the button (can also be lisp
 expression evaluating to a string),
 BUTTON: is the number of the regexp grouping actually matching the button,
 FORM: is a lisp expression which must eval to true for the button to
