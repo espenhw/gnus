@@ -1,5 +1,8 @@
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* rfc2047.el (rfc2047-encode-region): Do error out on invalid
+	strings. 
+
 	* nntp.el (nntp-retrieve-headers-with-xover): Get error messages
 	right. 
 
