@@ -253,21 +253,22 @@ The regular expression is matched against the address.")
     (insert address "\n")
     (save-buffer)))
 
+;;; returns nil if the sender is in the whitelist, spam-split-group otherwise
 (defun spam-check-whitelist ()
   ;; FIXME!  Should it detect when file timestamps change?
   (unless spam-whitelist-cache
     (setq spam-whitelist-cache (spam-parse-list spam-whitelist)))
-  (and (spam-from-listed-p spam-whitelist-cache) t))
+  (if (spam-from-listed-p spam-whitelist-cache) nil spam-split-group))
 
 ;;; copied from code by Alexander Kotelnikov <sacha@giotto.sj.ru>
 ;; FIXME: assumes that bbdb.el is loaded
-;; FIXME: not sure about the logic...
+;; FIXME: broken right now, if the "from" field can't be retrieved
 (defun spam-check-bbdb ()
-  "We want people, who are in bbdb not to be splitted to spam"
-  (let ((who (cadr
-	      (gnus-extract-address-components (message-fetch-field "from"))
-	      )))
-    (bbdb-search (bbdb-records) nil nil (regexp-quote who))))
+  "We want messages from people who are in the BBDB not to be split to spam"
+  (let ((who (message-fetch-field "from")))
+    (when who
+      (setq who (regexp-quote (cadr (gnus-extract-address-components who))))
+      (if (bbdb-search (bbdb-records) nil nil who) nil spam-split-group))))
 
 (defun spam-check-blacklist ()
   ;; FIXME!  Should it detect when file timestamps change?
