@@ -357,6 +357,9 @@ Common keywords should be listed here.")
        (:mailbox "INBOX")
        (:predicate "UNSEEN UNDELETED")
        (:fetchflag "\\Deleted")
+       (:prescript)
+       (:prescript-delay)
+       (:postscript)
        (:dontexpunge))
       (webmail
        (:subtype hotmail)
@@ -966,6 +969,10 @@ This only works when `display-time' is enabled."
 (defun mail-source-fetch-imap (source callback)
   "Fetcher for imap sources."
   (mail-source-bind (imap source)
+    (mail-source-run-script
+     prescript (format-spec-make ?p password ?t mail-source-crash-box
+				 ?s server ?P port ?u user)
+     prescript-delay)
     (let ((from (format "%s:%s:%s" server user port))
 	  (found 0)
 	  (buf (generate-new-buffer " *imap source*"))
@@ -1021,6 +1028,10 @@ This only works when `display-time' is enabled."
 		    mail-source-password-cache))
 	(error "IMAP error: %s" (imap-error-text buf)))
       (kill-buffer buf)
+      (mail-source-run-script
+       postscript
+       (format-spec-make ?p password ?t mail-source-crash-box
+			 ?s server ?P port ?u user))))
       found)))
 
 (eval-and-compile

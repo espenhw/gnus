@@ -1,5 +1,8 @@
 2003-10-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mail-source.el (defvar): Add post/pre/scripts.
+	(mail-source-fetch-imap): Use them.
+
 	* nndraft.el (nndraft-request-move-article): Fix infinite
 	recursion. 
 
