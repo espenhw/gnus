@@ -1,3 +1,9 @@
+2004-09-26  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-cite-original-without-signature)
+	(message-cite-original): Use mapc.
+	(message-do-actions, message-make-forward-subject): Use dolist.
+
 2004-09-25  Kevin Greiner  <kgreiner@compsol.cc>
 
 	* gnus-agent.el (gnus-agent-check-overview-buffer): Fixed range of
