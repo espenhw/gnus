@@ -1,3 +1,7 @@
+2000-09-29 09:56:34  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-dissect-mime-parts-sub): Correctly mark body-begin.
+
 2000-09-29 09:14:08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-enter-digest-group): Decode to-address.
