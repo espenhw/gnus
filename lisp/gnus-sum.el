@@ -6731,9 +6731,11 @@ If FORCE (the prefix), also save the .newsrc file(s)."
       (set-buffer gnus-group-buffer)
       (if quit-config
 	  (gnus-handle-ephemeral-exit quit-config)
-	(goto-char group-point)
 	(unless leave-hidden
-	  (gnus-configure-windows 'group 'force)))
+	  (gnus-configure-windows 'group 'force))
+	;; Move point after calling gnus-configure-windows to make sure it
+	;; moves the window's point as well.
+	(goto-char group-point))
       ;; Clear the current group name.
       (unless quit-config
 	(setq gnus-newsgroup-name nil)))))
