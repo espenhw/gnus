@@ -1,3 +1,8 @@
+2003-01-10  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-summary-read-group-1): Don't select first
+	undownloaded/downloadable only when unplugged.
+
 2003-01-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-srvr.el (gnus-browse-foreign-server): Optimize inner loop.
