@@ -4025,40 +4025,41 @@ the id of the parent article (if any)."
     (gnus-summary-goto-subject article)
     (let* ((datal (gnus-data-find-list article))
 	   (data (car datal))
-	   (length (when (cdr datal)
-		     (- (gnus-data-pos data)
-			(gnus-data-pos (cadr datal)))))
 	   (buffer-read-only nil)
 	   (level (gnus-summary-thread-level)))
       (gnus-delete-line)
-      (gnus-summary-insert-line
-       header level nil 
-       (memq article gnus-newsgroup-undownloaded)
-       (gnus-article-mark article)
-       (memq article gnus-newsgroup-replied)
-       (memq article gnus-newsgroup-expirable)
-       ;; Only insert the Subject string when it's different
-       ;; from the previous Subject string.
-       (if (and
-	    gnus-show-threads
-	    (gnus-subject-equal
-	     (condition-case ()
-		 (mail-header-subject
-		  (gnus-data-header
-		   (cadr
-		    (gnus-data-find-list
-		     article
-		     (gnus-data-list t)))))
-	       ;; Error on the side of excessive subjects.
-	       (error ""))
-	     (mail-header-subject header)))
-	   ""
-	 (mail-header-subject header))
-       nil (cdr (assq article gnus-newsgroup-scored))
-       (memq article gnus-newsgroup-processable))
-      (when length
-	(gnus-data-update-list
-	 (cdr datal) (- length (- (gnus-data-pos data) (point))))))))
+      (let ((inserted (- (point)
+                         (progn
+                           (gnus-summary-insert-line
+                            header level nil 
+                            (memq article gnus-newsgroup-undownloaded)
+                            (gnus-article-mark article)
+                            (memq article gnus-newsgroup-replied)
+                            (memq article gnus-newsgroup-expirable)
+                            ;; Only insert the Subject string when it's different
+                            ;; from the previous Subject string.
+                            (if (and
+                                 gnus-show-threads
+                                 (gnus-subject-equal
+                                  (condition-case ()
+                                      (mail-header-subject
+                                       (gnus-data-header
+                                        (cadr
+                                         (gnus-data-find-list
+                                          article
+                                          (gnus-data-list t)))))
+                                    ;; Error on the side of excessive subjects.
+                                    (error ""))
+                                  (mail-header-subject header)))
+                                ""
+                              (mail-header-subject header))
+                            nil (cdr (assq article gnus-newsgroup-scored))
+                            (memq article gnus-newsgroup-processable))
+                           (point)))))
+        (when (cdr datal)
+          (gnus-data-update-list
+           (cdr datal) 
+           (- (gnus-data-pos data) (gnus-data-pos (cadr datal)) inserted)))))))
 
 (defun gnus-summary-update-article (article &optional iheader)
   "Update ARTICLE in the summary buffer."
@@ -6779,7 +6780,7 @@ If optional argument UNREAD is non-nil, only unread article is selected."
       (gnus-summary-goto-subject article t)))
   (gnus-summary-limit (append articles gnus-newsgroup-limit))
   (gnus-summary-position-point))
-  
+ 
 (defun gnus-summary-goto-subject (article &optional force silent)
   "Go the subject line of ARTICLE.
 If FORCE, also allow jumping to articles not currently shown."
