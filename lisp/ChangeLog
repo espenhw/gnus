@@ -1,3 +1,7 @@
+2004-03-18  Helmut Waitzmann  <Helmut.Waitzmann@web.de>  (tiny change)
+
+	* gnus-sum.el (gnus-newsgroup-variables): Doc fix.
+
 2004-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-save-part): Bind enable-multibyte-characters to

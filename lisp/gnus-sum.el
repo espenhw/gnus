@@ -1435,11 +1435,19 @@ This list will always be a subset of gnus-newsgroup-undownloaded.")
 (defvar gnus-newsgroup-variables nil
   "A list of variables that have separate values in different newsgroups.
 A list of newsgroup (summary buffer) local variables, or cons of
-variables and their default values (when the default values are not
-nil), that should be made global while the summary buffer is active.
+variables and their default expressions to be evalled (when the default
+values are not nil), that should be made global while the summary buffer
+is active.
+
+Note: The default expressions will be evaluated (using function `eval')
+before assignment to the local variable rather than just assigned to it.
+If the default expression is the symbol `global', that symbol will not
+be evaluated but the global value of the local variable will be used
+instead.
+
 These variables can be used to set variables in the group parameters
-while still allowing them to affect operations done in other
-buffers. For example:
+while still allowing them to affect operations done in other buffers.
+For example:
 
 \(setq gnus-newsgroup-variables
      '(message-use-followup-to
