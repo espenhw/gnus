@@ -1,3 +1,9 @@
+2001-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-name-charset-group-alist): Use
+	`find-coding-system' for XEmacs to check whether the coding-system
+	`utf-8' is available.
+
 2001-10-09 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* dgnushack.el (dgnushack-compile): Detect mh-e and xml.
