@@ -455,7 +455,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	;; Each prefix.
 	(setq end (match-end 0)
 	      prefix (buffer-substring begin end))
-	(set-text-properties 0 (length prefix) nil prefix)
+	(gnus-set-text-properties 0 (length prefix) nil prefix)
 	(setq entry (assoc prefix alist))
 	(if entry 
 	    (setcdr entry (cons line (cdr entry)))

@@ -568,7 +568,8 @@ Two predefined functions are available:
   "Generate the thread tree for ARTICLE if it isn't displayed already."
   (when (save-excursion
 	  (set-buffer gnus-summary-buffer)
-	  gnus-use-trees)
+	  (and gnus-use-trees
+	       (vectorp (gnus-summary-article-header article))))
     (save-excursion
       (let ((top (save-excursion
 		   (set-buffer gnus-summary-buffer)

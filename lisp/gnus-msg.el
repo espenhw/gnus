@@ -524,8 +524,8 @@ header line with the old Message-ID."
 	  (set-buffer article-buffer)
 	  (widen)
 	  (copy-to-buffer gnus-article-copy (point-min) (point-max))
-	  (set-text-properties (point-min) (point-max) 
-			       nil gnus-article-copy)))))
+	  (gnus-set-text-properties (point-min) (point-max) 
+				    nil gnus-article-copy)))))
 
 (defun gnus-post-news (post &optional group header article-buffer yank subject)
   "Begin editing a new USENET news article to be posted.
@@ -1808,6 +1808,11 @@ mailer."
     (gnus-inews-insert-archive-gcc)
     (run-hooks 'gnus-mail-hook)))
 
+(defun gnus-new-empty-mail ()
+  "Create a new, virtually empty mail mode buffer."
+  (pop-to-buffer gnus-mail-buffer)
+  (gnus-mail-setup 'new "" ""))
+
 (defun gnus-mail-reply (&optional yank to-address followup)
   (save-excursion
     (set-buffer gnus-summary-buffer)
@@ -2376,7 +2381,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
       (insert-buffer-substring buffer)
       (goto-char (point-max))
       (insert gnus-forward-end-separator)
-      (set-text-properties (point-min) (point-max) nil)
+      (gnus-set-text-properties (point-min) (point-max) nil)
       ;; Remove all unwanted headers.
       (goto-char (point-min))
       (forward-line 1)
@@ -2557,7 +2562,7 @@ this is a reply."
   (interactive "P")
   (gnus-summary-select-article t)
   ;; Create a mail buffer.
-  (gnus-new-mail)
+  (gnus-new-empty-mail)
   (erase-buffer)
   (insert-buffer-substring gnus-article-buffer)
   (goto-char (point-min))

@@ -695,14 +695,13 @@ all. This may very well take some time.")
 (defun nnml-save-nov ()
   (save-excursion
     (while nnml-nov-buffer-alist
-      (if (buffer-name (cdr (car nnml-nov-buffer-alist)))
-	  (progn
-	    (set-buffer (cdr (car nnml-nov-buffer-alist)))
-	    (and (buffer-modified-p)
-		 (write-region 
-		  1 (point-max) (buffer-file-name) nil 'nomesg))
-	    (set-buffer-modified-p nil)
-	    (kill-buffer (current-buffer))))
+      (when (buffer-name (cdr (car nnml-nov-buffer-alist)))
+	(set-buffer (cdr (car nnml-nov-buffer-alist)))
+	(and (buffer-modified-p)
+	     (write-region 
+	      1 (point-max) (buffer-file-name) nil 'nomesg))
+	(set-buffer-modified-p nil)
+	(kill-buffer (current-buffer)))
       (setq nnml-nov-buffer-alist (cdr nnml-nov-buffer-alist)))))
 
 ;;;###autoload

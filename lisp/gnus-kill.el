@@ -251,7 +251,8 @@ If NEWSGROUP is nil, the global kill file is selected."
 	"From" name level))
       (insert string)
       (gnus-kill-file-apply-string string))
-    (message "Added temporary score file entry for followups to %s." name)))
+    (gnus-message 
+     6 "Added temporary score file entry for followups to %s." name)))
 
 (defun gnus-kill-file-apply-buffer ()
   "Apply current buffer to current newsgroup."
@@ -260,7 +261,7 @@ If NEWSGROUP is nil, the global kill file is selected."
 	   (get-buffer gnus-summary-buffer))
       ;; Assume newsgroup is selected.
       (gnus-kill-file-apply-string (buffer-string))
-    (ding) (message "No newsgroup is selected.")))
+    (ding) (gnus-message 2 "No newsgroup is selected.")))
 
 (defun gnus-kill-file-apply-string (string)
   "Apply STRING to current newsgroup."
@@ -284,7 +285,7 @@ If NEWSGROUP is nil, the global kill file is selected."
 	  (save-window-excursion
 	    (pop-to-buffer gnus-summary-buffer)
 	    (eval (car (read-from-string string))))))
-    (ding) (message "No newsgroup is selected.")))
+    (ding) (gnus-message 2 "No newsgroup is selected.")))
 
 (defun gnus-kill-file-exit ()
   "Save a kill file, then return to the previous buffer."
@@ -369,7 +370,7 @@ Returns the number of articles marked as read."
 	  (while kill-files
 	    (if (not (file-exists-p (car kill-files)))
 		()
-	      (message "Processing kill file %s..." (car kill-files))
+	      (gnus-message 6 "Processing kill file %s..." (car kill-files))
 	      (find-file (car kill-files))
 	      (gnus-add-current-to-buffer-list)
 	      (goto-char (point-min))
@@ -379,7 +380,8 @@ Returns the number of articles marked as read."
 		  (gnus-kill-parse-gnus-kill-file)
 		(gnus-kill-parse-rn-kill-file))
 	    
-	      (message "Processing kill file %s...done" (car kill-files)))
+	      (gnus-message 
+	       6 "Processing kill file %s...done" (car kill-files)))
 	    (setq kill-files (cdr kill-files)))))
 
       (gnus-set-mode-line 'summary)
@@ -387,7 +389,7 @@ Returns the number of articles marked as read."
       (if beg
 	  (let ((nunreads (- unreads (length gnus-newsgroup-unreads))))
 	    (or (eq nunreads 0)
-		(message "Marked %d articles as read" nunreads))
+		(gnus-message 6 "Marked %d articles as read" nunreads))
 	    nunreads)
 	0))))
 
@@ -582,7 +584,8 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		(gnus-last-article nil)
 		(gnus-break-pages nil)	;No need to break pages.
 		(gnus-mark-article-hook nil)) ;Inhibit marking as read.
-	    (message "Searching for article: %d..." (mail-header-number header))
+	    (gnus-message 
+	     6 "Searching for article: %d..." (mail-header-number header))
 	    (gnus-article-setup-buffer)
 	    (gnus-article-prepare (mail-header-number header) t)
 	    (if (save-excursion

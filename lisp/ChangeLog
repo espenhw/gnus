@@ -1,6 +1,49 @@
+Wed Feb 21 00:21:56 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-summary-refer-parent-article): Also check the NOV
+	references. 
+
+	* gnus-salt.el (gnus-possibly-generate-tree): Don't generate trees
+	for pseudo-articles.
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Make sure the group
+	exists. 
+
+	* gnus.el (gnus-summary-read-group): Search all frames when
+	recentering the group buffer.
+	(gnus-summary-hide-thread): Didn't hide dummy threads.
+
+	* gnus.el (gnus-summary-prepare-threads): Dummy roots would
+	swallow the following article.
+
+	* gnus-msg.el (gnus-new-empty-mail): New function.
+	(gnus-summary-resend-bounced-mail): Use it.
+
+	* gnus-picon.el (gnus-picons-display-x-face): Make sure buffer
+	exists. 
+
+Tue Feb 20 04:45:34 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-set-current-level): Error if not a group on
+	the current line.
+	(gnus-summary-next-page): Don't go to the next article when 'never
+	and at the end of the group.
+	(gnus-group-make-group): Make sure the server is opened.
+	(gnus-read-descriptions-file): Make sure the method is a method
+	and not a server.
+
+	* gnus-msg.el (gnus-copy-article-buffer): Ditto.
+	(gnus-forward-insert-buffer): Ditto.
+
+	* gnus-cite.el (gnus-cite-parse): Use `gnus-set-text-properties'.
+
+	* nnheader.el (nnheader-temp-write): Would bug out on nil files. 
+
 Mon Feb 19 23:01:33 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* browse-url.el: New version installed.
+
+	* gnus.el: 0.39 is released.
 
 Mon Feb 19 01:00:33 1996  Lars Ingebrigtsen  <lars@eyesore.no>
 

@@ -152,7 +152,8 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (sleep-for .1)))
   ;; display it
   (save-excursion
-    (set-buffer (gnus-get-buffer-name gnus-picons-display-where))
+    (set-buffer (get-buffer-create (gnus-get-buffer-name 
+				    gnus-picons-display-where)))
     (gnus-add-current-to-buffer-list)
     (beginning-of-buffer)
     (let ((iconpoint (point)))

@@ -74,57 +74,57 @@ virtual group.")
 	      beg cgroup active article result prefix)
 	  (while articles
 	    (setq article (assq (pop articles) nnvirtual-mapping))
-	    (setq cgroup (cadr article))
-	    (gnus-request-group cgroup t)
-	    (setq prefix (gnus-group-real-prefix cgroup))
-	    (when (setq result (gnus-retrieve-headers 
-				(list (caddr article)) cgroup))
-	      (set-buffer nntp-server-buffer)
-	      (if (zerop (buffer-size))
-		  (nconc (assq cgroup unfetched) (list (caddr article)))
-		;; If we got HEAD headers, we convert them into NOV
-		;; headers.  This is slow, inefficient and, come to think
-		;; of it, downright evil.  So sue me.  I couldn't be
-		;; bothered to write a header parse routine that could
-		;; parse a mixed HEAD/NOV buffer.
-		(when (eq result 'headers)
-		  (nnvirtual-convert-headers))
-		(goto-char (point-min))
-		(while (not (eobp))
-		  (delete-region 
-		   (point) (progn (read nntp-server-buffer) (point)))
-		  (insert (int-to-string (car article)))
-		  (beginning-of-line)
-		  (looking-at 
-		   "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
-		  (goto-char (match-end 0))
-		  (or (search-forward 
-		       "\t" (save-excursion (end-of-line) (point)) t)
-		      (end-of-line))
-		  (while (= (char-after (1- (point))) ? )
-		    (forward-char -1)
-		    (delete-char 1))
-		  (if (eolp)
-		      (progn
-			(end-of-line)
-			(or (= (char-after (1- (point))) ?\t)
-			    (insert ?\t))
-			(insert (format "Xref: %s %s:%d\t" (system-name) 
-					cgroup (caddr article))))
-		    (if (not (string= "" prefix))
-			(while (re-search-forward 
-				"[^ ]+:[0-9]+"
-				(save-excursion (end-of-line) (point)) t)
-			  (save-excursion
-			    (goto-char (match-beginning 0))
-			    (insert prefix))))
-		    (end-of-line)
-		    (or (= (char-after (1- (point))) ?\t)
-			(insert ?\t)))
-		  (forward-line 1))
-		(set-buffer vbuf)
-		(goto-char (point-max))
-		(insert-buffer-substring nntp-server-buffer))))
+	    (when (setq cgroup (cadr article))
+	      (gnus-request-group cgroup t)
+	      (setq prefix (gnus-group-real-prefix cgroup))
+	      (when (setq result (gnus-retrieve-headers 
+				  (list (caddr article)) cgroup))
+		(set-buffer nntp-server-buffer)
+		(if (zerop (buffer-size))
+		    (nconc (assq cgroup unfetched) (list (caddr article)))
+		  ;; If we got HEAD headers, we convert them into NOV
+		  ;; headers.  This is slow, inefficient and, come to think
+		  ;; of it, downright evil.  So sue me.  I couldn't be
+		  ;; bothered to write a header parse routine that could
+		  ;; parse a mixed HEAD/NOV buffer.
+		  (when (eq result 'headers)
+		    (nnvirtual-convert-headers))
+		  (goto-char (point-min))
+		  (while (not (eobp))
+		    (delete-region 
+		     (point) (progn (read nntp-server-buffer) (point)))
+		    (insert (int-to-string (car article)))
+		    (beginning-of-line)
+		    (looking-at 
+		     "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
+		    (goto-char (match-end 0))
+		    (or (search-forward 
+			 "\t" (save-excursion (end-of-line) (point)) t)
+			(end-of-line))
+		    (while (= (char-after (1- (point))) ? )
+		      (forward-char -1)
+		      (delete-char 1))
+		    (if (eolp)
+			(progn
+			  (end-of-line)
+			  (or (= (char-after (1- (point))) ?\t)
+			      (insert ?\t))
+			  (insert (format "Xref: %s %s:%d\t" (system-name) 
+					  cgroup (caddr article))))
+		      (if (not (string= "" prefix))
+			  (while (re-search-forward 
+				  "[^ ]+:[0-9]+"
+				  (save-excursion (end-of-line) (point)) t)
+			    (save-excursion
+			      (goto-char (match-beginning 0))
+			      (insert prefix))))
+		      (end-of-line)
+		      (or (= (char-after (1- (point))) ?\t)
+			  (insert ?\t)))
+		    (forward-line 1))
+		  (set-buffer vbuf)
+		  (goto-char (point-max))
+		  (insert-buffer-substring nntp-server-buffer)))))
 	  
 	  ;; In case some of the articles have expired or been
 	  ;; cancelled, we have to mark them as read in the

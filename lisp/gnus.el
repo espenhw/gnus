@@ -1685,7 +1685,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.39"
+(defconst gnus-version "September Gnus v0.40"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5275,7 +5275,7 @@ ADDRESS."
 			  (assoc method gnus-valid-select-methods))
 		    (read-string "Address: ")
 		  ""))
-	(list method nil)))))
+	(list method "")))))
 
   (save-excursion
     (set-buffer gnus-group-buffer)
@@ -5298,8 +5298,9 @@ ADDRESS."
 	   (concat "(gnus-group-set-info '" (prin1-to-string (cdr info)) ")")))
       (gnus-group-insert-group-line-info nname)
 
-      (if (assoc method gnus-valid-select-methods)
-	  (require (intern method)))
+      (when (assoc (symbol-name (car method)) gnus-valid-select-methods)
+	(require (car method)))
+      (gnus-check-server method)
       (and (gnus-check-backend-function 'request-create-group nname)
 	   (gnus-request-create-group nname))
       t)))
@@ -5855,19 +5856,19 @@ or nil if no action could be taken."
   (interactive
    (list
     current-prefix-arg
-    (string-to-int
-     (let ((s (read-string
-	       (format "Level (default %s): " (gnus-group-group-level)))))
-       (if (string-match "^\\s-*$" s)
-	   (int-to-string (gnus-group-group-level))
-	 s)))))
+    (if (not (gnus-group-group-name))
+	(error "No group on the current line")
+      (string-to-int
+       (let ((s (read-string
+		 (format "Level (default %s): " (gnus-group-group-level)))))
+	 (if (string-match "^\\s-*$" s)
+	     (int-to-string (gnus-group-group-level))
+	   s))))))
   (or (and (>= level 1) (<= level gnus-level-killed))
       (error "Illegal level: %d" level))
   (let ((groups (gnus-group-process-prefix n))
 	group)
-    (while groups
-      (setq group (car groups)
-	    groups (cdr groups))
+    (while (setq group (pop groups))
       (gnus-group-remove-mark group)
       (gnus-message 6 "Changed level of %s from %d to %d"
 		    group (or (gnus-group-group-level) gnus-level-killed)
@@ -7463,11 +7464,11 @@ If NO-DISPLAY, don't generate a summary buffer."
 	  (gnus-request-asynchronous gnus-newsgroup-name gnus-newsgroup-data))
 	(when kill-buffer
 	  (gnus-kill-or-deaden-summary kill-buffer))
-	(when (get-buffer-window gnus-group-buffer)
+	(when (get-buffer-window gnus-group-buffer t)
 	  ;; Gotta use windows, because recenter does wierd stuff if
 	  ;; the current buffer ain't the displayed window.
 	  (let ((owin (selected-window)))
-	    (select-window (get-buffer-window gnus-group-buffer))
+	    (select-window (get-buffer-window gnus-group-buffer t))
 	    (when (gnus-group-goto-group group)
 	      (recenter))
 	    (select-window owin))))
@@ -8162,96 +8163,95 @@ or a straight list of headers."
 	  (when gnus-tmp-header
 	    ;; We may have an old dummy line to output before this
 	    ;; article.
-	    (if gnus-tmp-dummy-line
-		(progn
-		  (gnus-summary-insert-dummy-line
-		   gnus-tmp-dummy-line (mail-header-number gnus-tmp-header))
-		  (setq gnus-tmp-dummy-line nil))
+	    (when gnus-tmp-dummy-line
+	      (gnus-summary-insert-dummy-line
+	       gnus-tmp-dummy-line (mail-header-number gnus-tmp-header))
+	      (setq gnus-tmp-dummy-line nil))
 
-	      ;; Compute the mark.
-	      (setq
-	       gnus-tmp-unread
-	       (cond
-		((memq number gnus-newsgroup-unreads) gnus-unread-mark)
-		((memq number gnus-newsgroup-marked) gnus-ticked-mark)
-		((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
-		((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
-		(t (or (cdr (assq number gnus-newsgroup-reads))
-		       gnus-ancient-mark))))
+	    ;; Compute the mark.
+	    (setq
+	     gnus-tmp-unread
+	     (cond
+	      ((memq number gnus-newsgroup-unreads) gnus-unread-mark)
+	      ((memq number gnus-newsgroup-marked) gnus-ticked-mark)
+	      ((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
+	      ((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
+	      (t (or (cdr (assq number gnus-newsgroup-reads))
+		     gnus-ancient-mark))))
 
-	      (push (gnus-data-make number gnus-tmp-unread (1+ (point))
-				    gnus-tmp-header gnus-tmp-level)
-		    gnus-newsgroup-data)
+	    (push (gnus-data-make number gnus-tmp-unread (1+ (point))
+				  gnus-tmp-header gnus-tmp-level)
+		  gnus-newsgroup-data)
 
-	      ;; Actually insert the line.
-	      (setq
-	       gnus-tmp-subject-or-nil
-	       (cond
-		((and gnus-thread-ignore-subject
-		      gnus-tmp-prev-subject
-		      (not (inline (gnus-subject-equal
-				    gnus-tmp-prev-subject subject))))
-		 subject)
-		((zerop gnus-tmp-level)
-		 (if (and (eq gnus-summary-make-false-root 'empty)
-			  (memq number gnus-tmp-gathered)
-			  gnus-tmp-prev-subject
-			  (inline (gnus-subject-equal
-				   gnus-tmp-prev-subject subject)))
-		     gnus-summary-same-subject
-		   subject))
-		(t gnus-summary-same-subject)))
-	      (if (and (eq gnus-summary-make-false-root 'adopt)
-		       (= gnus-tmp-level 1)
-		       (memq number gnus-tmp-gathered))
-		  (setq gnus-tmp-opening-bracket ?\<
-			gnus-tmp-closing-bracket ?\>)
-		(setq gnus-tmp-opening-bracket ?\[
-		      gnus-tmp-closing-bracket ?\]))
-	      (setq
-	       gnus-tmp-indentation
-	       (aref gnus-thread-indent-array gnus-tmp-level)
-	       gnus-tmp-lines (mail-header-lines gnus-tmp-header)
-	       gnus-tmp-score (or (cdr (assq number gnus-newsgroup-scored))
-				  gnus-summary-default-score 0)
-	       gnus-tmp-score-char
-	       (if (or (null gnus-summary-default-score)
-		       (<= (abs (- gnus-tmp-score gnus-summary-default-score))
-			   gnus-summary-zcore-fuzz)) ? 
-		 (if (< gnus-tmp-score gnus-summary-default-score)
-		     gnus-score-below-mark gnus-score-over-mark))
-	       gnus-tmp-replied
-	       (cond ((memq number gnus-newsgroup-processable)
-		      gnus-process-mark)
-		     ((memq number gnus-newsgroup-cached)
-		      gnus-cached-mark)
-		     ((memq number gnus-newsgroup-replied)
-		      gnus-replied-mark)
-		     (t gnus-unread-mark))
-	       gnus-tmp-from (mail-header-from gnus-tmp-header)
-	       gnus-tmp-name
-	       (cond
-		((string-match "(.+)" gnus-tmp-from)
-		 (substring gnus-tmp-from
-			    (1+ (match-beginning 0)) (1- (match-end 0))))
-		((string-match "<[^>]+> *$" gnus-tmp-from)
-		 (setq beg-match (match-beginning 0))
-		 (or (and (string-match "^\"[^\"]*\"" gnus-tmp-from)
-			  (substring gnus-tmp-from (1+ (match-beginning 0))
-				     (1- (match-end 0))))
-		     (substring gnus-tmp-from 0 beg-match)))
-		(t gnus-tmp-from)))
-	      (when (string= gnus-tmp-name "")
-		(setq gnus-tmp-name gnus-tmp-from))
-	      (or (numberp gnus-tmp-lines) (setq gnus-tmp-lines 0))
-	      (put-text-property
-	       (point)
-	       (progn (eval gnus-summary-line-format-spec) (point))
-	       'gnus-number number)
-	      (when gnus-visual-p
-		(forward-line -1)
-		(run-hooks 'gnus-summary-update-hook)
-		(forward-line 1)))
+	    ;; Actually insert the line.
+	    (setq
+	     gnus-tmp-subject-or-nil
+	     (cond
+	      ((and gnus-thread-ignore-subject
+		    gnus-tmp-prev-subject
+		    (not (inline (gnus-subject-equal
+				  gnus-tmp-prev-subject subject))))
+	       subject)
+	      ((zerop gnus-tmp-level)
+	       (if (and (eq gnus-summary-make-false-root 'empty)
+			(memq number gnus-tmp-gathered)
+			gnus-tmp-prev-subject
+			(inline (gnus-subject-equal
+				 gnus-tmp-prev-subject subject)))
+		   gnus-summary-same-subject
+		 subject))
+	      (t gnus-summary-same-subject)))
+	    (if (and (eq gnus-summary-make-false-root 'adopt)
+		     (= gnus-tmp-level 1)
+		     (memq number gnus-tmp-gathered))
+		(setq gnus-tmp-opening-bracket ?\<
+		      gnus-tmp-closing-bracket ?\>)
+	      (setq gnus-tmp-opening-bracket ?\[
+		    gnus-tmp-closing-bracket ?\]))
+	    (setq
+	     gnus-tmp-indentation
+	     (aref gnus-thread-indent-array gnus-tmp-level)
+	     gnus-tmp-lines (mail-header-lines gnus-tmp-header)
+	     gnus-tmp-score (or (cdr (assq number gnus-newsgroup-scored))
+				gnus-summary-default-score 0)
+	     gnus-tmp-score-char
+	     (if (or (null gnus-summary-default-score)
+		     (<= (abs (- gnus-tmp-score gnus-summary-default-score))
+			 gnus-summary-zcore-fuzz)) ? 
+	       (if (< gnus-tmp-score gnus-summary-default-score)
+		   gnus-score-below-mark gnus-score-over-mark))
+	     gnus-tmp-replied
+	     (cond ((memq number gnus-newsgroup-processable)
+		    gnus-process-mark)
+		   ((memq number gnus-newsgroup-cached)
+		    gnus-cached-mark)
+		   ((memq number gnus-newsgroup-replied)
+		    gnus-replied-mark)
+		   (t gnus-unread-mark))
+	     gnus-tmp-from (mail-header-from gnus-tmp-header)
+	     gnus-tmp-name
+	     (cond
+	      ((string-match "(.+)" gnus-tmp-from)
+	       (substring gnus-tmp-from
+			  (1+ (match-beginning 0)) (1- (match-end 0))))
+	      ((string-match "<[^>]+> *$" gnus-tmp-from)
+	       (setq beg-match (match-beginning 0))
+	       (or (and (string-match "^\"[^\"]*\"" gnus-tmp-from)
+			(substring gnus-tmp-from (1+ (match-beginning 0))
+				   (1- (match-end 0))))
+		   (substring gnus-tmp-from 0 beg-match)))
+	      (t gnus-tmp-from)))
+	    (when (string= gnus-tmp-name "")
+	      (setq gnus-tmp-name gnus-tmp-from))
+	    (or (numberp gnus-tmp-lines) (setq gnus-tmp-lines 0))
+	    (put-text-property
+	     (point)
+	     (progn (eval gnus-summary-line-format-spec) (point))
+	     'gnus-number number)
+	    (when gnus-visual-p
+	      (forward-line -1)
+	      (run-hooks 'gnus-summary-update-hook)
+	      (forward-line 1))
 
 	    (setq gnus-tmp-prev-subject subject)))
 
@@ -10064,7 +10064,8 @@ article."
 		(lines
 		 (gnus-message 3 "End of message"))
 		((null lines)
-		 (if (eq gnus-summary-goto-unread 'never)
+		 (if (and (eq gnus-summary-goto-unread 'never)
+			  (not (eq article gnus-newsgroup-end)))
 		     (gnus-summary-next-article)
 		   (gnus-summary-next-unread-article))))))
     (gnus-summary-recenter)
@@ -10578,7 +10579,7 @@ The difference between N and the number of articles fetched is returned."
 		 ;; It's not the current article, so we take a bet on
 		 ;; the value we got from the server.
 		 (mail-header-references header))))
-	 (if ref
+	 (if (setq ref (or ref (mail-header-references header)))
 	     (or (gnus-summary-refer-article (gnus-parent-id ref))
 		 (gnus-message 1 "Couldn't find parent"))
 	   (gnus-message 1 "No references in article %d"
@@ -12182,6 +12183,7 @@ Returns nil if no threads were there to be hidden."
 	(start (point))
 	(article (gnus-summary-article-number))
 	end)
+    (goto-char start)
     ;; Go forward until either the buffer ends or the subthread
     ;; ends.
     (when (and (not (eobp))
@@ -15210,83 +15212,84 @@ newsgroup."
 	(setq list (cdr list))))))
 
 (defun gnus-get-unread-articles-in-group (info active &optional update)
-  ;; Allow the backend to update the info in the group.
-  (when update
-    (gnus-request-update-info
-     info (gnus-find-method-for-group (gnus-info-group info))))
-  (let* ((range (gnus-info-read info))
-	 (num 0)
-	 (marked (gnus-info-marks info)))
-    ;; If a cache is present, we may have to alter the active info.
-    (and gnus-use-cache
-	 (gnus-cache-possibly-alter-active (gnus-info-group info) active))
-    ;; Modify the list of read articles according to what articles
-    ;; are available; then tally the unread articles and add the
-    ;; number to the group hash table entry.
-    (cond
-     ((zerop (cdr active))
-      (setq num 0))
-     ((not range)
-      (setq num (- (1+ (cdr active)) (car active))))
-     ((not (listp (cdr range)))
-      ;; Fix a single (num . num) range according to the
-      ;; active hash table.
-      ;; Fix by Carsten Bormann <cabo@Informatik.Uni-Bremen.DE>.
-      (and (< (cdr range) (car active)) (setcdr range (1- (car active))))
-      (and (> (cdr range) (cdr active)) (setcdr range (cdr active)))
-      ;; Compute number of unread articles.
-      (setq num (max 0 (- (cdr active) (- (1+ (cdr range)) (car range))))))
-     (t
-      ;; The read list is a list of ranges.  Fix them according to
-      ;; the active hash table.
-      ;; First peel off any elements that are below the lower
-      ;; active limit.
-      (while (and (cdr range)
-		  (>= (car active)
-		      (or (and (atom (car (cdr range))) (car (cdr range)))
-			  (car (car (cdr range))))))
-	(if (numberp (car range))
-	    (setcar range
-		    (cons (car range)
-			  (or (and (numberp (car (cdr range)))
-				   (car (cdr range)))
-			      (cdr (car (cdr range))))))
-	  (setcdr (car range)
-		  (or (and (numberp (nth 1 range)) (nth 1 range))
-		      (cdr (car (cdr range))))))
-	(setcdr range (cdr (cdr range))))
-      ;; Adjust the first element to be the same as the lower limit.
-      (if (and (not (atom (car range)))
-	       (< (cdr (car range)) (car active)))
-	  (setcdr (car range) (1- (car active))))
-      ;; Then we want to peel off any elements that are higher
-      ;; than the upper active limit.
-      (let ((srange range))
-	;; Go past all legal elements.
-	(while (and (cdr srange)
-		    (<= (or (and (atom (car (cdr srange)))
-				 (car (cdr srange)))
-			    (car (car (cdr srange)))) (cdr active)))
-	  (setq srange (cdr srange)))
-	(if (cdr srange)
-	    ;; Nuke all remaining illegal elements.
-	    (setcdr srange nil))
+  (when active
+    ;; Allow the backend to update the info in the group.
+    (when update 
+      (gnus-request-update-info
+       info (gnus-find-method-for-group (gnus-info-group info))))
+    (let* ((range (gnus-info-read info))
+	   (num 0)
+	   (marked (gnus-info-marks info)))
+      ;; If a cache is present, we may have to alter the active info.
+      (and gnus-use-cache
+	   (gnus-cache-possibly-alter-active (gnus-info-group info) active))
+      ;; Modify the list of read articles according to what articles
+      ;; are available; then tally the unread articles and add the
+      ;; number to the group hash table entry.
+      (cond
+       ((zerop (cdr active))
+	(setq num 0))
+       ((not range)
+	(setq num (- (1+ (cdr active)) (car active))))
+       ((not (listp (cdr range)))
+	;; Fix a single (num . num) range according to the
+	;; active hash table.
+	;; Fix by Carsten Bormann <cabo@Informatik.Uni-Bremen.DE>.
+	(and (< (cdr range) (car active)) (setcdr range (1- (car active))))
+	(and (> (cdr range) (cdr active)) (setcdr range (cdr active)))
+	;; Compute number of unread articles.
+	(setq num (max 0 (- (cdr active) (- (1+ (cdr range)) (car range))))))
+       (t
+	;; The read list is a list of ranges.  Fix them according to
+	;; the active hash table.
+	;; First peel off any elements that are below the lower
+	;; active limit.
+	(while (and (cdr range)
+		    (>= (car active)
+			(or (and (atom (car (cdr range))) (car (cdr range)))
+			    (car (car (cdr range))))))
+	  (if (numberp (car range))
+	      (setcar range
+		      (cons (car range)
+			    (or (and (numberp (car (cdr range)))
+				     (car (cdr range)))
+				(cdr (car (cdr range))))))
+	    (setcdr (car range)
+		    (or (and (numberp (nth 1 range)) (nth 1 range))
+			(cdr (car (cdr range))))))
+	  (setcdr range (cdr (cdr range))))
+	;; Adjust the first element to be the same as the lower limit.
+	(if (and (not (atom (car range)))
+		 (< (cdr (car range)) (car active)))
+	    (setcdr (car range) (1- (car active))))
+	;; Then we want to peel off any elements that are higher
+	;; than the upper active limit.
+	(let ((srange range))
+	  ;; Go past all legal elements.
+	  (while (and (cdr srange)
+		      (<= (or (and (atom (car (cdr srange)))
+				   (car (cdr srange)))
+			      (car (car (cdr srange)))) (cdr active)))
+	    (setq srange (cdr srange)))
+	  (if (cdr srange)
+	      ;; Nuke all remaining illegal elements.
+	      (setcdr srange nil))
 
-	;; Adjust the final element.
-	(if (and (not (atom (car srange)))
-		 (> (cdr (car srange)) (cdr active)))
-	    (setcdr (car srange) (cdr active))))
-      ;; Compute the number of unread articles.
-      (while range
-	(setq num (+ num (- (1+ (or (and (atom (car range)) (car range))
-				    (cdr (car range))))
-			    (or (and (atom (car range)) (car range))
-				(car (car range))))))
-	(setq range (cdr range)))
-      (setq num (max 0 (- (cdr active) num)))))
-    ;; Set the number of unread articles.
-    (setcar (gnus-gethash (gnus-info-group info) gnus-newsrc-hashtb) num)
-    num))
+	  ;; Adjust the final element.
+	  (if (and (not (atom (car srange)))
+		   (> (cdr (car srange)) (cdr active)))
+	      (setcdr (car srange) (cdr active))))
+	;; Compute the number of unread articles.
+	(while range
+	  (setq num (+ num (- (1+ (or (and (atom (car range)) (car range))
+				      (cdr (car range))))
+			      (or (and (atom (car range)) (car range))
+				  (car (car range))))))
+	  (setq range (cdr range)))
+	(setq num (max 0 (- (cdr active) num)))))
+      ;; Set the number of unread articles.
+      (setcar (gnus-gethash (gnus-info-group info) gnus-newsrc-hashtb) num)
+      num)))
 
 (defun gnus-activate-group (group &optional scan)
   ;; Check whether a group has been activated or not.
@@ -16177,6 +16180,8 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-read-descriptions-file (&optional method)
   (let ((method (or method gnus-select-method)))
+    (when (stringp method)
+      (setq method (gnus-server-to-method method)))
     ;; We create the hashtable whether we manage to read the desc file
     ;; to avoid trying to re-read after a failed read.
     (or gnus-description-hashtb

@@ -317,7 +317,9 @@ Return the number of headers removed."
 	   (nnheader-temp-cur-buffer
 	    (nnheader-set-temp-buffer
 	     (generate-new-buffer-name " *nnheader temp*"))))
-       (unless (file-directory-p (file-name-directory nnheader-temp-file))
+       (when (and nnheader-temp-file 
+		  (not (file-directory-p (file-name-directory 
+					  nnheader-temp-file))))
 	 (make-directory (file-name-directory nnheader-temp-file) t))
        (unwind-protect
 	   (prog1

@@ -18,6 +18,7 @@
 % \usepackage{babel}
 \usepackage{pagestyle}
 \usepackage{epsfig}
+% \usepackage{ifitricks}
 \fontfamily{bembo}\selectfont
 
 \makeindex
@@ -629,7 +630,7 @@ fail-safe answer.  I would suggest just setting this variable to
 few days.  If any do, then it works.  If any don't, then it doesn't
 work.  I could write a function to make Gnus guess whether the server
 supports @code{ask-server}, but it would just be a guess.  So I won't.
-You could @code{telnet} to the server and say @samp{HELP} and see
+You could @code{telnet} to the server and say @code{HELP} and see
 whether it lists @samp{NEWGROUPS} among the commands it understands.  If
 it does, then it might work.  (But there are servers that lists
 @samp{NEWGROUPS} without supporting the function properly.)
@@ -763,7 +764,7 @@ considerably, unless you read news over a 2400 baud modem.
 This variable can also have the value @code{some}.  Gnus will then
 attempt to read active info only on the subscribed groups.  On some
 servers this is quite fast (on sparkling, brand new INN servers that
-support the @samp{LIST ACTIVE group} command), on others this isn't fast
+support the @code{LIST ACTIVE group} command), on others this isn't fast
 at all.  In any case, @code{some} should be faster than @code{nil}, and
 is certainly faster than @code{t} over slow lines.
 
@@ -772,7 +773,7 @@ lock-step, which isn't very fast.  If it is @code{some} and you use an
 @sc{nntp} server, Gnus will pump out commands as fast as it can, and
 read all the replies in one swoop.  This will normally result in better
 performance, but if the server does not support the aforementioned
-@samp{LIST ACTIVE group} command, this isn't very nice to the server.
+@code{LIST ACTIVE group} command, this isn't very nice to the server.
 
 In any case, if you use @code{some} or @code{nil}, you should definitely
 kill all groups that you aren't interested in to speed things up.
@@ -881,7 +882,7 @@ a @code{printf} specifications, for those of you who use (feh!) C.
 @xref{Formatting Variables}. 
 
 The default value that produced those lines above is 
-@samp{"%M%S%5y: %(%g%)\n"}.
+@samp{%M%S%5y: %(%g%)\n}.
 
 There should always be a colon on the line; the cursor always moves to
 the colon after performing an operation.  Nothing else is required---not
@@ -959,7 +960,7 @@ Indentation based on the level of the topic (@pxref{Group Topics}).
 @vindex gnus-group-uncollapsed-levels
 Short (collapsed) group name.  The @code{gnus-group-uncollapsed-levels}
 variable says how many levels to leave at the end of the group name.
-The default is @samp{1}.
+The default is @code{1}.
 
 @item u
 User defined specifier.  The next character in the format string should
@@ -1192,9 +1193,9 @@ The @code{gnus-large-newsgroup} variable says what Gnus should consider
 to be a big group.  This is 200 by default.  If the group has more
 unread articles than this, Gnus will query the user before entering the
 group.  The user can then specify how many articles should be fetched
-from the server.  If the user specifies a negative number (@samp{-n}),
-the @samp{n} oldest articles will be fetched.  If it is positive, the
-@samp{n} articles that have arrived most recently will be fetched.
+from the server.  If the user specifies a negative number (@code{-n}),
+the @code{n} oldest articles will be fetched.  If it is positive, the
+@code{n} articles that have arrived most recently will be fetched.
 
 @vindex gnus-select-group-hook
 @vindex gnus-auto-select-first
@@ -1452,7 +1453,7 @@ use this level as the ``work'' level.
 Gnus will normally just activate groups that are on level
 @code{gnus-activate-level} or less.  If you don't want to activate
 unsubscribed groups, for instance, you might set this variable to
-@samp{5}. 
+@code{5}. 
 
 
 @node Group Score
@@ -1695,7 +1696,7 @@ The group parameters store information local to a particular group:
 @item to-address
 @cindex to-address
 If the group parameter list contains an element that looks like
-@samp{(to-address .  "some@@where.com")}, that address will be used by
+@code{(to-address .  "some@@where.com")}, that address will be used by
 the backend when doing followups and posts.  This is primarily useful in
 mail groups that represent closed mailing lists---mailing lists where
 it's expected that everybody that writes to the mailing list is
@@ -1746,14 +1747,14 @@ caution.
 @item expiry-wait
 @cindex expiry-wait
 @vindex nnmail-expiry-wait-function
-If the group parameter has an element that looks like @samp{(expiry-wait
+If the group parameter has an element that looks like @code{(expiry-wait
 . 10)}, this value will override any @code{nnmail-expiry-wait} and
 @code{nnmail-expiry-wait-function} when expiring expirable messages.
 The value can either be a number of days (not necessarily an integer) or
 the symbols @code{never} or @code{immediate}.
 
 @item score-file
-Elements that look like @samp{(score-file . "file")} will make
+Elements that look like @code{(score-file . "file")} will make
 @samp{file} into the current score file for the group in question.  This
 means that all score commands you issue will end up in that file. 
 
@@ -2206,7 +2207,7 @@ Number of unread articles in the topic and all its subtopics.
 @vindex gnus-topic-indent-level
 Each sub-topic (and the groups in the sub-topics) will be indented with
 @code{gnus-topic-indent-level} times the topic level number of spaces.
-The default is @samp{2}.
+The default is @code{2}.
 
 @vindex gnus-topic-mode-hook
 @code{gnus-topic-mode-hook} is called in topic minor mode buffers. 
@@ -2583,7 +2584,7 @@ slower.
 @vindex gnus-summary-same-subject
 @code{gnus-summary-same-subject} is a string indicating that the current
 article has the same subject as the previous.  This string will be used
-with those specs that require it.  The default is @samp{""}.
+with those specs that require it.  The default is @samp{}.
 
 
 @node Summary Buffer Lines
@@ -2594,7 +2595,7 @@ You can change the format of the lines in the summary buffer by changing
 the @code{gnus-summary-line-format} variable.  It works along the same
 lines a a normal @code{format} string, with some extensions.
 
-The default string is @samp{"%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n"}.
+The default string is @samp{%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n}.
 
 The following format specification characters are understood:
 
@@ -3086,16 +3087,16 @@ Not to be confused with the previous command,
 @code{gnus-summary-resend-message} will prompt you for an address to
 send the current message off to, and then send it to that place.  The
 headers of the message won't be altered---but lots of headers that say
-@samp{Resent-To}, @samp{Resent-From} and so on will be added.  This
-means that you actually send a mail to someone that has a @samp{To}
+@code{Resent-To}, @code{Resent-From} and so on will be added.  This
+means that you actually send a mail to someone that has a @code{To}
 header that (probably) points to yourself.  This will confuse people.
 So, natcherly you'll only do that if you're really eVIl.  
 
 This command is mainly used if you have several accounts and want to
 ship a mail to a different account of yours.  (If you're both
-@samp{root} and @samp{postmaster} and get a mail for @samp{postmaster}
-to the @samp{root} account, you may want to resend it to
-@samp{postmaster}.  Ordnung muss sein!
+@code{root} and @code{postmaster} and get a mail for @code{postmaster}
+to the @code{root} account, you may want to resend it to
+@code{postmaster}.  Ordnung muss sein!
 
 @item S O m
 @kindex S O m (Summary)
@@ -3212,7 +3213,7 @@ You probably want to delete some of the old headers before sending the
 superseding article---@code{Path} and @code{Date} are probably
 incorrect.  Set @code{gnus-delete-supersedes-headers} to a regexp to
 match the lines you want removed.  The default is
-@samp{"^Path:\\|^Date"}. 
+@samp{^Path:\\|^Date}. 
 
 The same goes for superseding as for canceling, only more so: Some
 sites do not honor superseding.  On those sites, it will appear that you
@@ -3223,8 +3224,8 @@ there is a trick you can use to cancel/supersede the article without
 waiting for the article to appear on your site first.  You simply return
 to the post buffer (which is called @code{*post-buf*}).  There you will
 find the article you just posted, with all the headers intact.  Change
-the @samp{Message-ID} header to a @samp{Cancel} or @samp{Supersedes}
-header by substituting one of those words for @samp{Message-ID}.  Then
+the @code{Message-ID} header to a @code{Cancel} or @code{Supersedes}
+header by substituting one of those words for @code{Message-ID}.  Then
 just press @kbd{C-c C-c} to send the article as you would do normally.
 The previous article will be canceled/superseded.
 
@@ -3844,10 +3845,10 @@ subjects.
 @vindex gnus-summary-gather-exclude-subject
 Since loose thread gathering is done on subjects only, that might lead
 to many false hits, especially with certain common subjects like
-@samp{""} and @samp{"(none)"}.  To make the situation slightly better,
+@samp{} and @samp{(none)}.  To make the situation slightly better,
 you can use the regexp @code{gnus-summary-gather-exclude-subject} to say
 what subjects should be excluded from the gathering process.  The
-default is @samp{"^ *$\\|^(none)$"}.  
+default is @samp{^ *$\\|^(none)$}.  
 
 @item gnus-summary-thread-gathering-function
 @vindex gnus-summary-thread-gathering-function
@@ -3943,7 +3944,7 @@ in a new thread.
 @item gnus-thread-indent-level
 @vindex gnus-thread-indent-level
 This is a number that says how much each sub-thread should be indented.
-The default is @samp{4}.
+The default is @code{4}.
 @end table
 
 
@@ -4186,7 +4187,7 @@ if your @code{nnml} mail is located under your home directory, it makes no
 sense to cache it somewhere else under your home directory.  Unless you
 feel that it's neat to use twice as much space.  To limit the caching,
 you could set the @code{gnus-uncacheable-groups} regexp to
-@samp{"^nnml"}, for instance.  This variable is @code{nil} by
+@samp{^nnml}, for instance.  This variable is @code{nil} by
 default.
 
 @findex gnus-cache-generate-nov-databases
@@ -4411,7 +4412,7 @@ reader to use this setting.
 @vindex gnus-article-save-directory
 All of these functions, except for the last one, will save the article
 in the @code{gnus-article-save-directory}, which is initialized from the
-@samp{SAVEDIR} environment variable.  This is @file{~/News/} by
+@code{SAVEDIR} environment variable.  This is @file{~/News/} by
 default. 
 
 As you can see above, the functions use different functions to find a
@@ -4422,19 +4423,19 @@ available functions that generate names:
 
 @item gnus-Numeric-save-name
 @findex gnus-Numeric-save-name
-Generates file names that look like @samp{~/News/Alt.andrea-dworkin/45}.
+Generates file names that look like @file{~/News/Alt.andrea-dworkin/45}.
 
 @item gnus-numeric-save-name
 @findex gnus-numeric-save-name
-Generates file names that look like @samp{~/News/alt.andrea-dworkin/45}.
+Generates file names that look like @file{~/News/alt.andrea-dworkin/45}.
 
 @item gnus-Plain-save-name
 @findex gnus-Plain-save-name
-Generates file names that look like @samp{~/News/Alt.andrea-dworkin}.
+Generates file names that look like @file{~/News/Alt.andrea-dworkin}.
 
 @item gnus-plain-save-name
 @findex gnus-plain-save-name
-Generates file names that look like @samp{~/News/alt.andrea-dworkin}.
+Generates file names that look like @file{~/News/alt.andrea-dworkin}.
 @end table
 
 @vindex gnus-split-methods
@@ -4467,7 +4468,7 @@ name completion over the results from applying this variable.
 
 This variable is @code{((gnus-article-archive-name))} by default, which
 means that Gnus will look at the articles it saves for an
-@samp{Archive-name} line and use that as a suggestion for the file
+@code{Archive-name} line and use that as a suggestion for the file
 name. 
 
 @vindex gnus-use-long-file-name
@@ -4476,8 +4477,8 @@ Finally, you have the @code{gnus-use-long-file-name} variable.  If it is
 (@samp{.}) in the group names with slashes (@samp{/})---which means that
 the functions will generate hierarchies of directories instead of having
 all the files in the toplevel directory
-(@samp{~/News/alt/andrea-dworkin} instead of
-@samp{~/News/alt.andrea-dworkin}.)  This variable is @code{t} by default
+(@file{~/News/alt/andrea-dworkin} instead of
+@file{~/News/alt.andrea-dworkin}.)  This variable is @code{t} by default
 on most systems.  However, for historical reasons, this is @code{nil} on
 Xenix and usg-unix-v machines by default.
 
@@ -5222,12 +5223,12 @@ This is an alist where each entry has this form:
 @item regexp
 All text that match this regular expression will be considered an
 external reference.  Here's a typical regexp that match embedded URLs:
-@samp{"<URL:\\([^\n\r>]*\\)>"}. 
+@samp{<URL:\\([^\n\r>]*\\)>}. 
 
 @item button-par
 Gnus has to know which parts of the match is to be highlighted.  This is
 a number that says what sub-expression of the regexp that is to be
-highlighted.  If you want it all highlighted, you use @samp{0} here.
+highlighted.  If you want it all highlighted, you use @code{0} here.
 
 @item use-p
 This form will be @code{eval}ed, and if the result is non-@code{nil},
@@ -5554,7 +5555,7 @@ A hook called in all tree mode buffers.
 @item gnus-tree-mode-line-format
 @vindex gnus-tree-mode-line-format
 A format string for the mode bar in the tree mode buffers.  The default
-is @samp{"Gnus: %%b [%A] %Z"}.  For a list of legal specs, @pxref{Summary
+is @samp{Gnus: %%b [%A] %Z}.  For a list of legal specs, @pxref{Summary
 Buffer Mode Line}. 
 
 @item gnus-selected-tree-face
@@ -5566,7 +5567,7 @@ default is @code{modeline}.
 @vindex gnus-tree-line-format
 A format string for the tree nodes.  The name is a bit of a misnomer,
 though---it doesn't define a line, but just the node.  The default value
-is @samp{"%(%[%3,3n%]%)"}, which displays the first three characters of
+is @samp{%(%[%3,3n%]%)}, which displays the first three characters of
 the name of the poster.  It is vital that all nodes are of the same
 length, so you @emph{must} use @samp{%4,4n}-like specifiers.
 
@@ -5973,7 +5974,7 @@ If you're in the habit of exiting groups, and then changing your mind
 about it, you might set @code{gnus-kill-summary-on-exit} to @code{nil}.
 If you do that, Gnus won't kill the summary buffer when you exit it.
 (Quelle surprise!)  Instead it will change the name of the buffer to
-something like @samp{"*Dead Summary ... *"} and install a minor mode
+something like @samp{*Dead Summary ... *} and install a minor mode
 called @code{gnus-dead-summary-mode}.  Now, if you switch back to this
 buffer, you'll find that all keys are mapped to a function called
 @code{gnus-summary-wake-up-the-dead}.  So tapping any keys in a dead
@@ -6371,8 +6372,8 @@ Gnus uses the normal methods to determine where replies are to go, but
 you can change the behavior to suit your needs by fiddling with this
 variable.
 
-If you want the replies to go to the @samp{Sender} instead of the
-@samp{From} in the group @samp{mail.stupid-list}, you could do something
+If you want the replies to go to the @code{Sender} instead of the
+@code{From} in the group @samp{mail.stupid-list}, you could do something
 like this:
 
 @lisp
@@ -6394,7 +6395,7 @@ header will be used.
 
 This function can also return a list.  In that case, each list element
 should be a cons, where the car should be the name of an header
-(eg. @samp{Cc}) and the cdr should be the header value
+(eg. @code{Cc}) and the cdr should be the header value
 (eg. @samp{larsi@@ifi.uio.no}).  All these headers will be inserted into
 the head of the outgoing mail. 
 
@@ -6623,7 +6624,7 @@ should be a symbol.  This symbol's name is the name of the header, and
 the cdr can either be a string to be entered verbatim as the value of
 this header, or it can be a function to be called.  This function should
 return a string to be inserted.  For instance, if you want to insert
-@samp{Mime-Version: 1.0}, you should enter @code{(Mime-Version . "1.0")}
+@code{Mime-Version: 1.0}, you should enter @code{(Mime-Version . "1.0")}
 into the list.  If you want to insert a funny quote, you could enter
 something like @code{(X-Yow . yow)} into the list.  The function
 @code{yow} will then be called without any arguments.
@@ -6656,8 +6657,8 @@ really means sending a mail to a list address.  Gnus uses the normal
 methods to determine where follow-ups are to go, but you can change the
 behavior to suit your needs by fiddling with this variable.
 
-If you want the followups to go to the @samp{Sender} instead of the
-@samp{From} in the group @samp{mail.stupid-list}, you could do something
+If you want the followups to go to the @code{Sender} instead of the
+@code{From} in the group @samp{mail.stupid-list}, you could do something
 like this:
 
 @lisp
@@ -6855,7 +6856,7 @@ posting:
 @cindex double signature
 @cindex signature
 If @code{gnus-signature-file} is non-@code{nil}, it should be the name
-of a file containing a signature (@samp{~/.signature} by default).  This
+of a file containing a signature (@file{~/.signature} by default).  This
 signature will be appended to all outgoing post.  Most people find it
 more convenient to use @code{mail-signature}, which (sort of) does the
 same, but inserts the signature into the buffer before you start editing
@@ -6905,27 +6906,27 @@ If all of @code{gnus-user-login-name}, @code{gnus-use-generic-from} and
 @vindex gnus-local-domain
 @cindex domain
 The local domain name excluding the host name.  If your host is called
-@samp{"narfi.ifi.uio.no"}, then this variable should be
-@samp{"ifi.uio.no"}. 
+@samp{narfi.ifi.uio.no}, then this variable should be
+@samp{ifi.uio.no}. 
 
 @item gnus-local-domain
 @vindex gnus-local-domain
 @cindex domain
 The local domain name excluding the host name.  If your host is called
-@samp{"narfi.ifi.uio.no"}, then this variable should be
-@samp{"ifi.uio.no"}. 
+@samp{narfi.ifi.uio.no}, then this variable should be
+@samp{ifi.uio.no}. 
 
 @item gnus-user-from-line
 @vindex gnus-user-from-line
 Your full, complete e-mail address with name.  This variable overrides
 the other Gnus variables if it is non-@code{nil}.
 
-Here are two example values of this variable: @samp{"larsi@@ifi.uio.no
-(Lars Magne Ingebrigtsen)"} and @samp{"Lars Magne Ingebrigtsen
-<larsi@@ifi.uio.no>"}.  The latter version is recommended in news (and is
+Here are two example values of this variable: @samp{larsi@@ifi.uio.no
+(Lars Magne Ingebrigtsen)} and @samp{Lars Magne Ingebrigtsen
+<larsi@@ifi.uio.no>}.  The latter version is recommended in news (and is
 probably illegal in mail), but the name has to be quoted if it contains
-non-alpha-numerical characters---@samp{"\"Lars M. Ingebrigtsen\"
-<larsi@@ifi.uio.no>"}.
+non-alpha-numerical characters---@samp{\"Lars M. Ingebrigtsen\"
+<larsi@@ifi.uio.no>}.
 
 @item mail-default-headers
 @vindex mail-default-headers
@@ -7048,12 +7049,12 @@ When a key ``matches'', the result is used.
 
 Let's illustrate:
 
-Just saving to a single group called @samp{"MisK"}:
+Just saving to a single group called @samp{MisK}:
 @lisp
 (setq gnus-message-archive-group "MisK")
 @end lisp
 
-Saving to two groups, @samp{"MisK"} and @samp{"safe"}:
+Saving to two groups, @samp{MisK} and @samp{safe}:
 @lisp
 (setq gnus-message-archive-group '("MisK" "safe"))
 @end lisp
@@ -7095,7 +7096,7 @@ Gnus, or the next time you press @kbd{F} in the group buffer.  You can
 enter it and read the articles in it just like you'd read any other
 group.  If the group gets really big and annoying, you can simply rename
 if (using @kbd{G r} in the group buffer) to something nice --
-@samp{"misc-mail-september-1995"}, or whatever.  New messages will
+@samp{misc-mail-september-1995}, or whatever.  New messages will
 continue to be stored in the old (now empty) group.
 
 That's the default method of archiving sent mail.  Gnus also offers two
@@ -7110,7 +7111,7 @@ that case you should set @code{gnus-message-archive-group} to
 This is a file name, and all outgoing articles will be saved in that
 file.  Initialized from the @code{AUTHORCOPY} environment variable.
 
-If this variable begins with the character @samp{"|"}, outgoing articles
+If this variable begins with the character @samp{|}, outgoing articles
 will be piped to the named program. It is possible to save an article in
 an MH folder as follows:
 
@@ -7372,7 +7373,7 @@ use, and what parameters to set by specifying a @dfn{select method}.
 
 These select methods specifications can sometimes become quite
 complicated---say, for instance, that you want to read from the
-@sc{nntp} server @samp{news.funet.fi} on port number @samp{13}, which
+@sc{nntp} server @samp{news.funet.fi} on port number @code{13}, which
 hangs if queried for @sc{nov} headers and has a buggy select.  Ahem.
 Anyways, if you had to specify that for each group that used this
 server, that would be too much work, so Gnus offers a way of naming
@@ -7506,7 +7507,7 @@ After these two elements, there may be a random number of @var{(variable
 form)} pairs.
 
 To go back to the first example---imagine that you want to read from
-port @samp{15} from that machine.  This is what the select method should
+port @code{15} from that machine.  This is what the select method should
 look like then:
 
 @lisp
@@ -7682,7 +7683,7 @@ server:
 @findex nntp-send-mode-reader
 @code{nntp-server-opened-hook} is run after a connection has been made.
 It can be used to send commands to the @sc{nntp} server after it has
-been contacted.  By default is sends the command @samp{MODE READER} to
+been contacted.  By default is sends the command @code{MODE READER} to
 the server with the @code{nntp-send-mode-reader} function.  Another
 popular function is @code{nntp-send-authinfo}, which will prompt you for
 an @sc{nntp} password and stuff.
@@ -7707,7 +7708,7 @@ The default value is
      (remove-hook 'nntp-server-opened-hook nntp-send-mode-reader)))
 @end lisp
 
-This ensures that Gnus doesn't send the @samp{MODE READER} command to
+This ensures that Gnus doesn't send the @code{MODE READER} command to
 nntpd 1.5.11t, since that command chokes that server, I've been told. 
 
 @item nntp-maximum-request
@@ -7824,7 +7825,7 @@ Subscribing to a foreign group from the local spool is extremely easy,
 and might be useful, for instance, to speed up reading groups like
 @samp{alt.binaries.pictures.furniture}.
 
-Anyways, you just specify @code{nnspool} as the method and @samp{""} (or
+Anyways, you just specify @code{nnspool} as the method and @samp{} (or
 anything else) as the address.
 
 If you have access to a local spool, you should probably use that as the
@@ -7977,7 +7978,7 @@ argument.  It should return a non-@code{nil} value if it thinks that the
 mail belongs in that group.
 
 The last of these groups should always be a general one, and the regular
-expression should @emph{always} be @samp{""} so that it matches any
+expression should @emph{always} be @samp{} so that it matches any
 mails that haven't been matched by any of the other regexps.
 
 If you like to tinker with this yourself, you can set this variable to a
@@ -7995,7 +7996,7 @@ some add @code{X-Gnus-Group} headers; most rename the Unix mbox
 The mail backends all support cross-posting.  If several regexps match,
 the mail will be ``cross-posted'' to all those groups.
 @code{nnmail-crosspost} says whether to use this mechanism or not.  Note
-that no articles are crossposted to the general (@samp{""}) group.
+that no articles are crossposted to the general (@samp{}) group.
 
 @vindex nnmail-crosspost-link-function
 @cindex crosspost
@@ -8037,13 +8038,13 @@ use this hook to notify any mail watch programs, if you want to.
 The backends will look for new mail in this file.  If this variable is
 @code{nil}, the mail backends will never attempt to fetch mail by
 themselves.  If you are using a POP mail server and your name is
-@samp{"larsi"}, you should set this variable to @samp{"po:larsi"}.  If
-your name is not @samp{"larsi"}, you should probably modify that
+@samp{larsi}, you should set this variable to @samp{po:larsi}.  If
+your name is not @samp{larsi}, you should probably modify that
 slightly, but you may have guessed that already, you smart & handsome
 devil!  You can also set this variable to @code{pop}, and Gnus will try
 to figure out the POP mail string by itself.  In any case, Gnus will
 call @code{movemail} which will contact the POP server named in the
-@samp{MAILHOST} environment variable.
+@code{MAILHOST} environment variable.
 
 When you use a mail backend, Gnus will slurp all your mail from your
 inbox and plonk it down in your home directory.  Gnus doesn't move any
@@ -8102,7 +8103,7 @@ it will be used instead.
 @item nnmail-movemail-program
 @vindex nnmail-movemail-program
 This program is executed to move mail from the user's inbox to her home
-directory.  The default is @samp{"movemail"}.
+directory.  The default is @samp{movemail}.
 
 @item nnmail-delete-incoming
 @vindex nnmail-delete-incoming
@@ -8377,7 +8378,7 @@ everywhere else:
 @end lisp
 
 The group names that this function is fed are ``unadorned'' group
-names---no @samp{"nnml:"} prefixes and the like.
+names---no @samp{nnml:} prefixes and the like.
 
 The @code{nnmail-expiry-wait} variable and
 @code{nnmail-expiry-wait-function} function can be either a number (not
@@ -9025,17 +9026,17 @@ reply packets.  The default is @file{~/SoupBrew/SoupReplies/}.
 @item gnus-soup-prefix-file
 @vindex gnus-soup-prefix-file
 Name of the file where Gnus stores the last used prefix.  The default is
-@samp{"gnus-prefix"}. 
+@samp{gnus-prefix}. 
 
 @item gnus-soup-packer
 @vindex gnus-soup-packer
 A format string command for packing a @sc{soup} packet.  The default is
-@samp{ "tar cf - %s | gzip > $HOME/Soupout%d.tgz"}. 
+@samp{tar cf - %s | gzip > $HOME/Soupout%d.tgz}. 
 
 @item gnus-soup-unpacker
 @vindex gnus-soup-unpacker
 Format string command for unpacking a @sc{soup} packet.  The default is
-@samp{"gunzip -c %s | tar xvf -"}.
+@samp{gunzip -c %s | tar xvf -}.
 
 @item gnus-soup-packet-directory
 @vindex gnus-soup-packet-directory
@@ -9097,12 +9098,12 @@ this file or mess it up in any way, you're dead.  The default is
 @item nnsoup-packer
 @vindex nnsoup-packer
 Format string command for packing a reply @sc{soup} packet.  The default
-is @samp{"tar cf - %s | gzip > $HOME/Soupin%d.tgz"}. 
+is @samp{tar cf - %s | gzip > $HOME/Soupin%d.tgz}. 
 
 @item nnsoup-unpacker
 @vindex nnsoup-unpacker
 Format string command for unpacking incoming @sc{soup} packets.  The
-default is @samp{"gunzip -c %s | tar xvf -"}. 
+default is @samp{gunzip -c %s | tar xvf -}. 
 
 @item nnsoup-packet-directory
 @vindex nnsoup-packet-directory
@@ -9580,7 +9581,7 @@ variable to @code{t} to do that.  (It is @code{t} by default.)
 @item gnus-kill-files-directory
 @vindex gnus-kill-files-directory
 All kill and score files will be stored in this directory, which is
-initialized from the @samp{SAVEDIR} environment variable by default.
+initialized from the @code{SAVEDIR} environment variable by default.
 This is @file{~/News/} by default.
 
 @item gnus-score-file-suffix
@@ -9597,7 +9598,7 @@ bloated, so this regexp can be used to weed out score files that are
 unlikely to be needed again.  It would be a bad idea to deny caching of
 @file{all.SCORE}, while it might be a good idea to not cache
 @file{comp.infosystems.www.authoring.misc.ADAPT}.  In fact, this
-variable is @samp{"ADAPT$"} by default, so no adaptive score files will
+variable is @samp{ADAPT$} by default, so no adaptive score files will
 be cached.
 
 @item gnus-save-score
@@ -9644,8 +9645,8 @@ Only apply the group's own score file.
 @findex gnus-score-find-bnews
 Apply all score files that match, using bnews syntax.  This is the
 default.  For instance, if the current group is @samp{gnu.emacs.gnus},
-@samp{all.emacs.all.SCORE}, @samp{not.alt.all.SCORE} and
-@samp{gnu.all.SCORE} would all apply.  In short, the instances of
+@file{all.emacs.all.SCORE}, @file{not.alt.all.SCORE} and
+@file{gnu.all.SCORE} would all apply.  In short, the instances of
 @samp{all} in the score file names are translated into @samp{.*}, and
 then a regexp match is done.
 
@@ -9737,15 +9738,15 @@ Six keys are supported by this alist:
 @item STRING
 If the key is a string, it is the name of the header to perform the
 match on.  Scoring can only be performed on these eight headers:
-@samp{From}, @samp{Subject}, @samp{References}, @samp{Message-ID},
-@samp{Xref}, @samp{Lines}, @samp{Chars} and @samp{Date}.  In addition to
+@code{From}, @code{Subject}, @code{References}, @code{Message-ID},
+@code{Xref}, @code{Lines}, @code{Chars} and @code{Date}.  In addition to
 these headers, there are three strings to tell Gnus to fetch the entire
-article and do the match on larger parts of the article: @samp{Body}
-will perform the match on the body of the article, @samp{Head} will
-perform the match on the head of the article, and @samp{All} will
+article and do the match on larger parts of the article: @code{Body}
+will perform the match on the body of the article, @code{Head} will
+perform the match on the head of the article, and @code{All} will
 perform the match on the entire article.  Note that using any of these
 last three keys will slow down group entry @emph{considerably}.  The
-final ``header'' you can score on is @samp{Followup}.  These score
+final ``header'' you can score on is @code{Followup}.  These score
 entries will result in new score entries being added for all follow-ups
 to articles that matches these score entries.
 
@@ -10376,8 +10377,8 @@ output lines in the various buffers.  There's quite a lot of them.
 Fortunately, they all use the same syntax, so there's not that much to
 be annoyed by.
 
-Here's an example format spec (from the group buffer): @samp{"%M%S%5y:
-%(%g%)\n"}.  We see that it is indeed extremely ugly, and that there are
+Here's an example format spec (from the group buffer): @samp{%M%S%5y:
+%(%g%)\n}.  We see that it is indeed extremely ugly, and that there are
 lots of percentages everywhere.  
 
 Each @samp{%} element will be replaced by some string or other when the
@@ -10552,10 +10553,10 @@ size        = number | frame-params
 buffer-name = group | article | summary ...
 @end example
 
-The limitations are that the @samp{frame} split can only appear as the
-top-level split.  @samp{form} should be an Emacs Lisp form that should
+The limitations are that the @code{frame} split can only appear as the
+top-level split.  @var{form} should be an Emacs Lisp form that should
 return a valid split.  We see that each split is fully recursive, and
-may contain any number of @samp{vertical} and @samp{horizontal} splits. 
+may contain any number of @code{vertical} and @code{horizontal} splits. 
 
 @vindex gnus-window-min-width
 @vindex gnus-window-min-height
@@ -10568,10 +10569,10 @@ characters wide.  Gnus will try to enforce this before applying the
 splits.  If you want to use the normal Emacs window width/height limit,
 you can just set these two variables to @code{nil}.
 
-If you're not familiar with Emacs terminology, @samp{horizontal} and
-@samp{vertical} splits may work the opposite way of what you'd expect.
-Windows inside a @samp{horizontal} split are shown side-by-side, and
-windows within a @samp{vertical} split are shown above each other.
+If you're not familiar with Emacs terminology, @code{horizontal} and
+@code{vertical} splits may work the opposite way of what you'd expect.
+Windows inside a @code{horizontal} split are shown side-by-side, and
+windows within a @code{vertical} split are shown above each other.
 
 @findex gnus-configure-frame
 If you want to experiment with window placement, a good tip is to call
@@ -10617,7 +10618,7 @@ You might want to have several frames as well.  No prob---just use the
 This split will result in the familiar summary/article window
 configuration in the first (or ``main'') frame, while a small additional
 frame will be created where picons will be shown.  As you can see,
-instead of the normal @samp{1.0} top-level spec, each additional split
+instead of the normal @code{1.0} top-level spec, each additional split
 should have a frame parameter alist as the size spec.
 @xref{(elisp)Frame Parameters}.
 
@@ -10939,13 +10940,13 @@ If @var{idle} is a number and @var{time} is @code{nil}, the function
 will be called once every time Emacs has been idle for @var{idle}
 minutes.  
 
-And if @var{time} is a string, it should look like @samp{"07:31"}, and
+And if @var{time} is a string, it should look like @samp{07:31}, and
 the function will then be called once every day somewhere near that
 time.  Modified by the @var{idle} parameter, of course.
 
 @vindex gnus-demon-timestep
 (When I say ``minute'' here, I really mean @code{gnus-demon-timestep}
-seconds.  This is @samp{60} by default.  If you change that variable,
+seconds.  This is @code{60} by default.  If you change that variable,
 all the timings in the handlers will be affected.)
 
 @vindex gnus-use-demon
@@ -11026,21 +11027,21 @@ people you want to listen to.  The default is @code{("Automoose-1"
 Known despammers that you can put in this list include:
 
 @table @samp
-@item "clewis@@ferret.ocunix.on.ca;"
+@item clewis@@ferret.ocunix.on.ca;
 @cindex Chris Lewis
 Chris Lewis---Major Canadian despammer who has probably canceled more
 usenet abuse than anybody else.
 
-@item "Automoose-1" 
+@item Automoose-1
 @cindex CancelMoose[tm]
 The CancelMoose[tm] on autopilot.  The CancelMoose[tm] is reputed to be
 Norwegian, and was the person(s) who invented NoCeM.  
 
-@item "jem@@xpat.com;"  
+@item jem@@xpat.com;
 @cindex Jem
 Jem---Korean despammer who is getting very busy these days.
 
-@item "red@@redpoll.mrfs.oh.us (Richard E. Depew)"
+@item red@@redpoll.mrfs.oh.us (Richard E. Depew)
 Richard E. Depew---lone American despammer.  He mostly cancels binary
 postings to non-binary groups and removes spews (regurgitaed articles).
 @end table
@@ -11830,7 +11831,7 @@ buffer all the time.
 Cut down on the headers that are included in the articles to the
 minimum.  You can, in fact, make do without them altogether---most of the
 useful data is in the summary buffer, anyway.  Set this variable to
-@samp{"^NEVVVVER"} or @samp{"From:"}, or whatever you feel you need.
+@samp{^NEVVVVER} or @samp{From:}, or whatever you feel you need.
 
 @item gnus-article-display-hook
 Set this hook to all the available hiding commands:
@@ -12013,8 +12014,8 @@ name.  Take this example:
       (nntp-port-number 4324))
 @end lisp
 
-Here the virtual server name is @samp{"odd-one"} while the name of
-the physical server is @samp{"ifi.uio.no"}. 
+Here the virtual server name is @samp{odd-one} while the name of
+the physical server is @samp{ifi.uio.no}. 
 
 The backends should be able to switch between several virtual servers.
 The standard backends implement this by keeping an alist of virtual
@@ -12025,7 +12026,7 @@ which must be present, and @dfn{optional functions}, which Gnus will
 always check whether are present before attempting to call.
 
 All these functions are expected to return data in the buffer
-@code{nntp-server-buffer} (@samp{" *nntpd*"}), which is somewhat
+@code{nntp-server-buffer} (@samp{ *nntpd*}), which is somewhat
 unfortunately named, but we'll have to live with it.  When I talk about
 ``resulting data'', I always refer to the data in that buffer.  When I
 talk about ``return value'', I talk about the function value returned by
@@ -12197,7 +12198,7 @@ Here's an example of some result data and a definition of the same:
 211 56 1000 1059 ifi.discussion
 @end example
 
-The first number is the status, which should be @samp{211}.  Next is the
+The first number is the status, which should be @code{211}.  Next is the
 total number of articles in the group, the lowest article number, the
 highest article number, and finally the group name.  Note that the total
 number of articles may be less than one might think while just
@@ -12270,7 +12271,7 @@ the subject of the message.  @var{article-buffer} is the buffer being
 followed up, if that is the case.  @var{info} is the group info.
 @var{follow-to} is the group that one is supposed to re-direct the
 article ot.  If @var{respect-poster} is non-@code{nil}, the special
-@samp{"poster"} value of a @code{Followup-To} header is to be respected.
+@samp{poster} value of a @code{Followup-To} header is to be respected.
 
 There should be no result data returned.
 
@@ -12867,7 +12868,7 @@ that means:
 @end lisp
 
 On the other hand, if the manual says ``set @code{gnus-nntp-server} to
-@samp{"nntp.ifi.uio.no"}'', that means:
+@samp{nntp.ifi.uio.no}'', that means:
 
 @lisp
 (setq gnus-nntp-server "nntp.ifi.uio.no")
