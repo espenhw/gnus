@@ -1,3 +1,9 @@
+2004-05-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* gnus-art.el (article-strip-banner): Use original from fields
+	instead of MIME-decoded from fields, when checking
+	`gnus-article-address-banner-alist'.
+
 2004-05-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnrss.el (nnrss-check-group, nnrss-read-group-data): Hash on
@@ -5,7 +11,7 @@
 
 2004-05-02  Steve Youngs  <steve@youngs.au.com>
 
-	* dgnushack.el: Autoload `mail-fetch-field' for	XEmacs. 
+	* dgnushack.el: Autoload `mail-fetch-field' for XEmacs.
 
 2004-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -18,7 +24,7 @@
 2004-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-agent.el (gnus-agent-read-agentview): Inline
-	gnus-uncompress-range. 
+	gnus-uncompress-range.
 
 2004-05-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

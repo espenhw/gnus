@@ -2485,18 +2485,14 @@ always hide."
 	  (article-really-strip-banner
 	   (gnus-parameter-banner gnus-newsgroup-name)))
 	(when gnus-article-address-banner-alist
-	  (article-really-strip-banner
-	   (let ((from (save-restriction
-			 (widen)
-			 (article-narrow-to-head)
-			 (mail-fetch-field "from"))))
-	     (when (and from
-			(setq from
-			      (caar (mail-header-parse-addresses from))))
-	       (catch 'found
-		 (dolist (pair gnus-article-address-banner-alist)
-		   (when (string-match (car pair) from)
-		     (throw 'found (cdr pair)))))))))))))
+	  (let ((from (caar (mail-header-parse-addresses
+			     (gnus-fetch-original-field "from")))))
+	    (when from
+	      (catch 'found
+		(dolist (pair gnus-article-address-banner-alist)
+		  (when (string-match (car pair) from)
+		    (throw 'found
+			   (article-really-strip-banner (cdr pair)))))))))))))
 
 (defun article-really-strip-banner (banner)
   "Strip the banner specified by the argument."
