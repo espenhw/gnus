@@ -2771,7 +2771,7 @@ sort in reverse order."
 
 (defun gnus-group-sort-by-score (info1 info2)
   "Sort by group score."
-  (< (gnus-info-score info1) (gnus-info-score info2)))
+  (> (gnus-info-score info1) (gnus-info-score info2)))
 
 (defun gnus-group-sort-by-rank (info1 info2)
   "Sort by level and score."
