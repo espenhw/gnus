@@ -1,3 +1,8 @@
+2005-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-coding-system-to-mime-charset): Make it work with
+	non-Mule XEmacs as well.
+
 2005-02-11  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-delete-group): small bug leaves

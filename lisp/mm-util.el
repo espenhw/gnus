@@ -939,8 +939,9 @@ If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'."
   "Return the MIME charset corresponding to CODING-SYSTEM.
 To make this function work with XEmacs, the APEL package is required."
   (when coding-system
-    (or (coding-system-get coding-system :mime-charset)
-	(coding-system-get coding-system 'mime-charset)
+    (or (and (fboundp 'coding-system-get)
+	     (or (coding-system-get coding-system :mime-charset)
+		 (coding-system-get coding-system 'mime-charset)))
 	(and (featurep 'xemacs)
 	     (or (and (fboundp 'coding-system-to-mime-charset)
 		      (not (eq (symbol-function 'coding-system-to-mime-charset)
