@@ -721,21 +721,18 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 (easy-menu-define
   mml-menu mml-mode-map ""
   '("Attachments"
-    ("Attach"
-     ["File" mml-attach-file t]
-     ["Buffer" mml-attach-buffer t]
-     ["External" mml-attach-external t])
-    ("Insert"
-     ["Multipart" mml-insert-multipart t]
-     ["Part" mml-insert-part t])
-    ("Security"
-     ["Sign PGP/MIME" mml-secure-sign-pgpmime t]
-     ["Sign S/MIME" mml-secure-sign-smime t]
-     ["Encrypt PGP/MIME" mml-secure-encrypt-pgpmime t]
-     ["Encrypt S/MIME" mml-secure-encrypt-smime t])
+    ["Attach File" mml-attach-file t]
+    ["Attach Buffer" mml-attach-buffer t]
+    ["Attach External" mml-attach-external t]
+    ["Insert Part" mml-insert-part t]
+    ["Insert Multipart" mml-insert-multipart t]
+    ["PGP/MIME Sign" mml-secure-sign-pgpmime t]
+    ["PGP/MIME Encrypt" mml-secure-encrypt-pgpmime t]
+    ["S/MIME Sign" mml-secure-sign-smime t]
+    ["S/MIME Encrypt" mml-secure-encrypt-smime t]
     ;;["Narrow" mml-narrow-to-part t]
-    ["Quote" mml-quote-region t]
-    ["Validate" mml-validate t]
+    ["Quote MML" mml-quote-region t]
+    ["Validate MML" mml-validate t]
     ["Preview" mml-preview t]))
 
 (defvar mml-mode nil

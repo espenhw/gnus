@@ -1515,14 +1515,11 @@ Point is left at the beginning of the narrowed-to region."
     ["Spellcheck" ispell-message
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Spellcheck this message"))]
-    ["Attach file as MIME" mml-attach-file
-     ,@(if (featurep 'xemacs) '(t)
-	 '(:help "Attach a file at point"))]
     "----"
     ["Send Message" message-send-and-exit
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Send this message"))]
-    ["Abort Message" message-dont-send
+    ["Postpone Message" message-dont-send
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "File this draft message and exit"))]
     ["Kill Message" message-kill-buffer

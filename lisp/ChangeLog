@@ -1,3 +1,13 @@
+2001-08-18  Simon Josefsson  <jas@extundo.com>
+
+	* mml.el (mml-menu): Collapse Attach, Insert and Security submenu.
+
+2001-08-17  Bj,Av(Brn Torkelsson  <torkel@acc.kth.se>
+
+	* message.el: rename "Abort Message" to "Postpone Message".
+	Remove "Attach file as MIME" from Message menu, it's already in
+	the MIME menu.
+
 2001-08-17 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* smime.el (smime-point-at-eol): eval-and-compile.
