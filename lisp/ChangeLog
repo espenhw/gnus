@@ -8,6 +8,9 @@
 	decision to `imap-authenticate'.
 	(imap-authenticate): Change logic, now finds the authenticator to
 	use, was previously in `imap-open'.
+	(imap-open): Return nil on failure.
+	(imap-open): Setup temp buffer correctly.
+	(imap-open): Return buffer only on success.
 
 2002-01-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

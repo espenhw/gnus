@@ -937,7 +937,9 @@ necessery.  If nil, the buffer name is generated."
     (message "imap: Connecting to %s..." imap-server)
     (if (null (let ((imap-stream (or imap-stream imap-default-stream)))
 		(imap-open-1 buffer)))
-	(message "imap: Connecting to %s...failed" imap-server)
+	(progn
+	  (message "imap: Connecting to %s...failed" imap-server)
+	  nil)
       (when (null imap-stream)
 	;; Need to choose stream.
 	(let ((streams imap-streams))
@@ -947,6 +949,9 @@ necessery.  If nil, the buffer name is generated."
 	      ;; Stream changed?
 	      (if (not (eq imap-default-stream stream))
 		  (with-temp-buffer
+		    (mapcar 'make-local-variable imap-local-variables)
+		    (imap-disable-multibyte)
+		    (buffer-disable-undo)
 		    (message "imap: Reconnecting with stream `%s'..." stream)
 		    (if (null (let ((imap-stream stream))
 				(imap-open-1 (current-buffer))))
@@ -968,7 +973,8 @@ necessery.  If nil, the buffer name is generated."
 		(setq streams nil))))))
       (when (imap-opened buffer)
 	(setq imap-mailbox-data (make-vector imap-mailbox-prime 0)))
-      buffer)))
+      (when imap-stream 
+	buffer))))
 
 (defun imap-opened (&optional buffer)
   "Return non-nil if connection to imap server in BUFFER is open.
