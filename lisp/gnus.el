@@ -585,7 +585,13 @@ from their parents will start separate threads.")
 (defvar gnus-thread-indent-level 4
   "*Number that says how much each sub-thread should be indented.")
 
-(defvar gnus-ignored-newsgroups ""
+(defvar gnus-ignored-newsgroups 
+  (purecopy (mapconcat 'identity
+                       '("^to\\."       ; not "real" groups
+                         "^[0-9. \t]+ " ; all digits in name
+                         "[][\"#'()]"   ; bogus characters
+                         )
+                       "\\|"))
   "*A regexp to match uninteresting newsgroups in the active file.
 Any lines in the active file matching this regular expression are
 removed from the newsgroup list before anything else is done to it,
@@ -1310,7 +1316,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.14"
+(defconst gnus-version "(ding) Gnus v0.99.15"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3259,7 +3265,56 @@ prompt the user for the name of an NNTP server to use."
 	   (unload-feature feature 'force))
       (setq history (cdr history)))))
 
+                                       
+
 (defun gnus-group-startup-message (&optional x y)
+  "Insert startup message in current buffer."
+  ;; Insert the message.
+  (erase-buffer)
+  (insert
+   (format "
+          _    ___ _             _      
+          _ ___ __ ___  __    _ ___     
+          __   _     ___    __  ___     
+              _           ___     _     
+             _  _ __             _      
+             ___   __            _      
+                   __           _       
+                    _      _   _        
+                   _      _    _        
+                      _  _    _         
+                  __  ___               
+                 _   _ _     _          
+                _   _                   
+              _    _                    
+             _    _                     
+            _                         
+          __                             
+
+
+      Gnus * A newsreader for Emacsen
+    A Praxis release * larsi@ifi.uio.no
+" 
+	   gnus-version))
+  ;; And then hack it.
+  ;; 18 is the longest line.
+  (indent-rigidly (point-min) (point-max) 
+		  (/ (max (- (window-width) (or x 46)) 0) 2))
+  (goto-char (point-min))
+  (let* ((pheight (count-lines (point-min) (point-max)))
+	 (wheight (window-height))
+	 (rest (- wheight  pheight)))
+    (insert (make-string (max 0 (* 2 (/ rest 3))) ?\n)))
+    
+    
+
+  ;; Fontify some.
+  (goto-char (point-min))
+  (search-forward "Praxis")
+  (put-text-property (match-beginning 0) (match-end 0) 'face 'bold)
+  (goto-char (point-min)))
+
+(defun gnus-group-startup-message-old (&optional x y)
   "Insert startup message in current buffer."
   ;; Insert the message.
   (erase-buffer)

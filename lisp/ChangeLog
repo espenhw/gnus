@@ -1,8 +1,20 @@
 Sun Aug 20 16:04:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
-	* gnus.el (gnus-summary-number-of-articles-in-thread): Include
+	* gnus.el: 0.99.15 is released.
+
+	* gnus.el (gnus-ignored-newsgroups): Totally bogus value.
+
+	* nnmail.el (nnmail-delete-incoming): NB! WILL NOW DELETE INCOMING
+	FILES. NB! (damn that shift lock key)
+
+Sun Aug 20 16:04:20 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.14 is released.
+
+        * gnus.el (gnus-summary-number-of-articles-in-thread): Include
 	adopted articles in the count.
 	(gnus-active-to-gnus-format): Would bug out on non-symbol stuff. 
+	(gnus-ignored-newsgroups): Reinstated regexp.
 
 	* nnheader.el (nnheader-insert-file-contents-literally): Don't
 	bind `file-name-handler-list' to nil.
