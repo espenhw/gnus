@@ -2242,7 +2242,7 @@ If FORCE is non-nil, the .newsrc file is read."
   (let ((fcv (and gnus-newsrc-file-version
 		  (gnus-continuum-version gnus-newsrc-file-version))))
     (when fcv
-      ;; A .newsrc.eld file was loaded.
+      ;; A newsrc file was loaded.
       (let (prompt-displayed
             (converters
              (sort
@@ -2287,18 +2287,18 @@ If FORCE is non-nil, the .newsrc file is read."
                   (while (let (c
                                (cursor-in-echo-area t)
                                (echo-keystrokes 0))
-                           (message "Convert newsrc from version '%s' to '%s'? (n/y/?)"
+                           (message "Convert gnus from version '%s' to '%s'? (n/y/?)"
                                     gnus-newsrc-file-version gnus-version)
                            (setq c (read-char-exclusive))
 
                            (cond ((or (eq c ?n) (eq c ?N))
-                                  (error "Can not start gnus using old (unconverted) newsrc"))
+                                  (error "Can not start gnus without converting"))
                                  ((or (eq c ?y) (eq c ?Y))
                                   (setq prompt-displayed t)
                                   nil)
                                  ((eq c ?\?)
                                   (message "This conversion is irreversible. \
- You should backup your files before proceeding.")
+ To be safe, you should backup your files before proceeding.")
                                   (sit-for 5)
                                   t)
                                  (t
@@ -2308,19 +2308,21 @@ If FORCE is non-nil, the .newsrc file is read."
 
               (funcall func convert-to)))
           (gnus-dribble-enter 
-           (format ";Converted newsrc from version '%s' to '%s'? (n/y/?)"
+           (format ";Converted gnus from version '%s' to '%s'."
                    gnus-newsrc-file-version gnus-version)))))))
 
 (defun gnus-convert-mark-converter-prompt (converter no-prompt)
-  (setplist converter
-            (let* ((symbol 'gnus-convert-no-prompt)
-                   (value (delq symbol (symbol-plist converter))))
-            (if no-prompt
-                (cons symbol value)
-              value))))
+  "Indicate whether CONVERTER requires gnus-convert-old-newsrc to
+  display the conversion prompt.  NO-PROMPT may be nil (prompt),
+  t (no prompt), or any form that can be called as a function.
+  The form should return either t or nil."
+  (put converter 'gnus-convert-no-prompt no-prompt))
 
 (defun gnus-convert-converter-needs-prompt (converter)
-  (not (memq 'gnus-convert-no-prompt (symbol-plist converter))))
+  (let ((no-prompt (get converter 'gnus-convert-no-prompt)))
+    (not (if (memq no-prompt '(t nil))
+	     no-prompt
+	   (funcall no-prompt)))))
 
 (defun gnus-convert-old-ticks (converting-to)
   (let ((newsrc (cdr gnus-newsrc-alist))
