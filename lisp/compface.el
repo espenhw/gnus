@@ -30,12 +30,11 @@
   "X-Face image conversion."
   :group 'extensions)
 
-(defcustom uncompface-use-external (and (not noninteractive)
-					(executable-find "uncompface")
-					(executable-find "icontopbm")
-					t)
-  "*Non-nil means use the external `uncompface' and `icontopbm' programs.
-If this variable is set to nil, use the internal Lisp-based function."
+(defcustom uncompface-use-external nil
+  "*nil means use the internal ELisp-based uncompface program.
+If you aren't satisfied with the speed, try to alter the value.  In
+that case, you need to have the external `uncompface' and `icontopbm'
+programs installed."
   :type 'boolean
   :group 'compface)
 
