@@ -1,19 +1,13 @@
 005-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
-	* message.el (message-make-date): Revert previous change.
-
-	* nnimap.el (nnimap-date-days-ago): Revert previous change and add
-	defvars in order to silence the byte compiler inside the defun
+	* nnimap.el (nnimap-date-days-ago): Add defvars in order to
+	silence the byte compiler inside the defun
 
 	* gnus-demon.el (parse-time-string): Added autoload.
 
 	* gnus-delay.el (parse-time-string): Added autoload.
 
 	* gnus-art.el (parse-time-string): Added autoload.
-
-	* message.el (parse-time): Require for `parse-time-string'.
-
-	* nnimap.el (parse-time): Require for `parse-time-string'.
 
 	* nnultimate.el (parse-time): Require for `parse-time-string'.
 
