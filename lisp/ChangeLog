@@ -1,5 +1,7 @@
 2003-04-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-unique-id): Comment change.
+
 	* gnus-art.el (gnus-article-next-page-1): New function.
 	(gnus-article-next-page): Use it.
 
