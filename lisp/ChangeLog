@@ -1,3 +1,8 @@
+2001-01-18 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-fold-region): Don't insert LWSP if there is
+	one.
+
 2001-01-16  Simon Josefsson  <simon@josefsson.org>
 
 	* message.el (message-make-in-reply-to): Add comment to message-id
