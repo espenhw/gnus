@@ -1,3 +1,7 @@
+2003-03-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-make-fqdn): Protect against nil user-mail. 
+
 2003-02-28  Vasily Korytov <deskpot@myrealbox.com>
 
 	* gnus-art.el (gnus-boring-article-headers): New values:

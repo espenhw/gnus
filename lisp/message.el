@@ -4530,7 +4530,8 @@ give as trustworthy answer as possible."
   (let* ((system-name (system-name))
 	 (user-mail (message-user-mail-address))
 	 (user-domain
-	  (if (string-match "@\\(.*\\)\\'" user-mail)
+	  (if (and user-mail
+		   (string-match "@\\(.*\\)\\'" user-mail))
 	      (match-string 1 user-mail))))
     (cond
      ((and message-user-fqdn
