@@ -638,7 +638,8 @@ displayed by the first non-nil matching CONTENT face."
 			       (face :value default)))))
 
 (defcustom gnus-article-decode-hook
-  '(article-decode-charset article-decode-encoded-words)
+  '(article-decode-charset article-decode-encoded-words
+			   article-decode-group-name)
   "*Hook run to decode charsets in articles."
   :group 'gnus-article-headers
   :type 'hook)
@@ -1753,6 +1754,22 @@ If PROMPT (the prefix), prompt for a coding system to use."
     (save-restriction
       (article-narrow-to-head)
       (funcall gnus-decode-header-function (point-min) (point-max)))))
+
+(defun article-decode-group-name ()
+  "Decode group names in `Newsgroups:'."
+  (let ((inhibit-point-motion-hooks t)
+	buffer-read-only
+	(method (gnus-find-method-for-group gnus-newsgroup-name)))
+    (when (and (or gnus-group-name-charset-method-alist
+		   gnus-group-name-charset-group-alist)
+	       (gnus-buffer-live-p gnus-original-article-buffer)
+	       (mail-fetch-field "Newsgroups"))
+      (nnheader-replace-header "Newsgroups"
+			       (gnus-decode-newsgroups
+				(with-current-buffer
+				    gnus-original-article-buffer
+				  (mail-fetch-field "Newsgroups"))
+				gnus-newsgroup-name method)))))
 
 (defun article-de-quoted-unreadable (&optional force read-charset)
   "Translate a quoted-printable-encoded article.

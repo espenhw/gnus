@@ -1339,7 +1339,9 @@ if it is a string, only list groups matching REGEXP."
      (point)
      (prog1 (1+ (point))
        ;; Insert the text.
-       (eval gnus-group-line-format-spec))
+       (let ((gnus-tmp-group (gnus-group-name-decode
+			      gnus-tmp-group group-name-charset)))
+	 (eval gnus-group-line-format-spec)))
      `(gnus-group ,(gnus-intern-safe gnus-tmp-group gnus-active-hashtb)
 		  gnus-unread ,(if (numberp number)
 				   (string-to-int gnus-tmp-number-of-unread)

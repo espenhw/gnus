@@ -2915,12 +2915,15 @@ to find out how to use this."
 		     (if followup-to
 			 (concat newsgroups "," followup-to)
 		       newsgroups)))
+	    (method (if (message-functionp message-post-method)
+			(funcall message-post-method)
+		      message-post-method))
 	    (known-groups
-	     (mapcar (lambda (n) (gnus-group-real-name n))
-		     (gnus-groups-from-server
-		      (if (message-functionp message-post-method)
-			  (funcall message-post-method)
-			message-post-method))))
+	     (mapcar (lambda (n)
+		       (gnus-group-name-decode 
+			(gnus-group-real-name n)
+			(gnus-group-name-charset method n)))
+		     (gnus-groups-from-server method)))
 	    errors)
        (while groups
 	 (unless (or (equal (car groups) "poster")

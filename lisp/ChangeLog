@@ -1,3 +1,23 @@
+2001-10-06  Simon Josefsson  <jas@extundo.com>
+
+	Support UTF-8 group names better.
+	
+	* message.el (message-check-news-header-syntax): Encode group
+	names before comparison.
+
+	* gnus-msg.el (gnus-copy-article-buffer): Run all
+	`gnus-article-decode-hook's except `article-decode-charset'
+	instead of hardcoding call to one of them.
+
+	* gnus-art.el (gnus-article-decode-hook): Add
+	`article-decode-group-name'.
+	(article-decode-group-name): New function, use `g-d-n'.
+
+	* gnus-group.el (gnus-group-insert-group-line): Decode
+	gnus-tmp-group using `g-d-n'.
+
+	* gnus-util.el (gnus-decode-newsgroups): New function.
+
 2001-10-06  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-srvr.el (gnus-browse-foreign-server): Fixed bug non-nil

@@ -187,6 +187,14 @@
 		   (search-forward ":" eol t)
 		   (point)))))
 
+(defun gnus-decode-newsgroups (newsgroups group &optional method)
+  (let ((method (or method (gnus-find-method-for-group group))))
+    (mapconcat (lambda (group)
+		 (gnus-group-name-decode group (gnus-group-name-charset
+						method group)))
+	       (message-tokenize-header newsgroups ", ")
+	       ", ")))
+
 (defun gnus-remove-text-with-property (prop)
   "Delete all text in the current buffer with text property PROP."
   (save-excursion
