@@ -1015,7 +1015,7 @@ FUNC will be called with the group name to determine the article number."
 	(narrow-to-region
 	 (goto-char (point-min))
 	 (if (search-forward "\n\n" nil t)
-	     (match-beginning 0)
+	     (point)
 	   (point-max)))
 	(goto-char (point-min))
 	;; Decode MIME headers and charsets.
@@ -1109,6 +1109,7 @@ FUNC will be called with the group name to determine the article number."
 	    (goto-char (point-min))
 	    (gnus-configure-windows 'split-trace)
 	    (set-buffer restore)))
+	(widen)
 	;; See whether the split methods returned `junk'.
 	(if (equal group-art '(junk))
 	    nil
@@ -1118,8 +1119,7 @@ FUNC will be called with the group name to determine the article number."
 	  (let (elem)
 	    (while (setq elem (car (memq 'junk group-art)))
 	      (setq group-art (delq elem group-art)))
-	    (nreverse group-art))))
-      (widen))))
+	    (nreverse group-art)))))))
 
 (defun nnmail-insert-lines ()
   "Insert how many lines there are in the body of the mail.
