@@ -610,8 +610,8 @@ variable it the real callback function.")
 	 ["Citation" gnus-article-highlight-citation t])
 	("Date"
 	 ["Local" gnus-article-date-local t]
-	 ["UT" gnus-article-date-local t]
-	 ["Lapsed" gnus-article-date-local t])
+	 ["UT" gnus-article-date-ut t]
+	 ["Lapsed" gnus-article-date-lapsed t])
 	("Filter"
 	 ["Overstrike" gnus-article-treat-overstrike t]
 	 ["Word wrap" gnus-article-word-wrap t]

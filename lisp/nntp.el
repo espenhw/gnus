@@ -230,7 +230,7 @@ instead call function `nntp-status-message' to get status message.")
 	  (if (or (null sequence)	;All requests have been sent.
 		  (zerop (% count nntp-maximum-request)))
 	      (progn
-		(accept-process-output)
+		(nntp-accept-response)
 		(while (progn
 			 (goto-char last-point)
 			 ;; Count replies.
@@ -292,7 +292,7 @@ instead call function `nntp-status-message' to get status message.")
 	  (if (or (null groups)       ;All requests have been sent.
 		  (zerop (% count nntp-maximum-request)))
 	      (progn
-		(accept-process-output)
+		(nntp-accept-response)
 		(while (progn
 			 (goto-char last-point)
 			 ;; Count replies.
@@ -926,7 +926,7 @@ It will prompt for a password."
 			     (setq received (1+ received)))
 			   (setq last-point (point))
 			   (< received count))
-		    (nntp-accept-response))))))
+		    (accept-process-output))))))
 
       (if (not nntp-server-xover)
 	  ()
@@ -1014,7 +1014,7 @@ It will prompt for a password."
 	  (process-send-region nntp-server-process (point) last)
 	  ;; I don't know whether the next codes solve the known
 	  ;;  problem of communication error of GNU Emacs.
-	  (accept-process-output)
+	  (nntp-accept-response)
 	  ;;(sit-for 0)
 	  (goto-char last))))
     ;; We cannot erase buffer, because reply may be received.

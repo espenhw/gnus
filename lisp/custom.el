@@ -134,8 +134,10 @@ STRING should be given if the last search was by `string-match' on STRING."
   ;; Must avoid calling set-face-underline-p directly, because it
   ;; is a defsubst in emacs19, and will make the .elc files non
   ;; portable!
-  (or (face-differs-from-default-p 'underline)
-      (funcall 'set-face-underline-p 'underline t)))
+  (or (and (fboundp 'face-differs-from-default-p)
+	   (face-differs-from-default-p 'underline))
+      (and (fboundp 'set-face-underline-p)
+	   (funcall 'set-face-underline-p 'underline t))))
 
 (or (fboundp 'set-text-properties)
     ;; Missing in XEmacs 19.12.

@@ -1,4 +1,12 @@
+Mon Aug 28 05:09:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Date menu was odd.
+
+	* custom.el: Choked under non-X Emacs.
+
 Sun Aug 27 05:05:05 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.24 is released.
 
 	* nnvirtual.el (nnvirtual-create-mapping): Numbering
  	irregularities - would be off by 1 for each of some component
