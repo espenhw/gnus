@@ -1,0 +1,153 @@
+;;; sieve-mode.el --- Sieve code editing commands for Emacs
+;; Copyright (C) 2001 Free Software Foundation, Inc.
+
+;; Author: Simon Josefsson <simon@josefsson.org>
+
+;; This file is not part of GNU Emacs, but the same permissions apply.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
+
+;; This file contain editing mode functions and font-lock support for
+;; editing Sieve scripts.  It sets up C-mode with support for
+;; sieve-style #-comments and a lightly hacked syntax table.  It was
+;; strongly influenced by awk-mode.el.
+;;
+;; Put something similar to the following in your .emacs to use this file:
+;;
+;; (load "~/lisp/sieve")
+;; (setq auto-mode-alist (cons '("\\.siv\\'" . sieve-mode) auto-mode-alist))
+;;
+;; References:
+;;
+;; RFC 3028,
+;; "Sieve: A Mail Filtering Language",
+;; by Tim Showalter.
+;;
+;; Release history:
+;;
+;; 2001-03-02 version 1.0 posted to gnu.emacs.sources
+;;            version 1.1 change file extension into ".siv" (official one)
+;;                        added keymap and menubar to hook into sieve-manage
+;; 2001-10-31 version 1.2 committed to Oort Gnus
+;;
+;; $Id: sieve-mode.el,v 1.7 2001/03/07 17:47:23 jas Exp $
+
+;;; Code:
+
+(autoload 'sieve-manage "sieve-manage")
+(autoload 'sieve-upload "sieve-manage")
+(require 'easymenu)
+(eval-when-compile
+  (require 'font-lock))
+
+(defgroup sieve nil
+  "Sieve."
+  :group 'languages)
+
+(defcustom sieve-mode-hook nil
+  "Hook run in sieve mode buffers."
+  :group 'sieve
+  :type 'hook)
+
+;; Font-lock
+
+(defconst sieve-font-lock-keywords
+  (eval-when-compile
+    (list
+     ;; control commands
+     (cons (regexp-opt '("require" "if" "else" "elsif" "stop"))
+	   'font-lock-keyword-face)
+     ;; action commands
+     (cons (regexp-opt '("fileinto" "redirect" "reject" "keep" "discard"))
+	   'font-lock-keyword-face)
+     ;; test commands
+     (cons (regexp-opt '("address" "allof" "anyof" "exists" "false"
+			 "true" "header" "not" "size" "envelope"))
+	   'font-lock-builtin-face)
+     (cons "\\Sw+:\\sw+" 'font-lock-constant-face))))
+
+;; Syntax table
+
+(defvar sieve-mode-syntax-table nil
+  "Syntax table in use in sieve-mode buffers.")
+
+(if sieve-mode-syntax-table
+    ()
+  (setq sieve-mode-syntax-table (make-syntax-table))
+  (modify-syntax-entry ?\\ "\\" sieve-mode-syntax-table)
+  (modify-syntax-entry ?\n ">   " sieve-mode-syntax-table)
+  (modify-syntax-entry ?\f ">   " sieve-mode-syntax-table)
+  (modify-syntax-entry ?\# "<   " sieve-mode-syntax-table)
+  (modify-syntax-entry ?/ "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?* "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?+ "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?- "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?= "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?% "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?< "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?> "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?& "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?| "." sieve-mode-syntax-table)
+  (modify-syntax-entry ?_ "_" sieve-mode-syntax-table)
+  (modify-syntax-entry ?\' "\"" sieve-mode-syntax-table))
+
+;; Key map definition
+
+(defvar sieve-mode-map 
+  (let ((map (make-sparse-keymap)))
+    (define-key map "\C-c\C-l" 'sieve-upload)
+    (define-key map "\C-c\C-m" 'sieve-manage)
+    map)
+  "Key map used in sieve mode.")
+
+;; Menu definition
+
+(defvar sieve-mode-menu nil
+  "Menubar used in sieve mode.")
+
+;; Code for Sieve editing mode.
+
+;;;###autoload
+(define-derived-mode sieve-mode c-mode "Sieve"
+  "Major mode for editing Sieve code.
+This is much like C mode except for the syntax of comments.  Its keymap
+inherits from C mode's and it has the same variables for customizing
+indentation.  It has its own abbrev table and its own syntax table.
+
+Turning on Sieve mode runs `sieve-mode-hook'."
+  (set (make-local-variable 'paragraph-start) (concat "$\\|" page-delimiter))
+  (set (make-local-variable 'paragraph-separate) paragraph-start)
+  (set (make-local-variable 'comment-start) "#")
+  (set (make-local-variable 'comment-end) "")
+  ;;(set (make-local-variable 'comment-start-skip) "\\(^\\|\\s-\\);?#+ *")
+  (set (make-local-variable 'comment-start-skip) "#+ *")
+  (set (make-local-variable 'font-lock-defaults)
+       '(sieve-font-lock-keywords nil nil ((?_ . "w"))))
+  (easy-menu-add-item nil nil sieve-mode-menu))
+
+;; Menu
+
+(easy-menu-define sieve-mode-menu sieve-mode-map
+  "Sieve Menu."
+  '("Sieve"
+    ["Upload script" sieve-upload t]
+    ["Manage scripts on server" sieve-manage t]))
+
+(provide 'sieve-mode)
+
+;; sieve-mode.el ends here

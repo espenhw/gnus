@@ -592,6 +592,10 @@ simple manner.")
     "r" gnus-group-mark-regexp
     "U" gnus-group-unmark-all-groups)
 
+  (gnus-define-keys (gnus-group-sieve-map "D" gnus-group-mode-map)
+    "u" gnus-sieve-update
+    "g" gnus-sieve-generate)
+
   (gnus-define-keys (gnus-group-group-map "G" gnus-group-mode-map)
     "d" gnus-group-make-directory-group
     "h" gnus-group-make-help-group
