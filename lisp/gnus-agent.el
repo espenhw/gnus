@@ -157,6 +157,11 @@ If this is `ask' the hook will query the user."
 (defvar gnus-agent-file-coding-system 'raw-text)
 (defvar gnus-agent-file-loading-cache nil)
 
+(defvar gnus-agent-auto-agentize-methods '(nntp nnimap)
+  "Initially, all servers from these methods are agentized.
+The user may remove or add servers using the Server buffer.  See Info
+node `(gnus)Server Buffer'.")
+
 ;; Dynamic variables
 (defvar gnus-headers)
 (defvar gnus-score)
@@ -419,7 +424,14 @@ minor mode in all Gnus buffers."
 					 message-send-mail-function)
 	  message-send-mail-real-function 'gnus-agent-send-mail))
   (unless gnus-agent-covered-methods
-    (setq gnus-agent-covered-methods (list gnus-select-method))))
+    (mapcar
+     (lambda (server)
+       (if (memq (car (gnus-server-to-method server)) 
+		 gnus-agent-auto-agentize-methods)
+	   (setq gnus-agent-covered-methods 
+		 (cons (gnus-server-to-method server)
+		       gnus-agent-covered-methods ))))
+     (append (list gnus-select-method) gnus-secondary-select-methods))))
 
 (defun gnus-agent-queue-setup ()
   "Make sure the queue group exists."
@@ -476,6 +488,7 @@ be a select method."
 	      methods (cdr methods)))
       covered)))
 
+;;;###autoload
 (defun gnus-agent-possibly-save-gcc ()
   "Save GCC if Gnus is unplugged."
   (when (and (not gnus-plugged) (gnus-agent-any-covered-gcc))
