@@ -1,3 +1,8 @@
+2003-04-27  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* dgnushack.el (dgnushack-compile-verbosely): New function.  Not
+	currently called (See source for explanation).
+
 2003-04-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bump.
