@@ -478,20 +478,31 @@ time saver for large mailboxes.")
   "Place point at the start of the headers of ARTICLE.
 ARTICLE can be an article number or a Message-ID."
   (let ((art-string (nnfolder-article-string article))
-	end-search end)
-    (while (not end-search)
-      (if (or (search-forward art-string nil t)
-	      ;; Don't search the whole file twice!  Also, articles
-	      ;; probably have some locality by number, so searching
-	      ;; backwards will be faster.  Especially if we're at the
-	      ;; beginning of the buffer :-). -SLB
-	      (search-backward art-string nil t))
-	  (progn
-	    (setq end (point))
-	    (nnmail-search-unix-mail-delim-backward)
-	    (unless (save-excursion (search-forward "\n\n" nil end))
-	      (setq end-search 'found)))
-	(setq end-search t)))
+	end-search end start beg)
+    (beginning-of-line)
+    (unless (bobp)
+      (forward-char -1))
+    (setq start (point))
+    (while (and (not end-search)
+		(search-forward art-string nil t))
+      (setq end (point))
+      (nnmail-search-unix-mail-delim-backward)
+      (setq beg (point))
+      (when (and (search-forward "\n\n" nil end)
+		 (search-backward art-string nil beg))
+	(setq end-search 'found)
+	(goto-char beg)))
+    (unless end-search
+      (goto-char start)
+      (while (and (not end-search)
+		  (search-backward art-string nil t))
+	(setq end (point))
+	(nnmail-search-unix-mail-delim-backward)
+	(setq beg (point))
+	(when (and (search-forward "\n\n" nil end)
+		   (search-backward art-string nil beg))
+	  (setq end-search 'found)
+	  (goto-char beg))))
     (eq end-search 'found)))
 
 (defun nnfolder-delete-mail (&optional force leave-delim)

@@ -1,3 +1,11 @@
+Fri May  1 21:59:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.9 is released.
+
+Fri May  1 21:54:30 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-goto-article): Would infloop.
+
 Fri May  1 19:45:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.8 is released.
