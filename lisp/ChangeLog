@@ -1,3 +1,71 @@
+Sat May  6 01:48:06 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* gnus.el (gnus-article-de-quoted-unreadable): Did not set
+	buffer-read-only to nil.
+
+	* gnus-score.el (gnus-score-save): Would not save score file if
+	the directory didn't exist.
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Added sort-by-score.
+
+	* gnus.el (gnus-read-active-file): Don't pretend that we have read
+	the active file when we haven't.
+	(gnus-summary-catchup): Make catchup-and-exit faster.
+	(gnus-summary-sort-by-score): Make the `reverse' element optional
+	on all score functions.
+	(gnus-read-descriptions-file): Don't barf if the server if down.
+
+	* gnus-uu.el (gnus-uu-initialize): Chmod work dir.
+
+	* gnus.el (gnus-nov-parse-line): Allow strings as Lines headers. 
+	(gnus-summary-dummy-line-format): Not aligned properly.
+	(gnus-summary-goto-subject): Skip dummy articles.
+	(gnus-group-first-unread-group): Went to the first group, not the
+	first unread group.
+
+Mon May  1 01:51:25 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-vis.el (gnus-server-make-menu-bar): New function.
+
+	* gnus.el: Pushed gnus-uu autoloads out to a keymap in gnus-uu. 
+	(gnus-rebuild-thread): New function.
+	(gnus-rebuild-remove-articles): New function.
+	(gnus-group-mode-map): Changes.
+
+	* gnus-score.el
+	(gnus-summary-temporarily-lower-followups-to-author): New command. 
+	(gnus-summary-lower-followups-to-author): Raised instead of
+	lowering. 
+
+	* gnus.el (gnus-article-date-ut): `lapsed' would give incorrect
+	time. 
+	(gnus-group-mark-group, gnus-group-unmark-group,
+	gnus-group-mark-region):  New commands and keystrokes.
+	(gnus-group-process-prefix): New function.
+	(gnus-group-goto-group): New function.
+	(gnus-group-catchup-current): Use pro/pre.
+	(gnus-group-expire-articles): Ditto.
+	(gnus-group-expire-all-groups): Double ditto.
+	(gnus-group-set-current-level): Ditto.
+	(gnus-delete-line): New function.
+	(gnus-summary-mark-article): Don't unconditionally request article
+	when using the cache.
+
+Tue May  2 01:52:56 1995  Christian Limpach  <chris@nice.ch>
+
+	* gnus.el (gnus-article-display-x-face): cleaned up and use
+	call-process-region now.
+
+Mon May  1 23:40:32 1995  Christian Limpach  <chris@nice.ch>
+
+	* gnus.el (gnus-group-fetch-faq): fixed fetching faq of foreign
+	groups
+
+Mon May  1 21:04:22 1995  Scott Byer  <byer@mv.us.adobe.com>
+
+		* gnus.el (gnus-unread-articles) Put back in dropped change to
+        prevent activation of unsubscribed foreign newsgroups.
+
 Sun Apr 30 04:11:31 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.el (gnus-sorted-complement): Would reverse the result given
@@ -18,6 +86,8 @@ Sun Apr 30 04:11:31 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 	(gnus-summary-respool-article): Behave grafully on nil input.
 	(gnus-get-unread-articles): Would barf on virtual servers.
 	(gnus-use-cache): New variable.
+
+	* gnus.el: 0.63 is released.
 
 Sun Apr 30 01:29:34 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
