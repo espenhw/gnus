@@ -4062,7 +4062,7 @@ If no internal viewer is available, use an external viewer."
   (interactive
    (list (completing-read "Action: " gnus-mime-action-alist nil t)))
   (gnus-article-check-buffer)
-  (let ((action-pair (assoc action gnus-mime-action-alistq)))
+  (let ((action-pair (assoc action gnus-mime-action-alist)))
     (if action-pair
 	(funcall (cdr action-pair)))))
 
