@@ -1,3 +1,9 @@
+2001-01-30 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-string-equal): New function.
+	
+	* gnus-art.el (article-hide-boring-headers): Use it.
+
 2001-01-27  Karl Kleinpaste <karl@charcoal.com>
 
 	* gnus-art.el (gnus-article-banner-alist): eGroups new banner.

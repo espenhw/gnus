@@ -1014,6 +1014,12 @@ Entries without port tokens default to DEFAULTPORT."
 	(remove-text-properties start end properties object))
     t))
 
+(defun gnus-string-equal (x y)
+  "Like `string-equal', except it compares case-insensitively."
+  (and (= (length x) (length y))
+       (or (string-equal x y)
+	   (string-equal (downcase x) (downcase y)))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here
