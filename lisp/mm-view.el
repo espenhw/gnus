@@ -40,6 +40,7 @@
 ;;;
 ;;; Functions for displaying various formats inline
 ;;;
+
 (defun mm-inline-image-emacs (handle)
   (let ((b (point-marker))
 	buffer-read-only)

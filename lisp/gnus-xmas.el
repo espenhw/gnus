@@ -419,7 +419,7 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-put-text-property 'gnus-xmas-put-text-property)
   (defalias 'gnus-deactivate-mark 'ignore)
   (defalias 'gnus-window-edges 'window-pixel-edges)
-
+  
   (if (and (<= emacs-major-version 19)
  	   (< emacs-minor-version 14))
       (defalias 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
@@ -467,6 +467,9 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-region-active-p 'region-active-p)
   (defalias 'gnus-annotation-in-region-p 'gnus-xmas-annotation-in-region-p)
   (defalias 'gnus-mime-button-menu 'gnus-xmas-mime-button-menu)
+  (defalias 'gnus-image-type-available-p 'gnus-xmas-image-type-available-p)
+  (defalias 'gnus-put-image 'gnus-xmas-put-image)
+  (defalias 'gnus-create-image 'gnus-xmas-create-image)
 
   ;; These ones are not defcutom'ed, sometimes not even defvar'ed. They
   ;; probably should. If that is done, the code below should then be moved
@@ -851,6 +854,19 @@ XEmacs compatibility workaround."
 (defun gnus-xmas-mailing-list-menu-add ()
   (gnus-xmas-menu-add mailing-list
 		      gnus-mailing-list-menu))
+
+(defun gnus-xmas-image-type-available-p (type)
+  (featurep type))
+
+(defun gnus-xmas-create-image (file)
+  (with-temp-buffer
+    (insert-file-contents file)
+    (mm-create-image-xemacs (car (last (split-string file "[.]"))))))
+
+(defun gnus-xmas-put-image (glyph)
+  (let ((annot (make-annotation glyph nil 'text)))
+    (set-extent-property annot 'mm t)
+    (set-extent-property annot 'duplicable t)))
 
 (provide 'gnus-xmas)
 

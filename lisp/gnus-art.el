@@ -140,7 +140,8 @@
     "^List-Subscribe:" "^List-Id:" "^List-Unsubscribe:" "^List-Archive:"
      "^X-Content-length:" "^X-Posting-Agent:" "^Original-Received:"
      "^X-Request-PGP:" "^X-Fingerprint:" "^X-WRIEnvto:" "^X-WRIEnvfrom:"
-     "^X-Virus-Scanned:" "^X-Delivery-Agent:")
+     "^X-Virus-Scanned:" "^X-Delivery-Agent:" "^Posted-Date:" "^X-Gateway:"
+     "^X-Local-Origin:" "^X-Local-Destination:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
@@ -225,12 +226,11 @@ regexp.  If it matches, the text in question is not a signature."
 ;; non-graphical frames in a session.
 (defcustom gnus-article-x-face-command
   (if (featurep 'xemacs)
-      (if (or (featurep 'xface)
-	      (featurep 'xpm))
+      (if (or (gnus-image-type-available-p 'xface)
+	      (gnus-image-type-available-p 'xpm))
 	  'gnus-xmas-article-display-xface
 	"{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | ee -")
-    (if (and (fboundp 'image-type-available-p)
-	     (image-type-available-p 'xbm))
+    (if (gnus-image-type-available-p 'xbm)
 	'gnus-article-display-xface
       (if gnus-article-compface-xbm
 	  "{ echo '/* Width=48, Height=48 */'; uncompface; } | display -"
@@ -1057,18 +1057,15 @@ See the manual for details."
   :type gnus-article-treat-custom)
 (put 'gnus-treat-display-smileys 'highlight t)
 
-(defcustom gnus-treat-display-picons
-  (if (or (and (featurep 'xemacs)
-	       (featurep 'xpm))
-	  (and (fboundp 'image-type-available-p)
-	       (image-type-available-p 'pbm)))
+(defcustom gnus-treat-from-picon
+  (if (gnus-image-type-available-p 'xpm)
       'head nil)
   "Display picons.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-head-custom)
-(put 'gnus-treat-display-picons 'highlight t)
+(put 'gnus-treat-from-picon 'highlight t)
 
 (defcustom gnus-treat-capitalize-sentences nil
   "Capitalize sentence-starting words.
@@ -1172,7 +1169,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-smileys gnus-smiley-display)
     (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
-    (gnus-treat-display-picons gnus-article-display-picons)
+    (gnus-treat-from-picon gnus-treat-from-picon)
     (gnus-treat-emphasize gnus-article-emphasize)
     (gnus-treat-play-sounds gnus-earcon-display)))
 
@@ -1549,7 +1546,9 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	       (point) (1+ (point)) 'face 'underline)))))))))
 
 (defun gnus-article-treat-unfold-headers ()
-  "Translate overstrikes into bold text."
+  "Unfold folded message headers.
+Only the headers that fit into the current window width will be
+unfolded."
   (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)
@@ -5738,6 +5737,24 @@ For example:
      handle 'gnus-region
      (cons (set-marker (make-marker) (point-min))
 	   (set-marker (make-marker) (point-max))))))
+
+;;; Macros for dealing with the article buffer.
+
+(defmacro gnus-with-article-headers (&rest forms)
+  `(save-excursion
+     (set-buffer gnus-article-buffer)
+     (save-restriction
+       (let ((buffer-read-only nil)
+	     (inhibit-point-motion-hooks t)
+	     (case-fold-search t))
+	 (article-narrow-to-head)
+	 ,@forms))))
+
+(put 'gnus-with-article-headers 'lisp-indent-function 0)
+(put 'gnus-with-article-headers 'edebug-form-spec '(body))
+
+(defun gnus-article-goto-header (header)
+  (re-search-forward (concat "^" header ":") nil t))
 
 (gnus-ems-redefine)
 

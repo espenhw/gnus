@@ -1,3 +1,25 @@
+2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el: New implementation.
+
+	* mm-decode.el (mm-create-image-xemacs): Separated out into
+	function.  
+	(mm-get-image): Use it.
+
+	* gnus-art.el (gnus-treat-display-picons): Simplify.
+	(gnus-treat-from-picon): Renamed.
+
+	* gnus-ems.el (gnus-create-image): New function.
+	(gnus-put-image): New function.
+
+	* gnus-art.el (gnus-article-treat-unfold-headers): Doc fix.
+	(gnus-with-article-headers): New macro.
+	(gnus-article-goto-header): New function.
+
+	* gnus-xmas.el (gnus-image-type-available-p): New function.
+
+	* gnus-ems.el (gnus-image-type-available-p): New function.
+
 2001-12-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el (nnrss-check-group): Find the correct tag, because
@@ -7,6 +29,7 @@
 
 	* gnus-art.el (gnus-article-treat-unfold-headers): Only fold when
 	lines are shorter than the window width.
+	(gnus-ignored-headers): More headers.
 
 2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

@@ -291,6 +291,18 @@ for XEmacs."
  	    (goto-char (next-single-property-change (point) 'display)))
 	  (insert-image image))))))
 
+;;; Image functions.
+
+(defun gnus-image-type-available-p (type)
+  (and (fboundp 'image-type-available-p)
+       (image-type-available-p type)))
+
+(defun gnus-create-image (file)
+  (create-image file))
+
+(defun gnus-put-image (glyph)
+  (put-image glyph (point)))
+
 (provide 'gnus-ems)
 
 ;;; gnus-ems.el ends here
