@@ -112,8 +112,8 @@
 
 (defvar mm-binary-coding-system
   (cond 
-   ((mm-coding-system-p 'no-conversion) 'no-conversion)
    ((mm-coding-system-p 'binary) 'binary)
+   ((mm-coding-system-p 'no-conversion) 'no-conversion)
    (t nil))
   "100% binary coding system.")
 

@@ -1,3 +1,7 @@
+1999-09-29  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-binary-coding-system): Try binary first.
+
 1999-09-14  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc1843.el (rfc1843-decode-article-body): Don't decode twice.
