@@ -92,7 +92,7 @@ If nil, only read articles will be expired."
 (defvar gnus-agent-spam-hashtb nil)
 (defvar gnus-agent-file-name nil)
 (defvar gnus-agent-send-mail-function nil)
-(defvar gnus-agent-article-file-coding-system 'no-conversion)
+(defvar gnus-agent-file-coding-system 'no-conversion)
 
 (defconst gnus-agent-scoreable-headers
   (list
@@ -524,7 +524,7 @@ the actual number of articles toggled is returned."
     (let* ((gnus-command-method method)
 	   (file (gnus-agent-lib-file "active")))
       (gnus-make-directory (file-name-directory file))
-      (let ((coding-system-for-write gnus-agent-article-file-coding-system))
+      (let ((coding-system-for-write gnus-agent-file-coding-system))
 	(write-region (point-min) (point-max) file nil 'silent))
       (when (file-exists-p (gnus-agent-lib-file "groups"))
 	(delete-file (gnus-agent-lib-file "groups"))))))
@@ -533,9 +533,10 @@ the actual number of articles toggled is returned."
   (let* ((gnus-command-method method)
 	 (file (gnus-agent-lib-file "groups")))
     (gnus-make-directory (file-name-directory file))
-    (write-region (point-min) (point-max) file nil 'silent))
+    (let ((coding-system-for-write gnus-agent-file-coding-system))
+      (write-region (point-min) (point-max) file nil 'silent))
     (when (file-exists-p (gnus-agent-lib-file "active"))
-      (delete-file (gnus-agent-lib-file "active"))))
+      (delete-file (gnus-agent-lib-file "active")))))
 
 (defun gnus-agent-save-group-info (method group active)
   (when (gnus-agent-method-p method)
@@ -554,7 +555,7 @@ the actual number of articles toggled is returned."
 		     (concat "^" (regexp-quote group) " ") nil t)
 		(gnus-delete-line))
 	      (insert group " " (number-to-string (cdr active)) " "
-		      (number-to-string (car active)) "\n"))
+		      (number-to-string (car active)) " y\n"))
 	  (when (re-search-forward (concat (regexp-quote group) " ") nil t)
 	    (gnus-delete-line))
 	  (insert-buffer-substring nntp-server-buffer))))))
@@ -604,8 +605,9 @@ the actual number of articles toggled is returned."
   (save-excursion
     (set-buffer gnus-agent-current-history)
     (gnus-make-directory (file-name-directory gnus-agent-file-name))
-    (write-region (1+ (point-min)) (point-max)
-		  gnus-agent-file-name nil 'silent)))
+    (let ((coding-system-for-write gnus-agent-file-coding-system))
+      (write-region (1+ (point-min)) (point-max)
+		    gnus-agent-file-name nil 'silent))))
 
 (defun gnus-agent-close-history ()
   (when (gnus-buffer-live-p gnus-agent-current-history)
@@ -703,7 +705,7 @@ the actual number of articles toggled is returned."
 		(setq id "No-Message-ID-in-article")
 	      (setq id (buffer-substring (match-beginning 1) (match-end 1))))
 	    (let ((coding-system-for-write
-		   gnus-agent-article-file-coding-system))
+		   gnus-agent-file-coding-system))
 	      (write-region (point-min) (point-max)
 			    (concat dir (number-to-string (caar pos)))
 			    nil 'silent))
@@ -746,10 +748,12 @@ the actual number of articles toggled is returned."
   (save-excursion
     (while gnus-agent-buffer-alist
       (set-buffer (cdar gnus-agent-buffer-alist))
-      (write-region (point-min) (point-max)
-		    (gnus-agent-article-name ".overview"
-					     (caar gnus-agent-buffer-alist))
-		     nil 'silent)
+      (let ((coding-system-for-write
+	     gnus-agent-file-coding-system))
+	(write-region (point-min) (point-max)
+		      (gnus-agent-article-name ".overview"
+					       (caar gnus-agent-buffer-alist))
+		      nil 'silent))
       (pop gnus-agent-buffer-alist))
     (while gnus-agent-group-alist
       (with-temp-file (caar gnus-agent-group-alist)
@@ -780,7 +784,9 @@ the actual number of articles toggled is returned."
  	    (gnus-agent-braid-nov group articles file))
  	  (gnus-make-directory (nnheader-translate-file-chars
  				(file-name-directory file)))
- 	  (write-region (point-min) (point-max) file nil 'silent)
+  	  (let ((coding-system-for-write
+  		 gnus-agent-file-coding-system))
+  	    (write-region (point-min) (point-max) file nil 'silent))
  	  (gnus-agent-save-alist group articles nil)
  	  (gnus-agent-enter-history
  	   "last-header-fetched-for-session"
@@ -1386,7 +1392,9 @@ The following commands are available:
 		 ;; Schedule the history line for nuking.
 		 (push (cdr elem) histories)))
 	     (gnus-make-directory (file-name-directory nov-file))
-	     (write-region (point-min) (point-max) nov-file nil 'silent)
+	     (let ((coding-system-for-write
+		    gnus-agent-file-coding-system))
+	       (write-region (point-min) (point-max) nov-file nil 'silent))
 	     ;; Delete the unwanted entries in the alist.
 	     (setq gnus-agent-article-alist
 		   (sort gnus-agent-article-alist 'car-less-than-car))

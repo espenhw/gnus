@@ -1,3 +1,49 @@
+Thu Sep 24 20:28:31 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.33 is released.
+
+1998-09-24 18:47:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-insert-mime-button): Get buffer size.
+
+	* mm-decode.el (mm-display-external): Don't switch for externals. 
+	(mm-dissect-multipart): Don't include end-sep.
+
+	* mm-util.el (mm-get-coding-system-list): New function.
+	(mm-coding-system-list): New variable.
+
+Thu Sep 24 02:08:10 1998  ZHU Shenghuo  <zsh@cs.rochester.edu>
+
+	* gnus-cus.el (gnus-group-parameters): Add charset as a parameter
+
+Thu Sep 24 02:05:48 1998  ZHU Shenghuo  <zsh@cs.rochester.edu>
+
+	* gnus-cus.el (gnus-group-customize): Use variable as cons not as
+ 	group
+
+Thu Sep 24 01:41:03 1998  ZHU Shenghuo  <zsh@cs.rochester.edu>
+
+	* base64.el (base64-run-command-on-region): External base64
+	decoder do not use coding system
+
+Thu Sep 24 01:39:44 1998  ZHU Shenghuo  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-interactively-view-part): Typo.
+
+Thu Sep 24 01:37:30 1998  ZHU Shenghuo  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-dissect-multipart): Display last part when the
+	article has no close-delimiter
+
+Thu Sep 24 01:28:54 1998  ZHU Shenghuo  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-dissect-buffer): Display parts which have no
+	content-type.
+
+Thu Sep 24 01:23:57 1998  ZHU Shenghuo  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-display-mime): Typo.
+
 Thu Sep 24 02:29:57 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.32 is released.

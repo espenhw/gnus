@@ -102,7 +102,8 @@
 		cd (mail-fetch-field "content-disposition")
 		description (mail-fetch-field "content-description")
 		id (mail-fetch-field "content-id"))))
-      (when ctl
+      (if (not ctl)
+	  (mm-dissect-singlepart '("text/plain") nil no-strict-mime nil nil)
 	(setq type (split-string (car ctl) "/"))
 	(setq subtype (cadr type)
 	      type (pop type))
@@ -140,9 +141,15 @@
 
 (defun mm-dissect-multipart (ctl)
   (goto-char (point-min))
-  (let ((boundary (concat "\n--" (mail-content-type-get ctl 'boundary)))
-	start parts end)
-    (while (search-forward boundary nil t)
+  (let* ((boundary (concat "\n--" (mail-content-type-get ctl 'boundary)))
+	(close-delimiter (concat boundary "--[ \t]*$"))
+	start parts 
+	(end (save-excursion	
+	       (goto-char (point-max))
+	       (if (re-search-backward close-delimiter nil t)
+		   (match-beginning 0)
+		 (point-max)))))
+    (while (search-forward boundary end t)
       (goto-char (match-beginning 0))
       (when start
 	(save-excursion
@@ -151,6 +158,11 @@
 	    (setq parts (nconc (mm-dissect-buffer t) parts)))))
       (forward-line 2)
       (setq start (point)))
+    (when start
+      (save-excursion
+	(save-restriction
+	  (narrow-to-region start end)
+	  (setq parts (nconc (mm-dissect-buffer t) parts)))))
     (nreverse parts)))
 
 (defun mm-copy-to-buffer ()
@@ -217,10 +229,7 @@
 		  (start-process "*display*" nil
 				 "xterm"
 				 "-e" (format method file))
-		(switch-to-buffer (generate-new-buffer "*mm*"))
-		(buffer-disable-undo)
-		(mm-set-buffer-file-coding-system 'no-conversion)
-		(start-process "*display*" (current-buffer)
+		(start-process "*display*" (generate-new-buffer "*mm*")
 			       shell-file-name
 			       "-c" (format method file))))
 	(mm-handle-set-undisplayer handle (cons file process))
@@ -367,7 +376,7 @@ This overrides entries in the mailcap file."
   "Display HANDLE using METHOD."
   (let* ((type (car (mm-handle-type handle)))
 	 (methods
-	  (mapcar (lambda (i) (list (cdr (assoc "viewer" i))))
+	  (mapcar (lambda (i) (list (cdr (assoc 'viewer i))))
 		  (mailcap-mime-info type 'all)))
 	 (method (completing-read "Viewer: " methods)))
     (mm-display-external (copy-sequence handle) method)))

@@ -78,8 +78,8 @@
    '((decode-coding-string . (lambda (s a) s))
      (encode-coding-string . (lambda (s a) s))
      (encode-coding-region . ignore)
-     (decode-coding-region . ignore)
      (coding-system-list . ignore)
+     (decode-coding-region . ignore)
      (char-int . identity)
      (device-type . ignore)
      (coding-system-equal . equal)
@@ -95,12 +95,18 @@
 	   prompt (mapcar (lambda (s) (list (symbol-name (car s))))
 			  mm-mime-mule-charset-alist)))))))
 
+(defvar mm-coding-system-list nil)
+(defun mm-get-coding-system-list ()
+  "Get the coding system list."
+  (or mm-coding-system-list
+      (setq mm-coding-system-list (mm-coding-system-list))))
+
 (defvar mm-charset-coding-system-alist
   (let ((rest
 	 '((gb2312 . cn-gb-2312)
 	   (iso-2022-jp-2 . iso-2022-7bit-ss2)
 	   (x-ctext . ctext)))
-	(systems (mm-coding-system-list))
+	(systems (mm-get-coding-system-list))
 	dest)
     (while rest
       (let ((pair (car rest)))
@@ -109,7 +115,6 @@
       (setq rest (cdr rest)))
     dest)
   "Charset/coding system alist.")
-
 
 (defun mm-mule-charset-to-mime-charset (charset)
   "Return the MIME charset corresponding to MULE CHARSET."
@@ -136,14 +141,14 @@ used as the line break code type of the coding system."
     (setq charset (intern (format "%s-%s" charset lbt))))
   (cond
    ;; Running in a non-MULE environment.
-   ((and (null (mm-coding-system-list))
+   ((and (null (mm-get-coding-system-list))
 	 (memq charset mm-known-charsets))
     charset)
    ;; ascii
    ((eq charset 'us-ascii)
     'ascii)
    ;; Check to see whether we can handle this charset.
-   ((memq charset (mm-coding-system-list))
+   ((memq charset (mm-get-coding-system-list))
     charset)
    ;; Nope.
    (t

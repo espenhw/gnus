@@ -75,7 +75,7 @@ base64-encoder-program.")
 
 (defun base64-run-command-on-region (start end output-buffer command
 					   &rest arg-list)
-  (let ((tempfile nil) status errstring)
+  (let ((tempfile nil) status errstring default-process-coding-system)
     (unwind-protect
 	(progn
 	  (setq tempfile (make-temp-name "base64"))

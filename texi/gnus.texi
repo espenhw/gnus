@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.32 Manual
+@settitle Pterodactyl Gnus 0.33 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.32 Manual
+@title Pterodactyl Gnus 0.33 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.32.
+This manual corresponds to Pterodactyl Gnus 0.33.
 
 @end ifinfo
 
@@ -13100,11 +13100,11 @@ If @code{gnus-adaptive-word-minimum} is set to a number, the adaptive
 word scoring process will never bring down the score of an article to
 below this number.  The default is @code{nil}.
 
-@vindex gnus-adative-word-no-group-words
-If @code{gnus-adative-word-no-group-words} is set to t, gnus won't
-adaptively word score any of the words in the group name.  Useful for
-groups like comp.editors.emacs, where most of the subject lines contain
-the word "emacs".
+@vindex gnus-adaptive-word-no-group-words
+If @code{gnus-adaptive-word-no-group-words} is set to @code{t}, gnus
+won't adaptively word score any of the words in the group name.  Useful
+for groups like @samp{comp.editors.emacs}, where most of the subject
+lines contain the word @samp{emacs}.
 
 After using this scheme for a while, it might be nice to write a
 @code{gnus-psychoanalyze-user} command to go through the rules and see
@@ -18147,7 +18147,7 @@ gnus-ignored-mime-types to avoid seeing buttons for Vcards and the
 like.
 
 @item
-Boucing articles should do MIME.
+Bouncing articles should do MIME.
 
 @item
 Solve the halting problem.
