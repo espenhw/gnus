@@ -1,7 +1,7 @@
 ;;; nntp.el --- nntp access for Gnus
-;; Copyright (C) 1987, 1988, 1989, 1990, 1992, 1993, 1994, 1995, 1996, 
-;;        1997, 1998, 2000, 2001, 2002
-;;        Free Software Foundation, Inc.
+
+;; Copyright (C) 1987, 1988, 1989, 1990, 1992, 1993, 1994, 1995, 1996,
+;; 1997, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news
@@ -9,18 +9,18 @@
 ;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
+;; it under the terms of the GNU General Public License as published
+;; by the Free Software Foundation; either version 2, or (at your
+;; option) any later version.
 
-;; GNU Emacs is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
+;; GNU Emacs is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ;;; Commentary:
 
@@ -737,8 +737,8 @@ noticing asynchronous data.")
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
 	  (copy-to-buffer buffer (point-min) (point-max))
-	  (nntp-find-group-and-number))
-      (nntp-find-group-and-number))))
+	  (nntp-find-group-and-number group))
+      (nntp-find-group-and-number group))))
 
 (deffoo nntp-request-head (article &optional group server)
   (nntp-possibly-change-group group server)
@@ -746,7 +746,7 @@ noticing asynchronous data.")
 	 "\r?\n\\.\r?\n" "HEAD"
 	 (if (numberp article) (int-to-string article) article))
     (prog1
-	(nntp-find-group-and-number)
+	(nntp-find-group-and-number group)
       (nntp-decode-text))))
 
 (deffoo nntp-request-body (article &optional group server)
@@ -1373,7 +1373,7 @@ password contained in '~/.nntp-authinfo'."
 	    (setq nntp-server-xover nil)))
 	nntp-server-xover))))
 
-(defun nntp-find-group-and-number ()
+(defun nntp-find-group-and-number (&optional group)
   (save-excursion
     (save-restriction
       (set-buffer nntp-server-buffer)
@@ -1385,29 +1385,48 @@ password contained in '~/.nntp-authinfo'."
 			 (string-to-int
 			  (buffer-substring (match-beginning 1)
 					    (match-end 1)))))
-	    group newsgroups xref)
+	    newsgroups xref)
 	(and number (zerop number) (setq number nil))
-	;; Then we find the group name.
-	(setq group
-	      (cond
-	       ;; If there is only one group in the Newsgroups header,
-	       ;; then it seems quite likely that this article comes
-	       ;; from that group, I'd say.
-	       ((and (setq newsgroups (mail-fetch-field "newsgroups"))
-		     (not (string-match "," newsgroups)))
-		newsgroups)
-	       ;; If there is more than one group in the Newsgroups
-	       ;; header, then the Xref header should be filled out.
-	       ;; We hazard a guess that the group that has this
-	       ;; article number in the Xref header is the one we are
-	       ;; looking for.  This might very well be wrong if this
-	       ;; article happens to have the same number in several
-	       ;; groups, but that's life.
-	       ((and (setq xref (mail-fetch-field "xref"))
-		     number
-		     (string-match (format "\\([^ :]+\\):%d" number) xref))
-		(substring xref (match-beginning 1) (match-end 1)))
-	       (t "")))
+	(if number
+	    ;; Then we find the group name.
+	    (setq group
+		  (cond
+		   ;; If there is only one group in the Newsgroups
+		   ;; header, then it seems quite likely that this
+		   ;; article comes from that group, I'd say.
+		   ((and (setq newsgroups 
+			       (mail-fetch-field "newsgroups"))
+			 (not (string-match "," newsgroups)))
+		    newsgroups)
+		   ;; If there is more than one group in the
+		   ;; Newsgroups header, then the Xref header should
+		   ;; be filled out.  We hazard a guess that the group
+		   ;; that has this article number in the Xref header
+		   ;; is the one we are looking for.  This might very
+		   ;; well be wrong if this article happens to have
+		   ;; the same number in several groups, but that's
+		   ;; life.
+		   ((and (setq xref (mail-fetch-field "xref"))
+			 number
+			 (string-match 
+			  (format "\\([^ :]+\\):%d" number) xref))
+		    (match-string 1 xref))
+		   (t "")))
+	  (cond
+	   ((and (setq xref (mail-fetch-field "xref"))
+		 (string-match 
+		  (if group
+		      (concat "\\(" (regexp-quote group) "\\):\\([0-9]+\\)")
+		    "\\([^ :]+\\):\\([0-9]+\\)")
+		  xref))
+	    (setq group (match-string 1 xref)
+		  number (string-to-int (match-string 2 xref))))
+	   ((and (setq newsgroups 
+		       (mail-fetch-field "newsgroups"))
+		 (not (string-match "," newsgroups)))
+	    (setq group newsgroups))
+	   (group)
+	   (t (setq group ""))))
 	(when (string-match "\r" group)
 	  (setq group (substring group 0 (match-beginning 0))))
 	(cons group number)))))

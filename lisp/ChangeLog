@@ -1,10 +1,17 @@
+2002-01-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-request-article): Add group parameter.
+	(nntp-request-head): Ditto.
+	(nntp-find-group-and-number): Add parameter group. Figure out
+	number if the status line doesn't give (e.g. quimby.gnus.org).
+
 2002-01-08  Simon Josefsson  <jas@extundo.com>
 
 	* mml.el (mml-generate-mime-1): Set recipient correctly.
 
 2002-01-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* message.el (message-read-from-minibuffer): Add argument
+	* message.el (message-read-from-minibuffer): Add parameter
 	initial-contents.
 	* gnus-msg.el (gnus-summary-resend-message): Use it.
 	
