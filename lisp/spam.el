@@ -69,7 +69,7 @@
 (defvar spam-use-whitelist nil
   "True if the whitelist should be used.")
 
-(defvar spam-use-blackholes t
+(defvar spam-use-blackholes nil
   "True if blackholes should be used.")
 
 (defvar spam-use-bogofilter nil
@@ -214,8 +214,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 (defvar spam-blackhole-servers '("bl.spamcop.net"
 				 "relays.ordb.org"
 				 "dev.null.dk"
-				 "relays.visi.com"
-				 "rbl.maps.vix.com")
+				 "relays.visi.com")
   "List of blackhole servers.")
 
 (defun spam-check-blackholes ()

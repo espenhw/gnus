@@ -29,7 +29,9 @@
 	through dig.el
 	(spam-check-blackholes): added dig.el checking functionality and
 	more verbose reporting; query-dig is autoloaded from dig.el
-	(spam-use-blackholes): enabled by default
+	(spam-use-blackholes): disabled by default
+	(spam-blackhole-servers): removed rbl.maps.vix.com from the
+	blackhole servers list
 
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
