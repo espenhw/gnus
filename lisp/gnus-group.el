@@ -1689,15 +1689,14 @@ If FIRST-TOO, the current line is also eligible as a target."
 	;; Go to the mark position.
 	(beginning-of-line)
 	(forward-char (or (cdr (assq 'process gnus-group-mark-positions)) 2))
-	(subst-char-in-region
-	 (point) (1+ (point)) (char-after)
-	 (if unmark
-	     (progn
-	       (setq gnus-group-marked (delete group gnus-group-marked))
-	       ? )
+	(delete-char 1)
+	(if unmark
+	    (progn
+	      (setq gnus-group-marked (delete group gnus-group-marked))
+	      (insert-char ? 1 t))
 	   (setq gnus-group-marked
 		 (cons group (delete group gnus-group-marked)))
-	   gnus-process-mark)))
+	   (insert-char gnus-process-mark 1 t)))
       (unless no-advance
 	(gnus-group-next-group 1))
       (decf n))
