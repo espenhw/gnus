@@ -551,7 +551,8 @@
     (setq nnslashdot-buffer
 	  (save-excursion
 	    (nnheader-set-temp-buffer
-	     (format " *nnslashdot %s*" server))))))
+	     (format " *nnslashdot %s*" server))))
+    (push nnslashdot-buffer gnus-buffers)))
 
 (defun nnslashdot-date-to-date (sdate)
   (condition-case err

@@ -37,7 +37,8 @@
 
 (eval-and-compile
   (autoload 'gnus-error "gnus-util")
-  (autoload 'gnus-buffer-live-p "gnus-util"))
+  (autoload 'gnus-buffer-live-p "gnus-util")
+  (autoload 'gnus-add-buffer "gnus"))
 
 (defgroup nnmail nil
   "Reading mail with Gnus."
@@ -1376,6 +1377,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (set-buffer
        (setq nnmail-cache-buffer
 	     (get-buffer-create " *nnmail message-id cache*")))
+      (gnus-add-buffer)
       (when (file-exists-p nnmail-message-id-cache-file)
 	(nnheader-insert-file-contents nnmail-message-id-cache-file))
       (set-buffer-modified-p nil)

@@ -1,3 +1,14 @@
+2001-08-01  Gerd Moellmann  <gerd@gnu.org>
+
+	* mm-view.el (autoload): Don't autoload `diff-mode' if it's 
+	already fboundp.  Add INTERACTIVE arg to autoload form. 
+
+2001-08-01 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-init): Add as gnus buffer.
+
+	* nnmail.el (nnmail-cache-open): Ditto.
+
 2001-07-31 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-button-fetch-group): Fix the regexp.

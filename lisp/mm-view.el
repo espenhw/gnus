@@ -34,7 +34,8 @@
   (autoload 'vcard-parse-string "vcard")
   (autoload 'vcard-format-string "vcard")
   (autoload 'fill-flowed "flow-fill")
-  (autoload 'diff-mode "diff-mode"))
+  (unless (fboundp 'diff-mode)
+    (autoload 'diff-mode "diff-mode" "" t nil)))
 
 ;;;
 ;;; Functions for displaying various formats inline
