@@ -96,9 +96,8 @@ regexp to replace with IMAGE.  IMAGE is the name of a PBM file in
 					      smiley-data-directory)))
 	  (setq file nil)))
       (when type
-	(let ((image (find-image (list (list :type (intern type) 
-					     :file file
-					     :ascent 'center)))))
+	(let ((image (gnus-create-image file (intern type) nil
+					:ascent 'center)))
 	  (when image
 	    (push (list (car elt) (cadr elt) image)
 		  smiley-cached-regexp-alist)))))))
@@ -115,33 +114,25 @@ regexp to replace with IMAGE.  IMAGE is the name of a PBM file in
   "Replace in the region `smiley-regexp-alist' matches with corresponding images.
 A list of images is returned."
   (interactive "r")
-  (when (and (fboundp 'display-graphic-p)
-	     (display-graphic-p))
-    (mapcar (lambda (o)
-	      (if (eq 'smiley (overlay-get o 'smiley))
-		  (delete-overlay o)))
-	    (overlays-in start end))
+  (when (gnus-graphic-display-p)
     (unless smiley-cached-regexp-alist
       (smiley-update-cache))
     (save-excursion
       (let ((beg (or start (point-min)))
-	    group overlay image images)
+	    group image images string)
 	(dolist (entry smiley-cached-regexp-alist)
 	  (setq group (nth 1 entry)
 		image (nth 2 entry))
 	  (goto-char beg)
 	  (while (re-search-forward (car entry) end t)
+	    (setq string (match-string group))
+	    (goto-char (match-end group))
+	    (delete-region (match-beginning group) (match-end group))
 	    (when image
 	      (push image images)
 	      (gnus-add-wash-type 'smiley)
 	      (gnus-add-image 'smiley image)
-	      (add-text-properties
-	       (match-beginning group) (match-end group)
-	       `(display ,image
-			 mouse-face highlight
-			 smiley t
-			 help-echo "mouse-2: toggle smilies in buffer"
-			 keymap smiley-mouse-map)))))
+	      (gnus-put-image image string))))
 	images))))
 
 (defun smiley-toggle-buffer (&optional arg)

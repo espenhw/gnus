@@ -1253,6 +1253,13 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
    history
    (car (symbol-value history))))
 
+(defun gnus-graphic-display-p ()
+  (or (and (fboundp 'display-graphic-p)
+	   (display-graphic-p))
+      ;;;!!!This is bogus.  Fixme!
+      (and (featurep 'xemacs)
+	   t)))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

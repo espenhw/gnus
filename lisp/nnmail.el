@@ -1075,7 +1075,8 @@ FUNC will be called with the group name to determine the article number."
 	    (nnheader-set-temp-buffer "*Split Trace*")
 	    (gnus-add-buffer)
 	    (dolist (trace (nreverse nnmail-split-trace))
-	      (insert trace "\n"))
+	      (prin1 trace (current-buffer))
+	      (insert "\n"))
 	    (goto-char (point-min))
 	    (gnus-configure-windows 'split-trace)
 	    (set-buffer restore)))
@@ -1222,7 +1223,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
      ;; A group name.  Do the \& and \N subs into the string.
      ((stringp split)
       (when nnmail-split-tracing
-	(push (format "\"%s\"" split) nnmail-split-trace))
+	(push split nnmail-split-trace))
       (list (nnmail-expand-newtext split)))
 
      ;; Junk the message.
@@ -1261,7 +1262,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	(while (and (goto-char end-point)
 		    (re-search-backward (cdr cached-pair) nil t))
 	  (when nnmail-split-tracing
-	    (push (cdr cached-pair) nnmail-split-trace))
+	    (push split nnmail-split-trace))
 	  (let ((split-rest (cddr split))
 		(end (match-end 0))
 		;; The searched regexp is \(\(FIELD\).*\)\(VALUE\).

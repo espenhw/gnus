@@ -44,7 +44,7 @@
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 `rfc934', `rfc822-forward', `mime-parts', `standard-digest',
 `slack-digest', `clari-briefs', `nsmail', `outlook', `oe-dbx',
-`mailman' or `guess'.")
+`mailman', `exim-bounce', or `guess'.")
 
 (defvoo nndoc-post-type 'mail
   "*Whether the nndoc group is `mail' or `post'.")
@@ -58,6 +58,9 @@ from the document.")
   `((mmdf
      (article-begin .  "^\^A\^A\^A\^A\n")
      (body-end .  "^\^A\^A\^A\^A\n"))
+    (exim-bounce
+     (article-begin . "^------ This is a copy of the message, including all the headers. ------\n\n")
+     (body-end-function . nndoc-exim-bounce-body-end-function))
     (nsmail
      (article-begin .  "^From - "))
     (news
@@ -546,6 +549,13 @@ from the document.")
 	  (setq from (match-string 1)))))
     (insert "From: " "clari@clari.net (" (or from "unknown") ")"
 	    "\nSubject: " (or subject "(no subject)") "\n")))
+
+(defun nndoc-exim-bounce-type-p ()
+  (and (re-search-forward "^------ This is a copy of the message, including all the headers. ------" nil t)
+       t))
+
+(defun nndoc-exim-bounce-body-end-function ()
+  (goto-char (point-max)))
 
 
 (defun nndoc-mime-digest-type-p ()
