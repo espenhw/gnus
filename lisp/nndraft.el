@@ -212,8 +212,6 @@
 
 (deffoo nndraft-request-accept-article (group &optional server last noinsert)
   (nndraft-possibly-change-group group)
-  (if (equal group "drafts")
-      (error "nndraft:drafts isn't supposed to accept articles."))
   (let ((gnus-verbose-backends nil))
     (nnoo-parent-function 'nndraft 'nnmh-request-accept-article
 			  (list group server last noinsert))))

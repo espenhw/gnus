@@ -3,9 +3,6 @@
 	* gnus-msg.el (gnus-summary-resend-message-edit): New function.
 	From Matthieu Moy <Matthieu.Moy@imag.fr>
 
-	* nndraft.el (nndraft-request-accept-article): Error if the group
-	is drafts.
-
 	* message.el (message-add-action): Use add-to-list.
 	(message-delete-action): New function.
 
