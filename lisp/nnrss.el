@@ -352,6 +352,15 @@ ARTICLE is the article number of the current headline.")
 	    ".el"))
    nnrss-directory))
 
+(gnus-add-shutdown 'nnrss-close 'gnus)
+
+(defun nnrss-close ()
+  "Clear internal nnrss variables."
+  (setq nnrss-group-data nil
+	nnrss-server-data nil
+	nnrss-group-hashtb nil
+	nnrss-group-alist nil))
+
 ;;; URL interface
 
 (defun nnrss-no-cache (url)

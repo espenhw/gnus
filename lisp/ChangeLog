@@ -1,3 +1,7 @@
+2004-02-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* nnrss.el (nnrss-close): New function.
+
 2004-02-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnrss.el (nnrss-make-filename): New function.
