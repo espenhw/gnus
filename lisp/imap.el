@@ -762,7 +762,6 @@ sure of changing the value of `foo'."
 		  (not (imap-parse-greeting)))
 	(accept-process-output process 1)
 	(sit-for 1))
-      (setq imap-client-eol "\n")
       (imap-send-command "STARTTLS")
       (while (and (memq (process-status process) '(open run))
 		  (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
