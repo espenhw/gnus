@@ -26,9 +26,6 @@
 ;; You can safely ignore most of it until Red Gnus.  **Evil Laugh**
 ;;; Code:
 
-(when (null (boundp 'running-xemacs))
-  (defvar running-xemacs (string-match "XEmacs\\|Lucid" emacs-version)))
-
 (require 'nnheader)
 (eval-when-compile (require 'cl))
 

@@ -67,7 +67,7 @@ input and write the converted data to its standard output.")
 	((boundp 'temporary-file-directory) temporary-file-directory)
 	("/tmp/")))
 
-(if (string-match "XEmacs" emacs-version)
+(if (featurep 'xemacs)
     (defalias 'binhex-insert-char 'insert-char)
   (defun binhex-insert-char (char &optional count ignored buffer)
     (if (or (null buffer) (eq buffer (current-buffer)))
@@ -198,7 +198,7 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 	(save-excursion
 	  (goto-char start)
 	  (when (re-search-forward binhex-begin-line end t)
-	    (if (and (not (string-match "XEmacs\\|Lucid" emacs-version))
+	    (if (and (not (featurep 'xemacs))
 		     (boundp 'enable-multibyte-characters))
 		(let ((multibyte
 		       (default-value 'enable-multibyte-characters)))

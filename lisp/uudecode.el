@@ -111,7 +111,7 @@ If FILE-NAME is non-nil, save the result to FILE-NAME."
       (and work-buffer (kill-buffer work-buffer))
       (ignore-errors (or file-name (delete-file tempfile))))))
 
-(if (string-match "XEmacs" emacs-version)
+(if (featurep 'xemacs)
     (defalias 'uudecode-insert-char 'insert-char)
   (defun uudecode-insert-char (char &optional count ignored buffer)
     (if (or (null buffer) (eq buffer (current-buffer)))

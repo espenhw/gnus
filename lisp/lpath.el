@@ -102,7 +102,6 @@
 		 find-image insert-image image-size
 		 vcard-pretty-print image-type-available-p)))
 
-(setq load-path (cons "." load-path))
 (require 'custom)
 
 (defun md5 (a &optional b c)

@@ -4298,7 +4298,7 @@ which specify the range to operate on."
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
 
 ;; Support for toolbar
-(when (string-match "XEmacs\\|Lucid" emacs-version)
+(when (featurep 'xemacs)
   (require 'messagexmas))
 
 ;;; Group name completion.

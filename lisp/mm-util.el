@@ -311,7 +311,7 @@ If the charset is `composition', return the actual one."
 See also `with-temp-file' and `with-output-to-string'."
   (let ((temp-buffer (make-symbol "temp-buffer"))
 	(multibyte (make-symbol "multibyte")))
-    `(if (or (string-match "XEmacs\\|Lucid" emacs-version)
+    `(if (or (featurep 'xemacs)
 	     (not (boundp 'enable-multibyte-characters)))
 	 (with-temp-buffer ,@forms)
        (let ((,multibyte (default-value 'enable-multibyte-characters))

@@ -896,7 +896,7 @@ find-file-hooks, etc.
 (defalias 'nnheader-cancel-timer 'cancel-timer)
 (defalias 'nnheader-cancel-function-timers 'cancel-function-timers)
 
-(when (string-match "XEmacs" emacs-version)
+(when (featurep 'xemacs)
   (require 'nnheaderxm))
 
 (run-hooks 'nnheader-load-hook)
