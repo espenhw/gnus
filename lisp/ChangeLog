@@ -1,3 +1,12 @@
+2003-04-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-required-headers): Add In-Reply-To.
+
+2003-04-27  Marshall T. Vandegrift  <vandem2@rpi.edu>
+
+	* gnus-fun.el (gnus-face-from-file): Bind coding-system-for-read
+	to binary.
+
 2003-04-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* mml.el (mml-preview): do.

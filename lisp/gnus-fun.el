@@ -111,10 +111,11 @@ Output to the current buffer, replace text, and don't mingle error."
       (while (and (not done)
 		  (> quant 1))
 	(setq attempt
-	      (gnus-shell-command-to-string
-	       (format gnus-convert-image-to-face-command
-		       (shell-quote-argument (expand-file-name file))
-		       quant)))
+	      (let ((coding-system-for-read 'binary))
+		(gnus-shell-command-to-string
+		 (format gnus-convert-image-to-face-command
+			 (shell-quote-argument (expand-file-name file))
+			 quant))))
 	(if (> (length attempt) 726)
 	    (progn
 	      (setq quant (- quant 2))
