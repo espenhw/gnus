@@ -9791,7 +9791,7 @@ then set the @code{gnus-post-method} to some other method:
 Now, if you've done this, and then this server rejects your article, or
 this server is down, what do you do then?  To override this variable you
 can use a non-zero prefix to the @kbd{C-c C-c} command to force using
-the ``current'' server, to get back the default behaviour, for posting.
+the ``current'' server, to get back the default behavior, for posting.
 
 If you give a zero prefix (i.e., @kbd{C-u 0 C-c C-c}) to that command,
 Gnus will prompt you for what method to use for posting.
