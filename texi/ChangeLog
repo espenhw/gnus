@@ -1,3 +1,8 @@
+Sat Mar  8 03:41:47 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Group Parameters): Added example.
+	(Duplicates): Fix.
+
 Fri Mar  7 10:49:43 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* Makefile: New "install" target.

@@ -607,7 +607,7 @@ Defaults to `text-mode-abbrev-table'.")
 (defface message-header-to-face
   '((((class color)
       (background dark))
-     (:foreground "green2" :italic t))
+     (:foreground "green2" :bold t))
     (((class color)
       (background light))
      (:foreground "MidnightBlue" :bold t))
@@ -622,7 +622,7 @@ Defaults to `text-mode-abbrev-table'.")
      (:foreground "green4" :bold t))
     (((class color)
       (background light))
-     (:foreground "blue4"))
+     (:foreground "MidnightBlue"))
     (t
      (:bold t)))
   "Face used for displaying Cc headers."
@@ -634,7 +634,7 @@ Defaults to `text-mode-abbrev-table'.")
      (:foreground "green3"))
     (((class color)
       (background light))
-     (:foreground "firebrick" :bold t))
+     (:foreground "navy blue" :bold t))
     (t
      (:bold t)))
   "Face used for displaying subject headers."
@@ -646,7 +646,7 @@ Defaults to `text-mode-abbrev-table'.")
      (:foreground "yellow" :bold t :italic t))
     (((class color)
       (background light))
-     (:foreground "indianred" :bold t :italic t))
+     (:foreground "blue4" :bold t :italic t))
     (t
      (:bold t :italic t)))
   "Face used for displaying newsgroups headers."
@@ -658,7 +658,7 @@ Defaults to `text-mode-abbrev-table'.")
      (:foreground "red4"))
     (((class color)
       (background light))
-     (:foreground "red3"))
+     (:foreground "steel blue"))
     (t
      (:bold t :italic t)))
   "Face used for displaying newsgroups headers."
@@ -670,7 +670,7 @@ Defaults to `text-mode-abbrev-table'.")
      (:foreground "DarkGreen"))
     (((class color)
       (background light))
-     (:foreground "red4"))
+     (:foreground "cornflower blue"))
     (t
      (:bold t)))
   "Face used for displaying header names."
@@ -706,7 +706,7 @@ Defaults to `text-mode-abbrev-table'.")
      (:foreground "red"))
     (((class color)
       (background light))
-     (:foreground "DarkGreen"))
+     (:foreground "red"))
     (t
      (:bold t)))
   "Face used for displaying cited text names."
@@ -714,30 +714,32 @@ Defaults to `text-mode-abbrev-table'.")
 
 (defvar message-font-lock-keywords
   (let* ((cite-prefix "A-Za-z")
-	 (cite-suffix (concat cite-prefix "0-9_.@-")))
-    (list '("^\\(To:\\)[ \t]*\\(.+\\)?"
-	    (1 'message-header-name-face)
-	    (2 'message-header-to-face nil t))
-          '("^\\(^[GBF]?[Cc][Cc]:\\|^Reply-To:\\)[ \t]*\\(.+\\)?"
-	    (1 'message-header-name-face)
-	    (2 'message-header-cc-face nil t))
-	  '("^\\(Subject:\\)[ \t]*\\(.+\\)?"
-	    (1 'message-header-name-face)
-	    (2 'message-header-subject-face nil t))
-	  '("^\\(Newsgroups:\\|Followup-to:\\)[ \t]*\\(.+\\)?"
-	    (1 'message-header-name-face)
-	    (2 'message-header-newsgroups-face nil t))
-	  '("^\\([^: \n\t]+:\\)[ \t]*\\(.+\\)?"
-	    (1 'message-header-name-face)
-	    (2 'message-header-other-face nil t))
-	  (list (concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
-		1 '(quote message-separator-face))
-	  `(,(concat "^[ \t]*"
-		     "\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
-		     "[>|}].*")
-	    (0 'message-cited-text-face))
-	  '("^\\(X-[A-Za-z0-9-]+\\|In-Reply-To\\):.*"
-	    (0 'message-header-xheader-face))))
+	 (cite-suffix (concat cite-prefix "0-9_.@-"))
+	 (content "[ \t]*\\(.+\\(\n[ \t].*\\)*\\)"))
+    `((,(concat "^\\(To:\\)" content)
+       (1 'message-header-name-face)
+       (2 'message-header-to-face nil t))
+      (,(concat "^\\(^[GBF]?[Cc][Cc]:\\|^Reply-To:\\)" content)
+       (1 'message-header-name-face)
+       (2 'message-header-cc-face nil t))
+      (,(concat "^\\(Subject:\\)" content)
+       (1 'message-header-name-face)
+       (2 'message-header-subject-face nil t))
+      (,(concat "^\\(Newsgroups:\\|Followup-to:\\)" content)
+       (1 'message-header-name-face)
+       (2 'message-header-newsgroups-face nil t))
+      (,(concat "^\\([^: \n\t]+:\\)" content)
+       (1 'message-header-name-face)
+       (2 'message-header-other-face nil t))
+      (,(concat "^\\(X-[A-Za-z0-9-]+\\|In-Reply-To\\):" content)
+       (1 'message-header-name-face)
+       (2 'message-header-name-face))
+      (,(concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
+       1 'message-separator-face)
+      (,(concat "^[ \t]*"
+		"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
+		"[>|}].*")
+       (0 'message-cited-text-face))))
   "Additional expressions to highlight in Message mode.")
 
 (defvar message-face-alist

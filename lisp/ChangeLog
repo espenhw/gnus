@@ -1,3 +1,24 @@
+Sat Mar  8 08:34:22 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.23 is released.
+
+Sat Mar  8 02:09:53 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-font-lock-keywords): Recognize continuation
+	headers. 
+
+	* gnus-group.el (gnus-group-expire-articles): Touch dribble
+	buffer. 
+
+	* gnus-sum.el (gnus-summary-default-score): Doc fix.
+
+	* gnus.el (gnus-local-organization): Doc fix.
+
+	* gnus-spec.el (gnus-compile): Don't work under XEmacs.
+
+	* gnus-art.el (gnus-article-highlight-headers): Work on bodiless
+	articles.
+
 Fri Mar  7 23:33:34 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.22 is released.

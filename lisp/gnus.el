@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.22"
+(defconst gnus-version-number "5.4.23"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -817,7 +817,7 @@ server buffer."
 
 (defcustom gnus-message-archive-group nil
   "*Name of the group in which to save the messages you've written.
-This can either be a string, a list of strings; or an alist
+This can either be a string; a list of strings; or an alist
 of regexps/functions/forms to be evaluated to return a string (or a list
 of strings).  The functions are called with the name of the current
 group (or nil) as a parameter.
@@ -880,19 +880,9 @@ no need to set this variable."
   :type '(choice (const :tag "default" nil)
 		 string))
 
-(defcustom gnus-local-organization nil
+(defvar gnus-local-organization nil
   "String with a description of what organization (if any) the user belongs to.
-The ORGANIZATION environment variable is used instead if it is defined.
-If this variable contains a function, this function will be called
-with the current newsgroup name as the argument.  The function should
-return a string.
-
-In any case, if the string (either in the variable, in the environment
-variable, or returned by the function) is a file name, the contents of
-this file will be used as the organization."
-  :group 'gnus-message
-  :type '(choice (const :tag "default" nil)
-		 string))
+Obsolete variable; use `message-user-organization' instead.")
 
 ;; Customization variables
 

@@ -419,10 +419,10 @@ above them."
 (defface gnus-header-from-face
   '((((class color)
       (background dark))
-     (:foreground "green1" :bold t :italic t))
+     (:foreground "spring green" :bold t :italic t))
     (((class color)
       (background light))
-     (:foreground "MidnightBlue" :bold t :italic t))
+     (:foreground "indianred" :bold t :italic t))
     (t
      (:bold t :italic t)))
   "Face used for displaying from headers."
@@ -432,7 +432,7 @@ above them."
 (defface gnus-header-subject-face
   '((((class color)
       (background dark))
-     (:foreground "green3" :bold t :italic t))
+     (:foreground "SeaGreen3" :bold t :italic t))
     (((class color)
       (background light))
      (:foreground "firebrick" :bold t :italic t))
@@ -448,7 +448,7 @@ above them."
      (:foreground "yellow" :bold t :italic t))
     (((class color)
       (background light))
-     (:foreground "indianred" :bold t :italic t))
+     (:foreground "MidnightBlue" :bold t :italic t))
     (t
      (:bold t :italic t)))
   "Face used for displaying newsgroups headers."
@@ -458,10 +458,10 @@ above them."
 (defface gnus-header-name-face
   '((((class color)
       (background dark))
-     (:foreground "green4" :bold t))
+     (:foreground "SeaGreen"))
     (((class color)
       (background light))
-     (:foreground "DarkGreen" :bold t))
+     (:foreground "maroon"))
     (t
      (:bold t)))
   "Face used for displaying header names."
@@ -474,7 +474,7 @@ above them."
      (:foreground "forest green" :italic t))
     (((class color)
       (background light))
-     (:foreground "DarkGreen" :italic t))
+     (:foreground "indianred4" :italic t))
     (t
      (:italic t)))  "Face used for displaying header content."
   :group 'gnus-article-headers
@@ -2652,35 +2652,33 @@ do the highlighting.  See the documentation for those functions."
 	    (case-fold-search t)
 	    (inhibit-point-motion-hooks t)
 	    entry regexp header-face field-face from hpoints fpoints)
-	(goto-char (point-min))
-	(when (search-forward "\n\n" nil t)
-	  (narrow-to-region (1- (point)) (point-min))
-	  (while (setq entry (pop alist))
-	    (goto-char (point-min))
-	    (setq regexp (concat "^\\("
-				 (if (string-equal "" (nth 0 entry))
-				     "[^\t ]"
-				   (nth 0 entry))
-				 "\\)")
-		  header-face (nth 1 entry)
-		  field-face (nth 2 entry))
-	    (while (and (re-search-forward regexp nil t)
-			(not (eobp)))
-	      (beginning-of-line)
-	      (setq from (point))
-	      (unless (search-forward ":" nil t)
-		(forward-char 1))
-	      (when (and header-face
-			 (not (memq (point) hpoints)))
-		(push (point) hpoints)
-		(gnus-put-text-property from (point) 'face header-face))
-	      (when (and field-face
-			 (not (memq (setq from (point)) fpoints)))
-		(push from fpoints)
-		(if (re-search-forward "^[^ \t]" nil t)
-		    (forward-char -2)
-		  (goto-char (point-max)))
-		(gnus-put-text-property from (point) 'face field-face)))))))))
+	(message-narrow-to-head)
+	(while (setq entry (pop alist))
+	  (goto-char (point-min))
+	  (setq regexp (concat "^\\("
+			       (if (string-equal "" (nth 0 entry))
+				   "[^\t ]"
+				 (nth 0 entry))
+			       "\\)")
+		header-face (nth 1 entry)
+		field-face (nth 2 entry))
+	  (while (and (re-search-forward regexp nil t)
+		      (not (eobp)))
+	    (beginning-of-line)
+	    (setq from (point))
+	    (unless (search-forward ":" nil t)
+	      (forward-char 1))
+	    (when (and header-face
+		       (not (memq (point) hpoints)))
+	      (push (point) hpoints)
+	      (gnus-put-text-property from (point) 'face header-face))
+	    (when (and field-face
+		       (not (memq (setq from (point)) fpoints)))
+	      (push from fpoints)
+	      (if (re-search-forward "^[^ \t]" nil t)
+		  (forward-char -2)
+		(goto-char (point-max)))
+	      (gnus-put-text-property from (point) 'face field-face))))))))
 
 (defun gnus-article-highlight-signature ()
   "Highlight the signature in an article.

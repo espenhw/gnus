@@ -500,6 +500,8 @@ If PROPS, insert the result."
 (defun gnus-compile ()
   "Byte-compile the user-defined format specs."
   (interactive)
+  (when gnus-xemacs
+    (error "Can't compile specs under XEmacs"))
   (let ((entries gnus-format-specs)
 	(byte-compile-warnings '(unresolved callargs redefine))
 	entry gnus-tmp-func)

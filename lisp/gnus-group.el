@@ -2488,6 +2488,7 @@ or nil if no action could be taken."
 		 (gnus-uncompress-sequence (cdr expirable)) group))))
 	    (gnus-close-group group))
 	  (gnus-message 6 "Expiring articles in %s...done" group)))
+      (gnus-dribble-touch)
       (gnus-group-position-point))))
 
 (defun gnus-group-expire-all-groups ()

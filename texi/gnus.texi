@@ -2005,6 +2005,13 @@ Use the @kbd{G p} command to edit group parameters of a group.
 
 Also @pxref{Topic Parameters}.
 
+Here's an example group parameter list:
+
+@example
+((to-address . "ding@ifi.uio.no")
+ (auto-expiry . t))
+@end example
+
 
 @node Listing Groups
 @section Listing Groups
@@ -9282,9 +9289,8 @@ variable, which is 1000 by default. (So 1000 @code{Message-ID}s will be
 stored.) If all this sounds scary to you, you can set
 @code{nnmail-treat-duplicates} to @code{warn} (which is what it is by
 default), and @code{nnmail} won't delete duplicate mails.  Instead it
-will generate a brand new @code{Message-ID} for the mail and insert a
-warning into the head of the mail saying that it thinks that this is a
-duplicate of a different message.  
+will insert a warning into the head of the mail saying that it thinks
+that this is a duplicate of a different message.
 
 This variable can also be a function.  If that's the case, the function
 will be called from a buffer narrowed to the message in question with
