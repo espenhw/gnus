@@ -31,6 +31,7 @@
 
 (require 'gnus)
 (require 'gnus-sum)
+(require 'gnus-win)
 
 ;;;
 ;;; gnus-pick-mode
@@ -554,7 +555,7 @@ Two predefined functions are available:
 (defun gnus-tree-recenter ()
   "Center point in the tree window."
   (let ((selected (selected-window))
-	(tree-window (get-buffer-window gnus-tree-buffer t)))
+	(tree-window (gnus-get-buffer-window gnus-tree-buffer t)))
     (when tree-window
       (select-window tree-window)
       (when gnus-selected-tree-overlay
@@ -699,8 +700,8 @@ Two predefined functions are available:
       (gnus-tree-minimize)
       (gnus-tree-recenter)
       (let ((selected (selected-window)))
-	(when (get-buffer-window (set-buffer gnus-tree-buffer) t)
-	  (select-window (get-buffer-window (set-buffer gnus-tree-buffer) t))
+	(when (gnus-get-buffer-window (set-buffer gnus-tree-buffer) t)
+	  (select-window (gnus-get-buffer-window (set-buffer gnus-tree-buffer) t))
 	  (gnus-horizontal-recenter)
 	  (select-window selected))))))
 
@@ -856,8 +857,8 @@ Two predefined functions are available:
       (gnus-tree-minimize)
       (gnus-tree-recenter)
       (let ((selected (selected-window)))
-	(when (get-buffer-window (set-buffer gnus-tree-buffer) t)
-	  (select-window (get-buffer-window (set-buffer gnus-tree-buffer) t))
+	(when (gnus-get-buffer-window (set-buffer gnus-tree-buffer) t)
+	  (select-window (gnus-get-buffer-window (set-buffer gnus-tree-buffer) t))
 	  (gnus-horizontal-recenter)
 	  (select-window selected))))
 ;; If we remove this save-excursion, it updates the wrong mode lines?!?
@@ -873,7 +874,7 @@ Two predefined functions are available:
       (when (setq region (gnus-tree-article-region article))
 	(gnus-put-text-property (car region) (cdr region) 'face face)
 	(set-window-point
-	 (get-buffer-window (current-buffer) t) (cdr region))))))
+	 (gnus-get-buffer-window (current-buffer) t) (cdr region))))))
 
 ;;;
 ;;; gnus-carpal

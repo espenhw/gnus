@@ -522,7 +522,7 @@
 	    subject (match-string 2))
       (forward-line 1)
       (unless (assq article nnwarchive-headers)
-	(if (looking-at "<UL><LI><EM>From</EM>:\\([^&]+\\)<\\([^&]+\\)>")
+	(if (looking-at "<UL><LI><EM>From</EM>: *\\([^<]*[^< ]\\) *&lt;\\([^&]+\\)&gt;")
 	    (progn
 	      (setq from (match-string 1)
 		    date (identity (match-string 2))))

@@ -29,6 +29,7 @@
 (eval-when-compile (require 'cl))
 
 (require 'gnus)
+(require 'gnus-util)
 
 (defgroup gnus-windows nil
   "Window configuration."
@@ -54,6 +55,13 @@
 
 (defcustom gnus-always-force-window-configuration nil
   "*If non-nil, always force the Gnus window configurations."
+  :group 'gnus-windows
+  :type 'boolean)
+
+(defcustom gnus-use-frames-on-any-display nil
+  "*If non-nil, frames on all displays will be considered useable by Gnus.
+When nil, only frames on the same display as the selected frame will be
+used to display Gnus windows."
   :group 'gnus-windows
   :type 'boolean)
 
@@ -519,7 +527,7 @@ should have point."
 	(unless buffer
 	  (error "Invalid buffer type: %s" type))
 	(if (and (setq buf (get-buffer (gnus-window-to-buffer-helper buffer)))
-		 (setq win (get-buffer-window buf t)))
+		 (setq win (gnus-get-buffer-window buf t)))
 	    (if (memq 'point split)
 		(setq all-visible win))
 	  (setq all-visible nil)))
@@ -553,6 +561,16 @@ should have point."
 	  (set-buffer nntp-server-buffer)))
       (mapcar (lambda (b) (delete-windows-on b t))
 	      (delq lowest-buf bufs)))))
+
+(defun gnus-get-buffer-window (buffer &optional frame)
+  (cond ((and (null gnus-use-frames-on-any-display)
+	      (memq frame '(t 0 visible)))
+	 (car (gnus-delete-if (lambda (win) 
+				(not (member (window-frame win)
+					     (frames-on-display-list))))
+			      (get-buffer-window-list buffer nil frame))))
+	(t
+	 (get-buffer-window buffer frame))))
 
 (provide 'gnus-win)
 

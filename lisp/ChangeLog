@@ -1,3 +1,34 @@
+2001-12-19 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el (nnwarchive-mail-archive-xover): Fix the regexp.
+
+2001-12-18 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-win.el (gnus-get-buffer-window): Use gnus-delete-if.
+	
+2001-12-18 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	   From Harald Meland <Harald.Meland@usit.uio.no>
+
+	* gnus-win.el (gnus-get-buffer-window): New function.
+	(gnus-all-windows-visible-p): Use it.
+
+	* gnus-util.el (gnus-horizontal-recenter) 
+	(gnus-horizontal-recenter, gnus-horizontal-recenter) 
+	(gnus-horizontal-recenter, gnus-set-window-start): Use it.
+
+	* gnus-score.el (gnus-score-insert-help): Use it.
+
+	* gnus-salt.el (gnus-tree-recenter, gnus-generate-tree)
+	(gnus-generate-tree, gnus-highlight-selected-tree)
+	(gnus-highlight-selected-tree, gnus-tree-highlight-article): Use
+	it.
+
+	* gnus-art.el (gnus-article-set-window-start)
+	(gnus-mm-display-part, gnus-request-article-this-buffer)
+	(gnus-button-next-page, gnus-button-prev-page)
+	(gnus-article-button-next-page, gnus-article-button-prev-page):
+	Use it.
+
 2001-12-18  Josh Huber  <huber@alum.wpi.edu>
 
 	* ChangeLog, ChangeLog.1, nnwfm.el, smiley.el:
