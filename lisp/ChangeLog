@@ -1,3 +1,14 @@
+2000-09-13 21:41:25  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-setup-buffer): Set
+	gnus-article-mime-handles to nil.
+	* gnus-sum.el (gnus-summary-exit): Ditto.
+	(gnus-summary-exit-no-update): Ditto.
+	(gnus-summary-show-article): Ditto.
+	(gnus-summary-save-parts): Use gnus-article-mime-handles if
+	dissected.
+	* mm-partial.el (mm-partial-find-parts): Remove redundancy.
+
 2000-09-13 16:59:33  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-sort): Sort loose threads too.

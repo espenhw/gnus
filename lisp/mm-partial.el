@@ -36,7 +36,7 @@
   (let ((headers (save-excursion
 		   (set-buffer gnus-summary-buffer)
 		   gnus-newsgroup-headers))
-	phandles handles  header)
+	phandles header)
     (while (setq header (pop headers))
       (unless (eq (aref header 0) art)
 	(mm-with-unibyte-buffer
@@ -44,7 +44,6 @@
 					    gnus-newsgroup-name)
 	  (when (search-forward id nil t)
 	    (let ((nhandles (mm-dissect-buffer)) nid)
-	      (setq handles gnus-article-mime-handles)
 	      (if (consp (car nhandles))
 		  (mm-destroy-parts nhandles)
 		(setq nid (cdr (assq 'id 

@@ -2653,7 +2653,8 @@ commands:
 	(save-excursion
 	  (set-buffer name)
 	  (when gnus-article-mime-handles
-	    (mm-destroy-parts gnus-article-mime-handles))
+	    (mm-destroy-parts gnus-article-mime-handles)
+	    (setq gnus-article-mime-handles nil))
 	  (buffer-disable-undo)
 	  (setq buffer-read-only t)
 	  (unless (eq major-mode 'gnus-article-mode)
