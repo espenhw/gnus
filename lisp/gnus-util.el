@@ -469,7 +469,7 @@ jabbering all the time."
   "Return a list of Message-IDs in REFERENCES."
   (let ((beg 0)
 	ids)
-    (while (string-match "<[^> \t]+>" references beg)
+    (while (string-match "<[^<]+[^< \t]" references beg)
       (push (substring references (match-beginning 0) (setq beg (match-end 0)))
 	    ids))
     (nreverse ids)))
@@ -484,7 +484,7 @@ If N, return the Nth ancestor instead."
 	  (while (nthcdr n ids)
 	    (setq ids (cdr ids)))
 	  (car ids))
-      (when (string-match "<[^> \t]+>\\'" references)
+      (when (string-match "<[^<]+\\'" references)
 	(match-string 0 references)))))
 
 (defun gnus-buffer-live-p (buffer)
