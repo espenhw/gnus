@@ -17213,10 +17213,10 @@ inherited.
 @cindex nnkiboze
 @cindex kibozing
 
-@dfn{Kibozing} is defined by @acronym{oed} as ``grepping through (parts of)
-the news feed''.  @code{nnkiboze} is a back end that will do this for
-you.  Oh joy!  Now you can grind any @acronym{NNTP} server down to a halt
-with useless requests!  Oh happiness!
+@dfn{Kibozing} is defined by the @acronym{OED} as ``grepping through
+(parts of) the news feed''.  @code{nnkiboze} is a back end that will
+do this for you.  Oh joy!  Now you can grind any @acronym{NNTP} server
+down to a halt with useless requests!  Oh happiness!
 
 @kindex G k (Group)
 To create a kibozed group, use the @kbd{G k} command in the group
@@ -17250,10 +17250,11 @@ and they can be foreign.  No restrictions.
 
 @vindex nnkiboze-directory
 The generation of an @code{nnkiboze} group means writing two files in
-@code{nnkiboze-directory}, which is @file{~/News/} by default.  One
-contains the @acronym{NOV} header lines for all the articles in the group,
-and the other is an additional @file{.newsrc} file to store information
-on what groups have been searched through to find component articles.
+@code{nnkiboze-directory}, which is @file{~/News/kiboze/} by default.
+One contains the @acronym{NOV} header lines for all the articles in
+the group, and the other is an additional @file{.newsrc} file to store
+information on what groups have been searched through to find
+component articles.
 
 Articles marked as read in the @code{nnkiboze} group will have
 their @acronym{NOV} lines removed from the @acronym{NOV} file.

@@ -1,3 +1,7 @@
+2003-08-08  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Kibozed Groups): Fix.
+
 2003-08-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Group Parameters): Add expiry-target.
