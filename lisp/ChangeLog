@@ -1,3 +1,15 @@
+2003-04-13  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-group-pathname): Bind
+	gnus-command-method so that gnus-agent-directory will always
+	return a valid directory.
+	* gnus-cache.el (gnus-cache-enter-article): Remove article from
+	gnus-newsgroup-undownloaded so that the summary will display the
+	article as downloaded.
+	(gnus-cache-remove-article): If the article isn't in the agent,
+	remove it from gnus-newsgroup-undownloaded so that the summary
+	will display the article as undownloaded.
+
 2003-04-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bump.
