@@ -1,3 +1,7 @@
+2002-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* binhex.el (binhex-insert-char): Eval-and-compile.
+
 2002-12-17  Jesper Harder  <harder@ifa.au.dk>
 
 	* lpath.el: Add tool-bar-local-item-from-menu.
@@ -119,7 +123,7 @@
 	lines problem and improves performance by skipping over all
 	articles IDs that preceed the first nov entry in the server's
 	reply.
-	
+
 2002-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-tmp-downloaded): New internal variable.
@@ -316,7 +320,7 @@
 	(gnus-agent-summary-mode-map): New keybinding `J s' for fetching
 	process-marked articles.
 	(gnus-agent-summary-fetch-series): Command for `J s'.  Articles
-	in the series are individually fetched to minimize lose of 
+	in the series are individually fetched to minimize lose of
 	content due to an error/quit.
 	(gnus-agent-synchronize-flags-server, gnus-agent-add-server): Use
 	gnus-message instead of message.
@@ -331,7 +335,7 @@
 	Removed function; history is not used anymore.
 	(gnus-agent-fetch-articles): Fix handling of crossposted articles.
 	(gnus-agent-crosspost): Started rewrite then realized that a typo
-	in gnus-agent-fetch-articles ensures that this function is never 
+	in gnus-agent-fetch-articles ensures that this function is never
 	called.  This will need to be fixed later.
 	(gnus-agent-check-overview-buffer): Some sanity checks on the
 	agent overview buffer.  This is a safety net used during
@@ -355,17 +359,17 @@
 	GROUP, FORCE.  Do not restrict usage.
 	(gnus-agent-uncached-articles): New function.
 	(gnus-agent-retrieve-headers): Use it.
-	(gnus-agent-regenerate-group): No longer needs to be called from 
-	gnus-agent-regenerate.  Individual groups may be regenerated. The 
+	(gnus-agent-regenerate-group): No longer needs to be called from
+	gnus-agent-regenerate.  Individual groups may be regenerated. The
 	regeneration code now fixes duplicate, and mis-ordered, NOV entries.
-	The article fetch dates are validated in the article alist.  The 
+	The article fetch dates are validated in the article alist.  The
 	article alist is pruned of entries that do not reference existing
-	NOV entries.  All changes are computed then applied with 
-	inhibit-quit bound to t.  As a result, it is now safe to quit out of 
+	NOV entries.  All changes are computed then applied with
+	inhibit-quit bound to t.  As a result, it is now safe to quit out of
 	regeneration.  The optional clean parameter has been replaced with
-	an optional reread parameter.  Clean is no longer necessary as 
+	an optional reread parameter.  Clean is no longer necessary as
 	regeneration gets the appropriate setting from
-	gnus-agent-consider-all-articles.  The new reread parameter will 
+	gnus-agent-consider-all-articles.  The new reread parameter will
 	result in fetched, or all, articles being marked as unread.
 	(gnus-agent-regenerate): Removed code to regenerate the history
 	file as it is no longer used.
@@ -381,11 +385,11 @@
 	line.
 	(gnus-summary-highlight-line): Use new face for downloaded
 	articles.
-	(gnus-summary-insert-old-articles): Improved performance by 
+	(gnus-summary-insert-old-articles): Improved performance by
 	replacing the initial LIST of older articles with a compressed
-	RANGE of older articles.  Some servers appear to lie about 
+	RANGE of older articles.  Some servers appear to lie about
 	their active range so the original list could contain millions
-	of article numbers.  The range is not expanded into a list 
+	of article numbers.  The range is not expanded into a list
 	until the optional ALL parameter has been applied.
 
 2002-11-18  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
