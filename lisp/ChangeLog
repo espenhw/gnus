@@ -1,3 +1,8 @@
+2004-11-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-header-encoding-alist): Add In-Reply-To to
+	address-mime.  Suggested by ARISAWA Akihiro <ari@mbf.ocn.ne.jp>.
+
 2004-11-22  Marek Martin  <marek.martin@mum.pri.ee>  (tiny change)
 
 	* nnfolder.el (nnfolder-request-create-group): Save current buffer.
