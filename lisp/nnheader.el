@@ -547,7 +547,7 @@ the line could be found."
   "Initialize the Gnus-backend communication buffer."
   (save-excursion
     (unless (gnus-buffer-live-p nntp-server-buffer)
-      (setq nntp-server-buffer (get-buffer-create " *nntpd*")))
+      (setq nntp-server-buffer (gnus-get-buffer-create " *nntpd*")))
     (set-buffer nntp-server-buffer)
     (mm-enable-multibyte)
     (erase-buffer)
