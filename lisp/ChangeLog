@@ -1,5 +1,8 @@
 2002-04-29  Simon Josefsson  <jas@extundo.com>
 
+	* nnmail.el (nnmail-cache-insert): Accept optional group
+	parameter.
+
 	* nnimap.el (nnimap-retrieve-groups): Don't send STATUS when
 	n-r-g-a is disabled.
 

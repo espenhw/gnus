@@ -1456,7 +1456,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 (defvar group)
 (defvar group-art-list)
 (defvar group-art)
-(defun nnmail-cache-insert (id)
+(defun nnmail-cache-insert (id &optional grp)
   (when nnmail-treat-duplicates
     ;; Store some information about the group this message is written
     ;; to.  This function might have been called from various places.
@@ -1467,7 +1467,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
     ;; the car of a pair is a group name.  Should we check that the
     ;; length of the list is equal to 1? -- kai
     (let ((g nil))
-      (cond ((and (boundp 'group) group)
+      (cond (grp
+	     (setq g grp))
+	    ((and (boundp 'group) group)
 	     (setq g group))
 	    ((and (boundp 'group-art-list) group-art-list
 		  (listp group-art-list))
