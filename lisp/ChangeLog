@@ -1,7 +1,9 @@
 2003-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* gnus-sum.el (gnus-summary-refer-article): Use
-	gnus-replace-in-string instead of replace-regexp-in-string.
+	* gnus-sum.el (gnus-remove-odd-characters): Use
+	mm-subst-char-in-string instead of subst-char-in-string.
+	(gnus-summary-refer-article): Use gnus-replace-in-string instead
+	of replace-regexp-in-string.
 
 2003-10-19  Jesper Harder  <harder@ifa.au.dk>
 

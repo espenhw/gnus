@@ -3978,9 +3978,9 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 
 (defsubst gnus-remove-odd-characters (string)
   "Translate STRING into something that doesn't contain weird characters."
-  (subst-char-in-string
+  (mm-subst-char-in-string
    ?\r ?\-
-   (subst-char-in-string 
+   (mm-subst-char-in-string
     ?\n ?\- string t)
    t))
 
