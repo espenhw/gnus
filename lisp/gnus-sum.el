@@ -1973,7 +1973,29 @@ increase the score of each group you read."
 	      ["Show X-Face" gnus-article-display-x-face t]
 	      ["Show picons in From" gnus-treat-from-picon t]
 	      ["Show picons in mail headers" gnus-treat-mail-picon t]
-	      ["Show picons in news headers" gnus-treat-newsgroups-picon t])
+	      ["Show picons in news headers" gnus-treat-newsgroups-picon t]
+	      ("View as different encoding"
+	       ,@(let (out)
+		   (if (fboundp 'read-coding-system)
+		       (mapc (lambda (el)
+			       (let ((cs (car el)))
+				 (unless (or (string-match "dos$" cs)
+					     (string-match "mac$" cs)
+					     (string-match "unix$" cs))
+				   (push (car el) out)))) 
+			     coding-system-alist)
+		     (mapc (lambda (el)
+			     (push (car el) out))
+			   mm-mime-mule-charset-alist))
+		   (setq out (sort out 'string<))
+		   (mapcar (lambda (cs)
+			     `[,cs
+			       (lambda ()
+				 (let ((gnus-summary-show-article-charset-alist
+					((1 . ,cs))))
+				   (gnus-summary-show-article 1)))
+			       t])
+			   out))))
 	     ("Washing"
 	      ("Remove Blanks"
 	       ["Leading" gnus-article-strip-leading-blank-lines t]
