@@ -1,3 +1,7 @@
+2001-11-06 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* many files: Fix copyright lines.
+
 2001-11-05 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-generate-mime-1): Use mm-with-unibyte-current-buffer.

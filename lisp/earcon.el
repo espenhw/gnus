@@ -1,6 +1,6 @@
 ;;; earcon.el --- Sound effects for messages
 
-;; Copyright (C) 1996, 2000 Free Software Foundation
+;; Copyright (C) 1996, 2000, 2001 Free Software Foundation
 
 ;; Author: Steven L. Baur <steve@miranova.com>
 

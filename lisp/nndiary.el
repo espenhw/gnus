@@ -1,21 +1,21 @@
 ;;; nndiary.el --- A diary backend for Gnus
 
-;; Copyright (C) 1999-2001 Didier Verna.
+;; Copyright (C) 1999, 2000, 2001
+;;        Free Software Foundation, Inc.
 
 ;; Author:        Didier Verna <didier@xemacs.org>
 ;; Maintainer:    Didier Verna <didier@xemacs.org>
 ;; Created:       Fri Jul 16 18:55:42 1999
-;; Last Revision: Wed Aug  8 17:36:21 2001
 ;; Keywords:      calendar mail news
 
-;; This file is part of Gnus.
+;; This file is part of GNU Emacs.
 
-;; Gnus is free software; you can redistribute it and/or modify
+;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2 of the License, or
 ;; (at your option) any later version.
 
-;; Gnus is distributed in the hope that it will be useful,
+;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.

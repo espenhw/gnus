@@ -1,5 +1,6 @@
 ;;; smiley.el --- displaying smiley faces
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
