@@ -958,22 +958,18 @@ characters to translate to."
 (defun gnus-article-decode-charset ()
   "Decode charset-encoded text in the article."
   (interactive)
-  (when (featurep 'mule)
-    (save-excursion
-      (set-buffer gnus-article-buffer)
-      (let* ((inhibit-point-motion-hooks t)
-	     (ct (message-fetch-field "Content-Type"))
-	     (charset (and ct (mm-content-type-charset ct)))
-	     mule-charset buffer-read-only)
-	(save-restriction
-	  (goto-char (point-min))
-	  (search-forward "\n\n" nil 'move)
-	  (narrow-to-region (point) (point-max))
-	  (when (and charset
-		     (setq mule-charset (mm-charset-to-coding-system charset))
-		     (not (mm-coding-system-equal
-			   buffer-file-coding-system mule-charset)))
-	    (mm-decode-body (mm-charset-to-coding-system charset))))))))
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (let* ((inhibit-point-motion-hooks t)
+	   (ct (message-fetch-field "Content-Type"))
+	   (cte (message-fetch-field "Content-Transfer-Encoding"))
+	   (charset (and ct (mm-content-type-charset ct)))
+	   buffer-read-only)
+      (save-restriction
+	(goto-char (point-min))
+	(search-forward "\n\n" nil 'move)
+	(narrow-to-region (point) (point-max))
+	(mm-decode-body charset (and cte (intern (downcase cte))))))))
 
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 (defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)

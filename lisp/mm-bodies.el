@@ -74,9 +74,27 @@ If no encoding was done, nil is returned."
 ;;; Functions for decoding
 ;;;
 
-(defun mm-decode-body (charset)
+(defun mm-decode-body (charset encoding)
+  "Decode the current article that has been encoded with ENCODING.
+The characters in CHARSET should then be decoded."
   (save-excursion
-    (mm-decode-coding-region (point-min) (point-max) charset)))
+    (when encoding
+      (cond
+       ((eq encoding 'quoted-printable)
+	(quoted-printable-decode-region (point-min) (point-max)))
+       ((eq encoding 'base64)
+	(base64-decode-region (point-min) (point-max)))
+       ((memq encoding '(7bit 8bit binary))
+	)
+       (t
+	(error "Can't decode encoding %s" encoding))))
+    (when (featurep 'mule)
+      (let (mule-charset)
+	(when (and charset
+		   (setq mule-charset (mm-charset-to-coding-system charset))
+		   (not (mm-coding-system-equal
+			 buffer-file-coding-system mule-charset)))
+	  (mm-decode-coding-region (point-min) (point-max) charset))))))
 
 (provide 'mm-bodies)
 

@@ -1,3 +1,16 @@
+Mon Aug 31 23:03:13 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.12 is released.
+
+1998-08-31 22:39:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-bodies.el (mm-decode-body): Don't do charset unless MULE.
+
+	* gnus-art.el (gnus-article-decode-charset): Supply cte.
+	(gnus-article-decode-charset): Always run.
+
+	* mm-bodies.el (mm-decode-body): Decode cte.
+
 Mon Aug 31 22:14:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.11 is released.
