@@ -4567,6 +4567,11 @@ Unscored articles will be counted as having a score of zero."
 If nil, use subject instead."
   :type 'string
   :group 'gnus-thread)
+(defcustom gnus-sum-thread-tree-false-root "> "
+  "With %B spec, used for a false root of a thread.
+If nil, use subject instead."
+  :type 'string
+  :group 'gnus-thread)
 (defcustom gnus-sum-thread-tree-single-indent ""
   "With %B spec, used for a thread with just one message.
 If nil, use subject instead."
@@ -4837,9 +4842,12 @@ or a straight list of headers."
 	     (cond
 	      ((not gnus-show-threads) "")
 	      ((zerop gnus-tmp-level)
-	       (if (cdar thread)
-		   (or gnus-sum-thread-tree-root subject)
-		 (or gnus-sum-thread-tree-single-indent subject)))
+	       (cond ((cdar thread)
+		      (or gnus-sum-thread-tree-root subject))
+		     (gnus-tmp-new-adopts
+		      (or gnus-sum-thread-tree-false-root subject))
+		     (t
+		      (or gnus-sum-thread-tree-single-indent subject))))
 	      (t
 	       (concat (apply 'concat
 			      (mapcar (lambda (item)

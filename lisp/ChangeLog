@@ -1,3 +1,7 @@
+2003-04-17  Mike Woolley  <mike@ariel.co.uk>
+
+	* gnus-sum.el (gnus-sum-thread-tree-false-root): New variable. 
+
 2003-04-15  Michael Shields  <shields@msrl.com>
 
 	* gnus-art.el (article-hide-boring-headers): Hide Reply-To: if
