@@ -303,9 +303,11 @@
       (if (stringp group)
 	  (and
 	   (nnmail-activate 'nnmh)
-	   (car (nnmh-save-mail
-		 (list (cons group (nnmh-active-number group)))
-		 noinsert)))
+	   (if noinsert
+	       (nnmh-active-number group)
+	     (car (nnmh-save-mail
+		   (list (cons group (nnmh-active-number group)))
+		   noinsert))))
 	(and
 	 (nnmail-activate 'nnmh)
 	 (let ((res (nnmail-article-group 'nnmh-active-number)))
@@ -453,8 +455,6 @@
   "Compute the next article number in GROUP."
   (let ((active (cadr (assoc group nnmh-group-alist)))
 	(dir (nnmail-group-pathname group nnmh-directory))
-	;; 1997/8/14 by MORIOKA Tomohiko
-	;;	for XEmacs/mule.
 	(pathname-coding-system 'binary))
     (unless active
       ;; The group wasn't known to nnmh, so we just create an active

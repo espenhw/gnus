@@ -267,8 +267,9 @@ agent minor mode in all Gnus buffers."
   (interactive (list (gnus-group-group-name)))
   (unless group
     (error "No group on the current line"))
-  (gnus-agent-with-fetch
-    (gnus-agent-fetch-group-1 group (gnus-find-method-for-group group))))
+  (let ((gnus-command-method (gnus-find-method-for-group group)))
+    (gnus-agent-with-fetch
+      (gnus-agent-fetch-group-1 group gnus-command-method))))
 
 (defun gnus-agent-add-group (category arg)
   "Add the current group to an agent category."
@@ -757,14 +758,14 @@ the actual number of articles toggled is returned."
   (unless gnus-plugged
     (error "Can't fetch articles while Gnus is unplugged"))
   (let ((methods gnus-agent-covered-methods)
-	method groups group)
+	groups group gnus-command-method)
     (save-excursion
       (while methods
-	(setq method (car methods)
+	(setq gnus-command-method (car methods)
 	      groups (gnus-groups-from-server (pop methods)))
 	(gnus-agent-with-fetch
 	  (while (setq group (pop groups))
-	    (gnus-agent-fetch-group-1 group method))))
+	    (gnus-agent-fetch-group-1 group gnus-command-method))))
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
 
 (defun gnus-agent-fetch-group-1 (group method)

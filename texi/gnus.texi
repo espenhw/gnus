@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.6 Manual
+@settitle Quassia Gnus 0.7 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.6 Manual
+@title Quassia Gnus 0.7 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.6.
+This manual corresponds to Quassia Gnus 0.7.
 
 @end ifinfo
 
@@ -6198,7 +6198,7 @@ Unreadable articles that tell you to read them with Caesar rotate or rot13.
 (Typically offensive jokes and such.)
 
 It's commonly called ``rot13'' because each letter is rotated 13
-positions in the alphabet, e. g. @samp{B} (letter #2) -> @sam{O} (letter
+positions in the alphabet, e. g. @samp{B} (letter #2) -> @samp{O} (letter
 #15).  It is sometimes referred to as ``Caesar rotate'' because Caesar
 is rumoured to have employed this form of, uh, somewhat weak encryption.
 
@@ -10890,7 +10890,7 @@ Using Gnus as an ``offline'' newsreader is quite simple.
 
 @itemize @bullet
 @item
-First, set ut Gnus as you would do if you were running it on a machine
+First, set up Gnus as you would do if you were running it on a machine
 that has full connection to the net.  Go ahead.  I'll still be waiting
 here.
 
@@ -10920,7 +10920,7 @@ Of course, to use it as such, you have to learn a few new commands.
 @node Agent Basics
 @subsection Agent Basics
 
-First, let's get some terminilogy out of the way.
+First, let's get some terminology out of the way.
 
 The Gnus Agent is said to be @dfn{unplugged} when you have severed the
 connection to the net (and notified the Agent that this is the case).
@@ -10986,7 +10986,7 @@ Uhm... that's it.
 @node Agent Categories
 @subsection Agent Categories
 
-On of the main reasons to integrate the news transport layer into the
+One of the main reasons to integrate the news transport layer into the
 newsreader is to allow greater control over what articles to download.
 There's not much point in downloading huge amounts of articles, just to
 find out that you're not interested in reading any of them.  It's better
@@ -11076,7 +11076,7 @@ True iff the article has a download score greater than
 @item spam
 True iff the Gnus Agent guesses that the article is spam.  The
 heuristics may change over time, but at present it just computes a
-checksum and see whether articles match.
+checksum and sees whether articles match.
 
 @item true
 Always true.
@@ -11092,7 +11092,7 @@ useful values.
 
 Now, the syntax of the download score is the same as the syntax of
 normal score files, except that all elements that require actually
-seeing the article itself is verboten.  This means that only the
+seeing the article itself are verboten.  This means that only the
 following headers can be scored on: @code{From}, @code{Subject},
 @code{Date}, @code{Xref}, @code{Lines}, @code{Chars}, @code{Message-ID},
 and @code{References}.
@@ -11202,7 +11202,7 @@ Articles that have a score higher than this have a high score.  Default
 @node Agent Commands
 @subsection Agent Commands
 
-All the Gnus Agent commands is on the @kbd{J} submap.  The @kbd{J j}
+All the Gnus Agent commands are on the @kbd{J} submap.  The @kbd{J j}
 (@code{gnus-agent-toggle-plugged} command works in all modes, and
 toggles the plugged/unplugged state of the Gnus Agent.
 

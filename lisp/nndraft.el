@@ -35,7 +35,7 @@
 (nnoo-declare nndraft
   nnmh)
 
-(defvoo nndraft-directory (nnheader-concat message-directory "message-drafts/")
+(defvoo nndraft-directory (nnheader-concat gnus-directory "drafts/")
   "Where nndraft will store its files."
   nnmh-current-directory)
 
@@ -151,8 +151,8 @@
 	 article file)
     (nnheader-temp-write nil
       (insert-buffer buf)
-      (setq article (cdr (nndraft-request-accept-article
-			  group (nnoo-current-server 'nndraft) t 'noinsert)))
+      (setq article (nndraft-request-accept-article
+		     group (nnoo-current-server 'nndraft) t 'noinsert))
       (setq file (nndraft-article-filename article)))
     (setq buffer-file-name file)
     (setq buffer-auto-save-file-name (make-auto-save-file-name))
@@ -218,6 +218,7 @@
 
 (defun nndraft-articles ()
   "Return the list of messages in the group."
+  (gnus-make-directory nndraft-directory)
   (sort
    (mapcar 'string-to-int
 	   (directory-files nndraft-directory nil "\\`[0-9]+\\'" t))

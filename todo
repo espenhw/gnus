@@ -759,3 +759,6 @@ home-brewed stuff for better reliability.
 * `C-u C-c C-c' should avoid highlighting after editing an article.
 
 * nntp-rlogin-program -- new variable.
+
+* have `C-u C-c C-c' work in nnvirtual groups -- post using
+the same server as the article came from.

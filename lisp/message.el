@@ -1243,7 +1243,6 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (make-local-variable 'message-postpone-actions)
   (make-local-variable 'message-draft-article)
   (make-local-hook 'kill-buffer-hook)
-  (add-hook 'kill-buffer-hook 'message-disassociate-draft)
   (set-syntax-table message-mode-syntax-table)
   (use-local-map message-mode-map)
   (setq local-abbrev-table message-mode-abbrev-table)

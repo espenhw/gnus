@@ -172,7 +172,8 @@ Thank you for your help in stamping out bugs.
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
        (unwind-protect
-	   ,@forms
+	   (progn
+	     ,@forms)
 	 (gnus-inews-add-send-actions ,winconf ,buffer ,article)
 	 (setq gnus-message-buffer (current-buffer))
 	 (make-local-variable 'gnus-newsgroup-name)
