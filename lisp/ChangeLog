@@ -1,6 +1,7 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam-report.el (spam-report-gmane): Adjust verbosity.
+	Delete trailing whitespace.  Update copyright.
 
 	* spam.el: Fix many (but not all) checkdoc complaints.
 	Delete trailing whitespace.

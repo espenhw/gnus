@@ -1,5 +1,5 @@
 ;;; spam-report.el --- Reporting spam
-;; Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Teodor Zlatanov <tzz@lifelogs.com>
 ;; Keywords: network
@@ -39,14 +39,14 @@
 
 (defcustom spam-report-gmane-regex nil
   "Regexp matching Gmane newsgroups, e.g. \"^nntp\\+.*:gmane\\.\"
-If you are using spam.el, consider setting gnus-spam-process-newsgroups 
-or the gnus-group-spam-exit-processor-report-gmane group/topic parameter 
+If you are using spam.el, consider setting gnus-spam-process-newsgroups
+or the gnus-group-spam-exit-processor-report-gmane group/topic parameter
 instead."
   :type '(radio (const nil)
 		(regexp :format "%t: %v\n" :size 0 :value "^nntp\+.*:gmane\."))
   :group 'spam-report)
 
-(defcustom spam-report-gmane-spam-header 
+(defcustom spam-report-gmane-spam-header
   "^X-Report-Spam: http://\\([^/]+\\)\\(.*\\)$"
   "String matching Gmane spam-reporting header.  Two match groups are needed."
   :type 'regexp
@@ -61,9 +61,9 @@ instead."
   'spam-report-url-ping-plain
   "Function to use for url ping spam reporting."
   :type '(choice
-	  (const :tag "Connect directly" 
+	  (const :tag "Connect directly"
 		 spam-report-url-ping-plain)
-	  (const :tag "Use the external program specified in `mm-url-program'" 
+	  (const :tag "Use the external program specified in `mm-url-program'"
 		 spam-report-url-ping-mm-url))
   :group 'spam-report)
 
@@ -75,7 +75,7 @@ instead."
 		   (string-match spam-report-gmane-regex gnus-newsgroup-name)))
       (gnus-message 6 "Reporting spam article %d to spam.gmane.org..." article)
       (if spam-report-gmane-use-article-number
-	  (spam-report-url-ping "spam.gmane.org" 
+	  (spam-report-url-ping "spam.gmane.org"
 				(format "/%s:%d"
 					(gnus-group-real-name gnus-newsgroup-name)
 					article))
@@ -101,7 +101,7 @@ the function specified by `spam-report-url-ping-function'."
   (let ((tcp-connection))
     (with-temp-buffer
       (or (setq tcp-connection
-		(open-network-stream 
+		(open-network-stream
 		 "URL ping"
 		 (buffer-name)
 		 host
