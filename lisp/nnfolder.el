@@ -963,7 +963,7 @@ deleted.  Point is left where the deleted region was."
 	      (nnfolder-insert-newsgroup-line
 	       (cons nil
 		     (setq newnum
-			   (nnfolder-active-number nnfolder-current-group))))
+			   (nnfolder-active-number group))))
 	      (when novbuf
 		(let ((headers (nnfolder-parse-head newnum (point-min)
 						    (point-max))))
@@ -981,7 +981,7 @@ deleted.  Point is left where the deleted region was."
 	  (setq newscantime (visited-file-modtime))
 	  (if scantime
 	      (setcdr scantime (list newscantime))
-	    (push (list nnfolder-current-group newscantime)
+	    (push (list group newscantime)
 		  nnfolder-scantime-alist))
 	  ;; Save nov.
 	  (when novbuf

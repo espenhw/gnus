@@ -1,3 +1,9 @@
+2001-11-18 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-read-folder): Use group instead of
+	nnfolder-current-group.
+	Suggested by Lorentey Karoly <lorentey@elte.hu>.
+
 2001-11-17  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-send): Ask user if Fcc/Gcc should be
