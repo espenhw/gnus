@@ -208,6 +208,9 @@
 	       ((equal command "include")
 		(latexi-strip-line)
 		(insert "\\input{gnus-faq.latexi}\n"))
+	       ((equal command "noindent")
+		(latexi-strip-line)
+		(insert "\\noindent\n"))
 	       ((equal command "printindex")
 		(latexi-strip-line)
 		;;(insert 
@@ -215,7 +218,11 @@
 		;;  "\\begin{theindex}\\input{gnus.%s}\\end{theindex}\n" arg))
 		)
 	       (t
-		(error "Unknown command: %s" command))))
+		(error "Unknown command (line %d): %s"
+		       (save-excursion
+			 (widen)
+			 (1+ (count-lines (point-min) (point-at-bol))))
+		       command))))
 	  ;; These are commands with {}.
 	  (setq arg (match-string 5))
 	  (cond 
@@ -242,7 +249,11 @@
 	    (delete-char 2)
 	    (insert "duppat{}"))
 	   (t
-	    (error "Unknown command: %s" command))))))
+	    (error "Unknown command (line %d): %s"
+		   (save-excursion
+		     (widen)
+		     (1+ (count-lines (point-min) (point-at-bol))))
+		   command))))))
     (latexi-translate-string "$" "\\gnusdollar{}")
     (latexi-translate-string "&" "\\gnusampersand{}")
     (latexi-translate-string "%" "\\gnuspercent{}")

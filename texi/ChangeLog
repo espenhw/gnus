@@ -1,3 +1,11 @@
+2001-07-31  Simon Josefsson  <jas@extundo.com>
+
+	* bembo.sty: New file.
+
+	* texi2latex.el (latexi-translate-file): Support @noindent.
+
+	* gnus-faq.texi (Reading News FAQ): Fix (@email -> @samp).
+
 2001-07-28 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Janne Rinta-Manty <rintaman@cs.helsinki.fi>
 

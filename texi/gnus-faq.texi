@@ -499,7 +499,7 @@ in your @file{.gnus} instead.
 @item
 Q3.1  How do I convert my kill files to score files?
 
-@email{ethanb@@ptolemy.astro.washington.edu, Ethan Bradford} write a
+@samp{ethanb@@ptolemy.astro.washington.edu, Ethan Bradford} write a
 kill-to-score translator.  It is available from@*
 @file{http://baugi.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el}.
 
