@@ -913,10 +913,11 @@ This only works when `display-time' is enabled."
 		  (push (cons from imap-password) mail-source-password-cache)))
 	      ;; if predicate is nil, use all uids
 	      (dolist (uid (imap-search (or predicate "1:*") buf))
-		(when (setq str (if (imap-capability 'IMAP4rev1 buf)
-				    (imap-fetch uid "BODY.PEEK[]" 'BODYDETAIL
-						nil buf)
-			    (imap-fetch uid "RFC822.PEEK" 'RFC822 nil buf)))
+		(when (setq str
+			    (if (imap-capability 'IMAP4rev1 buf)
+				(caddar (imap-fetch uid "BODY.PEEK[]"
+						    'BODYDETAIL nil buf))
+			      (imap-fetch uid "RFC822.PEEK" 'RFC822 nil buf)))
 		  (push uid remove)
 		  (insert "From imap " (current-time-string) "\n")
 		  (save-excursion

@@ -1,3 +1,8 @@
+2001-11-16  Simon Josefsson  <jas@extundo.com>
+
+	* mail-source.el (mail-source-fetch-imap): Fix BODY.PEEK return
+	value.
+
 2001-11-16  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* message.el (message-strip-special-text-properties): New option.
