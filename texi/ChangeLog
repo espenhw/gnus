@@ -1,3 +1,7 @@
+2001-10-03 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* emacs-mime.texi (mailcap): rvplayer -> wavplayer.
+
 2001-09-29  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Foreign Groups): Fix.  Add "mailman".

@@ -785,7 +785,7 @@ audio/wav; wavplayer %s
 @end example
 
 This says that all image files should be displayed with @code{gimp}, and
-that realaudio files should be played by @code{rvplayer}.
+that WAVE audio files should be played by @code{wavplayer}.
 
 The @code{mailcap} library parses this file, and provides functions for
 matching types.
