@@ -1,6 +1,6 @@
 ;;; mm-decode.el --- Functions for decoding MIME things
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002,
-;;        2003 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
+;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;;	MORIOKA Tomohiko <morioka@jaist.ac.jp>
@@ -155,6 +155,18 @@ set this variable to nil if you consider all urls to be safe."
 (defcustom mm-inline-text-html-with-w3m-keymap t
   "If non-nil, use emacs-w3m command keys in the article buffer."
   :type 'boolean
+  :group 'mime-display)
+
+(defcustom mm-enable-external t
+  "Indicate whether external MIME handlers should be used.
+
+If t, all defined external MIME handlers are used.  If nil, files are saved by
+`mailcap-save-binary-file'.  If it is the symbol `ask', you are prompted
+before the external MIME handler is invoked."
+  :version "21.4"
+  :type '(choice (const :tag "Always" t)
+		 (const :tag "Never" nil)
+		 (const :tag "Ask" ask))
   :group 'mime-display)
 
 (defcustom mm-inline-media-tests
@@ -633,7 +645,13 @@ external if displayed external."
     (if (mm-handle-displayed-p handle)
 	(mm-remove-part handle)
       (let* ((type (mm-handle-media-type handle))
-	     (method (mailcap-mime-info type)))
+	     (method (mailcap-mime-info type))
+	     (filename (or (mail-content-type-get
+			    (mm-handle-disposition handle) 'filename)
+			   (mail-content-type-get
+			    (mm-handle-type handle) 'name)
+			   "<file>"))
+	     (external mm-enable-external))
 	(if (and (mm-inlinable-p handle)
 		 (mm-inlined-p handle))
 	    (progn
@@ -648,8 +666,27 @@ external if displayed external."
 		  (forward-line 1)
 		  (mm-insert-inline handle (mm-get-part handle))
 		  'inline)
-	      (mm-display-external
-	       handle (or method 'mailcap-save-binary-file)))))))))
+	      (if (and method ;; If nil, we always use "save".
+		       (stringp method) ;; 'mailcap-save-binary-file
+		       (or (eq mm-enable-external t)
+			   (and (eq mm-enable-external 'ask)
+				(y-or-n-p
+				 (concat
+				  "Display part (" type
+				  ") using external program"
+				  ;; Can non-string method ever happen?
+				  (if (stringp method)
+				      (concat
+				       " \"" (format method filename) "\"")
+				    "")
+				  "? ")))))
+		  (setq external t)
+		(setq external nil))
+	      (if external
+		  (mm-display-external
+		   handle (or method 'mailcap-save-binary-file))
+		(mm-display-external
+		 handle 'mailcap-save-binary-file)))))))))
 
 (defun mm-display-external (handle method)
   "Display HANDLE using METHOD."
@@ -670,7 +707,8 @@ external if displayed external."
 	    (mm-set-buffer-file-coding-system mm-binary-coding-system)
 	    (insert-buffer-substring cur)
 	    (goto-char (point-min))
-	    (message "Viewing with %s" method)
+	    (when method
+	      (message "Viewing with %s" method))
 	    (let ((mm (current-buffer))
 		  (non-viewer (assq 'non-viewer
 				    (mailcap-mime-info

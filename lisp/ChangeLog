@@ -1,5 +1,9 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* mm-decode.el (mm-enable-external): New variable.
+	(mm-display-part): Use it.
+	(mm-display-external): Fix message in case of nil handle.
+
 	* Update copyright for several files.
 
 	* spam-report.el (spam-report-gmane): Adjust verbosity.
