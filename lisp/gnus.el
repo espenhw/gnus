@@ -747,10 +747,10 @@ be set in `.emacs' instead."
 (defface gnus-splash-face
   '((((class color)
       (background dark))
-     (:foreground "Brown"))
+     (:foreground "#888888"))
     (((class color)
       (background light))
-     (:foreground "Brown"))
+     (:foreground "#888888"))
     (t
      ()))
   "Face for the splash screen.")
@@ -781,6 +781,38 @@ be set in `.emacs' instead."
 
 (defvar gnus-simple-splash nil)
 
+;;(format "%02x%02x%02x" 114 66 20) "724214"
+
+(defvar gnus-logo-color-alist
+  '((flame "#cc3300" "#ff2200")
+    (pine "#c0cc93" "#f8ffb8")
+    (moss "#a1cc93" "#d2ffb8")
+    (irish "#04cc90" "#05ff97")
+    (sky "#049acc" "#05deff")
+    (tin "#6886cc" "#82b6ff")
+    (velvet "#7c68cc" "#8c82ff")
+    (grape "#b264cc" "#cf7df")
+    (labia "#cc64c2" "#fd7dff")
+    (berry "#cc6485" "#ff7db5")
+    (dino "#724214" "#1e3f03")
+    (oort "#cccccc" "#888888")
+    (neutral "#b4b4b4" "#878787")
+    (september "#bf9900" "#ffcc00"))
+  "Color alist used for the Gnus logo.")
+
+(defcustom gnus-logo-color-style 'oort
+  "*Color styles used for the Gnus logo."
+  :type '(choice (const flame) (const pine) (const moss)
+		 (const irish) (const sky) (const tin)
+		 (const velvet) (const grape) (const labia)
+		 (const berry) (const neutral) (const september)
+		 (const dino))
+  :group 'gnus-xmas)
+
+(defvar gnus-logo-colors
+  (cdr (assq gnus-logo-color-style gnus-logo-color-alist))
+  "Colors used for the Gnus logo.")
+
 (defun gnus-group-startup-message (&optional x y)
   "Insert startup message in current buffer."
   ;; Insert the message.
@@ -790,7 +822,11 @@ be set in `.emacs' instead."
      (fboundp 'find-image)
      (display-graphic-p)
      (let ((image (find-image
-		   `((:type xpm :file "gnus.xpm")
+		   `((:type xpm :file "gnus.xpm"
+			    :color-symbols
+			    (("thing" . ,(car gnus-logo-colors))
+			     ("shadow" . ,(cadr gnus-logo-colors))
+			     ("background" . ,(face-background 'default))))
 		     (:type pbm :file "gnus.pbm"
 			    ;; Account for the pbm's blackground.
 			    :background ,(face-foreground 'gnus-splash-face)

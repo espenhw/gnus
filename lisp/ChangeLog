@@ -1,5 +1,15 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el (gnus-logo-color-style): Change the default color. 
+	(gnus-splash-face): Gray, gray.
+
+	* gnus-xmas.el (gnus-xmas-group-startup-message): Use general
+	colors.
+
+	* gnus.el (gnus-logo-color-alist): Moved here and renamed.
+	(gnus-logo-color-style): Ditto.
+	(gnus-logo-colors): Ditto.
+
 	* gnus-picon.el (gnus-picon-create-glyph): Cache glyphs.
 
 	* gnus-art.el (gnus-treat-newsgroups-picon): New variable. 

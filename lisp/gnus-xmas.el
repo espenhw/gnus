@@ -50,37 +50,6 @@ automatically."
     (error "Can't find glyph directory. \
 Possibly the `etc' directory has not been installed.")))
 
-;;(format "%02x%02x%02x" 114 66 20) "724214"
-
-(defvar gnus-xmas-logo-color-alist
-  '((flame "#cc3300" "#ff2200")
-    (pine "#c0cc93" "#f8ffb8")
-    (moss "#a1cc93" "#d2ffb8")
-    (irish "#04cc90" "#05ff97")
-    (sky "#049acc" "#05deff")
-    (tin "#6886cc" "#82b6ff")
-    (velvet "#7c68cc" "#8c82ff")
-    (grape "#b264cc" "#cf7df")
-    (labia "#cc64c2" "#fd7dff")
-    (berry "#cc6485" "#ff7db5")
-    (dino "#724214" "#1e3f03")
-    (neutral "#b4b4b4" "#878787")
-    (september "#bf9900" "#ffcc00"))
-  "Color alist used for the Gnus logo.")
-
-(defcustom gnus-xmas-logo-color-style 'dino
-  "*Color styles used for the Gnus logo."
-  :type '(choice (const flame) (const pine) (const moss)
-		 (const irish) (const sky) (const tin)
-		 (const velvet) (const grape) (const labia)
-		 (const berry) (const neutral) (const september)
-		 (const dino))
-  :group 'gnus-xmas)
-
-(defvar gnus-xmas-logo-colors
-  (cdr (assq gnus-xmas-logo-color-style gnus-xmas-logo-color-alist))
-  "Colors used for the Gnus logo.")
-
 ;;; Internal variables.
 
 ;; Don't warn about these undefined variables.
@@ -501,8 +470,8 @@ call it with the value of the `gnus-data' text property."
 			  `[xpm
 			    :file ,logo-xpm
 			    :color-symbols
-			    (("thing" . ,(car gnus-xmas-logo-colors))
-			     ("shadow" . ,(cadr gnus-xmas-logo-colors))
+			    (("thing" . ,(car gnus-logo-colors))
+			     ("shadow" . ,(cadr gnus-logo-colors))
 			     ("background" . ,(face-background 'default)))])
 			 ((featurep 'xbm)
 			  `[xbm :file ,logo-xbm])
