@@ -264,6 +264,11 @@ If non-nil, this maildrop will be checked periodically for new mail."
   :group 'mail-source
   :type 'number)
 
+(defcustom mail-source-movemail-program nil
+  "If non-nil, name of program for fetching new mail."
+  :group 'mail-source
+  :type '(choice (const nil) string))
+
 ;;; Internal variables.
 
 (defvar mail-source-string ""
@@ -523,7 +528,8 @@ Pass INFO on to CALLBACK."
 		       'call-process
 		       (append
 			(list
-			 (expand-file-name "movemail" exec-directory)
+			 (or mail-source-movemail-program
+			     (expand-file-name "movemail" exec-directory))
 			 nil errors nil from to)))))
 	      (when (file-exists-p to)
 		(set-file-modes to mail-source-default-file-modes))
