@@ -1,3 +1,8 @@
+2001-08-22 00:06:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-visual-p): Define function before use of
+	function. 
+
 2001-08-21 23:28:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-adjust-marked-articles): Use new variable.

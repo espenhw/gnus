@@ -1689,6 +1689,18 @@ and `grouplens-menu'."
 	      (const pick-menu)
 	      (const grouplens-menu)))
 
+;; Byte-compiler warning.
+(defvar gnus-visual)
+;; Find out whether the gnus-visual TYPE is wanted.
+(defun gnus-visual-p (&optional type class)
+  (and gnus-visual			; Has to be non-nil, at least.
+       (if (not type)			; We don't care about type.
+	   gnus-visual
+	 (if (listp gnus-visual)	; It's a list, so we check it.
+	     (or (memq type gnus-visual)
+		 (memq class gnus-visual))
+	   t))))
+
 (defcustom gnus-mouse-face
   (condition-case ()
       (if (gnus-visual-p 'mouse-face 'highlight)
@@ -2259,18 +2271,6 @@ This restriction may disappear in later versions of Gnus."
 
 (defmacro gnus-get-info (group)
   `(nth 2 (gnus-gethash ,group gnus-newsrc-hashtb)))
-
-;; Byte-compiler warning.
-(defvar gnus-visual)
-;; Find out whether the gnus-visual TYPE is wanted.
-(defun gnus-visual-p (&optional type class)
-  (and gnus-visual			; Has to be non-nil, at least.
-       (if (not type)			; We don't care about type.
-	   gnus-visual
-	 (if (listp gnus-visual)	; It's a list, so we check it.
-	     (or (memq type gnus-visual)
-		 (memq class gnus-visual))
-	   t))))
 
 ;;; Load the compatability functions.
 
