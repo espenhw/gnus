@@ -2762,9 +2762,9 @@ or in the synonym headers, defined by `message-header-synonyms'."
     (forward-line -2)))
 
 (defun message-kill-to-signature (&optional arg)
-  "Deletes all text up to the signature. If a numberic argument or
-prefix arg is out there, leave that number of lines before the
-signature intact."
+  "Kill all text up to the signature.
+If a numberic argument or prefix arg is given, leave that number
+of lines before the signature intact."
   (interactive "p")
   (save-excursion
     (save-restriction

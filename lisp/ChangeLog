@@ -3,6 +3,7 @@
 	* message.el (message-kill-to-signature): Allow prefix arg to
 	specify number of lines to keep before signature.  From Vasily
 	Korytov.
+	(message-kill-to-signature): Change docstring.
 
 2004-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
