@@ -1,3 +1,10 @@
+1999-12-04  Simon Josefsson  <jas@pdc.kth.se>
+
+	* mm-decode.el (mm-display-part): Let mm-display-external return
+	inline or external.
+	(mm-display-external): For copiousoutput methods, insert output in
+	buffer.
+
 1999-12-04 03:29:13  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nntp.el (nntp-retrieve-headers-with-xover): Goto the end of

@@ -334,88 +334,107 @@ external if displayed external."
 		  (mm-insert-inline handle (mm-get-part handle))
 		  'inline)
 	      (mm-display-external
-	       handle (or method 'mailcap-save-binary-file))
-	      'external)))))))
+	       handle (or method 'mailcap-save-binary-file)))))))))
 
 (defun mm-display-external (handle method)
   "Display HANDLE using METHOD."
-  (mm-with-unibyte-buffer
-    (if (functionp method)
-	(let ((cur (current-buffer)))
-	  (if (eq method 'mailcap-save-binary-file)
-	      (progn
-		(set-buffer (generate-new-buffer "*mm*"))
-		(setq method nil))
-	    (mm-insert-part handle)
-	    (let ((win (get-buffer-window cur t)))
-	      (when win
-		(select-window win)))
-	    (switch-to-buffer (generate-new-buffer "*mm*")))
-	  (buffer-disable-undo)
-	  (mm-set-buffer-file-coding-system mm-binary-coding-system)
-	  (insert-buffer-substring cur)
+  (let ((outbuf (current-buffer)))
+    (mm-with-unibyte-buffer
+      (if (functionp method)
+	  (let ((cur (current-buffer)))
+	    (if (eq method 'mailcap-save-binary-file)
+		(progn
+		  (set-buffer (generate-new-buffer "*mm*"))
+		  (setq method nil))
+	      (mm-insert-part handle)
+	      (let ((win (get-buffer-window cur t)))
+		(when win
+		  (select-window win)))
+	      (switch-to-buffer (generate-new-buffer "*mm*")))
+	    (buffer-disable-undo)
+	    (mm-set-buffer-file-coding-system mm-binary-coding-system)
+	    (insert-buffer-substring cur)
+	    (message "Viewing with %s" method)
+	    (let ((mm (current-buffer))
+		  (non-viewer (assq 'non-viewer
+				    (mailcap-mime-info
+				     (mm-handle-media-type handle) t))))
+	      (unwind-protect
+		  (if method
+		      (funcall method)
+		    (mm-save-part handle))
+		(when (and (not non-viewer)
+			   method)
+		  (mm-handle-set-undisplayer handle mm)))))
+	;; The function is a string to be executed.
+	(mm-insert-part handle)
+	(let* ((dir (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
+	       (filename (mail-content-type-get
+			  (mm-handle-disposition handle) 'filename))
+	       (mime-info (mailcap-mime-info
+			   (mm-handle-media-type handle) t))
+	       (needsterm (or (assoc "needsterm" mime-info)
+			      (assoc "needsterminal" mime-info)))
+	       (copiousoutput (assoc "copiousoutput" mime-info))
+	       file buffer)
+	  ;; We create a private sub-directory where we store our files.
+	  (make-directory dir)
+	  (set-file-modes dir 448)
+	  (if filename
+	      (setq file (expand-file-name (file-name-nondirectory filename)
+					   dir))
+	    (setq file (make-temp-name (expand-file-name "mm." dir))))
+	  (let ((coding-system-for-write mm-binary-coding-system))
+	    (write-region (point-min) (point-max) file nil 'nomesg))
 	  (message "Viewing with %s" method)
-	  (let ((mm (current-buffer))
-		(non-viewer (assq 'non-viewer
-				  (mailcap-mime-info
-				   (mm-handle-media-type handle) t))))
-	    (unwind-protect
-		(if method
-		    (funcall method)
-		  (mm-save-part handle))
-	      (when (and (not non-viewer)
-			 method)
-		(mm-handle-set-undisplayer handle mm)))))
-      ;; The function is a string to be executed.
-      (mm-insert-part handle)
-      (let* ((dir (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
-	     (filename (mail-content-type-get
-			(mm-handle-disposition handle) 'filename))
-	     (mime-info (mailcap-mime-info
-			 (mm-handle-media-type handle) t))
-	     (needsterm (or (assoc "needsterm" mime-info)
-			    (assoc "needsterminal" mime-info)))
-	     (copiousoutput (assoc "copiousoutput" mime-info))
-	     process file buffer)
-	;; We create a private sub-directory where we store our files.
-	(make-directory dir)
-	(set-file-modes dir 448)
-	(if filename
-	    (setq file (expand-file-name (file-name-nondirectory filename)
-					 dir))
-	  (setq file (make-temp-name (expand-file-name "mm." dir))))
-	(let ((coding-system-for-write mm-binary-coding-system))
-	  (write-region (point-min) (point-max) file nil 'nomesg))
-	(message "Viewing with %s" method)
-	(unwind-protect
-	    (setq process
-		  (cond (needsterm
-			 (start-process "*display*" nil
-					"xterm"
-					"-e" shell-file-name 
-					shell-command-switch
-					(mm-mailcap-command
-					 method file (mm-handle-type handle))))
-			(copiousoutput
-			 (start-process "*display*"
+	  (cond (needsterm
+		 (unwind-protect
+		     (start-process "*display*" nil
+				    "xterm"
+				    "-e" shell-file-name 
+				    shell-command-switch
+				    (mm-mailcap-command
+				     method file (mm-handle-type handle)))
+		   (mm-handle-set-undisplayer handle (cons file buffer)))
+		 (message "Displaying %s..." (format method file))
+		 'external)
+		(copiousoutput
+		 (with-current-buffer outbuf
+		   (forward-line 1)
+		   (mm-insert-inline
+		    handle
+		    (unwind-protect
+			(progn
+			  (call-process shell-file-name nil
 					(setq buffer 
 					      (generate-new-buffer "*mm*"))
-					shell-file-name
+					nil
 					shell-command-switch
 					(mm-mailcap-command
 					 method file (mm-handle-type handle)))
-			 (switch-to-buffer buffer))
-			(t
-			 (start-process "*display*"
-					(setq buffer
-					      (generate-new-buffer "*mm*"))
-					shell-file-name
-					shell-command-switch
-					(mm-mailcap-command
-					 method file (mm-handle-type handle))))))
-	  (mm-handle-set-undisplayer handle (cons file buffer)))
-	(message "Displaying %s..." (format method file))))))
-
+			  (if (buffer-live-p buffer)
+			      (save-excursion
+				(set-buffer buffer)
+				(buffer-string))))
+		      (progn
+			(ignore-errors (delete-file file))
+			(ignore-errors (delete-directory
+					(file-name-directory file)))
+			(ignore-errors (kill-buffer buffer))))))
+		 'inline)
+		(t
+		 (unwind-protect
+		     (start-process "*display*"
+				    (setq buffer
+					  (generate-new-buffer "*mm*"))
+				    shell-file-name
+				    shell-command-switch
+				    (mm-mailcap-command
+				     method file (mm-handle-type handle)))
+		   (mm-handle-set-undisplayer handle (cons file buffer)))
+		 (message "Displaying %s..." (format method file))
+		 'external)))))))
+  
 (defun mm-mailcap-command (method file type-list)
   (let ((ctl (cdr type-list))
 	(beg 0)
