@@ -1,3 +1,13 @@
+2000-10-28  Simon Josefsson  <sj@extundo.com>
+
+	* mml.el: Require mml-sec.
+	(mml-generate-mime-1): Support "sign" and "encrypt" MML tags.
+	(mml-mode-map): Add "sign" and "encrypt" maps.
+	(mml-menu): Add security menu.
+	(mml-preview): Use generate-new-buffer.
+
+	* mml-sec.el: New file.
+
 2000-10-28 03:43:03  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-find-part-by-type): Move it here.
