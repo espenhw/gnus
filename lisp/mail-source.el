@@ -32,7 +32,8 @@
 (eval-and-compile
   (autoload 'pop3-movemail "pop3")
   (autoload 'pop3-get-message-count "pop3")
-  (autoload 'nnheader-cancel-timer "nnheader"))
+  (autoload 'nnheader-cancel-timer "nnheader")
+  (autoload 'nnheader-run-at-time "nnheader"))
 (require 'format-spec)
 (require 'mm-util)
 
@@ -655,7 +656,15 @@ If ARGS, PROMPT is used as an argument to `format'."
 		    (pop3-port port)
 		    (pop3-authentication-scheme
 		     (if (eq authentication 'apop) 'apop 'pass)))
-		(save-excursion (pop3-movemail mail-source-crash-box))))))
+		(condition-case err
+		    (save-excursion (pop3-movemail mail-source-crash-box))
+		  (error
+		   ;; We nix out the password in case the error
+		   ;; was because of a wrong password being given.
+		   (setq mail-source-password-cache
+			 (delq (assoc from mail-source-password-cache)
+			       mail-source-password-cache))
+		   (signal (car err) (cdr err))))))))
       (if result
 	  (progn
 	    (when (eq authentication 'password)
@@ -706,7 +715,15 @@ If ARGS, PROMPT is used as an argument to `format'."
 		    (pop3-port port)
 		    (pop3-authentication-scheme
 		     (if (eq authentication 'apop) 'apop 'pass)))
-		(save-excursion (pop3-get-message-count))))))
+		(condition-case err
+		    (save-excursion (pop3-get-message-count))
+		  (error
+		   ;; We nix out the password in case the error
+		   ;; was because of a wrong password being given.
+		   (setq mail-source-password-cache
+			 (delq (assoc from mail-source-password-cache)
+			       mail-source-password-cache))
+		   (signal (car err) (cdr err))))))))
       (if result
 	  ;; Inform display-time that we have new mail.
 	  (setq mail-source-new-mail-available (> result 0))
@@ -741,8 +758,8 @@ If ARGS, PROMPT is used as an argument to `format'."
 	   mail-source-idle-time-delay
 	   nil
 	   (lambda ()
-	     (setq mail-source-report-new-mail-idle-timer nil)
-	     (mail-source-check-pop mail-source-primary-source))))
+	     (mail-source-check-pop mail-source-primary-source)
+	     (setq mail-source-report-new-mail-idle-timer nil))))
     ;; Since idle timers created when Emacs is already in the idle
     ;; state don't get activated until Emacs _next_ becomes idle, we
     ;; need to force our timer to be considered active now.  We do
@@ -773,8 +790,10 @@ This only works when `display-time' is enabled."
 	  (setq display-time-mail-function #'mail-source-new-mail-p)
 	  ;; Set up the main timer.
 	  (setq mail-source-report-new-mail-timer
-		(run-at-time t (* 60 mail-source-report-new-mail-interval)
-			     #'mail-source-start-idle-timer))
+		(nnheader-run-at-time
+		 (* 60 mail-source-report-new-mail-interval)
+		 (* 60 mail-source-report-new-mail-interval)
+		 #'mail-source-start-idle-timer))
 	  ;; When you get new mail, clear "Mail" from the mode line.
 	  (add-hook 'nnmail-post-get-new-mail-hook
 		    'display-time-event-handler)

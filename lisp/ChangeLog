@@ -1,3 +1,16 @@
+2000-12-04 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-report-new-mail): Use
+	nnheader-run-at-time.
+
+2000-02-15  Andrew Innes  <andrewi@gnu.org>
+
+	* mail-source.el (mail-source-fetch-pop): Clear pop password when
+	an error is thrown, and then rethrow the error.
+	(mail-source-check-pop): Ditto.
+	(mail-source-start-idle-timer): Prevent multiple pop checks
+	running if the check takes a long time.
+	
 2000-12-04 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-msg-mail): COMPOSEFUNC should return t if
