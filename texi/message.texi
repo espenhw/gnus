@@ -1364,6 +1364,17 @@ Specifies what to do when there are no recipients other than
 allowed.  If it is @code{never}, the posting is not allowed.  If it is
 @code{ask} (the default), you are prompted.
 
+@item message-hidden-headers
+@vindex message-hidden-headers
+A regexp, a list of regexps, or a list where the first element is
+@code{not} and the rest are regexps.  It says which headers to keep
+hidden when composing a message.
+
+@lisp
+(setq message-hidden-headers
+      '(not "From" "Subject" "To" "Cc" "Newsgroups"))
+@end lisp
+
 @end table
 
 
