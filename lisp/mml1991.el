@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml1991.el,v 6.2 2001/11/13 15:52:59 zsh Exp $
+;; RCS: $Id: mml1991.el,v 6.3 2001/12/18 04:13:29 huber Exp $
 
 ;;; Code:
 
@@ -211,7 +211,8 @@
 (provide 'mml1991)
 
 ;; Local Variables:
-;; buffer-file-coding-system: iso-latin-1
+;; coding: iso-8859-1
+;; buffer-file-coding-system: iso-8859-1
 ;; End:
 
 ;;; mml1991.el ends here

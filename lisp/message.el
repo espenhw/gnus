@@ -5457,6 +5457,7 @@ regexp varstr."
 (run-hooks 'message-load-hook)
 
 ;; Local Variables:
+;; coding: iso-8859-1
 ;; buffer-file-coding-system: iso-8859-1
 ;; End:
 

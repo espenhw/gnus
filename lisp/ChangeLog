@@ -1,3 +1,9 @@
+2001-12-18 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* ChangeLog,  ChangeLog.1, nnwfm.el,  gnus-smiley.el:
+	* gnus-cite.el, gnus-delay.el, gnus-spec.el, message.el:
+	* mml1991.el, nnultimate.el: Add `coding'.
+
 2001-12-17  Josh Huber  <huber@alum.wpi.edu>
 
 	* ChangeLog: changed coding to buffer-file-coding-system
@@ -6697,5 +6703,6 @@
 	* ChangeLog: Moved to ChangeLog.1.
 
 ;; Local Variables:
+;; coding: iso-2022-7bit
 ;; buffer-file-coding-system: iso-2022-7bit
 ;; End:

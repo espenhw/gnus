@@ -181,7 +181,8 @@ Checking delayed messages is skipped if optional arg NO-CHECK is non-nil."
 (provide 'gnus-delay)
 
 ;; Local Variables:
-;; buffer-file-coding-system: latin-1
+;; coding: iso-8859-1
+;; buffer-file-coding-system: iso-8859-1
 ;; End:
 
 ;;; gnus-delay.el ends here

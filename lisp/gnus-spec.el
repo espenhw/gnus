@@ -675,6 +675,7 @@ If PROPS, insert the result."
 (provide 'gnus-spec)
 
 ;; Local Variables:
+;; coding: iso-8859-1
 ;; buffer-file-coding-system: iso-8859-1
 ;; End:
 
