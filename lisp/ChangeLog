@@ -1,5 +1,9 @@
 2004-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* rfc2047.el (rfc2047-syntax-table): Treat `(' and `)' as is.
+	(rfc2047-encode-region): Treat text within parentheses as special;
+	show the original text when error has occurred.
+
 	* gnus-group.el (gnus-group-get-new-news-this-group): Pass the
 	already-computed method to gnus-activate-group.
 

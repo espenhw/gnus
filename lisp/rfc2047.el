@@ -270,8 +270,8 @@ The buffer may be narrowed."
 			      table))))
     (modify-syntax-entry ?\\ "\\" table)
     (modify-syntax-entry ?\" "\"" table)
-    (modify-syntax-entry ?\( "." table)
-    (modify-syntax-entry ?\) "." table)
+    (modify-syntax-entry ?\( "(" table)
+    (modify-syntax-entry ?\) ")" table)
     (modify-syntax-entry ?\< "." table)
     (modify-syntax-entry ?\> "." table)
     (modify-syntax-entry ?\[ "." table)
@@ -295,7 +295,8 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 	  end begin
 	  ;; Whether there's an encoded word before the current token,
 	  ;; either immediately or separated by space.
-	  last-encoded)
+	  last-encoded
+	  (orig-text (buffer-substring-no-properties b e)))
       (if (eq 'mime rfc2047-encoding-type)
 	  ;; Simple case.  Continuous words in which all those contain
 	  ;; non-ASCII characters are encoded collectively.  Encoding
@@ -361,87 +362,76 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 		  ;; potentially separated quoted words.
 		  (forward-char)
 		  (setq last-encoded nil))
+		 ((eq ?\) (char-syntax (char-after)))
+		  (error "Unbalanced parentheses"))
+		 ((eq ?\( (char-syntax (char-after)))
+		  ;; Look for the end of parentheses.
+		  (forward-list)
+		  ;; Encode text as an unstructured field.
+		  (let ((rfc2047-encoding-type 'mime))
+		    (rfc2047-encode-region (1+ start) (1- (point)))
+		    (forward-char)))
 		 (t		    ; normal token/whitespace sequence
 		  ;; Find the end.
-		  (if (and (prog2
-			       (skip-chars-backward " \t\n")
-			       (eq (char-before) ?\()
-			     (goto-char start))
-			   ;; Look for the end of parentheses.
-			   (let ((string (buffer-substring (point)
-							   (point-max)))
-				 (default-major-mode 'fundamental-mode))
-			     ;; Use `standard-syntax-table'.
-			     (with-temp-buffer
-			       (insert "(" string)
-			       (goto-char (point-min))
-			       (condition-case nil
-				   (progn
-				     (forward-list 1)
-				     (setq end (+ start (point) -3)))
-				 (error nil)))))
-		      ;; Encode text as an unstructured field.
-		      (let ((rfc2047-encoding-type 'mime))
-			(rfc2047-encode-region start end)
-			(forward-char))
-		    ;; Skip one ASCII word, or encode continuous words
-		    ;; in which all those contain non-ASCII characters.
-		    (setq end nil)
-		    (while (not end)
-		      (when (looking-at "[\000-\177]+")
-			(setq begin (point)
-			      end (match-end 0))
-			(if (re-search-forward "[ \t\n]\\|\\Sw" end 'move)
-			    (progn
-			      (setq end (match-beginning 0))
-			      (if rfc2047-encode-encoded-words
-				  (progn
-				    (goto-char begin)
-				    (when (search-forward "=?" end 'move)
-				      (goto-char (match-beginning 0))
-				      (setq end nil)))
-				(goto-char end)))
-			  (setq end nil)))
-		      (unless end
-			(setq end t)
-			(when (looking-at encodable-regexp)
-			  (goto-char (match-end 0))
-			  (while (and (looking-at "[ \t\n]+\\([^ \t\n]+\\)")
-				      (setq end (match-end 0))
-				      (string-match encodable-regexp
-						    (match-string 1)))
-			    (goto-char end))
-			  (when (looking-at "[^ \t\n]+")
-			    (setq end (match-end 0))
-			    (if (re-search-forward "\\Sw+" end t)
-				;; There are special characters better
-				;; to be encoded so that MTAs may parse
-				;; them safely.
-				(cond ((= end (point)))
-				      ((looking-at encodable-regexp)
-				       (setq end nil))
-				      (t
-				       (goto-char (1- (match-end 0)))
-				       (unless (= (point) (match-beginning 0))
-					 (insert " "))))
-			      (goto-char end)
-			      (skip-chars-forward " \t\n")
-			      (if (and (looking-at "[^ \t\n]+")
-				       (string-match encodable-regexp
-						     (match-string 0)))
-				  (setq end nil)
-				(goto-char end)))))))
-		    (skip-chars-backward " \t\n")
-		    (setq end (point))
-		    (goto-char start)
-		    (if (re-search-forward encodable-regexp end 'move)
-			(progn
-			  (rfc2047-encode start end)
-			  (setq last-encoded t))
-		      (setq last-encoded nil))))))
+		  ;; Skip one ASCII word, or encode continuous words
+		  ;; in which all those contain non-ASCII characters.
+		  (setq end nil)
+		  (while (not end)
+		    (when (looking-at "[\000-\177]+")
+		      (setq begin (point)
+			    end (match-end 0))
+		      (if (re-search-forward "[ \t\n]\\|\\Sw" end 'move)
+			  (progn
+			    (setq end (match-beginning 0))
+			    (if rfc2047-encode-encoded-words
+				(progn
+				  (goto-char begin)
+				  (when (search-forward "=?" end 'move)
+				    (goto-char (match-beginning 0))
+				    (setq end nil)))
+			      (goto-char end)))
+			(setq end nil)))
+		    (unless end
+		      (setq end t)
+		      (when (looking-at encodable-regexp)
+			(goto-char (match-end 0))
+			(while (and (looking-at "[ \t\n]+\\([^ \t\n]+\\)")
+				    (setq end (match-end 0))
+				    (string-match encodable-regexp
+						  (match-string 1)))
+			  (goto-char end))
+			(when (looking-at "[^ \t\n]+")
+			  (setq end (match-end 0))
+			  (if (re-search-forward "\\Sw+" end t)
+			      ;; There are special characters better
+			      ;; to be encoded so that MTAs may parse
+			      ;; them safely.
+			      (cond ((= end (point)))
+				    ((looking-at encodable-regexp)
+				     (setq end nil))
+				    (t
+				     (goto-char (1- (match-end 0)))
+				     (unless (= (point) (match-beginning 0))
+				       (insert " "))))
+			    (goto-char end)
+			    (skip-chars-forward " \t\n")
+			    (if (and (looking-at "[^ \t\n]+")
+				     (string-match encodable-regexp
+						   (match-string 0)))
+				(setq end nil)
+			      (goto-char end)))))))
+		  (skip-chars-backward " \t\n")
+		  (setq end (point))
+		  (goto-char start)
+		  (if (re-search-forward encodable-regexp end 'move)
+		      (progn
+			(rfc2047-encode start end)
+			(setq last-encoded t))
+		    (setq last-encoded nil))
+		  )))
 	    (error
 	     (error "Invalid data for rfc2047 encoding: %s"
-		    (buffer-substring b e)))))))
+		    (mm-replace-in-string orig-text "[ \t\n]+" " ")))))))
     (rfc2047-fold-region b (point))))
 
 (defun rfc2047-encode-string (string)
