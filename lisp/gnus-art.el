@@ -564,6 +564,15 @@ The following additional specs are available:
   :type 'hook
   :group 'gnus-article-various)
 
+(defcustom gnus-copy-article-ignored-headers '("Xref")
+  "List of headers to be removed when copying an article.
+Each element is a regular expression."
+  :version "22.0" ;; No Gnus
+  :type '(choice :custom-show nil
+		 regexp
+		 (repeat regexp))
+  :group 'gnus-article-various)
+
 (make-obsolete-variable 'gnus-article-hide-pgp-hook
 			"This variable is obsolete in Gnus 5.10.")
 

@@ -9018,6 +9018,10 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	 (save-excursion
 	   (set-buffer copy-buf)
 	   (when (gnus-request-article-this-buffer article gnus-newsgroup-name)
+	     (save-restriction
+	       (nnheader-narrow-to-headers)
+	       (dolist (hdr gnus-copy-article-ignored-headers)
+		 (message-remove-header hdr t)))
 	     (gnus-request-accept-article
 	      to-newsgroup select-method (not articles) t))))
 	;; Crosspost the article.

@@ -1,3 +1,9 @@
+2004-10-17  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-copy-article-ignored-headers): New variable.
+
+	* gnus-sum.el (gnus-summary-move-article): Use it.
+
 2004-10-15  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-backend-article-list-property)
