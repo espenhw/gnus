@@ -514,6 +514,7 @@ ticked: The number of ticked articles."
     "u" gnus-group-make-useful-group
     "a" gnus-group-make-archive-group
     "k" gnus-group-make-kiboze-group
+    "l" gnus-group-nnimap-edit-acl
     "m" gnus-group-make-group
     "E" gnus-group-edit-group
     "e" gnus-group-edit-group-method
@@ -525,6 +526,7 @@ ticked: The number of ticked articles."
     "w" gnus-group-make-web-group
     "r" gnus-group-rename-group
     "c" gnus-group-customize
+    "x" gnus-group-nnimap-expunge
     "\177" gnus-group-delete-group
     [delete] gnus-group-delete-group)
 
@@ -2214,6 +2216,62 @@ score file entries for articles to include in the group."
 		   (if (eq major-mode 'gnus-summary-mode)
 		       'summary 'group)))
       (error "Couldn't enter %s" dir))))
+
+(eval-and-compile
+  (autoload 'nnimap-expunge "nnimap")
+  (autoload 'nnimap-acl-get "nnimap")
+  (autoload 'nnimap-acl-edit "nnimap"))
+
+(defun gnus-group-nnimap-expunge (group)
+  "Expunge deleted articles in current nnimap GROUP."
+  (interactive (list (gnus-group-group-name)))
+  (let ((mailbox (gnus-group-real-name group)) method)
+    (unless group
+      (error "No group on current line"))
+    (unless (gnus-get-info group)
+      (error "Killed group; can't be edited"))
+    (unless (eq 'nnimap (car (setq method (gnus-find-method-for-group group))))
+      (error "%s is not an nnimap group" group))
+    (nnimap-expunge mailbox (cadr method))))
+
+(defun gnus-group-nnimap-edit-acl (group)
+  "Edit the Access Control List of current nnimap GROUP."
+  (interactive (list (gnus-group-group-name)))
+  (let ((mailbox (gnus-group-real-name group)) method acl)
+    (unless group
+      (error "No group on current line"))
+    (unless (gnus-get-info group)
+      (error "Killed group; can't be edited"))
+    (unless (eq (car (setq method (gnus-find-method-for-group group))) 'nnimap)
+      (error "%s is not an nnimap group" group))
+    (gnus-edit-form (setq acl (nnimap-acl-get mailbox (cadr method)))
+		    (format "Editing the access control list for `%s'.
+
+   An access control list is a list of (identifier . rights) elements.
+
+   The identifier string specifies the corresponding user. The
+   identifier \"anyone\" is reserved to refer to the universal identity.
+
+   Rights is a string listing a (possibly empty) set of alphanumeric
+   characters, each character listing a set of operations which is being
+   controlled. Letters are reserved for ``standard'' rights, listed
+   below.  Digits are reserved for implementation or site defined rights.
+
+   l - lookup (mailbox is visible to LIST/LSUB commands)
+   r - read (SELECT the mailbox, perform CHECK, FETCH, PARTIAL,
+       SEARCH, COPY from mailbox)
+   s - keep seen/unseen information across sessions (STORE SEEN flag)
+   w - write (STORE flags other than SEEN and DELETED)
+   i - insert (perform APPEND, COPY into mailbox)
+   p - post (send mail to submission address for mailbox,
+       not enforced by IMAP4 itself)
+   c - create (CREATE new sub-mailboxes in any implementation-defined
+       hierarchy)
+   d - delete (STORE DELETED flag, perform EXPUNGE)
+   a - administer (perform SETACL)" group)
+		    `(lambda (form)
+		       (nnimap-acl-edit
+			,mailbox ',method ',acl form)))))
 
 ;; Group sorting commands
 ;; Suggested by Joe Hildebrand <hildjj@idaho.fuentez.com>.
