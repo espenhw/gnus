@@ -189,6 +189,15 @@ If nil, use system defaults."
 
 (defvar smime-details-buffer "*OpenSSL output*")
 
+(eval-and-compile
+  (defalias 'smime-make-temp-file
+    (if (fboundp 'make-temp-file)
+	'make-temp-file
+      (lambda (prefix &optional dir-flag) ;; Simple implementation
+	(expand-file-name
+	 (make-temp-name prefix)
+	 temporary-file-directory)))))
+
 ;; Password dialog function
 
 (defun smime-ask-passphrase ()
@@ -229,7 +238,7 @@ to include in its caar."
 	(certfiles (and (cdr keyfiles) (cadr keyfiles)))
 	(buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
 	(passphrase (smime-ask-passphrase))
-	(tmpfile (make-temp-file "smime")))
+	(tmpfile (smime-make-temp-file "smime")))
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (prog1
@@ -263,7 +272,7 @@ have proper MIME tags.  CERTFILES is a list of filenames, each file
 is expected to contain of a PEM encoded certificate."
   (smime-new-details-buffer)
   (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
-	(tmpfile (make-temp-file "smime")))
+	(tmpfile (smime-make-temp-file "smime")))
     (prog1
 	(when (prog1
 		  (apply 'smime-call-openssl-region b e (list buffer tmpfile)
@@ -354,7 +363,7 @@ in the buffer specified by `smime-details-buffer'."
   (smime-new-details-buffer)
   (let ((buffer (generate-new-buffer (generate-new-buffer-name " *smime*")))
 	CAs (passphrase (smime-ask-passphrase))
-	(tmpfile (make-temp-file "smime")))
+	(tmpfile (smime-make-temp-file "smime")))
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (if (prog1
@@ -461,10 +470,11 @@ A string or a list of strings is returned."
 	    (caddr curkey)
 	  (smime-get-certfiles keyfile otherkeys)))))
 
-(defalias 'smime-point-at-eol
-  (if (fboundp 'point-at-eol)
-      'point-at-eol
-    'line-end-position))
+(eval-and-compile
+  (defalias 'smime-point-at-eol
+    (if (fboundp 'point-at-eol)
+	'point-at-eol
+      'line-end-position)))
 
 (defun smime-buffer-as-string-region (b e)
   "Return each line in region between B and E as a list of strings."
