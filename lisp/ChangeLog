@@ -1,3 +1,8 @@
+2001-03-02 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-describe-key): Map key to event.
+	(gnus-article-describe-key-briefly): Ditto
+
 2001-03-01 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-limit-include-expunged): Fix.
