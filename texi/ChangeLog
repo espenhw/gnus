@@ -1,3 +1,7 @@
+2000-10-17  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus.texi (IMAP): Add.
+
 2000-10-05  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Windows Configuration): add examples; first example

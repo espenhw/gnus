@@ -13596,6 +13596,33 @@ think of it as a modernized @sc{nntp}.  Connecting to a @sc{imap} server
 is much similar to connecting to a news server, you just specify the
 network address of the server.
 
+A server configuration in @code{~/.gnus} with a few @sc{imap} servers
+might look something like this:
+
+@lisp
+(setq gnus-secondary-select-methods 
+      '((nnimap "simpleserver") ; no special configuration
+        ; perhaps a ssh port forwarded server:
+        (nnimap "dolk"
+                (nnimap-address "localhost")
+                (nnimap-server-port 1430))
+        ; a UW server running on localhost
+        (nnimap "barbar"
+                (nnimap-server-port 143)
+                (nnimap-address "localhost")
+                (nnimap-list-pattern ("INBOX" "mail/*")))
+        ; anonymous public cyrus server:
+        (nnimap "cyrus.andrew.cmu.edu"
+                (nnimap-authenticator anonymous)
+                (nnimap-list-pattern "archive.*")
+                (nnimap-stream network))
+        ; a ssl server on a non-standard port:
+        (nnimap "vic20"
+                (nnimap-address "vic20.somewhere.com")
+                (nnimap-server-port 9930)
+                (nnimap-stream ssl))))
+@end lisp
+
 The following variables can be used to create a virtual @code{nnimap}
 server:
 
