@@ -12657,7 +12657,7 @@ groups updated.
 
 The easiest way to get started with @code{nnwarchive} is to say
 something like the following in the group buffer: @kbd{M-x
-gnus-group-make-nnwarchive-group RET an_egroup RET egroups RET
+gnus-group-make-warchive-group RET an_egroup RET egroups RET
 www.egroups.com RET your@@email.address RET}.  (Substitute the
 @sc{an_egroup} with the mailing list you subscribed, the
 @sc{your@@email.address} with your email address.), or to browse the
