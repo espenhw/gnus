@@ -489,6 +489,7 @@ Regexp matching the longest possible citation prefix on a line.
 
 @item message-citation-line-function
 @vindex message-citation-line-function
+@cindex attribution line
 Function called to insert the citation line.  The default is
 @code{message-insert-citation-line}, which will lead to citation lines
 that look like:
@@ -1034,9 +1035,15 @@ buffers that are initialized as mail.
 @table @code
 @item message-send-mail-function
 @vindex message-send-mail-function
-Function used to send the current buffer as mail.  The default is
-@code{message-send-mail-with-sendmail}.   If you prefer using MH
-instead, set this variable to @code{message-send-mail-with-mh}.
+@findex message-send-mail-with-sendmail
+@findex message-send-mail-with-mh
+@findex message-send-mail-with-qmail
+@findex smtpmail-send-it
+@findex feedmail-send-it
+Function used to send the current buffer as mail. The default is
+@code{message-send-mail-with-sendmail}. Other valid values include
+@code{message-send-mail-with-mh}, @code{message-send-mail-with-qmail},
+@code{smtpmail-send-it} and @code{feedmail-send-it}.
 
 @item message-mh-deletable-headers
 @vindex message-mh-deletable-headers
