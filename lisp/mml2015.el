@@ -637,6 +637,16 @@ by you.")
 
 ;;; pgg wrapper
 
+(eval-when-compile
+  (defvar pgg-errors-buffer)
+  (defvar pgg-output-buffer))
+
+(eval-and-compile
+  (autoload 'pgg-decrypt-region "gpg")
+  (autoload 'pgg-verify-region "gpg")
+  (autoload 'pgg-sign-region "gpg")
+  (autoload 'pgg-encrypt-region "gpg"))
+
 (defun mml2015-pgg-decrypt (handle ctl)
   (catch 'error
     (let ((pgg-errors-buffer mml2015-result-buffer)
