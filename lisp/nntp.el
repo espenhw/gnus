@@ -1177,6 +1177,11 @@ password contained in '~/.nntp-authinfo'."
 		     (not (looking-at "^\\.\r?\n")))
 	      (nntp-accept-response)
 	      (set-buffer process-buffer)))
+	  (set-buffer buf)
+	  (goto-char (point-max))
+	  (insert-buffer-substring process-buffer)
+	  (set-buffer process-buffer)
+	  (erase-buffer)
 	  (set-buffer buf))
 
 	;; We remove any "." lines and status lines.
