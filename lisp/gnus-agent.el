@@ -69,7 +69,8 @@
   :type 'integer)
 
 (defcustom gnus-agent-expire-days 7
-  "Read articles older than this will be expired."
+  "Read articles older than this will be expired.
+If you wish to disable Agent expiring, see `gnus-agent-enable-expiration'."
   :group 'gnus-agent
   :type '(number :tag "days"))
 

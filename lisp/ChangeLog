@@ -1,3 +1,7 @@
+2003-12-01  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-agent.el (gnus-agent-expire-days): Doc fix.
+
 2003-11-30  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-agent.el (gnus-agent-expire-group-1): Bind message-log-max
