@@ -12439,6 +12439,15 @@ Header lines longer than the value of
 @code{nnmail-split-header-length-limit} are excluded from the split
 function.
 
+@vindex nnmail-mail-splitting-charset
+@vindex nnmail-mail-splitting-decodes
+By default the splitting codes MIME decodes headers so you can match
+on non-ASCII strings.  The @code{nnmail-mail-splitting-charset}
+variable specifies the default charset for decoding.  The behaviour
+can be turned off completely by binding
+@code{nnmail-mail-splitting-decodes} to nil, which is useful if you
+want to match articles based on the raw header data.
+
 Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
 all the mail you get from your boss.  And then you accidentally
