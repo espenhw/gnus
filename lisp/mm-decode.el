@@ -708,6 +708,8 @@ external if displayed external."
 	 (method (completing-read "Viewer: " methods)))
     (when (string= method "")
       (error "No method given"))
+    (if (string-match "^[^% \t]+$" method) 
+	(setq method (concat method " %s")))
     (mm-display-external (copy-sequence handle) method)))
 
 (defun mm-preferred-alternative (handles &optional preferred)

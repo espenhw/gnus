@@ -1,3 +1,9 @@
+2000-05-08 01:07:47  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-interactively-view-part): Append %s if the
+	method is a single word.
+	* nnwarchive.el (nnwarchive-type-definition): Typo.
+
 2000-05-07 17:24:01  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-prepare-flat-list-dead-predicate): New

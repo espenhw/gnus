@@ -68,9 +68,9 @@
      (list-dissect . nnwarchive-egroups-list)
      (list-groups . nnwarchive-egroups-list-groups)
      (xover-url 
-      "http://www.egroups.com/message/%s/%d" group aux)
+      "http://www.egroups.com/messages/%s/%d" group aux)
      (xover-last-url 
-      "http://www.egroups.com/message/%s/" group)
+      "http://www.egroups.com/messages/%s/" group)
      (xover-page-size . 13)
      (xover-dissect . nnwarchive-egroups-xover)
      (article-url 
