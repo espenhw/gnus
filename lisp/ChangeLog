@@ -1,3 +1,8 @@
+2004-10-02  Kevin Greiner  <kgreiner@compsol.cc>
+
+	* nnagent.el (nnagent-request-type): Bind gnus-agent to nil to
+	avoid infinite recursion via gnus-get-function.
+
 2004-10-02  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-partial.el (mm-partial-find-parts): Use with-current-buffer.

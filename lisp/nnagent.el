@@ -103,7 +103,7 @@
 
 (defun nnagent-request-type (group article)
   (unless (stringp article)
-    (let ((gnus-plugged t))
+    (let ((gnus-agent nil))
       (if (not (gnus-check-backend-function
 		'request-type (car gnus-command-method)))
 	  'unknown
