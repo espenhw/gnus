@@ -81,7 +81,8 @@ gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi: $(srcdir)/gnus.tex
 	make gnusconfig.tex
 	make tmps
 	rm -f gnus.aux
-	TEXINPUTS=$(srcdir):$$TEXINPUTS $(LATEX) $<
+	cp $< gnus.tmplatexi
+	TEXINPUTS=$(srcdir):$$TEXINPUTS $(LATEX) gnus.tmplatexi
 	$(srcdir)/splitindex
 	makeindex -o gnus.kind gnus.kidx
 	makeindex -o gnus.cind gnus.cidx
@@ -99,7 +100,8 @@ gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi: $(srcdir)/gnus.tex
 	make tmps
 	cd ps; make pdf
 	rm -f gnus.aux
-	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) $<
+	cp $< gnus.tmplatexi
+	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) gnus.tmplatexi
 	$(srcdir)/splitindex
 	makeindex -o gnus.kind gnus.kidx
 	makeindex -o gnus.cind gnus.cidx
