@@ -377,10 +377,11 @@
 	      (narrow-to-region (point) (search-forward "</story>"))
 	      (goto-char (point-min))
 	      (re-search-forward "<title>\\([^<]+\\)</title>")
-	      (setq description (nnweb-decode-entities-string (match-string 1)))
+	      (setq description
+		    (nnweb-decode-entities-string (match-string 1)))
 	      (re-search-forward "<url>\\([^<]+\\)</url>")
 	      (setq sid (match-string 1))
-	      (string-match "/\\([0-9/]+\\).shtml" sid)
+	      (string-match "/\\([0-9/]+\\)\\(.shtml\\|$\\)" sid)
 	      (setq sid (match-string 1 sid))
 	      (re-search-forward "<comments>\\([^<]+\\)</comments>")
 	      (setq articles (string-to-number (match-string 1)))
@@ -397,9 +398,11 @@
 		(nnweb-insert (format nnslashdot-active-url number) t)
 		(goto-char (point-min))
 		(while (re-search-forward
-			"article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>" nil t)
+			"article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>"
+			nil t)
 		  (setq sid (match-string 1)
-			description (nnweb-decode-entities-string (match-string 2)))
+			description
+			(nnweb-decode-entities-string (match-string 2)))
 		  (forward-line 1)
 		  (when (re-search-forward "<b>\\([0-9]+\\)</b>" nil t)
 		    (setq articles (string-to-number (match-string 1))))
