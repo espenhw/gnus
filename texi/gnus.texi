@@ -272,50 +272,43 @@
 
 \thispagestyle{empty}
 
-Copyright \copyright{} 1995,96,97,98,99 Free Software Foundation, Inc.
+Copyright \copyright{} 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
 
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided that the
-entire resulting derived work is distributed under the terms of a
-permission notice identical to this one.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being none, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License''.
 
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions.
-
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
 \newpage
 \end{titlepage}
 @end iflatex
 @end iftex
 
-@ifinfo
+@ifnottex
 
 This file documents Gnus, the GNU Emacs newsreader.
 
-Copyright (C) 1995,96,97,98,99 Free Software Foundation, Inc.
+Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being none, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License''.
 
-@ignore
-Permission is granted to process this file through Tex and print the
-results, provided the printed document carries copying permission
-notice identical to this one except for the removal of this paragraph
-(this paragraph not being relevant to the printed manual).
-
-@end ignore
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided also that the
-entire resulting derived work is distributed under the terms of a
-permission notice identical to this one.
-
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions.
-@end ifinfo
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
+@end ifnottex
 
 @tex
 
@@ -326,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1995,96,97,98,99 Free Software Foundation, Inc.
+Copyright @copyright{} 1995,96,97,98,99,2000 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -510,27 +503,24 @@ Choosing Articles
 
 Reply, Followup and Post
 
-* Summary Mail Commands::       Sending mail.
-* Summary Post Commands::       Sending news.
-* Summary Message Commands::    Other Message-related commands.
-* Canceling and Superseding::   ``Whoops, I shouldn't have called him that.''
+* Summary Mail Commands::    Sending mail.
+* Summary Post Commands::    Sending news.
+* Summary Message Commands:: Other Message-related commands.
+* Canceling and Superseding:: ``Whoops, I shouldn't have called him that.''
 
 Marking Articles
 
-* Unread Articles::      Marks for unread articles.
-* Read Articles::        Marks for read articles.
-* Other Marks::          Marks that do not affect readedness.
-
-Marking Articles
-
-* Setting Marks::             How to set and remove marks.
-* Generic Marking Commands::  How to customize the marking.
-* Setting Process Marks::     How to mark articles for later processing.
+* Unread Articles::          Marks for unread articles.
+* Read Articles::            Marks for read articles.
+* Other Marks::              Marks that do not affect readedness.
+* Setting Marks::            How to set and remove marks.
+* Generic Marking Commands:: How to customize the marking.
+* Setting Process Marks::    How to mark articles for later processing.
 
 Threading
 
-* Customizing Threading::     Variables you can change to affect the threading.
-* Thread Commands::           Thread based commands in the summary buffer.
+* Customizing Threading::    Variables you can change to affect the threading.
+* Thread Commands::          Thread based commands in the summary buffer.
 
 Customizing Threading
 
@@ -727,7 +717,7 @@ Scoring
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
 * Kill Files::               They are still here, but they can be ignored.
-* Converting Kill Files::    Translating kill files to score files.
+@c * Converting Kill Files::    Translating kill files to score files.
 * GroupLens::                Getting predictions on what you like to read.
 * Advanced Scoring::         Using logical expressions to build score rules.
 * Score Decays::             It can be useful to let scores wither away.
@@ -2523,7 +2513,7 @@ list address instead.
 
 @item to-list
 @cindex to-list
-Address used when doing a @kbd{a} in that group.
+Address used when doing @kbd{a} in that group.
 
 @example
 (to-list . "some@@where.com")
@@ -13749,6 +13739,10 @@ articles or not.
 @item nnimap-authinfo-file
 @vindex nnimap-authinfo-file
 
+A file containing credentials used to log in on servers.  The format
+is (almost) the same as the @code{ftp} @file{~/.netrc} file.  See
+`nntp-authinfo-file' for exact syntax.
+
 A file containing credentials used to log in on servers.  The format is
 (almost) the same as the @code{ftp} @file{~/.netrc} file.  See the
 variable @code{nntp-authinfo-file} for exact syntax; also see
@@ -14935,7 +14929,7 @@ silently to help keep the sizes of the score files down.
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
 * Kill Files::               They are still here, but they can be ignored.
-* Converting Kill Files::    Translating kill files to score files.
+@c * Converting Kill Files::    Translating kill files to score files.
 * GroupLens::                Getting predictions on what you like to read.
 * Advanced Scoring::         Using logical expressions to build score rules.
 * Score Decays::             It can be useful to let scores wither away.
@@ -15319,16 +15313,23 @@ file names---discarding the @samp{all} elements.
 @findex gnus-score-find-hierarchical
 Apply all score files from all the parent groups.  This means that you
 can't have score files like @file{all.SCORE}, but you can have
-@file{SCORE}, @file{comp.SCORE} and @file{comp.emacs.SCORE}.
+@file{SCORE}, @file{comp.SCORE} and @file{comp.emacs.SCORE} for each
+server.
 
 @end table
 This variable can also be a list of functions.  In that case, all these
-functions will be called, and all the returned lists of score files will
-be applied.  These functions can also return lists of score alists
-directly.  In that case, the functions that return these non-file score
-alists should probably be placed before the ``real'' score file
-functions, to ensure that the last score file returned is the local
-score file.  Phu.
+functions will be called with the group name as argument, and all the
+returned lists of score files will be applied.  These functions can also
+return lists of score alists directly.  In that case, the functions that
+return these non-file score alists should probably be placed before the
+``real'' score file functions, to ensure that the last score file
+returned is the local score file.  Phu.
+
+For example, to do hierarchical scoring but use a non-server-specific
+overall score file, you could use the value
+@example
+(list (lambda (group) ("all.SCORE")) 'gnus-score-find-hierarchical)
+@end example
 
 @item gnus-score-expiry-days
 @vindex gnus-score-expiry-days
@@ -16218,7 +16219,8 @@ A hook called in kill-file mode buffers.
 
 @end table
 
-
+@c The URL below is invalid and the code isn't on gnus.org.
+@ignore
 @node Converting Kill Files
 @section Converting Kill Files
 @cindex kill files
@@ -16237,6 +16239,7 @@ If your old kill files are very complex---if they contain more
 non-@code{gnus-kill} forms than not, you'll have to convert them by
 hand.  Or just let them be as they are.  Gnus will still use them as
 before.
+@end ignore
 
 
 @node GroupLens
