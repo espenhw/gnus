@@ -1,5 +1,8 @@
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-narrow-to-page): Only break page if it's
+	broken. 
+
 	* nnrss.el (nnrss-find-rss-via-syndic8): Return nil if xml-rpc
 	isn't available.
 

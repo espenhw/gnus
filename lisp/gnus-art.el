@@ -4939,21 +4939,22 @@ If given a numerical ARG, move forward ARG pages."
 	       (re-search-forward page-delimiter nil 'move arg)))
       (setq gnus-page-broken t)
       (goto-char (match-end 0)))
-    (narrow-to-region
-     (point)
-     (if (re-search-forward page-delimiter nil 'move)
-	 (match-beginning 0)
-       (point)))
-    (when (and (gnus-visual-p 'page-marker)
-	       (not (= (point-min) 1)))
-      (save-excursion
-	(goto-char (point-min))
-	(gnus-insert-prev-page-button)))
-    (when (and (gnus-visual-p 'page-marker)
-	       (< (+ (point-max) 2) (buffer-size)))
-      (save-excursion
-	(goto-char (point-max))
-	(gnus-insert-next-page-button)))))
+    (when gnus-page-broken
+      (narrow-to-region
+       (point)
+       (if (re-search-forward page-delimiter nil 'move)
+	   (match-beginning 0)
+	 (point)))
+      (when (and (gnus-visual-p 'page-marker)
+		 (not (= (point-min) 1)))
+	(save-excursion
+	  (goto-char (point-min))
+	  (gnus-insert-prev-page-button)))
+      (when (and (gnus-visual-p 'page-marker)
+		 (< (+ (point-max) 2) (buffer-size)))
+	(save-excursion
+	  (goto-char (point-max))
+	  (gnus-insert-next-page-button))))))
 
 ;; Article mode commands
 
