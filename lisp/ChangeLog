@@ -1,3 +1,18 @@
+2004-01-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (article-decode-mime-words, article-babel)
+	(gnus-article-highlight-signature, gnus-article-add-buttons)
+	(gnus-signature-toggle): Use gnus-with-article-buffer.
+	
+	* gnus-art.el (gnus-article-highlight-headers)
+	(gnus-article-add-buttons-to-head): Use gnus-with-article-headers.
+	
+	* gnus-art.el (gnus-mm-display-part, gnus-article-wash-status)
+	(gnus-article-set-globals, gnus-request-article-this-buffer)
+	(gnus-button-message-id, gnus-article-maybe-hide-headers)
+	(gnus-mime-view-part-externally, gnus-mime-view-part-internally)
+	(gnus-mime-display-alternative): Use with-current-buffer.
+
 2004-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-generate-fake-headers): rewrite to be simpler,
