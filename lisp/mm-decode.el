@@ -144,6 +144,8 @@
        (and (or (featurep 'nas-sound) (featurep 'native-sound))
 	    (device-sound-enabled-p))))
     ("application/pgp-signature" ignore identity)
+    ("application/x-pkcs7-signature" ignore identity)
+    ("application/pkcs7-signature" ignore identity)
     ("multipart/alternative" ignore identity)
     ("multipart/mixed" ignore identity)
     ("multipart/related" ignore identity))
@@ -156,7 +158,8 @@
 (defcustom mm-inlined-types
   '("image/.*" "text/.*" "message/delivery-status" "message/rfc822"
     "message/partial" "message/external-body" "application/emacs-lisp"
-    "application/pgp-signature")
+    "application/pgp-signature" "application/x-pkcs7-signature"
+    "application/pkcs7-signature")
   "List of media types that are to be displayed inline."
   :type '(repeat string)
   :group 'mime-display)
@@ -164,8 +167,9 @@
 (defcustom mm-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
     "text/x-vcard" "image/.*" "message/delivery-status" "multipart/.*"
-    "message/rfc822" "text/x-patch" "application/pgp-signature" 
-    "application/emacs-lisp")
+    "message/rfc822" "text/x-patch" "application/pgp-signature"
+    "application/emacs-lisp" "application/x-pkcs7-signature"
+    "application/pkcs7-signature")
   "A list of MIME types to be displayed automatically."
   :type '(repeat string)
   :group 'mime-display)
@@ -223,7 +227,9 @@ to:
 (autoload 'mml2015-verify "mml2015")
 
 (defvar mm-verify-function-alist
-  '(("application/pgp-signature" . mml2015-verify)))
+  '(("application/pgp-signature" mml2015-verify "PGP")
+    ("application/pkcs7-signature" mml-smime-verify "S/MIME")
+    ("application/x-pkcs7-signature" mml-smime-verify "S/MIME")))
 
 (defcustom mm-verify-option nil
   "Option of verifying signed parts.
@@ -238,7 +244,7 @@ to:
 (autoload 'mml2015-decrypt "mml2015")
 
 (defvar mm-decrypt-function-alist
-  '(("application/pgp-encrypted" . mml2015-decrypt)))
+  '(("application/pgp-encrypted" mml2015-decrypt "PGP")))
 
 (defcustom mm-decrypt-option nil
   "Option of decrypting signed parts.
@@ -886,6 +892,8 @@ external if displayed external."
        (mm-image-fit-p handle)))
 
 (defun mm-find-part-by-type (handles type &optional notp) 
+  "Search in HANDLES for part with TYPE.
+If NOTP, returns first non-matching part."
   (let (handle)
     (while handles
       (if (if notp
@@ -943,37 +951,41 @@ external if displayed external."
     (cond 
      ((equal subtype "signed")
       (setq protocol (mail-content-type-get ctl 'protocol))
-      (setq func (cdr (assoc protocol mm-verify-function-alist)))
+      (setq func (nth 1 (assoc protocol mm-verify-function-alist)))
       (if (cond
 	   ((eq mm-verify-option 'never) nil)
 	   ((eq mm-verify-option 'always) t)
 	   ((eq mm-verify-option 'known) func)
-	   (t (y-or-n-p 
-	       (format "Verify signed part(protocol=%s)?" protocol))))
+	   (t (y-or-n-p
+	       (format "Verify signed (%s) part? "
+		       (or (nth 2 (assoc protocol mm-verify-function-alist))
+			   (format "protocol=%s" protocol))))))
 	  (condition-case err
 	      (save-excursion
 		(if func
 		    (funcall func parts ctl)
-		  (error (format "Unknown sign protocol(%s)" protocol))))
+		  (error (format "Unknown sign protocol (%s)" protocol))))
 	    (error
-	     (unless (y-or-n-p (format "%s, continue?" err))
+	     (unless (y-or-n-p (format "%s, continue? " err))
 	       (error "Verify failure."))))))
      ((equal subtype "encrypted")
       (setq protocol (mail-content-type-get ctl 'protocol))
-      (setq func (cdr (assoc protocol mm-decrypt-function-alist)))
+      (setq func (nth 1 (assoc protocol mm-decrypt-function-alist)))
       (if (cond
 	   ((eq mm-decrypt-option 'never) nil)
 	   ((eq mm-decrypt-option 'always) t)
 	   ((eq mm-decrypt-option 'known) func)
 	   (t (y-or-n-p 
-	       (format "Decrypt part (protocol=%s)?" protocol))))
+	       (format "Decrypt (%s) part? "
+		       (or (nth 2 (assoc protocol mm-decrypt-function-alist))
+			   (format "protocol=%s" protocol))))))
 	  (condition-case err
 	      (save-excursion
 		(if func
 		    (setq parts (funcall func parts ctl))
-		  (error (format "Unknown encrypt protocol(%s)" protocol))))
+		  (error (format "Unknown encrypt protocol (%s)" protocol))))
 	    (error
-	     (unless (y-or-n-p (format "%s, continue?" err))
+	     (unless (y-or-n-p (format "%s, continue? " err))
 	       (error "Decrypt failure."))))))
      (t nil))
     parts))

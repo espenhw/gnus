@@ -23,19 +23,13 @@
 
 ;;; Commentary:
 
-;; This support creation of S/MIME parts in MML.
-
-;; Usage:
-;;    (mml-smime-setup)
-;; 
-;; Insert an attribute, postprocess=smime-sign (or smime-encrypt), into
-;; the mml tag to be signed (or encrypted).
-;;
-;; It is based on rfc2015.el by Shenghuo Zhu.
-
 ;;; Code:
 
 (require 'smime)
+
+(defun mml-smime-verify (handle ctl)
+  (smime-verify-buffer)
+  handle)
 
 ;;;###autoload
 (defun mml-smime-sign (cont)

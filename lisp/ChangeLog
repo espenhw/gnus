@@ -1,3 +1,19 @@
+2000-11-05  Simon Josefsson  <sj@extundo.com>
+
+	Verify S/MIME signature support.
+	
+	* mm-decode.el (mm-inline-media-tests): Add
+	application/{x-,}pkcs7-signature.
+	(mm-inlined-types): Ditto.
+	(mm-automatic-display): Ditto.
+	(mm-verify-function-alist): Ditto.  Add name of method.
+	(mm-decrypt-function-alist): Add name of method.
+	(mm-find-part-by-type): Add documentation.
+	(mm-possibly-verify-or-decrypt): Use new format of
+	mm-{verify,decrypt}-function-alist.  Use method names.
+
+	* mml-smime.el (mml-smime-verify): New function.
+
 2000-11-04 20:38:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el (mm-inline-text): Move point to the end of inserted text.
