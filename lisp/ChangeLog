@@ -1,3 +1,8 @@
+2001-10-02 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-write-active): The min in the
+	agent/active may be larger than that in the server/active.
+
 2001-10-01  Simon Josefsson  <jas@extundo.com>
 
 	* mail-source.el (mail-source-fetch-imap): Use BODY.PEEK if server
