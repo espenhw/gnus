@@ -1435,6 +1435,15 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 ;; Function for nnmail-split-fancy: look up all references in the
 ;; cache and if a match is found, return that group.
 (defun nnmail-split-fancy-with-parent ()
+  "Split this message into the same group as its parent.
+This function can be used as an entry in `nnmail-split-fancy', for
+example like this: (: nnmail-split-fancy)
+For a message to be split, it looks for the parent message in the
+References or In-Reply-To header and then looks in the message id
+cache file (given by the variable `nnmail-message-id-cache-file') to
+see which group that message was put in.  This group is returned.
+
+See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (let* ((refstr (or (message-fetch-field "references")
                      (message-fetch-field "in-reply-to")))
          (references nil)
