@@ -17279,7 +17279,7 @@ unread, ticked and dormant articles will be kept indefinitely.
 
 If you find that some articles eligible for expiry are never expired,
 perhaps some Gnus Agent files are corrupted.  There's a special
-@pxref{gnus-agent-regenerate} command to fix possible problems.
+@code{gnus-agent-regenerate} command to fix possible problems.
 
 @node Agent Regeneration
 @subsection Agent Regeneration
@@ -17446,7 +17446,7 @@ have been fetched.  @code{gnus-agent-max-fetch-size} provides a size
 limit to control how often the cycling occurs.  A large value improves
 performance.  A small value minimizes the time lost should the
 connection be lost while fetching (You may need to run
-@pxref{gnus-agent-regenerate-group} to update the group's state.
+@code{gnus-agent-regenerate-group} to update the group's state.
 However, all articles parsed prior to loosing the connection will be
 available while unplugged).
 
