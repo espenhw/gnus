@@ -202,6 +202,20 @@ Thank you for your help in stamping out bugs.
   ;; "c" gnus-summary-send-draft
   "r" gnus-summary-resend-message)
 
+;;;###autoload
+(defun gnus-msg-mail (&rest args)
+  "Start editing a mail message to be sent.
+Like `message-mail', but with Gnus paraphernalia, particularly the
+the Gcc: header for archiving purposes."
+  (interactive)
+  (gnus-setup-message 'message
+    (apply 'message-mail args)))
+
+;;;###autoload
+(define-mail-user-agent 'gnus-user-agent
+      'gnus-msg-mail 'message-send-and-exit
+      'message-kill-buffer 'message-send-hook)
+
 ;;; Internal functions.
 
 (defvar gnus-article-reply nil)
