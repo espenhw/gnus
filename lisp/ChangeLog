@@ -1,5 +1,9 @@
 2003-03-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-sum.el (gnus-summary-next-group): Semi-exit group first to
+	that target group is computed correctly when articles are marked
+	as read by Xref handling.
+
 	* mail-source.el (mail-source-fetch-imap): Pass buffer-name to
 	imap-open.
 
