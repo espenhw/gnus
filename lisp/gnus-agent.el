@@ -326,10 +326,14 @@ node `(gnus)Server Buffer'.")
        ["Toggle plugged" gnus-agent-toggle-plugged t]
        ["Toggle group plugged" gnus-agent-toggle-group-plugged t]
        ["List categories" gnus-enter-category-buffer t]
+       ["Add (current) group to category" gnus-agent-add-group t]
+       ["Remove (current) group from category" gnus-agent-remove-group t]
        ["Send queue" gnus-group-send-queue gnus-plugged]
        ("Fetch"
 	["All" gnus-agent-fetch-session gnus-plugged]
-	["Group" gnus-agent-fetch-group gnus-plugged])))))
+	["Group" gnus-agent-fetch-group gnus-plugged])
+       ["Synchronize flags" gnus-agent-synchronize-flags t]
+       ))))
 
 (defvar gnus-agent-summary-mode-map (make-sparse-keymap))
 (gnus-define-keys gnus-agent-summary-mode-map

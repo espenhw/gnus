@@ -1,3 +1,13 @@
+2003-02-14  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-agent.el (gnus-agent-group-make-menu-bar): Include all
+	commands.
+	* gnus-sum.el: Small change from Frank Weinberg
+	<frank@usenet-rundfahrt.de>:
+	(gnus-auto-center-group): New variable.
+	(gnus-summary-read-group-1): Use it.
+	(gnus-summary-next-group): Fix docstring.
+
 2003-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-util.el (gnus-faces-at): Simplify.

@@ -360,6 +360,9 @@ and non-`vertical', do both horizontal and vertical recentering."
 		 (integer :tag "height")
 		 (sexp :menu-tag "both" t)))
 
+(defvar gnus-auto-center-group t
+  "*If non-nil, always center the group buffer.")
+
 (defcustom gnus-show-all-headers nil
   "*If non-nil, don't hide any headers."
   :group 'gnus-article-hiding
@@ -3533,7 +3536,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 	  (gnus-summary-position-point)
 	  (gnus-configure-windows 'summary 'force)
 	  (gnus-set-mode-line 'summary))
-	(when (get-buffer-window gnus-group-buffer t)
+	(when (and gnus-auto-center-group
+		   (get-buffer-window gnus-group-buffer t))
 	  ;; Gotta use windows, because recenter does weird stuff if
 	  ;; the current buffer ain't the displayed window.
 	  (let ((owin (selected-window)))
@@ -6656,7 +6660,7 @@ in."
 (defun gnus-summary-next-group (&optional no-article target-group backward)
   "Exit current newsgroup and then select next unread newsgroup.
 If prefix argument NO-ARTICLE is non-nil, no article is selected
-initially.  If NEXT-GROUP, go to this group.  If BACKWARD, go to
+initially.  If TARGET-GROUP, go to this group.  If BACKWARD, go to
 previous group instead."
   (interactive "P")
   ;; Stop pre-fetching.
