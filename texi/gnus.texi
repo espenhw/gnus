@@ -9243,7 +9243,7 @@ variable, will be displayed in random order after all the headers listed in this
 @findex gnus-article-hide-boring-headers
 @vindex gnus-boring-article-headers
 You can hide further boring headers by setting
-@code{gnus-treat-hide-boring-header} to @code{head}.  What this function
+@code{gnus-treat-hide-boring-headers} to @code{head}.  What this function
 does depends on the @code{gnus-boring-article-headers} variable.  It's a
 list, but this list doesn't actually contain header names.  Instead is
 lists various @dfn{boring conditions} that Gnus can check and remove
@@ -9274,7 +9274,7 @@ Remove the @code{To} header if it is very long.
 Remove all @code{To} headers if there are more than one.
 @end table
 
-To include the four three elements, you could say something like;
+To include these three elements, you could say something like;
 
 @lisp
 (setq gnus-boring-article-headers

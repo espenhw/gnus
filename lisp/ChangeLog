@@ -1,3 +1,7 @@
+2001-03-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-generate-headers-first): Update doc.
+
 2001-03-10  Matthias Wiehl <mwiehl@gmx.de>
 
         * gnus.el (gnus-summary-line-format): Typo.

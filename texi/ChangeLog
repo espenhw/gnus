@@ -1,3 +1,13 @@
+2001-03-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Hiding Headers): Typos.  Reported by Sriram Karra
+	<karra@cs.utah.edu>.
+
+2001-03-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.texi (Message Headers): Update doc for
+	`message-generate-headers-first'. 
+
 2001-03-14 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Nevin Kapur <nevin@jhu.edu>
 

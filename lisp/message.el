@@ -458,7 +458,13 @@ variable isn't used."
   :type 'sexp)
 
 (defcustom message-generate-headers-first nil
-  "*If non-nil, generate all required headers before composing."
+  "*If non-nil, generate all required headers before composing.
+The variables `message-required-news-headers' and
+`message-required-mail-headers' specify which headers to generate.
+
+Note that the variable `message-deletable-headers' specifies headers which
+are to be deleted and then re-generated before sending, so this variable
+will not have a visible effect for those headers."
   :group 'message-headers
   :type 'boolean)
 

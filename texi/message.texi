@@ -927,6 +927,9 @@ compose the message.
 The variables @code{message-required-mail-headers} and
 @code{message-required-news-headers} specify which headers are required.
 
+Note that some headers will be removed and re-generated before posting,
+because of the variable @code{message-deletable-headers} (see below).
+
 @item message-from-style
 @vindex message-from-style
 Specifies how @code{From} headers should look.  There are four valid
