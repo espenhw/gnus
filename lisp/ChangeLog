@@ -1,3 +1,18 @@
+2004-08-30  Juanma Barranquero  <lektu@terra.es>
+
+	* ietf-drums.el (ietf-drums-remove-whitespace): Fix character constant.
+
+2004-08-30  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* nnimap.el (nnimap-demule): Avoid string-as-multibyte.
+
+2004-08-30  Kim F. Storm  <storm@cua.dk>
+
+	* nntp.el (nntp-authinfo-file): Add :group 'nntp.
+
+	* nnimap.el (nnimap-authinfo-file, nnimap-prune-cache):
+	Add :group 'nnimap.
+
 2004-08-30  Simon Josefsson  <jas@extundo.com>
 
 	* rfc2231.el (rfc2231-parse-string): Restore whitespace syntax for
