@@ -3814,7 +3814,7 @@ This command may read the active file."
     (gnus-group-list-plus args)))
 
 (defun gnus-group-list-limit (&optional args)
-  "Flush groups from the current selection."
+  "List groups limited within the current selection."
   (interactive "P")
   (let ((gnus-group-list-option 'limit))
     (gnus-group-list-plus args)))
