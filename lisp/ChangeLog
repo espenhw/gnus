@@ -4,7 +4,7 @@
 	replacement.  From Vagn Johansen <v@johansen.mail.dk> (tiny
 	change).
 
-22003-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+2003-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el: Don't use defvaralias.
 	(gnus-treat-display-x-face): Warn if the obsolete variable
