@@ -8355,7 +8355,8 @@ This is an alist where each entry has this form:
 @item regexp
 All text that match this regular expression will be considered an
 external reference.  Here's a typical regexp that matches embedded URLs:
-@samp{<URL:\\([^\n\r>]*\\)>}.
+@samp{<URL:\\([^\n\r>]*\\)>}. This can also be a variable containing a
+regexp, useful variables to use include @code{gnus-button-url-regexp}.
 
 @item button-par
 Gnus has to know which parts of the matches is to be highlighted.  This

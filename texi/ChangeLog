@@ -1,6 +1,7 @@
 2002-05-01  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Group Mail Splitting): Fix example.
+	(Article Buttons): Document that REGEXP can be a variable as well.
 
 	* message.texi (Message Headers): Fix example.
 
