@@ -1,6 +1,6 @@
 2004-08-06  Simon Josefsson  <jas@extundo.com>
 
-	* gnus-sum.el (gnus-article-loose-mime): Check default to t.  Doc
+	* gnus-sum.el (gnus-article-loose-mime): Change default to t.  Doc
 	fix.
 
 2004-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
