@@ -2144,7 +2144,7 @@ doing the deletion."
    (list (gnus-group-group-name)
 	 current-prefix-arg))
   (unless group
-    (error "No group to rename"))
+    (error "No group to delete"))
   (unless (gnus-check-backend-function 'request-delete-group group)
     (error "This backend does not support group deletion"))
   (prog1

@@ -1,3 +1,8 @@
+2001-09-26 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Katsuhiro Hermit Endo <hermit@koka-in.org>
+
+	* gnus-group.el (gnus-group-delete-group): Typo.
+
 2001-09-26  Simon Josefsson  <jas@extundo.com>
 
 	* nnmail.el (nnmail-expiry-target-group): Add doc warning.
