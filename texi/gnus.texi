@@ -10026,6 +10026,11 @@ built.  If @code{t}, update the buffer after every line is inserted.
 If the value is an integer, @var{n}, update the display every @var{n}
 lines.  The default is @code{nil}.
 
+@vindex gnus-summary-display-arrow
+@item gnus-summary-display-arrow
+If non-@code{nil}, display an arrow in the fringe to indicate the
+current article.
+
 @vindex gnus-summary-mode-hook
 @item gnus-summary-mode-hook
 This hook is called when creating a summary mode buffer.
@@ -22129,6 +22134,7 @@ Also, when you load @code{spam.el}, you will be able to customize its
 variables.  Try @code{customize-group} on the @samp{spam} variable
 group.
 
+@vindex gnus-spam-process-newsgroups
 The concepts of ham processors and spam processors are very important.
 Ham processors and spam processors for a group can be set with the
 @code{spam-process} group parameter, or the
@@ -22138,6 +22144,7 @@ that later similar mail will also be considered non-spam.  Spam
 processors take mail known to be spam and process it so similar spam
 will be detected later.
 
+@vindex gnus-spam-newsgroup-contents
 Gnus learns from the spam you get.  You have to collect your spam in
 one or more spam groups, and set or customize the variable
 @code{spam-junk-mailgroups} as appropriate.  You can also declare
@@ -22153,14 +22160,16 @@ groups are not classified by means of @code{spam-junk-mailgroups},
 considered @emph{unclassified}.  All groups are unclassified by
 default.
 
+@vindex gnus-spam-mark
+@cindex $
 In spam groups, all messages are considered to be spam by default:
-they get the @samp{$} mark when you enter the group.  You must review
-these messages from time to time and remove the @samp{$} mark for
-every message that is not spam after all.  To remove the @samp{$}
-mark, you can use @kbd{M-u} to ``unread'' the article, or @kbd{d} for
-declaring it read the non-spam way.  When you leave a group, all
-spam-marked (@samp{$}) articles are sent to a spam processor which
-will study them as spam samples.
+they get the @samp{$} mark (@code{gnus-spam-mark}) when you enter the
+group.  You must review these messages from time to time and remove
+the @samp{$} mark for every message that is not spam after all.  To
+remove the @samp{$} mark, you can use @kbd{M-u} to ``unread'' the
+article, or @kbd{d} for declaring it read the non-spam way.  When you
+leave a group, all spam-marked (@samp{$}) articles are sent to a spam
+processor which will study them as spam samples.
 
 Messages may also be deleted in various other ways, and unless
 @code{spam-ham-marks} gets overridden below, marks @samp{R} and
@@ -22190,6 +22199,7 @@ explicit kill a lot, you might sometimes end up with articles marked
 spam.  Best is to make sure that real spam is marked with @samp{$},
 and nothing else.
 
+@vindex gnus-ham-process-destinations
 When you leave a @emph{spam} group, all spam-marked articles are
 marked as expired after processing with the spam processor.  This is
 not done for @emph{unclassified} or @emph{ham} groups.  Also, any
@@ -22205,6 +22215,7 @@ parameter is not set, spam articles are only expired.
 When you leave a @emph{ham} group, all ham-marked articles are sent to
 a ham processor, which will study these as non-spam samples.
 
+@vindex gnus-spam-process-destinations
 When you leave a @emph{ham} or @emph{unclassified} group, all
 @strong{spam} articles are moved to a location determined by either
 the @code{spam-process-destination} group parameter or a match in the
