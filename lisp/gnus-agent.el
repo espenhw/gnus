@@ -53,6 +53,11 @@
   :group 'gnus-agent
   :type 'hook)
 
+(defcustom gnus-agent-fetched-hook nil
+  "Hook run after finishing fetching articles."
+  :group 'gnus-agent
+  :type 'hook)
+
 (defcustom gnus-agent-handle-level gnus-level-subscribed
   "Groups on levels higher than this variable will be ignored by the Agent."
   :group 'gnus-agent
@@ -1156,6 +1161,7 @@ the actual number of articles toggled is returned."
 				    err))
 	     (signal 'quit "Cannot fetch articles into the Gnus agent"))))
 	(pop methods))
+      (run-hooks 'gnus-agent-fetch-hook)
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
 
 (defun gnus-agent-fetch-group-1 (group method)

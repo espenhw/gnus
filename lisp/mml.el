@@ -636,6 +636,9 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
   (message-encode-message-body)
   (save-restriction
     (message-narrow-to-headers-or-head)
+    ;; Skip past any From_ headers.
+    (while (looking-at "From ")
+      (forward-line 1))
     (let ((mail-parse-charset message-default-charset))
       (mail-encode-encoded-word-buffer))))
 

@@ -1,3 +1,16 @@
+2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-read-init-file): Cleaned up.
+
+2002-01-03  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-start.el (gnus-startup-file-coding-system): Removed.
+	(gnus-read-init-file): Don't use it.
+
+2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-fetch-session): Run hook.
+
 2002-01-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-start.el (gnus-read-init-file): Don't force coding system
