@@ -6091,8 +6091,8 @@ Optional DIGEST will use digest to forward."
 			      "Content-Type: *multipart/\\(signed\\|encrypted\\)"
 			      nil t)))))
 	    (message-forward-make-body-mml forward-buffer)
-	  (message-forward-make-body-mime forward-buffer)))
-    (message-forward-make-body-plain forward-buffer))
+	  (message-forward-make-body-mime forward-buffer))
+      (message-forward-make-body-plain forward-buffer)))
   (message-position-point))
 
 ;;;###autoload
