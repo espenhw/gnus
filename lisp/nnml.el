@@ -2,7 +2,8 @@
 ;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
 ;;        Free Software Foundation, Inc.
 
-;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
+;; Author: Simon Josefsson <simon@josefsson.org> (adding MARKS)
+;;      Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -61,13 +62,24 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-nov-is-evil nil
-  "If non-nil, Gnus will never generate and use nov databases for mail groups.
+  "If non-nil, Gnus will never generate and use nov databases for mail spools.
 Using nov databases will speed up header fetching considerably.
 This variable shouldn't be flipped much.  If you have, for some reason,
 set this to t, and want to set it to nil again, you should always run
 the `nnml-generate-nov-databases' command.  The function will go
 through all nnml directories and generate nov databases for them
 all.  This may very well take some time.
+
+This variable is a virtual server slot.  See the Gnus manual for details.")
+
+(defvoo nnml-marks-is-evil nil
+  "If non-nil, Gnus will never generate and use marks file for mail spools.
+Using marks files makes it possible to backup and restore mail groups
+separately from `.newsrc.eld'.  If you have, for some reason, set this
+to t, and want to set it to nil again, you should always remove the
+corresponding marks file (usually named `.marks' in the nnml group
+directory, but see `nnml-marks-file-name') for the group.  Then the
+marks file will be regenerated properly by Gnus.
 
 This variable is a virtual server slot.  See the Gnus manual for details.")
 
@@ -88,6 +100,7 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
   "nnml version.")
 
 (defvoo nnml-nov-file-name ".overview")
+(defvoo nnml-marks-file-name ".marks")
 
 (defvoo nnml-current-directory nil)
 (defvoo nnml-current-group nil)
@@ -105,6 +118,8 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 check twice.")
 
 (defvoo nnml-file-coding-system nnmail-file-coding-system)
+
+(defvoo nnml-marks nil)
 
 
 
@@ -857,10 +872,6 @@ check twice.")
 	    force)
     (setq nnml-article-file-alist
 	  (nnheader-article-to-file-alist nnml-current-directory))))
-
-(defvoo nnml-marks-file-name ".marks")
-(defvoo nnml-marks-is-evil nil)
-(defvoo nnml-marks nil)
 
 (deffoo nnml-request-set-mark (group actions &optional server)
   (nnml-possibly-change-directory group server)
