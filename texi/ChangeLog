@@ -1,3 +1,18 @@
+2005-03-29  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (gnus-booklet.dvi, gnus-booklet.pdf)
+	(gnus-refcard.dvi, gnus-refcard.pdf): New targets replacing
+	refcard.* and booklet.*.
+
+	* gnus-refcard.tex: Merged from refcard.tex and gnusref.tex.
+	Removed refcard.tex gnusref.tex booklet.tex bk-lt.tex bk-a4.tex.
+
+	* gnus-logo.eps: Renamed from gnuslogo-booklet.eps.
+	gnuslogo-refcard.eps: Removed.
+
+	* Makefile.in (gnus-faq.texi): Depend on xml2texi.*.  Fix sed
+	command.
+
 2005-03-23  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* Makefile.in (gnus-faq-full-update, gnus-faq-clean)
