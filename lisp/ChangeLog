@@ -1,3 +1,8 @@
+2003-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el (dgnushack-compile): Increase the value for
+	max-specpdl-size when compiling Gnus with Emacs 20.
+
 2003-12-22  Kevin Greiner <kgreiner@xpediantsolutions.com>
 	* gnus-int.el (gnus-open-server): Fixed the server status such
 	that an agentized server, when opened offline, has a status of

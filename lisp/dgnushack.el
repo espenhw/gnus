@@ -207,6 +207,9 @@ dgnushack-compile."
 
 (defun dgnushack-compile (&optional warn)
   ;;(setq byte-compile-dynamic t)
+  (when (and (not (featurep 'xemacs))
+	     (< emacs-major-version 21))
+    (setq max-specpdl-size 1200))
   (unless warn
     (setq byte-compile-warnings
 	  '(free-vars unresolved callargs redefine)))
