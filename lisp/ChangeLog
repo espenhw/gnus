@@ -1,3 +1,8 @@
+2000-05-25  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-group.el (gnus-group-nnimap-edit-acl): Help text updated
+	from latest draft.
+
 2000-05-08  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-group.el (gnus-group-expire-articles-1): Make sure server
