@@ -1,3 +1,11 @@
+2002-03-27  Paul Jarc <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir--subdir, nnmaildir--nov-dir,
+	nnmaildir--marks-dir): New macros.  Use them.
+	Use inhibit-quit for atomicity instead of in-memory journaling.
+	(nnmaildir--edit-prep): New function.
+	(Local Variables): Use it.
+
 2002-03-26  Pavel@Janik.cz (Pavel Jan,Bm(Bk)
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Fix typo.
@@ -12,7 +20,7 @@
 	Matthieu Moy <Matthieu.Moy@imag.fr>.
 
 2002-03-24  Jesper Harder  <harder@ifa.au.dk>
-	
+
 	* mml-sec.el (mml-unsecure-message): Add docstring.
 
 2002-03-23  ShengHuo ZHU  <zsh@cs.rochester.edu>
