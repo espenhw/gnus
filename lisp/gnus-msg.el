@@ -929,7 +929,7 @@ If YANK is non-nil, include the original article."
       (insert nntp-server-type))
     (insert "\n\n\n\n\n")
     (let (text)
-      (save-window-excursion
+      (save-excursion
 	(set-buffer (gnus-get-buffer-create " *gnus environment info*"))
 	(gnus-debug)
 	(setq text (buffer-string)))

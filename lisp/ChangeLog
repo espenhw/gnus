@@ -1,5 +1,7 @@
 2000-12-21 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-msg.el (gnus-bug): Revert to save-excursion.
+
 	* mml.el (gnus-add-minor-mode): Autoload.
 
 	* message.el (message-forward): Save-restriction.
