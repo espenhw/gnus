@@ -1,3 +1,9 @@
+2003-10-30  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Slashdot, SpamAssassin, Score File Format): Fix
+	overfull hbox.
+	(Topic Parameters): @group.
+
 2003-10-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package): added

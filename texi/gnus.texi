@@ -3973,6 +3973,7 @@ know.  Normal inheritance rules.  (@dfn{Rules} is here a noun, not a
 verb, although you may feel free to disagree with me here.)
 
 @example
+@group
 Gnus
   Emacs
      3: comp.emacs
@@ -3985,6 +3986,7 @@ Gnus
      8: comp.binaries.fractals
     13: comp.sources.unix
    452: alt.sex.emacs
+@end group   
 @end example
 
 The @samp{Emacs} topic has the topic parameter @code{(score-file
@@ -15580,7 +15582,7 @@ command is the most handy tool (@pxref{Foreign Groups}).
 When following up to @code{nnslashdot} comments (or posting new
 comments), some light @acronym{HTML}izations will be performed.  In
 particular, text quoted with @samp{> } will be quoted with
-@code{blockquote} instead, and signatures will have @code{br} added to
+@samp{blockquote} instead, and signatures will have @samp{br} added to
 the end of each line.  Other than that, you can just write @acronym{HTML}
 directly into the message buffer.  Note that Slashdot filters out some
 @acronym{HTML} forms.
@@ -15619,7 +15621,7 @@ news articles and comments.  The default is@*
 @vindex nnslashdot-comments-url
 The @sc{url} format string that will be used to fetch comments.  The
 default is
-@samp{http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=%d&mode=flat&startat=%d}.
+@samp{http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=@/%d&mode=flat&startat=%d}.
 
 @item nnslashdot-article-url
 @vindex nnslashdot-article-url
@@ -19064,11 +19066,13 @@ Just as for the standard string overview headers, if you are using
 gnus-extra-headers, you can score on these headers' values.  In this
 case, there is a 5th element in the score entry, being the name of the
 header to be scored.  The following entry is useful in your
-@file{all.SCORE} file in case of spam attacks from a single origin host,
-if your @acronym{NNTP} server tracks NNTP-Posting-Host in overviews:
+@file{all.SCORE} file in case of spam attacks from a single origin
+host, if your @acronym{NNTP} server tracks @samp{NNTP-Posting-Host} in
+overviews:
 
 @lisp
-("111.222.333.444" -1000 nil s "NNTP-Posting-Host")
+("111.222.333.444" -1000 nil s
+ "NNTP-Posting-Host")
 @end lisp
 
 @item Lines, Chars
@@ -22104,14 +22108,12 @@ Then put the following split rule in @code{nnmail-split-fancy}
 (@pxref{Fancy Mail Splitting}):
 
 @lisp
-(
- ...
+(...
  (to "larsi@@trym.ifi.uio.no"
-      (| ("subject" "re:.*" "misc")
-         ("references" ".*@@.*" "misc")
-         "spam"))
- ...
-)
+     (| ("subject" "re:.*" "misc")
+        ("references" ".*@@.*" "misc")
+        "spam"))
+ ...)
 @end lisp
 
 This says that all mail to this address is suspect, but if it has a
@@ -22170,7 +22172,8 @@ Specifiers}) follow.
       '((file :prescript "formail -bs spamassassin < /var/mail/%u")
         (pop :user "jrl"
              :server "pophost"
-             :postscript "mv %t /tmp/foo; formail -bs spamc < /tmp/foo > %t")))
+             :postscript
+             "mv %t /tmp/foo; formail -bs spamc < /tmp/foo > %t")))
 @end lisp
 
 Once you manage to process your incoming spool somehow, thus making
