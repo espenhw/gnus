@@ -47,7 +47,9 @@
   "GnuPG ID of your default identity.")
 
 (defun pgg-gpg-process-region (start end passphrase program args)
-  (let* ((output-file-name (pgg-make-temp-file "pgg-output"))
+  (let* ((output-file-name
+	  (expand-file-name (make-temp-name "pgg-output") 
+			    pgg-temporary-file-directory))
 	 (args
 	  `("--status-fd" "2"
 	    ,@(if passphrase '("--passphrase-fd" "0"))
