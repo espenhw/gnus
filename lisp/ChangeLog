@@ -1,5 +1,8 @@
 2004-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-xmas.el (gnus-xmas-define): Defun char-width for non-MULE
+	XEmacsen.
+
 	* dgnushack.el: Autoload executable-find for XEmacs.
 
 2004-01-06  Jesper Harder  <harder@ifa.au.dk>

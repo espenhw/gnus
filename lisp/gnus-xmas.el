@@ -424,7 +424,10 @@ call it with the value of the `gnus-data' text property."
 	    'x-color-values
 	  (lambda (color)
 	    (color-instance-rgb-components
-	     (make-color-instance color))))))
+	     (make-color-instance color)))))
+
+  (unless (fboundp 'char-width)
+    (defalias 'char-width (lambda (ch) 1))))
 
 (defun gnus-xmas-redefine ()
   "Redefine lots of Gnus functions for XEmacs."
