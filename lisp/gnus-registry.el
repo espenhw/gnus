@@ -354,7 +354,7 @@ Returns the first place where the trail finds a group name."
     (let ((trail (gethash id gnus-registry-hashtb)))
       (dolist (crumb trail)
 	(when (stringp crumb)
-	  (return crumb))))))
+	  (return (gnus-group-short-name crumb)))))))
 
 (defun gnus-registry-group-count (id)
   "Get the number of groups of a message, based on the message ID."

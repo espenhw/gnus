@@ -1,3 +1,8 @@
+2003-06-02  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-fetch-group): always return the
+	short name of the group
+
 2003-06-02  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-cus.el (defvar): Silence byte-compiler warnings.
