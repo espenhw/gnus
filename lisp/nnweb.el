@@ -754,14 +754,11 @@ If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
 	  (narrow-to-region (point) (point))
 	  (url-insert-file-contents url)
 	  (goto-char (point-min))
-	  (while (re-search-forward 
-		  "HTTP-EQUIV=\"Refresh\"[^>]*URL=\\([^\"]+\\)\""
-		  nil t)
+	  (when (re-search-forward 
+		 "HTTP-EQUIV=\"Refresh\"[^>]*URL=\\([^\"]+\\)\"" nil t)
 	    (let ((url (match-string 1)))
 	      (delete-region (point-min) (point-max))
-	      (nnweb-insert url))
-	    (goto-char (point-min)))
-	  (goto-char (point-max)))
+	      (nnweb-insert url t))))
       (url-insert-file-contents url))
     (setq buffer-file-name name)))
 

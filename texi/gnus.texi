@@ -7796,7 +7796,31 @@ on a group-by-group basis using the group parameters (@pxref{Group
 Parameters}).  The default value is @code{(unknown-8bit)}, which is
 something some agents insist on having in there.
 
-@cindex Russina
+@vindex gnus-group-posting-charset-alist
+When posting, @code{gnus-group-posting-charset-alist} is used to
+determine which charsets should not be encoded using the @sc{mime}
+encodings.  For instance, some hierarchies discourage using
+quoted-printable header encoding.
+
+This variable is an alist of regexps and permitted unencoded charsets
+for posting.  Each element of the alist has the form @var{(test header
+body-list)}, where:
+
+@table @var
+@item 
+test
+is either a regular expression matching the newsgroup header or a
+variable to query,
+@item header
+is the charset which may be left unencoded in the header (@code{nil}
+means encode all charsets),
+@item body-list
+is a list of charsets which may be encoded using 8bit content-transfer
+encoding in the body, or one of the special values @code{nil} (always
+encode using quoted-printable) or @code{t} (always use 8bit).
+@end table
+
+@cindex Russian
 @cindex koi8-r
 @cindex koi8-u
 @cindex iso-8859-5
@@ -9439,6 +9463,21 @@ spell-checking via the @code{ispell} package:
 @lisp
 (add-hook 'message-send-hook 'ispell-message)
 @end lisp
+
+If you want to change the @code{ispell} dictionary based on what group
+you're in, you could say something like the following:
+
+@lisp
+(add-hook 'gnus-select-group-hook
+          (lambda ()
+            (cond
+             ((string-match "^de\\." gnus-newsgroup-name)
+              (ispell-change-dictionary "deutsch"))
+             (t
+              (ispell-change-dictionary "english")))))
+@end lisp
+
+Modify to suit your needs.
 
 
 @node Archived Messages
@@ -12321,7 +12360,10 @@ interfaces to these sources.
 * Slashdot::              Reading the Slashdot comments.
 * Ultimate::              The Ultimate Bulletin Board systems.
 * Web Archive::           Reading mailing list archived on web.
+* Customizing w3::        Doing stuff to Emacs/w3 from Gnus.
 @end menu
+
+All the web sources require Emacs/w3 and the url library to work.
 
 The main caveat with all these web sources is that they probably won't
 work for a very long time.  Gleaning information from the @sc{html} data 
@@ -12542,6 +12584,7 @@ The directory where @code{nnultimate} stores its files.  The default is
 @samp{~/News/ultimate/}.
 @end table
 
+
 @node Web Archive
 @subsection Web Archive
 @cindex nnwarchive
@@ -12577,6 +12620,38 @@ The account name on the web server.
 @vindex nnwarchive-passwd
 The password for your account on the web server.
 @end table
+
+
+@node Customizing w3
+@subsection Customizing w3
+@cindex w3
+@cindex html
+@cindex url
+@cindex Netscape
+
+Gnus uses the url library to fetch web pages and Emacs/w3 to display web 
+pages.  Emacs/w3 is documented in its own manual, but there are some
+things that may be more relevant for Gnus users.
+
+For instance, a common question is how to make Emacs/w3 follow links
+using the @code{browse-url} functions (which will call some external web 
+browser like Netscape).  Here's one way:
+
+@lisp
+(eval-after-load "w3"
+  '(progn
+    (fset 'w3-fetch-orig (symbol-function 'w3-fetch))
+    (defun w3-fetch (&optional url target)
+      (interactive (list (w3-read-url-with-default)))
+      (if (eq major-mode 'gnus-article-mode)
+          (browse-url url)
+        (w3-fetch-orig url target)))))
+@end lisp
+
+Put that in your @file{.emacs} file, and hitting links in w3-rendered
+@sc{html} in the Gnus article buffers will use @code{browse-url} to
+follow the link.
+
 
 @node Other Sources
 @section Other Sources

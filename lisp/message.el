@@ -2179,7 +2179,8 @@ It should typically alter the sending method in some way or other."
 (defun message-send-mail-with-sendmail ()
   "Send off the prepared buffer with sendmail."
   (let ((errbuf (if message-interactive
-		    (message-generate-new-buffer-clone-locals " sendmail errors")
+		    (message-generate-new-buffer-clone-locals
+		     " sendmail errors")
 		  0))
 	resend-to-addresses delimline)
     (let ((case-fold-search t))

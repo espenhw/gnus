@@ -7,6 +7,22 @@ internationalization and mail-fetching.
 *** The mail-fetching functions have changed.  See the manual for the
 many details.  In particular, all procmail fetching variables are gone.
 
+If you used procmail like in
+
+(setq nnmail-use-procmail t)
+(setq nnmail-spool-file 'procmail)
+(setq nnmail-procmail-directory "~/mail/incoming/")
+(setq nnmail-procmail-suffix "\\.in")
+
+this now has changed to 
+
+(setq mail-sources
+      '((directory :path "~/mail/incoming/"
+		   :suffix ".in")))
+
+More information is available in the info doc at Select Methods ->
+Getting Mail -> Mail Sources
+
 *** Gnus is now a MIME-capable reader.  This affects many parts of
 Gnus, and adds a slew of new commands.  See the manual for details.
 

@@ -1,14 +1,14 @@
 @echo off
 
 rem Written by David Charlap <shamino@writeme.com>
-
-rem There are two catches, however.  The emacs.bat batch file may not exist
-rem in all distributions.  It is part of the Voelker build of Emacs 19.34
-rem (http://www.cs.washington.edu/homes/voelker/ntemacs.html).  If the user
-rem installs Gnus with some other build, he may have to replace calls to
+rem
+rem There are two possible problems with this batch file.  The emacs.bat batch
+rem file may not exist in all distributions.  It is part of the GNU build of
+rem Emacs 20.4 (http://www.gnu.org/softare/emacs/windows.ntemacs.html)  If you
+rem install Gnus with some other build, you may have to replace calls to
 rem %1\emacs.bat with something else.
 rem 
-rem Also, the emacs.bat file that Voelker ships does not accept more than 9
+rem Also, the emacs.bat file that comes with Emacs does not accept more than 9
 rem parameters, so the attempts to compile the .texi files will fail.  To
 rem fix that (at least on NT.  I don't know about Win95), the following
 rem change should be made to emacs.bat:
@@ -31,12 +31,14 @@ if "%1" == "" goto usage
 cd lisp
 call %1\bin\emacs.bat -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
 if not "%2" == "copy" goto info
-copy *.el* %1\lisp
+attrib -r %1\lisp\gnus\*
+copy *.el* %1\lisp\gnus
 
 :info
 cd ..\texi
-call %1\bin\emacs.bat -batch -q -no-site-file gnus.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 call %1\bin\emacs.bat -batch -q -no-site-file message.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+call %1\bin\emacs.bat -batch -q -no-site-file emacs-mime.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
+call %1\bin\emacs.bat -batch -q -no-site-file gnus.texi -l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 if not "%2" == "copy" goto done
 copy gnus %1\info
 copy gnus-?? %1\info

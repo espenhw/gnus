@@ -323,7 +323,7 @@ DOC is a documentation string for the parameter.")
 			       :tag "Parameters"
 			       :format "%t:\n%h%v"
 			       :doc "\
-These special paramerters are recognized by Gnus.
+These special parameters are recognized by Gnus.
 Check the [ ] for the parameters you want to apply to this group or
 to the groups in this topic, then edit the value to suit your taste."
 			       ,@types)

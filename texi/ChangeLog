@@ -1,3 +1,19 @@
+2000-01-08 08:10:04  Martin Bialasinski  <agr30+news@uni-koeln.de>
+
+	* gnus.texi (Mail and Post): Example.
+
+2000-01-08 07:46:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Customizing w3): New.
+
+2000-01-08 07:46:06  Hamish Macdonald  <hamishm@lucent.com>
+
+	* gnus.texi (Customizing w3): Example.
+
+2000-01-06 17:55:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Charsets): Addition.
+
 2000-01-05 15:58:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Mail Group Commands): Addition.

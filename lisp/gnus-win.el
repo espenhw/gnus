@@ -446,12 +446,12 @@ See the Gnus manual for an explanation of the syntax used.")
 		    (gnus-delete-windows-in-gnusey-frames))
 		;; Just remove some windows.
 		(gnus-remove-some-windows)
-	      (set-buffer nntp-server-buffer))
+		(set-buffer nntp-server-buffer))
 	    (select-frame frame)))
 
 	(let (gnus-window-frame-focus)
-	(set-buffer nntp-server-buffer)
-	(gnus-configure-frame split)
+	  (set-buffer nntp-server-buffer)
+	  (gnus-configure-frame split)
 	  (when gnus-window-frame-focus
 	    (select-frame (window-frame gnus-window-frame-focus))))))))
 

@@ -2474,7 +2474,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
   "s" gnus-article-show-summary
   "\C-c\C-m" gnus-article-mail
   "?" gnus-article-describe-briefly
-  "e" gnus-summary-article-edit
+  "e" gnus-summary-edit-article
   "<" beginning-of-buffer
   ">" end-of-buffer
   "\C-c\C-i" gnus-info-find-node

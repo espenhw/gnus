@@ -714,6 +714,7 @@ this type is returned."
     (".cpio"     . "application/x-cpio")
     (".csh"      . "application/x-csh")
     (".dvi"      . "application/x-dvi")
+    (".diff"     . "text/x-patch")
     (".el"       . "application/emacs-lisp")
     (".eps"      . "application/postscript")
     (".etx"      . "text/x-setext")

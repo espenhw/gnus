@@ -746,7 +746,7 @@ deleted.  Point is left where the deleted region was."
 	    buffer
 	  (push (list group buffer) nnfolder-buffer-alist)
 	  (set-buffer-modified-p t)
-	  (save-buffer))
+	  (nnfolder-save-buffer))
       ;; Parse the damn thing.
       (save-excursion
 	(goto-char (point-min))
