@@ -1,3 +1,17 @@
+2003-01-22  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-wash-hide-map): Remove
+	gnus-article-hide-pgp.
+	(gnus-summary-make-menu-bar): do.
+
+	* gnus-art.el (gnus-treat-strip-pgp): Make obsolete.
+	(gnus-treatment-function-alist): Remove gnus-treat-strip-pgp and
+	gnus-article-hide-pgp.
+	(article-hide-pgp): Remove.
+	(gnus-article-hide): Remove gnus-article-hide-pgp.
+
+	* gnus.el: Remove gnus-article-hide-pgp
+
 2003-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-required-headers): Doc fix.

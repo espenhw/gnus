@@ -1814,7 +1814,6 @@ increase the score of each group you read."
   "c" gnus-article-hide-citation
   "C" gnus-article-hide-citation-in-followups
   "l" gnus-article-hide-list-identifiers
-  "p" gnus-article-hide-pgp
   "B" gnus-article-strip-banner
   "P" gnus-article-hide-pem
   "\C-c" gnus-article-hide-citation-maybe)
@@ -2031,7 +2030,6 @@ increase the score of each group you read."
 	      ["Signature" gnus-article-hide-signature t]
 	      ["Citation" gnus-article-hide-citation t]
 	      ["List identifiers" gnus-article-hide-list-identifiers t]
-	      ["PGP" gnus-article-hide-pgp t]
 	      ["Banner" gnus-article-strip-banner t]
 	      ["Boring headers" gnus-article-hide-boring-headers t])
 	     ("Highlight"
