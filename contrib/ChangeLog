@@ -1,3 +1,10 @@
+2003-02-21  Simon Josefsson  <jas@extundo.com>
+
+	* hashcash.el (hashcash-point-at-bol):
+	(hashcash-point-at-eol): Defalias.
+	(hashcash-generate-payment):
+	(mail-check-payment): Use it.
+
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* hashcash.el: New version from Paul Foley with new
