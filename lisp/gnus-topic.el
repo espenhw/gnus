@@ -1334,7 +1334,7 @@ If RECURSIVE is t, unmark its subtopics too."
   (interactive "P")
   (if (not (gnus-group-topic-p))
       (gnus-group-get-new-news-this-group n)
-    (gnus-topic-mark-topic (gnus-group-topic-name))
+    (gnus-topic-mark-topic (gnus-group-topic-name) nil (and n t))
     (gnus-group-get-new-news-this-group)))
 
 (defun gnus-topic-move-matching (regexp topic &optional copyp)
