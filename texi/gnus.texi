@@ -22304,25 +22304,15 @@ filters incoming mail, and it analyzes mail known to be spam or ham.
 @dfn{Ham} is the name used throughout @file{spam.el} to indicate
 non-spam messages.
 
+First of all, you @strong{must} run the function
+@code{spam-initialize} to autoload @code{spam.el} and to install the
+@code{spam.el} hooks:
+
+@example
+(spam-initialize)
+@end example
+
 So, what happens when you load @file{spam.el}?  
-
-First of all, you @strong{must} set the variable
-@code{spam-install-hooks} to @code{t} and install the @code{spam.el} hooks:
-
-@example
-(setq spam-install-hooks t)
-(spam-install-hooks-function)
-@end example
-
-This is automatically done for you if you load @code{spam.el}
-@emph{after} one of the @code{spam-use-*} variables explained later
-are set.  So you should load @code{spam.el} after you set one of the
-@code{spam-use-*} variables:
-
-@example
-(setq spam-use-bogofilter t)
-(require 'spam)
-@end example
 
 You get the following keyboard commands:
 
