@@ -155,7 +155,7 @@ permitted unencoded charset is us-ascii."
 (defun rfc2047-dissect-region (b e)
   "Dissect the region between B and E into words."
   (let ((all-specials (concat ietf-drums-tspecials " \t\n\r"))
-	(special-list (string-to-char-list ietf-drums-tspecials))
+	(special-list (mapcar 'identity ietf-drums-tspecials))
 	(blank-list '(?  ?\t ?\n ?\r))
 	words current cs state)
     (save-restriction
