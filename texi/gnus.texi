@@ -13388,7 +13388,7 @@ Example:
 @item nnimap-stream
 @vindex nnimap-stream
 The type of stream used to connect to your server.  By default, nnimap
-will use the most secure stream your server is capable of.
+will detect and use kerberos4 automatically, but not SSL connections.
 
 @itemize @bullet
 @item
