@@ -163,4 +163,6 @@ If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
 		  (error nil))
 		(delete-region ,(point-min-marker) ,(point-max-marker))))))))))
 
+(provide 'mm-extern)
+
 ;;; mm-extern.el ends here

@@ -148,4 +148,6 @@ If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
 		  (error nil))
 		(delete-region ,(point-min-marker) ,(point-max-marker))))))))))
 
+(provide 'mm-partial)
+
 ;;; mm-partial.el ends here
