@@ -1,4 +1,8 @@
 2002-11-25  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-agent.el (gnus-agent-check-overview-buffer): Make debugger
+	print message on entry.
+
 	From Kevin Greiner <kgreiner@xpediantsolutions.com>.
 
 	* gnus-range.el (gnus-range-difference): New function.
