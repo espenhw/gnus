@@ -1,3 +1,8 @@
+2005-03-01  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* gnus-sum.el (gnus-summary-exit): Undo last change and fix it in
+	a more conservative way.
+
 2005-02-26  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* gnus-sum.el (gnus-summary-exit): Move point after displaying the
@@ -9,8 +14,8 @@
 	`mm-dissect-multipart' and receive the from field as an (optional)
 	argument from `mm-dissect-multipart'.
 	(mm-dissect-multipart): Receive the from field as an argument and
-	pass it on when we call `mm-dissect-buffer' on MIME parts. Fixes
-	verification/decryption of signed/encrypted MIME parts.
+	pass it on when we call `mm-dissect-buffer' on MIME parts.
+	Fixes verification/decryption of signed/encrypted MIME parts.
 
 2005-02-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
