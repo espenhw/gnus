@@ -3,7 +3,7 @@
 @c Copyright (C) 1995 Free Software Foundation, Inc.
 @setfilename gnus-faq.info
 
-@node Frequently Asked Questions
+@node Frequently Asked Questions, , , Appendices
 @section Frequently Asked Questions
 
 This is the Gnus Frequently Asked Questions list.
