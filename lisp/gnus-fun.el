@@ -222,11 +222,24 @@ colors of the displayed X-Faces."
      (format "pnmcut -left 110 -top 30 -width 144 -height 144 '%s' | ppmnorm 2>/dev/null | ppmnorm | ppmtopgm | pnmscale -width 48 -height 48 > /tmp/gnus.face.ppm"
 	     file))
     (let ((gnus-convert-image-to-face-command
-	   "cat '%s' | ppmquant %d | pnmtopng"))
+	   (format "cat '%%s' | ppmchange %s | ppmquant %%d | pnmtopng"
+		   (gnus-fun-ppm-change-string))))
       (setq result (gnus-face-from-file "/tmp/gnus.face.ppm")))
     (delete-file file)
     ;;(delete-file "/tmp/gnus.face.ppm")
     result))
+
+(defun gnus-fun-ppm-change-string ()
+  (let* ((possibilites '("%02x0000" "00%02x00" "0000%02x"
+			"%02x%02x00" "00%02x%02x" "%02x00%02x"))
+	 (format (concat "'#%02x%02x%02x' '#"
+			 (nth (random 6) possibilites)
+			 "'"))
+	 (values nil))
+  (dotimes (i 255)
+    (push (format format i i i i i i)
+	  values))
+  (mapconcat 'identity values " ")))
 
 (provide 'gnus-fun)
 
