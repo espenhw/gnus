@@ -10371,13 +10371,9 @@ and @code{gpg} are also supported although deprecated.
 @kindex A M (summary)
 @findex gnus-mailing-list-insinuate
 Gnus understands some mailing list fields of RFC 2369.  To enable it,
-either add a `to-list' group parameter (@pxref{Group Parameters}),
+add a @code{to-list} group parameter (@pxref{Group Parameters}),
 possibly using @kbd{A M} (@code{gnus-mailing-list-insinuate}) in the
-summary buffer, or say:
-
-@lisp
-(add-hook 'gnus-summary-mode-hook 'turn-on-gnus-mailing-list-mode)
-@end lisp
+summary buffer.
 
 That enables the following commands to the summary buffer:
 

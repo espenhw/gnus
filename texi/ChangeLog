@@ -1,3 +1,7 @@
+2003-02-21  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Mailing List): Fix.
+
 2003-02-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Article Washing): Mention `g'.
