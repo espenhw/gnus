@@ -1,7 +1,5 @@
 ;; Shut up.
 
-(defvar byte-compile-default-warnings)
-
 (defun maybe-fbind (args)
   (while args
     (or (fboundp (car args))
@@ -11,126 +9,60 @@
 (defun maybe-bind (args)
   (mapcar (lambda (var) (unless (boundp var) (set var nil))) args))
 
-(maybe-fbind '(babel-fetch
-	       babel-wash create-image decode-coding-string display-graphic-p
-	       replace-regexp-in-string
-	       bbdb-complete-name bbdb-records
-	       display-time-event-handler
-	       find-image font-create-object gnus-mule-get-coding-system
-	       font-lock-set-defaults
-	       find-coding-systems-string
+(maybe-fbind '(create-image
+	       display-graphic-p display-time-event-handler find-image
 	       image-size image-type-available-p insert-image
-	       image-type-from-file-header
-	       make-symbolic-link
-	       make-temp-file message-xmas-redefine
-	       mail-abbrev-in-expansion-header-p
-	       mail-aliases-setup mm-copy-tree
-	       mule-write-region-no-coding-system put-image
-	       ring-elements
-	       charsetp sort-coding-systems
-	       coding-system-p coding-system-list
-	       propertize make-mode-line-mouse2-map
-	       frames-on-display-list
-	       make-mode-line-mouse-map
-	       rmail-select-summary rmail-summary-exists rmail-update-summary
-	       rmail-msg-is-pruned rmail-msg-restore-non-pruned-header
-	       sc-cite-regexp set-font-family set-font-size temp-directory
-	       string-as-multibyte
+	       make-mode-line-mouse-map make-temp-file propertize put-image
+	       replace-regexp-in-string rmail-msg-is-pruned
+	       rmail-msg-restore-non-pruned-header sort-coding-systems
 	       tool-bar-add-item tool-bar-add-item-from-menu
-	       unix-sync
-	       url-view-url vcard-pretty-print
-	       url-insert-file-contents
-	       w3-coding-system-for-mime-charset w3-prepare-buffer w3-region
-	       w3m-charset-to-coding-system w3m-region
-	       widget-make-intangible x-defined-colors
-	       w32-focus-frame x-focus-frame))
-
-(maybe-bind '(adaptive-fill-first-line-regexp
-	      adaptive-fill-regexp babel-history babel-translations
-	      default-enable-multibyte-characters
-	      enable-multibyte-characters
-	      display-time-mail-function imap-password mail-mode-hook
-	      filladapt-mode
-	      mc-pgp-always-sign
-	      gnus-message-group-art
-	      gpg-unabbrev-trust-alist
-	      nnoo-definition-alist
-	      current-language-environment
-	      language-info-alist
-	      url-current-callback-func url-be-asynchronous
-	      url-current-callback-data url-working-buffer
-	      url-current-mime-headers w3-meta-charset-content-type-regexp
-	      rmail-enable-mime-composing
+	       vcard-pretty-print w32-focus-frame w3m-charset-to-coding-system
+	       x-focus-frame))
+(maybe-bind '(filladapt-mode
+	      mc-pgp-always-sign rmail-enable-mime-composing
 	      rmail-insert-mime-forwarded-message-function
-	      w3-meta-content-type-charset-regexp
 	      w3m-cid-retrieve-function-alist w3m-current-buffer
-	      w3m-meta-content-type-charset-regexp w3m-mode-map
-	      url-package-version url-package-name))
+	      w3m-meta-content-type-charset-regexp w3m-mode-map))
 
 (if (featurep 'xemacs)
     (progn
-      (defvar track-mouse nil)
-      (maybe-fbind '(char-charset
-		     coding-system-get compute-motion coordinates-in-window-p
-		     delete-overlay easy-menu-create-keymaps
-		     error-message-string event-click-count event-end
-		     event-start facemenu-add-new-face facemenu-get-face
-		     find-charset-region find-coding-systems-for-charsets
-		     find-coding-systems-region find-non-ascii-charset-region
-		     frame-face-alist get-charset-property internal-find-face
-		     internal-next-face-id mail-abbrevs-setup make-char-table
-		     make-face-internal make-face-x-resource-internal
-		     make-overlay mouse-minibuffer-check mouse-movement-p
-		     mouse-scroll-subr overlay-buffer overlay-end
-		     overlay-get overlay-lists overlay-put
-		     overlays-in
-		     overlay-start posn-point posn-window
-		     read-event read-event run-with-idle-timer
-		     set-buffer-multibyte set-char-table-range
-		     set-face-stipple set-frame-face-alist track-mouse
-		     url-retrieve w3-form-encode-xwfu window-at
-		     window-edges x-color-values x-popup-menu browse-url
-		     frame-char-height frame-char-width
-		     url-generic-parse-url xml-parse-region
-		     make-network-process
-		     frame-parameter make-frame-on-display))
-      (maybe-bind '(buffer-display-table
-		    buffer-file-coding-system font-lock-defaults
-		    global-face-data gnus-article-x-face-too-ugly
-		    gnus-newsgroup-charset gnus-newsgroup-emphasis-alist
-		    gnus-newsgroup-name mark-active
-		    mouse-selection-click-count
-		    mouse-selection-click-count-buffer
-		    temporary-file-directory transient-mark-mode
-		    url-current-mime-type
-		    user-full-name user-login-name
-		    w3-image-mappings)))
-  (maybe-bind '(browse-url-browser-function
-		enable-multibyte-characters help-echo-owns-message))
-  (maybe-fbind '(Info-goto-node
-		 add-submenu annotation-glyph annotationp babel-as-string
-		 button-press-event-p characterp color-instance-name
-		 color-instance-rgb-components color-name delete-annotation
-		 device-class device-on-window-system-p device-type
-		 display-error event-glyph event-object event-point
-		 events-to-keys face-doc-string find-face frame-device
-		 frame-property get-popup-menu-response glyph-height
-		 glyph-property glyph-width glyphp make-annotation
-		 make-event
-		 make-color-instance make-extent make-glyph make-gui-button
-		 make-image-specifier map-extents next-command-event
-		 pp-to-string read-color set-extent-property
-		 set-face-doc-string set-glyph-image set-glyph-property
-		 specifier-instance url-generic-parse-url
-		 valid-image-instantiator-format-p w3-do-setup
-		 window-pixel-height window-pixel-width
-		 xml-parse-region make-network-process
-		 device-connection dfw-device)))
-
-(require 'custom)
-
-(defun md5 (a &optional b c)
-  )
+      (maybe-fbind '(ccl-execute-on-string
+		     char-charset charsetp coding-system-get
+		     coding-system-list coding-system-p decode-coding-region
+		     decode-coding-string define-ccl-program delete-overlay
+		     detect-coding-region encode-coding-region
+		     encode-coding-string event-click-count event-end
+		     event-start find-charset-region
+		     find-coding-systems-for-charsets
+		     find-coding-systems-region find-coding-systems-string
+		     get-charset-property mail-abbrevs-setup
+		     mouse-minibuffer-check mouse-movement-p mouse-scroll-subr
+		     overlay-lists pgg-parse-crc24-string posn-point
+		     posn-window read-event set-buffer-multibyte track-mouse
+		     window-edges))
+      (maybe-bind '(adaptive-fill-first-line-regexp
+		    buffer-display-table buffer-file-coding-system
+		    current-language-environment
+		    default-enable-multibyte-characters
+		    enable-multibyte-characters language-info-alist
+		    mark-active mouse-selection-click-count
+		    mouse-selection-click-count-buffer pgg-parse-crc24
+		    temporary-file-directory transient-mark-mode)))
+  (maybe-fbind '(bbdb-complete-name
+		 bbdb-records delete-annotation device-connection dfw-device
+		 events-to-keys font-lock-set-defaults frame-device
+		 glyph-height glyph-width mail-aliases-setup make-annotation
+		 make-event make-glyph make-network-process map-extents
+		 message-xmas-redefine set-extent-property temp-directory
+		 url-generic-parse-url url-insert-file-contents
+		 valid-image-instantiator-format-p
+		 w3-coding-system-for-mime-charset w3-do-setup
+		 w3-prepare-buffer w3-region w3m-region window-pixel-height
+		 window-pixel-width))
+  (maybe-bind '(help-echo-owns-message
+		mail-mode-hook url-package-name url-package-version
+		w3-meta-charset-content-type-regexp
+		w3-meta-content-type-charset-regexp)))
 
 (defun nnkiboze-score-file (a)
   )
