@@ -225,6 +225,7 @@ signer's public key from `pgg-default-keyserver-address'."
 	 (key (cdr (assq 'key-identifier packet)))
 	 status keyserver)
     (and (stringp key)
+	 pgg-query-keyserver
 	 (setq key (concat "0x" (pgg-truncate-key-identifier key)))
 	 (null (pgg-lookup-key key))
 	 (or fetch (interactive-p))

@@ -48,6 +48,11 @@
   :group 'pgg
   :type 'string)
 
+(defcustom pgg-query-keyserver nil
+  "Whether PGG queries keyservers for missing keys when verifying messages."
+  :group 'pgg
+  :type 'boolean)
+
 (defcustom pgg-encrypt-for-me nil
   "If t, encrypt all outgoing messages with user's public key."
   :group 'pgg

@@ -1,5 +1,9 @@
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
+	* pgg.el (pgg-verify-region): Use it.
+
+	* pgg-def.el (pgg-query-keyserver): New variable.
+
 	* pgg.el (pgg-decrypt-region): Bind pgg-default-user-id to
 	key-identifier in packet.  Is this a good idea?
 
