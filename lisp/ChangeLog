@@ -1,5 +1,8 @@
 2002-03-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* qp.el (quoted-printable-decode-region): Doc addition.
+	From: Eli Zaretskii <eliz@is.elta.co.il>
+
 	* mail-source.el (make-source-make-complex-temp-name): Use
 	make-temp-file.
 
