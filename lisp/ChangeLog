@@ -1,3 +1,20 @@
+2002-02-09  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-expire-days):
+	gnus-request-move-article depends on gnus-agent-expire to clean up
+	the cache after moving the article.  Therefore, g-a-e-d can NOT
+	default to nil or can gnus-agent-expire be disabled by doing so.
+	If you don't want to run gnus-agent-expire, don't call it.
+	(gnus-agent-expire): The broken test to disable gnus-agent-expire
+	when g-a-e-d was NOT nil was removed.
+	(gnus-agent-article-name): Removed unnecessary input test as
+	article IDs are always strings.
+	(gnus-agent-regenerate-group): Added check to protect against
+	servers that generate absurdly long article IDs.  Valid IDs are
+	less than 10 digits to avoid overflow errors.  Fixed logic error
+	when ensuring that the final article ID is present in the new
+	alist.
+	
 2003-02-09  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-topic.el (gnus-topic-goto-missing-topic): Just move to the
