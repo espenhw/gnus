@@ -3436,8 +3436,7 @@ Instead, just auto-save the buffer and then bury it."
   "Bury this mail BUFFER."
   (let ((newbuf (other-buffer buffer)))
     (bury-buffer buffer)
-    (if (and (fboundp 'frame-parameters)
-	     (cdr (assq 'dedicated (frame-parameters)))
+    (if (and (window-dedicated-p (selected-window))
 	     (not (null (delq (selected-frame) (visible-frame-list)))))
 	(delete-frame (selected-frame))
       (switch-to-buffer newbuf))))

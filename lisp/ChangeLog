@@ -1,3 +1,7 @@
+2004-10-15  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-bury): Use `window-dedicated-p'.
+
 2004-10-15  Simon Josefsson  <jas@extundo.com>
 
 	* pop3.el (top-level): Don't require nnheader.
