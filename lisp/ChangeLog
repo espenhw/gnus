@@ -1,3 +1,7 @@
+2003-01-07  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-mode-menu): Fix receipt balloon help.
+
 2003-01-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-group-post-news): Don't assume that "" will

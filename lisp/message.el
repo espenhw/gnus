@@ -2066,7 +2066,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Request Receipt"
      message-insert-disposition-notification-to
      ,@(if (featurep 'xemacs) '(t)
-	 '(:help "Request a Disposition Notification of this article"))]
+	 '(:help "Request a receipt notification"))]
     ["Spellcheck" ispell-message
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Spellcheck this message"))]
