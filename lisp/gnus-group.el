@@ -849,7 +849,7 @@ simple manner.")
 
     (easy-menu-define
      gnus-group-misc-menu gnus-group-mode-map ""
-     `("Misc"
+     `("Gnus"
        ("SOUP"
 	["Pack replies" nnsoup-pack-replies (fboundp 'nnsoup-request-group)]
 	["Send replies" gnus-soup-send-replies

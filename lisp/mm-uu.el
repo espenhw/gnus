@@ -371,7 +371,7 @@ Return that buffer."
     (mm-make-handle buf
 		    '("application/pgp-keys"))))
 
-;;;### autoload
+;;;###autoload
 (defun mm-uu-dissect ()
   "Dissect the current buffer and return a list of uu handles."
   (let ((case-fold-search t)

@@ -1,3 +1,19 @@
+2001-08-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Misc -> Gnus.
+	
+	* gnus-group.el (gnus-group-make-menu-bar): Ditto.
+
+	* mm-uu.el (mm-uu-dissect): Autoload. From Gerd M,Av(Bllmann
+	<gerd@gnu.org>.
+
+	* gnus-art.el (gnus-output-to-file): Bind file-name-coding-system.
+
+	* gnus-util.el (gnus-output-to-rmail): Ditto.
+	(gnus-output-to-mail): Ditto.
+
+	* nnmail.el (nnmail-pathname-coding-system): Set default to nil.
+
 2001-08-06  Florian Weimer   <fw@deneb.enyo.de>
 
 	* message.el (message-indent-citation): Use
