@@ -3549,7 +3549,7 @@ to use."
     (when (string-match "\\(^[^\\.]+\\)\\..*" name)
       (setq hierarchy (match-string 1 name))
       (if gnus-group-fetch-control-use-browse-url
-	  (browse-url (concat "ftp://ftp.isc.org:/usenet/control/"
+	  (browse-url (concat "ftp://ftp.isc.org/usenet/control/"
 			      hierarchy "/" name ".Z"))
 	(let ((enable-local-variables nil))
 	  (gnus-group-read-ephemeral-group
