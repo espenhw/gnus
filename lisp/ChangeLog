@@ -1,5 +1,8 @@
 2003-02-08  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-sum.el (gnus-summary-select-article): Remove blink removal
+	code that only worked under Emacs.
+
 	* pgg-gpg.el (pgg-gpg-process-region): Don't blink.  From Satyaki
 	Das <satyaki@chicory.stanford.edu>.
 

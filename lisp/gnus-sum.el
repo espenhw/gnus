@@ -6890,8 +6890,6 @@ be displayed."
     (set-buffer gnus-summary-buffer))
   (let ((article (or article (gnus-summary-article-number)))
 	(all-headers (not (not all-headers))) ;Must be t or nil.
-	;; prevent redisplay to cause flashy displays
-	(inhibit-redisplay t)
 	gnus-summary-display-article-function)
     (and (not pseudo)
 	 (gnus-summary-article-pseudo-p article)
