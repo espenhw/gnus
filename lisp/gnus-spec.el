@@ -377,21 +377,17 @@
 characters correctly. This is because `format' may pad to columns or to
 characters when given a pad value."
   (let ((pad (abs pad-width))
-	(side (< 0 pad-width)))
+	(side (< 0 pad-width))
+	(length-fun (gnus-string-width-function)))
     (if (symbolp el)
-	`(let ((need (- ,pad (,(if gnus-use-correct-string-widths
-				   'gnus-correct-length
-				 'length)
-			      ,el))))
+	`(let ((need (- ,pad (,length-fun ,el))))
 	   (if (> need 0)
 	       (concat ,(when side '(make-string need ?\ ))
 		       ,el
 		       ,(when (not side) '(make-string need ?\ )))
 	     ,el))
       `(let* ((val (eval ,el))
-	      (need (- ,pad (,(if gnus-use-correct-string-widths
-				  'gnus-correct-length
-				'length) val))))
+	      (need (- ,pad (,length-fun val))))
 	 (if (> need 0)
 	     (concat ,(when side '(make-string need ?\ ))
 		     val

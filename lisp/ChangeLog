@@ -1,3 +1,7 @@
+2002-10-12  Jesper harder  <harder@ifa.au.dk>
+
+	* gnus-spec.el (gnus-pad-form): Use gnus-string-width-function.
+
 2002-10-11  Ted Zlatanov <tzz@lifelogs.com>
 
 	* spam.el (spam-check-ifile): added ifile as a spam checking
