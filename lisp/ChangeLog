@@ -1,5 +1,11 @@
 2003-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-insert-mime-button): Exclude a newline from
+	the button.
+	(gnus-insert-prev-page-button): Ditto.
+	(gnus-insert-next-page-button): Ditto.
+	(gnus-insert-mime-security-button): Ditto.
+
 	* mm-view.el (mm-inline-image-emacs): Open the bottom of an image
 	one line.  Suggested by Greg Klanderman <gak@klanderman.net>.
 	(mm-inline-image-xemacs): Ditto.
