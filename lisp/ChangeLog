@@ -1,3 +1,8 @@
+2004-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* sasl.el, sasl-cram.el, sasl-digest.el, hmac-md5.el, hmac-def.el:
+	New files.
+
 2004-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-no-groups-message): Update.
