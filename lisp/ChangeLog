@@ -1,6 +1,6 @@
 2001-06-19 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* nnmail.el (nnmail-incoming-buffer): New variable.
+	* nnmail.el (nnmail-article-buffer): New variable.
 	(nnmail-split-incoming): Use it.
 
 2001-06-15  Eli Zaretskii  <eliz@is.elta.co.il>
