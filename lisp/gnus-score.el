@@ -1402,10 +1402,19 @@ SCORE is the score to add."
 		     (setq found (setq arts (get-text-property 
 					     (point) 'articles)))
 		     ;; Found a match, update scores.
-		     (while arts
-		       (setq art (car arts)
-			     arts (cdr arts))
-		       (setcdr art (+ score (cdr art))))))
+		     (if trace
+			 (while arts
+			   (setq art (car arts)
+				 arts (cdr arts))
+			   (setcdr art (+ score (cdr art)))
+			   (setq gnus-score-trace 
+				 (cons (cons (header-number
+					      (car art)) kill)
+				       gnus-score-trace)))
+		       (while arts
+			 (setq art (car arts)
+			       arts (cdr arts))
+			 (setcdr art (+ score (cdr art)))))))
 	      (forward-line 1))
 	    ;; Update expire date
 	    (cond ((null date))		;Permanent entry.
@@ -1488,13 +1497,19 @@ SCORE is the score to add."
 	    (setq match (funcall (car (car elem)) headers))
 	    (gnus-summary-score-entry 
 	     (nth 1 (car elem)) match
-	     ;; Whether we use substring or exact matches are controlled
-	     ;; here.  
-	     (if (or (not gnus-score-exact-adapt-limit)
-		     (< (length match) gnus-score-exact-adapt-limit))
-		 'e 
-	       (if (equal (nth 1 (car elem)) "subject")
-		   'f 's))
+	     (cond
+	      ((numberp match)
+	       '=)
+	      ((equal (nth 1 (car elem)) "date")
+	       'a)
+	      (t
+	       ;; Whether we use substring or exact matches are controlled
+	       ;; here.  
+	       (if (or (not gnus-score-exact-adapt-limit)
+		       (< (length match) gnus-score-exact-adapt-limit))
+		   'e 
+		 (if (equal (nth 1 (car elem)) "subject")
+		     'f 's))))
 	     (nth 2 (car elem)) date nil t)
 	    (setq elem (cdr elem))))
 	(forward-line 1)))))

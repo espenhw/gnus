@@ -1,4 +1,44 @@
-Mon Aug 28 05:09:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+Tue Aug 29 05:55:19 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-msg.el (gnus-delete-supersedes-headers): Delete
+	Supersedes. 
+
+	* gnus-score.el (gnus-score-adaptive): Did not like matches on
+	numbers or dates.
+
+	* gnus.el (gnus-server-kill-server): Did not mark the dribble
+	buffer as changed.
+
+	* gnus-score.el (gnus-score-string): Did not do traces on fuzzy
+	scores. 
+
+	* gnus.el (gnus-read-init-file): Run on load.
+
+	* gnus-cus.el (gnus-face-dark-name-list): Dark salmon isn't very
+	dark. 
+
+	* gnus-msg.el (gnus-inews-insert-headers): Don't insert multiple
+	Original-Sender headers.
+
+	* gnus-vis.el (gnus-group-make-menu-bar): New submenu for editing
+	groups. 
+
+	* gnus-msg.el (gnus-removable-headers): New variable.
+	(gnus-inews-remove-headers): Use it.
+
+Mon Aug 28 17:19:41 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-help-button): Add `custom-jump' property.
+	(custom-forward-field): Ignore fields with `custom-jump' property.
+
+Mon Aug 28 13:59:04 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-newsrc-to-gnus-format): Would totally barf on
+	illegal group names.
+
+Mon Aug 28 05:09:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.99.26 is released.
 
 	* nntp.el (nntp-send-region-to-server): Would hang.
 

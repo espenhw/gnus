@@ -305,7 +305,6 @@ variable it the real callback function.")
 	 ["Kill all zombie groups" gnus-group-kill-all-zombies t])
 	("Foreign groups"
 	 ["Make a foreign group" gnus-group-make-group t]
-	 ["Edit a group entry" gnus-group-edit-group t]
 	 ["Add a directory group" gnus-group-make-directory-group t]
 	 ["Add the help group" gnus-group-make-help-group t]
 	 ["Add the archive group" gnus-group-make-archive-group t]
@@ -313,6 +312,10 @@ variable it the real callback function.")
 	 ["Make a kiboze group" gnus-group-make-kiboze-group t]
 	 ["Make a virtual group" gnus-group-make-empty-virtual t]
 	 ["Add a group to a virtual" gnus-group-add-to-virtual t])
+	("Editing groups"
+	 ["Parameters" gnus-group-edit-group-parameters t]
+	 ["Select method" gnus-group-edit-group-method t]
+	 ["Info" gnus-group-edit-group t])
 	["Read a directory as a group" gnus-group-enter-directory t]
 	["Jump to group" gnus-group-jump-to-group t]
 	["Best unread group" gnus-group-best-unread-group t]

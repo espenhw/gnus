@@ -1343,7 +1343,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.26"
+(defconst gnus-version "(ding) Gnus v0.99.27"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1512,7 +1512,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar gnus-reffed-article-number nil)
 
 ; Let the byte-compiler know that we know about this variable.
-(defvar rmail-default-file)
+(defvar rmail-default-rmail-file)
 
 (defvar gnus-cache-removeable-articles nil)
 
@@ -1821,6 +1821,23 @@ Thank you for your help in stamping out bugs.
   (` (delete-region (progn (beginning-of-line) (point))
 		    (progn (forward-line (, (or n 1))) (point)))))
 
+;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
+(defvar gnus-init-inhibit nil)
+(defun gnus-read-init-file (&optional inhibit-next)
+  (if gnus-init-inhibit
+      (setq gnus-init-inhibit nil)
+    (setq gnus-init-inhibit inhibit-next)
+    (and gnus-init-file
+	 (or (and (file-exists-p gnus-init-file) 
+		  ;; Don't try to load a directory.
+		  (not (file-directory-p gnus-init-file)))
+	     (file-exists-p (concat gnus-init-file ".el"))
+	     (file-exists-p (concat gnus-init-file ".elc")))
+	 (load gnus-init-file nil t))))
+
+;;; Load the user startup file.
+(gnus-read-init-file 'inhibit)
+
 ;;; Load the compatability functions. 
 
 (require 'gnus-cus)
@@ -2038,16 +2055,6 @@ Thank you for your help in stamping out bugs.
 	(insert newspec))
       (setq fstring (buffer-substring 1 (point-max))))
     (cons 'format (cons fstring (nreverse flist)))))
-
-;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
-(defun gnus-read-init-file ()
-  (and gnus-init-file
-       (or (and (file-exists-p gnus-init-file) 
-		;; Don't try to load a directory.
-		(not (file-directory-p gnus-init-file)))
-	   (file-exists-p (concat gnus-init-file ".el"))
-	   (file-exists-p (concat gnus-init-file ".elc")))
-       (load gnus-init-file nil t)))
 
 (defun gnus-set-work-buffer ()
   (if (get-buffer gnus-work-buffer)
@@ -2373,6 +2380,12 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 
 (defun gnus-header-id (header)
   (header-id header))
+
+(defun gnus-header-message-id (header)
+  (header-id header))
+
+(defun gnus-header-chars (header)
+  (header-chars header))
 
 (defun gnus-header-references (header)
   (header-references header))
@@ -10588,6 +10601,8 @@ is initialized from the SAVEDIR environment variable."
 
 (put 'gnus-article-mode 'mode-class 'special)
 
+(defvar gnus-boogaboo nil)
+
 (if gnus-article-mode-map
     nil
   (setq gnus-article-mode-map (make-keymap))
@@ -10632,7 +10647,7 @@ is initialized from the SAVEDIR environment variable."
 ;;	  "Of" "Oh" "Ov" "Op" "Vu" "V\C-s" "V\C-r" "Vr" "V&" "VT" "Ve"
 ;;	  "VD" "Vk" "VK" "Vsn" "Vsa" "Vss" "Vsd" "Vsi"
 	  )))
-    (while (and nil commands) ; disabled
+    (while (and gnus-boogaboo commands) ; disabled
       (define-key gnus-article-mode-map (car commands) 
 	'gnus-article-summary-command)
       (setq commands (cdr commands))))
@@ -10640,7 +10655,7 @@ is initialized from the SAVEDIR environment variable."
   (let ((commands (list "q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
 ;;			"Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP" 
 			 "=" "n"  "^" "\M-^")))
-    (while (and nil commands) ; disabled
+    (while (and gnus-boogaboo commands) ; disabled
       (define-key gnus-article-mode-map (car commands) 
 	'gnus-article-summary-command-nosave)
       (setq commands (cdr commands)))))
@@ -13750,6 +13765,7 @@ The following commands are available:
   (or (gnus-server-goto-server server)
       (if server (error "No such server: %s" server)
 	(error "No server on the current line")))
+  (gnus-dribble-enter "")
   (let ((buffer-read-only nil))
     (delete-region (progn (beginning-of-line) (point))
 		   (progn (forward-line 1) (point))))

@@ -40,7 +40,7 @@
     "turquoise"))
 
 (defvar gnus-face-dark-name-list
-  '("dark salmon" "firebrick"
+  '("blue" "firebrick"
     "dark green" "dark orange" "dark khaki" "dark violet"
     "dark turquoise"))
 

@@ -1721,6 +1721,7 @@ If the optional argument SAVE is non-nil, use that for saving changes."
     (set-text-properties from (point)
 			 (list 'face custom-button-face
 			       mouse-face custom-mouse-face
+			       'custom-jump t ;Make TAB jump over it.
 			       'custom-tag command))
     (custom-category-set from (point) 'custom-documentation-properties))
   (custom-help-insert ": " (custom-first-line (documentation command)) "\n"))
@@ -1779,7 +1780,6 @@ If the optional argument SAVE is non-nil, use that for saving changes."
 With optional ARG, move across that many fields."
   (interactive "p")
   (while (> arg 0)
-    (setq arg (1- arg))
     (let ((next (if (get-text-property (point) 'custom-tag)
 		    (next-single-property-change (point) 'custom-tag)
 		  (point))))
@@ -1787,9 +1787,10 @@ With optional ARG, move across that many fields."
 		     (next-single-property-change (point-min) 'custom-tag)))
       (if next
 	  (goto-char next)
-	(error "No customization fields in this buffer."))))
+	(error "No customization fields in this buffer.")))
+    (or (get-text-property (point) 'custom-jump)
+	(setq arg (1- arg))))
   (while (< arg 0)
-    (setq arg (1+ arg))
     (let ((previous (if (get-text-property (1- (point)) 'custom-tag)
 			(previous-single-property-change (point) 'custom-tag)
 		      (point))))
@@ -1798,7 +1799,9 @@ With optional ARG, move across that many fields."
 		(previous-single-property-change (point-max) 'custom-tag)))
       (if previous
 	  (goto-char previous)
-	(error "No customization fields in this buffer.")))))
+	(error "No customization fields in this buffer.")))
+    (or (get-text-property (1- (point)) 'custom-jump)
+	(setq arg (1+ arg)))))
 
 (defun custom-backward-field (arg)
   "Move point to the previous field or button.
