@@ -1,3 +1,9 @@
+2003-11-17  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-gssapi-auth-p): Don't check capability (some
+	servers remove AUTH=GSSAPI from capability response returned after
+	successful authentication).
+
 2003-11-16  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.el (gnus-getenv-nntpserver): Fix regexp and simplify.

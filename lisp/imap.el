@@ -842,8 +842,7 @@ Returns t if login was successful, nil otherwise."
       ret)))
 
 (defun imap-gssapi-auth-p (buffer)
-  (and (imap-capability 'AUTH=GSSAPI buffer)
-       (eq imap-stream 'gssapi)))
+  (eq imap-stream 'gssapi))
 
 (defun imap-gssapi-auth (buffer)
   (message "imap: Authenticating using GSSAPI...%s"
