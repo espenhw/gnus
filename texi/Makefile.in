@@ -133,8 +133,8 @@ gnus.latexi gnus-faq.latexi message.latexi emacs-mime.latexi sieve.latexi pgg.la
 	egrep -v "end\{document\}" $< > gnus.tmplatexi
 	cat $(srcdir)/postamble.tex >> gnus.tmplatexi
 	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) gnus.tmplatexi
-	thumbpdf gnus.pdf
-	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) gnus.tmplatexi
+	#thumbpdf gnus.pdf
+	#TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) gnus.tmplatexi
 	mv gnus.pdf $@
 
 latexps: gnus.dvi-x
