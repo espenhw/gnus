@@ -27,6 +27,7 @@
 
 (require 'smime)
 (require 'mm-decode)
+(autoload 'message-narrow-to-headers "message")
 
 (defun mml-smime-sign (cont)
   (when (null smime-keys)
