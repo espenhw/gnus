@@ -1,3 +1,32 @@
+Thu Jan 30 04:15:28 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.8 is released.
+
+Thu Jan 30 02:07:13 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-indent-citation): Place point the right
+	place when indenting.
+
+	* nnml.el (nnml-generate-active-info): Don't enter conses into
+	lists. 
+
+	* gnus-score.el (gnus-score-file-rank): All global score files
+	have low ranks.
+
+	* nnweb.el (nnweb-possibly-change-server): Read active file.
+	(nnweb-dejanews-create-mapping): Respect .overview.
+	(nnweb-reference-create-mapping): Ditto.
+	(nnweb-altavista-create-mapping): Ditto.
+
+Wed Jan 29 04:52:31 1997  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* nnml.el (nnml-generate-nov-databases-1): Generate NOV files in
+	the right order.
+
+Tue Jan 28 23:28:49 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-list-groups): Position point.
+
 Tue Jan 28 22:11:36 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.7 is released.

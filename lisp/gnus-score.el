@@ -2500,22 +2500,24 @@ This includes the score file for the group and all its parents."
 (defun gnus-score-file-rank (file)
   "Return a number that says how specific score FILE is.
 Destroys the current buffer."
-  (when (string-match
-	 (concat "^" (regexp-quote
-		      (expand-file-name
-		       (file-name-as-directory gnus-kill-files-directory))))
-	 file)
-    (setq file (substring file (match-end 0))))
-  (insert file)
-  (goto-char (point-min))
-  (let ((beg (point))
-	elems)
-    (while (re-search-forward "[./]" nil t)
-      (push (buffer-substring beg (1- (point)))
-	    elems))
-    (erase-buffer)
-    (setq elems (delete "all" elems))
-    (length elems)))
+  (if (member file gnus-internal-global-score-files)
+      0
+    (when (string-match
+	   (concat "^" (regexp-quote
+			(expand-file-name
+			 (file-name-as-directory gnus-kill-files-directory))))
+	   file)
+      (setq file (substring file (match-end 0))))
+    (insert file)
+    (goto-char (point-min))
+    (let ((beg (point))
+	  elems)
+      (while (re-search-forward "[./]" nil t)
+	(push (buffer-substring beg (1- (point)))
+	      elems))
+      (erase-buffer)
+      (setq elems (delete "all" elems))
+      (length elems))))
     
 (defun gnus-sort-score-files (files)
   "Sort FILES so that the most general files come first."
@@ -2600,8 +2602,8 @@ The list is determined from the variable gnus-score-file-alist."
     (let ((files score-files))
       (while files
 	(when (stringp (car files))
-	  (setcar files (expand-file-name (car files) 
-					  gnus-kill-files-directory)))
+	  (setcar files (expand-file-name
+			 (car files) gnus-kill-files-directory)))
 	(pop files)))
     (setq score-files (nreverse score-files))
     ;; Remove any duplicate score files.

@@ -1394,8 +1394,8 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
 	(goto-char start)
 	(while (< (point) (mark t))
 	  (insert message-yank-prefix)
-	  (forward-line 1)))
-      (goto-char start))))
+	  (forward-line 1))))
+    (goto-char start)))
 
 (defun message-yank-original (&optional arg)
   "Insert the message being replied to, if any.

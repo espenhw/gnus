@@ -1527,7 +1527,7 @@ increase the score of each group you read."
 	["Original" gnus-article-date-original t]
 	["Lapsed" gnus-article-date-lapsed t]
 	["User-defined" gnus-article-date-user t])
-       ("Filter"
+       ("Washing"
 	("Remove Blanks"
 	 ["Leading" gnus-article-strip-leading-blank-lines t]
 	 ["Multiple" gnus-article-strip-multiple-blank-lines t]

@@ -879,9 +879,9 @@ listed."
 	      (setq newsrc (cdr newsrc)))
 	    (unless newsrc
 	      (goto-char (point-max))
-	      (forward-line -1))))))
-      ;; Adjust cursor point.
-      (gnus-group-position-point))))
+	      (forward-line -1)))))))
+    ;; Adjust cursor point.
+    (gnus-group-position-point)))
 
 (defun gnus-group-list-level (level &optional all)
   "List groups on LEVEL.

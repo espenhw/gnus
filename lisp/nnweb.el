@@ -50,24 +50,27 @@
      (article . nnweb-dejanews-wash-article)
      (map . nnweb-dejanews-create-mapping)
      (search . nnweb-dejanews-search)
-     (address . "http://xp9.dejanews.com/dnquery.xp"))
+     (address . "http://xp9.dejanews.com/dnquery.xp")
+     (identifier . nnweb-dejanews-identity))
     (reference
      (article . nnweb-reference-wash-article)
      (map . nnweb-reference-create-mapping)
      (search . nnweb-reference-search)
-     (address . "http://www.reference.com/cgi-bin/pn/go"))
+     (address . "http://www.reference.com/cgi-bin/pn/go")
+     (identifier . identity))
     (altavista
      (article . nnweb-altavista-wash-article)
      (map . nnweb-altavista-create-mapping)
      (search . nnweb-altavista-search)
      (address . "http://www.altavista.digital.com/cgi-bin/query")
-     (id . "/cgi-bin/news?id@%s")))
+     (id . "/cgi-bin/news?id@%s")
+     (identifier . identity)))
   "Type-definition alist.")
 
 (defvoo nnweb-search nil
   "Search string to feed to DejaNews.")
 
-(defvoo nnweb-max-hits 100
+(defvoo nnweb-max-hits 30
   "Maximum number of hits to display.")
 
 (defvoo nnweb-ephemeral-p nil
@@ -140,7 +143,8 @@
   (nnweb-possibly-change-server group server)
   (save-excursion
     (set-buffer (or buffer nntp-server-buffer))
-    (let ((url (caddr (assq article nnweb-articles))))
+    (let* ((header (cadr (assq article nnweb-articles)))
+	   (url (and header (mail-header-xref header))))
       (when (or (and url
 		     (nnweb-fetch-url url))
 		(and (stringp article)
@@ -226,13 +230,13 @@
 
 (defun nnweb-set-hashtb (header data)
   (gnus-sethash (nnweb-identifier (mail-header-xref header))
-		 data nnweb-hashtb))
+		data nnweb-hashtb))
 
 (defun nnweb-get-hashtb (url)
   (gnus-gethash (nnweb-identifier url) nnweb-hashtb))
 
 (defun nnweb-identifier (ident)
-  ident)
+  (funcall (nnweb-definition 'identifier) ident))
 
 (defun nnweb-overview-file (group)
   "Return the name of the overview file of GROUP."
@@ -260,6 +264,8 @@
   (when server
     (unless (nnweb-server-opened server)
       (nnweb-open-server server)))
+  (unless nnweb-group-alist
+    (nnweb-read-active))
   (when group
     (when (and (not nnweb-ephemeral-p)
 	       (not (equal group nnweb-group)))
@@ -394,18 +400,17 @@
 	    (widen)
 	    (when (string-match "#[0-9]+/[0-9]+ *$" Subject)
 	      (setq Subject (substring Subject 0 (match-beginning 0))))
+	    (incf i)
 	    (unless (nnweb-get-hashtb url)
-	      (incf i)
 	      (push
 	       (list
 		(incf (cdr active))
 		(make-full-mail-header
 		 (cdr active) (concat  "(" Newsgroup ") " Subject) Author Date
-		 (concat "<" (message-unique-id) "-" (int-to-string i)
-			 "@dejanews>")
-		 nil 0 (string-to-int Score) nil)
-		url)
-	       map)))
+		 (concat "<" (nnweb-identifier url) "@dejanews>")
+		 nil 0 (string-to-int Score) url))
+	       map)
+	      (nnweb-set-hashtb (cadar map) (car map))))
 	  ;; See whether there is a "Get next 20 hits" button here.
 	  (if (or (not (re-search-forward
 			"HREF=\"\\([^\"]+\\)\">Get next" nil t))
@@ -417,7 +422,8 @@
 	    (url-insert-file-contents more)))
 	;; Return the articles in the right order.
 	(setq nnweb-articles
-	      (sort map (lambda (s1 s2) (< (car s1) (car s2)))))))))
+	      (sort (nconc nnweb-articles map)
+		    (lambda (s1 s2) (< (car s1) (car s2)))))))))
 
 (defun nnweb-dejanews-wash-article ()
   (let ((case-fold-search t))
@@ -450,6 +456,12 @@
      ("agesign" . "1")
      ("ageweight" . "1")))
   t)
+
+(defun nnweb-dejanews-identity (url)
+  "Return an unique identifier based on URL."
+  (if (string-match "recnum=\\([0-9]+\\)" url)
+      (match-string 1 url)
+    url))
 
 ;;;
 ;;; InReference
@@ -493,21 +505,22 @@
 	      (set (intern (match-string 1)) (match-string 2)))
 	    (widen)
 	    (search-forward "</pre>" nil t)
+	    (incf i)
 	    (unless (nnweb-get-hashtb url)
-	      (incf i)
 	      (push
 	       (list
 		(incf (cdr active))
 		(make-full-mail-header
 		 (cdr active) (concat  "(" Newsgroups ") " Subject) From Date
 		 Message-ID
-		 nil 0 (string-to-int Score) nil)
-		url)
-	       map)))
+		 nil 0 (string-to-int Score) url))
+	       map)
+	      (nnweb-set-hashtb (cadar map) (car map))))
 	  (setq more nil))
 	;; Return the articles in the right order.
 	(setq nnweb-articles
-	      (sort map (lambda (s1 s2) (< (car s1) (car s2)))))))))
+	      (sort (nconc nnweb-articles map)
+		    (lambda (s1 s2) (< (car s1) (car s2)))))))))
 
 (defun nnweb-reference-wash-article ()
   (let ((case-fold-search t))
@@ -616,16 +629,16 @@
 		    group (match-string 4)
 		    id (concat "<" (match-string 5) ">")
 		    from (match-string 6))
+	      (incf i)
 	      (unless (nnweb-get-hashtb url)
-		(incf i)
 		(push
 		 (list
 		  (incf (cdr active))
 		  (make-full-mail-header
 		   (cdr active) (concat  "(" group ") " subject) from date
-		   id nil 0 0 nil)
-		  url)
-		 map)))
+		   id nil 0 0 url))
+		 map)
+		(nnweb-set-hashtb (cadar map) (car map))))
 	    ;; See if we want more.
 	    (when (or (not nnweb-articles)
 		      (>= i nnweb-max-hits)
@@ -634,7 +647,8 @@
 	      (setq more nil)))
 	  ;; Return the articles in the right order.
 	  (setq nnweb-articles
-		(sort map (lambda (s1 s2) (< (car s1) (car s2))))))))))
+		(sort (nconc nnweb-articles map)
+		      (lambda (s1 s2) (< (car s1) (car s2))))))))))
 
 (defun nnweb-altavista-wash-article ()
   (goto-char (point-min))

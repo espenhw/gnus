@@ -154,7 +154,7 @@
   :link '(custom-manual "(gnus)Various Various")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.7" 
+(defconst gnus-version-number "5.4.8"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
