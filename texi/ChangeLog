@@ -1,3 +1,10 @@
+2002-09-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Splitting Mail): "By default, splitting is performed
+	on all incoming messages."  This sentence had a "not" too many.
+	Explicitly say that `nnmail-resplit-incoming' has effect only for
+	`directory' mail-sources entries.
+
 2002-09-15  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Mail Source Specifiers): Say "one-to-one

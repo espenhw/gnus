@@ -12592,12 +12592,13 @@ can be turned off completely by binding
 want to match articles based on the raw header data.
 
 @vindex nnmail-resplit-incoming
-By default, splitting is not performed on all incoming messages.  If
+By default, splitting is performed on all incoming messages.  If
 you specify a @code{directory} entry for the variable
 @code{mail-sources} @pxref{Mail Source Specifiers}, however, then
 splitting does @emph{not} happen by default.  You can set the variable
 @code{nnmail-resplit-incoming} to a non-nil value to make splitting
-happen even in this case.
+happen even in this case.  (This variable has no effect on other kinds
+of entries.)
 
 Gnus gives you all the opportunity you could possibly want for shooting
 yourself in the foot.  Let's say you create a group that will contain
