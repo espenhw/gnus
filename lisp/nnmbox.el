@@ -201,11 +201,12 @@
 
 (defun nnmbox-request-list (&optional server)
   (if server (nnmbox-get-new-mail))
-  (or (nnmail-find-file nnmbox-active-file)
-      (progn
-	(setq nnmbox-group-alist (nnmail-get-active))
-	(nnmail-save-active nnmbox-group-alist nnmbox-active-file)
-	(nnmail-find-file nnmbox-active-file))))
+  (save-excursion
+    (or (nnmail-find-file nnmbox-active-file)
+	(progn
+	  (setq nnmbox-group-alist (nnmail-get-active))
+	  (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
+	  (nnmail-find-file nnmbox-active-file)))))
 
 (defun nnmbox-request-newgroups (date &optional server)
   (nnmbox-request-list server))

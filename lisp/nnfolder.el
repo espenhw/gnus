@@ -256,18 +256,20 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-request-list (&optional server)
   (if server (nnfolder-get-new-mail))
-  (or nnfolder-group-alist
-      (nnmail-find-file nnfolder-active-file)
-      (progn
-	(setq nnfolder-group-alist (nnmail-get-active))
-	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-	(nnmail-find-file nnfolder-active-file))))
+  (save-excursion
+    (or nnfolder-group-alist
+	(nnmail-find-file nnfolder-active-file)
+	(progn
+	  (setq nnfolder-group-alist (nnmail-get-active))
+	  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+	  (nnmail-find-file nnfolder-active-file)))))
 
 (defun nnfolder-request-newgroups (date &optional server)
   (nnfolder-request-list server))
 
 (defun nnfolder-request-list-newsgroups (&optional server)
-  (nnmail-find-file nnfolder-newsgroups-file))
+  (save-excursion
+    (nnmail-find-file nnfolder-newsgroups-file)))
 
 (defun nnfolder-request-post (&optional server)
   (mail-send-and-exit nil))

@@ -204,7 +204,12 @@
 
 (defun nnbabyl-request-list (&optional server)
   (if server (nnbabyl-get-new-mail))
-  (nnmail-find-file nnbabyl-active-file))
+  (save-excursion
+    (or (nnmail-find-file nnbabyl-active-file)
+	(progn
+	  (setq nnbabyl-group-alist (nnmail-get-active))
+	  (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
+	  (nnmail-find-file nnbabyl-active-file)))))
 
 (defun nnbabyl-request-newgroups (date &optional server)
   (nnbabyl-request-list server))

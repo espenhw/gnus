@@ -129,7 +129,7 @@ messages will be shown to indicate the current status.")
 (defun nnmail-request-post-buffer (post group subject header article-buffer
 					info follow-to respect-poster)
   (let ((method-address (cdr (assq 'to-address (nth 5 info))))
-	from subject date to reply-to message-of
+	from date to reply-to message-of
 	references message-id sender cc sendto elt)
     (setq method-address
 	  (if (and (stringp method-address) 

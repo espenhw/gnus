@@ -684,8 +684,10 @@ It will prompt for a password."
 						(car servers))))))
 	(setq servers (cdr servers)))
       (setq server (car (car servers))))
-    (message "nntp: Connection closed to server %s" (or server "(none)"))
-    (ding)))
+    (and server
+	 (progn
+	   (message "nntp: Connection closed to server %s" server)
+	   (ding)))))
 
 (defun nntp-kill-connection (server)
   (let ((proc (nth 1 (assq 'nntp-server-process 

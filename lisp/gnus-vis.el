@@ -120,6 +120,7 @@ To check for marks, e.g. to underline replied articles, use
    gnus-group-mode-map
    ""
    '("Misc"
+     ["Send a bug report" gnus-bug t]
      ["Check for new news" gnus-group-get-new-news t]     
      ["Delete bogus groups" gnus-group-check-bogus-groups t]
      ["Find new newsgroups" gnus-find-new-newsgroups t]

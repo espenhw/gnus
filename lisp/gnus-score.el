@@ -671,7 +671,9 @@ See `gnus-score-expiry-days'."
 		  ((equal adapt '(ignore))
 		   nil)
 		  ((consp adapt)
-		   adapt)))
+		   adapt)
+		  (t
+		   gnus-default-adaptive-score-alist)))
       (setq gnus-summary-mark-below 
 	    (or mark mark-and-expunge gnus-summary-mark-below))
       (setq gnus-summary-expunge-below 
@@ -1219,7 +1221,7 @@ See `gnus-score-expiry-days'."
   (save-excursion
     (set-buffer gnus-summary-buffer)
     (gnus-summary-score-entry 
-     "references" (header-id header) 'e score 
+     "references" (header-id header) 's score 
      (current-time-string) nil t)))
 
 
@@ -1389,7 +1391,7 @@ See `gnus-score-expiry-days'."
 	  (while elem
 	    (gnus-summary-score-entry 
 	     (nth 1 (car elem)) (funcall (car (car elem)) headers)
-	     'e (nth 2 (car elem)) date nil t)
+	     's (nth 2 (car elem)) date nil t)
 	    (setq elem (cdr elem))))
 	(forward-line 1)))))
 

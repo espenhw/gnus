@@ -38,15 +38,14 @@
 
 (defvar nndigest-group-alist nil)
 
-(defconst nndigest-separator "------------------------------[\n \t]*\n[^ ]+: ")
+(defconst nndigest-separator 
+  "^------------------------------[\n \t]*\n[^ ]+: ")
 
 
 
 ;;; Interface functions.
 
 (defun nndigest-retrieve-headers (sequence &optional newsgroup server)
-  "Retrieve the headers for the articles in SEQUENCE.
-Newsgroup must be selected before calling this function."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -81,25 +80,20 @@ Newsgroup must be selected before calling this function."
       'headers)))
 
 (defun nndigest-open-server (host &optional service)
-  "Open news server on HOST."
   (setq nndigest-status-string "")
   (nnheader-init-server-buffer))
 
 (defun nndigest-close-server (&optional server)
-  "Close news server."
   t)
 
 (defun nndigest-server-opened (&optional server)
-  "Return server process status, T or NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
 (defun nndigest-status-message ()
-  "Return server status response as string."
   nndigest-status-string)
 
 (defun nndigest-request-article (id &optional newsgroup server buffer)
-  "Select article by message ID (or number)."
   (nndigest-possibly-change-buffer newsgroup)
   (let ((range (nndigest-narrow-to-article id)))
     (and range
@@ -111,7 +105,6 @@ Newsgroup must be selected before calling this function."
 	   t))))
 
 (defun nndigest-request-group (group &optional server dont-check)
-  "Select news GROUP."
   (let ((entry (assoc group nndigest-group-alist)))
     (and entry (setq nndigest-group-alist (delq entry nndigest-group-alist))))
   (let ((buffer (get-buffer-create (concat " *nndigest " group "*"))))
@@ -143,28 +136,24 @@ Newsgroup must be selected before calling this function."
   t)
 
 (defun nndigest-request-list (&optional server)
-  "List active newsgoups."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     t))
 
 (defun nndigest-request-newgroups (date &optional server)
-  "List groups created after DATE."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     t))
 
 (defun nndigest-request-list-newsgroups (&optional server)
-  "List newsgroups (defined in NNTP2)."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     t))
 
 (defun nndigest-request-post (&optional server)
-  "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
 (fset 'nndigest-request-post-buffer 'nnmail-request-post-buffer)

@@ -208,6 +208,11 @@ all. This may very well take some time.")
 (defun nnml-close-group (group &optional server)
   t)
 
+(defun nnml-request-close ()
+  (setq nnml-current-server nil)
+  (setq nnml-server-alist nil)
+  t)
+
 (defun nnml-request-create-group (group &optional server) 
   (nnml-request-list)
   (setq nnml-group-alist (nnmail-get-active))
@@ -232,7 +237,8 @@ all. This may very well take some time.")
 (defun nnml-request-list (&optional server)
   (if server (nnml-get-new-mail))
   (save-excursion
-    (nnmail-find-file nnml-active-file)))
+    (nnmail-find-file nnml-active-file)
+    (setq nnml-group-alist (nnmail-get-active))))
 
 (defun nnml-request-newgroups (date &optional server)
   (nnml-request-list server))
@@ -592,7 +598,7 @@ all. This may very well take some time.")
    (progn   
      (setq nnml-group-alist nil)
      (list nnml-directory)))
-  (nnml-open-server (system-name))
+  (nnml-open-server (or nnml-current-server ""))
   (let ((dirs (directory-files dir t nil t)))
     (while dirs 
       (if (and (not (string-match "/\\.\\.$" (car dirs)))

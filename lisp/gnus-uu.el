@@ -1457,8 +1457,11 @@ so I simply dropped them.")
 (add-hook 'gnus-exit-group-hook 'gnus-uu-clean-up)
 (add-hook 'gnus-exit-group-hook	'gnus-uu-check-for-generated-files)
 
+
 
-;; Major mode for posting encoded articles.
+;;;
+;;; uuencoded posting
+;;;
 
 (require 'sendmail)
 (require 'rnews)
@@ -1504,129 +1507,24 @@ is t.")
 (defvar gnus-uu-post-inserted-file-name nil)
 (defvar gnus-uu-winconf-post-news nil)
 
-;; The following map and mode was taken from rnewspost.el and edited
-;; somewhat.
-(defvar gnus-uu-post-reply-mode-map nil)
-(if gnus-uu-post-reply-mode-map
-    ()
-  (setq gnus-uu-post-reply-mode-map (make-keymap))
-  (define-key gnus-uu-post-reply-mode-map "\C-c?" 'describe-mode)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-f\C-d" 
-    'news-reply-distribution)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-f\C-k" 
-    'news-reply-keywords)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-f\C-n" 
-    'news-reply-newsgroups)
-      
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-f\C-f" 
-    'news-reply-followup-to)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-f\C-s" 'mail-subject)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-f\C-a" 
-    'gnus-uu-post-reply-summary)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-r" 
-    'news-caesar-buffer-body)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-w" 'news-reply-signature)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-y" 
-    'news-reply-yank-original)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-q" 
-    'mail-fill-yanked-message)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-c" 
-    'gnus-uu-post-news-inews)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-s" 
-    'gnus-uu-post-news-inews)
-  (define-key gnus-uu-post-reply-mode-map "\C-c\C-i" 
-    'gnus-uu-post-insert-binary-in-article)
-  )
-
-;; This mode was taken from rnewspost.el and modified slightly.
-(defun gnus-uu-post-reply-mode ()
-  "Major mode for editing binary news to be posted on USENET.
-First-time posters are asked to please read the articles in newsgroup:
-                                                     news.announce.newusers .
-
-Like news-reply-mode, which is like Text Mode, but with these
-additional commands:
-
-\\<gnus-uu-post-reply-mode-map>\\[gnus-uu-post-news-inews]  post the message.
-C-c C-f	 move to a header field (and create it if there isn't):
-	 C-c C-f C-n  move to Newsgroups:	C-c C-f C-s  move to Subj:
-	 C-c C-f C-f  move to Followup-To:      C-c C-f C-k  move to Keywords:
-	 C-c C-f C-d  move to Distribution:	C-c C-f C-a  move to Summary:
-C-c C-y  news-reply-yank-original (insert current message, in NEWS).
-C-c C-q  mail-fill-yanked-message (fill what was yanked).
-C-c C-r  caesar rotate all letters by 13 places in the article's body (rot13).
-\\[gnus-uu-post-insert-binary-in-article]  encode and include a file in this article.
-
-This mode is almost identical to news-reply-mode, but has some
-additional commands for treating encoded binary articles. In
-particular, \\[gnus-uu-post-news-inews] will ask for a file to include, if
-one hasn't been included already. It will post, first, the message
-composed, and then it will post as many additional articles it takes
-to post the entire encoded files.
-
-   Relevant Variables
-
-   `gnus-uu-post-encode-method' 
-   There are three functions supplied with gnus-uu for encoding files:
-   `gnus-uu-post-encode-uuencode', which does straight uuencoding;
-   `gnus-uu-post-encode-mime', which encodes with base64 and adds MIME 
-   headers; and `gnus-uu-post-encode-mime-uuencode', which encodes with 
-   uuencode and adds MIME headers.
- 
-   `gnus-uu-post-include-before-composing'
-   Non-nil means that gnus-uu will ask for a file to encode before you
-   compose the article.  If this variable is t, you can either include
-   an encoded file with `C-c C-i' or have one included for you when you 
-   post the article.
-
-   `gnus-uu-post-length'
-   Maximum length of an article. The encoded file will be split into how 
-   many articles it takes to post the entire file.
-
-   `gnus-uu-post-separate-description'
-   Non-nil means that the description will be posted in a separate 
-   article. The first article will typically be numbered (0/x). If 
-   this variable is nil, the description the user enters will be 
-   included at the beginning of the first article, which will be 
-   numbered (1/x). Default is t.
-
-   `gnus-uu-post-threaded'
-   Non-nil means that gnus-uu will post the encoded file in a thread.
-   This may not be smart, as no other decoder I have seen are able to
-   follow threads when collecting uuencoded articles. (Well, I have seen
-   one package that does that - gnus-uu, but somehow, I don't think that 
-   counts...) Default is nil.
-"
-  (interactive)
-  ;; require...
-  (or (fboundp 'mail-setup) (load "sendmail"))
-  (kill-all-local-variables)
-  (make-local-variable 'mail-reply-buffer)
-  (setq mail-reply-buffer nil)
-  (set-syntax-table text-mode-syntax-table)
-  (use-local-map gnus-uu-post-reply-mode-map)
-  (setq local-abbrev-table text-mode-abbrev-table)
-  (setq major-mode 'gnus-uu-post-reply-mode)
-  (setq mode-name "Gnus UU News")
-  (make-local-variable 'paragraph-separate)
-  (make-local-variable 'paragraph-start)
-  (setq paragraph-start (concat "^" (regexp-quote mail-header-separator)
-				"$\\|" paragraph-start))
-  (setq paragraph-separate (concat "^" (regexp-quote mail-header-separator)
-				   "$\\|" paragraph-separate))
-  (run-hooks 'text-mode-hook 'gnus-uu-post-reply-mode-hook))
-
 (defun gnus-uu-post-news ()
   "Compose an article and post an encoded file."
   (interactive)
   (setq gnus-uu-post-inserted-file-name nil)
   (setq gnus-uu-winconf-post-news (current-window-configuration))
-  (let (news-reply-mode)
-    (fset 'news-reply-mode 'gnus-uu-post-reply-mode)
-    (gnus-summary-post-news)
-    (if gnus-uu-post-include-before-composing
-	(save-excursion (setq gnus-uu-post-inserted-file-name 
-			      (gnus-uu-post-insert-binary))))))
+
+  (gnus-summary-post-news)
+
+  (use-local-map (copy-keymap (current-local-map)))
+  (local-set-key "\C-c\C-c" 'gnus-summary-edit-article-done)
+  (local-set-key "\C-c\C-f\C-a" 'gnus-uu-post-reply-summary)
+  (local-set-key "\C-c\C-c" 'gnus-uu-post-news-inews)
+  (local-set-key "\C-c\C-s" 'gnus-uu-post-news-inews)
+  (local-set-key "\C-c\C-i" 'gnus-uu-post-insert-binary-in-article)
+      
+  (if gnus-uu-post-include-before-composing
+      (save-excursion (setq gnus-uu-post-inserted-file-name 
+			    (gnus-uu-post-insert-binary)))))
 
 (defun gnus-uu-post-insert-binary-in-article ()
   "Inserts an encoded file in the buffer.

@@ -330,15 +330,6 @@ Native @sc{mime} support is something that should be done.  I was hoping
 I could steal code from @code{Mew}, the @sc{mime} mail reader for Emacs,
 but I'm not quite sure what the status of that project is.  (ding) might
 support @sc{mime} quite soon, and it might not.
-@item 
-Some form of caching would come in handy.  Not only for those with
-extremely slow @sc{nntp} connections, but as a more general way of
-saving articles in a simple fashion.  (You'd basically just mark an
-article as @dfn{cached}.  Gnus would put it in some local directory, and
-each time you request that article from that group, Gnus would fetch the
-local copy instead.)  Lots of quite interesting stuff to be considered
-(caching @sc{nov} headers or not?) before jumping into it.  It would
-require much twiddling of Gnus internals to make it work transparently.
 @item
 When the user references the parent of an article, some sort of
 re-threading should be done to build a proper tree.  The same goes for
@@ -2341,6 +2332,7 @@ move around, read articles, post articles and reply to articles.
 * Ticking and Marking::         Marking articles as read, expirable, etc.
 * Threading::                   How threads are made.
 * Asynchronous Fetching::       Gnus might be able to pre-fetch articles.
+* Article Caching::             You may store articles in a cache.
 * Exiting the Summary Buffer::  Returning to the Group buffer.
 * Process/Prefix::              A convention used by many treatment commands.
 * Saving Articles::             Ways of customizing article saving.
@@ -3733,6 +3725,56 @@ not pre-fetch low-scored articles.  You can do that by setting the
 alist where the keys are the article numbers.  Your function should
 return an alist where the articles you are not interested in have been
 removed.  You could also do sorting on article score and the like. 
+
+@node Article Caching
+@section Article Caching
+@cindex article caching
+@cindex caching
+
+If you have an @emph{extremely} slow @sc{nntp} connection, you may
+consider turning article caching on.  Each article will then be stored
+locally under your home directory.  As you may surmise, this could
+potentially use @emph{huge} amounts of disk space, as well as eat up all
+your inodes so fast it will make your head swim.  In vodka.
+
+Used carefully, though, it could be just an easier way to save articles.
+
+@vindex gnus-use-long-file-name
+@vindex gnus-cache-directory
+@vindex gnus-use-cache
+To turn caching on, set @code{gnus-use-cache} to @code{t}.  By default,
+all articles that are ticked or marked as dormant will then be copied
+over to your local cache (@code{gnus-cache-directory}).  Whether this
+cache is flat or hierarchal is controlled by the
+@code{gnus-use-long-file-name} variable, as usual.
+
+When re-select a ticked or dormant article, it will be fetched from the
+cache instead of from the server.  As articles in your cache will never
+expire, this might serve as a method of saving articles while still
+keeping them where they belong.  Just mark all articles you want to save
+as dormant, and don't worry.
+
+When an article is marked as read, is it removed from the cache.
+
+@vindex gnus-cache-remove-articles
+@vindex gnus-cache-enter-articles
+The entering/removal of articles from the cache is controlled by the
+@code{gnus-cache-enter-articles} and @code{gnus-cache-remove-articles}
+variables.  Both are lists of symbols.  The first is @code{(ticked
+dormant)} by default, meaning that ticked and dormant articles will be
+put in the cache.  The latter is @code{(read)} by default, meaning that
+articles that are marked as read are removed from the cache.  Possibly
+symbols in these two lists are @code{ticked}, @code{dormant},
+@code{unread} and @code{read}.
+
+@findex gnus-jog-cache
+So where does the massive article-fetching and storing come into the
+picture?  The @code{gnus-jog-cache} command will go through all
+subscribed newsgroups, request all unread articles, and store them in
+the cache.  You should only ever, ever ever ever, use this command if 1)
+your connetion to the @sc{nntp} server is really, really, really slow
+and 2) you have a really, really, really huge disk.  Seriously.
+
 
 @node Exiting the Summary Buffer
 @section Exiting the Summary Buffer

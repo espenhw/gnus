@@ -1,3 +1,60 @@
+Sun Apr 30 04:11:31 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-sorted-complement): Would reverse the result given
+	a nil list.
+	(gnus-summary-refer-article): Would not let you refer expunged
+	articles. 
+	(gnus-summary-goto-article): Give a return value.
+
+	* gnus.el: Changes here and there to use the cache.
+
+	* gnus-cache.el: New file.
+
+	* gnus.el (gnus-article-de-quoted-unreadable): Have interactive
+	calls force un-quoting.
+	(gnus-article-date-ut): Would choke on distant dates.
+	(gnus-summary-respool-article): Use the current backend as a
+	default prompt.
+	(gnus-summary-respool-article): Behave grafully on nil input.
+	(gnus-get-unread-articles): Would barf on virtual servers.
+	(gnus-use-cache): New variable.
+
+Sun Apr 30 01:29:34 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el (gnus-summary-raise-thread): Would incorrectly not stay
+	on the same line when that was required.
+	(gnus-article-date-ut): Required arguments.
+
+	* gnus-score.el (gnus-score-load-file): Would reset
+	gnus-adaptive-score-alist. 
+
+Sat Apr 29 22:27:46 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-post-news): Work in mail buffers as
+	well. General cleanup.
+
+	* nntp.el (nntp-default-sentinel): Ignore servers that do not
+	exist. 
+
+	* gnus-score.el (gnus-score-add-followups): Used exact match
+	instead of substring.
+
+Sat Apr 29 17:58:42 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-gnus-to-quick-newsrc-format): Inhibit quitting in
+	a particularly tricky spot.
+	(gnus-read-newsrc-el-file): The same.
+	(gnus-server-edit-server): New layout.
+	(gnus-server-read-server): Wrong interactive spec and returned to
+	the wrong buffer.
+	(gnus-group-browse-foreign-server): Also allow browsing of
+	servers. 
+
+	* nnml.el (nnml-request-list): Did not set nnml-group-alist. 
+
+	* gnus.el (gnus-summary-respool-article): Would not let you
+	respool. 
+
 Sat Apr 29 00:35:17 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus-score.el (gnus-score-add-followups): Did not work.
@@ -5,6 +62,8 @@ Sat Apr 29 00:35:17 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* nntp.el (nntp-request-article): Would fetch articles even if
 	async-fetched.
 	(nntp-async-fetch-articles): Would re-fetch the first article.
+
+	* gnus.el: 0.62 is released
 
 Fri Apr 28 00:24:34 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
