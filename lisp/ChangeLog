@@ -1,3 +1,7 @@
+2005-03-08  Juergen Kreileder <jk@blackdown.de>  (tiny change)
+
+	* imap.el (imap-authenticate): Fix typo.
+
 2005-03-08  Bjorn Solberg <bjorn_ding@hekneby.org>  (tiny change)
 
 	* nnimap.el (nnimap-retrieve-headers-from-server): Sort NOV

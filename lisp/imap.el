@@ -1123,7 +1123,7 @@ password is remembered in the buffer."
   (with-current-buffer (or buffer (current-buffer))
     (if (not (eq imap-state 'nonauth))
 	(or (eq imap-state 'auth)
-	    (eq imap-state 'select)
+	    (eq imap-state 'selected)
 	    (eq imap-state 'examine))
       (make-local-variable 'imap-username)
       (make-local-variable 'imap-password)
