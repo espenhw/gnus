@@ -1,3 +1,10 @@
+2002-02-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cache.el (gnus-cache-articles-in-group): Remove from active
+	if no article.
+	(gnus-cache-possibly-remove-article): Ditto.
+	(gnus-cache-possibly-enter-article): Use gnus-add-to-sorted-list.
+
 2002-02-01  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-int.el (gnus-request-accept-article): Use gnus-get-function.

@@ -206,7 +206,8 @@ it's not cached."
 	      ;; Update the active info.
 	      (set-buffer gnus-summary-buffer)
 	      (gnus-cache-possibly-update-active group (cons number number))
-	      (push article gnus-newsgroup-cached)
+	      (setq gnus-newsgroup-cached
+		    (gnus-add-to-sorted-list gnus-newsgroup-cached article))
 	      (gnus-summary-update-secondary-mark article))
 	    t))))))
 
@@ -468,8 +469,10 @@ Returns the list of articles removed."
 				  (point-max) t))
 	  (delete-region (progn (beginning-of-line) (point))
 			 (progn (forward-line 1) (point)))))
-      (setq gnus-newsgroup-cached
-	    (delq article gnus-newsgroup-cached))
+      (unless (setq gnus-newsgroup-cached
+		    (delq article gnus-newsgroup-cached))
+	(gnus-sethash gnus-newsgroup-name nil gnus-cache-active-hashtb)
+	(setq gnus-cache-active-altered t))
       (gnus-summary-update-secondary-mark article)
       t)))
 
@@ -483,9 +486,13 @@ Returns the list of articles removed."
 			  (directory-files dir nil "^[0-9]+$" t))
 		  '<))
       ;; Update the cache active file, just to synch more.
-      (when articles
-	(gnus-cache-update-active group (car articles) t)
-	(gnus-cache-update-active group (car (last articles))))
+      (if articles
+	  (progn
+	    (gnus-cache-update-active group (car articles) t)
+	    (gnus-cache-update-active group (car (last articles))))
+	(when (gnus-gethash group gnus-cache-active-hashtb)
+	  (gnus-sethash group nil gnus-cache-active-hashtb)
+	  (setq gnus-cache-active-altered t)))
       articles)))
 
 (defun gnus-cache-braid-nov (group cached &optional file)
