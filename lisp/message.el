@@ -1933,7 +1933,8 @@ Prefix arg means justify as well."
 
 (defun message-do-auto-fill ()
   "Like `do-auto-fill', but don't fill in message header."
-  (unless (text-property-any (gnus-point-at-bol) (point) 'field 'header)
+  (unless (text-property-any (gnus-point-at-bol) (point)
+			     'message-field 'header)
     (do-auto-fill)))
 
 (defun message-insert-signature (&optional force)

@@ -1,3 +1,10 @@
+2001-10-19  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-draft.el (gnus-draft-edit-message): Change `field' to
+	`message-field'.  The `field' property has a special significance in
+	Emacs 21.
+	* message.el (message-send, message-setup-1): Ditto.
+
 2001-10-18  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-group-make-articles-read): Call g-r-set-mark
