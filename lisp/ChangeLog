@@ -19,6 +19,8 @@
 	which stream/authenticator is used for the queried
 	username/password.
 	(imap-open, imap-authenticate): Set variables.
+	(imap-gssapi-auth-p, imap-kerberos4-auth-p): Fix typo.
+	(imap-open): Don't assume how `with-temp-buffer' is implemented.
 
 2002-01-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

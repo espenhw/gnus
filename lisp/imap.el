@@ -796,7 +796,7 @@ Returns t if login was successful, nil otherwise."
 
 (defun imap-gssapi-auth-p (buffer)
   (and (imap-capability 'AUTH=GSSAPI buffer)
-       (eq imap-state 'gssapi)))
+       (eq imap-stream 'gssapi)))
 
 (defun imap-gssapi-auth (buffer)
   (message "imap: Authenticating using GSSAPI...%s"
@@ -805,7 +805,7 @@ Returns t if login was successful, nil otherwise."
 
 (defun imap-kerberos4-auth-p (buffer)
   (and (imap-capability 'AUTH=KERBEROS_V4 buffer)
-       (eq imap-state 'kerberos4)))
+       (eq imap-stream 'kerberos4)))
 
 (defun imap-kerberos4-auth (buffer)
   (message "imap: Authenticating using Kerberos 4...%s"
@@ -951,24 +951,28 @@ necessery.  If nil, the buffer name is generated."
 	    (when (funcall (nth 1 (assq stream imap-stream-alist)) buffer)
 	      ;; Stream changed?
 	      (if (not (eq imap-default-stream stream))
-		  (with-temp-buffer
+		  (with-current-buffer (get-buffer-create
+					(generate-new-buffer-name " *temp*"))
 		    (mapcar 'make-local-variable imap-local-variables)
 		    (imap-disable-multibyte)
 		    (buffer-disable-undo)
-		    (setq imap-server imap-server)
+		    (setq imap-server (or server imap-server))
 		    (setq imap-port imap-port)
 		    (setq imap-auth imap-auth)
 		    (message "imap: Reconnecting with stream `%s'..." stream)
 		    (if (null (let ((imap-stream stream))
 				(imap-open-1 (current-buffer))))
-			(message "imap: Reconnecting with stream `%s'...failed"
-				 stream)
+			(progn
+			  (kill-buffer (current-buffer))
+			  (message 
+			   "imap: Reconnecting with stream `%s'...failed" 
+			   stream))
 		      ;; We're done, kill the first connection
 		      (imap-close buffer)
 		      (kill-buffer buffer)
 		      (rename-buffer buffer)
 		      (message "imap: Reconnecting with stream `%s'...done"
-			       imap-stream)
+			       stream)
 		      (setq imap-stream stream)
 		      (setq imap-capability nil)
 		      (setq streams nil)))
