@@ -1227,7 +1227,7 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
    ((featurep 'xemacs)
     (list 'keymap map))
    ((>= emacs-major-version 21)
-    nil)
+    (list 'keymap map))
    (t
     (list 'local-map map))))
 

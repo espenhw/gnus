@@ -1,3 +1,10 @@
+2002-01-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-thread-sort-by-most-recent-number): Fix typo.
+	From: Damien Wyart <damien.wyart@free.fr>
+
+	* gnus-util.el (gnus-local-map-property): In Emacs 21, use keymap.
+
 2002-01-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-select-group-hook): Typo.

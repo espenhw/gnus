@@ -4167,7 +4167,7 @@ Unscored articles will be counted as having a score of zero."
     (gnus-thread-total-score-1 (list thread)))))
 
 (defun gnus-thread-sort-by-most-recent-number (h1 h2)
-  "Sort threads such that the thread with the most recently arrived article is comes first."
+  "Sort threads such that the thread with the most recently arrived article comes first."
   (> (gnus-thread-highest-number h1) (gnus-thread-highest-number h2)))
 
 (defun gnus-thread-highest-number (thread)
@@ -4177,11 +4177,11 @@ Unscored articles will be counted as having a score of zero."
 		      (message-flatten-list thread))))
 
 (defun gnus-thread-sort-by-most-recent-date (h1 h2)
-  "Sort threads such that the thread with the most recently arrived article is comes first."
-  (> (gnus-thread-highest-number h1) (gnus-thread-highest-number h2)))
+  "Sort threads such that the thread with the most recently dated article comes first."
+  (> (gnus-thread-latest-date h1) (gnus-thread-latest-date h2)))
 
 (defun gnus-thread-latest-date (thread)
-  "Return the highest article number in THREAD."
+  "Return the highest article date in THREAD."
   (let ((previous-time 0))
     (apply 'max (mapcar
 		 (lambda (header)
