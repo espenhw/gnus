@@ -1,3 +1,9 @@
+2000-12-20 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-add-text-properties-when): In XEmacs,
+	text-property-not-all doesn't return nil when start=mark(end).
+	(gnus-remove-text-properties-when): Ditto.
+
 2000-12-20 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-start.el (gnus-group-change-level): Remove group from

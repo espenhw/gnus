@@ -995,6 +995,7 @@ Entries without port tokens default to DEFAULTPORT."
   "Like `gnus-add-text-properties', only applied on where PROPERTY is VALUE."
   (let (point)
     (while (and start 
+		(< start end) ;; XEmacs will loop for every when start=end.
 		(setq point (text-property-not-all start end property value)))
       (gnus-add-text-properties start point properties object)
       (setq start (text-property-any point end property value)))
@@ -1006,6 +1007,7 @@ Entries without port tokens default to DEFAULTPORT."
   "Like `remove-text-properties', only applied on where PROPERTY is VALUE."
   (let (point)
     (while (and start 
+		(< start end)
 		(setq point (text-property-not-all start end property value)))
       (remove-text-properties start point properties object)
       (setq start (text-property-any point end property value)))
