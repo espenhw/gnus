@@ -308,12 +308,12 @@ Valid elements include:
 	       ;; Japanese users may prefer iso-2022-jp to shift-jis.
 	       '(iso-2022-jp iso-2022-jp-2 japanese-shift-jis
 			     iso-latin-1 utf-8)))))
-  "Preferred coding systems for encoding outgoing mails.
+  "Preferred coding systems for encoding outgoing messages.
 
-More than one suitable coding system may be found for some text.  By
-default, the coding system with the highest priority is used to encode
-outgoing mails (see `sort-coding-systems').  If this variable is set,
-it overrides the default priority."
+More than one suitable coding system may be found for some text.
+By default, the coding system with the highest priority is used
+to encode outgoing messages (see `sort-coding-systems').  If this
+variable is set, it overrides the default priority."
   :type '(repeat (symbol :tag "Coding system"))
   :group 'mime)
 
