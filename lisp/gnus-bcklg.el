@@ -126,7 +126,7 @@
 	      t))
 	  (setq gnus-backlog-articles (delq ident gnus-backlog-articles)))))))
 
-(defun gnus-backlog-request-article (group number buffer)
+(defun gnus-backlog-request-article (group number &optional buffer)
   (when (numberp number)
     (gnus-backlog-setup)
     (let ((ident (intern (concat group ":" (int-to-string number))
@@ -146,10 +146,12 @@
 	    (setq end
 		  (next-single-property-change
 		   (1+ beg) 'gnus-backlog (current-buffer) (point-max)))))
-	(let ((buffer-read-only nil))
-	  (erase-buffer)
-	  (insert-buffer-substring gnus-backlog-buffer beg end)
-	  t)))))
+	(save-excursion
+	  (and buffer (set-buffer buffer))
+	  (let ((buffer-read-only nil))
+	    (erase-buffer)
+	    (insert-buffer-substring gnus-backlog-buffer beg end)))
+	t))))
 
 (provide 'gnus-bcklg)
 

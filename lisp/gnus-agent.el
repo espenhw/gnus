@@ -753,7 +753,10 @@ the actual number of articles toggled is returned."
 	  (with-temp-buffer
 	    (let (article)
 	      (while (setq article (pop articles))
-		(when (gnus-request-article article group)
+		(when (or 
+		       (gnus-backlog-request-article group article 
+						     nntp-server-buffer)
+		       (gnus-request-article article group))
 		  (goto-char (point-max))
 		  (push (cons article (point)) pos)
 		  (insert-buffer-substring nntp-server-buffer)))

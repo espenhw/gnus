@@ -1,3 +1,10 @@
+1999-12-15 22:07:15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el: Support nov-is-evil.
+	* gnus-bcklg.el (gnus-backlog-request-article): Buffer is optional.
+	Set it if non-nil.
+	* gnus-agent.el (gnus-agent-fetch-articles): Use it.
+
 1999-12-15 08:55:19  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnagent.el (nnagent-server-opened): Redefine.

@@ -2,7 +2,7 @@
 ;; Copyright (C) 1999 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; Keywords: news
+;; Keywords: news egroups mail-archive
 
 ;; This file is part of GNU Emacs.
 
@@ -23,15 +23,12 @@
 
 ;;; Commentary:
 
-;; Note: You need to have `url' and `w3' 0.46 or greater version
+;; Note: You need to have `url' (w3 0.46) or greater version
 ;; installed for this backend to work.
-
-;; A lot of codes stolen from mail-source, nnslashdot, nnweb.
 
 ;; Todo: 
 ;; 1. To support more web archives.
-;; 2. Support nnwarchive-xover-is-evil.
-;; 3. Generalize webmail to other MHonArc archive.
+;; 2. Generalize webmail to other MHonArc archive.
 
 ;;; Code:
 
@@ -41,6 +38,7 @@
 (require 'message)
 (require 'gnus-util)
 (require 'gnus)
+(require 'gnus-bcklg)
 (require 'nnmail)
 (require 'mm-util)
 (require 'mail-source)
@@ -118,11 +116,9 @@
 
 (defvoo nnwarchive-headers-cache nil)
 
-(defvoo nnwarchive-opened nil)
-
 (defvoo nnwarchive-authentication nil)
 
-(defvoo nnwarchive-xover-is-evil nil) ;; not implemented
+(defvoo nnwarchive-nov-is-evil nil)
 
 (defconst nnwarchive-version "nnwarchive 1.0")
 
@@ -148,7 +144,11 @@
 
 (defvoo nnwarchive-buffer nil)
 
-(defvar nnwarchive-headers nil)
+(defvoo nnwarchive-keep-backlog 300)
+(defvar nnwarchive-backlog-articles nil)
+(defvar nnwarchive-backlog-hashtb nil)
+
+(defvoo nnwarchive-headers nil)
 
 
 ;;; Interface functions
@@ -162,40 +162,88 @@
       (set (intern (concat "nnwarchive-" (symbol-name (car def)))) 
 	   (cdr def)))))
 
+(defmacro nnwarchive-backlog (&rest form)
+  `(let ((gnus-keep-backlog nnwarchive-keep-backlog)
+	 (gnus-backlog-buffer 
+	  (format " *nnwarchive backlog %s*" nnwarchive-address))
+	 (gnus-backlog-articles nnwarchive-backlog-articles)
+	 (gnus-backlog-hashtb nnwarchive-backlog-hashtb))
+     (unwind-protect
+	 (progn ,@form)
+       (setq nnwarchive-backlog-articles gnus-backlog-articles
+	     nnwarchive-backlog-hashtb gnus-backlog-hashtb))))
+(put 'nnwarchive-backlog 'lisp-indent-function 0)
+(put 'nnwarchive-backlog 'edebug-form-spec '(form body))
+
+(defun nnwarchive-backlog-enter-article (group number buffer)
+  (nnwarchive-backlog
+    (gnus-backlog-enter-article group number buffer)))
+
+(defun nnwarchive-get-article (article &optional group server buffer) 
+  (if (numberp article)
+      (if (nnwarchive-backlog
+	    (gnus-backlog-request-article group article 
+					  (or buffer nntp-server-buffer)))
+	  (cons group article)
+	(let (contents)
+	  (save-excursion
+	    (set-buffer nnwarchive-buffer)
+	    (goto-char (point-min))
+	    (let ((article1 (- article nnwarchive-article-offset)))
+	      (nnwarchive-url nnwarchive-article-url))
+	    (setq contents (funcall nnwarchive-article-dissect group article)))
+	  (when contents
+	    (save-excursion
+	      (set-buffer (or buffer nntp-server-buffer))
+	      (erase-buffer)
+	      (insert contents)
+	      (nnwarchive-backlog-enter-article group article (current-buffer))
+	      (nnheader-report 'nnwarchive "Fetched article %s" article)
+	      (cons group article)))))
+    nil))
+
 (deffoo nnwarchive-retrieve-headers (articles &optional group server fetch-old)
   (nnwarchive-possibly-change-server group server)
-  (setq nnwarchive-headers (cdr (assoc group nnwarchive-headers-cache)))
-  (save-excursion
-    (set-buffer nnwarchive-buffer)
-    (erase-buffer)
-    (funcall nnwarchive-xover-files group articles))
-  (save-excursion
-    (set-buffer nntp-server-buffer)
-    (erase-buffer)
-    (let (header)
+  (if (or gnus-nov-is-evil nnwarchive-nov-is-evil)
+      (with-temp-buffer
+	(with-current-buffer nntp-server-buffer
+	  (erase-buffer))
+	(let ((buf (current-buffer)) b e)
+	  (dolist (art articles)
+	    (nnwarchive-get-article art group server buf)
+	    (setq b (goto-char (point-min)))
+	    (if (search-forward "\n\n" nil t)
+		(forward-char -1)
+	      (goto-char (point-max)))
+	    (setq e (point))
+	    (with-current-buffer nntp-server-buffer
+	      (insert (format "221 %d Article retrieved.\n" art))
+	      (insert-buffer-substring buf b e)
+	      (insert ".\n"))))
+	'headers)
+    (setq nnwarchive-headers (cdr (assoc group nnwarchive-headers-cache)))
+    (save-excursion
+      (set-buffer nnwarchive-buffer)
+      (erase-buffer)
+      (funcall nnwarchive-xover-files group articles))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)
+      (let (header)
       (dolist (art articles)
 	(if (setq header (assq art nnwarchive-headers))
 	    (nnheader-insert-nov (cdr header))))))
-  (let ((elem (assoc group nnwarchive-headers-cache)))
-    (if elem
-	(setcdr elem nnwarchive-headers)
-      (push (cons group nnwarchive-headers) nnwarchive-headers-cache)))
-  'nov)
-
-(deffoo nnwarchive-retrieve-groups (groups &optional server)
-  "Retrieve group info on GROUPS."
-  (nnwarchive-possibly-change-server nil server)
-  (if nnwarchive-list-groups
-      (funcall nnwarchive-list-groups groups))
-  (nnwarchive-write-groups)
-  (nnwarchive-generate-active)
-  'active)
+    (let ((elem (assoc group nnwarchive-headers-cache)))
+      (if elem
+	  (setcdr elem nnwarchive-headers)
+	(push (cons group nnwarchive-headers) nnwarchive-headers-cache)))
+    'nov))
 
 (deffoo nnwarchive-request-group (group &optional server dont-check)
   (nnwarchive-possibly-change-server nil server)
-  (if nnwarchive-list-groups
-      (funcall nnwarchive-list-groups (list group)))
-  (nnwarchive-write-groups)
+  (when (and (not dont-check) nnwarchive-list-groups)
+    (funcall nnwarchive-list-groups (list group))
+    (nnwarchive-write-groups))
   (let ((elem (assoc group nnwarchive-groups)))
     (cond
      ((not elem)
@@ -207,30 +255,9 @@
        (prin1-to-string group))
       t))))
 
-(deffoo nnwarchive-close-group (group &optional server)
-  (nnwarchive-possibly-change-server group server)
-  (when (gnus-buffer-live-p nnwarchive-buffer)
-    (save-excursion
-      (set-buffer nnwarchive-buffer)
-      (kill-buffer nnwarchive-buffer)))
-  t)
-
 (deffoo nnwarchive-request-article (article &optional group server buffer)
   (nnwarchive-possibly-change-server group server)
-  (let (contents)
-    (save-excursion
-      (set-buffer nnwarchive-buffer)
-      (goto-char (point-min))
-      (let ((article1 (- article nnwarchive-article-offset)))
-	(nnwarchive-url nnwarchive-article-url))
-      (setq contents (funcall nnwarchive-article-dissect group article)))
-    (when contents
-      (save-excursion
-	(set-buffer (or buffer nntp-server-buffer))
-	(erase-buffer)
-	(insert contents)
-	(nnheader-report 'nnwarchive "Fetched article %s" article)
-	(cons group article)))))
+  (nnwarchive-get-article article group server buffer))
 
 (deffoo nnwarchive-close-server (&optional server)
   (when (and (nnwarchive-server-opened server)
@@ -238,6 +265,8 @@
     (save-excursion
       (set-buffer nnwarchive-buffer)
       (kill-buffer nnwarchive-buffer)))
+  (nnwarchive-backlog
+    (gnus-backlog-shutdown))
   (nnoo-close-server 'nnwarchive server))
 
 (deffoo nnwarchive-request-list (&optional server)
@@ -251,23 +280,13 @@
 	(funcall nnwarchive-list-dissect))
     (nnwarchive-write-groups)
     (nnwarchive-generate-active))
-  'active)
-
-(deffoo nnwarchive-request-newgroups (date &optional server)
-  (nnwarchive-possibly-change-server nil server)
-  (nnwarchive-write-groups)
-  (nnwarchive-generate-active)
-  'active)
-
-(deffoo nnwarchive-asynchronous-p ()
-  nil)
-
-(deffoo nnwarchive-server-opened (&optional server)
-  nnwarchive-opened)
+  t)
 
 (deffoo nnwarchive-open-server (server &optional defs connectionless)
   (nnwarchive-init server)
-  (unless (nnwarchive-server-opened server)
+  (if (nnwarchive-server-opened server)
+      t
+    (nnoo-change-server 'nnwarchive server defs)
     (when nnwarchive-authentication
       (setq nnwarchive-login
 	    (or nnwarchive-login
@@ -287,9 +306,8 @@
       (if nnwarchive-open-url
 	  (nnwarchive-url nnwarchive-open-url))
       (if nnwarchive-open-dissect
-	  (funcall nnwarchive-open-dissect))
-      (setq nnwarchive-opened t)))
-  t)
+	  (funcall nnwarchive-open-dissect)))
+    t))
 
 (nnoo-define-skeleton nnwarchive)
 
