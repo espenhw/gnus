@@ -1,5 +1,7 @@
 2005-02-15  Simon Josefsson  <jas@extundo.com>
 
+	* nnimap.el (nnimap-debug): Doc fix.
+
 	* imap.el (imap-debug): Doc fix.
 
 2005-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
