@@ -35,6 +35,11 @@
 
 	* gnus-agent.el: Remove garbage made while merging the Emacs trunk.
 
+2005-02-14  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-group.el (gnus-group-make-doc-group): Mention prefix
+	argument in doc string.  Make query for type more clear.
+
 2005-02-09  Kim F. Storm  <storm@cua.dk>
 
 	Change Emacs release version from 21.4 to 22.1 throughout.
