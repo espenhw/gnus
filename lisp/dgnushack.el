@@ -37,16 +37,6 @@
 (defalias 'efs-re-read-dir 'ignore)
 (defalias 'ange-ftp-re-read-dir 'ignore)
 
-(fset 'orig-require (symbol-function 'require))
-
-(defun require (package &optional file)
-  "Avoid loading .elc files."
-  (let ((filename (concat (symbol-name package) ".el")))
-    (condition-case err
-	(orig-require package filename)
-      (error
-       (orig-require package)))))
-
 (eval-and-compile
   (unless (string-match "XEmacs" emacs-version)
     (fset 'get-popup-menu-response 'ignore)

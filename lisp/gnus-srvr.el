@@ -626,7 +626,7 @@ buffer.
 (defun gnus-browse-read-group (&optional no-article)
   "Enter the group at the current line."
   (interactive)
-  (let ((group (gnus-browse-group-name)))
+  (let ((group (gnus-group-real-name (gnus-browse-group-name))))
     (unless (gnus-group-read-ephemeral-group
 	     group gnus-browse-current-method nil
 	     (cons (current-buffer) 'browse))

@@ -36,6 +36,11 @@
 (require 'timezone)
 (require 'message)
 
+(defun gnus-boundp (variable)
+  "Return non-nil if VARIABLE is bound and non-nil."
+  (and (boundp variable)
+       (symbol-value variable)))
+
 (defmacro gnus-eval-in-buffer-window (buffer &rest forms)
   "Pop to BUFFER, evaluate FORMS, and then return to the original window."
   (let ((tempvar (make-symbol "GnusStartBufferWindow"))

@@ -1063,11 +1063,12 @@ Argument LINES specifies lines to be scrolled up."
 	(gnus-narrow-to-page 1)		;Go to next page.
 	nil)
     ;; More in this page.
-    (condition-case ()
-	(scroll-up lines)
-      (end-of-buffer
-       ;; Long lines may cause an end-of-buffer error.
-       (goto-char (point-max))))
+    (let ((scroll-in-place nil))
+      (condition-case ()
+	  (scroll-up lines)
+	(end-of-buffer
+	 ;; Long lines may cause an end-of-buffer error.
+	 (goto-char (point-max)))))
     (move-to-window-line 0)
     nil))
 
@@ -1083,10 +1084,11 @@ Argument LINES specifies lines to be scrolled down."
 	(gnus-narrow-to-page -1)	;Go to previous page.
 	(goto-char (point-max))
 	(recenter -1))
-    (prog1
-	(ignore-errors
-	  (scroll-down lines))
-      (move-to-window-line 0))))
+    (let ((scroll-in-place nil))
+      (prog1
+	  (ignore-errors
+	    (scroll-down lines))
+	(move-to-window-line 0)))))
 
 (defun gnus-article-refer-article ()
   "Read article specified by message-id around point."

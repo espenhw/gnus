@@ -31,9 +31,13 @@
 (require 'message)
 (require 'gnus-msg)
 
+(defgroup gnus-extract nil
+  "Extracting encoded files."
+  :group 'gnus)
+
 ;; Default viewing action rules
 
-(defvar gnus-uu-default-view-rules 
+(defcustom gnus-uu-default-view-rules 
   '(("\\.te?xt$\\|\\.doc$\\|read.*me\\|\\.c?$\\|\\.h$\\|\\.bat$\\|\\.asm$\\|makefile" "cat %s | sed s/\r//g")
     ("\\.pas$" "cat %s | sed s/\r//g")
     ("\\.[1-9]$" "groff -mandoc -Tascii %s | sed s/\b.//g")
@@ -51,7 +55,7 @@
     ("\\.\\(flc\\|fli\\|rle\\|iff\\|pfx\\|avi\\|sme\\|rpza\\|dl\\|qt\\|rsrc\\|mov\\)$" "xanim")
     ("\\.\\(tar\\|arj\\|zip\\|zoo\\|arc\\|gz\\|Z\\|lzh\\|ar\\|lha\\)$" 
      "gnus-uu-archive"))
-  "*Default actions to be taken when the user asks to view a file.  
+  "Default actions to be taken when the user asks to view a file.  
 To change the behaviour, you can either edit this variable or set
 `gnus-uu-user-view-rules' to something useful.
 
@@ -78,22 +82,28 @@ variable gnus-uu first consults when trying to decide how to view a
 file.  If this variable contains no matches, gnus-uu examines the
 default rule variable provided in this package.  If gnus-uu finds no
 match here, it uses `gnus-uu-user-view-rules-end' to try to make a
-match.")
+match."
+  :group 'gnus-extract
+  :type '(repeat (group regexp (string :tag "Command"))))
 
-(defvar gnus-uu-user-view-rules nil 
-  "*Variable detailing what actions are to be taken to view a file.
+(defcustom gnus-uu-user-view-rules nil 
+  "What actions are to be taken to view a file.
 See the documentation on the `gnus-uu-default-view-rules' variable for 
-details.")
+details."
+  :group 'gnus-extract
+  :type '(repeat (group regexp (string :tag "Command"))))
 
-(defvar gnus-uu-user-view-rules-end 
+(defcustom gnus-uu-user-view-rules-end 
   '(("" "file"))
-  "*Variable saying what actions are to be taken if no rule matched the file name.
+  "What actions are to be taken if no rule matched the file name.
 See the documentation on the `gnus-uu-default-view-rules' variable for 
-details.")
+details."
+  :group 'gnus-extract
+  :type '(repeat (group regexp (string :tag "Command"))))
 
 ;; Default unpacking commands
 
-(defvar gnus-uu-default-archive-rules 
+(defcustom gnus-uu-default-archive-rules 
   '(("\\.tar$" "tar xf")
     ("\\.zip$" "unzip -o")
     ("\\.ar$" "ar x")
@@ -102,20 +112,25 @@ details.")
     ("\\.\\(lzh\\|lha\\)$" "lha x")
     ("\\.Z$" "uncompress")
     ("\\.gz$" "gunzip")
-    ("\\.arc$" "arc -x")))
+    ("\\.arc$" "arc -x"))
+  "See `gnus-uu-user-archive-rules'."
+  :group 'gnus-extract
+  :type '(repeat (group regexp (string :tag "Command"))))
 
 (defvar gnus-uu-destructive-archivers 
   (list "uncompress" "gunzip"))
 
-(defvar gnus-uu-user-archive-rules nil
-  "*A list that can be set to override the default archive unpacking commands.
+(defcustom gnus-uu-user-archive-rules nil
+  "A list that can be set to override the default archive unpacking commands.
 To use, for instance, 'untar' to unpack tar files and 'zip -x' to
 unpack zip files, say the following:
   (setq gnus-uu-user-archive-rules 
     '((\"\\\\.tar$\" \"untar\")
-      (\"\\\\.zip$\" \"zip -x\")))")
+      (\"\\\\.zip$\" \"zip -x\")))"
+  :group 'gnus-extract
+  :type '(repeat (group regexp (string :tag "Command"))))
 
-(defvar gnus-uu-ignore-files-by-name nil
+(defcustom gnus-uu-ignore-files-by-name nil
   "*A regular expression saying what files should not be viewed based on name.
 If, for instance, you want gnus-uu to ignore all .au and .wav files, 
 you could say something like
@@ -123,9 +138,12 @@ you could say something like
   (setq gnus-uu-ignore-files-by-name \"\\\\.au$\\\\|\\\\.wav$\")
 
 Note that this variable can be used in conjunction with the
-`gnus-uu-ignore-files-by-type' variable.")
+`gnus-uu-ignore-files-by-type' variable."
+  :group 'gnus-extract
+  :type '(choice (const :tag "off" nil)
+		 (regexp :format "%v")))
 
-(defvar gnus-uu-ignore-files-by-type nil
+(defcustom gnus-uu-ignore-files-by-type nil
   "*A regular expression saying what files that shouldn't be viewed, based on MIME file type.
 If, for instance, you want gnus-uu to ignore all audio files and all mpegs, 
 you could say something like
@@ -133,7 +151,10 @@ you could say something like
   (setq gnus-uu-ignore-files-by-type \"audio/\\\\|video/mpeg\")
 
 Note that this variable can be used in conjunction with the
-`gnus-uu-ignore-files-by-name' variable.")
+`gnus-uu-ignore-files-by-name' variable."
+  :group 'gnus-extract
+  :type '(choice (const :tag "off" nil)
+		 (regexp :format "%v")))
 
 ;; Pseudo-MIME support
 
@@ -178,66 +199,95 @@ Note that this variable can be used in conjunction with the
 
 ;; Various variables users may set 
 
-(defvar gnus-uu-tmp-dir "/tmp/" 
+(defcustom gnus-uu-tmp-dir "/tmp/" 
   "*Variable saying where gnus-uu is to do its work.
-Default is \"/tmp/\".")
+Default is \"/tmp/\"."
+  :group 'gnus-extract
+  :type 'directory)
 
-(defvar gnus-uu-do-not-unpack-archives nil 
+(defcustom gnus-uu-do-not-unpack-archives nil 
   "*Non-nil means that gnus-uu won't peek inside archives looking for files to display. 
-Default is nil.")
+Default is nil."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-ignore-default-view-rules nil
+(defcustom gnus-uu-ignore-default-view-rules nil
   "*Non-nil means that gnus-uu will ignore the default viewing rules.
-Only the user viewing rules will be consulted.  Default is nil.")
+Only the user viewing rules will be consulted.  Default is nil."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-grabbed-file-functions nil
-  "*Functions run on each file after successful decoding.
+(defcustom gnus-uu-grabbed-file-functions nil
+  "Functions run on each file after successful decoding.
 They will be called with the name of the file as the argument.
 Likely functions you can use in this list are `gnus-uu-grab-view' 
-and `gnus-uu-grab-move'.")
+and `gnus-uu-grab-move'."
+  :group 'gnus-extract
+  :options '(gnus-uu-grab-view gnus-uu-grab-move)
+  :type 'hook)
 
-(defvar gnus-uu-ignore-default-archive-rules nil 
+(defcustom gnus-uu-ignore-default-archive-rules nil 
   "*Non-nil means that gnus-uu will ignore the default archive unpacking commands.  
-Only the user unpacking commands will be consulted.  Default is nil.")
+Only the user unpacking commands will be consulted.  Default is nil."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-kill-carriage-return t
+(defcustom gnus-uu-kill-carriage-return t
   "*Non-nil means that gnus-uu will strip all carriage returns from articles.
-Default is t.")
+Default is t."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-view-with-metamail nil
+(defcustom gnus-uu-view-with-metamail nil
   "*Non-nil means that files will be viewed with metamail.
 The gnus-uu viewing functions will be ignored and gnus-uu will try
 to guess at a content-type based on file name suffixes.  Default
-it nil.")
+it nil."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-unmark-articles-not-decoded nil
+(defcustom gnus-uu-unmark-articles-not-decoded nil
   "*Non-nil means that gnus-uu will mark articles that were unsuccessfully decoded as unread. 
-Default is nil.")
+Default is nil."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-correct-stripped-uucode nil
+(defcustom gnus-uu-correct-stripped-uucode nil
   "*Non-nil means that gnus-uu will *try* to fix uuencoded files that have had trailing spaces deleted. 
-Default is nil.")
+Default is nil."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-save-in-digest nil
+(defcustom gnus-uu-save-in-digest nil
   "*Non-nil means that gnus-uu, when asked to save without decoding, will save in digests.
 If this variable is nil, gnus-uu will just save everything in a 
 file without any embellishments.  The digesting almost conforms to RFC1153 -
 no easy way to specify any meaningful volume and issue numbers were found, 
-so I simply dropped them.")
+so I simply dropped them."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-digest-headers 
+(defcustom gnus-uu-digest-headers 
   '("^Date:" "^From:" "^To:" "^Cc:" "^Subject:" "^Message-ID:" "^Keywords:"
     "^Summary:" "^References:")
-  "*List of regexps to match headers included in digested messages.
-The headers will be included in the sequence they are matched.")
+  "List of regexps to match headers included in digested messages.
+The headers will be included in the sequence they are matched."
+  :group 'gnus-extract
+  :type '(repeat regexp))
 
-(defvar gnus-uu-save-separate-articles nil
-  "*Non-nil means that gnus-uu will save articles in separate files.")
+(defcustom gnus-uu-save-separate-articles nil
+  "*Non-nil means that gnus-uu will save articles in separate files."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-be-dangerous 'ask
+(defcustom gnus-uu-be-dangerous 'ask
   "*Specifies what to do if unusual situations arise during decoding.
 If nil, be as conservative as possible.  If t, ignore things that
-didn't work, and overwrite existing files.  Otherwise, ask each time.")
+didn't work, and overwrite existing files.  Otherwise, ask each time."
+  :group 'gnus-extract
+  :type '(choice (const :tag "conservative" nil)
+		 (const :tag "ask" ask)
+		 (const :tag "liberal" t)))
 
 ;; Internal variables
 
@@ -1676,37 +1726,50 @@ didn't work, and overwrite existing files.  Otherwise, ask each time.")
 ;; parameters: PATH-NAME and FILE-NAME.  (E.g. "/home/gaga/spiral.jpg"
 ;; and "spiral.jpg", respectively.) The function should return nil if
 ;; the encoding wasn't successful.
-(defvar gnus-uu-post-encode-method 'gnus-uu-post-encode-uuencode
+(defcustom gnus-uu-post-encode-method 'gnus-uu-post-encode-uuencode
   "Function used for encoding binary files.
 There are three functions supplied with gnus-uu for encoding files:
 `gnus-uu-post-encode-uuencode', which does straight uuencoding;
 `gnus-uu-post-encode-mime', which encodes with base64 and adds MIME 
 headers; and `gnus-uu-post-encode-mime-uuencode', which encodes with 
-uuencode and adds MIME headers.")
+uuencode and adds MIME headers."
+  :group 'gnus-extract
+  :type '(radio (function-item gnus-uu-post-encode-uuencode)
+		(function-item gnus-uu-post-encode-mime)
+		(function-item gnus-uu-post-encode-mime-uuencode)
+		(function :tag "Other")))
 
-(defvar gnus-uu-post-include-before-composing nil
+(defcustom gnus-uu-post-include-before-composing nil
   "Non-nil means that gnus-uu will ask for a file to encode before you compose the article.
 If this variable is t, you can either include an encoded file with
-\\[gnus-uu-post-insert-binary-in-article] or have one included for you when you post the article.")
+\\[gnus-uu-post-insert-binary-in-article] or have one included for you when you post the article."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-post-length 990
+(defcustom gnus-uu-post-length 990
   "Maximum length of an article.
 The encoded file will be split into how many articles it takes to
-post the entire file.")
+post the entire file."
+  :group 'gnus-extract
+  :type 'integer)
 
-(defvar gnus-uu-post-threaded nil
+(defcustom gnus-uu-post-threaded nil
   "Non-nil means that gnus-uu will post the encoded file in a thread.
 This may not be smart, as no other decoder I have seen are able to
 follow threads when collecting uuencoded articles.  (Well, I have seen
 one package that does that - gnus-uu, but somehow, I don't think that 
-counts...) Default is nil.")
+counts...) Default is nil."
+  :group 'gnus-extract
+  :type 'boolean)
 
-(defvar gnus-uu-post-separate-description t
+(defcustom gnus-uu-post-separate-description t
   "Non-nil means that the description will be posted in a separate article.
 The first article will typically be numbered (0/x).  If this variable
 is nil, the description the user enters will be included at the 
 beginning of the first article, which will be numbered (1/x).  Default 
-is t.")
+is t."
+  :group 'gnus-extract
+  :type 'boolean)
 
 (defvar gnus-uu-post-binary-separator "--binary follows this line--")
 (defvar gnus-uu-post-message-id nil)

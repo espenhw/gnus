@@ -1177,7 +1177,10 @@ If REGEXP, only list groups matching REGEXP."
        (if (member group gnus-zombie-list) gnus-level-zombie gnus-level-killed)
        nil
        (if (setq active (gnus-active group))
-	   (- (1+ (cdr active)) (car active)) 0)
+	   (if (zerop (cdr active))
+	       0
+	     (- (1+ (cdr active)) (car active)))
+	 0)
        nil))))
 
 (defun gnus-group-insert-group-line (gnus-tmp-group gnus-tmp-level 
@@ -2479,7 +2482,10 @@ If REVERSE, sort in reverse order."
 	(when (gnus-group-native-p (gnus-info-group info))
 	  (gnus-info-clear-data info)))
       (gnus-get-unread-articles)
-      (gnus-dribble-enter ""))))
+      (gnus-dribble-enter "")
+      (when (gnus-y-or-n-p 
+	     "Move the cache away to avoid problems in the future? ")
+	(call-interactively 'gnus-cache-move-cache)))))
 
 (defun gnus-info-clear-data (info)
   "Clear all marks and read ranges from INFO."
@@ -2565,7 +2571,8 @@ or nil if no action could be taken."
 	(when all
 	  (gnus-add-marked-articles group 'tick nil nil 'force)
 	  (gnus-add-marked-articles group 'dormant nil nil 'force))
-	(run-hooks 'gnus-group-catchup-group-hook)
+	(let ((gnus-newsgroup-name group))
+	  (run-hooks 'gnus-group-catchup-group-hook))
 	num))))
 
 (defun gnus-group-expire-articles (&optional n)
@@ -3137,8 +3144,8 @@ This command may read the active file."
   (when (and level
 	     (> (prefix-numeric-value level) gnus-level-killed))
     (gnus-get-killed-groups))
-  (gnus-group-prepare-flat (or level gnus-level-subscribed)
-			   all (or lowest 1) regexp)
+  (gnus-group-prepare-flat 
+   (or level gnus-level-subscribed) all (or lowest 1) regexp)
   (goto-char (point-min))
   (gnus-group-position-point))
 

@@ -265,9 +265,10 @@ This must be bound to a button-down mouse event."
 (defun gnus-pick-next-page ()
   "Go to the next page.  If at the end of the buffer, start reading articles."
   (interactive)
-  (condition-case nil
-      (scroll-up)
-    (end-of-buffer (gnus-pick-start-reading))))
+  (let ((scroll-in-place nil))
+    (condition-case nil
+	(scroll-up)
+      (end-of-buffer (gnus-pick-start-reading)))))
 
 ;;;
 ;;; gnus-binary-mode

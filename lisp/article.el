@@ -648,7 +648,8 @@ always hide."
   "Remove all blank lines from the beginning of the article."
   (interactive)
   (save-excursion
-    (let (buffer-read-only)
+    (let ((inhibit-point-motion-hooks t)
+	  buffer-read-only)
       (goto-char (point-min))
       (when (search-forward "\n\n" nil t)
 	(while (and (not (eobp))

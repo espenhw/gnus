@@ -27,20 +27,32 @@
 
 (require 'gnus)
 
-(defvar gnus-use-full-window t
-  "*If non-nil, use the entire Emacs screen.")
+(defgroup gnus-windows nil
+  "Window configuration."
+  :group 'gnus)
+
+(defcustom gnus-use-full-window t
+  "*If non-nil, use the entire Emacs screen."
+  :group 'gnus-windows
+  :type 'boolean)
 
 (defvar gnus-window-configuration nil
   "Obsolete variable.  See `gnus-buffer-configuration'.")
 
-(defvar gnus-window-min-width 2
-  "*Minimum width of Gnus buffers.")
+(defcustom gnus-window-min-width 2
+  "*Minimum width of Gnus buffers."
+  :group 'gnus-windows
+  :type 'integer)
 
-(defvar gnus-window-min-height 1
-  "*Minimum height of Gnus buffers.")
+(defcustom gnus-window-min-height 1
+  "*Minimum height of Gnus buffers."
+  :group 'gnus-windows
+  :type 'integer)
 
-(defvar gnus-always-force-window-configuration nil
-  "*If non-nil, always force the Gnus window configurations.")
+(defcustom gnus-always-force-window-configuration nil
+  "*If non-nil, always force the Gnus window configurations."
+  :group 'gnus-windows
+  :type 'boolean)
 
 (defvar gnus-buffer-configuration
   '((group

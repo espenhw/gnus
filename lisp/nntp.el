@@ -466,17 +466,13 @@ It will prompt for a password."
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
   (when (file-exists-p "~/.nntp-authinfo")
-    (save-excursion
-      (set-buffer (get-buffer-create " *authinfo*"))
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
+    (nnheader-temp-write nil
       (insert-file-contents "~/.nntp-authinfo")
       (goto-char (point-min))
       (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
       (nntp-send-command 
        "^.*\r?\n" "AUTHINFO PASS" 
-       (buffer-substring (point) (progn (end-of-line) (point))))
-      (kill-buffer (current-buffer)))))
+       (buffer-substring (point) (progn (end-of-line) (point)))))))
 
 ;;; Internal functions.
 
@@ -745,14 +741,19 @@ It will prompt for a password."
 
     (unless connectionless
       (or (nntp-find-connection nntp-server-buffer)
-	  (nntp-open-connection nntp-server-buffer)))
+	  (nntp-open-connection nntp-server-buffer))))
 
-    (when group
-      (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
-	(when (not (equal group (caddr entry)))
-	  (nntp-request-group group)
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
+  (when group
+    (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
+      (when (not (equal group (caddr entry)))
+	(nntp-request-group group)
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (if nnheader-callback-function
+	      (progn
+		(goto-char (point-max))
+		(forward-line -1)
+		(gnus-delete-line))
 	    (erase-buffer)))))))
 
 (defun nntp-decode-text (&optional cr-only)

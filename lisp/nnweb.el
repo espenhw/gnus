@@ -31,6 +31,7 @@
 (require 'nnoo)
 (require 'message)
 (require 'gnus-util)
+(require 'gnus)
 (require 'w3)
 (require 'url)
 (ignore-errors

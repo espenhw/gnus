@@ -642,6 +642,11 @@ If LOW, update the lower bound instead."
   (let ((nnml-generate-active-function 'identity))
     (nnml-generate-nov-databases-1 dir)))
 
+(defun gnus-cache-move-cache (dir)
+  "Move the cache tree to somewhere else."
+  (interactive "DMove the cache tree to: ")
+  (rename-file gnus-cache-directory dir))
+
 (provide 'gnus-cache)
 	      
 ;;; gnus-cache.el ends here

@@ -286,9 +286,8 @@ with some simple extensions.
 (defun gnus-topic-parameters (topic)
   "Return the parameters for TOPIC."
   (let ((top (gnus-topic-find-topology topic)))
-    (unless top
-      (error "No such topic: %s" topic))
-    (nth 3 (cadr top))))
+    (when top
+      (nth 3 (cadr top)))))
 
 (defun gnus-topic-set-parameters (topic parameters)
   "Set the topic parameters of TOPIC to PARAMETERS."
@@ -391,6 +390,7 @@ articles in the topic and its subtopics."
 	 (beg (progn (beginning-of-line) (point)))
 	 (topicl (reverse topicl))
 	 (all-entries entries)
+	 (point-max (point-max))
 	 (unread 0)
 	 (topic (car type))
 	 info entry end active)
@@ -428,7 +428,8 @@ articles in the topic and its subtopics."
     ;; Insert the topic line.
     (when (and (not silent)
 	       (or gnus-topic-display-empty-topics
-		   (not (zerop unread))))
+		   (not (zerop unread))
+		   (/= point-max (point-max))))
       (gnus-extent-start-open (point))
       (gnus-topic-insert-topic-line 
        (car type) visiblep

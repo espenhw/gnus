@@ -2017,11 +2017,11 @@ The following commands are available:
   (make-local-variable 'gnus-summary-line-format)
   (make-local-variable 'gnus-summary-line-format-spec)
   (make-local-variable 'gnus-summary-mark-positions)
-  (gnus-update-format-specifications nil 'summary 'summary-mode 'summary-dummy)
-  (gnus-update-summary-mark-positions)
   (gnus-make-local-hook 'post-command-hook)
   (gnus-add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
-  (run-hooks 'gnus-summary-mode-hook))
+  (run-hooks 'gnus-summary-mode-hook)
+  (gnus-update-format-specifications nil 'summary 'summary-mode 'summary-dummy)
+  (gnus-update-summary-mark-positions))
 
 (defun gnus-summary-make-local-variables ()
   "Make all the local summary buffer variables."
@@ -2424,10 +2424,8 @@ This is all marks except unread, ticked, dormant, and expirable."
     (let ((gnus-replied-mark 129)
 	  (gnus-score-below-mark 130)
 	  (gnus-score-over-mark 130)
-	  (thread nil)
-	  (gnus-visual nil)
 	  (spec gnus-summary-line-format-spec)
-	  pos)
+	  thread gnus-visual pos)
       (save-excursion
 	(gnus-set-work-buffer)
 	(let ((gnus-summary-line-format-spec spec))
@@ -5334,8 +5332,9 @@ If BACKWARD, the previous article is selected instead of the next."
 			  "exiting"))
 	  (gnus-summary-next-group nil group backward)))
        (t
-	(gnus-summary-walk-group-buffer
-	 gnus-newsgroup-name cmd unread backward)))))))
+	(when (numberp last-input-event)
+	  (gnus-summary-walk-group-buffer
+	   gnus-newsgroup-name cmd unread backward))))))))
 
 (defun gnus-summary-walk-group-buffer (from-group cmd unread backward)
   (let ((keystrokes '((?\C-n (gnus-group-next-unread-group 1))
@@ -6524,14 +6523,19 @@ and `request-accept' functions."
 	    to-newsgroup select-method (not articles))))
 	;; Crosspost the article.
 	((eq action 'crosspost)
-	 (let ((xref (mail-header-xref (gnus-summary-article-header article))))
-	   (setq new-xref (concat gnus-newsgroup-name ":" article))
-	   (if (and xref (not (string= xref "")))
-	       (progn
-		 (when (string-match "^Xref: " xref)
-		   (setq xref (substring xref (match-end 0))))
-		 (setq new-xref (concat xref " " new-xref)))
-	     (setq new-xref (concat (system-name) " " new-xref)))
+	 (let ((xref (message-tokenize-header
+		      (mail-header-xref (gnus-summary-article-header article))
+		      " ")))
+	   (setq new-xref (concat (gnus-group-real-name gnus-newsgroup-name)
+				  ":" article))
+	   (unless xref 
+	     (setq xref (list (system-name))))
+	   (setq new-xref
+		 (concat
+		  (mapconcat 'identity 
+			     (delete "Xref:" (delete new-xref xref))
+			     " ")
+		  new-xref))
 	   (save-excursion
 	     (set-buffer copy-buf)
 	     (gnus-request-article-this-buffer article gnus-newsgroup-name)
@@ -6603,8 +6607,7 @@ and `request-accept' functions."
 	      (set-buffer copy-buf)
 	      (gnus-request-article-this-buffer article gnus-newsgroup-name)
 	      (nnheader-replace-header
-	       "xref" (concat new-xref " " (gnus-group-prefixed-name
-					    (car art-group) to-method)
+	       "xref" (concat new-xref " " (car art-group)
 			      ":" (cdr art-group)))
 	      (gnus-request-replace-article
 	       article gnus-newsgroup-name (current-buffer)))))
@@ -6743,7 +6746,12 @@ This will be the case if the article has both been mailed and posted."
     ;; This backend supports expiry.
     (let* ((total (gnus-group-total-expirable-p gnus-newsgroup-name))
 	   (expirable (if total
-			  (gnus-list-of-read-articles gnus-newsgroup-name)
+			  (progn
+			    ;; We need to update the info for
+			    ;; this group for `gnus-list-of-read-articles'
+			    ;; to give us the right answer.
+			    (gnus-summary-update-info)
+			    (gnus-list-of-read-articles gnus-newsgroup-name))
 			(setq gnus-newsgroup-expirable
 			      (sort gnus-newsgroup-expirable '<))))
 	   (expiry-wait (if now 'immediate

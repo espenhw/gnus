@@ -336,7 +336,9 @@ This hook is called after Gnus is connected to the NNTP server."
   :group 'gnus-start
   :type 'hook)
 
-(defcustom gnus-get-new-news-hook nil
+(defcustom gnus-get-new-news-hook 
+  (when (gnus-boundp 'display-time-timer)
+    '(display-time-event-handler))
   "A hook run just before Gnus checks for new news."
   :group 'gnus-start
   :type 'hook)

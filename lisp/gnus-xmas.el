@@ -392,6 +392,9 @@ call it with the value of the `gnus-data' text property."
   (when (< emacs-minor-version 14)
     (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
 
+  (when (fboundp 'turn-off-scroll-in-place)
+    (add-hook 'gnus-article-mode-hook 'turn-off-scroll-in-place))
+
   (unless (boundp 'standard-display-table)
     (setq standard-display-table nil))
 

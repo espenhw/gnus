@@ -6,6 +6,9 @@ total:
 	rm -f *.elc ; $(EMACS) $(FLAGS) -f dgnushack-compile
 
 all:
+	rm -f *.elc ; $(EMACS) $(FLAGS) -f dgnushack-compile
+
+clever:
 	$(EMACS) $(FLAGS) -f dgnushack-compile
 
 some:
