@@ -1,5 +1,12 @@
 2002-02-23  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-view.el (mm-text-html-renderer-alist): Add html2text.
+	(mm-text-html-washer-alist): Ditto.
+
+	* mm-decode.el (mm-text-html-renderer): Add html2text.
+
+	* html2text.el: Face lift.
+
 	* html2text.el: New file from Joakim Hove <hove@phys.ntnu.no>.
 
 2002-02-22  ShengHuo ZHU  <zsh@cs.rochester.edu>

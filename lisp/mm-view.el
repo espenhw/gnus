@@ -34,6 +34,7 @@
   (autoload 'vcard-parse-string "vcard")
   (autoload 'vcard-format-string "vcard")
   (autoload 'fill-flowed "flow-fill")
+  (autoload 'html2text "html2text")
   (unless (fboundp 'diff-mode)
     (autoload 'diff-mode "diff-mode" "" t nil)))
 
@@ -44,7 +45,8 @@
 	   mm-links-remove-leading-blank
 	   "links" "-dump" file)
     (lynx  mm-inline-render-with-stdin nil
-	   "lynx" "-dump" "-force_html" "-stdin"))
+	   "lynx" "-dump" "-force_html" "-stdin")
+    (html2text  mm-inline-render-with-function html2text))
   "The attributes of renderer types for text/html.")
 
 (defvar mm-text-html-washer-alist
@@ -54,7 +56,8 @@
 	   mm-links-remove-leading-blank
 	   "links" "-dump" file)
     (lynx  mm-inline-wash-with-stdin nil
-	   "lynx" "-dump" "-force_html" "-stdin"))
+	   "lynx" "-dump" "-force_html" "-stdin")
+    (html2text  html2text))
   "The attributes of washer types for text/html.")
 
 ;;; Internal variables.

@@ -1,36 +1,67 @@
-;; These functions provide a simple way to wash/clean html infected mails.
-;; Definitely do not work in all cases, but some improvement in readability 
-;; is generally obtained. Formatting is only done in the buffer, so the next
-;; time you enter the article it will be "re-htmlized".
+;;; html2text.el --- a simple html to plain text converter
+
+;; Copyright (C) 2002 Free Software Foundation, Inc.
+
+;; Author: Joakim Hove <hove@phys.ntnu.no>
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
+
+;; These functions provide a simple way to wash/clean html infected
+;; mails.  Definitely do not work in all cases, but some improvement
+;; in readability is generally obtained. Formatting is only done in
+;; the buffer, so the next time you enter the article it will be
+;; "re-htmlized".
 ;;
 ;; The main function is "html2text"
-;; 
-;; Joakim Hove <hove@phys.ntnu.no>
 
-
+;;; Code:
 
 ;;
 ;; <Global variables>
 ;;
 
+(eval-when-compile
+  (require 'cl))
+
 (defvar html2text-format-single-element-list '(("hr" . html2text-clean-hr)))
 
-(defvar html2text-replace-list 
-  '(("&nbsp;" . " ") ("&gt;" . ">") ("&lt;" . "<") ("&quot;" . "\"")) 
-  "This is a alist(?) were each element is a dotted pair consisting of
-an old string, and a replacement string. This replacement is done by
-the function \"html2text-substitute\" which basically performs a 
-replace-string operation for every element in the list. This is completely
-verbatim - without any use of REGEXP")
+(defvar html2text-replace-list
+  '(("&nbsp;" . " ") ("&gt;" . ">") ("&lt;" . "<") ("&quot;" . "\""))
+  "The map of entity to text.
 
-(defvar html2text-remove-tag-list    
+This is an alist were each element is a dotted pair consisting of an
+old string, and a replacement string. This replacement is done by the
+function \"html2text-substitute\" which basically performs a
+replace-string operation for every element in the list. This is
+completely verbatim - without any use of REGEXP.")
+
+(defvar html2text-remove-tag-list
   '("html" "body" "p" "img" "dir" "head" "div" "br" "font" "title" "meta")
-  "This is a list of tags which should be removed, without any formatting. 
-Observe that if you the tags in the list are presented *without* any 
-\"<\" or \">\". All occurences of a tag appearing in this list are removed,
-irrespective of whether it is a closing or opening tag, or if the tag
-has additional attributes. The actual deletion is done by the function
-\"html2text-remove-tags\".
+  "A list of removable tags.
+
+This is a list of tags which should be removed, without any
+formatting.  Observe that if you the tags in the list are presented
+*without* any \"<\" or \">\". All occurences of a tag appearing in
+this list are removed, irrespective of whether it is a closing or
+opening tag, or if the tag has additional attributes. The actual
+deletion is done by the function \"html2text-remove-tags\".
 
 For instance the text:
 
@@ -42,48 +73,48 @@ will be reduced to:
 
 If this list contains the element \"font\".")
 
-(defvar html2text-format-tag-list    
-  '(("b" 	  . html2text-clean-bold) 
-    ("u" 	  . html2text-clean-underline) 
-    ("i" 	  . html2text-clean-italic) 
+(defvar html2text-format-tag-list
+  '(("b" 	  . html2text-clean-bold)
+    ("u" 	  . html2text-clean-underline)
+    ("i" 	  . html2text-clean-italic)
     ("blockquote" . html2text-clean-blockquote)
-    ("a"          . html2text-clean-anchor) 
+    ("a"          . html2text-clean-anchor)
     ("ul"         . html2text-clean-ul)
     ("ol"         . html2text-clean-ol)
     ("dl"         . html2text-clean-dl)
     ("center"     . html2text-clean-center))
-  "This is an alist where each dotted pair consists of a tag, and then the name
-of a function to be called when this tag is found. The function is called with
-the arguments p1, p2, p3 and p4. These are demontrated below:
+  "An alist of tags and processing functions.
+
+This is an alist where each dotted pair consists of a tag, and then
+the name of a function to be called when this tag is found. The
+function is called with the arguments p1, p2, p3 and p4. These are
+demontrated below:
 
 \"<b> This is bold text </b>\"
- ^   ^                 ^    ^  
+ ^   ^                 ^    ^
  |   |                 |    |
 p1  p2                p3   p4
 
-Then the called function will typically format the text somewhat and remove the tags.")
-
-
+Then the called function will typically format the text somewhat and
+remove the tags.")
 
 (defvar html2text-remove-tag-list2  '("li" "dt" "dd" "meta")
-  "This is a list of tags which are removed similarly to the list
-\"html2text-remove-tag-list\" - but these tags are retained for the
-formatting, and then moved afterwards.")
+  "Another list of removable tags.
 
+This is a list of tags which are removed similarly to the list
+`html2text-remove-tag-list' - but these tags are retained for the
+formatting, and then moved afterward.")
 
 ;;
 ;; </Global variables>
 ;;
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;;
 ;; <Utility functions>
 ;;
-
 
 (defun html2text-buffer-head ()
   (if (string= mode-name "Article")
@@ -91,7 +122,6 @@ formatting, and then moved afterwards.")
     (beginning-of-buffer)
     )
   )
-
 
 (defun html2text-replace-string (from-string to-string p1 p2)
   (goto-char p1)
@@ -109,10 +139,8 @@ formatting, and then moved afterwards.")
 ;; </Utility functions>
 ;;
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;;
 ;; <Functions related to attributes> i.e. <font size=+3>
@@ -120,9 +148,7 @@ formatting, and then moved afterwards.")
 
 (defun html2text-attr-value (attr-list attr)
   (nth 1 (assoc attr attr-list))
-)
-
-
+  )
 
 (defun html2text-get-attr (p1 p2 tag)
   (goto-char p1)
@@ -135,7 +161,7 @@ formatting, and then moved afterwards.")
 	 (this (nth 1 tmp-list))
 	 (next (nth 2 tmp-list))
 	 (index 1))
-    
+
     (cond
      ;; size=3
      ((string-match "[^ ]=[^ ]" prev)
@@ -151,7 +177,7 @@ formatting, and then moved afterwards.")
      )
 
     (while (< index (length tmp-list))
-      (cond 
+      (cond
        ;; size=3
        ((string-match "[^ ]=[^ ]" this)
 	(let ((attr  (nth 0 (split-string this "=")))
@@ -167,18 +193,17 @@ formatting, and then moved afterwards.")
        ((string-match "[^ ]=\\'" this)
 	(setq attr-list (cons (list (substring this 0 -1) next) attr-list))
 	)
-  
+
        ;; size = 3
        ((string= "=" this)
 	(setq attr-list (cons (list prev next) attr-list))
+	)
        )
-      )
       (setq index (1+ index))
       (setq prev this)
       (setq this next)
       (setq next (nth (1+ index) tmp-list))
       )
-
 
     ;;
     ;; Tags with no accompanying "=" i.e. value=nil
@@ -198,7 +223,8 @@ formatting, and then moved afterwards.")
 
     (while (< index (1- (length tmp-list)))
       (if (not (string-match "=" this))
-	  (if (not (or (string= (substring next 0 1) "=") (string= (substring prev -1) "=")))
+	  (if (not (or (string= (substring next 0 1) "=")
+		       (string= (substring prev -1) "=")))
 	      (setq attr-list (cons (list this nil) attr-list))
 	    )
 	)
@@ -208,7 +234,7 @@ formatting, and then moved afterwards.")
       (setq next (nth (1+ index) tmp-list))
       )
 
-    (if this 
+    (if this
 	(progn
 	  (if (not (string-match "=" this))
 	      (progn
@@ -219,18 +245,16 @@ formatting, and then moved afterwards.")
 	    )
 	  )
       )
-    attr-list  ;; return - value
+    attr-list ;; return - value
     )
-)
+  )
 
 ;;
 ;; </Functions related to attributes>
 ;;
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;;
 ;; <Functions to be called to format a tag-pair>
@@ -248,7 +272,7 @@ formatting, and then moved afterwards.")
       (cond
        ((string= list-type "ul") (insert " o "))
        ((string= list-type "ol") (insert (format " %s: " item-nr)))
-       (insert " x "))
+       (t (insert " x ")))
       )
     )
   )
@@ -285,15 +309,11 @@ formatting, and then moved afterwards.")
       )
     )
   )
-      
-
-
-
 
 (defun html2text-delete-tags (p1 p2 p3 p4)
   (kill-region p1 p2)
   (kill-region (- p3 (- p2 p1)) (- p4 (- p2 p1)))
-)
+  )
 
 (defun html2text-delete-single-tag (p1 p2)
   (kill-region p1 p2)
@@ -305,8 +325,6 @@ formatting, and then moved afterwards.")
   (newline 1)
   (insert (make-string fill-column ?-))
   )
-
-
 
 (defun html2text-clean-ul (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
@@ -321,33 +339,32 @@ formatting, and then moved afterwards.")
 (defun html2text-clean-dl (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
   (html2text-clean-dtdd p1 (- p3 (- p1 p2)))
-)
+  )
 
 (defun html2text-clean-center (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
   (center-region p1 (- p3 (- p2 p1)))
   )
-  
 
 (defun html2text-clean-bold (p1 p2 p3 p4)
   (put-text-property p2 p3 'face 'bold)
   (html2text-delete-tags p1 p2 p3 p4)
-)
+  )
 
 (defun html2text-clean-title (p1 p2 p3 p4)
   (put-text-property p2 p3 'face 'bold)
   (html2text-delete-tags p1 p2 p3 p4)
-)
+  )
 
 (defun html2text-clean-underline (p1 p2 p3 p4)
   (put-text-property p2 p3 'face 'underline)
   (html2text-delete-tags p1 p2 p3 p4)
-)
+  )
 
 (defun html2text-clean-italic (p1 p2 p3 p4)
   (put-text-property p2 p3 'face 'italic)
   (html2text-delete-tags p1 p2 p3 p4)
-)
+  )
 
 (defun html2text-clean-font (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
@@ -355,11 +372,10 @@ formatting, and then moved afterwards.")
 
 (defun html2text-clean-blockquote (p1 p2 p3 p4)
   (html2text-delete-tags p1 p2 p3 p4)
-)
-
+  )
 
 (defun html2text-clean-anchor (p1 p2 p3 p4)
-  ;; If someone can explain how to make the URL clickable 
+  ;; If someone can explain how to make the URL clickable
   ;; I will surely improve upon this.
   (let* ((attr-list (html2text-get-attr p1 p2 "a"))
 	 (href (html2text-attr-value attr-list "href")))
@@ -374,10 +390,8 @@ formatting, and then moved afterwards.")
 ;; </Functions to be called to format a tag-pair>
 ;;
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;;
 ;; <Functions to be called to fix up paragraphs>
@@ -402,11 +416,16 @@ formatting, and then moved afterwards.")
 		(re-search-backward ".+[^<][^b][^r][^>]$" refill-start t)
 		(next-line 1)
 		(end-of-line)
-		;; refill-stop should ideally be adjusted to accomodate the "<br>" strings which are removed
-		;; between refill-start and refill-stop.
-		;; Can simply be returned from my-replace-string
-		(setq refill-stop (+ (point) (html2text-replace-string "<br>" "" refill-start (point))))
-		;;(message "Point = %s  refill-stop = %s" (point) refill-stop) (sleep-for 4)
+		;; refill-stop should ideally be adjusted to
+		;; accomodate the "<br>" strings which are removed
+		;; between refill-start and refill-stop.  Can simply
+		;; be returned from my-replace-string
+		(setq refill-stop (+ (point)
+				     (html2text-replace-string
+				      "<br>" ""
+				      refill-start (point))))
+		;; (message "Point = %s  refill-stop = %s" (point) refill-stop)
+		;; (sleep-for 4)
 		(fill-region refill-start refill-stop)
 		)
 	    )
@@ -415,7 +434,6 @@ formatting, and then moved afterwards.")
     )
   (html2text-replace-string "<br>" "" p1 p2)
   )
-	      
 
 ;;
 ;; This one is interactive ...
@@ -425,9 +443,9 @@ formatting, and then moved afterwards.")
 fashion, quite close to pure guess-work. It does work in some cases though."
   (interactive)
   (html2text-buffer-head)
-  (replace-regexp "^<br>$" "") 
-;; Removing lonely <br> on a single line, if they are left
-;; intact we dont have any paragraphs at all.
+  (replace-regexp "^<br>$" "")
+  ;; Removing lonely <br> on a single line, if they are left intact we
+  ;; dont have any paragraphs at all.
   (html2text-buffer-head)
   (while (< (point) (point-max))
     (let ((p1 (point)))
@@ -435,7 +453,7 @@ fashion, quite close to pure guess-work. It does work in some cases though."
       ;;(message "Kaller fix med p1=%s  p2=%s " p1 (1- (point))) (sleep-for 5)
       (html2text-fix-paragraph p1 (1- (point)))
       (goto-char p1)
-      (if (< (point) (point-max)) 
+      (if (< (point) (point-max))
 	  (forward-paragraph 1))
       )
     )
@@ -445,10 +463,8 @@ fashion, quite close to pure guess-work. It does work in some cases though."
 ;; </Functions to be called to fix up paragraphs>
 ;;
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;;
 ;; <Interactive functions>
@@ -469,8 +485,6 @@ See the documentation for that variable."
     )
   )
 
-
-
 (defun html2text-format-tags ()
   "See the variable \"html2text-format-tag-list\" for documentation"
   (interactive)
@@ -478,10 +492,11 @@ See the documentation for that variable."
     (let ((tag      (car tag-and-function))
 	  (function (cdr tag-and-function)))
       (html2text-buffer-head)
-      (while (re-search-forward (format "\\(<%s\\( [^>]*\\)?>\\)" tag) (point-max) t)
+      (while (re-search-forward (format "\\(<%s\\( [^>]*\\)?>\\)" tag)
+				(point-max) t)
 	(let ((p1)
 	      (p2 (point))
-	      (p3) (p4) 
+	      (p3) (p4)
 	      (attr (match-string 1)))
 	  (search-backward "<" (point-min) t)
 	  (setq p1 (point))
@@ -516,7 +531,8 @@ See the documentation for that variable."
     (let ((tag      (car tag-and-function))
 	  (function (cdr tag-and-function)))
       (html2text-buffer-head)
-      (while (re-search-forward (format "\\(<%s\\( [^>]*\\)?>\\)" tag) (point-max) t)
+      (while (re-search-forward (format "\\(<%s\\( [^>]*\\)?>\\)" tag)
+				(point-max) t)
 	(let ((p1)
 	      (p2 (point)))
 	  (search-backward "<" (point-min) t)
@@ -530,40 +546,24 @@ See the documentation for that variable."
 
 ;;
 ;; Main function
-;;	  
+;;
+
+;;;###autoload
 (defun html2text ()
+  "Convert HTML to plain text in the current buffer."
   (interactive)
   (save-excursion
-    (let ((org-case-fold-search case-fold-search))
-      (setq case-fold-search 't)
-      (if (string= mode-name "Article")
-	  (toggle-read-only -1)
-	)
-      
+    (let ((case-fold-search t)
+	  (buffer-read-only))
       (html2text-remove-tags html2text-remove-tag-list)
       (html2text-format-tags)
       (html2text-remove-tags html2text-remove-tag-list2)
       (html2text-substitute)
       (html2text-format-single-elements)
-      (html2text-fix-paragraphs)
-
-      
-      (if (string= mode-name "Article")
-	  (toggle-read-only  1)
-	)
-      (setq case-fold-search org-case-fold-search)
-
-      )
-    )
-  )
+      (html2text-fix-paragraphs))))
 
 ;;
 ;; </Interactive functions>
-;; 
+;;
 
-
-
-
-
-
-
+;;; html2text.el ends here
