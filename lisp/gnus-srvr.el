@@ -662,7 +662,7 @@ The following commands are available:
     "L" gnus-browse-exit
     "q" gnus-browse-exit
     "Q" gnus-browse-exit
-    "d" gnus-server-describe-group
+    "d" gnus-browse-describe-group
     "\C-c\C-c" gnus-browse-exit
     "?" gnus-browse-describe-briefly
 
@@ -678,6 +678,7 @@ The following commands are available:
        ["Subscribe" gnus-browse-unsubscribe-current-group t]
        ["Read" gnus-browse-read-group t]
        ["Select" gnus-browse-select-group t]
+       ["Describe" gnus-browse-describe-groups t]
        ["Next" gnus-browse-next-group t]
        ["Prev" gnus-browse-prev-group t]
        ["Exit" gnus-browse-exit t]))
@@ -765,18 +766,19 @@ The following commands are available:
 	      (list
 	       (format
 		"Gnus: %%b {%s:%s}" (car method) (cadr method))))
-	(let ((buffer-read-only nil) charset
+	(let ((buffer-read-only nil)
+	      charset
 	      (prefix (let ((gnus-select-method orig-select-method))
 			(gnus-group-prefixed-name "" method))))
-	  (while groups
-	    (setq group (car groups))
+	  (dolist (group groups)
 	    (setq charset (gnus-group-name-charset method (car group)))
 	    (gnus-add-text-properties
 	     (point)
 	     (prog1 (1+ (point))
 	       (insert
 		(format "%c%7d: %s\n"
-			(let ((level (gnus-group-level (concat prefix (car group)))))
+			(let ((level (gnus-group-level
+				      (concat prefix (car group)))))
 			      (cond
 			       ((<= level gnus-level-subscribed) ? )
 			       ((<= level gnus-level-unsubscribed) ?U)

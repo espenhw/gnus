@@ -1,5 +1,10 @@
 2002-09-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-srvr.el (gnus-browse-make-menu-bar): Add "d".
+
+	* gnus-sum.el (gnus-summary-limit-to-unseen): New command and
+	keystroke. 
+
 	* gnus-srvr.el (gnus-browse-describe-group): New command and
 	keystroke. 
 

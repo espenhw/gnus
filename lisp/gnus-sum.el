@@ -1660,6 +1660,7 @@ increase the score of each group you read."
     "T" gnus-summary-limit-include-thread
     "d" gnus-summary-limit-exclude-dormant
     "t" gnus-summary-limit-to-age
+    "." gnus-summary-limit-to-unseen
     "x" gnus-summary-limit-to-extra
     "p" gnus-summary-limit-to-display-predicate
     "E" gnus-summary-limit-include-expunged
@@ -2267,6 +2268,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Score..." gnus-summary-limit-to-score t]
 	 ["Display Predicate" gnus-summary-limit-to-display-predicate t]
 	 ["Unread" gnus-summary-limit-to-unread t]
+	 ["Unseen" gnus-summary-limit-to-unseen t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
 	 ["Articles" gnus-summary-limit-to-articles t]
 	 ["Pop limit" gnus-summary-pop-limit t]
@@ -7376,6 +7378,13 @@ Returns how many articles were removed."
     (prog1
 	(gnus-summary-limit articles)
       (gnus-summary-position-point))))
+
+(defun gnus-summary-limit-to-unseen ()
+  "Limit to unseen articles."
+  (interactive)
+  (prog1
+      (gnus-summary-limit gnus-newsgroup-unseen)
+    (gnus-summary-position-point)))
 
 (defun gnus-summary-limit-include-thread (id)
   "Display all the hidden articles that is in the thread with ID in it.
