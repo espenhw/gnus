@@ -2799,9 +2799,11 @@ composed messages will be @code{Gcc}'d to the current group.  If
 generated, if @code{(gcc-self . "string")} is present, this string will
 be inserted literally as a @code{gcc} header.  This parameter takes
 precedence over any default @code{Gcc} rules as described later
-(@pxref{Archived Messages}).  CAVEAT:: It yields an error putting
-@code{(gcc-self . t)} in groups of a @code{nntp} server or so, because
-a @code{nntp} server doesn't accept articles.
+(@pxref{Archived Messages}).
+
+@strong{Caveat}: It yields an error putting @code{(gcc-self . t)} in
+groups of an @code{nntp} server or so, because an @code{nntp} server
+doesn't accept articles.
 
 @item auto-expire
 @cindex auto-expire
@@ -2830,6 +2832,11 @@ If the group parameter has an element that looks like
 (@pxref{Expiring Mail}) when expiring expirable messages.  The value
 can either be a number of days (not necessarily an integer) or the
 symbols @code{never} or @code{immediate}.
+
+@item expiry-target
+@cindex expiry-target
+Where expired messages end up.  This parameter overrides
+@code{nnmail-expiry-target}.
 
 @item score-file
 @cindex score file group parameter
@@ -2957,7 +2964,7 @@ that should be placed in this group.  From this group parameter, a
 Sieve @samp{IF} control structure is generated, having the test as the
 condition and @samp{fileinto "group.name";} as the body.
 
-For example, if the INBOX.list.sieve group has the @code{(sieve
+For example, if the @samp{INBOX.list.sieve} group has the @code{(sieve
 address "sender" "sieve-admin@@extundo.com")} group parameter, when
 translating the group parameter into a Sieve script (@pxref{Sieve
 Commands}) the following Sieve code is generated:
@@ -2968,8 +2975,8 @@ if address \"sender\" \"sieve-admin@@extundo.com\" @{
 @}
 @end example
 
-The Sieve language is described in RFC 3028.  @xref{Top, , Top, sieve,
-Emacs Sieve}.
+The Sieve language is described in RFC 3028.  @xref{Top, Emacs Sieve,
+Top, sieve, Emacs Sieve}.
 
 @item (@var{variable} @var{form})
 You can use the group parameters to set variables local to the group you
@@ -2987,6 +2994,7 @@ question to @code{gnus-newsgroup-variables}.  @xref{Various Summary
 Stuff}.  So if you want to set @code{message-from-style} via the group
 parameters, then you may need the following statement elsewhere in your
 @file{~/.gnus} file:
+
 @lisp
 (add-to-list 'gnus-newsgroup-variables 'message-from-style)
 @end lisp
@@ -2994,9 +3002,11 @@ parameters, then you may need the following statement elsewhere in your
 @vindex gnus-list-identifiers
 A use for this feature is to remove a mailing list identifier tag in
 the subject fields of articles.  E.g. if the news group
+
 @example
 nntp+news.gnus.org:gmane.text.docbook.apps
 @end example
+
 has the tag @samp{DOC-BOOK-APPS:} in the subject of all articles, this
 tag can be removed from the article subjects in the summary buffer for
 the group by putting @code{(gnus-list-identifiers "DOCBOOK-APPS:")}
@@ -11549,9 +11559,8 @@ determined by the @code{gnus-message-archive-group} variable.
 
 This variable can be used to do the following:
 
-@itemize @bullet
-@item
-a string
+@table @asis
+@item a string
 Messages will be saved in that group.
 
 Note that you can include a select method in the group name, then the
@@ -11563,16 +11572,16 @@ has the default value shown above.  Then setting
 messages are stored in @samp{nnfolder+archive:foo}, but if you use the
 value @code{"nnml:foo"}, then outgoing messages will be stored in
 @samp{nnml:foo}.
-@item
-a list of strings
+
+@item a list of strings
 Messages will be saved in all those groups.
-@item
-an alist of regexps, functions and forms
+
+@item an alist of regexps, functions and forms
 When a key ``matches'', the result is used.
-@item
-@code{nil}
+
+@item @code{nil}
 No message archiving will take place.  This is the default.
-@end itemize
+@end table
 
 Let's illustrate:
 

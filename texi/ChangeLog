@@ -1,3 +1,8 @@
+2003-08-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Group Parameters): Add expiry-target.
+	(Archived Messages): Layout fix.
+
 2003-07-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Top): Menu fixes and additions.
