@@ -1,5 +1,5 @@
 ;;; nnrss.el --- interfacing with RSS
-;; Copyright (C) 2001 ShengHuo Zhu
+;; Copyright (C) 2001  Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: RSS
@@ -208,7 +208,10 @@
   (setq nnrss-server-data
 	(delq (assoc group nnrss-server-data) nnrss-server-data))
   (nnrss-save-server-data server)
-  (let ((file (expand-file-name (concat group ".el") nnrss-directory)))
+  (let ((file (expand-file-name (concat group (and server
+						   (not (equal server ""))
+						   "-")
+					server ".el") nnrss-directory)))
     (delete-file file))
   t)
 
