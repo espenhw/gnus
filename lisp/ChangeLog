@@ -1,5 +1,7 @@
 2004-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-draft.el (gnus-draft-setup): Mark all replied as replied. 
+
 	* gnus-group.el (gnus-group-mode): Set show-trailing-whitespace
 	to nil.
 	

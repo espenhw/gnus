@@ -271,12 +271,13 @@
 	      `(lambda (arg)
 		 (gnus-post-method arg ,(car ga))))
 	(unless (equal (cadr ga) "")
-	  (message-add-action
-	   `(progn
-	      (gnus-add-mark ,(car ga) 'replied ,(cadr ga))
-	      (gnus-request-set-mark ,(car ga) (list (list (list ,(cadr ga))
-							   'add '(reply)))))
-	   'send))))))
+	  (dolist (article (cdr ga))
+	    (message-add-action
+	     `(progn
+		(gnus-add-mark ,(car ga) 'replied ,article)
+		(gnus-request-set-mark ,(car ga) (list (list (list ,article)
+							     'add '(reply)))))
+	     'send)))))))
 
 (defun gnus-draft-article-sendable-p (article)
   "Say whether ARTICLE is sendable."
