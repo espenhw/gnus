@@ -1,3 +1,10 @@
+2000-04-26  Florian Weimer  <fw@deneb.cygnus.argh.org>
+
+	* message.texi (Various Message Variables): Document
+	message-default-charset.
+
+	* emacs-mime.texi (Charset Translation): New section.
+
 2000-04-26 02:30:06  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Posting Styles): Addition. 
