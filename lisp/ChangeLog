@@ -1,5 +1,8 @@
 2002-01-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-cite-prefix-regexp): Use text-mode-syntax-table.
+	(message-mode-syntax-table): Move back the previous position.
+
 	* nnagent.el (nnagent-retrieve-headers): Use gnus-sorted-difference.
 
 	* gnus-agent.el (gnus-agent-retrieve-headers): Use
@@ -21,7 +24,7 @@
 	(gnus-sorted-ndifference): New function.
 	(gnus-sorted-nintersection): Rename from
 	gnus-set-sorted-intersection.
-	(gnus-sorted-nunion): Rename from gnus-sorted-nunion.
+	(gnus-sorted-nunion): Rename from gnus-set-sorted-union.
 	(gnus-list-range-difference): Rename from
 	gnus-inverse-list-range-intersection.
 	(gnus-inverse-list-range-intersection): Use defalias.

@@ -346,21 +346,13 @@ The provided functions are:
   :group 'message-insertion
   :type 'regexp)
 
-(defvar message-mode-syntax-table
-  (let ((table (copy-syntax-table text-mode-syntax-table)))
-    (modify-syntax-entry ?% ". " table)
-    (modify-syntax-entry ?> ". " table)
-    (modify-syntax-entry ?< ". " table)
-    table)
-  "Syntax table used while in Message mode.")
-
 (defcustom message-cite-prefix-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
       "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>»|:}+]\\)+"
     ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
     (let ((old-table (syntax-table))
 	  non-word-constituents)
-      (set-syntax-table message-mode-syntax-table)
+      (set-syntax-table text-mode-syntax-table)
       (setq non-word-constituents
 	    (concat
 	     (if (string-match "\\w" "-")  "" "-")
@@ -835,6 +827,14 @@ candidates:
 
 ;;; Internal variables.
 ;;; Well, not really internal.
+
+(defvar message-mode-syntax-table
+  (let ((table (copy-syntax-table text-mode-syntax-table)))
+    (modify-syntax-entry ?% ". " table)
+    (modify-syntax-entry ?> ". " table)
+    (modify-syntax-entry ?< ". " table)
+    table)
+  "Syntax table used while in Message mode.")
 
 (defface message-header-to-face
   '((((class color)
