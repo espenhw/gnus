@@ -191,6 +191,12 @@ This variable is obsolete; `mail-sources' should be used instead."
   :group 'nnmail-procmail
   :type 'boolean)
 
+(defcustom nnmail-scan-directory-mail-source-once nil
+  "*If non-nil, scan all incoming procmail sorted mails once.
+It scans low-level sorted spools even when not required."
+  :group 'nnmail-procmail
+  :type 'boolean)
+
 (defcustom nnmail-delete-file-function 'delete-file
   "Function called to delete files in some mail backends."
   :group 'nnmail-files
@@ -1520,6 +1526,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  nil))
 	;; Hack to only fetch the contents of a single group's spool file.
 	(when (and (eq (car source) 'directory)
+		   (null nnmail-scan-directory-mail-source-once)
 		   group)
 	  (mail-source-bind (directory source)
 	    (setq source (append source

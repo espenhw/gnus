@@ -1551,12 +1551,17 @@ newsgroup."
 	    ;; hack: `nnmail-get-new-mail' changes the mail-source depending
 	    ;; on the group, so we must perform a scan for every group
 	    ;; if the users has any directory mail sources.
-	    (if (and (null (assq 'directory
+	    ;; hack: if `nnmail-scan-directory-mail-source-once' is non-nil,
+	    ;; for it scan all spool files even when the groups are 
+	    ;; not required.
+	    (if (and 
+		 (or nnmail-scan-directory-mail-source-once
+		     (null (assq 'directory
 				 (or mail-sources
 				     (if (listp nnmail-spool-file) 
 					 nnmail-spool-file
-				       (list nnmail-spool-file)))))
-		     (member method scanned-methods))
+				       (list nnmail-spool-file))))))
+		 (member method scanned-methods))
 		(setq active (gnus-activate-group group))
 	      (setq active (gnus-activate-group group 'scan))
 	      (push method scanned-methods))
