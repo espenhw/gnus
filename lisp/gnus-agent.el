@@ -1108,9 +1108,11 @@ This can be added to `gnus-select-article-hook' or
 	(gnus-decode-encoded-word-function 'identity)
 	(file (gnus-agent-article-name ".overview" group))
 	gnus-agent-cache)
-    ;; Add article with marks to list of article headers we want to
-    ;; fetch.  We don't want to fetch all the seen articles, and we
-    ;; don't want do fetch the recent ones, though.
+    ;; Add articles with marks to the list of article headers we want to
+    ;; fetch.  Don't fetch articles solely on the basis of a recent or seen
+    ;; mark, but do fetch recent or seen articles if they have other, more
+    ;; interesting marks.  (We have to fetch articles with boring marks
+    ;; because otherwise the agent will remove their marks.)
     (dolist (arts (gnus-info-marks (gnus-get-info group)))
       (unless (memq (car arts) '(seen recent))
 	(setq articles (gnus-range-add articles (cdr arts)))))
