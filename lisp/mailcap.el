@@ -172,7 +172,11 @@
      ("sieve"
       (viewer . sieve-mode)
       (test   . (fboundp 'sieve-mode))
-      (type   . "application/sieve")))
+      (type   . "application/sieve"))
+     ("pgp-keys"
+      (viewer . "gpg --import --interactive --verbose")
+      (type   . "application/pgp-keys")
+      ("needsterminal")))
     ("audio"
      ("x-mpeg"
       (viewer . "maplay %s")
