@@ -1,3 +1,23 @@
+Sun Nov  8 23:17:24 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.42 is released.
+
+Sun Nov  8 02:36:33 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-display-mime): Add id for alternative part.
+
+1998-11-08 02:24:47  Simon Josefsson  <jas@pdc.kth.se>
+
+	* nntp.el (nntp-send-mode-reader): Revert.
+
+Sun Nov  8 00:45:13 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-articles): Use with-temp-buffer.
+
+Sat Nov  7 23:07:24 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-make-date): Fix for negative time zones.
+
 Sun Nov  8 01:00:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.41 is released.

@@ -673,7 +673,7 @@ the actual number of articles toggled is returned."
 	;; Fetch the articles from the backend.
 	(if (gnus-check-backend-function 'retrieve-articles group)
 	    (setq pos (gnus-retrieve-articles articles group))
-	  (with-temp-file nil
+	  (with-temp-buffer
 	    (let (article)
 	      (while (setq article (pop articles))
 		(when (gnus-request-article article group)

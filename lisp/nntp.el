@@ -750,7 +750,7 @@ If this variable is nil, which is the default, no timers are set.")
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will make innd servers spawn an nnrpd process to allow actual article
 reading."
-  (nntp-send-command "^\\.*\r?\n" "MODE READER"))
+  (nntp-send-command "^.*\n" "MODE READER"))
 
 (defun nntp-send-authinfo (&optional send-if-force)
   "Send the AUTHINFO to the nntp server.
@@ -858,7 +858,7 @@ password contained in '~/.nntp-authinfo'."
     (when (and (buffer-name pbuffer)
 	       process)
       (process-kill-without-query process)
-      (nntp-wait-for process "^\\.*\n" buffer nil t)
+      (nntp-wait-for process "^.*\n" buffer nil t)
       (if (memq (process-status process) '(open run))
 	  (prog1
 	      (caar (push (list process buffer nil) nntp-connection-alist))

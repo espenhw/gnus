@@ -2644,7 +2644,8 @@ If NOW, use that time instead."
 	 (zone (nth 8 (decode-time now)))
 	 (sign "+"))
     (when (< zone 0)
-      (setq sign ""))
+      (setq sign "-")
+      (setq zone (- zone)))
     (concat
      (format-time-string "%d" now)
      ;; The month name of the %b spec is locale-specific.  Pfff.

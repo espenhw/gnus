@@ -2394,7 +2394,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(delete-region (point) (point-max)))
       (if (stringp (car handles))
 	  (if (equal (car handles) "multipart/alternative")
-	      (gnus-mime-display-alternative (cdr handles))
+	      (let ((id (1+ (length gnus-article-mime-handle-alist))))
+		(push (cons id handles) gnus-article-mime-handle-alist)
+		(gnus-mime-display-alternative (cdr handles) nil nil id))
 	    (gnus-mime-display-mixed (cdr handles)))
 	(gnus-mime-display-single handles)))))
 
