@@ -54,6 +54,10 @@
 ;; files for the rest?  -- fx
 (defvar mailcap-mime-data
   '(("application"
+     ("vnd.ms-excel"
+      (viewer . "gnumeric %s")
+      (test   . (getenv "DISPLAY"))
+      (type . "application/vnd.ms-excel"))
      ("x-x509-ca-cert"
       (viewer . ssl-view-site-cert)
       (test . (fboundp 'ssl-view-site-cert))
