@@ -909,21 +909,22 @@ find-file-hooks, etc.
 (defun nnheader-insert-nov-file (file first)
   (let ((size (nth 7 (file-attributes file)))
 	(cutoff (* 32 1024)))
-    (if (< size cutoff)
-	;; If the file is small, we just load it.
-	(nnheader-insert-file-contents file)
-      ;; We start on the assumption that FIRST is pretty recent.  If
-      ;; not, we just insert the rest of the file as well.
-      (let (current)
-	(nnheader-insert-file-contents file nil (- size cutoff) size)
-	(goto-char (point-min))
-	(delete-region (point) (or (search-forward "\n" nil 'move) (point)))
-	(setq current (ignore-errors (read (current-buffer))))
-	(if (and (numberp current)
-		 (< current first))
-	    t
-	  (delete-region (point-min) (point-max))
-	  (nnheader-insert-file-contents file))))))
+    (when size
+      (if (< size cutoff)
+          ;; If the file is small, we just load it.
+          (nnheader-insert-file-contents file)
+        ;; We start on the assumption that FIRST is pretty recent.  If
+        ;; not, we just insert the rest of the file as well.
+        (let (current)
+          (nnheader-insert-file-contents file nil (- size cutoff) size)
+          (goto-char (point-min))
+          (delete-region (point) (or (search-forward "\n" nil 'move) (point)))
+          (setq current (ignore-errors (read (current-buffer))))
+          (if (and (numberp current)
+                   (< current first))
+              t
+            (delete-region (point-min) (point-max))
+            (nnheader-insert-file-contents file)))))))
 
 (defun nnheader-find-file-noselect (&rest args)
   (let ((format-alist nil)
