@@ -1,3 +1,28 @@
+1999-10-23  Simon Josefsson  <jas@pdc.kth.se>
+
+	* nnimap.el, imap.el, rfc2104.el: New files.
+
+	* gnus.el (gnus-valid-select-methods): Add nnimap.
+
+	* gnus-group.el (gnus-group-group-map): Add
+	gnus-group-nnimap-edit-acl, gnus-group-nnimap-expunge.
+	(gnus-group-nnimap-expunge): New function.
+	(gnus-group-nnimap-edit-acl): New function.
+
+	* gnus-agent.el (gnus-agent-group-mode-map): Add
+	gnus-agent-synchronize.
+	(gnus-agent-synchronize): New function.
+	(gnus-agent-fetch-group-1): Check if server is open.
+
+	* nnagent.el (nnagent-request-set-mark): Save marks.
+
+	* mail-source.el (mail-source-keyword-map): New imap mail-source.
+	(mail-source-fetcher-alist): Map to imap fetcher function.
+	(mail-source-fetch-imap): New function.
+
+	* gnus-art.el (article-hide-pgp): Hide all headers, not just
+	Hash:.
+
 1999-10-22 11:03:00  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-topic.el (gnus-topic-sort-topics-1): New function.
