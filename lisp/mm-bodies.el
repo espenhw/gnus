@@ -65,7 +65,10 @@ If no encoding was done, nil is returned."
 	(goto-char (point-min))
 	(if (re-search-forward "[^\x0-\x7f]" nil t)
 	    (or mail-parse-charset
-		(mm-read-charset "Charset used in the article: "))
+		(message-options-get 'mm-encody-body-charset)
+		(message-options-set 
+		 'mm-encody-body-charset
+		 (mm-read-charset "Charset used in the article: ")))
 	  ;; The logic in `mml-generate-mime-1' confirms that it's OK
 	  ;; to return nil here.
 	  nil))

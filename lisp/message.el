@@ -1007,6 +1007,9 @@ The first matched address (not primary one) is used in the From field."
     (User-Agent))
   "Alist used for formatting headers.")
 
+(defvar	message-options nil
+  "Some saved answers when sending message.")
+
 (eval-and-compile
   (autoload 'message-setup-toolbar "messagexmas")
   (autoload 'mh-new-draft-name "mh-comp")
@@ -2124,7 +2127,8 @@ It should typically alter the sending method in some way or other."
   (message message-sending-message)
   (let ((alist message-send-method-alist)
 	(success t)
-	elem sent)
+	elem sent
+	(message-options message-options))
     (while (and success
 		(setq elem (pop alist)))
       (when (funcall (cadr elem))
@@ -4559,6 +4563,19 @@ regexp varstr."
     (unless (or (not email) (equal email user-mail-address))
       (goto-char (point-max))
       (insert "From: " email "\n"))))
+
+(defun message-options-get (symbol)
+  (cdr (assq symbol message-options)))
+
+(defun message-options-set (symbol value)
+  (let ((the-cons (assq symbol message-options)))
+    (if the-cons
+	(if value 
+	    (setcdr the-cons value)
+	  (setq message-options (delq the-cons message-options)))
+      (and value
+	   (push (cons symbol value) message-options))))
+  value)
 
 (provide 'message)
 

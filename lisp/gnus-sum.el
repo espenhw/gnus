@@ -7852,6 +7852,7 @@ groups."
 		 (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))))
 	 `(lambda (no-highlight)
 	    (let ((mail-parse-charset ',gnus-newsgroup-charset)
+		  (message-options message-options)
 		  (mail-parse-ignored-charsets 
 		   ',gnus-newsgroup-ignored-charsets))
 	      ,(if (not raw) '(progn 

@@ -148,8 +148,12 @@ Should be called narrowed to the head of the message."
 	      (and (delq 'ascii 
 			 (mm-find-charset-region (point-min) 
 						 (point-max)))
-		   (if (y-or-n-p 
-			"Some texts are not encoded. Encode them anyway?")
+		   (if (or (message-options-get
+			    'rfc2047-encode-message-header-encode-any) 
+			   (message-options-set
+			    'rfc2047-encode-message-header-encode-any
+			    (y-or-n-p 
+			     "Some texts are not encoded. Encode anyway?")))
 		       (rfc2047-encode-region (point-min) (point-max))
 		     (error "Cannot send unencoded text."))))
 	     ((mm-coding-system-p method)

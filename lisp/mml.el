@@ -844,6 +844,7 @@ TYPE is the MIME type to use."
 If RAW, don't highlight the article."
   (interactive "P")
   (let ((buf (current-buffer))
+	(message-options message-options)
 	(message-posting-charset (or (gnus-setup-posting-charset 
 				      (save-restriction
 					(message-narrow-to-headers-or-head)

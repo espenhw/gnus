@@ -1,3 +1,17 @@
+2000-10-28 10:09:41  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-options): New variable.
+	(message-send): Use it.
+	* gnus-int.el (gnus-request-replace-article): Use it.
+	(gnus-request-accept-article): Ditto.
+	* mml.el (mml-preview): Use it.
+	* gnus-sum.el (gnus-summary-edit-article): Use it.
+	
+	* message.el (message-options-get): New function.
+	(message-options-get): New function.
+	* rfc2047.el (rfc2047-encode-message-header): Use them.
+	* mm-bodies.el (mm-encode-body): Use them.
+
 2000-10-28  Simon Josefsson  <sj@extundo.com>
 
 	* nnimap.el (nnimap-retrieve-which-headers): 
