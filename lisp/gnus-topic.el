@@ -1206,7 +1206,12 @@ If COPYP, copy the groups instead."
 	(gnus-topic-find-topology topic nil nil gnus-topic-topology)
 	(gnus-topic-enter-dribble))
     (gnus-group-kill-group n discard)
-    (gnus-topic-update-topic)))
+    (if (not (gnus-group-topic-p))
+	(gnus-topic-update-topic)
+      ;; Move up one line so that we update the right topic.
+      (forward-line -1)
+      (gnus-topic-update-topic)
+      (forward-line 1))))
 
 (defun gnus-topic-yank-group (&optional arg)
   "Yank the last topic."

@@ -8688,14 +8688,16 @@ is non-nil or the Subject: of both articles are the same."
 	(unless (and message-id (not (equal message-id "")))
 	  (error "No message-id in desired parent"))
 	(gnus-with-article current-article
-	  (goto-char (point-min))
-	  (if (re-search-forward "^References: " nil t)
-	      (progn
-		(re-search-forward "^[^ \t]" nil t)
-		(forward-line -1)
-		(end-of-line)
-		(insert " " message-id))
-	    (insert "References: " message-id "\n")))
+	  (save-restriction
+	    (goto-char (point-min))
+	    (message-narrow-to-head)
+	    (if (re-search-forward "^References: " nil t)
+		(progn
+		  (re-search-forward "^[^ \t]" nil t)
+		  (forward-line -1)
+		  (end-of-line)
+		  (insert " " message-id))
+	      (insert "References: " message-id "\n"))))
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-unmark-all-processable)
 	(gnus-summary-update-article current-article)

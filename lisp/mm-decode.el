@@ -368,6 +368,7 @@ external if displayed external."
 	    (buffer-disable-undo)
 	    (mm-set-buffer-file-coding-system mm-binary-coding-system)
 	    (insert-buffer-substring cur)
+	    (goto-char (point-min))
 	    (message "Viewing with %s" method)
 	    (let ((mm (current-buffer))
 		  (non-viewer (assq 'non-viewer

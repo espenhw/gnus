@@ -1,3 +1,13 @@
+2000-08-10 20:22:09  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-reparent-thread): Narrow to the
+	headers. 
+
+	* gnus-topic.el (gnus-topic-kill-group): Move up one line so that
+	we update the right topic.. 
+
+	* mm-decode.el (mm-display-external): Put point at start. 
+
 2000-08-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* nnmail.el (nnmail-expiry-target): More explicit documentation.
