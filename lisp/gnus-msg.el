@@ -97,6 +97,17 @@ the second with the current group name.")
 (defvar gnus-bug-create-help-buffer t
   "*Should we create the *Gnus Help Bug* buffer?")
 
+(defvar gnus-posting-styles nil
+  "*Alist of styles to use when posting.")
+
+(defvar gnus-posting-style-alist
+  '((organization . message-user-organization)
+    (signature . message-signature)
+    (signature-file . message-signature-file)
+    (address . user-mail-address)
+    (name . user-full-name))
+  "*Mapping from style parameters to variables.")
+
 ;;; Internal variables.
 
 (defvar gnus-message-buffer "*Mail Gnus*")
@@ -177,6 +188,7 @@ Thank you for your help in stamping out bugs.
 	    (copy-sequence message-header-setup-hook)))
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
+       (add-hook 'message-mode-hook 'gnus-configure-posting-styles)
        (unwind-protect
 	   (progn
 	     ,@forms)
@@ -1046,6 +1058,68 @@ this is a reply."
 	      (when groups
 		(insert " ")))
 	    (insert "\n")))))))
+
+;;; Posting styles.
+
+(defun gnus-configure-posting-styles ()
+  "Configure posting styles according to `gnus-posting-styles'."
+  (let ((styles gnus-posting-styles)
+	(gnus-newsgroup-name (or gnus-newsgroup-name ""))
+	style match variable attribute value value-value)
+    ;; Go through all styles and look for matches.
+    (while styles
+      (setq style (pop styles)
+	    match (pop style))
+      (when (cond ((stringp match)
+		   ;; Regexp string match on the group name.
+		   (string-match match gnus-newsgroup-name))
+		  ((or (symbolp match)
+		       (gnus-functionp match))
+		   (cond ((gnus-functionp match)
+			  ;; Function to be called.
+			  (funcall match))
+			 ((boundp match)
+			  ;; Variable to be checked.
+			  (symbol-value match))))
+		  ((listp match)
+		   ;; This is a form to be evaled.
+		   (eval match)))
+	;; We have a match, so we set the variables.
+	(while style
+	  (setq attribute (pop style)
+		value (cadr attribute)
+		variable nil)
+	  ;; We find the variable that is to be modified.
+	  (if (and (not (stringp (car attribute)))
+		   (not (setq variable (cdr (assq (car attribute) 
+						  gnus-posting-style-alist)))))
+	      (message "Couldn't find attribute %s" (car attribute))
+	    ;; We get the value.
+	    (setq value-value
+		  (cond ((stringp value)
+			 value)
+			((or (symbolp value)
+			     (gnus-functionp value))
+			 (cond ((gnus-functionp value)
+				(funcall value))
+			       ((boundp value)
+				(symbol-value value))))
+			((listp value)
+			 (eval value))))
+	    (if variable
+		(progn
+		  ;; This is an ordinary variable.
+		  (make-local-variable variable)
+		  (set variable value-value))
+	      ;; This is a header to be added to the headers when
+	      ;; posting. 
+	      (when value-value
+		(make-local-variable message-required-mail-headers)
+		(make-local-variable message-required-news-headers)
+		(push (cons (car attribute) value-value) 
+		      message-required-mail-headers)
+		(push (cons (car attribute) value-value) 
+		      message-required-news-headers)))))))))
 
 ;;; Allow redefinition of functions.
 

@@ -98,3 +98,5 @@ updated by the `gnus-start-date-timer' command.
 *** Old dejanews archives can now be read by nnweb.
 
 *** Byte-compilation of user-specs now works under XEmacs.
+
+*** `gnus-posting-styles' has been re-activated.

@@ -45,13 +45,11 @@
 (defvoo nntp-server-opened-hook '(nntp-send-mode-reader)
   "*Hook used for sending commands to the server at startup.
 The default value is `nntp-send-mode-reader', which makes an innd
-server spawn an nnrpd server.  Another useful function to put in this
-hook might be `nntp-send-authinfo', which will prompt for a password
-to allow posting from the server.  Note that this is only necessary to
-do on servers that use strict access control.")
+server spawn an nnrpd server.")
 
 (defvoo nntp-authinfo-function 'nntp-send-authinfo
-  "Function used to send AUTHINFO to the server.")
+  "Function used to send AUTHINFO to the server.
+It is called with no parameters.")
 
 (defvoo nntp-server-action-alist
   '(("nntpd 1\\.5\\.11t"
@@ -749,7 +747,10 @@ reading."
   "Send the AUTHINFO to the nntp server.
 It will look in the \"~/.authinfo\" file for matching entries.  If
 nothing suitable is found there, it will prompt for a user name
-and a password."
+and a password.
+
+If SEND-IF-FORCE, only send authinfo to the server if the
+.authinfo file has the FORCE token."
   (let* ((list (gnus-parse-netrc nntp-authinfo-file))
 	 (alist (gnus-netrc-machine list nntp-address))
 	 (force (gnus-netrc-get alist "force"))

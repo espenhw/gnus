@@ -464,16 +464,12 @@ Used by `message-yank-original' via `message-yank-cite'."
   :type 'integer)
 
 ;;;###autoload
-(defcustom message-cite-function
-  (if (and (boundp 'mail-citation-hook)
-	   mail-citation-hook)
-      mail-citation-hook
-    'message-cite-original)
+(defcustom message-cite-function 'message-cite-original
   "*Function for citing an original message.
-Pre-defined functions include `message-cite-original' and
-`message-cite-original-without-signature'."
+Predefined functions include `message-cite-original' and
+`message-cite-original-without-signature'.
+Note that `message-cite-original' uses `mail-citation-hook' if that is non-nil."
   :type '(radio (function-item message-cite-original)
-		(function-item message-cite-original-without-signature)
 		(function-item sc-cite-original)
 		(function :tag "Other"))
   :group 'message-insertion)
@@ -1744,19 +1740,22 @@ prefix, and don't delete any headers."
 
 (defun message-cite-original ()
   "Cite function in the standard Message manner."
-  (let ((start (point))
-	(functions
-	 (when message-indent-citation-function
-	   (if (listp message-indent-citation-function)
-	       message-indent-citation-function
-	     (list message-indent-citation-function)))))
-    (goto-char start)
-    (while functions
-      (funcall (pop functions)))
-    (when message-citation-line-function
-      (unless (bolp)
-	(insert "\n"))
-      (funcall message-citation-line-function))))
+  (if (and (boundp 'mail-citation-hook)
+	   mail-citation-hook)
+      (run-hooks 'mail-citation-hook)
+    (let ((start (point))
+	  (functions
+	   (when message-indent-citation-function
+	     (if (listp message-indent-citation-function)
+		 message-indent-citation-function
+	       (list message-indent-citation-function)))))
+      (goto-char start)
+      (while functions
+	(funcall (pop functions)))
+      (when message-citation-line-function
+	(unless (bolp)
+	  (insert "\n"))
+	(funcall message-citation-line-function)))))
 
 (defun message-insert-citation-line ()
   "Function that inserts a simple citation line."
@@ -3059,7 +3058,8 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-pop-to-buffer (name)
   "Pop to buffer NAME, and warn if it already exists and is modified."
-  (let ((buffer (get-buffer name)))
+  (let ((buffer (get-buffer name))
+	(cur (current-buffer)))
     (if (and buffer
 	     (buffer-name buffer))
 	(progn
@@ -3068,9 +3068,9 @@ Headers already prepared in the buffer are not modified."
 		     (not (y-or-n-p
 			   "Message already being composed; erase? ")))
 	    (error "Message being composed")))
-      (set-buffer (pop-to-buffer name))))
-  (erase-buffer)
-  (message-mode))
+      (set-buffer (pop-to-buffer name)))
+    (erase-buffer)
+    (message-mode)))
 
 (defun message-do-send-housekeeping ()
   "Kill old message buffers."

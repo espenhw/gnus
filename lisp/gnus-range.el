@@ -55,7 +55,7 @@
     list1))
 
 (defun gnus-sorted-complement (list1 list2)
-  "Return a list of elements of LIST1 that do not appear in LIST2.
+  "Return a list of elements that are in LIST1 or LIST2 but not both.
 Both lists have to be sorted over <."
   (let (out)
     (if (or (null list1) (null list2))

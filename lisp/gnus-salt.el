@@ -73,21 +73,10 @@ It accepts the same format specs that `gnus-summary-line-format' does."
 
   (gnus-define-keys gnus-pick-mode-map
     " " gnus-pick-next-page
-    "u" gnus-summary-unmark-as-processable
-    "." gnus-pick-article
+    "u" gnus-pick-unmark-article-or-thread
+    "." gnus-pick-article-or-thread
     gnus-down-mouse-2 gnus-pick-mouse-pick-region
     "\r" gnus-pick-start-reading
-    "t" gnus-uu-mark-thread
-    "T" gnus-uu-unmark-thread
-    "U" gnus-summary-unmark-all-processable
-    "v" gnus-uu-mark-over
-    "r" gnus-uu-mark-region
-    "R" gnus-uu-unmark-region
-    "e" gnus-uu-mark-by-regexp
-    "E" gnus-uu-mark-by-regexp
-    "b" gnus-uu-mark-buffer
-    "B" gnus-uu-unmark-buffer
-    "X" gnus-pick-start-reading
     ))
 
 (defun gnus-pick-make-menu-bar ()
@@ -172,21 +161,48 @@ If given a prefix, mark all unpicked articles as read."
 	    (gnus-summary-next-group)))
       (error "No articles have been picked"))))
 
+(defun gnus-pick-goto-article (arg)
+  "Go to the article number indicated by ARG.  If ARG is an invalid
+article number, then stay on current line."
+  (let (pos)
+    (save-excursion
+      (goto-char (point-min))
+      (when (zerop (forward-line (1- (prefix-numeric-value arg))))
+	(setq pos (point))))
+    (if (not pos)
+	(gnus-error 2 "No such line: %s" arg)
+      (goto-char pos))))
+    
 (defun gnus-pick-article (&optional arg)
-  "Pick the article on the current line.
+    "Pick the article on the current line.
 If ARG, pick the article on that line instead."
   (interactive "P")
   (when arg
-    (let (pos)
-      (save-excursion
-	(goto-char (point-min))
-	(when (zerop (forward-line (1- (prefix-numeric-value arg))))
-	  (setq pos (point))))
-      (if (not pos)
-	  (gnus-error 2 "No such line: %s" arg)
-	(goto-char pos))))
+    (gnus-pick-goto-article arg))
   (gnus-summary-mark-as-processable 1))
 
+(defun gnus-pick-article-or-thread (&optional arg)
+  "If gnus-thread-hide-subtree is t, then pick the thread on the current line.
+Otherwise pick the article on the current line.
+If ARG, pick the article/thread on that line instead."
+  (interactive "P")
+  (when arg
+    (gnus-pick-goto-article arg))
+  (if gnus-thread-hide-subtree
+      (gnus-uu-mark-thread)
+    (gnus-summary-mark-as-processable 1)))
+		  
+(defun gnus-pick-unmark-article-or-thread (&optional arg)
+  "If gnus-thread-hide-subtree is t, then unmark the thread on current line.
+Otherwise unmark the article on current line.
+If ARG, unmark thread/article on that line instead."
+  (interactive "P")
+  (when arg
+    (gnus-pick-goto-article arg))
+  (if gnus-thread-hide-subtree
+      (gnus-uu-unmark-thread)
+    (gnus-summary-unmark-as-processable 1)))
+  
 (defun gnus-pick-mouse-pick (e)
   (interactive "e")
   (mouse-set-point e)

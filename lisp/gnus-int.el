@@ -150,9 +150,10 @@ If it is down, start it up (again)."
     ;; Maybe complain if there is no function.
     (unless (fboundp func)
       (require (car method))
-      (when (and (not (fboundp func))
-		 (not noerror))
-	(error "No such function: %s" func)))
+      (when (not (fboundp func))
+	(if noerror
+	    (setq func nil)
+	  (error "No such function: %s" func))))
     func))
 
 

@@ -1,3 +1,66 @@
+Sat Jul 11 03:03:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.24 is released.
+
+Fri Jul 10 04:23:24 1998  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* gnus-util.el (gnus-parse-netrc): Allow "default" values.
+
+Fri Jul 10 04:15:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-server-opened-hook): Doc change.
+
+Fri Jul 10 03:03:48 1998  François Pinard  <pinard@iro.umontreal.ca>
+
+	* gnus-sum.el (gnus-summary-respool-trace): New command and
+	keystroke. 
+
+Fri Jul 10 02:18:01 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-prin1): Bind print-escape-multibyte to nil. 
+
+Mon Jul  6 01:02:59 1998  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-range.el (gnus-sorted-complement): Fix comments.
+
+Thu Jul  2 11:16:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-iterate): New macro.
+
+	* message.el (message-pop-to-buffer): Clone locals.
+
+	* gnus-msg.el (gnus-posting-styles): Reinstated.
+	(gnus-posting-style-alist): Ditto.
+
+Wed Jul  1 18:02:31 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-int.el (gnus-get-function): Set funct to nil.
+
+1998-07-01 16:57:38  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-int.el (gnus-get-function): returned non-nil when
+        function wasn't bound, if noerror=t
+
+Wed Jul  1 17:30:41 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-mode-map): Bind TAB and M-TAB.
+
+	* gnus-sum.el (gnus-build-sparse-threads): Make sure no dates are
+	nil. 
+	(gnus-summary-limit-mark-excluded-as-read): Use the intersection.
+
+	* gnus-msg.el (gnus-setup-message): Clone all local variables from
+	the summary buffer.
+
+Wed Jul  1 14:03:52 1998  Richard Stallman  <rms@santafe.edu>
+
+	* message.el (message-cite-original): Use mail-citation-hook.
+	(message-cite-function): Ditto.
+
+Wed Jul  1 14:00:53 1998  Rajappa Iyer  <rsi@lucent.com>
+
+	* gnus-salt.el (gnus-pick-mode-map): Changed keymap.
+
 Wed Jul  1 13:33:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.23 is released.

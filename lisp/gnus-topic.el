@@ -904,6 +904,8 @@ articles in the topic and its subtopics."
     "Gp" gnus-topic-edit-parameters
     "#" gnus-topic-mark-topic
     "\M-#" gnus-topic-unmark-topic
+    [tab] gnus-topic-indent
+    [M-tab] gnus-topic-unindent
     gnus-mouse-2 gnus-mouse-pick-topic)
 
   ;; Define a new submap.

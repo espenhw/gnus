@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.23 Manual
+@settitle Gnus 5.6.24 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.23 Manual
+@title Gnus 5.6.24 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.23.
+This manual corresponds to Gnus 5.6.24.
 
 @end ifinfo
 
@@ -2703,11 +2703,19 @@ toggling command on topics.  In addition, if you give a numerical
 prefix, group on that level (and lower) will be displayed.
 
 @item T TAB
+@itemx TAB
 @kindex T TAB (Topic)
+@kindex TAB (Topic)
 @findex gnus-topic-indent
 ``Indent'' the current topic so that it becomes a sub-topic of the
 previous topic (@code{gnus-topic-indent}).  If given a prefix,
 ``un-indent'' the topic instead.
+
+@item M-TAB
+@kindex M-TAB (Topic)
+@findex gnus-topic-unindent
+``Un-indent'' the current topic so that it becomes a sub-topic of the
+parent of its current parent (@code{gnus-topic-unindent}).  
 
 @item C-k
 @kindex C-k (Topic)
@@ -6867,10 +6875,13 @@ Here are the available keystrokes when using pick mode:
 @table @kbd
 @item .
 @kindex . (Pick)
-@findex gnus-summary-mark-as-processable
-Pick the article on the current line
-(@code{gnus-summary-mark-as-processable}).  If given a numerical prefix,
-go to that article and pick it.  (The line number is normally displayed
+@findex gnus-pick-article-or-thread
+Pick the article or thread on the current line
+(@code{gnus-pick-article-or-thread}).  If the variable
+@code{gnus-thread-hide-subtree} is true, then this key selects the
+entire thread when used at the first article of the thread.  Otherwise,
+it selects just the article. If given a numerical prefix, go to that
+thread or article and pick it.  (The line number is normally displayed
 at the beginning of the summary pick lines.)
 
 @item SPACE
@@ -6881,53 +6892,13 @@ at the end of the buffer, start reading the picked articles.
 
 @item u
 @kindex u (Pick)
-@findex gnus-summary-unmark-as-processable
-Unpick the article (@code{gnus-summary-unmark-as-processable}).
-
-@item U
-@kindex U (Pick)
-@findex gnus-summary-unmark-all-processable
-Unpick all articles (@code{gnus-summary-unmark-all-processable}).
-
-@item t
-@kindex t (Pick)
-@findex gnus-uu-mark-thread
-Pick the thread (@code{gnus-uu-mark-thread}).
-
-@item T
-@kindex T (Pick)
-@findex gnus-uu-unmark-thread
-Unpick the thread (@code{gnus-uu-unmark-thread}).
-
-@item r
-@kindex r (Pick)
-@findex gnus-uu-mark-region
-Pick the region (@code{gnus-uu-mark-region}).
-
-@item R
-@kindex R (Pick)
-@findex gnus-uu-unmark-region
-Unpick the region (@code{gnus-uu-unmark-region}).
-
-@item e
-@kindex e (Pick)
-@findex gnus-uu-mark-by-regexp
-Pick articles that match a regexp (@code{gnus-uu-mark-by-regexp}).
-
-@item E
-@kindex E (Pick)
-@findex gnus-uu-unmark-by-regexp
-Unpick articles that match a regexp (@code{gnus-uu-unmark-by-regexp}).
-
-@item b
-@kindex b (Pick)
-@findex gnus-uu-mark-buffer
-Pick the buffer (@code{gnus-uu-mark-buffer}).
-
-@item B
-@kindex B (Pick)
-@findex gnus-uu-unmark-buffer
-Unpick the buffer (@code{gnus-uu-unmark-buffer}).
+@findex gnus-pick-unmark-article-or-thread.
+Unpick the thread or article
+(@code{gnus-pick-unmark-article-or-thread}).  If the variable
+@code{gnus-thread-hide-subtree} is true, then this key unpicks the
+thread if used at the first article of the thread.  Otherwise it unpicks 
+just the article.  You can give this key a numerical prefix to unpick
+the thread or article at that line.
 
 @item RET
 @kindex RET (Pick)
@@ -6939,6 +6910,11 @@ given a prefix, mark all unpicked articles as read first.  If
 will still be visible when you are reading.
 
 @end table
+
+All the normal summary mode commands are still available in the
+pick-mode, with the exception of @kbd{u}.  However @kbd{!} is available
+which is mapped to the same function
+@code{gnus-summary-tick-article-forward}.
 
 If this sounds like a good idea to you, you could say:
 
@@ -7213,6 +7189,12 @@ editing and make the changes permanent, type @kbd{C-c C-c}
 If you want to re-spool an article, you might be curious as to what group
 the article will end up in before you do the re-spooling.  This command
 will tell you (@code{gnus-summary-respool-query}).
+
+@item B t
+@kindex B t (Summary)
+@findex gnus-summary-respool-trace
+Similarly, this command will display all fancy splitting patterns used
+when repooling, if any (@code{gnus-summary-respool-trace}).
 
 @item B p
 @kindex B p (Summary)
@@ -8042,6 +8024,7 @@ to make Gnus try to post using the foreign server.
 * Posting Server::       What server should you post via?
 * Mail and Post::        Mailing and posting at the same time.
 * Archived Messages::    Where Gnus stores the messages you've sent.
+* Posting Styles::       An easier way to specify who you are.
 * Drafts::               Postponing messages and rejected messages.
 * Rejected Articles::    What happens if the server doesn't like your article?
 @end menu
@@ -8297,83 +8280,83 @@ but the latter is the preferred method.
 @end table
 
 
-@c @node Posting Styles
-@c @section Posting Styles
-@c @cindex posting styles
-@c @cindex styles
-@c
-@c All them variables, they make my head swim.
-@c
-@c So what if you want a different @code{Organization} and signature based
-@c on what groups you post to?  And you post both from your home machine
-@c and your work machine, and you want different @code{From} lines, and so
-@c on?
-@c
-@c @vindex gnus-posting-styles
-@c One way to do stuff like that is to write clever hooks that change the
-@c variables you need to have changed.  That's a bit boring, so somebody
-@c came up with the bright idea of letting the user specify these things in
-@c a handy alist.  Here's an example of a @code{gnus-posting-styles}
-@c variable:
-@c
-@c @lisp
-@c ((".*"
-@c   (signature . "Peace and happiness")
-@c   (organization . "What me?"))
-@c  ("^comp"
-@c   (signature . "Death to everybody"))
-@c  ("comp.emacs.i-love-it"
-@c   (organization . "Emacs is it")))
-@c @end lisp
-@c
-@c As you might surmise from this example, this alist consists of several
-@c @dfn{styles}.  Each style will be applicable if the first element
-@c ``matches'', in some form or other.  The entire alist will be iterated
-@c over, from the beginning towards the end, and each match will be
-@c applied, which means that attributes in later styles that match override
-@c the same attributes in earlier matching styles.  So
-@c @samp{comp.programming.literate} will have the @samp{Death to everybody}
-@c signature and the @samp{What me?} @code{Organization} header.
-@c
-@c The first element in each style is called the @code{match}.  If it's a
-@c string, then Gnus will try to regexp match it against the group name.
-@c If it's a function symbol, that function will be called with no
-@c arguments.  If it's a variable symbol, then the variable will be
-@c referenced.  If it's a list, then that list will be @code{eval}ed.  In
-@c any case, if this returns a non-@code{nil} value, then the style is said
-@c to @dfn{match}.
-@c
-@c Each style may contain a arbitrary amount of @dfn{attributes}.  Each
-@c attribute consists of a @var{(name . value)} pair.  The attribute name
-@c can be one of @code{signature}, @code{organization} or @code{from}.  The
-@c attribute name can also be a string.  In that case, this will be used as
-@c a header name, and the value will be inserted in the headers of the
-@c article.
-@c
-@c The attribute value can be a string (used verbatim), a function (the
-@c return value will be used), a variable (its value will be used) or a
-@c list (it will be @code{eval}ed and the return value will be used).
-@c
-@c So here's a new example:
-@c
-@c @lisp
-@c (setq gnus-posting-styles
-@c       '((".*"
-@c           (signature . "~/.signature")
-@c           (from . "user@@foo (user)")
-@c           ("X-Home-Page" . (getenv "WWW_HOME"))
-@c           (organization . "People's Front Against MWM"))
-@c         ("^rec.humor"
-@c           (signature . my-funny-signature-randomizer))
-@c         ((equal (system-name) "gnarly")
-@c           (signature . my-quote-randomizer))
-@c         (posting-from-work-p
-@c           (signature . "~/.work-signature")
-@c           (from . "user@@bar.foo (user)")
-@c           (organization . "Important Work, Inc"))
-@c         ("^nn.+:"
-@c           (signature . "~/.mail-signature"))))
-@c @end lisp
+@node Posting Styles
+@section Posting Styles
+@cindex posting styles
+@cindex styles
+
+All them variables, they make my head swim.
+
+So what if you want a different @code{Organization} and signature based
+on what groups you post to?  And you post both from your home machine
+and your work machine, and you want different @code{From} lines, and so
+on?
+
+@vindex gnus-posting-styles
+One way to do stuff like that is to write clever hooks that change the
+variables you need to have changed.  That's a bit boring, so somebody
+came up with the bright idea of letting the user specify these things in
+a handy alist.  Here's an example of a @code{gnus-posting-styles}
+variable:
+
+@lisp
+((".*"
+  (signature "Peace and happiness")
+  (organization "What me?"))
+ ("^comp"
+  (signature "Death to everybody"))
+ ("comp.emacs.i-love-it"
+  (organization "Emacs is it")))
+@end lisp
+
+As you might surmise from this example, this alist consists of several
+@dfn{styles}.  Each style will be applicable if the first element
+``matches'', in some form or other.  The entire alist will be iterated
+over, from the beginning towards the end, and each match will be
+applied, which means that attributes in later styles that match override
+the same attributes in earlier matching styles.  So
+@samp{comp.programming.literate} will have the @samp{Death to everybody}
+signature and the @samp{What me?} @code{Organization} header.
+
+The first element in each style is called the @code{match}.  If it's a
+string, then Gnus will try to regexp match it against the group name.
+If it's a function symbol, that function will be called with no
+arguments.  If it's a variable symbol, then the variable will be
+referenced.  If it's a list, then that list will be @code{eval}ed.  In
+any case, if this returns a non-@code{nil} value, then the style is said
+to @dfn{match}.
+
+Each style may contain a arbitrary amount of @dfn{attributes}.  Each
+attribute consists of a @var{(name . value)} pair.  The attribute name
+can be one of @code{signature}, @code{signature-file},
+@code{organization}, @code{address} or @code{name}.  The attribute name
+can also be a string.  In that case, this will be used as a header name,
+and the value will be inserted in the headers of the article.
+
+The attribute value can be a string (used verbatim), a function (the
+return value will be used), a variable (its value will be used) or a
+list (it will be @code{eval}ed and the return value will be used).
+
+So here's a new example:
+
+@lisp
+(setq gnus-posting-styles
+      '((".*"
+         (signature-file "~/.signature")
+         (name "User Name")
+         ("X-Home-Page" (getenv "WWW_HOME"))
+         (organization "People's Front Against MWM"))
+        ("^rec.humor"
+         (signature my-funny-signature-randomizer))
+        ((equal (system-name) "gnarly")
+         (signature my-quote-randomizer))
+        (posting-from-work-p
+         (signature-file "~/.work-signature")
+         (address "user@@bar.foo")
+         (organization "Important Work, Inc"))
+        ("^nn.+:"
+         (signature-file "~/.mail-signature"))))
+@end lisp
 
 @node Drafts
 @section Drafts
@@ -8946,10 +8929,11 @@ The file contains one or more line, each of which define one server.
 
 @item
 Each line may contain an arbitrary number of token/value pairs.  The
-valid tokens include @samp{machine}, @samp{login}, @samp{password}, and
-@samp{force}.  (The latter is not a valid @file{.netrc}/@code{ftp}
-token, which is the only way the @file{.authinfo} file format deviates
-from the @file{.netrc} file format.)
+valid tokens include @samp{machine}, @samp{login}, @samp{password},
+@samp{default} and @samp{force}.  (The latter is not a valid
+@file{.netrc}/@code{ftp} token, which is the only way the
+@file{.authinfo} file format deviates from the @file{.netrc} file
+format.)
 
 @end enumerate
 
@@ -8970,6 +8954,16 @@ user will be prompted for the password.  The latter also has the
 @var{nntp} server upon connection; the default (i.e., when there is not
 @samp{force} tag) is to not send authinfo to the @var{nntp} server
 until the @var{nntp} server asks for it.
+
+You can also add @samp{default} lines that will apply to all servers
+that don't have matching @samp{machine} lines.
+
+@example
+default force yes
+@end example
+
+This will force sending @samp{AUTHINFO} commands to all servers not
+previously mentioned.
 
 Remember to not leave the @file{~/.authinfo} file world-readable.
 
@@ -15380,7 +15374,10 @@ In May 1996 the next Gnus generation (aka. ``September Gnus'' (after 99
 releases)) was released under the name ``Gnus 5.2'' (40 releases).
 
 On July 28th 1996 work on Red Gnus was begun, and it was released on
-January 25th 1997 (after 84 releases) as ``Gnus 5.4''.
+January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
+
+On September 13th 1997, Quassia Gnus was started and lasted 37
+releases.  If was released as ``Gnus 5.6.24' on March 8th 1998.
 
 If you happen upon a version of Gnus that has a prefixed name --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -15701,6 +15698,7 @@ Joao Cachopo,
 Zlatko Calusic,
 Massimo Campostrini,
 Castor,
+David Charlap,
 Dan Christensen,
 Kevin Christian,
 Michael R. Cook,
@@ -15856,7 +15854,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.23.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.24.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16391,7 +16389,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.23:
+New features in Gnus 5.6.24:
 
 @itemize @bullet
 
@@ -17704,6 +17702,9 @@ topics for displaying.
 with unread articles, even if that group is hidden in a topic.
 
 @item
+gnus-posting-styles doesn't work in drafts.
+
+@item
 Solve the halting problem.
 
 @c TODO
@@ -18231,6 +18232,19 @@ Takes an unprefixed group name and a select method, and returns the full
 @item gnus-get-info
 @findex gnus-get-info
 Returns the group info list for @var{group}.
+
+@item gnus-group-unread
+@findex gnus-group-unread
+The number of unread articles in @var{group}, or @code{t} if that is
+unknown.
+
+@item gnus-active
+@findex gnus-active
+The active entry for @var{group}.
+
+@item gnus-set-active
+@findex gnus-set-active
+Set the active entry for @var{group}.
 
 @item gnus-add-current-to-buffer-list
 @findex gnus-add-current-to-buffer-list

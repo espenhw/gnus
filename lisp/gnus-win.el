@@ -154,6 +154,10 @@
      (vertical 1.0
 	       (summary 0.5 point)
 	       ("*Score Words*" 1.0)))
+    (split-trace
+     (vertical 1.0
+	       (summary 0.5 point)
+	       ("*Split Trace*" 1.0)))
     (category
      (vertical 1.0
 	       (category 1.0)))
@@ -185,6 +189,7 @@ See the Gnus manual for an explanation of the syntax used.")
     (picons . gnus-picons-buffer-name)
     (tree . gnus-tree-buffer)
     (score-trace . "*Score Trace*")
+    (split-trace . "*Split Trace*")
     (info . gnus-info-buffer)
     (category . gnus-category-buffer)
     (article-copy . gnus-article-copy)

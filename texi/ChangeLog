@@ -1,3 +1,19 @@
+Fri Jul 10 04:26:23 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (NNTP): Addition.
+
+Sat Jul  4 14:24:29 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Gnus Utility Functions): Addition.
+
+Thu Jul  2 11:37:51 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Posting Styles): Ununcommented.
+
+Wed Jul  1 17:57:54 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Topic Commands): Addition.
+
 Tue Jun 30 16:11:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Topic Commands): Addition.
