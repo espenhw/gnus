@@ -6,7 +6,7 @@
 
 	* gnus-sum.el (gnus-summary-insert-articles): Remove fetched headers.
 
-	* webmail.el (webmail-type-definition): Deja is brought by google.
+	* webmail.el (webmail-type-definition): Deja is bought by google.
 
 2001-02-22 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
