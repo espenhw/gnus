@@ -111,7 +111,7 @@
     "^X-UIDL:" "^MIME-Version:" "^Return-Path:" "^In-Reply-To:"
     "^Content-Type:" "^Content-Transfer-Encoding:" "^X-WebTV-Signature:"
     "^X-MimeOLE:" "^X-MSMail-Priority:" "^X-Priority:" "^X-Loop:"
-    "^X-Authentication-Warning:" "^X-MIME-Autoconverted:" "^X-Face:"
+    "^X-Authentication-Warning:" "^X-MIME-Autoconverted:" "^X-Face"
     "^X-Attribution:" "^X-Originating-IP:" "^Delivered-To:"
     "^NNTP-[-A-Za-z]+:" "^Distribution:" "^X-no-archive:" "^X-Trace:"
     "^X-Complaints-To:" "^X-NNTP-Posting-Host:" "^X-Orig.*:"
@@ -1791,43 +1791,49 @@ unfolded."
 	;; instead.
 	(gnus-delete-images 'xface)
       ;; Display X-Faces.
-      (let (x-faces from face)
+      (let (x-faces from face grey)
 	(save-excursion
 	  (set-buffer gnus-original-article-buffer)
 	  (save-restriction
 	    (mail-narrow-to-head)
-	    (while (gnus-article-goto-header "x-face")
+	    (while (gnus-article-goto-header "x-face\\(-[0-9]+\\)?")
+	      (when (match-beginning 2)
+		(setq grey t))
 	      (push (mail-header-field-value) x-faces))
 	    (setq from (message-fetch-field "from"))))
-	;; Sending multiple EOFs to xv doesn't work, so we only do a
-	;; single external face.
-	(when (stringp gnus-article-x-face-command)
-	  (setq x-faces (list (car x-faces))))
-	(while (and (setq face (pop x-faces))
-		    gnus-article-x-face-command
-		    (or force
-			;; Check whether this face is censored.
-			(not gnus-article-x-face-too-ugly)
-			(and gnus-article-x-face-too-ugly from
-			     (not (string-match gnus-article-x-face-too-ugly
-						from)))))
-	  ;; We display the face.
-	  (if (symbolp gnus-article-x-face-command)
-	      ;; The command is a lisp function, so we call it.
-	      (if (gnus-functionp gnus-article-x-face-command)
-		  (funcall gnus-article-x-face-command face)
-		(error "%s is not a function" gnus-article-x-face-command))
-	    ;; The command is a string, so we interpret the command
-	    ;; as a, well, command, and fork it off.
-	    (let ((process-connection-type nil))
-	      (process-kill-without-query
-	       (start-process
-		"article-x-face" nil shell-file-name shell-command-switch
-		gnus-article-x-face-command))
-	      (with-temp-buffer
-		(insert face)
-		(process-send-region "article-x-face" (point-min) (point-max)))
-	      (process-send-eof "article-x-face"))))))))
+	(if grey
+	    (gnus-put-image
+	     (create-image (gnus-convert-gray-x-face-to-xpm x-faces) 'xpm t))
+	  ;; Sending multiple EOFs to xv doesn't work, so we only do a
+	  ;; single external face.
+	  (when (stringp gnus-article-x-face-command)
+	    (setq x-faces (list (car x-faces))))
+	  (while (and (setq face (pop x-faces))
+		      gnus-article-x-face-command
+		      (or force
+			  ;; Check whether this face is censored.
+			  (not gnus-article-x-face-too-ugly)
+			  (and gnus-article-x-face-too-ugly from
+			       (not (string-match gnus-article-x-face-too-ugly
+						  from)))))
+	    ;; We display the face.
+	    (if (symbolp gnus-article-x-face-command)
+		;; The command is a lisp function, so we call it.
+		(if (gnus-functionp gnus-article-x-face-command)
+		    (funcall gnus-article-x-face-command face)
+		  (error "%s is not a function" gnus-article-x-face-command))
+	      ;; The command is a string, so we interpret the command
+	      ;; as a, well, command, and fork it off.
+	      (let ((process-connection-type nil))
+		(process-kill-without-query
+		 (start-process
+		  "article-x-face" nil shell-file-name shell-command-switch
+		  gnus-article-x-face-command))
+		(with-temp-buffer
+		  (insert face)
+		  (process-send-region "article-x-face"
+				       (point-min) (point-max)))
+		(process-send-eof "article-x-face")))))))))
 
 (defun article-decode-mime-words ()
   "Decode all MIME-encoded words in the article."

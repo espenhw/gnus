@@ -1,5 +1,10 @@
 2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Renamed.
+
+	* gnus-art.el (gnus-ignored-headers): Hide all X-Faces.
+	(article-display-x-face): Display grey X-Faces.
+
 	* gnus-fun.el (gnus-convert-gray-x-face-region): New function.
 	(gnus-convert-gray-x-face-to-ppm): Ditto.
 	(gnus-convert-image-to-gray-x-face): Ditto.

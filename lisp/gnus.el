@@ -1987,6 +1987,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-demon-remove-handler)
      ("gnus-demon" :interactive t
       gnus-demon-init gnus-demon-cancel)
+     ("gnus-fun" gnus-convert-gray-x-face-to-xpm)
      ("gnus-salt" gnus-highlight-selected-tree gnus-possibly-generate-tree
       gnus-tree-open gnus-tree-close gnus-carpal-setup-buffer)
      ("gnus-nocem" gnus-nocem-scan-groups gnus-nocem-close

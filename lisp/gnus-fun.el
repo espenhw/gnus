@@ -97,7 +97,8 @@
 		(nth i x-faces))))
     (delete-file mapfile)))
 
-(defun gnus-convert-gray-x-face-to-ppm (faces)
+;;;###autoload
+(defun gnus-convert-gray-x-face-to-xpm (faces)
   (let* ((depth (length faces))
 	 (scale (/ 255 (1- (expt 2 depth))))
 	 bit-list bit-lists pixels pixel)
@@ -127,8 +128,13 @@
       (insert "P2\n48 48\n255\n")
       (dolist (pixel pixels)
 	(insert (number-to-string (* scale pixel)) " "))
+      (shell-command-on-region
+       (point-min) (point-max)
+       "ppmtoxpm"
+       (current-buffer) t (get-buffer-create " *junk"))
       (buffer-string))))
 
+;;;###autoload
 (defun gnus-convert-gray-x-face-region (beg end)
   "Convert the X-Faces in region to a PPM file."
   (interactive "r")
@@ -142,7 +148,7 @@
 	  (mail-header-narrow-to-field)
 	  (push (mail-header-field-value) faces)
 	  (goto-char (point-max)))))
-    (gnus-convert-gray-x-face-to-ppm faces)))
+    (gnus-convert-gray-x-face-to-xpm faces)))
 
 (provide 'gnus-fun)
 
