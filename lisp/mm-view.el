@@ -151,7 +151,10 @@
       (let ((b (point))
 	    (charset (mail-content-type-get
 		      (mm-handle-type handle) 'charset)))
-	(if (eq charset 'gnus-decoded)
+	(if (or (eq charset 'gnus-decoded)
+		;; This is probably not entirely correct, but
+		;; makes rfc822 parts with embedded multiparts work. 
+		(eq mail-parse-charset 'gnus-decoded))
 	    (mm-insert-part handle)
 	  (insert (mm-decode-string (mm-get-part handle) charset)))
 	(when (and (equal type "plain")

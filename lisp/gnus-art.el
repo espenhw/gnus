@@ -1477,10 +1477,10 @@ If PROMPT (the prefix), prompt for a coding system to use."
     (forward-line 1)
     (save-restriction
       (narrow-to-region (point) (point-max))
-      (if (and (eq mail-parse-charset 'gnus-decoded)
-	       (eq (mm-body-7-or-8) '8bit))
-	  ;; The text code could have been decoded.
-	  (setq charset mail-parse-charset))
+      (when (and (eq mail-parse-charset 'gnus-decoded)
+		 (eq (mm-body-7-or-8) '8bit))
+	;; The text code could have been decoded.
+	(setq charset mail-parse-charset))
       (when (and (or (not ctl)
 		     (equal (car ctl) "text/plain"))
 		 (not format)) ;; article with format will decode later.

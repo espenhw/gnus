@@ -191,7 +191,8 @@ To disable dissecting shar codes, for instance, add
 	      ((eq type 'uu)
 	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
 			       (list (or (and file-name
-					      (string-match "\\.[^\\.]+$" file-name)
+					      (string-match "\\.[^\\.]+$"
+							    file-name)
 					      (mailcap-extension-to-mime
 					       (match-string 0 file-name)))
 					 "application/octet-stream"))

@@ -229,9 +229,9 @@ running (\"xwatch\", etc.)
 Eg.
 
 \(add-hook 'nnmail-read-incoming-hook
-	   (lambda ()
-	     (start-process \"mailsend\" nil
-			    \"/local/bin/mailsend\" \"read\" \"mbox\")))
+          (lambda ()
+            (call-process \"/local/bin/mailsend\" nil nil nil
+                          \"read\" nnmail-spool-file)))
 
 If you have xwatch running, this will alert it that mail has been
 read.

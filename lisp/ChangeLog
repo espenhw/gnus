@@ -1,3 +1,16 @@
+2000-07-03 00:12:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnsoup.el: Use expand-file-name throughtout.
+
+2000-07-03 00:07:51  Kjetil Torgrim Homme  <kjetilho@ifi.uio.no>
+
+	* nnmail.el (nnmail-read-incoming-hook): New example.
+
+2000-07-02 23:17:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-inline-text): Check whether the text has already
+	been decoded.
+
 2000-07-04 15:17:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-sid-strip): To strip or not to strip?

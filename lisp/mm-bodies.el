@@ -231,13 +231,13 @@ The characters in CHARSET should then be decoded."
 
 (defun mm-decode-string (string charset)
   "Decode STRING with CHARSET."
-  (if (stringp charset)
-      (setq charset (intern (downcase charset))))
-  (if (or (not charset) 
-	  (eq 'gnus-all mail-parse-ignored-charsets)
-	  (memq 'gnus-all mail-parse-ignored-charsets)
-	  (memq charset mail-parse-ignored-charsets))
-      (setq charset mail-parse-charset))
+  (when (stringp charset)
+    (setq charset (intern (downcase charset))))
+  (when (or (not charset) 
+	    (eq 'gnus-all mail-parse-ignored-charsets)
+	    (memq 'gnus-all mail-parse-ignored-charsets)
+	    (memq charset mail-parse-ignored-charsets))
+    (setq charset mail-parse-charset))
   (or
    (when (featurep 'mule)
      (let ((mule-charset (mm-charset-to-coding-system charset)))
