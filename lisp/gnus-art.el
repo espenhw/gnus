@@ -5362,7 +5362,9 @@ guessing."
 
 (defun gnus-button-handle-apropos-variable (url)
   "Call apropos when pushing the corresponding URL button."
-  (apropos-variable (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
+  (funcall
+   (if (fboundp 'apropos-variable) 'apropos-variable 'apropos)
+   (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
 (defcustom gnus-button-man-level 5
   "*Integer that says how many man-related buttons Gnus will show.
