@@ -540,7 +540,7 @@ See also `message-yank-cited-prefix'."
   :group 'message-insertion)
 
 (defcustom message-yank-cited-prefix ">"
-  "*Prefix inserted on cited lines of yanked messages.
+  "*Prefix inserted on cited or empty lines of yanked messages.
 Fix `message-cite-prefix-regexp' if it is set to an abnormal value.
 See also `message-yank-prefix'."
   :type 'string
@@ -2109,7 +2109,7 @@ However, if `message-yank-prefix' is non-nil, insert that prefix on each line."
 	  (while (< (point) (mark t))
 	    (cond
 	     ((eolp) 
-	      (insert message-yank-prefix)
+	      (insert message-yank-cited-prefix)
 	      (setq last-line nil))
 	     ((looking-at ">")
 	      (if (memq last-line '(nil spaces right-angle quoted))
