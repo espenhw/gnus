@@ -1,3 +1,8 @@
+2001-07-31  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-delay.el (gnus-delay-initialize): Use standard define-key
+	syntax.
+
 2001-07-30 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	Originally from Andreas Fuchs <asf@void.at>
 

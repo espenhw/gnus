@@ -132,7 +132,7 @@ Key binding is skipped if optional arg NO-KEYMAP is non-nil.
 Checking delayed messages is skipped if optional arg NO-CHECK is non-nil."
   (unless no-keymap
     (require 'message)
-    (define-key message-mode-map (kbd "C-c C-j") 'gnus-delay-article))
+    (define-key message-mode-map "\C-c\n" 'gnus-delay-article))
   (unless no-check
     (add-hook 'gnus-get-new-news-hook 'gnus-delay-send-drafts)))
 
