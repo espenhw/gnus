@@ -3,6 +3,8 @@
 	* gnus.texi (Article Washing): Add libidn URL.  Suggested by
 	Michael Cook <michael@waxrat.com>.
 
+	* gnus-news.texi: Ditto.
+
 2005-01-16  Xavier Maillard <zedek@gnu-rox.org> (tiny change)
 
 	* gnus-faq.texi ([4.1]): Typo.

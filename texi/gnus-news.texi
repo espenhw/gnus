@@ -62,7 +62,8 @@ highlighting articles (@code{gnus-article-treat-ansi-sequences}).
 
 @item International host names (@acronym{IDNA}) can now be decoded
 inside article bodies using @kbd{W i}
-(@code{gnus-summary-idna-message}).
+(@code{gnus-summary-idna-message}).  This require that GNU Libidn
+(@url{http://www.gnu.org/software/libidn/}) has been installed.
 
 @item Gnus includes an Emacs Lisp @acronym{SASL} library.
 
