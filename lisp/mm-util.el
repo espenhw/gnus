@@ -951,44 +951,68 @@ To make this function work with XEmacs, the APEL package is required."
 		      (fboundp 'coding-system-to-mime-charset)))
 	     (coding-system-to-mime-charset coding-system)))))
 
-(defun mm-decompress-buffer (filename &optional inplace)
-  "Decompress buffer's contents according to the extension of FILENAME.
-If INPLACE is nil, return a decompressed string or nil, and the buffer
-will not be modified.  Otherwise, replace the buffer's contents with
-the decompressed one.  Decompression is done only when the extension
-is \".gz\" or \".bz2\" which does not follow \".tar\"."
-  (let ((decomp (cond ((or (not filename)
-			   (string-match "\\.tar\\.[^.]+\\'" filename))
-		       nil)
-		      ((string-match "\\.gz\\'" filename)
-		       '("gzip" "-c" "-d" "-q"))
-		      ((string-match "\\.bz2\\'" filename)
-		       '("bzip2" "-d")))))
-    (when decomp
-      (let ((coding-system-for-read mm-binary-coding-system)
-	    (coding-system-for-write mm-binary-coding-system)
-	    cur mod)
-	(if inplace
-	    (prog1
-		nil
-	      (setq cur (buffer-string)
-		    mod (buffer-modified-p))
-	      (condition-case nil
-		  (apply 'call-process-region (point-min) (point-max)
-			 (car decomp) t t nil (cdr decomp))
-		(error
-		 (erase-buffer)
-		 (insert cur)
-		 (set-buffer-modified-p mod))))
-	  (setq cur (current-buffer))
-	  (mm-with-unibyte-buffer
+(eval-when-compile
+  (require 'jka-compr))
+
+(defun mm-decompress-buffer (filename &optional inplace force)
+  "Decompress buffer's contents, depending on jka-compr.
+Only when FORCE is non-nil or `auto-compression-mode' is enabled and
+FILENAME agrees with `jka-compr-compression-info-list', decompression
+is done.  If INPLACE is nil, return decompressed data or nil without
+modifying the buffer.  Otherwise, replace the buffer's contents with
+the decompressed data.  The buffer's multibyteness must be turned off."
+  (when (and filename
+	     (if force
+		 (prog1 t (require 'jka-compr))
+	       (and (fboundp 'jka-compr-installed-p)
+		    (jka-compr-installed-p))))
+    (let ((info (jka-compr-get-compression-info filename)))
+      (when info
+	(let ((prog (jka-compr-info-uncompress-program info))
+	      (args (jka-compr-info-uncompress-args info))
+	      (msg (format "%s %s..."
+			   (jka-compr-info-uncompress-message info)
+			   filename))
+	      (err-file (jka-compr-make-temp-name))
+	      (cur (current-buffer))
+	      (coding-system-for-read mm-binary-coding-system)
+	      (coding-system-for-write mm-binary-coding-system)
+	      retval err-msg)
+	  (message "%s" msg)
+	  (with-temp-buffer
 	    (insert-buffer-substring cur)
-	    (condition-case nil
+	    (condition-case err
 		(progn
-		  (apply 'call-process-region (point-min) (point-max)
-			 (car decomp) t t nil (cdr decomp))
-		  (buffer-string))
-	      (error nil))))))))
+		  (unless (memq (apply 'call-process-region
+				       (point-min) (point-max)
+				       prog t (list t err-file) nil args)
+				jka-compr-acceptable-retval-list)
+		    (erase-buffer)
+		    (insert (mapconcat
+			     'identity
+			     (delete "" (split-string
+					 (prog2
+					     (insert-file-contents err-file)
+					     (buffer-string)
+					   (erase-buffer))))
+			     " ")
+			    "\n")
+		    (setq err-msg
+			  (format "Error while executing \"%s %s < %s\""
+				  prog (mapconcat 'identity args " ")
+				  filename)))
+		  (setq retval (buffer-string)))
+	      (error
+	       (setq err-msg (error-message-string err)))))
+	  (when (file-exists-p err-file)
+	    (ignore-errors (jka-compr-delete-temp-file err-file)))
+	  (when inplace
+	    (unless err-msg
+	      (delete-region (point-min) (point-max))
+	      (insert retval))
+	    (setq retval nil))
+	  (message "%s" (or err-msg (concat msg "done")))
+	  retval)))))
 
 (eval-when-compile
   (unless (fboundp 'coding-system-name)
@@ -1002,11 +1026,12 @@ is \".gz\" or \".bz2\" which does not follow \".tar\"."
   "Find coding system used to decode the contents of the current buffer.
 This function looks for the coding system magic cookie or examines the
 coding system specified by `file-coding-system-alist' being associated
-with FILENAME which defaults to `buffer-file-name'."
+with FILENAME which defaults to `buffer-file-name'.  Data compressed by
+gzip, bzip2, etc. are allowed."
   (unless filename
     (setq filename buffer-file-name))
   (save-excursion
-    (let ((decomp (mm-decompress-buffer filename)))
+    (let ((decomp (mm-decompress-buffer filename nil t)))
       (when decomp
 	(set-buffer (let (default-enable-multibyte-characters)
 		      (generate-new-buffer " *temp*")))

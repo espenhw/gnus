@@ -1,3 +1,24 @@
+2005-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-mime-jka-compr-maybe-uncompress): Remove;
+	merge in into mm-decompress-buffer.
+	(gnus-mime-copy-part): Use the MIME part charset, the value which
+	a user specified or gnus-newsgroup-charset for decoding, like
+	gnus-mime-inline-part does; set buffer-file-coding-system to tell
+	save-buffer what was used.  Suggested by Kevin Ryde
+	<user42@zip.com.au>.
+	(gnus-mime-inline-part): Allow the name parameter as well as the
+	filename parameter; force decompressing of compressed data; always
+	display contents being not decoded as unibyte.
+
+	* mm-view.el (mm-display-inline-fontify): Allow the name parameter
+	as well as the filename parameter.
+
+	* mm-util.el (mm-decompress-buffer): Merge
+	gnus-mime-jka-compr-maybe-uncompress.
+	(mm-find-buffer-file-coding-system): Doc fix; force decompressing
+	of compressed data.
+
 2005-02-08  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-log): Doc fix.

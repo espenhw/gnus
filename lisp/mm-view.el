@@ -466,10 +466,10 @@
     (unless (eq charset 'gnus-decoded)
       (mm-with-unibyte-buffer
 	(mm-insert-part handle)
-	(mm-decompress-buffer (mail-content-type-get
-			       (mm-handle-disposition handle)
-			       'filename)
-			      t)
+	(mm-decompress-buffer
+	 (or (mail-content-type-get (mm-handle-disposition handle) 'name)
+	     (mail-content-type-get (mm-handle-disposition handle) 'filename))
+	 t t)
 	(unless charset
 	  (setq coding-system (mm-find-buffer-file-coding-system)))
 	(setq text (buffer-string))))

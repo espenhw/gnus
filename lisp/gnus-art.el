@@ -4229,60 +4229,58 @@ Deleting parts may malfunction or destroy the article; continue? ")
 	    (mm-merge-handles gnus-article-mime-handles handle))
       (gnus-mm-display-part handle))))
 
-(eval-when-compile
-  (require 'jka-compr))
-
-;; jka-compr.el uses a "sh -c" to direct stderr to err-file, but these days
-;; emacs can do that itself.
-;;
-(defun gnus-mime-jka-compr-maybe-uncompress ()
-  "Uncompress the current buffer if `auto-compression-mode' is enabled.
-The uncompress method used is derived from `buffer-file-name'."
-  (when (and (fboundp 'jka-compr-installed-p)
-             (jka-compr-installed-p))
-    (let ((info (jka-compr-get-compression-info buffer-file-name)))
-      (when info
-        (let ((basename (file-name-nondirectory buffer-file-name))
-              (args     (jka-compr-info-uncompress-args    info))
-              (prog     (jka-compr-info-uncompress-program info))
-              (message  (jka-compr-info-uncompress-message info))
-              (err-file (jka-compr-make-temp-name)))
-          (if message
-              (message "%s %s..." message basename))
-          (unwind-protect
-              (unless (memq (apply 'call-process-region
-                                   (point-min) (point-max)
-                                   prog
-                                   t (list t err-file) nil
-                                   args)
-                            jka-compr-acceptable-retval-list)
-                (jka-compr-error prog args basename message err-file))
-            (jka-compr-delete-temp-file err-file)))))))
-
-(defun gnus-mime-copy-part (&optional handle)
+(defun gnus-mime-copy-part (&optional handle arg)
   "Put the MIME part under point into a new buffer.
 If `auto-compression-mode' is enabled, compressed files like .gz and .bz2
 are decompressed."
-  (interactive)
+  (interactive (list nil current-prefix-arg))
   (gnus-article-check-buffer)
-  (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
-	 (contents (and handle (mm-get-part handle)))
-	 (base (and handle
-		    (file-name-nondirectory
-		     (or
-		      (mail-content-type-get (mm-handle-type handle) 'name)
-		      (mail-content-type-get (mm-handle-disposition handle)
-					     'filename)
-		      "*decoded*"))))
-	 (buffer (and base (generate-new-buffer base))))
-    (when contents
-      (switch-to-buffer buffer)
-      (insert contents)
+  (unless handle
+    (setq handle (get-text-property (point) 'gnus-data)))
+  (when handle
+    (let* ((filename (or (mail-content-type-get (mm-handle-disposition handle)
+						'name)
+			 (mail-content-type-get (mm-handle-disposition handle)
+						'filename)))
+	   (contents (mm-with-unibyte-buffer
+		       (mm-insert-part handle)
+		       (or (mm-decompress-buffer filename)
+			   (buffer-string))))
+	   charset coding-system)
+      (setq filename (if filename
+			 (file-name-nondirectory filename)
+		       "*decoded*"))
+      (cond
+       ((not arg)
+	(unless (setq charset (mail-content-type-get
+			       (mm-handle-type handle) 'charset))
+	  (unless (setq coding-system (mm-with-unibyte-buffer
+					(insert contents)
+					(mm-find-buffer-file-coding-system)))
+	    (setq charset gnus-newsgroup-charset))))
+       ((numberp arg)
+	(setq charset (or (cdr (assq arg
+				     gnus-summary-show-article-charset-alist))
+			  (mm-read-coding-system "Charset: ")))))
+      (switch-to-buffer (generate-new-buffer filename))
+      (if (or coding-system
+	      (and charset
+		   (setq coding-system (mm-charset-to-coding-system charset))
+		   (not (eq charset 'ascii))))
+	  (progn
+	    (mm-enable-multibyte)
+	    (insert (mm-decode-coding-string contents coding-system))
+	    (setq buffer-file-coding-system
+		  (if (boundp 'last-coding-system-used)
+		      (symbol-value 'last-coding-system-used)
+		    coding-system)))
+	(mm-disable-multibyte)
+	(insert contents)
+	(setq buffer-file-coding-system mm-binary-coding-system))
       ;; We do it this way to make `normal-mode' set the appropriate mode.
       (unwind-protect
 	  (progn
-	    (setq buffer-file-name (expand-file-name base))
-	    (gnus-mime-jka-compr-maybe-uncompress)
+	    (setq buffer-file-name (expand-file-name filename))
 	    (normal-mode))
 	(setq buffer-file-name nil))
       (goto-char (point-min)))))
@@ -4313,7 +4311,8 @@ are decompressed."
 	  (ps-despool filename)))))
 
 (defun gnus-mime-inline-part (&optional handle arg)
-  "Insert the MIME part under point into the current buffer."
+  "Insert the MIME part under point into the current buffer.
+Compressed files like .gz and .bz2 are decompressed."
   (interactive (list nil current-prefix-arg))
   (gnus-article-check-buffer)
   (unless handle
@@ -4327,19 +4326,21 @@ are decompressed."
 	(mm-with-unibyte-buffer
 	  (mm-insert-part handle)
 	  (setq contents
-		(or (mm-decompress-buffer (mail-content-type-get
-					   (mm-handle-disposition handle)
-					   'filename))
+		(or (mm-decompress-buffer
+		     (or (mail-content-type-get (mm-handle-disposition handle)
+						'name)
+			 (mail-content-type-get (mm-handle-disposition handle)
+						'filename))
+		     nil t)
 		    (buffer-string))))
 	(cond
 	 ((not arg)
 	  (unless (setq charset (mail-content-type-get
 				 (mm-handle-type handle) 'charset))
-	    (if (setq coding-system (mm-with-unibyte-buffer
-				      (insert contents)
-				      (mm-find-buffer-file-coding-system)))
-		(setq contents (mm-decode-coding-string contents
-							coding-system))
+	    (unless (setq coding-system
+			  (mm-with-unibyte-buffer
+			    (insert contents)
+			    (mm-find-buffer-file-coding-system)))
 	      (setq charset gnus-newsgroup-charset))))
 	 ((numberp arg)
 	  (if (mm-handle-undisplayer handle)
@@ -4350,16 +4351,17 @@ are decompressed."
 		    (mm-read-coding-system "Charset: "))))
 	 (t
 	  (if (mm-handle-undisplayer handle)
-	      (mm-remove-part handle))
-	  (setq contents (mm-string-to-multibyte contents))))
+	      (mm-remove-part handle))))
 	(forward-line 2)
 	(mm-insert-inline
 	 handle
-	 (if (and charset
-		  (setq coding-system (mm-charset-to-coding-system charset))
-		  (not (eq charset 'ascii)))
+	 (if (or coding-system
+		 (and charset
+		      (setq coding-system
+			    (mm-charset-to-coding-system charset))
+		      (not (eq charset 'ascii))))
 	     (mm-decode-coding-string contents coding-system)
-	   contents))
+	   (mm-string-to-multibyte contents)))
 	(goto-char b)))))
 
 (defun gnus-mime-view-part-as-charset (&optional handle arg)
