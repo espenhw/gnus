@@ -200,8 +200,13 @@
 	  (when (or user-method
 		    method
 		    (not no-default))
-	    (mm-display-external
-	     handle (or user-method method 'mailcap-save-binary-file))))))))
+	    (if (and (not user-method)
+		     (not method)
+		     (equal "text" (car (split-string type))))
+		(mm-insert-inline handle (mm-get-part handle))
+	      (mm-display-external
+	       handle (or user-method method
+			  'mailcap-save-binary-file)))))))))
 
 (defun mm-display-external (handle method)
   "Display HANDLE using METHOD."
@@ -212,7 +217,9 @@
     (if (functionp method)
 	(let ((cur (current-buffer)))
 	  (if (eq method 'mailcap-save-binary-file)
-	      (set-buffer (generate-new-buffer "*mm*"))
+	      (progn
+		(set-buffer (generate-new-buffer "*mm*"))
+		(setq method nil))
 	    (let ((win (get-buffer-window cur t)))
 	      (when win
 		(select-window win)))
@@ -223,7 +230,9 @@
 	  (message "Viewing with %s" method)
 	  (let ((mm (current-buffer)))
 	    (unwind-protect
-		(funcall method)
+		(if method
+		    (funcall method)
+		  (mm-save-part handle))
 	      (mm-handle-set-undisplayer handle mm))))
       (let* ((dir (make-temp-name (expand-file-name "emm." mm-tmp-directory)))
 	     (filename (mail-content-type-get

@@ -1,5 +1,7 @@
 ** Gnus changes.
 
+*** Gnus is now a MIME-capable reader.  See the manual for details. 
+
 *** gnus-auto-select-first can now be a function to be
 called to position point.
 

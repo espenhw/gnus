@@ -567,7 +567,24 @@ displayed by the first non-nil matching CONTENT face."
     ("\264" "'"))
   "Table for MS-to-Latin1 translation.")
 
+(defcustom gnus-ignored-mime-types '("text/x-vcard")
+  "List of MIME types that should be ignored by Gnus."
+  :group 'gnus-mime
+  :type '(repeat regexp))
+
+(defcustom gnus-treat-body-highlight-signature t
+  "Highlight the signature."
+  :group 'gnus-article
+  :type '(choice (const :tag "Off" nil)
+		 (const :tag "On" t)
+		 (const :tag "Last" last)
+		 (integer :tag "Less")))
+
 ;;; Internal variables
+
+(defvar gnus-treatment-function-alist ()
+  '((gnus-treat-body-highlight-signature gnus-article-highlight-signature nil)
+    ))
 
 (defvar gnus-article-mime-handle-alist nil)
 (defvar article-lapsed-timer nil)
@@ -1192,21 +1209,10 @@ always hide."
       (while (re-search-forward "^[ \t]*\n" nil t)
 	(replace-match "" t t)))))
 
-(defvar mime::preview/content-list)
-(defvar mime::preview-content-info/point-min)
 (defun gnus-article-narrow-to-signature ()
   "Narrow to the signature; return t if a signature is found, else nil."
   (widen)
   (let ((inhibit-point-motion-hooks t))
-    (when (and (boundp 'mime::preview/content-list)
-	       mime::preview/content-list)
-      ;; We have a MIMEish article, so we use the MIME data to narrow.
-      (let ((pcinfo (car (last mime::preview/content-list))))
-	(ignore-errors
-	  (narrow-to-region
-	   (funcall (intern "mime::preview-content-info/point-min") pcinfo)
-	   (point-max)))))
-
     (when (gnus-article-search-signature)
       (forward-line 1)
       ;; Check whether we have some limits to what we consider
@@ -1312,7 +1318,7 @@ means show, 0 means toggle."
 	    (text-property-any (1+ pos) (point-max) 'article-type type)))
     (if pos
 	'hidden
-      'shown)))
+      nil)))
 
 (defun gnus-article-show-hidden-text (type &optional hide)
   "Show all hidden text of type TYPE.
@@ -2269,9 +2275,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			 (mail-content-type-get (mm-handle-type handle)
 						'filename)
 			 "*decoded*")))))
-    (set-buffer-major-mode buffer)
     (switch-to-buffer buffer)
     (insert contents)
+    (normal-mode)
     (goto-char (point-min))))
 
 (defun gnus-mime-inline-part ()
@@ -2342,7 +2348,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		 keymap ,gnus-mime-button-map
 		 gnus-callback gnus-mm-display-part
 		 gnus-part ,gnus-tmp-id
-		 gnus-type annotation
+		 article-type annotation
 		 gnus-data ,handle))
     (setq e (point))
     (widget-convert-button 'link b e :action 'gnus-widget-press-button
@@ -2382,67 +2388,84 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	(gnus-mime-display-single handle)))))
 
 (defun gnus-mime-display-single (handle)
-  (let (display)
-    (when (and (mm-automatic-display-p
-		(car (mm-handle-type handle)))
-	       (mm-inlinable-part-p (car (mm-handle-type handle)))
-	       (or (not (mm-handle-disposition handle))
-		   (equal (car (mm-handle-disposition handle))
-			  "inline")))
-      (setq display t))
-    (let ((id (1+ (length gnus-article-mime-handle-alist))))
-      (push (cons id handle) gnus-article-mime-handle-alist)
-      (gnus-insert-mime-button handle id (list display)))
-    (insert "\n\n")
-    (when display
-      (forward-line -2)
-      (mm-display-part handle t)
-      (goto-char (point-max)))))
+  (let ((type (car (mm-handle-type handle)))
+	(ignored gnus-ignored-mime-types)
+	display text)
+    (catch 'ignored
+      (progn
+	(while ignored
+	  (when (string-match (pop ignored) type)
+	    (throw 'ignored nil)))
+	(if (and (mm-automatic-display-p type)
+		   (mm-inlinable-part-p type)
+		   (or (not (mm-handle-disposition handle))
+		       (equal (car (mm-handle-disposition handle))
+			      "inline")))
+	    (setq display t)
+	  (when (equal (car (split-string type "/"))
+		       "text")
+	    (setq text t)))
+	(let ((id (1+ (length gnus-article-mime-handle-alist))))
+	  (push (cons id handle) gnus-article-mime-handle-alist)
+	  (gnus-insert-mime-button handle id (list (or display text))))
+	(insert "\n\n")
+	(cond
+	 (display
+	  (forward-line -2)
+	  (mm-display-part handle t)
+	  (goto-char (point-max)))
+	 (text
+	  (forward-line -2)
+	  (insert "\n")
+	  (mm-insert-inline handle (mm-get-part handle))
+	  (goto-char (point-max))))))))
 
-(defun gnus-mime-display-alternative (handles &optional preferred)
+(defun gnus-mime-display-alternative (handles &optional preferred ibegend)
   (let* ((preferred (mm-preferred-alternative handles preferred))
 	 (ihandles handles)
 	 (point (point))
-	 handle buffer-read-only from)
-    (goto-char (point-min))
-    (search-forward "\n\n" nil t)
-    (delete-region (point) (point-max))
-    (when preferred
-      ;; Top-level call; we clean up.
-      (mm-remove-parts gnus-article-mime-handles)
-      (setq gnus-article-mime-handles handles
-	    gnus-article-mime-handle-alist nil))
-    (while (setq handle (pop handles))
-      (gnus-add-text-properties
-       (setq from (point))
-       (progn
-	 (insert (format "[%c] %-18s"
-			 (if (equal handle preferred) ?* ? )
-			 (if (stringp (car handle))
-			     (car handle)
-			   (car (mm-handle-type handle)))))
-	 (point))
-       `(local-map ,gnus-mime-button-map
-		   ,gnus-mouse-face-prop ,gnus-article-mouse-face
-		   face ,gnus-article-button-face
-		   keymap ,gnus-mime-button-map
-		   gnus-callback
-		   (lambda (handles)
-		     (gnus-mime-display-alternative
-		      ',ihandles ,(if (stringp (car handle))
-				      (car handle)
-				    (car (mm-handle-type handle)))))
-		   gnus-data ,handle))
-      (widget-convert-button 'link from (point)
-			     :action 'gnus-widget-press-button
-			     :button-keymap gnus-widget-button-keymap)
-      (insert "  "))
-    (insert "\n\n")
-    (when preferred
-      (if (stringp (car preferred))
-	  (gnus-display-mime preferred)
-	(mm-display-part preferred)))
-    (goto-char point)))
+	 handle buffer-read-only from props begend)
+    (save-restriction
+      (when ibegend
+	(narrow-to-region (car ibegend) (cdr ibegend))
+	(delete-region (point-min) (point-max))
+	(mm-remove-parts handles))
+      (setq begend (list (point-marker)))
+      (while (setq handle (pop handles))
+	(gnus-add-text-properties
+	 (setq from (point))
+	 (progn
+	   (insert (format "[%c] %-18s"
+			   (if (equal handle preferred) ?* ? )
+			   (if (stringp (car handle))
+			       (car handle)
+			     (car (mm-handle-type handle)))))
+	   (point))
+	 `(gnus-callback
+	   (lambda (handles)
+	     (gnus-mime-display-alternative
+	      ',ihandles ,(if (stringp (car handle))
+			      (car handle)
+			    (car (mm-handle-type handle)))
+	      ',begend))
+	   local-map ,gnus-mime-button-map
+	   ,gnus-mouse-face-prop ,gnus-article-mouse-face
+	   face ,gnus-article-button-face
+	   keymap ,gnus-mime-button-map
+	   gnus-data ,handle))
+	(widget-convert-button 'link from (point)
+			       :action 'gnus-widget-press-button
+			       :button-keymap gnus-widget-button-keymap)
+	(insert "  "))
+      (insert "\n\n")
+      (when preferred
+	(if (stringp (car preferred))
+	    (gnus-display-mime preferred)
+	  (mm-display-part preferred)
+	  (goto-char (point-max))
+	  (setcdr begend (point-marker)))))
+    (when ibegend
+      (goto-char point))))
 
 (defun gnus-article-wash-status ()
   "Return a string which display status of article washing."
@@ -2456,7 +2479,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (signature (gnus-article-hidden-text-p 'signature))
 	  (overstrike (gnus-article-hidden-text-p 'overstrike))
 	  (emphasis (gnus-article-hidden-text-p 'emphasis)))
-      (format "%c%c%c%c%c%c%c"
+      (format "%c%c%c%c%c%c"
 	      (if cite ?c ? )
 	      (if (or headers boring) ?h ? )
 	      (if (or pgp pem) ?p ? )
@@ -3510,7 +3533,7 @@ forbidden in URL encoding."
      gnus-prev-page-line-format nil
      `(gnus-prev t local-map ,gnus-prev-page-map
 		 gnus-callback gnus-article-button-prev-page
-		 gnus-type annotation))))
+		 article-type annotation))))
 
 (defvar gnus-next-page-map nil)
 (unless gnus-next-page-map
@@ -3541,7 +3564,7 @@ forbidden in URL encoding."
 		      `(gnus-next
 			t local-map ,gnus-next-page-map
 			gnus-callback gnus-article-button-next-page
-			gnus-type annotation))))
+			article-type annotation))))
 
 (defun gnus-article-button-next-page (arg)
   "Go to the next page."
@@ -3558,6 +3581,44 @@ forbidden in URL encoding."
     (select-window (get-buffer-window gnus-article-buffer t))
     (gnus-article-prev-page)
     (select-window win)))
+
+(defvar gnus-decode-header-methods
+  '(mail-decode-encoded-word-region)
+  "List of methods used to decode headers
+
+This variable is a list of FUNCTION or (REGEXP . FUNCTION). If item is
+FUNCTION, FUNCTION will be apply to all newsgroups. If item is a
+(REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
+whose names match REGEXP.
+
+For example: 
+((\"chinese\" . gnus-decode-encoded-word-region-by-guess)
+ mail-decode-encoded-word-region 
+ (\"chinese\" . rfc1843-decode-region))
+")
+
+(defvar gnus-decode-header-methods-cache nil)
+
+(defun gnus-multi-decode-header (start end)
+  "Apply the functions from `gnus-encoded-word-methods' that match."
+  (unless (and gnus-decode-header-methods-cache
+	       (eq gnus-newsgroup-name 
+		   (car gnus-decode-header-methods-cache)))
+    (setq gnus-decode-header-methods-cache (list gnus-newsgroup-name))
+    (mapc '(lambda (x) 
+	     (if (symbolp x)
+		 (nconc gnus-decode-header-methods-cache (list x))
+	       (if (and gnus-newsgroup-name 
+			(string-match (car x) gnus-newsgroup-name))
+		   (nconc gnus-decode-header-methods-cache 
+			  (list (cdr x))))))
+	  gnus-decode-header-methods))
+  (let ((xlist gnus-decode-header-methods-cache))
+    (pop xlist)
+    (save-restriction
+      (narrow-to-region start end)
+      (while xlist
+	(funcall (pop xlist) (point-min) (point-max))))))
 
 (gnus-ems-redefine)
 

@@ -121,7 +121,8 @@ If no encoding was done, nil is returned."
 	(funcall encoding (point-min) (point-max))
       (error nil)))
    (t
-    (error "Can't decode encoding %s" encoding))))
+    (message "Unknown encoding %s; defaulting to 8bit" encoding)
+    )))
 
 (defun mm-decode-body (charset &optional encoding)
   "Decode the current article that has been encoded with ENCODING.

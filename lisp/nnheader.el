@@ -269,7 +269,7 @@ on your system, you could say something like:
 		  (nnheader-header-value)))
 	   
 	   ;; Extra.
-	   (when gnus-extra-headers
+	   (when nnmail-extra-headers
 	     (let ((extra nnmail-extra-headers)
 		   out)
 	       (while extra

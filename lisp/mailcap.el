@@ -442,7 +442,9 @@ If FORCE, re-parse even if already parsed."
 	(test (assq 'test info))	; The test clause
 	)
     (setq status (and test (split-string (cdr test) " ")))
-    (if (and (assoc "needsx11" info) (not (getenv "DISPLAY")))
+    (if (and (or (assoc "needsterm" info)
+		 (assoc "needsx11" info))
+	     (not (getenv "DISPLAY")))
 	(setq status nil)
       (cond
        ((and (equal (nth 0 status) "test")

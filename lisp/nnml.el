@@ -225,6 +225,7 @@ all.  This may very well take some time.")
   t)
 
 (deffoo nnml-request-create-group (group &optional server args)
+  (nnml-possibly-change-directory nil server)
   (nnmail-activate 'nnml)
   (cond
    ((assoc group nnml-group-alist)
@@ -574,15 +575,9 @@ all.  This may very well take some time.")
       (file-exists-p nnml-current-directory))))
 
 (defun nnml-possibly-create-directory (group)
-  (let (dir dirs)
-    (setq dir (nnmail-group-pathname group nnml-directory))
-    (while (not (file-directory-p dir))
-      (push dir dirs)
-      (setq dir (file-name-directory (directory-file-name dir))))
-    (while dirs
-      (make-directory (directory-file-name (car dirs)))
-      (nnheader-message 5 "Creating mail directory %s" (car dirs))
-      (setq dirs (cdr dirs)))))
+  (let ((dir (nnmail-group-pathname group nnml-directory)))
+    (make-directory (directory-file-name dir) t)
+    (nnheader-message 5 "Creating mail directory %s" dir)))
 
 (defun nnml-save-mail (group-art)
   "Called narrowed to an article."

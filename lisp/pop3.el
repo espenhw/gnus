@@ -1,10 +1,10 @@
 ;;; pop3.el --- Post Office Protocol (RFC 1460) interface
 
-;; Copyright (C) 1996,1997 Free Software Foundation, Inc.
+;; Copyright (C) 1996,1997,1998 Free Software Foundation, Inc.
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3l
+;; Version: 1.3m
 
 ;; This file is part of GNU Emacs.
 
@@ -37,7 +37,7 @@
 (require 'mail-utils)
 (provide 'pop3)
 
-(defconst pop3-version "1.3l")
+(defconst pop3-version "1.3m")
 
 (defvar pop3-maildrop (or (user-login-name) (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
@@ -112,12 +112,14 @@ Returns the process associated with the connection."
   (let ((process-buffer
 	 (get-buffer-create (format "trace of POP session to %s" mailhost)))
 	(process)
-        (coding-system-for-read 'no-conversion)
-        (coding-system-for-write 'no-conversion))
+	(coding-system-for-read 'no-conversion)   ;; because FSF Emacs 20
+	(coding-system-for-write 'no-conversion)  ;; is st00pid
+    )
     (save-excursion
       (set-buffer process-buffer)
       (erase-buffer)
-      (setq pop3-read-point (point-min)))
+      (setq pop3-read-point (point-min))
+      )
     (setq process
 	  (open-network-stream "POP" process-buffer mailhost port))
     (let ((response (pop3-read-response process t)))

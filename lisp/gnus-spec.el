@@ -201,9 +201,7 @@
 		  (gnus-parse-format
 		   new-format
 		   (symbol-value
-		    (intern (format "gnus-%s-line-format-alist"
-				    (if (eq type 'article-mode)
-					'summary-mode type))))
+		    (intern (format "gnus-%s-line-format-alist" type)))
 		   (not (string-match "mode$" (symbol-name type))))))
 	  ;; Enter the new format spec into the list.
 	  (if entry
@@ -531,7 +529,7 @@ If PROPS, insert the result."
 		       (not (eq 'byte-code (car form)))
 		       ;; Under XEmacs, it's (funcall #<compiled-function ...>)
 		       (not (and (eq 'funcall (car form))
-				 (compiled-function-p (cadr form)))))
+				 (byte-code-function-p (cadr form)))))
 	      (fset 'gnus-tmp-func `(lambda () ,form))
 	      (byte-compile 'gnus-tmp-func)
 	      (setcar (cddr entry) (gnus-byte-code 'gnus-tmp-func))))))

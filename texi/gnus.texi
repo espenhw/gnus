@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.38 Manual
+@settitle Pterodactyl Gnus 0.39 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.38 Manual
+@title Pterodactyl Gnus 0.39 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.38.
+This manual corresponds to Pterodactyl Gnus 0.39.
 
 @end ifinfo
 
@@ -6907,6 +6907,17 @@ the required charset (@pxref{Group Parameters}).
 @kindex W M v (Summary)
 View all the @sc{mime} parts in the current article
 (@code{gnus-mime-view-all-parts}). 
+
+@end table
+
+Relevant variables:
+
+@table @code
+@item gnus-ignored-mime-types
+@vindex gnus-ignored-mime-types
+This is a list of regexps.  @sc{mime} types that match a regexp from
+this list will be completely ignored by Gnus.  The default value is
+@code{("text/x-vcard")}.
 
 @end table
 
@@ -16144,6 +16155,10 @@ Luis Fernandes---design and graphics.
 Erik Naggum---help, ideas, support, code and stuff.
 
 @item
+Shenghuo Zhu---uudecode.el, mm-uu.el, rfc1843.el and many other things
+connected with @sc{mime} and other types of en/decoding.
+
+@item
 Wes Hardaker---@file{gnus-picon.el} and the manual section on
 @dfn{picons} (@pxref{Picons}).
 
@@ -16378,10 +16393,9 @@ Stefan Waldherr,
 Pete Ware,
 Barry A. Warsaw,
 Christoph Wedler,
-Joe Wells,
-Katsumi Yamaoka, @c Yamaoka
+Joe Wells
 and
-Shenghuo Zhu. @c Zhu
+Katsumi Yamaoka, @c Yamaoka.
 
 For a full overview of what each person has done, the ChangeLogs
 included in the Gnus alpha distributions should give ample reading
@@ -18271,10 +18285,6 @@ exits the group.
 The jingle is only played on the second invocation of Gnus.
 
 @item
-gnus-ignored-mime-types to avoid seeing buttons for Vcards and the
-like.
-
-@item
 Bouncing articles should do MIME.
 
 @item
@@ -19800,12 +19810,12 @@ basically, with each header (ouch) having one slot.
 
 These slots are, in order: @code{number}, @code{subject}, @code{from},
 @code{date}, @code{id}, @code{references}, @code{chars}, @code{lines},
-@code{xref}.  There are macros for accessing and setting these
-slots---they all have predictable names beginning with
+@code{xref}, and @code{extra}.  There are macros for accessing and
+setting these slots---they all have predictable names beginning with
 @code{mail-header-} and @code{mail-header-set-}, respectively.
 
-The @code{xref} slot is really a @code{misc} slot.  Any extra info will
-be put in there.
+All these slots contain strings, except the @code{extra} slot, which
+contains an alist of header/value pairs (@pxref{To From Newsgroups}).
 
 
 @node Ranges

@@ -1008,22 +1008,42 @@ variable (string, integer, character, etc).")
 
 ;; MIME stuff.
 
-(defvar gnus-encoded-word-method-alist
-  '(("chinese" mail-decode-encoded-word-string rfc1843-decode-string)
-    (".*" mail-decode-encoded-word-string))
-  "Alist of regexps (to match group names) and lists of functions to be applied.")
+(defvar gnus-decode-encoded-word-methods
+  '(mail-decode-encoded-word-string)
+  "List of methods used to decode encoded words.
+
+This variable is a list of FUNCTION or (REGEXP . FUNCTION). If item is
+FUNCTION, FUNCTION will be apply to all newsgroups. If item is a
+(REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
+whose names match REGEXP.
+
+For example: 
+((\"chinese\" . gnus-decode-encoded-word-string-by-guess)
+ mail-decode-encoded-word-string 
+ (\"chinese\" . rfc1843-decode-string))
+")
+
+(defvar gnus-decode-encoded-word-methods-cache nil)
 
 (defun gnus-multi-decode-encoded-word-string (string)
-  "Apply the functions from `gnus-encoded-word-method-alist' that match."
-  (let ((alist gnus-encoded-word-method-alist)
-	elem)
-    (while (setq elem (pop alist))
-      (when (string-match (car elem) gnus-newsgroup-name)
-	(pop elem)
-	(while elem
-	  (setq string (funcall (pop elem) string)))
-	(setq alist nil)))
-    string))
+  "Apply the functions from `gnus-encoded-word-methods' that match."
+  (unless (and gnus-decode-encoded-word-methods-cache
+	       (eq gnus-newsgroup-name 
+		   (car gnus-decode-encoded-word-methods-cache)))
+    (setq gnus-decode-encoded-word-methods-cache (list gnus-newsgroup-name))
+    (mapc '(lambda (x) 
+	     (if (symbolp x)
+		 (nconc gnus-decode-encoded-word-methods-cache (list x))
+	       (if (and gnus-newsgroup-name 
+			(string-match (car x) gnus-newsgroup-name))
+		   (nconc gnus-decode-encoded-word-methods-cache 
+			  (list (cdr x))))))
+	  gnus-decode-encoded-word-methods))
+  (let ((xlist gnus-decode-encoded-word-methods-cache))
+    (pop xlist)
+    (while xlist
+      (setq string (funcall (pop xlist) string))))
+  string)
 
 ;; Subject simplification.
 
@@ -4285,7 +4305,7 @@ If WHERE is `summary', the summary mode line format will be used."
 	  ;; We might have to chop a bit of the string off...
 	  (when (> (length mode-string) max-len)
 	    (setq mode-string
-		  (concat (truncate-string mode-string (- max-len 3))
+		  (concat (truncate-string-to-width mode-string (- max-len 3))
 			  "...")))
 	  ;; Pad the mode string a bit.
 	  (setq mode-string (format (format "%%-%ds" max-len) mode-string))))
@@ -7866,19 +7886,19 @@ marked."
   (let ((forward (cdr (assq type gnus-summary-mark-positions)))
         (buffer-read-only nil))
     (re-search-backward "[\n\r]" (gnus-point-at-bol) 'move-to-limit)
-    (when (looking-at "\r")
-      (incf forward))
-    (when (and forward
-               (<= (+ forward (point)) (point-max)))
-      ;; Go to the right position on the line.
-      (goto-char (+ forward (point)))
-      ;; Replace the old mark with the new mark.
-      (subst-char-in-region (point) (1+ (point)) (char-after) mark)
-      ;; Optionally update the marks by some user rule.
-      (when (eq type 'unread)
-        (gnus-data-set-mark
-         (gnus-data-find (gnus-summary-article-number)) mark)
-        (gnus-summary-update-line (eq mark gnus-unread-mark))))))
+    (when forward
+      (when (looking-at "\r")
+	(incf forward))
+      (when (<= (+ forward (point)) (point-max))
+	;; Go to the right position on the line.
+	(goto-char (+ forward (point)))
+	;; Replace the old mark with the new mark.
+	(subst-char-in-region (point) (1+ (point)) (char-after) mark)
+	;; Optionally update the marks by some user rule.
+	(when (eq type 'unread)
+	  (gnus-data-set-mark
+	   (gnus-data-find (gnus-summary-article-number)) mark)
+	  (gnus-summary-update-line (eq mark gnus-unread-mark)))))))
 
 (defun gnus-mark-article-as-read (article &optional mark)
   "Enter ARTICLE in the pertinent lists and remove it from others."
@@ -8682,6 +8702,7 @@ save those articles instead."
 (defun gnus-valid-move-group-p (group)
   (and (boundp group)
        (symbol-name group)
+       (symbol-value group)
        (memq 'respool
 	     (assoc (symbol-name
 		     (car (gnus-find-method-for-group

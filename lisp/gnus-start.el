@@ -1705,7 +1705,6 @@ newsgroup."
 		(gnus-message 5 "%sdone" mesg))))))
 	(setq methods (cdr methods))))))
 
-
 (defun gnus-ignored-newsgroups-has-to-p ()
   "Non-nil iff gnus-ignored-newsgroups includes \"^to\\\\.\" as an element."
   ;; note this regexp is the same as:

@@ -1,3 +1,89 @@
+Sun Oct 25 06:23:13 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.39 is released.
+
+1998-10-25 00:34:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-ignored-mime-types): New variable.
+	(gnus-mime-display-single): Use it.
+	(gnus-treatment-function-alist): New variable.
+
+	* gnus.el (gnus-mime): New group.
+
+	* gnus-art.el (gnus-mime-display-alternative): Don't destroy
+	things for other parts.
+	(gnus-mime-display-alternative): Place point.
+
+	* gnus.el: autoload gnus-uu-post-news.
+
+	* mailcap.el (mailcap-mailcap-entry-passes-test): Also check
+	needsterm/DISPLAY. 
+
+	* mm-decode.el (mm-display-part): Default to inline text/.*
+	parts. 
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Default to
+	8bit. 
+
+	* gnus-art.el (gnus-mime-copy-part): Use normal-mode.
+	(gnus-mime-display-single): Inline all text parts.
+	(gnus-article-narrow-to-signature): Removed mime:: stubs.
+
+1998-10-24 21:38:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnml.el (nnml-possibly-create-directory): Rewrite.
+	(nnml-request-create-group): Change to right server.
+
+	* gnus-xmas.el (gnus-xmas-define): Use byte-code-function-p. 
+
+	* gnus-sum.el (gnus-set-mode-line): Use truncate-string-to-width. 
+
+	* gnus.el: rmail-output-to-rmail-file autoload.
+
+	* gnus-util.el (gnus-output-to-rmail): Didn't work if not in
+	Gnus. 
+
+	* nnheader.el (nnheader-parse-head): Checked wrong variable.
+
+	* gnus-sum.el (gnus-summary-update-mark): Ignore nil'd marks.
+
+Tue Oct 20 23:37:43 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-display-mixed): Multipart in
+	mixed part.
+
+Tue Oct 20 23:36:43 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-exit): Use mm-destroy-parts.
+	
+	* gnus-sum.el (gnus-summary-exit-no-update): Ditto.
+
+Tue Oct 20 16:22:51 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-dissect): Create pseudo multipart head.
+
+1998-10-24 20:51:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-valid-move-group-p): Make sure group has a
+	value. 
+
+	* gnus-art.el (gnus-article-hidden-text-p): Return nil when not
+	hidden. 
+
+	* gnus-spec.el (gnus-update-format-specifications): Use the
+	article mode line spec.
+
+	* gnus-art.el (gnus-insert-mime-button): Put right type.
+	(gnus-insert-prev-page-button): Ditto.
+	(gnus-insert-next-page-button): Dutti.
+
+	* pop3.el: New version installed.
+
+Sat Oct 24 16:48:51 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-dissect): Delete the begining spurious newline
+	and display last part.
+
 Sat Oct 24 20:31:55 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.38 is released.
@@ -58,21 +144,6 @@ Sat Oct 24 07:41:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-spec.el (gnus-balloon-face-function): new function
 	(gnus-parse-format): understand the %< %> specifiers
 	(gnus-parse-complex-format): ditto.
-
-Tue Oct 20 23:37:43 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
-
-	* gnus-art.el (gnus-mime-display-mixed): Multipart in
-	mixed part.
-
-Tue Oct 20 23:36:43 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
-
-	* gnus-sum.el (gnus-summary-exit): Use mm-destroy-parts.
-	
-	* gnus-sum.el (gnus-summary-exit-no-update): Ditto.
-
-Tue Oct 20 16:22:51 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
-
-	* mm-uu.el (mm-uu-dissect): Create pseudo multipart head.
 
 1998-10-24 06:31:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -153,6 +224,23 @@ Tue Oct 20 02:16:36 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-display-external): Check before selecting.
 
+Sat Sep 26 02:03:00 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-multi-decode-encoded-word-string): Rewrite. 
+	
+	* gnus-sum.el (gnus-decode-encoded-word-methods): New variable.
+	
+	* gnus-sum.el (gnus-decode-encoded-word-methods-cache): New
+	variable.
+	
+	* gnus-sum.el (gnus-encoded-word-method-alist): Deleted.
+	
+	* gnus-art.el (gnus-decode-header-methods): New variable.
+
+	* gnus-art.el (gnus-decode-header-methods-cache): New variable.
+
+	* gnus-art.el (gnus-multi-decode-header): New function.
+	
 Tue Oct 20 00:24:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.35 is released.
