@@ -2764,7 +2764,12 @@ If variable `gnus-use-long-file-name' is non-nil, it is
       (define-key gnus-article-mode-map [menu-bar post]
 	(cons "Post" gnus-summary-post-menu)))
 
-    (gnus-run-hooks 'gnus-article-menu-hook)))
+    (gnus-run-hooks 'gnus-article-menu-hook))
+  ;; Add the menu.
+  (when (boundp 'gnus-article-commands-menu)
+    (easy-menu-add gnus-article-commands-menu gnus-article-mode-map))
+  (when (boundp 'gnus-summary-post-menu)
+    (easy-menu-add gnus-summary-post-menu gnus-article-mode-map)))
 
 (defun gnus-article-mode ()
   "Major mode for displaying an article.
