@@ -40,7 +40,8 @@
   (latexi-translate-file "emacs-mime" t)
   (latexi-translate-file "sieve" t)
   (latexi-translate-file "pgg" t)
-  (latexi-translate-file "sasl" t))
+  (latexi-translate-file "sasl" t)
+  (latexi-translate-file "gnus-news" t))
 
 (defun latexi-translate-file (file &optional as-a-chapter)
   "Translate file a LaTeX file."
@@ -102,7 +103,8 @@
 				  "summarycontents" "bye"
 				  "top" "iftex" "cartouche" 
 				  "iflatex" "finalout" "vskip"
-				  "dircategory" "group" "syncodeindex"))
+				  "dircategory" "group" "syncodeindex"
+				  "documentencoding"))
 		(latexi-strip-line))
 	       ((member command '("menu" "tex" "ifinfo" "ignore" 
 				  "ifnottex" "direntry"))
@@ -243,7 +245,7 @@
 		(latexi-begin-command "verse"))
 	       ((equal command "page")
 		(latexi-strip-line)
-		(insert (format "\\newpage\n" arg)))
+		(insert "\\newpage\n"))
 	       ((equal command "'s")
 		(goto-char (match-beginning 0))
 		(delete-char 1))
