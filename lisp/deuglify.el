@@ -266,7 +266,7 @@
   :group 'gnus-outlook-deuglify)
 
 (defcustom gnus-outlook-deuglify-attrib-verb-regexp
-  "wrote\\|writes\\|says\\|schrieb\\|schreibt\\|meinte\\|skrev\\|a écrit\\|schreef"
+  "wrote\\|writes\\|says\\|schrieb\\|schreibt\\|meinte\\|skrev\\|a écrit\\|schreef\\|escribió"
   "Regular expression matching the verb used in an attribution line."
   :type 'string
   :group 'gnus-outlook-deuglify)
@@ -277,17 +277,35 @@
   :type 'string
   :group 'gnus-outlook-deuglify)
 
+;;;###autoload
+(defcustom gnus-outlook-display-hook nil
+  "A hook called after an deuglified article has been prepared.
+It is run after `gnus-article-prepare-hook'."
+  :type 'hook
+  :group 'gnus-outlook-deuglify)
 
 ;; Functions
 
+(defun gnus-outlook-display-article-buffer ()
+  "Redisplay current buffer or article buffer."
+  (with-current-buffer (or gnus-article-buffer (current-buffer))
+    ;; "Emulate" `gnus-article-prepare-display' without calling
+    ;; it. Calling `gnus-article-prepare-display' on an already
+    ;; prepared article removes all MIME parts.  I'm unsure whether
+    ;; this is a bug or not.
+    (gnus-article-highlight t)
+    (gnus-treat-article nil)
+    (gnus-run-hooks 'gnus-article-prepare-hook
+		    'gnus-outlook-display-hook)))
+
 ;;;###autoload
-(defun gnus-outlook-unwrap-lines ()
-  "Unwrap lines that appear to be wrapped citation lines.
+(defun gnus-outlook-unwrap-lines (&optional nodisplay)
+  "Unwrap lines that appear to be wrapped citation lines.  
 You can control what lines will be unwrapped by frobbing
-`gnus-outlook-deuglify-unwrap-min' and
-`gnus-outlook-deuglify-unwrap-max', indicating the miminum and maximum
-length of an unwrapped citation line."
-  (interactive)
+`gnus-outlook-deuglify-unwrap-min' and `gnus-outlook-deuglify-unwrap-max',
+indicating the miminum and maximum length of an unwrapped citation line.  If
+NODISPLAY is non-nil, don't redisplay the article buffer."
+  (interactive "P")
   (save-excursion
     (let ((case-fold-search nil)
 	  (inhibit-read-only t)
@@ -308,7 +326,8 @@ length of an unwrapped citation line."
 		     (< (+ len12 len3) gnus-outlook-deuglify-unwrap-max))
 		(progn 
 		  (replace-match "\\1\\2 \\3")
-		  (goto-char (match-beginning 0))))))))))
+		  (goto-char (match-beginning 0)))))))))
+  (unless nodisplay (gnus-outlook-display-article-buffer)))
 
 (defun gnus-outlook-rearrange-article (attr-start)
   "Put the text from `attr-start' to the end of buffer at the top of the article buffer."
@@ -400,45 +419,46 @@ length of an unwrapped citation line."
 	      (match-beginning 0)))))))
 
 ;;;###autoload
-(defun gnus-outlook-repair-attribution ()
-  "Repair a broken attribution line."
-  (interactive)
-  (or
-   (gnus-outlook-repair-attribution-other)
-   (gnus-outlook-repair-attribution-block)
-   (gnus-outlook-repair-attribution-outlook)))
+(defun gnus-outlook-repair-attribution (&optional nodisplay)
+  "Repair a broken attribution line.
+If NODISPLAY is non-nil, don't redisplay the article buffer."
+  (interactive "P")
+  (let ((attrib-start
+	 (or
+	  (gnus-outlook-repair-attribution-other)
+	  (gnus-outlook-repair-attribution-block)
+	  (gnus-outlook-repair-attribution-outlook))))
+    (unless nodisplay (gnus-outlook-display-article-buffer))
+    attrib-start))
 
-(defun gnus-outlook-rearrange-citation ()
-  "Repair broken citations."
-  (let ((attrib-start (gnus-outlook-repair-attribution)))
+(defun gnus-outlook-rearrange-citation (&optional nodisplay)
+  "Repair broken citations.
+If NODISPLAY is non-nil, don't redisplay the article buffer."
+  (interactive "P")
+  (let ((attrib-start (gnus-outlook-repair-attribution 'nodisplay)))
     ;; rearrange citations if an attribution line has been recognized
     (if attrib-start
-	(gnus-outlook-rearrange-article attrib-start))))
+	(gnus-outlook-rearrange-article attrib-start)))
+  (unless nodisplay (gnus-outlook-display-article-buffer)))
 
 ;;;###autoload
-(defun gnus-outlook-deuglify-article ()
-  "Deuglify broken Outlook (Express) articles."
-  (interactive)
+(defun gnus-outlook-deuglify-article (&optional nodisplay)
+  "Deuglify broken Outlook (Express) articles.
+If NODISPLAY is non-nil, don't redisplay the article buffer."
+  (interactive "P")
   ;; apply treatment of dumb quotes
   (gnus-article-treat-dumbquotes)
   ;; repair wrapped cited lines
-  (gnus-outlook-unwrap-lines)
+  (gnus-outlook-unwrap-lines 'nodisplay)
   ;; repair attribution line
-  (gnus-outlook-rearrange-citation))
+  (gnus-outlook-rearrange-citation 'nodisplay)
+  (unless nodisplay (gnus-outlook-display-article-buffer)))
 
 ;;;###autoload
 (defun gnus-article-outlook-deuglify-article ()
   "Deuglify broken Outlook (Express) articles and redisplay."
   (interactive)
-  (gnus-outlook-deuglify-article)
-  (with-current-buffer (or gnus-article-buffer (current-buffer))
-    ;; "Emulate" `gnus-article-prepare-display' without calling
-    ;; it. Calling `gnus-article-prepare-display' on an already
-    ;; prepared article removes all MIME parts.  I'm unsure whether
-    ;; this is a bug or not.
-    (gnus-article-highlight t)
-    (gnus-treat-article nil)
-    (gnus-run-hooks 'gnus-article-prepare-hook)))
+  (gnus-outlook-deuglify-article nil))
 
 (provide 'deuglify)
 

@@ -4343,9 +4343,10 @@ If no internal viewer is available, use an external viewer."
 	  ;; We have to do this since selecting the window
 	  ;; may change the point.  So we set the window point.
 	  (set-window-point window point)))
-      (let* ((handles (or ihandles (mm-dissect-buffer
-				    nil gnus-article-loose-mime)
-			  (mm-uu-dissect)))
+      (let* ((handles (or ihandles
+			  (mm-dissect-buffer nil gnus-article-loose-mime)
+			  (and gnus-article-emulate-mime
+			       (mm-uu-dissect))))
 	     buffer-read-only handle name type b e display)
 	(when (and (not ihandles)
 		   (not gnus-displaying-mime))

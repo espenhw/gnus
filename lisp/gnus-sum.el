@@ -46,6 +46,9 @@
 (autoload 'gnus-article-outlook-deuglify-article "deuglify"
   "Deuglify broken Outlook (Express) articles and redisplay."
   t)
+(autoload 'gnus-outlook-unwrap-lines "deuglify" nil t)
+(autoload 'gnus-outlook-repair-attribution "deuglify" nil t)
+(autoload 'gnus-outlook-rearrange-citation "deuglify" nil t)
 
 (defcustom gnus-kill-summary-on-exit t
   "*If non-nil, kill the summary buffer when you exit from it.
@@ -1040,6 +1043,14 @@ the MIME-Version header is missed."
   :type 'boolean
   :group 'gnus-article)
 
+(defcustom gnus-article-emulate-mime t
+  "If non-nil, use MIME emulation for uuencode and the like.
+This means that Gnus will search message bodies for text that look
+like uuencoded bits, yEncoded bits, and so on, and present that using
+the normal Gnus MIME machinery."
+  :type 'boolean
+  :group 'gnus-article)
+
 ;;; Internal variables
 
 (defvar gnus-summary-display-cache nil)
@@ -1785,7 +1796,14 @@ increase the score of each group you read."
     "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
     "p" gnus-article-verify-x-pgp-sig
     "d" gnus-article-treat-dumbquotes
-    "k" gnus-article-outlook-deuglify-article)
+    "k" gnus-article-outlook-deuglify-article) ;; mnemonic: outloo*k*
+
+  (gnus-define-keys (gnus-summary-wash-deuglify-map "Y" gnus-summary-wash-map)
+    ;; mnemonic: deuglif*Y*
+    "u" gnus-outlook-unwrap-lines
+    "a" gnus-outlook-repair-attribution
+    "c" gnus-outlook-rearrange-citation
+    "f" gnus-article-outlook-deuglify-article) ;; mnemonic: full deuglify
 
   (gnus-define-keys (gnus-summary-wash-hide-map "W" gnus-summary-wash-map)
     "a" gnus-article-hide
@@ -2099,7 +2117,12 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	      ["URLs" gnus-article-unsplit-urls t]
 	      ["Verify X-PGP-Sig" gnus-article-verify-x-pgp-sig t]
 	      ["HZ" gnus-article-decode-HZ t]
-	      ["OutlooK deuglify" gnus-article-outlook-deuglify-article t]
+	      ("(Outlook) Deuglify"
+	       ["Unwrap lines" gnus-outlook-unwrap-lines t]
+	       ["Repair attribution" gnus-outlook-repair-attribution t]
+	       ["Rearrange citation" gnus-outlook-rearrange-citation t]
+	       ["Full (Outlook) deuglify"
+		gnus-article-outlook-deuglify-article t])
 	      )
 	     ("Output"
 	      ["Save in default format" gnus-summary-save-article
@@ -10715,7 +10738,8 @@ If REVERSE, save parts that do not match TYPE."
       (set-buffer gnus-article-buffer)
       (let ((handles (or gnus-article-mime-handles
 			 (mm-dissect-buffer nil gnus-article-loose-mime)
-			 (mm-uu-dissect))))
+			 (and gnus-article-emulate-mime
+			      (mm-uu-dissect)))))
 	(when handles
 	  (gnus-summary-save-parts-1 type dir handles reverse)
 	  (unless gnus-article-mime-handles ;; Don't destroy this case.

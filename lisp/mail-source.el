@@ -55,6 +55,7 @@
 	      (list 'const (car a)))
      imap-stream-alist)))
 
+;;;###autoload
 (defcustom mail-sources nil
   "*Where the mail backends will look for incoming mail.
 This variable is a list of mail source specifiers.

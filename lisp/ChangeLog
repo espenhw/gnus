@@ -1,4 +1,29 @@
+2003-01-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* deuglify.el (gnus-outlook-deuglify-attrib-verb-regexp): Added
+	castellano.
+	(gnus-outlook-display-hook): New variable.
+	(gnus-outlook-display-article-buffer): New function.
+	(gnus-outlook-unwrap-lines, gnus-outlook-repair-attribution)
+	(gnus-outlook-deuglify-article): Made them interactive and added
+	optional arg.  Use `g-o-d-a-b'.
+	(gnus-article-outlook-deuglify-article): Use `g-o-d-a-b'.
+
+	* gnus-sum.el: Added autoloads.
+	(gnus-summary-mode-map): Added gnus-summary-wash-deuglify-map.
+	(gnus-summary-make-menu-bar): Added "(Outlook) Deuglify" menu.
+
 2003-01-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-display-mime): Use the mime emulation
+	variable. 
+
+	* gnus-sum.el (gnus-article-emulate-mime): New variable.
+
+	* gnus-start.el (gnus-read-newsrc-el-file): Make sure that the
+	newsrc-alist is initialized properly.
+
+	* mail-source.el (mail-sources): Autoload.
 
 	* gnus-sum.el (gnus-summary-make-false-root-always): Default to
 	nil.
