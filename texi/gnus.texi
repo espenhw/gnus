@@ -13569,17 +13569,30 @@ SSL). Require the external library @samp{starttls.el} and program
 @dfn{ssl:} Connect through SSL. Require OpenSSL (the
 program @samp{openssl}) or SSLeay (@samp{s_client}).
 @item
+@dfn{shell:} Use a shell command to start IMAP connection.
+@item
 @dfn{network:} Plain, TCP/IP network connection.
 @end itemize
 
+@vindex imap-kerberos4-program
 The @samp{imtest} program is shipped with Cyrus IMAPD, nnimap support
-both @samp{imtest} version 1.5.x and version 1.6.x.
+both @samp{imtest} version 1.5.x and version 1.6.x.  The variable
+@code{imap-kerberos4-program} contain parameters to pass to the imtest
+program.
 
+@vindex imap-ssl-program
 For SSL connections, the OpenSSL program is available from
 @file{http://www.openssl.org/}. OpenSSL was formerly known as SSLeay,
-and nnimap support it too - altough the most recent versions of SSLeay,
-0.9.x, are known to have serious bugs making it useless. Earlier
-versions, especially 0.8.x, of SSLeay are known to work.
+and nnimap support it too - altough the most recent versions of
+SSLeay, 0.9.x, are known to have serious bugs making it
+useless. Earlier versions, especially 0.8.x, of SSLeay are known to
+work. The variable @code{imap-ssl-program} contain parameters to pass
+to OpenSSL/SSLeay.
+
+@vindex imap-shell-program
+@vindex imap-shell-host
+For IMAP connections using the @code{shell} stream, the variable
+@code{imap-shell-program} specify what program to call.
 
 @item nnimap-authenticator
 @vindex nnimap-authenticator
