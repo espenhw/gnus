@@ -88,7 +88,7 @@
 		 w3-coding-system-for-mime-charset 
 		 rmail-summary-exists rmail-select-summary rmail-update-summary
 		 url-generic-parse-url valid-image-instantiator-format-p
-		 babel-fetch babel-wash)))
+		 babel-fetch babel-wash babel-as-string)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

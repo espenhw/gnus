@@ -63,7 +63,7 @@ or base64 will be used, depending on what is more efficient.")
 (defun mm-encode-content-transfer-encoding (encoding &optional type)
   (cond
    ((eq encoding 'quoted-printable)
-    (quoted-printable-encode-region (point-min) (point-max)))
+    (quoted-printable-encode-region (point-min) (point-max) t))
    ((eq encoding 'base64)
     (when (equal type "text/plain")
       (goto-char (point-min))
@@ -126,24 +126,17 @@ The encoding used is returned."
 
 (defun mm-qp-or-base64 ()
   (save-excursion
-    (save-restriction
-      (narrow-to-region (point-min) (min (+ (point-min) 1000) (point-max)))
+    (let ((limit (min (point-max) (+ 2000 (point-min))))
+	  (n8bit 0))
       (goto-char (point-min))
-      (let ((8bit 0))
-	(cond
-	 ((not (featurep 'mule))
-	  (while (re-search-forward "[^\x20-\x7f\r\n\t]" nil t)
-	    (incf 8bit)))
-	 (t
-	  ;; Mule version
-	  (while (not (eobp))
-	    (skip-chars-forward "\x20-\x7f\r\n\t")
-	    (unless (eobp)
-	      (forward-char 1)
-	      (incf 8bit)))))
-	(if (> (/ (* 8bit 1.0) (buffer-size)) 0.166)
-	    'base64
-	  'quoted-printable)))))
+      (skip-chars-forward "\x20-\x7f\r\n\t" limit)
+      (while (< (point) limit)
+	(incf n8bit)
+	(forward-char 1)
+	(skip-chars-forward "\x20-\x7f\r\n\t" limit))
+      (if (< (* 6 n8bit) (- limit (point-min)))
+	  'quoted-printable
+	'base64))))
 
 (provide 'mm-encode)
 

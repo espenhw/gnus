@@ -1,7 +1,7 @@
 @c \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.96 Manual
+@settitle Pterodactyl Gnus 0.97 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.96 Manual
+@title Pterodactyl Gnus 0.97 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.96.
+This manual corresponds to Pterodactyl Gnus 0.97.
 
 @end ifinfo
 
@@ -1236,7 +1236,7 @@ Indentation based on the level of the topic (@pxref{Group Topics}).
 Short (collapsed) group name.  The @code{gnus-group-uncollapsed-levels}
 variable says how many levels to leave at the end of the group name.
 The default is 1---this will mean that group names like
-@samp{gnu.emacs.gnus} will be shortened to @samp{g.emacs.gnus}.
+@samp{gnu.emacs.gnus} will be shortened to @samp{g.e.gnus}.
 
 @item m
 @vindex gnus-new-mail-mark
@@ -6434,8 +6434,8 @@ default.
 @findex gnus-article-emphasize
 @kindex W e (Summary)
 People commonly add emphasis to words in news articles by writing things
-like @samp{_this_} or @samp{*this*}.  Gnus can make this look nicer by
-running the article through the @kbd{W e}
+like @samp{_this_} or @samp{*this*} or @samp{/this/}.  Gnus can make
+this look nicer by running the article through the @kbd{W e}
 (@code{gnus-article-emphasize}) command.
 
 @vindex gnus-emphasis-alist
@@ -6453,6 +6453,12 @@ highlighting.
       '(("_\\(\\w+\\)_" 0 1 gnus-emphasis-underline)
         ("\\*\\(\\w+\\)\\*" 0 1 gnus-emphasis-bold)))
 @end lisp
+
+@cindex slash
+@cindex asterisk
+@cindex underline
+@cindex /
+@cindex *
 
 @vindex gnus-emphasis-underline
 @vindex gnus-emphasis-bold
@@ -6727,9 +6733,9 @@ Do word wrap (@code{gnus-article-fill-cited-article}).
 You can give the command a numerical prefix to specify the width to use
 when filling.
 
-@item W q
-@kindex W q (Summary)
-@findex gnus-article-fill-long-lines
+@item W Q
+@kindex W Q (Summary)
+@findex gnus-article-fill-long-lines 
 Fill long lines (@code{gnus-article-fill-long-lines}).
 
 @item W C
@@ -8981,7 +8987,8 @@ can be one of @code{signature}, @code{signature-file},
 @code{organization}, @code{address}, @code{name} or @code{body}.  The
 attribute name can also be a string.  In that case, this will be used as
 a header name, and the value will be inserted in the headers of the
-article.
+article.  If the attribute name is @code{eval}, the form is evaluated,
+and the result is thrown away.
 
 The attribute value can be a string (used verbatim), a function with
 zero arguments (the return value will be used), a variable (its value
@@ -13536,7 +13543,7 @@ Suffix to add to the group name to arrive at the score file name
 @vindex gnus-score-uncacheable-files
 @cindex score cache
 All score files are normally cached to avoid excessive re-loading of
-score files.  However, if this might make you Emacs grow big and
+score files.  However, if this might make your Emacs grow big and
 bloated, so this regexp can be used to weed out score files unlikely to be needed again.  It would be a bad idea to deny caching of
 @file{all.SCORE}, while it might be a good idea to not cache
 @file{comp.infosystems.www.authoring.misc.ADAPT}.  In fact, this

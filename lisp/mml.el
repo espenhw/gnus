@@ -31,6 +31,19 @@
 (eval-and-compile
   (autoload 'message-make-message-id "message"))
 
+(defvar mml-generate-multipart-alist
+  '(("signed" . rfc2015-generate-signed-multipart)
+    ("encrypted" . rfc2015-generate-encrypted-multipart))
+  "*Alist of multipart generation functions.
+
+Each entry has the form (NAME . FUNCTION), where
+NAME: is a string containing the name of the part (without the 
+leading \"/multipart/\"),
+FUNCTION: is a Lisp function which is called to generate the part.
+
+The Lisp function has to supply the appropriate MIME headers and the
+contents of this part.")
+
 (defvar mml-syntax-table
   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
     (modify-syntax-entry ?\\ "/" table)
@@ -271,16 +284,20 @@
     (insert (or (cdr (assq 'contents cont))))
     (insert "\n"))
    ((eq (car cont) 'multipart)
-    (let ((mml-boundary (mml-compute-boundary cont)))
-      (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
-		      (or (cdr (assq 'type cont)) "mixed")
-		      mml-boundary))
-      (insert "\n")
-      (setq cont (cddr cont))
-      (while cont
-	(insert "\n--" mml-boundary "\n")
-	(mml-generate-mime-1 (pop cont)))
-      (insert "\n--" mml-boundary "--\n")))
+    (let* ((type (or (cdr (assq 'type cont)) "mixed"))
+           (handler (assoc type mml-generate-multipart-alist)))
+      (if handler
+          (funcall (cdr handler) cont)
+        ;; No specific handler.  Use default one.
+        (let ((mml-boundary (mml-compute-boundary cont)))
+          (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
+                          type mml-boundary))
+          (insert "\n")
+          (setq cont (cddr cont))
+          (while cont
+            (insert "\n--" mml-boundary "\n")
+            (mml-generate-mime-1 (pop cont)))
+          (insert "\n--" mml-boundary "--\n")))))
    (t
     (error "Invalid element: %S" cont))))
 
@@ -502,6 +519,7 @@
     (define-key map "p" 'mml-insert-part)
     (define-key map "v" 'mml-validate)
     (define-key map "P" 'mml-preview)
+    (define-key map "n" 'mml-narrow-to-part)
     (define-key main "\M-m" map)
     main))
 
@@ -515,6 +533,7 @@
    ("Insert"
     ["Multipart" mml-insert-multipart t]
     ["Part" mml-insert-part t])
+   ["Narrow" mml-narrow-to-part t]
    ["Quote" mml-quote-region t]
    ["Validate" mml-validate t]
    ["Preview" mml-preview t]))

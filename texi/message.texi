@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Pterodactyl Message 0.96 Manual
+@settitle Pterodactyl Message 0.97 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -42,7 +42,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Message 0.96 Manual
+@title Pterodactyl Message 0.97 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -83,7 +83,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Pterodactyl Message 0.96.  Message is
+This manual corresponds to Pterodactyl Message 0.97.  Message is
 distributed with the Gnus distribution bearing the same version number
 as this manual.
 
@@ -188,8 +188,8 @@ but you can change the behavior to suit your needs by fiddling with the
 @code{message-wide-reply-to-function}.  It is used in the same way as
 @code{message-reply-to-function} (@pxref{Reply}).
 
-@findex rmail-dont-reply-to-names
-Addresses that match the @code{rmail-dont-reply-to-names} regular
+@findex message-dont-reply-to-names
+Addresses that match the @code{message-dont-reply-to-names} regular
 expression will be removed from the @code{Cc} header.
 
 
@@ -246,26 +246,9 @@ the message in the current buffer.  If given a prefix, forward using
 news.
 
 @table @code
-@item message-forward-start-separator
-@vindex message-forward-start-separator
-Delimiter inserted before forwarded messages.  The default is@*
-@samp{------- Start of forwarded message -------\n}.
-
-@vindex message-forward-end-separator
-@item message-forward-end-separator
-@vindex message-forward-end-separator
-Delimiter inserted after forwarded messages.  The default is@*
-@samp{------- End of forwarded message -------\n}.
-
-@item message-signature-before-forwarded-message
-@vindex message-signature-before-forwarded-message
-If this variable is @code{t}, which it is by default, your personal
-signature will be inserted before the forwarded message.  If not, the
-forwarded message will be inserted first in the new mail.
-
-@item message-included-forward-headers
-@vindex message-included-forward-headers
-Regexp matching header lines to be included in forwarded messages.
+@item message-ignored-forward-headers
+@vindex message-ignored-forward-headers
+All headers that match this regexp will be deleted when forwarding a message.
 
 @item message-make-forward-subject-function
 @vindex message-make-forward-subject-function

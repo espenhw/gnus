@@ -814,8 +814,8 @@ If SOURCE is a directory spec, try to return the group name component."
        ;; if there is no head-body delimiter, we search a bit manually.
        (while (and (looking-at "From \\|[^ \t]+:")
 		   (not (eobp)))
-	 (forward-line 1)
-	 (point))))
+	 (forward-line 1))
+       (point)))
     ;; Find the Message-ID header.
     (goto-char (point-min))
     (if (re-search-forward "^Message-ID:[ \t]*\\(<[^>]+>\\)" nil t)

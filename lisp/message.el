@@ -305,6 +305,13 @@ The provided functions are:
   :group 'message-interface
   :type 'regexp)
 
+
+(defcustom message-forward-ignored-headers nil
+  "*All headers that match this regexp will be deleted when forwarding a message."
+  :group 'message-forwarding
+  :type '(choice (const :tag "None" nil)
+		 regexp))
+
 (defcustom message-ignored-cited-headers "."
   "*Delete these headers from the messages you yank."
   :group 'message-insertion
@@ -648,6 +655,13 @@ Valid valued are `unique' and `unsent'."
   "Default charset used in non-MULE XEmacsen."
   :group 'message
   :type 'symbol)
+
+(defcustom message-dont-reply-to-names rmail-dont-reply-to-names
+  "*A regexp specifying names to prune when doing wide replies.
+A value of nil means exclude your own name only."
+  :group 'message
+  :type '(choice (const :tag "Yourself" nil)
+		 regexp))
 
 ;;; Internal variables.
 ;;; Well, not really internal.
@@ -1071,6 +1085,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 	(insert (car headers) ?\n))))
     (setq headers (cdr headers))))
 
+
 (defun message-fetch-reply-field (header)
   "Fetch FIELD from the message we're replying to."
   (when (and message-reply-buffer
@@ -1432,12 +1447,12 @@ C-c C-a  mml-attach-file (attach a file as MIME)."
 	 '(message-font-lock-keywords t)))
   (make-local-variable 'adaptive-fill-regexp)
   (setq adaptive-fill-regexp
-	(concat "[ \t]*[-a-z0-9A-Z]*>+[ \t]*\\|" adaptive-fill-regexp))
+	(concat "[ \t]*[-a-z0-9A-Z]*\\(>[ \t]*\\)+[ \t]*\\|" adaptive-fill-regexp))
   (unless (boundp 'adaptive-fill-first-line-regexp)
     (setq adaptive-fill-first-line-regexp nil))
   (make-local-variable 'adaptive-fill-first-line-regexp)
   (setq adaptive-fill-first-line-regexp
-	(concat "[ \t]*[-a-z0-9A-Z]*>+[ \t]*\\|"
+	(concat "[ \t]*[-a-z0-9A-Z]*\\(>[ \t]*\\)+[ \t]*\\|"
 		adaptive-fill-first-line-regexp))
   (mm-enable-multibyte)
   (make-local-variable 'indent-tabs-mode) ;Turn off tabs for indentation.
@@ -2001,21 +2016,19 @@ the user from the mailer."
 	elem sent)
     (while (and success
 		(setq elem (pop alist)))
-      (when (and (or (not (funcall (cadr elem)))
-		     (and (or (not (memq (car elem)
-					 message-sent-message-via))
-			      (y-or-n-p
-			       (format
-				"Already sent message via %s; resend? "
-				(car elem))))
-			  (setq success (funcall (caddr elem) arg)))))
+      (when (or (not (funcall (cadr elem)))
+		(and (or (not (memq (car elem)
+				    message-sent-message-via))
+			 (y-or-n-p
+			  (format
+			   "Already sent message via %s; resend? "
+			   (car elem))))
+		     (setq success (funcall (caddr elem) arg))))
 	(setq sent t)))
-    (unless sent
+    (unless (or sent (not success))
       (error "No methods specified to send by"))
     (when (and success sent)
       (message-do-fcc)
-      ;;(when (fboundp 'mail-hist-put-headers-into-history)
-      ;; (mail-hist-put-headers-into-history))
       (save-excursion
 	(run-hooks 'message-sent-hook))
       (message "Sending...done")
@@ -3455,8 +3468,9 @@ OTHER-HEADERS is an alist of header/value pairs."
 	      (while (re-search-forward "[ \t]+" nil t)
 		(replace-match " " t t))
 	      ;; Remove addresses that match `rmail-dont-reply-to-names'.
-	      (insert (prog1 (rmail-dont-reply-to (buffer-string))
-			(erase-buffer)))
+	      (let ((rmail-dont-reply-to-names message-dont-reply-to-names))
+		(insert (prog1 (rmail-dont-reply-to (buffer-string))
+			  (erase-buffer))))
 	      (goto-char (point-min))
 	      ;; Perhaps Mail-Copies-To: never removed the only address?
 	      (when (eobp)
@@ -3802,8 +3816,16 @@ Optional NEWS will use news to forward instead of mail."
     ;; message.
     (message-goto-body)
     (insert "\n\n<#part type=message/rfc822 disposition=inline>\n")
-    (mml-insert-buffer cur)
-    (insert "<#/part>\n")
+    (let ((b (point))
+	  e)
+      (mml-insert-buffer cur)
+      (setq e (point))
+      (insert "<#/part>\n")
+      (when message-forward-ignored-headers
+	(save-restriction
+	  (narrow-to-region b e)
+	  (message-narrow-to-head)
+	  (message-remove-header message-forward-ignored-headers t))))
     (message-position-point)))
 
 ;;;###autoload
@@ -3861,7 +3883,7 @@ This only makes sense if the current message is a bounce message than
 contains some mail you have written which has been bounced back to
 you."
   (interactive)
-  (let ((handles (mm-dissect-buffer))
+  (let ((handles (mm-dissect-buffer t))
 	boundary)
     (message-pop-to-buffer (message-buffer-name "bounce"))
     (if (stringp (car handles))
@@ -3869,7 +3891,7 @@ you."
 	(mm-insert-part (car (last handles)))
       ;; This is a non-MIME bounce, so we try to remove things
       ;; manually.
-      (mm-insert-part (car (last handles)))
+      (mm-insert-part handles)
       (undo-boundary)
       (goto-char (point-min))
       (search-forward "\n\n" nil t)

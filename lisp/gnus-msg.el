@@ -1092,7 +1092,7 @@ this is a reply."
   (unless gnus-inhibit-posting-styles
     (let ((group (or gnus-newsgroup-name ""))
 	  (styles gnus-posting-styles)
-	  style match variable attribute value v styles results
+	  style match variable attribute value v results
 	  filep name address element)
       ;; If the group has a posting-style parameter, add it at the end with a
       ;; regexp matching everything, to be sure it takes precedence over all
@@ -1167,6 +1167,8 @@ this is a reply."
 	(when (cdr result)
 	  (add-hook 'message-setup-hook
 		    (cond
+		     ((eq 'eval (car result))
+		      'ignore)
 		     ((eq 'body (car result))
 		      `(lambda ()
 			 (save-excursion

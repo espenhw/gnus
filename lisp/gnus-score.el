@@ -502,7 +502,7 @@ used as score."
 	    (?s "subject" nil nil string)
 	    (?b "body" "" nil body-string)
 	    (?h "head" "" nil body-string)
-	    (?i "message-id" nil t string)
+	    (?i "message-id" nil nil string)
 	    (?r "references" "message-id" nil string)
 	    (?x "xref" nil nil string)
 	    (?e "extra" nil nil string)
@@ -1477,7 +1477,7 @@ EXTRA is the possible non-standard header."
 	  (let (score)
 	    (while (setq score (pop scores))
 	      (while score
-		(when (listp (caar score))
+		(when (consp (caar score))
 		  (gnus-score-advanced (car score) trace))
 		(pop score))))
 

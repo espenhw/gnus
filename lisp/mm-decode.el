@@ -139,8 +139,7 @@
     "message/rfc822")
   "A list of MIME types to be displayed automatically.")
 
-(defvar mm-attachment-override-types
-  '("text/plain" "text/x-vcard")
+(defvar mm-attachment-override-types '("text/plain" "text/x-vcard")
   "Types that should have \"attachment\" ignored if they can be displayed inline.")
 
 (defvar mm-automatic-external-display nil
@@ -437,9 +436,14 @@ external if displayed external."
 
 (defun mm-display-inline (handle)
   (let* ((type (mm-handle-media-type handle))
-	 (function (cadr (assoc type mm-inline-media-tests))))
+	 (function (cadr (mm-assoc-string-match mm-inline-media-tests type))))
     (funcall function handle)
     (goto-char (point-min))))
+
+(defun mm-assoc-string-match (alist type)
+  (dolist (elem alist)
+    (when (string-match (car elem) type)
+      (return elem))))
 
 (defun mm-inlinable-p (handle)
   "Say whether HANDLE can be displayed inline."
@@ -447,7 +451,7 @@ external if displayed external."
 	(type (mm-handle-media-type handle))
 	test)
     (while alist
-      (when (equal type (caar alist))
+      (when (string-match (caar alist) type)
 	(setq test (caddar alist)
 	      alist nil)
 	(setq test (funcall test handle)))

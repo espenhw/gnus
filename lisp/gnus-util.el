@@ -939,7 +939,7 @@ ARG is passed to the first function."
 	(throw 'found nil)))
     t))
 
-(defun gnus-write-active-file (file hashtb)
+(defun gnus-write-active-file (file hashtb &optional full-names)
   (with-temp-file file
     (mapatoms
      (lambda (sym)
@@ -947,7 +947,9 @@ ARG is passed to the first function."
 		  (boundp sym)
 		  (symbol-value sym))
 	 (insert (format "%s %d %d y\n"
-			 (gnus-group-real-name (symbol-name sym)) 
+			 (if full-names
+			     (symbol-name sym)
+			   (gnus-group-real-name (symbol-name sym)))
 			 (cdr (symbol-value sym))
 			 (car (symbol-value sym))))))
      hashtb)))

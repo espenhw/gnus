@@ -746,6 +746,7 @@ returned as a result of this analysis.
 * Handles::        Handle manipulations.
 * Display::        Displaying handles.
 * Customization::  Variables that affect display.
+* New Viewers::    How to write your own viewers.
 @end menu
 
 
@@ -901,6 +902,34 @@ their size.
 
 @end table
 
+
+@node New Viewers
+@section New Viewers
+
+Here's an example viewer for displaying @code{text/enriched} inline:
+
+@lisp
+(defun mm-display-enriched-inline (handle)
+  (let (text)
+    (with-temp-buffer
+      (mm-insert-part handle)
+      (save-window-excursion
+        (enriched-decode (point-min) (point-max))
+        (setq text (buffer-string))))
+    (mm-insert-inline handle text)))
+@end lisp
+
+We see that the function takes a @sc{mime} handle as its parameter.  It
+then goes to a temporary buffer, inserts the text of the part, does some 
+work on the text, stores the result, goes back to the buffer it was
+called from and inserts the result.
+
+The two important helper functions here are @code{mm-insert-part} and
+@code{mm-insert-inline}.  The first function inserts the text of the
+handle in the current buffer.  It handles charset and/or content
+transfer decoding.  The second function just inserts whatever text you
+tell it to insert, but it also sets things up so that the text can be
+``undisplayed' in a convenient manner.
 
 
 @node Composing

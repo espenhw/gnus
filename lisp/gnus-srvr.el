@@ -592,11 +592,12 @@ The following commands are available:
 	  (goto-char (point-min))
 	  (unless (string= gnus-ignored-newsgroups "")
 	    (delete-matching-lines gnus-ignored-newsgroups))
-         (while (and (not (eobp)) (forward-line))
+	  (while (not (eobp)) 
 	    (ignore-errors
              (push (cons (read cur)
 			  (max 0 (- (1+ (read cur)) (read cur))))
-		    groups)))))
+		    groups))
+	    (forward-line))))
       (setq groups (sort groups
 			 (lambda (l1 l2)
 			   (string< (car l1) (car l2)))))

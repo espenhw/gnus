@@ -368,9 +368,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	      (or password
 		  (cdr (assoc from mail-source-password-cache))
 		  (mail-source-read-passwd
-		   (format "Password for %s at %s: " user server))))
-	(unless (assoc from mail-source-password-cache)
-	  (push (cons from password) mail-source-password-cache)))
+		   (format "Password for %s at %s: " user server)))))
       (when server
 	(setenv "MAILHOST" server))
       (setq result
@@ -393,12 +391,16 @@ If ARGS, PROMPT is used as an argument to `format'."
 		     (if (eq authentication 'apop) 'apop 'pass)))
 		(save-excursion (pop3-movemail mail-source-crash-box))))))
       (if result
-	  (prog1
-	      (mail-source-callback callback server)
-	    (mail-source-run-script
-	     postscript
-	     (format-spec-make ?p password ?t mail-source-crash-box
-			       ?s server ?P port ?u user)))
+	  (progn
+	    (when (eq authentication 'password)
+	      (unless (assoc from mail-source-password-cache)
+		(push (cons from password) mail-source-password-cache)))
+	    (prog1
+		(mail-source-callback callback server)
+	      (mail-source-run-script
+	       postscript
+	       (format-spec-make ?p password ?t mail-source-crash-box
+				 ?s server ?P port ?u user))))
 	;; We nix out the password in case the error
 	;; was because of a wrong password being given.
 	(setq mail-source-password-cache

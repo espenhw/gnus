@@ -1257,7 +1257,6 @@ password contained in '~/.nntp-authinfo'."
 		   (setq nntp-telnet-passwd
 			 (mail-source-read-passwd "Password: ")))
 	       "\n"))
-	(erase-buffer)
 	(nntp-wait-for-string nntp-telnet-shell-prompt)
 	(process-send-string
 	 proc (concat (mapconcat 'identity nntp-telnet-parameters " ") "\n"))

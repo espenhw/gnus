@@ -206,7 +206,7 @@ used as the line break code type of the coding system."
 (defun mm-preferred-coding-system (charset)
   ;; A typo in some Emacs versions.
   (or (get-charset-property charset 'prefered-coding-system)
-      (get-charset-property charset 'preffered-coding-system)))
+      (get-charset-property charset 'preferred-coding-system)))
 
 (defun mm-mime-charset (charset)
   "Return the MIME charset corresponding to the MULE CHARSET."

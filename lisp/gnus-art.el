@@ -403,7 +403,7 @@ beginning of a line."
   :type 'regexp
   :group 'gnus-article-various)
 
-(defcustom gnus-article-mode-line-format "Gnus: %g %S%m"
+(defcustom gnus-article-mode-line-format "Gnus: %g [%w] %S%m"
   "*The format specification for the article mode line.
 See `gnus-summary-mode-line-format' for a closer description.
 
@@ -1832,6 +1832,9 @@ should replace the \"Date:\" one, or should be added below it."
 	  (article-narrow-to-head)
 	  (when (re-search-forward tdate-regexp nil t)
 	    (setq bface (get-text-property (gnus-point-at-bol) 'face)
+		  date (or (get-text-property (gnus-point-at-bol)
+						'original-date)
+			     date)
 		  eface (get-text-property (1- (gnus-point-at-eol))
 					   'face))
 	    (forward-line 1))
@@ -1855,6 +1858,8 @@ should replace the \"Date:\" one, or should be added below it."
 	    (beginning-of-line)
 	    (when (looking-at "\\([^:]+\\): *\\(.*\\)$")
 	      (put-text-property (match-beginning 1) (1+ (match-end 1))
+				 'original-date date)
+	      (put-text-property (match-beginning 1) (1+ (match-end 1))
 				 'face bface)
 	      (put-text-property (match-beginning 2) (match-end 2)
 				 'face eface))))))))
@@ -1870,9 +1875,10 @@ should replace the \"Date:\" one, or should be added below it."
      ;; functions since they aren't particularly resistant to
      ;; buggy dates.
      ((eq type 'local)
-      (let ((tz (car (current-time-zone))))
+      (let ((tz (car (current-time-zone time))))
 	(format "Date: %s %s%02d%02d" (current-time-string time)
-		(if (> tz 0) "+" "-") (/ tz 3600) (/ (% tz 3600) 60))))
+		(if (> tz 0) "+" "-") (/ (abs tz) 3600) 
+		(/ (% (abs tz) 3600) 60))))
      ;; Convert to Universal Time.
      ((eq type 'ut)
       (concat "Date: "
@@ -1880,7 +1886,7 @@ should replace the \"Date:\" one, or should be added below it."
 	       (let* ((e (parse-time-string date))
 		     (tm (apply 'encode-time e))
 		     (ms (car tm))
-		     (ls (- (cadr tm) (car (current-time-zone)))))
+		     (ls (- (cadr tm) (car (current-time-zone time)))))
 		 (cond ((< ls 0) (list (1- ms) (+ ls 65536)))
 		       ((> ls 65535) (list (1+ ms) (- ls 65536)))
 		       (t (list ms ls)))))
@@ -2686,7 +2692,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	buffer-read-only)
     (unless (eq major-mode 'gnus-article-mode)
       (gnus-article-mode))
-    (setq buffer-read-only nil)
+    (setq buffer-read-only nil
+	  gnus-article-wash-types nil)
     (gnus-run-hooks 'gnus-tmp-internal-hook)
     (gnus-run-hooks 'gnus-article-prepare-hook)
     (when gnus-display-mime-function
@@ -2792,7 +2799,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (let ((data (get-text-property (point) 'gnus-data)))
     (mm-interactively-view-part data)))
 
-(defun gnus-mime-view-part-as-media ()
+(defun gnus-mime-view-part-as-type ()
   "Choose a MIME media type, and view the part as such."
   (interactive
    (list (completing-read "View as MIME type: " mailcap-mime-types)))
@@ -3146,7 +3153,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (cond
 	   (display
 	    (when move
-	      (forward-line -2))
+	      (forward-line -2)
+	      (setq beg (point)))
 	    (let ((mail-parse-charset gnus-newsgroup-charset)
 		  (mail-parse-ignored-charsets 
 		   (save-excursion (set-buffer gnus-summary-buffer)
@@ -3155,7 +3163,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (goto-char (point-max)))
 	   ((and text not-attachment)
 	    (when move
-	      (forward-line -2))
+	      (forward-line -2)
+	      (setq beg (point)))
 	    (gnus-article-insert-newline)
 	    (mm-insert-inline handle (mm-get-part handle))
 	    (goto-char (point-max))))
@@ -4081,14 +4090,17 @@ specified by `gnus-button-alist'."
 	  (alist gnus-button-alist)
 	  beg entry regexp)
       ;; Remove all old markers.
-      (let (marker entry)
+      (let (marker entry new-list)
 	(while (setq marker (pop gnus-button-marker-list))
-	  (goto-char marker)
-	  (when (setq entry (gnus-button-entry))
-	    (put-text-property (match-beginning (nth 1 entry))
-			       (match-end (nth 1 entry))
-			       'gnus-callback nil))
-	  (set-marker marker nil)))
+	  (if (or (< marker (point-min)) (>= marker (point-max)))
+	      (push marker new-list)
+	    (goto-char marker)
+	    (when (setq entry (gnus-button-entry))
+	      (put-text-property (match-beginning (nth 1 entry))
+				 (match-end (nth 1 entry))
+				 'gnus-callback nil))
+	    (set-marker marker nil)))
+	(setq gnus-button-marker-list new-list))
       ;; We skip the headers.
       (article-goto-body)
       (setq beg (point))
@@ -4499,7 +4511,7 @@ For example:
        ((eq pred 'and)
 	(apply 'gnus-and (mapcar 'gnus-treat-predicate val)))
        ((eq pred 'not)
-	(not (gnus-treat-predicate val)))
+	(not (gnus-treat-predicate (car val))))
        ((eq pred 'typep)
 	(equal (cadr val) type))
        (t

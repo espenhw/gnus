@@ -5316,8 +5316,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (unless quit-config
       ;; Do adaptive scoring, and possibly save score files.
       (when gnus-newsgroup-adaptive
-	(let ((gnus-newsgroup-adaptive gnus-use-adaptive-scoring))
-	  (gnus-score-adaptive)))
+	(gnus-score-adaptive))
       (when gnus-use-scoring
 	(gnus-score-save)))
     (gnus-run-hooks 'gnus-summary-prepare-exit-hook)
@@ -6812,7 +6811,7 @@ to guess what the document format is."
 		(gnus-group-read-ephemeral-group
 		 name `(nndoc ,name (nndoc-address ,(get-buffer dig))
 			      (nndoc-article-type
-			       ,(if force 'digest 'guess))) t))
+			       ,(if force 'mbox 'guess))) t))
 	      ;; Make all postings to this group go to the parent group.
               (nconc (gnus-info-params (gnus-get-info name))
                      params)
@@ -8410,7 +8409,7 @@ read."
   (interactive "P")
   (save-excursion
     (gnus-summary-catchup all))
-  (gnus-summary-next-article t nil nil t))
+  (gnus-summary-next-group t nil nil))
 
 ;; Thread-based commands.
 

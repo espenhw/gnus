@@ -121,7 +121,7 @@ matches an previously scanned and verified nocem message."
   (interactive)
   (let ((groups gnus-nocem-groups)
 	(gnus-inhibit-demon t)
-	group active gactive articles)
+	group active gactive articles check-headers)
     (gnus-make-directory gnus-nocem-directory)
     ;; Load any previous NoCeM headers.
     (gnus-nocem-load-cache)
@@ -173,7 +173,14 @@ matches an previously scanned and verified nocem message."
 				    (null (mail-header-references header)))
 				(not (member (mail-header-message-id header)
 					     gnus-nocem-seen-message-ids))))
-		       (gnus-nocem-check-article group header)))))))
+		       (push header check-headers)))
+		(let ((i 0)
+		      (len (length check-headers)))
+		  (dolist (h check-headers)
+		    (gnus-message
+		     7 "Checking article %d in %s for NoCeM (%d of %d)..."
+		     (mail-header-number h) group (incf i) len)
+		    (gnus-nocem-check-article group h)))))))
 	(setq gnus-nocem-active
 	      (cons (list group gactive)
 		    (delq (assoc group gnus-nocem-active)
@@ -185,8 +192,6 @@ matches an previously scanned and verified nocem message."
 (defun gnus-nocem-check-article (group header)
   "Check whether the current article is an NCM article and that we want it."
   ;; Get the article.
-  (gnus-message 7 "Checking article %d in %s for NoCeM..."
-		(mail-header-number header) group)
   (let ((date (mail-header-date header))
 	issuer b e type)
     (when (or (not date)

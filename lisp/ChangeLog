@@ -1,3 +1,143 @@
+Mon Sep 27 15:18:05 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.97 is released.
+
+1999-09-01  Brendan Kehoe  <brendan@zen.org>
+
+	* gnus-sum.el (gnus-summary-catchup-and-goto-next-group): Use
+	gnus-summary-next-group, not gnus-summary-next-article.  Only give
+	3 args.
+
+1999-09-25 08:07:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Look in the group
+	buffer for params.
+
+	* gnus-xmas.el (gnus-xmas-summary-recenter): Display one more
+	line. 
+
+	* message.el (message-forward-ignored-headers): New variable.
+
+	* gnus-art.el (gnus-article-prepare-display): Nix out
+	gnus-article-wash-types. 
+
+	* gnus-agent.el (gnus-agent-create-buffer): New function.
+	(gnus-agent-fetch-group-1): Use it.
+	(gnus-agent-start-fetch): Ditto.
+
+	* gnus-sum.el (gnus-summary-exit): Don't use
+	`gnus-use-adaptive-scoring'. 
+
+	* mail-source.el (mail-source-fetch-pop): Only store password when 
+	successful.
+
+	* gnus-nocem.el (gnus-nocem-scan-groups): Message better.
+
+1999-09-24 18:43:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-reply): Use it.
+	(message-dont-reply-to-names): New variable.
+
+	* nntp.el (nntp-open-telnet): Don't erase-buffer.
+
+	* mm-util.el (mm-preferred-coding-system): Typo fix.
+
+	* message.el (message-bounce): Work for non-MIME.
+
+	* gnus.el (gnus-short-group-name): Short the right parts of the
+	name. 
+
+1999-09-24 18:17:48  Johan Kullstam  <kullstam@ne.mediaone.net>
+
+	* mm-encode.el (mm-qp-or-base64): New version.
+
+1999-09-10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-make-date-line): Fix time-zone bug.
+
+1999-09-09  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-add-buttons): Don't delete markers out
+	of restricted region.
+	(gnus-mime-display-single): Set beg at correct point.
+
+1999-09-09  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-process-maildir-mail-format): Typo.
+
+1999-09-09  Jens-Ulrik Petersen <jens-ulrik.petersen@nokia.com>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Let
+	`gnus-posting-styles' have its say in posting-style: local
+	variable `styles' is already bound to `gnus-posting-styles' so
+	don't rebind it to nil.
+
+1999-09-24 18:10:56  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* gnus-score.el (gnus-summary-increase-score): Allow editing of
+	Message-ID. 
+
+1999-09-08  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-encode.el (mm-encode-content-transfer-encoding): Fold
+	quoted-printable-encode-region.
+
+	* qp.el (quoted-printable-encode-region): Assume charset
+	encoded. Fold every line in the region.
+
+1999-09-02  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Read the first line
+	of active file.
+
+1999-09-01  Didier Verna  <verna@inf.enst.fr>
+
+	* message.el (message-mode): allows whitespaces between multiple
+	instances of the fill character ">".
+
+1999-09-24 18:02:50  Kim-Minh Kaplan  <kmkaplan@vocatex.fr>
+
+	* mm-encode.el (mm-qp-or-base64): Fix.
+
+1999-09-01 12:18:01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+        * message.el (message-send): Too much and.
+
+1999-09-24 17:58:07  Andreas Schwab  <schwab@suse.de>
+
+	* gnus-art.el (gnus-mime-view-part-as-type): Renamed.
+
+1999-08-28 12:44:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-score.el (gnus-score-headers): Work for nil scores.
+
+1999-08-27 20:46:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cache.el (gnus-cache-write-active): Write full names. 
+
+	* gnus-util.el (gnus-write-active-file): Accept full name. 
+
+	* mm-decode.el (mm-inlinable-p): Use string-match on the types. 
+	(mm-assoc-string-match): New function.
+	(mm-display-inline): Use it.
+
+	* gnus-group.el (gnus-group-set-info): Work for nil group params. 
+
+	* gnus-msg.el (gnus-configure-posting-styles): Allow eval.
+
+1999-08-27 19:08:10  Florian Weimer  <fw@s.netic.de>
+
+	* mml.el (mml-generate-multipart-alist): New variable.
+
+1999-08-27 15:30:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treat-predicate): Work for (not 5).
+
+1999-08-27  Peter von der Ahé  <pahe@daimi.au.dk>
+
+	* message.el (message-send): More helpful error message if sending
+	fails
+
 Fri Aug 27 13:17:48 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.96 is released.
