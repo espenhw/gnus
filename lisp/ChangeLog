@@ -1,3 +1,8 @@
+1999-12-04 03:29:13  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nntp.el (nntp-retrieve-headers-with-xover): Goto the end of
+ 	buffer.
+
 1999-12-04 08:31:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-audio.el: An M too far.

@@ -1181,7 +1181,8 @@ password contained in '~/.nntp-authinfo'."
 	  (goto-char (point-max))
 	  (while (not (re-search-backward "^[0-9][0-9][0-9] " nil t))
 	    (nntp-accept-response)
-	    (set-buffer process-buffer))
+	    (set-buffer process-buffer)
+	    (goto-char (point-max)))
 	  (when (looking-at "^[23]")
 	    (while (progn
 		     (goto-char (point-max))
