@@ -40,6 +40,7 @@
 (eval-when-compile (require 'cl))
 
 (require 'mail-utils)
+(require 'mm-util)
 
 (defvar nnheader-max-head-length 4096
   "*Max length of the head of articles.")
@@ -641,7 +642,7 @@ without formatting."
   (or (not (numberp gnus-verbose-backends))
       (<= level gnus-verbose-backends)))
 
-(defvar nnheader-pathname-coding-system 'iso-8859-1
+(defvar nnheader-pathname-coding-system 'binary
   "*Coding system for pathname.")
 
 (defun nnheader-group-pathname (group dir &optional file)
@@ -653,7 +654,7 @@ without formatting."
 	 (concat dir group "/")
        ;; If not, we translate dots into slashes.
        (concat dir
-	       (nnheader-encode-coding-string
+	       (mm-encode-coding-string
 		(nnheader-replace-chars-in-string group ?. ?/)
 		nnheader-pathname-coding-system)
 	       "/")))
@@ -808,14 +809,6 @@ find-file-hooks, etc.
 (fset 'nnheader-run-at-time 'run-at-time)
 (fset 'nnheader-cancel-timer 'cancel-timer)
 (fset 'nnheader-cancel-function-timers 'cancel-function-timers)
-
-(if (fboundp 'encode-coding-string)
-    (fset 'nnheader-encode-coding-string 'encode-coding-string)
-  (fset 'nnheader-encode-coding-string (lambda (s a) s)))
-
-(if (fboundp 'decode-coding-string)
-    (fset 'nnheader-decode-coding-string 'decode-coding-string)
-  (fset 'nnheader-decode-coding-string (lambda (s a) s)))
 
 (when (string-match "XEmacs\\|Lucid" emacs-version)
   (require 'nnheaderxm))

@@ -545,6 +545,10 @@ displayed by the first non-nil matching CONTENT face."
 			       (item :tag "skip" nil)
 			       (face :value default)))))
 
+(defcustom gnus-article-decode-hook
+  '(gnus-article-decode-charset gnus-article-decode-rfc1522)
+  "*Hook run to decode charsets in articles.")
+
 ;;; Internal variables
 
 (defvar article-lapsed-timer nil)
@@ -2538,6 +2542,9 @@ If given a prefix, show the hidden text instead."
 	    (insert-buffer-substring gnus-article-buffer))
 	  (setq gnus-original-article (cons group article))))
 
+      ;; Decode charsets.
+      (run-hooks 'gnus-article-decode-hook)
+      
       ;; Update sparse articles.
       (when (and do-update-line
 		 (or (numberp article)

@@ -116,6 +116,13 @@ The Gregorian date Sunday, December 31, 1bce is imaginary."
        (- (/ (1- year) 100))		;	- century years
        (/ (1- year) 400))))		;	+ Gregorian leap years
 
+(defun safe-date-to-time (date)
+  "Parse DATE and return a time structure.
+If DATE is malformed, a zero time will be returned."
+  (condition-case ()
+      (date-to-time date)
+    (error '(0 0))))
+
 (provide 'time-date)
 
 ;;; time-date.el ends here

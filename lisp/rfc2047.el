@@ -25,8 +25,9 @@
 ;;; Code:
 
 (eval-and-compile
-  (if (not (fboundp 'base64-encode-string))
-      (require 'base64)))
+  (eval
+   '(if (not (fboundp 'base64-encode-string))
+	(require 'base64))))
 (require 'qp)
 (require 'mm-util)
 
@@ -254,20 +255,24 @@ Should be called narrowed to the head of the message."
 		   (prog1
 		       (match-string 0)
 		     (delete-region (match-beginning 0) (match-end 0)))))
-	  (mm-decode-coding-region b e rfc2047-default-charset)
+	  (when enable-multibyte-characters
+	    (mm-decode-coding-region b e rfc2047-default-charset))
 	  (setq b (point)))
-	(mm-decode-coding-region b (point-max) rfc2047-default-charset)))))
+	(when enable-multibyte-characters
+	  (mm-decode-coding-region b (point-max) rfc2047-default-charset))))))
 
 ;;;###autoload
 (defun rfc2047-decode-string (string)
- "Decode the quoted-printable-encoded STRING and return the results."
- (with-temp-buffer
-   (mm-enable-multibyte)
-   (insert string)
-   (inline
-     (rfc2047-decode-region (point-min) (point-max)))
-   (buffer-string)))
-
+  "Decode the quoted-printable-encoded STRING and return the results."
+  (let ((m enable-multibyte-characters))
+    (with-temp-buffer
+      (when m
+	(mm-enable-multibyte))
+      (insert string)
+      (inline
+	(rfc2047-decode-region (point-min) (point-max)))
+      (buffer-string))))
+ 
 (defun rfc2047-parse-and-decode (word)
   "Decode WORD and return it if it is an encoded word.
 Return WORD if not."

@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.19"
+(defconst gnus-version-number "0.20"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1346,16 +1346,12 @@ face."
 (defcustom gnus-article-display-hook
   (if (and (string-match "XEmacs" emacs-version)
 	   (featurep 'xface))
-      '(gnus-article-decode-charset
-	gnus-article-decode-rfc1522
-	gnus-article-hide-headers-if-wanted
+      '(gnus-article-hide-headers-if-wanted
 	gnus-article-hide-boring-headers
 	gnus-article-treat-overstrike
 	gnus-article-maybe-highlight
 	gnus-article-display-x-face)
-    '(gnus-article-decode-charset
-      gnus-article-decode-rfc1522
-      gnus-article-hide-headers-if-wanted
+    '(gnus-article-hide-headers-if-wanted
       gnus-article-hide-boring-headers
       gnus-article-treat-overstrike
       gnus-article-maybe-highlight))
