@@ -1,3 +1,14 @@
+2000-04-27  Dave Love  <fx@gnu.org>
+
+	* mm-view.el (mm-inline-image-emacs): Use put-image, remove-images.
+
+	* mm-decode.el: Small doc fixes.  Require cl when compiling.
+	(mm-xemacs-p): Deleted.
+	(mm-get-image-emacs, mm-get-image-xemacs): Deleted.
+	(mm-get-image): Amalgamate Emacs and XEmacs code here; for Emacs,
+	use create-image and don't special-case xbm.
+	(mm-valid-image-format-p): Use display-graphic-p.
+
 2000-04-27 15:27:54  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-send-mail-partially-limit): New variable.
