@@ -1,3 +1,12 @@
+2002-01-05  Harry Putnam  <reader@newsguy.com>
+
+	* gnus.texi (Score Variables): Clarify.
+
+2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Agent Expiry): Addition.
+	(Sorting the Summary Buffer): Addition.
+
 2002-01-05  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Conformity): Add MIME and Disposition Notifications.
@@ -11,7 +20,6 @@
 
 	* gnus.texi (Advanced Formatting): Double @'s. Use thumbpdf.
 	
-
 2002-01-05  Norman Walsh  <ndw@nwalsh.com>
 
 	* gnus-faq.texi: Fix typo.

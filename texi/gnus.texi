@@ -6568,7 +6568,8 @@ By default, sorting is done on article numbers.  Ready-made sorting
 predicate functions include @code{gnus-thread-sort-by-number},
 @code{gnus-thread-sort-by-author}, @code{gnus-thread-sort-by-subject},
 @code{gnus-thread-sort-by-date}, @code{gnus-thread-sort-by-score},
-@code{gnus-thread-sort-by-most-recent-thread} and
+@code{gnus-thread-sort-by-most-recent-number},
+@code{gnus-thread-sort-by-most-recent-date} and
 @code{gnus-thread-sort-by-total-score}.
 
 Each function takes two threads and returns non-@code{nil} if the first
@@ -16383,6 +16384,20 @@ whenever you feel that you're running out of space.  It's not
 particularly fast or efficient, and it's not a particularly good idea to
 interrupt it (with @kbd{C-g} or anything else) once you've started it.
 
+@code{gnus-agent-expire-days} can also be a list of regexp/day pairs.
+The regexps will be matched against group names to allow differing
+expiry in different groups.
+
+@lisp
+(setq gnus-agent-expire-days
+      '(("alt\\." 7)
+        (".*binary" 1)
+        ("." 21)))
+@end lisp
+
+If you use the list form, the last element must always be the default
+method---it must always match all groups.
+
 @vindex gnus-agent-expire-all
 if @code{gnus-agent-expire-all} is non-@code{nil}, this command will
 expire all articles---unread, read, ticked and dormant.  If @code{nil}
@@ -17026,12 +17041,12 @@ are expired.  It's 7 by default.
 
 @item gnus-update-score-entry-dates
 @vindex gnus-update-score-entry-dates
-If this variable is non-@code{nil}, matching score entries will have
-their dates updated.  (This is how Gnus controls expiry---all
-non-matching entries will become too old while matching entries will
-stay fresh and young.)  However, if you set this variable to @code{nil},
-even matching entries will grow old and will have to face that oh-so
-grim reaper.
+If this variable is non-@code{nil}, temporary score entries that have
+been triggered (matched) will have their dates updated.  (This is how Gnus
+controls expiry---all non-matched-entries will become too old while
+matched entries will stay fresh and young.)  However, if you set this
+variable to @code{nil}, even matched entries will grow old and will
+have to face that oh-so grim reaper.
 
 @item gnus-score-after-write-file-function
 @vindex gnus-score-after-write-file-function
