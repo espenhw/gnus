@@ -878,6 +878,7 @@ Filtering Spam Using The Spam ELisp Package
 * Blackholes::                  
 * Regular Expressions Header Matching::  
 * Bogofilter::                  
+* SpamAssassin backend::        
 * ifile spam filtering::        
 * spam-stat spam filtering::    
 * SpamOracle::                  

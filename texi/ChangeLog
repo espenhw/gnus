@@ -1,3 +1,7 @@
+2004-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (SpamAssassin backend): Add it to the detailmenu.
+
 2004-04-16  Florian Weimer  <fw@deneb.enyo.de>
 
 	* gnus.texi (Charsets): Point to relevant section in emacs-mime.
