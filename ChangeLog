@@ -1,3 +1,8 @@
+2002-11-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* etc/smilies/blink.xpm: Changed smileys and some new ones from
+	Alex Schroeder <alex@emacswiki.org>.
+
 2002-04-26  Steve Youngs  <youngs@xemacs.org>
 
 	* aclocal.m4 (AC_PATH_INFODIR): New.  Defaults to '$prefix/info'
