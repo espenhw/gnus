@@ -22,6 +22,8 @@
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
 	       ring-elements
+	       charsetp
+	       coding-system-p
 	       propertize make-mode-line-mouse2-map
 	       rmail-select-summary rmail-summary-exists rmail-update-summary
 	       sc-cite-regexp set-font-family set-font-size temp-directory
@@ -35,11 +37,14 @@
 (maybe-bind '(adaptive-fill-first-line-regexp
 	      adaptive-fill-regexp babel-history babel-translations
 	      default-enable-multibyte-characters
+	      enable-multibyte-characters
 	      display-time-mail-function imap-password mail-mode-hook
 	      filladapt-mode
 	      mc-pgp-always-sign
 	      gpg-unabbrev-trust-alist
 	      nnoo-definition-alist
+	      current-language-environment   
+	      language-info-alist
 	      url-current-callback-func url-be-asynchronous
 	      url-current-callback-data url-working-buffer
 	      url-current-mime-headers w3-meta-charset-content-type-regexp
