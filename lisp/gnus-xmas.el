@@ -340,8 +340,10 @@ call it with the value of the `gnus-data' text property."
   (gnus-xmas-menu-add grouplens
     gnus-grouplens-menu))
 
-(defun gnus-xmas-read-event-char ()
+(defun gnus-xmas-read-event-char (&optional prompt)
   "Get the next event."
+  (when prompt
+    (message "%s" prompt))
   (let ((event (next-command-event)))
     (sit-for 0)
     ;; We junk all non-key events.  Is this naughty?

@@ -1,5 +1,8 @@
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-xmas.el (gnus-xmas-read-event-char): Take an optional
+	parameter. 
+
 	* gnus-art.el (article-wash-html): Clean up.
 	(article-wash-html): Typo fix.
 
