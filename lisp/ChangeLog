@@ -1,3 +1,8 @@
+2002-10-17  Steve Youngs  <youngs@xemacs.org>
+
+	* gnus-art.el (gnus-button-man-handler): Add 'manual-entry' for
+	XEmacs, default to it if featurep 'xemacs.
+
 2002-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* spam-stat.el: Check for the existence of hash functions instead
