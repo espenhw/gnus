@@ -774,7 +774,7 @@ external if displayed external."
 	(beg 0)
 	(uses-stdin t)
 	out sub total)
-    (while (string-match "%{\\([^}]+\\)}\\|%s\\|%t\\|%%" method beg)
+    (while (string-match "%{\\([^}]+\\)}\\|'%s'\\|%s\\|%t\\|%%" method beg)
       (push (substring method beg (match-beginning 0)) out)
       (setq beg (match-end 0)
 	    total (match-string 0 method)
@@ -782,7 +782,7 @@ external if displayed external."
       (cond
        ((string= total "%%")
 	(push "%" out))
-       ((string= total "%s")
+       ((or (string= total "%s") (string= total "'%s'"))
 	(setq uses-stdin nil)
 	(push (mm-quote-arg
 	       (gnus-map-function mm-path-name-rewrite-functions file)) out))

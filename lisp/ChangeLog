@@ -1,3 +1,9 @@
+2002-12-21  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* mm-decode.el (mm-mailcap-command): Do not backslash-quote
+	special chars if the mailcap file uses single quotes around %s.
+	From Laurent Martelli <laurent@bearteam.org>.	
+
 2002-12-19  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus-int.el (gnus-request-update-info): nnchoke-r-u-i might not
