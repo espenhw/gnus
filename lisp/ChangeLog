@@ -1,3 +1,8 @@
+2001-04-05 21:43:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-update-summary-mark-positions): Use a valid
+	date. 
+
 2001-04-04 16:13:17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-group-quit): Check that the dribble buffer

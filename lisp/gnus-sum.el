@@ -2796,7 +2796,8 @@ buffer that was in action when the last article was fetched."
 	(let ((gnus-summary-line-format-spec spec)
 	      (gnus-newsgroup-downloadable '((0 . t))))
 	  (gnus-summary-insert-line
-	   [0 "" "" "" "" "" 0 0 "" nil]  0 nil 128 t nil "" nil 1)
+	   [0 "" "" "05 Apr 2001 23:33:09 +0400" "" "" 0 0 "" nil]
+	   0 nil 128 t nil "" nil 1)
 	  (goto-char (point-min))
 	  (setq pos (list (cons 'unread (and (search-forward "\200" nil t)
 					     (- (point) 2)))))
