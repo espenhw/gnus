@@ -671,6 +671,21 @@ be set in `.emacs' instead."
      ()))
   "Face used for normal interest ancient articles.")
 
+(defface gnus-summary-high-uncached-face
+  '((((class color))
+     (:bold t :background "Wheat1")))
+  "Face used for high interest uncached articles.")
+
+(defface gnus-summary-low-uncached-face
+  '((((class color))
+     (:italic t :background "Wheat1")))
+  "Face used for low interest uncached articles.")
+
+(defface gnus-summary-normal-uncached-face
+  '((((class color))
+     (:background "Wheat1")))
+  "Face used for normal interest uncached articles.")
+
 (defface gnus-summary-high-unread-face
   '((t
      (:bold t)))
