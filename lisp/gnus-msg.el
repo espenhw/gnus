@@ -774,49 +774,50 @@ this is a reply."
 
 ;; Do Gcc handling, which copied the message over to some group. 
 (defun gnus-inews-do-gcc (&optional gcc)
-  (save-excursion
-    (save-restriction
-      (message-narrow-to-headers)
-      (let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
-	    (cur (current-buffer))
-	    groups group method)
-	(when gcc
-	  (message-remove-header "gcc")
-	  (widen)
-	  (setq groups (message-tokenize-header gcc " ,"))
-	  ;; Copy the article over to some group(s).
-	  (while (setq group (pop groups))
-	    (gnus-check-server 
-	     (setq method
-		   (cond ((and (null (gnus-get-info group))
-			       (eq (car gnus-message-archive-method)
-				   (car 
-				    (gnus-server-to-method
-				     (gnus-group-method group)))))
-			  ;; If the group doesn't exist, we assume
-			  ;; it's an archive group...
-			  gnus-message-archive-method)
-			 ;; Use the method.
-			 ((gnus-info-method (gnus-get-info group))
-			  (gnus-info-method (gnus-get-info group)))
-			 ;; Find the method.
-			 (t (gnus-group-method group)))))
-	    (gnus-check-server method)
-	    (unless (gnus-request-group group t method)
-	      (gnus-request-create-group group method))
-	    (save-excursion
-	      (nnheader-set-temp-buffer " *acc*")
-	      (insert-buffer-substring cur)
-	      (goto-char (point-min))
-	      (when (re-search-forward 
-		     (concat "^" (regexp-quote mail-header-separator) "$")
-		     nil t)
-		(replace-match "" t t ))
-	      (unless (gnus-request-accept-article group method t)
-		(gnus-message 1 "Couldn't store article in group %s: %s" 
-			      group (gnus-status-message method))
-		(sit-for 2))
-	      (kill-buffer (current-buffer)))))))))
+  (when (gnus-alive-p)
+    (save-excursion
+      (save-restriction
+	(message-narrow-to-headers)
+	(let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
+	      (cur (current-buffer))
+	      groups group method)
+	  (when gcc
+	    (message-remove-header "gcc")
+	    (widen)
+	    (setq groups (message-tokenize-header gcc " ,"))
+	    ;; Copy the article over to some group(s).
+	    (while (setq group (pop groups))
+	      (gnus-check-server 
+	       (setq method
+		     (cond ((and (null (gnus-get-info group))
+				 (eq (car gnus-message-archive-method)
+				     (car 
+				      (gnus-server-to-method
+				       (gnus-group-method group)))))
+			    ;; If the group doesn't exist, we assume
+			    ;; it's an archive group...
+			    gnus-message-archive-method)
+			   ;; Use the method.
+			   ((gnus-info-method (gnus-get-info group))
+			    (gnus-info-method (gnus-get-info group)))
+			   ;; Find the method.
+			   (t (gnus-group-method group)))))
+	      (gnus-check-server method)
+	      (unless (gnus-request-group group t method)
+		(gnus-request-create-group group method))
+	      (save-excursion
+		(nnheader-set-temp-buffer " *acc*")
+		(insert-buffer-substring cur)
+		(goto-char (point-min))
+		(when (re-search-forward 
+		       (concat "^" (regexp-quote mail-header-separator) "$")
+		       nil t)
+		  (replace-match "" t t ))
+		(unless (gnus-request-accept-article group method t)
+		  (gnus-message 1 "Couldn't store article in group %s: %s" 
+				group (gnus-status-message method))
+		  (sit-for 2))
+		(kill-buffer (current-buffer))))))))))
 
 (defun gnus-inews-insert-gcc ()
   "Insert Gcc headers based on `gnus-outgoing-message-group'."

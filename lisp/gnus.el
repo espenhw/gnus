@@ -1723,7 +1723,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.3"
+(defconst gnus-version-number "5.2.4"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -8058,7 +8058,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 	 (number (mail-header-number header))
 	 pos)
     (when thread
-      (setcar thread nil)
+      ;; !!! Should this be in or not?
+      ;(setcar thread nil)
       (when parent
 	(delq thread parent))
       (if (gnus-summary-insert-subject id header)
@@ -16278,7 +16279,8 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-continuum-version (version)
   "Return VERSION as a floating point number."
-  (when (string-match "^\\([^ ]+\\)? ?Gnus v?\\([0-9.]+\\)$" version)
+  (when (or (string-match "^\\([^ ]+\\)? ?Gnus v?\\([0-9.]+\\)$" version)
+	    (string-match "^\\(.?\\)gnus-\\([0-9.]+\\)$" version))
     (let* ((alpha (and (match-beginning 1) (match-string 1 version)))
 	   (number (match-string 2 version))
 	   major minor least)
@@ -16292,9 +16294,9 @@ If FORCE is non-nil, the .newsrc file is read."
        (if (zerop major)
 	   (format "%s00%02d%02d"
 		   (cond 
-		    ((string= alpha "(ding)") "4.99")
-		    ((string= alpha "September") "5.01")
-		    ((string= alpha "Red") "5.03"))
+		    ((member alpha '("(ding)" "d")) "4.99")
+		    ((member alpha '("September" "s")) "5.01")
+		    ((member alpha '("Red" "r")) "5.03"))
 		   minor least)
 	 (format "%d.%02d%02d" major minor least))))))
 

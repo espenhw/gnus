@@ -200,7 +200,7 @@ Legal values include `message-send-mail-with-mh' and
 (defvar message-send-news-function 'message-send-news
   "Function to call to send the current buffer as news.
 The headers should be delimited by a line whose contents match the
-variable `message-header-separator'.")
+variable `mail-header-separator'.")
 
 ;;;###autoload
 (defvar message-reply-to-function nil
@@ -243,10 +243,6 @@ always use the value.")
 ;;;###autoload
 (defvar message-generate-headers-first nil
   "*If non-nil, generate all possible headers before composing.")
-
-;;;###autoload
-(defvar message-header-separator "--text follows this line--" 
-  "*Line used to separate headers from text in messages being composed.")
 
 (defvar message-setup-hook nil
   "Normal hook, run each time a new outgoing message is initialized.
@@ -729,7 +725,7 @@ Return the number of headers removed."
     ["Sort Headers" message-sort-headers t]
     ["Yank Original" message-yank-original t]
     ["Fill Yanked Message" message-fill-yanked-message t]
-    ;;  ["Insert Signature"         news-reply-signature     t]
+    ["Insert Signature" message-insert-signature t]
     ["Caesar (rot13) Message" message-caesar-buffer-body t]
     ["Rename buffer" message-rename-buffer t]
     ["Spellcheck" ispell-message t]

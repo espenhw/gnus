@@ -1,4 +1,21 @@
+Fri May 31 04:33:16 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* custom.el (custom-face-lookup): Escape errors.
+
+	* gnus-msg.el (gnus-inews-do-gcc): Don't do anything unless Gnus
+	is alive.
+
+	* custom.el (custom-face-lookup): Wrong number of params.
+
+Fri May 31 00:14:17 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-continuum-version): Also give responses to
+	directory names.
+	(gnus-summary-update-article): Would bug out on editing articles. 
+
 Thu May 30 05:04:07 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.2 is released.
 
 	* gnus.el (gnus-article-hide-headers): Show boring headers as
 	well. 

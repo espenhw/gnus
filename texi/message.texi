@@ -557,7 +557,7 @@ Kill the message buffer and exit (@code{message-kill-buffer}).
 @node Message Headers
 @section Message Headers
 
-Message is a quite aggressive on the message generation front.  It has
+Message is quite aggressive on the message generation front.  It has
 to be -- it's a combined news and mail agent.  To be able to send
 combined messages, it has to generate all headers itself to ensure that
 mail and news copies of messages look sufficiently similar.

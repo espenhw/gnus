@@ -46,6 +46,8 @@
 
 ;;; Code:
 
+(require 'cl)
+
 ;; Make the byte-compiler shut up.
 (defvar headers)
 

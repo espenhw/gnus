@@ -231,60 +231,6 @@ into the buffer visible in the event's window."
   (defvar custom-mouse-face nil)
   (defvar custom-field-active-face nil))
 
-(or (and (fboundp 'modify-face) (not (featurep 'face-lock)))
-    ;; Introduced in Emacs 19.29.  Incompatible definition also introduced
-    ;; by face-lock.el version 3.00 and above for Emacs 19.28 and below.
-    ;; face-lock does not call modify-face, so we can safely redefine it.
-    (defun modify-face (face foreground background stipple
-			     bold-p italic-p underline-p)
-  "Change the display attributes for face FACE.
-FOREGROUND and BACKGROUND should be color strings or nil.
-STIPPLE should be a stipple pattern name or nil.
-BOLD-P, ITALIC-P, and UNDERLINE-P specify whether the face should be set bold,
-in italic, and underlined, respectively.  (Yes if non-nil.)
-If called interactively, prompts for a face and face attributes."
-  (interactive
-   (let* ((completion-ignore-case t)
-	  (face	       (symbol-name (read-face-name "Modify face: ")))
-	  (colors      (mapcar 'list x-colors))
-	  (stipples    (mapcar 'list
-			       (apply 'nconc
-				      (mapcar 'directory-files
-					      x-bitmap-file-path))))
-	  (foreground  (modify-face-read-string
-			face (face-foreground (intern face))
-			"foreground" colors))
-	  (background  (modify-face-read-string
-			face (face-background (intern face))
-			"background" colors))
-	  (stipple     (modify-face-read-string
-			face (face-stipple (intern face))
-			"stipple" stipples))
-	  (bold-p      (y-or-n-p (concat "Set face " face " bold ")))
-	  (italic-p    (y-or-n-p (concat "Set face " face " italic ")))
-	  (underline-p (y-or-n-p (concat "Set face " face " underline "))))
-     (message "Face %s: %s" face
-      (mapconcat 'identity
-       (delq nil
-	(list (and foreground (concat (downcase foreground) " foreground"))
-	      (and background (concat (downcase background) " background"))
-	      (and stipple (concat (downcase stipple) " stipple"))
-	      (and bold-p "bold") (and italic-p "italic")
-	      (and underline-p "underline"))) ", "))
-     (list (intern face) foreground background stipple
-	   bold-p italic-p underline-p)))
-  (condition-case nil (set-face-foreground face foreground) (error nil))
-  (condition-case nil (set-face-background face background) (error nil))
-  (condition-case nil (set-face-stipple face stipple) (error nil))
-  (if (string-match "XEmacs" emacs-version)
-      (progn
-	(funcall (if bold-p 'make-face-bold 'make-face-unbold) face)
-	(funcall (if italic-p 'make-face-italic 'make-face-unitalic) face))
-    (funcall (if bold-p 'make-face-bold 'make-face-unbold) face nil t)
-    (funcall (if italic-p 'make-face-italic 'make-face-unitalic) face nil t))
-  (set-face-underline-p face underline-p)
-  (and (interactive-p) (redraw-display))))
-
 ;; We can't easily check for a working intangible.
 (defconst intangible (if (and (boundp 'emacs-minor-version)
 			      (or (> emacs-major-version 19)
@@ -1543,20 +1489,28 @@ custom-face-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)"
 		 (not (string-equal fg "default")))
 	(set-face-foreground name fg))
       (when (and bg
-		 (not (string-equal fg "default")))
+		 (not (string-equal bg "default")))
 	(set-face-background name bg))
       (when (and stipple
-		 (not (eq stipple 'as-is)))
-	(set-face-stipple name))
+		 (not (string-equal stipple "default"))
+		 (not (eq stipple 'custom:asis))
+		 (fboundp 'set-face-stipple))
+	(set-face-stipple name stipple))
       (when (and bold
-		 (not (eq bold 'as-is)))
-	(make-face-bold name))
+		 (not (eq bold 'custom:asis)))
+	(condition-case ()
+	    (make-face-bold name)
+	  (error nil)))
       (when (and italic
-		 (not (eq italic 'as-is)))
-	(make-face-italic name))
+		 (not (eq italic 'custom:asis)))
+	(condition-case ()
+	    (make-face-italic name)
+	  (error nil)))
       (when (and underline
-		 (not (eq underline 'as-is)))
-	(set-face-underline-p name)))
+		 (not (eq underline 'custom:asis)))
+	(condition-case ()
+	    (set-face-underline-p name t)
+	  (error nil))))
     name))
 
 (defun custom-face-hack (field value)
@@ -2500,8 +2454,9 @@ Face used for customization fields while they are being edited.")
 		     (not (string-match "XEmacs" emacs-version)))
 (custom-category-put 'custom-hidden-properties intangible t)
 
-(if (file-readable-p custom-file)
-    (load-file custom-file))
+(eval-when 'load
+  (if (file-readable-p custom-file)
+      (load-file custom-file)))
 
 (provide 'custom)
 
