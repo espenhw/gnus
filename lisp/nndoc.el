@@ -188,7 +188,7 @@ from the document.")
 		(insert-buffer-substring
 		 nndoc-current-buffer (car entry) (nth 1 entry)))
 	      (goto-char (point-max))
-	      (unless (= (char-after (1- (point))) ?\n)
+	      (unless (eq (char-after (1- (point))) ?\n)
 		(insert "\n"))
 	      (insert (format "Lines: %d\n" (nth 4 entry)))
 	      (insert ".\n")))

@@ -1340,7 +1340,7 @@ If FIRST-TOO, the current line is also eligible as a target."
 	(beginning-of-line)
 	(forward-char (or (cdr (assq 'process gnus-group-mark-positions)) 2))
 	(subst-char-in-region
-	 (point) (1+ (point)) (following-char)
+	 (point) (1+ (point)) (char-after)
 	 (if unmark
 	     (progn
 	       (setq gnus-group-marked (delete group gnus-group-marked))

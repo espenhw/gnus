@@ -270,7 +270,7 @@ on your system, you could say something like:
 
 (defmacro nnheader-nov-read-integer ()
   '(prog1
-       (if (= (following-char) ?\t)
+       (if (eq (char-after) ?\t)
 	   0
 	 (let ((num (ignore-errors (read (current-buffer)))))
 	   (if (numberp num) num 0)))
@@ -290,7 +290,7 @@ on your system, you could say something like:
      (nnheader-nov-field)		; refs
      (nnheader-nov-read-integer)	; chars
      (nnheader-nov-read-integer)	; lines
-     (if (= (following-char) ?\n)
+     (if (eq (char-after) ?\n)
 	 nil
        (nnheader-nov-field))		; misc
      )))
@@ -715,7 +715,7 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
       (when (string-match (car ange-ftp-path-format) path)
 	(ange-ftp-re-read-dir path)))))
 
-(defvar nnheader-file-coding-system 'raw-text
+(defvar nnheader-file-coding-system 'no-conversion
   "Coding system used in file backends of Gnus.")
 
 (defun nnheader-insert-file-contents (filename &optional visit beg end replace)

@@ -102,7 +102,7 @@
     (let (c)
       (ietf-drums-init string)
       (while (not (eobp))
-	(setq c (following-char))
+	(setq c (char-after))
 	(cond
 	 ((eq c ?\")
 	  (forward-sexp 1))
@@ -118,7 +118,7 @@
     (ietf-drums-init string)
     (let (c)
       (while (not (eobp))
-	(setq c (following-char))
+	(setq c (char-after))
 	(cond
 	 ((eq c ?\")
 	  (forward-sexp 1))
@@ -136,7 +136,7 @@
     (ietf-drums-init string)
     (let (result c)
       (while (not (eobp))
-	(setq c (following-char))
+	(setq c (char-after))
 	(cond
 	 ((eq c ?\")
 	  (forward-sexp 1))
@@ -155,7 +155,7 @@
     (let (display-name mailbox c display-string)
       (ietf-drums-init string)
       (while (not (eobp))
-	(setq c (following-char))
+	(setq c (char-after))
 	(cond
 	 ((or (eq c ? )
 	      (eq c ?\t))
@@ -196,7 +196,7 @@
     (let ((beg (point))
 	  pairs c)
       (while (not (eobp))
-	(setq c (following-char))
+	(setq c (char-after))
 	(cond
 	 ((memq c '(?\" ?< ?\())
 	  (forward-sexp 1))

@@ -272,11 +272,12 @@ not.")
 
 (defun mailcap-save-binary-file ()
   (goto-char (point-min))
-  (let ((file (read-file-name
-	       "Filename to save as: "
-	       (or mailcap-download-directory "~/")))
-	(require-final-newline nil))
-    (write-region (point-min) (point-max) file)
+  (unwind-protect
+      (let ((file (read-file-name
+		   "Filename to save as: "
+		   (or mailcap-download-directory "~/")))
+	    (require-final-newline nil))
+	(write-region (point-min) (point-max) file))
     (kill-buffer (current-buffer))))
 
 (defun mailcap-maybe-eval ()
@@ -360,7 +361,7 @@ If FORCE, re-parse even if already parsed."
 	(downcase-region save-pos (point))
 	(setq minor
 	      (cond
-	       ((= ?* (or (char-after save-pos) 0)) ".*")
+	       ((eq ?* (or (char-after save-pos) 0)) ".*")
 	       ((= (point) save-pos) ".*")
 	       (t (buffer-substring save-pos (point)))))
 	(skip-chars-forward "; \t\n")
@@ -370,7 +371,7 @@ If FORCE, re-parse even if already parsed."
 	(skip-chars-forward "; \t\n")
 	(setq save-pos (point))
 	(skip-chars-forward "^;\n")
-	(if (= (or (char-after save-pos) 0) ?')
+	(if (eq (or (char-after save-pos) 0) ?')
 	    (setq viewer (progn
 			   (narrow-to-region (1+ save-pos) (point))
 			   (goto-char (point-min))
@@ -411,7 +412,7 @@ If FORCE, re-parse even if already parsed."
 	(downcase-region name-pos (point))
 	(setq name (buffer-substring name-pos (point)))
 	(skip-chars-forward " \t\n")
-	(if (/= (or (char-after (point)) 0)  ?=) ; There is no value
+	(if (not (eq (or (char-after (point)) 0) ?=)) ; There is no value
 	    (setq value nil)
 	  (skip-chars-forward " \t\n=")
 	  (setq val-pos (point))
@@ -425,7 +426,7 @@ If FORCE, re-parse even if already parsed."
 		  (error (goto-char (point-max)))))
 	    (while (not done)
 	      (skip-chars-forward "^;")
-	      (if (= (or (char-after (1- (point))) 0) ?\\ )
+	      (if (eq (or (char-after (1- (point))) 0) ?\\ )
 		  (progn
 		    (subst-char-in-region (1- (point)) (point) ?\\ ? )
 		    (skip-chars-forward ";"))

@@ -115,6 +115,8 @@ for download via the Agent.")
   (gnus-category-read)
   (setq gnus-agent-overview-buffer
 	(gnus-get-buffer-create " *Gnus agent overview*"))
+  (with-current-buffer gnus-agent-overview-buffer
+    (mm-enable-multibyte))
   (add-hook 'gnus-group-mode-hook 'gnus-agent-mode)
   (add-hook 'gnus-summary-mode-hook 'gnus-agent-mode)
   (add-hook 'gnus-server-mode-hook 'gnus-agent-mode))

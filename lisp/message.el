@@ -997,12 +997,12 @@ The cdr of ech entry is a function for applying the face to a region.")
 			       (not paren))))
 		 (push (buffer-substring beg (point)) elems)
 		 (setq beg (match-end 0)))
-		((= (following-char) ?\")
+		((eq (char-after) ?\")
 		 (setq quoted (not quoted)))
-		((and (= (following-char) ?\()
+		((and (eq (char-after) ?\()
 		      (not quoted))
 		 (setq paren t))
-		((and (= (following-char) ?\))
+		((and (eq (char-after) ?\))
 		      (not quoted))
 		 (setq paren nil))))
 	(nreverse elems)))))
@@ -2547,7 +2547,7 @@ to find out how to use this."
       (while (not (eobp))
 	(when (not (looking-at "[ \t\n]"))
  	  (setq sum (logxor (ash sum 1) (if (natnump sum) 0 1)
- 			    (following-char))))
+ 			    (char-after))))
 	(forward-char 1)))
     sum))
 
@@ -2947,7 +2947,7 @@ Headers already prepared in the buffer are not modified."
 		  (progn
 		    ;; The header was found.  We insert a space after the
 		    ;; colon, if there is none.
-		    (if (/= (following-char) ? ) (insert " ") (forward-char 1))
+		    (if (/= (char-after) ? ) (insert " ") (forward-char 1))
 		    ;; Find out whether the header is empty...
 		    (looking-at "[ \t]*$")))
 	  ;; So we find out what value we should insert.
@@ -3056,7 +3056,7 @@ Headers already prepared in the buffer are not modified."
       (goto-char (point-min))
       (while (not (eobp))
 	(skip-chars-forward "^,\"" (point-max))
-	(if (or (= (following-char) ?,)
+	(if (or (eq (char-after) ?,)
 		(eobp))
 	    (when (not quoted)
 	      (if (and (> (current-column) 78)
@@ -3121,7 +3121,7 @@ Headers already prepared in the buffer are not modified."
     (search-backward ":" )
     (widen)
     (forward-char 1)
-    (if (= (following-char) ? )
+    (if (eq (char-after) ? )
 	(forward-char 1)
       (insert " ")))
    (t
@@ -3899,7 +3899,7 @@ which specify the range to operate on."
       (goto-char (min start end))
       (while (< (point) end1)
 	(or (looking-at "[_\^@- ]")
-	    (insert (following-char) "\b"))
+	    (insert (char-after) "\b"))
 	(forward-char 1)))))
 
 ;;;###autoload
@@ -3913,7 +3913,7 @@ which specify the range to operate on."
       (move-marker end1 (max start end))
       (goto-char (min start end))
       (while (re-search-forward "\b" end1 t)
-	(if (eq (following-char) (char-after (- (point) 2)))
+	(if (eq (char-after) (char-after (- (point) 2)))
 	    (delete-char -2))))))
 
 (defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)

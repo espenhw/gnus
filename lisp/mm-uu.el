@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 1.1 $
+;; $Revision: 5.1 $
 ;; Keywords: news postscript uudecode binhex shar
   
 ;; This file is not part of GNU Emacs, but the same permissions
@@ -137,13 +137,14 @@
 		     '("application/x-shar") nil nil nil nil))) 
 	     result)
 	    (setq text-start end-char))))
-      (if (and result
-	       (> start-char text-start))
-	  (push
-	   (list (mm-uu-copy-to-buffer text-start (point-max)) 
-		 '("text/plain") nil nil nil nil) 
-	   result))
-      (nreverse result))))
+      (when result
+	(if (> start-char text-start)
+	    (push
+	     (list (mm-uu-copy-to-buffer text-start (point-max)) 
+		   '("text/plain") nil nil nil nil) 
+	     result))
+	(setq result (cons "multipart/mixed" (nreverse result))))
+      result)))
 
 (provide 'mm-uu)
 

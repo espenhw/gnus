@@ -46,18 +46,18 @@ The list will be on the form
       (let ((table (copy-syntax-table ietf-drums-syntax-table)))
 	(modify-syntax-entry ?\' "w" table)
 	(set-syntax-table table))
-      (setq c (following-char))
+      (setq c (char-after))
       (when (and (memq c ttoken)
 		 (not (memq c stoken)))
 	(setq type (downcase (buffer-substring
 			      (point) (progn (forward-sexp 1) (point)))))
 	;; Do the params
 	(while (not (eobp))
-	  (setq c (following-char))
+	  (setq c (char-after))
 	  (unless (eq c ?\;)
 	    (error "Invalid header: %s" string))
 	  (forward-char 1)
-	  (setq c (following-char))
+	  (setq c (char-after))
 	  (if (and (memq c ttoken)
 		   (not (memq c stoken)))
 	      (setq attribute
@@ -66,21 +66,21 @@ The list will be on the form
 		      (buffer-substring
 		       (point) (progn (forward-sexp 1) (point))))))
 	    (error "Invalid header: %s" string))
-	  (setq c (following-char))
+	  (setq c (char-after))
 	  (setq encoded nil)
 	  (when (eq c ?*)
 	    (forward-char 1)
-	    (setq c (following-char))
+	    (setq c (char-after))
 	    (when (memq c ntoken)
 	      (setq number
 		    (string-to-number
 		     (buffer-substring
 		      (point) (progn (forward-sexp 1) (point)))))
-	      (setq c (following-char))
+	      (setq c (char-after))
 	      (when (eq c ?*)
 		(setq encoded t)
 		(forward-char 1)
-		(setq c (following-char)))))
+		(setq c (char-after)))))
 	  ;; See if we have any previous continuations.
 	  (when (and prev-attribute
 		     (not (eq prev-attribute attribute)))
@@ -90,7 +90,7 @@ The list will be on the form
 	  (unless (eq c ?=)
 	    (error "Invalid header: %s" string))
 	  (forward-char 1)
-	  (setq c (following-char))
+	  (setq c (char-after))
 	  (cond
 	   ((eq c ?\")
 	    (setq value

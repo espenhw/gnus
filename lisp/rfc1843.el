@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 1.3 $
+;; $Revision: 5.1 $
 ;; Keywords: news HZ 
 ;; Time-stamp: <Tue Oct  6 23:48:49 EDT 1998 zsh>
   
@@ -100,10 +100,10 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
 		       (if (eq firstc ?{) 'cn-gb-2312 'cn-big5))))
 	    (goto-char (point-min))
 	    (while (search-forward "~" (point-max) t)  
-	      (cond ((eq (following-char) ?\n)
+	      (cond ((eq (char-after) ?\n)
 		     (delete-char -1)
 		     (delete-char 1))
-		  ((eq (following-char) ?~)
+		  ((eq (char-after) ?~)
 		   (delete-char 1)))))))))
 
 (defun rfc1843-decode-string (string)

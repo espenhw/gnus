@@ -705,7 +705,7 @@ Two predefined functions are available:
 	  (while (progn
 		   (forward-line -1)
 		   (forward-char col)
-		   (= (following-char) ? ))
+		   (eq (char-after) ? ))
 	    (delete-char 1)
 	    (insert (caddr gnus-tree-parent-child-edges)))
 	  (goto-char beg)))
@@ -763,7 +763,7 @@ Two predefined functions are available:
 	  (forward-char -1)
 	  ;; Draw "-" lines leftwards.
 	  (while (and (> (point) 1)
-		      (= (char-after (1- (point))) ? ))
+		      (eq (char-after (1- (point))) ? ))
 	    (delete-char -1)
 	    (insert (car gnus-tree-parent-child-edges))
 	    (forward-char -1))

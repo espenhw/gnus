@@ -294,10 +294,10 @@ Mouse button3 - menu"))
   (save-excursion
     (goto-char start)
     (when (and (re-search-backward "[()]" nil t)
-	       (= (following-char) ?\()
+	       (eq (char-after) ?\()
 	       (goto-char end)
 	       (or (not (re-search-forward "[()]" nil t))
-		   (= (char-after (1- (point))) ?\()))
+		   (eq (char-after (1- (point))) ?\()))
       t)))
 
 (defvar gnus-article-buffer)

@@ -168,7 +168,8 @@ used as the line break code type of the coding system."
 
 (defsubst mm-enable-multibyte ()
   "Enable multibyte in the current buffer."
-  (when (fboundp 'set-buffer-multibyte)
+  (when (and (fboundp 'set-buffer-multibyte)
+	     (default-value enable-multibyte-characters))
     (set-buffer-multibyte t)))
 
 (defsubst mm-disable-multibyte ()
@@ -206,15 +207,17 @@ See also `with-temp-file' and `with-output-to-string'."
 	 (with-temp-buffer ,@forms)
        (let ((,multibyte (default-value enable-multibyte-characters))
 	     ,temp-buffer)
-	 (setq-default enable-multibyte-characters nil)
-	 (setq ,temp-buffer
-	       (get-buffer-create (generate-new-buffer-name " *temp*")))
 	 (unwind-protect
-	     (with-current-buffer ,temp-buffer
-	       (let (buffer-file-coding-system)
-		 ,@forms))
-	   (and (buffer-name ,temp-buffer)
-		(kill-buffer ,temp-buffer))
+	     (progn
+	       (setq-default enable-multibyte-characters nil)
+	       (setq ,temp-buffer
+		     (get-buffer-create (generate-new-buffer-name " *temp*")))
+	       (unwind-protect
+		   (with-current-buffer ,temp-buffer
+		     (let (buffer-file-coding-system)
+		       ,@forms))
+		 (and (buffer-name ,temp-buffer)
+		      (kill-buffer ,temp-buffer))))
 	   (setq-default enable-multibyte-characters ,multibyte))))))
 (put 'mm-with-unibyte-buffer 'lisp-indent-function 0)
 (put 'mm-with-unibyte-buffer 'edebug-form-spec '(body))

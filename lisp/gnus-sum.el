@@ -2253,7 +2253,7 @@ marks of articles."
     (while (setq point (pop config))
       (when (and (< point (point-max))
 		 (goto-char point)
-		 (= (following-char) ?\n))
+		 (eq (char-after) ?\n))
 	(subst-char-in-region point (1+ point) ?\n ?\r)))))
 
 ;; Various summary mode internalish functions.
@@ -3062,7 +3062,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 
 (defmacro gnus-nov-read-integer ()
   '(prog1
-       (if (= (following-char) ?\t)
+       (if (eq (char-after) ?\t)
 	   0
 	 (let ((num (ignore-errors (read buffer))))
 	   (if (numberp num) num 0)))
@@ -3102,7 +3102,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 		 (gnus-nov-field)	; refs
 		 (gnus-nov-read-integer) ; chars
 		 (gnus-nov-read-integer) ; lines
-		 (unless (= (following-char) ?\n)
+		 (unless (eq (char-after) ?\n)
 		   (gnus-nov-field)))))	; misc
 
       (widen))
@@ -4601,7 +4601,7 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 	  (save-restriction
 	    (nnheader-narrow-to-headers)
 	    (goto-char (point-min))
-	    (when (or (and (eq (downcase (following-char)) ?x)
+	    (when (or (and (eq (downcase (char-after)) ?x)
 			   (looking-at "Xref:"))
 		      (search-forward "\nXref:" nil t))
 	      (goto-char (1+ (match-end 0)))
@@ -5125,7 +5125,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
       (when (gnus-buffer-live-p gnus-article-buffer)
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
-	  (mapcar 'mm-destroy-part gnus-article-mime-handles)))
+	  (mm-destroy-parts gnus-article-mime-handles)))
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
 	(gnus-kill-buffer gnus-article-buffer)
@@ -5174,7 +5174,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
       (when (gnus-buffer-live-p gnus-article-buffer)
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
-	  (mapcar 'mm-destroy-part gnus-article-mime-handles)))
+	  (mm-destroy-parts gnus-article-mime-handles)))
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
 	(gnus-kill-buffer gnus-article-buffer)
@@ -7815,7 +7815,7 @@ marked."
       ;; Go to the right position on the line.
       (goto-char (+ forward (point)))
       ;; Replace the old mark with the new mark.
-      (subst-char-in-region (point) (1+ (point)) (following-char) mark)
+      (subst-char-in-region (point) (1+ (point)) (char-after) mark)
       ;; Optionally update the marks by some user rule.
       (when (eq type 'unread)
         (gnus-data-set-mark

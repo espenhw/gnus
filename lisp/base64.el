@@ -162,7 +162,7 @@ base64-encoder-program.")
 		    (error "at least %d bits missing at end of base64 encoding"
 			   (* (- 4 counter) 6)))
 		(setq done t))
-	       ((= (char-after (point)) ?=)
+	       ((eq (char-after (point)) ?=)
 		(setq done t)
 		(cond ((= counter 1)
 		       (error "at least 2 bits missing at end of base64 encoding"))

@@ -1,3 +1,81 @@
+Sat Oct 24 07:41:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.37 is released.
+
+1998-10-24 07:29:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-bodies.el (mm-decode-body): Check for multibyticity.
+
+	* mm-util.el (mm-enable-multibyte): Don't always switch multibyte
+	on. 
+
+1998-10-22  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus-spec.el (gnus-balloon-face-function): new function
+	(gnus-parse-format): understand the %< %> specifiers
+	(gnus-parse-complex-format): ditto.
+
+Tue Oct 20 23:37:43 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-display-mixed): Multipart in
+	mixed part.
+
+Tue Oct 20 23:36:43 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-exit): Use mm-destroy-parts.
+	
+	* gnus-sum.el (gnus-summary-exit-no-update): Ditto.
+
+Tue Oct 20 16:22:51 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-dissect): Create pseudo multipart head.
+
+1998-10-24 06:31:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Changed following-char to char-after throughout.
+
+1998-10-22 04:05:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-display-external): Protect more and message. 
+
+Wed Oct 21 03:26:30 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-xmas.el (gnus-xmas-article-push-button): Go to the
+	position.
+
+Tue Oct 20 23:37:43 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-display-mixed): Multipart in
+	mixed part.
+
+Tue Oct 20 23:36:43 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-exit): Use mm-destroy-parts.
+	
+	* gnus-sum.el (gnus-summary-exit-no-update): Ditto.
+
+Tue Oct 20 16:22:51 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-uu.el (mm-uu-dissect): Create pseudo multipart head.
+
+1998-10-21  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* mailcap.el (mailcap-save-binary-file): Use unwind-protect.
+
+	* mm-decode.el (mm-display-external): Set undisplayer to mm
+	buffer, not the current buffer; use unwind-protect.
+
+1998-10-21 00:07:59  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-exit): Destroy parts.
+	(gnus-summary-exit-no-update): Ditto.
+
+1998-10-20 22:02:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-inline-media-tests): Look for w3.
+
+	* mailcap.el (mailcap-mime-data): Inline html.
+
 Tue Oct 20 20:25:03 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.36 is released.

@@ -246,6 +246,7 @@ call it with the value of the `gnus-data' text property."
   (let* ((pos (event-closest-point event))
 	 (data (get-text-property pos 'gnus-data))
 	 (fun (get-text-property pos 'gnus-callback)))
+    (goto-char pos)
     (when fun
       (funcall fun data))))
 

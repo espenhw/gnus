@@ -396,7 +396,7 @@ If this variable is nil, which is the default, no timers are set.")
   (cond
    ;; A result that starts with a 2xx code is terminated by
    ;; a line with only a "." on it.
-   ((eq (following-char) ?2)
+   ((eq (char-after) ?2)
     (if (re-search-forward "\n\\.\r?\n" nil t)
 	t
       nil))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.36 Manual
+@settitle Pterodactyl Gnus 0.37 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.36 Manual
+@title Pterodactyl Gnus 0.37 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.36.
+This manual corresponds to Pterodactyl Gnus 0.37.
 
 @end ifinfo
 
@@ -18213,6 +18213,9 @@ Bouncing articles should do MIME.
 @item
 Crossposted articles should "inherit" the % or @ mark from the other
 groups it has been crossposted to, or something.  (Agent.)
+
+@item
+`S D r' should allow expansion of aliases.
 
 @item
 Solve the halting problem.

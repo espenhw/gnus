@@ -241,6 +241,12 @@
     (point) (progn ,@form (point))
     '(gnus-face t face ,(symbol-value (intern (format "gnus-face-%d" type))))))
 
+(defun gnus-balloon-face-function (form type)
+  `(gnus-put-text-property 
+    (point) (progn ,@form (point))
+    'balloon-help
+    ,(intern (format "gnus-balloon-face-%d" type))))
+
 (defun gnus-tilde-max-form (el max-width)
   "Return a form that limits EL to MAX-WIDTH."
   (let ((max (abs max-width)))
@@ -287,8 +293,10 @@
   ;; SPEC-ALIST and returns a list that can be eval'ed to return the
   ;; string.  If the FORMAT string contains the specifiers %( and %)
   ;; the text between them will have the mouse-face text property.
+  ;; If the FORMAT string contains the specifiers %< and %>, the text between
+  ;; them will have the balloon-help text property.
   (if (string-match
-       "\\`\\(.*\\)%[0-9]?[{(]\\(.*\\)%[0-9]?[})]\\(.*\n?\\)\\'"
+       "\\`\\(.*\\)%[0-9]?[{(<]\\(.*\\)%[0-9]?[})>]\\(.*\n?\\)\\'"
        format)
       (gnus-parse-complex-format format spec-alist)
     ;; This is a simple format.
@@ -303,13 +311,17 @@
       (replace-match "\\\"" nil t))
     (goto-char (point-min))
     (insert "(\"")
-    (while (re-search-forward "%\\([0-9]+\\)?\\([{}()]\\)" nil t)
+    (while (re-search-forward "%\\([0-9]+\\)?\\([{}()<>]\\)" nil t)
       (let ((number (if (match-beginning 1)
 			(match-string 1) "0"))
 	    (delim (aref (match-string 2) 0)))
 	(if (or (= delim ?\()
-		(= delim ?\{))
-	    (replace-match (concat "\"(" (if (= delim ?\() "mouse" "face")
+		(= delim ?\{)
+		(= delim ?\<))
+	    (replace-match (concat "\"(" 
+				   (cond ((= delim ?\() "mouse")
+					 ((= delim ?\{) "face")
+					 (t "balloon"))
 				   " " number " \""))
 	  (replace-match "\")\""))))
     (goto-char (point-max))
@@ -390,9 +402,9 @@
 	     (t
 	      nil)))
 	;; User-defined spec -- find the spec name.
-	(when (= (setq spec (following-char)) ?u)
+	(when (eq (setq spec (char-after)) ?u)
 	  (forward-char 1)
-	  (setq user-defined (following-char)))
+	  (setq user-defined (char-after)))
 	(forward-char 1)
 	(delete-region spec-beg (point))
 

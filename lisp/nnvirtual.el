@@ -385,7 +385,7 @@ to virtual article number.")
     (insert "\t"))
 
   ;; Remove any spaces at the beginning of the Xref field.
-  (while (= (char-after (1- (point))) ? )
+  (while (eq (char-after (1- (point))) ? )
     (forward-char -1)
     (delete-char 1))
 
@@ -417,7 +417,7 @@ to virtual article number.")
 
   ;; Ensure a trailing \t.
   (end-of-line)
-  (or (= (char-after (1- (point))) ?\t)
+  (or (eq (char-after (1- (point))) ?\t)
       (insert ?\t)))
 
 

@@ -870,7 +870,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
     (when (search-forward "\n\n" nil t)
       (let ((buffer-read-only nil))
 	(while (search-forward "\b" nil t)
-	  (let ((next (following-char))
+	  (let ((next (char-after))
 		(previous (char-after (- (point) 2))))
 	    ;; We do the boldification/underlining by hiding the
 	    ;; overstrikes and putting the proper text property
@@ -2377,7 +2377,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-mime-display-mixed (handles)
   (let (handle)
     (while (setq handle (pop handles))
-      (gnus-mime-display-single handle))))
+      (if (stringp (car handle))
+	  (if (equal (car handle) "multipart/alternative")
+	      (gnus-mime-display-alternative (cdr handle))
+	    (gnus-mime-display-mixed (cdr handle)))
+	(gnus-mime-display-single handle)))))
 
 (defun gnus-mime-display-single (handle)
   (let (display)

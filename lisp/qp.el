@@ -32,11 +32,11 @@
   (save-excursion
     (goto-char from)
     (while (search-forward "=" to t)
-      (cond ((eq (following-char) ?\n)
+      (cond ((eq (char-after) ?\n)
 	     (delete-char -1)
 	     (delete-char 1))
 	    ((and
-	      (memq (following-char) quoted-printable-encoding-characters)
+	      (memq (char-after) quoted-printable-encoding-characters)
 	      (memq (char-after (1+ (point)))
 		    quoted-printable-encoding-characters))
 	     (subst-char-in-region
