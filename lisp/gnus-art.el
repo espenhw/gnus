@@ -3790,7 +3790,7 @@ General format specifiers can also be used.  See
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
 	 (contents (and handle (mm-get-part handle)))
-	 (file (make-temp-name (expand-file-name "mm." mm-tmp-directory)))
+	 (file (mm-make-temp-file (expand-file-name "mm." mm-tmp-directory)))
 	 (printer (mailcap-mime-info (mm-handle-type handle) "print")))
     (when contents
 	(if printer

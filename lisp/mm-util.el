@@ -780,6 +780,20 @@ If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers."
      (t
       'iso-8859-1))))
 
+;; It is not a MIME function, but some MIME functions use it.
+(defalias 'mm-make-temp-file
+  (if (fboundp 'make-temp-file)
+      'make-temp-file
+    (lambda (prefix &optional dir-flag)
+      (let ((file (expand-file-name
+		   (make-temp-name prefix)
+		   (if (fboundp 'temp-directory)
+		       (temp-directory)
+		     temporary-file-directory))))
+	(if dir-flag
+	    (make-directory file))
+	file))))
+
 (provide 'mm-util)
 
 ;;; mm-util.el ends here

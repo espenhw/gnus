@@ -45,7 +45,8 @@
       (if (not (and (not (file-exists-p tmp))
 		    (get-buffer tmp)))
 	  (push tmp certfiles)
-	(setq file (make-temp-name mm-tmp-directory))
+	(setq file (mm-make-temp-file (expand-file-name "mml." 
+							mm-tmp-directory)))
 	(with-current-buffer tmp
 	  (write-region (point-min) (point-max) file))
 	(push file certfiles)

@@ -311,7 +311,7 @@ will not be substituted.")
     (delete-region (match-beginning 0) (match-end 0))))
 
 (defun mm-inline-wash-with-file (post-func cmd &rest args)
-  (let ((file (make-temp-name
+  (let ((file (mm-make-temp-file
 	       (expand-file-name "mm" mm-tmp-directory))))
     (let ((coding-system-for-write 'binary))
       (write-region (point-min) (point-max) file nil 'silent))

@@ -75,7 +75,8 @@ Output to the current buffer, replace text, and don't mingle error."
 	     (shell-quote-argument file)))))
 
 (defun gnus-convert-image-to-gray-x-face (file depth)
-  (let* ((mapfile (make-temp-name (expand-file-name "gnus." mm-tmp-directory)))
+  (let* ((mapfile (mm-make-temp-file (expand-file-name "gnus." 
+						       mm-tmp-directory)))
 	 (levels (expt 2 depth))
 	 (step (/ 255 (1- levels)))
 	 color-alist bits bits-list mask pixel x-faces)
