@@ -1,3 +1,8 @@
+2001-09-19  Sam Steingold  <sds@gnu.org>
+
+	* gnus-win.el (gnus-buffer-configuration): Respect
+	`gnus-bug-create-help-buffer'.
+
 2001-09-18  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-spec.el (gnus-correct-pad-form): Re-revert.
