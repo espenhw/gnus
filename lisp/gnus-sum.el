@@ -9493,23 +9493,32 @@ If REVERSE, save parts that do not match TYPE."
       (if compute
 	  read
 	(save-excursion
-	  (set-buffer gnus-group-buffer)
-	  (gnus-undo-register
-	    `(progn
-	       (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
-	       (gnus-info-set-read ',info ',(gnus-info-read info))
-	       (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
-	       (gnus-group-update-group ,group t))))
-	;; Propagate the read marks to the backend.
-	(if (gnus-check-backend-function 'request-set-mark group)
-	    (let ((del (gnus-remove-from-range (gnus-info-read info) read))
-		  (add (gnus-remove-from-range read (gnus-info-read info))))
-	      (when (or add del)
-		(unless (gnus-check-group group)
-		  (error "Can't open server for %s" group))
-		(gnus-request-set-mark
-		 group (delq nil (list (if add (list add 'add '(read)))
-				       (if del (list del 'del '(read)))))))))
+	  (let (setmarkundo)
+	    ;; Propagate the read marks to the backend.
+	    (when (gnus-check-backend-function 'request-set-mark group)
+	      (let ((del (gnus-remove-from-range (gnus-info-read info) read))
+		    (add (gnus-remove-from-range read (gnus-info-read info))))
+		(when (or add del)
+		  (unless (gnus-check-group group)
+		    (error "Can't open server for %s" group))
+		  (gnus-request-set-mark
+		   group (delq nil (list (if add (list add 'add '(read)))
+					 (if del (list del 'del '(read))))))
+		  (setq setmarkundo
+			`(gnus-request-set-mark
+			  ,group
+			  ',(delq nil (list
+				       (if del (list del 'add '(read)))
+				       (if add (list add 'del '(read))))))))))
+	    (set-buffer gnus-group-buffer)
+	    (gnus-undo-register
+	      `(progn
+		 (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
+		 (gnus-info-set-read ',info ',(gnus-info-read info))
+		 (gnus-get-unread-articles-in-group ',info 
+						    (gnus-active ,group))
+		 (gnus-group-update-group ,group t)
+		 ,setmarkundo))))
 	;; Enter this list into the group info.
 	(gnus-info-set-read info read)
 	;; Set the number of unread articles in gnus-newsrc-hashtb.

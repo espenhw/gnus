@@ -1,3 +1,8 @@
+2000-09-12  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus-sum.el (gnus-update-read-articles): Undo
+	`gnus-request-set-mark' operation.
+
 2000-09-11  Dave Love  <fx@gnu.org>
 
 	* Changelog: Use iso-2022 coding.
