@@ -14009,7 +14009,7 @@ surrounded by anything.
 (any "joe" "joemail")
 @end example
 
-In this example, messages sent from @samp{joedavis@foo.org} will
+In this example, messages sent from @samp{joedavis@@foo.org} will
 normally not be filed in @samp{joemail}.  With
 @code{nnmail-split-fancy-match-partial-words} set to t, however, the
 match will happen.  In effect, the requirement of a word boundary is
