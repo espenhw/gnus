@@ -33,21 +33,21 @@
 (require 'gnus-sum)
 (require 'nnmail)
 
+(defgroup gnus-registry nil
+  "The Gnus registry."
+  :group 'gnus)
+
 (defvar gnus-registry-hashtb nil
   "*The article registry by Message ID.")
 
 (defvar gnus-registry-headers-hashtb nil
   "*The article header registry by Message ID.")
-;; (setq gnus-registry-hashtb (make-hash-table 
-;; 			    :size 4096
-;; 			    :test 'equal)) ; we test message ID strings equality
 
-;; sample data-header
-;; (defvar tzz-header '(49 "Re[2]: good news" "\"Jonathan Pryor\" <offerlm@aol.com>" "Mon, 17 Feb 2003 10:41:46 +-0800" "<88288020@dytqq>" "" 896 18 "lockgroove.bwh.harvard.edu spam.asian:49" nil))
-
-;; (maphash (lambda (key value) (message "key: %s value: %s" key value)) gnus-registry-hashtb)
-;; (clrhash gnus-registry-hashtb)
-;; (setq gnus-registry-alist nil)
+(defcustom gnus-registry-unfollowed-groups '("delayed" "drafts" "queue")
+  "List of groups that gnus-registry-split-fancy-with-parent won't follow.
+The group names are matched, they don't have to be fully qualified."
+  :group 'gnus-registry
+  :type '(repeat string))
 
 ;; Function(s) missing in Emacs 20
 (when (memq nil (mapcar 'fboundp '(puthash)))
@@ -58,11 +58,13 @@
 
 (defun gnus-registry-translate-to-alist ()
   (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb))
-  (setq gnus-registry-headers-alist (hashtable-to-alist gnus-registry-headers-hashtb)))
+  (setq gnus-registry-headers-alist (hashtable-to-alist 
+				     gnus-registry-headers-hashtb)))
 
 (defun gnus-registry-translate-from-alist ()
   (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist))
-  (setq gnus-registry-headers-hashtb (alist-to-hashtable gnus-registry-headers-alist)))
+  (setq gnus-registry-headers-hashtb (alist-to-hashtable 
+				      gnus-registry-headers-alist)))
 
 (defun alist-to-hashtable (alist)
   "Build a hashtable from the values in ALIST."
@@ -85,30 +87,95 @@
     list))
 
 (defun gnus-register-action (action data-header from &optional to method)
-  (let* ((id (mail-header-id data-header)))
+  (let* ((id (mail-header-id data-header))
+	(from (gnus-group-guess-full-name from))
+	(to (if to (gnus-group-guess-full-name to) nil))
+	(to-name (if to to "the Bit Bucket")))
     (gnus-message 5 "Registry: article %s %s from %s to %s"
-	     id
-	     (if method "respooling" "going")
-	     (gnus-group-guess-full-name from)
-	     (if to (gnus-group-guess-full-name to) "the Bit Bucket"))
+		  id
+		  (if method "respooling" "going")
+		  from
+		  to)   
     (unless (gethash id gnus-registry-headers-hashtb)
       (puthash id (list data-header) gnus-registry-headers-hashtb))
-    (puthash id (cons (list action from to method)
-		      (gethash id gnus-registry-hashtb)) gnus-registry-hashtb)))
+    (puthash id (cons (list action from to)
+		      (gethash id gnus-registry-hashtb)) 
+	     gnus-registry-hashtb)))
 
 (defun gnus-register-spool-action (id group)
-  (when (string-match "$" id)
-    (setq id (substring id 0 -1)))
-  (gnus-message 5 "Registry: article %s spooled to %s"
-	   id
-	   (gnus-group-prefixed-name 
-	    group 
-	    gnus-internal-registry-spool-current-method 
-	    t))
-  (puthash id (cons (list 'spool nil group nil) 
-		    (gethash id gnus-registry-hashtb)) gnus-registry-hashtb))
+  ;; do not process the draft IDs
+;  (unless (string-match "totally-fudged-out-message-id" id)
+    (let ((group (gnus-group-guess-full-name group)))
+    (when (string-match "$" id)
+      (setq id (substring id 0 -1)))
+    (gnus-message 5 "Registry: article %s spooled to %s"
+		  id
+		  group)
+    (puthash id (cons (list 'spool nil group) 
+		      (gethash id gnus-registry-hashtb)) 
+	     gnus-registry-hashtb)))
+;)
 
-(add-hook 'gnus-summary-article-move-hook 'gnus-register-action) ; also does copy, respool, and crosspost
+;; Function for nn{mail|imap}-split-fancy: look up all references in
+;; the cache and if a match is found, return that group.
+(defun gnus-registry-split-fancy-with-parent ()
+  "Split this message into the same group as its parent.  The parent
+is obtained from the registry.  This function can be used as an entry
+in `nnmail-split-fancy' or `nnimap-split-fancy', for example like
+this: (: gnus-registry-split-fancy-with-parent) 
+
+For a message to be split, it looks for the parent message in the
+References or In-Reply-To header and then looks in the registry to
+see which group that message was put in.  This group is returned.
+
+See the Info node `(gnus)Fancy Mail Splitting' for more details."
+  (let ((refstr (or (message-fetch-field "references")
+		    (message-fetch-field "in-reply-to")))
+	(references nil)
+	(res nil))
+    (when refstr
+      (setq references (nreverse (gnus-split-references refstr)))
+      (mapcar (lambda (x)
+		(setq res (or (gnus-registry-fetch-group x) res))
+		(when (or (gnus-registry-grep-in-list 
+			   res
+			   gnus-registry-unfollowed-groups)
+			  (gnus-registry-grep-in-list 
+			   res 
+			   nnmail-split-fancy-with-parent-ignore-groups))
+		  (setq res nil)))
+	      references)
+      res)))
+
+(defun gnus-registry-grep-in-list (word list)
+  (memq nil
+	(mapcar 'not
+	 (mapcar 
+	  (lambda (x)
+	    (string-match x word))
+	  list))))
+
+
+(defun gnus-registry-fetch-group (id)
+  "Get the group of a message, based on the message ID.
+Returns the first place where the trail finds a spool action."
+  (let ((trail (gethash id gnus-registry-hashtb)))
+    (dolist (crumb trail)
+      (let ((action (nth 0 crumb))
+	    (from (nth 1 crumb))
+	    (to (nth 2 crumb)))
+	(when (eq action 'spool)
+	  (return to))))))
+
+(defun gnus-registry-clear ()
+  "Clear the Gnus registry."
+  (interactive)
+  (setq gnus-registry-alist nil 
+	gnus-registry-headers-alist nil)
+  (gnus-registry-translate-from-alist))
+
+; also does copy, respool, and crosspost
+(add-hook 'gnus-summary-article-move-hook 'gnus-register-action) 
 (add-hook 'gnus-summary-article-delete-hook 'gnus-register-action)
 (add-hook 'gnus-summary-article-expire-hook 'gnus-register-action)
 (add-hook 'nnmail-spool-hook 'gnus-register-spool-action)

@@ -3211,13 +3211,26 @@ native."
 
 (defun gnus-group-guess-full-name (group)
   "Guess the full name from GROUP, even if the method is native."
-  (gnus-group-full-name group (gnus-find-method-for-group group)))
+  (if (gnus-group-prefixed-p group)
+      group
+    (gnus-group-full-name group (gnus-find-method-for-group group))))
 
 (defun gnus-group-real-prefix (group)
   "Return the prefix of the current group name."
   (if (string-match "^[^:]+:" group)
       (substring group 0 (match-end 0))
     ""))
+
+(defun gnus-group-short-name (group)
+  "Return the short group name."
+  (let ((prefix (gnus-group-real-prefix group)))
+    (if (< 0 (length prefix))
+	(substring group (length prefix) nil)
+      group)))
+
+(defun gnus-group-prefixed-p (group)
+  "Return the prefix of the current group name."
+  (< 0 (length (gnus-group-real-prefix group))))
 
 (defun gnus-summary-buffer-name (group)
   "Return the summary buffer name of GROUP."

@@ -1,3 +1,17 @@
+2003-04-17  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.el (gnus-group-short-name, gnus-group-prefixed-p): new functions
+	(gnus-group-guess-full-name): don't prefix the group twice
+
+	* nnmail.el (nnmail-split-fancy-with-parent): docstring fix
+
+	* gnus-registry.el (gnus-registry-clear) 
+	(gnus-registry-fetch-group, gnus-registry-grep-in-list) 
+	(gnus-registry-split-fancy-with-parent): new functions
+	(gnus-register-spool-action, gnus-register-action): simplified the format
+	(gnus-registry): new customization group
+	(gnus-registry-unfollowed-groups): new variable
+
 2003-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-button-alist): Add nntp: urls.

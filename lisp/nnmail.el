@@ -1545,7 +1545,7 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 (defun nnmail-split-fancy-with-parent ()
   "Split this message into the same group as its parent.
 This function can be used as an entry in `nnmail-split-fancy', for
-example like this: (: nnmail-split-fancy)
+example like this: (: nnmail-split-fancy-with-parent)
 For a message to be split, it looks for the parent message in the
 References or In-Reply-To header and then looks in the message id
 cache file (given by the variable `nnmail-message-id-cache-file') to
