@@ -16525,6 +16525,20 @@ Hook run when disconnecting from the network.
 @vindex gnus-agent-fetched-hook
 Hook run when after finishing fetching articles.
 
+@item gnus-agent-cache
+@vindex gnus-agent-cache
+Variable to control whether use the locally stored NOV and articles when
+plugged.
+
+@item gnus-agent-go-online
+@vindex gnus-agent-go-online
+If @code{gnus-agent-go-online} is @code{nil}, the Agent will never
+automatically switch offline servers into online status.  If it is
+@code{ask}, the default, the Agent will ask if you wish to switch
+offline servers into online status when you re-connect.  If it has any
+other value, all offline servers will be automatically switched into
+online status.
+
 @end table
 
 
@@ -16594,20 +16608,19 @@ newsreaders.  Here are some common questions that some imaginary people
 may ask:
 
 @table @dfn
-@item If I read an article while plugged, do they get entered into the
-Agent?
+@item If I read an article while plugged, do they get entered into the Agent?
 
-@strong{No.}
+@strong{No}.
 
-@item If I read an article while plugged, and the article already exists
-in the Agent, will it get downloaded once more?
+@item If I read an article while plugged, and the article already exists in the Agent, will it get downloaded once more?
 
-@strong{Yes.}
+@strong{No}, unless @code{gnus-agent-cache} is `nil'.
 
 @end table
 
 In short, when Gnus is unplugged, it only looks into the locally stored
-articles; when it's plugged, it only talks to your ISP.
+articles; when it's plugged, it only talks to your ISP and also uses the
+locally stored articles.
 
 
 @node Scoring
