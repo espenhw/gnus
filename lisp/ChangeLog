@@ -1,5 +1,12 @@
 2001-02-04 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-start.el (gnus-subscribe-options-newsgroup-method): Add
+	gnus-subscribe-topics.
+
+	* gnus-cus.el (gnus-extra-topic-parameters): Fix doc.
+
+2001-02-04 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
 	* gnus-art.el (gnus-article-make-menu-bar): Make
 	gnus-article-post-menu.
 

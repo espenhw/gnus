@@ -279,6 +279,7 @@ the subscription method in this variable."
 		(function-item gnus-subscribe-interactively)
 		(function-item gnus-subscribe-killed)
 		(function-item gnus-subscribe-zombies)
+		(function-item gnus-subscribe-topics)
 		function))
 
 (defcustom gnus-subscribe-hierarchical-interactive nil

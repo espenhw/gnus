@@ -274,7 +274,8 @@ DOC is a documentation string for the parameter.")
 
 (defconst gnus-extra-topic-parameters
   '((subscribe (regexp :tag "Subscribe") "\
-If `gnus-subscribe-newsgroup-method' is set to
+If `gnus-subscribe-newsgroup-method' or 
+`gnus-subscribe-options-newsgroup-method' is set to
 `gnus-subscribe-topics', new groups that matches this regexp will
 automatically be subscribed to this topic")) 
   "Alist of topic parameters that are not also group parameters.
