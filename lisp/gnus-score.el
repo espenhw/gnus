@@ -1723,7 +1723,8 @@ score in `gnus-newsgroup-scored' by SCORE."
 			(setq found t)
 			(when trace
 			  (push
-			   (cons (car-safe (rassq alist gnus-score-cache)) kill)
+			   (cons (car-safe (rassq alist gnus-score-cache))
+				 kill)
 			   gnus-score-trace)))
 		      ;; Update expire date
 		      (unless trace
