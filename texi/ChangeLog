@@ -1,3 +1,7 @@
+2003-01-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (NNTP): Addition.
+
 2003-01-23  Teodor Zlatanov  <tzz@bwh.harvard.edu>
 
 	* gnus.texi (Regular Expressions Header Matching): documentation

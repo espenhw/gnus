@@ -12294,6 +12294,13 @@ inhibit Gnus to add a @code{Message-ID} header, you could say:
 
 Note that not all servers support the recommended ID.  This works for
 INN versions 2.3.0 and later, for instance.
+
+@item nntp-read-timeout
+@vindex nntp-read-timeout
+How long nntp should wait between checking for the end of output.
+Shorter values mean quicker response, but is more CPU intensive.  The
+default is 0.1 seconds.
+
 @end table
 
 @menu
