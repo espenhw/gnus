@@ -1,3 +1,8 @@
+2002-08-22  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-art.el (gnus-emphasis-alist): Strikethru had a lot of false
+	positives, make it stricter.  From Jochen Hein (trivial change).
+
 2002-08-21  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* gnus.el (gnus-other-frame): Trivial fix.
