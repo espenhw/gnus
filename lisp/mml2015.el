@@ -309,9 +309,10 @@ by you.")
     (insert (format "--%s--\n" boundary))
     (goto-char (point-max))))
 
-(defun mml2015-mailcrypt-encrypt (cont)
+(defun mml2015-mailcrypt-encrypt (cont &optional sign)
   (let ((mc-pgp-always-sign
 	 (or mc-pgp-always-sign
+	     sign
 	     (eq t (or (message-options-get 'message-sign-encrypt)
 		       (message-options-set
 			'message-sign-encrypt
