@@ -4,6 +4,8 @@
 	Youngs <steve@youngs.au.com> and suggested by Katsumi Yamaoka
 	<yamaoka@jpl.org>.
 
+	* sieve.el (sieve-manage-mode): Ditto.
+
 2004-09-13  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-summary-copy-article): Fixed doc string.

@@ -1,5 +1,5 @@
 ;;; sieve.el --- Utilities to manage sieve scripts
-;; Copyright (C) 2001, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 
@@ -143,7 +143,7 @@ require \"fileinto\";
   (setq mode-name "SIEVE")
   (buffer-disable-undo (current-buffer))
   (setq truncate-lines t)
-  (easy-menu-add-item nil nil sieve-manage-mode-menu))
+  (easy-menu-add sieve-manage-mode-menu sieve-manage-mode-map))
 
 (put 'sieve-manage-mode 'mode-class 'special)
 
