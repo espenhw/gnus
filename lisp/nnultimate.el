@@ -358,7 +358,7 @@
 	    (setcar (nthcdr 5 entry) mapping)
 	    (setcar (nthcdr 6 entry) old-total)))))
     (setcar (nthcdr 7 entry) current-time)
-    (setcar (nthcdr 1 entry) old-total)
+    (setcar (nthcdr 1 entry) (1- old-total))
     (nnultimate-write-groups)
     mapping))
 

@@ -6,6 +6,7 @@
 	(nnultimate-request-group): Only fetch the groups list if it has
 	not been done before.
 	(nnultimate-retrieve-headers): Don't write groups.
+	(nnultimate-create-mapping): Off-by-one error.
 
 1999-11-19 12:17:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
