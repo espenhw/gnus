@@ -1,3 +1,7 @@
+2001-01-10  Paul Stevenson <p.stevenson@surrey.ac.uk>
+
+	* nnvirtual.el (nnvirtual-request-expire-articles): delq nil.
+
 2001-01-09  Didier Verna  <didier@xemacs.org>
 
 	* dgnushack.el (dgnushack-compile): give a dummy value to
@@ -28,7 +32,7 @@
 2001-01-08 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-get-new-mail): Find group only if file is not
-	orig-file. Use ,source.
+	orig-file. Use ',source.
 
 2001-01-08 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

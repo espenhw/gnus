@@ -376,7 +376,7 @@ component group will show up when you enter the virtual group.")
 				   group article))
 			      (gnus-uncompress-range
 			       (gnus-group-expire-articles-1 group))))))
-    (sort unexpired '<)))
+    (sort (delq nil unexpired) '<)))
 
 
 ;;; Internal functions.
