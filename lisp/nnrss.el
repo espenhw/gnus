@@ -572,13 +572,8 @@ It is useful when `(setq nnrss-use-local t)'."
     (if changed
 	(nnrss-save-server-data ""))))
 
-(defun nnrss-replace-in-string (string match newtext)
-  (while (string-match match string)
-    (setq string (replace-match newtext t t string)))
-  string)
-
 (defun nnrss-format-string (string)
-  (nnrss-replace-in-string (nnrss-string-as-multibyte string) " *\n *" " "))
+  (gnus-replace-in-string (nnrss-string-as-multibyte string) " *\n *" " "))
 
 (defun nnrss-node-text (node)
   (if (and node (listp node))

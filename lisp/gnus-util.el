@@ -45,6 +45,22 @@
   (autoload 'rmail-count-new-messages "rmail")
   (autoload 'rmail-show-message "rmail"))
 
+(eval-and-compile
+  (cond
+   ((fboundp 'replace-in-string)
+    (defalias 'gnus-replace-in-string 'replace-in-string))
+   ((fboundp 'replace-regexp-in-string)
+    (defun gnus-replace-in-string  (string regexp newtext &optional literal)
+      (replace-regexp-in-string regexp newtext string nil literal)))
+   (t
+    (defun gnus-replace-in-string (string regexp newtext &optional literal)
+      (let ((start 0) tail)
+	(while (string-match regexp string start)
+	  (setq tail (- (length string) (match-end 0)))
+	  (setq string (replace-match newtext t t string))
+	  (setq start (- (length string) tail))))
+      string))))
+
 (defun gnus-boundp (variable)
   "Return non-nil if VARIABLE is bound and non-nil."
   (and (boundp variable)
@@ -395,13 +411,7 @@ Cache the result as a text property stored in DATE."
 
 (defun gnus-mode-string-quote (string)
   "Quote all \"%\"'s in STRING."
-  (save-excursion
-    (gnus-set-work-buffer)
-    (insert string)
-    (goto-char (point-min))
-    (while (search-forward "%" nil t)
-      (insert "%"))
-    (buffer-string)))
+  (gnus-replace-in-string string "%" "%%"))
 
 ;; Make a hash table (default and minimum size is 256).
 ;; Optional argument HASHSIZE specifies the table size.

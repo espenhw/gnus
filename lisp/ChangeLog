@@ -1,3 +1,13 @@
+2001-12-06 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (nnweb-replace-in-string): Removed.
+
+	* gnus-util.el (gnus-replace-in-string): New.
+	(gnus-mode-string-quote): Use it.
+
+	* nnrss.el (nnrss-format-string): Use gnus-replace-in-string.
+	* nnwfm.el (nnwfm-create-mapping): Ditto.
+
 2001-12-06 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* dgnushack.el (dgnushack-compile): nnrss.el and

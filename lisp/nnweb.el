@@ -987,11 +987,6 @@ If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
 		 (listp (cdr element)))
 	(nnweb-text-1 element)))))
 
-(defun nnweb-replace-in-string (string match newtext)
-  (while (string-match match string)
-    (setq string (replace-match newtext t t string)))
-  string)
-
 (provide 'nnweb)
 
 ;;; nnweb.el ends here
