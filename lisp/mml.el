@@ -219,7 +219,7 @@ one charsets.")
     (setq name (buffer-substring-no-properties
 		(point) (progn (forward-sexp 1) (point))))
     (skip-chars-forward " \t\n")
-    (while (not (looking-at ">"))
+    (while (not (looking-at ">[ \t]*\n?"))
       (setq elem (buffer-substring-no-properties
 		  (point) (progn (forward-sexp 1) (point))))
       (skip-chars-forward "= \t\n")
@@ -229,7 +229,7 @@ one charsets.")
 	(setq val (match-string 1 val)))
       (push (cons (intern elem) val) contents)
       (skip-chars-forward " \t\n"))
-    (forward-char 1)
+    (goto-char (match-end 0))
     ;; Don't skip the leading space.
     ;;(skip-chars-forward " \t\n")
     (cons (intern name) (nreverse contents))))
