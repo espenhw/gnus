@@ -403,12 +403,13 @@ This is copy of the `lazy' widget in Emacs 21.4 provided for compatibility."
                             (const :format "" &)
                             (editable-list :inline t nnmail-split-fancy))
                       (list :tag "Function with fixed arguments (:)"
-                            :value (:)
+                            :value (: nil)
                             (const :format "" :value :)
                             function 
                             (editable-list :inline t (sexp :tag "Arg"))
                             )
-                      (list :tag "Function with split arguments (!)" :value (!)
+                      (list :tag "Function with split arguments (!)"
+                            :value (! nil)
                             (const :format "" !)
                             function
                             (editable-list :inline t nnmail-split-fancy))

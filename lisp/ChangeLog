@@ -1,3 +1,8 @@
+2003-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnmail.el (nnmail-split-fancy): Make it customizable with Emacs
+	20 as well.
+
 2003-12-15  Simon Josefsson  <jas@extundo.com>
 
 	* sha1-el.el (autoload): Ignore errors for
