@@ -159,7 +159,7 @@ days (not necessarily an integer) or the symbols `never' or
 			   string) "\
 Where expired messages end up.
 
-Overrides `nnmail-expiry-target', which see.")
+Overrides `nnmail-expiry-target'.")
 
     (score-file (file :tag "Score File") "\
 Make the specified file into the current score file.

@@ -1,5 +1,11 @@
 2003-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnimap.el (nnimap-split-fancy): Ditto.
+
+	* gnus-sum.el (gnus-summary-line-message-size): Ditto.
+
+	* gnus-cus.el (gnus-group-parameters): Removed "which see".
+
 	* mml.el (mml-minibuffer-read-file): Bind
 	completion-ignored-extensions to nil.
 

@@ -3389,7 +3389,7 @@ the thread are to be displayed."
 (defsubst gnus-summary-line-message-size (head)
   "Return pretty-printed version of message size.
 This function is intended to be used in
-`gnus-summary-line-format-alist', which see."
+`gnus-summary-line-format-alist'."
   (let ((c (or (mail-header-chars head) -1)))
     (cond ((< c 0) "n/a")		; chars not available
 	  ((< c (* 1000 10)) (format "%1.1fk" (/ c 1024.0)))

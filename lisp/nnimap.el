@@ -192,7 +192,7 @@ RFC2060 section 6.4.4."
   :type 'string)
 
 (defcustom nnimap-split-fancy nil
-  "Like the variable `nnmail-split-fancy', which see."
+  "Like the variable `nnmail-split-fancy'."
   :group 'nnimap
   :type 'sexp)
 
