@@ -1,5 +1,9 @@
 2004-03-04  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus.texi: Move @documentencoding back, and change to latin-1.
+
+	* emacs-mime.texi: do.
+
 	* infohack.el (infohack): Support @documentencoding in Emacs 21.3.
 
 2004-03-03  Jesper Harder  <harder@ifa.au.dk>

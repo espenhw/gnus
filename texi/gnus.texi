@@ -9,10 +9,8 @@
 @direntry
 * Gnus: (gnus).         The newsreader Gnus.
 @end direntry
-@iftex
-@iflatex
 @documentencoding ISO-8859-1
-@end iflatex
+@iftex
 @finalout
 @end iftex
 @setchapternewpage odd
@@ -28270,5 +28268,5 @@ former).  The manual is unambiguous, but it can be confusing.
 
 @c Local Variables:
 @c mode: texinfo
-@c coding: utf-8
+@c coding: iso-8859-1
 @c End:
