@@ -1,5 +1,17 @@
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-fun.el (gnus-display-x-face-in-from): Fake it.
+	From: Karl Kleinpaste <karl@charcoal.com>
+	
+	* gnus-art.el (article-display-x-face): Ditto.
+	(gnus-article-reply-with-original): Use gnus-region-active-p.
+	(gnus-article-followup-with-original): Ditto.
+
+	* gnus-sum.el (gnus-summary-read-group-1): Don't select
+	downloadable article either.
+	
+2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
 	* gnus-art.el (article-display-x-face): Insert From:.
 
 	* gnus-sum.el (gnus-summary-move-article): Don't draw the

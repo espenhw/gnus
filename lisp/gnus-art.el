@@ -1813,8 +1813,8 @@ unfolded."
 		  (setq image (gnus-create-image xpm 'xpm t))
 		  (gnus-article-goto-header "from")
 		  (when (bobp) 
-		    (insert "From: \n")
-		    (forward-char -2))
+		    (insert "From: [no `from' set]\n")
+		    (forward-char -17))
 		  (gnus-add-wash-type 'xface)
 		  (gnus-add-image 'xface image)
 		  (gnus-put-image image)))
@@ -4679,30 +4679,32 @@ Argument LINES specifies lines to be scrolled down."
 The text in the region will be yanked.  If the region isn't active,
 the entire article will be yanked."
   (interactive "P")
-  (let ((article (cdr gnus-article-current)))
-    (if (not mark-active)
+  (let ((article (cdr gnus-article-current)) cont)
+    (if (not (gnus-region-active-p))
 	(gnus-summary-reply (list (list article)) wide)
+      (setq cont (buffer-substring (point) (mark)))
       ;; Deactivate active regions.
       (when (and (boundp 'transient-mark-mode)
 		 transient-mark-mode)
 	(setq mark-active nil))
       (gnus-summary-reply
-       (list (list article (buffer-substring (point) (mark)))) wide))))
+       (list (list article cont)) wide))))
 
 (defun gnus-article-followup-with-original ()
   "Compose a followup to the current article.
 The text in the region will be yanked.  If the region isn't active,
 the entire article will be yanked."
   (interactive)
-  (let ((article (cdr gnus-article-current)))
-    (if (not mark-active)
+  (let ((article (cdr gnus-article-current)) cont)
+    (if (not (gnus-region-active-p))
 	(gnus-summary-followup (list (list article)))
+      (setq cont (buffer-substring (point) (mark)))
       ;; Deactivate active regions.
       (when (and (boundp 'transient-mark-mode)
 		 transient-mark-mode)
 	(setq mark-active nil))
       (gnus-summary-followup
-       (list (list article (buffer-substring (point) (mark))))))))
+       (list (list article cont))))))
 
 (defun gnus-article-hide (&optional arg force)
   "Hide all the gruft in the current article.
