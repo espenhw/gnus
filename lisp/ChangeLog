@@ -1,5 +1,8 @@
 2002-02-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-mode): Set local-abbrev-table.
+	From Matt Armstrong <matt@lickey.com>.
+
 	* gnus-art.el (gnus-article-treat-unfold-headers): Don't remove
 	too many spaces.
 	
