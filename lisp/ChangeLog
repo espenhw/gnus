@@ -1,5 +1,11 @@
 2002-01-04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-sum.el (gnus-summary-select-article): Disable multibyte in
+	all cases.
+	(gnus-summary-mode): Enable it in all cases.
+	(gnus-summary-display-article): Ditto.
+	(gnus-summary-edit-article): Ditto.
+
 	* gnus-ems.el (gnus-put-image): Really return glyph.
 
 	* gnus-art.el (gnus-article-x-face-command): Fix :type.
