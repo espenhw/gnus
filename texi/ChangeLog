@@ -1,3 +1,7 @@
+2000-10-31  Jorge Godoy <godoy@conectiva.com>
+
+	* gnus.texi: gnus-gpg document.
+
 2000-10-31  Simon Josefsson  <sj@extundo.com>
 
 	* gnus.texi (NNTP): Explain `port'.
