@@ -223,6 +223,8 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 (gnus-expert-user t)
 	 (gnus-large-newsgroup nil)
 	 (gnus-score-find-score-files-function 'nnkiboze-score-file)
+ 	 gnus-select-group-hook gnus-summary-prepare-hook 
+	 gnus-thread-sort-functions gnus-show-threads 
 	 method nnkiboze-newsrc nov-buffer gname newsrc active
 	 ginfo lowest)
     (setq nnkiboze-current-score-group group)

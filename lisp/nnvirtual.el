@@ -62,7 +62,8 @@
 	'headers
       (let ((map nnvirtual-current-mapping)
 	    (offset 0)
-	    articles beg group active top article result prefix)
+	    articles beg group active top article result prefix
+	    fetched-articles)
 	(while sequence
 	  (while (< (car (car map)) (car sequence))
 	    (setq offset (car (car map)))
@@ -88,9 +89,11 @@
 		;; parse a mixed HEAD/NOV buffer.
 		(and (eq result 'headers) (nnvirtual-convert-headers))
 		(goto-char (point-min))
+		(setq fetched-articles nil)
 		(while (not (eobp))
-		  (setq beg (point))
-		  (setq article (read nntp-server-buffer))
+		  (setq beg (point)
+			article (read nntp-server-buffer)
+			fetched-articles (cons article fetched-articles))
 		  (delete-region beg (point))
 		  (insert (int-to-string (+ (- article active) offset)))
 		  (beginning-of-line)
@@ -122,7 +125,15 @@
 			(insert ?\t)))
 		  (forward-line 1))))
 	  (goto-char (point-max))
-	  (insert-buffer-substring nntp-server-buffer))
+	  (insert-buffer-substring nntp-server-buffer)
+	  ;; We have now massaged and inserted the headers from one
+	  ;; group. In case some of the articles have expired or been
+	  ;; cancelled, we have to mark them as read in the component
+	  ;; group. 
+	  (let ((unfetched (gnus-sorted-complement 
+			    articles (nreverse fetched-articles))))
+	    (and unfetched
+		 (gnus-group-make-articles-read group unfetched nil))))
 	;; The headers are ready for reading, so they are inserted into
 	;; the nntp-server-buffer, which is where Gnus expects to find
 	;; them.
@@ -402,6 +413,7 @@ If the stream is opened, return T, otherwise return NIL."
 	marks art-group group-alist g)
     (while mark-lists
       (setq marks (symbol-value (car (car mark-lists))))
+      ;; Find out what groups the mark belong to.
       (while marks
 	(setq art-group (nnvirtual-art-group (car marks)))
 	(if (setq g (assoc (car art-group) group-alist))
@@ -409,6 +421,13 @@ If the stream is opened, return T, otherwise return NIL."
 	  (setq group-alist (cons (list (car art-group) (cdr art-group)) 
 				  group-alist)))
 	(setq marks (cdr marks)))
+      ;; The groups that don't have marks must have no marks. (Yup.)
+      (let ((groups nnvirtual-current-groups))
+	(while groups
+	  (or (assoc (car groups) group-alist)
+	      (setq group-alist (cons (list (car groups)) group-alist)))
+	  (setq groups (cdr groups))))
+      ;; The we update the list of marks.
       (while group-alist
 	(gnus-add-marked-articles 
 	 (car (car group-alist)) (cdr (car mark-lists)) 

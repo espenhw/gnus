@@ -284,7 +284,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (gnus-set-global-variables)
   (if yank-articles (gnus-summary-goto-subject (car yank-articles)))
   (save-window-excursion
-    (gnus-summary-select-article t))
+    (gnus-summary-select-article))
   (let ((headers gnus-current-headers)
 	(gnus-newsgroup-name gnus-newsgroup-name))
     ;; Check Followup-To: poster.
@@ -298,8 +298,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	(gnus-summary-reply yank)
       (gnus-post-news nil gnus-newsgroup-name
 		      headers gnus-article-buffer 
-		      (or yank-articles (not (not yank))))))
-  (gnus-article-hide-headers-if-wanted))
+		      (or yank-articles (not (not yank)))))))
 
 (defun gnus-summary-followup-with-original (n)
   "Compose a followup to an article and include the original article."
@@ -326,9 +325,9 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (let ((articles (gnus-summary-work-articles n)))
     (while articles
       (gnus-summary-select-article t nil nil (car articles))
-      (gnus-eval-in-buffer-window gnus-article-buffer (gnus-cancel-news))
+      (and (gnus-eval-in-buffer-window gnus-article-buffer (gnus-cancel-news))
+	   (gnus-summary-mark-as-read (car articles) gnus-canceled-mark))
       (gnus-summary-remove-process-mark (car articles))
-      (gnus-summary-mark-as-read (car articles) gnus-canceled-mark)
       (gnus-article-hide-headers-if-wanted)
       (setq articles (cdr articles)))))
 
@@ -531,7 +530,8 @@ will attempt to use the foreign server to post the article."
   (interactive "P")
   (let* ((case-fold-search nil)
 	 (server-running (gnus-server-opened gnus-select-method))
-	 (reply gnus-article-reply))
+	 (reply gnus-article-reply)
+	 error)
     (save-excursion
       ;; Connect to default NNTP server if necessary.
       ;; Suggested by yuki@flab.fujitsu.junet.
@@ -693,6 +693,7 @@ will attempt to use the foreign server to post the article."
 		    (gnus-summary-mark-article-as-replied 
 		     (cdr reply))))))
 	;; We cannot signal an error.
+	(setq error t)
 	(ding) (gnus-message 1 "Article rejected: %s" 
 			     (gnus-status-message gnus-select-method)))
       (set-buffer-modified-p nil))
@@ -702,7 +703,7 @@ will attempt to use the foreign server to post the article."
     (let ((conf gnus-prev-winconf))
       (bury-buffer)
       ;; Restore last window configuration.
-      (and conf (set-window-configuration conf)))))
+      (and conf (not error) (set-window-configuration conf)))))
 
 (defun gnus-inews-check-post ()
   "Check whether the post looks ok."
@@ -869,7 +870,8 @@ will attempt to use the foreign server to post the article."
 		(downcase (mail-strip-quoted-names from))
 		(downcase (mail-strip-quoted-names (gnus-inews-user-name)))))
 	      (progn
-		(ding) (gnus-message 3 "This article is not yours."))
+		(ding) (gnus-message 3 "This article is not yours.")
+		nil)
 	    ;; Make control article.
 	    (set-buffer (get-buffer-create " *Gnus-canceling*"))
 	    (buffer-disable-undo (current-buffer))
@@ -884,13 +886,17 @@ will attempt to use the foreign server to post the article."
 		    "This is a cancel message from " from ".\n")
 	    ;; Send the control article to NNTP server.
 	    (gnus-message 5 "Canceling your article...")
-	    (if (funcall gnus-inews-article-function)
-		(gnus-message 5 "Canceling your article...done")
-	      (ding) 
-	      (gnus-message 1 "Cancel failed; %s" 
-			    (gnus-status-message gnus-newsgroup-name)))
-	    ;; Kill the article buffer.
-	    (kill-buffer (current-buffer)))))))
+	    (prog1
+		(if (funcall gnus-inews-article-function)
+		    (gnus-message 5 "Canceling your article...done")
+		  (progn
+		    (ding) 
+		    (gnus-message 1 "Cancel failed; %s" 
+				  (gnus-status-message gnus-newsgroup-name))
+		    nil)
+		  t)
+	      ;; Kill the article buffer.
+	      (kill-buffer (current-buffer))))))))
 
 
 ;;; Lowlevel inews interface
@@ -1319,11 +1325,10 @@ Customize the variable gnus-mail-reply-method to use another mailer."
   ;; Stripping headers should be specified with mail-yank-ignored-headers.
   (gnus-set-global-variables)
   (if yank-articles (gnus-summary-goto-subject (car yank-articles)))
-  (gnus-summary-select-article t)
+  (gnus-summary-select-article)
   (let ((gnus-newsgroup-name gnus-newsgroup-name))
     (bury-buffer gnus-article-buffer)
-    (funcall gnus-mail-reply-method (or yank-articles (not (not yank)))))
-  (gnus-article-hide-headers-if-wanted))
+    (funcall gnus-mail-reply-method (or yank-articles (not (not yank))))))
 
 (defun gnus-summary-reply-with-original (n)
   "Reply mail to news author with original article.
@@ -1336,13 +1341,12 @@ Customize the variable gnus-mail-reply-method to use another mailer."
 Customize the variable gnus-mail-forward-method to use another mailer."
   (interactive "P")
   (gnus-set-global-variables)
-  (gnus-summary-select-article t)
+  (gnus-summary-select-article)
   (gnus-copy-article-buffer)
   (let ((gnus-newsgroup-name gnus-newsgroup-name))
     (if post
 	(gnus-forward-using-post gnus-article-copy)
-      (funcall gnus-mail-forward-method gnus-article-copy)))
-  (gnus-article-hide-headers-if-wanted))
+      (funcall gnus-mail-forward-method gnus-article-copy))))
 
 (defun gnus-summary-post-forward ()
   "Forward the current article to a newsgroup."
@@ -1390,8 +1394,6 @@ mailer."
       (setq gnus-article-reply cur)
       (make-local-variable 'gnus-prev-winconf)
       (setq gnus-prev-winconf winconf)
-      (use-local-map (copy-keymap mail-mode-map))
-      (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
       (if (and (buffer-modified-p)
 	       (> (buffer-size) 0)
 	       (not (gnus-y-or-n-p 
@@ -1440,6 +1442,9 @@ mailer."
 			(if (and follow-to (not (stringp follow-to))) sendto
 			  (or follow-to reply-to from sender "")))
 		    subject message-of nil gnus-article-copy nil)
+
+	(use-local-map (copy-keymap mail-mode-map))
+	(local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
 
 	(if (and follow-to (listp follow-to))
 	    (progn

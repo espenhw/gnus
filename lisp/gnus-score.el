@@ -1547,11 +1547,10 @@ This mode is an extended emacs-lisp mode.
 	trace)
     (setq gnus-score-trace nil)
     (gnus-possibly-score-headers 'trace)
+    (or (setq trace gnus-score-trace)
+	(error "No score rules apply to the current article."))
     (pop-to-buffer "*Gnus Scores*")
     (erase-buffer)
-    (setq trace gnus-score-trace)
-    (or trace
-	(error "No score rules apply to the current article."))
     (while trace
       (insert (format "%S\n" (cdr (car trace))))
       (setq trace (cdr trace)))

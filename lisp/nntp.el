@@ -1036,7 +1036,8 @@ If SERVICE, this this as the port number."
     (and timer (cancel-timer timer))
     (message "")
     (or status
-	(setq nntp-current-server nil))
+	(setq nntp-current-server nil
+	      nntp-async-number nil))
     status))
 
 (defun nntp-open-server-internal (server &optional service)

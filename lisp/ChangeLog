@@ -1,4 +1,57 @@
+Sat Jul  1 16:04:13 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-edit-article-done): No arguments to
+	buffer-disable-undo. 
+
+	* nnkiboze.el (nnkiboze-generate-group): Turn off slow stuff. 
+
+	* gnus-msg.el (gnus-inews-news): Don't restore the summary config
+	if posting is unsuccessful.
+
+	* gnus-score.el (gnus-score-find-trace): Don't pop to score window
+	if no scores apply.
+
+	* gnus-msg.el (gnus-summary-cancel-article): Don't mark article as
+	cancelled if they are not. 
+	(gnus-mail-reply-using-mail): Change map after running mail-setup. 
+
+	* gnus.el (gnus-group-best-unread-group): Would return a group
+	that was supposed to be excluded. 
+	(gnus-summary-next-group): Skip empty groups. 
+
+	* nntp.el (nntp-open-server-semi-internal): Don't attempt a second
+	async connection if the server is down. 
+
+	* gnus.el (gnus-summary-goto-last-article): Doc fix. 
+	(gnus-no-server): Use permanent levels. 
+
+	* gnus-msg.el: Unhide and hide was unnecessary when forwarding and
+	replying and stuff. 
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Mark cancelled and
+	expired articles as read in the component group. 
+	(nnvirtual-update-marked): When removing all marks, they wouldn't
+	go away.
+
+	* gnus.el (gnus-summary-catchup): Do thorough nnvirtual catchups. 
+
+Fri Jun 30 09:10:57 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: gnus-bug wasn't interactive.
+
+Thu Jun 29 13:42:33 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-catchup-to-here): Would mark one article
+	too many. 
+	(gnus-articles-to-read): Accept whitespace.
+	(gnus-summary-go-to-next-thread): Didn't go to next thread when
+	threads were hidden.
+	(gnus-summary-display-article): When the first article was
+	cancelled, point would remain in the group buffer.
+
 Wed Jun 28 16:24:38 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.89 is released.
 
 	* nnfolder.el (nnfolder-directory): file-name-as-directory thing. 
 
