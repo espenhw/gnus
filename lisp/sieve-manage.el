@@ -74,7 +74,8 @@
 (or (fboundp 'md5)
     (require 'md5))
 (eval-and-compile
-  (autoload 'starttls-open-stream "starttls"))
+  (autoload 'starttls-open-stream "starttls")
+  (autoload 'starttls-negotiate "starttls"))
 
 ;; User customizable variables:
 
