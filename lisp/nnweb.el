@@ -49,8 +49,7 @@
 
 (defvoo nnweb-type 'google
   "What search engine type is being used.
-Valid types include `google', `dejanews', `dejanewsold', `reference',
-and `altavista'.")
+Valid types include `google', `dejanews', `reference', and `altavista'.")
 
 (defvar nnweb-type-definition
   '((google

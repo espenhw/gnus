@@ -1,3 +1,8 @@
+2002-05-23  Simon Josefsson  <jas@extundo.com>
+
+	* nnweb.el (nnweb-type): Remove dejanewsold.  Trivial change from
+	Niklas Morberg <niklas.morberg@axis.com>.
+
 2002-05-22  Simon Josefsson  <jas@extundo.com>
 
 	* sieve.el (sieve-change-region): Define it before it is used.
