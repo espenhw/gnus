@@ -9706,6 +9706,16 @@ This variable can be used to do the following:
 @itemize @bullet
 @item a string
 Messages will be saved in that group.
+
+Note that you can include a select method in the group name, then the
+message will not be stored in the select method given by
+@code{gnus-message-archive-method}, but in the select method specified
+by the group name, instead.  Suppose @code{gnus-message-archive-method}
+has the default value shown above.  Then setting
+@code{gnus-message-archive-group} to @code{"foo"} means that outgoing
+messages are stored in @samp{nnfolder+archive:foo}, but if you use the
+value @code{"nnml:foo"}, then outgoing messages will be stored in
+@samp{nnml:foo}.
 @item a list of strings
 Messages will be saved in all those groups.
 @item an alist of regexps, functions and forms

@@ -1,3 +1,9 @@
+2000-10-30  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Archived Messages): Explain what happens when group
+	names mentioned in `gnus-message-archive-group' contain a select
+	method. 
+
 2000-10-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Group Levels): Explain meaning of subscribed,
