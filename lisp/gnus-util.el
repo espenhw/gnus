@@ -569,7 +569,7 @@ Bind `print-quoted' and `print-readably' to t while printing."
     (save-excursion
       (save-restriction
 	(goto-char beg)
-	(while (re-search-forward "[ \t]+\\|[ \t]*\n" end 'move)
+	(while (re-search-forward gnus-emphasize-whitespace-regexp end 'move)
 	  (gnus-put-text-property beg (match-beginning 0) prop val)
 	  (setq beg (point)))
 	(gnus-put-text-property beg (point) prop val)))))

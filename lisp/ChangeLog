@@ -1,3 +1,8 @@
+2000-05-17 10:16:32  Karl Kleinpaste <karl@charcoal.com>
+
+	* gnus-art.el (gnus-emphasize-whitespace-regexp): New variable.
+	* gnus-util.el (gnus-put-text-property-excluding-newlines): Use it.
+
 2000-05-17 02:25:11  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-mark-line-p): New function.
