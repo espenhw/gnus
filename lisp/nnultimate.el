@@ -56,6 +56,8 @@
 (defvoo nnultimate-groups nil)
 (defvoo nnultimate-headers nil)
 (defvoo nnultimate-articles nil)
+(defvar nnultimate-table-regexp 
+  "postings.*editpost\\|forumdisplay\\|Forum[0-9]+/HTML\\|getbio")
 
 ;;; Interface functions
 
@@ -74,6 +76,8 @@
 	   (old-total (or (nth 6 entry) 1))
 	   (furl "forumdisplay.cgi?action=topics&number=%d&DaysPrune=1000")
 	   (furls (list (concat nnultimate-address (format furl sid))))
+	   (nnultimate-table-regexp
+	    "postings.*editpost\\|forumdisplay\\|getbio")
 	   headers article subject score from date lines parent point
 	   contents tinfo fetchers map elem a href garticles topic old-max
 	   inc datel table string current-page total-contents pages
@@ -438,9 +442,7 @@
 		     (nth 2 parse))))
     (let ((href (cdr (assq 'href (nth 1 (nnweb-parse-find 'a parse 20)))))
 	  case-fold-search)
-      (when (and href (string-match
-		       "postings\\|forumdisplay\\|Forum[0-9]+/HTML\\|getbio"
-		       href))
+      (when (and href (string-match nnultimate-table-regexp href))
 	t))))
 
 (provide 'nnultimate)

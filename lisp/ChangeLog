@@ -1,3 +1,10 @@
+2000-10-16 11:36:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnultimate.el (nnultimate-forum-table-p): Be a bit more
+	restrictive. 
+	(nnultimate-table-regexp): New variable.
+	(nnultimate-forum-table-p): Use it.
+
 2000-10-30  Ed L Cashin <ecashin@coe.uga.edu>
 
 	* gnus-sum.el (gnus-summary-expire-articles): Save point.
