@@ -7,6 +7,9 @@
 
 2004-05-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-fill-field): Return point.
+	(message-generate-headers): Go to end of field.
+
 	* gnus-start.el (gnus-get-unread-articles-in-group): Don't do
 	stuff for non-living groups.
 

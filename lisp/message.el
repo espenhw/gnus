@@ -5030,9 +5030,9 @@ Headers already prepared in the buffer are not modified."
 		      (if formatter
 			  (funcall formatter header value)
 			(insert header-string ": " value))
-		      (message-fill-field)
+		      (goto-char (message-fill-field))
 		      ;; We check whether the value was ended by a
-		      ;; newline.  If now, we insert one.
+		      ;; newline.  If not, we insert one.
 		      (unless (bolp)
 			(insert "\n"))
 		      (forward-line -1)))
@@ -5150,7 +5150,8 @@ If the current line has `message-yank-prefix', insert it on the new line."
       (message-narrow-to-field)
       (let ((field-name (message-field-name)))
 	(funcall (or (cadr (assq field-name message-field-fillers))
-		     'message-fill-field-general))))))
+		     'message-fill-field-general)))
+      (point-max))))
 
 (defun message-fill-field-address ()
   (while (not (eobp))
