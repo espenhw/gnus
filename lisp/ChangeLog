@@ -1,3 +1,9 @@
+2002-04-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-save-part): Fill in file name when GUI saving
+	attachments. Trivial change from Peter 'Luna' Runestig
+	<peter@runestig.com>.
+
 2002-04-19  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnkiboze.el (nnkiboze-request-scan): Call

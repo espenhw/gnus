@@ -1015,9 +1015,8 @@ like underscores."
 					(file-name-nondirectory filename))))
     (setq file
 	  (read-file-name "Save MIME part to: "
-			  (expand-file-name
-			   (or filename name "")
-			   (or mm-default-directory default-directory))))
+			  (or mm-default-directory default-directory)
+			  nil nil (or filename name "")))
     (setq mm-default-directory (file-name-directory file))
     (and (or (not (file-exists-p file))
 	     (yes-or-no-p (format "File %s already exists; overwrite? "
