@@ -1,4 +1,24 @@
+Thu Jun  6 18:22:04 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* message.el (message-header-format-alist): Use
+	`message-fill-address' for To and Cc.
+	(message-fill-address): New function.
+
+	* gnus.el (gnus-article-check-hidden-text): Respect a postive
+	arg. 
+	(gnus-summary-save-article): Remove headers from the original
+	article buffer. 
+	(gnus-article-hide-headers): Delete "From " if wanted.
+
+	* nnmail.el (nnmail-load-hook): Run hooks.
+
+Thu Jun  6 14:41:20 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-check-news-syntax): Don't warn on "poster".
+
 Wed Jun  5 20:22:48 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.9 is released.
 
 	* message.el (message-setup): Add Mailcrypt magic.
 

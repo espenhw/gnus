@@ -1728,7 +1728,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.9"
+(defconst gnus-version-number "5.2.10"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -12914,6 +12914,8 @@ The variable `gnus-default-article-saver' specifies the saver function."
   (interactive "P")
   (gnus-set-global-variables)
   (let ((articles (gnus-summary-work-articles n))
+	(save-buffer (save-excursion 
+		       (nnheader-set-temp-buffer " *Gnus Save*")))
 	file header article)
     (while articles
       (setq header (gnus-summary-article-header
@@ -12926,33 +12928,34 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	;; This is a real article.
 	(save-window-excursion
 	  (gnus-summary-select-article t nil nil article))
+	(save-excursion
+	  (set-buffer save-buffer)
+	  (insert-buffer-substring gnus-original-article-buffer))
 	(unless gnus-save-all-headers
 	  ;; Remove headers accoring to `gnus-saved-headers'.
 	  (let ((gnus-visible-headers
-		 (or gnus-saved-headers gnus-visible-headers)))
+		 (or gnus-saved-headers gnus-visible-headers))
+		(gnus-article-buffer save-buffer))
 	    (gnus-article-hide-headers 1 t)))
-	;; Remove any X-Gnus lines.
-	(save-excursion
-	  (set-buffer gnus-article-buffer)
-	  (save-restriction
-	    (let ((buffer-read-only nil))
-	      (nnheader-narrow-to-headers)
-	      (while (re-search-forward "^X-Gnus" nil t)
-		(gnus-delete-line)))))
 	(save-window-excursion
 	  (if (not gnus-default-article-saver)
 	      (error "No default saver is defined.")
-	    (setq file (funcall
-			gnus-default-article-saver
-			(cond
-			 ((not gnus-prompt-before-saving)
-			  'default)
-			 ((eq gnus-prompt-before-saving 'always)
-			  nil)
-			 (t file))))))
+	    ;; !!! Magic!  The saving functions all save
+	    ;; `gnus-original-article-buffer' (or so they think),
+	    ;; but we bind that variable to out save-buffer.
+	    (let ((gnus-original-article-buffer save-buffer))
+	      (setq file (funcall
+			  gnus-default-article-saver
+			  (cond
+			   ((not gnus-prompt-before-saving)
+			    'default)
+			   ((eq gnus-prompt-before-saving 'always)
+			    nil)
+			   (t file)))))))
 	(gnus-summary-remove-process-mark article)
 	(unless not-saved
 	  (gnus-summary-set-saved-mark article))))
+    (gnus-kill-buffer save-buffer)
     (gnus-summary-position-point)
     n))
 
@@ -13901,7 +13904,9 @@ always hide."
 	    (while (looking-at "From ")
 	      (forward-line 1))
 	    (unless (bobp)
-	      (gnus-hide-text (point-min) (point) props))
+	      (if delete
+		  (delete-region (point-min) (point))
+		(gnus-hide-text (point-min) (point) props)))
 	    ;; Then treat the rest of the header lines.
 	    (narrow-to-region
 	     (point)
@@ -14263,8 +14268,10 @@ always hide."
     (set-buffer gnus-article-buffer)
     (let ((hide (gnus-article-hidden-text-p type)))
       (cond ((or (and (null arg) (eq hide 'hidden))
-		 (and arg (< 0 (prefix-numeric-value arg))))
+		 (and arg (< (prefix-numeric-value arg) 1)))
 	     (gnus-article-show-hidden-text type))
+	    ((and (numberp arg) (> (prefix-numeric-value arg) 0))
+	     nil)
 	    ((eq hide 'shown)
 	     (gnus-article-show-hidden-text type t))
 	    (t nil)))))

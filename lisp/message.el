@@ -455,8 +455,8 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 (defvar message-header-format-alist 
   `((Newsgroups)
-    (To . message-fill-header) 
-    (Cc . message-fill-header)
+    (To . message-fill-address) 
+    (Cc . message-fill-address)
     (Subject)
     (In-Reply-To)
     (Fcc)
@@ -1540,7 +1540,8 @@ the user from the mailer."
 	   (if (not hashtb)
 	       t
 	     (while groups
-	       (unless (boundp (intern (car groups) hashtb))
+	       (when (and (not (boundp (intern (car groups) hashtb)))
+			  (not (equal (car groups) "poster")))
 		 (push (car groups) errors))
 	       (pop groups))
 	     (if (not errors)
@@ -2126,6 +2127,36 @@ Headers already prepared in the buffer are not modified."
 ;;;
 ;;; Setting up a message buffer
 ;;;
+
+(defun message-fill-address (header value)
+  (save-restriction
+    (narrow-to-region (point) (point))
+    (insert (capitalize (symbol-name header))
+	    ": "
+	    (if (consp value) (car value) value)
+	    "\n")
+    (narrow-to-region (point-min) (1- (point-max)))
+    (let (quoted last)
+      (goto-char (point-min))
+      (while (not (eobp))
+	(skip-chars-forward "^,\"" (point-max))
+	(if (or (= (following-char) ?,)
+		(eobp))
+	    (when (not quoted)
+	      (if (and (> (current-column) 78)
+		       last)
+		  (progn
+		    (save-excursion
+		      (goto-char last)
+		      (insert "\n\t"))
+		    (setq last (1+ (point))))
+		(setq last (1+ (point)))))
+	  (setq quoted (not quoted)))
+	(unless (eobp)
+	  (forward-char 1))))
+    (goto-char (point-max))
+    (widen)
+    (forward-line 1)))
 
 (defun message-fill-header (header value)
   (let ((begin (point))
@@ -2894,6 +2925,8 @@ The following arguments may contain lists of values."
 	 (apply 'append (mapcar 'message-flatten-list-1 list)))
 	(list
 	 (list list))))
+
+(run-hooks 'message-load-hook)
 
 (provide 'message)
 

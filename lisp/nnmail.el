@@ -381,12 +381,12 @@ parameter.  It should return nil, `warn' or `delete'.")
        ((and (not movemail) (not popmail))
 	;; Try copying.  If that fails (perhaps no space),
 	;; rename instead.
-	(when (condition-case nil
-		  (copy-file inbox tofile nil)
-		(error
-		 ;; Third arg is t so we can replace existing file TOFILE.
-		 (rename-file inbox tofile t)))
-	  (push inbox nnmail-moved-inboxes))
+	(condition-case nil
+	    (copy-file inbox tofile nil)
+	  (error
+	   ;; Third arg is t so we can replace existing file TOFILE.
+	   (rename-file inbox tofile t)))
+	(push inbox nnmail-moved-inboxes)
 	;; Make the real inbox file empty.
 	;; Leaving it deleted could cause lossage
 	;; because mailers often won't create the file.
@@ -1149,6 +1149,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (setq days (nnmail-days-to-time days))
 	     ;; Compare the time with the current time.
 	     (nnmail-time-less days (nnmail-time-since time)))))))
+
+(run-hooks 'nnmail-load-hook)
 	    
 (provide 'nnmail)
 
