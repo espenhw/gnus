@@ -1,5 +1,8 @@
 2002-02-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
+	* gnus-util.el (gnus-byte-compile): Work around a bug in XEmacs
+	21.4. Suggested by Russ Allbery <rra@stanford.edu> .
+
 	* message-utils.el: Adopt the file.
 
 	* message-utils.el: New file.

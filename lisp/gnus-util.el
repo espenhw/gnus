@@ -1132,7 +1132,9 @@ Return the modified alist."
 	   (string-equal (downcase x) (downcase y)))))
 
 (defcustom gnus-use-byte-compile t
-  "If non-nil, byte-compile crucial run-time codes."
+  "If non-nil, byte-compile crucial run-time codes.
+Setting it to `nil' has no effect after first time running
+`gnus-byte-compile'."
   :type 'boolean
   :version "21.1"
   :group 'gnus-various)
@@ -1141,6 +1143,10 @@ Return the modified alist."
   "Byte-compile FORM if `gnus-use-byte-compile' is non-nil."
   (if gnus-use-byte-compile
       (progn
+	(condition-case nil
+	    ;; Work around a bug in XEmacs 21.4
+	    (require 'byte-optimize)
+	  (error))
 	(require 'bytecomp)
 	(defalias 'gnus-byte-compile 'byte-compile)
 	(byte-compile form))
