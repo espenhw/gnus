@@ -94,6 +94,13 @@
 	   prompt (mapcar (lambda (s) (list (symbol-name (car s))))
 			  mm-mime-mule-charset-alist)))))))
 
+(eval-and-compile
+  (defalias 'mm-char-or-char-int-p
+    (cond 
+     ((fboundp 'char-or-char-int-p) 'char-or-char-int-p)
+     ((fboundp 'char-valid-p) 'char-valid-p) 
+     (t 'identity))))
+
 (defvar mm-coding-system-list nil)
 (defun mm-get-coding-system-list ()
   "Get the coding system list."

@@ -722,7 +722,10 @@ and `altavista'.")
   (while (re-search-forward "&\\(#[0-9]+\\|[a-z]+\\);" nil t)
     (replace-match (char-to-string 
 		    (if (eq (aref (match-string 1) 0) ?\#)
-			(string-to-number (substring (match-string 1) 1))
+			(let ((c
+			       (string-to-number (substring 
+						  (match-string 1) 1))))
+			  (if (mm-char-or-char-int-p c) c 32))
 		      (or (cdr (assq (intern (match-string 1))
 				     w3-html-entities))
 			  ?#)))

@@ -1,3 +1,9 @@
+2000-04-14 18:50:04  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-char-or-char-int-p): New alias.
+	* nnweb.el (nnweb-decode-entities): Check the validity of numeric 
+	entities.
+
 2000-04-10   Daiki Ueno  <ueno@unixuser.org>
 
         * lisp/imap.el (imap-body-lines): Check Content-Type: of the
