@@ -4240,7 +4240,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
   '(prog1
        (if (= (following-char) ?\t)
 	   0
-	 (let ((num (condition-case nil (read buffer) (error nil))))
+	 (let ((num (ignore-errors (read buffer))))
 	   (if (numberp num) num 0)))
      (unless (eobp)
        (forward-char 1))))
@@ -8061,9 +8061,8 @@ save those articles instead."
 	    (when (cond
 		   ((stringp match)
 		    ;; Regular expression.
-		    (condition-case ()
-			(re-search-forward match nil t)
-		      (error nil)))
+		    (ignore-errors
+		      (re-search-forward match nil t)))
 		   ((gnus-functionp match)
 		    ;; Function.
 		    (save-restriction

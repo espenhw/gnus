@@ -472,9 +472,8 @@ file.  The vector contain three strings, [prefix name encoding]."
     (if entry
 	()
       (when (file-exists-p (concat dir gnus-soup-prefix-file))
-	(condition-case nil
-	    (load (concat dir gnus-soup-prefix-file) nil t t)
-	  (error nil)))
+	(ignore-errors
+	  (load (concat dir gnus-soup-prefix-file) nil t t)))
       (push (setq entry (cons dir (or gnus-soup-prev-prefix 0)))
 	    gnus-soup-last-prefix))
     (setcdr entry (1+ (cdr entry)))

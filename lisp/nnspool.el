@@ -320,9 +320,8 @@ there.")
 	(process-send-region proc (point-min) (point-max))
 	;; We slap a condition-case around this, because the process may
 	;; have exited already...
-	(condition-case nil
-	    (process-send-eof proc)
-	  (error nil))
+	(ignore-errors
+	  (process-send-eof proc))
 	t))))
 
 
@@ -362,33 +361,30 @@ there.")
 	    (if (and fetch-old
 		     (not (numberp fetch-old)))
 		t			; We want all the headers.
-	      (condition-case ()
-		  (progn
-		    ;; Delete unwanted NOV lines.
-		    (nnheader-nov-delete-outside-range
-		     (if fetch-old (max 1 (- (car articles) fetch-old))
-		       (car articles))
-		     (car (last articles)))
-		    ;; If the buffer is empty, this wasn't very successful.
-		    (unless (zerop (buffer-size))
-		      ;; We check what the last article number was.  
-		      ;; The NOV file may be out of sync with the articles
-		      ;; in the group.
-		      (forward-line -1)
-		      (setq last (read (current-buffer)))
-		      (if (= last (car articles))
-			  ;; Yup, it's all there.
-			  t
-			;; Perhaps not.  We try to find the missing articles.
-			(while (and arts
-				    (<= last (car arts)))
-			  (pop arts))
-			;; The articles in `arts' are missing from the buffer.
-			(while arts
-			  (nnspool-insert-nov-head (pop arts)))
-			t)))
-		;; The NOV file was corrupted.
-		(error nil)))))))))
+	      (ignore-errors
+		;; Delete unwanted NOV lines.
+		(nnheader-nov-delete-outside-range
+		 (if fetch-old (max 1 (- (car articles) fetch-old))
+		   (car articles))
+		 (car (last articles)))
+		;; If the buffer is empty, this wasn't very successful.
+		(unless (zerop (buffer-size))
+		  ;; We check what the last article number was.  
+		  ;; The NOV file may be out of sync with the articles
+		  ;; in the group.
+		  (forward-line -1)
+		  (setq last (read (current-buffer)))
+		  (if (= last (car articles))
+		      ;; Yup, it's all there.
+		      t
+		    ;; Perhaps not.  We try to find the missing articles.
+		    (while (and arts
+				(<= last (car arts)))
+		      (pop arts))
+		    ;; The articles in `arts' are missing from the buffer.
+		    (while arts
+		      (nnspool-insert-nov-head (pop arts)))
+		    t))))))))))
 
 (defun nnspool-insert-nov-head (article)
   "Read the head of ARTICLE, convert to NOV headers, and insert."
@@ -421,9 +417,8 @@ there.")
     (set-buffer (get-buffer-create " *nnspool work*"))
     (buffer-disable-undo (current-buffer))
     (erase-buffer)
-    (condition-case ()
-	(call-process "grep" nil t nil (regexp-quote id) nnspool-history-file)
-      (error nil))
+    (ignore-errors
+      (call-process "grep" nil t nil (regexp-quote id) nnspool-history-file))
     (goto-char (point-min))
     (prog1
 	(when (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ /\t\n]+\\)/\\([0-9]+\\)[ \t\n]")

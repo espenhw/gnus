@@ -46,11 +46,10 @@ instead."
   :type 'file)
 
 (defcustom gnus-site-init-file
-  (condition-case ()
-      (concat (file-name-directory 
-	       (directory-file-name installation-directory))
-	      "site-lisp/gnus-init")
-    (error nil))
+  (ignore-errors
+    (concat (file-name-directory 
+	     (directory-file-name installation-directory))
+	    "site-lisp/gnus-init"))
   "The site-wide Gnus elisp startup file.
 If a file with the .el or .elc suffixes exist, it will be read
 instead."
@@ -1669,14 +1668,13 @@ newsgroup."
 				    gnus-moderated-hashtb)))
 		(set group nil)))
 	  (error
-	   (progn
-	     (and group
-		  (symbolp group)
-		  (set group nil))
-	     (unless ignore-errors
-	       (gnus-message 3 "Warning - illegal active: %s"
-			     (buffer-substring
-			      (gnus-point-at-bol) (gnus-point-at-eol)))))))
+	   (and group
+		(symbolp group)
+		(set group nil))
+	   (unless ignore-errors
+	     (gnus-message 3 "Warning - illegal active: %s"
+			   (buffer-substring
+			    (gnus-point-at-bol) (gnus-point-at-eol))))))
 	(widen)
 	(forward-line 1)))))
 
@@ -1818,9 +1816,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	(let ((gnus-killed-assoc nil)
 	      gnus-marked-assoc gnus-newsrc-alist gnus-newsrc-assoc)
 	  (prog1
-	      (condition-case nil
-		  (load file t t t)
-		(error nil))
+	      (ignore-errors
+		(load file t t t))
 	    (setq newsrc gnus-newsrc-assoc
 		  killed gnus-killed-assoc
 		  marked gnus-marked-assoc)))
@@ -2307,9 +2304,8 @@ If FORCE is non-nil, the .newsrc file is read."
 		   (gnus-error 3.2 "Possible error in %s" file)
 		   nil))
 	    (unless gnus-slave		; Slaves shouldn't delete these files.
-	      (condition-case ()
-		  (delete-file file)
-		(error nil))))
+	      (ignore-errors
+		(delete-file file))))
 	  (setq slave-files (cdr slave-files))))
       (gnus-message 7 "Reading slave newsrcs...done"))))
 

@@ -192,9 +192,8 @@ If this variable is nil, no files will be excluded.")
 	(files (directory-files nneething-directory))
 	touched map-files)
     (when (file-exists-p map-file)
-      (condition-case nil
-	  (load map-file nil t t)
-	(error nil)))
+      (ignore-errors
+	(load map-file nil t t)))
     (unless nneething-active
       (setq nneething-active (cons 1 0)))
     ;; Old nneething had a different map format.

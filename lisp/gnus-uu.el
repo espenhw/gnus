@@ -1389,9 +1389,8 @@ didn't work, and overwrite existing files.  Otherwise, ask each time.")
 	    (if (memq 'end state)
 		(progn
 		  ;; Send an EOF, just in case.
-		  (condition-case ()
-		      (process-send-eof gnus-uu-uudecode-process)
-		    (error nil))
+		  (ignore-errors
+		    (process-send-eof gnus-uu-uudecode-process))
 		  (while (memq (process-status gnus-uu-uudecode-process)
 			       '(open run))
 		    (accept-process-output gnus-uu-uudecode-process 1)))

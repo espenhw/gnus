@@ -140,9 +140,8 @@ time saver for large mailboxes.")
 (deffoo nnfolder-open-server (server &optional defs)
   (nnoo-change-server 'nnfolder server defs)
   (when (not (file-exists-p nnfolder-directory))
-    (condition-case ()
-	(gnus-make-directory nnfolder-directory)
-      (error t)))
+    (ignore-errors
+      (gnus-make-directory nnfolder-directory)))
   (cond 
    ((not (file-exists-p nnfolder-directory))
     (nnfolder-close-server)
@@ -419,9 +418,8 @@ time saver for large mailboxes.")
   (if (not force)
       ()				; Don't delete the articles.
     ;; Delete the file that holds the group.
-    (condition-case nil
-	(delete-file (nnfolder-group-pathname group))
-      (error nil)))
+    (ignore-errors
+      (delete-file (nnfolder-group-pathname group))))
   ;; Remove the group from all structures.
   (setq nnfolder-group-alist 
 	(delq (assoc group nnfolder-group-alist) nnfolder-group-alist)
@@ -436,13 +434,11 @@ time saver for large mailboxes.")
   (save-excursion
     (set-buffer nnfolder-current-buffer)
     (and (file-writable-p buffer-file-name)
-	 (condition-case ()
-	     (progn
-	       (rename-file 
-		buffer-file-name
-		(nnfolder-group-pathname new-name))
-	       t)
-	   (error nil))
+	 (ignore-errors
+	   (rename-file 
+	    buffer-file-name
+	    (nnfolder-group-pathname new-name))
+	   t)
 	 ;; That went ok, so we change the internal structures.
 	 (let ((entry (assoc group nnfolder-group-alist)))
 	   (and entry (setcar entry new-name))

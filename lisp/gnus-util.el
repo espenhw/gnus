@@ -329,8 +329,7 @@
 ;; it yet.  -erik selberg@cs.washington.edu
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string"
-  (let ((datevec (condition-case () (timezone-parse-date messy-date)
-		   (error nil))))
+  (let ((datevec (ignore-errors (timezone-parse-date messy-date))))
     (if (not datevec)
 	"??-???"
       (format "%2s-%s"

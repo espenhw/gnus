@@ -199,9 +199,8 @@ buffer configuration.")
     (when (frame-live-p (car gnus-created-frames))
       ;; We slap a condition-case around this `delete-frame' to ensure 
       ;; against errors if we try do delete the single frame that's left.
-      (condition-case ()
-	  (delete-frame (car gnus-created-frames))
-	(error nil)))
+      (ignore-errors
+	(delete-frame (car gnus-created-frames))))
     (pop gnus-created-frames)))
 
 (defun gnus-window-configuration-element (list)

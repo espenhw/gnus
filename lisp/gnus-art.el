@@ -287,11 +287,15 @@ displayed by the first non-nil matching CONTENT face."
 			       (face :value default)))))
 
 (defvar gnus-article-mode-syntax-table
-  (copy-syntax-table text-mode-syntax-table)
+  (let ((table (copy-syntax-table text-mode-syntax-table)))
+    ;;(modify-syntax-entry ?_ "w" table)
+    table)
   "Syntax table used in article mode buffers.
 Initialized from `text-mode-syntax-table.")
 
 ;;; Internal variables
+
+(defvar gnus-save-article-buffer nil)
 
 (defvar gnus-article-mode-line-format-alist
     (nconc '((?w (gnus-article-wash-status) ?s))
@@ -356,16 +360,14 @@ Initialized from `text-mode-syntax-table.")
     (if (not gnus-default-article-saver)
 	(error "No default saver is defined.")
       ;; !!! Magic!  The saving functions all save
-      ;; `gnus-original-article-buffer' (or so they think),
-      ;; but we bind that variable to our save-buffer.
+      ;; `gnus-original-article-buffer' (or so they think), but we
+      ;; bind that variable to our save-buffer.
       (set-buffer gnus-article-buffer)
-      (let* ((gnus-original-article-buffer save-buffer)
+      (let* ((gnus-save-article-buffer save-buffer)
 	     (filename
 	      (cond
-	       ((not gnus-prompt-before-saving)
-		'default)
-	       ((eq gnus-prompt-before-saving 'always)
-		nil)
+	       ((not gnus-prompt-before-saving) 'default)
+	       ((eq gnus-prompt-before-saving 'always) nil)
 	       (t file)))
 	     (gnus-number-of-articles-to-be-saved
 	      (when (eq gnus-prompt-before-saving t)
@@ -445,7 +447,7 @@ Directory to save to is default to `gnus-article-save-directory'."
     (setq filename (gnus-read-save-file-name
 		    "Save %s in rmail file:" default-name filename))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-original-article-buffer
+    (gnus-eval-in-buffer-window gnus-save-article-buffer
       (save-excursion
 	(save-restriction
 	  (widen)
@@ -469,7 +471,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 			    (and default-name
 				 (file-name-directory default-name))))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-original-article-buffer
+    (gnus-eval-in-buffer-window gnus-save-article-buffer
       (save-excursion
 	(save-restriction
 	  (widen)
@@ -492,7 +494,7 @@ Directory to save to is default to `gnus-article-save-directory'."
     (setq filename (gnus-read-save-file-name
 		    "Save %s in file:" default-name filename))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-original-article-buffer
+    (gnus-eval-in-buffer-window gnus-save-article-buffer
       (save-excursion
 	(save-restriction
 	  (widen)
@@ -510,7 +512,6 @@ The directory to save in defaults to `gnus-article-save-directory'."
   (interactive)
   (gnus-summary-save-in-file nil t))
 
-
 (defun gnus-summary-save-body-in-file (&optional filename)
   "Append this article body to a file.
 Optional argument FILENAME specifies file name.
@@ -523,7 +524,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
     (setq filename (gnus-read-save-file-name
 		    "Save %s body in file:" default-name filename))
     (gnus-make-directory (file-name-directory filename))
-    (gnus-eval-in-buffer-window gnus-original-article-buffer
+    (gnus-eval-in-buffer-window gnus-save-article-buffer
       (save-excursion
 	(save-restriction
 	  (widen)
@@ -662,8 +663,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Scroll backwards" gnus-article-goto-prev-page t]
        ["Show summary" gnus-article-show-summary t]
        ["Fetch Message-ID at point" gnus-article-refer-article t]
-       ["Mail to address at point" gnus-article-mail t]
-       ))
+       ["Mail to address at point" gnus-article-mail t]))
 
     (easy-menu-define
      gnus-article-treatment-menu gnus-article-mode-map ""
@@ -673,8 +673,12 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Hide citation" gnus-article-hide-citation t]
        ["Treat overstrike" gnus-article-treat-overstrike t]
        ["Remove carriage return" gnus-article-remove-cr t]
-       ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
-       ))
+       ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]))
+
+    (define-key gnus-article-mode-map 
+      (vector 'menu-bar (car gnus-summary-article-menu))
+      gnus-summary-article-menu)
+
     (run-hooks 'gnus-article-menu-hook)))
 
 (defun gnus-article-mode ()
@@ -1080,9 +1084,8 @@ Argument LINES specifies lines to be scrolled down."
 	(goto-char (point-max))
 	(recenter -1))
     (prog1
-	(condition-case ()
-	    (scroll-down lines)
-	  (error nil))
+	(ignore-errors
+	  (scroll-down lines))
       (move-to-window-line 0))))
 
 (defun gnus-article-refer-article ()
@@ -1945,7 +1948,7 @@ forbidden in URL encoding."
 
 (defun gnus-button-url (address)
   "Browse ADDRESS."
-  (funcall browse-url-browser-function address browse-url-new-window-p))
+  (funcall browse-url-browser-function address))
 
 ;;; Next/prev buttons in the article buffer.
 

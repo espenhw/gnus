@@ -304,14 +304,12 @@
   (save-excursion
     (set-buffer buffer)
     (nnmh-possibly-create-directory group)
-    (condition-case ()
-	(progn
-	  (nnmail-write-region 
-	   (point-min) (point-max)
-	   (concat nnmh-current-directory (int-to-string article))
-	   nil (if (nnheader-be-verbose 5) nil 'nomesg))
-	  t)
-      (error nil))))
+    (ignore-errors
+      (nnmail-write-region 
+       (point-min) (point-max)
+       (concat nnmh-current-directory (int-to-string article))
+       nil (if (nnheader-be-verbose 5) nil 'nomesg))
+      t)))
 
 (deffoo nnmh-request-create-group (group &optional server args)
   (nnmail-activate 'nnmh)
@@ -344,9 +342,8 @@
 	  (funcall nnmail-delete-file-function (car articles)))
 	(setq articles (cdr articles))))
     ;; Try to delete the directory itself.
-    (condition-case ()
-	(delete-directory nnmh-current-directory)
-      (error nil)))
+    (ignore-errors
+      (delete-directory nnmh-current-directory)))
   ;; Remove the group from all structures.
   (setq nnmh-group-alist 
 	(delq (assoc group nnmh-group-alist) nnmh-group-alist)
@@ -357,11 +354,9 @@
   (nnmh-possibly-change-directory group server)
   (let ((new-dir (nnmail-group-pathname new-name nnmh-directory))
 	(old-dir (nnmail-group-pathname group nnmh-directory)))
-    (when (condition-case ()
-	      (progn
-		(make-directory new-dir t)
-		t)
-	    (error nil))
+    (when (ignore-errors
+	    (make-directory new-dir t)
+	    t)
       ;; We move the articles file by file instead of renaming
       ;; the directory -- there may be subgroups in this group.
       ;; One might be more clever, I guess.
@@ -372,9 +367,8 @@
 	   (concat new-dir (cdar files)))
 	  (pop files)))
       (when (<= (length (directory-files old-dir)) 2)
-	(condition-case ()
-	    (delete-directory old-dir)
-	  (error nil)))
+	(ignore-errors
+	  (delete-directory old-dir)))
       ;; That went ok, so we change the internal structures.
       (let ((entry (assoc group nnmh-group-alist)))
 	(when entry
@@ -478,7 +472,7 @@
     (when (file-exists-p nnmh-file)
       (setq articles 
 	    (let (nnmh-newsgroup-articles)
-	      (condition-case nil (load nnmh-file nil t t) (error nil))
+	      (ignore-errors (load nnmh-file nil t t))
 	      nnmh-newsgroup-articles)))
     ;; Add all new articles to the `new' list.
     (let ((art files))

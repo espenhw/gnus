@@ -475,9 +475,8 @@ If SILENT, don't prompt the user."
 	  end)
       (when message-id
 	(unless gnus-inews-sent-ids
-	  (condition-case ()
-	      (load  t t t)
-	    (error nil)))
+	  (ignore-errors
+	    (load t t t)))
 	(if (member message-id gnus-inews-sent-ids)
 	    ;; Reject this message.
 	    (not (gnus-yes-or-no-p 
@@ -797,16 +796,14 @@ The source file has to be in the Emacs load path."
 	      (gnus-message 4 "Malformed sources in file %s" file)
 	    (narrow-to-region (point-min) (point))
 	    (goto-char (point-min))
-	    (while (setq expr (condition-case ()
-				  (read (current-buffer)) (error nil)))
-	      (condition-case ()
-		  (and (eq (car expr) 'defvar)
-		       (stringp (nth 3 expr))
-		       (or (not (boundp (nth 1 expr)))
-			   (not (equal (eval (nth 2 expr))
-				       (symbol-value (nth 1 expr)))))
-		       (push (nth 1 expr) olist))
-		(error nil))))))
+	    (while (setq expr (ignore-errors (read (current-buffer))))
+	      (ignore-errors
+		(and (eq (car expr) 'defvar)
+		     (stringp (nth 3 expr))
+		     (or (not (boundp (nth 1 expr)))
+			 (not (equal (eval (nth 2 expr))
+				     (symbol-value (nth 1 expr)))))
+		     (push (nth 1 expr) olist)))))))
       (kill-buffer (current-buffer)))
     (when (setq olist (nreverse olist))
       (insert "------------------ Environment follows ------------------\n\n"))

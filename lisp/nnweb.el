@@ -33,9 +33,8 @@
 (require 'gnus-util)
 (require 'w3)
 (require 'url)
-(condition-case ()
-    (require 'w3-forms)
-  (error))
+(ignore-errors
+  (require 'w3-forms))
 
 (nnoo-declare nnweb)
 

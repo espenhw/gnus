@@ -1,3 +1,44 @@
+Fri Nov  8 22:56:59 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el: Added customize support.
+
+Sat Nov  9 05:14:58 1996  David Moore  <dmoore@ucsd.edu>
+
+	* nnmail.el (nnmail-expand-newtext): New version.
+
+Sat Nov  9 04:28:42 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-force-redisplay): New variable.
+	(gnus-xmas-summary-recenter): Use it.
+
+	* gnus-art.el (gnus-button-url): Removed seconds param since old
+	versions of `browse-url.el' don't support it.
+	(gnus-article-make-menu-bar): Add article menu to article menu. 
+
+	* article.el (gnus-emphasis-alist): Use ")" as a sentence end
+	marker. 
+
+Fri Nov  8 05:33:08 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* article.el (gnus-emphasis-alist): Recognize "_this_here_".
+
+	* gnus-art.el (gnus-article-save): Save the right buffer after
+	stripping headers. 
+
+	* nntp.el (nntp-wait-for): Nix out "nntp reading...." message.
+
+	* article.el (article-narrow-to-signature): Typo.
+
+	* nntp.el (nntp-try-list-active): Would guess wrong on `some'. 
+
+	* gnus.el: condition-case -> ignore-errors.
+
+	* nntp.el (nntp-request-close): Protect against errors.
+
+Fri Nov  8 03:23:02 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.56 is released.
+
 Fri Nov  8 02:45:21 1996  David S. Goldberg  <dsg@linus.mitre.org>
 
 	* gnus-art.el (gnus-button-url): Respect

@@ -406,8 +406,7 @@ Returns the number of articles marked as read."
 	      (gnus-add-current-to-buffer-list)
 	      (goto-char (point-min))
 
-	      (if (consp (condition-case nil (read (current-buffer))
-			   (error nil)))
+	      (if (consp (ignore-errors (read (current-buffer))))
 		  (gnus-kill-parse-gnus-kill-file)
 		(gnus-kill-parse-rn-kill-file))
 	    
@@ -441,8 +440,7 @@ Returns the number of articles marked as read."
   (let (beg form)
     (while (progn 
 	     (setq beg (point))
-	     (setq form (condition-case () (read (current-buffer))
-			  (error nil))))
+	     (setq form (ignore-errors (read (current-buffer)))))
       (unless (listp form)
 	(error "Illegal kill entry (possibly rn kill file?): %s" form))
       (if (or (eq (car form) 'gnus-kill)
@@ -453,7 +451,7 @@ Returns the number of articles marked as read."
 	    (insert (or (eval form) "")))
 	(save-excursion
 	  (set-buffer gnus-summary-buffer)
-	  (condition-case () (eval form) (error nil)))))
+	  (ignore-errors (eval form)))))
     (and (buffer-modified-p)
 	 gnus-kill-save-kill-file
 	 (save-buffer))

@@ -224,7 +224,7 @@ To enable this, set `nnmail-split-methods' to `nnmail-split-fancy'.
 The format is this variable is SPLIT, where SPLIT can be one of
 the following:
 
-GROUP: Mail will be stored in GROUP (a string).
+GROUP: Mail will be stored in GROUP (a string).  
 
 \(FIELD VALUE SPLIT): If the message field FIELD (a regexp) contains
   VALUE (a regexp), store the messages as specified by SPLIT.
@@ -235,12 +235,19 @@ GROUP: Mail will be stored in GROUP (a string).
 
 \(& SPLIT...): Process each SPLIT expression.
 
+\(: FUNCTION optional args): Call FUNCTION with the optional args, in
+  the buffer containing the message headers.  The return value FUNCTION
+  should be a split, which is then recursively processed.
+
 FIELD must match a complete field name.  VALUE must match a complete
 word according to the `nnmail-split-fancy-syntax-table' syntax table.
 You can use .* in the regexps to match partial field names or words.
 
 FIELD and VALUE can also be lisp symbols, in that case they are expanded
 as specified in `nnmail-split-abbrev-alist'.
+
+GROUP can contain \\& and \\N which will substitute from matching
+\\(\\) patterns in the previous VALUE.
 
 Example:
 
@@ -857,12 +864,11 @@ FUNC will be called with the group name to determine the article number."
 	    (if (or methods
 		    (not (equal "" (nth 1 method))))
 		(when (and
-		       (condition-case ()
-			   (if (stringp (nth 1 method))
-			       (re-search-backward (cadr method) nil t)
-			     ;; Function to say whether this is a match.
-			     (funcall (nth 1 method) (car method)))
-			 (error nil))
+		       (ignore-errors
+			 (if (stringp (nth 1 method))
+			     (re-search-backward (cadr method) nil t)
+			   ;; Function to say whether this is a match.
+			   (funcall (nth 1 method) (car method))))
 		       ;; Don't enter the article into the same 
 		       ;; group twice.
 		       (not (assoc (car method) group-art)))
@@ -1034,35 +1040,39 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       ;; on the same split, which will find it immediately in the cache.
       (nnmail-split-it split)))))
 
-;;; based on bbdb-auto-expand-newtext, except for getting the
-;;; text from the current buffer, not a string.
-;;; FIX FIX FIX, this could be sped up, if it ends up being slow
 (defun nnmail-expand-newtext (newtext)
-  (let ((pos 0)
-	(len (length newtext))
-	(expanded-newtext ""))
+  (let ((len (length newtext))
+	(pos 0)
+	c expanded beg N did-expand)
     (while (< pos len)
-      (setq expanded-newtext
-	    (concat expanded-newtext
-		    (let ((c (aref newtext pos)))
-		      (if (= ?\\ c)
-			  (cond ((= ?\& (setq c (aref newtext
-						      (setq pos (1+ pos)))))
-				 (buffer-substring (match-beginning 0)
-						   (match-end 0)))
-				((and (>= c ?1) 
-				      (<= c ?9))
-				 ;; return empty string if N'th
-				 ;; sub-regexp did not match:
-				 (let ((n (- c ?0)))
-				   (if (match-beginning n)
-				       (buffer-substring (match-beginning n)
-							 (match-end n))
-				     "")))
-				(t (char-to-string c)))
-			(char-to-string c)))))
+      (setq beg pos)
+      (while (and (< pos len)
+		  (not (= (aref newtext pos) ?\\)))
+	(setq pos (1+ pos)))
+      (unless (= beg pos)
+	(push (substring newtext beg pos) expanded))
+      (when (< pos len)
+	;; we hit a \, expand it.
+	(setq did-expand t)
+	(setq pos (1+ pos))
+	(setq c (aref newtext pos))
+	(if (not (or (= c ?\&)
+		     (and (>= c ?1)
+			  (<= c ?9))))
+	    ;; \ followed by some character we don't expand
+	    (push (char-to-string c) expanded)
+	  ;; \& or \N
+	  (if (= c ?\&)
+	      (setq N 0)
+	    (setq N (- c ?0)))
+	  (when (match-beginning N)
+	    (push (buffer-substring (match-beginning N) (match-end N))
+		  expanded))))
       (setq pos (1+ pos)))
-    expanded-newtext))
+    (if did-expand
+	(apply 'concat (nreverse expanded))
+      newtext)))
+
 
 ;; Get a list of spool files to read.
 (defun nnmail-get-spool-files (&optional group)
@@ -1133,10 +1143,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (let (file timestamp file-time)
     (if (or (not (symbol-value (intern (format "%s-group-alist" backend))))
 	    force
-	    (and (setq file (condition-case ()
-				(symbol-value (intern (format "%s-active-file" 
-							      backend)))
-			      (error nil)))
+	    (and (setq file (ignore-errors
+			      (symbol-value (intern (format "%s-active-file" 
+							    backend)))))
 		 (setq file-time (nth 5 (file-attributes file)))
 		 (or (not
 		      (setq timestamp
@@ -1470,7 +1479,7 @@ If ARGS, PROMPT is used as an argument to `format'."
   (buffer-disable-undo (current-buffer))
   (erase-buffer)
   (let ((history nnmail-split-history)
-	elem ga)
+	elem)
     (while (setq elem (pop history))
       (insert (mapconcat (lambda (ga)
 			   (concat (car ga) ":" (int-to-string (cdr ga))))

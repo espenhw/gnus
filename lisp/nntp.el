@@ -312,7 +312,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
   (save-excursion
     (set-buffer nntp-server-buffer)
     (goto-char (point-min))
-    (cond ((looking-at "5[0-9]+")
+    (cond ((or (eobp)
+	       (looking-at "5[0-9]+"))
 	   (setq nntp-server-list-active-group nil))
 	  (t
 	   (setq nntp-server-list-active-group t)))))
@@ -394,7 +395,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
     (while (setq process (pop nntp-connection-list))
       (when (memq (process-status process) '(open run))
 	(set-process-sentinel process nil)
-	(nntp-send-string process "QUIT"))
+	(ignore-errors
+	  (nntp-send-string process "QUIT")))
       (when (buffer-name (process-buffer process))
 	(kill-buffer (process-buffer process))))))
 
@@ -571,10 +573,8 @@ It will prompt for a password."
   (run-hooks 'nntp-prepare-server-hook)
   (let* ((pbuffer (nntp-make-process-buffer buffer))
 	 (process
-	  (condition-case ()
-	      (funcall
-	       nntp-open-connection-function pbuffer)
-	    (error nil))))
+	  (ignore-errors
+	    (funcall nntp-open-connection-function pbuffer))))
     (when process
       (process-kill-without-query process)
       (nntp-wait-for process "^.*\n" buffer)
@@ -710,6 +710,8 @@ It will prompt for a password."
 	    (set-buffer buffer)
 	    (goto-char (point-max))
 	    (insert-buffer-substring (process-buffer process))
+	    ;; Nix out "nntp reading...." message.
+	    (message "")
 	    t))
       (erase-buffer))))
 

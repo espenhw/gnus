@@ -565,9 +565,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defun nndoc-article-begin ()
   (if nndoc-article-begin-function
       (funcall nndoc-article-begin-function)
-    (condition-case ()
-	(nndoc-search nndoc-article-begin)
-      (error nil))))
+    (ignore-errors
+      (nndoc-search nndoc-article-begin))))
 
 (defun nndoc-unquote-dashes ()
   "Unquote quoted non-separators in digests."

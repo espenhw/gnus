@@ -310,20 +310,18 @@ The SOUP packet file name will be inserted at the %s.")
 	       ;; This file is old enough. 
 	       (nnmail-expired-article-p group mod-time force))
 	;; Ok, we delete this file.
-	(when (condition-case nil
-		  (progn
-		    (nnheader-message 
-		     5 "Deleting %s in group %s..." (nnsoup-file prefix)
-		     group)
-		    (when (file-exists-p (nnsoup-file prefix))
-		      (delete-file (nnsoup-file prefix)))
-		    (nnheader-message 
-		     5 "Deleting %s in group %s..." (nnsoup-file prefix t)
-		     group)
-		    (when (file-exists-p (nnsoup-file prefix t))
-		      (delete-file (nnsoup-file prefix t)))
-		    t)
-		(error nil))
+	(when (ignore-errors
+		(nnheader-message 
+		 5 "Deleting %s in group %s..." (nnsoup-file prefix)
+		 group)
+		(when (file-exists-p (nnsoup-file prefix))
+		  (delete-file (nnsoup-file prefix)))
+		(nnheader-message 
+		 5 "Deleting %s in group %s..." (nnsoup-file prefix t)
+		 group)
+		(when (file-exists-p (nnsoup-file prefix t))
+		  (delete-file (nnsoup-file prefix t)))
+		t)
 	  (setcdr (cdr total-infolist) (delq info (cddr total-infolist)))
 	  (setq articles (gnus-sorted-complement articles range-list))))
       (when (not mod-time)
@@ -346,9 +344,8 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-read-active-file ()
   (setq nnsoup-group-alist nil)
   (when (file-exists-p nnsoup-active-file)
-    (condition-case ()
-	(load nnsoup-active-file t t t)
-      (error nil))
+    (ignore-errors
+      (load nnsoup-active-file t t t))
     ;; Be backwards compatible.
     (when (and nnsoup-group-alist
 	       (not (atom (caadar nnsoup-group-alist))))

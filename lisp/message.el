@@ -1331,15 +1331,14 @@ the user from the mailer."
   "Perform all actions in ACTIONS."
   ;; Now perform actions on successful sending.
   (while actions
-    (condition-case nil
-	(cond 
-	 ;; A simple function.
-	 ((message-functionp (car actions))
-	  (funcall (car actions)))
-	 ;; Something to be evaled.
-	 (t
-	  (eval (car actions))))
-      (error))
+    (ignore-errors
+      (cond 
+       ;; A simple function.
+       ((message-functionp (car actions))
+	(funcall (car actions)))
+       ;; Something to be evaled.
+       (t
+	(eval (car actions)))))
     (pop actions)))
 
 (defun message-send-mail (&optional arg)
@@ -3119,10 +3118,9 @@ regexp varstr."
 		(when (and (car dude)
 			   (or (not varstr)
 			       (string-match varstr (symbol-name (car dude)))))
-		  (condition-case ()
-		      (set (make-local-variable (car dude))
-			   (cdr dude))
-		    (error))))
+		  (ignore-errors
+		    (set (make-local-variable (car dude))
+			 (cdr dude)))))
 	      oldlocals)
       (current-buffer))))
 

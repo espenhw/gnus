@@ -120,7 +120,7 @@ asynchronously.	 The compressed face will be piped to this command."
 
 (defcustom gnus-emphasis-alist
   (let ((format
-	 "\\(\\s-\\|^\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*\\)%s\\)\\(\\s-\\|[?!.,;]\\)")
+	 "\\(\\s-\\|^\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*\\)%s\\)\\(\\s-\\|[?!.,;)]\\)")
 	(types
 	 '(("_" "_" underline)
 	   ("/" "/" italic)
@@ -129,12 +129,14 @@ asynchronously.	 The compressed face will be piped to this command."
 	   ("_\\*" "\\*_" underline-bold)
 	   ("\\*/" "/\\*" bold-italic)
 	   ("_\\*/" "/\\*_" underline-bold-italic))))
-    (mapcar
-     (lambda (spec)
-       (list
-	(format format (car spec) (cadr spec))
-	2 3 (intern (format "gnus-emphasis-%s" (caddr spec)))))
-     types))
+    `(("\\(\\s-\\|^\\)\\(_\\(\\(\\w\\|_\\)+\\)_\\)\\(\\s-\\|[?!.,;]\\)"
+       2 3 'gnus-emphasis-underline)
+      ,@(mapcar
+	 (lambda (spec)
+	   (list
+	    (format format (car spec) (cadr spec))
+	    2 3 (intern (format "gnus-emphasis-%s" (caddr spec)))))
+	 types)))
   "Alist that says how to fontify certain phrases.
 Each item looks like this:
 
@@ -682,11 +684,10 @@ always hide."
 	     mime::preview/content-list)
     ;; We have a MIMEish article, so we use the MIME data to narrow.
     (let ((pcinfo (car (last mime::preview/content-list))))
-      (condition-case ()
-	  (narrow-to-region
-	   (funcall (intern "mime::preview-content-info/point-min") pcinfo)
-	   (point-max))
-	(error nil))))
+      (ignore-errors
+	(narrow-to-region
+	 (funcall (intern "mime::preview-content-info/point-min") pcinfo)
+	 (point-max)))))
   
   (when (article-search-signature)
     (forward-line 1)
@@ -842,21 +843,19 @@ how much time has lapsed since DATE."
     (concat "Date: " date "\n"))
    ;; Do an X-Sent lapsed format.
    ((eq type 'lapsed)
-    ;; If the date is seriously mangled, the timezone
-    ;; functions are liable to bug out, so we condition-case
-    ;; the entire thing.
+    ;; If the date is seriously mangled, the timezone functions are
+    ;; liable to bug out, so we ignore all errors.
     (let* ((now (current-time))
 	   (real-time
-	    (condition-case ()
-		(gnus-time-minus
-		 (gnus-encode-date
-		  (timezone-make-date-arpa-standard
-		   (current-time-string now)
-		   (current-time-zone now) "UT"))
-		 (gnus-encode-date
-		  (timezone-make-date-arpa-standard
-		   date nil "UT")))
-	      (error nil)))
+	    (ignore-errors
+	      (gnus-time-minus
+	       (gnus-encode-date
+		(timezone-make-date-arpa-standard
+		 (current-time-string now)
+		 (current-time-zone now) "UT"))
+	       (gnus-encode-date
+		(timezone-make-date-arpa-standard
+		 date nil "UT")))))
 	   (real-sec (and real-time
 			  (+ (* (float (car real-time)) 65536)
 			     (cadr real-time))))

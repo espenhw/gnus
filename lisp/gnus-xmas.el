@@ -137,6 +137,10 @@ It is provided only to ease porting of broken FSF Emacs programs."
     (set-extent-face gnus-newsgroup-selected-overlay
 		     gnus-summary-selected-face)))
 
+(defvar gnus-xmas-force-redisplay t
+  "If non-nil, force a redisplay before recentering the summary buffer.
+This is ugly, but it works around a bug in `window-displayed-height'.")
+
 (defun gnus-xmas-summary-recenter ()
   "\"Center\" point in the summary window.
 If `gnus-auto-center-summary' is nil, or the article buffer isn't
@@ -144,7 +148,8 @@ displayed, no centering will be performed."
   ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
   ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
   ;; Force redisplay to get properly computed window height.
-  (sit-for 0)
+  (when gnus-xmas-force-redisplay
+    (sit-for 0))
   (when gnus-auto-center-summary
     (let* ((height (if (fboundp 'window-displayed-height)
 		       (window-displayed-height)

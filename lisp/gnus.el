@@ -42,14 +42,14 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.56"
+(defconst gnus-version-number "0.57"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
 (defcustom gnus-inhibit-startup-message nil
-  "*If non-nil, the startup message will not be displayed.
+  "If non-nil, the startup message will not be displayed.
 This variable is used before `.gnus.el' is loaded, so it should
 be set in `.emacs' instead."
   :group 'gnus-start
@@ -104,14 +104,12 @@ be set in `.emacs' instead."
       (copy-face 'default name)
       (when (and fg
 		 (not (string-equal fg "default")))
-	(condition-case ()
-	    (set-face-foreground name fg)
-	  (error nil)))
+	(ignore-errors
+	  (set-face-foreground name fg)))
       (when (and bg
 		 (not (string-equal bg "default")))
-	(condition-case ()
-	    (set-face-background name bg)
-	  (error nil)))
+	(ignore-errors
+	  (set-face-background name bg)))
       (when (and stipple
 		 (not (string-equal stipple "default"))
 		 (not (eq stipple 'custom:asis))
@@ -119,19 +117,16 @@ be set in `.emacs' instead."
 	(set-face-stipple name stipple))
       (when (and bold
 		 (not (eq bold 'custom:asis)))
-	(condition-case ()
-	    (make-face-bold name)
-	  (error nil)))
+	(ignore-errors
+	  (make-face-bold name)))
       (when (and italic
 		 (not (eq italic 'custom:asis)))
-	(condition-case ()
-	    (make-face-italic name)
-	  (error nil)))
+	(ignore-errors
+	  (make-face-italic name)))
       (when (and underline
 		 (not (eq underline 'custom:asis)))
-	(condition-case ()
-	    (set-face-underline-p name t)
-	  (error nil))))
+	(ignore-errors
+	  (set-face-underline-p name t))))
     name))
 
 ;;; Internal variables
@@ -230,15 +225,22 @@ be set in `.emacs' instead."
 (require 'gnus-util)
 (require 'nnheader)
 
+(defgroup gnus-meta nil
+  "Meta variables controling major portions of Gnus.
+In general, modifying these variables does not take affect until Gnus
+is restarted, and sometimes reloaded."
+  :group 'gnus)
+
 (defcustom gnus-directory (or (getenv "SAVEDIR") "~/News/")
-  "*Directory variable from which all other Gnus file variables are derived."
-  :group 'gnus-start
+  "Directory variable from which all other Gnus file variables are derived."
+  :group 'gnus-meta
   :type 'directory)
 
 (defcustom gnus-default-directory nil
   "*Default directory for all Gnus buffers."
   :group 'gnus-start
-  :type 'directory)
+  :type '(choice (const :tag "current" nil)
+		 directory))
 
 ;; Site dependent variables.  These variables should be defined in
 ;; paths.el.
@@ -252,15 +254,17 @@ See the documentation to that variable.")
 
 ;; Don't touch this variable.
 (defvar gnus-nntp-service "nntp"
-  "*NNTP service name (\"nntp\" or 119).
+  "NNTP service name (\"nntp\" or 119).
 This is an obsolete variable, which is scarcely used.  If you use an
 nntp server for your newsgroup and want to change the port number
 used to 899, you would say something along these lines:
 
  (setq gnus-select-method '(nntp \"my.nntp.server\" (nntp-port-number 899)))")
 
-(defvar gnus-nntpserver-file "/etc/nntpserver"
-  "*A file with only the name of the nntp server in it.")
+(defcustom gnus-nntpserver-file "/etc/nntpserver"
+  "A file with only the name of the nntp server in it."
+  :group 'gnus-start
+  :type 'file)
 
 ;; This function is used to check both the environment variable
 ;; NNTPSERVER and the /etc/nntpserver file to see whether one can find
@@ -281,9 +285,8 @@ used to 899, you would say something along these lines:
 
 (defcustom gnus-select-method
   (nconc
-   (list 'nntp (or (condition-case ()
-		       (gnus-getenv-nntpserver)
-		     (error nil))
+   (list 'nntp (or (ignore-errors
+		     (gnus-getenv-nntpserver))
 		   (when (and gnus-default-nntp-server
 			      (not (string= gnus-default-nntp-server "")))
 		     gnus-default-nntp-server)
@@ -292,25 +295,27 @@ used to 899, you would say something along these lines:
 	   (equal gnus-nntp-service "nntp"))
        nil
      (list gnus-nntp-service)))
-  "*Default method for selecting a newsgroup.
+  "Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address.
 
 For instance, if you want to get your news via NNTP from
 \"flab.flab.edu\", you could say:
 
-(setq gnus-select-method '(nntp \"flab.flab.edu\"))
+\(setq gnus-select-method '(nntp \"flab.flab.edu\"))
 
 If you want to use your local spool, say:
 
-(setq gnus-select-method (list 'nnspool (system-name)))
+\(setq gnus-select-method (list 'nnspool (system-name)))
 
 If you use this variable, you must set `gnus-nntp-server' to nil.
 
 There is a lot more to know about select methods and virtual servers -
-see the manual for details.")
+see the manual for details."
+  :group 'gnus-start
+  :type 'gnus-select-method)
 
-(defvar gnus-message-archive-method 
+(defcustom gnus-message-archive-method 
   `(nnfolder
     "archive"
     (nnfolder-directory ,(nnheader-concat message-directory "archive"))
@@ -318,14 +323,20 @@ see the manual for details.")
      ,(nnheader-concat message-directory "archive/active"))
     (nnfolder-get-new-mail nil)
     (nnfolder-inhibit-expiry t))
-  "*Method used for archiving messages you've sent.
+  "Method used for archiving messages you've sent.
 This should be a mail method.
 
 It's probably not a very effective to change this variable once you've
 run Gnus once.  After doing that, you must edit this server from the
-server buffer.")
+server buffer."
+  :group 'gnus-start
+  :type 'gnus-select-method)
 
-(defvar gnus-message-archive-group nil
+(defgroup gnus-message '((message custom-group))
+  "Interface from gnus to message mode."
+  :group 'gnus)
+
+(defcustom gnus-message-archive-group nil
   "*Name of the group in which to save the messages you've written.
 This can either be a string, a list of strings; or an alist
 of regexps/functions/forms to be evaluated to return a string (or a list
@@ -344,40 +355,53 @@ Normally the group names returned by this variable should be
 unprefixed -- which implicitly means \"store on the archive server\".
 However, you may wish to store the message on some other server.  In
 that case, just return a fully prefixed name of the group --
-\"nnml+private:mail.misc\", for instance.")
+\"nnml+private:mail.misc\", for instance."
+  :group 'gnus-message
+  :type '(choice (const :tag "none" nil)
+		 string))
 
-(defvar gnus-secondary-servers nil
-  "*List of NNTP servers that the user can choose between interactively.
+(defcustom gnus-secondary-servers nil
+  "List of NNTP servers that the user can choose between interactively.
 To make Gnus query you for a server, you have to give `gnus' a
-non-numeric prefix - `C-u M-x gnus', in short.")
+non-numeric prefix - `C-u M-x gnus', in short."
+  :group 'gnus-start
+  :type '(repeat string))
 
-(defvar gnus-nntp-server nil
+(defcustom gnus-nntp-server nil
   "*The name of the host running the NNTP server.
 This variable is semi-obsolete.	 Use the `gnus-select-method'
-variable instead.")
+variable instead."
+  :group 'gnus-start
+  :type '(choice (const :tag "disable" nil)
+		 string))
 
-(defvar gnus-secondary-select-methods nil
-  "*A list of secondary methods that will be used for reading news.
+(defcustom gnus-secondary-select-methods nil
+  "A list of secondary methods that will be used for reading news.
 This is a list where each element is a complete select method (see
 `gnus-select-method').
 
 If, for instance, you want to read your mail with the nnml backend,
 you could set this variable:
 
-(setq gnus-secondary-select-methods '((nnml \"\")))")
+\(setq gnus-secondary-select-methods '((nnml \"\")))"
+:group 'gnus-start
+:type '(repeat gnus-select-method))
 
 (defvar gnus-backup-default-subscribed-newsgroups
   '("news.announce.newusers" "news.groups.questions" "gnu.emacs.gnus")
   "Default default new newsgroups the first time Gnus is run.
 Should be set in paths.el, and shouldn't be touched by the user.")
 
-(defvar gnus-local-domain nil
+(defcustom gnus-local-domain nil
   "Local domain name without a host name.
 The DOMAINNAME environment variable is used instead if it is defined.
 If the `system-name' function returns the full Internet name, there is
-no need to set this variable.")
+no need to set this variable."
+  :group 'gnus-start
+  :type '(choice (const :tag "default" nil)
+		 string))
 
-(defvar gnus-local-organization nil
+(defcustom gnus-local-organization nil
   "String with a description of what organization (if any) the user belongs to.
 The ORGANIZATION environment variable is used instead if it is defined.
 If this variable contains a function, this function will be called
@@ -386,20 +410,26 @@ return a string.
 
 In any case, if the string (either in the variable, in the environment
 variable, or returned by the function) is a file name, the contents of
-this file will be used as the organization.")
+this file will be used as the organization."
+  :group 'gnus-start
+  :type '(choice (const :tag "default" nil)
+		 string))
 
 ;; Customization variables
 
-(defvar gnus-refer-article-method nil
-  "*Preferred method for fetching an article by Message-ID.
+(defcustom gnus-refer-article-method nil
+  "Preferred method for fetching an article by Message-ID.
 If you are reading news from the local spool (with nnspool), fetching
 articles by Message-ID is painfully slow.  By setting this method to an
 nntp method, you might get acceptable results.
 
 The value of this variable must be a valid select method as discussed
-in the documentation of `gnus-select-method'.")
+in the documentation of `gnus-select-method'."
+  :group 'gnus-start
+  :type '(choice (const :tag "default" nil)
+		 gnus-select-method))
 
-(defvar gnus-group-faq-directory
+(defcustom gnus-group-faq-directory
   '("/ftp@mirrors.aol.com:/pub/rtfm/usenet/"
     "/ftp@sunsite.auc.dk:/pub/usenet/"
     "/ftp@sunsite.doc.ic.ac.uk:/pub/usenet/news-faqs/"
@@ -411,7 +441,7 @@ in the documentation of `gnus-select-method'.")
     "/ftp@nctuccca.edu.tw:/USENET/FAQ/"
     "/ftp@hwarang.postech.ac.kr:/pub/usenet/"
     "/ftp@ftp.hk.super.net:/mirror/faqs/")
-  "*Directory where the group FAQs are stored.
+  "Directory where the group FAQs are stored.
 This will most commonly be on a remote machine, and the file will be
 fetched by ange-ftp.
 
@@ -434,26 +464,40 @@ If the default site is too slow, try one of these:
 	          sunsite.auc.dk                 /pub/usenet
    Asia:	  nctuccca.edu.tw		 /USENET/FAQ
 		  hwarang.postech.ac.kr		 /pub/usenet
-		  ftp.hk.super.net		 /mirror/faqs")
+		  ftp.hk.super.net		 /mirror/faqs"
+  :group 'gnus-group
+  :type '(choice directory
+		 (repeat directory)))
 
-(defvar gnus-use-cross-reference t
+(defcustom gnus-use-cross-reference t
   "*Non-nil means that cross referenced articles will be marked as read.
 If nil, ignore cross references.  If t, mark articles as read in
 subscribed newsgroups.	If neither t nor nil, mark as read in all
-newsgroups.")
+newsgroups."
+  :group 'gnus-start
+  :type '(choice (const :tag "off" nil)
+		 (const :tag "subscribed" t)
+		 (sexp :format "all"
+		       :value always)))
 
-(defvar gnus-process-mark ?#
-  "*Process mark.")
+(defcustom gnus-process-mark ?#
+  "*Process mark."
+  :group 'gnus-start
+  :type 'character)
 
-(defvar gnus-asynchronous nil
-  "*If non-nil, Gnus will supply backends with data needed for async article fetching.")
+(defcustom gnus-asynchronous nil
+  "*If non-nil, Gnus will supply backends with data needed for async article fetching."
+  :group 'gnus-start
+  :type 'boolean)
 
-(defvar gnus-large-newsgroup 200
+(defcustom gnus-large-newsgroup 200
   "*The number of articles which indicates a large newsgroup.
 If the number of articles in a newsgroup is greater than this value,
-confirmation is required for selecting the newsgroup.")
+confirmation is required for selecting the newsgroup."
+  :group 'gnus-group
+  :type 'integer)
 
-(defvar gnus-use-long-file-name (not (memq system-type '(usg-unix-v xenix)))
+(defcustom gnus-use-long-file-name (not (memq system-type '(usg-unix-v xenix)))
   "*Non-nil means that the default name of a file to save articles in is the group name.
 If it's nil, the directory form of the group name is used instead.
 
@@ -465,90 +509,143 @@ will not be used for kill files.
 
 Note that the default for this variable varies according to what system
 type you're using.  On `usg-unix-v' and `xenix' this variable defaults
-to nil while on all other systems it defaults to t.")
+to nil while on all other systems it defaults to t."
+  :group 'gnus-start
+  :type 'boolean)
 
-(defvar gnus-kill-files-directory gnus-directory
-  "*Name of the directory where kill files will be stored (default \"~/News\").")
+(defcustom gnus-kill-files-directory gnus-directory
+  "*Name of the directory where kill files will be stored (default \"~/News\")."
+  :group 'gnus-score
+  :type 'directory)
 
-(defvar gnus-save-score nil
-  "*If non-nil, save group scoring info.")
+(defcustom gnus-save-score nil
+  "*If non-nil, save group scoring info."
+  :group 'gnus-score
+  :group 'gnus-start
+  :type 'boolean)
 
-(defvar gnus-use-undo t
-  "*If non-nil, allow undoing in Gnus group mode buffers.")
+(defcustom gnus-use-undo t
+  "*If non-nil, allow undoing in Gnus group mode buffers."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-use-adaptive-scoring nil
+(defcustom gnus-use-adaptive-scoring nil
   "*If non-nil, use some adaptive scoring scheme.
 If a list, then the values `word' and `line' are meaningful.  The
 former will perform adaption on individual words in the subject
-header while `line' will perform adaption on several headers.")
+header while `line' will perform adaption on several headers."
+  :group 'gnus-meta
+  :type '(set (const word) (const line)))
 
-(defvar gnus-use-cache 'passive
+(defcustom gnus-use-cache 'passive
   "*If nil, Gnus will ignore the article cache.
 If `passive', it will allow entering (and reading) articles
 explicitly entered into the cache.  If anything else, use the
-cache to the full extent of the law.")
+cache to the full extent of the law."
+  :group 'gnus-meta
+  :group 'gnus-cache
+  :type '(choice (const :tag "off" nil)
+		 (const :tag "passive" passive)
+		 (const :tag "active" t)))
 
-(defvar gnus-use-trees nil
-  "*If non-nil, display a thread tree buffer.")
+(defcustom gnus-use-trees nil
+  "*If non-nil, display a thread tree buffer."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-use-grouplens nil
-  "*If non-nil, use GroupLens ratings.")
+(defcustom gnus-use-grouplens nil
+  "*If non-nil, use GroupLens ratings."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-keep-backlog nil
+(defcustom gnus-keep-backlog nil
   "*If non-nil, Gnus will keep read articles for later re-retrieval.
 If it is a number N, then Gnus will only keep the last N articles
 read.  If it is neither nil nor a number, Gnus will keep all read
-articles.  This is not a good idea.")
+articles.  This is not a good idea."
+  :group 'gnus-meta
+  :type '(choice (const :tag "off" nil)
+		 integer
+		 (sexp :format "all" 
+		       :value t)))
 
-(defvar gnus-use-nocem nil
-  "*If non-nil, Gnus will read NoCeM cancel messages.")
+(defcustom gnus-use-nocem nil
+  "*If non-nil, Gnus will read NoCeM cancel messages."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-suppress-duplicates nil
-  "*If non-nil, Gnus will mark duplicate copies of the same article as read.")
+(defcustom gnus-suppress-duplicates nil
+  "*If non-nil, Gnus will mark duplicate copies of the same article as read."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-use-demon nil
-  "If non-nil, Gnus might use some demons.")
+(defcustom gnus-use-demon nil
+  "If non-nil, Gnus might use some demons."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-use-scoring t
-  "*If non-nil, enable scoring.")
+(defcustom gnus-use-scoring t
+  "*If non-nil, enable scoring."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-use-picons nil
-  "*If non-nil, display picons.")
+(defcustom gnus-use-picons nil
+  "*If non-nil, display picons."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-summary-prepare-exit-hook nil
-  "*A hook called when preparing to exit from the summary buffer.
-It calls `gnus-summary-expire-articles' by default.")
-(add-hook 'gnus-summary-prepare-exit-hook 'gnus-summary-expire-articles)
+(defcustom gnus-summary-prepare-exit-hook 
+  '(gnus-summary-expire-articles)
+  "A hook called when preparing to exit from the summary buffer.
+It calls `gnus-summary-expire-articles' by default."
+  :group 'gnus-summary
+  :type 'hook)
 
-(defvar gnus-novice-user t
+(defcustom gnus-novice-user t
   "*Non-nil means that you are a usenet novice.
 If non-nil, verbose messages may be displayed and confirmations may be
-required.")
+required."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-expert-user nil
+(defcustom gnus-expert-user nil
   "*Non-nil means that you will never be asked for confirmation about anything.
-And that means *anything*.")
+And that means *anything*."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-interactive-catchup t
-  "*If non-nil, require your confirmation when catching up a group.")
+(defcustom gnus-interactive-catchup t
+  "*If non-nil, require your confirmation when catching up a group."
+  :group 'gnus-group
+  :type 'boolean)
 
-(defvar gnus-interactive-exit t
-  "*If non-nil, require your confirmation when exiting Gnus.")
+(defcustom gnus-interactive-exit t
+  "*If non-nil, require your confirmation when exiting Gnus."
+  :group 'gnus-group
+  :type 'boolean)
 
-(defvar gnus-extract-address-components 'gnus-extract-address-components
+(defcustom gnus-extract-address-components 'gnus-extract-address-components
   "*Function for extracting address components from a From header.
 Two pre-defined function exist: `gnus-extract-address-components',
 which is the default, quite fast, and too simplistic solution, and
 `mail-extract-address-components', which works much better, but is
-slower.")
+slower."
+  :group 'gnus-start
+  :type '(radio (function-item gnus-extract-address-components)
+		(function-item mail-extract-address-components)
+		(function :tag "Other")))
 
-(defvar gnus-carpal nil
-  "*If non-nil, display clickable icons.")
+(defcustom gnus-carpal nil
+  "*If non-nil, display clickable icons."
+  :group 'gnus-meta
+  :type 'boolean)
 
-(defvar gnus-shell-command-separator ";"
-  "String used to separate to shell commands.")
+(defcustom gnus-shell-command-separator ";"
+  "String used to separate to shell commands."
+  :group 'gnus-start
+  :type 'string)
 
-(defvar gnus-valid-select-methods
+(defcustom gnus-valid-select-methods
   '(("nntp" post address prompt-address)
     ("nnspool" post address)
     ("nnvirtual" post-mail virtual prompt-address)
@@ -571,46 +668,90 @@ of the select method.  The other elements may be the category of
 this method (i. e., `post', `mail', `none' or whatever) or other
 properties that this method has (like being respoolable).
 If you implement a new select method, all you should have to change is
-this variable.	I think.")
+this variable.	I think."
+  :group 'gnus-start
+  :type '(repeat (group (string :tag "Name")
+			(radio-button-choice (const :format "%v " post)
+					     (const :format "%v " mail)
+					     (const :format "%v " none)
+					     (const post-mail))
+			(checklist :inline t
+				   (const :format "%v " address)
+				   (const :format "%v " prompt-address)
+				   (const :format "%v " virtual)
+				   (const respool)))))
 
-(defvar gnus-updated-mode-lines '(group article summary tree)
-  "*List of buffers that should update their mode lines.
-The list may contain the symbols `group', `article' and `summary'.  If
-the corresponding symbol is present, Gnus will keep that mode line
-updated with information that may be pertinent.
-If this variable is nil, screen refresh may be quicker.")
+(define-widget 'gnus-select-method 'list
+  "Widget for entering a select method."
+  :args `((choice :tag "Method"
+		  ,@(mapcar (lambda (entry)
+			      (list 'const :format "%v\n"
+				    (intern (car entry))))
+			    gnus-valid-select-methods))
+	  (string :tag "Address")
+	  (editable-list  :inline t
+			  (list :format "%v"
+				variable 
+				(sexp :tag "Value")))))
+
+(defcustom gnus-updated-mode-lines '(group article summary tree)
+  "List of buffers that should update their mode lines.
+The list may contain the symbols `group', `article', `tree' and
+`summary'.  If the corresponding symbol is present, Gnus will keep
+that mode line updated with information that may be pertinent.
+If this variable is nil, screen refresh may be quicker."
+  :group 'gnus-start
+  :type '(set (const group)
+	      (const article)
+	      (const summary)
+	      (const tree)))
 
 ;; Added by Keinonen Kari <kk85613@cs.tut.fi>.
-(defvar gnus-mode-non-string-length nil
+(defcustom gnus-mode-non-string-length nil
   "*Max length of mode-line non-string contents.
 If this is nil, Gnus will take space as is needed, leaving the rest
-of the modeline intact.")
+of the modeline intact."
+  :group 'gnus-start
+  :type '(choice (const nil)
+		 integer))
 
-(defvar gnus-auto-expirable-newsgroups nil
+(defcustom gnus-auto-expirable-newsgroups nil
   "*Groups in which to automatically mark read articles as expirable.
 If non-nil, this should be a regexp that should match all groups in
-which to perform auto-expiry.  This only makes sense for mail groups.")
+which to perform auto-expiry.  This only makes sense for mail groups."
+  :group 'gnus-group
+  :type '(choice (const nil)
+		 regexp))
 
-(defvar gnus-total-expirable-newsgroups nil
+(defcustom gnus-total-expirable-newsgroups nil
   "*Groups in which to perform expiry of all read articles.
 Use with extreme caution.  All groups that match this regexp will be
 expiring - which means that all read articles will be deleted after
-(say) one week.	 (This only goes for mail groups and the like, of
-course.)")
+\(say) one week.	 (This only goes for mail groups and the like, of
+course.)"
+  :group 'gnus-group
+  :type '(choice (const nil)
+		 regexp))
 
-(defvar gnus-group-uncollapsed-levels 1
-  "Number of group name elements to leave alone when making a short group name.")
+(defcustom gnus-group-uncollapsed-levels 1
+  "Number of group name elements to leave alone when making a short group name."
+  :group 'gnus-group
+  :type 'integer)
 
-(defvar gnus-group-use-permanent-levels nil
-  "*If non-nil, once you set a level, Gnus will use this level.")
+(defcustom gnus-group-use-permanent-levels nil
+  "*If non-nil, once you set a level, Gnus will use this level."
+  :group 'gnus-group
+  :type 'boolean)
 
 ;; Hooks.
 
-(defvar gnus-load-hook nil
-  "*A hook run while Gnus is loaded.")
+(defcustom gnus-load-hook nil
+  "A hook run while Gnus is loaded."
+  :group 'gnus-start
+  :type 'hook)
 
-(defvar gnus-apply-kill-hook '(gnus-apply-kill-file)
-  "*A hook called to apply kill files to a group.
+(defcustom gnus-apply-kill-hook '(gnus-apply-kill-file)
+  "A hook called to apply kill files to a group.
 This hook is intended to apply a kill file to the selected newsgroup.
 The function `gnus-apply-kill-file' is called by default.
 
@@ -625,15 +766,24 @@ following hook:
 	(lambda ()
 	  (cond ((string-match \"control\" gnus-newsgroup-name)
 		 (gnus-kill \"Subject\" \"rmgroup\")
-		 (gnus-expunge \"X\"))))))")
+		 (gnus-expunge \"X\"))))))"
+  :group 'gnus-score
+  :options '(gnus-apply-kill-file)
+  :type 'hook)
 
-(defvar gnus-group-change-level-function nil
+(defcustom gnus-group-change-level-function nil
   "Function run when a group level is changed.
-It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
+It is called with three parameters -- GROUP, LEVEL and OLDLEVEL."
+  :group 'gnus-start
+  :type 'function)
 
 ;;; Face thingies.
 
-(defvar gnus-visual 
+(defgroup gnus-visual nil
+  "Options controling the visual fluff."
+  :group 'gnus)
+
+(defcustom gnus-visual 
   '(summary-highlight group-highlight article-highlight 
 		      mouse-face
 		      summary-menu group-menu article-menu
@@ -644,9 +794,28 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
   "Enable visual features.
 If `visual' is disabled, there will be no menus and few faces.  Most of
 the visual customization options below will be ignored.  Gnus will use
-less space and be faster as a result.")
+less space and be faster as a result."
+  :group 'gnus-meta
+  :group 'gnus-visual
+  :type '(set (const summary-highlight)
+	      (const group-highlight)
+	      (const article-highlight)
+	      (const mouse-face)
+	      (const summary-menu)
+	      (const group-menu)
+	      (const article-menu)
+	      (const tree-highlight)
+	      (const menu)
+	      (const highlight)
+	      (const browse-menu)
+	      (const server-menu)
+	      (const page-marker)
+	      (const tree-menu)
+	      (const binary-menu)
+	      (const pick-menu)
+	      (const grouplens-menu)))
 
-(defvar gnus-mouse-face
+(defcustom gnus-mouse-face
   (condition-case ()
       (if (gnus-visual-p 'mouse-face 'highlight)
 	  (if (boundp 'gnus-mouse-face)
@@ -656,7 +825,9 @@ less space and be faster as a result.")
     (error 'highlight))
   "Face used for group or summary buffer mouse highlighting.
 The line beneath the mouse pointer will be highlighted with this
-face.")
+face."
+  :group 'gnus-visual
+  :type 'face)
 
 (defcustom gnus-article-display-hook
   (if (and (string-match "XEmacs" emacs-version)
@@ -676,7 +847,8 @@ If you leave the list empty, the article will appear exactly as it is
 stored on the disk.  The list entries will hide or highlight various
 parts of the article, making it easier to find the information you
 want."
-  :group 'gnus-art
+  :group 'article
+  :group 'gnus-visual
   :type 'hook
   :options '(gnus-article-add-buttons
 	     gnus-article-add-buttons-to-head
@@ -687,9 +859,8 @@ want."
 	     gnus-article-de-quoted-unreadable
 	     gnus-article-display-x-face
 	     gnus-summary-stop-page-breaking
-	     gnus-summary-caesar-message
-	     gnus-article-hide-headers
-	     gnus-summary-verbose-headers
+	     ;; gnus-summary-caesar-message
+	     ;; gnus-summary-verbose-headers
 	     gnus-summary-toggle-mime
 	     gnus-article-hide
 	     gnus-article-hide-headers
@@ -703,7 +874,6 @@ want."
 	     gnus-article-highlight-citation
 	     gnus-article-highlight-signature
 	     gnus-article-date-ut
-	     gnus-article-date-ut
 	     gnus-article-date-local
 	     gnus-article-date-lapsed
 	     gnus-article-date-original
@@ -711,8 +881,6 @@ want."
 	     gnus-article-strip-leading-blank-lines
 	     gnus-article-strip-multiple-blank-lines
 	     gnus-article-strip-blank-lines))
-
-
 
 
 ;;; Internal variables
@@ -1754,14 +1922,13 @@ If NEWSGROUP is nil, return the global kill file name instead."
 
 (defun gnus-check-backend-function (func group)
   "Check whether GROUP supports function FUNC."
-  (condition-case ()
-      (let ((method (if (stringp group)
-			(car (gnus-find-method-for-group group))
-		      group)))
-	(unless (featurep method)
-	  (require method))
-	(fboundp (intern (format "%s-%s" method func))))
-    (error nil)))
+  (ignore-errors
+    (let ((method (if (stringp group)
+		      (car (gnus-find-method-for-group group))
+		    group)))
+      (unless (featurep method)
+	(require method))
+      (fboundp (intern (format "%s-%s" method func))))))
 
 (defun gnus-methods-using (feature)
   "Find all methods that have FEATURE."

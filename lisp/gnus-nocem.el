@@ -98,9 +98,8 @@ isn't bound, the message will be used unconditionally."
     ;; Read the active file if it hasn't been read yet.
     (and (file-exists-p (gnus-nocem-active-file))
 	 (not gnus-nocem-active)
-	 (condition-case ()
-	     (load (gnus-nocem-active-file) t t t)
-	   (error nil)))
+	 (ignore-errors
+	   (load (gnus-nocem-active-file) t t t)))
     ;; Go through all groups and see whether new articles have
     ;; arrived.  
     (while (setq group (pop groups))
@@ -191,9 +190,8 @@ isn't bound, the message will be used unconditionally."
       (narrow-to-region b (1+ (match-beginning 0)))
       (goto-char (point-min))
       (while (search-forward "\t" nil t)
-	(if (condition-case nil
-		(setq group (let ((obarray gnus-active-hashtb)) (read buf)))
-	      (error nil))
+	(if (ignore-errors
+	      (setq group (let ((obarray gnus-active-hashtb)) (read buf))))
 	    (if (not (boundp group))
 		;; Make sure all entries in the hashtb are bound.
 		(set group nil)

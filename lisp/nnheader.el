@@ -249,7 +249,7 @@ on your system, you could say something like:
   '(prog1
        (if (= (following-char) ?\t)
 	   0
-	 (let ((num (condition-case nil (read (current-buffer)) (error nil))))
+	 (let ((num (ignore-errors (read (current-buffer)))))
 	   (if (numberp num) num 0)))
      (or (eobp) (forward-char 1))))
 
