@@ -112,8 +112,7 @@ See the documentation for these variables and functions for details."
     (insert sieve-template))
   (insert gnus-sieve-region-start
 	  (gnus-sieve-script gnus-sieve-select-method gnus-sieve-crosspost)
-	  gnus-sieve-region-end)
-  (sieve-mode))
+	  gnus-sieve-region-end))
 
 (defun gnus-sieve-guess-rule-for-article ()
   "Guess a sieve rule based on RFC822 article in buffer.

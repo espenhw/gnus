@@ -1,5 +1,14 @@
 2001-11-07  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-sieve.el (gnus-sieve-generate): Don't invoke sieve-mode.
+
+	* sieve-mode.el (sieve-control-commands-face)
+	(sieve-control-commands-face, sieve-action-commands-face)
+	(sieve-test-commands-face, sieve-tagged-arguments-face): New
+	faces.
+	(sieve-font-lock-keywords): Use them.
+	(sieve-mode): Only set font-lock-defaults in emacs.
+
 	* gnus-art.el (gnus-default-article-saver): Add
 	gnus-summary-save-body-in-file.
 	(gnus-summary-write-to-file): Fix doc.

@@ -45,7 +45,7 @@
 ;;                        added keymap and menubar to hook into sieve-manage
 ;; 2001-10-31 version 1.2 committed to Oort Gnus
 ;;
-;; $Id: sieve-mode.el,v 1.7 2001/03/07 17:47:23 jas Exp $
+;; $Id: sieve-mode.el,v 6.1 2001/11/01 00:50:22 jas Exp $
 
 ;;; Code:
 
@@ -66,20 +66,70 @@
 
 ;; Font-lock
 
+(defvar sieve-control-commands-face 'sieve-control-commands-face
+  "Face name used for Sieve Control Commands.")
+
+(defface sieve-control-commands-face 
+  '((((type tty) (class color)) (:foreground "blue" :weight light))
+    (((class grayscale) (background light)) (:foreground "LightGray" :bold t))
+    (((class grayscale) (background dark)) (:foreground "DimGray" :bold t))
+    (((class color) (background light)) (:foreground "Orchid"))
+    (((class color) (background dark)) (:foreground "LightSteelBlue"))
+    (t (:bold t)))
+  "Face used for Sieve Control Commands.")
+
+(defvar sieve-action-commands-face 'sieve-action-commands-face
+  "Face name used for Sieve Action Commands.")
+
+(defface sieve-action-commands-face
+  '((((type tty) (class color)) (:foreground "blue" :weight bold))
+    (((class color) (background light)) (:foreground "Blue"))
+    (((class color) (background dark)) (:foreground "LightSkyBlue"))
+    (t (:inverse-video t :bold t)))
+  "Face used for Sieve Action Commands.")
+
+(defvar sieve-test-commands-face 'sieve-test-commands-face
+  "Face name used for Sieve Test Commands.")
+
+(defface sieve-test-commands-face 
+  '((((type tty) (class color)) (:foreground "magenta"))
+    (((class grayscale) (background light))
+     (:foreground "LightGray" :bold t :underline t))
+    (((class grayscale) (background dark))
+     (:foreground "Gray50" :bold t :underline t))
+    (((class color) (background light)) (:foreground "CadetBlue"))
+    (((class color) (background dark)) (:foreground "Aquamarine"))
+    (t (:bold t :underline t)))
+  "Face used for Sieve Test Commands.")
+
+(defvar sieve-tagged-arguments-face 'sieve-tagged-arguments-face
+  "Face name used for Sieve Tagged Arguments.")
+
+(defface sieve-tagged-arguments-face
+  '((((type tty) (class color)) (:foreground "cyan" :weight bold))
+    (((class grayscale) (background light)) (:foreground "LightGray" :bold t))
+    (((class grayscale) (background dark)) (:foreground "DimGray" :bold t))
+    (((class color) (background light)) (:foreground "Purple"))
+    (((class color) (background dark)) (:foreground "Cyan"))
+    (t (:bold t)))
+  "Face used for Sieve Tagged Arguments.")
+
+
 (defconst sieve-font-lock-keywords
   (eval-when-compile
     (list
      ;; control commands
      (cons (regexp-opt '("require" "if" "else" "elsif" "stop"))
-	   'font-lock-keyword-face)
+	   'sieve-control-commands-face)
      ;; action commands
      (cons (regexp-opt '("fileinto" "redirect" "reject" "keep" "discard"))
-	   'font-lock-keyword-face)
+	   'sieve-action-commands-face)
      ;; test commands
      (cons (regexp-opt '("address" "allof" "anyof" "exists" "false"
 			 "true" "header" "not" "size" "envelope"))
-	   'font-lock-builtin-face)
-     (cons "\\Sw+:\\sw+" 'font-lock-constant-face))))
+	   'sieve-test-commands-face)
+     (cons "\\Sw+:\\sw+" 
+	   'sieve-tagged-arguments-face))))
 
 ;; Syntax table
 
@@ -136,8 +186,9 @@ Turning on Sieve mode runs `sieve-mode-hook'."
   (set (make-local-variable 'comment-end) "")
   ;;(set (make-local-variable 'comment-start-skip) "\\(^\\|\\s-\\);?#+ *")
   (set (make-local-variable 'comment-start-skip) "#+ *")
-  (set (make-local-variable 'font-lock-defaults)
-       '(sieve-font-lock-keywords nil nil ((?_ . "w"))))
+  (unless (featurep 'xemacs)
+    (set (make-local-variable 'font-lock-defaults)
+         '(sieve-font-lock-keywords nil nil ((?_ . "w")))))
   (easy-menu-add-item nil nil sieve-mode-menu))
 
 ;; Menu
