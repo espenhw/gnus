@@ -1,3 +1,8 @@
+2001-10-29  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Customizing Articles): Sort list. Remove
+	duplicate. Suggested by Henrik Holm <henrik@tele.ntnu.no>.
+
 2001-10-27  Simon Josefsson  <jas@extundo.com>
 
 	* message.texi (Insertion): Fix message-yank*-prefix.
