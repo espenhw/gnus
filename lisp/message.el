@@ -6485,7 +6485,13 @@ which specify the range to operate on."
 	(if (eq (char-after) (char-after (- (point) 2)))
 	    (delete-char -2))))))
 
-(defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
+(defun message-exchange-point-and-mark ()
+  "Exchange point and mark, but don't activate region if it was inactive."
+  (unless (prog1
+	      (symbol-value 'mark-active)
+	    (exchange-point-and-mark))
+    (setq mark-active nil)))
+
 (defalias 'message-make-overlay 'make-overlay)
 (defalias 'message-delete-overlay 'delete-overlay)
 (defalias 'message-overlay-put 'overlay-put)
