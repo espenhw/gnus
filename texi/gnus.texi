@@ -11400,7 +11400,8 @@ This is the delimiter mentioned above.  By default, it is @samp{^L}
 @item gnus-use-idna
 This variable controls whether Gnus performs IDNA decoding of
 internationalized domain names inside @samp{From}, @samp{To} and
-@samp{Cc} headers.  This requires
+@samp{Cc} headers.  @xref{IDNA, ,IDNA,message, The Message Manual},
+for how to compose such messages.  This requires
 @uref{http://www.gnu.org/software/libidn/, GNU Libidn}, and this
 variable is only enabled if you have installed it.
 
