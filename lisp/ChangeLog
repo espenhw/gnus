@@ -1,3 +1,18 @@
+2001-04-01 00:37:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-score.el (gnus-score-orphans): Clean up.
+
+	* gnus-win.el (gnus-remove-some-windows): Leave one Gnus window. 
+
+	* gnus-sum.el (gnus-summary-exit): Kill the summary buffer a bit
+	later. 
+
+	* gnus-start.el (gnus-close-all-servers): Find the right items to
+	close. 
+
+	* qp.el (quoted-printable-decode-region): Just message
+	malformation; don't quit.
+
 2001-03-31 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Gerd Moellmann <gerd@gnu.org>.
 

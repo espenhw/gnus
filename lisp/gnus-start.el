@@ -606,7 +606,7 @@ the first newsgroup."
   "Close all servers."
   (interactive)
   (dolist (server gnus-opened-servers)
-    (gnus-close-server server)))
+    (gnus-close-server (car server))))
 
 (defun gnus-clear-system ()
   "Clear all variables and buffers."
