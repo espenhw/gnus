@@ -1,3 +1,22 @@
+2003-05-09  Dave Love  <fx@gnu.org>
+
+	* utf7.el (mm-util): Require.
+	(utf7-direct-encoding-chars, utf7-imap-direct-encoding-chars):
+	Defconst, not defvar.
+	(utf7-utf-16-coding-system): New.
+	(utf7-encode-internal): Hoist concat out of loop.
+	(utf7-fragment-encode): Use mm-with-unibyte-current-buffer.
+	(utf7-get-u16char-converter) [utf7-utf-16-coding-system]: New
+	case.
+	(utf7-latin1-u16-char-converter): Encode the region.
+	(utf7-u16-latin1-char-converter): Decode the region.
+	(utf7-encode, utf7-decode): Fix multibyteness.
+
+	* mm-bodies.el (mm-body-7-or-8): Don't special-case mule.
+	(mm-encode-body): Use mm-read-coding-system, not mm-read-charset.
+	(mm-uu-yenc-decode-function): Defvar when compiling.
+	(mm-encode-body, mm-decode-body): Doc fix.
+
 2003-05-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-unregistered-group-regex):
