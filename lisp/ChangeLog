@@ -1,3 +1,10 @@
+2002-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* spam-stat.el: Require cl for the functions gethash,
+	hash-table-count, make-hash-table and mapc for Emacs 20.
+	(puthash): Alias to cl-puthash for Emacs 20.
+	(with-syntax-table): New macro for Emacs 20.
+
 2002-10-12  Jesper harder  <harder@ifa.au.dk>
 
 	* gnus-spec.el (gnus-pad-form): Use gnus-string-width-function.

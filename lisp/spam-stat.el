@@ -1,6 +1,6 @@
 ;;; spam-stat.el --- detecting spam based on statistics
 
-;; Copyright (C) 2002  Alex Schroeder 
+;; Copyright (C) 2002  Alex Schroeder
 
 ;; Author: Alex Schroeder <alex@gnu.org>
 ;; Maintainer: Alex Schroeder <alex@gnu.org>
@@ -69,7 +69,7 @@
 ;; the rule (: spam-stat-split-fancy) to `nnmail-split-fancy'
 ;;
 ;; This requires the following in your ~/.gnus file:
-;; 
+;;
 ;; (require 'spam-stat)
 ;; (spam-stat-load)
 
@@ -177,6 +177,35 @@ This is set by hooking into Gnus.")
 
 (defvar spam-stat-buffer-name " *spam stat buffer*"
   "Name of the `spam-stat-buffer'.")
+
+;; Functions missing in Emacs 20
+
+(eval-and-compile
+  (when (and (not (featurep 'xemacs))
+	     (= emacs-major-version 20))
+    ;; gethash, hash-table-count, make-hash-table, mapc
+    (require 'cl)
+    (defalias 'puthash 'cl-puthash)))
+
+(eval-when-compile
+  (unless (fboundp 'with-syntax-table)
+    ;; Imported from Emacs 21.2
+    (defmacro with-syntax-table (table &rest body) "\
+Evaluate BODY with syntax table of current buffer set to a copy of TABLE.
+The syntax table of the current buffer is saved, BODY is evaluated, and the
+saved table is restored, even in case of an abnormal exit.
+Value is what BODY returns."
+      (let ((old-table (make-symbol "table"))
+	    (old-buffer (make-symbol "buffer")))
+	`(let ((,old-table (syntax-table))
+	       (,old-buffer (current-buffer)))
+	   (unwind-protect
+	       (progn
+		 (set-syntax-table (copy-syntax-table ,table))
+		 ,@body)
+	     (save-current-buffer
+	       (set-buffer ,old-buffer)
+	       (set-syntax-table ,old-table))))))))
 
 ;; Hooking into Gnus
 
@@ -313,12 +342,12 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
    (lambda (word count)
      (let ((entry (gethash word spam-stat)))
        (if entry
-	   (spam-stat-set-good entry (+ count (spam-stat-good entry)))	   
+	   (spam-stat-set-good entry (+ count (spam-stat-good entry)))
 	 (setq entry (spam-stat-make-entry count 0)))
        (spam-stat-set-score entry (spam-stat-compute-score entry))
        (puthash word entry spam-stat)))
    (spam-stat-buffer-words)))
-	 
+
 (defun spam-stat-buffer-change-to-spam ()
   "Consider current buffer no longer normal mail but spam."
   (setq spam-stat-nbad (1+ spam-stat-nbad)
@@ -404,7 +433,7 @@ This deletes all the statistics."
 The default score for unknown words is stored in
 `spam-stat-unknown-word-score'."
   (spam-stat-score (gethash word spam-stat)))
-    
+
 
 (defun spam-stat-buffer-words-with-scores ()
   "Process current buffer, return the 15 most conspicuous words.
