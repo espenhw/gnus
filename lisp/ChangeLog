@@ -1,3 +1,7 @@
+2003-07-28  Dave Love  <fx@gnu.org>
+
+	* pgg-gpg.el, pgg-pgp.el, pgg-pgp5.el: Require cl when compiling.
+
 2003-07-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-install): add an initial
