@@ -152,6 +152,9 @@ RFC 2646 suggests 66 characters for readability."
 
 ;; Test vectors.
 
+(eval-when-compile
+  (defvar show-trailing-whitespace))
+
 (defvar fill-flowed-encode-tests
   '(
     ;; The syntax of each list element is:
@@ -196,7 +199,6 @@ RFC 2646 suggests 66 characters for readability."
     (let (start output)
       (insert "***** BEGIN TEST INPUT *****\n")
       (insert (car test))
-      (setq end (point))
       (insert "***** END TEST INPUT *****\n\n")
       (insert "***** BEGIN TEST OUTPUT *****\n")
       (setq start (point))
