@@ -1,6 +1,9 @@
 2000-09-24  Simon Josefsson  <simon@josefsson.org>
 
-	* gnus-group.el (gnus-group-nnimap-edit-acl): Check if server support ACL's.
+	* nnimap.el (nnimap-request-accept-article): Remove From[^:] lines.
+
+	* gnus-group.el (gnus-group-nnimap-edit-acl): Check if server
+	support ACL's.
 
 	* nnimap.el (nnimap-acl-get): Check capability.
 
