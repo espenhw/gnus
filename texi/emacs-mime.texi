@@ -78,9 +78,9 @@ This manual documents the libraries used to compose and display
 @sc{mime} messages.
 
 This manual is directed at users who want to modify the behaviour of
-the MIME encoding/decoding process or want a more detailed picture of
-how the Emacs MIME library works, and people who want to write
-functions and commands that manipulate @sc{mime} elements.
+the @sc{mime} encoding/decoding process or want a more detailed
+picture of how the Emacs @sc{mime} library works, and people who want
+to write functions and commands that manipulate @sc{mime} elements.
 
 @sc{mime} is short for @dfn{Multipurpose Internet Mail Extensions}.
 This standard is documented in a number of RFCs; mainly RFC2045 (Format
@@ -130,6 +130,7 @@ descend the message, following the structure, and return a tree of
 
 @node Non-MIME
 @section Non-MIME
+@vindex mm-uu-configure-list
 
 Gnus also understands some non-@sc{mime} attachments, such as
 postscript, uuencode, binhex, yenc, shar, forward, gnatsweb, pgp.
@@ -281,6 +282,7 @@ Prompt for a mailcap method to use to view the part.
 @table @code
 
 @item mm-inline-media-tests
+@vindex mm-inline-media-tests
 This is an alist where the key is a @sc{mime} type, the second element
 is a function to display the part @dfn{inline} (i.e., inside Emacs), and
 the third element is a form to be @code{eval}ed to say whether the part
@@ -291,28 +293,37 @@ and, if so, how to do it.  It does not say whether parts are
 @emph{actually} displayed inline.
 
 @item mm-inlined-types
+@vindex mm-inlined-types
 This, on the other hand, says what types are to be displayed inline, if
 they satisfy the conditions set by the variable above.  It's a list of
 @sc{mime} media types.
 
 @item mm-automatic-display
+@vindex mm-automatic-display
 This is a list of types that are to be displayed ``automatically'', but
 only if the above variable allows it.  That is, only inlinable parts can
 be displayed automatically.
 
+@item mm-automatic-external-display
+@vindex mm-automatic-external-display
+This is a list of types that will be displayed automatically in an
+external viewer.
+
 @item mm-attachment-override-types
+@vindex mm-attachment-override-types
 Some @sc{mime} agents create parts that have a content-disposition of
 @samp{attachment}.  This variable allows overriding that disposition and
 displaying the part inline.  (Note that the disposition is only
 overridden if we are able to, and want to, display the part inline.)
 
 @item mm-discouraged-alternatives
+@vindex mm-discouraged-alternatives
 List of @sc{mime} types that are discouraged when viewing
 @samp{multipart/alternative}.  Viewing agents are supposed to view the
 last possible part of a message, as that is supposed to be the richest.
 However, users may prefer other types instead, and this list says what
 types are most unwanted.  If, for instance, @samp{text/html} parts are
-very unwanted, and @samp{text/richtech} parts are somewhat unwanted,
+very unwanted, and @samp{text/richtext} parts are somewhat unwanted,
 you could say something like:
 
 @lisp
@@ -322,7 +333,8 @@ you could say something like:
       (remove "text/html" mm-automatic-display))
 @end lisp
 
-@item mm-inline-large-images-p
+@item mm-inline-large-images
+@vindex mm-inline-large-images
 When displaying inline images that are larger than the window, XEmacs
 does not enable scrolling, which means that you cannot see the whole
 image.  To prevent this, the library tries to determine the image size
@@ -332,7 +344,8 @@ library will display it externally (e.g. with @samp{ImageMagick} or
 makes the library display all inline images as inline, regardless of
 their size.
 
-@item mm-inline-override-type
+@item mm-inline-override-types
+@vindex mm-inline-override-types
 @code{mm-inlined-types} may include regular expressions, for example to
 specify that all @samp{text/.*} parts be displayed inline.  If a user
 prefers to have a type that matches such a regular expression be treated
@@ -341,16 +354,18 @@ list containing that type.  For example assuming @code{mm-inlined-types}
 includes @samp{text/.*}, then including @samp{text/html} in this
 variable will cause @samp{text/html} parts to be treated as attachments.
 
-@item mm-inline-text-html-renderer
+@item mm-text-html-renderer
+@vindex mm-text-html-renderer
 This selects the function used to render @sc{html}.  The predefined
 renderers are selected by the symbols @code{w3},
 @code{w3m}@footnote{See @uref{http://emacs-w3m.namazu.org/} for more
 information about emacs-w3m}, @code{links}, @code{lynx},
-@code{w3m-standalone} or @code{html2text}.  You can also specify a
-function, which will be called with a @sc{mime} handle as the
-argument.
+@code{w3m-standalone} or @code{html2text}.  If @code{nil} use an
+external viewer.  You can also specify a function, which will be
+called with a @sc{mime} handle as the argument.
 
 @item mm-inline-text-html-with-images
+@vindex mm-inline-text-html-with-images
 Some @sc{html} mails might have the trick of spammers using
 @samp{<img>} tags.  It is likely to be intended to verify whether you
 have read the mail.  You can prevent your personal informations from
@@ -361,9 +376,21 @@ command @kbd{t} on the image anchor to show an image even if it is
 have set the option @code{w3m-key-binding} to @code{info}, use @kbd{i}
 or @kbd{I} instead.}
 
+@item mm-w3m-safe-url-regexp
+@vindex mm-w3m-safe-url-regexp
+A regular expression that matches safe URL names, i.e. URLs that are
+unlikely to leak personal information when rendering @sc{html} email
+(the default value is @samp{\\`cid:}).  If @code{nil} consider all
+URLs safe.
+
 @item mm-inline-text-html-with-w3m-keymap
+@vindex mm-inline-text-html-with-w3m-keymap
 You can use emacs-w3m command keys in the inlined text/html part by
 setting this option to non-@code{nil}.  The default value is @code{t}.
+
+@item mm-external-terminal-program
+@vindex mm-external-terminal-program
+The program used to start an external terminal.
 
 @end table
 
@@ -679,7 +706,7 @@ This plain text part is an attachment.
 
 @item mm-body-charset-encoding-alist
 @vindex mm-body-charset-encoding-alist
-Mapping from MIME charset to encoding to use.  This variable is
+Mapping from @sc{mime} charset to encoding to use.  This variable is
 usually used except, e.g., when other requirements force a specific
 encoding (digitally signed messages require 7bit encodings).  The
 default is @code{((iso-2022-jp . 7bit) (iso-2022-jp-2 . 7bit))}.  As
@@ -702,10 +729,10 @@ basis by using the @code{charset} MML tag (@pxref{MML Definition}).
 
 @item mm-content-transfer-encoding-defaults
 @vindex mm-content-transfer-encoding-defaults
-Mapping from MIME types to encoding to use.  This variable is usually
+Mapping from @sc{mime} types to encoding to use.  This variable is usually
 used except, e.g., when other requirements force a safer encoding
 (digitally signed messages require 7bit encoding). Besides the normal
-MIME encodings, @code{qp-or-base64} may be used to indicate that for
+@sc{mime} encodings, @code{qp-or-base64} may be used to indicate that for
 each case the most efficient of quoted-printable and base64 should be
 used.  You can override this setting on a per-message basis by using
 the @code{encoding} MML tag (@pxref{MML Definition}).
@@ -1179,8 +1206,8 @@ The following variables are tweakable:
 Characters in this charset should not be decoded by this library.
 This defaults to @code{iso-8859-1}.
 
-@item rfc2047-header-encoding-list
-@vindex rfc2047-header-encoding-list
+@item rfc2047-header-encoding-alist
+@vindex rfc2047-header-encoding-alist
 This is an alist of header / encoding-type pairs.  Its main purpose is
 to prevent encoding of certain headers.
 
@@ -1469,7 +1496,6 @@ Decode the encoded text in the region.  If given a third parameter, only
 decode the @code{binhex} header and return the filename.
 
 @end table
-
 
 @node uudecode
 @section uudecode

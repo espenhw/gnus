@@ -1,3 +1,9 @@
+2002-12-22  Jesper Harder  <harder@ifa.au.dk>
+
+	* emacs-mime.texi: Fix typos.  Index variables.  Add
+	mm-automatic-external-display, mm-w3m-safe-url-regexp and
+	mm-external-terminal-program.
+
 2002-12-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.texi (Message Headers): Add message-allow-no-recipients.
