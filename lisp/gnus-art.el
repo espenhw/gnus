@@ -5441,57 +5441,171 @@ The function must take one argument, the string naming the URL."
   :group 'gnus-article-buttons
   :type 'regexp)
 
-(defcustom gnus-button-prefer-mid-or-mail 'guess
-  "What to do when the button on a string as \"foo123@bar.com\" is pushed.
-Strings like this can be either a message ID or a mail address.  If the
-variable is set to the symbol `ask', query the user what do do.  If it is the
-symbol `guess', Gnus will do a guess and query the user what do do if it is
-ambiguous.  See the variable `gnus-button-guessed-mid-regexp' for details
-concerning the guessing.  If it is one of the sybols `mid' or `mail', Gnus
-will always assume that the string is a message ID or a mail address,
-respectivly."
-  ;; FIXME: doc-string could/should be improved.
+(defcustom gnus-button-prefer-mid-or-mail 'gnus-button-mid-or-mail-heuristic
+  "What to do when the button on a string as \"foo123@bar.invalid\" is pushed.
+Strings like this can be either a message ID or a mail address.  If it is one
+of the symbols `mid' or `mail', Gnus will always assume that the string is a
+message ID or a mail address, respectivly.  If this variable is set to the
+symbol `ask', always query the user what do do.  If it is a function, this
+function will be called with the string as it's only argument.  The function
+must return `mid', `mail', `invalid' or `ask'."
   :group 'gnus-article-buttons
-  :type '(choice (const ask)
-		 (const guess)
+  :type '(choice (function-item :tag "Heuristic function"
+				gnus-button-mid-or-mail-heuristic)
+		 (const ask)
 		 (const mid)
 		 (const mail)))
 
-(defcustom gnus-button-guessed-mid-regexp
-  (concat
-   "^<?\\(slrn\\|Pine\\.\\)"
-   "\\|\\.fsf@\\|\\.fsf_-_@\\|\\.ln@"
-   "\\|@4ax\\.com\\|@ID-[0-9]+\\.[a-zA-Z]+\\.dfncis\\.de"
-	  "\\|^<?.*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*[0-9].*@")
-  "Regular expression that matches message IDs and not mail addresses."
-  ;; TODO: Incorporate more matches from
-  ;; <URL:http://piology.org/perl/id-or-mail.pl.html>. I.e. translate the
-  ;; Perl-REs to Elisp-REs.
+(defcustom gnus-button-mid-or-mail-heuristic-alist
+  '((-10.0 . ".+\\$.+@")
+    (-10.0 . "#")
+    (-10.0 . "\\*")
+    (-5.0  . "\\+[^+]*\\+.*@") ;; # two plus signs
+    (-5.0  . "@[Nn][Ee][Ww][Ss]") ;; /\@news/i
+    (-5.0  . "@.*[Dd][Ii][Aa][Ll][Uu][Pp]") ;; /\@.*dialup/i;
+    (-1.0  . "^[^a-z]+@")
+   
+    (-5.0  . "\\.[0-9][0-9]+.*@") ;; "\.[0-9]{2,}.*\@"
+    (-5.0  . "[a-z].*[A-Z].*[a-z].*[A-Z].*@") ;; "([a-z].*[A-Z].*){2,}\@"
+    (-3.0  . "[A-Z][A-Z][a-z][a-z].*@")
+    (-5.0  . "\\...?.?@") ;; (-5.0 . "\..{1,3}\@")
+   
+    (-2.0  . "^[0-9]")
+    (-1.0  . "^[0-9][0-9]")
+    ;;
+    ;; -3.0 /^[0-9][0-9a-fA-F]{2,2}/;
+    (-3.0  . "^[0-9][0-9a-fA-F][0-9a-fA-F][^0-9a-fA-F]")
+    ;; -5.0 /^[0-9][0-9a-fA-F]{3,3}/;
+    (-5.0  . "^[0-9][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][^0-9a-fA-F]")
+    ;;
+    (-3.0  .  "[0-9][0-9][0-9][0-9][0-9][^0-9].*@") ;; "[0-9]{5,}.*\@"
+    (-3.0  .  "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][^0-9].*@")
+    ;;       "[0-9]{8,}.*\@"
+    (-3.0
+     . "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].*@")
+    ;; "[0-9]{12,}.*\@"
+    ;;
+    (-20.0 . "\\.fsf@")	;; Gnus
+    (-20.0 . "^slrn")
+    (-20.0 . "^Pine")
+    (-20.0 . "_-_") ;; Subject change in thread
+    ;;
+    (-20.0 . "\\.ln@") ;; leafnode
+    (-30.0 . "@ID-[0-9]+\\.[a-zA-Z]+\\.dfncis\\.de")
+    (-30.0 . "@4[Aa][Xx]\\.com") ;; Forte Agent
+    ;;
+    ;; (5.0 . "") ;; $local_part_len <= 7
+    (10.0  . "^[^0-9]+@")
+    (3.0   . "^[^0-9]+[0-9][0-9]?[0-9]?@")
+    ;;      ^[^0-9]+[0-9]{1,3}\@ digits only at end of local part
+    (3.0   . "\@stud")
+    ;;
+    (2.0   . "[a-z][a-z][._-][A-Z][a-z].*@")
+    ;;
+    (0.5   . "^[A-Z][a-z]")
+    (0.5   . "^[A-Z][a-z][a-z]")
+    (1.5   . "^[A-Z][a-z][A-Z][a-z][^a-z]") ;; ^[A-Z][a-z]{3,3}
+    (2.0   . "^[A-Z][a-z][A-Z][a-z][a-z][^a-z]")) ;; ^[A-Z][a-z]{4,4}
+  "An alist of \(RATE . REGEXP\) pairs for `gnus-button-mid-or-mail-heuristic'.
+
+A negative RATE indicates a message IDs, whereas a positive indicates a mail
+address.  The REGEXP is processed with `case-fold-search' set to `nil'."
   :group 'gnus-article-buttons
-  :type 'regexp)
+  :type '(repeat (cons (number :tag "Rate")
+		       (regexp :tag "Regexp"))))
+
+(defun gnus-button-mid-or-mail-heuristic (mid-or-mail)
+  "Guess whether MID-OR-MAIL is a message ID or a mail address.
+Returns `mid' if MID-OR-MAIL is a message IDs, `mail' if it's a mail
+address, `ask' if unsure and `invalid' if the string is invalid."
+  (let ((case-fold-search nil)
+	(list gnus-button-mid-or-mail-heuristic-alist)
+	(result 0) rate regexp lpartlen elem)
+    (setq lpartlen
+	  (length (gnus-replace-in-string mid-or-mail "^\\(.*\\)@.*$" "\\1")))
+    (gnus-message 8 "`%s', length of local part=`%s'." mid-or-mail lpartlen)
+    ;; Certain special cases...
+    (when (string-match
+	   (concat
+	    "^0[0-9]+-[0-9][0-9][0-9][0-9]@t-online\\.de$" "\\|"
+	    "^[0-9]+\.[0-9]+\@compuserve")
+	   mid-or-mail)
+      (gnus-message 8 "`%s' is a known mail address.")
+      (setq result 'mail))
+    (when (string-match "@.*@\\| " mid-or-mail)
+      (gnus-message 8 "`%s' is invalid.")
+      (setq result 'invalid))
+    ;; Nothing more to do, if result is not a number here...
+    (when (numberp result)
+      (while list
+	(setq elem (car list)
+	      rate (car elem)
+	      regexp (cdr elem)
+	      list (cdr list))
+	(when (string-match regexp mid-or-mail)
+	  (setq result (+ result rate))
+	  (gnus-message
+	   9 "`%s' matched `%s', rate `%s', result `%s'."
+	   mid-or-mail regexp rate result)))
+      (when (<= lpartlen 7)
+	(setq result (+ result 5.0))
+	(gnus-message 9 "`%s' matched (<= lpartlen 7), result `%s'."
+		      mid-or-mail result))
+      (when (>= lpartlen 12)
+	(gnus-message 9 "`%s' matched (>= lpartlen 12)" mid-or-mail)
+	(cond
+	 ((string-match "[0-9][^0-9]+[0-9].*@" mid-or-mail)
+	  ;; Long local part should contain realname if e-mail address,
+	  ;; too many digits: message-id.
+	  ;; $score -= 5.0 + 0.1 * $local_part_len;
+	  (setq rate (* -1.0 (+ 5.0 (* 0.1 lpartlen))))
+	  (setq result (+ result rate))
+	  (gnus-message
+	   9 "Many digits in `%s', rate `%s', result `%s'."
+	   mid-or-mail rate result))
+	 ((string-match "[^aeiouy][^aeiouy][^aeiouy][^aeiouy]+.*\@"
+			mid-or-mail)
+	  ;; Too few vowels [^aeiouy]{4,}.*\@
+	  (setq result (+ result -5.0))
+	  (gnus-message
+	   9 "Few vowels in `%s', rate `%s', result `%s'."
+	   mid-or-mail -5.0 result))
+	 (t
+	  (setq result (+ result 5.0))
+	  (gnus-message
+	   9 "`%s', rate `%s', result `%s'." mid-or-mail 5.0 result)))))
+    (gnus-message 8 "`%s': Final rate is `%s'." mid-or-mail result)
+    (cond
+     ;; Maybe we should make this a customizable alist: (condition . 'result)
+     ((< result -10.0) 'mid)
+     ((> result  10.0) 'mail)
+     (t 'ask))))
 
 (defun gnus-button-handle-mid-or-mail (mid-or-mail)
-  (let* ((pref gnus-button-prefer-mid-or-mail)
+  (let* ((pref gnus-button-prefer-mid-or-mail) guessed
 	 (url-mid (concat "news" ":" mid-or-mail))
 	 (url-mailto (concat "mailto" ":" mid-or-mail)))
     (gnus-message 9 "mid-or-mail=%s" mid-or-mail)
-    ;; If it looks like a MID (well known readers or servers) use 'mid,
-    ;; otherwise 'ask the user.
-    (if (eq pref 'guess)
-	(if (string-match gnus-button-guessed-mid-regexp mid-or-mail)
-	    (setq pref 'mid)
-	  (setq pref 'ask)))
+    (when (fboundp pref)
+      (setq guessed
+	    ;; get rid of surrounding angles...
+	    (funcall pref
+		     (gnus-replace-in-string mid-or-mail "^<\\|>$" "")))
+      (if (or (eq 'mid guessed) (eq 'mail guessed))
+	  (setq pref guessed)
+	(setq pref 'ask)))
     (if (eq pref 'ask)
 	(save-window-excursion
 	  (if (y-or-n-p (concat "Is <" mid-or-mail "> a mail address? "))
 	      (setq pref 'mail)
 	    (setq pref 'mid))))
     (cond ((eq pref 'mid)
-	   (gnus-message 9 "calling `gnus-button-handle-news' %s" url-mid)
+	   (gnus-message 8 "calling `gnus-button-handle-news' %s" url-mid)
 	   (gnus-button-handle-news url-mid))
 	  ((eq pref 'mail)
-	   (gnus-message 9 "calling `gnus-url-mailto'  %s" url-mailto)
-	   (gnus-url-mailto url-mailto)))))
+	   (gnus-message 8 "calling `gnus-url-mailto'  %s" url-mailto)
+	   (gnus-url-mailto url-mailto))
+	  (t (gnus-message 3 "Invalid string.")))))
 
 (defun gnus-button-handle-custom (url)
   "Follow a Custom URL."

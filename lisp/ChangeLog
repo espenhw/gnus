@@ -1,3 +1,14 @@
+2003-02-21  Florian Weimer  <fw@deneb.enyo.de>
+	From Reiner Steib  <Reiner.Steib@gmx.de>.
+
+	* gnus-art.el (gnus-button-mid-or-mail-heuristic-alist): New
+	variable, used in `gnus-button-mid-or-mail-heuristic'.
+	(gnus-button-mid-or-mail-heuristic): New function derived from
+	Florian Weimer's Perl script.
+	(gnus-button-handle-mid-or-mail): Allow a function instead of
+	'guess.
+	(gnus-button-guessed-mid-regexp): Removed.
+
 2003-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-resend): Bind message-setup-hook to nil;
