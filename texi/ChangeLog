@@ -1,3 +1,10 @@
+2003-01-21  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Various Summary Stuff): Add
+	gnus-summary-display-while-building.
+	(Group Parameters): Index gnus-parameters.
+	(Startup Files): Index gnus-site-init-file
+
 2003-01-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Summary Buffer Lines): Additions to %B.

@@ -1473,6 +1473,7 @@ startup files.  If you want to turn backup creation off, say something like:
 @end lisp
 
 @vindex gnus-init-file
+@vindex gnus-site-init-file
 When Gnus starts, it will read the @code{gnus-site-init-file}
 (@file{.../site-lisp/gnus} by default) and @code{gnus-init-file}
 (@file{~/.gnus} by default) files.  These are normal Emacs Lisp files
@@ -2967,6 +2968,7 @@ presents you with a Customize-like interface.  The latter helps avoid
 silly Lisp errors.)  You might also be interested in reading about topic
 parameters (@pxref{Topic Parameters}).
 
+@vindex gnus-parameters
 Group parameters can be set via the @code{gnus-parameters} variable too.
 But some variables, such as @code{visible}, have no effect.  For
 example:
@@ -9819,6 +9821,13 @@ suggestions you find reasonable.  (Note that
 @end menu
 
 @table @code
+@vindex gnus-summary-display-while-building
+@item gnus-summary-display-while-building
+If non-@code{nil}, show and update the summary buffer as it's being
+built.  If @code{t}, update the buffer after every line is inserted.
+If the value is an integer, @var{n}, update the display every @var{n}
+lines.  The default is @code{nil}.
+
 @vindex gnus-summary-mode-hook
 @item gnus-summary-mode-hook
 This hook is called when creating a summary mode buffer.
