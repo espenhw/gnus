@@ -26,7 +26,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile
+  (require 'cl)
+  (defvar tool-bar-map))
 
 (require 'gnus)
 (require 'gnus-sum)
