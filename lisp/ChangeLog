@@ -1,3 +1,13 @@
+2003-03-01  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-maybe-spam-stat-load, spam-maybe-spam-stat-load):
+	load stats iff spam-use-stat is on
+
+	* spam.el: add spam-maybe-spam-stat-load to gnus-startup hook,
+	also use spam-maybe-spam-stat-load and spam-maybe-spam-stat-save
+	instead of spam-stat-load and spam-stat-save in the
+	gnus-get-new-news-hook and gnus-save-newsrc-hook, respectively
+
 2003-03-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el (mm-inline-text): Ignore errors from enriched-decode.

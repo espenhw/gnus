@@ -810,10 +810,16 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	       (insert article-string)
 	       (spam-stat-buffer-is-non-spam))))))
 
+      (defun spam-maybe-spam-stat-load ()
+	(when spam-use-stat (spam-stat-load)))
+      
+      (defun spam-maybe-spam-stat-save ()
+	(when spam-use-stat (spam-stat-save)))
+
       ;; Add hooks for loading and saving the spam stats
-      (when spam-use-stat
-	(add-hook 'gnus-save-newsrc-hook 'spam-stat-save)
-	(add-hook 'gnus-get-new-news-hook 'spam-stat-load)))
+      (add-hook 'gnus-save-newsrc-hook 'spam-maybe-spam-stat-save)
+      (add-hook 'gnus-get-new-news-hook 'spam-maybe-spam-stat-load))
+      (add-hook 'gnus-startup-hook 'spam-maybe-spam-stat-load))
 
   (file-error (progn
 		(defalias 'spam-stat-register-ham-routine 'ignore)
