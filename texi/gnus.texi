@@ -22698,9 +22698,9 @@ category, spam or not.  The command @kbd{S t} in summary mode, either
 for debugging or for curiosity, shows the @emph{spamicity} score of
 the current article (between 0.0 and 1.0).
 
-Bogofilter determines if a message is spam based on an internal
-threshold, set at compilation time.  That threshold can't be
-customized.
+Bogofilter determines if a message is spam based on a specific
+threshold.  That threshold can be customized, consult the Bogofilter
+documentation.
 
 If the @code{bogofilter} executable is not in your path, Bogofilter
 processing will be turned off.

@@ -1,3 +1,8 @@
+2003-06-11  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Bogofilter): revise docs to mention threshold is now
+	user-controllable
+
 2003-06-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* emacs-mime.texi: Use two spaces consistently to end sentences.
