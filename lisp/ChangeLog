@@ -1,3 +1,7 @@
+1999-11-06 22:56:49  Jens-Ulrik Petersen  <Jens-Ulrik.Petersen@nokia.com>
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Doc fix.
+
 1999-11-06 21:40:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-uu.el (gnus-uu-mark-thread): Don't move point around.
@@ -290,6 +294,14 @@ Fri Nov  5 19:10:02 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-msg.el (gnus-group-posting-charset-alist): 2047 in de.*.
 
 	* gnus-sum.el (gnus-newsgroup-ignored-charsets): Add x-unknown. 
+
+1999-10-20  David S. Goldberg  <dsg@mitre.org>
+
+	* mm-decode.el mm-inline-override-types: New variable
+
+	* mm-decode.el (mm-inline-override-p): Use it
+
+	* gnus-art.el (gnus-mime-display-single): Then use that
 
 Mon Sep 27 15:18:05 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 

@@ -6576,6 +6576,10 @@ Hide @sc{pem} (privacy enhanced messages) cruft
 @item W W B
 @kindex W W B (Summary)
 @findex gnus-article-strip-banner
+@cindex banner
+@cindex OneList
+@cindex stripping advertisments
+@cindex advertisments
 Strip the banner specified by the @code{banner} group parameter
 (@code{gnus-article-strip-banner}).  This is mainly used to hide those
 annoying banners and/or signatures that some mailing lists and moderated
@@ -8525,8 +8529,7 @@ You can, of course, write your own functions to be called from
 @code{gnus-part-display-hook}.  The functions are called narrowed to the
 part, and you can do anything you like, pretty much.  There is no
 information that you have to keep in the buffer---you can change
-everything.  However, you shouldn't delete any headers.  Instead make
-them invisible if you want to make them go away.
+everything.  
 
 
 @node Article Keymap

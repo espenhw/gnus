@@ -1,3 +1,7 @@
+1999-11-06 23:09:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Customizing Articles): Fix.
+
 1999-11-05 22:34:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Posting Styles): Addition.

@@ -145,6 +145,9 @@
 (defvar mm-attachment-override-types '("text/x-vcard")
   "Types that should have \"attachment\" ignored if they can be displayed inline.")
 
+(defvar mm-inline-override-types nil
+  "Types that should be treated as attachments even if they can be displayed inline.")
+
 (defvar mm-automatic-external-display nil
   "List of MIME type regexps that will be displayed externally automatically.")
 
@@ -498,6 +501,16 @@ external if displayed external."
       (while (setq ty (pop types))
 	(when (and (string-match ty type)
 		   (mm-inlinable-p handle))
+	  (throw 'found t))))))
+
+(defun mm-inline-override-p (handle)
+  "Say whether HANDLE should have inline behavior overridden."
+  (let ((types mm-inline-override-types)
+	(type (mm-handle-media-type handle))
+	ty)
+    (catch 'found
+      (while (setq ty (pop types))
+	(when (string-match ty type)
 	  (throw 'found t))))))
 
 (defun mm-automatic-external-display-p (type)
