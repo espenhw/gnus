@@ -1,3 +1,7 @@
+2003-09-12  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Summary Buffer Lines): Formatting fix.
+
 2003-09-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Creating a Virtual Server): Use nnml for the example.

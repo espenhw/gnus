@@ -4657,7 +4657,7 @@ Age sensitive date format.  Various date format is defined in
 @item u
 User defined specifier.  The next character in the format string should
 be a letter.  Gnus will call the function
-@code{gnus-user-format-function-}@samp{X}, where @samp{X} is the letter
+@code{gnus-user-format-function-@var{x}}, where @var{x} is the letter
 following @samp{%u}.  The function will be passed the current header as
 argument.  The function should return a string, which will be inserted
 into the summary just like information from any other summary specifier.
