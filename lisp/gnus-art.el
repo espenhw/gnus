@@ -179,11 +179,10 @@ asynchronously.	 The compressed face will be piped to this command."
 	 '(("_" "_" underline)
 	   ("/" "/" italic)
 	   ("\\*" "\\*" bold)
-	   ;;("_/" "/_" underline-italic)
-	   ;;("_\\*" "\\*_" underline-bold)
+	   ("_/" "/_" underline-italic)
+	   ("_\\*" "\\*_" underline-bold)
 	   ("\\*/" "/\\*" bold-italic)
-	   ;;("_\\*/" "/\\*_" underline-bold-italic)
-	   )))
+	   ("_\\*/" "/\\*_" underline-bold-italic))))
     `(("\\(\\s-\\|^\\)\\(_\\(\\(\\w\\|_[^_]\\)+\\)_\\)\\(\\s-\\|[?!.,;]\\)"
        2 3 gnus-emphasis-underline)
       ,@(mapcar
@@ -931,7 +930,8 @@ always hide."
 	(goto-char (point-min))
 	;; Hide the "header".
 	(when (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
-	  (gnus-article-hide-text-type (match-beginning 0) (match-end 0) 'pgp))
+	  (gnus-article-hide-text-type (1+ (match-beginning 0))
+				       (match-end 0) 'pgp))
 	(setq beg (point))
 	;; Hide the actual signature.
 	(and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
@@ -1010,13 +1010,16 @@ always hide."
   "Replace consecutive blank lines with one empty line."
   (interactive)
   (save-excursion
-    (let (buffer-read-only)
+    (let ((inhibit-point-motion-hooks t)
+	  buffer-read-only)
       ;; First make all blank lines empty.
       (goto-char (point-min))
+      (search-forward "\n\n" nil t)
       (while (re-search-forward "^[ \t]+$" nil t)
 	(replace-match "" nil t))
       ;; Then replace multiple empty lines with a single empty line.
       (goto-char (point-min))
+      (search-forward "\n\n" nil t)
       (while (re-search-forward "\n\n\n+" nil t)
 	(replace-match "\n\n" t t)))))
 
@@ -2459,8 +2462,8 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist 
-  `(("\\(\\b<\\(url: ?\\)?news:\\([^>\n\t ]*\\)>\\)" 1 t
-     gnus-button-message-id 3)
+  `(("<\\(url: ?\\)?news:\\([^>\n\t ]*\\)>" 0 t
+     gnus-button-message-id 2)
     ("\\bnews:\\([^\n\t ]+\\)" 0 t gnus-button-message-id 1)
     ("\\(\\b<\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>\\)" 1 t
      gnus-button-fetch-group 4)
@@ -2674,6 +2677,10 @@ It does this by highlighting everything after
 	    (gnus-article-add-button start (1- end) 'gnus-signature-toggle
 				     end)))))))
 
+(defun gnus-button-in-region-p (b e prop)
+  "Say whether PROP exists in the region."
+  (text-property-not-all b e prop nil))
+
 (defun gnus-article-add-buttons (&optional force)
   "Find external references in the article and make buttons of them.
 \"External references\" are things like Message-IDs and URLs, as
@@ -2703,7 +2710,7 @@ specified by `gnus-button-alist'."
 		 (from (match-beginning 0)))
 	    (when (and (or (eq t (nth 1 entry))
 			   (eval (nth 1 entry)))
-		       (not (get-text-property (point) 'gnus-callback)))
+		       (not (gnus-button-in-region-p from end 'gnus-callback)))
 	      ;; That optional form returned non-nil, so we add the
 	      ;; button. 
 	      (gnus-article-add-button 

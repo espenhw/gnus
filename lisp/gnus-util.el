@@ -782,7 +782,17 @@ with potentially long computations."
       ;; Decide whether to append to a file or to an Emacs buffer.
       (let ((outbuf (get-file-buffer filename)))
 	(if (not outbuf)
-	    (append-to-file (point-min) (point-max) filename)
+	    (let ((buffer-read-only nil))
+	      (save-excursion
+		(goto-char (point-max))
+		(forward-char -2)
+		(unless (looking-at "\n\n")
+		  (goto-char (point-max))
+		  (unless (bolp)
+		    (insert "\n"))
+		  (insert "\n"))
+		(goto-char (point-max))
+		(append-to-file (point-min) (point-max) filename)))
 	  ;; File has been visited, in buffer OUTBUF.
 	  (set-buffer outbuf)
 	  (let ((buffer-read-only nil))

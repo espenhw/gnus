@@ -686,6 +686,13 @@ Function used to send the current buffer as mail.  The default is
 @code{message-send-mail-with-sendmail}.   If you prefer using MH
 instead, set this variable to @code{message-send-mail-with-mh}.
 
+@item message-mh-deletable-headers
+@vindex message-mh-deletable-headers
+Most versions of MH doesn't like being fed messages that contain the
+headers in this variable.  If this variable is non-@code{nil} (which is
+the default), these headers will be removed before mailing.  Set it to
+@code{nil} if your MH can handle these headers.
+
 @end table
 
 
@@ -916,6 +923,22 @@ Hook run as the last thing when the message buffer has been initialized.
 @item message-header-setup-hook
 @vindex message-header-setup-hook
 Hook called narrowed to the headers after initializing the headers. 
+
+For instance, if you're running Gnus and wish to insert a
+@samp{Mail-Copies-To} header in all your news articles and all messages
+you send to mailing lists, you could do something like the following:
+
+@lisp
+(defun my-message-header-setup-hook ()
+  (when (or (message-fetch-field "newsgroups")
+	    (gnus-group-find-parameter
+             gnus-newsgroup-namegroup 'to-address)
+	    (gnus-group-find-parameter
+             gnus-newsgroup-namegroup 'to-list))
+    (insert "Mail-Copies-To: never\n")))
+
+(add-hook 'message-header-setup-hook 'my-message-header-setup-hook)
+@end lisp
 
 @item message-send-hook
 @vindex message-send-hook

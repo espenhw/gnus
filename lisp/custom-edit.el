@@ -1,10 +1,10 @@
 ;;; custom-edit.el --- Tools for customization Emacs.
 ;;
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.24
+;; Version: 1.38
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -156,6 +156,7 @@ if that value is non-nil."
   (setq major-mode 'custom-mode
 	mode-name "Custom")
   (use-local-map custom-mode-map)
+  (easy-menu-add custom-mode-menu)
   (make-local-variable 'custom-options)
   (run-hooks 'custom-mode-hook))
 
@@ -361,9 +362,15 @@ Push RET or click mouse-2 on the word ")
   (widget-insert " ")
   (widget-create 'push-button
 		 :tag "Reset"
-		 :help-echo "Push me to undo all modifications.."
+		 :help-echo "Push me to undo all modifications."
 		 :action (lambda (widget &optional event)
 			   (custom-reset event)))
+  (widget-insert " ")
+  (widget-create 'push-button
+		 :tag "Done"
+		 :help-echo "Push me to bury the buffer."
+		 :action (lambda (widget &optional event)
+			   (bury-buffer)))
   (widget-insert "\n")
   (widget-setup))
 
@@ -700,8 +707,14 @@ Push me to change the state."
 
 (defun custom-redraw (widget)
   "Redraw WIDGET with current settings."
-  (widget-value-set widget (widget-value widget))
-  (custom-redraw-magic widget))
+  (let ((pos (point))
+	(from (marker-position (widget-get widget :from)))
+	(to (marker-position (widget-get widget :to))))
+    (save-excursion
+      (widget-value-set widget (widget-value widget))
+      (custom-redraw-magic widget))
+    (when (and (>= pos from) (<= pos to))
+      (goto-char pos))))
 
 (defun custom-redraw-magic (widget)
   "Redraw WIDGET state with current settings."
@@ -856,18 +869,16 @@ Push me to change the state."
 		    (default-value symbol)
 		  (widget-get widget :value)))
 	 tmp
-	 (state (cond ((setq tmp (get symbol 'customized-value))
-		       (if (condition-case nil
-			       (equal value (eval (car tmp)))
-			     (error nil))
-			   'saved
-			 'set))
-		      ((setq tmp (get symbol 'saved-value))
-		       (if (condition-case nil
-			       (equal value (eval (car tmp)))
-			     (error nil))
-			   'saved
-			 'set))
+	 (state (cond ((and (setq tmp (get symbol 'customized-value))
+			    (not (condition-case nil
+				     (equal value (eval (car tmp)))
+				   (error nil))))
+		       'set)
+		      ((and (setq tmp (get symbol 'saved-value))
+			    (not (condition-case nil
+				     (equal value (eval (car tmp)))
+				   (error nil))))
+		       'saved)
 		      ((setq tmp (get symbol 'factory-value))
 		       (if (condition-case nil
 			       (equal value (eval (car tmp)))
@@ -932,7 +943,7 @@ Optional EVENT is the location for the menu."
 	   (set symbol (eval (setq val (widget-value child))))
 	   (put symbol 'customized-value (list val)))
 	  (t
-	   (set symbol (widget-value child))
+	   (set symbol (setq val (widget-value child)))
 	   (put symbol 'customized-value (list (custom-quote val)))))
     (custom-variable-state-set widget)
     (custom-redraw-magic widget)))

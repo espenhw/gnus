@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.24
+Version: 1.34
 
 @menu
 * Introduction::                

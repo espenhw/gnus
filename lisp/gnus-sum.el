@@ -159,7 +159,7 @@ If nil, only the marking commands will go to the next (un)read article."
 (defcustom gnus-summary-default-score 0
   "*Default article score level.
 If this variable is nil, scoring will be disabled."
-  :group 'gnus-score
+  :group 'gnus-score-default
   :type '(choice (const :tag "disable")
 		 integer))
 
@@ -489,7 +489,7 @@ with some simple extensions:
   "*Mark all articles with a score below this variable as read.
 This variable is local to each summary buffer and usually set by the
 score file."
-  :group 'gnus-score
+  :group 'gnus-score-default
   :type 'integer)
 
 (defcustom gnus-article-sort-functions '(gnus-article-sort-by-number)
@@ -538,7 +538,7 @@ Some functions you can use are `+', `max', or `min'."
 
 (defcustom gnus-summary-expunge-below nil
   "All articles that have a score less than this variable will be expunged."
-  :group 'gnus-score
+  :group 'gnus-score-default
   :type '(choice (const :tag "off" nil)
 		 integer))
 
@@ -547,7 +547,7 @@ Some functions you can use are `+', `max', or `min'."
 See `gnus-thread-score-function' for en explanation of what a
 \"thread score\" is."
   :group 'gnus-treading
-  :group 'gnus-score
+  :group 'gnus-score-default
   :type '(choice (const :tag "off" nil)
 		 integer))
 
@@ -6688,7 +6688,7 @@ If TO-NEWSGROUP is string, do not prompt for a newsgroup to move to.
 If SELECT-METHOD is non-nil, do not move to a specific newsgroup, but
 re-spool using this method."
   (interactive "P")
-  (gnus-summary-move-article n nil select-method 'copy))
+  (gnus-summary-move-article n to-newsgroup select-method 'copy))
 
 (defun gnus-summary-crosspost-article (&optional n)
   "Crosspost the current article to some other group."

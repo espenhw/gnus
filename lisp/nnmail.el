@@ -31,9 +31,42 @@
 (eval-when-compile (require 'cl))
 (require 'custom)
 
-(defgroup gnus-mail nil
-  "Mailreading.."
+(defgroup nnmail nil
+  "Reading mail with Gnus."
   :group 'gnus)
+
+(defgroup nnmail-retrieve nil
+  "Retrieving new mail."
+  :group 'nnmail)
+
+(defgroup nnmail-prepare nil
+  "Preparing (or mangling) new mail after retrival."
+  :group 'nnmail)
+
+(defgroup nnmail-duplicate nil
+  "Handling of duplicate mail messages."
+  :group 'nnmail)
+
+(defgroup nnmail-split nil
+  "Organizing the incomming mail in folders."
+  :group 'nnmail)
+
+(defgroup nnmail-files nil
+  "Mail files."
+  :group 'gnus-files
+  :group 'nnmail)
+
+(defgroup nnmail-expire nil
+  "Expiring old mail."
+  :group 'nnmail)
+
+(defgroup nnmail-procmail nil
+  "Interfacing with procmail and other mail agents."
+  :group 'nnmail)
+
+(defgroup nnmail-various nil
+  "Various mail options."
+  :group 'nnmail)
 
 (defcustom nnmail-split-methods
   '(("mail.misc" ""))
@@ -62,7 +95,7 @@ mail belongs in that group.
 The last element should always have \"\" as the regexp.
 
 This variable can also have a function as its value."
-  :group 'gnus-mail
+  :group 'nnmail-split
   :type '(choice (repeat :tag "Alist" (group (string :tag "Name") regexp))
 		 (function-item nnmail-split-fancy)
 		 (function :tag "Other")))
@@ -71,7 +104,7 @@ This variable can also have a function as its value."
 (defcustom nnmail-crosspost t
   "If non-nil, do crossposting if several split methods match the mail.
 If nil, the first match found will be used."
-  :group 'gnus-mail
+  :group 'nnmail-split
   :type 'boolean)
 
 ;; Added by gord@enci.ucalgary.ca (Gordon Matzigkeit).
@@ -79,19 +112,20 @@ If nil, the first match found will be used."
   "If non-nil, nnmail will never delete the last expired article in a directory.  
 You may need to set this variable if other programs are putting
 new mail into folder numbers that Gnus has marked as expired."
-  :group 'gnus-mail
+  :group 'nnmail-procmail
+  :group 'nnmail-various
   :type 'boolean)
 
 (defcustom nnmail-use-long-file-names nil
   "If non-nil the mail backends will use long file and directory names.
 If nil, groups like \"mail.misc\" will end up in directories like
 \"mail/misc/\"."
-  :group 'gnus-mail
+  :group 'nnmail-files
   :type 'boolean)
 
 (defcustom nnmail-default-file-modes 384
   "Set the mode bits of all new mail files to this integer."
-  :group 'gnus-mail
+  :group 'nnmail-files
   :type 'integer)
 
 (defcustom nnmail-expiry-wait 7
@@ -99,7 +133,7 @@ If nil, groups like \"mail.misc\" will end up in directories like
 This variable can either be a number (which will be interpreted as a
 number of days) -- this doesn't have to be an integer.  This variable
 can also be `immediate' and `never'."
-  :group 'gnus-mail
+  :group 'nnmail-expire
   :type '(choice (const immediate)
 		 (integer :tag "days")
 		 (const never)))
@@ -119,7 +153,7 @@ Eg.:
               ((string-match \"junk\" newsgroup) 1)
 	      ((string-match \"important\" newsgroup) 'never)
 	      (t 7))))"
-  :group 'gnus-mail
+  :group 'nnmail-expire
   :type '(choice (const :tag "nnmail-expiry-wait" nil)
 		 (function :format "%v" nnmail-)))
 
@@ -133,41 +167,41 @@ If this variable is a list, all files mentioned in this list will be
 used as incoming mailboxes.
 If this variable is a directory (i. e., it's name ends with a \"/\"),
 treat all files in that directory as incoming spool files."
-  :group 'gnus-mail
+  :group 'nnmail-files
   :type 'file)
 
 (defcustom nnmail-crash-box "~/.gnus-crash-box"
   "File where Gnus will store mail while processing it."
-  :group 'gnus-mail
+  :group 'nnmail-files
   :type 'file)
 
 (defcustom nnmail-use-procmail nil
   "*If non-nil, the mail backends will look in `nnmail-procmail-directory' for spool files.
 The file(s) in `nnmail-spool-file' will also be read."
-  :group 'gnus-mail
+  :group 'nnmail-procmail
   :type 'boolean)
 
 (defcustom nnmail-procmail-directory "~/incoming/"
   "*When using procmail (and the like), incoming mail is put in this directory.
 The Gnus mail backends will read the mail from this directory."
-  :group 'gnus-mail
+  :group 'nnmail-procmail
   :type 'directory)
 
 (defcustom nnmail-procmail-suffix "\\.spool"
   "*Suffix of files created by procmail (and the like).
 This variable might be a suffix-regexp to match the suffixes of
 several files - eg. \".spool[0-9]*\"."
-  :group 'gnus-mail
+  :group 'nnmail-procmail
   :type 'regexp)
 
 (defcustom nnmail-resplit-incoming nil
   "*If non-nil, re-split incoming procmail sorted mail."
-  :group 'gnus-mail
+  :group 'nnmail-procmail
   :type 'boolean)
 
 (defcustom nnmail-delete-file-function 'delete-file
   "Function called to delete files in some mail backends."
-  :group 'gnus-mail
+  :group 'nnmail-files
   :type 'function)
 
 (defcustom nnmail-crosspost-link-function 'add-name-to-file
@@ -175,7 +209,7 @@ several files - eg. \".spool[0-9]*\"."
 This is `add-name-to-file' by default, which means that crossposts
 will use hard links.  If your file system doesn't allow hard
 links, you could set this variable to `copy-file' instead."
-  :group 'gnus-mail
+  :group 'nnmail-files
   :type '(radio (function-item add-name-to-file)
 		(function-item copy-file)
 		(function :tag "Other")))
@@ -187,12 +221,13 @@ The default is \"movemail\".
 This can also be a function.  In that case, the function will be
 called with two parameters -- the name of the INBOX file, and the file
 to be moved to."
-  :group 'gnus-mail
+  :group 'nnmail-files
+  :group 'nnmail-retrieve
   :type 'string)
 
 (defcustom nnmail-pop-password-required nil
   "*Non-nil if a password is required when reading mail using POP."
-  :group 'gnus-mail
+  :group 'nnmail-retrieve
   :type 'boolean)
 
 (defcustom nnmail-read-incoming-hook 
@@ -224,43 +259,44 @@ If you use `display-time', you could use something like this:
 	    ;; the flag that says you have mail.
 	    (when (eq (process-status \"display-time\") 'run)
 	      (display-time-filter display-time-process \"\"))))"
-  :group 'gnus-mail
+  :group 'nnmail-prepare
   :type 'hook)
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defcustom nnmail-prepare-incoming-hook nil
   "Hook called before treating incoming mail.
 The hook is run in a buffer with all the new, incoming mail."
-  :group 'gnus-mail
+  :group 'nnmail-prepare
   :type 'hook)
 
 (defcustom nnmail-prepare-incoming-header-hook nil
   "Hook called narrowed to the headers of each message.
 This can be used to remove excessive spaces (and stuff like
 that) from the headers before splitting and saving the messages."
-  :group 'gnus-mail
+  :group 'nnmail-prepare
   :type 'hook)
 
 (defcustom nnmail-prepare-incoming-message-hook nil
   "Hook called narrowed to each message."
-  :group 'gnus-mail
+  :group 'nnmail-prepare
   :type 'hook)
 
 (defcustom nnmail-list-identifiers nil
   "Regexp that matches list identifiers to be removed.
 This can also be a list of regexps."
-  :group 'gnus-mail
-  :type '(choice regexp
+  :group 'nnmail-prepare
+  :type '(choice (const :tag "none" nil)
+		 regexp
 		 (repeat regexp)))
 
 (defcustom nnmail-pre-get-new-mail-hook nil
   "Hook called just before starting to handle new incoming mail."
-  :group 'gnus-mail
+  :group 'nnmail-retrieve
   :type 'hook)
 
 (defcustom nnmail-post-get-new-mail-hook nil
   "Hook called just after finishing handling new incoming mail."
-  :group 'gnus-mail
+  :group 'nnmail-retrieve
   :type 'hook)
 
 (defcustom nnmail-split-hook nil
@@ -268,13 +304,15 @@ This can also be a list of regexps."
 The functions in this hook are free to modify the buffer
 contents in any way they choose -- the buffer contents are
 discarded after running the split process."
-  :group 'gnus-mail
+  :group 'nnmail-split
   :type 'hook)
 
 ;; Suggested by Mejia Pablo J <pjm9806@usl.edu>.
 (defcustom nnmail-tmp-directory nil
-  "*If non-nil, use this directory for temporary storage when reading incoming mail."
-  :group 'gnus-mail
+  "*If non-nil, use this directory for temporary storage.
+Used when reading incoming mail."
+  :group 'nnmail-files
+  :group 'nnmail-retrieve
   :type '(choice (const :tag "default" nil)
 		 (directory :format "%v")))
 
@@ -282,7 +320,7 @@ discarded after running the split process."
   "*The number of the articles which indicates a large newsgroup.
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status."
-  :group 'gnus-mail
+  :group 'nnmail-various
   :type 'integer)
 
 (defcustom nnmail-split-fancy "mail.misc"
@@ -338,7 +376,7 @@ Example:
 	     (any \"larsi@ifi\\\\.uio\\\\.no\" \"people.Lars Magne Ingebrigtsen\"))
 	  ;; Unmatched mail goes to the catch all group.
 	  \"misc.misc\"))"
-  :group 'gnus-mail
+  :group 'nnmail-split
   ;; Sigh!
   :type 'sexp)
 
@@ -346,26 +384,27 @@ Example:
   '((any . "from\\|to\\|cc\\|sender\\|apparently-to\\|resent-from\\|resent-to\\|resent-cc")
     (mail . "mailer-daemon\\|postmaster\\|uucp"))
   "Alist of abbreviations allowed in `nnmail-split-fancy'."
-  :group 'gnus-mail
+  :group 'nnmail-split
   :type '(repeat (cons :format "%v" symbol regexp)))
 
 (defcustom nnmail-delete-incoming t
   "*If non-nil, the mail backends will delete incoming files after
 splitting."
-  :group 'gnus-mail
+  :group 'nnmail-retrieve
   :type 'boolean)
 
 (defcustom nnmail-message-id-cache-length 1000
   "*The approximate number of Message-IDs nnmail will keep in its cache.
 If this variable is nil, no checking on duplicate messages will be
 performed."
-  :group 'gnus-mail
+  :group 'nnmail-duplicate
   :type '(choice (const :tag "disable" nil)
 		 (integer :format "%v")))
 
 (defcustom nnmail-message-id-cache-file "~/.nnmail-cache"
   "*The file name of the nnmail Message-ID cache."
-  :group 'gnus-mail
+  :group 'nnmail-duplicate
+  :group 'nnmail-files
   :type 'file)
 
 (defcustom nnmail-treat-duplicates 'warn
@@ -378,7 +417,7 @@ and `delete', which means that nnmail will delete duplicated mails.
 This variable can also be a function.  It will be called from a buffer
 narrowed to the article in question with the Message-ID as a
 parameter.  It should return nil, `warn' or `delete'."
-  :group 'gnus-mail
+  :group 'nnmail-duplicate
   :type '(choice (const :tag "off" nil)
 		 (const warn)
 		 (const delete)))
@@ -1473,8 +1512,9 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		    (if nnmail-tmp-directory
 			(concat 
 			 (file-name-as-directory nnmail-tmp-directory)
-			 (file-name-nondirectory (concat temp "Incoming")))
-		      (concat temp "Incoming")))))
+			 (file-name-nondirectory
+			  (concat (file-name-as-directory temp) "Incoming")))
+		      (concat (file-name-as-directory temp) "Incoming")))))
 	    (rename-file nnmail-crash-box incoming t)
 	    (push incoming incomings))))
       ;; If we did indeed read any incoming spools, we save all info. 
@@ -1632,7 +1672,14 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(setq found t
 	      his nil)))
     found))
-	
+
+(defun nnmail-pop3-movemail (inbox crashbox)
+  "Function to move mail from INBOX on a pop3 server to file CRASHBOX."
+  (require 'pop3)
+  (let ((pop3-maildrop
+         (substring inbox (match-end (string-match "^po:" inbox)))))
+    (pop3-movemail crashbox)))
+
 (run-hooks 'nnmail-load-hook)
 	    
 (provide 'nnmail)

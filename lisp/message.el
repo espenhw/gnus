@@ -727,6 +727,8 @@ The cdr of ech entry is a function for applying the face to a region.")
 (eval-and-compile
   (autoload 'message-setup-toolbar "messagexmas")
   (autoload 'mh-send-letter "mh-comp")
+  (autoload 'gnus-point-at-eol "gnus-util")
+  (autoload 'gnus-point-at-bol "gnus-util")
   (autoload 'gnus-output-to-mail "gnus-util")
   (autoload 'gnus-output-to-rmail "gnus-util"))
 
@@ -735,22 +737,6 @@ The cdr of ech entry is a function for applying the face to a region.")
 ;;; 
 ;;; Utility functions.
 ;;;
-
-(defun message-point-at-bol ()
-  "Return point at the beginning of the line."
-  (let ((p (point)))
-    (beginning-of-line)
-    (prog1
-	(point)
-      (goto-char p))))
-
-(defun message-point-at-eol ()
-  "Return point at the end of the line."
-  (let ((p (point)))
-    (end-of-line)
-    (prog1
-	(point)
-      (goto-char p))))
 
 (defmacro message-y-or-n-p (question show &rest text)
   "Ask QUESTION, displaying the rest of the arguments in a temp. buffer if SHOW"
@@ -1277,20 +1263,8 @@ message-elide-elipsis) will be inserted where the text was killed."
     ;; We build the table, if necessary.
     (when (or (not message-caesar-translation-table)
 	      (/= (aref message-caesar-translation-table ?a) (+ ?a n)))
-      (let ((i -1) 
-	    (table (make-string 256 0)))
-	(while (< (incf i) 256)
-	  (aset table i i))
-	(setq table
-	      (concat
-	       (substring table 0 ?A)
-	       (substring table (+ ?A n) (+ ?A n (- 26 n)))
-	       (substring table ?A (+ ?A n))
-	       (substring table (+ ?A 26) ?a)
-	       (substring table (+ ?a n) (+ ?a n (- 26 n)))
-	       (substring table ?a (+ ?a n))
-	       (substring table (+ ?a 26) 255)))
-	(setq message-caesar-translation-table table)))
+	(setq message-caesar-translation-table
+	      (message-make-caesar-translation-table n)))
     ;; Then we translate the region.  Do it this way to retain 
     ;; text properties.
     (while (< b e)
@@ -1298,6 +1272,21 @@ message-elide-elipsis) will be inserted where the text was killed."
        b (1+ b) (char-after b)
        (aref message-caesar-translation-table (char-after b)))
       (incf b))))
+
+(defun message-make-caesar-translation-table (n)
+  "Create a rot table with offset N."
+  (let ((i -1) 
+	(table (make-string 256 0)))
+    (while (< (incf i) 256)
+      (aset table i i))
+    (concat
+     (substring table 0 ?A)
+     (substring table (+ ?A n) (+ ?A n (- 26 n)))
+     (substring table ?A (+ ?A n))
+     (substring table (+ ?A 26) ?a)
+     (substring table (+ ?a n) (+ ?a n (- 26 n)))
+     (substring table ?a (+ ?a n))
+     (substring table (+ ?a 26) 255))))
 
 (defun message-caesar-buffer-body (&optional rotnum)
   "Caesar rotates all letters in the current buffer by 13 places.
@@ -2523,7 +2512,7 @@ Headers already prepared in the buffer are not modified."
 		    (forward-line -1))
 		;; The value of this header was empty, so we clear
 		;; totally and insert the new value.
-		(delete-region (point) (message-point-at-eol))
+		(delete-region (point) (gnus-point-at-eol))
 		(insert value))
 	      ;; Add the deletable property to the headers that require it.
 	      (and (memq header message-deletable-headers)
@@ -2928,7 +2917,7 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 	references message-id follow-to 
 	(inhibit-point-motion-hooks t)
 	(message-this-is-news t)
-	followup-to distribution newsgroups gnus-warning)
+	followup-to distribution newsgroups gnus-warning posted-to)
     (save-restriction
       (narrow-to-region
        (goto-char (point-min))
@@ -2945,6 +2934,7 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 	    message-id (message-fetch-field "message-id" t)
 	    followup-to (message-fetch-field "followup-to")
 	    newsgroups (message-fetch-field "newsgroups")
+	    posted-to (message-fetch-field "posted-to")
 	    reply-to (message-fetch-field "reply-to")
 	    distribution (message-fetch-field "distribution")
 	    mct (message-fetch-field "mail-copies-to"))
@@ -3006,6 +2996,8 @@ Also, some source/announcement newsgroups are not indented for discussion;
 responses here are directed to other newsgroups."))
 		  (cons 'Newsgroups followup-to)
 		(cons 'Newsgroups newsgroups))))))
+	  (posted-to
+	   `((Newsgroups . ,posted-to)))
 	  (t
 	   `((Newsgroups . ,newsgroups))))
        ,@(and distribution (list (cons 'Distribution distribution)))

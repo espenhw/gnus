@@ -1,3 +1,95 @@
+Sun Feb 16 18:12:01 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.13 is released.
+
+Sun Feb 16 16:20:33 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-nocem.el (gnus-nocem-scan-groups): Allow NULL references.
+
+	* message.el (message-make-caesar-translation-table): New function.
+	(message-caesar-region): Use it.
+
+	* messagexmas.el (message-xmas-make-caesar-translation-table): New
+	function.
+
+	* gnus-art.el (gnus-article-add-buttons): Respect previous
+	buttons. 
+	(gnus-button-in-region-p): New function.
+	(gnus-article-add-buttons): Use it.
+
+	* nnweb.el (nnweb-max-hits): Fixed default.
+
+Tue Feb 11 20:25:42 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-srvr.el (gnus-server-regenerate-server): Typo.
+
+Sun Feb 16 15:24:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el: Removed `message-point-at-bol' and `eol'.
+
+	* gnus-start.el (gnus-read-active-file): Allow FORCE argument.
+	(gnus-check-bogus-newsgroups): Use it.
+
+	* gnus-srvr.el (gnus-server-copy-server): Allow copying of
+	unreadable servers.
+
+Thu Feb 13 19:44:33 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* gnus-util.el (gnus-output-to-mail): Make sure `From ' lines in
+	saved messages are preceded by a newline.
+
+Wed Feb 12 05:28:32 1997  Zlatko Calusic  <zcalusic@srce.hr>
+
+	* gnus-sum.el (gnus-summary-copy-article): Use TO-NEWSGROUP.
+
+Sat Feb 15 21:48:23 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el: Organized customization options.
+	* gnus.el: Updated.
+
+Wed Feb 12 18:06:11 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-kill.el: Reorganized customization
+	options.  
+	* gnus-sum.el: Ditto.
+	* gnus-score.el: Ditto.
+	* gnus-start.el: Ditto.
+	* gnus.el: Ditto.
+
+Fri Feb 14 09:30:42 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (article-strip-multiple-blank-lines): Inhibit
+	point-motion hooks.
+	(article-hide-pgp): Don't hide the leading newline.
+
+	* gnus-group.el (gnus-group-quick-select-group): Bind
+	gnus-home-score-file to nil.
+
+	* gnus-start.el (gnus-dribble-read-file): Changed prompt.
+
+Wed Feb 12 09:39:53 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-get-new-mail): Make sure we're using directory
+	file names.
+
+Tue Feb 11 14:00:56 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-followup): Respect Posted-To.
+
+Tue Feb 11 08:15:38 1997  Rich Pieri  <rich.pieri@prescienttech.com>
+
+	* nnmail.el (nnmail-pop3-movemail): New function.
+
+Tue Feb 11 03:44:43 1997  Karl Kleinpaste  <karl@jprc.com>
+
+	* gnus-art.el (gnus-emphasis-alist): Made compounds available
+	again. 
+
+Mon Feb 10 08:54:09 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* dgnushack.el (dgnushack-compile): XEmacs doesn't complain about
+	portability variables any more.
+
 Mon Feb 10 14:19:55 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.12 is released.

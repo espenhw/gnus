@@ -145,7 +145,9 @@ matches an previously scanned and verified nocem message."
 		  ;; ignore scanning followups.
 		  (and (string-match "@@NCM" (mail-header-subject header))
 		       (or gnus-nocem-liberal-fetch
-			   (and (string= "" (mail-header-references header))
+			   (and (or (string= "" (mail-header-references
+						 header))
+				    (null (mail-header-references header)))
 				(not (member (mail-header-message-id header)
 					     gnus-nocem-seen-message-ids))))
 		       (gnus-nocem-check-article group header)))))))

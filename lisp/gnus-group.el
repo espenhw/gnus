@@ -1501,6 +1501,7 @@ buffer."
   (require 'gnus-score)
   (let (gnus-visual
 	gnus-score-find-score-files-function
+	gnus-home-score-file
 	gnus-apply-kill-hook
 	gnus-summary-expunge-below)
     (gnus-group-read-group all t)))

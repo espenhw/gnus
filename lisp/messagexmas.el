@@ -97,6 +97,27 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 	     font-lock-auto-fontify)
     (turn-on-font-lock)))
 
+(defun message-xmas-make-caesar-translation-table (n)
+  "Create a rot table with offset N."
+  (let ((i -1) 
+	(table (make-string 256 0))
+	(a (char-int ?a))
+	(A (char-int ?A)))
+    (while (< (incf i) 256)
+      (aset table i i))
+    (concat
+     (substring table 0 A)
+     (substring table (+ A n) (+ A n (- 26 n)))
+     (substring table A (+ A n))
+     (substring table (+ A 26) a)
+     (substring table (+ a n) (+ a n (- 26 n)))
+     (substring table a (+ a n))
+     (substring table (+ a 26) 255))))
+
+(when (>= emacs-major-version 20)
+  (fset 'message-make-caesar-translation-table
+	'message-xmas-make-caesar-translation-table))
+
 (add-hook 'message-mode-hook 'message-xmas-maybe-fontify)
 
 (provide 'messagexmas)

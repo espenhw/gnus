@@ -32,22 +32,23 @@
 
 (defcustom gnus-kill-file-mode-hook nil
   "Hook for Gnus kill file mode."
-  :group 'gnus-score
+  :group 'gnus-score-kill
   :type 'hook)
 
 (defcustom gnus-kill-expiry-days 7
   "*Number of days before expiring unused kill file entries."
-  :group 'gnus-score
+  :group 'gnus-score-kill
+  :group 'gnus-score-expire
   :type 'integer)
 
 (defcustom gnus-kill-save-kill-file nil
   "*If non-nil, will save kill files after processing them."
-  :group 'gnus-score
+  :group 'gnus-score-kill
   :type 'boolean)
 
 (defcustom gnus-winconf-kill-file nil
   "What does this do, Lars?"
-  :group 'gnus-score
+  :group 'gnus-score-kill
   :type 'sexp)
 
 (defcustom gnus-kill-killed t
@@ -55,7 +56,7 @@
 If it is nil, Gnus will never apply kill files to articles that have
 already been through the scoring process, which might very well save lots
 of time."
-  :group 'gnus-score
+  :group 'gnus-score-kill
   :type 'boolean)
 
 

@@ -39,6 +39,10 @@
   "Starting your favorite newsreader."
   :group 'gnus)
 
+(defgroup gnus-start-server nil
+  "Server options at startup."
+  :group 'gnus-start)
+
 ;; These belong to gnus-group.el.
 (defgroup gnus-group nil
   "Group buffers."
@@ -48,6 +52,10 @@
 (defgroup gnus-group-foreign nil
   "Foreign groups."
   :link '(custom-manual "(gnus)Foreign Groups")
+  :group 'gnus-group)
+
+(defgroup gnus-group-new nil
+  "Automatic subscription of new groups."
   :group 'gnus-group)
 
 (defgroup gnus-group-levels nil
@@ -152,6 +160,18 @@
   "Adaptive score files."
   :group 'gnus-score)
 
+(defgroup gnus-score-default nil
+  "Default values for score files."
+  :group 'gnus-score)
+
+(defgroup gnus-score-expire nil
+  "Expiring score rules."
+  :group 'gnus-score)
+
+(defgroup gnus-score-decay nil
+  "Decaying score rules."
+  :group 'gnus-score)
+
 (defgroup gnus-score-files nil
   "Score and kill file names."
   :group 'gnus-score
@@ -166,13 +186,18 @@
   "Options controling the visual fluff."
   :group 'gnus)
 
-(defgroup gnus-mail-expire nil
-  "Expiring articles in mail backends."
-  :group 'gnus-mail)
-
 (defgroup gnus-files nil
   "Files used by Gnus."
   :group 'gnus)
+
+(defgroup gnus-dribble-file nil
+  "Auto save file."
+  :link '(custom-manual "(gnus)Auto Save")
+  :group 'gnus-files)
+
+(defgroup gnus-newsrc nil
+  "Storing Gnus state."
+  :group 'gnus-files)
 
 (defgroup gnus-server nil
   "Options related to newsservers and other servers used by Gnus."
@@ -198,7 +223,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.12"
+(defconst gnus-version-number "5.4.13"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1174,7 +1199,7 @@ to be desirable; see the manual for further details."
   "*Groups in which to automatically mark read articles as expirable.
 If non-nil, this should be a regexp that should match all groups in
 which to perform auto-expiry.  This only makes sense for mail groups."
-  :group 'gnus-mail-expire
+  :group 'nnmail-expire
   :type '(choice (const nil)
 		 regexp))
 
@@ -1184,7 +1209,7 @@ Use with extreme caution.  All groups that match this regexp will be
 expiring - which means that all read articles will be deleted after
 \(say) one week.	 (This only goes for mail groups and the like, of
 course.)"
-  :group 'gnus-mail-expire
+  :group 'nnmail-expire
   :type '(choice (const nil)
 		 regexp))
 

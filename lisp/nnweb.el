@@ -70,7 +70,7 @@
 (defvoo nnweb-search nil
   "Search string to feed to DejaNews.")
 
-(defvoo nnweb-max-hits 30
+(defvoo nnweb-max-hits 100
   "Maximum number of hits to display.")
 
 (defvoo nnweb-ephemeral-p nil

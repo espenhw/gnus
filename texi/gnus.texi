@@ -8774,8 +8774,11 @@ to.
 @cindex incoming mail files
 @cindex deleting incoming files
 If non-@code{nil}, the mail backends will delete the temporary incoming
-file after splitting mail into the proper groups.  This is @code{nil} by
-default for reasons of security.
+file after splitting mail into the proper groups.  This is @code{t} by
+default.
+
+@c This is @code{nil} by
+@c default for reasons of security.
 
 @c Since Red Gnus is an alpha release, it is to be expected to lose mail.
 (No Gnus release since (ding) Gnus 0.10 (or something like that) have

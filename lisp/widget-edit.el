@@ -1,10 +1,10 @@
 ;;; widget-edit.el --- Functions for creating and using widgets.
 ;;
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.24
+;; Version: 1.38
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -49,6 +49,7 @@ and `end-open' if it should sticky to the front."
     (defmacro defgroup (&rest args) nil)
     (defmacro defcustom (&rest args) nil)
     (defmacro defface (&rest args) nil)
+    (define-widget-keywords :prefix :tag :load :link :options :type :group)
     (when (fboundp 'copy-face)
       (copy-face 'default 'widget-documentation-face)
       (copy-face 'bold 'widget-button-face)
@@ -126,7 +127,7 @@ Larger menus are read through the minibuffer."
 ;;
 ;; These are not really widget specific.
 
-(defun widget-plist-member (plist prop)
+(defsubst widget-plist-member (plist prop)
   ;; Return non-nil if PLIST has the property PROP.
   ;; PLIST is a property list, which is a list of the form
   ;; (PROP1 VALUE1 PROP2 VALUE2 ...).  PROP is a symbol.
@@ -189,6 +190,20 @@ minibuffer."
 	 (cdr (assoc (completing-read (concat title ": ")
 				      items nil t)
 		     items)))))
+
+(defun widget-get-sibling (widget)
+  "Get the item WIDGET is assumed to toggle.
+This is only meaningful for radio buttons or checkboxes in a list."
+  (let* ((parent (widget-get widget :parent))
+	 (children (widget-get parent :children))
+	 child)
+    (catch 'child
+      (while children
+	(setq child (car children)
+	      children (cdr children))
+	(when (eq (widget-get child :button) widget)
+	  (throw 'child child)))
+      nil)))
 
 ;;; Widget text specifications.
 ;; 
@@ -288,9 +303,9 @@ minibuffer."
 
     (unless (widget-get widget :size)
       (add-text-properties to (1+ to) (list 'field widget
-					    'face face
-					    'local-map map
-					    'keymap map)))))
+					    'face face)))
+    (add-text-properties to (1+ to) (list 'local-map map
+					  'keymap map))))
 
 (defun widget-specify-button (widget from to)
   ;; Specify button for WIDGET between FROM and TO.
@@ -332,6 +347,10 @@ minibuffer."
 
 ;;; Widget Properties.
 
+(defsubst widget-type (widget)
+  "Return the type of WIDGET, a symbol."
+  (car widget))
+
 (defun widget-put (widget property value)
   "In WIDGET set PROPERTY to VALUE.
 The value can later be retrived with `widget-get'."
@@ -341,11 +360,17 @@ The value can later be retrived with `widget-get'."
   "In WIDGET, get the value of PROPERTY.
 The value could either be specified when the widget was created, or
 later with `widget-put'."
-  (cond ((widget-plist-member (cdr widget) property)
-	 (plist-get (cdr widget) property))
-	((car widget)
-	 (widget-get (get (car widget) 'widget-type) property))
-	(t nil)))
+  (let ((missing t)
+	value tmp)
+    (while missing
+      (cond ((setq tmp (widget-plist-member (cdr widget) property))
+	     (setq value (car (cdr tmp))
+		   missing nil))
+	    ((setq tmp (car widget))
+	     (setq widget (get tmp 'widget-type)))
+	    (t 
+	     (setq missing nil))))
+    value))
 
 (defun widget-member (widget property)
   "Non-nil iff there is a definition in WIDGET for PROPERTY."
@@ -379,6 +404,50 @@ ARGS are passed as extra argments to the function."
 	      (widget-apply widget :match (car vals)))
 	 (cons (list (car vals)) (cdr vals)))
 	(t nil)))
+
+;;; Glyphs.
+
+(defcustom widget-glyph-directory (concat data-directory "custom/")
+  "Where widget glyphs are located.
+If this variable is nil, widget will try to locate the directory
+automatically. This does not work yet."
+  :group 'widgets
+  :type 'directory)
+
+(defcustom widget-glyph-enable t
+  "If non nil, use glyphs in images when available."
+  :group 'widgets
+  :type 'boolean)
+
+(defun widget-glyph-insert (widget tag image)
+  "In WIDGET, insert the text TAG or, if supported, IMAGE.
+IMAGE should be a name sans extension of an xpm or xbm file located in 
+`widget-glyph-directory'"
+  (if (and (string-match "XEmacs" emacs-version)
+	   widget-glyph-enable
+	   (fboundp 'make-glyph)
+	   image)
+      (let ((file (concat widget-glyph-directory 
+			(if (string-match "/\\'" widget-glyph-directory)
+			    ""
+			  "/")
+			image
+			(if (featurep 'xpm) ".xpm" ".xbm"))))
+	(if (file-readable-p file)
+	    (widget-glyph-insert-glyph widget tag (make-glyph file))
+	  ;; File not readable, give up.
+	  (insert tag)))
+    ;; We don't want or can't use glyphs.
+    (insert tag)))
+
+(defun widget-glyph-insert-glyph (widget tag glyph)
+  "In WIDGET, with alternative text TAG, insert GLYPH."
+  (set-glyph-image glyph (cons 'tty tag))
+  (set-glyph-property glyph 'widget widget)
+  (insert "*")
+  (add-text-properties (1- (point)) (point) 
+		       (list 'invisible t
+			     'end-glyph glyph)))
 
 ;;; Creating Widgets.
 
@@ -491,15 +560,18 @@ Recommended as a parent keymap for modes using widgets.")
 
 (unless widget-keymap 
   (setq widget-keymap (make-sparse-keymap))
+  (define-key widget-keymap "\C-k" 'widget-kill-line)
   (define-key widget-keymap "\t" 'widget-forward)
   (define-key widget-keymap "\M-\t" 'widget-backward)
   (define-key widget-keymap [(shift tab)] 'widget-backward)
   (define-key widget-keymap [(shift tab)] 'widget-backward)
   (define-key widget-keymap [backtab] 'widget-backward)
   (if (string-match "XEmacs" (emacs-version))
-      (define-key widget-keymap [button2] 'widget-button-click)
-    (define-key widget-keymap [menu-bar] 'nil)
-    (define-key widget-keymap [mouse-2] 'widget-button-click))
+      (progn 
+	(define-key widget-keymap [button2] 'widget-button-click)
+	(define-key widget-keymap [button1] 'widget-button1-click))
+    (define-key widget-keymap [mouse-2] 'ignore)
+    (define-key widget-keymap [down-mouse-2] 'widget-button-click))
   (define-key widget-keymap "\C-m" 'widget-button-press))
 
 (defvar widget-global-map global-map
@@ -511,7 +583,11 @@ Recommended as a parent keymap for modes using widgets.")
 
 (unless widget-field-keymap 
   (setq widget-field-keymap (copy-keymap widget-keymap))
+  (unless (string-match "XEmacs" (emacs-version))
+    (define-key widget-field-keymap [menu-bar] 'nil))
   (define-key widget-field-keymap "\C-m" 'widget-field-activate)
+  (define-key widget-field-keymap "\C-a" 'widget-beginning-of-line)
+  (define-key widget-field-keymap "\C-e" 'widget-end-of-line)
   (set-keymap-parent widget-field-keymap global-map))
 
 (defvar widget-text-keymap nil
@@ -519,12 +595,16 @@ Recommended as a parent keymap for modes using widgets.")
 
 (unless widget-text-keymap 
   (setq widget-text-keymap (copy-keymap widget-keymap))
+  (unless (string-match "XEmacs" (emacs-version))
+    (define-key widget-text-keymap [menu-bar] 'nil))
+  (define-key widget-text-keymap "\C-a" 'widget-beginning-of-line)
+  (define-key widget-text-keymap "\C-e" 'widget-end-of-line)
   (set-keymap-parent widget-text-keymap global-map))
 
 (defun widget-field-activate (pos &optional event)
   "Activate the ediable field at point."
   (interactive "@d")
-  (let* ((field (get-text-property pos 'field)))
+  (let ((field (get-text-property pos 'field)))
     (if field
 	(widget-apply field :action event)
       (call-interactively
@@ -533,16 +613,43 @@ Recommended as a parent keymap for modes using widgets.")
 (defun widget-button-click (event)
   "Activate button below mouse pointer."
   (interactive "@e")
-  (widget-button-press (event-point event) event))
+  (cond ((and (fboundp 'event-glyph)
+	      (event-glyph event))
+	 (let ((widget (glyph-property (event-glyph event) 'widget)))
+	   (if widget
+	       (widget-apply widget :action event)
+	     (message "You clicked on a glyph."))))
+	((event-point event)
+	 (let ((button (get-text-property (event-point event) 'button)))
+	   (if button
+	       (widget-apply button :action event)
+	     (call-interactively 
+	      (or (lookup-key widget-global-map [ button2 ])
+		  (lookup-key widget-global-map [ down-mouse-2 ])
+		  (lookup-key widget-global-map [ mouse-2]))))))
+	(t
+	 (message "You clicked somewhere weird."))))
+
+(defun widget-button1-click (event)
+  "Activate glyph below mouse pointer."
+  (interactive "@e")
+  (if (and (fboundp 'event-glyph)
+	   (event-glyph event))
+      (let ((widget (glyph-property (event-glyph event) 'widget)))
+	(if widget
+	    (widget-apply widget :action event)
+	  (message "You clicked on a glyph.")))
+    (call-interactively (lookup-key widget-global-map (this-command-keys)))))
 
 (defun widget-button-press (pos &optional event)
   "Activate button at POS."
   (interactive "@d")
-  (let* ((button (get-text-property pos 'button)))
+  (let ((button (get-text-property pos 'button)))
     (if button
 	(widget-apply button :action event)
-      (call-interactively
-       (lookup-key widget-global-map (this-command-keys))))))
+      (let ((command (lookup-key widget-global-map (this-command-keys))))
+	(when (commandp command)
+	  (call-interactively command))))))
 
 (defun widget-move (arg)
   "Move point to the ARG next field or button.
@@ -624,6 +731,30 @@ With optional ARG, move across that many fields."
   (interactive "p")
   (run-hooks 'widget-backward-hook)
   (widget-move (- arg)))
+
+(defun widget-beginning-of-line ()
+  "Go to beginning of field or beginning of line, whichever is first."
+  (interactive)
+  (let ((bol (save-excursion (beginning-of-line) (point)))
+	(prev (previous-single-property-change (point) 'field)))
+    (goto-char (max bol (or prev bol)))))
+
+(defun widget-end-of-line ()
+  "Go to end of field or end of line, whichever is first."
+  (interactive)
+  (let ((bol (save-excursion (end-of-line) (point)))
+	(prev (next-single-property-change (point) 'field)))
+    (goto-char (min bol (or prev bol)))))
+
+(defun widget-kill-line ()
+  "Kill to end of field or end of line, whichever is first."
+  (interactive)
+  (let ((field (get-text-property (point) 'field))
+	(newline (save-excursion (search-forward "\n")))
+	(next (next-single-property-change (point) 'field)))
+    (if (and field (> newline next))
+	(kill-region (point) next)
+      (call-interactively 'kill-line))))
 
 ;;; Setting up the buffer.
 
@@ -763,6 +894,7 @@ With optional ARG, move across that many fields."
   (widget-specify-insert
    (let ((from (point))
 	 (tag (widget-get widget :tag))
+	 (glyph (widget-get widget :tag-glyph))
 	 (doc (widget-get widget :doc))
 	 button-begin button-end
 	 sample-begin sample-end
@@ -770,7 +902,7 @@ With optional ARG, move across that many fields."
 	 value-pos)
      (insert (widget-get widget :format))
      (goto-char from)
-     ;; Parse % escapes in format.
+     ;; Parse escapes in format.
      (while (re-search-forward "%\\(.\\)" nil t)
        (let ((escape (aref (match-string 1) 0)))
 	 (replace-match "" t t)
@@ -789,10 +921,13 @@ With optional ARG, move across that many fields."
 		  (insert "\n")
 		  (insert-char ?  (widget-get widget :indent))))
 	       ((eq escape ?t)
-		(if tag
-		    (insert tag)
-		  (let ((standard-output (current-buffer)))
-		    (princ (widget-get widget :value)))))
+		(cond (glyph 
+		       (widget-glyph-insert widget (or tag "image") glyph))
+		      (tag
+		       (insert tag))
+		      (t
+		       (let ((standard-output (current-buffer)))
+			 (princ (widget-get widget :value))))))
 	       ((eq escape ?d)
 		(when doc
 		  (setq doc-begin (point))
@@ -965,9 +1100,40 @@ With optional ARG, move across that many fields."
 
 ;;; The `push-button' Widget.
 
+(defcustom widget-push-button-gui t
+  "If non nil, use GUI push buttons when available."
+  :group 'widgets
+  :type 'boolean)
+
+;; Cache already created GUI objects.
+(defvar widget-push-button-cache nil)
+
 (define-widget 'push-button 'item
   "A pushable button."
-  :format "%[[%t]%]")
+  :value-create 'widget-push-button-value-create
+  :format "%[%v%]")
+
+(defun widget-push-button-value-create (widget)
+  ;; Insert text representing the `on' and `off' states.
+  (let* ((tag (or (widget-get widget :tag)
+		  (widget-get widget :value)))
+	 (text (concat "[" tag "]"))
+	 (gui (cdr (assoc tag widget-push-button-cache))))
+    (if (and (fboundp 'make-gui-button)
+	     (fboundp 'make-glyph)
+	     widget-push-button-gui
+	     (string-match "XEmacs" emacs-version))
+	(progn 
+	  (unless gui
+	    (setq gui (make-gui-button tag 'widget-gui-action widget))
+	    (push (cons tag gui) widget-push-button-cache))
+	  (widget-glyph-insert-glyph widget text
+				     (make-glyph (car (aref gui 1)))))
+      (insert text))))
+
+(defun widget-gui-action (widget)
+  "Apply :action for WIDGET."
+  (widget-apply widget :action (this-command-keys)))
 
 ;;; The `link' Widget.
 
@@ -1231,36 +1397,39 @@ With optional ARG, move across that many fields."
 
 ;;; The `toggle' Widget.
 
-(define-widget 'toggle 'menu-choice
+(define-widget 'toggle 'item
   "Toggle between two states."
-  :convert-widget 'widget-toggle-convert-widget
-  :format "%v"
+  :format "%[%v%]\n"
+  :value-create 'widget-toggle-value-create
+  :action 'widget-toggle-action
+  :match (lambda (widget value) t)
   :on "on"
   :off "off")
 
-(defun widget-toggle-convert-widget (widget)
-  ;; Create the types representing the `on' and `off' states.
-  (let ((on-type (widget-get widget :on-type))
-	(off-type (widget-get widget :off-type)))
-    (unless on-type
-      (setq on-type
-	    (list 'choice-item 
-		  :value t
-		  :match (lambda (widget value) value)
-		  :tag (widget-get widget :on))))
-    (unless off-type
-      (setq off-type
-	    (list 'choice-item :value nil :tag (widget-get widget :off))))
-    (widget-put widget :args (list on-type off-type)))
-  widget)
+(defun widget-toggle-value-create (widget)
+  ;; Insert text representing the `on' and `off' states.
+  (if (widget-value widget)
+      (widget-glyph-insert widget 
+			   (widget-get widget :on) 
+			   (widget-get widget :on-glyph))
+    (widget-glyph-insert widget
+			 (widget-get widget :off)
+			 (widget-get widget :off-glyph))))
 
+(defun widget-toggle-action (widget &optional event)
+  ;; Toggle value.
+  (widget-value-set widget (not (widget-value widget)))
+  (widget-apply widget :notify widget event))
+  
 ;;; The `checkbox' Widget.
 
 (define-widget 'checkbox 'toggle
   "A checkbox toggle."
-  :convert-widget 'widget-item-convert-widget
-  :on-type '(choice-item :format "%[[X]%]" t)
-  :off-type  '(choice-item :format "%[[ ]%]" nil))
+  :format "%[%v%]"
+  :on "[X]"
+  :on-glyph "check1"
+  :off "[ ]"
+  :off-glyph "check0")
 
 ;;; The `checklist' Widget.
 
@@ -1427,11 +1596,14 @@ With optional ARG, move across that many fields."
 (define-widget 'radio-button 'toggle
   "A radio button for use in the `radio' widget."
   :notify 'widget-radio-button-notify
-  :on-type '(choice-item :format "%[(*)%]" t)
-  :off-type '(choice-item :format "%[( )%]" nil))
+  :format "%[%v%]"
+  :on "(*)"
+  :on-glyph "radio1"
+  :off "( )"
+  :off-glyph "radio0")
 
 (defun widget-radio-button-notify (widget child &optional event)
-  ;; Notify the parent.
+  ;; Tell daddy.
   (widget-apply (widget-get widget :parent) :action widget event))
 
 ;;; The `radio-button-choice' Widget.
@@ -1612,6 +1784,11 @@ With optional ARG, move across that many fields."
 
 ;;; The `editable-list' Widget.
 
+(defcustom widget-editable-list-gui nil
+  "If non nil, use GUI push-buttons in editable list when available."
+  :type 'boolean
+  :group 'widgets)
+
 (define-widget 'editable-list 'default
   "A variable list of widgets of the same type."
   :convert-widget 'widget-types-convert-widget
@@ -1631,12 +1808,13 @@ With optional ARG, move across that many fields."
 
 (defun widget-editable-list-format-handler (widget escape)
   ;; We recognize the insert button.
-  (cond ((eq escape ?i)
-	 (and (widget-get widget :indent)
-	      (insert-char ?  (widget-get widget :indent)))
-	 (widget-create-child-and-convert widget 'insert-button))
-	(t 
-	 (widget-default-format-handler widget escape))))
+  (let ((widget-push-button-gui widget-editable-list-gui))
+    (cond ((eq escape ?i)
+	   (and (widget-get widget :indent)
+		(insert-char ?  (widget-get widget :indent)))
+	   (widget-create-child-and-convert widget 'insert-button))
+	  (t 
+	   (widget-default-format-handler widget escape)))))
 
 (defun widget-editable-list-value-create (widget)
   ;; Insert all values
@@ -1746,6 +1924,7 @@ With optional ARG, move across that many fields."
 (defun widget-editable-list-entry-create (widget value conv)
   ;; Create a new entry to the list.
   (let ((type (nth 0 (widget-get widget :args)))
+	(widget-push-button-gui widget-editable-list-gui)
 	child delete insert)
     (widget-specify-insert 
      (save-excursion
@@ -2074,7 +2253,7 @@ It will read a directory name from the minibuffer when activated."
 (define-widget 'boolean 'toggle
   "To be nil or non-nil, that is the question."
   :tag "Boolean"
-  :format "%{%t%}: %v")
+  :format "%{%t%}: %[%v%]\n")
 
 ;;; The `color' Widget.
 

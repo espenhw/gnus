@@ -1,10 +1,10 @@
 ;;; custom.el -- Tools for declaring and initializing options.
 ;;
-;; Copyright (C) 1996 Free Software Foundation, Inc.
+;; Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.24
+;; Version: 1.38
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -22,14 +22,16 @@
 (define-widget-keywords :prefix :tag :load :link :options :type :group)
 
 ;; These autoloads should be deleted when the file is added to Emacs
-(autoload 'customize "custom-edit" nil t)
-(autoload 'customize-variable "custom-edit" nil t)
-(autoload 'customize-face "custom-edit" nil t)
-(autoload 'customize-apropos "custom-edit" nil t)
-(autoload 'customize-customized "custom-edit" nil t)
-(autoload 'custom-buffer-create "custom-edit")
-(autoload 'custom-menu-update "custom-edit")
-(autoload 'custom-make-dependencies "custom-edit")
+
+(unless (fboundp 'load-gc)
+  (autoload 'customize "custom-edit" nil t)
+  (autoload 'customize-variable "custom-edit" nil t)
+  (autoload 'customize-face "custom-edit" nil t)
+  (autoload 'customize-apropos "custom-edit" nil t)
+  (autoload 'customize-customized "custom-edit" nil t)
+  (autoload 'custom-buffer-create "custom-edit")
+  (autoload 'custom-menu-update "custom-edit")
+  (autoload 'custom-make-dependencies "custom-edit"))
 
 ;;; Compatibility.
 
@@ -92,7 +94,6 @@ If FRAME is omitted or nil, use the selected frame."
 
 ;;; The `defcustom' Macro.
 
-;;;###autoload
 (defun custom-declare-variable (symbol value doc &rest args)
   "Like `defcustom', but SYMBOL and VALUE are evaluated as notmal arguments."
   (unless (and (default-boundp symbol)
@@ -129,7 +130,6 @@ If FRAME is omitted or nil, use the selected frame."
   (run-hooks 'custom-define-hook)
   symbol)
 
-;;;###autoload
 (defmacro defcustom (symbol value doc &rest args)
   "Declare SYMBOL as a customizable variable that defaults to VALUE.
 DOC is the variable documentation.
@@ -154,7 +154,6 @@ information."
 
 ;;; The `defface' Macro.
 
-;;;###autoload
 (defun custom-declare-face (face spec doc &rest args)
   "Like `defface', but FACE is evaluated as a normal argument."
   (put face 'factory-face spec)
@@ -170,7 +169,6 @@ information."
   (run-hooks 'custom-define-hook)
   face)
 
-;;;###autoload
 (defmacro defface (face spec doc &rest args)
   "Declare FACE as a customizable face that defaults to SPEC.
 FACE does not need to be quoted.
@@ -220,7 +218,6 @@ information."
 
 ;;; The `defgroup' Macro.
 
-;;;###autoload
 (defun custom-declare-group (symbol members doc &rest args)
   "Like `defgroup', but SYMBOL is evaluated as a normal argument."
   (put symbol 'custom-group (nconc members (get symbol 'custom-group)))
@@ -244,7 +241,6 @@ information."
   (run-hooks 'custom-define-hook)
   symbol)
 
-;;;###autoload
 (defmacro defgroup (symbol members doc &rest args)
   "Declare SYMBOL as a customization group containing MEMBERS.
 SYMBOL does not need to be quoted.
@@ -269,7 +265,6 @@ Read the section about customization in the emacs lisp manual for more
 information."
   `(custom-declare-group (quote ,symbol) ,members ,doc ,@args))
 
-;;;###autoload
 (defun custom-add-to-group (group option widget)
   "To existing GROUP add a new OPTION of type WIDGET,
 If there already is an entry for that option, overwrite it."
@@ -396,10 +391,10 @@ If FRAME is nil, the current FRAME is used."
       match)))
 
 (defconst custom-face-attributes
-  '((:bold (toggle :format "Bold: %v") custom-set-face-bold)
-    (:italic (toggle :format "Italic: %v") custom-set-face-italic)
+  '((:bold (toggle :format "Bold: %[%v%]\n") custom-set-face-bold)
+    (:italic (toggle :format "Italic: %[%v%]\n") custom-set-face-italic)
     (:underline
-     (toggle :format "Underline: %v") set-face-underline-p)
+     (toggle :format "Underline: %[%v%]\n") set-face-underline-p)
     (:foreground (color :tag "Foreground") set-face-foreground)
     (:background (color :tag "Background") set-face-background)
     (:stipple (editable-field :format "Stipple: %v") set-face-stipple))
@@ -467,7 +462,6 @@ If FRAME is nil, set the default face."
       (make-face-italic face frame)
     (make-face-unitalic face frame)))
 
-;;;###autoload
 (defun custom-initialize-faces (&optional frame)
   "Initialize all custom faces for FRAME.
 If FRAME is nil or omitted, initialize them for all frames."
@@ -479,7 +473,6 @@ If FRAME is nil or omitted, initialize them for all frames."
 
 ;;; Initializing.
 
-;;;###autoload
 (defun custom-set-variables (&rest args)
   "Initialize variables according to user preferences.  
 
@@ -507,7 +500,6 @@ the default value for the SYMBOL."
 	  (put symbol 'saved-value (list value)))
 	(setq args (cdr (cdr args)))))))
 
-;;;###autoload
 (defun custom-set-faces (&rest args)
   "Initialize faces according to user preferences.
 The arguments should be a list where each entry has the form:
@@ -581,7 +573,8 @@ See `defface' for the format of SPEC."
 		 (easy-menu-create-keymaps (car custom-help-menu)
 					   (cdr custom-help-menu)))))))
 
-(custom-menu-reset)
+(unless (fboundp 'load-gc)
+  (custom-menu-reset))
 
 ;;; The End.
 

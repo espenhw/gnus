@@ -1,6 +1,6 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.3 1997/02/03 18:09:45 steve Exp $
+@c $Id: widget.texi,v 1.4 1997/02/16 21:58:10 steve Exp $
 
 @c %**start of header
 @setfilename widget
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 1.24
+Version: 1.34
 
 @menu
 * Introduction::                
@@ -483,6 +483,10 @@ string.
 The string inserted by the @samp{%t} escape in the format
 string.  
 
+@item :tag-glyph
+Name of image to use instead of the string specified by `:tag' on
+Emacsen that supports it.
+
 @item :help-echo
 Message displayed whenever you move to the widget with either
 @code{widget-forward} or @code{widget-backward}.
@@ -530,6 +534,17 @@ return the widget containing the invalid data, and set that widgets
 The parent of a nested widget (e.g. a @code{menu-choice} item or an element of a
 @code{editable-list} widget). 
 @end table
+
+@deffn {User Option} widget-glyph-directory
+Directory where glyphs are found.  
+Widget will look here for a file with the same name as specified for the
+image, with either a @samp{.xpm} (if supported) or @samp{.xbm} extension.
+@end deffn
+
+@deffn{User Option} widget-glyph-enable
+If non-nil, allow glyphs to appear on displayes where they are supported.
+@end deffn
+
 
 @menu
 * link::                        
@@ -815,12 +830,12 @@ The following extra properties are recognized.
 String representing the `on' state.  By default the string @samp{on}.
 @item :off 
 String representing the `off' state.  By default the string @samp{off}.
-@item :on-type
-Type representing the `on' state.  By default an `item' widget displaying
-the string specified with the @code{:on} keyword.
-@item :off-type
-Type representing the `off' state.  By default an `item' widget
-displaying the string specified with the @code{:off} keyword.
+@item :on-glyph
+Name of a glyph to be used instead of the `:on' text string, on emacsen
+that supports it.
+@item :off-glyph
+Name of a glyph to be used instead of the `:off' text string, on emacsen
+that supports it.
 @end table
 
 @node checkbox, checklist, toggle, Basic Types
@@ -1101,8 +1116,8 @@ and has a similar syntax.
 @comment  node-name,  next,  previous,  up
 @section Properties
 
-You can examine or set this value by using the widget object that was
-returned by @code{widget-create}.  
+You can examine or set the value of a widget by using the widget object
+that was returned by @code{widget-create}.
 
 @defun widget-value widget
 Return the current value contained in @var{widget}.
@@ -1139,6 +1154,13 @@ In @var{widget} return the value for @var{property}.
 
 @defun widget-member widget property
 Non-nil if @var{widget} has a value (even nil) for property @var{property}.
+@end defun
+
+Occasionally it can be useful to know which kind of widget you have,
+i.e. the name of the widget type you gave when the widget was created. 
+
+@defun widget-type widget
+Return the name of @var{widget}, a symbol.
 @end defun
 
 @node Defining New Widgets, Widget Wishlist., Widget Properties, Top
@@ -1251,22 +1273,8 @@ default'' in this text.
 
 @itemize @bullet
 @item 
-In general, we need @strong{much} better support for keyboard
-operations. 
-
-@itemize -
-@item 
 It should be possible to add or remove items from a list with @kbd{C-k}
 and @kbd{C-o} (suggested by @sc{rms}).
-
-@item
-@kbd{C-k} should kill to end of field or end of line, whatever come
-first. 
-
-@item
-Commands to move to the beginning/end of a field.
-
-@end itemize
 
 @item 
 The @samp{[INS]} and @samp{[DEL]} buttons should be replaced by a single
@@ -1275,17 +1283,7 @@ whether you want to add or delete an item (@sc{rms} wanted to git rid of
 the ugly buttons, the dash is my idea).
 
 @item
-Use graphical versions of the widgets for emacsen that can do that.
-I.e. real radio buttons and checkmarks instead of their @sc{ascii}
-equivalents. 
-
-@item
-There should be support for browsing the widget documentation.
-
-@item
-There should be a way to specify that @key{RET} in a field will call the
-@code{:activate} function.  This should be used by widgets such as
-@code{file} and @code{symbol} prompt with completion. 
+Widgets such as @code{file} and @code{symbol} should prompt with completion. 
 
 @item
 The @code{menu-choice} tag should be prettier, something like the abbreviated
@@ -1294,7 +1292,7 @@ menus in Open Look.
 @item
 The functions used in many widgets, like
 @code{widget-item-convert-widget}, should not have names that are
-specific to the first widget where I used them.
+specific to the first widget where I happended to use them.
 
 @item 
 Unchecked items in a @code{radio-button-choice} or @code{checklist}
@@ -1308,9 +1306,6 @@ Flag to make @code{widget-move} skip a specified button.
 
 @item
 Document `helper' functions for defining new widgets.
-
-@item
-Show button menus on mouse down.
 
 @item
 Activate the item this is below the mouse when the button is
@@ -1331,6 +1326,19 @@ Document the `default' widget first.
 Split, when needed, keywords into those useful for normal
 customization, those primarily useful when deriving, and those who
 represent runtime information. 
+
+@item
+Figure out terminology and @sc{api} for the class/type/object/super
+stuff. 
+
+Perhaps the correct model is delegation?
+
+@item
+Document @code{widget-browse}.
+
+@item
+Add object and class hierarchies to the browser.
+
 @end itemize
 
 @contents

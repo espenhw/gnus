@@ -242,8 +242,7 @@ The following commands are available:
       (when entry
 	(gnus-dribble-enter 
 	 (concat "(gnus-server-set-info \"" server "\" '"
-		 (prin1-to-string (cdr entry)) ")
-")))
+		 (prin1-to-string (cdr entry)) ")\n")))
       (when (or entry oentry)
 	;; Buffer may be narrowed.
 	(save-restriction
@@ -401,8 +400,8 @@ The following commands are available:
 (defun gnus-server-copy-server (from to)
   (interactive
    (list
-    (unless (gnus-server-server-name)
-      (error "No server on the current line"))
+    (or (gnus-server-server-name)
+	(error "No server on the current line"))
     (read-string "Copy to: ")))
   (unless from
     (error "No server on current line"))
@@ -410,9 +409,10 @@ The following commands are available:
     (error "No name to copy to"))
   (when (assoc to gnus-server-alist)
     (error "%s already exists" to))
-  (unless (assoc from gnus-server-alist)
+  (unless (gnus-server-to-method from)
     (error "%s: no such server" from))
-  (let ((to-entry (gnus-copy-sequence (assoc from gnus-server-alist))))
+  (let ((to-entry (cons from (gnus-copy-sequence
+			      (gnus-server-to-method from)))))
     (setcar to-entry to)
     (setcar (nthcdr 2 to-entry) to)
     (push to-entry gnus-server-killed-servers)
@@ -735,9 +735,9 @@ buffer.
     (if (not (gnus-check-backend-function 
 	      'request-regenerate (car (gnus-server-to-method server))))
 	(error "This backend doesn't support regeneration")
-      (gnus-message 5 "Requesing regeneration of %s..." server)
+      (gnus-message 5 "Requesting regeneration of %s..." server)
       (when (gnus-request-regenerate server)
-	(gnus-message 5 "Requesing regeneration of %s...done" server)))))
+	(gnus-message 5 "Requesting regeneration of %s...done" server)))))
 					  
 (provide 'gnus-srvr)
 

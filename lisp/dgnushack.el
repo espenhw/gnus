@@ -60,9 +60,6 @@
       (cond 
        ((or (string= file "custom.el") (string= file "browse-url.el"))
 	(setq byte-compile-warnings nil))
-       (xemacs
-	(setq byte-compile-warnings 
-	      '(free-vars unresolved callargs redefine)))
        (t
 	(setq byte-compile-warnings 
 	      '(free-vars unresolved callargs redefine obsolete))))

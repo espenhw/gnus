@@ -228,7 +228,8 @@
 (deffoo nnmh-request-newgroups (date &optional server)
   (nnmh-request-list server))
 
-(deffoo nnmh-request-expire-articles (articles newsgroup &optional server force)
+(deffoo nnmh-request-expire-articles (articles newsgroup
+					       &optional server force)
   (nnmh-possibly-change-directory newsgroup server)
   (let* ((active-articles 
 	  (mapcar
