@@ -13996,6 +13996,25 @@ matched string will be substituted.  Similarly, the elements @samp{\\1}
 up to @samp{\\9} will be substituted with the text matched by the
 groupings 1 through 9.
 
+@vindex nnmail-split-fancy-match-partial-words
+@code{nnmail-split-fancy-match-partial-words} controls whether partial
+words are matched during fancy splitting.
+
+Normally, regular expressions given in @code{nnmail-split-fancy} are
+implicitly surrounded by @code{\<...\>} markers, which are word
+delimiters.  If this variable is true, they are not implicitly
+surrounded by anything.
+
+@example
+(any "joe" "joemail")
+@end example
+
+In this example, messages sent from @samp{joedavis@foo.org} will
+normally not be filed in @samp{joemail}.  With
+@code{nnmail-split-fancy-match-partial-words} set to t, however, the
+match will happen.  In effect, the requirement of a word boundary is
+removed and instead the match becomes more like a grep.
+
 @findex nnmail-split-fancy-with-parent
 @code{nnmail-split-fancy-with-parent} is a function which allows you to
 split followups into the same groups their parents are in.  Sometimes
