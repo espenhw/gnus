@@ -88,7 +88,7 @@
 
 (nnoo-map-functions nndir
   (nnml-retrieve-headers 0 nndir-current-group 0 0)
-  (nnmh-request-article 0 nndir-current-group 0 0)
+  (nnml-request-article 0 nndir-current-group 0 0)
   (nnmh-request-group nndir-current-group 0 0)
   (nnml-close-group nndir-current-group 0)
   (nnmh-request-list (nnoo-current-server 'nndir) nndir-directory)

@@ -94,12 +94,13 @@
      (t nil))))
 
 (defun nnagent-request-type (group article)
-  (let ((gnus-plugged t))
-    (if (not (gnus-check-backend-function
-	      'request-type (car gnus-command-method)))
-	'unknown
-      (funcall (gnus-get-function gnus-command-method 'request-type)
-	       (gnus-group-real-name group) article))))
+  (unless (stringp article)
+    (let ((gnus-plugged t))
+      (if (not (gnus-check-backend-function
+		'request-type (car gnus-command-method)))
+	  'unknown
+	(funcall (gnus-get-function gnus-command-method 'request-type)
+		 (gnus-group-real-name group) article)))))
 
 (deffoo nnagent-request-newgroups (date server)
   nil)

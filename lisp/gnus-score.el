@@ -1121,7 +1121,7 @@ SCORE is the score to add."
 		 (or (not decay)
 		     (gnus-decay-scores alist decay)))
 	(gnus-score-set 'touched '(t) alist)
-	(gnus-score-set 'decay (list (gnus-time-to-day (current-time)))))
+	(gnus-score-set 'decay (list (gnus-time-to-day (current-time))) alist))
       ;; We do not respect eval and files atoms from global score
       ;; files.
       (when (and files (not global))
@@ -2792,8 +2792,8 @@ If ADAPT, return the home adaptive file instead."
 	      (funcall elem group))
 	     ;; Regexp-file cons
 	     ((consp elem)
-	      (when (string-match (car elem) group)
-		(cadr elem))))))
+	      (when (string-match (gnus-globalify-regexp (car elem)) group)
+		(replace-match (cadr elem) t nil group ))))))
     (when found
       (nnheader-concat gnus-kill-files-directory found))))
 
@@ -2812,6 +2812,10 @@ If ADAPT, return the home adaptive file instead."
     ;; Group name without any dots.
     (concat group (if (gnus-use-long-file-name 'not-score) "." "/")
 	    gnus-adaptive-file-suffix)))
+
+(defun gnus-current-home-score-file (group)
+  "Return the \"current\" regular score file."
+  (car (nreverse (gnus-score-find-alist group))))
 
 ;;;
 ;;; Score decays

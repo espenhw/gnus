@@ -1476,7 +1476,7 @@ and with point over the group in question."
 
 ;; Selecting groups.
 
-(defun gnus-group-read-group (&optional all no-article group)
+(defun gnus-group-read-group (&optional all no-article group select-articles)
   "Read news in this newsgroup.
 If the prefix argument ALL is non-nil, already read articles become
 readable.  IF ALL is a number, fetch this number of articles.  If the
@@ -1507,7 +1507,7 @@ group."
 					  (cdr (assq 'tick marked)))
 				  (gnus-range-length
 				   (cdr (assq 'dormant marked)))))))
-     no-article nil no-display)))
+     no-article nil no-display nil select-articles)))
 
 (defun gnus-group-select-group (&optional all)
   "Select this newsgroup.
@@ -1574,25 +1574,19 @@ Returns whether the fetching was successful or not."
 ;; Enter a group that is not in the group buffer.  Non-nil is returned
 ;; if selection was successful.
 (defun gnus-group-read-ephemeral-group (group method &optional activate
-					      quit-config request-only)
+					      quit-config request-only
+					      select-articles)
   "Read GROUP from METHOD as an ephemeral group.
 If ACTIVATE, request the group first.
 If QUIT-CONFIG, use that window configuration when exiting from the
 ephemeral group.
 If REQUEST-ONLY, don't actually read the group; just request it.
+If SELECT-ARTICLES, only select those articles.
 
 Return the name of the group is selection was successful."
   ;; Transform the select method into a unique server.
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
-;;;  (let ((saddr (intern (format "%s-address" (car method)))))
-;;;    (setq method (gnus-copy-sequence method))
-;;;    (require (car method))
-;;;    (when (boundp saddr)
-;;;      (unless (assq saddr method)
-;;;	(nconc method `((,saddr ,(cadr method))))
-;;;	(setf (cadr method) (format "%s-%d" (cadr method)
-;;;				    (incf gnus-ephemeral-group-server))))))
   (let ((group (if (gnus-group-foreign-p group) group
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash
@@ -1616,7 +1610,7 @@ Return the name of the group is selection was successful."
     (if request-only
 	group
       (condition-case ()
-	  (when (gnus-group-read-group t t group)
+	  (when (gnus-group-read-group t t group select-articles)
 	    group)
 	;;(error nil)
 	(quit nil)))))

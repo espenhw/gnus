@@ -754,32 +754,33 @@ If SEND-IF-FORCE, only send authinfo to the server if the
   (let* ((list (gnus-parse-netrc nntp-authinfo-file))
 	 (alist (gnus-netrc-machine list nntp-address))
 	 (force (gnus-netrc-get alist "force"))
-	 (user (gnus-netrc-get alist "login"))
+	 (user (or (gnus-netrc-get alist "login") nntp-authinfo-user))
 	 (passwd (gnus-netrc-get alist "password")))
     (when (or (not send-if-force)
 	      force)
-      (nntp-send-command
-       "^3.*\r?\n" "AUTHINFO USER"
-       (or user
-	   nntp-authinfo-user
-	   (setq nntp-authinfo-user
-		 (read-string (format "NNTP (%s) user name: " nntp-address)))))
+      (unless user
+	(setq user (read-string (format "NNTP (%s) user name: " nntp-address))
+	      nntp-authinfo-user user))
+      (unless (member user '(nil ""))
+	(nntp-send-command "^3.*\r?\n" "AUTHINFO USER" user)
+	(when t				;???Should check if AUTHINFO succeeded
       (nntp-send-command
        "^2.*\r?\n" "AUTHINFO PASS"
        (or passwd
 	   nntp-authinfo-password
 	   (setq nntp-authinfo-password
-		 (nnmail-read-passwd (format "NNTP (%s) password: "
-					     nntp-address))))))))
+		     (nnmail-read-passwd (format "NNTP (%s@%s) password: "
+						 user nntp-address))))))))))
 
 (defun nntp-send-nosy-authinfo ()
   "Send the AUTHINFO to the nntp server."
-  (nntp-send-command
-   "^3.*\r?\n" "AUTHINFO USER"
-   (read-string (format "NNTP (%s) user name: " nntp-address)))
-  (nntp-send-command
-   "^2.*\r?\n" "AUTHINFO PASS"
-   (nnmail-read-passwd "NNTP (%s) password: " nntp-address)))
+  (let ((user (read-string (format "NNTP (%s) user name: " nntp-address))))
+    (unless (member user '(nil ""))
+      (nntp-send-command "^3.*\r?\n" "AUTHINFO USER" user)
+      (when t				;???Should check if AUTHINFO succeeded
+	(nntp-send-command "^2.*\r?\n" "AUTHINFO PASS"
+			   (nnmail-read-passwd "NNTP (%s@%s) password: "
+					       user nntp-address))))))
 
 (defun nntp-send-authinfo-from-file ()
   "Send the AUTHINFO to the nntp server.

@@ -974,6 +974,12 @@ ARG is passed to the first function."
     (error "Not a symbol: %s" alist))
   `(setq ,alist (delq (assq ,key ,alist) ,alist)))
 
+(defun gnus-globalify-regexp (re)
+  "Returns a regexp that matches a whole line, iff RE matches a part of it."
+  (concat (unless (string-match "^\\^" re) "^.*")
+	  re
+	  (unless (string-match "\\$$" re) ".*$")))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

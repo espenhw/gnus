@@ -31,6 +31,7 @@
 (require 'timezone)
 (require 'message)
 (require 'custom)
+(require 'gnus-util)
 
 (eval-and-compile
   (autoload 'gnus-error "gnus-util")
@@ -693,8 +694,7 @@ nn*-request-list should have been called before calling this function."
 	      group-assoc)))
     group-assoc))
 
-(defvar nnmail-active-file-coding-system
-  'iso-8859-1
+(defvar nnmail-active-file-coding-system 'binary
   "*Coding system for active file.")
 
 (defun nnmail-save-active (group-assoc file-name)

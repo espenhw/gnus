@@ -769,8 +769,11 @@ the actual number of articles toggled is returned."
 	  (gnus-make-directory (nnheader-translate-file-chars
 				(file-name-directory file)))
 	  (write-region (point-min) (point-max) file nil 'silent)
-	  (gnus-agent-save-alist group articles nil))
-	t))))
+	  (gnus-agent-save-alist group articles nil)
+	  (gnus-agent-enter-history "last-header-fetched-for-session"
+				    (list (cons group (nth (- (length  articles) 1) articles)))
+				    (gnus-time-to-day (current-time)))
+	t)))))
 
 (defsubst gnus-agent-copy-nov-line (article)
   (let (b e)
@@ -1292,7 +1295,7 @@ The following commands are available:
 		   info (gnus-get-info group)
 		   unreads (ignore-errors (gnus-list-of-unread-articles group))
 		   marked (nconc (gnus-uncompress-range
-				  (cdr (assq 'ticked (gnus-info-marks info))))
+				  (cdr (assq 'tick (gnus-info-marks info))))
 				 (gnus-uncompress-range
 				  (cdr (assq 'dormant
 					     (gnus-info-marks info)))))
@@ -1352,8 +1355,17 @@ The following commands are available:
 		     (setcdr prev (setq alist (cdr alist)))
 		   (setq prev alist
 			 alist (cdr alist))))
-	       (setq gnus-agent-article-alist (cdr first)))
-	     (gnus-agent-save-alist group))
+	       (setq gnus-agent-article-alist (cdr first))
+	       ;;; Mark all articles up to the first article
+	       ;;; in `gnus-article-alist' as read.
+	       (setcar (nthcdr 2 info)
+		       (gnus-range-add
+			(nth 2 info) (cons 1 (- (caar gnus-agent-article-alist) 1))))
+	       (gnus-dribble-enter
+		(concat "(gnus-group-set-info '"
+			(gnus-prin1-to-string info)
+			")"))
+	       (gnus-agent-save-alist group)))
 	   expiry-hashtb)
 	  (set-buffer history)
 	  (setq histories (nreverse (sort histories '<)))

@@ -379,7 +379,8 @@ This must be bound to a button-down mouse event."
   "If non-nil, minimize the tree buffer window.
 If a number, never let the tree buffer grow taller than that number of
 lines."
-  :type 'boolean
+  :type '(choice boolean
+		 integer)
   :group 'gnus-summary-tree)
 
 (defcustom gnus-selected-tree-face 'modeline

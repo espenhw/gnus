@@ -1114,8 +1114,8 @@ this is a reply."
 	      ;; This is a header to be added to the headers when
 	      ;; posting. 
 	      (when value-value
-		(make-local-variable message-required-mail-headers)
-		(make-local-variable message-required-news-headers)
+		(make-local-variable 'message-required-mail-headers)
+		(make-local-variable 'message-required-news-headers)
 		(push (cons (car attribute) value-value) 
 		      message-required-mail-headers)
 		(push (cons (car attribute) value-value) 

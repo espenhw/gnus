@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.24 Manual
+@settitle Gnus 5.6.25 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.24 Manual
+@title Gnus 5.6.25 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.24.
+This manual corresponds to Gnus 5.6.25.
 
 @end ifinfo
 
@@ -11119,6 +11119,7 @@ groups.
 @subsection Virtual Groups
 @cindex nnvirtual
 @cindex virtual groups
+@cindex merging groups
 
 An @dfn{nnvirtual group} is really nothing more than a collection of
 other groups.
@@ -12784,12 +12785,22 @@ So, if you want to use just a single score file, you could say:
 If you want to use @file{gnu.SCORE} for all @samp{gnu} groups and
 @file{rec.SCORE} for all @samp{rec} groups (and so on), you can say:
 
+@findex gnus-hierarchial-home-score-file
 @lisp
 (setq gnus-home-score-file
       'gnus-hierarchial-home-score-file)
 @end lisp
 
 This is a ready-made function provided for your convenience.
+Other functions include
+
+@table @code
+@item gnus-current-home-score-file
+@findex gnus-current-home-score-file
+Return the ``current'' regular score file.  This will make scoring
+commands add entry to the ``innermost'' matching score file.
+
+@end table
 
 If you want to have one score file for the @samp{emacs} groups and
 another for the @samp{comp} groups, while letting all other groups use
@@ -15377,7 +15388,7 @@ On July 28th 1996 work on Red Gnus was begun, and it was released on
 January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
 
 On September 13th 1997, Quassia Gnus was started and lasted 37
-releases.  If was released as ``Gnus 5.6.24' on March 8th 1998.
+releases.  If was released as ``Gnus 5.6.25' on March 8th 1998.
 
 If you happen upon a version of Gnus that has a prefixed name --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -15854,7 +15865,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.24.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.25.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16389,7 +16400,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.24:
+New features in Gnus 5.6.25:
 
 @itemize @bullet
 
@@ -17703,6 +17714,11 @@ with unread articles, even if that group is hidden in a topic.
 
 @item
 gnus-posting-styles doesn't work in drafts.
+
+@item
+gnus-summary-limit-include-cached is slow when there are
+many articles in the cache, since it regenerates big parts of the
+summary buffer for each article.
 
 @item
 Solve the halting problem.

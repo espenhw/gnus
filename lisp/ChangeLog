@@ -1,3 +1,107 @@
+Sat Jul 25 02:43:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.25 is released.
+
+1998-07-25 00:03:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Ditto.
+
+	* gnus-sum.el (gnus-summary-read-group-1): Ditto.
+
+	* gnus-group.el (gnus-group-read-group): Accept article list.
+
+1998-07-24 14:35:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Quote some.
+
+	* message.el (message-ignored-supersedes-headers): Added X-Trace
+	and X-Complaints-To.
+
+	* nnmail.el (gnus-util): Required.
+
+1998-07-21 23:03:13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-news-group-p): Bogosity in params.
+
+1998-07-21 16:14:32  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* gnus-util.el (gnus-globalify-regexp): New function.
+
+1998-07-18 21:49:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-list-of-unread-articles): Peel off articles
+	outside active range.
+
+1998-07-15 10:47:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnvirtual.el (nnvirtual-request-type): Handle non-numerical
+	articles. 
+
+	* gnus.el (gnus-news-group-p): Do something sensible with negative
+	articlies.
+
+Wed Jul 15 10:27:05 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-salt.el (gnus-tree-minimize-window): Allow numbers.
+
+Wed Jul 15 10:25:29 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-expire): Ignored ticks.
+
+Wed Jul 15 10:15:28 1998  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* nntp.el (nntp-send-authinfo): Message better and stuff.
+
+Wed Jul 15 10:10:07 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-message-archive-group): Allow sexp.
+
+Wed Jul 15 09:56:47 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-select-newsgroup): Accept select-articles
+	para, 
+
+1998-07-13  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-sum.el (gnus-select-newsgroup): Don't call the Agent to
+	mark articles as read until *all* headers have been retrieved.
+
+Wed Jul 15 09:06:18 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nndir.el (nndir): Use nnml to request article.
+
+1998-07-11  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus-topic.el (gnus-topic-mode-map): Use modern key syntax.
+
+Sun Jul 12 04:01:22 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-current-home-score-file): New function.
+
+1998-07-11  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Note last fetched
+ 	headers per sesion to aid expiry in `headers only' groups.
+
+	* gnus-agent.el (gnus-agent-expire): Update group info to add
+ 	expired articles to list of read articles and prevent
+	re-fetching. 
+
+1998-07-12  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-active-file-coding-system): Changed to
+	binary. 
+
+Sun Jul 12 03:16:18 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-load-file): Specify which alist to
+	decay. 
+
+1998-07-12  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-startup-file-coding-system): New variable.
+	(gnus-read-newsrc-el-file): Use it.
+
 Sat Jul 11 03:03:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.24 is released.

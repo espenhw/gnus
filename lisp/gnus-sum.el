@@ -2504,7 +2504,8 @@ the thread are to be displayed."
 	     (set (car elem) (eval (nth 1 elem))))))))
 
 (defun gnus-summary-read-group (group &optional show-all no-article
-				      kill-buffer no-display backward)
+				      kill-buffer no-display backward
+				      select-article)
   "Start reading news in newsgroup GROUP.
 If SHOW-ALL is non-nil, already read articles are also listed.
 If NO-ARTICLE is non-nil, no article is selected initially.
@@ -2516,7 +2517,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 			      (or (gnus-summary-read-group-1
 				   group show-all no-article
 				   kill-buffer no-display)
-				  (setq show-all nil)))))
+				  (setq show-all nil)
+				  select-article))))
 		(eq gnus-auto-select-next 'quietly))
       (set-buffer gnus-group-buffer)
       ;; The entry function called above goes to the next
@@ -2530,7 +2532,8 @@ If NO-DISPLAY, don't generate a summary buffer."
     result))
 
 (defun gnus-summary-read-group-1 (group show-all no-article
-					kill-buffer no-display)
+					kill-buffer no-display
+					&optional select-articles)
   ;; Killed foreign groups can't be entered.
   (when (and (not (gnus-group-native-p group))
 	     (not (gnus-gethash group gnus-newsrc-hashtb)))
@@ -2538,7 +2541,8 @@ If NO-DISPLAY, don't generate a summary buffer."
   (gnus-message 5 "Retrieving newsgroup: %s..." group)
   (let* ((new-group (gnus-summary-setup-buffer group))
 	 (quit-config (gnus-group-quit-config group))
-	 (did-select (and new-group (gnus-select-newsgroup group show-all))))
+	 (did-select (and new-group (gnus-select-newsgroup
+				     group show-all select-articles))))
     (cond
      ;; This summary buffer exists already, so we just select it.
      ((not new-group)
@@ -3811,9 +3815,10 @@ or a straight list of headers."
 	 (cdr (assq number gnus-newsgroup-scored))
 	 (memq number gnus-newsgroup-processable))))))
 
-(defun gnus-select-newsgroup (group &optional read-all)
+(defun gnus-select-newsgroup (group &optional read-all select-articles)
   "Select newsgroup GROUP.
-If READ-ALL is non-nil, all articles in the group are selected."
+If READ-ALL is non-nil, all articles in the group are selected.
+If SELECT-ARTICLES, only select those articles from GROUP."
   (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
 	 ;;!!! Dirty hack; should be removed.
 	 (gnus-summary-ignore-duplicates
@@ -3865,7 +3870,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
     (unless (gnus-ephemeral-group-p gnus-newsgroup-name)
       (gnus-group-update-group group))
 
-    (setq articles (gnus-articles-to-read group read-all))
+    (setq articles (or select-articles (gnus-articles-to-read group read-all)))
 
     (cond
      ((null articles)
@@ -3915,15 +3920,15 @@ If READ-ALL is non-nil, all articles in the group are selected."
       ;; Removed marked articles that do not exist.
       (gnus-update-missing-marks
        (gnus-sorted-complement fetched-articles articles))
-      ;; Let the Gnus agent mark articles as read.
-      (when gnus-agent
-	(gnus-agent-get-undownloaded-list))
       ;; We might want to build some more threads first.
       (when (and gnus-fetch-old-headers
 		 (eq gnus-headers-retrieved-by 'nov))
 	(if (eq gnus-fetch-old-headers 'invisible)
 	    (gnus-build-all-threads)
 	  (gnus-build-old-threads)))
+      ;; Let the Gnus agent mark articles as read.
+      (when gnus-agent
+	(gnus-agent-get-undownloaded-list))
       ;; Check whether auto-expire is to be done in this group.
       (setq gnus-newsgroup-auto-expire
 	    (gnus-group-auto-expirable-p group))
@@ -4866,12 +4871,12 @@ displayed, no centering will be performed."
       ;; first unread article is the article after the last read
       ;; article.  Sounds logical, doesn't it?
       (if (not (listp (cdr read)))
-	  (setq first (1+ (cdr read)))
+	  (setq first (max (car active) (1+ (cdr read))))
 	;; `read' is a list of ranges.
 	(when (/= (setq nlast (or (and (numberp (car read)) (car read))
 				  (caar read)))
 		  1)
-	  (setq first 1))
+	  (setq first (car active)))
 	(while read
 	  (when first
 	    (while (< first nlast)
