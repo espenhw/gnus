@@ -1,5 +1,32 @@
 2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-win.el (gnus-configure-windows-hook): New hook.
+
+2001-12-29  Sascha L,A|(Bdecke  <sascha@meta-x.de>
+
+	* gnus-win.el (gnus-configure-windows): Minimize tree buffer. 
+
+2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-update-marks): Don't uncompress the seen
+	lists. 
+	(gnus-select-newsgroup): Don't append; push.
+	(gnus-adjust-marked-articles): Remove obsolete ranges from
+	`seen'. 
+	(gnus-update-marks): Clean up.
+	(gnus-select-newsgroup): Don't stomp gnus-newsgroup-seen.
+
+2001-12-29  Frank Schmitt  <usereplyto@Frank-Schmitt.net>
+
+	* gnus-sum.el (gnus-summary-limit-to-age): Allow negative days. 
+
+2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-auto-select-subject): New variable.
+	(gnus-summary-best-unread-subject): New function.
+	(gnus-summary-best-unread-article): Use it.
+	(gnus-summary-first-unseen-subject): New function and command. 
+
 	* gnus-art.el (gnus-treatment-function-alist): Emphasize after
 	other treatments.
 

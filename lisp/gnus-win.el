@@ -208,6 +208,11 @@ See the Gnus manual for an explanation of the syntax used.")
     (draft . gnus-draft-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")
 
+(defcustom gnus-configure-windows-hook nil
+  "*A hook called when configuring windows."
+  :group 'gnus-windowns
+  :type 'hook)
+
 ;;; Internal variables.
 
 (defvar gnus-current-window-configuration nil
@@ -458,7 +463,7 @@ See the Gnus manual for an explanation of the syntax used.")
 		      ;; This is not a `frame' split, so we ignore the
 		      ;; other frames.
 		      (delete-other-windows)
-		    ;; This is a `frame' split, so we delete all windows
+		  ;; This is a `frame' split, so we delete all windows
 		    ;; on all frames.
 		    (gnus-delete-windows-in-gnusey-frames))
 		;; Just remove some windows.
@@ -473,6 +478,7 @@ See the Gnus manual for an explanation of the syntax used.")
 	      (switch-to-buffer nntp-server-buffer)
 	    (set-buffer nntp-server-buffer))
 	  (gnus-configure-frame split)
+	  (run-hooks 'gnus-configure-windows-hook)
 	  (when gnus-window-frame-focus
 	    (select-frame (window-frame gnus-window-frame-focus))))))))
 

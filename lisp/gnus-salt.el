@@ -839,6 +839,13 @@ Two predefined functions are available:
 (defun gnus-tree-close (group)
   (gnus-kill-buffer gnus-tree-buffer))
 
+(defun gnus-tree-perhaps-minimize ()
+  (when (and gnus-tree-minimize-window
+	     (get-buffer gnus-tree-buffer))
+    (save-excursion
+      (set-buffer gnus-tree-buffer)
+      (gnus-tree-minimize))))
+
 (defun gnus-highlight-selected-tree (article)
   "Highlight the selected article in the tree."
   (let ((buf (current-buffer))
