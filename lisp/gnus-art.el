@@ -234,7 +234,7 @@ asynchronously.	 The compressed face will be piped to this command."
 (defcustom gnus-article-banner-alist nil
   "Banner alist for stripping.
 For example,
-     ((egroups . \"^[ \\t\\n]*-------------------+\\\\( eGroups Sponsor -+\\\\)?....\\n\\\\(.+\\n\\\\)+\"))"
+     ((egroups . \"^[ \\t\\n]*-------------------+\\\\( \\\\(e\\\\|Yahoo! \\\\)Groups Sponsor -+\\\\)?....\\n\\\\(.+\\n\\\\)+\"))"
   :version "21.1"
   :type '(repeat (cons symbol regexp))
   :group 'gnus-article-washing)
