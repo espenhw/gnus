@@ -1,3 +1,87 @@
+2004-04-07  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+	* gnus-agent.el (gnus-agent-total-fetched-hashtb): New variable.
+	(gnus-agent-with-refreshed-group): New macro.
+	(gnus-agent-rename-group): New function.
+	(gnus-agent-delete-group): New function.
+	(gnus-agent-save-group-info): Use gnus-command-method when
+	`method' parameter is nil.  Don't write nil entries into the
+	active file.
+	(gnus-agent-get-group-info): New function.
+	(gnus-agent-fetch-articles): Use
+	gnus-agent-update-files-total-fetched-for to increment disk space
+	used.
+	(gnus-agent-fetch-headers, gnus-agent-save-alist): Use
+	gnus-agent-update-view-total-fetched-for to increment disk space
+	used.
+	(gnus-agent-get-local): Added optional parameters to avoid calling
+	gnus-group-real-name and gnus-find-method-for-group.
+	(gnus-agent-set-local): Delete stored entry if either min, or max,
+	are nil.
+	(gnus-agent-fetch-session): Reworded error/quit messages.  On
+	quit, use gnus-agent-regenerate-group to record existance of any
+	articles fetched to disk before the quit occurred.
+	(gnus-agent-expire-group-1): Use gnus-agent-with-refreshed-group,
+	gnus-agent-update-view-total-fetched-for, and
+	gnus-agent-update-files-total-fetched-for to decrement disk space
+	used.
+	(gnus-agent-retrieve-headers): Use
+	gnus-agent-update-view-total-fetched-for to increment disk space
+	used.
+	(gnus-agent-regenerate-group): Replace gnus-group-update-group
+	with gnus-agent-update-files-total-fetched-for to decrement disk
+	space and fresh group buffer.
+	(gnus-agent-inhibit-update-total-fetched-for): New variable.
+	(gnus-agent-need-update-total-fetched-for): New variable.
+	(gnus-agent-update-files-total-fetched-for): New function.
+	(gnus-agent-update-view-total-fetched-for): New function.
+	(gnus-agent-total-fetched-for): New function.  
+
+	* gnus-cache.el (gnus-cache-save-buffers): Use
+	gnus-cache-update-overview-total-fetched-for to change disk space
+	used by this group.
+	(gnus-cache-possibly-enter-article): Use
+	gnus-cache-update-file-total-fetched-for to increment disk space
+	used by this group.
+	(gnus-cache-possibly-remove-article): Use
+	gnus-cache-update-file-total-fetched-for to decrement disk space
+	used by this group.
+	(gnus-cache-generate-nov-databases): Purge total fetched cache.
+	(gnus-cache-rename-group): New function.
+	(gnus-cache-delete-group): New function.
+	(gnus-cache-inhibit-update-total-fetched-for): New variable.
+	(gnus-cache-need-update-total-fetched-for): New variable.
+	(gnus-cache-with-refreshed-group): New macro.
+	(gnus-cache-update-file-total-fetched-for): New function.
+	(gnus-cache-update-overview-total-fetched-for): New function.
+	(gnus-cache-rename-group-total-fetched-for): New function.
+	(gnus-cache-delete-group-total-fetched-for): New function.
+	(gnus-cache-total-fetched-for): New function.
+
+	* gnus-group.el (): Require gnus-sum and autoload functions to
+	resolve warnings when gnus-group.el compiled alone.
+	(gnus-group-line-format): Documented new %F
+	(size of Fetched data) group line format; identifies disk space
+	used by agent and cache.
+	(gnus-group-line-format-alist): Defined new F format.
+	(gnus-total-fetched-for): New function.
+	(gnus-group-delete-group): No longer update
+	gnus-cache-active-altered as gnus-request-delete-group now keeps
+	the cache in sync.
+	(gnus-group-list-active): Let the agent store a server's active
+	list if currently plugged.
+
+	* gnus-int.el (gnus-request-delete-group): Use
+	gnus-cache-delete-group and gnus-agent-delete-group to keep the
+	local disk in sync with the server.
+	 (gnus-request-rename-group): Use
+	gnus-cache-rename-group and gnus-agent-rename-group to keep the
+	local disk in sync with the server.
+
+	* gnus-start.el (gnus-get-unread-articles): Cosmetic
+	simplification to logic.
+
+	* gnus-util.el (gnus-rename-file): New function.
+
 2004-04-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc2047.el (rfc2047-encoded-word-regexp): Remove unnecessary
