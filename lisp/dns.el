@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (require 'mm-util)
 
 (defvar dns-timeout 5
