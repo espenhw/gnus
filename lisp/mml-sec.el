@@ -128,8 +128,8 @@
   (mml-secure-part "smime"))
 
 ;; defuns that add the proper <#secure ...> tag to the top of the message body
-(defun mml-secure-message (method &optional sign)
-  (let ((mode (if sign "sign" "encrypt"))
+(defun mml-secure-message (method &optional modesym)
+  (let ((mode (prin1-to-string modesym))
 	insert-loc)
     (mml-unsecure-message)
     (save-excursion
@@ -168,20 +168,27 @@
   (interactive)
   (mml-secure-message "pgpmime" 'sign))
 
-(defun mml-secure-message-encrypt-smime ()
-  "Add MML tag to encrypt/sign the entire message."
-  (interactive)
-  (mml-secure-message "smime"))
+(defun mml-secure-message-encrypt-smime (&optional dontsign)
+  "Add MML tag to encrypt and sign the entire message.
+If called with a prefix argument, only encrypt (do NOT sign)."
+  (interactive "P")
+  (mml-secure-message "smime" (if dontsign 'encrypt 'signencrypt)))
 
-(defun mml-secure-message-encrypt-pgp ()
-  "Add MML tag to encrypt/sign the entire message."
-  (interactive)
-  (mml-secure-message "pgp"))
+;;; NOTE: this should be switched to use signencrypt
+;;; once it does something sensible
+(defun mml-secure-message-encrypt-pgp (&optional dontsign)
+  "Add MML tag to encrypt and sign the entire message.
+If called with a prefix argument, only encrypt (do NOT sign)."
+  (interactive "P")
+  (mml-secure-message "pgp" (if dontsign 'encrypt 'encrypt)))
 
-(defun mml-secure-message-encrypt-pgpmime ()
-  "Add MML tag to encrypt/sign the entire message."
-  (interactive)
-  (mml-secure-message "pgpmime"))
+;;; NOTE: this should be switched to use signencrypt
+;;; once it does something sensible
+(defun mml-secure-message-encrypt-pgpmime (&optional dontsign)
+  "Add MML tag to encrypt and sign the entire message.
+If called with a prefix argument, only encrypt (do NOT sign)."
+  (interactive "P")
+  (mml-secure-message "pgpmime" (if dontsign 'encrypt 'encrypt)))
 
 (provide 'mml-sec)
 

@@ -1,3 +1,12 @@
+2002-04-13  Josh Huber  <huber@alum.wpi.edu>
+
+	* mml-sec.el (mml-secure-message): changed to support arbritrary
+	modes.
+	* mml-sec.el (mml-secure-message-encrypt-(smime|pgp|pgpmime)):
+	changed to support "signencrypt" mode.
+	* mml.el (mml-parse-1): changed to support different secure modes
+	more easily. (for signencrypt)
+
 2002-04-11  Stefan Monnier  <monnier@cs.yale.edu>
 
 	* gnus-sum.el (gnus-update-summary-mark-positions)

@@ -151,7 +151,10 @@ one charsets.")
 	(let* (secure-mode
 	       (taginfo (mml-read-tag))
 	       (recipients (cdr (assq 'recipients taginfo)))
-	       (location (cdr (assq 'tag-location taginfo))))
+	       (location (cdr (assq 'tag-location taginfo)))
+	       (mode (cdr (assq 'mode taginfo)))
+	       (method (cdr (assq 'method taginfo)))
+	       tags)
 	  (save-excursion
 	    (if
 		(re-search-forward
@@ -162,11 +165,16 @@ one charsets.")
 	    (goto-char location)
 	    (re-search-forward "<#secure[^\n]*>\n"))
 	  (delete-region (match-beginning 0) (match-end 0))
-	  (mml-insert-tag secure-mode
-			  (cdr (assq 'mode taginfo))
-			  (cdr (assq 'method taginfo))
-			  (and recipients 'recipients)
-			  recipients)
+	  (cond ((string= mode "sign")
+		 (setq tags (list "sign" method)))
+		((string= mode "encrypt")
+		 (setq tags (list "encrypt" method)))
+		((string= mode "signencrypt")
+		 (setq tags (list "sign" method "encrypt" method))))
+	  (eval `(mml-insert-tag ,secure-mode
+				 ,@tags
+				 ,(if recipients 'recipients)
+				 ,recipients))
 	  ;; restart the parse
 	  (goto-char location)))
        ((looking-at "<#multipart")
