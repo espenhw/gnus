@@ -365,7 +365,8 @@ external if displayed external."
 		  (cond (needsterm
 			 (start-process "*display*" nil
 					"xterm"
-					"-e" shell-file-name "-c"
+					"-e" shell-file-name 
+					shell-command-switch
 					(mm-mailcap-command
 					 method file (mm-handle-type handle))))
 			(copiousoutput
@@ -373,7 +374,7 @@ external if displayed external."
 					(setq buffer 
 					      (generate-new-buffer "*mm*"))
 					shell-file-name
-					"-c"
+					shell-command-switch
 					(mm-mailcap-command
 					 method file (mm-handle-type handle)))
 			 (switch-to-buffer buffer))
@@ -382,7 +383,7 @@ external if displayed external."
 					(setq buffer
 					      (generate-new-buffer "*mm*"))
 					shell-file-name
-					"-c"
+					shell-command-switch
 					(mm-mailcap-command
 					 method file (mm-handle-type handle))))))
 	  (mm-handle-set-undisplayer handle (cons file buffer)))

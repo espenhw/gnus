@@ -2,6 +2,7 @@
 
 	* mm-decode.el (mm-display-external): For `copiousoutput' methods,
 	switch to buffer after calling program.
+	(mm-display-external): Use `shell-command-switch' instead of "-c".
 
 1999-11-27 15:21:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
