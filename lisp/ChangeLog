@@ -1,3 +1,15 @@
+2001-06-02  Simon Josefsson  <simon@josefsson.org>
+
+	* imap.el (imap-kerberos4-open): 
+	(imap-gssapi-open):
+	(imap-ssl-open):
+	(imap-network-open):
+	(imap-shell-open):
+	(imap-starttls-open): Set buffer to workaround spurious
+	`accept-process-output' buffer changes.  Thanks to Mats Lidell
+	<Mats.Lidell@contactor.se> for report and partial patch and Jake
+	Colman <colman@ppllc.com> for report.
+
 2001-05-31 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-catchup): New argument.

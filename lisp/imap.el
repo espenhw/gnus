@@ -462,6 +462,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	    (setq imap-client-eol "\n"
 		  imap-calculate-literal-size-first t)
 	    (while (and (memq (process-status process) '(open run))
+			(set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 			(goto-char (point-min))
                         ;; cyrus 1.6.x (13? < x <= 22) queries capabilities
 		        (or (while (looking-at "^C:")
@@ -524,6 +525,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	    (setq imap-client-eol "\n"
 		  imap-calculate-literal-size-first t)
 	    (while (and (memq (process-status process) '(open run))
+			(set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 			(goto-char (point-min))
                         ;; cyrus 1.6.x (13? < x <= 22) queries capabilities
 		        (or (while (looking-at "^C:")
@@ -582,6 +584,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	  (with-current-buffer buffer
 	    (goto-char (point-min))
 	    (while (and (memq (process-status process) '(open run))
+			(set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 			(goto-char (point-max))
 			(forward-line -1)
 			(not (imap-parse-greeting)))
@@ -613,6 +616,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 	 (process (open-network-stream name buffer server port)))
     (when process
       (while (and (memq (process-status process) '(open run))
+		  (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 		  (goto-char (point-min))
 		  (not (imap-parse-greeting)))
 	(accept-process-output process 1)
@@ -649,6 +653,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 			 ?l imap-default-user)))))
 	(when process
 	  (while (and (memq (process-status process) '(open run))
+		      (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 		      (goto-char (point-min))
 		      (not (imap-parse-greeting)))
 	    (accept-process-output process 1)
@@ -686,6 +691,7 @@ If ARGS, PROMPT is used as an argument to `format'."
     (message "imap: Connecting with STARTTLS...")
     (when process
       (while (and (memq (process-status process) '(open run))
+		  (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 		  (goto-char (point-min))
 		  (not (imap-parse-greeting)))
 	(accept-process-output process 1)
@@ -790,8 +796,6 @@ Returns t if login was successful, nil otherwise."
     (if done
 	(message "imap: Authenticating using CRAM-MD5...done")
       (message "imap: Authenticating using CRAM-MD5...failed"))))
-      
-  
 
 (defun imap-login-p (buffer)
   (and (not (imap-capability 'LOGINDISABLED buffer))
