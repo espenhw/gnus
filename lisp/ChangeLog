@@ -1,3 +1,9 @@
+2001-09-12  Pavel Jan,Bm(Bk  <Pavel@Janik.cz>
+
+	* mm-util.el (mm-charset-synonym-alist): add windows-1250 so we
+	can read e-mails from Microsoft Outlook users not using ISO
+	8859-2 character set.
+
 2001-09-12 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-diary.el: Minor modifications to avoid warnings.
