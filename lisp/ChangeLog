@@ -1,3 +1,8 @@
+2003-04-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Disable "Encrypt
+	body" entry in read only groups.
+
 2003-04-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Disable "Import file"
