@@ -1,3 +1,8 @@
+1999-11-07 20:03:16  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Keeping use `read' to
+	support nnslashdot.
+
 1999-11-08 00:06:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-retrieve-headers): Don't fetch too
