@@ -173,6 +173,7 @@
     (setq buffer-file-name (expand-file-name file)
 	  buffer-auto-save-file-name (make-auto-save-file-name))
     (clear-visited-file-modtime)
+    (make-local-variable 'write-contents-hooks)
     (push 'nndraft-generate-headers write-contents-hooks)
     article))
 
