@@ -2770,6 +2770,7 @@ or nil if no action could be taken."
 	    (or (gnus-group-find-parameter group 'expiry-target)
 		nnmail-expiry-target)))
       (when expirable
+	(gnus-check-group group)
 	(setcdr
 	 expirable
 	 (gnus-compress-sequence
