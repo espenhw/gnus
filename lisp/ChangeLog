@@ -1,5 +1,11 @@
 2004-04-13  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* spam.el (spam-fetch-field-fast, spam-generate-fake-headers)
+	(spam-find-spam, spam-log-processing-to-registry)
+	(spam-log-registered-p, spam-log-unregistration-needed-p)
+	(spam-log-undo-registration): use gnus-message instead of
+	gnus-error, none of these errors are fatal
+
 	* gnus-registry.el (gnus-registry-clean-empty-function)
 	(gnus-registry-clean-empty): remove only empty entries without
 	extra data

@@ -951,7 +951,7 @@ When either list is nil, the other is returned."
 	  (mail-header-extra data-header))
 	 (t
 	  nil))
-	(gnus-error 5 "Article %d has a nil data header" article)))))
+	(gnus-message 5 "Article %d has a nil data header" article)))))
 
 (defun spam-fetch-field-from-fast (article &optional prepared-data-header)
   (spam-fetch-field-fast article 'from prepared-data-header))
@@ -977,7 +977,7 @@ When either list is nil, the other is returned."
 	  (spam-fetch-field-fast article 'xref dh))
 	 (when (spam-fetch-field-fast article 'extra dh)
 	   (format "%s\n" (spam-fetch-field-fast article 'extra dh))))
-      (gnus-error
+      (gnus-message
        5
        "spam-generate-fake-headers: article %d didn't have a valid header"
        article))))
@@ -1122,7 +1122,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	     registry-lookup)
 	 
 	 (unless id
-	   (gnus-error 5 "Article %d has no message ID!" article))
+	   (gnus-message 5 "Article %d has no message ID!" article))
 	 
 	 (when (and id spam-log-to-registry)
 	   (setq registry-lookup (spam-log-registration-type id 'incoming))
@@ -1318,7 +1318,7 @@ functions")
 	   type
 	   cell-list))
 
-      (gnus-error 
+      (gnus-message 
        5 
        (format "%s call with bad ID, type, classification, spam-check, or group"
 	       "spam-log-processing-to-registry")))))
@@ -1330,7 +1330,7 @@ functions")
 	     (spam-process-type-valid-p type))
 	(cdr-safe (gnus-registry-fetch-extra id type))
       (progn
-	(gnus-error 
+	(gnus-message
 	 5 
 	 (format "%s called with bad ID, type, classification, or spam-check"
 		 "spam-log-registered-p"))
@@ -1369,7 +1369,7 @@ functions")
 		(setq found t))))
 	  found)
       (progn
-	(gnus-error 
+	(gnus-message
 	 5 
 	 (format "%s called with bad ID, type, classification, or spam-check"
 		 "spam-log-unregistration-needed-p"))
@@ -1395,8 +1395,8 @@ functions")
 	   type
 	   new-cell-list))
       (progn
-	(gnus-error 5 (format "%s call with bad ID, type, spam-check, or group"
-			      "spam-log-undo-registration"))
+	(gnus-message 5 (format "%s call with bad ID, type, spam-check, or group"
+				"spam-log-undo-registration"))
 	nil))))
 
 ;;; set up IMAP widening if it's necessary
