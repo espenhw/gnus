@@ -1,3 +1,7 @@
+2003-06-03  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* README: Explain purpose of each file (well, most files).
+
 2003-05-01  Vasily Korytov  <deskpot@despammed.com>
 
 	* gpg.el (gpg-passphrase-forget): Check that gpg-passphrase is
