@@ -1,3 +1,8 @@
+2004-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-fold-region): Use trailing whitespace as
+	LWSP.
+
 2004-08-04  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-split-fancy-with-parent): try

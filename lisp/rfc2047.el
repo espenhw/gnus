@@ -640,9 +640,10 @@ Point moves to the end of the region."
 	(goto-char (or break qword-break))
 	(setq break nil
 	      qword-break nil)
-	  (if (looking-at "[ \t]")
-	      (insert ?\n)
-	    (insert "\n "))
+	(if (or (> 0 (skip-chars-backward " \t"))
+		(looking-at "[ \t]"))
+	    (insert ?\n)
+	  (insert "\n "))
 	(setq bol (1- (point)))
 	;; Don't break before the first non-LWSP characters.
 	(skip-chars-forward " \t")
