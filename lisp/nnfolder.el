@@ -1187,7 +1187,8 @@ This command does not work if you use short group names."
 			  (if (and (integerp (car seen))
 				   (null (cdr seen)))
 			      (list (cons (car seen) (car seen)))
-			    seen))))
+			    seen)))
+    (nnheader-message 8 "Updating marks for %s...done" group))
   info)
 
 (defun nnfolder-group-marks-pathname (group)

@@ -953,7 +953,8 @@ Use the nov database for that directory if available."
 			  (if (and (integerp (car seen))
 				   (null (cdr seen)))
 			      (list (cons (car seen) (car seen)))
-			    seen))))
+			    seen)))
+    (nnheader-message 8 "Updating marks for %s...done" group))
   info)
 
 (defun nnml-save-marks (group server)
