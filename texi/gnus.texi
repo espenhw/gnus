@@ -14165,7 +14165,8 @@ Source Specifiers}).
 
 @item
 You can then read the new news immediately, or you can download the news
-onto your local machine.  If you want to do the latter, you press @kbd{J
+onto your local machine.  If you want to do the latter, you press @kbd{g}
+to check if there are any new news and then @kbd{J
 s} to fetch all the eligible articles in all the groups.  (To let Gnus
 know which articles you want to download, @pxref{Agent Categories}.)
 
