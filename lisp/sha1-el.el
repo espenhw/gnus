@@ -54,7 +54,7 @@
 
 (require 'hex-util)
 
-(autoload 'executable-find "executable")
+(ignore-errors (autoload 'executable-find "executable"))
 
 ;;;
 ;;; external SHA1 function.
@@ -79,7 +79,7 @@ It must be a string \(program name\) or list of strings \(name and its args\)."
   :type '(repeat string)
   :group 'sha1)
 
-(defcustom sha1-use-external (executable-find (car sha1-program))
+(defcustom sha1-use-external (ignore-errors (executable-find (car sha1-program)))
   "*Use external SHA1 program.
 If this variable is set to nil, use internal function only."
   :type 'boolean

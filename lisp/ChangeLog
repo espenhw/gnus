@@ -1,5 +1,10 @@
 2003-12-15  Simon Josefsson  <jas@extundo.com>
 
+	* sha1-el.el (autoload): Ignore errors for
+	executable-find. (XEmacs ecrypto does not require sh-script where
+	executable.el is located.)
+	(sha1-use-external): Likewise.
+
 	* sha1-el.el (sha1): Add defgroup.
 	(sha1-maximum-internal-length, sha1-program, sha1-use-external)
 	(sha1-program): Use 'sha1sum' from GNU CoreUtils instead of OpenSSL.
