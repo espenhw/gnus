@@ -1,3 +1,8 @@
+2003-04-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-via-rlogin-command-switches): Doc fix.
+	(nntp-open-via-rlogin-and-telnet): Disable the telnet linemode.
+
 2003-03-31  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-start.el (gnus-gnus-to-quick-newsrc-format): Bound

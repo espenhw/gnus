@@ -107,8 +107,8 @@ The default is \"rsh\", but \"ssh\" is a popular alternative.")
   "*Switches given to the rlogin command `nntp-via-rlogin-command'.
 If you use \"ssh\" for `nntp-via-rlogin-command', you may set this to
 \(\"-C\") in order to compress all data connections, otherwise set this
-to \(\"-t\") or (\"-C\" \"-t\") if the telnet command requires a pseudo-tty
-allocation on an intermediate host.")
+to \(\"-t\" \"-e\" \"none\") or (\"-C\" \"-t\" \"-e\" \"none\") if the telnet
+command requires a pseudo-tty allocation on an intermediate host.")
 
 (defvoo nntp-via-telnet-command "telnet"
   "*Telnet command used to connect to an intermediate host.
@@ -1782,7 +1782,15 @@ Please refer to the following variables to customize the connection:
       (nntp-wait-for-string "^\r*20[01]")
       (beginning-of-line)
       (delete-region (point-min) (point))
-      proc)))
+      (process-send-string proc "\^]")
+      (nntp-wait-for-string "^r?telnet")
+      (process-send-string proc "mode character\n")
+      (accept-process-output proc 1)
+      (sit-for 1)
+      (goto-char (point-min))
+      (forward-line 1)
+      (delete-region (point) (point-max)))
+    proc))
 
 (defun nntp-open-via-telnet-and-telnet (buffer)
   "Open a connection to an nntp server through an intermediate host.
