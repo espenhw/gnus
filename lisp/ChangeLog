@@ -1,3 +1,10 @@
+2000-09-14 23:13:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-de-quoted-unreadable): Guess charset from
+	original article buffer.
+	(article-de-base64-unreadable): Ditto.
+	(article-wash-html): Ditto.
+
 2000-09-14 18:55:30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-summary-mail-forward): Disable multibyte
