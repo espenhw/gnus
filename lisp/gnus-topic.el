@@ -505,7 +505,7 @@ articles in the topic and its subtopics."
       (let ((data (cadr (gnus-topic-find-topology topic))))
 	(setcdr data
 		(list (if insert 'visible 'invisible)
-		      hide
+		      (caddr data)
 		      (cadddr data))))
       (if total-remove
 	  (setq gnus-topic-alist
@@ -1271,7 +1271,11 @@ If PERMANENT, make it stay hidden in subsequent sessions as well."
   (interactive "P")
   (when (gnus-current-topic)
     (gnus-topic-goto-topic (gnus-current-topic))
-    (setcar (cddr (assoc (gnus-current-topic) gnus-topic-topology)) 'hidden)
+    (if permanent
+	(setcar (cddr 
+		 (cadr
+		  (gnus-topic-find-topology (gnus-current-topic))))
+		'hidden))
     (gnus-topic-remove-topic nil nil)))
 
 (defun gnus-topic-show-topic (&optional permanent)
@@ -1279,8 +1283,14 @@ If PERMANENT, make it stay hidden in subsequent sessions as well."
 If PERMANENT, make it stay shown in subsequent sessions as well."
   (interactive "P")
   (when (gnus-group-topic-p)
-    (setcar (cddr (assoc (gnus-current-topic) gnus-topic-topology)) nil)
-    (gnus-topic-remove-topic t nil)))
+    (if (not permanent)
+	(gnus-topic-remove-topic t nil)
+      (let ((topic 
+	     (gnus-topic-find-topology 
+	      (completing-read "Show topic: " gnus-topic-alist nil t))))
+	(setcar (cddr (cadr topic)) nil)
+	(setcar (cdr (cadr topic)) 'visible)
+	(gnus-group-list-groups)))))
 
 (defun gnus-topic-mark-topic (topic &optional unmark)
   "Mark all groups in the topic with the process mark."
