@@ -387,6 +387,11 @@ This hook is called as the first thing when Gnus is started."
   :group 'gnus-start
   :type 'hook)
 
+(defcustom gnus-get-top-new-news-hook nil
+  "A hook run just before Gnus checks for new news globally."
+  :group 'gnus-group-new
+  :type 'hook)
+
 (defcustom gnus-get-new-news-hook nil
   "A hook run just before Gnus checks for new news."
   :group 'gnus-group-new

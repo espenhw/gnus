@@ -3491,6 +3491,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
 	;; Binding this variable will inhibit multiple fetchings
 	;; of the same mail source.
 	(nnmail-fetched-sources (list t)))
+    (gnus-run-hooks 'gnus-get-top-new-news-hook)
     (gnus-run-hooks 'gnus-get-new-news-hook)
 
     ;; Read any slave files.

@@ -1,3 +1,14 @@
+2003-03-06  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el: add spam-maybe-spam-stat-load to
+	gnus-get-top-new-news-hook, remove it from gnus-get-new-news-hook
+
+	* gnus-group.el (gnus-group-get-new-news): call the new
+	gnus-get-top-new-news-hook hook
+
+	* gnus-start.el (gnus-get-top-new-news-hook): new hook, run ONLY
+	by gnus-get-new-news, NOT by gnus-group-get-new-news-this-group
+
 2003-03-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-uu.el (mm-uu-pgp-encrypted-test): Fix message.
