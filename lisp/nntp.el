@@ -286,7 +286,9 @@ retried once before actually displaying the error report."
   (when nntp-record-commands
     (nntp-record-command "*** CALLED nntp-report ***"))
 
-  (nnheader-report 'nntp args))
+  (nnheader-report 'nntp args)
+
+  (apply 'error args))
 
 (defun nntp-report-1 (&rest args)
   "Throws out to nntp-with-open-group-error so that the connection may
@@ -1285,8 +1287,8 @@ password contained in '~/.nntp-authinfo'."
     ;; that the server has closed the connection.  This MUST be
     ;; handled here as the buffer restored by the save-excursion may
     ;; be the process's former output buffer (i.e. now killed)
-    (or (not process)
-        (memq (process-status process) '(open run))
+    (or (and process 
+            (memq (process-status process) '(open run)))
         (nntp-report "Server closed connection"))))
 
 (defun nntp-accept-response ()
