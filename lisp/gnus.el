@@ -3262,7 +3262,25 @@ that that variable is buffer-local to the summary buffers."
 			    (not (equal server (format "%s:%s" (caar servers)
 						       (cadar servers)))))
 		  (pop servers))
-		(car servers)))))
+		(car servers))
+              ;; This could be some sort of foreign server that I
+              ;; simply haven't opened (yet).  Do a brute-force scan
+              ;; of the entire gnus-newsrc-alist for the server name
+              ;; of every method.  As a side-effect, loads the
+              ;; gnus-server-method-cache so this only happens once,
+              ;; if at all.
+              (let (match)
+                (mapcar 
+                 (lambda (info)
+                   (let* ((info-method (gnus-info-method info))
+                          (info-server 
+                           (if (stringp info-method)
+                               info-method
+                             (gnus-method-to-server info-method))))
+                     (setq match (or (equal server info-server)
+                                     match))))
+                        (cdr gnus-newsrc-alist))
+                match))))
         (when result
           (push (cons server result) gnus-server-method-cache))
 	result)))
