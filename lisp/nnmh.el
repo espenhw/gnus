@@ -64,12 +64,11 @@
 (defvar nnmh-current-server nil)
 (defvar nnmh-server-alist nil)
 (defvar nnmh-server-variables 
-  (list
-   (list 'nnmh-directory nnmh-directory)
-   (list 'nnmh-get-new-mail nnmh-get-new-mail)
-   '(nnmh-current-directory nil)
-   '(nnmh-status-string "")
-   '(nnmh-group-alist)))
+  `((nnmh-directory ,nnmh-directory)
+    (nnmh-get-new-mail ,nnmh-get-new-mail)
+    (nnmh-current-directory nil)
+    (nnmh-status-string "")
+    (nnmh-group-alist)))
 
 
 
@@ -120,24 +119,26 @@
 	'headers))))
 
 (defun nnmh-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nnmh-current-server)
-      t
-    (if nnmh-current-server
-	(setq nnmh-server-alist 
-	      (cons (list nnmh-current-server
-			  (nnheader-save-variables nnmh-server-variables))
-		    nnmh-server-alist)))
-    (let ((state (assoc server nnmh-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nnmh-server-alist (delq state nnmh-server-alist)))
-	(nnheader-set-init-variables nnmh-server-variables defs)))
-    (setq nnmh-current-server server)))
+  (nnheader-change-server 'nnmh server defs)
+  (when (not (file-exists-p nnmh-directory))
+    (condition-case ()
+	(make-directory nnmh-directory t)
+      (error t)))
+  (cond 
+   ((not (file-exists-p nnmh-directory))
+    (nnmh-close-server)
+    (nnheader-report 'nnmh "Couldn't create directory: %s" nnmh-directory))
+   ((not (file-directory-p (file-truename nnmh-directory)))
+    (nnmh-close-server)
+    (nnheader-report 'nnmh "Not a directory: %s" nnmh-directory))
+   (t
+    (nnheader-report 'nnmh "Opened server %s using directory %s"
+		     server nnmh-directory)
+    t)))
 
 (defun nnmh-close-server (&optional server)
-  (setq nnmh-current-server nil)
+  (setq nnmh-current-server nil
+	nnmh-group-alist nil)
   t)
 
 (defun nnmh-server-opened (&optional server)
@@ -197,43 +198,41 @@
   (nnmail-get-new-mail 'nnmh nil nnmh-directory group))      
 
 (defun nnmh-request-list (&optional server dir)
-  (or dir
-      (save-excursion
-	(set-buffer nntp-server-buffer)
-	(erase-buffer)
-	(setq dir (file-truename (file-name-as-directory nnmh-directory)))))
+  (unless dir
+    (nnheader-insert "")
+    (setq dir (file-truename (file-name-as-directory nnmh-directory))))
   (setq dir (expand-file-name dir))
   ;; Recurse down all directories.
   (let ((dirs (and (file-readable-p dir)
 		   (> (nth 1 (file-attributes (file-chase-links dir))) 2)
-		   (directory-files dir t nil t))))
-    (while dirs 
-      (if (and (not (string-match "/\\.\\.?$" (car dirs)))
-	       (file-directory-p (car dirs))
-	       (file-readable-p (car dirs)))
-	  (nnmh-request-list nil (car dirs)))
-      (setq dirs (cdr dirs))))
+		   (directory-files dir t nil t)))
+	dir)
+    ;; Recurse down directories.
+    (while (setq dir (pop dirs))
+      (when (and (not (string-match "/\\.\\.?$" dir))
+		 (file-directory-p dir)
+		 (file-readable-p dir))
+	(nnmh-request-list nil dir))))
   ;; For each directory, generate an active file line.
-  (if (not (string= (expand-file-name nnmh-directory) dir))
-      (let ((files (mapcar
-		    (lambda (name) (string-to-int name))
-		    (directory-files dir nil "^[0-9]+$" t))))
-	(if (null files)
-	    ()
-	  (save-excursion
-	    (set-buffer nntp-server-buffer)
-	    (goto-char (point-max))
-	    (insert 
-	     (format 
-	      "%s %d %d y\n" 
-	      (progn
-		(string-match 
-		 (file-truename (file-name-as-directory 
-				 (expand-file-name nnmh-directory))) dir)
-		(nnheader-replace-chars-in-string
-		 (substring dir (match-end 0)) ?/ ?.))
-	      (apply (function max) files) 
-	      (apply (function min) files)))))))
+  (unless (string= (expand-file-name nnmh-directory) dir)
+    (let ((files (mapcar
+		  (lambda (name) (string-to-int name))
+		  (directory-files dir nil "^[0-9]+$" t))))
+      (when files
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (goto-char (point-max))
+	  (insert 
+	   (format 
+	    "%s %d %d y\n" 
+	    (progn
+	      (string-match 
+	       (file-truename (file-name-as-directory 
+			       (expand-file-name nnmh-directory))) dir)
+	      (nnheader-replace-chars-in-string
+	       (substring dir (match-end 0)) ?/ ?.))
+	    (apply (function max) files) 
+	    (apply (function min) files)))))))
   (setq nnmh-group-alist (nnmail-get-active))
   t)
 

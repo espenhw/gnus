@@ -95,23 +95,22 @@ there.")
 (defvar nnspool-current-server nil)
 (defvar nnspool-server-alist nil)
 (defvar nnspool-server-variables 
-  (list
-   (list 'nnspool-inews-program nnspool-inews-program)
-   (list 'nnspool-inews-switches nnspool-inews-switches)
-   (list 'nnspool-spool-directory nnspool-spool-directory)
-   (list 'nnspool-nov-directory nnspool-nov-directory)
-   (list 'nnspool-lib-dir nnspool-lib-dir)
-   (list 'nnspool-active-file nnspool-active-file)
-   (list 'nnspool-newsgroups-file nnspool-newsgroups-file)
-   (list 'nnspool-distributions-file nnspool-distributions-file)
-   (list 'nnspool-history-file nnspool-history-file)
-   (list 'nnspool-active-times-file nnspool-active-times-file)
-   (list 'nnspool-large-newsgroup nnspool-large-newsgroup)
-   (list 'nnspool-nov-is-evil nnspool-nov-is-evil)
-   (list 'nnspool-sift-nov-with-sed nnspool-sift-nov-with-sed)
-   '(nnspool-current-directory nil)
-   '(nnspool-current-group nil)
-   '(nnspool-status-string "")))
+  `((nnspool-inews-program ,nnspool-inews-program)
+    (nnspool-inews-switches ,nnspool-inews-switches)
+    (nnspool-spool-directory ,nnspool-spool-directory)
+    (nnspool-nov-directory ,nnspool-nov-directory)
+    (nnspool-lib-dir ,nnspool-lib-dir)
+    (nnspool-active-file ,nnspool-active-file)
+    (nnspool-newsgroups-file ,nnspool-newsgroups-file)
+    (nnspool-distributions-file ,nnspool-distributions-file)
+    (nnspool-history-file ,nnspool-history-file)
+    (nnspool-active-times-file ,nnspool-active-times-file)
+    (nnspool-large-newsgroup ,nnspool-large-newsgroup)
+    (nnspool-nov-is-evil ,nnspool-nov-is-evil)
+    (nnspool-sift-nov-with-sed ,nnspool-sift-nov-with-sed)
+    (nnspool-current-directory nil)
+    (nnspool-current-group nil)
+    (nnspool-status-string "")))
 
 
 ;;; Interface functions.
@@ -168,21 +167,19 @@ there.")
 	  'headers)))))
 
 (defun nnspool-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nnspool-current-server)
-      t
-    (if nnspool-current-server
-	(setq nnspool-server-alist 
-	      (cons (list nnspool-current-server
-			  (nnheader-save-variables nnspool-server-variables))
-		    nnspool-server-alist)))
-    (let ((state (assoc server nnspool-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nnspool-server-alist (delq state nnspool-server-alist)))
-	(nnheader-set-init-variables nnspool-server-variables defs)))
-    (setq nnspool-current-server server)))
+  (nnheader-change-server 'nnspool server defs)
+  (cond 
+   ((not (file-exists-p nnspool-spool-directory))
+    (nnspool-close-server)
+    (nnheader-report 'nnspool "Spool directory doesn't exist: %s"
+		     nnspool-spool-directory))
+   ((not (file-directory-p (file-truename nnspool-spool-directory)))
+    (nnspool-close-server)
+    (nnheader-report 'nnspool "Not a directory: %s" nnspool-spool-directory))
+   (t
+    (nnheader-report 'nnspool "Opened server %s using directory %s"
+		     server nnspool-spool-directory)
+    t)))
 
 (defun nnspool-close-server (&optional server)
   (setq nnspool-current-server nil)

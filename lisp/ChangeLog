@@ -1,3 +1,189 @@
+Mon Feb 19 23:01:33 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* browse-url.el: New version installed.
+
+Mon Feb 19 01:00:33 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-read-ephemeral-group): Put the quit-config
+	in the group parameters.
+	(gnus-summary-subject-string): Alias for backwards compatibility. 
+
+	* gnus-nocem.el (gnus-nocem-hashtb): Moved here.
+	(gnus-nocem-check-article): Check whether the article is new.
+	(gnus-nocem-unwanted-article-p): Mew function.
+
+	* gnus.el (gnus-summary-limit-children): Use NoCeM.
+	(gnus-summary-initial-limit): Ditto.
+	(gnus-get-newsgroup-headers): Don't use NoCeM.
+
+Sun Feb 18 00:03:03 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnsoup.el (nnsoup-request-expire-articles): Message better.
+
+	* gnus.el (gnus-summary-read-group): Display all dormant articles
+	when `all'.
+
+	* nndir.el (nndir-request-list): Would build to wide.
+	(nndir-execute-nnmh-command): Allow reading from nndir servers. 
+
+	* nnmh.el (nnmh-open-server): Report errors.o
+
+	* nnml.el (nnml-open-server): Report errors.
+
+	* nnsoup.el (nnsoup-open-server): Report errors.
+
+	* nnspool.el (nnspool-open-server): Report errors.
+
+Sat Feb 17 11:08:16 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnfolder.el (nnfolder-open-server): Report errors.
+
+	* nndraft.el (nndraft-open-server): Report errors.
+	(nndraft-close-server): Close.
+
+	* nndir.el (nndir-open-server): Report errors.
+	(nndir-close-server): Close.
+
+	* nnmbox.el (nnmbox-open-server): Report errors.
+	(nnmbox-close-server): Kill buffer.
+
+	* nnbabyl.el (nnbabyl-open-server): Report errors.
+
+	* nndir.el: New-stylee backquotes.
+
+	* nnml.el (nnml-generate-nov-file): Make sure numerical files are
+	files. 
+
+	* gnus.el (gnus-check-server): Give a better message.
+
+	* nndoc.el (nndoc-babyl-body-begin-function): New function.
+	(nndoc-type-alist): Find beginning of babyl articles.
+
+	* nnsoup.el (nnsoup-unpack-packets): Message better.
+
+	* gnus.el (gnus-article-mark-lists): Don't save the cache marks. 
+
+Fri Feb 16 19:14:26 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nndoc.el (nndoc-type-alist): Recognize the end of digests. 
+
+Fri Feb 16 06:46:48 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-score.el (gnus-summary-score-effect): Didn't correctly
+	escape meta charcters for substring and exact match types.
+
+Fri Feb 16 00:50:35 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-article-setup-buffer): Set global counterparts. 
+	(gnus-valid-select-methods): All methods should use address. 
+	(gnus-article-show-hidden-text): Hide all hidden text.
+
+	* gnus-kill.el (gnus-kill-file-mode-map): New implementation.
+
+	* gnus-salt.el (gnus-pick-mode): Install proper minor mode map. 
+
+	* gnus.el (gnus-summary-exit): Kill article buffer when using
+	non-single ones.
+	(gnus-set-global-variables): Copy the original buffer to global
+	value. 
+
+	* nnspool.el (nnspool-open-server): Simplify.
+	* nnmbox.el (nnmbox-open-server): Ditto.
+	* nnbabyl.el (nnbabyl-open-server): Ditto.
+	* nnml.el (nnml-open-server): Ditto.
+	* nnfolder.el (nnfolder-open-server): Ditto.
+	* nnmh.el (nnmh-open-server): Ditto.
+
+	* gnus-msg.el (gnus-debug): Pretty-print variables.
+
+	* gnus-srvr.el (gnus-server-kill-server): Don't allow killing
+	opened-only servers.
+	(gnus-server-edit-server): Would create duplicate servers.
+
+	* gnus.el (gnus-get-unread-articles): Close groups after opening
+	them. 
+	(gnus-server-to-method): Search the opened servers for matches.
+
+	* gnus-vm.el (gnus-summary-save-in-vm): Use the split methods. 
+
+	* gnus.el (gnus-summary-skip-intangible): Don't use `when'.
+
+Thu Feb 15 11:02:08 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nndoc.el (nndoc-type-alist): Allow several newlines in
+	937-digests. 
+
+	* gnus.el (gnus-select-newsgroup): Don't message when quitting. 
+
+	* nnfolder.el (nnfolder-request-close): Close the server.
+
+	* gnus.el (gnus-group-method): Changed name.
+	(gnus-group-method): Return the real select method, if possible.
+
+Wed Feb 14 15:01:57 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-score.el (gnus-summary-increase-score): Regexp-quote regexp
+	matches.
+
+	* gnus-msg.el (gnus-forward-insert-buffer): Remove all text
+	properties. 
+	(gnus-forward-included-headers): Buggy regexp.
+
+	* gnus-salt.el (gnus-possibly-generate-tree): Don't generate trees
+	unless threads are used.
+
+	* nnheader.el (nnheader-insert-head): Would almost laways stop
+	after the first kb.
+
+Wed Feb 14 07:41:58 1996  Colin Rafferty  <craffert@ml.com>
+
+	* gnus.el (gnus-group-add-parameter): Remove old versions of the
+	parameter. 
+
+Wed Feb 14 07:28:50 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-news-followup): Don't query if Followup-To and
+	Newsgroups are the same.
+	(gnus-inews-check-post): Reversed check for Followup-To.
+
+	* gnus.el (gnus-group-kill-group): Kill lots of zombie groups. 
+	(gnus-article-hide-headers): Check whether `gnus-visible-headers'
+	is nil. 
+
+Tue Feb 13 06:29:47 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-add-configuration): Autoload.
+	(gnus-summary-tick-article): Made interactive.
+
+	* nntp.el (nntp-open-server-internal): Don't bug out when the
+	server hangs up during initial negotiations.
+
+Mon Feb 12 04:47:14 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-default-directories): New variable.
+	(nntp-open-server-internal): Use it.
+
+	* nnsoup.el (nnsoup-read-areas): Delete AREAS file.
+	(nnsoup-read-areas): Check whether the MSG file exists.
+
+	* gnus.el (gnus-summary-move-article): Only mark as canceled when
+	moving. 
+
+	* gnus-ems.el (gnus-set-text-properties): New alias.
+
+Sun Feb 11 13:53:23 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-inews-remove-signature): New function.
+
+Sun Feb 11 09:29:06 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-request-article-this-buffer): Make sure the
+	article buffer exists. 
+
+Sun Feb 11 09:28:46 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: 0.38 is released.
+
 Sun Feb 11 04:49:16 1996  Mark Borges  <mdb@cdc.noaa.gov>
 
 	* gnus-xmas.el (gnus-xmas-define): Conditionally redefine

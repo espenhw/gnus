@@ -182,22 +182,28 @@ The SOUP packet file name will be inserted at the %s.")
 	  'headers)))))
 
 (defun nnsoup-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nnsoup-current-server)
-      t
-    (if nnsoup-current-server
-	(setq nnsoup-server-alist 
-	      (cons (list nnsoup-current-server
-			  (nnheader-save-variables nnsoup-server-variables))
-		    nnsoup-server-alist)))
-    (let ((state (assoc server nnsoup-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nnsoup-server-alist (delq state nnsoup-server-alist)))
-	(nnheader-set-init-variables nnsoup-server-variables defs)))
-    (setq nnsoup-current-server server))
-  (nnsoup-read-active-file))
+  (nnheader-change-server 'nnsoup server defs)
+  (when (not (file-exists-p nnsoup-directory))
+    (condition-case ()
+	(make-directory nnsoup-directory t)
+      (error t)))
+  (cond 
+   ((not (file-exists-p nnsoup-directory))
+    (nnsoup-close-server)
+    (nnheader-report 'nnsoup "Couldn't create directory: %s" nnsoup-directory))
+   ((not (file-directory-p (file-truename nnsoup-directory)))
+    (nnsoup-close-server)
+    (nnheader-report 'nnsoup "Not a directory: %s" nnsoup-directory))
+   (t
+    (nnsoup-read-active-file)
+    (nnheader-report 'nnsoup "Opened server %s using directory %s"
+		     server nnsoup-directory)
+    t)))
+
+(defun nnsoup-close-server (&optional server)
+  (setq nnsoup-current-server nil
+	nnsoup-group-alist nil)
+  t)
 
 (defun nnsoup-request-close ()
   (nnsoup-write-active-file)
@@ -215,9 +221,6 @@ The SOUP packet file name will be inserted at the %s.")
 	nnsoup-current-server nil
 	nnsoup-server-alist nil
 	nnsoup-replies-list nil)
-  t)
-
-(defun nnsoup-close-server (&optional server)
   t)
 
 (defun nnsoup-server-opened (&optional server)
@@ -325,11 +328,13 @@ The SOUP packet file name will be inserted at the %s.")
 	(when (condition-case nil
 		  (progn
 		    (nnheader-message 
-		     5 "Deleting %s..." (nnsoup-file prefix))
+		     5 "Deleting %s in group %s..." (nnsoup-file prefix)
+		     group)
 		    (when (file-exists-p (nnsoup-file prefix))
 		      (delete-file (nnsoup-file prefix)))
 		    (nnheader-message 
-		     5 "Deleting %s..." (nnsoup-file prefix t))
+		     5 "Deleting %s in group..." (nnsoup-file prefix t)
+		     group)
 		    (when (file-exists-p (nnsoup-file prefix t))
 		      (delete-file (nnsoup-file prefix t)))
 		    t)
@@ -413,25 +418,26 @@ The SOUP packet file name will be inserted at the %s.")
 	(when (file-exists-p 
 	       (setq file (concat nnsoup-tmp-directory 
 				  (gnus-soup-area-prefix area) ".MSG")))
-	  (rename-file file (nnsoup-file cur-prefix t)))
-	(gnus-soup-set-area-prefix area cur-prefix)
-	;; Find the number of new articles in this area.
-	(setq number (nnsoup-number-of-articles area))
-	(if (not (setq entry (assoc (gnus-soup-area-name area)
-				    nnsoup-group-alist)))
-	    ;; If this is a new area (group), we just add this info to
-	    ;; the group alist. 
-	    (push (list (gnus-soup-area-name area)
-			(cons 1 number)
-			(list (cons 1 number) area))
-		  nnsoup-group-alist)
-	  ;; There are already articles in this group, so we add this
-	  ;; info to the end of the entry.
-	  (nconc entry (list (list (cons (1+ (setq lnum (cdadr entry)))
-					 (+ lnum number))
-				   area)))
-	  (setcdr (cadr entry) (+ lnum number)))))
-    (nnsoup-write-active-file)))
+	  (rename-file file (nnsoup-file cur-prefix t))
+	  (gnus-soup-set-area-prefix area cur-prefix)
+	  ;; Find the number of new articles in this area.
+	  (setq number (nnsoup-number-of-articles area))
+	  (if (not (setq entry (assoc (gnus-soup-area-name area)
+				      nnsoup-group-alist)))
+	      ;; If this is a new area (group), we just add this info to
+	      ;; the group alist. 
+	      (push (list (gnus-soup-area-name area)
+			  (cons 1 number)
+			  (list (cons 1 number) area))
+		    nnsoup-group-alist)
+	    ;; There are already articles in this group, so we add this
+	    ;; info to the end of the entry.
+	    (nconc entry (list (list (cons (1+ (setq lnum (cdadr entry)))
+					   (+ lnum number))
+				     area)))
+	    (setcdr (cadr entry) (+ lnum number))))))
+    (nnsoup-write-active-file)
+    (delete-file (concat nnsoup-tmp-directory "AREAS"))))
 
 (defun nnsoup-number-of-articles (area)
   (save-excursion
@@ -478,15 +484,15 @@ The SOUP packet file name will be inserted at the %s.")
   "Unpack all packets in `nnsoup-packet-directory'."
   (let ((packets (directory-files
 		  nnsoup-packet-directory t nnsoup-packet-regexp))
-	packet msg)
+	packet)
     (while (setq packet (pop packets))
-      (message (setq msg (format "nnsoup: unpacking %s..." packet)))
+      (message (format "nnsoup: unpacking %s..." packet))
       (if (not (gnus-soup-unpack-packet 
 		nnsoup-tmp-directory nnsoup-unpacker packet))
 	  (message "Couldn't unpack %s" packet)
 	(delete-file packet)
 	(nnsoup-read-areas)
-	(message "%sdone" msg)))))
+	(message "Unpacking...done")))))
 
 (defun nnsoup-narrow-to-article (article &optional area head)
   (let* ((area (or area (nnsoup-article-to-area article nnsoup-current-group)))

@@ -195,6 +195,7 @@ on your system, you could say something like:
     (setq state (cdr state))))
 
 (defun nnheader-change-server (backend server defs)
+  (nnheader-init-server-buffer)
   (let ((current-server (intern (format "%s-current-server" backend)))
 	(alist (intern (format "%s-server-alist" backend)))
 	(variables (intern (format "%s-server-variables" backend))))
@@ -210,7 +211,8 @@ on your system, you could say something like:
 	  (nnheader-set-init-variables (symbol-value variables) defs)
 	(nnheader-restore-variables (nth 1 state))
 	(set alist (delq state (symbol-value alist)))))
-    (set current-server server)))
+    (set current-server server)
+    t))
 
 ;;; Various functions the backends use.
 
@@ -219,12 +221,12 @@ on your system, you could say something like:
   (if (eq nnheader-max-head-length t)
       ;; Just read the entire file.
       (insert-file-contents-literally file)
+    ;; Read 1K blocks until we find a separator.
     (let ((beg 0)
 	  (chop 1024))
-      ;; Read 1K blocks until we find a separator.
       (while (and (eq chop (nth 1 (insert-file-contents-literally
-				   file nil beg (setq beg (+ chop beg)))))
-		  (prog1 (not (search-backward "\n\n" nil t)) 
+				   file nil beg (incf beg chop))))
+		  (prog1 (not (search-forward "\n\n" nil t)) 
 		    (goto-char (point-max)))
 		  (or (null nnheader-max-head-length)
 		      (< beg nnheader-max-head-length)))))))
@@ -315,8 +317,8 @@ Return the number of headers removed."
 	   (nnheader-temp-cur-buffer
 	    (nnheader-set-temp-buffer
 	     (generate-new-buffer-name " *nnheader temp*"))))
-     (unless (file-directory-p (file-name-directory nnheader-temp-file))
-       (make-directory (file-name-directory nnheader-temp-file) t))
+       (unless (file-directory-p (file-name-directory nnheader-temp-file))
+	 (make-directory (file-name-directory nnheader-temp-file) t))
        (unwind-protect
 	   (prog1
 	       (progn

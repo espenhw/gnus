@@ -32,7 +32,8 @@
 (eval-and-compile
   (autoload 'mail-send-and-exit "sendmail"))
 
-(defvar nndraft-directory nil)
+(defvar nndraft-directory nil
+  "Where nndraft will store its directory.")
 
 
 
@@ -44,10 +45,9 @@
 (defvar nndraft-current-server nil)
 (defvar nndraft-server-alist nil)
 (defvar nndraft-server-variables 
-  (list
-   '(nndraft-directory nil)
-   '(nndraft-status-string "")
-   '(nndraft-group-alist)))
+  `((nndraft-directory nil)
+    (nndraft-status-string "")
+    (nndraft-group-alist)))
 
 
 
@@ -86,25 +86,24 @@
 	'headers))))
 
 (defun nndraft-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nndraft-current-server)
-      t
-    (if nndraft-current-server
-	(setq nndraft-server-alist 
-	      (cons (list nndraft-current-server
-			  (nnheader-save-variables nndraft-server-variables))
-		    nndraft-server-alist)))
-    (let ((state (assoc server nndraft-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nndraft-server-alist (delq state nndraft-server-alist)))
-	(nnheader-set-init-variables nndraft-server-variables defs))
-      (or (assq 'nndraft-directory defs)
-	  (setq nndraft-directory server)))
-    (setq nndraft-current-server server)))
+  (nnheader-change-server 'nndraft server defs)
+  (unless (assq 'nndraft-directory defs)
+    (setq nndraft-directory server))
+  (cond 
+   ((not (file-exists-p nndraft-directory))
+    (nndraft-close-server)
+    (nnheader-report 'nndraft "No such file or directory: %s"
+		     nndraft-directory))
+   ((not (file-directory-p (file-truename nndraft-directory)))
+    (nndraft-close-server)
+    (nnheader-report 'nndraft "Not a directory: %s" nndraft-directory))
+   (t
+    (nnheader-report 'nndraft "Opened server %s using directory %s"
+		     server nndraft-directory)
+    t)))
 
 (defun nndraft-close-server (&optional server)
+  (setq nndraft-current-server nil)
   t)
 
 (defun nndraft-server-opened (&optional server)
@@ -170,16 +169,16 @@
 (defun nndraft-request-group (group &optional server dont-check)
   (prog1
       (nndraft-execute-nnmh-command
-       (` (nnmh-request-group group "" (, dont-check))))
+       `(nnmh-request-group group "" ,dont-check))
     (nnheader-report 'nndraft nnmh-status-string)))
 
 (defun nndraft-request-list (&optional server dir)
   (nndraft-execute-nnmh-command
-   (` (nnmh-request-list nil (, dir)))))
+   `(nnmh-request-list nil ,dir)))
 
 (defun nndraft-request-newgroups (date &optional server)
   (nndraft-execute-nnmh-command
-   (` (nnmh-request-newgroups (, date) (, server)))))
+   `(nnmh-request-newgroups ,date ,server)))
 
 (defun nndraft-request-post (&optional server)
   (mail-send-and-exit nil))
@@ -187,8 +186,8 @@
 (defun nndraft-request-expire-articles 
   (articles group &optional server force)
   (let ((res (nndraft-execute-nnmh-command
-	      (` (nnmh-request-expire-articles
-		  (quote (, articles)) group (, server) (, force)))))
+	      `(nnmh-request-expire-articles
+		',articles group ,server ,force)))
 	article)
     ;; Delete all the "state" files of articles that have been expired.
     (while articles
@@ -208,7 +207,7 @@
 	 (name (buffer-name))
 	 (gnus-verbose-backends nil)
 	 (gart (nndraft-execute-nnmh-command
-		(` (nnmh-request-accept-article group (, last) noinsert))))
+		`(nnmh-request-accept-article group ,last noinsert)))
 	 (state
 	  (nndraft-article-filename (cdr gart) ".state")))
     ;; Write the "state" file.

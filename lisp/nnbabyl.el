@@ -66,14 +66,13 @@
 (defvar nnbabyl-current-server nil)
 (defvar nnbabyl-server-alist nil)
 (defvar nnbabyl-server-variables 
-  (list
-   (list 'nnbabyl-mbox-file nnbabyl-mbox-file)
-   (list 'nnbabyl-active-file nnbabyl-active-file)
-   (list 'nnbabyl-get-new-mail nnbabyl-get-new-mail)
-   '(nnbabyl-current-group nil)
-   '(nnbabyl-status-string "")
-   '(nnbabyl-previous-buffer-mode nil)
-   '(nnbabyl-group-alist nil)))
+  `((nnbabyl-mbox-file ,nnbabyl-mbox-file)
+    (nnbabyl-active-file ,nnbabyl-active-file)
+    (nnbabyl-get-new-mail ,nnbabyl-get-new-mail)
+    (nnbabyl-current-group nil)
+    (nnbabyl-status-string "")
+    (nnbabyl-previous-buffer-mode nil)
+    (nnbabyl-group-alist nil)))
 
 
 
@@ -122,21 +121,18 @@
       'headers)))
 
 (defun nnbabyl-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nnbabyl-current-server)
-      t
-    (if nnbabyl-current-server
-	(setq nnbabyl-server-alist 
-	      (cons (list nnbabyl-current-server
-			  (nnheader-save-variables nnbabyl-server-variables))
-		    nnbabyl-server-alist)))
-    (let ((state (assoc server nnbabyl-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nnbabyl-server-alist (delq state nnbabyl-server-alist)))
-	(nnheader-set-init-variables nnbabyl-server-variables defs)))
-    (setq nnbabyl-current-server server)))
+  (nnheader-change-server 'nnbabyl server defs)
+  (cond 
+   ((not (file-exists-p nnbabyl-mbox-file))
+    (nnbabyl-close-server)
+    (nnheader-report 'nnbabyl "No such file: %s" nnbabyl-mbox-file))
+   ((file-directory-p nnbabyl-mbox-file)
+    (nnbabyl-close-server)
+    (nnheader-report 'nnbabyl "Not a regular file: %s" nnbabyl-mbox-file))
+   (t
+    (nnheader-report 'nnbabyl "Opened server %s using mbox %s" server
+		     nnbabyl-mbox-file)
+    t)))
 
 (defun nnbabyl-close-server (&optional server)
   ;; Restore buffer mode.

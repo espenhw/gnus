@@ -31,10 +31,11 @@
 (require 'nnml)
 (eval-when-compile (require 'cl))
 
-(eval-and-compile
-  (autoload 'mail-send-and-exit "sendmail"))
+(defvar nndir-directory nil
+  "Where nndir will look for groups.")
 
-(defvar nndir-directory nil)
+(defvar nndir-nov-is-evil nil
+  "*Non-nil means that nndir will never retrieve NOV headers.")
 
 
 
@@ -42,49 +43,45 @@
 
 (defvar nndir-status-string "")
 
-(defvar nndir-nov-is-evil nil
-  "*Non-nil means that nndir will never retrieve NOV headers.")
+(defvar nndir-group "blououUOUOuuubhbh")
 
 
 
 (defvar nndir-current-server nil)
 (defvar nndir-server-alist nil)
 (defvar nndir-server-variables 
-  (list
-   '(nndir-directory nil)
-   '(nndir-status-string "")
-   '(nndir-group-alist)))
+  `((nndir-directory nil)
+    (nndir-status-string "")
+    (nndir-group-alist)))
 
 
 
 ;;; Interface functions.
 
 
-(defun nndir-retrieve-headers (sequence &optional group server fetch-old)
+(defun nndir-retrieve-headers (sequence &optional 
+					nndir-group server fetch-old)
   (nndir-execute-nnml-command
-   (` (nnml-retrieve-headers 
-       (quote (, sequence)) group (, server) (, fetch-old)))))
+   `(nnml-retrieve-headers ',sequence nndir-group ,server ,fetch-old)))
 
 (defun nndir-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nndir-current-server)
-      t
-    (if nndir-current-server
-	(setq nndir-server-alist 
-	      (cons (list nndir-current-server
-			  (nnheader-save-variables nndir-server-variables))
-		    nndir-server-alist)))
-    (let ((state (assoc server nndir-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nndir-server-alist (delq state nndir-server-alist)))
-	(nnheader-set-init-variables nndir-server-variables defs))
-      (or (assq 'nndir-directory defs)
-	  (setq nndir-directory server)))
-    (setq nndir-current-server server)))
+  (nnheader-change-server 'nndir server defs)
+  (unless (assq 'nndir-directory defs)
+    (setq nndir-directory server))
+  (cond 
+   ((not (file-exists-p nndir-directory))
+    (nndir-close-server)
+    (nnheader-report 'nndir "No such file or directory: %s" nndir-directory))
+   ((not (file-directory-p (file-truename nndir-directory)))
+    (nndir-close-server)
+    (nnheader-report 'nndir "Not a directory: %s" nndir-directory))
+   (t
+    (nnheader-report 'nndir "Opened server %s using directory %s"
+		     server nndir-directory)
+    t)))
 
 (defun nndir-close-server (&optional server)
+  (setq nndir-current-server nil)
   t)
 
 (defun nndir-server-opened (&optional server)
@@ -96,36 +93,34 @@
 (defun nndir-status-message (&optional server)
   nndir-status-string)
 
-(defun nndir-request-article (id &optional group server buffer)
+(defun nndir-request-article (id &optional nndir-group server buffer)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-article (, id) group (, server) (, buffer)))))
+   `(nnmh-request-article ,id nndir-group ,server ,buffer)))
 
-(defun nndir-request-group (group &optional server dont-check)
+(defun nndir-request-group (nndir-group &optional server dont-check)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-group group "" (, dont-check)))))
+   `(nnmh-request-group nndir-group "" ,dont-check)))
 
 (defun nndir-request-list (&optional server dir)
-  (nndir-execute-nnmh-command
-   (` (nnmh-request-list nil (, dir)))))
+  (let ((nndir-directory (concat (file-name-as-directory
+				  nndir-directory) "dummy")))
+    (nndir-execute-nnmh-command
+     `(nnmh-request-list ,(concat "nndir+" (or server "")) ,dir))))
 
 (defun nndir-request-newgroups (date &optional server)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-newgroups (, date) (, server)))))
-
-(defun nndir-request-post (&optional server)
-  (mail-send-and-exit nil))
+   `(nnmh-request-newgroups ,date ,server)))
 
 (defun nndir-request-expire-articles 
-  (articles group &optional server force)
+  (articles nndir-group &optional server force)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-expire-articles (quote (, articles)) group
-				    (, server) (, force)))))
+   `(nnmh-request-expire-articles ',articles nndir-group ,server ,force)))
 
-(defun nndir-request-accept-article (group &optional last)
+(defun nndir-request-accept-article (nndir-group &optional last)
   (nndir-execute-nnmh-command
-   (` (nnmh-request-accept-article group (, last)))))
+   `(nnmh-request-accept-article nndir-group ,last)))
 
-(defun nndir-close-group (group &optional server)
+(defun nndir-close-group (nndir-group &optional server)
   t)
 
 (defun nndir-request-create-group (group &optional server)
@@ -143,25 +138,38 @@
 ;;; Low-Level Interface
 
 (defun nndir-execute-nnmh-command (command)
-  (let ((dir (expand-file-name nndir-directory)))
-    (and (string-match "/$" dir)
-	 (setq dir (substring dir 0 (match-beginning 0))))
-    (string-match "/[^/]+$" dir)
-    (let ((group (substring dir (1+ (match-beginning 0))))
-          (nnmh-directory (substring dir 0 (1+ (match-beginning 0))))
-	  (nnmh-get-new-mail nil))
-      (eval command))))
+  (let ((dir (file-name-as-directory (expand-file-name nndir-directory))))
+    (if (or (file-directory-p (concat dir nndir-group))
+	    (file-directory-p
+	     (concat dir (nnheader-replace-chars-in-string 
+			  nndir-group ?. ?/))))
+	(let ((nnmh-directory nndir-directory)
+	      (nnmh-get-new-mail nil))
+	  (eval command))
+      (let ((dir (directory-file-name (expand-file-name nndir-directory))))
+	(string-match "/[^/]+$" dir)
+	(let ((nndir-group (substring dir (1+ (match-beginning 0))))
+	      (nnmh-directory (substring dir 0 (1+ (match-beginning 0))))
+	      (nnmh-get-new-mail nil))
+	  (eval command))))))
 
 (defun nndir-execute-nnml-command (command)
-  (let ((dir (expand-file-name nndir-directory)))
-    (and (string-match "/$" dir)
-	 (setq dir (substring dir 0 (match-beginning 0))))
-    (string-match "/[^/]+$" dir)
-    (let ((group (substring dir (1+ (match-beginning 0))))
-          (nnml-directory (substring dir 0 (1+ (match-beginning 0))))
-	  (nnml-nov-is-evil nndir-nov-is-evil)
-	  (nnml-get-new-mail nil))
-      (eval command))))
+  (let ((dir (file-name-as-directory (expand-file-name nndir-directory))))
+    (if (or (file-directory-p (concat dir nndir-group))
+	    (file-directory-p
+	     (concat dir (nnheader-replace-chars-in-string 
+			  nndir-group ?. ?/))))
+	(let ((nnml-directory nndir-directory)
+	      (nnml-nov-is-evil nndir-nov-is-evil)
+	      (nnml-get-new-mail nil))
+	  (eval command))
+      (let ((dir (directory-file-name (expand-file-name nndir-directory))))
+	(string-match "/[^/]+$" dir)
+	(let ((nndir-group (substring dir (1+ (match-beginning 0))))
+	      (nnml-directory (substring dir 0 (1+ (match-beginning 0))))
+	      (nnml-nov-is-evil nndir-nov-is-evil)
+	      (nnml-get-new-mail nil))
+	  (eval command))))))
 
 (provide 'nndir)
 

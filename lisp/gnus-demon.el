@@ -193,6 +193,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
   (gnus-demon-add-handler 'gnus-demon-scan-nocem 60 t))
 
 (defun gnus-demon-scan-nocem ()
+  "Scan NoCeM groups for NoCeM messages."
   (gnus-nocem-scan-groups))
 
 (defun gnus-demon-add-disconnection ()

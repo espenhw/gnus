@@ -90,18 +90,10 @@ save those articles instead."
 	  (funcall gnus-mail-save-name gnus-newsgroup-name
 		   gnus-current-headers gnus-newsgroup-last-mail)))
     (setq folder
-	  (cond ((eq folder 'default)
-		 default-name)
+	  (cond ((eq folder 'default) default-name)
 		(folder folder)
-		(t (read-file-name 
-		    (concat "Save article in VM folder: (default "
-			    (file-name-nondirectory default-name) ") ")
-		    (file-name-directory default-name)
-		    default-name))))
-    (setq folder
-	  (expand-file-name folder
-			    (and default-name
-				 (file-name-directory default-name))))
+		(t (gnus-read-save-file-name 
+		    "Save article in VM folder:" default-name))))
     (gnus-make-directory (file-name-directory folder))
     (set-buffer gnus-original-article-buffer)
     (save-excursion

@@ -59,6 +59,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (babyl 
      (article-begin . "\^_\^L *\n")
      (body-end . "\^_")
+     (body-begin-function . nndoc-babyl-body-begin)
      (head-begin . "^[0-9].*\n"))
     (forward
      (article-begin . "^-+ Start of forwarded message -+\n+")
@@ -83,11 +84,11 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (body-end . "")
      (file-end . ""))
     (standard-digest
-     (first-article . ,(concat "^" (make-string 70 ?-) "\n\n"))
-     (article-begin . ,(concat "\n\n" (make-string 30 ?-) "\n\n"))
+     (first-article . ,(concat "^" (make-string 70 ?-) "\n\n+"))
+     (article-begin . ,(concat "\n\n" (make-string 30 ?-) "\n\n+"))
      (prepare-body . nndoc-prepare-digest-body)
      (body-end-function . nndoc-digest-body-end)
-     (file-end . "^End of .*digest.*[0-9].*\n\\*\\*"))
+     (file-end . "^End of .*digest.*[0-9].*\n\\*\\*\\|^End of.*Digest *$"))
     (guess 
      (guess . nndoc-guess-type))
     (digest
@@ -105,6 +106,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defvar nndoc-file-end nil)
 (defvar nndoc-body-begin nil)
 (defvar nndoc-body-end-function nil)
+(defvar nndoc-body-begin-function nil)
 (defvar nndoc-body-end nil)
 (defvar nndoc-dissection-alist nil)
 (defvar nndoc-prepare-body nil)
@@ -114,18 +116,17 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defvar nndoc-current-server nil)
 (defvar nndoc-server-alist nil)
 (defvar nndoc-server-variables
-  (list
-   (list 'nndoc-article-type nndoc-article-type)
-   '(nndoc-article-begin nil)
-   '(nndoc-article-end nil)
-   '(nndoc-head-begin nil)
-   '(nndoc-head-end nil)
-   '(nndoc-first-article nil)
-   '(nndoc-current-buffer nil)
-   '(nndoc-group-alist nil)
-   '(nndoc-end-of-file nil)
-   '(nndoc-body-begin nil)
-   '(nndoc-address nil)))
+  `((nndoc-article-type ,nndoc-article-type)
+    (nndoc-article-begin nil)
+    (nndoc-article-end nil)
+    (nndoc-head-begin nil)
+    (nndoc-head-end nil)
+    (nndoc-first-article nil)
+    (nndoc-current-buffer nil)
+    (nndoc-group-alist nil)
+    (nndoc-end-of-file nil)
+    (nndoc-body-begin nil)
+    (nndoc-address nil)))
 
 (defconst nndoc-version "nndoc 1.0"
   "nndoc version.")
@@ -168,24 +169,10 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  'headers)))))
 
 (defun nndoc-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nndoc-current-server)
-      t
-    (if nndoc-current-server
-	(setq nndoc-server-alist 
-	      (cons (list nndoc-current-server
-			  (nnheader-save-variables nndoc-server-variables))
-		    nndoc-server-alist)))
-    (let ((state (assoc server nndoc-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nndoc-server-alist (delq state nndoc-server-alist)))
-	(nnheader-set-init-variables nndoc-server-variables defs)))
-    (setq nndoc-current-server server)
-    t))
+  (nnheader-change-server 'nndoc server defs))
 
 (defun nndoc-close-server (&optional server)
+  (setq nndoc-current-server nil)
   t)
 
 (defun nndoc-server-opened (&optional server)
@@ -297,13 +284,14 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	    (insert-file-contents nndoc-address)
 	  (insert-buffer-substring nndoc-address)))))
     ;; Initialize the nndoc structures according to this new document.
-    (if (not (and nndoc-current-buffer
-		  (not nndoc-dissection-alist)))
-	(nndoc-close-server)
+    (when (and nndoc-current-buffer
+	       (not nndoc-dissection-alist))
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(nndoc-set-delims)
 	(nndoc-dissect-buffer)))
+    (unless nndoc-current-buffer
+      (nndoc-close-server))
     ;; Return whether we managed to select a file.
     nndoc-current-buffer))
 
@@ -375,7 +363,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 		nndoc-file-end nndoc-article-begin
 		nndoc-body-begin nndoc-body-end-function nndoc-body-end
 		nndoc-prepare-body nndoc-article-transform
-		nndoc-generate-head)))
+		nndoc-generate-head nndoc-body-begin-function)))
     (while vars
       (set (pop vars) nil)))
   (let* (defs guess)
@@ -418,7 +406,9 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  (setq head-begin (point))
 	  (nndoc-search (or nndoc-head-end "^$"))
 	  (setq head-end (point))
-	  (nndoc-search (or nndoc-body-begin "^\n"))
+	  (if nndoc-body-begin-function
+	      (funcall nndoc-body-begin-function)
+	    (nndoc-search (or nndoc-body-begin "^\n")))
 	  (setq body-begin (point))
 	  (or (and nndoc-body-end-function
 		   (funcall nndoc-body-end-function))
@@ -490,6 +480,11 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	  (setq from (match-string 1)))))
     (insert "From: " "clari@clari.net (" (or from "unknown") ")"
 	    "\nSubject: " (or subject "(no subject)") "\n")))
+
+(defun nndoc-babyl-body-begin ()
+  (re-search-forward "^\n" nil t)
+  (when (looking-at "\*\*\* EOOH \*\*\*")
+    (re-search-forward "^\n" nil t)))
 
 (provide 'nndoc)
 

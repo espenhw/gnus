@@ -37,11 +37,13 @@
 (defalias 'gnus-group-remove-excess-properties 'ignore)
 (defalias 'gnus-topic-remove-excess-properties 'ignore)
 (defalias 'gnus-extent-start-open 'ignore)
-
+(defalias 'gnus-set-text-properties 'set-text-properties)
+(defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
 
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")
-  (autoload 'gnus-xmas-redefine "gnus-xmas"))
+  (autoload 'gnus-xmas-redefine "gnus-xmas")
+  (autoload 'appt-select-lowest-window "appt.el"))
 
 (or (fboundp 'mail-file-babyl-p)
     (fset 'mail-file-babyl-p 'rmail-file-p))
@@ -85,9 +87,8 @@
 	    (valstr (if (numberp val)
 			(int-to-string val) val)))
        (if (> (length valstr) (, max-width))
-	   (truncate-string valstr (, max-width))
+	   (gnus-truncate-string valstr (, max-width))
 	 valstr))))
-
 
 (eval-and-compile
   (if (string-match "XEmacs\\|Lucid" emacs-version)
@@ -202,9 +203,9 @@ pounce directly on the real variables themselves."))
 
    ((boundp 'MULE)
     ;; Mule definitions
-    (or (fboundp 'truncate-string)
-	(fset 'truncate-string 'gnus-mule-truncate-string))
-    (defalias 'gnus-truncate-string 'truncate-string)
+    (defalias 'gnus-truncate-string
+      (if (fboundp 'truncate-string)
+	  'truncate-string 'gnus-mule-truncate-string))
 
     (fset 'gnus-summary-make-display-table (lambda () nil))
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)

@@ -20,7 +20,9 @@ refcard.dvi: refcard.tex
 	$(LATEX) refcard.tex
 
 clean:
-	rm -f gnus.*.bak gnus.ky gnus.cp gnus.aux gnus.fn gnus.dvi gnus.cps gnus.kys gnus.log gnus.pg gnus.tp gnus.vr gnus.toc
+	rm -f gnus.*.bak gnus.ky gnus.cp gnus.fn gnus.dvi gnus.cps gnus.kys \
+	gnus.log gnus.pg gnus.tp gnus.vr gnus.toc gnus.latexi *.aux gnus.cidx \
+	gnus.cind gnus.ilg gnus.ind gnus.kidx gnus.kind gnus.idx 
 
 makeinfo: 
 	makeinfo -o gnus.info gnus.texi	
@@ -31,7 +33,7 @@ texi2latexi.elc:
 latex: gnus.texi
 	$(EMACS) -batch -q -no-site-file gnus.texi -l ./texi2latex.elc -f latexi-translate
 
-latexps: gnus.latexi
+latexps: 
 	$(LATEX) gnus.latexi 
 	splitindex
 	makeindex -o gnus.kind gnus.kidx
@@ -41,11 +43,13 @@ latexps: gnus.latexi
 	$(LATEX) gnus.tmplatexi 
 	$(DVIPS) -f gnus.dvi > gnus.ps
 
-latexboth: gnus.latexi
+latexboth: 
 	rm -f gnus-manual-a4.ps.gz gnus-manual-standard.ps.gz 
-	$(LATEX) gnus.latexi ; $(DVIPS) -f gnus.dvi > gnus-manual-a4.ps 
+	make latexps
+	mv gnus.ps gnus-manual-a4.ps
 	gzip gnus-manual-a4.ps 
-	 sed 's/,a4paper//' gnus.latexi > gnus-standard.latexi 
-	$(LATEX) gnus.latexi 
-	$(DVIPS) -f gnus.dvi > gnus-manual-standard.ps 
+	sed 's/,a4paper//' gnus.latexi > gnus-standard.latexi 
+	make latexps
+	mv gnus.ps gnus-manual-standard.ps 
 	gzip gnus-manual-standard.ps 
+

@@ -26,19 +26,26 @@
 ;;; Code:
 
 (require 'gnus)
+(require 'nnmail)
 (eval-when-compile (require 'cl))
 
-(defvar gnus-nocem-groups '("alt.nocem.misc" "news.admin.net-abuse.announce")
+(defvar gnus-nocem-groups 
+  '("alt.nocem.misc" "news.admin.net-abuse.announce")
   "*List of groups that will be searched for NoCeM messages.")
 
-(defvar gnus-nocem-issuers '("Automoose-1" "clewis@ferret.ocunix.on.ca;")
+(defvar gnus-nocem-issuers 
+  '("Automoose-1" ; The CancelMoose[tm] on autopilot.
+    "clewis@ferret.ocunix.on.ca;" ; Chris Lewis -- Canadian angel & despammer.
+    "jem@xpat.com;"  ; Jem -- Korean despammer.
+    "red@redpoll.mrfs.oh.us (Richard E. Depew)" ; Spew/bincancel guy.
+    )
   "*List of NoCeM issuers to pay attention to.")
 
 (defvar gnus-nocem-directory 
   (concat (file-name-as-directory gnus-article-save-directory) "NoCeM/")
   "*Directory where NoCeM files will be stored.")
 
-(defvar gnus-nocem-expiry-wait 30
+(defvar gnus-nocem-expiry-wait 15
   "*Number of days to keep NoCeM headers in the cache.")
 
 ;;; Internal variables
@@ -46,6 +53,7 @@
 (defvar gnus-nocem-active nil)
 (defvar gnus-nocem-alist nil)
 (defvar gnus-nocem-touched-alist nil)
+(defvar gnus-nocem-hashtb nil)
 
 ;;; Functions
 
@@ -72,9 +80,8 @@
 	   (error nil)))
     ;; Go through all groups and see whether new articles have
     ;; arrived.  
-    (while groups
-      (setq group (pop groups))
-      (if (not (gnus-activate-group group))
+    (while (setq group (pop groups))
+      (if (not (setq gactive (gnus-activate-group group)))
 	  () ; This group doesn't exist.
 	(setq active (nth 1 (assoc group gnus-nocem-active)))
 	(when (and (not (< (cdr gactive) (car gactive))) ; Empty group.
@@ -91,38 +98,44 @@
 			  (gnus-retrieve-headers 
 			   (setq articles
 				 (gnus-uncompress-range
-				  (cons (1+ (cdr active)) (cdr gactive))))
+				  (cons 
+				   (if active (1+ (cdr active)) (car gactive))
+				   (cdr gactive))))
 			   group))
 		      (gnus-get-newsgroup-headers-xover articles)
 		    (gnus-get-newsgroup-headers)))
 	    (while headers
 	      ;; We take a closer look on all articles that have
 	      ;; "@@NCM" in the subject.  
-	      (and (string-match "@@NCM" (mail-header-subject (car headers)))
-		   (gnus-nocem-check-article
-		    (mail-header-number (car headers)) group))
+	      (when (string-match "@@NCM" (mail-header-subject (car headers)))
+		(gnus-nocem-check-article
+		 (mail-header-number (car headers)) group))
 	      (setq headers (cdr headers)))))))
     ;; Save the results, if any.
     (gnus-nocem-save-cache)))
 
 (defun gnus-nocem-check-article (number group)
-  "Check whether the current article is a NCM article and that we want it."
-  (save-excursion
-    (set-buffer nntp-server-buffer)
+  "Check whether the current article is an NCM article and that we want it."
+  (nnheader-temp-write nil
     ;; Get the article.
     (gnus-request-article-this-buffer number group)
-    (goto-char (point-min))
-    (let (issuer b)
+    (nnheader-narrow-to-headers)
+    (let ((date (mail-fetch-field "date"))
+	  issuer b)
+      (widen)
       ;; The article has to have proper NoCeM headers.
       (when (and (setq b (search-forward "\n@@BEGIN NCM HEADERS\n" nil t))
-		 (search-forward "\n@@BEGIN NCM BODY\n" nil t))
+		 (search-forward "\n@@BEGIN NCM BODY\n" nil t)
+		 (or (not date)
+		     (nnmail-time-less 
+		      (nnmail-time-since (nnmail-date-to-time date))
+		      (nnmail-days-to-time gnus-nocem-expiry-wait))))
 	;; We get the name of the issuer.
 	(narrow-to-region b (match-beginning 0))
 	(setq issuer (mail-fetch-field "issuer"))
 	(and (member issuer gnus-nocem-issuers) ; We like her...
 	     (gnus-nocem-verify-issuer issuer) ; She is who she says she is...
-	     (gnus-nocem-enter-article)))) ; We gobble the message.
-    (widen)))
+	     (gnus-nocem-enter-article)))))) ; We gobble the message.
 
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
@@ -152,12 +165,13 @@
 	    (forward-line 1))))
       (when ncm
 	(setq gnus-nocem-touched-alist t)
-	(push (push (current-time-string) ncm) gnus-nocem-alist)))))
+	(push (cons (let ((time (current-time))) (setcdr (cdr time) nil) time)
+		    ncm) 
+	      gnus-nocem-alist)))))
 
 (defun gnus-nocem-load-cache ()
   "Load the NoCeM cache."
-  (if gnus-nocem-alist
-      () ; Do nothing.
+  (unless gnus-nocem-alist
     ;; The buffer doesn't exist, so we create it and load the NoCeM
     ;; cache.  
     (when (file-exists-p (gnus-nocem-cache-file))
@@ -168,31 +182,30 @@
   "Save the NoCeM cache."
   (when (and gnus-nocem-alist
 	     gnus-nocem-touched-alist)
-    (save-excursion
-      (nnheader-set-temp-buffer " *NoCeM*")
+    (nnheader-temp-write (gnus-nocem-cache-file)
       (insert (prin1-to-string
-	       (list 'setq 'gnus-nocem-alist gnus-nocem-alist)))
-      (write-region (point-min) (point-max) 
-		    (gnus-nocem-cache-file) nil 'silent)
-      (kill-buffer (current-buffer))
-      (setq gnus-nocem-touched-alist nil))))
+	       (list 'setq 'gnus-nocem-alist gnus-nocem-alist))))
+    (setq gnus-nocem-touched-alist nil)))
 
 (defun gnus-nocem-alist-to-hashtb ()
   "Create a hashtable from the Message-IDs we have."
-  (let ((alist gnus-nocem-alist)
-	(date (current-time-string))
-	entry)
-    (setq gnus-nocem-hashtb (* (length alist) 51))
-    (while alist
-      (setq entry (pop alist))
-      (if (> (gnus-days-between date (car entry)) gnus-nocem-expiry-wait)
+  (let* ((alist gnus-nocem-alist)
+	 (pprev (cons nil alist))
+	 (prev pprev)
+	 (expiry (nnmail-days-to-time gnus-nocem-expiry-wait))
+	 entry)
+    (setq gnus-nocem-hashtb (gnus-make-hashtable (* (length alist) 51)))
+    (while (setq entry (car alist))
+      (if (not (nnmail-time-less (nnmail-time-since (car entry)) expiry))
 	  ;; This entry has expired, so we remove it.
-	  (setq gnus-nocem-alist (delq entry gnus-nocem-alist))
+	  (setcdr prev (cdr alist))
+	(setq prev alist)
 	;; This is ok, so we enter it into the hashtable.
 	(setq entry (cdr entry))
 	(while entry
 	  (gnus-sethash (car entry) t gnus-nocem-hashtb)
-	  (setq entry (cdr entry)))))))
+	  (setq entry (cdr entry))))
+      (setq alist (cdr alist)))))
 
 (defun gnus-nocem-close ()
   "Clear internal NoCeM variables."
@@ -200,5 +213,11 @@
 	gnus-nocem-hashtb nil
 	gnus-nocem-active nil
 	gnus-nocem-touched-alist nil))
+
+(defun gnus-nocem-unwanted-article-p (id)
+  "Say whether article ID in the current group is wanted."
+  (gnus-gethash id gnus-nocem-hashtb))
+
+(provide 'gnus-nocem)
 
 ;;; gnus-nocem.el ends here

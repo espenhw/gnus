@@ -219,8 +219,7 @@ of the last successful match.")
 (defvar gnus-score-index nil)
 
 (eval-and-compile
-  (autoload 'gnus-uu-ctl-map "gnus-uu" nil nil 'keymap)
-  (autoload 'appt-select-lowest-window "appt.el"))
+  (autoload 'gnus-uu-ctl-map "gnus-uu" nil nil 'keymap))
 
 ;;; Summary mode score maps.
 
@@ -398,6 +397,9 @@ used as score."
 	(setq match (substring match (match-end 0))))
       (when (string-match "^[^:]* +" match)
 	(setq match (substring match (match-end 0))))))
+    
+    (when (memq type '(r R regexp Regexp))
+      (setq match (regexp-quote match)))
 
     (gnus-summary-score-entry
      (nth 1 entry)			; Header
@@ -444,7 +446,7 @@ used as score."
 	(setq alist (cdr alist))
 	(setq i (1+ i))))
     ;; display ourselves in a small window at the bottom
-    (appt-select-lowest-window)
+    (gnus-appt-select-lowest-window)
     (split-window)
     (pop-to-buffer "*Score Help*")
     (shrink-window-if-larger-than-buffer)
@@ -580,8 +582,12 @@ SCORE is the score to add."
     (goto-char (point-min))
     (let ((regexp (cond ((eq type 'f)
 			 (gnus-simplify-subject-fuzzy match))
-			(type match)
-			(t (concat "\\`.*" (regexp-quote match) ".*\\'")))))
+			((eq type 'r) 
+			 match)
+			((eq type 'e)
+			 (concat "\\`" (regexp-quote match) "\\'"))
+			(t 
+			 (regexp-quote match)))))
       (while (not (eobp))
 	(let ((content (gnus-summary-header header 'noerr))
 	      (case-fold-search t))

@@ -1151,11 +1151,11 @@ The following commands are available:
 	    (setq button (car buttons)
 		  buttons (cdr buttons))
 	    (if (stringp button)
-		(set-text-properties
+		(gnus-set-text-properties
 		 (point)
 		 (prog2 (insert button) (point) (insert " "))
 		 (list 'face gnus-carpal-header-face))
-	      (set-text-properties
+	      (gnus-set-text-properties
 	       (point)
 	       (prog2 (insert (car button)) (point) (insert " "))
 	       (list 'gnus-callback (cdr button)
@@ -1363,48 +1363,6 @@ specified by `gnus-button-alist'."
 	       (car (push (set-marker (make-marker) from)
 			  gnus-button-marker-list))))))))))
 
-(defun gnus-article-add-buttons-old (&optional force)
-  "Find external references in the article and make buttons of them.
-\"External references\" are things like Message-IDs and URLs, as
-specified by `gnus-button-alist'."
-  (interactive (list 'force))
-  (unless (eq gnus-button-last gnus-button-alist)
-    (setq gnus-button-regexp (mapconcat 'car gnus-button-alist  "\\|")
-	  gnus-button-last gnus-button-alist))
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    ;; Remove all old markers.
-    (while gnus-button-marker-list
-      (set-marker (pop gnus-button-marker-list) nil))
-    ;; We parse citations first to be able to match attributions.
-    (gnus-cite-parse-maybe force)
-    (let ((buffer-read-only nil)
-	  (inhibit-point-motion-hooks t)
-	  (case-fold-search t))
-      (goto-char (point-min))
-      ;; We skip the headers.
-      (unless (search-forward "\n\n" nil t)
-	(goto-char (point-max)))
-      ;; Then we search forward using that big regexp we have.
-      (while (re-search-forward gnus-button-regexp nil t)
-	(goto-char (match-beginning 0))
-	(let* ((from (point))
-	       (current (match-end 0))
-	       (entry (gnus-button-entry)) ; Find sub-regexp.
-	       (start (and entry (match-beginning (nth 1 entry))))
-	       (end (and entry (match-end (nth 1 entry))))
-	       (form (nth 2 entry)))
-	  ;; We now have a valid entry.
-	  (when entry
-	    (goto-char current)
-	    (when (eval form)
-	      ;; That optional form returned non-nil, so we add the
-	      ;; button. 
-	      (gnus-article-add-button 
-	       start end 'gnus-button-push 
-	       (car (push (set-marker (make-marker) from)
-			  gnus-button-marker-list))))))))))
-
 ;; Add buttons to the head of an article.
 (defun gnus-article-add-buttons-to-head ()
   "Add buttons to the head of the article."
@@ -1444,8 +1402,6 @@ specified by `gnus-button-alist'."
 				      (match-end (nth 4 entry)))))))
 	  (goto-char end))))
     (widen)))
-
-
 
 ;;; External functions:
 
@@ -1502,7 +1458,8 @@ specified by `gnus-button-alist'."
 			   (let ((string (buffer-substring
 					  (match-beginning group)
 					  (match-end group))))
-			     (set-text-properties 0 (length string) nil string)
+			     (gnus-set-text-properties
+			      0 (length string) nil string)
 			     string))
 			 (nthcdr 4 entry))))
       (cond ((fboundp fun)

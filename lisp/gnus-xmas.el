@@ -88,7 +88,7 @@ automatically.")
 (defun gnus-xmas-set-text-properties (start end props &optional buffer)
   "You should NEVER use this function.  It is ideologically blasphemous.
 It is provided only to ease porting of broken FSF Emacs programs."
-  (if (and (stringp buffer) (not (setq buffer (get-buffer buffer))))
+  (if (stringp buffer) 
       nil
     (map-extents (lambda (extent ignored)
 		   (remove-text-properties 
@@ -304,7 +304,7 @@ call it with the value of the `gnus-data' text property."
       
   (require 'text-props)
   (if (< emacs-minor-version 14)
-      (fset 'set-text-properties 'gnus-xmas-set-text-properties))
+      (fset 'gnus-set-text-properties 'gnus-xmas-set-text-properties))
 
   (fset 'nnheader-find-file-noselect 'gnus-xmas-find-file-noselect)
 
@@ -342,11 +342,12 @@ variables get.  You would normally not change this variable, but
 pounce directly on the real variables themselves.")
 
 
-  (or (fboundp 'x-color-values)
-      (fset 'x-color-values 
-	    (lambda (color)
-	      (color-instance-rgb-components
-	       (make-color-instance color)))))
+  (fset 'gnus-x-color-values 
+	(if (fboundp 'x-color-values)
+	    'x-color-values
+	  (lambda (color)
+	    (color-instance-rgb-components
+	     (make-color-instance color)))))
     
   (defvar gnus-background-mode 
     (let ((bg-resource 
@@ -356,9 +357,9 @@ pounce directly on the real variables themselves.")
 	  (params (frame-parameters)))
       (cond (bg-resource (intern (downcase bg-resource)))
 	    ((and (assq 'background-color params)
-		  (< (apply '+ (x-color-values
+		  (< (apply '+ (gnus-x-color-values
 				(cdr (assq 'background-color params))))
-		     (/ (apply '+ (x-color-values "white")) 3)))
+		     (/ (apply '+ (gnus-x-color-values "white")) 3)))
 	     'dark)
 	    (t 'light)))
     "A symbol indicating the Emacs background brightness.
@@ -391,14 +392,11 @@ pounce directly on the real variables themselves.")
   (fset 'gnus-article-push-button 'gnus-xmas-article-push-button)
   (fset 'gnus-article-add-button 'gnus-xmas-article-add-button)
   (fset 'gnus-window-top-edge 'gnus-xmas-window-top-edge)
-  (fset 'set-text-properties 'gnus-xmas-set-text-properties)
   (fset 'gnus-read-event-char 'gnus-xmas-read-event-char)
   (fset 'gnus-group-startup-message 'gnus-xmas-group-startup-message)
   (fset 'gnus-tree-minimize 'gnus-xmas-tree-minimize)
-
-  (or (fboundp 'appt-select-lowest-window)
-      (fset 'appt-select-lowest-window 
-	    'gnus-xmas-appt-select-lowest-window))
+  (fset 'gnus-appt-select-lowest-window 
+	'gnus-xmas-appt-select-lowest-window)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
@@ -581,6 +579,7 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 
 ;; Written by Erik Naggum <erik@naggum.no>.
 ;; Saved by Steve Baur <steve@miranova.com>.
+(or (fboundp 'insert-file-contents-literally)
 (defun insert-file-contents-literally (filename &optional visit beg end replace)
   "Like `insert-file-contents', q.v., but only reads in the file.
 A buffer may be modified in several ways after reading into the buffer due
@@ -600,7 +599,7 @@ find-file-hooks, etc.
           (insert-file-contents filename visit beg end replace))
       (if find-buffer-file-type-function
           (fset 'find-buffer-file-type find-buffer-file-type-function)
-        (fmakunbound 'find-buffer-file-type)))))
+        (fmakunbound 'find-buffer-file-type))))))
 
 (defun gnus-xmas-find-file-noselect (filename &optional nowarn rawfile)
   "Read file FILENAME into a buffer and return the buffer.

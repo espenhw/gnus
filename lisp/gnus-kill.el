@@ -43,12 +43,12 @@
 
 
 (defmacro gnus-raise (field expression level)
-  (` (gnus-kill (, field) (, expression)
-		(function (gnus-summary-raise-score (, level))) t)))
+  `(gnus-kill ,field ,expression
+	      (function (gnus-summary-raise-score ,level)) t))
 
 (defmacro gnus-lower (field expression level)
-  (` (gnus-kill (, field) (, expression)
-		(function (gnus-summary-raise-score (- (, level)))) t)))
+  `(gnus-kill ,field ,expression
+	      (function (gnus-summary-raise-score (- ,level))) t))
 
 ;;;
 ;;; Gnus Kill File Mode
@@ -56,23 +56,16 @@
 
 (defvar gnus-kill-file-mode-map nil)
 
-(if gnus-kill-file-mode-map
-    nil
-  (setq gnus-kill-file-mode-map (copy-keymap emacs-lisp-mode-map))
-  (define-key gnus-kill-file-mode-map 
-    "\C-c\C-k\C-s" 'gnus-kill-file-kill-by-subject)
-  (define-key gnus-kill-file-mode-map
-    "\C-c\C-k\C-a" 'gnus-kill-file-kill-by-author)
-  (define-key gnus-kill-file-mode-map
-    "\C-c\C-k\C-t" 'gnus-kill-file-kill-by-thread)
-  (define-key gnus-kill-file-mode-map 
-    "\C-c\C-k\C-x" 'gnus-kill-file-kill-by-xref)
-  (define-key gnus-kill-file-mode-map
-    "\C-c\C-a" 'gnus-kill-file-apply-buffer)
-  (define-key gnus-kill-file-mode-map
-    "\C-c\C-e" 'gnus-kill-file-apply-last-sexp)
-  (define-key gnus-kill-file-mode-map 
-    "\C-c\C-c" 'gnus-kill-file-exit))
+(unless gnus-kill-file-mode-map
+  (gnus-define-keymap
+   (setq gnus-kill-file-mode-map (copy-keymap emacs-lisp-mode-map))
+   "\C-c\C-k\C-s" gnus-kill-file-kill-by-subject
+   "\C-c\C-k\C-a" gnus-kill-file-kill-by-author
+   "\C-c\C-k\C-t" gnus-kill-file-kill-by-thread
+   "\C-c\C-k\C-x" gnus-kill-file-kill-by-xref
+   "\C-c\C-a" gnus-kill-file-apply-buffer
+   "\C-c\C-e" gnus-kill-file-apply-last-sexp
+   "\C-c\C-c" gnus-kill-file-exit))
 
 (defun gnus-kill-file-mode ()
   "Major mode for editing kill files.
@@ -215,7 +208,7 @@ If NEWSGROUP is nil, the global kill file is selected."
  
 (defun gnus-kill-file-kill-by-thread ()
   "Kill by author."
-  (interactive "p")
+  (interactive)
   (gnus-kill-file-enter-kill
    "References" 
    (if (vectorp gnus-current-headers)
@@ -625,17 +618,20 @@ marked as read or ticked are ignored."
        (t
 	(error "Unknown header field: \"%s\"" field)))
       ;; Starting from the current article.
-      (while (or (and (not article)
-		      (setq article (gnus-summary-article-number))
-		      t)
-		 (setq article 
-		       (gnus-summary-search-forward 
-			(not ignore-marked) nil backward)))
+      (while (or
+	      ;; First article.
+	      (and (not article)
+		   (setq article (gnus-summary-article-number)))
+	      ;; Find later articles.
+	      (setq article 
+		    (gnus-summary-search-forward 
+		     (not ignore-marked) nil backward)))
 	(and (or (null gnus-newsgroup-kill-headers)
 		 (memq article gnus-newsgroup-kill-headers))
 	     (vectorp (setq header (gnus-summary-article-header article)))
 	     (gnus-execute-1 function regexp form header)
 	     (setq killed-no (1+ killed-no))))
+      ;; Return the number of killed articles.
       killed-no)))
 
 (provide 'gnus-kill)

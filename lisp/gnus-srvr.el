@@ -43,16 +43,16 @@ with some simple extensions.")
 
 (defvar gnus-inserted-opened-servers nil)
 
-(defconst gnus-server-line-format-alist
-  (` ((?h how ?s)
-      (?n name ?s)
-      (?w where ?s)
-      (?s status ?s)))) 
+(defvar gnus-server-line-format-alist
+  `((?h how ?s)
+    (?n name ?s)
+    (?w where ?s)
+    (?s status ?s)))
 
-(defconst gnus-server-mode-line-format-alist 
-  (` ((?S news-server ?s)
-      (?M news-method ?s)
-      (?u user-defined ?s))))
+(defvar gnus-server-mode-line-format-alist 
+  `((?S news-server ?s)
+    (?M news-method ?s)
+    (?u user-defined ?s)))
 
 (defvar gnus-server-line-format-spec nil)
 (defvar gnus-server-mode-line-format-spec nil)
@@ -122,8 +122,8 @@ with some simple extensions.")
 
 All normal editing commands are switched off.
 \\<gnus-server-mode-map>
-
-For more in-depth information on this mode, read the manual (`\\[gnus-info-find-node]'). 
+For more in-depth information on this mode, read the manual 
+(`\\[gnus-info-find-node]'). 
 
 The following commands are available:
 
@@ -152,7 +152,7 @@ The following commands are available:
 			"(denied)")
 		       ((or (gnus-server-opened method)
 			    (eq (nth 1 elem) 'ok))
-			"(open)")
+			"(opened)")
 		       (t
 			"(closed)"))))
     (beginning-of-line)
@@ -199,7 +199,7 @@ The following commands are available:
     ;; Then we insert the list of servers that have been opened in
     ;; this session.
     (while opened 
-      (unless (member (car (car opened)) done)
+      (unless (member (caar opened) done)
 	(gnus-server-insert-server-line 
 	 (setq op-ser (format "%s:%s" (car (car (car opened))) 
 			      (nth 1 (car (car opened)))))
@@ -220,18 +220,17 @@ The following commands are available:
 (defun gnus-server-update-server (server)
   (save-excursion
     (set-buffer gnus-server-buffer)
-    (let ((buffer-read-only nil)
-	  (info (cdr (assoc server gnus-server-alist))))
-      (gnus-dribble-enter 
-       (concat "(gnus-server-set-info \"" server "\" '"
-	       (prin1-to-string info) ")"))
-      ;; Buffer may be narrowed.
-      (save-restriction
-	(widen)
-	(if (gnus-server-goto-server server)
-	    (delete-region (progn (beginning-of-line) (point))
-			   (progn (forward-line 1) (point))))
-	(let ((entry (assoc server gnus-server-alist)))
+    (let* ((buffer-read-only nil)
+	   (entry (assoc server gnus-server-alist)))
+      (when entry
+	(gnus-dribble-enter 
+	 (concat "(gnus-server-set-info \"" server "\" '"
+		 (prin1-to-string (cdr entry)) ")"))
+	;; Buffer may be narrowed.
+	(save-restriction
+	  (widen)
+	  (when (gnus-server-goto-server server)
+	    (gnus-delete-line))
 	  (gnus-server-insert-server-line (car entry) (cdr entry))
 	  (gnus-server-position-point))))))
 
@@ -252,13 +251,14 @@ The following commands are available:
 (defun gnus-server-kill-server (server)
   "Kill the server on the current line."
   (interactive (list (gnus-server-server-name)))
-  (or (gnus-server-goto-server server)
-      (if server (error "No such server: %s" server)
-	(error "No server on the current line")))
+  (unless (gnus-server-goto-server server)
+    (if server (error "No such server: %s" server)
+      (error "No server on the current line")))
+  (unless (assoc server gnus-server-alist)
+    (error "Read-only server %s" server))
   (gnus-dribble-enter "")
   (let ((buffer-read-only nil))
-    (delete-region (progn (beginning-of-line) (point))
-		   (progn (forward-line 1) (point))))
+    (gnus-delete-line))
   (setq gnus-server-killed-servers 
 	(cons (assoc server gnus-server-alist) gnus-server-killed-servers))
   (setq gnus-server-alist (delq (car gnus-server-killed-servers)
@@ -398,7 +398,9 @@ The following commands are available:
     (error "No server on current line"))
   (unless (assoc server gnus-server-alist)
     (error "This server can't be edited"))
-  (let ((winconf (current-window-configuration)))
+  (let ((winconf (current-window-configuration))
+	(info (cdr (assoc server gnus-server-alist))))
+    (gnus-close-server info)
     (get-buffer-create gnus-server-edit-buffer)
     (gnus-configure-windows 'edit-server)
     (gnus-add-current-to-buffer-list)
@@ -414,7 +416,7 @@ The following commands are available:
       (local-set-key "\C-c\C-c" done-func))
     (erase-buffer)
     (insert ";; Type `C-c C-c' after you have edited the server.\n\n")
-    (insert (pp-to-string (cdr (assoc server gnus-server-alist))))))
+    (insert (pp-to-string info))))
 
 (defun gnus-server-edit-server-done (server)
   (interactive)
@@ -426,7 +428,7 @@ The following commands are available:
     (kill-buffer (current-buffer))
     (and winconf (set-window-configuration winconf))
     (set-buffer gnus-server-buffer)
-    (gnus-server-update-server (gnus-server-server-name))
+    (gnus-server-update-server server)
     (gnus-server-list-servers)
     (gnus-server-position-point)))
 
@@ -681,5 +683,6 @@ buffer.
   (gnus-message 6
 		(substitute-command-keys "\\<gnus-browse-mode-map>\\[gnus-group-next-group]:Forward  \\[gnus-group-prev-group]:Backward  \\[gnus-browse-exit]:Exit  \\[gnus-info-find-node]:Run Info  \\[gnus-browse-describe-briefly]:This help")))
 
+(provide 'gnus-srvr)
 
 ;;; gnus-srvr.el ends here.

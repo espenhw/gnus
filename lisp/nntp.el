@@ -244,6 +244,7 @@ instead call function `nntp-status-message' to get status message.")
       (let ((number (length articles))
 	    (count 0)
 	    (received 0)
+	    (message-log-max nil)
 	    (last-point (point-min)))
 	;; Send HEAD command.
 	(while articles
@@ -396,8 +397,8 @@ servers."
 		 (process-sentinel nntp-server-process))
 	     (set-process-sentinel nntp-server-process nil))
 	;; We cannot send QUIT command unless the process is running.
-	(if (nntp-server-opened)
-	    (nntp-send-command nil "QUIT")))
+	(when (nntp-server-opened)
+	  (nntp-send-command nil "QUIT")))
     (nntp-close-server-internal server)))
 
 (defalias 'nntp-request-quit (symbol-function 'nntp-close-server))
@@ -620,6 +621,7 @@ servers."
   "Post the current buffer."
   (nntp-possibly-change-server nil server)
   (when (nntp-send-command "^[23].*\r?\n" "POST")
+    (nnheader-insert "")
     (nntp-encode-text)
     (nntp-send-region-to-server (point-min) (point-max))
     ;; 1.2a NNTP's post command is buggy. "^M" (\r) is not
@@ -809,12 +811,12 @@ It will prompt for a password."
 	  (if (looking-at regexp)
 	      (setq wait nil)
 	    (when nntp-debug-read
-	      (let ((newnum (/ (buffer-size) dotsize)))
-		(if (not (= dotnum newnum))
-		    (progn
-		      (setq dotnum newnum)
-		      (message "NNTP: Reading %s"
-			       (make-string dotnum ?.))))))
+	      (let ((newnum (/ (buffer-size) dotsize))
+		    (message-log-max nil))
+		(unless (= dotnum newnum)
+		  (setq dotnum newnum)
+		  (message "NNTP: Reading %s"
+			   (make-string dotnum ?.)))))
 	    (nntp-accept-response)))
 	;; Remove "...".
 	(when (and nntp-debug-read (> dotnum 0))
@@ -1082,11 +1084,23 @@ If SERVICE, this this as the port number."
 		nntp-async-number nil))
       status)))
 
+(defvar nntp-default-directories '("~" "/tmp" "/")
+  "Directories to as current directory in the nntp server buffer.")
+
 (defun nntp-open-server-internal (server &optional service)
   "Open connection to news server on SERVER by SERVICE (default is nntp)."
   (let (proc)
     (save-excursion
       (set-buffer nntp-server-buffer)
+      ;; Make sure we have a valid current directory for the
+      ;; nntp server buffer.
+      (unless (file-exists-p default-directory)
+	(let ((dirs nntp-default-directories))
+	  (while dirs
+	    (when (file-exists-p (car dirs))
+	      (setq default-directory (car dirs)
+		    dirs nil))
+	    (setq dirs (cdr dirs)))))
       (cond
        ((and (setq proc
 		   (condition-case nil
@@ -1099,10 +1113,14 @@ If SERVICE, this this as the port number."
 	(process-kill-without-query proc)
 	(run-hooks 'nntp-server-hook)
 	(push proc nntp-opened-connections)
-	(nntp-read-server-type)
+	(condition-case ()
+	    (nntp-read-server-type)
+	  (error 
+	   (nnheader-report 'nntp "Couldn't open server %s" server)
+	   (nntp-close-server)))
 	nntp-server-process)
        (t
-	(nnheader-report 'nntp (format "Couldn't open server %s" server)))))))
+	(nnheader-report 'nntp "Couldn't open server %s" server))))))
 
 (defun nntp-read-server-type ()
   "Find out what the name of the server we have connected to is."

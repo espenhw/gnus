@@ -5,7 +5,7 @@
 ;; Author: Denis Howe <dbh@doc.ic.ac.uk>
 ;; Maintainer: Denis Howe <dbh@doc.ic.ac.uk>
 ;; Created: 03 Apr 1995
-;; Version: 0.22 13 Sep 1995
+;; Version: 0.26 13 Jan 1996
 ;; Keywords: hypertext
 ;; X-Home page: http://wombat.doc.ic.ac.uk/
 
@@ -45,13 +45,14 @@
 ;; browse-url-cci        XMosaic     2.5
 ;; browse-url-w3         w3          0
 ;; browse-url-iximosaic  IXI Mosaic  ?
+;; browse-url-lynx-*	 Lynx	     0
 
 ;; Note that versions of Netscape before 1.1b1 did not have remote
-;; control.  <URL:http://home.netscape.com/newsref/std/x-remote.html>
-;; and <URL:http://home.netscape.com/info/APIs/>.
+;; control.  <URL:http://www.netscape.com/newsref/std/x-remote.html>
+;; and <URL:http://www.netscape.com/info/APIs/>.
 
 ;; Netscape can cache Web pages so it may be necessary to tell it to
-;; reload the current page if it has changed (eg. if you have edited
+;; reload the current page if it has changed (e.g. if you have edited
 ;; it).  There is currently no perfect automatic solution to this.
 
 ;; Netscape allows you to specify the id of the window you want to
@@ -65,7 +66,6 @@
 ;; XMosaic version 2.5 introduced Common Client Interface allowing you
 ;; to control mosaic through Unix sockets.
 ;; <URL:http://www.ncsa.uiuc.edu/SDG/Software/XMosaic/CCI/cci-spec.html>
-
 
 ;; William M. Perry's excellent "w3" WWW browser for
 ;; Emacs <URL:ftp://cs.indiana.edu/pub/elisp/w3/>
@@ -130,21 +130,21 @@
 ;; To see what variables are available for customization, type `M-x
 ;; set-variable browse-url TAB'.
 
-;; To bind the browse-url commands to keys with the `C-c u' prefix:
-;;	(global-set-key "\C-cu." 'browse-url-at-point)
-;;	(global-set-key "\C-cub" 'browse-url-of-buffer)
-;;	(global-set-key "\C-cuf" 'browse-url-of-file)
+;; To bind the browse-url commands to keys with the `C-c C-z' prefix
+;; (as used by html-helper-mode):
+;;	(global-set-key "\C-c\C-z." 'browse-url-at-point)
+;;	(global-set-key "\C-c\C-zb" 'browse-url-of-buffer)
+;;	(global-set-key "\C-c\C-zv" 'browse-url-of-file)
 ;;	(add-hook 'dired-mode-hook
 ;;		  (function (lambda ()
-;;			      (local-set-key "\C-cuf" 'browse-url-of-dired-file))))
+;;			      (local-set-key "\C-c\C-zf" 'browse-url-of-dired-file))))
 ;;	(if (boundp 'browse-url-browser-function)
-;;	    (global-set-key "\C-cuu" browse-url-browser-function)
-;;	  (eval-after-load
-;;	   "browse-url"
-;;	   '(global-set-key "\C-cuu" browse-url-browser-function)))
+;;	    (global-set-key "\C-c\C-zu" browse-url-browser-function)
+;;	  (eval-after-load "browse-url"
+;;	   '(global-set-key "\C-c\C-zu" browse-url-browser-function)))
 
 ;; To use the Emacs w3 browser when not running under X11:
-;;	(if (not (eq window-system 'x))
+;;	(or (eq window-system 'x)
 ;;	    (setq browse-url-browser-function 'browse-url-w3))
 
 ;; To always save modified buffers before displaying the file in a browser:
@@ -152,7 +152,7 @@
 
 ;; To get round the Netscape caching problem, you could try either of
 ;; the following (but not both).  EITHER write-file in
-;; html-helper-mode makes Netscape reload document:
+;; html-helper-mode makes Netscape reload the document:
 ;;
 ;;	(autoload 'browse-url-netscape-reload "browse-url"
 ;;	  "Ask a WWW browser to redisplay the current file." t)
@@ -168,7 +168,7 @@
 ;;
 ;; [Does this work for html-mode too?]
 ;;
-;; OR browse-url-of-file ask Netscape to load and then reload the
+;; OR browse-url-of-file asks Netscape to load and then reload the
 ;; file:
 ;;
 ;;	(add-hook 'browse-url-of-file-hook 'browse-url-netscape-reload)
@@ -193,7 +193,7 @@
 ;;	Use start-process instead of start-process-shell-command.
 
 ;; 0.03 06 Apr 1995
-;;	Add browse-url-netscape-reload, browse-url-netscape-command.
+;;	Add browse-url-netscape-reload, browse-url-netscape-send.
 ;;	browse-url-of-file save file option.
 
 ;; 0.04 08 Apr 1995
@@ -269,6 +269,22 @@
 ;;	Fixed new-window documentation and added to browse-url-cci.
 ;;	Thanks Dilip Sequeira <djs@dcs.ed.ac.uk>.
 
+;; 0.23 10 Nov 1995
+;;	Added b-u-lynx.  Thanks Steven L. Baur <steve@miranova.com>.
+
+;; 0.24 22 Nov 1995
+;;	Renamed b-u-netscape command to b-u-netscape-send.
+;;	Added b-u-netscape-command variable.
+
+;; 0.25 03 Dec 1995
+;;	Added event-buffer and event-point for XEmacs compatibility.
+;;	Thanks Eric Engstrom <engstrom@src.honeywell.com>
+
+;; 0.26 13 Jan 1996
+;;	Changed b-u-lynx to b-u-lynx-xterm, added b-u-lynx-emacs to
+;;	run Lynx in an Emacs buffer under terminal-emulator.
+;;	Thanks Jari Aalto <jaalto@tre.tele.nokia.fi>
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Code:
 
@@ -281,6 +297,9 @@
   "*Function to display the current buffer in a WWW browser.
 Used by the `browse-url-at-point', `browse-url-at-mouse', and
 `browse-url-of-file' commands.")
+
+(defvar browse-url-netscape-command "netscape"
+  "*The name by which to invoke Netscape.")
 
 (defvar browse-url-netscape-arguments nil
   "*A list of strings to pass to Netscape as arguments.")
@@ -315,10 +334,10 @@ file rather than displaying a cached copy.")
 (defvar browse-url-usr1-signal
   (if (and (boundp 'emacs-major-version)
 	   (or (> emacs-major-version 19) (>= emacs-minor-version 29)))
-      'sigusr1
+      'SIGUSR1 ; Why did I think this was in lower case before?
     30)					; Check /usr/include/signal.h.
   "The argument to `signal-process' for sending SIGUSR1 to XMosaic.
-Emacs 19.29 accepts 'sigusr1, earlier versions require an integer
+Emacs 19.29 accepts 'SIGUSR1, earlier versions require an integer
 which is 30 on SunOS and 16 on HP-UX and Solaris.")
 
 (defvar browse-url-CCI-port 3003
@@ -364,6 +383,16 @@ The URL is loaded according to the value of `browse-url-browser-function'."
   (interactive)
   (funcall browse-url-browser-function (browse-url-url-at-point)))
 
+;; Define these if not already defined (XEmacs compatibility)
+
+(or (fboundp 'event-buffer)
+    (defmacro event-buffer (event)
+      (window-buffer (posn-window (event-start event)))))
+
+(or (fboundp 'event-point)
+    (defmacro event-point (event)
+      (posn-point (event-start event))))
+
 (defun browse-url-at-mouse (event)
   "Ask a WWW browser to load a URL clicked with the mouse.
 The URL is the one around or before the position of the mouse click
@@ -371,13 +400,12 @@ but point is not changed.  The URL is loaded according to the value of
 `browse-url-browser-function'."
   (interactive "e")
   (save-excursion
-    (let ((posn (event-start event)))
-      (set-buffer (window-buffer (posn-window posn)))
-      (goto-char (posn-point posn))
-      (let ((url (browse-url-url-at-point)))
-	(if (string-equal url "")
-	    (error "No URL found"))
-	(funcall browse-url-browser-function url)))))
+    (set-buffer (event-buffer event))
+    (goto-char (event-point event))
+    (let ((url (browse-url-url-at-point)))
+      (if (string-equal url "")
+	  (error "No URL found"))
+      (funcall browse-url-browser-function url))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Browse current buffer
@@ -507,17 +535,19 @@ used instead of browse-url-new-window-p."
 				    ")")))))
       (progn				; Netscape not running - start it
 	(message "Starting Netscape...")
-	(apply 'start-process "netscape" nil "netscape"
+	(apply 'start-process "netscape" nil
+	       browse-url-netscape-command
 	       (append browse-url-netscape-arguments (list url))))))
 
 (defun browse-url-netscape-reload ()
   "Ask Netscape to reload its current document."
   (interactive)
-  (browse-url-netscape-command "reload"))
+  (browse-url-netscape-send "reload"))
 
-(defun browse-url-netscape-command (command)
+(defun browse-url-netscape-send (command)
   "Send a remote control command to Netscape."
-  (apply 'start-process "netscape" nil "netscape"
+  (apply 'start-process "netscape" nil
+	 browse-url-netscape-command
 	 (append browse-url-netscape-arguments
 		 (list "-remote" command))))
 
@@ -546,11 +576,13 @@ Default to the URL around or before point."
 	  (signal-process pid browse-url-usr1-signal)
 	  ;; Or you could try:
 	  ;; (call-process "kill" nil 0 nil "-USR1" (int-to-string pid))
+	  (message "Signalling Mosaic...done")
 	  )
       ;; Mosaic not running - start it
       (message "Starting Mosaic...")
       (apply 'start-process "xmosaic" nil "xmosaic"
-	     (append browse-url-mosaic-arguments (list url))))))
+	     (append browse-url-mosaic-arguments (list url)))
+      (message "Starting Mosaic...done"))))
 
 
 (defun browse-url-cci (url &optional new-window)
@@ -595,6 +627,20 @@ Default to the URL around or before point."
   (interactive (browse-url-interactive-arg "W3 URL: "))
   (w3-fetch url))
 
+(defun browse-url-lynx-xterm (url)
+  "Ask the Lynx WWW browser to load URL.
+Default to the URL around or before point.  A new Lynx process is run
+in an Xterm window."
+  (interactive (browse-url-interactive-arg "Lynx URL: "))
+  (start-process (concat "lynx" url) nil "xterm" "-e" "lynx" url))
+
+(defun browse-url-lynx-emacs (url)
+  "Ask the Lynx WWW browser to load URL.
+Default to the URL around or before point.  A new Lynx process is run
+in an Emacs buffer using terminal-emulator."
+  (interactive (browse-url-interactive-arg "Lynx URL: "))
+  (let ((system-uses-terminfo t))	; Lynx uses terminfo
+    (terminal-emulator "*browse-url*" "lynx" (list url))))
 
 (provide 'browse-url)
 

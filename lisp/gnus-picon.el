@@ -1,7 +1,7 @@
 ;;; gnus-picons.el:  Icon hacks for displaying pretty icons in Gnus.
 ;; Copyright (C) 1996 Wes Hardaker
 
-;; Author:  Wes hardaker <hardaker@ece.ucdavis.edu>
+;; Author:  Wes Hardaker <hardaker@ece.ucdavis.edu>
 ;; Keywords:  gnus xpm annotation glyph faces
 
 ;;; Commentary:

@@ -1,3 +1,25 @@
+Mon Feb 19 00:17:01 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (NoCeM): New.
+
+Fri Feb 16 12:05:05 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Creating a Virtual Server): New.
+
+Tue Feb 13 09:37:03 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi: Added documentation on all missing variables, and
+	added index entries for all functions, variables and keystrokes.
+	Moved sections around some more.
+
+Mon Feb 12 11:56:13 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi: Rearranged and proof-read some.
+
+Sun Feb 11 13:56:33 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Mail and Post): Addition.
+
 Sun Feb 11 04:39:52 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
 
 	* gnus.texi (Censorship): New.

@@ -84,7 +84,7 @@
        ["Switch pick mode off" gnus-pick-mode gnus-pick-mode]))))
 
 (defun gnus-pick-mode (&optional arg)
-  "Minor mode for provind a pick-and-read interface in Gnus summary buffers."
+  "Minor mode for providing a pick-and-read interface in Gnus summary buffers."
   (interactive "P")
   (when (eq major-mode 'gnus-summary-mode)
     (make-local-variable 'gnus-pick-mode)
@@ -101,8 +101,8 @@
 	(gnus-pick-make-menu-bar))
       (unless (assq 'gnus-pick-mode minor-mode-alist)
 	(push '(gnus-pick-mode " Pick") minor-mode-alist))
-      (unless (assq 'gnus-topic-mode minor-mode-map-alist)
-	(push (cons 'gnus-topic-mode gnus-pick-mode-map)
+      (unless (assq 'gnus-pick-mode minor-mode-map-alist)
+	(push (cons 'gnus-pick-mode gnus-pick-mode-map)
 	      minor-mode-map-alist))
       (run-hooks 'gnus-pick-mode-hook))))
 
@@ -566,18 +566,22 @@ Two predefined functions are available:
 
 (defun gnus-possibly-generate-tree (article &optional force)
   "Generate the thread tree for ARTICLE if it isn't displayed already."
-  (save-excursion
-    (let ((top (save-excursion
-		 (set-buffer gnus-summary-buffer)
-		 (gnus-cut-thread
-		  (gnus-remove-thread 
-		   (mail-header-id (gnus-summary-article-header article)) t))))
-	  (gnus-tmp-limit gnus-newsgroup-limit)
-	  (gnus-tmp-sparse gnus-newsgroup-sparse))
-      (when (or force
-		(not (eq top gnus-tree-displayed-thread)))
-	(gnus-generate-tree top)
-	(setq gnus-tree-displayed-thread top)))))
+  (when (save-excursion
+	  (set-buffer gnus-summary-buffer)
+	  gnus-use-trees)
+    (save-excursion
+      (let ((top (save-excursion
+		   (set-buffer gnus-summary-buffer)
+		   (gnus-cut-thread
+		    (gnus-remove-thread 
+		     (mail-header-id 
+		      (gnus-summary-article-header article)) t))))
+	    (gnus-tmp-limit gnus-newsgroup-limit)
+	    (gnus-tmp-sparse gnus-newsgroup-sparse))
+	(when (or force
+		  (not (eq top gnus-tree-displayed-thread)))
+	  (gnus-generate-tree top)
+	  (setq gnus-tree-displayed-thread top))))))
 
 (defun gnus-tree-open (group)
   (gnus-get-tree-buffer))

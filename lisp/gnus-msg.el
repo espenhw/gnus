@@ -164,7 +164,8 @@ the group.")
 (defvar gnus-posting-style-alist
   '((organization . gnus-organization-file)
     (signature . gnus-signature-file)
-    (from . gnus-user-from-line)))
+    (from . gnus-user-from-line))
+  "*Mapping from style parameters to Gnus variables.")
 
 (defvar gnus-user-login-name nil
   "*The login name of the user.
@@ -215,7 +216,7 @@ be used instead.")
   "*If non-nil, put the signature before any included forwarded message.")
 
 (defvar gnus-forward-included-headers 
-  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-\\:^Message-ID:\\|^References:"
+  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-\\|^Message-ID:\\|^References:"
   "*Regexp matching headers to be included in forwarded messages.")
 
 (defvar gnus-required-headers
@@ -856,12 +857,11 @@ called."
 	    (let ((followups (gnus-tokenize-header
 			      (mail-fetch-field "Newsgroups")))
 		  (newsgroups (gnus-tokenize-header
-			       (car gnus-newsgroup-followup)))
-		  shared)
+			       (car gnus-newsgroup-followup))))
 	      (while (and followups
-			  (not (member followups newsgroups)))
+			  (member (car followups) newsgroups))
 		(setq followups (cdr followups)))
-	      (if followups
+	      (if (not followups)
 		  t
 		(gnus-y-or-n-p
 		 "Followup redirected from original newsgroups.  Really post? "
@@ -1056,8 +1056,30 @@ called."
 	      ;; Kill the article buffer.
 	      (kill-buffer (current-buffer))))))))
 
+(defun gnus-inews-remove-signature ()
+  "Remove the signature from the text between point and mark.
+The text will also be indented the normal way.
+This function can be used in `mail-citation-hook', for instance."
+  (save-excursion
+    (let ((start (point))
+	  mark)
+    (if (not (re-search-forward gnus-signature-separator (mark t) t))
+	;; No signature here, so we just indent the cited text.
+	(mail-indent-citation)
+      ;; Find the last non-empty line.
+      (forward-line -1)
+      (while (looking-at "[ \t]*$")
+	(forward-line -1))
+      (forward-line 1)
+      (setq mark (set-marker (make-marker) (point)))
+      (goto-char start)
+      (mail-indent-citation)
+      ;; Enable undoing the deletion.
+      (undo-boundary)
+      (delete-region mark (mark t))
+      (set-marker mark nil)))))
+
 
-;;; Lowlevel inews interface.
 
 ;; Dummy to avoid byte-compile warning.
 (defvar nnspool-rejected-article-hook)
@@ -1094,17 +1116,15 @@ called."
 	'illegal
       ;; We fudge a hook for nnspool.
       (setq nnspool-rejected-article-hook
-	    (`
-	     (list
-	      (lambda ()
+	    `((lambda ()
 		(condition-case ()
 		    (save-excursion
-		      (set-buffer (, (buffer-name)))
+		      (set-buffer ,(buffer-name))
 		      (gnus-associate-buffer-with-draft nil 'silent))
 		  (error 
 		   (ding)
 		   (gnus-message 
-		    1 "Couldn't enter rejected article into draft group")))))))
+		    1 "Couldn't enter rejected article into draft group"))))))
 				   
       ;; Looks ok, so we do the nasty.
       (save-excursion
@@ -1204,7 +1224,6 @@ called."
 	(replace-regexp "\n[ \t]+" " ") ;No line breaks (too confusing)
 	(goto-char (point-min))
 	(replace-regexp "[ \t\n]*,[ \t\n]*\\|[ \t]+" ","))))
-
 
 (defun gnus-inews-remove-headers ()
   (let ((case-fold-search t)
@@ -1611,7 +1630,6 @@ domain is undefined, the domain name is got from it."
      ;; ID is unique to this newsreader, other newsreaders might
      ;; otherwise generate the same ID via another algorithm.
      ".fsf")))
-
 
 (defun gnus-inews-date ()
   "Current time string."
@@ -2111,17 +2129,18 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	  ;; Let posting styles be configured.
 	  (gnus-configure-posting-styles)
 
-	  (news-setup nil subject nil 
-		      (or sendto 
-			  (and followup-to
-			       gnus-use-followup-to
-			       (or (not (eq gnus-use-followup-to 'ask))
-				   (gnus-y-or-n-p 
-				    (format
-				     "Use Followup-To %s? " followup-to)))
-			       followup-to)
-			  newsgroups group "")
-		      gnus-article-copy)
+	  (news-setup
+	   nil subject nil 
+	   (or sendto 
+	       (and followup-to
+		    gnus-use-followup-to
+		    (or (not (eq gnus-use-followup-to 'ask))
+			(equal followup-to newsgroups)
+			(gnus-y-or-n-p 
+			 (format "Use Followup-To %s? " followup-to)))
+		    followup-to)
+	       newsgroups group "")
+	   gnus-article-copy)
 
 	  (make-local-variable 'gnus-article-reply)
 	  (setq gnus-article-reply cur)
@@ -2357,6 +2376,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
       (insert-buffer-substring buffer)
       (goto-char (point-max))
       (insert gnus-forward-end-separator)
+      (set-text-properties (point-min) (point-max) nil)
       ;; Remove all unwanted headers.
       (goto-char (point-min))
       (forward-line 1)
@@ -2365,15 +2385,8 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 				      (1- (point))
 				    (point)))
 	(goto-char (point-min))
-	(delete-non-matching-lines gnus-forward-included-headers))
-      ;; Delete any invisible text.
-      (goto-char (point-min))
-      (let (beg)
-	(while (setq beg (next-single-property-change (point) 'invisible))
-	  (goto-char beg)
-	  (delete-region beg (or (next-single-property-change 
-				  (point) 'invisible)
-				 (point-max))))))))
+	(let ((case-fold-search t))
+	  (delete-non-matching-lines gnus-forward-included-headers))))))
 
 (defun gnus-mail-forward (&optional buffer)
   "Forward the current message to another user using mail."
@@ -2521,7 +2534,7 @@ The source file has to be in the Emacs load path."
 			       (not (or (eq sym nil)
 					(eq sym t)))))
 		      " '" " ")
-		  (prin1-to-string (symbol-value (car olist))) ")\n")
+		  (pp-to-string (symbol-value (car olist))) ")\n")
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))
     (insert "\n\n")
@@ -2531,10 +2544,7 @@ The source file has to be in the Emacs load path."
     (while (re-search-forward "[\000\200]" nil t)
       (replace-match "" t t))))
 
-
 ;;; Treatment of rejected articles.
-
-
 ;;; Bounced mail.
 
 (defun gnus-summary-resend-bounced-mail (fetch)
@@ -2614,7 +2624,7 @@ Headers will be generated before sending."
 (defun gnus-inews-modify-mail-mode-map ()
   (use-local-map (copy-keymap (current-local-map)))
   (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
-  (local-set-key "\C-c\C-p" 'gnus-put-message)
+  (local-set-key "\C-c\M-\C-p" 'gnus-put-message)
   (local-set-key "\C-c\C-k" 'gnus-kill-message-buffer)
   (local-set-key "\C-c\M-d" 'gnus-dissociate-buffer-from-draft)
   (local-set-key "\C-c\C-d" 'gnus-associate-buffer-with-draft))
@@ -2692,7 +2702,9 @@ Headers will be generated before sending."
 	     (setq method
 		   (cond ((and (null (gnus-get-info group))
 			       (eq (car gnus-message-archive-method)
-				   (car (gnus-group-method-name group))))
+				   (car 
+				    (gnus-server-to-method
+				     (gnus-group-method group)))))
 			  ;; If the group doesn't exist, we assume
 			  ;; it's an archive group...
 			  gnus-message-archive-method)
@@ -2803,9 +2815,9 @@ Headers will be generated before sending."
 
 (defun gnus-make-draft-group ()
   "Make the draft group or die trying."
-  (let* ((method (` (nndraft "private" 
-			     (nndraft-directory 
-			      (, gnus-draft-group-directory)))))
+  (let* ((method `(nndraft "private" 
+			   (nndraft-directory 
+			    ,gnus-draft-group-directory)))
 	 (group (gnus-draft-group)))
     (or (gnus-gethash group gnus-newsrc-hashtb)
 	(gnus-group-make-group (gnus-group-real-name group) method)

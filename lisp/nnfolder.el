@@ -96,18 +96,17 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defvar nnfolder-current-server nil)
 (defvar nnfolder-server-alist nil)
 (defvar nnfolder-server-variables 
-  (list 
-   (list 'nnfolder-directory nnfolder-directory)
-   (list 'nnfolder-active-file nnfolder-active-file)
-   (list 'nnfolder-newsgroups-file nnfolder-newsgroups-file)
-   (list 'nnfolder-get-new-mail nnfolder-get-new-mail)
-   (list 'nnfolder-inhibit-expiry nnfolder-inhibit-expiry) 
-   '(nnfolder-current-group nil)
-   '(nnfolder-current-buffer nil)
-   '(nnfolder-status-string "")
-   '(nnfolder-group-alist nil)
-   '(nnfolder-buffer-alist nil)
-   '(nnfolder-active-timestamp nil)))
+  `((nnfolder-directory ,nnfolder-directory)
+    (nnfolder-active-file ,nnfolder-active-file)
+    (nnfolder-newsgroups-file ,nnfolder-newsgroups-file)
+    (nnfolder-get-new-mail ,nnfolder-get-new-mail)
+    (nnfolder-inhibit-expiry ,nnfolder-inhibit-expiry) 
+    (nnfolder-current-group nil)
+    (nnfolder-current-buffer nil)
+    (nnfolder-status-string "")
+    (nnfolder-group-alist nil)
+    (nnfolder-buffer-alist nil)
+    (nnfolder-active-timestamp nil)))
 
 
 
@@ -151,24 +150,27 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	'headers))))
 
 (defun nnfolder-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nnfolder-current-server)
-      t
-    (if nnfolder-current-server
-	(setq nnfolder-server-alist 
-	      (cons (list nnfolder-current-server
-			  (nnheader-save-variables nnfolder-server-variables))
-		    nnfolder-server-alist)))
-    (let ((state (assoc server nnfolder-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nnfolder-server-alist (delq state nnfolder-server-alist)))
-	(nnheader-set-init-variables nnfolder-server-variables defs)))
-    (setq nnfolder-current-server server)))
+  (nnheader-change-server 'nnfolder server defs)
+  (when (not (file-exists-p nnfolder-directory))
+    (condition-case ()
+	(make-directory nnfolder-directory t)
+      (error t)))
+  (cond 
+   ((not (file-exists-p nnfolder-directory))
+    (nnfolder-close-server)
+    (nnheader-report 'nnfolder "Couldn't create directory: %s"
+		     nnfolder-directory))
+   ((not (file-directory-p (file-truename nnfolder-directory)))
+    (nnfolder-close-server)
+    (nnheader-report 'nnfolder "Not a directory: %s" nnfolder-directory))
+   (t
+    (nnheader-report 'nnfolder "Opened server %s using directory %s"
+		     server nnfolder-directory)
+    t)))
 
 (defun nnfolder-close-server (&optional server)
-  (setq nnfolder-current-server nil)
+  (setq nnfolder-current-server nil
+	nnfolder-group-alist nil)
   t)
 
 (defun nnfolder-server-opened (&optional server)
@@ -182,6 +184,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (nnfolder-close-group (car (car alist)) nil t)
       (setq alist (cdr alist))))
   (setq nnfolder-buffer-alist nil
+	nnfolder-current-server nil
 	nnfolder-group-alist nil))
 
 (defun nnfolder-status-message (&optional server)

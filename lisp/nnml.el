@@ -82,19 +82,18 @@ all. This may very well take some time.")
 (defvar nnml-current-server nil)
 (defvar nnml-server-alist nil)
 (defvar nnml-server-variables 
-  (list 
-   (list 'nnml-directory nnml-directory)
-   (list 'nnml-active-file nnml-active-file)
-   (list 'nnml-newsgroups-file nnml-newsgroups-file)
-   (list 'nnml-get-new-mail nnml-get-new-mail)
-   (list 'nnml-nov-is-evil nnml-nov-is-evil)
-   (list 'nnml-nov-file-name nnml-nov-file-name)
-   '(nnml-current-directory nil)
-   '(nnml-current-group nil)
-   '(nnml-status-string "")
-   '(nnml-nov-buffer-alist nil)
-   '(nnml-group-alist nil)
-   '(nnml-active-timestamp nil)))
+  `((nnml-directory ,nnml-directory)
+    (nnml-active-file ,nnml-active-file)
+    (nnml-newsgroups-file ,nnml-newsgroups-file)
+    (nnml-get-new-mail ,nnml-get-new-mail)
+    (nnml-nov-is-evil ,nnml-nov-is-evil)
+    (nnml-nov-file-name ,nnml-nov-file-name)
+    (nnml-current-directory nil)
+    (nnml-current-group nil)
+    (nnml-status-string "")
+    (nnml-nov-buffer-alist nil)
+    (nnml-group-alist nil)
+    (nnml-active-timestamp nil)))
 
 
 
@@ -151,24 +150,26 @@ all. This may very well take some time.")
 	  'headers)))))
 
 (defun nnml-open-server (server &optional defs)
-  (nnheader-init-server-buffer)
-  (if (equal server nnml-current-server)
-      t
-    (if nnml-current-server
-	(setq nnml-server-alist 
-	      (cons (list nnml-current-server
-			  (nnheader-save-variables nnml-server-variables))
-		    nnml-server-alist)))
-    (let ((state (assoc server nnml-server-alist)))
-      (if state 
-	  (progn
-	    (nnheader-restore-variables (nth 1 state))
-	    (setq nnml-server-alist (delq state nnml-server-alist)))
-	(nnheader-set-init-variables nnml-server-variables defs)))
-    (setq nnml-current-server server)))
+  (nnheader-change-server 'nnml server defs)
+  (when (not (file-exists-p nnml-directory))
+    (condition-case ()
+	(make-directory nnml-directory t)
+      (error t)))
+  (cond 
+   ((not (file-exists-p nnml-directory))
+    (nnml-close-server)
+    (nnheader-report 'nnml "Couldn't create directory: %s" nnml-directory))
+   ((not (file-directory-p (file-truename nnml-directory)))
+    (nnml-close-server)
+    (nnheader-report 'nnml "Not a directory: %s" nnml-directory))
+   (t
+    (nnheader-report 'nnml "Opened server %s using directory %s"
+		     server nnml-directory)
+    t)))
 
 (defun nnml-close-server (&optional server)
-  (setq nnml-current-server nil)
+  (setq nnml-current-server nil
+	nnml-group-alist nil)
   t)
 
 (defun nnml-server-opened (&optional server)
@@ -756,7 +757,7 @@ all. This may very well take some time.")
   (let* ((dir (file-name-as-directory dir))
 	 (nov (concat dir nnml-nov-file-name))
 	 (nov-buffer (get-buffer-create " *nov*"))
-	 nov-line chars)
+	 nov-line chars file)
     (save-excursion
       ;; Init the nov buffer.
       (set-buffer nov-buffer)
@@ -767,24 +768,26 @@ all. This may very well take some time.")
       (when (file-exists-p nov)
 	(funcall nnmail-delete-file-function nov))
       (while files
-	(erase-buffer)
-	(insert-file-contents (concat dir (int-to-string (car files))))
-	(narrow-to-region 
-	 (goto-char (point-min))
-	 (progn
-	   (search-forward "\n\n" nil t)
-	   (setq chars (- (point-max) (point)))
-	   (max 1 (1- (point)))))
-	(when (and (not (= 0 chars))	; none of them empty files...
-		   (not (= (point-min) (point-max))))
-	  (goto-char (point-min))
-	  (setq nov-line (nnml-make-nov-line chars))
-	  (save-excursion
-	    (set-buffer nov-buffer)
-	    (goto-char (point-max))
-	    (insert (int-to-string (car files)) nov-line)))
-	(widen)
-	(setq files (cdr files)))
+	(unless (file-directory-p 
+		 (setq file (concat dir (int-to-string (car files)))))
+	  (erase-buffer)
+	  (insert-file-contents file)
+	  (narrow-to-region 
+	   (goto-char (point-min))
+	   (progn
+	     (search-forward "\n\n" nil t)
+	     (setq chars (- (point-max) (point)))
+	     (max 1 (1- (point)))))
+	  (when (and (not (= 0 chars))	; none of them empty files...
+		     (not (= (point-min) (point-max))))
+	    (goto-char (point-min))
+	    (setq nov-line (nnml-make-nov-line chars))
+	    (save-excursion
+	      (set-buffer nov-buffer)
+	      (goto-char (point-max))
+	      (insert (int-to-string (car files)) nov-line)))
+	  (widen)
+	  (setq files (cdr files))))
       (save-excursion
 	(set-buffer nov-buffer)
 	(write-region 1 (point-max) (expand-file-name nov) nil

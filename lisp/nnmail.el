@@ -66,8 +66,8 @@ If nil, the first match found will be used.")
 
 ;; Added by gord@enci.ucalgary.ca (Gordon Matzigkeit).
 (defvar nnmail-keep-last-article nil
-  "*If non-nil, nnmail will never delete the last expired article in a
-directory.  You may need to set this variable if other programs are putting
+  "*If non-nil, nnmail will never delete the last expired article in a directory.  
+You may need to set this variable if other programs are putting
 new mail into folder numbers that Gnus has marked as expired.")
 
 (defvar nnmail-use-long-file-names nil
