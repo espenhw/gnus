@@ -1,3 +1,14 @@
+2001-07-05  Colin Walters  <walters@cis.ohio-state.edu>
+
+	* mm-decode.el (mm-inlined-types): Document relationship with
+	`mm-inline-media-tests'.
+	(mm-display-inline): Default to displaying as plain text if no
+	inlining handler is available.
+	(mm-inlinable-p): Remove.
+	(mm-inlined-p): Don't call `mm-inlinable-p'.
+	(mm-automatic-display-p): Ditto.
+	(mm-attachment-override-p): Ditto.
+
 2001-07-04  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-importantize-dormant): New variable.

@@ -190,7 +190,10 @@
     "message/partial" "message/external-body" "application/emacs-lisp"
     "application/pgp-signature" "application/x-pkcs7-signature"
     "application/pkcs7-signature")
-  "List of media types that are to be displayed inline."
+  "List of media types that are to be displayed inline.
+See also `mm-inline-media-tests', which says how to display a media
+type inline.  If no media test is defined, the default is to treat the
+type as plain text."
   :type '(repeat string)
   :group 'mime-display)
 
@@ -741,26 +744,13 @@ external if displayed external."
 (defun mm-display-inline (handle)
   (let* ((type (mm-handle-media-type handle))
 	 (function (cadr (mm-assoc-string-match mm-inline-media-tests type))))
-    (funcall function handle)
+    (funcall (or function #'mm-inline-text) handle)
     (goto-char (point-min))))
 
 (defun mm-assoc-string-match (alist type)
   (dolist (elem alist)
     (when (string-match (car elem) type)
       (return elem))))
-
-(defun mm-inlinable-p (handle)
-  "Say whether HANDLE can be displayed inline."
-  (let ((alist mm-inline-media-tests)
-	(type (mm-handle-media-type handle))
-	test)
-    (while alist
-      (when (string-match (caar alist) type)
-	(setq test (caddar alist)
-	      alist nil)
-	(setq test (funcall test handle)))
-      (pop alist))
-    test))
 
 (defun mm-automatic-display-p (handle)
   "Say whether the user wants HANDLE to be displayed automatically."
@@ -769,8 +759,7 @@ external if displayed external."
 	method result)
     (while (setq method (pop methods))
       (when (and (not (mm-inline-override-p handle))
-		 (string-match method type)
-		 (mm-inlinable-p handle))
+		 (string-match method type))
 	(setq result t
 	      methods nil)))
     result))
@@ -782,8 +771,7 @@ external if displayed external."
 	method result)
     (while (setq method (pop methods))
       (when (and (not (mm-inline-override-p handle))
-		 (string-match method type)
-		 (mm-inlinable-p handle))
+		 (string-match method type))
 	(setq result t
 	      methods nil)))
     result))
@@ -795,8 +783,7 @@ external if displayed external."
 	ty)
     (catch 'found
       (while (setq ty (pop types))
-	(when (and (string-match ty type)
-		   (mm-inlinable-p handle))
+	(when (string-match ty type)
 	  (throw 'found t))))))
 
 (defun mm-inline-override-p (handle)
