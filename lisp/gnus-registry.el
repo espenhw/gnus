@@ -458,7 +458,8 @@ Returns the first place where the trail finds a group name."
   (remove-hook 'gnus-summary-prepare-hook 'gnus-registry-register-message-ids))
 
 (when gnus-registry-install
-  (gnus-registry-install-hooks))
+  (gnus-registry-install-hooks)
+  (gnus-registry-read))
 
 ;; TODO: a lot of things
 
