@@ -32,6 +32,7 @@
 (require 'cl)
 
 (defvar srcdir (or (getenv "srcdir") "."))
+(defvar loaddir (and load-file-name (file-name-directory load-file-name)))
 
 (defun my-getenv (str)
   (let ((val (getenv str)))
@@ -40,10 +41,10 @@
 (if (my-getenv "lispdir")
     (push (my-getenv "lispdir") load-path))
 
-(push (or (my-getenv "URLDIR") (expand-file-name "../../url/lisp/" srcdir))
+(push (or (my-getenv "URLDIR") (expand-file-name "../../url/lisp/" loaddir))
       load-path)
 
-(push (or (my-getenv "W3DIR") (expand-file-name "../../w3/lisp/" srcdir))
+(push (or (my-getenv "W3DIR") (expand-file-name "../../w3/lisp/" loaddir))
       load-path)
 
 ;(push "/usr/share/emacs/site-lisp" load-path)
@@ -158,7 +159,8 @@ fixed in Emacs after 21.3."
 	 (set-syntax-table stab)))))
 
 (push srcdir load-path)
-(load (expand-file-name "lpath.el" srcdir) nil t)
+(push loaddir load-path)
+(load (expand-file-name "lpath.el" loaddir) nil t)
 
 (defalias 'device-sound-enabled-p 'ignore)
 (defalias 'play-sound-file 'ignore)
