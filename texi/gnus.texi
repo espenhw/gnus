@@ -12392,9 +12392,10 @@ string into the subject line, you have to resort to manually moving the
 messages into the right group.  With this function, you only have to do
 it once per thread.
 
-To use this feature, you have to set @code{nnmail-treat-duplicates} to a
-non-nil value.  And then you can include
-@code{nnmail-split-fancy-with-parent} using the colon feature, like so:
+To use this feature, you have to set @code{nnmail-treat-duplicates} and
+@code{nnmail-cache-accepted-message-ids} to a non-nil value.  And then
+you can include @code{nnmail-split-fancy-with-parent} using the colon
+feature, like so:
 @lisp
 (setq nnmail-split-fancy
       '(| (: nnmail-split-fancy-with-parent)

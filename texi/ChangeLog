@@ -2,6 +2,8 @@
 
 	* gnus.texi (Delayed Articles): New section.  Documents
 	gnus-delay.el.
+	(Fancy Mail Splitting): Say that nnmail-cache-accepted-message-ids
+	must be non-nil for splitting with parents to work.
 
 2001-08-19 17:31:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
