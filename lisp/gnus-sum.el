@@ -136,8 +136,9 @@ comparing subjects."
   "List of functions taking a string argument that simplify subjects.
 The functions are applied recursively.
 
-Useful functions to put in this list include: `gnus-simplify-subject-re',
-`gnus-simplify-subject-fuzzy' and `gnus-simplify-whitespace'."
+Useful functions to put in this list include:
+`gnus-simplify-subject-re', `gnus-simplify-subject-fuzzy',
+`gnus-simplify-whitespace', and `gnus-simplify-all-whitespace'."
   :group 'gnus-thread
   :type '(repeat function))
 
@@ -1360,6 +1361,13 @@ For example:
     ;; Trailing spaces.
     (when (string-match "[ \t]+$" mystr)
       (setq mystr (substring mystr 0 (match-beginning 0))))
+    mystr))
+
+(defun gnus-simplify-all-whitespace (str)
+  "Remove all whitespace from STR."
+  (let ((mystr str))
+    (while (string-match "[ \t\n]+" mystr)
+      (setq mystr (replace-match "" nil nil mystr)))
     mystr))
 
 (defsubst gnus-simplify-subject-re (subject)

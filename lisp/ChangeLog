@@ -1,3 +1,8 @@
+2002-05-16  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-simplify-all-whitespace): New function.
+	(gnus-simplify-subject-functions): Mention g-s-a-w.
+
 2002-05-15  Josh Huber  <huber@alum.wpi.edu>
 
 	* nnbabyl.el (nnbabyl-request-accept-article): Pass group to
@@ -25,7 +30,7 @@
 
 2002-05-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Florian Weimer <fw@deneb.enyo.de>.
-	
+
 	* gnus.el (subscribed): New group parameter.
 	(gnus-find-subscribed-addresses): Use it.
 
@@ -174,12 +179,12 @@
 	Trivial change from Karl Pfl,Ad(Bsterer <sigurd@12move.de>.
 
 2002-04-27  Katsumi Yamaoka <yamaoka@jpl.org>
-	
+
 	* dns.el (dns-make-network-process): New macro.
 	(query-dns): Use it.
 
 2002-04-27  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
 	* gnus-msg.el (gnus-summary-reply): Remove unbound variable
 	article-buffer.
 
@@ -205,7 +210,7 @@
 	problems.
 	(nnkiboze-generate-group): Set newsrc to the *highest* article
 	number kibozed, not the lowest.
-	
+
 2002-04-15  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (article-unsplit-urls): Allow trailing SPC.
@@ -221,7 +226,7 @@
 	headers for message which are missing these headers.  Get rid
 	of spurious \\ lines (purely cosmetic).  Extend body-end and
 	file-end regexps, to exclude more garbage from the message.
-	Make URL rephrasing regexp more flexible, to match current 
+	Make URL rephrasing regexp more flexible, to match current
 	format.
 
 2002-04-23  Simon Josefsson  <jas@extundo.com>
