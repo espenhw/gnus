@@ -25,6 +25,8 @@
 
 ;;; Commentary:
 
+;; For Outlook mail boxes format, see http://mbx2mbox.sourceforge.net/
+
 ;;; Code:
 
 (require 'nnheader)
@@ -41,7 +43,8 @@
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 `rfc934', `rfc822-forward', `mime-parts', `standard-digest',
-`slack-digest', `clari-briefs', `nsmail' or `guess'.")
+`slack-digest', `clari-briefs', `nsmail', `outlook', `oe-dbx' or
+`guess'.")
 
 (defvoo nndoc-post-type 'mail
   "*Whether the nndoc group is `mail' or `post'.")
@@ -128,6 +131,10 @@ from the document.")
     (outlook
      (article-begin-function . nndoc-outlook-article-begin)
      (body-end .  "\0"))
+    (oe-dbx  ;; Outlook Express DBX format
+     (dissection-function . nndoc-oe-dbx-dissection)
+     (generate-head-function . nndoc-oe-dbx-generate-head)
+     (generate-article-function . nndoc-oe-dbx-generate-article))
     (guess
      (guess . t)
      (subtype nil))
@@ -137,6 +144,9 @@ from the document.")
     (preprints
      (guess . t)
      (subtype nil))))
+
+(defvar nndoc-binary-file-names ".[Dd][Bb][Xx]$"
+  "Regexp for binary nndoc file names.")
 
 
 (defvoo nndoc-file-begin nil)
@@ -163,6 +173,8 @@ from the document.")
 (defvoo nndoc-generate-head-function nil)
 (defvoo nndoc-article-transform-function nil)
 (defvoo nndoc-article-begin-function nil)
+(defvoo nndoc-generate-article-function nil)
+(defvoo nndoc-dissection-function nil)
 
 (defvoo nndoc-status-string "")
 (defvoo nndoc-group-alist nil)
@@ -213,8 +225,11 @@ from the document.")
       (set-buffer buffer)
       (erase-buffer)
       (when entry
-	(if (stringp article)
-	    nil
+	(cond 
+	 ((stringp article) nil)
+	 (nndoc-generate-article-function
+	  (funcall nndoc-generate-article-function article))
+	 (t
 	  (insert-buffer-substring
 	   nndoc-current-buffer (car entry) (nth 1 entry))
 	  (insert "\n")
@@ -226,7 +241,7 @@ from the document.")
 	    (funcall nndoc-prepare-body-function))
 	  (when nndoc-article-transform-function
 	    (funcall nndoc-article-transform-function article))
-	  t)))))
+	  t))))))
 
 (deffoo nndoc-request-group (group &optional server dont-check)
   "Select news GROUP."
@@ -299,10 +314,14 @@ from the document.")
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(erase-buffer)
-	(if (stringp nndoc-address)
-	    (nnheader-insert-file-contents nndoc-address)
-	  (insert-buffer-substring nndoc-address))
-	(run-hooks 'nndoc-open-document-hook))))
+	(if (and (stringp nndoc-address)
+		 (string-match nndoc-binary-file-names nndoc-address))
+	    (let ((coding-system-for-read 'binary))
+	      (mm-insert-file-contents nndoc-address))
+	  (if (stringp nndoc-address)
+	      (nnheader-insert-file-contents nndoc-address)
+	    (insert-buffer-substring nndoc-address))
+	  (run-hooks 'nndoc-open-document-hook)))))
     ;; Initialize the nndoc structures according to this new document.
     (when (and nndoc-current-buffer
 	       (not nndoc-dissection-alist))
@@ -331,7 +350,9 @@ from the document.")
 		nndoc-body-begin nndoc-body-end-function nndoc-body-end
 		nndoc-prepare-body-function nndoc-article-transform-function
 		nndoc-generate-head-function nndoc-body-begin-function
-		nndoc-head-begin-function)))
+		nndoc-head-begin-function
+		nndoc-generate-article-function
+		nndoc-dissection-function)))
     (while vars
       (set (pop vars) nil)))
   (let (defs)
@@ -600,9 +621,74 @@ from the document.")
   ;; FIXME: Is JMF the magic of outlook mailbox? -- ShengHuo.
   (looking-at "JMF"))
 
+(defun nndoc-oe-dbx-type-p ()
+  (looking-at (mm-string-as-multibyte "\317\255\022\376")))
+
+(defun nndoc-read-little-endian ()
+  (+ (prog1 (char-after) (forward-char 1))
+     (lsh (prog1 (char-after) (forward-char 1)) 8)
+     (lsh (prog1 (char-after) (forward-char 1)) 16)
+     (lsh (prog1 (char-after) (forward-char 1)) 24)))
+
+(defun nndoc-oe-dbx-decode-block ()
+  (list
+   (nndoc-read-little-endian)   ;; this address
+   (nndoc-read-little-endian)   ;; next address offset
+   (nndoc-read-little-endian)   ;; blocksize
+   (nndoc-read-little-endian))) ;; next address
+
+(defun nndoc-oe-dbx-dissection ()
+  (let ((i 0) blk p tp)
+    (goto-char 60117) ;; 0x0000EAD4+1
+    (setq p (point))
+    (unless (eobp)
+      (setq blk (nndoc-oe-dbx-decode-block)))
+    (while (and blk (> (car blk) 0) (or (zerop (nth 3 blk))
+					(> (nth 3 blk) p)))
+      (push (list (incf i) p nil nil nil 0) nndoc-dissection-alist)
+      (while (and (> (car blk) 0) (> (nth 3 blk) p))
+	(goto-char (1+ (nth 3 blk)))
+	(setq blk (nndoc-oe-dbx-decode-block)))
+      (if (or (<= (car blk) p)
+	      (<= (nth 1 blk) 0)
+	      (not (zerop (nth 3 blk))))
+	  (setq blk nil)
+	(setq tp (+ (car blk) (nth 1 blk) 17))
+	(if (or (<= tp p) (>= tp (point-max)))
+	    (setq blk nil)
+	  (goto-char tp)
+	  (setq p tp
+		blk (nndoc-oe-dbx-decode-block)))))))
+
+(defun nndoc-oe-dbx-generate-article (article &optional head)
+  (let ((entry (cdr (assq article nndoc-dissection-alist)))
+	(cur (current-buffer))
+	(begin (point))
+	blk p)
+    (with-current-buffer nndoc-current-buffer
+      (setq p (car entry))
+      (while (> p (point-min))
+	(goto-char p)
+	(setq blk (nndoc-oe-dbx-decode-block))
+	(setq p (point))
+	(with-current-buffer cur
+	  (insert-buffer-substring nndoc-current-buffer p (+ p (nth 2 blk))))
+	(setq p (1+ (nth 3 blk)))))
+    (goto-char begin)
+    (while (re-search-forward "\r$" nil t)
+      (delete-backward-char 1))
+    (when head
+      (goto-char begin)
+      (when (search-forward "\n\n" nil t)
+	(setcar (cddddr entry) (count-lines (point) (point-max)))
+	(delete-region (1- (point)) (point-max))))
+    t))
+
+(defun nndoc-oe-dbx-generate-head (article)
+  (nndoc-oe-dbx-generate-article article 'head))
+
 (deffoo nndoc-request-accept-article (group &optional server last)
   nil)
-
 
 ;;;
 ;;; Functions for dissecting the documents
@@ -625,43 +711,45 @@ from the document.")
       ;; Remove blank lines.
       (while (eq (following-char) ?\n)
 	(delete-char 1))
-      ;; Find the beginning of the file.
-      (when nndoc-file-begin
-	(nndoc-search nndoc-file-begin))
-      ;; Go through the file.
-      (while (if (and first nndoc-first-article)
-		 (nndoc-search nndoc-first-article)
-	       (nndoc-article-begin))
-	(setq first nil)
-	(cond (nndoc-head-begin-function
-	       (funcall nndoc-head-begin-function))
-	      (nndoc-head-begin
-	       (nndoc-search nndoc-head-begin)))
- 	(if (or (eobp)
-		(and nndoc-file-end
-		     (looking-at nndoc-file-end)))
-	    (goto-char (point-max))
-	  (setq head-begin (point))
-	  (nndoc-search (or nndoc-head-end "^$"))
-	  (setq head-end (point))
-	  (if nndoc-body-begin-function
-	      (funcall nndoc-body-begin-function)
-	    (nndoc-search (or nndoc-body-begin "^\n")))
-	  (setq body-begin (point))
-	  (or (and nndoc-body-end-function
-		   (funcall nndoc-body-end-function))
-	      (and nndoc-body-end
-		   (nndoc-search nndoc-body-end))
-	      (nndoc-article-begin)
-	      (progn
-		(goto-char (point-max))
-		(when nndoc-file-end
-		  (and (re-search-backward nndoc-file-end nil t)
-		       (beginning-of-line)))))
-	  (setq body-end (point))
-	  (push (list (incf i) head-begin head-end body-begin body-end
-		      (count-lines body-begin body-end))
-		nndoc-dissection-alist))))))
+      (if nndoc-dissection-function
+	  (funcall nndoc-dissection-function)
+	;; Find the beginning of the file.
+	(when nndoc-file-begin
+	  (nndoc-search nndoc-file-begin))
+	;; Go through the file.
+	(while (if (and first nndoc-first-article)
+		   (nndoc-search nndoc-first-article)
+		 (nndoc-article-begin))
+	  (setq first nil)
+	  (cond (nndoc-head-begin-function
+		 (funcall nndoc-head-begin-function))
+		(nndoc-head-begin
+		 (nndoc-search nndoc-head-begin)))
+	  (if (or (eobp)
+		  (and nndoc-file-end
+		       (looking-at nndoc-file-end)))
+	      (goto-char (point-max))
+	    (setq head-begin (point))
+	    (nndoc-search (or nndoc-head-end "^$"))
+	    (setq head-end (point))
+	    (if nndoc-body-begin-function
+		(funcall nndoc-body-begin-function)
+	      (nndoc-search (or nndoc-body-begin "^\n")))
+	    (setq body-begin (point))
+	    (or (and nndoc-body-end-function
+		     (funcall nndoc-body-end-function))
+		(and nndoc-body-end
+		     (nndoc-search nndoc-body-end))
+		(nndoc-article-begin)
+		(progn
+		  (goto-char (point-max))
+		  (when nndoc-file-end
+		    (and (re-search-backward nndoc-file-end nil t)
+			 (beginning-of-line)))))
+	    (setq body-end (point))
+	    (push (list (incf i) head-begin head-end body-begin body-end
+			(count-lines body-begin body-end))
+		  nndoc-dissection-alist)))))))
 
 (defun nndoc-article-begin ()
   (if nndoc-article-begin-function

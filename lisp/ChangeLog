@@ -1,3 +1,13 @@
+2001-08-10 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nndoc.el (nndoc-article-type): Fix doc.
+	(nndoc-generate-article-function): New.
+	(nndoc-dissection-function): New.
+	(nndoc-type-alist): Add oe-dbx.
+	(nndoc-oe-dbx-type-p): New.
+	(nndoc-oe-dbx-dissection): New.
+	(nndoc-oe-dbx-generate-article): New.
+
 2001-08-11  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-delay.el (gnus-delay-send-drafts): Cleaner way to check
