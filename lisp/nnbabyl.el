@@ -88,7 +88,8 @@
 	(beginning-of-line)
 	(when (or (search-forward art-string nil t)
 		  (search-backward art-string nil t))
-	  (re-search-backward delim nil t)
+	  (unless (re-search-backward delim nil t)
+	    (goto-char (point-min)))
 	  (while (and (not (looking-at ".+:"))
 		      (zerop (forward-line 1))))
 	  (setq start (point))
@@ -540,12 +541,12 @@
   (nnmail-activate 'nnbabyl)
   (nnbabyl-create-mbox)
 
-  (if (and nnbabyl-mbox-buffer
+  (unless (and nnbabyl-mbox-buffer
 	   (buffer-name nnbabyl-mbox-buffer)
 	   (save-excursion
 	     (set-buffer nnbabyl-mbox-buffer)
 	     (= (buffer-size) (nnheader-file-size nnbabyl-mbox-file))))
-      ()				; This buffer hasn't changed since we read it last.  Possibly.
+    ;; This buffer has changed since we read it last.  Possibly.
     (save-excursion
       (let ((delim (concat "^" nnbabyl-mail-delimiter))
 	    (alist nnbabyl-group-alist)
@@ -582,8 +583,10 @@
 	;; We go through the mbox and make sure that each and 
 	;; every mail belongs to some group or other.
 	(goto-char (point-min))
-	(re-search-forward delim nil t)
-	(setq start (match-end 0))
+	(if (looking-at "\^L")
+	    (setq start (point))
+	  (re-search-forward delim nil t)
+	  (setq start (match-end 0)))
 	(while (re-search-forward delim nil t)
 	  (setq end (match-end 0))
 	  (unless (search-backward "\nX-Gnus-Newsgroup: " start t)

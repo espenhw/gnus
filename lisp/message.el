@@ -934,35 +934,34 @@ Return the number of headers removed."
 
   (define-key message-mode-map "\t" 'message-tab))
 
-(easy-menu-define message-mode-menu message-mode-map
-  "Message Menu."
-  '("Message"
-    "Go to Field:"
-    "----"
-    ["To" message-goto-to t]
-    ["Subject" message-goto-subject t]
-    ["Cc" message-goto-cc t]
-    ["Reply-To" message-goto-reply-to t]
-    ["Summary" message-goto-summary t]
-    ["Keywords" message-goto-keywords t]
-    ["Newsgroups" message-goto-newsgroups t]
-    ["Followup-To" message-goto-followup-to t]
-    ["Distribution" message-goto-distribution t]
-    ["Body" message-goto-body t]
-    ["Signature" message-goto-signature t]
-    "----"
-    "Miscellaneous Commands:"
-    "----"
-    ["Sort Headers" message-sort-headers t]
-    ["Yank Original" message-yank-original t]
-    ["Fill Yanked Message" message-fill-yanked-message t]
-    ["Insert Signature" message-insert-signature t]
-    ["Caesar (rot13) Message" message-caesar-buffer-body t]
-    ["Rename buffer" message-rename-buffer t]
-    ["Spellcheck" ispell-message t]
-    "----"
-    ["Send Message" message-send-and-exit t]
-    ["Abort Message" message-dont-send t]))
+(easy-menu-define 
+ message-mode-menu message-mode-map "Message Menu."
+ '("Message"
+   ["Sort Headers" message-sort-headers t]
+   ["Yank Original" message-yank-original t]
+   ["Fill Yanked Message" message-fill-yanked-message t]
+   ["Insert Signature" message-insert-signature t]
+   ["Caesar (rot13) Message" message-caesar-buffer-body t]
+   ["Rename buffer" message-rename-buffer t]
+   ["Spellcheck" ispell-message t]
+   "----"
+   ["Send Message" message-send-and-exit t]
+   ["Abort Message" message-dont-send t]))
+
+(easy-menu-define 
+ message-mode-field-menu message-mode-map ""
+ '("Field"
+   ["To" message-goto-to t]
+   ["Subject" message-goto-subject t]
+   ["Cc" message-goto-cc t]
+   ["Reply-To" message-goto-reply-to t]
+   ["Summary" message-goto-summary t]
+   ["Keywords" message-goto-keywords t]
+   ["Newsgroups" message-goto-newsgroups t]
+   ["Followup-To" message-goto-followup-to t]
+   ["Distribution" message-goto-distribution t]
+   ["Body" message-goto-body t]
+   ["Signature" message-goto-signature t]))
 
 (defvar facemenu-add-face-function)
 (defvar facemenu-remove-face-function)

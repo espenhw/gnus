@@ -212,11 +212,11 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 (defun gnus-soup-store (directory prefix headers format index)
   ;; Create the directory, if needed. 
   (gnus-make-directory directory)
-  (let* ((msg-buf (find-file-noselect
+  (let* ((msg-buf (nnheader-find-file-noselect
 		   (concat directory prefix ".MSG")))
 	 (idx-buf (if (= index ?n)
 		      nil
-		    (find-file-noselect
+		    (nnheader-find-file-noselect
 		     (concat directory prefix ".IDX"))))
 	 (article-buf (current-buffer))
 	 from head-line beg type)
@@ -365,7 +365,7 @@ The vector contain five strings,
 though the two last may be nil if they are missing."
   (let (areas)
     (save-excursion
-      (set-buffer (find-file-noselect file 'force))
+      (set-buffer (nnheader-find-file-noselect file 'force))
       (buffer-disable-undo (current-buffer))
       (goto-char (point-min))
       (while (not (eobp))
@@ -388,7 +388,7 @@ The result is a of vectors, each containing one entry from the REPLIES
 file.  The vector contain three strings, [prefix name encoding]."
   (let (replies)
     (save-excursion
-      (set-buffer (find-file-noselect file))
+      (set-buffer (nnheader-find-file-noselect file))
       (buffer-disable-undo (current-buffer))
       (goto-char (point-min))
       (while (not (eobp))
@@ -503,7 +503,7 @@ Return whether the unpacking was successful."
 				 (gnus-soup-reply-prefix (car replies))
 				 ".MSG"))
 	       (msg-buf (and (file-exists-p msg-file)
-			     (find-file-noselect msg-file)))
+			     (nnheader-find-file-noselect msg-file)))
 	       (tmp-buf (get-buffer-create " *soup send*"))
 	       beg end)
 	  (cond 

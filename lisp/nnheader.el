@@ -397,12 +397,12 @@ the line could be found."
   (when (file-exists-p file)
     (if (eq nnheader-max-head-length t)
 	;; Just read the entire file.
-	(nnheader-insert-file-contents-literally file)
+	(nnheader-insert-file-contents file)
       ;; Read 1K blocks until we find a separator.
       (let ((beg 0)
 	    format-alist)
 	(while (and (eq nnheader-head-chop-length
-			(nth 1 (nnheader-insert-file-contents-literally
+			(nth 1 (nnheader-insert-file-contents
 				file nil beg
 				(incf beg nnheader-head-chop-length))))
 		    (prog1 (not (search-forward "\n\n" nil t))
@@ -483,12 +483,9 @@ If FILE is t, return the buffer contents as a string."
        (let* ((,temp-file ,file)
 	      (default-major-mode 'fundamental-mode)
 	      (,temp-buffer
-	       (progn
-		 (set-buffer
-		  (get-buffer-create
-		   (generate-new-buffer-name " *nnheader temp*")))
-		 (buffer-disable-undo (current-buffer))
-		 (current-buffer)))
+	       (set-buffer
+		(get-buffer-create
+		 (generate-new-buffer-name " *nnheader temp*"))))
 	      ,temp-results)
 	 (unwind-protect
 	     (progn
@@ -628,7 +625,7 @@ without formatting."
 	     (file-regular-p file))
     (save-excursion
       (nnheader-set-temp-buffer " *mail-file-mbox-p*")
-      (nnheader-insert-file-contents-literally file)
+      (nnheader-insert-file-contents file)
       (goto-char (point-min))
       (prog1
 	  (looking-at message-unix-mail-delimiter)
@@ -736,7 +733,7 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
       (when (string-match (car ange-ftp-path-format) path)
 	(ange-ftp-re-read-dir path)))))
 
-(defun nnheader-insert-file-contents-literally (filename &optional visit beg end replace)
+(defun nnheader-insert-file-contents (filename &optional visit beg end replace)
   "Like `insert-file-contents', q.v., but only reads in the file.
 A buffer may be modified in several ways after reading into the buffer due
 to advanced Emacs features, such as file-name-handlers, format decoding,
@@ -744,12 +741,14 @@ find-file-hooks, etc.
   This function ensures that none of these modifications will take place."
   (let ((format-alist nil)
 	(auto-mode-alist (nnheader-auto-mode-alist))
+	(default-major-mode 'fundamental-mode)
         (after-insert-file-functions nil))
     (insert-file-contents filename visit beg end replace)))
 
 (defun nnheader-find-file-noselect (&rest args)
   (let ((format-alist nil)
 	(auto-mode-alist (nnheader-auto-mode-alist))
+	(default-major-mode 'fundamental-mode)
         (after-insert-file-functions nil))
     (apply 'find-file-noselect args)))
 

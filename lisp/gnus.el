@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.66"
+(defconst gnus-version-number "0.67"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -2012,11 +2012,14 @@ As opposed to `gnus', this command will not connect to the local server."
 (defun gnus-other-frame (&optional arg)
   "Pop up a frame to read news."
   (interactive "P")
-  (if (gnus-alive-p)
-      (let ((pop-up-frames t))
-	(gnus arg))
-    (select-frame (make-frame))
-    (gnus arg)))
+  (let ((window (get-buffer-window gnus-group-buffer)))
+    (cond (window
+	   (select-frame (window-frame window)))
+	  ((= (length (frame-list)) 1)
+	   (select-frame (make-frame)))
+	  (t
+	   (other-frame 1))))
+  (gnus arg))
 
 ;;;###autoload
 (defun gnus (&optional arg dont-connect slave)

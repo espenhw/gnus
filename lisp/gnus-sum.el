@@ -1265,6 +1265,7 @@ increase the score of each group you read."
     "?" gnus-summary-mark-as-dormant
     "\C-c\M-\C-s" gnus-summary-limit-include-expunged
     "\C-c\C-s\C-n" gnus-summary-sort-by-number
+    "\C-c\C-s\C-l" gnus-summary-sort-by-lines
     "\C-c\C-s\C-a" gnus-summary-sort-by-author
     "\C-c\C-s\C-s" gnus-summary-sort-by-subject
     "\C-c\C-s\C-d" gnus-summary-sort-by-date
@@ -1515,7 +1516,8 @@ increase the score of each group you read."
       "Score"
       (nconc
        (list
-	["Enter score..." gnus-summary-score-entry t])
+	["Enter score..." gnus-summary-score-entry t]
+	["Customize" gnus-score-customize t])
        (gnus-make-score-map 'increase)
        (gnus-make-score-map 'lower)
        '(("Mark"
@@ -1781,56 +1783,55 @@ increase the score of each group you read."
     (easy-menu-define
      gnus-summary-misc-menu gnus-summary-mode-map ""
      '("Misc"
-       ("Mark"
-	("Read"
-	 ["Mark as read" gnus-summary-mark-as-read-forward t]
-	 ["Mark same subject and select"
-	  gnus-summary-kill-same-subject-and-select t]
-	 ["Mark same subject" gnus-summary-kill-same-subject t]
-	 ["Catchup" gnus-summary-catchup t]
-	 ["Catchup all" gnus-summary-catchup-all t]
-	 ["Catchup to here" gnus-summary-catchup-to-here t]
-	 ["Catchup region" gnus-summary-mark-region-as-read t]
-	 ["Mark excluded" gnus-summary-limit-mark-excluded-as-read t])
-	("Various"
-	 ["Tick" gnus-summary-tick-article-forward t]
-	 ["Mark as dormant" gnus-summary-mark-as-dormant t]
-	 ["Remove marks" gnus-summary-clear-mark-forward t]
-	 ["Set expirable mark" gnus-summary-mark-as-expirable t]
-	 ["Set bookmark" gnus-summary-set-bookmark t]
-	 ["Remove bookmark" gnus-summary-remove-bookmark t])
-	("Limit"
-	 ["Marks..." gnus-summary-limit-to-marks t]
-	 ["Subject..." gnus-summary-limit-to-subject t]
-	 ["Author..." gnus-summary-limit-to-author t]
-	 ["Score" gnus-summary-limit-to-score t]
-	 ["Unread" gnus-summary-limit-to-unread t]
-	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
-	 ["Articles" gnus-summary-limit-to-articles t]
-	 ["Pop limit" gnus-summary-pop-limit t]
-	 ["Show dormant" gnus-summary-limit-include-dormant t]
-	 ["Hide childless dormant" 
-	  gnus-summary-limit-exclude-childless-dormant t]
-	 ;;["Hide thread" gnus-summary-limit-exclude-thread t]
-	 ["Show expunged" gnus-summary-show-all-expunged t])
-	("Process mark"
-	 ["Set mark" gnus-summary-mark-as-processable t]
-	 ["Remove mark" gnus-summary-unmark-as-processable t]
-	 ["Remove all marks" gnus-summary-unmark-all-processable t]
-	 ["Mark above" gnus-uu-mark-over t]
-	 ["Mark series" gnus-uu-mark-series t]
-	 ["Mark region" gnus-uu-mark-region t]
-	 ["Mark by regexp..." gnus-uu-mark-by-regexp t]
-	 ["Mark all" gnus-uu-mark-all t]
-	 ["Mark buffer" gnus-uu-mark-buffer t]
-	 ["Mark sparse" gnus-uu-mark-sparse t]
-	 ["Mark thread" gnus-uu-mark-thread t]
-	 ["Unmark thread" gnus-uu-unmark-thread t]
-	 ("Process Mark Sets"
-	  ["Kill" gnus-summary-kill-process-mark t]
-	  ["Yank" gnus-summary-yank-process-mark
-	   gnus-newsgroup-process-stack]
-	  ["Save" gnus-summary-save-process-mark t])))
+       ("Mark Read"
+	["Mark as read" gnus-summary-mark-as-read-forward t]
+	["Mark same subject and select"
+	 gnus-summary-kill-same-subject-and-select t]
+	["Mark same subject" gnus-summary-kill-same-subject t]
+	["Catchup" gnus-summary-catchup t]
+	["Catchup all" gnus-summary-catchup-all t]
+	["Catchup to here" gnus-summary-catchup-to-here t]
+	["Catchup region" gnus-summary-mark-region-as-read t]
+	["Mark excluded" gnus-summary-limit-mark-excluded-as-read t])
+       ("Mark Various"
+	["Tick" gnus-summary-tick-article-forward t]
+	["Mark as dormant" gnus-summary-mark-as-dormant t]
+	["Remove marks" gnus-summary-clear-mark-forward t]
+	["Set expirable mark" gnus-summary-mark-as-expirable t]
+	["Set bookmark" gnus-summary-set-bookmark t]
+	["Remove bookmark" gnus-summary-remove-bookmark t])
+       ("Mark Limit"
+	["Marks..." gnus-summary-limit-to-marks t]
+	["Subject..." gnus-summary-limit-to-subject t]
+	["Author..." gnus-summary-limit-to-author t]
+	["Score" gnus-summary-limit-to-score t]
+	["Unread" gnus-summary-limit-to-unread t]
+	["Non-dormant" gnus-summary-limit-exclude-dormant t]
+	["Articles" gnus-summary-limit-to-articles t]
+	["Pop limit" gnus-summary-pop-limit t]
+	["Show dormant" gnus-summary-limit-include-dormant t]
+	["Hide childless dormant" 
+	 gnus-summary-limit-exclude-childless-dormant t]
+	;;["Hide thread" gnus-summary-limit-exclude-thread t]
+	["Show expunged" gnus-summary-show-all-expunged t])
+       ("Process Mark"
+	["Set mark" gnus-summary-mark-as-processable t]
+	["Remove mark" gnus-summary-unmark-as-processable t]
+	["Remove all marks" gnus-summary-unmark-all-processable t]
+	["Mark above" gnus-uu-mark-over t]
+	["Mark series" gnus-uu-mark-series t]
+	["Mark region" gnus-uu-mark-region t]
+	["Mark by regexp..." gnus-uu-mark-by-regexp t]
+	["Mark all" gnus-uu-mark-all t]
+	["Mark buffer" gnus-uu-mark-buffer t]
+	["Mark sparse" gnus-uu-mark-sparse t]
+	["Mark thread" gnus-uu-mark-thread t]
+	["Unmark thread" gnus-uu-unmark-thread t]
+	("Process Mark Sets"
+	 ["Kill" gnus-summary-kill-process-mark t]
+	 ["Yank" gnus-summary-yank-process-mark
+	  gnus-newsgroup-process-stack]
+	 ["Save" gnus-summary-save-process-mark t]))
        ("Scroll article"
 	["Page forward" gnus-summary-next-page t]
 	["Page backward" gnus-summary-prev-page t]
@@ -1855,7 +1856,8 @@ increase the score of each group you read."
 	["Sort by author" gnus-summary-sort-by-author t]
 	["Sort by subject" gnus-summary-sort-by-subject t]
 	["Sort by date" gnus-summary-sort-by-date t]
-	["Sort by score" gnus-summary-sort-by-score t])
+	["Sort by score" gnus-summary-sort-by-score t]
+	["Sort by lines" gnus-summary-sort-by-lines t])
        ("Help"
 	["Fetch group FAQ" gnus-summary-fetch-faq t]
 	["Describe group" gnus-summary-describe-group t]
@@ -3248,6 +3250,16 @@ If NO-DISPLAY, don't generate a summary buffer."
   (gnus-article-sort-by-number
    (gnus-thread-header h1) (gnus-thread-header h2)))
 
+(defsubst gnus-article-sort-by-lines (h1 h2)
+  "Sort articles by article Lines header."
+  (< (mail-header-lines h1)
+     (mail-header-lines h2)))
+
+(defun gnus-thread-sort-by-lines (h1 h2)
+  "Sort threads by root article Lines header."
+  (gnus-article-sort-by-lines
+   (gnus-thread-header h1) (gnus-thread-header h2)))
+
 (defsubst gnus-article-sort-by-author (h1 h2)
   "Sort articles by root author."
   (string-lessp
@@ -4047,9 +4059,9 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (setq articles (delq id articles))))))
     (gnus-undo-register
       `(progn
-	 (gnus-info-set-marks ',info ',(gnus-info-marks info))
+	 (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
 	 (gnus-info-set-read ',info ',(gnus-info-read info))
-	 (gnus-group-update-group group t)))
+	 (gnus-group-update-group ,group t)))
     ;; If the read list is nil, we init it.
     (and active
 	 (null (gnus-info-read info))
@@ -7898,36 +7910,42 @@ If the prefix argument is negative, tick articles instead."
 ;; Summary sorting commands
 
 (defun gnus-summary-sort-by-number (&optional reverse)
-  "Sort summary buffer by article number.
+  "Sort the summary buffer by article number.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'number reverse))
 
 (defun gnus-summary-sort-by-author (&optional reverse)
-  "Sort summary buffer by author name alphabetically.
+  "Sort the summary buffer by author name alphabetically.
 If case-fold-search is non-nil, case of letters is ignored.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'author reverse))
 
 (defun gnus-summary-sort-by-subject (&optional reverse)
-  "Sort summary buffer by subject alphabetically.  `Re:'s are ignored.
+  "Sort the summary buffer by subject alphabetically.  `Re:'s are ignored.
 If case-fold-search is non-nil, case of letters is ignored.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'subject reverse))
 
 (defun gnus-summary-sort-by-date (&optional reverse)
-  "Sort summary buffer by date.
+  "Sort the summary buffer by date.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'date reverse))
 
 (defun gnus-summary-sort-by-score (&optional reverse)
-  "Sort summary buffer by score.
+  "Sort the summary buffer by score.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'score reverse))
+
+(defun gnus-summary-sort-by-lines (&optional reverse)
+  "Sort the summary buffer by article length.
+Argument REVERSE means reverse order."
+  (interactive "P")
+  (gnus-summary-sort 'lines reverse))
 
 (defun gnus-summary-sort (predicate reverse)
   "Sort summary buffer by PREDICATE.  REVERSE means reverse order."
@@ -8423,7 +8441,7 @@ save those articles instead."
 	(push (cons prev (cdr active)) read))
       (gnus-undo-register
 	`(progn
-	   (gnus-info-set-marks ',info ',(gnus-info-marks info))
+	   (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
 	   (gnus-info-set-read ',info ',(gnus-info-read info))
 	   (gnus-get-unread-articles-in-group ',info (gnus-active ,group))))
       ;; Enter this list into the group info.

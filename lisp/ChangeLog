@@ -1,3 +1,40 @@
+Wed Nov 20 22:54:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-mode-field-menu): Separated.
+
+	* nnoo.el (nnoo-change-server): Preserve un-ooed variables as
+	well. 
+
+	* nnbabyl.el (nnbabyl-read-mbox): Understand movemailed babyl
+	files. 
+
+Wed Nov 20 19:25:40 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-art.el (gnus-article-make-menu-bar): Fix menu bar.
+
+Wed Nov 20 05:27:45 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-article-sort-by-lines,
+	gnus-thread-sort-by-lines): New functions.
+	(gnus-summary-sort-by-lines): New command and keystroke.
+
+	* gnus.el (gnus-other-frame): Be a bit more clever.
+
+	* gnus-group.el (gnus-group-get-new-news): Check for new
+	newsgroups. 
+
+	* nnheader.el (nnheader-insert-file-contents-literally): Bind
+	`default-major-mode' to nil.
+
+	* gnus-sum.el (gnus-group-make-articles-read): Yet another undo
+	bug. 
+
+	* nnmail.el (nnmail-article-group): Wrong `junk' check.
+
+Wed Nov 20 05:13:05 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.66 is released.
+
 Wed Nov 20 01:57:31 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnmail.el (nnmail-article-group): Would lose mail when using

@@ -347,6 +347,7 @@ Initialized from `text-mode-syntax-table.")
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 
 (defvar gnus-summary-article-menu)
+(defvar gnus-summary-post-menu)
 
 ;;; Saving functions.
 
@@ -677,8 +678,11 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]))
 
-    (define-key rmail-mode-map [menu-bar commands]
+    (define-key gnus-article-mode-map [menu-bar commands]
       (cons "Commands" gnus-summary-article-menu))
+
+    (define-key gnus-article-mode-map [menu-bar post]
+      (cons "Post" gnus-summary-post-menu))
 
     (run-hooks 'gnus-article-menu-hook)))
 

@@ -887,7 +887,7 @@ FUNC will be called with the buffer narrowed to each mail."
       (set-buffer (get-buffer-create " *nnmail incoming*"))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
-      (nnheader-insert-file-contents-literally incoming)
+      (nnheader-insert-file-contents incoming)
       (unless (zerop (buffer-size))
 	(goto-char (point-min))
 	(save-excursion (run-hooks 'nnmail-prepare-incoming-hook))
@@ -944,7 +944,7 @@ FUNC will be called with the group name to determine the article number."
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
 		      '("bogus")))))
-	      (unless (equal group-art '(junk))
+	      (unless (equal split '(junk))
 		;; `nnmail-split-methods' is a function, so we just call 
 		;; this function here and use the result.
 		(setq group-art
@@ -1294,7 +1294,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (get-buffer-create " *nnmail message-id cache*")))
       (buffer-disable-undo (current-buffer))
       (when (file-exists-p nnmail-message-id-cache-file)
-	(insert-file-contents nnmail-message-id-cache-file))
+	(nnheader-insert-file-contents nnmail-message-id-cache-file))
       (set-buffer-modified-p nil)
       (current-buffer))))
 

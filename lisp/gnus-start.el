@@ -256,7 +256,7 @@ for your decision; `gnus-subscribe-killed' kills all new groups;
 ;; Suggested by a bug report by Hallvard B Furuseth.
 ;; <h.b.furuseth@usit.uio.no>.
 (defcustom gnus-subscribe-options-newsgroup-method
-  (function gnus-subscribe-alphabetically)
+  'gnus-subscribe-alphabetically
   "*This function is called to subscribe newsgroups mentioned on \"options -n\" lines.
 If, for instance, you want to subscribe to all newsgroups in the
 \"no\" and \"alt\" hierarchies, you'd put the following in your
@@ -491,7 +491,7 @@ Can be used to turn version control on or off."
   "Subscribe new NEWSGROUP and insert it in hierarchical newsgroup order."
   ;; Basic ideas by mike-w@cs.aukuni.ac.nz (Mike Williams)
   (save-excursion
-    (set-buffer (find-file-noselect gnus-current-startup-file))
+    (set-buffer (nnheader-find-file-noselect gnus-current-startup-file))
     (let ((groupkey newgroup)
 	  before)
       (while (and (not before) groupkey)
@@ -737,8 +737,8 @@ prompt the user for the name of an NNTP server to use."
 	  ;; Load whichever file is newest -- the auto save file
 	  ;; or the "real" file.
 	  (if (file-newer-than-file-p auto dribble-file)
-	      (insert-file-contents auto)
-	    (insert-file-contents dribble-file))
+	      (nnheader-insert-file-contents auto)
+	    (nnheader-insert-file-contents dribble-file))
 	  (unless (zerop (buffer-size))
 	    (set-buffer-modified-p t))
 	  ;; Set the file modes to reflect the .newsrc file modes.
@@ -1758,7 +1758,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	;; already read (except for read articles).
 	(save-excursion
 	  (gnus-message 5 "Reading %s..." newsrc-file)
-	  (set-buffer (find-file-noselect newsrc-file))
+	  (set-buffer (nnheader-find-file-noselect newsrc-file))
 	  (buffer-disable-undo (current-buffer))
 	  (gnus-newsrc-to-gnus-format)
 	  (kill-buffer (current-buffer))

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.66 Manual
+@settitle Red Gnus 0.67 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.66 Manual
+@title Red Gnus 0.67 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.66
+This manual corresponds to Red Gnus 0.67
 
 @end ifinfo
 
@@ -589,7 +589,9 @@ you can set @code{gnus-check-new-newsgroups} to @code{nil}.  This will
 also save you some time at startup.  Even if this variable is
 @code{nil}, you can always subscribe to the new groups just by pressing
 @kbd{U} in the group buffer (@pxref{Group Maintenance}).  This variable
-is @code{t} by default.
+is @code{t} by default.  If you set this variable to @code{always}, then
+Gnus will query the backends for new groups even when you do the @kbd{g}
+command (@pxref{Scanning New Messages}).
 
 @menu
 * Checking New Groups::      Determining what groups are new.
@@ -732,6 +734,9 @@ more for user fiddling.  By default this variable makes all new groups
 that come from mail backends (@code{nnml}, @code{nnbabyl},
 @code{nnfolder}, @code{nnmbox}, and @code{nnmh}) subscribed.  If you
 don't like that, just set this variable to @code{nil}.
+
+New groups that match this regexp are subscribed using
+@code{gnus-subscribe-options-newsgroup-method}.
 
 
 @node Changing Servers
@@ -2814,8 +2819,8 @@ Activate absolutely all groups (@code{gnus-activate-all-groups}).
 @cindex restarting
 @findex gnus-group-restart
 Restart Gnus (@code{gnus-group-restart}).  This saves the @file{.newsrc}
-file(s), closes the connection to all servers, clears up all variables, and
-then starts Gnus all over again.
+file(s), closes the connection to all servers, clears up all run-time
+Gnus variables, and then starts Gnus all over again.
 
 @end table
 
@@ -6150,6 +6155,11 @@ Sort by subject (@code{gnus-summary-sort-by-subject}).
 @kindex C-c C-s C-d (Summary)
 @findex gnus-summary-sort-by-date
 Sort by date (@code{gnus-summary-sort-by-date}).
+
+@item C-c C-s C-l
+@kindex C-c C-s C-l (Summary)
+@findex gnus-summary-sort-by-lines
+Sort by lines (@code{gnus-summary-sort-by-lines}).
 
 @item C-c C-s C-i
 @kindex C-c C-s C-i (Summary)
@@ -14494,7 +14504,7 @@ Gnus has to get from the @sc{nntp} server.
 @item gnus-read-active-file
 Set this to @code{nil}, which will inhibit Gnus from requesting the
 entire active file from the server.  This file is often v.  large.  You
-also have to set @code{gnus-check-new-news} and
+also have to set @code{gnus-check-new-newsgroups} and
 @code{gnus-check-bogus-newsgroups} to @code{nil} to make sure that Gnus
 doesn't suddenly decide to fetch the active file anyway.
 

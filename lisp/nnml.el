@@ -452,7 +452,7 @@ all.  This may very well take some time.")
       (nnheader-report 'nnml "File %s does not exist" file))
      (t
       (nnheader-temp-write file
-	(nnheader-insert-file-contents-literally file)
+	(nnheader-insert-file-contents file)
 	(nnmail-replace-status name value))
       t))))
 
@@ -759,7 +759,7 @@ all.  This may very well take some time.")
 	(unless (file-directory-p 
 		 (setq file (concat dir (int-to-string (car files)))))
 	  (erase-buffer)
-	  (insert-file-contents file)
+	  (nnheader-insert-file-contents file)
 	  (narrow-to-region 
 	   (goto-char (point-min))
 	   (progn

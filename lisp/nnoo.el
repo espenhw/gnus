@@ -155,7 +155,8 @@
   (let* ((bstate (cdr (assq backend nnoo-state-alist)))
 	 (current (car bstate))
 	 (parents (nnoo-parents backend))
-	 state)
+	 (bvariables (nnoo-variables backend))
+	 state def)
     (unless bstate
       (push (setq bstate (list backend nil))
 	    nnoo-state-alist)
@@ -170,9 +171,11 @@
 	(pop state))
       (setcar bstate server)
       (unless (cdr (assoc server (cddr bstate)))
-	(while defs
-	  (set (caar defs) (cadar defs))
-	  (pop defs)))
+	(while (setq def (pop defs))
+	  (unless (assq (car def) bvariables)
+	    (nconc bvariables
+		   (list (cons (car def) (symbol-value (car def))))))
+	  (set (car def) (cadr def))))
       (while parents
 	(nnoo-change-server 
 	 (caar parents) server 

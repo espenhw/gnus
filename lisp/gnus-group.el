@@ -758,8 +758,6 @@ ticked: The number of ticked articles."
        ["Yank" gnus-group-yank-group gnus-list-of-killed-groups]
        ["Describe" gnus-group-describe-group (gnus-group-group-name)]
        ["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
-       ["Edit kill file" gnus-group-edit-local-kill
-	(gnus-group-group-name)]
        ;; Actually one should check, if any of the marked groups gives t for
        ;; (gnus-check-backend-function 'request-expire-articles ...)
        ["Expire articles" gnus-group-expire-articles
@@ -770,6 +768,15 @@ ticked: The number of ticked articles."
        ["Set group level" gnus-group-set-current-level
 	(gnus-group-group-name)]
        ["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
+       ("Edit"
+	["Parameters" gnus-group-edit-group-parameters
+	 (gnus-group-group-name)]
+	["Select method" gnus-group-edit-group-method
+	 (gnus-group-group-name)]
+	["Info" gnus-group-edit-group (gnus-group-group-name)]
+	["Customize" gnus-group-customize t]
+	["Local kill file" gnus-group-edit-local-kill (gnus-group-group-name)]
+	["Global kill file" gnus-group-edit-global-kill t])
        ))
   
     (easy-menu-define
@@ -845,14 +852,6 @@ ticked: The number of ticked articles."
 	["Delete group" gnus-group-delete-group
 	 (gnus-check-backend-function
 	  'request-delete-group (gnus-group-group-name))])
-       ("Editing groups"
-	["Parameters" gnus-group-edit-group-parameters
-	 (gnus-group-group-name)]
-	["Select method" gnus-group-edit-group-method
-	 (gnus-group-group-name)]
-	["Info" gnus-group-edit-group (gnus-group-group-name)])
-       ("Score file"
-	["Flush cache" gnus-score-flush-cache t])
        ("Move"
 	["Next" gnus-group-next-group t]
 	["Previous" gnus-group-prev-group t]
@@ -864,6 +863,8 @@ ticked: The number of ticked articles."
 	["Jump to group" gnus-group-jump-to-group t]
 	["First unread group" gnus-group-first-unread-group t]
 	["Best unread group" gnus-group-best-unread-group t])
+       ["Delete bogus groups" gnus-group-check-bogus-groups t]
+       ["Find new newsgroups" gnus-find-new-newsgroups t]
        ["Transpose" gnus-group-transpose-groups
 	(gnus-group-group-name)]
        ["Read a directory as a group..." gnus-group-enter-directory t]
@@ -872,14 +873,18 @@ ticked: The number of ticked articles."
     (easy-menu-define
      gnus-group-misc-menu gnus-group-mode-map ""
      '("Misc"
+       ("SOUP"
+	["Pack replies" nnsoup-pack-replies (fboundp 'nnsoup-request-group)]
+	["Send replies" gnus-soup-send-replies
+	 (fboundp 'gnus-soup-pack-packet)]
+	["Pack packet" gnus-soup-pack-packet (fboundp 'gnus-soup-pack-packet)]
+	["Save areas" gnus-soup-save-areas (fboundp 'gnus-soup-pack-packet)]
+	["Brew SOUP" gnus-soup-brew-soup (fboundp 'gnus-soup-pack-packet)])
        ["Send a bug report" gnus-bug t]
-       ["Customize" gnus-group-customize t]
        ["Send a mail" gnus-group-mail t]
        ["Post an article..." gnus-group-post-news t]
        ["Check for new news" gnus-group-get-new-news t]     
        ["Activate all groups" gnus-activate-all-groups t]
-       ["Delete bogus groups" gnus-group-check-bogus-groups t]
-       ["Find new newsgroups" gnus-find-new-newsgroups t]
        ["Restart Gnus" gnus-group-restart t]
        ["Read init file" gnus-group-read-init-file t]
        ["Browse foreign server" gnus-group-browse-foreign-server t]
@@ -890,22 +895,14 @@ ticked: The number of ticked articles."
        ["Save .newsrc files" gnus-group-save-newsrc t]
        ["Suspend Gnus" gnus-group-suspend t]
        ["Clear dribble buffer" gnus-group-clear-dribble t]
-       ["Edit global kill file" gnus-group-edit-global-kill t]
        ["Read manual" gnus-info-find-node t]
+       ["Flush score cache" gnus-score-flush-cache t]
        ["Toggle topics" gnus-topic-mode t]
-       ("SOUP"
-	["Pack replies" nnsoup-pack-replies (fboundp 'nnsoup-request-group)]
-	["Send replies" gnus-soup-send-replies
-	 (fboundp 'gnus-soup-pack-packet)]
-	["Pack packet" gnus-soup-pack-packet (fboundp 'gnus-soup-pack-packet)]
-	["Save areas" gnus-soup-save-areas (fboundp 'gnus-soup-pack-packet)]
-	["Brew SOUP" gnus-soup-brew-soup (fboundp 'gnus-soup-pack-packet)])
        ["Exit from Gnus" gnus-group-exit t]
        ["Exit without saving" gnus-group-quit t]
        ))
 
-    (run-hooks 'gnus-group-menu-hook)
-    ))
+    (run-hooks 'gnus-group-menu-hook)))
 
 (defun gnus-group-mode ()
   "Major mode for reading news.
@@ -2492,7 +2489,7 @@ If REVERSE, sort in reverse order."
   (let ((group (gnus-info-group info)))
     (gnus-undo-register
       `(progn
-	 (gnus-info-set-marks ',info ',(gnus-info-marks info))
+	 (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
 	 (gnus-info-set-read ',info ',(gnus-info-read info))
 	 (when (gnus-group-goto-group ,group)
 	   (gnus-group-update-group-line))))
@@ -2963,8 +2960,12 @@ re-scanning.  If ARG is non-nil and not a number, this will force
   (when (and arg (not (numberp arg)))
     (let ((gnus-read-active-file t))
       (gnus-read-active-file))
-    (setq arg nil))
+    (setq arg nil)
 
+    ;; If the user wants it, we scan for new groups.
+    (when (eq gnus-check-new-newsgroups 'always)
+      (gnus-find-new-newsgroups)))
+  
   (setq arg (gnus-group-default-level arg t))
   (if (and gnus-read-active-file (not arg))
       (progn
