@@ -1,5 +1,10 @@
 2002-03-31  Lars Magne Ingebrigtsen  <larsi@quimbies.gnus.org>
 
+	* spam.el (spam-enter-whitelist): New function.
+	(spam-parse-whitelist): Ditto.
+	(spam-refresh-list-cache): Ditto.
+	(spam-address-whitelisted-p): New function.
+
 	* dns.el (query-dns): Use TCP when make-network-process isn't
 	available. 
 	(dns-servers): New variable.

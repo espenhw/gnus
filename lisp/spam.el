@@ -28,6 +28,8 @@
 (require 'dns)
 (require 'message)
 
+;;; Blackholes
+
 (defvar spam-blackhole-servers
   '("bl.spamcop.net" "relays.ordb.org" "dev.null.dk"
     "relays.visi.com" "rbl.maps.vix.com")
@@ -52,6 +54,64 @@
 	  (push (list ip server (query-dns (concat ip "." server) 'TXT))
 		matches))))
     matches))
+
+;;; Black- and white-lists
+
+(defvar spam-directory "~/News/spam/"
+  "When spam files are kept.")
+
+(defvar spam-whitelist (expand-file-name "whitelist" spam-directory)
+  "The location of the whitelist.")
+					 
+(defvar spam-blacklist (expand-file-name "blacklist" spam-directory)
+  "The location of the whitelist.")
+
+(defvar spam-whitelist-cache nil)
+(defvar spam-blacklist-cache nil)
+
+(defun spam-enter-whitelist (address &optional blacklist)
+  "Enter ADDRESS into the whitelist."
+  (interactive "sAddress: ")
+  (let ((file (if blacklist spam-blacklist spam-whitelist)))
+    (unless (file-exists-p (file-name-directory file))
+      (make-directory (file-name-directory file) t))
+    (save-excursion
+      (set-buffer
+       (find-file-noselect file))
+      (goto-char (point-max))
+      (unless (bobp)
+	(insert "\n"))
+      (insert address "\n")
+      (save-buffer))))
+
+(defun spam-parse-whitelist (&optional blacklist)
+  (let ((file (if blacklist spam-blacklist spam-whitelist))
+	contents address)
+    (when (file-exists-p file)
+      (with-temp-buffer
+	(insert-file-contents file)
+	(while (not (eobp))
+	  (setq address (buffer-substring (point) (point-at-eol)))
+	  (forward-line 1)
+	  (unless (zerop (length address))
+	    (setq address (regexp-quote address))
+	    (while (string-match "\\\\\\*" address)
+	      (setq address (replace-match ".*" t t address)))
+	    (push address contents))))
+      (nreverse contents))))
+
+(defun spam-refresh-list-cache ()
+  (setq spam-whitelist-cache (spam-parse-whitelist))
+  (setq spam-blacklist-cache (spam-parse-whitelist t)))
+
+(defun spam-address-whitelisted-p (address &optional blacklist)
+  (let ((cache (if blacklist spam-blacklist-cache spam-whitelist-cache))
+	found)
+    (while (and (not found)
+		cache)
+      (when (string-match (pop cache) address)
+	(setq found t)))
+    found))
 
 (provide 'spam)
 
