@@ -30,12 +30,12 @@
   :group 'gnus-fun
   :type 'directory)
 
-(defcustom gnus-convert-pbm-to-x-face-command "pbmtoxbm '%s' | compface"
+(defcustom gnus-convert-pbm-to-x-face-command "pbmtoxbm %s | compface"
   "Command for converting a PBM to an X-Face."
   :group 'gnus-fun
   :type 'string)
 
-(defcustom gnus-convert-image-to-x-face-command "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmtopgm | pgmtopbm | pbmtoxbm | compface"
+(defcustom gnus-convert-image-to-x-face-command "giftopnm %s | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmtopgm | pgmtopbm | pbmtoxbm | compface"
   "Command for converting a GIF to an X-Face."
   :group 'gnus-fun
   :type 'string)
@@ -49,7 +49,8 @@
 	   (file (nth (random (length files)) files)))
       (when file
 	(shell-command-to-string
-	 (format gnus-convert-pbm-to-x-face-command file))))))
+	 (format gnus-convert-pbm-to-x-face-command
+		 (shell-quote-argument file)))))))
 
 ;;;###autoload
 (defun gnus-x-face-from-file (file)
@@ -57,7 +58,8 @@
   (interactive "fImage file name:" )
   (when (file-exists-p file)
     (shell-command-to-string
-     (format gnus-convert-image-to-x-face-command file))))
+     (format gnus-convert-image-to-x-face-command
+	     (shell-quote-argument file)))))
 
 (defun gnus-convert-image-to-gray-x-face (file depth)
   (let* ((mapfile (make-temp-name (expand-file-name "gnus." mm-tmp-directory)))
@@ -74,8 +76,10 @@
 	(push (cons (* step i) i) color-alist)))
     (when (file-exists-p file)
       (with-temp-buffer
-	(insert (shell-command-to-string (format "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmquant -fs -map %s 2>/dev/null | ppmtopgm | pnmnoraw"
-			       file mapfile)))
+	(insert (shell-command-to-string
+		 (format "giftopnm %s | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmquant -fs -map %s 2>/dev/null | ppmtopgm | pnmnoraw"
+			 (shell-quote-argument file)
+			 mapfile)))
 	(goto-char (point-min))
 	(forward-line 3)
 	(while (setq pixel (ignore-errors (read (current-buffer))))
@@ -104,10 +108,10 @@
 	 bit-list bit-lists pixels pixel)
     (dolist (face faces)
       (with-temp-buffer
-	(insert face)
+	(insert (uncompface face))
 	(shell-command-on-region
 	 (point-min) (point-max)
-	 "uncompface -X | xbmtopbm | pnmnoraw"
+	 "pnmnoraw"
 	 (current-buffer) t)
 	(goto-char (point-min))
 	(forward-line 2)

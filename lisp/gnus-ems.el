@@ -216,14 +216,6 @@
 (defvar gnus-article-xface-ring-size 6
   "Length of the ring used for `gnus-article-xface-ring-internal'.")
 
-(defvar gnus-article-compface-xbm
-  (condition-case ()
-      (eq 0 (string-match "#define"
-			  (shell-command-to-string "uncompface -X")))
-    (error nil))
-  "Non-nil means the compface program supports the -X option.
-That produces XBM output.")
-
 (defun gnus-article-display-xface (data)
   "Display the XFace header FACE in the current buffer.
 Requires support for images in your Emacs and the external programs
@@ -245,40 +237,21 @@ for XEmacs."
       (let* ((cur (current-buffer))
 	     (image (cdr-safe (assoc data (ring-elements
 					   gnus-article-xface-ring-internal))))
-	     default-enable-multibyte-characters)
+	     default-enable-multibyte-characters
+	     face)
 	(unless image
-	  (with-temp-buffer
-	    (insert data)
-	    (and (eq 0 (apply #'call-process-region (point-min) (point-max)
-			      "uncompface"
-			      'delete '(t nil) nil
-			      (if gnus-article-compface-xbm
-				  '("-X"))))
-		 (if gnus-article-compface-xbm
-		     t
-		   (goto-char (point-min))
-		   (progn (insert "/* Width=48, Height=48 */\n") t)
-		   (eq 0 (call-process-region (point-min) (point-max)
-					      "icontopbm"
-					      'delete '(t nil))))
-		 ;; Miles Bader says that faces don't look right as
-		 ;; light on dark.
-		 (if (eq 'dark (cdr-safe (assq 'background-mode
-					       (frame-parameters))))
-		     (setq image (create-image (buffer-string)
-					       (if gnus-article-compface-xbm
-						   'xbm
-						 'pbm)
-					       t
-					       :ascent 'center
-					       :foreground "black"
-					       :background "white"))
-		   (setq image (create-image (buffer-string)
-					     (if gnus-article-compface-xbm
-						 'xbm
-					       'pbm)
-					     t
-					     :ascent 'center)))))
+	  (when (setq face (uncompface data))
+	    ;; Miles Bader says that faces don't look right as
+	    ;; light on dark.
+	    (if (eq 'dark (cdr-safe (assq 'background-mode
+					  (frame-parameters))))
+		(setq image (create-image face 'pbm
+					  t
+					  :ascent 'center
+					  :foreground "black"
+					  :background "white"))
+	      (setq image (create-image face 'pbm
+					t :ascent 'center))))
 	  (ring-insert gnus-article-xface-ring-internal (cons data image)))
 	(when image
 	  (goto-char (point-min))
@@ -295,8 +268,8 @@ for XEmacs."
   (and (fboundp 'image-type-available-p)
        (image-type-available-p type)))
 
-(defun gnus-create-image (file)
-  (create-image file))
+(defun gnus-create-image (file &optional type data-p)
+  (create-image file type data-p))
 
 (defun gnus-put-image (glyph &optional string)
   (insert-image glyph string))

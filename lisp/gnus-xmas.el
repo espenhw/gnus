@@ -826,13 +826,21 @@ XEmacs compatibility workaround."
 (defun gnus-xmas-image-type-available-p (type)
   (featurep type))
 
-(defun gnus-xmas-create-image (file)
-  (let ((type (car (last (split-string file "[.]")))))
+(defun gnus-xmas-create-image (file &optional type data-p)
+  (let ((type (if type
+		  (symbol-name type)
+		(car (last (split-string file "[.]"))))))
     (if (equal type "xbm")
 	(make-glyph (list (cons 'x file)))
-      (with-temp-buffer
-	(insert-file-contents file)
-	(mm-create-image-xemacs type)))))
+      (with-tmp-buffer
+       (if data-p
+	   (insert file)
+	 (insert-file-contents file))
+       (make-glyph
+	(vector 
+	 (or (mm-image-type-from-buffer)
+	     (intern type))
+	 :data (buffer-string)))))))
 
 (defun gnus-xmas-put-image (glyph &optional string)
   "Insert STRING, but display GLYPH.

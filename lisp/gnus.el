@@ -2122,6 +2122,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-unplugged gnus-agentize gnus-agent-batch)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm)
+     ("compface" uncompface)
      ("gnus-draft" :interactive t gnus-draft-mode gnus-group-send-queue)
      ("gnus-mlspl" gnus-group-split gnus-group-split-fancy)
      ("gnus-mlspl" :interactive t gnus-group-split-setup

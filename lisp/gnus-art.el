@@ -1803,7 +1803,8 @@ unfolded."
 	    (setq from (message-fetch-field "from"))))
 	(if grey
 	    (gnus-put-image
-	     (create-image (gnus-convert-gray-x-face-to-xpm x-faces) 'xpm t))
+	     (gnus-create-image
+	      (gnus-convert-gray-x-face-to-xpm x-faces) 'xpm t))
 	  ;; Sending multiple EOFs to xv doesn't work, so we only do a
 	  ;; single external face.
 	  (when (stringp gnus-article-x-face-command)

@@ -1,3 +1,26 @@
+2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-xmas.el (gnus-xmas-create-image): Take optional
+	parameters. 
+
+	* gnus-art.el (article-display-x-face): Use optional parameters. 
+
+	* gnus-ems.el (gnus-create-image): Take optional parameters. 
+
+	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Use uncompface. 
+
+	* compface.el (compface-xbm-p): Removed.
+
+	* gnus-ems.el (gnus-article-compface-xbm): Removed.
+	(gnus-article-display-xface): Use compface.
+
+	* compface.el: New file.
+
+	* gnus-fun.el (gnus-convert-pbm-to-x-face-command): Remove quotes.
+	(gnus-convert-image-to-x-face-command): Ditto.
+	(gnus-random-x-face): Quote argument.
+	(gnus-x-face-from-file): Ditto.
+
 2002-01-03  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir-request-expire-articles): evaluate
