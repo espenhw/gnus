@@ -511,7 +511,8 @@ If SILENT, don't prompt the user."
 	   (not (eq (car group-method) 'nndraft))
 	   (not arg))
       group-method) 
-     (gnus-post-method
+     ((and gnus-post-method
+	   (not (eq gnus-post-method 'current)))
       gnus-post-method)
      ;; Use the normal select method.
      (t gnus-select-method))))
@@ -1111,17 +1112,23 @@ this is a reply."
 		;; This is an ordinary variable.
 		(set (make-local-variable variable) value-value)
               ;; This is either a body or a header to be inserted in the
-              ;; message
-              (when value-value
-                (let ((attr (car attribute)))
+              ;; message.
+ 	      (when value-value
+		(let ((attr (car attribute)))
+		  (make-local-variable 'message-setup-hook)
                   (if (eq 'body attr)
-                      (save-excursion
-                        (goto-char (point-max))
-                        (insert value-value))
-                    (save-excursion
-		      (message-goto-eoh)
-                      (insert (if (stringp attr) attr (symbol-name attr))
-                              ": " value-value "\n"))))))))))))
+		      (add-hook 'message-setup-hook
+				`(lambda ()
+				   (save-excursion
+				     (message-goto-body)
+				     (insert ,value-value))))
+		    (add-hook
+		     'message-setup-hook
+		     `(lambda ()
+			(save-excursion
+			  (message-goto-eoh)
+			  (insert ,(if (stringp attr) attr (symbol-name attr))
+				  ": " ,value-value "\n"))))))))))))))
 
 ;;; Allow redefinition of functions.
 

@@ -3834,7 +3834,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
   (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
 	 ;;!!! Dirty hack; should be removed.
 	 (gnus-summary-ignore-duplicates
-	  (if (eq (car (gnus-find-method-for-group group)) 'nnvirtual)
+ 	  (if (eq (car (gnus-find-method-for-group group)) 'nnvirtual)
 	      t
 	    gnus-summary-ignore-duplicates))
 	 (info (nth 2 entry))

@@ -801,7 +801,7 @@ the actual number of articles toggled is returned."
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (insert-file-contents file)
-    (goto-char (point-min))
+    (goto-char (point-max))
     (if (or (= (point-min) (point-max))
 	    (progn
 	      (forward-line -1)

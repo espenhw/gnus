@@ -1,3 +1,7 @@
+1998-08-18 00:30:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Article Hiding): Addition.
+
 1998-08-16 14:53:45  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (NNTP): Reinstated.

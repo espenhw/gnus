@@ -308,7 +308,7 @@ If FETCH-OLD, retrieve all headers (or some subset thereof) in the group."
 	       (gnus-group-real-name group) article))))
 
 (defun gnus-request-update-mark (group article mark)
-  "Return the type (`post' or `mail') of GROUP (and ARTICLE)."
+  "Allow the backend to change the mark the user tries to put on an article."
   (let ((gnus-command-method (gnus-find-method-for-group group)))
     (if (not (gnus-check-backend-function
 	      'request-update-mark (car gnus-command-method)))

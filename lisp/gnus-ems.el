@@ -217,6 +217,7 @@
 (defun gnus-add-minor-mode (mode name map)
   (if (fboundp 'add-minor-mode)
       (add-minor-mode mode name map)
+    (set (make-local-variable mode) t)
     (unless (assq mode minor-mode-alist)
       (push `(,mode ,name) minor-mode-alist))
     (unless (assq mode minor-mode-map-alist)

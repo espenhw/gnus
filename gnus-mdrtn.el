@@ -66,7 +66,7 @@
 (defvar gnus-moderated-groups nil
   "Regexp that match groups you moderate.")
 
-(defvar gnus-moderation-ignored-headers "^\\(Received\\|To\\|Cc\\|X-From-Line\\|Return-Path\\|Xref\\):"
+(defvar gnus-moderation-ignored-headers "^\\(Received\\|To\\|Cc\\|X-From-Line\\|Return-Path\\|Xref\\|NNTP-Posting-Host\\):"
   "Headers to be removed before posting an approved article.")
 
 (defvar gnus-moderation-mode nil

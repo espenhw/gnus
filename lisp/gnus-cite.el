@@ -284,6 +284,7 @@ This should make it easier to see who wrote what."
 (defvar gnus-cited-opened-text-button-line-format-alist
   `((?b (marker-position beg) ?d)
     (?e (marker-position end) ?d)
+    (?n (count-lines beg end) ?d)
     (?l (- end beg) ?d)))
 (defvar gnus-cited-opened-text-button-line-format-spec nil)
 (defvar gnus-cited-closed-text-button-line-format-alist

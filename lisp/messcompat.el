@@ -82,6 +82,11 @@ these lines.")
 (defvar message-send-hook mail-send-hook
   "Hook run before sending messages.")
 
+(defvar message-send-mail-function send-mail-function
+  "Function to call to send the current buffer as mail.
+The headers should be delimited by a line whose contents match the
+variable `mail-header-separator'.")
+
 (provide 'messcompat)
 
 ;;; messcompat.el ends here

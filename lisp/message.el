@@ -843,6 +843,9 @@ The cdr of ech entry is a function for applying the face to a region.")
   :group 'message-various
   :type 'hook)
 
+(defvar message-send-coding-system 'binary
+  "Coding system to encode outgoing mail.")
+
 ;;; Internal variables.
 
 (defvar message-buffer-list nil)
@@ -2056,7 +2059,7 @@ the user from the mailer."
 	  (set-buffer errbuf)
 	  (erase-buffer))))
     (let ((default-directory "/")
-	  (coding-system-for-write 'binary))
+	  (coding-system-for-write message-send-coding-system))
       (apply 'call-process-region
 	     (append (list (point-min) (point-max)
 			   (if (boundp 'sendmail-program)
@@ -2104,7 +2107,7 @@ to find out how to use this."
   (run-hooks 'message-send-mail-hook)
   ;; send the message
   (case
-      (let ((coding-system-for-write 'binary))
+      (let ((coding-system-for-write message-send-coding-system))
 	(apply
 	 'call-process-region 1 (point-max) message-qmail-inject-program
 	 nil nil nil
@@ -3233,7 +3236,8 @@ Headers already prepared in the buffer are not modified."
 (defun message-mail (&optional to subject
 			       other-headers continue switch-function
 			       yank-action send-actions)
-  "Start editing a mail message to be sent."
+  "Start editing a mail message to be sent.
+OTHER-HEADERS is an alist of header/value pairs."
   (interactive)
   (let ((message-this-is-mail t))
     (message-pop-to-buffer (message-buffer-name "mail" to))

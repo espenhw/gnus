@@ -64,7 +64,7 @@ If this variable is nil, no files will be excluded.")
 (defvoo nneething-map nil)
 (defvoo nneething-read-only nil)
 (defvoo nneething-active nil)
-(defvoo nneething-directory nil)
+(defvoo nneething-address nil)
 
 
 
@@ -158,8 +158,8 @@ If this variable is nil, no files will be excluded.")
   (nnheader-init-server-buffer)
   (if (nneething-server-opened server)
       t
-    (unless (assq 'nneething-directory defs)
-      (setq defs (append defs (list (list 'nneething-directory server)))))
+    (unless (assq 'nneething-address defs)
+      (setq defs (append defs (list (list 'nneething-address server)))))
     (nnoo-change-server 'nneething server defs)))
 
 
@@ -185,9 +185,9 @@ If this variable is nil, no files will be excluded.")
 
 (defun nneething-create-mapping ()
   ;; Read nneething-active and nneething-map.
-  (when (file-exists-p nneething-directory)
+  (when (file-exists-p nneething-address)
     (let ((map-file (nneething-map-file))
-	  (files (directory-files nneething-directory))
+	  (files (directory-files nneething-address))
 	  touched map-files)
       (when (file-exists-p map-file)
 	(ignore-errors
@@ -344,7 +344,7 @@ If this variable is nil, no files will be excluded.")
 
 (defun nneething-file-name (article)
   "Return the file name of ARTICLE."
-  (concat (file-name-as-directory nneething-directory)
+  (concat (file-name-as-directory nneething-address)
 	  (if (numberp article)
 	      (cadr (assq article nneething-map))
 	    article)))

@@ -6316,11 +6316,13 @@ specs are valid:
 
 @table @samp
 @item b
-Start point of the hidden text.
+Starting point of the hidden text.
 @item e
-End point of the hidden text.
+Ending point of the hidden text.
 @item l
-Length of the hidden text.
+Number of characters in the hidden region.
+@item n
+Number of lines of hidden text.
 @end table
 
 @item gnus-cited-lines-visible

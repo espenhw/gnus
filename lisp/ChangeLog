@@ -1,3 +1,57 @@
+Thu Aug 20 00:28:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.38 is released.
+
+1998-08-20 00:02:50  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-mail): Doc fix.
+
+1998-08-19 23:22:02  Bill Pringlemeir  <bpringle@my-dejanews.com>
+
+	* messcompat.el (message-send-mail-function): Initialized from
+	send-mail-function. 
+
+1998-08-19 23:20:42  Martin Larose  <larosem@IRO.UMontreal.CA>
+
+	* message.el (message-send-coding-system): New variable.
+
+1998-08-19 19:00:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-configure-posting-styles): Reinstated most of
+	old code.
+
+	* gnus-start.el (gnus-save-newsrc-file): Use coding system.
+
+1980-06-08 03:53:56  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-braid-nov): Go to right place. 
+
+1980-06-08 03:01:48  Shuhei KOBAYASHI  <shuhei-k@jaist.ac.jp>
+
+	* gnus-group.el (gnus-group-suspend): Fix.
+
+1998-08-18 00:25:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-cite.el (gnus-cited-opened-text-button-line-format-alist):
+	New n spec.
+
+	* gnus-group.el (gnus-group-suspend): Use mapcar.
+
+1998-08-17 14:35:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-ems.el (gnus-add-minor-mode): Set mode var.
+
+	* gnus-start.el (gnus-slave-mode): New function.
+
+	* gnus-msg.el (gnus-post-method): Work with current in nndraft. 
+
+1998-08-16 23:30:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-request-article-this-buffer): Allow recursive
+	selection of nneething groups.
+
+	* nneething.el (nneething-address): Renamed from directory.
+
 Sun Aug 16 18:59:41 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.37 is released.

@@ -773,6 +773,8 @@ The following commands are available:
   (add-hook 'post-command-hook 'gnus-clear-inboxes-moved nil t)
   (when gnus-use-undo
     (gnus-undo-mode 1))
+  (when gnus-slave
+    (gnus-slave-mode))
   (gnus-run-hooks 'gnus-group-mode-hook))
 
 (defun gnus-update-group-mark-positions ()
@@ -3163,11 +3165,11 @@ The hook gnus-suspend-gnus-hook is called before actually suspending."
   (interactive)
   (gnus-run-hooks 'gnus-suspend-gnus-hook)
   ;; Kill Gnus buffers except for group mode buffer.
-  (let* ((group-buf (get-buffer gnus-group-buffer)))
-    (apply (lambda (buf)
-	     (unless (equal buf group-buf)
-	       (kill-buffer buf)))
-	   (gnus-buffers))
+  (let ((group-buf (get-buffer gnus-group-buffer)))
+    (mapcar (lambda (buf)
+	      (unless (equal buf group-buf)
+		(kill-buffer buf)))
+	    (gnus-buffers))
     (gnus-kill-gnus-frames)
     (when group-buf
       (bury-buffer group-buf)

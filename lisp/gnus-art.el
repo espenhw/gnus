@@ -2056,7 +2056,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		  (unless (memq article gnus-newsgroup-sparse)
 		    (gnus-error 1
 		     "No such article (may have expired or been canceled)")))))
-	  (if (or (eq result 'pseudo) (eq result 'nneething))
+	  (if (or (eq result 'pseudo)
+		  (eq result 'nneething))
 	      (progn
 		(save-excursion
 		  (set-buffer summary-buffer)
@@ -2470,8 +2471,11 @@ If given a prefix, show the hidden text instead."
 			       gnus-newsgroup-name)))
 		  (when (and (eq (car method) 'nneething)
 			     (vectorp header))
-		    (let ((dir (concat (file-name-as-directory (nth 1 method))
-				       (mail-header-subject header))))
+		    (let ((dir (concat
+				(file-name-as-directory
+				 (or (cadr (assq 'nneething-address method))
+				     (nth 1 method)))
+				(mail-header-subject header))))
 		      (when (file-directory-p dir)
 			(setq article 'nneething)
 			(gnus-group-enter-directory dir))))))))

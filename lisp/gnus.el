@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.37"
+(defconst gnus-version-number "5.6.38"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1649,7 +1649,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-uu-decode-binhex gnus-uu-decode-uu-view
       gnus-uu-decode-uu-and-save-view gnus-uu-decode-unshar-view
       gnus-uu-decode-unshar-and-save-view gnus-uu-decode-save-view
-      gnus-uu-decode-binhex-view gnus-uu-unmark-thread)
+      gnus-uu-decode-binhex-view gnus-uu-unmark-thread
+      gnus-uu-mark-over)
      ("gnus-uu" gnus-uu-delete-work-dir gnus-quote-arg-for-sh-or-csh
       gnus-uu-unmark-thread)
      ("gnus-msg" (gnus-summary-send-map keymap)

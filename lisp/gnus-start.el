@@ -2279,7 +2279,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (gnus-message 5 "Saving %s.eld..." gnus-current-startup-file)
 	  (gnus-gnus-to-quick-newsrc-format)
 	  (gnus-run-hooks 'gnus-save-quick-newsrc-hook)
-	  (save-buffer)
+	  (let ((coding-system-for-write gnus-startup-file-coding-system))
+	    (save-buffer))
 	  (kill-buffer (current-buffer))
 	  (gnus-message
 	   5 "Saving %s.eld...done" gnus-current-startup-file))
@@ -2388,6 +2389,13 @@ If FORCE is non-nil, the .newsrc file is read."
 ;;;
 ;;; Slave functions.
 ;;;
+
+(defvar gnus-slave-mode nil)
+
+(defun gnus-slave-mode ()
+  "Minor mode for slave Gnusae."
+  (gnus-add-minor-mode 'gnus-slave-mode " Slave" (make-sparse-keymap))
+  (gnus-run-hooks 'gnus-slave-mode-hook))
 
 (defun gnus-slave-save-newsrc ()
   (save-excursion
