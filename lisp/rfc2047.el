@@ -574,4 +574,3 @@ If your Emacs implementation can't decode CHARSET, return nil."
 (provide 'rfc2047)
 
 ;;; rfc2047.el ends here
-
