@@ -1,3 +1,23 @@
+2000-03-13 13:51:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-move-article): Only delete article
+	when moving junk.
+	(gnus-deaden-summary): Bury the buffer.
+
+	* nnmail.el (nnmail-group-pathname): Ditto.
+
+	* nnheader.el (nnheader-group-pathname): Use expand-file-name.
+
+2000-03-10 14:57:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-mail): Protect against unloaded Gnus. 
+
+	* gnus-topic.el (gnus-topic-update-topic-line): Don't update the
+	parent.  
+	(gnus-topic-update-topic-line): Yes, do.
+	(gnus-topic-goto-missing-group): Tally the correct number of
+	unread articles before inserting the topic line.
+
 2000-03-01 09:55:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-retrieve-headers): Ignore errors. 

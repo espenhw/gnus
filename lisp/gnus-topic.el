@@ -608,8 +608,20 @@ articles in the topic and its subtopics."
       (when (and unfound
 		 topic
 		 (not (gnus-topic-goto-missing-topic topic)))
-	(gnus-topic-insert-topic-line
-	 topic t t (car (gnus-topic-find-topology topic)) nil 0)))))
+	(let* ((top (gnus-topic-find-topology topic))
+	       (children (cddr top))
+	       (type (cadr top))
+	       (unread 0)
+	       (entries (gnus-topic-find-groups
+			 (car type) (car gnus-group-list-mode)
+			 (cdr gnus-group-list-mode))))
+	  (while children
+	    (incf unread (gnus-topic-unread (caar (pop children)))))
+	  (while (setq entry (pop entries))
+	    (when (numberp (car entry))
+	      (incf unread (car entry))))
+	  (gnus-topic-insert-topic-line
+	   topic t t (car (gnus-topic-find-topology topic)) nil unread))))))
 
 (defun gnus-topic-goto-missing-topic (topic)
   (if (gnus-topic-goto-topic topic)
@@ -620,7 +632,7 @@ articles in the topic and its subtopics."
 	   (tp (reverse (cddr top))))
       (if (not top)
 	  (gnus-topic-insert-topic-line
-	   topic t t (car (gnus-topic-find-topology topic)) nil 0)
+	   topic t t (car (gnus-topic-find-topology topic)) nil unread)
 	(while (not (equal (caaar tp) topic))
 	  (setq tp (cdr tp)))
 	(pop tp)

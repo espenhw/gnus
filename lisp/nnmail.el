@@ -470,13 +470,13 @@ parameter.  It should return nil, `warn' or `delete'."
      ;; If this directory exists, we use it directly.
      (if (or nnmail-use-long-file-names
 	     (file-directory-p (concat dir group)))
-	 (concat dir group "/")
+	 (expand-file-name group dir)
        ;; If not, we translate dots into slashes.
-       (concat dir
-	       (mm-encode-coding-string
-		(nnheader-replace-chars-in-string group ?. ?/)
-		nnmail-pathname-coding-system)
-	       "/")))
+       (expand-file-name
+	(mm-encode-coding-string
+	 (nnheader-replace-chars-in-string group ?. ?/)
+	 nnmail-pathname-coding-system)
+	dir)))
    (or file "")))
 
 (defun nnmail-get-active ()

@@ -5538,7 +5538,8 @@ The state which existed when entering the ephemeral is reset."
       (rename-buffer
        (concat (substring name 0 (match-beginning 0)) "Dead "
 	       (substring name (match-beginning 0)))
-       t))))
+       t)
+      (bury-buffer))))
 
 (defun gnus-kill-or-deaden-summary (buffer)
   "Kill or deaden the summary BUFFER."
@@ -7395,10 +7396,10 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	(gnus-message 1 "Couldn't %s article %s: %s"
 		      (cadr (assq action names)) article
 		      (nnheader-get-report (car to-method))))
-       ((and (eq art-group 'junk)
-	     (eq action 'move))
-	(gnus-summary-mark-article article gnus-canceled-mark)
-	(gnus-message 4 "Deleted article %s" article))
+       ((eq art-group 'junk)
+	(when (eq action 'move)
+	  (gnus-summary-mark-article article gnus-canceled-mark)
+	  (gnus-message 4 "Deleted article %s" article)))
        (t
 	(let* ((pto-group (gnus-group-prefixed-name
 			   (car art-group) to-method))

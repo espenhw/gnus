@@ -2134,7 +2134,10 @@ It should typically alter the sending method in some way or other."
 	 (news (message-news-p))
 	 (mailbuf (current-buffer))
 	 (message-this-is-mail t)
-	 (message-posting-charset (gnus-setup-posting-charset nil)))
+	 (message-posting-charset
+	  (if (fboundp 'gnus-setup-posting-charset)
+	      (gnus-setup-posting-charset nil)
+	    message-posting-charset)))
     (save-restriction
       (message-narrow-to-headers)
       ;; Insert some headers.
