@@ -1,5 +1,22 @@
 2001-08-19  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-srvr.el (gnus-server-agent-face): New.
+	(gnus-server-agent-face): New.
+	(gnus-server-mode): Turn on font-lock-mode.
+
+	* gnus.el (gnus-server-visual): Add defgroup.
+
+2001-08-19  Simon Josefsson  <jas@extundo.com>
+	From Joe Casadonte <jcasadonte@northbound-train.com>
+
+	* gnus-srvr.el (gnus-server-opened-face, gnus-server-closed-face,
+	gnus-server-denied-face): New.
+	(gnus-server-opened-face, gnus-server-closed-face,
+	gnus-server-denied-face): New.
+	(gnus-server-font-lock-keywords): Add.
+
+2001-08-19  Simon Josefsson  <jas@extundo.com>
+
 	* nnml.el (nnml-request-set-mark): Return nil.
 	(nnml-save-marks): Use nnml-possibly-create-directory.
 	(nnml-open-marks): Only work in temp buffer when inserting/reading

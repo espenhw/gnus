@@ -149,6 +149,62 @@ The following specs are understood:
     "\C-c\C-i" gnus-info-find-node
     "\C-c\C-b" gnus-bug))
 
+(defface gnus-server-agent-face
+  '((((class color) (background light)) (:foreground "PaleTurquoise" :bold t))
+    (((class color) (background dark)) (:foreground "PaleTurquoise" :bold t))
+    (t (:bold t)))
+  "Face used for displaying AGENTIZED servers"
+  :group 'gnus-server-visual)
+
+(defface gnus-server-opened-face
+  '((((class color) (background light)) (:foreground "Green3" :bold t))
+    (((class color) (background dark)) (:foreground "Green1" :bold t))
+    (t (:bold t)))
+  "Face used for displaying OPENED servers"
+  :group 'gnus-server-visual)
+
+(defface gnus-server-closed-face
+  '((((class color) (background light)) (:foreground "Steel Blue" :italic t))
+    (((class color) (background dark))
+     (:foreground "Light Steel Blue" :italic t))
+    (t (:italic t)))
+  "Face used for displaying CLOSED servers"
+  :group 'gnus-server-visual)
+
+(defface gnus-server-denied-face
+  '((((class color) (background light)) (:foreground "Red" :bold t))
+    (((class color) (background dark)) (:foreground "Pink" :bold t))
+    (t (:inverse-video t :bold t)))
+  "Face used for displaying DENIED servers"
+  :group 'gnus-server-visual)
+
+(defcustom gnus-server-agent-face 'gnus-server-agent-face
+  "Face name to use on AGENTIZED servers."
+  :group 'gnus-server-visual
+  :type 'face)
+
+(defcustom gnus-server-opened-face 'gnus-server-opened-face
+  "Face name to use on OPENED servers."
+  :group 'gnus-server-visual
+  :type 'face)
+
+(defcustom gnus-server-closed-face 'gnus-server-closed-face
+  "Face name to use on CLOSED servers."
+  :group 'gnus-server-visual
+  :type 'face)
+
+(defcustom gnus-server-denied-face 'gnus-server-denied-face
+  "Face name to use on DENIED servers."
+  :group 'gnus-server-visual
+  :type 'face)
+
+(defvar gnus-server-font-lock-keywords
+  (list
+   '("(\\(agent\\))" 1 gnus-server-agent-face)
+   '("(\\(opened\\))" 1 gnus-server-opened-face)
+   '("(\\(closed\\))" 1 gnus-server-closed-face)
+   '("(\\(denied\\))" 1 gnus-server-denied-face)))
+
 (defun gnus-server-mode ()
   "Major mode for listing and editing servers.
 
@@ -173,6 +229,10 @@ The following commands are available:
   (buffer-disable-undo)
   (setq truncate-lines t)
   (setq buffer-read-only t)
+  (if (featurep 'xemacs)
+      (put 'gnus-server-mode 'font-lock-defaults '(gnus-server-font-lock-keywords t))
+    (set (make-local-variable 'font-lock-defaults)
+         '(gnus-server-font-lock-keywords t)))
   (gnus-run-hooks 'gnus-server-mode-hook))
 
 (defun gnus-server-insert-server-line (gnus-tmp-name method)

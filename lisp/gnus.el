@@ -238,6 +238,11 @@
   "Options related to newsservers and other servers used by Gnus."
   :group 'gnus)
 
+(defgroup gnus-server-visual nil
+  "Highlighting and menus in the server buffer."
+  :group 'gnus-visual
+  :group 'gnus-server)
+
 (defgroup gnus-message '((message custom-group))
   "Composing replies and followups in Gnus."
   :group 'gnus)
