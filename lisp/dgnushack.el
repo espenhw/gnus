@@ -69,10 +69,12 @@ Modify to suit your needs."))
 	(require 'w3-forms)
       (error (setq files (delete "nnweb.el" files))))
     (while (setq file (pop files))
-      (when (or (not (member file '("gnus-xmas.el" "gnus-picon.el"
-				    "messagexmas.el" "nnheaderxm.el"
-				    "smiley.el" "x-overlay.el")))
-		xemacs)
+      (when (or (and (not xemacs)
+		     (not (member file '("gnus-xmas.el" "gnus-picon.el"
+					 "messagexmas.el" "nnheaderxm.el"
+					 "smiley.el" "x-overlay.el"))))
+		(and xemacs
+		     (not (member file '("md5.el")))))
 	(when (or (not (file-exists-p (setq elc (concat file "c"))))
 		  (file-newer-than-file-p file elc))
 	  (ignore-errors

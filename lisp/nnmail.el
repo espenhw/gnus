@@ -1386,6 +1386,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 ;; If FORCE, re-read the active file even if the backend is
 ;; already activated.
 (defun nnmail-activate (backend &optional force)
+  (nnheader-init-server-buffer)
   (let (file timestamp file-time)
     (if (or (not (symbol-value (intern (format "%s-group-alist" backend))))
 	    force

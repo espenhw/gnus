@@ -416,6 +416,7 @@ call it with the value of the `gnus-data' text property."
   (fset 'gnus-extent-detached-p 'extent-detached-p)
   (fset 'gnus-add-text-properties 'gnus-xmas-add-text-properties)
   (fset 'gnus-put-text-property 'gnus-xmas-put-text-property)
+  (fset 'gnus-deactivate-mark 'ignore)
 
   (require 'text-props)
   (if (and (<= emacs-major-version 19)

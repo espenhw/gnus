@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 0.10 Manual
+@settitle Message 0.110 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 0.10 Manual
+@title Message 0.110 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -79,7 +79,7 @@ buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 0.10.  Message is distributed with
+This manual corresponds to Message 0.110.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -515,6 +515,29 @@ its place.
 @findex message-delete-not-region
 Delete all text in the body of the message that is outside the region
 (@code{message-delete-not-region}).
+
+@item M-RET
+@kindex M-RET
+@kindex message-newline-and-reformat
+Insert four newlines, and then reformat if inside quoted text.
+
+Here's an example:
+
+@example
+> This is some quoted text.  And here's more quoted text.
+@end example
+
+If point is before @samp{And} and you press @kbd{M-RET}, you'll get:
+
+@example
+> This is some quoted text.
+
+*
+
+> And here's more quoted text.
+@end example
+
+@samp{*} says where point will be placed.  
 
 @item C-c C-t
 @kindex C-c C-t 

@@ -153,7 +153,6 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defvoo nntp-warn-about-losing-connection t
   "*If non-nil, beep when a server closes connection.")
 
-;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 (defvoo nntp-coding-system-for-read nil
   "*coding-system for read from NNTP.")
 
@@ -745,7 +744,6 @@ This function is supposed to be called from `nntp-server-opened-hook'."
   (let* ((pbuffer (nntp-make-process-buffer buffer))
 	 (process
 	  (condition-case ()
-	      ;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
 	      (let ((coding-system-for-read nntp-coding-system-for-read))
 		(funcall nntp-open-connection-function pbuffer))
 	    (error nil)

@@ -283,10 +283,8 @@ time saver for large mailboxes.")
 (deffoo nnfolder-request-list (&optional server)
   (nnfolder-possibly-change-group nil server)
   (save-excursion
-    ;; 1997/8/14 by MORIOKA Tomohiko
-    ;;    for XEmacs/mule.
     (let ((nnmail-file-coding-system nnmail-active-file-coding-system)
-	  (pathname-coding-system 'binary)) ; for XEmacs/mule
+	  (pathname-coding-system 'binary))
       (nnmail-find-file nnfolder-active-file)
       (setq nnfolder-group-alist (nnmail-get-active)))
     t))

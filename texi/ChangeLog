@@ -1,3 +1,18 @@
+Sat Sep 27 04:24:41 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Various Commands): Addition.
+
+Wed Sep 24 02:38:21 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Example Setup): Wrong info.
+	(SOUP Groups): Addition.
+	(Contributors): Addition.
+
+1997-09-22  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus.texi (Finding the Parent): Fix typo.
+	(NoCeM): Fix typos.
+
 Tue Sep 23 07:05:48 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (NoCeM): Addition.

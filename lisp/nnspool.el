@@ -113,8 +113,6 @@ there.")
 	     (default-directory nnspool-current-directory)
 	     (do-message (and (numberp nnspool-large-newsgroup)
 			      (> number nnspool-large-newsgroup)))
-	     ;; 1997/8/14 by MORIOKA Tomohiko
-	     ;;   for Win32
 	     (nnheader-file-coding-system nnspool-file-coding-system)
 	     file beg article ag)
 	(if (and (numberp (car articles))
@@ -356,8 +354,6 @@ there.")
     (let ((nov (nnheader-group-pathname
 		nnspool-current-group nnspool-nov-directory ".overview"))
 	  (arts articles)
-	  ;; 1997/8/14 by MORIOKA Tomohiko
-	  ;;   for Win32
       	  (nnheader-file-coding-system nnspool-file-coding-system)
 	  last)
       (if (not (file-exists-p nov))
@@ -440,8 +436,6 @@ there.")
   (set-buffer nntp-server-buffer)
   (erase-buffer)
   (condition-case ()
-      ;; 1997/8/14 by MORIOKA Tomohiko
-      ;;   for Win32
       (let ((nnheader-file-coding-system nnspool-file-coding-system))
 	(nnheader-insert-file-contents file)
 	t)

@@ -69,6 +69,11 @@ The SOUP packet file name will be inserted at the %s.")
 (defvoo nnsoup-packet-regexp "Soupout"
   "*Regular expression matching SOUP packets in `nnsoup-packet-directory'.")
 
+(defvoo nnsoup-always-save t
+  "If non nil commit the reply buffer on each message send. 
+This is necessary if using message mode outside Gnus with nnsoup as a 
+backend for the messages.")
+
 
 
 (defconst nnsoup-version "nnsoup 0.0"
@@ -82,7 +87,6 @@ The SOUP packet file name will be inserted at the %s.")
 (defvoo nnsoup-current-group nil)
 (defvoo nnsoup-group-alist-touched nil)
 (defvoo nnsoup-article-alist nil)
-
 
 
 ;;; Interface functions.
@@ -707,7 +711,9 @@ The SOUP packet file name will be inserted at the %s.")
 		  (set-buffer msg-buf)
 		  (goto-char (point-min))
 		  (while (re-search-forward "^#! *rnews" nil t)
-		    (incf num)))
+		    (incf num))
+		  (when nnsoup-always-save
+		    (save-buffer)))
 		(message "Stored %d messages" num)))
 	    (nnsoup-write-replies)
 	    (kill-buffer tembuf))))))

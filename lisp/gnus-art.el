@@ -172,7 +172,7 @@ asynchronously.	 The compressed face will be piped to this command."
 
 (defcustom gnus-article-x-face-too-ugly nil
   "Regexp matching posters whose face shouldn't be shown automatically."
-  :type 'regexp
+  :type '(choice regexp (const nil))
   :group 'gnus-article-washing)
 
 (defcustom gnus-emphasis-alist
@@ -243,7 +243,7 @@ Esample: (_/*word*/_)."
 
 (defcustom gnus-article-time-format "%a, %b %d %Y %T %Z"
   "Format for display of Date headers in article bodies.
-See `format-time-zone' for the possible values."
+See `format-time-string' for the possible values."
   :type 'string
   :link '(custom-manual "(gnus)Article Date")
   :group 'gnus-article-washing)
@@ -277,7 +277,7 @@ If `gnus-save-all-headers' is non-nil, this variable will be ignored.
 If that variable is nil, however, all headers that match this regexp
 will be kept while the rest will be deleted before saving."
   :group 'gnus-article-saving
-  :type '(repeat string))
+  :type 'regexp)
 
 (defcustom gnus-default-article-saver 'gnus-summary-save-in-rmail
   "A function to save articles in your favourite format.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.10 Manual
+@settitle Quassia Gnus 0.110 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.10 Manual
+@title Quassia Gnus 0.110 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.10.
+This manual corresponds to Quassia Gnus 0.110.
 
 @end ifinfo
 
@@ -6632,7 +6632,7 @@ Commands}).
 @cindex parent articles
 @cindex referring articles
 
-@code @kbd
+@table @kbd
 @item ^
 @kindex ^ (Summary)
 @findex gnus-summary-refer-parent-article
@@ -9084,8 +9084,8 @@ You will probably want to split the mail into several groups, though:
 @lisp
 (setq nnmail-split-methods
       '(("junk" "^From:.*Lars Ingebrigtsen")
-       ("crazy" "^Subject:.*die\\|^Organization:.*flabby")
-       ("other" "")))
+        ("crazy" "^Subject:.*die\\|^Organization:.*flabby")
+        ("other" "")))
 @end lisp
 
 This will result in three new @code{nnml} mail groups being created:
@@ -10636,7 +10636,11 @@ Where @code{nnsoup} will look for incoming packets.  The default is
 @item nnsoup-packet-regexp
 @vindex nnsoup-packet-regexp
 Regular expression matching incoming @sc{soup} packets.  The default is
-@samp{Soupout}. 
+@samp{Soupout}.
+
+@item nnsoup-always-save
+@vindex nnsoup-always-save
+If non-@code{nil}, save the replies buffer after each posted message.
 
 @end table
 
@@ -11415,7 +11419,7 @@ setup, you may be able to use something like the following as your
 
 ;;; Define how Gnus is to read your mail.  We read mail from
 ;;; your ISP's POP server.
-(setenv "MAILSERVER" "pop.your-isp.com")
+(setenv "MAILHOST" "pop.your-isp.com")
 (setq nnmail-spool-file "po:username")
 
 ;;; Say how Gnus is to store the mail.  We use nnml groups.
@@ -14086,14 +14090,14 @@ For instance, if you want all NoCeM messages from Chris Lewis except his
 @samp{troll} messages, you'd say:
 
 @lisp
-("clewis@ferret.ocunix.on.ca" ".*" (not "troll"))
+("clewis@@ferret.ocunix.on.ca" ".*" (not "troll"))
 @end lisp
 
 On the other hand, if you just want nothing but his @samp{spam} and
 @samp{spew} messages, you'd say:
 
 @lisp
-("clewis@ferret.ocunix.on.ca" (not ".*") "spew" "spam")
+("clewis@@ferret.ocunix.on.ca" (not ".*") "spew" "spam")
 @end lisp
 
 The specs are applied left-to-right.
@@ -15174,8 +15178,10 @@ Adrian Aichner,
 Peter Arius, 
 Matt Armstrong,
 Marc Auslander,
+Robert Bihlmeyer,
 Chris Bone,
 Mark Borges,
+Mark Boyns,
 Lance A. Brown,
 Kees de Bruin,
 Martin Buchholz,
@@ -15198,10 +15204,14 @@ Paul Eggert,
 Michael Ernst,
 Luc Van Eycken,
 Sam Falkner,
+Nelson Jose dos Santos Ferreira,
+Sigbjorn Finne,
+Gary D. Foster,
 Paul Franklin, 
 Guy Geens,
 Arne Georg Gleditsch,
 David S. Goldberg,
+Michelangelo Grigni,
 D. Hall, 
 Magnus Hammerin,
 Raja R. Harinath,
@@ -15213,6 +15223,7 @@ François Felix Ingrand,
 Ishikawa Ichiro, @c Ishikawa
 Lee Iverson, 
 Rajappa Iyer,
+Andreas Jaeger,
 Randell Jesup,
 Fred Johansen, 
 Greg Klanderman,
@@ -15250,13 +15261,16 @@ John McClary Prevost,
 Colin Rafferty,
 Bart Robinson,
 Jason Rumney,
+Jay Sachs,
 Dewey M. Sasser,
 Loren Schall,
 Dan Schmidt,
 Ralph Schleicher,
 Philippe Schnoebelen,
 Randal L. Schwartz,
+Justin Sheehy,
 Danny Siu, 
+Matt Simmons,
 Paul D. Smith,
 Jeff Sparkes,
 Toby Speight,
@@ -15270,7 +15284,9 @@ Samuel Tardieu,
 Teddy,
 Chuck Thompson,
 Philippe Troin,
-Aaron M. Ucko,
+James Troup,
+Enami Tsugutomo, @c ?
+Aaron M. Ucko, 
 Jan Vroonhof,
 Barry A. Warsaw,
 Christoph Wedler,

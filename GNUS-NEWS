@@ -49,3 +49,5 @@ control over simplification.
 *** `/ T' -- new command for including the current thread in the
 limit.
 
+*** `M-RET' is a new Message command for breaking cited text.
+

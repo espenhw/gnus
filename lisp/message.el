@@ -1173,6 +1173,7 @@ Return the number of headers removed."
 
   (define-key message-mode-map "\C-c\C-e" 'message-elide-region)
   (define-key message-mode-map "\C-c\C-v" 'message-delete-not-region)
+  (define-key message-mode-map "\M-\r" 'message-newline-and-reformat)
 
   (define-key message-mode-map "\t" 'message-tab))
 
@@ -1187,6 +1188,7 @@ Return the number of headers removed."
    ["Caesar (rot13) Region" message-caesar-region (mark t)]
    ["Elide Region" message-elide-region (mark t)]
    ["Delete Outside Region" message-delete-not-region (mark t)]
+   ["Newline and Reformat" message-newline-and-reformat t]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message t]
    "----"
@@ -1268,10 +1270,12 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (setq paragraph-start (concat (regexp-quote mail-header-separator)
 				"$\\|[ \t]*[-_][-_][-_]+$\\|"
 				"-- $\\|"
+				"[> ]+$\\|"
 				paragraph-start))
   (setq paragraph-separate (concat (regexp-quote mail-header-separator)
 				   "$\\|[ \t]*[-_][-_][-_]+$\\|"
 				   "-- $\\|"
+				   "[> ]+$\\|"
 				   paragraph-separate))
   (make-local-variable 'message-reply-headers)
   (setq message-reply-headers nil)
@@ -1422,6 +1426,21 @@ With the prefix argument FORCE, insert the header anyway."
 			      (point))))
   (message-goto-signature)
   (forward-line -2))
+
+(defun message-newline-and-reformat ()
+  "Insert four newlines, and then reformat if inside quoted text."
+  (interactive)
+  (let ((point (point))
+	quoted)
+    (save-excursion
+      (beginning-of-line)
+      (setq quoted (looking-at (regexp-quote message-yank-prefix))))
+    (insert "\n\n\n\n")
+    (when quoted
+      (insert message-yank-prefix))
+    (fill-paragraph nil)
+    (goto-char point)
+    (forward-line 2)))
 
 (defun message-insert-signature (&optional force)
   "Insert a signature.  See documentation for the `message-signature' variable."
@@ -1770,7 +1789,7 @@ the user from the mailer."
   (interactive "P")
   ;; Disabled test.
   (when (if (and buffer-file-name
-		 (message-check-element 'buffer-file-name))
+		 nil)
 	    (y-or-n-p (format "Send buffer contents as %s message? "
 			      (if (message-mail-p)
 				  (if (message-news-p) "mail and news" "mail")

@@ -244,7 +244,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.10"
+(defconst gnus-version-number "0.11"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -280,6 +280,7 @@ be set in `.emacs' instead."
   (defalias 'gnus-put-text-property 'put-text-property)
   (defalias 'gnus-mode-line-buffer-identification 'identity)
   (defalias 'gnus-characterp 'numberp)
+  (defalias 'gnus-deactivate-mark 'deactivate-mark)
   (defalias 'gnus-key-press-event-p 'numberp))
 
 ;; The XEmacs people think this is evil, so it must go.
@@ -1177,6 +1178,7 @@ this variable.	I think."
 			(checklist :inline t
 				   (const :format "%v " address)
 				   (const :format "%v " prompt-address)
+				   (const :format "%v " physical-address)
 				   (const :format "%v " virtual)
 				   (const respool)))))
 

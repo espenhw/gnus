@@ -108,12 +108,12 @@
     (while (setq article (pop articles))
       (gnus-summary-remove-process-mark article)
       (unless (memq article gnus-newsgroup-unsendable)
-	(gnus-draft-send article)
+	(gnus-draft-send article gnus-newsgroup-name)
 	(gnus-summary-mark-article article gnus-canceled-mark)))))
 
-(defun gnus-draft-send (article)
+(defun gnus-draft-send (article &optional group)
   "Send message ARTICLE."
-  (gnus-draft-setup article "nndraft:queue")
+  (gnus-draft-setup article (or group "nndraft:queue"))
   (let ((message-syntax-checks 'dont-check-for-anything-just-trust-me))
     (message-send-and-exit)))
 
@@ -140,18 +140,24 @@
 
 ;;; Utility functions
 
+;;;!!!If this is byte-compiled, it fails miserably.
+;;;!!!I have no idea why.
+
+(progn
 (defun gnus-draft-setup (narticle group)
   (gnus-setup-message 'forward
-    (message-mail)
-    (erase-buffer)
-    (if (not (gnus-request-restore-buffer narticle group))
-	(error "Couldn't restore the article")
-      ;; Insert the separator.
-      (goto-char (point-min))
-      (search-forward "\n\n")
-      (forward-char -1)
-      (insert mail-header-separator)
-      (forward-line 1))))
+    (let ((article narticle))
+      (message-mail)
+      (erase-buffer)
+      (message "%s %s" group article)
+      (if (not (gnus-request-restore-buffer article group))
+	  (error "Couldn't restore the article")
+	;; Insert the separator.
+	(goto-char (point-min))
+	(search-forward "\n\n")
+	(forward-char -1)
+	(insert mail-header-separator)
+	(forward-line 1))))))
 
 (defun gnus-draft-article-sendable-p (article)
   "Say whether ARTICLE is sendable."

@@ -1,3 +1,39 @@
+Sat Sep 27 04:32:45 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.11 is released.
+
+Sat Sep 27 03:50:12 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-send): Post without asking.
+	(message-mode): Modify paragraphs-start and paragraph-separate. 
+	(message-newline-and-reformat): New command and keystroke.
+
+Thu Sep 25 00:13:41 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-activate): Init server buffer.
+
+Wed Sep 24 04:11:59 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-draft.el (gnus-draft-setup): Inexplicable binding problem
+	worked around.
+
+	* nnsoup.el (nnsoup-always-save): Renamed.
+
+Wed Sep 24 04:11:02 1997  Nelson Jose dos Santos Ferreira  <Nelson.Ferreira@inesc.pt>
+
+	* nnsoup.el (nnsoup-commit-reply-now): New variable.
+	(nnsoup-store-reply): Use it.
+
+Wed Sep 24 02:30:44 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-ems.el (gnus-deactivate-mark): New alias.
+
+Tue Sep 23 07:56:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Win-away!
+
+	* gnus-msg.el (gnus-setup-message): Don't trust make-symbol.
+
 Tue Sep 23 07:45:11 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.10 is released.
