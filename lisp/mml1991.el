@@ -1,4 +1,4 @@
-;;; mml-gpg-old.el --- Old PGP message format (RFC 1991) support for MML
+;;; mml-gpg-old.el --- Old PGP message format (RFC 1991) support for MML -*- coding: iso-latin-1 -*-
 ;; Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Sascha Lüdecke <sascha@meta-x.de>,
@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; RCS: $Id: mml-gpg-old.el,v 1.2 2001/10/23 09:15:17 saschal Exp saschal $
+;; RCS: $Id: mml1991.el,v 6.1 2001/11/12 21:33:12 jas Exp $
 
 ;;; Code:
 
