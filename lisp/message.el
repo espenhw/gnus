@@ -3135,7 +3135,8 @@ Do not use this for anything important, it is cryptographically weak."
 This is the value of `canlock-password', if that option is non-nil.
 Otherwise, generate and save a value for `canlock-password' first."
   (unless canlock-password
-    (customize-save-variable 'canlock-password (message-canlock-generate)))
+    (customize-save-variable 'canlock-password (message-canlock-generate))
+    (setq canlock-password-for-verify canlock-password))
   canlock-password)
 
 (defun message-insert-canlock ()

@@ -1,3 +1,10 @@
+2002-08-09  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-canlock-password): Set
+	canlock-password-for-verify to newly generated canlock-password.
+	When Emacs is restarted, Custom makes sure this is set, but during
+	the same session we must set it manually.
+
 2002-08-07  Jesper harder  <harder@ifa.au.dk>
 
 	* yenc.el: New file.
