@@ -8298,10 +8298,33 @@ apostrophe or quotation mark, then try this wash.
 
 @item W k
 @kindex W k (Summary)
+@kindex W Y f (Summary)
 @findex gnus-article-outlook-deuglify-article
 @cindex Outlook Express
-Deuglify broken Outlook (Express) articles and redisplay
+Deuglify broken Outlook (Express) articles.
 (@code{gnus-article-outlook-deuglify-article}).
+
+@item W Y u
+@kindex W Y u (Summary)
+@findex gnus-outlook-unwrap-lines
+Unwrap lines that appear to be wrapped citation lines.  You can control
+what lines will be unwrapped by frobbing
+@code{gnus-outlook-deuglify-unwrap-min} and
+@code{gnus-outlook-deuglify-unwrap-max}, indicating the miminum and
+maximum length of an unwrapped citation line.
+(@code{gnus-outlook-deuglify-article}).
+
+@item W Y a
+@kindex W Y a (Summary)
+@findex gnus-outlook-repair-attribution
+Repair a broken attribution line
+(@code{gnus-outlook-repair-attribution}).
+
+@item W Y c
+@kindex W Y c (Summary)
+@findex gnus-outlook-rearrange-citation
+Repair broken citations by rearranging the text.
+(@code{gnus-outlook-rearrange-citation}).
 
 @item W w
 @kindex W w (Summary)
@@ -8940,6 +8963,21 @@ To have all Vcards be ignored, you'd say something like this:
 (setq gnus-ignored-mime-types
       '("text/x-vcard"))
 @end lisp
+
+@item gnus-article-loose-mime
+@vindex gnus-article-loose-mime
+If non-@code{nil}, Gnus won't required the @samp{MIME-Version} header
+before interpreting the message as a @sc{mime} message.  This helps
+when reading messages from certain broken mail user agents.  The
+default is @code{nil}.
+
+@item gnus-article-emulate-mime
+@vindex gnus-article-emulate-mime
+There are other, non-@sc{mime} encoding methods used.  The most common
+is @samp{uuencode}, but yEncode is also getting to be popular.  If
+This variable is non-@code{nil}, Gnus will look in message bodies to
+see if it finds these encodings, and if so, it'll run them through the
+Gnus @sc{mime} machinery.  The default is @code{t}.
 
 @item gnus-unbuttonized-mime-types
 @vindex gnus-unbuttonized-mime-types

@@ -1,7 +1,13 @@
+2003-01-10  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Article Washing): Added gnus-outlook-unwrap-lines,
+	gnus-outlook-repair-attribution, gnus-outlook-rearrange-citation.
+
 2003-01-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi: Change .gnus to .gnus.el.
 	(Agent Commands): Remove batch here.
+	(MIME Commands): Add.
 
 	* message.texi (Canceling News): Document canlock.
 
