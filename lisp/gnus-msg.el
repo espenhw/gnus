@@ -672,7 +672,7 @@ post using the current select method."
   (let ((articles (gnus-summary-work-articles n))
 	(message-post-method
 	 `(lambda (arg)
-	    (gnus-post-method (eq ,symp 'a) ,gnus-newsgroup-name)))
+	    (gnus-post-method (eq ',symp 'a) ,gnus-newsgroup-name)))
 	article)
     (while (setq article (pop articles))
       (when (gnus-summary-select-article t nil nil article)
