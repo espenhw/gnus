@@ -5190,7 +5190,9 @@ Optional DIGEST will use digest to forward."
 			    (or (search-forward "\n\n" nil t) (point)))
 	  (delete-region (point-min) (point-max)))
       (when (and (not current-prefix-arg)
-		 message-forward-ignored-headers)
+		 message-forward-ignored-headers
+		 ;; don't remove CTE, X-Gnus etc when doing "raw" forward:
+		 message-forward-show-mml)
 	(save-restriction
 	  (narrow-to-region b e)
 	  (goto-char b)

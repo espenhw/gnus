@@ -1,5 +1,9 @@
 2002-07-27  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-forward-make-body): Don't use
+	`message-forward-ignored-headers' when doing a "raw" followup (it
+	is important to preserve e.g. CTE).
+
 	* flow-fill.el (fill-flowed): Disable filladapt-mode.
 
 	* gnus-sieve.el (gnus-sieve-guess-rule-for-article): Don't
