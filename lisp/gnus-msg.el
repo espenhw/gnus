@@ -391,7 +391,10 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	(gnus-summary-remove-process-mark article))
       (gnus-copy-article-buffer)
       (let ((message-reply-buffer gnus-article-copy)
-	    (message-reply-headers gnus-current-headers))
+	    (message-reply-headers 
+	     (with-current-buffer gnus-article-copy
+	       ;; The headers are decoded.
+	       (nnheader-parse-head t))))
 	(message-yank-original)
 	(setq beg (or beg (mark t))))
       (when articles

@@ -1,3 +1,7 @@
+2000-12-29 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-inews-yank-articles): Reparse headers.
+
 2000-12-30 00:17:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-summary-limit-include-expunged): Really
