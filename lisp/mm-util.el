@@ -262,24 +262,45 @@ system object in XEmacs."
 		       (coding-system-get 'mule-utf-8 'safe-charsets)))))
   "Alist of MIME-charset/MULE-charsets.")
 
-;; Correct by construction, but should be unnecessary:
-;; XEmacs hates it.
-(when (and (not (featurep 'xemacs))
-	   (fboundp 'coding-system-list)
-	   (fboundp 'sort-coding-systems))
-  (setq mm-mime-mule-charset-alist
-	(apply
-	 'nconc
-	 (mapcar
-	  (lambda (cs)
-	    (when (and (or (coding-system-get cs :mime-charset)	; Emacs 22
-			   (coding-system-get cs 'mime-charset))
-		       (not (eq t (coding-system-get cs 'safe-charsets))))
-	      (list (cons (or (coding-system-get cs :mime-charset)
-			      (coding-system-get cs 'mime-charset))
-			  (delq 'ascii
-				(coding-system-get cs 'safe-charsets))))))
-	  (sort-coding-systems (coding-system-list 'base-only))))))
+(defun mm-enrich-utf-8-by-mule-ucs ()
+  "Make the `utf-8' MIME charset usable by the Mule-UCS package.
+This function will run when the `un-define' module is loaded under
+XEmacs, and fill the `utf-8' entry in `mm-mime-mule-charset-alist'
+with Mule charsets.  It is completely useless for Emacs."
+  (setq after-load-alist
+	(delete '("un-define" (mm-enrich-utf-8-by-mule-ucs))
+		after-load-alist))
+  (when (boundp 'unicode-basic-translation-charset-order-list)
+    (condition-case nil
+	(let ((val (delq
+		    'ascii
+		    (symbol-value
+		     'unicode-basic-translation-charset-order-list)))
+	      (elem (assq 'utf-8 mm-mime-mule-charset-alist)))
+	  (if elem
+	      (setcdr elem val)
+	    (setq mm-mime-mule-charset-alist
+		  (nconc mm-mime-mule-charset-alist
+			 (list (cons 'utf-8 val))))))
+      (error))))
+
+;; Correct by construction, but should be unnecessary for Emacs:
+(if (featurep 'xemacs)
+    (eval-after-load "un-define" '(mm-enrich-utf-8-by-mule-ucs))
+  (when (and (fboundp 'coding-system-list)
+	     (fboundp 'sort-coding-systems))
+    (let ((css (sort-coding-systems (coding-system-list 'base-only)))
+	  cs mime mule alist)
+      (while css
+	(setq cs (pop css)
+	      mime (or (coding-system-get cs :mime-charset) ; Emacs 22
+		       (coding-system-get cs 'mime-charset)))
+	(when (and mime
+		   (not (eq t (setq mule
+				    (coding-system-get cs 'safe-charsets))))
+		   (not (assq mime alist)))
+	  (push (cons mime (delq 'ascii mule)) alist)))
+      (setq mm-mime-mule-charset-alist (nreverse alist)))))
 
 (defvar mm-hack-charsets '(iso-8859-15 iso-2022-jp-2)
   "A list of special charsets.

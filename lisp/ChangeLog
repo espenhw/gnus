@@ -7,6 +7,9 @@
 
 	* mm-util.el (mm-mime-mule-charset-alist): Add the windows-1251
 	entry.  From Ilya N. Golubev <gin@mo.msk.ru>.
+	(mm-enrich-utf-8-by-mule-ucs): New function run when Mule-UCS is
+	loaded under XEmacs.
+	(): Don't make duplicated entries in mm-mime-mule-charset-alist.
 
 2004-06-28  Jesper Harder  <harder@ifa.au.dk>
 
