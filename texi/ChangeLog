@@ -1,3 +1,8 @@
+2001-02-14  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Unread Articles): Say that Gnus itself never expires
+	ticked articles.  Suggested by `Poster 2000'.
+
 2001-02-13 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Saving Articles): Addition.
@@ -22,7 +27,7 @@
 2001-02-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (To From Newsgroups): Make it clear where to put the
-	sample code.  Kudos to Dan Jacobson for pointing it out.
+	sample code.  Suggested by Dan Jacobson.
 
 	* gnus.texi (Mail Source Specifiers, IMAP, Agent and IMAP):
 	Improve IMAP discussion.
@@ -145,8 +150,8 @@
 
 	* gnus.texi (Selecting a Group): Explain in more detail, what a
 	prefix arg means for SPC.  Refer people to M-g command from
-	summary buffer.  Kudos to Paul Repacholi <prep@prep.synonet.com>
-	and Dan Jacobson <jidanni@kimo.com.tw> for suggesting this.
+	summary buffer.  Suggested by Paul Repacholi
+	<prep@prep.synonet.com> and Dan Jacobson <jidanni@kimo.com.tw>.
 
 2000-12-29 21:43:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -243,7 +248,7 @@
 
 	* gnus.texi (Mail Group Commands): `gnus-move-split-methods' uses
 	group names as target, where `gnus-split-methods' uses file
-	names.  (Kudos to Nevin Kapur for pointing this out.)
+	names.  Suggested by Nevin Kapur.
 
 2000-11-07  Martin Buchholz <martin@xemacs.org>
 
@@ -280,8 +285,8 @@
 2000-10-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Gnus Development): nnmail-delete-incoming -->
-	mail-source-delete-incoming.  (Kudos to Karl Kleinpaste
-	<karl@charcoal.com> for pointing this out.)
+	mail-source-delete-incoming.  Suggested by Karl Kleinpaste
+	<karl@charcoal.com>.
 
 2000-10-18  Dave Love  <fx@gnu.org>
 

@@ -4907,9 +4907,10 @@ Marked as ticked (@code{gnus-ticked-mark}).
 @dfn{Ticked articles} are articles that will remain visible always.  If
 you see an article that you find interesting, or you want to put off
 reading it, or replying to it, until sometime later, you'd typically
-tick it.  However, articles can be expired, so if you want to keep an
-article forever, you'll have to make it persistent (@pxref{Persistent
-Articles}).
+tick it.  However, articles can be expired (from news servers by the
+news server software, Gnus itself never expires ticked messages), so if
+you want to keep an article forever, you'll have to make it persistent
+(@pxref{Persistent Articles}).
 
 @item ?
 @vindex gnus-dormant-mark
