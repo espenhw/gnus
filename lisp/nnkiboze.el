@@ -39,7 +39,7 @@
 
 
 
-(defconst nnkiboze-version "nnkiboze 0.0"
+(defconst nnkiboze-version "nnkiboze 1.0"
   "Version numbers of this version of nnkiboze.")
 
 (defvar nnkiboze-current-group nil)

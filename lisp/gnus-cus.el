@@ -40,7 +40,7 @@
     "turquoise"))
 
 (defvar gnus-face-dark-name-list
-  '("skyblue" "firebrick"
+  '("dark blue" "firebrick"
     "dark green" "dark orange" "dark khaki" "dark violet"
     "dark turquoise"))
 
@@ -326,7 +326,7 @@ alone.")
 				     ((eq gnus-background-mode 'dark)
 				      (list (list "From" nil 
 						  (custom-face-lookup 
-						   "SkyBlue" nil nil t t nil))
+						   "dark blue" nil nil t t nil))
 					    (list "Subject" nil 
 						  (custom-face-lookup
 						   "pink" nil nil t t nil))
@@ -460,7 +460,7 @@ mark:    The article's mark.")
 						  (custom-face-lookup "pink" nil nil nil nil nil))
 
 					    (cons '(and (> score default) (= mark gnus-ancient-mark))
-						  (custom-face-lookup "SkyBlue" nil nil t nil nil))
+						  (custom-face-lookup "dark blue" nil nil t nil nil))
 					    (cons '(and (< score default) (= mark gnus-ancient-mark))
 						  (custom-face-lookup "SkyBlue" nil nil nil t nil))
 					    (cons '(= mark gnus-ancient-mark)

@@ -73,7 +73,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 
 
-(defconst nnfolder-version "nnfolder 0.2"
+(defconst nnfolder-version "nnfolder 1.0"
   "nnfolder version.")
 
 (defconst nnfolder-article-marker "X-Gnus-Article-Number: "

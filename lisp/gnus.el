@@ -1343,7 +1343,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.28"
+(defconst gnus-version "Gnus v5.0"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1836,7 +1836,7 @@ Thank you for your help in stamping out bugs.
 	 (load gnus-init-file nil t))))
 
 ;;; Load the user startup file.
-(eval '(gnus-read-init-file 'inhibit))
+;; (eval '(gnus-read-init-file 'inhibit))
 
 ;;; Load the compatability functions. 
 

@@ -35,7 +35,7 @@
 
 
 
-(defconst nnvirtual-version "nnvirtual 0.0"
+(defconst nnvirtual-version "nnvirtual 1.0"
   "Version number of this version of nnvirtual.")
 
 (defvar nnvirtual-group-alist nil)

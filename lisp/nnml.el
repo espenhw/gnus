@@ -58,7 +58,7 @@ all. This may very well take some time.")
 
 
 
-(defconst nnml-version "nnml 0.2"
+(defconst nnml-version "nnml 1.0"
   "nnml version.")
 
 (defvar nnml-nov-file-name ".overview")

@@ -251,8 +251,10 @@ If called interactively, prompts for a face and face attributes."
 (if (string-match "XEmacs" emacs-version)
     nil
   ;; This will not work under XEmacs.
-  (global-set-key [ menu-bar help-menu customize ]
-		  '("Customize..." . customize)))
+  (condition-case nil
+      (global-set-key [ menu-bar help-menu customize ]
+		      '("Customize..." . customize))
+    (error nil)))
 
 ;;; Categories:
 ;;

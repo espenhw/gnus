@@ -43,7 +43,7 @@
 
 
 
-(defconst nneething-version "nneething 0.1"
+(defconst nneething-version "nneething 1.0"
   "nneething version.")
 
 (defvar nneething-current-directory nil

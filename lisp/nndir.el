@@ -34,7 +34,7 @@
 
 
 
-(defconst nndir-version "nndir 0.0")
+(defconst nndir-version "nndir 1.0")
 
 (defvar nndir-current-directory nil
   "Current news group directory.")

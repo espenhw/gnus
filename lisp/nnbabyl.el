@@ -48,7 +48,7 @@
 
 (defvar nnbabyl-mail-delimiter "\^_")
 
-(defconst nnbabyl-version "nnbabyl 0.1"
+(defconst nnbabyl-version "nnbabyl 1.0"
   "nnbabyl version.")
 
 (defvar nnbabyl-mbox-buffer nil)

@@ -48,7 +48,7 @@
 
 
 
-(defconst nnmh-version "nnmh 0.1"
+(defconst nnmh-version "nnmh 1.0"
   "nnmh version.")
 
 (defvar nnmh-current-directory nil

@@ -46,7 +46,7 @@
 
 
 
-(defconst nnmbox-version "nnmbox 0.1"
+(defconst nnmbox-version "nnmbox 1.0"
   "nnmbox version.")
 
 (defvar nnmbox-current-group nil

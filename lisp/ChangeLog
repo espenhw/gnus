@@ -1,4 +1,13 @@
+Thu Aug 31 10:45:26 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-cus.el (gnus-face-dark-name-list): Use dark blue instead of
+	sky blue.
+
+	* gnus.el: Don't read the .gnus file on load, anyway.
+
 Wed Aug 30 17:56:34 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.99.28 is released.
 
 	* custom.el ((string-match "XEmacs" emacs-version)): Would barf if
 	the menu-bar wasn't in use.

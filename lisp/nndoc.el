@@ -80,7 +80,7 @@ Possible values:
    '(nndoc-body-begin nil)
    '(nndoc-address nil)))
 
-(defconst nndoc-version "nndoc 0.1"
+(defconst nndoc-version "nndoc 1.0"
   "nndoc version.")
 
 (defvar nndoc-current-buffer nil

@@ -210,7 +210,7 @@ perfomed.")
 
 
 
-(defconst nnmail-version "nnml 0.0"
+(defconst nnmail-version "nnmail 1.0"
   "nnmail version.")
 
 
