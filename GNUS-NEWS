@@ -21,7 +21,8 @@ message-fcc-externalize-attachments) is non-nil, attach local files as
 external parts.
 
 Command gnus-mime-save-part-and-strip (bound to \C-o on MIME buttons)
-saves a part and replaces the part with an external one.
+saves a part and replaces the part with an external one. It works only
+on back ends that support editing.
 
 ** gnus-default-charset
 
