@@ -16069,7 +16069,7 @@ articles that appear in a thread.  @code{thread} matches uses a
 @code{Message-ID} to match on the @code{References} header of the
 article.  If the match is made, the @code{Message-ID} of the article is
 added to the @code{thread} rule.  (Think about it.  I'd recommend two
-aspirins afterwords.)
+aspirins afterwards.)
 
 If you use this scheme, you should set the score file atom @code{mark}
 to something small---like -300, perhaps, to avoid having small random
@@ -17812,7 +17812,7 @@ machine, and every user was running Simula compilers.  Bah!
 Right.
 
 @vindex gnus-carpal
-Well, you can make Gnus display buffer fulls of buttons you can click to
+Well, you can make Gnus display bufferfuls of buttons you can click to
 do anything by setting @code{gnus-carpal} to @code{t}.  Pretty simple,
 really.  Tell the chiropractor I sent you.
 
