@@ -4055,6 +4055,7 @@ Argument LINES specifies lines to be scrolled down."
 	  (setq key (if (featurep 'xemacs)
 			(events-to-keys (read-key-sequence nil))
 		      (read-key-sequence nil))))
+	(message "")
 	(let ((defn (key-binding key)))
 	  (if (or (null defn) (integerp defn))
 	      (message "%s is undefined" (key-description key))
