@@ -1,3 +1,8 @@
+2000-12-21 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-group-remove-excess-properties): Not defined
+	in gnus-xmas.
+
 2000-12-20 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-mail-user-agent): Add :version.

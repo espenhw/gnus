@@ -274,6 +274,9 @@ be set in `.emacs' instead."
   :group 'gnus-start
   :type 'boolean)
 
+(unless (fboundp 'gnus-group-remove-excess-properties)
+  (defalias 'gnus-group-remove-excess-properties 'ignore))
+
 (unless (featurep 'gnus-xmas)
   (defalias 'gnus-make-overlay 'make-overlay)
   (defalias 'gnus-delete-overlay 'delete-overlay)
@@ -285,7 +288,6 @@ be set in `.emacs' instead."
   (defalias 'gnus-extent-detached-p 'ignore)
   (defalias 'gnus-extent-start-open 'ignore)
   (defalias 'gnus-set-text-properties 'set-text-properties)
-  (defalias 'gnus-group-remove-excess-properties 'ignore)
   (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
   (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
   (defalias 'gnus-character-to-event 'identity)
