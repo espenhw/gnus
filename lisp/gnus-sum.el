@@ -1543,7 +1543,7 @@ increase the score of each group you read."
     "f" gnus-article-display-x-face
     "l" gnus-summary-stop-page-breaking
     "r" gnus-summary-caesar-message
-    "t" gnus-article-hide-headers
+    "t" gnus-summary-toggle-header
     "v" gnus-summary-verbose-headers
     "H" gnus-article-strip-headers-in-body
     "d" gnus-article-treat-dumbquotes)

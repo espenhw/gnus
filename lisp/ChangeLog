@@ -1,3 +1,7 @@
+2000-07-12 19:37:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el: `W t' is toggle-header in info.
+
 2000-07-12 16:50:06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* lpath.el: Fbind subst-char-in-string.
