@@ -11376,6 +11376,27 @@ useful when you use local mail and news.
 @end table
 @end table
 
+@paragraph Function Interface
+
+Some of the above keywords specify a Lisp function to be executed.
+For each keyword @code{:foo}, the Lisp variable @code{foo} is bound to
+the value of the keyword while the function is executing.  For example,
+consider the following mail-source setting:
+
+@lisp
+(setq mail-sources '((pop :user "jrl"
+                          :server "pophost" :function fetchfunc)))
+@end lisp
+
+While the function @code{fetchfunc} is executing, the symbol @code{user}
+is bound to @code{"jrl"}, and the symbol @code{server} is bound to
+@code{"pophost"}.  The symbols @code{port}, @code{password},
+@code{program}, @code{prescript}, @code{postscript}, @code{function},
+and @code{authentication} are also bound (to their default values).
+
+See above for a list of keywords for each type of mail source.
+
+
 @node Mail Source Customization
 @subsubsection Mail Source Customization
 
