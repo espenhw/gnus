@@ -167,7 +167,7 @@
 	    (setq lines (/ (abs (- (search-forward "<td ")
 				   (search-forward "</td>")))
 			   70))
-	    (forward-line 2)
+	    (forward-line 4)
 	    (setq parent
 		  (if (looking-at ".*cid=\\([0-9]+\\)")
 		      (match-string 1)
