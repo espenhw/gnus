@@ -1,3 +1,8 @@
+1999-12-12 03:08:15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* ietf-drums.el (ietf-drums-narrow-to-header): Make it work with
+	CRLF.
+
 1999-12-11 14:42:26  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el: Require url-cookie.
