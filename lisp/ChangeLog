@@ -1,6 +1,6 @@
 2000-12-04 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-win.el (gnus-configure-frame): save selected window.
+	* gnus-win.el (gnus-configure-frame): Save selected window.
 
 2000-02-15  Andrew Innes  <andrewi@gnu.org>
 

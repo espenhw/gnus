@@ -330,7 +330,7 @@ See the Gnus manual for an explanation of the syntax used.")
 	    (setq gnus-window-frame-focus window))
 	  ;; We return the window if it has the `point' spec.
 	  (and (memq 'point split) window)))
-     ;; This is a frame split.
+       ;; This is a frame split.
        ((eq type 'frame)
 	(unless gnus-frame-list
 	  (setq gnus-frame-list (list (window-frame current-window))))
@@ -339,7 +339,7 @@ See the Gnus manual for an explanation of the syntax used.")
 	  (while (< i (length subs))
 	    ;; Frame parameter is gotten from the sub-split.
 	    (setq params (cadr (elt subs i)))
-	  ;; It should be a list.
+	    ;; It should be a list.
 	    (unless (listp params)
 	      (setq params nil))
 	    ;; Create a new frame?
@@ -348,15 +348,15 @@ See the Gnus manual for an explanation of the syntax used.")
 	      (push frame gnus-created-frames))
 	    ;; Is the old frame still alive?
 	    (unless (frame-live-p frame)
-	    (setcar (nthcdr i gnus-frame-list)
-		    (setq frame (make-frame params))))
+	      (setcar (nthcdr i gnus-frame-list)
+		      (setq frame (make-frame params))))
 	    ;; Select the frame in question and do more splits there.
 	    (select-frame frame)
 	    (setq fresult (or (gnus-configure-frame (elt subs i)) fresult))
 	    (incf i))
 	  ;; Select the frame that has the selected buffer.
 	  (when fresult
-	  (select-frame (window-frame fresult)))))
+	    (select-frame (window-frame fresult)))))
        ;; This is a normal split.
        (t
 	(when (> (length subs) 0)
@@ -379,14 +379,14 @@ See the Gnus manual for an explanation of the syntax used.")
 		    (t
 		     (error "Invalid size: %s" size)))
 	      ;; Try to make sure that we are inside the safe limits.
-	    (cond ((zerop s))
-		  ((eq type 'horizontal)
-		   (setq s (max s window-min-width)))
-		  ((eq type 'vertical)
-		   (setq s (max s window-min-height))))
-	    (setcar (cdar comp-subs) s)
-	    (incf total s)))
-	;; Take care of the "1.0" spec.
+	      (cond ((zerop s))
+		    ((eq type 'horizontal)
+		     (setq s (max s window-min-width)))
+		    ((eq type 'vertical)
+		     (setq s (max s window-min-height))))
+	      (setcar (cdar comp-subs) s)
+	      (incf total s)))
+	  ;; Take care of the "1.0" spec.
 	  (if rest
 	      (setcar (cdr rest) (- len total))
 	    (error "No 1.0 specs in %s" split))
@@ -396,9 +396,9 @@ See the Gnus manual for an explanation of the syntax used.")
 	  (while comp-subs
 	    (if (null (cdr comp-subs))
 		(setq new-win window)
-	    (setq new-win
-		  (split-window window (cadar comp-subs)
-				(eq type 'horizontal))))
+	      (setq new-win
+		    (split-window window (cadar comp-subs)
+				  (eq type 'horizontal))))
 	    (setq result (or (gnus-configure-frame
 			      (car comp-subs) window)
 			     result))
