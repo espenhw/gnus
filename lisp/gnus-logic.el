@@ -59,21 +59,21 @@
 
 (defun gnus-score-advanced (rule &optional trace)
   "Apply advanced scoring RULE to all the articles in the current group."
-  (let ((headers gnus-newsgroup-headers)
-	gnus-advanced-headers score)
-    (while (setq gnus-advanced-headers (pop headers))
-      (when (gnus-advanced-score-rule (car rule))
-	;; This rule was successful, so we add the score to
-	;; this article.
+  (let (new-score score multiple)
+    (dolist (gnus-advanced-headers gnus-newsgroup-headers)
+      (when (setq multiple (gnus-advanced-score-rule (car rule)))
+	(setq new-score (or (nth 1 rule)
+			    gnus-score-interactive-default-score))
+	(when (numberp multiple)
+	  (setq new-score (* multiple new-score)))
+	;; This rule was successful, so we add the score to this
+	;; article.
 	(if (setq score (assq (mail-header-number gnus-advanced-headers)
 			      gnus-newsgroup-scored))
 	    (setcdr score
-		    (+ (cdr score)
-		       (or (nth 1 rule)
-			   gnus-score-interactive-default-score)))
+		    (+ (cdr score) new-score))
 	  (push (cons (mail-header-number gnus-advanced-headers)
-		      (or (nth 1 rule)
-			  gnus-score-interactive-default-score))
+		      new-score)
 		gnus-newsgroup-scored)
 	  (when trace
 	    (push (cons "A file" rule)
@@ -116,7 +116,7 @@
 		  ;; 1- type redirection.
 		  (string-to-number
 		   (substring (symbol-name type)
-			      (match-beginning 0) (match-end 0)))
+			      (match-beginning 1) (match-end 1)))
 		;; ^^^ type redirection.
 		(length (symbol-name type))))))
 	(when gnus-advanced-headers
@@ -129,9 +129,8 @@
       (error "Unknown advanced score type: %s" rule)))))
 
 (defun gnus-advanced-score-article (rule)
-  ;; `rule' is a semi-normal score rule, so we find out
-  ;; what function that's supposed to do the actual
-  ;; processing.
+  ;; `rule' is a semi-normal score rule, so we find out what function
+  ;; that's supposed to do the actual processing.
   (let* ((header (car rule))
 	 (func (assoc (downcase header) gnus-advanced-index)))
     (if (not func)
@@ -189,8 +188,8 @@
 				'gnus-request-body)
 			       (t 'gnus-request-article)))
 	   ofunc article)
-      ;; Not all backends support partial fetching.  In that case,
-      ;; we just fetch the entire article.
+      ;; Not all backends support partial fetching.  In that case, we
+      ;; just fetch the entire article.
       (unless (gnus-check-backend-function
 	       (intern (concat "request-" header))
 	       gnus-newsgroup-name)
@@ -201,8 +200,8 @@
       (when (funcall request-func article gnus-newsgroup-name)
 	(goto-char (point-min))
 	;; If just parts of the article is to be searched and the
-	;; backend didn't support partial fetching, we just narrow
-	;; to the relevant parts.
+	;; backend didn't support partial fetching, we just narrow to
+	;; the relevant parts.
 	(when ofunc
 	  (if (eq ofunc 'gnus-request-head)
 	      (narrow-to-region

@@ -922,14 +922,15 @@ If VERY-WIDE, make a very wide reply."
   (interactive
    (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
-  ;; Stripping headers should be specified with mail-yank-ignored-headers.
-  (when yank
-    (gnus-summary-goto-subject
-     (if (listp (car yank))
-	 (caar yank)
-       (car yank))))
-  (let ((gnus-article-reply (or yank (gnus-summary-article-number)))
-	(headers ""))
+  (let* ((article
+	  (if (listp (car yank))
+	      (caar yank)
+	    (car yank)))
+	 (gnus-article-reply (or article (gnus-summary-article-number)))
+	 (headers ""))
+    ;; Stripping headers should be specified with mail-yank-ignored-headers.
+    (when yank
+      (gnus-summary-goto-subject article))
     (gnus-setup-message (if yank 'reply-yank 'reply)
       (if (not very-wide)
 	  (gnus-summary-select-article)

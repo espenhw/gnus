@@ -1,3 +1,14 @@
+2002-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-reply-with-original): Use
+	`mark-active'. 
+
+	* gnus-msg.el (gnus-summary-reply): Don't bug out on regions. 
+
+	* gnus-logic.el (gnus-advanced-score-rule): Thinko fix.
+	(gnus-score-advanced): Clean up.
+	(gnus-score-advanced): Accept a multiple of the score. 
+
 2002-01-12  Simon Josefsson  <jas@extundo.com>
 
 	* flow-fill.el (fill-flowed-display-column)
