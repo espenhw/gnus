@@ -160,15 +160,6 @@
     (clear-visited-file-modtime)
     article))
 
-(defun nndraft-save-mime-part (file part)
-  "Save MIME PART belonging to the FILE."
-  (write-region (point-min) (point-max)
-		(format "%s.%d" file part)))
-
-(defun nndraft-get-mime-part (file part)
-  "Save MIME PART belonging to the FILE."
-  (insert-file-contents (format "%s.%d" file part)))
-
 (deffoo nndraft-request-expire-articles (articles group &optional server force)
   (nndraft-possibly-change-group group)
   (let* ((nnmh-allow-delete-final t)

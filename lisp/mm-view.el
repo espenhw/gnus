@@ -45,8 +45,7 @@
     (let ((annot (make-annotation image nil 'text)))
       (set-extent-property annot 'mm t)
       (set-extent-property annot 'duplicable t)
-      (mm-handle-set-undisplayer handle annot))
-    (insert " \n")))
+      (mm-insert-inline handle " \n"))))
 
 (defun mm-inline-text (handle)
   (let ((type (cadr (split-string (car (mm-handle-type handle)) "/")))

@@ -25,50 +25,7 @@
 ;;; Code:
 
 (require 'mail-parse)
-
-(defvar mm-mime-file-types
-  '(("\\.rtf$" "text/richtext")
-    ("\\.\\(html\\|htm\\)$" "text/html")
-    ("\\.ps$" "application/postscript"
-     (encoding quoted-printable)
-     (disposition "attachment"))
-    ("\\.\\(jpeg\\|jpg\\)$" "image/jpeg")
-    ("\\.gif$" "image/gif")
-    ("\\.png$" "image/png")
-    ("\\.\\(tiff\\|tif\\)$" "image/tiff")
-    ("\\.pic$" "image/x-pic")
-    ("\\.mag$" "image/x-mag")
-    ("\\.xbm$" "image/x-xbm")
-    ("\\.xwd$" "image/x-xwd")
-    ("\\.au$" "audio/basic")
-    ("\\.mpg$" "video/mpeg")
-    ("\\.txt$" "text/plain")
-    ("\\.el$" "application/octet-stream"
-     ("type" ."emacs-lisp"))
-    ("\\.lsp$" "application/octet-stream"
-     ("type" "common-lisp"))
-    ("\\.tar\\.gz$" "application/octet-stream"
-     ("type" "tar+gzip"))
-    ("\\.tgz$" "application/octet-stream"
-     ("type" "tar+gzip"))
-    ("\\.tar\\.Z$" "application/octet-stream"
-     ("type" "tar+compress"))
-    ("\\.taz$" "application/octet-stream"
-     ("type" "tar+compress"))
-    ("\\.gz$" "application/octet-stream"
-     ("type" "gzip"))
-    ("\\.Z$" "application/octet-stream"
-     ("type" "compress"))
-    ("\\.lzh$" "application/octet-stream"
-     ("type" . "lha"))
-    ("\\.zip$" "application/zip")
-    ("\\.diffs?$" "text/plain"
-     ("type" . "patch"))
-    ("\\.patch$" "application/octet-stream"
-     ("type" "patch"))
-    ("\\.signature" "text/plain")
-    (".*" "application/octet-stream"))
-  "*Alist of regexps and MIME types.")
+(require 'mailcap)
 
 (defvar mm-content-transfer-encoding-defaults
   '(("text/.*" quoted-printable)
@@ -93,13 +50,9 @@
 
 (defun mm-default-file-encoding (file)
   "Return a default encoding for FILE."
-  (let ((types mm-mime-file-types)
-	type)
-    (catch 'found
-      (while (setq type (pop types))
-	(when (string-match (car type) file)
-	  (throw 'found (cdr type)))
-	(pop types)))))
+  (if (not (string-match "\\.[^.]+$" file))
+      "application/octet-stream"
+    (mailcap-extension-to-mime (match-string 0 file))))
 
 (defun mm-encode-content-transfer-encoding (encoding &optional type)
   (cond
@@ -117,10 +70,10 @@
     )
    ((null encoding)
     )
-   ((eq encoding 'x-uuencode)
-    (condition-case ()
-	(uudecode-encode-region (point-min) (point-max))
-      (error nil)))
+   ;;((eq encoding 'x-uuencode)
+   ;; (condition-case ()
+   ;;	(uudecode-encode-region (point-min) (point-max))
+   ;;   (error nil)))
    ((functionp encoding)
     (condition-case ()
 	(funcall encoding (point-min) (point-max))
@@ -141,7 +94,7 @@ The encoding used is returned."
 
 (defun mm-insert-headers (type encoding &optional file)
   "Insert headers for TYPE."
-  (insert "Content-Type: " (car type))
+  (insert "Content-Type: " type)
   (when file
     (insert ";\n\tname=\"" (file-name-nondirectory file) "\""))
   (insert "\n")

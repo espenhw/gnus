@@ -4481,6 +4481,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
       (set-buffer nntp-server-buffer)
       ;; Translate all TAB characters into SPACE characters.
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
+      (subst-char-in-region (point-min) (point-max) ?\r ?  t)
       (gnus-run-hooks 'gnus-parse-headers-hook)
       (let ((case-fold-search t)
 	    in-reply-to header p lines chars)
@@ -4633,9 +4634,7 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 	number headers header)
     (save-excursion
       (set-buffer nntp-server-buffer)
-      (goto-char (point-min))
-      (while (search-forward "\r" nil t)
-	(replace-match " " t t))
+      (subst-char-in-region (point-min) (point-max) ?\r ?  t)
       ;; Allow the user to mangle the headers before parsing them.
       (gnus-run-hooks 'gnus-parse-headers-hook)
       (goto-char (point-min))

@@ -41,6 +41,7 @@
 (require 'mail-parse)
 (require 'mm-bodies)
 (require 'mm-encode)
+(require 'mml)
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
@@ -667,6 +668,8 @@ Valid valued are `unique' and `unsent'."
 (defvar message-mode-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
     (modify-syntax-entry ?% ". " table)
+    (modify-syntax-entry ?> ". " table)
+    (modify-syntax-entry ?< ". " table)
     table)
   "Syntax table used while in Message mode.")
 
@@ -4074,80 +4077,29 @@ regexp varstr."
 ;;; MIME functions
 ;;;
 
-(defun message-encode-message-body ()
-  "Examine the message body, encode it, and add the requisite headers."
-  (message-format-mime)
-  (when (featurep 'mule)
-    (let (old-headers)
-      (save-excursion
-	(save-restriction
-	  (message-narrow-to-headers-or-head)
-	  (unless (setq old-headers (message-fetch-field "mime-version"))
-	    (message-remove-header
-	     "^Content-Transfer-Encoding:\\|^Content-Type:\\|^Mime-Version:"
-	     t))
-	  (goto-char (point-max))
-	  (widen)
-	  (narrow-to-region (point) (point-max))
-	  (let* ((charset (mm-encode-body))
-		 (encoding (mm-body-encoding)))
-	    (when (consp charset)
-	      (error "Can't encode messages with multiple charsets (yet)"))
-	    (widen)
-	    (message-narrow-to-headers-or-head)
-	    (goto-char (point-max))
-	    (setq charset (or charset
-			      (mm-mule-charset-to-mime-charset 'ascii)))
-	    ;; We don't insert MIME headers if they only say the default.
-	    (when (and (not old-headers)
-		       (not (and (eq charset 'us-ascii)
-				 (eq encoding '7bit))))
-	      (mm-insert-rfc822-headers charset encoding))
-	    (mm-encode-body)))))))
-
 (defun message-insert-mime-part (file type)
   "Insert a multipart/alternative part into the buffer."
   (interactive
    (let* ((file (read-file-name "Insert file: " nil nil t))
 	  (type (mm-default-file-encoding file)))
-     (setq mime-type
-	   (read-string (format "MIME type for %s: " file) (car type)))
-     (unless (equal mime-type (car type))
-       (setq type (list mime-type)))
-     (list file type)))
+     (list file
+	   (completing-read
+	    (format "MIME type for %s: " file)
+	    (mapcar (lambda (m) (list (cdr m))) mailcap-mime-extensions)
+	    nil nil type))))
+  (insert (format "<part type=%s filename=\"%s\"></part>\n"
+		  type file)))
 
-  (insert (format "-*[%s %d]*-\n" (car type) (incf message-mime-part)))
-  (let ((current buffer-file-name)
-	(part message-mime-part))
-    (mm-with-unibyte-buffer
-      (insert-file file)
-      (mm-insert-headers type (mm-encode-buffer type) file)
-      (nndraft-save-mime-part current part))))
-
-(defun message-format-mime ()
-  "Insert all the MIME parts."
-  (when (not (zerop message-mime-part))
-    (message-narrow-to-headers)
-    (goto-char (point-max))
-    (let ((boundary (mm-insert-multipart-headers))
-	  (current buffer-file-name))
-      (widen)
-      (forward-line 1)
-      (insert "This is a MIME message.  If you are reading this -- *phphthth*.\n\n")
-      (insert "--" boundary "\n\n")
-      (while (re-search-forward
-	      "-\\*\\[\\([-a-z/A-Z0-9]+\\) \\([0-9]+\\)\\]\\*-" nil t)
-	(let ((part (string-to-number (match-string 2))))
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (insert "\n--" boundary "\n")
-	  (narrow-to-region (point) (point))
-	  (nndraft-get-mime-part current part)
-	  (goto-char (point-max))
-	  (widen)
-	  (insert "\n--" boundary "\n\n")
-	  ))
-      (goto-char (point-max))
-      (insert "\n--" boundary "--\n"))))
+(defun message-encode-message-body ()
+  (message-goto-body)
+  (narrow-to-region (point) (point-max))
+  (let ((new (mml-generate-mime)))
+    (delete-region (point-min) (point-max))
+    (insert new)
+    (goto-char (point-min))
+    (widen)
+    (delete-char -1)
+    (insert "Mime-Version: 1.0\n")))
     
 (run-hooks 'message-load-hook)
 

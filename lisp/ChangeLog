@@ -1,3 +1,30 @@
+Sun Nov 15 01:13:41 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.45 is released.
+
+1998-11-15 00:28:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nndraft.el (nndraft-save-mime-part): Removed.
+	(nndraft-get-mime-part): Ditto.
+
+	* message.el (message-format-mime-old): Removed.
+	(message-encode-message-body): Removed.
+	(message-encode-message-body): Renamed.
+
+1998-11-14 18:27:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Translate \r's.
+
+	* message.el (message-format-mime): Check message-mime-part.
+
+	* mm-encode.el (mm-mime-file-types): Removed.
+	(mm-default-file-encoding): New definition.
+
+Sat Nov 14 01:29:39 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-view.el (mm-inline-image): Use mm-insert-inline.
+	* gnus-art.el (gnus-mm-display-part): Go to correct position.
+
 Sat Nov 14 05:47:57 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.44 is released.
