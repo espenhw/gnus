@@ -1167,7 +1167,7 @@ See Info node `(gnus)Customizing Articles' and Info node
   :link '(custom-manual "(gnus)X-Face")
   :type gnus-article-treat-head-custom
   :set (lambda (symbol value)
-	 (custom-set-default
+	 (set-default
 	  symbol
 	  (cond ((or (boundp symbol) (get symbol 'saved-value))
 		 value)

@@ -1,3 +1,8 @@
+2003-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-treat-display-x-face): Use set-default instead
+	of custom-set-default which isn't available in old XEmacsen.
+
 2003-09-17  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-summary-resend-message-edit): Don't convert
