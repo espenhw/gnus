@@ -3826,8 +3826,8 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	    (set var (delq article (symbol-value var))))))
        ;; Adjust assocs.
        ((memq mark uncompressed)
-	(when (not (listp (car (symbol-value var)))))
-	  (set var (list (symbol-value var)))
+	(when (not (listp (cdr (symbol-value var))))
+	  (set var (list (symbol-value var))))
 	(when (not (listp (cdr articles)))
 	  (setq articles (list articles)))
 	(while articles
@@ -5001,7 +5001,7 @@ which existed when entering the ephemeral is reset."
   (suppress-keymap gnus-dead-summary-mode-map)
   (substitute-key-definition
    'undefined 'gnus-summary-wake-up-the-dead gnus-dead-summary-mode-map)
-  (let ((keys '("\C-d" "\r" "\177")))
+  (let ((keys '("\C-d" "\r" "\177" [delete])))
     (while keys
       (define-key gnus-dead-summary-mode-map
 	(pop keys) 'gnus-summary-wake-up-the-dead))))

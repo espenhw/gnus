@@ -1,3 +1,19 @@
+Tue Jul  1 01:51:24 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.61 is released.
+
+Tue Jul  1 01:33:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-adjust-marked-articles): Typo.
+
+Tue Jul  1 00:56:21 1997  Gary D. Foster  <Gary.Foster@corp.sun.com>
+
+	* gnus-topic.el (gnus-topic-mode-map): [delete].
+
+Tue Jul  1 00:53:04 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-demon.el (gnus-demon): Make sure Emacs really is idle.
+
 Sun Jun 29 21:32:13 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.60 is released.

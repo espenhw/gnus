@@ -223,7 +223,8 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	 ((null (setq idle (nth 2 handler)))
 	  ;; We do nothing.
 	  )
-	 ((not (numberp idle))
+	 ((and (not (numberp idle))
+	       (gnus-demon-is-idle-p))
 	  ;; We want to call this handler each and every time that
 	  ;; Emacs is idle.
 	  (ignore-errors (funcall (car handler))))
@@ -232,6 +233,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	  ;; for a specified number of timesteps.
 	  (and (not (memq (car handler) gnus-demon-idle-has-been-called))
 	       (< idle gnus-demon-idle-time)
+	       (gnus-demon-is-idle-p)
 	       (progn
 		 (ignore-errors (funcall (car handler)))
 		 ;; Make sure the handler won't be called once more in
