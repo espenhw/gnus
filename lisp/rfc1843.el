@@ -1,13 +1,10 @@
 ;;; rfc1843.el --- HZ (rfc1843) decoding
-;; Copyright (c) 1998 by Shenghuo Zhu <zsh@cs.rochester.edu>
+;; Copyright (c) 1998,1999 by Shenghuo Zhu <zsh@cs.rochester.edu>
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; $Revision: 5.2 $
 ;; Keywords: news HZ
-;; Time-stamp: <Tue Oct  6 23:48:49 EDT 1998 zsh>
 
-;; This file is not part of GNU Emacs, but the same permissions
-;; apply.
+;; This file is a part of GNU Emacs, but the same permissions apply.
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
@@ -139,9 +136,20 @@ ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
        (save-excursion
 	 (save-restriction
 	   (message-narrow-to-head)
-	   (goto-char (point-max))
-	   (widen)
-	   (rfc1843-decode-region (point) (point-max))))))
+	   (let* ((inhibit-point-motion-hooks t)
+		  (case-fold-search t)
+		  (ct (message-fetch-field "Content-Type" t))
+		  (ctl (and ct (ignore-errors
+				 (mail-header-parse-content-type ct)))))
+	     (if (and ctl (not (string-match "/" (car ctl)))) 
+		 (setq ctl nil))
+	     (goto-char (point-max))
+	     (widen)
+	     (forward-line 1)
+	     (narrow-to-region (point) (point-max))
+	     (when (or (not ctl)
+		       (equal (car ctl) "text/plain"))
+	       (rfc1843-decode-region (point) (point-max))))))))
 
 (defvar rfc1843-old-gnus-decode-header-function  nil)
 (defvar gnus-decode-header-methods)

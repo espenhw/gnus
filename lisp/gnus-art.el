@@ -1825,7 +1825,7 @@ should replace the \"Date:\" one, or should be added below it."
 	 (date (if (vectorp header) (mail-header-date header)
 		 header))
 	 (inhibit-point-motion-hooks t)
-	 (newline t)
+	 pos
 	 bface eface)
     (when (and date (not (string= date "")))
       (save-excursion
@@ -1843,16 +1843,17 @@ should replace the \"Date:\" one, or should be added below it."
 	  (let ((buffer-read-only nil))
  	    ;; Delete any old Date headers.
  	    (while (re-search-forward date-regexp nil t)
-	      (if newline
+	      (if pos
 		  (delete-region (progn (beginning-of-line) (point))
-				 (progn (end-of-line) (point)))
+				 (progn (forward-line 1) (point)))
 		(delete-region (progn (beginning-of-line) (point))
-			       (progn (forward-line 1) (point))))
-	      (setq newline nil))
-	    (when (re-search-forward tdate-regexp nil t)
+			       (progn (end-of-line) (point)))
+		(setq pos (point))))
+	    (when (and (not pos) (re-search-forward tdate-regexp nil t))
 	      (forward-line 1))
+	    (if pos (goto-char pos))
 	    (insert (article-make-date-line date (or type 'ut)))
-	    (when newline
+	    (when (not pos)
 	      (insert "\n")
 	      (forward-line -1))
 	    ;; Do highlighting.
@@ -1906,9 +1907,13 @@ should replace the \"Date:\" one, or should be added below it."
 	 (format-time-string gnus-article-time-format time))))
      ;; ISO 8601.
      ((eq type 'iso8601)
-      (concat
-       "Date: "
-       (format-time-string "%Y%m%dT%H%M%S" time)))
+      (let ((tz (car (current-time-zone time))))
+	(concat
+	 "Date: "
+	 (format-time-string "%Y%m%dT%H%M%S" time)
+	 (format "%s%02d%02d"
+		 (if (> tz 0) "+" "-") (/ (abs tz) 3600) 
+		 (/ (% (abs tz) 3600) 60)))))
      ;; Do an X-Sent lapsed format.
      ((eq type 'lapsed)
       ;; If the date is seriously mangled, the timezone functions are

@@ -147,7 +147,7 @@ To disable dissecting shar codes, for instance, add
 	      (setq cte (intern (downcase (mail-header-remove-whitespace
 					   (mail-header-remove-comments
 					    cte))))))
-	  (if (eq cte 'base64)
+	  (if (memq cte '(base64 quoted-printable))
 	      (setq charset 'gnus-encoded ;; a fake charset
 		    cte nil)))
 	(goto-char (point-max)))
