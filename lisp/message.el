@@ -3835,10 +3835,7 @@ Optional NEWS will use news to forward instead of mail."
 (defun message-resend (address)
   "Resend the current article to ADDRESS."
   (interactive
-   (list
-    (let ((mail-abbrev-mode-regexp ""))
-      (read-from-minibuffer
-       "Resend message to: " nil message-mode-map))))
+   (list (message-read-from-minibuffer "Resend message to: ")))
   (message "Resending message to %s..." address)
   (save-excursion
     (let ((cur (current-buffer))
@@ -4192,6 +4189,15 @@ regexp varstr."
 	(re-search-forward "^MIME-Version:")
 	(forward-line 1)
 	(insert "Content-Type: text/plain; charset=us-ascii\n")))))
+
+(defun message-read-from-minibuffer (prompt)
+  "Read from the minibuffer while providing abbrev expansion."
+  (if (fboundp 'mail-abbrevs-setup)
+      (let ((mail-abbrev-mode-regexp "")
+	    (minibuffer-setup-hook 'mail-abbrevs-setup))
+	(read-from-minibuffer prompt)))
+  (let ((minibuffer-setup-hook 'mail-abbrev-minibuffer-setup-hook))
+    (read-string prompt)))
 
 (provide 'message)
 
