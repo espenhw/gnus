@@ -1,3 +1,8 @@
+2000-05-10 12:17:58  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* qp.el (quoted-printable-encode-region): Bind tab-width to 1. Set
+	limit to 76.
+
 2000-05-10 09:11:48  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-sid-strip): New function.
