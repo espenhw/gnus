@@ -12906,9 +12906,44 @@ the telnet command requires a pseudo-tty allocation on an intermediate
 host.
 @end table
 
+Note that you may want to change the value for @code{nntp-end-of-line}
+to @samp{\n} (@pxref{Common Variables}).
+
+@item nntp-open-via-rlogin-and-netcat
+@findex nntp-open-via-rlogin-and-netcat
+Does essentially the same, but uses
+@uref{http://netcat.sourceforge.net/, netcat} instead of @samp{telnet}
+to connect to the real @acronym{NNTP} server from the intermediate host.
+
+@code{nntp-open-via-rlogin-and-netcat}-specific variables:
+
+@table @code
+@item nntp-via-netcat-command
+@vindex nntp-via-netcat-command
+Command used to connect to the real @acronym{NNTP} server from the
+intermediate host.  The default is @samp{nc}.  You can also use other
+programs like @uref{http://www.imasy.or.jp/~gotoh/ssh/connect.html,
+connect} instead.
+
+@item nntp-via-netcat-switches
+@vindex nntp-via-netcat-switches
+List of strings to be used as the switches to the
+@code{nntp-via-telnet-command} command.  The default is @code{nil}.
+
+@item nntp-via-rlogin-command
+@vindex nntp-via-rlogin-command
+Command used to log in on the intermediate host.  The default is
+@samp{rsh}, but @samp{ssh} is a popular alternative.
+
+@item nntp-via-rlogin-command-switches
+@vindex nntp-via-rlogin-command-switches
+List of strings to be used as the switches to
+@code{nntp-via-rlogin-command}.  The default is @code{nil}.
+@end table
+
 @item nntp-open-via-telnet-and-telnet
 @findex nntp-open-via-telnet-and-telnet
-Does essentially the same, but uses @samp{telnet} instead of
+Does essentially also the same, but uses @samp{telnet} instead of
 @samp{rlogin} to connect to the intermediate host.
 
 @code{nntp-open-via-telnet-and-telnet}-specific variables:
@@ -12941,6 +12976,8 @@ is @samp{bash\\|\$ *\r?$\\|> *\r?}.
 
 @end table
 
+Note that you may want to change the value for @code{nntp-end-of-line}
+to @samp{\n} (@pxref{Common Variables}).
 @end table
 
 
@@ -12993,7 +13030,7 @@ not work with named ports.
 @vindex nntp-end-of-line
 String to use as end-of-line marker when talking to the @acronym{NNTP}
 server.  This is @samp{\r\n} by default, but should be @samp{\n} when
-using a non native connection function.
+using a non native telnet connection function.
 
 @item nntp-telnet-command
 @vindex nntp-telnet-command

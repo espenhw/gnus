@@ -1,3 +1,8 @@
+2004-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Indirect Functions): Add
+	nntp-open-via-rlogin-and-netcat.
+
 2004-04-11  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-news.texi: Add OPML.
