@@ -1,3 +1,8 @@
+2003-06-07  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* nnmail.el (nnmail-split-fancy-match-partial-words): Doc string
+	fix.  Reported by Johan Bockg,Ae(Brd <bojohan+news@dd.chalmers.se>.
+
 2003-06-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-beginning-of-line): Docstring improvement.

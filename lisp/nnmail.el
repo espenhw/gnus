@@ -506,8 +506,9 @@ parameter.  It should return nil, `warn' or `delete'."
 (defcustom nnmail-split-fancy-match-partial-words nil
   "Whether to match partial words when fancy splitting.
 Normally, regexes given in `nnmail-split-fancy' are implicitly surrounded
-by \"\\<...\\>\".  If this is true, they are not implicitly surrounded by
-anything."
+by \"\\=\\<...\\>\".  If this variable is true, they are not implicitly\
+ surrounded
+by anything."
   :group 'nnmail
   :type 'boolean)
 
