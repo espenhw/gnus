@@ -1,3 +1,10 @@
+1999-12-13 13:14:42  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-threaded-retrieve-headers): Support
+	archived group.
+	(nnslashdot-sane-retrieve-headers): Ditto.
+	(nnslashdot-request-article): Ditto.
+
 1999-12-13 11:41:32  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnweb.el (nnweb-insert): Narrow to point.

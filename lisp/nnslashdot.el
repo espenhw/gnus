@@ -116,7 +116,7 @@
 	  (setq lines (count-lines
 		       (point)
 		       (search-forward
-			"A href=http://slashdot.org/article.pl")))
+			"A href=http://slashdot.org/article" nil t)))
 	  (push
 	   (cons
 	    1
@@ -140,11 +140,11 @@
 	    (setq startats (sort startats '<)))
 	  (goto-char point)
 	  (while (re-search-forward
-		  "<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score:\\([^)]+\\))"
+		  "<a name=\"\\([0-9]+\\)\"><\\(b\\|H4\\)>\\([^<]+\\)</\\(b\\|H4\\)>.*score:\\([^)]+\\))"
 		  nil t)
 	    (setq article (string-to-number (match-string 1))
-		  subject (match-string 2)
-		  score (match-string 3))
+		  subject (match-string 3)
+		  score (match-string 5))
 	    (when (string-match "^Re: *" subject)
 	      (setq subject (concat "Re: " (substring subject (match-end 0)))))
             (setq subject (nnweb-decode-entities-string subject))
@@ -215,7 +215,7 @@
 	(forward-line 2)
 	(setq lines (count-lines (point)
 				 (search-forward
-				  "A href=http://slashdot.org/article.pl")))
+				  "A href=http://slashdot.org/article")))
 	(push
 	 (cons
 	  1
@@ -234,11 +234,11 @@
 	 t)
 	(goto-char point)
 	(while (re-search-forward
-		"<a name=\"\\([0-9]+\\)\"><b>\\([^<]+\\)</b>.*score:\\([^)]+\\))"
+		  "<a name=\"\\([0-9]+\\)\"><\\(b\\|H4\\)>\\([^<]+\\)</\\(b\\|H4\\)>.*score:\\([^)]+\\))"
 		nil t)
 	  (setq article (string-to-number (match-string 1))
-		subject (match-string 2)
-		score (match-string 3))
+		subject (match-string 3)
+		score (match-string 5))
 	  (when (string-match "^Re: *" subject)
 	    (setq subject (concat "Re: " (substring subject (match-end 0)))))
           (setq subject (nnweb-decode-entities-string subject))
@@ -322,14 +322,14 @@
 	    (when (numberp article)
 	      (if (= article 1)
 		  (progn
-		    (re-search-forward "Posted by .* on ")
-		    (forward-line 1)
+		    (re-search-forward "Posted by <[^>]+>[^>]*<[^>]+> on ")
+		    (search-forward "<BR>")
 		    (setq contents
 			  (buffer-substring
 			   (point)
 			   (progn
 			     (re-search-forward
-			      "<p>.*A href=http://slashdot.org/article.pl")
+			      "<p>.*A href=http://slashdot\\.org/article")
 			     (match-beginning 0)))))
 		(search-forward (format "<a name=\"%d\">" (1- article)))
 		(setq contents
