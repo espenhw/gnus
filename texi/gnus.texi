@@ -5472,9 +5472,9 @@ argument @code{no-check}.  If it is non-nil,
 @code{gnus-get-new-news-hook} is not changed.  The optional first
 argument is ignored.
 
-For example, @code{(gnus-delay-initialize nil t)} means not to change
-@code{gnus-get-new-news-hook}.  Presumably, you want to use the demon
-for sending due delayed articles.  Just don't forget to set that up :-)
+For example, @code{(gnus-delay-initialize nil t)} means to do nothing.
+Presumably, you want to use the demon for sending due delayed articles.
+Just don't forget to set that up :-)
 @end table
 
 
