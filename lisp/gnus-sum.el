@@ -7187,8 +7187,16 @@ without any article massaging functions being run."
 	   (or (cdr (assq arg gnus-summary-show-article-charset-alist))
 	       (read-coding-system "Charset: ")))
 	  (gnus-newsgroup-ignored-charsets 'gnus-all))
+      (when (gnus-buffer-live-p gnus-article-buffer)
+	(save-excursion
+	  (set-buffer gnus-article-buffer)
+	  (mm-enable-multibyte)))
       (gnus-summary-select-article nil 'force)))
    ((not arg)
+    (when (gnus-buffer-live-p gnus-article-buffer)
+      (save-excursion
+	(set-buffer gnus-article-buffer)
+	(mm-enable-multibyte)))
     ;; Select the article the normal way.
     (gnus-summary-select-article nil 'force))
    (t
@@ -7207,7 +7215,11 @@ without any article massaging functions being run."
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
 	  (mm-destroy-parts gnus-article-mime-handles)))
-      (gnus-summary-select-article nil 'force))))
+      (gnus-summary-select-article nil 'force)
+      (when (gnus-buffer-live-p gnus-article-buffer)
+	(save-excursion
+	  (set-buffer gnus-article-buffer)
+	  (mm-disable-multibyte))))))
   (gnus-summary-goto-subject gnus-current-article)
   (gnus-summary-position-point))
 

@@ -1,3 +1,7 @@
+2000-05-04 10:31:24  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-show-article): En/disable multibyte.
+
 2000-05-03  Dave Love  <fx@gnu.org>
 
 	* gnus-ems.el (gnus-article-xface-ring-internal)
