@@ -1012,7 +1012,8 @@ Entries without port tokens default to DEFAULTPORT."
       (remove-text-properties start point properties object)
       (setq start (text-property-any point end property value)))
     (if start
-	(remove-text-properties start end properties object))))
+	(remove-text-properties start end properties object))
+    t))
 
 (provide 'gnus-util)
 

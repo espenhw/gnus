@@ -1,3 +1,9 @@
+2000-12-22 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-article-check-hidden-text): Return t.
+
+	* gnus-util.el (gnus-remove-text-properties-when): Return t.
+
 2000-12-22 03:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-dissect-multipart): Avoid errors owing to
