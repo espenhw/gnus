@@ -11776,6 +11776,14 @@ groups.
 The following variables can be altered to change its behavior:
 
 @table @code
+@item nnslashdot-threaded
+Whether @code{nnslashdot} should display threaded groups or not.  The
+default is @code{t}.  To be able to display threads, @code{nnslashdot}
+has to retrieve absolutely all comments in a group upon entry.  If a
+threaded display is not required, @code{nnslashdot} will only retrieve
+the comments that are actually wanted by the user.  Threading is nicer,
+but much, much slower than untreaded.
+
 @item nnslashdot-directory
 @vindex nnslashdot-directory
 Where @code{nnslashdot} will store its files.  The default value is
@@ -11791,7 +11799,7 @@ news articles and comments.  The default is
 @vindex nnslashdot-comments-url
 The @sc{url} format string that will be used to fetch comments.  The
 default is
-@samp{http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=4&mode=flat&startat=%d}.
+@samp{http://slashdot.org/comments.pl?sid=%s&threshold=%d&commentsort=%d&mode=flat&startat=%d}.
 
 @item nnslashdot-article-url
 @vindex nnslashdot-article-url

@@ -1,3 +1,14 @@
+1999-11-12 05:04:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el (nnslashdot-group-number): Doc fix.
+	(nnslashdot-request-list): Use Ultramode as well.
+	(nnslashdot-date-to-date): Be more lenient.
+	(nnslashdot-threaded): New function.
+
+1999-11-11 17:40:54  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-mime-internalize-part): Doc fix.
+
 1999-11-11 14:32:48  Steinar Bang  <sb@metis.no>
 
 	* nnweb.el (nnweb-type-definition): /=dnc

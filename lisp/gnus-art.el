@@ -2887,7 +2887,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (mm-display-part handle))))
 
 (defun gnus-mime-internalize-part (&optional handle)
-  "View the MIME part under point with an internal viewer."
+  "View the MIME part under point with an internal viewer.
+In no internal viewer is available, use an external viewer."
   (interactive)
   (gnus-article-check-buffer)
   (let* ((handle (or handle (get-text-property (point) 'gnus-data)))
