@@ -433,8 +433,7 @@ be a select method."
 				   gcc " ,")))))
 	   covered)
       (while (and (not covered) methods)
-	(setq covered
-	      (member (car methods) gnus-agent-covered-methods)
+	(setq covered (gnus-agent-method-p (car methods))
 	      methods (cdr methods)))
       covered)))
 
@@ -566,7 +565,7 @@ be a select method."
   (unless server
     (error "No server on the current line"))
   (let ((method (gnus-server-get-method nil (gnus-server-server-name))))
-    (when (member method gnus-agent-covered-methods)
+    (when (gnus-agent-method-p method)
       (error "Server already in the agent program"))
     (push method gnus-agent-covered-methods)
     (gnus-server-update-server server)
@@ -579,7 +578,7 @@ be a select method."
   (unless server
     (error "No server on the current line"))
   (let ((method (gnus-server-get-method nil (gnus-server-server-name))))
-    (unless (member method gnus-agent-covered-methods)
+    (unless (gnus-agent-method-p method)
       (error "Server not in the agent program"))
     (setq gnus-agent-covered-methods
 	  (delete method gnus-agent-covered-methods))
