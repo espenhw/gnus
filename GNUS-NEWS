@@ -31,7 +31,7 @@ and marked.  The data in `~/News/marks' has priority over the same
 data in `~/.newsrc.eld'.
 
 ** Picons can be displayed right from the textual address, see
-`gnus-picon-style'
+`gnus-picon-style'.  *Note Picons::.
 
 ** You can import and export your RSS subscriptions from OPML files.
 *Note RSS::.
@@ -84,10 +84,10 @@ message-generate-hashcash t)' to enable.
 
 ** Gnus supports new limiting commands in the Summary buffer: `/ r'
 (`gnus-summary-limit-to-replied') and `/ R'
-(`gnus-summary-limit-to-recipient').
+(`gnus-summary-limit-to-recipient').  *Note Limiting::.
 
 ** Gnus supports a new sort command in the Summary buffer: `C-c C-s C-t'
-(`gnus-summary-sort-by-recipient').
+(`gnus-summary-sort-by-recipient').  *Note Summary Sorting::
 
 ** The `nnrss' back end now supports multilingual text.  Non-ASCII group
 names for the `nnrss' groups are also supported.  *Note RSS::.
@@ -98,6 +98,10 @@ key ring when you click on them.
 ** Gnus uses narrowing to hide headers in Message buffers.  The
 `References' header is hidden by default.  To make all headers
 visible, use `(setq message-hidden-headers nil)'.
+
+** `gnus-decay-scores' can be a regexp matching score files.  This
+allows to decay only adaptive score files.  *Note Score Decays::.
+
 
 * For older news, see Gnus info node "New Features".
 
