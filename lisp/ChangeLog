@@ -1,3 +1,7 @@
+2002-09-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-completion-alist): Add Reply-To, From, etc.
+
 2002-09-18  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-request-expire-articles): Make flag setting
@@ -7652,7 +7656,7 @@
 	* gnus-sum.el (gnus-summary-mark-article-as-replied): Make into a
 	command.
 
-2001-03-31 01:04:54  Francis Litterio  <franl@world.omitthis.std.com>
+2001-03-31 01:04:54  Francis Litterio  <franl@world.std.com>
 
 	* message.el (message-set-auto-save-file-name): Don't use
 	asterisks under nt.

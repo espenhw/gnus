@@ -5879,7 +5879,9 @@ which specify the range to operate on."
 
 (defcustom message-completion-alist
   (list (cons message-newgroups-header-regexp 'message-expand-group)
-	'("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . message-expand-name))
+	'("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . message-expand-name)
+	'("^\\(Reply-To\\|From\\|Disposition-Notification-To\\|Return-Receipt-To\\):" 
+	  . message-expand-name))
   "Alist of (RE . FUN).  Use FUN for completion on header lines matching RE."
   :group 'message
   :type '(alist :key-type regexp :value-type function))
