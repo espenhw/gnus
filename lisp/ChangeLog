@@ -1,3 +1,8 @@
+2003-12-03  Simon Josefsson  <jas@extundo.com>
+
+	* mml.el (mml-generate-mime-1): Only flow encode messages when
+	use-hard-newlines is set.
+
 2003-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dns.el: Fix misplaced eval-when-compile.
