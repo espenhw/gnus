@@ -1,3 +1,7 @@
+2000-12-25  Lloyd Zusman <ljz@asfast.com>
+
+	* mml.el (mml-read-tag): Save tag location.
+
 2000-12-25  Simon Josefsson  <simon@josefsson.org>
 
 	* starttls.el: Sync with Emacs 21.
