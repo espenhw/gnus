@@ -6590,7 +6590,7 @@ Signature}.
 @kindex W W l (Summary)
 @findex gnus-article-hide-list-identifiers
 @vindex gnus-list-identifiers
-Hide list identifiers specified in @code{gnus-list-identifiers}. Theese
+Hide list identifiers specified in @code{gnus-list-identifiers}. These
 are strings some list servers add to the beginning of all @code{Subject}
 headers---for example, @samp{[zebra 4711]}.
 
@@ -8640,7 +8640,7 @@ controlling variable is a predicate list, as described above.
 
 The following treatment options are available.  The easiest way to
 customize this is to examine the @code{gnus-article-treat} customization
-group. Values in brackets are suggested sensible values. Others are possible
+group. Values in parenthesis are suggested sensible values. Others are possible
 but those listed are probably sufficient for most people.
 
 @table @code
@@ -10621,7 +10621,7 @@ what. For a complete list of predicates, see RFC2060 §6.4.4.
 @item :fetchflag
 How to flag fetched articles on the server, the default @samp{\Deleted}
 will mark them as deleted, an alternative would be @samp{\Seen} which
-would simply mark them as read. Theese are the two most likely choices,
+would simply mark them as read. These are the two most likely choices,
 but more flags are defined in RFC2060 §2.3.2.
 
 @item :dontexpunge
@@ -17154,7 +17154,7 @@ In short---to use Smiley in Gnus, put the following in your
 @file{.gnus.el} file:
 
 @lisp
-(setq gnus-treat-display-smiley t)
+(setq gnus-treat-display-smileys t)
 @end lisp
 
 Smiley maps text smiley faces---@samp{:-)}, @samp{:-=}, @samp{:-(} and
@@ -21070,7 +21070,7 @@ mentioned) marks. Mark is a list of marks; where each mark is a
 symbol. Currently used marks are @code{read}, @code{tick}, @code{reply},
 @code{expire}, @code{killed}, @code{dormant}, @code{save},
 @code{download} and @code{unsend}, but your backend should, if possible,
-not limit itself to theese.
+not limit itself to these.
 
 Given contradictory actions, the last action in the list should be the
 effective one. That is, if your action contains a request to add the

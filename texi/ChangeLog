@@ -1,3 +1,17 @@
+1999-12-04 01:16:52  Yoshiki Hayashi  <t90553@m.ecc.u-tokyo.ac.jp>
+
+	* gnus.texi (group-buffer): Fix "theese".
+
+1999-12-04 01:13:51  Thomas Gellekum  <tg@ihf.rwth-aachen.de>
+
+	* gnus.texi (Height): Typo fix.
+
+1999-11-13  Adrian Aichner  <aichner@ecf.teradyne.com>
+
+	* xemacs.mak: New NMAKE file to support build and install of info
+	documentation on Windows NT, requiring the `texinfo' XEmacs
+	package.
+
 1999-12-03 00:02:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Other Gnus Versions): New.

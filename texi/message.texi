@@ -275,6 +275,12 @@ the evidence of previous forwards (such as @samp{Fwd:}, @samp{Re:},
 @samp{(fwd)}) removed before the new subject is
 constructed.  The default value is @code{nil}.
 
+@item message-forward-as-mime
+@vindex message-forward-as-mime
+If this variable is @code{t} (the default), forwarded messages are
+included as inline MIME RFC822 parts.  If it's @code{nil}, forwarded
+messages will just be copied inline to the new message, like previous,
+non MIME-savvy versions of gnus would do.
 @end table
 
 
