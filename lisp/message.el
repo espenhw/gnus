@@ -863,6 +863,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar message-this-is-news nil)
 (defvar message-this-is-mail nil)
 (defvar message-draft-article nil)
+(defvar message-mime-part nil)
 
 ;; Byte-compiler warning
 (defvar gnus-active-hashtb)
@@ -1273,6 +1274,8 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-z" 'message-kill-to-signature)
   (define-key message-mode-map "\M-\r" 'message-newline-and-reformat)
 
+  (define-key message-mode-map "\C-c\C-a" 'message-insert-mime-part)
+
   (define-key message-mode-map "\t" 'message-tab))
 
 (easy-menu-define
@@ -1341,8 +1344,7 @@ C-c C-z  message-kill-to-signature (kill the text up to the signature).
 C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (interactive)
   (kill-all-local-variables)
-  (make-local-variable 'message-reply-buffer)
-  (setq message-reply-buffer nil)
+  (set (make-local-variable 'message-reply-buffer) nil)
   (make-local-variable 'message-send-actions) 
   (make-local-variable 'message-exit-actions) 
   (make-local-variable 'message-kill-actions)
@@ -1384,10 +1386,9 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (make-local-variable 'message-newsreader)
   (make-local-variable 'message-mailer)
   (make-local-variable 'message-post-method)
-  (make-local-variable 'message-sent-message-via)
-  (setq message-sent-message-via nil)
-  (make-local-variable 'message-checksum)
-  (setq message-checksum nil)
+  (set (make-local-variable 'message-sent-message-via) nil)
+  (set (make-local-variable 'message-checksum) nil)
+  (set (make-local-variable 'message-mime-part) 0)
   ;;(when (fboundp 'mail-hist-define-keys)
   ;;  (mail-hist-define-keys))
   (when (string-match "XEmacs\\|Lucid" emacs-version)
@@ -4075,6 +4076,7 @@ regexp varstr."
 
 (defun message-encode-message-body ()
   "Examine the message body, encode it, and add the requisite headers."
+  (message-format-mime)
   (when (featurep 'mule)
     (let (old-headers)
       (save-excursion
@@ -4082,7 +4084,8 @@ regexp varstr."
 	  (message-narrow-to-headers-or-head)
 	  (unless (setq old-headers (message-fetch-field "mime-version"))
 	    (message-remove-header
-	     "^Content-Transfer-Encoding:\\|^Content-Type:\\|^Mime-Version:" t))
+	     "^Content-Transfer-Encoding:\\|^Content-Type:\\|^Mime-Version:"
+	     t))
 	  (goto-char (point-max))
 	  (widen)
 	  (narrow-to-region (point) (point-max))
@@ -4102,6 +4105,50 @@ regexp varstr."
 	      (mm-insert-rfc822-headers charset encoding))
 	    (mm-encode-body)))))))
 
+(defun message-insert-mime-part (file type)
+  "Insert a multipart/alternative part into the buffer."
+  (interactive
+   (let* ((file (read-file-name "Insert file: " nil nil t))
+	  (type (mm-default-file-encoding file)))
+     (setq mime-type
+	   (read-string (format "MIME type for %s: " file) (car type)))
+     (unless (equal mime-type (car type))
+       (setq type (list mime-type)))
+     (list file type)))
+
+  (insert (format "-*[%s %d]*-\n" (car type) (incf message-mime-part)))
+  (let ((current buffer-file-name)
+	(part message-mime-part))
+    (mm-with-unibyte-buffer
+      (insert-file file)
+      (mm-insert-headers type (mm-encode-buffer type) file)
+      (nndraft-save-mime-part current part))))
+
+(defun message-format-mime ()
+  "Insert all the MIME parts."
+  (when (not (zerop message-mime-part))
+    (message-narrow-to-headers)
+    (goto-char (point-max))
+    (let ((boundary (mm-insert-multipart-headers))
+	  (current buffer-file-name))
+      (widen)
+      (forward-line 1)
+      (insert "This is a MIME message.  If you are reading this -- *phphthth*.\n\n")
+      (insert "--" boundary "\n\n")
+      (while (re-search-forward
+	      "-\\*\\[\\([-a-z/A-Z0-9]+\\) \\([0-9]+\\)\\]\\*-" nil t)
+	(let ((part (string-to-number (match-string 2))))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert "\n--" boundary "\n")
+	  (narrow-to-region (point) (point))
+	  (nndraft-get-mime-part current part)
+	  (goto-char (point-max))
+	  (widen)
+	  (insert "\n--" boundary "\n\n")
+	  ))
+      (goto-char (point-max))
+      (insert "\n--" boundary "--\n"))))
+    
 (run-hooks 'message-load-hook)
 
 (provide 'message)

@@ -1,3 +1,29 @@
+Sat Nov 14 05:47:57 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.44 is released.
+
+1998-11-14 03:59:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-format-mime): New function.
+
+	* nndraft.el (nndraft-save-mime-part): New function.
+	(nndraft-get-mime-part): New function.
+
+	* mm-encode.el (mm-default-file-encoding): New function.
+	(mm-content-transfer-encoding): New function.
+	(mm-encode-buffer): New function.
+
+	* message.el: New command.
+	(message-mime-part): New variable.
+	(message-insert-mime-part): New command.
+
+	* mm-encode.el (mm-encode-content-transfer-encoding): New
+	function. 
+
+	* mm-util.el (mm-content-transfer-encoding-defaults): New
+	variable. 
+	(mm-mime-file-types): Taken from TM.
+
 Sat Nov 14 01:51:06 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.43 is released.

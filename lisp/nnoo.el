@@ -105,11 +105,11 @@
 			(cdr (assq pbackend (nnoo-parents backend))))
     (prog1
 	(apply function args)
-    ;; Copy the changed variables back into the child.
-    (let ((vars (cdr (assq pbackend (nnoo-parents backend)))))
-      (while vars
-	(set (cadar vars) (symbol-value (caar vars)))
-	(setq vars (cdr vars)))))))
+      ;; Copy the changed variables back into the child.
+      (let ((vars (cdr (assq pbackend (nnoo-parents backend)))))
+	(while vars
+	  (set (cadar vars) (symbol-value (caar vars)))
+	  (setq vars (cdr vars)))))))
 
 (defun nnoo-execute (backend function &rest args)
   "Execute FUNCTION on behalf of BACKEND."
