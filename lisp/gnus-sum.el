@@ -5362,7 +5362,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	 (min (car active))
 	 (max (cdr active))
 	 (types gnus-article-mark-lists)
-	 marks var articles article mark mark-type p-articles
+	 marks var articles article mark mark-type
          bgn end)
 
     (dolist (marks marked-lists)
@@ -5376,35 +5376,27 @@ If SELECT-ARTICLES, only select those articles from GROUP."
        ;; Adjust "simple" lists - compressed yet unsorted
        ((eq mark-type 'list)
         ;; Simultaneously uncompress and clip to active range
-        (setq p-articles marks
-              articles (cdr p-articles))
-        (while (setq article (car articles))
-          (when (cond ((consp article)
-                       (setq bgn (max (car article) min)
-                             end (min (cdr article) max))
-                       (if (> bgn end)
-                           t    ; range excluded - splice out of marks
-                         (setcar articles bgn) ; First value replaces range.
-                         (setq bgn (1+ bgn))
-                         (while (<= bgn end)
-                           (setq articles (setcdr articles (cons bgn (cdr articles)))
-                                 bgn (1+ bgn)))
-                         (setq p-articles articles
-                               articles (cdr articles))
-                         nil))
-                      ((or (< article min)
-                           (> article max))
-                       t        ; value excluded - splice out of marks
-                       )
-                      (t
-                       (setq p-articles articles
-                             articles (cdr articles))
-                       nil))
-            ;; perform slice to remove article
-            (if (setcar articles (cadr articles))
-                (setcdr articles (cddr articles))
-              (setcdr p-articles nil))))
-        (set var (cdr marks)))
+        ;; See gnus-uncompress-range for a description of possible marks
+        (let (l lh)
+          (if (not (cadr marks))
+              (set var nil)
+            (setq articles (if (numberp (cddr marks))
+                               (list (cdr marks))
+                             (cdr marks))
+                  lh (cons nil nil)
+                  l lh)
+
+            (while (setq article (pop articles))
+              (cond ((consp article)
+                     (setq bgn (max (car article) min)
+                           end (min (cdr article) max))
+                     (while (<= bgn end)
+                       (setq l (setcdr l (cons bgn nil))
+                             bgn (1+ bgn))))
+                    ((and (<= min article)
+                          (>= max article))
+                     (setq l (setcdr l (cons article nil))))))
+            (set var (cdr lh)))))
        ;; Adjust assocs.
        ((eq mark-type 'tuple)
 	(set var (setq articles (cdr marks)))

@@ -1,3 +1,9 @@
+2004-01-23  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-sum.el (gnus-adjust-marks): Now correctly handles a list of
+	marks consisting of a single range {for example, (3 . 5)} rather
+	than a list of a single range { ((3 . 5)) }.
+
 2004-01-23  Jesper Harder  <harder@ifa.au.dk>
 
 	* spam-stat.el (spam-stat-store-gnus-article-buffer): Use
