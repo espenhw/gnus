@@ -10824,7 +10824,8 @@ If ALL is a number, fetch this number of articles."
 		      (setq older (subseq older 0 all))))))))
 	(if (not older)
 	    (message "No old news.")
-	  (gnus-summary-insert-articles older)
+	  (let ((gnus-fetch-old-headers t))
+	    (gnus-summary-insert-articles older))
 	  (gnus-summary-limit (gnus-union older old))))
     (gnus-summary-position-point)))
 
