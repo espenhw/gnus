@@ -63,6 +63,13 @@
   :group 'pgg
   :type 'boolean)
 
+(defcustom pgg-passphrase-cache-expiry 16
+  "How many seconds the passphrase is cached.
+Whether the passphrase is cached at all is controlled by
+`pgg-cache-passphrase'."
+  :group 'pgg
+  :type 'integer)
+
 (defvar pgg-messages-coding-system nil
   "Coding system used when reading from a PGP external process.")
 

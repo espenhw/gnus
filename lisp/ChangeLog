@@ -1,3 +1,9 @@
+2002-10-30  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-def.el (pgg-passphrase-cache-expiry): New, defcustom.
+
+	* pgg.el (pgg-passphrase-cache-expiry): Removed.
+
 2002-10-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mm-view.el (mm-w3m-local-map-property): Make it work with older

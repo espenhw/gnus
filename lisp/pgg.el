@@ -87,7 +87,6 @@
 	(set-buffer standard-output)
 	(insert-buffer-substring pgg-errors-buffer)))))
 
-(defvar pgg-passphrase-cache-expiry 16)
 (defvar pgg-passphrase-cache (make-vector 7 0))
 
 (defvar pgg-read-passphrase nil)
