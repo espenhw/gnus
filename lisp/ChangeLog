@@ -1,5 +1,7 @@
 2002-07-27  Simon Josefsson  <jas@extundo.com>
 
+	* flow-fill.el (fill-flowed): Disable filladapt-mode.
+
 	* gnus-sieve.el (gnus-sieve-guess-rule-for-article): Don't
 	regexp-quote, Cyrus Sieve is fixed.
 
