@@ -1,3 +1,12 @@
+2004-10-29  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-summary-score-preferred-header): global preference
+	for people who want to override the default SpamAssassin over
+	Bogofilter preference (when both are set)
+	(spam-necessary-extra-headers): add spam-use-bogofilter as an option
+	(spam-user-format-function-S): check spam-summary-score-preferred-header
+	(spam-extra-header-to-number): add X-Bogosity header parsing
+
 2004-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-configure-posting-styles): Work with empty

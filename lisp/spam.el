@@ -379,6 +379,14 @@ Only meaningful if you enable `spam-use-regex-body'."
   :type '(repeat (regexp :tag "Regular expression to match ham body"))
   :group 'spam)
 
+(defcustom spam-summary-score-preferred-header nil
+  "Preferred header to use for spam-summary-score."
+  :type '(choice :tag "Header name"
+	  (symbol :tag "SpamAssassin etc" X-Spam-Status)
+	  (symbol :tag "Bogofilter"       X-Bogosity)
+	  (const  :tag "No preference, take best guess." nil))
+  :group 'spam)
+
 (defgroup spam-ifile nil
   "Spam ifile configuration."
   :group 'spam)
@@ -1124,11 +1132,13 @@ backends)."
 	      spam-use-spamassassin-headers
 	      spam-use-regex-headers)
       (push 'X-Spam-Status list))
+    (when spam-use-bogofilter
+      (push 'X-Bogosity list))
     list))
 
 (defun spam-user-format-function-S (headers)
   (when headers
-    (spam-summary-score headers)))
+    (spam-summary-score headers spam-summary-score-preferred-header)))
 
 (defun spam-article-sort-by-spam-status (h1 h2)
   "Sort articles by score."
@@ -1142,7 +1152,8 @@ backends)."
     result))
 
 (defun spam-extra-header-to-number (header headers)
-  "Transform an extra header to a number."
+  "Transform an extra HEADER to a number, using list of HEADERS.
+Note this has to be fast."
   (if (gnus-extra-header header headers)
       (cond
        ((eq header 'X-Spam-Status)
@@ -1152,6 +1163,12 @@ backends)."
        ;; for CRM checking, it's probably faster to just do the string match
        ((and spam-use-crm114 (string-match "( pR: \\([0-9.-]+\\)" header))
 	(match-string 1 header))
+       ((eq header 'X-Bogosity)
+	(string-to-number (gnus-replace-in-string
+			   (gnus-replace-in-string
+			    (gnus-extra-header header headers)
+			    ".*spamicity=" "")
+			   ",.*" "")))
        (t nil))
     nil))
 
