@@ -1,3 +1,11 @@
+Tue Aug 27 00:46:48 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnweb.el (nnweb-dejanews-create-mapping): Dummy function.
+
+Tue Aug 27 00:43:33 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.16 is released.
+
 Tue Aug 27 00:36:58 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-topic.el (gnus-topic-set-parameters): Bugout.

@@ -246,9 +246,9 @@
 (defun nnweb-dejanews-create-mapping ()
   "Perform the search and create an number-to-url alist."
   (save-excursion
-    ;(set-buffer nnweb-buffer)
-    ;(erase-buffer)
-    (when (or t (funcall (nnweb-definition 'search) nnweb-search))
+    (set-buffer nnweb-buffer)
+    (erase-buffer)
+    (when (funcall (nnweb-definition 'search) nnweb-search)
       (let ((i 0)
 	    (more t)
 	    (case-fold-search t)
