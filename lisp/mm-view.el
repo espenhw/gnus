@@ -230,6 +230,9 @@ will not be substituted.")
 (defvar mm-w3m-mode-dont-bind-keys (list [up] [right] [left] [down])
   "List of keys which should not be bound for the emacs-w3m commands.")
 
+(defvar mm-w3m-mode-ignored-keys (list [down-mouse-2])
+  "List of keys which should ignore.")
+
 (defvar mm-w3m-setup nil
   "Whether gnus-article-mode has been setup to use emacs-w3m.")
 
@@ -246,6 +249,10 @@ will not be substituted.")
       (dolist (key mm-w3m-mode-dont-bind-keys)
 	(condition-case nil
 	    (define-key mm-w3m-mode-map key nil)
+	  (error)))
+      (dolist (key mm-w3m-mode-ignored-keys)
+	(condition-case nil
+	    (define-key mm-w3m-mode-map key 'ignore)
 	  (error))))
     (unless (assq 'gnus-article-mode w3m-cid-retrieve-function-alist)
       (push (cons 'gnus-article-mode 'mm-w3m-cid-retrieve)
