@@ -251,6 +251,16 @@
     'balloon-help
     ,(intern (format "gnus-balloon-face-%d" type))))
 
+(defun gnus-spec-tab (column)
+  (if (> column 0)
+      `(insert (make-string (max (- ,column (current-column)) 0) ? ))
+    `(progn
+       (if (> (current-column) ,(abs column))
+	   (delete-region (point)
+			  (- (point) (- (current-column) ,(abs column))))
+	 (insert (make-string (max (- ,(abs column) (current-column)) 0)
+			      ? ))))))
+
 (defun gnus-correct-length (string)
   "Return the correct width of STRING."
   (let ((length 0))
@@ -402,6 +412,10 @@
     (goto-char (point-min))
     (while (re-search-forward "%\\([-0-9]+\\)?C" nil t)
       (replace-match "\"(point)\"" t t))
+    ;; Convert TAB commands.
+    (goto-char (point-min))
+    (while (re-search-forward "%\\([-0-9]+\\)=" nil t)
+      (replace-match (format "\"(tab %s)\"" (match-string 1)) t t))
     ;; Convert the buffer into the spec.
     (goto-char (point-min))
     (let ((form (read (current-buffer))))
@@ -416,6 +430,8 @@
 	     (gnus-parse-simple-format sform spec-alist t))
 	    ((eq (car sform) 'point)
 	     `(gnus-put-text-property (1- (point)) (point) 'gnus-position t))
+	    ((eq (car sform) 'tab)
+	     (gnus-spec-tab (cadr sform)))
 	    (t
 	     (funcall (intern (format "gnus-%s-face-function" (car sform)))
 		      (gnus-complex-form-to-spec (cddr sform) spec-alist)

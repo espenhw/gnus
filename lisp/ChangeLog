@@ -1,5 +1,9 @@
 2001-08-19 16:14:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-spec.el (gnus-parse-complex-format): React to ?=.
+	(gnus-complex-form-to-spec): Insert tab.
+	(gnus-spec-tab): New function.
+
 	* gnus-sum.el (gnus-select-newsgroup): Set the marks before
 	entering the group.
 
