@@ -74,10 +74,12 @@
     (dolist (elem list)
       (when (and (equal (car elem) "node")
 		 node)
+	(push (list "save" nil) node)
 	(push (nreverse node) ast)
 	(setq node nil))
       (push elem node))
     (when node
+      (push (list "save" nil) node)
       (push (nreverse node) ast))
     (cons title (nreverse ast))))
 
@@ -104,6 +106,11 @@
 
 (defun assistant-get (ast command)
   (cadr (assoc command ast)))
+
+(defun assistant-set (ast command value)
+  (let ((elem (assoc command ast)))
+    (when elem
+      (setcar (nthcdr 3 elem) value))))
 
 (defun assistant-get-list (ast command)
   (let ((result nil))
@@ -136,13 +143,13 @@
       (pop ast))
     (car ast)))
 
-(defun assistant-insert-previous-node (node)
-  (insert (format "[ << Go back to %s ]  " node)))
+(defun assistant-previous-node-text (node)
+  (format "[ << Go back to %s ]  " node))
 
-(defun assistant-insert-next-node (node)
+(defun assistant-next-node-text (node)
   (if node
-      (insert (format "[ Proceed to %s >> ]" node))
-    (insert "[ Finish ]")))
+      (format "[ Proceed to %s >> ]" node)
+    "[ Finish ]"))
 
 (defun assistant-render-node (node-name)
   (let ((node (assistant-find-node node-name)))
@@ -152,9 +159,38 @@
     (insert node-name "\n\n")
     (insert (assistant-get node "text") "\n\n")
     (when assistant-previous-node
-      (assistant-insert-previous-node assistant-previous-node))
-    (assistant-insert-next-node (assistant-find-next-node))
+      (assistant-node-button 'previous assistant-previous-node))
+    (assistant-node-button 'next (assistant-find-next-node))
     (insert "\n")))
+
+(defun assistant-node-button (type node)
+  (let ((text (if (eq type 'next)
+		  (assistant-next-node-text node)
+		(assistant-previous-node-text node))))
+    (widget-create
+     'push-button
+     :assistant-node node
+     :assistant-type type
+     :notify (lambda (widget &rest ignore)
+	       (let* ((node (widget-get widget ':assistant-node))
+		      (type (widget-get widget ':assistant-type)))
+		 (when (eq type 'next)
+		   (assistant-validate node))
+		 (if (null node)
+		     (assistant-finish)
+		   (assistant-render-node node))))
+     text)
+    (use-local-map widget-keymap)))
+
+(defun assistant-validate (node-name)
+  (let* ((node (assistant-find-node node-name))
+	 (validation (assistant-get node "validate"))
+	 result)
+    (when validation
+      (when (setq result (assistant-eval validation node))
+	(unless (y-or-n-p (format "Error: %s.  Continue? " result))
+	  (error "%s" result))))
+    (assistant-set node "save" t)))
 
 (defun assistant-find-next-node ()
   (let* ((node (assistant-find-node node-name))
@@ -174,5 +210,17 @@
     (eval
      `(let ,bindings
 	,@form))))
+
+(defun assistant-finish ()
+  (let ((results nil)
+	result)
+    (dolist (node (cdr assistant-data))
+      (when (assistant-get node "save")
+	(setq result (assistant-get node "result"))
+	(push (list (car result)
+		    (assistant-eval (cadr result) node))
+	      results)))
+    (message "Results: "
+	     (nreverse results))))
 
 (provide 'assistant)
