@@ -28,6 +28,7 @@
 (require 'nnvirtual)
 (require 'gnus-sum)
 (eval-when-compile
+  (require 'timer)
   (require 'cl)
   (require 'gnus-score))
 
