@@ -2,6 +2,7 @@
 
 	* gnus-xmas.el (gnus-xmas-create-image): Take optional
 	parameters. 
+	(gnus-xmas-put-image): Allow non-strings to be passed.
 
 	* gnus-art.el (article-display-x-face): Use optional parameters. 
 

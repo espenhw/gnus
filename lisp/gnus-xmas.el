@@ -832,7 +832,7 @@ XEmacs compatibility workaround."
 		(car (last (split-string file "[.]"))))))
     (if (equal type "xbm")
 	(make-glyph (list (cons 'x file)))
-      (with-tmp-buffer
+      (with-temp-buffer
        (if data-p
 	   (insert file)
 	 (insert-file-contents file))
@@ -847,7 +847,7 @@ XEmacs compatibility workaround."
 Warning: Don't insert text immediately after the image."
   (let ((begin (point))
 	extent)
-    (insert string)
+    (insert (or string " "))
     (setq extent (make-extent begin (point)))
     (set-extent-property extent 'gnus-image t)
     (set-extent-property extent 'duplicable t)
