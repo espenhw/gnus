@@ -1354,7 +1354,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.13"
+(defconst gnus-version "Gnus v5.0.15"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -6869,12 +6869,13 @@ If READ-ALL is non-nil, all articles in the group are selected."
       (cond ((or (eq 'tick (car prev)) (eq 'dormant (car prev)))
 	     ;; Make sure that all ticked articles are a subset of the
 	     ;; unread/unselected articles.
-	     (while m
-	       (if (or (memq (car m) gnus-newsgroup-unreads)
-		       (memq (car m) gnus-newsgroup-unselected))
-		   (setq prev m)
-		 (setcdr prev (cdr m)))
-	       (setq m (cdr m))))
+	     ;;(while m
+	     ;;  (if (or (memq (car m) gnus-newsgroup-unreads)
+	     ;;  (memq (car m) gnus-newsgroup-unselected))
+	     ;; (setq prev m)
+	     ;; (setcdr prev (cdr m)))
+	     ;; (setq m (cdr m)))
+	     )
 	    ((eq 'score (car prev))
 	     ;; Scored articles should be a subset of
 	     ;; unread/unselected articles. 
