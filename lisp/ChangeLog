@@ -1,7 +1,7 @@
 2001-10-17  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-msg.el (gnus-post-method): Changed two instances of
-	'active' to 'current' and one 'null' to 'not.
+	'active' to 'current' and one 'null' to 'not'.
 
 2001-10-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Katsumi Yamaoka  <yamaoka@jpl.org>.
