@@ -105,13 +105,19 @@ is not given."
 	    domain		;bufer field
 	    )))
 
+(eval-when-compile
+  (defmacro ntlm-string-as-unibyte (string)
+    (if (fboundp 'string-as-unibyte)
+	`(string-as-unibyte ,string)
+      string)))
+
 (defun ntlm-build-auth-response (challenge user password-hashes)
   "Return the response string to a challenge string CHALLENGE given by
 the NTLM based server for the user USER and the password hash list
 PASSWORD-HASHES.  NTLM uses two hash values which are represented
 by PASSWORD-HASHES.  PASSWORD-HASHES should be a return value of
  (list (ntlm-smb-passwd-hash password) (ntlm-md4hash password))"
-  (let* ((rchallenge (string-as-unibyte challenge))
+  (let* ((rchallenge (ntlm-string-as-unibyte challenge))
 	 ;; get fields within challenge struct
 	 ;;(ident (substring rchallenge 0 8))	;ident, 8 bytes
 	 ;;(msgType (substring rchallenge 8 12))	;msgType, 4 bytes

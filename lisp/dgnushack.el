@@ -48,55 +48,6 @@
 
 ;(push "/usr/share/emacs/site-lisp" load-path)
 
-;; Define compiler macros for the functions provided by cl in old Emacsen.
-(unless (featurep 'xemacs)
-  (define-compiler-macro butlast (&whole form x &optional n)
-    (if (>= emacs-major-version 21)
-	form
-      (if n
-	  `(let ((x ,x)
-		 (n ,n))
-	     (if (and n (<= n 0))
-		 x
-	       (let ((m (length x)))
-		 (or n (setq n 1))
-		 (and (< n m)
-		      (progn
-			(if (> n 0)
-			    (progn
-			      (setq x (copy-sequence x))
-			      (setcdr (nthcdr (- (1- m) n) x) nil)))
-			x)))))
-	`(let* ((x ,x)
-		(m (length x)))
-	   (and (< 1 m)
-		(progn
-		  (setq x (copy-sequence x))
-		  (setcdr (nthcdr (- m 2) x) nil)
-		  x))))))
-
-  (define-compiler-macro remove (&whole form item seq)
-    (if (>= emacs-major-version 21)
-	form
-      `(delete ,item (copy-sequence ,seq))))
-
-  (define-compiler-macro mapc (&whole form fn seq &rest rest)
-    (if (>= emacs-major-version 21)
-	form
-      (if rest
-	  `(let* ((fn ,fn)
-		  (seq ,seq)
-		  (args (list seq ,@rest))
-		  (m (apply (function min) (mapcar (function length) args)))
-		  (n 0))
-	     (while (< n m)
-	       (apply fn (mapcar (function (lambda (arg) (nth n arg))) args))
-	       (setq n (1+ n)))
-	     seq)
-	`(let ((seq ,seq))
-	   (mapcar ,fn seq)
-	   seq)))))
-
 ;; If we are building w3 in a different directory than the source
 ;; directory, we must read *.el from source directory and write *.elc
 ;; into the building directory.  For that, we define this function
@@ -244,9 +195,6 @@ dgnushack-compile."
 
 (defun dgnushack-compile (&optional warn)
   ;;(setq byte-compile-dynamic t)
-  (when (and (not (featurep 'xemacs))
-	     (< emacs-major-version 21))
-    (setq max-specpdl-size 1200))
   (unless warn
     (setq byte-compile-warnings
 	  '(free-vars unresolved callargs redefine)))

@@ -673,9 +673,9 @@ network.  The corresponding back end must have a 'request-post method."
 	    (progn
 	      (message-news (gnus-group-real-name gnus-newsgroup-name))
 	      (set (make-local-variable 'gnus-discouraged-post-methods)
-		   (delq
+		   (remove
 		    (car (gnus-find-method-for-group gnus-newsgroup-name))
-		    (copy-sequence gnus-discouraged-post-methods))))))
+		    gnus-discouraged-post-methods)))))
       (save-excursion
 	(set-buffer buffer)
 	(setq gnus-newsgroup-name group)))))

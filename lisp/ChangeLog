@@ -1,3 +1,17 @@
+2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* ntlm.el (ntlm-string-as-unibyte): New macro.
+	(ntlm-build-auth-response): Use it.
+
+	Remove Emacs 20 stuff:
+	* dgnushack.el (dgnushack-compile): Don't modify max-specpdl-size.
+	(butlast, mapc, remove): Remove the compiler macros.
+	* gnus-msg.el (gnus-summary-news-other-window): Use remove instead
+	of delq and copy-sequence.
+	* gnus-art.el (popup-menu): Remove the compiler macro.
+	* nnmail.el (nnmail-split-fancy): Don't support customizing with
+	Emacs 20.
+
 2004-01-05  Simon Josefsson  <jas@extundo.com>
 
 	* ntlm.el: Fix namespace.  Change smb-passwd-hash into
