@@ -1,3 +1,7 @@
+2005-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nntp.el (nntp-request-update-info): Always return nil.
+
 2005-01-28  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* message.el (message-beginning-of-line): Change the behavior when

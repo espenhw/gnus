@@ -1073,8 +1073,8 @@ command whose response triggered the error."
 				     (null (cdr seen)))
 				(list (cons (car seen) (car seen)))
 			      seen)))
-      (nnheader-message 8 "Updating marks for %s...done" group))
-    info))
+      (nnheader-message 8 "Updating marks for %s...done" group)))
+  nil)
 
 
 
