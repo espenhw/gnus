@@ -4407,6 +4407,9 @@ Number of lines in the article.
 @item c
 Number of characters in the article. This specifier is not supported
 in some methods (like nnfolder).
+@item k
+Pretty-printed version of the number of characters in the article;
+for example, @samp{1.2k} or @samp{0.4M}.
 @item I
 Indentation based on thread level (@pxref{Customizing Threading}).
 @item B

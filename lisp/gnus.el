@@ -2209,6 +2209,8 @@ with some simple extensions.
 %M   Message-id of the article (string)
 %r   References of the article (string)
 %c   Number of characters in the article (integer)
+%k   Pretty-printed version of the above (string)
+     For example, \"1.2k\" or \"0.4M\".
 %L   Number of lines in the article (integer)
 %I   Indentation based on thread level (a string of spaces)
 %B   A complex trn-style thread tree (string)
