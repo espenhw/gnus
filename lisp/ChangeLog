@@ -1,5 +1,10 @@
 2002-01-12  Simon Josefsson  <jas@extundo.com>
 
+	* flow-fill.el (fill-flowed-display-column)
+	(fill-flowed-encode-columnq): New variables.  Suggested by
+	Kai.Grossjohann@CS.Uni-Dortmund.DE (Kai Gro,A_(Bjohann).
+	(fill-flowed-encode, fill-flowed): Use them.
+
 	* message.el (message-send-news, message-send-mail): Use
 	m-b-s-n-p-e-h-n.
 

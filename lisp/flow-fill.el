@@ -52,6 +52,23 @@
 
 (eval-when-compile (require 'cl))
 
+(defcustom fill-flowed-display-column 'fill-column
+  "Column beyond which format=flowed lines are wrapped, when displayed.
+This can be a lisp expression or an integer."
+  :type '(choice (const :tag "Standard `fill-column'" fill-column)
+		 (const :tag "Fit Window" (- (window-width) 5))
+		 (sexp)
+		 (integer)))
+
+(defcustom fill-flowed-encode-columnq 66
+  "Column beyond which format=flowed lines are wrapped, in outgoing messages.
+This can be a lisp expression or an integer.
+RFC 2646 suggests 66 characters for readability."
+  :type '(choice (const :tag "Standard fill-column" fill-column)
+		 (const :tag "RFC 2646 default (66)" 66)
+		 (sexp)
+		 (integer)))
+
 (eval-and-compile
   (defalias 'fill-flowed-point-at-bol
 	(if (fboundp 'point-at-bol)
@@ -71,7 +88,7 @@
 	;; Go through each paragraph, filling it and adding SPC
 	;; as the last character on each line.
 	(while (setq end (text-property-any start (point-max) 'hard 't))
-	  (let ((fill-column 66))
+	  (let ((fill-column (eval fill-flowed-encode-column)))
 	    (fill-region start end t 'nosqueeze 'to-eop))
 	  (goto-char start)
 	  ;; `fill-region' probably distorted end.
@@ -117,7 +134,7 @@
 	    (end-of-line))
 	  (unless sig
 	    (let ((fill-prefix (when quote (concat quote " ")))
-		  (fill-column (1- (window-width))))
+		  (fill-column (eval fill-flowed-display-column)))
 	      (fill-region (fill-flowed-point-at-bol)
 			   (min (1+ (fill-flowed-point-at-eol)) (point-max))
 			   'left 'nosqueeze))))))))
