@@ -334,49 +334,53 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	  (setq type (or (cdr (assq 'type cont)) "text/plain"))
 	  (if (and (not raw)
 		   (member (car (split-string type "/")) '("text" "message")))
-	      (with-temp-buffer
-		(setq charset (mm-charset-to-coding-system
-			       (cdr (assq 'charset cont))))
-		(when (eq charset 'ascii)
-		  (setq charset nil))
-		(cond
-		 ((cdr (assq 'buffer cont))
-		  (insert-buffer-substring (cdr (assq 'buffer cont))))
-		 ((and (setq filename (cdr (assq 'filename cont)))
-		       (not (equal (cdr (assq 'nofile cont)) "yes")))
-		  (let ((coding-system-for-read charset))
-		    (mm-insert-file-contents filename)))
-		 ((eq 'mml (car cont))
-		  (insert (cdr (assq 'contents cont))))
-		 (t
-		  (save-restriction
-		    (narrow-to-region (point) (point))
-		    (insert (cdr (assq 'contents cont)))
-		    ;; Remove quotes from quoted tags.
-		    (goto-char (point-min))
-		    (while (re-search-forward
-			    "<#!+/?\\(part\\|multipart\\|external\\|mml\\)"
-			    nil t)
-		      (delete-region (+ (match-beginning 0) 2)
-				     (+ (match-beginning 0) 3))))))
-		(cond
-		 ((eq (car cont) 'mml)
-		  (let ((mml-boundary (funcall mml-boundary-function
-					       (incf mml-multipart-number)))
-			(mml-generate-default-type "text/plain"))
-		    (mml-to-mime))
-		  (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
-		    ;; ignore 0x1b, it is part of iso-2022-jp
-		    (setq encoding (mm-body-7-or-8))))
-		 ((string= (car (split-string type "/")) "message")
-		  (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
-		    ;; ignore 0x1b, it is part of iso-2022-jp
-		    (setq encoding (mm-body-7-or-8))))
-		 (t
-		  (setq charset (mm-encode-body charset))
-		  (setq encoding (mm-body-encoding
-				  charset (cdr (assq 'encoding cont))))))
-		(setq coded (buffer-string)))
+	      (progn
+		(with-temp-buffer
+		  (setq charset (mm-charset-to-coding-system
+				 (cdr (assq 'charset cont))))
+		  (when (eq charset 'ascii)
+		    (setq charset nil))
+		  (cond
+		   ((cdr (assq 'buffer cont))
+		    (insert-buffer-substring (cdr (assq 'buffer cont))))
+		   ((and (setq filename (cdr (assq 'filename cont)))
+			 (not (equal (cdr (assq 'nofile cont)) "yes")))
+		    (let ((coding-system-for-read charset))
+		      (mm-insert-file-contents filename)))
+		   ((eq 'mml (car cont))
+		    (insert (cdr (assq 'contents cont))))
+		   (t
+		    (save-restriction
+		      (narrow-to-region (point) (point))
+		      (insert (cdr (assq 'contents cont)))
+		      ;; Remove quotes from quoted tags.
+		      (goto-char (point-min))
+		      (while (re-search-forward
+			      "<#!+/?\\(part\\|multipart\\|external\\|mml\\)"
+			      nil t)
+			(delete-region (+ (match-beginning 0) 2)
+				       (+ (match-beginning 0) 3))))))
+		  (cond
+		   ((eq (car cont) 'mml)
+		    (let ((mml-boundary (funcall mml-boundary-function
+						 (incf mml-multipart-number)))
+			  (mml-generate-default-type "text/plain"))
+		      (mml-to-mime))
+		    (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
+		      ;; ignore 0x1b, it is part of iso-2022-jp
+		      (setq encoding (mm-body-7-or-8))))
+		   ((string= (car (split-string type "/")) "message")
+		    (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
+		      ;; ignore 0x1b, it is part of iso-2022-jp
+		      (setq encoding (mm-body-7-or-8))))
+		   (t
+		    (setq charset (mm-encode-body charset))
+		    (setq encoding (mm-body-encoding
+				    charset (cdr (assq 'encoding cont))))))
+		  (setq coded (buffer-string)))
+		(mml-insert-mime-headers cont type charset encoding)
+		(insert "\n")
+		(insert coded))
 	    (mm-with-unibyte-buffer
 	      (cond
 	       ((cdr (assq 'buffer cont))
@@ -388,10 +392,11 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	       (t
 		(insert (cdr (assq 'contents cont)))))
 	      (setq encoding (mm-encode-buffer type)
-		    coded (mm-string-as-multibyte (buffer-string)))))
-	  (mml-insert-mime-headers cont type charset encoding)
-	  (insert "\n")
-	  (insert coded)))
+		    coded (mm-string-as-multibyte (buffer-string))))
+	    (mml-insert-mime-headers cont type charset encoding)
+	    (insert "\n")
+	    (mm-with-unibyte-current-buffer
+	      (insert coded)))))
        ((eq (car cont) 'external)
 	(insert "Content-Type: message/external-body")
 	(let ((parameters (mml-parameter-string
