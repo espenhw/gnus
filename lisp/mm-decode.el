@@ -70,6 +70,11 @@
   `(setcar (nthcdr 6 ,handle) ,contents))
 (defmacro mm-handle-id (handle)
   `(nth 7 ,handle))
+(defmacro mm-handle-multipart-original-buffer (handle)
+  `(get-text-property 0 'buffer (car ,handle)))
+(defmacro mm-handle-multipart-ctl-parameter (handle parameter)
+  `(get-text-property 0 ,parameter (car ,handle)))
+
 (defmacro mm-make-handle (&optional buffer type encoding undisplayer
 				    disposition description cache
 				    id)
@@ -278,6 +283,24 @@ to:
 
 ;;; The functions.
 
+(defun mm-alist-to-plist (alist)
+  "Convert association list ALIST into the equivalent property-list form.
+The plist is returned.  This converts from
+
+\((a . 1) (b . 2) (c . 3))
+
+into
+
+\(a 1 b 2 c 3)
+
+The original alist is not modified.  See also `destructive-alist-to-plist'."
+  (let (plist)
+    (while alist
+      (let ((el (car alist)))
+	(setq plist (cons (cdr el) (cons (car el) plist))))
+      (setq alist (cdr alist)))
+    (nreverse plist)))
+
 (defun mm-dissect-buffer (&optional no-strict-mime)
   "Dissect the current buffer and return a list of MIME handles."
   (save-excursion
@@ -314,6 +337,17 @@ to:
 	   (let ((mm-dissect-default-type (if (equal subtype "digest")
 					      "message/rfc822"
 					    "text/plain")))
+             (add-text-properties 0 (length (car ctl))
+                                  (mm-alist-to-plist (cdr ctl)) (car ctl))
+
+	     ;; what really needs to be done here is a way to link a
+	     ;; MIME handle back to it's parent MIME handle (in a multilevel
+	     ;; MIME article).  That would probably require changing
+	     ;; the mm-handle API so we simply store the multipart buffert
+	     ;; name as a text property of the "multipart/whatever" string.
+             (add-text-properties 0 (length (car ctl))
+				  (list 'buffer (mm-copy-to-buffer))
+                                  (car ctl))
 	     (cons (car ctl) (mm-dissect-multipart ctl))))
 	  (t
 	   (mm-dissect-singlepart
@@ -547,8 +581,8 @@ external if displayed external."
       (while (setq handle (pop handles))
 	(cond
 	 ((stringp handle)
-	  ;; Do nothing.
-	  )
+	  (when (buffer-live-p (get-text-property 0 'buffer handle))
+	    (kill-buffer (get-text-property 0 'buffer handle))))
 	 ((and (listp handle)
 	       (stringp (car handle)))
 	  (mm-remove-parts (cdr handle)))
@@ -564,8 +598,8 @@ external if displayed external."
       (while (setq handle (pop handles))
 	(cond
 	 ((stringp handle)
-	  ;; Do nothing.
-	  )
+	  (when (buffer-live-p (get-text-property 0 'buffer handle))
+	    (kill-buffer (get-text-property 0 'buffer handle))))
 	 ((and (listp handle)
 	       (stringp (car handle)))
 	  (mm-destroy-parts (cdr handle)))

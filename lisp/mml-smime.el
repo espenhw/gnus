@@ -30,8 +30,18 @@
 (require 'smime)
 
 (defun mml-smime-verify (handle ctl)
-  (smime-verify-buffer)
-  handle)
+  (with-current-buffer (mm-handle-original-buffer ctl)
+    ;; xxx modifies buffer -- noone else uses the buffer, so what the heck
+    (goto-char (point-min))
+    (insert (format "Content-Type: %s; " (mm-handle-media-type ctl)))
+    (insert (format "protocol=\"%s\"; " 
+		    (mm-handle-multipart-ctl-parameter ctl 'protocol)))
+    (insert (format "micalg=\"%s\"; " 
+		    (mm-handle-multipart-ctl-parameter ctl 'micalg)))
+    (insert (format "boundary=\"%s\"\n\n"
+		    (mm-handle-multipart-ctl-parameter ctl 'boundary)))
+    (smime-verify-buffer)
+    handle))
 
 (provide 'mml-smime)
 
