@@ -2123,23 +2123,34 @@ If PROMPT (the prefix), prompt for a coding system to use."
 		   gnus-group-name-charset-group-alist)
 	       (gnus-buffer-live-p gnus-original-article-buffer))
       (save-restriction
-	(goto-char (point-min))
 	(article-narrow-to-head)
-	(while (re-search-forward (concat "^\\(Newsgroups\\|Followup-To\\): "
-					  "\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]")
+	(while (re-search-forward "^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
 				  nil t)
 	  (replace-match (save-match-data
 			   (gnus-decode-newsgroups
-			    ;; XXX how to use data in this buffer?
+			    ;; XXX how to use data in article buffer?
 			    (with-current-buffer gnus-original-article-buffer
 			      (goto-char (point-min))
 			      (re-search-forward
-			       (concat "^\\(Newsgroups\\|Followup-To\\): "
-				       "\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]")
+			       "^Newsgroups:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
 			       nil t)
-			      (match-string 2))
+			      (match-string 1))
 			    gnus-newsgroup-name method))
-			 t t nil 2))))))
+			 t t nil 1))
+	(goto-char (point-min))
+	(while (re-search-forward "^Followup-To:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
+				  nil t)
+	  (replace-match (save-match-data
+			   (gnus-decode-newsgroups
+			    ;; XXX how to use data in article buffer?
+			    (with-current-buffer gnus-original-article-buffer
+			      (goto-char (point-min))
+			      (re-search-forward
+			       "^Followup-To:\\(\\(.\\|\n[\t ]\\)*\\)\n[^\t ]"
+			       nil t)
+			      (match-string 1))
+			    gnus-newsgroup-name method))
+			 t t nil 1))))))
 
 (autoload 'idna-to-unicode "idna")
 

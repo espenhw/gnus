@@ -1,3 +1,8 @@
+2003-03-27  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (article-decode-group-name): Be correct instead of
+	smart.
+
 2003-03-27  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* lpath.el: Bind url-current-object for FSF Emacs; bind
@@ -18,11 +23,11 @@
 	* gnus-sum.el (gnus-summary-find-for-reselect): Renamed from
 	gnus-summary-find-uncancelled, skip temporary articles inserted by
 	"refer" functions.
-	
+
 2003-03-26  Vasily Korytov  <deskpot@myrealbox.com>
 
 	* smiley.el (smiley-buffer): New function.
-	
+
 2003-03-26  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-fetch-selected-article): Replaced
@@ -30,14 +35,14 @@
 	gnus-summary-update-download-mark (which updates the article's
 	face by calling gnus-summary-update-line AND updates the download
 	mark to show that the article was fetched).
-	
+
 2003-03-23  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-expire-unagentized-dirs): Provides
 	option of deleting agent directories for groups/servers that are
 	not currently agentized.
 	(gnus-agent-expire): Use gnus-agent-expire-unagentized-dirs.
-	
+
 	* gnus-int.el (gnus-open-server): Report backend errors in
 	condition handler.
 
