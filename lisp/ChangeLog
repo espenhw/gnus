@@ -1,3 +1,10 @@
+2004-10-15  Simon Josefsson  <jas@extundo.com>
+
+	* pop3.el (top-level): Don't require nnheader.
+	(pop3-read-timeout): Add.
+	(pop3-accept-process-output): Add.
+	(pop3-read-response, pop3-retr): Use it.
+
 2004-10-14  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-register-routine): move comment
@@ -9,7 +16,6 @@
 
 	* nnimap.el (nnimap-open-connection): use
 	netrc-machine-user-or-password
-
 
 2004-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
