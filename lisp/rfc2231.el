@@ -27,6 +27,9 @@
 (eval-when-compile (require 'cl))
 (require 'ietf-drums)
 (require 'rfc2047)
+(autoload 'mm-encode-body "mm-bodies")
+(autoload 'mail-header-remove-whitespace "mail-parse")
+(autoload 'mail-header-remove-comments "mail-parse")
 
 (defun rfc2231-get-value (ct attribute)
   "Return the value of ATTRIBUTE from CT."
