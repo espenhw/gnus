@@ -22998,7 +22998,9 @@ number of articles may be less than one might think while just
 considering the highest and lowest article numbers, but some articles
 may have been canceled.  Gnus just discards the total-number, so
 whether one should take the bother to generate it properly (if that is a
-problem) is left as an exercise to the reader.
+problem) is left as an exercise to the reader.  If the group contains no
+articles, the lowest article number should be reported as 1 and the
+highest as 0.
 
 @example
 group-status = [ error / info ] eol
@@ -23028,7 +23030,9 @@ ifi.discussion 3324 3300 n
 @end example
 
 On each line we have a group name, then the highest article number in
-that group, the lowest article number, and finally a flag.
+that group, the lowest article number, and finally a flag.  If the group
+contains no articles, the lowest article number should be reported as 1
+and the highest as 0.
 
 @example
 active-file = *active-line

@@ -1,3 +1,9 @@
+2002-02-12  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus.texi (Required Back End Functions): specify the lowest and
+	highest article numbers for empty groups for nnchoke-request-list
+	and nnchoke-request-group.
+
 2002-02-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.texi (Sending Variables): Addition.
@@ -9,7 +15,7 @@
 
 	* gnus.texi (Group Parameters): Addition.
 	From: Steinar Bang <steinar@bang.priv.no>
-	
+
 2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Article Washing): Addition.
