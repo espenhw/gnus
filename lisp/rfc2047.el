@@ -134,7 +134,7 @@ This is either `base64' or `quoted-printable'."
     (save-restriction
       (rfc2047-narrow-to-field)
       (re-search-forward ":[ \t\n]*" nil t)
-      (buffer-substring (point) (point-max)))))
+      (buffer-substring-no-properties (point) (point-max)))))
 
 (defvar rfc2047-encoding-type 'address-mime
   "The type of encoding done by `rfc2047-encode-region'.

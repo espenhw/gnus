@@ -263,6 +263,11 @@ backslash and doublequote.")
       (concat "\"" string "\"")
     string))
 
+(defun ietf-drums-make-address (name address)
+  (if name
+      (concat (ietf-drums-quote-string name) " <" address ">")
+    address))
+
 (provide 'ietf-drums)
 
 ;;; ietf-drums.el ends here

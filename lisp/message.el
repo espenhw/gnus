@@ -2128,13 +2128,25 @@ Point is left at the beginning of the narrowed-to region."
 (defun message-delete-address ()
   "Delete the address under point."
   (interactive)
-  (let ((start (point))
-	(quote nil))
-    (message-narrow-to-field)
-    (while (and (not (eobp))
-		(or (not (eq (setq char (following-char)) ?,))
-		    (not quote)))
-      ())))
+  (let ((first t)
+	current-header addresses)
+    (save-restriction
+      (message-narrow-to-field)
+      (re-search-backward "[\t\n ,]" nil t)
+      (when (re-search-forward "[^\t\n ,]@[^\t\n ,]" nil t)
+	(setq current-header (match-string 0)
+	      addresses (replace-regexp-in-string
+			 "[\n\t]" " " (mail-header-field-value)))
+	(goto-char (point-min))
+	(re-search-forward ": ?")
+	(delete-region (point) (point-max))
+	(dolist (address (mail-header-parse-addresses addresses))
+	  (unless first
+	    (insert ", "))
+	  (setq first nil)
+	  (unless (string-match (regexp-quote current-header) (car address))
+	    (insert (mail-header-make-address
+		     (cdr address) (car address)))))))))
 
 
 

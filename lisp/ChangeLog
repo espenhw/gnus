@@ -1,5 +1,11 @@
 2004-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* rfc2047.el (rfc2047-field-value): Strip props.
+
+	* mail-parse.el (mail-header-make-address): New alias.
+
+	* ietf-drums.el (ietf-drums-make-address): New function.
+
 	* imap.el: Add compiler directives.
 
 	* gnus-score.el (gnus-score-edit-done): run-hook->run-hooks. 
