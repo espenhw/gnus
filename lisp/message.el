@@ -761,7 +761,7 @@ variable isn't used."
 ;; is nil.  See: http://article.gmane.org/gmane.emacs.gnus.general/51138
 (defcustom message-generate-headers-first '(references)
   "Which headers should be generated before starting to compose a message.
-If `t', generate all required headers.  This can also be a list of headers to
+If t, generate all required headers.  This can also be a list of headers to
 generate.  The variables `message-required-news-headers' and
 `message-required-mail-headers' specify which headers to generate.
 

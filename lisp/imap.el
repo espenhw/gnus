@@ -1107,7 +1107,7 @@ If BUFFER is nil, the current buffer is assumed."
 
 (defun imap-id (&optional list-of-values buffer)
   "Identify client to server in BUFFER, and return server identity.
-LIST-OF-VALUES is `nil', or a plist with identifier and value
+LIST-OF-VALUES is nil, or a plist with identifier and value
 strings to send to the server to identify the client.
 
 Return a list of identifiers which server in BUFFER support, or

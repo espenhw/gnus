@@ -144,9 +144,9 @@ If this is `ask' the hook will query the user."
   :group 'gnus-agent)
 
 (defcustom gnus-agent-consider-all-articles nil
-  "When non-`nil', the agent will let the agent predicate decide
+  "When non-nil, the agent will let the agent predicate decide
 whether articles need to be downloaded or not, for all articles.  When
-`nil', the default, the agent will only let the predicate decide
+nil, the default, the agent will only let the predicate decide
 whether unread articles are downloaded or not.  If you enable this,
 groups with large active ranges may open slower and you may also want
 to look into the agent expiry settings to block the expiration of
@@ -189,9 +189,9 @@ See Info node `(gnus)Server Buffer'."
   :group 'gnus-agent)
 
 (defcustom gnus-agent-queue-mail t
-  "Whether and when outgoing mail should be queued by the agent.  When
-`always', always queue outgoing mail.  When `nil', never queue.
-Otherwise, queue if and only if unplugged."
+  "Whether and when outgoing mail should be queued by the agent.
+When `always', always queue outgoing mail.  When nil, never
+queue.  Otherwise, queue if and only if unplugged."
   :group 'gnus-agent
   :type '(radio (const :format "Always" always)
 		(const :format "Never" nil)
