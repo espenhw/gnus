@@ -357,7 +357,7 @@ there.")
 	  (erase-buffer)
 	  (if nnspool-sift-nov-with-sed
 	      (nnspool-sift-nov-with-sed articles nov)
-	    (insert-file-contents nov)
+	    (nnheader-insert-file-contents nov)
 	    (if (and fetch-old
 		     (not (numberp fetch-old)))
 		t			; We want all the headers.

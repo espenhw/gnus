@@ -318,12 +318,14 @@ Returns the list of articles entered."
   (gnus-set-global-variables)
   (let ((articles (gnus-summary-work-articles n))
 	article out)
-    (while articles
-      (setq article (pop articles))
-      (when (gnus-cache-possibly-enter-article 
-	     gnus-newsgroup-name article (gnus-summary-article-header article)
-	     nil nil nil t)
-	(push article out))
+    (while (setq article (pop articles))
+      (if (natnump article)
+	  (when (gnus-cache-possibly-enter-article 
+		 gnus-newsgroup-name article 
+		 (gnus-summary-article-header article)
+		 nil nil nil t)
+	    (push article out))
+	(gnus-message 2 "Can't cache article %d" article))
       (gnus-summary-remove-process-mark article)
       (gnus-summary-update-secondary-mark article))
     (gnus-summary-next-subject 1)

@@ -1572,18 +1572,15 @@ If ARGS, PROMPT is used as an argument to `format'."
   (interactive)
   (unless nnmail-split-history
     (error "No current split history"))
-  (pop-to-buffer "*nnmail split history*")
-  (buffer-disable-undo (current-buffer))
-  (erase-buffer)
-  (let ((history nnmail-split-history)
-	elem)
-    (while (setq elem (pop history))
-      (insert (mapconcat (lambda (ga)
-			   (concat (car ga) ":" (int-to-string (cdr ga))))
-			 elem
-			 ", ")
-	      "\n"))
-    (goto-char (point-min))))
+  (with-output-to-temp-buffer "*nnmail split history*"
+    (let ((history nnmail-split-history)
+	  elem)
+      (while (setq elem (pop history))
+	(princ (mapconcat (lambda (ga)
+			    (concat (car ga) ":" (int-to-string (cdr ga))))
+			  elem
+			  ", "))
+	(princ "\n")))))
 
 (defun nnmail-new-mail-p (group)
   "Say whether GROUP has new mail."

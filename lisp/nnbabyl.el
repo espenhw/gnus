@@ -159,7 +159,9 @@
     (goto-char (point-min))
     (when (search-forward (nnbabyl-article-string article) nil t)
       (let (start stop summary-line)
-	(re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
+	(unless (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
+	  (goto-char (point-min))
+	  (end-of-line))
 	(while (and (not (looking-at ".+:"))
 		    (zerop (forward-line 1))))
 	(setq start (point))
@@ -418,7 +420,9 @@
       (widen)
       (narrow-to-region
        (save-excursion
-	 (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
+	(unless (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
+	  (goto-char (point-min))
+	  (end-of-line))
 	 (if leave-delim (progn (forward-line 1) (point))
 	   (match-beginning 0)))
        (progn

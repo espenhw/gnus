@@ -1870,6 +1870,10 @@ increase the score of each group you read."
        ("Modes"
 	["Pick and read" gnus-pick-mode t]
 	["Binary" gnus-binary-mode t])
+       ("Regeneration"
+	["Regenerate" gnus-summary-prepare t]
+	["Insert cached articles" gnus-summary-insert-cached-articles t]
+	["Toggle threading" gnus-summary-toggle-threads t])
        ["Filter articles..." gnus-summary-execute-command t]
        ["Run command on subjects..." gnus-summary-universal-argument t]
        ["Toggle line truncation" gnus-summary-toggle-truncation t]
@@ -3512,8 +3516,7 @@ or a straight list of headers."
 		  gnus-tmp-header nil))
 	   ;; If the article lies outside the current limit,
 	   ;; then we do not display it.
-	   ((and (not (memq number gnus-newsgroup-limit))
-		 (not gnus-tmp-dummy-line))
+	   ((not (memq number gnus-newsgroup-limit))
 	    (setq gnus-tmp-gathered
 		  (nconc (mapcar
 			  (lambda (h) (mail-header-number (car h)))
@@ -4316,37 +4319,39 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	header ref id id-dep ref-dep)
 
     ;; overview: [num subject from date id refs chars lines misc]
-    (narrow-to-region (point) eol)
-    (unless (eobp)
-      (forward-char))
+    (unwind-protect
+	(progn
+	  (narrow-to-region (point) eol)
+	  (unless (eobp)
+	    (forward-char))
 
-    (setq header
-	  (vector
-	   number			; number
-	   (gnus-nov-field)		; subject
-	   (gnus-nov-field)		; from
-	   (gnus-nov-field)		; date
-	   (setq id (or (gnus-nov-field)
-			(nnheader-generate-fake-message-id))) ; id
-	   (progn
-	     (let ((beg (point)))
-	       (search-forward "\t" eol)
-	       (if (search-backward ">" beg t)
-		   (setq ref
-			 (buffer-substring
-			  (1+ (point))
-			  (search-backward "<" beg t)))
-		 (setq ref nil))
-	       (goto-char beg))
-	     (gnus-nov-field))		; refs
-	   (gnus-nov-read-integer)	; chars
-	   (gnus-nov-read-integer)	; lines
-	   (if (= (following-char) ?\n)
-	       nil
-	     (gnus-nov-field))		; misc
-	   ))
+	  (setq header
+		(vector
+		 number			; number
+		 (gnus-nov-field)	; subject
+		 (gnus-nov-field)	; from
+		 (gnus-nov-field)	; date
+		 (setq id (or (gnus-nov-field)
+			      (nnheader-generate-fake-message-id))) ; id
+		 (progn
+		   (let ((beg (point)))
+		     (search-forward "\t" eol)
+		     (if (search-backward ">" beg t)
+			 (setq ref
+			       (buffer-substring
+				(1+ (point))
+				(search-backward "<" beg t)))
+		       (setq ref nil))
+		     (goto-char beg))
+		   (gnus-nov-field))	; refs
+		 (gnus-nov-read-integer) ; chars
+		 (gnus-nov-read-integer) ; lines
+		 (if (= (following-char) ?\n)
+		     nil
+		   (gnus-nov-field))	; misc
+		 )))
 
-    (widen)
+      (widen))
 
     ;; We build the thread tree.
     (when (equal id ref)
@@ -4410,7 +4415,8 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 		   (push header headers))
 	      (forward-line 1))
 	  (error
-	   (gnus-error 4 "Strange nov line")))
+	   (gnus-error 4 "Strange nov line (%d)"
+		       (count-lines (point-min) (point)))))
 	(forward-line 1))
       (nreverse headers))))
 

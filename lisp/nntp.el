@@ -306,6 +306,87 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	(copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	'active))))
 
+(deffoo nntp-retrieve-articles (articles &optional group server)
+  (nntp-possibly-change-group group server)
+  (save-excursion
+    (let ((number (length articles))
+	  (count 0)
+	  (received 0)
+	  (last-point (point-min))
+	  (buf (nntp-find-connection-buffer nntp-server-buffer))
+	  (nntp-inhibit-erase t)
+	  (map (apply 'vector articles))
+	  (point 1)
+	  article alist)
+      (set-buffer buf)
+      (erase-buffer)
+      ;; Send HEAD command.
+      (while (setq article (pop articles))
+	(nntp-send-command 
+	 nil
+	 "ARTICLE" (if (numberp article)
+		       (int-to-string article)
+		     ;; `articles' is either a list of article numbers
+		     ;; or a list of article IDs.
+		     article))
+	(incf count)
+	;; Every 400 requests we have to read the stream in
+	;; order to avoid deadlocks.
+	(when (or (null articles)	;All requests have been sent.
+		  (zerop (% count nntp-maximum-request)))
+	  (nntp-accept-response)
+	  (while (progn
+		   (progn
+		     (set-buffer buf)
+		     (goto-char last-point))
+		   ;; Count replies.
+		   (while (nntp-next-result-arrived-p)
+		     (aset map received (cons (aref map received) (point)))
+		     (incf received))
+		   (setq last-point (point))
+		   (< received count))
+	    ;; If number of headers is greater than 100, give
+	    ;;  informative messages.
+	    (and (numberp nntp-large-newsgroup)
+		 (> number nntp-large-newsgroup)
+		 (zerop (% received 20))
+		 (message "NNTP: Receiving articles... %d%%"
+			  (/ (* received 100) number)))
+	    (nntp-accept-response))))
+      (and (numberp nntp-large-newsgroup)
+	   (> number nntp-large-newsgroup)
+	   (message "NNTP: Receiving headers...done"))
+
+      ;; Now we have all the responses.  We go through the results,
+      ;; washes it and copies it over to the server buffer.
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)
+      (mapcar
+       (lambda (entry)
+	 (narrow-to-region
+	  (setq point (goto-char (point-max)))
+	  (progn
+	    (insert-buffer-substring buf last-point (cdr entry))
+	    (point-max)))
+	 (nntp-decode-text)
+	 (widen)
+	 (cons (car entry) point))
+       map))))
+
+(defun nntp-next-result-arrived-p ()
+  (let ((point (point)))
+    (cond 
+     ((looking-at "2")
+      (if (re-search-forward "\n.\r?\n" nil t)
+	  t
+	(goto-char point)
+	nil))
+     ((looking-at "[34]")
+      (forward-line 1)
+      t)
+     (t
+      nil))))
+
 (defun nntp-try-list-active (group)
   (nntp-list-active-group group)
   (save-excursion
@@ -898,7 +979,8 @@ It will prompt for a password."
 	;; If `nntp-server-xover' is a string, then we just send this
 	;; command.
 	(if wait-for-reply
-	    (nntp-send-command-nodelete "\r?\n\\.\r?\n" nntp-server-xover range)
+	    (nntp-send-command-nodelete 
+	     "\r?\n\\.\r?\n" nntp-server-xover range)
 	  ;; We do not wait for the reply.
 	  (nntp-send-command-nodelete "\r?\n\\.\r?\n" nntp-server-xover range))
       (let ((commands nntp-xover-commands))

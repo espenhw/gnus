@@ -215,6 +215,7 @@ all.  This may very well take some time.")
 
 (deffoo nnml-request-scan (&optional group server)
   (setq nnml-article-file-alist nil)
+  (nnml-possibly-change-directory group server)
   (nnmail-get-new-mail 'nnml 'nnml-save-nov nnml-directory group))
 
 (deffoo nnml-close-group (group &optional server)
@@ -505,7 +506,7 @@ all.  This may very well take some time.")
 		     nnml-nov-file-name))
 	number found)
     (when (file-exists-p nov)
-      (insert-file-contents nov)
+      (nnheader-insert-file-contents nov)
       (while (and (not found)
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.
@@ -532,7 +533,7 @@ all.  This may very well take some time.")
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
 	  (erase-buffer)
-	  (insert-file-contents nov)
+	  (nnheader-insert-file-contents nov)
 	  (if (and fetch-old
 		   (not (numberp fetch-old)))
 	      t				; Don't remove anything.
@@ -672,7 +673,7 @@ all.  This may very well take some time.")
 
 (defun nnml-open-nov (group)
   (or (cdr (assoc group nnml-nov-buffer-alist))
-      (let ((buffer (find-file-noselect 
+      (let ((buffer (nnheader-find-file-noselect 
 		     (concat (nnmail-group-pathname group nnml-directory)
 			     nnml-nov-file-name))))
 	(save-excursion

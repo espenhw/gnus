@@ -621,9 +621,12 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		    (set-buffer gnus-article-buffer)
 		    (goto-char (point-min))
 		    (setq did-kill (re-search-forward regexp nil t)))
-	      (if (stringp form)	;Keyboard macro.
-		  (execute-kbd-macro form)
-		(eval form))))))
+	      (cond ((stringp form)	;Keyboard macro.
+		     (execute-kbd-macro form))
+		    ((gnus-functionp form)
+		     (funcall form))
+		    (t
+		     (eval form)))))))
       did-kill)))
 
 (defun gnus-execute (field regexp form &optional backward unread)

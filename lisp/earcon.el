@@ -34,16 +34,26 @@
 (require 'gnus-art)
 (eval-when-compile (require 'cl))
 
-(defvar earcon-auto-play nil
-  "When True, automatically play sounds as well as buttonize them.")
+(defgroup earcon nil
+  "Turn ** sounds ** into noise."
+  :group 'gnus-visual)
 
-(defvar earcon-prefix "**"
-  "The start of an earcon")
+(defcustom earcon-auto-play nil
+  "When True, automatically play sounds as well as buttonize them."
+  :type 'boolean
+  :group 'earcon)
 
-(defvar earcon-suffix "**"
-  "The end of an earcon")
+(defcustom earcon-prefix "**"
+  "String denoting the start of an earcon."
+  :type 'string
+  :group 'earcon)
 
-(defvar earcon-regexp-alist
+(defcustom earcon-suffix "**"
+  "String denoting the end of an earcon."
+  :type 'string
+  :group 'earcon)
+
+(defcustom earcon-regexp-alist
   '(("boring" 1 "Boring.au")
     ("evil[ \t]+laugh" 1 "Evil_Laugh.au")
     ("gag\\|puke" 1 "Puke.au")
@@ -60,7 +70,11 @@
     ("cackle" 1 "witch.au")
     ("yell\\|roar" 1 "yell2.au")
     ("whoop-de-doo" 1 "whistle.au"))
-  "A list of regexps to map earcons to real sounds.")
+  "A list of regexps to map earcons to real sounds."
+  :type '(repeat (list regexp
+		       (integer :tag "Match")
+		       (string :tag "Sound")))
+  :group 'earcon)
 
 (defvar earcon-button-marker-list nil)
 (make-variable-buffer-local 'earcon-button-marker-list)

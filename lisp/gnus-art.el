@@ -1496,10 +1496,10 @@ groups."
   :type 'regexp)
 
 (defcustom gnus-button-alist 
-  `(("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
+  `(("\\(<?\\(url: ?\\)?news:\\(//\\)?\\([^>\n\t ]*\\)>?\\)" 1 t
+     gnus-button-fetch-group 4)
+    ("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
      t gnus-button-message-id 3)
-    ("\\(<?\\(url: ?\\)?news://\\([^>\n\t ]*\\)>?\\)" 1 t
-     gnus-button-fetch-group 3)
     ("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
      gnus-button-message-id 3)
     ("\\(<URL: *\\)?mailto: *\\([^> \n\t]+\\)>?" 0 t gnus-url-mailto 2)

@@ -80,7 +80,7 @@
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
-	    (insert-file-contents nov)
+	    (nnheader-insert-file-contents nov)
 	    (nnheader-nov-delete-outside-range
 	     (car articles) (car (last articles)))
 	    'nov))))))
@@ -117,7 +117,7 @@
 	(erase-buffer)
 	(if (not (file-exists-p nov-file))
 	    (nnheader-report 'nnkiboze "Can't select group %s" group)
-	  (insert-file-contents nov-file)
+	  (nnheader-insert-file-contents nov-file)
 	  (if (zerop (buffer-size))
 	      (nnheader-insert "211 0 0 0 %s\n" group)
 	    (goto-char (point-min))
@@ -136,7 +136,7 @@
 	     nnkiboze-remove-read-articles)
     (nnheader-temp-write (nnkiboze-nov-file-name)
       (let ((cur (current-buffer)))
-	(insert-file-contents (nnkiboze-nov-file-name))
+	(nnheader-insert-file-contents (nnkiboze-nov-file-name))
 	(goto-char (point-min))
 	(while (not (eobp))
 	  (if (not (gnus-article-read-p (read cur)))

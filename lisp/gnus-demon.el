@@ -159,10 +159,11 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	   (nseconds (gnus-time-minus
 		      (gnus-encode-date tdate) (gnus-encode-date date))))
       (round
-       (/ (if (< nseconds 0)
-	      (+ nseconds (* 60 60 24))
-	    nseconds)
-	  gnus-demon-timestep)))))
+       (/ (+ (if (< (car nseconds) 0)
+ 		 86400 0)
+ 	     (* 65536 (car nseconds))
+ 	     (nth 1 nseconds))
+ 	  gnus-demon-timestep)))))
 
 (defun gnus-demon ()
   "The Gnus daemon that takes care of running all Gnus handlers."

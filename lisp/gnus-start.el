@@ -1196,7 +1196,7 @@ the server for new groups."
 	    (setcdr (gnus-gethash (caadr entry) gnus-newsrc-hashtb) entry))
 	  (gnus-dribble-enter
 	   (format
-	    "(gnus-group-set-info '%s)" info)))))
+	    "(gnus-group-set-info '%S)" info)))))
       (when gnus-group-change-level-function
 	(funcall gnus-group-change-level-function group level oldlevel)))))
 

@@ -25,18 +25,14 @@
 
 ;;; Commentary:
 
-;; For an overview of what the interface functions do, please see the
-;; Gnus sources.  
-
-;; Various enhancements by byer@mv.us.adobe.com (Scott Byer).
-
 ;;; Code:
 
 (require 'nnheader)
 (require 'message)
 (require 'nnmail)
 (require 'nnoo)
-(eval-when-compile (require 'cl))
+(require 'cl)
+(require 'gnus-util)
 
 (nnoo-declare nnfolder)
 
@@ -104,8 +100,7 @@ time saver for large mailboxes.")
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let ((delim-string (concat "^" message-unix-mail-delimiter))
-	  article art-string start stop)
+    (let (article art-string start stop)
       (nnfolder-possibly-change-group group server)
       (when nnfolder-current-buffer
 	(set-buffer nnfolder-current-buffer)
@@ -122,8 +117,8 @@ time saver for large mailboxes.")
 		      ;; backwards will be faster.  Especially if we're at the
 		      ;; beginning of the buffer :-). -SLB
 		      (search-backward art-string nil t))
-	      (setq start (or (re-search-backward delim-string nil t)
-			      (point)))
+	      (nnmail-search-unix-mail-delim)
+	      (setq start (point))
 	      (search-forward "\n\n" nil t)
 	      (setq stop (1- (point)))
 	      (set-buffer nntp-server-buffer)
@@ -170,11 +165,10 @@ time saver for large mailboxes.")
     (goto-char (point-min))
     (when (search-forward (nnfolder-article-string article) nil t)
       (let (start stop)
-	(re-search-backward (concat "^" message-unix-mail-delimiter) nil t)
+	(nnmail-search-unix-mail-delim)
 	(setq start (point))
 	(forward-line 1)
-	(unless (and (re-search-forward 
-		      (concat "^" message-unix-mail-delimiter) nil t)
+	(unless (and (nnmail-search-unix-mail-delim)
 		     (forward-line -1))
 	  (goto-char (point-max)))
 	(setq stop (point))
@@ -460,12 +454,12 @@ time saver for large mailboxes.")
   (save-excursion
     (delete-region
      (save-excursion
-       (re-search-backward (concat "^" message-unix-mail-delimiter) nil t)
+       (nnmail-search-unix-mail-delim)
        (if leave-delim (progn (forward-line 1) (point))
 	 (match-beginning 0)))
      (progn
        (forward-line 1)
-       (if (re-search-forward (concat "^" message-unix-mail-delimiter) nil t)
+       (if (nnmail-search-unix-mail-delim)
 	   (if (and (not (bobp)) leave-delim)
 	       (progn (forward-line -2) (point))
 	     (match-beginning 0))
@@ -539,7 +533,7 @@ time saver for large mailboxes.")
     (when (looking-at (concat ">" message-unix-mail-delimiter))
       (delete-char 1))
     ;; This might come from somewhere else.    
-    (unless (looking-at delim)
+    (unless (looking-at message-unix-mail-delimiter)
       (insert "From nobody " (current-time-string) "\n")
       (goto-char (point-min)))
     ;; Quote all "From " lines in the article.
@@ -695,15 +689,15 @@ time saver for large mailboxes.")
 	    (goto-char (point-max))
 	    (if (not (re-search-backward marker nil t))
 		(goto-char (point-min))
-	      (when (not (re-search-backward delim nil t))
+	      (when (not (nnmail-search-unix-mail-delim))
 		(goto-char (point-min)))))
 
 	  ;; Keep track of the active number on our own, and insert it back
 	  ;; into the active list when we're done.  Also, prime the pump to
 	  ;; cut down on the number of searches we do.
 	  (setq end (point-marker))
-	  (set-marker end (or (and (re-search-forward delim nil t)
-				   (match-beginning 0))
+	  (set-marker end (or (and (nnmail-search-unix-mail-delim)
+				   (point))
 			      (point-max)))
 	  (while (not (= end (point-max)))
 	    (setq start (marker-position end))
@@ -712,8 +706,8 @@ time saver for large mailboxes.")
 	    ;; them.  
 	    (while (looking-at delim)
 	      (forward-line 1))
-	    (set-marker end (or (and (re-search-forward delim nil t)
-				     (match-beginning 0))
+	    (set-marker end (or (and (nnmail-search-unix-mail-delim)
+				     (point))
 				(point-max)))
 	    (goto-char start)
 	    (when (not (search-forward marker end t))

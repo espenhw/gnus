@@ -203,7 +203,7 @@
   "Read the overview of GROUP and build the map."
   (when (file-exists-p (nnweb-overview-file group))
     (nnheader-temp-write nil
-      (insert-file-contents (nnweb-overview-file group))
+      (nnheader-insert-file-contents (nnweb-overview-file group))
       (goto-char (point-min))
       (setq nnweb-hashtb (gnus-make-hashtable
 			  (count-lines (point-min) (point-max))))

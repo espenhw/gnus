@@ -204,7 +204,7 @@ groups with \"emacs\" in the name, you could say something like:
 
 $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
   (interactive)
-  )
+  nil)
   
 ;;; Internal Functions:
 

@@ -1408,6 +1408,12 @@ already."
       gnus-new-mail-mark
     ? ))
 
+(defun gnus-group-level (group)
+  "Return the estimated level of GROUP."
+  (or (gnus-info-level (gnus-get-info group))
+      (and (member group gnus-zombie-list) 8)
+      9))
+
 (defun gnus-group-search-forward (&optional backward all level first-too)
   "Find the next newsgroup with unread articles.
 If BACKWARD is non-nil, find the previous newsgroup instead.
@@ -2947,10 +2953,17 @@ entail asking the server for the groups."
 	     gnus-active-hashtb)
 	    list)
 	  'string<))
-	(buffer-read-only nil))
+	(buffer-read-only nil)
+	group)
     (erase-buffer)
     (while groups
-      (gnus-group-insert-group-line-info (pop groups)))
+      (gnus-add-text-properties
+       (point) (prog1 (1+ (point))
+		 (insert "       *: "
+			 (setq group (pop groups)) "\n"))
+       (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
+	     'gnus-unread t
+	     'gnus-level (inline (gnus-group-level group)))))
     (goto-char (point-min))))
 
 (defun gnus-activate-all-groups (level)
@@ -3052,8 +3065,9 @@ to use."
 			 (gnus-group-real-name group)))
       (if (not (file-exists-p file))
 	  (gnus-message 1 "No such file: %s" file)
-	(find-file file)
-	(setq found t)))))
+	(let ((enable-local-variables nil))
+	  (find-file file)
+	  (setq found t))))))
 
 (defun gnus-group-describe-group (force &optional group)
   "Display a description of the current newsgroup."
@@ -3176,6 +3190,8 @@ If the prefix LEVEL is non-nil, it should be a number that says which
 level to cut off listing groups.
 If LOWEST, don't list groups with level lower than LOWEST."
   (interactive "P\nsList newsgroups matching: ")
+  (when level
+    (setq level (prefix-numeric-value level)))
   (gnus-group-list-matching (or level gnus-level-killed) regexp t lowest))
 
 ;; Suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.

@@ -2434,8 +2434,8 @@ GROUP using BNews sys file syntax."
 	      (insert "\\")))
 	  ;; Kludge to deal with "++".
 	  (goto-char (point-min))
-	  (while (search-forward "++" nil t)
-	    (replace-match "\\+\\+" t t))
+	  (while (search-forward "+" nil t)
+	    (replace-match "\\+" t t))
 	  ;; Translate "all" to ".*".
 	  (goto-char (point-min))
 	  (while (search-forward "all" nil t)

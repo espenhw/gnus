@@ -270,7 +270,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	(buffer-disable-undo (current-buffer))
 	(erase-buffer)
 	(if (stringp nndoc-address)
-	    (insert-file-contents nndoc-address)
+	    (nnheader-insert-file-contents nndoc-address)
 	  (insert-buffer-substring nndoc-address)))))
     ;; Initialize the nndoc structures according to this new document.
     (when (and nndoc-current-buffer
@@ -400,7 +400,9 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-forward-type-p ()
   (when (and (re-search-forward "^-+ Start of forwarded message -+\n+" nil t)
-	     (not (re-search-forward "^Subject:.*digest" nil t)))
+	     (not (re-search-forward "^Subject:.*digest" nil t))
+	     (not (re-search-backward "^From:" nil t 2))
+	     (not (re-search-forward "^From:" nil t 2)))
     t))
 
 (defun nndoc-clari-briefs-type-p ()

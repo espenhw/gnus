@@ -635,6 +635,8 @@ The cdr of ech entry is a function for applying the face to a region.")
 ;;; Internal variables.
 
 (defvar message-buffer-list nil)
+(defvar message-this-is-news nil)
+(defvar message-this-is-mail nil)
 
 ;; Byte-compiler warning
 (defvar gnus-active-hashtb)
@@ -867,19 +869,21 @@ Return the number of headers removed."
 
 (defun message-news-p ()
   "Say whether the current buffer contains a news message."
-  (save-excursion
-    (save-restriction
-      (message-narrow-to-headers)
-      (message-fetch-field "newsgroups"))))
+  (or message-this-is-news
+      (save-excursion
+	(save-restriction
+	  (message-narrow-to-headers)
+	  (message-fetch-field "newsgroups")))))
 
 (defun message-mail-p ()
   "Say whether the current buffer contains a mail message."
-  (save-excursion
-    (save-restriction
-      (message-narrow-to-headers)
-      (or (message-fetch-field "to")
-	  (message-fetch-field "cc")
-	  (message-fetch-field "bcc")))))
+  (or message-this-is-mail
+      (save-excursion
+	(save-restriction
+	  (message-narrow-to-headers)
+	  (or (message-fetch-field "to")
+	      (message-fetch-field "cc")
+	      (message-fetch-field "bcc"))))))
 
 (defun message-next-header ()
   "Go to the beginning of the next header."
@@ -1288,8 +1292,10 @@ name, rather than giving an automatic name."
       (goto-char (point-min))
       (narrow-to-region (point) 
 			(search-forward mail-header-separator nil 'end))
-      (let* ((mail-to (if (message-news-p) (message-fetch-field "Newsgroups")
-			(message-fetch-field "To")))
+      (let* ((mail-to (or
+		       (if (message-news-p) (message-fetch-field "Newsgroups")
+			 (message-fetch-field "To"))
+		       ""))
 	     (mail-trimmed-to
 	      (if (string-match "," mail-to)
 		  (concat (substring mail-to 0 (match-beginning 0)) ", ...")
@@ -2333,7 +2339,9 @@ give as trustworthy answer as possible."
 (defun message-user-mail-address ()
   "Return the pertinent part of `user-mail-address'."
   (when user-mail-address
-    (nth 1 (mail-extract-address-components user-mail-address))))
+    (if (string-match " " user-mail-address)
+	(nth 1 (mail-extract-address-components user-mail-address))
+      user-mail-address)))
 
 (defun message-make-fqdn ()
   "Return user's fully qualified domain name."
@@ -2723,19 +2731,26 @@ Headers already prepared in the buffer are not modified."
 ;;;
 
 ;;;###autoload
-(defun message-mail (&optional to subject)
+(defun message-mail (&optional to subject
+			       other-headers continue switch-function
+			       yank-action send-actions)
   "Start editing a mail message to be sent."
   (interactive)
-  (message-pop-to-buffer (message-buffer-name "mail" to))
-  (message-setup `((To . ,(or to "")) (Subject . ,(or subject "")))))
+  (let ((message-this-is-mail t))
+    (message-pop-to-buffer (message-buffer-name "mail" to))
+    (message-setup 
+     (nconc
+      `((To . ,(or to "")) (Subject . ,(or subject "")))
+      (when other-headers (list other-headers))))))
 
 ;;;###autoload
 (defun message-news (&optional newsgroups subject)
   "Start editing a news article to be sent."
   (interactive)
-  (message-pop-to-buffer (message-buffer-name "news" nil newsgroups))
-  (message-setup `((Newsgroups . ,(or newsgroups "")) 
-		   (Subject . ,(or subject "")))))
+  (let ((message-this-is-news t))
+    (message-pop-to-buffer (message-buffer-name "news" nil newsgroups))
+    (message-setup `((Newsgroups . ,(or newsgroups "")) 
+		     (Subject . ,(or subject ""))))))
 
 ;;;###autoload
 (defun message-reply (&optional to-address wide ignore-reply-to)
@@ -2850,6 +2865,7 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 	from subject date reply-to mct
 	references message-id follow-to 
 	(inhibit-point-motion-hooks t)
+	(message-this-is-news t)
 	followup-to distribution newsgroups gnus-warning)
     (save-restriction
       (narrow-to-region
@@ -3036,10 +3052,14 @@ header line with the old Message-ID."
 
 (defun message-make-forward-subject ()
   "Return a Subject header suitable for the message in the current buffer."
-  (concat "[" (or (message-fetch-field 
-		   (if (message-news-p) "newsgroups" "from"))
-		  "(nowhere)")
-	  "] " (or (message-fetch-field "Subject") "")))
+  (save-excursion
+    (save-restriction
+      (current-buffer)
+      (message-narrow-to-head)
+      (concat "[" (or (message-fetch-field 
+		       (if (message-news-p) "newsgroups" "from"))
+		      "(nowhere)")
+	      "] " (or (message-fetch-field "Subject") "")))))
 
 ;;;###autoload
 (defun message-forward (&optional news)

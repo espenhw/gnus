@@ -754,6 +754,7 @@ find-file-hooks, etc.
   (let ((format-alist nil)
 	(auto-mode-alist (nnheader-auto-mode-alist))
 	(default-major-mode 'fundamental-mode)
+	(enable-local-variables nil)
         (after-insert-file-functions nil))
     (apply 'find-file-noselect args)))
 
