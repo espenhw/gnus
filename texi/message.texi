@@ -224,7 +224,13 @@ only you can cancel your own messages, which is nice.  The downside
 is that if you lose your @file{.emacs} file (which is where Gnus
 stores the secret cancel lock password (which is generated
 automatically the first time you use this feature)), you won't be
-able to cancel your message.
+able to cancel your message.  If you yourself want to manage a password,
+you can put something like the following in your @file{~/.gnus.el} file:
+
+@lisp
+(setq canlock-password "Salam Shalom"
+      canlock-password-for-verify canlock-password)
+@end lisp
 
 Whether to insert the header or not is controlled by the
 @code{message-insert-canlock} variable.
