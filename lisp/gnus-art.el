@@ -977,8 +977,11 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	(goto-char (point-max))
 	(widen)
 	(narrow-to-region (point) (point-max))
-	(mm-decode-body
-	 charset (and cte (intern (downcase (gnus-strip-whitespace cte)))))))))
+	(when (or (not ct)
+		  (string-match "text/plain" ct))
+	  (mm-decode-body
+	   charset (and cte (intern (downcase
+				     (gnus-strip-whitespace cte))))))))))
 
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 (defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)
@@ -1962,7 +1965,7 @@ commands:
     ;; Init original article buffer.
     (save-excursion
       (set-buffer (gnus-get-buffer-create gnus-original-article-buffer))
-      (buffer-disable-undo (current-buffer))
+      (mm-enable-multibyte)
       (setq major-mode 'gnus-original-article-mode)
       (make-local-variable 'gnus-original-article))
     (if (get-buffer name)

@@ -34,7 +34,7 @@
 (eval-when-compile (require 'cl))
 (require 'nnheader)
 (require 'message)
-(require 'date)
+(require 'time-date)
 
 (eval-and-compile
   (autoload 'rmail-insert-rmail-file-header "rmail")
@@ -291,20 +291,7 @@
 
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string."
-  (let ((datevec (ignore-errors (timezone-parse-date messy-date))))
-    (if (or (not datevec)
-	    (string-equal "0" (aref datevec 1)))
-	"??-???"
-      (format "%2s-%s"
-	      (condition-case ()
-		  ;; Make sure leading zeroes are stripped.
-		  (number-to-string (string-to-number (aref datevec 2)))
-		(error "??"))
-	      (capitalize
-	       (or (car
-		    (nth (1- (string-to-number (aref datevec 1)))
-			 timezone-months-assoc))
-		   "???"))))))
+  (format-time-string "%2d-%b" (date-to-time messy-date)))
 
 (defmacro gnus-date-get-time (date)
   "Convert DATE string to Emacs time.
@@ -446,20 +433,8 @@ If N, return the Nth ancestor instead."
     (cons (and (numberp event) event) event)))
 
 (defun gnus-sortable-date (date)
-  "Make sortable string by string-lessp from DATE.
-Timezone package is used."
-  (condition-case ()
-      (progn
-	(setq date (inline (timezone-fix-time
-			    date nil
-			    (aref (inline (timezone-parse-date date)) 4))))
-	(inline
-	  (timezone-make-sortable-date
-	   (aref date 0) (aref date 1) (aref date 2)
-	   (inline
-	     (timezone-make-time-string
-	      (aref date 3) (aref date 4) (aref date 5))))))
-    (error "")))
+  "Make string suitable for sorting from DATE."
+  (gnus-time-iso8601 (date-to-time date)))
 
 (defun gnus-copy-file (file &optional to)
   "Copy FILE to TO."

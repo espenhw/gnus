@@ -221,7 +221,7 @@ Should be called narrowed to the head of the message."
 ;;;
 
 (defvar rfc2047-encoded-word-regexp
-  "=\\?\\([^][\000-\040()<>@,\;:\\\"/?.=]+\\)\\?\\(B\\|Q\\)\\?\\([!->@-~]+\\)\\?=")
+  "=\\?\\([^][\000-\040()<>@,\;:\\\"/?.=]+\\)\\?\\(B\\|Q\\)\\?\\([!->@-~ ]+\\)\\?=")
 
 ;;;###autoload
 (defun rfc2047-decode-region (start end)

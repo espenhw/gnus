@@ -587,8 +587,7 @@ automatically."
   ;; Stripping headers should be specified with mail-yank-ignored-headers.
   (when yank
     (gnus-summary-goto-subject (car yank)))
-  (let ((gnus-article-reply t)
-	(gnus-inhibit-posting-styles t))
+  (let ((gnus-article-reply t))
     (gnus-setup-message (if yank 'reply-yank 'reply)
       (gnus-summary-select-article)
       (set-buffer (gnus-copy-article-buffer))

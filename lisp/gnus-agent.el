@@ -27,7 +27,8 @@
 (require 'gnus-cache)
 (require 'nnvirtual)
 (require 'gnus-sum)
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl)
+		   (require 'gnus-score))
 
 (defcustom gnus-agent-directory (nnheader-concat gnus-directory "agent/")
   "Where the Gnus agent will store its files."
@@ -77,8 +78,6 @@ If nil, only read articles will be expired."
 
 ;;; Internal variables
 
-(defvar gnus-agent-meta-information-header "X-Gnus-Agent-Meta-Information")
-
 (defvar gnus-agent-history-buffers nil)
 (defvar gnus-agent-buffer-alist nil)
 (defvar gnus-agent-article-alist nil)
@@ -93,6 +92,13 @@ If nil, only read articles will be expired."
 (defvar gnus-agent-file-name nil)
 (defvar gnus-agent-send-mail-function nil)
 (defvar gnus-agent-article-file-coding-system 'no-conversion)
+
+(defconst gnus-agent-scoreable-headers
+  (list
+   "subject" "from" "date" "message-id" 
+   "references" "chars" "lines" "xref")
+  "Headers that are considered when scoring articles
+for download via the Agent.")
 
 ;; Dynamic variables
 (defvar gnus-headers)
@@ -751,32 +757,35 @@ the actual number of articles toggled is returned."
       (pop gnus-agent-group-alist))))
 
 (defun gnus-agent-fetch-headers (group &optional force)
-  (when (gnus-agent-load-alist group)
-    (let ((articles (gnus-uncompress-range 
-		     (cons (1+ (caar (last (gnus-agent-load-alist group))))
-			   (cdr (gnus-active group))))))
-      ;; Fetch them.
-      (when articles
-	(gnus-message 7 "Fetching headers for %s..." group)
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (unless (eq 'nov (gnus-retrieve-headers articles group))
-	    (nnvirtual-convert-headers))
-	  ;; Save these headers for later processing.
-	  (copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
-	  (let (file)
-	    (when (file-exists-p
-		   (setq file (gnus-agent-article-name ".overview" group)))
-	      (gnus-agent-braid-nov group articles file))
-	    (gnus-make-directory (nnheader-translate-file-chars
-				  (file-name-directory file)))
-	    (write-region (point-min) (point-max) file nil 'silent)
-	    (gnus-agent-save-alist group articles nil)
-	    (gnus-agent-enter-history
-	     "last-header-fetched-for-session"
-	     (list (cons group (nth (- (length  articles) 1) articles)))
-	     (time-to-day (current-time)))
-	    articles))))))
+  (let ((articles (if (gnus-agent-load-alist group)   
+ 		      (gnus-sorted-intersection
+ 		       (gnus-list-of-unread-articles group)
+ 		       (gnus-uncompress-range
+ 			(cons (1+ (caar (last gnus-agent-article-alist)))
+ 			      (cdr (gnus-active group)))))
+ 		    (gnus-list-of-unread-articles group))))
+    ;; Fetch them.
+    (when articles
+      (gnus-message 7 "Fetching headers for %s..." group)
+      (save-excursion
+ 	(set-buffer nntp-server-buffer)
+ 	(unless (eq 'nov (gnus-retrieve-headers articles group))
+ 	  (nnvirtual-convert-headers))
+ 	;; Save these headers for later processing.
+ 	(copy-to-buffer gnus-agent-overview-buffer (point-min) (point-max))
+ 	(let (file)
+ 	  (when (file-exists-p
+ 		 (setq file (gnus-agent-article-name ".overview" group)))
+ 	    (gnus-agent-braid-nov group articles file))
+ 	  (gnus-make-directory (nnheader-translate-file-chars
+ 				(file-name-directory file)))
+ 	  (write-region (point-min) (point-max) file nil 'silent)
+ 	  (gnus-agent-save-alist group articles nil)
+ 	  (gnus-agent-enter-history
+ 	   "last-header-fetched-for-session"
+ 	   (list (cons group (nth (- (length  articles) 1) articles)))
+ 	   (time-to-day (current-time)))
+ 	  articles)))))
 
 (defsubst gnus-agent-copy-nov-line (article)
   (let (b e)
@@ -894,27 +903,63 @@ the actual number of articles toggled is returned."
       ;; Parse them and see which articles we want to fetch.
       (setq gnus-newsgroup-dependencies
 	    (make-vector (length articles) 0))
-      (setq gnus-newsgroup-headers
-	    (gnus-get-newsgroup-headers-xover articles nil nil group))
+      ;; No need to call `gnus-get-newsgroup-headers-xover' with 
+      ;; the entire .overview for group as we still have the just
+      ;; downloaded headers in `gnus-agent-overview-buffer'.
+      (let ((nntp-server-buffer gnus-agent-overview-buffer))
+	(setq gnus-newsgroup-headers
+	      (gnus-get-newsgroup-headers-xover articles nil nil group)))
       (setq category (gnus-group-category group))
       (setq predicate
 	    (gnus-get-predicate 
 	     (or (gnus-group-get-parameter group 'agent-predicate)
 		 (cadr category))))
-      (setq score-param
-	    (or (gnus-group-get-parameter group 'agent-score)
-		(caddr category)))
-      (when score-param
-	(gnus-score-headers (list (list score-param))))
-      (setq arts nil)
-      (while (setq gnus-headers (pop gnus-newsgroup-headers))
-	(setq gnus-score
-	      (or (cdr (assq (mail-header-number gnus-headers)
-			     gnus-newsgroup-scored))
-		  gnus-summary-default-score))
-	(when (funcall predicate)
-	  (push (mail-header-number gnus-headers)
-		arts)))
+      ;; Do we want to download everything, or nothing?
+      (if (or (eq (caaddr predicate) 'gnus-agent-true)
+	      (eq (caaddr predicate) 'gnus-agent-false))
+	  ;; Yes.
+	  (setq arts (symbol-value 
+		      (cadr (assoc (caaddr predicate) 
+				   '((gnus-agent-true articles)
+				     (gnus-agent-false nil))))))
+	;; No, we need to decide what we want.
+	(setq score-param
+	      (let ((score-method (or 
+				   (gnus-group-get-parameter group 'agent-score t)
+				   (caddr category))))
+		(when score-method
+		  (require 'gnus-score)
+		  (if (eq score-method 'file)
+		      (let ((entries
+			     (gnus-score-load-files
+			      (gnus-all-score-files group)))
+			    list score-file)
+			(while (setq list (car entries))
+			  (push (car list) score-file)
+			  (setq list (cdr list))
+			  (while list
+			    (when (member (caar list)
+					  gnus-agent-scoreable-headers)
+			      (push (car list) score-file))
+			    (setq list (cdr list)))
+			  (setq score-param 
+				(append score-param (list (nreverse score-file)))
+				score-file nil entries (cdr entries)))
+			(list score-param))
+		    (if (stringp (car score-method))
+			score-method
+		      (list (list score-method)))))))
+	(when score-param
+	  (gnus-score-headers score-param))
+	(setq arts nil)
+	(while (setq gnus-headers (pop gnus-newsgroup-headers))
+	  (setq gnus-score
+		(or (cdr (assq (mail-header-number gnus-headers)
+			       gnus-newsgroup-scored))
+		    gnus-summary-default-score))
+	  (when (funcall predicate)
+	    (push (mail-header-number gnus-headers)
+		  arts))))
       ;; Fetch the articles.
       (when arts
 	(gnus-agent-fetch-articles group arts)))
@@ -1346,7 +1391,8 @@ The following commands are available:
 		   (sort gnus-agent-article-alist 'car-less-than-car))
 	     (let* ((alist gnus-agent-article-alist)
 		    (prev (cons nil alist))
-		    (first prev))
+		    (first prev)
+		    expired)
 	       (while (and alist
 			   (<= (caar alist) article))
 		 (if (or (not (cdar alist))
@@ -1355,22 +1401,33 @@ The following commands are available:
 				(number-to-string
 				 (caar alist))
 				group))))
-		     (setcdr prev (setq alist (cdr alist)))
+		     (progn
+		       (push (caar alist) expired)
+		       (setcdr prev (setq alist (cdr alist))))
 		   (setq prev alist
 			 alist (cdr alist))))
 	       (setq gnus-agent-article-alist (cdr first))
-	       ;;; Mark all articles up to the first article
-	       ;;; in `gnus-article-alist' as read.
+	       (gnus-agent-save-alist group)
+               ;; Mark all articles up to the first article
+	       ;; in `gnus-article-alist' as read.
 	       (when (caar gnus-agent-article-alist)
 		 (setcar (nthcdr 2 info)
 			 (gnus-range-add
 			  (nth 2 info)
 			  (cons 1 (- (caar gnus-agent-article-alist) 1)))))
+	       ;; Maybe everything has been expired from `gnus-article-alist'
+	       ;; and so the above marking as read could not be conducted,
+	       ;; or there are expired article within the range of the alist.
+	       (when (or (not (caar gnus-agent-article-alist))
+			 (> (car expired) (caar gnus-agent-article-alist)))  
+	       (setcar (nthcdr 2 info)
+		       (gnus-add-to-range
+			(nth 2 info)
+			(nreverse expired))))
 	       (gnus-dribble-enter
 		(concat "(gnus-group-set-info '"
 			(gnus-prin1-to-string info)
-			")"))
-	       (gnus-agent-save-alist group)))
+			")"))))
 	   expiry-hashtb)
 	  (set-buffer history)
 	  (setq histories (nreverse (sort histories '<)))

@@ -35,6 +35,7 @@
 (require 'gnus-range)
 (require 'gnus-win)
 (require 'gnus-undo)
+(require 'time-date)
 
 (defcustom gnus-group-archive-directory
   "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
@@ -2946,8 +2947,9 @@ If N is negative, this group and the N-1 previous groups will be checked."
 	     (gnus-get-info group) (gnus-active group) t)
 	    (unless (gnus-virtual-group-p group)
 	      (gnus-close-group group))
-	    (gnus-agent-save-group-info
-	     method (gnus-group-real-name group) (gnus-active group))
+	    (when gnus-agent
+	      (gnus-agent-save-group-info
+	       method (gnus-group-real-name group) (gnus-active group)))
 	    (gnus-group-update-group group))
 	(if (eq (gnus-server-status (gnus-find-method-for-group group))
 		'denied)

@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.16"
+(defconst gnus-version-number "0.17"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -1412,6 +1412,7 @@ want."
 
 ;;; Internal variables
 
+(defvar gnus-agent-meta-information-header "X-Gnus-Agent-Meta-Information")
 (defvar gnus-group-get-parameter-function 'gnus-group-get-parameter)
 (defvar gnus-original-article-buffer " *Original Article*")
 (defvar gnus-newsgroup-name nil)
@@ -1583,8 +1584,6 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       message-send-and-exit message-yank-original)
      ("nnmail" nnmail-split-fancy nnmail-article-group)
      ("nnvirtual" nnvirtual-catchup-group nnvirtual-convert-headers)
-     ("timezone" timezone-make-date-arpa-standard timezone-fix-time
-      timezone-make-sortable-date timezone-make-time-string)
      ("rmailout" rmail-output)
      ("rmail" rmail-insert-rmail-file-header rmail-count-new-messages
       rmail-show-message rmail-output-to-rmail-file)
@@ -1667,8 +1666,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-post-news gnus-summary-reply gnus-summary-reply-with-original
       gnus-summary-mail-forward gnus-summary-mail-other-window
       gnus-summary-resend-message gnus-summary-resend-bounced-mail
-      gnus-summary-wide-reply
-      gnus-bug)
+      gnus-summary-wide-reply gnus-summary-followup-to-mail
+      gnus-summary-followup-to-mail-with-original gnus-bug)
      ("gnus-picon" :interactive t gnus-article-display-picons
       gnus-group-display-picons gnus-picons-article-display-x-face
       gnus-picons-display-x-face)

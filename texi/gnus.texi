@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.16 Manual
+@settitle Pterodactyl Gnus 0.17 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.16 Manual
+@title Pterodactyl Gnus 0.17 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.16.
+This manual corresponds to Pterodactyl Gnus 0.17.
 
 @end ifinfo
 
@@ -4924,10 +4924,7 @@ The default is 4.
 
 @item gnus-parse-headers-hook
 @vindex gnus-parse-headers-hook
-Hook run before parsing any headers.  The default value is
-@code{(gnus-decode-rfc1522)}, which means that QPized headers will be
-slightly decoded in a hackish way.  This is likely to change in the
-future when Gnus becomes @sc{MIME}ified.
+Hook run before parsing any headers.
 
 @item gnus-alter-header-function
 @vindex gnus-alter-header-function
@@ -7372,6 +7369,11 @@ It is called after the summary buffer has been generated.  You might use
 it to, for instance, highlight lines or modify the look of the buffer in
 some other ungodly manner.  I don't care.
 
+@vindex gnus-summary-prepared-hook
+@item gnus-summary-prepared-hook
+A hook called as the very last thing after the summary buffer has been
+generated.
+
 @vindex gnus-summary-ignore-duplicates
 @item gnus-summary-ignore-duplicates
 When Gnus discovers two articles that have the same @code{Message-ID},
@@ -8477,7 +8479,7 @@ So here's a new example:
          (signature my-funny-signature-randomizer))
         ((equal (system-name) "gnarly")
          (signature my-quote-randomizer))
-        (message-this-is-new
+        (message-this-is-news
          (signature my-news-signature))
         (posting-from-work-p
          (signature-file "~/.work-signature")
@@ -15711,8 +15713,8 @@ We do have some breaches to this one.
 @table @emph
 
 @item MIME
-Gnus does no MIME handling, and this standard-to-be seems to think that
-MIME is the bees' knees, so we have major breakage here.
+Gnus does not yet fully handle MIME, and this standard-to-be seems to
+think that MIME is the bees' knees, so we have major breakage here.
 
 @item X-Newsreader
 This is considered to be a ``vanity header'', while I consider it to be
@@ -15721,6 +15723,13 @@ coming from @code{tin} and @code{Netscape} I know not to use either of
 those for posting articles.  I would not have known that if it wasn't
 for the @code{X-Newsreader} header.
 @end table
+
+@item USEFOR
+@cindex USEFOR
+USEFOR is an IETF working group writing a successor to RFC 1036, based
+on Son-of-RFC 1036.  They have produced a number of drafts proposing
+various changes to the format of news articles.  The Gnus towers will
+look into implementing the changes when the draft is accepted as an RFC.
 
 @end table
 
@@ -15741,13 +15750,10 @@ Gnus should work on :
 @itemize @bullet
 
 @item
-Emacs 19.32 and up.
+Emacs 20.2 and up.
 
 @item
-XEmacs 19.14 and up.
-
-@item
-Mule versions based on Emacs 19.32 and up.
+XEmacs 20.4 and up.
 
 @end itemize
 

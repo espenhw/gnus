@@ -505,7 +505,7 @@ used as score."
 	    (?l "lines" nil nil number)
 	    (?d "date" nil nil date)
 	    (?f "followup" nil nil string)
-	    (?t "thread" nil nil string)))
+	    (?t "thread" "message-id" nil string)))
 	 (char-to-type
 	  '((?s s "substring" string)
 	    (?e e "exact string" string)
@@ -591,7 +591,7 @@ used as score."
 	    ;; It was a majuscule, so we end reading and use the default.
 	    (if mimic (message "%c %c %c" prefix hchar tchar)
 	      (message ""))
-	    (setq pchar (or pchar ?p)))
+	    (setq pchar (or pchar ?t)))
 
 	  ;; We continue reading.
 	  (while (not pchar)
@@ -743,6 +743,7 @@ used as score."
 
 (defun gnus-summary-score-entry (header match type score date
 					&optional prompt silent)
+  (interactive)
   "Enter score file entry.
 HEADER is the header being scored.
 MATCH is the string we are looking for.
@@ -1202,9 +1203,9 @@ SCORE is the score to add."
 	;; Couldn't read file.
 	(setq gnus-score-alist nil)
       ;; Read file.
-      (save-excursion
-	(gnus-set-work-buffer)
-	(insert-file-contents file)
+      (with-temp-buffer
+	(let ((coding-system-for-write score-mode-coding-system))
+	  (insert-file-contents file))
 	(goto-char (point-min))
 	;; Only do the loading if the score file isn't empty.
 	(when (save-excursion (re-search-forward "[()0-9a-zA-Z]" nil t))
@@ -1337,7 +1338,8 @@ SCORE is the score to add."
 	      (delete-file file)
 	    ;; There are scores, so we write the file.
 	    (when (file-writable-p file)
-	      (gnus-write-buffer file)
+	      (let ((coding-system-for-write score-mode-coding-system))
+		(gnus-write-buffer file))
 	      (when gnus-score-after-write-file-function
 		(funcall gnus-score-after-write-file-function file)))))
 	(and gnus-score-uncacheable-files

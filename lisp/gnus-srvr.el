@@ -592,9 +592,11 @@ The following commands are available:
 	  (while (re-search-forward
 		  "\\(^[^ \t]+\\)[ \t]+[0-9]+[ \t]+[0-9]+" nil t)
 	    (goto-char (match-end 1))
-	    (push (cons (match-string 1)
-			(max 0 (- (1+ (read cur)) (read cur))))
-		  groups))))
+	    (condition-case ()
+		(push (cons (match-string 1)
+			    (max 0 (- (1+ (read cur)) (read cur))))
+		      groups)
+	      (error nil)))))
       (setq groups (sort groups
 			 (lambda (l1 l2)
 			   (string< (car l1) (car l2)))))

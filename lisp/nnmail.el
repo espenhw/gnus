@@ -28,7 +28,6 @@
 (eval-when-compile (require 'cl))
 
 (require 'nnheader)
-(require 'timezone)
 (require 'message)
 (require 'custom)
 (require 'gnus-util)

@@ -30,10 +30,6 @@
 
 (nnoo-declare nntp)
 
-(eval-and-compile
-  (unless (fboundp 'open-network-stream)
-    (require 'tcp)))
-
 (eval-when-compile (require 'cl))
 
 (defvoo nntp-address nil

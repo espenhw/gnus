@@ -28,7 +28,6 @@
 
 (require 'nnheader)
 (require 'nntp)
-(require 'timezone)
 (require 'nnoo)
 (eval-when-compile (require 'cl))
 
@@ -280,7 +279,7 @@ there.")
 	(while (and (not (looking-at
 			  "\\([^ ]+\\) +\\([0-9]+\\)[0-9][0-9][0-9] "))
 		    (zerop (forward-line -1))))
-	(let ((seconds (nnspool-seconds-since-epoch date))
+	(let ((seconds (time-to-float (date-to-time date)))
 	      groups)
 	  ;; Go through lines and add the latest groups to a list.
 	  (while (and (looking-at "\\([^ ]+\\) +[0-9]+ ")
@@ -452,18 +451,6 @@ there.")
 (defun nnspool-article-pathname (group &optional article)
   "Find the path for GROUP."
   (nnheader-group-pathname group nnspool-spool-directory article))
-
-(defun nnspool-seconds-since-epoch (date)
-  (let* ((tdate (mapcar (lambda (ti) (and ti (string-to-int ti)))
-			(timezone-parse-date date)))
-	 (ttime (mapcar (lambda (ti) (and ti (string-to-int ti)))
-			(timezone-parse-time
-			 (aref (timezone-parse-date date) 3))))
-	 (unix (encode-time (nth 2 ttime) (nth 1 ttime) (nth 0 ttime)
-			    (nth 2 tdate) (nth 1 tdate) (nth 0 tdate)
-			    (nth 4 tdate))))
-    (+ (* (car unix) 65536.0)
-       (cadr unix))))
 
 (provide 'nnspool)
 

@@ -21,14 +21,14 @@
 
 ;;; Commentary:
 
-;; DRUMS is and IETF Working Group that works (or worked) on the
+;; DRUMS is an IETF Working Group that works (or worked) on the
 ;; successor to RFC822, "Standard For The Format Of Arpa Internet Text
 ;; Messages".  This library is based on
 ;; draft-ietf-drums-msg-fmt-05.txt, released on 1998-08-05.
 
 ;;; Code:
 
-(require 'date)
+(require 'time-date)
 
 (defvar drums-no-ws-ctl-token "\001-\010\013\014\016-\037\177"
   "US-ASCII control characters excluding CR, LF and white space.")

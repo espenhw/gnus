@@ -1,4 +1,4 @@
-;;; date.el --- Date and time handling functions
+;;; time-date.el --- Date and time handling functions
 ;; Copyright (C) 1998 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -24,28 +24,42 @@
 
 ;;; Code:
 
-(require 'timezone)
+(eval-and-compile
+  (eval
+   '(if (not (string-match "XEmacs" emacs-version))
+	(require 'parse-time)
 
-(defun parse-time-string (date)
-  "Convert DATE into time."
-  (decode-time
-   (condition-case ()
-       (let* ((d1 (timezone-parse-date date))
-	      (t1 (timezone-parse-time (aref d1 3))))
-	 (apply 'encode-time
-		(mapcar (lambda (el)
-			  (and el (string-to-number el)))
-			(list
-			 (aref t1 2) (aref t1 1) (aref t1 0)
-			 (aref d1 2) (aref d1 1) (aref d1 0)
-			 (number-to-string
-			  (* 60 (timezone-zone-to-minute (aref d1 4))))))))
-     ;; If we get an error, then we just return a 0 time.
-     (error (list 0 0)))))
+      (require 'timezone)
+      (defun parse-time-string (date)
+	"Convert DATE into time."
+	(decode-time
+	 (condition-case ()
+	     (let* ((d1 (timezone-parse-date date))
+		    (t1 (timezone-parse-time (aref d1 3))))
+	       (apply 'encode-time
+		      (mapcar (lambda (el)
+				(and el (string-to-number el)))
+			      (list
+			       (aref t1 2) (aref t1 1) (aref t1 0)
+			       (aref d1 2) (aref d1 1) (aref d1 0)
+			       (number-to-string
+				(* 60 (timezone-zone-to-minute (aref d1 4))))))))
+	   ;; If we get an error, then we just return a 0 time.
+	   (error (list 0 0))))))))
 
 (defun date-to-time (date)
   "Convert DATE into time."
   (apply 'encode-time (parse-time-string date)))
+
+(defun time-to-float (time)
+  "Convert TIME to a floating point number."
+  (+ (* (car time) 65536.0)
+     (cadr time)))
+
+(defun float-to-time (float)
+  "Convert FLOAT (a floating point number) to an Emacs time structure."
+  (list (floor float 65536)
+	(floor (mod float 65536))))
 
 (defun time-less-p (t1 t2)
   "Say whether time T1 is less than time T2."
@@ -119,6 +133,6 @@ The Gregorian date Sunday, December 31, 1bce is imaginary."
        (- (/ (1- year) 100))		;	- century years
        (/ (1- year) 400))))		;	+ Gregorian leap years
 
-(provide 'date)
+(provide 'time-date)
 
-;;; date.el ends here
+;;; time-date.el ends here

@@ -78,14 +78,9 @@ If no encoding was done, nil is returned."
        ;;;!!!above seems to return the wrong result under Emacs 20.3.
        ;;;!!!Sometimes.
        (save-excursion
-	 (let (found)
-	   (goto-char (point-min))
-	   (while (and (not found)
-		       (not (eobp)))
-	     (when (> (mm-char-int (following-char)) 127)
-	       (setq found t))
-	     (forward-char 1))
-	   (not found))))
+	 (goto-char (point-min))
+	 (skip-chars-forward "\0-\177")
+	 (eobp)))
       '7bit
     '8bit))
 

@@ -1,3 +1,88 @@
+Sun Sep  6 21:19:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.17 is released.
+
+1998-09-06 05:45:17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* time-date.el: Renamed from "date".
+
+	* gnus.el: Removed all timezone dependencies.
+
+	* score-mode.el: Removed.
+	(gnus-score-edit-insert-date): Use date.
+
+	* date.el (float-to-time): New function.
+
+	* nnspool.el (nnspool-seconds-since-epoch): Removed.
+
+	* date.el (time-to-float): New function.
+
+	* message.el (message-make-date): Use format-time-string.
+	(message-make-expires): Use make-date.
+
+	* gnus-xmas.el (gnus-xmas-seconds-since-epoch): Removed.
+
+	* gnus-util.el (gnus-dd-mmm): Use date.
+	(gnus-sortable-date): Ditto.
+
+	* message.el (message-make-date): Take an optional time.
+
+	* gnus: Applied patches from 5.6.43.
+
+	* date.el (if): Use parse-time.
+
+	* gnus-score.el (gnus-summary-score-entry): Make into a command
+	again. 
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Only call if
+	gnus-agent. 
+
+	* gnus.el (gnus-agent-meta-information-header): Moved here.
+
+1998-09-05  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-scoreable-headers): New variable.
+	(gnus-agent-fetch-group-1): Score article headers using normal
+ 	group score files if the download score rule of a category/group
+ 	is `file'.
+	(gnus-agent-fetch-group-1): Don't parse the entire .overview when
+ 	deciding what articles to download.
+	(gnus-agent-fetch-group-1): Don't push headers through scoring and
+ 	predicate processing if predicate is `true' or `false'.
+
+1998-09-06 01:56:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-score.el (gnus-score-load-score-alist): Bind coding system.
+
+	* gnus-art.el (gnus-article-setup-buffer): Enable multibyte.
+
+	* score-mode.el (score-mode-coding-system): New variable.
+	(gnus-score-edit-exit): Use it.
+
+1998-09-04  Jason R Mastaler  <jason@4b.org>
+
+	* drums.el: Corrected typo.
+
+1998-09-05 23:24:43  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* mm-bodies.el (mm-body-encoding): Faster version.
+
+1998-09-05 22:23:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-decode-charset): Only decode text
+	things. 
+
+	* message.el (message-output): Use rmail.
+
+	* rfc2047.el (rfc2047-encoded-word-regexp): Allow spaces in the
+	word part.
+
+	* mm-util.el (mm-charset-to-coding-system): Use
+	rfc2047-default-charset. 
+	(mm-known-charsets): New variable.
+
+	* message.el (message-caesar-region): Bugged out.
+
 Sat Sep  5 21:55:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.16 is released.

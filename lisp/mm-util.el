@@ -24,6 +24,9 @@
 
 ;;; Code:
 
+(defvar mm-known-charsets '(iso-8859-1)
+  "List of known charsets.")
+
 (defvar mm-mime-mule-charset-alist
   '((us-ascii ascii)
     (iso-8859-1 latin-iso8859-1)
@@ -143,7 +146,7 @@ used as the line break code type of the coding system."
   (cond
    ;; Running in a non-MULE environment.
    ((and (null (mm-coding-system-list))
-	 (eq charset 'iso-8859-1))
+	 (memq charset mm-known-charsets))
     charset)
    ;; Check to see whether we can handle this charset.
    ((memq charset (mm-coding-system-list))

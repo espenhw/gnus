@@ -70,7 +70,6 @@
   (autoload 'cancel-timer "timer")
   (autoload 'telnet "telnet" nil t)
   (autoload 'telnet-send-input "telnet" nil t)
-  (autoload 'timezone-parse-date "timezone")
   (autoload 'gnus-declare-backend "gnus-start"))
 
 ;; Declare nndb as derived from nntp

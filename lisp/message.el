@@ -33,7 +33,6 @@
 
 (require 'mailheader)
 (require 'nnheader)
-(require 'timezone)
 (require 'easymenu)
 (require 'custom)
 (if (string-match "XEmacs\\|Lucid" emacs-version)
@@ -951,7 +950,6 @@ The cdr of ech entry is a function for applying the face to a region.")
   (autoload 'gnus-point-at-eol "gnus-util")
   (autoload 'gnus-point-at-bol "gnus-util")
   (autoload 'gnus-output-to-mail "gnus-util")
-  (autoload 'gnus-output-to-rmail "gnus-util")
   (autoload 'mail-abbrev-in-expansion-header-p "mailabbrev")
   (autoload 'nndraft-request-associate-buffer "nndraft")
   (autoload 'nndraft-request-expire-articles "nndraft")
@@ -1623,8 +1621,8 @@ text was killed."
     ;; Then we translate the region.  Do it this way to retain
     ;; text properties.
     (while (< b e)
-      (subst-char-in-region
-       (when (< (char-after b) 255)
+      (when (< (char-after b) 255)
+	(subst-char-in-region
 	 b (1+ b) (char-after b)
 	 (aref message-caesar-translation-table (char-after b))))
       (incf b))))
@@ -2581,7 +2579,7 @@ to find out how to use this."
   "Append this article to Unix/babyl mail file.."
   (if (and (file-readable-p filename)
 	   (mail-file-babyl-p filename))
-      (gnus-output-to-rmail filename t)
+      (rmail-output-to-rmail-file filename t)
     (gnus-output-to-mail filename t)))
 
 (defun message-cleanup-headers ()
@@ -2616,11 +2614,10 @@ to find out how to use this."
 	(when (re-search-forward ",+$" nil t)
 	  (replace-match "" t t))))))
 
-(defun message-make-date ()
-  "Make a valid data header."
-  (let ((now (current-time)))
-    (timezone-make-date-arpa-standard
-     (current-time-string now) (current-time-zone now))))
+(defun message-make-date (&optional now)
+  "Make a valid data header.
+If NOW, use that time instead."
+  (format-time-string "%d %b %Y %H:%M:%S %z" (or now (current-time))))
 
 (defun message-make-message-id ()
   "Make a unique Message-ID."
@@ -2745,9 +2742,7 @@ to find out how to use this."
     ;; Add the future to current.
     (setcar current (+ (car current) (round (/ future (expt 2 16)))))
     (setcar (cdr current) (+ (nth 1 current) (% (round future) (expt 2 16))))
-    ;; Return the date in the future in UT.
-    (timezone-make-date-arpa-standard
-     (current-time-string current) (current-time-zone current) '(0 "UT"))))
+    (message-make-date current)))
 
 (defun message-make-path ()
   "Return uucp path."
@@ -4048,9 +4043,11 @@ regexp varstr."
 	  (widen)
 	  (message-narrow-to-headers)
 	  (goto-char (point-max))
-	  (mm-insert-rfc822-headers
-	   (or charset (mm-mule-charset-to-mime-charset 'ascii))
-	   encoding)
+	  (setq charset (or charset (mm-mule-charset-to-mime-charset 'ascii)))
+	  ;; We don't insert MIME headers if they only say the default.
+	  (unless (and (eq charset 'ascii)
+		       (eq encoding '7bit))
+	    (mm-insert-rfc822-headers charset encoding))
 	  (mm-encode-body))))))
 
 (run-hooks 'message-load-hook)
