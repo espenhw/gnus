@@ -1219,7 +1219,7 @@ This command does not work if you use short group names."
 		   (gnus-group-prefixed-name
 		    group
 		    (gnus-server-to-method (format "nnfolder:%s" server))))))
-	(nnheader-message 6 "Boostrapping nnfolder marks...")
+	(nnheader-message 6 "Bootstrapping nnfolder marks...")
 	(setq nnfolder-marks (gnus-info-marks info))
 	(push (cons 'read (gnus-info-read info)) nnfolder-marks)
 	(nnfolder-save-marks group server)))))

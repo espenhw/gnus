@@ -1,4 +1,10 @@
 2001-08-25  Simon Josefsson  <jas@extundo.com>
+	From Andreas Jaeger  <aj@suse.de>
+
+	* nnfolder.el (nnfolder-open-marks): Fix typo.
+	* nnml.el (nnml-open-marks): Likewise.
+
+2001-08-25  Simon Josefsson  <jas@extundo.com>
 
 	Make nnfolder groups self-contained as far as marks are concerned.
 

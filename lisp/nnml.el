@@ -1,5 +1,5 @@
 ;;; nnml.el --- mail spool access for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org> (adding MARKS)
@@ -949,7 +949,7 @@ check twice.")
 		   (gnus-group-prefixed-name
 		    group
 		    (gnus-server-to-method (format "nnml:%s" server))))))
-	(nnheader-message 6 "Boostrapping nnml marks...")
+	(nnheader-message 6 "Bootstrapping nnml marks...")
 	(setq nnml-marks (gnus-info-marks info))
 	(push (cons 'read (gnus-info-read info)) nnml-marks)
 	(nnml-save-marks group server)))))
