@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.51 Manual
+@settitle Gnus 5.4.52 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.51 Manual
+@title Gnus 5.4.52 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.51.
+This manual corresponds to Gnus 5.4.52.
 
 @end ifinfo
 
@@ -5236,7 +5236,7 @@ lots of mail groups that are called things like
 these group names before creating the file name to save to.  The
 following will do just that:
 
-1@lisp
+@lisp
 (defun my-save-name (group)
   (when (string-match "^nnml:mail." group)
     (substring group (match-end 0))))

@@ -1130,7 +1130,7 @@ Put point at the beginning of the signature separator."
 	  (setq buf (buffer-string))))
       (when buf
 	(delete-region (point-min) (point-max))
-	(insert-buffer-substring buf)
+	(insert buf)
 	(kill-buffer buf))
       (widen)
       (goto-char (point-min))
@@ -2464,7 +2464,7 @@ groups."
   (let ((winconf (current-window-configuration)))
     (set-buffer gnus-article-buffer)
     (gnus-article-edit-mode)
-    (set-text-properties (point-min) (point-max) nil)
+    (gnus-set-text-properties (point-min) (point-max) nil)
     (gnus-configure-windows 'edit-article)
     (setq gnus-article-edit-done-function exit-func)
     (setq gnus-prev-winconf winconf)

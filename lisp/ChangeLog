@@ -1,3 +1,29 @@
+Sat May 10 00:37:32 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.52 is released.
+
+Sat May 10 00:13:30 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-possibly-change-group): Set wrong
+	variable. 
+
+	* gnus-art.el (gnus-article-edit-article): Remove invisible text
+	under XEmacs.
+	(gnus-article-treat-html): Insert string.
+
+Thu May  8 10:53:12 1997  Steven L Baur  <steve@altair.xemacs.org>
+
+	* gnus-msg.el (gnus-summary-mail-crosspost-complaint):
+	`deactivate-mark' doesn't exist in XEmacs.
+
+Fri May  9 23:50:01 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-create-topic): Added doc.
+
+	* gnus-sum.el (gnus-summary-refer-article): Insert sparse
+	non-displayed articles properly.
+	(gnus-cut-thread): Exclude non-displayed sparse articles.
+
 Thu May  8 17:37:38 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.51 is released.

@@ -2014,7 +2014,7 @@ The following commands are available:
 
 (defmacro gnus-summary-article-sparse-p (article)
   "Say whether this article is a sparse article or not."
-  ` (memq ,article gnus-newsgroup-sparse))
+  `(memq ,article gnus-newsgroup-sparse))
 
 (defmacro gnus-summary-article-ancient-p (article)
   "Say whether this article is a sparse article or not."
@@ -5931,7 +5931,10 @@ If ALL, mark even excluded ticked and dormants as read."
 	      (mail-header-number (car thread))))
 	    (progn
 	      (if (<= (length (cdr thread)) 1)
-		  (setq thread (cadr thread))
+		  (setq gnus-newsgroup-limit
+			(delq (mail-header-number (car thread))
+			      gnus-newsgroup-limit)
+			thread (cadr thread))
 		(when (gnus-invisible-cut-children (cdr thread))
 		  (let ((th (cdr thread)))
 		    (while th
@@ -5939,8 +5942,7 @@ If ALL, mark even excluded ticked and dormants as read."
 				gnus-newsgroup-limit)
 			  (setq thread (car th)
 				th nil)
-			(setq th (cdr th)))))))))
-      ))
+			(setq th (cdr th)))))))))))
   thread)
 
 (defun gnus-cut-threads (threads)
@@ -6156,8 +6158,13 @@ or `gnus-select-method', no matter what backend the article comes from."
     (let* ((header (gnus-id-to-header message-id))
 	   (sparse (and header
 			(gnus-summary-article-sparse-p
-			 (mail-header-number header)))))
-      (if header
+			 (mail-header-number header))
+			(memq (mail-header-number header)
+			      gnus-newsgroup-limit))))
+      (if (and header
+	       (or (not (gnus-summary-article-sparse-p
+			 (mail-header-number header)))
+		   sparse))
 	  (prog1
               ;; The article is present in the buffer, so we just go to it.
 	      (gnus-summary-goto-article

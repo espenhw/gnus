@@ -1024,6 +1024,8 @@ If performed over a topic line, toggle folding the topic."
     (gnus-group-read-group all no-article group)))
 
 (defun gnus-topic-create-topic (topic parent &optional previous full-topic)
+  "Create a new TOPIC under PARENT.
+When used interactively, PARENT will be the topic under point."
   (interactive
    (list
     (read-string "New topic: ")

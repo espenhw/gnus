@@ -509,7 +509,7 @@ time saver for large mailboxes.")
 
     (if dont-check
 	(setq nnfolder-current-group group
-	      nnfolder-current-folder nil)
+	      nnfolder-current-buffer nil)
       (let (inf file)
 	;; If we have to change groups, see if we don't already have the
 	;; folder in memory.  If we do, verify the modtime and destroy

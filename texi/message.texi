@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 5.4.51 Manual
+@settitle Message 5.4.52 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 5.4.51 Manual
+@title Message 5.4.52 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -79,7 +79,7 @@ buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 5.4.51.  Message is distributed with
+This manual corresponds to Message 5.4.52.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
