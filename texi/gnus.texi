@@ -14811,8 +14811,7 @@ expect from a disconnected IMAP client, including:
 @itemize @bullet
 
 @item
-Copying/moving articles into nnimap groups when unplugged. (This
-currently include GCC into a nnimap group when unplugged.)
+Copying/moving articles into nnimap groups when unplugged.
 
 @item
 Creating/deleting nnimap groups when unplugged.
