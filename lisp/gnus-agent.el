@@ -143,6 +143,7 @@ If this is `ask' the hook will query the user."
 (defvar gnus-agent-file-name nil)
 (defvar gnus-agent-send-mail-function nil)
 (defvar gnus-agent-file-coding-system 'raw-text)
+(defvar gnus-agent-file-loading-cache nil)
 
 ;; Dynamic variables
 (defvar gnus-headers)
@@ -1115,11 +1116,14 @@ the actual number of articles toggled is returned."
 
 (defun gnus-agent-load-alist (group &optional dir)
   "Load the article-state alist for GROUP."
+  (let ((file ))
   (setq gnus-agent-article-alist
-	(gnus-agent-read-file
+	(gnus-cache-file-contents
 	 (if dir
-	     (expand-file-name ".agentview" dir)
-	   (gnus-agent-article-name ".agentview" group)))))
+		  (expand-file-name ".agentview" dir)
+		(gnus-agent-article-name ".agentview" group))
+	 'gnus-agent-file-loading-cache
+	 'gnus-agent-read-file))))
 
 (defun gnus-agent-save-alist (group &optional articles state dir)
   "Save the article-state alist for GROUP."

@@ -1274,6 +1274,19 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
 		    (count-lines (point-min) (point)))
 	(forward-line 1)))))
 
+(defun gnus-cache-file-contents (file variable function)
+  "Cache the contents of FILE in VARIABLE.  The contents come from FUNCTION."
+  (let ((time (nth 5 (file-attributes file)))
+	contents value)
+    (if (or (null (setq value (symbol-value variable)))
+	    (not (equalp (car value) file))
+	    (not (equalp (nth 1 value) time)))
+	(progn
+	  (setq contents (funcall function file))
+	  (set variable (list file time contents))
+	  contents)
+      (nth 2 value))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

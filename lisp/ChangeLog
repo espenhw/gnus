@@ -1,5 +1,17 @@
 2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-agent.el (gnus-agent-load-alist): Use new caching
+	function. 
+
+	* gnus-util.el (gnus-cache-file-contents): New function.
+
+	* gnus-agent.el (gnus-agent-file-loading-cache): New variable.
+	(gnus-agent-load-alist): Use it.
+
+	* nnagent.el (nnagent-retrieve-headers): Use optimized function. 
+
+	* nnheader.el (nnheader-insert-nov-file): New function.
+
 	* gnus-util.el (gnus-parse-without-error): Correct the loop. 
 
 	* gnus-sum.el (gnus-dependencies-add-header): Use in-reply-to if
