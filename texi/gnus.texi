@@ -8579,6 +8579,20 @@ directory (which you shouldn't do), you should set
 ever expiring the final article in a mail newsgroup.  This is quite,
 quite important.
 
+Here's an example setup:  The incoming spools are located in
+@file{~/incoming/} and have @samp{""} as suffixes (i. e., the incoming
+spool files have the same names as the equivalent groups).  The
+@code{nnfolder} backend is to be used as the mail interface, and the
+@code{nnfolder} directory is @file{~/fMail/}.
+
+@lisp
+(setq nnfolder-directory "~/fMail/")
+(setq nnmail-spool-file 'procmail)
+(setq nnmail-procmail-directory "~/incoming/")
+(setq gnus-secondary-select-methods '((nnfolder "")))
+(setq nnmail-procmail-suffix "")
+@end lisp
+
 
 @node Incorporating Old Mail
 @subsection Incorporating Old Mail
@@ -13488,7 +13502,7 @@ You can click on buttons instead of using the keyboard
 
 New features in Gnus 5.2/5.3:
 
-@itemize
+@itemize @bullet
 
 @item
 A new message composition mode is used.  All old customization variables
@@ -13722,7 +13736,7 @@ Further syntax checking of outgoing articles have been added.
 
 New features in Gnus 5.4/5.5:
 
-@itemize
+@itemize @bullet
 
 @item
 @file{nntp.el} has been totally rewritten in an asynchronous fashion.
@@ -13887,11 +13901,16 @@ could point your Web browser over that-a-way.
 
 @node The Manual
 @section The Manual
+@cindex colophon
+@cindex manual
 
 This manual was generated from a TeXinfo file and then run through
-either @code{texi2dvi} or my own home-brewed texi to LaTeX transformer,
-and then run through @code{latex} and @code{dvips} to get what you hold
-in your hands now.  
+either @code{texi2dvi}
+@iflatex
+or my own home-brewed TeXinfo to \LaTeX\ transformer,
+and then run through @code{latex} and @code{dvips} 
+@end iflatex
+to get what you hold in your hands now.
 
 The following conventions have been used:
 
@@ -13927,6 +13946,7 @@ If I say ``set @code{flumphel} to @code{yes}'', that would mean:
 @samp{yes} and @code{yes} are two @emph{very} different things---don't
 ever get them confused.
 
+@iflatex
 @c @head
 Of course, everything in this manual is of vital interest, so you should
 read it all.  Several times.  However, if you feel like skimming the
@@ -13935,6 +13955,7 @@ there---it means that what's being discussed is of more importance than
 the rest of the stuff.  (On the other hand, if everything is infinitely
 important, how can anything be more important than that?  Just one more
 of the mysteries of this world, I guess.)
+@end iflatex
 
 @end iftex
 

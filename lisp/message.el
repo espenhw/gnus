@@ -193,7 +193,7 @@ If nil, message won't autosave.")
 
 ;;;###autoload
 (defvar message-ignored-cited-headers "."
-  "Delete these headers from the messages you yank.")
+  "*Delete these headers from the messages you yank.")
 
 (defvar message-cancel-message "I am canceling my own article."
   "Message to be inserted in the cancel message.")

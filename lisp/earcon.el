@@ -31,6 +31,7 @@
 
 (require 'gnus)
 (require 'gnus-audio)
+(require 'gnus-art)
 (eval-when-compile (require 'cl))
 
 (defvar earcon-auto-play nil

@@ -42,7 +42,7 @@
   :group 'gnus 
   "Score and kill file handling.")
 
-(defconst gnus-version-number "0.38"
+(defconst gnus-version-number "0.39"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)

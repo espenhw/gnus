@@ -1,3 +1,11 @@
+Thu Sep 19 03:05:01 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.37 is released.
+
+Thu Sep 19 18:57:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-ignored-cited-headers): Doc fix.
+
 Wed Sep 18 10:36:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus-async.el (gnus-async-prefetch-article-p): New variable.
