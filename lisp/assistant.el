@@ -184,7 +184,7 @@
     (when (or (eq (nth 3 variable) 'default)
 	      forcep)
       (setcar (nthcdr 3 variable)
-	      (eval (nth 2 variable))))))
+	      (assistant-eval (nth 2 variable))))))
 
 (defun assistant-get-variable (node variable)
   (let ((variables (assistant-get-list node "variable"))
@@ -312,7 +312,7 @@
 	 result)
     (assistant-validate-types node)
     (when validation
-      (when (setq result (assistant-eval validation node))
+      (when (setq result (assistant-eval validation))
 	(unless (y-or-n-p (format "Error: %s.  Continue? " result))
 	  (error "%s" result))))
     (assistant-set node "save" t)))
@@ -323,15 +323,25 @@
 	 next elem)
     (while (and (setq elem (cadr (pop nexts)))
 		(not next))
-      (when (assistant-eval (car elem) node)
+      (when (assistant-eval (car elem))
 	(setq next (cadr elem))))
     next))
-      
-(defun assistant-eval (form node)
+
+(defun assistant-get-all-variables ()
+  (let ((variables nil))
+    (dolist (node (cdr assistant-data))
+      (setq variables
+	    (append (assistant-get-list node "variable")
+		    variables)))
+    variables))
+  
+(defun assistant-eval (form)
   (let ((bindings nil))
-    (dolist (variable (assistant-get-list node "variable"))
+    (dolist (variable (assistant-get-all-variables))
       (setq variable (cadr variable))
-      (push (list (car variable) (nth 3 variable))
+      (push (list (car variable) (if (eq (nth 3 variable) 'default)
+				     nil
+				   (nth 3 variable)))
 	    bindings))
     (eval
      `(let ,bindings
@@ -344,7 +354,7 @@
       (when (assistant-get node "save")
 	(setq result (assistant-get node "result"))
 	(push (list (car result)
-		    (assistant-eval (cadr result) node))
+		    (assistant-eval (cadr result)))
 	      results)))
     (message "Results: %s"
 	     (nreverse results))))
@@ -366,9 +376,11 @@
 
 (defun assistant-authinfo-data (server port type)
   (when (file-exists-p "~/.authinfo")
-    (let ((data
-	   (netrc-machine (netrc-parse "~/.authinfo")
-			  server port)))
+    (netrc-get (netrc-machine (netrc-parse "~/.authinfo")
+			      server port)
+	       (if (eq type 'user)
+		   "login"
+		 "password"))))
 
 (provide 'assistant)
 
