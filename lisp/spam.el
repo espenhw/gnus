@@ -197,8 +197,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	decision)
     (while (and list-of-checks (not decision))
       (let ((pair (pop list-of-checks)))
-	(when (eval (car pair))
-	  (setq decision (apply (cdr pair))))))
+	(when (symbol-value (car pair))
+	  (setq decision (funcall (cdr pair))))))
     (if (eq decision t)
 	nil
       decision)))
