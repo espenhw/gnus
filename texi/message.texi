@@ -1460,10 +1460,10 @@ The Gnus Manual}.
 @findex smtpmail-send-it
 @findex feedmail-send-it
 Function used to send the current buffer as mail.  The default is
-@code{message-send-mail-with-sendmail}.  Other valid values include
+@code{message-send-mail-with-sendmail}, or @code{smtpmail-send-it}
+according to the system.  Other valid values include
 @code{message-send-mail-with-mh}, @code{message-send-mail-with-qmail},
-@code{message-smtpmail-send-it}, @code{smtpmail-send-it} and
-@code{feedmail-send-it}.
+@code{message-smtpmail-send-it} and @code{feedmail-send-it}.
 
 @item message-mh-deletable-headers
 @vindex message-mh-deletable-headers
