@@ -1,10 +1,18 @@
+2002-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* lpath.el: Fbind `w3m-charset-to-coding-system'; bind
+	`w3m-meta-content-type-charset-regexp'.
+
+	* mm-view.el (mm-inline-text-html-render-with-w3m): Decode
+	charset-encoded html contents.
+
 2002-01-24  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-request-article): Make sure it is not
 	empty file.
 
 	* nnweb.el (url): Ignore errors when request url.
-	
+
 	* nnrss.el: Clean up the comments.
 
 2002-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>

@@ -40,7 +40,7 @@
 	       url-view-url vcard-pretty-print
 	       url-insert-file-contents
 	       w3-coding-system-for-mime-charset w3-prepare-buffer w3-region
-	       w3m-region
+	       w3m-charset-to-coding-system w3m-region
 	       widget-make-intangible x-defined-colors))
 
 (maybe-bind '(adaptive-fill-first-line-regexp
@@ -60,7 +60,7 @@
 	      rmail-enable-mime-composing
 	      rmail-insert-mime-forwarded-message-function
 	      w3-meta-content-type-charset-regexp
-	      w3m-mode-map))
+	      w3m-meta-content-type-charset-regexp w3m-mode-map))
 
 (if (featurep 'xemacs)
     (progn

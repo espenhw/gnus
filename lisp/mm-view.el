@@ -165,12 +165,19 @@
 (defun mm-inline-text-html-render-with-w3m (handle)
   (mm-setup-w3m)
   (let ((text (mm-get-part handle))
-	(b (point)))
+	(b (point))
+	(charset (mail-content-type-get (mm-handle-type handle) 'charset)))
     (save-excursion
       (insert text)
       (save-restriction
 	(narrow-to-region b (point))
 	(goto-char (point-min))
+	(when (re-search-forward w3m-meta-content-type-charset-regexp nil t)
+	  (setq charset (or (w3m-charset-to-coding-system (match-string 2))
+			    charset)))
+	(when charset
+	  (delete-region (point-min) (point-max))
+	  (insert (mm-decode-string text charset)))
 	(w3m-region (point-min) (point-max))
 	(setq mm-w3m-minor-mode t))
       (mm-handle-set-undisplayer
