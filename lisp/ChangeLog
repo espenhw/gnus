@@ -1,5 +1,16 @@
 2004-02-03  Jesper Harder  <harder@ifa.au.dk>
 
+	* spam.el (spam-check-spamoracle, spam-spamoracle-learn): Fix
+	format string mismatch.
+
+	* sieve.el (sieve-deactivate-all): do.
+
+	* nnfolder.el (nnfolder-request-set-mark, nnfolder-save-marks): do.
+
+	* nnlistserv.el (nnlistserv-kk-wash-article): do.
+
+	* nnml.el (nnml-request-set-mark, nnml-save-marks): do.	
+
 	* mm-bodies.el (mm-7bit-chars): Don't include \r.
 
 2004-02-02  Teodor Zlatanov  <tzz@lifelogs.com>

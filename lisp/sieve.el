@@ -173,7 +173,7 @@ require \"fileinto\";
     (sieve-refresh-scriptlist)
     (if (sieve-manage-ok-p err)
 	(message "Deactivating scripts...done")
-      (message "Deactivating scripts...failed" (nth 2 err)))))
+      (message "Deactivating scripts...failed: %s" (nth 2 err)))))
 
 (defalias 'sieve-deactivate 'sieve-deactivate-all)
 

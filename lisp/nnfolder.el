@@ -1174,7 +1174,7 @@ This command does not work if you use short group names."
       (let ((range (nth 0 action))
 	    (what  (nth 1 action))
 	    (marks (nth 2 action)))
-	(assert (or (eq what 'add) (eq what 'del)) t
+	(assert (or (eq what 'add) (eq what 'del)) nil
 		"Unknown request-set-mark action: %s" what)
 	(dolist (mark marks)
 	  (setq nnfolder-marks (gnus-update-alist-soft
@@ -1240,7 +1240,7 @@ This command does not work if you use short group names."
 			nnfolder-marks-modtime))
       (error (or (gnus-yes-or-no-p
 		  (format "Could not write to %s (%s).  Continue? " file err))
-		 (error "Cannot write to %s (%s)" err))))))
+		 (error "Cannot write to %s (%s)" file err))))))
 
 (defun nnfolder-open-marks (group server)
   (let ((file (nnfolder-group-marks-pathname group)))

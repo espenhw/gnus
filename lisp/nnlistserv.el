@@ -122,7 +122,7 @@
     (mm-url-decode-entities)
     (while headers
       (goto-char (point-min))
-      (re-search-forward (format "<!-- %s=\"\\([^\"]+\\)" (car headers) nil t))
+      (re-search-forward (format "<!-- %s=\"\\([^\"]+\\)" (car headers)) nil t)
       (set (pop headers) (match-string 1)))
     (goto-char (point-min))
     (search-forward "<!-- body" nil t)
