@@ -595,21 +595,27 @@ If FILE is t, return the buffer contents as a string."
   "Fold continuation lines in the current buffer."
   (nnheader-replace-regexp "\\(\r?\n[ \t]+\\)+" " "))
 
-(defun nnheader-translate-file-chars (file)
+(defun nnheader-translate-file-chars (file &optional full)
+  "Translate FILE into something that can be a file name.
+If FULL, translate everything."
   (if (null nnheader-file-name-translation-alist)
       ;; No translation is necessary.
       file
-    ;; We translate -- but only the file name.  We leave the directory
-    ;; alone.
     (let* ((i 0)
 	   trans leaf path len)
-      (if (string-match "/[^/]+\\'" file)
-	  ;; This is needed on NT's and stuff.
-	  (setq leaf (substring file (1+ (match-beginning 0)))
-		path (substring file 0 (1+ (match-beginning 0))))
-	;; Fall back on this.
-	(setq leaf (file-name-nondirectory file)
-	      path (file-name-directory file)))
+      (if full
+	  ;; Do complete translation.
+	  (setq leaf file
+		path "")
+	;; We translate -- but only the file name.  We leave the directory
+	;; alone.
+	(if (string-match "/[^/]+\\'" file)
+	    ;; This is needed on NT's and stuff.
+	    (setq leaf (substring file (1+ (match-beginning 0)))
+		  path (substring file 0 (1+ (match-beginning 0))))
+	  ;; Fall back on this.
+	  (setq leaf (file-name-nondirectory file)
+		path (file-name-directory file))))
       (setq len (length leaf))
       (while (< i len)
 	(when (setq trans (cdr (assq (aref leaf i)

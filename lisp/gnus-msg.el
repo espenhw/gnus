@@ -195,9 +195,9 @@ Thank you for your help in stamping out bugs.
   (message-add-action
    `(set-window-configuration ,winconf) 'exit 'postpone 'kill)
   (message-add-action
-   `(when (buffer-name (get-buffer ,buffer))
+   `(when (gnus-buffer-exists-p ,buffer)
       (save-excursion
-	(set-buffer (get-buffer ,buffer))
+	(set-buffer ,buffer)
 	,(when article
 	   `(gnus-summary-mark-article-as-replied ,article))))
    'send))
@@ -317,9 +317,9 @@ header line with the old Message-ID."
       (message-supersede)
       (push
        `((lambda ()
-	   (when (buffer-name (get-buffer ,gnus-summary-buffer))
+	   (when (gnus-buffer-exists-p ,gnus-summary-buffer)
 	     (save-excursion
-	       (set-buffer (get-buffer ,gnus-summary-buffer))
+	       (set-buffer ,gnus-summary-buffer)
 	       (gnus-cache-possibly-remove-article ,article nil nil nil t)
 	       (gnus-summary-mark-as-read ,article gnus-canceled-mark)))))
        message-send-actions))))
@@ -338,7 +338,7 @@ header line with the old Message-ID."
   (let ((article-buffer (or article-buffer gnus-article-buffer))
 	end beg contents)
     (if (not (and (get-buffer article-buffer)
-		  (buffer-name (get-buffer article-buffer))))
+		  (gnus-buffer-exists-p article-buffer)))
 	(error "Can't find any article buffer")
       (save-excursion
 	(set-buffer article-buffer)

@@ -84,7 +84,7 @@ the same.")
 The default is \"rsh\", but \"ssh\" is a popular alternative.")
 
 (defvoo nntp-rlogin-parameters '("telnet" "-8" "${NNTPSERVER:=news}" "nntp")
-  "*Parameters to `nntp-open-login'.
+  "*Parameters to `nntp-open-rlogin'.
 That function may be used as `nntp-open-connection-function'.  In that
 case, this list will be used as the parameter list given to rsh.")
 
@@ -811,7 +811,7 @@ password contained in '~/.nntp-authinfo'."
      (generate-new-buffer
       (format " *server %s %s %s*"
 	      nntp-address nntp-port-number
-	      (buffer-name (get-buffer buffer)))))
+	      (gnus-buffer-exists-p buffer))))
     (buffer-disable-undo (current-buffer))
     (set (make-local-variable 'after-change-functions) nil)
     (set (make-local-variable 'nntp-process-wait-for) nil)
@@ -885,11 +885,11 @@ password contained in '~/.nntp-authinfo'."
 	(when (and (> (point) nntp-process-start-point)
 		   (re-search-backward nntp-process-wait-for
 				       nntp-process-start-point t))
-	  (when (buffer-name (get-buffer nntp-process-to-buffer))
+	  (when (gnus-buffer-exists-p nntp-process-to-buffer)
 	    (let ((cur (current-buffer))
 		  (start nntp-process-start-point))
 	      (save-excursion
-		(set-buffer (get-buffer nntp-process-to-buffer))
+		(set-buffer nntp-process-to-buffer)
 		(goto-char (point-max))
 		(let ((b (point)))
 		  (insert-buffer-substring cur start)

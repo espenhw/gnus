@@ -843,7 +843,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	(when (not (eq in-state 'end))
 	  (setq state (list 'middle))))
       (save-excursion
-	(set-buffer (get-buffer "*gnus-uu-body*"))
+	(set-buffer "*gnus-uu-body*")
 	(goto-char (setq beg (point-max)))
 	(save-excursion
 	  (save-restriction
@@ -885,16 +885,16 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	(when (re-search-forward "^Subject: \\(.*\\)$" nil t)
 	  (setq subj (buffer-substring (match-beginning 1) (match-end 1)))
 	  (save-excursion
-	    (set-buffer (get-buffer "*gnus-uu-pre*"))
+	    (set-buffer "*gnus-uu-pre*")
 	    (insert (format "   %s\n" subj)))))
       (when (or (eq in-state 'last)
 		(eq in-state 'first-and-last))
 	(save-excursion
-	  (set-buffer (get-buffer "*gnus-uu-pre*"))
+	  (set-buffer "*gnus-uu-pre*")
 	  (insert (format "\n\n%s\n\n" (make-string 70 ?-)))
 	  (gnus-write-buffer gnus-uu-saved-article-name))
 	(save-excursion
-	  (set-buffer (get-buffer "*gnus-uu-body*"))
+	  (set-buffer "*gnus-uu-body*")
 	  (goto-char (point-max))
 	  (insert
 	   (concat (setq end-string (format "End of %s Digest" name))
@@ -902,8 +902,8 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 	  (insert (concat (make-string (length end-string) ?*) "\n"))
 	  (write-region
 	   (point-min) (point-max) gnus-uu-saved-article-name t))
-	(kill-buffer (get-buffer "*gnus-uu-pre*"))
-	(kill-buffer (get-buffer "*gnus-uu-body*"))
+	(gnus-kill-buffer "*gnus-uu-pre*")
+	(gnus-kill-buffer "*gnus-uu-body*")
 	(push 'end state))
       (if (memq 'begin state)
 	  (cons gnus-uu-saved-article-name state)

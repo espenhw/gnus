@@ -1,3 +1,9 @@
+Sun Apr 26 15:32:45 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Summary Post Commands): Ref to Message.
+
+	* message.texi (Various Message Variables): Deletia.
+
 Fri Apr 24 16:00:40 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Unread Articles): Typo.

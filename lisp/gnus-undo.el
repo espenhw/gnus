@@ -48,12 +48,26 @@
 
 (require 'gnus-util)
 (require 'gnus)
+(require 'custom)
 
-(defvar gnus-undo-mode nil
-  "Minor mode for undoing in Gnus buffers.")
+(defgroup gnus-undo nil
+  "Undoing in Gnus buffers."
+  :group 'gnus)
 
-(defvar gnus-undo-mode-hook nil
-  "Hook called in all `gnus-undo-mode' buffers.")
+(defcustom gnus-undo-limit 2000
+  "The number of undoable actions recorded."
+  :type 'integer
+  :group 'gnus-undo)
+
+(defcustom gnus-undo-mode nil
+  "Minor mode for undoing in Gnus buffers."
+  :type 'boolean
+  :group 'gnus-undo)
+
+(defcustom gnus-undo-mode-hook nil
+  "Hook called in all `gnus-undo-mode' buffers."
+  :type 'hook
+  :group 'gnus-undo)
 
 ;;; Internal variables.
 
@@ -148,6 +162,11 @@ FORMS may use backtick quote syntax."
      ;; Initialize list.
      (t
       (setq gnus-undo-actions (list (list function)))))
+    ;; Limit the length of the undo list.
+    (let ((next (nthcdr gnus-undo-limit gnus-undo-actions)))
+      (when next
+	(setcdr next nil)))
+    ;; We are not at a boundary...
     (setq gnus-undo-boundary-inhibit t)))
 
 (defun gnus-undo (n)

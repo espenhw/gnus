@@ -2429,9 +2429,7 @@ marks of articles."
 (defun gnus-update-summary-mark-positions ()
   "Compute where the summary marks are to go."
   (save-excursion
-    (when (and gnus-summary-buffer
-	       (get-buffer gnus-summary-buffer)
-	       (buffer-name (get-buffer gnus-summary-buffer)))
+    (when (gnus-buffer-exists-p gnus-summary-buffer)
       (set-buffer gnus-summary-buffer))
     (let ((gnus-replied-mark 129)
 	  (gnus-score-below-mark 130)
@@ -2960,7 +2958,7 @@ If NO-DISPLAY, don't generate a summary buffer."
   (let ((headers gnus-newsgroup-headers)
 	(deps gnus-newsgroup-dependencies)
 	header references generation relations
-	cthread subject child end pthread relation new-child)
+	cthread subject child end pthread relation new-child children)
     ;; First we create an alist of generations/relations, where
     ;; generations is how much we trust the relation, and the relation
     ;; is parent/child.
@@ -2977,12 +2975,20 @@ If NO-DISPLAY, don't generate a summary buffer."
 	  (while (search-backward ">" nil t)
 	    (setq end (1+ (point)))
 	    (when (search-backward "<" nil t)
-	      (unless (string= (setq new-child (buffer-substring (point) end))
-			       child)
+	      ;; This is a rather weak for of loop-checking, but if
+	      ;; an article contains the same Message-ID twice in
+	      ;; the References header, this will catch it.  I haven't
+	      ;; considered other forms of thread loop preventions,
+	      ;; though -- I think one should probably go through
+	      ;; the entire thread after building it and break
+	      ;; any loops that are found.
+	      (unless (member (setq new-child (buffer-substring (point) end))
+			       children)
 		(push (list (incf generation)
 			    child (setq child new-child)
 			    subject)
-		      relations))))
+		      relations)
+		(push child children))))
 	  (push (list (1+ generation) child nil subject) relations)
 	  (erase-buffer)))
       (kill-buffer (current-buffer)))
@@ -3520,7 +3526,6 @@ or a straight list of headers."
       (while (or threads stack gnus-tmp-new-adopts new-roots)
 
 	(if (and (= gnus-tmp-level 0)
-		 (not (setq gnus-tmp-dummy-line nil))
 		 (or (not stack)
 		     (= (caar stack) 0))
 		 (not gnus-tmp-false-parent)
@@ -4781,7 +4786,7 @@ If EXCLUDE-GROUP, do not go to this group."
     (save-excursion
       (gnus-group-best-unread-group exclude-group))))
 
-(defun gnus-summary-find-next (&optional unread article backward)
+(defun gnus-summary-find-next (&optional unread article backward undownloaded)
   (if backward (gnus-summary-find-prev)
     (let* ((dummy (gnus-summary-article-intangible-p))
 	   (article (or article (gnus-summary-article-number)))
@@ -4796,7 +4801,10 @@ If EXCLUDE-GROUP, do not go to this group."
 		  (if unread
 		      (progn
 			(while arts
-			  (when (gnus-data-unread-p (car arts))
+			  (when (or (and undownloaded
+					 (eq gnus-undownloaded-mark
+					     (gnus-data-mark (car arts))))
+				    (gnus-data-unread-p (car arts)))
 			    (setq result (car arts)
 				  arts nil))
 			  (setq arts (cdr arts)))
@@ -5050,10 +5058,12 @@ The prefix argument ALL means to select all articles."
 		 t)))
 	(unless (listp (cdr gnus-newsgroup-killed))
 	  (setq gnus-newsgroup-killed (list gnus-newsgroup-killed)))
-	(let ((headers gnus-newsgroup-headers))
-	  (when (and (not gnus-save-score)
-		     (not non-destructive))
-	    (setq gnus-newsgroup-scored nil))
+	(let ((headers gnus-newsgroup-headers)
+	      (gnus-newsgroup-scored 
+	       (if (and (not gnus-save-score)
+			(not non-destructive))
+		   nil
+		 gnus-newsgroup-scored)))
 	  ;; Set the new ranges of read articles.
 	  (save-excursion
 	    (set-buffer gnus-group-buffer)
@@ -5294,14 +5304,12 @@ which existed when entering the ephemeral is reset."
 	(gnus-kill-buffer gnus-original-article-buffer)))
     (cond (gnus-kill-summary-on-exit
 	   (when (and gnus-use-trees
-		      (and (get-buffer buffer)
-			   (buffer-name (get-buffer buffer))))
+		      (gnus-buffer-exists-p buffer))
 	     (save-excursion
-	       (set-buffer (get-buffer buffer))
+	       (set-buffer buffer)
 	       (gnus-tree-close gnus-newsgroup-name)))
 	   (gnus-kill-buffer buffer))
-	  ((and (get-buffer buffer)
-		(buffer-name (get-buffer buffer)))
+	  ((gnus-buffer-exists-p buffer)
 	   (save-excursion
 	     (set-buffer buffer)
 	     (gnus-deaden-summary))))))
@@ -5405,7 +5413,7 @@ If prefix argument NO-ARTICLE is non-nil, no article is selected initially."
 
 ;; Walking around summary lines.
 
-(defun gnus-summary-first-subject (&optional unread)
+(defun gnus-summary-first-subject (&optional unread undownloaded)
   "Go to the first unread subject.
 If UNREAD is non-nil, go to the first unread article.
 Returns the article selected or nil if there are no unread articles."
@@ -5428,7 +5436,10 @@ Returns the article selected or nil if there are no unread articles."
        (t
 	(let ((data gnus-newsgroup-data))
 	  (while (and data
-		      (not (gnus-data-unread-p (car data))))
+		      (and (not (and undownloaded
+				     (eq gnus-undownloaded-mark
+					 (gnus-data-mark (car data)))))
+			   (not (gnus-data-unread-p (car data)))))
 	    (setq data (cdr data)))
 	  (when data
 	    (goto-char (gnus-data-pos (car data)))
@@ -5715,6 +5726,9 @@ article."
   (let ((article (gnus-summary-article-number))
 	(article-window (get-buffer-window gnus-article-buffer t))
 	endp)
+    ;; If the buffer is empty, we have no article.
+    (unless article
+      (error "No article to select"))
     (gnus-configure-windows 'article)
     (if (eq (cdr (assq article gnus-newsgroup-reads)) gnus-canceled-mark)
 	(if (and (eq gnus-summary-goto-unread 'never)
@@ -6780,7 +6794,8 @@ to save in."
 		      (concat "("
 			      (mail-header-date gnus-current-headers) ")"))))
 		(gnus-run-hooks 'gnus-ps-print-hook)
-		(ps-print-buffer-with-faces filename)))
+		(save-excursion
+		  (ps-print-buffer-with-faces filename))))
 	  (kill-buffer buffer))))))
 
 (defun gnus-summary-show-article (&optional arg)
@@ -7268,10 +7283,10 @@ This will be the case if the article has both been mailed and posted."
 This means that *all* articles that are marked as expirable will be
 deleted forever, right now."
   (interactive)
-  (unless gnus-expert-user
-    (gnus-yes-or-no-p
-     "Are you really, really, really sure you want to delete all these messages? ")
-    (error "Phew!"))
+  (or gnus-expert-user
+      (gnus-yes-or-no-p
+       "Are you really, really, really sure you want to delete all these messages? ")
+      (error "Phew!"))
   (gnus-summary-expire-articles t))
 
 ;; Suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.
@@ -8035,11 +8050,11 @@ The number of articles marked as read is returned."
 	    ;; We actually mark all articles as canceled, which we
 	    ;; have to do when using auto-expiry or adaptive scoring.
 	    (gnus-summary-show-all-threads)
-	    (when (gnus-summary-first-subject (not all))
+	    (when (gnus-summary-first-subject (not all) t)
 	      (while (and
 		      (if to-here (< (point) to-here) t)
 		      (gnus-summary-mark-article-as-read gnus-catchup-mark)
-		      (gnus-summary-find-next (not all)))))
+		      (gnus-summary-find-next (not all) nil nil t))))
 	    (gnus-set-mode-line 'summary))
 	  t))
     (gnus-summary-position-point)))

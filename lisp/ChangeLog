@@ -1,3 +1,108 @@
+Mon Apr 27 00:26:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.6 is released.
+
+Mon Apr 27 00:07:11 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-request-article-this-buffer): Viewing pseudos
+	in nneething groups bugged.
+
+	* gnus-sum.el (gnus-summary-prepare-threads): Dummy roots and
+	dormants and stuff.
+
+Sun Apr 26 23:34:40 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cache.el (gnus-cache-file-name): Use FULL.
+
+	* nnheader.el (nnheader-translate-file-chars): Allow FULL
+	parameter.
+
+	* gnus-cache.el (gnus-cache-file-name): Translate all colons.
+
+Sun Apr 26 19:27:56 1998  Justin Sheehy  <justin@linus.mitre.org>
+
+	* nntp.el (nntp-rlogin-parameters): Doc fix.
+
+Sun Apr 26 19:21:12 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-summary-save-in-mail): Not a command.
+
+Sun Apr 26 19:16:03 1998  James Troup  <J.J.Troup@scm.brad.ac.uk>
+
+	* gnus-sum.el (gnus-summary-expire-articles-now): Work.
+
+Sun Apr 26 14:34:06 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-build-sparse-threads): Break loops.
+	(gnus-summary-print-article): Save excursion to try to preserve
+	local/bound variable messup.
+
+	* gnus-salt.el (gnus-tree-read-summary-keys): Put point in article
+	buffer.
+
+	* gnus-undo.el (gnus-undo): New group.
+	(gnus-undo-limit): New variable.
+	(gnus-undo-register-1): Use it.
+
+	* gnus-sum.el (gnus-summary-update-info): Don't nix out scores.
+
+	* gnus-start.el (gnus-active-to-gnus-format): Removed "." from
+	quoting. 
+
+	* gnus.el (gnus-cache-directory): Moved here. 
+	(gnus-predefined-server-alist): Use.
+
+	* message.el (message-autosave-directory): Put back in.
+	(message-set-auto-save-file-name): Use if Gnus isn't running.
+
+	* gnus-util.el (gnus-alive-p): Moved here.
+
+	* message.el (message-autosave-directory): Removed.
+	(message-set-auto-save-file-name): Don't use it.
+
+	* gnus.el: Use gnus-buffer-exists-p throughout.
+
+	* gnus-uu.el (gnus-uu-save-article): Use gnus-kill-buffer.
+
+	* message.el (message-make-in-reply-to): Check more for strange
+	From lines.
+
+	* gnus-art.el (gnus-article-mode): Don't nix out vars.
+
+Sun Apr 26 14:05:40 1998  Frank Bennett  <bennett@rumple.soas.ac.uk>
+
+	* nnmail.el (nnmail-move-inbox): Push error'ed mailboxes onto the
+	list. 
+
+Sun Apr 26 13:01:53 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-save): Use it.
+
+	* score-mode.el (score-mode-syntax-table): New table.
+
+	* nnmbox.el: Commentary fix.
+
+Sun Apr 26 12:59:00 1998  Richard Stallman  <rms@santafe.edu>
+
+	* message.el (message-mode): New adaptive fill defaults.
+
+Sun Apr 26 12:50:38 1998  Jim Radford  <radford@robby.caltech.edu>
+
+	* gnus-start.el (gnus-active-to-gnus-format): Groups that start
+	with dots.
+
+1998-04-11  Richard Stallman  <rms@sucrose.gnu.org>
+
+	* gnus/gnus-art.el (gnus-emphasis-alist): Use nth, not caddr.
+
+Sat Apr 25 15:33:57 1998  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* gnus-sum.el (gnus-build-sparse-threads): Handle loops.
+
+Sat Apr 25 15:09:54 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-valid-select-methods): nngateway is post-mail.
+
 Fri Apr 24 21:32:14 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.5 is released.

@@ -35,9 +35,11 @@
 		    mouse-selection-click-count-buffer buffer-display-table
 		    font-lock-defaults user-full-name user-login-name
 		    gnus-newsgroup-name gnus-article-x-face-too-ugly
-		    mail-mode-hook enable-multibyte-characters)))
+		    mail-mode-hook enable-multibyte-characters
+		    adaptive-fill-first-line-regexp adaptive-fill-regexp)))
   (maybe-bind '(mail-mode-hook
-		enable-multibyte-characters browse-url-browser-function))
+		enable-multibyte-characters browse-url-browser-function
+		adaptive-fill-first-line-regexp adaptive-fill-regexp))
   (maybe-fbind '(color-instance-rgb-components
 		 make-color-instance color-instance-name specifier-instance
 		 device-type device-class get-popup-menu-response event-object

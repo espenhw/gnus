@@ -1975,7 +1975,8 @@ If FORCE is non-nil, the .newsrc file is read."
     (if (or (file-exists-p real-file)
 	    (file-exists-p (concat real-file ".el"))
 	    (file-exists-p (concat real-file ".eld")))
-	real-file file)))
+	real-file
+      file)))
 
 (defun gnus-newsrc-to-gnus-format ()
   (setq gnus-newsrc-options "")

@@ -32,6 +32,7 @@
 (require 'gnus-sum)
 (require 'gnus-range)
 (require 'message)
+(require 'score-mode)
 
 (defcustom gnus-global-score-files nil
   "List of global score files and directories.
@@ -1327,7 +1328,8 @@ SCORE is the score to add."
 		(gnus-prin1 score)
 	      ;; This is a normal score file, so we print it very
 	      ;; prettily.
-	      (pp score (current-buffer))))
+	      (let ((emacs-lisp-mode-syntax-table score-mode-syntax-table))
+		(pp score (current-buffer)))))
 	  (gnus-make-directory (file-name-directory file))
 	  ;; If the score file is empty, we delete it.
 	  (if (zerop (buffer-size))

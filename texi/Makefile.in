@@ -30,7 +30,7 @@ most: texi2latex.elc latex latexps
 	  makeinfo -o $* $<; \
 	fi
 
-dvi: gnus.dvi message.dvi
+dvi: gnus.dvi message.dvi refcard.dvi
 
 .texi.dvi :
 	$(PERL) -n -e 'print unless (/\@iflatex/ .. /\@end iflatex/)' $< > gnustmp.texi

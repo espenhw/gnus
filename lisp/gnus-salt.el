@@ -468,6 +468,7 @@ Two predefined functions are available:
   (interactive "P")
   (let ((buf (current-buffer))
 	win)
+    (set-buffer gnus-article-buffer)      
     (gnus-article-read-summary-keys arg nil t)
     (when (setq win (get-buffer-window buf))
       (select-window win)

@@ -921,6 +921,17 @@ ARG is passed to the first function."
   "Return the value of token TYPE from ALIST."
   (cdr (assoc type alist)))
 
+;;; Various
+
+(defun gnus-alive-p ()
+  "Say whether Gnus is running or not."
+  (and gnus-group-buffer
+       (get-buffer gnus-group-buffer)
+       (save-excursion
+	 (set-buffer gnus-group-buffer)
+	 (eq major-mode 'gnus-group-mode))))
+
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

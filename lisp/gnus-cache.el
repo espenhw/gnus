@@ -34,16 +34,6 @@
 (eval-when-compile
   (require 'gnus-sum))
 
-(defgroup gnus-cache nil
-  "Cache interface."
-  :group 'gnus)
-
-(defcustom gnus-cache-directory
-  (nnheader-concat gnus-directory "cache/")
-  "*The directory where cached articles will be stored."
-  :group 'gnus-cache
-  :type 'directory)
-
 (defcustom gnus-cache-active-file
   (concat (file-name-as-directory gnus-cache-directory) "active")
   "*The cache active file."
@@ -409,7 +399,8 @@ Returns the list of articles removed."
 		;; Translate the first colon into a slash.
 		(when (string-match ":" group)
 		  (aset group (match-beginning 0) ?/))
-		(nnheader-replace-chars-in-string group ?. ?/)))))
+		(nnheader-replace-chars-in-string group ?. ?/)))
+	    t))
 	  (if (stringp article) article (int-to-string article))))
 
 (defun gnus-cache-update-article (group article)

@@ -182,9 +182,8 @@
 	      val)
 	  (when (and (boundp buffer)
 		     (setq val (symbol-value buffer))
-		     (get-buffer val)
-		     (buffer-name (get-buffer val)))
-	    (set-buffer (get-buffer val)))
+		     (gnus-buffer-exists-p val))
+	    (set-buffer val))
 	  (setq new-format (symbol-value
 			    (intern (format "gnus-%s-line-format" type)))))
 	(setq entry (cdr (assq type gnus-format-specs)))

@@ -96,9 +96,9 @@
     (gnus-draft-setup article gnus-newsgroup-name)
     (push
      `((lambda ()
-	 (when (buffer-name (get-buffer ,gnus-summary-buffer))
+	 (when (gnus-buffer-exists-p ,gnus-summary-buffer)
 	   (save-excursion
-	     (set-buffer (get-buffer ,gnus-summary-buffer))
+	     (set-buffer ,gnus-summary-buffer)
 	     (gnus-cache-possibly-remove-article ,article nil nil nil t)))))
      message-send-actions)))
 

@@ -41,6 +41,10 @@
   :group 'news
   :group 'mail)
 
+(defgroup gnus-cache nil
+  "Cache interface."
+  :group 'gnus)
+
 (defgroup gnus-start nil
   "Starting your favorite newsreader."
   :group 'gnus)
@@ -246,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.5"
+(defconst gnus-version-number "5.6.6"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1125,7 +1129,7 @@ slower."
     ("nnsoup" post-mail address)
     ("nndraft" post-mail)
     ("nnfolder" mail respool address)
-    ("nngateway" none address prompt-address physical-address)
+    ("nngateway" post-mail address prompt-address physical-address)
     ("nnweb" none)
     ("nnlistserv" none)
     ("nnagent" post-mail))
@@ -1402,12 +1406,19 @@ want."
 (defvar gnus-server-alist nil
   "List of available servers.")
 
+(defcustom gnus-cache-directory
+  (nnheader-concat gnus-directory "cache/")
+  "*The directory where cached articles will be stored."
+  :group 'gnus-cache
+  :type 'directory)
+
 (defvar gnus-predefined-server-alist
   `(("cache"
      (nnspool "cache"
-	      (nnspool-spool-directory "~/News/cache/")
-	      (nnspool-nov-directory "~/News/cache/")
-	      (nnspool-active-file "~/News/cache/active"))))
+	      (nnspool-spool-directory gnus-cache-directory)
+	      (nnspool-nov-directory gnus-cache-directory)
+	      (nnspool-active-file
+	       (nnheader-concat gnus-cache-directory "active")))))
   "List of predefined (convenience) servers.")
 
 (defvar gnus-topic-indentation "") ;; Obsolete variable.
@@ -1810,14 +1821,6 @@ This restriction may disappear in later versions of Gnus."
   "Set GROUP's active info."
   `(gnus-sethash ,group ,active gnus-active-hashtb))
 
-(defun gnus-alive-p ()
-  "Say whether Gnus is running or not."
-  (and gnus-group-buffer
-       (get-buffer gnus-group-buffer)
-       (save-excursion
-	 (set-buffer gnus-group-buffer)
-	 (eq major-mode 'gnus-group-mode))))
-
 ;; Info access macros.
 
 (defmacro gnus-info-group (info)
@@ -2196,11 +2199,11 @@ that that variable is buffer-local to the summary buffers."
 
 (defun gnus-ephemeral-group-p (group)
   "Say whether GROUP is ephemeral or not."
-  (gnus-group-get-parameter group 'quit-config))
+  (gnus-group-get-parameter group 'quit-config t))
 
 (defun gnus-group-quit-config (group)
   "Return the quit-config of GROUP."
-  (gnus-group-get-parameter group 'quit-config))
+  (gnus-group-get-parameter group 'quit-config t))
 
 (defun gnus-kill-ephemeral-group (group)
   "Remove ephemeral GROUP from relevant structures."
@@ -2386,30 +2389,32 @@ You should probably use `gnus-find-method-for-group' instead."
   "Say whether the group is secondary or not."
   (gnus-secondary-method-p (gnus-find-method-for-group group)))
 
-(defun gnus-group-find-parameter (group &optional symbol)
+(defun gnus-group-find-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.
 If SYMBOL, return the value of that symbol in the group parameters."
   (save-excursion
     (set-buffer gnus-group-buffer)
     (let ((parameters (funcall gnus-group-get-parameter-function group)))
       (if symbol
-	  (gnus-group-parameter-value parameters symbol)
+	  (gnus-group-parameter-value parameters symbol allow-list)
 	parameters))))
 
-(defun gnus-group-get-parameter (group &optional symbol)
+(defun gnus-group-get-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.
 If SYMBOL, return the value of that symbol in the group parameters.
 Most functions should use `gnus-group-find-parameter', which
 also examines the topic parameters."
   (let ((params (gnus-info-params (gnus-get-info group))))
     (if symbol
-	(gnus-group-parameter-value params symbol)
+	(gnus-group-parameter-value params symbol allow-list)
       params)))
 
-(defun gnus-group-parameter-value (params symbol)
+(defun gnus-group-parameter-value (params symbol &optional allow-list)
   "Return the value of SYMBOL in group PARAMS."
-  (or (car (memq symbol params))	; It's either a simple symbol
-      (cdr (assq symbol params))))	; or a cons.
+  (or (car (memq symbol params))	; It's either a simple symbol, 
+      (and (or allow-list
+	       (atom (cdr (assq symbol params)))) ; and it's not a local variable
+	   (cdr (assq symbol params))))) ; but a cons.
 
 (defun gnus-group-add-parameter (group param)
   "Add parameter PARAM to GROUP."

@@ -343,7 +343,7 @@ messages will be shown to indicate the current status."
   "Incoming mail can be split according to this fancy variable.
 To enable this, set `nnmail-split-methods' to `nnmail-split-fancy'.
 
-The format is this variable is SPLIT, where SPLIT can be one of
+The format of this variable is SPLIT, where SPLIT can be one of
 the following:
 
 GROUP: Mail will be stored in GROUP (a string).
@@ -636,14 +636,14 @@ parameter.  It should return nil, `warn' or `delete'."
 			     nil errors nil inbox tofile)
 			    (when nnmail-internal-password
 			      (list nnmail-internal-password)))))))
+		(push inbox nnmail-moved-inboxes)
 		(if (and (not (buffer-modified-p errors))
 			 (zerop result))
 		    ;; No output => movemail won
 		    (progn
 		      (unless popmail
 			(when (file-exists-p tofile)
-			  (set-file-modes tofile nnmail-default-file-modes)))
-		      (push inbox nnmail-moved-inboxes))
+			  (set-file-modes tofile nnmail-default-file-modes))))
 		  (set-buffer errors)
 		  ;; There may be a warning about older revisions.  We
 		  ;; ignore those.
@@ -652,8 +652,8 @@ parameter.  It should return nil, `warn' or `delete'."
 		      (progn
 			(unless popmail
 			  (when (file-exists-p tofile)
-			    (set-file-modes tofile nnmail-default-file-modes)))
-			(push inbox nnmail-moved-inboxes))
+			    (set-file-modes
+			     tofile nnmail-default-file-modes))))
 		    ;; Probably a real error.
 		    (subst-char-in-region (point-min) (point-max) ?\n ?\  )
 		    (goto-char (point-max))

@@ -45,6 +45,12 @@
   (define-key gnus-score-mode-map "\C-c\C-d" 'gnus-score-edit-insert-date)
   (define-key gnus-score-mode-map "\C-c\C-p" 'gnus-score-pretty-print))
 
+(defvar score-mode-syntax-table
+  (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
+    (modify-syntax-entry ?| "w" table)
+    table)
+  "Syntax table used in score-mode buffers.")
+
 ;;;###autoload
 (defun gnus-score-mode ()
   "Mode for editing Gnus score files.
@@ -55,7 +61,7 @@ This mode is an extended emacs-lisp mode.
   (kill-all-local-variables)
   (use-local-map gnus-score-mode-map)
   (gnus-score-make-menu-bar)
-  (set-syntax-table emacs-lisp-mode-syntax-table)
+  (set-syntax-table score-mode-syntax-table)
   (setq major-mode 'gnus-score-mode)
   (setq mode-name "Score")
   (lisp-mode-variables nil)
@@ -83,7 +89,8 @@ This mode is an extended emacs-lisp mode.
   (goto-char (point-min))
   (let ((form (read (current-buffer))))
     (erase-buffer)
-    (pp form (current-buffer)))
+    (let ((emacs-lisp-mode-syntax-table score-mode-syntax-table))
+      (pp form (current-buffer))))
   (goto-char (point-min)))
 
 (defun gnus-score-edit-exit ()

@@ -517,7 +517,6 @@ Return whether the unpacking was successful."
 	    t)
 	   (t
 	    (buffer-disable-undo msg-buf)
-	    (buffer-disable-undo tmp-buf)
 	    (set-buffer msg-buf)
 	    (goto-char (point-min))
 	    (while (not (eobp))
