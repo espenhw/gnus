@@ -1324,7 +1324,12 @@ buffers. For example:
 ")
 
 ;; Byte-compiler warning.
-(eval-when-compile (defvar gnus-article-mode-map))
+;(eval-when-compile (defvar gnus-article-mode-map))
+(eval-when-compile
+  (let ((features (cons 'gnus-sum features)))
+    (require 'gnus)
+    (require 'gnus-agent)
+    (require 'gnus-art)))
 
 ;; MIME stuff.
 
@@ -3092,7 +3097,7 @@ buffer that was in action when the last article was fetched."
     (let ((gnus-replied-mark 129)
 	  (gnus-score-below-mark 130)
 	  (gnus-score-over-mark 130)
-	  (gnus-downloaded-mark 131)
+	  (gnus-undownloaded-mark 131)
 	  (spec gnus-summary-line-format-spec)
 	  gnus-visual pos)
       (save-excursion
@@ -3101,7 +3106,7 @@ buffer that was in action when the last article was fetched."
 	      (gnus-newsgroup-downloadable '(0)))
 	  (gnus-summary-insert-line
 	   [0 "" "" "05 Apr 2001 23:33:09 +0400" "" "" 0 0 "" nil]
-	   0 nil nil 128 t nil "" nil 1)
+	   0 nil t 128 t nil "" nil 1)
 	  (goto-char (point-min))
 	  (setq pos (list (cons 'unread (and (search-forward "\200" nil t)
 					     (- (point) (point-min) 1)))))
