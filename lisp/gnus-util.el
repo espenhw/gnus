@@ -907,12 +907,15 @@ Entries without port tokens default to DEFAULTPORT."
       (pop list))
     (nreverse out)))
 
-(defun gnus-delete-alist (key alist)
-  "Delete all entries in ALIST that have a key eq to KEY."
-  (let (entry)
-    (while (setq entry (assq key alist))
-      (setq alist (delq entry alist)))
-    alist))
+(if (fboundp 'assq-delete-all)
+    (defalias 'gnus-delete-alist 'assq-delete-all)
+  (defun gnus-delete-alist (key alist)
+    "Delete from ALIST all elements whose car is KEY.
+Return the modified alist."
+    (let (entry)
+      (while (setq entry (assq key alist))
+        (setq alist (delq entry alist)))
+      alist)))
 
 (defmacro gnus-pull (key alist &optional assoc-p)
   "Modify ALIST to be without KEY."

@@ -1,3 +1,16 @@
+2001-03-31 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Gerd Moellmann <gerd@gnu.org>.
+
+	* gnus.el (gnus-interactive): A typo.
+
+2001-03-26  Juanma Barranquero  <lektu@uol.com.br>
+	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-delete-alist): Declare it as an alias of
+	`assq-delete-all', if that function exists; otherwise use the old
+	definition. Documentation changed to match the one in
+	`assq-delete-all'.
+	
 2001-04-01 00:37:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-start.el (gnus-close-all-servers): New function.

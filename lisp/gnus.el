@@ -2420,8 +2420,8 @@ g -- Group name."
        out)
       (cond
        ((= c ?r)
-	(push (if (< (point) (mark) (point) (mark))) out)
-	(push (if (> (point) (mark) (point) (mark))) out))))
+	(push (if (< (point) (mark)) (point) (mark)) out)
+	(push (if (> (point) (mark)) (point) (mark)) out))))
     (setq out (delq 'gnus-prefix-nil out))
     (nreverse out)))
 
