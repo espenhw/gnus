@@ -746,6 +746,11 @@ find-file-hooks, etc.
         (after-insert-file-functions nil))
     (insert-file-contents filename visit beg end replace)))
 
+(defun nnheader-find-file-noselect (&rest args)
+  (let ((format-alist nil)
+        (after-insert-file-functions nil))
+    (apply 'find-file-noselect args)))
+
 (defun nnheader-directory-regular-files (dir)
   "Return a list of all regular files in DIR."
   (let ((files (directory-files dir t))
@@ -793,7 +798,6 @@ find-file-hooks, etc.
 (fset 'nnheader-run-at-time 'run-at-time)
 (fset 'nnheader-cancel-timer 'cancel-timer)
 (fset 'nnheader-cancel-function-timers 'cancel-function-timers)
-(fset 'nnheader-find-file-noselect 'find-file-noselect)
 
 (when (string-match "XEmacs\\|Lucid" emacs-version)
   (require 'nnheaderxm))

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.997
+;; Version: 1.00
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -166,6 +166,23 @@ if that value is non-nil."
   (custom-buffer-create (list (list symbol 'custom-face))))
 
 ;;;###autoload
+(defun customize-customized ()
+  "Customize all already customized user options."
+  (interactive)
+  (let ((found nil))
+    (mapatoms (lambda (symbol)
+		(and (get symbol 'saved-face)
+		     (facep symbol)
+		     (setq found (cons (list symbol 'custom-face) found)))
+		(and (get symbol 'saved-value)
+		     (boundp symbol)
+		     (setq found
+			   (cons (list symbol 'custom-variable) found)))))
+    (if found 
+	(custom-buffer-create found)
+      (error "No customized user options"))))
+
+;;;###autoload
 (defun customize-apropos (regexp &optional all)
   "Customize all user options matching REGEXP.
 If ALL (e.g., started with a prefix key), include options which are not
@@ -179,7 +196,7 @@ user-settable."
 		  (when (facep symbol)
 		    (setq found (cons (list symbol 'custom-face) found)))
 		  (when (and (boundp symbol)
-			     (or (get symbol 'default-value)
+			     (or (get symbol 'saved-value)
 				 (get symbol 'factory-value)
 				 (if all
 				     (get symbol 'variable-documentation)
@@ -190,6 +207,7 @@ user-settable."
 	(custom-buffer-create found)
       (error "No matches"))))
 
+;;;###autoload
 (defun custom-buffer-create (options)
   "Create a buffer containing OPTIONS.
 OPTIONS should be an alist of the form ((SYMBOL WIDGET)...), where
@@ -219,6 +237,7 @@ Push RET or click mouse-2 on the word ")
 		      (widget-insert "\n"))
 		    (widget-insert "\n")))
 		options))
+  (mapcar 'custom-magic-reset custom-options)
   (widget-create 'push-button
 		 :tag "Apply"
 		 :help-echo "Push me to apply all modifications."
@@ -503,7 +522,7 @@ The list should be sorted most significant first."
 	 (options (get symbol 'custom-options))
 	 (child-type (or (get symbol 'custom-type) 'sexp))
 	 (type (let ((tmp (if (listp child-type)
-			      child-type
+			      (copy-list child-type)
 			    (list child-type))))
 		 (when options
 		   (widget-put tmp :options options))
@@ -663,7 +682,9 @@ Optional EVENT is the location for the menu."
   "Restore the default value for the variable being edited by WIDGET."
   (let ((symbol (widget-value widget)))
     (if (get symbol 'saved-value)
-	(set symbol (car (get symbol 'saved-value)))
+	(condition-case nil
+	    (set symbol (eval (car (get symbol 'saved-value))))
+	  (error nil))
       (error "No default value for %s" symbol))
     (widget-put widget :custom-state 'unknown)
     (custom-redraw widget)))

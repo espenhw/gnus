@@ -4047,8 +4047,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (setq articles (delq id articles))))))
     (gnus-undo-register
       `(progn
-	 (gnus-info-set-marks ,info ',(gnus-info-marks info))
-	 (gnus-info-set-read ,info ',(gnus-info-read info))
+	 (gnus-info-set-marks ',info ',(gnus-info-marks info))
+	 (gnus-info-set-read ',info ',(gnus-info-read info))
 	 (gnus-group-update-group group t)))
     ;; If the read list is nil, we init it.
     (and active
@@ -8423,8 +8423,8 @@ save those articles instead."
 	(push (cons prev (cdr active)) read))
       (gnus-undo-register
 	`(progn
-	   (gnus-info-set-marks ,info ',(gnus-info-marks info))
-	   (gnus-info-set-read ,info ',(gnus-info-read info))
+	   (gnus-info-set-marks ',info ',(gnus-info-marks info))
+	   (gnus-info-set-read ',info ',(gnus-info-read info))
 	   (gnus-get-unread-articles-in-group ,info (gnus-active ,group))))
       ;; Enter this list into the group info.
       (gnus-info-set-read

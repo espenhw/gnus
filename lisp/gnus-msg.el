@@ -155,7 +155,7 @@ Thank you for your help in stamping out bugs.
 	(buffer (make-symbol "buffer"))
 	(article (make-symbol "article")))
     `(let ((,winconf (current-window-configuration))
-	   (,buffer (current-buffer))
+	   (,buffer (buffer-name (current-buffer)))
 	   (,article (and gnus-article-reply (gnus-summary-article-number)))
 	   (message-header-setup-hook
 	    (copy-sequence message-header-setup-hook)))
@@ -177,9 +177,9 @@ Thank you for your help in stamping out bugs.
   (message-add-action
    `(set-window-configuration ,winconf) 'exit 'postpone 'kill)
   (message-add-action
-   `(when (buffer-name ,buffer)
+   `(when (buffer-name (get-buffer ,buffer))
       (save-excursion
-	(set-buffer ,buffer)
+	(set-buffer (get-buffer ,buffer))
 	,(when article
 	   `(gnus-summary-mark-article-as-replied ,article))))
    'send))
@@ -779,7 +779,7 @@ If YANK is non-nil, include the original article."
 The source file has to be in the Emacs load path."
   (interactive)
   (let ((files '("gnus.el" "gnus-sum.el" "gnus-group.el"
-		 "gnus-art.el" "gnus-start.el"
+		 "gnus-art.el" "gnus-start.el" "gnus-async.el"
 		 "gnus-msg.el" "gnus-score.el" "gnus-win.el"
 		 "nnmail.el" "message.el"))
 	file expr olist sym)

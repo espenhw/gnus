@@ -323,6 +323,7 @@ call it with the value of the `gnus-data' text property."
 (defun gnus-xmas-read-event-char ()
   "Get the next event."
   (let ((event (next-command-event)))
+    (sit-for 0)
     ;; We junk all non-key events.  Is this naughty?
     (while (not (key-press-event-p event))
       (setq event (next-command-event)))

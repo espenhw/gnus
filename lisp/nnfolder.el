@@ -370,8 +370,6 @@ time saver for large mailboxes.")
 (deffoo nnfolder-request-accept-article (group &optional server last)
   (nnfolder-possibly-change-group group server)
   (nnmail-check-syntax)
-  (when (stringp group)
-    (nnfolder-possibly-change-group group))
   (let ((buf (current-buffer))
 	result)
     (goto-char (point-min))
@@ -644,7 +642,7 @@ time saver for large mailboxes.")
   ;; if we know we've seen it since the last time it was touched.
   (let ((scantime (cadr (assoc nnfolder-current-group 
 			       nnfolder-scantime-alist)))
-	(modtime (nth 5 (or (file-attributes file) '(nil nil nil nil nil)))))
+	(modtime (nth 5 (file-attributes file))))
     (if (and scanning scantime
 	     (eq (car scantime) (car modtime))
 	     (eq (cdr scantime) (cadr modtime)))
@@ -653,7 +651,7 @@ time saver for large mailboxes.")
 	(nnfolder-possibly-activate-groups nil)
 	;; Read in the file.
 	(set-buffer (setq nnfolder-current-buffer 
-			  (nnheader-find-file-noselect file nil 'raw)))
+			  (nnheader-find-file-noselect file)))
 	(buffer-disable-undo (current-buffer))
 	;; If the file hasn't been touched since the last time we scanned it,
 	;; don't bother doing anything with it.

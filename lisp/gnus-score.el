@@ -2574,7 +2574,7 @@ The list is determined from the variable gnus-score-file-alist."
     (while funcs
       (when (gnus-functionp (car funcs))
 	(setq score-files 
-	      (nconc score-files (funcall (car funcs) group))))
+	      (nconc score-files (nreverse (funcall (car funcs) group)))))
       (setq funcs (cdr funcs)))
     ;; Add any home score files.
     (let ((home (gnus-home-score-file group)))
@@ -2588,7 +2588,8 @@ The list is determined from the variable gnus-score-file-alist."
     (let ((files score-files))
       (while files
 	(when (stringp (car files))
-	  (setcar files (expand-file-name (car files))))
+	  (setcar files (expand-file-name (car files) 
+					  gnus-kill-files-directory)))
 	(pop files)))
     (setq score-files (nreverse score-files))
     ;; Remove any duplicate score files.

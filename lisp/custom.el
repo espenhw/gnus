@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.997
+;; Version: 1.00
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -26,6 +26,8 @@
 (autoload 'customize-variable "custom-edit" nil t)
 (autoload 'customize-face "custom-edit" nil t)
 (autoload 'customize-apropos "custom-edit" nil t)
+(autoload 'customize-customized "custom-edit" nil t)
+(autoload 'custom-buffer-create "custom-edit")
 
 ;;; Compatibility.
 
@@ -97,12 +99,18 @@ If FRAME is omitted or nil, use the selected frame."
 	(cond ((eq keyword :type)
 	       (put symbol 'custom-type value))
 	      ((eq keyword :options)
-	       (put symbol 'custom-options 
-		    (append value (get symbol 'custom-options))))
+	       (if (get symbol 'custom-options)
+		   ;; Slow safe code to avoid duplicates.
+		   (mapcar (lambda (option)
+			     (custom-add-option symbol option))
+			   value)
+		 ;; Fast code for the common case.
+		 (put symbol 'custom-options (copy-list value))))
 	      ((eq keyword :group)
 	       (custom-add-to-group value symbol 'custom-variable))
 	      (t
-	       (error "Unknown keyword %s" symbol)))))))
+	       (error "Unknown keyword %s" symbol))))))
+  (run-hooks 'custom-define-hook))
 
 ;;;###autoload
 (defmacro defcustom (symbol value doc &rest args)
@@ -153,7 +161,8 @@ information."
 	(cond ((eq keyword :group)
 	       (custom-add-to-group value face 'custom-face))
 	      (t
-	       (error "Unknown keyword %s" face)))))))
+	       (error "Unknown keyword %s" face))))))
+  (run-hooks 'custom-define-hook))
 
 ;;;###autoload
 (defmacro defface (face spec doc &rest args)
@@ -224,7 +233,8 @@ information."
 	(cond ((eq keyword :group)
 	       (custom-add-to-group value symbol 'custom-group))
 	      (t
-	       (error "Unknown keyword %s" symbol)))))))
+	       (error "Unknown keyword %s" symbol))))))
+  (run-hooks 'custom-define-hook))
 
 ;;;###autoload
 (defmacro defgroup (symbol members doc &rest args)
@@ -268,7 +278,9 @@ If there already is an entry for that option, overwrite it."
 
 If SYMBOL is a hook variable, OPTION should be a hook member.
 For other types variables, the effect is undefined."
-  (put symbol 'custom-options (cons option (get symbol 'custom-options))))
+  (let ((options (get symbol 'custom-options)))
+    (unless (member option options)
+      (put symbol 'custom-options (cons option options)))))
 
 ;;; Face Utilities.
 
@@ -454,6 +466,72 @@ See `defface' for the format of SPEC."
 (defgroup customize nil
   "Customization of the Customization support."
   :group 'emacs)
+
+(defcustom custom-define-hook nil
+  "Hook called after defining each customize option."
+  :group 'customize
+  :type 'hook)
+
+;;; Menu support
+
+(defcustom custom-menu-nesting 2
+  "Maximum nesting in custom menus."
+  :type 'integer
+  :group 'customize)
+
+(defun custom-menu-create-entry (entry)
+  "Create a easy menu entry for customization option ENTRY.
+
+ENTRY should be list whose first element is a symbol, and second
+element is a widget type used to customize the symbol.  The widget
+type `custom-group' is recognized, and will return a submenu
+specification containing the group members.
+
+The maximum nesting in the submenu is specified by `custom-menu-nesting'."
+  (let ((item (vector (symbol-name (nth 0 entry))
+		      `(custom-buffer-create (list (quote ,entry)))
+		      t)))
+    (if (and (> custom-menu-nesting 0)
+	     (eq (nth 1 entry) 'custom-group))
+	(let ((custom-menu-nesting (1- custom-menu-nesting))
+	      (symbol (nth 0 entry)))
+	  `(,(symbol-name symbol)
+	    ,item
+	    ,@(mapcar 'custom-menu-create-entry (get symbol 'custom-group))))
+      item)))
+
+(defconst custom-help-menu '("Customize"
+			     ["Update menu..." custom-menu-update t]
+			     ["Group..." customize t]
+			     ["Variable..." customize-variable t]
+			     ["Face..." customize-face t]
+			     ["Saved..." customize-customized t]
+			     ["Apropos..." customize-apropos t])
+  "Customize menu")
+
+(defun custom-menu-reset ()
+  "Reset customize menu."
+  (remove-hook 'custom-define-hook 'custom-menu-reset)
+  (if (fboundp 'add-submenu)
+      (add-submenu '("Help") custom-help-menu)
+    (define-key global-map [menu-bar help-menu customize-menu]
+      (cons (car custom-help-menu)
+	    (easy-menu-create-keymaps (car custom-help-menu)
+				      (cdr custom-help-menu))))))
+
+(defun custom-menu-update ()
+  "Update customize menu."
+  (interactive)
+  (add-hook 'custom-define-hook 'custom-menu-reset)
+  (let ((menu `(,(car custom-help-menu)
+		,(custom-menu-create-entry '(emacs custom-group))
+		,@(cdr (cdr custom-help-menu)))))
+    (if (fboundp 'add-submenu)
+	(add-submenu '("Help") menu)
+      (define-key global-map [menu-bar help-menu customize-menu]
+	(cons (car menu) (easy-menu-create-keymaps (car menu) (cdr menu)))))))
+
+(custom-menu-reset)
 
 ;;; The End.
 

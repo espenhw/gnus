@@ -1,3 +1,7 @@
+Tue Nov 19 20:54:16 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Scanning New Messages): Addition.
+
 Sat Nov  9 06:04:22 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Group Parameters): Addition.

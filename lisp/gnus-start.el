@@ -924,9 +924,9 @@ the server for new groups."
 	    (gnus-subscribe-hierarchical-interactive new-newsgroups))
 	  ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
 	  (if (> groups 0)
-	      (gnus-message 6 "%d new newsgroup%s arrived."
+	      (gnus-message 5 "%d new newsgroup%s arrived."
 			    groups (if (> groups 1) "s have" " has"))
-	    (gnus-message 6 "No new newsgroups.")))))))
+	    (gnus-message 5 "No new newsgroups.")))))))
 
 (defun gnus-matches-options-n (group)
   ;; Returns `subscribe' if the group is to be unconditionally

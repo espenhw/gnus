@@ -935,11 +935,7 @@ FUNC will be called with the group name to determine the article number."
 	(run-hooks 'nnmail-split-hook)
 	(if (and (symbolp nnmail-split-methods)
 		 (fboundp nnmail-split-methods))
-	    ;; `nnmail-split-methods' is a function, so we just call 
-	    ;; this function here and use the result.
-	    (setq group-art
-		  (mapcar
-		   (lambda (group) (cons group (funcall func group)))
+	    (let ((split
 		   (condition-case nil
 		       (or (funcall nnmail-split-methods)
 			   '("bogus"))
@@ -947,7 +943,14 @@ FUNC will be called with the group name to determine the article number."
 		      (message 
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
-		      '("bogus")))))
+		      '("bogus")))))'
+	      (unless (equal group-art '(junk))
+		;; `nnmail-split-methods' is a function, so we just call 
+		;; this function here and use the result.
+		(setq group-art
+		      (mapcar
+		       (lambda (group) (cons group (funcall func group)))
+		       split))))
 	  ;; Go through the split methods to find a match.
 	  (while (and methods (or nnmail-crosspost (not group-art)))
 	    (goto-char (point-max))

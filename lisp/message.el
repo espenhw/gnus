@@ -2054,7 +2054,7 @@ to find out how to use this."
 		   (not (eq message-fcc-handler-function 'rmail-output)))
 	      (funcall message-fcc-handler-function file)
 	    (if (and (file-readable-p file) (mail-file-babyl-p file))
-		(rmail-output file 1)
+		(rmail-output file 1 nil t)
 	      (let ((mail-use-rfc822 t))
 		(rmail-output file 1 t t))))))
       (kill-buffer (current-buffer)))))

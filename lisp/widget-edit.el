@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 0.997
+;; Version: 1.00
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -1208,7 +1208,9 @@ With optional ARG, move across that many fields."
       (setq current (car args)
 	    args (cdr args)
 	    found (widget-match-inline current vals)))
-    (and found current)))
+    (if found
+	current
+      nil)))
 
 (defun widget-checklist-value-get (widget)
   ;; The values of all selected items.
@@ -1466,19 +1468,6 @@ With optional ARG, move across that many fields."
 	(t 
 	 (widget-default-format-handler widget escape))))
 
-;(defun widget-editable-list-format-handler (widget escape)
-;  ;; We recognize the insert button.
-;  (cond ((eq escape ?i)
-;	 (insert " ")			
-;	 (backward-char 1)
-;	 (let* ((from (point))
-;		(button (widget-create-child-and-convert
-;			 widget 'insert-button)))
-;	   (widget-specify-button button from (point)))
-;	 (forward-char 1))
-;	(t 
-;	 (widget-default-format-handler widget escape))))
-
 (defun widget-editable-list-value-create (widget)
   ;; Insert all values
   (let* ((value (widget-get widget :value))
@@ -1715,16 +1704,12 @@ With optional ARG, move across that many fields."
   :documentation-property (lambda (symbol)
 			    (condition-case nil
 				(documentation symbol t)
-			      (error nil)))
-  :value-delete 'widget-children-value-delete
-  :match (lambda (widget value) (symbolp value)))
+			      (error nil))))
 
 (define-widget 'variable-item 'item
   "An immutable variable name."
   :format "%v\n%h"
-  :documentation-property 'variable-documentation
-  :value-delete 'widget-children-value-delete
-  :match (lambda (widget value) (symbolp value)))
+  :documentation-property 'variable-documentation)
 
 (define-widget 'string 'editable-field
   "A string"
@@ -2027,10 +2012,14 @@ Enable with (run-with-idle-timer 1 t 'widget-echo-help-mouse)"
   (remove-hook 'post-command-hook 'widget-stop-mouse-tracking)
   (setq track-mouse nil))
 
+(defun widget-at (pos)
+  "The button or field at POS."
+  (or (get-text-property pos 'button)
+      (get-text-property pos 'field)))
+
 (defun widget-echo-help (pos)
   "Display the help echo for widget at POS."
-  (let* ((widget (or (get-text-property pos 'button)
-		     (get-text-property pos 'field)))
+  (let* ((widget (widget-at pos))
 	 (help-echo (and widget (widget-get widget :help-echo))))
     (cond ((stringp help-echo)
 	   (message "%s" help-echo))
