@@ -4033,7 +4033,7 @@ groups."
   "Exit the article editing without updating."
   (interactive)
   ;; We remove all text props from the article buffer.
-  (let ((buf (format "%s" (buffer-string)))
+  (let ((buf (buffer-substring-no-properties (point-min) (point-max)))
 	(curbuf (current-buffer))
 	(p (point))
 	(window-start (window-start)))
