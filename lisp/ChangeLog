@@ -1,5 +1,7 @@
 2000-07-05  Dave Love  <fx@gnu.org>
 
+	* gnus-sum.el: Doc fixes.
+
 	* gnus-util.el (gnus-point-at-eol, gnus-point-at-bol): Use
 	defalias, not fset.
 
