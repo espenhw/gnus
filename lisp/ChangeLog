@@ -1,3 +1,12 @@
+2000-10-08 10:59:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-ems.el (gnus-kill-all-overlays): Move here.
+	* gnus-util.el (gnus-kill-all-overlays): Move out.
+	* gnus-sum.el (gnus-cache-write-active): Auto load.
+	* lpath.el: Shut up.
+	* nnweb.el (nnweb-url-retrieve-asynch): url-retrieve is 
+	asynchronous in Exp version.
+
 2000-10-08 08:57:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el, gnus-ems.el, gnus-start.el: Remove gnus-xemacs.

@@ -50,6 +50,14 @@
   (autoload 'gnus-smiley-display "smiley-ems") ; override XEmacs version
 )
 
+(defun gnus-kill-all-overlays ()
+  "Delete all overlays in the current buffer."
+  (let* ((overlayss (overlay-lists))
+	 (buffer-read-only nil)
+	 (overlays (delq nil (nconc (car overlayss) (cdr overlayss)))))
+    (while overlays
+      (delete-overlay (pop overlays)))))
+
 ;;; Mule functions.
 
 (defun gnus-mule-max-width-function (el max-width)

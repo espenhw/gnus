@@ -37,6 +37,7 @@
 (require 'gnus-util)
 (require 'mm-decode)
 (autoload 'gnus-summary-limit-include-cached "gnus-cache" nil t)
+(autoload 'gnus-cache-write-active "gnus-cache")
 
 (defcustom gnus-kill-summary-on-exit t
   "*If non-nil, kill the summary buffer when you exit from it.
