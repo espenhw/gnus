@@ -1012,7 +1012,12 @@ FUNC will be called with the group name to determine the article number."
 	(erase-buffer)
 	(insert-buffer-substring obuf)
 	;; Narrow to headers.
-	(mail-narrow-to-head)
+	(narrow-to-region
+	 (goto-char (point-min))
+	 (if (search-forward "\n\n" nil t)
+	     (match-beginning 0)
+	   (point-max)))
+	(goto-char (point-min))
 	;; Decode MIME headers and charsets.
 	(when nnmail-mail-splitting-decodes
 	  (let ((mail-parse-charset nnmail-mail-splitting-charset))
