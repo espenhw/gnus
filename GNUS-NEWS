@@ -1,5 +1,5 @@
 GNUS NEWS -- history of user-visible changes.
-Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send Gnus bug reports to bugs@gnus.org.
@@ -7,6 +7,26 @@ For older news, see Gnus info node "New Features".
 
 
 * Changes in Oort Gnus
+
+** (require 'gnus-load)
+
+If you use a stand-alone Gnus distribution, you'd better add (require
+'gnus-load) into your ~/.emacs after adding the Gnus lisp directory
+into load-path.
+
+File gnus-load.el contains autoload commands, functions and variables,
+some of which may not be included in distributions of Emacsen.
+
+** gnus-slave-unplugged
+
+A new command which starts gnus offline in slave mode.
+
+** message-insinuate-rmail
+
+Adding (message-insinuate-rmail) and (setq mail-user-agent
+'gnus-user-agent) in .emacs convinces RMAIL to compose, reply and
+forward messages in message-mode, where you can enjoy the power of
+MML.
 
 ** message-minibuffer-local-map
 
@@ -205,7 +225,7 @@ ever-changing layouts.
 ----------------------------------------------------------------------
 Copyright information:
 
-Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
    Permission is granted to anyone to make or distribute verbatim copies
    of this document as received, in any medium, provided that the
