@@ -30,15 +30,29 @@
 ;; Call mail-add-payment to add a hashcash payment to a mail message
 ;; in the current buffer.
 ;;
-;; To automatically add payments to all outgoing mail:
+;; Call mail-add-payment-async after writing the addresses but before
+;; writing the mail to start calculating the hashcash payment
+;; asynchronously.
+;;
+;; The easiest way to do this automatically for all outgoing mail
+;; is to set `message-generate-hashcash' to t.  If you want more
+;; control, try the following hooks.
+;;
+;; To automatically add payments to all outgoing mail when sending:
 ;;    (add-hook 'message-send-hook 'mail-add-payment)
+;;
+;; To start calculations automatically when addresses are prefilled:
+;;    (add-hook 'message-setup-hook 'mail-add-payment-async)
+;;
+;; To check whether calculations are done before sending:
+;;    (add-hook 'message-send-hook 'hashcash-wait-or-cancel)
 
 ;;; Code:
 
 (eval-and-compile
  (autoload 'executable-find "executable"))
 
-(defcustom hashcash-default-payment 10
+(defcustom hashcash-default-payment 20
   "*The default number of bits to pay to unknown users.
 If this is zero, no payment header will be generated.
 See `hashcash-payment-alist'."
@@ -51,7 +65,7 @@ ADDR is the email address of the intended recipient and AMOUNT is
 the value of hashcash payment to be made to that user.  STRING, if
 present, is the string to be hashed; if not present ADDR will be used.")
 
-(defcustom hashcash-default-accept-payment 10
+(defcustom hashcash-default-accept-payment 20
   "*The default minimum number of bits to accept on incoming payments."
   :type 'integer)
 
@@ -70,6 +84,9 @@ is used instead.")
 (defcustom hashcash-in-news nil
   "*Specifies whether or not hashcash payments should be made to newsgroups."
   :type 'boolean)
+
+(defvar hashcash-process-alist nil
+  "Alist of asynchronous hashcash processes and buffers.")
 
 (require 'mail-utils)
 
@@ -122,6 +139,19 @@ is used instead.")
 	(hashcash-token-substring))
     (error "No `hashcash' binary found")))
 
+(defun hashcash-generate-payment-async (str val callback)
+  "Generate a hashcash payment by finding a VAL-bit collison on STR.
+Return immediately.  Call CALLBACK with process and result when ready."
+  (if (> val 0)
+      (let ((process (start-process "hashcash" nil
+				    hashcash-path "-m" "-q" "-b" (number-to-string val) str)))
+	(setq hashcash-process-alist (cons
+				      (cons process (current-buffer))
+				      hashcash-process-alist))
+	(set-process-filter process `(lambda (process output)
+				       (funcall ,callback process output))))
+    (funcall callback nil)))
+
 (defun hashcash-check-payment (token str val)
   "Check the validity of a hashcash payment."
   (if hashcash-path
@@ -151,17 +181,87 @@ is used instead.")
 	((equal (aref token 6) ?:) 1.1)
 	(t (error "Unknown hashcash format version"))))
 
+(defun hashcash-already-paid-p (recipient)
+  "Check for hashcash token to RECIPIENT in current buffer."
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-headers-or-head)
+      (let ((token (message-fetch-field "x-hashcash")))
+	(and (stringp token)
+	     (string-match (regexp-quote recipient) token))))))
+
 ;;;###autoload
 (defun hashcash-insert-payment (arg)
   "Insert X-Payment and X-Hashcash headers with a payment for ARG"
   (interactive "sPay to: ")
-  (let ((pay (hashcash-generate-payment (hashcash-payment-to arg)
-					(hashcash-payment-required arg))))
-    (when pay
+  (unless (hashcash-already-paid-p arg)
+    (let ((pay (hashcash-generate-payment (hashcash-payment-to arg)
+					  (hashcash-payment-required arg))))
+      (when pay
+	;;      (insert-before-markers "X-Payment: hashcash "
+	;;			     (number-to-string (hashcash-version pay)) " "
+	;;			     pay "\n")
+	(insert-before-markers "X-Hashcash: " pay "\n")))))
+
+;;;###autoload
+(defun hashcash-insert-payment-async (arg)
+  "Insert X-Payment and X-Hashcash headers with a payment for ARG
+Only start calculation.  Results are inserted when ready."
+  (interactive "sPay to: ")
+  (unless (hashcash-already-paid-p arg)
+    (hashcash-generate-payment-async (hashcash-payment-to arg)
+				     (hashcash-payment-required arg)
+				     `(lambda (process payment)
+					(hashcash-insert-payment-async-2 ,(current-buffer) process payment)))))
+
+(defun hashcash-insert-payment-async-2 (buffer process pay)
+  (with-current-buffer buffer
+    (save-excursion
+      (save-restriction
+	(setq hashcash-process-alist (delq
+				      (assq process hashcash-process-alist)
+				      hashcash-process-alist))
+	(goto-char (point-min))
+	(search-forward mail-header-separator)
+	(beginning-of-line)
+	(when pay
 ;;      (insert-before-markers "X-Payment: hashcash "
 ;;			     (number-to-string (hashcash-version pay)) " "
 ;;			     pay "\n")
-      (insert-before-markers "X-Hashcash: " pay "\n"))))
+	  (insert-before-markers "X-Hashcash: " pay))))))
+
+(defun hashcash-cancel-async (&optional buffer)
+  "Delete any hashcash processes associated with BUFFER.
+BUFFER defaults to the current buffer."
+  (interactive)
+  (unless buffer (setq buffer (current-buffer)))
+  (let (entry)
+    (while (setq entry (rassq buffer hashcash-process-alist))
+      (delete-process (car entry))
+      (setq hashcash-process-alist
+	    (delq entry hashcash-process-alist)))))
+
+(defun hashcash-wait-async (&optional buffer)
+  "Wait for asynchronous hashcash processes in BUFFER to finish.
+BUFFER defaults to the current buffer."
+  (interactive)
+  (unless buffer (setq buffer (current-buffer)))
+  (let (entry)
+    (while (setq entry (rassq buffer hashcash-process-alist))
+      (accept-process-output (car entry)))))
+
+(defun hashcash-processes-running-p (buffer)
+  "Return non-nil if hashcash processes in BUFFER are still running."
+  (rassq buffer hashcash-process-alist))
+
+(defun hashcash-wait-or-cancel ()
+  "Ask user whether to wait for hashcash processes to finish."
+  (interactive)
+  (when (hashcash-processes-running-p (current-buffer))
+    (if (y-or-n-p 
+	  "Hashcash process(es) still running; wait for them to finish? ")
+	(hashcash-wait-async)
+      (hashcash-cancel-async))))
 
 ;;;###autoload
 (defun hashcash-verify-payment (token &optional resource amount)
@@ -182,9 +282,11 @@ is used instead.")
 	  (t nil))))
 
 ;;;###autoload
-(defun mail-add-payment (&optional arg)
+(defun mail-add-payment (&optional arg async)
   "Add X-Payment: and X-Hashcash: headers with a hashcash payment
-for each recipient address.  Prefix arg sets default payment temporarily."
+for each recipient address.  Prefix arg sets default payment temporarily.
+Set ASYNC to t to start asynchronous calculation.  (See
+`mail-add-payment-async')."
   (interactive "P")
   (let ((hashcash-default-payment (if arg (prefix-numeric-value arg)
 				    hashcash-default-payment))
@@ -206,8 +308,19 @@ for each recipient address.  Prefix arg sets default payment temporarily."
 	  (when (and hashcash-in-news ng)
 	    (setq addrlist (nconc addrlist (split-string ng ",[ \t\n]*")))))
 	(when addrlist
-	  (mapcar #'hashcash-insert-payment addrlist))))) ; mapc
+	  (mapcar (if async
+		      #'hashcash-insert-payment-async
+		    #'hashcash-insert-payment)
+		  addrlist))))) ; mapc
   t)
+
+;;;###autoload
+(defun mail-add-payment-async (&optional arg)
+  "Add X-Payment: and X-Hashcash: headers with a hashcash payment
+for each recipient address.  Prefix arg sets default payment temporarily.
+Calculation is asynchronous."
+  (interactive "P")
+  (mail-add-payment arg t))
 
 ;;;###autoload
 (defun mail-check-payment (&optional arg)

@@ -1,3 +1,26 @@
+2004-11-14  Magnus Henoch  <mange@freemail.hu>
+
+	* hashcash.el (hashcash-default-payment): Change default to 20
+	(hashcash-default-accept-payment): Change default to 20
+	(hashcash-process-alist): New variable
+	(hashcash-generate-payment-async): Add
+	(hashcash-already-paid-p): Add
+	(hashcash-insert-payment): Don't generate payments twice
+	(hashcash-insert-payment-async): Add
+	(hashcash-insert-payment-async-2): Add
+	(hashcash-cancel-async): Add
+	(hashcash-wait-async): Add
+	(hashcash-processes-running-p): Add
+	(hashcash-wait-or-cancel): Add
+	(mail-add-payment): New optional argument.  Conditionally start
+	asynchronous calculation.
+	(mail-add-payment-async): Add
+
+	* message.el (message-send-mail): Wait for asynchronous hashcash
+	results.  Don't clobber existing X-Hashcash headers.
+	(message-setup-1): Call mail-add-payment-async when
+	message-generate-hashcash is non-nil.
+
 2004-11-11  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>  (tiny change)
 
 	* message.el (message-use-alternative-email-as-from): Examine the

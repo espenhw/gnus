@@ -3760,10 +3760,11 @@ not have PROP."
 	    message-posting-charset))
 	 (headers message-required-mail-headers))
     (when message-generate-hashcash
-      (save-restriction
-	(message-narrow-to-headers)
-	(message-remove-header "X-Hashcash"))
       (message "Generating hashcash...")
+      ;; Wait for calculations already started to finish...
+      (hashcash-wait-async)
+      ;; ...and do calculations not already done.  mail-add-payment
+      ;; will leave existing X-Hashcash headers alone.
       (mail-add-payment)
       (message "Generating hashcash...done"))
     (save-restriction
@@ -5582,6 +5583,9 @@ are not included."
     (run-hooks 'message-header-setup-hook))
   (set-buffer-modified-p nil)
   (setq buffer-undo-list nil)
+  (when message-generate-hashcash
+    ;; Generate hashcash headers for recipients already known
+    (mail-add-payment-async))
   (run-hooks 'message-setup-hook)
   (message-position-point)
   (undo-boundary))
