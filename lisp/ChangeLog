@@ -2,6 +2,8 @@
 
 	* gnus-sum.el (gnus-summary-insert-old-articles): Remove
 	superfluous function call.
+	(gnus-summary-catchup-all, gnus-summary-catchup-all-and-exit):
+	Add warning to docstring.
 
 2002-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 

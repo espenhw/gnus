@@ -9875,7 +9875,9 @@ If ALL is non-nil, also mark ticked and dormant articles as read."
 
   (gnus-summary-position-point))
 (defun gnus-summary-catchup-all (&optional quietly)
-  "Mark all articles in this newsgroup as read."
+  "Mark all articles in this newsgroup as read.
+This command is dangerous.  Normally, you want \\[gnus-summary-catchup]
+instead, which marks only unread articles as read."
   (interactive "P")
   (gnus-summary-catchup t quietly))
 
@@ -9892,7 +9894,9 @@ If QUIETLY is non-nil, no questions will be asked."
       (gnus-summary-exit))))
 
 (defun gnus-summary-catchup-all-and-exit (&optional quietly)
-  "Mark all articles in this newsgroup as read, and then exit."
+  "Mark all articles in this newsgroup as read, and then exit.
+This command is dangerous.  Normally, you want \\[gnus-summary-catchup-and-exit]
+instead, which marks only unread articles as read."
   (interactive "P")
   (gnus-summary-catchup-and-exit t quietly))
 
