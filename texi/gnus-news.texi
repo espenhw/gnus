@@ -66,6 +66,9 @@ customize it using @code{nnimap-id}.
 @item The @file{all.SCORE} file can now be edited from the group buffer 
 using @kbd{W e}.
 
+@item Gnus now MIME decode articles even when they lack "MIME-Version" header.
+This changes the default of @code{gnus-article-loose-mime}.
+
 @end itemize
 
 @c gnus-news.texi ends here.
