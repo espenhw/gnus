@@ -80,23 +80,23 @@
 	 valstr))))
 
 
-(eval
- '(progn
-    (if (string-match "XEmacs\\|Lucid" emacs-version)
-	()
+(eval-and-compile
+  (if (string-match "XEmacs\\|Lucid" emacs-version)
+      ()
 
-      (defvar gnus-mouse-face-prop 'mouse-face)
+    (defvar gnus-mouse-face-prop 'mouse-face
+      "Property used for highlighting mouse regions.")
 
-      ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
-      (defvar gnus-display-type 
-	(condition-case nil
-	    (let ((display-resource (x-get-resource ".displayType" "DisplayType")))
-	      (cond (display-resource (intern (downcase display-resource)))
-		    ((x-display-color-p) 'color)
-		    ((x-display-grayscale-p) 'grayscale)
-		    (t 'mono)))
-	  (error 'mono))
-	"A symbol indicating the display Emacs is running under.
+    ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+    (defvar gnus-display-type 
+      (condition-case nil
+	  (let ((display-resource (x-get-resource ".displayType" "DisplayType")))
+	    (cond (display-resource (intern (downcase display-resource)))
+		  ((x-display-color-p) 'color)
+		  ((x-display-grayscale-p) 'grayscale)
+		  (t 'mono)))
+	(error 'mono))
+      "A symbol indicating the display Emacs is running under.
 The symbol should be one of `color', `grayscale' or `mono'. If Emacs
 guesses this display attribute wrongly, either set this variable in
 your `~/.emacs' or set the resource `Emacs.displayType' in your
@@ -106,20 +106,20 @@ This is a meta-variable that will affect what default values other
 variables get.  You would normally not change this variable, but
 pounce directly on the real variables themselves.")
 
-      (defvar gnus-background-mode 
-	(condition-case nil
-	    (let ((bg-resource (x-get-resource ".backgroundMode"
-					       "BackgroundMode"))
-		  (params (frame-parameters)))
-	      (cond (bg-resource (intern (downcase bg-resource)))
-		    ((and (cdr (assq 'background-color params))
-			  (< (apply '+ (x-color-values
-					(cdr (assq 'background-color params))))
-			     (/ (apply '+ (x-color-values "white")) 3)))
-		     'dark)
-		    (t 'light)))
-	  (error 'light))
-	"A symbol indicating the Emacs background brightness.
+    (defvar gnus-background-mode 
+      (condition-case nil
+	  (let ((bg-resource (x-get-resource ".backgroundMode"
+					     "BackgroundMode"))
+		(params (frame-parameters)))
+	    (cond (bg-resource (intern (downcase bg-resource)))
+		  ((and (cdr (assq 'background-color params))
+			(< (apply '+ (x-color-values
+				      (cdr (assq 'background-color params))))
+			   (/ (apply '+ (x-color-values "white")) 3)))
+		   'dark)
+		  (t 'light)))
+	(error 'light))
+      "A symbol indicating the Emacs background brightness.
 The symbol should be one of `light' or `dark'.
 If Emacs guesses this frame attribute wrongly, either set this variable in
 your `~/.emacs' or set the resource `Emacs.backgroundMode' in your
@@ -130,25 +130,24 @@ This is a meta-variable that will affect what default values other
 variables get.  You would normally not change this variable, but
 pounce directly on the real variables themselves."))
 
-    (cond 
-     ((string-match "XEmacs\\|Lucid" emacs-version)
-      (gnus-xmas-define))
+  (cond 
+   ((string-match "XEmacs\\|Lucid" emacs-version)
+    (gnus-xmas-define))
 
-     ((and (not (string-match "28.9" emacs-version)) 
-	   (not (string-match "29" emacs-version)))
-      ;; Remove the `intangible' prop.
-      (let ((props (and (boundp 'gnus-hidden-properties) 
-			gnus-hidden-properties)))
-	(while (and props (not (eq (car (cdr props)) 'intangible)))
-	  (setq props (cdr props)))
-	(and props (setcdr props (cdr (cdr (cdr props))))))
-      (or (fboundp 'buffer-substring-no-properties)
-	  (defun buffer-substring-no-properties (beg end)
-	    (format "%s" (buffer-substring beg end)))))
+   ((and (not (string-match "28.9" emacs-version)) 
+	 (not (string-match "29" emacs-version)))
+    ;; Remove the `intangible' prop.
+    (let ((props (and (boundp 'gnus-hidden-properties) 
+		      gnus-hidden-properties)))
+      (while (and props (not (eq (car (cdr props)) 'intangible)))
+	(setq props (cdr props)))
+      (and props (setcdr props (cdr (cdr (cdr props))))))
+    (or (fboundp 'buffer-substring-no-properties)
+	(defun buffer-substring-no-properties (beg end)
+	  (format "%s" (buffer-substring beg end)))))
    
-     ((boundp 'MULE)
-      (provide 'gnusutil))
-     )))
+   ((boundp 'MULE)
+    (provide 'gnusutil))))
 
 (eval-and-compile
   (cond
@@ -166,8 +165,7 @@ pounce directly on the real variables themselves."))
 	     (not (file-symlink-p file))
 	     (file-exists-p file))))
   (or (fboundp 'face-list)
-      (defun face-list (&rest args)))
-  )
+      (defun face-list (&rest args))))
 
 (defun gnus-ems-redefine ()
   (cond 
@@ -188,8 +186,26 @@ pounce directly on the real variables themselves."))
 	(setq gnus-check-before-posting
 	      (delq 'long-lines
 		    (delq 'control-chars gnus-check-before-posting))))
-    )
-   ))
+
+    (defun gnus-summary-line-format-spec ()
+      (insert gnus-tmp-unread gnus-tmp-replied 
+	      gnus-tmp-score-char gnus-tmp-indentation)
+      (put-text-property
+       (point)
+       (progn
+	 (insert 
+	  gnus-tmp-opening-bracket 
+	  (format "%4d: %-20s" 
+		  gnus-tmp-lines 
+		  (if (> (length gnus-tmp-name) 20) 
+		      (gnus-truncate-string gnus-tmp-name 20) 
+		    gnus-tmp-name))
+	  gnus-tmp-closing-bracket)
+	 (point))
+       gnus-mouse-face-prop gnus-mouse-face)
+      (insert " " gnus-tmp-subject-or-nil "\n"))
+    )))
+
 
 (provide 'gnus-ems)
 

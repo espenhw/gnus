@@ -192,20 +192,26 @@
     (set (car (car state)) (nth 1 (car state)))
     (setq state (cdr state))))
 
+;; Read the head of an article by brute force
+(defvar nnheader-gnus-headers-program "/usr/local/bin/headers")
+
 ;; Read the head of an article.
 (defun nnheader-insert-head (file)
   (if (eq nnheader-max-head-length t)
       ;; Just read the entire file.
       (nnheader-insert-file-contents-literally file)
-    (let ((beg 0)
-	  (chop 1024))
+    (call-process nnheader-gnus-headers-program file t)
+    (goto-char (point-max))))
+
+;    (let ((beg 0)
+;	  (chop 1024))
       ;; Read 1K blocks until we find a separator.
-      (while (and (eq chop (nth 1 (nnheader-insert-file-contents-literally
-				   file nil beg (setq beg (+ chop beg)))))
-		  (prog1 (not (search-backward "\n\n" nil t)) 
-		    (goto-char (point-max)))
-		  (or (null nnheader-max-head-length)
-		      (< beg nnheader-max-head-length)))))))
+;      (while (and (eq chop (nth 1 (nnheader-insert-file-contents-literally
+;				   file nil beg (setq beg (+ chop beg)))))
+;		  (prog1 (not (search-backward "\n\n" nil t)) 
+;		    (goto-char (point-max)))
+;		  (or (null nnheader-max-head-length)
+;		      (< beg nnheader-max-head-length)))))))
 
 (defun nnheader-article-p ()
   (goto-char (point-min))

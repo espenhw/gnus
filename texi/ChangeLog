@@ -1,3 +1,26 @@
+Fri Nov 24 13:38:25 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Formatting Variables): Addition.
+
+Thu Nov 23 10:37:59 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Listing Groups): Addition.
+	(Process/Prefix): Addition.
+	(nndoc): Addition.
+
+Wed Nov 22 08:57:14 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Topic Commands): New.
+	(Topic Topology): New.
+
+Tue Nov 21 16:45:33 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Formatting Variables): New.
+
+Sat Nov 18 07:21:01 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Parameters): Addition.
+
 Mon Nov 13 00:14:30 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Various File Formats): New.

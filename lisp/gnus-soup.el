@@ -401,7 +401,7 @@ file. The vector contain three strings, [prefix name encoding]."
     (save-excursion
       (set-buffer (find-file-noselect
 		   (concat gnus-soup-directory "AREAS")))
-      (buffer-disable-undo)
+      (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (let ((areas gnus-soup-areas)
 	    area)
@@ -433,7 +433,7 @@ file. The vector contain three strings, [prefix name encoding]."
       (gnus-make-directory dir))
   (save-excursion
     (set-buffer (find-file-noselect (concat dir "REPLIES")))
-    (buffer-disable-undo)
+    (buffer-disable-undo (current-buffer))
     (erase-buffer)
     (let (area)
       (while areas

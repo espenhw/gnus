@@ -223,7 +223,8 @@ variable to \"^nnml\".")
 
 
 (defun gnus-cache-request-article (article group)
-  (let ((file (gnus-cache-file-name group article)))
+  (let ((file (gnus-cache-file-name group article))
+	(buffer-read-only nil))
     (if (not (file-exists-p file))
 	()
       (erase-buffer)

@@ -361,6 +361,8 @@ The orphan scoring was written by Peter Mutsaers.
 @item 
 GNU XEmacs support has been added by Fabrice Popineau. 
 @item 
+POP mail support was written by Ken Raeburn.
+@item 
 Various bits and pieces, especially dealing with .newsrc files, were
 suggested and added by Hallvard B Furuseth.
 @item 
@@ -1158,17 +1160,7 @@ You can fuck that up to your heart's delight by fiddling with the
 @code{gnus-group-line-format} variable.  This variable works along the
 lines of a @code{format} specification, which is pretty much the same as
 a @code{printf} specifications, for those of you who use (feh!) C.
-
-(All these format variables can also be random elisp forms.  In that
-case, they will be @code{eval}ed to insert the required lines.)
-
-(All these format variables can also be random elisp forms.  In that
-case, they will be @code{eval}ed to insert the required lines.)
-
-In addition to the normal "padding" specs that @code{format} supports
-(eg. @samp{%7d}), specifications like @samp{%7,12s} are allowed.  A spec
-of this type means that the field will be at least 7 characters long,
-and never more that 12 characters long.
+@xref{Formatting Variables}. 
 
 The default value that produced those lines above is 
 @samp{"%M%S%5y: %(%g%)\n"}.
@@ -1718,9 +1710,11 @@ Read a random directory as if with were a newsgroup with the
 @kindex G f (Group)
 @findex gnus-group-make-doc-group
 Make a group based on some file or other
-(@code{gnus-group-make-doc-group}).  You will be prompted for a file
-name and a file type.  Currently supported types are @code{babyl},
-@code{mbox} and @code{digest}.
+(@code{gnus-group-make-doc-group}).  If you give a prefix to this
+command, you will be prompted for a file name and a file type.
+Currently supported types are @code{babyl}, @code{mbox}, @code{digest},
+@code{mmfd}, and @code{forward}.  If you run this command without a
+prefix, Gnus will guess at the file type.
 
 @item G DEL
 @kindex G DEL (Group)
@@ -2158,9 +2152,13 @@ Name of the map files.
 @cindex documentation group
 @cindex help group
 
-@code{nndoc} is a cute little thing that will let you read a single file as a
-newsgroup.  Currently supported file types are @code{babyl}, @code{mbox}
-and @code{digest}. 
+@code{nndoc} is a cute little thing that will let you read a single file
+as a newsgroup.  Currently supported file types are @code{babyl} (the
+RMAIL file type), @code{mbox} (standard Unix mbox files), @code{digest}
+(various digests, MIME and otherwise), @code{mmfd} (the MMFD mail box
+format), and @code{forward} (a single forwarded mail).  You can also use
+the special "file type" @code{guess}, which means that @code{nndoc} will
+try to guess what file type it is looking at.
 
 @code{nndoc} will not try to change the file or insert any extra headers into
 it---it will simply, like, let you use the file as the basis for a
@@ -2181,7 +2179,8 @@ Virtual server variables:
 @table @code
 @item nndoc-article-type
 @vindex nndoc-article-type
-This should be one of @code{mbox}, @code{babyl} or @code{digest}. 
+This should be one of @code{mbox}, @code{babyl}, @code{digest},
+@code{mmfd}, @code{forward}, or @code{guess}.
 @end table
 
 
@@ -2454,11 +2453,15 @@ reading new mail.  You can use this hook to notify any mail watch
 programs, if you want to.
 
 @vindex nnmail-spool-file
+@cindex POP mail
 @code{nnmail-spool-file} says where to look for new mail.  If this
 variable is @code{nil}, the mail backends will never attempt to fetch
-mail by themselves.  It is quite likely that Gnus supports POP-mail.
-Set this variable to begin with the string @samp{po:}, and everything
-should go smoothly, even though I have never tested this.
+mail by themselves.  If you are using a POP mail server and your name is
+@samp{"larsi"}, you should set this variable to @samp{"po:larsi"}.  If
+your name is not @samp{"larsi"}, you should probably modify that
+slightly, but you may have guessed that already, you smart & handsome
+devil!  You can also set this variable to @code{pop}, and Gnus will try
+to figure out the POP mail string by itself.
 
 When you use a mail backend, Gnus will slurp all your mail from your
 inbox and plonk it down in your home directory.  Gnus doesn't move any
@@ -3043,8 +3046,8 @@ The group parameters store information local to a particular group:
 If the group parameter list contains an element that looks like
 @samp{(to-address .  "some@@where.com")}, that address will be used by
 the backend when doing followups and posts.  This is primarily useful in
-mail groups that represent mailing lists.  You just set this address to
-whatever the list address is.
+mail groups that represent close mailing lists.  You just set this
+address to whatever the list address is.
 
 This trick will actually work whether the group is foreign or not.
 Let's say there's a group on the server that is called @samp{fa.4ad-l}.
@@ -3052,6 +3055,14 @@ This is a real newsgroup, but the server has gotten the articles from a
 mail-to-news gateway.  Posting directly to this group is therefore
 impossible---you have to send mail to the mailing list address instead.
 Also @xref{Mail & Post}. 
+
+@item to-list
+@cindex to-list
+If the group parameter list has an element that looks like
+@samp{(to-list . "some@@where.com")}, that address will be used when
+doing a @kbd{a} in any group.  It is totally ignored when doing a
+followup---except that if it is present in a news group, you'll get mail
+group semantics when doing @kbd{f}.
 
 @item to-group
 @cindex to-group
@@ -3163,6 +3174,12 @@ thing to match on.
 
 @end table
 
+@vindex gnus-permanently-visible-groups
+@cindex visible group paramenter
+Groups that match the @code{gnus-permanently-visible-groups} regexp will
+always be shown, whether they have unread articles or not.  You can also
+add the @code{visible} element to the group parameters in question to
+get the same effect.
 
 @node Sorting Groups
 @section Sorting Groups
@@ -3252,6 +3269,9 @@ Sort the group buffer alphabetically by backend name
 (@code{gnus-group-sort-groups-by-method}). 
 
 @end table
+
+When given a prefix, all these commands will sort in reverse order. 
+
 
 
 @node Group Maintenance
@@ -3405,15 +3425,17 @@ plastic chair.
 @cindex topics
 
 If you read lots and lots of groups, it might be convenient to group
-them according to topics.  You put your Emacs groups over here, your sex
-groups over there, and the rest (what, two groups or so?) you put in
-some misc section that you never bother with anyway.
+them hierarchically according to topics.  You put your Emacs groups over
+here, your sex groups over there, and the rest (what, two groups or so?)
+you put in some misc section that you never bother with anyway.  You can
+even group the Emacs sex groups as a sub-topic to either the Emacs
+groups or the sex groups---or both!  Go wild!
 
-To get this @emph{fab} functionality:
-
-@lisp
-(setq gnus-group-prepare-function 'gnus-group-prepare-topics)
-@end lisp
+@findex gnus-topic-mode
+@kindex t (Group)
+To get this @emph{fab} functionality you simply turn on (ooh!) the
+@code{gnus-topic} minor mode---type @kbd{t} in the group buffer.  (This
+is a toggling command.)
 
 Go ahead, just try it.  I'll still be here when you get back.  La de
 dum...  Nice tune, that...  la la la...  What, you're back? Yes, and now
@@ -3421,10 +3443,33 @@ press @kbd{l}.  There.  All your groups are now listed under
 @samp{misc}.  Doesn't that make you feel all warm and fuzzy?  Hot and
 bothered?
 
+If you want this permanently enabled, you should add that minor mode to
+the hook for the group mode:
+
+@lisp
+(add-hook 'gnus-group-mode 'gnus-topic-mode)
+@end lisp
+
+There are, in general, two methods for dividing the groups into topics.
+You can either sniff around some variables, or you can use some handy
+commands. 
+
+@menu 
+* Topic Variables::    How to customize the topics the Lisp Way.
+* Topic Commands::     Interactive E-Z commands.
+* Topic Topology::     A map of the world.
+@end menu
+
+
+@node Topic Variables
+@subsection Topic Variables
+@cindex topic variables
+
 @vindex gnus-group-topics
-To get an even more exciting division, you have to fiddle with
-@code{gnus-group-topics}.  That is an alist where each entry looks like
-this: 
+
+@code{gnus-group-topics} is the main variable that specifies what topics
+each group belong to.  That is an alist where each entry looks like
+this:
 
 @lisp
 (TOPIC REGEXP SHOW)
@@ -3444,9 +3489,6 @@ If this variable is non-@code{nil}, only the topics will be listed, and
 the groups will not be listed.  This makes the group buffer much shorter,
 I'm sure you'll agree.  This is all modified on a topic-by-topic basis
 by the @var{show} parameter.   It makes perfect sense, really.
-
-@vindex gnus-group-topic-face
-Topics are shown with @code{gnus-group-topic-face}.
 
 @vindex gnus-topic-unique
 If @code{gnus-topic-unique} is non-@code{nil}, each group will be member
@@ -3468,12 +3510,122 @@ Here's an example @code{gnus-group-topics}:
  ("The Rest" "." nil))
 @end lisp
 
-If you want to add a group to a topic, you can use the @kbd{G t}
-(@code{gnus-group-add-to-topic}) command.  It understands the
-process/prefix convention (@pxref{Process/Prefix}). 
+@vindex gnus-topic-line-format
+The topic lines themselves are created according to the
+@code{gnus-topic-line-format} variable.  @xref{Formatting Variables}.
+Elements allowed are:
 
-@kbd{A t} (@code{gnus-topic-toggle-topic} toggles between the normal
-flat group buffer display and the topic folded display.
+@table @samp
+@item i
+Indentation.
+@item n
+Topic name.
+@item v
+Visibility.
+@item l
+Level.
+@item g
+Number of groups in the topic.
+@item a
+Number of unread articles in the topic.
+@end table
+
+
+@node Topic Commands
+@subsection Topic Commands
+@cindex topic commands
+
+When the topic minor mode is turned on, a new @kbd{T} submap will be
+available.  In addition, a few of the standard keys change their
+definitions slightly.
+
+@table @kbd
+
+@item T c
+@kindex T c (Group)
+@findex gnus-topic-create-topic
+Create a new topic (@code{gnus-topic-create-subtopic}).  You will be
+prompted for a topic name and the name of the parent topic.
+
+@item T m
+@kindex T m (Group)
+@findex gnus-topic-move-to-topic
+Move the current group to some other topic
+(@code{gnus-topic-move-to-topic}).  This command understands the
+process/prefix convention (@pxref{Process/Prefix}).
+
+@item RET
+@kindex RET (Group)
+@findex gnus-topic-select-group
+@itemx SPACE
+Either select a group or fold a topic (@code{gnus-topic-select-group}).
+When you perform this command on a group, you'll enter the group, as
+usual.  When done on a topic line, the topic will be folded (if it was
+visible) or unfolded (if it was folded already).  So it's basically a
+toggling command on topics.  In addition, if you give a numerical
+prefix, group on that level (and lower) will be displayed.
+
+@item C-k
+@kindex C-k (Group)
+@findex gnus-topic-kill-group
+Kill a group or topic (@code{gnus-topic-kill-group}).  
+
+@item C-y
+@kindex C-y (Group)
+@findex gnus-topic-yank-group
+Yank the previosuly killed group or topic (@code{gnus-topic-yank-group}).
+Note that all topics will be yanked before all groups.
+
+@end table
+
+
+@node Topic Topology
+@subsection Topic Topology
+@cindex topic topology
+@cindex topology
+
+So, let's have a look at an example group buffer:
+
+@example
+Gnus
+  Emacs -- I wuw it!
+       3: comp.emacs
+       2: alt.religion.emacs
+    Naughty Emacs
+     452: alt.sex.emacs
+       0: comp.talk.emacs.recovery
+  Misc
+       8: comp.binaries.fractals
+      13: comp.sources.unix
+@end example
+
+So, here we have one top-level topic, two topics under that, and one
+sub-topic under one of the sub-topics.  (There is always just one (1)
+top-level topic).  This topology can be expressed as follows:
+
+@lisp
+(("Gnus" visible)
+ (("Emacs -- I wuw it!" visible) 
+  (("Naughty Emacs" visible)))
+ (("Misc" visible)))
+@end lisp
+
+This is in fact how the variable @code{gnus-topic-topology} would look
+for the display above.  That variable is saved in the @file{.newsrc.eld}
+file, and shouldn't be messed with manually---unless you really want
+to.  Since this variable is read from the @file{.newsrc.eld} file,
+setting it in any other startup files will have no effect.  
+
+This topology shows what topics are sub-topics of what topics (right),
+and which topics are visible.  Two settings are currently
+allowed---@code{visible} and @code{invisible}.
+
+@vindex gnus-topic-hide-subtopics
+If @code{gnus-topic-hide-subtopics} is non-@code{nil} (which it is by
+default), sub-topics will be folded along with any groups that belong to
+the topic.  If this variable is @code{nil}, all topics will always be
+visible, even though the parent topics are folded.
+
 
 @node Misc Group Stuff
 @section Misc Group Stuff
@@ -3522,7 +3674,8 @@ Read the init file (@code{gnus-init-file}, which defaults to
 @kindex s (Group)
 @findex gnus-group-save-newsrc
 Save the @file{.newsrc.eld} file (and @file{.newsrc} if wanted)
-(@code{gnus-group-save-newsrc}).
+(@code{gnus-group-save-newsrc}).  If given a prefix, force saving the
+file(s) whether Gnus thinks it is necessary or not.
 @item Z
 @kindex Z (Group)
 @findex gnus-group-clear-dribble
@@ -3719,10 +3872,6 @@ following @samp{%u}.  The function will be passed the current header as
 argument.  The function should return a string, which will be inserted
 into the summary just like information from any other summary specifier.
 @end table
-
-Text between @samp{%(} and @samp{%)} will be highlighted with
-@code{gnus-mouse-face} when the mouse point is placed inside the area.
-There can only be one such area.
 
 The @samp{%U} (status), @samp{%R} (replied) and @samp{%z} (zcore) specs
 have to be handled with care.  For reasons of efficiency, Gnus will
@@ -5771,6 +5920,9 @@ articles, starting with the current one.  If the numeric prefix is
 negative, perform the operation on the previous N articles, starting
 with the current one.
 
+If @code{transient-mark-mode} in non-@code{nil} and the region is
+active, all articles in the region will be worked upon.
+
 If there is no numeric prefix, but some articles are marked with the
 process mark, perform the operation on the articles that are marked with
 the process mark.
@@ -6935,18 +7087,23 @@ the process mark (@code{gnus-summary-universal-argument}).
 @kindex A D (Summary)
 @findex gnus-summary-enter-digest-group
 If the current article is a digest, you might use this command to enter
-you into a group based on the current digest to ease reading
-(@code{gnus-summary-enter-digest-group}).
+a group based on the current digest
+(@code{gnus-summary-enter-digest-group}).  Gnus will try to guess what
+article type is currently displayed unless you give a prefix to this
+command, which forces a "digest" interpretation.
+
 @item C-t
 @kindex C-t (Summary)
 @findex gnus-summary-toggle-truncation
 Toggle truncation of summary lines (@code{gnus-summary-toggle-truncation}).
+
 @item =
 @kindex = (Summary)
 @findex gnus-summary-expand-window
 Expand the summary buffer window (@code{gnus-summary-expand-window}).
 If given a prefix, force an @code{article} window configuration. 
 @end table
+
 
 @node The Article Buffer
 @chapter The Article Buffer
@@ -8193,6 +8350,7 @@ kills.
 
 @menu
 * Interactive::                Making Gnus ask you many questions.
+* Formatting Variables::       How to control the look of the buffers.
 * Windows Configuration::      Configuring the Gnus buffer windows.
 * Buttons::                    Get tendonitis in ten easy steps!
 * Compilation & Init File::    How to speed Gnus up.
@@ -8235,6 +8393,87 @@ posting an article.  It is @code{t} by default.
 Require confirmation before exiting Gnus.  This variable is @code{t} by
 default. 
 @end table
+
+
+@node Formatting Variables
+@section Formatting Variables
+@cindex formatting variables
+
+Throughout this manual you've probably noticed lots of variables that
+are called things like @code{gnus-group-line-format} and
+@code{gnus-summary-mode-line-format}.  These control how Gnus is to
+output lines in the various buffers.  There's quite a lot of them.
+Fortunately, they all use the same syntax, so there's not that much to
+be annoyed by.
+
+Here's an example format spec (from the group buffer): @samp{"%M%S%5y:
+%(%g%)\n"}.  We see that it is indeed extremely ugly, and that there are
+lots of percentages everywhere.  
+
+Each @samp{%} element will be replaced by some string or other when the
+buffer in question is generated.  @samp{%5y} means "insert the @samp{y}
+spec, and pad with spaces to get a 5-character field".  Just like a
+normal format spec, almost.
+
+You can also say @samp{%6,4y}, which means that the field will never be
+more than 6 characters wide and never less than 4 characters wide.
+
+There are also specs for highlighting, and these are shared by all the
+format variables.  Text inside the @samp{%(} and @samp{%)} specifiers
+will get the special @code{mouse-face} property set, which means that it
+will be highlighted (with @code{gnus-mouse-face}) when you put the mouse
+pointer over it.
+
+Text inside the @samp{%[} and @samp{%]} specifiers will have their
+normal faces set using @code{gnus-face-0}, which is @code{bold} by
+default.  If you say @samp{%1[} instead, you'll get @code{gnus-face-1}
+instead, and so on.  Create as many faces as you wish.  The same goes
+for the @code{mouse-face} specs---you can say @samp{%3(hello%)} to have
+@samp{hello} mouse-highlighted with @code{gnus-mouse-face-3}.
+
+Here's an alternative recipe for the group buffer:
+
+@lisp
+;; Create three face types.
+(setq gnus-face-1 'bold)
+(setq gnus-face-3 'italic)
+
+;; We want the article count to be in 
+;; a bold and green face.  So we create 
+;; a new face called `my-green-bold'.
+(copy-face 'bold 'my-green-bold)
+;; Set the color.
+(set-face-foreground 'my-green-bold "ForestGreen")
+(setq gnus-face-2 'my-green-bold)
+
+;; Set the new & fancy format.
+(setq gnus-group-line-format 
+      "%M%S%3[%5y%]%2[:%] %(%1[%g%]%)\n")
+@end lisp
+
+I'm sure you'll be able to use this scheme to create totally unreadable
+and extremely vulgar displays.  Have fun!
+
+Currently Gnus uses the following formatting variables:
+@code{gnus-group-line-format}, @code{gnus-summary-line-format},
+@code{gnus-server-line-format}, @code{gnus-topic-line-format},
+@code{gnus-group-mode-line-format},
+@code{gnus-summary-mode-line-format},
+@code{gnus-article-mode-line-format},
+@code{gnus-server-mode-line-format}. 
+
+Note that the @samp{%(} specs (and friends) do not make any sense on the
+mode-line variables.
+
+All these format variables can also be random elisp forms.  In that
+case, they will be @code{eval}ed to insert the required lines.
+
+@kindex M-x gnus-update-format
+@findex gnus-update-format
+Gnus includes a command to help you while creating your own format
+specs.  @kbd{M-x gnus-update-format} will @code{eval} the current form,
+update the spec in question and pop you to a buffer where you can
+examine the resulting lisp code to be run to generate the line.  
 
 
 @node Windows Configuration
@@ -8832,6 +9071,11 @@ and ask for more info, and everything takes more time.
 
 If you just need help, you are better off asking on
 @samp{gnu.emacs.gnus}.  I'm not very helpful.
+
+@cindex gnu.emacs.gnus
+@cindex ding mailing list
+You can also ask on the ding mailing list---samp{ding@@ifi.uio.no}.
+Write to @samp{ding-request@@ifi.uio.no} to subscribe.
 
 
 @node The End

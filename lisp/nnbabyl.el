@@ -139,6 +139,7 @@
     (setq nnbabyl-current-server server)))
 
 (defun nnbabyl-close-server (&optional server)
+  (setq nnbabyl-current-server nil)
   t)
 
 (defun nnbabyl-server-opened (&optional server)

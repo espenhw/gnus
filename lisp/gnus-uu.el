@@ -1087,8 +1087,7 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-grab-articles 
   (articles process-function &optional sloppy limit no-errors)
   (let ((state 'first) 
-	has-been-begin article result-file result-files process-state 
-	article-buffer)
+	has-been-begin article result-file result-files process-state)
  
     (if (not (gnus-server-opened gnus-current-select-method))
 	(progn
@@ -1112,28 +1111,16 @@ The headers will be included in the sequence they are matched.")
 	    (setq state 'last)))
 
       (message "Getting article %d, %s" article (gnus-uu-part-number article))
-
-      (if (not (= (or gnus-current-article 0) article))
-	  (let ((nntp-async-number nil))
-	    (save-excursion
-	      (set-buffer nntp-server-buffer)
-	      (gnus-request-article-this-buffer article gnus-newsgroup-name))
-	    (setq gnus-last-article gnus-current-article)
-	    (setq gnus-current-article article)
-	    (setq gnus-article-current (cons gnus-newsgroup-name article))
-	    (if (stringp nntp-server-buffer)
-		(setq article-buffer nntp-server-buffer)
-	      (setq article-buffer (buffer-name nntp-server-buffer))))
-	(gnus-summary-stop-page-breaking)
-	(setq article-buffer gnus-article-buffer))
-
-      (buffer-disable-undo article-buffer)
-      ;; Mark article as read.
-      (and (memq article gnus-newsgroup-processable)
-	   (gnus-summary-remove-process-mark article))
-      (run-hooks 'gnus-mark-article-hook)
-
-      (setq process-state (funcall process-function article-buffer state))
+      (gnus-summary-display-article article)
+      (save-excursion
+	(set-buffer gnus-original-article-buffer)
+	(let ((buffer-read-only nil))
+	  (save-excursion
+	    (set-buffer gnus-summary-buffer)
+	    (setq process-state 
+		  (funcall process-function
+			   gnus-original-article-buffer state)))))
+      (gnus-summary-remove-process-mark article)
 
       (if (or (memq 'begin process-state)
 	      (and (or (eq state 'first) (eq state 'first-and-last))
@@ -1178,18 +1165,6 @@ The headers will be included in the sequence they are matched.")
 
     ;; Make sure the last article is put in the article buffer & fix
     ;; windows etc.
-
-    (if (not (string= article-buffer gnus-article-buffer))
-	(save-excursion
-	  (set-buffer (get-buffer-create gnus-article-buffer))
-	  (let ((buffer-read-only nil))
-	    (widen)
-	    (erase-buffer)
-	    (insert-buffer-substring article-buffer)
-	    (gnus-set-mode-line 'article)
-	    (goto-char (point-min)))))
-
-    (gnus-set-mode-line 'summary)
 
     (if result-files
 	()

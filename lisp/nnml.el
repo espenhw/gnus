@@ -163,6 +163,7 @@ all. This may very well take some time.")
     (setq nnml-current-server server)))
 
 (defun nnml-close-server (&optional server)
+  (setq nnml-current-server nil)
   t)
 
 (defun nnml-server-opened (&optional server)

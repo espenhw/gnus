@@ -181,6 +181,7 @@ Newsgroup must be selected before calling this function."
     (setq nnspool-current-server server)))
 
 (defun nnspool-close-server (&optional server)
+  (setq nnspool-current-server nil)
   t)
 
 (defun nnspool-server-opened (&optional server)

@@ -34,6 +34,7 @@
 (require 'nnheader)
 (require 'rmail)
 (require 'nnmail)
+(eval-when-compile (require 'cl))
 
 (defvar nnfolder-directory (expand-file-name "~/Mail/")
   "The name of the mail box file in the users home directory.")
@@ -165,6 +166,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
     (setq nnfolder-current-server server)))
 
 (defun nnfolder-close-server (&optional server)
+  (setq nnfolder-current-server nil)
   t)
 
 (defun nnfolder-server-opened (&optional server)
@@ -393,10 +395,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (let ((buf (current-buffer))
 	result)
     (goto-char (point-min))
-    (cond ((looking-at "X-From-Line: ")
-	   (replace-match "From "))
-	  ((not (looking-at "From "))
-	   (insert "From nobody " (current-time-string) "\n")))
+    (when (looking-at "X-From-Line: ")
+      (replace-match "From "))
     (and 
      (nnfolder-request-list)
      (save-excursion
@@ -555,7 +555,18 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	  (if group (list (list group "")) nnmail-split-methods))
 	 (group-art-list
 	  (nreverse (nnmail-article-group 'nnfolder-active-number)))
+	 (delim (concat "^" rmail-unix-mail-delimiter))
 	 save-list group-art)
+    (goto-char (point-min))
+    ;; This might come from somewhere else.
+    (unless (looking-at delim)
+      (insert "From nobody " (current-time-string) "\n")
+      (goto-char (point-min)))
+    ;; Quote all "From " lines in the article.
+    (forward-line 1)
+    (while (re-search-forward delim nil t)
+      (beginning-of-line)
+      (insert "> "))
     (setq save-list group-art-list)
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art-list)
@@ -619,8 +630,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 			nnfolder-group-alist)))
 	  (cdr active))
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-      (nnfolder-possibly-activate-groups group)
-      )))
+      (nnfolder-possibly-activate-groups group))))
 
 
 ;; This method has a problem if you've accidentally let the active list get

@@ -7,7 +7,8 @@ done, because you are reading this.
 
 You should definitely byte-compile the source files. To do that, you
 can simply say "make" in this directory.  If you are using XEmacs, you
-*must* say "make EMACS=xemacs".
+*must* say "make EMACS=xemacs".  If you use XEmacs 19.12 (or earlier)
+you should rename "lisp/x-easymenu.el" to "lisp/easymenu.el". 
 
 Then you have to tell Emacs where Gnus is. You might put something
 like

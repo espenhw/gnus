@@ -140,7 +140,7 @@
 	  (let ((unfetched (gnus-sorted-complement 
 			    articles (nreverse fetched-articles))))
 	    (and unfetched
-		 (gnus-group-make-articles-read group unfetched nil))))
+		 (gnus-group-make-articles-read group unfetched))))
 	;; The headers are ready for reading, so they are inserted into
 	;; the nntp-server-buffer, which is where Gnus expects to find
 	;; them.
@@ -237,13 +237,11 @@ If the stream is opened, return T, otherwise return NIL."
 	"nnvirtual: LIST NEWSGROUPS is not implemented.")
   nil)
 
-(defalias 'nnvirtual-request-post 'nntp-request-post)
-
 
 ;;; Internal functions.
 
-;; Convert HEAD headers into NOV headers.
 (defun nnvirtual-convert-headers ()
+  "Convert HEAD headers into NOV headers."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (let* ((gnus-newsgroup-dependencies (make-vector 100 0))

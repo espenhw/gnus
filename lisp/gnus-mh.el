@@ -88,6 +88,7 @@ Optional argument FOLDER specifies folder name."
     (setq mh-sent-from-folder gnus-article-copy)
     (setq mh-sent-from-msg 1)
     (setq gnus-mail-buffer (buffer-name (current-buffer)))
+    (use-local-map (copy-keymap (current-local-map)))
     (local-set-key "\C-c\C-c" 'gnus-mh-mail-send-and-exit)
     (setq mh-previous-window-config config)))
 

@@ -137,6 +137,7 @@
     (setq nnmh-current-server server)))
 
 (defun nnmh-close-server (&optional server)
+  (setq nnmh-current-server nil)
   t)
 
 (defun nnmh-server-opened (&optional server)

@@ -40,25 +40,29 @@ Possible values:
   `rfc1341' -- RFC 1341 digest (MIME, unique boundary, no quoting).")
 
 (defconst nndoc-type-to-regexp
-  (` ((mbox 
-       (, (concat "^" rmail-unix-mail-delimiter))
-       (, (concat "^" rmail-unix-mail-delimiter))
-       nil "^$" nil nil nil)
-      (babyl "\^_\^L *\n" "\^_" "^[0-9].*\n" "^$" nil nil
-	     "^$")
-      (digest
-       "^------------------------------*[\n \t]+"
-       "^------------------------------*[\n \t]+"
-       nil "^ ?$"   
-       "^------------------------------*[\n \t]+"
-       "^End of" nil)
-      (forward
-       "^-+ Start of forwarded message -+\n+"
-       "^-+ End of forwarded message -+\n"
-       nil "^ ?$" nil nil nil)))
+  `((mbox 
+     ,(concat "^" rmail-unix-mail-delimiter)
+     ,(concat "^" rmail-unix-mail-delimiter)
+     nil "^$" nil nil nil)
+    (babyl "\^_\^L *\n" "\^_" "^[0-9].*\n" "^$" nil nil
+	   "^$")
+    (digest
+     "^------------------------------*[\n \t]+"
+     "^------------------------------*[\n \t]+"
+     nil "^ ?$"   
+     "^------------------------------*[\n \t]+"
+     "^End of" nil)
+    (forward
+     "^-+ Start of forwarded message -+\n+"
+     "^-+ End of forwarded message -+\n"
+     nil "^ ?$" nil nil nil)
+    (mmfd
+     "^\^A\^A\^A\^A\n" "^\^A\^A\^A\^A\n" nil "^$"
+     nil nil nil))
   "Regular expressions for articles of the various types.
 article-begin, article-end, head-begin, head-end, 
 first-article, end-of-file, body-begin.")
+
 
 
 
@@ -171,14 +175,8 @@ first-article, end-of-file, body-begin.")
 	    (setq nndoc-server-alist (delq state nndoc-server-alist)))
 	(nnheader-set-init-variables nndoc-server-variables defs)))
     (setq nndoc-current-server server)
-    (let ((defs (cdr (assq nndoc-article-type nndoc-type-to-regexp))))
-      (setq nndoc-article-begin (nth 0 defs))
-      (setq nndoc-article-end (nth 1 defs))
-      (setq nndoc-head-begin (nth 2 defs))
-      (setq nndoc-head-end (nth 3 defs))
-      (setq nndoc-first-article (nth 4 defs))
-      (setq nndoc-end-of-file (nth 5 defs))
-      (setq nndoc-body-begin (nth 6 defs)))
+    (unless (eq nndoc-article-type 'guess)
+      (nndoc-set-delims))
     t))
 
 (defun nndoc-close-server (&optional server)
@@ -246,7 +244,9 @@ first-article, end-of-file, body-begin.")
 
 (defun nndoc-close-group (group &optional server)
   (nndoc-possibly-change-buffer group server)
-  (kill-buffer nndoc-current-buffer)
+  (and nndoc-current-buffer
+       (buffer-name nndoc-current-buffer)
+       (kill-buffer nndoc-current-buffer))
   (setq nndoc-group-alist (delq (assoc group nndoc-group-alist)
 				nndoc-group-alist))
   (setq nndoc-current-buffer nil)
@@ -298,15 +298,21 @@ first-article, end-of-file, body-begin.")
 	  (save-excursion
 	    (set-buffer nndoc-address)
 	    (widen))
-	  (insert-buffer-substring nndoc-address))
-	t)))))
+	  (insert-buffer-substring nndoc-address)))))
+    (when (eq nndoc-article-type 'guess)
+      (save-excursion
+	(set-buffer nndoc-current-buffer)
+	(setq nndoc-article-type (nndoc-guess-doc-type))
+	(nndoc-set-delims)))
+    t))
+
 
 ;; MIME (RFC 1341) digest hack by Ulrik Dickow <dickow@nbi.dk>.
 (defun nndoc-set-header-dependent-regexps ()
   (if (not (eq nndoc-article-type 'digest))
       ()
-    (let ((case-fold-search t)		; We match a bit too much, keep it simple.
-	  (boundary-id) (b-delimiter))
+    (let ((case-fold-search t)	     ; We match a bit too much, keep it simple.
+	  boundary-id b-delimiter)
       (save-excursion
 	(set-buffer nndoc-current-buffer)
 	(goto-char (point-min))
@@ -381,8 +387,7 @@ first-article, end-of-file, body-begin.")
       (goto-char (point-min))
       (while (and (re-search-forward nndoc-article-begin nil t)
 		  (not (zerop (setq article (1- article))))))
-      (if (not (zerop article))
-	  ()
+      (when (zerop article)
 	(narrow-to-region 
 	 (match-end 0)
 	 (or (and (re-search-forward nndoc-article-end nil t)
@@ -399,6 +404,33 @@ first-article, end-of-file, body-begin.")
 	     (re-search-forward nndoc-body-begin nil t))
 	(append-to-buffer ibuf (point) (point-max))
 	t))))
+
+(defun nndoc-guess-doc-type ()
+  "Guess what document type is in the current buffer.
+Returns one of `babyl', `mbox', `digest', `forward', `mmfd' or nil."
+  (goto-char (point-min))
+  (cond 
+   ((looking-at rmail-unix-mail-delimiter)
+    'mbox)
+   ((looking-at "\^A\^A\^A\^A$")
+    'mmfd)
+   ((and (re-search-forward "^-+ Start of forwarded message -+\n+" nil t)
+	 (not (re-search-forward "^Subject:.*digest" nil t)))
+    'forward)
+   ((re-search-forward "\^_\^L *\n" nil t)
+    'babyl)
+   (t 
+    'digest)))
+
+(defun nndoc-set-delims ()
+  (let ((defs (cdr (assq nndoc-article-type nndoc-type-to-regexp))))
+    (setq nndoc-article-begin (nth 0 defs))
+    (setq nndoc-article-end (nth 1 defs))
+    (setq nndoc-head-begin (nth 2 defs))
+    (setq nndoc-head-end (nth 3 defs))
+    (setq nndoc-first-article (nth 4 defs))
+    (setq nndoc-end-of-file (nth 5 defs))
+    (setq nndoc-body-begin (nth 6 defs))))
 
 (provide 'nndoc)
 

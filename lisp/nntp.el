@@ -624,7 +624,7 @@ It will prompt for a password."
   (when (file-exists-p "~/.nntp-authinfo")
     (save-excursion
       (set-buffer (get-buffer-create " *authinfo*"))
-      (buffer-disable-undo)
+      (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert-file-contents "~/.nntp-authinfo")
       (goto-char (point-min))
@@ -1070,7 +1070,9 @@ If SERVICE, this this as the port number."
 	    ;; It is possible to change kanji-fileio-code in this hook.
 	    (run-hooks 'nntp-server-hook)
 	    (push proc nntp-opened-connections)
-	    nntp-server-process)))))
+	    nntp-server-process)
+	(setq nntp-status-string (format "Couldn't open server %s" server))
+	nil))))
 
 (defun nntp-open-network-stream (server)
   (open-network-stream 

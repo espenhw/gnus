@@ -25,8 +25,7 @@
 ;;; Code:
 
 (require 'gnus)
-(eval-when-compile 
-  (require 'cl))
+(eval-when-compile (require 'cl))
 
 (defvar gnus-nocem-groups '("alt.nocem.misc" "news.admin.net-abuse.announce")
   "*List of groups that will be searched for NoCeM messages.")

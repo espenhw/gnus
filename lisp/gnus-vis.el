@@ -213,7 +213,7 @@
 ;  "Face used for signature.")
 
 (defvar gnus-button-url-regexp "\\b\\(s?https?\\|ftp\\|file\\|gopher\\|news\\|telnet\\|wais\\|mailto\\):\\(//[-a-zA-Z0-9_.]+:[0-9]*\\)?[-a-zA-Z0-9_=?#$@~`%&*+|\\/.,]*[-a-zA-Z0-9_=#$@~`%&*+|\\/]"
-  "*Regular expression matching Urls")
+  "*Regular expression that matches URLs.")
 
 (defvar gnus-button-alist 
   `(("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
@@ -222,10 +222,12 @@
 	   (assq (1+ lines) gnus-cite-attribution-alist)))
      gnus-button-message-id 3)
     ;; This is how URLs _should_ be embedded in text...
-    ("<URL:\\([^\n\r>]*\\)>" 0 t browse-url-browser-function 1)
+    ("<URL:\\([^\n\r>]*\\)>" 0 t ,browse-url-browser-function 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
-    (,gnus-button-url-regexp 0 t browse-url-browser-function 0))
+    (,gnus-button-url-regexp 0 t ,browse-url-browser-function 0)
+    ("\\(<\\(url: \\)?news:\\([^>\n ]*\\)>\\)" 1 t
+     gnus-button-message-id 3))
   "Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -240,11 +242,13 @@ CALLBACK can also be a variable, in that case the value of that
 variable it the real callback function.")
 
 (defvar gnus-header-button-alist 
-  `(("^\\(References\\|Message-ID\\):" "<[^>]+>" 0 t gnus-button-message-id 0)
+  `(("^\\(References\\|Message-I[Dd]\\):" "<[^>]+>"
+     0 t gnus-button-message-id 0)
     ("^\\(From\\|Reply-To\\): " ": *\\(.+\\)$" 1 t gnus-button-reply 0)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+" 
      0 t gnus-button-mailto 0)
-    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t browse-url-browser-function 0))
+    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t
+     ,browse-url-browser-function 0))
   "Alist of headers and regexps to match buttons in article heads.
 
 This alist is very similar to `gnus-button-alist', except that each
@@ -1458,7 +1462,7 @@ specified by `gnus-button-alist'."
 		      (cons fun args)))))))
 
 (defun gnus-button-message-id (message-id)
-  ;; Fetch MESSAGE-ID.
+  "Fetch MESSAGE-ID."
   (save-excursion
     (set-buffer gnus-summary-buffer)
     (gnus-summary-refer-article message-id)))

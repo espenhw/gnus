@@ -143,6 +143,7 @@
     (setq nnmbox-current-server server)))
 
 (defun nnmbox-close-server (&optional server)
+  (setq nnmbox-current-server nil)
   t)
 
 (defun nnmbox-server-opened (&optional server)
@@ -452,7 +453,18 @@
   "Called narrowed to an article."
   (let* ((nnmail-split-methods 
 	  (if group (list (list group "")) nnmail-split-methods))
-	 (group-art (nreverse (nnmail-article-group 'nnmbox-active-number))))
+	 (group-art (nreverse (nnmail-article-group 'nnmbox-active-number)))
+	 (delim (concat "^" rmail-unix-mail-delimiter)))
+    (goto-char (point-min))
+    ;; This might come from somewhere else.
+    (unless (looking-at delim)
+      (insert "From nobody " (current-time-string) "\n")
+      (goto-char (point-min)))
+    ;; Quote all "From " lines in the article.
+    (forward-line 1)
+    (while (re-search-forward delim nil t)
+      (beginning-of-line)
+      (insert "> "))
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
     (nnmbox-insert-newsgroup-line group-art)

@@ -199,11 +199,13 @@ The SOUP packet file name will be inserted at the %s.")
   (nnsoup-write-active-file)
   (nnsoup-write-replies)
   (gnus-soup-save-areas)
-  (while nnsoup-buffers
-    (and (car nnsoup-buffers)
-	 (buffer-name (car nnsoup-buffers))
-	 (kill-buffer (car nnsoup-buffers)))
-    (setq nnsoup-buffers (cdr nnsoup-buffers)))
+  ;; Kill all nnsoup buffers.
+  (let (buffer)
+    (while nnsoup-buffers
+      (setq buffer (cdr (pop nnsoup-buffers)))
+      (and buffer
+	   (buffer-name buffer)
+	   (kill-buffer buffer))))
   (setq nnsoup-group-alist nil
 	nnsoup-current-group nil
 	nnsoup-current-server nil
@@ -252,6 +254,14 @@ The SOUP packet file name will be inserted at the %s.")
   t)
 
 (defun nnsoup-close-group (group &optional server)
+  ;; Kill all nnsoup buffers.
+  (let ((buffers nnsoup-buffers)
+	elem)
+    (while buffers
+      (when (equal (car (setq elem (pop buffers))) group)
+	(setq nnsoup-buffers (delq elem nnsoup-buffers))
+	(and (cdr elem) (buffer-name (cdr elem))
+	     (kill-buffer (cdr elem))))))
   t)
 
 (defun nnsoup-request-list (&optional server)
@@ -408,7 +418,7 @@ The SOUP packet file name will be inserted at the %s.")
 	(save-excursion			; Load the file.
 	  (set-buffer (get-buffer-create buffer-name))
 	  (buffer-disable-undo (current-buffer))
-	  (setq nnsoup-buffers (cons (current-buffer) nnsoup-buffers))
+	  (push (cons nnsoup-current-group (current-buffer)) nnsoup-buffers)
 	  (insert-file-contents (concat nnsoup-directory file))
 	  (current-buffer)))))
 
@@ -616,7 +626,7 @@ The SOUP packet file name will be inserted at the %s.")
 						 (match-end 1))))))))
 	active group lines ident elem min)
     (set-buffer (get-buffer-create " *nnsoup work*"))
-    (buffer-disable-undo)
+    (buffer-disable-undo (current-buffer))
     (while files
       (message "Doing %s..." (car files))
       (erase-buffer)

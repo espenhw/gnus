@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'text-props)
+(defvar menu-bar-mode t)
 
 (defvar gnus-xmas-glyph-directory nil
   "*Directory where Gnus logos and icons are located.
@@ -135,12 +136,12 @@ It is provided only to ease porting of broken FSF Emacs programs."
 	(progn
 	  (setq info (nth 2 entry))
 	  (gnus-group-insert-group-line 
-	   nil group (gnus-info-level info) (gnus-info-marks info)
+	   group (gnus-info-level info) (gnus-info-marks info)
 	   (car entry) (gnus-info-method info)))
       (setq active (gnus-gethash group gnus-active-hashtb))
 	  
       (gnus-group-insert-group-line 
-       nil group (if (member group gnus-zombie-list) gnus-level-zombie
+       group (if (member group gnus-zombie-list) gnus-level-zombie
 		   gnus-level-killed)
        nil (if active (- (1+ (cdr active)) (car active)) 0) nil))
     (save-excursion
@@ -307,7 +308,8 @@ pounce directly on the real variables themselves.")
 
 
 (defun gnus-xmas-redefine ()
-  (fset 'gnus-mouse-face-function 'identity)
+
+
   (fset 'gnus-summary-make-display-table (lambda () nil))
   (fset 'gnus-visual-turn-off-edit-menu 'identity)
   (fset 'gnus-highlight-selected-summary
@@ -483,6 +485,5 @@ If it is non-nil, it must be a toolbar.  The five legal values are
        (gnus-xmas-setup-toolbar gnus-summary-toolbar)
        (set-specifier (symbol-value gnus-use-toolbar)
 		      (cons (current-buffer) gnus-summary-toolbar))))
-
 
 ;;; gnus-xmas.el ends here

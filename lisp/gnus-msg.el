@@ -465,20 +465,18 @@ Type \\[describe-mode] in the buffer to get a list of commands."
   (interactive (list t))
   (let* ((group (or group gnus-newsgroup-name))
 	 (pgroup group)
-	 (to-address 
-	  (when group
-	    (gnus-group-get-parameter group 'to-address)))
-	 (to-group
-	  (when group
-	    (gnus-group-get-parameter group 'to-group)))
-	 (mailing-list
-	  (and group gnus-mailing-list-groups
-	       (string-match gnus-mailing-list-groups group))))
+	 to-address to-group mailing-list to-list)
     (when group
-      (setq group (gnus-group-real-name group)))
+      (setq to-address (gnus-group-get-parameter group 'to-address)
+	    to-group (gnus-group-get-parameter group 'to-group)
+	    to-list (gnus-group-get-parameter group 'to-list)
+	    mailing-list (when gnus-mailing-list-groups
+			   (string-match gnus-mailing-list-groups group))
+	    group (gnus-group-real-name group)))
     (if (or to-group
 	    (and (gnus-member-of-valid 'post (or pgroup gnus-newsgroup-name))
 		 (not mailing-list)
+		 (not to-list)
 		 (not to-address)))
 	;; This is news.
 	(if post
@@ -487,13 +485,12 @@ Type \\[describe-mode] in the buffer to get a list of commands."
       ;; The is mail.
       (if post
 	  (progn
-	    (gnus-new-mail to-address)
+	    (gnus-new-mail (or to-address to-list))
 	    ;; Arrange for mail groups that have no `to-address' to
 	    ;; get that when the user sends off the mail.
-	    (or to-address
-		(progn
-		  (make-local-variable 'gnus-add-to-address)
-		  (setq gnus-add-to-address group))))
+	    (unless to-address
+	      (make-local-variable 'gnus-add-to-address)
+	      (setq gnus-add-to-address group)))
 	(gnus-mail-reply yank to-address 'followup)))))
 
 (defun gnus-inews-news (&optional use-group-method)
@@ -941,12 +938,12 @@ called."
 	(re-search-forward
 	 (concat "^" (regexp-quote mail-header-separator) "$"))
 	(replace-match "" t t)
+	;; Remove X- prefixes to headers.
+	(gnus-inews-dex-headers)
 	;; Run final inews hooks.  This hook may do FCC.
 	;; The article must be saved before being posted because
 	;; `gnus-request-post' modifies the buffer.
 	(run-hooks 'gnus-inews-article-hook)
-	;; Remove X- prefixes to headers.
-	(gnus-inews-dex-headers)
 	;; Copy the article over to some group, possibly.
 	(and gcc (gnus-inews-do-gcc gcc))
 	;; Post the article.
@@ -1518,7 +1515,8 @@ mailer."
 	  (cur (cons (current-buffer) (cdr gnus-article-current)))
 	  (winconf (current-window-configuration))
 	  from subject date reply-to message-of to cc
-	  references message-id sender follow-to sendto elt new-cc)
+	  references message-id sender follow-to sendto elt new-cc new-to
+	  mct mctdo)
       (set-buffer (get-buffer-create gnus-mail-buffer))
       (mail-mode)
       (if (and (buffer-modified-p)
@@ -1556,21 +1554,39 @@ mailer."
 	    (setq subject (concat "Re: " subject))
 	    (setq to (mail-fetch-field "to"))
 	    (setq cc (mail-fetch-field "cc"))
+	    (setq mct (mail-fetch-field "mail-copies-to"))
 	    (setq reply-to (mail-fetch-field "reply-to"))
 	    (setq references (mail-fetch-field "references"))
 	    (setq message-id (mail-fetch-field "message-id"))
+	    
+	    (setq mctdo (not (equal mct "never")))
 
-	    (if (not followup)
-		()
-	      ;; When we followup, we want all the headers, I would think.
-	      (setq new-cc (rmail-dont-reply-to 
-			    (concat (or to "")
-				    (if cc (concat (if to ", " "") cc) ""))))
-	      (let ((rmail-dont-reply-to-names 
-		     (regexp-quote (mail-strip-quoted-names
-				    (or to-address reply-to from "")))))
-		(setq new-cc (rmail-dont-reply-to new-cc))))
-
+	    (if (not (and followup (not to-address)))
+		(setq new-to (or reply-to from))
+	      (let (ccalist)
+		(save-excursion
+		  (gnus-set-work-buffer)
+		  (unless (equal mct "never")
+		    (insert (or reply-to from "")))
+		  (insert (if (bolp) "" ", ")
+			  (or to "")
+			  (if (or (not mct) (not mctdo)) ""
+			    (concat (if (bolp) "" ", ") mct))
+			  (if cc (concat (if (bolp) "" ", ") cc) ""))
+		  (goto-char (point-min))
+		  (setq ccalist
+			(mapcar
+			 (lambda (addr)
+			   (cons (mail-strip-quoted-names addr) addr))
+			 (nreverse (mail-parse-comma-list))))
+		  (let ((s ccalist))
+		    (while s
+		      (setq ccalist (delq (assoc (car (pop s)) s) ccalist)))))
+		(setq new-to (cdr (pop ccalist)))
+		(setq new-cc 
+		      (mapconcat 
+		       (lambda (addr) (cdr addr))
+		       ccalist ", "))))
 	    (widen)))
 
 	(setq news-reply-yank-from (or from "(nobody)"))
@@ -1588,7 +1604,7 @@ mailer."
 	 (if followup 'followup 'reply)
 	 (or to-address 
 	     (if (and follow-to (not (stringp follow-to))) sendto
-	       (or follow-to reply-to from sender "")))
+	       (or follow-to new-to sender "")))
 	 subject message-of
 	 (if (zerop (length new-cc)) nil new-cc)
 	 gnus-article-copy)

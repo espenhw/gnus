@@ -91,7 +91,9 @@ The following commands are available:
 
 \\{gnus-server-mode-map}"
   (interactive)
-  (if (gnus-visual-p 'server-menu 'menu) (gnus-server-make-menu-bar))
+  (when (and menu-bar-mode
+	     (gnus-visual-p 'server-menu 'menu))
+    (gnus-server-make-menu-bar))
   (kill-all-local-variables)
   (setq mode-line-modified "-- ")
   (make-local-variable 'mode-line-format)
@@ -115,7 +117,8 @@ The following commands are available:
 	 (elem (assoc method gnus-opened-servers))
 	 (status (cond ((eq (nth 1 elem) 'denied)
 			"(denied)")
-		       ((gnus-server-opened method)
+		       ((or (gnus-server-opened method)
+			    (eq (nth 1 elem) 'ok))
 			"(open)")
 		       (t
 			"(closed)")))
@@ -123,22 +126,23 @@ The following commands are available:
     (beginning-of-line)
     (setq b (point))
     ;; Insert the text.
-    (insert (eval sformat))
+    (eval sformat)
     (add-text-properties b (1+ b) (list 'gnus-server (intern name)))))
 
-(defun gnus-server-enter-server-buffer ()
+(defun gnus-enter-server-buffer ()
   "Set up the server buffer."
   (gnus-server-setup-buffer)
   (gnus-configure-windows 'server)
   (gnus-server-prepare))
 
 (defun gnus-server-setup-buffer ()
-  (if (get-buffer gnus-server-buffer)
-      ()
+  "Initialize the server buffer."
+  (unless (get-buffer gnus-server-buffer)
     (save-excursion
       (set-buffer (get-buffer-create gnus-server-buffer))
       (gnus-server-mode)
-      (and gnus-carpal (gnus-carpal-setup-buffer 'server)))))
+      (when gnus-carpal 
+	(gnus-carpal-setup-buffer 'server)))))
 
 (defun gnus-server-prepare ()
   (setq gnus-server-mode-line-format-spec 
@@ -146,26 +150,24 @@ The following commands are available:
 			   gnus-server-mode-line-format-alist))
   (setq gnus-server-line-format-spec 
 	(gnus-parse-format gnus-server-line-format 
-			   gnus-server-line-format-alist))
+			   gnus-server-line-format-alist t))
   (let ((alist gnus-server-alist)
 	(buffer-read-only nil)
 	(opened gnus-opened-servers)
-	done)
+	done server)
     (erase-buffer)
     ;; First we do the real list of servers.
     (while alist
-      (gnus-server-insert-server-line nil (car (car alist)) (cdr (car alist)))
-      (and (assoc (cdr (car alist)) gnus-opened-servers)
-	   (setq done (cons (cdr (car alist)) done)))
-      (setq alist (cdr alist)))
+      (push (cdr (setq server (pop alist))) done)
+      (gnus-server-insert-server-line nil (car server) (cdr server)))
     ;; Then we insert the list of servers that have been opened in
     ;; this session.
     (while opened 
-      (or (member (car (car opened)) done)
-	  (gnus-server-insert-server-line 
-	   nil (format "%s:%s" (car (car (car opened))) 
-		       (nth 1 (car (car opened))))
-	   (car (car opened))))
+      (unless (member (car (car opened)) done)
+	(gnus-server-insert-server-line 
+	 nil (format "%s:%s" (car (car (car opened))) 
+		     (nth 1 (car (car opened))))
+	 (car (car opened))))
       (setq opened (cdr opened))))
   (goto-char (point-min))
   (gnus-server-position-point))
@@ -304,9 +306,13 @@ The following commands are available:
   (gnus-server-position-point))
 
 (defun gnus-server-remove-denials ()
-  "Remove all marks as to whether Gnus could open servers or not."
+  "Make all denied servers into closed servers."
   (interactive)
-  (setq gnus-opened-servers nil)
+  (let ((servers gnus-opened-servers))
+    (while servers
+      (when (eq (nth 1 (car servers)) 'denied)
+	(setcar (nthcdr 1 (car servers)) 'closed))
+      (setq servers (cdr servers))))
   (gnus-server-list-servers))
 
 (defun gnus-server-copy-server (from to)
@@ -387,9 +393,15 @@ The following commands are available:
 (defun gnus-server-read-server (server)
   "Browse a server."
   (interactive (list (gnus-server-server-name)))
-  (gnus-browse-foreign-server (gnus-server-to-method server) (current-buffer)))
-
-(defun gnus-mouse-pick-server (e)
+  (let ((buf (current-buffer)))
+    (prog1
+	(gnus-browse-foreign-server (gnus-server-to-method server) buf)
+      (save-excursion
+	(set-buffer buf)
+	(gnus-server-update-server (gnus-server-server-name))
+	(gnus-server-position-point)))))
+    
+(defun gnus-server-pick-server (e)
   (interactive "e")
   (mouse-set-point e)
   (gnus-server-read-server (gnus-server-server-name)))
