@@ -211,7 +211,6 @@ as unread by Gnus.")
   (setq dir (expand-file-name dir))
   ;; Recurse down all directories.
   (let ((dirs (and (file-readable-p dir)
-		   (> (nth 1 (file-attributes (file-chase-links dir))) 2)
 		   (nnheader-directory-files dir t nil t)))
 	rdir)
     ;; Recurse down directories.
