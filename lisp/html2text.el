@@ -463,9 +463,7 @@ See the documentation for that variable."
   (dolist (tag tag-list)
     (html2text-buffer-head)
     (while (re-search-forward (format "\\(</?%s[^>]*>\\)" tag) (point-max) t)
-      (let ((p1 (point)))
-	(search-backward "<")
-	(delete-region (point) p1)))))
+      (delete-region (match-beginning 0) (match-end 0)))))
 
 (defun html2text-format-tags ()
   "See the variable \"html2text-format-tag-list\" for documentation"

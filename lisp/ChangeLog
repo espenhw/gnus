@@ -1,3 +1,8 @@
+2003-11-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* html2text.el (html2text-remove-tags): Remove the tag in a
+	simpler way to avoid inflooping.
+
 2003-11-17  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-gssapi-auth-p): Don't check capability (some
