@@ -1,3 +1,7 @@
+2004-02-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* mml.el (mml-compute-boundary-1): Don't uncompress files.
+
 2004-02-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* mml.el (mml-mode, mml-x-dnd-attach-file): Attach drop and drag

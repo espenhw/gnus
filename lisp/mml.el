@@ -583,7 +583,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	  (insert-buffer-substring (cdr (assq 'buffer cont))))
 	 ((and (setq filename (cdr (assq 'filename cont)))
 	       (not (equal (cdr (assq 'nofile cont)) "yes")))
-	  (mm-insert-file-contents filename))
+	  (mm-insert-file-contents filename nil nil nil nil t))
 	 (t
 	  (insert (cdr (assq 'contents cont)))))
 	(goto-char (point-min))
