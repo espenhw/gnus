@@ -1,5 +1,8 @@
 2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* emacs-mime.texi (Customization): Added documentation for
+	`mm-inline-text-html-with-images'.
+
 	* gnus.texi (Article Washing): Replace w3m to emacs-w3m.
 
 2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
