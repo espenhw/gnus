@@ -1,3 +1,12 @@
+2004-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-text-with-property): Make it fast and accept
+	optional arguments.
+	(message-strip-forbidden-properties): Use it.
+	(message-fix-before-sending): Follow the m-t-w-p change.
+
+	* gnus-ems.el (gnus-remove-image): Follow the m-t-w-p change.
+
 2004-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-hide-headers): Don't change the buffer

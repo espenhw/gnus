@@ -223,13 +223,18 @@
     glyph))
 
 (defun gnus-remove-image (image &optional category)
-  (dolist (position (message-text-with-property 'display))
-    (when (and (equal (get-text-property position 'display) image)
-	       (equal (get-text-property position 'gnus-image-category)
-		      category))
-      (put-text-property position (1+ position) 'display nil)
-      (when (get-text-property position 'gnus-image-text-deletable)
-	(delete-region position (1+ position))))))
+  (let ((regions (message-text-with-property 'display))
+	start end)
+    (while regions
+      (setq start (caar regions)
+	    end (cdar regions)
+	    regions (cdr regions))
+      (when (and (equal (get-text-property start 'display) image)
+		 (equal (get-text-property start 'gnus-image-category)
+			category))
+	(put-text-property start end 'display nil)
+	(when (get-text-property start 'gnus-image-text-deletable)
+	  (delete-region start end))))))
 
 (provide 'gnus-ems)
 

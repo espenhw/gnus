@@ -2387,11 +2387,10 @@ This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
   (when (and message-strip-special-text-properties
 	     (message-tamago-not-in-use-p begin))
-    (while (not (= begin end))
-      (when (not (get-text-property begin 'message-hidden))
-	(remove-text-properties begin (1+ begin)
-				message-forbidden-properties))
-      (incf begin))))
+    (dolist (from-to (message-text-with-property 'message-hidden
+						 begin end t))
+      (remove-text-properties (car from-to) (cdr from-to)
+			      message-forbidden-properties))))
 
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"
@@ -3483,16 +3482,32 @@ It should typically alter the sending method in some way or other."
 (put 'message-check 'lisp-indent-function 1)
 (put 'message-check 'edebug-form-spec '(form body))
 
-(defun message-text-with-property (prop)
-  "Return a list of all points where the text has PROP."
-  (let ((points nil)
-	(point (point-min)))
-    (save-excursion
-      (while (< point (point-max))
-	(when (get-text-property point prop)
-	  (push point points))
-	(incf point)))
-    (nreverse points)))
+(defun message-text-with-property (prop &optional start end reverse)
+  "Return a list of start and end positions where the text has PROP.
+START and END bound the search, they default to `point-min' and
+`point-max' respectively.  If REVERSE is non-nil, find text which does
+not have PROP."
+  (unless start
+    (setq start (point-min)))
+  (unless end
+    (setq end (point-max)))
+  (let (next regions)
+    (if reverse
+	(progn
+	  (while (and start
+		      (setq start (text-property-any start end prop nil)))
+	    (setq next (next-single-property-change start prop nil end))
+	    (push (cons start (or next end)) regions)
+	    (setq start next)))
+      (while (and start
+		  (or (get-text-property start prop)
+		      (and (setq start (next-single-property-change
+					start prop nil end))
+			   (get-text-property start prop))))
+	(setq next (text-property-any start end prop nil))
+	(push (cons start (or next end)) regions)
+	(setq start next)))
+    (nreverse regions)))
 
 (defun message-fix-before-sending ()
   "Do various things to make the message nice before sending it."
@@ -3501,22 +3516,22 @@ It should typically alter the sending method in some way or other."
   (unless (bolp)
     (insert "\n"))
   ;; Make the hidden headers visible.
-  (let ((points (message-text-with-property 'message-hidden)))
-    (when points
-      (goto-char (car points))
-      (dolist (point points)
-	(add-text-properties point (1+ point)
-			     '(invisible nil intangible nil)))))
+  (dolist (from-to (message-text-with-property 'message-hidden))
+    (add-text-properties (car from-to) (cdr from-to)
+			 '(invisible nil intangible nil)))
   ;; Make invisible text visible.
   ;; It doesn't seem as if this is useful, since the invisible property
   ;; is clobbered by an after-change hook anyhow.
   (message-check 'invisible-text
-    (let ((points (message-text-with-property 'invisible)))
-      (when points
-	(goto-char (car points))
-	(dolist (point points)
-	  (put-text-property point (1+ point) 'invisible nil)
-	  (message-overlay-put (message-make-overlay point (1+ point))
+    (let ((regions (message-text-with-property 'invisible))
+	  from to)
+      (when regions
+	(while regions
+	  (setq from (caar regions)
+		to (cdar regions)
+		regions (cdr regions))
+	  (put-text-property from to 'invisible nil)
+	  (message-overlay-put (message-make-overlay from to)
 			       'face 'highlight))
 	(unless (yes-or-no-p
 		 "Invisible text found and made visible; continue sending? ")
