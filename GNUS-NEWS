@@ -396,6 +396,18 @@ longer supported.
 It was aliased to `Y c' (gnus-summary-insert-cached-articles). The new
 function filters out other articles.
 
+** Some limiting commands accept a C-u prefix to negate the match.
+
+If C-u is used on subject, author or extra headers, i.e., `/ s', `/
+a', and `/ x' (gnus-summary-limit-to-{subject,author,extra})
+respectively, the result will be to display all articles that do not
+match the expression.
+
+** `/ s' (gnus-summary-limit-to-subject), `/ a'
+	(gnus-summary-limit-to-author), and `/ x'
+	(gnus-summary-limit-to-extra)
+
+
 ** Group names are treated as UTF-8 by default.
 
 This is supposedly what USEFOR wanted to migrate to.  See
