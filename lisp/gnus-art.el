@@ -543,7 +543,6 @@ displayed by the first non-nil matching CONTENT face."
 
 ;;; Internal variables
 
-(defvar gnus-article-mime-handles nil)
 (defvar article-lapsed-timer nil)
 (defvar gnus-article-current-summary nil)
 
@@ -963,11 +962,12 @@ If PROMPT (the prefix), prompt for a coding system to use."
       (let* ((inhibit-point-motion-hooks t)
 	     (ct (message-fetch-field "Content-Type" t))
 	     (cte (message-fetch-field "Content-Transfer-Encoding" t))
-	     (ctl (and ct (drums-parse-content-type ct)))
+	     (ctl (and ct (condition-case () (drums-parse-content-type ct)
+			    (error nil))))
 	     (charset (cond
 		       (prompt
 			(mm-read-coding-system "Charset to decode: "))
-		       (ct
+		       (ctl
 			(drums-content-type-get ctl 'charset))
 		       (gnus-newsgroup-name
 			(gnus-group-find-parameter
@@ -1350,17 +1350,26 @@ how much time has lapsed since DATE."
      ;; functions since they aren't particularly resistant to
      ;; buggy dates.
      ((eq type 'local)
-      (concat "Date: " (current-time-string time)))
+      (let ((tz (car (current-time-zone))))
+	(format "Date: %s %s%04d" (current-time-string time)
+		(if (> tz 0) "+" "-") (abs (/ tz 36)))))
      ;; Convert to Universal Time.
      ((eq type 'ut)
       (concat "Date: "
 	      (current-time-string
-	       (let ((e (parse-time-string date)))
-		 (setcar (last e) 0)
-		 (apply 'encode-time e)))))
+	       (let* ((e (parse-time-string date))
+		     (tm (apply 'encode-time e))
+		     (ms (car tm))
+		     (ls (- (cadr tm) (car (current-time-zone)))))
+		 (cond ((< ls 0) (list (1- ms) (+ ls 65536)))
+		       ((> ls 65535) (list (1+ ms) (- ls 65536)))
+		       (t (list ms ls)))))
+	      " UT"))
      ;; Get the original date from the article.
      ((eq type 'original)
-      (concat "Date: " date))
+      (concat "Date: " (if (string-match "\n+$" date)
+			   (substring date 0 (match-beginning 0))
+			 date)))
      ;; Let the user define the format.
      ((eq type 'user)
       (if (gnus-functionp gnus-article-time-format)
@@ -1531,7 +1540,7 @@ This format is defined by the `gnus-article-time-format' variable."
     (if (not gnus-default-article-saver)
 	(error "No default saver is defined")
       ;; !!! Magic!  The saving functions all save
-      ;; `gnus-original-article-buffer' (or so they think), but we
+      ;; `gnus-save-article-buffer' (or so they think), but we
       ;; bind that variable to our save-buffer.
       (set-buffer gnus-article-buffer)
       (let* ((gnus-save-article-buffer save-buffer)
@@ -2116,9 +2125,57 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (set-window-point (get-buffer-window (current-buffer)) (point))
 	    t))))))
 
+;;;
+;;; Gnus MIME viewing functions
+;;;
+
+(defvar gnus-mime-button-line-format "%{%([%t%n]%)%}\n")
+(defvar gnus-mime-button-line-format-alist
+  '((?t gnus-tmp-type ?s)
+    (?n gnus-tmp-name ?s)))
+
+(defvar gnus-mime-button-map nil)
+(unless gnus-mime-button-map
+  (setq gnus-mime-button-map (make-sparse-keymap))
+  (define-key gnus-mime-button-map gnus-mouse-2 'gnus-article-push-button)
+  (define-key gnus-mime-button-map "\r" 'gnus-article-press-button)
+  (define-key gnus-mime-button-map "\M-\r" 'gnus-mime-view-part)
+  (define-key gnus-mime-button-map "o" 'gnus-mime-save-part)
+  (define-key gnus-mime-button-map "|" 'gnus-mime-pipe-part))
+
+(defun gnus-mime-save-part ()
+  "Save the MIME part under point."
+  (interactive)
+  (let ((data (get-text-property (point) 'gnus-data)))
+    (mm-save-part data)))
+
+(defun gnus-mime-pipe-part ()
+  "Pipe the MIME part under point to a process."
+  (interactive)
+  (let ((data (get-text-property (point) 'gnus-data)))
+    (mm-pipe-part data)))
+
+(defun gnus-mime-view-part ()
+  "Interactively choose a view method for the MIME part under point."
+  (interactive)
+  (let ((data (get-text-property (point) 'gnus-data)))
+    (mm-interactively-view-part data)))
+
+(defun gnus-insert-mime-button (handle)
+  (let ((gnus-tmp-name (drums-content-type-get (cadr handle) 'name))
+	(gnus-tmp-type (caadr handle)))
+    (when gnus-tmp-name
+      (setq gnus-tmp-name (concat " (" gnus-tmp-name ")")))
+    (gnus-eval-format
+     gnus-mime-button-line-format gnus-mime-button-line-format-alist
+     `(local-map ,gnus-mime-button-map
+		 keymap ,gnus-mime-button-map
+		 gnus-callback mm-display-part
+		 gnus-data ,handle))))
+
 (defun gnus-display-mime ()
   (let ((handles (mm-dissect-buffer))
-	handle name type)
+	handle name type b e)
     (mapcar 'mm-destroy-part gnus-article-mime-handles)
     (setq gnus-article-mime-handles nil)
     (setq gnus-article-mime-handles (nconc gnus-article-mime-handles handles))
@@ -2127,17 +2184,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (search-forward "\n\n" nil t)
       (delete-region (point) (point-max))
       (while (setq handle (pop handles))
-	(setq name (drums-content-type-get (cadr handle) 'name)
-	      type (caadr handle))
-	(gnus-article-add-button
-	 (point)
-	 (progn
-	   (insert
-	    (format "[%s%s]" type (if name (concat " (" name ")") "")))
-	   (point))
-	 'mm-display-part handle)
-	(insert "\n\n\n")
-	(when (mm-automatic-display-p type)
+	(gnus-insert-mime-button handle)
+	(insert "\n\n")
+	(when (mm-automatic-display-p (caadr handle))
 	  (forward-line -2)
 	  (mm-display-part handle)
 	  (goto-char (point-max)))))))

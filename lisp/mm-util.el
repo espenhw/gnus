@@ -201,6 +201,9 @@ See also `with-temp-file' and `with-output-to-string'."
 	   (and (buffer-name ,temp-buffer)
 		(kill-buffer ,temp-buffer))
 	   (setq-default enable-multibyte-characters ,multibyte))))))
+(put 'mm-with-unibyte-buffer 'lisp-indent-function 0)
+(put 'mm-with-unibyte-buffer 'edebug-form-spec '(body))
+
 
 (provide 'mm-util)
 

@@ -174,7 +174,7 @@
   "Parse the time-string STRING into (SEC MIN HOUR DAY MON YEAR DOW DST TZ).
 The values are identical to those of `decode-time', but any values that are
 unknown are returned as nil."
-  (let ((time (list nil nil nil nil nil nil nil nil nil nil))
+  (let ((time (list nil nil nil nil nil nil nil nil nil))
 	(temp (parse-time-tokenize (downcase string))))
     (while temp
       (let ((elt (pop temp))

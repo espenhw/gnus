@@ -35,9 +35,15 @@
     ("image/tiff" mm-inline-image (featurep 'tiff))
     ("image/xbm" mm-inline-image (eq (device-type) 'x))
     ("image/xpm" mm-inline-image (featurep 'xpm))
+    ("image/bmp" mm-inline-image (featurep 'bmp))
     ("text/plain" mm-inline-text t)
     ("text/html" mm-inline-text (featurep 'w3))
-    )
+    ("audio/wav" mm-inline-audio
+     (and (or (featurep 'nas-sound) (featurep 'native-sound))
+	  (device-sound-enabled-p)))
+    ("audio/au" mm-inline-audio
+     (and (or (featurep 'nas-sound) (featurep 'native-sound))
+	  (device-sound-enabled-p))))
   "Alist of media types/test that say whether the media types can be displayed inline.")
 
 (defvar mm-user-display-methods
@@ -53,6 +59,7 @@
 ;;; Internal variables.
 
 (defvar mm-dissection-list nil)
+(defvar mm-last-shell-command "")
 
 (defun mm-dissect-buffer (&optional no-strict-mime)
   "Dissect the current buffer and return a list of MIME handles."
@@ -267,14 +274,58 @@ This overrides entries in the mailcap file."
      ((equal type "plain")
       (let ((b (point)))
 	(insert text)
-	(setcar
-	 (nthcdr 3 handle)
-	 `(lambda ()
-	    (let (buffer-read-only)
-	      (delete-region ,(set-marker (make-marker) b)
-			     ,(set-marker (make-marker) (point)))))))))))
-				    
-    
+	(save-restriction
+	  (narrow-to-region b (point))
+	  (let ((charset (drums-content-type-get (nth 1 handle) 'charset)))
+	    (when charset
+	      (mm-decode-body charset nil)))
+	  (setcar
+	   (nthcdr 3 handle)
+	   `(lambda ()
+	      (let (buffer-read-only)
+		(delete-region ,(set-marker (make-marker) (point-min))
+			       ,(set-marker (make-marker) (point-max)))))))))
+     )))
+
+(defun mm-inline-audio (handle)
+  (message "Not implemented"))
+
+;;;
+;;; Functions for outputting parts
+;;;
+
+(defun mm-save-part (handle)
+  "Write HANDLE to a file."
+  (let* ((name (drums-content-type-get (cadr handle) 'name))
+	 (file (read-file-name "Save MIME part to: "
+			       (expand-file-name
+				(or name "") default-directory))))
+    (mm-with-unibyte-buffer
+      (insert-buffer-substring (car handle))
+      (mm-decode-content-transfer-encoding (nth 2 handle))
+      (when (or (not (file-exists-p file))
+		(yes-or-no-p (format "File %s already exists; overwrite? ")))
+	(write-region (point-min) (point-max) file)))))
+
+(defun mm-pipe-part (handle)
+  "Pipe HANDLE to a process."
+  (let* ((name (drums-content-type-get (cadr handle) 'name))
+	 (command
+	  (read-string "Shell command on MIME part: " mm-last-shell-command)))
+    (mm-with-unibyte-buffer
+      (insert-buffer-substring (car handle))
+      (mm-decode-content-transfer-encoding (nth 2 handle))
+      (shell-command-on-region (point-min) (point-max) command nil))))
+
+(defun mm-interactively-view-part (handle)
+  "Display HANDLE using METHOD."
+  (let* ((type (caadr handle))
+	 (methods
+	  (mapcar (lambda (i) (list (cdr (assoc "viewer" i))))
+		  (mailcap-mime-info type 'all)))
+	 (method (completing-read "Viewer: " methods)))
+    (mm-display-external (copy-sequence handle) method)))
+
 (provide 'mm-decode)
 
 ;; mm-decode.el ends here

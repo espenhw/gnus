@@ -91,6 +91,7 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
        ;; gnus-open-server-hook might have opened it
        (gnus-server-opened gnus-select-method)
        (gnus-open-server gnus-select-method)
+       gnus-batch-mode
        (gnus-y-or-n-p
 	(format
 	 "%s (%s) open error: '%s'.  Continue? "

@@ -763,6 +763,7 @@ which it may alter in any way.")
 
 ;;; Internal variables
 
+(defvar gnus-article-mime-handles nil)
 (defvar gnus-scores-exclude-files nil)
 (defvar gnus-page-broken nil)
 
@@ -4521,10 +4522,9 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 				     number dependencies force-new))))
 		   (push header headers))
 	      (forward-line 1))
-	  ;(error
-	  ; (gnus-error 4 "Strange nov line (%d)"
-	;	       (count-lines (point-min) (point))))
-	  )
+	  (error
+	   (gnus-error 4 "Strange nov line (%d)"
+		       (count-lines (point-min) (point)))))
 	(forward-line 1))
       ;; A common bug in inn is that if you have posted an article and
       ;; then retrieves the active file, it will answer correctly --

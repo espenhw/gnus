@@ -291,7 +291,7 @@
 
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string."
-  (format-time-string "%2d-%b" (safe-date-to-time messy-date)))
+  (format-time-string "%d-%b" (safe-date-to-time messy-date)))
 
 (defmacro gnus-date-get-time (date)
   "Convert DATE string to Emacs time.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.25 Manual
+@settitle Pterodactyl Gnus 0.26 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.25 Manual
+@title Pterodactyl Gnus 0.26 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.25.
+This manual corresponds to Pterodactyl Gnus 0.26.
 
 @end ifinfo
 
@@ -5501,7 +5501,7 @@ files.
 
 @vindex gnus-default-article-saver
 You can customize the @code{gnus-default-article-saver} variable to make
-Gnus do what you want it to.  You can use any of the four ready-made
+Gnus do what you want it to.  You can use any of the six ready-made
 functions below, or you can create your own.
 
 @table @code
@@ -12037,16 +12037,16 @@ Agent (@code{gnus-agent-remove-server}).
 @node Agent Expiry
 @subsection Agent Expiry
 
-@vindex gnus-agent-expiry-days
-@findex gnus-agent-expiry
-@kindex M-x gnus-agent-expiry
+@vindex gnus-agent-expire-days
+@findex gnus-agent-expire
+@kindex M-x gnus-agent-expire
 @cindex Agent expiry
 @cindex Gnus Agent expiry
 @cindex expiry
 
 @code{nnagent} doesn't handle expiry.  Instead, there's a special
-@code{gnus-agent-expiry} command that will expire all read articles that
-are older than @code{gnus-agent-expiry-days} days.  It can be run
+@code{gnus-agent-expire} command that will expire all read articles that
+are older than @code{gnus-agent-expire-days} days.  It can be run
 whenever you feel that you're running out of space.  It's not
 particularly fast or efficient, and it's not a particularly good idea to
 interrupt it (with @kbd{C-g} or anything else) once you've started it.
@@ -12464,7 +12464,7 @@ You can do scoring from the command line by saying something like:
 @findex gnus-batch-score
 @cindex batch scoring
 @example
-$ emacs -batch -l ~/.emacs -l gnus -f gnus-batch-score
+$ emacs -batch -l ~/.emacs -l ~/.gnus.el -f gnus-batch-score
 @end example
 
 

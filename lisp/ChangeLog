@@ -1,3 +1,49 @@
+Fri Sep 11 12:32:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.26 is released.
+
+1998-09-11 08:25:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-interactively-view-part): New function.
+
+	* gnus-art.el (gnus-mime-view-part): New command.
+
+	* mm-decode.el (mm-last-shell-command): New variable.
+
+	* mailcap.el (mailcap-mime-info): Allow returning all matches. 
+
+	* mm-decode.el (mm-save-part): New function.
+
+	* gnus-art.el (article-decode-charset): Protect against buggy
+	content-types. 
+	(gnus-mime-pipe-part): New command.
+	(gnus-mime-save-part): New command.
+	(gnus-mime-button-map): New keymap.
+	(gnus-mime-button-line-format): New variable.
+	(gnus-insert-mime-button): New function.
+	(gnus-display-mime): Use it.
+
+	* gnus-util.el (gnus-dd-mmm): Removed length spec.
+
+	* mm-decode.el (mm-inline-text): Decode charsets.
+
+	* gnus-art.el (gnus-article-save): Comment fix.
+
+	* gnus-int.el (gnus-start-news-server): When in batch, don't
+	prompt. 
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Don't
+	decode. 
+
+	* mm-decode.el (mm-inline-media-tests): Add audio.
+	(mm-inline-audio): New function.
+
+1998-09-11 08:19:22  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* gnus-art.el (article-make-date-line): Didn't work.
+
+	* parse-time.el (parse-time-string): One too many nils.
+
 Fri Sep 11 08:09:40 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.25 is released.

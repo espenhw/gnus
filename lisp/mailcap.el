@@ -602,16 +602,16 @@ If FORCE, re-parse even if already parsed."
      (t nil))))
 
 (defun mailcap-mime-info (string &optional request)
-  "Get the mime viewer command for HEADERLINE, return nil if none found.
-Expects a complete content-type header line as its argument.  This can
-be simple like text/html, or complex like text/plain; charset=blah; foo=bar
+  "Get the MIME viewer command for STRING, return nil if none found.
+Expects a complete content-type header line as its argument. 
 
 Second argument REQUEST specifies what information to return.  If it is
 nil or the empty string, the viewer (second field of the mailcap
 entry) will be returned.  If it is a string, then the mailcap field
 corresponding to that string will be returned (print, description,
 whatever).  If a number, then all the information for this specific
-viewer is returned."
+viewer is returned.  If `all', then all possible viewers for
+this type is returned."
   (let (
 	major				; Major encoding (text, etc)
 	minor				; Minor encoding (html, etc)
@@ -652,6 +652,8 @@ viewer is returned."
 	(if (or (string= request "test") (string= request "viewer"))
 	    (mailcap-unescape-mime-test
 	     (cdr-safe (assoc request viewer)) info)))
+       ((eq request 'all)
+	passed)
        (t
 	;; MUST make a copy *sigh*, else we modify mailcap-mime-data
 	(setq viewer (copy-tree viewer))
