@@ -480,7 +480,16 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
     (if (and n (not (numberp n)))
 	(setq message-forward-as-mime (not message-forward-as-mime)
 	      n nil))
-    (let ((gnus-article-reply (gnus-summary-work-articles n)))
+    (let ((gnus-article-reply (gnus-summary-work-articles n))
+	  gnus-newsgroup-processable)
+      (when (and (not n)
+		 (= (length gnus-article-reply) 1))
+	;; The case where neither a number of articles nor a region is
+	;; specified.
+	(gnus-summary-top-thread)
+	(setq gnus-article-reply (gnus-uu-get-list-of-articles nil)))
+      ;; Specify articles to be forwarded.
+      (setq gnus-newsgroup-processable (copy-sequence gnus-article-reply))
       (gnus-setup-message 'forward
 	(setq gnus-uu-digest-from-subject nil)
 	(setq gnus-uu-digest-buffer

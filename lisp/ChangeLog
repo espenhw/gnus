@@ -1,3 +1,9 @@
+2004-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Obey the process/prefix
+	convention fully; don't miss the root article of a thread; make
+	the X-Draft-From header with correct article numbers.
+
 2004-09-23  Kevin Greiner  <kgreiner@compsol.cc>
 
 	* gnus-agent.el (gnus-agent-synchronize-flags-server): Do nothing
