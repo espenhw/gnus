@@ -587,7 +587,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
     ;; We should be paranoid here and make sure the group is in the alist,
     ;; and add it if it isn't.
     ;;(if (not (assoc nnfoler-current-group nnfolder-group-alist)
-    (set-buffer (setq nnfolder-current-buffer (find-file-noselect file)))
+    (set-buffer (setq nnfolder-current-buffer 
+		      (nnheader-find-file-noselect file)))
     (buffer-disable-undo (current-buffer))
     (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	  (marker (concat "\n" nnfolder-article-marker))

@@ -356,7 +356,7 @@ instead call function `nntp-status-message' to get status message.")
 	  (if (member server nntp-timeout-servers)
 	      nil
 	    (run-hooks 'nntp-prepare-server-hook)
-	    (nntp-open-server-semi-internal nntp-address))))))
+	    (nntp-open-server-semi-internal nntp-address nntp-port-number))))))
 
 (defun nntp-close-server (&optional server)
   "Close connection to SERVER."
@@ -510,7 +510,8 @@ instead call function `nntp-status-message' to get status message.")
    (if (not (or (nntp-async-server-opened)
 		(nntp-async-open-server)))
        (progn
-	 (message "Can't open second connection to %s" nntp-current-server)
+	 (message "Can't open second connection to %s" nntp-address)
+;	 (debug)
 	 (ding)
 	 (setq nntp-async-articles nil)
 	 (sit-for 2))
@@ -873,7 +874,8 @@ It will prompt for a password."
 
    ;; We don't care about gaps.
    ((not nntp-nov-gap)
-    (nntp-send-xover-command (car sequence) (nntp-last-element sequence)))
+    (nntp-send-xover-command (car sequence) (nntp-last-element sequence)
+			     'wait))
 
    ;; We do it the hard way.  For each gap, an XOVER command is sent
    ;; to the server.  We do not wait for a reply from the server, we
@@ -937,14 +939,17 @@ It will prompt for a password."
 
       nntp-server-xover))))
 
-(defun nntp-send-xover-command (beg end)
+(defun nntp-send-xover-command (beg end &optional wait-for-reply)
   (let ((range (format "%d-%d" beg end)))
     (if (stringp nntp-server-xover)
 	;; If `nntp-server-xover' is a string, then we just send this
-	;; command. We do not wait for the reply.
-	(progn
-	  (nntp-send-strings-to-server nntp-server-xover range)
-	  t)
+	;; command.
+	(if wait-for-reply
+	    (nntp-send-command "^\\.\r?\n" nntp-server-xover range)
+	  ;; We do not wait for the reply.
+	  (progn
+	    (nntp-send-strings-to-server nntp-server-xover range)
+	    t))
       (let ((commands nntp-xover-commands))
 	;; `nntp-xover-commands' is a list of possible XOVER commands.
 	;; We try them all until we get at positive response. 
@@ -1075,8 +1080,11 @@ If SERVICE, this this as the port number."
 	    (run-hooks 'nntp-server-hook)
 	    nntp-server-process)))))
 
+(defvar nntp-dum-num 5)
+
 (defun nntp-open-network-stream (server)
-  (open-network-stream "nntpd" nntp-server-buffer server nntp-port-number))
+  (open-network-stream 
+   "nntpd" nntp-server-buffer server nntp-port-number))
 
 (defun nntp-open-rlogin (server)
   (let ((proc (start-process "nntpd" nntp-server-buffer "rsh" server)))

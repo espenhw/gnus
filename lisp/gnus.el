@@ -1308,7 +1308,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.3"
+(defconst gnus-version "(ding) Gnus v0.99.4"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2551,13 +2551,16 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 		 (delete-window (get-buffer-window buf)))))
 	(setq buffers (cdr buffers)))
       ;; Remove windows on *all* summary buffers.
-      (let ((buffers (buffer-list)))
-	(while buffers
-	  (if (and (string-match 
-		    "^\\*Summary" (or (buffer-name (car buffers)) ""))
-		   (get-buffer-window (car buffers)))
-	      (delete-window (get-buffer-window (car buffers))))
-	  (setq buffers (cdr buffers)))))))
+      (walk-windows
+       (lambda (win)
+	 (let ((buf (window-buffer win)))
+	   (if (string-match  "^\\*Summary" (buffer-name buf))
+	       (if first
+		   (progn
+		     (select-window win)
+		     (switch-to-buffer nntp-server-buffer)
+		     (setq first nil))
+		 (delete-window win)))))))))
 			  
 (defun gnus-version ()
   "Version numbers of this version of Gnus."
@@ -3166,6 +3169,11 @@ prompt the user for the name of an NNTP server to use."
 	    (gnus-group-quit)
 	  (run-hooks 'gnus-startup-hook)
 	  ;; NNTP server is successfully open. 
+
+	  ;; Find the current startup file name.
+	  (setq gnus-current-startup-file 
+		(gnus-make-newsrc-file gnus-startup-file))
+
 	  ;; Read the dribble file.
 	  (and gnus-use-dribble-file (gnus-dribble-read-file))
 
@@ -6452,17 +6460,17 @@ If READ-ALL is non-nil, all articles in the group are selected."
 		  (gnus-get-newsgroup-headers-xover articles))
 	      ;; If we were to fetch old headers, but the backend didn't
 	      ;; support XOVER, then it is possible we fetched one article
-	      ;; that we shouldn't have. If that's the case, we pop it off the
-	      ;; list of headers.
+	      ;; that we shouldn't have. If that's the case, we remove it.
 	      (if (not gnus-fetch-old-headers)
 		  ()
 		(save-excursion
 		  (set-buffer nntp-server-buffer)
 		  (goto-char (point-min))
-		  (and (looking-at "[0-9]+[ \t]+1[ \t]")
-		       (delete-region 
-			(point) 
-			(search-forward "\n.\n" nil t)))))
+		  (and 
+		   (looking-at "[0-9]+[ \t]+1[ \t]") ; This is not a NOV line.
+		   (delete-region	; So we delete this head.
+		    (point) 
+		    (search-forward "\n.\n" nil t)))))
 	      (gnus-get-newsgroup-headers)))
       (gnus-message 5 "Fetching headers...done")      
       ;; Remove canceled articles from the list of unread articles.
@@ -10846,6 +10854,8 @@ or not."
 	     (insert (hexl-hex-string-to-integer
 		      (buffer-substring (point) (+ 2 (point)))))
 	     (delete-char 2))
+	    ((looking-at "=")
+	     (delete-char 1))
 	    ((gnus-message 3 "Malformed MIME quoted-printable message"))))))
 
 (defvar gnus-article-time-units
@@ -12653,7 +12663,6 @@ Returns whether the updating was successful."
 (defun gnus-read-newsrc-file (&optional force)
   "Read startup file.
 If FORCE is non-nil, the .newsrc file is read."
-  (setq gnus-current-startup-file (gnus-make-newsrc-file gnus-startup-file))
   ;; Reset variables that might be defined in the .newsrc.eld file.
   (let ((variables gnus-variable-list))
     (while variables

@@ -1,4 +1,32 @@
+Fri Aug  4 00:08:59 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+
+	* nnheader.el (nnheader-find-file-noselect): New function.
+	* nnfolder.el (nnfolder-read-folder): Use it.
+	* nnmbox.el (nnmbox-possibly-change-newsgroup): Ditto.
+
+	* gnus-msg.el (gnus-inews-check-post): Use y-or-n instead of
+	yes-or-no. 
+
+	* nntp.el (nntp-open-server): Didn't use port number when opening.
+	
+	* gnus.el (gnus): Set the name of the current startup file here.
+
+Thu Aug  3 22:15:06 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+
+	* gnus.el (gnus-remove-some-windows): Didn't delete all summary
+	windows. 
+
+	* nntp.el (nntp-send-xover-command): Wait for reply.
+	(nntp-retrieve-headers-with-xover): Would not do anything useful
+	if nntp-nov-gap was nil.
+
+Thu Aug  3 21:48:51 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-msg.el (gnus-debug): Don't quote non-lists. 
+
 Wed Aug  2 15:08:10 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
+
+	* gnus.el: 0.99.3 is released.
 
 	* gnus.el (gnus): Don't read the dribble file that early after
 	all. 

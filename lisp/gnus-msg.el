@@ -769,7 +769,7 @@ will attempt to use the foreign server to post the article."
 	 (or (gnus-check-before-posting 'sendsys)
 	     (save-excursion
 	       (if (re-search-forward "^Sendsys:\\|^Version:" nil t)
-		   (gnus-yes-or-no-p
+		   (gnus-y-or-n-p
 		    (format "The article contains a %s command. Really post? "
 			    (buffer-substring (match-beginning 0) 
 					      (1- (match-end 0)))))
@@ -782,7 +782,7 @@ will attempt to use the foreign server to post the article."
 		 (or (not message-id)
 		     (and (string-match "@" message-id)
 			  (string-match "@[^\\.]*\\." message-id))
-		     (gnus-yes-or-no-p
+		     (gnus-y-or-n-p
 		      (format 
 		       "The Message-ID looks strange: \"%s\". Really post? "
 		       message-id))))))
@@ -793,13 +793,13 @@ will attempt to use the foreign server to post the article."
 		      (from (mail-fetch-field "from")))
 		 (cond
 		  ((not from)
-		   (gnus-yes-or-no-p "There is no From line. Really post? "))
+		   (gnus-y-or-n-p "There is no From line. Really post? "))
 		  ((not (string-match "@[^\\.]*\\." from))
-		   (gnus-yes-or-no-p
+		   (gnus-y-or-n-p
 		    (format 
 		     "The address looks strange: \"%s\". Really post? " from)))
 		  ((string-match "(.*).*(.*)" from)
-		   (gnus-yes-or-no-p
+		   (gnus-y-or-n-p
 		    (format
 		     "The From header looks strange: \"%s\". Really post? " 
 		     from)))
@@ -818,7 +818,7 @@ will attempt to use the foreign server to post the article."
 		  (zerop (forward-line 1))))
 	  (or (bolp)
 	      (eobp)
-	      (gnus-yes-or-no-p
+	      (gnus-y-or-n-p
 	       (format
 		"You have lines longer than 79 characters.  Really post? ")))))
     ;; Check for control characters.
@@ -841,7 +841,7 @@ will attempt to use the foreign server to post the article."
      (gnus-check-before-posting 'new-text)
      (if (and (= (buffer-size) (car gnus-article-check-size))
 	      (= (gnus-article-checksum) (cdr gnus-article-check-size)))
-	 (gnus-yes-or-no-p
+	 (gnus-y-or-n-p
 	  "It looks like there's no new text in your article. Really post? ")
        t))
     ;; Check the length of the signature.
@@ -1738,7 +1738,10 @@ The source file has to be in the Emacs load path."
     (insert "------------------- Environment follows -------------------\n\n")
     (while olist
       (if (boundp (car olist))
-	  (insert "(setq " (symbol-name (car olist)) " '" 
+	  (insert "(setq " (symbol-name (car olist)) 
+		  (if (or (consp (symbol-value (car olist)))
+			  (symbolp (symbol-value (car olist))))
+		      " '" " ")
 		  (prin1-to-string (symbol-value (car olist))) ")\n")
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))

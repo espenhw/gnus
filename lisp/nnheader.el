@@ -206,6 +206,17 @@
 	(eobp)
       (widen))))    
 
+(defun nnheader-find-file-noselect (file)
+  "Basically does the same as `find-file-noselect', but avoids that function."
+  (save-excursion
+    (or
+     (get-file-buffer file)
+     (prog1
+	 (get-buffer-create (create-file-buffer file))
+       (and (file-exists-p file)
+	    (not (file-directory-p file))
+	    (insert-file-contents file))))))
+
 (provide 'nnheader)
 
 ;;; nnheader.el ends here

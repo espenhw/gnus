@@ -371,7 +371,7 @@
 	  (not (buffer-name nnmbox-mbox-buffer)))
       (save-excursion
 	(set-buffer (setq nnmbox-mbox-buffer 
-			  (find-file-noselect nnmbox-mbox-file)))
+			  (nnheader-find-file-noselect nnmbox-mbox-file)))
 	(buffer-disable-undo (current-buffer))))
   (if (not nnmbox-group-alist)
       (nnmail-activate 'nnmbox))
@@ -433,7 +433,7 @@
       (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	    start end)
 	(set-buffer (setq nnmbox-mbox-buffer 
-			  (find-file-noselect nnmbox-mbox-file)))
+			  (nnheader-find-file-noselect nnmbox-mbox-file)))
 	(buffer-disable-undo (current-buffer))
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)
