@@ -565,16 +565,24 @@ charset, and a longer list means no appropriate charset."
 		     ;; `compound-text' is not in the IANA list.  We
 		     ;; shouldn't normally use anything here with a
 		     ;; mime-charset having an `x-' prefix.
-		     ;; Fixme:  allow this to be overridden, since
+		     ;; Fixme:  Allow this to be overridden, since
 		     ;; there is existing use of x-ctext.
 		     ;; Also people apparently need the coding system
-		     ;; `iso-2022-jp-3', which Mule-UCS defines.
+		     ;; `iso-2022-jp-3' (which Mule-UCS defines with
+		     ;; mime-charset, though it's not valid).
 		     (if (and cs
-			      (not (string-match "^[Xx]-" (symbol-name cs))))
+			      (not (string-match "^[Xx]-" (symbol-name cs)))
+			      ;; UTF-16 of any variety is invalid for
+			      ;; text parts and, unfortunately, has
+			      ;; mime-charset defined both in Mule-UCS
+			      ;; and versions of Emacs.  (The name
+			      ;; might be `mule-utf-16...'  or
+			      ;; `utf-16...'.)
+			      (not (string-match "utf-16" (symbol-name cs))))
 			 (setq systems nil
 			       charsets (list cs))))))
 	       charsets))
-	;; Otherwise we're not multibyte, we're XEmacs or a single
+	;; Otherwise we're not multibyte, we're XEmacs, or a single
 	;; coding system won't cover it.
 	(setq charsets
 	      (mm-delete-duplicates
