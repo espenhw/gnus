@@ -1,5 +1,11 @@
 2002-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* lpath.el: Fbind bbdb-records.
+
+	* spam.el: Don't autoload bbdb-records.
+
+2002-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* spam.el: Set autoload for bbdb-records after loading bbdb-com to
 	prevent inf-loop.
 

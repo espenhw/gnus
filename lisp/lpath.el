@@ -14,7 +14,7 @@
 (maybe-fbind '(babel-fetch
 	       babel-wash create-image decode-coding-string display-graphic-p
 	       replace-regexp-in-string
-	       bbdb-complete-name
+	       bbdb-complete-name bbdb-records
 	       display-time-event-handler
 	       find-image font-create-object gnus-mule-get-coding-system
 	       font-lock-set-defaults

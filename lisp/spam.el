@@ -45,10 +45,6 @@
       (require 'bbdb-com)
     (file-error (defalias 'bbdb-search 'ignore))))
 
-;; This should be evaluated after loading bbdb-com to prevent inf-loop
-(eval-and-compile
-  (autoload 'bbdb-records "bbdb-com"))
-
 ;; autoload executable-find
 (eval-and-compile
   ;; executable-find is not autoloaded in Emacs 20
