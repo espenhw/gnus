@@ -1,3 +1,7 @@
+2003-05-10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-logo-color-alist): Added no colours.
+
 2003-05-09  Dave Love  <fx@gnu.org>
 
 	* utf7.el (mm-util): Require.
