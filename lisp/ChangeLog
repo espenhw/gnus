@@ -1,3 +1,8 @@
+2003-04-01  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-art.el (gnus-button-ctan-directory-regexp): New variable.
+	(gnus-button-alist): Use it.  Changed CTAN and "setq" entries.
+
 2003-04-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nntp.el (nntp-via-rlogin-command-switches): Doc fix.
@@ -77,7 +82,7 @@
 2003-03-28  Vasily Korytov  <deskpot@myrealbox.com>
 
 	* message.el (message-make-in-reply-to): Use
-	mail-extract-address-components to dentermine sender's
+	mail-extract-address-components to determine sender's
 	name/address.
 
 2003-03-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>

@@ -5602,6 +5602,21 @@ The function must take one argument, the string naming the URL."
   :type '(choice (const "^/?tex-archive/\\|/")
 		 (regexp :tag "Other")))
 
+(defcustom gnus-button-ctan-directory-regexp
+  (concat
+   "\\b\\(\\("
+   "biblio\\|digests\\|dviware\\|fonts\\|graphics\\|help\\|"
+   "indexing\\|info\\|language\\|macros\\|support\\|systems\\|"
+   "tds\\|tools\\|usergrps\\|web\\|nonfree\\|obsolete"
+   "\\)"
+   ;; Require at least one subdirectory to avoid false positives.
+   "/[-a-z0-9]+/[/-a-z0-9]+\\)")
+  "Regular expression that matches ctan directories.
+The first regexp group has to match the directory relative to
+`gnus-ctan-url'."
+  :group 'gnus-article-buttons
+  :type 'regexp)
+
 (defcustom gnus-button-mid-or-mail-regexp
   (concat "\\b\\(<?[a-z0-9][^<>\")!;:,{}\n\t ]*@"
 	  gnus-button-valid-fqdn-regexp
@@ -5922,8 +5937,12 @@ positives are possible."
     ("\\bmailto:\\([^ \n\t]+\\)"
      0 (>= gnus-button-message-level 0) gnus-url-mailto 1)
     ;; CTAN
-    ("\\bCTAN:[ \t\n]*\\([^>)!;:,\n\t ]*\\)"
+    ("\\bCTAN:[ \t\n]*\\([^>)!;:,'\n\t ]*\\)"
      0 (>= gnus-button-tex-level 1) gnus-button-handle-ctan 1)
+    ("\\btex-archive/\\([-/a-z0-9]+\\)"
+     1 (>= gnus-button-tex-level 7) gnus-button-handle-ctan 1)
+    (gnus-button-ctan-directory-regexp
+     1 (>= gnus-button-tex-level 9) gnus-button-handle-ctan 1)
     ;; This is info
     ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 2)
@@ -5957,12 +5976,12 @@ positives are possible."
      0 (>= gnus-button-emacs-level 8) gnus-button-handle-symbol 1)
     ("`\\([a-z]+-[a-z]+\\)'"
      0 (>= gnus-button-emacs-level 9) gnus-button-handle-symbol 1)
+    ("(setq[ \t\n]+\\([a-z][a-z0-9]+-[-a-z0-9]+\\)[ \t\n]+.+)"
+     1 (>= gnus-button-emacs-level 7) gnus-button-handle-describe-variable 1)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+f[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+v[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 2)
-    ("[ \t\n(]setq[ \t\n]+\\([^ \t\n]+\\)[ \t\n)]+"
-     1 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 1)
     ("`\\(\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^']+\\)\\)'"
      ;; Unlike the other regexps we really have to require quoting
      ;; here to determine where it ends.
