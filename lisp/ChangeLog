@@ -1,4 +1,83 @@
-Thu Jun 15 03:34:23 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+Sat Jun 17 02:38:33 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnkiboze.el (nnkiboze-close-group): Don't bug out on missing nov
+	files. 
+
+	* gnus-cache.el (gnus-cache-possibly-remove-articles): Wait until
+	exit to remove articles from the cache. 
+
+	* gnus.el (gnus-summary-next-group): Go to the next group, or exit
+	if no articles. 
+	(gnus-summary-search-article-forward): Cleaned up. 
+	(gnus-summary-search-article-backward): New implementation. 
+
+	* gnus-uu.el (gnus-uu-decode-with-method): Make sure the dir name
+	is a directory. 
+
+	* gnus.el (gnus-summary-mode-map): Add binding for gnus-bug. 
+	(gnus-article-mode-map): Ditto. 
+	(gnus-browse-mode-map): Ditto.
+
+	* nnmh.el (nnmh-request-expire-articles): Possibly keep last
+	article; and return the right `rest' undeleted list. 
+
+	* gnus.el (gnus-summary-mark-article): Don't auto-expire ancient
+	articles. 
+
+	* nnbabyl.el (nnbabyl-request-expire-articles): Would infloop. 
+
+	* gnus.el (gnus-summary-mark-article): Would possibly enter a nil
+	into the lists of articles. 
+
+Fri Jun 16 01:51:01 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nneething.el (nneething-get-head): Returned nil. 
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Make doubly
+	sure that point as at the start of the line. 
+
+	* gnus-score.el (gnus-summary-score-entry): Matches on lines were
+	entered with strings, leading to later bugouts. 
+
+	* nntp.el (nntp-request-asynchronous): Error message slightly
+	off. 
+
+	* gnus.el (gnus-summary-verbose-header): New command and keystroke
+	for POG compatability. 
+	(gnus-article-hide-headers-if-wanted): Fix to the same. 
+
+	* gnus-score.el (gnus-score-edit-alist): Use it new config.  
+
+	* gnus.el (gnus-summary-refer-parent-article): Give a more
+	unabiguous error message. 
+	(gnus-summary-refer-article): Save the article buffer before
+	trying to refer some other. 
+	(gnus-summary-refer-article): Don't blank out the old article
+	buffer. 
+	(gnus-buffer-configuration): New entry for summary-edit-score. 
+
+	* gnus-mh.el (gnus-mail-reply-using-mhe): Set mail-bug to wrong
+	thing. 
+
+	* gnus.el (gnus-article-word-wrap): Let adaptive-fill-regexp be
+	somewhat more permissive.
+	(gnus-summary-first-subject): Did not go to the first article. 
+
+Thu Jun 15 21:31:38 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-setup-news): Read active file from secondary
+	servers even if native is down. 
+	(gnus-get-unread-articles): Didn't display unread articles when
+	started on a low level. 
+	(gnus-get-unread-articles): More efficient implementation.
+
+Thu Jun 15 05:28:03 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus-score.el (gnus-score-save): Delete empty score files. 
+
+Thu Jun 15 03:34:23 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 0.86 is released.
 
 	* gnus.el (gnus-summary-refer-article): Recenter after fetching. 
 
@@ -55,6 +134,8 @@ Sat Jun 10 00:15:13 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 	(gnus-summary-next-group): Would bug out when all articles were
 	expinged from scoring. 
 	(gnus-simplify-subject-fuzzy): Totally bugged out. 
+
+	* gnus.el: 0.85 is released.
 
 Thu Jun  8 22:27:07 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
 

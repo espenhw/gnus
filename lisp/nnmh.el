@@ -245,30 +245,35 @@
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
+	 (active-articles 
+	  (mapcar
+	   (function
+	    (lambda (name)
+	      (string-to-int name)))
+	   (directory-files nnmh-current-directory nil "^[0-9]+$" t)))
+	 (max-article (and active-articles (apply 'max active-articles)))
 	 article rest mod-time)
-    (if nnmail-keep-last-article
-	(progn
-	  (setq articles (sort articles '>))
-	  (setq rest (cons (car articles) rest))
-	  (setq articles (cdr articles))))
     (while articles
-      (setq article (concat nnmh-current-directory (int-to-string
-						    (car articles))))
+      (setq article (concat nnmh-current-directory 
+			    (int-to-string (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
-	  (and (or force
-		   (> (nnmail-days-between
-		       (current-time-string)
-		       (current-time-string mod-time))
-		      days))
-	       (progn
-		 (message "Deleting %s..." article)
-		 (condition-case ()
-		     (progn
-		       (delete-file article)
-		       t)
-		   (file-error nil)))
-	       (setq rest (cons (car articles) rest))))
+	  (if (and (or (not nnmail-keep-last-article)
+		       (not max-article)
+		       (not (= (car articles) max-article)))
+		   (or force
+		       (> (nnmail-days-between
+			   (current-time-string)
+			   (current-time-string mod-time))
+			  days)))
+	      (progn
+		(and gnus-verbose-backends (message "Deleting %s..." article))
+		(condition-case ()
+		    (delete-file article)
+		  (file-error
+		   (setq rest (cons (car articles) rest)))))
+	    (setq rest (cons (car articles) rest))))
       (setq articles (cdr articles)))
+    (message "")
     rest))
 
 (defun nnmh-close-group (group &optional server)

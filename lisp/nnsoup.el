@@ -190,9 +190,11 @@ The SOUP packet file name will be inserted at the %s.")
 	    (nnheader-restore-variables (nth 1 state))
 	    (setq nnsoup-server-alist (delq state nnsoup-server-alist)))
 	(nnheader-set-init-variables nnsoup-server-variables defs)))
-    (setq nnsoup-current-server server)))
+    (setq nnsoup-current-server server))
+  (nnsoup-read-active-file))
 
 (defun nnsoup-request-close ()
+  (nnsoup-write-active-file)
   (nnsoup-write-replies)
   (while nnsoup-buffers
     (and (car nnsoup-buffers)
@@ -202,7 +204,8 @@ The SOUP packet file name will be inserted at the %s.")
   (setq nnsoup-group-alist nil
 	nnsoup-current-group nil
 	nnsoup-current-server nil
-	nnsoup-server-alist nil)
+	nnsoup-server-alist nil
+	nnsoup-replies-list nil)
   t)
 
 (defun nnsoup-close-server (&optional server)

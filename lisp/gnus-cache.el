@@ -128,6 +128,7 @@
 			(forward-line 1)))
 		(beginning-of-line))
 	    (forward-line 1))
+	  (beginning-of-line)
 	  ;; [number subject from date id references chars lines xref]
 	  (insert (format "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n"
 			  (header-number headers)
@@ -140,6 +141,25 @@
 			  (or (header-lines headers) "")
 			  (or (header-xref headers) ""))))
 	t))))
+
+(defvar gnus-cache-remove-articles nil)
+
+(defun gnus-cache-enter-remove-article (article)
+  (setq gnus-cache-remove-articles
+	(cons article gnus-cache-remove-articles)))
+
+(defun gnus-cache-possibly-remove-articles ()
+  (let ((articles gnus-cache-remove-articles)
+	article)
+    (while articles
+      (setq article (car articles)
+	    articles (cdr articles))
+      (gnus-cache-possibly-remove-article
+       gnus-newsgroup-name article 
+       (memq article gnus-newsgroup-marked)
+       (memq article gnus-newsgroup-dormant)
+       (or (memq article gnus-newsgroup-unreads)
+	   (memq article gnus-newsgroup-unselected))))))
 
 (defun gnus-cache-possibly-remove-article 
   (group article ticked dormant unread)

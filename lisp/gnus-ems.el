@@ -51,7 +51,7 @@
     (or (fboundp 'set-text-properties)
 	(defun set-text-properties (start end props &optional buffer)
 	  (if props
-	      (put-text-property start end (car props) (cadr props) buffer)
+	      (put-text-property start end (car props) (cdr props) buffer)
 	    (remove-text-properties start end ()))))
     
     (or (fboundp 'make-overlay) (fset 'make-overlay 'make-extent))
@@ -134,22 +134,7 @@
     (fset 'gnus-set-mouse-face (lambda (string) string))
 
     (defun gnus-summary-make-display-table ()
-      ;; We start from the standard display table, if any.
-      (let* ((table (window-display-table)))
-	(and (not table)
-	     (setq table (make-vector 261 ())))
-	;; Nix out all the control chars...
-	(let ((i 32))
-	  (while (>= (setq i (1- i)) 0)
-	    (aset table i [??])))
-	;; ... but not newline, of course.
-	(aset table ?\n nil)
-	;; We nix out any glyphs over 126 that are not set already.  
-	(let ((i 256))
-	  (while (>= (setq i (1- i)) 127)
-	    (or (aref table i)
-		(aset table i [??]))))
-	(set-window-display-table (get-buffer-window (current-buffer)) table)))
+      )
 
     (defun gnus-highlight-selected-summary ()
       ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.

@@ -102,7 +102,9 @@ The file(s) in `nnmail-spool-file' will also be read.")
 The Gnus mail backends will read the mail from this directory.")
 
 (defvar nnmail-procmail-suffix ".spool"
-  "*Suffix of files created by procmail (and the like).")
+  "*Suffix of files created by procmail (and the like).
+This variable might be a suffix-regexp to match the suffixes of
+several files - eg. \".spool[0-9]*\".")
 
 (defvar nnmail-resplit-incoming nil
   "*If non-nil, re-split incoming procmail sorted mail.")

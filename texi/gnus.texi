@@ -1,4 +1,4 @@
-x      \input texinfo                  @c -*-texinfo-*-
+\input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
 @setfilename gnus
 @settitle (ding) Gnus 0.84 Manual
@@ -4491,6 +4491,20 @@ names will not be used for score files, if it contains the element
 @code{not-save}, long file names will not be used for saving, and if it
 contains the element @code{not-kill}, long file names will not be used
 for kill files.
+
+If you'd like to save articles in a hierarchy that looks something like
+a spool, you could
+
+@lisp
+(setq gnus-use-long-file-name '(not-save)) ; to get a hierarchy
+(setq gnus-default-article-save 'gnus-summary-save-in-file) ; no encoding
+@end lisp
+
+Then just save with @kbd{o}. You'd then read this hierarchy with
+ephemeral @code{nneething} groups - @kbd{G D} in the group buffer, and
+the toplevel directory as the argument (@file{~/News/}). Then just walk
+around to the groups/directories with @code{nneething}.
+
 
 @node Decoding Articles
 @section Decoding Articles

@@ -1040,15 +1040,18 @@ Headers in `gnus-required-headers' will be generated."
 		      ;; so we just ask the user.
 		      (read-from-minibuffer
 		       (format "Empty header for %s; enter value: " header))))
-	    ;; Add the deletable property to the headers that require it. 
-	    (and (memq header gnus-deletable-headers)
-		 (add-text-properties 
-		  0 (length value) '(gnus-deletable t) value))
 	    ;; Finally insert the header.
 	    (if (bolp)
 		(save-excursion
 		  (goto-char (point-max))
-		  (insert (symbol-name header) ": " value "\n"))
+		  (insert (symbol-name header) ": ")
+		  ;; Add the deletable property to the headers that require it.
+		  (if (memq header gnus-deletable-headers)
+		      (add-text-properties 
+		       (point) (progn (insert value) (point))
+		       '(gnus-deletable t) (current-buffer))
+		    (insert value))
+		  (insert "\n"))
 	      (replace-match value t t))))
       (setq headers (cdr headers)))))
 

@@ -323,9 +323,10 @@ The headers will be included in the sequence they are matched.")
   "Decodes and saves the resulting file."
   (interactive
    (list current-prefix-arg
-	 (read-file-name "Uudecode and save in dir: "
-			 gnus-uu-default-dir
-			 gnus-uu-default-dir t)))
+	 (file-name-as-directory
+	  (read-file-name "Uudecode and save in dir: "
+			  gnus-uu-default-dir
+			  gnus-uu-default-dir t))))
   (gnus-uu-decode-with-method 'gnus-uu-uustrip-article n dir))
 
 (defun gnus-uu-decode-unshar (n)
@@ -337,9 +338,10 @@ The headers will be included in the sequence they are matched.")
   "Unshars and saves the current article."
   (interactive
    (list current-prefix-arg
-	 (read-file-name "Unshar and save in dir: "
-			 gnus-uu-default-dir
-			 gnus-uu-default-dir t)))
+	 (file-name-as-directory
+	  (read-file-name "Unshar and save in dir: "
+			  gnus-uu-default-dir
+			  gnus-uu-default-dir t))))
   (gnus-uu-decode-with-method 'gnus-uu-unshar-article n dir nil 'scan))
 
 (defun gnus-uu-decode-save (n file)
@@ -361,9 +363,10 @@ The headers will be included in the sequence they are matched.")
   "Unbinhexes the current article."
   (interactive
    (list current-prefix-arg
-	 (read-file-name "Unbinhex and save in dir: "
-			 gnus-uu-default-dir
-			 gnus-uu-default-dir t)))
+	 (file-name-as-directory
+	  (read-file-name "Unbinhex and save in dir: "
+			  gnus-uu-default-dir
+			  gnus-uu-default-dir t))))
   (gnus-uu-decode-with-method 'gnus-uu-binhex-article n dir))
 
 (defun gnus-uu-decode-uu-view (n)
@@ -557,9 +560,10 @@ The headers will be included in the sequence they are matched.")
   "Extracts postscript and saves the current article."
   (interactive
    (list current-prefix-arg
-	 (read-file-name "Where do you want to save the file(s)? "
-			 gnus-uu-default-dir
-			 gnus-uu-default-dir t)))
+	 (file-name-as-directory
+	  (read-file-name "Save in dir: "
+			  gnus-uu-default-dir
+			  gnus-uu-default-dir t))))
   (gnus-uu-decode-with-method 'gnus-uu-decode-postscript-article n dir))
 
 

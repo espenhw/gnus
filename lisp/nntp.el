@@ -60,8 +60,8 @@ The default value is `nntp-send-mode-reader', which makes an innd
 server spawn an nnrpd server.  Another useful function to put in this
 hook might be `nntp-send-authinfo', which will prompt for a password
 to allow posting from the server.  Note that this is only necessary to
-do on servers that use strict access control.")  (add-hook
-'nntp-server-opened-hook 'nntp-send-mode-reader)
+do on servers that use strict access control.")  
+(add-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)
 
 (defvar nntp-open-server-function 'nntp-open-network-stream
   "*Function used for connecting to a remote system.
@@ -501,7 +501,7 @@ instead call function `nntp-status-message' to get status message.")
    (if (not (or (nntp-async-server-opened)
 		(nntp-async-open-server)))
        (progn
-	 (message "Can't open second connection to %s" nntp-address)
+	 (message "Can't open second connection to %s" nntp-current-server)
 	 (ding)
 	 (setq nntp-async-articles nil)
 	 (sit-for 2))

@@ -65,6 +65,7 @@ always be used.")
 (defvar gnus-score-help-winconf nil)
 (defvar gnus-adaptive-score-alist gnus-default-adaptive-score-alist)
 (defvar gnus-score-trace nil)
+(defvar gnus-score-edit-buffer nil)
 
 (defvar gnus-score-alist nil
   "Alist containing score information.
@@ -329,10 +330,14 @@ If optional argument `SILENT' is nil, show effect of score entry."
 				 (int-to-string match)
 			       match))))
     (and (>= (nth 1 (assoc header gnus-header-index)) 0)
-	 (eq (nth 2 (assoc header gnus-header-index))
-	     'gnus-score-string)
+	 (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-string)
 	 (not silent)
 	 (gnus-summary-score-effect header match type score))
+
+    ;; If this is an integer comparison, we transform from string to int. 
+    (and (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)
+	 (setq match (string-to-int match)))
+
     (if (eq date 'now)
 	()
       (and (= score gnus-score-interactive-default-score)
@@ -486,8 +491,8 @@ SCORE is the score to add."
   (interactive (list gnus-current-score-file))
   (let ((winconf (current-window-configuration)))
     (and (buffer-name gnus-summary-buffer) (gnus-score-save))
-    (gnus-configure-windows 'article)
-    (pop-to-buffer (find-file-noselect file))
+    (setq gnus-score-edit-buffer (find-file-noselect file))
+    (gnus-configure-windows 'summary-edit-score)
     (gnus-score-mode)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf))
@@ -501,8 +506,8 @@ SCORE is the score to add."
    (list (read-file-name "Edit score file: " gnus-kill-files-directory)))
   (and (buffer-name gnus-summary-buffer) (gnus-score-save))
   (let ((winconf (current-window-configuration)))
-    (gnus-configure-windows 'article)
-    (pop-to-buffer (find-file-noselect file))
+    (setq gnus-score-edit-buffer (find-file-noselect file))
+    (gnus-configure-windows 'summary-edit-score)
     (gnus-score-mode)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf))
@@ -718,7 +723,11 @@ SCORE is the score to add."
 		;; prettily. 
 		(pp score (current-buffer))))
 	    (gnus-make-directory (file-name-directory file))
-	    (write-region (point-min) (point-max) file nil 'silent))))
+	    ;; If the score file is empty, we delete it.
+	    (if (zerop (buffer-size))
+		(delete-file file)
+	      ;; There are scores, so we write the file. 
+	      (write-region (point-min) (point-max) file nil 'silent)))))
       (kill-buffer (current-buffer)))))
   
 (defun gnus-score-headers (score-files &optional trace)

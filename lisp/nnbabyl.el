@@ -251,8 +251,9 @@
       ;; Find the lowest active article in this group.
       (let ((active (nth 1 (assoc newsgroup nnbabyl-group-alist))))
 	(goto-char (point-min))
-	(while (not (search-forward
-		     (nnbabyl-article-string (car active)) nil t))
+	(while (and (not (search-forward
+			  (nnbabyl-article-string (car active)) nil t))
+		    (<= (car active) (cdr active)))
 	  (setcar active (1+ (car active)))
 	  (goto-char (point-min))))
       (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)

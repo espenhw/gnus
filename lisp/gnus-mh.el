@@ -122,7 +122,7 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
       (if (not yank)
 	  (gnus-configure-windows 'reply)
 	(gnus-configure-windows 'reply-yank))
-      (setq mail-buf (cdr (assq 'mail gnus-window-to-buffer)))
+      (setq mail-buf gnus-mail-buffer)
       (pop-to-buffer mail-buf) ;; always in the display, so won't have window probs
       (switch-to-buffer draft)
       (kill-buffer mail-buf) ;; mh-e don't use it!

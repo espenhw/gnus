@@ -316,7 +316,8 @@
 		 (point-max)))
 	   (point-max))
 	(erase-buffer)
-	(nneething-make-head file) t)))))
+	(nneething-make-head file))
+      t))))
 
 (defun nneething-number-to-file (number)
   (car (rassq number nneething-map)))

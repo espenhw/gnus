@@ -271,8 +271,8 @@ all. This may very well take some time.")
 	 (max-article (and active-articles (apply 'max active-articles)))
 	 article rest mod-time)
     (while articles
-      (setq article (concat nnml-current-directory (int-to-string
-						      (car articles))))
+      (setq article (concat nnml-current-directory 
+			    (int-to-string (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
 	  (if (and (or (not nnmail-keep-last-article)
 		       (not max-article)
