@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-(require 'cl)
+(eval-when-compile (require 'cl))
 
 (require 'nnheader)
 (require 'timezone)
@@ -1096,7 +1096,7 @@ FUNC will be called with the group name to determine the article number."
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
 		      '("bogus")))))
-	      (setq split (remove-duplicates split :test 'equal))
+	      (setq split (gnus-remove-duplicates split))
 	      ;; The article may be "cross-posted" to `junk'.  What
 	      ;; to do?  Just remove the `junk' spec.  Don't really
 	      ;; see anything else to do...
@@ -1758,8 +1758,8 @@ If ARGS, PROMPT is used as an argument to `format'."
   (let ((history nnmail-split-history)
 	prev)
     (while history
-      (setcar history (delete-if (lambda (e) (string= (car e) group))
-				 (car history)))
+      (setcar history (gnus-delete-if (lambda (e) (string= (car e) group))
+				      (car history)))
       (pop history))
     (setq nnmail-split-history (delq nil nnmail-split-history))))
 

@@ -1089,9 +1089,13 @@ SCORE is the score to add."
 	  found)
       (while a
 	;; Downcase all header names.
-	(when (stringp (caar a))
+	(cond
+	 ((stringp (caar a))
 	  (setcar (car a) (downcase (caar a)))
 	  (setq found t))
+	 ;; Advanced scoring.
+	 ((consp (caar a))
+	  (setq found t)))
 	(pop a))
       ;; If there are actual scores in the alist, we add it to the
       ;; return value of this function.
@@ -1307,7 +1311,7 @@ SCORE is the score to add."
 		(and (file-exists-p file)
 		     (not (file-writable-p file))))
 	    ()
-	  (setq score (setcdr entry (delq (assq 'touched score) score)))
+	  (setq score (setcdr entry (gnus-delete-alist 'touched score)))
 	  (erase-buffer)
 	  (let (emacs-lisp-mode-hook)
 	    (if (string-match
@@ -1861,7 +1865,7 @@ SCORE is the score to add."
     (while (setq art (pop articles))
       (setq this (aref (car art) gnus-score-index))
       (if simplify
-        (setq this (gnus-map-function gnus-simplify-subject-functions this)))
+	  (setq this (gnus-map-function gnus-simplify-subject-functions this)))
       (if (equal last this)
 	  ;; O(N*H) cons-cells used here, where H is the number of
 	  ;; headers.
@@ -1894,7 +1898,7 @@ SCORE is the score to add."
 	       (mt (aref (symbol-name type) 0))
 	       (case-fold-search (not (memq mt '(?R ?S ?E ?F))))
 	       (dmt (downcase mt))
-               ; Assume user already simplified regexp and fuzzies
+					; Assume user already simplified regexp and fuzzies
 	       (match (if (and simplify (not (memq dmt '(?f ?r))))
                           (gnus-map-function
                            gnus-simplify-subject-functions
@@ -1908,10 +1912,12 @@ SCORE is the score to add."
 	  (cond
 	   ;; Fuzzy matches.  We save these for later.
 	   ((= dmt ?f)
-	    (push (cons entries alist) fuzzies))
+	    (push (cons entries alist) fuzzies)
+	    (setq entries (cdr entries)))
 	   ;; Word matches.  Save these for even later.
 	   ((= dmt ?w)
-	    (push (cons entries alist) words))
+	    (push (cons entries alist) words)
+	    (setq entries (cdr entries)))
 	   ;; Exact matches.
 	   ((= dmt ?e)
 	    ;; Do exact matching.
@@ -1936,7 +1942,26 @@ SCORE is the score to add."
 			    gnus-score-trace))
 		       (while (setq art (pop arts))
 			 (setcdr art (+ score (cdr art)))))))
-	      (forward-line 1)))
+	      (forward-line 1))
+	    ;; Update expiry date
+	    (if trace
+		(setq entries (cdr entries))
+	      (cond
+	       ;; Permanent entry.
+	       ((null date)
+		(setq entries (cdr entries)))
+	       ;; We have a match, so we update the date.
+	       ((and found gnus-update-score-entry-dates)
+		(gnus-score-set 'touched '(t) alist)
+		(setcar (nthcdr 2 kill) now)
+		(setq entries (cdr entries)))
+	       ;; This entry has expired, so we remove it.
+	       ((and expire (< date expire))
+		(gnus-score-set 'touched '(t) alist)
+		(setcdr entries (cddr entries)))
+	       ;; No match; go to next entry.
+	       (t
+		(setq entries (cdr entries))))))
 	   ;; Regexp and substring matching.
 	   (t
 	    (goto-char (point-min))
@@ -1955,26 +1980,26 @@ SCORE is the score to add."
 			  gnus-score-trace))
 		(while (setq art (pop arts))
 		  (setcdr art (+ score (cdr art)))))
-	      (forward-line 1))))
-	  ;; Update expiry date
-	  (if trace
-	      (setq entries (cdr entries))
-	    (cond
-	     ;; Permanent entry.
-	     ((null date)
-	      (setq entries (cdr entries)))
-	     ;; We have a match, so we update the date.
-	     ((and found gnus-update-score-entry-dates)
-	      (gnus-score-set 'touched '(t) alist)
-	      (setcar (nthcdr 2 kill) now)
-	      (setq entries (cdr entries)))
-	     ;; This entry has expired, so we remove it.
-	     ((and expire (< date expire))
-	      (gnus-score-set 'touched '(t) alist)
-	      (setcdr entries (cddr entries)))
-	     ;; No match; go to next entry.
-	     (t
-	      (setq entries (cdr entries))))))))
+	      (forward-line 1))
+	    ;; Update expiry date
+	    (if trace
+		(setq entries (cdr entries))
+	      (cond
+	       ;; Permanent entry.
+	       ((null date)
+		(setq entries (cdr entries)))
+	       ;; We have a match, so we update the date.
+	       ((and found gnus-update-score-entry-dates)
+		(gnus-score-set 'touched '(t) alist)
+		(setcar (nthcdr 2 kill) now)
+		(setq entries (cdr entries)))
+	       ;; This entry has expired, so we remove it.
+	       ((and expire (< date expire))
+		(gnus-score-set 'touched '(t) alist)
+		(setcdr entries (cddr entries)))
+	       ;; No match; go to next entry.
+	       (t
+		(setq entries (cdr entries))))))))))
 
     ;; Find fuzzy matches.
     (when fuzzies
@@ -2006,18 +2031,19 @@ SCORE is the score to add."
 		  (setcdr art (+ score (cdr art))))))
 	    (forward-line 1))
 	  ;; Update expiry date
-	  (cond
-	   ;; Permanent.
-	   ((null date)
-	    )
-	   ;; Match, update date.
-	   ((and found gnus-update-score-entry-dates)
-	    (gnus-score-set 'touched '(t) (cdar fuzzies))
-	    (setcar (nthcdr 2 kill) now))
-	   ;; Old entry, remove.
-	   ((and expire (< date expire))
-	    (gnus-score-set 'touched '(t) (cdar fuzzies))
-	    (setcdr (caar fuzzies) (cddaar fuzzies))))
+	  (if (not trace)
+	      (cond
+	       ;; Permanent.
+	       ((null date)
+		)
+	       ;; Match, update date.
+	       ((and found gnus-update-score-entry-dates)
+		(gnus-score-set 'touched '(t) (cdar fuzzies))
+		(setcar (nthcdr 2 kill) now))
+	       ;; Old entry, remove.
+	       ((and expire (< date expire))
+		(gnus-score-set 'touched '(t) (cdar fuzzies))
+		(setcdr (caar fuzzies) (cddaar fuzzies)))))
 	  (setq fuzzies (cdr fuzzies)))))
 
     (when words
@@ -2043,18 +2069,19 @@ SCORE is the score to add."
 		(while (setq art (pop arts))
 		  (setcdr art (+ score (cdr art))))))
 	    ;; Update expiry date
-	    (cond
-	     ;; Permanent.
-	     ((null date)
-	      )
-	     ;; Match, update date.
-	     ((and found gnus-update-score-entry-dates)
-	      (gnus-score-set 'touched '(t) (cdar words))
-	      (setcar (nthcdr 2 kill) now))
-	     ;; Old entry, remove.
-	     ((and expire (< date expire))
-	      (gnus-score-set 'touched '(t) (cdar words))
-	      (setcdr (caar words) (cddaar words))))
+	    (if (not trace)
+		(cond
+		 ;; Permanent.
+		 ((null date)
+		  )
+		 ;; Match, update date.
+		 ((and found gnus-update-score-entry-dates)
+		  (gnus-score-set 'touched '(t) (cdar words))
+		  (setcar (nthcdr 2 kill) now))
+		 ;; Old entry, remove.
+		 ((and expire (< date expire))
+		  (gnus-score-set 'touched '(t) (cdar words))
+		  (setcdr (caar words) (cddaar words)))))
 	    (setq words (cdr words))))))
     nil))
 

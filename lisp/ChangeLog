@@ -1,3 +1,64 @@
+Fri Jun 26 15:46:05 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.16 is released.
+
+Fri Jun 26 15:36:25 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-delete-assq): Removed.
+	(gnus-delete-assoc): Ditto.
+
+	* gnus.el: Use throughout.
+
+	* gnus-util.el (gnus-pull): New macro.
+
+1998-06-26  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): parse Chars: headers
+
+Fri Jun 26 13:45:24 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-update-marks): Use it.
+
+	* gnus-util.el (gnus-delete-alist): New function.
+
+	* gnus-sum.el (gnus-update-marks): Don't save list of cached
+	articles. 
+
+	* message.el (message-mode-menu): Include kill-buffer.
+
+	* nnmail.el (nnmail-purge-split-history): Use it.
+
+	* gnus-util.el (gnus-delete-if): New function.
+
+	* nnmail.el (nnmail-article-group): Use gnus-remove-duplicates.
+
+Fri Jun 26 13:45:09 1998  Richard Stallman  <rms@santafe.edu>
+
+	* gnus-util.el (gnus-remove-duplicates): New function.
+
+Fri Jun 26 13:30:42 1998  Kevin Christian  <Kevin.Christian@symbios.com>
+
+	* gnus-score.el (gnus-score-string): Do updating of scores after
+	fuzzies. 
+
+Fri Jun 26 07:26:03 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-mode): Don't do the intern dance.
+
+Fri Jun 26 07:13:49 1998  Richard Stallman  <rms@santafe.edu>
+
+	* message.el (message-mode): Adaptive fill changes.
+
+Fri Jun 26 04:29:44 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-mode-line-format-alist): Allow article
+	score.
+
+	* gnus-score.el (gnus-score-load-file): Would ignore all score
+	files without un-advanced rules.
+
+	* gnus-ems.el ((fboundp 'split-string)): Use it where it exists. 
+
 Fri Jun 26 04:23:12 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.15 is released.

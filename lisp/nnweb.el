@@ -206,7 +206,7 @@
 
 (deffoo nnweb-request-delete-group (group &optional force server)
   (nnweb-possibly-change-server group server)
-  (gnus-delete-assoc group nnweb-group-alist)
+  (gnus-pull group nnweb-group-alist)
   (gnus-delete-file (nnweb-overview-file group))
   t)
 

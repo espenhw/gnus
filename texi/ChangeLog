@@ -1,3 +1,17 @@
+1998-06-26  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): parse Chars: headers
+
+Fri Jun 26 13:33:00 1998  Yoshiki Hayashi  <g740685@komaba.ecc.u-tokyo.ac.jp>
+
+	* gnus.texi (Summary Buffer Lines): Typo fix.
+
+Fri Jun 26 05:53:22 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Score File Format): Addition.
+	(Mode Line Formatting): New.
+	(Summary Buffer Mode Line): Addition.
+
 Thu Jun 25 11:24:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Summary Score Commands): Deletia.

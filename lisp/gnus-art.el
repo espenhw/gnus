@@ -3101,14 +3101,6 @@ specified by `gnus-button-alist'."
 				     (match-string 3 address)
 				   "nntp")))))))
 
-(defun gnus-split-string (string pattern)
-  "Return a list of substrings of STRING which are separated by PATTERN."
-  (let (parts (start 0))
-    (while (string-match pattern string start)
-      (setq parts (cons (substring string start (match-beginning 0)) parts)
-	    start (match-end 0)))
-    (nreverse (cons (substring string start) parts))))
-
 (defun gnus-url-parse-query-string (query &optional downcase)
   (let (retval pairs cur key val)
     (setq pairs (gnus-split-string query "&"))

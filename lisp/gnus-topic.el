@@ -348,7 +348,7 @@ If TOPIC, start with that topic."
 	(when (atom param)
 	  (setq param (cons param t)))
 	;; Override any old versions of this param.
-	(setq out (delq (assq (car param) out) out))
+	(gnus-pull (car param) out)
 	(push param out)))
     ;; Return the resulting parameter list.
     out))

@@ -616,9 +616,7 @@ as the last checked definition, if t or `first', add as the
 first definition, and if any other symbol, add after that
 symbol in the alist."
   ;; First remove any old instances.
-  (setq nndoc-type-alist
-	(delq (assq (car definition) nndoc-type-alist)
-	      nndoc-type-alist))
+  (gnus-pull (car definition) nndoc-type-alist)
   ;; Then enter the new definition in the proper place.
   (cond
    ((or (null position) (eq position 'last))

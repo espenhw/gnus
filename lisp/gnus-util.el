@@ -603,14 +603,6 @@ Bind `print-quoted' and `print-readably' to t while printing."
   ;; Write the buffer.
   (write-region (point-min) (point-max) file nil 'quietly))
 
-(defmacro gnus-delete-assq (key list)
-  `(let ((listval (eval ,list)))
-     (setq ,list (delq (assq ,key listval) listval))))
-
-(defmacro gnus-delete-assoc (key list)
-  `(let ((listval ,list))
-     (setq ,list (delq (assoc ,key listval) listval))))
-
 (defun gnus-delete-file (file)
   "Delete FILE if it exists."
   (when (file-exists-p file)
@@ -930,6 +922,35 @@ ARG is passed to the first function."
 	 (set-buffer gnus-group-buffer)
 	 (eq major-mode 'gnus-group-mode))))
 
+(defun gnus-remove-duplicates (list)
+  (let (new (tail list))
+    (while tail
+      (or (member (car tail) new)
+	  (setq new (cons (car tail) new)))
+      (setq tail (cdr tail)))
+    (nreverse new)))
+
+(defun gnus-delete-if (predicate list)
+  "Delete elements from LIST that satisfy PREDICATE."
+  (let (out)
+    (while list
+      (when (funcall predicate (car list))
+	(push (car list) out))
+      (pop list))
+    (nreverse out)))
+
+(defun gnus-delete-alist (key alist)
+  "Delete all entries in ALIST that have a key eq to KEY."
+  (let (entry)
+    (while (setq entry (assq key alist))
+      (setq alist (delq entry alist)))
+    alist))
+
+(defmacro gnus-pull (key alist)
+  "Modify ALIST to be without KEY."
+  (unless (symbolp alist)
+    (error "Not a symbol: %s" alist))
+  `(setq ,alist (delq (assq ,key ,alist) ,alist)))
 
 (provide 'gnus-util)
 

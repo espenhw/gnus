@@ -258,6 +258,16 @@
 	  (goto-char (point-min))
 	  (sit-for 0))))))
 
+(if (fboundp 'split-string)
+    (fset 'gnus-split-string 'split-string)
+  (defun gnus-split-string (string pattern)
+    "Return a list of substrings of STRING which are separated by PATTERN."
+    (let (parts (start 0))
+      (while (string-match pattern string start)
+	(setq parts (cons (substring string start (match-beginning 0)) parts)
+	      start (match-end 0)))
+      (nreverse (cons (substring string start) parts)))))
+
 (provide 'gnus-ems)
 
 ;; Local Variables:

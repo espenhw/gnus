@@ -3333,7 +3333,7 @@ and the second element is the address."
 	(if force
 	    (if (null articles)
 		(setcar (nthcdr 3 info)
-			(delq (assq type (car marked)) (car marked)))
+			(gnus-delete-alist type (car marked)))
 	      (setcdr m (gnus-compress-sequence articles t)))
 	  (setcdr m (gnus-compress-sequence
 		     (sort (nconc (gnus-uncompress-range (cdr m))

@@ -29,7 +29,7 @@
 		     make-char-table set-char-table-range font-create-object
 		     x-color-values widget-make-intangible error-message-string
 		     w3-form-encode-xwfu gnus-mule-get-coding-system
-		     decode-coding-string))
+		     decode-coding-string mail-aliases-setup))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
 		    mouse-selection-click-count-buffer buffer-display-table
@@ -52,7 +52,8 @@
 		 set-glyph-property event-glyph glyph-property event-point
 		 device-on-window-system-p make-gui-button Info-goto-node
 		 pp-to-string color-name 
-		 gnus-mule-get-coding-system decode-coding-string)))
+		 gnus-mule-get-coding-system decode-coding-string
+		 mail-aliases-setup)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

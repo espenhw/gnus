@@ -1229,7 +1229,8 @@ Return the number of headers removed."
    ["Spellcheck" ispell-message t]
    "----"
    ["Send Message" message-send-and-exit t]
-   ["Abort Message" message-dont-send t]))
+   ["Abort Message" message-dont-send t]
+   ["Kill Message" message-kill-buffer t]))
 
 (easy-menu-define
  message-mode-field-menu message-mode-map ""
@@ -1302,19 +1303,18 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 	facemenu-remove-face-function t)
   (make-local-variable 'paragraph-separate)
   (make-local-variable 'paragraph-start)
+  ;; `-- ' precedes the signature.  `-----' appears at the start of the
+  ;; lines that delimit forwarded messages.
+  ;; Lines containing just >= 3 dashes, perhaps after whitespace,
+  ;; are also sometimes used and should be separators.
   (setq paragraph-start
 	(concat (regexp-quote mail-header-separator)
-		"$\\|[ \t]*[-_][-_][-_]+$\\|"
-		"-- $\\|"
+		"$\\|[ \t]*[a-z0-9A-Z]*>+[ \t]*$\\|[ \t]*$\\|"
+		"-- $\\|---+$\\|"
+		page-delimiter
 		;;!!! Uhm... shurely this can't be right?
-		"[> " (regexp-quote message-yank-prefix) "]+$\\|"
-		paragraph-start))
-  (setq paragraph-separate
-	(concat (regexp-quote mail-header-separator)
-		"$\\|[ \t]*[-_][-_][-_]+$\\|"
-		"-- $\\|"
-		"[> " (regexp-quote message-yank-prefix) "]+$\\|"
-		paragraph-separate))
+		"[> " (regexp-quote message-yank-prefix) "]+$\\|"))
+  (setq paragraph-separate paragraph-start)
   (make-local-variable 'message-reply-headers)
   (setq message-reply-headers nil)
   (make-local-variable 'message-newsreader)
@@ -1334,7 +1334,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (when (eq message-mail-alias-type 'abbrev)
     (if (fboundp 'mail-abbrevs-setup)
 	(mail-abbrevs-setup)
-      (funcall (intern "mail-aliases-setup"))))
+      (mail-aliases-setup)))
   (message-set-auto-save-file-name)
   (unless (string-match "XEmacs" emacs-version)
     (set (make-local-variable 'font-lock-defaults)
