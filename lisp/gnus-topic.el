@@ -927,8 +927,8 @@ articles in the topic and its subtopics."
 		       ? ))
 		     (yanked (list group))
 		     alist talist end)
-		;; Then we enter the yanked groups into the topics they belong
-		;; to.
+		;; Then we enter the yanked groups into the topics
+		;; they belong to.
 		(when (setq alist (assoc (save-excursion
 					   (forward-line -1)
 					   (or
