@@ -508,13 +508,4 @@
 
 (provide 'nnslashdot)
 
-;;; test
-
-
 ;;; nnslashdot.el ends here
-
-
-
-
-
-

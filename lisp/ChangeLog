@@ -1,3 +1,7 @@
+2002-10-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el: Removed some test lines.
+
 2002-10-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-agent.el (gnus-agent-fetch-headers): Remove articles that
