@@ -1,5 +1,11 @@
 2000-07-05  Dave Love  <fx@gnu.org>
 
+	* gnus-util.el (gnus-point-at-eol, gnus-point-at-bol): Use
+	defalias, not fset.
+
+	* flow-fill.el (fill-flowed-point-at-eol)
+	(fill-flowed-point-at-bol): Use defalias, not fset.
+
 	* gnus-art.el: Don't alias article-mime-decode-quoted-printable.
 	(gnus-Plain-save-name): Delete -- apparently bogus.
 
