@@ -115,8 +115,8 @@ of the buffer."
   (interactive)
   (goto-char (point-min))
   (let ((form (condition-case nil
-                  (read (current-buffer))
-                (end-of-file nil)))
+		  (read (current-buffer))
+		(end-of-file nil)))
 	(func gnus-edit-form-done-function))
     (gnus-edit-form-exit)
     (funcall func form)))

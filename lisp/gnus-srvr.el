@@ -836,7 +836,7 @@ buffer.
     (unless server
       (error "No server on the current line"))
     (condition-case ()
-	(gnus-get-function (gnus-server-to-method server) 
+	(gnus-get-function (gnus-server-to-method server)
 			   'request-regenerate)
       (error
 	(error "This backend doesn't support regeneration")))

@@ -64,7 +64,7 @@
 	* gnus-start.el (gnus-setup-news): Call
 	`gnus-check-bogus-newsgroups' just after the native server is
 	opened.
-	
+
 2001-07-23  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* nnmail.el (nnmail-do-request-post): Util function to be used by
@@ -105,7 +105,7 @@
 	mm-read-coding-system.
 
 	* gnus-art.el (article-de-quoted-unreadable):
-	(article-de-base64-unreadable, article-wash-html): 
+	(article-de-base64-unreadable, article-wash-html):
 	(gnus-mime-inline-part, gnus-mime-view-part-as-charset): Ditto.
 
 2001-07-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
@@ -137,7 +137,7 @@
 	* gnus-sum.el (gnus-summary-display-arrow): New variable.
 	(gnus-summary-set-article-display-arrow): New function.
 	(gnus-summary-goto-subject): Use it.
-	
+
 2001-07-18 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-import-article): Insert date if
@@ -160,7 +160,7 @@
 
 	* dgnushack.el (dgnushack-make-auto-load): Advise `make-autoload'
 	to handle `define-derived-mode'.
-	
+
 2001-07-16 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From:  Stefan Monnier  <monnier@cs.yale.edu>
 
@@ -194,7 +194,7 @@
 	(nnrss-read-server-data): Ditto.
 
 2001-07-13 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
 	* gnus-setup.el (gnus-use-installed-gnus): Typo.
 	* Cleanup files.
 	From Pavel@Janik.cz (Pavel Jan,Bm(Bk).
@@ -208,7 +208,7 @@
 
 2001-07-13 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-art.el (gnus-boring-article-headers): Better doc. 
+	* gnus-art.el (gnus-boring-article-headers): Better doc.
 	(article-hide-headers): Better regexp.
 	Suggested by Matt Swift <swift@alum.mit.edu>.
 
@@ -243,7 +243,7 @@
 
 	* gnus-srvr.el (gnus-browse-make-menu-bar): Changed one of the
 	Browse->Next entries to Browse->Prev
-	
+
 2001-07-11 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-inews-do-gcc): Don't test gnus-alive-p.
@@ -284,20 +284,20 @@
 
 	* gnus-kill.el (gnus-execute): Work with the extra headers.
 	* gnus-sum.el (gnus-summary-execute-command): Ditto.
-	
+
 2001-07-09 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el (mm-inline-text): w3-coding-system-for-mime-charset
 	may not defined. From: Raja R Harinath <harinath@cs.umn.edu>.
 
 	* message.el (message-send-mail-real-function): New variable.
-	(message-send-mail-partially, message-send-mail): 
+	(message-send-mail-partially, message-send-mail):
 
 	* nngateway.el (nngateway-request-post): Use it.
 
-	* gnus-agent.el (gnus-agentize): Use it. 
+	* gnus-agent.el (gnus-agentize): Use it.
 
-	* nnsoup.el (nnsoup-old-functions, nnsoup-set-variables) 
+	* nnsoup.el (nnsoup-old-functions, nnsoup-set-variables)
 	(nnsoup-revert-variables): Use it.
 
 2001-07-09  Colin Walters  <walters@cis.ohio-state.edu>
@@ -311,7 +311,7 @@
 	(mm-display-part): Call `mm-inlinable-p'.
 	(mm-attachment-override-p): Ditto.
 	(mm-inlined-p): Doc fix.
-	
+
 	* gnus-art.el (gnus-mime-display-single): Call `mm-inlinable-p' as
 	well as `mm-inlined-p'.
 
@@ -321,7 +321,7 @@
 	(nntp-send-command-and-decode): Use gnus-point-at-bol.
 
 2001-07-09 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	From  Paul Jarc <prj@po.cwru.edu> 
+	From  Paul Jarc <prj@po.cwru.edu>
 
 	* message.el (message-use-mail-followup-to): New variable.
 	(message-get-reply-headers): Use it.
@@ -330,7 +330,7 @@
 
 	* nnheader.el (nnheader-init-server-buffer): Make sure the
 	*nntpd* buffer is made multibyte instead of a random buffer.
-	
+
 2001-07-09 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Get headers only
@@ -1139,7 +1139,7 @@
 
 2001-03-10  Matthias Wiehl <mwiehl@gmx.de>
 
-        * gnus.el (gnus-summary-line-format): Typo.
+	* gnus.el (gnus-summary-line-format): Typo.
 
 2001-03-11  Simon Josefsson  <simon@josefsson.org>
 
@@ -1423,7 +1423,7 @@
 	(nnml-request-regenerate): Use it. Change to deffoo.
 
 2001-02-14  Katsumi Yamaoka <yamaoka@jpl.org>
-        Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
+	Committed by ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-define-group-parameter): Fix.
 
@@ -1824,7 +1824,7 @@
 
 2001-01-19  Simon Josefsson  <sj@extundo.com>
 
-        * gnus-art.el (gnus-button-alist): Add `?=' to mailto URL regexp.
+	* gnus-art.el (gnus-button-alist): Add `?=' to mailto URL regexp.
 
 2001-01-19 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

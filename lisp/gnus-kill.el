@@ -357,16 +357,16 @@ If NEWSGROUP is nil, return the global kill file instead."
 (defun gnus-apply-kill-file-unless-scored ()
   "Apply .KILL file, unless a .SCORE file for the same newsgroup exists."
   (cond ((file-exists-p (gnus-score-file-name gnus-newsgroup-name))
-         ;; Ignores global KILL.
-         (when (file-exists-p (gnus-newsgroup-kill-file gnus-newsgroup-name))
+	 ;; Ignores global KILL.
+	 (when (file-exists-p (gnus-newsgroup-kill-file gnus-newsgroup-name))
 	   (gnus-message 3 "Note: Ignoring %s.KILL; preferring .SCORE"
 			 gnus-newsgroup-name))
-         0)
-        ((or (file-exists-p (gnus-newsgroup-kill-file nil))
-             (file-exists-p (gnus-newsgroup-kill-file gnus-newsgroup-name)))
-         (gnus-apply-kill-file-internal))
-        (t
-         0)))
+	 0)
+	((or (file-exists-p (gnus-newsgroup-kill-file nil))
+	     (file-exists-p (gnus-newsgroup-kill-file gnus-newsgroup-name)))
+	 (gnus-apply-kill-file-internal))
+	(t
+	 0)))
 
 (defun gnus-apply-kill-file-internal ()
   "Apply a kill file to the current newsgroup.
@@ -398,7 +398,7 @@ Returns the number of articles marked as read."
 			  gnus-newsgroup-kill-headers))
 		  (setq headers (cdr headers))))
 	      (setq files nil))
- 	  (setq files (cdr files)))))
+	  (setq files (cdr files)))))
     (if (not gnus-newsgroup-kill-headers)
 	()
       (save-window-excursion

@@ -50,7 +50,7 @@ methods.  If that is the case, the user will be queried for what select
 method to use when posting."
   :group 'gnus-group-foreign
   :type `(choice (const nil)
-                 (const current)
+		 (const current)
 		 (const native)
 		 (sexp :tag "Methods" ,gnus-select-method)))
 
@@ -246,10 +246,10 @@ Thank you for your help in stamping out bugs.
 	     (let ((mbl1 mml-buffer-list))
 	       (setq mml-buffer-list mbl)  ;; Global value
 	       (set (make-local-variable 'mml-buffer-list) mbl1);; Local value
-               ;; LOCAL argument of add-hook differs between GNU Emacs
-               ;; and XEmacs. make-local-hook makes sure they are local.
-               (make-local-hook 'kill-buffer-hook)
-               (make-local-hook 'change-major-mode-hook)
+	       ;; LOCAL argument of add-hook differs between GNU Emacs
+	       ;; and XEmacs. make-local-hook makes sure they are local.
+	       (make-local-hook 'kill-buffer-hook)
+	       (make-local-hook 'change-major-mode-hook)
 	       (add-hook 'change-major-mode-hook 'mml-destroy-buffers nil t)
 	       (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))
 	   (mml-destroy-buffers)
@@ -607,9 +607,9 @@ header line with the old Message-ID."
 
 (defun gnus-msg-treat-broken-reply-to (&optional force)
   "Remove the Reply-to header iff broken-reply-to."
-  (when (or force 
-            (gnus-group-find-parameter
-             gnus-newsgroup-name 'broken-reply-to))
+  (when (or force
+	    (gnus-group-find-parameter
+	     gnus-newsgroup-name 'broken-reply-to))
     (save-restriction
       (message-narrow-to-head)
       (message-remove-header "reply-to"))))
@@ -1045,7 +1045,7 @@ If YANK is non-nil, include the original article."
     (let (text)
       (save-excursion
 	(set-buffer (gnus-get-buffer-create " *gnus environment info*"))
-        (erase-buffer)
+	(erase-buffer)
 	(gnus-debug)
 	(setq text (buffer-string)))
       (insert "<#part type=application/x-emacs-lisp disposition=inline description=\"User settings\">\n" text "\n<#/part>"))
@@ -1176,43 +1176,43 @@ this is a reply."
     (save-restriction
       (message-narrow-to-headers)
       (let ((gcc (or gcc (mail-fetch-field "gcc" nil t)))
-            (cur (current-buffer))
-            groups group method group-art)
-        (when gcc
-          (message-remove-header "gcc")
-          (widen)
-          (setq groups (message-unquote-tokens
-                        (message-tokenize-header gcc " ,")))
-          ;; Copy the article over to some group(s).
-          (while (setq group (pop groups))
-            (gnus-check-server
-             (setq method (gnus-inews-group-method group)))
-            (unless (gnus-request-group group nil method)
-              (gnus-request-create-group group method))
-            (save-excursion
-              (nnheader-set-temp-buffer " *acc*")
-              (insert-buffer-substring cur)
-              (message-encode-message-body)
-              (save-restriction
-                (message-narrow-to-headers)
-                (let ((mail-parse-charset message-default-charset)
-                      (rfc2047-header-encoding-alist
-                       (cons '("Newsgroups" . default)
-                             rfc2047-header-encoding-alist)))
-                  (mail-encode-encoded-word-buffer)))
-              (goto-char (point-min))
-              (when (re-search-forward
-                     (concat "^" (regexp-quote mail-header-separator) "$")
-                     nil t)
-                (replace-match "" t t ))
-              (unless (setq group-art
-                            (gnus-request-accept-article group method t t))
-                (gnus-message 1 "Couldn't store article in group %s: %s"
-                              group (gnus-status-message method))
-                (sit-for 2))
-              (when (and group-art gnus-inews-mark-gcc-as-read)
-                (gnus-group-mark-article-read group (cdr group-art)))
-              (kill-buffer (current-buffer)))))))))
+	    (cur (current-buffer))
+	    groups group method group-art)
+	(when gcc
+	  (message-remove-header "gcc")
+	  (widen)
+	  (setq groups (message-unquote-tokens
+			(message-tokenize-header gcc " ,")))
+	  ;; Copy the article over to some group(s).
+	  (while (setq group (pop groups))
+	    (gnus-check-server
+	     (setq method (gnus-inews-group-method group)))
+	    (unless (gnus-request-group group nil method)
+	      (gnus-request-create-group group method))
+	    (save-excursion
+	      (nnheader-set-temp-buffer " *acc*")
+	      (insert-buffer-substring cur)
+	      (message-encode-message-body)
+	      (save-restriction
+		(message-narrow-to-headers)
+		(let ((mail-parse-charset message-default-charset)
+		      (rfc2047-header-encoding-alist
+		       (cons '("Newsgroups" . default)
+			     rfc2047-header-encoding-alist)))
+		  (mail-encode-encoded-word-buffer)))
+	      (goto-char (point-min))
+	      (when (re-search-forward
+		     (concat "^" (regexp-quote mail-header-separator) "$")
+		     nil t)
+		(replace-match "" t t ))
+	      (unless (setq group-art
+			    (gnus-request-accept-article group method t t))
+		(gnus-message 1 "Couldn't store article in group %s: %s"
+			      group (gnus-status-message method))
+		(sit-for 2))
+	      (when (and group-art gnus-inews-mark-gcc-as-read)
+		(gnus-group-mark-article-read group (cdr group-art)))
+	      (kill-buffer (current-buffer)))))))))
 
 (defun gnus-inews-insert-gcc ()
   "Insert Gcc headers based on `gnus-outgoing-message-group'."
@@ -1426,8 +1426,8 @@ this is a reply."
       (when (or name address)
 	(add-hook 'message-setup-hook
 		  `(lambda ()
- 		     (set (make-local-variable 'user-mail-address)
- 			  ,(or (cdr address) user-mail-address))
+		     (set (make-local-variable 'user-mail-address)
+			  ,(or (cdr address) user-mail-address))
 		     (let ((user-full-name ,(or (cdr name) (user-full-name)))
 			   (user-mail-address
 			    ,(or (cdr address) user-mail-address)))

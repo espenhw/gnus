@@ -56,7 +56,7 @@
 (defvoo nnultimate-groups nil)
 (defvoo nnultimate-headers nil)
 (defvoo nnultimate-articles nil)
-(defvar nnultimate-table-regexp 
+(defvar nnultimate-table-regexp
   "postings.*editpost\\|forumdisplay\\|Forum[0-9]+/HTML\\|getbio")
 
 ;;; Interface functions
@@ -107,7 +107,7 @@
 		    fetchers))
 	    (pop articles)
 	    (setq article (car articles)))))
-      ;; Now we have the mapping from/to Gnus/nnultimate article numbers,
+   ;; Now we have the mapping from/to Gnus/nnultimate article numbers,
       ;; so we start fetching the topics that we need to satisfy the
       ;; request.
       (if (not fetchers)
@@ -172,26 +172,26 @@
 	      (setq date (substring (car datel) (match-end 0))
 		    datel nil))
 	    (pop datel))
-          (when date
-            (setq date (delete "" (split-string
-                                   date "[-, \n\t\r    ]")))
-            (if (or (member "AM" date)
-                    (member "PM" date))
-                (setq date (format
-                            "%s %s %s %s"
-                            (nth 1 date)
-                            (if (and (>= (length (nth 0 date)) 3)
-                                     (assoc (downcase
-                                             (substring (nth 0 date) 0 3))
-                                            parse-time-months))
-                                (substring (nth 0 date) 0 3)
-                              (car (rassq (string-to-number (nth 0 date))
-                                          parse-time-months)))
-                            (nth 2 date) (nth 3 date)))
-              (setq date (format "%s %s %s %s"
-                                 (car (rassq (string-to-number (nth 1 date))
-                                             parse-time-months))
-                                 (nth 0 date) (nth 2 date) (nth 3 date)))))
+	  (when date
+	    (setq date (delete "" (split-string
+				   date "[-, \n\t\r    ]")))
+	    (if (or (member "AM" date)
+		    (member "PM" date))
+		(setq date (format
+			    "%s %s %s %s"
+			    (nth 1 date)
+			    (if (and (>= (length (nth 0 date)) 3)
+				     (assoc (downcase
+					     (substring (nth 0 date) 0 3))
+					    parse-time-months))
+				(substring (nth 0 date) 0 3)
+			      (car (rassq (string-to-number (nth 0 date))
+					  parse-time-months)))
+			    (nth 2 date) (nth 3 date)))
+	      (setq date (format "%s %s %s %s"
+				 (car (rassq (string-to-number (nth 1 date))
+					     parse-time-months))
+				 (nth 0 date) (nth 2 date) (nth 3 date)))))
 	  (push
 	   (cons
 	    article
@@ -433,7 +433,7 @@
 	nnultimate-groups-alist)
   (with-temp-file (expand-file-name "groups" nnultimate-directory)
     (prin1 nnultimate-groups-alist (current-buffer))))
-    
+
 (defun nnultimate-init (server)
   "Initialize buffers and such."
   (unless (file-exists-p nnultimate-directory)

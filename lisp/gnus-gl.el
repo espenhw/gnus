@@ -510,11 +510,11 @@ recommend using both scores and grouplens predictions together."
       ;; Return an empty string
       ""
     (let* ((rate-string (make-string 12 ?\ ))
-           (mid (mail-header-id header))
-           (hashent (gnus-gethash mid grouplens-current-hashtable))
-           (pred (or (nth 0 hashent) 0))
-           (low (nth 1 hashent))
-           (high (nth 2 hashent)))
+	   (mid (mail-header-id header))
+	   (hashent (gnus-gethash mid grouplens-current-hashtable))
+	   (pred (or (nth 0 hashent) 0))
+	   (low (nth 1 hashent))
+	   (high (nth 2 hashent)))
       ;; Init rate-string
       (aset rate-string 0 ?|)
       (aset rate-string 11 ?|)

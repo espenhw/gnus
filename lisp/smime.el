@@ -177,7 +177,7 @@ and the files themself should be in PEM format."
 		 (const :tag "RC2 64 bits" "-rc2-64")
 		 (const :tag "RC2 128 bits" "-rc2-128"))
   :group 'smime)
-  
+
 (defcustom smime-dns-server nil
   "DNS server to query certificates from.
 If nil, use system defaults."
@@ -229,7 +229,7 @@ to include in its caar."
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (prog1
-	(when (apply 'smime-call-openssl-region b e buffer "smime" "-sign" 
+	(when (apply 'smime-call-openssl-region b e buffer "smime" "-sign"
 		     "-signer" (expand-file-name keyfile)
 		     (append
 		      (smime-make-certfiles certfiles)
@@ -338,7 +338,7 @@ nil."
     (if passphrase
 	(setenv "GNUS_SMIME_PASSPHRASE" passphrase))
     (when (apply 'smime-call-openssl-region
-		 b e buffer "smime" "-decrypt" 
+		 b e buffer "smime" "-decrypt"
 		 "-recip" keyfile
 		 (if passphrase
 		     (list "-passin" "env:GNUS_SMIME_PASSPHRASE" )))

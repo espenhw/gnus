@@ -160,9 +160,9 @@ it's not cached."
       (when (and number
 		 (> number 0)		; Reffed article.
 		 (or force
-                     (and (or (not gnus-cacheable-groups)
-                              (string-match gnus-cacheable-groups group))
-                          (or (not gnus-uncacheable-groups)
+		     (and (or (not gnus-cacheable-groups)
+			      (string-match gnus-cacheable-groups group))
+			  (or (not gnus-uncacheable-groups)
 			      (not (string-match
 				    gnus-uncacheable-groups group)))
 			  (gnus-cache-member-of-class
@@ -307,7 +307,7 @@ it's not cached."
 	    ;; unsuccessful), so we use the cached headers exclusively.
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
-	    (let ((coding-system-for-read 
+	    (let ((coding-system-for-read
 		   gnus-cache-overview-coding-system))
 	      (insert-file-contents cache-file))
 	    'nov)
@@ -490,9 +490,9 @@ Returns the list of articles removed."
     (save-excursion
       (set-buffer cache-buf)
       (erase-buffer)
-      (let ((coding-system-for-read 
+      (let ((coding-system-for-read
 	     gnus-cache-overview-coding-system))
-	(insert-file-contents 
+	(insert-file-contents
 	 (or file (gnus-cache-file-name group ".overview"))))
       (goto-char (point-min))
       (insert "\n")
@@ -535,7 +535,7 @@ Returns the list of articles removed."
       (save-excursion
 	(set-buffer cache-buf)
 	(erase-buffer)
-	(let ((coding-system-for-read 
+	(let ((coding-system-for-read
 	       gnus-cache-coding-system))
 	  (insert-file-contents (gnus-cache-file-name group (car cached))))
 	(goto-char (point-min))

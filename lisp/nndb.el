@@ -175,7 +175,7 @@ article was posted to nndb")
       (nntp-send-command "^\\([23]\\|^423\\).*\n" "X-DATE" art)
       (setq msg (nndb-status-message))
       (if (string-match "^423" msg)
-          ()
+	  ()
 	(or (string-match "'\\(.+\\)'" msg)
 	    (error "Not a valid response for X-DATE command: %s"
 		   msg))
@@ -202,12 +202,12 @@ article was posted to nndb")
     (set-buffer nntp-server-buffer)
     (goto-char (point-min))
     (if (looking-at "^[34]")
-	;; x-expire returned error--presume no articles were expirable)
+       ;; x-expire returned error--presume no articles were expirable)
 	(setq list nil)
       ;; otherwise, pull all of the following numbers into the list
       (re-search-forward "follows\r?\n?" nil t)
       (while (re-search-forward "^[0-9]+$" nil t)
-	(push (string-to-int (match-string 0)) list)))
+      (push (string-to-int (match-string 0)) list)))
     list))
 
 (defun nndb-request-expire-articles-remote
@@ -219,15 +219,15 @@ article was posted to nndb")
     ;; first calculate the wait period in days
     (setq days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function group))
-		   nnmail-expiry-wait))
+    nnmail-expiry-wait))
     ;; now handle the special cases
     (cond (force
-	   (setq days 0))
+    (setq days 0))
 	  ((eq days 'never)
 	   ;; This isn't an expirable group.
-	   (setq days -1))
+	  (setq days -1))
 	  ((eq days 'immediate)
-	   (setq days 0)))
+	  (setq days 0)))
 
 
     ;; build article string
@@ -268,19 +268,19 @@ Optional LAST is ignored."
 	  (cons new-group article))
       ;; else move normally
       (let ((artbuf (get-buffer-create " *nndb move*")))
-	(and
-	 (nndb-request-article article group server artbuf)
-	 (save-excursion
-	   (set-buffer artbuf)
-	   (insert-buffer-substring nntp-server-buffer)
-	   (setq result (eval accept-form))
-	   (kill-buffer (current-buffer))
-	   result)
-	 (nndb-request-expire-articles (list article)
-				       group
-				       server
-				       t))
-	result)
+      (and
+       (nndb-request-article article group server artbuf)
+       (save-excursion
+	 (set-buffer artbuf)
+	 (insert-buffer-substring nntp-server-buffer)
+	 (setq result (eval accept-form))
+	 (kill-buffer (current-buffer))
+	 result)
+       (nndb-request-expire-articles (list article)
+				     group
+				     server
+				     t))
+      result)
       )))
 
 (deffoo nndb-request-accept-article (group server &optional last)
@@ -307,11 +307,11 @@ Optional LAST is ignored."
     (nntp-send-buffer "^[23.*\n")
     (list (int-to-string article))))
 
-; nndb-request-delete-group does not exist
-; todo -- maybe later
+			    ; nndb-request-delete-group does not exist
+					; todo -- maybe later
 
-; nndb-request-rename-group does not exist
-; todo -- maybe later
+			    ; nndb-request-rename-group does not exist
+					; todo -- maybe later
 
 ;; -- standard compatability functions
 

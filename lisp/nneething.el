@@ -122,11 +122,11 @@ included.")
   (let ((file (unless (stringp id)
 		(nneething-file-name id)))
 	(nntp-server-buffer (or buffer nntp-server-buffer)))
-    (and (stringp file)			; We did not request by Message-ID.
+    (and (stringp file)		   ; We did not request by Message-ID.
 	 (file-exists-p file)		; The file exists.
 	 (not (file-directory-p file))	; It's not a dir.
 	 (save-excursion
-	   (nnmail-find-file file)	; Insert the file in the nntp buf.
+	   (nnmail-find-file file)  ; Insert the file in the nntp buf.
 	   (unless (nnheader-article-p)	; Either it's a real article...
 	     (goto-char (point-min))
 	     (nneething-make-head
@@ -234,7 +234,7 @@ included.")
 	    prev)
 	(while map
 	  (if (and (member (cadr (car map)) files)
-		   ;; We also remove files that have changed mod times.
+		  ;; We also remove files that have changed mod times.
 		   (equal (nth 5 (file-attributes
 				  (nneething-file-name (cadr (car map)))))
 			  (cadr (cdar map))))
@@ -352,7 +352,7 @@ included.")
 		 (progn
 		   (goto-char (point-min))
 		   (or (and (search-forward "\n\n" nil t)
-		      (1- (point)))
+			    (1- (point)))
 		       (point-max)))
 		 (point-max))
 	      (goto-char (point-min))
@@ -365,7 +365,7 @@ included.")
 (defun nneething-file-name (article)
   "Return the file name of ARTICLE."
   (let ((dir (file-name-as-directory nneething-address))
-        fname)
+	fname)
     (if (numberp article)
 	(if (setq fname (cadr (assq article nneething-map)))
 	    (expand-file-name fname dir)

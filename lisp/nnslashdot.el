@@ -89,9 +89,9 @@
   (nnslashdot-possibly-change-server group server)
   (condition-case why
       (unless gnus-nov-is-evil
-        (if nnslashdot-threaded
-            (nnslashdot-threaded-retrieve-headers articles group)
-          (nnslashdot-sane-retrieve-headers articles group)))
+	(if nnslashdot-threaded
+	    (nnslashdot-threaded-retrieve-headers articles group)
+	  (nnslashdot-sane-retrieve-headers articles group)))
     (search-failed (nnslashdot-lose why))))
 
 (deffoo nnslashdot-threaded-retrieve-headers (articles group)
@@ -152,7 +152,7 @@
 		  score (match-string 5))
 	    (when (string-match "^Re: *" subject)
 	      (setq subject (concat "Re: " (substring subject (match-end 0)))))
-            (setq subject (nnweb-decode-entities-string subject))
+	    (setq subject (nnweb-decode-entities-string subject))
 	    (forward-line 1)
 	    (if (looking-at
 		 "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
@@ -254,7 +254,7 @@
 		score (match-string 5))
 	  (when (string-match "^Re: *" subject)
 	    (setq subject (concat "Re: " (substring subject (match-end 0)))))
-          (setq subject (nnweb-decode-entities-string subject))
+	  (setq subject (nnweb-decode-entities-string subject))
 	  (forward-line 1)
 	  (if (looking-at
 	       "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
@@ -387,7 +387,7 @@
   (let ((number 0)
 	sid elem description articles gname)
     (condition-case why
-        ;; First we do the Ultramode to get info on all the latest groups.
+	;; First we do the Ultramode to get info on all the latest groups.
 	(progn
 	  (mm-with-unibyte-buffer
 	    (nnweb-insert nnslashdot-backslash-url t)
@@ -407,7 +407,7 @@
 	      (setq gname (concat description " (" sid ")"))
 	      (if (setq elem (assoc gname nnslashdot-groups))
 		  (setcar (cdr elem) articles)
-		(push (list gname articles sid (current-time)) 
+		(push (list gname articles sid (current-time))
 		      nnslashdot-groups))
 	      (goto-char (point-max))
 	      (widen)))
@@ -429,7 +429,7 @@
 		  (setq gname (concat description " (" sid ")"))
 		  (if (setq elem (assoc gname nnslashdot-groups))
 		      (setcar (cdr elem) articles)
-		    (push (list gname articles sid (current-time)) 
+		    (push (list gname articles sid (current-time))
 			  nnslashdot-groups)))))
 	    (incf number 30)))
       (search-failed (nnslashdot-lose why)))
@@ -508,9 +508,9 @@
     (when item
       (if (fourth item)
 	  (when (and (>= (length articles) (cadr item)) ;; All are expirable.
-		     (nnmail-expired-article-p 
+		     (nnmail-expired-article-p
 		      group
-		      (fourth item) 
+		      (fourth item)
 		      force))
 	    (setq nnslashdot-groups (delq item nnslashdot-groups))
 	    (nnslashdot-write-groups)
@@ -574,11 +574,6 @@
 
 (defun nnslashdot-lose (why)
   (error "Slashdot HTML has changed; please get a new version of nnslashdot"))
-
-;(defun nnslashdot-sid-strip (sid)
-;  (if (string-match "^00/" sid)
-;      (substring sid (match-end 0))
-;    sid))
 
 (defalias 'nnslashdot-sid-strip 'identity)
 

@@ -109,60 +109,60 @@
     ("Reuters.Health.rdf"
      "http://www.reutershealth.com/eline.rdf"
      "Consumer-oriented health-related news stories.")
-    ;;("4xt" "http://4xt.org/news/general.rss10" "Resources for XT users.")
+;;("4xt" "http://4xt.org/news/general.rss10" "Resources for XT users.")
     ("Aaronland" "http://aaronland.net/xml/abhb.rdf" "A boy and his basement.")
     ("Art of the Mix" "http://www.artofthemix.org/xml/rss.asp" "A website devoted to the art of making mixed tapes and cds.")
     ("Dave Beckett's RDF Resource Guide" "http://www.ilrt.bristol.ac.uk/discovery/rdf/resources/rss.rdf" "A comprehensive guide to resources about RDF.")
     ("David Chess" "http://www.davidchess.com/words/log.rss" "Mostly-daily musings on philosophy, children, culture, technology, the emergence of life from matter, chocolate, Nomic, and all that sort of thing.")
-    ;;("Dublin Core Metadata Intitiative" "http://www.dublincore.org/news.rss" "Latest news from DCMI.")
+;;("Dublin Core Metadata Intitiative" "http://www.dublincore.org/news.rss" "Latest news from DCMI.")
     ("Figby Articles" "http://www.figby.com/index-rss.php" "A weblog with daily stories about technology, books and publishing, privacy, science, and occasional humor.")
-    ;;("Figby News" "http://www.figby.com/news.php" "Categorized RSS feeds from various sources.")
+;;("Figby News" "http://www.figby.com/news.php" "Categorized RSS feeds from various sources.")
     ("Figby Quickies" "http://www.figby.com/quickies-rss.php" "Quick commented links to other sites from Figby.com.")
     ("Flutterby!" "http://www.flutterby.com/main.rdf" "News and views from Dan Lyke.")
     ("Groovelog" "http://groovelog.agora.co.uk/groove+log/groovelog.nsf/today.rss.xml" "The open-access groove users' weblog.")
-    ;;("Groovelog.rss10" "http://groovelog.agora.co.uk/groove+log/groovelog.nsf/today.rss10.xml" "The open-access groove users' weblog.")
+;;("Groovelog.rss10" "http://groovelog.agora.co.uk/groove+log/groovelog.nsf/today.rss10.xml" "The open-access groove users' weblog.")
     ("Hit or Miss" "http://hit-or-miss.org/rss/" "Daily weblog and journal.")
-    ;;("Internet.com Feeds" "http://www.webreference.com/services/news/" "News from ")
+;;("Internet.com Feeds" "http://www.webreference.com/services/news/" "News from ")
     ("Larkfarm News" "http://www.larkfarm.com/Larkfarm.rdf" "Mike Gunderloy's web site.")
     ("Latest RFCs" "http://x42.com/rss/rfc.rss")
     ("Linux Today" "http://linuxtoday.com/backend/biglt.rss")
     ("Linux Today.rdf" "http://linuxtoday.com/backend/my-netscape10.rdf")
     ("More Like This WebLog" "http://www.whump.com/moreLikeThis/RSS" "Because the more you know, the more jokes you get.")
     ("Motivational Quotes of the Day" "http://www.quotationspage.com/data/mqotd.rss" "Four motivational quotations each day from the Quotations Page.")
-    ;;("My Netscape Network" "http://www.dmoz.org/Netscape/My_Netscape_Network/")
+;;("My Netscape Network" "http://www.dmoz.org/Netscape/My_Netscape_Network/")
     ;;("My UserLand" "http://my.userland.com/choose")
     ("Network World Fusion NetFlash" "http://www.nwfusion.com/netflash.rss" "Daily breaking news about networking products, technologies and services.")
-    ;;("News Feeds" "http://newsfeeds.manilasites.com/" "Jeff Barr highlights high quality RSS feeds.")
+;;("News Feeds" "http://newsfeeds.manilasites.com/" "Jeff Barr highlights high quality RSS feeds.")
     ;;("News Is Free Export" "http://www.newsisfree.com/export.php3")
     ("News Is Free" "http://www.newsisfree.com/news.rdf.php3")
-    ;;("News is Free XML Export" "http://www.newsisfree.com/ocs/directory.xml")
+;;("News is Free XML Export" "http://www.newsisfree.com/ocs/directory.xml")
     ("O'Reilly Network Articles" "http://www.oreillynet.com/cs/rss/query/q/260?x-ver=1.0")
     ("Quotes of the Day" "http://www.quotationspage.com/data/qotd.rss" "Four humorous quotations each day from the Quotations Page.")
     ("RDF Interest Group" "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=www-rdf-interest" "An experimental channel scraped from the RDF Interest Group mail archives.")
     ("RDF Logic List" "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=www-rdf-logic" "An experimental channel scraped from the RDF Logic mail archives.")
     ("RSS Info" "http://www.blogspace.com/rss/rss10" "News and information on the RSS format")
-    ;;("RSS-DEV listing" "http://www.egroups.com/links/rss-dev/Feeds_000966335046/" "A listing of RSS files from the RSS-DEV list.")
+;;("RSS-DEV listing" "http://www.egroups.com/links/rss-dev/Feeds_000966335046/" "A listing of RSS files from the RSS-DEV list.")
     ("Semantic Web List" "http://ilrt.org/discovery/rdf-dev/roads/cgi-bin/desire/ig2rss?list=semantic-web" "An experimental channel scraped from the W3C's Semantic Web mail archives.")
-    ;;("Sherch!" "http://www.sherch.com/~pldms/cgi-bin/sherch.pl" "Sherlock for the rest of us.")
-    ;;("Street Fusion Archived Financial Webcasts" "http://partners.streetfusion.com/rdf/archive.rdf")
-    ;;("Street Fusion Upcoming Financial Webcasts" "http://partners.streetfusion.com/rdf/live.rdf")
-    ;;("TNL.net newsletter" "http://www.tnl.net/newsletter/channel100.asp" "A newsletter about Internet technology and issues.")
+;;("Sherch!" "http://www.sherch.com/~pldms/cgi-bin/sherch.pl" "Sherlock for the rest of us.")
+;;("Street Fusion Archived Financial Webcasts" "http://partners.streetfusion.com/rdf/archive.rdf")
+;;("Street Fusion Upcoming Financial Webcasts" "http://partners.streetfusion.com/rdf/live.rdf")
+;;("TNL.net newsletter" "http://www.tnl.net/newsletter/channel100.asp" "A newsletter about Internet technology and issues.")
     ("W3C" "http://www.w3.org/2000/08/w3c-synd/home.rss" "The latest news at the World Wide Web Consortium.")
-    ;;("XML News: RSS Live Content" "http://www.xmlnews.org/RSS/content.html" "A listing of well-known RSS feeds.")
-    ("|fr| XMLfr" "http://xmlfr.org/actualites/general.rss10" 
+;;("XML News: RSS Live Content" "http://www.xmlnews.org/RSS/content.html" "A listing of well-known RSS feeds.")
+    ("|fr| XMLfr" "http://xmlfr.org/actualites/general.rss10"
      "French speaking portal site dedicated to XML.")
-    ("XMLhack" "http://xmlhack.com/rss10.php" 
+    ("XMLhack" "http://xmlhack.com/rss10.php"
      "Developer news from the XML community.")
-    ("The Register" 
-     "http://www.theregister.co.uk/tonys/slashdot.rdf" 
+    ("The Register"
+     "http://www.theregister.co.uk/tonys/slashdot.rdf"
      "The Register -- Biting the hand that feeds IT.")
-    ("|de| Heise-Ticker" 
-     "http://www.heise.de/newsticker/heise.rdf" 
+    ("|de| Heise-Ticker"
+     "http://www.heise.de/newsticker/heise.rdf"
      "German news ticker about technology.")
-    ("|de| Telepolis News" 
-     "http://www.heise.de/tp/news.rdf" 
+    ("|de| Telepolis News"
+     "http://www.heise.de/tp/news.rdf"
      "German background news about technology.")
-    ("Kuro5hin" 
+    ("Kuro5hin"
      "http://www.kuro5hin.org/backend.rdf"
      "Technology and culture, from the trenches.")
     ("JabberCentral"
@@ -208,20 +208,20 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 		    "0" "\t" ;; lines
 		    "" "\t" ;; Xref
 		    (if (and (nth 6 e)
-                             (memq nnrss-description-field 
-                                   nnmail-extra-headers))
+			     (memq nnrss-description-field
+				   nnmail-extra-headers))
 			(concat (symbol-name nnrss-description-field)
 				": "
-                                (nnrss-format-string (nth 6 e))
-                                "\t")
+				(nnrss-format-string (nth 6 e))
+				"\t")
 		      "")
-                    (if (and (nth 2 e)
-                             (memq nnrss-url-field 
-                                   nnmail-extra-headers))
+		    (if (and (nth 2 e)
+			     (memq nnrss-url-field
+				   nnmail-extra-headers))
 			(concat (symbol-name nnrss-url-field)
 				": "
-                                (nnrss-format-string (nth 2 e))
-                                "\t")
+				(nnrss-format-string (nth 2 e))
+				"\t")
 		      "")
 		    "\n")))))
   'nov)
@@ -250,8 +250,8 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 	(with-current-buffer nntp-server-buffer
 	  (erase-buffer)
 	  (goto-char (point-min))
-          (if group
-              (insert "Newsgroups: " group "\n"))
+	  (if group
+	      (insert "Newsgroups: " group "\n"))
 	  (if (nth 3 e)
 	      (insert "Subject: " (nnrss-format-string (nth 3 e)) "\n"))
 	  (if (nth 4 e)
@@ -294,7 +294,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
       (if (and (setq e (assq art nnrss-group-data))
 	       (nnmail-expired-article-p
 		group
-		(if (listp (setq days (nth 1 e))) days 
+		(if (listp (setq days (nth 1 e))) days
 		  (days-to-time (- days (time-to-days '(0 0)))))
 		force))
 	  (setq nnrss-group-data (delq e nnrss-group-data)
@@ -309,7 +309,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
   (setq nnrss-server-data
 	(delq (assoc group nnrss-server-data) nnrss-server-data))
   (nnrss-save-server-data server)
-  (let ((file (expand-file-name 
+  (let ((file (expand-file-name
 	       (nnrss-translate-file-chars
 		(concat group (and server
 				   (not (equal server ""))
@@ -360,7 +360,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 
 (defun nnrss-read-server-data (server)
   (setq nnrss-server-data nil)
-  (let ((file (expand-file-name 
+  (let ((file (expand-file-name
 	       (nnrss-translate-file-chars
 		(concat "nnrss" (and server
 				     (not (equal server ""))
@@ -371,15 +371,15 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
     (when (file-exists-p file)
       (with-temp-buffer
 	(let ((coding-system-for-read 'binary)
-              emacs-lisp-mode-hook)
+	      emacs-lisp-mode-hook)
 	  (insert-file-contents file)
-          (emacs-lisp-mode)
-          (goto-char (point-min))
-          (eval-buffer))))))
+	  (emacs-lisp-mode)
+	  (goto-char (point-min))
+	  (eval-buffer))))))
 
 (defun nnrss-save-server-data (server)
   (gnus-make-directory nnrss-directory)
-  (let ((file (expand-file-name 
+  (let ((file (expand-file-name
 	       (nnrss-translate-file-chars
 		(concat "nnrss" (and server
 				     (not (equal server ""))
@@ -387,7 +387,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 			server ".el"))
 	       nnrss-directory)))
     (let ((coding-system-for-write 'binary)
-          print-level print-length)
+	  print-level print-length)
       (with-temp-file file
 	(insert "(setq nnrss-server-data '"
 		(prin1-to-string nnrss-server-data)
@@ -399,7 +399,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
   (let ((pair (assoc group nnrss-server-data)))
     (setq nnrss-group-max (or (cadr pair) 0))
     (setq nnrss-group-min (+ nnrss-group-max 1)))
-  (let ((file (expand-file-name 
+  (let ((file (expand-file-name
 	       (nnrss-translate-file-chars
 		(concat group (and server
 				   (not (equal server ""))
@@ -409,11 +409,11 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
     (when (file-exists-p file)
       (with-temp-buffer
 	(let ((coding-system-for-read 'binary)
-              emacs-lisp-mode-hook)
+	      emacs-lisp-mode-hook)
 	  (insert-file-contents file)
-          (emacs-lisp-mode)
-          (goto-char (point-min))
-          (eval-buffer)))
+	  (emacs-lisp-mode)
+	  (goto-char (point-min))
+	  (eval-buffer)))
       (dolist (e nnrss-group-data)
 	(gnus-sethash (nth 2 e) e nnrss-group-hashtb)
 	(if (and (car e) (> nnrss-group-min (car e)))
@@ -423,7 +423,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 
 (defun nnrss-save-group-data (group server)
   (gnus-make-directory nnrss-directory)
-  (let ((file (expand-file-name 
+  (let ((file (expand-file-name
 	       (nnrss-translate-file-chars
 		(concat group (and server
 				   (not (equal server ""))
@@ -431,7 +431,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 			server ".el"))
 	       nnrss-directory)))
     (let ((coding-system-for-write 'binary)
-          print-level print-length)
+	  print-level print-length)
       (with-temp-file file
 	(insert "(setq nnrss-group-data '"
 		(prin1-to-string nnrss-group-data)
@@ -476,15 +476,15 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 	(mm-with-unibyte-buffer
 	  (if (and nnrss-use-local
 		   (file-exists-p (setq file (expand-file-name
-					  (nnrss-translate-file-chars
-					   (concat group ".xml"))
-					  nnrss-directory))))
+					      (nnrss-translate-file-chars
+					       (concat group ".xml"))
+					      nnrss-directory))))
 	      (insert-file-contents file)
 	    (setq url (or (nth 2 (assoc group nnrss-server-data))
 			  (second (assoc group nnrss-group-alist))))
 	    (unless url
 	      (setq url
-		(read-string (format "RSS url of %s: " group "http://")))
+		    (read-string (format "RSS url of %s: " group "http://")))
 	      (let ((pair (assoc group nnrss-server-data)))
 		(if pair
 		    (setcdr (cdr pair) (list url))
@@ -498,35 +498,35 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 	  (if (re-search-forward "<rdf\\|<rss" nil t)
 	      (goto-char (match-beginning 0)))
 	  (setq xml (xml-parse-region (point) (point-max))))
-      (error 
+      (error
        (nnheader-message 1 "Error in group %s: %s" group (cadr err))))
     (while (and xml (not (assq 'item xml)))
       (unless (listp (car (setq xml (cddar xml))))
 	(setq xml nil)))
     (dolist (item (nreverse xml))
-       (when (and (listp item)
-		  (eq 'item (car item))
-		  (setq url (nnrss-node-text (assq 'link (cddr item))))
-		  (setq url (nnrss-decode-entities-unibyte-string url))
-		  (not (gnus-gethash url nnrss-group-hashtb)))
-	 (setq subject (nnrss-node-text (assq 'title (cddr item))))
-	 (setq extra (or (nnrss-node-text (assq 'description (cddr item)))
-			 (nnrss-node-text (assq 'dc:description (cddr item)))))
-	 (setq author (nnrss-node-text (assq 'dc:creator (cddr item))))
-	 (setq date (or (nnrss-node-text (assq 'dc:date (cddr item)))
-			(message-make-date)))
-	 (push
-	  (list
-	   (incf nnrss-group-max)
-	   (current-time)
-	   url
-	   (and subject (nnrss-decode-entities-unibyte-string subject))
-	   (and author (nnrss-decode-entities-unibyte-string author))
-	   date
-	   (and extra (nnrss-decode-entities-unibyte-string extra)))
-	  nnrss-group-data)
-	 (gnus-sethash url (car nnrss-group-data) nnrss-group-hashtb)
-	 (setq changed t)))
+      (when (and (listp item)
+		 (eq 'item (car item))
+		 (setq url (nnrss-node-text (assq 'link (cddr item))))
+		 (setq url (nnrss-decode-entities-unibyte-string url))
+		 (not (gnus-gethash url nnrss-group-hashtb)))
+	(setq subject (nnrss-node-text (assq 'title (cddr item))))
+	(setq extra (or (nnrss-node-text (assq 'description (cddr item)))
+			(nnrss-node-text (assq 'dc:description (cddr item)))))
+	(setq author (nnrss-node-text (assq 'dc:creator (cddr item))))
+	(setq date (or (nnrss-node-text (assq 'dc:date (cddr item)))
+		       (message-make-date)))
+	(push
+	 (list
+	  (incf nnrss-group-max)
+	  (current-time)
+	  url
+	  (and subject (nnrss-decode-entities-unibyte-string subject))
+	  (and author (nnrss-decode-entities-unibyte-string author))
+	  date
+	  (and extra (nnrss-decode-entities-unibyte-string extra)))
+	 nnrss-group-data)
+	(gnus-sethash url (car nnrss-group-data) nnrss-group-hashtb)
+	(setq changed t)))
     (when changed
       (nnrss-save-group-data group server)
       (let ((pair (assoc group nnrss-server-data)))
@@ -545,16 +545,16 @@ It is useful when `(setq nnrss-use-local t)'."
   (dolist (elem nnrss-server-data)
     (let ((url (or (nth 2 elem)
 		   (second (assoc (car elem) nnrss-group-alist)))))
-    (insert "$WGET -q -O \"$RSSDIR\"/'" 
-	    (nnrss-translate-file-chars (concat (car elem) ".xml"))
-	    "' '" url "'\n"))))
+      (insert "$WGET -q -O \"$RSSDIR\"/'"
+	      (nnrss-translate-file-chars (concat (car elem) ".xml"))
+	      "' '" url "'\n"))))
 
 (defun nnrss-translate-file-chars (name)
   (let ((nnheader-file-name-translation-alist
 	 (append nnheader-file-name-translation-alist '((?' . ?_)))))
     (nnheader-translate-file-chars name)))
 
-(defvar nnrss-moreover-url 
+(defvar nnrss-moreover-url
   "http://w.moreover.com/categories/category_list_rss.html"
   "The url of moreover.com categories.")
 
@@ -565,13 +565,13 @@ It is useful when `(setq nnrss-use-local t)'."
     (with-temp-buffer
       (nnrss-insert nnrss-moreover-url)
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "<A NAME=\"\\([^\"]+\\)\">\\|<A HREF=\"\\(http://[^\"]*moreover\\.com[^\"]+page\\?c=\\([^\"&]+\\)&o=rss\\)" nil t)
 	(if (match-string 1)
 	    (setq category (match-string 1))
 	  (setq url (match-string 2)
 		name (nnweb-decode-entities-string
-		      (rfc2231-decode-encoded-string 
+		      (rfc2231-decode-encoded-string
 		       (match-string 3))))
 	  (if category
 	      (setq name (concat category "." name)))

@@ -52,41 +52,41 @@ DELAY is a string, giving the length of the time.  Possible values are:
   variable `gnus-delay-default-hour', minute and second are zero."
   (interactive
    (list (read-string
-          "Target date (YYYY-MM-DD) or length of delay (units in [mhdwMY]): "
-          gnus-delay-default-delay)))
+	  "Target date (YYYY-MM-DD) or length of delay (units in [mhdwMY]): "
+	  gnus-delay-default-delay)))
   (let (num unit days year month day deadline)
     (cond ((string-match
-            "\\([0-9][0-9][0-9]?[0-9]?\\)-\\([0-9]+\\)-\\([0-9]+\\)"
-            delay)
-           (setq year  (string-to-number (match-string 1 delay))
-                 month (string-to-number (match-string 2 delay))
-                 day   (string-to-number (match-string 3 delay)))
-           (setq deadline
-                 (message-make-date
-                  (encode-time 0 0      ; second and minute
-                               gnus-delay-default-hour
-                               day month year))))
-          ((string-match "\\([0-9]+\\)\\s-*\\([mhdwMY]\\)" delay)
-           (setq num (match-string 1 delay))
-           (setq unit (match-string 2 delay))
-           ;; Start from seconds, then multiply into needed units.
-           (setq num (string-to-number num))
-           (cond ((string= unit "Y")
-                  (setq delay (* num 60 60 24 365)))
-                 ((string= unit "M")
-                  (setq delay (* num 60 60 24 30)))
-                 ((string= unit "w")
-                  (setq delay (* num 60 60 24 7)))
-                 ((string= unit "d")
-                  (setq delay (* num 60 60 24)))
-                 ((string= unit "h")
-                  (setq delay (* num 60 60)))
-                 (t
-                  (setq delay (* num 60))))
-           (setq deadline (message-make-date
-                           (seconds-to-time (+ (time-to-seconds (current-time))
-                                               delay)))))
-          (t (error "Malformed delay `%s'" delay)))
+	    "\\([0-9][0-9][0-9]?[0-9]?\\)-\\([0-9]+\\)-\\([0-9]+\\)"
+	    delay)
+	   (setq year  (string-to-number (match-string 1 delay))
+		 month (string-to-number (match-string 2 delay))
+		 day   (string-to-number (match-string 3 delay)))
+	   (setq deadline
+		 (message-make-date
+		  (encode-time 0 0      ; second and minute
+			       gnus-delay-default-hour
+			       day month year))))
+	  ((string-match "\\([0-9]+\\)\\s-*\\([mhdwMY]\\)" delay)
+	   (setq num (match-string 1 delay))
+	   (setq unit (match-string 2 delay))
+	   ;; Start from seconds, then multiply into needed units.
+	   (setq num (string-to-number num))
+	   (cond ((string= unit "Y")
+		  (setq delay (* num 60 60 24 365)))
+		 ((string= unit "M")
+		  (setq delay (* num 60 60 24 30)))
+		 ((string= unit "w")
+		  (setq delay (* num 60 60 24 7)))
+		 ((string= unit "d")
+		  (setq delay (* num 60 60 24)))
+		 ((string= unit "h")
+		  (setq delay (* num 60 60)))
+		 (t
+		  (setq delay (* num 60))))
+	   (setq deadline (message-make-date
+			   (seconds-to-time (+ (time-to-seconds (current-time))
+					       delay)))))
+	  (t (error "Malformed delay `%s'" delay)))
     (message-add-header (format "%s: %s" gnus-delay-header deadline)))
   (set-buffer-modified-p t)
   (nndraft-request-create-group gnus-delay-group)
@@ -101,23 +101,23 @@ DELAY is a string, giving the length of the time.  Possible values are:
   (interactive)
   (save-excursion
     (let* ((group (format "nndraft:%s" gnus-delay-group))
-           (articles (nndraft-articles))
-           article deadline)
+	   (articles (nndraft-articles))
+	   article deadline)
       (gnus-activate-group group)
       (while (setq article (pop articles))
-        (gnus-request-head article group)
-        (set-buffer nntp-server-buffer)
-        (unless (re-search-forward
-                 (concat "^" (regexp-quote gnus-delay-header) ":\\s-+"))
-          (error "Couldn't find delay for article %d" article))
-        (setq deadline (nnheader-header-value))
-        (setq deadline (apply 'encode-time (parse-time-string deadline)))
-        (setq deadline (time-since deadline))
-        (when (and (>= (nth 0 deadline) 0)
-                   (>= (nth 1 deadline) 0))
-          (message "Sending article %d" article)
-          (gnus-draft-send article group)
-          (message "Sending article %d...done" article))))))
+	(gnus-request-head article group)
+	(set-buffer nntp-server-buffer)
+	(unless (re-search-forward
+		 (concat "^" (regexp-quote gnus-delay-header) ":\\s-+"))
+	  (error "Couldn't find delay for article %d" article))
+	(setq deadline (nnheader-header-value))
+	(setq deadline (apply 'encode-time (parse-time-string deadline)))
+	(setq deadline (time-since deadline))
+	(when (and (>= (nth 0 deadline) 0)
+		   (>= (nth 1 deadline) 0))
+	  (message "Sending article %d" article)
+	  (gnus-draft-send article group)
+	  (message "Sending article %d...done" article))))))
 
 ;;;###autoload
 (defun gnus-delay-initialize (&optional no-keymap no-check)

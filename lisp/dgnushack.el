@@ -294,7 +294,7 @@ Modify to suit your needs."))
   (let ((generated-autoload-file dgnushack-gnus-load-file)
 	(make-backup-files nil)
 	(autoload-package-name "gnus"))
-    (if (featurep 'xemacs) 
+    (if (featurep 'xemacs)
 	(if (file-exists-p generated-autoload-file)
 	    (delete-file generated-autoload-file))
       (with-temp-file generated-autoload-file

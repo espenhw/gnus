@@ -199,7 +199,7 @@ If TOPIC, start with that topic."
   "Return entries for all visible groups in TOPIC.
 If RECURSIVE is t, return groups in its subtopics too."
   (let ((groups (cdr (assoc topic gnus-topic-alist)))
-        info clevel unread group params visible-groups entry active)
+	info clevel unread group params visible-groups entry active)
     (setq lowest (or lowest 1))
     (setq level (or level gnus-level-unsubscribed))
     ;; We go through the newsrc to look for matches.
@@ -396,7 +396,7 @@ if it is t, list groups that have no unread articles.
 If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (set-buffer gnus-group-buffer)
   (let ((buffer-read-only nil)
-        (lowest (or lowest 1))
+	(lowest (or lowest 1))
 	(not-in-list
 	 (and gnus-group-listed-groups
 	      (copy-sequence gnus-group-listed-groups))))
@@ -644,7 +644,7 @@ articles in the topic and its subtopics."
   (when (and (eq major-mode 'gnus-group-mode)
 	     gnus-topic-mode)
     (let ((group (gnus-group-group-name))
-          (m (point-marker))
+	  (m (point-marker))
 	  (buffer-read-only nil))
       (when (and group
 		 (gnus-get-info group)
@@ -1078,7 +1078,7 @@ articles in the topic and its subtopics."
 	    (> (prefix-numeric-value arg) 0)))
     ;; Infest Gnus with topics.
     (if (not gnus-topic-mode)
- 	(setq gnus-goto-missing-group-function nil)
+	(setq gnus-goto-missing-group-function nil)
       (when (gnus-visual-p 'topic-menu 'menu)
 	(gnus-topic-make-menu-bar))
       (gnus-set-format 'topic t)

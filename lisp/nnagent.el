@@ -67,7 +67,7 @@
 	  (nnagent-active-file ,(gnus-agent-lib-file "active"))
 	  (nnagent-newsgroups-file ,(gnus-agent-lib-file "newsgroups"))
 	  (nnagent-get-new-mail nil)))
-  (nnoo-change-server 'nnagent 
+  (nnoo-change-server 'nnagent
 		      (nnagent-server server)
 		      defs)
   (let ((dir (gnus-agent-directory))
@@ -121,68 +121,68 @@
 (deffoo nnagent-request-set-mark (group action server)
   (with-temp-buffer
     (insert (format "(%s-request-set-mark \"%s\" '%s \"%s\")\n"
-                    (nth 0 gnus-command-method) group action
-                    (or server (nth 1 gnus-command-method))))
+		    (nth 0 gnus-command-method) group action
+		    (or server (nth 1 gnus-command-method))))
     (append-to-file (point-min) (point-max) (gnus-agent-lib-file "flags")))
   nil)
 
 (deffoo nnagent-request-group (group &optional server dont-check)
   (nnoo-parent-function 'nnagent 'nnml-request-group
-		    (list group (nnagent-server server) dont-check)))
+			(list group (nnagent-server server) dont-check)))
 
 (deffoo nnagent-close-group (group &optional server)
   (nnoo-parent-function 'nnagent 'nnml-close-group
-		    (list group (nnagent-server server))))
+			(list group (nnagent-server server))))
 
 (deffoo nnagent-request-accept-article (group &optional server last)
   (nnoo-parent-function 'nnagent 'nnml-request-accept-article
-		    (list group (nnagent-server server) last)))
+			(list group (nnagent-server server) last)))
 
 (deffoo nnagent-request-article (id &optional group server buffer)
   (nnoo-parent-function 'nnagent 'nnml-request-article
-		    (list id group (nnagent-server server) buffer)))
+			(list id group (nnagent-server server) buffer)))
 
 (deffoo nnagent-request-create-group (group &optional server args)
   (nnoo-parent-function 'nnagent 'nnml-request-create-group
-		    (list group (nnagent-server server) args)))
+			(list group (nnagent-server server) args)))
 
 (deffoo nnagent-request-delete-group (group &optional force server)
   (nnoo-parent-function 'nnagent 'nnml-request-delete-group
-		    (list group force (nnagent-server server))))
+			(list group force (nnagent-server server))))
 
 (deffoo nnagent-request-expire-articles (articles group &optional server force)
   (nnoo-parent-function 'nnagent 'nnml-request-expire-articles
-		    (list articles group (nnagent-server server) force)))
+			(list articles group (nnagent-server server) force)))
 
 (deffoo nnagent-request-list (&optional server)
-  (nnoo-parent-function 'nnagent 'nnml-request-list 
-		    (list (nnagent-server server))))
+  (nnoo-parent-function 'nnagent 'nnml-request-list
+			(list (nnagent-server server))))
 
 (deffoo nnagent-request-list-newsgroups (&optional server)
-  (nnoo-parent-function 'nnagent 'nnml-request-list-newsgroups 
-		    (list (nnagent-server server))))
+  (nnoo-parent-function 'nnagent 'nnml-request-list-newsgroups
+			(list (nnagent-server server))))
 
-(deffoo nnagent-request-move-article 
+(deffoo nnagent-request-move-article
     (article group server accept-form &optional last)
-  (nnoo-parent-function 'nnagent 'nnml-request-move-article 
-		    (list article group (nnagent-server server) 
-			  accept-form last)))
+  (nnoo-parent-function 'nnagent 'nnml-request-move-article
+			(list article group (nnagent-server server)
+			      accept-form last)))
 
 (deffoo nnagent-request-rename-group (group new-name &optional server)
-  (nnoo-parent-function 'nnagent 'nnml-request-rename-group 
-		    (list group new-name (nnagent-server server))))
+  (nnoo-parent-function 'nnagent 'nnml-request-rename-group
+			(list group new-name (nnagent-server server))))
 
 (deffoo nnagent-request-scan (&optional group server)
-  (nnoo-parent-function 'nnagent 'nnml-request-scan 
-		    (list group (nnagent-server server))))
+  (nnoo-parent-function 'nnagent 'nnml-request-scan
+			(list group (nnagent-server server))))
 
 (deffoo nnagent-retrieve-headers (sequence &optional group server fetch-old)
-  (nnoo-parent-function 'nnagent 'nnml-retrieve-headers 
-		    (list sequence group (nnagent-server server) fetch-old)))
+  (nnoo-parent-function 'nnagent 'nnml-retrieve-headers
+			(list sequence group (nnagent-server server) fetch-old)))
 
 (deffoo nnagent-set-status (article name value &optional group server)
-  (nnoo-parent-function 'nnagent 'nnml-set-status 
-		    (list article name value group (nnagent-server server))))
+  (nnoo-parent-function 'nnagent 'nnml-set-status
+			(list article name value group (nnagent-server server))))
 
 (deffoo nnagent-server-opened (&optional server)
   (nnoo-parent-function 'nnagent 'nnml-server-opened

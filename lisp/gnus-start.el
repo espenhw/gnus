@@ -1361,7 +1361,7 @@ newsgroup."
 	      group (gnus-info-group info))
 	(unless (or (gnus-active group)	; Active
 		    (and (gnus-info-method info)
-			 (not (gnus-secondary-method-p 
+			 (not (gnus-secondary-method-p
 			       (gnus-info-method info))))) ; Foreign
 	  ;; Found a bogus newsgroup.
 	  (push group bogus)))
@@ -1578,7 +1578,7 @@ newsgroup."
 	       (not (gnus-secondary-method-p method)))
 	  ;; These groups are foreign.  Check the level.
 	  (when (and (<= (gnus-info-level info) foreign-level)
-                     (setq active (gnus-activate-group group 'scan)))
+		     (setq active (gnus-activate-group group 'scan)))
 	    ;; Let the Gnus agent save the active file.
 	    (when (and gnus-agent gnus-plugged active)
 	      (gnus-agent-save-group-info
@@ -1619,8 +1619,8 @@ newsgroup."
 		(setq active (gnus-activate-group group))
 	      (setq active (gnus-activate-group group 'scan))
 	      (push method scanned-methods))
-            (when active
-              (gnus-close-group group))))))
+	    (when active
+	      (gnus-close-group group))))))
 
       ;; Get the number of unread articles in the group.
       (cond
@@ -1643,22 +1643,22 @@ newsgroup."
       (let ((method (or (car rg) gnus-select-method))
 	    (groups (cdr rg)))
 	(when (gnus-check-server method)
-          ;; Request that the backend scan its incoming messages.
-          (when (gnus-check-backend-function 'request-scan (car method))
-            (gnus-request-scan nil method))
-          (gnus-read-active-file-2
+	  ;; Request that the backend scan its incoming messages.
+	  (when (gnus-check-backend-function 'request-scan (car method))
+	    (gnus-request-scan nil method))
+	  (gnus-read-active-file-2
 	   (mapcar (lambda (group) (gnus-group-real-name group)) groups)
 	   method)
-          (dolist (group groups)
-            (cond
-             ((setq active (gnus-active (gnus-info-group
-                                         (setq info (gnus-get-info group)))))
-              (inline (gnus-get-unread-articles-in-group info active t)))
-             (t
-              ;; The group couldn't be reached, so we nix out the number of
-              ;; unread articles and stuff.
-              (gnus-set-active group nil)
-              (setcar (gnus-gethash group gnus-newsrc-hashtb) t)))))))
+	  (dolist (group groups)
+	    (cond
+	     ((setq active (gnus-active (gnus-info-group
+					 (setq info (gnus-get-info group)))))
+	      (inline (gnus-get-unread-articles-in-group info active t)))
+	     (t
+	      ;; The group couldn't be reached, so we nix out the number of
+	      ;; unread articles and stuff.
+	      (gnus-set-active group nil)
+	      (setcar (gnus-gethash group gnus-newsrc-hashtb) t)))))))
 
     (gnus-message 5 "Checking new news...done")))
 
@@ -2080,7 +2080,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	   (error "Error in %s" ding-file))))
       ;; Older versions of `gnus-format-specs' are no longer valid
       ;; in Oort Gnus 0.01.
-      (let ((version 
+      (let ((version
 	     (and gnus-newsrc-file-version
 		  (gnus-continuum-version gnus-newsrc-file-version))))
 	(when (or (not version)

@@ -70,7 +70,7 @@ If no encoding was done, nil is returned."
 	    (if (re-search-forward "[^\x0-\x7f]" nil t)
 		(or mail-parse-charset
 		    (message-options-get 'mm-encody-body-charset)
-		    (message-options-set 
+		    (message-options-set
 		     'mm-encody-body-charset
 		     (mm-read-charset "Charset used in the article: ")))
 	      ;; The logic in `mml-generate-mime-1' confirms that it's OK
@@ -232,7 +232,7 @@ If no encoding was done, nil is returned."
 The characters in CHARSET should then be decoded."
   (if (stringp charset)
       (setq charset (intern (downcase charset))))
-  (if (or (not charset) 
+  (if (or (not charset)
 	  (eq 'gnus-all mail-parse-ignored-charsets)
 	  (memq 'gnus-all mail-parse-ignored-charsets)
 	  (memq charset mail-parse-ignored-charsets))
@@ -245,7 +245,7 @@ The characters in CHARSET should then be decoded."
 	(if (and (not coding-system)
 		 (listp mail-parse-ignored-charsets)
 		 (memq 'gnus-unknown mail-parse-ignored-charsets))
-	    (setq coding-system 
+	    (setq coding-system
 		  (mm-charset-to-coding-system mail-parse-charset)))
 	(when (and charset coding-system
 		   ;; buffer-file-coding-system
@@ -261,7 +261,7 @@ The characters in CHARSET should then be decoded."
   "Decode STRING with CHARSET."
   (when (stringp charset)
     (setq charset (intern (downcase charset))))
-  (when (or (not charset) 
+  (when (or (not charset)
 	    (eq 'gnus-all mail-parse-ignored-charsets)
 	    (memq 'gnus-all mail-parse-ignored-charsets)
 	    (memq charset mail-parse-ignored-charsets))
@@ -272,7 +272,7 @@ The characters in CHARSET should then be decoded."
        (if (and (not coding-system)
 		(listp mail-parse-ignored-charsets)
 		(memq 'gnus-unknown mail-parse-ignored-charsets))
-	   (setq coding-system 
+	   (setq coding-system
 		 (mm-charset-to-coding-system mail-parse-charset)))
        (when (and charset coding-system
 		  (mm-multibyte-p)

@@ -37,14 +37,14 @@
   (autoload 'message-fetch-field "message")
   (autoload 'message-posting-charset "message"))
 
-(defcustom mml-content-type-parameters 
+(defcustom mml-content-type-parameters
   '(name access-type expiration size permission format)
   "*A list of acceptable parameters in MML tag.
 These parameters are generated in Content-Type header if exists."
   :type '(repeat (symbol :tag "Parameter"))
   :group 'message)
 
-(defcustom mml-content-disposition-parameters 
+(defcustom mml-content-disposition-parameters
   '(filename creation-date modification-date read-date)
   "*A list of acceptable parameters in MML tag.
 These parameters are generated in Content-Disposition header if exists."
@@ -136,23 +136,23 @@ one charsets.")
 	      point (point)
 	      contents (mml-read-part (eq 'mml (car tag)))
 	      charsets (cond
-                        (raw nil)
-                        ((assq 'charset tag)
-                         (list
-                          (intern (downcase (cdr (assq 'charset tag))))))
-                        (t
-                         (mm-find-mime-charset-region point (point)))))
+			(raw nil)
+			((assq 'charset tag)
+			 (list
+			  (intern (downcase (cdr (assq 'charset tag))))))
+			(t
+			 (mm-find-mime-charset-region point (point)))))
 	(when (and (not raw) (memq nil charsets))
 	  (if (or (memq 'unknown-encoding mml-confirmation-set)
-                  (message-options-get 'unknown-encoding)
+		  (message-options-get 'unknown-encoding)
 		  (and (y-or-n-p "\
 Message contains characters with unknown encoding.  Really send?")
-                       (message-options-set 'unknown-encoding t)))
+		       (message-options-set 'unknown-encoding t)))
 	      (if (setq use-ascii
 			(or (memq 'use-ascii mml-confirmation-set)
-                            (message-options-get 'use-ascii)
+			    (message-options-get 'use-ascii)
 			    (and (y-or-n-p "Use ASCII as charset?")
-                                 (message-options-set 'use-ascii t))))
+				 (message-options-set 'use-ascii t))))
 		  (setq charsets (delq nil charsets))
 		(setq warn nil))
 	    (error "Edit your message to remove those characters")))
@@ -168,11 +168,11 @@ Message contains characters with unknown encoding.  Really send?")
 			  tag point (point) use-ascii)))
 	    (when (and warn
 		       (not (memq 'multipart mml-confirmation-set))
-                       (not (message-options-get 'multipart))
+		       (not (message-options-get 'multipart))
 		       (not (and (y-or-n-p (format "\
 A message part needs to be split into %d charset parts.  Really send? "
-                                                   (length nstruct)))
-                                 (message-options-set 'multipart t))))
+						   (length nstruct)))
+				 (message-options-set 'multipart t))))
 	      (error "Edit your message to use only one charset"))
 	    (setq struct (nconc nstruct struct)))))))
     (unless (eobp)
@@ -266,7 +266,7 @@ A message part needs to be split into %d charset parts.  Really send? "
   "Return the buffer up till the next part, multipart or closing part or multipart.
 If MML is non-nil, return the buffer up till the correspondent mml tag."
   (let ((beg (point)) (count 1))
-    ;; If the tag ended at the end of the line, we go to the next line.
+   ;; If the tag ended at the end of the line, we go to the next line.
     (when (looking-at "[ \t]*\n")
       (forward-line 1))
     (if mml
@@ -705,26 +705,26 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     main))
 
 (easy-menu-define
- mml-menu mml-mode-map ""
- '("MML"
-   ("Attach"
-    ["File" mml-attach-file t]
-    ["Buffer" mml-attach-buffer t]
-    ["External" mml-attach-external t])
-   ("Insert"
-    ["Multipart" mml-insert-multipart t]
-    ["Part" mml-insert-part t])
-   ("Security"
-    ("Sign"
-     ["PGP/MIME" mml-secure-sign-pgpmime t]
-     ["S/MIME" mml-secure-sign-smime t])
-    ("Encrypt"
-     ["PGP/MIME" mml-secure-encrypt-pgpmime t]
-     ["S/MIME" mml-secure-encrypt-smime t]))
-   ;;["Narrow" mml-narrow-to-part t]
-   ["Quote" mml-quote-region t]
-   ["Validate" mml-validate t]
-   ["Preview" mml-preview t]))
+  mml-menu mml-mode-map ""
+  '("MML"
+    ("Attach"
+     ["File" mml-attach-file t]
+     ["Buffer" mml-attach-buffer t]
+     ["External" mml-attach-external t])
+    ("Insert"
+     ["Multipart" mml-insert-multipart t]
+     ["Part" mml-insert-part t])
+    ("Security"
+     ("Sign"
+      ["PGP/MIME" mml-secure-sign-pgpmime t]
+      ["S/MIME" mml-secure-sign-smime t])
+     ("Encrypt"
+      ["PGP/MIME" mml-secure-encrypt-pgpmime t]
+      ["S/MIME" mml-secure-encrypt-smime t]))
+    ;;["Narrow" mml-narrow-to-part t]
+    ["Quote" mml-quote-region t]
+    ["Validate" mml-validate t]
+    ["Preview" mml-preview t]))
 
 (defvar mml-mode nil
   "Minor mode for editing MML.")
@@ -748,7 +748,7 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 
 (defun mml-minibuffer-read-file (prompt)
   (let ((file (read-file-name prompt nil nil t)))
-    ;; Prevent some common errors.  This is inspired by similar code in
+   ;; Prevent some common errors.  This is inspired by similar code in
     ;; VM.
     (when (file-directory-p file)
       (error "%s is a directory, cannot attach" file))
@@ -906,7 +906,7 @@ If RAW, don't highlight the article."
 	(run-hooks 'gnus-article-decode-hook)
 	(let ((gnus-newsgroup-name "dummy"))
 	  (gnus-article-prepare-display))))
-    ;; Disable article-mode-map. 
+    ;; Disable article-mode-map.
     (use-local-map nil)
     (setq buffer-read-only t)
     (local-set-key "q" (lambda () (interactive) (kill-buffer nil)))

@@ -854,14 +854,14 @@ be set in `.emacs' instead."
 
 For example:
    ((\"mail\\\\..*\"  (gnus-show-threads nil)
-                  (gnus-use-scoring nil)
-                  (gnus-summary-line-format
-                        \"%U%R%z%I%(%[%d:%ub%-20,20f%]%) %s\\n\")
-                  (gcc-self . t)
-                  (display . all))
+		  (gnus-use-scoring nil)
+		  (gnus-summary-line-format
+			\"%U%R%z%I%(%[%d:%ub%-20,20f%]%) %s\\n\")
+		  (gcc-self . t)
+		  (display . all))
      (\"mail\\\\.me\" (gnus-use-scoring  t))
      (\"list\\\\..*\" (total-expire . t)
-                  (broken-reply-to . t)))")
+		  (broken-reply-to . t)))")
 
 (defvar gnus-group-parameters-more nil)
 
@@ -1074,9 +1074,9 @@ If you want to save your mail in one group and the news articles you
 write in another group, you could say something like:
 
  \(setq gnus-message-archive-group
-        '((if (message-news-p)
-              \"misc-news\"
-            \"misc-mail\")))
+	'((if (message-news-p)
+	      \"misc-news\"
+	    \"misc-mail\")))
 
 Normally the group names returned by this variable should be
 unprefixed -- which implicitly means \"store on the archive server\".
@@ -1191,9 +1191,9 @@ If the default site is too slow, try one of these:
 		  ftp.seas.gwu.edu		 /pub/rtfm
 		  rtfm.mit.edu			 /pub/usenet
    Europe:	  ftp.uni-paderborn.de		 /pub/FAQ
-                  src.doc.ic.ac.uk               /usenet/news-FAQS
+		  src.doc.ic.ac.uk               /usenet/news-FAQS
 		  ftp.sunet.se			 /pub/usenet
-	          sunsite.auc.dk                 /pub/usenet
+		  sunsite.auc.dk                 /pub/usenet
    Asia:	  nctuccca.edu.tw		 /USENET/FAQ
 		  hwarang.postech.ac.kr		 /pub/usenet
 		  ftp.hk.super.net		 /mirror/faqs"
@@ -1469,9 +1469,9 @@ to be desirable; see the manual for further details."
  :function-document
  "Return GROUP's to-address."
  :variable-document
-  "*Alist of group regexps and correspondent to-addresses."
-  :parameter-type '(gnus-email-address :tag "To Address")
-  :parameter-document "\
+ "*Alist of group regexps and correspondent to-addresses."
+ :parameter-type '(gnus-email-address :tag "To Address")
+ :parameter-document "\
 This will be used when doing followups and posts.
 
 This is primarily useful in mail groups that represent closed
@@ -1516,15 +1516,15 @@ address was listed in gnus-group-split Addresses (see below).")
  :variable gnus-auto-expirable-newsgroups
  :variable-default nil
  :variable-document
-  "*Groups in which to automatically mark read articles as expirable.
+ "*Groups in which to automatically mark read articles as expirable.
 If non-nil, this should be a regexp that should match all groups in
 which to perform auto-expiry.  This only makes sense for mail groups."
-  :variable-group nnmail-expire
-  :variable-type '(choice (const nil)
-			  regexp)
-  :parameter-type '(const :tag "Automatic Expire" t)
-  :parameter-document
-  "All articles that are read will be marked as expirable.")
+ :variable-group nnmail-expire
+ :variable-type '(choice (const nil)
+			 regexp)
+ :parameter-type '(const :tag "Automatic Expire" t)
+ :parameter-document
+ "All articles that are read will be marked as expirable.")
 
 (gnus-define-group-parameter
  total-expire
@@ -1540,12 +1540,12 @@ Use with extreme caution.  All groups that match this regexp will be
 expiring - which means that all read articles will be deleted after
 \(say) one week.	 (This only goes for mail groups and the like, of
 course.)"
-  :variable-group nnmail-expire
-  :variable-type '(choice (const nil)
-			  regexp)
-  :parameter-type '(const :tag "Total Expire" t)
-  :parameter-document
-  "All read articles will be put through the expiry process
+ :variable-group nnmail-expire
+ :variable-type '(choice (const nil)
+			 regexp)
+ :parameter-type '(const :tag "Total Expire" t)
+ :parameter-document
+ "All read articles will be put through the expiry process
 
 This happens even if they are not marked as expirable.
 Use with caution.")
@@ -1555,7 +1555,7 @@ Use with caution.")
  :function-document
  "Return the default charset of GROUP."
  :variable gnus-group-charset-alist
- :variable-default 
+ :variable-default
  '(("\\(^\\|:\\)hk\\>\\|\\(^\\|:\\)tw\\>\\|\\<big5\\>" cn-big5)
    ("\\(^\\|:\\)cn\\>\\|\\<chinese\\>" cn-gb-2312)
    ("\\(^\\|:\\)fj\\>\\|\\(^\\|:\\)japan\\>" iso-2022-jp-2)
@@ -1570,12 +1570,12 @@ Use with caution.")
    ("\\(^\\|:\\)\\(comp\\|rec\\|alt\\|sci\\|soc\\|news\\|gnu\\|bofh\\)\\>" iso-8859-1)
    (".*" iso-8859-1))
  :variable-document
-  "Alist of regexps (to match group names) and default charsets to be used when reading."
-  :variable-group gnus-charset
-  :variable-type '(repeat (list (regexp :tag "Group")
-				(symbol :tag "Charset")))
-  :parameter-type '(symbol :tag "Charset")
-  :parameter-document "\
+ "Alist of regexps (to match group names) and default charsets to be used when reading."
+ :variable-group gnus-charset
+ :variable-type '(repeat (list (regexp :tag "Group")
+			       (symbol :tag "Charset")))
+ :parameter-type '(symbol :tag "Charset")
+ :parameter-document "\
 The default charset to use in the group.")
 
 (defcustom gnus-group-uncollapsed-levels 1
@@ -1753,7 +1753,7 @@ covered by that variable."
       ,(nnheader-concat gnus-cache-directory "active"))))
   "List of predefined (convenience) servers.")
 
-(defvar gnus-topic-indentation "");; Obsolete variable.
+(defvar gnus-topic-indentation "") ;; Obsolete variable.
 
 (defconst gnus-article-mark-lists
   '((marked . tick) (replied . reply)
@@ -2749,7 +2749,7 @@ You should probably use `gnus-find-method-for-group' instead."
 	params-list)
     (while alist
       (when (string-match (caar alist) group)
-	(setq params-list 
+	(setq params-list
 	      (nconc (copy-sequence (cdar alist))
 		     params-list)))
       (pop alist))
@@ -2760,7 +2760,7 @@ You should probably use `gnus-find-method-for-group' instead."
 If SYMBOL, return the value of that symbol in the group parameters."
   (save-excursion
     (set-buffer gnus-group-buffer)
-    (let ((parameters 
+    (let ((parameters
 	   (nconc
 	    (copy-sequence
 	     (funcall gnus-group-get-parameter-function group))
@@ -2852,7 +2852,7 @@ just the host name."
 			       depth (+ depth 1)))
 		       depth))))
     ;; Separate foreign select method from group name and collapse.
-    ;; If method contains a server, collapse to non-domain server name,
+   ;; If method contains a server, collapse to non-domain server name,
     ;; otherwise collapse to select method.
     (let* ((colon (string-match ":" group))
 	   (server (and colon (substring group 0 colon)))
@@ -3013,7 +3013,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
   (or gnus-override-method
       (and (not group)
 	   gnus-select-method)
-      (and (not (gnus-group-entry group));; a new group
+      (and (not (gnus-group-entry group)) ;; a new group
 	   (gnus-group-name-to-method group))
       (let ((info (or info (gnus-get-info group)))
 	    method)
@@ -3063,7 +3063,7 @@ Disallow invalid group names."
 (defun gnus-read-method (prompt)
   "Prompt the user for a method.
 Allow completion over sensible values."
-  (let* ((open-servers 
+  (let* ((open-servers
 	  (mapcar (lambda (i) (cons (format "%s:%s" (caar i) (cadar i)) i))
 		  gnus-opened-servers))
 	 (valid-methods
@@ -3129,8 +3129,8 @@ As opposed to `gnus', this command will not connect to the local server."
   (let ((window (get-buffer-window gnus-group-buffer)))
     (cond (window
 	   (select-frame (window-frame window)))
- 	  (t
- 	   (select-frame (make-frame)))))
+	  (t
+	   (select-frame (make-frame)))))
   (gnus arg))
 
 ;;(setq thing ?				; this is a comment

@@ -1963,11 +1963,11 @@ always hide."
 	     (start (point))
 	     (end (point-max))
 	     (orig (buffer-substring start end))
-             (trans (babel-as-string orig)))
+	     (trans (babel-as-string orig)))
 	(save-restriction
 	  (narrow-to-region start end)
 	  (delete-region start end)
-          (insert trans))))))
+	  (insert trans))))))
 
 (defun article-hide-signature (&optional arg)
   "Hide the signature in the current article.
@@ -2194,7 +2194,7 @@ should replace the \"Date:\" one, or should be added below it."
 		     (message-fetch-field "date")
 		     ""))
 	 (tdate-regexp "^Date:[ \t]\\|^X-Sent:[ \t]")
- 	 (date-regexp
+	 (date-regexp
 	  (cond
 	   ((not gnus-article-date-lapsed-new-header)
 	    tdate-regexp)
@@ -2220,8 +2220,8 @@ should replace the \"Date:\" one, or should be added below it."
 	(when (and date (not (string= date "")))
 	  (goto-char (point-min))
 	  (let ((buffer-read-only nil))
- 	    ;; Delete any old Date headers.
- 	    (while (re-search-forward date-regexp nil t)
+	    ;; Delete any old Date headers.
+	    (while (re-search-forward date-regexp nil t)
 	      (if pos
 		  (delete-region (progn (beginning-of-line) (point))
 				 (progn (forward-line 1) (point)))
@@ -2252,7 +2252,7 @@ should replace the \"Date:\" one, or should be added below it."
   (condition-case ()
       (let ((time (date-to-time date)))
 	(cond
-	 ;; Convert to the local timezone.  
+	 ;; Convert to the local timezone.
 	 ((eq type 'local)
 	  (let ((tz (car (current-time-zone time))))
 	    (format "Date: %s %s%02d%02d" (current-time-string time)
@@ -2465,15 +2465,15 @@ This format is defined by the `gnus-article-time-format' variable."
 		visible (nth 2 elem)
 		face (nth 3 elem))
 	  (while (re-search-forward regexp nil t)
- 	    (when (and (match-beginning visible) (match-beginning invisible))
+	    (when (and (match-beginning visible) (match-beginning invisible))
 	      (push 'emphasis gnus-article-wash-types)
- 	      (gnus-article-hide-text
- 	       (match-beginning invisible) (match-end invisible) props)
- 	      (gnus-article-unhide-text-type
- 	       (match-beginning visible) (match-end visible) 'emphasis)
- 	      (gnus-put-text-property-excluding-newlines
- 	       (match-beginning visible) (match-end visible) 'face face)
- 	      (goto-char (match-end invisible)))))))))
+	      (gnus-article-hide-text
+	       (match-beginning invisible) (match-end invisible) props)
+	      (gnus-article-unhide-text-type
+	       (match-beginning visible) (match-end visible) 'emphasis)
+	      (gnus-put-text-property-excluding-newlines
+	       (match-beginning visible) (match-end visible) 'face face)
+	      (goto-char (match-end invisible)))))))))
 
 (defun gnus-article-setup-highlight-words (&optional highlight-words)
   "Setup newsgroup emphasis alist."
@@ -2992,7 +2992,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
     ;; Note "Commands" menu is defined in gnus-sum.el for consistency
 
     ;; Note "Post" menu is defined in gnus-sum.el for consistency
-    
+
     (gnus-run-hooks 'gnus-article-menu-hook)))
 
 ;; Fixme: do something for the Emacs tool bar in Article mode a la
@@ -3354,8 +3354,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	     (let ((mbl1 mml-buffer-list))
 	       (setq mml-buffer-list mbl)
 	       (set (make-local-variable 'mml-buffer-list) mbl1))
-             ;; LOCAL argument of add-hook differs between GNU Emacs
-             ;; and XEmacs. make-local-hook makes sure they are local.
+	     ;; LOCAL argument of add-hook differs between GNU Emacs
+	     ;; and XEmacs. make-local-hook makes sure they are local.
 	     (make-local-hook 'kill-buffer-hook)
 	     (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t)))
        `(lambda (no-highlight)
@@ -3676,8 +3676,8 @@ If no internal viewer is available, use an external viewer."
 		       nil id
 		       (gnus-article-mime-total-parts)
 		       (mm-handle-media-type handle)))))
-              (if (window-live-p window)
-                  (select-window window)))))
+	      (if (window-live-p window)
+		  (select-window window)))))
       (goto-char point)
       (delete-region (gnus-point-at-bol) (progn (forward-line 1) (point)))
       (gnus-insert-mime-button
@@ -4245,61 +4245,61 @@ Argument LINES specifies lines to be scrolled down."
   (interactive "P")
   (gnus-article-check-buffer)
   (let ((nosaves
-         '("q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
-           "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"
-           "=" "^" "\M-^" "|"))
-        (nosave-but-article
-         '("A\r"))
-        (nosave-in-article
-         '("\C-d"))
-        (up-to-top
-         '("n" "Gn" "p" "Gp"))
-        keys new-sum-point)
+	 '("q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
+	   "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"
+	   "=" "^" "\M-^" "|"))
+	(nosave-but-article
+	 '("A\r"))
+	(nosave-in-article
+	 '("\C-d"))
+	(up-to-top
+	 '("n" "Gn" "p" "Gp"))
+	keys new-sum-point)
     (save-excursion
       (set-buffer gnus-article-current-summary)
       (let (gnus-pick-mode)
-        (push (or key last-command-event) unread-command-events)
-        (setq keys (if (featurep 'xemacs)
+	(push (or key last-command-event) unread-command-events)
+	(setq keys (if (featurep 'xemacs)
 		       (events-to-keys (read-key-sequence nil))
 		     (read-key-sequence nil)))))
 
     (message "")
 
     (if (or (member keys nosaves)
-            (member keys nosave-but-article)
-            (member keys nosave-in-article))
-        (let (func)
-          (save-window-excursion
-            (pop-to-buffer gnus-article-current-summary 'norecord)
-            ;; We disable the pick minor mode commands.
-            (let (gnus-pick-mode)
-              (setq func (lookup-key (current-local-map) keys))))
-          (if (or (not func)
+	    (member keys nosave-but-article)
+	    (member keys nosave-in-article))
+	(let (func)
+	  (save-window-excursion
+	    (pop-to-buffer gnus-article-current-summary 'norecord)
+	    ;; We disable the pick minor mode commands.
+	    (let (gnus-pick-mode)
+	      (setq func (lookup-key (current-local-map) keys))))
+	  (if (or (not func)
 		  (numberp func))
-              (ding)
-            (unless (member keys nosave-in-article)
-              (set-buffer gnus-article-current-summary))
-            (call-interactively func)
-            (setq new-sum-point (point)))
-          (when (member keys nosave-but-article)
-            (pop-to-buffer gnus-article-buffer 'norecord)))
+	      (ding)
+	    (unless (member keys nosave-in-article)
+	      (set-buffer gnus-article-current-summary))
+	    (call-interactively func)
+	    (setq new-sum-point (point)))
+	  (when (member keys nosave-but-article)
+	    (pop-to-buffer gnus-article-buffer 'norecord)))
       ;; These commands should restore window configuration.
       (let ((obuf (current-buffer))
-            (owin (current-window-configuration))
-            (opoint (point))
-            (summary gnus-article-current-summary)
-            func in-buffer selected)
-        (if not-restore-window
-            (pop-to-buffer summary 'norecord)
-          (switch-to-buffer summary 'norecord))
-        (setq in-buffer (current-buffer))
-        ;; We disable the pick minor mode commands.
-        (if (and (setq func (let (gnus-pick-mode)
+	    (owin (current-window-configuration))
+	    (opoint (point))
+	    (summary gnus-article-current-summary)
+	    func in-buffer selected)
+	(if not-restore-window
+	    (pop-to-buffer summary 'norecord)
+	  (switch-to-buffer summary 'norecord))
+	(setq in-buffer (current-buffer))
+	;; We disable the pick minor mode commands.
+	(if (and (setq func (let (gnus-pick-mode)
 			      (lookup-key (current-local-map) keys)))
 		 (functionp func))
-            (progn
-              (call-interactively func)
-              (setq new-sum-point (point))
+	    (progn
+	      (call-interactively func)
+	      (setq new-sum-point (point))
 	      (when (eq in-buffer (current-buffer))
 		(setq selected (gnus-summary-select-article))
 		(set-buffer obuf)
@@ -4315,7 +4315,7 @@ Argument LINES specifies lines to be scrolled down."
 		  (when win
 		    (set-window-point win new-sum-point))))    )
 	  (switch-to-buffer gnus-article-buffer)
-          (ding))))))
+	  (ding))))))
 
 (defun gnus-article-describe-key (key)
   "Display documentation of the function invoked by KEY.  KEY is a string."
@@ -4328,10 +4328,10 @@ Argument LINES specifies lines to be scrolled down."
 	  (if (featurep 'xemacs)
 	      (progn
 		(push (elt key 0) unread-command-events)
-		(setq key (events-to-keys 
+		(setq key (events-to-keys
 			   (read-key-sequence "Describe key: "))))
-	    (setq unread-command-events 
-		  (mapcar 
+	    (setq unread-command-events
+		  (mapcar
 		   (lambda (x) (if (>= x 128) (list 'meta (- x 128)) x))
 		   (string-to-list key)))
 	    (setq key (read-key-sequence "Describe key: "))))
@@ -4349,10 +4349,10 @@ Argument LINES specifies lines to be scrolled down."
 	  (if (featurep 'xemacs)
 	      (progn
 		(push (elt key 0) unread-command-events)
-		(setq key (events-to-keys 
+		(setq key (events-to-keys
 			   (read-key-sequence "Describe key: "))))
-	    (setq unread-command-events 
-		  (mapcar 
+	    (setq unread-command-events
+		  (mapcar
 		   (lambda (x) (if (>= x 128) (list 'meta (- x 128)) x))
 		   (string-to-list key)))
 	    (setq key (read-key-sequence "Describe key: "))))
@@ -4788,7 +4788,7 @@ call it with the value of the `gnus-data' text property."
   (interactive "e")
   (set-buffer (window-buffer (posn-window (event-start event))))
   (let* ((pos (posn-point (event-start event)))
-         (data (get-text-property pos 'gnus-data))
+	 (data (get-text-property pos 'gnus-data))
 	 (fun (get-text-property pos 'gnus-callback)))
     (goto-char pos)
     (when fun
@@ -5058,7 +5058,7 @@ specified by `gnus-button-alist'."
       (when (looking-at "//\\([^/]+\\)/")
 	(setq server (match-string 1))
 	(goto-char (match-end 0)))
-	
+
       (cond
        ((looking-at "\\(.*@.*\\)")
 	(setq message-id (match-string 1)))
@@ -5113,24 +5113,24 @@ specified by `gnus-button-alist'."
     (setq pairs (split-string query "&"))
     (while pairs
       (setq cur (car pairs)
-            pairs (cdr pairs))
+	    pairs (cdr pairs))
       (if (not (string-match "=" cur))
-          nil                           ; Grace
-        (setq key (gnus-url-unhex-string (substring cur 0 (match-beginning 0)))
-              val (gnus-url-unhex-string (substring cur (match-end 0) nil)))
-        (if downcase
-            (setq key (downcase key)))
-        (setq cur (assoc key retval))
-        (if cur
-            (setcdr cur (cons val (cdr cur)))
-          (setq retval (cons (list key val) retval)))))
+	  nil                           ; Grace
+	(setq key (gnus-url-unhex-string (substring cur 0 (match-beginning 0)))
+	      val (gnus-url-unhex-string (substring cur (match-end 0) nil)))
+	(if downcase
+	    (setq key (downcase key)))
+	(setq cur (assoc key retval))
+	(if cur
+	    (setcdr cur (cons val (cdr cur)))
+	  (setq retval (cons (list key val) retval)))))
     retval))
 
 (defun gnus-url-unhex (x)
   (if (> x ?9)
       (if (>= x ?a)
-          (+ 10 (- x ?a))
-        (+ 10 (- x ?A)))
+	  (+ 10 (- x ?a))
+	(+ 10 (- x ?A)))
     (- x ?0)))
 
 (defun gnus-url-unhex-string (str &optional allow-newlines)
@@ -5140,21 +5140,21 @@ decoding of carriage returns and line feeds in the string, which is normally
 forbidden in URL encoding."
   (setq str (or str ""))
   (let ((tmp "")
-        (case-fold-search t))
+	(case-fold-search t))
     (while (string-match "%[0-9a-f][0-9a-f]" str)
       (let* ((start (match-beginning 0))
-             (ch1 (gnus-url-unhex (elt str (+ start 1))))
-             (code (+ (* 16 ch1)
-                      (gnus-url-unhex (elt str (+ start 2))))))
-        (setq tmp (concat
-                   tmp (substring str 0 start)
-                   (cond
-                    (allow-newlines
-                     (char-to-string code))
-                    ((or (= code ?\n) (= code ?\r))
-                     " ")
-                    (t (char-to-string code))))
-              str (substring str (match-end 0)))))
+	     (ch1 (gnus-url-unhex (elt str (+ start 1))))
+	     (code (+ (* 16 ch1)
+		      (gnus-url-unhex (elt str (+ start 2))))))
+	(setq tmp (concat
+		   tmp (substring str 0 start)
+		   (cond
+		    (allow-newlines
+		     (char-to-string code))
+		    ((or (= code ?\n) (= code ?\r))
+		     " ")
+		    (t (char-to-string code))))
+	      str (substring str (match-end 0)))))
     (setq tmp (concat tmp str))
     tmp))
 
@@ -5164,22 +5164,22 @@ forbidden in URL encoding."
     (setq url (substring url (match-beginning 1) nil)))
   (let (to args subject func)
     (if (string-match (regexp-quote "?") url)
-        (setq to (gnus-url-unhex-string (substring url 0 (match-beginning 0)))
-              args (gnus-url-parse-query-string
-                    (substring url (match-end 0) nil) t))
+	(setq to (gnus-url-unhex-string (substring url 0 (match-beginning 0)))
+	      args (gnus-url-parse-query-string
+		    (substring url (match-end 0) nil) t))
       (setq to (gnus-url-unhex-string url)))
     (setq args (cons (list "to" to) args)
-          subject (cdr-safe (assoc "subject" args)))
+	  subject (cdr-safe (assoc "subject" args)))
     (gnus-msg-mail)
     (while args
       (setq func (intern-soft (concat "message-goto-" (downcase (caar args)))))
       (if (fboundp func)
-          (funcall func)
-        (message-position-on-field (caar args)))
+	  (funcall func)
+	(message-position-on-field (caar args)))
       (insert (mapconcat 'identity (cdar args) ", "))
       (setq args (cdr args)))
     (if subject
-        (message-goto-body)
+	(message-goto-body)
       (message-goto-subject))))
 
 (defun gnus-button-embedded-url (address)

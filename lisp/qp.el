@@ -65,7 +65,7 @@ coding-system."
 					    16)))
 		   (insert byte)
 		   (delete-char 3)
-		   ;; Why backward-char??? 
+		   ;; Why backward-char???
 		   ;;(unless (eq byte 61) ;; 61 is not ?= in XEmacs
 		   ;;  (backward-char))
 		   ))

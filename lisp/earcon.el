@@ -83,7 +83,7 @@ call it with the value of the `earcon-data' text property."
   (interactive "e")
   (set-buffer (window-buffer (posn-window (event-start event))))
   (let* ((pos (posn-point (event-start event)))
-         (data (get-text-property pos 'earcon-data))
+	 (data (get-text-property pos 'earcon-data))
 	 (fun (get-text-property pos 'earcon-callback)))
     (if fun (funcall fun data))))
 

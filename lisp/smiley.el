@@ -51,7 +51,7 @@
   :group 'gnus-visual)
 
 ;; FIXME: Where is the directory when using Emacs?
-(defcustom smiley-data-directory 
+(defcustom smiley-data-directory
   (if (featurep 'xemacs)
     (message-xmas-find-glyph-directory "smilies")
     "/usr/local/lib/xemacs/xemacs-packages/etc/smilies")
@@ -334,7 +334,7 @@ Mouse button3 - menu"))
 	(dolist (overlay (overlays-in (or st (point-min))
 				      (or nd (point-max))))
 	  (when (overlay-get overlay 'smiley)
-	    (remove-text-properties (overlay-start overlay)  
+	    (remove-text-properties (overlay-start overlay)
 				    (overlay-end overlay) '(display))
 	    (delete-overlay overlay)))
 	(goto-char (or st (point-min)))
@@ -399,7 +399,7 @@ With arg, turn displaying on if and only if arg is positive."
 ;; FIXME: make it work as the one in XEmacs.
 (defun smiley-toggle-buffer-ems (&optional arg buffer st nd)
   "Toggle displaying smiley faces.
-With arg, turn displaying on if and only if arg is positive." 
+With arg, turn displaying on if and only if arg is positive."
   (interactive "P")
   (save-excursion
     (when buffer
@@ -408,7 +408,7 @@ With arg, turn displaying on if and only if arg is positive."
       (dolist (overlay (overlays-in (or st (point-min))
 				    (or nd (point-max))))
 	(when (overlay-get overlay 'smiley)
-	  (remove-text-properties (overlay-start overlay)  
+	  (remove-text-properties (overlay-start overlay)
 				  (overlay-end overlay) '(display))
 	  (setq found t)))
       (unless found

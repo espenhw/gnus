@@ -78,7 +78,7 @@
 		   (when (string-match "[\"'\\~/*;() \t\n]" value)
 		     (setq value (prin1-to-string value)))
 		   (insert (format " %s=%s" key value))))))
-	    ((or (re-search-backward 
+	    ((or (re-search-backward
 		  (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
 		 (re-search-forward
 		  (concat "^" (regexp-quote mail-header-separator) "\n") nil t))

@@ -492,7 +492,7 @@ noticing asynchronous data.")
 	     (not nntp-nov-is-evil)
 	     (nntp-retrieve-headers-with-xover articles fetch-old))
 	;; We successfully retrieved the headers via XOVER.
-        'nov
+	'nov
       ;; XOVER didn't work, so we do it the hard, slow and inefficient
       ;; way.
       (let ((number (length articles))
@@ -951,7 +951,7 @@ password contained in '~/.nntp-authinfo'."
 	 (process
 	  (condition-case ()
 	      (let ((coding-system-for-read nntp-coding-system-for-read)
-                    (coding-system-for-write nntp-coding-system-for-write))
+		    (coding-system-for-write nntp-coding-system-for-write))
 		(funcall nntp-open-connection-function pbuffer))
 	    (error nil)
 	    (quit

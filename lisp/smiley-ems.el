@@ -120,7 +120,7 @@ rgexp to replace with IMAGE.  IMAGE is the name of a PBM file in
 	      (overlay-put overlay
 			   'help-echo "mouse-2: toggle smilies in buffer")
 	      (overlay-put overlay 'keymap smiley-mouse-map))))))
-        (setq smiley-active t)))
+    (setq smiley-active t)))
 
 (defun smiley-toggle-buffer (&optional arg)
   "Toggle displaying smiley faces.

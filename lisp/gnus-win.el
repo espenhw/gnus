@@ -168,7 +168,7 @@
 	       (message 1.0 point)))
     (display-term
       (vertical 1.0
-                ("*display*" 1.0))))
+		("*display*" 1.0))))
   "Window configuration for all possible Gnus buffers.
 See the Gnus manual for an explanation of the syntax used.")
 
@@ -436,7 +436,7 @@ See the Gnus manual for an explanation of the syntax used.")
 	  ;; put point in the assigned buffer, and do not touch the
 	  ;; winconf.
 	  (select-window all-visible)
-	
+
 	;; Make sure "the other" buffer, nntp-server-buffer, is live.
 	(unless (gnus-buffer-live-p nntp-server-buffer)
 	  (nnheader-init-server-buffer))

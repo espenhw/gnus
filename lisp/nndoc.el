@@ -246,8 +246,8 @@ from the document.")
 
 (deffoo nndoc-request-type (group &optional article)
   (cond ((not article) 'unknown)
-        (nndoc-post-type nndoc-post-type)
-        (t 'unknown)))
+	(nndoc-post-type nndoc-post-type)
+	(t 'unknown)))
 
 (deffoo nndoc-close-group (group &optional server)
   (nndoc-possibly-change-buffer group server)
@@ -436,7 +436,7 @@ from the document.")
     t))
 
 (defun nndoc-forward-type-p ()
-  (when (and (re-search-forward "^-+ \\(Start of \\)?forwarded message.*\n+" 
+  (when (and (re-search-forward "^-+ \\(Start of \\)?forwarded message.*\n+"
 				nil t)
 	     (not (re-search-forward "^Subject:.*digest" nil t))
 	     (not (re-search-backward "^From:" nil t 2))

@@ -151,10 +151,10 @@ days (not necessarily an integer) or the symbols `never' or
 `immediate'.")
 
     (expiry-target (choice :tag "Expiry Target"
-                           :value delete
-                           (const delete)
-                           (function :format "%v" nnmail-)
-                           string) "\
+			   :value delete
+			   (const delete)
+			   (function :format "%v" nnmail-)
+			   string) "\
 Where expired messages end up.
 
 Overrides `nnmail-expiry-target', which see.")
@@ -195,13 +195,13 @@ An arbitrary comment on the group.")
 Always display this group, even when there are no unread articles
 in it..")
 
-    (highlight-words 
+    (highlight-words
      (choice :tag "Highlight words"
 	     :value nil
 	     (repeat (list (regexp :tag "Highlight regexp")
 			   (number :tag "Group for entire word" 0)
 			   (number :tag "Group for displayed part" 0)
-			   (symbol :tag "Face" 
+			   (symbol :tag "Face"
 				   gnus-emphasis-highlight-words))))
      "highlight regexps.
 See gnus-emphasis-alist.")
@@ -210,14 +210,14 @@ See gnus-emphasis-alist.")
      (choice :tag "Posting style"
 	     :value nil
 	     (repeat (list
- 		      (choice :tag "Type"
+		      (choice :tag "Type"
 			      :value nil
 			      (const signature)
- 			      (const signature-file) 
- 			      (const organization) 
- 			      (const address)
- 			      (const name)
- 			      (const body))
+			      (const signature-file)
+			      (const organization)
+			      (const address)
+			      (const name)
+			      (const body))
 		      (string :format "%v"))))
      "post style.
 See gnus-posting-styles."))
@@ -229,10 +229,10 @@ DOC is a documentation string for the parameter.")
 
 (defconst gnus-extra-topic-parameters
   '((subscribe (regexp :tag "Subscribe") "\
-If `gnus-subscribe-newsgroup-method' or 
+If `gnus-subscribe-newsgroup-method' or
 `gnus-subscribe-options-newsgroup-method' is set to
 `gnus-subscribe-topics', new groups that matches this regexp will
-automatically be subscribed to this topic")) 
+automatically be subscribed to this topic"))
   "Alist of topic parameters that are not also group parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter
@@ -262,7 +262,7 @@ DOC is a documentation string for the parameter.")
 				(const :format "" ,(nth 0 entry))
 				,(nth 1 entry)))
 		       (append (reverse gnus-group-parameters-more)
-			       gnus-group-parameters 
+			       gnus-group-parameters
 			       (if group
 				   gnus-extra-group-parameters
 				 gnus-extra-topic-parameters)))))
@@ -642,7 +642,7 @@ When called interactively, FILE defaults to the current score file.
 This can be changed using the `\\[gnus-score-change-score-file]' command."
   (interactive (list gnus-current-score-file))
   (unless file
-    (error (format "No score file for %s" 
+    (error (format "No score file for %s"
 		   (gnus-group-decoded-name gnus-newsgroup-name))))
   (let ((scores (gnus-score-load file))
 	(types (mapcar (lambda (entry)

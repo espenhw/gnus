@@ -47,7 +47,7 @@ score files in the \"/ftp.some-where:/pub/score\" directory.
 
  (setq gnus-global-score-files
        '(\"/ftp.gnus.org:/pub/larsi/ding/score/soc.motss.SCORE\"
-         \"/ftp.some-where:/pub/score\"))"
+	 \"/ftp.some-where:/pub/score\"))"
   :group 'gnus-score-files
   :type '(repeat file))
 
@@ -1148,7 +1148,7 @@ EXTRA is the possible non-standard header."
 	  (mark-and-expunge (car (gnus-score-get 'mark-and-expunge alist)))
 	  (files (gnus-score-get 'files alist))
 	  (exclude-files (gnus-score-get 'exclude-files alist))
-          (orphan (car (gnus-score-get 'orphan alist)))
+	  (orphan (car (gnus-score-get 'orphan alist)))
 	  (adapt (gnus-score-get 'adapt alist))
 	  (thread-mark-and-expunge
 	   (car (gnus-score-get 'thread-mark-and-expunge alist)))
@@ -1874,8 +1874,8 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	;; gnus-score-index is used as a free variable.
-        (simplify (and gnus-score-thread-simplify
-                       (string= "subject" header)))
+	(simplify (and gnus-score-thread-simplify
+		       (string= "subject" header)))
 	alike last this art entries alist articles
 	fuzzies arts words kill)
 
@@ -1939,10 +1939,10 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 	       (dmt (downcase mt))
 	       ;; Assume user already simplified regexp and fuzzies
 	       (match (if (and simplify (not (memq dmt '(?f ?r))))
-                          (gnus-map-function
-                           gnus-simplify-subject-functions
-                           (nth 0 kill))
-                        (nth 0 kill)))
+			  (gnus-map-function
+			   gnus-simplify-subject-functions
+			   (nth 0 kill))
+			(nth 0 kill)))
 	       (search-func
 		(cond ((= dmt ?r) 're-search-forward)
 		      ((or (= dmt ?e) (= dmt ?s) (= dmt ?f)) 'search-forward)
@@ -2604,10 +2604,10 @@ GROUP using BNews sys file syntax."
 	  ;; we add this score file to the list of score files
 	  ;; applicable to this group.
 	  (when (or (and not-match
- 			 (ignore-errors
+			 (ignore-errors
 			   (not (string-match regexp group-trans))))
-  		    (and (not not-match)
- 			 (ignore-errors (string-match regexp group-trans))))
+		    (and (not not-match)
+			 (ignore-errors (string-match regexp group-trans))))
 	    (push (car sfiles) ofiles)))
 	(setq sfiles (cdr sfiles)))
       (kill-buffer (current-buffer))
@@ -2744,8 +2744,8 @@ The list is determined from the variable gnus-score-file-alist."
       (while funcs
 	(when (gnus-functionp (car funcs))
 	  (setq score-files
-		(nconc score-files 
-                       (nreverse (funcall (car funcs) group)))))
+		(nconc score-files
+		       (nreverse (funcall (car funcs) group)))))
 	(setq funcs (cdr funcs)))
       (when gnus-score-use-all-scores
 	;; Add any home score files.
@@ -2840,22 +2840,22 @@ If ADAPT, return the home adaptive file instead."
     (while (and (not found)
 		(setq elem (pop list)))
       (setq found
-            (cond
-             ;; Simple string.
-             ((stringp elem)
-              elem)
-             ;; Function.
-             ((gnus-functionp elem)
-              (funcall elem group))
-             ;; Regexp-file cons.
-             ((consp elem)
-              (when (string-match (gnus-globalify-regexp (car elem)) group)
-                (replace-match (cadr elem) t nil group))))))
+	    (cond
+	     ;; Simple string.
+	     ((stringp elem)
+	      elem)
+	     ;; Function.
+	     ((gnus-functionp elem)
+	      (funcall elem group))
+	     ;; Regexp-file cons.
+	     ((consp elem)
+	      (when (string-match (gnus-globalify-regexp (car elem)) group)
+		(replace-match (cadr elem) t nil group))))))
     (when found
       (setq found (nnheader-translate-file-chars found))
       (if (file-name-absolute-p found)
-          found
-        (nnheader-concat gnus-kill-files-directory found)))))
+	  found
+	(nnheader-concat gnus-kill-files-directory found)))))
 
 (defun gnus-hierarchial-home-score-file (group)
   "Return the score file of the top-level hierarchy of GROUP."

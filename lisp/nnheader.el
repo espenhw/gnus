@@ -33,7 +33,7 @@
 
 ;; Requiring `gnus-util' at compile time creates a circular
 ;; dependency between nnheader.el and gnus-util.el.
-;(eval-when-compile (require 'gnus-util))
+			     ;(eval-when-compile (require 'gnus-util))
 
 (require 'mail-utils)
 (require 'mm-util)
@@ -183,7 +183,7 @@ on your system, you could say something like:
   (concat "fake+none+" (int-to-string (incf nnheader-fake-message-id))))
 
 (defsubst nnheader-fake-message-id-p (id)
-  (save-match-data			; regular message-id's are <.*>
+  (save-match-data		       ; regular message-id's are <.*>
     (string-match "\\`fake\\+none\\+[0-9]+\\'" id)))
 
 ;; Parsing headers and NOV lines.
@@ -255,7 +255,7 @@ on your system, you could say something like:
 	     (goto-char p)
 	     (if (search-forward "\nreferences:" nil t)
 		 (nnheader-header-value)
-	       ;; Get the references from the in-reply-to header if there
+	    ;; Get the references from the in-reply-to header if there
 	       ;; were no references and the in-reply-to header looks
 	       ;; promising.
 	       (if (and (search-forward "\nin-reply-to:" nil t)
@@ -270,7 +270,7 @@ on your system, you could say something like:
 					     (match-end 0)))
 		       (when (> (length ref2) (length ref))
 			 (setq ref ref2)))
-                     ref)
+		     ref)
 		 nil)))
 	   ;; Chars.
 	   0
@@ -623,7 +623,7 @@ an alarming frequency on NFS mounted file systems. If it is nil,
 (defun nnheader-directory-articles (dir)
   "Return a list of all article files in directory DIR."
   (mapcar 'nnheader-file-to-number
-	  (if nnheader-directory-files-is-safe 
+	  (if nnheader-directory-files-is-safe
 	      (directory-files
 	       dir nil nnheader-numerical-short-files t)
 	    (nnheader-directory-files-safe
@@ -632,7 +632,7 @@ an alarming frequency on NFS mounted file systems. If it is nil,
 (defun nnheader-article-to-file-alist (dir)
   "Return an alist of article/file pairs in DIR."
   (mapcar (lambda (file) (cons (nnheader-file-to-number file) file))
-	  (if nnheader-directory-files-is-safe 
+	  (if nnheader-directory-files-is-safe
 	      (directory-files
 	       dir nil nnheader-numerical-short-files t)
 	    (nnheader-directory-files-safe
@@ -656,7 +656,7 @@ If FULL, translate everything."
 		path ""
 		i (if (and (< 1 (length leaf)) (eq ?: (aref leaf 1)))
 		      2 0))
-	;; We translate -- but only the file name.  We leave the directory
+    ;; We translate -- but only the file name.  We leave the directory
 	;; alone.
 	(if (and (featurep 'xemacs)
 		 (memq system-type '(win32 w32 mswindows windows-nt)))
@@ -664,7 +664,7 @@ If FULL, translate everything."
 	    ;; file-name-nondirectory is not enough to split
 	    ;; file names, containing ':', e.g.
 	    ;; "d:\\Work\\News\\nntp+news.fido7.ru:fido7.ru.gnu.SCORE"
-	    ;; 
+	    ;;
 	    ;; we are trying to correctly split such names:
 	    ;; "d:file.name" -> "a:" "file.name"
 	    ;; "aaa:bbb.ccc" -> "" "aaa:bbb.ccc"
@@ -773,7 +773,7 @@ without formatting."
 	;; If not, we translate dots into slashes.
 	(expand-file-name (mm-encode-coding-string
 			   (nnheader-replace-chars-in-string group ?. ?/)
-			  nnheader-pathname-coding-system)
+			   nnheader-pathname-coding-system)
 			  dir))))
    (cond ((null file) "")
 	 ((numberp file) (int-to-string file))
@@ -849,7 +849,7 @@ find-file-hooks, etc.
 	(auto-mode-alist (mm-auto-mode-alist))
 	(default-major-mode 'fundamental-mode)
 	(enable-local-variables nil)
-        (after-insert-file-functions nil)
+	(after-insert-file-functions nil)
 	(enable-local-eval nil)
 	(find-file-hooks nil)
 	(coding-system-for-read nnheader-file-coding-system))

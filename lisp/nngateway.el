@@ -66,7 +66,7 @@ parameter -- the gateway address.")
 	(widen)
 	(let (message-required-mail-headers)
 	  (funcall (or message-send-mail-real-function
-                       message-send-mail-function)))
+		       message-send-mail-function)))
 	t))))
 
 ;;; Internal functions

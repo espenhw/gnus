@@ -194,7 +194,7 @@ and `altavista'.")
 			   (nnweb-fetch-url url))
 			 (if (nnweb-definition 'reference t)
 			     (setq article
-				   (funcall (nnweb-definition 
+				   (funcall (nnweb-definition
 					     'reference) article)))))))
 	(unless nnheader-callback-function
 	  (funcall (nnweb-definition 'article))
@@ -733,13 +733,13 @@ and `altavista'.")
 	Subject Score Date Newsgroups From
 	map url)
     (unless active
-      (push (list nnweb-group (setq active (cons 1 0)) 
+      (push (list nnweb-group (setq active (cons 1 0))
 		  nnweb-type nnweb-search)
 	    nnweb-group-alist))
     ;; Go through all the article hits on this page.
     (goto-char (point-min))
     (while (re-search-forward
-            "a href=/groups\\(\\?[^ \">]*selm=[^ \">]*\\)" nil t)
+	    "a href=/groups\\(\\?[^ \">]*selm=[^ \">]*\\)" nil t)
       (setq url
 	    (concat (nnweb-definition 'address)
 		    (match-string 1)))
@@ -763,7 +763,7 @@ and `altavista'.")
 	(goto-char (point-max))
 	(widen)
 	(skip-chars-forward "- \t"))
-      (when (looking-at 
+      (when (looking-at
 	     "\\([0-9]+[/ ][A-Za-z]+[/ ][0-9]+\\)[ \t]*by[ \t]*\\([^<]*\\) - <a")
 	(setq From (match-string 2)
 	      Date (match-string 1)))
@@ -775,7 +775,7 @@ and `altavista'.")
 	  (incf (cdr active))
 	  (make-full-mail-header
 	   (cdr active) (if Newsgroups
-			    (concat  "(" Newsgroups ") " Subject) 
+			    (concat  "(" Newsgroups ") " Subject)
 			  Subject)
 	   From Date Message-ID
 	   nil 0 0 url))
@@ -785,7 +785,7 @@ and `altavista'.")
 
 (defun nnweb-google-reference (id)
   (let ((map (nnweb-google-parse-1 id)) header)
-    (setq nnweb-articles 
+    (setq nnweb-articles
 	  (nconc nnweb-articles map))
     (when (setq header (cadar map))
       (mm-with-unibyte-current-buffer

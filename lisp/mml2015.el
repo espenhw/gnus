@@ -416,8 +416,8 @@
 	     mm-security-handle 'gnus-info "Failed")
 	    (throw 'error handle)))
 	(mm-set-handle-multipart-parameter
-	 mm-security-handle 'gnus-info 
-	 (with-current-buffer mml2015-result-buffer 
+	 mm-security-handle 'gnus-info
+	 (with-current-buffer mml2015-result-buffer
 	   (mml2015-gpg-extract-from))))
       handle)))
 
@@ -438,8 +438,8 @@
 	  mm-security-handle 'gnus-details "Quit.")
 	 nil))
       (mm-set-handle-multipart-parameter
-       mm-security-handle 'gnus-info 
-       (with-current-buffer mml2015-result-buffer 
+       mm-security-handle 'gnus-info
+       (with-current-buffer mml2015-result-buffer
 	 (mml2015-gpg-extract-from)))
     (mm-set-handle-multipart-parameter
      mm-security-handle 'gnus-info "Failed")))

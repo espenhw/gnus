@@ -402,7 +402,7 @@ Return that buffer."
 	    (funcall func))
 	(forward-line);; in case of failure
 	(when (and (not (mm-uu-configure-p (mm-uu-type entry) 'disabled))
-                   (let ((end-regexp (mm-uu-end-regexp entry)))
+		   (let ((end-regexp (mm-uu-end-regexp entry)))
 		     (if (not end-regexp)
 			 (or (setq end-point (point-max)) t)
 		       (prog1

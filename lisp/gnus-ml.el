@@ -75,7 +75,7 @@
   "Setup group parameters from List-Post header.
 If FORCE is non-nil, replace the old ones."
   (interactive "P")
-  (let ((list-post 
+  (let ((list-post
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-post"))))
     (if list-post
@@ -84,7 +84,7 @@ If FORCE is non-nil, replace the old ones."
 	    (gnus-message 1 "to-list is non-nil.")
 	  (if (string-match "<mailto:\\([^>]*\\)>" list-post)
 	      (setq list-post (match-string 1 list-post)))
-	  (gnus-group-add-parameter gnus-newsgroup-name 
+	  (gnus-group-add-parameter gnus-newsgroup-name
 				    (cons 'to-list list-post))
 	  (gnus-mailing-list-mode 1))
       (gnus-message 1 "no list-post in this message."))))
@@ -109,8 +109,8 @@ If FORCE is non-nil, replace the old ones."
 
 (defun gnus-mailing-list-help ()
   "Get help from mailing list server."
-  (interactive)  
-  (let ((list-help 
+  (interactive)
+  (let ((list-help
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-help"))))
     (cond (list-help (gnus-mailing-list-message list-help))
@@ -119,7 +119,7 @@ If FORCE is non-nil, replace the old ones."
 (defun gnus-mailing-list-subscribe ()
   "Subscribe"
   (interactive)
-  (let ((list-subscribe 
+  (let ((list-subscribe
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-subscribe"))))
     (cond (list-subscribe (gnus-mailing-list-message list-subscribe))
@@ -128,7 +128,7 @@ If FORCE is non-nil, replace the old ones."
 (defun gnus-mailing-list-unsubscribe ()
   "Unsubscribe"
   (interactive)
-  (let ((list-unsubscribe 
+  (let ((list-unsubscribe
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-unsubscribe"))))
     (cond (list-unsubscribe (gnus-mailing-list-message list-unsubscribe))
@@ -137,7 +137,7 @@ If FORCE is non-nil, replace the old ones."
 (defun gnus-mailing-list-post ()
   "Post message (really useful ?)"
   (interactive)
-  (let ((list-post 
+  (let ((list-post
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-post"))))
     (cond (list-post (gnus-mailing-list-message list-post))
@@ -146,7 +146,7 @@ If FORCE is non-nil, replace the old ones."
 (defun gnus-mailing-list-owner ()
   "Mail to the owner"
   (interactive)
-  (let ((list-owner 
+  (let ((list-owner
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-owner"))))
     (cond (list-owner (gnus-mailing-list-message list-owner))
@@ -156,10 +156,10 @@ If FORCE is non-nil, replace the old ones."
   "Browse archive"
   (interactive)
   (require 'browse-url)
-  (let ((list-archive 
+  (let ((list-archive
 	 (with-current-buffer gnus-original-article-buffer
 	   (gnus-fetch-field "list-archive"))))
-    (cond (list-archive 
+    (cond (list-archive
 	   (if (string-match "<\\(http:[^>]*\\)>" list-archive)
 	       (browse-url (match-string 1 list-archive))
 	     (browse-url list-archive)))
@@ -174,7 +174,7 @@ If FORCE is non-nil, replace the old ones."
 	(subject "None")
 	(body "")
 	)
-    (cond 
+    (cond
      ((string-match "<mailto:\\([^>]*\\)>" address)
       (let ((args (match-string 1 address)))
 	(cond    				; with param
@@ -187,9 +187,9 @@ If FORCE is non-nil, replace the old ones."
 		(setq body (match-string 1 param)))
 	    (if (string-match "to=\\([^&]*\\)" param)
 		(push (match-string 1 param) to))
-	    ))	 
+	    ))
 	 (t (setq mailto args)))))			; without param
-     
+
      ; other case <http://... to be done.
      (t nil))
     (gnus-setup-message 'message (message-mail mailto subject))

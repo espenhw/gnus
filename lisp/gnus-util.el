@@ -53,20 +53,20 @@
 (defmacro gnus-eval-in-buffer-window (buffer &rest forms)
   "Pop to BUFFER, evaluate FORMS, and then return to the original window."
   (let ((tempvar (make-symbol "GnusStartBufferWindow"))
-        (w (make-symbol "w"))
-        (buf (make-symbol "buf")))
+	(w (make-symbol "w"))
+	(buf (make-symbol "buf")))
     `(let* ((,tempvar (selected-window))
-            (,buf ,buffer)
-            (,w (get-buffer-window ,buf 'visible)))
+	    (,buf ,buffer)
+	    (,w (get-buffer-window ,buf 'visible)))
        (unwind-protect
-           (progn
-             (if ,w
-                 (progn
-                   (select-window ,w)
-                   (set-buffer (window-buffer ,w)))
-               (pop-to-buffer ,buf))
-             ,@forms)
-         (select-window ,tempvar)))))
+	   (progn
+	     (if ,w
+		 (progn
+		   (select-window ,w)
+		   (set-buffer (window-buffer ,w)))
+	       (pop-to-buffer ,buf))
+	     ,@forms)
+	 (select-window ,tempvar)))))
 
 (put 'gnus-eval-in-buffer-window 'lisp-indent-function 1)
 (put 'gnus-eval-in-buffer-window 'edebug-form-spec '(form body))
@@ -700,10 +700,10 @@ with potentially long computations."
 	    (when msg
 	      (goto-char (point-min))
 	      (widen)
- 	      (search-backward "\n\^_")
- 	      (narrow-to-region (point) (point-max))
- 	      (rmail-count-new-messages t)
- 	      (when (rmail-summary-exists)
+	      (search-backward "\n\^_")
+	      (narrow-to-region (point) (point-max))
+	      (rmail-count-new-messages t)
+	      (when (rmail-summary-exists)
 		(rmail-select-summary
 		 (rmail-update-summary)))
 	      (rmail-count-new-messages t)
@@ -914,7 +914,7 @@ Entries without port tokens default to DEFAULTPORT."
 Return the modified alist."
     (let (entry)
       (while (setq entry (assq key alist))
-        (setq alist (delq entry alist)))
+	(setq alist (delq entry alist)))
       alist)))
 
 (defmacro gnus-pull (key alist &optional assoc-p)

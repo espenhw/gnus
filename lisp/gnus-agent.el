@@ -360,9 +360,9 @@ minor mode in all Gnus buffers."
   (gnus-open-agent)
   (add-hook 'gnus-setup-news-hook 'gnus-agent-queue-setup)
   (unless gnus-agent-send-mail-function
-    (setq gnus-agent-send-mail-function (or 
-                                         message-send-mail-real-function
-                                         message-send-mail-function)
+    (setq gnus-agent-send-mail-function (or
+					 message-send-mail-real-function
+					 message-send-mail-function)
 	  message-send-mail-real-function 'gnus-agent-send-mail))
   (unless gnus-agent-covered-methods
     (setq gnus-agent-covered-methods (list gnus-select-method))))
@@ -1051,7 +1051,7 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-save-alist (group &optional articles state dir)
   "Save the article-state alist for GROUP."
   (let ((file-name-coding-system nnmail-pathname-coding-system)
-        print-level print-length)
+	print-level print-length)
       (with-temp-file (if dir
 			  (expand-file-name ".agentview" dir)
 			(gnus-agent-article-name ".agentview" group))

@@ -104,14 +104,14 @@
 		    (and (boundp 'w3-meta-charset-content-type-regexp)
 			 (re-search-forward
 			  w3-meta-charset-content-type-regexp nil t)))
-                (setq charset
-                     (or (let ((bsubstr (buffer-substring-no-properties
-                                         (match-beginning 2)
-                                         (match-end 2))))
-                           (if (fboundp 'w3-coding-system-for-mime-charset)
-                               (w3-coding-system-for-mime-charset bsubstr)
-                             (mm-charset-to-coding-system bsubstr)))
-                         charset)))
+		(setq charset
+		      (or (let ((bsubstr (buffer-substring-no-properties
+					  (match-beginning 2)
+					  (match-end 2))))
+			    (if (fboundp 'w3-coding-system-for-mime-charset)
+				(w3-coding-system-for-mime-charset bsubstr)
+			      (mm-charset-to-coding-system bsubstr)))
+			  charset)))
 	    (delete-region (point-min) (point-max))
 	    (insert (mm-decode-string text charset))
 	    (save-window-excursion
@@ -124,18 +124,18 @@
 		  (condition-case var
 		      (w3-region (point-min) (point-max))
 		    (error
-                     (delete-region (point-min) (point-max))
-                     (let ((b (point))
-                           (charset (mail-content-type-get
-                                     (mm-handle-type handle) 'charset)))
-                       (if (or (eq charset 'gnus-decoded)
-                               (eq mail-parse-charset 'gnus-decoded))
-                           (save-restriction
-                             (narrow-to-region (point) (point))
-                             (mm-insert-part handle)
-                             (goto-char (point-max)))
-                         (insert (mm-decode-string (mm-get-part handle) 
-                                                   charset))))
+		     (delete-region (point-min) (point-max))
+		     (let ((b (point))
+			   (charset (mail-content-type-get
+				     (mm-handle-type handle) 'charset)))
+		       (if (or (eq charset 'gnus-decoded)
+			       (eq mail-parse-charset 'gnus-decoded))
+			   (save-restriction
+			     (narrow-to-region (point) (point))
+			     (mm-insert-part handle)
+			     (goto-char (point-max)))
+			 (insert (mm-decode-string (mm-get-part handle)
+						   charset))))
 		     (message
 		      "Error while rendering html; showing as text/plain"))))))
 	    (mm-handle-set-undisplayer

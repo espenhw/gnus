@@ -149,7 +149,7 @@
 	     nnkiboze-remove-read-articles)
     (let ((coding-system-for-write nnkiboze-file-coding-system))
       (with-temp-file (nnkiboze-nov-file-name)
-	(let ((cur (current-buffer)) 
+	(let ((cur (current-buffer))
 	      (nnheader-file-coding-system nnkiboze-file-coding-system))
 	  (nnheader-insert-file-contents (nnkiboze-nov-file-name))
 	  (goto-char (point-min))
@@ -227,11 +227,11 @@ Finds out what articles are to be part of the nnkiboze groups."
 (defun nnkiboze-generate-group (group &optional inhibit-list-groups)
   (let* ((info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
 	 (newsrc-file (concat nnkiboze-directory
-                              (nnheader-translate-file-chars
-                               (concat group ".newsrc"))))
+			      (nnheader-translate-file-chars
+			       (concat group ".newsrc"))))
 	 (nov-file (concat nnkiboze-directory
-                           (nnheader-translate-file-chars
-                            (concat group ".nov"))))
+			   (nnheader-translate-file-chars
+			    (concat group ".nov"))))
 	 method nnkiboze-newsrc gname newsrc active
 	 ginfo lowest glevel orig-info nov-buffer
 	 ;; Bind various things to nil to make group entry faster.
@@ -242,7 +242,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 (gnus-score-use-all-scores nil)
 	 (gnus-use-scoring t)
 	 (gnus-verbose (min gnus-verbose 3))
- 	 gnus-select-group-hook gnus-summary-prepare-hook
+	 gnus-select-group-hook gnus-summary-prepare-hook
 	 gnus-thread-sort-functions gnus-show-threads
 	 gnus-visual gnus-suppress-duplicates num-unread)
     (unless info
@@ -255,31 +255,31 @@ Finds out what articles are to be part of the nnkiboze groups."
 	(when (file-exists-p nov-file)
 	  (insert-file-contents nov-file))
 	(setq nov-buffer (current-buffer))
-	;; Go through the active hashtb and add new all groups that match the
+ ;; Go through the active hashtb and add new all groups that match the
 	;; kiboze regexp.
 	(mapatoms
 	 (lambda (group)
 	   (and (string-match nnkiboze-regexp
-			      (setq gname (symbol-name group))) ; Match
+			      (setq gname (symbol-name group)))	; Match
 		(not (assoc gname nnkiboze-newsrc)) ; It isn't registered
 		(numberp (car (symbol-value group))) ; It is active
 		(or (> nnkiboze-level 7)
 		    (and (setq glevel (nth 1 (nth 2 (gnus-gethash
 						     gname gnus-newsrc-hashtb))))
 			 (>= nnkiboze-level glevel)))
-		(not (string-match "^nnkiboze:" gname)) ; Exclude kibozes
+		(not (string-match "^nnkiboze:" gname))	; Exclude kibozes
 		(push (cons gname (1- (car (symbol-value group))))
 		      nnkiboze-newsrc)))
 	 gnus-active-hashtb)
 	;; `newsrc' is set to the list of groups that possibly are
-	;; component groups to this kiboze group.  This list has elements
+     ;; component groups to this kiboze group.  This list has elements
 	;; on the form `(GROUP . NUMBER)', where NUMBER is the highest
 	;; number that has been kibozed in GROUP in this kiboze group.
 	(setq newsrc nnkiboze-newsrc)
 	(while newsrc
 	  (if (not (setq active (gnus-gethash
 				 (caar newsrc) gnus-active-hashtb)))
-	      ;; This group isn't active after all, so we remove it from
+	    ;; This group isn't active after all, so we remove it from
 	      ;; the list of component groups.
 	      (setq nnkiboze-newsrc (delq (car newsrc) nnkiboze-newsrc))
 	    (setq lowest (cdar newsrc))
@@ -293,13 +293,13 @@ Finds out what articles are to be part of the nnkiboze groups."
 						gnus-newsrc-hashtb)))
 	    (unwind-protect
 		(progn
-		  ;; We set all list of article marks to nil.  Since we operate
-		  ;; on copies of the real lists, we can destroy anything we
+	 ;; We set all list of article marks to nil.  Since we operate
+	    ;; on copies of the real lists, we can destroy anything we
 		  ;; want here.
 		  (when (nth 3 ginfo)
 		    (setcar (nthcdr 3 ginfo) nil))
-		  ;; We set the list of read articles to be what we expect for
-		  ;; this kiboze group -- either nil or `(1 . LOWEST)'.
+	  ;; We set the list of read articles to be what we expect for
+		 ;; this kiboze group -- either nil or `(1 . LOWEST)'.
 		  (when ginfo
 		    (setcar (nthcdr 2 ginfo)
 			    (and (not (= lowest 1)) (cons 1 lowest))))
@@ -319,7 +319,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 		    ;; We go through the list of scored articles.
 		    (while gnus-newsgroup-scored
 		      (when (> (caar gnus-newsgroup-scored) lowest)
-			;; If it has a good score, then we enter this article
+		 ;; If it has a good score, then we enter this article
 			;; into the kiboze group.
 			(nnkiboze-enter-nov
 			 nov-buffer

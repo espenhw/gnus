@@ -143,7 +143,7 @@ Calling (gnus-group-split-fancy nil nil \"mail.misc\") returns:
 \(| (& (any \"\\\\(bar@femail\\\\.com\\\\|.*@femail\\\\.com\\\\)\"
 	   \"mail.bar\")
       (any \"\\\\(foo@nowhere\\\\.gov\\\\|foo@localhost\\\\|foo-redist@home\\\\)\"
-           - \"bugs-foo\" - \"rambling-foo\" \"mail.foo\"))
+	   - \"bugs-foo\" - \"rambling-foo\" \"mail.foo\"))
    \"mail.others\")"
   (let* ((newsrc (cdr gnus-newsrc-alist))
 	 split)
@@ -200,9 +200,9 @@ Calling (gnus-group-split-fancy nil nil \"mail.misc\") returns:
 			 (list 'any split-regexp)
 			 ;; Generate RESTRICTs for SPLIT-EXCLUDEs.
 			 (if (listp split-exclude)
-                             (apply #'append 
-                                    (mapcar (lambda (arg) (list '- arg))
-                                            split-exclude))
+			     (apply #'append
+				    (mapcar (lambda (arg) (list '- arg))
+					    split-exclude))
 			   (list '- split-exclude))
 			 (list group-clean))
 			split)
