@@ -1,3 +1,7 @@
+2004-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (POP before SMTP): Addition.
+
 2004-03-05  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Spam ELisp Package Sequence of Events): Index.
