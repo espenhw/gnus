@@ -195,7 +195,7 @@ These look like \"us-ascii'en-us'This%20is%20%2A%2A%2Afun%2A%2A%2A\"."
 		(delete-char 1))
 	    (forward-char 1)))
 	(goto-char (point-min))
-	(insert (or (symbol-name charset) "ascii") "''")
+	(insert (symbol-name (or charset 'us-ascii)) "''")
 	(goto-char (point-min))
 	(if (not broken)
 	    (insert param "*=")
