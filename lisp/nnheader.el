@@ -105,7 +105,6 @@ on your system, you could say something like:
   (autoload 'nnmail-message-id "nnmail")
   (autoload 'mail-position-on-field "sendmail")
   (autoload 'message-remove-header "message")
-  (autoload 'gnus-point-at-eol "gnus-util")
   (autoload 'gnus-buffer-live-p "gnus-util"))
 
 ;;; Header access macros.
@@ -233,7 +232,7 @@ on your system, you could say something like:
 
 (defsubst nnheader-header-value ()
   (skip-chars-forward " \t")
-  (buffer-substring (point) (gnus-point-at-eol)))
+  (buffer-substring (point) (point-at-eol)))
 
 (defun nnheader-parse-naked-head (&optional number)
   ;; This function unfolds continuation lines in this buffer
@@ -279,9 +278,9 @@ on your system, you could say something like:
 	   (goto-char p)
 	   (if (search-forward "\nmessage-id:" nil t)
 	       (buffer-substring
-		(1- (or (search-forward "<" (gnus-point-at-eol) t)
+		(1- (or (search-forward "<" (point-at-eol) t)
 			(point)))
-		(or (search-forward ">" (gnus-point-at-eol) t) (point)))
+		(or (search-forward ">" (point-at-eol) t) (point)))
 	     ;; If there was no message-id, we just fake one to make
 	     ;; subsequent routines simpler.
 	     (nnheader-generate-fake-message-id)))
@@ -389,7 +388,7 @@ on your system, you could say something like:
        (nnheader-generate-fake-message-id))))
 
 (defun nnheader-parse-nov ()
-  (let ((eol (gnus-point-at-eol)))
+  (let ((eol (point-at-eol)))
     (vector
      (nnheader-nov-read-integer)	; number
      (nnheader-nov-field)		; subject
@@ -608,7 +607,7 @@ the line could be found."
       ;; This is invalid, but not all articles have Message-IDs.
       ()
     (mail-position-on-field "References")
-    (let ((begin (gnus-point-at-bol))
+    (let ((begin (point-at-bol))
 	  (fill-column 78)
 	  (fill-prefix "\t"))
       (when references

@@ -725,7 +725,7 @@ Two predefined functions are available:
 	(unless (zerop level)
 	  (gnus-tree-indent level)
 	  (insert (cadr gnus-tree-parent-child-edges))
-	  (setq col (- (setq beg (point)) (gnus-point-at-bol) 1))
+	  (setq col (- (setq beg (point)) (point-at-bol) 1))
 	  ;; Draw "|" lines upwards.
 	  (while (progn
 		   (forward-line -1)
@@ -749,7 +749,7 @@ Two predefined functions are available:
 
 (defsubst gnus-tree-indent-vertical ()
   (let ((len (- (* (1+ gnus-tree-node-length) gnus-tmp-indent)
-		(- (point) (gnus-point-at-bol)))))
+		(- (point) (point-at-bol)))))
     (when (> len 0)
       (insert (make-string len ? )))))
 

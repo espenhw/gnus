@@ -1,3 +1,8 @@
+2004-01-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-util.el (gnus-point-at-bol, gnus-point-at-eol): Remove.
+	Replace with point-at-{eol,bol} throughout all files.
+
 2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* ntlm.el (ntlm-string-as-unibyte): New macro.

@@ -572,7 +572,7 @@ marks file will be regenerated properly by Gnus.")
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.
 	(if (not (and (search-backward "\t" nil t 4)
-		      (not (search-backward"\t" (gnus-point-at-bol) t))))
+		      (not (search-backward "\t" (point-at-bol) t))))
 	    (forward-line 1)
 	  (beginning-of-line)
 	  (setq found t)
@@ -699,7 +699,7 @@ marks file will be regenerated properly by Gnus.")
     (nnheader-insert-nov headers)))
 
 (defsubst nnml-header-value ()
-  (buffer-substring (match-end 0) (gnus-point-at-eol)))
+  (buffer-substring (match-end 0) (point-at-eol)))
 
 (defun nnml-parse-head (chars &optional number)
   "Parse the head of the current buffer."

@@ -445,7 +445,7 @@ be restored and the command retried."
 	      (goto-char pos)
 	      (if (looking-at (regexp-quote command))
 		  (delete-region pos (progn (forward-line 1)
-					    (gnus-point-at-bol))))
+					    (point-at-bol))))
 	      )))
       (nnheader-report 'nntp "Couldn't open connection to %s."
 		       nntp-address))))
@@ -470,7 +470,7 @@ be restored and the command retried."
 	      (goto-char pos)
 	      (if (looking-at (regexp-quote command))
 		  (delete-region pos (progn (forward-line 1)
-					    (gnus-point-at-bol)))))))
+					    (point-at-bol)))))))
       (nnheader-report 'nntp "Couldn't open connection to %s."
 		       nntp-address))))
 
@@ -498,7 +498,7 @@ be restored and the command retried."
 	  (set-buffer buffer)
 	  (goto-char pos)
 	  (if (looking-at (regexp-quote command))
-	      (delete-region pos (progn (forward-line 1) (gnus-point-at-bol))))
+	      (delete-region pos (progn (forward-line 1) (point-at-bol))))
 	  )))
       (nnheader-report 'nntp "Couldn't open connection to %s."
 		       nntp-address))))
@@ -1063,7 +1063,7 @@ password contained in '~/.nntp-authinfo'."
       (nntp-send-command "^3.*\r?\n" "AUTHINFO USER" (user-login-name))
       (nntp-send-command
        "^2.*\r?\n" "AUTHINFO PASS"
-       (buffer-substring (point) (gnus-point-at-eol))))))
+       (buffer-substring (point) (point-at-eol))))))
 
 ;;; Internal functions.
 

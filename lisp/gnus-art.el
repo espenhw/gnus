@@ -1629,7 +1629,7 @@ always hide."
 	      (while (re-search-forward "^[^: \t]+:[ \t]*\n[^ \t]" nil t)
 		(forward-line -1)
 		(gnus-article-hide-text-type
-		 (gnus-point-at-bol)
+		 (point-at-bol)
 		 (progn
 		   (end-of-line)
 		   (if (re-search-forward "^[^ \t]" nil t)
@@ -1755,7 +1755,7 @@ always hide."
     (goto-char (point-min))
     (when (re-search-forward (concat "^" header ":") nil t)
       (gnus-article-hide-text-type
-       (gnus-point-at-bol)
+       (point-at-bol)
        (progn
 	 (end-of-line)
 	 (if (re-search-forward "^[^ \t]" nil t)
@@ -1776,7 +1776,7 @@ always hide."
 	(article-narrow-to-head)
 	(while (not (eobp))
 	  (cond
-	   ((< (setq column (- (gnus-point-at-eol) (point)))
+	   ((< (setq column (- (point-at-eol) (point)))
 	       gnus-article-normalized-header-length)
 	    (end-of-line)
 	    (insert (make-string
@@ -1787,7 +1787,7 @@ always hide."
 	     (progn
 	       (forward-char gnus-article-normalized-header-length)
 	       (point))
-	     (gnus-point-at-eol)
+	     (point-at-eol)
 	     'invisible t))
 	   (t
 	    ;; Do nothing.
@@ -1958,7 +1958,7 @@ unfolded."
 	    (end-of-line)
 	    (when (>= (current-column) (min fill-column width))
 	      (narrow-to-region (min (1+ (point)) (point-max))
-				(gnus-point-at-bol))
+				(point-at-bol))
               (let ((goback (point-marker)))
                 (fill-paragraph nil)
                 (goto-char (marker-position goback)))
@@ -2000,7 +2000,7 @@ unfolded."
 	 (while (and (not (bobp))
 		     (looking-at "^[ \t]*$")
 		     (not (gnus-annotation-in-region-p
-			   (point) (gnus-point-at-eol))))
+			   (point) (point-at-eol))))
 	   (forward-line -1))
 	 (forward-line 1)
 	 (point))))))
@@ -2761,11 +2761,11 @@ should replace the \"Date:\" one, or should be added below it."
       (save-restriction
 	(article-narrow-to-head)
 	(when (re-search-forward tdate-regexp nil t)
-	  (setq bface (get-text-property (gnus-point-at-bol) 'face)
-		date (or (get-text-property (gnus-point-at-bol)
+	  (setq bface (get-text-property (point-at-bol) 'face)
+		date (or (get-text-property (point-at-bol)
 					    'original-date)
 			 date)
-		eface (get-text-property (1- (gnus-point-at-eol)) 'face))
+		eface (get-text-property (1- (point-at-eol)) 'face))
 	  (forward-line 1))
 	(when (and date (not (string= date "")))
 	  (goto-char (point-min))
@@ -3418,8 +3418,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 		(message-narrow-to-head)
 		(goto-char (point-max))
 		(forward-line -1)
-		(setq bface (get-text-property (gnus-point-at-bol) 'face)
-		      eface (get-text-property (1- (gnus-point-at-eol)) 'face))
+		(setq bface (get-text-property (point-at-bol) 'face)
+		      eface (get-text-property (1- (point-at-eol)) 'face))
 		(message-remove-header "X-Gnus-PGP-Verify")
 		(if (re-search-forward "^X-PGP-Sig:" nil t)
 		    (forward-line)
@@ -5060,9 +5060,9 @@ not have a face in `gnus-article-boring-faces'."
   "Read article specified by message-id around point."
   (interactive)
   (save-excursion
-    (re-search-backward "[ \t]\\|^" (gnus-point-at-bol) t)
-    (re-search-forward "<?news:<?\\|<" (gnus-point-at-eol) t)
-    (if (re-search-forward "[^@ ]+@[^ \t>]+" (gnus-point-at-eol) t)
+    (re-search-backward "[ \t]\\|^" (point-at-bol) t)
+    (re-search-forward "<?news:<?\\|<" (point-at-eol) t)
+    (if (re-search-forward "[^@ ]+@[^ \t>]+" (point-at-eol) t)
 	(let ((msg-id (concat "<" (match-string 0) ">")))
 	  (set-buffer gnus-summary-buffer)
 	  (gnus-summary-refer-article msg-id))

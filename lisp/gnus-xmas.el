@@ -123,7 +123,7 @@ It is provided only to ease porting of broken FSF Emacs programs."
     (when gnus-newsgroup-selected-overlay
       (delete-extent gnus-newsgroup-selected-overlay))
     (setq gnus-newsgroup-selected-overlay
-	  (make-extent (gnus-point-at-bol) (gnus-point-at-eol)))
+	  (make-extent (point-at-bol) (point-at-eol)))
     (set-extent-face gnus-newsgroup-selected-overlay
 		     gnus-summary-selected-face)))
 
@@ -737,7 +737,7 @@ XEmacs compatibility workaround."
 (defun gnus-group-add-icon ()
   "Add an icon to the current line according to `gnus-group-icon-list'."
   (let* ((p (point))
-	 (end (gnus-point-at-eol))
+	 (end (point-at-eol))
 	 ;; now find out where the line starts and leave point there.
 	 (beg (progn (beginning-of-line) (point))))
     (save-restriction

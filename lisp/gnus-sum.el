@@ -3986,7 +3986,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 ;; This function has to be called with point after the article number
 ;; on the beginning of the line.
 (defsubst gnus-nov-parse-line (number dependencies &optional force-new)
-  (let ((eol (gnus-point-at-eol))
+  (let ((eol (point-at-eol))
 	(buffer (current-buffer))
 	header references in-reply-to)
 
@@ -4183,7 +4183,7 @@ If LINE, insert the rebuilt thread starting on line LINE."
 	(setq thread (list (car (gnus-id-to-thread id))))
       ;; Get the thread this article is part of.
       (setq thread (gnus-remove-thread id)))
-    (setq old-pos (gnus-point-at-bol))
+    (setq old-pos (point-at-bol))
     (setq current (save-excursion
 		    (and (re-search-backward "[\r\n]" nil t)
 			 (gnus-summary-article-number))))
@@ -4365,9 +4365,9 @@ If LINE, insert the rebuilt thread starting on line LINE."
       (gnus-summary-show-thread)
       (gnus-data-remove
        number
-       (- (gnus-point-at-bol)
+       (- (point-at-bol)
 	  (prog1
-	      (1+ (gnus-point-at-eol))
+	      (1+ (point-at-eol))
 	    (gnus-delete-line)))))))
 
 (defun gnus-sort-threads-1 (threads func)
@@ -5947,7 +5947,7 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
 			   (looking-at "Xref:"))
 		      (search-forward "\nXref:" nil t))
 	      (goto-char (1+ (match-end 0)))
-	      (setq xref (buffer-substring (point) (gnus-point-at-eol)))
+	      (setq xref (buffer-substring (point) (point-at-eol)))
 	      (mail-header-set-xref headers xref)))))))
 
 (defun gnus-summary-insert-subject (id &optional old-header use-old-header)
@@ -5975,9 +5975,9 @@ the subject line on."
 	  (goto-char (gnus-data-pos d))
 	  (gnus-data-remove
 	   number
-	   (- (gnus-point-at-bol)
+	   (- (point-at-bol)
 	      (prog1
-		  (1+ (gnus-point-at-eol))
+		  (1+ (point-at-eol))
 		(gnus-delete-line))))))
       (when old-header
 	(mail-header-set-number header (mail-header-number old-header)))
@@ -9933,7 +9933,7 @@ If NO-EXPIRE, auto-expiry will be inhibited."
 (defun gnus-summary-update-mark (mark type)
   (let ((forward (cdr (assq type gnus-summary-mark-positions)))
 	(buffer-read-only nil))
-    (re-search-backward "[\n\r]" (gnus-point-at-bol) 'move-to-limit)
+    (re-search-backward "[\n\r]" (point-at-bol) 'move-to-limit)
     (when forward
       (when (looking-at "\r")
 	(incf forward))
@@ -10457,7 +10457,7 @@ Returns nil if no thread was there to be shown."
   (interactive)
   (let ((buffer-read-only nil)
 	(orig (point))
-	(end (gnus-point-at-eol))
+	(end (point-at-eol))
 	;; Leave point at bol
 	(beg (progn (beginning-of-line) (point))))
     (prog1
@@ -11213,8 +11213,8 @@ If REVERSE, save parts that do not match TYPE."
   ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
   (when gnus-summary-selected-face
     (save-excursion
-      (let* ((beg (gnus-point-at-bol))
-	     (end (gnus-point-at-eol))
+      (let* ((beg (point-at-bol))
+	     (end (point-at-eol))
 	     ;; Fix by Mike Dugan <dugan@bucrf16.bu.edu>.
 	     (from (if (get-text-property beg gnus-mouse-face-prop)
 		       beg
@@ -11263,7 +11263,7 @@ If REVERSE, save parts that do not match TYPE."
 
 (defun gnus-summary-highlight-line ()
   "Highlight current line according to `gnus-summary-highlight'."
-  (let* ((beg (gnus-point-at-bol))
+  (let* ((beg (point-at-bol))
 	 (article (or (gnus-summary-article-number) gnus-current-article))
 	 (score (or (cdr (assq article
 			       gnus-newsgroup-scored))
@@ -11278,7 +11278,7 @@ If REVERSE, save parts that do not match TYPE."
     (let ((face (funcall (gnus-summary-highlight-line-0))))
       (unless (eq face (get-text-property beg 'face))
 	(gnus-put-text-property-excluding-characters-with-faces
-	 beg (gnus-point-at-eol) 'face
+	 beg (point-at-eol) 'face
 	 (setq face (if (boundp face) (symbol-value face) face)))
 	(when gnus-summary-highlight-line-function
 	  (funcall gnus-summary-highlight-line-function article face))))))
@@ -11420,7 +11420,7 @@ treated as multipart/mixed."
     (insert "Mime-Version: 1.0\n")
     (widen)
     (when (search-forward "\n--" nil t)
-      (let ((separator (buffer-substring (point) (gnus-point-at-eol))))
+      (let ((separator (buffer-substring (point) (point-at-eol))))
 	(message-narrow-to-head)
 	(message-remove-header "Content-Type")
 	(goto-char (point-max))

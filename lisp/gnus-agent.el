@@ -1484,7 +1484,7 @@ and that there are no duplicates."
 	      (gnus-message 1
 			    "Overview buffer contains garbage '%s'."
 			    (buffer-substring
-			     p (gnus-point-at-eol))))
+			     p (point-at-eol))))
 	     ((= cur prev-num)
 	      (or backed-up
                   (setq backed-up (gnus-agent-backup-overview-buffer)))
@@ -2234,7 +2234,7 @@ The following commands are available:
     (gnus-category-position-point)))
 
 (defun gnus-category-name ()
-  (or (intern (get-text-property (gnus-point-at-bol) 'gnus-category))
+  (or (intern (get-text-property (point-at-bol) 'gnus-category))
       (error "No category on the current line")))
 
 (defun gnus-category-read ()
@@ -2871,7 +2871,7 @@ missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
 
                     (incf (nth 0 stats))
 
-                    (let ((from (gnus-point-at-bol))
+                    (let ((from (point-at-bol))
                           (to (progn (forward-line 1) (point))))
                       (incf (nth 2 stats) (- to from))
                       (delete-region from to)))

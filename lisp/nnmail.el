@@ -667,7 +667,7 @@ nn*-request-list should have been called before calling this function."
     (while (not (eobp))
       (condition-case err
 	  (progn
-	    (narrow-to-region (point) (gnus-point-at-eol))
+	    (narrow-to-region (point) (point-at-eol))
 	    (setq group (read buffer))
 	    (unless (stringp group)
 	      (setq group (symbol-name group)))
@@ -1105,7 +1105,7 @@ FUNC will be called with the group name to determine the article number."
 	(while (not (eobp))
 	  (unless (< (move-to-column nnmail-split-header-length-limit)
 		     nnmail-split-header-length-limit)
-	    (delete-region (point) (gnus-point-at-eol)))
+	    (delete-region (point) (point-at-eol)))
 	  (forward-line 1))
 	;; Allow washing.
 	(goto-char (point-min))
@@ -1614,7 +1614,7 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 	(skip-chars-forward "^\n\r\t")
 	(unless (looking-at "[\r\n]")
 	  (forward-char 1)
-	  (buffer-substring (point) (gnus-point-at-eol)))))))
+	  (buffer-substring (point) (point-at-eol)))))))
 
 ;; Function for nnmail-split-fancy: look up all references in the
 ;; cache and if a match is found, return that group.

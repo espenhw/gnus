@@ -400,7 +400,7 @@ component group will show up when you enter the virtual group.")
   (looking-at
    "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
   (goto-char (match-end 0))
-  (unless (search-forward "\t" (gnus-point-at-eol) 'move)
+  (unless (search-forward "\t" (point-at-eol) 'move)
     (insert "\t"))
 
   ;; Remove any spaces at the beginning of the Xref field.
@@ -416,8 +416,8 @@ component group will show up when you enter the virtual group.")
   ;; component server prefix.
   (save-restriction
     (narrow-to-region (point)
-		      (or (search-forward "\t" (gnus-point-at-eol) t)
-			  (gnus-point-at-eol)))
+		      (or (search-forward "\t" (point-at-eol) t)
+			  (point-at-eol)))
     (goto-char (point-min))
     (when (re-search-forward "Xref: *[^\n:0-9 ]+ *" nil t)
       (replace-match "" t t))

@@ -123,16 +123,6 @@
        (funcall (if (stringp buffer) 'get-buffer 'buffer-name)
 		buffer))))
 
-(defalias 'gnus-point-at-bol
-  (if (fboundp 'point-at-bol)
-      'point-at-bol
-    'line-beginning-position))
-
-(defalias 'gnus-point-at-eol
-  (if (fboundp 'point-at-eol)
-      'point-at-eol
-    'line-end-position))
-
 ;; The LOCAL arg to `add-hook' is interpreted differently in Emacs and
 ;; XEmacs.  In Emacs we don't need to call `make-local-hook' first.
 ;; It's harmless, though, so the main purpose of this alias is to shut
@@ -157,7 +147,7 @@
 
 ;; Delete the current line (and the next N lines).
 (defmacro gnus-delete-line (&optional n)
-  `(delete-region (gnus-point-at-bol)
+  `(delete-region (point-at-bol)
 		  (progn (forward-line ,(or n 1)) (point))))
 
 (defun gnus-byte-code (func)
@@ -220,7 +210,7 @@ is slower."
 
 (defun gnus-goto-colon ()
   (beginning-of-line)
-  (let ((eol (gnus-point-at-eol)))
+  (let ((eol (point-at-eol)))
     (goto-char (or (text-property-any (point) eol 'gnus-position t)
 		   (search-forward ":" eol t)
 		   (point)))))
