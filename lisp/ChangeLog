@@ -1,3 +1,9 @@
+2004-07-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* flow-fill.el (fill-flowed): Remove space stuffing, and only do
+	quotes that actually start with ">" at the beginning of the
+	lines. 
+
 2004-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-encode-region): Fix last change.
