@@ -1,3 +1,8 @@
+2003-02-08  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-gpg.el (pgg-gpg-process-region): Don't blink.  From Satyaki
+	Das <satyaki@chicory.stanford.edu>.
+
 2003-02-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-article-refer-article): Use
