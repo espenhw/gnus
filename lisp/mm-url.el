@@ -270,9 +270,12 @@ This is taken from RFC 2396.")
 
 (defun mm-url-insert-file-contents (url)
   (if mm-url-use-external
-      (if (string-match "^file:/+" url)
-	  (insert-file-contents (substring url (1- (match-end 0))))
-	(mm-url-insert-file-contents-external url))
+      (progn
+	(if (string-match "^file:/+" url)
+	    (insert-file-contents (substring url (1- (match-end 0))))
+	  (mm-url-insert-file-contents-external url))
+	(goto-char (point-min))
+	(list url (buffer-size)))
     (mm-url-load-url)
     (let ((name buffer-file-name)
 	  (url-package-name (or mm-url-package-name

@@ -1,3 +1,10 @@
+2002-10-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+	From mah@everybody.org (Mark A. Hershberger).
+
+	* mm-url.el (mm-url-insert-file-contents): Make it return the same
+	type values ("url" size) regardless of the values of
+	mm-url-use-external.
+
 2002-10-26  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nnimap.el (nnimap-request-article-part): Try harder to show
