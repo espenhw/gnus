@@ -302,13 +302,13 @@
       (when (numberp article)
 	(if (= article 1)
 	    (progn
-	      (search-forward " on ")
+	      (re-search-forward "Posted by .* on ")
 	      (forward-line 1)
 	      (setq contents
 		    (buffer-substring
 		     (point)
-		     (search-forward
-				  "A href=http://slashdot.org/article.pl"))))
+		     (re-search-forward
+		      "^<p>.*A href=http://slashdot.org/article.pl"))))
 	  (search-forward (format "<a name=\"%d\">" (1- article)))
 	  (setq contents
 		(buffer-substring

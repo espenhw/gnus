@@ -1,3 +1,8 @@
+1999-11-09 00:13:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el (nnslashdot-request-article): Search better on
+	first article.
+
 1999-11-08 05:33:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el: Autoload gnus-subscribe-topics.
