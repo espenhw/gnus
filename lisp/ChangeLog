@@ -1,3 +1,7 @@
+2003-12-10  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-get-reply-headers): Narrow to headers.
+
 2003-12-10  Teodor Zlatanov  <tzz@lifelogs.com> 
 
 	* spam.el (spam-disable-spam-split-during-ham-respool): new

@@ -5582,15 +5582,17 @@ OTHER-HEADERS is an alist of header/value pairs."
 (defun message-get-reply-headers (wide &optional to-address address-headers)
   (let (follow-to mct never-mct to cc author mft recipients)
     ;; Find all relevant headers we need.
-    (setq to (message-fetch-field "to")
-	  cc (message-fetch-field "cc")
-	  mct (message-fetch-field "mail-copies-to")
-	  author (or (message-fetch-field "mail-reply-to")
-		     (message-fetch-field "reply-to")
-		     (message-fetch-field "from")
-		     "")
-	  mft (and message-use-mail-followup-to
-		   (message-fetch-field "mail-followup-to")))
+    (save-restriction
+      (message-narrow-to-headers-or-head)
+      (setq to (message-fetch-field "to")
+	    cc (message-fetch-field "cc")
+	    mct (message-fetch-field "mail-copies-to")
+	    author (or (message-fetch-field "mail-reply-to")
+		       (message-fetch-field "reply-to")
+		       (message-fetch-field "from")
+		       "")
+	    mft (and message-use-mail-followup-to
+		     (message-fetch-field "mail-followup-to"))))
 
     ;; Handle special values of Mail-Copies-To.
     (when mct
