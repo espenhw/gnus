@@ -1,5 +1,7 @@
 2000-09-13  Dave Love  <fx@gnu.org>
 
+	* gnus-salt.el (gnus-binary-mode): Fix call to gnus-add-minor-mode.
+
 	* gnus-ems.el (gnus-ems-redefine): Don't alias
 	gnus-summary-set-display-table.
 
