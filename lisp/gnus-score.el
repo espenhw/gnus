@@ -108,8 +108,8 @@ gnus-score-find-bnews: Apply score files whose names matches.
 See the documentation to these functions for more information.
 
 This variable can also be a list of functions to be called.  Each
-function should either return a list of score files, or a list of
-score alists.
+function is given the group name as argument and should either return
+a list of score files, or a list of score alists.
 
 If functions other than these pre-defined functions are used,
 the `a' symbolic prefix to the score commands will always use
@@ -118,7 +118,12 @@ the `a' symbolic prefix to the score commands will always use
   :type '(radio (function-item gnus-score-find-single)
 		(function-item gnus-score-find-hierarchical)
 		(function-item gnus-score-find-bnews)
-		(function :tag "Other")))
+		(repeat :tag "List of functions"
+			(choice (function :tag "Other" :value 'ignore)
+				(function-item gnus-score-find-single)
+				(function-item gnus-score-find-hierarchical)
+				(function-item gnus-score-find-bnews)))
+		(function :tag "Other" :value 'ignore)))
 
 (defcustom gnus-score-interactive-default-score 1000
   "*Scoring commands will raise/lower the score with this number as the default."
