@@ -6680,7 +6680,10 @@ be displayed."
 (defun gnus-summary-force-verify-and-decrypt ()
   (interactive)
   (let ((mm-verify-option 'known)
-	(mm-decrypt-option 'known))
+	(mm-decrypt-option 'known)
+	(gnus-buttonized-mime-types (append (list "multipart/signed" 
+						  "multipart/encrypted")
+					    gnus-buttonized-mime-types)))
     (gnus-summary-select-article nil 'force)))
 
 (defun gnus-summary-set-current-mark (&optional current-mark)

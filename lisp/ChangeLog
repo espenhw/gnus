@@ -1,8 +1,12 @@
 2002-04-11  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-sum.el (gnus-summary-force-verify-and-decrypt): Force
+	viewing of security buttons.  Thanks to Nicolas Kowalski
+	<Nicolas.Kowalski@imag.fr>.
+
 	* smime.el (smime-CA-directory): Fix doc.  Thanks to Arne
 	J,Ax(Brgensen <arne+usenet@daimi.au.dk>.
-	(smime-sign-buffer): Work in XEmacs.  Thansk to Nicolas Kowalski
+	(smime-sign-buffer): Work in XEmacs.  Thanks to Nicolas Kowalski
 	<Nicolas.Kowalski@imag.fr>.
 	(smime-decrypt-buffer): Ditto.
 
