@@ -51,10 +51,13 @@
 
 (defvar mailcap-print-command
   (mapconcat 'identity
-	     (cons lpr-command
-		   (if (stringp lpr-switches)
-		       (list lpr-switches)
-		     lpr-switches))
+	     (cons (if (boundp 'lpr-command)
+		       lpr-command
+		     "lpr")
+		   (when (boundp 'lpr-switches)
+		     (if (stringp lpr-switches)
+			 (list lpr-switches)
+		       lpr-switches)))
 	     " ")
   "Shell command (including switches) used to print Postscript files.")
 
