@@ -1,3 +1,7 @@
+2000-05-31 14:50:52  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (ange-ftp-name-format): Typo.
+
 2000-05-30  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-start.el (gnus-get-unread-articles): If
