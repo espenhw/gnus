@@ -3,6 +3,7 @@
 	* nnimap.el (nnimap-open-connection): Don't look up virtual server
 	name in authinfo (.authinfo now support ports, no need for the
 	hack).
+	(nnimap-split-find-rule): Fix.
 
 2000-07-03  Paul Stodghill <stodghil@CS.Cornell.EDU>
 

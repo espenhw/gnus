@@ -922,7 +922,9 @@ function is generally only called when Gnus is shutting down."
     element))
 
 (defun nnimap-split-find-rule (server inbox)
-  (if (listp (cadar nnimap-split-rule)) ;; extended format?
+  (if (and (listp nnimap-split-rule) (listp (car nnimap-split-rule))
+           (list (cdar nnimap-split-rule)) (listp (cadar nnimap-split-rule)))
+      ;; extended format
       (cadr (nnimap-assoc-match inbox (cdr (nnimap-assoc-match 
 					    server nnimap-split-rule))))
     nnimap-split-rule))
