@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (require 'gnus)
 (require 'gnus-start)
 (require 'nnmail)
@@ -82,8 +84,10 @@ with the best level."
 
 (defcustom gnus-permanently-visible-groups nil
   "*Regexp to match groups that should always be listed in the group buffer.
-This means that they will still be listed when there are no unread
-articles in the groups."
+This means that they will still be listed even when there are no
+unread articles in the groups.
+
+If nil, no groups are permanently visible."
   :group 'gnus-group-listing
   :type 'regexp)
 

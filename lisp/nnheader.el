@@ -37,6 +37,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (require 'mail-utils)
 
 (defvar nnheader-max-head-length 4096
@@ -667,6 +669,11 @@ without formatting."
   (or (not (numberp gnus-verbose-backends))
       (<= level gnus-verbose-backends)))
 
+;; 1997/8/10 by MORIOKA Tomohiko
+(defvar nnheader-pathname-coding-system
+  'iso-8859-1
+  "*Coding system for pathname.")
+
 (defun nnheader-group-pathname (group dir &optional file)
   "Make pathname for GROUP."
   (concat
@@ -675,7 +682,11 @@ without formatting."
      (if (file-directory-p (concat dir group))
 	 (concat dir group "/")
        ;; If not, we translate dots into slashes.
-       (concat dir (nnheader-replace-chars-in-string group ?. ?/) "/")))
+       (concat dir
+	       (gnus-encode-coding-string
+		(nnheader-replace-chars-in-string group ?. ?/)
+		nnheader-pathname-coding-system)
+	       "/")))
    (cond ((null file) "")
 	 ((numberp file) (int-to-string file))
 	 (t file))))
@@ -732,6 +743,10 @@ If FILE, find the \".../etc/PACKAGE\" file instead."
       (when (string-match (car ange-ftp-path-format) path)
 	(ange-ftp-re-read-dir path)))))
 
+;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
+(defvar nnheader-file-coding-system nil
+  "Coding system used in file backends of Gnus.")
+
 (defun nnheader-insert-file-contents (filename &optional visit beg end replace)
   "Like `insert-file-contents', q.v., but only reads in the file.
 A buffer may be modified in several ways after reading into the buffer due
@@ -741,7 +756,9 @@ find-file-hooks, etc.
   (let ((format-alist nil)
 	(auto-mode-alist (nnheader-auto-mode-alist))
 	(default-major-mode 'fundamental-mode)
-        (after-insert-file-functions nil))
+        (after-insert-file-functions nil)
+	;; 1997/5/4 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
+	(coding-system-for-read nnheader-file-coding-system))
     (insert-file-contents filename visit beg end replace)))
 
 (defun nnheader-find-file-noselect (&rest args)
@@ -749,7 +766,9 @@ find-file-hooks, etc.
 	(auto-mode-alist (nnheader-auto-mode-alist))
 	(default-major-mode 'fundamental-mode)
 	(enable-local-variables nil)
-        (after-insert-file-functions nil))
+        (after-insert-file-functions nil)
+	;; 1997/5/16 by MORIOKA Tomohiko <morioka@jaist.ac.jp>
+	(coding-system-for-read nnheader-file-coding-system))
     (apply 'find-file-noselect args)))
 
 (defun nnheader-auto-mode-alist ()

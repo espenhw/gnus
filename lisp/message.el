@@ -29,7 +29,8 @@
 
 ;;; Code:
 
-(require 'cl)
+(eval-when-compile (require 'cl))
+
 (require 'mailheader)
 (require 'rmail)
 (require 'nnheader)
@@ -583,10 +584,14 @@ actually occur."
   :group 'message-sending
   :type 'sexp)
 
-(ignore-errors
-  (define-mail-user-agent 'message-user-agent
-    'message-mail 'message-send-and-exit
-    'message-kill-buffer 'message-send-hook))
+;; Ignore errors in case this is used in Emacs 19.
+;; Don't use ignore-errors because this is copied into loaddefs.el.
+;;;###autoload
+(condition-case nil
+    (define-mail-user-agent 'message-user-agent
+      'message-mail 'message-send-and-exit
+      'message-kill-buffer 'message-send-hook)
+  (error nil))
 
 (defvar message-mh-deletable-headers '(Message-ID Date Lines Sender)
   "If non-nil, delete the deletable headers before feeding to mh.")
@@ -806,7 +811,8 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar gnus-read-active-file)
 
 ;;; Regexp matching the delimiter of messages in UNIX mail format
-;;; (UNIX From lines), minus the initial ^.
+;;; (UNIX From lines), minus the initial ^.  It should be a copy
+;;; of rmail.el's rmail-unix-mail-delimiter.
 (defvar message-unix-mail-delimiter
   (let ((time-zone-regexp
 	 (concat "\\([A-Z]?[A-Z]?[A-Z][A-Z]\\( DST\\)?"
@@ -816,25 +822,39 @@ The cdr of ech entry is a function for applying the face to a region.")
     (concat
      "From "
 
-     ;; Username, perhaps with a quoted section that can contain spaces.
-     "\\("
-     "[^ \n]*"
-     "\\(\\|\".*\"[^ \n]*\\)"
-     "\\|<[^<>\n]+>"
-     "\\)  ?"
+     ;; Many things can happen to an RFC 822 mailbox before it is put into
+     ;; a `From' line.  The leading phrase can be stripped, e.g.
+     ;; `Joe <@w.x:joe@y.z>' -> `<@w.x:joe@y.z>'.  The <> can be stripped, e.g.
+     ;; `<@x.y:joe@y.z>' -> `@x.y:joe@y.z'.  Everything starting with a CRLF
+     ;; can be removed, e.g.
+     ;;		From: joe@y.z (Joe	K
+     ;;			User)
+     ;; can yield `From joe@y.z (Joe 	K Fri Mar 22 08:11:15 1996', and
+     ;;		From: Joe User
+     ;;			<joe@y.z>
+     ;; can yield `From Joe User Fri Mar 22 08:11:15 1996'.
+     ;; The mailbox can be removed or be replaced by white space, e.g.
+     ;;		From: "Joe User"{space}{tab}
+     ;;			<joe@y.z>
+     ;; can yield `From {space}{tab} Fri Mar 22 08:11:15 1996',
+     ;; where {space} and {tab} represent the Ascii space and tab characters.
+     ;; We want to match the results of any of these manglings.
+     ;; The following regexp rejects names whose first characters are
+     ;; obviously bogus, but after that anything goes.
+     "\\([^\0-\b\n-\r\^?].*\\)? "
 
      ;; The time the message was sent.
-     "\\([^ \n]*\\) *"			; day of the week
-     "\\([^ ]*\\) *"			; month
-     "\\([0-9]*\\) *"			; day of month
-     "\\([0-9:]*\\) *"			; time of day
+     "\\([^\0-\r \^?]+\\) +"				; day of the week
+     "\\([^\0-\r \^?]+\\) +"				; month
+     "\\([0-3]?[0-9]\\) +"				; day of month
+     "\\([0-2][0-9]:[0-5][0-9]\\(:[0-6][0-9]\\)?\\) *"	; time of day
 
      ;; Perhaps a time zone, specified by an abbreviation, or by a
      ;; numeric offset.
      time-zone-regexp
 
      ;; The year.
-     " [0-9][0-9]\\([0-9]*\\) *"
+     " \\([0-9][0-9]+\\) *"
 
      ;; On some systems the time zone can appear after the year, too.
      time-zone-regexp
@@ -842,7 +862,8 @@ The cdr of ech entry is a function for applying the face to a region.")
      ;; Old uucp cruft.
      "\\(remote from .*\\)?"
 
-     "\n")))
+     "\n"))
+  nil)
 
 (defvar message-unsent-separator
   (concat "^ *---+ +Unsent message follows +---+ *$\\|"
@@ -2372,31 +2393,32 @@ to find out how to use this."
   ;; Remove empty lines in the header.
   (save-restriction
     (message-narrow-to-headers)
+    ;; Remove blank lines.
     (while (re-search-forward "^[ \t]*\n" nil t)
-      (replace-match "" t t)))
+      (replace-match "" t t))
 
-  ;; Correct Newsgroups and Followup-To headers: change sequence of
-  ;; spaces to comma and eliminate spaces around commas.  Eliminate
-  ;; embedded line breaks.
-  (goto-char (point-min))
-  (while (re-search-forward "^\\(Newsgroups\\|Followup-To\\): +" nil t)
-    (save-restriction
-      (narrow-to-region
-       (point)
-       (if (re-search-forward "^[^ \t]" nil t)
-	   (match-beginning 0)
-	 (forward-line 1)
-	 (point)))
-      (goto-char (point-min))
-      (while (re-search-forward "\n[ \t]+" nil t)
-	(replace-match " " t t))	;No line breaks (too confusing)
-      (goto-char (point-min))
-      (while (re-search-forward "[ \t\n]*,[ \t\n]*\\|[ \t]+" nil t)
-	(replace-match "," t t))
-      (goto-char (point-min))
-      ;; Remove trailing commas.
-      (when (re-search-forward ",+$" nil t)
-	(replace-match "" t t)))))
+    ;; Correct Newsgroups and Followup-To headers:  Change sequence of
+    ;; spaces to comma and eliminate spaces around commas.  Eliminate
+    ;; embedded line breaks.
+    (goto-char (point-min))
+    (while (re-search-forward "^\\(Newsgroups\\|Followup-To\\): +" nil t)
+      (save-restriction
+	(narrow-to-region
+	 (point)
+	 (if (re-search-forward "^[^ \t]" nil t)
+	     (match-beginning 0)
+	   (forward-line 1)
+	   (point)))
+	(goto-char (point-min))
+	(while (re-search-forward "\n[ \t]+" nil t)
+	  (replace-match " " t t))	;No line breaks (too confusing)
+	(goto-char (point-min))
+	(while (re-search-forward "[ \t\n]*,[ \t\n]*\\|[ \t]+" nil t)
+	  (replace-match "," t t))
+	(goto-char (point-min))
+	;; Remove trailing commas.
+	(when (re-search-forward ",+$" nil t)
+	  (replace-match "" t t))))))
 
 (defun message-make-date ()
   "Make a valid data header."
@@ -3637,7 +3659,8 @@ Do a `tab-to-tab-stop' if not in those headers."
 ;;; Help stuff.
 
 (defun message-talkative-question (ask question show &rest text)
-  "Call FUNCTION with argument QUESTION, displaying the rest of the arguments in a temporary buffer if SHOW.
+  "Call FUNCTION with argument QUESTION; optionally display TEXT... args.
+If SHOW is non-nil, the arguments TEXT... are displayed in a temp buffer.
 The following arguments may contain lists of values."
   (if (and show
 	   (setq text (message-flatten-list text)))

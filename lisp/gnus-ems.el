@@ -75,6 +75,9 @@
 	   (truncate-string valstr (, max-width))
 	 valstr))))
 
+(defun gnus-encode-coding-string (string system)
+  string)
+
 (eval-and-compile
   (if (string-match "XEmacs\\|Lucid" emacs-version)
       nil
@@ -170,6 +173,7 @@
     (fset 'gnus-cite-add-face 'gnus-mule-cite-add-face)
     (fset 'gnus-max-width-function 'gnus-mule-max-width-function)
     (fset 'gnus-summary-set-display-table 'ignore)
+    (fset 'gnus-encode-coding-string 'encode-coding-string)
 
     (when (boundp 'gnus-check-before-posting)
       (setq gnus-check-before-posting

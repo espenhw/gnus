@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 ;;; List and range functions
 
 (defun gnus-last-element (list)

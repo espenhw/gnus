@@ -28,6 +28,8 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
+(eval-when-compile (require 'cl))
+
 (require 'custom)
 (require 'gnus-load)
 (require 'message)
@@ -238,7 +240,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.66"
+(defconst gnus-version-number "5.4.67"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -783,10 +785,11 @@ used to 899, you would say something along these lines:
 		 (kill-buffer (current-buffer))))))))
 
 (defcustom gnus-select-method
-  (ignore-errors
+  (condition-case nil
     (nconc
-     (list 'nntp (or (ignore-errors
-		       (gnus-getenv-nntpserver))
+     (list 'nntp (or (condition-case nil
+			 (gnus-getenv-nntpserver)
+		       (error nil))
 		     (when (and gnus-default-nntp-server
 				(not (string= gnus-default-nntp-server "")))
 		       gnus-default-nntp-server)
@@ -794,7 +797,8 @@ used to 899, you would say something along these lines:
      (if (or (null gnus-nntp-service)
 	     (equal gnus-nntp-service "nntp"))
 	 nil
-       (list gnus-nntp-service))))
+       (list gnus-nntp-service)))
+    (error nil))
   "Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address.
@@ -1993,6 +1997,17 @@ If ARG, insert string at point."
 
 ;;; More various functions.
 
+(defsubst gnus-check-backend-function (func group)
+  "Check whether GROUP supports function FUNC.
+GROUP can either be a string (a group name) or a select method."
+  (ignore-errors
+    (let ((method (if (stringp group)
+		      (car (gnus-find-method-for-group group))
+		    group)))
+      (unless (featurep method)
+	(require method))
+      (fboundp (intern (format "%s-%s" method func))))))
+
 (defun gnus-group-read-only-p (&optional group)
   "Check whether GROUP supports editing or not.
 If GROUP is nil, `gnus-newsgroup-name' will be checked instead.	 Note
@@ -2481,17 +2496,6 @@ If NEWSGROUP is nil, return the global kill file name instead."
 		 (list (car method) ""))
 		(t
 		 (gnus-server-add-address method)))))))
-
-(defsubst gnus-check-backend-function (func group)
-  "Check whether GROUP supports function FUNC.
-GROUP can either be a string (a group name) or a select method."
-  (ignore-errors
-    (let ((method (if (stringp group)
-		      (car (gnus-find-method-for-group group))
-		    group)))
-      (unless (featurep method)
-	(require method))
-      (fboundp (intern (format "%s-%s" method func))))))
 
 (defun gnus-methods-using (feature)
   "Find all methods that have FEATURE."
