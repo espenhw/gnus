@@ -1,3 +1,9 @@
+2003-03-08  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-ham-move-routine): use
+	spam-mark-ham-unread-before-move-from-spam-group
+	(spam-mark-ham-unread-before-move-from-spam-group): new variable
+
 2003-03-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: load nnimap.el when compiling

@@ -72,7 +72,15 @@ When nil, only ham and unclassified groups will have their spam moved
 to the spam-process-destination.  When t, spam will also be moved from
 spam groups."
   :type 'boolean
-  :group 'spam-ifile)
+  :group 'spam)
+
+(defcustom spam-mark-ham-unread-before-move-from-spam-group nil
+  "Whether ham should be marked unread before it's moved out of a spam
+group according to ham-process-destination.  This variable is an
+official entry in the international Longest Variable Name
+Competition."
+  :type 'boolean
+  :group 'spam)
 
 (defcustom spam-whitelist (expand-file-name "whitelist" spam-directory)
   "The location of the whitelist.
@@ -473,6 +481,8 @@ your main source of newsgroup names."
       ;; now do the actual move
       (when tomove
 	(dolist (article tomove)
+	  (when spam-mark-ham-unread-before-move-from-spam-group
+	    (gnus-summary-mark-article article gnus-unread-mark))	    
 	  (gnus-summary-set-process-mark article))
 	(if copy
 	    (gnus-summary-copy-article nil group)
