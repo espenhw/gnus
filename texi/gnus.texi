@@ -11318,9 +11318,9 @@ no more new text to scroll in.  The default is @code{nil}.
 @vindex gnus-article-mode-line-format
 @item gnus-article-mode-line-format
 This variable is a format string along the same lines as
-@code{gnus-summary-mode-line-format} (@pxref{Mode Line Formatting}).  It
-accepts the same format specifications as that variable, with two
-extensions:
+@code{gnus-summary-mode-line-format} (@pxref{Summary Buffer Mode
+Line}).  It accepts the same format specifications as that variable,
+with two extensions:
 
 @table @samp
 

@@ -1,3 +1,8 @@
+2004-03-18  Raymond Scholz  <ray-2004@zonix.de>  (tiny change)
+
+	* gnus.texi (Misc Article): Refer to `Summary Buffer Mode Line' in
+	the gnus-article-mode-line-format section.
+
 2004-03-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-news.texi: Addition.
