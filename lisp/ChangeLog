@@ -1,3 +1,13 @@
+2000-01-28  Dave Love  <fx@gnu.org>
+
+	* message.el (message-check-news-header-syntax): Fix typo
+	`newsgroyps'.
+	(message-talkative-question): Put temp buffer in fundamental-mode.
+	(message-recover): Use fundamental-mode in the right buffer.
+
+	* nnmail.el (nnmail-split-history): Use fundamental-mode in the
+	right buffer.
+
 2000-01-26 12:01:18  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* qp.el (quoted-printable-decode-region): Add charset parameter.
