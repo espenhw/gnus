@@ -8,6 +8,12 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** message-ignored-news-headers and message-ignored-mail-headers
+
+X-Draft-From and X-Gnus-Agent-Meta-Information have been added into
+these two variables. If you customized those, perhaps you need add
+those two headers too.
+
 ** Gnus reads the NOV and articles in the Agent if plugged.
 
 If one reads an article while plugged, and the article already exists
