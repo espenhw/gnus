@@ -634,7 +634,16 @@ The following commands are available:
 	   (point)
 	   (prog1 (1+ (point))
 	     (insert
-	      (format "K%7d: %s\n" (cdr group)
+	      (format "%c%7d: %s\n" 
+		      (let ((level
+			     (gnus-group-level
+			      (gnus-group-prefixed-name (car group) method))))
+			(cond 
+			 ((<= level gnus-level-subscribed) ? )
+			 ((<= level gnus-level-unsubscribed) ?U)
+			 ((= level gnus-level-zombie) ?Z)
+			 (t ?K)))
+		      (cdr group)
 		      (gnus-group-name-decode (car group) charset))))
 	   (list 'gnus-group (car group)))
 	  (setq groups (cdr groups))))
@@ -739,13 +748,13 @@ buffer.
     (save-excursion
       (beginning-of-line)
       ;; If this group it killed, then we want to subscribe it.
-      (when (eq (char-after) ?K)
+      (unless (eq (char-after) ? )
 	(setq sub t))
       (setq group (gnus-browse-group-name))
-      (when (and sub
-		 (cadr (gnus-gethash group gnus-newsrc-hashtb)))
-	(error "Group already subscribed"))
-      (delete-char 1)
+      ;;;;
+      ;;(when (and sub
+      ;;		 (cadr (gnus-gethash group gnus-newsrc-hashtb)))
+      ;;(error "Group already subscribed"))
       (if sub
 	  (progn
 	    ;; Make sure the group has been properly removed before we
@@ -758,15 +767,17 @@ buffer.
 			       nil
 			     (gnus-method-simplify 
 			      gnus-browse-current-method)))
-	     gnus-level-default-subscribed gnus-level-killed
+	     gnus-level-default-subscribed (gnus-group-level group)
 	     (and (car (nth 1 gnus-newsrc-alist))
 		  (gnus-gethash (car (nth 1 gnus-newsrc-alist))
 				gnus-newsrc-hashtb))
 	     t)
+	    (delete-char 1)
 	    (insert ? ))
 	(gnus-group-change-level
-	 group gnus-level-killed gnus-level-default-subscribed)
-	(insert ?K)))
+	 group gnus-level-unsubscribed gnus-level-default-subscribed)
+	(delete-char 1)
+	(insert ?U)))
     t))
 
 (defun gnus-browse-exit ()

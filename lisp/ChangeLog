@@ -1,3 +1,8 @@
+2000-10-29 09:42:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-srvr.el (gnus-browse-foreign-server): Show level mark.
+	(gnus-browse-unsubscribe-group): Unsubscribed is not killed.
+
 2000-10-29 08:28:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-read-folder): Don't goto point-min.
