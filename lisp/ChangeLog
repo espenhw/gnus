@@ -1,3 +1,7 @@
+2004-01-04  Simon Josefsson  <jas@extundo.com>
+
+	* password.el: Add.
+
 2004-01-04  Mario Lang  <lang@zid.tugraz.at>
 
 	* dns.el: Add support for AAAA records (see RFC 3596)
@@ -12,7 +16,7 @@
 
 	* Moved to Changelog.1.
 
-    Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+    Copyright (C) 2000, 2001, 2002, 2004 Free Software Foundation, Inc.
   Copying and distribution of this file, with or without modification,
   are permitted provided the copyright notice and this notice are preserved.
 
