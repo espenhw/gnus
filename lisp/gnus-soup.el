@@ -144,8 +144,8 @@ move those articles instead."
 	  (when (gnus-request-article-this-buffer 
 		 (car articles) gnus-newsgroup-name)
 	    (save-restriction
-	      (nnheader-narrow-to-headers)
-	      (nnheader-remove-header gnus-soup-ignored-headers t))
+	      (message-narrow-to-headers)
+	      (message-remove-header gnus-soup-ignored-headers t))
 	    (gnus-soup-store gnus-soup-directory prefix headers
 			     gnus-soup-encoding-type 
 			     gnus-soup-index-type)
@@ -538,12 +538,12 @@ Return whether the unpacking was successful."
 		(message "Sending news message to %s..."
 			 (mail-fetch-field "newsgroups"))
 		(sit-for 1)
-		(gnus-inews-article))
+		(funcall message-send-news-function))
 	       ((string= (gnus-soup-reply-kind (car replies)) "mail")
 		(message "Sending mail to %s..."
 			 (mail-fetch-field "to"))
 		(sit-for 1)
-		(gnus-mail-send-and-exit))
+		(funcall message-send-mail-function))
 	       (t
 		(error "Unknown reply kind")))
 	      (set-buffer msg-buf)

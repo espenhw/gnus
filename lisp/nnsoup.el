@@ -321,7 +321,7 @@ The SOUP packet file name will be inserted at the %s.")
   (nnsoup-store-reply "news")
   t)
 
-(defun nnsoup-request-mail ()
+(defun nnsoup-request-mail (&optional server)
   (nnsoup-store-reply "mail")
   t)
 
@@ -609,21 +609,21 @@ The SOUP packet file name will be inserted at the %s.")
     (and areas (car areas))))
 
 (defvar nnsoup-old-functions
-  (list gnus-inews-article-function send-mail-function))
+  (list message-send-mail-function message-send-news-function))
 
 ;;;###autoload
 (defun nnsoup-set-variables ()
   "Use the SOUP methods for posting news and mailing mail."
   (interactive)
-  (setq gnus-inews-article-function 'nnsoup-request-post)
-  (setq send-mail-function 'nnsoup-request-mail))
+  (setq message-send-news-function 'nnsoup-request-post)
+  (setq message-send-mail-function 'nnsoup-request-mail))
 
 ;;;###autoload
 (defun nnsoup-revert-variables ()
   "Revert posting and mailing methods to the standard Emacs methods."
   (interactive)
-  (setq gnus-inews-article-function (car nnsoup-old-functions))
-  (setq send-mail-function (cadr nnsoup-old-functions)))
+  (setq message-send-mail-function (car nnsoup-old-functions))
+  (setq message-send-news-function (cadr nnsoup-old-functions)))
 
 (defun nnsoup-store-reply (kind)
   ;; Mostly stolen from `sendmail.el'.

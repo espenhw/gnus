@@ -988,6 +988,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (buffer-disable-undo (current-buffer))
       (and (file-exists-p nnmail-message-id-cache-file)
 	   (insert-file-contents nnmail-message-id-cache-file))
+      (set-buffer-modified-p nil)
       (current-buffer))))
 
 (defun nnmail-cache-close ()
@@ -1011,7 +1012,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		    nnmail-message-id-cache-file nil 'silent)
       (set-buffer-modified-p nil)
       (setq nnmail-cache-buffer nil)
-      (kill-buffer (current-buffer)))))
+      ;;(kill-buffer (current-buffer))
+      )))
 
 (defun nnmail-cache-insert (id)
   (when nnmail-treat-duplicates

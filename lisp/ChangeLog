@@ -1,4 +1,26 @@
+Tue Mar 26 05:15:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-cache.el (gnus-cache-retrieve-headers): Would bug out on
+	empty groups.
+
+	* nnmail.el (nnmail-cache-open): Mark buffer as un-modified.
+	(nnmail-cache-close): Don't kill buffer.
+
+	* gnus-msg.el: Cannibalized.
+
+	* message.el: New file.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Don't enter
+	sparse article into cache.
+
+Sun Mar 24 06:44:11 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-article-hide-boring-headers): Use
+	`gnus-extract-address-components'. 
+
 Sun Mar 24 00:00:33 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.57 is released.
 
 	* gnus-topic.el (gnus-topic-insert-topic-line): Would mess up the
 	`.' command.

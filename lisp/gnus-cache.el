@@ -111,6 +111,8 @@ variable to \"^nnml\".")
 (defun gnus-cache-possibly-enter-article 
   (group article headers ticked dormant unread &optional force)
   (when (and (or force (not (eq gnus-use-cache 'passive)))
+	     (numberp article)
+	     (> article 0)
 	     (vectorp headers))	; This might be a dummy article.
     ;; If this is a virtual group, we find the real group.
     (when (gnus-virtual-group-p group)
@@ -256,9 +258,10 @@ variable to \"^nnml\".")
 	;; We first retrieve all the headers that we don't have in 
 	;; the cache.
 	(let ((gnus-use-cache nil))
-	  (setq type (and articles 
-			  (gnus-retrieve-headers 
-			   uncached-articles group fetch-old))))
+	  (when uncached-articles
+	    (setq type (and articles 
+			    (gnus-retrieve-headers 
+			     uncached-articles group fetch-old)))))
 	(gnus-cache-save-buffers)
 	;; Then we insert the cached headers.
 	(save-excursion

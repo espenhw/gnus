@@ -66,16 +66,6 @@ In any case, if the string (either in the variable, in the environment
 variable, or returned by the function) is a file name, the contents of
 this file will be used as the organization.")
 
-(defvar gnus-use-generic-from nil
-  "If nil, the full host name will be the system name prepended to the domain name.
-If this is a string, the full host name will be this string.
-If this is non-nil, non-string, the domain name will be used as the
-full host name.")
-
-(defvar gnus-use-generic-path nil
-  "If nil, use the NNTP server name in the Path header.
-If stringp, use this; if non-nil, use no host name (user name only).")
-
 ;; Customization variables
 
 ;; Don't touch this variable.
@@ -869,19 +859,9 @@ beginning of a line.")
      (vertical 1.0
 	       (browse 1.0 point)
 	       (if gnus-carpal '(browse-carpal 2))))
-    (group-mail
+    (message
      (vertical 1.0
-	       (mail 1.0 point)))
-    (group-post
-     (vertical 1.0
-	       (post 1.0 point)))
-    (summary-mail
-     (vertical 1.0
-	       (mail 1.0 point)))
-    (summary-reply
-     (vertical 1.0
-	       (article-copy 0.5)
-	       (mail 1.0 point)))
+	       (message 1.0 point)))
     (pick
      (vertical 1.0
 	       (article 1.0 point)))
@@ -910,20 +890,17 @@ beginning of a line.")
     (reply
      (vertical 1.0
 	       (article-copy 0.5)
-	       (mail 1.0 point)))
-    (mail-forward
+	       (message 1.0 point)))
+    (forward
      (vertical 1.0
-	       (mail 1.0 point)))
-    (post-forward
-     (vertical 1.0
-	       (post 1.0 point)))
+	       (message 1.0 point)))
     (reply-yank
      (vertical 1.0
-	       (mail 1.0 point)))
+	       (message 1.0 point)))
     (mail-bounce
      (vertical 1.0
 	       (article 0.5)
-	       (mail 1.0 point)))
+	       (message 1.0 point)))
     (draft
      (vertical 1.0
 	       (draft 1.0 point)))
@@ -935,14 +912,7 @@ beginning of a line.")
     (compose-bounce
      (vertical 1.0
 	       (article 0.5)
-	       (mail 1.0 point)))
-    (followup
-     (vertical 1.0
-	       (article-copy 0.5)
-	       (post 1.0 point)))
-    (followup-yank
-     (vertical 1.0
-	       (post 1.0 point))))
+	       (message 1.0 point))))
   "Window configuration for all possible Gnus buffers.
 This variable is a list of lists.  Each of these lists has a NAME and
 a RULE.	 The NAMEs are commonsense names like `group', which names a
@@ -971,8 +941,7 @@ buffer configuration.")
     (server-carpal . gnus-carpal-server-buffer)
     (browse-carpal . gnus-carpal-browse-buffer)
     (edit-score . gnus-score-edit-buffer)
-    (mail . gnus-mail-buffer)
-    (post . gnus-post-news-buffer)
+    (message . gnus-message-buffer)
     (faq . gnus-faq-buffer)
     (picons . "*Picons*")
     (tree . gnus-tree-buffer)
@@ -1719,7 +1688,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.57"
+(defconst gnus-version "September Gnus v0.58"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -13369,10 +13338,10 @@ The following commands are available:
 	    (setq major-mode 'gnus-original-article-mode)
 	    (setq buffer-read-only t)
 	    (gnus-add-current-to-buffer-list))
-	  (setq gnus-original-article (cons group article))
 	  (let (buffer-read-only)
 	    (erase-buffer)
-	    (insert-buffer-substring gnus-article-buffer))))
+	    (insert-buffer-substring gnus-article-buffer))
+	  (setq gnus-original-article (cons group article))))
     
       ;; Update sparse articles.
       (when do-update-line
@@ -13704,8 +13673,9 @@ always hide."
 		(when (and
 		       from reply-to
 		       (equal 
-			(nth 1 (mail-extract-address-components from))
-			(nth 1 (mail-extract-address-components reply-to))))
+			(nth 1 (funcall gnus-extract-address-components from))
+			(nth 1 (funcall gnus-extract-address-components
+					reply-to))))
 		  (gnus-article-hide-header "reply-to"))))
 	     ((eq elem 'date)
 	      (let ((date (mail-fetch-field "date")))
@@ -14038,7 +14008,7 @@ how much time has lapsed since DATE."
 	  (nnheader-narrow-to-headers)
 	  (let ((buffer-read-only nil))
 	    ;; Delete any old Date headers.
-	    (if (zerop (nnheader-remove-header date-regexp t))
+	    (if (zerop (message-remove-header date-regexp t))
 		(beginning-of-line)
 	      (goto-char (point-max)))
 	    (insert

@@ -39,6 +39,7 @@
 
 (require 'mail-utils)
 (require 'sendmail)
+(require 'message)
 (require 'rmail)
 (eval-when-compile (require 'cl))
 
@@ -259,36 +260,13 @@ on your system, you could say something like:
       ;; without inserting extra newline.
       (fill-region-as-paragraph begin (1+ (point))))))
 
-(defun nnheader-remove-header (header &optional is-regexp first)
-  "Remove HEADER.
-If FIRST, only remove the first instance if the header.
-Return the number of headers removed."
-  (goto-char (point-min))
-  (let ((regexp (if is-regexp header (concat "^" header ":")))
-	(number 0)
-	(case-fold-search t)
-	last)
-    (while (and (re-search-forward regexp nil t)
-		(not last))
-      (incf number)
-      (when first
-	(setq last t))
-      (delete-region
-       (match-beginning 0) 
-       ;; There might be a continuation header, so we have to search
-       ;; until we find a new non-continuation line.
-       (if (re-search-forward "^[^ \t]" nil t)
-	   (match-beginning 0)
-	 (point-max))))
-    number))
-
 (defun nnheader-replace-header (header new-value)
   "Remove HEADER and insert the NEW-VALUE."
   (save-excursion
     (save-restriction
       (nnheader-narrow-to-headers)
       (prog1
-	  (nnheader-remove-header header)
+	  (message-remove-header header)
 	(goto-char (point-max))
 	(insert header ": " new-value "\n")))))
 

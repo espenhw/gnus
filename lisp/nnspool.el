@@ -411,13 +411,15 @@ there.")
 	      ((< num article)
 	       (setq min (point)))
 	      (t
-	       (setq found t)))))
+	       (setq found 'yes)))))
     ;; Now we may have found the article we're looking for, or we
     ;; may be somewhere near it.
-    (when (not (eq num article))
+    (when (and (not (eq found 'yes))
+	       (not (eq num article)))
       (setq found (point))
       (while (and (< (point) max)
-		  (< num article))
+		  (or (not (numberp num))
+		      (< num article)))
 	(forward-line 1)
 	(setq found (point))
 	(or (eobp)
