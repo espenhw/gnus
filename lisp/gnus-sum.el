@@ -6921,6 +6921,7 @@ Optional argument BACKWARD means do search for backward.
   (require 'gnus-async)
   (require 'gnus-art)
   (let ((gnus-select-article-hook nil)	;Disable hook.
+	(gnus-article-prepare-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
 	(gnus-use-article-prefetch nil)
 	(gnus-xmas-force-redisplay nil)	;Inhibit XEmacs redisplay.
@@ -6947,6 +6948,9 @@ Optional argument BACKWARD means do search for backward.
 	       (get-buffer-window (current-buffer))
 	       (point))
 	      (forward-line 1)
+	      (set-window-point
+	       (get-buffer-window (current-buffer))
+	       (point))
 	      (set-buffer sum)
 	      (setq point (point)))
 	  ;; We didn't find it, so we go to the next article.
