@@ -1,3 +1,7 @@
+2003-01-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Article Display): Addition.
+
 2003-01-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Header Commands): Addition.

@@ -8746,6 +8746,12 @@ they'll be removed.
 Display an @code{X-Face} in the @code{From} header.
 (@code{gnus-article-display-x-face}).
 
+@item W D d
+@kindex W D d (Summary)
+@findex gnus-article-display-face
+Display a @code{Face} in the @code{From} header.
+(@code{gnus-article-display-face}).
+
 @item W D s
 @kindex W D s (Summary)
 @findex gnus-treat-smiley
