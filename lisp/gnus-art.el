@@ -137,7 +137,7 @@
     "^X-Abuse-Info:" "^X-From_:" "^X-Accept-Language:" "^Errors-To:"
     "^X-BeenThere:" "^X-Mailman-Version:" "^List-Help:" "^List-Post:"
     "^List-Subscribe:" "^List-Id:" "^List-Unsubscribe:" "^List-Archive:"
-     "^X-Content-length:" "^X-Posting-Agent:")
+     "^X-Content-length:" "^X-Posting-Agent:" "^Original-Received:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
