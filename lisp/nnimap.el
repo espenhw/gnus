@@ -379,12 +379,15 @@ just like \"ticked\" articles, in other IMAP clients.")
 If this is 'imap-mailbox-lsub, then use a server-side subscription list to
 restrict visible folders.")
 
+(defcustom nnimap-debug nil
+  "If non-nil, random debug spews are placed in *nnimap-debug* buffer."
+  :group 'nnimap
+  :type 'boolean)
+
 ;; Internal variables:
 
+(defvar nnimap-debug-buffer "*nnimap-debug*")
 (defvar nnimap-mailbox-info (gnus-make-hashtable 997))
-(defvar nnimap-debug nil
-  "Name of buffer to record debugging info.
-For example: (setq nnimap-debug \"*nnimap-debug*\")")
 (defvar nnimap-current-move-server nil)
 (defvar nnimap-current-move-group nil)
 (defvar nnimap-current-move-article nil)
@@ -1563,8 +1566,8 @@ be used in a STORE FLAGS command."
 
 (when nnimap-debug
   (require 'trace)
-  (buffer-disable-undo (get-buffer-create nnimap-debug))
-  (mapcar (lambda (f) (trace-function-background f nnimap-debug))
+  (buffer-disable-undo (get-buffer-create nnimap-debug-buffer))
+  (mapcar (lambda (f) (trace-function-background f nnimap-debug-buffer))
 	  '(
 	    nnimap-possibly-change-server
 	    nnimap-verify-uidvalidity

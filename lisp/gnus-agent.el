@@ -1074,35 +1074,40 @@ In particular, checks that the file is sorted by article number
 and that there are no duplicates."
   (let ((prev-num -1))
     (save-excursion
-      (when buffer (set-buffer buffer))
+      (when buffer
+	(set-buffer buffer))
       (save-excursion
         (save-restriction
-          (let ((deactivate-mark (if (boundp 'deactivate-mark)
-				     (symbol-value 'deactivate-mark)
-				   nil)))
-            (widen)
-            (goto-char (point-min))
+	  (widen)
+	  (goto-char (point-min))
 
-	    (while (< (point) (point-max))
-	      (let ((p (point))
-		    (cur (condition-case nil
-			     (read (current-buffer))
-			   (error nil))))
-		(cond
-		 ((or (not (integerp cur))
-		      (not (eq (char-after) ?\t)))
-		  (gnus-message 1
-				"Overview buffer contains garbage '%s'." (buffer-substring p (progn (end-of-line) (point)))))
-		 ((= cur prev-num)
-		  (gnus-message 1
-				"Duplicate overview line for %d" cur)
-		  (delete-region (point) (progn (forward-line 1) (point))))
-		 ((< cur prev-num)
-		  (sort-numeric-fields 1 (point-min) (point-max))
-		  (gnus-message 1 "Overview buffer not sorted!"))
-		 (t
-		  (setq prev-num cur)))
-		(forward-line 1)))))))))
+	  (while (< (point) (point-max))
+	    (let ((p (point))
+		  (cur (condition-case nil
+			   (read (current-buffer))
+			 (error nil))))
+	      (cond
+	       ((or (not (integerp cur))
+		    (not (eq (char-after) ?\t)))
+		(gnus-message 1
+			      "Overview buffer contains garbage '%s'."
+			      (buffer-substring
+			       p (gnus-point-at-eol))))
+	       ((= cur prev-num)
+		(gnus-message 1
+			      "Duplicate overview line for %d" cur)
+		(delete-region (point) (progn (forward-line 1) (point))))
+	       ((< cur 0)
+		(gnus-message 1 "Junk article number %d" cur)
+		(delete-region (point) (progn (forward-line 1) (point))))
+	       ((< cur prev-num)
+		(sort-numeric-fields 1 (point-min) (point-max))
+		(goto-char (point-min))
+		(setq prev-num -1)
+		(gnus-message 1 "Overview buffer not sorted!"))
+	       (t
+		(setq prev-num cur)))
+	      (forward-line 1))))))))
 
 (defun gnus-agent-flush-cache ()
   (save-excursion

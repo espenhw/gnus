@@ -117,17 +117,16 @@ If nil, the first match found will be used."
   :type 'boolean)
 
 (defcustom nnmail-split-fancy-with-parent-ignore-groups nil
-  "Regexp that matches group names to be ignored when applying
-`nnmail-split-fancy-with-parent'.  This can also be a list of regexps."
+  "Regexp that matches group names to be ignored when applying `nnmail-split-fancy-with-parent'.
+This can also be a list of regexps."
   :group 'nnmail-split
   :type '(choice (const :tag "none" nil)
 		 (regexp :value ".*")
 		 (repeat :value (".*") regexp)))
 
 (defcustom nnmail-cache-ignore-groups nil
-  "Regexp that matches group names to be ignored when inserting message
-ids into the cache (`nnmail-cache-insert').  This can also be a list
-of regexps."
+  "Regexp that matches group names to be ignored when inserting message ids into the cache (`nnmail-cache-insert').
+This can also be a list of regexps."
   :group 'nnmail-split
   :type '(choice (const :tag "none" nil)
 		 (regexp :value ".*")
