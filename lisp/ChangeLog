@@ -1,3 +1,9 @@
+2000-07-03  Simon Josefsson  <jas@pdc.kth.se>
+
+	* nnimap.el (nnimap-open-connection): Don't look up virtual server
+	name in authinfo (.authinfo now support ports, no need for the
+	hack).
+
 2000-07-03  Paul Stodghill <stodghil@CS.Cornell.EDU>
 
 	* message.el (message-unquote-tokens): Remove all quotes.
