@@ -36,7 +36,7 @@
   :type 'string)
 
 (defcustom gnus-convert-image-to-x-face-command "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmtopgm | pgmtopbm | pbmtoxbm | compface"
-  "Command for converting a PBM to an X-Face."
+  "Command for converting a GIF to an X-Face."
   :group 'gnus-fun
   :type 'string)
 

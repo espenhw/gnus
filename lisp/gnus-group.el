@@ -178,9 +178,6 @@ with some simple extensions.
       will be inserted into the buffer just like information from any other
       group specifier.
 
-Text between %( and %) will be highlighted with `gnus-mouse-face' when
-the mouse point move inside the area.  There can only be one such area.
-
 Note that this format specification is not always respected.  For
 reasons of efficiency, when listing killed groups, this specification
 is ignored altogether.	If the spec is changed considerably, your
@@ -191,7 +188,10 @@ If you use %o or %O, reading the active file will be slower and quite
 a bit of extra memory will be used.  %D will also worsen performance.
 Also note that if you change the format specification to include any
 of these specs, you must probably re-start Gnus to see them go into
-effect."
+effect.
+
+General format specifiers can also be used.  See
+(gnus)Formatting Variables."
   :group 'gnus-group-visual
   :type 'string)
 

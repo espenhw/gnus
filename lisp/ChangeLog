@@ -1,3 +1,15 @@
+2002-01-02  Pavel Jan,Bm(Bk  <Pavel@Janik.cz>
+
+	* gnus-fun.el (gnus-convert-pbm-to-x-face-command): Doc fix. 
+
+2002-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Doc fix.
+
+	* gnus-art.el: Doc fix.
+
+	* gnus-agent.el: Doc fix.
+
 2002-01-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-diary.el, gnus-delay.el: Fix copyright lines.

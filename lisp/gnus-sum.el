@@ -571,7 +571,10 @@ list of parameters to that command."
 It works along the same lines as a normal formatting string,
 with some simple extensions.
 
-%S  The subject"
+%S  The subject
+
+General format specifiers can also be used.  See
+(gnus)Formatting Variables."
   :group 'gnus-threading
   :type 'string)
 

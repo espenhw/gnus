@@ -3440,14 +3440,19 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 ;;;
 
 (defvar gnus-mime-button-line-format "%{%([%p. %d%T]%)%}%e\n"
-  "The following specs can be used:
+  "Format of the MIME buttons.
+
+Valid specifiers include:
 %t  The MIME type
 %T  MIME type, along with additional info
 %n  The `name' parameter
 %d  The description, if any
 %l  The length of the encoded part
 %p  The part identifier number
-%e  Dots if the part isn't displayed")
+%e  Dots if the part isn't displayed
+
+General format specifiers can also be used.  See
+(gnus)Formatting Variables.")
 
 (defvar gnus-mime-button-line-format-alist
   '((?t gnus-tmp-type ?s)

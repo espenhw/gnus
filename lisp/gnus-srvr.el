@@ -55,7 +55,10 @@ The following specs are understood:
 %n name
 %w address
 %s status
-%a agent covered"
+%a agent covered
+
+General format specifiers can also be used.  See
+(gnus)Formatting Variables."
   :group 'gnus-server-visual
   :type 'string)
 

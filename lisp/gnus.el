@@ -2177,10 +2177,6 @@ with some simple extensions.
      will be inserted into the summary just like information from any other
      summary specifier.
 
-Text between %( and %) will be highlighted with `gnus-mouse-face'
-when the mouse point is placed inside the area.	 There can only be one
-such area.
-
 The %U (status), %R (replied) and %z (zcore) specs have to be handled
 with care.  For reasons of efficiency, Gnus will compute what column
 these characters will end up in, and \"hard-code\" that.  This means that
@@ -2191,7 +2187,10 @@ which is bad enough.
 The smart choice is to have these specs as far to the left as
 possible.
 
-This restriction may disappear in later versions of Gnus."
+This restriction may disappear in later versions of Gnus.
+
+General format specifiers can also be used.  See
+(gnus)Formatting Variables."
   :type 'string
   :group 'gnus-summary-format)
 
