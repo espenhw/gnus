@@ -462,7 +462,7 @@ parameter.  It should return nil, `warn' or `delete'."
   mm-text-coding-system
   "Coding system used in reading inbox")
 
-(defvar nnmail-pathname-coding-system 'binary
+(defvar nnmail-pathname-coding-system 'iso-8859-1
   "*Coding system for pathname.")
 
 (defun nnmail-find-file (file)

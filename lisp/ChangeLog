@@ -1,3 +1,8 @@
+2000-11-04 10:34:29  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnheader.el (nnheader-pathname-coding-system): Default iso-8859-1.
+	* nnmail.el (nnmail-pathname-coding-system): Ditto.
+
 2000-09-29  David Edmondson  <dme@thus.net>
 
 	One-line patch.
