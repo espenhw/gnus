@@ -1167,6 +1167,7 @@ It is a string, such as \"PGP\". If nil, ask user."
 (defvar article-goto-body-goes-to-point-min-p nil)
 (defvar gnus-article-wash-types nil)
 (defvar gnus-article-emphasis-alist nil)
+(defvar gnus-article-image-alist nil)
 
 (defvar gnus-article-mime-handle-alist-1 nil)
 (defvar gnus-treatment-function-alist
@@ -1257,6 +1258,15 @@ Initialized from `text-mode-syntax-table.")
 (put 'gnus-with-article-headers 'lisp-indent-function 0)
 (put 'gnus-with-article-headers 'edebug-form-spec '(body))
 
+(defmacro gnus-with-article-buffer (&rest forms)
+  `(save-excursion
+     (set-buffer gnus-article-buffer)
+     (let ((buffer-read-only nil))
+       ,@forms)))
+
+(put 'gnus-with-article-buffer 'lisp-indent-function 0)
+(put 'gnus-with-article-buffer 'edebug-form-spec '(body))
+
 (defun gnus-article-goto-header (header)
   "Go to HEADER, which is a regular expression."
   (re-search-forward (concat "^\\(" header "\\):") nil t))
@@ -1278,14 +1288,13 @@ Initialized from `text-mode-syntax-table.")
 
 (defun gnus-article-hide-text-type (b e type)
   "Hide text of TYPE between B and E."
-  (push type gnus-article-wash-types)
+  (gnus-add-wash-type type)
   (gnus-article-hide-text
    b e (cons 'article-type (cons type gnus-hidden-properties))))
 
 (defun gnus-article-unhide-text-type (b e type)
   "Unhide text of TYPE between B and E."
-  (setq gnus-article-wash-types
-	(delq type gnus-article-wash-types))
+  (gnus-delete-wash-type type)
   (remove-text-properties
    b e (cons 'article-type (cons type gnus-hidden-properties)))
   (when (memq 'intangible gnus-hidden-properties)
@@ -1384,7 +1393,7 @@ Initialized from `text-mode-syntax-table.")
 	  (when (setq beg (text-property-any
 			   (point-min) (point-max) 'message-rank (+ 2 max)))
 	    ;; We delete the unwanted headers.
-	    (push 'headers gnus-article-wash-types)
+	    (gnus-add-wash-type 'headers)
 	    (add-text-properties (point-min) (+ 5 (point-min))
 				 '(article-type headers dummy-invisible t))
 	    (delete-region beg (point-max))))))))
@@ -1716,90 +1725,52 @@ unfolded."
 (defun article-display-x-face (&optional force)
   "Look for an X-Face header and display it if present."
   (interactive (list 'force))
-  (save-excursion
+  (gnus-with-article-headers
     ;; Delete the old process, if any.
     (when (process-status "article-x-face")
       (delete-process "article-x-face"))
-    (let ((inhibit-point-motion-hooks t)
-	  x-faces
-	  (case-fold-search t)
-	  from last)
-      (save-restriction
-	(article-narrow-to-head)
-	(when (and buffer-read-only ;; When type `W f'
-		   (progn
-		     (goto-char (point-min))
-		     (not (re-search-forward "^X-Face:[\t ]*" nil t)))
-		   (gnus-buffer-live-p gnus-original-article-buffer))
-	  (with-current-buffer gnus-original-article-buffer
-	    (save-restriction
-	      (article-narrow-to-head)
-	      (while (re-search-forward "^X-Face:" nil t)
-		(setq x-faces
-		      (concat
-		       (or x-faces "")
-		       (buffer-substring
-			(match-beginning 0)
-			(1- (re-search-forward
-			     "^\\($\\|[^ \t]\\)" nil t))))))))
-	  (if x-faces
-	      (let (point start bface eface buffer-read-only)
-		(goto-char (point-max))
-		(forward-line -1)
-		(setq bface (get-text-property (gnus-point-at-bol) 'face)
-		      eface (get-text-property (1- (gnus-point-at-eol)) 'face))
-		(goto-char (point-max))
-		(setq point (point))
-		(insert x-faces)
-		(goto-char point)
-		(while (looking-at "\\([^:]+\\): *")
-		  (put-text-property (match-beginning 1) (1+ (match-end 1))
-				     'face bface)
-		  (setq start (match-end 0))
-		  (forward-line 1)
-		  (while (looking-at "[\t ]")
-		    (forward-line 1))
-		  (put-text-property start (point)
-				     'face eface)))))
-	(goto-char (point-min))
-	(setq from (message-fetch-field "from"))
-	(goto-char (point-min))
-	(while (and gnus-article-x-face-command
-		    (not last)
+    (if (memq 'xface gnus-article-wash-types)
+	;; We have already displayed X-Faces, so we remove them
+	;; instead.
+	(gnus-delete-images 'xface)
+      ;; Display X-Faces.
+      (let (x-faces from face)
+	(save-excursion
+	  (set-buffer gnus-original-article-buffer)
+	  (save-restriction
+	    (mail-narrow-to-head)
+	    (while (gnus-article-goto-header "x-face")
+	      (push (mail-header-field-value) x-faces))
+	    (setq from (message-fetch-field "from"))))
+	;; Sending multiple EOFs to xv doesn't work, so we only do a
+	;; single external face.
+	(when (stringp gnus-article-x-face-command)
+	  (setq x-faces (list (car x-faces))))
+	(while (and (setq face (pop x-faces))
+		    gnus-article-x-face-command
 		    (or force
 			;; Check whether this face is censored.
 			(not gnus-article-x-face-too-ugly)
 			(and gnus-article-x-face-too-ugly from
 			     (not (string-match gnus-article-x-face-too-ugly
-						from))))
-		    ;; Has to be present.
-		    (re-search-forward "^X-Face:[\t ]*" nil t))
-	  ;; This used to try to do multiple faces (`while' instead of
-	  ;; `when' above), but (a) sending multiple EOFs to xv doesn't
-	  ;; work (b) it can crash some versions of Emacs (c) are
-	  ;; multiple faces really something to encourage?
-	  (when (stringp gnus-article-x-face-command)
-	    (setq last t))
-	  ;; We now have the area of the buffer where the X-Face is stored.
-	  (save-excursion
-	    (let ((beg (point))
-		  (end (1- (re-search-forward "^\\($\\|[^ \t]\\)" nil t)))
-		  buffer-read-only)
-	      ;; We display the face.
-	      (if (symbolp gnus-article-x-face-command)
-		  ;; The command is a lisp function, so we call it.
-		  (if (gnus-functionp gnus-article-x-face-command)
-		      (funcall gnus-article-x-face-command beg end)
-		    (error "%s is not a function" gnus-article-x-face-command))
-		;; The command is a string, so we interpret the command
-		;; as a, well, command, and fork it off.
-		(let ((process-connection-type nil))
-		  (process-kill-without-query
-		   (start-process
-		    "article-x-face" nil shell-file-name shell-command-switch
-		    gnus-article-x-face-command))
-		  (process-send-region "article-x-face" beg end)
-		  (process-send-eof "article-x-face"))))))))))
+						from)))))
+	  ;; We display the face.
+	  (if (symbolp gnus-article-x-face-command)
+	      ;; The command is a lisp function, so we call it.
+	      (if (gnus-functionp gnus-article-x-face-command)
+		  (funcall gnus-article-x-face-command face)
+		(error "%s is not a function" gnus-article-x-face-command))
+	    ;; The command is a string, so we interpret the command
+	    ;; as a, well, command, and fork it off.
+	    (let ((process-connection-type nil))
+	      (process-kill-without-query
+	       (start-process
+		"article-x-face" nil shell-file-name shell-command-switch
+		gnus-article-x-face-command))
+	      (with-temp-buffer
+		(insert face)
+		(process-send-region "article-x-face" (point-min) (point-max)))
+	      (process-send-eof "article-x-face"))))))))
 
 (defun article-decode-mime-words ()
   "Decode all MIME-encoded words in the article."
@@ -2039,7 +2010,7 @@ The `gnus-list-identifiers' variable specifies what to do."
 	(article-goto-body)
 	;; Hide the "header".
 	(when (re-search-forward "^-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
-	  (push 'pgp gnus-article-wash-types)
+	  (gnus-add-wash-type 'pgp)
 	  (delete-region (match-beginning 0) (match-end 0))
 	  ;; Remove armor headers (rfc2440 6.2)
 	  (delete-region (point) (or (re-search-forward "^[ \t]*\n" nil t)
@@ -2079,7 +2050,7 @@ always hide."
 		    "\n-----BEGIN PRIVACY-ENHANCED MESSAGE-----\n"
 		    nil t)
 		   (setq end (1+ (match-beginning 0))))
-	  (push 'pem gnus-article-wash-types)
+	  (gnus-add-wash-type 'pem)
 	  (gnus-article-hide-text-type
 	   end
 	   (if (search-forward "\n\n" nil t)
@@ -2339,7 +2310,7 @@ Originally it is hide instead of DUMMY."
      (point-min) (point-max)
      (cons 'article-type (cons type
 			       gnus-hidden-properties)))
-    (setq gnus-article-wash-types (delq type gnus-article-wash-types))))
+    (gnus-delete-wash-type type)))
 
 (defconst article-time-units
   `((year . ,(* 365.25 24 60 60))
@@ -2639,7 +2610,7 @@ This format is defined by the `gnus-article-time-format' variable."
 	       (match-beginning visible) (match-end visible) 'emphasis)
 	      (gnus-put-overlay-excluding-newlines
 	       (match-beginning visible) (match-end visible) 'face face)
-	      (push 'emphasis gnus-article-wash-types)
+	      (gnus-add-wash-type 'emphasis)
 	      (goto-char (match-end invisible)))))))))
 
 (defun gnus-article-setup-highlight-words (&optional highlight-words)
@@ -3052,7 +3023,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 	 (setq afunc func
 	       gfunc (intern (format "gnus-%s" func))))
        (defalias gfunc
-	 (if (fboundp afunc)
+	 (when (fboundp afunc)
 	   `(lambda (&optional interactive &rest args)
 	      ,(documentation afunc t)
 	      (interactive (list t))
@@ -3211,6 +3182,7 @@ commands:
   (make-local-variable 'gnus-article-decoded-p)
   (make-local-variable 'gnus-article-mime-handle-alist)
   (make-local-variable 'gnus-article-wash-types)
+  (make-local-variable 'gnus-article-image-alist)
   (make-local-variable 'gnus-article-charset)
   (make-local-variable 'gnus-article-ignored-charsets)
   (gnus-set-default-directory)
@@ -3399,7 +3371,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (unless (eq major-mode 'gnus-article-mode)
       (gnus-article-mode))
     (setq buffer-read-only nil
-	  gnus-article-wash-types nil)
+	  gnus-article-wash-types nil
+	  gnus-article-image-alist nil)
     (gnus-run-hooks 'gnus-tmp-internal-hook)
     (when gnus-display-mime-function
       (funcall gnus-display-mime-function))
@@ -4049,12 +4022,10 @@ If no internal viewer is available, use an external viewer."
     ;;;!!! No, w3 can display everything just fine.
     (gnus-mime-display-part (cadr handle)))
    ((equal (car handle) "multipart/signed")
-    (or (memq 'signed gnus-article-wash-types)
-	(push 'signed gnus-article-wash-types))
+    (gnus-add-wash-type 'signed)
     (gnus-mime-display-security handle))
    ((equal (car handle) "multipart/encrypted")
-    (or (memq 'encrypted gnus-article-wash-types)
-	(push 'encrypted gnus-article-wash-types))
+    (gnus-add-wash-type 'encrypted)
     (gnus-mime-display-security handle))
    ;; Other multiparts are handled like multipart/mixed.
    (t
@@ -4280,7 +4251,7 @@ representing the particular washing function, ON is the string to use
 in the article mode line when the washing function is active, and OFF
 is the string to use when it is inactive.")
 
-(defun gnus-gnus-article-wash-status-entry (key value)
+(defun gnus-article-wash-status-entry (key value)
   (let ((entry (assoc key gnus-article-wash-status-strings)))
     (if value (nth 1 entry) (nth 2 entry))))
 
@@ -4298,14 +4269,37 @@ is the string to use when it is inactive.")
 	  (signature (memq 'signature gnus-article-wash-types))
 	  (overstrike (memq 'overstrike gnus-article-wash-types))
 	  (emphasis (memq 'emphasis gnus-article-wash-types)))
-      (concat (gnus-gnus-article-wash-status-entry 'cite cite)
-	      (gnus-gnus-article-wash-status-entry 'headers
-						   (or headers boring))
-	      (gnus-gnus-article-wash-status-entry
-	       'pgp (or pgp pem signed encrypted))
-	      (gnus-gnus-article-wash-status-entry 'signature signature)
-	      (gnus-gnus-article-wash-status-entry 'overstrike overstrike)
-	      (gnus-gnus-article-wash-status-entry 'emphasis emphasis)))))
+      (concat
+       (gnus-article-wash-status-entry 'cite cite)
+       (gnus-article-wash-status-entry 'headers (or headers boring))
+       (gnus-article-wash-status-entry 'pgp (or pgp pem signed encrypted))
+       (gnus-article-wash-status-entry 'signature signature)
+       (gnus-article-wash-status-entry 'overstrike overstrike)
+       (gnus-article-wash-status-entry 'emphasis emphasis)))))
+
+(defun gnus-add-wash-type (type)
+  "Add a washing of TYPE to the current status."
+  (push type gnus-article-wash-types))
+
+(defun gnus-delete-wash-type (type)
+  "Add a washing of TYPE to the current status."
+  (setq gnus-article-wash-types (delq type gnus-article-wash-types)))
+
+(defun gnus-add-image (category image)
+  "Add IMAGE of CATEGORY to the list of displayed images."
+  (let ((entry (assq category gnus-article-image-alist)))
+    (unless entry
+      (setq entry (list category))
+      (push entry gnus-article-image-alist))
+    (nconc entry (list image))))
+
+(defun gnus-delete-images (category)
+  "Delete all images in CATEGORY."
+  (let ((entry (assq category gnus-article-image-alist)))
+    (dolist (image (cdr entry))
+      (gnus-remove-image image))
+    (setq gnus-article-image-alist (delq entry gnus-article-image-alist))
+    (gnus-delete-wash-type category)))
 
 (defalias 'gnus-article-hide-headers-if-wanted 'gnus-article-maybe-hide-headers)
 
@@ -5256,14 +5250,12 @@ specified by `gnus-button-alist'."
 	  (inhibit-point-motion-hooks t))
       (if (text-property-any end (point-max) 'article-type 'signature)
 	  (progn
-	    (setq gnus-article-wash-types
-		  (delq 'signature gnus-article-wash-types))
+	    (gnus-delete-wash-type 'signature)
 	    (gnus-remove-text-properties-when
 	     'article-type 'signature end (point-max)
 	     (cons 'article-type (cons 'signature
 				       gnus-hidden-properties))))
-	(or (memq 'signature gnus-article-wash-types)
-	    (push 'signature gnus-article-wash-types))
+	(gnus-add-wash-type 'signature)
 	(gnus-add-text-properties-when
 	 'article-type nil end (point-max)
 	 (cons 'article-type (cons 'signature

@@ -1,5 +1,44 @@
 2001-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* smiley-ems.el (smiley-update-cache): Check for valid types.
+
+	* gnus-art.el (gnus-with-article-buffer): New macro.
+
+	* gnus-picon.el (gnus-picon-transform-newsgroups): Keep the
+	strings as well as the glyphs.
+	(gnus-picon-transform-address): Ditto.
+	(gnus-picon-insert-glyph): Ditto.
+	(gnus-picon-transform-newsgroups): Toggle.
+	(gnus-picon-transform-address): Toggle.
+
+	* gnus-ems.el (gnus-remove-image): New function.
+	(gnus-put-image): Take an optional string.
+
+	* gnus-util.el (gnus-text-with-property): New function.
+
+	* gnus-art.el (gnus-delete-images): New function.
+
+	* gnus-ems.el (gnus-article-display-xface): Mark and store image. 
+
+	* gnus-art.el (gnus-article-wash-status-entry): Renamed.
+	(gnus-article-wash-status): Use it.
+	(gnus-signature-toggle): Clean up.
+	(gnus-add-wash-status): New function.
+	(gnus-delete-wash-status): New function.
+	(gnus-article-hide-text-type): Use them throughout.
+	(gnus-add-image): New function.
+
+	* gnus-ems.el (gnus-article-display-xface): Use new interface.
+
+	* gnus-xmas.el (gnus-xmas-article-display-xface): Use new
+	interface. 
+
+	* gnus-art.el (article-display-x-face): Cleaned up.
+
+	* rfc2047.el (rfc2047-field-value): New function.
+
+	* mail-parse.el (mail-header-field-value): New alias.
+
 	* gnus-art.el (gnus-mime-print-part): Fix typos.
 
 	* smiley-ems.el (gnus-smiley-file-types): New variable.

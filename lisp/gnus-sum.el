@@ -8066,8 +8066,7 @@ If ARG is a negative number, hide the unwanted header lines."
 	  (if  hidden
 	      (let ((gnus-treat-hide-headers nil)
 		    (gnus-treat-hide-boring-headers nil))
-		(setq gnus-article-wash-types
-		      (delq 'headers gnus-article-wash-types))
+		(gnus-delete-wash-type 'headers)
 		(gnus-treat-article 'head))
 	    (gnus-treat-article 'head)))
 	(gnus-set-mode-line 'article)))))

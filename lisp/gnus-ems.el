@@ -224,8 +224,8 @@
   "Non-nil means the compface program supports the -X option.
 That produces XBM output.")
 
-(defun gnus-article-display-xface (beg end &optional buffer)
-  "Display an XFace header from between BEG and END in BUFFER.
+(defun gnus-article-display-xface (data)
+  "Display the XFace header FACE in the current buffer.
 Requires support for images in your Emacs and the external programs
 `uncompface', and `icontopbm'.  On a GNU/Linux system these
 might be in packages with names like `compface' or `faces-xface' and
@@ -243,10 +243,6 @@ for XEmacs."
 	    (make-ring gnus-article-xface-ring-size)))
     (save-excursion
       (let* ((cur (current-buffer))
-	     (data (if buffer
-		       (with-current-buffer buffer
-			 (buffer-substring beg end))
-		     (buffer-substring beg end)))
 	     (image (cdr-safe (assoc data (ring-elements
 					   gnus-article-xface-ring-internal))))
 	     default-enable-multibyte-characters)
@@ -289,6 +285,8 @@ for XEmacs."
 	  (re-search-forward "^From:" nil 'move)
  	  (while (get-text-property (point) 'display)
  	    (goto-char (next-single-property-change (point) 'display)))
+	  (gnus-add-wash-type 'xface)
+	  (gnus-add-image 'xface image)
 	  (insert-image image))))))
 
 ;;; Image functions.
@@ -300,8 +298,13 @@ for XEmacs."
 (defun gnus-create-image (file)
   (create-image file))
 
-(defun gnus-put-image (glyph)
-  (put-image glyph (point)))
+(defun gnus-put-image (glyph &optional string)
+  (insert-image glyph string))
+
+(defun gnus-remove-image (image)
+  (dolist (position (gnus-text-with-property 'display))
+    (when (equal (get-text-property position 'display) image)
+      (put-text-property position (1+ position) 'display nil))))
 
 (provide 'gnus-ems)
 

@@ -62,6 +62,7 @@
 (defalias 'mail-header-fold-field 'rfc2047-fold-field)
 (defalias 'mail-header-unfold-field 'rfc2047-unfold-field)
 (defalias 'mail-header-narrow-to-field 'rfc2047-narrow-to-field)
+(defalias 'mail-header-field-value 'rfc2047-field-value)
 
 (defalias 'mail-encode-encoded-word-region 'rfc2047-encode-region)
 (defalias 'mail-encode-encoded-word-buffer 'rfc2047-encode-message-header)

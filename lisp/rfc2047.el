@@ -116,6 +116,14 @@ Valid encodings are nil, `Q' and `B'.")
        (point-max))))
   (goto-char (point-min)))
 
+(defun rfc2047-field-value ()
+  "Return the value of the field at point."
+  (save-excursion
+    (save-restriction
+      (rfc2047-narrow-to-field)
+      (re-search-forward ":[ \t\n]*" nil t)
+      (buffer-substring (point) (point-max)))))
+
 (defun rfc2047-encode-message-header ()
   "Encode the message header according to `rfc2047-header-encoding-alist'.
 Should be called narrowed to the head of the message."

@@ -141,12 +141,14 @@ List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
 	file
       nil)))
 
-(defun gnus-picon-insert-glyph (glyph)
+(defun gnus-picon-insert-glyph (glyph category)
   "Insert GLYPH into the buffer.
 GLYPH can be either a glyph or a string."
   (if (stringp glyph)
       (insert glyph)
-    (gnus-put-image glyph)))
+    (gnus-add-wash-type category)
+    (gnus-add-image category (car glyph))
+    (gnus-put-image (car glyph) (cdr glyph))))
 
 (defun gnus-picon-create-glyph (file)
   (or (cdr (assoc file gnus-picon-glyph-alist))
@@ -155,8 +157,7 @@ GLYPH can be either a glyph or a string."
 
 ;;; Functions that does picon transformations:
 
-(defun gnus-picon-transform-address (header)
-  (interactive)
+(defun gnus-picon-transform-address (header category)
   (gnus-with-article-headers
     (let ((addresses
 	   (mail-header-parse-addresses (mail-fetch-field header)))
@@ -168,21 +169,24 @@ GLYPH can be either a glyph or a string."
 		   (setq spec (gnus-picon-split-address address)))
 	  (when (setq file (gnus-picon-find-face
 			    address gnus-picon-user-directories))
-	    (setcar spec (gnus-picon-create-glyph file)))
+	    (setcar spec (cons (gnus-picon-create-glyph file)
+			       (car spec))))
 	  (dotimes (i (1- (length spec)))
 	    (when (setq file (gnus-picon-find-face
 			      (concat "unknown@"
 				      (mapconcat
 				       'identity (nthcdr (1+ i) spec) "."))
 			      gnus-picon-domain-directories t))
-	      (setcar (nthcdr (1+ i) spec) (gnus-picon-create-glyph file))))
+	      (setcar (nthcdr (1+ i) spec)
+		      (cons (gnus-picon-create-glyph file)
+			    (nth (1+ i) spec)))))
 	  
 	  (gnus-article-goto-header header)
 	  (mail-header-narrow-to-field)
 	  (when (search-forward address nil t)
 	    (delete-region (match-beginning 0) (match-end 0))
 	    (while spec
-	      (gnus-picon-insert-glyph (pop spec))
+	      (gnus-picon-insert-glyph (pop spec) category)
 	      (when spec
 		(if (not first)
 		    (insert ".")
@@ -205,7 +209,9 @@ GLYPH can be either a glyph or a string."
 				    (mapconcat
 				     'identity (nthcdr i spec) "."))
 			    gnus-picon-news-directories t))
-	    (setcar (nthcdr i spec) (gnus-picon-create-glyph file))))
+	    (setcar (nthcdr i spec)
+		    (cons (gnus-picon-create-glyph file)
+			  (nth i spec)))))
 	
 	(gnus-article-goto-header header)
 	(mail-header-narrow-to-field)
@@ -213,7 +219,7 @@ GLYPH can be either a glyph or a string."
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (setq spec (nreverse spec))
 	  (while spec
-	    (gnus-picon-insert-glyph (pop spec))
+	    (gnus-picon-insert-glyph (pop spec) 'newsgroups-picon)
 	    (when spec
 	      (insert "."))))))))
 
@@ -221,20 +227,35 @@ GLYPH can be either a glyph or a string."
 
 ;;;###autoload
 (defun gnus-treat-from-picon ()
+  "Display picons in the From header.
+If picons are already displayed, remove them."
   (interactive)
-  (gnus-picon-transform-address "from"))
+  (gnus-with-article-buffer
+    (if (memq 'from-picon gnus-article-wash-types)
+	(gnus-delete-images 'from-picon)
+      (gnus-picon-transform-address "from" 'from-picon))))
 
 ;;;###autoload
 (defun gnus-treat-mail-picon ()
+  "Display picons in the Cc and To headers.
+If picons are already displayed, remove them."
   (interactive)
-  (gnus-picon-transform-address "cc")
-  (gnus-picon-transform-address "to"))
+  (gnus-with-article-buffer
+    (if (memq 'mail-picon gnus-article-wash-types)
+	(gnus-delete-images 'mail-picon)
+      (gnus-picon-transform-address "cc" 'mail-picon)
+      (gnus-picon-transform-address "to" 'mail-picon))))
 
 ;;;###autoload
 (defun gnus-treat-newsgroups-picon ()
+  "Display picons in the Newsgroups and Followup-To headers.
+If picons are already displayed, remove them."
   (interactive)
-  (gnus-picon-transform-newsgroups "newsgroups")
-  (gnus-picon-transform-newsgroups "followup-to"))
+  (gnus-with-article-buffer
+    (if (memq 'newsgroups-picon gnus-article-wash-types)
+	(gnus-delete-images  'newsgroups-picon)
+      (gnus-picon-transform-newsgroups "newsgroups")
+      (gnus-picon-transform-newsgroups "followup-to"))))
 
 (provide 'gnus-picon)
 

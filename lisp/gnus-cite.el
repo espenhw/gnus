@@ -510,8 +510,7 @@ always hide."
 		      (setq beg nil)
 		  (setq end (point-marker))))))
 	    (when (and beg end)
-	      (or (memq 'cite gnus-article-wash-types)
-		  (push 'cite gnus-article-wash-types))
+	      (gnus-add-wash-type 'cite)
 	      ;; We use markers for the end-points to facilitate later
 	      ;; wrapping and mangling of text.
 	      (setq beg (set-marker (make-marker) beg)
@@ -557,8 +556,7 @@ means show, nil means toggle."
 	     'article-type 'cite beg end
 	     (cons 'article-type (cons 'cite
 				       gnus-hidden-properties))))
-	(or (memq 'cite gnus-article-wash-types)
-	    (push 'cite gnus-article-wash-types))
+	(gnus-add-wash-type 'cite)
 	(gnus-add-text-properties-when
 	 'article-type nil beg end
 	 (cons 'article-type (cons 'cite
@@ -968,8 +966,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 				       gnus-hidden-properties))
 	      ((assq number gnus-cite-attribution-alist))
 	      (t
-	       (or (memq 'cite gnus-article-wash-types)
-		   (push 'cite gnus-article-wash-types))
+	       (gnus-add-wash-type 'cite)
 	       (gnus-add-text-properties
 		(point) (progn (forward-line 1) (point))
 		(nconc (list 'article-type 'cite)

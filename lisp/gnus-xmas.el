@@ -648,23 +648,19 @@ XEmacs compatibility workaround."
   "Face to show X face"
   :group 'gnus-xmas)
 
-(defun gnus-xmas-article-display-xface (beg end &optional buffer)
+(defun gnus-xmas-article-display-xface (data)
   "Display any XFace headers in BUFFER."
   (save-excursion
     (let ((xface-glyph
 	   (cond
 	    ((featurep 'xface)
 	     (make-glyph (vector 'xface :data
-				 (concat "X-Face: "
-					 (if buffer
-					     (with-current-buffer buffer
-					       (buffer-substring beg end))
-					   (buffer-substring beg end))))))
+				 (concat "X-Face: " data))))
 	    ((featurep 'xpm)
 	     (let ((cur (or buffer (current-buffer))))
 	       (save-excursion
 		 (gnus-set-work-buffer)
-		 (insert-buffer-substring cur beg end)
+		 (insert data)
 		 (let ((coding-system-for-read 'binary)
 		       (coding-system-for-write 'binary))
 		   (gnus-xmas-call-region "uncompface")
@@ -832,7 +828,7 @@ XEmacs compatibility workaround."
     (insert-file-contents file)
     (mm-create-image-xemacs (car (last (split-string file "[.]"))))))
 
-(defun gnus-xmas-put-image (glyph)
+(defun gnus-xmas-put-image (glyph &optional string)
   (let ((annot (make-annotation glyph nil 'text)))
     (set-extent-property annot 'mm t)
     (set-extent-property annot 'duplicable t)))

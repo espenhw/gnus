@@ -91,15 +91,16 @@ regexp to replace with IMAGE.  IMAGE is the name of a PBM file in
       (while (and (not file)
 		  (setq type (pop types)))
 	(unless (file-exists-p
-	       (setq file (expand-file-name (concat (nth 2 elt) "." type)
-					    smiley-data-directory)))
+		 (setq file (expand-file-name (concat (nth 2 elt) "." type)
+					      smiley-data-directory)))
 	  (setq file nil)))
-      (let ((image (find-image (list (list :type (intern type) 
-					   :file file
-					   :ascent 'center)))))
-	(when image
-	  (push (list (car elt) (cadr elt) image)
-		smiley-cached-regexp-alist))))))
+      (when type
+	(let ((image (find-image (list (list :type (intern type) 
+					     :file file
+					     :ascent 'center)))))
+	  (when image
+	    (push (list (car elt) (cadr elt) image)
+		  smiley-cached-regexp-alist)))))))
 
 (defvar smiley-active nil
   "Non-nil means smilies in the buffer will be displayed.")
