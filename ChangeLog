@@ -1,3 +1,8 @@
+2001-12-10  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* make-x.bat: Code cleanup.  Fix a bug with "/copy".  From Frank
+	Schmitt <ich@Frank-Schmitt.net>.
+
 2001-11-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* make-x.bat: Use parameter "/copy" rather than "copy" for increased

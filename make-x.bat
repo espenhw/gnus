@@ -11,13 +11,14 @@ set PWD=
 if "%1" == "" goto usage
 
 set emacs=xemacs.exe
+if "%2" == "copy" set copy=true
+if "%2" == "/copy" set copy=true
 
 cd lisp
 call %1\%emacs% -batch -q -no-site-file -l ./dgnushack.el -f dgnushack-compile
-if not "%2" == "copy" goto info
-if not "%2" == "/copy" goto info
+if not %copy%==true goto info
 attrib -r %1\..\..\xemacs-packages\lisp\gnus\*.*
-copy *.el* %1\..\..\xemacs-packages\lisp\gnus
+copy *.el? %1\..\..\xemacs-packages\lisp\gnus
 
 :info
 set EMACSINFO=call %1\%emacs% -no-site-file -no-init-file -batch -q -l infohack.el -f batch-makeinfo
@@ -25,8 +26,7 @@ cd ..\texi
 %EMACSINFO% message.texi
 %EMACSINFO% emacs-mime.texi
 %EMACSINFO% gnus.texi
-if not "%2" == "copy" goto done
-if not "%2" == "/copy" goto done
+if not %copy%==true goto done
 copy gnus %1\..\..\xemacs-packages\info
 copy gnus-?? %1\..\..\xemacs-packages\info
 copy message %1\..\..\xemacs-packages\info
