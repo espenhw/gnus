@@ -204,4 +204,5 @@ an alist of attribute/value pairs."
 
 (provide 'smime-ldap)
 
+;; arch-tag: 87e6bc44-21fc-4e9b-a89b-f55f031f78f8
 ;;; smime-ldap.el ends here
