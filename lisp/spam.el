@@ -355,7 +355,7 @@ your main source of newsgroup names."
   :group 'spam-ifile)
 
 (defgroup spam-spamoracle nil
-  "Spam ifile configuration."
+  "Spam spamoracle configuration."
   :group 'spam)
 
 (defcustom spam-spamoracle-database nil 

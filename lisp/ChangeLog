@@ -1,3 +1,10 @@
+2003-11-06  Teodor Zlatanov  <tzz@lifelogs.com> suggested by Jean-Marc Lasgouttes <Jean-Marc.Lasgouttes@inria.fr>
+
+	* gnus.el (gnus-install-group-spam-parameters): fixed parameters
+	to list spamoracle as well
+
+	* spam.el (spam-spamoracle): doc change
+
 2003-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-score.el (gnus-decay-score): Protect against arithmetic

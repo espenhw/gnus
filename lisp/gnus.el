@@ -1924,15 +1924,17 @@ spam processing, associated with the appropriate processor."
 		   (variable-item gnus-group-spam-exit-processor-stat)
 		   (variable-item gnus-group-spam-exit-processor-bogofilter)
 		   (variable-item gnus-group-spam-exit-processor-blacklist)
+		   (variable-item gnus-group-spam-exit-processor-spamoracle)
 		   (variable-item gnus-group-spam-exit-processor-report-gmane)
 		   (variable-item gnus-group-ham-exit-processor-bogofilter)
 		   (variable-item gnus-group-ham-exit-processor-ifile)
 		   (variable-item gnus-group-ham-exit-processor-stat)
 		   (variable-item gnus-group-ham-exit-processor-whitelist)
 		   (variable-item gnus-group-ham-exit-processor-BBDB)
+		   (variable-item gnus-group-ham-exit-processor-spamoracle)
 		   (variable-item gnus-group-ham-exit-processor-copy))))
    :parameter-document
-   "Which spam or ham processors will be appliedwhen the summary is exited.")
+   "Which spam or ham processors will be applied when the summary is exited.")
 
   (gnus-define-group-parameter
    spam-process-destination
