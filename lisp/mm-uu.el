@@ -81,8 +81,8 @@ decoder, such as hexbin."
 
 ;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and 
 ;;; Peter von der Ah\'e <pahe@daimi.au.dk>
-(defconst mm-uu-forward-begin-line "^-+ \\(?:Start of \\)?Forwarded message")
-(defconst mm-uu-forward-end-line "^-+ End\\(?: of\\)? forwarded message")
+(defconst mm-uu-forward-begin-line "^-+ \\(Start of \\)?Forwarded message")
+(defconst mm-uu-forward-end-line "^-+ End \\(of \\)?forwarded message")
 
 (defvar mm-uu-begin-line nil)
 
