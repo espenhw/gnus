@@ -1,3 +1,7 @@
+2000-04-22 10:25:56  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el (nnwarchive-egroups-article): Remove < and >.
+
 2000-04-22 14:25:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-get-reply-headers): Return a value.

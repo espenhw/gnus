@@ -489,7 +489,7 @@
       (delete-region (point) (point-max)))
   (goto-char (point-min))
   (while (re-search-forward "<a[^>]+>\\([^<]+\\)</a>" nil t)
-    (replace-match "<\\1>"))
+    (replace-match "\\1"))
   (nnweb-decode-entities)
   (buffer-string))
 
