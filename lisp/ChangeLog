@@ -1,3 +1,8 @@
+2003-05-31  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (article-unsplit-urls): Use gnus-treat-article
+	rather than gnus-display-mime-function.
+
 2003-05-30  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-use-long-group-names): new variable

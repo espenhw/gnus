@@ -2272,8 +2272,8 @@ If READ-CHARSET, ask for a coding system."
       (while (re-search-forward
 	      "^\\(\\(https?\\|ftp\\)://\\S-+\\) *\n\\(\\S-+\\)" nil t)
 	(replace-match "\\1\\3" t)))
-    (when (and gnus-display-mime-function (interactive-p))
-      (funcall gnus-display-mime-function))))
+    (when (interactive-p)
+      (gnus-treat-article nil))))
 
 
 (defun article-wash-html (&optional read-charset)
