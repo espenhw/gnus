@@ -37,13 +37,14 @@
     (anon-ftp . mm-extern-anon-ftp)
     (ftp . mm-extern-ftp)
 ;;;     (tftp . mm-extern-tftp)
-;;;     (mail-server . mm-extern-mail-server))
+    (mail-server . mm-extern-mail-server)
 ;;;     (afs . mm-extern-afs))
     ))
 
 (defvar mm-extern-anonymous "anonymous")
 
 (defun mm-extern-local-file (handle)
+  (erase-buffer)
   (let ((name (cdr (assq 'name (cdr (mm-handle-type handle)))))
 	(coding-system-for-read mm-binary-coding-system))
     (unless name
@@ -52,6 +53,7 @@
     (mm-insert-file-contents name nil nil nil nil t)))
 
 (defun mm-extern-url (handle)
+  (erase-buffer)
   (require 'url)
   (let ((url (cdr (assq 'url (cdr (mm-handle-type handle)))))
 	(name buffer-file-name)
@@ -64,6 +66,7 @@
     (setq buffer-file-name name)))
 
 (defun mm-extern-anon-ftp (handle)
+  (erase-buffer)
   (let* ((params (cdr (mm-handle-type handle)))
 	 (name (cdr (assq 'name params)))
 	 (site (cdr (assq 'site params)))
@@ -81,6 +84,27 @@
 (defun mm-extern-ftp (handle)
   (let (mm-extern-anonymous)
     (mm-extern-anon-ftp handle)))
+
+(defun mm-extern-mail-server (handle)
+  (require 'message)
+  (let* ((params (cdr (mm-handle-type handle)))
+	 (server (cdr (assq 'server params)))
+	 (subject (or (cdr (assq 'subject params)) "none"))
+	 (buf (current-buffer))
+	 info)
+    (if (y-or-n-p (format "Send a request message to %s?" server))
+	(save-window-excursion
+	  (message-mail server subject)
+	  (message-goto-body)
+	  (delete-region (point) (point-max))
+	  (insert-buffer buf)
+	  (message "Requesting external body...")
+	  (message-send-and-exit)
+	  (setq info "Request is sent.")
+	  (message info))
+      (setq info "Request is not sent."))
+    (goto-char (point-min))
+    (insert "[" info "]\n\n")))
 
 ;;;###autoload
 (defun mm-inline-external-body (handle &optional no-display)
@@ -106,16 +130,12 @@ If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
 	(mm-destroy-parts handles)
 	(error "Multipart external body is not supported."))
       (save-excursion ;; single part
-	(kill-buffer (mm-handle-buffer handles))
-	(set-buffer (setq buf (generate-new-buffer " *mm*")))
+	(set-buffer (setq buf (mm-handle-buffer handles)))
 	(condition-case err
 	    (funcall func handle)
 	  (error 
-	   ;; Don't require gnus-util
-	   (when (gnus-buffer-exists-p buf)
-	     (kill-buffer buf))
+	   (mm-destroy-parts handles)
 	   (error err)))
-	(setcar handles (current-buffer))
 	(mm-handle-set-cache handle handles))
       (push handles gnus-article-mime-handles))
     (unless no-display
