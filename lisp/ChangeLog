@@ -1,3 +1,7 @@
+2002-01-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-url-parse-query-string): Allow new line in value.
+
 2002-01-18  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-starttls-p): Don't check for binary.

@@ -5516,7 +5516,7 @@ specified by `gnus-button-alist'."
       (if (not (string-match "=" cur))
 	  nil                           ; Grace
 	(setq key (gnus-url-unhex-string (substring cur 0 (match-beginning 0)))
-	      val (gnus-url-unhex-string (substring cur (match-end 0) nil)))
+	      val (gnus-url-unhex-string (substring cur (match-end 0) nil) t))
 	(if downcase
 	    (setq key (downcase key)))
 	(setq cur (assoc key retval))
