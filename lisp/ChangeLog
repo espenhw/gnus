@@ -1,3 +1,10 @@
+2001-08-24 16:05:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-spec.el (gnus-compile): Don't compile gnus-version. 
+
+	* gnus-group.el (gnus-update-group-mark-positions): Bind
+	gnus-group-update-hook to nil.
+
 2001-08-24 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-generate-mime-1): Force as multibyte string.

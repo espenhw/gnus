@@ -627,7 +627,7 @@ If PROPS, insert the result."
 
       (while entries
 	(setq entry (pop entries))
-	(if (eq (car entry) 'version)
+	(if (memq (car entry) '(gnus-version version))
 	    (setq gnus-format-specs (delq entry gnus-format-specs))
 	  (let ((form (caddr entry)))
 	    (when (and (listp form)
