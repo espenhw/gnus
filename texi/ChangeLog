@@ -1,3 +1,7 @@
+2003-09-22  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.texi: Fixes.
+
 2003-09-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Fancy Mail Splitting): Make split-on-body work for
