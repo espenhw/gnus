@@ -1,3 +1,7 @@
+2001-12-18 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* ChangeLog, todo: Add `coding'.
+
 2001-12-17  Josh Huber  <huber@alum.wpi.edu>
 
 	* ChangeLog: changed coding to buffer-file-coding-system
@@ -138,5 +142,6 @@
 	Windows NT.
 
 ;; Local Variables:
+;; coding: iso-2022-7bit
 ;; buffer-file-coding-system: iso-2022-7bit
 ;; End:
