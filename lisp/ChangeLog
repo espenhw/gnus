@@ -1,3 +1,7 @@
+1999-12-17 13:08:54  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-fold-region): Fold a line more than once.
+
 1999-12-17 11:54:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el: Enhance hotmail-snarf.

@@ -277,8 +277,8 @@ permitted unencoded charset is us-ascii."
 	 ((and (looking-at "\\?=")
 	       (> (- (point) (save-excursion (beginning-of-line) (point))) 76))
 	  (goto-char break)
-	  (insert "\n ")
-	  (forward-line 1)))
+	  (setq break nil)
+	  (insert "\n ")))
 	(unless (eobp)
 	  (forward-char 1))))))
 
