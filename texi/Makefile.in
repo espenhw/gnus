@@ -64,7 +64,7 @@ clean:
 	gnus.ilg gnus.ind gnus.[cgk]ind gnus.idx \
 	gnustmp.texi *.tmplatexi gnus.tmplatexi1 texput.log *.orig *.rej \
 	gnus.latexi*~* xface.tex picons.tex smiley.tex *.latexi *.dvi-x \
-	*.pdf-x
+	*.pdf-x gnusconfig.tex
 
 makeinfo:
 	makeinfo -o gnus gnus.texi
