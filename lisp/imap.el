@@ -156,27 +156,57 @@
 
 ;; User variables.
 
-(defvar imap-kerberos4-program '("imtest -m kerberos_v4 -u %l -p %p %s"
-				 "imtest -kp %s %p")
+(defgroup imap nil
+  "Low-level IMAP issues."
+  :group 'mail)
+
+(defcustom imap-kerberos4-program '("imtest -m kerberos_v4 -u %l -p %p %s"
+				    "imtest -kp %s %p")
   "List of strings containing commands for Kerberos 4 authentication.
 %s is replaced with server hostname, %p with port to connect to, and
 %l with the value of `imap-default-user'.  The program should accept
-IMAP commands on stdin and return responses to stdout.")
+IMAP commands on stdin and return responses to stdout.  Each entry in
+the list is tried until a successful connection is made."
+  :group 'imap
+  :type '(repeat string))
 
-(defvar imap-gssapi-program '("imtest -m gssapi -u %l -p %p %s")
+(defcustom imap-gssapi-program '("imtest -m gssapi -u %l -p %p %s")
   "List of strings containing commands for GSSAPI (krb5) authentication.
 %s is replaced with server hostname, %p with port to connect to, and
 %l with the value of `imap-default-user'.  The program should accept
-IMAP commands on stdin and return responses to stdout.")
+IMAP commands on stdin and return responses to stdout.  Each entry in
+the list is tried until a successful connection is made."
+  :group 'imap
+  :type '(repeat string))
 
-(defvar imap-ssl-program '("openssl s_client -ssl3 -connect %s:%p"
-			   "openssl s_client -ssl2 -connect %s:%p"
-			   "s_client -ssl3 -connect %s:%p"
-			   "s_client -ssl2 -connect %s:%p")
+(defcustom imap-ssl-program '("openssl s_client -ssl3 -connect %s:%p"
+			      "openssl s_client -ssl2 -connect %s:%p"
+			      "s_client -ssl3 -connect %s:%p"
+			      "s_client -ssl2 -connect %s:%p")
   "A string, or list of strings, containing commands for SSL connections.
 Within a string, %s is replaced with the server address and %p with
 port number on server.  The program should accept IMAP commands on
-stdin and return responses to stdout.")
+stdin and return responses to stdout.  Each entry in the list is tried
+until a successful connection is made."
+  :group 'imap
+  :type '(choice string
+		 (repeat string)))
+
+(defcustom imap-shell-program '("ssh %s imapd"
+				"rsh %s imapd"
+				"ssh %g ssh %s imapd"
+				"rsh %g rsh %s imapd")
+  "A list of strings, containing commands for IMAP connection.
+Within a string, %s is replaced with the server address, %p with port
+number on server, %g with `imap-shell-host', and %l with
+`imap-default-user'.  The program should read IMAP commands from stdin
+and write IMAP response to stdout. Each entry in the list is tried
+until a successful connection is made."
+  :group 'imap
+  :type '(repeat string))
+
+(defvar imap-shell-host "gateway"
+  "Hostname of rlogin proxy.")
 
 (defvar imap-default-user (user-login-name)
   "Default username to use.")
@@ -189,7 +219,7 @@ stdin and return responses to stdout.")
 (defvar imap-fetch-data-hook nil
   "Hooks called after receiving each FETCH response.")
 
-(defvar imap-streams '(gssapi kerberos4 starttls ssl network)
+(defvar imap-streams '(gssapi kerberos4 starttls ssl network shell)
   "Priority of streams to consider when opening connection to server.")
 
 (defvar imap-stream-alist
@@ -197,6 +227,7 @@ stdin and return responses to stdout.")
     (kerberos4 imap-kerberos4-stream-p imap-kerberos4-open)
     (ssl       imap-ssl-p              imap-ssl-open)
     (network   imap-network-p          imap-network-open)
+    (shell     imap-shell-p            imap-shell-open)
     (starttls  imap-starttls-p         imap-starttls-open))
   "Definition of network streams.
 
@@ -574,6 +605,49 @@ If ARGS, PROMPT is used as an argument to `format'."
       (when (memq (process-status process) '(open run))
 	process))))
 
+(defun imap-shell-p (buffer)
+  nil)
+
+(defun imap-shell-open (name buffer server port)
+  (let ((cmds imap-shell-program)
+	cmd done)
+    (while (and (not done) (setq cmd (pop cmds)))
+      (message "imap: Opening IMAP connection with `%s'..." cmd)
+      (setq imap-client-eol "\n")
+      (let* ((port (or port imap-default-port))
+	     (coding-system-for-read imap-coding-system-for-read)
+	     (coding-system-for-write imap-coding-system-for-write)
+	     (process (start-process 
+		       name buffer shell-file-name shell-command-switch
+		       (format-spec
+			cmd
+			(format-spec-make
+			 ?s server
+			 ?g imap-shell-host
+			 ?p (number-to-string port)
+			 ?l imap-default-user)))))
+	(when process
+	  (while (and (memq (process-status process) '(open run))
+		      (goto-char (point-min))
+		      (not (imap-parse-greeting)))
+	    (accept-process-output process 1)
+	    (sit-for 1))
+	  (erase-buffer)
+	  (and imap-log
+	       (with-current-buffer (get-buffer-create imap-log)
+		 (imap-disable-multibyte)
+		 (buffer-disable-undo)
+		 (goto-char (point-max))
+		 (insert-buffer-substring buffer)))
+	  (when (memq (process-status process) '(open run))
+	    (setq done process)))))
+    (if done
+	(progn
+	  (message "imap: Opening IMAP connection with `%s'...done" cmd)
+	  done)
+      (message "imap: Failed opening IMAP connection")
+      nil)))
+
 (defun imap-starttls-p (buffer)
   (and (condition-case ()
 	   (require 'starttls)
@@ -798,7 +872,7 @@ necessery.  If nil, the buffer name is generated."
 	  (setq imap-capability nil)))
       (if (imap-opened buffer)
 	  ;; Choose authenticator
-	  (when (null imap-auth)
+	  (when (and (null imap-auth) (not (eq imap-state 'auth)))
 	    (let ((auths imap-authenticators))
 	      (while (setq auth (pop auths))
 		(if (funcall (nth 1 (assq auth imap-authenticator-alist)) 
@@ -828,7 +902,10 @@ user and optionally stored in the buffer.  If USER and/or PASSWD is
 specified, the user will not be questioned and the username and/or
 password is remembered in the buffer."
   (with-current-buffer (or buffer (current-buffer))
-    (when (eq imap-state 'nonauth)
+    (if (not (eq imap-state 'nonauth))
+	(or (eq imap-state 'auth)
+	    (eq imap-state 'select)
+	    (eq imap-state 'examine))
       (make-variable-buffer-local 'imap-username)
       (make-variable-buffer-local 'imap-password)
       (if user (setq imap-username user))
