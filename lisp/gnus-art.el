@@ -1502,6 +1502,24 @@ or not."
 	(article-goto-body)
 	(quoted-printable-decode-region (point) (point-max) charset)))))
 
+(defun article-de-base64-unreadable (&optional force)
+  "Translate a quoted-printable-encoded article.
+If FORCE, decode the article whether it is marked as quoted-printable
+or not."
+  (interactive (list 'force))
+  (save-excursion
+    (let ((buffer-read-only nil)
+	  (type (gnus-fetch-field "content-transfer-encoding"))
+	  (charset gnus-newsgroup-charset))
+      (when (or force
+		(and type (string-match "quoted-printable" (downcase type))))
+	(article-goto-body)
+	(save-restriction
+	  (narrow-to-region (point) (point-max))
+	  (base64-decode-region (point-min) (point-max))
+	  (if (mm-coding-system-p charset)
+	      (mm-decode-coding-region (point-min) (point-max) charset)))))))
+
 (eval-when-compile
   (require 'rfc1843))
 
@@ -2444,6 +2462,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-remove-cr
      article-display-x-face
      article-de-quoted-unreadable
+     article-de-base64-unreadable
      article-decode-HZ
      article-mime-decode-quoted-printable
      article-hide-list-identifiers
@@ -2529,6 +2548,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Treat overstrike" gnus-article-treat-overstrike t]
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
+       ["Remove base64" gnus-article-de-base64-unreadable t]
        ["Decode HZ" gnus-article-decode-HZ t]))
 
     ;; Note "Commands" menu is defined in gnus-sum.el for consistency

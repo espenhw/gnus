@@ -1,3 +1,12 @@
+2000-05-05 12:27:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-de-base64-unreadable): New function.
+	(gnus-article-de-base64-unreadable): Bind.
+	(gnus-article-make-menu-bar): Menu item.
+	* gnus-sum.el (gnus-summary-wash-map): Bind '6' and 'Z'.
+	(gnus-summary-make-menu-bar): Menu item.
+	* gnus.el: Autoload.
+
 2000-05-05 10:32:27  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-show-article): Remove en/disable multibyte.

@@ -1531,6 +1531,8 @@ increase the score of each group you read."
     "C" gnus-article-capitalize-sentences
     "c" gnus-article-remove-cr
     "q" gnus-article-de-quoted-unreadable
+    "6" gnus-article-de-base64-unreadable
+    "Z" gnus-article-decode-HZ
     "f" gnus-article-display-x-face
     "l" gnus-summary-stop-page-breaking
     "r" gnus-summary-caesar-message
@@ -1681,6 +1683,7 @@ increase the score of each group you read."
 	      ["Words" gnus-article-decode-mime-words t]
 	      ["Charset" gnus-article-decode-charset t]
 	      ["QP" gnus-article-de-quoted-unreadable t]
+	      ["Base64" gnus-article-de-base64-unreadable t]
 	      ["View all" gnus-mime-view-all-parts t])
              ("Date"
               ["Local" gnus-article-date-local t]
@@ -1707,6 +1710,7 @@ increase the score of each group you read."
               ["CR" gnus-article-remove-cr t]
               ["Show X-Face" gnus-article-display-x-face t]
               ["Quoted-Printable" gnus-article-de-quoted-unreadable t]
+              ["Base64" gnus-article-de-base64-unreadable t]
               ["Rot 13" gnus-summary-caesar-message t]
               ["Unix pipe" gnus-summary-pipe-message t]
               ["Add buttons" gnus-article-add-buttons t]

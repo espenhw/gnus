@@ -1767,6 +1767,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-treat-overstrike 
       gnus-article-remove-cr gnus-article-remove-trailing-blank-lines
       gnus-article-display-x-face gnus-article-de-quoted-unreadable
+      gnus-article-de-base64-unreadable
       gnus-article-decode-HZ
       gnus-article-hide-pgp
       gnus-article-hide-pem gnus-article-hide-signature
