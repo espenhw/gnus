@@ -1,3 +1,7 @@
+Tue Mar 18 14:43:32 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Article Washing): Not addition.
+
 Mon Mar 17 16:15:54 1997  Philippe Schnoebelen  <Philippe.Schnoebelen@lsv.ens-cachan.fr>
 
 	* Makefile (install): Install properly.

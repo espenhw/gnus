@@ -1454,6 +1454,7 @@ and with point over the group in question."
 
 ;; Selecting groups.
 
+(defvar gnus-auto-select-next)
 (defun gnus-group-read-group (&optional all no-article group)
   "Read news in this newsgroup.
 If the prefix argument ALL is non-nil, already read articles become
@@ -1464,28 +1465,41 @@ group."
   (interactive "P")
   (let ((no-display (eq all 0))
 	(group (or group (gnus-group-group-name)))
-	number active marked entry)
+	number active marked entry selected did-select)
     (when (eq all 0)
       (setq all nil))
     (unless group
       (error "No group on current line"))
-    (setq marked (gnus-info-marks
-		  (nth 2 (setq entry (gnus-gethash
-				      group gnus-newsrc-hashtb)))))
-    ;; This group might be a dead group.  In that case we have to get
-    ;; the number of unread articles from `gnus-active-hashtb'.
-    (setq number
-	  (cond ((numberp all) all)
-		(entry (car entry))
-		((setq active (gnus-active group))
-		 (- (1+ (cdr active)) (car active)))))
-    (gnus-summary-read-group
-     group (or all (and (numberp number)
-			(zerop (+ number (gnus-range-length
-					  (cdr (assq 'tick marked)))
-				  (gnus-range-length
-				   (cdr (assq 'dormant marked)))))))
-     no-article nil no-display)))
+    ;; We loop here in case all articles in the group we try to select
+    ;; is scored out and we want to go to the next group.
+    (while (not selected)
+      (setq marked (gnus-info-marks
+		    (nth 2 (setq entry (gnus-gethash
+					group gnus-newsrc-hashtb)))))
+      ;; This group might be a dead group.  In that case we have to get
+      ;; the number of unread articles from `gnus-active-hashtb'.
+      (setq number
+	    (cond ((numberp all) all)
+		  (entry (car entry))
+		  ((setq active (gnus-active group))
+		   (- (1+ (cdr active)) (car active)))))
+      (setq did-select
+	    (let ((gnus-auto-select-next nil))
+	      (gnus-summary-read-group
+	       group
+	       (or all (and (numberp number)
+			    (zerop
+			     (+ number
+				(gnus-range-length
+				 (cdr (assq 'tick marked)))
+				(gnus-range-length
+				 (cdr (assq 'dormant marked)))))))
+	       no-article nil no-display)))
+      (if (and (not did-select)
+	       (eq gnus-auto-select-next 'quietly))
+	  (setq group (gnus-group-group-name))
+	(setq selected t)))
+    did-select))
 
 (defun gnus-group-select-group (&optional all)
   "Select this newsgroup.
@@ -1563,9 +1577,9 @@ Return the name of the group is selection was successful."
     (require (car method))
     (when (boundp saddr)
       (unless (assq saddr method)
-	(nconc method `((,saddr ,(cadr method)))))
-      (setf (cadr method) (format "%s-%d" (cadr method)
-				  (incf gnus-ephemeral-group-server)))))
+	(nconc method `((,saddr ,(cadr method))))
+	(setf (cadr method) (format "%s-%d" (cadr method)
+				    (incf gnus-ephemeral-group-server))))))
   (let ((group (if (gnus-group-foreign-p group) group
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash

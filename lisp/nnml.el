@@ -313,7 +313,6 @@ all.  This may very well take some time.")
   (nnml-possibly-change-directory group server)
   (nnmail-check-syntax)
   (let (result)
-    (nnmail-cache-insert (nnmail-fetch-field "message-id"))
     (if (stringp group)
 	(and
 	 (nnmail-activate 'nnml)
@@ -328,7 +327,6 @@ all.  This may very well take some time.")
 			  (nnmail-article-group 'nnml-active-number))))
        (when last
 	 (nnmail-save-active nnml-group-alist nnml-active-file)
-	 (nnmail-cache-close)
 	 (nnml-save-nov))))
     result))
 
@@ -682,11 +680,11 @@ all.  This may very well take some time.")
   (nnml-open-server (or (nnoo-current-server 'nnml) ""))
   (setq nnml-directory (expand-file-name nnml-directory))
   ;; Recurse down the directories.
-  (nnml-generate-nov-databases-1 nnml-directory)
+  (nnml-generate-nov-databases-1 nnml-directory nil t)
   ;; Save the active file.
   (nnmail-save-active nnml-group-alist nnml-active-file))
 
-(defun nnml-generate-nov-databases-1 (dir &optional seen)
+(defun nnml-generate-nov-databases-1 (dir &optional seen no-active)
   "Regenerate the NOV database in DIR."
   (interactive "DRegenerate NOV in: ")
   (setq dir (file-name-as-directory dir))
@@ -706,7 +704,9 @@ all.  This may very well take some time.")
       (when files
 	(funcall nnml-generate-active-function dir)
 	;; Generate the nov file.
-	(nnml-generate-nov-file dir files)))))
+	(nnml-generate-nov-file dir files)
+	(unless no-active
+	  (nnmail-save-active nnml-group-alist nnml-active-file))))))
 
 (defvar files)
 (defun nnml-generate-active-info (dir)

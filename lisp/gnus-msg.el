@@ -308,13 +308,10 @@ header line with the old Message-ID."
       (message-supersede)
       (push
        `((lambda ()
-	   (gnus-cache-possibly-remove-article ,article nil nil nil t)))
-       message-send-actions)
-      (push
-       `((lambda ()
 	   (when (buffer-name (get-buffer ,gnus-summary-buffer))
 	     (save-excursion
 	       (set-buffer (get-buffer ,gnus-summary-buffer))
+	       (gnus-cache-possibly-remove-article ,article nil nil nil t)
 	       (gnus-summary-mark-as-read ,article gnus-canceled-mark)))))
        message-send-actions))))
 
@@ -726,7 +723,9 @@ The current group name will be inserted at \"%s\".")
 	       (gnus-alive-p))
       ;; This mail group doesn't have a `to-list', so we add one
       ;; here.  Magic!
-      (gnus-group-add-parameter group (cons 'to-list to-address)))))
+      (when (gnus-y-or-n-p
+	     (format "Do you want to add this as `to-list': %s " to-address))
+	(gnus-group-add-parameter group (cons 'to-list to-address))))))
 
 (defun gnus-put-message ()
   "Put the current message in some group and return to Gnus."

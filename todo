@@ -608,3 +608,12 @@ the header
 
 * point in the article buffer doesn't always go to the
 beginning of the buffer when selecting new articles.
+
+* a command to process mark all unread articles.
+
+* `gnus-gather-threads-by-references-and-subject' -- first
+do gathering by references, and then go through the dummy roots and
+do more gathering by subject.
+
+* gnus-uu-mark-in-numerical-order -- process mark articles in
+article numerical order.

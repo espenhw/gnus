@@ -1312,7 +1312,8 @@ increase the score of each group you read."
     "t" gnus-article-remove-trailing-blank-lines
     "l" gnus-article-strip-leading-blank-lines
     "m" gnus-article-strip-multiple-blank-lines
-    "a" gnus-article-strip-blank-lines)
+    "a" gnus-article-strip-blank-lines
+    "s" gnus-article-strip-leading-space)
 
   (gnus-define-keys (gnus-summary-help-map "H" gnus-summary-mode-map)
     "v" gnus-version
@@ -1514,7 +1515,8 @@ increase the score of each group you read."
 	 ["Leading" gnus-article-strip-leading-blank-lines t]
 	 ["Multiple" gnus-article-strip-multiple-blank-lines t]
 	 ["Trailing" gnus-article-remove-trailing-blank-lines t]
-	 ["All of the above" gnus-article-strip-blank-lines t])
+	 ["All of the above" gnus-article-strip-blank-lines t]
+	 ["Leading space" gnus-article-strip-leading-space t])
 	["Overstrike" gnus-article-treat-overstrike t]
 	["Emphasis" gnus-article-emphasize t]
 	["Word wrap" gnus-article-fill-cited-article t]

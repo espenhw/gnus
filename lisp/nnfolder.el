@@ -225,7 +225,7 @@ time saver for large mailboxes.")
        (let ((bufs nnfolder-buffer-alist))
 	 (save-excursion
 	   (while bufs
-	     (if (not (buffer-name (nth 1 (car bufs))))
+	     (if (not (buffer-live-p (nth 1 (car bufs))))
 		 (setq nnfolder-buffer-alist
 		       (delq (car bufs) nnfolder-buffer-alist))
 	       (set-buffer (nth 1 (car bufs)))
@@ -246,7 +246,8 @@ time saver for large mailboxes.")
 	    (equal group nnfolder-current-group))
     (let ((inf (assoc group nnfolder-buffer-alist)))
       (when inf
-	(when nnfolder-current-group
+	(when (and nnfolder-current-group
+		   nnfolder-current-buffer)
 	  (push (list nnfolder-current-group nnfolder-current-buffer)
 		nnfolder-buffer-alist))
 	(setq nnfolder-buffer-alist
@@ -374,7 +375,6 @@ time saver for large mailboxes.")
        (forward-line -1)
        (while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
 	 (delete-region (point) (progn (forward-line 1) (point))))
-       (nnmail-cache-insert (nnmail-fetch-field "message-id"))
        (setq result
 	     (car (nnfolder-save-mail
 		   (if (stringp group)
@@ -384,8 +384,7 @@ time saver for large mailboxes.")
      (when last
        (save-excursion
 	 (nnfolder-possibly-change-folder (or (caar art-group) group))
-	 (nnfolder-save-buffer)
-	 (nnmail-cache-close))))
+	 (nnfolder-save-buffer))))
     (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
     (unless result
       (nnheader-report 'nnfolder "Couldn't store article"))

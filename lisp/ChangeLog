@@ -1,3 +1,42 @@
+Tue Mar 18 17:56:26 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.29 is released.
+
+Tue Mar 18 14:29:49 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Would set virt
+	ser too much. 
+	(gnus-group-read-group): Return right value.
+
+	* nnml.el (nnml-generate-nov-databases-1): Save active.
+
+	* gnus-msg.el (gnus-summary-supersede-article): Place point in the
+	with buffer.
+	(gnus-inews-add-to-address): Prompt before adding.
+
+	* gnus-art.el (article-strip-leading-space): Not a new command
+	and keystroke (HTDW Jaari fix).
+
+	* nnfolder.el (nnfolder-close-group): Don't push bogus entries
+	onto alist.
+
+Tue Mar 18 14:28:27 1997  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* nnfolder.el (nnfolder-request-scan): Check whether buffer really
+	is live.
+
+Tue Mar 18 13:53:00 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-read-group): Iterate instead of
+	recurse. 
+
+	* nnfolder.el (nnfolder-request-accept-article): Don't insert into
+	Message-ID cache.
+	* nnbabyl.el (nnbabyl-request-accept-article): Ditto.
+	* nnmbox.el (nnmbox-request-accept-article): Ditto.
+	* nnml.el (nnml-request-accept-article): Ditto.
+	* nnmh.el (nnmh-request-accept-article): Ditto.
+
 Tue Mar 18 00:35:06 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.28 is released.

@@ -1018,6 +1018,17 @@ always hide."
       (while (re-search-forward "\n\n\n+" nil t)
 	(replace-match "\n\n" t t)))))
 
+(defun article-strip-leading-space ()
+  "Remove all white space from the beginning of the lines in the article."
+  (interactive)
+  (save-excursion
+    (let ((inhibit-point-motion-hooks t)
+	  buffer-read-only)
+      (goto-char (point-min))
+      (search-forward "\n\n" nil t)
+      (while (re-search-forward "^[ \t]+" nil t)
+	(replace-match "" t t)))))
+
 (defun article-strip-blank-lines ()
   "Strip leading, trailing and multiple blank lines."
   (interactive)
@@ -1669,6 +1680,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-remove-trailing-blank-lines
      article-strip-leading-blank-lines
      article-strip-multiple-blank-lines
+     article-strip-leading-space
      article-strip-blank-lines
      article-date-local
      article-date-original
