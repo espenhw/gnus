@@ -1038,7 +1038,7 @@ REST is a plist of following:
 
 (defcustom gnus-home-directory "~/"
   "Directory variable that specifies the \"home\" directory.
-All other Gnus path variables are initialized from this variable."
+All other Gnus file and directory variables are initialized from this variable."
   :group 'gnus-files
   :type 'directory)
 

@@ -1011,7 +1011,7 @@ supported.
 
 @vindex gpg-temp-directory
 Note, if you are using the @code{gpg.el} you must make sure that the
-path specified by @code{gpg-temp-directory} have permissions 0700.
+directory specified by @code{gpg-temp-directory} have permissions 0700.
 
 Creating your own OpenPGP key is described in detail in the
 documentation of your OpenPGP implementation, so we refer to it.

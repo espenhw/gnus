@@ -1,3 +1,15 @@
+2003-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi: Don't use `path' in some cases. 
+	From the GNU coding standards:
+	
+	    Please do not use the term ``pathname'' that is used in Unix
+	    documentation; use ``file name'' (two words) instead.  We use
+	    the term ``path'' only for search paths, which are lists of
+	    directory names.
+
+	* message.texi: Ditto.
+
 2003-01-15  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (X-Face): Revert substantial part of last fix.

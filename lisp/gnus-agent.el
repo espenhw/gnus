@@ -234,12 +234,12 @@ node `(gnus)Server Buffer'.")
 	    (cadr gnus-command-method))))
 
 (defsubst gnus-agent-directory ()
-  "Path of the Gnus agent directory."
+  "The name of the Gnus agent directory."
   (nnheader-concat gnus-agent-directory
 		   (nnheader-translate-file-chars (gnus-agent-method)) "/"))
 
 (defun gnus-agent-lib-file (file)
-  "The full path of the Gnus agent library FILE."
+  "The full name of the Gnus agent library FILE."
   (expand-file-name file
 		    (file-name-as-directory
 		     (expand-file-name "agent.lib" (gnus-agent-directory)))))
@@ -933,7 +933,7 @@ This can be added to `gnus-select-article-hook' or
 	  (delete-char 1))))))
 
 (defun gnus-agent-group-path (group)
-  "Translate GROUP into a path."
+  "Translate GROUP into a file name."
   (if nnmail-use-long-file-names
       (gnus-group-real-name group)
     (nnheader-translate-file-chars

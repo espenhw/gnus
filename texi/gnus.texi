@@ -12505,19 +12505,19 @@ Where the news lib dir is (@file{/usr/lib/news/} by default).
 
 @item nnspool-active-file
 @vindex nnspool-active-file
-The path to the active file.
+The name of the active file.
 
 @item nnspool-newsgroups-file
 @vindex nnspool-newsgroups-file
-The path to the group descriptions file.
+The name of the group descriptions file.
 
 @item nnspool-history-file
 @vindex nnspool-history-file
-The path to the news history file.
+The name of the news history file.
 
 @item nnspool-active-times-file
 @vindex nnspool-active-times-file
-The path to the active date file.
+The name of the active date file.
 
 @item nnspool-nov-is-evil
 @vindex nnspool-nov-is-evil
@@ -12817,7 +12817,7 @@ Keywords:
 
 @table @code
 @item :path
-The path of the file.  Defaults to the value of the @code{MAIL}
+The file name.  Defaults to the value of the @code{MAIL}
 environment variable or the value of @code{rmail-spool-directory}
 (usually something like @file{/usr/mail/spool/user-name}).
 @end table
@@ -12828,7 +12828,7 @@ An example file mail source:
 (file :path "/usr/spool/mail/user-name")
 @end lisp
 
-Or using the default path:
+Or using the default file name:
 
 @lisp
 (file)
@@ -12882,7 +12882,7 @@ Keywords:
 
 @table @code
 @item :path
-The path of the directory where the files are.  There is no default
+The name of the directory where the files are.  There is no default
 value.
 
 @item :suffix
@@ -13016,7 +13016,7 @@ Keywords:
 
 @table @code
 @item :path
-The path of the directory where the mails are stored.  The default is
+The name of the directory where the mails are stored.  The default is
 taken from the @code{MAILDIR} environment variable or
 @samp{~/Maildir/}.
 @item :subdirs
@@ -13736,18 +13736,18 @@ Here's how:
 Go to the group buffer.
 
 @item
-Type `G f' and give the path to the mbox file when prompted to create an
+Type @kbd{G f} and give the file name to the mbox file when prompted to create an
 @code{nndoc} group from the mbox file (@pxref{Foreign Groups}).
 
 @item
-Type `SPACE' to enter the newly created group.
+Type @kbd{SPACE} to enter the newly created group.
 
 @item
-Type `M P b' to process-mark all articles in this group's buffer
+Type @kbd{M P b} to process-mark all articles in this group's buffer
 (@pxref{Setting Process Marks}).
 
 @item
-Type `B r' to respool all the process-marked articles, and answer
+Type @kbd{B r} to respool all the process-marked articles, and answer
 @samp{nnml} when prompted (@pxref{Mail Group Commands}).
 @end enumerate
 
@@ -22221,14 +22221,14 @@ Save table: (spam-stat-save)
 @table @code
 
 @item gnus-home-directory
-All Gnus path variables will be initialized from this variable, which
-defaults to @file{~/}.
+All Gnus file and directory variables will be initialized from this
+variable, which defaults to @file{~/}.
 
 @item gnus-directory
 @vindex gnus-directory
-Most Gnus storage path variables will be initialized from this variable,
-which defaults to the @samp{SAVEDIR} environment variable, or
-@file{~/News/} if that variable isn't set.
+Most Gnus storage file and directory variables will be initialized from
+this variable, which defaults to the @samp{SAVEDIR} environment
+variable, or @file{~/News/} if that variable isn't set.
 
 Note that Gnus is mostly loaded when the @file{.gnus.el} file is read.
 This means that other directory variables that are initialized from this
