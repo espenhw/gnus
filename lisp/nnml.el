@@ -939,13 +939,14 @@ Use the nov database for the current group if available."
     (nnml-open-marks group server)
     ;; Update info using `nnml-marks'.
     (mapcar (lambda (pred)
-	      (gnus-info-set-marks
-	       info
-	       (gnus-update-alist-soft
-		(cdr pred)
-		(cdr (assq (cdr pred) nnml-marks))
-		(gnus-info-marks info))
-	       t))
+	      (unless (memq (cdr pred) gnus-article-unpropagated-mark-lists)
+		(gnus-info-set-marks
+		 info
+		 (gnus-update-alist-soft
+		  (cdr pred)
+		  (cdr (assq (cdr pred) nnml-marks))
+		  (gnus-info-marks info))
+		 t)))
 	    gnus-article-mark-lists)
     (let ((seen (cdr (assq 'read nnml-marks))))
       (gnus-info-set-read info

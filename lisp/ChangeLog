@@ -1,3 +1,10 @@
+2002-01-18  Simon Josefsson  <jas@extundo.com>
+
+	* nnml.el (nnml-request-update-info): Don't erase flags that isn't
+	stored in .marks.
+
+	* nnfolder.el (nnfolder-request-update-info): Ditto.
+
 2002-01-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-url-parse-query-string): Allow new line in value.

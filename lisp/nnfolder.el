@@ -1163,13 +1163,14 @@ This command does not work if you use short group names."
     (nnfolder-open-marks group server)
     ;; Update info using `nnfolder-marks'.
     (mapcar (lambda (pred)
-	      (gnus-info-set-marks
-	       info
-	       (gnus-update-alist-soft
-		(cdr pred)
-		(cdr (assq (cdr pred) nnfolder-marks))
-		(gnus-info-marks info))
-	       t))
+	      (unless (memq (cdr pred) gnus-article-unpropagated-mark-lists)
+		(gnus-info-set-marks
+		 info
+		 (gnus-update-alist-soft
+		  (cdr pred)
+		  (cdr (assq (cdr pred) nnfolder-marks))
+		  (gnus-info-marks info))
+		 t)))
 	    gnus-article-mark-lists)
     (let ((seen (cdr (assq 'read nnfolder-marks))))
       (gnus-info-set-read info
