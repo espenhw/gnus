@@ -1145,7 +1145,11 @@ See Info node `(gnus)Customizing Articles' for details."
   :type gnus-article-treat-custom)
 (put 'gnus-treat-overstrike 'highlight t)
 
-(defcustom gnus-treat-display-xface
+(defvaralias 'gnus-treat-display-xface 'gnus-treat-display-x-face)
+(make-obsolete-variable 'gnus-treat-display-xface 
+			'gnus-treat-display-x-face)
+
+(defcustom gnus-treat-display-x-face
   (and (not noninteractive)
        (or (and (fboundp 'image-type-available-p)
 		(image-type-available-p 'xbm)
@@ -1163,7 +1167,7 @@ See Info node `(gnus)Customizing Articles' and Info node
   :link '(custom-manual "(gnus)Customizing Articles")
   :link '(custom-manual "(gnus)X-Face")
   :type gnus-article-treat-head-custom)
-(put 'gnus-treat-display-xface 'highlight t)
+(put 'gnus-treat-display-x-face 'highlight t)
 
 (defcustom gnus-treat-display-face
   (and (not noninteractive)
@@ -1181,7 +1185,7 @@ See Info node `(gnus)Customizing Articles' and Info node
   :link '(custom-manual "(gnus)Customizing Articles")
   :link '(custom-manual "(gnus)X-Face")
   :type gnus-article-treat-head-custom)
-(put 'gnus-treat-display-xface 'highlight t)
+(put 'gnus-treat-display-face 'highlight t)
 
 (defcustom gnus-treat-display-smileys
   (if (or (and (featurep 'xemacs)
@@ -1367,7 +1371,7 @@ This requires GNU Libidn, and by default only enabled if it is found."
     (gnus-treat-date-original gnus-article-date-original)
     (gnus-treat-date-user-defined gnus-article-date-user)
     (gnus-treat-date-iso8601 gnus-article-date-iso8601)
-    (gnus-treat-display-xface gnus-article-display-x-face)
+    (gnus-treat-display-x-face gnus-article-display-x-face)
     (gnus-treat-display-face gnus-article-display-face)
     (gnus-treat-hide-headers gnus-article-maybe-hide-headers)
     (gnus-treat-hide-boring-headers gnus-article-hide-boring-headers)

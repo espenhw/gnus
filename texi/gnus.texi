@@ -11078,7 +11078,7 @@ is controlled by @code{gnus-body-boundary-delimiter}.
 
 @xref{Smileys}.
 
-@item gnus-treat-display-xface (head)
+@item gnus-treat-display-x-face (head)
 
 @xref{X-Face}.
 
