@@ -1,3 +1,8 @@
+2002-02-04  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-treatment-function-alist): Move hide-citation,
+	highlight-citation after emphasize.
+
 2002-02-04  Simon Josefsson  <jas@extundo.com>
 
 	* nnfolder.el (nnfolder-open-marks): 
