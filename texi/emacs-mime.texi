@@ -430,6 +430,16 @@ parts.  Each function is applied successively to the file name.
 Ready-made functions include
 
 @table @code
+@item mm-file-name-delete-control
+@findex mm-file-name-delete-control
+Delete all control characters.
+
+@item mm-file-name-delete-gotchas
+@findex mm-file-name-delete-gotchas
+Delete characters that could have unintended consequences when used
+with flawed shell scripts, i.e. @samp{|}, @samp{>} and @samp{<}; and
+@samp{-}, @samp{.} as the first character.
+
 @item mm-file-name-delete-whitespace
 @findex mm-file-name-delete-whitespace
 Remove all whitespace.
@@ -448,7 +458,6 @@ Collapse multiple whitespace characters.
 Replace whitespace with underscores.  Set the variable
 @code{mm-file-name-replace-whitespace} to any other string if you do
 not like underscores.
-
 @end table
 
 The standard Emacs functions @code{capitalize}, @code{downcase},
