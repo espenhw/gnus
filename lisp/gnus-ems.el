@@ -200,40 +200,56 @@
 	  (goto-char (point-min))
 	  (sit-for 0))))))
 
+(defvar gnus-article-xface-ring-internal nil
+  "Cache for face data.")
+
+;; Worth customizing?
+(defvar gnus-article-xface-ring-size 6
+  "Length of the ring used for `gnus-article-xface-ring-internal'.")
+
 (defun gnus-article-display-xface (beg end)
   "Display an XFace header from between BEG and END in the current article.
-This requires support for XPM or XBM images in your Emacs and the
-external programs `uncompface', `icontopbm' and either `ppmtoxpm' (for
-XPM support) or `ppmtoxbm' (for XBM support).  On a GNU/Linux system
-these might be in packages with names like `compface' or `faces-xface'
-and `netpbm' or `libgr-progs', for instance.
+This requires support images in your Emacs and the external programs
+`uncompface', `icontopbm' and `ppmtoxbm'.  On a GNU/Linux system these
+might be in packages with names like `compface' or `faces-xface' and
+`netpbm' or `libgr-progs', for instance.
 
 This function is for Emacs 21+.  See `gnus-xmas-article-display-xface'
 for XEmacs."
+  ;; It might be worth converting uncompface's output in Lisp.
+
+  (unless gnus-article-xface-ring-internal ; Only load ring when needed.
+    (setq gnus-article-xface-ring-internal
+	  (make-ring gnus-article-xface-ring-size)))
   (save-excursion
-    (let ((cur (current-buffer))
-	  image type)
-      (when (and (fboundp 'image-type-available-p)
-		 (cond ((image-type-available-p 'xpm) (setq type 'xpm))
-		       ((image-type-available-p 'xbm) (setq type 'xbm))))
-	(with-temp-buffer
-	  (insert-buffer-substring cur beg end)
-	  (call-process-region (point-min) (point-max) "uncompface"
-			       'delete '(t nil))
-	  (goto-char (point-min))
-	  (insert "/* Width=48, Height=48 */\n")
-	  (and (eq 0 (call-process-region (point-min) (point-max) "icontopbm"
-					  'delete '(t nil)))
-	       (eq 0 (call-process-region (point-min) (point-max)
-					  (if (eq type 'xpm)
-					      "ppmtoxpm"
-					    "pbmtoxbm")
-					  'delete '(t nil)))
-	       (setq image (create-image (buffer-string) type t))))
-	(when image
-	  (goto-char (point-min))
-	  (re-search-forward "^From:" nil 'move)
-	    (insert-image image " "))))))
+    (let* ((cur (current-buffer))
+	   (data (buffer-substring beg end))
+	   (image (cdr-safe (assoc data (ring-elements
+					 gnus-article-xface-ring-internal)))))
+      (when (if (fboundp 'display-graphic-p)
+		(display-graphic-p))
+	(unless image
+	  (let ((coding-system-for-read 'binary)
+		(coding-system-for-write 'binary))
+	    (with-temp-buffer
+	      (insert data)
+	      (and (eq 0 (call-process-region (point-min) (point-max)
+					      "uncompface"
+					      'delete '(t nil)))
+		   (goto-char (point-min))
+		   (progn (insert "/* Width=48, Height=48 */\n") t)
+		   (eq 0 (call-process-region (point-min) (point-max)
+					      "icontopbm"
+					      'delete '(t nil)))
+		   (eq 0 (call-process-region (point-min) (point-max)
+					      "pbmtoxbm"
+					      'delete '(t nil)))
+		   (setq image (create-image (buffer-string) 'xbm t)))))
+	  (ring-insert gnus-article-xface-ring-internal (cons data image))))
+      (when image
+	(goto-char (point-min))
+	(re-search-forward "^From:" nil 'move)
+	(insert-image image " ")))))
 
 (provide 'gnus-ems)
 
