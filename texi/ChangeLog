@@ -1,3 +1,7 @@
+2001-07-04  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (IMAP): Add.
+
 2001-07-04  Didier Verna  <didier@lrde.epita.fr>
 
 	* gnus.texi (Example Methods): use the new nntp-open-connection

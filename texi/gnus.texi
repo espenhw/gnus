@@ -14364,6 +14364,28 @@ articles or not.
 
 @end table
 
+@item nnimap-importantize-dormant
+@vindex nnimap-importantize-dormant
+
+If non-nil, marks dormant articles as ticked (as well), for other IMAP
+clients. Within Gnus, dormant articles will naturally still (only) be
+marked as ticked.  This is to make dormant articles stand out, just
+like ticked articles, in other IMAP clients. (In other words, Gnus has
+two ``Tick'' marks and IMAP has only one.)
+
+Probably the only reason for frobing this would be if you're trying
+enable per-user persistant dormant flags, using something like:
+
+@lisp
+(setcdr (assq 'dormant nnimap-mark-to-flag-alist)
+        (format "gnus-dormant-%s" (user-login-name)))
+(setcdr (assq 'dormant nnimap-mark-to-predicate-alist)
+        (format "KEYWORD gnus-dormant-%s" (user-login-name)))
+@end lisp
+
+In this case, you would not want the per-user dormant flag showing up
+as ticked for other users.
+
 @item nnimap-expunge-search-string
 @cindex Expunging
 @vindex nnimap-expunge-search-string
