@@ -55,6 +55,27 @@
 	(Info-split))
     (save-buffer)))
 
+(eval-and-compile
+  (when (string-match "windows-nt\\|os/2\\|emx\\|cygwin"
+                      (symbol-name system-type))
+    (defun subst-char-in-region (START END FROMCHAR TOCHAR &optional NOUNDO)
+      "From START to END, replace FROMCHAR with TOCHAR each time it occurs.
+If optional arg NOUNDO is non-nil, don't record this change for undo
+and don't mark the buffer as really changed.
+Both characters must have the same length of multi-byte form."
+      (let ((original-buffer-undo-list buffer-undo-list)
+            (modified (buffer-modified-p)))
+        (if NOUNDO
+            (setq buffer-undo-list t))
+        (goto-char START)
+        (let ((from (char-to-string FROMCHAR))
+              (to (char-to-string TOCHAR)))
+          (while (search-forward from END t)
+            (replace-match to t t)))
+        (if NOUNDO
+            (progn (setq buffer-undo-list original-buffer-undo-list)
+                   (set-buffer-modidifed-p modified)))))))
+
 (defun batch-makeinfo ()
   "Emacs makeinfo in batch mode."
   (infohack (car command-line-args-left))
