@@ -1,5 +1,7 @@
 2000-09-01  Simon Josefsson  <simon@josefsson.org>
 
+	* nnimap.el (nnimap-retrieve-headers-from-file): Ignore errors.
+
 	* imap.el (imap-parse-flag-list): Hack.
 
 2000-08-29  Dave Love  <fx@gnu.org>

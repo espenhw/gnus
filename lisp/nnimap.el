@@ -54,6 +54,7 @@
 ;;     .newsrc.eld)
 ;;   o What about Gnus's article editing, can we support it?  NO!
 ;;   o Use \Draft to support the draft group??
+;;   o Duplicate suppression
 
 ;;; Code:
 
@@ -458,13 +459,11 @@ If EXAMINE is non-nil the group is selected read-only."
       (when (file-exists-p nov)
 	(mm-insert-file-contents nov)
 	(set-buffer-modified-p nil)
-	(let ((min (progn (goto-char (point-min))
-			  (when (not (eobp))
-			    (read (current-buffer)))))
-	      (max (progn (goto-char (point-max))
-			  (forward-line -1)
-			  (when (not (bobp))
-			    (read (current-buffer))))))
+	(let ((min (ignore-errors (goto-char (point-min))
+				  (read (current-buffer))))
+	      (max (ignore-errors (goto-char (point-max))
+				  (forward-line -1)
+				  (read (current-buffer)))))
 	  (if (and (numberp min) (numberp max))
 	      (cons min max)
 	    ;; junk, remove it, it's saved later
