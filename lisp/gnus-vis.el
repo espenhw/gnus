@@ -786,41 +786,43 @@ to do the hiding.  See the documentation for those functions."
   (save-excursion
     (set-buffer gnus-article-buffer)
     (goto-char (point-min))
-    (search-forward "\n\n")
-    (beginning-of-line 0)
-    (while (not (bobp))
-      (let ((alist gnus-header-face-alist)
-	    (buffer-read-only nil)
-	    (case-fold-search t)
-	    (end (point))
-	    (inhibit-point-motion-hooks t)
-	    begin entry regexp header-face field-face header-found field-found)
-	(re-search-backward "^[^ \t]" nil t)
-	(setq begin (point))
-	(while alist
-	  (setq entry (car alist)
-		regexp (nth 0 entry)
-		header-face (nth 1 entry)
-		field-face (nth 2 entry)
-		alist (cdr alist))
-	  (if (looking-at regexp)
-	      (let ((from (point)))
-		(skip-chars-forward "^:\n")
-		(and (not header-found)
-		     header-face
-		     (progn
-		       (put-text-property  from (point) 'face header-face)
-		       (setq header-found t)))
-		(and (not field-found)
-		     field-face
-		     (progn 
-		       (skip-chars-forward ": \t")
-		       (let ((from (point)))
-			 (goto-char end)
-			 (skip-chars-backward " \t")
-			 (put-text-property from (point) 'face field-face)
-			 (setq field-found t))))))
-	  (goto-char begin))))))
+    (if (not (search-forward "\n\n" nil t))
+	()
+      (beginning-of-line 0)
+      (while (not (bobp))
+	(let ((alist gnus-header-face-alist)
+	      (buffer-read-only nil)
+	      (case-fold-search t)
+	      (end (point))
+	      (inhibit-point-motion-hooks t)
+	      begin entry regexp header-face field-face 
+	      header-found field-found)
+	  (re-search-backward "^[^ \t]" nil t)
+	  (setq begin (point))
+	  (while alist
+	    (setq entry (car alist)
+		  regexp (nth 0 entry)
+		  header-face (nth 1 entry)
+		  field-face (nth 2 entry)
+		  alist (cdr alist))
+	    (if (looking-at regexp)
+		(let ((from (point)))
+		  (skip-chars-forward "^:\n")
+		  (and (not header-found)
+		       header-face
+		       (progn
+			 (put-text-property  from (point) 'face header-face)
+			 (setq header-found t)))
+		  (and (not field-found)
+		       field-face
+		       (progn 
+			 (skip-chars-forward ": \t")
+			 (let ((from (point)))
+			   (goto-char end)
+			   (skip-chars-backward " \t")
+			   (put-text-property from (point) 'face field-face)
+			   (setq field-found t))))))
+	    (goto-char begin)))))))
 
 (defun gnus-article-highlight-signature ()
   "Highlight the signature in an article.

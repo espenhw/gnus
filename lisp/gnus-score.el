@@ -581,7 +581,7 @@ SCORE is the score to add."
 		   (setq gnus-newsgroup-adaptive t)
 		   adapt)
 		  (t
-		   (setq gnus-newsgroup-adaptive gnus-use-adaptive-scoring)
+		   ;;(setq gnus-newsgroup-adaptive gnus-use-adaptive-scoring)
 		   gnus-default-adaptive-score-alist)))
       (setq gnus-summary-mark-below 
 	    (or mark mark-and-expunge gnus-summary-mark-below))

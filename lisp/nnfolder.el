@@ -264,6 +264,17 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	nnfolder-current-buffer nil)
   t)
 
+(defun nnfolder-request-create-group (group &optional server) 
+  (nnfolder-request-list)
+  (setq nnfolder-group-alist (nnmail-get-active))
+  (or (assoc group nnfolder-group-alist)
+      (let (active)
+	(setq nnfolder-group-alist 
+	      (cons (list group (setq active (cons 0 0)))
+		    nnfolder-group-alist))
+	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
+  t)
+
 (defun nnfolder-request-list (&optional server)
   (if server (nnfolder-get-new-mail))
   (save-excursion
@@ -368,7 +379,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (insert "From nobody " (current-time-string) "\n"))
     (and 
      (nnfolder-request-list)
-     (progn
+     (save-excursion
        (set-buffer buf)
        (goto-char (point-min))
        (search-forward "\n\n" nil t)
@@ -378,10 +389,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
        (setq result (car (nnfolder-save-mail (and (stringp group) group)))))
      (save-excursion
        (set-buffer nnfolder-current-buffer)
-       (insert-buffer-substring buf)
-       (and last (buffer-modified-p) (save-buffer))
-       result)
-     (nnmail-save-active nnfolder-group-alist nnfolder-active-file))
+       (and last (buffer-modified-p) (save-buffer))))
+    (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
     result))
 
 (defun nnfolder-request-replace-article (article group buffer)
@@ -463,9 +472,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	      ()
 	    (if (not (file-exists-p file))
 		(write-region 1 1 file t 'nomesg))
-	    (set-buffer (nnfolder-read-folder file))
 	    (setq nnfolder-buffer-alist (cons (list group (current-buffer))
-					      nnfolder-buffer-alist)))))))
+					      nnfolder-buffer-alist))
+	    (set-buffer (nnfolder-read-folder file)))))))
   (setq nnfolder-current-group group))
 
 (defun nnfolder-save-mail (&optional group)

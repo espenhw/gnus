@@ -1,4 +1,50 @@
+Sat Jun 10 00:15:13 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-ask-server-for-new-groups): Ignore errors while
+	reading newgroups files.
+	(gnus-summary-next-group): Would bug out when all articles were
+	expinged from scoring. 
+	(gnus-simplify-subject-fuzzy): Totally bugged out. 
+
+Thu Jun  8 22:27:07 1995  Per Abrahamsen  <abraham@iesd.auc.dk>
+
+	* custom.el: Added support for faces, sexp, and pair types.  Added
+	support for declaring emacs packages.  Added support for loading,
+	saveing, and editing Emacs customization.  Declared all user
+	variables in the custom package itself.
+
+	* gnus-edit.el: Added support for `eval', `adapt', and `local'
+	entries. 
+
+	* gnus-cus.el: New file.
+
 Fri Jun  9 00:07:16 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-uu.el (gnus-uu-initialize): Create tmp dir recursively. 
+
+	* gnus.el (gnus-group-edit-group): Refuse to edit killed groups. 
+	(gnus-summary-enter-digest-group): Have followups in digest groups
+	go to the parent group. 
+	(gnus-newsrc-to-gnus-format): Would infloop on empty lines. 
+
+	* gnus-score.el (gnus-score-load-file): Have adapt nil do nothing
+	much. 
+	(gnus-score-load-file): Have a nil 'adapt entry mean "use current
+	value". 
+
+	* gnus-vis.el (gnus-article-highlight-headers): Would sometimes
+	bug out. 
+
+	* gnus.el (gnus-configure-windows): Accept integer hor specs. 
+
+	* nnfolder.el (nnfolder-request-create-group): Make sure new
+	groups that are created are, indeedn, created.
+	(nnfolder-request-accept-article): Would save two copies of all
+	mail. 
+
+Fri Jun  9 00:07:16 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: 0.84 is released.
 
 	* nneething.el (nneething-retrieve-headers): Check for empty
 	files. 

@@ -1471,7 +1471,7 @@ The headers will be included in the sequence they are matched.")
 	(make-temp-name (concat gnus-uu-tmp-dir "gnus")))
   (gnus-uu-add-file gnus-uu-work-dir)
   (if (not (file-directory-p gnus-uu-work-dir)) 
-      (make-directory gnus-uu-work-dir))
+      (gnus-make-directory gnus-uu-work-dir))
   (set-file-modes gnus-uu-work-dir 448)
   (setq gnus-uu-work-dir (file-name-as-directory gnus-uu-work-dir)))
 

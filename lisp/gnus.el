@@ -1283,7 +1283,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.84"
+(defconst gnus-version "(ding) Gnus v0.85"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1470,7 +1470,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
     gnus-score-alist gnus-current-score-file gnus-summary-expunge-below 
     gnus-summary-mark-below gnus-newsgroup-active gnus-scores-exclude-files
     gnus-newsgroup-history gnus-newsgroup-ancient
-    gnus-newsgroup-adaptive)
+    (gnus-newsgroup-adaptive . gnus-use-adaptive-scoring))
   "Variables that are buffer-local to the summary buffers.")
 
 (defconst gnus-bug-message
@@ -2197,7 +2197,7 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
     (save-excursion
       (gnus-set-work-buffer)
       (insert subject)
-      (inline gnus-simplify-buffer-fuzzy)
+      (inline (gnus-simplify-buffer-fuzzy))
       (buffer-string))))
 
 (defun gnus-simplify-buffer-fuzzy ()
@@ -2368,9 +2368,12 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
       (if (and (listp (car hor)) 
 	       (eq (car (car hor)) 'horizontal))
 	  (progn
-	    (split-window nil (- (frame-width) 
-				 (floor (* (frame-width) (nth 1 (car hor)))))
-			  t)
+	    (split-window 
+	     nil
+	     (if (integerp (nth 1 (car hor)))
+		 (nth 1 (car hor))
+	       (- (frame-width) (floor (* (frame-width) (nth 1 (car hor))))))
+	     t)
 	    (setq hor (cdr hor))))
 
       ;; Go through the rules and eval the elements that are to be
@@ -3913,8 +3916,9 @@ ADDRESS."
 	(part (or part 'info))
 	(winconf (current-window-configuration))
 	info)
-    (if group (setq info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
-      (error "No group on current line"))
+    (or group (error "No group on current line"))
+    (or (setq info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
+	(error "Killed group; can't be edited"))
     (set-buffer (get-buffer-create gnus-group-edit-buffer))
     (gnus-configure-windows 'edit-group)
     (gnus-add-current-to-buffer-list)
@@ -7410,8 +7414,10 @@ If BACKWARD, go to previous group instead."
 		 ;; We have reached the final group in the group
 		 ;; buffer.
 		 (progn
-		   (set-buffer sumbuf)
-		   (gnus-summary-exit)))))))))
+		   (if (buffer-name sumbuf)
+		       (progn
+			 (set-buffer sumbuf)
+			 (gnus-summary-exit)))))))))))
 
 (defun gnus-summary-prev-group (no-article)
   "Exit current newsgroup and then select previous unread newsgroup.
@@ -7908,13 +7914,15 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 		      (gnus-group-prefixed-name 
 		       gnus-newsgroup-name (list 'nndoc "")) 
 		      gnus-current-article))
+	(ogroup gnus-newsgroup-name)
 	(buf (current-buffer)))
     (if (gnus-group-read-ephemeral-group 
 	 name (list 'nndoc name
 		    (list 'nndoc-address (get-buffer gnus-article-buffer))
 		    '(nndoc-article-type digest))
 	 t)
-	()
+	(setcdr (nthcdr 4 (nth 2 (gnus-gethash name gnus-newsrc-hashtb)))
+		(list (list (cons 'to-group ogroup))))
       (switch-to-buffer buf)
       (gnus-set-global-variables)
       (gnus-configure-windows 'summary)
@@ -11424,7 +11432,7 @@ The `-n' option line from .newsrc is respected."
 	     (or hashtb (setq hashtb (gnus-make-hashtable 
 				      (count-lines (point-min) (point-max)))))
 	     ;; Enter all the new groups in a hashtable.
-	     (gnus-active-to-gnus-format (car methods) hashtb)))
+	     (gnus-active-to-gnus-format (car methods) hashtb 'ignore)))
       (setq methods (cdr methods)))
     (and got-new (setq gnus-newsrc-last-checked-date new-date))
     ;; Now all new groups from all select methods are in `hashtb'.
@@ -11436,7 +11444,8 @@ The `-n' option line from .newsrc is respected."
 	       (member group gnus-killed-list))
 	   ;; The group is already known.
 	   ()
-	 (gnus-sethash group (symbol-value group-sym) gnus-active-hashtb)
+	 (and (symbol-value group-sym)
+	      (gnus-sethash group (symbol-value group-sym) gnus-active-hashtb))
 	 (let ((do-sub (gnus-matches-options-n group)))
 	   (cond ((eq do-sub 'subscribe)
 		  (setq groups (1+ groups))
@@ -12015,7 +12024,7 @@ Returns whether the updating was successful."
 	(setq methods (cdr methods))))))
 
 ;; Read an active file and place the results in `gnus-active-hashtb'.
-(defun gnus-active-to-gnus-format (method &optional hashtb)
+(defun gnus-active-to-gnus-format (method &optional hashtb ignore-errors)
   (let ((cur (current-buffer))
 	(hashtb (or hashtb 
 		    (if method
@@ -12026,7 +12035,8 @@ Returns whether the updating was successful."
     ;; Delete unnecessary lines.
     (goto-char (point-min))
     (while (search-forward "\nto." nil t)
-      (delete-region (match-beginning 0) (progn (forward-line 1) (point))))
+      (delete-region (1+ (match-beginning 0)) 
+		     (progn (forward-line 1) (point))))
     (or (string= gnus-ignored-newsgroups "")
 	(progn
 	  (goto-char (point-min))
@@ -12081,11 +12091,13 @@ Returns whether the updating was successful."
 		  (set group nil)))
 	    (error 
 	     (progn 
-	       (ding) 
-	       (gnus-message 3 "Warning - illegal active: %s"
-			     (buffer-substring 
-			      (gnus-point-at-bol) (gnus-point-at-eol)))
-	       nil)))
+	       (if ignore-errors
+		   (set group nil)
+		 (ding) 
+		 (gnus-message 3 "Warning - illegal active: %s"
+			       (buffer-substring 
+				(gnus-point-at-bol) (gnus-point-at-eol)))
+		 nil))))
 	  (widen)
 	  (forward-line 1))))))
 
@@ -12412,8 +12424,8 @@ If FORCE is non-nil, the .newsrc file is read."
 				     (1+ gnus-level-subscribed)
 				   gnus-level-default-unsubscribed))
 			       (nreverse reads))))
-	    (setq newsrc (cons info newsrc))))
-	(forward-line 1))))
+	    (setq newsrc (cons info newsrc))))))
+      (forward-line 1))
     
     (setq newsrc (nreverse newsrc))
 

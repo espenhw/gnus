@@ -277,7 +277,7 @@ crud:
              ;; use this instead.  note that the final t is *essential*,
              ;; this must be the last thing done
              (add-hook 'gnus-article-display-hook
-                       'gnus-article-highlight t)))
+                       'gnus-article-maybe-highlight t)))
 @end lisp
 
 
