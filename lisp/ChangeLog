@@ -1,3 +1,8 @@
+2001-01-24 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
+	* mm-util.el (mm-mime-mule-charset-alist): Preferred MIME names
+	GB2312 and Big5.
+
 2001-01-24  Simon Josefsson  <sj@extundo.com>
 
 	* mail-source.el (mail-sources): Add :program specifier to IMAP
