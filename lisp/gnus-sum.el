@@ -1839,7 +1839,8 @@ increase the score of each group you read."
   "C" gnus-summary-limit-mark-excluded-as-read
   "o" gnus-summary-insert-old-articles
   "N" gnus-summary-insert-new-articles
-  "r" gnus-summary-limit-to-replied)
+  "r" gnus-summary-limit-to-replied
+  "R" gnus-summary-limit-to-recipient)
 
 (gnus-define-keys (gnus-summary-goto-map "G" gnus-summary-mode-map)
   "n" gnus-summary-next-unread-article
@@ -2476,6 +2477,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	 ["Marks..." gnus-summary-limit-to-marks t]
 	 ["Subject..." gnus-summary-limit-to-subject t]
 	 ["Author..." gnus-summary-limit-to-author t]
+	 ["Recipient..." gnus-summary-limit-to-recipient t]
 	 ["Age..." gnus-summary-limit-to-age t]
 	 ["Extra..." gnus-summary-limit-to-extra t]
 	 ["Score..." gnus-summary-limit-to-score t]
@@ -7675,6 +7677,41 @@ If NOT-MATCHING, excluding articles that have authors that match a regexp."
 			"Limit to author (regexp): "))
 	 current-prefix-arg))
   (gnus-summary-limit-to-subject from "from" not-matching))
+
+(defun gnus-summary-limit-to-recipient (recipient &optional not-matching)
+  "Limit the summary buffer to articles with the given RECIPIENT.
+
+To and Cc headers are checked.  You need to include them in
+`nnmail-extra-headers'."
+  ;; Unlike `rmail-summary-by-recipients', doesn't include From.
+  (interactive
+   (list (read-string (format "%s recipient (regexp): "
+			      (if current-prefix-arg "Exclude" "Limit to")))
+	 current-prefix-arg))
+  (when (not (equal "" recipient))
+    (prog1 (let* ((articles1
+		   (if (memq 'To nnmail-extra-headers)
+		       (gnus-summary-find-matching
+			(cons 'extra 'To) recipient 'all nil nil
+			not-matching)
+		     (gnus-message
+		      1 "`To' isn't present in `nnmail-extra-headers'")
+		     (sit-for 1)
+		     nil))
+		  (articles2
+		   (if (memq 'Cc nnmail-extra-headers)
+		       (gnus-summary-find-matching
+			(cons 'extra 'Cc) recipient 'all nil nil
+			not-matching)
+		     (gnus-message
+		      1 "`Cc' isn't present in `nnmail-extra-headers'")
+		     (sit-for 1)
+		     nil))
+		  (articles (nconc articles1 articles2)))
+	     (unless articles
+	       (error "Found no matches for \"%s\"" recipient))
+	     (gnus-summary-limit articles))
+      (gnus-summary-position-point))))
 
 (defun gnus-summary-limit-to-age (age &optional younger-p)
   "Limit the summary buffer to articles that are older than (or equal) AGE days.

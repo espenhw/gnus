@@ -1,3 +1,9 @@
+2004-12-02  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-limit-to-recipient): New function.
+	Suggested David Mazieres in analogy to rmail-summary-by-recipients.
+	(gnus-summary-limit-map, gnus-summary-make-menu-bar): Add it.
+
 2004-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-forward-make-body-mml): Remove headers
