@@ -175,38 +175,68 @@
 	      (replace-match "-----BEGIN PGP SIGNATURE-----" t t))
 	  (if (re-search-forward "^-----END PGP [^-]+-----\r?$" nil t)
 	      (replace-match "-----END PGP SIGNATURE-----" t t)))
-	(unless (condition-case err
-		    (funcall mml2015-verify-function)
-		  (error
-		   (mm-set-handle-multipart-parameter
-		    mm-security-handle 'gnus-details (cadr err))
-		   nil)
-		  (quit
-		   (mm-set-handle-multipart-parameter
-		    mm-security-handle 'gnus-details "Quit.")
-		   nil))
-	  (mm-set-handle-multipart-parameter
-	   mm-security-handle 'gnus-info "Failed")
-	  (throw 'error handle)))
+	(let ((mc-gpg-debug-buffer (get-buffer-create " *gnus gpg debug*")))
+	  (unless (condition-case err
+		      (prog1
+			  (funcall mml2015-verify-function)
+			(if (get-buffer " *mailcrypt stderr temp")
+			    (mm-set-handle-multipart-parameter
+			     mm-security-handle 'gnus-details
+			     (with-current-buffer " *mailcrypt stderr temp"
+			       (buffer-string))))
+			(if (get-buffer " *mailcrypt stdout temp")
+			    (kill-buffer " *mailcrypt stdout temp"))
+			(if (get-buffer " *mailcrypt stderr temp")
+			    (kill-buffer " *mailcrypt stderr temp"))
+			(if (get-buffer " *mailcrypt status temp")
+			    (kill-buffer " *mailcrypt status temp"))
+			(if (get-buffer mc-gpg-debug-buffer)
+			    (kill-buffer mc-gpg-debug-buffer)))
+		    (error
+		     (mm-set-handle-multipart-parameter
+		      mm-security-handle 'gnus-details (cadr err))
+		     nil)
+		    (quit
+		     (mm-set-handle-multipart-parameter
+		      mm-security-handle 'gnus-details "Quit.")
+		     nil))
+	    (mm-set-handle-multipart-parameter
+	     mm-security-handle 'gnus-info "Failed")
+	    (throw 'error handle))))
       (mm-set-handle-multipart-parameter
        mm-security-handle 'gnus-info "OK")
       handle)))
 
 (defun mml2015-mailcrypt-clear-verify ()
-  (if (condition-case err
-	  (funcall mml2015-verify-function)
-	(error
-	 (mm-set-handle-multipart-parameter
-	  mm-security-handle 'gnus-details (cadr err))
-	 nil)
-	(quit
-	 (mm-set-handle-multipart-parameter
-	  mm-security-handle 'gnus-details "Quit.")
-	 nil))
+  (let ((mc-gpg-debug-buffer (get-buffer-create " *gnus gpg debug*")))
+    (if (condition-case err
+	    (prog1
+		(funcall mml2015-verify-function)
+	      (if (get-buffer " *mailcrypt stderr temp")
+		  (mm-set-handle-multipart-parameter
+		   mm-security-handle 'gnus-details
+		   (with-current-buffer " *mailcrypt stderr temp"
+		     (buffer-string))))
+	      (if (get-buffer " *mailcrypt stdout temp")
+		  (kill-buffer " *mailcrypt stdout temp"))
+	      (if (get-buffer " *mailcrypt stderr temp")
+		  (kill-buffer " *mailcrypt stderr temp"))
+	      (if (get-buffer " *mailcrypt status temp")
+		  (kill-buffer " *mailcrypt status temp"))
+	      (if (get-buffer mc-gpg-debug-buffer)
+		  (kill-buffer mc-gpg-debug-buffer)))
+	  (error
+	   (mm-set-handle-multipart-parameter
+	    mm-security-handle 'gnus-details (cadr err))
+	   nil)
+	  (quit
+	   (mm-set-handle-multipart-parameter
+	    mm-security-handle 'gnus-details "Quit.")
+	   nil))
+	(mm-set-handle-multipart-parameter
+	 mm-security-handle 'gnus-info "OK")
       (mm-set-handle-multipart-parameter
-       mm-security-handle 'gnus-info "OK")
-    (mm-set-handle-multipart-parameter
-     mm-security-handle 'gnus-info "Failed")))
+       mm-security-handle 'gnus-info "Failed"))))
 
 (defun mml2015-mailcrypt-sign (cont)
   (mc-sign-generic (message-options-get 'message-sender)
