@@ -697,7 +697,7 @@ and `altavista'.")
    pairs "&"))
 
 (defun nnweb-fetch-form (url pairs)
-  "Fetch a form from URL with PAIRS as the data."
+  "Fetch a form from URL with PAIRS as the data using the POST method."
   (let ((url-request-data (nnweb-encode-www-form-urlencoded pairs))
 	(url-request-method "POST")
 	(url-request-extra-headers

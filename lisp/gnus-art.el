@@ -953,6 +953,7 @@ See the manual for details."
     (gnus-treat-overstrike gnus-article-treat-overstrike)
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-smileys gnus-smiley-display)
+    (gnus-treat-capitalize-sentences gnus-article-capitalize-sentences)
     (gnus-treat-display-picons gnus-article-display-picons)
     (gnus-treat-play-sounds gnus-earcon-display)))
 

@@ -237,7 +237,10 @@
 (deffoo nnultimate-request-list (&optional server)
   (nnultimate-possibly-change-server nil server)
   (with-temp-buffer
-    (nnweb-insert (concat nnultimate-address "Ultimate.cgi"))
+    (nnweb-insert
+     (if (string-match "/$" nnultimate-address)
+	 (concat nnultimate-address "Ultimate.cgi")
+       nnultimate-address))
     (let ((contents (nth 2 (car (nth 2
 				     (nnultimate-find-forum-table
 				      (w3-parse-buffer (current-buffer)))))))
