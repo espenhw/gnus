@@ -1,3 +1,18 @@
+2000-10-18  Dave Love  <fx@gnu.org>
+
+	* mail-source.el (mm-util): Require.
+	(defvar): Use rmail-spool-directory unconditionally.
+
+	* gnus-nocem.el (gnus-nocem-issuers): Update.
+	(gnus-nocem-check-from): New option.
+	(gnus-nocem-scan-groups): Use it.
+	(gnus-nocem-check-article): Bind gnus-newsgroup-name.
+
+2000-10-18  Miles Bader  <miles@lsi.nec.co.jp>
+
+	* gnus-nocem.el (gnus-nocem-check-article-limit): New variable.
+	(gnus-nocem-scan-groups): Obey `gnus-nocem-check-article-limit'.
+
 2000-10-18  Simon Josefsson  <simon@josefsson.org>
 
 	* nnheader.el (nnheader-parse-head): Try both "from:" and "from: ".
@@ -15,7 +30,7 @@
 
 2000-10-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* mail-source.el (defvar mail-source-keyword-map): Use
+	* mail-source.el (mail-source-keyword-map): Use
 	`rmail-spool-directory' as a default directory for the `file'
 	source, if the variable is defined.  Fall back to hardcoded
 	"/usr/spool/mail/", as before.  Suggestion by Steven E. Harris
