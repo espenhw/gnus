@@ -1,3 +1,10 @@
+2000-05-03  Dave Love  <fx@gnu.org>
+
+	* gnus-ems.el (gnus-article-xface-ring-internal)
+	(gnus-article-xface-ring-size): New variable.
+	(gnus-article-display-xface): Use them to cache data.  Don't try
+	to use XPM.  Set up binary coding for PBM's sake.
+
 2000-05-03 14:23:38  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-inews-do-gcc): Set mail-parse-charset.
