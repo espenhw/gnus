@@ -1,3 +1,8 @@
+2003-07-31  Simon Josefsson  <jas@extundo.com>
+
+	* mml-sec.el (mml-signencrypt-style-alist): Use separate S/MIME
+	method by default (revert partial 2003-07-10 patch).
+
 2003-07-28  Dave Love  <fx@gnu.org>
 
 	* pgg-gpg.el, pgg-pgp.el, pgg-pgp5.el: Require cl when compiling.
