@@ -1,3 +1,8 @@
+2004-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-spec.el (gnus-spec-tab): Make a Lisp form which works
+	correctly even if there are wide characters.
+
 2004-12-21  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-BBDB): fix the BBDB caching code to use
