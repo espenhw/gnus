@@ -149,8 +149,25 @@
     ;;("TNL.net newsletter" "http://www.tnl.net/newsletter/channel100.asp" "A newsletter about Internet technology and issues.")
     ("W3C" "http://www.w3.org/2000/08/w3c-synd/home.rss" "The latest news at the World Wide Web Consortium.")
     ;;("XML News: RSS Live Content" "http://www.xmlnews.org/RSS/content.html" "A listing of well-known RSS feeds.")
-    ("XMLfr" "http://xmlfr.org/actualites/general.rss10" "French speaking portal site dedicated to XML.")
-    ("XMLhack" "http://xmlhack.com/rss10.php" "Developer news from the XML community.")))
+    ("[fr] XMLfr" "http://xmlfr.org/actualites/general.rss10" 
+     "French speaking portal site dedicated to XML.")
+    ("XMLhack" "http://xmlhack.com/rss10.php" 
+     "Developer news from the XML community.")
+    ("The Register" 
+     "http://www.theregister.co.uk/tonys/slashdot.rdf" 
+     "The Register -- Biting the hand that feeds IT.")
+    ("[de] Heise-Ticker" 
+     "http://www.heise.de/newsticker/heise.rdf" 
+     "German news ticker about technology.")
+    ("[de] Telepolis News" 
+     "http://www.heise.de/tp/news.rdf" 
+     "German background news about technology.")
+    ("Kuro5hin" 
+     "http://www.kuro5hin.org/backend.rdf"
+     "Technology and culture, from the trenches.")
+    ("JabberCentral"
+     "http://www.jabbercentral.com/rss.php"
+     "News around the Jabber instant messaging system.")))
 
 (defvar nnrss-use-local nil)
 
@@ -310,7 +327,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 (defvar nnrss-extra-categories '(nnrss-snarf-moreover-categories))
 
 (defun nnrss-generate-active ()
-  (if (y-or-n-p "Fetch extra categories?")
+  (if (y-or-n-p "Fetch extra categories? ")
       (dolist (func nnrss-extra-categories)
 	(funcall func)))
   (save-excursion
@@ -548,7 +565,7 @@ It is useful when `(setq nnrss-use-local t)'."
 
 (defun nnrss-node-text (node)
   (if (stringp node) node
-    (mapconcat 'nnrss-node-text (xml-node-children node) "")))
+    (mapconcat 'nnrss-node-text (cddr node) "")))
 
 (provide 'nnrss)
 
