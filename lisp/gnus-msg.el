@@ -219,6 +219,26 @@ This variable is used only when `gnus-post-method' is `current'."
   :group 'gnus-group-foreign
   :type '(repeat (symbol :tab "Back end")))
 
+(defcustom gnus-message-replysign
+  nil
+  "Automatically sign replys to signed messages.
+See also the `mml-default-sign-method' variable."
+  :group 'gnus-message
+  :type 'boolean)
+
+(defcustom gnus-message-replyencrypt
+  nil
+  "Automatically encrypt replys to encrypted messages.
+See also the `mml-default-encrypt-method' variable."
+  :group 'gnus-message
+  :type 'boolean)
+
+(defcustom gnus-message-replysignencrypted
+  nil
+  "Setting this causes automatically encryped messages to also be signed."
+  :group 'gnus-message
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar gnus-inhibit-posting-styles nil
@@ -989,7 +1009,20 @@ If VERY-WIDE, make a very wide reply."
       (mml-quote-region (point) (point-max))
       (message-reply nil wide)
       (when yank
-	(gnus-inews-yank-articles yank)))))
+	(gnus-inews-yank-articles yank))
+      (when (or gnus-message-replysign gnus-message-replyencrypt)
+	(let (signed encrypted)
+	  (save-excursion
+	    (set-buffer (or gnus-article-buffer article-buffer))
+	    (setq signed (memq 'signed gnus-article-wash-types))
+	    (setq encrypted (memq 'encrypted gnus-article-wash-types)))
+	  (cond ((and gnus-message-replysign signed)
+		 (mml-secure-message mml-default-sign-method 'sign))
+		((and gnus-message-replyencrypt encrypted)
+		 (mml-secure-message mml-default-encrypt-method
+				     (if gnus-message-replysignencrypted
+					 'signencrypt
+				       'encrypt)))))))))
 
 (defun gnus-summary-reply-with-original (n &optional wide)
   "Start composing a reply mail to the current message.

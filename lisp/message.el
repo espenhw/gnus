@@ -1563,6 +1563,7 @@ Point is left at the beginning of the narrowed-to region."
 
   (define-key message-mode-map "\C-c\C-t" 'message-insert-to)
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
+  (define-key message-mode-map "\C-c\C-l" 'message-to-list-only)
 
   (define-key message-mode-map "\C-c\C-u" 'message-insert-or-toggle-importance)
   (define-key message-mode-map "\C-c\M-n" 'message-insert-disposition-notification-to)
@@ -1733,6 +1734,7 @@ C-c C-f  move to a header field (and create it if there isn't):
 	 C-c C-f C-m  move to Mail-Followup-To
 	 C-c C-f C-i  cycle through Importance values
 C-c C-t  `message-insert-to' (add a To header to a news followup)
+C-c C-l  `message-to-list-only' (removes all but list address in to/cc)
 C-c C-n  `message-insert-newsgroups' (add a Newsgroup header to a news reply)
 C-c C-b  `message-goto-body' (move to beginning of message text).
 C-c C-i  `message-goto-signature' (move to the beginning of the signature).
@@ -3937,8 +3939,20 @@ give as trustworthy answer as possible."
   (or mail-host-address
       (message-make-fqdn)))
 
-(defun message-make-mft ()
-  "Return the Mail-Followup-To header."
+(defun message-to-list-only ()
+  (interactive)
+  (let ((listaddr (message-make-mft t)))
+    (when listaddr
+      (save-excursion
+	(message-remove-header "to")
+	(message-remove-header "cc")
+	(message-position-on-field "To" "X-Draft-From")
+	(insert listaddr)))))
+
+(defun message-make-mft (&optional only-show-subscribed)
+  "Return the Mail-Followup-To header. If passed the optional
+argument `only-show-subscribed' only return the subscribed address (and
+not the additional To and Cc header contents)."
   (let* ((case-fold-search t)
 	 (to (message-fetch-field "To"))
 	 (cc (message-fetch-field "cc"))
@@ -3968,16 +3982,16 @@ give as trustworthy answer as possible."
 			     (mapcar 'funcall
 				     message-subscribed-address-functions))))
     (save-match-data
-      (when (eval
-	     (apply 'append '(or)
-		    (mapcar
-		     #'(lambda (regexp)
-			 (mapcar
-			  #'(lambda (recipient)
-			      `(string-match ,regexp ,recipient))
-			  recipients))
-		     mft-regexps)))
-	msg-recipients))))
+      (let ((subscribed-lists nil)
+	    (list
+	     (loop for recipient in recipients
+	       when (loop for regexp in mft-regexps
+		      when (string-match regexp recipient) return t)
+	       return recipient)))
+	(when list
+	  (if only-show-subscribed
+	      list
+	    msg-recipients))))))
 
 (defun message-generate-headers (headers)
   "Prepare article HEADERS.

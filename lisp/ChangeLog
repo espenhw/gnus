@@ -1,3 +1,36 @@
+2002-04-20  Josh Huber  <huber@alum.wpi.edu>
+
+	* gnus-msg.el:
+	* gnus-msg.el (gnus-message-replysign): New.
+	* gnus-msg.el (gnus-message-replyencrypt): New.
+	* gnus-msg.el (gnus-message-replysignencrypted): New.
+	* gnus-msg.el (gnus-summary-reply): Use the three new variables
+	(above) to automatically encrypt/sign to encrypted/signed
+	messages.
+	* message.el:
+	* message.el (message-mode-map): Add keybinding for
+	`message-to-list-only'
+	* message.el (message-mode): Add description for
+	`message-to-list-only'
+	* message.el (message-to-list-only): New.
+	* message.el (message-make-mft): Changed to use the cl loop macro,
+	and added optional flag to return only the matched list. (for use
+	in new message-to-list-only function)
+
+2002-04-20  Josh Huber  <huber@alum.wpi.edu>
+
+	* gnus-msg.el:
+	* gnus-msg.el (gnus-message-replysign):
+	* gnus-msg.el (gnus-replysign): New.
+	* gnus-msg.el (gnus-replyencrypt): New.
+	* gnus-msg.el (gnus-replysignencrypted): New.
+	* gnus-msg.el (gnus-summary-reply):
+	* message.el:
+	* message.el (message-mode-map):
+	* message.el (message-mode):
+	* message.el (message-to-list-only): New.
+	* message.el (message-make-mft):
+
 2002-04-19  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-win.el (gnus-configure-windows-hook): Fix typo.
