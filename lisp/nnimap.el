@@ -415,7 +415,7 @@ If EXAMINE is non-nil the group is selected read-only."
     (if (numberp (car-safe articles))
 	(imap-search
 	 (concat "UID "
-		 (nnimap-range-to-string
+		 (imap-range-to-message-set
 		  (gnus-compress-sequence
 		   (append (gnus-uncompress-sequence
 			    (and fetch-old
@@ -468,7 +468,7 @@ If EXAMINE is non-nil the group is selected read-only."
     (let ((imap-fetch-data-hook '(nnimap-retrieve-headers-progress))
 	  (nnimap-length (gnus-range-length articles))
 	  (nnimap-counter 0))
-      (imap-fetch (nnimap-range-to-string articles)
+      (imap-fetch (imap-range-to-message-set articles)
 		  (concat "(UID RFC822.SIZE BODY "
 			  (let ((headers
 				 (append '(Subject From Date Message-Id
@@ -868,15 +868,15 @@ function is generally only called when Gnus is shutting down."
 	    (when (and range marks)
 	      (cond ((eq what 'del)
 		     (imap-message-flags-del
-		      (nnimap-range-to-string range)
+		      (imap-range-to-message-set range)
 		      (nnimap-mark-to-flag marks nil t)))
 		    ((eq what 'add)
 		     (imap-message-flags-add
-		      (nnimap-range-to-string range)
+		      (imap-range-to-message-set range)
 		      (nnimap-mark-to-flag marks nil t)))
 		    ((eq what 'set)
 		     (imap-message-flags-set
-		      (nnimap-range-to-string range)
+		      (imap-range-to-message-set range)
 		      (nnimap-mark-to-flag marks nil t)))))))
 	(gnus-message 7 "nnimap: Setting marks in %s...done" group))))
   nil)
@@ -1032,25 +1032,25 @@ function is generally only called when Gnus is shutting down."
       (with-current-buffer nnimap-server-buffer
 	(if force
 	    (and (imap-message-flags-add
-		  (nnimap-range-to-string artseq) "\\Deleted")
+		  (imap-range-to-message-set artseq) "\\Deleted")
 		 (setq articles nil))
 	  (let ((days (or (and nnmail-expiry-wait-function
 			       (funcall nnmail-expiry-wait-function group))
 			  nnmail-expiry-wait)))
 	    (cond ((eq days 'immediate)
 		   (and (imap-message-flags-add
-			 (nnimap-range-to-string artseq) "\\Deleted")
+			 (imap-range-to-message-set artseq) "\\Deleted")
 			(setq articles nil)))
 		  ((numberp days)
 		   (let ((oldarts (imap-search
 				   (format "UID %s NOT SINCE %s"
-					   (nnimap-range-to-string artseq)
+					   (imap-range-to-message-set artseq)
 					   (nnimap-date-days-ago days))))
 			 (imap-fetch-data-hook
 			  '(nnimap-request-expire-articles-progress)))
 		     (and oldarts
 			  (imap-message-flags-add
-			   (nnimap-range-to-string
+			   (imap-range-to-message-set
 			    (gnus-compress-sequence oldarts))
 			   "\\Deleted")
 			  (setq articles (gnus-set-difference
@@ -1235,18 +1235,6 @@ sure of changing the value of `foo'."
       (cons (cons key value) (nnimap-remassoc key alist))
     (nnimap-remassoc key alist)))
 
-(defun nnimap-range-to-string (range)
-  (mapconcat
-   (lambda (item)
-     (if (consp item)
-         (format "%d:%d"
-                 (car item) (cdr item))
-       (format "%d" item)))
-   (if (and (listp range) (not (listp (cdr range))))
-       (list range);; make (1 . 2) into ((1 . 2))
-     range)
-   ","))
-
 (when nnimap-debug
   (require 'trace)
   (buffer-disable-undo (get-buffer-create nnimap-debug))
@@ -1308,7 +1296,6 @@ sure of changing the value of `foo'."
 	  nnimap-mark-permanent-p
 	  nnimap-remassoc
 	  nnimap-update-alist-soft
-	  nnimap-range-to-string
           )))
 
 (provide 'nnimap)
