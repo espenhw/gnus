@@ -71,7 +71,9 @@
      (string-as-unibyte . identity)
      (string-make-unibyte . identity)
      (string-as-multibyte . identity)
-     (multibyte-string-p . ignore))))
+     (multibyte-string-p . ignore)
+     (insert-byte . insert-char)
+     (multibyte-char-to-unibyte . identity))))
 
 (eval-and-compile
   (defalias 'mm-char-or-char-int-p
@@ -154,6 +156,11 @@
 
 (defvar mm-auto-save-coding-system
   (cond
+   ((mm-coding-system-p 'utf-8-emacs)	; Mule 7
+    (if (memq system-type '(windows-nt ms-dos ms-windows))
+	(if (mm-coding-system-p 'utf-8-emacs-dos)
+	    'utf-8-emacs-dos mm-binary-coding-system)
+      'utf-8-emacs))
    ((mm-coding-system-p 'emacs-mule)
     (if (memq system-type '(windows-nt ms-dos ms-windows))
 	(if (mm-coding-system-p 'emacs-mule-dos)
@@ -232,9 +239,11 @@
 	 'nconc
 	 (mapcar
 	  (lambda (cs)
-	    (when (and (coding-system-get cs 'mime-charset)
+	    (when (and (or (coding-system-get cs :mime-charset)	; Emacs 22
+			   (coding-system-get cs 'mime-charset))
 		       (not (eq t (coding-system-get cs 'safe-charsets))))
-	      (list (cons (coding-system-get cs 'mime-charset)
+	      (list (cons (or (coding-system-get cs :mime-charset)
+			      (coding-system-get cs 'mime-charset))
 			  (delq 'ascii
 				(coding-system-get cs 'safe-charsets))))))
 	  (sort-coding-systems (coding-system-list 'base-only))))))
@@ -278,13 +287,14 @@ Valid elements include:
 			     iso-latin-1 utf-8)))))
   "Preferred coding systems for encoding outgoing mails.
 
-More than one suitable coding systems may be found for some texts.  By
-default, a coding system with the highest priority is used to encode
+More than one suitable coding system may be found for some text.  By
+default, the coding system with the highest priority is used to encode
 outgoing mails (see `sort-coding-systems').  If this variable is set,
 it overrides the default priority."
   :type '(repeat (symbol :tag "Coding system"))
   :group 'mime)
 
+;; ??
 (defvar mm-use-find-coding-systems-region
   (fboundp 'find-coding-systems-region)
   "Use `find-coding-systems-region' to find proper coding systems.
@@ -306,7 +316,8 @@ mail with multiple parts is preferred to sending a Unicode one.")
 		      (find-coding-systems-for-charsets (list charset)))))
 	  (unless mime
 	    (when cs
-	      (setq mime (coding-system-get cs 'mime-charset)))))
+	      (setq mime (or (coding-system-get cs :mime-charset)
+			     (coding-system-get cs 'mime-charset))))))
 	mime)
     (let ((alist mm-mime-mule-charset-alist)
 	  out)
@@ -355,7 +366,8 @@ used as the line break code type of the coding system."
       ;; Do we need -lbt?
       (dolist (c (mm-get-coding-system-list))
 	(if (and (null cs)
-		 (eq charset (coding-system-get c 'mime-charset)))
+		 (eq charset (or (coding-system-get c :mime-charset)
+				 (coding-system-get c 'mime-charset))))
 	    (setq cs c)))
       cs))))
 
@@ -454,8 +466,10 @@ If the charset is `composition', return the actual one."
       ;; This exists in Emacs 20.
       (or
        (and (mm-preferred-coding-system charset)
-	    (coding-system-get
-	     (mm-preferred-coding-system charset) 'mime-charset))
+	    (or (coding-system-get
+		 (mm-preferred-coding-system charset) :mime-charset)
+		(coding-system-get
+		 (mm-preferred-coding-system charset) 'mime-charset)))
        (and (eq charset 'ascii)
 	    'us-ascii)
        (mm-preferred-coding-system charset)
@@ -525,18 +539,27 @@ charset, and a longer list means no appropriate charset."
 	       (when mm-coding-system-priorities
 		 (setq systems
 		       (sort systems 'mm-sort-coding-systems-predicate)))
-	       ;; Fixme: The `mime-charset' (`x-ctext') of `compound-text'
-	       ;; is not in the IANA list.
 	       (setq systems (delq 'compound-text systems))
 	       (unless (equal systems '(undecided))
 		 (while systems
-		   (let ((cs (coding-system-get (pop systems) 'mime-charset)))
-		     (if cs
+		   (let* ((head (pop systems))
+			  (cs (or (coding-system-get head :mime-charset)
+				  (coding-system-get head 'mime-charset))))
+		     ;; The mime-charset (`x-ctext') of
+		     ;; `compound-text' is not in the IANA list.  We
+		     ;; shouldn't normally use anything here with a
+		     ;; mime-charset having an `x-' prefix.
+		     ;; Fixme:  allow this to be overridden, since
+		     ;; there is existing use of x-ctext.
+		     ;; Also people apparently need the coding system
+		     ;; `iso-2022-jp-3', which Mule-UCS defines.
+		     (if (and cs
+			      (not (string-match "^[Xx]-" (symbol-name cs))))
 			 (setq systems nil
 			       charsets (list cs))))))
 	       charsets))
-	;; Otherwise we're not multibyte, XEmacs or a single coding
-	;; system won't cover it.
+	;; Otherwise we're not multibyte, we're XEmacs or a single
+	;; coding system won't cover it.
 	(setq charsets
 	      (mm-delete-duplicates
 	       (mapcar 'mm-mime-charset
@@ -562,7 +585,7 @@ Use unibyte mode for this."
 (put 'mm-with-unibyte-buffer 'edebug-form-spec '(body))
 
 (defmacro mm-with-unibyte-current-buffer (&rest forms)
-  "Evaluate FORMS with current current buffer temporarily made unibyte.
+  "Evaluate FORMS with current buffer temporarily made unibyte.
 Also bind `default-enable-multibyte-characters' to nil.
 Equivalent to `progn' in XEmacs"
   (let ((multibyte (make-symbol "multibyte"))
@@ -676,7 +699,7 @@ Mule4 only."
 A buffer may be modified in several ways after reading into the buffer due
 to advanced Emacs features, such as file-name-handlers, format decoding,
 find-file-hooks, etc.
-If INHIBIT is non-nil, inhibit mm-inhibit-file-name-handlers.
+If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'.
   This function ensures that none of these modifications will take place."
   (let ((format-alist nil)
 	(auto-mode-alist (if inhibit nil (mm-auto-mode-alist)))
