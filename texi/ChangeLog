@@ -1,3 +1,8 @@
+2004-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* infohack.el: Support @copying and @insertcopying for Emacs 21.3
+	and lesser and XEmacs.
+
 2004-08-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* emacs-mime.texi, gnus-faq.texi, gnus.texi, message.texi,
