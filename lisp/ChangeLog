@@ -1,5 +1,8 @@
 2004-05-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-idna-inside-rhs-p): Removed.
+	(message-idna-to-ascii-rhs-1): Use proper address parsing.
+
 	* gnus-art.el (gnus-emphasis-alist): Removed strikethru; too many
 	false positives.
 
