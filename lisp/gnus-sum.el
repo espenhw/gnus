@@ -3309,8 +3309,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	(while (not (eobp))
 	  (ignore-errors
 	    (setq article (read (current-buffer))
-		  header (gnus-nov-parse-line
-			  article dependencies)))
+		  header (gnus-nov-parse-line article dependencies)))
 	  (when header
 	    (save-excursion
 	      (set-buffer gnus-summary-buffer)

@@ -3834,7 +3834,8 @@ Optional NEWS will use news to forward instead of mail."
       (setq e (point))
       (and message-forward-as-mime
 	   (insert "<#/part>\n"))
-      (when message-forward-ignored-headers
+      (when (and (not current-prefix-arg)
+		 message-forward-ignored-headers)
 	(save-restriction
 	  (narrow-to-region b e)
 	  (goto-char b)
