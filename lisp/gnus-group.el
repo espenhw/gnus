@@ -3640,14 +3640,15 @@ If DONT-SCAN is non-nil, scan non-activated groups as well."
       ;; Bypass any previous denials from the server.
       (gnus-remove-denial (setq method (gnus-find-method-for-group group)))
       (if (gnus-activate-group group (if dont-scan nil 'scan) nil method)
-	  (progn
-	    (gnus-get-unread-articles-in-group
-	     (gnus-get-info group) (gnus-active group) t)
+	  (let ((info (gnus-get-info group))
+		(active (gnus-active group)))
+	    (gnus-request-update-info info method)
+	    (gnus-get-unread-articles-in-group info active)
 	    (unless (gnus-virtual-group-p group)
 	      (gnus-close-group group))
 	    (when gnus-agent
 	      (gnus-agent-save-group-info
-	       method (gnus-group-real-name group) (gnus-active group)))
+	       method (gnus-group-real-name group) active))
 	    (gnus-group-update-group group))
 	(if (eq (gnus-server-status (gnus-find-method-for-group group))
 		'denied)

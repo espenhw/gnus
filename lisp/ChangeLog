@@ -1,3 +1,9 @@
+2004-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Don't call
+	gnus-activate-group twice.  Suggested by Markus Peter
+	<warp@spin.de>.
+
 2004-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-time-format): Exchange the order of
