@@ -674,7 +674,8 @@ the first newsgroup."
 	nnoo-state-alist nil
 	gnus-current-select-method nil
 	nnmail-split-history nil
-	gnus-ephemeral-servers nil)
+	gnus-ephemeral-servers nil
+	gnus-registry-alist nil)
   (gnus-shutdown 'gnus)
   ;; Kill the startup file.
   (and gnus-current-startup-file

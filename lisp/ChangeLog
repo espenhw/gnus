@@ -1,5 +1,8 @@
 2003-05-08  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* gnus-start.el (gnus-clear-system): added gnus-registry-alist to
+	the list of cleared variables
+
 	* gnus-registry.el (gnus-registry-split-fancy-with-parent):
 	nnmail-split-fancy-with-parent-ignore-groups can be a single regex
 	in addition to a list of regexes.
