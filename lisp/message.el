@@ -5684,7 +5684,7 @@ OTHER-HEADERS is an alist of header/value pairs."
 		     (Subject . ,(or subject ""))))))
 
 (defun message-get-reply-headers (wide &optional to-address address-headers)
-  (let (follow-to mct never-mct to cc author mft recipients)
+  (let (follow-to mct never-mct to cc author mft recipients extra)
     ;; Find all relevant headers we need.
     (save-restriction
       (message-narrow-to-headers-or-head)
