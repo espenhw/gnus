@@ -15852,7 +15852,7 @@ For instance, an article with this @code{Newsgroups} header:
 Newsgroups: alt.religion.emacs
 @end example
 
-will get this @code{From} header inserted:
+will get this @code{To} header inserted:
 
 @example
 To: alt-religion-emacs@@GATEWAY

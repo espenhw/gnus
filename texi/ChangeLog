@@ -1,3 +1,9 @@
+2002-05-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Mail-To-News Gateways): The default
+	nngateway-header-transformation function inserts a "To" header,
+	not a "From" header.  From Jesper Harder <harder@ifa.au.dk>.
+
 2002-05-08  Josh Huber  <huber@alum.wpi.edu>
 
 	* message.texi (Security): Added a note about the signencrypt
