@@ -1357,9 +1357,18 @@ and read ranges have become worthless.  You can use the @kbd{M-x
 gnus-group-clear-data-on-native-groups} command to clear out all data
 that you have on your native groups.  Use with caution.
 
+@kindex M-x gnus-group-clear-data
+@findex gnus-group-clear-data
+Clear the data from the current group only---nix out marks and the
+list of read articles (@code{gnus-group-clear-data}).
+
 After changing servers, you @strong{must} move the cache hierarchy away,
 since the cached articles will have wrong article numbers, which will
 affect which articles Gnus thinks are read.
+@code{gnus-group-clear-data-on-native-groups} will ask you if you want
+to have it done automatically; for @code{gnus-group-clear-data}, you
+can use @kbd{M-x gnus-cache-move-cache} (but beware, it will move the
+cache for all groups).
 
 
 @node Startup Files
@@ -6808,6 +6817,10 @@ gnus-cache-generate-nov-databases} will (re)build all the @sc{nov}
 files, and @kbd{gnus-cache-generate-active} will (re)generate the active
 file.
 
+@findex gnus-cache-move-cache
+@code{gnus-cache-move-cache} will move your whole
+@code{gnus-cache-directory} to some other location. You get asked to
+where, isn't that cool?
 
 @node Persistent Articles
 @section Persistent Articles

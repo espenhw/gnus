@@ -1,3 +1,7 @@
+2002-01-10  Colin Marquardt  <c.marquardt@alcatel.de>
+
+	* gnus.texi (Changing Servers): Addition.
+
 2002-01-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Archived Messages): Rename
