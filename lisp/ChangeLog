@@ -1,5 +1,8 @@
 2002-01-12  Simon Josefsson  <jas@extundo.com>
 
+	* message.el (message-send-news, message-send-mail): Use
+	m-b-s-n-p-e-h-n.
+
 	* mml.el (autoload): Autoload fill-flowed-encode.
 	(mml-buffer-substring-no-properties-except-hard-newlines): New
 	function.

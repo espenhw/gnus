@@ -2789,9 +2789,10 @@ It should typically alter the sending method in some way or other."
 	(save-excursion
 	  (set-buffer tembuf)
 	  (erase-buffer)
-	  ;; Avoid copying text props.
+	  ;; Avoid copying text props (except hard newlines).
 	  (insert (with-current-buffer mailbuf
-		    (buffer-substring-no-properties (point-min) (point-max))))
+		    (mml-buffer-substring-no-properties-except-hard-newlines
+		     (point-min) (point-max))))
 	  ;; Remove some headers.
 	  (message-encode-message-body)
 	  (save-restriction
@@ -3041,10 +3042,11 @@ Otherwise, generate and save a value for `canlock-password' first."
 	      (set-buffer tembuf)
 	      (buffer-disable-undo)
 	      (erase-buffer)
-	      ;; Avoid copying text props.
-	      (insert (with-current-buffer messbuf
-			(buffer-substring-no-properties
-			 (point-min) (point-max))))
+	      ;; Avoid copying text props (except hard newlines).
+	      (insert
+	       (with-current-buffer messbuf
+		 (mml-buffer-substring-no-properties-except-hard-newlines
+		  (point-min) (point-max))))
 	      (message-encode-message-body)
 	      ;; Remove some headers.
 	      (save-restriction
