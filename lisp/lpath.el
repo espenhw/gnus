@@ -71,4 +71,7 @@
 (defun nnkiboze-score-file (a)
   )
 
+(defun split-line (&optional arg)
+  )
+
 (provide 'lpath)

@@ -1,3 +1,14 @@
+2003-03-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-split-line): Ignore error.
+
+	* lpath.el (split-line): Avoid split-line warning message.
+
+2003-03-20  Kim F. Storm  <storm@cua.dk>
+
+	* message.el (message-split-line): New function.
+	(message-mode-map): Remap split-line to message-split-line.
+
 2003-03-20  Katsumi Yamaoka <yamaoka@jpl.org>
 
 	* message.el (message-make-overlay): Defalias it to make-overlay.

@@ -2091,6 +2091,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c\C-z" 'message-kill-to-signature)
   (define-key message-mode-map "\M-\r" 'message-newline-and-reformat)
   ;;(define-key message-mode-map "\M-q" 'message-fill-paragraph)
+  (define-key message-mode-map [remap split-line]  'message-split-line)
 
   (define-key message-mode-map "\C-c\C-a" 'mml-attach-file)
 
@@ -4904,6 +4905,16 @@ Headers already prepared in the buffer are not modified."
     (goto-char (point-max))
     (widen)
     (forward-line 1)))
+
+(defun message-split-line ()
+  "Split current line, moving portion beyond point vertically down.
+If the current line has `message-yank-prefix', insert it on the new line."
+  (interactive "*")
+  (condition-case nil
+      (split-line message-yank-prefix) ;; Emacs 21.3.50+ supports arg.
+    (error
+     (split-line))))
+     
 
 (defun message-fill-header (header value)
   (let ((begin (point))
