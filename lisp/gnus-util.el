@@ -170,6 +170,11 @@
       (cons 'progn (cddr fval)))))
 
 (defun gnus-extract-address-components (from)
+  "Extract address components from a From header.
+Given an RFC-822 address FROM, extract full name and canonical address.
+Returns a list of the form (FULL-NAME CANONICAL-ADDRESS).  Much more simple
+solution than `mail-extract-address-components', which works much better, but
+is slower."
   (let (name address)
     ;; First find the address - the thing with the @ in it.  This may
     ;; not be accurate in mail addresses, but does the trick most of
