@@ -143,6 +143,32 @@ one charsets.")
     (while (and (not (eobp))
 		(not (looking-at "<#/multipart")))
       (cond
+       ((looking-at "<#secure")
+	;; The secure part is essentially a meta-meta tag, which
+	;; expands to either a part tag if there are no other parts in
+	;; the document or a multipart tag if there are other parts
+	;; included in the message
+	(let* (secure-mode
+	       (taginfo (mml-read-tag))
+	       (recipient (cdr (assq 'recipient taginfo)))
+	       (location (cdr (assq 'tag-location taginfo))))
+	  (save-excursion
+	    (if
+		(re-search-forward
+		 "<#\\(/\\)?\\(multipart\\|part\\|external\\|mml\\)." nil t)
+		(setq secure-mode "multipart")
+	      (setq secure-mode "part")))
+	  (save-excursion
+	    (goto-char location)
+	    (re-search-forward "<#secure[^\n]*>\n"))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (mml-insert-tag secure-mode
+			  (cdr (assq 'mode taginfo))
+			  (cdr (assq 'method taginfo))
+			  (and recipient 'recipient)
+			  recipient)
+	  ;; restart the parse
+	  (goto-char location)))
        ((looking-at "<#multipart")
 	(push (nconc (mml-read-tag) (mml-parse-1)) struct))
        ((looking-at "<#external")
@@ -750,12 +776,12 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
 	(encrypt (make-sparse-keymap))
 	(map (make-sparse-keymap))
 	(main (make-sparse-keymap)))
-    (define-key sign "p" 'mml-secure-sign-pgpmime)
-    (define-key sign "o" 'mml-secure-sign-pgp)
-    (define-key sign "s" 'mml-secure-sign-smime)
-    (define-key encrypt "p" 'mml-secure-encrypt-pgpmime)
-    (define-key encrypt "o" 'mml-secure-encrypt-pgp)
-    (define-key encrypt "s" 'mml-secure-encrypt-smime)
+    (define-key sign "p" 'mml-secure-message-sign-pgpmime)
+    (define-key sign "o" 'mml-secure-message-sign-pgp)
+    (define-key sign "s" 'mml-secure-message-sign-smime)
+    (define-key encrypt "p" 'mml-secure-message-encrypt-pgpmime)
+    (define-key encrypt "o" 'mml-secure-message-encrypt-pgp)
+    (define-key encrypt "s" 'mml-secure-message-encrypt-smime)
     (define-key map "f" 'mml-attach-file)
     (define-key map "b" 'mml-attach-buffer)
     (define-key map "e" 'mml-attach-external)
@@ -782,12 +808,12 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     ["Attach External" mml-attach-external t]
     ["Insert Part" mml-insert-part t]
     ["Insert Multipart" mml-insert-multipart t]
-    ["PGP/MIME Sign" mml-secure-sign-pgpmime t]
-    ["PGP/MIME Encrypt" mml-secure-encrypt-pgpmime t]
-    ["PGP Sign" mml-secure-sign-pgp t]
-    ["PGP Encrypt" mml-secure-encrypt-pgp t]
-    ["S/MIME Sign" mml-secure-sign-smime t]
-    ["S/MIME Encrypt" mml-secure-encrypt-smime t]
+    ["PGP/MIME Sign" mml-secure-message-sign-pgpmime t]
+    ["PGP/MIME Encrypt" mml-secure-message-encrypt-pgpmime t]
+    ["PGP Sign" mml-secure-message-sign-pgp t]
+    ["PGP Encrypt" mml-secure-message-encrypt-pgp t]
+    ["S/MIME Sign" mml-secure-message-sign-smime t]
+    ["S/MIME Encrypt" mml-secure-message-encrypt-smime t]
     ;;["Narrow" mml-narrow-to-part t]
     ["Quote MML" mml-quote-region t]
     ["Validate MML" mml-validate t]
@@ -947,42 +973,43 @@ TYPE is the MIME type to use."
   "Display current buffer with Gnus, in a new buffer.
 If RAW, don't highlight the article."
   (interactive "P")
-  (let* ((buf (current-buffer))
-	 (message-options message-options)
-	 (message-this-is-news (message-news-p))
-	 (message-posting-charset (or (gnus-setup-posting-charset
-				       (save-restriction
-					 (message-narrow-to-headers-or-head)
-					 (message-fetch-field "Newsgroups")))
-				      message-posting-charset)))
-    (message-options-set-recipient)
-    (switch-to-buffer (generate-new-buffer
-		       (concat (if raw "*Raw MIME preview of "
-				 "*MIME preview of ") (buffer-name))))
-    (erase-buffer)
-    (insert-buffer buf)
-    (if (re-search-forward
-	 (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
-	(replace-match "\n"))
-    (let ((mail-header-separator "")) ;; mail-header-separator is removed.
-      (mml-to-mime))
-    (if raw
-	(when (fboundp 'set-buffer-multibyte)
-	  (let ((s (buffer-string)))
-	    ;; Insert the content into unibyte buffer.
-	    (erase-buffer)
-	    (mm-disable-multibyte)
-	    (insert s)))
-      (let ((gnus-newsgroup-charset (car message-posting-charset))
-	    gnus-article-prepare-hook gnus-original-article-buffer)
-	(run-hooks 'gnus-article-decode-hook)
-	(let ((gnus-newsgroup-name "dummy"))
-	  (gnus-article-prepare-display))))
-    ;; Disable article-mode-map.
-    (use-local-map nil)
-    (setq buffer-read-only t)
-    (local-set-key "q" (lambda () (interactive) (kill-buffer nil)))
-    (goto-char (point-min))))
+  (save-excursion
+    (let* ((buf (current-buffer))
+	   (message-options message-options)
+	   (message-this-is-news (message-news-p))
+	   (message-posting-charset (or (gnus-setup-posting-charset
+					 (save-restriction
+					   (message-narrow-to-headers-or-head)
+					   (message-fetch-field "Newsgroups")))
+					message-posting-charset)))
+      (message-options-set-recipient)
+      (switch-to-buffer (generate-new-buffer
+			 (concat (if raw "*Raw MIME preview of "
+				   "*MIME preview of ") (buffer-name))))
+      (erase-buffer)
+      (insert-buffer buf)
+      (if (re-search-forward
+	   (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
+	  (replace-match "\n"))
+      (let ((mail-header-separator ""));; mail-header-separator is removed.
+	(mml-to-mime))
+      (if raw
+	  (when (fboundp 'set-buffer-multibyte)
+	    (let ((s (buffer-string)))
+	      ;; Insert the content into unibyte buffer.
+	      (erase-buffer)
+	      (mm-disable-multibyte)
+	      (insert s)))
+	(let ((gnus-newsgroup-charset (car message-posting-charset))
+	      gnus-article-prepare-hook gnus-original-article-buffer)
+	  (run-hooks 'gnus-article-decode-hook)
+	  (let ((gnus-newsgroup-name "dummy"))
+	    (gnus-article-prepare-display))))
+      ;; Disable article-mode-map.
+      (use-local-map nil)
+      (setq buffer-read-only t)
+      (local-set-key "q" (lambda () (interactive) (kill-buffer nil)))
+      (goto-char (point-min)))))
 
 (defun mml-validate ()
   "Validate the current MML document."

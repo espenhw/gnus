@@ -127,6 +127,61 @@
   (interactive)
   (mml-secure-part "smime"))
 
+;; defuns that add the proper <#secure ...> tag to the top of the message body
+(defun mml-secure-message (method &optional sign)
+  (let ((mode (if sign "sign" "encrypt"))
+	insert-loc)
+    (mml-unsecure-message)
+    (save-excursion
+      (goto-char (point-max))
+      (cond ((re-search-backward
+	      (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
+	     (goto-char (setq insert-loc (match-end 0)))
+	     (unless (looking-at "<#secure")
+	       (mml-insert-tag
+		'secure 'method method 'mode mode)))
+	    (t (error
+		"The message is corrupted. No mail header separator"))))
+    (when (eql insert-loc (point))
+      (forward-line 1))))
+
+(defun mml-unsecure-message ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-max))
+    (when (re-search-backward "^<#secure.*>\n" nil t)
+      (kill-region (match-beginning 0) (match-end 0)))))
+
+(defun mml-secure-message-sign-smime ()
+  "Add MML tag to encrypt/sign the entire message."
+  (interactive)
+  (mml-secure-message "smime" 'sign))
+
+(defun mml-secure-message-sign-pgp ()
+  "Add MML tag to encrypt/sign the entire message."
+  (interactive)
+  (mml-secure-message "pgp" 'sign))
+
+(defun mml-secure-message-sign-pgpmime ()
+  "Add MML tag to encrypt/sign the entire message."
+  (interactive)
+  (mml-secure-message "pgpmime" 'sign))
+
+(defun mml-secure-message-encrypt-smime ()
+  "Add MML tag to encrypt/sign the entire message."
+  (interactive)
+  (mml-secure-message "smime"))
+
+(defun mml-secure-message-encrypt-pgp ()
+  "Add MML tag to encrypt/sign the entire message."
+  (interactive)
+  (mml-secure-message "pgp"))
+
+(defun mml-secure-message-encrypt-pgpmime ()
+  "Add MML tag to encrypt/sign the entire message."
+  (interactive)
+  (mml-secure-message "pgpmime"))
+
 (provide 'mml-sec)
 
 ;;; mml-sec.el ends here
