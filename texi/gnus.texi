@@ -4485,12 +4485,21 @@ message (@code{gnus-summary-wide-reply-with-original}).  This command uses
 the process/prefix convention.
 
 @item S o m
+@itemx C-c C-f
 @kindex S o m (Summary)
+@kindex C-c C-f (Summary)
 @findex gnus-summary-mail-forward
 @c @icon{gnus-summary-mail-forward}
 Forward the current article to some other person
-(@code{gnus-summary-mail-forward}).  If given a prefix, include the full
-headers of the forwarded article.
+(@code{gnus-summary-mail-forward}).  If no prefix is given, the message
+is forwarded according to the value of (@code{message-forward-as-mime})
+and (@code{message-forward-show-mml}); if the prefix is 1, decode the
+message and forward directly inline; if the prefix is 2, foward message
+as an rfc822 MIME section; if the prefix is 3, decode message and
+forward as an rfc822 MIME section; if the prefix is 4, foward message
+directly inline; otherwise, the message is forwarded as no prefix given
+but use the flipped value of (@code{message-forward-as-mime}).  By
+default, the message is decoded and forwarded as an rfc822 MIME section.
 
 @item S m
 @itemx m
@@ -4615,8 +4624,16 @@ the process/prefix convention.
 @kindex S o p (Summary)
 @findex gnus-summary-post-forward
 Forward the current article to a newsgroup
-(@code{gnus-summary-post-forward}).  If given a prefix, include the full
-headers of the forwarded article.
+(@code{gnus-summary-post-forward}).  
+ If no prefix is given, the message is forwarded according to the value
+of (@code{message-forward-as-mime}) and
+(@code{message-forward-show-mml}); if the prefix is 1, decode the
+message and forward directly inline; if the prefix is 2, foward message
+as an rfc822 MIME section; if the prefix is 3, decode message and
+forward as an rfc822 MIME section; if the prefix is 4, foward message
+directly inline; otherwise, the message is forwarded as no prefix given
+but use the flipped value of (@code{message-forward-as-mime}).  By
+default, the message is decoded and forwarded as an rfc822 MIME section.
 
 @item S O p
 @kindex S O p (Summary)

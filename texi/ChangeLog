@@ -1,3 +1,8 @@
+2000-05-03 21:12:05  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Summary Mail Commands): Addition.
+	(Summary Post Commands): Ditto.
+
 2000-04-27  Dave Love  <fx@gnu.org>
 
 	* gnus.texi (Article Washing): Update x-face bit.
