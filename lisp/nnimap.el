@@ -392,10 +392,6 @@ For example: (setq nnimap-debug \"*nnimap-debug*\")")
 (defvar nnimap-progress-chars '(?| ?/ ?- ?\\))
 (defvar nnimap-progress-how-often 20)
 (defvar nnimap-counter)
-(defvar nnimap-callback-callback-function nil
-  "Gnus callback the nnimap asynchronous callback should call.")
-(defvar nnimap-callback-buffer nil
-  "Which buffer the asynchronous article prefetch callback should work in.")
 (defvar nnimap-server-buffer-alist nil)	;; Map server name to buffers.
 (defvar nnimap-current-server nil) ;; Current server
 (defvar nnimap-server-buffer nil) ;; Current servers' buffer
@@ -784,19 +780,26 @@ function is generally only called when Gnus is shutting down."
 	     'identity)
 	   (or string "")))
 
-(defun nnimap-callback ()
-  (remove-hook 'imap-fetch-data-hook 'nnimap-callback)
-  (with-current-buffer nnimap-callback-buffer
-    (insert
-     (with-current-buffer nnimap-server-buffer
-       (nnimap-demule
-	(if (imap-capability 'IMAP4rev1)
-	    ;; xxx don't just use car? alist doesn't contain
-	    ;; anything else now, but it might...
-	    (nth 2 (car (imap-message-get (imap-current-message) 'BODYDETAIL)))
-	  (imap-message-get (imap-current-message) 'RFC822)))))
-    (nnheader-ms-strip-cr)
-    (funcall nnimap-callback-callback-function t)))
+(defun nnimap-make-callback (article gnus-callback buffer)
+  "Return a callback function."
+  `(lambda () 
+     (nnimap-callback ,article ,gnus-callback ,buffer)))
+
+(defun nnimap-callback (article gnus-callback buffer)
+  (when (eq article (imap-current-message))
+    (remove-hook 'imap-fetch-data-hook
+		 (nnimap-make-callback article gnus-callback buffer))
+    (with-current-buffer buffer
+      (insert
+       (with-current-buffer nnimap-server-buffer
+	 (nnimap-demule
+	  (if (imap-capability 'IMAP4rev1)
+	      ;; xxx don't just use car? alist doesn't contain
+	      ;; anything else now, but it might...
+	      (nth 2 (car (imap-message-get article 'BODYDETAIL)))
+	    (imap-message-get article 'RFC822)))))
+      (nnheader-ms-strip-cr)
+      (funcall gnus-callback t))))
 
 (defun nnimap-request-article-part (article part prop &optional
 					    group server to-buffer detail)
@@ -828,9 +831,10 @@ function is generally only called when Gnus is shutting down."
 					       gnus-newsgroup-name)
 				   (imap-error-text nnimap-server-buffer))
 		(cons group article)))
-	  (add-hook 'imap-fetch-data-hook 'nnimap-callback)
-	  (setq nnimap-callback-callback-function nnheader-callback-function
-		nnimap-callback-buffer nntp-server-buffer)
+	  (add-hook 'imap-fetch-data-hook
+		    (nnimap-make-callback article 
+					  nnheader-callback-function 
+					  nntp-server-buffer))
 	  (imap-fetch-asynch article part nil nnimap-server-buffer)
 	  (cons group article))))))
 

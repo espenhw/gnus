@@ -1,3 +1,12 @@
+2002-11-16  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-callback-callback-function):
+	(nnimap-callback-buffer): Removed, these cannot be global but must
+	be embedded into the callback.
+	(nnimap-make-callback): New.  Embedd article number, callback and
+	buffer in function.
+	(nnimap-callback, nnimap-request-article-part): Update.
+
 2002-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mml.el (mml-preview): Bind message-this-is-mail if it is mail.
