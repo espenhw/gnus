@@ -632,7 +632,7 @@ simple manner.")
   "a" gnus-group-make-archive-group
   "k" gnus-group-make-kiboze-group
   "l" gnus-group-nnimap-edit-acl
-  "m" gnus-group-make-group
+  "m" gnus-group-make-group-simple
   "E" gnus-group-edit-group
   "e" gnus-group-edit-group-method
   "p" gnus-group-edit-group-parameters
@@ -899,7 +899,7 @@ simple manner.")
 	 gnus-zombie-list]
 	["Kill all groups on level..." gnus-group-kill-level t])
        ("Foreign groups"
-	["Make a foreign group..." gnus-group-make-group t]
+	["Make a foreign group..." gnus-group-make-group-simple t]
 	["Add a directory group..." gnus-group-make-directory-group t]
 	["Add the help group" gnus-group-make-help-group t]
 	["Add the archive group" gnus-group-make-archive-group t]
@@ -2249,6 +2249,16 @@ If EXCLUDE-GROUP, do not go to that group."
   "Jump to the server buffer."
   (interactive)
   (gnus-enter-server-buffer))
+
+(defun gnus-group-make-group-simple (&optional group)
+  "Add a new newsgroup.
+The user will be prompted for GROUP."
+  (interactive
+   (list (completing-read "Group: " gnus-active-hashtb
+			  nil nil nil 'gnus-group-history)))
+  (gnus-group-make-group
+   (gnus-group-real-name group)
+   (gnus-group-server group)))
 
 (defun gnus-group-make-group (name &optional method address args)
   "Add a new newsgroup.
