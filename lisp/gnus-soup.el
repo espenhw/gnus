@@ -154,11 +154,11 @@ move those articles instead."
 			   gnus-soup-encoding-type
 			   gnus-soup-index-type)
 	  (gnus-soup-area-set-number
-	   area (1+ (or (gnus-soup-area-number area) 0))))
-	;; Mark article as read.
-	(set-buffer gnus-summary-buffer)
+	   area (1+ (or (gnus-soup-area-number area) 0)))
+	  ;; Mark article as read.
+	  (set-buffer gnus-summary-buffer)
+	  (gnus-summary-mark-as-read (car articles) gnus-souped-mark))
 	(gnus-summary-remove-process-mark (car articles))
-	(gnus-summary-mark-as-read (car articles) gnus-souped-mark)
 	(setq articles (cdr articles)))
       (kill-buffer tmp-buf))
     (gnus-soup-save-areas)

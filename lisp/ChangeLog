@@ -1,3 +1,9 @@
+2002-09-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	Trivial patch from Micha Wiedenmann <mw-u1@gmx.de>
+
+	* gnus-soup.el (gnus-soup-add-article): Mark as read only when the
+	article exists.
+
 2002-09-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-next-group): Switch to the summary buffer.
