@@ -1,3 +1,11 @@
+2000-10-12 08:26:30  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-with-unibyte-current-buffer): Revert to old.
+	(mm-with-unibyte-current-buffer-mule4): New function.
+	* qp.el (quoted-printable-encode-region): Use it.
+	* rfc2047.el (rfc2047-decode): Ditto.
+	* webmail.el (webmail-init): Revert to use mm-disable-multibyte.
+
 2000-10-10 08:44:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-fold-region): "=?=" is not a break point.

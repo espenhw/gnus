@@ -356,8 +356,7 @@ See also `with-temp-file' and `with-output-to-string'."
   "Evaluate FORMS there like `progn' in current buffer."
   (let ((multibyte (make-symbol "multibyte")))
     `(if (or (featurep 'xemacs)
-	     (not (fboundp 'set-buffer-multibyte))
-	     (charsetp 'eight-bit-control)) ;; For Emacs Mule 4 only.
+	     (not (fboundp 'set-buffer-multibyte)))
 	 (progn
 	   ,@forms)
        (let ((,multibyte (default-value 'enable-multibyte-characters)))
@@ -372,6 +371,28 @@ See also `with-temp-file' and `with-output-to-string'."
 	   (set-buffer-multibyte ,multibyte))))))
 (put 'mm-with-unibyte-current-buffer 'lisp-indent-function 0)
 (put 'mm-with-unibyte-current-buffer 'edebug-form-spec '(body))
+
+(defmacro mm-with-unibyte-current-buffer-mule4 (&rest forms)
+  "Evaluate FORMS there like `progn' in current buffer.
+Mule4 only."
+  (let ((multibyte (make-symbol "multibyte")))
+    `(if (or (featurep 'xemacs)
+	     (not (fboundp 'set-buffer-multibyte))
+	     (charsetp 'eight-bit-control)) ;; For Emacs Mule 4 only.
+	 (progn
+	   ,@forms)
+       (let ((,multibyte (default-value 'enable-multibyte-characters)))
+	 (unwind-protect
+	     (let ((buffer-file-coding-system mm-binary-coding-system)
+		   (coding-system-for-read mm-binary-coding-system)
+		   (coding-system-for-write mm-binary-coding-system))
+	       (set-buffer-multibyte nil)
+	       (setq-default enable-multibyte-characters nil)
+	       ,@forms)
+	   (setq-default enable-multibyte-characters ,multibyte)
+	   (set-buffer-multibyte ,multibyte))))))
+(put 'mm-with-unibyte-current-buffer-mule4 'lisp-indent-function 0)
+(put 'mm-with-unibyte-current-buffer-mule4 'edebug-form-spec '(body))
 
 (defmacro mm-with-unibyte (&rest forms)
   "Set default `enable-multibyte-characters' to `nil', eval the FORMS."

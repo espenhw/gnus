@@ -94,7 +94,7 @@ encode lines starting with \"From\"."
   (save-excursion
     (save-restriction
       (narrow-to-region from to)
-      (mm-with-unibyte-current-buffer
+      (mm-with-unibyte-current-buffer-mule4
 	;;      (mm-encode-body)
 	;; Encode all the non-ascii and control characters.
 	(goto-char (point-min))

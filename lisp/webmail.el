@@ -283,7 +283,7 @@
       (set-buffer webmail-buffer)
     (setq webmail-buffer
 	  (nnheader-set-temp-buffer " *webmail*"))
-    (mm-disable-multibyte-mule4)))
+    (mm-disable-multibyte)))
 
 (defvar url-package-name)
 (defvar url-package-version)

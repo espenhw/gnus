@@ -477,7 +477,7 @@ If your Emacs implementation can't decode CHARSET, it returns nil."
       (when (and (eq cs 'ascii)
 		 mail-parse-charset)
 	(setq cs mail-parse-charset))
-      (mm-with-unibyte-current-buffer 
+      (mm-with-unibyte-current-buffer-mule4
 	;; In Emacs Mule 4, decoding UTF-8 should be in unibyte mode.
 	(mm-decode-coding-string
 	 (cond
