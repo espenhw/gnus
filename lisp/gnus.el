@@ -1349,7 +1349,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.11"
+(defconst gnus-version "Gnus v5.0.12"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -10853,7 +10853,8 @@ The following commands are available:
 	  (erase-buffer)
 	  ;; There may be some overlays that we have to kill...
 	  (insert "i")
-	  (let ((overlays (overlays-at (point-min))))
+	  (let ((overlays (and (fboundp 'overlays-at)
+			       (overlays-at (point-min)))))
 	    (while overlays
 	      (delete-overlay (car overlays))
 	      (setq overlays (cdr overlays))))

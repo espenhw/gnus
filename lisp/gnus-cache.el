@@ -221,7 +221,8 @@
       (erase-buffer)
       ;; There may be some overlays that we have to kill...
       (insert "i")
-      (let ((overlays (overlays-at (point-min))))
+      (let ((overlays (and (fboundp 'overlays-at)
+			   (overlays-at (point-min)))))
 	(while overlays
 	  (delete-overlay (car overlays))
 	  (setq overlays (cdr overlays))))
