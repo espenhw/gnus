@@ -2108,15 +2108,15 @@ It should typically alter the sending method in some way or other."
 	elem sent)
     (while (and success
 		(setq elem (pop alist)))
-      (when (or (not (funcall (cadr elem)))
-		(and (or (not (memq (car elem)
-				    message-sent-message-via))
-			 (y-or-n-p
-			  (format
-			   "Already sent message via %s; resend? "
-			   (car elem))))
-		     (setq success (funcall (caddr elem) arg))))
-	(setq sent t)))
+      (when (funcall (cadr elem))
+	(when (and (or (not (memq (car elem)
+				  message-sent-message-via))
+		       (y-or-n-p
+			(format
+			 "Already sent message via %s; resend? "
+			 (car elem))))
+		   (setq success (funcall (caddr elem) arg)))
+	  (setq sent t))))
     (unless (or sent (not success))
       (error "No methods specified to send by"))
     (when (and success sent)

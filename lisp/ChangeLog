@@ -1,3 +1,8 @@
+2000-09-29  Simon Josefsson  <simon@josefsson.org>
+
+	* message.el (message-send): Make sure error is signalled if no
+	send method is specified.
+
 2000-09-29  Florian Weimer  <fw@deneb.enyo.de>
 
 	* qp.el (quoted-printable-encode-region): Wrap with
