@@ -68,7 +68,7 @@ coding-system."
 		   ;;  (backward-char))
 		   ))
 		(t
-		 (error "Malformed quoted-printable text")
+		 (message "Malformed quoted-printable text")
 		 (forward-char)))))
       (if coding-system
 	  (mm-decode-coding-region (point-min) (point-max) coding-system)))))

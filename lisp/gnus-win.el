@@ -548,7 +548,8 @@ should have point."
 	(if (featurep 'xemacs)
 	    (switch-to-buffer nntp-server-buffer)
 	  (set-buffer nntp-server-buffer)))
-      (mapcar (lambda (b) (delete-windows-on b t)) bufs))))
+      (mapcar (lambda (b) (delete-windows-on b t))
+	      (delq lowest-buf bufs)))))
 
 (provide 'gnus-win)
 
