@@ -155,7 +155,7 @@
 
 (defvar mm-w3m-mode-map nil
   "Local keymap for inlined text/html part rendered by emacs-w3m.  It will
-be slightly different from `w3m-mode-map' to use in the article buffer.")
+be different from `w3m-mode-map' to use in the article buffer.")
 
 (defvar mm-w3m-mode-command-alist
   '((backward-char)
@@ -203,6 +203,9 @@ registered in `w3m-mode-map' which will be substituted by TO-COMMAND
 in `mm-w3m-mode-map'.  If TO-COMMAND is nil, an article command key
 will not be substituted.")
 
+(defvar mm-w3m-mode-dont-bind-keys (list [up] [right] [left] [down])
+  "List of keys which should not be bound for the emacs-w3m commands.")
+
 (defvar mm-w3m-setup nil
   "Whether gnus-article-mode has been setup to use emacs-w3m.")
 
@@ -215,6 +218,10 @@ will not be substituted.")
       (dolist (def mm-w3m-mode-command-alist)
 	(condition-case nil
 	    (substitute-key-definition (car def) (cdr def) mm-w3m-mode-map)
+	  (error)))
+      (dolist (key mm-w3m-mode-dont-bind-keys)
+	(condition-case nil
+	    (define-key mm-w3m-mode-map key nil)
 	  (error))))
     (unless (assq 'gnus-article-mode w3m-cid-retrieve-function-alist)
       (push (cons 'gnus-article-mode 'mm-w3m-cid-retrieve)

@@ -1,5 +1,10 @@
 2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mm-view.el (mm-w3m-mode-dont-bind-keys): New variable.
+	(mm-setup-w3m): Don't bind keys listed in the above.
+
+2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* mm-view.el (mm-inline-text-html-render-with-w3m): Bind
 	`w3m-safe-url-regexp' with nil if `mm-inline-text-html-with-images'
 	is non-nil; bind `w3m-force-redisplay' with nil.
