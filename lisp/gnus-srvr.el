@@ -83,8 +83,8 @@ with some simple extensions.")
        ["Yank" gnus-server-yank-server t]
        ["Copy" gnus-server-copy-server t]
        ["Edit" gnus-server-edit-server t]
-       ["Exit" gnus-server-exit t]
-       ))
+       ["Regenerate" gnus-server-regenerate-server t]
+       ["Exit" gnus-server-exit t]))
 
     (easy-menu-define
      gnus-server-connections-menu gnus-server-mode-map ""
@@ -95,8 +95,7 @@ with some simple extensions.")
        "---"
        ["Open All" gnus-server-open-all-servers t]
        ["Close All" gnus-server-close-all-servers t]
-       ["Reset All" gnus-server-remove-denials t]
-       ))
+       ["Reset All" gnus-server-remove-denials t]))
 
     (run-hooks 'gnus-server-menu-hook)))
 
@@ -127,6 +126,8 @@ with some simple extensions.")
    "\M-c" gnus-server-close-all-servers
    "D" gnus-server-deny-server
    "R" gnus-server-remove-denials
+
+   "g" gnus-server-regenerate-server
 
     "\C-c\C-i" gnus-info-find-node))
 
@@ -721,6 +722,19 @@ buffer.
   (gnus-message 6
 		(substitute-command-keys "\\<gnus-browse-mode-map>\\[gnus-group-next-group]:Forward  \\[gnus-group-prev-group]:Backward  \\[gnus-browse-exit]:Exit  \\[gnus-info-find-node]:Run Info  \\[gnus-browse-describe-briefly]:This help")))
 
+(defun gnus-server-regenerate-server ()
+  "Issue a command to the server to regenerate all its data structures."
+  (interactive)
+  (let ((server (gnus-server-server-name)))
+    (unless server 
+      (error "No server on the current line"))
+    (if (not (gnus-check-backend-function 
+	      'request-regenerate (car (gnus-server-to-method server))))
+	(error "This backend doesn't support regeneration")
+      (gnus-message 5 "Requesing regeneration of %s..." server)
+      (when (gnus-request-regenerate server)
+	(gnus-message 5 "Requesing regeneration of %s...done" server)))))
+					  
 (provide 'gnus-srvr)
 
 ;;; gnus-srvr.el ends here.

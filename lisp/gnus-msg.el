@@ -132,6 +132,8 @@ Thank you for your help in stamping out bugs.
   "s" gnus-summary-supersede-article
   "r" gnus-summary-reply
   "R" gnus-summary-reply-with-original
+  "n" gnus-summary-followup-to-mail
+  "N" gnus-summary-followup-to-mail-with-original
   "m" gnus-summary-mail-other-window
   "u" gnus-uu-post-news
   "\M-c" gnus-summary-mail-crosspost-complaint
@@ -237,6 +239,18 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   "Compose a followup to an article and include the original article."
   (interactive "P")
   (gnus-summary-followup (gnus-summary-work-articles n) force-news))
+
+(defun gnus-summary-followup-to-mail (&optional arg)
+  "Followup to the current mail message via news."
+  (interactive 
+   (list (and current-prefix-arg 
+	      (gnus-summary-work-articles 1))))
+  (gnus-summary-followup arg t))
+
+(defun gnus-summary-followup-to-mail-with-original (&optional arg)
+  "Followup to the current mail message via news."
+  (interactive "P")
+  (gnus-summary-followup (gnus-summary-work-articles arg) t))
 
 (defun gnus-inews-yank-articles (articles)
   (let (beg article)
@@ -366,7 +380,7 @@ header line with the old Message-ID."
 	    (if post
 		(message-news (or to-group group))
 	      (set-buffer gnus-article-copy)
-	      (message-followup to-group))
+	      (message-followup (if force-news nil to-group)))
 	  ;; The is mail.
 	  (if post
 	      (progn
@@ -775,7 +789,8 @@ The source file has to be in the Emacs load path."
       (buffer-disable-undo (current-buffer))
       (while files
 	(erase-buffer)
-	(when (file-exists-p (setq file (locate-library (pop files))))
+	(when (and (setq file (locate-library (pop files)))
+		   (file-exists-p file))
 	  (insert-file-contents file)
 	  (goto-char (point-min))
 	  (if (not (re-search-forward "^;;* *Internal variables" nil t))

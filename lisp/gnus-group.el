@@ -2546,7 +2546,7 @@ or nil if no action could be taken."
 	 (num (car entry)))
     ;; Do the updating only if the newsgroup isn't killed.
     (if (not (numberp (car entry)))
-	(gnus-message 1 "Can't catch up; non-active group")
+	(gnus-message 1 "Can't catch up %s; non-active group" group)
       ;; Do auto-expirable marks if that's required.
       (when (gnus-group-auto-expirable-p group)
 	(gnus-add-marked-articles

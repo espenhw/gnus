@@ -141,7 +141,7 @@ If given a prefix, mark all unpicked articles as read."
         (gnus-summary-limit-to-articles nil)
         (when (or catch-up gnus-mark-unpicked-articles-as-read)
 	  (gnus-summary-limit-mark-excluded-as-read))
-        (gnus-summary-first-unread-article)
+        (gnus-summary-first-article)
         (gnus-configure-windows 
 	 (if gnus-pick-display-summary 'article 'pick) t))
     (if gnus-pick-elegant-flow

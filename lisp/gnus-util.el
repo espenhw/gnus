@@ -349,12 +349,14 @@
 Cache the result as a text property stored in DATE."
   ;; Either return the cached value...
   `(let ((d ,date))
-     (or (get-text-property 0 'gnus-time d)
-	 ;; or compute the value...
-	 (let ((time (nnmail-date-to-time d)))
-	   ;; and store it back in the string.
-	   (put-text-property 0 1 'gnus-time time d)
-	   time))))
+     (if (equal "" d)
+	 '(0 0)
+       (or (get-text-property 0 'gnus-time d)
+	   ;; or compute the value...
+	   (let ((time (nnmail-date-to-time d)))
+	     ;; and store it back in the string.
+	     (put-text-property 0 1 'gnus-time time d)
+	     time)))))
 
 (defsubst gnus-time-iso8601 (time)
   "Return a string of TIME in YYMMDDTHHMMSS format."

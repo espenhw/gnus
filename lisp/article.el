@@ -48,15 +48,15 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :group 'article)
 
 (defcustom gnus-visible-headers 
-  '("^From:" "^Newsgroups:" "^Subject:" "^Date:" "^Followup-To:"
-    "^Reply-To:" "^Organization:" "^Summary:" "^Keywords:" "^To:"
-    "^Cc:" "^Posted-To:" "^Mail-Copies-To:" "^Apparently-To:"
-    "^Gnus-Warning:" "^Resent-")
+  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-"
   "All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `gnus-ignored-headers' will be ignored."
-  :type '(choice :custom-show nil
-		 (repeat regexp)
+  :type '(repeat :value-to-internal (lambda (widget value)
+				      (custom-split-regexp-maybe value))
+		 :match (lambda (widget value)
+			  (or (stringp value)
+			      (widget-editable-list-match widget value)))
 		 regexp)
   :group 'article)
 
@@ -119,10 +119,22 @@ asynchronously.	 The compressed face will be piped to this command."
   :group 'article)
 
 (defcustom gnus-emphasis-alist
-  '(("\\(\\s-\\|^\\)\\(_\\(\\w+\\(\\s-+\\w+\\)*\\)_\\)\\(\\s-\\|[?!.,;]\\)" 2 3 underline)
-    ("\\(\\s-\\|^\\)\\(\\*\\(\\w+\\(\\s-+\\w+\\)*\\)\\*\\)\\(\\s-\\|[?!.,;]\\)" 2 3 bold)
-    ("\\(\\s-\\|^\\)\\(\\(\\*_\\|_\\*\\)\\(\\w+\\(\\s-+\\w+\\)*\\)\\(\\*_\\|_\\*\\)\\)\\(\\s-\\|[?!.,;]\\)" 2 4 bold-underline)
-    ("\\(\\s-\\|^\\)\\(/\\(\\w+\\)/\\)\\s-" 2 3 italic))
+  (let ((format
+	 "\\(\\s-\\|^\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*\\)%s\\)\\(\\s-\\|[?!.,;]\\)")
+	(types
+	 '(("_" "_" underline)
+	   ("/" "/" italic)
+	   ("\\*" "\\*" bold)
+	   ("_/" "/_" underline-italic)
+	   ("_\\*" "\\*_" underline-bold)
+	   ("\\*/" "/\\*" bold-italic)
+	   ("_\\*/" "/\\*_" underline-bold-italic))))
+    (mapcar
+     (lambda (spec)
+       (list
+	(format format (car spec) (cadr spec))
+	2 3 (intern (format "gnus-emphasis-%s" (caddr spec)))))
+     types))
   "Alist that says how to fontify certain phrases.
 Each item looks like this:
 
@@ -138,6 +150,35 @@ is the face used for highlighting."
 		       (integer :tag "Match group")
 		       (integer :tag "Emphasize group")
 		       face))
+  :group 'article)
+
+(defface gnus-emphasis-bold '((t (:bold t)))
+  "Face used for displaying strong emphasized text (*word*)."
+  :group 'article)
+
+(defface gnus-emphasis-italic '((t (:italic t)))
+  "Face used for displaying italic emphasized text (/word/)."
+  :group 'article)
+
+(defface gnus-emphasis-underline '((t (:underline t)))
+  "Face used for displaying underlined emphasized text (_word_)."
+  :group 'article)
+
+(defface gnus-emphasis-bold-underline '((t (:bold t :underline t)))
+  "Face used for displaying underlined bold emphasized text (_*word*_)."
+  :group 'article)
+
+(defface gnus-emphasis-underline-italic '((t (:italic t :underline t)))
+  "Face used for displaying underlined italic emphasized text (_*word*_)."
+  :group 'article)
+
+(defface gnus-emphasis-bold-italic '((t (:bold t :italic t)))
+  "Face used for displaying bold italic emphasized text (/*word*/)."
+  :group 'article)
+
+(defface gnus-emphasis-underline-bold-italic 
+  '((t (:bold t :italic t :underline t)))
+  "Face used for displaying underlined bold italic emphasized text (_/*word*/_)."
   :group 'article)
 
 (eval-and-compile
@@ -607,7 +648,8 @@ always hide."
     (let (buffer-read-only)
       (goto-char (point-min))
       (when (search-forward "\n\n" nil t)
-	(while (looking-at "[ \t]*$")
+	(while (and (not (eobp))
+		    (looking-at "[ \t]*$"))
 	  (gnus-delete-line))))))
 
 (defun article-strip-multiple-blank-lines ()

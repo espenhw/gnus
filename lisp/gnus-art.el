@@ -1945,7 +1945,7 @@ forbidden in URL encoding."
 
 (defun gnus-button-url (address)
   "Browse ADDRESS."
-  (funcall browse-url-browser-function address))
+  (funcall browse-url-browser-function address browse-url-new-window-p))
 
 ;;; Next/prev buttons in the article buffer.
 

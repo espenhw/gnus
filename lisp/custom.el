@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 0.995
+;; Version: 0.997
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -29,12 +29,22 @@
 
 ;;; Compatibility.
 
-(fset 'custom-x-color-values 
-      (if (fboundp 'x-color-values)
-	  'x-color-values
-	(lambda (color)
-	  (color-instance-rgb-components
-	   (make-color-instance color)))))
+(unless (fboundp 'x-color-values)
+  ;; Emacs function missing in XEmacs 19.14.
+  (defun x-color-values  (color)
+    "Return a description of the color named COLOR on frame FRAME.
+The value is a list of integer RGB values--(RED GREEN BLUE).
+These values appear to range from 0 to 65280 or 65535, depending
+on the system; white is (65280 65280 65280) or (65535 65535 65535).
+If FRAME is omitted or nil, use the selected frame."
+    (color-instance-rgb-components (make-color-instance color))))
+
+(unless (fboundp 'frame-property)
+  ;; XEmacs function missing in Emacs 19.34.
+  (defun frame-property (frame property &optional default)
+    "Return FRAME's value for property PROPERTY."
+    (or (cdr (assq property (frame-parameters frame)))
+	default)))
 
 (defun custom-background-mode ()
   "Kludge to detext background mode."
@@ -42,26 +52,24 @@
 	  (condition-case ()
 	      (x-get-resource ".backgroundMode" "BackgroundMode" 'string)
 	    (error nil)))
-	 (params (frame-parameters))
-	 (color (condition-case ()
-		    (or (assq 'background-color params)
-			(color-instance-name
-			 (specifier-instance
-			  (face-background 'default))))
-		  (error nil)))
-	 (mode (cond (bg-resource (intern (downcase bg-resource)))
-		     ((and color
-			   (< (apply '+ (custom-x-color-values color))
-			      (/ (apply '+ (custom-x-color-values "white"))
+	 color
+	 (mode (cond (bg-resource
+		      (intern (downcase bg-resource)))
+		     ((and (setq color (condition-case ()
+					   (or (frame-property
+						(selected-frame)
+						'background-color)
+					       (color-instance-name
+						(specifier-instance
+						 (face-background 'default))))
+					 (error nil)))
+			   (< (apply '+ (x-color-values color))
+			      (/ (apply '+ (x-color-values "white"))
 				 3)))
 		      'dark)
 		     (t 'light))))
-    (if (fboundp 'set-frame-property)
-	;; `modify-frame-properties' is borken on XEmacs 19.14.
-	(set-frame-property (selected-frame) 'background-mode mode)
-      ;; `set-frame-property' is unimplemented in Emacs 19.34.
-      (modify-frame-parameters (selected-frame)
-			       (cons (cons 'background-mode mode) params)))
+    (modify-frame-parameters (selected-frame)
+			     (list (cons 'background-mode mode)))
     mode))
 
 ;;; The `defcustom' Macro.
@@ -253,6 +261,15 @@ If there already is an entry for that option, overwrite it."
 	(setcar (cdr old) widget)
       (put group 'custom-group (nconc members (list (list option widget)))))))
 
+;;; Options
+
+(defun custom-add-option (symbol option)
+  "To the variable SYMBOL add OPTION.
+
+If SYMBOL is a hook variable, OPTION should be a hook member.
+For other types variables, the effect is undefined."
+  (put symbol 'custom-options (cons option (get symbol 'custom-options))))
+
 ;;; Face Utilities.
 
 (and (fboundp 'make-face)
@@ -292,8 +309,7 @@ If FRAME is nil, the current FRAME is used."
     (setq frame (selected-frame)))
   (if (eq display t)
       t
-    (let ((match t)
-	  (pars (frame-parameters frame)))
+    (let ((match t))
       (while (and display match)
 	(let* ((entry (car display))
 	       (req (car entry))
@@ -307,11 +323,11 @@ If FRAME is nil, the current FRAME is used."
 		((eq req 'class)
 		 (let ((class (if (fboundp 'device-class)
 				  (device-class frame)
-				(cdr (assq 'display-type pars)))))
+				(frame-property frame 'display-type))))
 		   (setq match (memq class options))))
 		((eq req 'background)
 		 (let ((background (or custom-background-mode
-				       (cdr (assq 'background-mode pars))
+				       (frame-property frame 'background-mode)
 				       (custom-background-mode))))
 		   (setq match (memq background options))))
 		(t
@@ -377,27 +393,58 @@ If FRAME is nil or omitted, initialize them for all frames."
 ;;;###autoload
 (defun custom-set-variables (&rest args)
   "Initialize variables according to user preferences.  
-The arguments should have the form [SYMBOL VALUE]...
-For each symbol, VALUE is evaluated and bound as the default value for
-the symbol.  The unevaluated VALUE is also stored as the saved value
-for that symbol."
+
+The arguments should be a list where each entry has the form:
+
+  (SYMBOL VALUE [NOW])
+
+The unevaluated VALUE is stored as the saved value for SYMBOL.
+If NOW is present and non-nil, VALUE is also evaluated and bound as
+the default value for the SYMBOL."
   (while args 
-    (let ((symbol (nth 0 args))
-	  (value (nth 1 args)))
-      (put symbol 'saved-value (list value)))
-    (setq args (cdr (cdr args)))))
+    (let ((entry (car args)))
+      (if (listp entry)
+	  (let ((symbol (nth 0 entry))
+		(value (nth 1 entry))
+		(now (nth 2 entry)))
+	    (put symbol 'saved-value (list value))
+	    (when now 
+	      (put symbol 'force-value t)
+	      (set-default symbol (eval value)))
+	    (setq args (cdr args)))
+	;; Old format, a plist of SYMBOL VALUE pairs.
+	(let ((symbol (nth 0 args))
+	      (value (nth 1 args)))
+	  (put symbol 'saved-value (list value)))
+	(setq args (cdr (cdr args)))))))
 
 ;;;###autoload
 (defun custom-set-faces (&rest args)
   "Initialize faces according to user preferences.
-The arguments should have the form [SYMBOL SPEC]...
-For each symbol, a face with that name is created according to SPEC.
+The arguments should be a list where each entry has the form:
+
+  (FACE SPEC [NOW])
+
+SPEC will be stored as the saved value for FACE.  If NOW is present
+and non-nil, FACE will also be created according to SPEC.
+
 See `defface' for the format of SPEC."
   (while args
-    (let ((face (nth 0 args))
-	  (spec (nth 1 args)))
-      (put face 'saved-face spec))
-    (setq args (cdr (cdr args)))))
+    (let ((entry (car args)))
+      (if (listp entry)
+	  (let ((face (nth 0 entry))
+		(spec (nth 1 entry))
+		(now (nth 2 entry)))
+	    (put face 'saved-face spec)
+	    (when now
+	      (put face 'force-face t)
+	      (custom-face-display-set face spec))
+	    (setq args (cdr args)))
+	;; Old format, a plist of FACE SPEC pairs.
+	(let ((face (nth 0 args))
+	      (spec (nth 1 args)))
+	  (put face 'saved-face spec))
+	(setq args (cdr (cdr args)))))))
 
 ;;; Meta Customization
 

@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.55"
+(defconst gnus-version-number "0.56"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -71,24 +71,24 @@ be set in `.emacs' instead."
 	(t
 	 'ignore)))
 
-(when (not (featurep 'gnus-xmas))
-  (progn (defalias 'gnus-make-overlay 'make-overlay)
-	 (defalias 'gnus-overlay-put 'overlay-put)
-	 (defalias 'gnus-move-overlay 'move-overlay)
-	 (defalias 'gnus-overlay-end 'overlay-end)
-	 (defalias 'gnus-extent-detached-p 'ignore)
-	 (defalias 'gnus-extent-start-open 'ignore)
-	 (defalias 'gnus-set-text-properties 'set-text-properties)
-	 (defalias 'gnus-group-remove-excess-properties 'ignore)
-	 (defalias 'gnus-topic-remove-excess-properties 'ignore)
-	 (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
-	 (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
-	 (defalias 'gnus-make-local-hook 'make-local-hook)
-	 (defalias 'gnus-add-hook 'add-hook)
-	 (defalias 'gnus-character-to-event 'identity)
-	 (defalias 'gnus-add-text-properties 'add-text-properties)
-	 (defalias 'gnus-put-text-property 'put-text-property)
-	 (defalias 'gnus-mode-line-buffer-identification 'identity)))
+(unless (featurep 'gnus-xmas)
+  (defalias 'gnus-make-overlay 'make-overlay)
+  (defalias 'gnus-overlay-put 'overlay-put)
+  (defalias 'gnus-move-overlay 'move-overlay)
+  (defalias 'gnus-overlay-end 'overlay-end)
+  (defalias 'gnus-extent-detached-p 'ignore)
+  (defalias 'gnus-extent-start-open 'ignore)
+  (defalias 'gnus-set-text-properties 'set-text-properties)
+  (defalias 'gnus-group-remove-excess-properties 'ignore)
+  (defalias 'gnus-topic-remove-excess-properties 'ignore)
+  (defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
+  (defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
+  (defalias 'gnus-make-local-hook 'make-local-hook)
+  (defalias 'gnus-add-hook 'add-hook)
+  (defalias 'gnus-character-to-event 'identity)
+  (defalias 'gnus-add-text-properties 'add-text-properties)
+  (defalias 'gnus-put-text-property 'put-text-property)
+  (defalias 'gnus-mode-line-buffer-identification 'identity))
 
 ;; The XEmacs people think this is evil, so it must go.
 (defun custom-face-lookup (&optional fg bg stipple bold italic underline)
@@ -658,7 +658,7 @@ less space and be faster as a result.")
 The line beneath the mouse pointer will be highlighted with this
 face.")
 
-(defvar gnus-article-display-hook
+(defcustom gnus-article-display-hook
   (if (and (string-match "XEmacs" emacs-version)
 	   (featurep 'xface))
       '(gnus-article-hide-headers-if-wanted
@@ -675,7 +675,42 @@ face.")
 If you leave the list empty, the article will appear exactly as it is
 stored on the disk.  The list entries will hide or highlight various
 parts of the article, making it easier to find the information you
-want.")
+want."
+  :group 'gnus-art
+  :type 'hook
+  :options '(gnus-article-add-buttons
+	     gnus-article-add-buttons-to-head
+	     gnus-article-treat-overstrike
+	     gnus-article-emphasize
+	     gnus-article-fill-cited-article
+	     gnus-article-remove-cr
+	     gnus-article-de-quoted-unreadable
+	     gnus-article-display-x-face
+	     gnus-summary-stop-page-breaking
+	     gnus-summary-caesar-message
+	     gnus-article-hide-headers
+	     gnus-summary-verbose-headers
+	     gnus-summary-toggle-mime
+	     gnus-article-hide
+	     gnus-article-hide-headers
+	     gnus-article-hide-boring-headers
+	     gnus-article-hide-signature
+	     gnus-article-hide-citation
+	     gnus-article-hide-pgp
+	     gnus-article-hide-pem
+	     gnus-article-highlight
+	     gnus-article-highlight-headers
+	     gnus-article-highlight-citation
+	     gnus-article-highlight-signature
+	     gnus-article-date-ut
+	     gnus-article-date-ut
+	     gnus-article-date-local
+	     gnus-article-date-lapsed
+	     gnus-article-date-original
+	     gnus-article-remove-trailing-blank-lines
+	     gnus-article-strip-leading-blank-lines
+	     gnus-article-strip-multiple-blank-lines
+	     gnus-article-strip-blank-lines))
 
 
 

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 0.995
+;; Version: 0.997
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -391,6 +391,8 @@ Recommended as a parent keymap for modes using widgets.")
   (define-key widget-keymap "\t" 'widget-forward)
   (define-key widget-keymap "\M-\t" 'widget-backward)
   (define-key widget-keymap [(shift tab)] 'widget-backward)
+  (define-key widget-keymap [(shift tab)] 'widget-backward)
+  (define-key widget-keymap [backtab] 'widget-backward)
   (if (string-match "XEmacs" (emacs-version))
       (define-key widget-keymap [button2] 'widget-button-click)
     (define-key widget-keymap [menu-bar] 'nil)
@@ -584,6 +586,22 @@ With optional ARG, move across that many fields."
 		   (widget-specify-field-update field from to)))
 	       (widget-apply field :notify field))))
     (error (debug))))
+
+;;; Widget Functions
+;;
+;; These functions are used in the definition of multiple widgets. 
+
+(defun widget-children-value-delete (widget)
+  "Delete all :children and :buttons in WIDGET."
+  (mapcar 'widget-delete (widget-get widget :children))
+  (widget-put widget :children nil)
+  (mapcar 'widget-delete (widget-get widget :buttons))
+  (widget-put widget :buttons nil))
+
+(defun widget-types-convert-widget (widget)
+  "Convert :args as widget types in WIDGET."
+  (widget-put widget :args (mapcar 'widget-convert (widget-get widget :args)))
+  widget)
 
 ;;; The `default' Widget.
 
@@ -927,13 +945,13 @@ With optional ARG, move across that many fields."
 
 (define-widget 'menu-choice 'default
   "A menu of options."
-  :convert-widget  'widget-choice-convert-widget
+  :convert-widget  'widget-types-convert-widget
   :format "%[%t%]: %v"
   :case-fold t
   :tag "choice"
   :void '(item :format "invalid (%t)\n")
   :value-create 'widget-choice-value-create
-  :value-delete 'widget-radio-value-delete
+  :value-delete 'widget-children-value-delete
   :value-get 'widget-choice-value-get
   :value-inline 'widget-choice-value-inline
   :action 'widget-choice-action
@@ -941,17 +959,6 @@ With optional ARG, move across that many fields."
   :validate 'widget-choice-validate
   :match 'widget-choice-match
   :match-inline 'widget-choice-match-inline)
-
-(defun widget-choice-convert-widget (widget)
-  ;; Expand type args into widget objects.
-;  (widget-put widget :args (mapcar (lambda (child)
-;				     (if (widget-get child ':converted)
-;					 child
-;				       (widget-put child ':converted t)
-;				       (widget-convert child)))
-;				   (widget-get widget :args)))
-  (widget-put widget :args (mapcar 'widget-convert (widget-get widget :args)))
-  widget)
 
 (defun widget-choice-value-create (widget)
   ;; Insert the first choice that matches the value.
@@ -1089,14 +1096,14 @@ With optional ARG, move across that many fields."
 
 (define-widget 'checklist 'default
   "A multiple choice widget."
-  :convert-widget 'widget-choice-convert-widget
+  :convert-widget 'widget-types-convert-widget
   :format "%v"
   :offset 4
   :entry-format "%b %v"
   :menu-tag "checklist"
   :greedy nil
   :value-create 'widget-checklist-value-create
-  :value-delete 'widget-radio-value-delete
+  :value-delete 'widget-children-value-delete
   :value-get 'widget-checklist-value-get
   :validate 'widget-checklist-validate
   :match 'widget-checklist-match
@@ -1259,13 +1266,13 @@ With optional ARG, move across that many fields."
 
 (define-widget 'radio-button-choice 'default
   "Select one of multiple options."
-  :convert-widget 'widget-choice-convert-widget
+  :convert-widget 'widget-types-convert-widget
   :offset 4
   :format "%v"
   :entry-format "%b %v"
   :menu-tag "radio"
   :value-create 'widget-radio-value-create
-  :value-delete 'widget-radio-value-delete
+  :value-delete 'widget-children-value-delete
   :value-get 'widget-radio-value-get
   :value-inline 'widget-radio-value-inline
   :value-set 'widget-radio-value-set
@@ -1326,13 +1333,6 @@ With optional ARG, move across that many fields."
      (when child
        (widget-put widget :children (nconc children (list child))))
      child)))
-
-(defun widget-radio-value-delete (widget)
-  ;; Delete the child widgets.
-  (mapcar 'widget-delete (widget-get widget :children))
-  (widget-put widget :children nil)
-  (mapcar 'widget-delete (widget-get widget :buttons))
-  (widget-put widget :buttons nil))
 
 (defun widget-radio-value-get (widget)
   ;; Get value of the child widget.
@@ -1442,14 +1442,14 @@ With optional ARG, move across that many fields."
 
 (define-widget 'editable-list 'default
   "A variable list of widgets of the same type."
-  :convert-widget 'widget-choice-convert-widget
+  :convert-widget 'widget-types-convert-widget
   :offset 12
   :format "%v%i\n"
   :format-handler 'widget-editable-list-format-handler
   :entry-format "%i %d %v"
   :menu-tag "editable-list"
   :value-create 'widget-editable-list-value-create
-  :value-delete 'widget-radio-value-delete
+  :value-delete 'widget-children-value-delete
   :value-get 'widget-editable-list-value-get
   :validate 'widget-editable-list-validate
   :match 'widget-editable-list-match
@@ -1631,10 +1631,10 @@ With optional ARG, move across that many fields."
 
 (define-widget 'group 'default
   "A widget which group other widgets inside."
-  :convert-widget 'widget-choice-convert-widget
+  :convert-widget 'widget-types-convert-widget
   :format "%v"
   :value-create 'widget-group-value-create
-  :value-delete 'widget-radio-value-delete
+  :value-delete 'widget-children-value-delete
   :value-get 'widget-editable-list-value-get
   :validate 'widget-editable-list-validate
   :match 'widget-group-match
@@ -1716,14 +1716,14 @@ With optional ARG, move across that many fields."
 			    (condition-case nil
 				(documentation symbol t)
 			      (error nil)))
-  :value-delete 'widget-radio-value-delete
+  :value-delete 'widget-children-value-delete
   :match (lambda (widget value) (symbolp value)))
 
 (define-widget 'variable-item 'item
   "An immutable variable name."
   :format "%v\n%h"
   :documentation-property 'variable-documentation
-  :value-delete 'widget-radio-value-delete
+  :value-delete 'widget-children-value-delete
   :match (lambda (widget value) (symbolp value)))
 
 (define-widget 'string 'editable-field
@@ -1943,7 +1943,7 @@ It will read a directory name from the minibuffer when activated."
   :tag "Color"
   :value "default"
   :value-create 'widget-color-value-create
-  :value-delete 'widget-radio-value-delete
+  :value-delete 'widget-children-value-delete
   :value-get 'widget-color-value-get
   :value-set 'widget-color-value-set
   :action 'widget-color-action

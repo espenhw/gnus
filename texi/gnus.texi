@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.55 Manual
+@settitle Red Gnus 0.56 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.55 Manual
+@title Red Gnus 0.56 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -3633,6 +3633,20 @@ Post a followup to the current article and include the original message
 (@code{gnus-summary-followup-with-original}).   This command uses the
 process/prefix convention.
 
+@item S n
+@kindex S n (Summary)
+@findex gnus-summary-followup-to-mail
+Post a followup to the current article via news, even if you got the
+message through mail (@code{gnus-summary-followup-to-mail}).
+
+@item S n
+@kindex S n (Summary)
+@findex gnus-summary-followup-to-mail
+Post a followup to the current article via news, even if you got the
+message through mail and include the original message
+(@code{gnus-summary-followup-to-mail-with-original}).  This command uses
+the process/prefix convention.
+
 @item S o p
 @kindex S o p (Summary)
 @findex gnus-summary-post-forward
@@ -5536,6 +5550,7 @@ these articles easier.
 
 @menu
 * Article Highlighting::    You want to make the article look like fruit salad.
+* Article Fontisizing::     Making emphasized text look niced.
 * Article Hiding::          You also want to make certain info go away.
 * Article Washing::         Lots of way-neat functions to make life better.
 * Article Buttons::         Click on URLs, Message-IDs, addresses and the like.
@@ -5641,6 +5656,58 @@ highlighted with @code{gnus-signature-face}, which is @code{italic} by
 default.
 
 @end table
+
+
+@node Article Fontisizing
+@subsection Article Fontisizing
+@cindex emphasis
+@cindex article emphasis
+
+@findex gnus-article-emphasize
+@kindex W e (Summary)
+People commonly add emphasis to words in news articles by writing things
+like @samp{_this_} or @samp{*this*}.  Gnus can make this look nicer by
+running the article through the @kbd{W e}
+(@code{gnus-article-emphasize}) command.
+
+@vindex gnus-article-emphasis
+How the emphasis is computed is controlled by the
+@code{gnus-article-emphasis} variable.  This is an alist where the first
+element is a regular expression to be matched.  The second is a number
+that says what regular expression grouping used to find the entire
+emphasized word.  The third is a number that says what regexp grouping
+should be displayed and highlighted.  (The text between these two
+groupings will be hidden.)  The fourth is the face used for
+highlighting.
+
+@lisp
+(setq gnus-article-emphasis
+      '(("_\\(\\w+\\)_" 0 1 gnus-emphasis-underline)
+        ("\\*\\(\\w+\\)\\*" 0 1 gnus-emphasis-bold)))
+@end lisp
+
+@vindex gnus-emphasis-underline
+@vindex gnus-emphasis-bold
+@vindex gnus-emphasis-italic
+@vindex gnus-emphasis-underline-bold
+@vindex gnus-emphasis-underline-italic
+@vindex gnus-emphasis-bold-italic
+@vindex gnus-emphasis-underline-bold-italic
+By default, there are seven rules, and they use the following faces:
+@code{gnus-emphasis-bold}, @code{gnus-emphasis-italic},
+@code{gnus-emphasis-underline}, @code{gnus-emphasis-bold-italic},
+@code{gnus-emphasis-underline-italic},
+@code{gnus-emphasis-undeline-bold}, and
+@code{gnus-emphasis-underline-bold-italic}.  
+
+If you want to change these faces, you can either use @kbd{M-x
+customize}, or you can use @code{copy-face}.  For instance, if you want
+to make @code{gnus-emphasis-italic} use a red face instead, you could
+say something like:
+
+@lisp
+(copy-face 'red 'gnus-emphasis-italic)
+@end lisp
 
 
 @node Article Hiding
@@ -7841,6 +7908,13 @@ Request that the server scan its sources for new articles
 (@code{gnus-server-scan-server}).  This is mainly sensible with mail
 servers. 
 
+@item g
+@kindex g (Server)
+@findex gnus-server-regenerate-server
+Request that the server regenerate all its data structures
+(@code{gnus-server-regenerate-server}).  This can be useful if you have
+a mail backend that has gotten out of synch.
+
 @end table
 
 
@@ -8644,22 +8718,38 @@ be stored in one or more groups.
 @code{junk}: If the split is the symbol @code{junk}, then don't save
 this message anywhere.
 
+@item
+@var{(: function arg1 arg2 ...)}:  If the split is a list, and the first
+element is @code{:}, then the second element will be called as a
+function with @var{args} given as arguments.  The function should return
+a SPLIT.
+
 @end enumerate
 
-In these splits, FIELD must match a complete field name.  VALUE must
-match a complete word according to the fundamental mode syntax table.
-You can use @code{.*} in the regexps to match partial field names or
-words.
+In these splits, @var{FIELD} must match a complete field name.
+@var{VALUE} must match a complete word according to the fundamental mode
+syntax table.  You can use @code{.*} in the regexps to match partial
+field names or words.  In other words, all @var{VALUE}'s are wrapped in
+@samp{\<} and @samp{\>} pairs.
 
 @vindex nnmail-split-abbrev-alist
-FIELD and VALUE can also be lisp symbols, in that case they are expanded
-as specified by the variable @code{nnmail-split-abbrev-alist}.  This is
-an alist of cons cells, where the car of the cells contains the key, and
-the cdr contains a string.
+@var{FIELD} and @var{VALUE} can also be lisp symbols, in that case they
+are expanded as specified by the variable
+@code{nnmail-split-abbrev-alist}.  This is an alist of cons cells, where
+the car of the cells contains the key, and the cdr contains a string.
 
 @vindex nnmail-split-fancy-syntax-table
 @code{nnmail-split-fancy-syntax-table} is the syntax table in effect
 when all this splitting is performed.
+
+If you want to have Gnus create groups dynamically based on some
+information in the headers, you can say things like:
+
+@example
+(any "debian-\(\\w*\\)@@lists.debian.org" "mail.debian.\\1")
+@end example
+
+That is, do @code{replace-match}-like substitions in the group names. 
 
 
 @node Mail and Procmail
@@ -9211,7 +9301,9 @@ If your @code{nnml} groups and @sc{nov} files get totally out of whack,
 you can do a complete update by typing @kbd{M-x
 nnml-generate-nov-databases}.  This command will trawl through the
 entire @code{nnml} hierarchy, looking at each and every article, so it
-might take a while to complete.
+might take a while to complete.  A better interface to this
+functionality can be found in the server buffer (@pxref{Server
+Commands}). 
 
 
 @node MH Spool
@@ -14111,6 +14203,13 @@ Mail}).
 @item
 More hooks and functions have been added to remove junk from incoming
 mail before saving the mail (@pxref{Washing Mail}).
+
+@item
+Emphasized text can be properly fontisized:
+
+@lisp
+(add-hook 'gnus-article-display-hook 'gnus-article-emphasize)
+@end lisp
  
 @end itemize
 

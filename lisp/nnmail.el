@@ -397,20 +397,16 @@ parameter.  It should return nil, `warn' or `delete'.")
     (let ((inbox (file-truename (expand-file-name inbox)))
 	  (tofile (file-truename (expand-file-name nnmail-crash-box)))
 	  movemail popmail errors)
-      ;; If getting from mail spool directory,
-      ;; use movemail to move rather than just renaming,
-      ;; so as to interlock with the mailer.
-      (unless (setq popmail (string-match
-			     "^po:" (file-name-nondirectory inbox)))
-	(setq movemail t))
-      (when popmail 
-	(setq inbox (file-name-nondirectory inbox)))
-      (when (and movemail
-		 ;; On some systems, /usr/spool/mail/foo is a directory
-		 ;; and the actual inbox is /usr/spool/mail/foo/foo.
-		 (file-directory-p inbox))
-	(setq inbox (expand-file-name (user-login-name) inbox)))
+      (if (setq popmail (string-match
+			 "^po:" (file-name-nondirectory inbox)))
+	  (setq inbox (file-name-nondirectory inbox))
+	(setq movemail t)
+	;; On some systems, /usr/spool/mail/foo is a directory
+	;; and the actual inbox is /usr/spool/mail/foo/foo.
+	(when (file-directory-p inbox)
+	  (setq inbox (expand-file-name (user-login-name) inbox))))
       (if (member inbox nnmail-moved-inboxes)
+	  ;; We don't try to move an already moced inbox.
 	  nil
 	(if popmail
 	    (progn
@@ -437,23 +433,10 @@ parameter.  It should return nil, `warn' or `delete'.")
 	       (not (file-exists-p inbox)))
 	  ;; There is no inbox.
 	  (setq tofile nil))
-	 ((and (not movemail) (not popmail))
-	  ;; Try copying.  If that fails (perhaps no space),
-	  ;; rename instead.
-	  (condition-case nil
-	      (copy-file inbox tofile nil)
-	    (error
-	     ;; Third arg is t so we can replace existing file TOFILE.
-	     (rename-file inbox tofile t)))
-	  (push inbox nnmail-moved-inboxes)
-	  ;; Make the real inbox file empty.
-	  ;; Leaving it deleted could cause lossage
-	  ;; because mailers often won't create the file.
-	  (condition-case ()
-	      (write-region (point) (point) inbox)
-	    (file-error nil)))
 	 (t
-	  ;; Use movemail.
+	  ;; If getting from mail spool directory, use movemail to move
+	  ;; rather than just renaming, so as to interlock with the
+	  ;; mailer.
 	  (unwind-protect
 	      (save-excursion
 		(setq errors (generate-new-buffer " *nnmail loss*"))
@@ -641,19 +624,21 @@ is a spool.  If not using procmail, return GROUP."
     (while (not found)
       (if (not (re-search-forward "^From " nil t))
 	  (setq found 'no)
-	(beginning-of-line)
-	(when (and (or (bobp)
-		       (save-excursion
-			 (forward-line -1)
-			 (= (following-char) ?\n)))
-		   (save-excursion
-		     (forward-line 1)
-		     (looking-at "[^ \t:]+[ \t]*:")))
-	  (setq found 'yes))))
+	(save-excursion
+	  (beginning-of-line)
+	  (when (and (or (bobp)
+			 (save-excursion
+			   (forward-line -1)
+			   (= (following-char) ?\n)))
+		     (save-excursion
+		       (forward-line 1)
+		       (looking-at "[^ \t:]+[ \t]*:")))
+	    (setq found 'yes)))))
+    (beginning-of-line)
     (eq found 'yes)))
 
 (defun nnmail-process-unix-mail-format (func artnum-func)
-  (let ((case-fold-search nil)
+  (let ((case-fold-search t)
 	start message-id content-length end skip head-end)
     (goto-char (point-min))
     (if (not (and (re-search-forward "^From " nil t)
@@ -978,42 +963,106 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 (defun nnmail-split-it (split)
   ;; Return a list of groups matching SPLIT.
   (cond
+   ;; nil split
+   ((null split)
+    nil)
+
+   ;; A group name.  Do the \& and \N subs into the string.
    ((stringp split)
-    ;; A group.
-    (list split))
+    (list (nnmail-expand-newtext split)))
+
+   ;; Junk the message.
    ((eq split 'junk)
-    ;; Junk this.
     (list 'junk))
+
+   ;; Builtin & operation.
    ((eq (car split) '&)
     (apply 'nconc (mapcar 'nnmail-split-it (cdr split))))
+
+   ;; Builtin | operation.
    ((eq (car split) '|)
     (let (done)
       (while (and (not done) (cdr split))
 	(setq split (cdr split)
 	      done (nnmail-split-it (car split))))
       done))
+
+   ;; Builtin : operation.
+   ((eq (car split) ':)
+    (nnmail-split-it (eval (cdr split))))
+
+   ;; Check the cache for the regexp for this split.
+   ;; FIX FIX FIX could avoid calling assq twice here
    ((assq split nnmail-split-cache)
-    ;; A compiled match expression.
     (goto-char (point-max))
+    ;; FIX FIX FIX problem with re-search-backward is that if you have
+    ;; a split: (from "foo-\\(bar\\|baz\\)@gnus.org "mail.foo.\\1")
+    ;; and someone mails a message with 'To: foo-bar@gnus.org' and
+    ;; 'CC: foo-baz@gnus.org', we'll pick 'mail.foo.baz' as the group
+    ;; if the cc line is a later header, even though the other choice
+    ;; is probably better.  Also, this routine won't do a crosspost
+    ;; when there are two different matches.
+    ;; I guess you could just make this more determined, and it could
+    ;; look for still more matches prior to this one, and recurse
+    ;; on each of the multiple matches hit.  Of course, then you'd
+    ;; want to make sure that nnmail-article-group or nnmail-split-fancy
+    ;; removed duplicates, since there might be more of those.
+    ;; I guess we could also remove duplicates in the & split case, since
+    ;; that's the only thing that can introduce them.
     (when (re-search-backward (cdr (assq split nnmail-split-cache)) nil t)
+      ;; Someone might want to do a \N sub on this match, so get the
+      ;; correct match positions.
+      (goto-char (match-end 0))
+      (re-search-backward (nth 1 split) (match-end 1))
       (nnmail-split-it (nth 2 split))))
+
+   ;; Not in cache, compute a regexp for the field/value pair.
    (t
-    ;; An uncompiled match.
     (let* ((field (nth 0 split))
 	   (value (nth 1 split))
-	   (regexp (concat "^\\(" 
+	   (regexp (concat "^\\(\\("
 			   (if (symbolp field)
 			       (cdr (assq field nnmail-split-abbrev-alist))
 			     field)
-			   "\\):.*\\<\\("
+			   "\\):.*\\)\\<\\("
 			   (if (symbolp value)
 			       (cdr (assq value nnmail-split-abbrev-alist))
 			     value)
 			   "\\)\\>")))
       (push (cons split regexp) nnmail-split-cache)
-      (goto-char (point-max))
-      (when (re-search-backward regexp nil t)
-	(nnmail-split-it (nth 2 split)))))))
+      ;; Now that it's in the cache, just call nnmail-split-it again
+      ;; on the same split, which will find it immediately in the cache.
+      (nnmail-split-it split)))))
+
+;;; based on bbdb-auto-expand-newtext, except for getting the
+;;; text from the current buffer, not a string.
+;;; FIX FIX FIX, this could be sped up, if it ends up being slow
+(defun nnmail-expand-newtext (newtext)
+  (let ((pos 0)
+	(len (length newtext))
+	(expanded-newtext ""))
+    (while (< pos len)
+      (setq expanded-newtext
+	    (concat expanded-newtext
+		    (let ((c (aref newtext pos)))
+		      (if (= ?\\ c)
+			  (cond ((= ?\& (setq c (aref newtext
+						      (setq pos (1+ pos)))))
+				 (buffer-substring (match-beginning 0)
+						   (match-end 0)))
+				((and (>= c ?1) 
+				      (<= c ?9))
+				 ;; return empty string if N'th
+				 ;; sub-regexp did not match:
+				 (let ((n (- c ?0)))
+				   (if (match-beginning n)
+				       (buffer-substring (match-beginning n)
+							 (match-end n))
+				     "")))
+				(t (char-to-string c)))
+			(char-to-string c)))))
+      (setq pos (1+ pos)))
+    expanded-newtext))
 
 ;; Get a list of spool files to read.
 (defun nnmail-get-spool-files (&optional group)

@@ -157,6 +157,10 @@ all.  This may very well take some time.")
 		     server nnml-directory)
     t)))
 
+(defun nnml-request-regenerate (server)
+  (nnml-possibly-change-directory nil server)
+  (nnml-generate-nov-databases))
+
 (deffoo nnml-request-article (id &optional newsgroup server buffer)
   (nnml-possibly-change-directory newsgroup server)
   (let* ((nntp-server-buffer (or buffer nntp-server-buffer))

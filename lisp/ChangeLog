@@ -1,3 +1,88 @@
+Fri Nov  8 02:45:21 1996  David S. Goldberg  <dsg@linus.mitre.org>
+
+	* gnus-art.el (gnus-button-url): Respect
+	`browse-url-new-window-p'. 
+
+Fri Nov  8 02:34:31 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-process-unix-mail-format): Fold searches.
+
+Thu Nov  7 09:07:32 1996  Steven L Baur  <steve@miranova.com>
+
+	* nnmail.el (nnmail-search-unix-mail-delim): Take better care in
+	ignoring bogus From_ lines.
+
+Fri Nov  8 02:01:06 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-move-inbox): Cleaned up code.
+
+	* gnus-int.el (gnus-request-regenerate): New function.
+
+	* nnml.el (nnml-request-regenerate): New function.
+
+	* gnus-srvr.el (gnus-server-regenerate-server): New command and
+	keystroke. 
+
+Thu Nov  7 16:12:30 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-start.el: Added customize support.
+
+Fri Nov  8 01:47:16 1996  David S. Goldberg  <dsg@linus.mitre.org>
+
+	* gnus-win.el (gnus-delete-windows-in-gnusey-frames): Would bug
+	out on nil variables.
+
+Fri Nov  8 01:45:06 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-sum.el (gnus-handle-ephemeral-exit): Go to the next
+	article. 
+
+Thu Nov  7 16:12:30 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* article.el (gnus-visible-headers): Convert string to list of
+	strings. 
+
+Fri Nov  8 01:40:38 1996  Kurt Swanson  <Kurt.Swanson@dna.lth.se>
+
+	* gnus-sum.el (gnus-summary-first-article): New function.
+
+	* gnus-salt.el (gnus-pick-start-reading): Use it.
+
+Thu Nov  7 09:42:17 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-catchup): Better message.
+
+	* gnus-util.el (gnus-date-get-time): Protect against "" Dates. 
+
+	* article.el (article-strip-leading-blank-lines): Would infloop.
+
+	* gnus-msg.el (gnus-debug): Protect against odd load-paths.
+
+Fri Nov  8 05:30:51 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): `ref' should never be
+	nil. 
+
+	* gnus-msg.el (gnus-summary-followup-to-mail,
+	gnus-summary-followup-to-mail-with-original): New commands.
+
+	* nnmail.el (nnmail-split-it): Use `replace-match'.
+
+Fri Nov  8 05:30:46 1996  David Moore  <dmoore@ucsd.edu>
+
+	* nnmail.el (nnmail-split-it): New version.
+
+Fri Nov  8 03:44:10 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-article-display-hook): Customized.
+
+	* article.el (gnus-emphasis-alist): Define more combinations.
+	(gnus-emphasis-underline-bold-italic): New face.
+
+Fri Nov  8 00:20:29 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.55 is released.
+
 Thu Nov  7 00:14:45 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-win.el (gnus-delete-windows-in-gnusey-frames): New function.

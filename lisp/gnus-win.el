@@ -436,8 +436,11 @@ buffer configuration.")
 	 (mapcar
 	  (lambda (elem)
 	    (if (symbolp (cdr elem))
-		(get-buffer (symbol-value (cdr elem)))
-	      (get-buffer (cdr elem))))
+		(when (and (boundp (cdr elem))
+			   (symbol-value (cdr elem)))
+		  (get-buffer (symbol-value (cdr elem))))
+	      (when (cdr elem) 
+		(get-buffer (cdr elem)))))
 	  gnus-window-to-buffer)))
     (mapcar 
      (lambda (frame)

@@ -1769,6 +1769,9 @@ increase the score of each group you read."
        ["Send bounced mail" gnus-summary-resend-bounced-mail t]
        ["Send a mail" gnus-summary-mail-other-window t]
        ["Uuencode and post" gnus-uu-post-news t]
+       ["Followup via news" gnus-summary-followup-to-mail t]
+       ["Followup via news and yank"
+	gnus-summary-followup-with-original-to-mail t]
        ;;("Draft"
        ;;["Send" gnus-summary-send-draft t]
        ;;["Send bounced" gnus-resend-bounced-mail t])
@@ -4180,7 +4183,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 			 (string-match "<[^>]+>" in-reply-to))
 		    (setq ref (substring in-reply-to (match-beginning 0)
 					 (match-end 0)))
-		  (setq ref ""))))
+		  (setq ref nil))))
 	    ;; Chars.
 	    0
 	    ;; Lines.
@@ -4219,8 +4222,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		    (setq header nil))
 		(setcar (symbol-value id-dep) header))
 	    (set id-dep (list header)))
-	  (when header
-	    (if (boundp (setq ref-dep (intern ref dependencies)))
+	  (when  header
+	    (if (boundp (setq ref-dep (intern (or ref "none") dependencies)))
 		(setcdr (symbol-value ref-dep)
 			(nconc (cdr (symbol-value ref-dep))
 			       (list (symbol-value id-dep))))
@@ -4929,7 +4932,11 @@ which existed when entering the ephemeral is reset."
           (if (and (boundp 'gnus-pick-mode) (symbol-value 'gnus-pick-mode))
               (gnus-configure-windows 'pick 'force)
             (gnus-configure-windows (cdr quit-config) 'force)))
-      (gnus-configure-windows (cdr quit-config) 'force))))
+      (gnus-configure-windows (cdr quit-config) 'force))
+    (when (eq major-mode 'gnus-summary-mode)
+      (gnus-summary-next-subject 1 nil t)
+      (gnus-summary-recenter)
+      (gnus-summary-position-point))))
 
 ;;; Dead summaries.
 
@@ -5506,6 +5513,18 @@ Return nil if there are no unread articles."
 	(gnus-summary-show-thread)
 	(gnus-summary-first-subject t)
 	(gnus-summary-display-article (gnus-summary-article-number)))
+    (gnus-summary-position-point)))
+
+(defun gnus-summary-first-article ()
+  "Select the first article.
+Return nil if there are no articles."
+  (interactive)
+  (gnus-set-global-variables)
+  (prog1
+      (when (gnus-summary-first-subject)
+      (gnus-summary-show-thread)
+      (gnus-summary-first-subject)
+      (gnus-summary-display-article (gnus-summary-article-number)))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-best-unread-article ()

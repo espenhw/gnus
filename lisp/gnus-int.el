@@ -211,6 +211,12 @@ this group uses will be queried."
 		  method)))
     (funcall (gnus-get-function method 'status-message) (nth 1 method))))
 
+(defun gnus-request-regenerate (method)
+  "Request a data generation from METHOD."
+  (when (stringp method)
+    (setq method (gnus-server-to-method method)))
+  (funcall (gnus-get-function method 'request-regenerate) (nth 1 method)))
+
 (defun gnus-request-group (group &optional dont-check method)
   "Request GROUP.  If DONT-CHECK, no information is required."
   (let ((method (or method (gnus-find-method-for-group group))))

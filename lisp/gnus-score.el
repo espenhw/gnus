@@ -30,8 +30,8 @@
 (require 'gnus-sum)
 (require 'gnus-range)
 
-(defvar gnus-global-score-files nil
-  "*List of global score files and directories.
+(defcustom gnus-global-score-files nil
+  "List of global score files and directories.
 Set this variable if you want to use people's score files.  One entry
 for each score file or each score file directory.  Gnus will decide
 by itself what score files are applicable to which group.
@@ -42,10 +42,12 @@ score files in the \"/ftp.some-where:/pub/score\" directory.
 
  (setq gnus-global-score-files
        '(\"/ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE\"
-         \"/ftp.some-where:/pub/score\"))")
+         \"/ftp.some-where:/pub/score\"))"
+  :group 'gnus-score
+  :type '(repeat file))
 
-(defvar gnus-score-file-single-match-alist nil
-  "*Alist mapping regexps to lists of score files.
+(defcustom gnus-score-file-single-match-alist nil
+  "Alist mapping regexps to lists of score files.
 Each element of this alist should be of the form
 	(\"REGEXP\" [ \"SCORE-FILE-1\" ] [ \"SCORE-FILE-2\" ] ... )
 
@@ -55,10 +57,12 @@ The first match found is used, subsequent matching entries are ignored (to
 use multiple matches, see gnus-score-file-multiple-match-alist).
 
 These score files are loaded in addition to any files returned by
-gnus-score-find-score-files-function (which see).")
+gnus-score-find-score-files-function (which see)."
+  :group 'gnus-score
+  :type '(repeat (cons regexp (repeat file))))
 
-(defvar gnus-score-file-multiple-match-alist nil
-  "*Alist mapping regexps to lists of score files.
+(defcustom gnus-score-file-multiple-match-alist nil
+  "Alist mapping regexps to lists of score files.
 Each element of this alist should be of the form
 	(\"REGEXP\" [ \"SCORE-FILE-1\" ] [ \"SCORE-FILE-2\" ] ... )
 
@@ -69,16 +73,22 @@ match will be used (for only one match to be used, see
 gnus-score-file-single-match-alist).
 
 These score files are loaded in addition to any files returned by
-gnus-score-find-score-files-function (which see).")
+gnus-score-find-score-files-function (which see)."
+  :group 'gnus-score
+  :type '(repeat (cons regexp (repeat file))))
 
-(defvar gnus-score-file-suffix "SCORE"
-  "*Suffix of the score files.")
+(defcustom gnus-score-file-suffix "SCORE"
+  "Suffix of the score files."
+  :group 'gnus-score
+  :type 'string)
 
-(defvar gnus-adaptive-file-suffix "ADAPT"
-  "*Suffix of the adaptive score files.")
+(defcustom gnus-adaptive-file-suffix "ADAPT"
+  "Suffix of the adaptive score files."
+  :group 'gnus-score
+  :type 'string)
 
-(defvar gnus-score-find-score-files-function 'gnus-score-find-bnews
-  "*Function used to find score files.
+(defcustom gnus-score-find-score-files-function 'gnus-score-find-bnews
+  "Function used to find score files.
 The function will be called with the group name as the argument, and
 should return a list of score files to apply to that group.  The score
 files do not actually have to exist.
@@ -93,37 +103,60 @@ See the documentation to these functions for more information.
 
 This variable can also be a list of functions to be called.  Each
 function should either return a list of score files, or a list of
-score alists.")
+score alists."
+  :group 'gnus-score
+  :type '(radio (function-item gnus-score-find-single)
+		(function-item gnus-score-find-hierarchical)
+		(function-item gnus-score-find-bnews)
+		(function :tag "Other")))
 
-(defvar gnus-score-interactive-default-score 1000
-  "*Scoring commands will raise/lower the score with this number as the default.")
+(defcustom gnus-score-interactive-default-score 1000
+  "*Scoring commands will raise/lower the score with this number as the default."
+  :group 'gnus-score
+  :type 'integer)
 
-(defvar gnus-score-expiry-days 7
+(defcustom gnus-score-expiry-days 7
   "*Number of days before unused score file entries are expired.
-If this variable is nil, no score file entries will be expired.")
+If this variable is nil, no score file entries will be expired."
+  :group 'gnus-score
+  :type '(choice (const :tag "never" nil)
+		 number))
 
-(defvar gnus-update-score-entry-dates t
+(defcustom gnus-update-score-entry-dates t
   "*In non-nil, update matching score entry dates.
 If this variable is nil, then score entries that provide matches
-will be expired along with non-matching score entries.")
+will be expired along with non-matching score entries."
+  :group 'gnus-score
+  :type 'boolean)
 
-(defvar gnus-orphan-score nil
-  "*All orphans get this score added.  Set in the score file.")
+(defcustom gnus-orphan-score nil
+  "*All orphans get this score added.  Set in the score file."
+  :group 'gnus-score
+  :type 'integer)
 
-(defvar gnus-decay-scores nil
-  "*If non-nil, decay non-permanent scores.")
+(defcustom gnus-decay-scores nil
+  "*If non-nil, decay non-permanent scores."
+  :group 'gnus-score
+  :type 'boolean)
 
-(defvar gnus-decay-score-function 'gnus-decay-score
+(defcustom gnus-decay-score-function 'gnus-decay-score
   "*Function called to decay a score.
-It is called with one parameter -- the score to be decayed.")
+It is called with one parameter -- the score to be decayed."
+  :group 'gnus-score
+  :type '(radio (function-item gnus-decay-score)
+		(function :tag "Other")))
 
-(defvar gnus-score-decay-constant 3
-  "*Decay all \"small\" scores with this amount.")
+(defcustom gnus-score-decay-constant 3
+  "*Decay all \"small\" scores with this amount."
+  :group 'gnus-score
+  :type 'integer)
 
-(defvar gnus-score-decay-scale .05
-  "*Decay all \"big\" scores with this factor.")
+(defcustom gnus-score-decay-scale .05
+  "*Decay all \"big\" scores with this factor."
+  :group 'gnus-score
+  :type 'number)
 
-(defvar gnus-home-score-file nil
+(defcustom gnus-home-score-file nil
   "Variable to control where interactive score entries are to go.
 It can be:
 
@@ -152,25 +185,46 @@ It can be:
    * A string.  Use the string as the home score file.
 
    The list will be traversed from the beginning towards the end looking
-   for matches.")
+   for matches."
+  :group 'gnus-score
+  :type '(choice string
+		 (repeat (choice string
+				 (cons regexp (repeat file))
+				 function))
+		 function))
 
-(defvar gnus-home-adapt-file nil
+(defcustom gnus-home-adapt-file nil
   "Variable to control where new adaptive score entries are to go.
-This variable allows the same syntax as `gnus-home-score-file'.")
+This variable allows the same syntax as `gnus-home-score-file'."
+  :group 'gnus-score
+  :type '(choice string
+		 (repeat (choice string
+				 (cons regexp (repeat file))
+				 function))
+		 function))
 
-(defvar gnus-default-adaptive-score-alist  
+(defcustom gnus-default-adaptive-score-alist  
   '((gnus-kill-file-mark)
     (gnus-unread-mark)
     (gnus-read-mark (from 3) (subject 30))
     (gnus-catchup-mark (subject -10))
     (gnus-killed-mark (from -1) (subject -20))
     (gnus-del-mark (from -2) (subject -15)))
-"*Alist of marks and scores.")
+"Alist of marks and scores."
+:group 'gnus-score
+:type '(repeat (cons (symbol :tag "Mark")
+		     (repeat (list (choice :tag "Header"
+					   (const from)
+					   (const subject)
+					   (symbol :tag "other"))
+				   (integer :tag "Score"))))))
 
-(defvar gnus-ignored-adaptive-words nil
-  "*List of words to be ignored when doing adaptive word scoring.")
+(defcustom gnus-ignored-adaptive-words nil
+  "List of words to be ignored when doing adaptive word scoring."
+  :group 'gnus-score
+  :type '(repeat string))
 
-(defvar gnus-default-ignored-adaptive-words
+(defcustom gnus-default-ignored-adaptive-words
   '("a" "i" "the" "to" "of" "and" "in" "is" "it" "for" "that" "if" "you"
     "this" "be" "on" "with" "not" "have" "are" "or" "as" "from" "can"
     "but" "by" "at" "an" "will" "no" "all" "was" "do" "there" "my" "one"
@@ -185,31 +239,42 @@ This variable allows the same syntax as `gnus-home-score-file'.")
     "being" "current" "back" "still" "go" "point" "value" "each" "did"
     "both" "true" "off" "say" "another" "state" "might" "under" "start"
     "try" "re")
-  "Default list of words to be ignored when doing adaptive word scoring.")
+  "Default list of words to be ignored when doing adaptive word scoring."
+  :group 'gnus-score
+  :type '(repeat string))
 
-(defvar gnus-default-adaptive-word-score-alist  
+(defcustom gnus-default-adaptive-word-score-alist  
   `((,gnus-read-mark . 30)
     (,gnus-catchup-mark . -10)
     (,gnus-killed-mark . -20)
     (,gnus-del-mark . -15))
-"*Alist of marks and scores.")
+"Alist of marks and scores."
+:group 'gnus-score
+:type '(repeat (cons (character :tag "Mark")
+		     (integer :tag "Score"))))
 
-(defvar gnus-score-mimic-keymap nil
-  "*Have the score entry functions pretend that they are a keymap.")
+(defcustom gnus-score-mimic-keymap nil
+  "*Have the score entry functions pretend that they are a keymap."
+  :group 'gnus-score
+  :type 'boolean)
 
-(defvar gnus-score-exact-adapt-limit 10
+(defcustom gnus-score-exact-adapt-limit 10
   "*Number that says how long a match has to be before using substring matching.
 When doing adaptive scoring, one normally uses fuzzy or substring
 matching.  However, if the header one matches is short, the possibility
 for false positives is great, so if the length of the match is less
 than this variable, exact matching will be used.
 
-If this variable is nil, exact matching will always be used.")
+If this variable is nil, exact matching will always be used."
+  :group 'gnus-score
+  :type '(choice (const nil) integer))
 
-(defvar gnus-score-uncacheable-files "ADAPT$"
-  "*All score files that match this regexp will not be cached.")
+(defcustom gnus-score-uncacheable-files "ADAPT$"
+  "All score files that match this regexp will not be cached."
+  :group 'gnus-score
+  :type 'regexp)
 
-(defvar gnus-score-default-header nil
+(defcustom gnus-score-default-header nil
   "Default header when entering new scores.
 
 Should be one of the following symbols.
@@ -225,9 +290,20 @@ Should be one of the following symbols.
  d: date
  f: followup
 
-If nil, the user will be asked for a header.")
+If nil, the user will be asked for a header."
+  :group 'gnus-score
+  :type '(choice (const :tag "from" a)
+		 (const :tag "subject" s)
+		 (const :tag "body" b)
+		 (const :tag "head" h)
+		 (const :tag "message-id" i)
+		 (const :tag "references" t)
+		 (const :tag "xref" x)
+		 (const :tag "lines" l)
+		 (const :tag "date" d)
+		 (const :tag "followup" f)))
 
-(defvar gnus-score-default-type nil
+(defcustom gnus-score-default-type nil
   "Default match type when entering new scores.
 
 Should be one of the following symbols.
@@ -243,12 +319,25 @@ Should be one of the following symbols.
  >: greater than number
  =: equal to number
 
-If nil, the user will be asked for a match type.")
+If nil, the user will be asked for a match type."
+  :group 'gnus-score
+  :type '(choice (const :tag "substring" s)
+		 (const :tag "exact string" e)
+		 (const :tag "fuzzy string" f)
+		 (const :tag "regexp string" r)
+		 (const :tag "before date" b)
+		 (const :tag "at date" a)
+		 (const :tag "this date" n)
+		 (const :tag "less than number" <)
+		 (const :tag "greater than number" >)
+		 (const :tag "equal than number" =)))
 
-(defvar gnus-score-default-fold nil
-  "Use case folding for new score file entries iff not nil.")
+(defcustom gnus-score-default-fold nil
+  "Use case folding for new score file entries iff not nil."
+  :group 'gnus-score
+  :type 'boolean)
 
-(defvar gnus-score-default-duration nil
+(defcustom gnus-score-default-duration nil
   "Default duration of effect when entering new scores.
 
 Should be one of the following symbols.
@@ -257,10 +346,16 @@ Should be one of the following symbols.
  p: permanent
  i: immediate
 
-If nil, the user will be asked for a duration.")
+If nil, the user will be asked for a duration."
+  :group 'gnus-score
+  :type '(choice (const :tag "temporary" t)
+		 (const :tag "permanent" p)
+		 (const :tag "immediate" i)))
 
-(defvar gnus-score-after-write-file-function nil
-  "*Function called with the name of the score file just written to disk.")
+(defcustom gnus-score-after-write-file-function nil
+  "Function called with the name of the score file just written to disk."
+  :group 'gnus-score
+  :type 'function)
 
 
 
@@ -354,15 +449,6 @@ permanence, and the string to be used.  The numerical prefix will be
 used as score."
   (interactive "P")
   (gnus-summary-increase-score (- (gnus-score-default score))))
-
-(defvar gnus-score-default-header nil
-  "*The default header to score on when entering a score rule interactively.")
-
-(defvar gnus-score-default-type nil
-  "*The default score type to use when entering a score rule interactively.")
-
-(defvar gnus-score-default-duration nil
-  "*The default score duration to use on when entering a score rule interactively.")
 
 (defun gnus-score-kill-help-buffer ()
   (when (get-buffer "*Score Help*")
