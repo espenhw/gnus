@@ -1882,15 +1882,15 @@ background is dark:
 (cond (window-system
        (setq custom-background-mode 'light)
        (defface my-group-face-1
-	 '((t (:foreground "Red" :bold t))) "First group face")
+         '((t (:foreground "Red" :bold t))) "First group face")
        (defface my-group-face-2
-	 '((t (:foreground "DarkSeaGreen4" :bold t))) "Second group face")
+         '((t (:foreground "DarkSeaGreen4" :bold t))) "Second group face")
        (defface my-group-face-3
-	 '((t (:foreground "Green4" :bold t))) "Third group face")
+         '((t (:foreground "Green4" :bold t))) "Third group face")
        (defface my-group-face-4
-	 '((t (:foreground "SteelBlue" :bold t))) "Fourth group face")
+         '((t (:foreground "SteelBlue" :bold t))) "Fourth group face")
        (defface my-group-face-5
-	 '((t (:foreground "Blue" :bold t))) "Fifth group face")))
+         '((t (:foreground "Blue" :bold t))) "Fifth group face")))
 
 (setq gnus-group-highlight
       '(((> unread 200) . my-group-face-1)
@@ -4234,8 +4234,8 @@ the line containing the call to @code{stop} is removed.)
 
 @example
 if address "sender" "owner-ding@@hpc.uh.edu" @{
-	fileinto "INBOX.ding";
-	stop;
+        fileinto "INBOX.ding";
+        stop;
 @}
 @end example
 
@@ -9591,7 +9591,7 @@ buffers. For example:
 (setq gnus-newsgroup-variables
      '(message-use-followup-to
        (gnus-visible-headers .
-	 "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^To:")))
+         "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^To:")))
 @end lisp
 
 @end table
@@ -13594,7 +13594,7 @@ expire mail to groups according to the variable
  (setq nnmail-expiry-target 'nnmail-fancy-expiry-target
        nnmail-fancy-expiry-targets
        '((to-from "boss" "nnfolder:Work")
-    	 ("subject" "IMPORTANT" "nnfolder:IMPORTANT.%Y.%b")
+         ("subject" "IMPORTANT" "nnfolder:IMPORTANT.%Y.%b")
          ("from" ".*" "nnfolder:Archive-%Y")))
 @end lisp
 
@@ -14697,7 +14697,7 @@ the summary buffer.
 
 (defun gnus-user-format-function-X (header)
   (let ((descr
-	 (assq nnrss-description-field (mail-header-extra header))))
+         (assq nnrss-description-field (mail-header-extra header))))
     (if descr (concat "\n\t" (cdr descr)) "")))
 @end lisp
 
@@ -16382,7 +16382,7 @@ wherever.
 (require 'gnus-agent)
 (setq  gnus-category-predicate-alist
   (append gnus-category-predicate-alist
-	 '((old . my-article-old-p))))
+         '((old . my-article-old-p))))
 @end lisp
 
 and simply specify your predicate as:
@@ -20833,13 +20833,13 @@ call the external tools during splitting.  Example fancy split method:
 (defun kevin-spamassassin ()
   (save-excursion
     (let ((buf (or (get-buffer " *nnmail incoming*")
-		   (get-buffer " *nnml move*"))))
+                   (get-buffer " *nnml move*"))))
       (if (not buf)
-	  (progn (message "Oops, cannot find message buffer") nil)
-	(set-buffer buf)
-	(if (eq 1 (call-process-region (point-min) (point-max)
-				       "spamc" nil nil nil "-c"))
-	    "spam")))))
+          (progn (message "Oops, cannot find message buffer") nil)
+        (set-buffer buf)
+        (if (eq 1 (call-process-region (point-min) (point-max)
+                                       "spamc" nil nil nil "-c"))
+            "spam")))))
 @end lisp
 
 That is about it.  As some spam is likely to get through anyway, you
@@ -22434,7 +22434,7 @@ this now has changed to
 @lisp
 (setq mail-sources
       '((directory :path "~/mail/incoming/"
-		   :suffix ".in")))
+                   :suffix ".in")))
 @end lisp
 
 More information is available in the info doc at Select Methods ->
