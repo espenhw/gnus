@@ -1,3 +1,7 @@
+2000-10-10 00:00:28  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el (webmail-init): Use mm-disable-multibyte-mule4.
+
 2000-10-09 22:50:05  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* base64.el (base64-decode-region): Just give a message if the end
@@ -9,7 +13,7 @@
 	encode-region.
 	(rfc2047-dissect-region): Rewrite.
 	(rfc2047-encode-region): Rewrite.
-	(rfc2047-fold-region): Fold 
+	(rfc2047-fold-region): Fold any line longer than 76.
 	(rfc2047-unfold-region): New function.
 	(rfc2047-decode-region): Use it.
 	(rfc2047-q-encode-region): Don't break at bob.

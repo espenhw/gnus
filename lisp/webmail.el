@@ -282,8 +282,8 @@
   (if (gnus-buffer-live-p webmail-buffer)
       (set-buffer webmail-buffer)
     (setq webmail-buffer
-	  (mm-with-unibyte
-	    (nnheader-set-temp-buffer " *webmail*")))))
+	  (nnheader-set-temp-buffer " *webmail*"))
+    (mm-disable-multibyte-mule4)))
 
 (defvar url-package-name)
 (defvar url-package-version)
