@@ -1,5 +1,8 @@
 2003-08-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-art.el (gnus-button-alist): Add `+' (gnus-button-handle-man).
+	(gnus-header-button-alist): Added `In-Reply-To'.
+
 	* nnimap.el (nnimap-open-connection): Allow different user names
 	on the same server (and in the same authinfo file).
 
