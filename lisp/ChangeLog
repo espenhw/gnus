@@ -1,5 +1,7 @@
 2001-12-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* ietf-drums.el (ietf-drums-parse-addresses): Recover from errors.
+
 	* gnus-picon.el (gnus-picon-transform-address): Skip bad addresses.
 
 	* gnus-art.el (gnus-with-article-headers): Move to here. Define
