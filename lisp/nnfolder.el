@@ -1193,12 +1193,10 @@ This command does not work if you use short group names."
   (let ((file-name-coding-system nnmail-pathname-coding-system)
 	(file (nnfolder-group-marks-pathname group)))
     (condition-case err
-	(progn
-	  (gnus-make-directory group)
-	  (with-temp-file file
-	    (erase-buffer)
-	    (princ nnfolder-marks (current-buffer))
-	    (insert "\n")))
+	(with-temp-file file
+	  (erase-buffer)
+	  (princ nnfolder-marks (current-buffer))
+	  (insert "\n"))
       (error (or (gnus-yes-or-no-p
 		  (format "Could not write to %s (%s).  Continue? " file err))
 		 (error "Cannot write to %s (%s)" err))))))

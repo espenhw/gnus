@@ -1,4 +1,9 @@
 2001-08-25  Simon Josefsson  <jas@extundo.com>
+
+	* nnfolder.el (nnfolder-save-marks): Don't create directory named
+	after group in ~/.
+
+2001-08-25  Simon Josefsson  <jas@extundo.com>
 	From Andreas Jaeger  <aj@suse.de>
 
 	* nnfolder.el (nnfolder-open-marks): Fix typo.
