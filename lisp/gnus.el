@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.24"
+(defconst gnus-version-number "0.25"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -267,8 +267,6 @@ be set in `.emacs' instead."
   "If non-nil, play the Gnus jingle at startup."
   :group 'gnus-start
   :type 'boolean)
-
-;;; Kludges to help the transition from the old `custom.el'.
 
 (unless (featurep 'gnus-xmas)
   (defalias 'gnus-make-overlay 'make-overlay)
@@ -289,7 +287,8 @@ be set in `.emacs' instead."
   (defalias 'gnus-characterp 'numberp)
   (defalias 'gnus-deactivate-mark 'deactivate-mark)
   (defalias 'gnus-window-edges 'window-edges)
-  (defalias 'gnus-key-press-event-p 'numberp))
+  (defalias 'gnus-key-press-event-p 'numberp)
+  (defalias 'gnus-annotation-in-region-p 'ignore))
 
 ;; We define these group faces here to avoid the display
 ;; update forced when creating new faces.
@@ -1373,7 +1372,6 @@ want."
 	     gnus-summary-stop-page-breaking
 	     ;; gnus-summary-caesar-message
 	     ;; gnus-summary-verbose-headers
-	     gnus-summary-toggle-mime
 	     gnus-article-hide
 	     gnus-article-hide-headers
 	     gnus-article-hide-boring-headers

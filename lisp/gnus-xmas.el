@@ -476,6 +476,7 @@ call it with the value of the `gnus-data' text property."
 	'gnus-xmas-mode-line-buffer-identification)
   (fset 'gnus-key-press-event-p 'key-press-event-p)
   (fset 'gnus-region-active-p 'region-active-p)
+  (fset 'gnus-annotation-in-region-p 'gnus-xmas-annotation-in-region-p)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)
@@ -801,6 +802,9 @@ XEmacs compatibility workaround."
 (defun gnus-xmas-splash ()
   (when (eq (device-type) 'x)
     (gnus-splash)))
+
+(defun gnus-xmas-annotation-in-region-p (b e)
+  (map-extents (lambda (e u) t) nil b e nil nil 'mm t))
 
 (provide 'gnus-xmas)
 

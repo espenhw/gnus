@@ -29,6 +29,7 @@
 ;;; Code:
 
 (require 'time-date)
+(require 'mm-util)
 
 (defvar drums-no-ws-ctl-token "\001-\010\013\014\016-\037\177"
   "US-ASCII control characters excluding CR, LF and white space.")
@@ -50,15 +51,42 @@
 (defvar drums-qtext-token
   (concat drums-no-ws-ctl-token "\041\043-\133\135-\177")
   "Non-white-space control characaters, plus the rest of ASCII excluding backslash and doublequote.")
-  
+(defvar drums-tspecials "][()<>@,;:\\\"/?="
+  "Tspecials.")
+
 (defvar drums-syntax-table
   (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
     (modify-syntax-entry ?\\ "/" table)
     (modify-syntax-entry ?< "(" table)
     (modify-syntax-entry ?> ")" table)
-    (modify-syntax-entry ?( "(" table)
-    (modify-syntax-entry ?) ")" table)
+    (modify-syntax-entry ?@ "w" table)
+    (modify-syntax-entry ?/ "w" table)
+    (modify-syntax-entry ?= " " table)
+    (modify-syntax-entry ?\; " " table)
     table))
+
+(defun drums-token-to-list (token)
+  "Translate TOKEN into a list of characters."
+  (let ((i 0)
+	b e c out range)
+    (while (< i (length token))
+      (setq c (mm-char-int (aref token i)))
+      (incf i)
+      (cond
+       ((eq c (mm-char-int ?-))
+	(if b
+	    (setq range t)
+	  (push c out)))
+       (range
+	(while (<= b c)
+	  (push (mm-make-char 'ascii b) out)
+	  (incf b))
+	(setq range nil))
+       ((= i (length token))
+	(push (mm-make-char 'ascii c) out))
+       (t
+	(setq b c))))
+    (nreverse out)))
 
 (defsubst drums-init (string)
   (set-syntax-table drums-syntax-table)
@@ -92,7 +120,7 @@
 	(cond
 	 ((eq c ?\")
 	  (forward-sexp 1))
-	 ((memq c '(? ?\t))
+	 ((memq c '(? ?\t ?\n))
 	  (delete-char 1))
 	 (t
 	  (forward-char 1))))
@@ -186,7 +214,67 @@
 (defun drums-parse-date (string)
   "Return an Emacs time spec from STRING."
   (apply 'encode-time (parse-time-string string)))
-    
+
+(defun drums-content-type-get (ct attribute)
+  "Return the value of ATTRIBUTE from CT."
+  (cdr (assq attribute (cdr ct))))
+
+(defun drums-parse-content-type (string)
+  "Parse STRING and return a list."
+  (with-temp-buffer
+    (let ((ttoken (drums-token-to-list drums-text-token))
+	  (stoken (drums-token-to-list drums-tspecials))
+	  display-name mailbox c display-string parameters
+	  attribute value type subtype)
+      (drums-init (drums-remove-whitespace (drums-remove-comments string)))
+      (setq c (following-char))
+      (when (and (memq c ttoken)
+		 (not (memq c stoken)))
+	(setq type (downcase (buffer-substring
+			      (point) (progn (forward-sexp 1) (point)))))
+	;; Do the params
+	(while (not (eobp))
+	  (setq c (following-char))
+	  (unless (eq c ?\;)
+	    (error "Invalid header: %s" string))
+	  (forward-char 1)
+	  (setq c (following-char))
+	  (if (and (memq c ttoken)
+		   (not (memq c stoken)))
+	      (setq attribute
+		    (intern
+		     (downcase
+		      (buffer-substring
+		       (point) (progn (forward-sexp 1) (point))))))
+	    (error "Invalid header: %s" string))
+	  (setq c (following-char))
+	  (unless (eq c ?=)
+	    (error "Invalid header: %s" string))
+	  (forward-char 1)
+	  (setq c (following-char))
+	  (cond
+	   ((eq c ?\")
+	    (setq value
+		  (buffer-substring (1+ (point))
+				    (progn (forward-sexp 1) (1- (point))))))
+	   ((and (memq c ttoken)
+		 (not (memq c stoken)))
+	    (setq value (buffer-substring
+			 (point) (progn (forward-sexp 1) (point)))))
+	   (t
+	    (error "Invalid header: %s" string)))
+	  (push (cons attribute value) parameters))
+	`(,type ,@(nreverse parameters))))))
+
+(defun drums-narrow-to-header ()
+  "Narrow to the header of the current buffer."
+  (narrow-to-region
+   (goto-char (point-min))
+   (if (search-forward "\n\n" nil 1)
+       (1- (point))
+     (point-max)))
+  (goto-char (point-min)))
+
 (provide 'drums)
 
 ;;; drums.el ends here

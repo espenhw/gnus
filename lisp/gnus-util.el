@@ -302,7 +302,7 @@ Cache the result as a text property stored in DATE."
 	 '(0 0)
        (or (get-text-property 0 'gnus-time d)
 	   ;; or compute the value...
-	   (let ((time (date-to-time d)))
+	   (let ((time (safe-date-to-time d)))
 	     ;; and store it back in the string.
 	     (put-text-property 0 1 'gnus-time time d)
 	     time)))))

@@ -64,7 +64,9 @@
 		 gnus-mule-get-coding-system decode-coding-string
 		 mail-aliases-setup
 		 mm-copy-tree url-view-url w3-prepare-buffer
-		 mule-write-region-no-coding-system char-int)))
+		 mule-write-region-no-coding-system char-int
+		 annotationp delete-annotation make-image-specifier
+		 make-annotation)))
 
 (setq load-path (cons "." load-path))
 (require 'custom)

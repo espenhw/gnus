@@ -1,3 +1,51 @@
+Fri Sep 11 08:09:40 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.25 is released.
+
+1998-09-11 07:38:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-remove-trailing-blank-lines): Don't remove
+	annotations. 
+
+	* gnus.el ((featurep 'gnus-xmas)): New
+	'gnus-annotation-in-region-p alias.
+
+1998-09-10 06:20:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-util.el (mm-with-unibyte-buffer): New function.
+
+	* gnus-uu.el (gnus-quote-arg-for-sh-or-csh): Renamed.
+
+	* mm-decode.el (mm-inline-media-tests): New variable.
+
+	* gnus-sum.el (gnus-summary-exit): Destroy handles.
+
+	* gnus-art.el (gnus-article-mime-handles): New variable.
+
+	* drums.el (drums-narrow-to-header): New function.
+
+	* gnus-art.el (article-decode-charset): Use it.
+
+	* drums.el (drums-content-type-get): New function.
+
+	* mm-util.el (mm-content-type-charset): Removed.
+
+	* drums.el (drums-syntax-table): @ is word.
+	(drums-parse-content-type): New function.
+
+	* parse-time.el (parse-time-rules): Parse "Wed, 29 Apr 98 0:26:01
+	EDT" times.
+
+	* gnus-util.el (gnus-date-get-time): Use safe date.
+
+	* gnus-sum.el (gnus-show-mime): Removed.
+	(gnus-summary-toggle-mime): Removed.
+
+	* gnus-art.el (gnus-strict-mime): Removed.
+	(gnus-article-prepare): Don't do MIME.
+	(gnus-decode-encoded-word-method): Removed.
+	(gnus-show-mime-method): Removed.
+
 Thu Sep 10 04:03:29 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.24 is released.

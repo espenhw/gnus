@@ -34,6 +34,8 @@
 (require 'gnus-int)
 (require 'browse-url)
 (require 'mm-bodies)
+(require 'drums)
+(require 'mm-decode)
 
 (defgroup gnus-article nil
   "Article display."
@@ -374,23 +376,6 @@ be used as possible file names."
 			 (cons :value ("" "") regexp (repeat string))
 			 (sexp :value nil))))
 
-(defcustom gnus-strict-mime t
-  "*If nil, MIME-decode even if there is no Mime-Version header."
-  :group 'gnus-article-mime
-  :type 'boolean)
-
-(defcustom gnus-show-mime-method 'metamail-buffer
-  "Function to process a MIME message.
-The function is called from the article buffer."
-  :group 'gnus-article-mime
-  :type 'function)
-
-(defcustom gnus-decode-encoded-word-method 'gnus-article-de-quoted-unreadable
-  "*Function to decode MIME encoded words.
-The function is called from the article buffer."
-  :group 'gnus-article-mime
-  :type 'function)
-
 (defcustom gnus-page-delimiter "^\^L"
   "*Regexp describing what to use as article page delimiters.
 The default value is \"^\^L\", which is a form linefeed at the
@@ -547,10 +532,18 @@ displayed by the first non-nil matching CONTENT face."
 
 (defcustom gnus-article-decode-hook
   '(article-decode-charset article-decode-rfc1522)
-  "*Hook run to decode charsets in articles.")
+  "*Hook run to decode charsets in articles."
+  :group 'gnus-article-headers
+  :type 'hook)
+
+(defcustom gnus-display-mime-function 'gnus-display-mime
+  "Function to display MIME articles."
+  :group 'gnus-article-headers
+  :type 'function)
 
 ;;; Internal variables
 
+(defvar gnus-article-mime-handles nil)
 (defvar article-lapsed-timer nil)
 (defvar gnus-article-current-summary nil)
 
@@ -894,7 +887,9 @@ characters to translate to."
        (point)
        (progn
 	 (while (and (not (bobp))
-		     (looking-at "^[ \t]*$"))
+		     (looking-at "^[ \t]*$")
+		     (not (gnus-annotation-in-region-p
+			   (point) (gnus-point-at-eol))))
 	   (forward-line -1))
 	 (forward-line 1)
 	 (point))))))
@@ -968,11 +963,12 @@ If PROMPT (the prefix), prompt for a coding system to use."
       (let* ((inhibit-point-motion-hooks t)
 	     (ct (message-fetch-field "Content-Type" t))
 	     (cte (message-fetch-field "Content-Transfer-Encoding" t))
+	     (ctl (and ct (drums-parse-content-type ct)))
 	     (charset (cond
 		       (prompt
 			(mm-read-coding-system "Charset to decode: "))
 		       (ct
-			(mm-content-type-charset ct))
+			(drums-content-type-get ctl 'charset))
 		       (gnus-newsgroup-name
 			(gnus-group-find-parameter
 			 gnus-newsgroup-name 'charset))))
@@ -981,7 +977,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	(widen)
 	(narrow-to-region (point) (point-max))
 	(when (or (not ct)
-		  (string-match "text/plain" ct))
+		  (equal (car ctl) "text/plain"))
 	  (mm-decode-body
 	   charset (and cte (intern (downcase
 				     (gnus-strip-whitespace cte))))))))))
@@ -1118,7 +1114,9 @@ always hide."
       (goto-char (point-min))
       (search-forward "\n\n" nil t)
       (while (re-search-forward "\n\n\n+" nil t)
-	(replace-match "\n\n" t t)))))
+	(unless (gnus-annotation-in-region-p
+		 (match-beginning 0) (match-end 0))
+	  (replace-match "\n\n" t t))))))
 
 (defun article-strip-leading-space ()
   "Remove all white space from the beginning of the lines in the article."
@@ -1937,14 +1935,13 @@ commands:
   (setq mode-name "Article")
   (setq major-mode 'gnus-article-mode)
   (make-local-variable 'minor-mode-alist)
-  (unless (assq 'gnus-show-mime minor-mode-alist)
-    (push (list 'gnus-show-mime " MIME") minor-mode-alist))
   (use-local-map gnus-article-mode-map)
   (gnus-update-format-specifications nil 'article-mode)
   (set (make-local-variable 'page-delimiter) gnus-page-delimiter)
   (make-local-variable 'gnus-page-broken)
   (make-local-variable 'gnus-button-marker-list)
   (make-local-variable 'gnus-article-current-summary)
+  (make-local-variable 'gnus-article-mime-handles)
   (gnus-set-default-directory)
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
@@ -2102,14 +2099,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      (let (buffer-read-only)
 		(gnus-run-hooks 'gnus-tmp-internal-hook)
 		(gnus-run-hooks 'gnus-article-prepare-hook)
-		;; Decode MIME message.
-		(when gnus-show-mime
-		  (if (or (not gnus-strict-mime)
-			  (gnus-fetch-field "Mime-Version"))
-		      (let ((coding-system-for-write 'binary)
-			    (coding-system-for-read 'binary))
-			(funcall gnus-show-mime-method))
-		    (funcall gnus-decode-encoded-word-method)))
+		(when gnus-display-mime-function
+		  (funcall gnus-display-mime-function))
 		;; Perform the article display hooks.
 		(gnus-run-hooks 'gnus-article-display-hook))
 	      ;; Do page break.
@@ -2125,6 +2116,32 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (set-window-point (get-buffer-window (current-buffer)) (point))
 	    t))))))
 
+(defun gnus-display-mime ()
+  (let ((handles (mm-dissect-buffer))
+	handle name type)
+    (mapcar 'mm-destroy-part gnus-article-mime-handles)
+    (setq gnus-article-mime-handles nil)
+    (setq gnus-article-mime-handles (nconc gnus-article-mime-handles handles))
+    (when handles
+      (goto-char (point-min))
+      (search-forward "\n\n" nil t)
+      (delete-region (point) (point-max))
+      (while (setq handle (pop handles))
+	(setq name (drums-content-type-get (cadr handle) 'name)
+	      type (caadr handle))
+	(gnus-article-add-button
+	 (point)
+	 (progn
+	   (insert
+	    (format "[%s%s]" type (if name (concat " (" name ")") "")))
+	   (point))
+	 'mm-display-part handle)
+	(insert "\n\n\n")
+	(when (mm-automatic-display-p type)
+	  (forward-line -2)
+	  (mm-display-part handle)
+	  (goto-char (point-max)))))))
+
 (defun gnus-article-wash-status ()
   "Return a string which display status of article washing."
   (save-excursion
@@ -2136,15 +2153,13 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  (pem (gnus-article-hidden-text-p 'pem))
 	  (signature (gnus-article-hidden-text-p 'signature))
 	  (overstrike (gnus-article-hidden-text-p 'overstrike))
-	  (emphasis (gnus-article-hidden-text-p 'emphasis))
-	  (mime gnus-show-mime))
+	  (emphasis (gnus-article-hidden-text-p 'emphasis)))
       (format "%c%c%c%c%c%c%c"
 	      (if cite ?c ? )
 	      (if (or headers boring) ?h ? )
 	      (if (or pgp pem) ?p ? )
 	      (if signature ?s ? )
 	      (if overstrike ?o ? )
-	      (if mime ?m ? )
 	      (if emphasis ?e ? )))))
 
 (fset 'gnus-article-hide-headers-if-wanted 'gnus-article-maybe-hide-headers)

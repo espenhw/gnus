@@ -66,42 +66,30 @@
 
 
 (eval-and-compile
-  (if (fboundp 'decode-coding-string)
-      (fset 'mm-decode-coding-string 'decode-coding-string)
-    (fset 'mm-decode-coding-string (lambda (s a) s)))
-
-  (if (fboundp 'encode-coding-string)
-      (fset 'mm-encode-coding-string 'encode-coding-string)
-    (fset 'mm-encode-coding-string (lambda (s a) s)))
-
-  (if (fboundp 'encode-coding-region)
-      (fset 'mm-encode-coding-region 'encode-coding-region)
-    (fset 'mm-encode-coding-region 'ignore))
-
-  (if (fboundp 'decode-coding-region)
-      (fset 'mm-decode-coding-region 'decode-coding-region)
-    (fset 'mm-decode-coding-region 'ignore))
-
-  (if (fboundp 'coding-system-list)
-      (fset 'mm-coding-system-list 'coding-system-list)
-    (fset 'mm-coding-system-list 'ignore))
-
-  (if (fboundp 'char-int)
-      (fset 'mm-char-int 'char-int)
-    (fset 'mm-char-int 'identity))
-
-  (if (fboundp 'coding-system-equal)
-      (fset 'mm-coding-system-equal 'coding-system-equal)
-    (fset 'mm-coding-system-equal 'equal))
-
-  (if (fboundp 'read-coding-system)
-      (fset 'mm-read-coding-system 'read-coding-system)
-    (defun mm-read-coding-system (prompt)
-      "Prompt the user for a coding system."
-      (completing-read
-       prompt (mapcar (lambda (s) (list (symbol-name (car s))))
-		      mm-mime-mule-charset-alist)))))
-
+  (mapcar
+   (lambda (elem)
+     (let ((nfunc (intern (format "mm-%s" (car elem)))))
+       (if (fboundp (car elem))
+	   (fset nfunc (car elem))
+	 (fset nfunc (cdr elem)))))
+   '((decode-coding-string . (lambda (s a) s))
+     (encode-coding-string . (lambda (s a) s))
+     (encode-coding-region . ignore)
+     (decode-coding-region . ignore)
+     (coding-system-list . ignore)
+     (char-int . identity)
+     (device-type . ignore)
+     (coding-system-equal . equal)
+     (annotationp . ignore)
+     (make-char
+      . (lambda (charset int)
+	  (int-to-char int)))
+     (read-coding-system
+      . (lambda (prompt)
+	  "Prompt the user for a coding system."
+	  (completing-read
+	   prompt (mapcar (lambda (s) (list (symbol-name (car s))))
+			  mm-mime-mule-charset-alist)))))))
 
 (defvar mm-charset-coding-system-alist
   (let ((rest
@@ -180,12 +168,6 @@ used as the line break code type of the coding system."
   (insert "Content-Transfer-Encoding: "
 	  (downcase (symbol-name encoding)) "\n"))
 
-(defun mm-content-type-charset (header)
-  "Return the charset parameter from HEADER."
-  (when (string-match "charset *= *\"? *\\([-0-9a-zA-Z_]+\\)\"? *$" header)
-    (intern (downcase (match-string 1 header)))))
-
-
 (defun mm-mime-charset (charset b e)
   (if (fboundp 'coding-system-get)
       (or
@@ -200,6 +182,25 @@ used as the line break code type of the coding system."
   "Say whether multibyte is enabled."
   (and (boundp 'enable-multibyte-characters)
        enable-multibyte-characters))
+
+(defmacro mm-with-unibyte-buffer (&rest forms)
+  "Create a temporary buffer, and evaluate FORMS there like `progn'.
+See also `with-temp-file' and `with-output-to-string'."
+  (let ((temp-buffer (make-symbol "temp-buffer"))
+	(multibyte (make-symbol "multibyte")))
+    `(if (not (boundp 'enable-multibyte-characters))
+	 (with-temp-buffer ,@forms)
+       (let ((,multibyte (default-value enable-multibyte-characters))
+	     ,temp-buffer)
+	 (setq-default enable-multibyte-characters nil)
+	 (setq ,temp-buffer
+	       (get-buffer-create (generate-new-buffer-name " *temp*")))
+	 (unwind-protect
+	     (with-current-buffer ,temp-buffer
+	       ,@forms)
+	   (and (buffer-name ,temp-buffer)
+		(kill-buffer ,temp-buffer))
+	   (setq-default enable-multibyte-characters ,multibyte))))))
 
 (provide 'mm-util)
 

@@ -328,13 +328,6 @@ variable."
   :group 'gnus-article-various
   :type 'boolean)
 
-(defcustom gnus-show-mime nil
-  "*If non-nil, do mime processing of articles.
-The articles will simply be fed to the function given by
-`gnus-show-mime-method'."
-  :group 'gnus-article-mime
-  :type 'boolean)
-
 (defcustom gnus-move-split-methods nil
   "*Variable used to suggest where articles are to be moved to.
 It uses the same syntax as the `gnus-split-methods' variable."
@@ -1188,7 +1181,6 @@ increase the score of each group you read."
     "\M-g" gnus-summary-rescan-group
     "w" gnus-summary-stop-page-breaking
     "\C-c\C-r" gnus-summary-caesar-message
-    "\M-t" gnus-summary-toggle-mime
     "f" gnus-summary-followup
     "F" gnus-summary-followup-with-original
     "C" gnus-summary-cancel-article
@@ -1363,7 +1355,6 @@ increase the score of each group you read."
     "r" gnus-summary-caesar-message
     "t" gnus-article-hide-headers
     "v" gnus-summary-verbose-headers
-    "m" gnus-summary-toggle-mime
     "h" gnus-article-treat-html
     "d" gnus-article-treat-dumbquotes)
 
@@ -1519,7 +1510,6 @@ increase the score of each group you read."
               ["Add buttons" gnus-article-add-buttons t]
               ["Add buttons to head" gnus-article-add-buttons-to-head t]
               ["Stop page breaking" gnus-summary-stop-page-breaking t]
-              ["Toggle MIME" gnus-summary-toggle-mime t]
               ["Verbose header" gnus-summary-verbose-headers t]
               ["Toggle header" gnus-summary-toggle-header t])
              ("Output"
@@ -5089,6 +5079,9 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	nil				;Nothing to do.
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
+	(save-excursion
+	  (set-buffer gnus-article-buffer)
+	  (mapcar 'mm-destroy-part gnus-article-mime-handles))
 	(gnus-kill-buffer gnus-article-buffer)
 	(gnus-kill-buffer gnus-original-article-buffer)
 	(setq gnus-article-current nil))
@@ -6598,7 +6591,7 @@ Optional argument BACKWARD means do search for backward.
 	(gnus-use-trees nil)		;Inhibit updating tree buffer.
 	(sum (current-buffer))
 	(found nil)
-	point)
+	point gnus-display-mime-function)
     (gnus-save-hidden-threads
       (gnus-summary-select-article)
       (set-buffer gnus-article-buffer)
@@ -6772,8 +6765,8 @@ article massaging functions being run."
 	  gnus-article-display-hook
 	  gnus-article-prepare-hook
 	  gnus-article-decode-hook
+	  gnus-display-mime-function
 	  gnus-break-pages
-	  gnus-show-mime
 	  gnus-visual)
       (gnus-summary-select-article nil 'force)))
   (gnus-summary-goto-subject gnus-current-article)
@@ -6823,15 +6816,6 @@ If ARG is a negative number, hide the unwanted header lines."
   "Make all header lines visible."
   (interactive)
   (gnus-article-show-all-headers))
-
-(defun gnus-summary-toggle-mime (&optional arg)
-  "Toggle MIME processing.
-If ARG is a positive number, turn MIME processing on."
-  (interactive "P")
-  (setq gnus-show-mime
-	(if (null arg) (not gnus-show-mime)
-	  (> (prefix-numeric-value arg) 0)))
-  (gnus-summary-select-article t 'force))
 
 (defun gnus-summary-caesar-message (&optional arg)
   "Caesar rotate the current article by 13.

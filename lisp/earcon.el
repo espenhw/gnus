@@ -74,8 +74,6 @@
 (defvar earcon-button-marker-list nil)
 (make-variable-buffer-local 'earcon-button-marker-list)
 
-
-
 ;;; FIXME!! clone of code from gnus-vis.el FIXME!!
 (defun earcon-article-push-button (event)
   "Check text under the mouse pointer for a callback function.
@@ -155,7 +153,6 @@ If N is negative, move backward instead."
 	  (setq alist nil)
 	(setq entry nil)))
     entry))
-
 
 (defun earcon-button-push (marker)
   ;; Push button starting at MARKER.
