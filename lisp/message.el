@@ -359,7 +359,7 @@ The provided functions are:
 
 (defcustom message-cite-prefix-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
-      "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>»|:}+]\\)+"
+      "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>|}+]\\)+"
     ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
     (let ((old-table (syntax-table))
 	  non-word-constituents)
@@ -371,10 +371,10 @@ The provided functions are:
 	     (if (string-match "\\w" ".")  "" ".")))
       (set-syntax-table old-table)
       (if (equal non-word-constituents "")
-	  "\\([ \t]*\\(\\w\\)+>+\\|[ \t]*[]>»|:}+]\\)+"
+	  "\\([ \t]*\\(\\w\\)+>+\\|[ \t]*[]>|}+]\\)+"
 	(concat "\\([ \t]*\\(\\w\\|["
 		non-word-constituents
-		"]\\)+>+\\|[ \t]*[]>»|:}+]\\)+"))))
+		"]\\)+>+\\|[ \t]*[]>|}+]\\)+"))))
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'message-insertion
   :type 'regexp)
