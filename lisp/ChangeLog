@@ -1,3 +1,9 @@
+2003-06-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-xmas.el (gnus-xmas-create-image): Use
+	insert-file-contents-literally.  From: Eric Eide
+	<eeide@cs.utah.edu>
+
 2003-06-02  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-fetch-group): always return the
