@@ -1,3 +1,8 @@
+2001-11-28 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-limit-to-author): Missing arguments.
+	  Thanks to david.goldberg6@verizon.net (David S. Goldberg)
+
 2001-11-27 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-topic.el (gnus-topic-mode): Add LOCAL for add-hook.
