@@ -16,7 +16,11 @@ servers by using `J a' in the server buffer).  Gnus will not start to
 download articles unless you instruct it to do so, though, by using
 e.g. J u or J s from the group buffer.  Revert to the old behaviour
 with `(setq gnus-agent nil)'.  Note that putting (gnus-agentize) in
-~/.gnus is not needed any more.
+~/.gnus is not needed any more.  Now, by default all nntp and nnimap
+servers from gnus-select-method and gnus-secondary-select-method are
+agentized by default (earlier only the server in gnus-select-method
+was agentized).  You can view and change which servers should be
+agentized in the Server Buffer.
 
 ** gnus-summary-line-format
 
