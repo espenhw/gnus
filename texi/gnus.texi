@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.8.4.
+This manual corresponds to Gnus 5.8.5.
 
 @end ifinfo
 
@@ -6757,7 +6757,7 @@ content type based on the file name.  The result will be fed to
 Non-@code{nil} means that @code{gnus-uu}, when asked to save without
 decoding, will save in digests.  If this variable is @code{nil},
 @code{gnus-uu} will just save everything in a file without any
-embellishments.  The digesting almost conforms to RFC1153---no easy way
+embellishments.  The digesting almost conforms to RFC 1153---no easy way
 to specify any meaningful volume and issue numbers were found, so I
 simply dropped them.
 
@@ -7718,7 +7718,7 @@ Toggle the buttonized display of the article buffer
 
 @item W M w
 @kindex W M w (Summary)
-Decode RFC2047-encoded words in the article headers
+Decode RFC 2047-encoded words in the article headers
 (@code{gnus-article-decode-mime-words}).
 
 @item W M c
@@ -11172,13 +11172,13 @@ UNDELETED}, is probably the best choice for most people, but if you
 sometimes peek in your mailbox with a @sc{imap} client and mark some
 articles as read (or; SEEN) you might want to set this to @samp{nil}.
 Then all articles in the mailbox is fetched, no matter what.  For a
-complete list of predicates, see RFC2060 §6.4.4.
+complete list of predicates, see RFC 2060 §6.4.4.
 
 @item :fetchflag
 How to flag fetched articles on the server, the default @samp{Deleted}
 will mark them as deleted, an alternative would be @samp{Seen} which
 would simply mark them as read.  These are the two most likely choices,
-but more flags are defined in RFC2060 §2.3.2.
+but more flags are defined in RFC 2060 §2.3.2.
 
 @item :dontexpunge
 If non-nil, don't remove all articles marked as deleted in the mailbox
@@ -11343,8 +11343,8 @@ use this hook to notify any mail watch programs, if you want to.
 @vindex nnmail-split-hook
 @item nnmail-split-hook
 @findex article-decode-encoded-words
-@findex RFC1522 decoding
-@findex RFC2047 decoding
+@findex RFC 1522 decoding
+@findex RFC 2047 decoding
 Hook run in the buffer where the mail headers of each message is kept
 just before the splitting based on these headers is done.  The hook is
 free to modify the buffer contents in any way it sees fit---the buffer
@@ -11844,10 +11844,10 @@ auto-expire turned on.
 @cindex incoming mail treatment
 
 Mailers and list servers are notorious for doing all sorts of really,
-really stupid things with mail.  ``Hey, RFC822 doesn't explicitly
+really stupid things with mail.  ``Hey, RFC 822 doesn't explicitly
 prohibit us from adding the string @code{wE aRe ElItE!!!!!1!!} to the
 end of all lines passing through our server, so let's do that!!!!1!''
-Yes, but RFC822 wasn't designed to be read by morons.  Things that were
+Yes, but RFC 822 wasn't designed to be read by morons.  Things that were
 considered to be self-evident were not discussed.  So.  Here we are.
 
 Case in point:  The German version of Microsoft Exchange adds @samp{AW:
@@ -21080,7 +21080,7 @@ An article that responds to a different article---its parent.
 @item digest
 @cindex digest
 A collection of messages in one file.  The most common digest format is
-specified by RFC1153.
+specified by RFC 1153.
 
 @end table
 
@@ -22332,7 +22332,7 @@ almost suspect that the author looked at the @sc{nov} specification and
 just shamelessly @emph{stole} the entire thing, and one would be right.
 
 @dfn{Header} is a severely overloaded term.  ``Header'' is used in
-RFC1036 to talk about lines in the head of an article (e.g.,
+RFC 1036 to talk about lines in the head of an article (e.g.,
 @code{From}).  It is used by many people as a synonym for
 ``head''---``the header and the body''.  (That should be avoided, in my
 opinion.)  And Gnus uses a format internally that it calls ``header'',

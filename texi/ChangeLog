@@ -1,3 +1,9 @@
+2000-04-24 17:09:17  Felix Natter  <f.natter@ndh.net>
+
+	* gnusref.tex: New version.
+
+	* refcard.tex: New version.
+
 2000-04-23 00:32:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Thread Commands): Add keystrokes.

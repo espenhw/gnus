@@ -265,8 +265,12 @@ one charsets.")
 		(let ((rfc2047-header-encoding-alist nil))
 		  (mail-encode-encoded-word-buffer))))
 	    (setq charset (mm-encode-body))
-	    (setq encoding (mm-body-encoding charset 
-					     (cdr (assq 'encoding cont))))
+	    (setq encoding (mm-body-encoding
+			    charset
+			    (if (string= (car (split-string type "/"))
+					 "message")
+				'8bit
+			      (cdr (assq 'encoding cont)))))
 	    (setq coded (buffer-string)))
 	(mm-with-unibyte-buffer
 	  (cond

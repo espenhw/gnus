@@ -46,7 +46,7 @@ The values can be:
 
 1) nil, in which case no encoding is done;
 2) `mime', in which case the header will be encoded according to RFC2047;
-3) a charset, in which case it will be encoded as that charse;
+3) a charset, in which case it will be encoded as that charset;
 4) `default', in which case the field will be encoded as the rest
    of the article.")
 

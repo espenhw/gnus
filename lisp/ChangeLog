@@ -1,3 +1,15 @@
+Mon Apr 24 21:12:06 2000  Lars Magne Ingebrigtsen  <lmi@quimbies.gnus.org>
+
+	* gnus.el: Gnus v5.8.5 is released.
+
+2000-04-24 16:29:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2047.el (rfc2047-header-encoding-alist): Doc fix.
+
+	* gnus-util.el (gnus-netrc-machine): Default to nntp.
+
+	* mml.el (mml-generate-mime-1): Force 8bit on message/rfc822.
+
 2000-04-23 23:27:25  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el (mm-inline-message): Disable prepare-hook. 
