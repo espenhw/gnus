@@ -844,13 +844,13 @@ Appendices
 
 * XEmacs::                      Requirements for installing under XEmacs.
 * History::                     How Gnus got where it is today.
-* The Manual::                  
 * On Writing Manuals::          Why this is not a beginner's guide.
 * Terminology::                 We use really difficult, like, words here.
 * Customization::               Tailoring Gnus to your needs.
 * Troubleshooting::             What you might try if things do not work.
 * Gnus Reference Guide::        Rilly, rilly technical stuff.
 * Emacs for Heathens::          A short introduction to Emacsian terms.
+* Frequently Asked Questions::
 
 History
 
@@ -5348,9 +5348,6 @@ In addition, you also have marks that do not affect readedness.
 * Unread Articles::             Marks for unread articles.
 * Read Articles::               Marks for read articles.
 * Other Marks::                 Marks that do not affect readedness.
-* Setting Marks::               
-* Generic Marking Commands::    
-* Setting Process Marks::       
 @end menu
 
 @ifinfo
@@ -20316,13 +20313,13 @@ but at the common table.@*
 @menu
 * XEmacs::                      Requirements for installing under XEmacs.
 * History::                     How Gnus got where it is today.
-* The Manual::                  
 * On Writing Manuals::          Why this is not a beginner's guide.
 * Terminology::                 We use really difficult, like, words here.
 * Customization::               Tailoring Gnus to your needs.
 * Troubleshooting::             What you might try if things do not work.
 * Gnus Reference Guide::        Rilly, rilly technical stuff.
 * Emacs for Heathens::          A short introduction to Emacsian terms.
+* Frequently Asked Questions::
 @end menu
 
 
