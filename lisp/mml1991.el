@@ -104,7 +104,7 @@
     (while (looking-at "^Content[^ ]+:") (forward-line))
     (unless (bobp)
       (delete-region (point-min) (point)))
-    (mm-with-unibyte-current-buffer-mule4
+    (mm-with-unibyte-current-buffer
       (with-temp-buffer
 	(setq cipher (current-buffer))
 	(insert-buffer-substring text)
@@ -178,7 +178,7 @@
     (while (looking-at "^Content[^ ]+:") (forward-line))
     (unless (bobp)
       (delete-region (point-min) (point)))
-    (mm-with-unibyte-current-buffer-mule4
+    (mm-with-unibyte-current-buffer
       (with-temp-buffer
 	(flet ((gpg-encrypt-func 
 		(sign plaintext ciphertext result recipients &optional
