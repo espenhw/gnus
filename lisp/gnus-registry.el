@@ -95,8 +95,8 @@ Registry entries are considered empty when they have no groups."
 
 (defcustom gnus-registry-track-extra nil
   "Whether the registry should track other things about a message.
-The Subject header is currently the only thing that can be
-tracked this way."
+The Subject and Sender (From:) headers are currently tracked this
+way."
   :group 'gnus-registry
   :type 'boolean)
 
@@ -301,10 +301,11 @@ tracked this way."
   (let* ((id (mail-header-id data-header))
 	 (subject (gnus-registry-simplify-subject 
 		   (mail-header-subject data-header)))
-	(from (gnus-group-guess-full-name-from-command-method from))
-	(to (if to (gnus-group-guess-full-name-from-command-method to) nil))
-	(to-name (if to to "the Bit Bucket"))
-	(old-entry (gethash id gnus-registry-hashtb)))
+	 (sender (mail-header-from data-header))
+	 (from (gnus-group-guess-full-name-from-command-method from))
+	 (to (if to (gnus-group-guess-full-name-from-command-method to) nil))
+	 (to-name (if to to "the Bit Bucket"))
+	 (old-entry (gethash id gnus-registry-hashtb)))
     (gnus-message 5 "Registry: article %s %s from %s to %s"
 		  id
 		  (if method "respooling" "going")
@@ -315,18 +316,18 @@ tracked this way."
     (gnus-registry-delete-group id from)
 
     (when (equal 'copy action) 
-      (gnus-registry-add-group id from subject)) ; undo the delete
+      (gnus-registry-add-group id from subject sender)) ; undo the delete
 
-    (gnus-registry-add-group id to subject)))
+    (gnus-registry-add-group id to subject sender)))
 
-(defun gnus-registry-spool-action (id group &optional subject)
+(defun gnus-registry-spool-action (id group &optional subject sender)
   (let ((group (gnus-group-guess-full-name-from-command-method group)))
     (when (and (stringp id) (string-match "\r$" id))
       (setq id (substring id 0 -1)))
     (gnus-message 5 "Registry: article %s spooled to %s"
 		  id
 		  group)
-    (gnus-registry-add-group id group subject)))
+    (gnus-registry-add-group id group subject sender)))
 
 ;; Function for nn{mail|imap}-split-fancy: look up all references in
 ;; the cache and if a match is found, return that group.
@@ -363,7 +364,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		  references))
       ;; there were no references, now try the extra tracking
       (when gnus-registry-track-extra
-	(let ((subject (gnus-registry-simplify-subject 
+	(let ((sender (message-fetch-field "from"))
+	      (subject (gnus-registry-simplify-subject
 			(message-fetch-field "subject"))))
 	  (when (and subject
 		     (< gnus-registry-minimum-subject-length (length subject)))
@@ -380,6 +382,22 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 		    "%s (extra tracking) traced subject %s to group %s"
 		    "gnus-registry-split-fancy-with-parent"
 		    subject
+		    (if res res "nil")))))
+	     gnus-registry-hashtb))
+	  (when sender
+	    (maphash
+	     (lambda (key value)
+	       (let ((this-sender (cdr 
+				    (gnus-registry-fetch-extra key 'sender))))
+		 (when (and this-sender
+			    (equal sender this-sender))
+		   (setq res (gnus-registry-fetch-group key))
+		   (gnus-message
+		    ;; raise level of messaging if gnus-registry-track-extra
+		    (if gnus-registry-track-extra 5 9)
+		    "%s (extra tracking) traced sender %s to group %s"
+		    "gnus-registry-split-fancy-with-parent"
+		    sender
 		    (if res res "nil")))))
 	     gnus-registry-hashtb)))))
     (gnus-message
@@ -419,7 +437,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	  (gnus-registry-add-group 
 	   (gnus-registry-fetch-message-id-fast article)
 	   gnus-newsgroup-name
-	   (gnus-registry-fetch-simplified-message-subject-fast article)))))))
+	   (gnus-registry-fetch-simplified-message-subject-fast article)
+	   (gnus-registry-fetch-sender-fast article)))))))
 
 (defun gnus-registry-fetch-message-id-fast (article)
   "Fetch the Message-ID quickly, using the internal gnus-data-list function"
@@ -440,6 +459,14 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       (gnus-registry-simplify-subject
        (mail-header-subject (gnus-data-header
 			     (assoc article (gnus-data-list nil)))))
+    nil))
+
+(defun gnus-registry-fetch-sender-fast (article)
+  "Fetch the Sender quickly, using the internal gnus-data-list function"
+  (if (and (numberp article)
+	   (assoc article (gnus-data-list nil)))
+      (mail-header-from (gnus-data-header
+			 (assoc article (gnus-data-list nil))))
     nil))
 
 (defun gnus-registry-grep-in-list (word list)
@@ -560,7 +587,7 @@ Returns the first place where the trail finds a group name."
 	 (remhash id value)))
      gnus-registry-hashtb)))
 
-(defun gnus-registry-add-group (id group &optional subject)
+(defun gnus-registry-add-group (id group &optional subject sender)
   "Add a group for a message, based on the message ID."
   (when group
     (when (and id
@@ -580,11 +607,17 @@ Returns the first place where the trail finds a group name."
 			(list group))
 		   gnus-registry-hashtb)
 
-	  (when gnus-registry-track-extra 
-	    (gnus-registry-store-extra-entry 
-	     id 
-	     'subject 
-	     (gnus-registry-simplify-subject subject)))
+	  (when gnus-registry-track-extra
+	    (when subject
+	      (gnus-registry-store-extra-entry
+	       id 
+	       'subject 
+	       (gnus-registry-simplify-subject subject)))
+	    (when sender
+	      (gnus-registry-store-extra-entry
+	       id 
+	       'sender
+	       sender)))
 	  
 	  (gnus-registry-store-extra-entry id 'mtime (current-time)))))))
 

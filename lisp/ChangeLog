@@ -1,3 +1,33 @@
+2003-11-12  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* nnml.el (nnml-request-accept-article): pass sender to
+	nnmail-cache-insert
+
+	* nnmh.el (nnmh-request-accept-article): pass sender to
+	nnmail-cache-insert 
+
+	* nnmbox.el (nnmbox-request-accept-article): pass sender to
+	nnmail-cache-insert 
+
+	* nnfolder.el (nnfolder-request-accept-article): pass sender to
+	nnmail-cache-insert 
+
+	* nnbabyl.el (nnbabyl-request-accept-article): pass sender to
+	nnmail-cache-insert 
+
+	* nnmail.el (nnmail-cache-insert): accept sender parameter and
+	pass it to the nnmail-spool-hook
+
+	* gnus-registry.el (gnus-registry-track-extra): clarify doc
+	(gnus-registry-action): add sender lexical var and pass it to
+	gnus-registry-add-group
+	(gnus-registry-spool-action): take a sender parameter, pass to
+	gnus-registry-add-group
+	(gnus-registry-split-fancy-with-parent): trace by sender in
+	addition to subject
+	(gnus-registry-fetch-sender-fast): new function
+	(gnus-registry-add-group): accept sender parameter
+
 2003-11-11  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-ham-copy-routine, spam-ham-move-routine)

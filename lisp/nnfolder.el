@@ -526,7 +526,8 @@ the group.  Then the marks file will be regenerated properly by Gnus.")
 	(when nnmail-cache-accepted-message-ids
 	  (nnmail-cache-insert (nnmail-fetch-field "message-id") 
 			       group
-			       (nnmail-fetch-field "subject")))
+			       (nnmail-fetch-field "subject")
+			       (nnmail-fetch-field "from")))
 	(setq result (if (stringp group)
 			 (list (cons group (nnfolder-active-number group)))
 		       (setq art-group
