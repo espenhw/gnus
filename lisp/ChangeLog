@@ -1,3 +1,8 @@
+2003-03-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-cache.el (gnus-cache-braid-nov): Test if a line looks like
+	a NOV.
+
 2003-03-20  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-use-idna): Disable if UTF-8 unavailable.
