@@ -1,3 +1,14 @@
+2004-01-07  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-cite-prefix-regexp): Use with-syntax-table.
+
+	* nnmail.el (nnmail-split-fancy): do.
+
+	* mml.el (mml-parse): do.
+
+	* gnus-score.el (gnus-enter-score-words-into-hashtb)
+	(gnus-score-adaptive): do.
+
 2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-treat-emphasize): Ignore Emacs version number.

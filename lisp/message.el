@@ -540,15 +540,13 @@ Done before generating the new subject of a forward."
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
       "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>|}+]\\)+"
     ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
-    (let ((old-table (syntax-table))
-	  non-word-constituents)
-      (set-syntax-table text-mode-syntax-table)
-      (setq non-word-constituents
-	    (concat
-	     (if (string-match "\\w" "-")  "" "-")
-	     (if (string-match "\\w" "_")  "" "_")
-	     (if (string-match "\\w" ".")  "" ".")))
-      (set-syntax-table old-table)
+    (let (non-word-constituents)
+      (with-syntax-table text-mode-syntax-table
+	(setq non-word-constituents
+	      (concat
+	       (if (string-match "\\w" "-")  "" "-")
+	       (if (string-match "\\w" "_")  "" "_")
+	       (if (string-match "\\w" ".")  "" "."))))
       (if (equal non-word-constituents "")
 	  "\\([ \t]*\\(\\w\\)+>+\\|[ \t]*[]>|}+]\\)+"
 	(concat "\\([ \t]*\\(\\w\\|["

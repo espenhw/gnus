@@ -137,12 +137,8 @@ one charsets.")
   "Parse the current buffer as an MML document."
   (save-excursion
     (goto-char (point-min))
-    (let ((table (syntax-table)))
-      (unwind-protect
-	  (progn
-	    (set-syntax-table mml-syntax-table)
-	    (mml-parse-1))
-	(set-syntax-table table)))))
+    (with-syntax-table mml-syntax-table
+      (mml-parse-1))))
 
 (defun mml-parse-1 ()
   "Parse the current buffer as an MML document."

@@ -1307,12 +1307,8 @@ to actually put the message in the right group."
 (defun nnmail-split-fancy ()
   "Fancy splitting method.
 See the documentation for the variable `nnmail-split-fancy' for details."
-  (let ((syntab (syntax-table)))
-    (unwind-protect
-	(progn
-	  (set-syntax-table nnmail-split-fancy-syntax-table)
-	  (nnmail-split-it nnmail-split-fancy))
-      (set-syntax-table syntab))))
+  (with-syntax-table nnmail-split-fancy-syntax-table
+    (nnmail-split-it nnmail-split-fancy)))
 
 (defvar nnmail-split-cache nil)
 ;; Alist of split expressions their equivalent regexps.

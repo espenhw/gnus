@@ -2188,23 +2188,19 @@ score in `gnus-newsgroup-scored' by SCORE."
 (defun gnus-enter-score-words-into-hashtb (hashtb)
   ;; Find all the words in the buffer and enter them into
   ;; the hashtable.
-  (let ((syntab (syntax-table))
-	word val)
+  (let (word val)
     (goto-char (point-min))
-    (unwind-protect
-	(progn
-	  (set-syntax-table gnus-adaptive-word-syntax-table)
-	  (while (re-search-forward "\\b\\w+\\b" nil t)
-	    (setq val
-		  (gnus-gethash
-		   (setq word (downcase (buffer-substring
-					 (match-beginning 0) (match-end 0))))
-		   hashtb))
-	    (gnus-sethash
-	     word
-	     (append (get-text-property (point-at-eol) 'articles) val)
-	     hashtb)))
-      (set-syntax-table syntab))
+    (with-syntax-table gnus-adaptive-word-syntax-table
+      (while (re-search-forward "\\b\\w+\\b" nil t)
+	(setq val
+	      (gnus-gethash
+	       (setq word (downcase (buffer-substring
+				     (match-beginning 0) (match-end 0))))
+	       hashtb))
+	(gnus-sethash
+	 word
+	 (append (get-text-property (point-at-eol) 'articles) val)
+	 hashtb)))
     ;; Make all the ignorable words ignored.
     (let ((ignored (append gnus-ignored-adaptive-words
 			   (if gnus-adaptive-word-no-group-words
@@ -2307,39 +2303,35 @@ score in `gnus-newsgroup-scored' by SCORE."
 	(let* ((hashtb (gnus-make-hashtable 1000))
 	       (date (date-to-day (current-time-string)))
 	       (data gnus-newsgroup-data)
-	       (syntab (syntax-table))
 	       word d score val)
-	  (unwind-protect
-	      (progn
-		(set-syntax-table gnus-adaptive-word-syntax-table)
-		;; Go through all articles.
-		(while (setq d (pop data))
-		  (when (and
-			 (not (gnus-data-pseudo-p d))
-			 (setq score
-			       (cdr (assq
-				     (gnus-data-mark d)
-				     gnus-adaptive-word-score-alist))))
-		    ;; This article has a mark that should lead to
-		    ;; adaptive word rules, so we insert the subject
-		    ;; and find all words in that string.
-		    (insert (mail-header-subject (gnus-data-header d)))
-		    (downcase-region (point-min) (point-max))
-		    (goto-char (point-min))
-		    (while (re-search-forward "\\b\\w+\\b" nil t)
-		      ;; Put the word and score into the hashtb.
-		      (setq val (gnus-gethash (setq word (match-string 0))
-					      hashtb))
-		      (when (or (not gnus-adaptive-word-length-limit)
-				(> (length word)
-				   gnus-adaptive-word-length-limit))
-			(setq val (+ score (or val 0)))
-			(if (and gnus-adaptive-word-minimum
-				 (< val gnus-adaptive-word-minimum))
-			    (setq val gnus-adaptive-word-minimum))
-			(gnus-sethash word val hashtb)))
-		    (erase-buffer))))
-	    (set-syntax-table syntab))
+	  (with-syntax-table gnus-adaptive-word-syntax-table
+	    ;; Go through all articles.
+	    (while (setq d (pop data))
+	      (when (and
+		     (not (gnus-data-pseudo-p d))
+		     (setq score
+			   (cdr (assq
+				 (gnus-data-mark d)
+				 gnus-adaptive-word-score-alist))))
+		;; This article has a mark that should lead to
+		;; adaptive word rules, so we insert the subject
+		;; and find all words in that string.
+		(insert (mail-header-subject (gnus-data-header d)))
+		(downcase-region (point-min) (point-max))
+		(goto-char (point-min))
+		(while (re-search-forward "\\b\\w+\\b" nil t)
+		  ;; Put the word and score into the hashtb.
+		  (setq val (gnus-gethash (setq word (match-string 0))
+					  hashtb))
+		  (when (or (not gnus-adaptive-word-length-limit)
+			    (> (length word)
+			       gnus-adaptive-word-length-limit))
+		    (setq val (+ score (or val 0)))
+		    (if (and gnus-adaptive-word-minimum
+			     (< val gnus-adaptive-word-minimum))
+			(setq val gnus-adaptive-word-minimum))
+		    (gnus-sethash word val hashtb)))
+		(erase-buffer))))
 	  ;; Make all the ignorable words ignored.
 	  (let ((ignored (append gnus-ignored-adaptive-words
 				 (if gnus-adaptive-word-no-group-words
