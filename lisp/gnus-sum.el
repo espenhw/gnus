@@ -2759,26 +2759,29 @@ If NO-DISPLAY, don't generate a summary buffer."
 
 (defun gnus-thread-loop-p (root thread)
   "Say whether ROOT is in THREAD."
-  (let ((th (cdr thread)))
-    (while (and th
-		(not (eq (caar th) root)))
-      (pop th))
-    (if th
-	;; We have found a loop.
-	(let (ref-dep)
-	  (setcdr thread (delq (car th) (cdr thread)))
-	  (if (boundp (setq ref-dep (intern "none"
-					    gnus-newsgroup-dependencies)))
-	      (setcdr (symbol-value ref-dep)
-		      (nconc (cdr (symbol-value ref-dep))
-			     (list (car th))))
-	    (set ref-dep (list nil (car th))))
-	  1)
-      ;; Recurse down into the sub-threads and look for loops.
-      (apply '+
-	     (mapcar
-	      (lambda (thread) (gnus-thread-loop-p root thread))
-	      (cdr thread))))))
+  (let ((stack (list thread))
+	(infloop 0)
+	th)
+    (while (setq thread (pop stack))
+      (setq th (cdr thread))
+      (while (and th
+		  (not (eq (caar th) root)))
+	(pop th))
+      (if th
+	  ;; We have found a loop.
+	  (let (ref-dep)
+	    (setcdr thread (delq (car th) (cdr thread)))
+	    (if (boundp (setq ref-dep (intern "none"
+					      gnus-newsgroup-dependencies)))
+		(setcdr (symbol-value ref-dep)
+			(nconc (cdr (symbol-value ref-dep))
+			       (list (car th))))
+	      (set ref-dep (list nil (car th))))
+	    (setq infloop 1
+		  stack nil))
+	;; Push all the subthreads onto the stack.
+	(push (cdr thread) stack)))
+    infloop))
 
 (defun gnus-make-threads ()
   "Go through the dependency hashtb and find the roots.	 Return all threads."
@@ -2950,10 +2953,10 @@ If NO-DISPLAY, don't generate a summary buffer."
 		    article
 		    (gnus-data-list t)))))
 	      ;; Error on the side of excessive subjects.
-	      (error (mail-header-subject header)))
+	      (error ""))
 	    (mail-header-subject header))
-	   (mail-header-subject header)
-	 "")
+	   ""
+	 (mail-header-subject header))
        nil (cdr (assq article gnus-newsgroup-scored))
        (memq article gnus-newsgroup-processable))
       (when length

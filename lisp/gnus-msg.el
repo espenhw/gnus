@@ -415,7 +415,9 @@ header line with the old Message-ID."
 		  (push (list 'gnus-inews-add-to-address pgroup)
 			message-send-actions)))
 	    (set-buffer gnus-article-copy)
-	    (message-wide-reply to-address)))
+	    (message-wide-reply to-address
+				(gnus-group-find-parameter
+				 gnus-newsgroup-name 'broken-reply-to))))
 	(when yank
 	  (gnus-inews-yank-articles yank))))))
 

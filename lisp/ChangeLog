@@ -1,3 +1,22 @@
+Sat Apr 12 23:28:30 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.45 is released.
+
+Sat Apr 12 02:00:51 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-update-article-line): Insert the
+	subject. 
+
+	* gnus-msg.el (gnus-post-news): Use it.
+
+	* message.el (message-wide-reply): Accept ignore-reply-to.
+
+	* gnus-sum.el (gnus-thread-loop-p): Don't recurse; use a stack.
+
+	* message.el (message-generate-headers): Don't insert incomlete
+	Senders in mail-only messages.
+	(message-check-news-header-syntax): Check subject first.
+
 Sat Apr 12 01:42:42 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.44 is released.

@@ -2032,6 +2032,16 @@ to find out how to use this."
 
 (defun message-check-news-header-syntax ()
   (and
+   ;; Check the Subject header.
+   (message-check 'subject
+     (let* ((case-fold-search t)
+	    (subject (message-fetch-field "subject")))
+       (or
+	(and subject
+	     (not (string-match "\\`[ \t]*\\'" subject)))
+	(ignore
+	 (message
+	  "The subject field is empty or missing.  Posting is denied.")))))
    ;; Check for commands in Subject.
    (message-check 'subject-cmsg
      (if (string-match "^cmsg " (message-fetch-field "subject"))
@@ -2105,16 +2115,6 @@ to find out how to use this."
 	   (y-or-n-p
 	    (format "The Message-ID looks strange: \"%s\".  Really post? "
 		    message-id)))))
-   ;; Check the Subject header.
-   (message-check 'subject
-     (let* ((case-fold-search t)
-	    (subject (message-fetch-field "subject")))
-       (or
-	(and subject
-	     (not (string-match "\\`[ \t]*\\'" subject)))
-	(ignore
-	 (message
-	  "The subject field is empty or missing.  Posting is denied.")))))
    ;; Check the Newsgroups & Followup-To headers.
    (message-check 'existing-newsgroups
      (let* ((case-fold-search t)
@@ -2708,7 +2708,9 @@ Headers already prepared in the buffer are not modified."
 	    (beginning-of-line)
 	    (insert "Original-")
 	    (beginning-of-line))
-	  (insert "Sender: " secure-sender "\n"))))))
+	  (when (or (message-news-p)
+		    (string-match "^[^@]@.+\\..+" secure-sender))
+	    (insert "Sender: " secure-sender "\n")))))))
 
 (defun message-insert-courtesy-copy ()
   "Insert a courtesy message in mail copies of combined messages."
@@ -3072,10 +3074,10 @@ Headers already prepared in the buffer are not modified."
      cur)))
 
 ;;;###autoload
-(defun message-wide-reply (&optional to-address)
+(defun message-wide-reply (&optional to-address ignore-reply-to)
   "Make a \"wide\" reply to the message in the current buffer."
   (interactive)
-  (message-reply to-address t))
+  (message-reply to-address t ignore-reply-to))
 
 ;;;###autoload
 (defun message-followup (&optional to-newsgroups)

@@ -636,3 +636,5 @@ database such as specifying start and end dates, subject, author,
 and/or newsgroup name.
 
 * new Date header scoring type -- older, newer
+
+* use the summary toolbar in the article buffer.
