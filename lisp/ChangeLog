@@ -1,3 +1,8 @@
+1999-12-14 16:21:45  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-find-charset-region): mail-parse-charset is a
+	MIME charset not a MULE charset.
+
 1999-12-14 15:08:03  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-ems.el: Translate more ugly characters.

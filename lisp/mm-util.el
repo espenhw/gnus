@@ -340,7 +340,10 @@ See also `with-temp-file' and `with-output-to-string'."
 	(skip-chars-forward "\0-\177")
 	(if (eobp)
 	    '(ascii)
-	  (delq nil (list 'ascii mail-parse-charset))))))
+	  (delq nil (list 'ascii 
+			  (or (car (last (assq mail-parse-charset
+					       mm-mime-mule-charset-alist)))
+			      'latin-iso8859-1)))))))
    (t
     ;; We are in a unibyte buffer, so we futz around a bit.
     (save-excursion
@@ -352,7 +355,9 @@ See also `with-temp-file' and `with-output-to-string'."
 	  (skip-chars-forward "\0-\177")
 	  (if (eobp)
 	      '(ascii)
-	    (delq nil (list 'ascii (car (last (assq 'charset entry))))))))))))
+	    (delq nil (list 'ascii 
+			    (or (car (last (assq 'charset entry)))
+				'latin-iso8859-1))))))))))
 
 (defun mm-read-charset (prompt)
   "Return a charset."
