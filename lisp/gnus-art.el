@@ -1085,6 +1085,16 @@ See Info node `(gnus)Customizing Articles' and Info node
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-display-xface 'highlight t)
 
+(defcustom gnus-treat-display-grey-xface
+  (and (string-match "^0x" (shell-command-to-string "uncompface"))
+       t)
+  "Display grey X-Face headers.
+Valid values are nil, t."
+  :group 'gnus-article-treat
+  :version "21.3"
+  :type 'boolean)
+(put 'gnus-treat-display-grey-xface 'highlight t)
+
 (defcustom gnus-treat-display-smileys
   (if (or (and (featurep 'xemacs)
 	       (featurep 'xpm))
@@ -1838,10 +1848,14 @@ unfolded."
 	      (set-buffer gnus-original-article-buffer))
 	    (save-restriction
 	      (mail-narrow-to-head)
-	      (while (gnus-article-goto-header "x-face\\(-[0-9]+\\)?")
-		(when (match-beginning 2)
-		  (setq grey t))
-		(push (mail-header-field-value) x-faces))
+	      (let ((regexp
+		     (if gnus-treat-display-grey-xface
+			 "x-face\\(-[0-9]+\\)?"
+		       "x-face")))
+		(while (gnus-article-goto-header regexp)
+		  (when (match-beginning 2)
+		    (setq grey t))
+		  (push (mail-header-field-value) x-faces)))
 	      (setq from (message-fetch-field "from"))))
 	  (if grey
 	      (let ((xpm (gnus-convert-gray-x-face-to-xpm x-faces))

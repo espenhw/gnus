@@ -1,5 +1,9 @@
 2002-02-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (gnus-treat-display-grey-xface): New variable.
+	(article-display-x-face): Use it.  Disable grey xface, if
+	uncompface is not found.
+
 	* message.el (message-mode): Don't enable multibyte on an indirect
 	buffer.
 
