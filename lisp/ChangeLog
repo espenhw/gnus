@@ -1,5 +1,8 @@
 2002-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-group.el: Don't require mm-url in the toplevel.
+	(gnus-group-fetch-charter): Require mm-url.
+
 	* spam-stat.el: Require cl for the functions gethash,
 	hash-table-count, make-hash-table and mapc for Emacs 20.
 	(puthash): Alias to cl-puthash for Emacs 20.

@@ -38,7 +38,6 @@
 (require 'gnus-undo)
 (require 'time-date)
 (require 'gnus-ems)
-(require 'mm-url)
 
 (defcustom gnus-group-archive-directory
   "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
@@ -3532,6 +3531,7 @@ If given a prefix argument, prompt for a group."
 	     gnus-newsgroup-name)))
   (unless group
     (error "No group name given"))
+  (require 'mm-url)
   (let ((name (mm-url-form-encode-xwfu (gnus-group-real-name group)))
 	url hierarchy)
     (when (string-match "\\(^[^\\.]+\\)\\..*" name)
