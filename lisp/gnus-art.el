@@ -6060,7 +6060,7 @@ positives are possible."
     ("\\binfo://\\([^'\">\n\t ]+\\)"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 1)
     ;; Info GNOME style <info:foo#bar_baz>
-    ("\\binfo:\\([^(][^'\n\t\r \"><]*\\)"
+    ("\\binfo:\\([^('\n\t\r \"><][^'\n\t\r \"><]*\\)"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url-gnome 1)
     ;; Info KDE style <info:(foo)bar baz>
     ("<\\(info:\\(([^)]+)[^>\n\r]*\\)\\)>"

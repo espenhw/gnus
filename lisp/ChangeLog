@@ -1,3 +1,7 @@
+2003-09-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-button-alist): Improve Info regexp.
+
 2003-09-04  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el: added brief explanation of basics
