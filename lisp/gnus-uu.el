@@ -1,6 +1,6 @@
 ;;; gnus-uu.el --- extract (uu)encoded files in Gnus
 ;; Copyright (C) 1985, 1986, 1987, 1993, 1994, 1995, 1996, 1997, 1998, 2000,
-;;        2001, 2002, 2003 Free Software Foundation, Inc.
+;;        2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Created: 2 Oct 1993
@@ -859,7 +859,7 @@ When called interactively, prompt for REGEXP."
 	      (mm-enable-multibyte)
 	      (mime-to-mml))
 	    (goto-char (point-min))
-	    (re-search-forward "\n\n")
+	    (search-forward "\n\n")
 	    (unless (and message-forward-as-mime gnus-uu-digest-buffer)
 	      ;; Quote all 30-dash lines.
 	      (save-excursion
@@ -1895,7 +1895,7 @@ The user will be asked for a file name."
   (when (gnus-uu-post-encode-file "uuencode" path file-name)
     (goto-char (point-min))
     (forward-line 1)
-    (while (re-search-forward " " nil t)
+    (while (search-forward " " nil t)
       (replace-match "`"))
     t))
 

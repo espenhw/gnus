@@ -3860,7 +3860,7 @@ If you always want Gnus to send messages in one piece, set
 	    (save-excursion
 	      (set-buffer errbuf)
 	      (goto-char (point-min))
-	      (while (re-search-forward "\n\n* *" nil t)
+	      (while (re-search-forward "\n+ *" nil t)
 		(replace-match "; "))
 	      (if (not (zerop (buffer-size)))
 		  (error "Sending...failed to %s"
@@ -5194,7 +5194,7 @@ If the current line has `message-yank-prefix', insert it on the new line."
     (when (looking-at "[ \t]*$")
       (message-delete-line))
     (goto-char begin)
-    (re-search-forward ":" nil t)
+    (search-forward ":" nil t)
     (when (looking-at "\n[ \t]+")
       (replace-match " " t t))
     (goto-char (point-max))))
@@ -6493,7 +6493,7 @@ which specify the range to operate on."
     (let ((end1 (make-marker)))
       (move-marker end1 (max start end))
       (goto-char (min start end))
-      (while (re-search-forward "\b" end1 t)
+      (while (search-forward "\b" end1 t)
 	(if (eq (char-after) (char-after (- (point) 2)))
 	    (delete-char -2))))))
 

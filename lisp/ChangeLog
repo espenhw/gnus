@@ -1,5 +1,28 @@
 2004-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-agent.el (gnus-agent-restore-gcc): Use ^ and regexp-quote.
+
+	* gnus-sum.el (gnus-summary-morse-message): Use search-forward
+	instead of re-search-forward.
+
+	* gnus-uu.el (gnus-uu-save-article): Ditto.
+	(gnus-uu-post-encode-uuencode): Ditto.
+
+	* html2text.el (html2text-clean-list-items): Ditto.
+	(html2text-clean-dtdd): Ditto.
+	(html2text-format-tags): Ditto.
+
+	* message.el (message-send-mail-with-sendmail): Fix regexp.
+	(message-fill-field-general): Use search-forward instead of
+	re-search-forward.
+	(unbold-region): Ditto.
+
+	* nnrss.el (nnrss-request-article): Ditto.
+
+	* nnslashdot.el (nnslashdot-request-article): Ditto.
+
+	* nnweb.el (nnweb-gmane-wash-article): Ditto.
+
 	* gnus-sum.el (gnus-summary-make-menu-bar): Avoid the
 	"Unrecognized menu descriptor" error in XEmacs.
 

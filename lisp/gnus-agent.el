@@ -696,7 +696,8 @@ be a select method."
   "Restore GCC field from saved header."
   (save-excursion
     (goto-char (point-min))
-    (while (re-search-forward (concat gnus-agent-gcc-header ":") nil t)
+    (while (re-search-forward
+	    (concat "^" (regexp-quote gnus-agent-gcc-header) ":") nil t)
       (replace-match "Gcc:" 'fixedcase))))
 
 (defun gnus-agent-any-covered-gcc ()

@@ -1,5 +1,5 @@
 ;;; nnweb.el --- retrieving articles via web search engines
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -489,7 +489,7 @@ Valid types include `google', `dejanews', and `gmane'.")
 (defun nnweb-gmane-wash-article ()
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (re-search-forward "<!--X-Head-of-Message-->" nil t)
+    (search-forward "<!--X-Head-of-Message-->" nil t)
     (delete-region (point-min) (point))
     (goto-char (point-min))
     (while (looking-at "^<li><em>\\([^ ]+\\)</em>.*</li>")

@@ -8877,7 +8877,7 @@ forward."
 	    (when (message-goto-body)
 	      (gnus-narrow-to-body))
 	    (goto-char (point-min))
-	    (while (re-search-forward "·" (point-max) t)
+	    (while (search-forward "·" (point-max) t)
 	      (replace-match "."))
 	    (unmorse-region (point-min) (point-max))
 	    (widen)
