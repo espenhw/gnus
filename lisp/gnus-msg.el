@@ -1051,6 +1051,7 @@ this is a reply."
 	 (group (or group gnus-newsgroup-name ""))
 	 (gcc-self-val
 	  (and gnus-newsgroup-name
+	       (not (equal gnus-newsgroup-name ""))
 	       (gnus-group-find-parameter
 		gnus-newsgroup-name 'gcc-self)))
 	 result

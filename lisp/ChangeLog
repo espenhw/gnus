@@ -1,3 +1,19 @@
+2000-04-21 20:36:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-insert-group-line): Don't call
+	gnus-group-add-icon unconditionally.
+
+	* gnus-xmas.el (gnus-group-add-icon): Moved here.
+
+	* gnus-group.el (gnus-group-glyph-directory): Don't depend on
+	xmas. 
+	(gnus-group-glyph-directory): Removed.
+
+2000-04-21 20:26:23  Jaap-Henk Hoepman  <hoepman@cs.utwente.nl>
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Don't do stuff if
+	gnus-newsgroup-name is "".
+
 2000-04-21  Florian Weimer  <fw@deneb.cygnus.argh.org>
 
 	* mm-util.el (mm-mime-mule-charset-alist): Add support for UTF-8
