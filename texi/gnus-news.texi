@@ -61,9 +61,9 @@ whether to do so.
 @item @acronym{IMAP} identity (@acronym{RFC} 2971) is supported.
 
 By default, Gnus do not send any information about itself, but you can
-customize it using @code{nnimap-id}.
+customize it using the variable @code{nnimap-id}.
 
-@item The @file{all.SCORE} file can now be edited from the group buffer 
+@item The @file{all.SCORE} file can be edited from the group buffer
 using @kbd{W e}.
 
 @item Gnus now MIME decode articles even when they lack "MIME-Version" header.
