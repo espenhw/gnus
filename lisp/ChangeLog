@@ -2,6 +2,7 @@
 
 	* gnus-art.el (gnus-article-next-page): Don't go to the next line
 	before checking end-of-buffer.
+	(gnus-mime-delete-part): Don't insert parts twice.
 
 2003-10-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

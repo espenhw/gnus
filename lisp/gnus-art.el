@@ -4017,8 +4017,6 @@ Replace it with some information about the removed part."
 	  (erase-buffer)
 	  (insert
 	   (concat
-	    "<#part type=text/plain nofile=yes disposition=attachment"
-	    " description=\"Deleted attachment (" bsize " Byte)\">"
 	    ",----\n"
 	    "| The following attachment has been deleted:\n"
 	    "|\n"
@@ -4026,10 +4024,12 @@ Replace it with some information about the removed part."
 	    "| Filename:       " filename "\n"
 	    "| Size (encoded): " bsize " Byte\n"
 	    "| Description:    " description "\n"
-	    "`----\n"
-	    "<#/part>"))
+	    "`----\n"))
 	  (setcdr data
-		  (cdr (mm-make-handle nil `("text/plain"))))))
+		  (cdr (mm-make-handle
+			nil `("text/plain") nil nil
+			(list "attachment")
+			(format "Deleted attachment (%s bytes)" bsize))))))
       (set-buffer gnus-summary-buffer)
       ;; FIXME: maybe some of the following code (borrowed from
       ;; `gnus-mime-save-part-and-strip') isn't necessary?
