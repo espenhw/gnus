@@ -1,3 +1,8 @@
+2000-05-16 21:46:40  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Misc Group Stuff): Addition.
+	(Article Washing): Ditto.
+
 2000-05-15 10:16:29  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Mail Source Specifiers): Update maildir.
