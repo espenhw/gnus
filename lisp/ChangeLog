@@ -1,5 +1,7 @@
 2002-12-28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el (gnus-keep-backlog): Change default to 20.
+
 	* gnus-agent.el (gnus-agent-check-overview-buffer): Start from
 	start. 
 	(gnus-agent-check-overview-buffer): Remove negative article

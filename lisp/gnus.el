@@ -1401,7 +1401,7 @@ cache to the full extent of the law."
   :group 'gnus-meta
   :type 'boolean)
 
-(defcustom gnus-keep-backlog nil
+(defcustom gnus-keep-backlog 20
   "*If non-nil, Gnus will keep read articles for later re-retrieval.
 If it is a number N, then Gnus will only keep the last N articles
 read.  If it is neither nil nor a number, Gnus will keep all read
