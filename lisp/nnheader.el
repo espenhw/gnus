@@ -634,7 +634,8 @@ If FULL, translate everything."
 		      2 0))
 	;; We translate -- but only the file name.  We leave the directory
 	;; alone.
-	(if (memq system-type '(win32 w32 mswindows windows-nt))
+	(if (and (featurep 'xemacs)
+		 (memq system-type '(win32 w32 mswindows windows-nt)))
 	    ;; This is needed on NT and stuff, because
 	    ;; file-name-nondirectory is not enough to split
 	    ;; file names, containing ':', e.g.
@@ -652,7 +653,7 @@ If FULL, translate everything."
 	      (if (string-match "\\(^\\w:\\|[/\\]\\)\\([^/\\]+\\)$" file)
 		  (setq leaf (substring file (match-beginning 2))
 			path (substring file 0 (match-beginning 2)))))
-	  ;; Fall back on this.
+	  ;; Emacs DTRT, says andrewi.
 	  (setq leaf (file-name-nondirectory file)
 		path (file-name-directory file))))
       (setq len (length leaf))
