@@ -36,12 +36,6 @@
   "Support for asynchronous operations."
   :group 'gnus)
 
-(defcustom gnus-asynchronous nil
-  "*If nil, inhibit all Gnus asynchronicity.
-If non-nil, let the other asynch variables be heeded."
-  :group 'gnus-asynchronous
-  :type 'boolean)
-
 (defcustom gnus-use-article-prefetch 30
   "*If non-nil, prefetch articles in groups that allow this.
 If a number, prefetch only that many articles forward;
@@ -50,6 +44,12 @@ if t, prefetch as many articles as possible."
   :type '(choice (const :tag "off" nil)
 		 (const :tag "all" t)
 		 (integer :tag "some" 0)))
+
+(defcustom gnus-asynchronous nil
+  "*If nil, inhibit all Gnus asynchronicity.
+If non-nil, let the other asynch variables be heeded."
+  :group 'gnus-asynchronous
+  :type 'boolean)
 
 (defcustom gnus-prefetched-article-deletion-strategy '(read exit)
   "List of symbols that say when to remove articles from the prefetch buffer.
