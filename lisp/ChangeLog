@@ -1,3 +1,9 @@
+2003-02-25  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-sendmail-envelope-from): New option.
+	(message-sendmail-envelope-from): New function.
+	(message-send-mail-with-sendmail): Use it.
+
 2003-02-25  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-mid-or-mail-heuristic-alist): Added

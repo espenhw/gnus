@@ -636,6 +636,15 @@ Doing so would be even more evil than leaving it out."
   :group 'message-sending
   :type 'boolean)
 
+(defcustom message-sendmail-envelope-from nil
+  "*Envelope-from when sending mail with sendmail.
+If this is nil, use `user-mail-address'.  If it is the symbol
+`header', use the From: header of the message."
+  :type '(choice (string :tag "From name")
+		 (const :tag "Use From: header from message" header)
+		 (const :tag "Use `user-mail-address'" nil))
+  :group 'message-sending)
+
 ;; qmail-related stuff
 (defcustom message-qmail-inject-program "/var/qmail/bin/qmail-inject"
   "Location of the qmail-inject program."
@@ -3550,7 +3559,7 @@ If you always want Gnus to send messages in one piece, set
 			;; But some systems are more broken with -f, so
 			;; we'll let users override this.
 			(if (null message-sendmail-f-is-evil)
-			    (list "-f" (message-make-address)))
+			    (list "-f" (message-sendmail-envelope-from)))
 			;; These mean "report errors by mail"
 			;; and "deliver in background".
 			(if (null message-interactive) '("-oem" "-odb"))
@@ -4505,6 +4514,16 @@ give as trustworthy answer as possible."
     (if (string-match " " user-mail-address)
 	(nth 1 (mail-extract-address-components user-mail-address))
       user-mail-address)))
+
+(defun message-sendmail-envelope-from ()
+  "Return the envelope from."
+  (cond ((eq message-sendmail-envelope-from 'header)
+	 (nth 1 (mail-extract-address-components
+		 (message-fetch-field "from"))))
+	((stringp message-sendmail-envelope-from)
+	 message-sendmail-envelope-from)
+	(t
+	 (message-make-address))))
 
 (defun message-make-fqdn ()
   "Return user's fully qualified domain name."
