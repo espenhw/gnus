@@ -305,8 +305,12 @@ not.")
 (defvar mailcap-parsed-p nil)
 
 (defun mailcap-parse-mailcaps (&optional path force)
-  "Parse out all the mailcaps specified in a unix-style path string PATH.
-If FORCE, re-parse even if already parsed."
+  "Parse out all the mailcaps specified in a path string PATH.
+Components of PATH are separated by the `path-separator' character
+appropriate for this system.  If FORCE, re-parse even if already
+parsed.  If PATH is omitted, use the value of environment variable
+MAILCAPS if set; otherwise (on Unix) use the path from RFC 1524, plus
+/usr/local/etc/mailcap."
   (interactive (list nil t))
   (when (or (not mailcap-parsed-p)
 	    force)
@@ -315,22 +319,21 @@ If FORCE, re-parse even if already parsed."
      ((getenv "MAILCAPS") (setq path (getenv "MAILCAPS")))
      ((memq system-type '(ms-dos ms-windows windows-nt))
       (setq path '("~/.mailcap" "~/mail.cap" "~/etc/mail.cap")))
-     (t (setq path '("~/.mailcap" "/usr/etc/mailcap" "/etc/mailcap" 
-		     "/usr/local/etc/mailcap"))))
+     (t (setq path
+	      ;; This is per RFC 1524, specifically
+	      ;; with /usr before /usr/local.
+	      '("~/.mailcap" "/etc/mailcap" "/usr/etc/mailcap"
+		"/usr/local/etc/mailcap"))))
     (let ((fnames (reverse
 		   (if (stringp path)
-		       (split-string
-			path (if (memq system-type
-				       '(ms-dos ms-windows windows-nt))
-				 ";"
-			       ":"))
+		       (parse-colon-path path)
 		     path)))
 	  fname)
       (while fnames
 	(setq fname (car fnames))
-	(if (and (file-exists-p fname) (file-readable-p fname)
+	(if (and (file-readable-p fname)
 		 (file-regular-p fname))
-	    (mailcap-parse-mailcap (car fnames)))
+	    (mailcap-parse-mailcap fname))
 	(setq fnames (cdr fnames))))
       (setq mailcap-parsed-p t)))
 
@@ -796,38 +799,37 @@ this type is returned."
   "An assoc list of file extensions and corresponding MIME content-types.")
 
 (defun mailcap-parse-mimetypes (&optional path)
-  ;; Parse out all the mimetypes specified in a unix-style path string PATH
+  "Parse out all the mimetypes specified in a unix-style path string PATH.
+Components of PATH are separated by the `path-separator' character
+appropriate for this system.  If PATH is omitted, use the value of
+environment variable MIMETYPES if set; otherwise use a default path."
   (cond
    (path nil)
    ((getenv "MIMETYPES") (setq path (getenv "MIMETYPES")))
    ((memq system-type '(ms-dos ms-windows windows-nt))
-    (setq path (mapconcat 'expand-file-name
-			  '("~/mime.typ" "~/etc/mime.typ") ";")))
-   (t (setq path (mapconcat
-		  'expand-file-name
-		  ;; mime.types seems to be the normal name,
-		  ;; definitely so on current GNUish systems.  The
-		  ;; ordering follows that for mailcap.
-		  '("~/.mime.types"
-		    "/etc/mime.types"
-		    "/usr/etc/mime.types"
-		    "/usr/local/etc/mime.types"
-		    "/usr/local/www/conf/mime.types"
-		    "~/.mime-types"
-		    "/etc/mime-types"
-		    "/usr/etc/mime-types"
-		    "/usr/local/etc/mime-types"
-		    "/usr/local/www/conf/mime-types") ":"))))
-  (let ((fnames (reverse
-		 (split-string path
-			       (if (memq system-type
-					 '(ms-dos ms-windows windows-nt))
-				   ";" ":"))))
+    (setq path '("~/mime.typ" "~/etc/mime.typ")))
+   (t (setq path
+	    ;; mime.types seems to be the normal name, definitely so
+	    ;; on current GNUish systems.  The search order follows
+	    ;; that for mailcap.
+	    '("~/.mime.types"
+	      "/etc/mime.types"
+	      "/usr/etc/mime.types"
+	      "/usr/local/etc/mime.types"
+	      "/usr/local/www/conf/mime.types"
+	      "~/.mime-types"
+	      "/etc/mime-types"
+	      "/usr/etc/mime-types"
+	      "/usr/local/etc/mime-types"
+	      "/usr/local/www/conf/mime-types"))))
+  (let ((fnames (reverse (if (stringp path)
+			     (parse-colon-path path)
+			   path)))
 	fname)
     (while fnames
       (setq fname (car fnames))
-      (if (and (file-exists-p fname) (file-readable-p fname))
-	  (mailcap-parse-mimetype-file (car fnames)))
+      (if (and (file-readable-p fname))
+	  (mailcap-parse-mimetype-file fname))
       (setq fnames (cdr fnames)))))
 
 (defun mailcap-parse-mimetype-file (fname)
