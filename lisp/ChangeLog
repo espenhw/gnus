@@ -1,3 +1,7 @@
+2002-04-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el (nnwarchive-mail-archive-article): Fix typo.
+
 2002-04-01  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el: fixed some buggy invocations of nnmaildir--pgname.
