@@ -144,14 +144,12 @@
     (my-deja
      (paranoid cookie post)
      (address . "www.my-deja.com")
-     (open-url "http://www.deja.com/my/pr.xp")
-     (open-snarf . webmail-my-deja-open)
+     ;;(open-snarf . webmail-my-deja-open)
      (login-url
       content
-      ("%s" webmail-aux)
-      "member_name=%s&pw=%s&go=&priv_opt_MyDeja99="
+      ("http://mydeja.google.com/cgi-bin/deja/maillogin.py")
+      "userid=%s&password=%s"
       user password)
-     (list-url "http://www.deja.com/rg_gotomail.xp")
      (list-snarf . webmail-my-deja-list)
      (article-snarf . webmail-my-deja-article)
      (trash-url webmail-aux id))))
@@ -1045,7 +1043,7 @@
 (defun webmail-my-deja-open ()
   (webmail-refresh-redirect)
   (goto-char (point-min))
-  (if (re-search-forward "action=\"\\([^\"]+login_confirm\\.xp[^\"]*\\)\""
+  (if (re-search-forward "action=\"\\([^\"]+maillogin\\.py[^\"]*\\)\""
 			 nil t)
       (setq webmail-aux (match-string 1))
     (webmail-error "open@1")))
