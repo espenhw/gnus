@@ -1,3 +1,20 @@
+2001-08-17 10:41:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* lpath.el (featurep): fbind xml-parse-region.
+
+	* gnus.el (gnus-message-archive-method): Default to "archive".
+	(gnus-message-archive-method): Doc fix.
+	(gnus-parameters-get-parameter): Cleaned up.
+	(gnus-expand-group-parameter): New function.
+
+	* gnus-start.el (gnus-setup-news): Push the archive server only
+	the server list.
+
+	* mml.el (mml-menu): Changed name to "Attachments".
+
+	* mm-decode.el (mm-destroy-postponed-undisplay-list): Only message
+	when there is something to detroy.
+
 2001-05-21 17:11:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-srvr.el (gnus-server-browse-in-group-buffer): Default to

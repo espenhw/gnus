@@ -406,8 +406,9 @@ for types in mm-keep-viewer-alive-types."
     (mm-handle-set-undisplayer handle function)))
 
 (defun mm-destroy-postponed-undisplay-list ()
-  (message "Destroying external MIME viewers")
-  (mm-destroy-parts mm-postponed-undisplay-list))
+  (when mm-postponed-undisplay-list
+    (message "Destroying external MIME viewers")
+    (mm-destroy-parts mm-postponed-undisplay-list)))
 
 (defun mm-dissect-buffer (&optional no-strict-mime)
   "Dissect the current buffer and return a list of MIME handles."

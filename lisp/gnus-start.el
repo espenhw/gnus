@@ -900,10 +900,17 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 
     ;; Make sure the archive server is available to all and sundry.
     (when gnus-message-archive-method
-      (setq gnus-server-alist (delq (assoc "archive" gnus-server-alist)
-				    gnus-server-alist))
-      (push (cons "archive" gnus-message-archive-method)
-	    gnus-server-alist))
+      (unless (assoc "archive" gnus-server-alist)
+	(push `("archive"
+		(nnfolder
+		 "archive"
+		 (nnfolder-directory
+		  ,(nnheader-concat message-directory "archive"))
+		 (nnfolder-active-file
+		  ,(nnheader-concat message-directory "archive/active"))
+		 (nnfolder-get-new-mail nil)
+		 (nnfolder-inhibit-expiry t)))
+	      gnus-server-alist)))
 
     ;; If we don't read the complete active file, we fill in the
     ;; hashtb here.

@@ -1045,23 +1045,9 @@ see the manual for details."
   :group 'gnus-server
   :type 'gnus-select-method)
 
-(defcustom gnus-message-archive-method
-  (progn
-    ;; Don't require it at top level to avoid circularity.
-    (require 'message)
-    `(nnfolder
-      "archive"
-      (nnfolder-directory ,(nnheader-concat message-directory "archive"))
-      (nnfolder-active-file
-       ,(nnheader-concat message-directory "archive/active"))
-      (nnfolder-get-new-mail nil)
-      (nnfolder-inhibit-expiry t)))
+(defcustom gnus-message-archive-method "archive"
   "*Method used for archiving messages you've sent.
-This should be a mail method.
-
-It's probably not very effective to change this variable once you've
-run Gnus once.  After doing that, you must edit this server from the
-server buffer."
+This should be a mail method."
   :group 'gnus-server
   :group 'gnus-message
   :type 'gnus-select-method)
@@ -2773,15 +2759,20 @@ You should probably use `gnus-find-method-for-group' instead."
 
 (defun gnus-parameters-get-parameter (group)
   "Return the group parameters for GROUP from `gnus-parameters'."
-  (let ((alist gnus-parameters)
-	params-list)
-    (while alist
-      (when (string-match (caar alist) group)
+  (let (params-list)
+    (dolist (elem gnus-parameters)
+      (when (string-match (car elem) group)
 	(setq params-list
-	      (nconc (copy-sequence (cdar alist))
-		     params-list)))
-      (pop alist))
+	      (nconc (gnus-expand-group-parameters
+		      (copy-sequence (cdr elem)) group)
+		     params-list))))
     params-list))
+
+(defun gnus-expand-group-parameters (parameters group)
+  "Go through PARAMETERS and expand them according to the match data."
+  (dolist (elem parameters)
+    (when (stringp (cdr elem))
+      (setcdr elem (replace-match elem nil nil group)))))
 
 (defun gnus-group-find-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.
