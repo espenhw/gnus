@@ -1270,6 +1270,8 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 
      ;; Builtin : operation.
      ((eq (car split) ':)
+      (when nnmail-split-tracing
+	(push split nnmail-split-trace))
       (nnmail-split-it (save-excursion (eval (cdr split)))))
 
      ;; Builtin ! operation.

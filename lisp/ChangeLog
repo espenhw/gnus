@@ -1,3 +1,24 @@
+2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-article-yanked-articles): New variable.
+	(gnus-inews-add-send-actions): Mark all answered messages as
+	answered. 
+
+2002-08-10  Jari Aalto  <jari.aalto@poboxes.com>
+
+	* nnmail.el (nnmail-split-it): Added tracing to
+	`:' split rule
+
+2002-08-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* mm-decode.el (mm-mailcap-command): Remove the quotes around '%s'
+	and "%s" so we don't overquote them.
+
+2002-08-13  Hrvoje Niksic  <hniksic@xemacs.org>
+
+	* (mm-display-external): Display the actual command that has been
+	executed in the echo area.
+
 2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-topic.el (gnus-topic-display-missing-topic): Bind entry. 

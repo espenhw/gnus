@@ -272,6 +272,7 @@ If nil, the address field will always be empty after invoking
 (defvar gnus-inhibit-posting-styles nil
   "Inhibit the use of posting styles.")
 
+(defvar gnus-article-yanked-articles nil)
 (defvar gnus-message-buffer "*Mail Gnus*")
 (defvar gnus-article-copy nil)
 (defvar gnus-check-before-posting nil)
@@ -352,10 +353,12 @@ Thank you for your help in stamping out bugs.
   (let ((winconf (make-symbol "gnus-setup-message-winconf"))
 	(buffer (make-symbol "gnus-setup-message-buffer"))
 	(article (make-symbol "gnus-setup-message-article"))
+	(yanked (make-symbol "gnus-setup-yanked-articles"))
 	(group (make-symbol "gnus-setup-message-group")))
     `(let ((,winconf (current-window-configuration))
 	   (,buffer (buffer-name (current-buffer)))
 	   (,article gnus-article-reply)
+	   (,yanked gnus-article-yanked-articles)
 	   (,group gnus-newsgroup-name)
 	   (message-header-setup-hook
 	    (copy-sequence message-header-setup-hook))
@@ -377,7 +380,8 @@ Thank you for your help in stamping out bugs.
        (unwind-protect
 	   (progn
 	     ,@forms)
-	 (gnus-inews-add-send-actions ,winconf ,buffer ,article ,config)
+	 (gnus-inews-add-send-actions ,winconf ,buffer ,article ,config
+				      ,yanked)
 	 (gnus-inews-insert-draft-meta-information ,group ,article)
 	 (setq gnus-message-buffer (current-buffer))
 	 (set (make-local-variable 'gnus-message-group-art)
@@ -475,7 +479,8 @@ Gcc: header for archiving purposes."
 			 (symbol-value (car elem))))
 	    (throw 'found (cons (cadr elem) (caddr elem)))))))))
 
-(defun gnus-inews-add-send-actions (winconf buffer article &optional config)
+(defun gnus-inews-add-send-actions (winconf buffer article
+					    &optional config yanked)
   (make-local-hook 'message-sent-hook)
   (add-hook 'message-sent-hook (if gnus-agent 'gnus-agent-possibly-do-gcc
 				 'gnus-inews-do-gcc) nil t)
@@ -494,8 +499,8 @@ Gcc: header for archiving purposes."
 	(set-buffer ,buffer)
 	,(when article
 	   (if (eq config 'forward)
-	       `(gnus-summary-mark-article-as-forwarded ',article)
-	     `(gnus-summary-mark-article-as-replied ',article)))))
+	       `(gnus-summary-mark-article-as-forwarded ',yanked)
+	     `(gnus-summary-mark-article-as-replied ',yanked)))))
    'send))
 
 (put 'gnus-setup-message 'lisp-indent-function 1)
@@ -834,6 +839,7 @@ header line with the old Message-ID."
   (when article-buffer
     (gnus-copy-article-buffer))
   (let ((gnus-article-reply (and article-buffer (gnus-summary-article-number)))
+	(gnus-article-yanked-articles yank)
 	(add-to-list gnus-add-to-list))
     (gnus-setup-message (cond (yank 'reply-yank)
 			      (article-buffer 'reply)
@@ -1033,6 +1039,7 @@ If VERY-WIDE, make a very wide reply."
 		(caar yank)
 	      (car yank)))
 	   (gnus-article-reply (or article (gnus-summary-article-number)))
+	   (gnus-article-yanked-articles yank)
 	   (headers ""))
       ;; Stripping headers should be specified with mail-yank-ignored-headers.
       (when yank
@@ -1165,7 +1172,8 @@ For the `inline' alternatives, also see the variable
 		message-forward-show-mml nil))
 	 (t
 	  (setq message-forward-as-mime (not message-forward-as-mime))))
-	(let ((gnus-article-reply (gnus-summary-article-number)))
+	(let* ((gnus-article-reply (gnus-summary-article-number))
+	       (gnus-article-yanked-articles (list (list gnus-article-reply))))
 	  (gnus-setup-message 'forward
 	    (gnus-summary-select-article)
 	    (let ((mail-parse-charset

@@ -700,36 +700,33 @@ external if displayed external."
 	  (message "Viewing with %s" method)
 	  (cond
 	   (needsterm
-	    (unwind-protect
-		(if window-system
-		    (start-process "*display*" nil
-				   mm-external-terminal-program
-				   "-e" shell-file-name
-				   shell-command-switch
-				   (mm-mailcap-command
-				    method file (mm-handle-type handle)))
-		  (require 'term)
-		  (require 'gnus-win)
-		  (set-buffer
-		   (setq buffer
-			 (make-term "display"
-				    shell-file-name
-				    nil
-				    shell-command-switch
-				    (mm-mailcap-command
-				     method file
-				     (mm-handle-type handle)))))
-		  (term-mode)
-		  (term-char-mode)
-		  (set-process-sentinel
-		   (get-buffer-process buffer)
-		   `(lambda (process state)
-		      (if (eq 'exit (process-status process))
-			  (gnus-configure-windows
-			   ',gnus-current-window-configuration))))
-		  (gnus-configure-windows 'display-term))
-	      (mm-handle-set-external-undisplayer handle (cons file buffer)))
-	    (message "Displaying %s..." (format method file))
+	    (let ((command (mm-mailcap-command
+			    method file (mm-handle-type handle))))
+	      (unwind-protect
+		  (if window-system
+		      (start-process "*display*" nil
+				     mm-external-terminal-program
+				     "-e" shell-file-name
+				     shell-command-switch command)
+		    (require 'term)
+		    (require 'gnus-win)
+		    (set-buffer
+		     (setq buffer
+			   (make-term "display"
+				      shell-file-name
+				      nil
+				      shell-command-switch command)))
+		    (term-mode)
+		    (term-char-mode)
+		    (set-process-sentinel
+		     (get-buffer-process buffer)
+		     `(lambda (process state)
+			(if (eq 'exit (process-status process))
+			    (gnus-configure-windows
+			     ',gnus-current-window-configuration))))
+		    (gnus-configure-windows 'display-term))
+		(mm-handle-set-external-undisplayer handle (cons file buffer)))
+	      (message "Displaying %s..." command))
 	    'external)
 	   (copiousoutput
 	    (with-current-buffer outbuf
@@ -756,17 +753,17 @@ external if displayed external."
 		   (ignore-errors (kill-buffer buffer))))))
 	    'inline)
 	   (t
-	    (unwind-protect
-		(start-process "*display*"
-			       (setq buffer
-				     (generate-new-buffer " *mm*"))
-			       shell-file-name
-			       shell-command-switch
-			       (mm-mailcap-command
-				method file (mm-handle-type handle)))
-	      (mm-handle-set-external-undisplayer
-	       handle (cons file buffer)))
-	    (message "Displaying %s..." (format method file))
+	    (let ((command (mm-mailcap-command
+			    method file (mm-handle-type handle))))
+	      (unwind-protect
+		  (start-process "*display*"
+				 (setq buffer
+				       (generate-new-buffer " *mm*"))
+				 shell-file-name
+				 shell-command-switch command)
+		(mm-handle-set-external-undisplayer
+		 handle (cons file buffer)))
+	      (message "Displaying %s..." command))
 	    'external)))))))
 
 (defun mm-mailcap-command (method file type-list)
@@ -774,7 +771,8 @@ external if displayed external."
 	(beg 0)
 	(uses-stdin t)
 	out sub total)
-    (while (string-match "%{\\([^}]+\\)}\\|'%s'\\|%s\\|%t\\|%%" method beg)
+    (while (string-match "%{\\([^}]+\\)}\\|'%s'\\|\"%s\"\\|%s\\|%t\\|%%"
+			 method beg)
       (push (substring method beg (match-beginning 0)) out)
       (setq beg (match-end 0)
 	    total (match-string 0 method)
@@ -782,7 +780,10 @@ external if displayed external."
       (cond
        ((string= total "%%")
 	(push "%" out))
-       ((or (string= total "%s") (string= total "'%s'"))
+       ((or (string= total "%s")
+	    ;; We do our own quoting.
+	    (string= total "'%s'")
+	    (string= total "\"%s\""))
 	(setq uses-stdin nil)
 	(push (mm-quote-arg
 	       (gnus-map-function mm-path-name-rewrite-functions file)) out))
