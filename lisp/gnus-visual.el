@@ -276,6 +276,8 @@ The `.' will match any character.")
      ["Describe group" gnus-summary-describe-group t]
      ["Exit group" gnus-summary-exit t]
      ["Exit group without updating" gnus-summary-quit t]
+     ["Edit local kill file" gnus-summary-edit-local-kill t]
+     ["Edit global kill file" gnus-summary-edit-global-kill t]
      ))
 
   (easy-menu-define
@@ -302,11 +304,13 @@ The `.' will match any character.")
    gnus-summary-kill-menu
    gnus-summary-mode-map
    ""
-   '("Kill"
-     ["Edit local kill file" gnus-summary-edit-local-kill t]
-     ["Edit global kill file" gnus-summary-edit-global-kill t]
-     ["Expunge with score below..." gnus-score-set-expunge-below t]
-     ["Set mark with score below..." gnus-score-set-mark-below t]
+   '("Score"
+     ("Score file"
+      ["Switch current score file" gnus-score-change-score-file t]
+      ["Set mark below" gnus-score-set-mark-below t]
+      ["Set expunge below" gnus-score-set-expunge-below t]
+      ["Edit current score file" gnus-score-edit-alist t]
+      ["Edit score file" gnus-score-edit-file t])
      ["Raise score with current subject" 
       gnus-summary-temporarily-raise-by-subject t]
      ["Raise score with current author" 

@@ -23,6 +23,9 @@
 
 ;;; Commentary:
 
+;; For an overview of what the interface functions do, please see the
+;; Gnus sources.  
+
 ;;; Code:
 
 (require 'nnheader)
@@ -55,8 +58,6 @@
 ;;; Interface functions
 
 (defun nnfolder-retrieve-headers (sequence &optional newsgroup server)
-  "Retrieve the headers for the articles in SEQUENCE.
-Newsgroup must be selected before calling this function."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -94,27 +95,21 @@ Newsgroup must be selected before calling this function."
       'headers)))
 
 (defun nnfolder-open-server (host &optional service)
-  "Open mbox backend."
   (setq nnfolder-status-string "")
   (setq nnfolder-group-alist nil)
   (nnheader-init-server-buffer))
 
 (defun nnfolder-close-server (&optional server)
-  "Close news server."
   t)
 
 (defun nnfolder-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (buffer-name nntp-server-buffer)))
 
 (defun nnfolder-status-message (&optional server)
-  "Return server status response as string."
   nnfolder-status-string)
 
 (defun nnfolder-request-article (article &optional newsgroup server buffer)
-  "Select ARTICLE by number."
   (nnfolder-possibly-change-group newsgroup)
   (if (stringp article)
       nil
@@ -143,7 +138,6 @@ If the stream is opened, return T, otherwise return NIL."
 	      t))))))
 
 (defun nnfolder-request-group (group &optional server dont-check)
-  "Select news GROUP."
   (save-excursion
     (nnfolder-possibly-change-group group)
     (and (assoc group nnfolder-group-alist)
@@ -166,7 +160,6 @@ If the stream is opened, return T, otherwise return NIL."
   t)
 
 (defun nnfolder-request-list (&optional server)
-  "List active newsgoups."
   (if server (nnfolder-get-new-mail))
   (or (nnmail-find-file nnfolder-active-file)
       (progn
@@ -175,25 +168,17 @@ If the stream is opened, return T, otherwise return NIL."
 	(nnmail-find-file nnfolder-active-file))))
 
 (defun nnfolder-request-newgroups (date &optional server)
-  "List groups created after DATE."
   (nnfolder-request-list server))
 
 (defun nnfolder-request-list-newsgroups (&optional server)
-  "List newsgroups (defined in NNTP2)."
   (nnmail-find-file nnfolder-newsgroups-file))
 
 (defun nnfolder-request-post (&optional server)
-  "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
 (fset 'nnfolder-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnfolder-request-expire-articles (articles newsgroup &optional server force)
-  "Expire all articles in the ARTICLES list in group GROUP.
-The list of unexpired articles will be returned (ie. all articles that
-were too fresh to be expired).
-If FORCE is non-nil, the ARTICLES will be deleted without looking at
-the date."
   (nnfolder-possibly-change-group newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
@@ -217,6 +202,14 @@ the date."
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
       (save-buffer)
+      ;; Find the lowest active article in this group.
+      (let ((active (nth 1 (assoc newsgroup nnfolder-group-alist))))
+	(goto-char (point-min))
+	(while (not (search-forward
+		     (nnfolder-article-string (car active)) nil t))
+	  (setcar (car active) (1+ (car active)))
+	  (goto-char (point-min))))
+      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       rest)))
 
 (defun nnfolder-request-move-article
@@ -253,7 +246,6 @@ the date."
   (nnfolder-possibly-change-group group)
   (let ((buf (current-buffer))
 	result beg)
-    (debug (current-buffer))
     (goto-char (point-min))
     (if (looking-at "X-From-Line: ")
 	(replace-match "From ")
@@ -293,9 +285,6 @@ the date."
 ;;; Internal functions.
 
 (defun nnfolder-delete-mail (&optional force leave-delim)
-  "If FORCE, delete article no matter how many X-Gnus-Newsgroup
-headers there are. If LEAVE-DELIM, don't delete the Unix mbox
-delimeter line."
   ;; Beginning of the article.
   (save-excursion
     (save-restriction
@@ -388,7 +377,6 @@ delimeter line."
 			  (cdr group-art) (current-time-string)))))))
 
 (defun nnfolder-active-number (group)
-  "Find the next article number in GROUP."
   (let ((active (car (cdr (assoc group nnfolder-group-alist)))))
     (setcdr active (1+ (cdr active)))
     (cdr active)))
@@ -418,6 +406,7 @@ delimeter line."
 	    (save-excursion
 	      (save-restriction
 		(narrow-to-region start end)
+		(nnmail-insert-lines)
 		(nnfolder-insert-newsgroup-line 
 		 (cons nil (nnfolder-active-number nnfolder-current-group))))))
 	(goto-char end)))

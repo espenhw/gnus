@@ -24,6 +24,8 @@
 ;;; Commentary:
 
 ;; Based on nnspool.el by Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>.
+;; For an overview of what the interface functions do, please see the
+;; Gnus sources.  
 
 ;;; Code:
 
@@ -55,8 +57,6 @@
 ;;; Interface functions.
 
 (defun nnmh-retrieve-headers (sequence &optional newsgroup server)
-  "Retrieve the headers for the articles in SEQUENCE.
-Newsgroup must be selected before calling this function."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -80,6 +80,7 @@ Newsgroup must be selected before calling this function."
 		  (forward-char -1)
 		(goto-char (point-max))
 		(insert "\n\n"))
+	      (insert (format "Lines: %d\n" (count-lines (point) (point-max))))
 	      (insert ".\n")
 	      (delete-region (point) (point-max))))
 	(setq sequence (cdr sequence))
@@ -101,26 +102,20 @@ Newsgroup must be selected before calling this function."
       'headers)))
 
 (defun nnmh-open-server (host &optional service)
-  "Open nnmh mail backend."
   (setq nnmh-status-string "")
   (nnheader-init-server-buffer))
 
 (defun nnmh-close-server (&optional server)
-  "Close news server."
   t)
 
 (defun nnmh-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
 (defun nnmh-status-message (&optional server)
-  "Return server status response as string."
   nnmh-status-string)
 
 (defun nnmh-request-article (id &optional newsgroup server buffer)
-  "Select article by message ID (or number)."
   (nnmh-possibly-change-directory newsgroup)
   (let ((file (if (stringp id)
 		  nil
@@ -133,7 +128,6 @@ If the stream is opened, return T, otherwise return NIL."
 	  (nnmail-find-file file)))))
 
 (defun nnmh-request-group (group &optional server dont-check)
-  "Select news GROUP."
   (and nnmh-get-new-mail (or dont-check (nnmh-get-new-mail)))
   (let ((pathname (nnmail-article-pathname group nnmh-directory))
 	dir)
@@ -165,7 +159,6 @@ If the stream is opened, return T, otherwise return NIL."
 	  t))))
 
 (defun nnmh-request-list (&optional server dir)
-  "Get list of active articles in all newsgroups."
   (and server nnmh-get-new-mail (nnmh-get-new-mail))
   (or dir
       (save-excursion
@@ -200,20 +193,14 @@ If the stream is opened, return T, otherwise return NIL."
   t)
 
 (defun nnmh-request-newgroups (date &optional server)
-  "List groups created after DATE."
   (nnmh-request-list server))
 
 (defun nnmh-request-post (&optional server)
-  "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
 (fset 'nnmh-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnmh-request-expire-articles (articles newsgroup &optional server force)
-  "Expire all articles in the ARTICLES list in group GROUP.
-The list of unexpired articles will be returned (ie. all articles that
-were too fresh to be expired).
-If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
   (nnmh-possibly-change-directory newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
@@ -355,12 +342,12 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 (defun nnmh-get-new-mail ()
   "Read new incoming mail."
   (let (incoming)
-    (nnmh-create-directories)
     (if (and nnmh-get-new-mail nnmail-spool-file
 	     (file-exists-p nnmail-spool-file)
 	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
 	(progn
 	  (message "nnmh: Reading incoming mail...")
+	  (nnmh-create-directories)
 	  (setq incoming 
 		(nnmail-move-inbox nnmail-spool-file
 				   (concat nnmh-directory "Incoming")))

@@ -23,6 +23,9 @@
 
 ;;; Commentary:
 
+;; For an overview of what the interface functions do, please see the
+;; Gnus sources.  
+
 ;;; Code:
 
 (require 'nnheader)
@@ -57,8 +60,6 @@
 ;;; Interface functions
 
 (defun nnbabyl-retrieve-headers (sequence &optional newsgroup server)
-  "Retrieve the headers for the articles in SEQUENCE.
-Newsgroup must be selected before calling this function."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -111,27 +112,21 @@ Newsgroup must be selected before calling this function."
       'headers)))
 
 (defun nnbabyl-open-server (host &optional service)
-  "Open mbox backend."
   (setq nnbabyl-status-string "")
   (setq nnbabyl-group-alist nil)
   (nnheader-init-server-buffer))
 
 (defun nnbabyl-close-server (&optional server)
-  "Close news server."
   t)
 
 (defun nnbabyl-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
 (defun nnbabyl-status-message (&optional server)
-  "Return server status response as string."
   nnbabyl-status-string)
 
 (defun nnbabyl-request-article (article &optional newsgroup server buffer)
-  "Select ARTICLE by number."
   (nnbabyl-possibly-change-newsgroup newsgroup)
   (if (stringp article)
       nil
@@ -162,7 +157,6 @@ If the stream is opened, return T, otherwise return NIL."
 	      t))))))
 
 (defun nnbabyl-request-group (group &optional server dont-check)
-  "Select news GROUP."
   (save-excursion
     (if (nnbabyl-possibly-change-newsgroup group)
 	(if dont-check
@@ -184,31 +178,22 @@ If the stream is opened, return T, otherwise return NIL."
   t)
 
 (defun nnbabyl-request-list (&optional server)
-  "List active newsgoups."
   (if server (nnbabyl-get-new-mail))
   (nnmail-find-file nnbabyl-active-file))
 
 (defun nnbabyl-request-newgroups (date &optional server)
-  "List groups created after DATE."
   (nnbabyl-request-list server))
 
 (defun nnbabyl-request-list-newsgroups (&optional server)
-  "List newsgroups (defined in NNTP2)."
   (setq nnbabyl-status-string "nnbabyl: LIST NEWSGROUPS is not implemented.")
   nil)
 
 (defun nnbabyl-request-post (&optional server)
-  "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
 (fset 'nnbabyl-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnbabyl-request-expire-articles (articles newsgroup &optional server force)
-  "Expire all articles in the ARTICLES list in group GROUP.
-The list of unexpired articles will be returned (ie. all articles that
-were too fresh to be expired).
-If FORCE is non-nil, the ARTICLES will be deleted without looking at
-the date."
   (nnbabyl-possibly-change-newsgroup newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
@@ -232,6 +217,14 @@ the date."
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
       (save-buffer)
+      ;; Find the lowest active article in this group.
+      (let ((active (nth 1 (assoc newsgroup nnbabyl-group-alist))))
+	(goto-char (point-min))
+	(while (not (search-forward
+		     (nnbabyl-article-string (car active)) nil t))
+	  (setcar (car active) (1+ (car active)))
+	  (goto-char (point-min))))
+      (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
       rest)))
 
 (defun nnbabyl-request-move-article 
@@ -300,10 +293,10 @@ the date."
 
 ;;; Low-Level Interface
 
+;; If FORCE, delete article no matter how many X-Gnus-Newsgroup
+;; headers there are. If LEAVE-DELIM, don't delete the Unix mbox
+;; delimeter line.
 (defun nnbabyl-delete-mail (&optional force leave-delim)
-  "If FORCE, delete article no matter how many X-Gnus-Newsgroup
-headers there are. If LEAVE-DELIM, don't delete the Unix mbox
-delimeter line."
   ;; Delete the current X-Gnus-Newsgroup line.
   (or force
       (delete-region
@@ -348,7 +341,7 @@ delimeter line."
 	  (int-to-string article)))
 
 (defun nnbabyl-save-mail ()
-  "Called narrowed to an article."
+  ;; Called narrowed to an article.
   (let ((group-art (nreverse (nnmail-article-group 'nnbabyl-active-number))))
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
@@ -372,7 +365,7 @@ delimeter line."
 	    (setq group-art (cdr group-art)))))))
 
 (defun nnbabyl-active-number (group)
-  "Find the next article number in GROUP."
+  ;; Find the next article number in GROUP.
   (let ((active (car (cdr (assoc group nnbabyl-group-alist)))))
     (setcdr active (1+ (cdr active)))
     (cdr active)))

@@ -24,6 +24,8 @@
 ;;; Commentary:
 
 ;; Based on nnspool.el by Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>.
+;; For an overview of what the interface functions do, please see the
+;; Gnus sources.  
 
 ;;; Code:
 
@@ -71,8 +73,6 @@ all. This may very well take some time.")
 ;;; Interface functions.
 
 (defun nnml-retrieve-headers (sequence &optional newsgroup server)
-  "Retrieve the headers for the articles in SEQUENCE.
-Newsgroup must be selected before calling this function."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -125,21 +125,16 @@ Newsgroup must be selected before calling this function."
   (nnheader-init-server-buffer))
 
 (defun nnml-close-server (&optional server)
-  "Close news server."
   t)
 
 (defun nnml-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
 (defun nnml-status-message (&optional server)
-  "Return server status response as string."
   nnml-status-string)
 
 (defun nnml-request-article (id &optional newsgroup server buffer)
-  "Select article by message ID (or number)."
   (nnml-possibly-change-directory newsgroup)
   (let ((file (if (stringp id)
 		  nil
@@ -152,7 +147,6 @@ If the stream is opened, return T, otherwise return NIL."
 	  (nnmail-find-file file)))))
 
 (defun nnml-request-group (group &optional server dont-check)
-  "Select news GROUP."
   (if (not (nnml-possibly-change-directory group))
       (progn
 	(setq nnml-status-string "Invalid group (no such directory)")
@@ -183,58 +177,58 @@ If the stream is opened, return T, otherwise return NIL."
   t)
 
 (defun nnml-request-list (&optional server)
-  "List active newsgoups."
   (if server (nnml-get-new-mail))
   (save-excursion
     (nnmail-find-file nnml-active-file)))
 
 (defun nnml-request-newgroups (date &optional server)
-  "List groups created after DATE."
   (nnml-request-list server))
 
 (defun nnml-request-list-newsgroups (&optional server)
-  "List newsgroups (defined in NNTP2)."
   (save-excursion
     (nnmail-find-file nnml-newsgroups-file)))
 
 (defun nnml-request-post (&optional server)
-  "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
 (fset 'nnml-request-post-buffer 'nnmail-request-post-buffer)
 
 (defun nnml-request-expire-articles (articles newsgroup &optional server force)
-  "Expire all articles in the ARTICLES list in group GROUP.
-The list of unexpired articles will be returned (ie. all articles that
-were too fresh to be expired).
-If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
   (nnml-possibly-change-directory newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
+	 (active-articles 
+	  (mapcar
+	   (function
+	    (lambda (name)
+	      (string-to-int name)))
+	   (directory-files nnml-current-directory nil "^[0-9]+$" t)))
+	 (max-article (max active-articles))
 	 article rest mod-time)
-    (if nnmail-keep-last-article
-	(progn
-	  (setq articles (sort articles '>))
-	  (setq rest (cons (car articles) rest))
-	  (setq articles (cdr articles))))
     (while articles
       (setq article (concat nnml-current-directory (int-to-string
 						      (car articles))))
       (if (setq mod-time (nth 5 (file-attributes article)))
-	  (if (or force
-		  (> (nnmail-days-between
-		      (current-time-string)
-		      (current-time-string mod-time))
-		     days))
+	  (if (and (or (not nnmail-keep-last-article)
+		       (not (= (car articles) max-article)))
+		   (or force
+		       (> (nnmail-days-between
+			   (current-time-string)
+			   (current-time-string mod-time))
+			  days)))
 	      (progn
 		(and gnus-verbose-backends (message "Deleting %s..." article))
 		(condition-case ()
 		    (delete-file article)
 		  (file-error nil))
+		(setq active-articles (delq (car articles) active-articles))
 		(nnml-nov-delete-article newsgroup (car articles)))
 	    (setq rest (cons (car articles) rest))))
       (setq articles (cdr articles)))
+    (let ((active (nth 1 (assoc newsgroup nnml-group-alist))))
+      (setcar active (min active-articles))
+      (nnmail-save-active nnml-group-alist nnml-active-file))
     (nnml-save-nov)
     rest))
 

@@ -52,7 +52,7 @@ Newsgroup must be selected before calling this function."
     (let ((file nil)
 	  (number (length sequence))
 	  (count 0)
-	  beg article art-string start stop)
+	  beg article art-string start stop lines)
       (nndoc-possibly-change-buffer newsgroup server)
       (while sequence
 	(setq article (car sequence))
@@ -66,12 +66,20 @@ Newsgroup must be selected before calling this function."
 			(concat "^" rmail-unix-mail-delimiter) nil t)
 		       (point-min))))
 	      (search-forward "\n\n" nil t)
+	      (setq lines (count-lines 
+			   (point)
+			   (or
+			    (save-excursion
+			      (re-search-forward 
+			       (concat "^" rmail-unix-mail-delimiter) nil t))
+			    (point-max))))
 	      (setq stop (1- (point)))
 	      (set-buffer nntp-server-buffer)
 	      (insert (format "221 %d Article retrieved.\n" article))
 	      (setq beg (point))
 	      (insert-buffer-substring nndoc-current-buffer start stop)
 	      (goto-char (point-max))
+	      (insert (format "Lines: %d\n" lines))
 	      (insert ".\n")))
 	(setq sequence (cdr sequence)))
 

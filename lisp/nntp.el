@@ -185,9 +185,9 @@ instead call function `nntp-status-message' to get status message.")
 	'headers))))
 
 (defun nntp-open-server (server &optional service)
-  "Open news server on SERVER.
+  "Open SERVER.
 If SERVER is nil, use value of environment variable `NNTPSERVER'.
-If optional argument SERVICE is non-nil, open by the service name."
+If SERVICE, this this as the port number."
   (let ((server (or server (getenv "NNTPSERVER")))
 	(status nil)
 	(timer 
@@ -215,7 +215,7 @@ If optional argument SERVICE is non-nil, open by the service name."
     status))
 
 (defun nntp-close-server (&optional server)
-  "Close news server."
+  "Close connection to SERVER."
   (nntp-possibly-change-server nil server)
   (unwind-protect
       (progn
@@ -232,8 +232,7 @@ If optional argument SERVICE is non-nil, open by the service name."
 (fset 'nntp-request-quit (symbol-function 'nntp-close-server))
 
 (defun nntp-server-opened (&optional server)
-  "Return server process status.
-If the stream is opened, return non-nil, otherwise return nil."
+  "Say whether a connection to SERVER has been opened."
   (if (or server nntp-current-server)
       (let ((process (nth 1 (assoc (or server nntp-current-server)
 				   nntp-server-alist))))
@@ -241,7 +240,7 @@ If the stream is opened, return non-nil, otherwise return nil."
 	     (memq (process-status process) '(open run))))))
 
 (defun nntp-status-message (&optional server)
-  "Return server status response as string."
+  "Return server status as a string."
   (if (and nntp-status-string
 	   ;; NNN MESSAGE
 	   (string-match "[0-9][0-9][0-9][ \t]+\\([^\r]*\\).*$"
@@ -251,7 +250,7 @@ If the stream is opened, return non-nil, otherwise return nil."
     nntp-status-string))
 
 (defun nntp-request-article (id &optional newsgroup server buffer)
-  "Select article by message ID (or number)."
+  "Request article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
   (unwind-protect
       (progn
@@ -264,7 +263,7 @@ If the stream is opened, return non-nil, otherwise return nil."
     (if buffer (set-process-buffer nntp-server-process nntp-server-buffer))))
 
 (defun nntp-request-body (id &optional newsgroup server)
-  "Select article body by message ID (or number)."
+  "Request body of article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
   (prog1
       ;; If NEmacs, end of message may look like: "\256\215" (".^M")
@@ -272,77 +271,79 @@ If the stream is opened, return non-nil, otherwise return nil."
     (nntp-decode-text)))
 
 (defun nntp-request-head (id &optional newsgroup server)
-  "Select article head by message ID (or number)."
+  "Request head of article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
   (prog1
       (nntp-send-command "^\\.\r$" "HEAD" id)
     (nntp-decode-text)))
 
 (defun nntp-request-stat (id &optional newsgroup server)
-  "Select article by message ID (or number)."
+  "Request STAT of article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
   (nntp-send-command "^[23].*\r$" "STAT" id))
 
 (defun nntp-request-group (group &optional server dont-check)
-  "Select news GROUP."
+  "Select GROUP."
   (if (nntp-possibly-change-server nil server)
       (nntp-send-command "^.*\r$" "GROUP" group)))
 
 (defun nntp-request-group-description (group &optional server)
-  "Select news GROUP."
+  "Get description of GROUP."
   (if (nntp-possibly-change-server nil server)
-      (nntp-send-command "^.*\r$" "XGTITLE" group)))
+      (prog1
+	  (nntp-send-command "^.*\r$" "XGTITLE" group)
+	(nntp-decode-text))))
 
 (defun nntp-close-group (group &optional server)
   t)
 
 (defun nntp-request-list (&optional server)
-  "List active newsgroups."
+  "List active groups."
   (nntp-possibly-change-server nil server)
   (prog1
       (nntp-send-command "^\\.\r$" "LIST")
     (nntp-decode-text)))
 
 (defun nntp-request-list-newsgroups (&optional server)
-  "List newsgroups (defined in NNTP2)."
+  "List groups."
   (nntp-possibly-change-server nil server)
   (prog1
       (nntp-send-command "^\\.\r$" "LIST NEWSGROUPS")
     (nntp-decode-text)))
 
 (defun nntp-request-newgroups (date &optional server)
-  "List new groups (defined in NNTP2)."
+  "List new groups."
   (nntp-possibly-change-server nil server)
-  (let ((date (timezone-parse-date date))
-	(time-string
-	 (format "%s%02d%02d %s%s%s"
-		 (substring (aref date 0) 2) (string-to-int (aref date 1)) 
-		 (string-to-int (aref date 2)) (substring (aref date 3) 0 2)
-		 (substring (aref date 3) 3 5) (substring (aref date 3) 6 8))))
+  (let* ((date (timezone-parse-date date))
+	 (time-string
+	  (format "%s%02d%02d %s%s%s"
+		  (substring (aref date 0) 2) (string-to-int (aref date 1)) 
+		  (string-to-int (aref date 2)) (substring (aref date 3) 0 2)
+		  (substring 
+		   (aref date 3) 3 5) (substring (aref date 3) 6 8))))
     (prog1
 	(nntp-send-command "^\\.\r$" "NEWGROUPS" time-string)
       (nntp-decode-text))))
 
 (defun nntp-request-list-distributions (&optional server)
-  "List distributions (defined in NNTP2)."
+  "List distributions."
   (nntp-possibly-change-server nil server)
   (prog1
       (nntp-send-command "^\\.\r$" "LIST DISTRIBUTIONS")
     (nntp-decode-text)))
 
 (defun nntp-request-last (&optional newsgroup server)
-  "Set current article pointer to the previous article
-in the current news group."
+  "Decrease the current article pointer."
   (nntp-possibly-change-server newsgroup server)
   (nntp-send-command "^[23].*\r$" "LAST"))
 
 (defun nntp-request-next (&optional newsgroup server)
-  "Advance current article pointer."
+  "Advance the current article pointer."
   (nntp-possibly-change-server newsgroup server)
   (nntp-send-command "^[23].*\r$" "NEXT"))
 
 (defun nntp-request-post (&optional server)
-  "Post a new news in current buffer."
+  "Post the current buffer."
   (nntp-possibly-change-server nil server)
   (if (nntp-send-command "^[23].*\r$" "POST")
       (progn
@@ -353,8 +354,14 @@ in the current news group."
 	(nntp-wait-for-response "^[23].*$"))))
 
 (defun nntp-request-post-buffer 
-  (post group subject header article-buffer info follow-to
-	respect-poster)
+  (post group subject header article-buffer info follow-to respect-poster)
+  "Request a buffer suitable for composing an article.
+If POST, this is an original article; otherwise it's a followup.
+GROUP is the group to be posted to, the article should have subject
+SUBJECT.  HEADER is a Gnus header vector.  ARTICLE-BUFFER contains the
+article being followed up.  INFO is a Gnus info list.  If FOLLOW-TO,
+post to this group instead.  If RESPECT-POSTER, heed the special
+\"poster\" value of the Followup-to header."
   (if (assq 'to-address (nth 4 info))
       (nnmail-request-post-buffer 
        post group subject header article-buffer info follow-to respect-poster)
@@ -427,7 +434,7 @@ in the current news group."
 (defun nntp-send-mode-reader ()
   "Send the MODE READER command to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
-It will make innd servers enter nnrpd mode to allow actual article
+It will make innd servers spawn an nnrpd process to allow actual article
 reading."
   (nntp-send-command "^.*\r$" "MODE READER"))
 
@@ -471,21 +478,19 @@ It will prompt for a password."
     (set-buffer nntp-server-buffer)
     ;; Insert newline at end of buffer.
     (goto-char (point-max))
-    (if (not (bolp))
-	(insert "\n"))
+    (or (bolp) (insert "\n"))
     ;; Delete status line.
     (goto-char (point-min))
     (delete-region (point) (progn (forward-line 1) (point)))
-    ;; Delete `^M' at end of line.
-    ;; (replace-regexp "\r$" "")
+    ;; Delete `^M' at the end of lines.
     (while (not (eobp))
       (end-of-line)
-      (if (= (preceding-char) ?\r)
-	  (delete-char -1))
+      (and (= (preceding-char) ?\r)
+	   (delete-char -1))
       (forward-line 1))
-    ;; Delete `.' at end of buffer (end of text mark).
+    ;; Delete `.' at end of the buffer (end of text mark).
     (goto-char (point-max))
-    (forward-line -1)			;(beginning-of-line)
+    (forward-line -1)
     (if (looking-at "^\\.$")
 	(delete-region (point) (progn (forward-line 1) (point))))
     ;; Replace `..' at beginning of line with `.'.
@@ -501,8 +506,7 @@ It will prompt for a password."
   (save-excursion
     ;; Insert newline at end of buffer.
     (goto-char (point-max))
-    (if (not (bolp))
-	(insert "\n"))
+    (or (bolp) (insert "\n"))
     ;; Replace `.' at beginning of line with `..'.
     (goto-char (point-min))
     ;; (replace-regexp "^\\." "..")

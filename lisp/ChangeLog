@@ -1,3 +1,86 @@
+Sat Mar 25 05:05:26 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-compress-newsrc-assoc,
+	gnus-uncompress-newsrc-assoc): Compress lists of marked articles
+	before writing them to the .newsrc.eld file.
+	(gnus-select-newsgroup): auto-expire match on full name.
+	(gnus-select-newsgroup): New element in select methods:
+	auto-expire. 
+	(gnus-save-scores): New variable. 
+	(gnus-summary-exit): Use it.
+	(gnus-newsrc-to-gnus-format): If .newsrc was newer than
+	.newsrc.eld, all foreign groups would be hosed.
+
+	* gnus.el: All range functions have changed to allow an extended
+	syntax.
+
+Fri Mar 24 07:17:20 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-move-article): Copy marks when moving
+	articles. 
+	(gnus-set-sorted-intersection): Would compute incorrect
+	intersection. 
+
+	* nndoc.el (nndoc-retrieve-headers): Insert Lines header.
+	* nnmh.el (nnmh-retrieve-headers): Ditto.
+	(nndigest-retrieve-headers): Ditto.
+
+	* nndigest.el (nndigest-narrow-to-article): Don't include the
+	closing digest separator in an article. 
+
+	* gnus.el (gnus-group-change-level): When subscribing to
+	non-existant groups, would claim that there was one unread article
+	in the group.
+	(gnus-summary-delete-article): Remove process mark after deleting
+	articles. 
+	(gnus-score-load-file): 'files was not properly handled, and edits
+	would end up with the wrong alist as the current one. 
+	(gnus-score-edit-alist): Name change from -file. 
+	(gnus-score-edit-file): New function and keystroke.
+
+	* nntp.el (nntp-request-newgroups): Would bug out due to a `let'
+	instead of a `let*'.
+
+	* gnus.el (gnus-score-save): Score files would not be saved. 
+	(gnus-summary-update-line): Would mark as read-below even when
+	attempting to remove the mark.
+
+Thu Mar 23 08:29:56 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-save-article-file,
+	gnus-summary-save-article-folder,
+	gnus-summary-save-article-rmail): New commands and keystrokes.
+	(gnus-summary-sort): All sort commands now also work when
+	threading is used.
+	(gnus-summary-mode-map): Several key changes.
+
+	* nnml.el (nnml-request-expire-articles): Update active file as
+	well. 
+	* nnbabyl.el (nnbabyl-request-expire-articles): Ditto.
+	* nnfolder.el (nnfolder-request-expire-articles): Ditto.
+	* nnmbox.el (nnmbox-request-expire-articles): Ditto.
+
+	* nnmail.el (nnmail-tmp-directory): New variable.
+	(nnmail-move-inbox): Use it.
+
+	* nnvirtual.el (nnvirtual-update-marked): Would insert non-visible
+	component groups into the group buffer.
+
+	* nnmh.el (nnmh-get-new-mail): Don't create directories unless
+	mail reading is wanted.
+
+	* nnfolder.el (nnfolder-read-folder): Insert number of lines in
+	the article.
+
+	* gnus.el (gnus-group-unsubscribe-group): Would refuse to
+	subscribe to groups not in active file. 
+
+Thu Mar 23 13:23:45 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Remove two calls to `debug'.
+
+	* gnus.el: 0.40 is released.
+
 Thu Mar 23 06:29:03 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: 0.39 is released.

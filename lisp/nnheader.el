@@ -136,6 +136,8 @@
 (defvar news-reply-yank-from nil)
 (defvar news-reply-yank-message-id nil)
 
+;; All backends use this function, so I moved it to this file.
+
 (defun nnheader-init-server-buffer ()
   (save-excursion
     (setq nntp-server-buffer (get-buffer-create " *nntpd*"))

@@ -69,6 +69,7 @@ Newsgroup must be selected before calling this function."
 		  (forward-char -1)
 		(goto-char (point-max))
 		(insert "\n\n"))
+	      (insert (format "Lines: %d\n" (count-lines (point) (point-max))))
 	      (insert ".\n")
 	      (delete-region (point) (point-max))))
 	(setq sequence (cdr sequence)))
@@ -194,9 +195,7 @@ Newsgroup must be selected before calling this function."
 	  (narrow-to-region 
 	   (point)
 	   (or (and (re-search-forward nndigest-separator nil t)
-		    (progn
-		      (beginning-of-line)
-		      (point)))
+		    (match-beginning 0))
 	       (point-max)))
 	  (cons (point-min) (point-max)))
       nil)))

@@ -23,6 +23,9 @@
 
 ;;; Commentary:
 
+;; For an overview of what the interface functions do, please see the
+;; Gnus sources.  
+
 ;;; Code:
 
 (require 'nnheader)
@@ -55,8 +58,6 @@
 ;;; Interface functions
 
 (defun nnmbox-retrieve-headers (sequence &optional newsgroup server)
-  "Retrieve the headers for the articles in SEQUENCE.
-Newsgroup must be selected before calling this function."
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -107,27 +108,21 @@ Newsgroup must be selected before calling this function."
       'headers)))
 
 (defun nnmbox-open-server (host &optional service)
-  "Open mbox backend."
   (setq nnmbox-status-string "")
   (setq nnmbox-group-alist nil)
   (nnheader-init-server-buffer))
 
 (defun nnmbox-close-server (&optional server)
-  "Close news server."
   t)
 
 (defun nnmbox-server-opened (&optional server)
-  "Return server process status, T or NIL.
-If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
 (defun nnmbox-status-message (&optional server)
-  "Return server status response as string."
   nnmbox-status-string)
 
 (defun nnmbox-request-article (article &optional newsgroup server buffer)
-  "Select ARTICLE by number."
   (nnmbox-possibly-change-newsgroup newsgroup)
   (if (stringp article)
       nil
@@ -156,7 +151,6 @@ If the stream is opened, return T, otherwise return NIL."
 	      t))))))
 
 (defun nnmbox-request-group (group &optional server dont-check)
-  "Select news GROUP."
   (save-excursion
     (if (nnmbox-possibly-change-newsgroup group)
 	(if dont-check
@@ -178,7 +172,6 @@ If the stream is opened, return T, otherwise return NIL."
   t)
 
 (defun nnmbox-request-list (&optional server)
-  "List active newsgoups."
   (if server (nnmbox-get-new-mail))
   (or (nnmail-find-file nnmbox-active-file)
       (progn
@@ -187,26 +180,19 @@ If the stream is opened, return T, otherwise return NIL."
 	(nnmail-find-file nnmbox-active-file))))
 
 (defun nnmbox-request-newgroups (date &optional server)
-  "List groups created after DATE."
   (nnmbox-request-list server))
 
 (defun nnmbox-request-list-newsgroups (&optional server)
-  "List newsgroups (defined in NNTP2)."
   (setq nnmbox-status-string "nnmbox: LIST NEWSGROUPS is not implemented.")
   nil)
 
 (defun nnmbox-request-post (&optional server)
-  "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
 (fset 'nnmbox-request-post-buffer 'nnmail-request-post-buffer)
 
-(defun nnmbox-request-expire-articles (articles newsgroup &optional server force)
-  "Expire all articles in the ARTICLES list in group GROUP.
-The list of unexpired articles will be returned (ie. all articles that
-were too fresh to be expired).
-If FORCE is non-nil, the ARTICLES will be deleted without looking at
-the date."
+(defun nnmbox-request-expire-articles 
+  (articles newsgroup &optional server force)
   (nnmbox-possibly-change-newsgroup newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
@@ -230,6 +216,14 @@ the date."
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
       (save-buffer)
+      ;; Find the lowest active article in this group.
+      (let ((active (nth 1 (assoc newsgroup nnmbox-group-alist))))
+	(goto-char (point-min))
+	(while (not (search-forward
+		     (nnmbox-article-string (car active)) nil t))
+	  (setcar (car active) (1+ (car active)))
+	  (goto-char (point-min))))
+      (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
       rest)))
 
 (defun nnmbox-request-move-article
@@ -264,7 +258,6 @@ the date."
 (defun nnmbox-request-accept-article (group &optional last)
   (let ((buf (current-buffer))
 	result beg)
-    (debug (current-buffer))
     (goto-char (point-min))
     (if (looking-at "X-From-Line: ")
 	(replace-match "From ")
@@ -303,10 +296,10 @@ the date."
 
 ;;; Internal functions.
 
+;; If FORCE, delete article no matter how many X-Gnus-Newsgroup
+;; headers there are. If LEAVE-DELIM, don't delete the Unix mbox
+;; delimeter line.
 (defun nnmbox-delete-mail (&optional force leave-delim)
-  "If FORCE, delete article no matter how many X-Gnus-Newsgroup
-headers there are. If LEAVE-DELIM, don't delete the Unix mbox
-delimeter line."
   ;; Delete the current X-Gnus-Newsgroup line.
   (or force
       (delete-region

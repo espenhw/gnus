@@ -383,7 +383,7 @@ If the stream is opened, return T, otherwise return NIL."
 	(gnus-add-marked-articles 
 	 (car (car group-alist)) (cdr (car mark-lists)) 
 	 (cdr (car group-alist)) nil t)
-	(gnus-group-update-group (car (car group-alist)))
+	(gnus-group-update-group (car (car group-alist)) t)
 	(setq group-alist (cdr group-alist)))
       (setq mark-lists (cdr mark-lists)))))
 

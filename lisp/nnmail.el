@@ -78,16 +78,16 @@ says how many days an article can be stored before it is considered
 Eg.:
 
 (setq nnmail-expiry-wait-function
-  (function
-    (lambda (newsgroup)
-      (cond ((string-match \"private\" newsgroup) 31)
-            ((string-match \"junk\" newsgroup) 1)
-	    (t 7)))))")
+      (lambda (newsgroup)
+        (cond ((string-match \"private\" newsgroup) 31)
+              ((string-match \"junk\" newsgroup) 1)
+	      (t 7))))")
 
 (defvar nnmail-spool-file 
   (or (getenv "MAIL")
       (concat "/usr/spool/mail/" (user-login-name)))
   "Where the mail backends will look for incoming mail.
+This variable is \"/usr/spool/mail/$user\" by default.
 If this variable is nil, no mail backends will read incoming mail.")
 
 (defvar nnmail-read-incoming-hook nil
@@ -101,15 +101,18 @@ running (\"xwatch\", etc.)
 Eg.
 
 (add-hook 'nnmail-read-incoming-hook 
-	  (function
 	   (lambda () 
 	     (start-process \"mailsend\" nil 
-			    \"/local/bin/mailsend\" \"read\" \"mbox\"))))")
+			    \"/local/bin/mailsend\" \"read\" \"mbox\")))")
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defvar nnmail-prepare-incoming-hook nil
   "Hook called before treating incoming mail.
 The hook is run in a buffer with all the new, incoming mail.")
+
+;; Suggested by Mejia Pablo J <pjm9806@usl.edu>.
+(defvar nnmail-tmp-directory nil
+  "If non-nil, use this directory for temporary storage when reading incoming mail.")
 
 (defvar nnmail-large-newsgroup 50
   "The number of the articles which indicates a large newsgroup.
@@ -229,6 +232,10 @@ messages will be shown to indicate the current status.")
 		(expand-file-name (substitute-in-file-name inbox))))
 	(tofile (make-temp-name (expand-file-name tofile)))
 	movemail popmail errors)
+    ;; Check whether the inbox is to be moved to the special tmp dir. 
+    (if nnmail-tmp-directory
+	(setq tofile (concat (file-name-as-directory nnmail-tmp-directory)
+			     (file-name-nondirectory tofile))))
     ;; If getting from mail spool directory,
     ;; use movemail to move rather than just renaming,
     ;; so as to interlock with the mailer.
