@@ -382,7 +382,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Oort Gnus v0.06
+This manual corresponds to Oort Gnus v0.06.
 
 @end ifinfo
 
@@ -10919,23 +10919,24 @@ signature and the @samp{What me?} @code{Organization} header.
 
 The first element in each style is called the @code{match}.  If it's a
 string, then Gnus will try to regexp match it against the group name.
-If it is the form @code{(header match regexp)}, then Gnus will look
-for header (the second element in the form) in the original article , and
-compare that to the last regexp in the form.  If it's a function
-symbol, that function will be called with no arguments.  If it's a
-variable symbol, then the variable will be referenced.  If it's a list,
-then that list will be @code{eval}ed.  In any case, if this returns a
-non-@code{nil} value, then the style is said to @dfn{match}.
+If it is the form @code{(header MATCH REGEXP)}, then Gnus will look in
+the original article for a header whose name is MATCH and compare that
+REGEXP.  MATCH and REGEXP are strings. If it's a function symbol, that
+function will be called with no arguments.  If it's a variable symbol,
+then the variable will be referenced.  If it's a list, then that list
+will be @code{eval}ed.  In any case, if this returns a non-@code{nil}
+value, then the style is said to @dfn{match}.
 
-Each style may contain a arbitrary amount of @dfn{attributes}.  Each
+Each style may contain an arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @code{(@var{name} @var{value})} pair.  The
 attribute name can be one of @code{signature}, @code{signature-file},
-@code{address} (user email address), @code{name} (user name) or
-@code{body}.  The attribute name can also be a string or a symbol.  In
-that case, this will be used as a header name, and the value will be
-inserted in the headers of the article; if the value is @code{nil}, the
-header name will be removed.  If the attribute name is @code{eval}, the
-form is evaluated, and the result is thrown away.
+@code{address} (overriding @code{user-mail-address}), @code{name}
+(overriding @code{(user-full-name)}) or @code{body}.  The attribute name
+can also be a string or a symbol.  In that case, this will be used as a
+header name, and the value will be inserted in the headers of the
+article; if the value is @code{nil}, the header name will be removed.
+If the attribute name is @code{eval}, the form is evaluated, and the
+result is thrown away.
 
 The attribute value can be a string (used verbatim), a function with
 zero arguments (the return value will be used), a variable (its value
