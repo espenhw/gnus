@@ -699,7 +699,7 @@ Respects the process/prefix convention."
 	     (new-articles (spam-list-articles
 			    gnus-newsgroup-articles
 			    classification))
-	     (changed-articles (gnus-set-difference new-articles old-articles))))
+	     (changed-articles (gnus-set-difference new-articles old-articles)))
 	;; now that we have the changed articles, we go through the processors
 	(dolist (processor-param spam-list-of-processors)
 	  (let ((processor (nth 0 processor-param))
