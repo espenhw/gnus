@@ -1846,7 +1846,7 @@ The following commands are available:
 	    (when (looking-at "[0-9]")
 	      (push (read (current-buffer)) cached-articles))
 	    (forward-line 1))
-	  (setq cached-articles (sort cached-articles '<))))
+	  (setq cached-articles (nreverse cached-articles))))
       (if (setq uncached-articles 
 		(gnus-set-difference articles cached-articles))
 	  (progn
