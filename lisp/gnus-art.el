@@ -5796,11 +5796,11 @@ specified by `gnus-button-alist'."
 
 This variable is a list of FUNCTION or (REGEXP . FUNCTION).  If item
 is FUNCTION, FUNCTION will be apply to all newsgroups.  If item is a
-(REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
+\(REGEXP . FUNCTION), FUNCTION will be only apply to thes newsgroups
 whose names match REGEXP.
 
 For example:
-((\"chinese\" . gnus-decode-encoded-word-region-by-guess)
+\((\"chinese\" . gnus-decode-encoded-word-region-by-guess)
  mail-decode-encoded-word-region
  (\"chinese\" . rfc1843-decode-region))
 ")
