@@ -1,3 +1,10 @@
+2001-11-30  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Use gnus-range-add
+	instead of gnus-union, for speed.  Suggested by Christoph Conrad
+	<christoph.conrad@gmx.de>.
+	(gnus-agent-fetch-group-1): Add verbose message.
+
 2001-11-29 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-write-active): Make sure sym is a cons
