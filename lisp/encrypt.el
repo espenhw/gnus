@@ -1,5 +1,5 @@
 ;;; encrypt.el --- file encryption routines
-;; Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 ;; Author: Teodor Zlatanov <tzz@lifelogs.com>
 ;; Created: 2003/01/24
@@ -36,15 +36,6 @@
 
 (defgroup encrypt nil
   "File encryption configuration.")
-
-(defcustom encrypt-password-cache-expiry 200
-  "Encryption password timeout.
-When set, directly sets password-cache-expiry"
-  :type 'integer
-  :group 'encrypt
-  :set (lambda (symbol value)
-	 (set symbol value)
-	 (setq password-cache-expiry value)))
 
 (defcustom encrypt-file-alist nil
   "List of file names or regexes matched with encryptions.
