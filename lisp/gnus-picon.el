@@ -253,7 +253,7 @@ If picons are already displayed, remove them."
   (interactive)
   (gnus-with-article-buffer
     (if (memq 'newsgroups-picon gnus-article-wash-types)
-	(gnus-delete-images  'newsgroups-picon)
+	(gnus-delete-images 'newsgroups-picon)
       (gnus-picon-transform-newsgroups "newsgroups")
       (gnus-picon-transform-newsgroups "followup-to"))))
 

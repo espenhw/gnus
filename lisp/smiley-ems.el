@@ -115,7 +115,8 @@ regexp to replace with IMAGE.  IMAGE is the name of a PBM file in
 
 ;;;###autoload
 (defun smiley-region (start end)
-  "Replace in the region `smiley-regexp-alist' matches with corresponding images."
+  "Replace in the region `smiley-regexp-alist' matches with corresponding images.
+A list of images is returned."
   (interactive "r")
   (when (and (fboundp 'display-graphic-p)
 	     (display-graphic-p))
@@ -125,25 +126,25 @@ regexp to replace with IMAGE.  IMAGE is the name of a PBM file in
 	    (overlays-in start end))
     (unless smiley-cached-regexp-alist
       (smiley-update-cache))
+    (setq smiley-active t)
     (save-excursion
       (let ((beg (or start (point-min)))
-	    group overlay image)
+	    group overlay image images)
 	(dolist (entry smiley-cached-regexp-alist)
 	  (setq group (nth 1 entry)
 		image (nth 2 entry))
 	  (goto-char beg)
 	  (while (re-search-forward (car entry) end t)
 	    (when image
-	      (setq overlay (make-overlay (match-beginning group)
-					  (match-end group)))
-	      (overlay-put overlay
-			   'display `(when smiley-active ,@image))
-	      (overlay-put overlay 'mouse-face 'highlight)
-	      (overlay-put overlay 'smiley t)
-	      (overlay-put overlay
-			   'help-echo "mouse-2: toggle smilies in buffer")
-	      (overlay-put overlay 'keymap smiley-mouse-map))))))
-    (setq smiley-active t)))
+	      (push image images)
+	      (add-text-properties
+	       (match-beginning group) (match-end group)
+	       `(display ,image
+			 mouse-face highlight
+			 smiley t
+			 help-echo "mouse-2: toggle smilies in buffer"
+			 keymap smiley-mouse-map)))))
+	images))))
 
 (defun smiley-toggle-buffer (&optional arg)
   "Toggle displaying smiley faces.
@@ -168,11 +169,18 @@ With arg, turn displaying on if and only if arg is positive."
   "Display textual emoticaons (\"smilies\") as small graphical icons.
 With arg, turn displaying on if and only if arg is positive."
   (interactive "P")
-  (save-excursion
-    (article-goto-body)
-    (smiley-region (point) (point-max))
-    (if (and (numberp arg) (<= arg 0))
-	(smiley-toggle-buffer arg))))
+  (gnus-with-article-buffer
+    (if (memq 'smiley gnus-article-wash-types)
+	(gnus-delete-images 'smiley)
+      (article-goto-body)
+      (let ((images (smiley-region (point) (point-max))))
+	(when images
+	  (gnus-add-wash-type 'smiley)
+	  (dolist (image images)
+	    (gnus-add-image 'smiley image))))
+      (when (and (numberp arg)
+		 (<= arg 0))
+	(smiley-toggle-buffer arg)))))
 
 (provide 'smiley)
 

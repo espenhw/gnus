@@ -1,5 +1,12 @@
 2001-12-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* smiley-ems.el (smiley-region): Return images.
+	(gnus-smiley-display): Allow toggling.
+	(smiley-region): Use text properties, not overlays.
+
+	* gnus-xmas.el (gnus-xmas-remove-image): New function, not
+	implemented yet.
+
 	* smiley-ems.el (smiley-update-cache): Check for valid types.
 
 	* gnus-art.el (gnus-with-article-buffer): New macro.

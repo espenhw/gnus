@@ -439,6 +439,7 @@ call it with the value of the `gnus-data' text property."
   (defalias 'gnus-image-type-available-p 'gnus-xmas-image-type-available-p)
   (defalias 'gnus-put-image 'gnus-xmas-put-image)
   (defalias 'gnus-create-image 'gnus-xmas-create-image)
+  (defalias 'gnus-remove-image 'gnus-xmas-remove-image)
 
   ;; These ones are not defcutom'ed, sometimes not even defvar'ed. They
   ;; probably should. If that is done, the code below should then be moved
@@ -832,6 +833,9 @@ XEmacs compatibility workaround."
   (let ((annot (make-annotation glyph nil 'text)))
     (set-extent-property annot 'mm t)
     (set-extent-property annot 'duplicable t)))
+
+(defun gnus-xmas-remove-image (image)
+  )
 
 (provide 'gnus-xmas)
 
