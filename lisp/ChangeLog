@@ -1,3 +1,31 @@
+2003-01-01  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-summary-prepare-exit): added slots for spam- and
+	ham-processing of articles; use the new
+	spam-group-(spam|ham)-contents-p functions
+	(spam-group-spam-contents-p, spam-group-ham-contents-p): new
+	convenience functions
+	(spam-mark-junk-as-spam-routine): use the new
+	spam-group-spam-contents-p function
+
+	* gnus.el (spam-process, spam-contents, spam-process-destination):
+	added new parameters with corresponding global variables
+	(gnus-group-spam-exit-processor-ifile,
+	gnus-group-spam-exit-processor-bogofilter,
+	gnus-group-spam-exit-processor-blacklist,
+	gnus-group-spam-exit-processor-whitelist,
+	gnus-group-spam-exit-processor-BBDB,
+	gnus-group-spam-classification-spam,
+	gnus-group-spam-classification-ham): added new symbols for the
+	spam-process and spam-contents parameters
+
+	* spam.el (spam-ham-marks, spam-spam-marks): changed list
+	customization and list itself to store mark symbol rather than
+	mark character.
+	(spam-bogofilter-register-routine): added logic to generate mark
+	values list from spam-ham-marks and spam-spam-marks, so (member)
+	would work.
+
 2003-01-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* message.el (message-cross-post-followup-to): Fix comment.

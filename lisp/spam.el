@@ -37,6 +37,7 @@
 (require 'gnus-sum)
 
 (require 'gnus-uu)			; because of key prefix issues
+(require 'gnus)	; for the definitions of group content classification and spam processors
 
 ;; FIXME!  We should not require `message' until we actually need
 ;; them.  Best would be to declare needed functions as auto-loadable.
@@ -221,19 +222,42 @@ articles before they get registered by Bogofilter."
 (push '((eq mark gnus-spam-mark) . spam-face)
       gnus-summary-highlight)
 
+;; convenience functions
+(defun spam-group-spam-contents-p (group)
+  (if (stringp group)
+      (or (member group spam-junk-mailgroups)
+	  (memq 'gnus-group-spam-classification-spam (gnus-parameter-spam-contents group)))
+    nil))
+  
+(defun spam-group-ham-contents-p (group)
+  (if (stringp group)
+      (memq 'gnus-group-spam-classification-ham (gnus-parameter-spam-contents group))
+    nil))
+  
+
 ;;; Hooks dispatching.  A bit raw for now.
 
 (defun spam-summary-prepare ()
   (spam-mark-junk-as-spam-routine))
 
 (defun spam-summary-prepare-exit ()
-  (spam-bogofilter-register-routine))
+  (spam-bogofilter-register-routine)
+  (when (spam-group-spam-contents-p gnus-newsgroup-name)
+    (				      
+     ;; TODO: the spam processors here
+     ;; TODO: the spam-processed articles will be moved here
+     ))
+  (when (spam-group-ham-contents-p gnus-newsgroup-name)
+    (
+     ;; TODO: the ham processors here
+     )))
 
 (add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
 (add-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
 
 (defun spam-mark-junk-as-spam-routine ()
-  (when (member gnus-newsgroup-name spam-junk-mailgroups)
+  ;; check the global list of group names spam-junk-mailgroups and the group parameters
+  (when (spam-group-spam-contents-p gnus-newsgroup-name)
     (let ((articles gnus-newsgroup-articles)
 	  article)
       (while articles
@@ -530,6 +554,7 @@ spamicity coefficient of each, and the overall article spamicity."
 	  article mark ham-articles spam-articles spam-mark-values ham-mark-values)
 
       ;; marks are stored as symbolic values, so we have to dereference them for memq to work
+      ;; we wouldn't have to do this if gnus-summary-article-mark returned a symbol.
       (dolist (mark spam-ham-marks)
 	(push (symbol-value mark) ham-mark-values))
 

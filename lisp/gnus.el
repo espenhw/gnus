@@ -1741,6 +1741,134 @@ articles to list when the group is a large newsgroup (see
 `gnus-large-newsgroup').  If it is `nil', the default value is the
 total number of articles in the group.")
 
+;; group parameters for spam processing added by Ted Zlatanov <tzz@lifelogs.com>
+(defvar gnus-group-spam-classification-spam t
+  "Spam group classification (requires spam.el).
+This group contains spam messages.  On summary entry, unread messages
+will be marked as spam.  On summary exit, the specified spam
+processors will be invoked on spam-marked messages, then those
+messages will be expired, so the spam processor will only see a
+spam-marked message once.")
+
+(defvar gnus-group-spam-classification-ham 'ask
+  "The ham value for the spam group parameter (requires spam.el).
+On summary exit, the specified ham processors will be invoked on
+ham-marked messages.  Exercise caution, since the ham processor will
+see the same message more than once because there is no ham message
+registry.")
+
+(gnus-define-group-parameter
+ spam-contents
+ :type list
+ :function-document
+ "The spam type (spam, ham, or neither) of the group."
+ :variable gnus-spam-newsgroup-contents
+ :variable-default nil
+ :variable-document
+ "*Groups in which to automatically mark new articles as spam on
+summary entry.  If non-nil, this should be a list of group name
+regexps that should match all groups in which to do automatic spam
+tagging, associated with a classification (spam, ham, or neither).
+This only makes sense for mail groups."
+ :variable-group spam
+ :variable-type '(repeat 
+			 (list :tag "Group contents spam/ham classification"
+			  (regexp :tag "Group")
+			  (choice
+			   (variable-item gnus-group-spam-classification-spam)
+			   (variable-item gnus-group-spam-classification-ham)
+			   (other :tag "Unclassified" nil))))
+
+ :parameter-type '(list :tag "Group contents spam/ham classification"
+		   (choice :tag "Group contents classification for spam sorting"
+			   (variable-item gnus-group-spam-classification-spam)
+			   (variable-item gnus-group-spam-classification-ham)
+			   (other :tag "Unclassified" nil)))
+ :parameter-document
+ "The spam classification (spam, ham, or neither) of this group.
+When a spam group is entered, all unread articles are marked as spam.")
+
+(defvar gnus-group-spam-exit-processor-ifile "ifile"
+  "The ifile summary exit spam processor.
+Only applicable to spam groups.")
+
+(defvar gnus-group-spam-exit-processor-bogofilter "bogofilter"
+  "The Bogofilter summary exit spam processor.
+Only applicable to spam groups.")
+
+(defvar gnus-group-spam-exit-processor-blacklist "blacklist"
+  "The Blacklist summary exit spam processor.
+Only applicable to spam groups.")
+
+(defvar gnus-group-ham-exit-processor-whitelist "whitelist"
+  "The whitelist summary exit ham processor.
+Only applicable to non-spam (unclassified and ham) groups.")
+
+(defvar gnus-group-ham-exit-processor-BBDB "bbdb"
+  "The BBDB summary exit ham processor.
+Only applicable to non-spam (unclassified and ham) groups.")
+
+(gnus-define-group-parameter
+ spam-process
+ :type list
+ :parameter-type '(choice :tag "Spam Summary Exit Processor"
+                          :value nil
+			  (list :tag "Spam Summary Exit Processor Choices"
+			   (set 
+			    (variable-item gnus-group-spam-exit-processor-ifile)
+			    (variable-item gnus-group-spam-exit-processor-bogofilter)
+			    (variable-item gnus-group-spam-exit-processor-blacklist)
+			    (variable-item gnus-group-ham-exit-processor-whitelist)
+			    (variable-item gnus-group-ham-exit-processor-BBDB))))
+ :function-document
+ "Which spam or ham processors will be applied to the GROUP articles at summary exit."
+ :variable gnus-spam-process-newsgroups
+ :variable-default nil
+ :variable-document
+ "*Groups in which to automatically process spam or ham articles with
+a backend on summary exit.  If non-nil, this should be a list of group
+name regexps that should match all groups in which to do automatic
+spam processing, associated with the appropriate processor.  This only makes sense
+for mail groups."
+ :variable-group spam
+ :variable-type '(repeat :tag "Spam/Ham Processors" 
+			 (list :tag "Spam Summary Exit Processor Choices"
+			  (regexp :tag "Group Regexp") 
+			  (set :tag "Spam/Ham Summary Exit Processor"
+			       (variable-item gnus-group-spam-exit-processor-ifile)
+			       (variable-item gnus-group-spam-exit-processor-bogofilter)
+			       (variable-item gnus-group-spam-exit-processor-blacklist)
+			       (variable-item gnus-group-ham-exit-processor-whitelist)
+			       (variable-item gnus-group-ham-exit-processor-BBDB))))
+ :parameter-document
+ "Which spam processors will be applied to the spam or ham GROUP articles at summary exit.")
+
+(gnus-define-group-parameter
+ spam-process-destination
+ :parameter-type '(choice :tag "Destination for spam-processed articles at summary exit"
+			  (string :tag "Move to a group")
+			  (other :tag "Expire" nil))
+ :function-document
+ "Where spam-processed articles will go at summary exit."
+ :variable gnus-spam-process-destinations
+ :variable-default nil
+ :variable-document
+ "*Groups in which to explicitly send spam-processed articles to
+another group, or expire them (the default).  If non-nil, this should
+be a list of group name regexps that should match all groups in which
+to do spam-processed article moving, associated with the destination
+group or `nil' for explicit expiration.  This only makes sense for
+mail groups."
+ :variable-group spam
+ :variable-type '(repeat :tag "Spam-processed articles destination" 
+			 (list
+			  (regexp :tag "Group Regexp") 
+			  (choice :tag "Destination for spam-processed articles at summary exit"
+				  (string :tag "Move to a group")
+				  (other :tag "Expire" nil))))
+ :parameter-document
+ "Where spam-processed articles will go at summary exit.")
+
 (defcustom gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name."
   :group 'gnus-group-visual
