@@ -449,8 +449,9 @@
 
 (defun nnmbox-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (nnmail-get-spool-files group))
-	incoming incomings)
+  (let* ((spools (nnmail-get-spool-files group))
+	 (all-spools spools)
+	 incoming incomings)
     (nnmbox-read-mbox)
     (if (or (not nnmbox-get-new-mail) (not nnmail-spool-file))
 	()
@@ -467,6 +468,7 @@
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnmbox-mbox-file "-Incoming")))
 	   (save-excursion
+	     (setq group (nnmail-get-split-group (car spools) group))
 	     (let ((in-buf (nnmail-split-incoming 
 			    incoming 'nnmbox-save-mail t group)))
 	       (set-buffer nnmbox-mbox-buffer)
@@ -480,6 +482,7 @@
 	     (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
 	     (set-buffer nnmbox-mbox-buffer)
 	     (save-buffer)))
+      (if incomings (run-hooks 'nnmail-read-incoming-hook))
       (while incomings
 	(and nnmail-delete-incoming
 	     (file-writable-p incoming) 

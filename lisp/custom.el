@@ -854,7 +854,7 @@ If the optional argument TYPES is non-nil, use that as the local types.
 If the optional argument SET is non-nil, use that to set external data.
 If the optional argument GET is non-nil, use that to get external data."
   (switch-to-buffer name)
-  (buffer-disable-undo)
+  (buffer-disable-undo (current-buffer))
   (custom-mode)
   (setq custom-local-type-properties types)
   (if (null custom)

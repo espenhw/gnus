@@ -390,8 +390,9 @@
 
 (defun nnmh-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (nnmail-get-spool-files group))
-	incoming incomings)
+  (let* ((spools (nnmail-get-spool-files group))
+	 (all-spools spools)
+	 incoming incomings)
     (if (or (not nnmh-get-new-mail) (not nnmail-spool-file))
 	()
       ;; We first activate all the groups.
@@ -410,6 +411,7 @@
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnmh-directory "Incoming")))
 	   (setq incomings (cons incoming incomings))
+	   (setq group (nnmail-get-split-group (car spools) group))
 	   (nnmail-split-incoming incoming 'nnmh-save-mail nil group)))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 

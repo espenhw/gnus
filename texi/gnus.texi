@@ -1852,7 +1852,8 @@ thinks should carry this mail message.
 @vindex nnmail-crosspost
 The mail backends all support cross-posting.  If several regexps match,
 the mail will be "cross-posted" to all those groups.
-@code{nnmail-crosspost} says whether to use this mechanism or not.
+@code{nnmail-crosspost} says whether to use this mechanism or not.  Note
+that no articles are crossposted to the general (@samp{""}) group. 
 
 @node Fancy Mail Splitting
 @subsubsection Fancy Mail Splitting
@@ -2720,8 +2721,11 @@ Replied.
 @item i
 Score as a number.
 @item z
+@vindex gnus-summary-zcore-fuzz
 Zcore, @samp{+} if above the default level and @samp{-} if below the
-default level. 
+default level.  If the difference between
+@code{gnus-summary-default-level} and the score is less than
+@code{gnus-summary-zcore-fuzz}, this spec will not be used.
 @item x
 @code{Xref}.
 @item D
@@ -5654,7 +5658,7 @@ Move the article from one mail group to another
 
 @item B c
 @kindex B c (Summary)
-@kindex copy mail
+@cindex copy mail
 @findex gnus-summary-copy-article
 Copy the article from one group (mail group or not) to a mail group
 (@code{gnus-summary-copy-article}).
@@ -5881,17 +5885,19 @@ other naughty stuff in innocent-looking articles.
 @vindex gnus-show-mime-method
 Gnus handles @sc{mime} by shoving the articles through
 @code{gnus-show-mime-method}, which is @code{metamail-buffer} by
-default.  Set @code{gnus-show-mime} to @code{t} if you want to use
-@sc{mime} all the time; it might be best to just use the toggling
-functions from the summary buffer to avoid getting nasty surprises. (For
-instance, you enter the group @samp{alt.sing-a-long} and, before you
-know it, @sc{mime} has decoded the sound file in the article and some
-horrible sing-a-long song comes streaming out out your speakers, and you
-can't find the volume button, because there isn't one, and people are
-starting to look at you, and you try to stop the program, but you can't,
-and you can't find the program to control the volume, and everybody else
-in the room suddenly decides to look at you disdainfully, and you'll
-feel rather stupid.)
+default.  If @code{gnus-strict-mime} is non-@code{nil}, the @sc{mime}
+method will only be used it there are @sc{mime} headers in the article.
+Set @code{gnus-show-mime} to @code{t} if you want to use @sc{mime} all
+the time; it might be best to just use the toggling functions from the
+summary buffer to avoid getting nasty surprises. (For instance, you
+enter the group @samp{alt.sing-a-long} and, before you know it,
+@sc{mime} has decoded the sound file in the article and some horrible
+sing-a-long song comes streaming out out your speakers, and you can't
+find the volume button, because there isn't one, and people are starting
+to look at you, and you try to stop the program, but you can't, and you
+can't find the program to control the volume, and everybody else in the
+room suddenly decides to look at you disdainfully, and you'll feel
+rather stupid.)
 
 Any similarity to real events and people is purely coincidental.  Ahem.
 
@@ -6277,6 +6283,19 @@ Here's a list of all possible keys:
 @code{summary-reply}, @code{info}, @code{summary-faq},
 @code{edit-group}, @code{edit-server}, @code{reply}, @code{reply-yank},
 @code{followup}, @code{followup-yank}.  
+
+@findex gnus-add-configuration
+Since this variable is so long and complicated, there's a function you
+can use to ease changing the config of a single setting:
+@code{gnus-add-configuration}.  If, for instance, you want to change the
+@code{article} setting, you could say:
+
+@lisp
+(gnus-add-configuration
+ '(article ([group 4]
+            [summary .25 point] 
+            [article 1.0])))
+@end lisp
 
 @end table
 

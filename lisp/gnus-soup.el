@@ -233,7 +233,7 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
   
 ;;; Internal Functions:
 
-;; Store the article in the current buffer. 
+;; Store the current buffer. 
 (defun gnus-soup-store (directory prefix headers format index)
   (add-hook 'gnus-exit-gnus-hook 'gnus-soup-save-areas)
   ;; Create the directory, if needed. 
@@ -354,9 +354,10 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 	 (packer (if (< (string-match "%s" packer)
 			(string-match "%d" packer))
 		     (format packer files
-			     (string-to-int (gnus-soup-unique-prefix)))
+			     (string-to-int (gnus-soup-unique-prefix dir)))
 		   (format packer 
-			   (string-to-int (gnus-soup-unique-prefix)) files)))
+			   (string-to-int (gnus-soup-unique-prefix dir))
+			   files)))
 	 (dir (expand-file-name dir)))
     (message "Packing %s..." packer)
     (if (zerop (call-process "sh" nil nil nil "-c" 
@@ -376,7 +377,7 @@ though the two last may be nil if they are missing."
   (let (areas)
     (save-excursion
       (set-buffer (gnus-find-file-noselect file 'force))
-      (buffer-disable-undo)
+      (buffer-disable-undo (current-buffer))
       (goto-char (point-min))
       (while (not (eobp))
 	(setq areas

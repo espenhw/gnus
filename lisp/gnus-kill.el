@@ -410,7 +410,9 @@ Returns the number of articles marked as read."
 	  (progn
 	    (delete-region beg (point))
 	    (insert (or (eval form) "")))
-	(condition-case () (eval form) (error nil))))
+	(save-excursion
+	  (set-buffer gnus-summary-buffer)
+	  (condition-case () (eval form) (error nil)))))
     (and (buffer-modified-p) (save-buffer))))
 
 ;; Parse an rn killfile.

@@ -26,6 +26,9 @@
 
 (defvar gnus-mouse-2 [mouse-2])
 (defvar gnus-easymenu 'easymenu)
+(defvar gnus-group-mode-hook ())
+(defvar gnus-summary-mode-hook ())
+(defvar gnus-article-mode-hook ())
 
 ;; We do not byte-compile this file, because error messages are such a
 ;; bore.  
@@ -40,8 +43,11 @@
 
     (or (memq 'underline (list-faces))
 	(funcall (intern "make-face") 'underline))
+    ;; Must avoid calling set-face-underline-p directly, because it
+    ;; is a defsubst in emacs19, and will make the .elc files non
+    ;; portable!
     (or (face-differs-from-default-p 'underline)
-	(set-face-underline-p 'underline t))
+  	(funcall 'set-face-underline-p 'underline t))
     (or (fboundp 'set-text-properties)
 	(defun set-text-properties (start end props &optional buffer)
 	  (if props
@@ -54,6 +60,7 @@
         (defun move-overlay (extent start end &optional buffer)
           (set-extent-endpoints extent start end)))
     (or (boundp 'standard-display-table) (setq standard-display-table nil))
+    (or (boundp 'read-event) (fset 'read-event 'next-command-event))
 
     (if (not gnus-visual)
 	()
@@ -93,6 +100,9 @@
 	 (not (string-match "29" emacs-version)))
     (setq gnus-hidden-properties '(invisible t)))
    
+   ((boundp 'MULE)
+    (provide 'gnusutil))
+   
    ))
 
 (eval-and-compile
@@ -121,20 +131,74 @@
     (fset 'gnus-set-mouse-face (lambda (string) string))
 
     (defun gnus-summary-make-display-table ()
+      ;; We start from the standard display table, if any.
       (let* ((table (window-display-table)))
 	(and (not table)
 	     (setq table (make-vector 261 ())))
+	;; Nix out all the control chars...
 	(let ((i 32))
 	  (while (>= (setq i (1- i)) 0)
 	    (aset table i [??])))
+	;; ... but not newline, of course.
 	(aset table ?\n nil)
-	(let ((i 160))
+	;; We nix out any glyphs over 126 that are not set already.  
+	(let ((i 256))
 	  (while (>= (setq i (1- i)) 127)
-	    (aset table i [??])))
-	(setq gnus-summary-display-table table)))
+	    (or (aref table i)
+		(aset table i [??]))))
+	(set-window-display-table (get-buffer-window (current-buffer)) table)))
+
+    (defun gnus-highlight-selected-summary ()
+      ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+      ;; Highlight selected article in summary buffer
+      (if gnus-summary-selected-face
+	  (save-excursion
+	    (let* ((beg (progn (beginning-of-line) (point)))
+		   (end (progn (end-of-line) (point)))
+		   (to (max 1 (1- (or (previous-single-property-change
+				       end 'mouse-face nil beg) end))))
+		   (from (1+ (or (next-single-property-change 
+				  beg 'mouse-face nil end) beg))))
+	      (if (< to beg)
+		  (progn
+		    (setq from beg)
+		    (setq to end)))
+	      (if gnus-newsgroup-selected-overlay
+ 		  (delete-extent gnus-newsgroup-selected-overlay))
+ 	      (setq gnus-newsgroup-selected-overlay
+ 		    (make-extent from to))
+ 	      (set-extent-face gnus-newsgroup-selected-overlay
+ 			       gnus-summary-selected-face)))))
 
     )
-
+   ((boundp 'MULE)
+    ;; Mule definitions
+    (defun top-short-string (str width)
+      "Return a substring of STRING, starting at top and its length is
+equal or smaller than WIDTH. This function doesn't split in the middle
+of multi-octet character. [tl-str]"
+      (substring str 0
+		 (let ((i 0) (w 0) chr (len (length str)))
+		   (catch 'label
+		     (while (< i len)
+		       (setq chr (elt str i))
+		       (setq w (+ w (char-width chr)))
+		       (if (> w width)
+			   (throw 'label i))
+		       (setq i (+ i (char-bytes chr)))
+		       )
+		     i))
+		 ))
+    
+    (defun gnus-format-max-width (form length)
+      (let* ((val (eval form))
+	     (valstr (if (numberp val) (int-to-string val) val)))
+	(if (> (length valstr) length)
+	    (top-short-string valstr length)
+	  valstr)))
+    
+    (defun gnus-summary-make-display-table ())
+    )
    ))
 
 (provide 'gnus-ems)

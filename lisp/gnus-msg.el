@@ -969,7 +969,7 @@ Headers in `gnus-required-headers' will be generated."
 	(goto-char (point-min))
 	(and (re-search-forward 
 	      (concat "^" (symbol-name (car headers)) ": *") nil t)
-	     (get-text-property 'gnus-delete (match-end 0))
+	     (get-text-property (match-end 0) 'gnus-delete)
 	     (gnus-delete-line))
 	(setq headers (cdr headers))))
     ;; Insert new Sender if the From is strange. 

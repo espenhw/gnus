@@ -1,3 +1,91 @@
+Sun Jun  4 00:48:38 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-catchup): Would not properly catchup all
+	ticked articles.
+
+	* nndoc.el (nndoc-number-of-articles): Would totally bug out on
+	mbox types. 
+
+Sat Jun  3 00:27:41 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-sort): Re-send async info after sorting. 
+	(gnus-strict-mime): New variable. 
+	(gnus-extract-address-components): XOVER From headers might not
+	support folded lines. 
+
+	* nnmail.el (nnmail-move-inbox): Always use movemail to move
+	incoming mail. 
+
+	* gnus.el (gnus-summary-zcore-fuzz): New variable. 
+	(gnus-summary-insert-line): Use it. 
+
+	* gnus-score.el (gnus-summary-score-entry): Remove Re:'s from
+	substring and regexp matches. 
+
+	* gnus-msg.el (gnus-inews-insert-headers): Would bug out on
+	existing message-ids. 
+
+	* gnus-ems.el: Provide gnusutil for Mule users. 
+
+	* gnus.el (gnus-summary-catchup): Would nix out dormant articles. 
+
+	* nntp.el (nntp-retrieve-headers-with-xover): Would give erronous
+	results on non-xover servers. 
+
+	* gnus.el (gnus-group-make-group): Would insert groups at the end
+	of the list at the beginning. 
+
+	* gnus-kill.el (gnus-kill-parse-gnus-kill-file): Switch to the
+	summary buffer before evaling nok-kill forms. 
+
+	* gnus-score.el (gnus-score-edit-done): Make sure the directory
+	where we save the score file exists. 
+
+	* gnus.el (gnus-retrieve-headers): Don't try to retrieve headers
+	by id from the cache.
+
+	* nnsoup.el (nnsoup-read-areas): New packets would bomb. 
+
+	* gnus.el (gnus-get-unread-articles): Check secondary groups kinda
+	unconditionally. 
+	(gnus-read-descriptions-file): Don't try to re-read desc file if
+	it failed the first time. 
+	(gnus-add-configuration): New function. 
+	(gnus-summary-next-article): The group window was selected. We
+	select the summary buffer.
+	(gnus-active-to-gnus-format): Would leave illegal group symbols
+	undefined. 
+
+Fri Jun  2 20:58:58 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnvirtual.el (nnvirtual-possibly-change-newsgroups): Make sure
+	the nnvirtual group doesn't include itself. 
+
+	* gnus-score.el (gnus-score-body): Changed message to "num of
+	tot". 
+
+	* nnbabyl.el (nnbabyl-get-new-mail): Remove ^_-s from incoming
+	mails. 
+
+	* gnus.el (gnus-mark-article-as-read): Did not remove articles
+	from the cache. 
+
+	* nnmail.el (nnmail-get-spool-files): Remove directories that
+	match the suffix. 
+
+	* gnus-score.el (gnus-summary-increase-score): Use sit-fors to
+	better mimic a keymap.
+	(gnus-summary-increase-score): Don't display match types that are
+	illegal for the header to be scored on.
+	(gnus-summary-increase-score): Allow C-h to list help. 
+
+	* nnmail.el (nnmail-get-split-group): Get the right group to split
+	in when doing procmail splits. 
+
+Fri Jun  2 17:25:28 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 0.81 is released. 
+
 Fri Jun  2 14:56:40 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.el (gnus-group-exit): Would offer to save summaries after

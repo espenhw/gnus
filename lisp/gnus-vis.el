@@ -511,7 +511,6 @@ highlight-headers-follow-url-netscape:
 	    (overlay-put gnus-newsgroup-selected-overlay 'face 
 			 gnus-summary-selected-face))))))
 
-
 ;; New implementation by Christian Limpach <Christian.Limpach@nice.ch>.
 (defun gnus-summary-highlight-line ()
   "Highlight current line according to `gnus-summary-highlight'."

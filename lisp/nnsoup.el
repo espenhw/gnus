@@ -338,7 +338,7 @@ The SOUP packet file name will be inserted at the %s.")
 	  (let ((e (cdr entry)))
 	    (while (cdr e)
 	      (setq e (cdr e)))
-	    (setcdr e (list (list (cons (setq lnum (1+ (cdr (nth 1 (car e)))))
+	    (setcdr e (list (list (cons (setq lnum (1+ (cdr (car (car e)))))
 					(+ lnum number)) 
 				  area)))))))))
 
@@ -459,6 +459,7 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-pack-replies ()
   "Make an outbound package of SOUP replies."
   (interactive)
+  (nnsoup-write-active-file)
   (nnsoup-write-replies)
   (gnus-soup-pack nnsoup-replies-directory nnsoup-packer))
 

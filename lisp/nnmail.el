@@ -90,6 +90,8 @@ Eg.:
   "Where the mail backends will look for incoming mail.
 This variable is \"/usr/spool/mail/$user\" by default.
 If this variable is nil, no mail backends will read incoming mail.
+If this variable is a list, all files mentioned in this list will be
+used as incoming mailboxes.
 If this variable is `procmail', the mail backends will look in
 `nnmail-procmail-directory' for spool files.")
 
@@ -329,9 +331,8 @@ This is nil by default for reasons of security.")
     ;; If getting from mail spool directory,
     ;; use movemail to move rather than just renaming,
     ;; so as to interlock with the mailer.
-    (setq movemail (string= (file-name-directory inbox)
-			    (file-truename rmail-spool-directory))
-	  popmail (string-match "^po:" (file-name-nondirectory inbox)))
+    (or (setq popmail (string-match "^po:" (file-name-nondirectory inbox)))
+	(setq movemail t))
     (if popmail (setq inbox (file-name-nondirectory inbox)))
     (if movemail
 	;; On some systems, /usr/spool/mail/foo is a directory
@@ -440,6 +441,19 @@ nn*-request-list should have been called before calling this function."
 	(setq group-assoc (cdr group-assoc)))
       (write-region 1 (point-max) (expand-file-name file-name) nil 'nomesg)
       (kill-buffer (current-buffer)))))
+
+(defun nnmail-get-split-group (file group)
+  (if (eq nnmail-spool-file 'procmail)
+      (cond (group group)
+	    ((string-match (concat "^" (expand-file-name
+					nnmail-procmail-directory)
+				   "\\(.*\\)" nnmail-procmail-suffix "$")
+			   (expand-file-name file))
+	     (substring (expand-file-name file)
+			(match-beginning 1) (match-end 1)))
+	    (t
+	     group))
+    group))
 
 (defun nnmail-split-incoming (incoming func &optional dont-kill group)
   "Go through the entire INCOMING file and pick out each individual mail.
@@ -550,7 +564,8 @@ FUNC will be called with the group name to determine the article number."
 			     (if (stringp (nth 1 (car methods)))
 				 (re-search-backward
 				  (car (cdr (car methods))) nil t)
-			       ;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
+			       ;; Suggested by Brian Edmonds 
+			       ;; <edmonds@cs.ubc.ca>.
 			       (funcall (nth 1 (car methods)) 
 					(car (car methods))))
 			   (error nil))
@@ -663,14 +678,22 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (if (null nnmail-spool-file)
       ;; No spool file whatsoever.
       nil)
-  (let ((procmails 
-	 ;; If procmail is used to get incoming mail, the files
-	 ;; are stored in this directory.
-	 (and (file-exists-p nnmail-procmail-directory)
-	      (directory-files 
-	       nnmail-procmail-directory 
-	       t (concat (if group group "")
-			 nnmail-procmail-suffix "$") t))))
+  (let* ((procmails 
+	  ;; If procmail is used to get incoming mail, the files
+	  ;; are stored in this directory.
+	  (and (file-exists-p nnmail-procmail-directory)
+	       (directory-files 
+		nnmail-procmail-directory 
+		t (concat (if group group "")
+			  nnmail-procmail-suffix "$") t)))
+	 (p procmails))
+    ;; Remove any directories that inadvertantly match the procmail
+    ;; suffix, which might happen if the suffix is "".
+    (while p
+      (and (or (file-directory-p (car p))
+	       (file-symlink-p (car p)))
+	   (setq procmails (delete (car p) procmails)))
+      (setq p (cdr p)))
     (cond ((listp nnmail-spool-file)
 	   (append nnmail-spool-file procmails))
 	  ((stringp nnmail-spool-file)
@@ -680,4 +703,4 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 
 (provide 'nnmail)
 
-;;; nnml.el ends here
+;;; nnmail.el ends here

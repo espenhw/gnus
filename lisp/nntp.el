@@ -886,24 +886,25 @@ It will prompt for a password."
 		    (< (- (nth 1 sequence) (car sequence)) nntp-nov-gap))
 	  (setq sequence (cdr sequence)))
 
-	  (nntp-send-xover-command first (car sequence))
-	  (setq sequence (cdr sequence)
-		count (1+ count))
+	  (if (not (nntp-send-xover-command first (car sequence)))
+	      ()
+	    (setq sequence (cdr sequence)
+		  count (1+ count))
 
-	  ;; Every 400 requests we have to read the stream in
-	  ;; order to avoid deadlocks.
-	  (if (or (null sequence)       ;All requests have been sent.
-		  (zerop (% count nntp-maximum-request)))
-	      (progn
-		(accept-process-output)
-		(while (progn
-			 (goto-char last-point)
-			 ;; Count replies.
-			 (while (re-search-forward "^[0-9][0-9][0-9] " nil t)
-			   (setq received (1+ received)))
-			 (setq last-point (point))
-			 (< received count))
-		  (nntp-accept-response)))))
+	    ;; Every 400 requests we have to read the stream in
+	    ;; order to avoid deadlocks.
+	    (if (or (null sequence)	;All requests have been sent.
+		    (zerop (% count nntp-maximum-request)))
+		(progn
+		  (accept-process-output)
+		  (while (progn
+			   (goto-char last-point)
+			   ;; Count replies.
+			   (while (re-search-forward "^[0-9][0-9][0-9] " nil t)
+			     (setq received (1+ received)))
+			   (setq last-point (point))
+			   (< received count))
+		    (nntp-accept-response))))))
 
       (if (not nntp-server-xover)
 	  ()
@@ -931,7 +932,9 @@ It will prompt for a password."
     (if (stringp nntp-server-xover)
 	;; If `nntp-server-xover' is a string, then we just send this
 	;; command. We do not wait for the reply.
-	(nntp-send-strings-to-server nntp-server-xover range)
+	(progn	
+	  (nntp-send-strings-to-server nntp-server-xover range)
+	  t)
       (let ((commands nntp-xover-commands))
 	;; `nntp-xover-commands' is a list of possible XOVER commands.
 	;; We try them all until we get at positive response. 
@@ -944,12 +947,15 @@ It will prompt for a password."
 	  (setq commands (cdr commands)))
 	;; If none of the commands worked, we disable XOVER.
 	(if (eq nntp-server-xover 'try)
-	    (setq nntp-server-xover nil))
+	    (save-excursion
+	      (set-buffer nntp-server-buffer)
+	      (erase-buffer)
+	      (setq nntp-server-xover nil)))
 	nntp-server-xover))))
 
 (defun nntp-send-strings-to-server (&rest strings)
   "Send list of STRINGS to news server as command and its arguments."
-  (let ((cmd (concat (mapconcat (lambda (s) s) strings " ") "\r\n")))
+  (let ((cmd (concat (mapconcat 'identity strings " ") "\r\n")))
     ;; We open the nntp server if it is down.
     (or (nntp-server-opened nntp-current-server)
 	(progn
@@ -999,8 +1005,17 @@ If SERVICE, this this as the port number."
 	(status nil)
 	(timer 
 	 (and nntp-connection-timeout 
-	      (run-at-time nntp-connection-timeout
-			   nil 'nntp-kill-connection server))))
+   	      (cond
+   	       ((fboundp 'run-at-time)
+		(run-at-time nntp-connection-timeout
+   			     nil 'nntp-kill-connection server))
+   	       ((fboundp 'start-itimer)
+   		;; Not sure if this will work or not, only one way to
+   		;; find out
+   		(eval '(start-itimer "nntp-timeout"
+				     (lambda ()
+				       (nntp-kill-connection server))
+				     nntp-connection-timeout nil)))))))
     (setq nntp-status-string "")
     (message "nntp: Connecting to server on %s..." server)
     (cond ((and server (nntp-open-server-internal server service))
@@ -1054,11 +1069,11 @@ If SERVICE, this this as the port number."
 
 (defun nntp-open-rlogin (server)
   (let ((proc (start-process "nntpd" nntp-server-buffer "rsh" server)))
-    (process-send-string proc (mapconcat (lambda (s) s) nntp-rlogin-parameters
+    (process-send-string proc (mapconcat 'identity nntp-rlogin-parameters
 					 " "))
     (process-send-string proc "\n")))
 
-(defun nntp-telnet-to-machine
+(defun nntp-telnet-to-machine ()
   (let (b)
     (telnet "localhost")
     (goto-char (point-min))
@@ -1175,7 +1190,7 @@ defining this function as macro."
 	(setq articles (cdr articles))))))
 
 (defun nntp-async-send-strings (&rest strings)
-  (let ((cmd (concat (mapconcat (lambda (s) s) strings " ") "\r\n")))
+  (let ((cmd (concat (mapconcat 'identity strings " ") "\r\n")))
     (or (nntp-async-server-opened)
 	(nntp-async-open-server)
 	(error (nntp-status-message)))

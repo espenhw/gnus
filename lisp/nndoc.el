@@ -97,7 +97,8 @@
 	  'headers
 	(set-buffer nndoc-current-buffer)
 	(goto-char (point-min))
-	(re-search-forward nndoc-first-article nil t)
+	(re-search-forward (or nndoc-first-article 
+			       nndoc-article-begin) nil t)
 	(or (not nndoc-head-begin)
 	    (re-search-forward nndoc-head-begin nil t))
 	(re-search-forward nndoc-head-end nil t)
@@ -274,7 +275,8 @@
     (widen)
     (goto-char (point-min))
     (let ((num 0))
-      (if (re-search-forward nndoc-first-article nil t)
+      (if (re-search-forward (or nndoc-first-article
+				 nndoc-article-begin) nil t)
 	(progn
 	  (setq num 1)
           (while (and (re-search-forward nndoc-article-begin nil t)

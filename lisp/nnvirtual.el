@@ -269,6 +269,8 @@ If the stream is opened, return T, otherwise return NIL."
 	    (setq nnvirtual-current-groups nil)
 	    (while newsrc
 	      (and (string-match regexp (car (car newsrc)))
+		   (not (string= (gnus-group-real-name (car (car newsrc)))
+				 nnvirtual-current-group))
 		   (setq nnvirtual-current-groups
 			 (cons (car (car newsrc)) nnvirtual-current-groups)))
 	      (setq newsrc (cdr newsrc))))

@@ -445,7 +445,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
       ;; time.
       (if (or (not (buffer-name nnfolder-current-buffer))
 	      (not (and (bufferp nnfolder-current-buffer)
-			(verify-visited-file-modtime nnfolder-current-buffer))))
+			(verify-visited-file-modtime 
+			 nnfolder-current-buffer))))
 	  (progn
 	    (if (and (buffer-name nnfolder-current-buffer)
 		     (bufferp nnfolder-current-buffer))
@@ -457,11 +458,14 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	  ()
 	(save-excursion
 	  (setq file (concat nnfolder-directory group))
-	  (if (not (file-exists-p file))
-	      (write-region 1 1 file t 'nomesg))
-	  (set-buffer (nnfolder-read-folder file))
-	  (setq nnfolder-buffer-alist (cons (list group (current-buffer))
-					    nnfolder-buffer-alist))))))
+	  (if (or (file-directory-p file)
+		  (file-symlink-p file))
+	      ()
+	    (if (not (file-exists-p file))
+		(write-region 1 1 file t 'nomesg))
+	    (set-buffer (nnfolder-read-folder file))
+	    (setq nnfolder-buffer-alist (cons (list group (current-buffer))
+					      nnfolder-buffer-alist)))))))
   (setq nnfolder-current-group group))
 
 (defun nnfolder-save-mail (&optional group)
@@ -613,8 +617,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 
 (defun nnfolder-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (nnmail-get-spool-files group))
-	incomings incoming)
+  (let* ((spools (nnmail-get-spool-files group))
+	 (all-spools spools)
+	 incomings incoming)
     (if (or (not nnfolder-get-new-mail) (not nnmail-spool-file))
 	()
       ;; We first activate all the groups.
@@ -632,6 +637,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnfolder-directory "Incoming")))
 	   (setq incomings (cons incoming incomings))
+	   (setq group (nnmail-get-split-group (car spools) group))
 	   (nnmail-split-incoming incoming 'nnfolder-save-mail nil group)))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 

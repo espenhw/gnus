@@ -488,10 +488,16 @@
 	(and (buffer-modified-p (current-buffer)) (save-buffer))
 	(nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)))))
 
+(defun nnbabyl-remove-incoming-delims ()
+  (goto-char (point-min))
+  (while (search-forward "\^_" nil t)
+    (replace-match "?" t t)))
+
 (defun nnbabyl-get-new-mail (&optional group)
   "Read new incoming mail."
-  (let ((spools (nnmail-get-spool-files group))
-	incoming incomings)
+  (let* ((spools (nnmail-get-spool-files group))
+	 (all-spools spools)
+	 incoming incomings)
     (nnbabyl-read-mbox)
     (if (or (not nnbabyl-get-new-mail) (not nnmail-spool-file))
 	()
@@ -509,8 +515,13 @@
 		  (car spools) (concat nnbabyl-mbox-file "-Incoming")))
 	   (setq incomings (cons incoming incomings))
 	   (save-excursion
-	     (let ((in-buf (nnmail-split-incoming 
-			    incoming 'nnbabyl-save-mail t group)))
+	     (setq group (nnmail-get-split-group (car spools) group))
+	     (let* ((nnmail-prepare-incoming-hook
+		     (cons 'nnbabyl-remove-incoming-delims
+			   nnmail-prepare-incoming-hook))
+		    in-buf)
+	       (setq in-buf (nnmail-split-incoming 
+			     incoming 'nnbabyl-save-mail t group))
 	       (set-buffer in-buf)
 	       (goto-char (point-min))
 	       (while (search-forward "\n\^_\n" nil t)
@@ -528,6 +539,7 @@
 	     (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
 	     (set-buffer nnbabyl-mbox-buffer)
 	     (save-buffer)))
+      (if incomings (run-hooks 'nnmail-read-incoming-hook))
       (while incomings
 	(and nnmail-delete-incoming
 	     (file-writable-p incoming) 
