@@ -22,7 +22,7 @@
 	       mail-aliases-setup mm-copy-tree
 	       mule-write-region-no-coding-system put-image
 	       ring-elements
-	       charsetp
+	       charsetp sort-coding-systems
 	       coding-system-p
 	       propertize make-mode-line-mouse2-map
 	       make-mode-line-mouse-map

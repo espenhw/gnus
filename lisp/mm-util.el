@@ -27,61 +27,6 @@
 (eval-when-compile (require 'cl))
 (require 'mail-prsvr)
 
-(defvar mm-mime-mule-charset-alist
-  `((us-ascii ascii)
-    (iso-8859-1 latin-iso8859-1)
-    (iso-8859-2 latin-iso8859-2)
-    (iso-8859-3 latin-iso8859-3)
-    (iso-8859-4 latin-iso8859-4)
-    (iso-8859-5 cyrillic-iso8859-5)
-  ;; Non-mule (X)Emacs uses the last mule-charset for 8bit characters.
-    ;; The fake mule-charset, gnus-koi8-r, tells Gnus that the default
-    ;; charset is koi8-r, not iso-8859-5.
-    (koi8-r cyrillic-iso8859-5 gnus-koi8-r)
-    (iso-8859-6 arabic-iso8859-6)
-    (iso-8859-7 greek-iso8859-7)
-    (iso-8859-8 hebrew-iso8859-8)
-    (iso-8859-9 latin-iso8859-9)
-    (iso-8859-14 latin-iso8859-14)
-    (iso-8859-15 latin-iso8859-15)
-    (viscii vietnamese-viscii-lower)
-    (iso-2022-jp latin-jisx0201 japanese-jisx0208 japanese-jisx0208-1978)
-    (euc-kr korean-ksc5601)
-    (gb2312 chinese-gb2312)
-    (big5 chinese-big5-1 chinese-big5-2)
-    (tibetan tibetan)
-    (thai-tis620 thai-tis620)
-    (iso-2022-7bit ethiopic arabic-1-column arabic-2-column)
-    (iso-2022-jp-2 latin-iso8859-1 greek-iso8859-7
-		   latin-jisx0201 japanese-jisx0208-1978
-		   chinese-gb2312 japanese-jisx0208
-		   korean-ksc5601 japanese-jisx0212
-		   katakana-jisx0201)
-    (iso-2022-int-1 latin-iso8859-1 greek-iso8859-7
-		    latin-jisx0201 japanese-jisx0208-1978
-		    chinese-gb2312 japanese-jisx0208
-		    korean-ksc5601 japanese-jisx0212
-		    chinese-cns11643-1 chinese-cns11643-2)
-    (iso-2022-int-1 latin-iso8859-1 latin-iso8859-2
-		    cyrillic-iso8859-5 greek-iso8859-7
-		    latin-jisx0201 japanese-jisx0208-1978
-		    chinese-gb2312 japanese-jisx0208
-		    korean-ksc5601 japanese-jisx0212
-		    chinese-cns11643-1 chinese-cns11643-2
-		    chinese-cns11643-3 chinese-cns11643-4
-		    chinese-cns11643-5 chinese-cns11643-6
-		    chinese-cns11643-7)
-    ,(if (or (not (fboundp 'charsetp)) ;; non-Mule case
-	     (not (fboundp 'coding-system-p))
-	     (charsetp 'unicode-a)
-	     (not (coding-system-p 'mule-utf-8)))
-	 '(utf-8 unicode-a unicode-b unicode-c unicode-d unicode-e)
-       ;; If we have utf-8 we're in Mule 5+.
-       (append '(utf-8)
-	       (delete 'ascii
-		       (coding-system-get 'mule-utf-8 'safe-charsets)))))
-  "Alist of MIME-charset/MULE-charsets.")
-
 (eval-and-compile
   (mapcar
    (lambda (elem)
@@ -161,22 +106,31 @@
       (memq sym (mm-get-coding-system-list))))
 
 (defvar mm-charset-synonym-alist
-  `((big5 . cn-big5)
-    (gb2312 . cn-gb-2312)
-    (cn-gb . cn-gb-2312)
+  `(
+    ;; Perfectly fine?  A valid MIME name, anyhow.
+    ,(unless (mm-coding-system-p 'big5)
+       '(big5 . cn-big5))
+    ;; Not in XEmacs, but it's not a proper MIME charset anyhow.
+    ,(unless (mm-coding-system-p 'x-ctext)
+       '(x-ctext . ctext))
+    ;; Apparently not defined in Emacs 20, but is a valid MIME name.
+    ,(unless (mm-coding-system-p 'gb2312)
+       '(gb2312 . cn-gb-2312))
     ;; Windows-1252 is actually a superset of Latin-1.  See also
     ;; `gnus-article-dumbquotes-map'.
-    ,(unless (mm-coding-system-p 'windows-1252)	; should be defined eventually
-       '(windows-1252 . iso-8859-1))
+    ;;,(unless (mm-coding-system-p 'windows-1252)	
+					; should be defined eventually
+    ;;  '(windows-1252 . iso-8859-1))
     ;; ISO-8859-15 is very similar to ISO-8859-1.
-    ,(unless (mm-coding-system-p 'iso-8859-15) ; Emacs 21 defines it.
-       '(iso-8859-15 . iso-8859-1))
+    ;;,(unless (mm-coding-system-p 'iso-8859-15) ; Emacs 21 defines it.
+    ;;   '(iso-8859-15 . iso-8859-1))
     ;; Windows-1250 is a variant of Latin-2 heavily used by Microsoft
     ;; Outlook users in Czech republic. Use this to allow reading of their
     ;; e-mails. cp1250 should be defined by M-x codepage-setup.
-    ,(unless (mm-coding-system-p 'windows-1250)	; should be defined eventually
-       '(windows-1250 . cp1250))
-    (x-ctext . ctext))
+    ;;,(unless (mm-coding-system-p 'windows-1250)	
+					; should be defined eventually
+    ;;  '(windows-1250 . cp1250))
+    )
   "A mapping from invalid charset names to the real charset names.")
 
 (defvar mm-binary-coding-system
@@ -210,20 +164,100 @@
 (defvar mm-universal-coding-system mm-auto-save-coding-system
   "The universal Coding system.")
 
+;; Fixme: some of the cars here aren't valid MIME charsets.  That
+;; should only matter with XEmacs, though.
+(defvar mm-mime-mule-charset-alist
+  `((us-ascii ascii)
+    (iso-8859-1 latin-iso8859-1)
+    (iso-8859-2 latin-iso8859-2)
+    (iso-8859-3 latin-iso8859-3)
+    (iso-8859-4 latin-iso8859-4)
+    (iso-8859-5 cyrillic-iso8859-5)
+    ;; Non-mule (X)Emacs uses the last mule-charset for 8bit characters.
+    ;; The fake mule-charset, gnus-koi8-r, tells Gnus that the default
+    ;; charset is koi8-r, not iso-8859-5.
+    (koi8-r cyrillic-iso8859-5 gnus-koi8-r)
+    (iso-8859-6 arabic-iso8859-6)
+    (iso-8859-7 greek-iso8859-7)
+    (iso-8859-8 hebrew-iso8859-8)
+    (iso-8859-9 latin-iso8859-9)
+    (iso-8859-14 latin-iso8859-14)
+    (iso-8859-15 latin-iso8859-15)
+    (viscii vietnamese-viscii-lower)
+    (iso-2022-jp latin-jisx0201 japanese-jisx0208 japanese-jisx0208-1978)
+    (euc-kr korean-ksc5601)
+    (gb2312 chinese-gb2312)
+    (big5 chinese-big5-1 chinese-big5-2)
+    (tibetan tibetan)
+    (thai-tis620 thai-tis620)
+    (iso-2022-7bit ethiopic arabic-1-column arabic-2-column)
+    (iso-2022-jp-2 latin-iso8859-1 greek-iso8859-7
+		   latin-jisx0201 japanese-jisx0208-1978
+		   chinese-gb2312 japanese-jisx0208
+		   korean-ksc5601 japanese-jisx0212
+		   katakana-jisx0201)
+    (iso-2022-int-1 latin-iso8859-1 greek-iso8859-7
+		    latin-jisx0201 japanese-jisx0208-1978
+		    chinese-gb2312 japanese-jisx0208
+		    korean-ksc5601 japanese-jisx0212
+		    chinese-cns11643-1 chinese-cns11643-2)
+    (iso-2022-int-1 latin-iso8859-1 latin-iso8859-2
+		    cyrillic-iso8859-5 greek-iso8859-7
+		    latin-jisx0201 japanese-jisx0208-1978
+		    chinese-gb2312 japanese-jisx0208
+		    korean-ksc5601 japanese-jisx0212
+		    chinese-cns11643-1 chinese-cns11643-2
+		    chinese-cns11643-3 chinese-cns11643-4
+		    chinese-cns11643-5 chinese-cns11643-6
+		    chinese-cns11643-7)
+    ,(if (or (not (fboundp 'charsetp)) ;; non-Mule case
+	     (charsetp 'unicode-a)
+	     (not (mm-coding-system-p 'mule-utf-8)))
+	 '(utf-8 unicode-a unicode-b unicode-c unicode-d unicode-e)
+       ;; If we have utf-8 we're in Mule 5+.
+       (append '(utf-8)
+	       (delete 'ascii
+		       (coding-system-get 'mule-utf-8 'safe-charsets)))))
+  "Alist of MIME-charset/MULE-charsets.")
+
+;; Correct by construction, but should be unnecessary:
+;; XEmacs hates it.
+(when (and (not (featurep 'xemacs))
+	   (fboundp 'coding-system-list)
+	   (fboundp 'sort-coding-systems))
+  (setq mm-mime-mule-charset-alist
+	(apply
+	 'nconc
+	 (mapcar
+	  (lambda (cs)
+	    (when (and (coding-system-get cs 'mime-charset)
+		       (not (eq t (coding-system-get cs 'safe-charsets))))
+	      (list (cons (coding-system-get cs 'mime-charset)
+			  (delq 'ascii
+				(coding-system-get cs 'safe-charsets))))))
+	  (sort-coding-systems (coding-system-list 'base-only))))))
+
 ;;; Internal variables:
 
 ;;; Functions:
 
 (defun mm-mule-charset-to-mime-charset (charset)
   "Return the MIME charset corresponding to the given Mule CHARSET."
-  (let ((alist mm-mime-mule-charset-alist)
-	out)
-    (while alist
-      (when (memq charset (cdar alist))
-	(setq out (caar alist)
-	      alist nil))
-      (pop alist))
-    out))
+  (if (fboundp 'find-coding-systems-for-charsets)
+      (let (mime)
+	(dolist (cs (find-coding-systems-for-charsets (list charset)))
+	  (unless mime
+	    (when cs
+	      (setq mime (coding-system-get cs 'mime-charset)))))
+	mime)
+    (let ((alist mm-mime-mule-charset-alist)
+	  out)
+      (while alist
+	(when (memq charset (cdar alist))
+	  (setq out (caar alist)
+		alist nil))
+	(pop alist))
+      out)))
 
 (defun mm-charset-to-coding-system (charset &optional lbt)
   "Return coding-system corresponding to CHARSET.
@@ -232,9 +266,6 @@ If optional argument LBT (`unix', `dos' or `mac') is specified, it is
 used as the line break code type of the coding system."
   (when (stringp charset)
     (setq charset (intern (downcase charset))))
-  (setq charset
-	(or (cdr (assq charset mm-charset-synonym-alist))
-	    charset))
   (when lbt
     (setq charset (intern (format "%s-%s" charset lbt))))
   (cond
@@ -246,52 +277,73 @@ used as the line break code type of the coding system."
     'ascii)
    ;; Check to see whether we can handle this charset.  (This depends
    ;; on there being some coding system matching each `mime-charset'
-   ;; coding sysytem property defined, as there should be.)
-   ((memq charset (mm-get-coding-system-list))
+   ;; property defined, as there should be.)
+   ((and (mm-coding-system-p charset)
+;;; Doing this would potentially weed out incorrect charsets.
+;;; 	 charset
+;;; 	 (eq charset (coding-system-get charset 'mime-charset))
+	 )
     charset)
-   ;; Nope.
-   (t
-    nil)))
+   ;; Translate invalid charsets.
+   ((mm-coding-system-p (setq charset
+			   (cdr (assq charset
+				      mm-charset-synonym-alist))))
+    charset)
+   ;; Last resort: search the coding system list for entries which
+   ;; have the right mime-charset in case the canonical name isn't
+   ;; defined (though it should be).
+   ((let (cs)
+      ;; mm-get-coding-system-list returns a list of cs without lbt.
+      ;; Do we need -lbt?
+      (dolist (c (mm-get-coding-system-list))
+	(if (and (null cs)
+		 (eq charset (coding-system-get c 'mime-charset)))
+	    (setq cs c)))
+      cs))))
 
 (defsubst mm-replace-chars-in-string (string from to)
   (mm-subst-char-in-string from to string))
 
-(defsubst mm-enable-multibyte ()
-  "Set the multibyte flag of the current buffer.
+(eval-and-compile
+  (defvar mm-emacs-mule (and (not (featurep 'xemacs))
+			     (boundp 'default-enable-multibyte-characters)
+			     default-enable-multibyte-characters
+			     (fboundp 'set-buffer-multibyte))
+    "Emacs mule.")
+  
+  (defvar mm-mule4-p (and mm-emacs-mule
+			  (fboundp 'charsetp)
+			  (not (charsetp 'eight-bit-control)))
+    "Mule version 4.")
+
+  (if mm-emacs-mule
+      (defun mm-enable-multibyte ()
+	"Set the multibyte flag of the current buffer.
 Only do this if the default value of `enable-multibyte-characters' is
 non-nil.  This is a no-op in XEmacs."
-  (when (and (not (featurep 'xemacs))
-	     (boundp 'default-enable-multibyte-characters)
-	     default-enable-multibyte-characters
-	     (fboundp 'set-buffer-multibyte))
-    (set-buffer-multibyte t)))
+	(set-buffer-multibyte t))
+    (defalias 'mm-enable-multibyte 'ignore))
 
-(defsubst mm-disable-multibyte ()
-  "Unset the multibyte flag of in the current buffer.
+  (if mm-emacs-mule
+      (defun mm-disable-multibyte ()
+	"Unset the multibyte flag of in the current buffer.
 This is a no-op in XEmacs."
-  (when (and (not (featurep 'xemacs))
-	     (fboundp 'set-buffer-multibyte))
-    (set-buffer-multibyte nil)))
+	(set-buffer-multibyte nil))
+    (defalias 'mm-disable-multibyte 'ignore))
 
-(defsubst mm-enable-multibyte-mule4 ()
-  "Enable multibyte in the current buffer.
+  (if mm-mule4-p
+      (defun mm-enable-multibyte-mule4  ()
+	"Enable multibyte in the current buffer.
 Only used in Emacs Mule 4."
-  (when (and (not (featurep 'xemacs))
-	     (boundp 'default-enable-multibyte-characters)
-	     default-enable-multibyte-characters
-	     (fboundp 'set-buffer-multibyte)
-	     (fboundp 'charsetp)
-	     (not (charsetp 'eight-bit-control)))
-    (set-buffer-multibyte t)))
-
-(defsubst mm-disable-multibyte-mule4 ()
-  "Disable multibyte in the current buffer.
+	(set-buffer-multibyte t))
+    (defalias 'mm-enable-multibyte-mule4 'ignore))
+  
+  (if mm-mule4-p
+      (defun mm-disable-multibyte-mule4 ()
+	"Disable multibyte in the current buffer.
 Only used in Emacs Mule 4."
-  (when (and (not (featurep 'xemacs))
-	     (fboundp 'set-buffer-multibyte)
-	     (fboundp 'charsetp)
-	     (not (charsetp 'eight-bit-control)))
-    (set-buffer-multibyte nil)))
+	(set-buffer-multibyte nil))
+    (defalias 'mm-disable-multibyte-mule4 'ignore)))
 
 (defun mm-preferred-coding-system (charset)
   ;; A typo in some Emacs versions.
@@ -358,27 +410,47 @@ If the charset is `composition', return the actual one."
       (setq result (cons head result)))
     (nreverse result)))
 
-(defun mm-find-mime-charset-region (b e)
-  "Return the MIME charsets needed to encode the region between B and E."
-  (let ((charsets (mapcar 'mm-mime-charset
-			  (delq 'ascii
-				(mm-find-charset-region b e)))))
-    (when (memq 'iso-2022-jp-2 charsets)
-      (setq charsets (delq 'iso-2022-jp charsets)))
-    (setq charsets (mm-delete-duplicates charsets))
-    (if (and (> (length charsets) 1)
-	     (fboundp 'find-coding-systems-region)
-	     (let ((cs (find-coding-systems-region b e)))
-	       (or (memq 'utf-8 cs) (memq 'mule-utf-8 cs))))
-	'(utf-8)
-      charsets)))
-
+;; It's not clear whether this is supposed to mean the global or local
+;; setting.  I think it's used inconsistently.  -- fx
 (defsubst mm-multibyte-p ()
   "Say whether multibyte is enabled."
   (if (and (not (featurep 'xemacs))
 	   (boundp 'enable-multibyte-characters))
       enable-multibyte-characters
     (featurep 'mule)))
+
+(defun mm-find-mime-charset-region (b e)
+  "Return the MIME charsets needed to encode the region between B and E.
+Nil means ASCII, a single-element list represents an appropriate MIME
+charset, and a longer list means no appropriate charset."
+  ;; The return possibilities of this function are a mess...
+  (or (and
+       (mm-multibyte-p)
+       (fboundp 'find-coding-systems-region)
+       ;; Find the mime-charset of the most preferred coding
+       ;; system that has one.
+       (let ((systems (find-coding-systems-region b e))
+	     result)
+	 ;; Fixme: The `mime-charset' (`x-ctext') of `compound-text'
+	 ;; is not in the IANA list.
+	 (setq systems (delq 'compound-text systems))
+	 (unless (equal systems '(undecided))
+	   (while systems
+	     (let ((cs (coding-system-get (pop systems) 'mime-charset)))
+	       (if cs
+		   (setq systems nil
+			 result (list cs))))))
+	 result))
+      ;; Otherwise we're not multibyte, XEmacs or a single coding
+      ;; system won't cover it.
+      (let ((charsets 
+	     (mm-delete-duplicates
+	      (mapcar 'mm-mime-charset
+		      (delq 'ascii
+			    (mm-find-charset-region b e))))))
+	(if (memq 'iso-2022-jp-2 charsets)
+	    (delq 'iso-2022-jp charsets)
+	  charsets))))
 
 (defmacro mm-with-unibyte-buffer (&rest forms)
   "Create a temporary buffer, and evaluate FORMS there like `progn'.
@@ -392,18 +464,17 @@ Use unibyte mode for this."
   "Evaluate FORMS with current current buffer temporarily made unibyte.
 Also bind `default-enable-multibyte-characters' to nil.
 Equivalent to `progn' in XEmacs"
-  (let ((buffer (make-symbol "buffer")))
-    `(if (and (not (featurep 'xemacs))
-	      (boundp 'enable-multibyte-characters)
-	      enable-multibyte-characters
-	      (fboundp 'set-buffer-multibyte))
-	 (let ((,buffer (current-buffer)))
+  (let ((multibyte (make-symbol "multibyte"))
+	(buffer (make-symbol "buffer")))
+    `(if mm-emacs-mule 
+ 	 (let ((,multibyte enable-multibyte-characters)
+	       (,buffer (current-buffer)))
 	   (unwind-protect
 	       (let (default-enable-multibyte-characters)
 		 (set-buffer-multibyte nil)
 		 ,@forms)
 	     (set-buffer ,buffer)
-	     (set-buffer-multibyte t)))
+	     (set-buffer-multibyte ,multibyte)))
        (let (default-enable-multibyte-characters)
 	 ,@forms))))
 (put 'mm-with-unibyte-current-buffer 'lisp-indent-function 0)
@@ -412,20 +483,17 @@ Equivalent to `progn' in XEmacs"
 (defmacro mm-with-unibyte-current-buffer-mule4 (&rest forms)
   "Evaluate FORMS there like `progn' in current buffer.
 Mule4 only."
-  (let ((buffer (make-symbol "buffer")))
-    `(if (and (not (featurep 'xemacs))
-	      (boundp 'enable-multibyte-characters)
-	      enable-multibyte-characters
-	      (fboundp 'set-buffer-multibyte)
-	      (fboundp 'charsetp)
-	      (not (charsetp 'eight-bit-control))) ;; For Emacs Mule 4 only.
-	 (let ((,buffer (current-buffer)))
+  (let ((multibyte (make-symbol "multibyte"))
+	(buffer (make-symbol "buffer")))
+    `(if mm-mule4-p
+ 	 (let ((,multibyte enable-multibyte-characters)
+	       (,buffer (current-buffer)))
 	   (unwind-protect
 	       (let (default-enable-multibyte-characters)
 		 (set-buffer-multibyte nil)
 		 ,@forms)
 	     (set-buffer ,buffer)
-	     (set-buffer-multibyte t)))
+	     (set-buffer-multibyte ,multibyte)))
        (let (default-enable-multibyte-characters)
 	 ,@forms))))
 (put 'mm-with-unibyte-current-buffer-mule4 'lisp-indent-function 0)
@@ -451,7 +519,7 @@ Mule4 only."
 			    control-1))
       css))
    (t
-;; We are in a unibyte buffer or XEmacs non-mule, so we futz around a bit.
+    ;; We are in a unibyte buffer or XEmacs non-mule, so we futz around a bit.
     (save-excursion
       (save-restriction
 	(narrow-to-region b e)
