@@ -72,6 +72,15 @@ unknown encoding; `use-ascii': always use ASCII for those characters
 with unknown encoding; `multipart': always send messages with more than
 one charsets.")
 
+(defvar mml-generate-mime-preprocess-function nil
+  "A function called before generating a mime part.
+The function is called with one parameter, which is the part to be 
+generated.")
+
+(defvar mml-generate-mime-postprocess-function nil
+  "A function called after generating a mime part.
+The function is called with one parameter, which is the generated part.")
+
 (defvar mml-generate-default-type "text/plain")
 
 (defvar mml-buffer-list nil)
@@ -274,116 +283,122 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	(buffer-string)))))
 
 (defun mml-generate-mime-1 (cont)
-  (cond
-   ((or (eq (car cont) 'part) (eq (car cont) 'mml))
-    (let (coded encoding charset filename type)
-      (setq type (or (cdr (assq 'type cont)) "text/plain"))
-      (if (member (car (split-string type "/")) '("text" "message"))
-	  (with-temp-buffer
+  (save-restriction
+    (narrow-to-region (point) (point))
+    (if mml-generate-mime-preprocess-function
+	(funcall mml-generate-mime-preprocess-function cont))
+    (cond
+     ((or (eq (car cont) 'part) (eq (car cont) 'mml))
+      (let (coded encoding charset filename type)
+	(setq type (or (cdr (assq 'type cont)) "text/plain"))
+	(if (member (car (split-string type "/")) '("text" "message"))
+	    (with-temp-buffer
+	      (cond
+	       ((cdr (assq 'buffer cont))
+		(insert-buffer-substring (cdr (assq 'buffer cont))))
+	       ((and (setq filename (cdr (assq 'filename cont)))
+		     (not (equal (cdr (assq 'nofile cont)) "yes")))
+		(mm-insert-file-contents filename))
+	       ((eq 'mml (car cont))
+		(insert (cdr (assq 'contents cont))))
+	       (t
+		(save-restriction
+		  (narrow-to-region (point) (point))
+		  (insert (cdr (assq 'contents cont)))
+		  ;; Remove quotes from quoted tags.
+		  (goto-char (point-min))
+		  (while (re-search-forward
+			  "<#!+/?\\(part\\|multipart\\|external\\|mml\\)" nil t)
+		    (delete-region (+ (match-beginning 0) 2)
+				   (+ (match-beginning 0) 3))))))
+	      (cond 
+	       ((eq (car cont) 'mml)
+		(let ((mml-boundary (funcall mml-boundary-function
+					     (incf mml-multipart-number)))
+		      (mml-generate-default-type "text/plain"))
+		  (mml-to-mime))
+		(let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
+		  ;; ignore 0x1b, it is part of iso-2022-jp
+		  (setq encoding (mm-body-7-or-8))))
+	       ((string= (car (split-string type "/")) "message")
+		(let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
+		  ;; ignore 0x1b, it is part of iso-2022-jp
+		  (setq encoding (mm-body-7-or-8))))
+	       (t 
+		(setq charset (mm-encode-body))
+		(setq encoding (mm-body-encoding
+				charset (cdr (assq 'encoding cont))))))
+	      (setq coded (buffer-string)))
+	  (mm-with-unibyte-buffer
 	    (cond
 	     ((cdr (assq 'buffer cont))
 	      (insert-buffer-substring (cdr (assq 'buffer cont))))
 	     ((and (setq filename (cdr (assq 'filename cont)))
 		   (not (equal (cdr (assq 'nofile cont)) "yes")))
-	      (mm-insert-file-contents filename))
-	     ((eq 'mml (car cont))
-	      (insert (cdr (assq 'contents cont))))
+	      (let ((coding-system-for-read mm-binary-coding-system))
+		(mm-insert-file-contents filename nil nil nil nil t)))
 	     (t
-	      (save-restriction
-		(narrow-to-region (point) (point))
-		(insert (cdr (assq 'contents cont)))
-		;; Remove quotes from quoted tags.
-		(goto-char (point-min))
-		(while (re-search-forward
-			"<#!+/?\\(part\\|multipart\\|external\\|mml\\)" nil t)
-		  (delete-region (+ (match-beginning 0) 2)
-				 (+ (match-beginning 0) 3))))))
-	    (cond 
-	     ((eq (car cont) 'mml)
-	      (let ((mml-boundary (funcall mml-boundary-function
-			  		   (incf mml-multipart-number)))
-		    (mml-generate-default-type "text/plain"))
-		(mml-to-mime))
-	      (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
-		;; ignore 0x1b, it is part of iso-2022-jp
-		(setq encoding (mm-body-7-or-8))))
-	     ((string= (car (split-string type "/")) "message")
-	      (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
-		;; ignore 0x1b, it is part of iso-2022-jp
-		(setq encoding (mm-body-7-or-8))))
-	     (t 
-	      (setq charset (mm-encode-body))
-	      (setq encoding (mm-body-encoding
-			      charset (cdr (assq 'encoding cont))))))
-	    (setq coded (buffer-string)))
-	(mm-with-unibyte-buffer
-	  (cond
-	   ((cdr (assq 'buffer cont))
-	    (insert-buffer-substring (cdr (assq 'buffer cont))))
-	   ((and (setq filename (cdr (assq 'filename cont)))
-		 (not (equal (cdr (assq 'nofile cont)) "yes")))
-	    (let ((coding-system-for-read mm-binary-coding-system))
-	      (mm-insert-file-contents filename nil nil nil nil t)))
-	   (t
-	    (insert (cdr (assq 'contents cont)))))
-	  (setq encoding (mm-encode-buffer type)
-		coded (buffer-string))))
-      (mml-insert-mime-headers cont type charset encoding)
-      (insert "\n")
-      (insert coded)))
-   ((eq (car cont) 'external)
-    (insert "Content-Type: message/external-body")
-    (let ((parameters (mml-parameter-string
-		       cont '(expiration size permission)))
-	  (name (cdr (assq 'name cont))))
-      (when name
-	(setq name (mml-parse-file-name name))
-	(if (stringp name)
+	      (insert (cdr (assq 'contents cont)))))
+	    (setq encoding (mm-encode-buffer type)
+		  coded (buffer-string))))
+	(mml-insert-mime-headers cont type charset encoding)
+	(insert "\n")
+	(insert coded)))
+     ((eq (car cont) 'external)
+      (insert "Content-Type: message/external-body")
+      (let ((parameters (mml-parameter-string
+			 cont '(expiration size permission)))
+	    (name (cdr (assq 'name cont))))
+	(when name
+	  (setq name (mml-parse-file-name name))
+	  (if (stringp name)
+	      (mml-insert-parameter
+	       (mail-header-encode-parameter "name" name)
+	       "access-type=local-file")
 	    (mml-insert-parameter
-	     (mail-header-encode-parameter "name" name)
-	     "access-type=local-file")
-	  (mml-insert-parameter
-	   (mail-header-encode-parameter
-	    "name" (file-name-nondirectory (nth 2 name)))
-	   (mail-header-encode-parameter "site" (nth 1 name))
-	   (mail-header-encode-parameter
-	    "directory" (file-name-directory (nth 2 name))))
-	  (mml-insert-parameter
-	   (concat "access-type="
-		   (if (member (nth 0 name) '("ftp@" "anonymous@"))
-		       "anon-ftp"
-		     "ftp")))))      
-      (when parameters
-	(mml-insert-parameter-string
-	 cont '(expiration size permission))))
-    (insert "\n\n")
-    (insert "Content-Type: " (cdr (assq 'type cont)) "\n")
-    (insert "Content-ID: " (message-make-message-id) "\n")
-    (insert "Content-Transfer-Encoding: "
-	    (or (cdr (assq 'encoding cont)) "binary"))
-    (insert "\n\n")
-    (insert (or (cdr (assq 'contents cont))))
-    (insert "\n"))
-   ((eq (car cont) 'multipart)
-    (let* ((type (or (cdr (assq 'type cont)) "mixed"))
-	   (mml-generate-default-type (if (equal type "digest")
-					  "message/rfc822"
-					"text/plain"))
-           (handler (assoc type mml-generate-multipart-alist)))
-      (if handler
-          (funcall (cdr handler) cont)
-        ;; No specific handler.  Use default one.
-        (let ((mml-boundary (mml-compute-boundary cont)))
-          (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
-                          type mml-boundary))
-	  ;; Skip `multipart' and `type' elements.
-          (setq cont (cddr cont))
-          (while cont
-            (insert "\n--" mml-boundary "\n")
-            (mml-generate-mime-1 (pop cont)))
-          (insert "\n--" mml-boundary "--\n")))))
-   (t
-    (error "Invalid element: %S" cont))))
+	     (mail-header-encode-parameter
+	      "name" (file-name-nondirectory (nth 2 name)))
+	     (mail-header-encode-parameter "site" (nth 1 name))
+	     (mail-header-encode-parameter
+	      "directory" (file-name-directory (nth 2 name))))
+	    (mml-insert-parameter
+	     (concat "access-type="
+		     (if (member (nth 0 name) '("ftp@" "anonymous@"))
+			 "anon-ftp"
+		       "ftp")))))      
+	(when parameters
+	  (mml-insert-parameter-string
+	   cont '(expiration size permission))))
+      (insert "\n\n")
+      (insert "Content-Type: " (cdr (assq 'type cont)) "\n")
+      (insert "Content-ID: " (message-make-message-id) "\n")
+      (insert "Content-Transfer-Encoding: "
+	      (or (cdr (assq 'encoding cont)) "binary"))
+      (insert "\n\n")
+      (insert (or (cdr (assq 'contents cont))))
+      (insert "\n"))
+     ((eq (car cont) 'multipart)
+      (let* ((type (or (cdr (assq 'type cont)) "mixed"))
+	     (mml-generate-default-type (if (equal type "digest")
+					    "message/rfc822"
+					  "text/plain"))
+	     (handler (assoc type mml-generate-multipart-alist)))
+	(if handler
+	    (funcall (cdr handler) cont)
+	  ;; No specific handler.  Use default one.
+	  (let ((mml-boundary (mml-compute-boundary cont)))
+	    (insert (format "Content-Type: multipart/%s; boundary=\"%s\"\n"
+			    type mml-boundary))
+	    ;; Skip `multipart' and `type' elements.
+	    (setq cont (cddr cont))
+	    (while cont
+	      (insert "\n--" mml-boundary "\n")
+	      (mml-generate-mime-1 (pop cont)))
+	    (insert "\n--" mml-boundary "--\n")))))
+     (t
+      (error "Invalid element: %S" cont)))
+    (if mml-generate-mime-postprocess-function
+	(funcall mml-generate-mime-postprocess-function cont))))
 
 (defun mml-compute-boundary (cont)
   "Return a unique boundary that does not exist in CONT."

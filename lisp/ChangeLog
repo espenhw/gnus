@@ -1,3 +1,9 @@
+2000-05-16 21:13:24  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-generate-mime-preprocess-function): New variable.
+	(mml-generate-mime-postprocess-function): New variable.
+	(mml-generate-mime-1): Use them.
+
 2000-05-16 18:15:24  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-apropos): Group name charset.

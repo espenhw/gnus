@@ -395,7 +395,7 @@ ticked: The number of ticked articles."
   :type '(repeat (cons (sexp :tag "Form") file)))
 
 (defcustom gnus-group-name-charset-method-alist nil
-  "*Alist for method and the charset for group names.
+  "*Alist of method and the charset for group names.
 
 For example:
     (((nntp \"news.com.cn\") . cn-gb-2312))
@@ -404,7 +404,7 @@ For example:
   :type '(repeat (cons (sexp :tag "Method") (symbol :tag "Charset"))))
 
 (defcustom gnus-group-name-charset-group-alist nil
-  "*Alist for group regexp and the charset for group names.
+  "*Alist of group regexp and the charset for group names.
 
 For example:
     ((\"\\.com\\.cn:\" . cn-gb-2312))
