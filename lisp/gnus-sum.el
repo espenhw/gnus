@@ -1150,10 +1150,10 @@ the type of the variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-limits nil)
 
 (defvar gnus-newsgroup-unreads nil
-  "List of unread articles in the current newsgroup.")
+  "Sorted list of unread articles in the current newsgroup.")
 
 (defvar gnus-newsgroup-unselected nil
-  "List of unselected unread articles in the current newsgroup.")
+  "Sorted list of unselected unread articles in the current newsgroup.")
 
 (defvar gnus-newsgroup-reads nil
   "Alist of read articles and article marks in the current newsgroup.")
@@ -1161,13 +1161,13 @@ the type of the variable (string, integer, character, etc).")
 (defvar gnus-newsgroup-expunged-tally nil)
 
 (defvar gnus-newsgroup-marked nil
-  "List of ticked articles in the current newsgroup (a subset of unread art).")
+  "Sorted list of ticked articles in the current newsgroup (a subset of unread art).")
 
 (defvar gnus-newsgroup-killed nil
   "List of ranges of articles that have been through the scoring process.")
 
 (defvar gnus-newsgroup-cached nil
-  "List of articles that come from the article cache.")
+  "Sorted list of articles that come from the article cache.")
 
 (defvar gnus-newsgroup-saved nil
   "List of articles that have been saved.")
@@ -1184,13 +1184,13 @@ the type of the variable (string, integer, character, etc).")
   "List of articles that have are recent in the current newsgroup.")
 
 (defvar gnus-newsgroup-expirable nil
-  "List of articles in the current newsgroup that can be expired.")
+  "Sorted list of articles in the current newsgroup that can be expired.")
 
 (defvar gnus-newsgroup-processable nil
   "List of articles in the current newsgroup that can be processed.")
 
 (defvar gnus-newsgroup-downloadable nil
-  "List of articles in the current newsgroup that can be processed.")
+  "Sorted list of articles in the current newsgroup that can be processed.")
 
 (defvar gnus-newsgroup-undownloaded nil
   "List of articles in the current newsgroup that haven't been downloaded..")
@@ -1202,7 +1202,7 @@ the type of the variable (string, integer, character, etc).")
   "List of articles in the current newsgroup that have bookmarks.")
 
 (defvar gnus-newsgroup-dormant nil
-  "List of dormant articles in the current newsgroup.")
+  "Sorted list of dormant articles in the current newsgroup.")
 
 (defvar gnus-newsgroup-unseen nil
   "List of unseen articles in the current newsgroup.")
@@ -3751,7 +3751,7 @@ the id of the parent article (if any)."
 	  (push header gnus-newsgroup-headers)
 	  (if (memq number gnus-newsgroup-unselected)
 	      (progn
-		(setq gnus-newsgroup-unselected
+		(setq gnus-newsgroup-unreads
 		      (gnus-add-to-sorted-list gnus-newsgroup-unreads
 					       number))
 		(setq gnus-newsgroup-unselected
@@ -3779,7 +3779,9 @@ the id of the parent article (if any)."
 	      (if (memq (setq article (mail-header-number header))
 			gnus-newsgroup-unselected)
 		  (progn
-		    (push article gnus-newsgroup-unreads)
+		    (setq gnus-newsgroup-unreads
+			  (gnus-add-to-sorted-list
+			   gnus-newsgroup-unreads article))
 		    (setq gnus-newsgroup-unselected
 			  (delq article gnus-newsgroup-unselected)))
 		(push article gnus-newsgroup-ancient)))
@@ -5987,11 +5989,8 @@ The prefix argument ALL means to select all articles."
 		(gnus-compress-sequence
 		 (gnus-sorted-union
 		  (gnus-list-range-intersection
-		   (setq gnus-newsgroup-unselected
-			 (sort gnus-newsgroup-unselected '<))
-		   gnus-newsgroup-killed)
-		  (setq gnus-newsgroup-unreads
-			(sort gnus-newsgroup-unreads '<)))
+		   gnus-newsgroup-unselected gnus-newsgroup-killed)
+		  gnus-newsgroup-unreads)
 		 t)))
 	(unless (listp (cdr gnus-newsgroup-killed))
 	  (setq gnus-newsgroup-killed (list gnus-newsgroup-killed)))
@@ -6001,7 +6000,8 @@ The prefix argument ALL means to select all articles."
 	    (set-buffer gnus-group-buffer)
 	    (gnus-undo-force-boundary))
 	  (gnus-update-read-articles
-	   group (append gnus-newsgroup-unreads gnus-newsgroup-unselected))
+	   group (gnus-sorted-union 
+		  gnus-newsgroup-unreads gnus-newsgroup-unselected))
 	  ;; Set the current article marks.
 	  (let ((gnus-newsgroup-scored
 		 (if (and (not gnus-save-score)
@@ -10583,12 +10583,12 @@ If REVERSE, save parts that do not match TYPE."
     (goto-char p)))
 
 (defun gnus-update-read-articles (group unread &optional compute)
-  "Update the list of read articles in GROUP."
+  "Update the list of read articles in GROUP.
+UNREAD is a sorted list."
   (let* ((active (or gnus-newsgroup-active (gnus-active group)))
 	 (entry (gnus-gethash group gnus-newsrc-hashtb))
 	 (info (nth 2 entry))
 	 (prev 1)
-	 (unread (sort (copy-sequence unread) '<))
 	 read)
     (if (or (not info) (not active))
 	;; There is no info on this group if it was, in fact,

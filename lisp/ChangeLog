@@ -1,5 +1,20 @@
 2002-02-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-group.el (gnus-group-mark-article-read): Nreverse
+	gnus-newsgroups-unselected.
+
+	* gnus-agent.el (gnus-summary-set-agent-mark): Use
+	gnus-add-to-sorted-list.
+
+	* gnus-sum.el (gnus-summary-update-info): gnus-newsgroup-unreads
+	gnus-newsgroup-unselected are sorted. Use gnus-sorted-union.
+	(gnus-build-all-threads): Use gnus-add-to-sorted-list.
+	(gnus-update-read-articles): UNREAD is sorted.
+	(gnus-newsgroup-unreads, gnus-newsgroup-unselected) 
+	(gnus-newsgroup-marked, gnus-newsgroup-cached) 
+	(gnus-newsgroup-expirable, gnus-newsgroup-downloadable) 
+	(gnus-newsgroup-dormant): Require sorted.
+
 	* gnus-dired.el (gnus-dired-find-file-mailcap): Correctly handle
 	directories.
 	(gnus-dired-print): New function.

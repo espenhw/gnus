@@ -683,7 +683,8 @@ the actual number of articles toggled is returned."
 	  (push article gnus-newsgroup-undownloaded))
       (setq gnus-newsgroup-undownloaded
 	    (delq article gnus-newsgroup-undownloaded))
-      (push article gnus-newsgroup-downloadable))
+      (setq gnus-newsgroup-downloadable
+	    (gnus-add-to-sorted-list gnus-newsgroup-downloadable article)))
     (gnus-summary-update-mark
      (if unmark gnus-undownloaded-mark gnus-downloadable-mark)
      'unread)))

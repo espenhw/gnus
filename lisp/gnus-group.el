@@ -4039,7 +4039,9 @@ This command may read the active file."
 	      (while (<= n (cdr gnus-newsgroup-active))
 		(unless (eq n article)
 		  (push n gnus-newsgroup-unselected))
-		(setq n (1+ n))))))
+		(setq n (1+ n)))
+	      (setq gnus-newsgroup-unselected 
+		    (nreverse gnus-newsgroup-unselected)))))
       (gnus-activate-group group)
       (gnus-group-make-articles-read group
 				     (list article))
