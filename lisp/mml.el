@@ -949,11 +949,9 @@ See Info node `(emacs-mime)Composing'.
 		      (if (string-match "^text/.*" type)
 			  "inline"
 			"attachment")))
-        (disposition (completing-read
-                      (format "Disposition: (default %s): " default)
-                      '(("attachment") ("inline") (""))
-                      nil
-                      nil)))
+	 (disposition (completing-read "Disposition: "
+				       '(("attachment") ("inline") (""))
+				       nil t)))
     (if (not (equal disposition ""))
 	disposition
       default)))

@@ -436,6 +436,9 @@ string with the suggested prefix."
   :group 'gnus-summary-mail
   :type 'function)
 
+;; FIXME: Although the custom type is `character' for the following variables,
+;; using multibyte characters (Latin-1, UTF-8) doesn't work.  -- rs
+
 (defcustom gnus-unread-mark ?           ;Whitespace
   "*Mark used for unread articles."
   :group 'gnus-summary-marks
