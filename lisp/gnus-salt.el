@@ -53,7 +53,7 @@
   :group 'gnus-summary-pick)
 
 (defcustom gnus-pick-elegant-flow t
-  "If non-nil, gnus-pick-start-reading will run gnus-summary-next-group when no articles have been picked."
+  "If non-nil, `gnus-pick-start-reading' runs `gnus-summary-next-group' when no articles have been picked."
   :type 'boolean
   :group 'gnus-summary-pick)
 
@@ -120,7 +120,8 @@ It accepts the same format specs that `gnus-summary-line-format' does."
       ;; Set up the menu.
       (when (gnus-visual-p 'pick-menu 'menu)
 	(gnus-pick-make-menu-bar))
-      (gnus-add-minor-mode 'gnus-pick-mode " Pick" gnus-pick-mode-map)
+      (gnus-add-minor-mode 'gnus-pick-mode " Pick" gnus-pick-mode-map
+			   nil 'gnus-pick-mode)
       (gnus-run-hooks 'gnus-pick-mode-hook))))
 
 (defun gnus-pick-setup-message ()
@@ -182,7 +183,7 @@ If ARG, pick the article on that line instead."
   (gnus-summary-mark-as-processable 1))
 
 (defun gnus-pick-article-or-thread (&optional arg)
-  "If gnus-thread-hide-subtree is t, then pick the thread on the current line.
+  "If `gnus-thread-hide-subtree' is t, then pick the thread on the current line.
 Otherwise pick the article on the current line.
 If ARG, pick the article/thread on that line instead."
   (interactive "P")
@@ -196,7 +197,7 @@ If ARG, pick the article/thread on that line instead."
     (gnus-summary-mark-as-processable 1)))
 
 (defun gnus-pick-unmark-article-or-thread (&optional arg)
-  "If gnus-thread-hide-subtree is t, then unmark the thread on current line.
+  "If `gnus-thread-hide-subtree' is t, then unmark the thread on current line.
 Otherwise unmark the article on current line.
 If ARG, unmark thread/article on that line instead."
   (interactive "P")
@@ -352,7 +353,8 @@ This must be bound to a button-down mouse event."
       ;; Set up the menu.
       (when (gnus-visual-p 'binary-menu 'menu)
 	(gnus-binary-make-menu-bar))
-      (gnus-add-minor-mode 'gnus-binary-mode " Binary" gnus-binary-mode-map)
+      (gnus-add-minor-mode 'gnus-binary-mode " Binary"
+			   gnus-binary-mode-map nil 'gnus-binary-mode-map)
       (gnus-run-hooks 'gnus-binary-mode-hook))))
 
 (defun gnus-binary-display-article (article &optional all-header)
