@@ -1,3 +1,7 @@
+2001-09-27 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi: Remove the extra white-space.
+
 2001-09-27 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnusconfig.tex.in: New.

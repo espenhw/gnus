@@ -40,9 +40,9 @@
 \newcommand{\gnuskindex}[1]{\index{#1}}
 \newcommand{\gnusindex}[1]{\index{#1}}
 
-\newcommand{\gnustt}[1]{{\gnusselectttfont{} #1}}
+\newcommand{\gnustt}[1]{{\gnusselectttfont{}#1}}
 \newcommand{\gnuscode}[1]{\gnustt{#1}}
-\newcommand{\gnussamp}[1]{``{\fontencoding{OT1}\gnusselectttfont{} #1}''}
+\newcommand{\gnussamp}[1]{``{\fontencoding{OT1}\gnusselectttfont{}#1}''}
 \newcommand{\gnuslisp}[1]{\gnustt{#1}}
 \newcommand{\gnuskbd}[1]{`\gnustt{#1}'}
 \newcommand{\gnusfile}[1]{`\gnustt{#1}'}
@@ -19797,7 +19797,6 @@ group).
 
 
 @end table
-
 
 @node The End
 @chapter The End
