@@ -156,7 +156,7 @@ this limit."
 When set to ENABLE, the default, gnus-agent-expire will expire old
 contents from a group's local storage.  This value may be overridden
 to disable expiration in specific categories, topics, and groups.  Of
-course, you could change gnus-agent-enable-expiration to nil then
+course, you could change gnus-agent-enable-expiration to DISABLE then
 enable expiration per categories, topics, and groups."
   :group 'gnus-agent
   :type '(radio (const :format "Enable " ENABLE)
@@ -2409,7 +2409,6 @@ FORCE is equivalent to setting the expiration predicates to true."
   ;; Internal function - requires caller to have set
   ;; gnus-command-method, initialized overview buffer, and to have
   ;; provided a non-nil active
-  (interactive)
 
   (if (eq 'DISABLE (gnus-agent-find-parameter group 'agent-enable-expiration))
       (gnus-message 5 "Expiry skipping over %s" group)
