@@ -22529,6 +22529,7 @@ group.
 * Blackholes::                  
 * Regular Expressions Header Matching::  
 * Bogofilter::                  
+* SpamAssassin backend::        
 * ifile spam filtering::        
 * spam-stat spam filtering::    
 * SpamOracle::                  
@@ -23444,6 +23445,59 @@ purpose.  A ham and a spam processor are provided, plus the
 variables to indicate to spam-split that Bogofilter should either be
 used, or has already been used on the article.  The 0.9.2.1 version of
 Bogofilter was used to test this functionality.
+
+@node SpamAssassin backend
+@subsubsection SpamAssassin backend
+@cindex spam filtering
+@cindex spamassassin, spam filtering
+@cindex spam
+
+@defvar spam-use-spamassassin
+
+Set this variable if you want @code{spam-split} to use SpamAssassin.
+
+SpamAssassin assigns a score to each article based on a set of rules
+and tests, including a Bayesian filter.  The Bayesian filter can be
+trained by associating the @samp{$} mark for spam articles.  The
+spam score can be viewed by using the command @kbd{S t} in summary
+mode.
+
+If you set this variable, each article will be processed by
+SpamAssassin when @code{spam-split} is called.  If your mail is
+preprocessed by SpamAssassin, and you want to just use the
+SpamAssassin headers, set @code{spam-use-spamassassin-headers}
+instead.
+
+You should not enable this is you use
+@code{spam-use-spamassassin-headers}.
+
+@end defvar
+
+@defvar spam-use-spamassassin-headers
+
+Set this variable if your mail is preprocessed by SpamAssassin and
+want @code{spam-split} to split based on the SpamAssassin headers.
+
+You should not enable this is you use @code{spam-use-spamassassin}.
+
+@end defvar
+
+@defvar spam-spamassassin-path
+
+This variable points to the SpamAssassin executable.  If you have
+@code{spamd} running, you can set this variable to the @code{spamc}
+executable for faster processing.  See the SpamAssassin documentation
+for more information on @code{spamd}/@code{spamc}.
+
+@end defvar
+
+SpamAssassin is a powerful and flexible spam filter that uses a wide
+variety of tests to identify spam.  A ham and a spam processors are
+provided, plus the @code{spam-use-spamassassin} and
+@code{spam-use-spamassassin-headers} variables to indicate to
+spam-split that SpamAssassin should be either used, or has already
+been used on the article.  The 2.63 version of SpamAssassin was used
+to test this functionality.
 
 @node ifile spam filtering
 @subsubsection ifile spam filtering

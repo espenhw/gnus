@@ -1,3 +1,8 @@
+2004-04-02  Teodor Zlatanov  <tzz@lifelogs.com>
+	From Hubert Chan <hubert@uhoreg.ca>
+
+	* gnus.texi (SpamAssassin backend): added new node about SpamAssassin
+
 2004-03-29  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Spam ELisp Package Sequence of Events): some clarifications
