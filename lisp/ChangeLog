@@ -1,3 +1,8 @@
+2001-10-30 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-spec.el (gnus-parse-simple-format): Use
+	  buffer-substring-no-properties.
+
 2001-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-verify-cancel-lock): New function.

@@ -570,7 +570,7 @@ characters when given a pad value."
 		  (push el flist)))
 	    (insert elem-type)
 	    (push (car elem) flist))))
-      (setq fstring (buffer-string)))
+      (setq fstring (buffer-substring-no-properties (point-min) (point-max))))
 
     ;; Do some postprocessing to increase efficiency.
     (setq
