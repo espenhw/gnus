@@ -33,10 +33,10 @@
 (require 'nnmail)
 
 (defvar nnbabyl-mbox-file (expand-file-name "~/RMAIL")
-  "The name of the mail box file in the users home directory.")
+  "The name of the rmail box file in the users home directory.")
 
 (defvar nnbabyl-active-file (expand-file-name "~/.rmail-active")
-  "The name of the active file for the mail box.")
+  "The name of the active file for the rmail box.")
 
 (defvar nnbabyl-get-new-mail t
   "If non-nil, nnbabyl will check the incoming mail file and split the mail.")

@@ -146,7 +146,7 @@ instead use `nntp-server-buffer'.")
 You'd better not use this variable in NNTP front-end program but
 instead call function `nntp-status-message' to get status message.")
 
-(defvar nntp-server-xover t)
+(defvar nntp-server-xover 'try)
 (defvar nntp-server-list-active-group 'try)
 (defvar nntp-current-group "")
 
@@ -170,8 +170,8 @@ instead call function `nntp-status-message' to get status message.")
    (list 'nntp-prepare-server-hook nntp-prepare-server-hook) 
    '(nntp-server-process nil)
    '(nntp-status-string nil)
-   '(nntp-server-xover t)
-   '(nntp-server-list-active-group 'try)
+   '(nntp-server-xover try)
+   '(nntp-server-list-active-group try)
    '(nntp-current-group "")))
 
 
@@ -255,7 +255,7 @@ instead call function `nntp-status-message' to get status message.")
 	  (command (if nntp-server-list-active-group
 		       "LIST ACTIVE" "GROUP")))
 	(while groups
-	  (nntp-send-strings-to-server "HEAD" (car groups))
+	  (nntp-send-strings-to-server command (car groups))
 	  (setq groups (cdr groups))
 	  (setq count (1+ count))
 	  ;; Every 400 requests we have to read the stream in
@@ -272,14 +272,17 @@ instead call function `nntp-status-message' to get status message.")
 			 (setq last-point (point))
 			 (< received count))
 		  (nntp-accept-response)))))
+
 	;; Wait for the reply from the final command.
-	(goto-char (point-max))
-	(re-search-backward "^[0-9]" nil t)
-	(if (looking-at "^[23]")
-	    (while (progn
-		     (goto-char (- (point-max) 3))
-		     (not (looking-at "^\\.\r$")))
-	      (nntp-accept-response)))
+	(if nntp-server-list-active-group
+	    (progn
+	      (goto-char (point-max))
+	      (re-search-backward "^[0-9]" nil t)
+	      (if (looking-at "^[23]")
+		  (while (progn
+			   (goto-char (- (point-max) 3))
+			   (not (looking-at "^\\.\r$")))
+		    (nntp-accept-response)))))
 
 	;; Now all replies are received. We remove CRs.
 	(goto-char (point-min))
@@ -513,7 +516,7 @@ SUBJECT.  HEADER is a Gnus header vector.  ARTICLE-BUFFER contains the
 article being followed up.  INFO is a Gnus info list.  If FOLLOW-TO,
 post to this group instead.  If RESPECT-POSTER, heed the special
 \"poster\" value of the Followup-to header."
-  (if (assq 'to-address (nth 4 info))
+  (if (assq 'to-address (nth 5 info))
       (nnmail-request-post-buffer 
        post group subject header article-buffer info follow-to respect-poster)
     (let ((mail-default-headers 
@@ -765,8 +768,7 @@ It will prompt for a password."
 	  (if (stringp nntp-server-xover)
 	      (nntp-send-command "^\\.\r$" nntp-server-xover range)
 	    (let ((commands nntp-xover-commands))
-	      (while (and commands
-			  (eq t nntp-server-xover))
+	      (while (and commands (eq nntp-server-xover 'try))
 		(nntp-send-command "^\\.\r$" (car commands) range)
 		(save-excursion
 		  (set-buffer nntp-server-buffer)
@@ -774,10 +776,12 @@ It will prompt for a password."
 		  (if (looking-at "[23]") 
 		      (setq nntp-server-xover (car commands))))
 		(setq commands (cdr commands)))
-	      (if (eq t nntp-server-xover)
+	      (if (eq nntp-server-xover 'try)
 		  (setq nntp-server-xover nil))
 	      nntp-server-xover))
-	(if nntp-server-xover (nntp-decode-text) (erase-buffer))))))
+	(if nntp-server-xover
+	    (nntp-decode-text)
+	  (erase-buffer))))))
 
 (defun nntp-send-strings-to-server (&rest strings)
   "Send list of STRINGS to news server as command and its arguments."
@@ -883,8 +887,6 @@ If SERVICE, this this as the port number."
 	    (setq nntp-server-process proc)
 	    ;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
 	    (process-kill-without-query proc)
-	    (setq nntp-server-xover t)
-	    (setq nntp-server-list-active-group t)
 	    (setq nntp-address server)
 	    ;; It is possible to change kanji-fileio-code in this hook.
 	    (run-hooks 'nntp-server-hook)

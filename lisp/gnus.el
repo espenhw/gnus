@@ -50,19 +50,21 @@
 		  (system-name)))
   "*Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
-news is to be fetched, the second is the address.  An optional third
-element can be included to specify a port number if nntp is used.
+news is to be fetched, the second is the address. 
 
 For instance, if you want to get your news via NNTP from
-\"flab.flab.edu\" on port 23, you could say:
+\"flab.flab.edu\", you could say:
 
-(setq gnus-select-method '(nntp \"flab.flab.edu\" 23))
+(setq gnus-select-method '(nntp \"flab.flab.edu\"))
 
 If you want to use your local spool, say:
 
 (setq gnus-select-method (list 'nnspool (system-name)))
 
-If you use this variable, you must set `gnus-nntp-server' to nil.")
+If you use this variable, you must set `gnus-nntp-server' to nil.
+
+There is a lot more to know about select methods and virtual servers -
+see the manual for details.")
 
 ;; Added by Sudish Joseph <joseph@cis.ohio-state.edu>.
 (defvar gnus-post-method nil
@@ -110,7 +112,7 @@ This is an obsolete variable, which is scarcely used. If you use an
 nntp server for your newsgroup and want to change the port number
 used to 899, you would say something along these lines:
 
- (setq gnus-select-method '(nntp \"my.nntp.server\" 899))")
+ (setq gnus-select-method '(nntp \"my.nntp.server\" (nntp-port-number 899)))")
 
 (defvar gnus-startup-file "~/.newsrc"
   "*Your `.newsrc' file.
@@ -413,17 +415,43 @@ check for bogus newsgroups with \\<gnus-group-mode-map>\\[gnus-group-check-bogus
 If this variable is nil, Gnus will only know about the groups in your
 `.newsrc' file.
 
-If you set this variable to nil, you probably still want to be told
-about new newsgroups that arrive.  To do that, set
+If this variable is `some', Gnus will try to only read the relevant
+parts of the active file from the server.  Not all servers support
+this, and it might be quite slow with other servers, but this should
+generally be faster than both the t and nil value.
+
+If you set this variable to nil or `some', you probably still want to
+be told about new newsgroups that arrive.  To do that, set
 `gnus-check-new-newsgroups' to `ask-server'.  This may not work
-properly with all servers.") 
+properly with all servers.")
+
+(defvar gnus-level-subscribed 5
+  "*Groups with levels less than or equal to this variable are subscribed.")
+
+(defvar gnus-level-unsubscribed 7
+  "*Groups with levels less than or equal to this variable are unsubscribed.
+Groups with levels less than `gnus-level-subscribed', which should be
+less than thiss variable, are subscribed.")
+
+(defvar gnus-level-zombie 8
+  "*Groups with this level are zombie groups.")
+
+(defvar gnus-level-killed 9
+  "*Groups with this level are killed.")
+
+(defvar gnus-level-default-subscribed 3
+  "*New subscribed groups will be subscribed at this level.")
+
+(defvar gnus-level-default-unsubscribed 
+  "*New unsubscribed groups will be unsubscribed at this level.")
 
 (defvar gnus-activate-foreign-newsgroups nil
   "*If nil, Gnus will not check foreign newsgroups at startup.
 If it is non-nil, it should be a number between one and nine. Foreign
 newsgroups that have a level lower or equal to this number will be
 activated on startup. For instance, if you want to active all
-subscribed newsgroups, but not the rest, you'd set this variable to 5.
+subscribed newsgroups, but not the rest, you'd set this variable to 
+`gnus-level-subscribed'.
 
 If you subscribe to lots of newsgroups from different servers, startup
 might take a while. By setting this variable to nil, you'll save time,
@@ -493,10 +521,10 @@ score files in the \"/ftp.some-where:/pub/score\" directory.
   "*Default article score level.
 If this variable is nil, scoring will be disabled.")
 
-(defvar gnus-group-default-list-level 5
+(defvar gnus-group-default-list-level gnus-level-subscribed
   "*Default listing level.")
 
-(defvar gnus-group-always-list-unread 5
+(defvar gnus-group-always-list-unread gnus-level-subscribed
   "*Always list groups less than this variable with unread articles. 
 If nil, use parameter to specify.")
 
@@ -584,6 +612,9 @@ Also see `gnus-ignored-headers'.")
 If it is non-nil, headers that match the regular expressions will
 be placed first in the article buffer in the sequence specified by
 this list.")
+
+(defvar gnus-check-before-posting t
+  "In non-nil, Gnus will attempt to run some checks on outgoing posts.")
 
 (defvar gnus-required-headers
   '(From Date Newsgroups Subject Message-ID Organization Lines X-Newsreader)
@@ -777,7 +808,7 @@ with some simple extensions.
 
 %M    Only marked articles (character, \"*\" or \" \")
 %S    Whether the group is subscribed (character, \"U\", \"K\", \"Z\" or \" \")
-%L    Level of subscribedness (integer, 1-9)
+%L    Level of subscribedness (integer)
 %N    Number of unread articles (integer)
 %I    Number of dormant articles (integer)
 %i    Number of ticked and dormant (integer)
@@ -1221,9 +1252,6 @@ of the last succesful match.")
 
 (defvar gnus-newsgroup-dependencies nil)
 (defconst gnus-group-edit-buffer "*Gnus edit newsgroup*")
-(defvar gnus-default-subscribe-level 2)
-(defvar gnus-default-unsubscribe-level 6)
-(defvar gnus-default-kill-level 9)
 
 (defconst gnus-group-line-format-alist
   (list (list ?M 'marked ?c)
@@ -1303,7 +1331,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "Lars Magne Ingebrigtsen <larsi@ifi.uio.no>"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.53"
+(defconst gnus-version "(ding) Gnus v0.54"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2015,9 +2043,10 @@ it is killed."
   "Subscribe new NEWSGROUP.
 If NEXT is non-nil, it is inserted before NEXT. Otherwise it is made
 the first newsgroup."
-  ;; We subscribe the group by changing its level to 3.
+  ;; We subscribe the group by changing its level to `subscribed'.
   (gnus-group-change-level 
-   newsgroup 3 9 (gnus-gethash (or next "dummy.group") gnus-newsrc-hashtb))
+   newsgroup gnus-level-default-subscribed
+   gnus-level-killed (gnus-gethash (or next "dummy.group") gnus-newsrc-hashtb))
   (message "Subscribe newsgroup: %s" newsgroup))
 
 ;; For directories
@@ -2805,7 +2834,7 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-mode-map "\M-f" 'gnus-group-fetch-faq)
   (define-key gnus-group-mode-map "?" 'gnus-group-describe-briefly)
   (define-key gnus-group-mode-map "\C-c\C-i" 'gnus-info-find-node)
-  (define-key gnus-group-mode-map "\M-e" 'gnus-group-edit-group)
+  (define-key gnus-group-mode-map "\M-e" 'gnus-group-edit-group-method)
   (define-key gnus-group-mode-map "^" 'gnus-group-enter-server-mode)
   (define-key gnus-group-mode-map
     (if gnus-xemacs [button2] [mouse-2]) 'gnus-mouse-pick-group)
@@ -2819,7 +2848,9 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-make-map "a" 'gnus-group-make-archive-group)
   (define-key gnus-group-make-map "k" 'gnus-group-make-kiboze-group)
   (define-key gnus-group-make-map "m" 'gnus-group-make-group)
-  (define-key gnus-group-make-map "e" 'gnus-group-edit-group)
+  (define-key gnus-group-make-map "E" 'gnus-group-edit-group)
+  (define-key gnus-group-make-map "e" 'gnus-group-edit-group-method)
+  (define-key gnus-group-make-map "p" 'gnus-group-edit-group-parameters)
 
   (define-prefix-command 'gnus-group-list-map)
   (define-key gnus-group-mode-map "G" 'gnus-group-list-map)
@@ -2891,7 +2922,7 @@ If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use.
 As opposed to `gnus', this command will not connect to the local server."
   (interactive "P")
-  (gnus (or arg 2) t))
+  (gnus (or arg (1- gnus-level-default-subscribed)) t))
 
 (defalias '\(ding\) 'gnus)
 
@@ -2973,10 +3004,10 @@ prompt the user for the name of an NNTP server to use."
 
 (defun gnus-group-list-groups (level &optional unread)
   "List newsgroups with level LEVEL or lower that have unread alticles.
-Default is 5, which lists all subscribed groups.
+Default is all subscribed groups.
 If argument UNREAD is non-nil, groups with no unread articles are also listed."
   (interactive "P")
-  (setq level (or level gnus-group-default-list-level 5))
+  (setq level (or level gnus-group-default-list-level gnus-level-subscribed))
   (gnus-group-setup-buffer)	;May call from out of group buffer
   (let ((case-fold-search nil)
 	(group (gnus-group-group-name)))
@@ -3017,7 +3048,7 @@ If REGEXP, only list groups matching REGEXP."
 	(lowest (or lowest 1))
 	info clevel unread group)
     (erase-buffer)
-    (if (< lowest 8)
+    (if (< lowest gnus-level-zombie)
 	;; List living groups.
 	(while newsrc
 	  (setq info (car newsrc)
@@ -3037,14 +3068,15 @@ If REGEXP, only list groups matching REGEXP."
 		nil group (car (cdr info)) (nth 3 info) unread (nth 4 info)))))
 
     ;; List dead groups.
-    (and (>= level 8) (<= lowest 8)
+    (and (>= level gnus-level-zombie) (<= lowest gnus-level-zombie)
 	 (gnus-group-prepare-flat-list-dead 
-	  (setq gnus-zombie-list (sort gnus-zombie-list 'string<)) 8 ?Z
+	  (setq gnus-zombie-list (sort gnus-zombie-list 'string<)) 
+	  gnus-level-zombie ?Z
 	  regexp))
-    (and (>= level 9) (<= lowest 9)
+    (and (>= level gnus-level-killed) (<= lowest gnus-level-killed)
 	 (gnus-group-prepare-flat-list-dead 
-	  (setq gnus-killed-list (sort gnus-killed-list 'string<)) 9 ?K
-	  regexp))
+	  (setq gnus-killed-list (sort gnus-killed-list 'string<)) 
+	  gnus-level-killed ?K regexp))
 
     (gnus-group-set-mode-line)
     (setq gnus-have-all-newsgroups all)
@@ -3105,8 +3137,26 @@ If REGEXP, only list groups matching REGEXP."
   "Return nil if GROUP is native, non-nil if it is foreign."
   (string-match ":" group))
 
-(defun gnus-group-set-info (info)
-  (let ((entry (gnus-gethash (car info) gnus-newsrc-hashtb)))
+(defun gnus-group-set-info (info &optional method-only-group part)
+  (let* ((entry (gnus-gethash
+		 (or method-only-group (car info)) gnus-newsrc-hashtb))
+	 (part-info info)
+	 (info (if method-only-group (nth 2 entry) info)))
+    (if (not method-only-group)
+	()
+      (or entry
+	  (error "Trying to change non-existant group %s" method-only-group))
+      ;; We have recevied parts of the actual group info - either the
+      ;; select method or the group parameters.  We first check
+      ;; whether we have to extend the info, and if so, do that.
+      (let ((len (length info))
+	    (total (if (eq part 'method) 5 6)))
+	(and (< len total)
+	     (setcdr (nthcdr (1- len) info)
+		     (make-list (- total len) nil)))
+	;; Then we enter the new info.
+	(setcar (nthcdr (1- total) info) part-info)))
+    ;; We uncompress some lists of marked articles.
     (let (marked)
       (if (not (setq marked (nth 3 info)))
 	  ()
@@ -3119,13 +3169,16 @@ If REGEXP, only list groups matching REGEXP."
 	  (setq marked (cdr marked)))))
     (if entry
 	()
+      ;; This is a new group, so we just create it.
       (save-excursion
 	(set-buffer gnus-group-buffer)
 	(if (nth 4 info)
+	    ;; It's a foreign group...
 	    (gnus-group-make-group 
 	     (gnus-group-real-name (car info))
 	     (prin1-to-string (car (nth 4 info)))
 	     (nth 1 (nth 4 info)))
+	  ;; It's a native group.
 	  (gnus-group-make-group
 	   (car info)
 	   (prin1-to-string (car gnus-select-method))
@@ -3136,6 +3189,8 @@ If REGEXP, only list groups matching REGEXP."
 			     (gnus-group-real-name (car info))
 			     (or (nth 4 info) gnus-select-method))
 			    gnus-newsrc-hashtb))))
+    ;; Whether it was a new group or not, we now have the entry, so we
+    ;; can do the update.
     (if entry
 	(progn
 	  (setcar (nthcdr 2 entry) info)
@@ -3148,6 +3203,12 @@ If REGEXP, only list groups matching REGEXP."
 				  (length (cdr (assq 'tick marked)))
 				  (length (cdr (assq 'dormant marked)))))))))
       (error "No such group: %s" (car info)))))
+
+(defun gnus-group-set-method-info (group select-method)
+  (gnus-group-set-info select-method group 'method))
+
+(defun gnus-group-set-params-info (group params)
+  (gnus-group-set-info params group 'params))
 
 (defun gnus-group-update-group-line ()
   "This function updates the current line in the newsgroup buffer and
@@ -3175,7 +3236,8 @@ moves the point to the colon."
 	   nil group (nth 1 info) (nth 3 info) (car entry) (nth 4 info)))
       (setq active (gnus-gethash group gnus-active-hashtb))
       (gnus-group-insert-group-line 
-       nil group (if (member group gnus-zombie-list) 8 9)
+       nil group (if (member group gnus-zombie-list) gnus-level-zombie
+		   gnus-level-killed)
        nil (if active (- (1+ (cdr active)) (car active)) 0) nil))))
 
 (defun gnus-group-insert-group-line (gformat group level marked number method)
@@ -3193,9 +3255,9 @@ moves the point to the colon."
 	  (if (numberp number)
 	      (max 0 (- number-total number))
 	    "*"))
-	 (subscribed (cond ((< level 6) ? )
-			   ((< level 8) ?U)
-			   ((= level 8) ?Z)
+	 (subscribed (cond ((<= level gnus-level-subscribed) ? )
+			   ((<= level gnus-level-unsubscribed) ?U)
+			   ((= level gnus-level-zombie) ?Z)
 			   (t ?K)))
 	 (qualified-group (gnus-group-real-name group))
 	 (newsgroup-description 
@@ -3325,8 +3387,11 @@ If FIRST-TOO, the current line is also eligeble as a target."
 			    (let ((unread 
 				   (get-text-property (point) 'gnus-unread)))
 			      (or (eq unread t) (and unread (> unread 0))))
-			    (let ((lev (get-text-property (point) 'gnus-level)))
-			      (and lev (< (get-text-property (point) 'gnus-level) 6)))))
+			    (let ((lev (get-text-property
+					(point) 'gnus-level)))
+			      (and lev (<= (get-text-property 
+					   (point) 'gnus-level)
+					   gnus-level-subscribed)))))
 		       (or (not level)
 			   (let ((lev (get-text-property (point) 'gnus-level)))
 			     (if (and lev (<= lev level))
@@ -3516,8 +3581,9 @@ ADDRESS."
     (and (gnus-gethash nname gnus-active-hashtb)
 	 (error "Group %s already exists" nname))
     (gnus-group-change-level 
-     (setq info (list t nname 3 nil nil meth))
-     3 9 (gnus-gethash (or (gnus-group-group-name) "dummy.group")
+     (setq info (list t nname gnus-level-default-subscribed nil nil meth))
+     gnus-level-default-subscribed gnus-level-killed 
+     (gnus-gethash (or (gnus-group-group-name) "dummy.group")
 		       gnus-newsrc-hashtb) t)
     (gnus-sethash nname '(0 . 0) gnus-active-hashtb)
     (gnus-dribble-enter 
@@ -3527,7 +3593,7 @@ ADDRESS."
     (and (gnus-check-backend-function 'request-create-group nname)
 	 (gnus-request-create-group nname))))
 
-(defun gnus-group-edit-group (group)
+(defun gnus-group-edit-group (group &optional part)
   "Edit the group on the current line."
   (interactive (list (gnus-group-group-name)))
   (let (info)
@@ -3553,8 +3619,27 @@ ADDRESS."
 	      (setcdr (car marked) 
 		      (gnus-compress-sequence (sort (cdr (car marked)) '<) t)))
 	  (setq marked (cdr marked))))
-      (insert (pp-to-string (list 'gnus-group-set-info
-				  (list 'quote cinfo)))))))
+      (cond ((eq part 'method)
+	     (insert 
+	      "(gnus-group-set-method-info \"" group "\"\n  "
+	      (pp-to-string (list 'quote (or (nth 4 info) "native"))) ")\n"))
+	    ((eq part 'params)
+	     (insert 
+	      "(gnus-group-set-params-info \"" group "\"\n  "
+	      (pp-to-string (list 'quote (nth 5 info))) ")\n"))
+	    (t
+	     (insert (pp-to-string 
+		      (list 'gnus-group-set-info (list 'quote cinfo)))))))))
+
+(defun gnus-group-edit-group-method (group)
+  "Edit the select method of GROUP."
+  (interactive (list (gnus-group-group-name)))
+  (gnus-group-edit-group group 'method))
+
+(defun gnus-group-edit-group-parameters (group)
+  "Edit the group parameters of GROUP."
+  (interactive (list (gnus-group-group-name)))
+  (gnus-group-edit-group group 'params))
 
 (defun gnus-group-edit-group-done ()
   (interactive)
@@ -3650,7 +3735,7 @@ score file entries for articles to include in the group."
   (setq gnus-newsrc-assoc 
 	(sort (cdr gnus-newsrc-assoc) gnus-group-sort-function))
   (gnus-make-hashtable-from-newsrc-alist)
-  (gnus-get-unread-articles 6)
+  (gnus-get-unread-articles (1+ gnus-level-subscribed))
   (gnus-group-list-groups nil))
 
 (defun gnus-group-sort-by-alphabet (info1 info2)
@@ -3936,11 +4021,12 @@ specify which levels you are interested in re-scanning."
   (if (and gnus-read-active-file (not arg))
       (progn
 	(gnus-read-active-file)
-	(gnus-get-unread-articles (or arg 6)))
+	(gnus-get-unread-articles (or arg (1+ gnus-level-subscribed))))
     (let ((gnus-read-active-file nil))
-      (gnus-get-unread-articles (or arg 6))))
+      (gnus-get-unread-articles (or arg (1+ gnus-level-subscribed)))))
   (gnus-group-list-groups 
-   (or gnus-group-always-list-unread arg 5) gnus-have-all-newsgroups))
+   (or gnus-group-always-list-unread arg gnus-level-subscribed)
+   gnus-have-all-newsgroups))
 
 (defun gnus-group-get-new-news-this-group (n)
   "Check for newly arrived news in the current group (and the N-1 next groups).
@@ -4020,7 +4106,8 @@ If N is negative, this group and the N-1 previous groups will be checked."
 		       (symbol-value group)))
        (add-text-properties 
 	b (1+ b) (list 'gnus-group group
-		       'gnus-unread t 'gnus-marked nil 'gnus-level 6)))
+		       'gnus-unread t 'gnus-marked nil
+		       'gnus-level (1+ gnus-level-subscribed))))
      gnus-description-hashtb)
     (goto-char (point-min))
     (gnus-group-position-cursor)))
@@ -4083,7 +4170,8 @@ level to cut off listing groups.
 If ALL, also list groups with no unread articles.
 If LOWEST, don't list groups with level lower than LOWEST."
   (interactive "P\nsList newsgroups matching: ")
-  (gnus-group-prepare-flat (or level 5) all (or lowest 1) regexp)
+  (gnus-group-prepare-flat (or level gnus-level-subscribed)
+			   all (or lowest 1) regexp)
   (goto-char (point-min))
   (gnus-group-position-cursor))
 
@@ -4093,7 +4181,7 @@ If the prefix LEVEL is non-nil, it should be a number that says which
 level to cut off listing groups. 
 If LOWEST, don't list groups with level lower than LOWEST."
   (interactive "P\nsList newsgroups matching: ")
-  (gnus-group-list-matching (or level 9) regexp t lowest))
+  (gnus-group-list-matching (or level gnus-level-killed) regexp t lowest))
 
 ;; Suggested by Jack Vinson <vinson@unagi.cis.upenn.edu>.
 (defun gnus-group-save-newsrc ()
@@ -4381,11 +4469,14 @@ and the second element is the address."
       (if sub
 	  (progn
 	    (gnus-group-change-level 
-	     (list t group 3 nil nil gnus-browse-current-method) 3 9 
+	     (list t group gnus-level-default-subscribed
+		   nil nil gnus-browse-current-method) 
+	     gnus-level-default-subscribed gnus-level-killed
 	     (gnus-gethash (car (nth 1 gnus-newsrc-assoc)) gnus-newsrc-hashtb)
 	     t)
 	    (insert ? ))
-	(gnus-group-change-level group 9 3)
+	(gnus-group-change-level 
+	 group gnus-level-killed gnus-level-default-subscribed)
 	(insert ?K)))
     t))
 
@@ -5638,7 +5729,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
       (setq gnus-newsgroup-auto-expire
 	    (or (and (stringp gnus-auto-expirable-newsgroups)
 		     (string-match gnus-auto-expirable-newsgroups group))
-		(memq 'auto-expire gnus-current-select-method)))
+		(memq 'auto-expire (nth 5 info))))
       ;; First and last article in this newsgroup.
       (and gnus-newsgroup-headers
 	   (setq gnus-newsgroup-begin 
@@ -5944,7 +6035,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 			    virtual
 			    ;; Only do cross-references on subscribed
 			    ;; groups, if that is what is wanted.  
-			    (<= (nth 1 info) 5)))
+			    (<= (nth 1 info) gnus-level-subscribed)))
 		   (progn
 		     (setq num 0)
 		     ;; Set the new list of read articles in this group.
@@ -7212,7 +7303,7 @@ NOTE: This command only works with newsgroup that use NNTP."
     (set-buffer gnus-group-buffer)
     (gnus-sethash 
      name 
-     (list t nil (list name 3 nil nil 
+     (list t nil (list name gnus-level-default-subscribed nil nil 
 		       (list 'nndigest gnus-article-buffer
 			     (cons 'quit-buffer buf))))
      gnus-newsrc-hashtb)
@@ -10046,7 +10137,7 @@ score the alt hierarchy, you'd say \"!alt.all\"."
     (while newsrc
       (setq group (car (car newsrc)))
       (setq entry (gnus-gethash group gnus-newsrc-hashtb))
-      (if (and (<= (nth 1 (car newsrc)) 5)
+      (if (and (<= (nth 1 (car newsrc)) gnus-level-subscribed)
 	       (and (car entry)
 		    (or (eq (car entry) t)
 			(not (zerop (car entry)))))
@@ -11200,7 +11291,8 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 			   (format "%s" (car (gnus-find-method-for-group 
 					      gnus-newsgroup-name)))
 			   gnus-valid-select-methods))))
-	  (assq 'to-address (gnus-find-method-for-group gnus-newsgroup-name))
+	  (assq 'to-address (nth 5 (nth 2 (gnus-gethash gnus-newsgroup-name
+							gnus-newsrc-hashtb))))
 	  (gnus-y-or-n-p "Are you sure you want to post to all of USENET? "))
       (let ((sumart (if (not post)
 			(save-excursion
@@ -11441,107 +11533,99 @@ will attempt to use the foreign server to post the article."
 
 (defun gnus-inews-check-post ()
   "Check whether the post looks ok."
-  (and 
-   ;; Check excessive size.
-   (if (> (buffer-size) 60000)
-       (gnus-y-or-n-p (format "The article is %d octets long. Really post? "
-			      (buffer-size)))
-     t)
-   ;; Check for commands in Subject.
-   (save-excursion
-     (save-restriction
-       (goto-char (point-min))
-       (narrow-to-region 
-	(point) 
-	(re-search-forward 
-	 (concat "^" (regexp-quote mail-header-separator) "$")))
-       (if (string-match "^cmsg " (mail-fetch-field "subject"))
-	   (gnus-y-or-n-p
-	    "The control code \"cmsg \" is in the subject. Really post? ")
-	 t)))
-   ;; Check for control characters.
-   (save-excursion
-     (if (re-search-forward "[\000-\007\013\015-\037\200-\237]" nil t)
-	 (gnus-y-or-n-p 
-	  "The article contains control characters. Really post? ")
-       t))
-   ;; Check for multiple identical headers.
-   (let (found)
-     (save-excursion
-       (save-restriction
-	 (goto-char (point-min))
-	 (narrow-to-region
-	  (point) 
-	  (re-search-forward 
-	   (concat "^" (regexp-quote mail-header-separator) "$")))
-	 (goto-char (point-min))
-	 (while (and (not found) (re-search-forward "^[^ \t:]+: " nil t))
-	   (save-excursion
-	     (or (re-search-forward 
-		  (concat "^" (setq found
-				    (buffer-substring (match-beginning 0) 
-						      (match-end 0))))
-		  nil t)
-		 (setq found nil))))
-	 (if found
-	     (gnus-y-or-n-p 
-	      (format "Multiple %s headers. Really post? " found))
-	   t))))
-   ;; Check for version and sendsys.
-   (save-excursion
-     (save-restriction
-       (goto-char (point-min))
-       (narrow-to-region
-	(point) 
-	(re-search-forward 
-	 (concat "^" (regexp-quote mail-header-separator) "$")))
-       (if (re-search-backward "^Sendsys:\\|^Version:" nil t)
-	   (gnus-yes-or-no-p
-	    (format "The article contains a %s command. Really post? "
-		    (buffer-substring (match-beginning 0) (match-end 0))))
-	 t)))
-   ;; Check the From header.
-   (save-excursion
-     (save-restriction
-       (goto-char (point-min))
-       (narrow-to-region
-	(point)
-	(re-search-forward
-	 (concat "^" (regexp-quote mail-header-separator) "$")))
-       (let* ((case-fold-search t)
-	      (from (mail-fetch-field "from")))
-	 (if (and from
-		  (string-match "@" from)
-		  (not (string-match "@[^\\.]*\\." from)))
-	     (gnus-yes-or-no-p
-	      (format "The domain looks strange: \"%s\". Really post? "
-		      from))
-	   t))))
-   ;; Check for long lines.
-   (save-excursion
-     (save-restriction
-       (goto-char (point-min))
-       (narrow-to-region
-	(point)
-	(re-search-forward
-	 (concat "^" (regexp-quote mail-header-separator) "$")))
-       (while 
-	   (and
-	    (progn
-	      (end-of-line)
-	      (< (current-column) 80))
-	    (zerop (forward-line 1))))
-       (or (eobp)
-	   (gnus-yes-or-no-p
-	    (format
-	     "You have lines longer than 79 characters.  Really post? ")))))
-   ;; Use the (size . checksum) variable to see whether the
-   ;; article is empty or has only quoted text.
-   (if (and (= (buffer-size) (car gnus-article-check-size))
-	    (= (gnus-article-checksum) (cdr gnus-article-check-size)))
-       (gnus-yes-or-no-p
-	"It looks like there's no new text in your article. Really post? ")
-     t)))
+  (or
+   (not gnus-check-before-posting)
+   (and 
+    ;; We narrow to the headers and check them first.
+    (save-excursion
+      (save-restriction
+	(goto-char (point-min))
+	(narrow-to-region 
+	 (point) 
+	 (re-search-forward 
+	  (concat "^" (regexp-quote mail-header-separator) "$")))
+	(goto-char (point-min))
+	(and 
+	 ;; Check for commands in Subject.
+	 (save-excursion
+	   (if (string-match "^cmsg " (mail-fetch-field "subject"))
+	       (gnus-y-or-n-p
+		"The control code \"cmsg \" is in the subject. Really post? ")
+	     t))
+	 ;; Check for multiple identical headers.
+	 (save-excursion
+	   (let (found)
+	     (while (and (not found) (re-search-forward "^[^ \t:]+: " nil t))
+	       (save-excursion
+		 (or (re-search-forward 
+		      (concat "^" (setq found
+					(buffer-substring 
+					 (match-beginning 0) 
+					 (- (match-end 0) 2))))
+		      nil t)
+		     (setq found nil))))
+	     (if found
+		 (gnus-y-or-n-p 
+		  (format "Multiple %s headers. Really post? " found))
+	       t)))
+	 ;; Check for version and sendsys.
+	 (save-excursion
+	   (if (re-search-forward "^Sendsys:\\|^Version:" nil t)
+	       (gnus-yes-or-no-p
+		(format "The article contains a %s command. Really post? "
+			(buffer-substring (match-beginning 0) 
+					  (1- (match-end 0)))))
+	     t))
+	 ;; Check the Message-Id header.
+	 (save-excursion
+	   (let* ((case-fold-search t)
+		  (message-id (mail-fetch-field "message-id")))
+	     (or (and (string-match "@" message-id)
+		      (string-match "@[^\\.]*\\." message-id))
+		 (gnus-yes-or-no-p
+		  (format "The Message-ID looks strange: \"%s\". Really post? "
+			  message-id)))))
+	 ;; Check the From header.
+	 (save-excursion
+	   (let* ((case-fold-search t)
+		  (from (mail-fetch-field "from")))
+	     (or (and (string-match "@" from)
+		      (string-match "@[^\\.]*\\." from))
+		 (gnus-yes-or-no-p
+		  (format "The From looks strange: \"%s\". Really post? "
+			  from))))))))
+    ;; Check for long lines.
+    (save-excursion
+      (goto-char (point-min))
+      (re-search-forward
+       (concat "^" (regexp-quote mail-header-separator) "$"))
+      (while (and
+	      (progn
+		(end-of-line)
+		(< (current-column) 80))
+	      (zerop (forward-line 1))))
+      (or (bolp)
+	  (gnus-yes-or-no-p
+	   (format
+	    "You have lines longer than 79 characters.  Really post? "))))
+    ;; Check for control characters.
+    (save-excursion
+      (if (re-search-forward "[\000-\007\013\015-\037\200-\237]" nil t)
+	  (gnus-y-or-n-p 
+	   "The article contains control characters. Really post? ")
+	t))
+    ;; Check excessive size.
+    (if (> (buffer-size) 60000)
+	(gnus-y-or-n-p (format "The article is %d octets long. Really post? "
+			       (buffer-size)))
+      t)
+    ;; Use the (size . checksum) variable to see whether the
+    ;; article is empty or has only quoted text.
+    (if (and (= (buffer-size) (car gnus-article-check-size))
+	     (= (gnus-article-checksum) (cdr gnus-article-check-size)))
+	(gnus-yes-or-no-p
+	 "It looks like there's no new text in your article. Really post? ")
+      t))))
 
 (defun gnus-article-checksum ()
   (let ((sum 0))
@@ -11792,7 +11876,7 @@ nil."
 		 (not
 		  (gnus-y-or-n-p
 		   (format
-		    "Your .sig is %d lines; it should be max 4. Really post? "
+		    "Your .sig is %d lines; it should be max 4.  Really post? "
 		    b)))
 		 (if (file-exists-p signature)
 		     (error (format "Edit %s." signature))
@@ -12352,6 +12436,13 @@ mailer."
 ;; Should return a status string (not in the nntp buffer, but as the
 ;; result of the function).
 ;;
+;; `choke-retrieve-groups GROUPS &optional SERVER'
+;; Optional function for retrieving active file info on all groups in
+;; GROUPS.  Two return formats are supported: The normal active file
+;; format, and a list of GROUP lines.  This function should return (as
+;; a function value) either `active' or `group', depending on what
+;; format it returns.
+;;
 ;; The following functions are optional and apply only to backends
 ;; that are able to control the contents of their groups totally
 ;; (ie. mail backends.)  Backends that aren't able to do that
@@ -12555,6 +12646,9 @@ is returned insted of the status string."
     (funcall (gnus-get-function method 'retrieve-headers) 
 	     articles (gnus-group-real-name group) (nth 1 method))))
 
+(defun gnus-retrieve-groups (groups method)
+  (funcall (gnus-get-function method 'retrieve-groups) groups (nth 1 method)))
+
 (defun gnus-request-article (article group &optional buffer)
   (let ((method (gnus-find-method-for-group group)))
     (funcall (gnus-get-function method 'request-article) 
@@ -12625,11 +12719,11 @@ is returned insted of the status string."
     (funcall (gnus-get-function method 'request-create-group) 
 	     (gnus-group-real-name group) (nth 1 method))))
 
-(defun gnus-find-method-for-group (group)
+(defun gnus-find-method-for-group (group &optional info)
   (or gnus-override-method
       (and (not group)
 	   gnus-select-method)
-      (let ((info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
+      (let ((info (or info (nth 2 (gnus-gethash group gnus-newsrc-hashtb))))
 	    method)
 	(if (or (not info)
 		(not (setq method (nth 4 info))))
@@ -12641,18 +12735,7 @@ is returned insted of the status string."
 		       (gnus-server-extend-method group method))
 		      (t
 		       method))))
-	(let ((method-name (symbol-name (car method))))
-	  (if (and (memq 'address (assoc method-name 
-					 gnus-valid-select-methods))
-		   (not (assq (intern (concat method-name "-address"))
-			      method)))
-	      (setq method 
-		    (append method 
-			    (list (list (intern (concat 
-						 method-name "-address"))
-					(nth 1 method)))))))
-	method)))
-
+	(gnus-server-add-address method))))
 
 (defun gnus-check-backend-function (func group)
   (let ((method (if (stringp group) (car (gnus-find-method-for-group group))
@@ -12710,6 +12793,10 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
   (let ((init (not (and gnus-newsrc-assoc gnus-active-hashtb (not rawfile)))))
     ;; Clear some variables to re-initialize news information.
     (if init (setq gnus-newsrc-assoc nil gnus-active-hashtb nil))
+
+    ;; Read the newsrc file and create `gnus-newsrc-hashtb'.
+    (if init (gnus-read-newsrc-file rawfile))
+
     ;; Read the active file and create `gnus-active-hashtb'.
     ;; If `gnus-read-active-file' is nil, then we just create an empty
     ;; hash table. The partial filling out of the hash table will be
@@ -12720,10 +12807,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 	(gnus-read-active-file)
       (setq gnus-active-hashtb (make-vector 4095 0)))
 
-    ;; Read the newsrc file and create `gnus-newsrc-hashtb'.
-    (if init (gnus-read-newsrc-file rawfile))
     ;; Find the number of unread articles in each non-dead group.
-    (gnus-get-unread-articles (or level 6))
+    (gnus-get-unread-articles (or level (1+ gnus-level-subscribed)))
     ;; Find new newsgroups and treat them.
     (if (and init gnus-check-new-newsgroups gnus-read-active-file (not level)
 	     (gnus-server-opened gnus-select-method))
@@ -12886,7 +12971,8 @@ The `-n' option line from .newsrc is respected."
 	 gnus-active-hashtb)
 	(while groups
 	  (if (gnus-gethash (car groups) gnus-active-hashtb)
-	      (gnus-group-change-level (car groups) 3 9))
+	      (gnus-group-change-level 
+	       (car groups) gnus-level-default-subscribed gnus-level-killed))
 	  (setq groups (cdr groups)))
 	(gnus-group-make-help-group)
 	(and gnus-novice-user
@@ -12919,7 +13005,7 @@ The `-n' option line from .newsrc is respected."
       (setq group entry))
     (if (and (stringp entry)
 	     oldlevel 
-	     (< oldlevel 8))
+	     (< oldlevel gnus-level-zombie))
 	(setq entry (gnus-gethash entry gnus-newsrc-hashtb)))
     (if (and (not oldlevel)
 	     (listp entry))
@@ -12935,12 +13021,12 @@ The `-n' option line from .newsrc is respected."
     ;; If the group was killed, we remove it from the killed or zombie
     ;; list. If not, and it is in fact going to be killed, we remove
     ;; it from the newsrc hash table and assoc.
-    (cond ((>= oldlevel 8)
-	   (if (= oldlevel 8)
+    (cond ((>= oldlevel gnus-level-zombie)
+	   (if (= oldlevel gnus-level-zombie)
 	       (setq gnus-zombie-list (delete group gnus-zombie-list))
 	     (setq gnus-killed-list (delete group gnus-killed-list))))
 	  (t
-	   (if (>= level 8)
+	   (if (>= level gnus-level-zombie)
 	       (progn
 		 (gnus-sethash (car (nth 2 entry))
 			       nil gnus-newsrc-hashtb)
@@ -12953,16 +13039,16 @@ The `-n' option line from .newsrc is respected."
     ;; Finally we enter (if needed) the list where it is supposed to
     ;; go, and change the subscription level. If it is to be killed,
     ;; we enter it into the killed or zombie list.
-    (cond ((>= level 8)
+    (cond ((>= level gnus-level-zombie)
 	   (and (string= group (gnus-group-real-name group))
-		(if (= level 8)
+		(if (= level gnus-level-zombie)
 		    (setq gnus-zombie-list (cons group gnus-zombie-list))
 		  (setq gnus-killed-list (cons group gnus-killed-list)))))
 	  (t
 	   ;; If the list is to be entered into the newsrc assoc, and
 	   ;; it was killed, we have to create an entry in the newsrc
 	   ;; hashtb format and fix the pointers in the newsrc assoc.
-	   (if (>= oldlevel 8)
+	   (if (>= oldlevel gnus-level-zombie)
 	       (progn
 		 (if (listp entry)
 		     (progn
@@ -12995,7 +13081,8 @@ The `-n' option line from .newsrc is respected."
 
 (defun gnus-kill-newsgroup (newsgroup)
   "Obsolete function. Kills a newsgroup."
-  (gnus-group-change-level (gnus-gethash newsgroup gnus-newsrc-hashtb) 9))
+  (gnus-group-change-level
+   (gnus-gethash newsgroup gnus-newsrc-hashtb) gnus-level-killed))
 
 (defun gnus-check-bogus-newsgroups (&optional confirm)
   "Remove bogus newsgroups.
@@ -13022,7 +13109,7 @@ newsgroup."
     ;; then removing them from the list of killed groups.
     (while bogus
       (gnus-group-change-level 
-       (gnus-gethash (car bogus) gnus-newsrc-hashtb) 9)
+       (gnus-gethash (car bogus) gnus-newsrc-hashtb) gnus-level-killed)
       (setq gnus-killed-list (delete (car bogus) gnus-killed-list))
       (setq bogus (cdr bogus)))
     ;; Then we remove all bogus groups from the list of killed and
@@ -13054,7 +13141,7 @@ newsgroup."
 ;; and compute how many unread articles there are in each group.
 (defun gnus-get-unread-articles (&optional level)
   (let ((newsrc (cdr gnus-newsrc-assoc))
-	(level (or level 6))
+	(level (or level (1+ gnus-level-subscribed)))
 	info group active virtuals)
     (message "Checking new news...")
     (while newsrc
@@ -13301,27 +13388,56 @@ Returns whether the updating was successful."
 (defun gnus-read-active-file ()
   "Get active file from NNTP server."
   (gnus-group-set-mode-line)
-  (let ((methods (cons gnus-select-method gnus-secondary-select-methods)))
+  (let ((methods (cons gnus-select-method gnus-secondary-select-methods))
+	list-type)
     (setq gnus-have-read-active-file nil)
-    (while methods
-      (let* ((where (nth 1 (car methods)))
-	     (mesg (format "Reading active file%s via %s..."
-			   (if (and where (not (zerop (length where))))
-			       (concat " from " where) "")
-			   (car (car methods)))))
-	(message mesg)
-	(gnus-check-news-server (car methods))
-	(if (gnus-request-list (car methods)) ; Get active 
-	    (save-excursion
-	      (set-buffer nntp-server-buffer)
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (while methods
+	(let* ((where (nth 1 (car methods)))
+	       (mesg (format "Reading active file%s via %s..."
+			     (if (and where (not (zerop (length where))))
+				 (concat " from " where) "")
+			     (car (car methods)))))
+	  (message mesg)
+	  (gnus-check-news-server (car methods))
+	  (cond 
+	   ((and (eq gnus-read-active-file 'some)
+		 (gnus-check-backend-function
+		  'retrieve-groups (car (car methods))))
+	    (let ((newsrc (cdr gnus-newsrc-assoc))
+		  groups)
+	      (while newsrc
+		(and (gnus-server-equal 
+		      (gnus-find-method-for-group
+		       (car (car newsrc)) (car newsrc))
+		      (gnus-server-get-method nil (car methods)))
+		     (setq groups (cons (car (car newsrc)) groups)))
+		(setq newsrc (cdr newsrc)))
+	      (setq list-type (gnus-retrieve-groups groups (car methods)))
+	      (cond ((not list-type)
+		     (message "Cannot read partial active file from %s server." 
+			      (car (car methods)))
+		     (ding))
+		    ((eq list-type 'active)
+		     (gnus-active-to-gnus-format 
+		      (and gnus-have-read-active-file (car methods)))
+		     (setq gnus-have-read-active-file t))
+		    (t
+		     (gnus-groups-to-gnus-format
+		      (and gnus-have-read-active-file (car methods)))
+		     (setq gnus-have-read-active-file t)))))
+	   (t
+	    (if (not (gnus-request-list (car methods)))
+		(progn
+		  (message "Cannot read active file from %s server." 
+			   (car (car methods)))
+		  (ding))
 	      (gnus-active-to-gnus-format 
 	       (and gnus-have-read-active-file (car methods)))
 	      (setq gnus-have-read-active-file t)
-	      (message "%s...done" mesg))
-	  (message "Cannot read active file from %s server." 
-		   (car (car methods)))
-	  (ding)))
-      (setq methods (cdr methods)))))
+	      (message "%s...done" mesg)))))
+	(setq methods (cdr methods))))))
 
 ;; rewritten by jwz based on ideas from Rick Sladkey <jrs@world.std.com>
 ;; Further rewrites by lmi.
@@ -13387,6 +13503,46 @@ Lines matching `gnus-ignored-newsgroups' are ignored."
 		(forward-line 1)))
 	  (error 
 	   (progn (ding) (message "Possible error in active file."))))))))
+
+(defun gnus-groups-to-gnus-format (method &optional hashtb)
+  ;; Parse a "groups" active file.
+  (let ((cur (current-buffer))
+	(hashtb (or hashtb 
+		    (if method
+			gnus-active-hashtb
+		      (setq gnus-active-hashtb
+			    (gnus-make-hashtable 
+			     (count-lines (point-min) (point-max)))))))
+	(prefix (and method (not (eq method gnus-select-method))
+		     (gnus-group-prefixed-name "" method))))
+
+    (goto-char (point-min))
+    (condition-case ()
+	;; We split this into to separate loops, one with the prefix
+	;; and one without to speed the reading up somewhat.
+	(if prefix
+	    (let (min max opoint)
+	      (while (not (eobp))
+		(read cur) (read cur)
+		(setq min (read cur)
+		      max (read cur)
+		      opoint (point))
+		(skip-chars-forward " \t")
+		(insert prefix)
+		(goto-char opoint)
+		(set (let ((obarray hashtb)) (read cur)) 
+		     (cons min max))
+		(forward-line 1)))
+	  (let (min max opoint)
+	    (while (not (eobp))
+	      (read cur) (read cur)
+	      (setq min (read cur)
+		    max (read cur))
+	      (set (let ((obarray hashtb)) (read cur)) 
+		   (cons min max))
+	      (forward-line 1))))
+      (error 
+       (progn (ding) (message "Possible error in active file."))))))
 
 (defun gnus-read-newsrc-file (&optional force)
   "Read startup file.
@@ -13462,13 +13618,17 @@ If FORCE is non-nil, the .newsrc file is read."
 	  (if info
 	      (progn
 		(setcar (nthcdr 2 info) (cdr (cdr group)))
-		(setcar (cdr info) (if (nth 1 group) 3 6))
+		(setcar (cdr info)
+			(if (nth 1 group) gnus-level-default-subscribed 
+			  gnus-level-default-unsubscribed))
 		(setq gnus-newsrc-assoc (cons info gnus-newsrc-assoc)))
 	    (setq gnus-newsrc-assoc
 		  (cons 
 		   (setq info
 			 (list (car group)
-			       (if (nth 1 group) 3 6) (cdr (cdr group))))
+			       (if (nth 1 group) gnus-level-default-subscribed
+				 gnus-level-default-unsubscribed) 
+			       (cdr (cdr group))))
 		   gnus-newsrc-assoc)))
 	  (if (setq m (assoc (car group) marked))
 	    (setcdr (cdr (cdr info)) (cons (list (cons 'tick (cdr m))) nil))))
@@ -13683,13 +13843,19 @@ If FORCE is non-nil, the .newsrc file is read."
 		  ;; only change it if there's been a status change
 		  ;; from subscribed to unsubscribed, or vice versa.
 		  (setq level (nth 1 info))
-		  (cond ((and (<= level 5) (not subscribe))
-			 (setq level (if read-list 6 7)))
-			((and (> level 5) subscribe)
-			 (setq level 3)))
+		  (cond ((and (<= level gnus-level-subscribed) (not subscribe))
+			 (setq level (if read-list 
+					 gnus-level-default-unsubscribed 
+				       (1+ gnus-level-default-unsubscribed))))
+			((and (> level gnus-level-subscribed) subscribe)
+			 (setq level gnus-level-default-subscribed)))
 		  (setcar (cdr info) level))
 	      (setq gnus-newsrc-assoc
-		    (cons (list newsgroup (if subscribe 3 (if read-list 6 7))
+		    (cons (list newsgroup 
+				(if subscribe
+				    gnus-level-default-subscribed 
+				  (if read-list gnus-level-default-subscribed
+				    (1+ gnus-level-default-subscribed)))
 				(nreverse read-list))
 			  gnus-newsrc-assoc))))))
 	(setq line (1+ line))
@@ -13801,7 +13967,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	(setq info (car newsrc))
 	(if (not (nth 4 info))		;Don't write foreign groups to .newsrc.
 	    (progn
-	      (insert (car info) (if (>= (nth 1 info) 6) "!" ":"))
+	      (insert (car info) (if (> (nth 1 info) gnus-level-subscribed)
+				     "!" ":"))
 	      (if (setq ranges (nth 2 info))
 		  (progn
 		    (insert " ")
@@ -14004,6 +14171,7 @@ The following commands are available:
 	  (gnus-server-position-cursor))))))
 
 (defun gnus-server-set-info (info)
+  ;; Enter a select method into the virtual server alist.
   (gnus-dribble-enter 
    (concat "(gnus-server-set-info '"
 	   (prin1-to-string info) ")"))
@@ -14014,21 +14182,46 @@ The following commands are available:
 	    (nconc gnus-server-alist (list (cons server info)))))))
 
 (defun gnus-server-to-method (server)
+  ;; Map virtual server names to select methods.
   (cdr (assoc server gnus-server-alist)))
 
 (defun gnus-server-extend-method (group method)
+  ;; This function "extends" a virtual server.  If the server is
+  ;; "hello", and the select method is ("hello" (my-var "something")) 
+  ;; in the group "alt.alt", this will result in a new virtual server
+  ;; called "helly+alt.alt".
   (let ((entry
-	 (gnus-copy-sequence (cdr (assoc (car method) gnus-server-alist)))))
+	 (gnus-copy-sequence 
+	  (if (equal (car method) "native") gnus-select-method
+	      (cdr (assoc (car method) gnus-server-alist))))))
     (setcar (cdr entry) (concat (nth 1 entry) "+" group))
     (nconc entry (cdr method))))
 
 (defun gnus-server-get-method (group method)
+  ;; Input either a server name, and extended server name, or a
+  ;; select method, and return a select method. 
   (cond ((stringp method)
 	 (gnus-server-to-method method))
 	((stringp (car method))
 	 (gnus-server-extend-method group method))
 	(t
-	 method)))
+	 (gnus-server-add-address method))))
+
+(defun gnus-server-add-address (method)
+  (let ((method-name (symbol-name (car method))))
+    (if (and (memq 'address (assoc method-name gnus-valid-select-methods))
+	     (not (assq (intern (concat method-name "-address")) method)))
+	(append method (list (list (intern (concat method-name "-address"))
+				   (nth 1 method))))
+      method)))
+
+(defun gnus-server-equal (s1 s2)
+  (or (equal s1 s2)
+      (and (= (length s1) (length s2))
+	   (progn
+	     (while (and s1 (member (car s1) s2))
+	       (setq s1 (cdr s1)))
+	     (null s1)))))
 
 ;;; Interactive server functions.
 

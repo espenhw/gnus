@@ -33,13 +33,13 @@
 (require 'nnmail)
 
 (defvar nnmbox-mbox-file (expand-file-name "~/mbox")
-  "The name of the mail box file in the users home directory.")
+  "The name of the mail box file in the user's home directory.")
 
 (defvar nnmbox-active-file (expand-file-name "~/.mbox-active")
   "The name of the active file for the mail box.")
 
 (defvar nnmbox-get-new-mail t
-  "If non-nil, nnml will check the incoming mail file and split the mail.")
+  "If non-nil, nnmbox will check the incoming mail file and split the mail.")
 
 
 

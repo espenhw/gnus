@@ -1,3 +1,31 @@
+Thu Apr 20 06:36:33 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-setup-news): Read .newsrc.eld before reading the
+	active file.
+	(gnus-group-edit-group-parameters): New command and keystroke.
+
+	* nntp.el (nntp-server-list-active-group): Improperly initialised. 
+
+	* gnus.el (gnus-retrieve-groups): New function.
+	(gnus-groups-to-gnus-format): New function.
+	(gnus-read-active-file): New semantics: `some'.
+	(gnus-level-subscribed, gnus-level-unsubscribed,
+	gnus-level-zombie, gnus-level-killed): New variables.
+	(gnus-inews-check-post): Many of the checks didn't actually check
+	anything. 
+	(gnus-check-before-posting): New variable.
+	(gnus-group-edit-group-method): New command and keystroke.
+	(gnus-group-mode-map): Change in keymap for edit-group.
+	(gnus-server-extend-method): Didn{t properly recognise native
+	groups. 
+
+	* gnus.el: Changes throughout to use the level variables instead
+	of the hard-coded level numbers.
+
+Thu Apr 20 04:23:34 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+        * gnus.el: 0.53 is released.
+
 Thu Apr 20 01:56:59 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
 
 	* gnus-uu.el (gnus-uu-part-number): New function.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
 @setfilename gnus
-@settitle Gnus 0.51 Manual
+@settitle Gnus 0.54 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -753,14 +753,24 @@ that you actually subscribe to.
 Note that if you subscribe to lots and lots of groups, setting this
 variable to @code{nil} will probabaly make Gnus slower, not faster.  At
 present, having this variable @code{nil} will slow Gnus down
-considerably, unless you read news over a 2400 baud modem.  Gnus does
-the group info fetching in total lock-step, so if you have this variable
-@code{nil}, you should kill all groups that you aren't interested in to
-speed things up.
+considerably, unless you read news over a 2400 baud modem.  
 
-There are plans for doing lots of Gnus stuff asynchronously, which
-should make this option more useful, but that's probably some ways off
-in the future.
+This variable can also have the value @code{some}.  Gnus will then
+attempt to read active info only on the subscribed groups.  On some
+servers this is quite fast (on sparkling, brand new INN servers that
+support the @samp{LIST ACTIVE group} command), on others this is not
+fast at all.  In any case, @code{some} should be faster than @code{nil},
+and is certainly faster than @code{t} over slow lines.
+
+If this variable is @code{nil}, Gnus will as for group info in total
+lock-step, which isn't very fast.  If it is @code{some} and you use an
+NNTP server, Gnus will pump out commands as fast as it can, and read all
+the replies in one swoop.  This will normally result in better
+performance, but if the server does not support the aforementioned
+@samp{LIST ACTIVE group} command, this isn't very nice to the server. 
+
+In any case, if you use @code{some} or @code{nil}, you should kill all
+groups that you aren't interested in.
 
 @node Startup Variables
 @section Startup Variables
@@ -799,6 +809,7 @@ long as Gnus is active.
 * Group Subscribing::      Unsubscribing, killing, subscribing.
 * Group Levels::           Levels? What are those, then?
 * Foreign Groups::         How to create foreign groups.
+* Group Parameters::       Each group may have different parameters set.
 * Listing Groups::         Gnus can list various subsets of the groups.
 * Group Maintenance::      Maintaining a tidy @file{.newsrc} file.
 * Browse Foreign Server::  You can browse a server.  See what if has to offer.
@@ -1120,18 +1131,34 @@ group to three (@code{gnus-group-set-current-level}).  If no numeric
 prefix is given, this command will prompt the user for a level.
 @end table
 
-Gnus considers groups on levels 1-5 to be subscribed, 6-7 to be
-unsubscribed, 8 to be zombies (walking dead) and 9 to be killed,
-completely dead.  Gnus treats subscribed and unsubscribed groups exactly
-the same, but zombie and killed groups have no information on what
-articles you have read, etc, stored.  This distinction between dead and
-living groups isn't done because it is nice or clever, it is done purely
-for reasons of efficiency.  On the other hand, if you would like a finer
-granularity to the levels - you're out of luck.  The nine levels are
-hardcoded into the source.  Sorry.
+@vindex gnus-level-killed
+@vindex gnus-level-zombie
+@vindex gnus-level-unsubscribed
+@vindex gnus-level-subscribed
+Gnus considers groups on between levels 1 and
+@code{gnus-level-subscribed} (inclusive) to be subscribed,
+@code{gnus-level-subscribed} (ecxlusive) and
+@code{gnus-level-unsubscribed} (inclusive) to be unsubscribed,
+@code{gnus-level-zombie} to be zombies (walking dead) and
+@code{gnus-level-killed} to be killed, completely dead.  Gnus treats
+subscribed and unsubscribed groups exactly the same, but zombie and
+killed groups have no information on what articles you have read, etc,
+stored.  This distinction between dead and living groups isn't done
+because it is nice or clever, it is done purely for reasons of
+efficiency. 
 
-It is recommended that you keep all regular groups on level 3 or higher,
-and keep your mail groups (if any) on level 1 or 2.
+It is recommended that you keep all your mail groups (if any) on quite
+low levels (eg. 1 or 2).
+
+If you want to play with the level variables, you should show some care.
+Set them once, and don't touch them ever again.  
+
+@vindex gnus-level-default-unsubscribed
+@vindex gnus-level-default-subscribed
+Two closely related variables are @code{gnus-level-default-subscribed}
+and @code{gnus-level-default-unsubscribed}, which are the leves that new
+groups will be put on if they are (un)subscribed.  These two variables
+should, of course, be inside the relevant legal ranges.
 
 @vindex gnus-keep-same-level
 If @code{gnus-keep-same-level} is non-@code{nil}, some movement commands
@@ -1158,10 +1185,12 @@ personal mail group.
 A foreign group (or any group, really) is specified by a @dfn{name} and
 a @dfn{select method}.  To take the latter first, a select method is a
 list where the first element says what backend to use (eg. nntp,
-nnspool, nnml) and the second element is the @dfn{address}, in some
-meaning of the word.  There may be additional elements in the select
-method, where the value may have special meaning for the backend in
-question.
+nnspool, nnml) and the second element is the @dfn{server name}.  There
+may be additional elements in the select method, where the value may
+have special meaning for the backend in question.
+
+One could say that a select method defines a @dfn{virtual server} - so
+we do just that (@pxref{The Server Buffer}).
 
 The @dfn{name} of the group is the name the backend will recognize the
 group as.
@@ -1184,9 +1213,19 @@ for a name, a method and possibly an @dfn{address}.  For an easier way
 to subscribe to @sc{nntp} groups, @xref{Browse Foreign Server}.
 @item M e
 @kindex M e (Group)
+@findex gnus-group-edit-group-method
+Enter a buffer where you can edit the select method of the current
+group (@code{gnus-group-edit-group-method}).
+@item M p
+@kindex M p (Group)
+@findex gnus-group-edit-group-parameters
+Enter a buffer where you can edit the group parameters
+(@code{gnus-group-edit-group-parameters}). 
+@item M E
+@kindex M E (Group)
 @findex gnus-group-edit-group
-Edit a group entry.  Gnus will pop up a new buffer where you can edit
-the entry (@code{gnus-group-edit-group}).
+Enter a buffer where you can edit the group info
+(@code{gnus-group-edit-group}).
 @item M d
 @kindex M d (Group)
 @findex gnus-group-make-directory-group
@@ -1234,46 +1273,6 @@ these groups.  How many unread articles there are will be determined
 when, or if, you decide to enter them.  You can also activate any group
 with @kbd{M-g} to see how many unread articles there are.
 
-@cindex to-address
-If the select method contains an element that looks like
-@samp{(to-address .  "some@@where.com")}, that address will be used by
-the backend when doing followups and posts.  This is primarily useful in
-mail groups that represent mailing lists.  You just set this address to
-whatever the list address is.
-
-This trick will actually work whether the group is foreign or not.
-Let's say there's a group on the server that is called @samp{fa.4ad-l}.
-This is a real newsgroup, but the server has gotten the articles from a
-mail-to-news gateway.  Posting directly to this group is therefore
-impossible - you have to send mail to the mailing list address instead.
-
-To achieve this, go to the group in question in the group buffer and
-type @kbd{M e} to edit the group entry.  You'll then be put in a buffer
-where you can edit the group entry.
-
-@lisp
-(gnus-group-set-info
- '("ifi.fritt-forum" 3
-   ((1 . 3321)
-    (3325 . 3325))
-   ((score
-     (3322 . 1000)
-     (3324 . 1000)))))
-@end lisp
-
-A fifth entry has to be added. (In case there isn't a fourth one, you
-have to add a fourth one yourself - @code{nil}.)  The fifth entry should
-look like this:
-
-@lisp
-(nntp "your.host" (to-address . "4ad-l@@jhuvm.hcf.jhu.edu"))
-@end lisp
-
-The two first entries in this method should, of course, be the same as
-@code{gnus-select-method}. 
-
-Quite simple, eh? <duck> @strong{Ouch}.
-
 @node nntp
 @subsection nntp
 @cindex @sc{nntp}
@@ -1291,11 +1290,16 @@ The name of the foreign group can be the same as a native group.  In
 fact, you can subscribe to the same group from as many different servers
 you feel like.  There will be no name collisions.
 
+The following variables can be used to create a virtual @code{nntp}
+server: 
+
+@table @code
+@item nntp-server-opened-hook
+@vindex nntp-server-opened-hook
 @cindex @sc{mode reader}
 @cindex authinfo
 @findex nntp-send-authinfo
 @findex nntp-send-mode-reader
-@vindex nntp-server-opened-hook
 @code{nntp-server-opened-hook} is run after a connection has been made.
 It can be used to send commands to the @sc{nntp} server after it has
 been contacted.  By default is sends the command @samp{MODE READER} to
@@ -1303,6 +1307,7 @@ the server with the @code{nntp-send-mode-reader} function.  Another
 popular function is @code{nntp-send-authinfo}, which will prompt you for
 an @sc{nntp} password and stuff.
 
+@item nntp-maximum-request
 @vindex nntp-maximum-request
 If the @sc{nntp} server doesn't support @sc{nov} headers, this backend
 will collect headers by sending a series of @code{head} commands.  To
@@ -1311,14 +1316,73 @@ waiting for reply, and then reads all the replies.  This is controlled
 by the @code{nntp-maximum-request} variable, and is 400 by default.  If
 your network is buggy, you should set this to 1.
 
+@item nntp-connection-timeout
 @vindex nntp-connection-timeout
-If you have lots of foreign nntp groups that you connect to regularly,
-you're sure to have problems with nntp servers not responding properly,
-or being too loaded to reply within reasonable time.  This is can lead
-to awkward problems, which can be helped somewhat by setting
-@code{nntp-connection-timeout}.  This is an integer that says how many
-seconds the nntp backend should wait for a connection before giving up.
-If it is @code{nil}, which is the default, no timeouts are done.
+If you have lots of foreign @code{nntp} groups that you connect to
+regularly, you're sure to have problems with @sc{nntp} servers not
+responding properly, or being too loaded to reply within reasonable
+time.  This is can lead to awkward problems, which can be helped
+somewhat by setting @code{nntp-connection-timeout}.  This is an integer
+that says how many seconds the @code{nntp} backend should wait for a
+connection before giving up.  If it is @code{nil}, which is the default,
+no timeouts are done.
+
+@item nntp-server-hook
+@vindex nntp-server-hook
+This hook is run as the last step when connecting to an @sc{nntp}
+server.
+
+@findex nntp-open-rlogin
+@findex nntp-open-network-stream
+@item nntp-open-server-function
+@vindex nntp-open-server-function
+This function is used to connect to the remote system.  Two pre-made
+functions are @code{nntp-open-network-stream}, which is the default, and
+simply connects to some port or other on the remote system.  The other
+is @code{nntp-open-rlogin}, which does an rlogin on the remote system,
+and then does a telnet to the @sc{nntp} server available there.
+
+@item nntp-rlogin-parameters
+@vindex nntp-rlogin-parameters
+If you use @code{nntp-open-rlogin} as the
+@code{nntp-open-server-function}, this list will be used as the
+parameter list given to @code{rsh}.
+
+@item nntp-rlogin-user-name
+@vindex nntp-rlogin-user-name
+User name on the remote system when using the @code{rlogin} connect
+function. 
+
+@item nntp-address
+@vindex nntp-address
+The address of the remote system running the @sc{nntp} server.
+
+@item nntp-port-number
+@vindex nntp-port-number
+Port number to connect to when using the @code{nntp-open-network-stream}
+connect function.
+
+@item nntp-buggy-select
+@vindex nntp-buggy-select
+Set this to non-@code{nil} if your select routine is buggy.
+
+@item nntp-nov-is-evil 
+@vindex nntp-nov-is-evil 
+If the @sc{nntp} server does not support @sc{nov}, you could set this
+variable to @code{t}, but @code{nntp} usually checks whether @sc{nov}
+can be used automatically.
+
+@item nntp-xover-commands
+@vindex nntp-xover-commands
+List of strings that are used as commands to fetch @sc{nov} lines from a
+server.  The default value of this variable is @code{("XOVER"
+"XOVERVIEW")}. 
+
+@item nntp-prepare-server-hook
+@vindex nntp-prepare-server-hook
+A hook run before attempting to connect to an @sc{nntp} server.
+
+@end table
 
 @node nnspool
 @subsection nnspool
@@ -1337,15 +1401,47 @@ native select method (@pxref{Finding the News}).
 
 @table @code
 @item nnspool-inews-program
+@vindex nnspool-inews-program
 Program used to post an article.
+
+@item nnspool-inews-switches
+@vindex nnspool-inews-switches
+Parameters given to the inews program when posting an article. 
+
 @item nnspool-spool-directory
+@vindex nnspool-spool-directory
 Where nnspool looks for the articles.  This is normally
 @file{/usr/spool/news/}.
+
 @item nnspool-nov-directory 
+@vindex nnspool-nov-directory 
 Where nnspool will look for @sc{nov} files.  This is normally
 @file{/usr/spool/news/over.view/}.
+
 @item nnspool-lib-dir
+@vindex nnspool-lib-dir
 Where the news lib dir is (@file{/usr/lib/news/} by default).
+
+@item nnspool-active-file
+@vindex nnspool-active-file
+The path of the active file.
+
+@item nnspool-newsgroups-file
+@vindex nnspool-newsgroups-file
+The path of the group description file.
+
+@item nnspool-history-file
+@vindex nnspool-history-file
+The path of the news history file.
+
+@item nnspool-active-times-file
+@vindex nnspool-active-times-file
+The path of the active date file.
+
+@item nnspool-nov-is-evil
+@vindex nnspool-nov-is-evil
+If non-@code{nil}, @code{nnspool} won't try to use any @sc{nov} files
+that it finds.
 @end table
 
 @node nnvirtual
@@ -1741,13 +1837,23 @@ the @code{nnbabyl} mail reading, you just set
 @vindex nnmbox-active-file
 @vindex nnmbox-mbox-file
 The @dfn{nnmbox} backend will use the standard Un*x mbox file to store
-mail.  The path of the mbox file is given by the @code{nnmbox-mbox-file}
-variable.  In addition, Gnus needs to store information about active
-articles.  The file specified by @code{nnmbox-active-file} will be used
-for that.
+mail.  @code{nnmbox} will add extra headers to each mail article to say
+which group it belongs in.
 
-nnmbox will add extra headers to each mail article to say which
-group it belongs in.
+@table @code
+@item nnmbox-mbox-file
+@vindex nnmbox-mbox-file
+The name of the mail box in the user's home directory. 
+
+@item nnmbox-active-file
+@vindex nnmbox-active-file
+The name of the active file for the mail box.
+
+@item nnmbox-get-new-mail
+@vindex nnmbox-get-new-mail
+If non-@code{nil}, @code{nnmbox} will read incoming mail and split it
+into groups.
+@end table
 
 @node nnbabyl
 @subsubsection nnbabyl
@@ -1756,14 +1862,23 @@ group it belongs in.
 
 @vindex nnbabyl-active-file
 @vindex nnbabyl-mbox-file
-The @dfn{nnbabyl} backend will use a babyl mail box to store mail.  The
-path of the rmail mail box file is given by the @code{nnbabyl-mbox-file}
-variable.  In addition, Gnus needs to store information about active
-articles.  The file specified by @code{nnbabyl-active-file} will be used
-for that.
-
-nnbabyl will add extra headers to each mail article to say which
+The @dfn{nnbabyl} backend will use a babyl mail box to store mail.
+@code{nnbabyl} will add extra headers to each mail article to say which
 group it belongs in.
+
+@table @code
+@item nnbabyl-mbox-file
+@vindex nnbabyl-mbox-file
+The name of the rmail mbox file.
+
+@item nnbabyl-active-file
+@vindex nnbabyl-active-file
+The name of the active file for the rmail box.
+
+@item nnbabyl-get-new-mail
+@vindex nnbabyl-get-new-mail
+If non-@code{nil}, @code{nnbabyl} will read incoming mail. 
+@end table
 
 @node nnml
 @subsubsection nnml
@@ -1796,6 +1911,33 @@ splitting.  It has to create lots of files, and it also generates
 @sc{nov} databases for the incoming mails.  This makes is the fastest
 backend when it comes to reading mail.
 
+@table @code
+@item nnml-directory
+@vindex nnml-directory
+All @code{nnml} directories will be placed under this directory. 
+
+@item nnml-active-file
+@vindex nnml-active-file
+The active file for the @code{nnml} server.
+
+@item nnml-newsgroups-file
+@vindex nnml-newsgroups-file
+The @code{nnml} group description file.
+
+@item nnml-get-new-mail
+@vindex nnml-get-new-mail
+If non-@code{nil}, @code{nnml} will read incoming mail.
+
+@item nnml-nov-is-evil
+@vindex nnml-nov-is-evil
+If non-@code{nil}, this backend will ignore any @sc{nov} files.  
+
+@item nnml-nov-file-name
+@vindex nnml-nov-file-name
+The name of the @sc{nov} files.  The default is @file{.overview}. 
+
+@end table
+
 @findex nnml-generate-nov-databases
 If your @code{nnml} groups and @sc{nov} files get totally out of whack,
 you can do a complete update by typing @kbd{M-x
@@ -1813,6 +1955,14 @@ might take a while to complete.
 @code{nnmh} a @emph{much} slower backend than @code{nnml}, but it also
 makes it easier to write procmail scripts for.
 
+@table @code
+@item nnml-directory
+All @code{nnmh} directories will be located under this directory.
+
+@item nnmh-get-new-mail
+If non-@code{nil}, @code{nnml} will read incoming mail.
+@end table
+
 @node nnfolder
 @subsubsection nnfolder
 @cindex nnfolder
@@ -1823,11 +1973,75 @@ file.  Each file is in the standard Un*x mbox format.  @code{nnfolder}
 will add extra headers to keep track of article numbers and arrival
 dates.
 
-@vindex nnfolder-active-file
-@vindex nnfolder-directory
-@code{nnfolder-directory} says where to store these files, and
-@code{nnfolder-active-file} says where to store the @dfn{active}
-information.
+@table @code
+@item nnfolder-directory
+All the @code{nnfolder} mail boxes will be stored under this directory. 
+
+@item nnfolder-active-file
+The name of the active file.
+
+@item nnfolder-newsgroups-file
+The name of the group description file.
+
+@item nnfolder-get-new-mail
+If non-@code{nil}, @code{nnfolder} will read incoming mail.
+@end table
+
+@node Group Parameters
+@section Group Parameters
+@cindex group parameters
+
+Gnus stores all information on a group in a list that is usually known
+as the @dfn{group info}.  This list has from three to six elements.
+Here's an example info.
+
+@lisp
+("nnml:mail.ding" 3 ((1 . 232) 244 (256 . 270)) ((tick 246 249))
+                  (nnml "private") ((to-address . "ding@@ifi.uio.no")))
+@end lisp
+
+The first element is the @dfn{group name}, as Gnus knows the group,
+anyway.  The second element is the @dfn{subscription level}, which
+normally is a small integer.  The third element is a list of ranges of
+read articles.  The fourth element is a list of lists of article marks
+of various kinds.  The fifth element is the select method (or virtual
+server, if you like).  The sixth element is a list of @dfn{group
+parameters}, which is what this section is about.
+
+Any of the last three elements may be missing if they are not required.
+In fact, the vast majority of groups will normally only have the first
+three elements, which saves quite a lot of cons cells.
+
+At present, there's not much you can put in the group parameters list: 
+
+@table @code
+@item to-address
+@cindex to-address
+If the group parameter list contains an element that looks like
+@samp{(to-address .  "some@@where.com")}, that address will be used by
+the backend when doing followups and posts.  This is primarily useful in
+mail groups that represent mailing lists.  You just set this address to
+whatever the list address is.
+
+This trick will actually work whether the group is foreign or not.
+Let's say there's a group on the server that is called @samp{fa.4ad-l}.
+This is a real newsgroup, but the server has gotten the articles from a
+mail-to-news gateway.  Posting directly to this group is therefore
+impossible - you have to send mail to the mailing list address instead.
+
+@item auto-expire
+@cindex auto-expire
+If this symbol is present in the group parameter list, all articles that
+are read will be marked as expirable.  For an alternative approach,
+@xref{Expiring Old Mail Articles}.
+@end table
+
+If you want to change the group parameters (or anything else of the
+group info) you can use the @kbd{M E} to edit enter a buffer where you
+can edit the group info.
+
+You usually don't want to edit the entire group info, so you'd be better
+off using the @kbd{M p} command to just edit the group parameters.
 
 @node Listing Groups
 @section Listing Groups
@@ -2020,6 +2234,13 @@ level ARG and lower (@code{gnus-group-get-new-news}).
 @findex gnus-group-get-new-news-this-group
 Check whether new articles have arrived in the current group
 (@code{gnus-group-get-new-news-this-group}).
+
+@item ^
+@kindex ^ (Group)
+@findex gnus-group-enter-server-mode
+Enter the server buffer (@code{gnus-group-enter-server-mode}). @xref{The
+Server Buffer}.
+
 @item M-f
 @kindex M-f (Group)
 @findex gnus-group-fetch-faq
@@ -2760,6 +2981,12 @@ This hook is called after inserting the required headers in an article
 to be posted.  The hook is called from the @code{*post-news*} buffer,
 narrowed to the head, and is intended for people who would like to
 insert additional headers, or just change headers in some way or other.
+
+@item gnus-check-before-posting
+@vindex gnus-check-before-posting
+If non-@code{nil}, Gnus will attempt to check the legality of the
+headers, as well as some other stuff, before posting.
+
 @end table
 
 
@@ -3945,6 +4172,9 @@ the pseudo-articles into the summary buffer, but view them
 immediately.  If this variable is @code{not-confirm}, the user won't even
 be asked for a confirmation before viewing is done.
 
+So; there you are, reading your @emph{pseduo-articles} in your
+@emph{virtual newsgroup} from the @emph{virtual server}; and you think:
+Why isn't anything real anymore? How did we get here?
 
 @node Various Article Stuff 
 @section Various Article Stuff 

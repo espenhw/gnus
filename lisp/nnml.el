@@ -33,7 +33,7 @@
 (require 'nnmail)
 
 (defvar nnml-directory "~/Mail/"
-  "Mail directory.")
+  "Mail spool directory.")
 
 (defvar nnml-active-file (concat nnml-directory "active")
   "Mail active file.")
@@ -58,13 +58,11 @@ all. This may very well take some time.")
 (defconst nnml-version "nnml 0.2"
   "nnml version.")
 
-(defvar nnml-current-directory nil
-  "Current news group directory.")
+(defvar nnml-nov-file-name ".overview")
 
+(defvar nnml-current-directory nil)
 (defvar nnml-status-string "")
-
 (defvar nnml-nov-buffer-alist nil)
-
 (defvar nnml-group-alist nil)
 (defvar nnml-active-timestamp nil)
 
@@ -81,6 +79,7 @@ all. This may very well take some time.")
    (list 'nnml-newsgroups-file nnml-newsgroups-file)
    (list 'nnml-get-new-mail nnml-get-new-mail)
    (list 'nnml-nov-is-evil nnml-nov-is-evil)
+   (list 'nnml-nov-file-name nnml-nov-file-name)
    '(nnml-current-directory nil)
    '(nnml-status-string "")
    '(nnml-nov-buffer-alist nil)
@@ -372,7 +371,7 @@ all. This may very well take some time.")
     (let ((first (car articles))
 	  (last (progn (while (cdr articles) (setq articles (cdr articles)))
 		       (car articles)))
-	  (nov (concat nnml-current-directory ".nov")))
+	  (nov (concat nnml-current-directory nnml-nov-file-name)))
       (if (file-exists-p nov)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
@@ -562,7 +561,7 @@ all. This may very well take some time.")
   (or (cdr (assoc group nnml-nov-buffer-alist))
       (let ((buffer (find-file-noselect 
 		     (concat (nnmail-article-pathname 
-			      group nnml-directory) ".nov"))))
+			      group nnml-directory) nnml-nov-file-name))))
 	(save-excursion
 	  (set-buffer buffer)
 	  (buffer-disable-undo (current-buffer)))
@@ -605,7 +604,7 @@ all. This may very well take some time.")
 		    (string-to-int name)))
 		 (directory-files dir nil "^[0-9]+$" t))
 		(function <)))
-	(nov (concat dir "/.nov"))
+	(nov (concat dir "/" nnml-nov-file-name))
 	(nov-buffer (get-buffer-create "*nov*"))
 	nov-line chars)
     (if files
