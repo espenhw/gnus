@@ -64,6 +64,13 @@ suggestion each time.  The function is called with one parameter,
 which is a number that says how many times the function has been
 called for this message.")
 
+(defvar mml-confirmation-set nil
+  "A list of symbols, each of which disables some warning.
+`unknown-encoding': always send messages contain characters with
+unknown encoding; `use-ascii': always use ASCII for those characters
+with unknown encoding; `multipart': always send messages with more than
+one charsets.")
+
 (defun mml-parse ()
   "Parse the current buffer as an MML document."
   (goto-char (point-min))
@@ -76,7 +83,7 @@ called for this message.")
 
 (defun mml-parse-1 ()
   "Parse the current buffer as an MML document."
-  (let (struct tag point contents charsets warn)
+  (let (struct tag point contents charsets warn use-ascii)
     (while (and (not (eobp))
 		(not (looking-at "<#/multipart")))
       (cond
@@ -93,12 +100,23 @@ called for this message.")
 	(setq point (point)
 	      contents (mml-read-part)
 	      charsets (mm-find-mime-charset-region point (point)))
+	(when (memq nil charsets)
+	  (if (or (memq 'unknown-encoding mml-confirmation-set)
+		  (y-or-n-p
+		   "Warning: You message contains characters with unknown encoding. Really send?"))
+	      (if (setq use-ascii 
+			(or (memq 'use-ascii mml-confirmation-set)
+			    (y-or-n-p "Use ASCII as charset?")))
+		  (setq charsets (delq nil charsets))
+		(setq warn nil))
+	    (error "Edit your message to remove those characters")))
 	(if (< (length charsets) 2)
 	    (push (nconc tag (list (cons 'contents contents)))
 		  struct)
 	  (let ((nstruct (mml-parse-singlepart-with-multiple-charsets
-			  tag point (point))))
+			  tag point (point) use-ascii)))
 	    (when (and warn
+		       (not (memq 'multipart mml-confirmation-set))
 		       (not
 			(y-or-n-p
 			 (format
@@ -110,17 +128,20 @@ called for this message.")
       (forward-line 1))
     (nreverse struct)))
 
-(defun mml-parse-singlepart-with-multiple-charsets (orig-tag beg end)
+(defun mml-parse-singlepart-with-multiple-charsets 
+  (orig-tag beg end &optional use-ascii)
   (save-excursion
     (narrow-to-region beg end)
     (goto-char (point-min))
-    (let ((current (mm-mime-charset (char-charset (following-char))))
+    (let ((current (or (mm-mime-charset (char-charset (following-char)))
+		       (and use-ascii 'us-ascii)))
 	  charset struct space newline paragraph)
       (while (not (eobp))
 	(cond
 	 ;; The charset remains the same.
 	 ((or (eq (setq charset (mm-mime-charset
 				 (char-charset (following-char)))) 'us-ascii)
+	      (and use-ascii (not charset))
 	      (eq charset current)))
 	 ;; The initial charset was ascii.
 	 ((eq current 'us-ascii)

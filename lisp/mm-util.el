@@ -225,10 +225,9 @@ used as the line break code type of the coding system."
 
 (defun mm-find-mime-charset-region (b e)
   "Return the MIME charsets needed to encode the region between B and E."
-  (let ((charsets
-	 (delq nil (mapcar 'mm-mime-charset
-			   (delq 'ascii
-				 (mm-find-charset-region b e))))))
+  (let ((charsets (mapcar 'mm-mime-charset
+			  (delq 'ascii
+				(mm-find-charset-region b e)))))
     (when (memq 'iso-2022-jp-2 charsets)
       (setq charsets (delq 'iso-2022-jp charsets)))
     (delete-duplicates charsets)

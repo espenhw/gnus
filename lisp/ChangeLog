@@ -1,3 +1,9 @@
+1999-12-09 17:47:56  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-find-mime-charset-region): Revoke last change.
+	* mml.el (mml-confirmation-set): New variable.
+	(mml-parse-1): Ask user to confirm.
+
 1999-12-09  Simon Josefsson  <jas@pdc.kth.se>
 
 	* gnus-start.el (gnus-get-unread-articles): Make sure all methods
