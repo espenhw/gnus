@@ -2130,10 +2130,12 @@ It should typically alter the sending method in some way or other."
 
 (defun message-send-mail (&optional arg)
   (require 'mail-utils)
-  (let ((tembuf (message-generate-new-buffer-clone-locals " message temp"))
-	(case-fold-search nil)
-	(news (message-news-p))
-	(mailbuf (current-buffer)))
+  (let* ((tembuf (message-generate-new-buffer-clone-locals " message temp"))
+	 (case-fold-search nil)
+	 (news (message-news-p))
+	 (mailbuf (current-buffer))
+	 (message-this-is-mail t)
+	 (message-posting-charset (gnus-setup-posting-charset nil)))
     (save-restriction
       (message-narrow-to-headers)
       ;; Insert some headers.
@@ -2299,18 +2301,21 @@ to find out how to use this."
     (mh-send-letter)))
 
 (defun message-send-news (&optional arg)
-  (let ((tembuf (message-generate-new-buffer-clone-locals " *message temp*"))
-	(case-fold-search nil)
-	(method (if (message-functionp message-post-method)
-		    (funcall message-post-method arg)
-		  message-post-method))
-	(messbuf (current-buffer))
-	(message-syntax-checks
-	 (if arg
-	     (cons '(existing-newsgroups . disabled)
-		   message-syntax-checks)
-	   message-syntax-checks))
-	result)
+  (let* ((tembuf (message-generate-new-buffer-clone-locals " *message temp*"))
+	 (case-fold-search nil)
+	 (method (if (message-functionp message-post-method)
+		     (funcall message-post-method arg)
+		   message-post-method))
+	 (messbuf (current-buffer))
+	 (message-syntax-checks
+	  (if arg
+	      (cons '(existing-newsgroups . disabled)
+		    message-syntax-checks)
+	    message-syntax-checks))
+	 (message-this-is-news t)
+	 (message-posting-charset (gnus-setup-posting-charset 
+				   (message-fetch-field "Newsgroups")))
+	 result)
     (if (not (message-check-news-body-syntax))
 	nil
       (save-restriction
@@ -2341,7 +2346,7 @@ to find out how to use this."
 		  (message-generate-headers '(Lines)))
 		;; Remove some headers.
 		(message-remove-header message-ignored-news-headers t)
-		(let ((mail-parse-charset message-posting-charset))
+		(let ((mail-parse-charset (car message-posting-charset)))
 		  (mail-encode-encoded-word-buffer)))
 	      (goto-char (point-max))
 	      ;; require one newline at the end.
@@ -4224,8 +4229,7 @@ regexp varstr."
 (defun message-encode-message-body ()
   (unless message-inhibit-body-encoding 
     (let ((mail-parse-charset (or mail-parse-charset
-				  message-default-charset
-				  message-posting-charset))
+				  message-default-charset))
 	  (case-fold-search t)
 	  lines content-type-p)
       (message-goto-body)
