@@ -13326,6 +13326,11 @@ default is @code{nil}.
 @vindex nnfolder-nov-file-suffix
 The extension for @sc{nov} files.  The default is @file{.nov}.
 
+@item nnfolder-nov-directory
+@vindex nnfolder-nov-directory
+The directory where the @sc{nov} files should be stored.  If nil,
+@code{nnfolder-directory} is used.
+
 @item nnfolder-marks-is-evil
 @vindex nnfolder-marks-is-evil
 If non-@code{nil}, this backend will ignore any @sc{marks} files.  The
@@ -13334,6 +13339,11 @@ default is @code{nil}.
 @item nnfolder-marks-file-suffix
 @vindex nnfolder-marks-file-suffix
 The extension for @sc{marks} files.  The default is @file{.mrk}.
+
+@item nnfolder-marks-directory
+@vindex nnfolder-marks-directory
+The directory where the @sc{marks} files should be stored.  If nil,
+@code{nnfolder-directory} is used.
 
 @end table
 

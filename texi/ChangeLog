@@ -1,3 +1,7 @@
+2001-09-14  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Mail Folders): Add.
+
 2001-09-11  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Delayed Articles): Fix.  Suggested by Paul Jarc
