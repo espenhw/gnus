@@ -1,3 +1,15 @@
+Thu Oct 26 14:56:41 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Limiting): Change.
+
+Mon Oct 16 12:47:13 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Listing Groups): Addition.
+
+Sun Oct 15 09:23:55 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Topics): Addition.
+
 Mon Oct 16 12:47:13 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Listing Groups): Addition.

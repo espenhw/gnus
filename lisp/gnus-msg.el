@@ -1237,6 +1237,7 @@ a program specified by the rest of the value."
 		   (call-process-region (point-min) (point-max) shell-file-name
 					nil nil nil "-c" program)))
 		(t
+		 (setq fcc-file (expand-file-name fcc-file))
 		 ;; Suggested by hyoko@flab.fujitsu.junet.
 		 ;; Save article in Unix mail format by default.
 		 (gnus-make-directory (file-name-directory fcc-file))
@@ -1492,7 +1493,7 @@ mailer."
   (pop-to-buffer gnus-mail-buffer)
   (erase-buffer)
   (gnus-mail-setup 'new to)
-  (gnus-inews-modify-mail-mode-map))
+  (run-hooks 'gnus-mail-hook))
 
 (defun gnus-mail-reply (&optional yank to-address followup)
   (save-excursion
@@ -1586,7 +1587,6 @@ mailer."
 	(setq gnus-in-reply-to message-of)
 
 	(auto-save-mode auto-save-default)
-	(gnus-inews-modify-mail-mode-map)
 
 	(if (and follow-to (listp follow-to))
 	    (progn
@@ -1647,7 +1647,7 @@ mailer."
     (news-reply-mode)
     ;; Let posting styles be configured.
     (gnus-configure-posting-styles)
-    (news-setup nil subject nil (gnus-group-real-name group) nil)
+    (news-setup nil subject nil (and group (gnus-group-real-name group)) nil)
     (gnus-inews-insert-signature)
     (and gnus-post-prepare-function
 	 (symbolp gnus-post-prepare-function)
@@ -1976,12 +1976,11 @@ mailer."
 	()
       (erase-buffer)
       (gnus-mail-setup 'forward nil subject)
-      (gnus-inews-modify-mail-mode-map)
       (make-local-variable 'gnus-prev-winconf)
       (setq gnus-prev-winconf winconf)
       (gnus-forward-insert-buffer forward-buffer)
       (goto-char (point-min))
-      (re-search-forward "^To: " nil t)
+      (re-search-forward "^To: ?" nil t)
       (gnus-configure-windows 'mail-forward 'force)
       ;; You have a chance to arrange the message.
       (run-hooks 'gnus-mail-forward-hook)
@@ -2203,7 +2202,7 @@ Headers will be generated before sending."
   (funcall
    (cond
     ((or 
-      (and (eq type 'reply) 
+      (and (or (eq type 'reply) (eq type 'followup))
 	   (eq gnus-mail-reply-method 'gnus-mail-reply-using-mhe))
       (and (eq type 'forward)
 	   (eq gnus-mail-forward-method 'gnus-mail-forward-using-mhe))
@@ -2212,7 +2211,7 @@ Headers will be generated before sending."
 	       'gnus-mail-other-window-using-mhe)))
      'gnus-mh-mail-setup)
     ((or 
-      (and (eq type 'reply) 
+      (and (or (eq type 'reply) (eq type 'followup)) 
 	   (eq gnus-mail-reply-method 'gnus-mail-reply-using-vm))
       (and (eq type 'forward)
 	   (eq gnus-mail-forward-method 'gnus-mail-forward-using-vm))
@@ -2225,7 +2224,8 @@ Headers will be generated before sending."
 
 (defun gnus-sendmail-mail-setup (to subject in-reply-to cc replybuffer actions)
   (mail-mode)
-  (mail-setup to subject nil cc replybuffer actions))
+  (mail-setup to subject nil cc replybuffer actions)
+  (gnus-inews-modify-mail-mode-map))
   
 ;;; Gcc handling.
 

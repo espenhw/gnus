@@ -1,8 +1,54 @@
+Tue Oct 24 22:11:44 1995  Peter Arius  <arius@informatik.uni-erlangen.de>
+
+	* gnus.el (gnus-summary-skip-intangible): Quotes missing in macro 
+	body; turned into an inline function.
+	(gnus-summary-article-intangible-p): dito.
+	(gnus-summary-article-number): Didn't skip intangible articles 
+	when compiled.  Turned from macro into an inline function.
+
+Thu Oct 26 00:04:57 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-new-news): Would bug out on nil group names.
+
+	* gnus-mh.el (gnus-mh-mail-send-and-exit): Use mh's send-letter
+	function. 
+
+	* gnus.el (gnus-summary-number-of-articles-in-thread): Don't count
+	limited articles.	
+	(gnus-summary-number-of-articles-in-thread): Count false roots
+	correctly. 
+
+	* gnus-msg.el (gnus-inews-do-fcc): Expand the FCC file name.
+
+	* gnus.el (gnus-summary-read-group): Update summary line after
+	setting the initial limit.
+	(gnus-summary-mode-map): Moved all limit commands to the `/'
+	submap. 
+
+	* gnus-msg.el (gnus-new-mail): Didn't run `gnus-mail-hook'.
+
+Wed Oct 25 22:45:44 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-mh.el (gnus-mh-mail-setup): Didn't set `gnus-mail-buffer'. 
+
+	* gnus.el (gnus-compile): Didn't really work.
+
+	* nnbabyl.el (nnbabyl-request-article): Handle Summary-Line.
+
+	* gnus-topic.el: Didn't really work.
+
+	* gnus.el (gnus-parse-simple-format): Bugged out on user format
+	functions. 
+	(gnus-group-make-help-group): Don't signal errors on non-retrieval
+	of the doc group.
+	(gnus-summary-toggle-header): Would delete functions from hook
+	forever. 
+
 Thu Oct 19 10:08:24 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
-
-	* gnus-msg.el (gnus-inews-send-mail-copy): Changed X-Courtesy-Copy
-	to Posted-To.
-
+ 
+ 	* gnus-msg.el (gnus-inews-send-mail-copy): Changed X-Courtesy-Copy
+ 	to Posted-To.
+ 
 Mon Oct 16 11:57:14 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.el (gnus-group-foreign-p): New definition.  Secondary

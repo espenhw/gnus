@@ -1159,6 +1159,9 @@ a @code{printf} specifications, for those of you who use (feh!) C.
 (All these format variables can also be random elisp forms.  In that
 case, they will be @code{eval}ed to insert the required lines.)
 
+(All these format variables can also be random elisp forms.  In that
+case, they will be @code{eval}ed to insert the required lines.)
+
 In addition to the normal "padding" specs that @code{format} supports
 (eg. @samp{%7d}), specifications like @samp{%7,12s} are allowed.  A spec
 of this type means that the field will be at least 7 characters long,
@@ -3079,6 +3082,10 @@ If you want to add a group to a topic, you can use the @kbd{G t}
 (@code{gnus-group-add-to-topic}) command.  It understands the
 process/prefix convention (@pxref{Process/Prefix}). 
 
+If you want to add a group to a topic, you can use the @kbd{G t}
+(@code{gnus-group-add-to-topic}) command.  It understands the
+process/prefix convention (@pxref{Process/Prefix}). 
+
 
 @node Misc Group Stuff
 @section Misc Group Stuff
@@ -4158,13 +4165,20 @@ prepended with @samp{> }, so @code{(setq mail-yank-prefix "> ")} in your
 @item mail-yank-ignored-headers
 @vindex mail-yank-ignored-headers
 When you yank a message, you do not want to quote any headers, so
-@code{(setq mail-yank-ignored-headers ":")}.
+@code{(setq mail-yank-ignored-headers "^")}.
 
 @item user-mail-address
 @vindex user-mail-address
 If all of @code{gnus-user-login-name}, @code{gnus-use-generic-from} and
 @code{gnus-local-domain} are @code{nil}, Gnus will use
 @code{user-mail-address} as the address part of the @code{From} header.
+
+@item gnus-local-domain
+@vindex gnus-local-domain
+@cindex domain
+The local doman name excluding the host name.  If your host is called
+@samp{"narfi.ifi.uio.no"}, then this variable should be
+@samp{"ifi.uio.no"}. 
 
 @item gnus-local-domain
 @vindex gnus-local-domain
@@ -4356,7 +4370,7 @@ If the group doesn't exist, it will be created and you'll be subscribed
 to it.
 
 @findex gnus-summary-send-draft
-@kindex S D c
+@kindex S D c S (Summary)
 When you want to continue editing the article, you simply enter the
 draft group and push @kbd{S D c} (@code{gnus-summary-send-draft}) to do
 that.  You will be placed in a buffer where you left off.
@@ -4766,9 +4780,15 @@ buffer.
 
 @table @kbd
 
-@item M N u
+@item / /
+@kindex / / (Summary)
+@findex gnus-summary-limit-to-subject
+Limit the summary buffer to articles that match some subject
+(@code{gnus-summary-limit-to-subject}). 
+
+@item / u
 @itemx x
-@kindex M N u (Summary)
+@kindex / u (Summary)
 @kindex x (Summary)
 @findex gnus-summary-limit-to-unread
 Limit the summary buffer to articles that are not marked as read
@@ -4776,57 +4796,60 @@ Limit the summary buffer to articles that are not marked as read
 buffer to articles that are strictly unread.  This means that ticked and
 dormant articles will also be excluded.
 
-@item M N m
-@kindex M N m (Summary)
+@item / m
+@kindex / m (Summary)
 @findex gnus-summary-limit-to-marks
 Ask for a mark and then limit to all articles that have not been marked
 with that mark (@code{gnus-summary-limit-to-marks}).
 
-@item M N n
-@kindex M N n (Summary)
+@item / n
+@kindex / n (Summary)
 @findex 
 Limit the summary buffer to the current article
 (@code{gnus-summary-limit-to-articles}).  Uses the process/prefix
 convention (@pxref{Process/Prefix}).
 
-@item M N w
-@kindex M N w (Summary)
+@item / w
+@kindex / w (Summary)
 @findex gnus-summary-pop-limit
 Pop the previous limit off the stack and restore it
 (@code{gnus-summary-pop-limit}).  If given a prefix, pop all limits off
 the stack.
 
-@item M N s
+@item / s
 @itemx /
-@kindex M N s (Summary)
+@kindex / s (Summary)
 @kindex / (Summary)
 @findex gnus-summary-limit-to-subject
 Limit the summary buffer to articles that have a subject that matches a
 regexp (@code{gnus-summary-limit-to-subject}).
 
-@item M N v
-@kindex M N v (Summary)
+@item / v
+@kindex / v (Summary)
 @findex gnus-summary-limit-to-score
 Limit the summary buffer to articles that have a score at or above some
 score (@code{gnus-summary-limit-to-score}).
 
-@item M S
+@item / E
+@itemx M S
 @kindex M S (Summary)
-@findex gnus-summary-show-all-expunged
-Display all expunged articles (@code{gnus-summary-show-all-expunged}).
+@kindex / E (Summary)
+@findex gnus-summary-limit-include-expunged
+Display all expunged articles
+(@code{gnus-summary-limit-include-expunged}). 
 
-@item M N D
-@kindex M N D (Summary)
+@item / D
+@kindex / D (Summary)
 @findex gnus-summary-limit-include-dormant
 Display all dormant articles (@code{gnus-summary-limit-include-dormant}).
 
-@item M N d
-@kindex M N d (Summary)
+@item / d
+@kindex / d (Summary)
 @findex gnus-summary-limit-exclude-dormant
 Hide all dormant articles (@code{gnus-summary-limit-exclude-dormant}).
 
-@item M N c
-@kindex M N c (Summary)
+@item / c
+@kindex / c (Summary)
 @findex gnus-summary-limit-exclude-childless-dormant
 Hide all dormant articles that have no children
 (@code{gnus-summary-limit-exclude-childless-dormant}). 
@@ -5506,6 +5529,19 @@ like:
  ("^Subject:.*vm\\|^Xref:.*vm" "vm-stuff"))
 @end lisp
 
+@vindex gnus-split-methods
+You can have Gnus suggest where to save articles by plonking regexp into
+the @code{gnus-split-methods} alist.  The syntax of this variable is the
+same as @code{nnmail-split-methods}. For instance, if you would like to
+save articles related to Gnus in the file @file{gnus-stuff}, and articles
+related to VM in @code{vm-stuff}, you could set this variable to something
+like:
+
+@lisp
+(("^Subject:.*gnus\\|^Newsgroups:.*gnus" "gnus-stuff")
+ ("^Subject:.*vm\\|^Xref:.*vm" "vm-stuff"))
+@end lisp
+
 @vindex gnus-use-long-file-name
 Finally, you have the @code{gnus-use-long-file-name} variable.  If it is
 @code{nil}, all the preceding functions will replace all periods
@@ -5885,12 +5921,12 @@ you want it to look like technicolor fruit salad.
 @table @kbd
 
 @item W H a
-@kindex W H a
+@kindex W H a (Summary)
 @findex gnus-article-highlight
 Highlight the current article (@code{gnus-article-highlight}).
 
 @item W H h
-@kindex W H h
+@kindex W H h (Summary)
 @findex gnus-article-highlight-headers
 @vindex gnus-header-face-alist
 Highlight the headers (@code{gnus-article-highlight-headers}).  The
@@ -5902,7 +5938,7 @@ header,  @var{name} is the face used for highling the header name and
 match made will be used.
 
 @item W H c
-@kindex W H c
+@kindex W H c (Summary)
 @findex gnus-article-highlight-citation
 Highlight cited text (@code{gnus-article-highlight-citation}). 
 
@@ -5952,7 +5988,7 @@ cited text belonging to the attribution.
 
 
 @item W H s
-@kindex W H s
+@kindex W H s (Summary)
 @vindex gnus-signature-separator
 @findex gnus-article-highlight-signature
 Highlight the signature (@code{gnus-article-highlight-signature}).
@@ -7200,6 +7236,12 @@ If you have really complicated score files, and do lots of batch
 scoring, then you might set this variable to @code{t}.  This will make
 Gnus save the scores into the @file{.newsrc.eld} file.
 
+@item gnus-save-score
+@vindex gnus-save-score
+If you have really complicated score files, and do lots of batch
+scoring, then you might set this variable to @code{t}.  This will make
+Gnus save the scores into the @file{.newsrc.eld} file.
+
 @item gnus-score-interactive-default-score
 @vindex gnus-score-interactive-default-score
 Score used by all the interactive raise/lower commands to raise/lower
@@ -8015,6 +8057,10 @@ time.  Modified by the @var{idle} parameter, of course.
 (When I say "minute" here, I really mean @code{gnus-demon-timestep}
 seconds.  This is @samp{60} by default.  If you change that variable,
 all the timings in the handlers will be affected.)
+
+@vindex gnus-use-demon
+To set the whole thing in motion, though, you have to set
+@code{gnus-use-demon} to @code{t}.
 
 @vindex gnus-use-demon
 To set the whole thing in motion, though, you have to set
@@ -9158,7 +9204,7 @@ it.
 
 
 @node Emacs Lisp
-@section Emacs Lisp
+@subsection Emacs Lisp
 
 Emacs is the King of Editors because it's really a Lisp interpreter.
 Each and every key you tap runs some Emacs Lisp code snippet, and since
@@ -9219,6 +9265,7 @@ former).  The manual is unambiguous, but it can be confusing.
 
 @node Frequently Asked Questions
 @section Frequently Asked Questions
+
 
 
 @node Index

@@ -87,7 +87,35 @@ Optional argument FOLDER specifies folder name."
     (and in-reply-to (insert "In-Reply-To: " in-reply-to "\n"))
     (setq mh-sent-from-folder gnus-article-copy)
     (setq mh-sent-from-msg 1)
+    (setq gnus-mail-buffer (buffer-name (current-buffer)))
+    (local-set-key "\C-c\C-c" 'gnus-mh-mail-send-and-exit)
     (setq mh-previous-window-config config)))
+
+(defun gnus-mh-mail-send-and-exit (&optional dont-send)
+  "Send the current mail and return to Gnus."
+  (interactive)
+  (let* ((reply gnus-article-reply)
+	 (winconf gnus-prev-winconf)
+	 (address-group gnus-add-to-address)
+	 (to-address (and address-group
+			  (mail-fetch-field "to"))))
+    (setq gnus-add-to-address nil)
+    (or dont-send (mh-send-letter))
+    (bury-buffer)
+    ;; This mail group doesn't have a `to-address', so we add one
+    ;; here.  Magic!  
+    (and to-address
+	 (gnus-group-add-parameter 
+	  address-group (cons 'to-address to-address)))
+    (if (get-buffer gnus-group-buffer)
+	(progn
+	  (if (gnus-buffer-exists-p (car-safe reply))
+	      (progn
+		(set-buffer (car reply))
+		(and (cdr reply)
+		     (gnus-summary-mark-article-as-replied 
+		      (cdr reply)))))
+	  (and winconf (set-window-configuration winconf))))))
 
 (defun gnus-Folder-save-name (newsgroup headers &optional last-folder)
   "Generate folder name from NEWSGROUP, HEADERS, and optional LAST-FOLDER.

@@ -547,7 +547,50 @@ The SOUP packet file name will be inserted at the %s.")
 				      ?n ?m)))
 		  nnsoup-replies-list))
       (gnus-soup-reply-prefix (car nnsoup-replies-list)))))
-	
+
+(defun nnsoup-make-active ()
+  (let ((files (sort (directory-files nnsoup-directory t "IDX$")
+		     (lambda (f1 f2)
+		       (< (progn (string-match "/\\([0-9]+\\)\\." f1)
+				 (string-to-int (substring 
+						 f1 (match-beginning 1)
+						 (match-end 1))))
+			  (progn (string-match "/\\([0-9]+\\)\\." f2)
+				 (string-to-int (substring 
+						 f2 (match-beginning 1)
+						 (match-end 1))))))))
+	active group lines ident elem min)
+    (set-buffer (get-buffer-create " *nnsoup work*"))
+    (buffer-disable-undo)
+    (while files
+      (message "Doing %s..." (car files))
+      (erase-buffer)
+      (insert-file-contents (car files))
+      (goto-char (point-min))
+      (end-of-line)
+      (re-search-backward "[ \t]\\([^ ]+\\):[0-9]")
+      (setq group (buffer-substring (match-beginning 1) (match-end 1)))
+      (setq lines (count-lines (point-min) (point-max)))
+      (setq ident (progn (string-match
+			  "/\\([0-9]+\\)\\." (car files))
+			 (substring 
+			  (car files) (match-beginning 1)
+			  (match-end 1))))
+      (if (not (setq elem (assoc group active)))
+	  (push (list group (list (cons 1 lines) 
+				  (vector ident group "ncm" "" lines)))
+		active)
+	(setcdr elem (cons (list (cons (setq min (1+ (cdr (car (car
+								(cdr elem))))))
+				       (+ min lines))
+				 (vector ident group "ncm" "" lines))
+			   (cdr elem))))
+      (setq files (cdr files)))
+    (setq nnsoup-group-alist active)
+    (while active
+      (setcdr (car active) (nreverse (cdr (car active))))
+      (setq active (cdr active)))))
+
 (provide 'nnsoup)
 
 ;;; nnsoup.el ends here
