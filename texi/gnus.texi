@@ -13274,6 +13274,19 @@ The directory where @code{nnrss} stores its files.  The default is
 
 @end table
 
+The following code may be helpful, if you want to show the description in
+the summary buffer.
+
+@lisp
+(add-to-list 'nnmail-extra-headers nnrss-description-field)
+(setq gnus-summary-line-format "%U%R%z%I%(%[%4L: %-15,15f%]%) %s%uX\n")
+
+(defun gnus-user-format-function-X (header)
+  (let ((descr
+	 (assq nnrss-description-field (mail-header-extra header))))
+    (if descr (concat "\n\t" (cdr descr)) "")))
+@end lisp
+
 @node Customizing w3
 @subsection Customizing w3
 @cindex w3
