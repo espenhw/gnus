@@ -1,3 +1,7 @@
+2003-03-17  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Using MIME): Added gnus-mime-delete-part.
+
 2003-03-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Required Back End Functions): Add.

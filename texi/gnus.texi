@@ -10631,9 +10631,16 @@ Prompt for a file name, and then save the @sc{mime} object
 Prompt for a file name, then save the @sc{mime} object and strip it from
 the article.  Then proceed to article editing, where a reasonable
 suggestion is being made on how the altered article should look
-like. The stripped @sc{mime} object will be referred via the
+like.  The stripped @sc{mime} object will be referred via the
 message/external-body @sc{mime} type.
 (@code{gnus-mime-save-part-and-strip}).
+
+@findex gnus-mime-delete-part
+@item d (Article)
+@kindex d (Article)
+Delete the @sc{mime} object from the article and replace it with some
+information about the removed @sc{mime} object
+(@code{gnus-mime-delete-part}).
 
 @findex gnus-mime-copy-part
 @item c (Article)
