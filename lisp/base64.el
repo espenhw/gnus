@@ -25,6 +25,8 @@
 ;;; Boston, MA 02111-1307, USA.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(eval-when-compile (require 'cl))
+
 ;; For non-MULE
 (if (not (fboundp 'char-int))
     (fset 'char-int 'identity))
