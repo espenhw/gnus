@@ -1,3 +1,11 @@
+005-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (parse-time): Require for `parse-time-string'.
+
+	* nnimap.el (parse-time): Require for `parse-time-string'.
+
+	* nnultimate.el (parse-time): Require for `parse-time-string'.
+
 2005-03-31  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-copy-article-ignored-headers): Update :version.

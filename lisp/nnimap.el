@@ -69,6 +69,7 @@
 (require 'gnus-range)
 (require 'gnus-start)
 (require 'gnus-int)
+(require 'parse-time)
 
 (eval-when-compile (require 'cl))
 

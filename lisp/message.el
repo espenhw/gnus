@@ -47,6 +47,7 @@
 (require 'mail-parse)
 (require 'mml)
 (require 'rfc822)
+(require 'parse-time)
 
 (defgroup message '((user-mail-address custom-variable)
 		    (user-full-name custom-variable))
