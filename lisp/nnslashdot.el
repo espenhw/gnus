@@ -116,7 +116,7 @@
 	  (forward-line 2)
 	  (setq lines (count-lines
 		       (point)
-		       (search-forward
+		       (re-search-forward
 			"A href=\"\\(http://slashdot.org\\)?/article" nil t)))
 	  (push
 	   (cons
@@ -219,7 +219,7 @@
 		    (buffer-substring (point) (1- (search-forward "<")))))
 	(forward-line 2)
 	(setq lines (count-lines (point)
-				 (search-forward
+				 (re-search-forward
 				  "A href=\"\\(http://slashdot.org\\)?/article")))
 	(push
 	 (cons

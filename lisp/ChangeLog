@@ -6,6 +6,7 @@
 	(nnslashdot-request-article): Ditto.
 	(nnslashdot-threaded-retrieve-headers): Thread properly.
 	(nnslashdot-request-article): Be more lenient.
+	(nnslashdot-threaded-retrieve-headers): Regexp search.
 
 2000-05-09 13:23:50  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
