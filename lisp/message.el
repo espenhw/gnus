@@ -2218,8 +2218,7 @@ the user from the mailer."
 			 (list "-f"
 			       (if (null user-mail-address)
 				   (user-login-name)
-				 (user-mail-address))
-			       ))
+				 user-mail-address)))
 		     ;; These mean "report errors by mail"
 		     ;; and "deliver in background".
 		     (if (null message-interactive) '("-oem" "-odb"))

@@ -127,7 +127,8 @@
     "^X-Sun-Charset:" "^X-Accept-Language:" "^X-Envelope-Sender:"
     "^List-[A-Za-z]+:" "^X-Listprocessor-Version:"
     "^X-Received:" "^X-Distribute:" "^X-Sequence:" "^X-Juno-Line-Breaks:"
-    "^X-Notes-Item:" "^X-MS-TNEF-Correlator:" "^x-uunet-gateway:")
+    "^X-Notes-Item:" "^X-MS-TNEF-Correlator:" "^x-uunet-gateway:"
+    "^X-Received:" "^Content-length:" "X-precedence:")
   "*All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
