@@ -91,7 +91,7 @@
       (set-buffer nnslashdot-buffer)
       (let ((case-fold-search t))
 	(erase-buffer)
-	(when (= (car articles) 1)
+	(when (= start 1)
 	  (url-insert-file-contents (format nnslashdot-article-url sid))
 	  (setq buffer-file-name nil)
 	  (goto-char (point-min))

@@ -1,5 +1,7 @@
 1999-11-09 00:13:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnultimate.el: New file.
+
 	* nnslashdot.el (nnslashdot-retrieve-headers): Skip the article
 	unless wanted.
 
