@@ -1,3 +1,8 @@
+2002-03-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Other Marks): Remove duplication.
+	From: David Aspinwall <aspinwall@timesten.com>
+
 2002-03-09  Paul Jarc  <prj@po.cwru.edu>
 
 	* gnus.texi: Mention nnmaildir where appropriate; fix some typos.

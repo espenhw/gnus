@@ -5557,14 +5557,10 @@ All articles that you have replied to or made a followup to (i.e., have
 answered) will be marked with an @samp{A} in the second column
 (@code{gnus-replied-mark}).
 
+@item
 @vindex gnus-forwarded-mark
 All articles that you have forwarded will be marked with an @samp{F} in
 the second column (@code{gnus-forwarded-mark}).
-
-@vindex gnus-recent-mark
-Articles that are ``recently'' arrived in the group will be marked
-with an @samp{N} in the second column (@code{gnus-recent-mark}).  Most
-back end doesn't support the mark, in which case it's not shown.
 
 @item
 @vindex gnus-cached-mark
@@ -5582,7 +5578,7 @@ religiously) are marked with an @samp{S} in the second column
 Articles that according to the back end haven't been seen by the user
 before are marked with a @samp{N} in the second column
 (@code{gnus-recent-mark}).  Note that not all back ends support this
-mark, in which case it simply never appear.
+mark, in which case it simply never appears.
 
 @item
 @vindex gnus-unseen-mark
