@@ -116,6 +116,17 @@ The defined renderer types are:
   :version "21.3"
   :group 'mime-display)
 
+(defcustom mm-application-msword-renderer
+  (cond ((executable-find "catdoc") 'catdoc))
+  "Render of application/msword contents.
+It is one of defined renderer types, or a rendering function.
+The defined renderer types are:
+`catdoc' : using catdoc."
+  :type '(choice (symbol catdoc)
+		 (function))
+  :version "21.3"
+  :group 'mime-display)
+
 (defvar mm-inline-text-html-renderer nil
   "Function used for rendering inline HTML contents.
 It is suggested to customize `mm-text-html-renderer' instead.")
@@ -194,6 +205,10 @@ images, however this behavior may be changed in the future."
      (lambda (handle)
        (or (featurep 'vcard)
 	   (locate-library "vcard"))))
+    ("application/msword"
+     mm-inline-application-msword
+     (lambda (handle)
+       mm-application-msword-renderer))
     ("message/delivery-status" mm-inline-text identity)
     ("message/rfc822" mm-inline-message identity)
     ("message/partial" mm-inline-partial identity)
@@ -232,7 +247,7 @@ images, however this behavior may be changed in the future."
     "message/partial" "message/external-body" "application/emacs-lisp"
     "application/pgp-signature" "application/x-pkcs7-signature"
     "application/pkcs7-signature" "application/x-pkcs7-mime"
-    "application/pkcs7-mime")
+    "application/pkcs7-mime" "application/msword")
   "List of media types that are to be displayed inline.
 See also `mm-inline-media-tests', which says how to display a media
 type inline."

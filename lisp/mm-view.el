@@ -45,7 +45,7 @@
 	   "links" "-dump" file)
     (lynx  mm-inline-render-with-stdin nil
 	   "lynx" "-dump" "-force_html" "-stdin"))
-  "The attributes of renderer types.")
+  "The attributes of renderer types for text/html.")
 
 (defvar mm-text-html-washer-alist
   '((w3  . gnus-article-wash-html-with-w3)
@@ -55,7 +55,11 @@
 	   "links" "-dump" file)
     (lynx  mm-inline-wash-with-stdin nil
 	   "lynx" "-dump" "-force_html" "-stdin"))
-  "The attributes of washer types.")
+  "The attributes of washer types for text/html.")
+
+(defvar mm-application-msword-renderer-alist
+  '((catdoc  mm-inline-render-with-stdin nil "catdoc"))
+  "The attributes of renderer types.")
 
 ;;; Internal variables.
 
@@ -311,7 +315,8 @@ will not be substituted.")
 (defun mm-inline-wash-with-file (post-func cmd &rest args)
   (let ((file (make-temp-name 
 	       (expand-file-name "mm" mm-tmp-directory))))
-    (write-region (point-min) (point-max) file nil 'silent)
+    (let ((coding-system-for-write 'binary))
+      (write-region (point-min) (point-max) file nil 'silent))
     (delete-region (point-min) (point-max))
     (unwind-protect
 	(apply 'call-process cmd nil t nil (mapcar 'eval args))
@@ -319,15 +324,16 @@ will not be substituted.")
     (and post-func (funcall post-func))))
 
 (defun mm-inline-wash-with-stdin (post-func cmd &rest args)
-  (apply 'call-process-region (point-min) (point-max)
-	 cmd t t nil args)
+  (let ((coding-system-for-write 'binary))
+    (apply 'call-process-region (point-min) (point-max)
+	   cmd t t nil args))
   (and post-func (funcall post-func)))
 
 (defun mm-inline-render-with-file (handle post-func cmd &rest args)
   (let ((source (mm-get-part handle)))
     (mm-insert-inline
      handle
-     (with-temp-buffer
+     (mm-with-unibyte-buffer
        (insert source)
        (apply 'mm-inline-wash-with-file post-func cmd args)
        (buffer-string)))))
@@ -336,7 +342,7 @@ will not be substituted.")
   (let ((source (mm-get-part handle)))
     (mm-insert-inline 
      handle 
-     (with-temp-buffer
+     (mm-with-unibyte-buffer
        (insert source)
        (apply 'mm-inline-wash-with-stdin post-func cmd args)
        (buffer-string)))))
@@ -345,7 +351,7 @@ will not be substituted.")
   (let ((source (mm-get-part handle)))
     (mm-insert-inline 
      handle 
-     (with-temp-buffer
+     (mm-with-unibyte-buffer
        (insert source)
        (apply func args)
        (buffer-string)))))
@@ -585,6 +591,18 @@ will not be substituted.")
 		       smime-keys nil nil
 		       (and (listp (car-safe smime-keys))
 			    (caar smime-keys)))))))
+
+(defun mm-inline-application-msword (handle)
+  (let* ((func mm-application-msword-renderer)
+	 (entry (assq func mm-application-msword-renderer-alist))
+	 buffer-read-only)
+    (if entry
+	(setq func (cdr entry)))
+    (cond
+     ((gnus-functionp func)
+      (funcall func handle))
+     (t
+      (apply (car func) handle (cdr func))))))
 
 (provide 'mm-view)
 
