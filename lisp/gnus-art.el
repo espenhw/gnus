@@ -2058,7 +2058,7 @@ unfolded."
 	    (save-restriction
 	      (mail-narrow-to-head)
 	      (while (gnus-article-goto-header "Face")
-		(push (mail-header-field-value) faces))))
+		(setq faces (nconc faces (list (mail-header-field-value)))))))
 	  (while (setq face (pop faces))
 	    (let ((png (gnus-convert-face-to-png face))
 		  image)
