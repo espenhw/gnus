@@ -1984,15 +1984,17 @@ Please refer to the following variables to customize the connection:
       (make-directory (directory-file-name dir) t)
       (nnheader-message 5 "Creating nntp marks directory %s" dir))))
 
+(autoload 'time-less-p "time-date")
+
 (defun nntp-marks-changed-p (group server)
   (let ((file (expand-file-name
-	       nntp-marks-file-name 
+	       nntp-marks-file-name
 	       (nnmail-group-pathname
 		group (nntp-marks-directory server)))))
     (if (null (gnus-gethash file nntp-marks-modtime))
 	t ;; never looked at marks file, assume it has changed
-      (not (equal (gnus-gethash file nntp-marks-modtime)
-		  (nth 5 (file-attributes file)))))))
+      (time-less-p (gnus-gethash file nntp-marks-modtime)
+		   (nth 5 (file-attributes file))))))
 
 (defun nntp-save-marks (group server)
   (let ((file-name-coding-system nnmail-pathname-coding-system)
