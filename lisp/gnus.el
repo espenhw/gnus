@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.76"
+(defconst gnus-version-number "0.77"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -80,6 +80,7 @@ be set in `.emacs' instead."
   (defalias 'gnus-add-text-properties 'add-text-properties)
   (defalias 'gnus-put-text-property 'put-text-property)
   (defalias 'gnus-mode-line-buffer-identification 'identity)
+  (defalias 'gnus-characterp 'numberp)
   (defalias 'gnus-key-press-event-p 'numberp))
 
 ;; The XEmacs people think this is evil, so it must go.
@@ -123,12 +124,321 @@ be set in `.emacs' instead."
 
 ;;; Internal variables
 
+;; We define these group faces here to avoid the display
+;; update forced when creating new faces.
+
+(defface gnus-group-news-1-face 
+  '((((class color)
+      (background dark))
+     (:foreground "PaleTurquoise" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "ForestGreen" :bold t))
+    (t
+     ()))
+  "Level 1 newsgroup face.")
+
+(defface gnus-group-news-1-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleTurquoise"))
+    (((class color)
+      (background light))
+     (:foreground "ForestGreen"))
+    (t
+     ()))
+  "Level 1 empty newsgroup face.")
+
+(defface gnus-group-news-2-face 
+  '((((class color)
+      (background dark))
+     (:foreground "turquoise" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "CadetBlue4" :bold t))
+    (t
+     ()))
+  "Level 2 newsgroup face.")
+
+(defface gnus-group-news-2-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "turquoise"))
+    (((class color)
+      (background light))
+     (:foreground "CadetBlue4"))
+    (t
+     ()))
+  "Level 2 empty newsgroup face.")
+
+(defface gnus-group-news-3-face 
+  '((((class color)
+      (background dark))
+     (:bold t))
+    (((class color)
+      (background light))
+     (:bold t))
+    (t
+     ()))
+  "Level 3 newsgroup face.")
+
+(defface gnus-group-news-3-empty-face
+  '((((class color)
+      (background dark))
+     ())
+    (((class color)
+      (background light))
+     ())
+    (t
+     ()))
+  "Level 3 empty newsgroup face.")
+
+(defface gnus-group-news-low-face 
+  '((((class color)
+      (background dark))
+     (:foreground "DarkTurquoise" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :bold t))
+    (t
+     ()))
+  "Low level newsgroup face.")
+
+(defface gnus-group-news-low-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "DarkTurquoise"))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen"))
+    (t
+     ()))
+  "Low level empty newsgroup face.")
+
+(defface gnus-group-mail-1-face 
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine1" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DeepPink3" :bold t))
+    (t
+     (:bold t)))
+  "Level 1 mailgroup face.")
+
+(defface gnus-group-mail-1-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine1"))
+    (((class color)
+      (background light))
+     (:foreground "DeepPink3"))
+    (t
+     (:italic t :bold t)))
+  "Level 1 empty mailgroup face.")
+
+(defface gnus-group-mail-2-face 
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine2" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "HotPink3" :bold t))
+    (t
+     (:bold t)))
+  "Level 2 mailgroup face.")
+
+(defface gnus-group-mail-2-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine2"))
+    (((class color)
+      (background light))
+     (:foreground "HotPink3"))
+    (t
+     (:bold t)))
+  "Level 2 empty mailgroup face.")
+
+(defface gnus-group-mail-3-face 
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine3" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "magenta4" :bold t))
+    (t
+     (:bold t)))
+  "Level 3 mailgroup face.")
+
+(defface gnus-group-mail-3-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine3"))
+    (((class color)
+      (background light))
+     (:foreground "magenta4"))
+    (t
+     ()))
+  "Level 3 empty mailgroup face.")
+
+(defface gnus-group-mail-low-face 
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine4" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DeepPink4" :bold t))
+    (t
+     (:bold t)))
+  "Low level mailgroup face.")
+
+(defface gnus-group-mail-low-empty-face
+  '((((class color)
+      (background dark))
+     (:foreground "aquamarine4"))
+    (((class color)
+      (background light))
+     (:foreground "DeepPink4"))
+    (t
+     (:bold t)))
+  "Low level empty mailgroup face.")
+
+;; Summary mode faces.
+
+(defface gnus-summary-selected-face '((t 
+				       (:underline t)))
+  "Face used for selected articles.")
+
+(defface gnus-summary-cancelled-face 
+  '((((class color))
+     (:foreground "yellow" :background "black")))
+  "Face used for cancelled articles.")
+
+(defface gnus-summary-high-ticked-face
+  '((((class color)
+      (background dark))
+     (:foreground "pink" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "firebrick" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for high interest ticked articles.")
+
+(defface gnus-summary-low-ticked-face
+  '((((class color)
+      (background dark))
+     (:foreground "pink" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "firebrick" :italic t))
+    (t 
+     (:italic t)))
+  "Face used for low interest ticked articles.")
+
+(defface gnus-summary-normal-ticked-face
+  '((((class color)
+      (background dark))
+     (:foreground "pink"))
+    (((class color)
+      (background light))
+     (:foreground "firebrick"))
+    (t 
+     ()))
+  "Face used for normal interest ticked articles.")
+  
+(defface gnus-summary-high-ancient-face
+  '((((class color)
+      (background dark))
+     (:foreground "SkyBlue" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "RoyalBlue" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for high interest ancient articles.")
+
+(defface gnus-summary-low-ancient-face
+  '((((class color)
+      (background dark))
+     (:foreground "SkyBlue" :italic t))
+    (((class color)
+      (background light))
+     (:foreground "RoyalBlue" :italic t))
+    (t 
+     (:italic t)))
+  "Face used for low interest ancient articles.")
+
+(defface gnus-summary-normal-ancient-face
+  '((((class color)
+      (background dark))
+     (:foreground "SkyBlue"))
+    (((class color)
+      (background light))
+     (:foreground "RoyalBlue"))
+    (t 
+     ()))
+  "Face used for normal interest ancient articles.")
+  
+(defface gnus-summary-high-unread-face
+  '((t 
+     (:bold t)))
+  "Face used for high interest unread articles.")
+
+(defface gnus-summary-low-unread-face
+  '((t 
+     (:italic t)))
+  "Face used for low interest unread articles.")
+
+(defface gnus-summary-normal-unread-face
+  '((t 
+     ()))
+  "Face used for normal interest unread articles.")
+  
+(defface gnus-summary-high-read-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleGreen"
+		  :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen"
+		  :bold t))
+    (t 
+     (:bold t)))
+  "Face used for high interest read articles.")
+
+(defface gnus-summary-low-read-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleGreen"
+		  :italic t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen"
+		  :italic t))
+    (t 
+     (:italic t)))
+  "Face used for low interest read articles.")
+
+(defface gnus-summary-normal-read-face
+  '((((class color)
+      (background dark))
+     (:foreground "PaleGreen"))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen"))
+    (t 
+     ()))
+  "Face used for normal interest read articles.")
+
+
+;;; Splash screen.
+
 (defvar gnus-group-buffer "*Group*")
 
 (eval-and-compile
   (autoload 'gnus-play-jingle "gnus-audio"))
-
-;;; Splash screen.
 
 (defface gnus-splash-face 
   '((((class color)
@@ -1154,9 +1464,9 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-hide-pem gnus-article-hide-signature
       gnus-article-strip-leading-blank-lines gnus-article-date-local
       gnus-article-date-original gnus-article-date-lapsed
-      gnus-decode-rfc1522 gnus-article-show-all-headers
+      gnus-article-show-all-headers 
       gnus-article-edit-mode gnus-article-edit-article
-      gnus-article-edit-done)
+      gnus-article-edit-done gnus-decode-rfc1522)
      ("gnus-int" gnus-request-type)
      ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1
       gnus-dribble-enter)
@@ -1171,7 +1481,6 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
       gnus-async-prefetch-article gnus-async-prefetch-remove-group
       gnus-async-halt-prefetch)
-     ("article" article-decode-rfc1522)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm))))
 

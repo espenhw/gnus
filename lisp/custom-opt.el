@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.12
+;; Version: 1.15
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Code:

@@ -970,6 +970,8 @@ Return the number of headers removed."
   (define-key message-mode-map "\C-c\C-k" 'message-kill-buffer)
   (define-key message-mode-map "\C-c\C-d" 'message-dont-send)
 
+  (define-key message-mode-map "\C-c\C-e" 'message-elide-region)
+
   (define-key message-mode-map "\t" 'message-tab))
 
 (easy-menu-define 
@@ -980,7 +982,8 @@ Return the number of headers removed."
    ["Fill Yanked Message" message-fill-yanked-message t]
    ["Insert Signature" message-insert-signature t]
    ["Caesar (rot13) Message" message-caesar-buffer-body t]
-   ["Caesar (rot13) Region" message-caesar-region t]
+   ["Caesar (rot13) Region" message-caesar-region mark-active]
+   ["Elide Region" message-elide-region mark-active]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message t]
    "----"
@@ -1027,6 +1030,7 @@ C-c C-i  message-goto-signature (move to the beginning of the signature).
 C-c C-w  message-insert-signature (insert `message-signature-file' file).
 C-c C-y  message-yank-original (insert current message, if any).
 C-c C-q  message-fill-yanked-message (fill what was yanked).
+C-c C-e  message-elide-region (elide the text between point and mark).
 C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (interactive)
   (kill-all-local-variables)
@@ -1228,6 +1232,16 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 	(insert signature))
       (goto-char (point-max))
       (or (bolp) (insert "\n")))))
+
+(defun message-elide-region (b e)
+  "Elide the text between point and mark.
+An ellipsis (\"[...]\") will be inserted where the text was 
+killed."
+  (interactive "r")
+  (kill-region b e)
+  (unless (bolp)
+    (insert "\n"))
+  (insert "\n[...]\n\n"))
 
 (defvar message-caesar-translation-table nil)
 

@@ -75,6 +75,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
    "." gnus-pick-article
    gnus-down-mouse-2 gnus-pick-mouse-pick-region
    ;;gnus-mouse-2 gnus-pick-mouse-pick
+   "X" gnus-pick-start-reading
    "\r" gnus-pick-start-reading))
 
 (defun gnus-pick-make-menu-bar ()
@@ -144,9 +145,12 @@ If given a prefix, mark all unpicked articles as read."
         (gnus-configure-windows 
 	 (if gnus-pick-display-summary 'article 'pick) t))
     (if gnus-pick-elegant-flow
-	(if (gnus-group-quit-config gnus-newsgroup-name)
-	    (gnus-summary-exit)
-	  (gnus-summary-next-group))
+	(progn
+	  (when (or catch-up gnus-mark-unpicked-articles-as-read)
+	    (gnus-summary-limit-mark-excluded-as-read))
+	  (if (gnus-group-quit-config gnus-newsgroup-name)
+	      (gnus-summary-exit)
+	    (gnus-summary-next-group)))
       (error "No articles have been picked"))))
 
 (defun gnus-pick-article (&optional arg)
@@ -705,7 +709,8 @@ Two predefined functions are available:
 	  (setq beg (point))
 	  ;; Draw "-" lines leftwards.
 	  (while (progn
-		   (forward-char -2)
+		   (unless (bolp)
+		     (forward-char -2))
 		   (= (following-char) ? ))
 	    (delete-char 1)
 	    (insert (car gnus-tree-parent-child-edges)))

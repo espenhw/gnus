@@ -361,7 +361,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
       (search-forward "\n\n" nil t)
       (push (cons (point-marker) "") marks)
       (goto-char (point-max))
-      (article-search-signature)
+      (gnus-article-search-signature)
       (push (cons (point-marker) "") marks)
       (setq marks (sort marks (lambda (m1 m2) (< (car m1) (car m2)))))
       (let* ((omarks marks))
@@ -421,18 +421,18 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 See the documentation for `gnus-article-highlight-citation'.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
-  (interactive (append (article-hidden-arg) (list 'force)))
+  (interactive (append (gnus-article-hidden-arg) (list 'force)))
   (setq gnus-cited-text-button-line-format-spec 
 	(gnus-parse-format gnus-cited-text-button-line-format 
 			   gnus-cited-text-button-line-format-alist t))
   (save-excursion
     (set-buffer gnus-article-buffer)
     (cond
-     ((article-check-hidden-text 'cite arg)
+     ((gnus-article-check-hidden-text 'cite arg)
       t)
-     ((article-text-type-exists-p 'cite)
+     ((gnus-article-text-type-exists-p 'cite)
       (let ((buffer-read-only nil))
-	(article-hide-text-of-type 'cite)))
+	(gnus-article-hide-text-of-type 'cite)))
      (t
       (let ((buffer-read-only nil)
 	    (marks (gnus-dissect-cited-text))
@@ -493,8 +493,8 @@ percent and at least `gnus-cite-hide-absolute' lines of the body is
 cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."
-  (interactive (append (article-hidden-arg) (list 'force)))
-  (unless (article-check-hidden-text 'cite arg)
+  (interactive (append (gnus-article-hidden-arg) (list 'force)))
+  (unless (gnus-article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
       (gnus-cite-parse-maybe force)
@@ -507,7 +507,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	    (hiden 0)
 	    total)
 	(goto-char (point-max))
-	(article-search-signature)
+	(gnus-article-search-signature)
 	(setq total (count-lines start (point)))
 	(while atts
 	  (setq hiden (+ hiden (length (cdr (assoc (cdar atts)
@@ -572,7 +572,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(case-fold-search t)
 	(max (save-excursion
 	       (goto-char (point-max))
-	       (article-search-signature)
+	       (gnus-article-search-signature)
 	       (point)))
 	alist entry start begin end numbers prefix)
     ;; Get all potential prefixes in `alist'.

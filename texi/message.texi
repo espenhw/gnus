@@ -497,6 +497,13 @@ Caesar rotate (aka. rot13) the current message
 rotate the visible portion of the buffer.  A numerical prefix says how
 many places to rotate the text.  The default is 13.
 
+@item C-c C-e
+@kindex C-c C-e
+@findex message-elide-region
+Elide the text between point and mark (@code{message-elide-region}).
+The text is killed and an ellipsis (@samp{[...]}) will be inserted in
+its place.
+
 @item C-c C-t
 @kindex C-c C-t 
 @findex message-insert-to

@@ -277,182 +277,6 @@ variable."
 		       (string :tag "Name")
 		       (sexp :tag "Method"))))
 
-(defface gnus-group-news-1-face 
-  '((((class color)
-      (background dark))
-     (:foreground "PaleTurquoise" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "ForestGreen" :bold t))
-    (t
-     ()))
-  "Level 1 newsgroup face.")
-
-(defface gnus-group-news-1-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "PaleTurquoise"))
-    (((class color)
-      (background light))
-     (:foreground "ForestGreen"))
-    (t
-     ()))
-  "Level 1 empty newsgroup face.")
-
-(defface gnus-group-news-2-face 
-  '((((class color)
-      (background dark))
-     (:foreground "turquoise" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "CadetBlue4" :bold t))
-    (t
-     ()))
-  "Level 2 newsgroup face.")
-
-(defface gnus-group-news-2-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "turquoise"))
-    (((class color)
-      (background light))
-     (:foreground "CadetBlue4"))
-    (t
-     ()))
-  "Level 2 empty newsgroup face.")
-
-(defface gnus-group-news-3-face 
-  '((((class color)
-      (background dark))
-     (:bold t))
-    (((class color)
-      (background light))
-     (:bold t))
-    (t
-     ()))
-  "Level 3 newsgroup face.")
-
-(defface gnus-group-news-3-empty-face
-  '((((class color)
-      (background dark))
-     ())
-    (((class color)
-      (background light))
-     ())
-    (t
-     ()))
-  "Level 3 empty newsgroup face.")
-
-(defface gnus-group-news-low-face 
-  '((((class color)
-      (background dark))
-     (:foreground "DarkTurquoise" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "DarkGreen" :bold t))
-    (t
-     ()))
-  "Low level newsgroup face.")
-
-(defface gnus-group-news-low-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "DarkTurquoise"))
-    (((class color)
-      (background light))
-     (:foreground "DarkGreen"))
-    (t
-     ()))
-  "Low level empty newsgroup face.")
-
-(defface gnus-group-mail-1-face 
-  '((((class color)
-      (background dark))
-     (:foreground "aquamarine1" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "DeepPink3" :bold t))
-    (t
-     (:bold t)))
-  "Level 1 mailgroup face.")
-
-(defface gnus-group-mail-1-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "aquamarine1"))
-    (((class color)
-      (background light))
-     (:foreground "DeepPink3"))
-    (t
-     (:italic t :bold t)))
-  "Level 1 empty mailgroup face.")
-
-(defface gnus-group-mail-2-face 
-  '((((class color)
-      (background dark))
-     (:foreground "aquamarine2" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "HotPink3" :bold t))
-    (t
-     (:bold t)))
-  "Level 2 mailgroup face.")
-
-(defface gnus-group-mail-2-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "aquamarine2"))
-    (((class color)
-      (background light))
-     (:foreground "HotPink3"))
-    (t
-     (:bold t)))
-  "Level 2 empty mailgroup face.")
-
-(defface gnus-group-mail-3-face 
-  '((((class color)
-      (background dark))
-     (:foreground "aquamarine3" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "magenta4" :bold t))
-    (t
-     (:bold t)))
-  "Level 3 mailgroup face.")
-
-(defface gnus-group-mail-3-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "aquamarine3"))
-    (((class color)
-      (background light))
-     (:foreground "magenta4"))
-    (t
-     ()))
-  "Level 3 empty mailgroup face.")
-
-(defface gnus-group-mail-low-face 
-  '((((class color)
-      (background dark))
-     (:foreground "aquamarine4" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "DeepPink4" :bold t))
-    (t
-     (:bold t)))
-  "Low level mailgroup face.")
-
-(defface gnus-group-mail-low-empty-face
-  '((((class color)
-      (background dark))
-     (:foreground "aquamarine4"))
-    (((class color)
-      (background light))
-     (:foreground "DeepPink4"))
-    (t
-     (:bold t)))
-  "Low level empty mailgroup face.")
-
 (defcustom gnus-group-highlight
   '(;; News.
     ((and (= unread 0) (not mailp) (eq level 1)) .
@@ -2535,15 +2359,20 @@ caught up is returned."
   (interactive "P")
   (unless (gnus-group-group-name)
     (error "No group on the current line"))
-  (if (not (or (not gnus-interactive-catchup) ;Without confirmation?
-	       gnus-expert-user
-	       (gnus-y-or-n-p
-		(if all
-		    "Do you really want to mark all articles as read? "
-		  "Mark all unread articles as read? "))))
-      n
-    (let ((groups (gnus-group-process-prefix n))
-	  (ret 0))
+  (let ((groups (gnus-group-process-prefix n))
+	(ret 0))
+    (if (not
+	 (or (not gnus-interactive-catchup) ;Without confirmation?
+	     gnus-expert-user
+	     (gnus-y-or-n-p
+	      (format
+	       (if all
+		   "Do you really want to mark all articles in %s as read? "
+		 "Mark all unread articles in %s as read? ")
+	       (if (= (length groups) 1)
+		   (car groups)
+		 (format "these %d groups" (length groups)))))))
+	n
       (while groups
 	;; Virtual groups have to be given special treatment.
 	(let ((method (gnus-find-method-for-group (car groups))))
@@ -3007,7 +2836,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
     (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
       (gnus-get-unread-articles arg)))
   (run-hooks 'gnus-after-getting-new-news-hook)
-  (gnus-group-list-groups))
+  (gnus-group-list-groups arg))
 
 (defun gnus-group-get-new-news-this-group (&optional n)
   "Check for newly arrived news in the current group (and the N-1 next groups).

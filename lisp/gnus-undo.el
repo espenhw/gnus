@@ -71,12 +71,10 @@
    "\M-\C-_" gnus-undo))
 
 (defun gnus-undo-make-menu-bar ()
-  (unless (boundp 'gnus-undo-menu)
-    (easy-menu-define
-     gnus-undo-menu gnus-undo-mode-map ""
-     '("Undo"
-       ("Undo"
-	["Undo" gnus-undo gnus-undo-actions])))))
+  (when nil
+  (define-key-after (current-local-map) [menu-bar file gnus-undo]
+    (cons "Undo" 'gnus-undo-actions)
+    [menu-bar file whatever])))
 
 (defun gnus-undo-mode (&optional arg)
   "Minor mode for providing `undo' in Gnus buffers.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.76 Manual
+@settitle Red Gnus 0.77 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.76 Manual
+@title Red Gnus 0.77 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.76
+This manual corresponds to Red Gnus 0.77
 
 @end ifinfo
 
@@ -8691,7 +8691,7 @@ Hook run in the buffer where the mail headers of each message is kept
 just before the splitting based on these headers is done.  The hook is
 free to modify the buffer contents in any way it sees fit---the buffer
 is discarded after the splitting has been done, and no changes performed
-in the buffer will show up in any files.  @code{article-decode-rfc1522}
+in the buffer will show up in any files.  @code{gnus-article-decode-rfc1522}
 is one likely function to add to this hook.
 
 @vindex nnmail-pre-get-new-mail-hook
@@ -13764,8 +13764,10 @@ Marc Horowitz,
 Ishikawa Ichiro, @c Ishikawa
 Francois Felix Ingrand,
 Lee Iverson, 
+Rajappa Iyer,
 Randell Jesup,
 Fred Johansen, 
+Peter Skov Knudsen,
 Shuhei Kobayashi, @c Kobayashi
 Thor Kristoffersen,
 Jens Lautenbacher,
@@ -13780,6 +13782,7 @@ Timo Metzemakers,
 Richard Mlynarik,
 Lantz Moore,
 Morioka Tomohiko, @c Morioka
+Erik Toubro Nielsen,
 Hrvoje Niksic,
 Andy Norman,
 C. R. Oldham,
@@ -13801,6 +13804,7 @@ Jeff Sparkes,
 Michael Sperber,
 Richard Stallman,
 Greg Stark, 
+Paul Stodghill,
 Kurt Swanson,
 Samuel Tardieu, 
 Teddy,
@@ -15129,9 +15133,8 @@ group-buffer = *active-line / *group-status
 A Gnus group info (@pxref{Group Info}) is handed to the backend for
 alterations.  This comes in handy if the backend really carries all the
 information (as is the case with virtual an imap groups).  This function
-may alter the info in any manner it sees fit, and should return the
-(altered) group info.  This function may alter the group info
-destructively, so no copying is needed before boogeying. 
+should destructively alter the info to suit its needs, and should return
+the (altered) group info.  
 
 There should be no result data from this function.
 

@@ -1,3 +1,11 @@
+Fri Jan  3 18:13:02 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Various Commands): Addition.
+
+Thu Jan  2 16:12:27 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Optional Backend Functions): Fix.
+
 Mon Dec 16 13:53:28 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Exiting the Summary Buffer): Update.

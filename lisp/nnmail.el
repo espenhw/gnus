@@ -1047,7 +1047,7 @@ Return the number of characters in the body."
   "Remove excessive whitespace from all headers."
   (goto-char (point-min))
   (while (re-search-forward "^\\([^ :]+: \\) +" nil t)
-    (replace-match "\\1" t t)))
+    (replace-match "\\1" t)))
 
 (defun nnmail-remove-list-identifiers ()
   "Remove list identifiers from Subject headers."

@@ -4,7 +4,7 @@
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.2
+;; Version: 1.3
 
 ;; This file is part of GNU Emacs.
 
@@ -79,7 +79,6 @@ Used for APOP authentication.")
     (while (<= n message-count)
       (message (format "Retrieving message %d of %d from %s..."
 		       n message-count pop3-mailhost))
-      (sit-for 0)
       (pop3-retr process n crashbuf)
       (save-excursion
 	(set-buffer crashbuf)
@@ -89,7 +88,6 @@ Used for APOP authentication.")
     (pop3-quit process)
     (kill-buffer crashbuf)
     )
-  (sit-for 0)
   )
 
 (defun pop3-open-server (mailhost port)
@@ -120,16 +118,16 @@ Returns the process associated with the connection."
     (insert output)))
 
 (defun pop3-send-command (process command)
-  (set-buffer (process-buffer process))
-  (goto-char (point-max))
-  ;;    (if (= (aref command 0) ?P)
-  ;;	(insert "PASS <omitted>\r\n")
-  ;;      (insert command "\r\n"))
-  (setq pop3-read-point (point))
-  (goto-char (point-max))
-  (process-send-string process command)
-  (process-send-string process "\r\n")
-  )
+    (set-buffer (process-buffer process))
+    (goto-char (point-max))
+;;    (if (= (aref command 0) ?P)
+;;	(insert "PASS <omitted>\r\n")
+;;      (insert command "\r\n"))
+    (setq pop3-read-point (point))
+    (goto-char (point-max))
+    (process-send-string process command)
+    (process-send-string process "\r\n")
+    )
 
 (defun pop3-read-response (process &optional return)
   "Read the response from the server.
@@ -253,9 +251,6 @@ Return the response string if optional second argument is non-nil."
 		(pop3-quit process)))))
     ))
 
-(eval-and-compile
-  (if (not (fboundp 'md5)) (autoload 'md5 "md5")))
-
 (defun pop3-apop (process user)
   "Send alternate authentication information to the server."
   (if (not (fboundp 'md5)) (autoload 'md5 "md5"))
@@ -296,6 +291,13 @@ buffer CRASHBUF."
       (set-buffer (process-buffer process))
       (while (not (re-search-forward "^\\.\r\n" nil t))
 	(accept-process-output process)
+	;; bill@att.com ... to save wear and tear on the heap
+	(if (> (buffer-size)  20000) (sleep-for 1))
+	(if (> (buffer-size)  50000) (sleep-for 1))
+	(if (> (buffer-size) 100000) (sleep-for 1))
+	(if (> (buffer-size) 200000) (sleep-for 1))
+	(if (> (buffer-size) 500000) (sleep-for 1))
+	;; bill@att.com
 	(goto-char start))
       (setq pop3-read-point (point-marker))
       (goto-char (match-beginning 0))

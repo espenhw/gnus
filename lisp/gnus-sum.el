@@ -736,137 +736,10 @@ automatically when it is selected."
   :group 'gnus-group-select
   :type 'hook)
 
-(defface gnus-summary-selected-face '((t 
-				       (:underline t)))
-  "Face used for selected articles.")
-
 (defcustom gnus-summary-selected-face 'gnus-summary-selected-face
   "Face used for highlighting the current article in the summary buffer."
   :group 'gnus-summary-visual
   :type 'face)
-
-(defface gnus-summary-cancelled-face 
-  '((((class color))
-     (:foreground "yellow" :background "black")))
-  "Face used for cancelled articles.")
-
-(defface gnus-summary-high-ticked-face
-  '((((class color)
-      (background dark))
-     (:foreground "pink" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "firebrick" :bold t))
-    (t 
-     (:bold t)))
-  "Face used for high interest ticked articles.")
-
-(defface gnus-summary-low-ticked-face
-  '((((class color)
-      (background dark))
-     (:foreground "pink" :italic t))
-    (((class color)
-      (background light))
-     (:foreground "firebrick" :italic t))
-    (t 
-     (:italic t)))
-  "Face used for low interest ticked articles.")
-
-(defface gnus-summary-normal-ticked-face
-  '((((class color)
-      (background dark))
-     (:foreground "pink"))
-    (((class color)
-      (background light))
-     (:foreground "firebrick"))
-    (t 
-     ()))
-  "Face used for normal interest ticked articles.")
-  
-(defface gnus-summary-high-ancient-face
-  '((((class color)
-      (background dark))
-     (:foreground "SkyBlue" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "RoyalBlue" :bold t))
-    (t 
-     (:bold t)))
-  "Face used for high interest ancient articles.")
-
-(defface gnus-summary-low-ancient-face
-  '((((class color)
-      (background dark))
-     (:foreground "SkyBlue" :italic t))
-    (((class color)
-      (background light))
-     (:foreground "RoyalBlue" :italic t))
-    (t 
-     (:italic t)))
-  "Face used for low interest ancient articles.")
-
-(defface gnus-summary-normal-ancient-face
-  '((((class color)
-      (background dark))
-     (:foreground "SkyBlue"))
-    (((class color)
-      (background light))
-     (:foreground "RoyalBlue"))
-    (t 
-     ()))
-  "Face used for normal interest ancient articles.")
-  
-(defface gnus-summary-high-unread-face
-  '((t 
-     (:bold t)))
-  "Face used for high interest unread articles.")
-
-(defface gnus-summary-low-unread-face
-  '((t 
-     (:italic t)))
-  "Face used for low interest unread articles.")
-
-(defface gnus-summary-normal-unread-face
-  '((t 
-     ()))
-  "Face used for normal interest unread articles.")
-  
-(defface gnus-summary-high-read-face
-  '((((class color)
-      (background dark))
-     (:foreground "PaleGreen"
-		  :bold t))
-    (((class color)
-      (background light))
-     (:foreground "DarkGreen"
-		  :bold t))
-    (t 
-     (:bold t)))
-  "Face used for high interest read articles.")
-
-(defface gnus-summary-low-read-face
-  '((((class color)
-      (background dark))
-     (:foreground "PaleGreen"
-		  :italic t))
-    (((class color)
-      (background light))
-     (:foreground "DarkGreen"
-		  :italic t))
-    (t 
-     (:italic t)))
-  "Face used for low interest read articles.")
-
-(defface gnus-summary-normal-read-face
-  '((((class color)
-      (background dark))
-     (:foreground "PaleGreen"))
-    (((class color)
-      (background light))
-     (:foreground "DarkGreen"))
-    (t 
-     ()))
-  "Face used for normal interest read articles.")
 
 (defcustom gnus-summary-highlight 
   '(((= mark gnus-canceled-mark)
@@ -4514,7 +4387,20 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
 	   (gnus-error 4 "Strange nov line (%d)"
 		       (count-lines (point-min) (point)))))
 	(forward-line 1))
-      (nreverse headers))))
+      ;; A common bug in inn is that if you have posted an article and
+      ;; then retrieves the active file, it will answer correctly --
+      ;; the new article is included.  However, a NOV entry for the
+      ;; article may not have been generated yet, so this may fail.
+      ;; We work around this problem by retrieving the last few
+      ;; headers using HEAD.
+      (if (not sequence)
+	  (nreverse headers)
+	(let ((gnus-nov-is-evil t)
+	      (nntp-nov-is-evil t))
+	  (nconc
+	   (nreverse headers)
+	   (when (gnus-retrieve-headers sequence gnus-newsgroup-name)
+	     (gnus-get-newsgroup-headers))))))))
 
 (defun gnus-article-get-xrefs ()
   "Fill in the Xref value in `gnus-current-headers', if necessary.
@@ -4957,7 +4843,7 @@ The prefix argument ALL means to select all articles."
 (defun gnus-summary-save-newsrc (&optional force)
   "Save the current number of read/marked articles in the dribble buffer.
 If FORCE (the prefix), also save the .newsrc file(s)."
-  (interactive)
+  (interactive "P")
   (gnus-summary-update-info)
   (when force
     (gnus-save-newsrc-file)))
@@ -6138,9 +6024,13 @@ fetch-old-headers verbiage, and so on."
 			gnus-newsgroup-reads)))
 	      t)
 	    ;; Check NoCeM things.
-	    (and gnus-use-nocem
-		 (gnus-nocem-unwanted-article-p
-		  (mail-header-id (car thread))))))
+	    (if (and gnus-use-nocem
+		     (gnus-nocem-unwanted-article-p
+		      (mail-header-id (car thread))))
+		(progn
+		  (setq gnus-newsgroup-reads 
+			(delq number gnus-newsgroup-unreads))
+		  t))))
 	  ;; Nope, invisible article.
 	  0
 	;; Ok, this article is to be visible, so we add it to the limit
@@ -6556,7 +6446,7 @@ to save in."
 	  (progn
 	    (copy-to-buffer buffer (point-min) (point-max))
 	    (set-buffer buffer)
-	    (article-delete-invisible-text)
+	    (gnus-article-delete-invisible-text)
 	    (ps-print-buffer-with-faces filename))
 	(kill-buffer buffer)))))
 
@@ -7021,7 +6911,7 @@ deleted forever, right now."
   (interactive)
   (gnus-set-global-variables)
   (or gnus-expert-user
-      (gnus-y-or-n-p
+      (gnus-yes-or-no-p
        "Are you really, really, really sure you want to delete all these messages? ")
       (error "Phew!"))
   (gnus-summary-expire-articles t))
@@ -7044,7 +6934,7 @@ delete these instead."
   (let ((articles (gnus-summary-work-articles n))
 	not-deleted)
     (if (and gnus-novice-user
-	     (not (gnus-y-or-n-p
+	     (not (gnus-yes-or-no-p
 		   (format "Do you really want to delete %s forever? "
 			   (if (> (length articles) 1)
 			       (format "these %s articles" (length articles))
@@ -7452,7 +7342,7 @@ marked."
   (and (not no-expire)
        gnus-newsgroup-auto-expire
        (or (not mark)
-	   (and (numberp mark)
+	   (and (gnus-characterp mark)
 		(or (= mark gnus-killed-mark) (= mark gnus-del-mark)
 		    (= mark gnus-catchup-mark) (= mark gnus-low-score-mark)
 		    (= mark gnus-read-mark) (= mark gnus-souped-mark)
@@ -8220,6 +8110,7 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	  (gnus-summary-set-saved-mark article))))
     (gnus-kill-buffer save-buffer)
     (gnus-summary-position-point)
+    (gnus-set-mode-line 'summary)
     n))
 
 (defun gnus-summary-pipe-output (&optional arg)

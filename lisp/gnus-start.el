@@ -715,6 +715,7 @@ prompt the user for the name of an NNTP server to use."
 	     (buffer-name gnus-dribble-buffer))
     (let ((obuf (current-buffer)))
       (set-buffer gnus-dribble-buffer)
+      (goto-char (point-max))
       (insert string "\n")
       (set-window-point (get-buffer-window (current-buffer)) (point-max))
       (bury-buffer gnus-dribble-buffer)

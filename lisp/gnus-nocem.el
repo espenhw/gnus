@@ -188,7 +188,6 @@ matches an previously scanned and verified nocem message."
 	     (push (mail-header-message-id header) ; But don't come back for
 		   gnus-nocem-seen-message-ids)))))) ; second helpings.
 
-  
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
   (if (fboundp gnus-nocem-verifyer)

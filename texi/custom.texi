@@ -13,16 +13,14 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.12
+Version: 1.15
 
 @menu
 * Introduction::                
 * User Commands::               
 * The Customization Buffer::    
-* Declaring Groups::            
-* Declaring Variables::         
-* Declaring Faces::             
-* Utilities::            
+* Declarations::                
+* Utilities::                   
 * The Init File::               
 * Wishlist::                    
 @end menu
@@ -38,8 +36,8 @@ simultaneously:
 @table @dfn
 @item factory setting
 The value specified by the programmer.
-@item default value
-The value specified by the user as the default for this variable.  This
+@item saved value
+The value saved by the user as the default for this variable.  This
 overwrites the factory setting when starting a new emacs.
 @item current value
 The value used by Emacs.  This will not be remembered next time you
@@ -80,7 +78,7 @@ Create a customization buffer containing all variables, faces, and
 groups that match a user specified regular expression.
 @end table
 
-@node The Customization Buffer, Declaring Groups, User Commands, Top
+@node The Customization Buffer, Declarations, User Commands, Top
 @comment  node-name,  next,  previous,  up
 @section The Customization Buffer.
 
@@ -184,7 +182,7 @@ using the standard emacs editing commands.
 The state button.  This look of this button will indicate the state of
 the option, e.g. whether it is currently hidden, or whether it has been
 modified or not.  Activating the button will allow you to change the
-state, e.g. apply or reset the changes you have made.  This is explained
+state, e.g. set or reset the changes you have made.  This is explained
 in detail in the following sections.
 
 @item [?] 
@@ -213,29 +211,29 @@ the list, or delete existing items from the list.  You may want to see
 @ref{User Interface,,, widget, The Widget Library}, where some examples
 of editing are discussed.  
 
-You can either choose to edit the value directly, or edit the default
-value for that variable.  The default value is a lisp expression that
+You can either choose to edit the value directly, or edit the lisp
+value for that variable.  The lisp value is a lisp expression that
 will be evaluated when you start emacs.  The result of the evaluation
 will be used as the initial value for that variable.  Editing the
-default value is for experts only, but if the current value of the
+lisp value is for experts only, but if the current value of the
 variable is of a wrong type (i.e. a symbol where a string is expected),
-the `edit default' mode will always be selected.
+the `edit lisp' mode will always be selected.
 
 You can see what mode is currently selected by looking at the state
-button.  If it uses parenthesises (like @samp{( )}) it is in `Edit
-default' mode, with square brackets (like @samp{[ ]}) it is normal edit
-mode.   You can switch mode by activating the state button, and select
-either @samp{Edit} or @samp{Edit default} from the menu.
+button.  If it uses parenthesises (like @samp{( )}) it is in edit lisp
+mode, with square brackets (like @samp{[ ]}) it is normal edit mode.
+You can switch mode by activating the state button, and select either
+@samp{Edit} or @samp{Edit lisp} from the menu.
 
 You can change the state of the variable with the other menu items:
 
 @table @samp
-@item Apply
+@item Set
 When you have made your modifications in the buffer, you need to
 activate this item to make the modifications take effect.  The
 modifications will be forgotten next time you run emacs.
 
-@item Set Default
+@item Save
 Unless you activate this item instead!  This will mark the modification
 as permanent, i.e. the changes will be remembered in the next emacs
 session.
@@ -244,9 +242,9 @@ session.
 If you have made some modifications and not yet applied them, you can
 undo the modification by activating this item.
 
-@item Reset to Default
+@item Reset to Saved
 Activating this item will reset the value of the variable to the last
-value you marked as permanent with `Set Default'.
+value you marked as permanent with `Save'.
 
 @item Reset to Factory Settings
 Activating this item will undo all modifications you have made, and
@@ -335,10 +333,10 @@ stars in the level button.
 
 Since there is really no customization needed for the group itself, the
 menu items in the groups state button will affect all modified group
-members recursively.  Thus, if you activate the @samp{Apply} menu item,
+members recursively.  Thus, if you activate the @samp{Set} menu item,
 all variables and faces that have been modified and belong to that group
 will be applied.  For those members that themselves are groups, it will
-work as if you had activated the @samp{Apply} menu item on them as well.
+work as if you had activated the @samp{Set} menu item on them as well.
 
 @node  The State Button, The Customization Buttons, The Group Options, The Customization Buffer
 @comment  node-name,  next,  previous,  up
@@ -362,10 +360,13 @@ The value if this option has been modified in the buffer, but not yet
 applied.  
 
 @item +
-The current value of this option is different from the default value.   
+The item has has been set by the user.
+
+@item :
+The current value of this option is different from the saved value.   
 
 @item !
-The default value of this option is different from the factory setting.
+The saved value of this option is different from the factory setting.
 
 @item @@
 The factory setting of this option is not known.  This occurs when you
@@ -388,21 +389,50 @@ list above (except hidden members, which are ignored).
 The last part of the customization buffer looks like this:
 
 @example
-[Apply] [Set Default] [Reset] [Save]
+[Set] [Save] [Reset]
 @end example
 
-Activating the @samp{[Apply]}, @samp{[Set Default]}, or @samp{[Reset]}
+Activating the @samp{[Set]}, @samp{[Save]}, or @samp{[Reset]}
 button will affect all modified customization items that are visible in
 the buffer.
 
-Activating the @samp{[Save]} button will ensure that all customization
-options who are marked as persistent with @samp{Set default} (either
-with the button at the end of the buffer, or with any of the state
-button menus), will actually be saved in your initialization file.
-
-@node  Declaring Groups, Declaring Variables, The Customization Buffer, Top
+@node   Declarations, Utilities, The Customization Buffer, Top
 @comment  node-name,  next,  previous,  up
-@section Declaring Groups
+@section Declarations
+
+@menu
+* Declaring Groups::            
+* Declaring Variables::         
+* Declaring Faces::             
+@end menu
+
+All the customization declarations can be changes by keyword arguments.
+Groups, variables, and faces all share these common keywords:
+
+@table @code
+@item :group
+@var{value} should be a customization group. 
+Add @var{symbol} to that group. 
+@item :link
+@var{value} should be a widget type. 
+Add @var{value} to the extrenal links for this customization option.
+Useful widget types include @code{custom-manual}, @code{info-link}, and
+@code{url-link}. 
+@item :load
+Add @var{value} to the files that should be loaded nefore displaying
+this customization option.  The value should be iether a string, which
+should be a string which will be loaded with @code{load-library} unless
+present in @code{load-history}, or a symbol which will be loaded with
+@code{require}. 
+@item :tag
+@var{Value} should be a short string used for identifying the option in
+customization menus and buffers.  By default the tag will be
+automatically created from the options name.
+@end table
+
+@node  Declaring Groups, Declaring Variables, Declarations, Declarations
+@comment  node-name,  next,  previous,  up
+@subsection Declaring Groups
 
 Use @code{defgroup} to declare new customization groups. 
 
@@ -418,33 +448,22 @@ widget for editing that symbol.  Useful widgets are
 @code{custom-variable} for editing variables, @code{custom-face} for
 editing faces, and @code{custom-group} for editing groups.@refill
 
-The following @var{keyword}'s are defined:
-
-@table @code
-@item :group
-@var{value} should be a customization group. 
-Add @var{symbol} to that group. 
-@item :link
-@var{value} should be a widget type. 
-Add @var{value} to the extrenal links for this customization option.
-Useful widget types include @code{custom-manual}, @code{info-link}, and
-@code{url-link}. 
-@item :load
-Add @var{value} to the files that should be loaded nefore displaying
-this customization option.  The value should be iether a string, which
-should be a string which will be loaded with @code{load-library} unless
-present in @code{load-history}, or a symbol which will be loaded with
-@code{require}. 
-@end table
-@end defun
-
 Internally, custom uses the symbol property @code{custom-group} to keep
 track of the group members, and @code{group-documentation} for the
 documentation string. 
 
-@node  Declaring Variables, Declaring Faces, Declaring Groups, Top
+The following additional @var{keyword}'s are defined:
+
+@table @code
+@item :prefix
+@var{value} should be a string.  If the string is a prefix for the name
+of a member of the group, that prefix will be ignored when creating a
+tag for that member.
+@end table
+
+@node  Declaring Variables, Declaring Faces, Declaring Groups, Declarations
 @comment  node-name,  next,  previous,  up
-@section Declaring Variables
+@subsection Declaring Variables
 
 Use @code{defcustom} to declare user editable variables.
 
@@ -455,7 +474,7 @@ If @var{symbol} is not already bound, initialize it to @var{value}.
 
 @var{doc} is the variable documentation.
 
-The following @var{keyword}'s are defined:
+The following additional @var{keyword}'s are defined:
 
 @table @code
 @item :type	
@@ -463,20 +482,6 @@ The following @var{keyword}'s are defined:
 @item :options
 @var{value} should be a list of possible members of the specified type.
 For hooks, this is a list of function names.
-@item :group
-@var{value} should be a customization group. 
-Add @var{symbol} to that group. 
-@item :link
-@var{value} should be a widget type. 
-Add @var{value} to the extrenal links for this customization option.
-Useful widget types include @code{custom-manual}, @code{info-link}, and
-@code{url-link}. 
-@item :load
-Add @var{value} to the files that should be loaded nefore displaying
-this customization option.  The value should be iether a string, which
-should be a string which will be loaded with @code{load-library} unless
-present in @code{load-history}, or a symbol which will be loaded with
-@code{require}. 
 @end table
 
 @xref{Sexp Types,,,widget,The Widget Library}, for information about
@@ -485,9 +490,8 @@ widgets to use together with the @code{:type} keyword.
 
 Internally, custom uses the symbol property @code{custom-type} to keep
 track of the variables type, @code{factory-value} for the program
-specified default value, @code{default-value} for a user specified
-default value, and @code{variable-documentation} for the documentation
-string.
+specified default value, @code{saved-value} for a value saved by the
+user, and @code{variable-documentation} for the documentation string.
 
 Use @code{custom-add-option} to specify that a specific function is
 useful as an meber of a hook.
@@ -499,9 +503,9 @@ If @var{symbol} is a hook variable, @var{option} should be a hook
 member.  For other types variables, the effect is undefined."
 @end defun
 
-@node  Declaring Faces, Utilities, Declaring Variables, Top
+@node  Declaring Faces,  , Declaring Variables, Declarations
 @comment  node-name,  next,  previous,  up
-@section Declaring Faces
+@subsection Declaring Faces
 
 Faces are declared with @code{defface}.
 
@@ -515,25 +519,6 @@ as specified by that function, otherwise set the face attributes
 according to @var{spec}.
 
 @var{doc} is the face documentation.
-
-The following @var{keyword}'s are defined:
-
-@table @code
-@item :group
-@var{value} should be a customization group. 
-Add @var{symbol} to that group. 
-@item :link
-@var{value} should be a widget type. 
-Add @var{value} to the extrenal links for this customization option.
-Useful widget types include @code{custom-manual}, @code{info-link}, and
-@code{url-link}. 
-@item :load
-Add @var{value} to the files that should be loaded nefore displaying
-this customization option.  The value should be iether a string, which
-should be a string which will be loaded with @code{load-library} unless
-present in @code{load-history}, or a symbol which will be loaded with
-@code{require}. 
-@end table
 
 @var{spec} should be an alist of the form @samp{((@var{display} @var{atts})...)}.
 
@@ -566,13 +551,13 @@ Should be one of @code{light} or @code{dark}.
 @end table
   
 Internally, custom uses the symbol property @code{factory-face} for the
-program specified default face properties, @code{default-face} for a
-user specified default properties, and @code{face-documentation} for the
+program specified default face properties, @code{saved-face} for
+properties saved by the user, and @code{face-documentation} for the
 documentation string.@refill
 
 @end defun
 
-@node  Utilities, The Init File, Declaring Faces, Top
+@node  Utilities, The Init File, Declarations, Top
 @comment  node-name,  next,  previous,  up
 @section Utilities
 
@@ -595,6 +580,13 @@ To the custom option @var{symbol} add the link @var{widget}.
 @defun custom-add-load symbol load
 To the custom option @var{symbol} add the dependency @var{load}.
 @var{load} should be either a library file name, or a feature name.
+@end defun
+
+@defun custom-menu-create symbol &optional name
+Create menu for customization group @var{symbol}.
+If optional @var{name} is given, use that as the name of the menu. 
+Otherwise make up a name from @var{symbol}.
+The menu is in a format applicable to @code{easy-menu-define}.
 @end defun
 
 @node  The Init File, Wishlist, Utilities, Top

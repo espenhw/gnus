@@ -257,8 +257,15 @@ It should return non-nil if the article is to be prefetched."
 	  
 (defun gnus-async-prefetched-article-entry (group article)
   "Return the entry for ARTICLE in GROUP iff it has been prefetched."
-  (assq (intern (format "%s-%d" group article))
-	gnus-async-article-alist))
+  (let ((entry (assq (intern (format "%s-%d" group article))
+		     gnus-async-article-alist)))
+    ;; Perhaps something has emptied the buffer?
+    (if (and entry
+	     (= (cadr entry) (caddr entry)))
+	(progn
+	  (gnus-async-delete-prefected-entry entry)
+	  nil)
+      entry)))
 
 ;;;
 ;;; Header prefetch

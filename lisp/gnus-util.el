@@ -482,6 +482,7 @@ If N, return the Nth ancestor instead."
 (defun gnus-read-event-char ()
   "Get the next event."
   (let ((event (read-event)))
+    ;; should be gnus-characterp, but this can't be called in XEmacs anyway
     (cons (and (numberp event) event) event)))
 
 (defun gnus-sortable-date (date)

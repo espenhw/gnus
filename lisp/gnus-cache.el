@@ -28,8 +28,9 @@
 (require 'gnus)
 (require 'gnus-int)
 (require 'gnus-range)
-(require 'gnus-sum)
 (require 'gnus-start)
+(eval-when-compile
+  (require 'gnus-sum))
 
 (defgroup gnus-cache nil
   "Cache interface."

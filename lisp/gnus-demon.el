@@ -73,7 +73,6 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 (defvar gnus-demon-idle-has-been-called nil)
 (defvar gnus-demon-idle-time 0)
 (defvar gnus-demon-handler-state nil)
-(defvar gnus-demon-is-idle nil)
 (defvar gnus-demon-last-keys nil)
 
 (eval-and-compile
@@ -188,7 +187,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	     (or (not (setq idle (nth 2 handler))) ; Don't care about idle.
 		 (and (numberp idle)	; Numerical idle...
 		      (< idle gnus-demon-idle-time)) ; Idle timed out.
-		 gnus-demon-is-idle)	; Or just need to be idle.
+		 gnus-demon-idle-time)	; Or just need to be idle.
 	     ;; So we call the handler.
 	     (progn
 	       (funcall (car handler))

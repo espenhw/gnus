@@ -65,7 +65,8 @@
 	       (if gnus-carpal '(summary-carpal 4))))
     (article
      (cond 
-      ((and gnus-use-picons (not (eq gnus-picons-display-where 'article)))
+      ((and gnus-use-picons 
+	    (eq gnus-picons-display-where 'picons))
        '(frame 1.0
 	       (vertical 1.0
 			 (summary 0.25 point)

@@ -381,6 +381,7 @@ call it with the value of the `gnus-data' text property."
   (unless (face-differs-from-default-p 'underline)
     (funcall (intern "set-face-underline-p") 'underline t))
 
+  (fset 'gnus-characterp 'characterp)
   (fset 'gnus-make-overlay 'make-extent)
   (fset 'gnus-overlay-put 'set-extent-property)
   (fset 'gnus-move-overlay 'gnus-xmas-move-overlay)
@@ -720,8 +721,8 @@ If HIDE, hide the text instead."
 	(setq beg (point))
 	(forward-char)
 	(if hide
-	    (article-hide-text beg (point) gnus-hidden-properties)
-	  (article-unhide-text beg (point)))
+	    (gnus-article-hide-text beg (point) gnus-hidden-properties)
+	  (gnus-article-unhide-text beg (point)))
 	(setq beg (point)))
       (save-window-excursion
 	(select-window (get-buffer-window (current-buffer)))
