@@ -1550,7 +1550,15 @@ newsgroup."
 		  (setcdr (assoc method retrievegroups)
 			  (cons group (cdr (assoc method retrievegroups))))
 		(push (list method group) retrievegroups))
-	    (if (member method scanned-methods)
+	    ;; hack: `nnmail-get-new-mail' changes the mail-source depending
+	    ;; on the group, so we must perform a scan for every group
+	    ;; if the users has any directory mail sources.
+	    (if (and (null (assq 'directory
+				 (or mail-sources
+				     (if (listp nnmail-spool-file) 
+					 nnmail-spool-file
+				       (list nnmail-spool-file)))))
+		     (member method scanned-methods))
 		(setq active (gnus-activate-group group))
 	      (setq active (gnus-activate-group group 'scan))
 	      (push method scanned-methods))

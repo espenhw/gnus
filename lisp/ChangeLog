@@ -1,3 +1,10 @@
+1999-12-09  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-start.el (gnus-get-unread-articles): Make sure all methods
+	are scanned when we have directory mail-sources (the mail source
+	is modified in that case, so we must scan it for all
+	groups/methods).
+
 1999-12-09 12:05:28  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnml.el (nnml-request-move-article): Save nnml-current-directory
