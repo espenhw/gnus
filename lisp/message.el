@@ -1637,6 +1637,7 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
     (setq adaptive-fill-first-line-regexp nil))
   (make-local-variable 'adaptive-fill-first-line-regexp)
   (make-local-variable 'auto-fill-inhibit-regexp)
+  (make-local-variable 'normal-auto-fill-function)
   (let ((quote-prefix-regexp
 	 ;; User should change message-cite-prefix-regexp if
 	 ;; message-yank-prefix is set to an abnormal value.
@@ -1658,7 +1659,7 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 		  adaptive-fill-first-line-regexp))
     ;;(setq auto-fill-inhibit-regexp "^[A-Z][^: \n\t]+:")
     (setq auto-fill-inhibit-regexp nil)
-    (setq auto-fill-function 'message-do-auto-fill)))
+    (setq normal-auto-fill-function 'message-do-auto-fill)))
 
 
 

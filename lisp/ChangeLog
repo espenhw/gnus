@@ -1,3 +1,9 @@
+2001-10-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Katsumi Yamaoka  <yamaoka@jpl.org>.
+
+	* message.el (message-setup-fill-variables): Use
+	`normal-auto-fill-function' instead of `auto-fill-function'.
+
 2001-10-16  Simon Josefsson  <jas@extundo.com>
 
 	* mml2015.el (mml2015-fix-micalg): Fix for Mutt-bug.
