@@ -1,3 +1,8 @@
+2003-01-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* mml.el (mml-preview): Get rid of MIME handles and buffers after
+	previewing.
+
 2003-01-08  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir--grp-add-art): Fix wrong-type-argument

@@ -1068,6 +1068,10 @@ If RAW, don't highlight the article."
 	    (gnus-article-prepare-display))))
       ;; Disable article-mode-map.
       (use-local-map nil)
+      (make-local-hook 'kill-buffer-hook)
+      (add-hook 'kill-buffer-hook
+		(lambda ()
+		  (mm-destroy-parts gnus-article-mime-handles)) nil t)
       (setq buffer-read-only t)
       (local-set-key "q" (lambda () (interactive) (kill-buffer nil)))
       (goto-char (point-min)))))
