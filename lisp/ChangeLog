@@ -1,3 +1,8 @@
+2003-03-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-fetch): Fetch the local stuff.
+	(nnrss-check-group): Use it.
+
 2003-03-20 Mark A. Hershberger  <mah@everybody.org> 
 
 	* nnrss.el: Primitive XML Name-space support.  This means that RSS

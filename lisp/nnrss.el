@@ -240,13 +240,16 @@ ARTICLE is the article number of the current headline.")
 
 ;;; Internal functions
 (eval-when-compile (defun xml-rpc-method-call (&rest args)))
-(defun nnrss-fetch (url)
+(defun nnrss-fetch (url &optional local)
   "Fetch the url and put it in a the expected lisp structure."
   (with-temp-buffer
   ;some CVS versions of url.el need this to close the connection quickly
     (let* (xmlform htmlform)
       ;; bit o' work necessary for w3 pre-cvs and post-cvs
-      (mm-url-insert url)
+      (if local
+	  (let ((coding-system-for-read 'binary))
+	    (insert-file-contents url))
+	(mm-url-insert url))
 
 ;; Because xml-parse-region can't deal with anything that isn't
 ;; xml and w3-parse-buffer can't deal with some xml, we have to
@@ -404,7 +407,7 @@ ARTICLE is the article number of the current headline.")
 					(nnrss-translate-file-chars
 					 (concat group ".xml"))
 					nnrss-directory))))
-	(insert-file-contents file)
+	(nnrss-fetch file t)
       (setq url (or (nth 2 (assoc group nnrss-server-data))
 		    (second (assoc group nnrss-group-alist))))
       (unless url
