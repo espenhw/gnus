@@ -1,3 +1,8 @@
+2001-08-14  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-delay.el (gnus-delay-send-drafts): Fix check whether
+	deadline has expired.
+
 2001-08-12  Simon Josefsson  <jas@extundo.com>
 	Suggested by Kai.Grossjohann@CS.Uni-Dortmund.DE
 

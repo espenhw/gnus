@@ -101,9 +101,10 @@ DELAY is a string, giving the length of the time.  Possible values are:
   (interactive)
   (save-excursion
     (let* ((group (format "nndraft:%s" gnus-delay-group))
-	   (articles (nndraft-articles))
+	   articles
 	   article deadline)
       (gnus-activate-group group)
+      (setq articles (nndraft-articles))
       (while (setq article (pop articles))
 	(gnus-request-head article group)
 	(set-buffer nntp-server-buffer)
@@ -115,12 +116,11 @@ DELAY is a string, giving the length of the time.  Possible values are:
 	      (setq deadline (nnheader-header-value))
 	      (setq deadline (apply 'encode-time (parse-time-string deadline)))
 	      (setq deadline (time-since deadline))
- 	      (when (time-less-p (apply 'encode-time 
- 					(parse-time-string deadline))
- 				 (current-time))
-		(message "Sending article %d" article)
+ 	      (when (and (>= (nth 0 deadline) 0)
+			 (>= (nth 1 deadline) 0))
+		(message "Sending delayed article %d" article)
 		(gnus-draft-send article group)
-		(message "Sending article %d...done" article)))
+		(message "Sending delayed article %d...done" article)))
 	  (message "Delay header missing for article %d" article))))))
 
 ;;;###autoload
