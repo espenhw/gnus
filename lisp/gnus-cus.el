@@ -181,6 +181,15 @@ when expiring expirable messages.  The value can either be a number of
 days (not necessarily an integer) or the symbols `never' or
 `immediate'.")
 
+    (expiry-target (choice :tag "Expiry Target"
+                           :value delete
+                           (const delete)
+                           (function :format "%v" nnmail-)
+                           string) "\
+Where expired messages end up.
+
+Overrides `nnmail-expiry-target', which see.")
+
     (score-file (file :tag "Score File") "\
 Make the specified file into the current score file.
 This means that all score commands you issue will end up in this file.")

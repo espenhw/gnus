@@ -168,7 +168,13 @@ Eg.:
 		 (function :format "%v" nnmail-)))
 
 (defcustom nnmail-expiry-target 'delete
-  "*Variable that says where expired messages should end up."
+  "*Variable that says where expired messages should end up.
+The default value is `delete' (which says to delete the messages),
+but it can also be a string or a function.  If it is a string, expired
+messages end up in that group.  If it is a function, the function is
+called in a buffer narrowed to the message in question.  The function
+receives one argument, the name of the group the message comes from.
+The return value should be `delete' or a group name (a string)."
     :group 'nnmail-expire
     :type '(choice (const delete)
 		   (function :format "%v" nnmail-)
