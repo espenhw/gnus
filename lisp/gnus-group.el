@@ -412,11 +412,14 @@ For example:
   :group 'gnus-charset
   :type '(repeat (cons (regexp :tag "Group") (symbol :tag "Charset"))))
 
-(defvar gnus-group-jump-to-group-prompt nil
-  "GNUS-GROUP-JUMP-TO-GROUP prompt.
+(defcustom gnus-group-jump-to-group-prompt nil
+  "Default prompt for `gnus-group-jump-to-group'.
 If non-nil, the value should be a string, e.g. \"nnml:\",
-in which case GNUS-GROUP-JUMP-TO-GROUP offers \"Group: nnml:\"
-in the minibuffer prompt.")
+in which case `gnus-group-jump-to-group' offers \"Group: nnml:\"
+in the minibuffer prompt."
+  :group 'gnus-group-various
+  :type '(choice (string :tag "Prompt string")
+                 (const :tag "Empty" nil)))
 
 ;;; Internal variables
 
