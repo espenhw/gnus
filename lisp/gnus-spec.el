@@ -1,4 +1,4 @@
-;;; gnus-spec.el --- format spec functions for Gnus  -*- coding: iso-latin-1 -*-
+;;; gnus-spec.el --- format spec functions for Gnus
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
@@ -675,7 +675,7 @@ If PROPS, insert the result."
 (provide 'gnus-spec)
 
 ;; Local Variables:
-;; coding: iso-8859-1
+;; buffer-file-coding-system: iso-8859-1
 ;; End:
 
 ;;; gnus-spec.el ends here

@@ -1,4 +1,4 @@
-;;; gnus-delay.el --- Delayed posting of articles -*- coding: latin-1; -*-
+;;; gnus-delay.el --- Delayed posting of articles
 
 ;; Copyright (C) 2001  Free Software Foundation, Inc.
 
@@ -179,4 +179,9 @@ Checking delayed messages is skipped if optional arg NO-CHECK is non-nil."
     (add-hook 'gnus-get-new-news-hook 'gnus-delay-send-drafts)))
 
 (provide 'gnus-delay)
+
+;; Local Variables:
+;; buffer-file-coding-system: latin-1
+;; End:
+
 ;;; gnus-delay.el ends here

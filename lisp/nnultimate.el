@@ -1,4 +1,4 @@
-;;; nnultimate.el --- interfacing with the Ultimate Bulletin Board system -*- coding: iso-latin-1 -*-
+;;; nnultimate.el --- interfacing with the Ultimate Bulletin Board system
 
 ;; Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
@@ -473,7 +473,7 @@
 (provide 'nnultimate)
 
 ;; Local Variables:
-;; coding: iso-8859-1
+;; buffer-file-coding-system: iso-8859-1
 ;; End:
 
 ;;; nnultimate.el ends here

@@ -1,4 +1,4 @@
-;;; gnus-cite.el --- parse citations in articles for Gnus  -*- coding: iso-latin-1 -*-
+;;; gnus-cite.el --- parse citations in articles for Gnus
 
 ;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
@@ -1004,7 +1004,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 (provide 'gnus-cite)
 
 ;; Local Variables:
-;; coding: iso-8859-1
+;; buffer-file-coding-system: iso-8859-1
 ;; End:
 
 ;;; gnus-cite.el ends here
