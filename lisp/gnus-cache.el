@@ -428,8 +428,7 @@ Returns the list of articles removed."
 
 (defun gnus-cache-articles-in-group (group)
   "Return a sorted list of cached articles in GROUP."
-  (let ((dir (file-name-directory (gnus-cache-file-name group 1)))
-	articles)
+  (let ((dir (file-name-directory (gnus-cache-file-name group 1))))
     (when (file-exists-p dir)
       (sort (mapcar (lambda (name) (string-to-int name)) 
 		    (directory-files dir nil "^[0-9]+$" t))

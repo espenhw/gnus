@@ -596,8 +596,6 @@ The SOUP packet file name will be inserted at the %s.")
   (require 'mail-utils)
   (let ((tembuf (generate-new-buffer " message temp"))
 	(case-fold-search nil)
-	(news (message-news-p))
-	(resend-to-addresses (mail-fetch-field "resent-to"))
 	delimline
 	(mailbuf (current-buffer)))
     (unwind-protect

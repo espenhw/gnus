@@ -43,7 +43,7 @@
     "turquoise"))
 
 (defvar gnus-face-dark-name-list
-  '("dark blue" "firebrick" "dark green" "OrangeRed" 
+  '("MidnightBlue" "firebrick" "dark green" "OrangeRed" 
     "dark khaki" "dark violet" "SteelBlue4"))
 ; CornflowerBlue SeaGreen OrangeRed SteelBlue4 DeepPink3
 ; DarkOlviveGreen4 

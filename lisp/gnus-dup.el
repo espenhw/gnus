@@ -94,8 +94,7 @@ seen in the same session.")
   "Enter articles from the current group for future duplicate suppression."
   (unless gnus-dup-list
     (gnus-dup-open))
-  (let ((data gnus-newsgroup-data)
-	id)
+  (let ((data gnus-newsgroup-data))
     ;; Enter the Message-IDs of all read articles into the list
     ;; and hash table.
     (while data

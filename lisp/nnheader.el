@@ -151,7 +151,7 @@ on your system, you could say something like:
   (let ((case-fold-search t)
 	(cur (current-buffer))
 	(buffer-read-only nil)
-	end ref in-reply-to lines p)
+	in-reply-to lines p)
     (goto-char (point-min))
     (when naked
       (insert "\n"))

@@ -1,3 +1,39 @@
+Sun Sep  1 05:45:59 1996  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Removed unreferenced let bindings from all files. 
+
+Sun Sep  1 02:10:28 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el ((load)): Only do the initial splash on "gnus"
+	commands. 
+
+	* gnus-cus.el (gnus-face-dark-name-list): Don't use "dark blue".
+
+	* nntp.el (nntp-retrieve-headers): Would infloop sometimes.
+
+	* gnus-group.el (gnus-group-insert-group-line-info): Indent
+	properly. 
+
+	* gnus-sum.el (gnus-gather-threads-by-references): Avoid
+	infloops. 
+
+	* gnus-salt.el (gnus-mouse-pick): Changed name.
+
+	* nntp.el (nntp-retrieve-groups): Didn't do the right thing on
+	servers that don't support LIST ACTIVE.
+
+	* gnus-win.el (gnus-current-window-configuration): New variable.
+	(gnus-configure-windows): Use it.
+
+	* gnus-art.el (gnus-article-read-summary-keys): Let `C-d' work
+	properly. 
+
+	* gnus-sum.el (gnus-list-of-unread-articles): Active group.
+
+Sat Aug 31 05:05:14 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.21 is released.
+
 Sat Aug 31 02:54:39 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus-topic.el (gnus-topic-goto-next-group): Go to the proper

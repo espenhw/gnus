@@ -428,6 +428,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
 ;;; Internal variables
 
+(defvar gnus-group-get-parameter-function 'gnus-group-get-parameter)
 (defvar gnus-original-article-buffer " *Original Article*")
 (defvar gnus-newsgroup-name nil)
 
@@ -565,7 +566,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("hexl" hexl-hex-string-to-integer)
      ("pp" pp pp-to-string pp-eval-expression)
      ("mail-extr" mail-extract-address-components)
-     ("nnmail" nnmail-split-fancy nnmail-article-group)
+     ("nnmail" nnmail-split-fancy nnmail-article-group nnmail-date-to-time)
      ("nnvirtual" nnvirtual-catchup-group nnvirtual-convert-headers)
      ("timezone" timezone-make-date-arpa-standard timezone-fix-time
       timezone-make-sortable-date timezone-make-time-string)
@@ -657,7 +658,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("gnus-sum" gnus-summary-insert-line gnus-summary-read-group
       gnus-list-of-unread-articles gnus-list-of-read-articles
       gnus-offer-save-summaries gnus-make-thread-indent-array
-      gnus-summary-exit)
+      gnus-summary-exit gnus-update-read-articles)
      ("gnus-group" gnus-group-insert-group-line gnus-group-quit
       gnus-group-list-groups gnus-group-first-unread-group
       gnus-group-set-mode-line gnus-group-set-info gnus-group-save-newsrc

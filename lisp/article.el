@@ -704,7 +704,6 @@ how much time has lapsed since DATE."
 	 (date (if (vectorp header) (mail-header-date header)
 		 header))
 	 (date-regexp "^Date: \\|^X-Sent: ")
-	 (now (current-time))
 	 (inhibit-point-motion-hooks t)
 	 bface eface)
     (when (and date (not (string= date "")))

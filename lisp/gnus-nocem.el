@@ -97,29 +97,28 @@ isn't bound, the message will be used unconditionally.")
 	  ;; headers.
 	  (save-excursion
 	    (let ((dependencies (make-vector 10 nil))
-		  (buffer (nnheader-set-temp-buffer " *Gnus NoCeM*"))
 		  headers)
-	      (setq headers
-		    (if (eq 'nov
-			    (gnus-retrieve-headers 
-			     (setq articles
-				   (gnus-uncompress-range
-				    (cons 
-				     (if active (1+ (cdr active)) 
-				       (car gactive))
-				     (cdr gactive))))
-			     group))
-			(gnus-get-newsgroup-headers-xover 
-			 articles nil dependencies)
-		      (gnus-get-newsgroup-headers dependencies)))
-	      (while headers
-		;; We take a closer look on all articles that have
-		;; "@@NCM" in the subject.  
-		(when (string-match "@@NCM"
-				    (mail-header-subject (car headers)))
-		  (gnus-nocem-check-article group (car headers)))
-		(setq headers (cdr headers)))
-	      (kill-buffer (current-buffer)))))
+	      (nnheader-temp-write nil
+		(setq headers
+		      (if (eq 'nov
+			      (gnus-retrieve-headers 
+			       (setq articles
+				     (gnus-uncompress-range
+				      (cons 
+				       (if active (1+ (cdr active)) 
+					 (car gactive))
+				       (cdr gactive))))
+			       group))
+			  (gnus-get-newsgroup-headers-xover 
+			   articles nil dependencies)
+			(gnus-get-newsgroup-headers dependencies)))
+		(while headers
+		  ;; We take a closer look on all articles that have
+		  ;; "@@NCM" in the subject.  
+		  (when (string-match "@@NCM"
+				      (mail-header-subject (car headers)))
+		    (gnus-nocem-check-article group (car headers)))
+		  (setq headers (cdr headers)))))))
 	(setq gnus-nocem-active
 	      (cons (list group gactive) 
 		    (delq (assoc group gnus-nocem-active)

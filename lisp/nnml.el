@@ -161,7 +161,7 @@ all. This may very well take some time.")
 (deffoo nnml-request-article (id &optional newsgroup server buffer)
   (nnml-possibly-change-directory newsgroup server)
   (let* ((nntp-server-buffer (or buffer nntp-server-buffer))
-	 file path gpath group-num)
+	 path gpath group-num)
     (if (stringp id)
 	(when (and (setq group-num (nnml-find-group-number id))
 		   (setq file (cdr
@@ -343,7 +343,7 @@ all. This may very well take some time.")
     (nnml-possibly-create-directory group)
     (let ((chars (nnmail-insert-lines))
 	  (art (concat (int-to-string article) "\t"))
-	  headers file)
+	  headers)
       (when (condition-case ()
 		(progn
 		  (nnmail-write-region 
@@ -740,7 +740,7 @@ all. This may very well take some time.")
   (let* ((dir (file-name-as-directory dir))
 	 (nov (concat dir nnml-nov-file-name))
 	 (nov-buffer (get-buffer-create " *nov*"))
-	 nov-line chars file headers)
+	 chars file headers)
     (save-excursion
       ;; Init the nov buffer.
       (set-buffer nov-buffer)

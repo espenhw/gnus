@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.21"
+(defconst gnus-version-number "0.22"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -108,7 +108,8 @@
   (set-buffer-modified-p t))
 
 (eval-when (load)
-  (gnus-splash))
+  (when (string-match "gnus" (format "%s" this-command))
+    (gnus-splash)))
 
 ;;; Do the rest.
 

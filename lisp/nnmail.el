@@ -384,7 +384,7 @@ parameter.  It should return nil, `warn' or `delete'.")
   "Move INBOX to `nnmail-crash-box'."
   (let ((inbox (file-truename (expand-file-name inbox)))
 	(tofile (file-truename (expand-file-name nnmail-crash-box)))
-	movemail popmail errors password)
+	movemail popmail errors)
     ;; If getting from mail spool directory,
     ;; use movemail to move rather than just renaming,
     ;; so as to interlock with the mailer.

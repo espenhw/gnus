@@ -2379,16 +2379,17 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(thhashtb (gnus-make-hashtable 1023))
 	(prev threads)
 	(result threads)
-	ids references id gthread gid entered)
+	ids references id gthread gid entered ref)
     (while threads
       (when (setq references (mail-header-references (caar threads)))
 	(setq id (mail-header-id (caar threads))
 	      ids (gnus-split-references references)
 	      entered nil)
-	(while ids
-	  (if (not (setq gid (gnus-gethash (car ids) idhashtb)))
+	(while (setq ref (pop ids))
+	  (setq ids (delete ref ids))
+	  (if (not (setq gid (gnus-gethash ref idhashtb)))
 	      (progn
-		(gnus-sethash (car ids) id idhashtb)
+		(gnus-sethash ref id idhashtb)
 		(gnus-sethash id threads thhashtb))
 	    (setq gthread (gnus-gethash gid thhashtb))
 	    (unless entered
@@ -2406,8 +2407,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	    (setq entered t)
 	    ;; Remove it from the list of threads.
 	    (setcdr prev (cdr threads))
-	    (setq threads prev))
-	  (setq ids (cdr ids))))
+	    (setq threads prev))))
       (setq prev threads)
       (setq threads (cdr threads)))
     result))
@@ -4220,7 +4220,7 @@ displayed, no centering will be performed."
 ;; the range of active articles.
 (defun gnus-list-of-unread-articles (group)
   (let* ((read (gnus-info-read (gnus-get-info group)))
-	 (active (gnus-active group))
+	 (active (or (gnus-active group) (gnus-activate-group group)))
 	 (last (cdr active))
 	 first nlast unread)
     ;; If none are read, then all are unread.
@@ -4413,7 +4413,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	  (bury-buffer gnus-article-buffer))
 	;; We clear the global counterparts of the buffer-local
 	;; variables as well, just to be on the safe side.
-	(gnus-configure-windows 'group 'force)
+	(set-buffer gnus-group-buffer)
 	(gnus-summary-clear-local-variables)
 	;; Return to group mode buffer.
 	(if (eq mode 'gnus-summary-mode)
@@ -4429,9 +4429,13 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	(if (not (buffer-name (car quit-config)))
 	    (gnus-configure-windows 'group 'force)
 	  (set-buffer (car quit-config))
-	  (and (eq major-mode 'gnus-summary-mode)
-	       (gnus-set-global-variables))
-	  (gnus-configure-windows (cdr quit-config))))
+	  (cond ((eq major-mode 'gnus-summary-mode)
+		 (gnus-set-global-variables))
+		((eq major-mode 'gnus-article-mode)
+		 (save-excursion
+		   (set-buffer gnus-summary-buffer)
+		   (gnus-set-global-variables))))
+	  (gnus-configure-windows (cdr quit-config) 'force)))
       (unless quit-config
 	(setq gnus-newsgroup-name nil)))))
 
@@ -5578,11 +5582,14 @@ If FORCE, force a digest interpretation.  If not, try
 to guess what the document format is."
   (interactive "P")
   (gnus-set-global-variables)
-  (gnus-summary-select-article)
+  (save-excursion
+    (gnus-summary-select-article))
   (let* ((name (format "%s-%d"
 		       (gnus-group-prefixed-name
 			gnus-newsgroup-name (list 'nndoc ""))
-		       gnus-current-article))
+		       (save-excursion
+			 (set-buffer gnus-summary-buffer)
+			 gnus-current-article)))
 	 (ogroup gnus-newsgroup-name)
 	 (params (append (gnus-info-params (gnus-get-info ogroup))
 			 (list (cons 'to-group ogroup))))
@@ -5592,6 +5599,8 @@ to guess what the document format is."
     (save-excursion
       (setq dig (nnheader-set-temp-buffer " *gnus digest buffer*"))
       (insert-buffer-substring gnus-original-article-buffer)
+      ;; Remove lines that may lead nndoc to misinterpret the
+      ;; document type.
       (narrow-to-region
        (goto-char (point-min))
        (or (search-forward "\n\n" nil t) (point)))
@@ -5709,9 +5718,6 @@ Optional argument BACKWARD means do search for backward.
 	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
 	(gnus-use-article-prefetch nil)
-	(re-search
-	 (if backward
-	     're-search-backward 're-search-forward))
 	(sum (current-buffer))
 	(found nil)
 	point)
@@ -7257,34 +7263,6 @@ Return the article number moved to, or nil if moving was impossible."
 	  (gnus-summary-article-number)
 	(goto-char beg)))))
 
-(defun gnus-summary-go-to-next-thread-old (&optional previous)
-  "Go to the same level (or less) next thread.
-If PREVIOUS is non-nil, go to previous thread instead.
-Return the article number moved to, or nil if moving was impossible."
-  (if (and (eq gnus-summary-make-false-root 'dummy)
-	   (gnus-summary-article-intangible-p))
-      (let ((beg (point)))
-	(while (and (zerop (forward-line 1))
-		    (not (gnus-summary-article-intangible-p))
-		    (not (zerop (save-excursion 
-				  (gnus-summary-thread-level))))))
-	(if (eobp)
-	    (progn
-	      (goto-char beg)
-	      nil)
-	  (point)))
-    (let* ((level (gnus-summary-thread-level))
-	   (article (gnus-summary-article-number))
-	   (data (cdr (gnus-data-find-list article (gnus-data-list previous))))
-	   oart)
-      (while data
-	(if (<= (gnus-data-level (car data)) level)
-	    (setq oart (gnus-data-number (car data))
-		  data nil)
-	  (setq data (cdr data))))
-      (and oart
-	   (gnus-summary-goto-subject oart)))))
-
 (defun gnus-summary-next-thread (n &optional silent)
   "Go to the same level next N'th thread.
 If N is negative, search backward instead.
@@ -7295,8 +7273,7 @@ If SILENT, don't output messages."
   (interactive "p")
   (gnus-set-global-variables)
   (let ((backward (< n 0))
-	(n (abs n))
-	old dum int)
+	(n (abs n)))
     (while (and (> n 0)
 		(gnus-summary-go-to-next-thread backward))
       (decf n))
@@ -7876,6 +7853,49 @@ save those articles instead."
 	(when gnus-summary-highlight-line-function
 	  (funcall gnus-summary-highlight-line-function article face))))
     (goto-char p)))
+
+(defun gnus-update-read-articles (group unread)
+  "Update the list of read articles in GROUP."
+  (let* ((active (or gnus-newsgroup-active (gnus-active group)))
+	 (entry (gnus-gethash group gnus-newsrc-hashtb))
+	 (info (nth 2 entry))
+	 (prev 1)
+	 (unread (sort (copy-sequence unread) '<))
+	 read)
+    (if (or (not info) (not active))
+	;; There is no info on this group if it was, in fact,
+	;; killed.  Gnus stores no information on killed groups, so
+	;; there's nothing to be done.
+	;; One could store the information somewhere temporarily,
+	;; perhaps...  Hmmm...
+	()
+      ;; Remove any negative articles numbers.
+      (while (and unread (< (car unread) 0))
+	(setq unread (cdr unread)))
+      ;; Remove any expired article numbers
+      (while (and unread (< (car unread) (car active)))
+	(setq unread (cdr unread)))
+      ;; Compute the ranges of read articles by looking at the list of
+      ;; unread articles.
+      (while unread
+	(if (/= (car unread) prev)
+	    (setq read (cons (if (= prev (1- (car unread))) prev
+			       (cons prev (1- (car unread)))) read)))
+	(setq prev (1+ (car unread)))
+	(setq unread (cdr unread)))
+      (when (<= prev (cdr active))
+	(setq read (cons (cons prev (cdr active)) read)))
+      (gnus-undo-register
+	`(progn
+	   (gnus-info-set-marks ,info ,(gnus-info-marks info))
+	   (gnus-info-set-read ,info ,(gnus-info-read info))
+	   (gnus-get-unread-articles-in-group ,info (gnus-active ,group))))
+      ;; Enter this list into the group info.
+      (gnus-info-set-read
+       info (if (> (length read) 1) (nreverse read) read))
+      ;; Set the number of unread articles in gnus-newsrc-hashtb.
+      (gnus-get-unread-articles-in-group info (gnus-active group))
+      t)))
 
 (provide 'gnus-sum)
 

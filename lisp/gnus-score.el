@@ -1712,7 +1712,7 @@ SCORE is the score to add."
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	;; gnus-score-index is used as a free variable.
-	alike last this art entries alist articles scores 
+	alike last this art entries alist articles 
 	fuzzies arts words kill)
 
     ;; Sorting the articles costs os O(N*log N) but will allow us to

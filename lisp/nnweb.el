@@ -477,7 +477,7 @@
 	(let ((i 0)
 	      (more t)
 	      (case-fold-search t)
-	      subject score date newsgroups from id
+	      subject date from id group
 	      map url)
 	  (while more
 	    ;; Go through all the article hits on this page.
@@ -515,8 +515,7 @@
 
 (defun nnweb-altavista-wash-article ()
   (goto-char (point-min))
-  (let ((case-fold-search t)
-	subject)
+  (let ((case-fold-search t))
     (when (re-search-forward "<H1>\\(.*\\)</H1>" nil t)
       (setq subject (match-string 1)))
     (re-search-forward "^<strong>" nil t)

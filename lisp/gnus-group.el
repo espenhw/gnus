@@ -199,7 +199,6 @@ variable.")
 (defvar gnus-group-indentation-function nil)
 (defvar gnus-goto-missing-group-function nil)
 (defvar gnus-group-update-group-function nil)
-(defvar gnus-group-get-parameter-function 'gnus-group-get-parameter)
 (defvar gnus-group-goto-next-group-function nil
   "Function to override finding the next group after listing groups.")
 
@@ -809,6 +808,7 @@ If REGEXP, only list groups matching REGEXP."
 (defun gnus-group-insert-group-line-info (group)
   "Insert GROUP on the current line."
   (let ((entry (gnus-gethash group gnus-newsrc-hashtb))
+	(gnus-group-indentation (gnus-group-group-indentation))
 	active info)
     (if entry
 	(progn
@@ -1180,7 +1180,7 @@ Return nil if the group isn't displayed."
   "Perform any command on all groups accoring to the process/prefix convention."
   (interactive "P")
   (let ((groups (or groups (gnus-group-process-prefix arg)))
-	group func)
+	func)
     (if (eq (setq func (or func
 			   (key-binding
 			    (read-key-sequence
@@ -1189,7 +1189,7 @@ Return nil if the group isn't displayed."
 	    'undefined)
 	(gnus-error 1 "Undefined key")
       (while groups
-	(gnus-group-remove-mark (setq group (pop groups)))
+	(gnus-group-remove-mark (pop groups))
 	(command-execute func))))
   (gnus-group-position-point))
 
@@ -1320,9 +1320,12 @@ Return the name of the group is selection was successful."
 		 (gnus-group-prefixed-name group method))))
     (gnus-sethash
      group
-     `(-1 nil (,group ,gnus-level-default-subscribed nil nil ,method
-		     ((quit-config . ,(if quit-config quit-config
-					(cons (current-buffer) 'summary))))))
+     `(-1 nil (,group 
+	       ,gnus-level-default-subscribed nil nil ,method
+	       ((quit-config .
+			     ,(if quit-config quit-config
+				(cons (current-buffer) 
+				      gnus-current-window-configuration))))))
      gnus-newsrc-hashtb)
     (set-buffer gnus-group-buffer)
     (unless (gnus-check-server method)
@@ -2922,49 +2925,6 @@ and the second element is the address."
 	  (setcdr m (gnus-compress-sequence
 		     (sort (nconc (gnus-uncompress-range (cdr m))
 				  (copy-sequence articles)) '<) t))))))
-
-(defun gnus-update-read-articles (group unread)
-  "Update the list of read articles in GROUP."
-  (let* ((active (or gnus-newsgroup-active (gnus-active group)))
-	 (entry (gnus-gethash group gnus-newsrc-hashtb))
-	 (info (nth 2 entry))
-	 (prev 1)
-	 (unread (sort (copy-sequence unread) '<))
-	 read)
-    (if (or (not info) (not active))
-	;; There is no info on this group if it was, in fact,
-	;; killed.  Gnus stores no information on killed groups, so
-	;; there's nothing to be done.
-	;; One could store the information somewhere temporarily,
-	;; perhaps...  Hmmm...
-	()
-      ;; Remove any negative articles numbers.
-      (while (and unread (< (car unread) 0))
-	(setq unread (cdr unread)))
-      ;; Remove any expired article numbers
-      (while (and unread (< (car unread) (car active)))
-	(setq unread (cdr unread)))
-      ;; Compute the ranges of read articles by looking at the list of
-      ;; unread articles.
-      (while unread
-	(if (/= (car unread) prev)
-	    (setq read (cons (if (= prev (1- (car unread))) prev
-			       (cons prev (1- (car unread)))) read)))
-	(setq prev (1+ (car unread)))
-	(setq unread (cdr unread)))
-      (when (<= prev (cdr active))
-	(setq read (cons (cons prev (cdr active)) read)))
-      (gnus-undo-register
-	`(progn
-	   (gnus-info-set-marks ,info ,(gnus-info-marks info))
-	   (gnus-info-set-read ,info ,(gnus-info-read info))
-	   (gnus-get-unread-articles-in-group ,info (gnus-active ,group))))
-      ;; Enter this list into the group info.
-      (gnus-info-set-read
-       info (if (> (length read) 1) (nreverse read) read))
-      ;; Set the number of unread articles in gnus-newsrc-hashtb.
-      (gnus-get-unread-articles-in-group info (gnus-active group))
-      t)))
 
 (provide 'gnus-group)
 

@@ -45,6 +45,7 @@
 ;;; Code:
 
 (require 'gnus-util)
+(require 'gnus)
 
 (defvar gnus-undo-mode nil
   "Minor mode for undoing in Gnus buffers.")

@@ -187,6 +187,7 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 	    (count 0)
 	    (received 0)
 	    (last-point (point-min))
+	    (buf (nntp-find-connection-buffer nntp-server-buffer))
 	    (nntp-inhibit-erase t))
 	;; Send HEAD command.
 	(while articles
@@ -205,10 +206,12 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 		    (zerop (% count nntp-maximum-request)))
 	    (nntp-accept-response)
 	    (while (progn
-		     (goto-char last-point)
+		     (progn
+		       (set-buffer buf)
+		       (goto-char last-point))
 		     ;; Count replies.
 		     (while (re-search-forward "^[0-9]" nil t)
-		       (setq received (1+ received)))
+		       (incf received))
 		     (setq last-point (point))
 		     (< received count))
 	      ;; If number of headers is greater than 100, give
@@ -257,9 +260,8 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 	  (command (if nntp-server-list-active-group "LIST ACTIVE" "GROUP")))
       (while groups
 	;; Send the command to the server.
-	(nntp-send-command nil command (car groups))
-	(setq groups (cdr groups))
-	(setq count (1+ count))
+	(nntp-send-command nil command (pop groups))
+	(incf count)
 	;; Every 400 requests we have to read the stream in
 	;; order to avoid deadlocks.
 	(when (or (null groups)		;All requests have been sent.
@@ -269,22 +271,21 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 		   (goto-char last-point)
 		   ;; Count replies.
 		   (while (re-search-forward "^[0-9]" nil t)
-		     (setq received (1+ received)))
+		     (incf received))
 		   (setq last-point (point))
 		   (< received count))
 	    (nntp-accept-response))))
 
       ;; Wait for the reply from the final command.
-      (when nntp-server-list-active-group
-	(goto-char (point-max))
-	(re-search-backward "^[0-9]" nil t)
-	(when (looking-at "^[23]")
-	  (while (progn
-		   (goto-char (point-max))
-		   (if (equal command "GROUP")
-		       (not (re-search-backward "\r?\n" (- (point) 3) t))
-		     (not (re-search-backward "^\\.\r?\n" (- (point) 4) t))))
-	    (nntp-accept-response))))
+      (goto-char (point-max))
+      (re-search-backward "^[0-9]" nil t)
+      (when (looking-at "^[23]")
+	(while (progn
+		 (goto-char (point-max))
+		 (if (not nntp-server-list-active-group)
+		     (not (re-search-backward "\r?\n" (- (point) 3) t))
+		   (not (re-search-backward "^\\.\r?\n" (- (point) 4) t))))
+	  (nntp-accept-response)))
 
       ;; Now all replies are received. We remove CRs.
       (goto-char (point-min))
@@ -292,7 +293,9 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 	(replace-match "" t t))
 
       (if (not nntp-server-list-active-group)
-	  'group
+	  (progn
+	    (copy-to-buffer nntp-server-buffer (point-min) (point-max))
+	    'group)
 	;; We have read active entries, so we just delete the
 	;; superfluos gunk.
 	(goto-char (point-min))

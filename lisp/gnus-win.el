@@ -183,6 +183,11 @@ buffer configuration.")
     (draft . gnus-draft-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")
 
+(defvar gnus-current-window-configuration nil
+  "The most recently set window configuration.")
+
+;;; Internal variables.
+
 (defvar gnus-created-frames nil)
 
 (defun gnus-kill-gnus-frames ()
@@ -381,6 +386,7 @@ buffer configuration.")
 (defvar gnus-frame-split-p nil)
 
 (defun gnus-configure-windows (setting &optional force)
+  (setq gnus-current-window-configuration setting)
   (setq setting (gnus-windows-old-to-new setting))
   (let ((split (if (symbolp setting)
 		   (cadr (assq setting gnus-buffer-configuration))

@@ -380,7 +380,7 @@ virtual group.")
 (defun nnvirtual-create-mapping ()
   "Create an article mapping for the current group."
   (let* ((div nil)
-	 m marks list article unreads marks active
+	 m unreads marks active 
 	 (map (sort
 	       (apply 
 		'nconc
@@ -409,7 +409,7 @@ virtual group.")
     (setq nnvirtual-mapping map)
     ;; Set the virtual article numbers.
     (while (setq m (pop map))
-      (setcar m (setq article (incf i))))))
+      (setcar m (incf i)))))
 
 (provide 'nnvirtual)
 

@@ -33,7 +33,8 @@
 (require 'nnheader)
 (require 'nnmail)
 (require 'nnoo)
-(eval-when-compile (require 'cl))
+(require 'gnus-util)
+(require 'cl)
 
 (nnoo-declare nneething)
 

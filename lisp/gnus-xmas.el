@@ -583,10 +583,9 @@ pounce directly on the real variables themselves.")
     (and (search-forward "Praxis" nil t)
 	 (put-text-property (match-beginning 0) (match-end 0) 'face 'bold))
     (goto-char (point-min))
-    (let* ((mode-string (gnus-group-set-mode-line)))
-      (setq modeline-buffer-identification 
-	    (list (concat gnus-version ": *Group*")))
-      (set-buffer-modified-p t))))
+    (setq modeline-buffer-identification 
+	  (list (concat gnus-version ": *Group*")))
+    (set-buffer-modified-p t)))
 
 
 ;;; The toolbar.

@@ -70,7 +70,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
    "b" gnus-uu-mark-buffer
    "B" gnus-uu-unmark-buffer
    "." gnus-pick-article
-   gnus-mouse-2 gnus-mouse-pick-article
+   gnus-mouse-2 gnus-pick-mouse-pick
    "\r" gnus-pick-start-reading))
 
 (defun gnus-pick-make-menu-bar ()
@@ -154,7 +154,7 @@ If ARG, pick the article on that line instead."
 	(goto-char pos))))
   (gnus-summary-mark-as-processable 1))
 
-(defun gnus-mouse-pick-article (e)
+(defun gnus-pick-mouse-pick (e)
   (interactive "e")
   (mouse-set-point e)
   (save-excursion

@@ -158,7 +158,6 @@
 
 (defun nnoo-change-server (backend server defs)
   (let* ((bstate (cdr (assq backend nnoo-state-alist)))
-	 (sdefs (assq backend nnoo-definition-alist))
 	 (current (car bstate))
 	 (parents (nnoo-parents backend))
 	 state)

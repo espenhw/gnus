@@ -491,7 +491,9 @@ If variable `gnus-use-long-file-name' is non-nil, it is
     "<" beginning-of-buffer
     ">" end-of-buffer
     "\C-c\C-i" gnus-info-find-node
-    "\C-c\C-b" gnus-bug)
+    "\C-c\C-b" gnus-bug
+
+    "\C-d" gnus-article-read-summary-keys)
 
   (substitute-key-definition
    'undefined 'gnus-article-read-summary-keys gnus-article-mode-map))
@@ -545,15 +547,14 @@ commands:
   (setq mode-name "Article")
   (setq major-mode 'gnus-article-mode)
   (make-local-variable 'minor-mode-alist)
-  (or (assq 'gnus-show-mime minor-mode-alist)
-      (setq minor-mode-alist
-	    (cons (list 'gnus-show-mime " MIME") minor-mode-alist)))
+  (unless (assq 'gnus-show-mime minor-mode-alist)
+    (push (list 'gnus-show-mime " MIME") minor-mode-alist))
   (use-local-map gnus-article-mode-map)
   (gnus-update-format-specifications nil 'article-mode)
   (set (make-local-variable 'page-delimiter) gnus-page-delimiter)
   (gnus-set-default-directory)
   (buffer-disable-undo (current-buffer))
-  (setq buffer-read-only t)		;Disable modification
+  (setq buffer-read-only t)
   (run-hooks 'gnus-article-mode-hook))
 
 (defun gnus-article-setup-buffer ()
@@ -572,8 +573,7 @@ commands:
 	(set-buffer gnus-summary-buffer)
 	(setq gnus-article-buffer name)
 	(setq gnus-original-article-buffer original)
-	(gnus-set-global-variables))
-      (make-local-variable 'gnus-summary-buffer))
+	(gnus-set-global-variables)))
     ;; Init original article buffer.
     (save-excursion
       (set-buffer (get-buffer-create gnus-original-article-buffer))
@@ -587,13 +587,14 @@ commands:
 	  (buffer-disable-undo (current-buffer))
 	  (setq buffer-read-only t)
 	  (gnus-add-current-to-buffer-list)
-	  (or (eq major-mode 'gnus-article-mode)
+	  (unless (eq major-mode 'gnus-article-mode)
 	      (gnus-article-mode))
 	  (current-buffer))
       (save-excursion
 	(set-buffer (get-buffer-create name))
 	(gnus-add-current-to-buffer-list)
 	(gnus-article-mode)
+	(make-local-variable 'gnus-summary-buffer)
 	(current-buffer)))))
 
 ;; Set article window start at LINE, where LINE is the number of lines
@@ -984,6 +985,8 @@ Argument LINES specifies lines to be scrolled down."
 	   "=" "^" "\M-^" "|"))
 	(nosave-but-article
 	 '("A\r"))
+	(nosave-in-article
+	 '("\C-d"))
 	keys)
     (save-excursion
       (set-buffer gnus-summary-buffer)
@@ -992,17 +995,20 @@ Argument LINES specifies lines to be scrolled down."
     (message "")
 
     (if (or (member keys nosaves)
-	    (member keys nosave-but-article))
+	    (member keys nosave-but-article)
+	    (member keys nosave-in-article))
 	(let (func)
 	  (save-window-excursion
 	    (pop-to-buffer gnus-summary-buffer 'norecord)
 	    (setq func (lookup-key (current-local-map) keys)))
 	  (if (not func)
 	      (ding)
-	    (set-buffer gnus-summary-buffer)
+	    (unless (member keys nosave-in-article)
+	      (set-buffer gnus-summary-buffer))
 	    (call-interactively func))
 	  (when (member keys nosave-but-article)
 	    (pop-to-buffer gnus-article-buffer 'norecord)))
+      ;; These commands should restore window configuration.
       (let ((obuf (current-buffer))
 	    (owin (current-window-configuration))
 	    (opoint (point))
@@ -1260,14 +1266,13 @@ groups."
 	(buf (current-buffer))
 	(start (window-start)))
     (gnus-article-edit-exit)
-    (let ((cur (current-buffer)))
-      (save-excursion
-	(set-buffer buf)
-	(let ((buffer-read-only nil))
-	  (funcall func)))
+    (save-excursion
       (set-buffer buf)
-      (set-window-start (get-buffer-window buf) start)
-      (set-window-point (get-buffer-window buf) (point)))))
+      (let ((buffer-read-only nil))
+	(funcall func)))
+    (set-buffer buf)
+    (set-window-start (get-buffer-window buf) start)
+    (set-window-point (get-buffer-window buf) (point))))
 
 (defun gnus-article-edit-exit ()
   "Exit the article editing without updating."
@@ -1575,8 +1580,7 @@ specified by `gnus-button-alist'."
 	  (goto-char beg)
 	  (while (re-search-forward (nth 1 entry) end t)
 	    ;; Each match within a header.
-	    (let* ((from (match-beginning 0))
-		   (entry (cdr entry))
+	    (let* ((entry (cdr entry))
 		   (start (match-beginning (nth 1 entry)))
 		   (end (match-end (nth 1 entry)))
 		   (form (nth 2 entry)))
