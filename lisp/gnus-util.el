@@ -1399,8 +1399,9 @@ sequence, this is like `mapcar'.  With several, it is like the Common Lisp
 (if (fboundp 'merge)
     (defalias 'gnus-merge 'merge)
   ;; Adapted from cl-seq.el
-  (defun gnus-merge (list1 list2 pred)
+  (defun gnus-merge (type list1 list2 pred)
     "Destructively merge lists LIST1 and LIST2 to produce a new list.
+Argument TYPE is for compatibility and ignored.
 Ordering of the elements is preserved according to PRED, a `less-than'
 predicate on the elements."
     (let ((res nil))
