@@ -47,6 +47,7 @@
 ;; 2000-10-23  don't flow "-- " lines, make "quote-depth wins" rule
 ;;             work when first line is at level 0.
 ;; 2002-01-12  probably incomplete encoding support
+;; 2003-12-08  started working on test harness.
 
 ;;; Code:
 
@@ -148,6 +149,69 @@ RFC 2646 suggests 66 characters for readability."
 	      (error
 	       (forward-line 1)
 	       nil))))))))
+
+;; Test vectors.
+
+(defvar fill-flowed-encode-tests
+  '(
+    ;; The syntax of each list element is:
+    ;; (INPUT . EXPECTED-OUTPUT)
+    ("> Thou villainous ill-breeding spongy dizzy-eyed 
+> reeky elf-skinned pigeon-egg! 
+>> Thou artless swag-bellied milk-livered 
+>> dismal-dreaming idle-headed scut!
+>>> Thou errant folly-fallen spleeny reeling-ripe 
+>>> unmuzzled ratsbane!
+>>>> Henceforth, the coding style is to be strictly 
+>>>> enforced, including the use of only upper case.
+>>>>> I've noticed a lack of adherence to the coding 
+>>>>> styles, of late.
+>>>>>> Any complaints?
+" . "> Thou villainous ill-breeding spongy dizzy-eyed reeky elf-skinned
+> pigeon-egg! 
+>> Thou artless swag-bellied milk-livered dismal-dreaming idle-headed
+>> scut!
+>>> Thou errant folly-fallen spleeny reeling-ripe unmuzzled ratsbane!
+>>>> Henceforth, the coding style is to be strictly enforced,
+>>>> including the use of only upper case.
+>>>>> I've noticed a lack of adherence to the coding styles, of late.
+>>>>>> Any complaints?
+")
+;    ("
+;> foo
+;> 
+;> 
+;> bar
+;" . "
+;> foo bar
+;")
+    ))
+
+(defun fill-flowed-test ()
+  (interactive "")
+  (switch-to-buffer (get-buffer-create "*Format=Flowed test output*"))
+  (erase-buffer)
+  (setq show-trailing-whitespace t)
+  (dolist (test fill-flowed-encode-tests)
+    (let (start output)
+      (insert "***** BEGIN TEST INPUT *****\n")
+      (insert (car test))
+      (setq end (point))
+      (insert "***** END TEST INPUT *****\n\n")
+      (insert "***** BEGIN TEST OUTPUT *****\n")
+      (setq start (point))
+      (insert (car test))
+      (save-restriction
+	(narrow-to-region start (point))
+	(fill-flowed))
+      (setq output (buffer-substring start (point-max)))
+      (insert "***** END TEST OUTPUT *****\n")
+      (unless (string= output (cdr test))
+	(insert "\n***** BEGIN TEST EXPECTED OUTPUT *****\n")
+	(insert (cdr test))
+	(insert "***** END TEST EXPECTED OUTPUT *****\n"))
+      (insert "\n\n")))
+  (goto-char (point-max)))
 
 (provide 'flow-fill)
 

@@ -1,3 +1,7 @@
+2003-12-08  Simon Josefsson  <jas@extundo.com>
+
+	* flow-fill.el (fill-flowed-encode-tests, fill-flowed-test): Add.
+
 2003-12-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-extended-version): Bind float-output-format to
