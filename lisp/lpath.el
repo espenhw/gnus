@@ -28,6 +28,7 @@
 	       charsetp sort-coding-systems
 	       coding-system-p coding-system-list
 	       propertize make-mode-line-mouse2-map
+	       frames-on-display-list
 	       make-mode-line-mouse-map
 	       rmail-select-summary rmail-summary-exists rmail-update-summary
 	       rmail-toggle-header
