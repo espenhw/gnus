@@ -678,7 +678,10 @@ buffer.
   (save-excursion
     (beginning-of-line)
     (when (re-search-forward ": \\(.*\\)$" (gnus-point-at-eol) t)
-      (gnus-group-prefixed-name (match-string 1) gnus-browse-current-method))))
+      (gnus-group-prefixed-name
+       ;; Remove text props.
+       (format "%s" (match-string 1))
+       gnus-browse-current-method))))
 
 (defun gnus-browse-unsubscribe-group ()
   "Toggle subscription of the current group in the browse buffer."

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.65
+;; Version: 1.70
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -18,6 +18,20 @@
 (eval-and-compile (require 'cl))
 
 ;;; Compatibility.
+
+(if (string-match "XEmacs" emacs-version)
+    (defun custom-face-background (face &optional frame)
+      ;; Specifiers suck!
+      "Return the background color name of face FACE, or nil if unspecified."
+      (color-instance-name (specifier-instance (face-background face) frame)))
+  (defalias 'custom-face-background 'face-background))
+
+(if (string-match "XEmacs" emacs-version)
+    (defun custom-face-foreground (face &optional frame)
+      ;; Specifiers suck!
+      "Return the background color name of face FACE, or nil if unspecified."
+      (color-instance-name (specifier-instance (face-foreground face) frame)))
+  (defalias 'custom-face-foreground 'face-foreground))
 
 (eval-and-compile
   (unless (fboundp 'frame-property)
@@ -37,7 +51,38 @@
     ;; XEmacs function missing in Emacs.
     (defun set-face-doc-string (face string)
       "Set the documentation string for FACE to STRING."
-      (put face 'face-doc-string string))))
+      (put face 'face-doc-string string)))
+
+  (when (and (not (fboundp 'set-face-stipple))
+	     (fboundp 'set-face-background-pixmap))
+    ;; Emacs function missing in XEmacs 19.15.
+    (defun set-face-stipple (face pixmap &optional frame)
+      ;; Written by Kyle Jones.
+      "Change the stipple pixmap of face FACE to PIXMAP.
+PIXMAP should be a string, the name of a file of pixmap data.
+The directories listed in the `x-bitmap-file-path' variable are searched.
+
+Alternatively, PIXMAP may be a list of the form (WIDTH HEIGHT DATA)
+where WIDTH and HEIGHT are the size in pixels,
+and DATA is a string, containing the raw bits of the bitmap.  
+
+If the optional FRAME argument is provided, change only
+in that frame; otherwise change each frame."
+      (while (not (find-face face))
+	(setq face (signal 'wrong-type-argument (list 'facep face))))
+      (while (cond ((stringp pixmap)
+		    (unless (file-readable-p pixmap)
+		      (setq pixmap (vector 'xbm ':file pixmap)))
+		    nil)
+		   ((and (consp pixmap) (= (length pixmap) 3))
+		    (setq pixmap (vector 'xbm ':data pixmap))
+		    nil)
+		   (t t))
+	(setq pixmap (signal 'wrong-type-argument
+			     (list 'stipple-pixmap-p pixmap))))
+      (while (and frame (not (framep frame)))
+	(setq frame (signal 'wrong-type-argument (list 'framep frame))))
+      (set-face-background-pixmap face pixmap frame))))
 
 (unless (fboundp 'x-color-values)
   ;; Emacs function missing in XEmacs 19.14.
@@ -162,9 +207,8 @@ examine the brightness for you."
 					   (or (frame-property
 						frame
 						'background-color)
-					       (color-instance-name
-						(specifier-instance
-						 (face-background 'default))))
+					       (custom-face-background
+						'default))
 					 (error nil)))
 			   (or (string-match "XEmacs" emacs-version)
 			       window-system)
@@ -240,15 +284,18 @@ Control whether an italic font should be used.")
     (:underline (toggle :format "Underline: %[%v%]\n"
 			:help-echo "\
 Control whether the text should be underlined.")
-		set-face-underline-p)
+		set-face-underline-p
+		face-underline-p)
     (:foreground (color :tag "Foreground"
 			:value "black"
 			:help-echo "Set foreground color.")
-		 set-face-foreground)
+		 set-face-foreground
+		 custom-face-foreground)
     (:background (color :tag "Background"
 			:value "white"
 			:help-echo "Set background color.")
-		 set-face-background)
+		 set-face-background
+		 custom-face-background)
     ;;    (:invert (const :format "Invert Face\n" 
     ;;		    :sibling-args (:help-echo "
     ;;Reverse the foreground and background color.
@@ -262,13 +309,16 @@ Control whether the text should be underlined.")
 	      set-face-stipple))
   "Alist of face attributes. 
 
-The elements are of the form (KEY TYPE SET) where KEY is a symbol
+The elements are of the form (KEY TYPE SET GET) where KEY is a symbol
 identifying the attribute, TYPE is a widget type for editing the
-attibute, SET is a function for setting the attribute value.
+attibute, SET is a function for setting the attribute value, and GET is a function for getiing the attribute value. 
 
 The SET function should take three arguments, the face to modify, the
 value of the attribute, and optionally the frame where the face should
-be changed.")
+be changed.
+
+The GET function should take two arguments, the face to examine, and
+optonally the frame where the face should be examined.")
 
 (defun custom-face-attributes-set (face frame &rest atts)
   "For FACE on FRAME set the attributes [KEYWORD VALUE]....
@@ -283,6 +333,24 @@ If FRAME is nil, set the default face."
       (condition-case nil
 	  (funcall fun face value frame)
 	(error nil)))))
+
+(defun custom-face-attributes-get (face frame)
+  "For FACE on FRAME get the attributes [KEYWORD VALUE]....
+Each keyword should be listed in `custom-face-attributes'.
+
+If FRAME is nil, use the default face."
+  (let ((atts custom-face-attributes)
+	att result get)
+    (while atts
+      (setq att (car atts)
+	    atts (cdr atts)
+	    get (nth 3 att))
+      (when get 
+	(let ((answer (funcall get face frame)))
+	  (unless (equal answer (funcall get 'default frame))
+	    (when (widget-apply (nth 1 att) :match answer)
+	      (setq result (cons (nth 0 att) (cons answer result))))))))
+    result))
 
 (defun custom-set-face-bold (face value &optional frame)
   "Set the bold property of FACE to VALUE."
@@ -427,7 +495,7 @@ If FRAME is nil or omitted, initialize them for all frames."
 
 (defun custom-initialize-frame (&optional frame)
   "Initialize local faces for FRAME if necessary.
-If FRAME is missing or nil, the first member (frame-list) is used."
+If FRAME is missing or nil, the first member of (frame-list) is used."
   (unless frame
     (setq frame (car (frame-list))))
   (unless (equal (custom-get-frame-properties) 

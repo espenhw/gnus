@@ -1,6 +1,6 @@
 \input texinfo.tex
 
-@c $Id: widget.texi,v 1.93 1997/03/18 13:42:55 abraham Exp $
+@c $Id: widget.texi,v 1.98 1997/04/02 16:26:18 abraham Exp $
 
 @c %**start of header
 @setfilename widget
@@ -15,7 +15,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Emacs Widget Library
 
-Version: 1.65
+Version: 1.70
 
 @menu
 * Introduction::                
@@ -1207,6 +1207,43 @@ i.e. the name of the widget type you gave when the widget was created.
 Return the name of @var{widget}, a symbol.
 @end defun
 
+Widgets can be in two states: active, which means they are modifiable by
+the user, or inactive, which means they cannot be modified by the user.
+You can query or set the state with the following code:
+
+@lisp
+;; Examine if @var{widget} is active or not.
+(if (widget-apply @var{widget} :active)
+    (message "Widget is active.")
+  (message "Widget is inactive.")
+
+;; Make @var{widget} inactive.
+(widget-apply @var{widget} :deactivate)
+
+;; Make @var{widget} active.
+(widget-apply @var{widget} :activate)
+@end lisp
+
+A widget is inactive if itself, or any of its ancestors (found by
+following the @code{:parent} link) have been deactivated.  To make sure
+a widget is really active, you must therefore activate both itself, and
+all its ancestors.
+
+@lisp
+(while widget 
+  (widget-apply widget :activate)
+  (setq widget (widget-get widget :parent)))
+@end lisp
+
+You can check if a widget has been made inactive by examining the value
+of @code{:inactive} keyword.  If this is non-nil, the widget itself has
+been deactivated.  This is different from using the @code{:active}
+keyword, in that the later tell you if the widget @strong{or} any of its
+ancestors have been deactivated.   Do not attempt to set the
+@code{:inactive} keyword directly.  Use the @code{:activate}
+@code{:deactivated} keywords instead.
+
+
 @node Defining New Widgets, Widget Wishlist., Widget Properties, Top
 @comment  node-name,  next,  previous,  up
 @section Defining New Widgets
@@ -1337,13 +1374,6 @@ menus in Open Look.
 The functions used in many widgets, like
 @code{widget-item-convert-widget}, should not have names that are
 specific to the first widget where I happended to use them.
-
-@item 
-Unchecked items in a @code{radio-button-choice} or @code{checklist}
-should be grayed out, and the subwidgets should somehow become inactive.
-This could perhaps be implemented by binding @code{widget-inactive} to t
-when inserting the grayed out subwidget, and let the widget-specify
-functions check that variable.
 
 @item
 Flag to make @code{widget-move} skip a specified button.

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.65
+;; Version: 1.70
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -129,13 +129,13 @@ face is used.
 
 The ATTS of the first entry in SPEC where the DISPLAY matches the
 frame should take effect in that frame.  DISPLAY can either be the
-symbol `t', which will match all frames, or an alist of the form
+symbol t, which will match all frames, or an alist of the form
 \((REQ ITEM...)...)
 
 For the DISPLAY to match a FRAME, the REQ property of the frame must
 match one of the ITEM.  The following REQ are defined:
 
-`type' (the value of (window-system))
+`type' (the value of `window-system')
   Should be one of `x' or `tty'.
 
 `class' (the frame's color support)
@@ -198,7 +198,7 @@ information."
   `(custom-declare-group (quote ,symbol) ,members ,doc ,@args))
 
 (defun custom-add-to-group (group option widget)
-  "To existing GROUP add a new OPTION of type WIDGET,
+  "To existing GROUP add a new OPTION of type WIDGET.
 If there already is an entry for that option, overwrite it."
   (let* ((members (get group 'custom-group))
 	 (old (assq option members)))

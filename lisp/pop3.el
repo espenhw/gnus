@@ -4,7 +4,7 @@
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3c
+;; Version: 1.3e
 
 ;; This file is part of GNU Emacs.
 
@@ -229,7 +229,7 @@ Return the response string if optional second argument is non-nil."
 				 (nth 1 date) (nth 0 date)
 				 (nth 3 date) (nth 2 date)))
 			))
-	    (setq From_ (format "From %s  %s\n" from date))
+	    (setq From_ (format "\nFrom %s  %s\n" from date))
 	    (while (string-match "," From_)
 	      (setq From_ (concat (substring From_ 0 (match-beginning 0))
 				  (substring From_ (match-end 0)))))
@@ -308,11 +308,13 @@ This function currently does nothing.")
 	;; bill@att.com
 	(goto-char start))
       (setq pop3-read-point (point-marker))
-      (goto-char (match-beginning 0))
-      (backward-char 2)
-      (if (not (looking-at "\r\n"))
-	  (insert "\r\n"))
-      (re-search-forward "\\.\r\n")
+;; this code does not seem to work for some POP servers...
+;; and I cannot figure out why not.
+;      (goto-char (match-beginning 0))
+;      (backward-char 2)
+;      (if (not (looking-at "\r\n"))
+;	  (insert "\r\n"))
+;      (re-search-forward "\\.\r\n")
       (goto-char (match-beginning 0))
       (setq end (point-marker))
       (pop3-clean-region start end)

@@ -353,7 +353,8 @@ If nil, the user will be asked for a duration."
   :group 'gnus-score-default
   :type '(choice (const :tag "temporary" t)
 		 (const :tag "permanent" p)
-		 (const :tag "immediate" i)))
+		 (const :tag "immediate" i)
+		 (const :tag "ask" nil)))
 
 (defcustom gnus-score-after-write-file-function nil
   "Function called with the name of the score file just written to disk."

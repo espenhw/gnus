@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.65
+;; Version: 1.70
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -24,6 +24,11 @@
   (autoload 'pp-to-string "pp")
   (autoload 'Info-goto-node "info")
 
+  (when (string-match "XEmacs" emacs-version)
+    (condition-case nil
+	(require 'overlay)
+      (error (load-library "x-overlay"))))
+  
   (if (string-match "XEmacs" emacs-version)
       ;; XEmacs spell `intangible' as `atomic'.
       (defun widget-make-intangible (from to side)
@@ -380,6 +385,41 @@ This is only meaningful for radio buttons or checkboxes in a list."
        (goto-char (point-max))
        result)))
 
+(defface widget-inactive-face '((((class grayscale color)
+				  (background dark))
+				 (:foreground "light gray"))
+				(((class grayscale color)
+				  (background light))
+				 (:foreground "dark gray"))
+				(t 
+				 (:italic t)))
+  "Face used for inactive widgets."
+  :group 'widgets)
+
+(defun widget-specify-inactive (widget from to)
+  "Make WIDGET inactive for user modifications."
+  (unless (widget-get widget :inactive)
+    (let ((overlay (make-overlay from to nil t nil)))
+      (overlay-put overlay 'face 'widget-inactive-face)
+      (overlay-put overlay 'evaporate 't)
+      (overlay-put overlay (if (string-match "XEmacs" emacs-version)
+			       'read-only
+			     'modification-hooks) '(widget-overlay-inactive))
+      (widget-put widget :inactive overlay))))
+
+(defun widget-overlay-inactive (&rest junk)
+  "Ignoring the arguments, signal an error."
+  (unless inhibit-read-only
+    (error "Attempt to modify inactive widget")))
+
+
+(defun widget-specify-active (widget)
+  "Make WIDGET active for user modifications."
+  (let ((inactive (widget-get widget :inactive)))
+    (when inactive
+      (delete-overlay inactive)
+      (widget-put widget :inactive nil))))
+
 ;;; Widget Properties.
 
 (defsubst widget-type (widget)
@@ -415,6 +455,7 @@ later with `widget-put'."
 	 (widget-member (get (car widget) 'widget-type) property))
 	(t nil)))
 
+;;;###autoload
 (defun widget-apply (widget property &rest args)
   "Apply the value of WIDGET's PROPERTY to the widget itself.
 ARGS are passed as extra arguments to the function."
@@ -440,6 +481,12 @@ ARGS are passed as extra arguments to the function."
 	 (cons (list (car vals)) (cdr vals)))
 	(t nil)))
 
+(defun widget-apply-action (widget &optional event)
+  "Apply :action in WIDGET in response to EVENT."
+  (if (widget-apply widget :active)
+      (widget-apply widget :action event)
+    (error "Attempt to perform action on inactive widget")))
+    
 ;;; Glyphs.
 
 (defcustom widget-glyph-directory (concat data-directory "custom/")
@@ -459,9 +506,10 @@ automatically. This does not work yet."
 IMAGE should either be a glyph, or a name sans extension of an xpm or
 xbm file located in `widget-glyph-directory'.
 
-WARNING: If you call this with a glyph, and you want theuser to be
+WARNING: If you call this with a glyph, and you want the user to be
 able to activate the glyph, make sure it is unique.  If you use the
-same glyph for multiple widgets, "
+same glyph for multiple widgets, activating any of the glyphs will
+cause the last created widget to be activated."
   (cond ((not (and (string-match "XEmacs" emacs-version)
 		   widget-glyph-enable
 		   (fboundp 'make-glyph)
@@ -659,7 +707,7 @@ Recommended as a parent keymap for modes using widgets.")
   (interactive "@d")
   (let ((field (get-text-property pos 'field)))
     (if field
-	(widget-apply field :action event)
+	(widget-apply-action field event)
       (call-interactively
        (lookup-key widget-global-map (this-command-keys))))))
 
@@ -670,12 +718,12 @@ Recommended as a parent keymap for modes using widgets.")
 	      (event-glyph event))
 	 (let ((widget (glyph-property (event-glyph event) 'widget)))
 	   (if widget
-	       (widget-apply widget :action event)
+	       (widget-apply-action widget event)
 	     (message "You clicked on a glyph."))))
 	((event-point event)
 	 (let ((button (get-text-property (event-point event) 'button)))
 	   (if button
-	       (widget-apply button :action event)
+	       (widget-apply-action button event)
 	     (call-interactively 
 	      (or (lookup-key widget-global-map [ button2 ])
 		  (lookup-key widget-global-map [ down-mouse-2 ])
@@ -690,7 +738,7 @@ Recommended as a parent keymap for modes using widgets.")
 	   (event-glyph event))
       (let ((widget (glyph-property (event-glyph event) 'widget)))
 	(if widget
-	    (widget-apply widget :action event)
+	    (widget-apply-action widget event)
 	  (message "You clicked on a glyph.")))
     (call-interactively (lookup-key widget-global-map (this-command-keys)))))
 
@@ -699,7 +747,7 @@ Recommended as a parent keymap for modes using widgets.")
   (interactive "@d")
   (let ((button (get-text-property pos 'button)))
     (if button
-	(widget-apply button :action event)
+	(widget-apply-action button event)
       (let ((command (lookup-key widget-global-map (this-command-keys))))
 	(when (commandp command)
 	  (call-interactively command))))))
@@ -947,6 +995,9 @@ With optional ARG, move across that many fields."
   :value-inline 'widget-default-value-inline
   :menu-tag-get 'widget-default-menu-tag-get
   :validate (lambda (widget) nil)
+  :active 'widget-default-active
+  :activate 'widget-specify-active
+  :deactivate 'widget-default-deactivate
   :action 'widget-default-action
   :notify 'widget-default-notify)
 
@@ -1077,7 +1128,9 @@ With optional ARG, move across that many fields."
 	(inhibit-read-only t)
 	after-change-functions)
     (widget-apply widget :value-delete)
-    (delete-region from to)
+    (when (< from to)
+      ;; Kludge: this doesn't need to be true for empty formats.
+      (delete-region from to))
     (set-marker from nil)
     (set-marker to nil)))
 
@@ -1100,6 +1153,19 @@ With optional ARG, move across that many fields."
   (or (widget-get widget :menu-tag)
       (widget-get widget :tag)
       (widget-princ-to-string (widget-get widget :value))))
+
+(defun widget-default-active (widget)
+  "Return t iff this widget active (user modifiable)."
+  (and (not (widget-get widget :inactive))
+       (let ((parent (widget-get widget :parent)))
+	 (or (null parent) 
+	     (widget-apply parent :active)))))
+
+(defun widget-default-deactivate (widget)
+  "Make WIDGET inactive for user modifications."
+  (widget-specify-inactive widget
+			   (widget-get widget :from)
+			   (widget-get widget :to)))
 
 (defun widget-default-action (widget &optional event)
   ;; Notify the parent when a widget change
@@ -1196,7 +1262,7 @@ With optional ARG, move across that many fields."
 
 (defun widget-gui-action (widget)
   "Apply :action for WIDGET."
-  (widget-apply widget :action (this-command-keys)))
+  (widget-apply-action widget (this-command-keys)))
 
 ;;; The `link' Widget.
 
@@ -1492,7 +1558,17 @@ With optional ARG, move across that many fields."
   :on "[X]"
   :on-glyph "check1"
   :off "[ ]"
-  :off-glyph "check0")
+  :off-glyph "check0"
+  :action 'widget-checkbox-action)
+
+(defun widget-checkbox-action (widget &optional event)
+  "Toggle checkbox, notify parent, and set active state of sibling."
+  (widget-toggle-action widget event)
+  (let ((sibling (widget-get-sibling widget)))
+    (when sibling
+      (if (widget-value widget)
+	  (widget-apply sibling :activate)
+	(widget-apply sibling :deactivate)))))
 
 ;;; The `checklist' Widget.
 
@@ -1549,7 +1625,9 @@ With optional ARG, move across that many fields."
 	       ((eq escape ?v)
 		(setq child
 		      (cond ((not chosen)
-			     (widget-create-child widget type))
+			     (let ((child (widget-create-child widget type)))
+			       (widget-apply child :deactivate)
+			       child))
 			    ((widget-get type :inline)
 			     (widget-create-child-value
 			      widget type (cdr chosen)))
@@ -1735,7 +1813,9 @@ With optional ARG, move across that many fields."
 		(setq child (if chosen
 				(widget-create-child-value
 				 widget type value)
-			      (widget-create-child widget type))))
+			      (widget-create-child widget type)))
+		(unless chosen 
+		  (widget-apply child :deactivate)))
 	       (t 
 		(error "Unknown escape `%c'" escape)))))
      ;; Update properties.
@@ -1795,7 +1875,10 @@ With optional ARG, move across that many fields."
 			 (widget-apply current :match value))))
 	(widget-value-set button match)
 	(if match 
-	    (widget-value-set current value))
+	    (progn 
+	      (widget-value-set current value)
+	      (widget-apply current :activate))
+	  (widget-apply current :deactivate))
 	(setq found (or found match))))))
 
 (defun widget-radio-validate (widget)
@@ -1822,9 +1905,11 @@ With optional ARG, move across that many fields."
 	      children (cdr children))
 	(let* ((button (widget-get current :button)))
 	  (cond ((eq child button)
-		 (widget-value-set button t))
+		 (widget-value-set button t)
+		 (widget-apply current :activate))
 		((widget-value button)
-		 (widget-value-set button nil)))))))
+		 (widget-value-set button nil)
+		 (widget-apply current :deactivate)))))))
   ;; Pass notification to parent.
   (widget-apply widget :notify child event))
 
@@ -1967,7 +2052,7 @@ With optional ARG, move across that many fields."
 	    (setq children (cdr children)))
 	  (setcdr children (cons child (cdr children)))))))
   (widget-setup)
-  (widget-apply widget :notify widget))
+ widget (widget-apply widget :notify widget))
 
 (defun widget-editable-list-delete-at (widget child)
   ;; Delete child from list of children.

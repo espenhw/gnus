@@ -527,7 +527,6 @@ Initialized from `text-mode-syntax-table.")
 (defvar gnus-number-of-articles-to-be-saved nil)
 
 (defvar gnus-inhibit-hiding nil)
-(defvar gnus-newsgroup-name)
 
 (defsubst gnus-article-hide-text (b e props)
   "Set text PROPS on the B to E region, extending `intangible' 1 past B."
@@ -744,6 +743,8 @@ always hide."
   "Translate overstrikes into bold text."
   (interactive)
   (save-excursion
+    (goto-char (point-min))
+    (re-search-forward "\n\n")
     (let ((buffer-read-only nil))
       (while (search-forward "\b" nil t)
 	(let ((next (following-char))
@@ -1147,11 +1148,15 @@ means show, 0 means toggle."
 
 (defun gnus-article-hidden-text-p (type)
   "Say whether the current buffer contains hidden text of type TYPE."
-  (let ((pos (text-property-any (point-min) (point-max) 'article-type type)))
-    (when pos
-      (if (get-text-property pos 'invisible)
-	  'hidden
-	'shown))))
+  (let ((start (point-min))
+	(pos (text-property-any (point-min) (point-max) 'article-type type)))
+    (while (and pos
+		(not (get-text-property pos 'invisible)))
+      (setq pos
+	    (text-property-any (1+ pos) (point-max) 'article-type type)))
+    (if pos
+	'hidden
+      'shown)))
 
 (defun gnus-article-show-hidden-text (type &optional hide)
   "Show all hidden text of type TYPE.
@@ -1796,6 +1801,7 @@ commands:
   (use-local-map gnus-article-mode-map)
   (gnus-update-format-specifications nil 'article-mode)
   (set (make-local-variable 'page-delimiter) gnus-page-delimiter)
+  (set (make-local-variable 'gnus-page-broken) nil)
   (set (make-local-variable 'gnus-button-marker-list) nil)
   (gnus-set-default-directory)
   (buffer-disable-undo (current-buffer))
@@ -1970,8 +1976,10 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		(run-hooks 'gnus-article-display-hook))
 	      ;; Do page break.
 	      (goto-char (point-min))
-	      (when gnus-break-pages
-		(gnus-narrow-to-page)))
+	      (setq gnus-page-broken
+		    (when gnus-break-pages
+		      (gnus-narrow-to-page)
+		      t)))
 	    (gnus-set-mode-line 'article)
 	    (gnus-configure-windows 'article)
 	    (goto-char (point-min))
@@ -2081,7 +2089,7 @@ Argument LINES specifies lines to be scrolled up."
 	(and (pos-visible-in-window-p)	;Not continuation line.
 	     (eobp)))
       ;; Nothing in this page.
-      (if (or (not gnus-break-pages)
+      (if (or (not gnus-page-broken)
 	      (save-excursion
 		(save-restriction
 		  (widen) (forward-line 1) (eobp)))) ;Real end-of-buffer?
@@ -2103,7 +2111,7 @@ Argument LINES specifies lines to be scrolled up."
 Argument LINES specifies lines to be scrolled down."
   (interactive "p")
   (move-to-window-line 0)
-  (if (and gnus-break-pages
+  (if (and gnus-page-broken
 	   (bobp)
 	   (not (save-restriction (widen) (bobp)))) ;Real beginning-of-buffer?
       (progn

@@ -572,6 +572,7 @@ articles in the topic and its subtopics."
 	  (forward-line 1)
 	  (setq unfound nil)))
       (when (and unfound
+		 topic
 		 (not (gnus-topic-goto-missing-topic topic)))
 	(gnus-topic-insert-topic-line
 	 topic t t (car (gnus-topic-find-topology topic)) nil 0)))))

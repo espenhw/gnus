@@ -183,8 +183,11 @@ displayed, no centering will be performed."
 
 (defun gnus-xmas-summary-set-display-table ()
   ;; Setup the display table -- like gnus-summary-setup-display-table,
+  ;; Setup the display table -- like `gnus-summary-setup-display-table',
   ;; but done in an XEmacsish way.
   (let ((table (make-display-table))
+	;; Nix out all the control chars...
+	(default-table (specifier-instance current-display-table))
 	(i 32))
     ;; Nix out all the control chars...
     (while (>= (setq i (1- i)) 0)
@@ -197,8 +200,11 @@ displayed, no centering will be performed."
     (let ((i 256))
       (while (>= (setq i (1- i)) 127)
 	;; Only modify if the entry is nil.
-	(unless (aref table i)
-	  (aset table i [??]))))
+	(or (aref table i)
+	;; Only modify if the default entry is nil.
+	(or (aref default-table i)
+	    (aset table i [??]))))
+    ;; Can't use `set-specifier' because of a bug in 19.14 and earlier
     (add-spec-to-specifier current-display-table table (current-buffer) nil)))
 
 (defun gnus-xmas-add-hook (hook function &optional append local)

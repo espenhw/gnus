@@ -626,3 +626,6 @@ bind to a key.
 
 * a command to fetch an arbitrary article -- without having to be
 in the summary buffer.
+
+* a new nncvs backend.  Each group would show an article, using
+version branches as threading, checkin date as the date, etc.

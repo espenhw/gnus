@@ -714,6 +714,7 @@ mark:    The articles mark."
 ;;; Internal variables
 
 (defvar gnus-scores-exclude-files nil)
+(defvar gnus-page-broken nil)
 
 (defvar gnus-original-article nil)
 (defvar gnus-article-internal-prepare-hook nil)
@@ -5127,8 +5128,9 @@ previous group instead."
 	  (progn
 	    (gnus-message 5 "Returning to the group buffer")
 	    (setq entered t)
-	    (set-buffer current-buffer)
-	    (gnus-summary-exit)
+	    (when (buffer-live-p current-buffer)
+	      (set-buffer current-buffer)
+	      (gnus-summary-exit))
 	    (run-hooks 'gnus-group-no-more-groups-hook))
 	;; We try to enter the target group.
 	(gnus-group-jump-to-group target-group)
@@ -6428,7 +6430,7 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
   (gnus-eval-in-buffer-window gnus-article-buffer
     (widen)
     (goto-char (point-min))
-    (when gnus-break-pages
+    (when gnus-page-broken
       (gnus-narrow-to-page))))
 
 (defun gnus-summary-end-of-article ()
@@ -6441,7 +6443,7 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
     (widen)
     (goto-char (point-max))
     (recenter -3)
-    (when gnus-break-pages
+    (when gnus-page-broken
       (gnus-narrow-to-page))))
 
 (defun gnus-summary-print-article (&optional filename)
@@ -6481,7 +6483,6 @@ article massaging functions being run."
 	  gnus-visual)
       (gnus-summary-select-article nil 'force)))
   (gnus-summary-goto-subject gnus-current-article)
-					;  (gnus-configure-windows 'article)
   (gnus-summary-position-point))
 
 (defun gnus-summary-verbose-headers (&optional arg)
@@ -6753,7 +6754,12 @@ and `request-accept' functions."
 		  ;; Copy the marks to other group.
 		  (gnus-add-marked-articles
 		   to-group (cdar marks) (list to-article) info))
-		(setq marks (cdr marks)))))
+		(setq marks (cdr marks)))
+
+	      (gnus-dribble-enter
+	       (concat "(gnus-group-set-info '"
+		       (gnus-prin1-to-string (gnus-get-info to-group))
+		       ")"))))
 
 	  ;; Update the Xref header in this article to point to
 	  ;; the new crossposted article we have just created.

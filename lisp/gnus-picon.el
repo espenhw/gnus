@@ -218,7 +218,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 			 (if gnus-local-domain
 			     (nreverse (message-tokenize-header
 					gnus-local-domain "."))
-			   '(""))
+			   '("."))
 		       (nreverse (message-tokenize-header
 				  (substring from (1+ at-idx)) ".")))))
 	  (set-buffer (get-buffer-create
@@ -347,7 +347,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	(domainp (and gnus-picons-display-as-address dots))
 	picons found bar-ann cur first)
     (when (string-match "/MISC" database)
-      (setq addrs '("")))
+      (setq addrs '(".")))
     (while (and addrs
 		(file-accessible-directory-p path))
       (setq cur (pop addrs)

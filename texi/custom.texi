@@ -13,7 +13,7 @@
 @comment  node-name,  next,  previous,  up
 @top The Customization Library
 
-Version: 1.65
+Version: 1.70
 
 @menu
 * Introduction::                
@@ -272,7 +272,8 @@ attribute is controlled by the face, it can be turned either on or of.
 
 It is possible to specify that a face should have different attributes
 on different device types.  For example, a face may make text red on a
-color device, and bold on a monochrome device.
+color device, and bold on a monochrome device.  You do this by
+activating `Edit All' in the state menu.
 
 The way this is presented in the customization buffer is to have a list
 of display specifications, and for each display specification a list of
@@ -282,8 +283,9 @@ Here is an example:
 
 @example
  *** custom-invalid-face: (sample)
+ State: this item is unchanged from its factory setting.
  [ ] Face used when the customize item is invalid.
- [INS] [DEL] Display: [ ] Type: [ ] X [ ] TTY
+ [INS] [DEL] Display: [ ] Type: [ ] X [ ] PM [ ] Win32 [ ] DOS [ ] TTY
                       [X] Class: [X] Color [ ] Grayscale [ ] Monochrome
                       [ ] Background: [ ] Light [ ] Dark
              Attributes: [ ] Bold: off 
@@ -303,7 +305,7 @@ Here is an example:
 @end example
 
 This has two display specifications.  The first will match all color
-displays, independently on whether the device is X11 or a tty, and
+displays, independently on what window system the device belongs to, and
 whether background color is dark or light.  For devices matching this
 specification, @samp{custom-invalid-face} will force text to be
 displayed in yellow on red, but leave all other attributes alone.
@@ -318,8 +320,7 @@ You can add or delete display specifications by activating the
 the check boxes.  The first checkbox in each line in the display
 specification is special.  It specify whether this particular property
 will even be relevant.  By not checking the box in the first display, we
-match all device types, also device types other than X11 and tty, for
-example ms-windows, nextstep, and mac os.
+match all device types, also device types other than those listed.
 
 After modifying the face, you can activate the state button to make the
 changes take effect.  The menu items in the state button menu is similar
@@ -620,8 +621,9 @@ The menu is in a format applicable to @code{easy-menu-define}.
 When you save the customizations, call to @code{custom-set-variables},
 @code{custom-set-faces} are inserted into the file specified by
 @code{custom-file}.  By default @code{custom-file} is your @file{.emacs}
-file.  The two functions will initialize variables and faces as you have
-specified. 
+file.  If you use another file, you must explicitly load it yourself.
+The two functions will initialize variables and faces as you have
+specified.
 
 @node  Wishlist,  , The Init File, Top
 @comment  node-name,  next,  previous,  up
@@ -634,8 +636,7 @@ missing.  I.e. if a variable doesn't have a factory setting, the user
 should not be allowed to select the @samp{Factory} menu item.
 
 @item 
-We need @strong{much} better support for keyboard operations in the
-customize buffer.
+Better support for keyboard operations in the customize buffer.
 
 @item
 Integrate with @file{w3} so you can customization buffers with much
@@ -650,10 +651,6 @@ definitions.
 @item
 Support selectable color themes.  I.e., change many faces by setting one
 variable.
-
-@item
-There should be a way to see only the "current" display when editing a
-face, and that should be "on" by default.
 
 @item
 Support undo using lmi's @file{gnus-undo.el}.
@@ -676,6 +673,12 @@ Optionally disable the point-cursor and instead highlight the selected
 item in XEmacs.  This is like the *Completions* buffer in XEmacs.
 Suggested by Jens Lautenbacher
 @samp{<jens@@lemming0.lem.uni-karlsruhe.de>}.@refill
+
+@item
+Use @file{font.el} to extract font attributes from rogue faces.
+
+@item
+Empty customization groups should start open (harder than it looks).
 
 @end itemize
 
