@@ -490,6 +490,12 @@ the signature is inserted."
   :group 'message-various
   :type 'hook)
 
+(defcustom message-minibuffer-local-map 
+  (let ((map (make-sparse-keymap 'message-minibuffer-local-map)))
+    (set-keymap-parent map minibuffer-local-map)
+    map)
+  "Keymap for `message-read-from-minibuffer'.")
+
 ;;;###autoload
 (defcustom message-citation-line-function 'message-insert-citation-line
   "*Function called to insert the \"Whomever writes:\" line."
@@ -4767,9 +4773,11 @@ regexp varstr."
   "Read from the minibuffer while providing abbrev expansion."
   (if (fboundp 'mail-abbrevs-setup)
       (let ((mail-abbrev-mode-regexp "")
-	    (minibuffer-setup-hook 'mail-abbrevs-setup))
+	    (minibuffer-setup-hook 'mail-abbrevs-setup)
+	    (minibuffer-local-map message-minibuffer-local-map))
 	(read-from-minibuffer prompt))
-    (let ((minibuffer-setup-hook 'mail-abbrev-minibuffer-setup-hook))
+    (let ((minibuffer-setup-hook 'mail-abbrev-minibuffer-setup-hook)
+	  (minibuffer-local-map message-minibuffer-local-map))
       (read-string prompt))))
 
 (defun message-use-alternative-email-as-from ()

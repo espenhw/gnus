@@ -753,7 +753,9 @@ If POST, post instead of mail."
 
 (defun gnus-summary-resend-message (address n)
   "Resend the current article to ADDRESS."
-  (interactive "sResend message(s) to: \nP")
+  (interactive 
+   (list (message-read-from-minibuffer "Resend message(s) to: ") 
+	 current-prefix-arg))
   (let ((articles (gnus-summary-work-articles n))
 	article)
     (while (setq article (pop articles))
