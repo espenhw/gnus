@@ -6522,9 +6522,9 @@ regexp varstr."
 		(message-next-header)
 	      (let ((begin (point)))
 		(message-next-header)
-		(add-text-properties begin (point)
-				     '(intangible t invisible t
-						  message-hidden t))))))))))
+		(add-text-properties
+		 begin (point)
+		 '(invisible t message-hidden t))))))))))
 
 (defun message-hide-header-p (regexps)
   (let ((result nil)
