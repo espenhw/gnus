@@ -1,3 +1,10 @@
+2003-02-23  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-mime-button-commands): Add ellipsis.
+	(gnus-mime-button-menu): Define MIME popup menu with easy-menu to
+	display key bindings.
+	(gnus-mime-button-menu): Rewrite.
+
 2003-02-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-button-url-regexp): Removed `.

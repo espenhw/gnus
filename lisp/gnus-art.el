@@ -3710,7 +3710,7 @@ General format specifiers can also be used.  See Info node
     (gnus-mime-view-part-externally "e" "View Externally")
     (gnus-mime-print-part "p" "Print")
     (gnus-mime-pipe-part "|" "Pipe To Command...")
-    (gnus-mime-action-on-part "." "Take action on the part")))
+    (gnus-mime-action-on-part "." "Take action on the part...")))
 
 (defun gnus-article-mime-part-status ()
   (if gnus-article-mime-handle-alist-1
@@ -3730,21 +3730,20 @@ General format specifiers can also be used.  See Info node
       (define-key map (cadr c) (car c)))
     map))
 
-(defun gnus-mime-button-menu (event)
-  "Construct a context-sensitive menu of MIME commands."
-  (interactive "e")
-  (save-window-excursion
-    (let ((pos (event-start event)))
-      (select-window (posn-window pos))
-      (goto-char (posn-point pos))
-      (gnus-article-check-buffer)
-      (let ((response (x-popup-menu
-		       t `("MIME Part"
-			   ("" ,@(mapcar (lambda (c)
-					   (cons (caddr c) (car c)))
-					 gnus-mime-button-commands))))))
-	(if response
-	    (call-interactively response))))))
+(easy-menu-define gnus-mime-button-menu gnus-mime-button-map "MIME button menu."
+  `("MIME Part"
+    ,@(mapcar (lambda (c)
+		(vector (caddr c) (car c) :enable t)) gnus-mime-button-commands)))
+
+(defun gnus-mime-button-menu (event prefix)
+ "Construct a context-sensitive menu of MIME commands."
+ (interactive "e\nP")
+ (save-window-excursion
+   (let ((pos (event-start event)))
+     (select-window (posn-window pos))
+     (goto-char (posn-point pos))
+     (gnus-article-check-buffer)
+     (popup-menu gnus-mime-button-menu nil prefix))))
 
 (defun gnus-mime-view-all-parts (&optional handles)
   "View all the MIME parts."
