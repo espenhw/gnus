@@ -1,3 +1,8 @@
+2002-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* spam.el: Set autoload for bbdb-records after loading bbdb-com to
+	prevent inf-loop.
+
 2002-10-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el: Removed some test lines.
@@ -10,7 +15,7 @@
 
 2002-10-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* mm-view.el (mm-text-html-renderer-alist): Add w3m-standalone. 
+	* mm-view.el (mm-text-html-renderer-alist): Add w3m-standalone.
 	(mm-text-html-washer-alist): Ditto.
 
 2002-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
