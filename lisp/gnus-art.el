@@ -3609,6 +3609,7 @@ In no internal viewer is available, use an external viewer."
 	(unless (setq not-pref (cadr (member preferred ihandles)))
 	  (setq not-pref (car ihandles)))
 	(when (or ibegend
+		  (not preferred)
 		  (not (gnus-unbuttonized-mime-type-p
 			"multipart/alternative")))
 	  (gnus-add-text-properties
