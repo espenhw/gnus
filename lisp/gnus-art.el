@@ -1676,6 +1676,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
     "\C-d" gnus-article-read-summary-keys
     "\M-*" gnus-article-read-summary-keys
     "\M-#" gnus-article-read-summary-keys
+    "\M-^" gnus-article-read-summary-keys
     "\M-g" gnus-article-read-summary-keys)
 
   (substitute-key-definition

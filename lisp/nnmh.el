@@ -525,10 +525,11 @@
 (defun nnmh-deletable-article-p (group article)
   "Say whether ARTICLE in GROUP can be deleted."
   (let ((path (concat nnmh-current-directory (int-to-string article))))
-    (when (file-writable-p path)
-      (or (not nnmail-keep-last-article)
-	  (not (eq (cdr (nth 1 (assoc group nnmh-group-alist)))
-		   article))))))
+    ;; Writable.
+    (and (file-writable-p path) 
+	 ;; We can never delete the last article in the group.
+	 (not (eq (cdr (nth 1 (assoc group nnmh-group-alist)))
+		  article)))))
 
 (provide 'nnmh)
 

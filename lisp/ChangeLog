@@ -1,3 +1,32 @@
+Tue Jan 28 22:11:36 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.7 is released.
+
+Tue Jan 28 19:48:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmh.el (nnmh-deletable-article-p): Never allow deleting the
+	last article in the group.
+
+	* nnweb.el (nnweb-definition): Accept an optional noerror
+	argument. 
+	(nnweb-request-article): Don't bug out when requesting by MsgId. 
+
+	* gnus-topic.el (gnus-group-prepare-topics): Return the number of
+	unread articles in the buffer.
+
+	* gnus-group.el (gnus-group-list-groups): On empty buffers, let
+	point go to the beginning.
+	(gnus-group-list-groups): Give "No news" message when using
+	topics. 
+
+	* gnus-topic.el (gnus-topic-goto-next-group): Let point remain
+	at the end of the buffer.
+
+	* gnus-group.el (gnus-group-rename-group): Check group name
+	syntax. 
+
+	* gnus.el (gnus-read-group): Accept an optional default.
+
 Tue Jan 28 18:11:54 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.6 is released.

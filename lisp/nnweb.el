@@ -144,6 +144,7 @@
       (when (or (and url
 		     (nnweb-fetch-url url))
 		(and (stringp article)
+		     (nnweb-definition 'id t)
 		     (let ((fetch (nnweb-definition 'id))
 			   art)
 		       (when (string-match "^<\\(.*\\)>$" article)
@@ -246,10 +247,11 @@
   "Read the active file."
   (load (nnheader-concat nnweb-directory "active") t t t))
 	   
-(defun nnweb-definition (type)
+(defun nnweb-definition (type &optional noerror)
   "Return the definition of TYPE."
   (let ((def (cdr (assq type (assq nnweb-type nnweb-type-definition)))))
-    (unless def
+    (when (and (not def)
+	       (not noerror))
       (error "Undefined definition %s" type))
     def))
 

@@ -371,17 +371,18 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
        regexp))
 
     ;; Use topics.
-    (when (< lowest gnus-level-zombie)
-      (if list-topic
-	  (let ((top (gnus-topic-find-topology list-topic)))
-	    (gnus-topic-prepare-topic (cdr top) (car top)
-				      (or topic-level level) all))
-	(gnus-topic-prepare-topic gnus-topic-topology 0
-				  (or topic-level level) all))))
-
-  (gnus-group-set-mode-line)
-  (setq gnus-group-list-mode (cons level all))
-  (run-hooks 'gnus-group-prepare-hook))
+    (prog1
+	(when (< lowest gnus-level-zombie)
+	  (if list-topic
+	      (let ((top (gnus-topic-find-topology list-topic)))
+		(gnus-topic-prepare-topic (cdr top) (car top)
+					  (or topic-level level) all))
+	    (gnus-topic-prepare-topic gnus-topic-topology 0
+				      (or topic-level level) all)))
+      
+      (gnus-group-set-mode-line)
+      (setq gnus-group-list-mode (cons level all))
+      (run-hooks 'gnus-group-prepare-hook))))
 
 (defun gnus-topic-prepare-topic (topicl level &optional list-level all silent)
   "Insert TOPIC into the group buffer.
@@ -743,8 +744,10 @@ articles in the topic and its subtopics."
 
 (defun gnus-topic-goto-next-group (group props)
   "Go to group or the next group after group."
-  (if (null group)
-      (gnus-topic-goto-topic (symbol-name (cadr (memq 'gnus-topic props))))
+  (if (not group)
+      (if (not (memq 'gnus-topic props))
+	  (goto-char (point-max))
+	(gnus-topic-goto-topic (symbol-name (cadr (memq 'gnus-topic props)))))
     (if (gnus-group-goto-group group)
 	t
       ;; The group is no longer visible.
@@ -761,9 +764,11 @@ articles in the topic and its subtopics."
 		      (not (gnus-group-goto-group (car after))))
 	    (setq after (cdr after))))
 	;; Finally, just put point on the topic.
-	(unless after
-	  (gnus-topic-goto-topic (car list))
-	  (setq after nil))
+	(if (not (car list))
+	    (goto-char (point-min))
+	  (unless after
+	    (gnus-topic-goto-topic (car list))
+	    (setq after nil)))
 	t))))
 
 ;;; Topic-active functions

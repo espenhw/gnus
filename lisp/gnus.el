@@ -154,7 +154,7 @@
   :link '(custom-manual "(gnus)Various Various")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.5"
+(defconst gnus-version-number "5.4.7" 
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2384,7 +2384,7 @@ GROUP can either be a string (a group name) or a select method."
       (setq valids (cdr valids)))
     outs))
 
-(defun gnus-read-group (prompt)
+(defun gnus-read-group (prompt &optional default)
   "Prompt the user for a group name.
 Disallow illegal group names."
   (let ((prefix "")
@@ -2393,7 +2393,8 @@ Disallow illegal group names."
       (when (string-match
 	     "[: `'\"/]\\|^$"
 	     (setq group (read-string (concat prefix prompt)
-				      "" 'gnus-group-history)))
+				      (or default "")
+				      'gnus-group-history)))
 	(setq prefix (format "Illegal group name: \"%s\".  " group)
 	      group nil)))
     group))

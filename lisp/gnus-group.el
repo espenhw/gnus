@@ -834,42 +834,52 @@ listed."
     (setq level (car gnus-group-list-mode)
 	  unread (cdr gnus-group-list-mode)))
   (setq level (gnus-group-default-level level))
-  (gnus-group-setup-buffer)		;May call from out of group buffer
+  (gnus-group-setup-buffer)
   (gnus-update-format-specifications nil 'group 'group-mode)
   (let ((case-fold-search nil)
 	(props (text-properties-at (gnus-point-at-bol)))
-	(group (gnus-group-group-name)))
+	(empty (= (point-min) (point-max)))
+	(group (gnus-group-group-name))
+	number)
     (set-buffer gnus-group-buffer)
-    (funcall gnus-group-prepare-function level unread lowest)
-    (if (zerop (buffer-size))
-	(gnus-message 5 gnus-no-groups-message)
-      (goto-char (point-max))
-      (when (or (not gnus-group-goto-next-group-function)
-		(not (funcall gnus-group-goto-next-group-function 
-			      group props)))
-	(if (not group)
-	    ;; Go to the first group with unread articles.
-	    (gnus-group-search-forward t)
-	  ;; Find the right group to put point on.  If the current group
-	  ;; has disappeared in the new listing, try to find the next
-	  ;; one.	 If no next one can be found, just leave point at the
-	  ;; first newsgroup in the buffer.
-	  (when (not (gnus-goto-char
-		      (text-property-any
-		       (point-min) (point-max)
-		       'gnus-group (gnus-intern-safe
-				    group gnus-active-hashtb))))
-	    (let ((newsrc (cdddr (gnus-gethash group gnus-newsrc-hashtb))))
-	      (while (and newsrc
-			  (not (gnus-goto-char
-				(text-property-any
-				 (point-min) (point-max) 'gnus-group
-				 (gnus-intern-safe
-				  (caar newsrc) gnus-active-hashtb)))))
-		(setq newsrc (cdr newsrc)))
-	      (unless newsrc
-		(goto-char (point-max))
-		(forward-line -1))))))
+    (setq number (funcall gnus-group-prepare-function level unread lowest))
+    (when (or (and (numberp number)
+		   (zerop number))
+	      (zerop (buffer-size)))
+      ;; No groups in the buffer.
+      (gnus-message 5 gnus-no-groups-message))
+    ;; We have some groups displayed.
+    (goto-char (point-max))
+    (when (or (not gnus-group-goto-next-group-function)
+	      (not (funcall gnus-group-goto-next-group-function 
+			    group props)))
+      (cond
+       (empty
+	(goto-char (point-min)))
+       ((not group)
+	;; Go to the first group with unread articles.
+	(gnus-group-search-forward t))
+       (t
+	;; Find the right group to put point on.  If the current group
+	;; has disappeared in the new listing, try to find the next
+	;; one.  If no next one can be found, just leave point at the
+	;; first newsgroup in the buffer.
+	(when (not (gnus-goto-char
+		    (text-property-any
+		     (point-min) (point-max)
+		     'gnus-group (gnus-intern-safe
+				  group gnus-active-hashtb))))
+	  (let ((newsrc (cdddr (gnus-gethash group gnus-newsrc-hashtb))))
+	    (while (and newsrc
+			(not (gnus-goto-char
+			      (text-property-any
+			       (point-min) (point-max) 'gnus-group
+			       (gnus-intern-safe
+				(caar newsrc) gnus-active-hashtb)))))
+	      (setq newsrc (cdr newsrc)))
+	    (unless newsrc
+	      (goto-char (point-max))
+	      (forward-line -1))))))
       ;; Adjust cursor point.
       (gnus-group-position-point))))
 
@@ -933,7 +943,8 @@ If REGEXP, only list groups matching REGEXP."
 
     (gnus-group-set-mode-line)
     (setq gnus-group-list-mode (cons level all))
-    (run-hooks 'gnus-group-prepare-hook)))
+    (run-hooks 'gnus-group-prepare-hook)
+    t))
 
 (defun gnus-group-prepare-flat-list-dead (groups level mark regexp)
   ;; List zombies and killed lists somewhat faster, which was
@@ -1816,7 +1827,7 @@ and NEW-NAME will be prompted for."
       (unless (gnus-check-backend-function
 	       'request-rename-group (gnus-group-group-name))
 	(error "This backend does not support renaming groups"))
-      (read-string "Rename group to: " (gnus-group-group-name)))))
+      (gnus-read-group "Rename group to: " (gnus-group-group-name)))))
 
   (unless (gnus-check-backend-function 'request-rename-group group)
     (error "This backend does not support renaming groups"))
