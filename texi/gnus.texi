@@ -8348,9 +8348,8 @@ Display an @code{X-Face} in the @code{From} header.
 
 @item W D s
 @kindex W D s (Summary)
-@findex gnus-article-toggle-smiley
-Toggle whether to display smileys
-(@code{gnus-article-toggle-smiley}).
+@findex gnus-smiley-smiley
+Display smileys (@code{gnus-treat-smiley}).
 
 @item W D f
 @kindex W D f (Summary)
@@ -8368,6 +8367,12 @@ Piconify all mail headers (i. e., @code{Cc}, @code{To})
 @findex gnus-treat-newsgroups-picon
 Piconify all news headers (i. e., @code{Newsgroups} and
 @code{Followup-To}) (@code{gnus-treat-from-picon}).
+
+@item W D D
+@kindex W D D (Summary)
+@findex gnus-article-remove-images
+Remove all images from the article buffer
+(@code{gnus-article-remove-images}).
 
 @end table
 
