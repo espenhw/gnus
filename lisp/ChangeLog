@@ -1,3 +1,11 @@
+2002-01-18  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-regenerate-group): Added interactive form.
+
+	* gnus-sum.el (gnus-summary-update-article-line): Fixed
+	calculation of net characters added for use in the gnus-data
+	structure.
+	
 2003-01-18  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* nnmail.el (nnmail-process-unix-mail-format): Improve error
