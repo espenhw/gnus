@@ -32,7 +32,9 @@
 		     decode-coding-string mail-aliases-setup
 		     mm-copy-tree url-view-url w3-prepare-buffer
 		     set-buffer-multibyte
-		     find-non-ascii-charset-region char-charset))
+		     find-non-ascii-charset-region char-charset
+		     mule-write-region-no-coding-system
+		     find-charset-region))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
 		    mouse-selection-click-count-buffer buffer-display-table
@@ -40,7 +42,7 @@
 		    gnus-newsgroup-name gnus-article-x-face-too-ugly
 		    mail-mode-hook enable-multibyte-characters
 		    adaptive-fill-first-line-regexp adaptive-fill-regexp
-		    url-current-mime-headers)))
+		    url-current-mime-headers buffer-file-coding-system)))
   (maybe-bind '(mail-mode-hook
 		enable-multibyte-characters browse-url-browser-function
 		adaptive-fill-first-line-regexp adaptive-fill-regexp

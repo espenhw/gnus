@@ -1,3 +1,36 @@
+Thu Sep  3 15:23:22 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.14 is released.
+
+1998-09-03 15:08:30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-bodies.el (mm-body-encoding): Go through the buffer to make
+	sure we have 7bit.
+
+1998-09-02 14:38:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-post-method): Use opened servers, and remove
+	ducplicates. 
+	(gnus-inews-insert-mime-headers): Removed.
+
+	* message.el (message-caesar-region): Protect against MULE chars. 
+
+1998-09-02 00:36:23  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* mm-util.el (if): fset the right function.
+
+1998-09-02 00:31:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-decode-charset): Use real
+	read-coding-system. 
+
+1998-09-01 17:58:40  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-bodies.el (mm-decode-body): Protect against malformed
+	base64. 
+	(mm-decode-body): Check that buffer-file-coding-system is
+	non-nil. 
+
 Tue Sep  1 10:29:33 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.13 is released.

@@ -24,7 +24,11 @@
 
 ;;; Code:
 
+(eval-and-compile
+  (if (not (fboundp 'base64-encode-string))
+      (require 'base64)))
 (require 'mm-util)
+(require 'qp)
 
 (defun mm-encode-body ()
   "Encode a body.
@@ -66,7 +70,20 @@ If no encoding was done, nil is returned."
 
 (defun mm-body-encoding ()
   "Return the encoding of the current buffer."
-  (if (null (delq 'ascii (find-charset-region (point-min) (point-max))))
+  (if (and  
+       (null (delq 'ascii (find-charset-region (point-min) (point-max))))
+       ;;;!!!The following is necessary because the function
+       ;;;!!!above seems to return the wrong result under Emacs 20.3.
+       ;;;!!!Sometimes.
+       (save-excursion
+	 (let (found)
+	   (goto-char (point-min))
+	   (while (and (not found)
+		       (not (eobp)))
+	     (when (> (char-int (following-char)) 127)
+	       (setq found t))
+	     (forward-char 1))
+	   (not found))))
       '7bit
     '8bit))
 
@@ -83,7 +100,9 @@ The characters in CHARSET should then be decoded."
        ((eq encoding 'quoted-printable)
 	(quoted-printable-decode-region (point-min) (point-max)))
        ((eq encoding 'base64)
-	(base64-decode-region (point-min) (point-max)))
+	(condition-case ()
+	    (base64-decode-region (point-min) (point-max))
+	  (error nil)))
        ((memq encoding '(7bit 8bit binary))
 	)
        (t
@@ -92,6 +111,7 @@ The characters in CHARSET should then be decoded."
       (let (mule-charset)
 	(when (and charset
 		   (setq mule-charset (mm-charset-to-coding-system charset))
+		   buffer-file-coding-system
 		   (not (mm-coding-system-equal
 			 buffer-file-coding-system mule-charset)))
 	  (mm-decode-coding-region (point-min) (point-max) mule-charset))))))

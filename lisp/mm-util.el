@@ -24,36 +24,6 @@
 
 ;;; Code:
 
-(eval-and-compile
-  (if (fboundp 'decode-coding-string)
-      (fset 'mm-decode-coding-string 'decode-coding-string)
-    (fset 'mm-decode-coding-string (lambda (s a) s))))
-
-(eval-and-compile
-  (if (fboundp 'encode-coding-string)
-      (fset 'mm-encode-coding-string 'encode-coding-string)
-    (fset 'mm-encode-coding-string (lambda (s a) s))))
-
-(eval-and-compile
-  (if (fboundp 'encode-coding-region)
-      (fset 'mm-encode-coding-region 'encode-coding-region)
-    (fset 'mm-encode-coding-string 'ignore)))
-
-(eval-and-compile
-  (if (fboundp 'decode-coding-region)
-      (fset 'mm-decode-coding-region 'decode-coding-region)
-    (fset 'mm-decode-coding-string 'ignore)))
-
-(eval-and-compile
-  (if (fboundp 'coding-system-list)
-      (fset 'mm-coding-system-list 'coding-system-list)
-    (fset 'mm-coding-system-list 'ignore)))
-
-(eval-and-compile
-  (if (fboundp 'coding-system-equal)
-      (fset 'mm-coding-system-equal 'coding-system-equal)
-    (fset 'mm-coding-system-equal 'equal)))
-
 (defvar mm-mime-mule-charset-alist
   '((us-ascii ascii)
     (iso-8859-1 latin-iso8859-1)
@@ -91,6 +61,41 @@
 		    chinese-cns11643-7))
   "Alist of MIME-charset/MULE-charsets.")
 
+
+(eval-and-compile
+  (if (fboundp 'decode-coding-string)
+      (fset 'mm-decode-coding-string 'decode-coding-string)
+    (fset 'mm-decode-coding-string (lambda (s a) s)))
+
+  (if (fboundp 'encode-coding-string)
+      (fset 'mm-encode-coding-string 'encode-coding-string)
+    (fset 'mm-encode-coding-string (lambda (s a) s)))
+
+  (if (fboundp 'encode-coding-region)
+      (fset 'mm-encode-coding-region 'encode-coding-region)
+    (fset 'mm-encode-coding-region 'ignore))
+
+  (if (fboundp 'decode-coding-region)
+      (fset 'mm-decode-coding-region 'decode-coding-region)
+    (fset 'mm-decode-coding-region 'ignore))
+
+  (if (fboundp 'coding-system-list)
+      (fset 'mm-coding-system-list 'coding-system-list)
+    (fset 'mm-coding-system-list 'ignore))
+
+  (if (fboundp 'coding-system-equal)
+      (fset 'mm-coding-system-equal 'coding-system-equal)
+    (fset 'mm-coding-system-equal 'equal))
+
+  (if (fboundp 'read-coding-system)
+      (fset 'mm-read-coding-system 'read-coding-system)
+    (defun mm-read-coding-system (prompt)
+      "Prompt the user for a coding system."
+      (completing-read
+       prompt (mapcar (lambda (s) (list (symbol-name (car s))))
+		      mm-mime-mule-charset-alist)))))
+
+
 (defvar mm-charset-coding-system-alist
   (let ((rest
 	 '((us-ascii . iso-8859-1)
@@ -106,6 +111,7 @@
       (setq rest (cdr rest)))
     dest)
   "Charset/coding system alist.")
+
 
 (defun mm-mule-charset-to-mime-charset (charset)
   "Return the MIME charset corresponding to MULE CHARSET."
@@ -171,12 +177,6 @@ used as the line break code type of the coding system."
   "Return the charset parameter from HEADER."
   (when (string-match "charset *= *\"? *\\([-0-9a-zA-Z_]+\\)\"? *$" header)
     (intern (downcase (match-string 1 header)))))
-
-(defun mm-read-coding-system (prompt)
-  "Prompt the user for a coding system."
-  (completing-read
-   prompt (mapcar (lambda (s) (list (symbol-name (car s))))
-		  mm-mime-mule-charset-alist)))
 
 (provide 'mm-util)
 

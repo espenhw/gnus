@@ -24,7 +24,9 @@
 
 ;;; Code:
 
-(require 'base64)
+(eval-and-compile
+  (if (not (fboundp 'base64-encode-string))
+      (require 'base64)))
 (require 'qp)
 (require 'mm-util)
 

@@ -1624,8 +1624,9 @@ text was killed."
     ;; text properties.
     (while (< b e)
       (subst-char-in-region
-       b (1+ b) (char-after b)
-       (aref message-caesar-translation-table (char-after b)))
+       (when (< (char-after b) 255)
+	 b (1+ b) (char-after b)
+	 (aref message-caesar-translation-table (char-after b))))
       (incf b))))
 
 (defun message-make-caesar-translation-table (n)
