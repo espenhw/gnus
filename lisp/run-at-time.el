@@ -46,22 +46,23 @@
 			    ctime
 			  (setcar ctime (1- (car ctime)))))
 		       (itimer-list nil)
-		       (itimer (start-itimer "fixed-run-at-time" 'ignore 5)))
+		       (itimer (start-itimer "run-at-time" 'ignore 5)))
 		  (sleep-for 0.1) ;; Accept the timeout interrupt.
 		  (prog1
 		      (> (itimer-value itimer) 0)
 		    (delete-itimer itimer))))
 	    (error nil))
 	  (lambda (time repeat function &rest args)
-	    "Emulating function run as `run-at-time'.
+	    "Function emulating the function of the same name of Emacs.
 TIME should be nil meaning now, or a number of seconds from now.
 Return an itimer object which can be used in either `delete-itimer'
 or `cancel-timer'."
-	    (apply #'start-itimer "fixed-run-at-time"
+	    (apply #'start-itimer "run-at-time"
 		   function (if time (max time 1e-9) 1e-9)
 		   repeat nil t args))
 	(lambda (time repeat function &rest args)
-	  "Emulating function run as `run-at-time' in the right way.
+	  "Function emulating the function of the same name of Emacs.
+It works correctly for TIME even if there is a bug in the XEmacs core.
 TIME should be nil meaning now, or a number of seconds from now.
 Return an itimer object which can be used in either `delete-itimer'
 or `cancel-timer'."
@@ -93,8 +94,6 @@ or `cancel-timer'."
 			   (append (list itimer function) args)))))
 		    1e-9 (if time (max time 1e-9) 1e-9)
 		    nil t itimers repeat function args))))))))
-
-(defvar run-at-time-saved (symbol-function 'run-at-time))
 
 (provide 'run-at-time)
 

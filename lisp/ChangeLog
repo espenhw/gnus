@@ -1,3 +1,8 @@
+2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* run-at-time.el (run-at-time-saved): Remove.
+	(run-at-time): Doc fix.
+
 2004-01-07  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-limit-to-replied): New command.
