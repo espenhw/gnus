@@ -25,7 +25,20 @@ exec mzscheme -mr $0 ${1+"$@"}
 ;;  Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
+;;
+;; Requirements:
+;;
+;; To run this scheme program you need MzScheme and DrScheme.
+;;
+;; Some URLs:
+;; http://www.plt-scheme.org/software/mzscheme/
+;; http://www.drscheme.org/
+;; http://www.plt-scheme.org/software/
 ;; 
+;; ,----[ http://www.plt-scheme.org/license/ ]
+;; | PLT software is distributed under the
+;; |  GNU Lesser General Public License (LGPL).
+;; `----
 
 ;;; Code:
 
@@ -42,7 +55,7 @@ exec mzscheme -mr $0 ${1+"$@"}
    (set! +in+ in))
   (("-o" "--output") out "Name of output file (default gnus-faq.texi)"
    (set! +out+ out))
-  (("-l" "--library") lib "Name of Scheme library to load (default faqxml2texi.scm)"
+  (("-l" "--library") lib "Name of Scheme library to load (default xml2texi.scm)"
    (set! +scmfile+ lib)))
  (help-labels "The first (or only) remaining argument is used as the name of the Input file"
               "The second argument is used as the name of the Output file")

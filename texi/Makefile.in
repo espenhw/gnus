@@ -87,6 +87,25 @@ booklet.pdf: booklet.tex gnuslogo-refcard.eps gnusref.tex
 		mv bk-lt.pdf booklet.pdf ;\
 	fi
 
+gnus-faq-full-update:  gnus-faq-clean gnus-faq.texi
+
+gnus-faq.xml:
+	cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/gnus \
+	  co -p gnus-faq/src/gnus-faq.xml > $@.tmp
+	head -n 1 $@.tmp | grep '^<.xml version' || \
+	  { echo "Update of $@ failed."; : rm $@.tmp; exit 1; }
+	mv $@.tmp $@
+
+gnus-faq.texi: gnus-faq.xml
+	./xml2texi.sh $< $@.tmp
+	@echo
+# FIXME: This should be done in xml2texi.scm or gnus-faq.xml should be
+# changed:
+	sed '/\$$Id: Makefile.in,v 6.29.2.3 2005/03/23 14:52:41 rsteib Exp $$/d' < $@.tmp > $@
+
+gnus-faq-clean:
+	rm -f gnus-faq.xml gnus-faq.*.tmp gnus-faq.texi
+
 clean:
 	rm -f *.[cgk]idx *.aux *.cp *.cps *.dvi *.dvi-x *.fn *.ky	\
 	*.kys *.latexi *.log *.orig *.pdf *.pdf-x *.pg *.rej		\
@@ -187,6 +206,7 @@ distclean: veryclean
 	rm -f message-[0-9]
 	rm -f $(INFO_DEPS)
 	rm -f gnusconfig.tex
+	rm -f gnus-faq.xml gnus-faq.*.tmp
 
 install: $(INFO_DEPS)
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(infodir)

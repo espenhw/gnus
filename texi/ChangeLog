@@ -1,3 +1,15 @@
+2005-03-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* Makefile.in (gnus-faq-full-update, gnus-faq-clean)
+	(gnus-faq.texi): New targets.
+	(distclean): Remove some gnus-faq.* files.
+
+	* xml2texi.sh: Mention requirements.
+
+	* xml2texi.scm (boilerplate): Add "Do not modify ...".
+
+	* gnus-faq.texi: Generated.
+
 2005-03-22  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-faq.texi: Generated from gnus-faq.xml using xml2texi.*.

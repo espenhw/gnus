@@ -78,9 +78,14 @@
 @c Uncomment 1st line before texing this file alone.~%\
 @c %**start of header~%\
 @c Copyright (C) 1995, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.~%\
+@c~%\
+@c Do not modify this file, it was generated from gnus-faq.xml, available from~%\
+@c <URL:http://my.gnus.org/FAQ/>.~%\
+@c~%\
 @setfilename gnus-faq.info~%\
 @settitle ~A~%\
 @c %**end of header~%\
+@c~%\
 " titel)))
 
 ;; Inserted right before the end of the file
