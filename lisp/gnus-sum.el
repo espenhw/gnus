@@ -6012,7 +6012,8 @@ If EXCLUDE-GROUP, do not go to this group."
 		      (progn
 			(while arts
 			  (when (or (and undownloaded
-					 (memq (car arts) gnus-newsgroup-undownloaded))
+					 (memq (car arts)
+					       gnus-newsgroup-undownloaded))
 				    (gnus-data-unread-p (car arts)))
 			    (setq result (car arts)
 				  arts nil))
