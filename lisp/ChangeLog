@@ -1,3 +1,8 @@
+2005-01-13  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-msg.el (gnus-confirm-mail-reply-to-news): Change default to
+	gnus-novice-user.
+
 2005-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnrss.el (nnrss-request-delete-group): Delete entries in
