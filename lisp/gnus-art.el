@@ -5001,7 +5001,8 @@ Argument LINES specifies lines to be scrolled up."
       (if (or (not gnus-page-broken)
 	      (save-excursion
 		(save-restriction
-		  (widen) (forward-line 1) (eobp)))) ;Real end-of-buffer?
+		  (widen)
+		  (eobp)))) ;Real end-of-buffer?
 	  (progn
 	    (when gnus-article-over-scroll
 	      (gnus-article-next-page-1 lines))
