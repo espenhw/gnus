@@ -172,13 +172,14 @@
 
 (defun assistant-next-node-text (node)
   (if node
-      (format "[ Proceed to %s >> ]" node)
-    "[ Finish ]"))
+      (format "Proceed to %s >>" node)
+    "Finish"))
 
-(defun assistant-set-defaults (node)
+(defun assistant-set-defaults (node &optional forcep)
   (dolist (variable (assistant-get-list node "variable"))
     (setq variable (cadr variable))
-    (when (eq (nth 3 variable) 'default)
+    (when (or (eq (nth 3 variable) 'default)
+	      forcep)
       (setcar (nthcdr 3 variable)
 	      (eval (nth 2 variable))))))
 
@@ -234,8 +235,18 @@
     (insert "\n\n")
     (when assistant-previous-node
       (assistant-node-button 'previous assistant-previous-node))
+    (widget-create
+     'push-button
+     :assistant-node node-name
+     :notify (lambda (widget &rest ignore)
+	       (let* ((node (widget-get widget :assistant-node)))
+		 (assistant-set-defaults (assistant-find-node node) 'force)
+		 (assistant-render-node node)))
+     "Reset")
+    (insert " ")
     (assistant-node-button 'next (assistant-find-next-node))
     (insert "\n")
+    (goto-char (point-min))
     (assistant-make-read-only)))
 
 (defun assistant-make-read-only ()
@@ -331,6 +342,21 @@
 	      results)))
     (message "Results: %s"
 	     (nreverse results))))
+
+;;; Validation functions.
+
+(defun assistant-validate-connect-to-server (server port)
+  (let* ((error nil)
+	 (stream
+	  (condition-case err
+	      (open-network-stream "nntpd" nil server port)
+	    (error (setq error err)))))
+    (if (and (processp stream)
+	     (memq (process-status stream) '(open run)))
+	(progn
+	  (delete-process stream)
+	  nil)
+      error)))
 
 (provide 'assistant)
 

@@ -2,6 +2,7 @@
 
 	* assistant.el (assistant-render-node): Fix up rendering and
 	read-only text. 
+	(assistant-render-node): Reset.
 
 2004-05-20  Danny Siu  <dsiu@adobe.com>
 
