@@ -667,11 +667,11 @@ If SILENT, don't prompt the user."
      ;; If the group-method is nil (which shouldn't happen) we use
      ;; the default method.
      ((null group-method)
-      (or (and (null (eq gnus-post-method 'active)) gnus-post-method)
+      (or (and (not (eq gnus-post-method 'current)) gnus-post-method)
 	  gnus-select-method message-post-method))
      ;; We want the inverse of the default
      ((and arg (not (eq arg 0)))
-      (if (eq gnus-post-method 'active)
+      (if (eq gnus-post-method 'current)
 	  gnus-select-method
 	group-method))
      ;; We query the user for a post method.
