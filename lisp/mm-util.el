@@ -268,6 +268,19 @@ Valid elements include:
 	mm-iso-8859-15-compatible))
   "A table of the difference character between ISO-8859-X and ISO-8859-15.")
 
+(defvar mm-coding-system-priorities nil
+  "Preferred coding systems for encoding outgoing mails.
+
+More than one suitable coding systems may be found for some texts.  By
+default, a coding system with the highest priority is used to encode
+outgoing mails (see `sort-coding-systems').  If this variable is set,
+it overrides the default priority.  For example, Japanese users may
+prefer iso-2022-jp to japanese-shift-jis:
+
+(setq mm-coding-system-priorities
+  '(iso-2022-jp iso-2022-jp-2 japanese-shift-jis utf-8))
+")
+
 ;;; Internal variables:
 
 ;;; Functions:
@@ -380,8 +393,8 @@ Only used in Emacs Mule 4."
 
 (defun mm-preferred-coding-system (charset)
   ;; A typo in some Emacs versions.
-  (or (get-charset-property charset 'prefered-coding-system)
-      (get-charset-property charset 'preferred-coding-system)))
+  (or (get-charset-property charset 'preferred-coding-system)
+      (get-charset-property charset 'prefered-coding-system)))
 
 (defun mm-charset-after (&optional pos)
   "Return charset of a character in current buffer at position POS.
@@ -472,6 +485,10 @@ If the charset is `composition', return the actual one."
 	    (skip-chars-forward "\0-\177"))))
 	(not inconvertible))))
 
+(defun mm-sort-coding-systems-predicate (a b)
+  (> (length (memq a mm-coding-system-priorities))
+     (length (memq b mm-coding-system-priorities))))
+
 (defun mm-find-mime-charset-region (b e &optional hack-charsets)
   "Return the MIME charsets needed to encode the region between B and E.
 Nil means ASCII, a single-element list represents an appropriate MIME
@@ -483,6 +500,9 @@ charset, and a longer list means no appropriate charset."
 	     ;; Find the mime-charset of the most preferred coding
 	     ;; system that has one.
 	     (let ((systems (find-coding-systems-region b e)))
+	       (when mm-coding-system-priorities
+		 (setq systems 
+		       (sort systems 'mm-sort-coding-systems-predicate)))
 	       ;; Fixme: The `mime-charset' (`x-ctext') of `compound-text'
 	       ;; is not in the IANA list.
 	       (setq systems (delq 'compound-text systems))

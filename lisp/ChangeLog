@@ -1,3 +1,10 @@
+2001-11-20 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-coding-system-priorities): New.
+	(mm-sort-coding-systems-predicate): New.
+	(mm-find-mime-charset-region): Resort coding systems if needed.
+	Suggested by Katsumi Yamaoka <yamaoka@jpl.org>.
+
 2001-11-20  Didier Verna  <didier@xemacs.org>
 
 	* gnus-group.el (gnus-group-make-help-group): new optional
