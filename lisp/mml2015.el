@@ -93,6 +93,10 @@
 		(error 
 		 (mm-set-handle-multipart-parameter 
 		  mm-security-handle 'gnus-details (cadr err)) 
+		 nil)
+		(quit
+		 (mm-set-handle-multipart-parameter 
+		  mm-security-handle 'gnus-details "Quit.") 
 		 nil)))
 	(unless (car result)
 	  (mm-set-handle-multipart-parameter 
@@ -114,6 +118,10 @@
 	    (error 
 	     (mm-set-handle-multipart-parameter 
 	      mm-security-handle 'gnus-details (cadr err)) 
+	     nil)
+	    (quit
+	     (mm-set-handle-multipart-parameter 
+	      mm-security-handle 'gnus-details "Quit.") 
 	     nil)))
     (if (car result)
 	(mm-set-handle-multipart-parameter 
@@ -169,6 +177,10 @@
 		  (error 
 		   (mm-set-handle-multipart-parameter 
 		    mm-security-handle 'gnus-details (cadr err)) 
+		   nil)
+		  (quit
+		   (mm-set-handle-multipart-parameter 
+		    mm-security-handle 'gnus-details "Quit.") 
 		   nil))
 	  (mm-set-handle-multipart-parameter 
 	   mm-security-handle 'gnus-info "Failed")
@@ -183,6 +195,10 @@
 	(error 
 	 (mm-set-handle-multipart-parameter 
 	  mm-security-handle 'gnus-details (cadr err)) 
+	 nil)
+	(quit
+	 (mm-set-handle-multipart-parameter 
+	  mm-security-handle 'gnus-details "Quit.") 
 	 nil))
       (mm-set-handle-multipart-parameter 
        mm-security-handle 'gnus-info "OK")
@@ -325,7 +341,16 @@
 	     mm-security-handle 'gnus-info "Corrupted")
 	    (throw 'error handle))
 	  (mm-insert-part part)
-	  (unless (gpg-verify message signature mml2015-result-buffer)
+	  (unless (condition-case err
+		      (gpg-verify message signature mml2015-result-buffer)
+		    (error 
+		     (mm-set-handle-multipart-parameter 
+		      mm-security-handle 'gnus-details (cadr err)) 
+		     nil)
+		    (quit
+		     (mm-set-handle-multipart-parameter 
+		      mm-security-handle 'gnus-details "Quit.") 
+		     nil))
 	    (mm-set-handle-multipart-parameter 
 	     mm-security-handle 'gnus-details 
 	     (with-current-buffer mml2015-result-buffer

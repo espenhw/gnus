@@ -1,3 +1,11 @@
+2000-11-13 16:09:09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el (mml2015-mailcrypt-decrypt): Handle quit.
+	(mml2015-mailcrypt-clear-decrypt): Ditto.
+	(mml2015-mailcrypt-verify): Ditto.
+	(mml2015-mailcrypt-clear-verify): Ditto.
+	(mml2015-gpg-verify): Ditto.
+
 2000-11-13 15:29:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* smime.el (smime-openssl-program): Test the existence of openssl.
