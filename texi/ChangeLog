@@ -1,3 +1,9 @@
+2002-02-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.texi (Mailing Lists): Addition.
+	* gnus.texi (Group Parameters): Addition.
+	From Sriram Karra <karra@cs.utah.edu>.
+
 2002-02-03  Karl Kleinpaste  <karl@charcoal.com>
 
 	* gnus.texi (Summary Score Commands): Added detail on "extra"

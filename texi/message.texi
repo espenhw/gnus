@@ -358,6 +358,7 @@ way.  The following variables would come in handy.
 
 @table @code
 
+@vindex message-subscribed-addresses
 @item message-subscribed-addresses
 This should be a list of addresses the user is subscribed to.  Its
 default value is @code{nil}.   Example: 
@@ -366,19 +367,32 @@ default value is @code{nil}.   Example:
       '("ding@@gnus.org" "bing@@noose.org"))
 @end lisp
 
+@vindex message-subscribed-regexps
 @item message-subscribed-regexps
 This should be a list of regexps denoting the addresses of mailing
 lists subscribed to.  Default value is @code{nil}.  Example: If you
 want to achieve the same result as above:
 @lisp
 (setq message-subscribed-regexps
-      '("[bd]ing@@\\(gnus\\|noose\\)\\.org"))
+      '("\\(ding@@gnus\\)\\|\\(bing@@noose\\)\\.org")
 @end lisp
 
+@vindex message-subscribed-address-functions
 @item message-subscribed-address-functions
 This can be a list of functions to be called (one at a time!!) to
 determine the value of MFT headers.  It is advisable that these
 functions not take any arguments.  Default value is @code{nil}.
+
+There is a pre-defined function in Gnus that is a good candidate for
+this variable.  @code{gnus-find-subscribed-addresses} is a function
+that returns a list of addresses corresponding to the groups that have
+the @code{subscribed} (@pxref{(gnus)subscribed})
+group parameter set to a non-nil value.  This is how you would do it.
+
+@lisp
+(setq message-subscribed-address-functions
+      '(gnus-find-subscribed-addresses))
+@end lisp
 
 @item message-subscribed-address-file
 You might be one organised human freak and have a list of addresses of
@@ -404,11 +418,12 @@ Hm. ``So'', you ask, ``what if I send an email to a list I am not
 subscribed to?''  Well, the kind folks at Gnus Towers are working on a
 database of all known mailing list addresses that can be used for this
 purpose.  Till then, you could, like, insert a MFT header manually,
-with the help of @kbd{C-c C-f m} !!
+with the help of @kbd{C-c C-f C-m} !!
 
 @c @node Honoring an MFT post
 @subsection Honoring an MFT post
 
+@vindex message-use-mail-followup-to
 When you followup to a post on a mailing list, and the post has a MFT
 header, Gnus' action will depend on the value of the variable
 @code{message-use-mail-followup-to}.  This variable can be one of:

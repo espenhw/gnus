@@ -2678,6 +2678,7 @@ entering summary buffer.
 
 See also @code{gnus-parameter-to-list-alist}.
 
+@anchor{subscribed}
 @item subscribed
 @cindex subscribed
 If this parameter is set to @code{t}, Gnus will consider the
