@@ -125,7 +125,8 @@ Modify to suit your needs."))
  	(require 'w3-forms)
       (error
        (dolist (file '("nnweb.el" "nnlistserv.el" "nnultimate.el"
-		       "nnslashdot.el" "nnwarchive.el" "webmail.el"))
+		       "nnslashdot.el" "nnwarchive.el" "webmail.el"
+		       "nnwfm.el"))
 	 (setq files (delete file files)))))
     (dolist (file 
 	     (if (featurep 'xemacs)
