@@ -1,3 +1,7 @@
+2000-12-29 21:43:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.texi (Spelling): New.
+
 2000-12-29 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* texi2latex.el (latexi-translate-file): Support srcdir.
