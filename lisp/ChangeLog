@@ -67,7 +67,6 @@
 	* qp.el (quoted-printable-decode-region): Just message
 	malformation; don't quit.
 
->>>>>>> 6.401
 2001-03-31 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Gerd Moellmann <gerd@gnu.org>.
 
