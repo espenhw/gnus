@@ -15766,6 +15766,7 @@ changes to a wiki (e.g. @url{http://cliki.net/recent-changes.rdf}).
 @acronym{RSS} has a quite regular and nice interface, and it's
 possible to get the information Gnus needs to keep groups updated.
 
+@kindex G R (Summary)
 Use @kbd{G R} from the summary buffer to subscribe to a feed---you
 will be prompted for the location of the feed.
 

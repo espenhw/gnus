@@ -1,3 +1,7 @@
+2004-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (RSS): kindex.
+
 2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Summary Score Commands): Add `f' to
