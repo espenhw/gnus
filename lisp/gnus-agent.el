@@ -748,9 +748,11 @@ article's mark is toggled."
   (let ((gnus-command-method (gnus-find-method-for-group gnus-newsgroup-name)))
     (when (set (make-local-variable 'gnus-newsgroup-agentized) (gnus-agent-method-p gnus-command-method))
       (let* ((alist (gnus-agent-load-alist gnus-newsgroup-name))
-	    (headers gnus-newsgroup-headers)
-	    (undownloaded (list nil))
-	    (tail undownloaded))
+             (headers gnus-newsgroup-headers)
+             (undownloaded (list nil))
+             (tail-undownloaded undownloaded)
+             (unfetched (list nil))
+             (tail-unfetched unfetched))
 	(while (and alist headers)
 	  (let ((a (caar alist))
 		(h (mail-header-number (car headers))))
@@ -760,21 +762,26 @@ article's mark is toggled."
                    ;; headers that are not in the alist should be
                    ;; fictious (see nnagent-retrieve-headers); they
                    ;; imply that this article isn't in the agent.
-		   (gnus-agent-append-to-list tail h)
+		   (gnus-agent-append-to-list tail-undownloaded h)
+		   (gnus-agent-append-to-list tail-unfetched    h)
                    (pop headers)) 
 		  ((cdar alist)
 		   (pop alist)
 		   (pop headers)
-		   nil; ignore already downloaded
+		   nil                  ; ignore already downloaded
 		   )
 		  (t
 		   (pop alist)
 		   (pop headers)
-		   (gnus-agent-append-to-list tail a)))))
+		   (gnus-agent-append-to-list tail-undownloaded a)))))
 
 	(while headers
-          (gnus-agent-append-to-list tail (mail-header-number (pop headers))))
-	(setq gnus-newsgroup-undownloaded (cdr undownloaded))))))
+          (let ((num (mail-header-number (pop headers))))
+            (gnus-agent-append-to-list tail-undownloaded num)
+            (gnus-agent-append-to-list tail-unfetched    num)))
+
+	(setq gnus-newsgroup-undownloaded (cdr undownloaded)
+              gnus-newsgroup-unfetched    (cdr unfetched))))))
 
 (defun gnus-agent-catchup ()
   "Mark all articles as read that are neither cached, downloaded, nor downloadable."
