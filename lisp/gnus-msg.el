@@ -518,7 +518,7 @@ Gcc: header for archiving purposes."
    `(set-window-configuration ,winconf) 'exit 'postpone 'kill)
   (let ((to-be-marked (cond
 		       (yanked yanked)
-		       (article (list article))
+		       (article (if (listp article) article (list article)))
 		       (t nil))))
     (message-add-action
      `(when (gnus-buffer-exists-p ,buffer)
