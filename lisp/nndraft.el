@@ -106,47 +106,23 @@
     ;; "real" file.
     (let* ((file (nndraft-article-filename id))
 	   (auto (nndraft-auto-save-file-name file))
-	   (newest (if (or (member group '("drafts" "delayed"))
-			   (file-newer-than-file-p file auto))
-		       file
-		     auto))
-	   (nntp-server-buffer (or buffer nntp-server-buffer))
-	   ;; The default value for `message-draft-coding-system' was
-	   ;; `emacs-mule' for Emacs in the past, and the existing draft
-	   ;; files may have been saved using that coding-system.
-	   (maybe-emacs-mule-p (and (not (featurep 'xemacs))
-				    (not (equal "queue" group))
-				    (eq message-draft-coding-system
-					;; The present default value.
-					'iso-2022-7bit)
-				    (mm-coding-system-p 'emacs-mule))))
+	   (newest (if (file-newer-than-file-p file auto) file auto))
+	   (nntp-server-buffer (or buffer nntp-server-buffer)))
       (when (and (file-exists-p newest)
-		 (if (equal "queue" group)
-		     (nnmail-find-file newest)
-		   (let ((nnmail-file-coding-system
-			  (if (file-newer-than-file-p file auto)
-			      (if (member group '("drafts" "delayed"))
-				  (if maybe-emacs-mule-p
-				      mm-text-coding-system
-				    message-draft-coding-system)
-				mm-text-coding-system)
-			    mm-auto-save-coding-system)))
-		     (nnmail-find-file newest))))
+		 (let ((nnmail-file-coding-system
+			(if (file-newer-than-file-p file auto)
+			    (if (member group '("drafts" "delayed"))
+				message-draft-coding-system
+			      mm-text-coding-system)
+			  mm-auto-save-coding-system)))
+		   (nnmail-find-file newest)))
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
-	  (when maybe-emacs-mule-p
-	    (goto-char (point-min))
-	    (if (re-search-forward "[^\000-\177]" nil t)
-		;; Consider the file has been saved as `emacs-mule'.
-		(mm-decode-coding-region (point-min) (point-max)
-					 mm-auto-save-coding-system)
-	      (mm-decode-coding-region (point-min) (point-max)
-				       message-draft-coding-system)))
 	  (goto-char (point-min))
 	  ;; If there's a mail header separator in this file,
 	  ;; we remove it.
 	  (when (re-search-forward
-		 (concat "^" mail-header-separator "$") nil t)
+		 (concat "^" (regexp-quote mail-header-separator) "$") nil t)
 	    (replace-match "" t t)))
 	t))))
 
