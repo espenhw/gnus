@@ -2283,8 +2283,6 @@ such as a mark that says whether an article is stored in the cache
   '(gnus-newsrc-options gnus-newsrc-options-n
 			gnus-newsrc-last-checked-date
 			gnus-newsrc-alist gnus-server-alist
-			gnus-registry-alist
-			gnus-registry-headers-alist
 			gnus-killed-list gnus-zombie-list
 			gnus-topic-topology gnus-topic-alist
 			gnus-agent-covered-methods gnus-format-specs)
@@ -2296,10 +2294,6 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 
 (defvar gnus-registry-alist nil
   "Assoc list of registry data.
-gnus-registry.el will populate this if it's loaded.")
-
-(defvar gnus-registry-headers-alist nil
-  "Assoc list of registry header data.
 gnus-registry.el will populate this if it's loaded.")
 
 (defvar gnus-newsrc-hashtb nil

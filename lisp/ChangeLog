@@ -1,3 +1,24 @@
+2003-05-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.el (gnus-variable-list): removed gnus-registry-alist and
+	gnus-registry-headers-alist from the list
+	(gnus-registry-headers-alist): removed
+
+	* gnus-start.el (gnus-clear-system): no need to clear the
+	registry, we can do it ourselves
+	(gnus-gnus-to-quick-newsrc-format): extra parameters so it can be
+	used by gnus-registry.el
+
+	* gnus-registry.el (gnus-registry-cache-file): new file variable
+	(gnus-registry-cache-read, gnus-registry-cache-save): new
+	functions
+	(gnus-registry-cache-whitespace): new function.  From Dan
+	Christensen <jdc@chow.mat.jhu.edu>
+	(gnus-registry-save, gnus-registry-read): use the new
+	gnus-registry-cache-{read|save} functions, and change the name
+	from gnus-registry-translate-{from|to}-alist
+	(gnus-registry-clear): fixed so it doesn't refer to old function name
+
 2003-05-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-picon.el (gnus-picon-transform-address): Parse the encoded

@@ -674,8 +674,7 @@ the first newsgroup."
 	nnoo-state-alist nil
 	gnus-current-select-method nil
 	nnmail-split-history nil
-	gnus-ephemeral-servers nil
-	gnus-registry-alist nil)
+	gnus-ephemeral-servers nil)
   (gnus-shutdown 'gnus)
   ;; Kill the startup file.
   (and gnus-current-startup-file
@@ -2632,16 +2631,21 @@ If FORCE is non-nil, the .newsrc file is read."
 	(gnus-dribble-delete-file)
 	(gnus-group-set-mode-line)))))
 
-(defun gnus-gnus-to-quick-newsrc-format ()
+(defun gnus-gnus-to-quick-newsrc-format (&optional minimal name specific-variable)
   "Print Gnus variables such as gnus-newsrc-alist in lisp format."
     (princ ";; -*- emacs-lisp -*-\n")
-    (princ ";; Gnus startup file.\n")
-    (princ "\
+    (if name
+	(princ (format ";; %s\n" name))
+      (princ ";; Gnus startup file.\n"))
+
+    (unless minimal
+      (princ "\
 ;; Never delete this file -- if you want to force Gnus to read the
 ;; .newsrc file (if you have one), touch .newsrc instead.\n")
-    (princ "(setq gnus-newsrc-file-version ")
-    (princ (gnus-prin1-to-string gnus-version))
-    (princ ")\n")
+      (princ "(setq gnus-newsrc-file-version ")
+      (princ (gnus-prin1-to-string gnus-version))
+      (princ ")\n"))
+
     (let* ((print-quoted t)
            (print-readably t)
            (print-escape-multibyte nil)
@@ -2654,11 +2658,13 @@ If FORCE is non-nil, the .newsrc file is read."
 		     (stringp gnus-save-killed-list))
 		(gnus-strip-killed-list)
 	      gnus-killed-list))
-	   (variables
-	    (if gnus-save-killed-list gnus-variable-list
-	      ;; Remove the `gnus-killed-list' from the list of variables
-	      ;; to be saved, if required.
-	      (delq 'gnus-killed-list (copy-sequence gnus-variable-list))))
+	   (variables 
+	    (if specific-variable
+		(list specific-variable)
+	      (if gnus-save-killed-list gnus-variable-list
+		;; Remove the `gnus-killed-list' from the list of variables
+		;; to be saved, if required.
+		(delq 'gnus-killed-list (copy-sequence gnus-variable-list)))))
 	   ;; Peel off the "dummy" group.
 	   (gnus-newsrc-alist (cdr gnus-newsrc-alist))
 	   variable)

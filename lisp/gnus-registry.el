@@ -40,14 +40,16 @@
 (defvar gnus-registry-hashtb nil
   "*The article registry by Message ID.")
 
-(defvar gnus-registry-headers-hashtb nil
-  "*The article header registry by Message ID.  Unused for now.")
-
 (defcustom gnus-registry-unfollowed-groups '("delayed" "drafts" "queue")
   "List of groups that gnus-registry-split-fancy-with-parent won't follow.
 The group names are matched, they don't have to be fully qualified."
   :group 'gnus-registry
   :type '(repeat string))
+
+(defcustom gnus-registry-cache-file "~/.gnus.registry.eld"
+  "File where the Gnus registry will be stored."
+  :group 'gnus-registry
+  :type 'file)
 
 (defcustom gnus-registry-unregistered-group-regex "^nntp"
   "Group name regex that gnus-registry-register-message-ids won't process."
@@ -61,10 +63,96 @@ The group names are matched, they don't have to be fully qualified."
     ;; alias puthash is missing from Emacs 20 cl-extra.el
     (defalias 'puthash 'cl-puthash)))
 
-(defun gnus-registry-translate-to-alist ()
-  (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb)))
+(defun gnus-registry-cache-read ()
+  "Read the registry cache file."
+  (interactive)
+  (let ((file gnus-registry-cache-file))
+    (when (file-exists-p file)
+      (gnus-message 5 "Reading %s..." file)
+      (gnus-load file)
+      (gnus-message 5 "Reading %s...done" file))))
 
-(defun gnus-registry-translate-from-alist ()
+(defun gnus-registry-cache-save ()
+  "Save the registry cache file."
+  (interactive)
+  (let ((file gnus-registry-cache-file))
+    (save-excursion
+      ;; Save .newsrc.eld.
+      (set-buffer (gnus-get-buffer-create " *Gnus-registry-cache*"))
+      (make-local-variable 'version-control)
+    (setq version-control gnus-backup-startup-file)
+    (setq buffer-file-name file)
+    (setq default-directory (file-name-directory buffer-file-name))
+    (buffer-disable-undo)
+    (erase-buffer)
+    (gnus-message 5 "Saving %s..." file)
+    (if gnus-save-startup-file-via-temp-buffer
+	(let ((coding-system-for-write gnus-ding-file-coding-system)
+	      (standard-output (current-buffer)))
+	  (gnus-gnus-to-quick-newsrc-format t "gnus registry startup file" 'gnus-registry-alist)
+	  (gnus-registry-cache-whitespace file)
+	  (save-buffer))
+      (let ((coding-system-for-write gnus-ding-file-coding-system)
+	    (version-control gnus-backup-startup-file)
+	    (startup-file file)
+	    (working-dir (file-name-directory file))
+	    working-file
+	    (i -1))
+	;; Generate the name of a non-existent file.
+	(while (progn (setq working-file
+			    (format
+			     (if (and (eq system-type 'ms-dos)
+				      (not (gnus-long-file-names)))
+				 "%s#%d.tm#" ; MSDOS limits files to 8+3
+			       (if (memq system-type '(vax-vms axp-vms))
+				   "%s$tmp$%d"
+				 "%s#tmp#%d"))
+			     working-dir (setq i (1+ i))))
+		      (file-exists-p working-file)))
+	
+	(unwind-protect
+	    (progn
+	      (gnus-with-output-to-file working-file
+		(gnus-gnus-to-quick-newsrc-format t "gnus registry startup file" 'gnus-registry-alist))
+	      
+	      ;; These bindings will mislead the current buffer
+	      ;; into thinking that it is visiting the startup
+	      ;; file.
+	      (let ((buffer-backed-up nil)
+		    (buffer-file-name startup-file)
+		    (file-precious-flag t)
+		    (setmodes (file-modes startup-file)))
+		;; Backup the current version of the startup file.
+		(backup-buffer)
+		
+		;; Replace the existing startup file with the temp file.
+		(rename-file working-file startup-file t)
+		(set-file-modes startup-file setmodes)))
+	  (condition-case nil
+	      (delete-file working-file)
+	    (file-error nil)))))
+    
+    (gnus-kill-buffer (current-buffer))
+    (gnus-message 5 "Saving %s...done" file))))
+
+;; Idea from Dan Christensen <jdc@chow.mat.jhu.edu>
+;; Save the gnus-registry file with extra line breaks.
+(defun gnus-registry-cache-whitespace (filename)
+  (gnus-message 4 "Adding whitespace to %s" filename)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^(\\|(\\\"" nil t)
+      (replace-match "\n\\&" t))
+    (goto-char (point-min))
+    (while (re-search-forward " $" nil t)
+      (replace-match "" t t))))
+
+(defun gnus-registry-save ()
+  (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb))
+  (gnus-registry-cache-save))
+
+(defun gnus-registry-read ()
+  (gnus-registry-cache-read)
   (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist)))
 
 (defun alist-to-hashtable (alist)
@@ -252,9 +340,8 @@ Returns the first place where the trail finds a group name."
 (defun gnus-registry-clear ()
   "Clear the Gnus registry."
   (interactive)
-  (setq gnus-registry-alist nil 
-	gnus-registry-headers-alist nil)
-  (gnus-registry-translate-from-alist))
+  (setq gnus-registry-alist nil)
+  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist)))
 
 ; also does copy, respool, and crosspost
 (add-hook 'gnus-summary-article-move-hook 'gnus-register-action) 
@@ -262,8 +349,8 @@ Returns the first place where the trail finds a group name."
 (add-hook 'gnus-summary-article-expire-hook 'gnus-register-action)
 (add-hook 'nnmail-spool-hook 'gnus-register-spool-action)
 
-(add-hook 'gnus-save-newsrc-hook 'gnus-registry-translate-to-alist)
-(add-hook 'gnus-read-newsrc-el-hook 'gnus-registry-translate-from-alist)
+(add-hook 'gnus-save-newsrc-hook 'gnus-registry-save)
+(add-hook 'gnus-read-newsrc-el-hook 'gnus-registry-read)
 
 (add-hook 'gnus-summary-prepare-hook 'gnus-registry-register-message-ids)
 
