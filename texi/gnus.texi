@@ -22131,8 +22131,18 @@ description-buffer = *description-line
 @item (nnchoke-request-newgroups DATE &optional SERVER)
 
 The result data from this function should be all groups that were
-created after @samp{date}, which is in normal human-readable date
-format.  The data should be in the active buffer format.
+created after @samp{date}, which is in normal human-readable date format
+(i.e., the date format used in mail and news headers, and returned by
+the function @code{current-time-string} by default).  The data should be
+in the active buffer format.
+
+It is okay for this function to return `too many' groups; some backends
+might find it cheaper to return the full list of groups, rather than
+just the new groups.  But don't do this for backends with many groups.
+Normally, if the user creates the groups herself, there won't be too
+many groups, so nnml and the like are probably safe.  But for backends
+like nntp, where the groups have been created by the server, it is quite
+likely that there can be many groups.
 
 
 @item (nnchoke-request-create-group GROUP &optional SERVER)
