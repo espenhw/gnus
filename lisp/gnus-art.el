@@ -3351,10 +3351,12 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	     (insert-buffer gnus-original-article-buffer)
 	     (mime-to-mml gnus-article-mime-handles)
 	     (setq gnus-article-mime-handles nil)
-	     (make-local-hook 'kill-buffer-hook)
 	     (let ((mbl1 mml-buffer-list))
 	       (setq mml-buffer-list mbl)
 	       (set (make-local-variable 'mml-buffer-list) mbl1))
+             ;; LOCAL argument of add-hook differs between GNU Emacs
+             ;; and XEmacs. make-local-hook makes sure they are local.
+	     (make-local-hook 'kill-buffer-hook)
 	     (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t)))
        `(lambda (no-highlight)
 	  (let ((mail-parse-charset (or gnus-article-charset

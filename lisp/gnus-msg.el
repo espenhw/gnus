@@ -246,6 +246,10 @@ Thank you for your help in stamping out bugs.
 	     (let ((mbl1 mml-buffer-list))
 	       (setq mml-buffer-list mbl)  ;; Global value
 	       (set (make-local-variable 'mml-buffer-list) mbl1);; Local value
+               ;; LOCAL argument of add-hook differs between GNU Emacs
+               ;; and XEmacs. make-local-hook makes sure they are local.
+               (make-local-hook 'kill-buffer-hook)
+               (make-local-hook 'change-major-mode-hook)
 	       (add-hook 'change-major-mode-hook 'mml-destroy-buffers nil t)
 	       (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))
 	   (mml-destroy-buffers)
