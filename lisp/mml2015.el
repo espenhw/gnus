@@ -36,6 +36,7 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
+(require 'mm-decode)
 
 (defvar mml2015-decrypt-function 'mailcrypt-decrypt)
 (defvar mml2015-verify-function 'mailcrypt-verify)
@@ -87,7 +88,14 @@
       (unless (funcall mml2015-verify-function)
 	(error "Verify error.")))))
 
-(autoload 'mc-sign-generic "mc-toplev")
+(eval-and-compile
+  (autoload 'mc-encrypt-generic "mc-toplev")
+  (autoload 'mc-cleanup-recipient-headers "mc-toplev")
+  (autoload 'mc-sign-generic "mc-toplev"))
+
+(eval-when-compile
+  (defvar mc-default-scheme)
+  (defvar mc-schemes))
 
 (defun mml2015-mailcrypt-sign (cont)
   (mc-sign-generic (message-options-get 'message-sender)
@@ -127,7 +135,6 @@
     (insert (format "--%s--\n" boundary))
     (goto-char (point-max))))
 
-(autoload 'mc-encrypt-generic "mc-toplev")
 
 (defun mml2015-mailcrypt-encrypt (cont)
   (mc-encrypt-generic 

@@ -1,3 +1,7 @@
+2000-10-30 08:38:12  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml2015.el: Shut up.
+
 2000-10-30 08:17:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-server-browse-hashtb): Removed.
