@@ -495,6 +495,7 @@ For example:
     "=" gnus-group-select-group
     "\r" gnus-group-select-group
     "\M-\r" gnus-group-quick-select-group
+    "\M- " gnus-group-visible-select-group
     [(meta control return)] gnus-group-select-group-ephemerally
     "j" gnus-group-jump-to-group
     "n" gnus-group-next-unread-group

@@ -255,7 +255,7 @@ is the face used for highlighting."
 
 (defcustom gnus-emphasize-whitespace-regexp "^[ \t]+\\|[ \t]*\n"
   "A regexp to describe whitespace which should not be emphasized.
-Typical values are \"^[ \t]+\\|[ \t]*\n\" and \"[ \t]+\\|[ \t]*\n\".
+Typical values are \"^[ \\t]+\\\\|[ \\t]*\\n\" and \"[ \\t]+\\\\|[ \\t]*\\n\".
 The former avoids underlining of leading and trailing whitespace,
 and the latter avoids underlining any whitespace at all."
   :group 'gnus-article-emphasis

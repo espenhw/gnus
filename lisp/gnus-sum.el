@@ -9013,7 +9013,7 @@ If N is a negative number, save the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 save those articles instead."
   (interactive "P")
-  (let ((gnus-default-article-saver 'rmail-output-to-rmail-file))
+  (let ((gnus-default-article-saver 'gnus-summary-save-in-rmail))
     (gnus-summary-save-article arg)))
 
 (defun gnus-summary-save-article-file (&optional arg)

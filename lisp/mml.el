@@ -638,7 +638,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
     (define-key map "p" 'mml-insert-part)
     (define-key map "v" 'mml-validate)
     (define-key map "P" 'mml-preview)
-    (define-key map "n" 'mml-narrow-to-part)
+    ;;(define-key map "n" 'mml-narrow-to-part)
     (define-key main "\M-m" map)
     main))
 
@@ -652,7 +652,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
    ("Insert"
     ["Multipart" mml-insert-multipart t]
     ["Part" mml-insert-part t])
-   ["Narrow" mml-narrow-to-part t]
+   ;;["Narrow" mml-narrow-to-part t]
    ["Quote" mml-quote-region t]
    ["Validate" mml-validate t]
    ["Preview" mml-preview t]))

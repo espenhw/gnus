@@ -1,3 +1,18 @@
+2000-05-17 21:16:54  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-mode-map): Add M-SPACE.
+	* mml.el (mml-mode-map): Comment out mml-narrow-to-part.
+
+2000-05-17 21:13:38 Jim Davidson <jdavidson@acm.org>
+
+	* gnus-sum.el (gnus-summary-save-article-rmail): Use
+	gnus-summary-save-in-rmail.
+	* message.el (message-output): Ditto.
+
+2000-05-17 22:37:25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-emphasize-whitespace-regexp): Doc fix.
+	
 2000-05-17 14:03:49  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-encode-message-header): Encode if the method
