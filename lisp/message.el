@@ -2477,10 +2477,13 @@ It should typically alter the sending method in some way or other."
 		(and news
 		     (or (message-fetch-field "cc")
 			 (message-fetch-field "to"))
-		     (string= "text/plain"
-			      (car
-			       (mail-header-parse-content-type
-				(message-fetch-field "content-type"))))))
+		     (let ((content-type (message-fetch-field "content-type")))
+		       (or
+			(not content-type)
+			(string= "text/plain"
+				 (car
+				  (mail-header-parse-content-type
+				   content-type)))))))
 	    (message-insert-courtesy-copy))
 	  (if (or (not message-send-mail-partially-limit)
 		  (< (point-max) message-send-mail-partially-limit)

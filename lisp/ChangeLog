@@ -1,3 +1,7 @@
+2001-01-19  Alberto Lusiani <a.lusiani@noemail.org>
+
+	* message.el (message-send-mail): Content-Type may not be there.
+
 2001-01-18 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-ems.el (gnus-article-display-xface): Add BUFFER.
