@@ -706,7 +706,7 @@ The original article will be yanked."
   "Forward the current message to another user.  
 If ARG is nil, see `message-forward-as-mime' and `message-forward-show-mml';
 if ARG is 1, decode the message and forward directly inline;
-if ARG is 2, foward message as an rfc822 MIME section;
+if ARG is 2, forward message as an rfc822 MIME section;
 if ARG is 3, decode message and forward as an rfc822 MIME section;
 if ARG is 4, foward message directly inline;
 otherwise, use flipped `message-forward-as-mime'.
