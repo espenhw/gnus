@@ -1,3 +1,9 @@
+2004-10-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* gnus-art.el (gnus-mime-display-single): Call `mm-display-inline'
+	instead of calling `mm-insert-inline', to decode text/* parts
+	before displaying them.
+
 2004-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-uu.el (mm-uu-text-plain-type): New variable.

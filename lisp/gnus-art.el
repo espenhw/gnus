@@ -4709,7 +4709,7 @@ If displaying \"text/html\" is discouraged \(see
 	      (forward-line -1)
 	      (setq beg (point)))
 	    (gnus-article-insert-newline)
-	    (mm-insert-inline handle (mm-get-part handle))
+	    (mm-display-inline handle)
 	    (goto-char (point-max))))
 	  ;; Do highlighting.
 	  (save-excursion
