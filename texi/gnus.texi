@@ -17024,7 +17024,18 @@ all @code{nntp} and @code{nnimap} groups in @code{gnus-select-method} and
 @code{gnus-secondary-select-methods} are agentized.
 
 @item
-Decide on download policy.  @xref{Agent Categories}.
+
+Decide on download policy.  It's fairly simple once you decide whether
+you are going to use agent categories, topic parameters, and/or group
+parameters to implement your policy.  If you're new to gnus, it
+is probably best to start with a category @xref{Agent Categories}.
+
+Both topic parameters (@xref{Topic Parameters}) and agent 
+categories (@xref{Agent Categories}) provide for setting a policy that 
+applies to multiple groups.  Which you use is entirely up to you.  Topic
+parameters do override categories so, if you mix the two, you'll have to
+take that into account.  If you have a few groups that deviate from your
+policy, you can use @xref{Group Parameters} to configure them.
 
 @item
 Uhm@dots{} that's it.
@@ -17042,11 +17053,26 @@ to be somewhat more conservative in choosing what to download, and then
 mark the articles for downloading manually if it should turn out that
 you're interested in the articles anyway.
 
-The main way to control what is to be downloaded is to create a
-@dfn{category} and then assign some (or all) groups to this category.
-Groups that do not belong in any other category belong to the
-@code{default} category.  Gnus has its own buffer for creating and
-managing categories.
+One of the more effective methods for controlling what is to be
+downloaded is to create a @dfn{category} and then assign some (or all)
+groups to this category.  Groups that do not belong in any other
+category belong to the @code{default} category.  Gnus has its own
+buffer for creating and managing categories.
+
+If you prefer, you can also use group parameters (@pxref{Group
+Parameters}) and topic parameters (@pxref{Topic Parameters}) for an
+alternative approach to controlling the agent.  The only real
+difference is that categories are specific to the agent (so there is
+less to learn) while group and topic parameters include the kitchen
+sink.
+
+Since you can set agent parameters in several different places we have
+a rule to decide which source to believe.  This rule specifies that
+the parameter sources are checked in the following order: group
+parameters, topic parameters, agent category, and finally customizable
+variables. So you can mix all of these sources to produce a wide range
+of behavior, just don't blame me if you don't remember where you put
+your settings.
 
 @menu
 * Category Syntax::             What a category looks like.
@@ -17058,18 +17084,58 @@ managing categories.
 @node Category Syntax
 @subsubsection Category Syntax
 
-A category consists of two things.
+A category consists of a name, the list of groups belonging to the
+category, and a number of optional parameters that override the
+customizable variables.  The complete list of agent parameters are
+listed below.
 
-@enumerate
-@item
+@table @code
+@item gnus-agent-cat-name
+The name of the category.
+
+@item gnus-agent-cat-groups
+The list of groups that are in this category.
+
+@item gnus-agent-cat-predicate
 A predicate which (generally) gives a rough outline of which articles
 are eligible for downloading; and
 
-@item
+@item gnus-agent-cat-score-file
 a score rule which (generally) gives you a finer granularity when
 deciding what articles to download.  (Note that this @dfn{download
 score} is not necessarily related to normal scores.)
-@end enumerate
+
+@item gnus-agent-cat-enable-expiration
+a boolean indicating whether the agent should expire old articles in
+this group.  Most groups should be expired to conserve disk space.  In
+fact, its probably safe to say that the gnus.* hierarchy contains the
+only groups that should not be expired.
+
+@item gnus-agent-cat-days-until-old
+an integer indicating the number of days that the agent should wait
+before deciding that a read article is safe to expire.
+
+@item gnus-agent-cat-low-score
+an integer that overrides the value of @code{gnus-agent-low-score}.
+
+@item gnus-agent-cat-high-score
+an integer that overrides the value of @code{gnus-agent-high-score}.
+
+@item gnus-agent-cat-length-when-short
+an integer that overrides the value of
+@code{gnus-agent-short-article}.
+
+@item gnus-agent-cat-length-when-long
+an integer that overrides the value of @code{gnus-agent-long-article}.
+@end table
+
+The name of a category can not be changed once the category has been
+created.
+
+Each category maintains a list of groups that are exclusive members of
+that category.  The exclusivity rule is automatically enforced, add a
+group to a new category and it is automatically removed from its old
+category.
 
 A predicate in its simplest form can be a single predicate such as
 @code{true} or @code{false}.  These two will download every available
@@ -17115,6 +17181,14 @@ The available logical operators are @code{or}, @code{and} and
 
 The following predicates are pre-defined, but if none of these fit what
 you want to do, you can write your own.
+
+When evaluating each of these predicates, the named constant will be
+bound to the value determined by calling
+@code{gnus-agent-find-parameter} on the appropriate parameter.  For
+example, gnus-agent-short-article will be bound to
+@code{(gnus-agent-find-parameter group 'agent-short-article)}.  This
+means that you can specify a predicate in your category then tune that
+predicate to individual groups.
 
 @table @code
 @item short
@@ -17200,7 +17274,7 @@ parameters like so:
 (agent-predicate . short)
 @end lisp
 
-This is the group parameter equivalent of the agent category default.
+This is the group/topic parameter equivalent of the agent category default.
 Note that when specifying a single word predicate like this, the
 @code{agent-predicate} specification must be in dotted pair notation.
 
@@ -17251,7 +17325,7 @@ Category specification
 @end lisp
 
 @item
-Group Parameter specification
+Group/Topic Parameter specification
 
 @lisp
 (agent-score ("from"
@@ -17341,6 +17415,12 @@ The following commands are available in this buffer:
 @findex gnus-category-exit
 Return to the group buffer (@code{gnus-category-exit}).
 
+@item e
+@kindex e (Category)
+@findex gnus-category-customize-category
+Use a customization buffer to set all of the selected category's
+parameters at one time (@code{gnus-category-customize-category}).
+
 @item k
 @kindex k (Category)
 @findex gnus-category-kill
@@ -17423,6 +17503,25 @@ Articles that have a score lower than this have a low score.  Default
 @vindex gnus-agent-high-score
 Articles that have a score higher than this have a high score.  Default
 0.
+
+@item gnus-agent-expire-days
+@vindex gnus-agent-expire-days
+The number of days that a @samp{read} article must stay in the agent's
+local disk before becoming eligible for expiration (While the name is
+the same, this doesn't mean expiring the article on the server.  It
+just means deleting the local copy of the article).  What is also
+important to understand is that the counter starts with the time the
+article was written to the local disk and not the time the article was
+read.
+Default 7.
+
+@item gnus-agent-enable-expiration
+@vindex gnus-agent-enable-expiration
+Determines whether articles in a group are, by default, expired or
+retained indefinitely.  The default is @code{ENABLE} which means that
+you'll have to disable expiration when desired.  On the other hand,
+you could set this to @code{DISABLE}.  In that case, you would then
+have to enable expiration in selected groups.
 
 @end table
 
@@ -17577,8 +17676,11 @@ consume lots of disk space), but if you have already downloaded an
 article into the Agent, Gnus will not download the article from the
 server again but use the locally stored copy instead.
 
-This behaviour can be controlled by @code{gnus-agent-cache}
-(@pxref{Agent Variables}).
+If you so desire, you can configure the agent (see @code{gnus-agent-cache}
+@pxref{Agent Variables}) to always download headers and articles while
+plugged.  Gnus will almost certainly be slower, but it will be kept
+synchronized with the server.  That last point probably won't make any
+sense if you are using a nntp or nnimap backend.
 
 @node Agent Expiry
 @subsection Agent Expiry
@@ -17586,45 +17688,39 @@ This behaviour can be controlled by @code{gnus-agent-cache}
 @vindex gnus-agent-expire-days
 @findex gnus-agent-expire
 @kindex M-x gnus-agent-expire
+@kindex M-x gnus-agent-expire-group
+@findex gnus-agent-expire-group
 @cindex Agent expiry
 @cindex Gnus Agent expiry
 @cindex expiry
 
-@code{nnagent} doesn't handle expiry.  Instead, there's a special
-@code{gnus-agent-expire} command that will expire all read articles that
-are older than @code{gnus-agent-expire-days} days.  It can be run
-whenever you feel that you're running out of space.  It's not
-particularly fast or efficient, and it's not a particularly good idea to
-interrupt it (with @kbd{C-g} or anything else) once you've started it.
+The Agent backend, @code{nnagent}, doesn't handle expiry. Well, at
+least it doesn't handle it like other backends.  Instead, there are
+special @code{gnus-agent-expire} and @code{gnus-agent-expire-group}
+commands that will expire all read articles that are older than
+@code{gnus-agent-expire-days} days.  They can be run whenever you feel
+that you're running out of space.  Neither are particularly fast or
+efficient, and it's not a particularly good idea to interrupt them (with
+@kbd{C-g} or anything else) once you've started one of them.
 
 Note that other functions, e.g. @code{gnus-request-expire-articles},
 might run @code{gnus-agent-expire} for you to keep the agent 
 synchronized with the group.
 
-@code{gnus-agent-expire-days} can also be a list of regexp/day pairs.
-The regexps will be matched against group names to allow differing
-expiry in different groups.
-
-@lisp
-(setq gnus-agent-expire-days
-      '(("alt\\." 7)
-        (".*binary" 1)
-        ("." 21)))
-@end lisp
-
-If you use the list form, the last element must always be the default
-method---it must always match all groups. Also, for a regexp to match,
-it must match from the beginning of the group's name.
+The agent parameter @code{agent-enable-expiration} may be used to
+prevent expiration in selected groups.
 
 @vindex gnus-agent-expire-all
-If @code{gnus-agent-expire-all} is non-@code{nil}, this command will
-expire all articles---unread, read, ticked and dormant.  If @code{nil}
-(which is the default), only read articles are eligible for expiry, and
-unread, ticked and dormant articles will be kept indefinitely.
+If @code{gnus-agent-expire-all} is non-@code{nil}, the agent
+expiration commands will expire all articles---unread, read, ticked
+and dormant.  If @code{nil} (which is the default), only read articles
+are eligible for expiry, and unread, ticked and dormant articles will
+be kept indefinitely.
 
 If you find that some articles eligible for expiry are never expired,
-perhaps some Gnus Agent files are corrupted.  There's a special
-@code{gnus-agent-regenerate} command to fix possible problems.
+perhaps some Gnus Agent files are corrupted.  There's are special
+commands, @code{gnus-agent-regenerate} and
+@code{gnus-agent-regenerate-group}, to fix possible problems.
 
 @node Agent Regeneration
 @subsection Agent Regeneration
@@ -17641,8 +17737,8 @@ internal inconsistencies.
 
 For example, if your connection to your server is lost while
 downloaded articles into the agent, the local data structures will not
-know about articles downloaded prior to the connection failure.
-Running @code{gnus-agent-regenerate} or
+know about articles successfully downloaded prior to the connection
+failure.  Running @code{gnus-agent-regenerate} or
 @code{gnus-agent-regenerate-group} will update the data structures
 such that you don't need to download these articles a second time.
 
@@ -17754,7 +17850,7 @@ Hook run when disconnecting from the network.
 
 @item gnus-agent-fetched-hook
 @vindex gnus-agent-fetched-hook
-Hook run when after finishing fetching articles.
+Hook run when finished fetching articles.
 
 @item gnus-agent-cache
 @vindex gnus-agent-cache
@@ -17774,7 +17870,9 @@ online status.
 @item gnus-agent-mark-unread-after-downloaded
 @vindex gnus-agent-mark-unread-after-downloaded
 If @code{gnus-agent-mark-unread-after-downloaded} is non-@code{nil},
-mark articles as unread after downloading.  The default is t.
+mark articles as unread after downloading.  This is usually a safe
+thing to do as the newly downloaded article has obviously not been
+read.  The default is t.
 
 @item gnus-agent-consider-all-articles
 @vindex gnus-agent-consider-all-articles
@@ -17793,7 +17891,8 @@ performance.  A small value minimizes the time lost should the
 connection be lost while fetching (You may need to run
 @code{gnus-agent-regenerate-group} to update the group's state.
 However, all articles parsed prior to loosing the connection will be
-available while unplugged).
+available while unplugged).  The default is 10M so it is unusual to
+see any cycling.
 
 @item gnus-server-unopen-status
 @vindex gnus-server-unopen-status
@@ -17804,6 +17903,19 @@ whether to deny the server or whether to unplug the agent.  If the
 Agent is disabled, Gnus always simply deny the server.  Other choices
 for this variable include @code{denied} and @code{offline} the latter
 is only valid if the Agent is used.
+
+@item gnus-auto-goto-ignores
+@vindex gnus-auto-goto-ignores
+Another variable that isn't a Agent variable, yet so closely related
+that most will look for it here, this variable tells the summary
+buffer how to maneuver around undownloaded (only headers stored in the
+agent) and unfetched (neither article nor headers stored) articles.
+
+The legal values are @code{nil} (maneuver to any article),
+@code{undownloaded} (maneuvering while unplugged ignores articles that
+have not been fetched), @code{always-undownloaded} (maneuvering always
+ignores articles that have not been fetched), @code{unfetched}
+(maneuvering ignores articles whose headers have not been fetched).
 
 @end table
 
@@ -17885,7 +17997,8 @@ may ask:
 @code{gnus-agent-fetch-selected-article} to
 @code{gnus-select-article-hook}.
 
-@item If I read an article while plugged, and the article already exists in the Agent, will it get downloaded once more?
+@item If I read an article while plugged, and the article already exists in 
+the Agent, will it get downloaded once more?
 
 @strong{No}, unless @code{gnus-agent-cache} is @code{nil}.
 
