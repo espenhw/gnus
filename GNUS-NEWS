@@ -30,7 +30,7 @@ after quering the user about whether to do so.
 ** IMAP identity (RFC 2971) is supported.
 
 By default, Gnus do not send any information about itself, but you can
-customize it using `nnimap-id'.
+customize it via the variable `nnimap-id'.
 
 ** The "all.SCORE" file can now be edited from the group buffer using `W e'.
 
