@@ -1,5 +1,20 @@
 2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* gnus-art.el (gnus-treat-emphasize): Ignore Emacs version number.
+	(gnus-mime-button-map): Don't set keymap parent.
+	(gnus-button-ctan-directory-regexp): Use shy grouping.
+	(gnus-prev-page-map): Don't set keymap parent.
+	(gnus-prev-page-map): Remove duplicated one.
+	(gnus-next-page-map): Don't set keymap parent.
+	(gnus-mime-security-button-map): Ditto.
+
+	* nnheader.el (nnheader-directory-files-is-safe): Ignore Emacs
+	version number.
+
+	* sha1-el.el (sha1-string-external): Use with-temp-buffer.
+
+2004-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* canlock.el (canlock-sha1-function): Remove.
 	(canlock-sha1-function-for-verify): Remove.
 	(canlock-openssl-program): Remove.

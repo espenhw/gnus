@@ -680,8 +680,7 @@ the line could be found."
 
 (defvar nnheader-directory-files-is-safe
   (or (eq system-type 'windows-nt)
-      (and (not (featurep 'xemacs))
-	   (> emacs-major-version 20)))
+      (not (featurep 'xemacs)))
   "If non-nil, Gnus believes `directory-files' is safe.
 It has been reported numerous times that `directory-files' fails with
 an alarming frequency on NFS mounted file systems. If it is nil,
