@@ -246,6 +246,7 @@
 
     (save-excursion 
       (set-buffer nnbabyl-mbox-buffer)
+      (set-text-properties (point-min) (point-max) nil)
       (while (and articles is-old)
 	(goto-char (point-min))
 	(if (search-forward (nnbabyl-article-string (car articles)) nil t)
@@ -480,6 +481,9 @@
 			  (nnheader-find-file-noselect 
 			   nnbabyl-mbox-file nil 'raw)))
 	(buffer-disable-undo (current-buffer))
+	(widen)
+	(setq buffer-read-only nil)
+	(fundamental-mode)
 	
 	(goto-char (point-min))
 	(re-search-forward delim nil t)
@@ -521,28 +525,30 @@
 	 (progn
 	   (and gnus-verbose-backends 
 		(message "nnbabyl: Reading incoming mail..."))
-	   (setq incoming 
-		 (nnmail-move-inbox 
-		  (car spools) (concat nnbabyl-mbox-file "-Incoming")))
-	   (setq incomings (cons incoming incomings))
-	   (save-excursion
-	     (setq group (nnmail-get-split-group (car spools) group-in))
-	     (let* ((nnmail-prepare-incoming-hook
-		     (cons 'nnbabyl-remove-incoming-delims
-			   nnmail-prepare-incoming-hook))
-		    in-buf)
-	       (setq in-buf (nnmail-split-incoming 
-			     incoming 'nnbabyl-save-mail t group))
-	       (set-buffer in-buf)
-	       (goto-char (point-min))
-	       (while (search-forward "\n\^_\n" nil t)
-		 (delete-char -1))
-	       (set-buffer nnbabyl-mbox-buffer)
-	       (goto-char (point-max))
-	       (search-backward "\n\^_" nil t)
-	       (goto-char (match-end 0))
-	       (insert-buffer-substring in-buf)
-	       (kill-buffer in-buf)))))
+	   (if (not (setq incoming 
+			  (nnmail-move-inbox 
+			   (car spools) 
+			   (concat nnbabyl-mbox-file "-Incoming"))))
+	       ()
+	     (setq incomings (cons incoming incomings))
+	     (save-excursion
+	       (setq group (nnmail-get-split-group (car spools) group-in))
+	       (let* ((nnmail-prepare-incoming-hook
+		       (cons 'nnbabyl-remove-incoming-delims
+			     nnmail-prepare-incoming-hook))
+		      in-buf)
+		 (setq in-buf (nnmail-split-incoming 
+			       incoming 'nnbabyl-save-mail t group))
+		 (set-buffer in-buf)
+		 (goto-char (point-min))
+		 (while (search-forward "\n\^_\n" nil t)
+		   (delete-char -1))
+		 (set-buffer nnbabyl-mbox-buffer)
+		 (goto-char (point-max))
+		 (search-backward "\n\^_" nil t)
+		 (goto-char (match-end 0))
+		 (insert-buffer-substring in-buf)
+		 (kill-buffer in-buf))))))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
       (and (buffer-modified-p nnbabyl-mbox-buffer) 

@@ -66,26 +66,6 @@
   "Set article author of HEADER to FROM."
   (` (aset (, header) 2 (, from))))
 
-(defalias 'nntp-header-xref 'mail-header-xref)
-(defmacro mail-header-xref (header)
-  "Return xref string in HEADER."
-  (` (aref (, header) 8)))
-
-(defalias 'nntp-set-header-xref 'mail-header-set-xref)
-(defmacro mail-header-set-xref (header xref)
-  "Set article xref of HEADER to xref."
-  (` (aset (, header) 8 (, xref))))
-
-(defalias 'nntp-header-lines 'mail-header-lines)
-(defmacro mail-header-lines (header)
-  "Return lines in HEADER."
-  (` (aref (, header) 7)))
-
-(defalias 'nntp-set-header-lines 'mail-header-set-lines)
-(defmacro mail-header-set-lines (header lines)
-  "Set article lines of HEADER to LINES."
-  (` (aset (, header) 7 (, lines))))
-
 (defalias 'nntp-header-date 'mail-header-date)
 (defmacro mail-header-date (header)
   "Return date in HEADER."
@@ -125,6 +105,27 @@
 (defmacro mail-header-set-chars (header chars)
   "Set number of chars in article of HEADER to CHARS."
   (` (aset (, header) 6 (, chars))))
+
+(defalias 'nntp-header-lines 'mail-header-lines)
+(defmacro mail-header-lines (header)
+  "Return lines in HEADER."
+  (` (aref (, header) 7)))
+
+(defalias 'nntp-set-header-lines 'mail-header-set-lines)
+(defmacro mail-header-set-lines (header lines)
+  "Set article lines of HEADER to LINES."
+  (` (aset (, header) 7 (, lines))))
+
+(defalias 'nntp-header-xref 'mail-header-xref)
+(defmacro mail-header-xref (header)
+  "Return xref string in HEADER."
+  (` (aref (, header) 8)))
+
+(defalias 'nntp-set-header-xref 'mail-header-set-xref)
+(defmacro mail-header-set-xref (header xref)
+  "Set article xref of HEADER to xref."
+  (` (aset (, header) 8 (, xref))))
+
 
 ;; Various cruft the backends and Gnus need to communicate.
 
@@ -337,6 +338,18 @@ The buffer is not selected, just returned to the caller."
 	    (after-find-file error (not nowarn)))))
       buf)))
 
+(defun nnheader-insert-references (references message-id)
+  ;; Fold long references line to follow RFC1036.
+  (mail-position-on-field "References")
+  (let ((begin (gnus-point-at-bol))
+	(fill-column 78)
+	(fill-prefix "\t"))
+    (if references (insert references))
+    (if (and references message-id) (insert " "))
+    (if message-id (insert message-id))
+    ;; The region must end with a newline to fill the region
+    ;; without inserting extra newline.
+    (fill-region-as-paragraph begin (1+ (point)))))
 
 (provide 'nnheader)
 

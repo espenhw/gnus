@@ -677,6 +677,10 @@ The headers will be included in the sequence they are matched.")
 	(save-excursion
 	  (save-restriction
 	    (set-buffer buffer)
+	    (set-text-properties (point-min) (point-max) nil)
+	    ;; These two are necessary for XEmacs 19.12 fascism.
+	    (put-text-property (point-min) (point-max) 'invisible nil)
+	    (put-text-property (point-min) (point-max) 'intangible nil)
 	    (goto-char (point-min))
 	    (re-search-forward "\n\n")
 	    (setq body (buffer-substring (1- (point)) (point-max)))

@@ -422,13 +422,15 @@
 	 (progn
 	   (and gnus-verbose-backends 
 		(message "nnmh: Reading incoming mail..."))
-	   (setq incoming 
-		 (nnmail-move-inbox 
-		  (car spools) (concat (file-name-as-directory nnmh-directory)
-				       "Incoming")))
-	   (setq incomings (cons incoming incomings))
-	   (setq group (nnmail-get-split-group (car spools) group-in))
-	   (nnmail-split-incoming incoming 'nnmh-save-mail nil group)))
+	   (if (not (setq incoming 
+			  (nnmail-move-inbox 
+			   (car spools) 
+			   (concat (file-name-as-directory nnmh-directory)
+				   "Incoming"))))
+	       ()
+	     (setq incomings (cons incoming incomings))
+	     (setq group (nnmail-get-split-group (car spools) group-in))
+	     (nnmail-split-incoming incoming 'nnmh-save-mail nil group))))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
       (if incoming 

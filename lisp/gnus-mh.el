@@ -80,6 +80,7 @@ Optional argument FOLDER specifies folder name."
 Optional argument YANK means yank original article.
 The command \\[mh-yank-cur-msg] yank the original message into current buffer."
   (let (from cc subject date to reply-to to-userid orig-to
+	     references message-id
 	     (config (current-window-configuration))
 	     buffer)
     (pop-to-buffer gnus-article-buffer)
@@ -101,7 +102,9 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 	      reply-to (gnus-fetch-field "reply-to")
 	      cc (gnus-fetch-field "cc")
 	      orig-to (or (gnus-fetch-field "to") "")
-	      date (gnus-fetch-field "date"))
+	      date (gnus-fetch-field "date")
+	      references (gnus-fetch-field "references")
+	      message-id (gnus-fetch-field "message-id"))
 	(setq to (or reply-to from))
 	(setq to-userid (mail-strip-quoted-names orig-to))
 	(if (or (string-match "," orig-to)
@@ -135,7 +138,8 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
        "In-reply-to:"
        (concat
 	(substring from 0 (string-match "  *at \\|  *@ \\| *(\\| *<" from))
-	"'s message of " date)))
+	"'s message of " date))
+      (nnheader-insert-references references message-id))
 
     ;; need this for mh-yank-cur-msg
     (setq mh-sent-from-folder buffer)

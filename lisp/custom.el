@@ -32,7 +32,7 @@
 ;;; Todo:  
 ;;
 ;; - Toggle documentation in three states `none', `one-line', `full'.
-;; - Function to generate a XEmacs menu from a CUSTOM.
+;; - Function to generate an XEmacs menu from a CUSTOM.
 ;; - Write TeXinfo documentation.
 ;; - Make it possible to hide sections by clicking at the level.
 ;; - Declare AUC TeX variables.
@@ -42,6 +42,11 @@
 ;; - XEmacs port.
 ;; - Allow `URL', `info', and internal hypertext buttons.
 ;; - Support meta-variables and goal directed customization.
+;; - Make it easy to declare custom types independently.
+;; - Make it possible to declare default value and type for a single
+;;   variable, storing the data in a symbol property.
+;; - Syntactic sugar for CUSTOM declarations.
+;; - Use W3 for variable documenation.
 
 ;;; Code:
 
@@ -93,15 +98,19 @@ If PROP is already a property on the list, its value is set to VAL,
 otherwise the new PROP VAL pair is added.  The new plist is returned;
 use `(setq x (plist-put x prop val))' to be sure to use the new value.
 The PLIST is modified by side effects."
-      (while plist
-	(cond ((eq (car plist) prop)
-	       (setcar (cdr plist) val)
-	       (setq plist nil))
-	      ((null (cdr (cdr plist)))
-	       (setcdr (cdr plist) (list prop val))
-	       (setq plist nil))
-	      (t
-	       (setq plist (cdr (cdr plist))))))))
+      (if (null plist)
+	  (list prop val)
+	(let ((current plist))
+	  (while current
+	    (cond ((eq (car current) prop)
+		   (setcar (cdr current) val)
+		   (setq current nil))
+		  ((null (cdr (cdr current)))
+		   (setcdr (cdr current) (list prop val))
+		   (setq current nil))
+		  (t
+		   (setq current (cdr (cdr current)))))))
+	plist)))
 
 (or (fboundp 'match-string)
     ;; Introduced in Emacs 19.29.
@@ -126,7 +135,12 @@ STRING should be given if the last search was by `string-match' on STRING."
 		(assq x (and (boundp 'global-face-data) global-face-data))))
 	   t)))
 
-(if (facep 'underline)
+;; XEmacs and Emacs 19.29 facep does different things.
+(if (fboundp 'find-face)
+    (fset 'custom-facep 'find-face)
+  (fset 'custom-facep 'facep))
+
+(if (custom-facep 'underline)
     ()
   ;; No underline face in XEmacs 19.12.
   (and (fboundp 'make-face)
@@ -249,12 +263,42 @@ If called interactively, prompts for a face and face attributes."
 
 ;; Put it in the Help menu, if possible.
 (if (string-match "XEmacs" emacs-version)
-    nil
-  ;; This will not work under XEmacs.
-  (condition-case nil
-      (global-set-key [ menu-bar help-menu customize ]
-		      '("Customize..." . customize))
-    (error nil)))
+    ;; XEmacs (disabled because it doesn't work)
+    (add-menu-item '("Help") "Customize..." 'customize nil)
+  ;; Emacs 19.28 and earlier
+  (global-set-key [ menu-bar help customize ]
+		  '("Customize..." . customize))
+  ;; Emacs 19.29 and later
+  (global-set-key [ menu-bar help-menu customize ] 
+		  '("Customize..." . customize)))
+
+;; XEmacs popup-menu stolen from w3.el.
+(defun custom-x-really-popup-menu (pos title menudesc)
+  "My hacked up function to do a blocking popup menu..."
+  (let ((echo-keystrokes 0)
+	event menu)
+    (while menudesc
+      (setq menu (cons (vector (car (car menudesc))
+			       (list (car (car menudesc))) t) menu)
+	    menudesc (cdr menudesc)))
+    (setq menu (cons title menu))
+    (popup-menu menu)
+    (catch 'popup-done
+      (while t
+	(setq event (next-command-event event))
+	(cond ((and (misc-user-event-p event) (stringp (car-safe						   (event-object event))))
+	       (throw 'popup-done (event-object event)))
+	      ((and (misc-user-event-p event)
+		    (or (eq (event-object event) 'abort)
+			(eq (event-object event) 'menu-no-selection-hook)))
+	       nil)
+	      ((not (popup-menu-up-p))
+	       (throw 'popup-done nil))
+	      ((button-release-event-p event);; don't beep twice
+	       nil)
+	      (t
+	       (beep)
+	       (message "please make a choice from the menu.")))))))
 
 ;;; Categories:
 ;;
@@ -401,6 +445,7 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 
 (defconst custom-type-properties
   '((repeat (type . default)
+	    ;; See `custom-match'.
 	    (import . custom-repeat-import)
 	    (eval . custom-repeat-eval)
 	    (quote . custom-repeat-quote)
@@ -414,6 +459,7 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 	    (del-tag . "[DEL]")
 	    (add-tag . "[INS]"))
     (pair (type . group)
+	  ;; A cons-cell.
 	  (accept . custom-pair-accept)
 	  (eval . custom-pair-eval)
 	  (import . custom-pair-import)
@@ -421,10 +467,13 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 	  (valid . (lambda (c d) (consp d)))
 	  (extract . custom-pair-extract))
     (list (type . group)
+	  ;; A lisp list.
 	  (quote . custom-list-quote)
-	  (valid . (lambda (c d) (listp d)))
+	  (valid . (lambda (c d)
+		     (and (listp d) (not (eq custom-nil(car d))))))
 	  (extract . custom-list-extract))
     (group (type . default)
+	   ;; See `custom-match'.
 	   (face-tag . nil)
 	   (eval . custom-group-eval)
 	   (import . custom-group-import)
@@ -439,6 +488,7 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 	   (insert . custom-group-insert)
 	   (find . custom-group-find))
     (toggle (type . choice)
+	    ;; Booleans.
 	    (data ((type . const)
 		   (tag . "On ")
 		   (default . t))
@@ -446,6 +496,7 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 		   (tag . "Off")
 		   (default . nil))))
     (choice (type . default)
+	    ;; See `custom-match'.
 	    (query . custom-choice-query)
 	    (accept . custom-choice-accept)
 	    (extract . custom-choice-extract)
@@ -455,12 +506,14 @@ hierarchy the new entry should be added.  CUSTOM is the entry to add."
 		  (default . __uninitialized__)
 		  (type . const)))
     (const (type . default)
+	   ;; A `const' only matches a single lisp value.
 	   (extract . (lambda (c f) (list (custom-default c))))
 	   (validate . (lambda (c f) nil))
 	   (valid . custom-const-valid)
 	   (update . custom-const-update)
 	   (insert . custom-const-insert))
     (face-doc (type . doc)
+	      ;; A variable containing a face.
 	      (doc . "\
 You can customize the look of Emacs by deciding which faces should be
 used when.  If you push one of the face buttons below, you will be
@@ -565,33 +618,41 @@ Select the properties you want this face to have.")
 		 (type . list))
 		((prompt . "Other")
 		 (face . custom-field-value)
+		 (default . __uninitialized__)
 		 (type . symbol))))
     (file (type . string)
+	  ;; A string containing a file or directory name.
 	  (directory . nil)
 	  (default-file . nil)
 	  (query . custom-file-query))
     (sexp (type . default)
+	  ;; Any lisp expression.
 	  (width . 40)
 	  (default . (__uninitialized__ . "Uninitialized"))
 	  (read . custom-sexp-read)
 	  (write . custom-sexp-write))
     (symbol (type . sexp)
+	    ;; A lisp symbol.
 	    (width . 40)
 	    (valid . (lambda (c d) (symbolp d))))
     (integer (type . sexp)
+	     ;; A lisp integer.
 	     (width . 10)
 	     (valid . (lambda (c d) (integerp d))))
     (string (type . default)
+	    ;; A lisp string.
 	    (width . 40) 
 	    (valid . (lambda (c d) (stringp d)))
 	    (read . custom-string-read)
 	    (write . custom-string-write))
     (button (type . default)
+	    ;; Push me.
 	    (accept . ignore)
 	    (extract . nil)
 	    (validate . ignore)
 	    (insert . custom-button-insert))
     (doc (type . default)
+	 ;; A documentation only entry with no value.
 	 (header . nil)
 	 (reset . ignore)
 	 (extract . nil)
@@ -631,7 +692,9 @@ Select the properties you want this face to have.")
 The format is `((SYMBOL (PROPERTY . VALUE)... )... )'.")
 
 (defconst custom-local-type-properties nil
-  "Local type properties.")
+  "Local type properties.
+Entries in this list take precedence over `custom-type-properties'.")
+
 (make-variable-buffer-local 'custom-local-type-properties)
 
 (defconst custom-nil '__uninitialized__
@@ -684,6 +747,10 @@ CUSTOM must have at least one property already."
   "Extract `tag' from CUSTOM."
   (custom-property custom 'tag))
 
+(defun custom-face-tag (custom)
+  "Extract `face-tag' from CUSTOM."
+  (custom-property custom 'face-tag))
+
 (defun custom-prompt (custom)
   "Extract `prompt' from CUSTOM.  
 If none exist, default to `tag' or, failing that, `type'."
@@ -719,12 +786,16 @@ If none exist, default to `tag' or, failing that, `type'."
   (custom-property custom 'padding))
 
 (defun custom-valid (custom value)
-  "Non-nil if CUSTOM may legally be set to VALUE."
+  "Non-nil if CUSTOM may validly be set to VALUE."
   (and (not (and (listp value) (eq custom-invalid (car value))))
        (funcall (custom-property custom 'valid) custom value)))
 
 (defun custom-import (custom value)
-  "Import CUSTOM VALUE from external variable."
+  "Import CUSTOM VALUE from external variable.
+
+This function change VALUE into a form that makes it easier to edit 
+internally.  What the internal form is exactly depends on CUSTOM.  
+The internal form is returned."
   (if (eq custom-nil value)
       (list custom-nil)
     (funcall (custom-property custom 'import) custom value)))
@@ -747,16 +818,27 @@ If none exist, default to `tag' or, failing that, `type'."
 	 (funcall (custom-property custom 'write) custom value))))
 
 (defun custom-read (custom string)
-  "Convert CUSTOM field content STRING into external form."
+  "Convert CUSTOM field content STRING into lisp."
   (condition-case nil
       (funcall (custom-property custom 'read) custom string)
     (error (cons custom-invalid string))))
 
 (defun custom-match (custom values)
   "Match CUSTOM with a list of VALUES.
+
 Return a cons-cell where the car is the sublist of VALUES matching CUSTOM,
-and the cdr is the remaining VALUES."
+and the cdr is the remaining VALUES.
+
+A CUSTOM is actually a regular expression over the alphabet of lisp
+types.  Most CUSTOM types are just doing a literal match, e.g. the
+`symbol' type matches any lisp symbol.  The exceptions are:
+
+group:    which corresponds to a `(' and `)' group in a regular expression.
+choice:   which corresponds to a group of `|' in a regular expression.
+repeat:   which corresponds to a `*' in a regular expression.
+optional: which corresponds to a `?', and isn't implemented yet."
   (if (memq values (list custom-nil nil))
+      ;; Nothing matches the uninitialized or empty list.
       (cons custom-nil nil)
     (funcall (custom-property custom 'match) custom values)))
 
@@ -853,7 +935,7 @@ START and END are markers to the start and end of the field."
   (funcall (custom-property (custom-field-custom field) 'query) field))
 
 (defun custom-field-accept (field value &optional original)
-  "Accept FIELD VALUE.  
+  "Store a new value into field FIELD, taking it from VALUE.
 If optional ORIGINAL is non-nil, concider VALUE for the original value."
   (let ((inhibit-point-motion-hooks t))
     (funcall (custom-property (custom-field-custom field) 'accept) 
@@ -864,10 +946,11 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
   (let ((custom (custom-field-custom field)))
     (if (stringp custom)
 	nil
-      (funcall (custom-property custom 'face) field))))
+      (let ((face (funcall (custom-property custom 'face) field)))
+	(if (custom-facep face) face nil)))))
 
 (defun custom-field-update (field)
-  "Update content of FIELD."
+  "Update the screen appearance of FIELD to correspond with the field's value."
   (let ((custom (custom-field-custom field)))
     (if (stringp custom)
 	nil
@@ -900,7 +983,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 			   value))))
 
 (defun custom-repeat-accept (field value &optional original)
-  "Enter content of editing FIELD."
+  "Store a new value into field FIELD, taking it from VALUE."
   (let ((values (copy-sequence (custom-field-value field)))
 	(all (custom-field-value field))
 	(start (custom-field-start field))
@@ -1040,7 +1123,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
     result))
 
 (defun custom-pair-accept (field value &optional original)
-  "Enter content of editing FIELD with VALUE."
+  "Store a new value into field FIELD, taking it from VALUE."
   (custom-group-accept field (list (car value) (cdr value)) original))
 
 (defun custom-pair-eval (custom value)
@@ -1186,11 +1269,11 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	(setq data (cdr data))))))
 
 (defun custom-group-accept (field value &optional original)
-  "Enter content of editing FIELD with VALUE."
+  "Store a new value into field FIELD, taking it from VALUE."
   (let* ((values (custom-field-value field))
 	 (custom (custom-field-custom field))
 	 (from (custom-field-start field))
-	 (face-tag (custom-property custom 'face-tag))
+	 (face-tag (custom-face-tag custom))
 	 current)
     (if face-tag 
 	(put-text-property from (+ from (length (custom-tag custom)))
@@ -1213,7 +1296,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	 (from (point))
 	 (compact (custom-compact custom))
 	 (tag (custom-tag custom))
-	 (face-tag (custom-property custom 'face-tag)))
+	 (face-tag (custom-face-tag custom)))
     (cond (face-tag (custom-text-insert tag))
 	  (tag (custom-tag-insert tag field)))
     (or compact (custom-documentation-insert custom))
@@ -1244,7 +1327,7 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
     field))
 
 (defun custom-choice-accept (field value &optional original)
-  "Reset content of editing FIELD."
+  "Store a new value into field FIELD, taking it from VALUE."
   (let ((custom (custom-field-custom field))
 	(start (custom-field-start field))
 	(end (custom-field-end field))
@@ -1318,15 +1401,25 @@ If optional ORIGINAL is non-nil, concider VALUE for the original value."
 	(setq current (car data)
 	      data (cdr data))
 	(setq alist (cons (cons (custom-prompt current) current) alist)))
-      (let ((answer (if (listp last-input-event)
-			(x-popup-menu last-input-event
-				      (list tag (cons "" (reverse alist))))
-		      (let ((choice (completing-read (concat tag " (default "
-							     default "): ") 
-						     alist nil t)))
-			(if (or (null choice) (string-equal choice ""))
-			    (setq choice default))
-			(cdr (assoc choice alist))))))
+      (let ((answer (cond ((and (fboundp 'button-press-event-p)
+				(fboundp 'popup-menu)
+				(button-press-event-p last-input-event))
+			   (cdr (assoc (car (custom-x-really-popup-menu 
+					     last-input-event tag 
+					     (reverse alist)))
+				       alist)))
+			  ((listp last-input-event)
+			   (x-popup-menu last-input-event
+					 (list tag (cons "" (reverse alist)))))
+			  (t 
+			   (let ((choice (completing-read (concat tag
+								  " (default "
+								  default 
+								  "): ") 
+							  alist nil t)))
+			     (if (or (null choice) (string-equal choice ""))
+				 (setq choice default))
+			     (cdr (assoc choice alist)))))))
 	(if answer
 	    (custom-field-accept field (custom-default answer)))))))
 
@@ -1378,7 +1471,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 			      (or bg "default")
 			      (or stipple "default")
 			      bold italic underline))))
-    (if (and (facep name)
+    (if (and (custom-facep name)
 	     (fboundp 'make-face))
 	()
       (make-face name)
@@ -1391,8 +1484,10 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 
 (defun custom-face-hack (field value)
   "Face that should be used for highlighting FIELD containing VALUE."
-  (let ((custom (custom-field-custom field)))
-    (eval (funcall (custom-property custom 'export) custom value))))
+  (let* ((custom (custom-field-custom field))
+	 (face (eval (funcall (custom-property custom 'export) 
+			      custom value))))
+    (if (custom-facep face) face nil)))
 
 (defun custom-const-insert (custom level)
   "Insert field for CUSTOM at nesting LEVEL in customization buffer."
@@ -1415,7 +1510,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 		       'face (custom-field-face field))))
 
 (defun custom-const-valid (custom value)
-  "Non-nil if CUSTOM can legally have the value VALUE."
+  "Non-nil if CUSTOM can validly have the value VALUE."
   (equal (custom-default custom) value))
 
 (defun custom-const-face (field)
@@ -1470,6 +1565,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
 
 (defun custom-default-export (custom value)
   ;; Convert CUSTOM's VALUE to external representation.
+  ;; See `custom-import'.
   (if (custom-eval custom value)
       (eval (car (custom-quote custom value)))
     value))
@@ -1516,7 +1612,7 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
     field))
 
 (defun custom-default-accept (field value &optional original)
-  "Enter into FIELD the value VALUE."
+  "Store a new value into field FIELD, taking it from VALUE."
   (if original 
       (custom-field-original-set field value))
   (custom-field-value-set field value)
@@ -2050,8 +2146,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
      from (point)
      (list 'custom-field field
 	   'custom-tag field
-	   'face (let ((face (custom-field-face field)))
-		   (if (facep face) face nil))
+	   'face (custom-field-face field)
 	   front-sticky t))))
 
 (defun custom-field-read (field)
@@ -2059,6 +2154,10 @@ If the optional argument is non-nil, show text iff the argument is positive."
   (custom-read (custom-field-custom field)
 	       (buffer-substring-no-properties (custom-field-start field)
 					       (custom-field-end field))))
+
+;; Fields are shown in a special `active' face when point is inside
+;; it.  You activate the field by moving point inside (entering) it
+;; and deactivate the field by moving point outside (leaving) it.
 
 (defun custom-field-leave (field)
   ;; Deactivate FIELD.
@@ -2095,11 +2194,12 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	 (size (- end begin)))
     (cond ((< size width)
 	   (goto-char end)
-	   (condition-case nil
+	   (if (fboundp 'insert-before-markers-and-inherit)
+	       ;; Emacs 19.
 	       (insert-before-markers-and-inherit
 		(make-string (- width size) padding))
-	     (error (insert-before-markers
-		     (make-string (- width size) padding))))
+	     ;; XEmacs:  BUG:  Doesn't work!
+	     (insert-before-markers (make-string (- width size) padding)))
 	   (goto-char pos))
 	  ((> size width)
 	   (let ((start (if (and (< (+ begin width) pos) (<= pos end))
@@ -2111,7 +2211,8 @@ If the optional argument is non-nil, show text iff the argument is positive."
 	     (goto-char pos))))))
 
 (defvar custom-field-changed nil)
-;; List of fields changed on the screen.
+;; List of fields changed on the screen but whose VALUE attribute has
+;; not yet been updated to reflect the new screen content.
 (make-variable-buffer-local 'custom-field-changed)
 
 (defun custom-field-parse (field)

@@ -639,7 +639,11 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 	      (setq followup-to (mail-fetch-field "followup-to"))
 	      (if (or (null respect-poster) ;Ignore followup-to: field.
 		      (string-equal "" followup-to) ;Bogus header.
-		      (string-equal "poster" followup-to)) ;Poster
+		      (string-equal "poster" followup-to);Poster
+		      (and (eq respect-poster 'ask)
+			   followup-to
+			   (y-or-n-p (concat "Followup to " 
+					     followup-to "? "))))
 		  (setq followup-to nil))
 	      (setq newsgroups
 		    (or follow-to followup-to (mail-fetch-field "newsgroups")))
@@ -663,17 +667,7 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 		    (insert (car (car newsgroups)) ": " 
 			    (cdr (car newsgroups)) "\n")
 		    (setq newsgroups (cdr newsgroups)))))
-	    ;; Fold long references line to follow RFC1036.
-	    (mail-position-on-field "References")
-	    (let ((begin (- (point) (length "References: ")))
-		  (fill-column 79)
-		  (fill-prefix "\t"))
-	      (if references (insert references))
-	      (if (and references message-id) (insert " "))
-	      (if message-id (insert message-id))
-	      ;; The region must end with a newline to fill the region
-	      ;; without inserting extra newline.
-	      (fill-region-as-paragraph begin (1+ (point))))
+	    (nnheader-insert-references references message-id)
 	    (if distribution
 		(progn
 		  (mail-position-on-field "Distribution")

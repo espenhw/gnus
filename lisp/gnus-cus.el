@@ -40,9 +40,11 @@
     "turquoise"))
 
 (defvar gnus-face-dark-name-list
-  '("dark blue" "firebrick"
-    "dark green" "dark orange" "dark khaki" "dark violet"
-    "dark turquoise"))
+  '("RoyalBlue" "firebrick"
+    "dark green" "OrangeRed" "dark khaki" "dark violet"
+    "SteelBlue4"))
+; CornflowerBlue SeaGreen OrangeRed SteelBlue4 DeepPink3
+; DarkOlviveGreen4 
 
 (custom-declare '()
   '((tag . "GNUS")
@@ -67,7 +69,6 @@ WWW Browser to call when clicking on an URL button in the article buffer.
 
 You can choose between one of the predefined browsers, or `Other'.")
 		  (name . gnus-button-url)
-		  (default . w3-fetch)
 		  (calculate . (cond ((boundp 'browse-url-browser-function)
 				      browse-url-browser-function)
 				     ((fboundp 'w3-fetch) 

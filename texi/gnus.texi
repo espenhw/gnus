@@ -89,7 +89,8 @@ luck.
 * Various::                 General purpose settings.
 * Customization::           Tailoring Gnus to your needs.
 * Troubleshooting::         What you might try if things do not work.
-* The End::                 Farewell, and goodbye.
+* The End::                 Farewell and goodbye.
+* Appendix::                Technical stuff for technical people.
 * Index::                   Variable, function and concept index.
 * Key Index::               Key Index.
 @end menu
@@ -114,10 +115,12 @@ can point your (feh!) web browser to
 distribution point for the new and spiffy versions of Gnus, also know as
 The Site That Destroys Newsrcs And Drives People Mad.
 
-@dfn{(ding)}, is, of course, short for @dfn{ding is not Gnus}, which is
-a total and utter lie, but who cares? (Besides, the "Gnus" in this
-abbreviation should probably be pronounced "news" as UMEDA intended,
-which makes it a more appropriate name, don't you think?)
+During the first extended alpha period of develpment, the new Gnus was
+called "(ding) Gnus".  @dfn{(ding)}, is, of course, short for @dfn{ding
+is not Gnus}, which is a total and utter lie, but who cares? (Besides,
+the "Gnus" in this abbreviation should probably be pronounced "news" as
+UMEDA intended, which makes it a more appropriate name, don't you
+think?)
 
 In any case, after spending all that energy with coming up with a new
 and spiffy name, we decided that the name was @emph{too} spiffy, so we
@@ -130,8 +133,9 @@ and won't be released until February.  Confused?  You will be.
 @menu
 * Why?::                What's the point of Gnus?
 * Compatibility::       Just how compatible is Gnus with @sc{gnus}?
+* Conformity::          Gnus tries to conform to all standards.
 * Contributors::        Oodles of people.  
-* New Features::        A short description of all the new stuff in Gnus.
+* New Features::        Pointers to some of the new stuff in Gnus.
 * Newest Features::     Features so new that they haven't been written yet.
 @end menu
 
@@ -228,6 +232,54 @@ Problems specific to GNU XEmacs can be reported to popineau@@ese-metz.fr
 anyway, so you might have to wait longer if you mail XEmacs questions to
 me.
 
+
+@node Conformity
+@section Conformity
+
+No rebels without a clue here, ma'am.  We conform to all standards known
+to man.  Except, of course, where we disagree with the standards and/or
+conventions.
+
+@table @strong
+
+@item RFC 822
+There are no known breaches to this standard.
+
+@item RFC 1036
+There are no known breaches to this standard, either.
+
+@item Usenet Seal of Approval
+Gnus hasn't been formally through the Seal process, but I have read
+through the Seal text, and I think that Gnus would pass.
+
+@item Son-of-RFC 1036
+We do have some breaches to this one.
+
+@table @emph
+@item MIME
+Gnus does no MIME handling, and this standard-to-be seems to think that
+MIME is the bees' knees, so we have major breakage here.
+@item X-Newsreader
+This is considered to be a "vanity header", while I consider it to be
+consumer information.  After seeing so many badly formatted articles
+coming from @code{tin} and @code{Netscape} I know not to use either of
+those for posting articles.  I would not have known that if it wasn't
+for the @code{X-Newsreader} header.
+@item References
+Gnus does line breaking on this header.  I infer from RFC1036 that being
+conservative in what you output is not creating 5000-character lines, so
+it seems like a good idea to me.  However, this standard-to-be says that
+whitespace in the @code{References} header is to be preserved, so...  It
+doesn't matter one way or the other to Gnus, so if somebody tells me
+what The Way is, I'll change it.  Or not.
+@end table
+
+@end table
+
+If you ever see Gnus act noncompliantly to the texts mentioned above,
+don't hesitate to drop a note to Gnus Towers and let us know.
+
+
 @node Contributors
 @section Contributors
 @cindex contributors
@@ -285,32 +337,128 @@ all contributed code and suggestions.
 @section New Features
 @cindex new features
 
-The look of all buffers can be changed by setting format-like variables.
- 
-Local spool and several @sc{nntp} servers can be used at once.  Virtual
-groups and private mail groups are featured.
+@itemize @bullet
 
+@item
+The look of all buffers can be changed by setting format-like variables
+(@pxref{Group Buffer Format} and @pxref{Summary Buffer Format}). 
+ 
+@item 
+Local spool and several @sc{nntp} servers can be used at once
+(@pxref{Foreign Groups}).  
+
+@item 
+You can combine groups into virtual groups (@pxref{nnvirtual}). 
+
+@item 
+You can read a number of different mail formats (@pxref{Reading Mail}).
+All the mail backends implement a convenient mail expiry scheme
+(@code{Expiring Old Mail Articles}). 
+
+@item
 Gnus can use various strategies for gathering threads that have lost
 their roots (thereby gathering loose sub-threads in one thread) or it
-can go back and retrieve enough headers to build a complete thread.
+can go back and retrieve enough headers to build a complete thread
+(@pxref{Customizing Threading}).
 
+@item 
 Killed groups can be displayed in the group buffer, and you can read
 them as well.
 
+@item 
 Gnus can do partial group updates - you do not have to retrieve the
-entire active file just to check for new articles in a few groups.
+entire active file just to check for new articles in a few groups
+(@pxref{The Active File}).
 
-Gnus implements a sliding scale of subscribedness to groups.
+@item 
+Gnus implements a sliding scale of subscribedness to groups
+(@pxref{Group Levels}).
 
-The approach to killing has been changed.  Instead of simply killing or
-not, you can score articles for easier reading.
+@item 
+You can score articles according to any number of criteria (@pxref{Score
+Files}).  You can even get Gnus to score articles for you
+(@pxref{Adaptive Scoring}). 
+
+@item 
+Gnus maintains a dribble buffer that is auto-saved the normal Emacs
+manner, so it should be difficult to lose much data on what you have
+read if your machine should go down (@pxref{Auto Save}). 
+
+@item 
+Gnus now has its own startup file to avoid cluttering up the
+@file{.emacs} file.
+
+@item 
+You can set the process mark on both groups and articles and perform
+operations on all the marked items (@pxref{Process/Prefix}).
+
+@item 
+You can grep through a subset of groups and create a group from the
+results (@pxref{nnkiboze}). 
+
+@item 
+You can list subsets of groups according to, well, anything
+(@pxref{Listing Groups}). 
+
+@item 
+You can browse foreign servers and subscribe to groups from those
+servers (@pxref{Browse Foreign Server}). 
+
+@item 
+Gnus can fetch articles asynchronously on a second connection to the
+server (@pxref{Asynchronous Fetching}).
+
+@item 
+You can cache articles locally (@pxref{Article Caching}). 
+
+@item 
+The uudecode functions have been expanded and generalized
+(@pxref{Decoding Articles}). 
+
+@item
+You can still post uuencoded articles, which was a little-known feature
+of @sc{gnus} past (@pxref{Uuencoding & Posting}).
+
+@item
+Fetching parents (and other articles) now actually works without
+glitches (@pxref{Finding the Parent}). 
+
+@item
+Gnus can fetch FAQs to and descriptions of groups (@pxref{Group
+Information}). 
+
+@item
+Digests (and other files) can be used as the basis for groups
+(@pxref{nndoc}).
+
+@item 
+Articles can be highlighted and customized (@pxref{Customizing
+Articles}). 
+
+@item
+All Gnus buffers can be customized in a difficult fashion
+(@pxref{Windows Configuration}). 
+
+@item
+You can click on buttons instead of using the keyboard
+(@pxref{Buttons}). 
+
+@end itemize
+
+This is, of course, just a @emph{short} overview of the @emph{most}
+important new features.  No, really.  There are tons more.  Yes, we have
+feeping creaturism in full effect, but nothing too gratuitous, I would
+hope. 
+
 
 @node Newest Features
 @section Newest Features
 @cindex todo
 
 Also known as the @dfn{todo list}.  Sure to be implemented before the
-next millennium.
+next millennium. 
+
+Be afraid.  Be very afraid.
 
 @itemize @bullet
 @item
@@ -318,13 +466,76 @@ Native @sc{mime} support is something that should be done.  I was hoping
 I could steal code from @code{Mew}, the @sc{mime} mail reader for Emacs,
 but I'm not quite sure what the status of that project is.  Gnus might
 support @sc{mime} quite soon, and it might not.
+
 @item
-When the user references the parent of an article, some sort of
-re-threading should be done to build a proper tree.  The same goes for
-article expunging.  However, as it stands, it's not a trivial issue to
-re-generate parts of the summary buffer.  Generating the entire buffer
-is very easy, but slow.
+@code{trn}-like trees.
+@item
+@code{nn}-like pick-and-read summary interface.
+@item 
+NoCeM support.
+@item 
+Frame configuration.
+@item
+Re-sending bounced mail and rejected articles.
+@item 
+Floating point group levels and group bubbling.
+@item
+@file{/etc/nntpserver} usage.
+@item 
+Automatic re-scan of incoming mail.
+@item
+Buttonize more stuff in the article buffer.
+@item
+A better and simpler method for specifying mail composing methods. 
+@item 
+Marks for saved, forwarded, etc articles.
+@item 
+Speed up caching and adaptive scoring.
+@item
+Gather thread by filling in missing Message-IDs.
+@item 
+Slave Gnusii to enable several Gnusii to run at once.
+@item 
+PGP support.
+@item
+Allow posting through mail-to-news gateways.
+@item
+Allow renaming mail groups in a simple fashion.
+@item
+Speed up massive group massacres.
+@item
+@code{jka-compr} isn't fully supported.
+@item
+Create better digests.
+@item
+Do better word-wrap on cited text.
+@item 
+Better X-Face support with X-Face databases and stuff. 
+@item
+Support SELF-DISCIPLINE pins.
+@item
+Really do unbinhexing.
+@item
+Fetching by Message-ID should work in mail groups.
+@item
+Listing of all active groups.
+@item
+XEmacs toolbar.
+@item
+Do the X-Receipt-To thing.
+@item
+Hierarchal group buffers.
+@item
+Don't kill summary buffers upon exit from the groups.
+@item
+Allow adaption on secondary marks.
 @end itemize
+
+And much, much, much more.  There is more to come than has already been
+implemented.  (But that's always true, isn't it?)
+
+You can probably sneak a look at the actual up-to-the-second todo list
+by snooping @code{<URL:http://www.ifi.uio.no/~larsi/sgnus/todo>}. 
 
 @node Terminology
 @chapter Terminology
@@ -750,6 +961,16 @@ groups that you aren't interested in.
 @section Startup Variables
 
 @table @code
+@item gnus-load-hook
+@vindex gnus-load-hook
+A hook that is run while Gnus is being loaded.  Note that this hook will
+normally be run just once in a single Emacs session, no matter how many
+times you start Gnus.
+
+@item gnus-startup-hook
+@vindex gnus-startup-hook
+A hook that is run after starting up Gnus successfully.
+
 @item gnus-check-bogus-newsgroups
 @vindex gnus-check-bogus-newsgroups
 If non-@code{nil}, Gnus will check for and delete all bogus groups at
@@ -758,11 +979,13 @@ startup.  A @dfn{bogus group} is a group that you have in your
 bogus groups isn't very quick, so to save time and resources, it's best
 to leave this option off, and instead do the checking for bogus groups
 once in a while from the group buffer (@pxref{Group Maintenance}).
+
 @item gnus-inhibit-startup-message
 @vindex gnus-inhibit-startup-message
 If non-@code{nil}, the startup message won't be displayed.  That way,
 your boss might not notice that you are reading news instead of doing
 your job.
+
 @item gnus-no-groups-message
 @vindex gnus-no-groups-message
 Message displayed by Gnus when no groups are available.
@@ -1742,24 +1965,21 @@ This should be one of @code{mbox}, @code{babyl} or @code{digest}.
 Reading mail with a newsreader - isn't that just plain WeIrD? But of
 course.
 
+Gnus will read the mail spool when you activate a mail group.  The mail
+file is first copied to your home directory.  What happens after that
+depends on what format you want to store your mail in.
+
 @menu
 * Creating Mail Groups::         How to create mail groups.
 * Fancy Mail Splitting::         Gnus can do hairy splitting of incoming mail.
 * Mail & Procmail::              Reading mail groups that procmail create.
 * Expiring Old Mail Articles::   Getting rid of unwanted mail.
 * Not Reading Mail::             Using mail backends for reading other files.
-@end menu
-
-Gnus will read the mail spool when you activate a mail group.  The mail
-file is first copied to your home directory.  What happens after that
-depends on what format you want to store your mail in.
-
-@menu
-* nnmbox::    Using the (quite) standard Un*x mbox.
-* nnbabyl::   Many Emacs programs use the rmail babyl format.
-* nnml::      Store your mail in a private spool?
-* nnmh::      An mhspool-like backend useful for procmail people.
-* nnfolder::  Having one file for each group.
+* nnmbox::                       Using the (quite) standard Un*x mbox.
+* nnbabyl::                      Emacs programs use the rmail babyl format.
+* nnml::                         Store your mail in a private spool?
+* nnmh::                         An mhspool-like backend.
+* nnfolder::                     Having one file for each group.
 @end menu
 
 @vindex nnmail-read-incoming-hook
@@ -2599,6 +2819,7 @@ Restart Gnus (@code{gnus-group-restart}).
 @item r
 @kindex r (Group)
 @findex gnus-group-read-init-file
+@vindex gnus-init-file
 Read the init file (@code{gnus-init-file}, which defaults to
 @file{~/.gnus}) (@code{gnus-group-read-init-file}).
 @item s
@@ -3348,8 +3569,8 @@ outgoing articles.
 If @code{nil}, always ignore the Followup-To header.  If it is @code{t},
 use its value, but ignore the special value @samp{poster}, which will
 send the followup as a reply mail to the person you are responding to.
-If it is neither @code{nil} nor @code{t}, always use the Followup-To
-value.
+If it is the symbol @code{ask}, query the user before posting.
+If it is the symbol @code{use}, always use the value.
 
 @item gnus-followup-to-function
 @vindex gnus-followup-to-function
@@ -4572,6 +4793,8 @@ encoded in some way or other.  Gnus can decode them for you.
 * Uuencoded Articles::    Uudecode articles.
 * Shared Articles::       Unshar articles.
 * PostScript Files::      Split PostScript.
+* Decoding Variables::    Variables for a happy decoding.
+* Viewing Files::         You want to look at the result of the decoding?
 @end menu
 
 All these functions use the process/prefix convention
@@ -4591,11 +4814,6 @@ will find all the articles that match the regexp @samp{^cat.gif
 Subjects that are nonstandard, like @samp{cat.gif (2/3) Part 6 of a
 series}, will not be properly recognized by any of the automatic viewing
 commands, and you have to mark the articles manually with @key{#}.
-
-@menu 
-* Decoding Variables::     Variables for a happy decoding.
-* Viewing Files::          You want to look at the result of the decoding?
-@end menu
 
 @node Uuencoded Articles
 @subsection Uuencoded Articles
@@ -5376,8 +5594,8 @@ directly.  In that case, the functions that return these non-file score
 alists should probably be placed before the "real" score file functions,
 to ensure that the last score file returned is the local score file.
 Phu. 
-@item gnus-kill-expiry-days
-@vindex gnus-kill-expiry-days
+@item gnus-score-expiry-days
+@vindex gnus-score-expiry-days
 This variable says how many days should pass before an unused score file
 entry is expired.  The default is 7.
 @end table
@@ -6143,11 +6361,11 @@ make them invisible if you want to make them go away.
 @node Article Keymap
 @section Article Keymap
 
-Most of the keystrokes in the summary buffer can also be used in the
-article buffer.  They should behave as if you typed them in the summary
-buffer, which means that you don't actually have to have a summary
-buffer displayed while reading.  You can do it all from the article
-buffer.
+@c Most of the keystrokes in the summary buffer can also be used in the
+@c article buffer.  They should behave as if you typed them in the summary
+@c buffer, which means that you don't actually have to have a summary
+@c buffer displayed while reading.  You can do it all from the article
+@c buffer.
 
 A few additional keystrokes are available:
 
@@ -6346,6 +6564,11 @@ Here's the method for the public spool:
 @node Servers & Methods
 @section Servers & Methods
 
+Wherever you would normally use a select method
+(eg. @code{gnus-secondary-select-method}, in the group select method,
+when browsing a foreign server) you can use a virtual server name
+instead.  This could potentially save lots of typing.  And it's nice all
+over.
 
 
 @node Various
@@ -6784,6 +7007,681 @@ as well as I was able;@*
 not for a seat upon the dais@*
 but at the common table.@*
 @end quotation
+
+@node Appendix
+@chapter A Programmer's Guide to Gnus
+
+It is my hope that other people will figure out smart stuff that Gnus
+can do, and that other people will write those smart things as well.  To
+facilitate that I thought it would be a good idea to describe the inner
+workings of Gnus. And some of the not-so-inner workings, while I'm at
+it.
+
+You can never expect the internals of a program not to change, but I
+will be defining (in some details) the interface between Gnus and its
+backends (this is written in stone), the format of the score files
+(ditto), data structures (some are less likely to change than others)
+and general method of operations.
+
+@menu 
+* Backend Interface::        How Gnus communicates with the servers.
+* Score File Syntax::        A BNF definition of the score file standard.
+* Headers::                  How Gnus stores headers internally.
+* Ranges::                   A handy format for storing mucho numbers.
+* Group Info::               The group info format.
+@end menu
+
+
+@node Backend Interface
+@section Backend Interface
+
+Gnus doesn't know anything about nntp, spools, mail or virtual groups.
+It only knows how to talk to @dfn{virtual servers}.  A virtual server is
+a @dfn{backend} and some @dfn{backend variables}.  As examples of the
+first, we have @code{nntp}, @code{nnspool} and @code{nnmbox}.  As
+examples of the latter we have @code{nntp-port-number} and
+@code{nnmbox-directory}. 
+
+When Gnus asks for information from a backend -- say @code{nntp} -- on
+something, it will normally include a virtual server name in the
+function parameters.  (If not, the backend should use the "current"
+virtual server.)  For instance, @code{nntp-request-list} takes a virtual
+server as its only (optional) parameter.  If this virtual server hasn't
+been opened, the function should fail.
+
+Note that a virtual server name has no relation to some physical server
+name.  Take this example:
+
+@lisp
+(nntp "odd-one" 
+      (nntp-address "ifi.uio.no") 
+      (nntp-port-number 4324))
+@end lisp
+
+Here the virtual server name is @samp{"odd-one"} while the name of
+the physical server is @samp{"ifi.uio.no"}. 
+
+The backends should be able to switch between several virtual servers.
+The standard backends implement this by keeping an alist of virtual
+server environments that it pulls down/pushes up when needed.  
+
+There are two groups of interface functions: @dfn{required functions},
+which must be present, and @dfn{optional functions}, which Gnus will
+always check whether are present before attempting to call.
+
+All these functions are expected to return data in the buffer
+@code{nntp-server-buffer} (@samp{" *nntpd*"}), which is somewhat
+unfortunately named, but we'll have to live with it.  When I talk about
+"resulting data", I always refer to the data in that buffer.  When I
+talk about "return value", I talk about the function value returned by
+the function call.
+
+Some backends could be said to be @dfn{server-forming} backends, and
+some might be said to not be.  The latter are backends that generally
+only operate on one group at a time, and have no concept of "server" --
+they have a group, and they deliver info on that group and nothing more.
+
+In the examples and definitions I will refer to the imaginary backend
+@code{nnchoke}. 
+
+@menu
+* Required Backend Functions::        Functions that must be implemented.
+* Optional Backend Functions::        Functions that need not be implemented.
+@end menu
+
+
+@node Required Backend Functions
+@subsection Required Backend Functions
+
+@table @code
+
+@item (nnchoke-retrieve-headers ARTICLES &optional GROUP SERVER)
+
+@var{articles} is either a range of article numbers or a list of
+@code{Message-ID}s.  Current backends do not fully support either - only
+sequences (lists) of article numbers, and most backends do not support
+retrieval of @code{Message-ID}s.  But they should try for both. 
+
+The result data should either be HEADs or NOV lines, and the result
+value should either be @code{headers} or @code{nov} to reflect this.
+This might later be expanded to @code{various}, which will be a mixture
+of HEADs and NOV lines, but this is currently not supported by Gnus.  
+
+Here's an example HEAD:
+
+@example
+221 1056 Article retrieved.
+Path: ifi.uio.no!sturles
+From: sturles@@ifi.uio.no (Sturle Sunde)
+Newsgroups: ifi.discussion
+Subject: Re: Something very droll
+Date: 27 Oct 1994 14:02:57 +0100
+Organization: Dept. of Informatics, University of Oslo, Norway
+Lines: 26
+Message-ID: <38o8e1$a0o@@holmenkollen.ifi.uio.no>
+References: <38jdmq$4qu@@visbur.ifi.uio.no>
+NNTP-Posting-Host: holmenkollen.ifi.uio.no
+.
+@end example
+
+So a @code{headers} return value would imply that there's a number of
+these in the data buffer.
+
+Here's a BNF definition of such a buffer:
+
+@example
+headers        = *head
+head           = error / valid-head
+error-message  = [ "4" / "5" ] 2number " " <error message> eol
+valid-head     = valid-message *header "." eol
+valid-message  = "221 " <number> " Article retrieved." eol
+header         = <text> eol
+@end example
+
+If the return value is @code{nov}, the data buffer should contain
+@dfn{network overview database} lines.  These are basically fields
+separated by tabs. 
+
+@example
+nov-buffer = *nov-line
+nov-line   = 8*9 [ field <TAB> ] eol
+field      = <text except TAB>
+@end example
+
+For a closer explanation what should be in those fields,
+@xref{Headers}. 
+
+
+@item (nnchoke-open-server SERVER &optional DEFINITIONS)
+
+@var{server} is here the virtual server name.  @var{definitions} is a
+list of @code{(VARIABLE VALUE)} pairs that defines this virtual server. 
+
+If the server can't be opened, no error should be signaled.  The backend
+may then choose to refuse further attempts at connecting to this
+server.  In fact, it should do so. 
+
+If the server is opened already, this function should return a
+non-@code{nil} value.  There should be no data returned.
+
+
+@item (nnchoke-close-server &optional SERVER)
+
+Close connection to @var{server} and free all resources connected
+to it. 
+
+There should be no data returned.
+
+
+@item (nnchoke-request-close)
+
+Close connection to all servers and free all resources that the backend
+have reserved.  All buffers that have been created by that backend
+should be killed.  (Not the @code{nntp-server-buffer}, though.)
+
+There should be no data returned. 
+
+
+@item (nnchoke-server-opened &optional SERVER)
+
+This function should return whether @var{server} is opened, and that the
+connection to it is still alive.  This function should under no
+circumstances attempt to reconnect to a server that is has lost
+connection to. 
+
+There should be no data returned.
+
+
+@item (nnchoke-status-message &optional SERVER)
+
+This function should return the last error message from @var{server}. 
+
+There should be no data returned.
+
+
+@item (nnchoke-request-article ARTICLE &optional GROUP SERVER TO-BUFFER)
+
+The result data from this function should be the article specified by
+@var{article}.  This might either be a @code{Message-ID} or a number.
+It is optional whether to implement retrieval by @code{Message-ID}, but
+it would be nice if that were possible.
+
+If @var{to-buffer} is non-@code{nil}, the result data should be returned
+in this buffer instead of the normal data buffer.  This is to make it
+possible to avoid copying large amounts of data from one buffer to
+another, and Gnus mainly request articles to be inserted directly into
+its article buffer.
+
+
+@item (nnchoke-open-group GROUP &optional SERVER)
+
+Make @var{group} the current group.  
+
+There should be no data returned by this function.
+
+
+@item (nnchoke-request-group GROUP &optional SERVER)
+
+Get data on @var{group}.  This function also has the side effect of
+making @var{group} the current group. 
+
+Here's an example of some result data and a definition of the same:
+
+@example
+211 56 1000 1059 ifi.discussion
+@end example
+
+The first number is the status, which should be @samp{211}.  Next is the
+total number of articles in the group, the lowest article number, the
+highest article number, and finally the group name.  Note that the total
+number of articles may be less than one might think while just
+considering the highest and lowest article numbers, but some articles
+may have been cancelled.  Gnus just discards the total-number, so
+whether one should take the bother to generate it properly (if that is a
+problem) is left as an excercise to the reader.
+
+@example
+group-status = [ error / info ] eol
+error        = [ "4" / "5" ] 2<number> " " <Error message>
+info         = "211 " 3* [ <number> " " ] <string>
+@end example
+
+
+@item (nnchoke-close-group GROUP &optional SERVER)
+
+Close @var{group} and free any resources connected to it.  This will be
+a no-op on most backends. 
+
+There should be no data returned.
+
+
+@item (nnchoke-request-list &optional SERVER)
+
+Return a list of all groups available on @var{server}.  And that means
+@emph{all}. 
+
+Here's an example from a server that only carries two groups:
+
+@example
+ifi.test 0000002200 0000002000 y
+ifi.discussion 3324 3300 n
+@end example
+
+On each line we have a group name, then the highest article number in
+that group, the lowest article number, and finally a flag.
+
+@example
+active-file = *active-line
+active-line = name " " <number> " " <number> " " flags eol
+name        = <string>
+flags       = "n" / "y" / "m" / "x" / "j" / "=" name
+@end example
+
+The flag says whether the group is read-only (@samp{n}), is moderated
+(@samp{m}), is dead (@samp{x}), is aliased to some other group
+(@samp{=other-group} or none of the above (@samp{y}). 
+
+
+@item (nnchoke-request-post &optional SERVER)
+
+This function should post the current buffer.  It might return whether
+the posting was successful or not, but that's not required.  If, for
+instance, the posting is done asynchronously, it has generally not been
+completed by the time this function concludes.  In that case, this
+function should set up some kind of sentinel to beep the user loud and
+clear if the posting could not be completed.
+
+There should be no result data from this function. 
+
+
+@item (nnchoke-request-post-buffer POST GROUP SUBJECT HEADER ARTICLE-BUFFER INFO FOLLOW-TO RESPECT-POSTER)
+
+This function should return a buffer suitable for composing an article
+to be posted by @code{nnchoke-request-post}.  If @var{post} is
+non-@code{nil}, this is not a followup, but a totally new article.
+@var{group} is the name of the group to be posted to.  @var{subject} is
+the subject of the message.  @var{article-buffer} is the buffer being
+followed up, if that is the case.  @var{info} is the group info.
+@var{follow-to} is the group that one is supposed to re-direct the
+article to.  If @var{respect-poster} is non-@code{nil}, the special
+@samp{"poster"} value of a @code{Followup-To} header is to be respected.
+
+There should be no result data returned.
+
+@end table
+
+@node Optional Backend Functions
+@subsection Optional Backend Functions
+
+@table @code
+
+@item (nnchoke-retrieve-groups GROUPS &optional SERVER)
+
+@var{groups} is a list of groups, and this function should request data
+on all those groups.  How it does it is of no concern to Gnus, but it
+should attempt to do this in a speedy fashion.
+
+The return value of this function can be either @code{active} or
+@code{group}, which says what the format of the result data is.  The
+former is in the same format as the data from
+@code{nnchoke-request-list}, while the latter is a buffer full of lines
+in the same format as @code{nnchoke-request-group} gives.
+
+@example
+group-buffer = *active-line / *group-status
+@end example
+
+
+@item (nnchoke-request-update-info GROUP INFO &optional SERVER)
+
+A Gnus group info (@pxref{Group Info}) is handed to the backend for
+alterations.  This comes in handy if the backend really carries all the
+information (as is the case with virtual an imap groups).  This function
+may alter the info in any manner it sees fit, and should return the
+(altered) group info.  This function may alter the group info
+destructively, so no copying is needed before boogying. 
+
+There should be no result data from this function.
+
+
+@item (nnchoke-request-scan &optional GROUP SERVER)
+
+This function may be called at any time (by Gnus or anything else) to
+request that the backend check for incoming articles, in one way or
+another.  A mail backend will typically read the spool file or query the
+POP server when this function is invoked.  The @var{group} doesn't have
+to be heeded -- if the backend decides that it is too much work just
+scanning for a single group, it may do a total scan of all groups.  It
+would be nice, however, to keep things local if that's practical.
+
+There should be no result data from this function.
+
+
+@item (nnchoke-request-asynchronous GROUP &optional SERVER ARTICLES)
+
+This is a request to fetch articles asynchronously later.
+@var{articles} is an alist of @var{(article-number line-number)}.  One
+would generally expect that if one later fetches article number 4, for
+instance, some sort of asynchronous fetching of the articles after 4
+(which might be 5, 6, 7 or 11, 3, 909 depending on the order in that
+alist) would be fetched asynchronouly, but that is left up to the
+backend.  Gnus doesn't care.
+
+There should be no result data from this function.
+ 
+
+@item (nnchoke-request-group-description GROUP &optional SERVER)
+
+The result data from this function should be a description of
+@var{group}. 
+
+@example
+description-line = name <TAB> description eol
+name             = <string>
+description      = <text>
+@end example
+
+@item (nnchoke-request-list-newsgroups &optional SERVER)
+
+The result data from this function should be the description of all
+groups available on the server.
+
+@example
+description-buffer = *description-line
+@end example
+
+
+@item (nnchoke-request-newgroups DATE &optional SERVER)
+
+The result data from this function should be all groups that were
+created after @samp{date}, which is in normal human-readable date
+format.  The data should be in the active buffer format.
+
+
+@item (nnchoke-request-create-groups GROUP &optional SERVER)
+
+This function should create an empty group with name @var{group}.  
+
+There should be no return data.
+
+
+@item (nnchoke-request-expire-articles ARTICLES &optional GROUP SERVER FORCE)
+
+This function should run the expiry process on all articles in the
+@var{articles} range (which is currently a simple list of article
+numbers.)  It is left up to the backend to decide how old articles
+should be before they are removed by this function.  If @var{force} is
+non-@code{nil}, all @var{articles} should be deleted, no matter how new
+they are. 
+
+This function should return a list of articles that it did not/was not
+able to delete.
+
+There should be no result data returned.
+
+
+@item (nnchoke-request-move-article ARTICLE GROUP SERVER ACCEPT-FORM
+&optional LAST)
+
+This function should move @var{article} (which is a number) from
+@var{group} by calling @var{accept-form}.  
+
+This function should ready the article in question for moving by
+removing any header lines it has added to the article, and generally
+should "tidy up" the article.  Then it should @code{eval}
+@var{accept-form} in the buffer where the "tidy" article is.  This will
+do the actual copying.  If this @code{eval} returns a non-@code{nil}
+value, the article should be removed.
+
+If @var{last} is @code{nil}, that means that there is a high likelihood
+that there will be more requests issued shortly, so that allows some
+optimizations. 
+
+There should be no data returned. 
+
+
+@item (nnchoke-request-accept-article GROUP &optional LAST)
+
+This function takes the current buffer and inserts it into @var{group}.
+If @var{last} in @code{nil}, that means that there will be more calls to
+this function in short order.
+
+There should be no data returned.
+
+
+@item (nnchoke-request-replace-article ARTICLE GROUP BUFFER)
+
+This function should remove @var{article} (which is a number) from
+@var{group} and insert @var{buffer} there instead.
+
+There should be no data returned.
+
+@end table
+
+
+@node Score File Syntax
+@section Score File Syntax
+
+Score files are meant to be easily parsable, but yet extremely
+mallable.   It was decided that something that had the same read syntax
+as an Emacs Lisp list would fit that spec.
+
+Here's a typical score file:
+
+@lisp
+(("summary"
+  ("win95" -10000 nil s)
+  ("Gnus"))
+ ("from"
+  ("Lars" -1000))
+ (mark -100))
+@end lisp
+
+BNF definition of a score file:
+
+@example
+score-file       = "" / "(" *element ")"
+element          = rule / atom
+rule             = string-rule / number-rule / date-rule
+string-rule      = "(" quote string-header quote space *string-match ")"
+number-rule      = "(" quote number-header quote space *number-match ")"
+date-rule        = "(" quote date-header quote space *date-match ")"
+quote            = <ascii 34>
+string-header    = "subject" / "from" / "references" / "message-id" / 
+                   "xref" / "body" / "head" / "all" / "followup"
+number-header    = "lines" / "chars"
+date-header      = "date"
+string-match     = "(" quote <string> quote [ "" / [ space score [ "" / 
+                   space date [ "" / [ space string-match-t ] ] ] ] ] ")"
+score            = "nil" / <integer>
+date             = "nil" / <natural number>
+string-match-t   = "nil" / "s" / "substring" / "S" / "Substring" / 
+                   "r" / "regex" / "R" / "Regex" /
+                   "e" / "exact" / "E" / "Exact" /
+                   "f" / "fuzzy" / "F" / "Fuzzy"
+number-match     = "(" <integer> [ "" / [ space score [ "" / 
+                   space date [ "" / [ space number-match-t ] ] ] ] ] ")"
+number-match-t   = "nil" / "=" / "<" / ">" / ">=" / "<="
+date-match       = "(" quote <string> quote [ "" / [ space score [ "" / 
+                   space date [ "" / [ space date-match-t ] ] ] ] ")"
+date-match-t     = "nil" / "at" / "before" / "after"
+atom             = "(" [ required-atom / optional-atom ] ")"
+required-atom    = mark / expunge / mark-and-expunge / files /
+                   exclude-files / read-only / touched
+optional-atom    = adapt / local / eval 
+mark             = "mark" space nil-or-number
+nil-or-t         = "nil" / <integer>
+expunge          = "expunge" space nil-or-number
+mark-and-expunge = "mark-and-expunge" space nil-or-number
+files            = "files" *[ space <string> ]
+exclude-files    = "exclude-files" *[ space <string> ]
+read-only        = "read-only" [ space "nil" / space "t" ]
+adapt            = "adapt" [ space "nil" / space "t" / space adapt-rule ]
+adapt-rule       = "(" *[ <string> *[ "(" <string> <integer> ")" ] ")"
+local            = "local" *[ space "(" <string> space <form> ")" ]
+eval             = "eval" space <form>
+space            = *[ " " / <TAB> / <NEWLINE> ]
+@end example
+
+Any unrecognized elements in a score file should be ignored, but not
+discarded.  
+
+As you can see, white space is needed, but the type and amount of white
+space is irrelevant.  This means that formatting of the score file is
+left up to the programmer -- if it's simpler to just spew it all out on
+one looong line, then that's ok.
+
+The meaning of the various atoms are explained elsewhere in this
+manual. 
+
+@node Headers
+@section Headers
+
+Gnus uses internally a format for storing article headers that
+corresponds to the @sc{nov} format in a mysterious fashion.  One could
+almost suspect that the author looked at the @sc{nov} specification and
+just shamelessly @emph{stole} the entire thing, and one would be right.
+
+@dfn{Header} is a severly overloaded term.  "Header" is used in RFC1036
+to talk about lines in the head of an article (eg., @code{From}).  It is
+used by many people as a synonym for "head" -- "the header and the
+body".  (That should be avoided, in my opinion.)  And Gnus uses a format
+interanally that it calls "header", which is what I'm talking about
+here.  This is a 9-element vector, basically, with each header (ouch)
+having one slot. 
+
+These slots are, in order: @code{number}, @code{subject}, @code{from},
+@code{date}, @code{id}, @code{references}, @code{chars}, @code{lines},
+@code{xref}.  There are macros for accessing and setting these slots --
+they all have predicatable names beginning with @code{mail-header-} and
+@code{mail-header-set-}, respectively.  
+
+The @code{xref} slot is really a @code{misc} slot.  Any extra info will
+be put in there.
+
+@node Ranges
+@section Ranges
+
+@sc{gnus} introduced a concept that I found so useful that I've started
+using it a lot and have elaborated on it greatly. 
+
+The question is simple: If you have a large amount of objects that are
+identified by numbers (say, articles, to take a @emph{wild} example)
+that you want to callify as being "included", a normal sequence isn't
+very useful.  (A 200,000 length sequence is a bit long-winded.)
+
+The solution is as simple as the question: You just collapse the
+sequence. 
+
+@example
+(1 2 3 4 5 6 10 11 12)
+@end example
+
+is transformed into
+
+@example
+((1 . 6) (10 . 12))
+@end example
+
+To avoid having those nasty @samp{(13 . 13)} elements to denote a
+lonesome object, a @samp{13} is a valid element:
+
+@example
+((1 . 6) 7 (10 . 12))
+@end example
+
+This means that comparing two ranges to find out whether they are equal
+is slightly tricky:
+
+@example
+((1 . 6) 7 8 (10 . 12))
+@end example
+
+and
+
+@example
+((1 . 5) (7 . 8) (10 . 12))
+@end example
+
+are equal.  In fact, any non-descending list is a range:
+
+@example
+(1 2 3 4 5)
+@end example
+
+is a perfectly valid range, although a pretty longwinded one.  This is
+also legal:
+
+@example
+(1 . 5)
+@end example
+
+and is equal to the previous range.
+
+Here's a BNF definition of ranges.  Of course, one must remember the
+semantic requirement that the numbers are non-descending.  (Any number
+of repetition of the same number is allowed, but apt to disappear in
+range handling.)
+
+@example
+range           = simple-range / normal-range
+simple-range    = "(" number " . " number ")"
+normal-range    = "(" start-contents ")"
+contents        = "" / simple-range *[ " " contents ] / 
+                  number *[ " " contents ]
+@end example
+
+Gnus currently uses ranges to keep track of read articles and article
+marks.  I plan on implementing a number of range operators in C if The
+Powers That Be are willing to let me.  (I haven't asked yet, because I
+need to do some more thinking on what operators I need to make life
+totally range-based without ever having to convert back to normal
+sequences.) 
+
+
+@node Group Info
+@section Group Info
+
+Gnus stores all permanent info on groups in a @dfn{group info} list.
+This list is from three to six elements (or more) long and exhaustively
+describes the group.
+
+Here are two example group infos; one is a very simple group while the
+second is a more complex one:
+
+@example
+("no.group" 5 (1 . 54324))
+
+("nnml:my.mail" 3 ((1 . 5) 9 (20 . 55))
+                ((tick (15 . 19)) (replied 3 6 (19 . 23)))
+                (nnml "")
+                (auto-expire (to-address "ding@@ifi.uio.no")))
+@end example
+
+The first element is the group name as Gnus knows the group; the second
+is the group level; the third is the read articles in range format; the
+fourth is a list of article marks lists; the fifth is the select method;
+and the sixth contains the group parameters.
+
+Here's a BNF definition of the group info format:
+
+@example
+info          = "(" group space level space read 
+                [ "" / [ space marks-list [ "" / [ space method [ "" /
+                space parameters ] ] ] ] ] ")" 
+group         = quote <string> quote
+level         = <integer in the range of 1 to inf>
+read          = range
+marks-lists   = nil / "(" *marks ")"
+marks         = "(" <string> range ")"
+method        = "(" <string> *elisp-forms ")"
+parameters    = "(" *elisp-forms ")"
+@end example
+
+Actually that @samp{marks} rule is a fib.  A @samp{marks} is a
+@samp{<string>} consed on to a @samp{range}, but that's a bitch to say
+in pseudo-BNF.
+
 
 @node Index
 @chapter Index

@@ -131,7 +131,7 @@ pounce directly on the real variables themselves."))
       ;; portable!
       (or (face-differs-from-default-p 'underline)
 	  (funcall 'set-face-underline-p 'underline t))
-      (or (fboundp 'set-text-properties)
+      ; (or (fboundp 'set-text-properties) Fuckit!
 	  (defun set-text-properties (start end props &optional buffer)
 	    (if (or (null buffer) (bufferp buffer))
 		(if props
@@ -139,7 +139,7 @@ pounce directly on the real variables themselves."))
 		      (put-text-property 
 		       start end (car props) (nth 1 props) buffer)
 		      (setq props (nthcdr 2 props)))
-		  (remove-text-properties start end ())))))
+		  (remove-text-properties start end ()))))
 
       (defalias 'gnus-make-overlay 'make-extent)
       (defalias 'gnus-overlay-put 'set-extent-property)

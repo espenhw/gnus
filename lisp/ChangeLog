@@ -1,4 +1,166 @@
+Sun Sep 10 00:39:41 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-post-news): Set the name of the newsgroup for
+	later use.
+
+	* gnus.el (gnus-group-unsubscribe-group): Don't accept empty group
+	names. 
+
+	* nnbabyl.el (nnbabyl-get-new-mail): If moving is unsuccessful,
+	don't pretend it went ok.
+	* nnmbox.el (nnmbox-get-new-mail): Ditto.
+	* nnfolder.el (nnfolder-get-new-mail): Ditto.
+	* nnmh.el (nnmh-get-new-mail): Ditto.
+	* nnml.el (nnml-get-new-mail): Ditto.
+
+	* gnus-vis.el (gnus-group-menu-hook, gnus-summary-menu-hook,
+	gnus-article-menu-hook, gnus-server-menu-hook,
+	gnus-browse-menu-hook): New hooks. 
+
+Fri Sep  8 19:08:29 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-request-post-buffer): Newer send to `sender',
+	don't put everything in the `To' header, filter the `CC' header
+	through `rmail-dont-reply-to'.
+
+Fri Sep  8 20:42:27 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-make-archive-group): Wrong interactive spec.
+	(gnus-select-method): Take `gnus-nntp-service' into account for
+	backwards compatability.
+
+Thu Sep  7 22:17:33 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-setup-news): Find new groups before finding
+ 	numbers of unread articles in the groups.
+
+	* gnus-score.el (gnus-summary-score-entry): Fuzzy wrong match
+	value. 
+
+	* gnus.el ('gnus-load-hook): Run this hook while loading.
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Would re-generate the
+	summary buffers on each group entry.
+
+	* gnus-score.el (gnus-score-save): Don't try to write a score file
+	unless one can.
+
+Wed Sep  6 20:38:43 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-cite.el 	(gnus-cite-parse-max-size): New variable.
+	(gnus-cite-parse-maybe): Use it.  
+	(gnus-cite-parse): Move parser initialization to
+	`gnus-cite-parse-maybe' and reformat.
+	* gnus-vis.el (gnus-article-add-buttons): Force citation parsing
+	if called interactively.
+	* gnus-cite.el (gnus-article-highlight-citation): Ditto.
+	(gnus-article-hide-citation): Ditto.
+	(gnus-article-hide-citation-maybe): Ditto.
+	(gnus-article-highlight): Ditto.
+	(gnus-article-highlight-some): Ditto.
+	(gnus-article-hide): Ditto.
+
+Thu Sep  7 00:52:36 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-show-thread): Expand hidden subthreads as
+	well. 
+
+Wed Sep  6 20:38:43 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-msg.el (gnus-use-followup-to): New value `ask' will make
+	Gnus always ask before obeying the followup-to header.  Changed
+	default to t to confirm with the Seal.
+        (gnus-summary-followup): Support `ask' value of
+	`gnus-use-followup-to'. 
+	* nntp.el (nntp-request-post-buffer): Support `ask' value of
+	`gnus-use-followup-to'. 
+	* gnus.texi (Post): Document `ask' value of
+	`gnus-use-followup-to'.  
+
+Thu Sep  7 00:20:44 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-select-newsgroup): Checked the server twice.
+	(gnus-select-newsgroup): Wouldn't respond properly to unwell
+	groups. 
+
+Wed Sep  6 00:11:00 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-read-old-newsrc-el-file): Didn't parse options
+	lines from the .el file. 
+	(gnus-summary-prepare-threads): When using empty make-false-root,
+	and the subject changed, that wouldn't be reflected in the summary
+	buffer.
+
+	* nnfolder.el (nnfolder-read-folder): Make absofuckinutely sure
+	that active numbers never, ever decrease.
+
+	* nnbabyl.el (nnbabyl-request-expire-articles): Remove all text
+	props. 
+	(nnbabyl-read-mbox): If an rmail buffer is in rmail mode, make it
+	ordinary. 
+
+	* gnus.el (gnus-summary-kill-thread): Did not kill hidden
+	threads. 
+
+	* gnus-uu.el (gnus-uu-save-article): Didn't remove text props.
+
+	* gnus.el (gnus-group-make-articles-read): Would not do
+	crosspostings in one obscure instance.
+	(gnus-summary-update-mark): Would compute score-markedness even
+	when setting the process mark.
+
+Tue Sep  5 21:50:33 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-inews-news): Would choke on trailing
+	commands. Also used `replace-regexp'.
+	(gnus-inews-news): Would, for some reason, fold all lines
+	sometimes. 
+
+	* gnus-ems.el: Force our definition of `set-text-properties'. So
+	there! 
+
+	* gnus.el (gnus-summary-sort-by-subject): Sorted oddly for (1/2)
+	stuff. 
+	(gnus-request-body): Had gone missing for some reason.
+	(gnus-group-exit): Would quit out of an empty group buffer without
+	confirmation.
+
+Mon Sep  4 00:44:38 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-field-face): Check that the face is defined.
+	(custom-face-tag): New function.
+	(custom-group-accept): Use it.
+	(custom-group-insert): Ditto.
+	(custom-type-properties): Give `face->other' a default value.
+	(custom-facep): New function.
+	(custom-face-lookup): Use it.
+
+Sun Sep  3 19:36:29 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (custom-local-type-properties): Added extra line of
+	documentation. 
+	(custom-valid, custom-const-valid): Changed legal to valid in doc
+	string.
+	(custom-match): More documentation.
+	(custom-field-update): Doc. clarification.
+	(custom-field-accept): Ditto.
+	(custom-type-properties): More documentation.
+
+Fri Sep  1 15:39:56 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (menu-bar): Added XEmacs and Emacs 19.28 support.
+
+Fri Sep  1 15:39:56 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el (plist-put): Fixed bogus definition.  
+
+Thu Aug 31 15:21:23 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-cus.el: Removed dead code.
+
 Thu Aug 31 10:45:26 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 5.0 is released.
 
 	* gnus-cus.el (gnus-face-dark-name-list): Use dark blue instead of
 	sky blue.

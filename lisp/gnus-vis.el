@@ -29,6 +29,21 @@
 (require 'gnus-ems)
 (require gnus-easymenu)
 (require 'custom)
+
+(defvar gnus-group-menu-hook nil
+  "*Hook run after the creation of the group mode menu.")
+
+(defvar gnus-summary-menu-hook nil
+  "*Hook run after the creation of the summary mode menu.")
+
+(defvar gnus-article-menu-hook nil
+  "*Hook run after the creation of the article mode menu.")
+
+(defvar gnus-server-menu-hook nil
+  "*Hook run after the creation of the server mode menu.")
+
+(defvar gnus-browse-menu-hook nil
+  "*Hook run after the creation of the browse mode menu.")
   
 ;;; Summary highlights.
 
@@ -329,7 +344,8 @@ variable it the real callback function.")
 	["Send a bug report" gnus-bug t]
 	["Send a mail" gnus-group-mail t]
 	["Post an article" gnus-group-post-news t]
-	["Customize score file" gnus-score-customize (not (string-match "XEmacs" emacs-version)) ]
+	["Customize score file" gnus-score-customize 
+	 (not (string-match "XEmacs" emacs-version)) ]
 	["Check for new news" gnus-group-get-new-news t]     
 	["Delete bogus groups" gnus-group-check-bogus-groups t]
 	["Find new newsgroups" gnus-find-new-newsgroups t]
@@ -348,6 +364,7 @@ variable it the real callback function.")
 	["Edit global kill file" gnus-group-edit-global-kill t]
 	["Sort group buffer" gnus-group-sort-groups t]
 	))
+     (run-hooks 'gnus-group-menu-hook)
      )))
 
 ;; Server mode
@@ -355,42 +372,49 @@ variable it the real callback function.")
   (gnus-visual-turn-off-edit-menu 'server)
   (or
    (boundp 'gnus-server-menu)
-   (easy-menu-define
-    gnus-server-menu
-    gnus-server-mode-map
-    ""
-    '("Server"
-      ["Add" gnus-server-add-server t]
-      ["Browse" gnus-server-read-server t]
-      ["List" gnus-server-list-servers t]
-      ["Kill" gnus-server-kill-server t]
-      ["Yank" gnus-server-yank-server t]
-      ["Copy" gnus-server-copy-server t]
-      ["Edit" gnus-server-edit-server t]
-      ["Exit" gnus-server-exit t]
-      ))))
+   (progn
+     (easy-menu-define
+      gnus-server-menu
+      gnus-server-mode-map
+      ""
+      '("Server"
+	["Add" gnus-server-add-server t]
+	["Browse" gnus-server-read-server t]
+	["List" gnus-server-list-servers t]
+	["Kill" gnus-server-kill-server t]
+	["Yank" gnus-server-yank-server t]
+	["Copy" gnus-server-copy-server t]
+	["Edit" gnus-server-edit-server t]
+	["Exit" gnus-server-exit t]
+	))
+     (run-hooks 'gnus-server-menu-hook)
+     )))
 
 ;; Browse mode
 (defun gnus-browse-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'browse)
   (or
    (boundp 'gnus-browse-menu)
-   (easy-menu-define
-    gnus-browse-menu
-    gnus-browse-mode-map
-    ""
-    '("Browse"
-      ["Subscribe" gnus-browse-unsubscribe-current-group t]
-      ["Read" gnus-group-read-group t]
-      ["Exit" gnus-browse-exit t]
-      ))))
+   (progn
+     (easy-menu-define
+      gnus-browse-menu
+      gnus-browse-mode-map
+      ""
+      '("Browse"
+	["Subscribe" gnus-browse-unsubscribe-current-group t]
+	["Read" gnus-group-read-group t]
+	["Exit" gnus-browse-exit t]
+	))
+      (run-hooks 'gnus-browse-menu-hook)
+      )))
+
 
 ;; Summary buffer
 (defun gnus-summary-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'summary)
 
   (or
-   (boundp 'gnus-summary-mark-menu)
+   (boundp 'gnus-summary-misc-menu)
    (progn
 
      (easy-menu-define
@@ -657,6 +681,7 @@ variable it the real callback function.")
 	["Fetch article with id..." gnus-summary-refer-article t]
 	["Redisplay" gnus-summary-show-article t]))
 
+
 	 
      (easy-menu-define
       gnus-summary-thread-menu
@@ -695,7 +720,7 @@ variable it the real callback function.")
 	["Reply & followup and yank" gnus-summary-followup-and-reply-with-original t]
 	["Uuencode and post" gnus-uu-post-news t]
 	))
-
+     (run-hooks 'gnus-summary-menu-hook)
      )))
 
 (defun gnus-score-set-default (var value)
@@ -871,6 +896,7 @@ If nil, the user will be asked for a duration.")
 	["Remove carriage return" gnus-article-remove-cr t]
 	["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
 	))
+     (run-hooks 'gnus-article-menu-hook)
      )))
 
 ;;;
@@ -1153,36 +1179,36 @@ call it with the value of the `gnus-data' text property."
 	  (goto-char pos)
 	(error "No buttons found")))))
 
-(defun gnus-article-highlight ()
+(defun gnus-article-highlight (&optional force)
   "Highlight current article.
 This function calls `gnus-article-highlight-headers',
 `gnus-article-highlight-citation', 
 `gnus-article-highlight-signature', and `gnus-article-add-buttons' to
 do the highlighting.  See the documentation for those functions."
-  (interactive)
+  (interactive (list 'force))
   (gnus-article-highlight-headers)
-  (gnus-article-highlight-citation)
+  (gnus-article-highlight-citation force)
   (gnus-article-highlight-signature)
-  (gnus-article-add-buttons))
+  (gnus-article-add-buttons force))
 
-(defun gnus-article-highlight-some ()
+(defun gnus-article-highlight-some (&optional force)
   "Highlight current article.
 This function calls `gnus-article-highlight-headers',
 `gnus-article-highlight-signature', and `gnus-article-add-buttons' to
 do the highlighting.  See the documentation for those functions."
-  (interactive)
+  (interactive (list 'force))
   (gnus-article-highlight-headers)
   (gnus-article-highlight-signature)
   (gnus-article-add-buttons))
 
-(defun gnus-article-hide ()
+(defun gnus-article-hide (&optional force)
   "Hide current article.
 This function calls `gnus-article-hide-headers',
 `gnus-article-hide-citation-maybe', and `gnus-article-hide-signature'
 to do the hiding.  See the documentation for those functions." 
-  (interactive)
+  (interactive (list 'force))
   (gnus-article-hide-headers)
-  (gnus-article-hide-citation-maybe)
+  (gnus-article-hide-citation-maybe force)
   (gnus-article-hide-signature))
 
 (defun gnus-article-highlight-headers ()
@@ -1260,19 +1286,19 @@ It does this by making everything after `gnus-signature-separator' invisible."
 	   (add-text-properties (match-end 0) (point-max)
 				gnus-hidden-properties)))))
 
-(defun gnus-article-add-buttons ()
+(defun gnus-article-add-buttons (&optional force)
   "Find external references in article and make them to buttons.
 
 External references are things like message-ids and URLs, as specified by 
 `gnus-button-alist'."
-  (interactive)
+  (interactive (list 'force))
   (if (eq gnus-button-last gnus-button-alist)
       ()
     (setq gnus-button-regexp (mapconcat 'car gnus-button-alist  "\\|")
 	  gnus-button-last gnus-button-alist))
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe)
+    (gnus-cite-parse-maybe force)
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t)
 	  (case-fold-search t))

@@ -34,6 +34,10 @@
 
 ;;; Customization:
 
+(defvar gnus-cite-parse-max-size 25000
+  "Maximum article size (in bytes) where parsing citations is allowed.
+Set it to nil to parse all articles.")
+
 (defvar gnus-cite-prefix-regexp 
     "^[]>|:}+ ]*[]>|:}+]\\(.*>\\)?\\|^.*>"
   "Regexp matching the longest possible citation prefix on a line.")
@@ -133,7 +137,7 @@ The text matching the first grouping will be used as a button.")
 
 ;;; Commands:
 
-(defun gnus-article-highlight-citation ()
+(defun gnus-article-highlight-citation (&optional force)
   "Highlight cited text.
 Each citation in the article will be highlighted with a different face.
 The faces are taken from `gnus-cite-face-list'.
@@ -145,7 +149,7 @@ lines matches `gnus-cite-prefix-regexp' with the same prefix.
 
 Lines matching `gnus-cite-attribution-postfix' and perhaps
 `gnus-cite-attribution-prefix' are considered attribution lines."
-  (interactive)
+  (interactive (list 'force))
   ;; Create dark or light faces if necessary.
   (cond ((eq gnus-cite-face-list 'light)
 	 (setq gnus-cite-face-list
@@ -155,7 +159,7 @@ Lines matching `gnus-cite-attribution-postfix' and perhaps
 	       (mapcar 'gnus-make-face gnus-face-dark-name-list))))
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe)
+    (gnus-cite-parse-maybe force)
     (let ((buffer-read-only nil)
 	  (alist gnus-cite-prefix-alist)
 	  (faces gnus-cite-face-list)
@@ -204,13 +208,13 @@ Lines matching `gnus-cite-attribution-postfix' and perhaps
 	      skip (gnus-cite-find-prefix number))
 	(gnus-cite-add-face number skip gnus-cite-attribution-face)))))
 
-(defun gnus-article-hide-citation ()
+(defun gnus-article-hide-citation (&optional force)
   "Hide all cited text except attribution lines.
 See the documentation for `gnus-article-highlight-citation'."
-  (interactive)
+  (interactive (list 'force))
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe)
+    (gnus-cite-parse-maybe force)
     (let ((buffer-read-only nil)
 	  (alist gnus-cite-prefix-alist)
 	  (inhibit-point-motion-hooks t)
@@ -236,7 +240,7 @@ See also the documentation for `gnus-article-highlight-citation'."
   (interactive (list 'force))
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (gnus-cite-parse-maybe)
+    (gnus-cite-parse-maybe force)
     (goto-char (point-min))
     (search-forward "\n\n")
     (let ((start (point))
@@ -271,19 +275,26 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 ;;; Internal functions:
 
-(defun gnus-cite-parse-maybe ()
+(defun gnus-cite-parse-maybe (&optional force)
   ;; Parse if the buffer has changes since last time.
   (if (eq gnus-article-length (- (point-max) (point-min)))
       ()
-    (setq gnus-article-length (- (point-max) (point-min)))
-    (gnus-cite-parse)))
+    ;;Reset parser information.
+    (setq gnus-cite-prefix-alist nil
+	  gnus-cite-attribution-alist nil
+	  gnus-cite-loose-prefix-alist nil
+	  gnus-cite-loose-attribution-alist nil)
+    ;; Parse if not too large.
+    (if (and (not force) 
+	     gnus-cite-parse-max-size
+	     (> (buffer-size) gnus-cite-parse-max-size))
+	()
+      (setq gnus-article-length (- (point-max) (point-min)))
+      (gnus-cite-parse))))
 
 (defun gnus-cite-parse ()
   ;; Parse and connect citation prefixes and attribution lines.
-  (setq gnus-cite-prefix-alist nil
-	gnus-cite-attribution-alist nil
-        gnus-cite-loose-prefix-alist nil
-        gnus-cite-loose-attribution-alist nil)
+  
   ;; Parse current buffer searching for citation prefixes.
   (goto-char (point-min))
   (or (search-forward "\n\n" nil t)
@@ -345,7 +356,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 	     (setq gnus-cite-prefix-alist
 		   (cons entry gnus-cite-prefix-alist)))
 	    (t
-	     (setq gnus-cite-prefix-alist (cons entry gnus-cite-prefix-alist))
+	     (setq gnus-cite-prefix-alist (cons entry
+						gnus-cite-prefix-alist))
 	     ;; Remove articles from other prefixes.
 	     (let ((loop alist)
 		   current)
@@ -391,16 +403,21 @@ See also the documentation for `gnus-article-highlight-citation'."
   (gnus-cite-match-attributions 'small nil
 				(lambda (prefix tag)
 				  (if tag
-				      (concat "\\`" (regexp-quote prefix) "[ \t]*" 
+				      (concat "\\`" 
+					      (regexp-quote prefix) "[ \t]*" 
 					      (regexp-quote tag) ">"))))
   ;; Find loose supercite citations after attributions.
   (gnus-cite-match-attributions 'small t
 				(lambda (prefix tag)
-				  (if tag (concat "\\<" (regexp-quote tag) "\\>"))))
+				  (if tag (concat "\\<"
+						  (regexp-quote tag)
+						  "\\>"))))
   ;; Find loose supercite citations anywhere.
   (gnus-cite-match-attributions 'small nil
 				(lambda (prefix tag)
-				  (if tag (concat "\\<" (regexp-quote tag) "\\>"))))
+				  (if tag (concat "\\<"
+						  (regexp-quote tag)
+						  "\\>"))))
   ;; Find nested citations after attributions.
   (gnus-cite-match-attributions 'small-if-unique t
 				(lambda (prefix tag)

@@ -45,11 +45,11 @@ newsgroup name. (In that case, `gnus-signature-file' and
 If you want to insert the signature, you might put
 `gnus-inews-insert-signature' in this hook.")
 
-(defvar gnus-use-followup-to 'use
+(defvar gnus-use-followup-to t
   "*Specifies what to do with Followup-To header.
 If nil, ignore the header. If it is t, use its value, but ignore 
-`poster'. If it is neither nil nor t, which is the default, always use
-the value.") 
+`poster'.  If it is the symbol `ask', query the user before posting.
+If it is the symbol `use', always use the value.") 
 
 (defvar gnus-followup-to-function nil
   "*A variable that contains a function that returns a followup address.
@@ -298,7 +298,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
     (set-buffer gnus-article-buffer)
     (if (and gnus-use-followup-to
 	     (string-equal "poster" (gnus-fetch-field "followup-to"))
-	     (or (not (eq gnus-use-followup-to t))
+	     (or (not (memq gnus-use-followup-to '(t ask)))
 		 (not (gnus-y-or-n-p 
 		       "Do you want to ignore `Followup-To: poster'? "))))
 	;; Mail to the poster. 
@@ -431,8 +431,9 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	     (not gnus-expert-user)
 	     post (not group)
 	     (progn
-	       (setq group 
-		     (completing-read "Group: " gnus-active-hashtb))
+	       (setq gnus-newsgroup-name
+		     (setq group 
+			   (completing-read "Group: " gnus-active-hashtb)))
 	       (or subject
 		   (setq subject (read-string "Subject: ")))))
 	(setq mail-reply-buffer gnus-article-copy)
@@ -574,17 +575,24 @@ will attempt to use the foreign server to post the article."
 	;; Correct newsgroups field: change sequence of spaces to comma and 
 	;; eliminate spaces around commas.  Eliminate imbedded line breaks.
 	(goto-char (point-min))
-	(if (search-forward-regexp "^Newsgroups: +" nil t)
+	(if (re-search-forward "^Newsgroups: +" nil t)
 	    (save-restriction
 	      (narrow-to-region
 	       (point)
-	       (if (re-search-forward "^[^ \t]" nil 'end)
+	       (if (re-search-forward "^[^ \t]" nil t)
 		   (match-beginning 0)
-		 (point-max)))
+		 (forward-line 1)
+		 (point)))
 	      (goto-char (point-min))
-	      (replace-regexp "\n[ \t]+" " ") ;No line breaks (too confusing)
+	      (while (re-search-forward "\n[ \t]+" nil t)
+		(replace-match " " t t)) ;No line breaks (too confusing)
 	      (goto-char (point-min))
-	      (replace-regexp "[ \t\n]*,[ \t\n]*\\|[ \t]+" ",")))
+	      (while (re-search-forward "[ \t\n]*,[ \t\n]*\\|[ \t]+" nil t)
+		(replace-match "," t t))
+	      (goto-char (point-min))
+	      ;; Remove a trailing comma.
+	      (if (re-search-forward ",$" nil t)
+		  (replace-match "" t t))))
 
 	;; Added by Per Abrahamsen <abraham@iesd.auc.dk>.
 	;; Help save the the world!
@@ -593,7 +601,8 @@ will attempt to use the foreign server to post the article."
 	 (let ((newsgroups (mail-fetch-field "newsgroups"))
 	       (followup-to (mail-fetch-field "followup-to"))
 	       groups to)
-	   (if (and (string-match "," newsgroups) (not followup-to))
+	   (if (and newsgroups
+		    (string-match "," newsgroups) (not followup-to))
 	       (progn
 		 (while (string-match "," newsgroups)
 		   (setq groups
@@ -1539,17 +1548,7 @@ mailer."
 	      (while follow-to
 		(insert (car (car follow-to)) ": " (cdr (car follow-to)) "\n")
 		(setq follow-to (cdr follow-to)))))
-	;; Fold long references line to follow RFC1036.
-	(mail-position-on-field "References")
-	(let ((begin (- (point) (length "References: ")))
-	      (fill-column 78)
-	      (fill-prefix "\t"))
-	  (if references (insert references))
-	  (if (and references message-id) (insert " "))
-	  (if message-id (insert message-id))
-	  ;; The region must end with a newline to fill the region
-	  ;; without inserting extra newline.
-	  (fill-region-as-paragraph begin (1+ (point))))
+	(nnheader-insert-references references message-id)
 	(goto-char (point-min))
 	(re-search-forward
 	 (concat "^" (regexp-quote mail-header-separator) "$"))

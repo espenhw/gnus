@@ -360,8 +360,10 @@ If optional argument `SILENT' is nil, show effect of score entry."
   ;; Regexp is the default type.
   (if (eq type t) (setq type 'r))
   ;; Simplify matches...
-  (if (or (eq type 'r) (eq type 's) (eq type nil))
-      (setq match (gnus-simplify-subject-re match)))
+  (cond ((or (eq type 'r) (eq type 's) (eq type nil))
+	 (setq match (if match (gnus-simplify-subject-re match) "")))
+	((eq type 'f)
+	 (setq match (gnus-simplify-subject-fuzzy match))))
   (let ((score (gnus-score-default score))
 	(header (downcase header)))
     (and prompt (setq match (read-string 
@@ -390,9 +392,6 @@ If optional argument `SILENT' is nil, show effect of score entry."
       (and (= score gnus-score-interactive-default-score)
 	   (setq score nil))
       (let ((new (cond 
-		  ((eq type 'f)
-		   (list (gnus-simplify-subject-fuzzy match)
-			 score (and date (gnus-day-number date)) type))
 		  (type
 		   (list match score (and date (gnus-day-number date)) type))
 		  (date
@@ -775,7 +774,9 @@ SCORE is the score to add."
 	      (if (zerop (buffer-size))
 		  (delete-file file)
 		;; There are scores, so we write the file. 
-		(write-region (point-min) (point-max) file nil 'silent))))))
+		(and (file-writable-p file)
+		     (write-region (point-min) (point-max) 
+				   file nil 'silent)))))))
       (kill-buffer (current-buffer)))))
   
 (defun gnus-score-headers (score-files &optional trace)

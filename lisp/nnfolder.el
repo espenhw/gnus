@@ -612,7 +612,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		(setq activenumber (max activenumber newnum))
 		(setq activemin (min activemin newnum))))
 	    (setcar active (min activemin activenumber))
-	    (setcdr active activenumber)
+	    (setcdr active (max activenumber (cdr active)))
 	    (goto-char (point-min))))
 
       ;; Keep track of the active number on our own, and insert it back into
@@ -637,12 +637,11 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	    (progn
 	      (narrow-to-region start end)
 	      (nnmail-insert-lines)
-	      (setq activenumber (1+ activenumber))
-	      (nnfolder-insert-newsgroup-line (cons nil activenumber))
+	      (nnfolder-insert-newsgroup-line
+	       (cons nil (nnfolder-active-number nnfolder-current-group)))
 	      (widen))))
 
       ;; Make absolutely sure that the active list reflects reality!
-      (setcdr active activenumber)
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       (current-buffer))))
 
@@ -664,14 +663,15 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	 (progn
 	   (and gnus-verbose-backends 
 		(message "nnfolder: Reading incoming mail..."))
-	   (setq incoming 
-		 (nnmail-move-inbox 
-		  (car spools) 
-		  (concat (file-name-as-directory nnfolder-directory)
-			  "Incoming")))
-	   (setq incomings (cons incoming incomings))
-	   (setq group (nnmail-get-split-group (car spools) group-in))
-	   (nnmail-split-incoming incoming 'nnfolder-save-mail nil group)))
+	   (if (not (setq incoming 
+			  (nnmail-move-inbox 
+			   (car spools) 
+			   (concat (file-name-as-directory nnfolder-directory)
+				   "Incoming"))))
+	       ()
+	     (setq incomings (cons incoming incomings))
+	     (setq group (nnmail-get-split-group (car spools) group-in))
+	     (nnmail-split-incoming incoming 'nnfolder-save-mail nil group))))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
       (if incoming 

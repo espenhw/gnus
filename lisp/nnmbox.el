@@ -472,18 +472,20 @@
 	 (progn
 	   (and gnus-verbose-backends 
 		(message "nnmbox: Reading incoming mail..."))
-	   (setq incoming 
-		 (nnmail-move-inbox 
-		  (car spools) (concat nnmbox-mbox-file "-Incoming")))
-	   (setq incomings (cons incoming incomings))
-	   (save-excursion
-	     (setq group (nnmail-get-split-group (car spools) group-in))
-	     (let ((in-buf (nnmail-split-incoming 
-			    incoming 'nnmbox-save-mail t group)))
-	       (set-buffer nnmbox-mbox-buffer)
-	       (goto-char (point-max))
-	       (insert-buffer-substring in-buf)
-	       (kill-buffer in-buf)))))
+	   (if (not (setq incoming 
+			  (nnmail-move-inbox 
+			   (car spools) 
+			   (concat nnmbox-mbox-file "-Incoming"))))
+	       ()
+	     (setq incomings (cons incoming incomings))
+	     (save-excursion
+	       (setq group (nnmail-get-split-group (car spools) group-in))
+	       (let ((in-buf (nnmail-split-incoming 
+			      incoming 'nnmbox-save-mail t group)))
+		 (set-buffer nnmbox-mbox-buffer)
+		 (goto-char (point-max))
+		 (insert-buffer-substring in-buf)
+		 (kill-buffer in-buf))))))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
       (and (buffer-modified-p nnmbox-mbox-buffer) 

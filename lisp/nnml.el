@@ -500,12 +500,13 @@ all. This may very well take some time.")
 	 (progn
 	   (and gnus-verbose-backends 
 		(message "nnml: Reading incoming mail..."))
-	   (setq incoming 
-		 (nnmail-move-inbox 
-		  (car spools) (concat nnml-directory "Incoming")))
-	   (setq group (nnmail-get-split-group (car spools) group-in))
-	   (nnmail-split-incoming incoming 'nnml-save-mail nil group)
-	   (setq incomings (cons incoming incomings))))
+	   (if (not (setq incoming 
+			  (nnmail-move-inbox 
+			   (car spools) (concat nnml-directory "Incoming"))))
+	       ()
+	     (setq group (nnmail-get-split-group (car spools) group-in))
+	     (nnmail-split-incoming incoming 'nnml-save-mail nil group)
+	     (setq incomings (cons incoming incomings)))))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
       (if incoming 

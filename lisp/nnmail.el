@@ -53,7 +53,9 @@ called narrowed to the headers with the first element of the rule as
 the argument.  It should return a non-nil value if it thinks that the
 mail belongs in that group.
 
-The last element should always have \"\" as the regexp.")
+The last element should always have \"\" as the regexp.
+
+This variable can also have a function as its value.")
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defvar nnmail-crosspost t
@@ -222,7 +224,7 @@ perfomed.")
 					info follow-to respect-poster)
   (let ((method-address (cdr (assq 'to-address (nth 5 info))))
 	from date to reply-to message-of
-	references message-id sender cc sendto elt)
+	references message-id cc new-cc sendto elt)
     (setq method-address
 	  (if (and (stringp method-address) 
 		   (string= method-address ""))
@@ -255,9 +257,11 @@ perfomed.")
 		   (setq message-of
 			 (concat (if stop-pos (substring from 0 stop-pos) from)
 				 "'s message of " date))))
-	    (setq sender (mail-fetch-field "sender"))
-	    (setq cc (mail-fetch-field "cc"))
-	    (setq to (mail-fetch-field "to"))
+	    (setq cc (mail-strip-quoted-names (mail-fetch-field "cc")))
+	    (setq to (mail-strip-quoted-names (mail-fetch-field "to")))
+	    (setq new-cc (rmail-dont-reply-to 
+			  (concat (or to "")
+				  (if cc (concat (if to ", " "") cc) ""))))
 	    (setq subject (mail-header-subject header))
 	    (or (string-match "^[Rr][Ee]:" subject)
 		(setq subject (concat "Re: " subject)))
@@ -274,12 +278,12 @@ perfomed.")
 	      (while (setq elt (assoc "To" follow-to))
 		(setq sendto (concat sendto (and sendto ", ") (cdr elt)))
 		(setq follow-to (delq elt follow-to))))
-	  (mail-setup (if (and follow-to (listp follow-to)) sendto
-			(or method-address 
-			    (concat (or sender reply-to from "")
-				    (if to (concat ", " to) "")
-				    (if cc (concat ", " cc) ""))))
-		      subject message-of nil article-buffer nil)
+	  (mail-setup (if (and follow-to (listp follow-to)) 
+			  sendto
+			(or method-address reply-to from ""))
+		      subject message-of 
+		      (if (zerop (length new-cc)) nil new-cc)
+		      article-buffer nil)
 	  (auto-save-mode auto-save-default)
 	  ;; Note that "To" elements should already be in the message.
 	  (if (and follow-to (listp follow-to))
@@ -292,17 +296,7 @@ perfomed.")
 		  (insert 
 		   (car (car follow-to)) ": " (cdr (car follow-to)) "\n")
 		  (setq follow-to (cdr follow-to)))))
-	  ;; Fold long references line to follow RFC1036.
-	  (mail-position-on-field "References")
-	  (let ((begin (- (point) (length "References: ")))
-		(fill-column 78)
-		(fill-prefix "\t"))
-	    (if references (insert references))
-	    (if (and references message-id) (insert " "))
-	    (if message-id (insert message-id))
-	    ;; The region must end with a newline to fill the region
-	    ;; without inserting extra newline.
-	    (fill-region-as-paragraph begin (1+ (point))))))
+	  (nnheader-insert-references references message-id)))
       (current-buffer))))
 
 (defun nnmail-find-file (file)
