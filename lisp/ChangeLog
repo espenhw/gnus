@@ -1,3 +1,8 @@
+2004-05-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-inews-make-draft-meta-information): Really
+	get it right.
+
 2004-05-19  Ben Menasha  <bmenasha@benmenasha.net>
 
 	* nnmh.el (nnmh-request-list-1): Don't check the link count
