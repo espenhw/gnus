@@ -1195,15 +1195,15 @@ It can also be a list of select methods, as well as the special symbol
 list, Gnus will try all the methods in the list until it finds a match."
   :group 'gnus-server
   :type '(choice (const :tag "default" nil)
-		 (const :tag "DejaNews" (nnweb "refer" (nnweb-type dejanews)))
+		 (const :tag "Google" (nnweb "refer" (nnweb-type google)))
 		 gnus-select-method
 		 (repeat :menu-tag "Try multiple"
 			 :tag "Multiple"
-			 :value (current (nnweb "refer" (nnweb-type dejanews)))
+			 :value (current (nnweb "refer" (nnweb-type google)))
 			 (choice :tag "Method"
 				 (const current)
-				 (const :tag "DejaNews"
-					(nnweb "refer" (nnweb-type dejanews)))
+				 (const :tag "Google"
+					(nnweb "refer" (nnweb-type google)))
 				 gnus-select-method))))
 
 (defcustom gnus-group-faq-directory

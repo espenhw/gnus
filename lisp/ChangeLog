@@ -1,3 +1,7 @@
+2002-04-11  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-refer-article-method): Change `dejanews' to `google'.
+
 2002-04-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-delete-marked-with): Fix typo.
