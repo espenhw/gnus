@@ -1,3 +1,8 @@
+2003-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-sum.el (gnus-summary-move-article): Don't copy expirable
+	marks if the destination group is not auto-expirable.
+
 2003-05-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* dgnushack.el (assq-delete-all): Removed the compiler macro.

@@ -8922,7 +8922,10 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 				       (list (cdr art-group)))))
 
 	    ;; See whether the article is to be put in the cache.
-	    (let ((marks gnus-article-mark-lists)
+	    (let ((marks (if (gnus-group-auto-expirable-p to-group)
+			     gnus-article-mark-lists
+			   (delete '(expirable . expire)
+				   (copy-sequence gnus-article-mark-lists))))
 		  (to-article (cdr art-group)))
 
 	      ;; Enter the article into the cache in the new group,
