@@ -1,7 +1,7 @@
 ;;; nnmbox.el --- mail mbox access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -122,7 +122,7 @@ If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nnmbox-status-message ()
+(defun nnmbox-status-message (&optional server)
   "Return server status response as string."
   nnmbox-status-string)
 
@@ -137,8 +137,8 @@ If the stream is opened, return T, otherwise return NIL."
       (if (search-forward (nnmbox-article-string article) nil t)
 	  (let (start stop)
 	    (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
-	    (forward-line 1)
 	    (setq start (point))
+	    (forward-line 1)
 	    (or (and (re-search-forward 
 		      (concat "^" rmail-unix-mail-delimiter) nil t)
 		     (forward-line -1))
@@ -148,6 +148,11 @@ If the stream is opened, return T, otherwise return NIL."
 	      (set-buffer nntp-server-buffer)
 	      (erase-buffer)
 	      (insert-buffer-substring nnmbox-mbox-buffer start stop)
+	      (goto-char (point-min))
+	      (while (looking-at "From ")
+		(delete-char 5)
+		(insert "X-From-Line: ")
+		(forward-line 1))
 	      t))))))
 
 (defun nnmbox-request-group (group &optional server dont-check)
@@ -175,7 +180,11 @@ If the stream is opened, return T, otherwise return NIL."
 (defun nnmbox-request-list (&optional server)
   "List active newsgoups."
   (if server (nnmbox-get-new-mail))
-  (nnmail-find-file nnmbox-active-file))
+  (or (nnmail-find-file nnmbox-active-file)
+      (progn
+	(setq nnmbox-group-alist (nnmail-get-active))
+	(nnmail-save-active nnmbox-group-alist nnmbox-active-file)
+	(nnmail-find-file nnmbox-active-file))))
 
 (defun nnmbox-request-newgroups (date &optional server)
   "List groups created after DATE."
@@ -223,7 +232,8 @@ the date."
       (save-buffer)
       rest)))
 
-(defun nnmbox-request-move-article (article group server accept-form)
+(defun nnmbox-request-move-article
+  (article group server accept-form &optional last)
   (nnmbox-possibly-change-newsgroup group)
   (let ((buf (get-buffer-create " *nnmbox move*"))
 	result)
@@ -231,47 +241,52 @@ the date."
      (nnmbox-request-article article group server)
      (save-excursion
        (set-buffer buf)
+       (buffer-disable-undo (current-buffer))
+       (erase-buffer)
        (insert-buffer-substring nntp-server-buffer)
        (goto-char (point-min))
-       (if (re-search-forward 
-	    "^X-Gnus-Newsgroup:" 
-	    (save-excursion (search-forward "\n\n" nil t) (point)) t)
-	   (delete-region (progn (beginning-of-line) (point))
-			  (progn (forward-line 1) (point))))
+       (while (re-search-forward 
+	       "^X-Gnus-Newsgroup:" 
+	       (save-excursion (search-forward "\n\n" nil t) (point)) t)
+	 (delete-region (progn (beginning-of-line) (point))
+			(progn (forward-line 1) (point))))
        (setq result (eval accept-form))
-       (kill-buffer (current-buffer))
+       (kill-buffer buf)
        result)
      (save-excursion
        (set-buffer nnmbox-mbox-buffer)
        (goto-char 1)
        (if (search-forward (nnmbox-article-string article) nil t)
 	   (nnmbox-delete-mail))
-       (save-buffer)))
+       (and last (save-buffer))))
     result))
 
-(defun nnmbox-request-accept-article (group)
+(defun nnmbox-request-accept-article (group &optional last)
   (let ((buf (current-buffer))
 	result beg)
+    (debug (current-buffer))
+    (goto-char (point-min))
+    (if (looking-at "X-From-Line: ")
+	(replace-match "From ")
+      (insert "From nobody " (current-time-string) "\n"))
     (and 
+     (nnmbox-request-list)
      (setq nnmbox-group-alist (nnmail-get-active))
+     (progn
+       (set-buffer buf)
+       (goto-char (point-min))
+       (search-forward "\n\n" nil t)
+       (forward-line -1)
+       (while (re-search-backward "^X-Gnus-Newsgroup: " nil t)
+	 (delete-region (point) (progn (forward-line 1) (point))))
+       (setq result (nnmbox-save-mail (and (stringp group) group))))
      (save-excursion
        (set-buffer nnmbox-mbox-buffer)
-       (setq beg (goto-char (point-max)))
        (insert-buffer-substring buf)
-       (goto-char beg)
-       (if (stringp group)
-	   (progn
-	     (search-forward "\n\n" nil t)
-	     (forward-line -1)
-	     (save-excursion
-	       (while (re-search-backward "^X-Gnus-Newsgroup: " beg t)
-		 (delete-region (point) (progn (forward-line 1) (point)))))
-	     (setq result (nnmbox-insert-newsgroup-line group)))
-	 (setq result (nnmbox-save-mail)))
-       (save-buffer)
+       (and last (save-buffer))
        result)
      (nnmail-save-active nnmbox-group-alist nnmbox-active-file))
-    result))
+    (car result)))
 
 (defun nnmbox-request-replace-article (article group buffer)
   (nnmbox-possibly-change-newsgroup group)
@@ -286,7 +301,7 @@ the date."
       t)))
 
 
-;;; Low-Level Interface
+;;; Internal functions.
 
 (defun nnmbox-delete-mail (&optional force leave-delim)
   "If FORCE, delete article no matter how many X-Gnus-Newsgroup
@@ -325,21 +340,26 @@ delimeter line."
 			  (find-file-noselect nnmbox-mbox-file)))
 	(buffer-disable-undo (current-buffer))))
   (if (not nnmbox-group-alist)
-      (setq nnmbox-group-alist (nnmail-get-active)))
+      (progn
+	(nnmbox-request-list)
+	(setq nnmbox-group-alist (nnmail-get-active))))
   (if newsgroup
       (if (assoc newsgroup nnmbox-group-alist)
 	  (setq nnmbox-current-group newsgroup))))
 
 (defun nnmbox-article-string (article)
   (concat "\nX-Gnus-Newsgroup: " nnmbox-current-group ":" 
-	  (int-to-string article)))
+	  (int-to-string article) " "))
 
-(defun nnmbox-save-mail ()
+(defun nnmbox-save-mail (&optional group)
   "Called narrowed to an article."
-  (let ((group-art (nreverse (nnmail-article-group 'nnmbox-active-number))))
+  (let* ((nnmail-split-methods 
+	  (if group (list (list group "")) nnmail-split-methods))
+	 (group-art (nreverse (nnmail-article-group 'nnmbox-active-number))))
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
-    (nnmbox-insert-newsgroup-line group-art)))
+    (nnmbox-insert-newsgroup-line group-art)
+    group-art))
 
 (defun nnmbox-insert-newsgroup-line (group-art)
   (save-excursion
@@ -351,7 +371,8 @@ delimeter line."
 	    (insert (format "X-Gnus-Newsgroup: %s:%d   %s\n" 
 			    (car (car group-art)) (cdr (car group-art))
 			    (current-time-string)))
-	    (setq group-art (cdr group-art)))))))
+	    (setq group-art (cdr group-art)))))
+    t))
 
 (defun nnmbox-active-number (group)
   "Find the next article number in GROUP."
@@ -398,7 +419,7 @@ delimeter line."
 (defun nnmbox-get-new-mail ()
   (let (incoming)
     (nnmbox-read-mbox)
-    (if (and nnmail-spool-file
+    (if (and nnmail-spool-file nnmbox-get-new-mail
 	     (file-exists-p nnmail-spool-file)
 	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
 	(progn

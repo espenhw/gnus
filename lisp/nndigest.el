@@ -1,7 +1,7 @@
 ;;; nndigest.el --- digest access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.

@@ -1,7 +1,7 @@
 ;;; nnmail.el --- mail support functions for the Gnus mail backends
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
@@ -30,12 +30,40 @@
 
 (defvar nnmail-split-methods
   '(("mail.misc" ""))
-  "nnmail will split incoming mail into the groups detailed in this variable.")
+  "Incoming mail will be split according to this variable.
+
+If you'd like, for instance, one mail group for mail from the
+\"4ad-l\" mailing list, one group for junk mail and one for everything
+else, you could do something like this:
+
+ (setq nnmail-split-methods
+       '((\"mail.4ad\" \"From:.*4ad\")
+         (\"mail.junk\" \"From:.*Lars\\\\|Subject:.*buy\")
+         (\"mail.misc\" \"\")))
+
+As you can see, this variable is a list of lists, where the first
+element in each \"rule\" is the name of the group (which, by the way,
+does not have to be called anything beginning with \"mail\",
+\"yonka.zow\" is a fine, fine name), and the second is a regexp that
+nnmail will try to match on the header to find a fit.
+
+The second element can also be a function.  In that case, it will be
+called narrowed to the headers with the first element of the rule as
+the argument.  It should return a non-nil value if it thinks that the
+mail belongs in that group.
+
+The last element should always have \"\" as the regexp.")
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defvar nnmail-crosspost t
   "If non-nil, do crossposting if several split methods match the mail.
 If nil, the first match found will be used.")
+
+;; Added by gord@enci.ucalgary.ca (Gordon Matzigkeit).
+(defvar nnmail-keep-last-article nil
+  "If non-nil, nnmail will never delete the last expired article in a
+directory.  You may need to set this variable if other programs are putting
+new mail into folder numbers that Gnus has marked as expired.")
 
 (defvar nnmail-expiry-wait 7
   "Articles that are older than `nnmail-expiry-wait' days will be expired.")
@@ -95,10 +123,11 @@ messages will be shown to indicate the current status.")
 
 
 
-(defun nnmail-request-post-buffer (method header article-buffer group info)
+(defun nnmail-request-post-buffer (post group subject header article-buffer
+					info follow-to respect-poster)
   (let ((method-address (cdr (assq 'to-address (nth 4 info))))
 	from subject date to reply-to message-of
-	references message-id sender follow-to cc)
+	references message-id sender cc)
     (setq method-address
 	  (if (and (stringp method-address) 
 		   (string= method-address ""))
@@ -112,17 +141,14 @@ messages will be shown to indicate the current status.")
 	       (not (y-or-n-p "Unsent mail being composed; erase it? ")))
 	  ()
 	(erase-buffer)
-	(if (eq method 'post)
-	    (mail-setup method-address nil nil nil nil nil)
+	(if post
+	    (mail-setup method-address subject nil nil nil nil)
 	  (save-excursion
 	    (set-buffer article-buffer)
 	    (goto-char (point-min))
 	    (narrow-to-region (point-min)
 			      (progn (search-forward "\n\n") (point)))
 	    (set-text-properties (point-min) (point-max) nil)
-	    (if (and (boundp 'gnus-followup-to-function)
-		     gnus-followup-to-function)
-		(setq follow-to (funcall gnus-followup-to-function group)))
 	    (setq from (header-from header))
 	    (setq date (header-date header))
 	    (and from
@@ -158,8 +184,7 @@ messages will be shown to indicate the current status.")
 	    (if message-id (insert message-id))
 	    ;; The region must end with a newline to fill the region
 	    ;; without inserting extra newline.
-	    (fill-region-as-paragraph begin (1+ (point))))
-	  ))
+	    (fill-region-as-paragraph begin (1+ (point))))))
       (current-buffer))))
 
 (defun nnmail-find-file (file)
@@ -268,8 +293,9 @@ messages will be shown to indicate the current status.")
 						      (point-max))))
 		   (sit-for 3)
 		   nil)))))
-    (if (buffer-name errors)
-	(kill-buffer errors))
+    (and errors
+	 (buffer-name errors)
+	 (kill-buffer errors))
     tofile))
 
 
@@ -375,9 +401,13 @@ FUNC will be called with the group name to determine the article number."
       (while (and methods (or nnmail-crosspost (not group-art)))
 	(goto-char (point-max))
 	(if (or (cdr methods)
-		(not (string= "" (nth 1 (car methods)))))
+		(not (equal "" (nth 1 (car methods)))))
 	    (if (and (condition-case () 
-			 (re-search-backward (car (cdr (car methods))) nil t)
+			 (if (stringp (nth 1 (car methods)))
+			     (re-search-backward
+			      (car (cdr (car methods))) nil t)
+			   ;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
+			   (funcall (nth 1 (car methods)) (car (car methods))))
 		       (error nil))
 		     ;; Don't enter the article into the same group twice.
 		     (not (assoc (car (car methods)) group-art)))

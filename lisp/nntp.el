@@ -2,7 +2,7 @@
 ;; Copyright (C) 1987,88,89,90,92,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; 	Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -30,7 +30,9 @@
 
 (eval-and-compile
   (autoload 'news-setup "rnewspost")
-  (autoload 'news-reply-mode "rnewspost"))
+  (autoload 'news-reply-mode "rnewspost")
+  (autoload 'nnmail-request-post-buffer "nnmail")
+  (autoload 'cancel-timer "timer"))
 
 (defvar nntp-server-hook nil
   "Hooks for the NNTP server.
@@ -48,14 +50,14 @@ server must be specified as follows:
 If you'd like to change something depending on the server in this
 hook, use the variable `nntp-server-name'.")
 
-(defvar nntp-server-opened-hook 
-  (list
-   (lambda ()
-     (nntp-send-command "MODE" "READER")))
-  "Hook used for sending commands to the server at startup.
-It is used by default to send the \"MODE READER\" command to the
-server. This makes innd servers spawn an nnrpd server.
-Other useful commands might be \"AUTHINFO\".")
+(defvar nntp-server-opened-hook nil
+  "Hook used for sending commands to the server at startup.  The
+default value is `nntp-send-mode-reader', whick makes an innd server
+spawn an nnrpd server.  Another useful function to put in this hook
+might be `nntp-send-authinfo', which will prompt for a password to
+allow posting from the server.  Note that this is only necessary to do
+on servers that use strict access control.")
+(add-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)
 
 (defvar nntp-large-newsgroup 50
   "The number of the articles which indicates a large newsgroup.
@@ -87,19 +89,23 @@ The strings are tried in turn until a positive response is gotten. If
 none of the commands are successful, nntp will just grab headers one
 by one.")
 
+(defvar nntp-connection-timeout nil
+  "Number of seconds to wait before an nntp connection times out.
+If this variable is nil, which is the default, no timers are set.")
+
 
 (defconst nntp-version "nntp 4.0"
   "Version numbers of this version of NNTP.")
 
 (defvar nntp-server-name nil
-  "The name of the host running NNTP server.")
+  "The name of the NNTP server.")
 
 (defvar nntp-server-buffer nil
-  "Buffer associated with NNTP server process.")
+  "Buffer associated with the NNTP server process.")
 
 (defvar nntp-server-process nil
   "The NNTP server process.
-You'd better not use this variable in NNTP front-end program but
+You'd better not use this variable in NNTP front-end program, but
 instead use `nntp-server-buffer'.")
 
 (defvar nntp-status-string nil
@@ -108,11 +114,8 @@ You'd better not use this variable in NNTP front-end program but
 instead call function `nntp-status-message' to get status message.")
 
 (defvar nntp-current-server "")
-
 (defvar nntp-server-alist nil)
-
 (defvar nntp-server-xover t)
-
 (defvar nntp-current-group "")
 
 ;;; Interface funtions.
@@ -156,9 +159,7 @@ instead call function `nntp-status-message' to get status message.")
 		       (zerop (% received 20))
 		       (message "NNTP: Receiving headers... %d%%"
 				(/ (* received 100) number)))
-		  (nntp-accept-response))
-		))
-	  )
+		  (nntp-accept-response)))))
 	;; Wait for text of last command.
 	(goto-char (point-max))
 	(re-search-backward "^[0-9]" nil t)
@@ -188,31 +189,30 @@ instead call function `nntp-status-message' to get status message.")
 If SERVER is nil, use value of environment variable `NNTPSERVER'.
 If optional argument SERVICE is non-nil, open by the service name."
   (let ((server (or server (getenv "NNTPSERVER")))
-	(status nil))
+	(status nil)
+	(timer 
+	 (and nntp-connection-timeout 
+	      (run-at-time nntp-connection-timeout
+			   nil 'nntp-kill-connection server))))
     (setq nntp-status-string "")
     (message "nntp: Connecting to server on %s..." server)
     (cond ((and server (nntp-open-server-internal server service))
 	   (setq nntp-current-server server)
-	   (setq status (nntp-wait-for-response "^[23].*\r$"))
-	   ;; Do check unexpected close of connection.
-	   ;; Suggested by feldmark@hanako.stars.flab.fujitsu.junet.
-	   (if status
-	       (progn
-		 (set-process-sentinel nntp-server-process
-				       'nntp-default-sentinel)
- 		 ;; You can send commands at startup like AUTHINFO here.
-		 ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
-		 (run-hooks 'nntp-server-opened-hook))
-	     ;; We have to close connection here, since function
-	     ;;  `nntp-server-opened' may return incorrect status.
-	     (nntp-close-server-internal server)
-	     ))
+	   (condition-case nil
+	       (setq status (nntp-wait-for-response "^[23].*\r$"))
+	     (error (nntp-close-server-internal server)))
+	   (and nntp-server-process
+		(progn
+		  (set-process-sentinel 
+		   nntp-server-process 'nntp-default-sentinel)
+		  ;; You can send commands at startup like AUTHINFO here.
+		  ;; Added by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>
+		  (run-hooks 'nntp-server-opened-hook))))
 	  ((null server)
-	   (setq nntp-status-string "NNTP server is not specified."))
-	  )
+	   (setq nntp-status-string "NNTP server is not specified.")))
+    (and timer (cancel-timer timer))
     (message "")
-    status
-    ))
+    status))
 
 (defun nntp-close-server (&optional server)
   "Close news server."
@@ -226,10 +226,8 @@ If optional argument SERVICE is non-nil, open by the service name."
 	     (set-process-sentinel nntp-server-process nil))
 	;; We cannot send QUIT command unless the process is running.
 	(if (nntp-server-opened)
-	    (nntp-send-command nil "QUIT"))
-	)
-    (nntp-close-server-internal server)
-    ))
+	    (nntp-send-command nil "QUIT")))
+    (nntp-close-server-internal server)))
 
 (fset 'nntp-request-quit (symbol-function 'nntp-close-server))
 
@@ -250,8 +248,7 @@ If the stream is opened, return non-nil, otherwise return nil."
 			 nntp-status-string))
       (substring nntp-status-string (match-beginning 1) (match-end 1))
     ;; Empty message if nothing.
-    ""
-    ))
+    nntp-status-string))
 
 (defun nntp-request-article (id &optional newsgroup server buffer)
   "Select article by message ID (or number)."
@@ -272,16 +269,14 @@ If the stream is opened, return non-nil, otherwise return nil."
   (prog1
       ;; If NEmacs, end of message may look like: "\256\215" (".^M")
       (nntp-send-command "^\\.\r$" "BODY" id)
-    (nntp-decode-text)
-    ))
+    (nntp-decode-text)))
 
 (defun nntp-request-head (id &optional newsgroup server)
   "Select article head by message ID (or number)."
   (nntp-possibly-change-server newsgroup server)
   (prog1
       (nntp-send-command "^\\.\r$" "HEAD" id)
-    (nntp-decode-text)
-    ))
+    (nntp-decode-text)))
 
 (defun nntp-request-stat (id &optional newsgroup server)
   "Select article by message ID (or number)."
@@ -291,9 +286,12 @@ If the stream is opened, return non-nil, otherwise return nil."
 (defun nntp-request-group (group &optional server dont-check)
   "Select news GROUP."
   (if (nntp-possibly-change-server nil server)
-      (progn
-	(nntp-send-command "^.*\r$" "GROUP" group)
-	)))
+      (nntp-send-command "^.*\r$" "GROUP" group)))
+
+(defun nntp-request-group-description (group &optional server)
+  "Select news GROUP."
+  (if (nntp-possibly-change-server nil server)
+      (nntp-send-command "^.*\r$" "XGTITLE" group)))
 
 (defun nntp-close-group (group &optional server)
   t)
@@ -303,31 +301,34 @@ If the stream is opened, return non-nil, otherwise return nil."
   (nntp-possibly-change-server nil server)
   (prog1
       (nntp-send-command "^\\.\r$" "LIST")
-    (nntp-decode-text)
-    ))
+    (nntp-decode-text)))
 
 (defun nntp-request-list-newsgroups (&optional server)
   "List newsgroups (defined in NNTP2)."
   (nntp-possibly-change-server nil server)
   (prog1
       (nntp-send-command "^\\.\r$" "LIST NEWSGROUPS")
-    (nntp-decode-text)
-    ))
+    (nntp-decode-text)))
 
 (defun nntp-request-newgroups (date &optional server)
   "List new groups (defined in NNTP2)."
   (nntp-possibly-change-server nil server)
-  (prog1
-      (nntp-send-command "^\\.\r$" "NEWGROUPS" date)
-    (nntp-decode-text)))
+  (let ((date (timezone-parse-date date))
+	(time-string
+	 (format "%s%02d%02d %s%s%s"
+		 (substring (aref date 0) 2) (string-to-int (aref date 1)) 
+		 (string-to-int (aref date 2)) (substring (aref date 3) 0 2)
+		 (substring (aref date 3) 3 5) (substring (aref date 3) 6 8))))
+    (prog1
+	(nntp-send-command "^\\.\r$" "NEWGROUPS" time-string)
+      (nntp-decode-text))))
 
 (defun nntp-request-list-distributions (&optional server)
   "List distributions (defined in NNTP2)."
   (nntp-possibly-change-server nil server)
   (prog1
       (nntp-send-command "^\\.\r$" "LIST DISTRIBUTIONS")
-    (nntp-decode-text)
-    ))
+    (nntp-decode-text)))
 
 (defun nntp-request-last (&optional newsgroup server)
   "Set current article pointer to the previous article
@@ -349,95 +350,113 @@ in the current news group."
 	(nntp-send-region-to-server (point-min) (point-max))
 	;; 1.2a NNTP's post command is buggy. "^M" (\r) is not
 	;;  appended to end of the status message.
-	(nntp-wait-for-response "^[23].*$")
-	)))
+	(nntp-wait-for-response "^[23].*$"))))
 
-(defun nntp-request-post-buffer (method header article-buffer group info)
-  (let (from subject date to followup-to newsgroups message-of
-	     references distribution message-id follow-to)
-    (save-excursion
-      (set-buffer (get-buffer-create "*post-news*"))
-      (news-reply-mode)
-      (if (and (buffer-modified-p)
-	       (> (buffer-size) 0)
-	       (not (y-or-n-p "Unsent article being composed; erase it? ")))
-	  ()
-	(erase-buffer)
-	(if (eq method 'post)
-	    (news-setup nil nil nil header article-buffer)
-	  (save-excursion
-	    (set-buffer article-buffer)
-	    (goto-char (point-min))
-	    (narrow-to-region (point-min)
-			      (progn (search-forward "\n\n") (point)))
-	    (if (and (boundp 'gnus-followup-to-function)
-		     gnus-followup-to-function)
-		(setq follow-to (funcall gnus-followup-to-function group)))
-	    (setq from (header-from header))
-	    (setq date (header-date header))
-	    (and from
-		 (let ((stop-pos 
-			(string-match "  *at \\|  *@ \\| *(\\| *<" from)))
-		   (setq message-of
-			 (concat (if stop-pos (substring from 0 stop-pos) from)
-				 "'s message of " date))))
-	    (setq subject (header-subject header))
-	    (or (string-match "^[Rr][Ee]:" subject)
-		(setq subject (concat "Re: " subject)))
-	    (setq followup-to (mail-fetch-field "followup-to"))
-	    (if (or (null gnus-use-followup-to)	;Ignore followup-to: field.
-		    (string-equal "" followup-to) ;Bogus header.
-		    (string-equal "poster" followup-to)) ;Poster
-		(setq followup-to nil))
-	    (setq newsgroups (or followup-to (mail-fetch-field "newsgroups")))
-	    (setq references (header-references header))
-	    (setq distribution (mail-fetch-field "distribution"))
-	    ;; Remove bogus distribution.
-	    (and (string= distribution "world")
-		 (setq distribution nil))
-	    (setq message-id (header-id header))
-	    (widen))
-	  (setq news-reply-yank-from from)
-	  (setq news-reply-yank-message-id message-id)
-	  ;; Prevent getting BCC or FCC fields inserted for both mail
-	  ;; and news.  
-	  (let ((mail-self-blind
-		 (and (not gnus-mail-self-blind) mail-self-blind))
-		(mail-archive-file-name
-		 (and (not gnus-author-copy) mail-archive-file-name)))
-	    (news-setup 
-	     ;; Suggested by Daniel Quinlan <quinlan@best.com>.
-	     (if (eq gnus-auto-mail-to-author 'ask)
-		 (and (y-or-n-p "Also send mail to author? ") from)
-	       (and gnus-auto-mail-to-author from))
-	     subject message-of newsgroups article-buffer))
-	  ;; Fold long references line to follow RFC1036.
-	  (mail-position-on-field "References")
-	  (let ((begin (- (point) (length "References: ")))
-		(fill-column 79)
-		(fill-prefix "\t"))
-	    (if references (insert references))
-	    (if (and references message-id) (insert " "))
-	    (if message-id (insert message-id))
-	    ;; The region must end with a newline to fill the region
-	    ;; without inserting extra newline.
-	    (fill-region-as-paragraph begin (1+ (point))))
-	  (if distribution
-	      (progn
-		(mail-position-on-field "Distribution")
-		(insert distribution)))))
-      (current-buffer))))
+(defun nntp-request-post-buffer 
+  (post group subject header article-buffer info follow-to
+	respect-poster)
+  (if (assq 'to-address (nth 4 info))
+      (nnmail-request-post-buffer 
+       post group subject header article-buffer info follow-to respect-poster)
+    (let (from date to followup-to newsgroups message-of
+	       references distribution message-id)
+      (save-excursion
+	(set-buffer (get-buffer-create "*post-news*"))
+	(news-reply-mode)
+	(if (and (buffer-modified-p)
+		 (> (buffer-size) 0)
+		 (not (y-or-n-p "Unsent article being composed; erase it? ")))
+	    ()
+	  (erase-buffer)
+	  (if post
+	      (news-setup nil subject nil group nil)
+	    (save-excursion
+	      (set-buffer article-buffer)
+	      (goto-char (point-min))
+	      (narrow-to-region (point-min)
+				(progn (search-forward "\n\n") (point)))
+	      (setq from (header-from header))
+	      (setq date (header-date header))
+	      (and from
+		   (let ((stop-pos 
+			  (string-match "  *at \\|  *@ \\| *(\\| *<" from)))
+		     (setq 
+		      message-of
+		      (concat (if stop-pos (substring from 0 stop-pos) from) 
+			      "'s message of " date))))
+	      (setq subject (or subject (header-subject header)))
+	      (or (string-match "^[Rr][Ee]:" subject)
+		  (setq subject (concat "Re: " subject)))
+	      (setq followup-to (mail-fetch-field "followup-to"))
+	      (if (or (null respect-poster) ;Ignore followup-to: field.
+		      (string-equal "" followup-to) ;Bogus header.
+		      (string-equal "poster" followup-to)) ;Poster
+		  (setq followup-to nil))
+	      (setq newsgroups
+		    (or follow-to followup-to (mail-fetch-field "newsgroups")))
+	      (setq references (header-references header))
+	      (setq distribution (mail-fetch-field "distribution"))
+	      ;; Remove bogus distribution.
+	      (and (stringp distribution)
+		   (string-match "world" distribution)
+		   (setq distribution nil))
+	      (setq message-id (header-id header))
+	      (widen))
+	    (setq news-reply-yank-from from)
+	    (setq news-reply-yank-message-id message-id)
+	    (news-setup to subject message-of newsgroups article-buffer)
+	    ;; Fold long references line to follow RFC1036.
+	    (mail-position-on-field "References")
+	    (let ((begin (- (point) (length "References: ")))
+		  (fill-column 79)
+		  (fill-prefix "\t"))
+	      (if references (insert references))
+	      (if (and references message-id) (insert " "))
+	      (if message-id (insert message-id))
+	      ;; The region must end with a newline to fill the region
+	      ;; without inserting extra newline.
+	      (fill-region-as-paragraph begin (1+ (point))))
+	    (if distribution
+		(progn
+		  (mail-position-on-field "Distribution")
+		  (insert distribution)))))
+	(current-buffer)))))
 
 ;;; Internal functions.
+
+(defun nntp-send-mode-reader ()
+  "Send the MODE READER command to the nntp server.
+This function is supposed to be called from `nntp-server-opened-hook'.
+It will make innd servers enter nnrpd mode to allow actual article
+reading."
+  (nntp-send-command "^.*\r$" "MODE READER"))
+
+(defun nntp-send-authinfo ()
+  "Send the AUTHINFO to the nntp server.
+This function is supposed to be called from `nntp-server-opened-hook'.
+It will prompt for a password."
+  (nntp-send-command "^.*\r$" "AUTHINFO USER" (user-login-name))
+  (nntp-send-command "^.*\r$" "AUTHINFO PASS" (read-string "NNTP password: ")))
 
 (defun nntp-default-sentinel (proc status)
   "Default sentinel function for NNTP server process."
   (let ((servers nntp-server-alist))
+    ;; Go through the alist of server names and find the name of the
+    ;; server that the process that sent the signal is connected to.
+    ;; If you get my drift.
     (while (and servers 
 		(not (equal proc (nth 1 (car servers)))))
       (setq servers (cdr servers)))
     (message "nntp: Connection closed to server %s." 
 	     (or (car (car servers)) "(none)"))
+    (ding)))
+
+(defun nntp-kill-connection (server)
+  (let ((proc (nth 1 (assoc server nntp-server-alist))))
+    (if proc (delete-process (process-name proc)))
+    (nntp-close-server server)
+    (setq nntp-status-string 
+	  (message "Connection timed out to server %s." server))
     (ding)))
 
 ;; Encoding and decoding of NNTP text.
@@ -463,8 +482,7 @@ in the current news group."
       (end-of-line)
       (if (= (preceding-char) ?\r)
 	  (delete-char -1))
-      (forward-line 1)
-      )
+      (forward-line 1))
     ;; Delete `.' at end of buffer (end of text mark).
     (goto-char (point-max))
     (forward-line -1)			;(beginning-of-line)
@@ -474,8 +492,7 @@ in the current news group."
     (goto-char (point-min))
     ;; (replace-regexp "^\\.\\." ".")
     (while (search-forward "\n.." nil t)
-      (delete-char -1))
-    ))
+      (delete-char -1))))
 
 (defun nntp-encode-text ()
   "Encode text in current buffer for NNTP transmission.
@@ -493,8 +510,7 @@ in the current news group."
       (insert "."))
     ;; Insert `.' at end of buffer (end of text mark).
     (goto-char (point-max))
-    (insert ".\r\n")
-    ))
+    (insert ".\r\n")))
 
 
 ;;;
@@ -510,8 +526,7 @@ in the current news group."
     (apply 'nntp-send-strings-to-server cmd args)
     (if response
 	(nntp-wait-for-response response)
-      t)
-    ))
+      t)))
 
 (defun nntp-wait-for-response (regexp)
   "Wait for server response which matches REGEXP."
@@ -538,8 +553,7 @@ in the current news group."
 	      ((looking-at "[45]")
 	       (setq status nil)
 	       (setq wait nil))
-	      (t (nntp-accept-response))
-	      ))
+	      (t (nntp-accept-response))))
       ;; Save status message.
       (end-of-line)
       (setq nntp-status-string
@@ -562,16 +576,12 @@ in the current news group."
 			    (setq dotnum newnum)
 			    (message "NNTP: Reading %s"
 				     (make-string dotnum ?.))))))
-		(nntp-accept-response)
-		;;(if nntp-debug-read (message ""))
-		))
+		(nntp-accept-response)))
 	    ;; Remove "...".
 	    (if (and nntp-debug-read (> dotnum 0))
 		(message ""))
 	    ;; Successfully received server response.
-	    t
-	    ))
-      )))
+	    t)))))
 
 
 ;;;
@@ -620,8 +630,7 @@ in the current news group."
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer))))
-    (process-send-string nntp-server-process (concat cmd "\r\n"))
-    ))
+    (process-send-string nntp-server-process (concat cmd "\r\n"))))
 
 (defun nntp-send-region-to-server (begin end)
   "Send current buffer region (from BEGIN to END) to news server."
@@ -651,11 +660,9 @@ in the current news group."
 	  ;;  problem of communication error of GNU Emacs.
 	  (accept-process-output)
 	  ;;(sit-for 0)
-	  (goto-char last)
-	  )))
+	  (goto-char last))))
     ;; We cannot erase buffer, because reply may be received.
-    (delete-region begin end)
-    ))
+    (delete-region begin end)))
 
 (defun nntp-open-server-internal (server &optional service)
   "Open connection to news server on SERVER by SERVICE (default is nntp)."
@@ -669,8 +676,8 @@ in the current news group."
       (set-buffer nntp-server-buffer)
       (if (setq proc
 		(condition-case nil
-		    (open-network-stream "nntpd" (current-buffer)
-					 server (or service "nntp"))
+		    (open-network-stream 
+		     "nntpd" (current-buffer) server (or service "nntp"))
 		  (error nil)))
 	  (progn
 	    (setq nntp-server-process proc)
@@ -690,16 +697,9 @@ in the current news group."
   (if nntp-server-process
       (delete-process nntp-server-process))
   (setq nntp-server-process nil)
-  (let* ((servers nntp-server-alist)
-	 (prev servers))
-    (if (and servers (string= (car (car servers)) server))
-	(setq nntp-server-alist (cdr nntp-server-alist))
-      (setq servers (cdr servers))
-      (while servers
-	(if (string= (car (car servers)) server)
-	    (setcdr prev (cdr servers)))
-	(setq prev servers)
-	(setq servers (cdr servers))))))
+  (setq nntp-server-alist (delq (assoc nntp-current-server nntp-server-alist)
+				nntp-server-alist))
+  (setq nntp-current-server ""))
 
 (defun nntp-request-close ()
   "Close all server connections."
@@ -717,26 +717,25 @@ defining this function as macro."
   ;;  accept-process-output is called.
   ;; Suggested by Jason Venner <jason@violet.berkeley.edu>.
   ;; This is a copy of `nntp-default-sentinel'.
-  (or (memq (process-status nntp-server-process) '(open run))
-      (error "NNTP: Connection closed."))
-  (if nntp-buggy-select
-      (progn
-	;; We cannot use `accept-process-output'.
-	;; Fujitsu UTS requires messages during sleep-for. I don't know why.
-	(message "NNTP: Reading...")
-	(sleep-for 1)
-	(message ""))
-    (condition-case errorcode
-	(accept-process-output nntp-server-process)
-      (error
-       (cond ((string-equal "select error: Invalid argument" (nth 1 errorcode))
-	      ;; Ignore select error.
-	      nil
-	      )
-	     (t
-	      (signal (car errorcode) (cdr errorcode))
-       ))
-    ))))
+  (if (or (not nntp-server-process)
+	  (not (memq (process-status nntp-server-process) '(open run))))
+      (error (format "nntp: Process connection closed"))
+    (if nntp-buggy-select
+	(progn
+	  ;; We cannot use `accept-process-output'.
+	  ;; Fujitsu UTS requires messages during sleep-for. I don't know why.
+	  (message "NNTP: Reading...")
+	  (sleep-for 1)
+	  (message ""))
+      (condition-case errorcode
+	  (accept-process-output nntp-server-process)
+	(error
+	 (cond ((string-equal "select error: Invalid argument" 
+			      (nth 1 errorcode))
+		;; Ignore select error.
+		nil)
+	       (t
+		(signal (car errorcode) (cdr errorcode)))))))))
 
 (defun nntp-last-element (list)
   "Return last element of LIST."
@@ -765,11 +764,12 @@ defining this function as macro."
 		(setq result t))))
       (setq result t))
     ;; The we see whether it is necessary to change newsgroup.
-    (if (and newsgroup result (or (not (string= newsgroup nntp-current-group))
-				  changed-server))
-	(progn
-	  (setq result (nntp-request-group newsgroup server))
-	  (setq nntp-current-group newsgroup)))
+    (and newsgroup result 
+	 (or (not (string= newsgroup nntp-current-group))
+	     changed-server)
+	 (progn
+	   (setq result (nntp-request-group newsgroup server))
+	   (setq nntp-current-group newsgroup)))
     result))
 
 (provide 'nntp)

@@ -1,7 +1,7 @@
 ;;; nnml.el --- mail spool access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -64,6 +64,7 @@ all. This may very well take some time.")
 (defvar nnml-nov-buffer-alist nil)
 
 (defvar nnml-group-alist nil)
+(defvar nnml-active-timestamp nil)
 
 
 
@@ -133,7 +134,7 @@ If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nnml-status-message ()
+(defun nnml-status-message (&optional server)
   "Return server status response as string."
   nnml-status-string)
 
@@ -152,22 +153,31 @@ If the stream is opened, return T, otherwise return NIL."
 
 (defun nnml-request-group (group &optional server dont-check)
   "Select news GROUP."
-  (nnml-possibly-change-directory group)
-  (or dont-check (nnml-get-new-mail))
-  (or nnml-group-alist 
+  (if (not (nnml-possibly-change-directory group))
       (progn
-	(nnml-request-list)
-	(setq nnml-group-alist (nnmail-get-active))))
-  (let ((active (nth 1 (assoc group nnml-group-alist))))
-    (save-excursion
-      (set-buffer nntp-server-buffer)
-      (erase-buffer)
-      (if (not active)
-	  ()
-	(insert (format "211 %d %d %d %s\n" 
-			(max (1+ (- (cdr active) (car active))) 0)
-			(car active) (cdr active) group))
-	t))))
+	(setq nnml-status-string "Invalid group (no such directory)")
+	nil)
+    (if dont-check 
+	t
+      (nnml-get-new-mail)
+      (let ((timestamp (nth 5 (file-attributes nnml-active-file))))
+	(if (or (not nnml-active-timestamp)
+		(> (nth 0 timestamp) (nth 0 nnml-active-timestamp))
+		(> (nth 1 timestamp) (nth 1 nnml-active-timestamp)))
+	    (progn
+	      (setq nnml-active-timestamp timestamp)
+	      (nnml-request-list)
+	      (setq nnml-group-alist (nnmail-get-active))))
+	(let ((active (nth 1 (assoc group nnml-group-alist))))
+	  (save-excursion
+	    (set-buffer nntp-server-buffer)
+	    (erase-buffer)
+	    (if (not active)
+		()
+	      (insert (format "211 %d %d %d %s\n" 
+			      (max (1+ (- (cdr active) (car active))) 0)
+			      (car active) (cdr active) group))
+	      t)))))))
 
 (defun nnml-close-group (group &optional server)
   t)
@@ -203,6 +213,11 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
 	 article rest mod-time)
+    (if nnmail-keep-last-article
+	(progn
+	  (setq articles (sort articles '>))
+	  (setq rest (cons (car articles) rest))
+	  (setq articles (cdr articles))))
     (while articles
       (setq article (concat nnml-current-directory (int-to-string
 						      (car articles))))
@@ -223,7 +238,8 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
     (nnml-save-nov)
     rest))
 
-(defun nnml-request-move-article (article group server accept-form)
+(defun nnml-request-move-article 
+  (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnml move*"))
 	result)
     (and 
@@ -240,10 +256,10 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 				(int-to-string article)))
 	 (file-error nil))
        (nnml-nov-delete-article group article)
-       (nnml-save-nov)))
+       (and last (nnml-save-nov))))
     result))
 
-(defun nnml-request-accept-article (group)
+(defun nnml-request-accept-article (group &optional last)
   (let (result)
     (if (stringp group)
 	(and 
@@ -255,14 +271,14 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 	   (setq result (car (nnml-save-mail))))
 	 (progn
 	   (nnmail-save-active nnml-group-alist nnml-active-file)
-	   (nnml-save-nov)))
+	   (and last (nnml-save-nov))))
       (and
        (nnml-request-list)
        (setq nnml-group-alist (nnmail-get-active))
        (setq result (car (nnml-save-mail)))
        (progn
 	 (nnmail-save-active nnml-group-alist nnml-active-file)
-	 (nnml-save-nov))))
+	 (and last (nnml-save-nov)))))
     result))
 
 (defun nnml-request-replace-article (article group buffer)
@@ -325,10 +341,10 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 (defun nnml-possibly-change-directory (newsgroup)
   (if newsgroup
       (let ((pathname (nnmail-article-pathname newsgroup nnml-directory)))
-	(if (file-directory-p pathname)
-	    (setq nnml-current-directory pathname)
-	  (error "No such newsgroup: %s" newsgroup)))))
-
+	(and (file-directory-p pathname)
+	     (setq nnml-current-directory pathname)))
+    t))
+	     
 (defun nnml-create-directories ()
   (let ((methods nnmail-split-methods)
 	dir dirs)
@@ -504,11 +520,14 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
       (if (buffer-name (cdr (car nnml-nov-buffer-alist)))
 	  (progn
 	    (set-buffer (cdr (car nnml-nov-buffer-alist)))
-	    (write-region 1 (point-max) (buffer-file-name) nil 'nomesg)
+	    (and (buffer-modified-p)
+		 (write-region 
+		  1 (point-max) (buffer-file-name) nil 'nomesg))
 	    (set-buffer-modified-p nil)
 	    (kill-buffer (current-buffer))))
       (setq nnml-nov-buffer-alist (cdr nnml-nov-buffer-alist)))))
 
+;;;###autoload
 (defun nnml-generate-nov-databases (dir)
   "Generate nov databases in all nnml mail newsgroups."
   (interactive 

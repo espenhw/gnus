@@ -2,7 +2,7 @@
 ;; Copyright (C) 1988,89,90,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; 	Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; 	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -23,119 +23,11 @@
 
 ;;; Commentary:
 
-;; All the Gnus backends have the same interface, and should return
-;; data in a similar format. Below is an overview of what functions
-;; these packages must supply and what results they should return.
-;;
-;; Variables:
-;;
-;; `nntp-server-buffer' - All data should be returned to Gnus in this
-;; buffer. 
-;;
-;; Functions for the imaginary backend `choke':
-;;
-;; `choke-retrieve-headers ARTICLES &optional GROUP SERVER'
-;; Should return all headers for all ARTICLES, or return NOV lines for
-;; the same.
-;;
-;; `choke-request-group GROUP &optional SERVER DISCARD'
-;; Switch to GROUP. If DISCARD is nil, active information on the group
-;; must be returned.
-;;
-;; `choke-close-group GROUP &optional SERVER'
-;; Close group. Most backends won't have to do anything with this
-;; call, but it is an opportunity to clean up, if that is needed. It
-;; is called when Gnus exits a group.
-;;
-;; `choke-request-article ARTICLE &optional GROUP SERVER'
-;; Return ARTICLE, which is either an article number or
-;; message-id. Note that not all backends can return articles based on
-;; message-id. 
-;;
-;; `choke-request-list SERVER'
-;; Return a list of all active newsgroups on SERVER.
-;;
-;; `choke-request-list-newsgroups SERVER'
-;; Return a list of descriptions of all newsgroups on SERVER.
-;;
-;; `choke-request-newgroups DATE &optional SERVER'
-;; Return a list of all groups that have arrived after DATE on
-;; SERVER. Note that the date doesn't have to be respected - Gnus will
-;; always check whether the groups are old or not. Backends that do
-;; not store date information may just return the entire list of
-;; groups. 
-;;
-;; `choke-request-post-buffer METHOD HEADER ARTICLE-BUFFER GROUP INFO'
-;; Should return a buffer that is suitable for "posting". nnspool and
-;; nntp return a `*post-buffer*', and nnmail return a `*mail*'
-;; buffer. This function should fill out the appropriate headers. 
-;;
-;; `choke-request-post &optional SERVER'
-;; Function that will be called from a buffer to be posted. 
-;;
-;; `choke-open-server SERVER &optional ARGUMENT'
-;; Open a connection to SERVER.
-;;
-;; `choke-close-server &optional SERVER'
-;; Close the connection to SERVER.
-;;
-;; `choke-server-opened &optional SERVER'
-;; Whether the conenction to SERVER is opened or not.
-;;
-;; `choke-server-status &optional SERVER'
-;; Should return a status string (not in the nntp buffer, but as the
-;; result of the function).
-;;
-;; The following functions are optional and apply only to backends
-;; that are able to control the contents of their groups totally
-;; (ie. mail backends.)  Backends that aren't able to do that
-;; shouldn't define these functions at all. Gnus will check for their
-;; presence before attempting to call them.
-;;
-;; `choke-request-expire-articles ARTICLES &optional NEWSGROUP SERVER'
-;; Should expire (according to some aging scheme) all ARTICLES. Most
-;; backends will not be able to expire articles. Should return a list
-;; of all articles that were not expired.
-;;
-;; `choke-request-move-article ARTICLE GROUP SERVER ACCEPT-FORM'
-;; Should move ARTICLE from GROUP on SERVER by using ACCEPT-FORM.
-;; Removes any information it has added to the article (extra headers,
-;; whatever - make it as clean as possible), and then passes the
-;; article on by evaling ACCEPT-FORM, which is normally a call to the
-;; function described below. If the ACCEPT-FORM returns a non-nil
-;; value, the article should then be deleted.
-;;
-;; `choke-request-accept-article GROUP'
-;; The contents of the current buffer will be put into GROUP. There
-;; should, of course, be an article in the current buffer. This
-;; function is normally only called by the function described above. 
-;;
-;; `choke-request-replace-article ARTICLE GROUP BUFFER'
-;; Replace ARTICLE in GROUP with the contents of BUFFER.
-;; This provides an easy interface for allowing editing of
-;; articles. Note that even headers may be edited, so the backend has
-;; to update any tables (nov buffers, etc) that it maintains after
-;; replacing the article.
-;;
-;; All these functions must return nil if they couldn't service the
-;; request. If the optional arguments are not supplied, some "current"
-;; or "default" values should be used. In short, one should emulate an
-;; NNTP server, in a way.
-;;
-;; If you want to write a new backend, you just have to supply the
-;; functions listed above. In addition, you must enter the new backend
-;; into the list of valid select methods:
-;; (setq gnus-valid-select-methods 
-;;       (cons '("choke" mail) gnus-valid-select-methods))
-;; The first element in this list is the name of the backend. Other
-;; elemnets may be `mail' (for mail groups),  `post' (for news
-;; groups), `none' (neither), `respool' (for groups that can control
-;; their contents). 
-
 ;;; Code:
 
 (require 'nnheader)
 (require 'nntp)
+(require 'timezone)
 
 (defvar nnspool-inews-program news-inews-program
   "Program to post news.")
@@ -145,6 +37,9 @@
 
 (defvar nnspool-spool-directory news-path
   "Local news spool directory.")
+
+(defvar nnspool-nov-directory (concat nnspool-spool-directory "over.view/")
+  "Local news nov directory.")
 
 (defvar nnspool-lib-dir "/usr/lib/news/"
   "Where the local news library files are stored.")
@@ -180,6 +75,7 @@ messages will be shown to indicate the current status.")
 (defvar nnspool-current-directory nil
   "Current news group directory.")
 
+(defvar nnspool-current-group nil)
 (defvar nnspool-status-string "")
 
 
@@ -197,37 +93,38 @@ Newsgroup must be selected before calling this function."
 	   (do-message (and (numberp nnspool-large-newsgroup)
 			    (> number nnspool-large-newsgroup)))
 	   file beg article)
-      (nnspool-possibly-change-directory newsgroup)
-      (if (nnspool-retrieve-headers-with-nov sequence)
-	  'nov
-	(while sequence
-	  (setq article (car sequence))
-	  (setq file (concat nnspool-current-directory 
-			     (int-to-string article)))
-	  (and (file-exists-p file)
-	       (progn
-		 (insert (format "221 %d Article retrieved.\n" article))
-		 (setq beg (point))
-		 (insert-file-contents file)
-		 (goto-char beg)
-		 (search-forward "\n\n" nil t)
-		 (forward-char -1)
-		 (insert ".\n")
-		 (delete-region (point) (point-max))))
-	  (setq sequence (cdr sequence))
-
-	  (and do-message
-	       (zerop (% (setq count (1+ count)) 20))
-	       (message "NNSPOOL: Receiving headers... %d%%"
-			(/ (* count 100) number))))
-
-	(and do-message (message "NNSPOOL: Receiving headers... done"))
-
-	;; Fold continuation lines.
-	(goto-char 1)
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
-	'headers))))
+      (if (not (nnspool-possibly-change-directory newsgroup))
+	  ()
+	(if (nnspool-retrieve-headers-with-nov sequence)
+	    'nov
+	  (while sequence
+	    (setq article (car sequence))
+	    (setq file (concat nnspool-current-directory 
+			       (int-to-string article)))
+	    (and (file-exists-p file)
+		 (progn
+		   (insert (format "221 %d Article retrieved.\n" article))
+		   (setq beg (point))
+		   (insert-file-contents file)
+		   (goto-char beg)
+		   (search-forward "\n\n" nil t)
+		   (forward-char -1)
+		   (insert ".\n")
+		   (delete-region (point) (point-max))))
+	    (setq sequence (cdr sequence))
+	    
+	    (and do-message
+		 (zerop (% (setq count (1+ count)) 20))
+		 (message "NNSPOOL: Receiving headers... %d%%"
+			  (/ (* count 100) number))))
+	  
+	  (and do-message (message "NNSPOOL: Receiving headers... done"))
+	  
+	  ;; Fold continuation lines.
+	  (goto-char 1)
+	  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	    (replace-match " " t t))
+	  'headers)))))
 
 (defun nnspool-open-server (host &optional service)
   "Open local spool."
@@ -248,9 +145,9 @@ Newsgroup must be selected before calling this function."
   "Return server process status, T or NIL.
 If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
-       (get-buffer nntp-server-buffer)))
+       (buffer-name nntp-server-buffer)))
 
-(defun nnspool-status-message ()
+(defun nnspool-status-message (&optional server)
   "Return server status response as string."
   nnspool-status-string)
 
@@ -294,34 +191,38 @@ If the stream is opened, return T, otherwise return NIL."
   (let ((pathname (nnspool-article-pathname
 		   (nnspool-replace-chars-in-string group ?. ?/)))
 	dir)
-    (if (file-directory-p pathname)
+    (if (not (file-directory-p pathname))
 	(progn
-	  (setq nnspool-current-directory pathname)
-	  (if (not dont-check)
-  	      (progn
- 		(setq dir (directory-files pathname nil "^[0-9]+$" t))
- 		;; yes, completely empty spool directories *are* possible
-		;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
- 		(and dir
- 		    (setq dir
- 			  (sort 
- 			   (mapcar
- 			    (function
- 			     (lambda (name)
- 			       (string-to-int name)))
- 			    dir)
- 			   '<)))
-  		(save-excursion
-  		  (set-buffer nntp-server-buffer)
-  		  (erase-buffer)
- 		  (if dir
- 		      (insert
- 		       (format "211 %d %d %d %s\n" (length dir) (car dir)
- 			       (progn (while (cdr dir) (setq dir (cdr dir)))
- 				      (car dir))
- 			       group))
- 		    (insert (format "211 0 0 0 %s\n" group))))))
-	  t))))
+	  (setq nnspool-status-string
+		"Invalid group name (no such directory)")
+	  nil)
+      (setq nnspool-current-directory pathname)
+      (setq nnspool-status-string "")
+      (if (not dont-check)
+	  (progn
+	    (setq dir (directory-files pathname nil "^[0-9]+$" t))
+	    ;; yes, completely empty spool directories *are* possible
+	    ;; Fix by Sudish Joseph <joseph@cis.ohio-state.edu>
+	    (and dir
+		 (setq dir
+		       (sort 
+			(mapcar
+			 (function
+			  (lambda (name)
+			    (string-to-int name)))
+			 dir)
+			'<)))
+	    (save-excursion
+	      (set-buffer nntp-server-buffer)
+	      (erase-buffer)
+	      (if dir
+		  (insert
+		   (format "211 %d %d %d %s\n" (length dir) (car dir)
+			   (progn (while (cdr dir) (setq dir (cdr dir)))
+				  (car dir))
+			   group))
+		(insert (format "211 0 0 0 %s\n" group))))))
+      t)))
 
 (defun nnspool-close-group (group &optional server)
   t)
@@ -341,11 +242,38 @@ If the stream is opened, return T, otherwise return NIL."
   (save-excursion
     (nnspool-find-file nnspool-distributions-file)))
 
+;; Suggested by Hallvard B Furuseth <h.b.furuseth@usit.uio.no>.
 (defun nnspool-request-newgroups (date &optional server)
   "List groups created after DATE."
-  (save-excursion
-    (nnspool-find-file nnspool-active-times-file)
-    (setq nnspool-status-string "NEWGROUPS is not supported.")
+  (if (nnspool-find-file nnspool-active-times-file)
+      (save-excursion
+	;; Find the last valid line.
+	(goto-char (point-max))
+	(while (and (not (looking-at 
+			  "\\([^ ]+\\) +\\([0-9]+\\)[0-9][0-9][0-9] "))
+		    (zerop (forward-line -1))))
+	(let ((seconds (nnspool-date-to-seconds date))
+	      groups)
+	  ;; Go through lines and add groups that are recent to a list.
+	  (while (and (looking-at "\\([^ ]+\\) +\\([0-9]+\\)[0-9][0-9][0-9] ")
+		      ;; We ignore the last three digits in the number
+		      ;; of seconds. This is quite naughty, but large
+		      ;; numbers are so tiresome to deal with. Perhaps
+		      ;; one could switch to floats instead? 
+		      (> (save-restriction 
+			   (goto-char (match-beginning 2))
+			   (narrow-to-region (point) (match-end 2))
+			   (read (current-buffer)))
+			 seconds)
+		      (setq groups (cons (buffer-substring
+					  (match-beginning 1) (match-end 1))
+					 groups))
+		      (zerop (forward-line -1))))
+	  (erase-buffer)
+	  (while groups
+	    (insert (car groups) " 0 0 y\n")
+	    (setq groups (cdr groups))))
+	t)
     nil))
 
 (defun nnspool-request-post (&optional server)
@@ -378,7 +306,10 @@ If the stream is opened, return T, otherwise return NIL."
 (defun nnspool-retrieve-headers-with-nov (articles)
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)
       nil
-    (let ((nov (concat nnspool-current-directory ".overview"))
+    (let ((nov (concat nnspool-nov-directory
+		       (nnspool-replace-chars-in-string
+			nnspool-current-group ?. ?/)
+		       "/.overview"))
 	  article)
       (if (file-exists-p nov)
 	  (save-excursion
@@ -391,7 +322,7 @@ If the stream is opened, return T, otherwise return NIL."
 	    ;; we find one of the articles we want.
 	    (while (and articles
 			(setq article (concat (int-to-string 
-					       (car articles) "\t")))
+					       (car articles)) "\t"))
 			(not (or (looking-at article)
 				 (search-forward (concat "\n" article) 
 						 nil t))))
@@ -447,8 +378,13 @@ If the stream is opened, return T, otherwise return NIL."
       (let ((pathname (nnspool-article-pathname
 		       (nnspool-replace-chars-in-string newsgroup ?. ?/))))
 	(if (file-directory-p pathname)
-	    (setq nnspool-current-directory pathname)
-	  (error "No such newsgroup: %s" newsgroup)))))
+	    (progn
+	      (setq nnspool-current-directory pathname)
+	      (setq nnspool-current-group newsgroup))
+	  (setq nnspool-status-string 
+		(format "No such newsgroup: %s" newsgroup))
+	  nil))
+    t))
 
 (defun nnspool-article-pathname (group)
   "Make pathname for GROUP."
@@ -465,6 +401,35 @@ If the stream is opened, return T, otherwise return NIL."
 	  (aset string idx to))
       (setq idx (1+ idx)))
     string))
+
+(defun nnspool-number-base-10 (num pos)
+  (if (<= pos 0) ""
+    (setcdr num (+ (* (% (car num) 10) 65536) (cdr num)))
+    (apply
+     'concat
+     (reverse
+      (list
+       (char-to-string
+	(aref "0123456789" (% (cdr num) 10)))
+       (progn
+	 (setcdr num (/ (cdr num) 10))
+	 (setcar num (/ (car num) 10))
+	 (nnspool-number-base-10 num (1- pos))))))))
+
+(defun nnspool-days-between (date1 date2)
+  ;; Return the number of days between date1 and date2.
+  (let ((d1 (mapcar (lambda (s) (and s (string-to-int s)))
+		    (timezone-parse-date date1)))
+	(d2 (mapcar (lambda (s) (and s (string-to-int s)))
+		    (timezone-parse-date date2))))
+    (- (timezone-absolute-from-gregorian 
+	(nth 1 d1) (nth 2 d1) (car d1))
+       (timezone-absolute-from-gregorian 
+	(nth 1 d2) (nth 2 d2) (car d2)))))
+
+(defun nnspool-date-to-seconds (string)
+  (let ((days (nnspool-days-between string "Jan 1 00:00:00 1970")))
+    (* days 86)))
 
 (provide 'nnspool)
 

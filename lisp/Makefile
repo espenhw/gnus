@@ -58,7 +58,7 @@ all:	nntp virtual nnmbox nnml nnmh nnspool mh
 # all: elc info
 
 elc:
-	$(EMACS) -batch -l ./dgnushack.el -f dgnushack -f batch-byte-compile *.el
+	$(EMACS) -batch -l ./dgnushack.el -f batch-byte-compile *.el
 
 info:
 	cd ../texi; makeinfo gnus.texi

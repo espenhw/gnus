@@ -1,9 +1,9 @@
 ;;; nndoc.el --- single file access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; Keywords: news, mail
+;; Keywords: news
 
 ;; This file is part of GNU Emacs.
 
@@ -96,7 +96,7 @@ Newsgroup must be selected before calling this function."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nndoc-status-message ()
+(defun nndoc-status-message (&optional server)
   "Return server status response as string."
   nndoc-status-string)
 
@@ -126,20 +126,23 @@ Newsgroup must be selected before calling this function."
 (defun nndoc-request-group (group &optional server dont-check)
   "Select news GROUP."
   (save-excursion
-    (nndoc-possibly-change-buffer group server)
-    (if dont-check
-	t
-      (save-excursion
-	(set-buffer nntp-server-buffer)
-	(erase-buffer)
-	(let ((number (nndoc-number-of-articles)))
-	  (if (zerop number)
-	      (progn
-		(nndoc-close-group group)
-		nil)
-	    (insert (format "211 %d %d %d %s\n" 
-			    number 1 number group))
-	    t))))))
+    (if (not (nndoc-possibly-change-buffer group server))
+	(progn
+	  (setq nndoc-status-string "No such file")
+	  nil)
+      (if dont-check
+	  t
+	(save-excursion
+	  (set-buffer nntp-server-buffer)
+	  (erase-buffer)
+	  (let ((number (nndoc-number-of-articles)))
+	    (if (zerop number)
+		(progn
+		  (nndoc-close-group group)
+		  nil)
+	      (insert (format "211 %d %d %d %s\n" 
+			      number 1 number group))
+	      t)))))))
 
 (defun nndoc-close-group (group &optional server)
   (nndoc-possibly-change-buffer group server)
@@ -173,16 +176,20 @@ Newsgroup must be selected before calling this function."
 		 (setq buf (cdr (assoc group nndoc-group-alist)))))
 	(if buf 
 	    (setq nndoc-current-buffer buf)
-	  (setq nndoc-group-alist 
-		(cons (cons group (setq nndoc-current-buffer 
-					(get-buffer-create 
-					 (concat " *nndoc " group "*"))))
-		      nndoc-group-alist))
-	  (save-excursion
-	    (set-buffer nndoc-current-buffer)
-	    (buffer-disable-undo (current-buffer))
-	    (erase-buffer)
-	    (insert-file-contents file))))))
+	  (if (or (not (file-exists-p file))
+		  (file-directory-p file))
+	      ()
+	    (setq nndoc-group-alist 
+		  (cons (cons group (setq nndoc-current-buffer 
+					  (get-buffer-create 
+					   (concat " *nndoc " group "*"))))
+			nndoc-group-alist))
+	    (save-excursion
+	      (set-buffer nndoc-current-buffer)
+	      (buffer-disable-undo (current-buffer))
+	      (erase-buffer)
+	      (insert-file-contents file)
+	      t))))))
 
 (defun nndoc-number-of-articles ()
   (save-excursion

@@ -1,7 +1,7 @@
 ;;; nnmh.el --- mail spool access for Gnus (mhspool)
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -115,7 +115,7 @@ If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nnmh-status-message ()
+(defun nnmh-status-message (&optional server)
   "Return server status response as string."
   nnmh-status-string)
 
@@ -219,6 +219,11 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
 	 article rest mod-time)
+    (if nnmail-keep-last-article
+	(progn
+	  (setq articles (sort articles '>))
+	  (setq rest (cons (car articles) rest))
+	  (setq articles (cdr articles))))
     (while articles
       (setq article (concat nnmh-current-directory (int-to-string
 						    (car articles))))
@@ -240,7 +245,8 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 (defun nnmh-close-group (group &optional server)
   t)
 
-(defun nnmh-request-move-article (article group server accept-form)
+(defun nnmh-request-move-article 
+  (article group server accept-form &optional last)
   (let ((buf (get-buffer-create " *nnmh move*"))
 	result)
     (and 
@@ -257,7 +263,7 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
        (file-error nil)))
  result))
 
-(defun nnmh-request-accept-article (group)
+(defun nnmh-request-accept-article (group &optional last)
   (if (stringp group)
       (and 
        (nnmh-request-list)

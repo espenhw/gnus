@@ -1,7 +1,7 @@
 ;;; nnbabyl.el --- mail mbox access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news, mail
 
@@ -126,7 +126,7 @@ If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nnbabyl-status-message ()
+(defun nnbabyl-status-message (&optional server)
   "Return server status response as string."
   nnbabyl-status-string)
 
@@ -234,7 +234,8 @@ the date."
       (save-buffer)
       rest)))
 
-(defun nnbabyl-request-move-article (article group server accept-form)
+(defun nnbabyl-request-move-article 
+  (article group server accept-form &optional last)
   (nnbabyl-possibly-change-newsgroup group)
   (let ((buf (get-buffer-create " *nnbabyl move*"))
 	result)
@@ -257,10 +258,10 @@ the date."
        (goto-char 1)
        (if (search-forward (nnbabyl-article-string article) nil t)
 	   (nnbabyl-delete-mail))
-       (save-buffer)))
+       (and last (save-buffer))))
     result))
 
-(defun nnbabyl-request-accept-article (group)
+(defun nnbabyl-request-accept-article (group &optional last)
   (let ((buf (current-buffer))
 	result beg)
     (and 
@@ -279,7 +280,7 @@ the date."
 		 (delete-region (point) (progn (forward-line 1) (point)))))
 	     (setq result (nnbabyl-insert-newsgroup-line group)))
 	 (setq result (nnbabyl-save-mail)))
-       (save-buffer)
+       (and last (save-buffer))
        result)
      (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file))
     result))
@@ -330,19 +331,17 @@ delimeter line."
 	  (delete-region (point-min) (point-max))))))
 
 (defun nnbabyl-possibly-change-newsgroup (newsgroup)
-  (if (not (get-buffer nnbabyl-mbox-buffer))
+  (if (or (not nnbabyl-mbox-buffer)
+	  (not (buffer-name nnbabyl-mbox-buffer)))
       (save-excursion
-	(let ((buf (or (get-buffer (file-name-nondirectory nnbabyl-mbox-file))
-		       (create-file-buffer nnbabyl-mbox-file))))
-	  (set-buffer (setq nnbabyl-mbox-buffer buf))
-	  (insert-file-contents nnbabyl-mbox-file)
-	  (setq buffer-file-name nnbabyl-mbox-file))
-	(buffer-disable-undo (current-buffer))))
+	(nnbabyl-read-mbox)))
   (if (not nnbabyl-group-alist)
       (setq nnbabyl-group-alist (nnmail-get-active)))
   (if newsgroup
       (if (assoc newsgroup nnbabyl-group-alist)
-	  (setq nnbabyl-current-group newsgroup))))
+	  (setq nnbabyl-current-group newsgroup)
+	(setq nnbabyl-status-string "No such group in file")
+	nil)))
 
 (defun nnbabyl-article-string (article)
   (concat "\nX-Gnus-Newsgroup: " nnbabyl-current-group ":" 
@@ -396,34 +395,37 @@ delimeter line."
 		     (create-file-buffer nnbabyl-mbox-file)))
 	    start end)
 	(set-buffer (setq nnbabyl-mbox-buffer buf))
+	(buffer-disable-undo (current-buffer))
+
 	(insert-file-contents nnbabyl-mbox-file)
 	(setq buffer-file-name nnbabyl-mbox-file)
+	(set-buffer-modified-p nil)
 
-	(buffer-disable-undo (current-buffer))
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)
 	  (setq start (match-beginning 0))
-	  (if (not (search-forward "\nX-Gnus-Newsgroup: " 
-				   (save-excursion 
-				     (setq end
-					   (or
-					    (and
-					     (re-search-forward delim nil t)
-					     (match-beginning 0))
-					    (point-max))))
-				   t))
-	      (goto-char end)
-	      (save-excursion
-		(save-restriction
-		  (goto-char start)
-		  (narrow-to-region start end)
-		  (nnbabyl-save-mail))))
-	  )))))
+	  (if (and
+	       (save-excursion (re-search-forward delim nil t))
+	       (not (search-forward 
+		     "\nX-Gnus-Newsgroup: " 
+		     (save-excursion 
+		       (setq end (or (and (re-search-forward delim nil t)
+					  (match-beginning 0))
+				     (point-max)))) t)))
+	      (progn
+		(goto-char end)
+		(save-excursion
+		  (save-restriction
+		    (goto-char start)
+		    (narrow-to-region start end)
+		    (nnbabyl-save-mail))))))
+	(save-buffer)
+	(nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)))))
 
 (defun nnbabyl-get-new-mail ()
   (let (incoming)
     (nnbabyl-read-mbox)
-    (if (and nnmail-spool-file
+    (if (and nnmail-spool-file nnbabyl-get-new-mail
 	     (file-exists-p nnmail-spool-file)
 	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
 	(progn

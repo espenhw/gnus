@@ -1,9 +1,9 @@
 ;;; nndir.el --- single directory newsgroup access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
-;; Keywords: news, mail
+;; Keywords: news
 
 ;; This file is part of GNU Emacs.
 

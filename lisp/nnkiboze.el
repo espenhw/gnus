@@ -1,7 +1,7 @@
 ;;;; nnkiboze.el --- select virtual news access for (ding) Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -90,7 +90,7 @@ If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nnkiboze-status-message ()
+(defun nnkiboze-status-message (&optional server)
   "Return server status response as string."
   nnkiboze-status-string)
 
@@ -195,7 +195,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	(gnus-read-active-file t)
 	(gnus-expert-user t))
     (gnus))
-  (let* ((gnus-newsrc-assoc (copy-alist gnus-newsrc-assoc))
+  (let* ((gnus-newsrc-assoc (gnus-copy-sequence gnus-newsrc-assoc))
 	 (newsrc gnus-newsrc-assoc))
     (while newsrc
       (if (string-match "nnkiboze" (car (car newsrc)))
@@ -220,7 +220,9 @@ Finds out what articles are to be part of the nnkiboze groups."
     (setq nnkiboze-current-score-group group)
     (or info (error "No such group: %s" group))
     (and (file-exists-p newsrc-file) (load newsrc-file))
-    (setq nov-buffer (find-file-noselect nov-file))
+    (save-excursion
+      (set-buffer (setq nov-buffer (find-file-noselect nov-file)))
+      (buffer-disable-undo (current-buffer)))
     (mapatoms
      (lambda (group)
        (if (and (string-match regexp (setq gname (symbol-name group)))

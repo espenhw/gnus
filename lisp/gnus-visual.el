@@ -1,7 +1,7 @@
 ;;; gnus-visual: display-oriented parts of Gnus.
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news
 
 ;; This file is part of GNU Emacs.
@@ -51,6 +51,9 @@ To check for marks, e.g. to underline replied articles, use `looking-at':
 This will match all lines where the second character is `R'.  
 The `.' will match any character.")
 
+(eval-and-compile
+  (autoload 'nnkiboze-generate-groups "nnkiboze"))
+
 ;; Newsgroup buffer
 
 ;; Make a menu bar item.
@@ -62,15 +65,16 @@ The `.' will match any character.")
    '("Group"
      ["Read" gnus-group-read-group t]
      ["Select" gnus-group-select-group t]
-     ["Mark unread articles as read" gnus-group-catchup-current t]
-     ["Mark all unread articles as read" gnus-group-catchup-current-all t]
+     ["Catch up" gnus-group-catchup-current t]
+     ["Catch up all articles" gnus-group-catchup-current-all t]
      ["Check for new articles" gnus-group-get-new-news-this-group t]
      ["Toggle subscription" gnus-group-unsubscribe-current-group t]
      ["Kill" gnus-group-kill-group t]
      ["Yank" gnus-group-yank-group t]
      ["Describe" gnus-group-describe-group t]
+     ["Fetch FAQ" gnus-group-fetch-faq t]
      ["Edit kill file" gnus-group-edit-local-kill t]
-     ["Expire expirable articles" gnus-group-expire-articles t]
+     ["Expire articles" gnus-group-expire-articles t]
      ["Set group level" gnus-group-set-current-level t]
      ))
   
@@ -84,14 +88,17 @@ The `.' will match any character.")
      ["List subscribed groups" gnus-group-list-groups t]
      ["List all groups" gnus-group-list-all-groups t]
      ["List groups matching..." gnus-group-list-matching t]
+     ["Sort group buffer" gnus-group-sort-groups t]
      ["Subscribe to random group" gnus-group-unsubscribe-group t]
      ["Describe all groups" gnus-group-describe-all-groups t]
      ["Group apropos" gnus-group-apropos t]
      ["Group and description apropos" gnus-group-description-apropos t]
-     ["Add a foreign group" gnus-group-add-newsgroup t]
-     ["Edit a group entry" gnus-group-edit-newsgroup t]
+     ["List groups matching..." gnus-group-list-matching t]
+     ["Add a foreign group" gnus-group-add-group t]
+     ["Edit a group entry" gnus-group-edit-group t]
      ["Add a directory group" gnus-group-make-directory-group t]
-     ["Add the documentation group" gnus-group-make-doc-group t]
+     ["Add the help group" gnus-group-make-help-group t]
+     ["Make a kiboze group" gnus-group-make-kiboze-group t]
      ["Kill all newsgroups in region" gnus-group-kill-region t]
      ["Kill all zombie groups" gnus-group-kill-all-zombies t]
      ["List killed groups" gnus-group-list-killed t]
@@ -120,13 +127,14 @@ The `.' will match any character.")
      ["Read init file" gnus-group-read-init-file t]
      ["Browse foreign server" gnus-group-browse-foreign-server t]
      ["Edit the global kill file" gnus-group-edit-global-kill t]
-     ["Expire expirable articles in all groups" gnus-group-expire-all-groups t]
+     ["Expire all expirable articles" gnus-group-expire-all-groups t]
+     ["Generate any kiboze groups" nnkiboze-generate-groups t]
      ["Gnus version" gnus-version t]
      ["Save .newsrc files" gnus-group-save-newsrc t]
      ["Suspend Gnus" gnus-group-suspend t]
      ["Clear dribble buffer" gnus-group-clear-dribble t]
      ["Exit from Gnus" gnus-group-exit t]
-     ["Exit from Gnus without updating .newsrc" gnus-group-quit t]
+     ["Exit without saving" gnus-group-quit t]
      ))
 
   )
@@ -142,14 +150,11 @@ The `.' will match any character.")
      ["Tick" gnus-summary-tick-article-forward t]
      ["Mark as read" gnus-summary-mark-as-read-forward t]
      ["Mark as unread" gnus-summary-clear-mark-forward t]
-     ["Mark all articles with the current subject as read and select"
-      gnus-summary-kill-same-subject-and-select t]
-     ["Mark all articles with the current subject as read"
-      gnus-summary-kill-same-subject t]
-     ["Delete all subjects marked as read" gnus-summary-delete-marked-as-read t]
-     ["Delete all subjects marked with..." gnus-summary-delete-marked-with t]
+     ["Mark same subject and select" gnus-summary-kill-same-subject-and-select t]
+     ["Mark same subject" gnus-summary-kill-same-subject t]
+     ["Remove lines marked as read" gnus-summary-remove-lines-marked-as-read t]
+     ["Remove lines marked with..." gnus-summary-remove-lines-marked-with t]
      ["Set expirable mark" gnus-summary-mark-as-expirable t]
-     ["Remove expirable mark" gnus-summary-unmark-as-expirable t]
      ["Set bookmark" gnus-summary-set-bookmark t]
      ["Remove bookmark" gnus-summary-remove-bookmark t]
      ["Catchup" gnus-summary-catchup t]
@@ -167,6 +172,7 @@ The `.' will match any character.")
       ["Mark by regexp" gnus-uu-mark-by-regexp t]
       ["Mark all" gnus-uu-mark-all t]
       ["Mark sparse" gnus-uu-mark-sparse t]
+      ["Mark thread" gnus-uu-mark-thread t]
       )
      ))
 
@@ -180,11 +186,12 @@ The `.' will match any character.")
      ["Previous unread article" gnus-summary-prev-unread-article t]
      ["Next article" gnus-summary-next-article t]
      ["Previous article" gnus-summary-prev-article t]
-     ["Next article with the same subject" gnus-summary-next-same-subject t]
-     ["Previous article with the same subject" gnus-summary-prev-same-subject t]
-     ["Go to the first unread article" gnus-summary-first-unread-article t]
+     ["Next article same subject" gnus-summary-next-same-subject t]
+     ["Previous article same subject" gnus-summary-prev-same-subject t]
+     ["First unread article" gnus-summary-first-unread-article t]
      ["Go to subject number..." gnus-summary-goto-subject t]
-     ["Go to the previous article" gnus-summary-goto-last-article t]
+     ["Go to the last article" gnus-summary-goto-last-article t]
+     ["Pop article off history" gnus-summary-pop-article t]
      ))
 
   (easy-menu-define
@@ -197,26 +204,36 @@ The `.' will match any character.")
       ["Signature" gnus-article-hide-signature t]
       ["Citation" gnus-article-hide-citation t]
       ["Overstrike" gnus-article-treat-overstrike t]
-      ["Word Wrap" gnus-article-word-wrap t]
+      ["Word wrap" gnus-article-word-wrap t]
       ["CR" gnus-article-remove-cr t]
       ["Quoted-Printable" gnus-article-de-quoted-unreadable t])
-     ["Interactive search in the article" gnus-summary-isearch-article t]
-     ["Search for an regexp in articles" gnus-summary-search-article-forward t]
+     ("Extract"
+      ["Uudecode" gnus-uu-decode-uu t]
+      ["Uudecode and save" gnus-uu-decode-uu-and-save t]
+      ["Unshar" gnus-uu-decode-unshar t]
+      ["Unshar and save" gnus-uu-decode-unshar-and-save t]
+      ["Save" gnus-uu-decode-save t]
+      ["Binhex" gnus-uu-decode-binhex t])
+     ["Enter digest buffer" gnus-summary-enter-digest-group t]
+     ["Isearch article" gnus-summary-isearch-article t]
+     ["Search all articles" gnus-summary-search-article-forward t]
      ["Beginning of the article" gnus-summary-beginning-of-article t]
      ["End of the article" gnus-summary-end-of-article t]
-     ["Fetch the parent of the article" gnus-summary-refer-parent-article t]
-     ["Fetch an article with Message-ID..." gnus-summary-refer-article t]
+     ["Fetch parent of article" gnus-summary-refer-parent-article t]
+     ["Fetch article with id..." gnus-summary-refer-article t]
      ["Stop page breaking" gnus-summary-stop-page-breaking t]
      ["Caesar rotate" gnus-summary-caesar-message t]
      ["Redisplay" gnus-summary-show-article t]
      ["Toggle header" gnus-summary-toggle-header t]
      ["Toggle MIME" gnus-summary-toggle-mime t]
      ["Save" gnus-summary-save-article t]
-     ["Save in rmail format" gnus-summary-save-article-rmail t]
+     ["Save in mail format" gnus-summary-save-article-mail t]
      ["Pipe through a filter" gnus-summary-pipe-output t]
-     ["Respool article" gnus-summary-respool-article t]
-     ["Move article" gnus-summary-move-article t]
-     ["Edit article" gnus-summary-edit-article t]
+     ("Mail articles"
+      ["Respool article" gnus-summary-respool-article t]
+      ["Move article" gnus-summary-move-article t]
+      ["Edit article" gnus-summary-edit-article t]
+      ["Delete article" gnus-summary-delete-article t])
      ))
 
   (easy-menu-define
@@ -241,17 +258,19 @@ The `.' will match any character.")
    gnus-summary-mode-map
    ""
    '("Misc"
-     ["Sort by number" gnus-summary-sort-by-number t]
-     ["Sort by author" gnus-summary-sort-by-author t]
-     ["Sort by subject" gnus-summary-sort-by-subject t]
-     ["Sort by date" gnus-summary-sort-by-date t]
+     ("Sort"
+      ["Sort by number" gnus-summary-sort-by-number t]
+      ["Sort by author" gnus-summary-sort-by-author t]
+      ["Sort by subject" gnus-summary-sort-by-subject t]
+      ["Sort by date" gnus-summary-sort-by-date t])
+     ["Fetch group FAQ" gnus-summary-fetch-faq t]
      ["Filter articles" gnus-summary-execute-command t]
-     ["Mark all articles as read and exit" gnus-summary-catchup-and-exit t]
+     ["Mark all read and exit" gnus-summary-catchup-and-exit t]
      ["Toggle line truncation" gnus-summary-toggle-truncation t]
      ["Expire expirable articles" gnus-summary-expire-articles t]
-     ["Delete a mail article" gnus-summary-delete-article t]
-     ["Show all dormant articles" gnus-summary-show-all-dormant t]
-     ["Show all expunged articles" gnus-summary-show-all-expunged t]
+     ["Show dormant articles" gnus-summary-show-all-dormant t]
+     ["Hide dormant articles" gnus-summary-hide-all-dormant t]
+     ["Show expunged articles" gnus-summary-show-all-expunged t]
      ["Reselect group" gnus-summary-reselect-current-group t]
      ["Rescan group" gnus-summary-rescan-group t]
      ["Describe group" gnus-summary-describe-group t]
@@ -265,17 +284,18 @@ The `.' will match any character.")
    ""
    '("Post"
      ["Post an article" gnus-summary-post-news t]
-     ["Followup an article" gnus-summary-followup t]
-     ["Followup an article and include original" 
-      gnus-summary-followup-with-original t]
+     ["Followup" gnus-summary-followup t]
+     ["Followup and yank" gnus-summary-followup-with-original t]
      ["Supersede article" gnus-summary-supersede-article t]
      ["Cancel article" gnus-summary-cancel-article t]
-     ["Mail a reply" gnus-summary-reply t]
-     ["Mail a reply and include original" gnus-summary-reply-with-original t]
-     ["Forward an article via mail" gnus-summary-mail-forward t]
+     ["Reply" gnus-summary-reply t]
+     ["Reply and yank" gnus-summary-reply-with-original t]
+     ["Forward" gnus-summary-mail-forward t]
+     ["Digest and forward" gnus-uu-digest-and-forward t]
      ["Send a mail" gnus-summary-mail-other-window t]
-     ["Send a reply and a followup" gnus-summary-followup-and-reply t]
-     ["Send a reply and a followup and include original" gnus-summary-followup-and-reply-with-original t]
+     ["Reply & followup" gnus-summary-followup-and-reply t]
+     ["Reply & followup and yank" gnus-summary-followup-and-reply-with-original t]
+     ["Uuencode and post" gnus-uu-post-news t]
      ))
 
   (easy-menu-define
@@ -285,8 +305,8 @@ The `.' will match any character.")
    '("Kill"
      ["Edit local kill file" gnus-summary-edit-local-kill t]
      ["Edit global kill file" gnus-summary-edit-global-kill t]
-     ["Expunge with score below..." gnus-kill-file-set-expunge-below t]
-     ["Set mark with score below..." gnus-kill-file-set-mark-below t]
+     ["Expunge with score below..." gnus-score-set-expunge-below t]
+     ["Set mark with score below..." gnus-score-set-mark-below t]
      ["Raise score with current subject" 
       gnus-summary-temporarily-raise-by-subject t]
      ["Raise score with current author" 
@@ -375,19 +395,23 @@ The `.' will match any character.")
 (defun gnus-visual-summary-highlight-line ()
   "Highlight current line according to `gnus-visual-summary-highlight'."
   (let ((list gnus-visual-summary-highlight)
+	(score (gnus-summary-article-score))
+	(default gnus-summary-default-score)
 	(inhibit-read-only t))
-    (while (and list (not (eval (car (car list)))))
-      (setq list (cdr list)))
-    (let ((face (and list (cdr (car list)))))
-      (save-excursion
-	;; BUG! For some reason the text properties of the first
-	;; characters get mangled. 
-	(forward-char 10)
-	(if (eq face (get-text-property (point) 'face))
-	    ()
-	  (put-text-property (save-excursion (beginning-of-line 1) (point))
-			     (save-excursion (end-of-line 1) (point))
-			     'face face))))))
+    (save-excursion
+      (beginning-of-line)
+      (while (and list (not (eval (car (car list)))))
+	(setq list (cdr list)))
+      (let ((face (and list (cdr (car list)))))
+	(save-excursion
+	  ;; BUG! For some reason the text properties of the first
+	  ;; characters get mangled. 
+	  (forward-char 10)
+	  (if (eq face (get-text-property (point) 'face))
+	      ()
+	    (put-text-property (save-excursion (beginning-of-line 1) (point))
+			       (save-excursion (end-of-line 1) (point))
+			       'face face)))))))
 
 (provide 'gnus-visual)
 

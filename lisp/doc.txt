@@ -39,11 +39,32 @@ that. This "newsgroup" is intended as a kinder, gentler way of getting
 people started.
 
 (ding) Gnus is a rewrite of GNUS 4.1, written by Masanobu Umeda. The
-rewrite was done by moi, yours truly, your humle servant, Lars Magne
+rewrite was done by moi, yours truly, your humble servant, Lars Magne
 Ingebrigtsen. If you have a WWW browser, you can investigate to your
 heart's delight at "http://www.ifi.uio.no/~larsi/larsi.html". 
 
 Much code (especially the score code) was written by Per Abrahamsen. 
+
+;; Copyright (C) 1995 Free Software Foundation, Inc.
+
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
+;; Keywords: news
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to
+;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 From lars Thu Feb 23 23:20:38 1995
 From: larsi@ifi.uio.no (ding)
@@ -184,7 +205,12 @@ In particular, `gnus-newsrc-hashtb', `gnus-newsrc-assoc',
 have all changed. If you have some code lying around that depend on
 these, or change these, you'll have to re-write your code.
 
-The old hilit code, for instance, will fail with (ding) Gnus.
+Old hilit19 code does not work at all.  In fact, you should probably
+remove all hihit code from all the Gnus hooks
+(`gnus-group-prepare-hook', `gnus-summary-prepare-hook' and
+`gnus-summary-article-hook').  (Well, at the very least the first
+two.)  Gnus provides various integrated functions for highlighting,
+which are both faster and more accurated.
 
 There is absolutely no chance, whatsoever, of getting Gnus to work
 with Emacs 18.
@@ -213,8 +239,8 @@ If I am not able to reproduce the bug, I won't be able to fix it.
 I would, of course, prefer that you locate the bug, fix it, and mail
 me the patches, but one can't have everything.
 
-If you have any questions on usage, the "gnu.emacs.gnus" newsgroup or
-the "ding@ifi.uio.no" mailing list is where to post the questions. 
+If you have any questions on usage, the "ding@ifi.uio.no" mailing list
+is where to post the questions.
 
 
 From lars Thu Feb 23 23:20:38 1995
@@ -279,9 +305,9 @@ the lines of:
 (setq gnus-select-group-hook
       (lambda ()
   	(if (eq 'nnvirtual (car (gnus-find-method-for-group 
-                                 gnus-newsgroup-name)))
+	                          gnus-newsgroup-name)))
 	    (progn
-	      (make-local-variable gnus-thread-sort-functions)
+	      (make-local-variable 'gnus-thread-sort-functions)
 	      (setq gnus-thread-sort-functions '(gnus-thread-sort-by-date))))))
 
 

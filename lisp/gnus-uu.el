@@ -1,7 +1,7 @@
 ;;; gnus-uu.el --- extract (uu)encoded files in Gnus
 ;; Copyright (C) 1985,86,87,93,94,95 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Created: 2 Oct 1993
 ;; Version: v3.0
 ;; Keyword: news
@@ -253,6 +253,7 @@ so I simply dropped them.")
 (defconst gnus-uu-output-buffer-name "*Gnus UU Output*")
 
 (defconst gnus-uu-highest-article-number 1)
+(defvar gnus-uu-default-dir default-directory)
 
 ;; Commands.
 
@@ -263,7 +264,11 @@ so I simply dropped them.")
 
 (defun gnus-uu-decode-uu-and-save (n dir)
   "Decodes and saves the resulting file."
-  (interactive "P\nDWhere do you want to save the file(s)? ")
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file(s)? "
+			 gnus-uu-default-dir
+			 gnus-uu-default-dir t)))
   (gnus-uu-decode-with-method 'gnus-uu-uustrip-article n dir))
 
 (defun gnus-uu-decode-unshar (n)
@@ -273,12 +278,20 @@ so I simply dropped them.")
 
 (defun gnus-uu-decode-unshar-and-save (n dir)
   "Unshars and saves the current article."
-  (interactive "P\nDWhere do you want to save the file(s)? ")
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file(s)? "
+			 gnus-uu-default-dir
+			 gnus-uu-default-dir t)))
   (gnus-uu-decode-with-method 'gnus-uu-unshar-article n dir))
 
 (defun gnus-uu-decode-save (n file)
   "Saves the current article."
-  (interactive "P\nDWhere do you want to save the file(s)? ")
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file? "
+			 gnus-uu-default-dir
+			 gnus-uu-default-dir)))
   (setq gnus-uu-saved-article-name file)
   (gnus-uu-decode-with-method 'gnus-uu-save-article n nil)
   (setq gnus-uu-generated-file-list 
@@ -286,43 +299,61 @@ so I simply dropped them.")
 
 (defun gnus-uu-decode-binhex (n dir)
   "Unbinhexes the current article."
-  (interactive "P\nDWhere do you want to save the file(s)? ")
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file(s)? "
+			 gnus-uu-default-dir
+			 gnus-uu-default-dir t)))
   (gnus-uu-decode-with-method 'gnus-uu-binhex-article n dir))
 
 (defun gnus-uu-decode-uu-view (n)
   "Uudecodes and views the current article."    
   (interactive "P")
-  (let ((gnus-view-pseudos 'automatic))
+  (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
     (gnus-uu-decode-uu n)))
 
 (defun gnus-uu-decode-uu-and-save-view (n dir)
   "Decodes, views and saves the resulting file."
-  (interactive "P\nDWhere do you want to save the file(s)? ")
-  (let ((gnus-view-pseudos 'automatic))
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file(s)? "
+			 gnus-uu-default-dir
+			 gnus-uu-default-dir t)))
+  (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
     (gnus-uu-decode-uu-and-save n dir)))
 
 (defun gnus-uu-decode-unshar-view (n)
   "Unshars and views the current article."
   (interactive "P")
-  (let ((gnus-view-pseudos 'automatic))
+  (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
     (gnus-uu-decode-unshar n)))
 
 (defun gnus-uu-decode-unshar-and-save-view (n dir)
   "Unshars and saves the current article."
-  (interactive "P\nDWhere do you want to save the file(s)? ")
-  (let ((gnus-view-pseudos 'automatic))
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file(s)? "
+			 gnus-uu-default-dir
+			 gnus-uu-default-dir t)))
+  (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
     (gnus-uu-decode-unshar-and-save n dir)))
 
 (defun gnus-uu-decode-save-view (n file)
   "Saves and views the current article."
-  (interactive "P\nDWhere do you want to save the file(s)? ")
-  (let ((gnus-view-pseudos 'automatic))
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file? "
+			 gnus-uu-default-dir gnus-uu-default-dir)))
+  (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
     (gnus-uu-decode-save n file)))
 
 (defun gnus-uu-decode-binhex-view (n file)
   "Unbinhexes and views the current article."
-  (interactive "P\nDWhere do you want to save the file(s)? ")
-  (let ((gnus-view-pseudos 'automatic))
+  (interactive
+   (list current-prefix-arg
+	 (read-file-name "Where do you want to save the file(s)? "
+			 gnus-uu-default-dir gnus-uu-default-dir)))
+  (let ((gnus-view-pseudos (or gnus-view-pseudos 'automatic)))
     (gnus-uu-decode-binhex n file)))
 
 
@@ -426,6 +457,7 @@ so I simply dropped them.")
 
 (defun gnus-uu-decode-with-method (method n &optional save)
   (gnus-uu-initialize)
+  (if save (setq gnus-uu-default-dir save))
   (let ((articles (gnus-uu-get-list-of-articles n))
 	files)
     (setq files (gnus-uu-grab-articles articles method t))
@@ -442,7 +474,8 @@ so I simply dropped them.")
       (setq file (cdr (assq 'name (car files))))
       (copy-file file (if (file-directory-p dir)
 			  (concat dir (file-name-nondirectory file))
-			dir))
+			dir)
+		 t)
       (setq files (cdr files)))
     (message "Saved %d file%s" len (if (> len 1) "s" ""))))
 
@@ -866,7 +899,8 @@ so I simply dropped them.")
 	(setq article-buffer gnus-article-buffer))
 
       (buffer-disable-undo article-buffer)
-      (gnus-summary-mark-as-read article)
+      ;; Mark article as read.
+      (run-hooks 'gnus-mark-article-hook)
       (and (memq article gnus-newsgroup-processable)
 	   (gnus-summary-remove-process-mark article))
 
@@ -929,7 +963,6 @@ so I simply dropped them.")
 	    (erase-buffer)
 	    (insert-buffer-substring article-buffer)
 	    (goto-char 1))))
-    (run-hooks 'gnus-mark-article-hook)
 
     (if result-files
 	()

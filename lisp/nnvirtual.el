@@ -1,7 +1,7 @@
 ;;;; nnvirtual.el --- virtual newsgroups access for (ding) Gnus
 ;; Copyright (C) 1994,95 Free Software Foundation, Inc.
 
-;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
+;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; 	Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; Keywords: news
 
@@ -90,10 +90,16 @@
 		(setq article (read nntp-server-buffer))
 		(delete-region beg (point))
 		(insert (int-to-string (+ (- article active) offset)))
-		(end-of-line)
-		(setq beg (point))
-		(search-backward "\t")
-		(if (not (search-forward "Xref:" beg t))
+		(beginning-of-line)
+		(looking-at "[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
+		(goto-char (match-end 0))
+		(or (search-forward 
+		     "\t" (save-excursion (end-of-line) (point)) t)
+		    (end-of-line))
+		(while (= (char-after (1- (point))) ? )
+		  (forward-char -1)
+		  (delete-char 1))
+		(if (eolp)
 		    (progn
 		      (end-of-line)
 		      (or (= (char-after (1- (point))) ?\t)
@@ -106,7 +112,10 @@
 			      (save-excursion (end-of-line) (point)) t)
 			(save-excursion
 			  (goto-char (match-beginning 0))
-			  (insert prefix)))))
+			  (insert prefix))))
+		  (end-of-line)
+		  (or (= (char-after (1- (point))) ?\t)
+		      (insert ?\t)))
 		(forward-line 1))))
 	(goto-char (point-max))
 	(insert-buffer-substring nntp-server-buffer))
@@ -135,7 +144,7 @@ If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nnvirtual-status-message ()
+(defun nnvirtual-status-message (&optional server)
   "Return server status response as string."
   nnvirtual-status-string)
 
@@ -215,7 +224,9 @@ If the stream is opened, return T, otherwise return NIL."
 		(or (header-references header) "") "\t"
 		(int-to-string (or (header-chars header) 0)) "\t"
 		(int-to-string (or (header-lines header) 0)) "\t"
-		(or (header-xref header) "") "\n")))))
+		(if (header-xref header) 
+		    (concat "Xref: " (header-xref header) "\t")
+		  "") "\n")))))
 
 (defun nnvirtual-possibly-change-newsgroups (group regexp &optional check)
   (let ((inf t))
@@ -273,31 +284,44 @@ If the stream is opened, return T, otherwise return NIL."
 	;; if not, we do it now.
 	(if (null active)
 	    (if (gnus-activate-newsgroup igroup)
-		(gnus-get-unread-articles-in-group
-		 info (gnus-gethash igroup gnus-active-hashtb))
-	      (message "Couldn't request newsgroup %s" group)
+		(progn
+		  (gnus-get-unread-articles-in-group
+		   info (gnus-gethash igroup gnus-active-hashtb))
+		  (setq active (gnus-gethash igroup gnus-active-hashtb)))
+	      (message "Couldn't open component group %s" igroup)
 	      (ding)))
-	(setq itotal (1+ (- (cdr active) (car active))))
-	(if (setq ireads (nth 2 info))
-	    (let ((itreads
-		   (if (atom (car ireads)) 
-		       (setq ireads (list (cons (car ireads) (cdr ireads))))
-		     (setq ireads (copy-alist ireads)))))
-	      (if (< (cdr (car ireads)) (car active))
-		  (setq ireads (setq itreads (cdr ireads))))
-	      (if (< (car (car ireads)) (car active)) 
-		  (setcar (car ireads) (1+ (car active))))
-	      (while itreads
-		(setcar (car itreads)
-			(+ (- (car (car itreads)) (car active)) offset))
-		(setcdr (car itreads)
-			(+ (- (cdr (car itreads)) (car active)) offset))
-		(setq itreads (cdr itreads)))
-	      (setq reads (nconc reads ireads))))
-	(setq offset (+ offset (1- itotal)))
-	(setq nnvirtual-current-mapping
-	      (cons (list offset igroup (car active)) 
-		    nnvirtual-current-mapping))
+	(if (null active)
+	    ()
+	  ;; And then we do the mapping for this component group. If
+	  ;; you feel tempte to cast your eyes to the soup below -
+	  ;; don't. It'll hurt your soul. Suffice to say that it
+	  ;; assigns ranges of nnvirtual article numbers to the
+	  ;; different component groups. To get the article number
+	  ;; from the nnvirtual number, one does something like
+	  ;; (+ (- number offset) (car active)), where `offset' is the
+	  ;; slice the mess below assigns, and active is the lowest
+	  ;; active article in the component group. 
+	  (setq itotal (1+ (- (cdr active) (car active))))
+	  (if (setq ireads (nth 2 info))
+	      (let ((itreads
+		     (if (atom (car ireads)) 
+			 (setq ireads (list (cons (car ireads) (cdr ireads))))
+		       (setq ireads (copy-alist ireads)))))
+		(if (< (cdr (car ireads)) (car active))
+		    (setq ireads (setq itreads (cdr ireads))))
+		(if (and ireads (< (car (car ireads)) (car active)))
+		    (setcar (car ireads) (1+ (car active))))
+		(while itreads
+		  (setcar (car itreads)
+			  (+ (- (car (car itreads)) (car active)) offset))
+		  (setcdr (car itreads)
+			  (+ (- (cdr (car itreads)) (car active)) offset))
+		  (setq itreads (cdr itreads)))
+		(setq reads (nconc reads ireads))))
+	  (setq offset (+ offset (1- itotal)))
+	  (setq nnvirtual-current-mapping
+		(cons (list offset igroup (car active)) 
+		      nnvirtual-current-mapping)))
 	(setq groups (cdr groups))))
     (setq nnvirtual-current-mapping
 	  (nreverse nnvirtual-current-mapping))
