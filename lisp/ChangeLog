@@ -1,3 +1,10 @@
+2004-07-09  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-agent.el (gnus-agent-synchronize-flags): Revert to ask.
+	Users will lose all flag changes made while unplugged with
+	e.g. nntp unless flag synchronization happens, thus `nil' is not a
+	good default.  See numerous reports on ding mailing list.
+
 2004-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nndoc.el (nndoc-type-alist): Improve regexp for article-begin,

@@ -113,7 +113,7 @@ If nil, only read articles will be expired."
   :group 'gnus-agent
   :type 'function)
 
-(defcustom gnus-agent-synchronize-flags nil
+(defcustom gnus-agent-synchronize-flags 'ask
   "Indicate if flags are synchronized when you plug in.
 If this is `ask' the hook will query the user."
   :version "21.1"
