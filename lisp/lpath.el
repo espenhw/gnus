@@ -75,6 +75,7 @@
 		 events-to-keys face-doc-string find-face frame-device
 		 frame-property get-popup-menu-response glyph-height
 		 glyph-property glyph-width glyphp make-annotation
+		 make-event
 		 make-color-instance make-extent make-glyph make-gui-button
 		 make-image-specifier map-extents next-command-event
 		 pp-to-string read-color set-extent-property
