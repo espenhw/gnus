@@ -22165,31 +22165,37 @@ default.
 @cindex $
 In spam groups, all messages are considered to be spam by default:
 they get the @samp{$} mark (@code{gnus-spam-mark}) when you enter the
-group.  You must review these messages from time to time and remove
-the @samp{$} mark for every message that is not spam after all.  To
-remove the @samp{$} mark, you can use @kbd{M-u} to ``unread'' the
-article, or @kbd{d} for declaring it read the non-spam way.  When you
-leave a group, all spam-marked (@samp{$}) articles are sent to a spam
-processor which will study them as spam samples.
+group.  If you have seen a message, had it marked as spam, then
+unmarked it, it won't be marked as spam when you enter the group
+thereafter.  You can disable that behavior, so all unread messages
+will get the @samp{$} mark, if you set the
+@code{spam-mark-only-unseen-as-spam} parameter to nil.  You should
+remove the @samp{$} mark when you are in the group summary buffer for
+every message that is not spam after all.  To remove the @samp{$}
+mark, you can use @kbd{M-u} to ``unread'' the article, or @kbd{d} for
+declaring it read the non-spam way.  When you leave a group, all
+spam-marked (@samp{$}) articles are sent to a spam processor which
+will study them as spam samples.
 
 Messages may also be deleted in various other ways, and unless
-@code{spam-ham-marks} gets overridden below, marks @samp{R} and
-@samp{r} for default read or explicit delete, marks @samp{X} and
+@code{ham-marks} group parameter gets overridden below, marks @samp{R}
+and @samp{r} for default read or explicit delete, marks @samp{X} and
 @samp{K} for automatic or explicit kills, as well as mark @samp{Y} for
 low scores, are all considered to be associated with articles which
 are not spam.  This assumption might be false, in particular if you
 use kill files or score files as means for detecting genuine spam, you
-should then adjust the @code{spam-ham-marks} variable.
+should then adjust the @code{ham-marks} group parameter.
 
-@defvar spam-ham-marks
-You can customize this variable to be the list of marks you want to
-consider ham.  By default, the list contains the deleted, read,
-killed, kill-filed, and low-score marks.
+@defvar ham-marks
+You can customize this group or topic parameter to be the list of
+marks you want to consider ham.  By default, the list contains the
+deleted, read, killed, kill-filed, and low-score marks.
 @end defvar
 
-@defvar spam-spam-marks
-You can customize this variable to be the list of marks you want to
-consider spam.  By default, the list contains only the spam mark.
+@defvar spam-marks
+You can customize this group or topic parameter to be the list of
+marks you want to consider spam.  By default, the list contains only
+the spam mark.
 @end defvar
 
 When you leave @emph{any} group, regardless of its
@@ -22211,7 +22217,9 @@ variable, which is a list of regular expressions matched with group
 names (it's easiest to customize this variable with
 @code{customize-variable gnus-ham-process-destinations}).  The ultimate
 location is a group name.  If the @code{ham-process-destination}
-parameter is not set, spam articles are only expired.
+parameter is not set, ham articles are left in place.  If the
+@code{spam-mark-ham-unread-before-move-from-spam-group} parameter is
+set, the ham articles are marked as unread before being moved.
 
 When you leave a @emph{ham} group, all ham-marked articles are sent to
 a ham processor, which will study these as non-spam samples.
@@ -22242,7 +22250,55 @@ nnimap back ends to retrieve your mail.
 The @code{spam-split} function will process incoming mail and send the
 mail considered to be spam into the group name given by the variable
 @code{spam-split-group}.  By default that group name is @samp{spam},
-but you can customize it.
+but you can customize @code{spam-split-group}.
+
+You can also give @code{spam-split} a parameter,
+e.g. @samp{'spam-use-regex-headers}.  Why is this useful?
+
+Take these split rules (with @code{spam-use-regex-headers} and
+@code{spam-use-blackholes} set):
+
+@example
+ nnimap-split-fancy '(|
+		      (any "ding" "ding")
+		      (: spam-split)
+		      ;; default mailbox
+		      "mail")
+@end example
+
+Now, the problem is that you want all ding messages to make it to the
+ding folder.  But that will let obvious spam (for example, spam
+detected by SpamAssassin, and @code{spam-use-regex-headers}) through,
+when it's sent to the ding list.  On the other hand, some messages to
+the ding list are from a mail server in the blackhole list, so the
+invocation of @code{spam-split} can't be before the ding rule.
+
+You can let SpamAssassin headers supercede ding rules, but all other
+@code{spam-split} rules (including a second invocation of the
+regex-headers check) will be after the ding rule:
+
+@example
+ nnimap-split-fancy '(|
+		      (: spam-split 'spam-use-regex-headers)
+		      (any "ding" "ding")
+		      (: spam-split)
+		      ;; default mailbox
+		      "mail")
+@end example
+
+Basically, this lets you invoke specific @code{spam-split} checks
+depending on your particular needs.  You don't have to throw all mail
+into all the spam tests.  Another reason why this is nice is that
+messages to mailing lists you have rules for don't have to have
+resource-intensive blackhole checks performed on them.  You could also
+specify different spam checks for your nnmail split vs. your nnimap
+split.  Go crazy.
+
+You still have to have specific checks such as
+@code{spam-use-regex-headers} set to t, even if you specifically
+invoke @code{spam-split} with the check.  The reason is that when
+loading @code{spam.el}, some conditional loading is done depending on
+what @code{spam-use-xyz} variables you have set.
 
 @emph{Note for IMAP users}
 
@@ -22252,7 +22308,8 @@ the headers.  By default, the nnimap backend will only retrieve the
 message headers.  If you use @code{spam-check-bogofilter},
 @code{spam-check-ifile}, or @code{spam-check-stat} (the splitters that
 can benefit from the full message body), you should set this variable.
-It is not set by default because it will slow @acronym{IMAP} down.
+It is not set by default because it will slow @acronym{IMAP} down, and
+that is not an appropriate decision to make on behalf of the user.
 
 @xref{Splitting in IMAP}.
 
@@ -22270,6 +22327,8 @@ The following are the methods you can use to control the behavior of
 @menu
 * Blacklists and Whitelists::   
 * BBDB Whitelists::             
+* Gmane Spam Reporting::        
+* Anti-spam Hashcash Payments::  
 * Blackholes::                  
 * Regular Expressions Header Matching::  
 * Bogofilter::                  
@@ -22391,6 +22450,42 @@ added to a group's @code{spam-process} parameter, the senders of
 ham-marked articles in @emph{ham} groups will be added to the
 BBDB.  Note that this ham processor has no effect in @emph{spam}
 or @emph{unclassified} groups.
+
+@end defvar
+
+@node Gmane Spam Reporting
+@subsubsection Gmane Spam Reporting
+@cindex spam reporting
+@cindex Gmane, spam reporting
+@cindex Gmane, spam reporting
+@cindex spam
+
+@defvar gnus-group-spam-exit-processor-report-gmane
+
+Add this symbol to a group's @code{spam-process} parameter by
+customizing the group parameters or the
+@code{gnus-spam-process-newsgroups} variable.  When this symbol is
+added to a group's @code{spam-process} parameter, the spam-marked
+articles groups will be reported to the Gmane administrators.
+
+@end defvar
+
+@node Anti-spam Hashcash Payments
+@subsubsection Anti-spam Hashcash Payments
+@cindex spam filtering
+@cindex hashcash, spam filtering
+@cindex spam
+
+@defvar spam-use-hashcash
+
+Similar to @code{spam-use-whitelist} (@pxref{Blacklists and
+Whitelists}), but uses hashcash tokens for whitelisting messages
+instead of the sender address.  You must have the @code{hashcash.el}
+package loaded for @code{spam-use-hashcash} to work properly.
+Messages without a hashcash payment token will be sent to the next
+spam-split rule.  This is an explicit filter, meaning that unless a
+hashcash token is found, the messages are not assumed to be spam or
+ham.
 
 @end defvar
 

@@ -1,3 +1,8 @@
+2003-04-30  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Filtering Spam Using The Spam ELisp Package): revised documentation
+	(Gmane Spam Reporting, Anti-spam Hashcash Payments): new sections
+
 2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Oort Gnus): New features in Gnus 5.10 from GNUS-NEWS.
