@@ -460,7 +460,16 @@ LIST is a sorted list."
 
 (defun gnus-range-length (range)
   "Return the length RANGE would have if uncompressed."
-  (length (gnus-uncompress-range range)))
+  (cond
+   ((null range)
+    0)
+   ((not (listp (cdr range)))
+    (- (cdr range) (car range) -1))
+   (t
+    (let ((sum 0))
+      (dolist (x range sum)
+	(setq sum
+	      (+ sum (if (consp x) (- (cdr x) (car x) -1) 1))))))))
 
 (defun gnus-sublist-p (list sublist)
   "Test whether all elements in SUBLIST are members of LIST."

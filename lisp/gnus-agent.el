@@ -128,6 +128,18 @@ If this is `ask' the hook will query the user."
 		 (const :tag "Ask" ask))
   :group 'gnus-agent)
 
+(defcustom gnus-agent-mark-unread-after-downloaded t
+  "Indicate whether to mark articles unread after downloaded."
+  :version "21.1"
+  :type 'boolean
+  :group 'gnus-agent)
+
+(defcustom gnus-agent-download-marks '(download)
+  "Marks for downloading."
+  :version "21.1"
+  :type '(repeat (symbol :tag "Mark"))
+  :group 'gnus-agent)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -732,7 +744,8 @@ the actual number of articles toggled is returned."
 	    (dolist (article articles)
 	      (setq gnus-newsgroup-downloadable
 		    (delq article gnus-newsgroup-downloadable))
-	      (gnus-summary-mark-article article gnus-unread-mark))))
+	      (if gnus-agent-mark-unread-after-downloaded
+		  (gnus-summary-mark-article article gnus-unread-mark)))))
       (when (and (not state)
 		 gnus-plugged)
 	(gnus-agent-toggle-plugged nil)))))
@@ -1271,18 +1284,20 @@ the actual number of articles toggled is returned."
       (when arts
 	(gnus-agent-fetch-articles group arts)))
     ;; Perhaps we have some additional articles to fetch.
-    (setq arts (assq 'download (gnus-info-marks
-				(setq info (gnus-get-info group)))))
-    (when (cdr arts)
-      (gnus-message 8 "Agent is downloading marked articles...")
-      (gnus-agent-fetch-articles
-       group (gnus-uncompress-range (cdr arts)))
-      (setq marks (delq arts (gnus-info-marks info)))
-      (gnus-info-set-marks info marks)
-      (gnus-dribble-enter
-       (concat "(gnus-group-set-info '"
-	       (gnus-prin1-to-string info)
-	       ")")))))
+    (dolist (mark gnus-agent-download-marks)
+      (setq arts (assq mark (gnus-info-marks
+			     (setq info (gnus-get-info group)))))
+      (when (cdr arts)
+	(gnus-message 8 "Agent is downloading marked articles...")
+	(gnus-agent-fetch-articles
+	 group (gnus-uncompress-range (cdr arts)))
+	(when (eq mark 'download)
+	  (setq marks (delq arts (gnus-info-marks info)))
+	  (gnus-info-set-marks info marks)
+	  (gnus-dribble-enter
+	   (concat "(gnus-group-set-info '"
+		   (gnus-prin1-to-string info)
+		   ")")))))))
 
 ;;;
 ;;; Agent Category Mode

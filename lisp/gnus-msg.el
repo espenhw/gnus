@@ -185,6 +185,25 @@ use this option with care."
 				  (symbol :tag "Charset")))))
   :group 'gnus-charset)
 
+(defcustom gnus-debug-files
+  '("gnus.el" "gnus-sum.el" "gnus-group.el"
+    "gnus-art.el" "gnus-start.el" "gnus-async.el"
+    "gnus-msg.el" "gnus-score.el" "gnus-win.el" "gnus-topic.el"
+    "gnus-agent.el" "gnus-cache.el" "gnus-srvr.el"
+    "mm-util.el" "mm-decode.el" "nnmail.el" "message.el")
+  "Files whose variables will be reported in `gnus-bug'."
+  :version "21.1"
+  :group 'gnus-message
+  :type '(repeat (string :tag "File")))
+
+(defcustom gnus-debug-exclude-variables 
+  '(mm-mime-mule-charset-alist 
+    nnmail-split-fancy message-minibuffer-local-map)
+  "Variables that should not be reported in `gnus-bug'."
+  :version "21.1"
+  :group 'gnus-message
+  :type '(repeat (symbol :tab "Variable")))
+
 ;;; Internal variables.
 
 (defvar gnus-inhibit-posting-styles nil
@@ -1274,10 +1293,7 @@ If YANK is non-nil, include the original article."
   "Attempts to go through the Gnus source file and report what variables have been changed.
 The source file has to be in the Emacs load path."
   (interactive)
-  (let ((files '("gnus.el" "gnus-sum.el" "gnus-group.el"
-		 "gnus-art.el" "gnus-start.el" "gnus-async.el"
-		 "gnus-msg.el" "gnus-score.el" "gnus-win.el" "gnus-topic.el"
-		 "nnmail.el" "message.el"))
+  (let ((files gnus-debug-files)
 	(point (point))
 	file expr olist sym)
     (gnus-message 4 "Please wait while we snoop your variables...")
@@ -1300,6 +1316,7 @@ The source file has to be in the Emacs load path."
 		(and (or (eq (car expr) 'defvar)
 			 (eq (car expr) 'defcustom))
 		     (stringp (nth 3 expr))
+		     (not (memq (nth 1 expr) gnus-debug-exclude-variables))
 		     (or (not (boundp (nth 1 expr)))
 			 (not (equal (eval (nth 2 expr))
 				     (symbol-value (nth 1 expr)))))
