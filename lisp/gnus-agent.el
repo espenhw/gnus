@@ -373,9 +373,23 @@ manipulated as follows:
 (gnus-agent-cat-defaccessor
  gnus-agent-cat-enable-undownloaded-faces agent-enable-undownloaded-faces)
 
+
+;; This form is equivalent to defsetf except that it calls make-symbol
+;; whereas defsetf calls gensym (Using gensym creates a run-time
+;; dependency on the CL library).
+
 (eval-and-compile
-  (defsetf gnus-agent-cat-groups (category) (groups)
-    (list 'gnus-agent-set-cat-groups category groups)))
+  (define-setf-method gnus-agent-cat-groups (category)
+    (let* ((--category--temp-- (make-symbol "--category--"))
+	   (--groups--temp-- (make-symbol "--groups--")))
+      (list (list --category--temp--)
+	    (list category)
+	    (list --groups--temp--)
+	    (let* ((category --category--temp--)
+		   (groups --groups--temp--))
+	      (list (quote gnus-agent-set-cat-groups) category groups))
+	    (list (quote gnus-agent-cat-groups) --category--temp--))))
+  )
 
 (defun gnus-agent-set-cat-groups (category groups)
   (unless (eq groups 'ignore)
@@ -1030,6 +1044,7 @@ article's mark is toggled."
 	 gnus-downloadable-mark)
        'unread))))
 
+;;;###autoload
 (defun gnus-agent-get-undownloaded-list ()
   "Construct list of articles that have not been downloaded."
   (let ((gnus-command-method (gnus-find-method-for-group gnus-newsgroup-name)))
@@ -1192,6 +1207,7 @@ This can be added to `gnus-select-article-hook' or
       ;; will add it while reading the file.
       (gnus-write-active-file file new nil)))
 
+;;;###autoload
 (defun gnus-agent-possibly-alter-active (group active &optional info)
   "Possibly expand a group's active range to include articles
 downloaded into the agent."
@@ -1500,6 +1516,37 @@ downloaded into the agent."
             (gnus-message 7 ""))
           (cdr fetched-articles))))))
 
+(defun gnus-agent-unfetch-articles (group articles)
+  "Delete ARTICLES that were fetched from GROUP into the agent."
+  (when articles
+    (gnus-agent-with-refreshed-group 
+     group
+     (gnus-agent-load-alist group)
+     (let* ((alist (cons nil gnus-agent-article-alist))
+	    (articles (sort articles #'<))
+	    (next-possibility alist)
+	    (delete-this (pop articles)))
+       (while (and (cdr next-possibility) delete-this)
+	 (let ((have-this (caar (cdr next-possibility))))
+	   (cond ((< delete-this have-this)
+		  (setq delete-this (pop articles)))
+		 ((= delete-this have-this)
+		  (let ((timestamp (cdar (cdr next-possibility))))
+		    (when timestamp
+		      (let* ((file-name (concat (gnus-agent-group-pathname group)
+						(number-to-string have-this)))
+			     (size-file (float (or (and gnus-agent-total-fetched-hashtb
+							(nth 7 (file-attributes file-name)))
+						   0))))
+			(delete-file file-name)
+			(gnus-agent-update-files-total-fetched-for group (- size-file)))))
+
+		  (setcdr next-possibility (cddr next-possibility)))
+		 (t
+		  (setq next-possibility (cdr next-possibility))))))
+       (setq gnus-agent-article-alist (cdr alist))
+       (gnus-agent-save-alist group)))))
+
 (defun gnus-agent-crosspost (crosses article &optional date)
   (setq date (or date t))
 
@@ -1606,6 +1653,7 @@ and that there are no duplicates."
 	(insert "\n"))
       (setq gnus-agent-group-alist (cdr gnus-agent-group-alist)))))
 
+;;;###autoload
 (defun gnus-agent-find-parameter (group symbol)
   "Search for GROUPs SYMBOL in the group's parameters, the group's
 topic parameters, the group's category, or the customizable
@@ -1710,8 +1758,10 @@ article numbers will be returned."
               ;; of FILE.
               (copy-to-buffer
 	       gnus-agent-overview-buffer (point-min) (point-max))
-	      (when (file-exists-p file)
-		(gnus-agent-braid-nov group articles file))
+	      ;; NOTE: Call g-a-brand-nov even when the file does not
+	      ;; exist.  As a minimum, it will validate the article
+	      ;; numbers already in the buffer.
+	      (gnus-agent-braid-nov group articles file)
               (let ((coding-system-for-write
                      gnus-agent-file-coding-system))
                 (gnus-agent-check-overview-buffer)
@@ -1724,11 +1774,32 @@ article numbers will be returned."
             (nnheader-insert-file-contents file)))))
     articles))
 
+(defsubst gnus-agent-read-article-number ()
+  "Reads the article number at point.  Returns nil when a valid article number can not be read."
+
+  ;; It is unfortunite but the read function quietly overflows
+  ;; integer.  As a result, I have to use string operations to test
+  ;; for overflow BEFORE calling read.
+  (when (looking-at "[0-9]+\t")
+    (let ((len (- (match-end 0) (match-beginning 0))))
+      (cond ((< len 9)
+	     (read (current-buffer)))
+	    ((= len 9)
+	     ;; Many 9 digit base-10 numbers can be represented in a 27-bit int
+	     ;; Back convert from int to string to ensure that this is one of them.
+	     (let* ((str1 (buffer-substring (match-beginning 0) (1- (match-end 0))))
+		    (num (read (current-buffer)))
+		    (str2 (int-to-string num)))
+	       (when (equal str1 str2)
+		 num)))))))
+
 (defsubst gnus-agent-copy-nov-line (article)
+  "Copy the indicated ARTICLE from the overview buffer to the nntp server buffer."
   (let (art b e)
     (set-buffer gnus-agent-overview-buffer)
     (while (and (not (eobp))
-		(< (setq art (read (current-buffer))) article))
+		(or (not (setq art (gnus-agent-read-article-number)))
+		    (< art article)))
       (forward-line 1))
     (beginning-of-line)
     (if (or (eobp)
@@ -1741,64 +1812,77 @@ article numbers will be returned."
 
 (defun gnus-agent-braid-nov (group articles file)
   "Merge agent overview data with given file.
-Takes headers for ARTICLES from `gnus-agent-overview-buffer' and the given
-FILE and places the combined headers into `nntp-server-buffer'."
+Takes unvalidated headers for ARTICLES from
+`gnus-agent-overview-buffer' and validated headers from the given
+FILE and places the combined valid headers into
+`nntp-server-buffer'.  This function can be used, when file
+doesn't exist, to valid the overview buffer."
   (let (start last)
     (set-buffer gnus-agent-overview-buffer)
     (goto-char (point-min))
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (nnheader-insert-file-contents file)
+    (when (file-exists-p file)
+      (nnheader-insert-file-contents file))
     (goto-char (point-max))
     (forward-line -1)
-    (unless (looking-at "[0-9]+\t")
-      ;; Remove corrupted lines
-      (gnus-message
-       1 "Overview %s is corrupted. Removing corrupted lines..." file)
-      (goto-char (point-min))
-      (while (not (eobp))
-	(if (looking-at "[0-9]+\t")
-	    (forward-line 1)
-	  (delete-region (point) (progn (forward-line 1) (point)))))
-      (forward-line -1))
+
     (unless (or (= (point-min) (point-max))
 		(< (setq last (read (current-buffer))) (car articles)))
-      ;; We do it the hard way.
+      ;; Old and new overlap -- We do it the hard way.
       (when (nnheader-find-nov-line (car articles))
         ;; Replacing existing NOV entry
         (delete-region (point) (progn (forward-line 1) (point))))
       (gnus-agent-copy-nov-line (pop articles))
 
       (ignore-errors
-        (while articles
-          (while (let ((art (read (current-buffer))))
-                   (cond ((< art (car articles))
-                          (forward-line 1)
-                          t)
-                         ((= art (car articles))
-                          (beginning-of-line)
-                          (delete-region
-			   (point) (progn (forward-line 1) (point)))
-                          nil)
-                         (t
-                          (beginning-of-line)
-                          nil))))
+       (while articles
+	 (while (let ((art (read (current-buffer))))
+		  (cond ((< art (car articles))
+			 (forward-line 1)
+			 t)
+			((= art (car articles))
+			 (beginning-of-line)
+			 (delete-region
+			  (point) (progn (forward-line 1) (point)))
+			 nil)
+			(t
+			 (beginning-of-line)
+			 nil))))
 
-	  (gnus-agent-copy-nov-line (pop articles)))))
+	 (gnus-agent-copy-nov-line (pop articles)))))
 
-    ;; Copy the rest lines
-    (set-buffer nntp-server-buffer)
     (goto-char (point-max))
+
+    ;; Append the remaining lines
     (when articles
       (when last
 	(set-buffer gnus-agent-overview-buffer)
-	(ignore-errors
-          (while (<= (read (current-buffer)) last)
-            (forward-line 1)))
-	(beginning-of-line)
 	(setq start (point))
 	(set-buffer nntp-server-buffer))
-      (insert-buffer-substring gnus-agent-overview-buffer start))))
+
+      (let ((p (point)))
+	(insert-buffer-substring gnus-agent-overview-buffer start)
+	(goto-char p))
+
+      (setq last (or last -134217728))
+      (let (sort art)
+	(while (not (eobp))
+	  (setq art (gnus-agent-read-article-number))
+	  (cond ((not art)
+		 ;; Bad art num - delete this line
+		 (beginning-of-line)
+		 (delete-region (point) (progn (forward-line 1) (point))))
+		((< art last)
+		 ;; Art num out of order - enable sort
+		 (setq sort t)
+		 (forward-line 1))
+		(t
+		 ;; Good art num
+		 (setq last art)
+		 (forward-line 1))))
+	(when sort
+	  (sort-numeric-fields 1 (point-min) (point-max)))))))
 
 ;; Keeps the compiler from warning about the free variable in
 ;; gnus-agent-read-agentview.
@@ -3359,7 +3443,7 @@ articles in every agentized group."))
 
 (defun gnus-agent-uncached-articles (articles group &optional cached-header)
   "Restrict ARTICLES to numbers already fetched.
-Returns a sublist of ARTICLES that excludes thos article ids in GROUP
+Returns a sublist of ARTICLES that excludes those article ids in GROUP
 that have already been fetched.
 If CACHED-HEADER is nil, articles are only excluded if the article itself
 has been fetched."
@@ -3449,12 +3533,11 @@ has been fetched."
 
                      ;; Get the list of articles that were fetched
                      (goto-char (point-min))
-                     (let ((pm (point-max)))
+                     (let ((pm (point-max))
+			   art)
                        (while (< (point) pm)
-                         (when (looking-at "[0-9]+\t")
-                           (gnus-agent-append-to-list
-                            tail-fetched-articles
-                            (read (current-buffer))))
+			 (when (setq art (gnus-agent-read-article-number))
+                           (gnus-agent-append-to-list tail-fetched-articles art))
                          (forward-line 1)))
 
                      ;; Clip this list to the headers that will
@@ -3493,7 +3576,7 @@ has been fetched."
 
 	    ;; Merge the temp buffer with the known headers (found on
 	    ;; disk in FILE) into the nntp-server-buffer
-	    (when (and uncached-articles (file-exists-p file))
+	    (when uncached-articles
 	      (gnus-agent-braid-nov group uncached-articles file))
 
 	    ;; Save the new set of known headers to FILE
@@ -3825,19 +3908,23 @@ agent has fetched."
 		       (gnus-sethash path (make-list 3 0) 
 				     gnus-agent-total-fetched-hashtb))))
        (when (listp delta)
-	 (unless delta
-	   (setq delta (directory-files path nil "^-?[0-9]+$" t)))
-
-	 (let ((sum 0.0)
-	       file)
-	   (while (setq file (pop delta))
-	     (incf sum (float (or (nth 7 (file-attributes 
-					  (nnheader-concat 
-					   path 
-					   (if (numberp file)
-					       (number-to-string file)
-					     file)))) 0))))
-	   (setq delta sum)))
+	 (if delta
+	     (let ((sum 0.0)
+		   file)
+	       (while (setq file (pop delta))
+		 (incf sum (float (or (nth 7 (file-attributes 
+					      (nnheader-concat 
+					       path 
+					       (if (numberp file)
+						   (number-to-string file)
+						 file)))) 0))))
+	       (setq delta sum))
+	   (let ((sum 0.0)
+		 (info (directory-files-and-attributes path nil "^-?[0-9]+$" t))
+		 file)
+	     (while (setq file (pop info))
+	       (incf sum (float (or (nth 8 file) 0))))
+	     (setq delta sum))))
 
        (setq gnus-agent-need-update-total-fetched-for t)
        (incf (nth 2 entry) delta)))))
