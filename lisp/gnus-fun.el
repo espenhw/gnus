@@ -74,7 +74,7 @@
 	(push (cons (* step i) i) color-alist)))
     (when (file-exists-p file)
       (with-temp-buffer
-	(insert (shell-command-to-string (format "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmquant -map %s 2>/dev/null | ppmtopgm | pnmnoraw"
+	(insert (shell-command-to-string (format "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmquant -fs -map %s 2>/dev/null | ppmtopgm | pnmnoraw"
 			       file mapfile)))
 	(goto-char (point-min))
 	(forward-line 3)

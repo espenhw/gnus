@@ -238,7 +238,7 @@ Thank you for your help in stamping out bugs.
   "w" gnus-summary-wide-reply
   "W" gnus-summary-wide-reply-with-original
   "v" gnus-summary-very-wide-reply
-  "W" gnus-summary-very-wide-reply-with-original
+  "V" gnus-summary-very-wide-reply-with-original
   "n" gnus-summary-followup-to-mail
   "N" gnus-summary-followup-to-mail-with-original
   "m" gnus-summary-mail-other-window

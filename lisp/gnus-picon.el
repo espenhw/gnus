@@ -96,6 +96,7 @@ Some people may want to add \"unknown\" to this list."
 (defvar gnus-picon-glyph-alist nil
   "Picon glyphs cache.
 List of pairs (KEY . GLYPH) where KEY is either a filename or an URL.")
+(defvar gnus-picon-cache nil)
 
 ;;; Functions:
 
@@ -162,36 +163,39 @@ GLYPH can be either a glyph or a string."
   (gnus-with-article-headers
     (let ((addresses
 	   (mail-header-parse-addresses (mail-fetch-field header)))
-	  spec file point)
+	  spec file point cache)
       (dolist (address addresses)
 	(setq address (car address))
 	(when (and (stringp address)
 		   (setq spec (gnus-picon-split-address address)))
-	  (when (setq file (or (gnus-picon-find-face
-				address gnus-picon-user-directories)
-			       (gnus-picon-find-face
+	  (if (setq cache (cdr (assoc address gnus-picon-cache)))
+	      (setq spec cache)
+	    (when (setq file (or (gnus-picon-find-face
+				  address gnus-picon-user-directories)
+				 (gnus-picon-find-face
+				  (concat "unknown@"
+					  (mapconcat
+					   'identity (cdr spec) "."))
+				  gnus-picon-user-directories)))
+	      (setcar spec (cons (gnus-picon-create-glyph file)
+				 (car spec))))
+	      
+	    (dotimes (i (1- (length spec)))
+	      (when (setq file (gnus-picon-find-face
 				(concat "unknown@"
 					(mapconcat
-					 'identity (cdr spec) "."))
-				gnus-picon-user-directories)))
-	    (setcar spec (cons (gnus-picon-create-glyph file)
-			       (car spec))))
-	      
-	  (dotimes (i (1- (length spec)))
-	    (when (setq file (gnus-picon-find-face
-			      (concat "unknown@"
-				      (mapconcat
-				       'identity (nthcdr (1+ i) spec) "."))
-			      gnus-picon-domain-directories t))
-	      (setcar (nthcdr (1+ i) spec)
-		      (cons (gnus-picon-create-glyph file)
-			    (nth (1+ i) spec)))))
+					 'identity (nthcdr (1+ i) spec) "."))
+				gnus-picon-domain-directories t))
+		(setcar (nthcdr (1+ i) spec)
+			(cons (gnus-picon-create-glyph file)
+			      (nth (1+ i) spec)))))
+	    (setq spec (nreverse spec))
+	    (push (cons address spec) gnus-picon-cache))
 	  
 	  (gnus-article-goto-header header)
 	  (mail-header-narrow-to-field)
 	  (when (search-forward address nil t)
 	    (delete-region (match-beginning 0) (match-end 0))
-	    (setq spec (nreverse spec))
 	    (setq point (point))
 	    (while spec
 	      (goto-char point)
@@ -209,16 +213,18 @@ GLYPH can be either a glyph or a string."
     (let ((groups (message-tokenize-header (mail-fetch-field header)))
 	  spec file point)
       (dolist (group groups)
-	(setq spec (nreverse (split-string group "[.]")))
-	(dotimes (i (length spec))
-	  (when (setq file (gnus-picon-find-face
-			    (concat "unknown@"
-				    (mapconcat
-				     'identity (nthcdr i spec) "."))
-			    gnus-picon-news-directories t))
-	    (setcar (nthcdr i spec)
-		    (cons (gnus-picon-create-glyph file)
-			  (nth i spec)))))
+	(unless (setq spec (cdr (assoc group gnus-picon-cache)))
+	  (setq spec (nreverse (split-string group "[.]")))
+	  (dotimes (i (length spec))
+	    (when (setq file (gnus-picon-find-face
+			      (concat "unknown@"
+				      (mapconcat
+				       'identity (nthcdr i spec) "."))
+			      gnus-picon-news-directories t))
+	      (setcar (nthcdr i spec)
+		      (cons (gnus-picon-create-glyph file)
+			    (nth i spec)))))
+	    (push (cons group spec) gnus-picon-cache))
 	(when (search-forward group nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (save-restriction

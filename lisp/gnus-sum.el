@@ -2070,6 +2070,10 @@ increase the score of each group you read."
 	["Wide reply and yank" gnus-summary-wide-reply-with-original
 	 ,@(if (featurep 'xemacs) '(t)
 	     '(:help "Mail a reply, quoting this article"))]
+        ["Very wide reply" gnus-summary-very-wide-reply t]
+        ["Very wide reply and yank" gnus-summary-very-wide-reply-with-original
+ 	,@(if (featurep 'xemacs) '(t)
+ 	    '(:help "Mail a very wide reply, quoting this article"))]
 	["Mail forward" gnus-summary-mail-forward t]
 	["Post forward" gnus-summary-post-forward t]
 	["Digest and mail" gnus-uu-digest-mail-forward t]
@@ -8624,18 +8628,22 @@ groups."
   (let (force raw current-handles)
     (cond
      ((null arg))
-     ((eq arg 1) (setq raw t))
-     ((eq arg 2) (setq raw t
-		       force t))
-     ((eq arg 3) (setq current-handles
-		       (and (gnus-buffer-live-p gnus-article-buffer)
-			    (with-current-buffer gnus-article-buffer
-			      (prog1
-				  gnus-article-mime-handles
-				(setq gnus-article-mime-handles nil))))))
-     (t (setq force t)))
-    (if (and raw (not force) (equal gnus-newsgroup-name "nndraft:drafts"))
-	(error "Can't edit the raw article in group nndraft:drafts"))
+     ((eq arg 1)
+      (setq raw t))
+     ((eq arg 2)
+      (setq raw t
+	    force t))
+     ((eq arg 3)
+      (setq current-handles
+	    (and (gnus-buffer-live-p gnus-article-buffer)
+		 (with-current-buffer gnus-article-buffer
+		   (prog1
+		       gnus-article-mime-handles
+		     (setq gnus-article-mime-handles nil))))))
+     (t
+      (setq force t)))
+    (when (and raw (not force) (equal gnus-newsgroup-name "nndraft:drafts"))
+      (error "Can't edit the raw article in group nndraft:drafts"))
     (save-excursion
       (set-buffer gnus-summary-buffer)
       (let ((mail-parse-charset gnus-newsgroup-charset)

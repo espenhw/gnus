@@ -1,5 +1,18 @@
 2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-msg.el (gnus-summary-send-map): Fix binding for very-wide. 
+
+2002-01-03  Reiner Steib  <reiner.steib@gmx.de>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Menu bar entries for
+	very wide reply.
+
+2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picon-transform-address): Cache stuff.
+	(gnus-picon-cache): New variable.
+	(gnus-picon-transform-newsgroups): Cache stuff.
+
 	* gnus-art.el (gnus-article-reply-with-original): New command.
 	(gnus-article-followup-with-original): New command.
 
