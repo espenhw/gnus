@@ -1,3 +1,8 @@
+2002-06-06  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* message.el (message-interactive): Change default from nil to t.
+	Better to be safe than to be fast.
+
 2002-06-05  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-send-mail-with-sendmail): Check return value

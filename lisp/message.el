@@ -258,7 +258,7 @@ any confusion."
   :type 'string
   :group 'message-various)
 
-(defcustom message-interactive nil
+(defcustom message-interactive t
   "Non-nil means when sending a message wait for and display errors.
 nil means let mailer mail back a message to report errors."
   :group 'message-sending
