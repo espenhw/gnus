@@ -1,3 +1,9 @@
+2003-06-16  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* nnml.el (nnml-current-group-article-to-file-alist): Don't read
+	overview when using compressed files.  From Michael Albinus
+	<Michael.Albinus@alcatel.de>.
+
 2003-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-refer-parent-article): Extract
