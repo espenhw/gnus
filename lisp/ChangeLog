@@ -1,3 +1,7 @@
+2003-04-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-srvr.el (gnus-browse-make-menu-bar): Fix typo.
+
 2003-04-17  Mike Woolley  <mike@ariel.co.uk>
 
 	* gnus-sum.el (gnus-sum-thread-tree-false-root): New variable. 

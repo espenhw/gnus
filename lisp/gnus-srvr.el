@@ -678,7 +678,7 @@ The following commands are available:
        ["Subscribe" gnus-browse-unsubscribe-current-group t]
        ["Read" gnus-browse-read-group t]
        ["Select" gnus-browse-select-group t]
-       ["Describe" gnus-browse-describe-groups t]
+       ["Describe" gnus-browse-describe-group t]
        ["Next" gnus-browse-next-group t]
        ["Prev" gnus-browse-prev-group t]
        ["Exit" gnus-browse-exit t]))
