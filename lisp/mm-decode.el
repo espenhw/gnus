@@ -218,6 +218,36 @@ to:
 ;; "message/rfc822".
 (defvar mm-dissect-default-type "text/plain")
 
+(autoload 'mml2015-verify "mml2015")
+
+(defvar mm-verify-function-alist
+  '(("application/pgp-signature" . mml2015-verify)))
+
+(defcustom mm-verify-option nil
+  "Option of verifying signed parts.
+`never', not verify; `always', always verify; 
+`known', only verify known protocols. Otherwise, ask user."
+  :type '(choice (item always)
+		 (item never)
+		 (item :tag "only known protocols" known)
+		 (item :tag "ask" nil))
+  :group 'gnus-article)
+
+(autoload 'mml2015-decrypt "mml2015")
+
+(defvar mm-decrypt-function-alist
+  '(("application/pgp-encrypted" . mml2015-decrypt)))
+
+(defcustom mm-decrypt-option nil
+  "Option of decrypting signed parts.
+`never', not decrypt; `always', always decrypt; 
+`known', only decrypt known protocols. Otherwise, ask user."
+  :type '(choice (item always)
+		 (item never)
+		 (item :tag "only known protocols" known)
+		 (item :tag "ask" nil))
+  :group 'gnus-article)
+
 (defvar mm-viewer-completion-map
   (let ((map (make-sparse-keymap 'mm-viewer-completion-map)))
     (set-keymap-parent map minibuffer-local-completion-map)
@@ -322,7 +352,7 @@ to:
 	(save-restriction
 	  (narrow-to-region start end)
 	  (setq parts (nconc (list (mm-dissect-buffer t)) parts)))))
-    (nreverse parts)))
+    (mm-possibly-verify-or-decrypt (nreverse parts) ctl)))
 
 (defun mm-copy-to-buffer ()
   "Copy the contents of the current buffer to a fresh buffer."
@@ -851,6 +881,88 @@ external if displayed external."
 		handles nil))
       (setq handles (cdr handles)))
     handle))
+
+(defun mm-find-raw-part-by-type (ctl type &optional notp) 
+  (goto-char (point-min))
+  (let* ((boundary (concat "\n--" (mail-content-type-get ctl 'boundary)))
+	 (close-delimiter (concat (regexp-quote boundary) "--[ \t]*$"))
+	 start
+	 (end (save-excursion
+		(goto-char (point-max))
+		(if (re-search-backward close-delimiter nil t)
+		    (match-beginning 0)
+		  (point-max))))
+	 result)
+    (setq boundary (concat (regexp-quote boundary) "[ \t]*$"))
+    (while (and (not result)
+		(re-search-forward boundary end t))
+      (goto-char (match-beginning 0))
+      (when start
+	(save-excursion
+	  (save-restriction
+	    (narrow-to-region start (point))
+	    (when (let ((ctl (ignore-errors 
+			       (mail-header-parse-content-type 
+				(mail-fetch-field "content-type")))))
+		    (if notp
+			(not (equal (car ctl) type))
+		      (equal (car ctl) type)))
+	      (setq result (buffer-substring (point-min) (point-max)))))))
+      (forward-line 2)
+      (setq start (point)))
+    (when (and (not result) start)
+      (save-excursion
+	(save-restriction
+	  (narrow-to-region start end)
+	  (when (let ((ctl (ignore-errors 
+			     (mail-header-parse-content-type 
+			      (mail-fetch-field "content-type")))))
+		  (if notp
+		      (not (equal (car ctl) type))
+		    (equal (car ctl) type)))
+	    (setq result (buffer-substring (point-min) (point-max)))))))
+    result))
+
+(defun mm-possibly-verify-or-decrypt (parts ctl)
+  (let ((subtype (cadr (split-string (car ctl) "/")))
+	protocol func)
+    (cond 
+     ((equal subtype "signed")
+      (setq protocol (mail-content-type-get ctl 'protocol))
+      (setq func (cdr (assoc protocol mm-verify-function-alist)))
+      (if (cond
+	   ((eq mm-verify-option 'never) nil)
+	   ((eq mm-verify-option 'always) t)
+	   ((eq mm-verify-option 'known) func)
+	   (t (y-or-n-p 
+	       (format "Verify signed part(protocol=%s)?" protocol))))
+	  (condition-case err
+	      (save-excursion
+		(if func
+		    (funcall func parts ctl)
+		  (error (format "Unknown sign protocol(%s)" protocol))))
+	    (error
+	     (unless (y-or-n-p (format "%s, continue?" err))
+	       (error "Verify failure."))))))
+     ((equal subtype "encrypted")
+      (setq protocol (mail-content-type-get ctl 'protocol))
+      (setq func (cdr (assoc protocol mm-decrypt-function-alist)))
+      (if (cond
+	   ((eq mm-decrypt-option 'never) nil)
+	   ((eq mm-decrypt-option 'always) t)
+	   ((eq mm-decrypt-option 'known) func)
+	   (t (y-or-n-p 
+	       (format "Decrypt part (protocol=%s)?" protocol))))
+	  (condition-case err
+	      (save-excursion
+		(if func
+		    (setq parts (funcall func parts ctl))
+		  (error (format "Unknown encrypt protocol(%s)" protocol))))
+	    (error
+	     (unless (y-or-n-p (format "%s, continue?" err))
+	       (error "Decrypt failure."))))))
+     (t nil))
+    parts))
 
 (provide 'mm-decode)
 

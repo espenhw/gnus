@@ -43,57 +43,49 @@
 (defvar mml2015-sign-function 'mml2015-mailcrypt-sign)
 
 ;;;###autoload
-(defun mml2015-decrypt (handle)
-  (let (child)
-    (cond 
-     ((setq child (mm-find-part-by-type (cdr handle) 
-					"application/octet-stream"))
-      (let (handles result)
-	(with-temp-buffer
-	  (mm-insert-part child)
-	  (setq result (funcall mml2015-decrypt-function))
-	  (unless (car result)
-	    (error "Decrypting error."))
-	  (setq handles (mm-dissect-buffer t)))
-	(setq gnus-article-mime-handles
-	      (append (if (listp (car gnus-article-mime-handles))
-			  gnus-article-mime-handles
-			(list gnus-article-mime-handles))
-		      (if (listp (car handles))
-			  handles
-			(list handles))))
-	(gnus-mime-display-part handles)))
-     (t
-      (if (y-or-n-p "Corrupted pgp-encrypted part. Abort?" )
-	  (error "Corrupted pgp-encrypted part.")
-	(gnus-mime-display-mixed (cdr handle)))))))
+(defun mml2015-decrypt (handle ctl)
+  (let (child handles result)
+    (unless (setq child (mm-find-part-by-type (cdr handle) 
+					      "application/octet-stream"))
+      (error "Corrupted pgp-encrypted part."))
+    (with-temp-buffer
+      (mm-insert-part child)
+      (setq result (funcall mml2015-decrypt-function))
+      (unless (car result)
+	(error "Decrypting error."))
+      (setq handles (mm-dissect-buffer t)))
+    (mm-destroy-parts handle)
+    (if (listp (car handles))
+	handles
+      (list handles))))
+
+(defun mml2015-fix-micalg (alg)
+  (if (and alg (string-match "^pgp-" alg))
+      (substring alg (match-end 0))
+    alg))
 
 ;;;###autoload
-(defun mml2015-verify (handle)
-  ;; FIXME: mm-dissect-buffer loses information of micalg and the
-  ;; original header of signed part.
-  (if (y-or-n-p "Verify signed part?" )
-      (let (child result hash)
-	(with-temp-buffer
-	  (unless (setq child (mm-find-part-by-type 
-			       (cdr handle) "application/pgp-signature" t))
-	    (error "Corrupted pgp-signature part."))
-	  (insert "-----BEGIN PGP SIGNED MESSAGE-----\n")
-	  (insert (format "Hash: %s\n\n" (read-string "Hash: " "SHA1")))
-	  (mm-insert-part child)
-	  (goto-char (point-max))
-	  (unless (bolp)
-	    (insert "\n"))
-	  (unless (setq child (mm-find-part-by-type 
-			       (cdr handle) "application/pgp-signature"))
-	    (error "Corrupted pgp-signature part."))
-	  (mm-insert-part child)
-	  (setq result (funcall mml2015-verify-function))
-	  (unless result
-	    (error "Verify error.")))))
-  (gnus-mime-display-part 
-   (mm-find-part-by-type 
-    (cdr handle) "application/pgp-signature" t)))
+(defun mml2015-verify (handle ctl)
+  (let (part)
+    (unless (setq part (mm-find-raw-part-by-type 
+			 ctl "application/pgp-signature" t))
+      (error "Corrupted pgp-signature part."))
+    (with-temp-buffer
+      (insert "-----BEGIN PGP SIGNED MESSAGE-----\n")
+      (insert (format "Hash: %s\n\n" 
+		      (or (mml2015-fix-micalg
+			   (mail-content-type-get ctl 'micalg))
+			  "SHA1")))
+      (insert part)
+      (goto-char (point-max))
+      (unless (bolp)
+	(insert "\n"))
+      (unless (setq part (mm-find-part-by-type 
+			   (cdr handle) "application/pgp-signature"))
+	(error "Corrupted pgp-signature part."))
+      (mm-insert-part part)
+      (unless (funcall mml2015-verify-function)
+	(error "Verify error.")))))
 
 (defvar mml2015-mailcrypt-prefix 0)
 
@@ -167,9 +159,7 @@
 
 ;;;###autoload
 (defun mml2015-setup ()
-  ;;(push '("multipart/signed" . mml2015-verify) gnus-mime-multipart-functions)
-  (push '("multipart/encrypted" . mml2015-decrypt)
-	gnus-mime-multipart-functions))
+  )
 
 (provide 'mml2015)
 

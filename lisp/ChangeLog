@@ -1,3 +1,17 @@
+2000-10-28 19:11:01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-verify-function-alist): New variable.
+	(mm-verify-option): New variable.
+	(mm-decrypt-function-alist): Ditto.
+	(mm-decrypt-option): Ditto.
+	(mm-find-raw-part-by-type): New function.
+	(mm-possibly-verify-or-decrypt): New function.
+	(mm-dissect-multipart): Use it.
+	* mml2015.el (mml2015-fix-micalg): New function.
+	(mml2015-decrypt): Use new interface.
+	(mml2015-verify):  Use new interface.
+	(mml2015-setup): Make it bogus.
+
 2000-10-28 16:54:45  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-generate-mime-postprocess-function): Set to
