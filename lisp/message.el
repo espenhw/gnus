@@ -1178,18 +1178,23 @@ candidates:
 The cdr of each entry is a function for applying the face to a region.")
 
 (defcustom message-send-hook nil
-  "Hook run before sending messages."
+  "Hook run before sending messages.
+This hook is run quite early when sending."
   :group 'message-various
   :options '(ispell-message)
   :type 'hook)
 
 (defcustom message-send-mail-hook nil
-  "Hook run before sending mail messages."
+  "Hook run before sending mail messages.
+This hook is run very late -- just before the message is sent as
+mail."
   :group 'message-various
   :type 'hook)
 
 (defcustom message-send-news-hook nil
-  "Hook run before sending news messages."
+  "Hook run before sending news messages.
+This hook is run very late -- just before the message is sent as
+news."
   :group 'message-various
   :type 'hook)
 

@@ -1,3 +1,10 @@
+2003-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-hook): Doc fix.
+
+	* gnus-win.el (gnus-buffer-configuration): Display article
+	instead of article-copy when `reply'.
+
 2003-01-21  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.el (gnus-format): Change customize group to gnus.

@@ -123,7 +123,7 @@ used to display Gnus windows."
 	       (post 1.0 point)))
     (reply
      (vertical 1.0
-	       (article-copy 0.5)
+	       (article 0.5)
 	       (message 1.0 point)))
     (forward
      (vertical 1.0
