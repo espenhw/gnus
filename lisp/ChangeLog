@@ -1,3 +1,13 @@
+2004-01-25  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir--num-file, nnmaildir--mkfile,
+	nnmaildir--emlink-p, nnmaildir--eexist-p, nnmaildir--new-number):
+	New macros and functions.
+	* nnmaildir.el (nnmaildir--group-maxnum, nnmaildir--update-nov):
+	Handle > NLINK_MAX messages.
+	* nnmaildir.el (nnmaildir-request-set-mark): Use
+	nnmaildir--emlink-p and nnmaildir--eexist-p.
+
 2004-01-25  Alex Schroeder  <alex@gnu.org>
 
 	* spam-stat.el (spam-stat-process-directory-age): New option.
