@@ -257,16 +257,16 @@ If the stream is opened, return T, otherwise return NIL."
       (while headers
 	(setq header (car headers)
 	      headers (cdr headers))
-	(insert (int-to-string (header-number header)) "\t"
-		(or (header-subject header) "") "\t"
-		(or (header-from header) "") "\t"
-		(or (header-date header) "") "\t"
-		(or (header-id header) "") "\t"
-		(or (header-references header) "") "\t"
-		(int-to-string (or (header-chars header) 0)) "\t"
-		(int-to-string (or (header-lines header) 0)) "\t"
-		(if (header-xref header) 
-		    (concat "Xref: " (header-xref header) "\t")
+	(insert (int-to-string (mail-header-number header)) "\t"
+		(or (mail-header-subject header) "") "\t"
+		(or (mail-header-from header) "") "\t"
+		(or (mail-header-date header) "") "\t"
+		(or (mail-header-id header) "") "\t"
+		(or (mail-header-references header) "") "\t"
+		(int-to-string (or (mail-header-chars header) 0)) "\t"
+		(int-to-string (or (mail-header-lines header) 0)) "\t"
+		(if (mail-header-xref header) 
+		    (concat "Xref: " (mail-header-xref header) "\t")
 		  "") "\n")))))
 
 (defun nnvirtual-possibly-change-newsgroups (group regexp &optional check)

@@ -2001,8 +2001,9 @@ Gnus to split the mail the normal way, you could set
 @code{nnmail-resplit-incoming} to @code{t}.
 
 @vindex nnmail-keep-last-article
-If you use @code{procmail}, you should set
-@code{nnmail-keep-last-article} to non-@code{nil}, to prevent Gnus from
+If you use @code{procmail} to split things directory into an nnmh
+directory (which you shouldn't do), you should set
+@code{nnmail-keep-last-article} to non-@code{nil} to prevent Gnus from
 ever expiring the final article in a mail newsgroup. This is quite,
 quite important.
 
@@ -5661,6 +5662,11 @@ in your @file{all.SCORE} file:
 ((mark -100))
 @end lisp
 You may also consider doing something similar with @code{expunge}.  
+
+@item Negated charater classes
+If you say stuff like @code{[^abcd]*}, you may get unexpected results.
+That will match newlines, which might lead to, well, The Unknown.  Say
+@code{[^abcd\n]*} instead.
 @end table
 
 @node Reverse Scoring

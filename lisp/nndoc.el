@@ -206,9 +206,9 @@ Possible values:
 	;; headers. Aargh!
 	(goto-char (point-min))
 	(if (search-forward "\n\n" nil t)
-	    () ; We let this one pass.
+	    ()				; We let this one pass.
 	  (if (re-search-forward "^[ \t]+$" nil t)
-	      (replace-match "" t t) ; We nix out a line of blanks.
+	      (replace-match "" t t)	; We nix out a line of blanks.
 	    (while (and (looking-at "[^ ]+:")
 			(zerop (forward-line 1))))
 	    ;; We just insert a couple of lines. If you read digests
@@ -300,7 +300,7 @@ Possible values:
 (defun nndoc-set-header-dependent-regexps ()
   (if (not (eq nndoc-article-type 'digest))
       ()
-    (let ((case-fold-search t)	    ; We match a bit too much, keep it simple.
+    (let ((case-fold-search t)		; We match a bit too much, keep it simple.
 	  (boundary-id) (b-delimiter))
       (save-excursion
 	(set-buffer nndoc-current-buffer)
@@ -340,15 +340,15 @@ Possible values:
     (let ((num 0))
       (if (re-search-forward (or nndoc-first-article
 				 nndoc-article-begin) nil t)
-	(progn
-	  (setq num 1)
-          (while (and (re-search-forward nndoc-article-begin nil t)
-		  (or (not nndoc-end-of-file)
-		      (not (looking-at nndoc-end-of-file)))
-		  (or (not nndoc-head-begin)
-		      (re-search-forward nndoc-head-begin nil t))
-		  (re-search-forward nndoc-head-end nil t))
-	    (setq num (1+ num)))))
+	  (progn
+	    (setq num 1)
+	    (while (and (re-search-forward nndoc-article-begin nil t)
+			(or (not nndoc-end-of-file)
+			    (not (looking-at nndoc-end-of-file)))
+			(or (not nndoc-head-begin)
+			    (re-search-forward nndoc-head-begin nil t))
+			(re-search-forward nndoc-head-end nil t))
+	      (setq num (1+ num)))))
       num)))
 
 (defun nndoc-narrow-to-article (article)

@@ -348,7 +348,7 @@ header line with the old Message-ID."
   (if (not
        (string-equal
 	(downcase (mail-strip-quoted-names 
-		   (header-from gnus-current-headers)))
+		   (mail-header-from gnus-current-headers)))
 	(downcase (mail-strip-quoted-names (gnus-inews-user-name)))))
       (error "This article is not yours."))
   (save-excursion
@@ -424,7 +424,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 			(save-excursion
 			  (set-buffer gnus-summary-buffer)
 			  (cons (current-buffer) gnus-current-article))))
-	    (from (and header (header-from header)))
+	    (from (and header (mail-header-from header)))
 	    (winconf (current-window-configuration))
 	    real-group)
 	(and gnus-interactive-post
@@ -463,7 +463,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	  (make-local-variable 'gnus-article-reply)
 	  (make-local-variable 'gnus-article-check-size)
 	  (make-local-variable 'gnus-reply-subject)
-	  (setq gnus-reply-subject (and header (header-subject header)))
+	  (setq gnus-reply-subject (and header (mail-header-subject header)))
 	  (setq gnus-article-reply sumart)
 	  ;; Handle `gnus-auto-mail-to-author'.
 	  ;; Suggested by Daniel Quinlan <quinlan@best.com>.
@@ -1067,8 +1067,12 @@ Headers in `gnus-required-headers' will be generated."
       (if (or (not (re-search-forward 
 		    (concat "^" (downcase (symbol-name header)) ":") nil t))
 	      (progn
-		(if (= (following-char) ? ) (forward-char 1) (insert " "))
+		;; The header was found. We insert a space after the
+		;; colon, if there is none.
+		(if (/= (following-char) ? ) (insert " "))
+		;; Find out whether the header is empty...
 		(looking-at "[ \t]*$")))
+	  ;; So we find out what value we should insert.
 	  (progn
  	    (setq value 
 		  (or (if (consp elem)
@@ -1490,7 +1494,7 @@ mailer."
 		(setq follow-to (funcall gnus-reply-to-function group)))
 	    (setq from (mail-fetch-field "from"))
 	    (setq date (or (mail-fetch-field "date") 
-			   (header-date gnus-current-headers)))
+			   (mail-header-date gnus-current-headers)))
 	    (and from
 		 (let ((stop-pos 
 			(string-match "  *at \\|  *@ \\| *(\\| *<" from)))
@@ -1522,6 +1526,7 @@ mailer."
 			  (or follow-to reply-to from sender "")))
 		    subject message-of nil gnus-article-copy nil)
 
+	(auto-save-mode auto-save-default)
 	(use-local-map (copy-keymap mail-mode-map))
 	(local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
 
@@ -1579,7 +1584,7 @@ mailer."
 (defun gnus-mail-yank-original ()
   (interactive)
   (save-excursion
-   (mail-yank-original nil))
+    (mail-yank-original nil))
   (or mail-yank-hooks mail-citation-hook
       (run-hooks 'news-reply-header-hook)))
 
@@ -1606,7 +1611,7 @@ mailer."
 					      gnus-newsgroup-name)))
 				       gnus-valid-select-methods))
 		    (gnus-fetch-field "From")
-		gnus-newsgroup-name)
+		  gnus-newsgroup-name)
 	    "] " (or (gnus-fetch-field "Subject") ""))))
 
 (defun gnus-forward-insert-buffer (buffer)
@@ -1696,6 +1701,7 @@ If YANK is non-nil, include the original article."
     (erase-buffer)
     (mail-mode)
     (mail-setup gnus-maintainer nil nil nil nil nil)
+    (auto-save-mode auto-save-default)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
     (use-local-map (copy-keymap mail-mode-map))

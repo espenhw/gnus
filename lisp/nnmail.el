@@ -237,7 +237,9 @@ perfomed.")
 	  ()
 	(erase-buffer)
 	(if post
-	    (mail-setup method-address subject nil nil nil nil)
+	    (progn
+	      (mail-setup method-address subject nil nil nil nil)
+	      (auto-save-mode auto-save-default))
 	  (save-excursion
 	    (set-buffer article-buffer)
 	    (goto-char (point-min))
@@ -245,8 +247,8 @@ perfomed.")
 			      (progn (search-forward "\n\n") (point)))
 	    (let ((buffer-read-only nil))
 	      (set-text-properties (point-min) (point-max) nil))
-	    (setq from (header-from header))
-	    (setq date (header-date header))
+	    (setq from (mail-header-from header))
+	    (setq date (mail-header-date header))
 	    (and from
 		 (let ((stop-pos 
 			(string-match "  *at \\|  *@ \\| *(\\| *<" from)))
@@ -256,12 +258,12 @@ perfomed.")
 	    (setq sender (mail-fetch-field "sender"))
 	    (setq cc (mail-fetch-field "cc"))
 	    (setq to (mail-fetch-field "to"))
-	    (setq subject (header-subject header))
+	    (setq subject (mail-header-subject header))
 	    (or (string-match "^[Rr][Ee]:" subject)
 		(setq subject (concat "Re: " subject)))
 	    (setq reply-to (mail-fetch-field "reply-to"))
-	    (setq references (header-references header))
-	    (setq message-id (header-id header))
+	    (setq references (mail-header-references header))
+	    (setq message-id (mail-header-id header))
 	    (widen))
 	  (setq news-reply-yank-from from)
 	  (setq news-reply-yank-message-id message-id)
@@ -278,6 +280,7 @@ perfomed.")
 				    (if to (concat ", " to) "")
 				    (if cc (concat ", " cc) ""))))
 		      subject message-of nil article-buffer nil)
+	  (auto-save-mode auto-save-default)
 	  ;; Note that "To" elements should already be in the message.
 	  (if (and follow-to (listp follow-to))
 	      (progn
@@ -442,15 +445,15 @@ nn*-request-list should have been called before calling this function."
 						   (match-end 2)))))
 		    group-assoc))))
 
-;;    ;; In addition, add all groups mentioned in `nnmail-split-methods'.
-;;    (let ((methods (and (not (symbolp nnmail-split-methods))
-;;			nnmail-split-methods)))
-;;      (while methods
-;;	(if (not (assoc (car (car methods)) group-assoc))
-;;	    (setq group-assoc
-;;		  (cons (list (car (car methods)) (cons 1 0)) 
-;;			group-assoc)))
-;;	(setq methods (cdr methods)))
+    ;;    ;; In addition, add all groups mentioned in `nnmail-split-methods'.
+    ;;    (let ((methods (and (not (symbolp nnmail-split-methods))
+    ;;			nnmail-split-methods)))
+    ;;      (while methods
+    ;;	(if (not (assoc (car (car methods)) group-assoc))
+    ;;	    (setq group-assoc
+    ;;		  (cons (list (car (car methods)) (cons 1 0)) 
+    ;;			group-assoc)))
+    ;;	(setq methods (cdr methods)))
     
     group-assoc))
 
@@ -702,7 +705,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (setq split (cdr split)
 		   done (nnmail-split-it (car split))))
 	   done))	((assq split nnmail-split-cache)
-	 ;; A compiled match expression.
+			 ;; A compiled match expression.
 	 (goto-char (point-max))
 	 (if (re-search-backward (cdr (assq split nnmail-split-cache)) nil t)
 	     (nnmail-split-it (nth 2 split))))
@@ -711,16 +714,16 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	 (let* ((field (nth 0 split))
 		(value (nth 1 split))
 		(regexp (concat "^\\(" 
-				 (if (symbolp field)
-				     (cdr (assq field 
-						nnmail-split-abbrev-alist))
-				   field)
-				 "\\):.*\\<\\("
-				 (if (symbolp value)
-				     (cdr (assq value
-						nnmail-split-abbrev-alist))
-				   value)
-				 "\\>\\)")))
+				(if (symbolp field)
+				    (cdr (assq field 
+					       nnmail-split-abbrev-alist))
+				  field)
+				"\\):.*\\<\\("
+				(if (symbolp value)
+				    (cdr (assq value
+					       nnmail-split-abbrev-alist))
+				  value)
+				"\\>\\)")))
 	   (setq nnmail-split-cache 
 		 (cons (cons split regexp) nnmail-split-cache))
 	   (goto-char (point-max))
@@ -824,7 +827,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (if (or (not nnmail-delete-duplicates)
 	  (and nnmail-cache-buffer
 	       (buffer-name nnmail-cache-buffer)))
-      () ; The buffer is open.
+      ()				; The buffer is open.
     (save-excursion
       (set-buffer 
        (setq nnmail-cache-buffer 
@@ -839,7 +842,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  (not nnmail-delete-duplicates)
 	  (not (buffer-name nnmail-cache-buffer))
 	  (not (buffer-modified-p nnmail-cache-buffer)))
-      () ; The buffer is closed.
+      ()				; The buffer is closed.
     (save-excursion
       (set-buffer nnmail-cache-buffer)
       ;; Weed out the excess number of Message-IDs.

@@ -518,7 +518,7 @@ The headers will be included in the sequence they are matched.")
     (save-excursion
       (while marked
 	(and (setq headers (gnus-get-header-by-number (car marked)))
-	     (setq subject (header-subject headers)
+	     (setq subject (mail-header-subject headers)
 		   articles (gnus-uu-find-articles-matching 
 			     (gnus-uu-reginize-string subject))
 		   total (nconc total articles)))
@@ -654,56 +654,56 @@ The headers will be included in the sequence they are matched.")
 						 'begin 'end))
 	    ((eq in-state 'last) (list 'end))
 	    (t (list 'middle)))))
-    (t
-     (let ((name (file-name-nondirectory gnus-uu-saved-article-name))
-	   beg subj headers headline sorthead body end-string state)
-       (if (or (eq in-state 'first) 
-	       (eq in-state 'first-and-last))
-	   (progn 
-	     (setq state (list 'begin))
-	     (save-excursion (set-buffer (get-buffer-create "*gnus-uu-body*"))
-			     (erase-buffer))
-	     (save-excursion 
-	       (set-buffer (get-buffer-create "*gnus-uu-pre*"))
-	       (erase-buffer)
-	       (insert (format 
-			"Date: %s\nFrom: %s\nSubject: %s Digest\n\nTopics:\n"
-			(current-time-string) name name))))
-	 (if (not (eq in-state 'end))
-	     (setq state (list 'middle))))
-       (save-excursion
-	 (set-buffer (get-buffer "*gnus-uu-body*"))
-	 (goto-char (setq beg (point-max)))
-	 (save-excursion
-	   (save-restriction
-	     (set-buffer buffer)
-	     (goto-char (point-min))
-	     (re-search-forward "\n\n")
-	     (setq body (buffer-substring (1- (point)) (point-max)))
-	     (narrow-to-region 1 (point))
-	     (if (not (setq headers gnus-uu-digest-headers))
-		 (setq sorthead (buffer-substring (point-min) (point-max)))
-	       (while headers
-		 (setq headline (car headers))
-		 (setq headers (cdr headers))
-		 (goto-char (point-min))
-		 (if (re-search-forward headline nil t)
-		     (setq sorthead 
-			   (concat sorthead
-				   (buffer-substring 
-				    (match-beginning 0)
-				    (or (and (re-search-forward "^[^ \t]" nil t)
-					     (1- (point)))
-					(progn (forward-line 1) (point)))))))))
-	     (widen)))
-	 (insert sorthead)(goto-char (point-max))
-	 (insert body)(goto-char (point-max))
-	 (insert (concat "\n" (make-string 30 ?-) "\n\n"))
-	 (goto-char beg)
-	 (if (re-search-forward "^Subject: \\(.*\\)$" nil t)
-	     (progn
-	       (setq subj (buffer-substring (match-beginning 1) (match-end 1)))
-	       (save-excursion 
+   (t
+    (let ((name (file-name-nondirectory gnus-uu-saved-article-name))
+	  beg subj headers headline sorthead body end-string state)
+      (if (or (eq in-state 'first) 
+	      (eq in-state 'first-and-last))
+	  (progn 
+	    (setq state (list 'begin))
+	    (save-excursion (set-buffer (get-buffer-create "*gnus-uu-body*"))
+			    (erase-buffer))
+	    (save-excursion 
+	      (set-buffer (get-buffer-create "*gnus-uu-pre*"))
+	      (erase-buffer)
+	      (insert (format 
+		       "Date: %s\nFrom: %s\nSubject: %s Digest\n\nTopics:\n"
+		       (current-time-string) name name))))
+	(if (not (eq in-state 'end))
+	    (setq state (list 'middle))))
+      (save-excursion
+	(set-buffer (get-buffer "*gnus-uu-body*"))
+	(goto-char (setq beg (point-max)))
+	(save-excursion
+	  (save-restriction
+	    (set-buffer buffer)
+	    (goto-char (point-min))
+	    (re-search-forward "\n\n")
+	    (setq body (buffer-substring (1- (point)) (point-max)))
+	    (narrow-to-region 1 (point))
+	    (if (not (setq headers gnus-uu-digest-headers))
+		(setq sorthead (buffer-substring (point-min) (point-max)))
+	      (while headers
+		(setq headline (car headers))
+		(setq headers (cdr headers))
+		(goto-char (point-min))
+		(if (re-search-forward headline nil t)
+		    (setq sorthead 
+			  (concat sorthead
+				  (buffer-substring 
+				   (match-beginning 0)
+				   (or (and (re-search-forward "^[^ \t]" nil t)
+					    (1- (point)))
+				       (progn (forward-line 1) (point)))))))))
+	    (widen)))
+	(insert sorthead)(goto-char (point-max))
+	(insert body)(goto-char (point-max))
+	(insert (concat "\n" (make-string 30 ?-) "\n\n"))
+	(goto-char beg)
+	(if (re-search-forward "^Subject: \\(.*\\)$" nil t)
+	    (progn
+	      (setq subj (buffer-substring (match-beginning 1) (match-end 1)))
+	      (save-excursion 
 		(set-buffer (get-buffer "*gnus-uu-pre*"))
 		(insert (format "   %s\n" subj))))))
       (if (or (eq in-state 'last)
@@ -777,23 +777,23 @@ The headers will be included in the sequence they are matched.")
   (let ((state (list 'ok))
 	start-char end-char file-name)
     (save-excursion
-     (set-buffer process-buffer)
-     (goto-char (point-min))
-     (if (not (re-search-forward gnus-uu-postscript-begin-string nil t))
-	 (setq state (list 'wrong-type))
-       (beginning-of-line)
-       (setq start-char (point))
-       (if (not (re-search-forward gnus-uu-postscript-end-string nil t))
-	   (setq state (list 'wrong-type))
-	 (setq end-char (point))
-	 (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
-	 (insert-buffer-substring process-buffer start-char end-char)
-	 (setq file-name (concat gnus-uu-work-dir (cdr gnus-article-current) ".ps"))
-	 (write-region (point-min) (point-max) file-name)
-	 (setq state (list file-name'begin 'end))
+      (set-buffer process-buffer)
+      (goto-char (point-min))
+      (if (not (re-search-forward gnus-uu-postscript-begin-string nil t))
+	  (setq state (list 'wrong-type))
+	(beginning-of-line)
+	(setq start-char (point))
+	(if (not (re-search-forward gnus-uu-postscript-end-string nil t))
+	    (setq state (list 'wrong-type))
+	  (setq end-char (point))
+	  (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
+	  (insert-buffer-substring process-buffer start-char end-char)
+	  (setq file-name (concat gnus-uu-work-dir (cdr gnus-article-current) ".ps"))
+	  (write-region (point-min) (point-max) file-name)
+	  (setq state (list file-name'begin 'end))
 
-	 ))
-     )
+	  ))
+      )
     state))
       
 
@@ -893,21 +893,21 @@ The headers will be included in the sequence they are matched.")
   ;; Failing that, articles that have subjects that are part of the
   ;; same "series" as the current will be returned.
   (let (articles)
-  (cond 
-   (n
-    (let ((backward (< n 0))
-	  (n (abs n)))
-      (save-excursion
-	(while (and (> n 0)
-		    (setq articles (cons (gnus-summary-article-number) 
-					 articles))
-		    (gnus-summary-search-forward nil nil backward))
-	  (setq n (1- n))))
-      (nreverse articles)))
-   (gnus-newsgroup-processable
-    (reverse gnus-newsgroup-processable))
-   (t
-    (gnus-uu-find-articles-matching)))))
+    (cond 
+     (n
+      (let ((backward (< n 0))
+	    (n (abs n)))
+	(save-excursion
+	  (while (and (> n 0)
+		      (setq articles (cons (gnus-summary-article-number) 
+					   articles))
+		      (gnus-summary-search-forward nil nil backward))
+	    (setq n (1- n))))
+	(nreverse articles)))
+     (gnus-newsgroup-processable
+      (reverse gnus-newsgroup-processable))
+     (t
+      (gnus-uu-find-articles-matching)))))
 
 (defun gnus-uu-string< (l1 l2)
   (string< (car l1) (car l2)))
@@ -1103,8 +1103,8 @@ The headers will be included in the sequence they are matched.")
 
       (if (and (or (eq state 'last) (eq state 'first-and-last))
 	       (not (memq 'end process-state)))
-		(if (and result-file (file-exists-p result-file))
-		    (delete-file result-file)))
+	  (if (and result-file (file-exists-p result-file))
+	      (delete-file result-file)))
 
       (if (not (memq 'wrong-type process-state))
 	  ()
@@ -1152,7 +1152,7 @@ The headers will be included in the sequence they are matched.")
     result-files))
 
 (defun gnus-uu-part-number (article)
-  (let ((subject (header-subject (gnus-get-header-by-number article))))
+  (let ((subject (mail-header-subject (gnus-get-header-by-number article))))
     (if (string-match "[0-9]+ */[0-9]+\\|[0-9]+ * of *[0-9]+"
 		      subject)
 	(substring subject (match-beginning 0) (match-end 0))
@@ -1197,7 +1197,7 @@ The headers will be included in the sequence they are matched.")
 		(or (looking-at gnus-uu-body-line)
 		    (gnus-delete-line))
  
-		; Replace any slashes and spaces in file names before decoding
+					; Replace any slashes and spaces in file names before decoding
 		(goto-char name-beg)
 		(while (re-search-forward "/" name-end t)
 		  (replace-match ","))
@@ -1206,7 +1206,7 @@ The headers will be included in the sequence they are matched.")
 		  (replace-match "_"))
 		(goto-char name-beg)
 		(if (re-search-forward "_*$" name-end t)
-		  (replace-match ""))
+		    (replace-match ""))
 
 		(setq gnus-uu-file-name (buffer-substring name-beg name-end))
 		(and gnus-uu-uudecode-process
@@ -1263,7 +1263,7 @@ The headers will be included in the sequence they are matched.")
 			(progn 
 			  (delete-process gnus-uu-uudecode-process)
 			  (message "gnus-uu: Couldn't uudecode")
-;			  (sleep-for 2)
+					;			  (sleep-for 2)
 			  (setq state (list 'wrong-type)))))
 
 		     (if (memq 'end state)
@@ -1282,16 +1282,16 @@ The headers will be included in the sequence they are matched.")
   (let ((state (list 'ok))
 	start-char)
     (save-excursion
-     (set-buffer process-buffer)
-     (goto-char (point-min))
-     (if (not (re-search-forward gnus-uu-shar-begin-string nil t))
-	 (setq state (list 'wrong-type))
-       (beginning-of-line)
-       (setq start-char (point))
-       (call-process-region 
-	start-char (point-max) "sh" nil 
-	(get-buffer-create gnus-uu-output-buffer-name) nil 
-	"-c" (concat "cd " gnus-uu-work-dir " ; sh"))))
+      (set-buffer process-buffer)
+      (goto-char (point-min))
+      (if (not (re-search-forward gnus-uu-shar-begin-string nil t))
+	  (setq state (list 'wrong-type))
+	(beginning-of-line)
+	(setq start-char (point))
+	(call-process-region 
+	 start-char (point-max) "sh" nil 
+	 (get-buffer-create gnus-uu-output-buffer-name) nil 
+	 "-c" (concat "cd " gnus-uu-work-dir " ; sh"))))
     state))
 
 ;; Returns the name of what the shar file is going to unpack.

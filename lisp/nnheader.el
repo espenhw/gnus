@@ -36,93 +36,93 @@
 
 ;;; Code:
 
-(defalias 'nntp-header-number 'header-number)
-(defmacro header-number (header)
+(defalias 'nntp-header-number 'mail-header-number)
+(defmacro mail-header-number (header)
   "Return article number in HEADER."
   (` (aref (, header) 0)))
 
-(defalias 'nntp-set-header-number 'header-set-number)
-(defmacro header-set-number (header number)
+(defalias 'nntp-set-header-number 'mail-header-set-number)
+(defmacro mail-header-set-number (header number)
   "Set article number of HEADER to NUMBER."
   (` (aset (, header) 0 (, number))))
 
-(defalias 'nntp-header-subject 'header-subject)
-(defmacro header-subject (header)
+(defalias 'nntp-header-subject 'mail-header-subject)
+(defmacro mail-header-subject (header)
   "Return subject string in HEADER."
   (` (aref (, header) 1)))
 
-(defalias 'nntp-set-header-subject 'header-set-subject)
-(defmacro header-set-subject (header subject)
+(defalias 'nntp-set-header-subject 'mail-header-set-subject)
+(defmacro mail-header-set-subject (header subject)
   "Set article subject of HEADER to SUBJECT."
   (` (aset (, header) 1 (, subject))))
 
-(defalias 'nntp-header-from 'header-from)
-(defmacro header-from (header)
+(defalias 'nntp-header-from 'mail-header-from)
+(defmacro mail-header-from (header)
   "Return author string in HEADER."
   (` (aref (, header) 2)))
 
-(defalias 'nntp-set-header-from 'header-set-from)
-(defmacro header-set-from (header from)
+(defalias 'nntp-set-header-from 'mail-header-set-from)
+(defmacro mail-header-set-from (header from)
   "Set article author of HEADER to FROM."
   (` (aset (, header) 2 (, from))))
 
-(defalias 'nntp-header-xref 'header-xref)
-(defmacro header-xref (header)
+(defalias 'nntp-header-xref 'mail-header-xref)
+(defmacro mail-header-xref (header)
   "Return xref string in HEADER."
   (` (aref (, header) 8)))
 
-(defalias 'nntp-set-header-xref 'header-set-xref)
-(defmacro header-set-xref (header xref)
+(defalias 'nntp-set-header-xref 'mail-header-set-xref)
+(defmacro mail-header-set-xref (header xref)
   "Set article xref of HEADER to xref."
   (` (aset (, header) 8 (, xref))))
 
-(defalias 'nntp-header-lines 'header-lines)
-(defmacro header-lines (header)
+(defalias 'nntp-header-lines 'mail-header-lines)
+(defmacro mail-header-lines (header)
   "Return lines in HEADER."
   (` (aref (, header) 7)))
 
-(defalias 'nntp-set-header-lines 'header-set-lines)
-(defmacro header-set-lines (header lines)
+(defalias 'nntp-set-header-lines 'mail-header-set-lines)
+(defmacro mail-header-set-lines (header lines)
   "Set article lines of HEADER to LINES."
   (` (aset (, header) 7 (, lines))))
 
-(defalias 'nntp-header-date 'header-date)
-(defmacro header-date (header)
+(defalias 'nntp-header-date 'mail-header-date)
+(defmacro mail-header-date (header)
   "Return date in HEADER."
   (` (aref (, header) 3)))
 
-(defalias 'nntp-set-header-date 'header-set-date)
-(defmacro header-set-date (header date)
+(defalias 'nntp-set-header-date 'mail-header-set-date)
+(defmacro mail-header-set-date (header date)
   "Set article date of HEADER to DATE."
   (` (aset (, header) 3 (, date))))
 
-(defalias 'nntp-header-id 'header-id)
-(defmacro header-id (header)
+(defalias 'nntp-header-id 'mail-header-id)
+(defmacro mail-header-id (header)
   "Return Id in HEADER."
   (` (aref (, header) 4)))
 
-(defalias 'nntp-set-header-id 'header-set-id)
-(defmacro header-set-id (header id)
+(defalias 'nntp-set-header-id 'mail-header-set-id)
+(defmacro mail-header-set-id (header id)
   "Set article Id of HEADER to ID."
   (` (aset (, header) 4 (, id))))
 
-(defalias 'nntp-header-references 'header-references)
-(defmacro header-references (header)
+(defalias 'nntp-header-references 'mail-header-references)
+(defmacro mail-header-references (header)
   "Return references in HEADER."
   (` (aref (, header) 5)))
 
-(defalias 'nntp-set-header-references 'header-set-references)
-(defmacro header-set-references (header ref)
+(defalias 'nntp-set-header-references 'mail-header-set-references)
+(defmacro mail-header-set-references (header ref)
   "Set article references of HEADER to REF."
   (` (aset (, header) 5 (, ref))))
 
-(defalias 'nntp-header-chars 'header-chars)
-(defmacro header-chars (header)
+(defalias 'nntp-header-chars 'mail-header-chars)
+(defmacro mail-header-chars (header)
   "Return number of chars of article in HEADER."
   (` (aref (, header) 6)))
 
-(defalias 'nntp-set-header-chars 'header-set-chars)
-(defmacro header-set-chars (header chars)
+(defalias 'nntp-set-header-chars 'mail-header-set-chars)
+(defmacro mail-header-set-chars (header chars)
   "Set number of chars in article of HEADER to CHARS."
   (` (aset (, header) 6 (, chars))))
 
@@ -213,7 +213,7 @@ A buffer may be modified in several ways after reading into the buffer due
 to advanced Emacs features, such as file-name-handlers, format decoding,
 find-file-hooks, etc.
   This function ensures that none of these modifications will take place."
-  (let (; (file-name-handler-alist nil)
+  (let (				; (file-name-handler-alist nil)
 	(format-alist nil)
 	(after-insert-file-functions nil)
 	(find-buffer-file-type-function 
@@ -271,13 +271,13 @@ The buffer is not selected, just returned to the caller."
 				   (buffer-name buf))
 			  (format
 			   (if (buffer-modified-p buf)
-	"File %s changed on disk.  Discard your edits? "
-	"File %s changed on disk.  Reread from disk? ")
+			       "File %s changed on disk.  Discard your edits? "
+			     "File %s changed on disk.  Reread from disk? ")
 			   (file-name-nondirectory filename))
 			(format
 			 (if (buffer-modified-p buf)
-      "File %s changed on disk.  Discard your edits in %s? "
-      "File %s changed on disk.  Reread from disk into %s? ")
+			     "File %s changed on disk.  Discard your edits in %s? "
+			   "File %s changed on disk.  Reread from disk into %s? ")
 			 (file-name-nondirectory filename)
 			 (buffer-name buf))))
 		     (save-excursion
@@ -292,7 +292,7 @@ The buffer is not selected, just returned to the caller."
 ;;;		(message "Symbolic link to file in buffer %s"
 ;;;			 (buffer-name linked-buf))))
 	  (setq buf (create-file-buffer filename))
-;;	  (set-buffer-major-mode buf)
+	  ;;	  (set-buffer-major-mode buf)
 	  (set-buffer buf)
 	  (erase-buffer)
 	  (if rawfile
@@ -305,7 +305,7 @@ The buffer is not selected, just returned to the caller."
 		(insert-file-contents filename t)
 	      (file-error
 	       ;; Run find-file-not-found-hooks until one returns non-nil.
-	       (or t; (run-hook-with-args-until-success 'find-file-not-found-hooks)
+	       (or t			; (run-hook-with-args-until-success 'find-file-not-found-hooks)
 		   ;; If they fail too, set error.
 		   (setq error t)))))
 	  ;; Find the file's truename, and maybe use that as visited name.

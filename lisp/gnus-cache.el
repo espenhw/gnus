@@ -117,19 +117,19 @@
 
 (defun gnus-cache-possibly-enter-article 
   (group article headers ticked dormant unread)
-  (let ((number (header-number headers))
+  (let ((number (mail-header-number headers))
 	file dir)
-    (if (or (not (vectorp headers)) ; This might be a dummy article.
+    (if (or (not (vectorp headers))	; This might be a dummy article.
 	    (not (gnus-cache-member-of-class
 		  gnus-cache-enter-articles ticked dormant unread))
 	    (file-exists-p (setq file (gnus-cache-file-name group article))))
-	() ; Do nothing.
+	()				; Do nothing.
       ;; Possibly create the cache directory.
       (or (file-exists-p (setq dir (file-name-directory file)))
 	  (gnus-make-directory dir))
       ;; Save the article in the cache.
       (if (file-exists-p file)
-	  t ; The article already is saved, so we end here.
+	  t				; The article already is saved, so we end here.
 	(let ((gnus-use-cache nil))
 	  (gnus-summary-select-article))
 	(save-excursion
@@ -155,15 +155,15 @@
 	  (beginning-of-line)
 	  ;; [number subject from date id references chars lines xref]
 	  (insert (format "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n"
-			  (header-number headers)
-			  (header-subject headers)
-			  (header-from headers)
-			  (header-date headers)
-			  (header-id headers)
-			  (or (header-references headers) "")
-			  (or (header-chars headers) "")
-			  (or (header-lines headers) "")
-			  (or (header-xref headers) ""))))
+			  (mail-header-number headers)
+			  (mail-header-subject headers)
+			  (mail-header-from headers)
+			  (mail-header-date headers)
+			  (mail-header-id headers)
+			  (or (mail-header-references headers) "")
+			  (or (mail-header-chars headers) "")
+			  (or (mail-header-lines headers) "")
+			  (or (mail-header-xref headers) ""))))
 	t))))
 
 (defun gnus-cache-enter-remove-article (article)

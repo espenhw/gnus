@@ -475,16 +475,12 @@
       ()
     (save-excursion
       (let ((delim (concat "^" nnbabyl-mail-delimiter))
-	    (buf (or (get-buffer (file-name-nondirectory nnbabyl-mbox-file))
-		     (create-file-buffer nnbabyl-mbox-file)))
 	    start end)
-	(set-buffer (setq nnbabyl-mbox-buffer buf))
+	(set-buffer (setq nnbabyl-mbox-buffer 
+			  (nnheader-find-file-noselect 
+			   nnbabyl-mbox-file nil 'raw)))
 	(buffer-disable-undo (current-buffer))
-
-	(insert-file-contents nnbabyl-mbox-file)
-	(setq buffer-file-name nnbabyl-mbox-file)
-	(set-buffer-modified-p nil)
-
+	
 	(goto-char (point-min))
 	(re-search-forward delim nil t)
 	(setq start (match-end 0))

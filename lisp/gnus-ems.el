@@ -302,20 +302,20 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
     (let ((header (car (gnus-gethash (downcase message-id)
 				     gnus-newsgroup-dependencies))))
       (if header
-	  (or (gnus-summary-goto-article (header-number header))
+	  (or (gnus-summary-goto-article (mail-header-number header))
 	      ;; The header has been read, but the article had been
 	      ;; expunged, so we insert it again.
 	      (let ((beg (point)))
 		(gnus-summary-insert-line
 		 nil header 0 nil gnus-read-mark nil nil
-		 (header-subject header))
+		 (mail-header-subject header))
 		(save-excursion
 		  (goto-char beg)
 		  (remove-text-properties
 		   (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
 		   '(gnus-number nil gnus-mark nil gnus-level nil)))
 		(forward-line -1)
-		(header-number header)))
+		(mail-header-number header)))
 	(let ((gnus-override-method gnus-refer-article-method)
 	      (gnus-ancient-mark gnus-read-mark)
 	      (tmp-point (window-start
@@ -332,7 +332,7 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 	      (if (gnus-article-prepare 
 		   message-id nil (gnus-read-header message-id))
 		  (progn
-		    (setq number (header-number gnus-current-headers))
+		    (setq number (mail-header-number gnus-current-headers))
 		    (gnus-rebuild-thread message-id)
 		    (gnus-summary-goto-subject number)
 		    (gnus-summary-recenter)
@@ -447,7 +447,7 @@ call it with the value of the `gnus-data' text property."
     (if fun (funcall fun data))))
 
 ;; Re-build the thread containing ID.
-(defun gnus-rebuild-thread-xemacs (id)
+(defun gnus-rebuild-thread-xemacs  (id)
   (let ((dep gnus-newsgroup-dependencies)
 	(buffer-read-only nil)
 	parent headers refs thread art)
@@ -455,7 +455,7 @@ call it with the value of the `gnus-data' text property."
 			 (car (setq art (gnus-gethash (downcase id) 
 						      dep)))))
       (setq parent art)
-      (setq id (and (setq refs (header-references headers))
+      (setq id (and (setq refs (mail-header-references headers))
 		    (string-match "\\(<[^>]+>\\) *$" refs)
 		    (substring refs (match-beginning 1) (match-end 1)))))
     (setq thread (gnus-make-sub-thread (car parent)))
@@ -465,9 +465,10 @@ call it with the value of the `gnus-data' text property."
       (save-excursion
 	(while (and (>= (point) beg)
 		    (not (bobp)))
-	  (remove-text-properties
-	   (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
-	   '(gnus-number nil gnus-mark nil gnus-level nil))
+	  (or (eobp)
+	      (remove-text-properties
+	       (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
+	       '(gnus-number nil gnus-mark nil gnus-level nil)))
 	  (forward-line -1)))
       (gnus-summary-update-lines beg (point)))))
 
@@ -487,6 +488,29 @@ call it with the value of the `gnus-data' text property."
 
 (defun gnus-window-top-edge-xemacs (&optional window)
   (nth 1 (window-pixel-edges window)))
+
+;; Select the lowest window on the frame.
+(defun gnus-appt-select-lowest-window-xemacs ()
+  (let* ((lowest-window (selected-window))
+	 (bottom-edge (car (cdr (cdr (cdr (window-pixel-edges))))))
+         (last-window (previous-window))
+         (window-search t))
+    (while window-search
+      (let* ((this-window (next-window))
+             (next-bottom-edge (car (cdr (cdr (cdr 
+                                               (window-pixel-edges 
+						this-window)))))))
+        (if (< bottom-edge next-bottom-edge)
+            (progn
+              (setq bottom-edge next-bottom-edge)
+              (setq lowest-window this-window)))
+
+        (select-window this-window)
+        (if (eq last-window this-window)
+            (progn
+              (select-window lowest-window)
+              (setq window-search nil)))))))
+
 
 (defun gnus-ems-redefine ()
   (cond 
@@ -508,31 +532,35 @@ call it with the value of the `gnus-data' text property."
     (fset 'gnus-article-add-button 'gnus-article-add-button-xemacs)
     (fset 'gnus-window-top-edge 'gnus-window-top-edge-xemacs)
 
+    (or (fboundp 'appt-select-lowest-window)
+	(fset 'appt-select-lowest-window 
+	      'gnus-appt-select-lowest-window-xemacs))
+
     (if (not gnus-visual)
 	()
       (setq gnus-group-mode-hook
 	    (cons
 	     '(lambda ()
-	       (easy-menu-add gnus-group-reading-menu)
-	       (easy-menu-add gnus-group-group-menu)
-	       (easy-menu-add gnus-group-misc-menu)
-	       (gnus-install-mouse-tracker)) 
+		(easy-menu-add gnus-group-reading-menu)
+		(easy-menu-add gnus-group-group-menu)
+		(easy-menu-add gnus-group-misc-menu)
+		(gnus-install-mouse-tracker)) 
 	     gnus-group-mode-hook))
       (setq gnus-summary-mode-hook
 	    (cons
 	     '(lambda ()
-	       (easy-menu-add gnus-summary-article-menu)
-	       (easy-menu-add gnus-summary-thread-menu)
-	       (easy-menu-add gnus-summary-misc-menu)
-	       (easy-menu-add gnus-summary-post-menu)
-	       (easy-menu-add gnus-summary-kill-menu)
-	       (gnus-install-mouse-tracker)) 
+		(easy-menu-add gnus-summary-article-menu)
+		(easy-menu-add gnus-summary-thread-menu)
+		(easy-menu-add gnus-summary-misc-menu)
+		(easy-menu-add gnus-summary-post-menu)
+		(easy-menu-add gnus-summary-kill-menu)
+		(gnus-install-mouse-tracker)) 
 	     gnus-summary-mode-hook))
       (setq gnus-article-mode-hook
 	    (cons
 	     '(lambda ()
-	       (easy-menu-add gnus-article-article-menu)
-	       (easy-menu-add gnus-article-treatment-menu))
+		(easy-menu-add gnus-article-article-menu)
+		(easy-menu-add gnus-article-treatment-menu))
 	     gnus-article-mode-hook)))
 
     (defvar gnus-logo (make-glyph (make-specifier 'image)))

@@ -342,7 +342,7 @@ Newsgroup must be selected before calling this function."
       (subst-char-in-region (point-min) (point-max) ?\n ?\\ 'noundo)
       (setq nnspool-status-string (buffer-string))
       (message "nnspool: %s" nnspool-status-string)
-      ;(kill-buffer (current-buffer))
+					;(kill-buffer (current-buffer))
       )))
 
 (defalias 'nnspool-request-post-buffer 'nntp-request-post-buffer)
@@ -419,7 +419,7 @@ Newsgroup must be selected before calling this function."
       (erase-buffer)
       (call-process "grep" nil t nil id nnspool-history-file)
       (goto-char (point-min))
-       (if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ \t\n]*\\)")
+      (if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ \t\n]*\\)")
 	  (concat nnspool-spool-directory
 		  (nnspool-replace-chars-in-string 
 		   (buffer-substring (match-beginning 1) (match-end 1)) 

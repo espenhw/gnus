@@ -417,7 +417,7 @@
       ;; This might be a bit naughty... creating groups on the drop of
       ;; a hat, but I don't know...
       (setq nnmbox-group-alist (cons (list group (setq active (cons 1 1)))
-				      nnmbox-group-alist)))
+				     nnmbox-group-alist)))
     (cdr active)))
 
 (defun nnmbox-read-mbox ()

@@ -199,7 +199,7 @@ If NEWSGROUP is nil, the global kill file is selected."
    "Subject" 
    (if (vectorp gnus-current-headers)
        (regexp-quote 
-	(gnus-simplify-subject (header-subject gnus-current-headers)))
+	(gnus-simplify-subject (mail-header-subject gnus-current-headers)))
      "")))
   
 (defun gnus-kill-file-kill-by-author ()
@@ -208,7 +208,7 @@ If NEWSGROUP is nil, the global kill file is selected."
   (gnus-kill-file-enter-kill
    "From" 
    (if (vectorp gnus-current-headers)
-       (regexp-quote (header-from gnus-current-headers))
+       (regexp-quote (mail-header-from gnus-current-headers))
      "")))
  
 (defun gnus-kill-file-kill-by-thread ()
@@ -217,14 +217,14 @@ If NEWSGROUP is nil, the global kill file is selected."
   (gnus-kill-file-enter-kill
    "References" 
    (if (vectorp gnus-current-headers)
-       (regexp-quote (header-id gnus-current-headers))
+       (regexp-quote (mail-header-id gnus-current-headers))
      "")))
  
 (defun gnus-kill-file-kill-by-xref ()
   "Kill by Xref."
   (interactive)
   (let ((xref (and (vectorp gnus-current-headers) 
-		   (header-xref gnus-current-headers)))
+		   (mail-header-xref gnus-current-headers)))
 	(start 0)
 	group)
     (if xref
@@ -241,7 +241,7 @@ If NEWSGROUP is nil, the global kill file is selected."
 (defun gnus-kill-file-raise-followups-to-author (level)
   "Raise score for all followups to the current author."
   (interactive "p")
-  (let ((name (header-from gnus-current-headers))
+  (let ((name (mail-header-from gnus-current-headers))
 	string)
     (save-excursion
       (gnus-kill-set-kill-buffer)
@@ -357,14 +357,14 @@ Returns the number of articles marked as read."
 	    (let ((headers gnus-newsgroup-headers))
 	      (if gnus-kill-killed
 		  (setq gnus-newsgroup-kill-headers
-			(mapcar (lambda (header) (header-number header))
+			(mapcar (lambda (header) (mail-header-number header))
 				headers))
 		(while headers
 		  (or (gnus-member-of-range 
-		       (header-number (car headers)) 
+		       (mail-header-number (car headers)) 
 		       gnus-newsgroup-killed)
 		      (setq gnus-newsgroup-kill-headers 
-			    (cons (header-number (car headers))
+			    (cons (mail-header-number (car headers))
 				  gnus-newsgroup-kill-headers)))
 		  (setq headers (cdr headers))))
 	      (setq files nil))
@@ -444,30 +444,30 @@ Returns the number of articles marked as read."
 	 '((?m . " ")
 	   (?j . "X")))
 	pattern modifier commands)
-  (while (not (eobp))
-    (if (not (looking-at "[ \t]*/\\([^/]*\\)/\\([ahfcH]\\)?:\\([a-z=:]*\\)"))
-	()
-      (setq pattern (buffer-substring (match-beginning 1) (match-end 1)))
-      (setq modifier (if (match-beginning 2) (char-after (match-beginning 2))
-		       ?s))
-      (setq commands (buffer-substring (match-beginning 3) (match-end 3)))
+    (while (not (eobp))
+      (if (not (looking-at "[ \t]*/\\([^/]*\\)/\\([ahfcH]\\)?:\\([a-z=:]*\\)"))
+	  ()
+	(setq pattern (buffer-substring (match-beginning 1) (match-end 1)))
+	(setq modifier (if (match-beginning 2) (char-after (match-beginning 2))
+			 ?s))
+	(setq commands (buffer-substring (match-beginning 3) (match-end 3)))
 
-      ;; The "f:+" command marks everything *but* the matches as read,
-      ;; so we simply first match everything as read, and then unmark
-      ;; PATTERN later. 
-      (and (string-match "\\+" commands)
-	   (progn
-	     (gnus-kill "from" ".")
-	     (setq commands "m")))
+	;; The "f:+" command marks everything *but* the matches as read,
+	;; so we simply first match everything as read, and then unmark
+	;; PATTERN later. 
+	(and (string-match "\\+" commands)
+	     (progn
+	       (gnus-kill "from" ".")
+	       (setq commands "m")))
 
-      (gnus-kill 
-       (or (cdr (assq modifier mod-to-header)) "subject")
-       pattern 
-       (if (string-match "m" commands) 
-	   '(gnus-summary-mark-as-unread nil " ")
-	 '(gnus-summary-mark-as-read nil "X")) 
-       nil t))
-    (forward-line 1))))
+	(gnus-kill 
+	 (or (cdr (assq modifier mod-to-header)) "subject")
+	 pattern 
+	 (if (string-match "m" commands) 
+	     '(gnus-summary-mark-as-unread nil " ")
+	   '(gnus-summary-mark-as-read nil "X")) 
+	 nil t))
+      (forward-line 1))))
 
 ;; Kill changes and new format by suggested by JWZ and Sudish Joseph
 ;; <joseph@cis.ohio-state.edu>.  
@@ -584,9 +584,9 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		(gnus-last-article nil)
 		(gnus-break-pages nil)	;No need to break pages.
 		(gnus-mark-article-hook nil)) ;Inhibit marking as read.
-	    (message "Searching for article: %d..." (header-number header))
+	    (message "Searching for article: %d..." (mail-header-number header))
 	    (gnus-article-setup-buffer)
-	    (gnus-article-prepare (header-number header) t)
+	    (gnus-article-prepare (mail-header-number header) t)
 	    (if (save-excursion
 		  (set-buffer gnus-article-buffer)
 		  (goto-char (point-min))

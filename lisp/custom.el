@@ -248,11 +248,11 @@ If called interactively, prompts for a face and face attributes."
   "Symbol used for highlighting text under mouse.")
 
 ;; Put it in the Help menu, if possible.
-(condition-case nil
-    ;; This will not work under XEmacs.
-    (global-set-key [ menu-bar help-menu customize ]
-		    '("Customize..." . customize))
-  (error nil))
+(if (string-match "XEmacs" emacs-version)
+    nil
+  ;; This will not work under XEmacs.
+  (global-set-key [ menu-bar help-menu customize ]
+		  '("Customize..." . customize)))
 
 ;;; Categories:
 ;;

@@ -671,7 +671,7 @@ all. This may very well take some time.")
 						(setq chars (- (point-max) 
 							       (point)))
 						(point)))
- 	    (if (not (= 0 chars)) ; none of them empty files...
+ 	    (if (not (= 0 chars))	; none of them empty files...
  		(progn
 		  (setq nov-line (nnml-make-nov-line chars))
 		  (save-excursion

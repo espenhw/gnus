@@ -40,7 +40,7 @@
     "turquoise"))
 
 (defvar gnus-face-dark-name-list
-  '("blue" "firebrick"
+  '("skyblue" "firebrick"
     "dark green" "dark orange" "dark khaki" "dark violet"
     "dark turquoise"))
 
@@ -326,7 +326,7 @@ alone.")
 				     ((eq gnus-background-mode 'dark)
 				      (list (list "From" nil 
 						  (custom-face-lookup 
-						   "SkyeBlue" nil nil t t nil))
+						   "SkyBlue" nil nil t t nil))
 					    (list "Subject" nil 
 						  (custom-face-lookup
 						   "pink" nil nil t t nil))
@@ -337,7 +337,7 @@ alone.")
 						  (custom-face-lookup
 						   "cyan" nil nil t nil nil)
 						  (custom-face-lookup
-						   "green"
+						   "forestgreen"
 						   nil nil nil t nil))))
 				     (t
 				      (list (list "From" nil 
@@ -350,7 +350,7 @@ alone.")
 						   nil nil t t nil))
 					    (list "Newsgroups:.*," nil
 						  (custom-face-lookup
-						   "red" nil nil t t nil))
+						   "indianred" nil nil t t nil))
 					    (list ""
 						  (custom-face-lookup
 						   "DarkGreen"

@@ -488,113 +488,113 @@ variable it the real callback function.")
 
      (and nil
 	  '(("Default header"
-	   ["Ask" (gnus-score-set-default 'gnus-score-default-header nil)
-	    :style radio 
-	    :selected (null gnus-score-default-header)]
-	   ["From" (gnus-score-set-default 'gnus-score-default-header 'a)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 'a )]
-	   ["Subject" (gnus-score-set-default 'gnus-score-default-header 's)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 's )]
-	   ["Article body"
-	    (gnus-score-set-default 'gnus-score-default-header 'b)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 'b )]
-	   ["All headers"
-	    (gnus-score-set-default 'gnus-score-default-header 'h)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 'h )]
-	   ["Message-Id" (gnus-score-set-default 'gnus-score-default-header 'i)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 'i )]
-	   ["Thread" (gnus-score-set-default 'gnus-score-default-header 't)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 't )]
-	   ["Crossposting"
-	    (gnus-score-set-default 'gnus-score-default-header 'x)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 'x )]
-	   ["Lines" (gnus-score-set-default 'gnus-score-default-header 'l)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 'l )]
-	   ["Date" (gnus-score-set-default 'gnus-score-default-header 'd)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 'd )]
-	   ["Followups to author"
-	    (gnus-score-set-default 'gnus-score-default-header 'f)
-	    :style radio 
-	    :selected (eq gnus-score-default-header 'f )])
-	  ("Default type"
-	   ["Ask" (gnus-score-set-default 'gnus-score-default-type nil)
-	    :style radio 
-	    :selected (null gnus-score-default-type)]
-	   ;; The `:active' key is commented out in the following,
-	   ;; because the GNU Emacs hack to support radio buttons use
-	   ;; active to indicate which button is selected.  
-	   ["Substring" (gnus-score-set-default 'gnus-score-default-type 's)
-	    :style radio 
-	    ;; :active (not (memq gnus-score-default-header '(l d)))
-	    :selected (eq gnus-score-default-type 's)]
-	   ["Regexp" (gnus-score-set-default 'gnus-score-default-type 'r)
-	    :style radio
-	    ;; :active (not (memq gnus-score-default-header '(l d)))
-	    :selected (eq gnus-score-default-type 'r)]
-	   ["Exact" (gnus-score-set-default 'gnus-score-default-type 'e)
-	    :style radio
-	    ;; :active (not (memq gnus-score-default-header '(l d)))
-	    :selected (eq gnus-score-default-type 'e)]
-	   ["Fuzzy" (gnus-score-set-default 'gnus-score-default-type 'f)
-	    :style radio 
-	    ;; :active (not (memq gnus-score-default-header '(l d)))
-	    :selected (eq gnus-score-default-type 'f)]
-	   ["Before date" (gnus-score-set-default 'gnus-score-default-type 'b)
-	    :style radio 
-	    ;; :active (eq (gnus-score-default-header 'd))
-	    :selected (eq gnus-score-default-type 'b)]
-	   ["At date" (gnus-score-set-default 'gnus-score-default-type 'n)
-	    :style radio 
-	    ;; :active (eq (gnus-score-default-header 'd))
-	    :selected (eq gnus-score-default-type 'n)]
-	   ["After date" (gnus-score-set-default 'gnus-score-default-type 'a)
-	    :style radio 
-	    ;; :active (eq (gnus-score-default-header 'd))
-	    :selected (eq gnus-score-default-type 'a)]
-	   ["Less than number"
-	    (gnus-score-set-default 'gnus-score-default-type '<)
-	    :style radio 
-	    ;; :active (eq (gnus-score-default-header 'l))
-	    :selected (eq gnus-score-default-type '<)]
-	   ["Equal to number"
-	    (gnus-score-set-default 'gnus-score-default-type '=)
-	    :style radio 
-	    ;; :active (eq (gnus-score-default-header 'l))
-	    :selected (eq gnus-score-default-type '=)]
-	   ["Greater than number" 
-	    (gnus-score-set-default 'gnus-score-default-type '>)
-	    :style radio 
-	    ;; :active (eq (gnus-score-default-header 'l))
-	    :selected (eq gnus-score-default-type '>)])
-	  ["Default fold" gnus-score-default-fold-toggle
-	   :style toggle
-	   :selected gnus-score-default-fold]
-	  ("Default duration"
-	   ["Ask" (gnus-score-set-default 'gnus-score-default-duration nil)
-	    :style radio
-	    :selected (null gnus-score-default-duration)]
-	   ["Permanent"
-	    (gnus-score-set-default 'gnus-score-default-duration 'p)
-	    :style radio
-	    :selected (eq gnus-score-default-duration 'p)]
-	   ["Temporary"
-	    (gnus-score-set-default 'gnus-score-default-duration 't)
-	    :style radio
-	    :selected (eq gnus-score-default-duration 't)]
-	   ["Immediate" 
-	    (gnus-score-set-default 'gnus-score-default-duration 'i)
-	    :style radio
-	    :selected (eq gnus-score-default-duration 'i)])
-	  ))
+	     ["Ask" (gnus-score-set-default 'gnus-score-default-header nil)
+	      :style radio 
+	      :selected (null gnus-score-default-header)]
+	     ["From" (gnus-score-set-default 'gnus-score-default-header 'a)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 'a )]
+	     ["Subject" (gnus-score-set-default 'gnus-score-default-header 's)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 's )]
+	     ["Article body"
+	      (gnus-score-set-default 'gnus-score-default-header 'b)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 'b )]
+	     ["All headers"
+	      (gnus-score-set-default 'gnus-score-default-header 'h)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 'h )]
+	     ["Message-Id" (gnus-score-set-default 'gnus-score-default-header 'i)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 'i )]
+	     ["Thread" (gnus-score-set-default 'gnus-score-default-header 't)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 't )]
+	     ["Crossposting"
+	      (gnus-score-set-default 'gnus-score-default-header 'x)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 'x )]
+	     ["Lines" (gnus-score-set-default 'gnus-score-default-header 'l)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 'l )]
+	     ["Date" (gnus-score-set-default 'gnus-score-default-header 'd)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 'd )]
+	     ["Followups to author"
+	      (gnus-score-set-default 'gnus-score-default-header 'f)
+	      :style radio 
+	      :selected (eq gnus-score-default-header 'f )])
+	    ("Default type"
+	     ["Ask" (gnus-score-set-default 'gnus-score-default-type nil)
+	      :style radio 
+	      :selected (null gnus-score-default-type)]
+	     ;; The `:active' key is commented out in the following,
+	     ;; because the GNU Emacs hack to support radio buttons use
+	     ;; active to indicate which button is selected.  
+	     ["Substring" (gnus-score-set-default 'gnus-score-default-type 's)
+	      :style radio 
+	      ;; :active (not (memq gnus-score-default-header '(l d)))
+	      :selected (eq gnus-score-default-type 's)]
+	     ["Regexp" (gnus-score-set-default 'gnus-score-default-type 'r)
+	      :style radio
+	      ;; :active (not (memq gnus-score-default-header '(l d)))
+	      :selected (eq gnus-score-default-type 'r)]
+	     ["Exact" (gnus-score-set-default 'gnus-score-default-type 'e)
+	      :style radio
+	      ;; :active (not (memq gnus-score-default-header '(l d)))
+	      :selected (eq gnus-score-default-type 'e)]
+	     ["Fuzzy" (gnus-score-set-default 'gnus-score-default-type 'f)
+	      :style radio 
+	      ;; :active (not (memq gnus-score-default-header '(l d)))
+	      :selected (eq gnus-score-default-type 'f)]
+	     ["Before date" (gnus-score-set-default 'gnus-score-default-type 'b)
+	      :style radio 
+	      ;; :active (eq (gnus-score-default-header 'd))
+	      :selected (eq gnus-score-default-type 'b)]
+	     ["At date" (gnus-score-set-default 'gnus-score-default-type 'n)
+	      :style radio 
+	      ;; :active (eq (gnus-score-default-header 'd))
+	      :selected (eq gnus-score-default-type 'n)]
+	     ["After date" (gnus-score-set-default 'gnus-score-default-type 'a)
+	      :style radio 
+	      ;; :active (eq (gnus-score-default-header 'd))
+	      :selected (eq gnus-score-default-type 'a)]
+	     ["Less than number"
+	      (gnus-score-set-default 'gnus-score-default-type '<)
+	      :style radio 
+	      ;; :active (eq (gnus-score-default-header 'l))
+	      :selected (eq gnus-score-default-type '<)]
+	     ["Equal to number"
+	      (gnus-score-set-default 'gnus-score-default-type '=)
+	      :style radio 
+	      ;; :active (eq (gnus-score-default-header 'l))
+	      :selected (eq gnus-score-default-type '=)]
+	     ["Greater than number" 
+	      (gnus-score-set-default 'gnus-score-default-type '>)
+	      :style radio 
+	      ;; :active (eq (gnus-score-default-header 'l))
+	      :selected (eq gnus-score-default-type '>)])
+	    ["Default fold" gnus-score-default-fold-toggle
+	     :style toggle
+	     :selected gnus-score-default-fold]
+	    ("Default duration"
+	     ["Ask" (gnus-score-set-default 'gnus-score-default-duration nil)
+	      :style radio
+	      :selected (null gnus-score-default-duration)]
+	     ["Permanent"
+	      (gnus-score-set-default 'gnus-score-default-duration 'p)
+	      :style radio
+	      :selected (eq gnus-score-default-duration 'p)]
+	     ["Temporary"
+	      (gnus-score-set-default 'gnus-score-default-duration 't)
+	      :style radio
+	      :selected (eq gnus-score-default-duration 't)]
+	     ["Immediate" 
+	      (gnus-score-set-default 'gnus-score-default-duration 'i)
+	      :style radio
+	      :selected (eq gnus-score-default-duration 'i)])
+	    ))
 
      (easy-menu-define
       gnus-summary-article-menu
@@ -1127,7 +1127,7 @@ call it with the value of the `gnus-data' text property."
   (let* ((pos (posn-point (event-start event)))
          (data (get-text-property pos 'gnus-data))
 	 (fun (get-text-property pos 'gnus-callback)))
-      (if fun (funcall fun data))))
+    (if fun (funcall fun data))))
 
 (defun gnus-article-press-button ()
   "Check text at point for a callback function.
@@ -1136,7 +1136,7 @@ call it with the value of the `gnus-data' text property."
   (interactive)
   (let* ((data (get-text-property (point) 'gnus-data))
 	 (fun (get-text-property (point) 'gnus-callback)))
-      (if fun (funcall fun data))))
+    (if fun (funcall fun data))))
 
 ;; Suggested by Arne Elofsson <arne@hodgkin.mbi.ucla.edu>
 (defun gnus-article-next-button ()
@@ -1144,7 +1144,7 @@ call it with the value of the `gnus-data' text property."
   (interactive)
   (if (get-text-property (point) 'gnus-callback)
       (goto-char (next-single-property-change (point) 'gnus-callback
-				       nil (point-max))))
+					      nil (point-max))))
   (let ((pos (next-single-property-change (point) 'gnus-callback)))
     (if pos
 	(goto-char pos)
@@ -1363,8 +1363,8 @@ External references are things like message-ids and URLs, as specified by
 			   (let ((string (buffer-substring
 					  (match-beginning group)
 					  (match-end group))))
-			   (set-text-properties 0 (length string) nil string)
-			   string))
+			     (set-text-properties 0 (length string) nil string)
+			     string))
 			 (nthcdr 4 entry))))
       (cond ((fboundp fun)
 	     (apply fun args))

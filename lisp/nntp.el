@@ -283,51 +283,51 @@ instead call function `nntp-status-message' to get status message.")
 	  (last-point (point-min))
 	  (command (if nntp-server-list-active-group
 		       "LIST ACTIVE" "GROUP")))
-	(while groups
-	  (nntp-send-strings-to-server command (car groups))
-	  (setq groups (cdr groups))
-	  (setq count (1+ count))
-	  ;; Every 400 requests we have to read the stream in
-	  ;; order to avoid deadlocks.
-	  (if (or (null groups)       ;All requests have been sent.
-		  (zerop (% count nntp-maximum-request)))
-	      (progn
-		(nntp-accept-response)
+      (while groups
+	(nntp-send-strings-to-server command (car groups))
+	(setq groups (cdr groups))
+	(setq count (1+ count))
+	;; Every 400 requests we have to read the stream in
+	;; order to avoid deadlocks.
+	(if (or (null groups)		;All requests have been sent.
+		(zerop (% count nntp-maximum-request)))
+	    (progn
+	      (nntp-accept-response)
+	      (while (progn
+		       (goto-char last-point)
+		       ;; Count replies.
+		       (while (re-search-forward "^[0-9]" nil t)
+			 (setq received (1+ received)))
+		       (setq last-point (point))
+		       (< received count))
+		(nntp-accept-response)))))
+
+      ;; Wait for the reply from the final command.
+      (if nntp-server-list-active-group
+	  (progn
+	    (goto-char (point-max))
+	    (re-search-backward "^[0-9]" nil t)
+	    (if (looking-at "^[23]")
 		(while (progn
-			 (goto-char last-point)
-			 ;; Count replies.
-			 (while (re-search-forward "^[0-9]" nil t)
-			   (setq received (1+ received)))
-			 (setq last-point (point))
-			 (< received count))
+			 (goto-char (- (point-max) 3))
+			 (not (looking-at "^\\.\r?\n")))
 		  (nntp-accept-response)))))
 
-	;; Wait for the reply from the final command.
-	(if nntp-server-list-active-group
-	    (progn
-	      (goto-char (point-max))
-	      (re-search-backward "^[0-9]" nil t)
-	      (if (looking-at "^[23]")
-		  (while (progn
-			   (goto-char (- (point-max) 3))
-			   (not (looking-at "^\\.\r?\n")))
-		    (nntp-accept-response)))))
+      ;; Now all replies are received. We remove CRs.
+      (goto-char (point-min))
+      (while (search-forward "\r" nil t)
+	(replace-match "" t t))
 
-	;; Now all replies are received. We remove CRs.
-	(goto-char (point-min))
-	(while (search-forward "\r" nil t)
-	  (replace-match "" t t))
-
-	(if nntp-server-list-active-group
-	    (progn
-	      ;; We have read active entries, so we just delete the
-	      ;; superfluos gunk.
-	      (goto-char (point-min))
-	      (while (re-search-forward "^[.2-5]" nil t)
-		(delete-region (match-beginning 0) 
-			       (progn (forward-line 1) (point))))
-	      'active)
-	  'group))))
+      (if nntp-server-list-active-group
+	  (progn
+	    ;; We have read active entries, so we just delete the
+	    ;; superfluos gunk.
+	    (goto-char (point-min))
+	    (while (re-search-forward "^[.2-5]" nil t)
+	      (delete-region (match-beginning 0) 
+			     (progn (forward-line 1) (point))))
+	    'active)
+	'group))))
 
 (defun nntp-open-server (server &optional defs)
   (nnheader-init-server-buffer)
@@ -624,8 +624,8 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 	      (goto-char (point-min))
 	      (narrow-to-region (point-min)
 				(progn (search-forward "\n\n") (point)))
-	      (setq from (header-from header))
-	      (setq date (header-date header))
+	      (setq from (mail-header-from header))
+	      (setq date (mail-header-date header))
 	      (and from
 		   (let ((stop-pos 
 			  (string-match "  *at \\|  *@ \\| *(\\| *<" from)))
@@ -633,7 +633,7 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 		      message-of
 		      (concat (if stop-pos (substring from 0 stop-pos) from) 
 			      "'s message of " date))))
-	      (setq subject (or subject (header-subject header)))
+	      (setq subject (or subject (mail-header-subject header)))
 	      (or (string-match "^[Rr][Ee]:" subject)
 		  (setq subject (concat "Re: " subject)))
 	      (setq followup-to (mail-fetch-field "followup-to"))
@@ -643,13 +643,13 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 		  (setq followup-to nil))
 	      (setq newsgroups
 		    (or follow-to followup-to (mail-fetch-field "newsgroups")))
-	      (setq references (header-references header))
+	      (setq references (mail-header-references header))
 	      (setq distribution (mail-fetch-field "distribution"))
 	      ;; Remove bogus distribution.
 	      (and (stringp distribution)
 		   (string-match "world" distribution)
 		   (setq distribution nil))
-	      (setq message-id (header-id header))
+	      (setq message-id (mail-header-id header))
 	      (widen))
 	    (setq news-reply-yank-from from)
 	    (setq news-reply-yank-message-id message-id)
@@ -896,6 +896,7 @@ It will prompt for a password."
     (let ((count 0)
 	  (received 0)
 	  (last-point (point-min))
+	  (buf (current-buffer))
 	  first)
       ;; We have to check `nntp-server-xover'.  If it gets set to nil,
       ;; that means that the server does not understand XOVER, but we
@@ -908,25 +909,31 @@ It will prompt for a password."
 		    (< (- (nth 1 sequence) (car sequence)) nntp-nov-gap))
 	  (setq sequence (cdr sequence)))
 
-	  (if (not (nntp-send-xover-command first (car sequence)))
-	      ()
-	    (setq sequence (cdr sequence)
-		  count (1+ count))
+	(if (not (nntp-send-xover-command first (car sequence)))
+	    ()
+	  (setq sequence (cdr sequence)
+		count (1+ count))
 
-	    ;; Every 400 requests we have to read the stream in
-	    ;; order to avoid deadlocks.
-	    (if (or (null sequence)	;All requests have been sent.
-		    (zerop (% count nntp-maximum-request)))
-		(progn
+	  ;; Every 400 requests we have to read the stream in
+	  ;; order to avoid deadlocks.
+	  (if (or (null sequence)	;All requests have been sent.
+		  (zerop (% count nntp-maximum-request)))
+	      (progn
+		(accept-process-output)
+		;; On some Emacs versions the preceding function has
+		;; a tendency to change the buffer. Perhaps. It's
+		;; quite difficult to reporduce, because it only
+		;; seems to happen once in a blue moon. 
+		(set-buffer buf) 
+		(while (progn
+			 (goto-char last-point)
+			 ;; Count replies.
+			 (while (re-search-forward "^[0-9][0-9][0-9] " nil t)
+			   (setq received (1+ received)))
+			 (setq last-point (point))
+			 (< received count))
 		  (accept-process-output)
-		  (while (progn
-			   (goto-char last-point)
-			   ;; Count replies.
-			   (while (re-search-forward "^[0-9][0-9][0-9] " nil t)
-			     (setq received (1+ received)))
-			   (setq last-point (point))
-			   (< received count))
-		    (accept-process-output))))))
+		  (set-buffer buf))))))
 
       (if (not nntp-server-xover)
 	  ()
@@ -1138,25 +1145,29 @@ defining this function as macro."
   ;;  accept-process-output is called.
   ;; Suggested by Jason Venner <jason@violet.berkeley.edu>.
   ;; This is a copy of `nntp-default-sentinel'.
-  (if (or (not nntp-server-process)
-	  (not (memq (process-status nntp-server-process) '(open run))))
-      (error "nntp: Process connection closed; %s" (nntp-status-message))
-    (if nntp-buggy-select
-	(progn
-	  ;; We cannot use `accept-process-output'.
-	  ;; Fujitsu UTS requires messages during sleep-for. I don't know why.
-	  (message "NNTP: Reading...")
-	  (sleep-for 1)
-	  (message ""))
-      (condition-case errorcode
-	  (accept-process-output nntp-server-process)
-	(error
-	 (cond ((string-equal "select error: Invalid argument" 
-			      (nth 1 errorcode))
-		;; Ignore select error.
-		nil)
-	       (t
-		(signal (car errorcode) (cdr errorcode)))))))))
+  (let ((buf (current-buffer)))
+    (prog1
+	(if (or (not nntp-server-process)
+		(not (memq (process-status nntp-server-process) '(open run))))
+	    (error "nntp: Process connection closed; %s" (nntp-status-message))
+	  (if nntp-buggy-select
+	      (progn
+		;; We cannot use `accept-process-output'.
+		;; Fujitsu UTS requires messages during sleep-for.
+		;; I don't know why.
+		(message "NNTP: Reading...")
+		(sleep-for 1)
+		(message ""))
+	    (condition-case errorcode
+		(accept-process-output nntp-server-process)
+	      (error
+	       (cond ((string-equal "select error: Invalid argument" 
+				    (nth 1 errorcode))
+		      ;; Ignore select error.
+		      nil)
+		     (t
+		      (signal (car errorcode) (cdr errorcode))))))))
+      (set-buffer buf))))
 
 (defun nntp-last-element (list)
   "Return last element of LIST."

@@ -106,7 +106,7 @@ If the stream is opened, return T, otherwise return NIL."
       ;; article fetching by message-id at all.
       (nntp-request-article article newsgroup gnus-nntp-server buffer)
     (let* ((header (gnus-get-header-by-number article))
-	   (xref (header-xref header))
+	   (xref (mail-header-xref header))
 	   igroup iarticle)
       (or xref (error "nnkiboze: No xref"))
       (or (string-match " \\([^ ]+\\):\\([0-9]+\\)" xref)
@@ -296,7 +296,7 @@ Finds out what articles are to be part of the nnkiboze groups."
   (save-excursion
     (set-buffer buffer)
     (goto-char (point-max))
-    (let ((xref (header-xref header))
+    (let ((xref (mail-header-xref header))
 	  (prefix (gnus-group-real-prefix group))
 	  (first t)
 	  article)
@@ -306,18 +306,18 @@ Finds out what articles are to be part of the nnkiboze groups."
 	    (forward-line 1))
 	(setq article 1))
       (insert (int-to-string article) "\t"
-	      (or (header-subject header) "") "\t"
-	      (or (header-from header) "") "\t"
-	      (or (header-date header) "") "\t"
-	      (or (header-id header) "") "\t"
-	      (or (header-references header) "") "\t"
-	      (int-to-string (or (header-chars header) 0)) "\t"
-	      (int-to-string (or (header-lines header) 0)) "\t")
+	      (or (mail-header-subject header) "") "\t"
+	      (or (mail-header-from header) "") "\t"
+	      (or (mail-header-date header) "") "\t"
+	      (or (mail-header-id header) "") "\t"
+	      (or (mail-header-references header) "") "\t"
+	      (int-to-string (or (mail-header-chars header) 0)) "\t"
+	      (int-to-string (or (mail-header-lines header) 0)) "\t")
       (if (or (not xref) (equal "" xref))
 	  (insert "Xref: " (system-name) " " group ":" 
-		  (int-to-string (header-number header))
+		  (int-to-string (mail-header-number header))
 		  "\t\n")
-	(insert (header-xref header) "\t\n")
+	(insert (mail-header-xref header) "\t\n")
 	(search-backward "\t" nil t)
 	(search-backward "\t" nil t)
 	(while (re-search-forward 
@@ -330,7 +330,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	      (save-excursion
 		(goto-char (match-beginning 0))
 		(insert prefix group ":" 
-			(int-to-string (header-number header)) " ")
+			(int-to-string (mail-header-number header)) " ")
 		(setq first nil)))
 	  (save-excursion
 	    (goto-char (match-beginning 0))

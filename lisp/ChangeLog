@@ -1,4 +1,50 @@
+Wed Aug 30 17:56:34 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* custom.el ((string-match "XEmacs" emacs-version)): Would barf if
+	the menu-bar wasn't in use.
+
+Wed Aug 30 08:46:48 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el ('(gnus-read-init-file 'inhibit)): Don't load while
+	compiling. 
+	(gnus-summary-next-article): Would not go to the next group when
+	all articles were canceled.
+	(gnus-summary-prepare): Create the hashtb before running the
+	prepare hook.
+
+	* gnus.el: Renamed all `header-' macros `mail-header-'. Ran
+	`indent-sexp' on all functions in all files.
+
+	* nnbabyl.el (nnbabyl-read-mbox): Would doubly insert RMAIL file
+	sometimes. 
+
+	* gnus-ems.el (appt-select-lowest-window): Not defined in XEmacs.
+
+	* gnus-score.el (gnus-summary-header): Would bug out if there were
+	pseudo-articles in the buffer.
+
+Wed Aug 30 06:08:13 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-score.el (gnus-score-find-trace): Didn't kill "*Gnus
+	Scores*" buffer on exit.
+
+Tue Aug 29 17:21:37 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-msg.el (gnus-mail-reply-using-mail): Set auto-save-mode if
+	that is wanted.
+
+	* gnus-ems.el (gnus-rebuild-thread-xemacs): Bugged out near the
+	end of buffers.
+
+	* gnus.el (gnus-summary-read-group): Force a summary config.
+
 Tue Aug 29 05:55:19 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* nntp.el: Do some pussy-footing around `accept-process-output'.
+
+Tue Aug 29 05:55:19 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.27 is released.
 
 	* gnus-msg.el (gnus-delete-supersedes-headers): Delete
 	Supersedes. 

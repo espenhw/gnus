@@ -303,7 +303,7 @@
 	 (delete-file (concat nnmh-current-directory 
 			      (int-to-string article)))
        (file-error nil)))
- result))
+    result))
 
 (defun nnmh-request-accept-article (group &optional last)
   (if (stringp group)

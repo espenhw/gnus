@@ -275,8 +275,8 @@ used as score."
        (if (eq 'perm temporary)         ; Temp
            nil
          temporary)
-         (not (nth 3 entry)))		; Prompt
-        )))
+       (not (nth 3 entry)))		; Prompt
+      )))
   
 (defun gnus-score-insert-help (string alist idx)
   (setq gnus-score-help-winconf (current-window-configuration))
@@ -323,7 +323,8 @@ used as score."
   (let ((article (gnus-summary-article-number))
 	headers)
     (if article
-	(if (setq headers (gnus-get-header-by-number article))
+	(if (and (setq headers (gnus-get-header-by-number article))
+		 (vectorp headers))
 	    (aref headers (nth 1 (assoc header gnus-header-index)))
 	  (if no-err
 	      nil
@@ -350,7 +351,7 @@ If optional argument `SILENT' is nil, show effect of score entry."
 	 (read-string "Match: ")
 	 (if (y-or-n-p "Use regexp match? ") 'r 's)
 	 (and current-prefix-arg
-	     (prefix-numeric-value current-prefix-arg))
+	      (prefix-numeric-value current-prefix-arg))
 	 (cond ((not (y-or-n-p "Add to score file? "))
 		'now)
 	       ((y-or-n-p "Expire kill? ")
@@ -434,7 +435,7 @@ SCORE is the score to add."
 		     (prefix-numeric-value current-prefix-arg)))
   (save-excursion
     (or (and (stringp match) (> (length match) 0))
-      (error "No match"))
+	(error "No match"))
     (goto-char (point-min))
     (let ((regexp (cond ((eq type 'f)
 			 (gnus-simplify-subject-fuzzy match))
@@ -452,21 +453,21 @@ SCORE is the score to add."
 	(beginning-of-line 2)))))
 
 (defun gnus-summary-score-crossposting (score date)
-   ;; Enter score file entry for current crossposting.
-   ;; SCORE is the score to add.
-   ;; DATE is the expire date.
-   (let ((xref (gnus-summary-header "xref"))
-	 (start 0)
-	 group)
-     (or xref (error "This article is not crossposted"))
-     (while (string-match " \\([^ \t]+\\):" xref start)
-       (setq start (match-end 0))
-       (if (not (string= 
-		 (setq group 
-		       (substring xref (match-beginning 1) (match-end 1)))
-		 gnus-newsgroup-name))
-	   (gnus-summary-score-entry
-	    "xref" (concat " " group ":") nil score date t)))))
+  ;; Enter score file entry for current crossposting.
+  ;; SCORE is the score to add.
+  ;; DATE is the expire date.
+  (let ((xref (gnus-summary-header "xref"))
+	(start 0)
+	group)
+    (or xref (error "This article is not crossposted"))
+    (while (string-match " \\([^ \t]+\\):" xref start)
+      (setq start (match-end 0))
+      (if (not (string= 
+		(setq group 
+		      (substring xref (match-beginning 1) (match-end 1)))
+		gnus-newsgroup-name))
+	  (gnus-summary-score-entry
+	   "xref" (concat " " group ":") nil score date t)))))
 
 
 ;;;
@@ -821,8 +822,8 @@ SCORE is the score to add."
 	  ;; WARNING: The assq makes the function O(N*S) while it could
 	  ;; be written as O(N+S), where N is (length gnus-newsgroup-headers)
 	  ;; and S is (length gnus-newsgroup-scored).
-	  (or (assq (header-number header) gnus-newsgroup-scored)
-	      (setq gnus-scores-articles       ;Total of 2 * N cons-cells used.
+	  (or (assq (mail-header-number header) gnus-newsgroup-scored)
+	      (setq gnus-scores-articles ;Total of 2 * N cons-cells used.
 		    (cons (cons header (or gnus-summary-default-score 0))
 			  gnus-scores-articles))))
 
@@ -856,7 +857,7 @@ SCORE is the score to add."
 	(while gnus-scores-articles
 	  (or (= gnus-summary-default-score (cdr (car gnus-scores-articles)))
 	      (setq gnus-newsgroup-scored
-		    (cons (cons (header-number 
+		    (cons (cons (mail-header-number 
 				 (car (car gnus-scores-articles)))
 				(cdr (car gnus-scores-articles)))
 			  gnus-newsgroup-scored)))
@@ -978,7 +979,7 @@ SCORE is the score to add."
 		(found			;Match, update date.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcar (nthcdr 2 kill) now))
-		((< date expire) ;Old entry, remove.
+		((< date expire)	;Old entry, remove.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcdr entries (cdr rest))
 		 (setq rest entries)))
@@ -1029,7 +1030,7 @@ SCORE is the score to add."
 		(found			;Match, update date.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcar (nthcdr 2 kill) now))
-		((< date expire) ;Old entry, remove.
+		((< date expire)	;Old entry, remove.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcdr entries (cdr rest))
 		 (setq rest entries)))
@@ -1041,7 +1042,7 @@ SCORE is the score to add."
     (save-restriction
       (let* ((buffer-read-only nil)
 	     (articles gnus-scores-articles)
-	     (last (header-number (car (car gnus-scores-articles))))
+	     (last (mail-header-number (car (car gnus-scores-articles))))
 	     (all-scores scores)
 	     (request-func (cond ((string= "head" (downcase header))
 				  'gnus-request-head)
@@ -1060,7 +1061,7 @@ SCORE is the score to add."
 	      (setq ofunc request-func)
 	      (setq request-func 'gnus-request-article)))
 	(while articles
-	  (setq article (header-number (car (car articles))))
+	  (setq article (mail-header-number (car (car articles))))
 	  (gnus-message 7 "Scoring on article %s of %s..." article last)
 	  (if (not (funcall request-func article gnus-newsgroup-name))
 	      ()
@@ -1212,7 +1213,7 @@ SCORE is the score to add."
 		(found			;Match, update date.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcar (nthcdr 2 kill) now))
-		((< date expire) ;Old entry, remove.
+		((< date expire)	;Old entry, remove.
 		 (gnus-score-set 'touched '(t) alist)
 		 (setcdr entries (cdr rest))
 		 (setq rest entries)))
@@ -1223,7 +1224,7 @@ SCORE is the score to add."
 (defun gnus-score-add-followups (header score scores)
   (save-excursion
     (set-buffer gnus-summary-buffer)
-    (let* ((id (header-id header))
+    (let* ((id (mail-header-id header))
 	   (scores (car scores))
 	   entry dont)
       ;; Don't enter a score if there already is one.
@@ -1326,7 +1327,7 @@ SCORE is the score to add."
 				     arts (cdr arts))
 			       (setcdr art (+ score (cdr art)))
 			       (setq gnus-score-trace 
-				     (cons (cons (header-number
+				     (cons (cons (mail-header-number
 						  (car art)) kill)
 					   gnus-score-trace)))
 			   (while arts
@@ -1347,7 +1348,7 @@ SCORE is the score to add."
 			    arts (cdr arts))
 		      (setcdr art (+ score (cdr art)))
 		      (setq gnus-score-trace 
-			    (cons (cons (header-number (car art)) kill)
+			    (cons (cons (mail-header-number (car art)) kill)
 				  gnus-score-trace)))
 		  (while arts
 		    (setq art (car arts)
@@ -1408,7 +1409,7 @@ SCORE is the score to add."
 				 arts (cdr arts))
 			   (setcdr art (+ score (cdr art)))
 			   (setq gnus-score-trace 
-				 (cons (cons (header-number
+				 (cons (cons (mail-header-number
 					      (car art)) kill)
 				       gnus-score-trace)))
 		       (while arts
@@ -1435,7 +1436,7 @@ SCORE is the score to add."
 
 (defun gnus-score-build-cons (article)
   ;; Build a `gnus-newsgroup-scored' type cons from ARTICLE.
-  (cons (header-number (car article)) (cdr article)))
+  (cons (mail-header-number (car article)) (cdr article)))
 
 (defconst gnus-header-index
   ;; Name to index alist.
@@ -1620,6 +1621,7 @@ This mode is an extended emacs-lisp mode.
     (or (setq trace gnus-score-trace)
 	(error "No score rules apply to the current article."))
     (pop-to-buffer "*Gnus Scores*")
+    (gnus-add-current-to-buffer-list)
     (erase-buffer)
     (while trace
       (insert (format "%S\n" (cdr (car trace))))

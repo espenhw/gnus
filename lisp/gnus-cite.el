@@ -389,26 +389,26 @@ See also the documentation for `gnus-article-highlight-citation'."
 		  gnus-cite-loose-attribution-alist))))
   ;; Find exact supercite citations.
   (gnus-cite-match-attributions 'small nil
-   (lambda (prefix tag)
-     (if tag
-	 (concat "\\`" (regexp-quote prefix) "[ \t]*" 
-		 (regexp-quote tag) ">"))))
+				(lambda (prefix tag)
+				  (if tag
+				      (concat "\\`" (regexp-quote prefix) "[ \t]*" 
+					      (regexp-quote tag) ">"))))
   ;; Find loose supercite citations after attributions.
   (gnus-cite-match-attributions 'small t
-   (lambda (prefix tag)
-     (if tag (concat "\\<" (regexp-quote tag) "\\>"))))
+				(lambda (prefix tag)
+				  (if tag (concat "\\<" (regexp-quote tag) "\\>"))))
   ;; Find loose supercite citations anywhere.
   (gnus-cite-match-attributions 'small nil
-   (lambda (prefix tag)
-     (if tag (concat "\\<" (regexp-quote tag) "\\>"))))
+				(lambda (prefix tag)
+				  (if tag (concat "\\<" (regexp-quote tag) "\\>"))))
   ;; Find nested citations after attributions.
   (gnus-cite-match-attributions 'small-if-unique t
-   (lambda (prefix tag)
-     (concat "\\`" (regexp-quote prefix) ".+")))
+				(lambda (prefix tag)
+				  (concat "\\`" (regexp-quote prefix) ".+")))
   ;; Find nested citations anywhere.
   (gnus-cite-match-attributions 'small nil
-   (lambda (prefix tag)
-     (concat "\\`" (regexp-quote prefix) ".+")))
+				(lambda (prefix tag)
+				  (concat "\\`" (regexp-quote prefix) ".+")))
   ;; Remove loose prefixes with too few lines.
   (let ((alist gnus-cite-loose-prefix-alist)
 	entry)
@@ -487,21 +487,21 @@ See also the documentation for `gnus-article-highlight-citation'."
 	    (setq gnus-cite-attribution-alist 
 		  (cons (cons in (car best)) gnus-cite-attribution-alist)))
 	(if (memq best gnus-cite-loose-prefix-alist)
-	   (let ((loop gnus-cite-prefix-alist)
-		 (numbers (cdr best))
-		 current)
-	     (setq gnus-cite-loose-prefix-alist
-		   (delq best gnus-cite-loose-prefix-alist))
-	     (while loop
-	       (setq current (car loop)
-		     loop (cdr loop))
-	       (if (eq current best)
-		   ()
-		 (setcdr current (gnus-set-difference (cdr current) numbers))
-		 (if (null (cdr current))
-		     (setq gnus-cite-loose-prefix-alist
-			   (delq current gnus-cite-loose-prefix-alist)
-			   atts (delq current atts)))))))))))
+	    (let ((loop gnus-cite-prefix-alist)
+		  (numbers (cdr best))
+		  current)
+	      (setq gnus-cite-loose-prefix-alist
+		    (delq best gnus-cite-loose-prefix-alist))
+	      (while loop
+		(setq current (car loop)
+		      loop (cdr loop))
+		(if (eq current best)
+		    ()
+		  (setcdr current (gnus-set-difference (cdr current) numbers))
+		  (if (null (cdr current))
+		      (setq gnus-cite-loose-prefix-alist
+			    (delq current gnus-cite-loose-prefix-alist)
+			    atts (delq current atts)))))))))))
 
 (defun gnus-cite-find-loose (prefix)
   ;; Return a list of loose attribution lines prefixed by PREFIX.
