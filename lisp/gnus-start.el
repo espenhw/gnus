@@ -229,7 +229,7 @@ not match this regexp will be removed before saving the list."
 (defcustom gnus-ignored-newsgroups
   (mapconcat 'identity
 	     '("^to\\."			; not "real" groups
-	       "^[0-9. \t]+ "		; all digits in name
+	       "^[0-9. \t]+\\( \\|$\\)"	; all digits in name
 	       "^[\"][]\"[#'()]"	; bogus characters
 	       )
 	     "\\|")
