@@ -1,5 +1,8 @@
 2002-03-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-add-action): Use add-to-list.
+	(message-delete-action): New function.
+
 	* nndoc.el (nndoc-mail-in-mail-type-p): Break a long regexp into
 	pieces.
 

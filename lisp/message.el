@@ -2764,10 +2764,16 @@ It should typically alter the sending method in some way or other."
 
 (defun message-add-action (action &rest types)
   "Add ACTION to be performed when doing an exit of type TYPES."
+  (while types
+    (add-to-list (intern (format "message-%s-actions" (pop types)))
+		 action)))
+
+(defun message-delete-action (action &rest types)
+  "Delete ACTION from lists of actions performed when doing an exit of type TYPES."
   (let (var)
     (while types
       (set (setq var (intern (format "message-%s-actions" (pop types))))
-	   (nconc (symbol-value var) (list action))))))
+	   (delq action (symbol-value var))))))
 
 (defun message-do-actions (actions)
   "Perform all actions in ACTIONS."
