@@ -862,9 +862,8 @@ If you want to experiment with the @acronym{IDNA} encoding, you can
 invoke @kbd{M-x message-idna-to-ascii-rhs RET} in the message buffer
 to have the non-@acronym{ASCII} domain names encoded while you edit the message.
 
-Note that you must have GNU Libidn
-(@uref{http://www.gnu.org/software/libidn/} installed in order to use
-this functionality.
+Note that you must have @uref{http://www.gnu.org/software/libidn/, GNU
+Libidn} installed in order to use this functionality.
 
 @node Security
 @section Security
@@ -1039,7 +1038,7 @@ care in handling it.
 @subsection Using PGP/MIME
 
 @acronym{PGP/MIME} requires an external OpenPGP implementation, such
-as GNU Privacy Guard (@uref{http://www.gnupg.org/}).  One Emacs
+as @uref{http://www.gnupg.org/, GNU Privacy Guard}.  One Emacs
 interface to OpenPGP implementations, PGG (@pxref{Top, ,PGG, pgg, PGG
 Manual}), is included, but Mailcrypt and Florian Weimer's
 @code{gpg.el} are also supported.

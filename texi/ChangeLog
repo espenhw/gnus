@@ -1,10 +1,15 @@
+2003-04-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.texi, gnus.texi: Use the second arg to @uref where it
+	makes sense to make HTML and PDF output look nicer.
+
 2003-04-26  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-faq.texi: Make it compile in the LaTeX version.  Remove
 	redundant entries in @urefs.
 	(FAQ - Glossary): Remove the final @bye since it breaks the Gnus
 	manual.
-	([1.2]): @subsection -> @subheading.	
+	([1.2]): @subsection -> @subheading.
 
 	* texi2latex.el (latexi-translate-file): Support @r, @env,
 	@heading, @subheading, @TeX.

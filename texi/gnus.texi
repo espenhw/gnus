@@ -7318,10 +7318,10 @@ complete headers in the piped output.
 @findex gnus-summary-muttprint
 @vindex gnus-summary-muttprint-program
 Save the current article into muttprint. That is, print it using the
-external program Muttprint (see
-@uref{http://muttprint.sourceforge.net/}). The program name and
-options to use is controlled by the variable
-@code{gnus-summary-muttprint-program}. (@code{gnus-summary-muttprint}).
+external program @uref{http://muttprint.sourceforge.net/,
+Muttprint}. The program name and options to use is controlled by the
+variable @code{gnus-summary-muttprint-program}.
+(@code{gnus-summary-muttprint}).
 
 @end table
 
@@ -8508,14 +8508,13 @@ can use include:
 Use Emacs/w3.
 
 @item w3m
-Use emacs-w3m (see @uref{http://emacs-w3m.namazu.org/} for more
-information).
+Use @uref{http://emacs-w3m.namazu.org/, emacs-w3m}.
 
 @item links
-Use Links (see @uref{http://links.sf.net/}).
+Use @uref{http://links.sf.net/, Links}.
 
 @item lynx
-Use Lynx (see @uref{http://lynx.isc.org/}).
+Use @uref{http://lynx.isc.org/, Lynx}.
 
 @item html2text
 Use html2text---a simple @acronym{HTML} converter included with Gnus.
@@ -11246,9 +11245,9 @@ This is the delimiter mentioned above.  By default, it is @samp{^L}
 @item gnus-use-idna
 This variable controls whether Gnus performs IDNA decoding of
 internationalized domain names inside @samp{From}, @samp{To} and
-@samp{Cc} headers.  This requires GNU Libidn
-(@uref{http://www.gnu.org/software/libidn/}, and this variable is only
-enabled if you have installed it.
+@samp{Cc} headers.  This requires
+@uref{http://www.gnu.org/software/libidn/, GNU Libidn}, and this
+variable is only enabled if you have installed it.
 
 @end table
 
@@ -12619,9 +12618,8 @@ remote system.
 @findex nntp-open-tls-stream
 @item nntp-open-tls-stream
 Opens a connection to a server over a @dfn{secure} channel.  To use
-this you must have GNUTLS installed (see
-@uref{http://www.gnu.org/software/gnutls/}).  You then define a server
-as follows:
+this you must have @uref{http://www.gnu.org/software/gnutls/, GNUTLS}
+installed.  You then define a server as follows:
 
 @lisp
 ;; @r{"nntps" is port 563 and is predefined in our @file{/etc/services}}
@@ -12635,10 +12633,10 @@ as follows:
 
 @findex nntp-open-ssl-stream
 @item nntp-open-ssl-stream
-Opens a connection to a server over a @dfn{secure} channel.  To use this
-you must have OpenSSL (@uref{http://www.openssl.org}) or SSLeay
-installed (@uref{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}.  You then
-define a server as follows:
+Opens a connection to a server over a @dfn{secure} channel.  To use
+this you must have @uref{http://www.openssl.org, OpenSSL} or
+@uref{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL, SSLeay} installed.  You
+then define a server as follows:
 
 @lisp
 ;; @r{"snews" is port 563 and is predefined in our @file{/etc/services}}
@@ -13502,7 +13500,7 @@ An example @acronym{IMAP} mail source:
 @item webmail
 Get mail from a webmail server, such as @uref{www.hotmail.com},
 @uref{webmail.netscape.com}, @uref{www.netaddress.com},
-@uref{mail.yahoo..com}.
+@uref{mail.yahoo.com}.
 
 NOTE: Webmail largely depends cookies. A "one-line-cookie" patch is
 required for url "4.0pre.46".
@@ -15244,8 +15242,8 @@ filename is unrelated to the article number in Gnus.  @code{nnmaildir}
 also stores the equivalent of @code{nnml}'s overview files in one file
 per article, so it uses about twice as many inodes as @code{nnml}.  (Use
 @code{df -i} to see how plentiful your inode supply is.)  If this slows
-you down or takes up very much space, consider switching to ReiserFS
-(@uref{http://www.namesys.com/}) or another non-block-structured
+you down or takes up very much space, consider switching to 
+@uref{http://www.namesys.com/, ReiserFS} or another non-block-structured
 file system.
 
 Since maildirs don't require locking for delivery, the maildirs you use
@@ -15463,7 +15461,7 @@ Format string URL to fetch an article by @code{Message-ID}.
 @cindex Slashdot
 @cindex nnslashdot
 
-Slashdot (@uref{http://slashdot.org/}) is a popular news site, with
+@uref{http://slashdot.org/, Slashdot} is a popular news site, with
 lively discussion following the news articles.  @code{nnslashdot} will
 let you read this forum in a convenient manner.
 
@@ -15553,7 +15551,7 @@ updated.  The default is 0.
 @cindex nnultimate
 @cindex Ultimate Bulletin Board
 
-The Ultimate Bulletin Board (@uref{http://www.ultimatebb.com/}) is
+@uref{http://www.ultimatebb.com/, The Ultimate Bulletin Board} is
 probably the most popular Web bulletin board system used.  It has a
 quite regular and nice interface, and it's possible to get the
 information Gnus needs to keep groups updated.
@@ -19703,7 +19701,7 @@ before.
 @section GroupLens
 @cindex GroupLens
 
-GroupLens (@uref{http://www.cs.umn.edu/Research/GroupLens/}) is a
+@uref{http://www.cs.umn.edu/Research/GroupLens/, GroupLens} is a
 collaborative filtering system that helps you work together with other
 people to find the quality news articles out of the huge volume of
 news articles generated every day.
@@ -19732,10 +19730,9 @@ so this section is mostly of historical interest.
 @node Using GroupLens
 @subsection Using GroupLens
 
-To use GroupLens you must register a pseudonym with your local Better
-Bit Bureau (BBB).
-@uref{http://www.cs.umn.edu/Research/GroupLens/bbb.html} is the only
-better bit in town at the moment.
+To use GroupLens you must register a pseudonym with your local
+@uref{http://www.cs.umn.edu/Research/GroupLens/bbb.html, Better Bit
+Bureau (BBB)} is the only better bit in town at the moment.
 
 Once you have registered you'll need to set a couple of variables.
 
