@@ -1,3 +1,7 @@
+2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* smiley.el: Replaced with smiley-ems.el.
+
 2002-01-26  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-url.el (mm-url-predefined-programs): Add w3m.

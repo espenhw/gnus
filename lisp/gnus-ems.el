@@ -47,7 +47,7 @@
   (autoload 'gnus-xmas-redefine "gnus-xmas")
   (autoload 'appt-select-lowest-window "appt"))
 
-(autoload 'smiley-region "smiley-ems")
+(autoload 'smiley-region "smiley")
 
 (defun gnus-kill-all-overlays ()
   "Delete all overlays in the current buffer."

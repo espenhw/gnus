@@ -258,7 +258,7 @@ Modify to suit your needs."))
     (dolist (file
 	     (if (featurep 'xemacs)
                 '("md5.el")
-	       '("gnus-xmas.el" "messagexmas.el" "nnheaderxm.el" "smiley.el")))
+	       '("gnus-xmas.el" "messagexmas.el" "nnheaderxm.el")))
       (setq files (delete file files)))
 
     (dolist (file files)
