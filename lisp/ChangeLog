@@ -1,3 +1,12 @@
+2001-05-28  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	From Jaap-Henk Hoepman (jhh@xs4all.nl).
+	
+	* mm-decode.el (mm-keep-viewer-alive-types): New variable.
+	(mm-keep-viewer-alive-p, mm-handle-set-external-undisplayer,
+	mm-destroy-postponed-undisplay-list): New functions.
+	(mm-display-external): Use them.
+
 2001-05-27  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-salt.el (gnus-tree-highlight-node): Bind `default-high' and

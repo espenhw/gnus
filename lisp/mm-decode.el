@@ -22,6 +22,14 @@
 
 ;;; Commentary:
 
+;; Jaap-Henk Hoepman (jhh@xs4all.nl): 
+;;
+;; Added support for delayed destroy of external MIME viewers. All external
+;; viewers for mime types in mm-keep-viewer-alive-types will remain active
+;; after switching articles or groups, and will only be removed when exiting
+;; gnus.
+;; 
+
 ;;; Code:
 
 (require 'mail-parse)
@@ -33,6 +41,8 @@
   (autoload 'mm-inline-partial "mm-partial")
   (autoload 'mm-inline-external-body "mm-extern")
   (autoload 'mm-insert-inline "mm-view"))
+
+(add-hook 'gnus-exit-gnus-hook 'mm-destroy-postponed-undisplay-list)
 
 (defgroup mime-display ()
   "Display of MIME in mail and news articles."
@@ -183,6 +193,14 @@
   "List of media types that are to be displayed inline."
   :type '(repeat string)
   :group 'mime-display)
+
+(defcustom mm-keep-viewer-alive-types
+  '("application/postscript" "application/msword" "application/vnd.ms-excel"
+    "application/pdf" "application/x-dvi")
+  "List of media types for which the external viewer will not be killed
+when selecting a different article."
+  :type '(repeat string)
+  :group 'mime-display)
  
 (defcustom mm-automatic-display
   '("text/plain" "text/enriched" "text/richtext" "text/html"
@@ -246,6 +264,7 @@ If not set, `default-directory' will be used."
 (defvar mm-dissection-list nil)
 (defvar mm-last-shell-command "")
 (defvar mm-content-id-alist nil)
+(defvar mm-postponed-undisplay-list nil)
 
 ;; According to RFC2046, in particular, in a digest, the default
 ;; Content-Type value for a body part is changed from "text/plain" to
@@ -331,6 +350,35 @@ The original alist is not modified.  See also `destructive-alist-to-plist'."
 	(setq plist (cons (cdr el) (cons (car el) plist))))
       (setq alist (cdr alist)))
     (nreverse plist)))
+
+(defun mm-keep-viewer-alive-p (handle)
+  "Say whether external viewer for HANDLE should stay alive."
+  (let ((types mm-keep-viewer-alive-types)
+	(type (mm-handle-media-type handle))
+	ty)
+    (catch 'found
+      (while (setq ty (pop types))
+	(when (string-match ty type)
+	  (throw 'found t))))))
+
+(defun mm-handle-set-external-undisplayer (handle function)
+ "Set the undisplayer for this handle; postpone undisplaying of viewers
+for types in mm-keep-viewer-alive-types."
+  (if (mm-keep-viewer-alive-p handle)
+    (progn
+     (setq new-handle (copy-sequence handle))
+     (mm-handle-set-undisplayer new-handle function)
+     (mm-handle-set-undisplayer handle nil)
+     (push new-handle mm-postponed-undisplay-list)
+    )
+  (mm-handle-set-undisplayer handle function)
+  )
+)
+
+(defun mm-destroy-postponed-undisplay-list ()
+  (message "Destroying external MIME viewers")
+  (mm-destroy-parts mm-postponed-undisplay-list)
+)
 
 (defun mm-dissect-buffer (&optional no-strict-mime)
   "Dissect the current buffer and return a list of MIME handles."
@@ -556,7 +604,7 @@ external if displayed external."
 				    shell-command-switch
 				    (mm-mailcap-command
 				     method file (mm-handle-type handle)))
-		   (mm-handle-set-undisplayer handle (cons file buffer)))
+		   (mm-handle-set-external-undisplayer handle (cons file buffer)))
 		 (message "Displaying %s..." (format method file))
 		 'external)
 		(copiousoutput
@@ -592,7 +640,7 @@ external if displayed external."
 				    shell-command-switch
 				    (mm-mailcap-command
 				     method file (mm-handle-type handle)))
-		   (mm-handle-set-undisplayer handle (cons file buffer)))
+		   (mm-handle-set-external-undisplayer handle (cons file buffer)))
 		 (message "Displaying %s..." (format method file))
 		 'external)))))))
 
