@@ -8,6 +8,14 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** gnus-summary-line-format
+
+The default value changed to "%U%R%z%I%(%[%4L: %-23,23f%]%) %s\n".
+Moreover gnus-extra-headers, nnmail-extra-headers and
+gnus-ignored-from-addresses changed their default so that the users
+name will be replaced by the recipient's name or the group name
+posting to for NNTP groups.
+
 ** deuglify.el (gnus-article-outlook-deuglify-article)
 
 A new file from Raymond Scholz <rscholz@zonix.de> for deuglifying
