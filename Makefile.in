@@ -5,7 +5,7 @@ srcdir = @srcdir@
 
 @SET_MAKE@
 EMACS = @EMACS@
-XEMACS = xemacs21
+XEMACS = xemacs
 
 all: lick info
 
@@ -28,23 +28,20 @@ info:
 clean:
 	rm -f */*.orig */*.rej *.orig *.rej
 
-xsome:
-	cd lisp && $(MAKE) EMACS="$(XEMACS)" some
-
 elclean:
 	rm lisp/*.elc
 
 x:
-	make EMACS=xemacs21
+	$(MAKE) EMACS=$(XEMACS)
+
+xsome:
+	$(MAKE) EMACS="$(XEMACS)" some
 
 distclean:
 	make clean
 	rm -rf *~
 	for i in lisp texi; do (cd $$i; make distclean); done
 	rm -f config.log config.status config.cache Makefile
-
-osome:
-	make EMACS=xemacs21 some
 
 config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck

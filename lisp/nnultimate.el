@@ -215,6 +215,10 @@
        "211 %d %d %d %s\n" (cadr elem) 1 (cadr elem)
        (prin1-to-string group))))))
 
+(deffoo nnultimate-request-close ()
+  (setq nnultimate-groups-alist nil
+	nnultimate-groups nil))
+
 (deffoo nnultimate-request-article (article &optional group server buffer)
   (nnultimate-possibly-change-server group server)
   (let ((contents (cdr (assq article nnultimate-articles))))

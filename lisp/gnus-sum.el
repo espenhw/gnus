@@ -9188,7 +9188,9 @@ If REVERSE, save parts that do not match TYPE."
 		    (or
 		     (mail-content-type-get
 		      (mm-handle-disposition handle) 'filename)
-		     (concat gnus-newsgroup-name "." gnus-current-article)))
+		     (concat gnus-newsgroup-name
+			     "." (number-to-string
+				  (cdr gnus-article-current)))))
 		   dir)))
 	(unless (file-exists-p file)
 	  (mm-save-part-to-file handle file))))))
