@@ -209,7 +209,7 @@ The characters in CHARSET should then be decoded."
 		   ;; buffer-file-coding-system
 		   ;;Article buffer is nil coding system
 		   ;;in XEmacs
-		   enable-multibyte-characters
+		   (mm-multibyte-p)
 		   (or (not (eq mule-charset 'ascii))
 		       (setq mule-charset mail-parse-charset)))
 	  (mm-decode-coding-region (point-min) (point-max) mule-charset))))))
@@ -225,7 +225,7 @@ The characters in CHARSET should then be decoded."
      (let (mule-charset)
        (when (and charset
 		  (setq mule-charset (mm-charset-to-coding-system charset))
-		  enable-multibyte-characters
+		  (mm-multibyte-p)
 		  (or (not (eq mule-charset 'ascii))
 		      (setq mule-charset mail-parse-charset)))
 	 (mm-decode-coding-string string mule-charset))))

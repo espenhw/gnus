@@ -235,15 +235,17 @@ used as the line break code type of the coding system."
 
 (defsubst mm-multibyte-p ()
   "Say whether multibyte is enabled."
-  (and (boundp 'enable-multibyte-characters)
-       enable-multibyte-characters))
+  (or (string-match "XEmacs\\|Lucid" emacs-version)
+      (and (boundp 'enable-multibyte-characters)
+	   enable-multibyte-characters)))
 
 (defmacro mm-with-unibyte-buffer (&rest forms)
   "Create a temporary buffer, and evaluate FORMS there like `progn'.
 See also `with-temp-file' and `with-output-to-string'."
   (let ((temp-buffer (make-symbol "temp-buffer"))
 	(multibyte (make-symbol "multibyte")))
-    `(if (not (boundp 'enable-multibyte-characters))
+    `(if (or (string-match "XEmacs\\|Lucid" emacs-version)
+	     (not (boundp 'enable-multibyte-characters)))
 	 (with-temp-buffer ,@forms)
        (let ((,multibyte (default-value 'enable-multibyte-characters))
 	     ,temp-buffer)
@@ -267,8 +269,7 @@ See also `with-temp-file' and `with-output-to-string'."
 (defun mm-find-charset-region (b e)
   "Return a list of charsets in the region."
   (cond
-   ((and (boundp 'enable-multibyte-characters)
- 	 enable-multibyte-characters
+   ((and (mm-multibyte-p)
  	 (fboundp 'find-charset-region))
     (find-charset-region b e))
    ((not (boundp 'current-language-environment))

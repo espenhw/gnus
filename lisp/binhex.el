@@ -199,12 +199,12 @@ If HEADER-ONLY is non-nil only decode header and return filename."
 	(save-excursion
 	  (goto-char start)
 	  (when (re-search-forward binhex-begin-line end t)
-	    (if (boundp 'enable-multibyte-characters)
+	    (if (and (not (string-match "XEmacs\\|Lucid" emacs-version))
+		     (boundp 'enable-multibyte-characters))
 		(let ((multibyte
 		       (default-value 'enable-multibyte-characters)))
 		  (setq-default enable-multibyte-characters nil)
-		  (setq work-buffer
-			(generate-new-buffer " *binhex-work*"))
+		  (setq work-buffer (generate-new-buffer " *binhex-work*"))
 		  (setq-default enable-multibyte-characters multibyte))
 	      (setq work-buffer (generate-new-buffer " *binhex-work*")))
 	    (buffer-disable-undo work-buffer)

@@ -48,7 +48,7 @@
 		    font-lock-defaults user-full-name user-login-name
 		    gnus-newsgroup-name gnus-article-x-face-too-ugly
 		    gnus-newsgroup-charset gnus-newsgroup-emphasis-alist
-		    mail-mode-hook enable-multibyte-characters
+		    mail-mode-hook
 		    adaptive-fill-first-line-regexp adaptive-fill-regexp
 		    url-current-mime-headers buffer-file-coding-system
 		    w3-image-mappings url-current-mime-type
