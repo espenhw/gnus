@@ -10520,6 +10520,9 @@ Privacy Guard when you click on the MIME button (@pxref{Using MIME}).
 application/pgp-keys; gpg --import --interactive --verbose; needsterminal
 @end example
 
+This happens to also be the default action defined in
+@var{mailcap-mime-data}.
+
 @node Mailing List
 @section Mailing List
 
