@@ -1,5 +1,7 @@
 2002-03-31  Lars Magne Ingebrigtsen  <larsi@quimbies.gnus.org>
 
+	* spam.el: New file.
+
 	* dns.el (query-dns): Test.
 
 2002-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>

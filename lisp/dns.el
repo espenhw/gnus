@@ -121,7 +121,9 @@
 				  (progn (forward-char length) (point)))
 		name))))
     (if (stringp ended)
-	(concat (mapconcat 'identity (nreverse name) ".") "." ended)
+	(if (null name)
+	    ended
+	  (concat (mapconcat 'identity (nreverse name) ".") "." ended))
       (mapconcat 'identity (nreverse name) "."))))
 
 (defun dns-write (spec)
@@ -254,13 +256,16 @@
 	      (mapconcat 'number-to-string (nreverse bytes) ".")))
 	   ((eq type 'NS)
 	    (dns-read-string-name string buffer))
+	   ((eq type 'CNAME)
+	    (dns-read-string-name string buffer))
 	   (t string)))
       (goto-char point))))
 
 ;;; Interface functions.
 
-(defun query-dns (name &optional type)
-  "Query a DNS server for NAME of TYPE."
+(defun query-dns (name &optional type fullp)
+  "Query a DNS server for NAME of TYPE.
+If FULLP, return the entire record returned."
   (setq type (or type 'A))
   (mm-with-unibyte-buffer
     (let ((coding-system-for-read 'binary) 
@@ -274,10 +279,11 @@
 	      :service "domain"
 	      :type 'datagram))
 	    (step 100)
-	    (times (* dns-timeout 1000)))
+	    (times (* dns-timeout 1000))
+	    (id (random 65000)))
 	(process-send-string
 	 process
-	 (dns-write `((id 4)
+	 (dns-write `((id ,id)
 		      (opcode query)
 		      (queries ((,name (type ,type))))
 		      (recursion-desired-p t))))
@@ -287,9 +293,12 @@
 	  (decf times step))
 	(ignore-errors
 	  (delete-process process))
-	(let ((answer (car (dns-get 'answers (dns-read (buffer-string))))))
- 	  (when (eq type (dns-get 'type answer))
-	    (dns-get 'data answer)))))))
+	(let ((result (dns-read (buffer-string))))
+	  (if fullp
+	      result
+	    (let ((answer (car (dns-get 'answers result))))
+	      (when (eq type (dns-get 'type answer))
+		(dns-get 'data answer)))))))))
     
 (provide 'dns)
 
