@@ -1,3 +1,7 @@
+2000-11-16 23:31  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-generate-mime-1): Ignore ascii.
+
 2000-11-16 Justin Sheehy <justin@iago.org>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Fix menu items.

@@ -294,6 +294,7 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	      (with-temp-buffer
 		(setq charset (mm-charset-to-coding-system 
 			       (cdr (assq 'charset cont))))
+		(if (eq charset 'ascii) (setq charset nil))
 		(cond
 		 ((cdr (assq 'buffer cont))
 		  (insert-buffer-substring (cdr (assq 'buffer cont))))
