@@ -1,3 +1,9 @@
+2004-02-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-fetch-field): Remove redundant
+	case-fold-search binding.
+	(message-narrow-to-field): Simplify.
+
 2004-02-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam.el (spam-directory): Derive from `gnus-directory'.

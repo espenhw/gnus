@@ -1628,7 +1628,6 @@ is used by default."
 The buffer is expected to be narrowed to just the header of the message;
 see `message-narrow-to-headers-or-head'."
   (let* ((inhibit-point-motion-hooks t)
-	 (case-fold-search t)
 	 (value (mail-fetch-field header nil (not not-all))))
     (when value
       (while (string-match "\n[\t ]+" value)
@@ -1651,9 +1650,7 @@ see `message-narrow-to-headers-or-head'."
    (progn
      (forward-line 1)
      (if (re-search-forward "^[^ \n\t]" nil t)
-	 (progn
-	   (beginning-of-line)
-	   (point))
+	 (point-at-bol)
        (point-max))))
   (goto-char (point-min)))
 
