@@ -333,7 +333,7 @@ The provided functions are:
 
 (defcustom message-cite-prefix-regexp
   ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
-  "[ \t]*\\(\\(\\w\\|[-_.]\\)+>+[ \t]*\\|[]>»|:}+][ \t]*\\)+"
+  "\\([ \t]*\\(\\w\\|[-_.]\\)+>+\\|[ \t]*[]>»|:}+]\\)+"
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'message-insertion
   :type 'regexp)

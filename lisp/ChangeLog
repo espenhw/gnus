@@ -1,3 +1,12 @@
+2000-11-16 Justin Sheehy <justin@iago.org>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Fix menu items.
+
+2000-11-16 17:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-cite-prefix-regexp): Prefix should not end
+	at space.
+
 2000-11-15 18:09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-mode-syntax-table): Add - as a word

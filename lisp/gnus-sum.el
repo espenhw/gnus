@@ -1717,8 +1717,8 @@ increase the score of each group you read."
 	      ["QP" gnus-article-de-quoted-unreadable t]
 	      ["Base64" gnus-article-de-base64-unreadable t]
 	      ["View all" gnus-mime-view-all-parts t]
-	      ["Verify and Decrypt" gnus-summary-force-verify-and-decrypt]
-	      ["Encrypt body" gnus-article-encrypt-body])
+	      ["Verify and Decrypt" gnus-summary-force-verify-and-decrypt t]
+	      ["Encrypt body" gnus-article-encrypt-body t])
              ("Date"
               ["Local" gnus-article-date-local t]
               ["ISO8601" gnus-article-date-iso8601 t]
