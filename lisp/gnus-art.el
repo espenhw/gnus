@@ -576,7 +576,7 @@ Initialized from `text-mode-syntax-table.")
    b e (cons 'article-type (cons type gnus-hidden-properties))))
 
 (defun gnus-article-unhide-text-type (b e type)
-  "Hide text of TYPE between B and E."
+  "Unhide text of TYPE between B and E."
   (remove-text-properties
    b e (cons 'article-type (cons type gnus-hidden-properties)))
   (when (memq 'intangible gnus-hidden-properties)
@@ -1470,7 +1470,7 @@ is to run."
   (unless n
     (setq n 1))
   (gnus-stop-date-timer)
-  (setq article-lapsed-timer 
+  (setq article-lapsed-timer
 	(nnheader-run-at-time 1 n 'article-update-date-lapsed)))
 
 (defun gnus-stop-date-timer ()
@@ -1954,9 +1954,9 @@ commands:
   (use-local-map gnus-article-mode-map)
   (gnus-update-format-specifications nil 'article-mode)
   (set (make-local-variable 'page-delimiter) gnus-page-delimiter)
-  (make-local-variable 'gnus-page-broken) 
-  (make-local-variable 'gnus-button-marker-list) 
-  (make-local-variable 'gnus-article-current-summary) 
+  (make-local-variable 'gnus-page-broken)
+  (make-local-variable 'gnus-button-marker-list)
+  (make-local-variable 'gnus-article-current-summary)
   (gnus-set-default-directory)
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)
@@ -2057,7 +2057,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		      (message "Message marked for downloading"))
 		  (gnus-summary-mark-article article gnus-canceled-mark)
 		  (unless (memq article gnus-newsgroup-sparse)
-		    (gnus-error 1 
+		    (gnus-error 1
 		     "No such article (may have expired or been canceled)")))))
 	  (if (or (eq result 'pseudo) (eq result 'nneething))
 	      (progn
@@ -2534,7 +2534,7 @@ If given a prefix, show the hidden text instead."
 
       ;; Associate this article with the current summary buffer.
       (setq gnus-article-current-summary gnus-summary-buffer)
-      
+
       ;; Take the article from the original article buffer
       ;; and place it in the buffer it's supposed to be in.
       (when (and (get-buffer gnus-article-buffer)

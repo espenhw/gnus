@@ -1,10 +1,21 @@
+Tue Aug 11 20:46:25 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.33 is released.
+
+1998-08-11 20:07:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-apropos): Check symbol value.
+
+	* gnus-cite.el (gnus-cited-closed-text-button-line-format):
+	Changed.
+
 Tue Aug 11 19:42:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.32 is released.
 
 1998-08-11 13:36:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* nndoc.el (nndoc-type-alist): Do MIME digests before multiparts. 
+	* nndoc.el (nndoc-type-alist): Do MIME digests before multiparts.
 
 	* gnus.el (gnus-predefined-server-alist): Expand vars.
 
@@ -15,7 +26,7 @@ Tue Aug 11 19:42:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 1998-08-11 11:41:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus-art.el (gnus-header-newsgroups-face): Don't bold so much. 
+	* gnus-art.el (gnus-header-newsgroups-face): Don't bold so much.
 
 	* gnus-group.el (gnus-group-rename-group): Remove old group name
 	from list of killed groups.
@@ -23,7 +34,7 @@ Tue Aug 11 19:42:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-int.el (gnus-get-function): Error better.
 
 	* gnus-art.el (gnus-article-narrow-to-signature): Inhibit motion
-	hooks. 
+	hooks.
 	(article-hide-pgp): Delete text instead of hiding it.
 
 	* gnus-group.el (gnus-group-find-new-groups): Ditto.
@@ -39,15 +50,15 @@ Tue Aug 11 19:42:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-cite.el (gnus-cite-attribution-face): Changed to italic.
 
 	* gnus-art.el (gnus-article-edit-article): Delete "annotation"
-	text. 
+	text.
 	(gnus-insert-prev-page-button): Mark as annotation.
 	(gnus-insert-next-page-button): Ditto.
 
 	* gnus-cite.el (gnus-cited-closed-text-button-line-format): New
-	variable. 
+	variable.
 	(gnus-cited-closed-text-button-line-format-alist): Ditto.
 	(gnus-article-toggle-cited-text): Toggle between different
-	symbols. 
+	symbols.
 
 1998-08-09 19:58:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -69,7 +80,7 @@ Sun Aug  9 19:37:40 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-08-09 17:51:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-agent.el (gnus-agent-save-group-info): Check whether file
-	exists. 
+	exists.
 
 	* message.el (message-goto-signature): Return nil if no sig.
 	(message-delete-not-region): Delete properly if no sig.
@@ -82,7 +93,7 @@ Sun Aug  9 19:37:40 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus-sum.el (t): Added keystroke for W W C.
 
-	* gnus-cite.el (gnus-article-hide-citation-maybe): hiden->hidden. 
+	* gnus-cite.el (gnus-article-hide-citation-maybe): hiden->hidden.
 
 Sun Aug  9 15:46:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -111,7 +122,7 @@ Sun Aug  9 15:46:16 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el (gnus-continuum-version): Include quassia.
 
-	* gnus-sum.el (gnus-data-enter-list): Check before entering list. 
+	* gnus-sum.el (gnus-data-enter-list): Check before entering list.
 
 1998-08-06 11:13:56  Francois Felix Ingrand  <felix@dial.oleane.com>
 
@@ -127,7 +138,7 @@ Thu Aug  6 07:58:17 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-agent.el (gnus-agent-expire): Check whether (caar
 	gnus-agent-article-alist) is nil.
 
-	* gnus.el (gnus-read-method): Allow selecting predefined servers. 
+	* gnus.el (gnus-read-method): Allow selecting predefined servers.
 
 	* gnus-topic.el (gnus-topic-update-topic-line): Compute right
 	number when inserting missing topic lines.
@@ -136,7 +147,7 @@ Thu Aug  6 07:58:17 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	is alive.
 
 	* gnus-score.el (gnus-score-load-score-alist): Better error
-	messaging. 
+	messaging.
 
 Tue Aug  4 09:42:31 1998  Kurt Swanson  <ksw@dna.lth.se>
 
@@ -174,7 +185,7 @@ Tue Aug  4 09:42:31 1998  Kurt Swanson  <ksw@dna.lth.se>
 	* gnus-sum.el (gnus-select-newsgroup): Set
 	`gnus-newsgroup-unselected' when selecting specific articles via
 	SELECT-ARTICLE - there may be more headers to fetch if
-	`gnus-fetch-old-headers' is non-nil. 
+	`gnus-fetch-old-headers' is non-nil.
 	(gnus-summary-read-group): pass SELECT-ARTICLE to
 	`gnus-summary-read-group-1' and reset to nil when going to next group.
 	(gnus-summary-read-group): Change `select-article' to
@@ -206,7 +217,7 @@ Tue Aug  4 05:25:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-07-30 21:47:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-cache.el (gnus-summary-insert-cached-articles): Sort
-	articles. 
+	articles.
 
 	* nndir.el (nndir): Use nnml functions.
 
@@ -246,7 +257,7 @@ Mon Jul 27 03:26:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-07-26 19:01:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-request-article-this-buffer): Pass along
-	header. 
+	header.
 
 	* gnus-sum.el (gnus-summary-update-article): Don't pass along
 	iheader to regeneration routine.
@@ -263,7 +274,7 @@ Sat Jul 25 19:31:36 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-07-25 14:53:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-salt.el (gnus-pick-mouse-pick-region): Use
-	gnus-read-event-char. 
+	gnus-read-event-char.
 
 Sat Jul 25 02:43:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -302,7 +313,7 @@ Sat Jul 25 02:43:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-07-15 10:47:39  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnvirtual.el (nnvirtual-request-type): Handle non-numerical
-	articles. 
+	articles.
 
 	* gnus.el (gnus-news-group-p): Do something sensible with negative
 	articlies.
@@ -326,7 +337,7 @@ Wed Jul 15 10:10:07 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Wed Jul 15 09:56:47 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-select-newsgroup): Accept select-articles
-	para, 
+	para,
 
 1998-07-13  Mike McEwan  <mike@lotusland.demon.co.uk>
 
@@ -352,17 +363,17 @@ Sun Jul 12 04:01:22 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-agent.el (gnus-agent-expire): Update group info to add
  	expired articles to list of read articles and prevent
-	re-fetching. 
+	re-fetching.
 
 1998-07-12  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnmail.el (nnmail-active-file-coding-system): Changed to
-	binary. 
+	binary.
 
 Sun Jul 12 03:16:18 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-score.el (gnus-score-load-file): Specify which alist to
-	decay. 
+	decay.
 
 1998-07-12  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -384,11 +395,11 @@ Fri Jul 10 04:15:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Fri Jul 10 03:03:48 1998  François Pinard  <pinard@iro.umontreal.ca>
 
 	* gnus-sum.el (gnus-summary-respool-trace): New command and
-	keystroke. 
+	keystroke.
 
 Fri Jul 10 02:18:01 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus-util.el (gnus-prin1): Bind print-escape-multibyte to nil. 
+	* gnus-util.el (gnus-prin1): Bind print-escape-multibyte to nil.
 
 Mon Jul  6 01:02:59 1998  Simon Josefsson  <jas@pdc.kth.se>
 
@@ -417,7 +428,7 @@ Wed Jul  1 17:30:41 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-topic.el (gnus-topic-mode-map): Bind TAB and M-TAB.
 
 	* gnus-sum.el (gnus-build-sparse-threads): Make sure no dates are
-	nil. 
+	nil.
 	(gnus-summary-limit-mark-excluded-as-read): Use the intersection.
 
 	* gnus-msg.el (gnus-setup-message): Clone all local variables from
@@ -438,7 +449,7 @@ Wed Jul  1 13:33:26 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 Wed Jul  1 12:52:32 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* nntp.el (nntp-record-command): Give more precise time info. 
+	* nntp.el (nntp-record-command): Give more precise time info.
 	(nntp-next-result-arrived-p): Look for the end of error lines.
 
 Wed Jul  1 12:24:06 1998  François Pinard  <pinard@iro.umontreal.ca>
@@ -480,7 +491,7 @@ Mon Jun 29 21:22:46 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 Sun Jun 28 14:32:08 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus-spec.el (gnus-face-face-function): Double quoting removed. 
+	* gnus-spec.el (gnus-face-face-function): Double quoting removed.
 
 Sun Jun 28 09:54:52 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -492,7 +503,7 @@ Sun Jun 28 08:51:39 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	a temp buffer before replacing.
 
 	* gnus-msg.el (gnus-post-news): Treat broken-reply-to in
-	followups. 
+	followups.
 
 	* gnus-sum.el (gnus-summary-goto-subject): Position point.
 
@@ -506,7 +517,7 @@ Sat Jun 27 09:19:20 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-util.el
 	(gnus-put-text-properties-excluding-characters-with-faces): New
-	function. 
+	function.
 
 Sat Jun 27 08:56:08 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -519,7 +530,7 @@ Sat Jun 27 08:49:51 1998  Arne Georg Gleditsch  <argggh@ifi.uio.no>
 Sat Jun 27 08:45:09 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.el (message-check-news-body-syntax): Buggy checksum
-	check. 
+	check.
 
 Sat Jun 27 07:59:22 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -536,7 +547,7 @@ Sat Jun 27 03:18:57 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* nnfolder.el (nnfolder-request-replace-article): Check all X-From
 	headers.
 
-	* gnus-sum.el (gnus-update-marks): Don't nix out cache lists.  
+	* gnus-sum.el (gnus-update-marks): Don't nix out cache lists.
 
 	* nngateway.el (nngateway-mail2news-header-transformation):
 	Changed semantics.
@@ -568,7 +579,7 @@ Fri Jun 26 13:45:24 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-util.el (gnus-delete-alist): New function.
 
 	* gnus-sum.el (gnus-update-marks): Don't save list of cached
-	articles. 
+	articles.
 
 	* message.el (message-mode-menu): Include kill-buffer.
 
@@ -585,7 +596,7 @@ Fri Jun 26 13:45:09 1998  Richard Stallman  <rms@santafe.edu>
 Fri Jun 26 13:30:42 1998  Kevin Christian  <Kevin.Christian@symbios.com>
 
 	* gnus-score.el (gnus-score-string): Do updating of scores after
-	fuzzies. 
+	fuzzies.
 
 Fri Jun 26 07:26:03 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -603,7 +614,7 @@ Fri Jun 26 04:29:44 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-score.el (gnus-score-load-file): Would ignore all score
 	files without un-advanced rules.
 
-	* gnus-ems.el ((fboundp 'split-string)): Use it where it exists. 
+	* gnus-ems.el ((fboundp 'split-string)): Use it where it exists.
 
 Fri Jun 26 04:23:12 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -612,7 +623,7 @@ Fri Jun 26 04:23:12 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 Fri Jun 26 03:39:32 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnfolder.el (nnfolder-request-replace-article): Delete old
-	delimiter. 
+	delimiter.
 
 	* gnus-msg.el (gnus-summary-reply): Use it.
 
@@ -637,9 +648,9 @@ Thu Jun 25 10:35:48 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-sum.el (gnus-summary-limit-to-age): Reverse logic.
 
 	* gnus-score.el (gnus-summary-score-entry): Removed interactive
-	spec. 
+	spec.
 	((gnus-summary-score-map "V" gnus-summary-mode-map)): Removed
-	keystroke. 
+	keystroke.
 
 	* gnus-art.el (gnus-article-show-summary): Position point.
 
@@ -663,7 +674,7 @@ Thu Jun 25 05:13:31 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-salt.el (gnus-pick-mode-map): Reinstated keymap.
 
 	* gnus-sum.el (gnus-build-sparse-threads): Put the proper date
-	in. 
+	in.
 
 Wed Jun 24 07:52:30 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -676,12 +687,12 @@ Wed Jun 24 07:47:04 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Wed Jun 24 07:33:17 1998  Vladimir Alexiev  <vladimir@cs.ualberta.ca>
 
 	* nnvirtual.el (nnvirtual-update-xref-header): Regexp-quote group
-	name. 
+	name.
 
 Wed Jun 24 06:15:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-build-sparse-threads): Give all the sparse
-	articles the date of the current child.  
+	articles the date of the current child.
 
 	* gnus-topic.el (gnus-group-topic-parameters): Didn't compute.
 
@@ -712,7 +723,7 @@ Wed Jun 24 03:04:05 1998  Kim-Minh Kaplan  <kaplan@sky.fr>
 
 Wed Jun 24 02:49:57 1998  Castor  <castor@my-dejanews.com>
 
-	* nntp.el (nntp-open-ssl-stream): 
+	* nntp.el (nntp-open-ssl-stream):
 
 Wed Jun 24 02:31:46 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -722,7 +733,7 @@ Wed Jun 24 02:31:46 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Wed Jun 24 01:43:26 1998  Decklin Foster  <djarum@base.org>
 
 	* nngateway.el (nngateway-mail2news-header-transformation): New
-	function. 
+	function.
 
 Wed Jun 24 00:25:45 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -736,18 +747,18 @@ Wed Jun 24 00:25:45 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Tue Jun 23 23:58:48 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-topic.el (gnus-topic-prepare-topic): Respect visible topic
-	param. 
+	param.
 	(gnus-topic-hierarchical-parameters): New function.
 
 1998-06-02  Didier Verna  <verna@inf.enst.fr>
 
 	* gnus-picon.el (gnus-get-buffer-name): use get-buffer-create
-	instead of get-buffer 
+	instead of get-buffer
 
 Wed Jun  3 04:41:45 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnkiboze.el (nnkiboze-request-delete-group): Delete .newsrc
-	file. 
+	file.
 
 	* nnmail.el (nnmail-article-group): Nuke looong lines.
 
@@ -836,7 +847,7 @@ Sat May 23 19:44:43 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Tue May 19 04:11:33 1998  Yoshiki Hayashi  <g740685@komaba.ecc.u-tokyo.ac.jp>
 
 	* nnheader.el (nnheader-translate-file-chars): Don't change
-	string. 
+	string.
 
 Tue May 19 03:07:45 1998  P. E. Jareth Hein  <jareth@camelot-soft.com>
 
@@ -853,7 +864,7 @@ Tue May 12 06:12:42 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun May 10 19:08:28 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-group.el (gnus-group-read-ephemeral-group): Don't add
-	`address'. 
+	`address'.
 
 Sun May  3 18:01:01 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -886,7 +897,7 @@ Sat May  2 01:36:37 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	`find-file-hooks' to nil.
 
 	* nnmail.el (nnmail-process-unix-mail-format): Don't use
-	`find-file-noselect'. 
+	`find-file-noselect'.
 
 	* gnus-group.el (gnus-group-make-menu-bar): Typo.
 
@@ -918,7 +929,7 @@ Fri May  1 16:56:32 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	buffer.
 
 	* gnus-soup.el (gnus-soup-parse-areas): Check whether the file
-	exists. 
+	exists.
 
 	* gnus-draft.el (gnus-draft-send): Use meta-information.
 
@@ -930,7 +941,7 @@ Fri May  1 16:56:32 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Fri May  1 16:43:35 1998  Paul Franklin  <paul@cs.washington.edu>
 
 	* message.el (message-generate-headers): Insert Sender when
-	required. 
+	required.
 
 Fri May  1 15:28:55 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -940,10 +951,10 @@ Fri May  1 15:28:55 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	when hiding.
 
 	* gnus-msg.el (gnus-post-method): Allow ARG to override
-	`current'. 
+	`current'.
 
 	* gnus-sum.el (gnus-remove-thread): Remove the dummy root
-	properly. 
+	properly.
 
 	* nnfolder.el (nnfolder-goto-article): New function.
 	(nnfolder-retrieve-headers): Use it.
@@ -961,7 +972,7 @@ Wed Apr 29 20:54:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	dummy roots.
 
 	* gnus-cache.el (gnus-cache-enter-article): Update marks
-	properly. 
+	properly.
 
 	* gnus-xmas.el (gnus-xmas-draft-menu-add): New function.
 
@@ -977,22 +988,22 @@ Wed Apr 29 20:54:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Wed Apr 29 20:18:45 1998  Kurt Swanson  <kurt@dna.lth.se>
 
 	* gnus-art.el (article-update-date-lapsed): Bind
-	`deactivate-mark'. 
+	`deactivate-mark'.
 
 	* gnus-salt.el (gnus-pick-mode-map): Moved keys around to avoid
-	shadowing. 
+	shadowing.
 
 	* gnus-art.el (gnus-article-read-summary-keys): New version.
 
-	* gnus-sum.el (gnus-summary-make-menu-bar): New for article mode. 
+	* gnus-sum.el (gnus-summary-make-menu-bar): New for article mode.
 
 	* gnus-msg.el (gnus-post-method): `current' custom.
 
 Wed Apr 29 19:04:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-summary-set-local-parameters): Ignore
-	quit-config. 
-	(gnus-select-newsgroup): Use the value of gnus-fetch-old-headers. 
+	quit-config.
+	(gnus-select-newsgroup): Use the value of gnus-fetch-old-headers.
 
 	* message.el (message-post-method): Doc fix.
 
@@ -1011,7 +1022,7 @@ Tue Apr 28 03:15:50 1998  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
 Tue Apr 28 03:00:16 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-parent-headers): Don't infloop on nil
-	References. 
+	References.
 
 	* gnus-art.el (gnus-article-mode): Don't kill local vars.
 
@@ -1066,9 +1077,9 @@ Sun Apr 26 14:34:06 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-sum.el (gnus-summary-update-info): Don't nix out scores.
 
 	* gnus-start.el (gnus-active-to-gnus-format): Removed "." from
-	quoting. 
+	quoting.
 
-	* gnus.el (gnus-cache-directory): Moved here. 
+	* gnus.el (gnus-cache-directory): Moved here.
 	(gnus-predefined-server-alist): Use.
 
 	* message.el (message-autosave-directory): Put back in.
@@ -1091,7 +1102,7 @@ Sun Apr 26 14:34:06 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun Apr 26 14:05:40 1998  Frank Bennett  <bennett@rumple.soas.ac.uk>
 
 	* nnmail.el (nnmail-move-inbox): Push error'ed mailboxes onto the
-	list. 
+	list.
 
 Sun Apr 26 13:01:53 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -1163,7 +1174,7 @@ Wed Apr  1 16:01:44 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun Mar 29 11:54:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnkiboze.el (nnkiboze-generate-group): Would mess up newsrs
-	hashtb. 
+	hashtb.
 	(nnkiboze-enter-nov): Created bogus Xrefs headers.
 
 	* gnus-agent.el (gnus-agent-save-group-info): New function.
@@ -1173,7 +1184,7 @@ Sun Mar 29 11:54:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* message.el (message-expand-group): Allow completion from in the
 	middle of strings.
 	(message-font-lock-keywords): Work when mail-header-separator is
-	"". 
+	"".
 
 Sun Mar 29 09:56:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -1228,7 +1239,7 @@ Thu Mar 19 15:09:14 1998  Wes Hardaker  <wjhardaker@ucdavis.edu>
 1998-03-17  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-uu.el (gnus-uu-digest-headers): Add `Content-Type' and
-	`Content-Transfer-Encoding'. 
+	`Content-Transfer-Encoding'.
 
 1998-03-18  Per Abrahamsen  <abraham@dina.kvl.dk>
 
@@ -1256,7 +1267,7 @@ Thu Mar 19 12:44:12 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-msg.el: Would use nil group names.
 
 	* nntp.el (nntp-send-authinfo): Send authinfo to "force"d
-	servers. 
+	servers.
 
 	* gnus-util.el (gnus-parse-netrc): Accept the "force" token.
 
@@ -1293,7 +1304,7 @@ Fri Mar 13 22:07:17 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 Fri Mar 13 21:10:24 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* nnvirtual.el (nnvirtual-request-group): Force updating of info. 
+	* nnvirtual.el (nnvirtual-request-group): Force updating of info.
 
 Sun Mar  8 20:46:51 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -1306,7 +1317,7 @@ Sun Mar  8 14:05:25 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 Sun Mar  8 00:35:09 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-picon.el (gnus-get-buffer-name): Look in the assoc for the
-	variable. 
+	variable.
 
 	* nntp.el (nntp-wait-for): Check more for dead connections.
 
@@ -1366,7 +1377,7 @@ Sat Mar  7 15:01:57 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sat Mar  7 15:00:05 1998  Wes Hardaker  <wjhardaker@ucdavis.edu>
 
 	* gnus-art.el (gnus-article-prepare): Mark articles as
-	downloadable. 
+	downloadable.
 
 Wed Mar  4 22:33:27 1998  Ken Raeburn  <raeburn@cygnus.com>
 
@@ -1415,10 +1426,10 @@ Sat Feb 28 13:35:26 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	(nntp-record-commands): New variable.
 	(nntp-record-command): New function.
 
-	* gnus-agent.el (gnus-agent-group-path): Use real name of group. 
+	* gnus-agent.el (gnus-agent-group-path): Use real name of group.
 
 	* gnus-sum.el (gnus-summary-insert-subject): Don't allow nil
-	articles. 
+	articles.
 	(gnus-summary-read-group): Respect backward movement.
 
 1998-03-01  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
@@ -1452,7 +1463,7 @@ Sat Feb 28 08:17:37 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 Sat Feb 28 08:10:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-picon.el (gnus-picons-display-x-face): `buf' -- unbound
-	var. 
+	var.
 
 Sat Feb 28 08:03:23 1998  François Pinard  <pinard@iro.umontreal.ca>
 
@@ -1464,7 +1475,7 @@ Sat Feb 28 07:43:00 1998  Nelson Jose dos Santos Ferreira  <Nelson.Ferreira@ines
 
 Sat Feb 28 07:01:17 1998  Lasse Rasinen  <lrasinen@iki.fi>
 
-	* gnus-start.el (gnus-ask-server-for-new-groups): Message more. 
+	* gnus-start.el (gnus-ask-server-for-new-groups): Message more.
 
 Fri Feb 27 13:26:34 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -1485,7 +1496,7 @@ Mon Feb 23 18:26:48 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-ems.el (gnus-ems-redefine): Define
 	'gnus-summary-set-display-table as a function that takes no
-	params. 
+	params.
 
 	* gnus.el (gnus-interactive): Don't use gnus-sum macros.
 	(gnus-valid-select-methods): Include nnlistserv.
@@ -1549,7 +1560,7 @@ Sat Feb 21 00:09:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	the mark doesn't change.
 
 	* gnus-art.el (gnus-article-prepare): Don't enter article into
-	cache. 
+	cache.
 
 	* gnus-sum.el (gnus-summary-reparent-thread): Don't mark as read.
 	(gnus-summary-mark-article): Don't do cache things here.
@@ -1559,7 +1570,7 @@ Sat Feb 21 00:09:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Fri Feb 20 22:56:22 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-srvr.el (gnus-browse-unsubscribe-group): Wouldn't allow
-	unsubscription. 
+	unsubscription.
 
 	* gnus-sum.el (gnus-summary-insert-subject): Allow inserting
 	articles outside limits.
@@ -1567,7 +1578,7 @@ Fri Feb 20 22:56:22 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-start.el (gnus-dribble-enter): Update mode line.
 
 	* gnus-srvr.el (gnus-browse-unsubscribe-group): Allow
-	unsubscription. 
+	unsubscription.
 
 	* gnus-picon.el (gnus-article-display-picons): Check that the
 	extents are live first.
@@ -1583,7 +1594,7 @@ Thu Feb 19 02:28:17 1998  Jens-Ulrik Holger Petersen  <petersen@kurims.kyoto-u.a
 Thu Feb 19 01:58:47 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-get-newsgroup-headers): Just use the header
-	value. 
+	value.
 	(gnus-summary-exit): Set global vars.
 
 Tue Feb 17 07:17:49 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
@@ -1599,7 +1610,7 @@ Tue Feb 17 07:00:43 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 Tue Feb 17 06:15:03 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnmail.el (nnmail-purge-split-history): List of alists, not
-	alist. 
+	alist.
 
 Mon Feb 16 20:22:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -1608,10 +1619,10 @@ Mon Feb 16 20:22:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-02-16  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.el (message-dont-send): Make sure the article really is
-	saved. 
+	saved.
 
 	* nnmail.el (nnmail-purge-split-history): Alist; not a list of
-	alists. 
+	alists.
 
 1998-02-16  Hrvoje Niksic  <hniksic@srce.hr>
 
@@ -1626,7 +1637,7 @@ Mon Feb 16 20:22:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1998-02-16  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-util.el (gnus-run-hooks): Use unwind-protect instead of
-	save-excursion. 
+	save-excursion.
 
 1998-02-16  Per Abrahamsen  <abraham@dina.kvl.dk>
 
@@ -1658,7 +1669,7 @@ Sun Feb 15 19:41:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun Feb 15 19:35:11 1998  Kurt Swanson  <kurt@dna.lth.se>
 
 	* gnus-art.el (gnus-article-read-summary-keys): Go to top on
-	some. 
+	some.
 
 Sun Feb 15 19:26:21 1998  SeokChan LEE  <chan@xfer.kren.nm.kr>
 
@@ -1691,14 +1702,14 @@ Sun Feb 15 14:23:51 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* message.el (message-mode): Set font-lock things before running
 	mode hook.
 
-	* gnus-agent.el (gnus-agent-group-path): Respect long file names. 
+	* gnus-agent.el (gnus-agent-group-path): Respect long file names.
 
 Sat Feb 14 21:31:25 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-summary-goto-last-article): Force jumping to
 	articles outside limit.
 
-	* gnus-agent.el (gnus-agent-toggle-plugged): un/plug before hook. 
+	* gnus-agent.el (gnus-agent-toggle-plugged): un/plug before hook.
 
 Sat Feb 14 21:08:03 1998  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
 
@@ -1715,7 +1726,7 @@ Sat Feb 14 19:28:01 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 Sat Feb 14 18:40:55 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus-agent.el (gnus-agent-directory): Translate file chars. 
+	* gnus-agent.el (gnus-agent-directory): Translate file chars.
 
 	* gnus-sum.el (gnus-summary-print-article): Don't display all
 	headers.
@@ -1726,7 +1737,7 @@ Sat Feb 14 18:40:55 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sat Feb 14 18:39:45 1998  Fred Oberhauser  <foberhauser@psipenta.de>
 
 	* nnmail.el (nnmail-process-babyl-mail-format): Fix point
-	movement. 
+	movement.
 
 Sat Feb 14 18:31:39 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -1763,7 +1774,7 @@ Sat Feb 14 17:41:44 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
        * gnus-sum.el (gnus-summary-work-articles): change buffer
        before looking at marked articles
        (gnus-summary-work-articles): better check of marked articles
-       
+
 Sat Feb 14 15:10:36 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nntp.el (nntp-send-authinfo): Use new .netrc functionality.
@@ -1777,10 +1788,10 @@ Sat Feb 14 15:10:36 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el (gnus-expert-user): Dix fox.
 
-	* nnmail.el (nnmail-article-group): Remove duplicates from split. 
+	* nnmail.el (nnmail-article-group): Remove duplicates from split.
 
 	* message.el (message-check-news-header-syntax): Check more on
-	Message-ID. 
+	Message-ID.
 
 	* nnmh.el: Don't call nnmail-activate.
 
@@ -1838,7 +1849,7 @@ Fri Feb 13 17:10:31 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	(gnus-cite-parse-maybe): Use it.
 
 	* gnus-sum.el (gnus-summary-move-article): Move back to summary
-	buffer. 
+	buffer.
 
 	* nnfolder.el (nnfolder-request-accept-article): Save excursion.
 	(nnfolder-request-move-article): Ditto.
@@ -1871,12 +1882,12 @@ Tue Feb 10 21:59:53 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-agent.el (gnus-agent-fetch-session): Reversed reversal.
 
 	* gnus-topic.el (gnus-topic-rename): Check whether the new name
-	exists. 
+	exists.
 
 Tue Feb 10 21:39:47 1998  dave edmondson  <dme@sco.com>
 
 	* message.el (message-font-lock-keywords): Allow : as a citation
-	ending. 
+	ending.
 
 Tue Feb 10 20:09:02 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -1887,11 +1898,11 @@ Mon Feb  9 17:02:09 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* message.el (message-fill-header): Fill to column 990.
 
 	* gnus-score.el (gnus-score-load-file): Exclude all excluded
-	files. 
+	files.
 
 Mon Feb  9 16:55:41 1998  jari aalto  <jari.aalto@poboxes.com>
 
-	* gnus-art.el (gnus-article-time-format): Extended variable. 
+	* gnus-art.el (gnus-article-time-format): Extended variable.
 
 Mon Feb  9 16:27:59 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -1923,7 +1934,7 @@ Sun Feb  8 18:13:58 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 Sun Feb  8 17:20:40 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus-group.el (gnus-update-group-mark-positions): Bind `topic'. 
+	* gnus-group.el (gnus-update-group-mark-positions): Bind `topic'.
 
 	* message.el (message-expand-group): Added doc string.
 
@@ -1933,7 +1944,7 @@ Sun Feb  8 17:20:40 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun Feb  8 16:44:36 1998  Richard Hoskins  <rmh@interlaced.net>
 
 	* message.el (message-kill-to-signature): Don't kill the
-	delimiter. 
+	delimiter.
 
 Sun Feb  8 16:15:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -1941,7 +1952,7 @@ Sun Feb  8 16:15:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	(gnus-summary-read-group-1): Use it.
 
 	* message.el (message-cite-original-without-signature): New
-	function. 
+	function.
 	(message-cite-function): Added to custom.
 
 1998-01-13  Per Abrahamsen  <abraham@dina.kvl.dk>
@@ -1964,7 +1975,7 @@ Mon Feb  2 18:56:22 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	(gnus-agent-fetch-session): Use it.
 
 	* gnus-art.el (article-strip-all-blank-lines): New command and
-	keystroke. 
+	keystroke.
 
 Sun Feb  1 18:00:54 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -1981,7 +1992,7 @@ Sun Feb  1 18:00:54 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Thu Jan 15 22:47:38 1998   <Use-Author-Address-Header@[127.1]>
 
 	* gnus-art.el (gnus-request-article-this-buffer): Put it into the
-	backlog. 
+	backlog.
 
 Mon Jan 12 23:30:59 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -2039,15 +2050,15 @@ Sun Jan  4 14:28:35 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 1997-12-10  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus/gnus-msg.el (gnus-inews-insert-mime-headers): Added
-	documentation. 
+	documentation.
 	(gnus-inews-insert-mime-headers): Made it work with Emacs MULE.
 	(gnus-inews-insert-mime-headers): Added as option to
-	`message-header-hook'. 
+	`message-header-hook'.
 
 1997-12-22  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus/gnus-art.el (gnus-button-alist): Assume msg-id after "in
-	message". 
+	message".
 
 1997-12-22  Simon Josefsson  <jas@faun.nada.kth.se>
 
@@ -2063,9 +2074,9 @@ Sun Jan  4 13:35:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* nndraft.el (nndraft-request-associate-buffer): Open the damn
 	server first.  Sheesh.
 
-	* gnus-draft.el (gnus-draft-send): Bind message-send-hook to nil. 
+	* gnus-draft.el (gnus-draft-send): Bind message-send-hook to nil.
 
-	* gnus-sum.el (gnus-summary-catchup): Don't nix out downloadable. 
+	* gnus-sum.el (gnus-summary-catchup): Don't nix out downloadable.
 	(gnus-summary-highlight): Highlight down/un as unread.
 
 Sun Jan  4 13:27:31 1998  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
@@ -2075,7 +2086,7 @@ Sun Jan  4 13:27:31 1998  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
 Sun Jan  4 13:18:04 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnsoup.el (nnsoup-store-reply): Bind mail-header-separator to
-	"". 
+	"".
 
 	* gnus-xmas.el (gnus-xmas-agent-server-menu-add): New.
 
@@ -2140,7 +2151,7 @@ Fri Dec 19 21:39:43 1997  Hrvoje Niksic  <hniksic@srce.hr>
 
 Fri Dec 19 21:26:08 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus-cache.el (gnus-cache-read-active): Check for empty files. 
+	* gnus-cache.el (gnus-cache-read-active): Check for empty files.
 
 Sun Dec 14 11:46:50 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -2149,7 +2160,7 @@ Sun Dec 14 11:46:50 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 1997-12-10  SL Baur  <steve@altair.xemacs.org>
 
-	* gnus-start.el (gnus-read-descriptions-file): Really bind and gag 
+	* gnus-start.el (gnus-read-descriptions-file): Really bind and gag
 	Mule.
 
 Fri Dec  5 15:15:05 1997  Danny Siu  <dsiu@adobe.com>
@@ -2163,7 +2174,7 @@ Sun Dec 14 11:11:22 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-uu.el (gnus-uu-pre-uudecode-hook): New hook.
 
 	* gnus-sum.el (gnus-summary-read-group-1): Set mode line after
-	configuring. 
+	configuring.
 
 Sun Dec 14 11:03:26 1997  Wes Hardaker  <wjhardaker@ucdavis.edu>
 
@@ -2185,7 +2196,7 @@ Sat Dec  6 17:27:04 1997  Kim-Minh Kaplan  <KimMinh.Kaplan@Utopia.EUnet.fr>
 Sat Dec  6 17:23:26 1997  Christian von Roques  <roques@scalar.pond.sub.org>
 
 	* gnus-start.el (gnus-read-descriptions-file): Fix
-	enable-multibyte-characters. 
+	enable-multibyte-characters.
 
 1997-12-05  Dave Love  <d.love@dl.ac.uk>
 
@@ -2198,7 +2209,7 @@ Sat Dec  6 17:23:26 1997  Christian von Roques  <roques@scalar.pond.sub.org>
 
 Sat Dec  6 17:16:28 1997  Lars Balker Rasmussen  <lbr@mjolner.dk>
 
-	* gnus-art.el (article-make-date-line): Don't add extra newlines. 
+	* gnus-art.el (article-make-date-line): Don't add extra newlines.
 
 1997-11-27  MORIOKA Tomohiko  <morioka@jaist.ac.jp>
 
@@ -2213,7 +2224,7 @@ Sat Dec  6 17:04:40 1997  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
 	* nnml.el (nnml-parse-head): Out-of-bounds fix.
 
 	* nndraft.el (nndraft-request-associate-buffer): Get proper file
-	name. 
+	name.
 
 Sat Dec  6 15:35:37 1997  Gary D. Foster  <Gary.Foster@Corp.Sun.COM>
 
@@ -2222,7 +2233,7 @@ Sat Dec  6 15:35:37 1997  Gary D. Foster  <Gary.Foster@Corp.Sun.COM>
 Thu Nov 27 19:56:59 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-agent.el (gnus-summary-set-agent-mark): Remove marks
-	properly. 
+	properly.
 
 1997-11-27  Christoph Wedler  <wedler@fmi.uni-passau.de>
 
@@ -2251,7 +2262,7 @@ Wed Nov 26 18:19:29 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* nnweb.el (nnweb-type-definition): Rescued dejanewsold.
 
 	* gnus-mh.el (gnus-summary-save-in-folder): Reverted to old
-	version. 
+	version.
 
 	* gnus-sum.el (gnus-kill-or-deaden-summary): Save excursion.
 
@@ -2260,7 +2271,7 @@ Wed Nov 26 18:19:29 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-start.el (gnus-setup-news): Always push archive server.
 
 	* gnus-sum.el (gnus-read-header): Would bug out on sparse
-	articles. 
+	articles.
 
 Wed Nov 26 17:50:41 1997  Kurt Swanson  <kurt@dna.lth.se>
 
@@ -2273,16 +2284,16 @@ Wed Nov 26 17:40:57 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 Wed Nov 26 16:04:25 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-summary-move-article): Don't work on canceled
-	articles. 
+	articles.
 
 	* gnus-start.el (gnus-subscribe-hierarchical-interactive): Use
-	`read-char-exclusive'. 
+	`read-char-exclusive'.
 
 	* gnus-sum.el (gnus-summary-mode): Localize
-	gnus-summary-dummy-line-format. 
+	gnus-summary-dummy-line-format.
 
 	* nnml.el (nnml-open-nov): Check that the file exists before
-	inserting it. 
+	inserting it.
 
 	* gnus-art.el (article-date-ut): Insert a newline if needed.
 
@@ -2300,7 +2311,7 @@ Wed Nov 26 15:47:40 1997  Greg Klanderman  <greg@alphatech.com>
 Wed Nov 26 15:43:53 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-start.el (gnus-setup-news): Protect against nil
-	gnus-message-archive-method. 
+	gnus-message-archive-method.
 
 1997-11-26  Christoph Wedler  <wedler@fmi.uni-passau.de>
 
@@ -2324,7 +2335,7 @@ Wed Nov 26 13:50:01 1997  Alastair Burt <alastair.burt@dfki.de>
 
 Wed Nov 26 13:45:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus-util.el (gnus-kill-all-overlays): Remove check for XEmacs. 
+	* gnus-util.el (gnus-kill-all-overlays): Remove check for XEmacs.
 
 1997-09-30  Dave Love  <d.love@dl.ac.uk>
 
@@ -2354,7 +2365,7 @@ Wed Nov 26 10:31:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	that spanned several lines.
 
 	* gnus-util.el (gnus-date-iso8601): Didn't pick out the date
-	header. 
+	header.
 
 	* gnus-demon.el (gnus-demon-scan-mail): Clean inboxes.
 
@@ -2366,7 +2377,7 @@ Wed Nov 26 10:31:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Wed Nov 26 08:54:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-summary-update-info): Would use wrong group
-	name. 
+	name.
 
 1997-11-26  Hrvoje Niksic  <hniksic@srce.hr>
 
@@ -2391,7 +2402,7 @@ Wed Nov 26 08:54:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 Wed Nov 26 08:31:28 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus-art.el (gnus-stop-date-timer): Cancel instead of delete. 
+	* gnus-art.el (gnus-stop-date-timer): Cancel instead of delete.
 	(gnus-start-date-timer): Use the numerical prefix.
 
 Tue Nov 25 20:03:34 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
@@ -2405,7 +2416,7 @@ Tue Nov 25 19:57:55 1997  Dan Christensen  <jdc@chow.mat.jhu.edu>
 Tue Nov 25 19:54:00 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-move.el (gnus-move-group-to-server): Protect agains
-	nil-ness. 
+	nil-ness.
 
 Tue Nov 25 19:03:38 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
@@ -2414,7 +2425,7 @@ Tue Nov 25 19:03:38 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 Tue Nov 25 16:05:01 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-read-header): Remove thread entry before
-	rebuilding. 
+	rebuilding.
 
 	* gnus-cite.el (gnus-cite-add-face): Keep track of all overlays.
 
@@ -2424,10 +2435,10 @@ Tue Nov 25 16:05:01 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	(article-date-ut): Would move around.
 
 	* gnus-group.el (gnus-group-read-ephemeral-group): Accept server
-	names. 
+	names.
 
 	* gnus-srvr.el (gnus-browse-foreign-server): Use proper server
-	names. 
+	names.
 
 	* gnus.el (gnus-group-prefixed-name): Give the right result for
 	native groups.
@@ -2459,7 +2470,7 @@ Mon Nov 24 18:07:21 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Mon Nov 24 17:36:00 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.el (message-reply): Respect Mail-Copies-To even when
-	`to-address'. 
+	`to-address'.
 
 Mon Nov 24 17:32:47 1997  Thor Kristoffersen  <thor@unik.no>
 
@@ -2471,7 +2482,7 @@ Mon Nov 24 16:18:19 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	entering group.
 
 	* gnus-start.el (gnus-setup-news): Get correct value of archive
-	server. 
+	server.
 
 Wed Oct  8 20:29:35 1997  Robert Bihlmeyer  <robbe@orcus.priv.at>
 
@@ -2484,7 +2495,7 @@ Mon Nov 24 14:09:00 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-sum.el (gnus-last-newsgroup-variables-set): New variable.
 	(gnus-set-global-variables): Don't do to much; gets run off of
-	pre-command-hook. 
+	pre-command-hook.
 	Got rid of gnus-set-global-variables throughout.
 	(gnus-summary-exit): Update adaptive scoring here.
 	(gnus-summary-isearch-article): Widen.
@@ -2516,12 +2527,12 @@ Sun Nov 23 14:04:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	bound.  And gagged.
 
 	* message.el (message-send-mail-with-mh): Use
-	`mh-new-draft-name'. 
+	`mh-new-draft-name'.
 
 	* nnfolder.el (nnfolder-read-folder): Save new buffers.
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Removed "write to
-	file". 
+	file".
 
 	* gnus-util.el (gnus-byte-code): Use indirect-function.
 
@@ -2530,7 +2541,7 @@ Sun Nov 23 14:04:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-sum.el (gnus-summary-reparent-thread): Update thread.
 
 	* gnus-score.el (gnus-all-score-files): Don't do anything unless
-	GROUP. 
+	GROUP.
 
 	* nnmail.el (nnmail-split-it): Save-excursion.
 	(nnmail-group-pathname): Translate file chars.
@@ -2538,7 +2549,7 @@ Sun Nov 23 14:04:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun Nov 23 13:41:10 1997  Gunnar Horrigmo  <horrigmo@online.no>
 
 	* gnus-sum.el (gnus-summary-exit): Don't skip if group
-	disappeared. 
+	disappeared.
 
 Sun Nov 23 13:32:55 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -2564,7 +2575,7 @@ Sun Nov 23 12:44:38 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun Nov 23 12:15:00 1997  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
 
 	* gnus-sum.el (gnus-summary-limit-include-thread): Interactive
-	fix. 
+	fix.
 
 Sun Nov 23 07:06:58 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -2585,7 +2596,7 @@ Sat Nov 22 18:04:34 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 Sat Nov 22 18:01:26 1997  Didier Verna  <verna@inf.enst.fr>
 
-	* gnus-sum.el (gnus-summary-remove-bookmark): Interactive spec. 
+	* gnus-sum.el (gnus-summary-remove-bookmark): Interactive spec.
 
 Mon Nov 17 23:50:51 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -2603,7 +2614,7 @@ Thu Nov 13 22:57:23 1997  Kenichi Handa  <handa@etl.go.jp>
 Thu Nov 13 22:30:19 1997  seokchan lee  <chan@xfer.kren.nm.kr>
 
 	* message.el (message-ignored-supersedes-headers): Ignore more
-	headers. 
+	headers.
 
 Thu Nov 13 22:28:13 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -2635,15 +2646,15 @@ Thu Nov  6 01:53:51 1997  Stefan Waldherr  <swa@cs.cmu.edu>
 Thu Nov  6 01:52:43 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-topic.el (gnus-topic-change-level): Really delete multiple
-	instances. 
+	instances.
 
 Wed Nov  5 14:04:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-topic.el (gnus-topic-update-topic-line): Possibly fix nil
-	numbers. 
+	numbers.
 
 	* gnus-sum.el (gnus-summary-show-article): New command and
-	keystroke. 
+	keystroke.
 
 Tue Nov  4 06:29:58 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -2659,7 +2670,7 @@ Sat Oct 25 05:52:22 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sat Oct 25 00:39:42 1997  Lars Balker Rasmussen  <lbr@mjolner.dk>
 
 	* gnus-art.el (gnus-article-fill-paragraph): New command and
-	keystroke. 
+	keystroke.
 
 1997-10-16  Colin Rafferty  <craffert@ml.com>
 
@@ -2686,7 +2697,7 @@ Mon Oct 13 00:01:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Sun Oct 12 23:54:55 1997  ISO-2022-JP  <ichikawa@hv.epson.co.jp>
 
 	* gnus-agent.el (gnus-agent-article-file-coding-system): New
-	variable. 
+	variable.
 
 Sun Oct 12 16:46:11 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -2714,21 +2725,21 @@ Sat Oct  4 00:16:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* nnmail.el (nnmail-delete-incoming): Changed default to nil.
 
 	* gnus-int.el (gnus-request-scan): Don't do anything if
-	unplugged. 
+	unplugged.
 
 Fri Oct  3 21:09:19 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-art.el (gnus-ignored-headers): Doc fix.
 
 	* gnus-demon.el (gnus-demon-add-nntp-close-connection): New
-	function. 
+	function.
 	(gnus-demon-nntp-close-connection): Ditto.
 
 	* nntp.el (nntp-last-command-time): New variable.
 	(nntp-retrieve-data): Use it.
 
 	* message.el (message-news-p): Messages with Posted-To aren't
-	news. 
+	news.
 	(message-mode): Heed message-yank-prefix when filling.
 
 	* nndraft.el (nndraft-request-restore-buffer): Remove Xrefs and
@@ -2750,7 +2761,7 @@ Sat Sep 27 12:57:44 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-xmas.el (gnus-xmas-window-edges): New function.
 
 	* gnus-score.el (gnus-score-edit-current-scores): Don't select
-	window. 
+	window.
 
 Sat Sep 27 12:52:31 1997  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
 
@@ -2763,10 +2774,10 @@ Sat Sep 27 09:22:15 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-sum.el (gnus-summary-pop-article): Force.
 
 	* gnus-art.el (gnus-article-prepare): Push the article onto the
-	history. 
+	history.
 
 	* gnus-sum.el (gnus-summary-pop-article): Pop to the right
-	article. 
+	article.
 
 	* gnus-demon.el (gnus-demon-scan-news): Save excursion.
 
@@ -2807,7 +2818,7 @@ Sat Sep 27 04:32:45 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 Sat Sep 27 03:50:12 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.el (message-send): Post without asking.
-	(message-mode): Modify paragraphs-start and paragraph-separate. 
+	(message-mode): Modify paragraphs-start and paragraph-separate.
 	(message-newline-and-reformat): New command and keystroke.
 
 Thu Sep 25 00:13:41 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
@@ -2855,17 +2866,17 @@ Tue Sep 23 01:41:04 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* dgnushack.el (dgnushack-compile): Check for cus-edit.
 
 	* message.el (message-included-forward-headers): Include Mime
-	headers. 
+	headers.
 	(message-send): Allow posting without confirming from Agent.
 
 Mon Sep 22 05:43:14 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* dgnushack.el (byte-compile-warnings): Don't warn about obsolete
-	variables. 
+	variables.
 
 	* gnus-sum.el (gnus-summary-refer-thread): New command and
-	keystroke. 
-	(gnus-summary-limit-include-thread): New command and keystroke. 
+	keystroke.
+	(gnus-summary-limit-include-thread): New command and keystroke.
 	(gnus-summary-articles-in-thread): New function.
 	(gnus-articles-in-thread): Renamed.
 
@@ -2900,14 +2911,14 @@ Sun Sep 21 00:14:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	(gnus-current-prefix-symbols): New variable.
 
 	* gnus-score.el (gnus-summary-increase-score): Take symbolic
-	prefix. 
+	prefix.
 
 	* gnus.el (gnus-interactive): Removed.
 	(gnus-interactive): Renamed from gnus-interactive-1.
 	(gnus-symbolic-argument): New command.
 
 	* gnus-draft.el (gnus-draft-send-message): Disable message
-	checks. 
+	checks.
 	(gnus-draft-send): Ditto.
 	(gnus-draft-setup): Don't save buffer.
 
@@ -2916,7 +2927,7 @@ Sun Sep 21 00:14:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-group.el (gnus-group-iterate): Use gensymmed variables.
 
 	* pop3.el (pop3-md5): `with-temp-buffer' doesn't exist in Emacs
-	19.34. 
+	19.34.
 
 	* nneething.el (nneething-directory): Defvarred.
 
@@ -2933,12 +2944,12 @@ Sun Sep 21 00:14:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	throughout.
 
 	* gnus-sum.el (gnus-summary-edit-article): Supply additional
-	param. 
+	param.
 
 	* gnus-group.el (gnus-group-iterate): Undo bogus change.
 
 	* gnus-agent.el (gnus-agentize): Just call gnus-open-agent
-	directly. 
+	directly.
 
 	* gnus.el (gnus-interactive): New macro.
 	(gnus-interactive-1): New function.
@@ -3005,12 +3016,12 @@ Thu Sep 18 03:33:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-msg.el (gnus-setup-message): Slap a progn around forms.
 
-	* nndraft.el (nndraft-articles): Make sure directory exists. 
+	* nndraft.el (nndraft-articles): Make sure directory exists.
 
 	* message.el (message-mode): Don't delete article.
 
 	* nnmh.el (nnmh-request-accept-article): Don't save when
-	noinsert. 
+	noinsert.
 
 Wed Sep 17 03:37:59 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -3033,10 +3044,10 @@ Wed Sep 17 02:30:04 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	References.
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): Separated out into
-	function. 
+	function.
 
 	* message.el (message-delete-not-region): New command and
-	keystroke. 
+	keystroke.
 
 Tue Sep 16 00:58:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -3049,7 +3060,7 @@ Tue Sep 16 00:58:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	* gnus-agent.el (gnus-agentize): Don't set twice.
 
 	* gnus-art.el (gnus-article-prepare): Go to the right line before
-	marking. 
+	marking.
 
 	* gnus-start.el: Renamed the drafts group.
 
@@ -3068,7 +3079,7 @@ Mon Sep 15 00:53:50 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 	(gnus-get-newsgroup-headers): Ditto.
 
 	* gnus-draft.el (gnus-group-send-drafts): Don't send when
-	unplugged. 
+	unplugged.
 
 	* gnus-sum.el (gnus-summary-read-group): Don't show-all when
 	skipping groups.

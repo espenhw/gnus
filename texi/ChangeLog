@@ -1,3 +1,7 @@
+1998-08-11 20:33:53  Justin Zaglio  <justin@caxton.com>
+
+	* gnus.texi (Group Maintenance): Fix.
+
 1998-08-11 11:44:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Group Maintenance): Fix.
@@ -345,7 +349,7 @@ Sat Sep 20 20:53:43 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 Wed Sep 17 02:32:56 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus.texi (Customizing Threading): Broken up into five nodes. 
+	* gnus.texi (Customizing Threading): Broken up into five nodes.
 	(Article Washing): Addition.
 
 	* message.texi (Various Commands): Add.
@@ -372,7 +376,7 @@ Sat Jul 19 23:02:03 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 Sat Jul 12 16:29:35 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus.texi (Picon Configuration): Moved Picons to under XEmacs. 
+	* gnus.texi (Picon Configuration): Moved Picons to under XEmacs.
 	(Smileys): New section.
 
 Fri Jul 11 11:58:20 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
@@ -554,7 +558,7 @@ Mon Feb  3 07:31:47 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 Mon Jan 27 17:51:29 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Highlighting and Menus): Removed
-	`gnus-display-type'. 
+	`gnus-display-type'.
 
 Sat Jan 25 08:09:30 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
@@ -677,7 +681,7 @@ Fri Oct 25 09:04:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 Wed Oct 23 08:28:29 1996  Hrvoje Niksic  <hniksic@srce.hr>
 
-	* gnus.texi (Fancy Mail Splitting): Removed trailing garbage. 
+	* gnus.texi (Fancy Mail Splitting): Removed trailing garbage.
 
 Tue Oct 22 07:36:02 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
@@ -955,4 +959,3 @@ Mon Jul 29 10:12:24 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 	(Advanced Scoring Example): New.
 	(Advanced Scoring Syntax): New.
 	(Advanced Scoring): New.
-

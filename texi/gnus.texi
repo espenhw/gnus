@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.32 Manual
+@settitle Gnus 5.6.33 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.32 Manual
+@title Gnus 5.6.33 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.32.
+This manual corresponds to Gnus 5.6.33.
 
 @end ifinfo
 
@@ -2381,7 +2381,7 @@ Find bogus groups and delete them
 @kindex F (Group)
 @findex gnus-group-find-new-groups
 Find new groups and process them (@code{gnus-group-find-new-groups}).
-With 1 @kbd{C-u{, use the @code{ask-server} method to query the server
+With 1 @kbd{C-u}, use the @code{ask-server} method to query the server
 for new groups.  With 2 @kbd{C-u}'s, use most complete method possible
 to query the server for new groups, and subscribe the new groups as
 zombies.
@@ -15434,7 +15434,7 @@ On July 28th 1996 work on Red Gnus was begun, and it was released on
 January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
 
 On September 13th 1997, Quassia Gnus was started and lasted 37
-releases.  If was released as ``Gnus 5.6.32' on March 8th 1998.
+releases.  If was released as ``Gnus 5.6.33' on March 8th 1998.
 
 If you happen upon a version of Gnus that has a prefixed name --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -15911,7 +15911,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.32.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.33.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16446,7 +16446,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.32:
+New features in Gnus 5.6.33:
 
 @itemize @bullet
 

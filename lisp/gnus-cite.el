@@ -47,12 +47,12 @@ article has citations."
   :type '(choice (const :tag "no" nil)
 		  (const :tag "yes" t)))
 
-(defcustom gnus-cited-opened-text-button-line-format "%(%{<->%}%)\n"
+(defcustom gnus-cited-opened-text-button-line-format "%(%{[-]%}%)\n"
   "Format of opened cited text buttons."
   :group 'gnus-cite
   :type 'string)
 
-(defcustom gnus-cited-closed-text-button-line-format "%(%{<+>%}%)\n"
+(defcustom gnus-cited-closed-text-button-line-format "%(%{[+]%}%)\n"
   "Format of closed cited text buttons."
   :group 'gnus-cite
   :type 'string)
@@ -100,7 +100,7 @@ The first regexp group should match the Supercite attribution."
   :group 'gnus-cite
   :type 'integer)
 
-(defcustom gnus-cite-attribution-prefix 
+(defcustom gnus-cite-attribution-prefix
   "In article\\|in <\\|On \\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\),"
   "*Regexp matching the beginning of an attribution line."
   :group 'gnus-cite
@@ -521,7 +521,7 @@ always hide."
 	   (car gnus-hidden-properties) (cadr gnus-hidden-properties)))
 	 (inhibit-point-motion-hooks t)
 	 buffer-read-only)
-    (funcall 
+    (funcall
      (if hidden
 	 'remove-text-properties 'gnus-add-text-properties)
      (car region) (cdr region) gnus-hidden-properties)

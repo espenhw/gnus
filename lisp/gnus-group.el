@@ -1472,7 +1472,7 @@ and with point over the group in question."
 	    (save-selected-window
 	      (save-excursion
 		(funcall ,function ,group)))))))))
-  
+
 (put 'gnus-group-iterate 'lisp-indent-function 1)
 
 ;; Selecting groups.
@@ -3023,6 +3023,7 @@ to use."
      (lambda (group)
        (and (symbol-name group)
 	    (string-match regexp (symbol-name group))
+	    (symbol-value group)
 	    (push (symbol-name group) groups)))
      gnus-active-hashtb)
     ;; Also go through all descriptions that are known to Gnus.
@@ -3130,7 +3131,7 @@ for new groups, and subscribe the new groups as zombies."
   (interactive "p")
   (gnus-find-new-newsgroups (or arg 1))
   (gnus-group-list-groups))
-  
+
 (defun gnus-group-edit-global-kill (&optional article group)
   "Edit the global kill file.
 If GROUP, edit that local kill file instead."
