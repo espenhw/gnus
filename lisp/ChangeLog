@@ -1,3 +1,8 @@
+2000-12-25 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* qp.el (quoted-printable-encode-region): Don't check multibyte in
+	XEmacs.
+
 2000-12-25  Lloyd Zusman <ljz@asfast.com>
 
 	* mml.el (mml-read-tag): Save tag location.

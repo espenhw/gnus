@@ -99,8 +99,8 @@ encode lines starting with \"From\"."
     (save-restriction
       (narrow-to-region from to)
       (mm-with-unibyte-current-buffer-mule4
-	;; Fixme: what should this do in XEmacs/Mule?
-	(if (fboundp 'find-charset-region)	; else XEmacs, non-Mule
+	(if (and (not (featurep 'xemacs)) ;; Don't check XEmacs Mule.
+		 (fboundp 'find-charset-region))
 	    (if (delq 'unknown		; Emacs 20 unibyte
 		      (delq 'eight-bit-graphic ; Emacs 21
 			    (delq 'eight-bit-control
