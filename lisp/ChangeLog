@@ -5,6 +5,9 @@
 
 	* sieve-mode.el (c-mode): Ditto.
 
+	* mm-url.el (require): Require timer when compiling for
+	with-timeout macro (fix xemacs compile warnings).
+
 2003-04-28  Dave Love  <fx@gnu.org>
 
 	* gnus-util.el (nnheader): Don't require.
