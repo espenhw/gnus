@@ -1,3 +1,7 @@
+2004-01-04  Kai Grossjohann  <kai@emptydomain.de>
+
+	* gnus-sum.el (gnus-summary-print-article): Doc fix.
+
 2004-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bump.

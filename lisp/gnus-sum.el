@@ -8534,10 +8534,16 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
 			  "[()]" "\\\\\\&"))
 
 (defun gnus-summary-print-article (&optional filename n)
-  "Generate and print a PostScript image of the N next (mail) articles.
+  "Generate and print a PostScript image of the process-marked (mail) articles.
 
-If N is negative, print the N previous articles.  If N is nil and articles
-have been marked with the process mark, print these instead.
+If used interactively, print the current article if none are
+process-marked.  With prefix arg, prompt the user for the name of the
+file to save in.
+
+When used from Lisp, accept two optional args FILENAME and N.  N means
+to print the next N articles.  If N is negative, print the N previous
+articles.  If N is nil and articles have been marked with the process
+mark, print these instead.
 
 If the optional first argument FILENAME is nil, send the image to the
 printer.  If FILENAME is a string, save the PostScript image in a file with
