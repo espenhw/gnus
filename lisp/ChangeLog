@@ -1,3 +1,8 @@
+2003-02-09  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-topic.el (gnus-topic-goto-missing-topic): Just move to the
+	next line after finding the parent.
+
 2003-02-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.el (gnus-version-number): Bumped.

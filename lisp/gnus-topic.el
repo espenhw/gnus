@@ -752,7 +752,7 @@ articles in the topic and its subtopics."
 		    (not (gnus-topic-goto-topic (caaar tp))))
 	  (pop tp))
 	(if tp
-	    (gnus-topic-forward-topic 1)
+	    (forward-line 1)
 	  (gnus-topic-goto-missing-topic (caadr top)))))
     nil))
 
