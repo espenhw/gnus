@@ -1,3 +1,9 @@
+2002-04-21  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-update-info,
+	nnmaildir-request-group, nnmaildir-retrieve-groups): remove
+	unnecessary calls to nnmaildir-request-scan.
+
 2002-04-20  Josh Huber  <huber@alum.wpi.edu>
 
 	* gnus-msg.el:
@@ -133,7 +139,7 @@
 2002-04-01  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-buffer-naming-style): Remove.
-	
+
 2002-04-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-make-tool-bar): Load tool-bar first.
@@ -162,7 +168,7 @@
 	(spam-address-whitelisted-p): New function.
 
 	* dns.el (query-dns): Use TCP when make-network-process isn't
-	available. 
+	available.
 	(dns-servers): New variable.
 	(dns-parse-resolv-conf): New function.
 	(query-dns): Use it.

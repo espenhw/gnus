@@ -785,7 +785,6 @@ by nnmaildir-request-article.")
       (erase-buffer)
       (while groups
 	(setq gname (car groups) groups (cdr groups))
-	(nnmaildir-request-scan gname server)
 	(setq group (nnmaildir--prepare nil gname))
 	(if (null group) (insert "411 no such news group\n")
 	  (setq ct-min (nnmaildir--article-count group))
@@ -802,7 +801,6 @@ by nnmaildir-request-article.")
   'group)
 
 (defun nnmaildir-request-update-info (gname info &optional server)
-  (nnmaildir-request-scan gname server)
   (let ((group (nnmaildir--prepare server gname))
 	pgname nlist flist last always-marks never-marks old-marks dotfile num
         dir markdirs marks mark ranges articles article read end new-marks ls
@@ -869,7 +867,6 @@ by nnmaildir-request-article.")
       info)))
 
 (defun nnmaildir-request-group (gname &optional server fast)
-  (nnmaildir-request-scan gname server)
   (let ((group (nnmaildir--prepare server gname))
 	ct-min deactivate-mark)
     (nnmaildir--with-nntp-buffer
