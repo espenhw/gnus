@@ -284,6 +284,35 @@ included.")
     (insert-buffer-substring nneething-work-buffer)
     (goto-char (point-max))))
 
+(defun nneething-encode-file-name (file &optional coding-system)
+  "Encode the name of the FILE in CODING-SYSTEM."
+  (let ((pos 0) buf)
+    (setq file (mm-encode-coding-string
+		file (or coding-system nnmail-pathname-coding-system)))
+    (while (string-match "[^-a-zA-Z_:/.]" file pos)
+      (setq buf (cons (format "%%%02x" (aref file (match-beginning 0)))
+		      (cons (substring file pos (match-beginning 0)) buf))
+	    pos (match-end 0)))
+    (apply (function concat)
+	   (nreverse (cons (substring file pos) buf)))))
+
+(defun nneething-decode-file-name (file &optional coding-system)
+  "Decode the name of the FILE is encoded in CODING-SYSTEM."
+  (let ((pos 0) buf)
+    (while (string-match "%\\([0-9a-fA-F][0-9a-fA-F]\\)" file pos)
+      (setq buf (cons (string (string-to-number (match-string 1 file) 16))
+		      (cons (substring file pos (match-beginning 0)) buf))
+	    pos (match-end 0)))
+    (decode-coding-string
+     (apply (function concat)
+	    (nreverse (cons (substring file pos) buf)))
+     (or coding-system nnmail-pathname-coding-system))))
+
+(defun nneething-get-file-name (id)
+  "Extract the file name from the message ID string."
+  (when (string-match "\\`<nneething\\-[0-9]+\\-\\([^@]+\\)@.*>\\'" id)
+    (nneething-decode-file-name (match-string 1 id))))
+
 (defun nneething-make-head (file &optional buffer extra-msg
 				 mime-type mime-charset mime-encoding)
   "Create a head by looking at the file attributes of FILE."
@@ -292,6 +321,7 @@ included.")
      "Subject: " (file-name-nondirectory file) (or extra-msg "") "\n"
      "Message-ID: <nneething-"
      (int-to-string (incf nneething-message-id-number))
+     "-" (nneething-encode-file-name file)
      "@" (system-name) ">\n"
      (if (equal '(0 0) (nth 5 atts)) ""
        (concat "Date: " (current-time-string (nth 5 atts)) "\n"))

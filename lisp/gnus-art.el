@@ -4750,6 +4750,9 @@ If given a prefix, show the hidden text instead."
     (gnus-check-server (gnus-find-method-for-group gnus-newsgroup-name))
     (gnus-request-group gnus-newsgroup-name t)))
 
+(eval-when-compile
+  (autoload 'nneething-get-file-name "nneething"))
+
 (defun gnus-request-article-this-buffer (article group)
   "Get an article and insert it into this buffer."
   (let (do-update-line sparse-header)
@@ -4799,12 +4802,10 @@ If given a prefix, show the hidden text instead."
 			       gnus-newsgroup-name)))
 		  (when (and (eq (car method) 'nneething)
 			     (vectorp header))
-		    (let ((dir (expand-file-name
-				(mail-header-subject header)
-				(file-name-as-directory
-				 (or (cadr (assq 'nneething-address method))
-				     (nth 1 method))))))
-		      (when (file-directory-p dir)
+		    (let ((dir (nneething-get-file-name
+				(mail-header-id header))))
+		      (when (and (stringp dir)
+				 (file-directory-p dir))
 			(setq article 'nneething)
 			(gnus-group-enter-directory dir))))))))
 

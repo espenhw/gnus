@@ -1,3 +1,15 @@
+2002-01-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* gnus-art.el (gnus-request-article-this-buffer): Call
+	`nneething-get-file-name' to extract the file name from the
+	message id.
+
+	* nneething.el (nneething-encode-file-name): New function.
+	(nneething-decode-file-name): Ditto.
+	(nneething-get-file-name): Ditto.
+	(nneething-make-head): Encode the file name and encapsulate it
+	into the field of the message id.
+
 2002-01-18  Simon Josefsson  <jas@extundo.com>
 
 	* nnml.el (nnml-request-update-info): Don't erase flags that isn't
@@ -4602,7 +4614,7 @@
 2001-06-03  Dale Hagglund  <rdh@best.com>
 
 	* gnus-mlspl.el (gnus-group-split-fancy): Fix generation of split
-       restrict clauses.
+	restrict clauses.
 
 2001-06-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
