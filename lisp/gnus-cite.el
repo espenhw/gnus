@@ -90,16 +90,39 @@ The first regexp group should match the Supercite attribution."
   :group 'gnus-cite
   :type 'integer)
 
+;; Some Microsoft products put in a citation that extends to the
+;; remainder of the message:
+;;
+;;     -----Original Message-----
+;;     From: ...
+;;     To: ...
+;;     Sent: ...   [date, in non-RFC-2822 format]
+;;     Subject: ...
+;;
+;;     Cited message, with no prefixes
+;;
+;; The four headers are always the same.  But note they are prone to
+;; folding without additional indentation.
+;;
+;; Others use "----- Original Message -----" instead, and properly quote
+;; the body using "> ".  This style is handled without special cases.
+
 (defcustom gnus-cite-attribution-prefix
-  "In article\\|in <\\|On \\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\),\\|-----Original Message-----"
+  "In article\\|in <\\|On \\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\),\\|----- ?Original Message ?-----"
   "*Regexp matching the beginning of an attribution line."
   :group 'gnus-cite
   :type 'regexp)
 
 (defcustom gnus-cite-attribution-suffix
-  "\\(\\(wrote\\|writes\\|said\\|says\\|>\\)\\(:\\|\\.\\.\\.\\)\\|-----Original Message-----\\)[ \t]*$"
+  "\\(\\(wrote\\|writes\\|said\\|says\\|>\\)\\(:\\|\\.\\.\\.\\)\\|----- ?Original Message ?-----\\)[ \t]*$"
   "*Regexp matching the end of an attribution line.
 The text matching the first grouping will be used as a button."
+  :group 'gnus-cite
+  :type 'regexp)
+
+(defcustom gnus-unsightly-citation-regexp
+  "^-----Original Message-----\nFrom: \\(.+\n\\)+\n"
+  "Regexp matching Microsoft-type rest-of-message citations."
   :group 'gnus-cite
   :type 'regexp)
 
@@ -724,9 +747,19 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(goto-char begin))
       (goto-char start)
       (setq line (1+ line)))
+    ;; Horrible special case for some Microsoft mailers.
+    (goto-char (point-min))
+    (when (re-search-forward gnus-unsightly-citation-regexp max t)
+      (setq begin (count-lines (point-min) (point)))
+      (setq end (count-lines (point-min) max))
+      (setq entry nil)
+      (while (< begin end)
+	(push begin entry)
+	(setq begin (1+ begin)))
+      (push (cons "" entry) alist))
     ;; We got all the potential prefixes.  Now create
     ;; `gnus-cite-prefix-alist' containing the oldest prefix for each
-    ;; line that appears at least gnus-cite-minimum-match-count
+    ;; line that appears at least `gnus-cite-minimum-match-count'
     ;; times.  First sort them by length.  Longer is older.
     (setq alist (sort alist (lambda (a b)
 			      (> (length (car a)) (length (car b))))))

@@ -1,3 +1,10 @@
+2003-02-13  Michael Shields  <shields@msrl.com>
+
+	* gnus-cite.el
+	(gnus-cite-attribution-suffix, gnus-cite-parse):
+	Better handling for Microsoft citation styles.
+	(gnus-unsightly-citation-regexp): New.
+
 2003-02-12  Michael Shields  <shields@msrl.com>
 
 	* gnus-art.el (article-strip-banner): Strip both per-group and
