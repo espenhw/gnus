@@ -202,7 +202,7 @@
    ((eq (car cont) 'part)
     (let (coded encoding charset filename type)
       (setq type (or (cdr (assq 'type cont)) "text/plain"))
-      (if (equal (car (split-string type "/")) "text")
+      (if (member (car (split-string type "/")) '("text" "message"))
 	  (with-temp-buffer
 	    (cond
 	     ((cdr (assq 'buffer cont))
@@ -511,7 +511,8 @@
     ["Multipart" mml-insert-multipart t]
     ["Part" mml-insert-part t])
    ["Quote" mml-quote-region t]
-   ["Validate" mml-validate t]))
+   ["Validate" mml-validate t]
+   ["Preview" mml-preview t]))
 
 (defvar mml-mode nil
   "Minor mode for editing MML.")
@@ -689,7 +690,12 @@ If RAW, don't highlight the article."
    (fundamental-mode)
    (setq buffer-read-only t)
    (goto-char (point-min))))
- 
+
+(defun mml-validate ()
+  "Validate the current MML document."
+  (interactive)
+  (mml-parse))
+
 (provide 'mml)
 
 ;;; mml.el ends here

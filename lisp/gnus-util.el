@@ -940,7 +940,9 @@ ARG is passed to the first function."
   (with-temp-file file
     (mapatoms
      (lambda (sym)
-       (when (and sym (boundp sym))
+       (when (and sym
+		  (boundp sym)
+		  (symbol-value sym))
 	 (insert (format "%s %d %d y\n"
 			 (symbol-name sym) (cdr (symbol-value sym))
 			 (car (symbol-value sym))))))

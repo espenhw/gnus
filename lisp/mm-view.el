@@ -98,7 +98,6 @@
 		  (condition-case var
 		      (w3-region (point-min) (point-max))
 		    (error)))))
-;;;	    (narrow-to-region (1+ (point-min)) (point-max))
 	    (mm-handle-set-undisplayer
 	     handle
 	     `(lambda ()
@@ -172,7 +171,8 @@
   (goto-char (point-min)))
 
 (defun mm-inline-message (handle)
-  (let ((b (point)) gnus-displaying-mime handles)
+  (let ((b (point))
+	gnus-displaying-mime handles)
     (save-excursion
       (save-restriction
 	(narrow-to-region b b)
@@ -181,17 +181,19 @@
 	  (run-hooks 'gnus-article-decode-hook)
 	  (gnus-article-prepare-display)
 	  (setq handles gnus-article-mime-handles))
-	(if handles
-	    (setq gnus-article-mime-handles
-		  (append gnus-article-mime-handles handles)))
+	(when handles
+	  (setq gnus-article-mime-handles
+		(append gnus-article-mime-handles handles)))
 	(mm-handle-set-undisplayer
 	 handle
 	 `(lambda ()
 	    (let (buffer-read-only)
-	      (mapc (lambda (prop)
-		      (remove-specifier
-		       (face-property 'default prop) (current-buffer)))
-		    '(background background-pixmap foreground))
+	      (ignore-errors
+		;; This is only valid on XEmacs.
+		(mapc (lambda (prop)
+			(remove-specifier
+			 (face-property 'default prop) (current-buffer)))
+		      '(background background-pixmap foreground)))
 	      (delete-region ,(point-min-marker) ,(point-max-marker)))))))))
 
 (provide 'mm-view)

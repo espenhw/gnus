@@ -1,7 +1,7 @@
 @c \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.91 Manual
+@settitle Pterodactyl Gnus 0.92 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -319,7 +319,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.91 Manual
+@title Pterodactyl Gnus 0.92 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.91.
+This manual corresponds to Pterodactyl Gnus 0.92.
 
 @end ifinfo
 
@@ -9930,7 +9930,7 @@ of a culture shock.
 Gnus does not behave like traditional mail readers.  If you want to make 
 it behave that way, you can, but it's an uphill battle.
 
-Gnus, by default, handles all its group using the same approach.  This
+Gnus, by default, handles all its groups using the same approach.  This
 approach is very newsreaderly---you enter a group, see the new/unread
 messages, and when you read the messages, they get marked as read, and
 you don't see them any more.  (Unless you explicitly ask for them.)
@@ -9947,18 +9947,28 @@ you.  The expire process for mail is covered in depth in @pxref{Expiring
 Mail}.
 
 What many Gnus users find, after using it a while for both news and
-mail, is that the transport becomes more and more irrelevant.  What
-becomes important is the size of the receiving audience.
+mail, is that the transport mechanism has very little to do with how
+they want to treat a message.
 
 Many people subscribe to several mailing lists.  These are transported
-via SMTP, and are therefore mail.  Some people have local news groups
-which have only a handful of readers.  These are transported via NNTP,
-and are therefore news.
+via SMTP, and are therefore mail.  But we might go for weeks without
+answering, or even reading these messages very carefully. We may not
+need to save them because if we should need to read one again, they are
+archived somewhere else.
+
+Some people have local news groups which have only a handful of readers.
+These are transported via NNTP, and are therefore news.  But we may need
+to read and answer a large fraction of the messages very carefully in
+order to do our work.  And there may not be an archive, so we may need
+to save the interesting messages the same way we would personal mail.
 
 The important distinction turns out to be not the transport mechanism,
-but whether the messages are @dfn{personal} or @dfn{public}.  Many users
-then subtly alter the behavior of Gnus according to these two
-categories.
+but other factors such as how interested we are in the subject matter,
+or how easy it is to retrieve the message if we need to read it again.
+
+Gnus provides many options for sorting mail into ``groups'' which behave
+like newsgroups, and for treating each group (whether mail or news)
+differently.
 
 Some users never get comfortable using the Gnus (ahem) paradigm and wish
 that Gnus should grow up and be a male, er, mail reader.  It is possible
@@ -10118,8 +10128,8 @@ POP mail server, or from a procmail directory, for instance.
 @cindex mail spool
 @cindex mail source
 
-You tell Gnus how to fetch mail by creating a @dfn{mail source
-specifier}.
+You tell Gnus how to fetch mail by setting @code{mail-sources}
+(@pxref{Fetching Mail}) to a @dfn{mail source specifier}.
 
 Here's an example:
 
@@ -10322,19 +10332,6 @@ fetched.  You would normally not need to set or change any of these
 variables.
 
 @table @code
-@item mail-source-movemail-program
-@vindex mail-source-movemail-program
-A command to be executed to move mail from the inbox.  The default is
-@samp{movemail}.
-
-This can also be a function.  In that case, the function will be
-called with two parameters -- the name of the INBOX file, and the file
-to be moved to.
-
-@item mail-source-movemail-args
-@vindex mail-source-movemail-args
-Extra arguments to give to the command described above.
-
 @item mail-source-crash-box
 @vindex mail-source-crash-box
 File where mail will be stored while processing it.  The default is
@@ -10496,6 +10493,12 @@ Let's look at an example value of this variable first:
       ;; Other mailing lists...
       (any "procmail@@informatik\\.rwth-aachen\\.de" "procmail.list")
       (any "SmartList@@informatik\\.rwth-aachen\\.de" "SmartList.list")
+      ;; Both lists below have the same suffix, so prevent
+      ;; cross-posting to mkpkg.list of messages posted only to 
+      ;; the bugs- list, but allow cross-posting when the
+      ;; message was really cross-posted.
+      (any "bugs-mypackage@@somewhere" "mypkg.bugs")
+      (any "mypackage@@somewhere\" - "bugs-mypackage" "mypkg.list")
       ;; People...
       (any "larsi@@ifi\\.uio\\.no" "people.Lars_Magne_Ingebrigtsen"))
    ;; Unmatched mail goes to the catch all group.
@@ -10514,9 +10517,12 @@ name.  Normal regexp match expansion will be done.  See below for
 examples.
 
 @item
-@var{(FIELD VALUE SPLIT)}: If the split is a list, the first element of
-which is a string, then store the message as specified by SPLIT, if
-header FIELD (a regexp) contains VALUE (also a regexp).
+@var{(FIELD VALUE [- RESTRICT [- RESTRICT [...]]] SPLIT)}: If the split
+is a list, the first element of which is a string, then store the
+message as specified by SPLIT, if header FIELD (a regexp) contains VALUE
+(also a regexp).  If RESTRICT (yet another regexp) matches some string
+after FIELD and before the end of the matched VALUE, the SPLIT is
+ignored.  If none of the RESTRICT clauses match, SPLIT is processed.
 
 @item
 @var{(| SPLIT...)}: If the split is a list, and the first element is
@@ -16979,12 +16985,14 @@ Peter Arius,
 Matt Armstrong,
 Marc Auslander,
 Miles Bader,
+Alexei V. Barantsev,
 Frank Bennett,
 Robert Bihlmeyer,
 Chris Bone,
 Mark Borges,
 Mark Boyns,
 Lance A. Brown,
+Rob Browning,
 Kees de Bruin,
 Martin Buchholz,
 Joe Buehler,
@@ -16997,8 +17005,13 @@ Castor,
 David Charlap,
 Dan Christensen,
 Kevin Christian,
+Jae-you Chung, @c ?
+James H. Cloos, Jr.,
+Laura Conrad,
 Michael R. Cook,
 Glenn Coombs,
+Andrew J. Cosgriff,
+Neil Crellin,
 Frank D. Cringle,
 Geoffrey T. Dairiki,
 Andre Deparade,
@@ -17009,6 +17022,7 @@ Joev Dubach,
 Michael Welsh Duggan,
 Dave Edmondson,
 Paul Eggert,
+Mark W. Eichin,
 Karl Eichwalder,
 Enami Tsugutomo, @c Enami
 Michael Ernst,
@@ -17016,6 +17030,7 @@ Luc Van Eycken,
 Sam Falkner,
 Nelson Jose dos Santos Ferreira,
 Sigbjorn Finne,
+Sven Fischer,
 Paul Fisher,
 Decklin Foster,
 Gary D. Foster,
@@ -17032,24 +17047,30 @@ Raja R. Harinath,
 Yoshiki Hayashi, @c ?
 P. E. Jareth Hein,
 Hisashige Kenji, @c Hisashige
+Scott Hofmann,
 Marc Horowitz,
 Gunnar Horrigmo,
 Richard Hoskins,
 Brad Howes,
+Miguel de Icaza,
 François Felix Ingrand,
+Tatsuya Ichikawa, @c ?
 Ishikawa Ichiro, @c Ishikawa
 Lee Iverson,
 Iwamuro Motonori, @c Iwamuro
 Rajappa Iyer,
 Andreas Jaeger,
+Adam P. Jenkins,
 Randell Jesup,
 Fred Johansen,
 Gareth Jones,
 Simon Josefsson,
 Greg Klanderman,
 Karl Kleinpaste,
+Michael Klingbeil,
 Peter Skov Knudsen,
 Shuhei Kobayashi, @c Kobayashi
+Petr Konecny,
 Koseki Yoshinori, @c Koseki
 Thor Kristoffersen,
 Jens Lautenbacher,
@@ -17082,6 +17103,7 @@ Alexandre Oliva,
 Ken Olstad,
 Masaharu Onishi, @c Onishi
 Hideki Ono, @c Ono
+Ettore Perazzoli,
 William Perry,
 Stephen Peters,
 Jens-Ulrik Holger Petersen,
@@ -17123,18 +17145,23 @@ Darren Stalder,
 Richard Stallman,
 Greg Stark,
 Sam Steingold,
+Paul Stevenson,
 Jonas Steverud,
 Paul Stodghill,
+Kiyokazu Suto, @c Suto
 Kurt Swanson,
 Samuel Tardieu,
 Teddy,
 Chuck Thompson,
+Tozawa Akihiko, @c Tozawa
 Philippe Troin,
 James Troup,
 Trung Tran-Duc,
+Jack Twilley,
 Aaron M. Ucko,
 Aki Vehtari,
 Didier Verna,
+Vladimir Volovich,
 Jan Vroonhof,
 Stefan Waldherr,
 Pete Ware,
@@ -19068,6 +19095,16 @@ Under the subject "foo1", you wrote on 01.01.1999:
 
 @item
 Allow "orphan" scores in the Agent scoring.
+
+@item
+@example
+    - Edit article's summary line. 
+    - End edit
+    - Sort lines in buffer by subject
+
+    --> the old subject line appears in Summary buffer, not the one that was
+    just changed to.
+@end example
 
 @item
 Solve the halting problem.

@@ -1,3 +1,77 @@
+Tue Jul  6 10:59:24 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.92 is released.
+
+1999-07-06 12:30:59  Johannes Weinert  <Johannes.Weinert@Informatik.Uni-Oldenburg.DE>
+
+	* gnus-sum.el (gnus-summary-catchup-and-exit): Doc fix. 
+
+1999-07-06 07:41:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nntp.el (nntp-retrieve-groups): Don't do anything when not
+	connected. 
+
+	* gnus-start.el (gnus-active-to-gnus-format): Only save active
+	when plugged.
+
+	* mm-view.el (mm-inline-message): Ignore remove-spec.
+
+	* gnus-agent.el (gnus-agent-write-active): Check whether orig sym
+	is bound.
+
+	* gnus-msg.el (gnus-summary-mail-forward): Rename From_ lines. 
+
+	* nndoc.el (nndoc-guess-type): Remove blank lines at the start. 
+
+	* nnfolder.el (nnfolder-read-folder): Remove blank lines at the
+	start. 
+
+	* message.el (message-fill-yanked-message): Remove `t' arg.
+
+	* gnus-group.el (gnus-group-kill-group): Message killing of
+	groups. 
+
+	* mm-util.el (mm-preferred-coding-system): New function.
+	(mm-mime-charset): Use it.
+
+	* mml.el (mml-generate-mime-1): Charset-encode message parts.
+
+1999-07-06 07:03:31  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* gnus-mlsplt.el: New file.
+
+1999-07-06 05:47:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-inline-Media-tests): Changed from forms to
+	functions. 
+	(mm-attachment-override-p): Take a handle instead of a type.
+	(mm-inlined-p): Ditto.
+	(mm-automatic-display-p): Ditto,
+	(mm-inlinable-p): Ditto.
+
+	* nndraft.el (nndraft-request-expire-articles): Delete backup
+	files. 
+
+	* mailcap.el (mailcap-parse-mailcap): Regexp-quote stuff.
+
+	* gnus-sum.el (gnus-summary-limit-to-extra): Typo.
+
+1999-07-06 05:37:46  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* nnmail.el (nnmail-split-it): Allow .*.
+
+1999-07-05 05:04:57  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-inline-large-images-p): Renamed.
+
+	* gnus-art.el (article-date-ut): Always look in the current buffer 
+	for the Date header.
+
+	* mml.el (mml-validate): New command.
+
+	* mailcap.el (mailcap-possible-viewers): Revert to string-match
+	since we are dealing with regexps.
+
 Sun Jul  4 06:31:01 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.91 is released.

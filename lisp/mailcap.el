@@ -376,7 +376,7 @@ If FORCE, re-parse even if already parsed."
 	      (cond
 	       ((eq ?* (or (char-after save-pos) 0)) ".*")
 	       ((= (point) save-pos) ".*")
-	       (t (buffer-substring save-pos (point)))))
+	       (t (regexp-quote (buffer-substring save-pos (point))))))
 	(skip-chars-forward "; \t\n")
 	;;; Got the major/minor chunks, now for the viewers/etc
 	;;; The first item _must_ be a viewer, according to the
@@ -486,7 +486,7 @@ If FORCE, re-parse even if already parsed."
       (cond
        ((equal (car (car major)) minor)
 	(setq exact (cons (cdr (car major)) exact)))
-       ((and minor (string= (car (car major)) minor))
+       ((and minor (string-match (car (car major)) minor))
 	(setq wildcard (cons (cdr (car major)) wildcard))))
       (setq major (cdr major)))
     (nconc (nreverse exact) (nreverse wildcard))))

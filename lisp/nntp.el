@@ -476,64 +476,65 @@ noticing asynchronous data.")
 (deffoo nntp-retrieve-groups (groups &optional server)
   "Retrieve group info on GROUPS."
   (nntp-possibly-change-group nil server)
-  (save-excursion
-    (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
-    ;; The first time this is run, this variable is `try'.  So we
-    ;; try.
-    (when (eq nntp-server-list-active-group 'try)
-      (nntp-try-list-active (car groups)))
-    (erase-buffer)
-    (let ((count 0)
-	  (received 0)
-	  (last-point (point-min))
-	  (nntp-inhibit-erase t)
-	  (command (if nntp-server-list-active-group "LIST ACTIVE" "GROUP")))
-      (while groups
-	;; Send the command to the server.
-	(nntp-send-command nil command (pop groups))
-	(incf count)
-	;; Every 400 requests we have to read the stream in
-	;; order to avoid deadlocks.
-	(when (or (null groups)		;All requests have been sent.
-		  (zerop (% count nntp-maximum-request)))
-	  (nntp-accept-response)
+  (when (nntp-find-connection-buffer nntp-server-buffer)
+    (save-excursion
+      (set-buffer (nntp-find-connection-buffer nntp-server-buffer))
+      ;; The first time this is run, this variable is `try'.  So we
+      ;; try.
+      (when (eq nntp-server-list-active-group 'try)
+	(nntp-try-list-active (car groups)))
+      (erase-buffer)
+      (let ((count 0)
+	    (received 0)
+	    (last-point (point-min))
+	    (nntp-inhibit-erase t)
+	    (command (if nntp-server-list-active-group "LIST ACTIVE" "GROUP")))
+	(while groups
+	  ;; Send the command to the server.
+	  (nntp-send-command nil command (pop groups))
+	  (incf count)
+	  ;; Every 400 requests we have to read the stream in
+	  ;; order to avoid deadlocks.
+	  (when (or (null groups)	;All requests have been sent.
+		    (zerop (% count nntp-maximum-request)))
+	    (nntp-accept-response)
+	    (while (progn
+		     (goto-char last-point)
+		     ;; Count replies.
+		     (while (re-search-forward "^[0-9]" nil t)
+		       (incf received))
+		     (setq last-point (point))
+		     (< received count))
+	      (nntp-accept-response))))
+
+	;; Wait for the reply from the final command.
+	(goto-char (point-max))
+	(re-search-backward "^[0-9]" nil t)
+	(when (looking-at "^[23]")
 	  (while (progn
-		   (goto-char last-point)
-		   ;; Count replies.
-		   (while (re-search-forward "^[0-9]" nil t)
-		     (incf received))
-		   (setq last-point (point))
-		   (< received count))
-	    (nntp-accept-response))))
+		   (goto-char (point-max))
+		   (if (not nntp-server-list-active-group)
+		       (not (re-search-backward "\r?\n" (- (point) 3) t))
+		     (not (re-search-backward "^\\.\r?\n" (- (point) 4) t))))
+	    (nntp-accept-response)))
 
-      ;; Wait for the reply from the final command.
-      (goto-char (point-max))
-      (re-search-backward "^[0-9]" nil t)
-      (when (looking-at "^[23]")
-	(while (progn
-		 (goto-char (point-max))
-		 (if (not nntp-server-list-active-group)
-		     (not (re-search-backward "\r?\n" (- (point) 3) t))
-		   (not (re-search-backward "^\\.\r?\n" (- (point) 4) t))))
-	  (nntp-accept-response)))
-
-      ;; Now all replies are received.  We remove CRs.
-      (goto-char (point-min))
-      (while (search-forward "\r" nil t)
-	(replace-match "" t t))
-
-      (if (not nntp-server-list-active-group)
-	  (progn
-	    (copy-to-buffer nntp-server-buffer (point-min) (point-max))
-	    'group)
-	;; We have read active entries, so we just delete the
-	;; superfluous gunk.
+	;; Now all replies are received.  We remove CRs.
 	(goto-char (point-min))
-	(while (re-search-forward "^[.2-5]" nil t)
-	  (delete-region (match-beginning 0)
-			 (progn (forward-line 1) (point))))
-	(copy-to-buffer nntp-server-buffer (point-min) (point-max))
-	'active))))
+	(while (search-forward "\r" nil t)
+	  (replace-match "" t t))
+
+	(if (not nntp-server-list-active-group)
+	    (progn
+	      (copy-to-buffer nntp-server-buffer (point-min) (point-max))
+	      'group)
+	  ;; We have read active entries, so we just delete the
+	  ;; superfluous gunk.
+	  (goto-char (point-min))
+	  (while (re-search-forward "^[.2-5]" nil t)
+	    (delete-region (match-beginning 0)
+			   (progn (forward-line 1) (point))))
+	  (copy-to-buffer nntp-server-buffer (point-min) (point-max))
+	  'active)))))
 
 (deffoo nntp-retrieve-articles (articles &optional group server)
   (nntp-possibly-change-group group server)

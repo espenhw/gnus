@@ -57,32 +57,68 @@
 	 ,disposition ,description ,cache ,id))
 
 (defvar mm-inline-media-tests
-  '(("image/jpeg" mm-inline-image (mm-valid-and-fit-image-p 'jpeg handle))
-    ("image/png" mm-inline-image (mm-valid-and-fit-image-p 'png handle))
-    ("image/gif" mm-inline-image (mm-valid-and-fit-image-p 'gif handle))
-    ("image/tiff" mm-inline-image (mm-valid-and-fit-image-p 'tiff handle)) 
-    ("image/xbm" mm-inline-image (mm-valid-and-fit-image-p 'xbm handle))
-    ("image/x-xbitmap" mm-inline-image (mm-valid-and-fit-image-p 'xbm handle))
-    ("image/xpm" mm-inline-image (mm-valid-and-fit-image-p 'xpm handle))
-    ("image/x-pixmap" mm-inline-image (mm-valid-and-fit-image-p 'xpm handle))
-    ("image/bmp" mm-inline-image (mm-valid-and-fit-image-p 'bmp handle))
-    ("text/plain" mm-inline-text t)
-    ("text/enriched" mm-inline-text t)
-    ("text/richtext" mm-inline-text t)
-    ("text/html" mm-inline-text (locate-library "w3"))
-    ("text/x-vcard" mm-inline-text (locate-library "vcard"))
-    ("message/delivery-status" mm-inline-text t)
-    ("message/rfc822" mm-inline-message t)
-    ("text/.*" mm-inline-text t)
+  '(("image/jpeg"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'jpeg handle)))
+    ("image/png"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'png handle)))
+    ("image/gif"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'gif handle)))
+    ("image/tiff"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'tiff handle)) )
+    ("image/xbm"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'xbm handle)))
+    ("image/x-xbitmap"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'xbm handle)))
+    ("image/xpm"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'xpm handle)))
+    ("image/x-pixmap"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'xpm handle)))
+    ("image/bmp"
+     mm-inline-image
+     (lambda (handle)
+       (mm-valid-and-fit-image-p 'bmp handle)))
+    ("text/plain" mm-inline-text identity)
+    ("text/enriched" mm-inline-text identity)
+    ("text/richtext" mm-inline-text identity)
+    ("text/html"
+     mm-inline-text
+     (lambda (handle)
+       (locate-library "w3")))
+    ("text/x-vcard"
+     mm-inline-text
+     (lambda (handle)
+       (locate-library "vcard")))
+    ("message/delivery-status" mm-inline-text identity)
+    ("message/rfc822" mm-inline-message identity)
+    ("text/.*" mm-inline-text identity)
     ("audio/wav" mm-inline-audio
-     (and (or (featurep 'nas-sound) (featurep 'native-sound))
-	  (device-sound-enabled-p)))
-    ("audio/au" mm-inline-audio
-     (and (or (featurep 'nas-sound) (featurep 'native-sound))
-	  (device-sound-enabled-p)))
-    ("multipart/alternative" ignore t)
-    ("multipart/mixed" ignore t)
-    ("multipart/related" ignore t))
+     (lambda (handle)
+       (and (or (featurep 'nas-sound) (featurep 'native-sound))
+	    (device-sound-enabled-p))))
+    ("audio/au"
+     mm-inline-audio
+     (lambda (handle)
+       (and (or (featurep 'nas-sound) (featurep 'native-sound))
+	    (device-sound-enabled-p))))
+    ("multipart/alternative" ignore identity)
+    ("multipart/mixed" ignore identity)
+    ("multipart/related" ignore identity))
   "Alist of media types/test that say whether the media types can be displayed inline.")
 
 (defvar mm-inlined-types
@@ -119,7 +155,7 @@ to:
 	("/tmp/"))
   "Where mm will store its temporary files.")
 
-(defvar mm-all-images-fit nil
+(defvar mm-inline-large-images nil
   "If non-nil, then all images fit in the buffer.")
 
 ;;; Internal variables.
@@ -235,7 +271,7 @@ external if displayed external."
 	(mm-remove-part handle)
       (let* ((type (car (mm-handle-type handle)))
 	     (method (mailcap-mime-info type)))
-	(if (mm-inlined-p type)
+	(if (mm-inlined-p handle)
 	    (progn
 	      (forward-line 1)
 	      (mm-display-inline handle)
@@ -376,48 +412,52 @@ external if displayed external."
     (funcall function handle)
     (goto-char (point-min))))
 
-(defun mm-inlinable-p (type)
-  "Say whether TYPE can be displayed inline."
+(defun mm-inlinable-p (handle)
+  "Say whether HANDLE can be displayed inline."
   (let ((alist mm-inline-media-tests)
+	(type (car (mm-handle-type handle)))
 	test)
     (while alist
       (when (equal type (caar alist))
 	(setq test (caddar alist)
 	      alist nil)
-	(setq test (eval test)))
+	(setq test (funcall test handle)))
       (pop alist))
     test))
 
-(defun mm-automatic-display-p (type)
-  "Say whether the user wants TYPE to be displayed automatically."
+(defun mm-automatic-display-p (handle)
+  "Say whether the user wants HANDLE to be displayed automatically."
   (let ((methods mm-automatic-display)
+	(type (car (mm-handle-type handle)))
 	method result)
     (while (setq method (pop methods))
       (when (and (string-match method type)
-		 (mm-inlinable-p type))
+		 (mm-inlinable-p handle))
 	(setq result t
 	      methods nil)))
     result))
 
-(defun mm-inlined-p (type)
-  "Say whether the user wants TYPE to be displayed automatically."
+(defun mm-inlined-p (handle)
+  "Say whether the user wants HANDLE to be displayed automatically."
   (let ((methods mm-inlined-types)
+	(type (car (mm-handle-type handle)))
 	method result)
     (while (setq method (pop methods))
       (when (and (string-match method type)
-		 (mm-inlinable-p type))
+		 (mm-inlinable-p handle))
 	(setq result t
 	      methods nil)))
     result))
 
-(defun mm-attachment-override-p (type)
-  "Say whether TYPE should have attachment behavior overridden."
+(defun mm-attachment-override-p (handle)
+  "Say whether HANDLE should have attachment behavior overridden."
   (let ((types mm-attachment-override-types)
+	(type (car (mm-handle-type handle)))
 	ty)
     (catch 'found
       (while (setq ty (pop types))
 	(when (and (string-match ty type)
-		   (mm-inlinable-p type))
+		   (mm-inlinable-p handle))
 	  (throw 'found t))))))
 
 (defun mm-automatic-external-display-p (type)
@@ -548,7 +588,7 @@ external if displayed external."
 		(car (mm-handle-type (car h)))))
 	(setq handle (car h))
 	(when (and (equal p type)
-		   (mm-automatic-display-p type)
+		   (mm-automatic-display-p (car h))
 		   (or (stringp (caar h))
 		       (not (mm-handle-disposition (car h)))
 		       (equal (car (mm-handle-disposition (car h)))
@@ -615,7 +655,7 @@ external if displayed external."
 (defun mm-image-fit-p (handle)
   "Say whether the image in HANDLE will fit the current window."
   (let ((image (mm-get-image handle)))
-    (or mm-all-images-fit
+    (or mm-inline-large-images
 	(and (< (glyph-width image) (window-pixel-width))
 	     (< (glyph-height image) (window-pixel-height))))))
 

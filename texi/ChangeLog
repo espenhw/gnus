@@ -1,3 +1,12 @@
+1999-07-06 11:41:59  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Mail Source Specifiers): Fix.
+	(Mail Source Customization): Deleted obsolete vars.
+
+1999-07-05 05:16:55  Laura Conrad  <lconrad@world.std.com>
+
+	* gnus.texi (Mail in a Newsreader): Rewrite.
+
 1999-07-04 04:33:50  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Posting Styles): Fix.

@@ -293,8 +293,12 @@ the following:
 
 GROUP: Mail will be stored in GROUP (a string).
 
-\(FIELD VALUE SPLIT): If the message field FIELD (a regexp) contains
-  VALUE (a regexp), store the messages as specified by SPLIT.
+\(FIELD VALUE [- RESTRICT [- RESTRICT [...]]] SPLIT): If the message
+  field FIELD (a regexp) contains VALUE (a regexp), store the messages 
+  as specified by SPLIT.  If RESTRICT (a regexp) matches some string
+  after FIELD and before the end of the matched VALUE, return NIL,
+  otherwise process SPLIT.  Multiple RESTRICTs add up, further
+  restricting the possibility of processing SPLIT.
 
 \(| SPLIT...): Process each SPLIT expression until one of them matches.
   A SPLIT expression is said to match if it will cause the mail
@@ -305,6 +309,10 @@ GROUP: Mail will be stored in GROUP (a string).
 \(: FUNCTION optional args): Call FUNCTION with the optional args, in
   the buffer containing the message headers.  The return value FUNCTION
   should be a split, which is then recursively processed.
+
+\(! FUNCTION SPLIT): Call FUNCTION with the result of SPLIT.  The
+  return value FUNCTION should be a split, which is then recursively
+  processed.
 
 FIELD must match a complete field name.  VALUE must match a complete
 word according to the `nnmail-split-fancy-syntax-table' syntax table.
@@ -333,6 +341,13 @@ Example:
 	     ;; Other mailing lists...
 	     (any \"procmail@informatik\\\\.rwth-aachen\\\\.de\" \"procmail.list\")
 	     (any \"SmartList@informatik\\\\.rwth-aachen\\\\.de\" \"SmartList.list\")
+             ;; Both lists below have the same suffix, so prevent
+             ;; cross-posting to mkpkg.list of messages posted only to 
+             ;; the bugs- list, but allow cross-posting when the
+             ;; message was really cross-posted.
+             (any \"bugs-mypackage@somewhere\" \"mypkg.bugs\")
+             (any \"mypackage@somewhere\" - \"bugs-mypackage\" \"mypkg.list\")
+             ;; 
 	     ;; People...
 	     (any \"larsi@ifi\\\\.uio\\\\.no\" \"people.Lars Magne Ingebrigtsen\"))
 	  ;; Unmatched mail goes to the catch all group.
@@ -1106,47 +1121,71 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 
      ;; Check the cache for the regexp for this split.
      ((setq cached-pair (assq split nnmail-split-cache))
-      (goto-char (point-max))
-      ;; FIX FIX FIX problem with re-search-backward is that if you have
-      ;; a split: (from "foo-\\(bar\\|baz\\)@gnus.org "mail.foo.\\1")
-      ;; and someone mails a message with 'To: foo-bar@gnus.org' and
-      ;; 'CC: foo-baz@gnus.org', we'll pick 'mail.foo.baz' as the group
-      ;; if the cc line is a later header, even though the other choice
-      ;; is probably better.  Also, this routine won't do a crosspost
-      ;; when there are two different matches.
-      ;; I guess you could just make this more determined, and it could
-      ;; look for still more matches prior to this one, and recurse
-      ;; on each of the multiple matches hit.  Of course, then you'd
-      ;; want to make sure that nnmail-article-group or nnmail-split-fancy
-      ;; removed duplicates, since there might be more of those.
-      ;; I guess we could also remove duplicates in the & split case, since
-      ;; that's the only thing that can introduce them.
-      (when (re-search-backward (cdr cached-pair) nil t)
+      (let (split-result
+	    (end-point (point-max))
+	    (value (nth 1 split)))
+	(if (symbolp value)
+	    (setq value (cdr (assq value nnmail-split-abbrev-alist))))
+	(while (and (goto-char end-point)
+		    (re-search-backward (cdr cached-pair) nil t))
 	(when nnmail-split-tracing
 	  (push (cdr cached-pair) nnmail-split-trace))
-	;; Someone might want to do a \N sub on this match, so get the
-	;; correct match positions.
-	(goto-char (match-end 0))
-	(let ((value (nth 1 split)))
-	  (re-search-backward (if (symbolp value)
-				  (cdr (assq value nnmail-split-abbrev-alist))
-				value)
-			      (match-end 1)))
-	(nnmail-split-it (nth 2 split))))
+	(let ((split-rest (cddr split))
+	      (end (match-end 0))
+	      ;; The searched regexp is \(\(FIELD\).*\)\(VALUE\).  So,
+	      ;; start-of-value is the the point just before the
+	      ;; beginning of the value, whereas after-header-name is
+	      ;; the point just after the field name.
+	      (start-of-value (match-end 1))
+	      (after-header-name (match-end 2)))
+	    ;; Start the next search just before the beginning of the
+	    ;; VALUE match.
+	    (setq end-point (1- start-of-value))
+	  ;; Handle - RESTRICTs
+	  (while (eq (car split-rest) '-)
+	    ;; RESTRICT must start after-header-name and
+	    ;; end after start-of-value, so that, for
+	    ;; (any "foo" - "x-foo" "foo.list")
+	    ;; we do not exclude foo.list just because
+	    ;; the header is: ``To: x-foo, foo''
+	    (goto-char end)
+	    (if (and (re-search-backward (cadr split-rest)
+					 after-header-name t)
+		     (> (match-end 0) start-of-value))
+		(setq split-rest nil)
+	      (setq split-rest (cddr split-rest))))
+	  (when split-rest
+	    (goto-char end)
+	    (let ((value (nth 1 split)))
+	      (if (symbolp value)
+		  (setq value (cdr (assq value nnmail-split-abbrev-alist))))
+	      ;; Someone might want to do a \N sub on this match, so get the
+	      ;; correct match positions.
+	      (re-search-backward value start-of-value))
+	      (dolist (sp (nnmail-split-it (car split-rest)))
+		(unless (memq sp split-result)
+		  (push sp split-result))))))
+	split-result))
 
      ;; Not in cache, compute a regexp for the field/value pair.
      (t
       (let* ((field (nth 0 split))
 	     (value (nth 1 split))
-	     (regexp (concat "^\\(\\("
+	     partial regexp)
+	(if (symbolp value)
+	    (setq value (cdr (assq value nnmail-split-abbrev-alist))))
+	(if (string= ".*" (substring value 0 2))
+	    (setq value (substring value 2)
+		  partial ""))
+	(setq regexp (concat "^\\(\\("
 			     (if (symbolp field)
 				 (cdr (assq field nnmail-split-abbrev-alist))
 			       field)
-			     "\\):.*\\)\\<\\("
-			     (if (symbolp value)
-				 (cdr (assq value nnmail-split-abbrev-alist))
-			       value)
-			     "\\)\\>")))
+			     "\\):.*\\)"
+			     (or partial "\\<")
+			     "\\("
+			     value
+			     "\\)\\>"))
 	(push (cons split regexp) nnmail-split-cache)
 	;; Now that it's in the cache, just call nnmail-split-it again
 	;; on the same split, which will find it immediately in the cache.

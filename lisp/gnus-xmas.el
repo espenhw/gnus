@@ -597,8 +597,7 @@ If it is non-nil, it must be a toolbar.  The five valid values are
     [gnus-group-unsubscribe gnus-group-unsubscribe t "Unsubscribe group"]
     [gnus-group-subscribe gnus-group-subscribe t "Subscribe group"]
     [gnus-group-kill-group gnus-group-kill-group t "Kill group"]
-    [gnus-group-exit gnus-group-exit t "Exit Gnus"]
-    )
+    [gnus-group-exit gnus-group-exit t "Exit Gnus"])
   "The group buffer toolbar.")
 
 (defvar gnus-summary-toolbar

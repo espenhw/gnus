@@ -561,7 +561,7 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-write-active (file new)
   (let ((orig (gnus-make-hashtable (count-lines (point-min) (point-max))))
 	(file (gnus-agent-lib-file "active"))
-	elem)
+	elem osym)
     (when (file-exists-p file)
       (with-temp-buffer
 	(insert-file-contents file)
@@ -569,7 +569,8 @@ the actual number of articles toggled is returned."
       (mapatoms
        (lambda (sym)
 	 (when (and sym (boundp sym))
-	   (if (setq elem (symbol-value (intern (symbol-name sym) orig)))
+	   (if (and (boundp (setq osym (intern (symbol-name sym) orig)))
+		    (setq elem (symbol-value osym)))
 	       (setcdr elem (cdr (symbol-value sym)))
 	     (set (intern (symbol-name sym) orig) (symbol-value sym)))))
        new))

@@ -182,18 +182,22 @@ used as the line break code type of the coding system."
   (when (fboundp 'set-buffer-multibyte)
     (set-buffer-multibyte nil)))
 
+(defun mm-preferred-coding-system (charset)
+  ;; A typo in some Emacs versions.
+  (or (get-charset-property charset 'prefered-coding-system)
+      (get-charset-property charset 'preffered-coding-system)))
+
 (defun mm-mime-charset (charset)
   "Return the MIME charset corresponding to the MULE CHARSET."
   (if (fboundp 'coding-system-get)
       ;; This exists in Emacs 20.
       (or
-       (and (get-charset-property charset 'prefered-coding-system)
+       (and (mm-preferred-coding-system charset)
 	    (coding-system-get
-	     (get-charset-property charset 'prefered-coding-system)
-	     'mime-charset))
+	     (mm-preferred-coding-system charset) 'mime-charset))
        (and (eq charset 'ascii)
 	    'us-ascii)
-       (get-charset-property charset 'prefered-coding-system)
+       (mm-preferred-coding-system charset)
        (mm-mule-charset-to-mime-charset charset))
     ;; This is for XEmacs.
     (mm-mule-charset-to-mime-charset charset)))

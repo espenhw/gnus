@@ -652,6 +652,9 @@ If POST, post instead of mail."
 		   (generate-new-buffer-name " *Gnus forward*")))
       (erase-buffer)
       (insert text)
+      (goto-char (point-min))
+      (when (looking-at "From ")
+	(replace-match "X-From-Line: ") )
       (run-hooks 'gnus-article-decode-hook)
       (message-forward post))))
 

@@ -1761,7 +1761,7 @@ newsgroup."
       (insert ?\\))
 
     ;; Let the Gnus agent save the active file.
-    (when (and gnus-agent real-active)
+    (when (and gnus-agent real-active gnus-plugged)
       (gnus-agent-save-active method))
 
     ;; If these are groups from a foreign select method, we insert the

@@ -177,7 +177,14 @@
 	(let ((auto (nndraft-auto-save-file-name
 		     (nndraft-article-filename article))))
 	  (when (file-exists-p auto)
-	    (funcall nnmail-delete-file-function auto)))))
+	    (funcall nnmail-delete-file-function auto)))
+	(dolist (backup
+		 (let ((kept-new-versions 1)
+		       (kept-old-versions 0))
+		   (cdr (find-backup-file-name
+			 (nndraft-article-filename article)))))
+	  (when (file-exists-p backup)
+	    (funcall nnmail-delete-file-function backup)))))
     res))
 
 (deffoo nndraft-request-accept-article (group &optional server last noinsert)

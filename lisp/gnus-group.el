@@ -2736,7 +2736,8 @@ of groups killed."
 	    (push (cons (car entry) (nth 2 entry))
 		  gnus-list-of-killed-groups))
 	  (gnus-group-change-level
-	   (if entry entry group) gnus-level-killed (if entry nil level)))
+	   (if entry entry group) gnus-level-killed (if entry nil level))
+	  (message "Killed group %s" group))
       ;; If there are lots and lots of groups to be killed, we use
       ;; this thing instead.
       (let (entry)

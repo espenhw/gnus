@@ -710,6 +710,10 @@ deleted.  Point is left where the deleted region was."
 	  (save-buffer))
       ;; Parse the damn thing.
       (save-excursion
+	(goto-char (point-min))
+	;; Remove any blank lines at the start.
+	(while (eq (following-char) ?\n)
+	  (delete-char 1))
 	(nnmail-activate 'nnfolder)
 	;; Read in the file.
 	(let ((delim "^From ")
