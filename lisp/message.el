@@ -3245,7 +3245,10 @@ than 988 characters long, and if they are not, trim them until they are."
 
     ;; If folding is disallowed, make sure the total length (including
     ;; the spaces between) will be less than MAXSIZE characters.
-    (when message-cater-to-broken-inn
+    ;;
+    ;; Only disallow folding for News messages. At this point the headers
+    ;; have not been generated, thus we use message-this-is-news directly.
+    (when (and message-this-is-news message-cater-to-broken-inn)
       (let ((maxsize 988)
 	    (totalsize (+ (apply #'+ (mapcar #'length refs))
 			  (1- count)))
@@ -3263,7 +3266,7 @@ than 988 characters long, and if they are not, trim them until they are."
     ;; Finally, collect the references back into a string and insert
     ;; it into the buffer.
     (let ((refstring (mapconcat #'identity refs " ")))
-      (if message-cater-to-broken-inn
+      (if (and message-this-is-news message-cater-to-broken-inn)
 	  (insert (capitalize (symbol-name header)) ": "
 		  refstring "\n")
 	(message-fill-header header refstring)))))

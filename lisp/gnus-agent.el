@@ -1308,8 +1308,8 @@ The following commands are available:
   (let ((info (assq category gnus-category-alist))
 	(buffer-read-only nil))
     (gnus-delete-line)
-    (gnus-category-write)
-    (setq gnus-category-alist (delq info gnus-category-alist))))
+    (setq gnus-category-alist (delq info gnus-category-alist))
+    (gnus-category-write)))
 
 (defun gnus-category-copy (category to)
   "Copy the current category."

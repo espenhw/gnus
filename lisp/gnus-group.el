@@ -161,6 +161,7 @@ with some simple extensions.
 %n    Select from where (string)
 %z    A string that look like `<%s:%n>' if a foreign select method is used
 %d    The date the group was last entered.
+%E    Icon as defined by `gnus-group-icon-list'.
 %u    User defined specifier.  The next character in the format string should
       be a letter.  Gnus will call the function gnus-user-format-function-X,
       where X is the letter following %u.  The function will be passed the
@@ -360,6 +361,45 @@ ticked: The number of ticked articles."
   :group 'gnus-group-visual
   :type 'character)
 
+(defgroup gnus-group-icons nil
+  "Add Icons to your group buffer.  "
+  :group 'gnus-group-visual)
+
+(defcustom gnus-group-icon-list
+  nil
+  "*Controls the insertion of icons into group buffer lines.
+
+Below is a list of `Form'/`File' pairs.  When deciding how a
+particular group line should be displayed, each form is evaluated.
+The icon from the file field after the first true form is used.  You
+can change how those group lines are displayed by editing the file
+field.  The File will either be found in the
+`gnus-group-glyph-directory' or by designating absolute path to the
+file.
+
+It is also possible to change and add form fields, but currently that
+requires an understanding of Lisp expressions.  Hopefully this will
+change in a future release.  For now, you can use the following
+variables in the Lisp expression:
+
+group: The name of the group.
+unread: The number of unread articles in the group.
+method: The select method used.
+mailp: Whether it's a mail group or not.
+newsp: Whether it's a news group or not
+level: The level of the group.
+score: The score of the group.
+ticked: The number of ticked articles."
+  :group 'gnus-group-icons
+  :type '(repeat (cons (sexp :tag "Form") file)))
+
+(defcustom gnus-group-glyph-directory gnus-xmas-glyph-directory
+  "*Directory where gnus group icons are located.
+Defaults to `gnus-xmas-glyph-directory'."
+  :group 'gnus-group-icons
+  :type 'directory)
+
+
 ;;; Internal variables
 
 (defvar gnus-group-sort-alist-function 'gnus-group-sort-flat
@@ -404,6 +444,7 @@ ticked: The number of ticked articles."
     (?s gnus-tmp-news-server ?s)
     (?n gnus-tmp-news-method ?s)
     (?P gnus-group-indentation ?s)
+    (?E gnus-tmp-group-icon ?s)
     (?l gnus-tmp-grouplens ?s)
     (?z gnus-tmp-news-method-string ?s)
     (?m (gnus-group-new-mail gnus-tmp-group) ?c)
@@ -425,6 +466,10 @@ ticked: The number of ticked articles."
 (defvar gnus-group-marked nil)
 
 (defvar gnus-group-list-mode nil)
+
+
+(defvar gnus-group-icon-cache nil)
+(defvar gnus-group-running-xemacs (string-match "XEmacs" emacs-version))
 
 ;;;
 ;;; Gnus group mode
@@ -1067,6 +1112,7 @@ If REGEXP, only list groups matching REGEXP."
 	      ?m ? ))
 	 (gnus-tmp-moderated-string
 	  (if (eq gnus-tmp-moderated ?m) "(m)" ""))
+	 (gnus-tmp-group-icon "==&&==")
 	 (gnus-tmp-method
 	  (gnus-server-get-method gnus-tmp-group gnus-tmp-method)) ;
 	 (gnus-tmp-news-server (or (cadr gnus-tmp-method) ""))
@@ -1102,12 +1148,83 @@ If REGEXP, only list groups matching REGEXP."
 		  gnus-marked ,gnus-tmp-marked-mark
 		  gnus-indentation ,gnus-group-indentation
 		  gnus-level ,gnus-tmp-level))
-    (when (inline (gnus-visual-p 'group-highlight 'highlight))
       (forward-line -1)
+      (gnus-group-add-icon)
+    (when (inline (gnus-visual-p 'group-highlight 'highlight))
       (gnus-run-hooks 'gnus-group-update-hook)
       (forward-line))
     ;; Allow XEmacs to remove front-sticky text properties.
     (gnus-group-remove-excess-properties)))
+
+(defun gnus-group-add-icon ()
+  "Add an icon to the current line according to `gnus-group-icon-list'."
+  (let* ((p (point))
+	 (end (progn (end-of-line) (point)))
+	 ;; now find out where the line starts and leave point there.
+	 (beg (progn (beginning-of-line) (point))))
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char beg)
+      (when (search-forward "==&&==" nil t)
+	(let* ((group (gnus-group-group-name))
+	       (entry (gnus-group-entry group))
+	       (unread (if (numberp (car entry)) (car entry) 0))
+	       (active (gnus-active group))
+	       (total (if active (1+ (- (cdr active) (car active))) 0))
+	       (info (nth 2 entry))
+	       (method (gnus-server-get-method group (gnus-info-method info)))
+	       (marked (gnus-info-marks info))
+	       (mailp (memq 'mail (assoc (symbol-name
+					  (car (or method gnus-select-method)))
+					 gnus-valid-select-methods)))
+	       (level (or (gnus-info-level info) gnus-level-killed))
+	       (score (or (gnus-info-score info) 0))
+	       (ticked (gnus-range-length (cdr (assq 'tick marked))))
+	       (group-age (gnus-group-timestamp-delta group))
+	       (inhibit-read-only t)
+	       (list gnus-group-icon-list)
+	       (mystart (match-beginning 0))
+	       (myend (match-end 0)))
+	  (goto-char (point-min))
+	  (while (and list
+		      (not (eval (caar list))))
+	    (setq list (cdr list)))
+	  (if list
+	      (let* ((file (cdar list))
+		     (glyph (gnus-group-icon-create-glyph
+			     (buffer-substring mystart myend)
+			     file)))
+		(if glyph
+		    (progn
+		      (mapcar 'delete-annotation (annotations-at myend))
+		      (let ((ext (make-extent mystart myend))
+			    (ant (make-annotation glyph myend 'text)))
+			;; set text extent params
+			(set-extent-property ext 'end-open t)
+			(set-extent-property ext 'start-open t)
+			(set-extent-property ext 'invisible t)))
+		  (delete-region mystart myend)))
+	    (delete-region mystart myend))))
+      (widen))
+    (goto-char p)))
+
+(defun gnus-group-icon-create-glyph (substring pixmap)
+  "Create a glyph for insertion into a group line."
+  (and
+   gnus-group-running-xemacs
+   (or
+    (cdr-safe (assoc pixmap gnus-group-icon-cache))
+    (let* ((glyph (make-glyph
+		   (list
+		    (cons 'x
+			  (expand-file-name pixmap gnus-group-glyph-directory))
+		    (cons 'mswindows
+			  (expand-file-name pixmap gnus-group-glyph-directory))
+		    (cons 'tty substring)))))
+      (setq gnus-group-icon-cache
+	    (cons (cons pixmap glyph) gnus-group-icon-cache))
+      (set-glyph-face glyph 'default)
+      glyph))))
 
 (defun gnus-group-highlight-line ()
   "Highlight the current line according to `gnus-group-highlight'."

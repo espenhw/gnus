@@ -4580,7 +4580,10 @@ For example:
 	val elem)
     (gnus-run-hooks 'gnus-part-display-hook)
     (while (setq elem (pop alist))
-      (setq val (symbol-value (car elem)))
+      (setq val
+	    (save-excursion
+	      (set-buffer gnus-summary-buffer)
+	      (symbol-value (car elem))))
       (when (and (or (consp val)
 		     treated-type)
 		 (gnus-treat-predicate val)

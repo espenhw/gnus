@@ -1,3 +1,36 @@
+1999-12-13  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* rfc2047.el (rfc2047-fold-region): Don't use the same break twice.
+
+1999-12-14 04:14:44  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* dgnushack.el (last, mapcon, member-if, union): New compiler
+	macros for emulating cl functions.
+
+1999-12-21  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* message.el (message-shorten-references): Only cater to broken
+	INN for news. This caters for broken smtpd.
+
+2000-04-21 18:20:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mailcap.el (mailcap-mime-info): Use the first match; not the
+	last. 
+
+	* gnus-agent.el (gnus-category-kill): Save the category list.
+
+2000-04-21 16:41:50  Chris Brierley  <brierley@pobox.com>
+
+	* gnus-sum.el (gnus-summary-move-article): Do something or other. 
+
+2000-04-21 16:07:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-add-icon): Fixed indentation.
+
+2000-04-21 16:07:07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-add-icon): Fixed indentation.
+
 2000-04-21 10:43:16  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-group.el (gnus-group-prepare-flat-predicate): New function.
@@ -423,6 +456,21 @@ Thu Apr 20 01:39:25 2000  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	(safe-date-to-time): Add autoload cookie.
 
 	* base64.el: Require cl when compiling.
+
+2000-01-05  BrYan P. Johnson  <beej@mindspring.net>
+
+	* gnus-group.el (gnus-group-line-format-alist): Added %E for
+	eyecandy.
+	(gnus-group-insert-group-line): Now groks %E and inserts icon in
+	group line using gnus-group-add-icon.
+	(gnus-group-icons): Added customize group.
+	(gnus-group-icon-list): Added variable.
+	(gnus-group-glyph-directory): Added variable.
+	(gnus-group-icon-cache): Added variable.
+	(gnus-group-running-xemacs): Added variable.
+	(gnus-group-add-icon): Added function. Add an icon to the current
+	line according to gnus-group-icon-list.
+	(gnus-group-icon-create-glyph): Added function.
 
 2000-01-05 17:31:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

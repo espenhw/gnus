@@ -266,7 +266,8 @@ Should be called narrowed to the head of the message."
 	 ((and (not break)
 	       (looking-at "=\\?"))
 	  (setq break (point)))
-	 ((and (looking-at "\\?=")
+	 ((and break
+	       (looking-at "\\?=")
 	       (> (- (point) (save-excursion (beginning-of-line) (point))) 76))
 	  (goto-char break)
 	  (setq break nil)
