@@ -4,7 +4,7 @@
 
 ;; Author: Richard L. Pieri <ratinox@peorth.gweep.net>
 ;; Keywords: mail, pop3
-;; Version: 1.3
+;; Version: 1.3c
 
 ;; This file is part of GNU Emacs.
 
@@ -37,9 +37,6 @@
 (require 'mail-utils)
 (provide 'pop3)
 
-(eval-and-compile
-  (if (not (fboundp 'md5)) (autoload 'md5 "md5")))
-
 (defvar pop3-maildrop (or user-login-name (getenv "LOGNAME") (getenv "USER") nil)
   "*POP3 maildrop.")
 (defvar pop3-mailhost (or (getenv "MAILHOST") nil)
@@ -53,8 +50,9 @@
   "*Password to use when connecting to POP server.")
 
 (defvar pop3-authentication-scheme 'pass
-  "*POP3 authentication scheme.  Defaults to 'pass, for the standard
-USER/PASS authentication.  Other valid values are 'apop.")
+  "*POP3 authentication scheme.
+Defaults to 'pass, for the standard USER/PASS authentication.  Other valid
+values are 'apop.")
 
 (defvar pop3-timestamp nil
   "Timestamp returned when initially connected to the POP server.
@@ -85,9 +83,16 @@ Used for APOP authentication.")
       (pop3-retr process n crashbuf)
       (save-excursion
 	(set-buffer crashbuf)
-	(append-to-file (point-min) (point-max) crashbox))
+	(append-to-file (point-min) (point-max) crashbox)
+	(set-buffer (process-buffer process))
+	(while (> (buffer-size) 5000)
+	  (goto-char (point-min))
+	  (forward-line 50)
+	  (delete-region (point-min) (point))))
       (pop3-dele process n)
-      (setq n (+ 1 n)))
+      (setq n (+ 1 n))
+      (if pop3-debug (sit-for 1) (sit-for 0.1))
+      )
     (pop3-quit process)
     (kill-buffer crashbuf)
     )
@@ -272,8 +277,7 @@ Return the response string if optional second argument is non-nil."
 ;; TRANSACTION STATE
 
 (defun pop3-stat (process)
-  "Return a list of the number of messages in the maildrop and the size
-of the maildrop."
+  "Return the number of messages in the maildrop and the maildrop's size."
   (pop3-send-command process "STAT")
   (let ((response (pop3-read-response process t)))
     (list (string-to-int (nth 1 (pop3-string-to-list response)))
@@ -285,8 +289,7 @@ of the maildrop."
 This function currently does nothing.")
 
 (defun pop3-retr (process msg crashbuf)
-  "Retrieve message-id MSG from the server and place the contents in
-buffer CRASHBUF."
+  "Retrieve message-id MSG to buffer CRASHBUF."
   (pop3-send-command process (format "RETR %s" msg))
   (pop3-read-response process)
   (let ((start pop3-read-point) end)
@@ -304,6 +307,7 @@ buffer CRASHBUF."
 	(goto-char start))
       (setq pop3-read-point (point-marker))
       (goto-char (match-beginning 0))
+      (insert "\r\n")
       (setq end (point-marker))
       (pop3-clean-region start end)
       (pop3-munge-message-separator start end)
@@ -339,8 +343,9 @@ buffer CRASHBUF."
 ;; UPDATE
 
 (defun pop3-quit (process)
-  "Tell server to remove all messages marked as deleted, unlock the
-maildrop, and close the connection."
+  "Close connection to POP3 server.
+Tell server to remove all messages marked as deleted, unlock the maildrop,
+and close the connection."
   (pop3-send-command process "QUIT")
   (pop3-read-response process t)
   (if process

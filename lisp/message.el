@@ -3007,6 +3007,9 @@ Headers already prepared in the buffer are not modified."
 	      (insert (if (bolp) "" ", ") (or to ""))
 	      (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
 	      (insert (if cc (concat (if (bolp) "" ", ") cc) ""))
+	      (goto-char (point-min))
+	      (while (re-search-forward "[ \t]+" nil t)
+		(replace-match " " t t))
 	      ;; Remove addresses that match `rmail-dont-reply-to-names'.
 	      (insert (prog1 (rmail-dont-reply-to (buffer-string))
 			(erase-buffer)))

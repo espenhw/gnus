@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message Manual
+@settitle Message 5.4.31 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -12,7 +12,7 @@
 
 @ifinfo
 
-This file documents Messa, the Emacs message composition mode.
+This file documents Message, the Emacs message composition mode.
 
 Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message Manual
+@title Message 5.4.31 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -78,6 +78,10 @@ buffers.
 * Index::             Variable, function and concept index.
 * Key Index::         List of Message mode keys.
 @end menu
+
+This manual corresponds to Message 5.4.31.  Message is distributed with
+the Gnus distribution bearing the same version number as this manual
+has. 
 
 
 @node Interface

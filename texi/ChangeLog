@@ -1,3 +1,8 @@
+Wed Mar 19 15:45:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Various Summary Stuff): Addition.
+	(Mail Backend Variables): Addition.
+
 Tue Mar 18 14:43:32 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Article Washing): Not addition.

@@ -304,6 +304,8 @@
        (forward-line -1)
        (while (re-search-backward "^X-Gnus-Newsgroup: " nil t)
 	 (delete-region (point) (progn (forward-line 1) (point))))
+       (when nnmail-cache-accepted-message-ids
+	 (nnmail-cache-insert (nnmail-fetch-field "message-id")))
        (setq result (nnmbox-save-mail
 		     (if (stringp group)
 			 (list (cons group (nnmbox-active-number group)))
@@ -313,6 +315,8 @@
        (goto-char (point-max))
        (insert-buffer-substring buf)
        (when last
+	 (when nnmail-cache-accepted-message-ids
+	   (nnmail-cache-close))
 	 (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
 	 (save-buffer))))
     (car result)))

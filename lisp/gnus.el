@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.30"
+(defconst gnus-version-number "5.4.31"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2244,8 +2244,8 @@ If SYMBOL, return the value of that symbol in the group parameters."
 (defun gnus-group-add-parameter (group param)
   "Add parameter PARAM to GROUP."
   (let ((info (gnus-get-info group)))
-    (if (not info)
-	()				; This is a dead group.  We just ignore it.
+    (when info
+      (gnus-group-remove-parameter group (if (consp param) (car param) param))
       ;; Cons the new param to the old one and update.
       (gnus-group-set-info (cons param (gnus-info-params info))
 			   group 'params))))
@@ -2253,8 +2253,8 @@ If SYMBOL, return the value of that symbol in the group parameters."
 (defun gnus-group-set-parameter (group name value)
   "Set parameter NAME to VALUE in GROUP."
   (let ((info (gnus-get-info group)))
-    (if (not info)
-	()				; This is a dead group.  We just ignore it.
+    (when info
+      (gnus-group-remove-parameter group name)
       (let ((old-params (gnus-info-params info))
 	    (new-params (list (cons name value))))
 	(while old-params
@@ -2263,6 +2263,17 @@ If SYMBOL, return the value of that symbol in the group parameters."
 	    (setq new-params (append new-params (list (car old-params)))))
 	  (setq old-params (cdr old-params)))
 	(gnus-group-set-info new-params group 'params)))))
+
+(defun gnus-group-remove-parameter (group name)
+  "Remove parameter NAME from GROUP."
+  (let ((info (gnus-get-info group)))
+    (when info
+      (let ((params (gnus-info-params info)))
+	(when params
+	  (setq params (delq name params))
+	  (while (assq name params)
+	    (setq params (delq (assq name params) params)))
+	  (gnus-info-set-params info params))))))
 
 (defun gnus-group-add-score (group &optional score)
   "Add SCORE to the GROUP score.

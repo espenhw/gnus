@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.30 Manual
+@settitle Gnus 5.4.31 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.30 Manual
+@title Gnus 5.4.31 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.30
+This manual corresponds to Gnus 5.4.31.
 
 @end ifinfo
 
@@ -6761,6 +6761,17 @@ Is is called after the summary buffer has been generated.  You might use
 it to, for instance, highlight lines or modify the look of the buffer in
 some other ungodly manner.  I don't care.
 
+@vindex gnus-summary-ignore-duplicates
+@item gnus-summary-ignore-duplicates
+When Gnus discovers two articles that have the same @code{Message-ID},
+it has to do something drastic.  No articles are allowed to have the
+same @code{Message-ID}, but this may happen when reading mail from some
+sources.  Gnus allows you to customize what happens with this variable.
+If it is @code{nil} (which is the default), Gnus will rename the
+@code{Message-ID} (for display purposes only) and display the article as
+any other article.  If this variable is @code{t}, it won't display the
+article---it'll be as if it never existed.
+
 @end table
 
 
@@ -8861,6 +8872,12 @@ names.  Groups like @samp{mail.misc} will end up in directories like
 @vindex nnmail-delete-file-function
 @findex delete-file
 Function called to delete files.  It is @code{delete-file} by default. 
+
+@item nnmail-cache-accepted-message-ids
+@vindex nnmail-cache-accepted-message-ids
+If non-@code{nil}, put the @code{Message-ID}s of articles imported into
+the backend (via @code{Gcc}, for instance) into the mail duplication
+discovery cache.  The default is @code{nil}.
 
 @end table
 

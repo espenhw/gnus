@@ -943,7 +943,6 @@ the server for new groups."
 	   gnus-active-hashtb)
 	  (when new-newsgroups
 	    (gnus-subscribe-hierarchical-interactive new-newsgroups))
-	  ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
 	  (if (> groups 0)
 	      (gnus-message 5 "%d new newsgroup%s arrived."
 			    groups (if (> groups 1) "s have" " has"))

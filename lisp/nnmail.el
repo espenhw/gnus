@@ -160,6 +160,11 @@ Eg.:
   :type '(choice (const :tag "nnmail-expiry-wait" nil)
 		 (function :format "%v" nnmail-)))
 
+(defcustom nnmail-cache-accepted-message-ids nil
+  "If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache."
+  :group nnmail
+  :type boolean)
+
 (defcustom nnmail-spool-file
   (or (getenv "MAIL")
       (concat "/usr/spool/mail/" (user-login-name)))
@@ -853,8 +858,8 @@ is a spool.  If not using procmail, return GROUP."
 	   ;; if there is no head-body delimiter, we search a bit manually.
 	   (while (and (looking-at "From \\|[^ \t]+:")
 		       (not (eobp)))
-	     (forward-line 1)
-	     (point))))
+	     (forward-line 1))
+	   (point)))
 	;; Find the Message-ID header.
 	(goto-char (point-min))
 	(if (re-search-forward "^Message-ID[ \t]*:[ \n\t]*\\(<[^>]+>\\)" nil t)
@@ -937,8 +942,8 @@ is a spool.  If not using procmail, return GROUP."
 	   ;; if there is no head-body delimiter, we search a bit manually.
 	   (while (and (looking-at "From \\|[^ \t]+:")
 		       (not (eobp)))
-	     (forward-line 1)
-	     (point))))
+	     (forward-line 1))
+	   (point)))
 	;; Find the Message-ID header.
 	(goto-char (point-min))
 	(if (re-search-forward "^Message-ID[ \t]*:[ \n\t]*\\(<[^>]+>\\)" nil t)

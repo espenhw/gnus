@@ -290,16 +290,21 @@
 (deffoo nnmh-request-accept-article (group &optional server last noinsert)
   (nnmh-possibly-change-directory group server)
   (nnmail-check-syntax)
-  (if (stringp group)
-      (and
-       (nnmail-activate 'nnmh)
-       (car (nnmh-save-mail
-	     (list (cons group (nnmh-active-number group)))
-	     noinsert)))
-    (and
-     (nnmail-activate 'nnmh)
-     (car (nnmh-save-mail (nnmail-article-group 'nnmh-active-number)
-			  noinsert)))))
+  (when nnmail-cache-accepted-message-ids
+    (nnmail-cache-insert (nnmail-fetch-field "message-id")))
+  (prog1
+      (if (stringp group)
+	  (and
+	   (nnmail-activate 'nnmh)
+	   (car (nnmh-save-mail
+		 (list (cons group (nnmh-active-number group)))
+		 noinsert)))
+	(and
+	 (nnmail-activate 'nnmh)
+	 (car (nnmh-save-mail (nnmail-article-group 'nnmh-active-number)
+			      noinsert))))
+    (when (and last nnmail-cache-accepted-message-ids)
+      (nnmail-cache-close))))
 
 (deffoo nnmh-request-replace-article (article group buffer)
   (nnmh-possibly-change-directory group)

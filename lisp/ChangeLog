@@ -1,3 +1,41 @@
+Wed Mar 19 20:53:34 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.31 is released.
+
+Wed Mar 19 14:29:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmh.el (nnmh-request-accept-article): Ditto.
+
+	* nnbabyl.el (nnbabyl-request-accept-article): Ditto.
+
+	* nnmbox.el (nnmbox-request-accept-article): Ditto.
+
+	* nnfolder.el (nnfolder-request-accept-article): Ditto.
+
+	* nnml.el (nnml-request-accept-article): Cache or not.
+
+	* gnus-sum.el (gnus-summary-read-group): Don't recurse.
+	(gnus-summary-ignore-duplicates): New variable.
+	(gnus-get-newsgroup-headers): Use it.
+	(gnus-nov-parse-line): Ditto.
+
+	* message.el (message-reply): Remove excessive white space in
+	headers. 
+
+	* nnfolder.el (nnfolder-read-folder): Work when ignoring active
+	file. 
+
+	* nnmail.el (nnmail-process-unix-mail-format): Narrow to the right
+	portion.
+	(nnmail-process-mmdf-mail-format): Ditto.
+
+	* gnus.el (gnus-group-remove-parameter): New function.
+	(gnus-group-set-parameter): Use it.
+	(gnus-group-add-parameter): Ditto.
+
+	* gnus-msg.el (gnus-post-news): Check first whether
+	to-list/to-address exists before adding.
+
 Tue Mar 18 23:54:17 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.30 is released.

@@ -404,8 +404,10 @@ header line with the old Message-ID."
 		(message-mail (or to-address to-list))
 		;; Arrange for mail groups that have no `to-address' to
 		;; get that when the user sends off the mail.
-		(push (list 'gnus-inews-add-to-address pgroup)
-		      message-send-actions))
+		(when (and (not to-list)
+			   (not to-address))
+		  (push (list 'gnus-inews-add-to-address pgroup)
+			message-send-actions)))
 	    (set-buffer gnus-article-copy)
 	    (message-wide-reply to-address)))
 	(when yank

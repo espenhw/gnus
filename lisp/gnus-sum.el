@@ -288,6 +288,11 @@ and non-`vertical', do both horizontal and vertical recentering."
   :group 'gnus-article-headers
   :type 'boolean)
 
+(defcustom gnus-summary-ignore-duplicates nil
+  "*If non-nil, ignore articles with identical Message-ID headers."
+  :group 'gnus-summary
+  :type 'boolean)
+  
 (defcustom gnus-single-article-buffer t
   "*If non-nil, display all articles in the same buffer.
 If nil, each group will get its own article buffer."
@@ -2465,9 +2470,10 @@ If NO-DISPLAY, don't generate a summary buffer."
   (let (result)
     (while (and group
 		(null (setq result
-			    (gnus-summary-read-group-1
-			     group show-all no-article
-			     kill-buffer no-display)))
+			    (let ((gnus-auto-select-next nil))
+			      (gnus-summary-read-group-1
+			       group show-all no-article
+			       kill-buffer no-display))))
 		(eq gnus-auto-select-next 'quietly))
       (set-buffer gnus-group-buffer)
       (if (not (equal group (gnus-group-group-name)))
@@ -4196,9 +4202,20 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	  (if (boundp (setq id-dep (intern id dependencies)))
 	      (if (and (car (symbol-value id-dep))
 		       (not force-new))
-		  ;; An article with this Message-ID has already been seen,
-		  ;; so we rename the Message-ID.
-		  (progn
+		  ;; An article with this Message-ID has already been seen.
+		  (if gnus-summary-ignore-duplicates
+		      ;; We ignore this one, except we add
+		      ;; any additional Xrefs (in case the two articles
+		      ;; came from different servers).
+		      (progn
+			(mail-header-set-xref
+			 (car (symbol-value id-dep))
+			 (concat (or (mail-header-xref
+				      (car (symbol-value id-dep)))
+				     "")
+				 (or (mail-header-xref header) "")))
+			(setq header nil))
+		    ;; We rename the Message-ID.
 		    (set
 		     (setq id-dep (intern (setq id (nnmail-message-id))
 					  dependencies))
@@ -4285,9 +4302,20 @@ The resulting hash table is returned, or nil if no Xrefs were found."
     (if (boundp (setq id-dep (intern id dependencies)))
 	(if (and (car (symbol-value id-dep))
 		 (not force-new))
-	    ;; An article with this Message-ID has already been seen,
-	    ;; so we rename the Message-ID.
-	    (progn
+	    ;; An article with this Message-ID has already been seen.
+	    (if gnus-summary-ignore-duplicates
+		;; We ignore this one, except we add any additional
+		;; Xrefs (in case the two articles came from different
+		;; servers.
+		(progn
+		  (mail-header-set-xref
+		   (car (symbol-value id-dep))
+		   (concat (or (mail-header-xref
+				(car (symbol-value id-dep)))
+			       "")
+			   (or (mail-header-xref header) "")))
+		  (setq header nil))
+	      ;; We rename the Message-ID.
 	      (set
 	       (setq id-dep (intern (setq id (nnmail-message-id))
 				    dependencies))
