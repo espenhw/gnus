@@ -100,18 +100,18 @@
 
     ;; [Note] Now there are three kinds of mule implementations,
     ;; original MULE, XEmacs/mule and Emacs 20+ including
-    ;; MULE features.  Unfortunately these API are different.  In
-    ;; particular, Emacs (including original MULE) and XEmacs are
+    ;; MULE features.  Unfortunately these APIs are different.  In
+    ;; particular, Emacs (including original Mule) and XEmacs are
     ;; quite different.  However, this version of Gnus doesn't support
     ;; anything other than XEmacs 20+ and Emacs 20.3+.
 
     ;; Predicates to check are following:
-    ;; (boundp 'MULE) is t only if MULE (original; anything older than
+    ;; (boundp 'MULE) is t only if Mule (original; anything older than
     ;;                     Mule 2.3) is running.
-    ;; (featurep 'mule) is t when every mule variants are running.
+    ;; (featurep 'mule) is t when other mule variants are running.
 
     ;; It is possible to detect XEmacs/mule by (featurep 'mule) and
-    ;; checking `emacs-version'.  In this case, the implementation for
+    ;; (featurep 'xemacs).  In this case, the implementation for
     ;; XEmacs/mule may be shareable between XEmacs and XEmacs/mule.
 
     (defvar gnus-summary-display-table nil
