@@ -772,6 +772,24 @@ If ARGS, PROMPT is used as an argument to `format'."
 		    mail-source-password-cache)))
       result)))
 
+(defun mail-source-touch-pop ()
+  "Open and close a POP connection shortly.
+POP server should be defined in `mail-source-primary-source' (which is
+preferred) or `mail-sources'.  You may use it for the POP-before-SMTP
+authentication.  To do that, you need to set the option
+`message-send-mail-function' to `message-smtpmail-send-it' and put the
+following line in .gnus file:
+
+\(add-hook 'message-send-mail-hook 'mail-source-touch-pop)
+"
+  (let ((sources (if mail-source-primary-source
+		     (list mail-source-primary-source)
+		   mail-sources)))
+    (while sources
+      (if (eq 'pop (car (car sources)))
+	  (mail-source-check-pop (car sources)))
+      (setq sources (cdr sources)))))
+
 (defun mail-source-new-mail-p ()
   "Handler for `display-time' to indicate when new mail is available."
   ;; Flash (ie. ring the visible bell) if mail is available.
