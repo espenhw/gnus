@@ -4184,6 +4184,8 @@ you."
        (if (re-search-forward "^[^ \n\t]+:" nil t)
 	   (match-beginning 0)
 	 (point))))
+    (mm-enable-multibyte)
+    (mime-to-mml)
     (save-restriction
       (message-narrow-to-head)
       (message-remove-header message-ignored-bounced-headers t)
