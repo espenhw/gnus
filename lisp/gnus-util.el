@@ -1025,6 +1025,32 @@ Return the modified alist."
       (while (search-backward "\\." nil t)
 	(delete-char 1)))))
 
+(defmacro gnus-with-output-to-file (file &rest body)
+  (let ((buffer (make-symbol "output-buffer"))
+        (size (make-symbol "output-buffer-size"))
+        (leng (make-symbol "output-buffer-length")))
+    `(let* ((print-quoted t)
+            (print-readably t)
+            (print-escape-multibyte nil)
+            print-level 
+            print-length
+            (,size 131072)
+            (,buffer (make-string ,size 0))
+            (,leng 0)
+            (append nil)
+            (standard-output (lambda (c)
+                               (aset ,buffer ,leng c)
+                               (if (= ,size (setq ,leng (1+ ,leng)))
+                                   (progn (write-region ,buffer nil ,file append 'no-msg)
+                                          (setq ,leng 0
+                                                append t))))))
+       ,@body
+       (if (> ,leng 0)
+           (write-region (substring ,buffer 0 ,leng) nil ,file append 'no-msg)))))
+
+(put 'gnus-with-output-to-file 'lisp-indent-function 1)
+(put 'gnus-with-output-to-file 'edebug-form-spec '(form body))
+
 (if (fboundp 'union)
     (defalias 'gnus-union 'union)
   (defun gnus-union (l1 l2)
