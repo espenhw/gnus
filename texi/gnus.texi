@@ -3171,6 +3171,11 @@ If the group parameter has an element that looks like @samp{(expiry-wait
 The value can either be a number of days (not necessarily an integer) or
 the symbols @code{never} or @code{immediate}.
 
+@item score-file
+Elements that look like @samp{(score-file . "file")} will make
+@samp{file} into the current score file for the group in question.  This
+means that all score commands you issue will end up in that file. 
+
 @item @var{(variable form)}
 You can use the group parameters to set variables local to the group you
 are entering.  Say you want to turn threading off in
@@ -6566,10 +6571,28 @@ This variable can be used to say what commands should be used to unpack
 archives.
 @end table
 
+
 @node Other Decode Variables
 @subsubsection Other Decode Variables
 
 @table @code
+@vindex gnus-uu-grabbed-file-functions
+@item gnus-uu-grabbed-file-functions
+All functions in this list will be called right each file has been
+successfully decoded---so that you can move or view files right away,
+and don't have to wait for all files to be decoded before you can do
+anything.  Ready-made functions you can put in this list are:
+
+@table @code
+@item gnus-uu-grab-view
+@findex gnus-uu-grab-view
+View the file.
+
+@item gnus-uu-grab-move
+@findex gnus-uu-grab-move
+Move the file (if you're using a saving function.)
+@end table
+
 @item gnus-uu-ignore-files-by-name
 @vindex gnus-uu-ignore-files-by-name
 Files with name matching this regular expression won't be viewed.
@@ -8785,22 +8808,19 @@ examine the resulting lisp code to be run to generate the line.
 
 No, there's nothing here about X, so be quiet.
 
-@table @code
-@item gnus-use-full-window
 @vindex gnus-use-full-window
-If non-@code{nil}, Gnus will delete all other windows and occupy the
-entire Emacs screen by itself.  It is @code{t} by default.
+If @code{gnus-use-full-window} non-@code{nil}, Gnus will delete all
+other windows and occupy the entire Emacs screen by itself.  It is
+@code{t} by default.
 
-@item gnus-buffer-configuration
-@vindex gnus-buffer-configuration
-This variable describes how much space each Gnus buffer should be given.
-Here's an excerpt of this variable:
+@code{gnus-buffer-configuration} describes how much space each Gnus
+buffer should be given.  Here's an excerpt of this variable:
 
 @lisp
-((group ([group 1.0 point] 
-	 (if gnus-carpal [group-carpal 4])))
- (article ([summary 0.25 point] 
-	   [article 1.0])))
+((group (vertical 1.0 (group 1.0 point)
+	              (if gnus-carpal (group-carpal 4))))
+ (article (vertical 1.0 (summary 0.25 point) 
+	                (article 1.0))))
 @end lisp
 
 This is an alist.  The @dfn{key} is a symbol that names some action or
@@ -8808,21 +8828,22 @@ other.  For instance, when displaying the group buffer, the window
 configuration function will use @code{group} as the key.  A full list of
 possible names is listed below.
 
-The @dfn{value} is a @dfn{rule} that says how much space each buffer
-should occupy.  To take the @code{article} rule as an example -
+The @dfn{value} (i. e., the @dfn{split}) says how much space each buffer
+should occupy.  To take the @code{article} split as an example -
 
 @lisp
-(article ([summary 0.25 point] 
-	  [article 1.0]))
+(article (vertical 1.0 (summary 0.25 point)
+                       (article 1.0)))
 @end lisp
 
-This rule says that the summary buffer should occupy 25% of the screen,
-and that it is placed over the article buffer.  As you may have noticed,
-100% + 25% is actually 125% (yup, I saw y'all reaching for that
-calculator there).  However, the special number @code{1.0} is used to
-signal that this buffer should soak up all the rest of the space
-avaiable after the rest of the buffers have taken whatever they need.  
-There should be only one buffer with the @code{1.0} size spec.
+This @dfn{split} says that the summary buffer should occupy 25% of upper
+half of the screen, and that it is placed over the article buffer.  As
+you may have noticed, 100% + 25% is actually 125% (yup, I saw y'all
+reaching for that calculator there).  However, the special number
+@code{1.0} is used to signal that this buffer should soak up all the
+rest of the space avaiable after the rest of the buffers have taken
+whatever they need.  There should be only one buffer with the @code{1.0}
+size spec per split.
 
 Point will be put in the buffer that has the optional third element
 @code{point}. 
@@ -8830,47 +8851,104 @@ Point will be put in the buffer that has the optional third element
 Here's a more complicated example:
 
 @lisp
-(article ([group 4]
-          [summary 0.25 point]
-          (if gnus-carpal [summary-carpal 4])
-          [article 1.0])
+(article (vertical 1.0 (group 4)
+                       (summary 0.25 point)
+                       (if gnus-carpal (summary-carpal 4))
+                       (article 1.0)))
 @end lisp
 
 If the size spec is an integer instead of a floating point number, 
 then that number will be used to say how many lines a buffer should
 occupy, not a percentage.
 
-If an element is a list instead of a vector, this list will be
-@code{eval}ed.  If the result is non-@code{nil}, it will be used.  This
-means that there will be three buffers if @code{gnus-carpal} is
-@code{nil}, and four buffers if @code{gnus-carpal} is non-@code{nil}. 
+If the @dfn{split} looks like something that can be @code{eval}ed (to be
+precise---if the @code{car} of the split is a function or a subr), this
+split will be @code{eval}ed.  If the result is non-@code{nil}, it will
+be used as a split.  This means that there will be three buffers if
+@code{gnus-carpal} is @code{nil}, and four buffers if @code{gnus-carpal}
+is non-@code{nil}.
 
 Not complicated enough for you?  Well, try this on for size:
 
 @lisp
-(article ([group 1.0]
-          [gnus-carpal 4])
-         ((horizontal 0.5)
-          [summary 0.25 point]
-          [summary-carpal 4]
-          [article 1.0]))
+(article (horizontal 1.0 
+             (vertical 0.5
+                 (group 1.0)
+                 (gnus-carpal 4))
+             (vertical 1.0
+                 (summary 0.25 point)
+                 (summary-carpal 4)
+                 (article 1.0))))
 @end lisp
 
 Whoops.  Two buffers with the mystery 100% tag.  And what's that
 @code{horizontal} thingie?  
 
-If the first element in one of the rule lists is a list with
-@code{horizontal} as the first element, Gnus will split the window
-horizontally, giving you two windows side-by-side.  Inside each of these
-strips you may carry on all you like in the normal fashion.  The number
-following @code{horizontal} says what percentage of the screen is to be
-given to this strip.  
+If the first element in one of the split is @code{horizontal}, Gnus will
+split the window horizontally, giving you two windows side-by-side.
+Inside each of these strips you may carry on all you like in the normal
+fashion.  The number following @code{horizontal} says what percentage of
+the screen is to be given to this strip.
 
-For each horizontal split, there @emph{must} be one element that has the
-100% tag.  The splitting is never accurate, and this buffer will eat any
-leftover lines from the splits. 
+For each split, there @emph{must} be one element that has the 100% tag.
+The splitting is never accurate, and this buffer will eat any leftover
+lines from the splits.
 
-Here's a list of all possible keys:
+To be slightly more formal, here's a definition of what a legal split
+may look like:
+
+@example
+split       = frame | horizontal | vertical | buffer | form
+frame       = "(frame " frame-size *split ")"
+horizontal  = "(horizontal " size *split ")"
+vertical    = "(vertical " size *split ")"
+buffer      = "(" buffer-name " " size *[ "point" ] ")"
+frame-size  = "(" number " . " number ")"
+size        = number
+buffer-name = group | article | summary ...
+@end example
+
+The limitations are that the @samp{frame} split can only appear as the
+top-level split.  @samp{form} should be an Emacs Lisp form that should
+return a valid split.  We see that each split is fully recursive, and
+may contain any number of @samp{vertical} and @samp{horizontal} splits. 
+
+Finding the right sizes can be a bit complicated.  No window may be less
+than 4 characters high, and all windows must be at least 10 characters
+wide.  Gnus will try to enforce this before applying the splits.
+
+If you're not familiar with Emacs terminology, @samp{horizontal} and
+@samp{vertical} splits may work the opposite way of what you'd expect.
+Windows inside a @samp{horizontal} split are shown side-by-side, and
+windows within a @samp{vertical} split are shown above each other.
+
+@findex gnus-configure-frame
+If you want to experiment with window placement, a good tip is to call
+@code{gnus-configure-frame} directly with a split.  This is the function
+that does all the real work when splitting buffers.  Below is a pretty
+nonsensical configuration with 5 windows; two for the group buffer and
+three for the article buffer.  (I said it was nonsensical.)  If you
+@code{eval} the statement below, you can get an idea of how that would
+look straight away, without going through the normal Gnus channels.
+Play with it until you're satisfied, and then use
+@code{gnus-add-configuration} to add your new creation to the buffer
+configuration list. 
+
+@example
+(gnus-configure-frame
+ '(horizontal 1.0
+    (vertical 10
+      (group 1.0)
+      (article 0.3 point))
+    (vertical 1.0
+      (article 1.0)
+      (horizontal 4
+        (group 1.0)
+        (article 10)))))
+@end example
+
+Here's a list of all possible keys for
+@code{gnus-buffer-configuaration}:
 
 @code{group}, @code{summary}, @code{article}, @code{server},
 @code{browse}, @code{group-mail}, @code{summary-mail},
@@ -8879,19 +8957,20 @@ Here's a list of all possible keys:
 @code{followup}, @code{followup-yank}, @code{edit-score}.  
 
 @findex gnus-add-configuration
-Since this variable is so long and complicated, there's a function you
-can use to ease changing the config of a single setting:
-@code{gnus-add-configuration}.  If, for instance, you want to change the
-@code{article} setting, you could say:
+Since the @code{gnus-buffer-configuration} variable is so long and
+complicated, there's a function you can use to ease changing the config
+of a single setting: @code{gnus-add-configuration}.  If, for instance,
+you want to change the @code{article} setting, you could say:
 
 @lisp
 (gnus-add-configuration
- '(article ([group 4]
-            [summary .25 point] 
-            [article 1.0])))
+ '(article (vertical 1.0
+               (group 4)
+               (summary .25 point)
+               (article 1.0))))
 @end lisp
 
-@end table
+
 
 @node Buttons
 @section Buttons

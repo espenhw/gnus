@@ -31,6 +31,9 @@
 
 (require 'nnheader)
 (require 'nnmail)
+(eval-when-compile (require 'cl))
+
+(require 'cl)
 
 (defvar nnml-directory "~/Mail/"
   "Mail spool directory.")
@@ -718,7 +721,7 @@ all. This may very well take some time.")
   (let ((group (nnmail-replace-chars-in-string 
 		(substring dir (length nnml-directory))
 		?/ ?.)))
-    (setq nnml-group-alist (delq (assoc group nnml-group-alist)))
+    (setq nnml-group-alist (delq (assoc group nnml-group-alist) nnml-group-alist))
     (push (list group
 		(cons (car files)
 		      (let ((f files))
@@ -727,9 +730,10 @@ all. This may very well take some time.")
 	  nnml-group-alist)))
 
 (defun nnml-generate-nov-file (dir files)
-  (let ((nov (concat dir "/" nnml-nov-file-name))
-	(nov-buffer (get-buffer-create " *nov*"))
-	nov-line chars)
+  (let* ((dir (file-name-as-directory dir))
+	 (nov (concat dir nnml-nov-file-name))
+	 (nov-buffer (get-buffer-create " *nov*"))
+	 nov-line chars)
     (save-excursion
       ;; Init the nov buffer.
       (set-buffer nov-buffer)
@@ -741,13 +745,13 @@ all. This may very well take some time.")
 	(funcall nnmail-delete-file-function nov))
       (while files
 	(erase-buffer)
-	(insert-file-contents (concat dir "/" (int-to-string (car files))))
+	(insert-file-contents (concat dir (int-to-string (car files))))
 	(narrow-to-region 
 	 (goto-char (point-min))
 	 (progn
 	   (search-forward "\n\n" nil t)
 	   (setq chars (- (point-max) (point)))
-	   (1- (point))))
+	   (max 1 (1- (point)))))
 	(when (and (not (= 0 chars))	; none of them empty files...
 		   (not (= (point-min) (point-max))))
 	  (goto-char (point-min))

@@ -1,3 +1,12 @@
+Fri Dec 15 13:53:02 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Windows Configuration): Addition, change.
+
+Thu Dec 14 17:57:19 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Group Parameters): Addition.
+	(Other Decode Variables): Addition.
+
 Wed Dec 13 16:13:56 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (Selecting a Group): Addition.

@@ -374,6 +374,9 @@ articles.  This is not a good idea.")
 (defvar gnus-use-scoring t
   "*If non-nil, enable scoring.")
 
+(defvar gnus-use-picon nil
+  "*If non-nil, display picons.")
+
 (defvar gnus-fetch-old-headers nil
   "*Non-nil means that Gnus will try to build threads by grabbing old headers.
 If an unread article in the group refers to an older, already read (or
@@ -601,7 +604,7 @@ will not be marked.")
 
 (defvar gnus-simplify-subject-fuzzy-regexp nil
   "*Strings to be removed when doing fuzzy matches.
-This can either be a egular expression or list of regular expressions
+This can either be a regular expression or list of regular expressions
 that will be removed from subject strings if fuzzy subject
 simplification is selected.")
 
@@ -763,45 +766,95 @@ beginning of a line.")
   "Obsolete variable.  See `gnus-buffer-configuration'.")
 
 (defvar gnus-buffer-configuration
-  '((group ([group 1.0 point] 
-	    (if gnus-carpal [group-carpal 4])))
-    (summary ([summary 1.0 point]
-	      (if gnus-carpal [summary-carpal 4])))
-    (article ([summary 0.25 point] 
-	      (if gnus-carpal [summary-carpal 4]) 
-	      [article 1.0]))
-    (server ([server 1.0 point]
-	     (if gnus-carpal [server-carpal 2])))
-    (browse ([browse 1.0 point]
-	     (if gnus-carpal [browse-carpal 2])))
-    (group-mail ([mail 1.0 point]))
-    (summary-mail ([mail 1.0 point]))
-    (summary-reply ([article 0.5]
-		    [mail 1.0 point]))
-    (info ([nil 1.0 point]))
-    (summary-faq ([summary 0.25]
-		  [faq 1.0 point]))
-    (edit-group ([group 0.5]
-		 [edit-group 1.0 point]))
-    (edit-server ([server 0.5]
-		  [edit-server 1.0 point]))
-    (edit-score ([summary 0.25]
-		 [edit-score 1.0 point]))
-    (post ([post 1.0 point]))
-    (reply ([article 0.5]
-	    [mail 1.0 point]))
-    (mail-forward ([mail 1.0 point]))
-    (post-forward ([post 1.0 point]))
-    (reply-yank ([mail 1.0 point]))
-    (mail-bounce ([article 0.5]
-		  [mail 1.0 point]))
-    (draft ([draft 1.0 point]))
-    (pipe ([summary 0.25 point] 
-	   (if gnus-carpal [summary-carpal 4]) 
-	   ["*Shell Command Output*" 1.0]))
-    (followup ([article 0.5]
-	       [post 1.0 point]))
-    (followup-yank ([post 1.0 point])))
+  '((group
+     (vertical 1.0 
+	       (group 1.0 point) 
+	       (if gnus-carpal (group-carpal 4))))
+    (summary
+     (vertical 1.0
+	       (summary 1.0 point)
+	       (if gnus-carpal (summary-carpal 4))))
+    (article
+     (vertical 1.0
+	       (if gnus-use-picon
+		   '(horizontal 0.25
+				(summary 1.0 point)
+				(picon 10))
+		 '(summary 0.25 point))
+	       (if gnus-carpal (summary-carpal 4)) 
+	       (article 1.0)))
+    (server
+     (vertical 1.0
+	       (server 1.0 point)
+	       (if gnus-carpal (server-carpal 2))))
+    (browse
+     (vertical 1.0
+	       (browse 1.0 point)
+	       (if gnus-carpal (browse-carpal 2))))
+    (group-mail
+     (vertical 1.0
+	       (mail 1.0 point)))
+    (summary-mail
+     (vertical 1.0
+	       (mail 1.0 point)))
+    (summary-reply
+     (vertical 1.0
+	       (article 0.5)
+	       (mail 1.0 point)))
+    (info
+     (vertical 1.0
+	       (nil 1.0 point)))
+    (summary-faq
+     (vertical 1.0
+	       (summary 0.25)
+	       (faq 1.0 point)))
+    (edit-group
+     (vertical 1.0
+	       (group 0.5)
+	       (edit-group 1.0 point)))
+    (edit-server
+     (vertical 1.0
+	       (server 0.5)
+	       (edit-server 1.0 point)))
+    (edit-score
+     (vertical 1.0
+	       (summary 0.25)
+	       (edit-score 1.0 point)))
+    (post
+     (vertical 1.0
+	       (post 1.0 point)))
+    (reply
+     (vertical 1.0
+	       (article 0.5)
+	       (mail 1.0 point)))
+    (mail-forward
+     (vertical 1.0
+	       (mail 1.0 point)))
+    (post-forward
+     (vertical 1.0
+	       (post 1.0 point)))
+    (reply-yank
+     (vertical 1.0
+	       (mail 1.0 point)))
+    (mail-bounce
+     (vertical 1.0
+	       (article 0.5)
+	       (mail 1.0 point)))
+    (draft
+     (vertical 1.0
+	       (draft 1.0 point)))
+    (pipe
+     (vertical 1.0
+	       (summary 0.25 point) 
+	       (if gnus-carpal (summary-carpal 4)) 
+	       ("*Shell Command Output*" 1.0)))
+    (followup
+     (vertical 1.0
+	       (article 0.5)
+	       (post 1.0 point)))
+    (followup-yank
+     (vertical 1.0
+	       (post 1.0 point))))
   "Window configuration for all possible Gnus buffers.
 This variable is a list of lists.  Each of these lists has a NAME and
 a RULE.  The NAMEs are commonsense names like `group', which names a
@@ -833,6 +886,7 @@ buffer configuration.")
     (mail . gnus-mail-buffer)
     (post . gnus-post-news-buffer)
     (faq . gnus-faq-buffer)
+    (picon . gnus-picon-buffer)
     (draft . gnus-draft-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")
 
@@ -1379,6 +1433,12 @@ automatically when it is selected.")
 
 ;; Internal variables
 
+(defconst gnus-article-mark-lists 
+  '((marked . tick) (replied . reply) 
+    (expirable . expire) (killed . killed)
+    (bookmarks . bookmark) (dormant . dormant)
+    (scored . score) (saved . save)))
+
 ;; Avoid highlighting in kill files.
 (defvar gnus-summary-inhibit-highlight nil)
 (defvar gnus-newsgroup-selected-overlay nil)
@@ -1511,7 +1571,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.22"
+(defconst gnus-version "September Gnus v0.23"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1864,6 +1924,7 @@ Thank you for your help in stamping out bugs.
       gnus-summary-reply gnus-summary-reply-with-original
       gnus-summary-mail-forward gnus-summary-mail-other-window
       gnus-bug)
+     ("gnus-picon" gnus-article-display-picon)
      ("gnus-vm" gnus-vm-mail-setup)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm gnus-yank-article))))
@@ -2427,8 +2488,9 @@ Thank you for your help in stamping out bugs.
 		(setq flist (cons (gnus-max-width-function el max-width)
 				  flist))
 		(setq newspec ?s))
-	    (setq flist (cons (car elem) flist)))
-	  (setq newspec (car (cdr elem))))
+            (progn
+              (setq flist (cons (car elem) flist))
+              (setq newspec (car (cdr elem))))))
 	;; Remove the old specification (and possibly a ",12" string).
 	(delete-region beg (match-end 2))
 	;; Insert the new specification.
@@ -2947,22 +3009,111 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	(cons conf (delq (assq (car conf) gnus-buffer-configuration)
 			 gnus-buffer-configuration))))
 
+(defun gnus-configure-frame (split &optional window)
+  "Split WINDOW according to SPLIT."
+  (unless window
+    (setq window (get-buffer-window (current-buffer))))
+  (select-window window)
+  ;; This might be an old-stylee buffer config.
+  (when (vectorp split)
+    (setq split (append split nil)))
+  (when (or (consp (car split))
+	    (vectorp (car split)))
+    (push 1.0 split)
+    (push 'vertical split))
+  ;; The SPLIT might be something that is to be evaled to 
+  ;; return a new SPLIT.
+  (while (and (not (assq (car split) gnus-window-to-buffer))
+	      (gnus-functionp (car split)))
+    (setq split (eval split)))
+  (let* ((type (car split))
+	 (subs (cdr (cdr split)))
+	 (len (if (eq type 'horizontal) (window-width) (window-height) ))
+	 (total 0)
+	 s result new-win rest comp-subs size sub)
+    (cond
+     ;; Nothing to do here.
+     ((null split))
+     ;; This is a buffer to be selected.
+     ((not (or (eq type 'horizontal) (eq type 'vertical)))
+      (let ((buffer (cdr (assq type gnus-window-to-buffer))))
+	(unless buffer
+	  (error "Illegal buffer type: %s" type))
+	(switch-to-buffer (get-buffer (if (symbolp buffer) 
+					  (symbol-value buffer)
+					buffer)))
+	;; We return the window if it has the `point' spec.
+	(and (memq 'point split) window)))
+     ;; This is a normal split
+     (t
+      (when (> (length subs) 0)
+	;; First we have to compute the sizes of all new windows.
+	(while subs
+	  (setq sub (append (pop subs) nil))
+	  (while (and (not (assq (car sub) gnus-window-to-buffer))
+		      (gnus-functionp (car sub)))
+	    (setq sub (eval sub)))
+	  (when sub
+	    (push sub comp-subs)
+	    (setq size (cadar comp-subs))
+	    (cond ((equal size 1.0)
+		   (setq rest (car comp-subs))
+		   (setq s 0))
+		  ((floatp size)
+		   (setq s (floor (* size len))))
+		  ((integerp size)
+		   (setq s size))
+		  (t
+		   (error "Illegal size: %s" size)))
+	    ;; Try to make sure that we are inside the safe limits.
+	    (cond ((zerop s))
+		  ((and (eq type 'horizontal)
+			(< s 10))
+		   (setq s 10))
+		  ((and (eq type 'vertical)
+			(< s 4))
+		   (setq s 4)))
+	    (setcar (cdar comp-subs) s)
+	    (incf total s)))
+	;; Take care of the "1.0" spec.
+	(if rest
+	    (setcar (cdr rest) (- len total))
+	  (error "No 1.0 specs in %s" split))
+	;; The we do the actual splitting in a nice recursive
+	;; fashion.
+	(setq comp-subs (nreverse comp-subs))
+	(while comp-subs
+	  (if (null (cdr comp-subs))
+	      (setq new-win window)
+	    (setq new-win
+		  (split-window window (cadar comp-subs)
+				(eq type 'horizontal))))
+	  (setq result (or (gnus-configure-frame 
+			    (car comp-subs) window) result))
+	  (select-window new-win)
+	  (setq window new-win)
+	  (setq comp-subs (cdr comp-subs))))
+      ;; Return the proper window, if any.
+      (when result
+	(select-window result))))))
+
 (defun gnus-configure-windows (setting &optional force)
   (setq setting (gnus-windows-old-to-new setting))
-  (let ((r (if (symbolp setting)
-	       (cdr (assq setting gnus-buffer-configuration))
-	     setting))
+  (let ((split (if (symbolp setting)
+		   (car (cdr (assq setting gnus-buffer-configuration)))
+		 setting))
 	(in-buf (current-buffer))
 	rule val w height hor ohor heights sub jump-buffer
 	rel total to-buf all-visible)
-    (or r (error "No such setting: %s" setting))
 
-    (if (and (not force) (setq all-visible (gnus-all-windows-visible-p r)))
+    (unless split
+      (error "No such setting: %s" setting))
+
+    (if (and (not force) (setq all-visible (gnus-all-windows-visible-p split)))
 	;; All the windows mentioned are already visible, so we just
 	;; put point in the assigned buffer, and do not touch the
 	;; winconf. 
-	(select-window (get-buffer-window all-visible t))
-	 
+	(select-window all-visible)
 
       ;; Either remove all windows or just remove all Gnus windows.
       (if gnus-use-full-window
@@ -2970,115 +3121,49 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	(gnus-remove-some-windows)
 	(switch-to-buffer nntp-server-buffer))
 
-      (while r
-	(setq hor (car r)
-	      ohor nil)
+      (switch-to-buffer nntp-server-buffer)
+      (gnus-configure-frame split (get-buffer-window (current-buffer))))))
 
-	;; We have to do the (possible) horizontal splitting before the
-	;; vertical. 
-	(if (and (listp (car hor)) 
-		 (eq (car (car hor)) 'horizontal))
-	    (progn
-	      (split-window 
-	       nil
-	       (if (integerp (nth 1 (car hor)))
-		   (nth 1 (car hor))
-		 (- (frame-width) (floor (* (frame-width) (nth 1 (car hor))))))
-	       t)
-	      (setq hor (cdr hor))))
-
-	;; Go through the rules and eval the elements that are to be
-	;; evaled.  
-	(while hor
-	  (if (setq val (if (vectorp (car hor)) (car hor) (eval (car hor))))
-	      (progn
-		;; Expand short buffer name.
-		(setq w (aref val 0))
-		(and (setq w (cdr (assq w gnus-window-to-buffer)))
-		     (progn
-		       (setq val (apply 'vector (mapcar 'identity val)))
-		       (aset val 0 w)))
-		(setq ohor (cons val ohor))))
-	  (setq hor (cdr hor)))
-	(setq rule (cons (nreverse ohor) rule))
-	(setq r (cdr r)))
-      (setq rule (nreverse rule))
-
-      ;; We tally the window sizes.
-      (setq total (window-height))
-      (while rule
-	(setq hor (car rule))
-	(if (and (listp (car hor)) (eq (car (car hor)) 'horizontal))
-	    (setq hor (cdr hor)))
-	(setq sub 0)
-	(while hor
-	  (setq rel (aref (car hor) 1)
-		heights (cons
-			 (cond ((and (floatp rel) (= 1.0 rel))
-				'x)
-			       ((integerp rel)
-				rel)
-			       (t
-				(max (floor (* total rel)) 4)))
-			 heights)
-		sub (+ sub (if (numberp (car heights)) (car heights) 0))
-		hor (cdr hor)))
-	(setq heights (nreverse heights)
-	      hor (car rule))
-
-	;; We then go through these heighs and create windows for them.
-	(while heights
-	  (setq height (car heights)
-		heights (cdr heights))
-	  (and (eq height 'x)
-	       (setq height (- total sub)))
-	  (and heights
-	       (split-window nil height))
-	  (setq to-buf (aref (car hor) 0))
-	  (switch-to-buffer 
-	   (cond ((not to-buf)
-		  in-buf)
-		 ((symbolp to-buf)
-		  (symbol-value (aref (car hor) 0)))
-		 (t
-		  (aref (car hor) 0))))
-	  (and (> (length (car hor)) 2)
-	       (eq (aref (car hor) 2) 'point)
-	       (setq jump-buffer (current-buffer)))
-	  (other-window 1)
-	  (setq hor (cdr hor)))
-      
-	(setq rule (cdr rule)))
-
-      ;; Finally, we pop to the buffer that's supposed to have point. 
-      (or jump-buffer (error "Missing `point' in spec for %s" setting))
-
-      (select-window (get-buffer-window jump-buffer t))
-      (set-buffer jump-buffer))))
-
-(defun gnus-all-windows-visible-p (rule)
-  (let (invisible hor jump-buffer val buffer)
-    ;; Go through the rules and eval the elements that are to be
-    ;; evaled.  
-    (while (and rule (not invisible))
-      (setq hor (car rule)
-	    rule (cdr rule))
-      (while (and hor (not invisible))
-	(if (setq val (if (vectorp (car hor)) 
-			  (car hor)
-			(if (not (eq (car (car hor)) 'horizontal))
-			    (eval (car hor)))))
-	    (progn
-	      ;; Expand short buffer name.
-	      (setq buffer (or (cdr (assq (aref val 0) gnus-window-to-buffer))
-			       (aref val 0)))
-	      (setq buffer (if (symbolp buffer) (symbol-value buffer)
-			     buffer))
-	      (and (> (length val) 2) (eq 'point (aref val 2))
-		   (setq jump-buffer buffer))
-	      (setq invisible (not (and buffer (get-buffer-window buffer))))))
-	(setq hor (cdr hor))))
-    (and (not invisible) jump-buffer)))
+(defun gnus-all-windows-visible-p (split)
+  (when (vectorp split)
+    (setq split (append split nil)))
+  (when (or (consp (car split))
+	    (vectorp (car split)))
+    (push 1.0 split)
+    (push 'vertical split))
+  ;; The SPLIT might be something that is to be evaled to 
+  ;; return a new SPLIT.
+  (while (and (not (assq (car split) gnus-window-to-buffer))
+	      (gnus-functionp (car split)))
+    (setq split (eval split)))
+  (let* ((type (elt split 0)))
+    (cond
+     ((null split)
+      t)
+     ((not (or (eq type 'horizontal) (eq type 'vertical)))
+      (let ((buffer (cdr (assq type gnus-window-to-buffer)))
+	    win)
+	(unless buffer
+	  (error "Illegal buffer type: %s" type))
+	(setq win
+	      (get-buffer-window (get-buffer (if (symbolp buffer) 
+						 (symbol-value buffer)
+					       buffer))))
+	(when win
+	  (if (memq 'point split)
+	      win
+	    t))))
+     (t
+      (let ((n (mapcar 'gnus-all-windows-visible-p
+		       (cdr (cdr split))))
+	    (win t))
+	(while n
+	  (cond ((windowp (car n))
+		 (setq win (car n)))
+		((null (car n))
+		 (setq win nil)))
+	  (setq n (cdr n)))
+	win)))))
 
 (defun gnus-window-top-edge (&optional window)
   (nth 1 (window-edges window)))
@@ -3226,20 +3311,28 @@ that that variable is buffer-local to the summary buffers."
 	(and gnus-auto-expirable-newsgroups ; Check var.
 	     (string-match gnus-auto-expirable-newsgroups group)))))
 
-(defun gnus-subject-equal (s1 s2)
-  "Check whether two subjects are equal."
+(defsubst gnus-simplify-subject-fully (subject)
+  "Simplify a subject string according to the user's wishes."
   (cond
    ((null gnus-summary-gather-subject-limit)
-    (equal (gnus-simplify-subject-re s1)
-	   (gnus-simplify-subject-re s2)))
+    (gnus-simplify-subject-re subject))
    ((eq gnus-summary-gather-subject-limit 'fuzzy)
-    (equal (gnus-simplify-subject-fuzzy s1)
-	   (gnus-simplify-subject-fuzzy s2)))
+    (gnus-simplify-subject-fuzzy subject))
    ((numberp gnus-summary-gather-subject-limit)
-    (equal (gnus-limit-string s1 gnus-summary-gather-subject-limit)
-	   (gnus-limit-string s2 gnus-summary-gather-subject-limit)))
+    (gnus-limit-string subject gnus-summary-gather-subject-limit))
    (t
-    (equal s1 s2))))
+    subject)))
+
+(defsubst gnus-subject-equal (s1 s2 &optional simple-first) 
+  "Check whether two subjects are equal.  If optional argument
+simple-first is t, first argument is already simplified."
+  (cond
+   ((null simple-first)
+    (equal (gnus-simplify-subject-fully s1)
+	   (gnus-simplify-subject-fully s2)))
+   (t
+    (equal s1
+	   (gnus-simplify-subject-fully s2)))))
 
 ;; Returns a list of writable groups.
 (defun gnus-writable-groups ()
@@ -7954,7 +8047,7 @@ or a straight list of headers."
 If READ-ALL is non-nil, all articles in the group are selected."
   (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
 	 (info (nth 2 entry))
-	 articles)
+	 articles fetched-articles)
 
     (or (gnus-check-server
 	 (setq gnus-current-select-method (gnus-find-method-for-group group)))
@@ -8022,8 +8115,12 @@ If READ-ALL is non-nil, all articles in the group are selected."
       (setq gnus-newsgroup-unreads
 	    (gnus-set-sorted-intersection 
 	     gnus-newsgroup-unreads
-	     (mapcar (lambda (headers) (mail-header-number headers))
-		     gnus-newsgroup-headers)))
+	     (setq fetched-articles
+		   (mapcar (lambda (headers) (mail-header-number headers))
+			   gnus-newsgroup-headers))))
+      ;; Removed marked articles that do not exist.
+      (gnus-update-missing-marks 
+       (gnus-sorted-complement fetched-articles articles))
       ;; We might want to build some more threads first.
       (and gnus-fetch-old-headers
 	   (eq gnus-headers-retrieved-by 'nov)
@@ -8120,10 +8217,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	 (active (gnus-active (gnus-info-group info)))
 	 (min (car active))
 	 (max (cdr active))
-	 (types '((marked . tick) (replied . reply) 
-		  (expirable . expire) (killed . killed)
-		  (bookmarks . bookmark) (dormant . dormant)
-		  (scored . score) (saved . save)))
+	 (types gnus-article-mark-lists)
 	 (uncompressed '(score bookmark))
 	 marks var articles article mark)
 
@@ -8151,12 +8245,24 @@ If READ-ALL is non-nil, all articles in the group are selected."
 		    (> (car article) max))
 	    (set var (delq article (symbol-value var))))))))))
 
+(defun gnus-update-missing-marks (missing)
+  "Go through the list of MISSING articles and remove them mark lists."
+  (when missing
+    (let ((types gnus-article-mark-lists)
+	  var m)
+      ;; Go through all types.
+      (while types
+	(setq var (intern (format "gnus-newsgroup-%s" (car (pop types)))))
+	(when (symbol-value var)
+	  ;; This list has articles.  So we delete all missing articles 
+	  ;; from it.
+	  (setq m missing)
+	  (while m
+	    (set var (delq (pop m) (symbol-value var)))))))))
+
 (defun gnus-update-marks ()
   "Enter the various lists of marked articles into the newsgroup info list."
-  (let ((types '((marked . tick) (replied . reply) 
-		 (expirable . expire) (killed . killed)
-		 (bookmarks . bookmark) (dormant . dormant)
-		 (scored . score) (saved . save)))
+  (let ((types gnus-article-mark-lists)
 	(info (gnus-get-info gnus-newsgroup-name))
 	(uncompressed '(score bookmark killed))
 	var type list newmarked symbol)
@@ -8820,7 +8926,8 @@ If EXCLUDE-GROUP, do not go to this group."
 	  (gnus-data-number result)))))
 
 (defun gnus-summary-find-subject (subject &optional unread backward article)
-  (let* ((article (or article (gnus-summary-article-number)))
+  (let* ((simp-subject (gnus-simplify-subject-fully subject))
+	 (article (or article (gnus-summary-article-number)))
 	 (articles (gnus-data-list backward))
 	 (arts (gnus-data-find-list article articles))
 	 result)
@@ -8833,7 +8940,7 @@ If EXCLUDE-GROUP, do not go to this group."
 	       (gnus-data-unread-p (car arts)))
 	   (vectorp (gnus-data-header (car arts)))
 	   (gnus-subject-equal 
-	    subject (mail-header-subject (gnus-data-header (car arts))))
+	    simp-subject (mail-header-subject (gnus-data-header (car arts))) t)
 	   (setq result (car arts)
 		 arts nil))
       (setq arts (cdr arts)))
@@ -9100,7 +9207,6 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
       (setq gnus-current-select-method gnus-select-method)
       (pop-to-buffer gnus-group-buffer)
       ;; Clear the current group name.
-      (setq gnus-newsgroup-name nil)
       (if (not quit-config)
 	  (progn
 	    (gnus-group-jump-to-group group)
@@ -9111,7 +9217,9 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	  (and (eq major-mode 'gnus-summary-mode)
 	       (gnus-set-global-variables))
 	  (gnus-configure-windows (cdr quit-config))))
-      (run-hooks 'gnus-summary-exit-hook))))
+      (run-hooks 'gnus-summary-exit-hook)
+      (unless quit-config
+	(setq gnus-newsgroup-name nil)))))
 
 (defalias 'gnus-summary-quit 'gnus-summary-exit-no-update)
 (defun gnus-summary-exit-no-update (&optional no-questions)

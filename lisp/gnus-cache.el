@@ -55,6 +55,9 @@ variable to \"^nnml\".")
 (defvar gnus-cache-active-hashtb nil)
 (defvar gnus-cache-active-altered nil)
 
+(eval-and-compile
+  (autoload 'nnml-generate-nov-databases-1 "nnml"))
+
 
 
 ;;; Functions called from Gnus.
@@ -493,12 +496,14 @@ If LOW, update the lower bound instead."
   "Generate the cache active file."
   (interactive)
   (let* ((top (null directory))
-	 (directory (or directory (expand-file-name gnus-cache-directory)))
+	 (directory (expand-file-name (or directory gnus-cache-directory)))
 	 (files (directory-files directory 'full))
 	 (group 
 	  (progn
-	    (string-match (concat "^" (expand-file-name gnus-cache-directory))
-			  directory)
+	    (string-match 
+	     (concat "^" (file-name-as-directory
+			  (expand-file-name gnus-cache-directory)))
+	     directory)
 	    (gnus-replace-chars-in-string 
 	     (substring directory (match-end 0))
 	     ?/ ?.)))
@@ -534,9 +539,8 @@ If LOW, update the lower bound instead."
   "Generate NOV files recursively starting in DIR."
   (interactive (list gnus-cache-directory))
   (gnus-cache-close)
-  (require 'nnml)
   (let ((nnml-generate-active-function 'identity))
-    (nnml-generate-nov-databases dir)))
+    (nnml-generate-nov-databases-1 dir)))
 
 (provide 'gnus-cache)
 	      

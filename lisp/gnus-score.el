@@ -1952,21 +1952,30 @@ The list is determined from the variable gnus-score-file-alist."
       score-files)))
 
 (defun gnus-possibly-score-headers (&optional trace)
-  (let ((func gnus-score-find-score-files-function)
+  (let ((funcs gnus-score-find-score-files-function)
 	score-files)
-    (and func 
-	 (not (listp func))
-	 (setq func (list func)))
+    ;; Make sure funcs is a list.
+    (and funcs
+	 (not (listp funcs))
+	 (setq funcs (list funcs)))
+    ;; Get the initial score files for this group.
+    (when funcs 
+      (setq score-files (gnus-score-find-alist gnus-newsgroup-name)))
     ;; Go through all the functions for finding score files (or actual
     ;; scores) and add them to a list.
-    (and func (setq score-files (gnus-score-find-alist gnus-newsgroup-name)))
-    (while func
-      (and (symbolp (car func))
-	   (fboundp (car func))
-	   (setq score-files 
-		 (nconc score-files (funcall (car func) gnus-newsgroup-name))))
-      (setq func (cdr func)))
-    (if score-files (gnus-score-headers score-files trace))))
+    (while funcs
+      (when (gnus-functionp (car funcs))
+	(setq score-files 
+	      (nconc score-files (funcall (car funcs) gnus-newsgroup-name))))
+      (setq funcs (cdr funcs)))
+    ;; Check whether there is a `score-file' group parameter.
+    (let ((param-file (gnus-group-get-parameter 
+		       gnus-newsgroup-name 'score-file)))
+      (when param-file
+	(push param-file score-files)))
+    ;; Do the scoring if there are any score files for this group.
+    (when score-files
+      (gnus-score-headers score-files trace))))
 
 (defun gnus-score-file-name (newsgroup &optional suffix)
   "Return the name of a score file for NEWSGROUP."

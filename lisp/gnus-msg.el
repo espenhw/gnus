@@ -1202,26 +1202,27 @@ Headers in `gnus-required-headers' will be generated."
 		  '(gnus-deletable t face italic) (current-buffer)))))))
     ;; Insert new Sender if the From is strange. 
     (let ((from (mail-fetch-field "from"))
-	  (sender (mail-fetch-field "sender")))
-      (if (and from 
-	       (not (gnus-check-before-posting 'sender))
-	       (not (string=
-		     (downcase (car (cdr (gnus-extract-address-components from))))
-		     (downcase (gnus-inews-real-user-address))))
-	       (or (null sender)
-		   (not 
-		    (string=
-		     (downcase (car (cdr (gnus-extract-address-components sender))))
-		     (downcase (gnus-inews-real-user-address))))))
-	  (progn
-	    (goto-char (point-min))    
-	    (and (re-search-forward "^Sender:" nil t)
-		 (progn
-		   (beginning-of-line)
-		   (insert "Original-")
-		   (beginning-of-line)))
-	    (insert "Sender: " (gnus-inews-real-user-address) "\n"))))))
-
+	  (sender (mail-fetch-field "sender"))
+	  (secure-sender (gnus-inews-real-user-address)))
+      (when (and from 
+		 (not (gnus-check-before-posting 'sender))
+		 (not (string=
+		       (downcase (car (cdr (gnus-extract-address-components
+					    from))))
+		       (downcase (gnus-inews-real-user-address))))
+		 (or (null sender)
+		     (not 
+		      (string=
+		       (downcase (car (cdr (gnus-extract-address-components
+					    sender))))
+		       (downcase secure-sender)))))
+	(goto-char (point-min))    
+	;; Rename any old Sender headers to Original-Sender.
+	(when (re-search-forward "^Sender:" nil t)
+	  (beginning-of-line)
+	  (insert "Original-")
+	  (beginning-of-line))
+	(insert "Sender: " secure-sender "\n")))))
 
 (defun gnus-inews-insert-signature ()
   "Insert a signature file.

@@ -414,7 +414,7 @@ Return the number of headers removed."
   (if (not (boundp 'jka-compr-compression-info-list))
       (string-to-int file)
     (string-match nnheader-numerical-short-files file)
-    (match-string 1 file)))
+    (string-to-int (match-string 0 file))))
 
 (defun nnheader-directory-articles (dir)
   (mapcar 'nnheader-file-to-number
