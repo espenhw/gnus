@@ -2611,9 +2611,13 @@ display only a single character."
 	  (aset table i [??]))))
     (setq buffer-display-table table)))
 
+(defun gnus-summary-buffer-name (group)
+  "Return the summary buffer name of GROUP."
+  (concat "*Summary " group "*"))
+
 (defun gnus-summary-setup-buffer (group)
   "Initialize summary buffer."
-  (let ((buffer (concat "*Summary " group "*")))
+  (let ((buffer (gnus-summary-buffer-name group)))
     (if (get-buffer buffer)
 	(progn
 	  (set-buffer buffer)
@@ -8293,6 +8297,20 @@ the actual number of articles unmarked is returned."
       (gnus-summary-remove-process-mark (car gnus-newsgroup-processable))))
   (gnus-summary-position-point))
 
+(defun gnus-summary-add-mark (article type)
+  "Mark ARTICLE with a mark of TYPE."
+  (let ((vtype (car (assq type gnus-article-mark-lists)))
+	var)
+    (if (not vtype)
+	(error "No such mark type: %s" type)
+      (setq var (intern (format "gnus-newsgroup-%s" type)))
+      (set var (cons article (symbol-value var)))
+      (if (memq type '(processable cached replied saved))
+	  (gnus-summary-update-secondary-mark article)
+	;;; !!! This is bobus.  We should find out what primary
+	;;; !!! mark we want to set.
+	(gnus-summary-update-mark gnus-del-mark 'unread)))))
+	
 (defun gnus-summary-mark-as-expirable (n)
   "Mark N articles forward as expirable.
 If N is negative, mark backward instead.  The difference between N and

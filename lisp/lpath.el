@@ -61,7 +61,8 @@
 		     set-buffer-multibyte set-char-table-range
 		     set-face-stipple set-frame-face-alist track-mouse
 		     url-retrieve w3-form-encode-xwfu window-at
-		     window-edges x-color-values x-popup-menu))
+		     window-edges x-color-values x-popup-menu browse-url
+		     frame-char-height frame-char-width))
       (maybe-bind '(buffer-display-table 
 		    buffer-file-coding-system font-lock-defaults
 		    global-face-data gnus-article-x-face-too-ugly

@@ -3746,7 +3746,8 @@ and the second element is the address."
 	    (setcar (nthcdr 2 entry) info)
 	    (when (and (not (eq (car entry) t))
 		       (gnus-active (gnus-info-group info)))
-	      (setcar entry (length (gnus-list-of-unread-articles (car info))))))
+	      (setcar entry (length
+			     (gnus-list-of-unread-articles (car info))))))
 	(error "No such group: %s" (gnus-info-group info))))))
 
 (defun gnus-group-set-method-info (group select-method)
@@ -3780,6 +3781,16 @@ and the second element is the address."
 	  (setcdr m (gnus-compress-sequence
 		     (sort (nconc (gnus-uncompress-range (cdr m))
 				  (copy-sequence articles)) '<) t))))))
+
+(defun gnus-add-mark (group mark article)
+  "Mark ARTICLE in GROUP with MARK, whether the group is displayed or not."
+  (let ((buffer (gnus-summary-buffer-name group)))
+    (if (gnus-buffer-live-p buffer)
+	(save-excursion
+	  (set-buffer (get-buffer buffer))
+	  (gnus-summary-add-mark article mark))
+      (gnus-add-marked-articles group (cdr (assq mark gnus-article-mark-lists))
+				(list article)))))
 
 ;;;
 ;;; Group timestamps

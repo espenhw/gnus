@@ -275,10 +275,12 @@ Return that buffer."
       (if (search-forward "\n\n" nil t)
 	  (delete-region (point-min) (point)))
       (if (re-search-forward mm-uu-pgp-beginning-signature nil t)
-	  (delete-region (match-beginning 0) (point-max))))
-    (list
-     (mm-make-handle buf
-		     '("text/plain"  (charset . gnus-decoded))))))
+	  (delete-region (match-beginning 0) (point-max)))
+      (goto-char (point-min))
+      (while (re-search-forward "^- " nil t)
+	(replace-match "" t t)
+	(forward-line 1)))
+    (list (mm-make-handle buf '("text/plain" (charset . gnus-decoded))))))
 
 (defun mm-uu-pgp-signed-extract ()
   (let ((mm-security-handle (list (format "multipart/signed"))))

@@ -36,6 +36,7 @@
 (push (or (getenv "lispdir") 
 	  "/usr/share/emacs/site-lisp")
       load-path)
+
 (push (or (getenv "W3DIR") (expand-file-name "../../w3/lisp/" srcdir)) 
       load-path)
 
@@ -83,7 +84,6 @@
 
 (require 'bytecomp)
 
-(push "/usr/share/emacs/site-lisp" load-path)
 (push srcdir load-path)
 (load (expand-file-name "lpath.el" srcdir) nil t)
 
@@ -119,11 +119,12 @@ Modify to suit your needs."))
 	file elc)
     (dolist (file '("dgnushack.el" "lpath.el"))
       (setq files (delete file files)))
-    (if (featurep 'base64)
-	(setq files (delete "base64.el" files)))
-    (condition-case ()
- 	(require 'w3-forms)
+    (when (featurep 'base64)
+      (setq files (delete "base64.el" files)))
+    (condition-case code
+	(require 'w3-forms)
       (error
+       (message "No w3: %s %s" code (locate-library "w3-forms"))
        (dolist (file '("nnweb.el" "nnlistserv.el" "nnultimate.el"
 		       "nnslashdot.el" "nnwarchive.el" "webmail.el"
 		       "nnwfm.el"))

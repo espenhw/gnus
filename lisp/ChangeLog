@@ -1,4 +1,32 @@
+2000-12-31 03:57:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-draft.el: Mark articles as replied.
+
+	* gnus-sum.el (gnus-summary-add-mark): New function.
+
+	* gnus-group.el (gnus-add-mark): New function.
+
+	* gnus-sum.el (gnus-summary-buffer-name): New function.
+	(gnus-summary-setup-buffer): Use it.
+
+	* gnus-draft.el: Set things up with the right post method and
+	stuff. 
+
+	* message.el (message-ignored-news-headers): Remove X-Draft-From.
+
+	* gnus-msg.el (gnus-inews-insert-draft-meta-information): New function.
+
+	* gnus.el (gnus-draft-meta-information-header): New variable.
+
 2000-12-30 00:17:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-treatment-function-alist): Move the date
+	functions before the header sorting functions.
+
+	* mm-uu.el (mm-uu-pgp-signed-extract-1): Unquote "- " quotes.
+
+	* dgnushack.el (dgnushack-compile): Message whether there is w3. 
+	Don't (push "/usr/share/emacs/site-lisp" load-path).
 
 	* gnus-cite.el (gnus-article-fill-cited-article): Don't add space
 	to empty fill prefixes.

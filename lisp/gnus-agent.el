@@ -370,7 +370,7 @@ agent minor mode in all Gnus buffers."
 
 (defun gnus-agent-insert-meta-information (type &optional method)
   "Insert meta-information into the message that says how it's to be posted.
-TYPE can be either `mail' or `news'.  If the latter METHOD can
+TYPE can be either `mail' or `news'.  If the latter, then METHOD can
 be a select method."
   (save-excursion
     (message-remove-header gnus-agent-meta-information-header)

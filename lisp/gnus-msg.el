@@ -230,6 +230,7 @@ Thank you for your help in stamping out bugs.
 	   (progn
 	     ,@forms)
 	 (gnus-inews-add-send-actions ,winconf ,buffer ,article)
+	 (gnus-inews-insert-draft-meta-information ,group ,article)
 	 (setq gnus-message-buffer (current-buffer))
 	 (set (make-local-variable 'gnus-message-group-art)
 	      (cons ,group ,article))
@@ -246,6 +247,15 @@ Thank you for your help in stamping out bugs.
        (gnus-configure-windows ,config t)
        (set-buffer-modified-p nil))))
 
+(defun gnus-inews-insert-draft-meta-information (group article)
+  (save-excursion
+    (when (and group
+	       (not (string= group ""))
+	       (not (message-fetch-field gnus-draft-meta-information-header)))
+      (goto-char (point-min))
+      (insert gnus-draft-meta-information-header ": (\"" group "\" "
+	      (if article (number-to-string article) "\"\"") ")\n"))))
+
 ;;;###autoload
 (defun gnus-msg-mail (&rest args)
   "Start editing a mail message to be sent.
@@ -259,8 +269,8 @@ Gcc: header for archiving purposes."
 
 ;;;###autoload
 (define-mail-user-agent 'gnus-user-agent
-      'gnus-msg-mail 'message-send-and-exit
-      'message-kill-buffer 'message-send-hook)
+  'gnus-msg-mail 'message-send-and-exit
+  'message-kill-buffer 'message-send-hook)
 
 (defun gnus-setup-posting-charset (group)
   (let ((alist gnus-group-posting-charset-alist)
@@ -1106,7 +1116,7 @@ this is a reply."
 			    (gnus-set-active group (cons (car active) 
 							 (cdr group-art))))
 		      (gnus-activate-group group)))
-		  (let ((buffer (concat "*Summary " group "*"))
+		  (let ((buffer (gnus-summary-buffer-name group))
 			(mark gnus-read-mark)
 			(article (cdr group-art)))
 		    (unless 
