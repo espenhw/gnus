@@ -2222,118 +2222,116 @@ should replace the \"Date:\" one, or should be added below it."
 
 (defun article-make-date-line (date type)
   "Return a DATE line of TYPE."
-  (let ((time (condition-case ()
-		  (date-to-time date)
-		(error '(0 0)))))
-    (cond
-     ;; Convert to the local timezone.  We have to slap a
-     ;; `condition-case' round the calls to the timezone
-     ;; functions since they aren't particularly resistant to
-     ;; buggy dates.
-     ((eq type 'local)
-      (let ((tz (car (current-time-zone time))))
-	(format "Date: %s %s%02d%02d" (current-time-string time)
-		(if (> tz 0) "+" "-") (/ (abs tz) 3600)
-		(/ (% (abs tz) 3600) 60))))
-     ;; Convert to Universal Time.
-     ((eq type 'ut)
-      (concat "Date: "
-	      (current-time-string
-	       (let* ((e (parse-time-string date))
-		      (tm (apply 'encode-time e))
-		      (ms (car tm))
-		      (ls (- (cadr tm) (car (current-time-zone time)))))
-		 (cond ((< ls 0) (list (1- ms) (+ ls 65536)))
-		       ((> ls 65535) (list (1+ ms) (- ls 65536)))
-		       (t (list ms ls)))))
-	      " UT"))
-     ;; Get the original date from the article.
-     ((eq type 'original)
-      (concat "Date: " (if (string-match "\n+$" date)
-			   (substring date 0 (match-beginning 0))
-			 date)))
-     ;; Let the user define the format.
-     ((eq type 'user)
-      (if (gnus-functionp gnus-article-time-format)
-	  (funcall gnus-article-time-format time)
-	(concat
-	 "Date: "
-	 (format-time-string gnus-article-time-format time))))
-     ;; ISO 8601.
-     ((eq type 'iso8601)
-      (let ((tz (car (current-time-zone time))))
-	(concat
-	 "Date: "
-	 (format-time-string "%Y%m%dT%H%M%S" time)
-	 (format "%s%02d%02d"
-		 (if (> tz 0) "+" "-") (/ (abs tz) 3600)
-		 (/ (% (abs tz) 3600) 60)))))
-     ;; Do an X-Sent lapsed format.
-     ((eq type 'lapsed)
-      ;; If the date is seriously mangled, the timezone functions are
-      ;; liable to bug out, so we ignore all errors.
-      (let* ((now (current-time))
-	     (real-time (subtract-time now time))
-	     (real-sec (and real-time
-			    (+ (* (float (car real-time)) 65536)
-			       (cadr real-time))))
-	     (sec (and real-time (abs real-sec)))
-	     num prev)
+  (unless (memq type '(local ut original user iso8601 lapsed english))
+    (error "Unknown conversion type: %s" type))
+  (condition-case ()
+      (let ((time (date-to-time date)))
 	(cond
-	 ((null real-time)
-	  "X-Sent: Unknown")
-	 ((zerop sec)
-	  "X-Sent: Now")
-	 (t
-	  (concat
-	   "X-Sent: "
-	   ;; This is a bit convoluted, but basically we go
-	   ;; through the time units for years, weeks, etc,
-	   ;; and divide things to see whether that results
-	   ;; in positive answers.
-	   (mapconcat
-	    (lambda (unit)
-	      (if (zerop (setq num (ffloor (/ sec (cdr unit)))))
-		  ;; The (remaining) seconds are too few to
-		  ;; be divided into this time unit.
-		  ""
-		;; It's big enough, so we output it.
-		(setq sec (- sec (* num (cdr unit))))
-		(prog1
-		    (concat (if prev ", " "") (int-to-string
-					       (floor num))
-			    " " (symbol-name (car unit))
-			    (if (> num 1) "s" ""))
-		  (setq prev t))))
-	    article-time-units "")
-	   ;; If dates are odd, then it might appear like the
-	   ;; article was sent in the future.
-	   (if (> real-sec 0)
-	       " ago"
-	     " in the future"))))))
-     ;; Display the date in proper English
-     ((eq type 'english)
-      (let ((dtime (decode-time time)))
-	(concat
-	 "Date: the "
-	 (number-to-string (nth 3 dtime))
-	 (let ((digit (% (nth 3 dtime) 10)))
-	   (cond
-	    ((memq (nth 3 dtime) '(11 12 13)) "th")
-	    ((= digit 1) "st")
-	    ((= digit 2) "nd")
-	    ((= digit 3) "rd")
-	    (t "th")))
-	 " of "
-	 (nth (1- (nth 4 dtime)) gnus-english-month-names)
-	 " "
-	 (number-to-string (nth 5 dtime))
-	 " at "
-	 (format "%02d" (nth 2 dtime))
-	 ":"
-	 (format "%02d" (nth 1 dtime)))))
-     (t
-      (error "Unknown conversion type: %s" type)))))
+	 ;; Convert to the local timezone.  
+	 ((eq type 'local)
+	  (let ((tz (car (current-time-zone time))))
+	    (format "Date: %s %s%02d%02d" (current-time-string time)
+		    (if (> tz 0) "+" "-") (/ (abs tz) 3600)
+		    (/ (% (abs tz) 3600) 60))))
+	 ;; Convert to Universal Time.
+	 ((eq type 'ut)
+	  (concat "Date: "
+		  (current-time-string
+		   (let* ((e (parse-time-string date))
+			  (tm (apply 'encode-time e))
+			  (ms (car tm))
+			  (ls (- (cadr tm) (car (current-time-zone time)))))
+		     (cond ((< ls 0) (list (1- ms) (+ ls 65536)))
+			   ((> ls 65535) (list (1+ ms) (- ls 65536)))
+			   (t (list ms ls)))))
+		  " UT"))
+	 ;; Get the original date from the article.
+	 ((eq type 'original)
+	  (concat "Date: " (if (string-match "\n+$" date)
+			       (substring date 0 (match-beginning 0))
+			     date)))
+	 ;; Let the user define the format.
+	 ((eq type 'user)
+	  (if (gnus-functionp gnus-article-time-format)
+	      (funcall gnus-article-time-format time)
+	    (concat
+	     "Date: "
+	     (format-time-string gnus-article-time-format time))))
+	 ;; ISO 8601.
+	 ((eq type 'iso8601)
+	  (let ((tz (car (current-time-zone time))))
+	    (concat
+	     "Date: "
+	     (format-time-string "%Y%m%dT%H%M%S" time)
+	     (format "%s%02d%02d"
+		     (if (> tz 0) "+" "-") (/ (abs tz) 3600)
+		     (/ (% (abs tz) 3600) 60)))))
+	 ;; Do an X-Sent lapsed format.
+	 ((eq type 'lapsed)
+	  ;; If the date is seriously mangled, the timezone functions are
+	  ;; liable to bug out, so we ignore all errors.
+	  (let* ((now (current-time))
+		 (real-time (subtract-time now time))
+		 (real-sec (and real-time
+				(+ (* (float (car real-time)) 65536)
+				   (cadr real-time))))
+		 (sec (and real-time (abs real-sec)))
+		 num prev)
+	    (cond
+	     ((null real-time)
+	      "X-Sent: Unknown")
+	     ((zerop sec)
+	      "X-Sent: Now")
+	     (t
+	      (concat
+	       "X-Sent: "
+	       ;; This is a bit convoluted, but basically we go
+	       ;; through the time units for years, weeks, etc,
+	       ;; and divide things to see whether that results
+	       ;; in positive answers.
+	       (mapconcat
+		(lambda (unit)
+		  (if (zerop (setq num (ffloor (/ sec (cdr unit)))))
+		      ;; The (remaining) seconds are too few to
+		      ;; be divided into this time unit.
+		      ""
+		    ;; It's big enough, so we output it.
+		    (setq sec (- sec (* num (cdr unit))))
+		    (prog1
+			(concat (if prev ", " "") (int-to-string
+						   (floor num))
+				" " (symbol-name (car unit))
+				(if (> num 1) "s" ""))
+		      (setq prev t))))
+		article-time-units "")
+	       ;; If dates are odd, then it might appear like the
+	       ;; article was sent in the future.
+	       (if (> real-sec 0)
+		   " ago"
+		 " in the future"))))))
+	 ;; Display the date in proper English
+	 ((eq type 'english)
+	  (let ((dtime (decode-time time)))
+	    (concat
+	     "Date: the "
+	     (number-to-string (nth 3 dtime))
+	     (let ((digit (% (nth 3 dtime) 10)))
+	       (cond
+		((memq (nth 3 dtime) '(11 12 13)) "th")
+		((= digit 1) "st")
+		((= digit 2) "nd")
+		((= digit 3) "rd")
+		(t "th")))
+	     " of "
+	     (nth (1- (nth 4 dtime)) gnus-english-month-names)
+	     " "
+	     (number-to-string (nth 5 dtime))
+	     " at "
+	     (format "%02d" (nth 2 dtime))
+	     ":"
+	     (format "%02d" (nth 1 dtime)))))))
+	(error
+	 (format "Date: %s (from Oort)" date))))
 
 (defun article-date-local (&optional highlight)
   "Convert the current article date to the local timezone."
