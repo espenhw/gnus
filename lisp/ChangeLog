@@ -1,5 +1,8 @@
 2004-01-05  Simon Josefsson  <jas@extundo.com>
 
+	* md4.el (print-int32, print-string-hexa): Remove.  Suggested by
+	Jesper Harder <harder@myrealbox.com>.
+
 	* sasl-ntlm.el, ntlm.el, md4.el: New files.
 
 	* hmac-md5.el (md5-binary): Fix byte compile warning.  (This
