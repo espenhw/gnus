@@ -1,3 +1,8 @@
+2004-01-12  Kai Grossjohann  <kai.grossjohann@mci.com>
+
+	* message.el (message-expand-name): Use EUDC if the user uses
+	that.
+
 2004-01-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc2047.el (rfc2047-parse-and-decode, rfc2047-decode): Use a

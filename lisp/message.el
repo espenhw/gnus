@@ -6626,9 +6626,12 @@ those headers."
 	    (delete-region (point) (progn (forward-line 3) (point))))))))))
 
 (defun message-expand-name ()
-  (if (fboundp 'bbdb-complete-name)
-      (bbdb-complete-name)
-    (expand-abbrev)))
+  (cond ((and (boundp 'eudc-protocol) eudc-protocol)
+	 (eudc-expand-inline))
+	((fboundp 'bbdb-complete-name)
+	 (bbdb-complete-name))
+	(t
+	 (expand-abbrev))))
 
 ;;; Help stuff.
 
