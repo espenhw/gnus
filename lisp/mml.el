@@ -27,6 +27,7 @@
 (require 'mm-bodies)
 (require 'mm-encode)
 (require 'mm-decode)
+(eval-when-compile 'cl)
 
 (eval-and-compile
   (autoload 'message-make-message-id "message")
@@ -629,8 +630,7 @@ one charsets.")
 		   'list
 		   (mm-delete-duplicates
 		    (nconc
-		     (mapcar (lambda (m) (cdr m))
-			     mailcap-mime-extensions)
+		     (mapcar 'cdr mailcap-mime-extensions)
 		     (apply
 		      'nconc
 		      (mapcar
