@@ -3,16 +3,12 @@
 	* gnusref.tex: Mention `gnus-summary-limit-to-recipient' and 
 	`gnus-summary-sort-by-recipient'.
 
-2004-11-22  Reiner Steib  <Reiner.Steib@gmx.de>
+2004-12-08  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.texi (Various Message Variables): Mention that all mail
 	file variables are derived from `message-directory'.
 
 	* gnus.texi (Splitting Mail): Clarify bogus group.
-
-2004-11-16  Reiner Steib  <Reiner.Steib@gmx.de>
-
-	* gnus.texi (Filtering Spam Using The Spam ELisp Package): 
 
 2004-12-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
