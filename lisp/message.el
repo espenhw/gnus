@@ -1098,6 +1098,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (when (string-match "XEmacs\\|Lucid" emacs-version)
     (message-setup-toolbar))
   (easy-menu-add message-mode-menu message-mode-map)
+  (easy-menu-add message-mode-field-menu message-mode-map)
   ;; Allow mail alias things.
   (if (fboundp 'mail-abbrevs-setup)
       (mail-abbrevs-setup)

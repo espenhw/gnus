@@ -8606,8 +8606,11 @@ argument.  It should return a non-@code{nil} value if it thinks that the
 mail belongs in that group.
 
 The last of these groups should always be a general one, and the regular
-expression should @emph{always} be @samp{} so that it matches any
-mails that haven't been matched by any of the other regexps.
+expression should @emph{always} be @samp{} so that it matches any mails
+that haven't been matched by any of the other regexps.  (These rules are
+processed from the beginning of the alist toward the end.  The first
+rule to make a match will "win", unless you have crossposting enabled.
+In that case, all matching rules will "win".)
 
 If you like to tinker with this yourself, you can set this variable to a
 function of your choice.  This function will be called without any

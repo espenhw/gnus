@@ -117,6 +117,7 @@ seen in the same session."
       (when (and (not (gnus-data-pseudo-p datum))
 		 (> (gnus-data-number datum) 0)
 		 (gnus-data-read-p datum)
+		 (not (= (gnus-data-mark datum) gnus-canceled-mark))
  		 (setq msgid (mail-header-id (gnus-data-header datum)))
  		 (not (nnheader-fake-message-id-p msgid))
  		 (not (intern-soft msgid gnus-dup-hashtb)))

@@ -35,6 +35,15 @@
 
 (defvar running-xemacs (string-match "XEmacs\\|Lucid" emacs-version))
 
+(defvar gnus-use-installed-gnus t
+  "*If non-nil Use installed version of Gnus.")
+
+(defvar gnus-use-installed-tm running-xemacs
+  "*If non-nil use installed version of tm.")
+
+(defvar gnus-use-installed-mailcrypt running-xemacs
+  "*If non-nil use installed version of mailcrypt.")
+
 (defvar gnus-emacs-lisp-directory (if running-xemacs
 				      "/usr/local/lib/xemacs/"
 				    "/usr/local/share/emacs/")
@@ -43,10 +52,6 @@
 (defvar gnus-gnus-lisp-directory (concat gnus-emacs-lisp-directory
 					 "gnus-5.0.15/lisp/")
   "Directory where Gnus Emacs lisp is found.")
-
-(defvar gnus-sgnus-lisp-directory (concat gnus-emacs-lisp-directory
-					  "sgnus/lisp/")
-  "Directory where September Gnus Emacs lisp is found.")
 
 (defvar gnus-tm-lisp-directory (concat gnus-emacs-lisp-directory
 				       "site-lisp/")
@@ -57,10 +62,10 @@
   "Directory where Mailcrypt Emacs Lisp is found.")
 
 (defvar gnus-bbdb-lisp-directory (concat gnus-emacs-lisp-directory
-					 "site-lisp/bbdb-1.50/")
+					 "site-lisp/bbdb-1.51/")
   "Directory where Big Brother Database is found.")
 
-(defvar gnus-use-tm t
+(defvar gnus-use-tm running-xemacs
   "Set this if you want MIME support for Gnus")
 (defvar gnus-use-mhe nil
   "Set this if you want to use MH-E for mail reading")
@@ -76,14 +81,10 @@
   "Set this if you want to use Mailcrypt for dealing with PGP messages")
 (defvar gnus-use-bbdb nil
   "Set this if you want to use the Big Brother DataBase")
-(defvar gnus-use-september nil
-  "Set this if you are using the experimental September Gnus")
 
-(let ((gnus-directory (if gnus-use-september
-			  gnus-sgnus-lisp-directory
-			gnus-gnus-lisp-directory)))
-  (when (null (member gnus-directory load-path))
-    (push gnus-directory load-path)))
+(when (and (not gnus-use-installed-gnus)
+	   (null (member gnus-gnus-lisp-directory load-path)))
+  (push gnus-gnus-lisp-directory load-path))
 
 ;;; We can't do this until we know where Gnus is.
 (require 'message)
@@ -93,16 +94,21 @@
 ;;; MORIOKA Tomohiko <morioka@jaist.ac.jp>
 
 (when gnus-use-tm
-  (when (null (member gnus-tm-lisp-directory load-path))
+  (when (and (not gnus-use-installed-tm)
+	     (null (member gnus-tm-lisp-directory load-path)))
     (setq load-path (cons gnus-tm-lisp-directory load-path)))
-  (load "mime-setup"))
+  ;; tm may or may not be dumped with XEmacs.  In Sunpro it is, otherwise
+  ;; it isn't.
+  (unless (featurep 'mime-setup)
+    (load "mime-setup")))
 
 ;;; Mailcrypt by
 ;;; Jin Choi <jin@atype.com>
 ;;; Patrick LoPresti <patl@lcs.mit.edu>
 
 (when gnus-use-mailcrypt
-  (when (null (member gnus-mailcrypt-lisp-directory load-path))
+  (when (and (not gnus-use-installed-mailcrypt)
+	     (null (member gnus-mailcrypt-lisp-directory load-path)))
     (setq load-path (cons gnus-mailcrypt-lisp-directory load-path)))
   (autoload 'mc-install-write-mode "mailcrypt" nil t)
   (autoload 'mc-install-read-mode "mailcrypt" nil t)
@@ -116,6 +122,7 @@
 ;;; Jamie Zawinski <jwz@lucid.com>
 
 (when gnus-use-bbdb
+  ;; bbdb will never be installed with emacs.
   (when (null (member gnus-bbdb-lisp-directory load-path))
     (setq load-path (cons gnus-bbdb-lisp-directory load-path)))
   (autoload 'bbdb "bbdb-com"
@@ -161,10 +168,12 @@
 ;;;### (autoloads (gnus gnus-slave gnus-no-server) "gnus" "lisp/gnus.el" (12473 2137))
 ;;; Generated autoloads from lisp/gnus.el
 
-(autoload 'gnus-slave-no-server "gnus" "\
+;; Don't redo this if autoloads already exist
+(unless (fboundp 'gnus)
+  (autoload 'gnus-slave-no-server "gnus" "\
 Read network news as a slave without connecting to local server." t nil)
 
-(autoload 'gnus-no-server "gnus" "\
+  (autoload 'gnus-no-server "gnus" "\
 Read network news.
 If ARG is a positive number, Gnus will use that as the
 startup level.  If ARG is nil, Gnus will be started at level 2. 
@@ -172,10 +181,10 @@ If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use.
 As opposed to `gnus', this command will not connect to the local server." t nil)
 
-(autoload 'gnus-slave "gnus" "\
+  (autoload 'gnus-slave "gnus" "\
 Read news as a slave." t nil)
 
-(autoload 'gnus "gnus" "\
+  (autoload 'gnus "gnus" "\
 Read network news.
 If ARG is non-nil and a positive number, Gnus will use that as the
 startup level.  If ARG is non-nil and not a positive number, Gnus will
@@ -185,21 +194,21 @@ prompt the user for the name of an NNTP server to use." t nil)
 
 ;;; These have moved out of gnus.el into other files.
 ;;; FIX FIX FIX: should other things be in gnus-setup? or these not in it?
-(autoload 'gnus-update-format "gnus-spec" "\
+  (autoload 'gnus-update-format "gnus-spec" "\
 Update the format specification near point." t nil)
 
-(autoload 'gnus-fetch-group "gnus-group" "\
+  (autoload 'gnus-fetch-group "gnus-group" "\
 Start Gnus if necessary and enter GROUP.
 Returns whether the fetching was successful or not." t nil)
 
-(defalias 'gnus-batch-kill 'gnus-batch-score)
+  (defalias 'gnus-batch-kill 'gnus-batch-score)
 
-(autoload 'gnus-batch-score "gnus-kill" "\
+  (autoload 'gnus-batch-score "gnus-kill" "\
 Run batched scoring.
 Usage: emacs -batch -l gnus -f gnus-batch-score <newsgroups> ...
 Newsgroups is a list of strings in Bnews format.  If you want to score
 the comp hierarchy, you'd say \"comp.all\".  If you would not like to
-score the alt hierarchy, you'd say \"!alt.all\"." t nil)
+score the alt hierarchy, you'd say \"!alt.all\"." t nil))
 
 (provide 'gnus-setup)
 

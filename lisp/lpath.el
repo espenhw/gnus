@@ -1,5 +1,7 @@
 ;; Shut up.
 
+(defvar byte-compile-default-warnings)
+
 (defun maybe-fbind (args)
   (while args 
     (or (fboundp (car args))

@@ -184,26 +184,42 @@ to virtual article number.")
 	    (kill-buffer vbuf)))))))
 
 
+(defvoo nnvirtual-last-accessed-component-group nil)
 
 (deffoo nnvirtual-request-article (article &optional group server buffer)
-  (when (and (nnvirtual-possibly-change-server server)
-	     (numberp article))
-    (let* ((amap (nnvirtual-map-article article))
-	   (cgroup (car amap)))
-      (cond
-       ((not amap)
-	(nnheader-report 'nnvirtual "No such article: %s" article))
-       ((not (gnus-check-group cgroup))
-	(nnheader-report
-	 'nnvirtual "Can't open server where %s exists" cgroup))
-       ((not (gnus-request-group cgroup t))
-	(nnheader-report 'nnvirtual "Can't open component group %s" cgroup))
-       (t
-	(if buffer 
-	    (save-excursion
-	      (set-buffer buffer)
-	      (gnus-request-article-this-buffer (cdr amap) cgroup))
-	  (gnus-request-article (cdr amap) cgroup)))))))
+  (when (nnvirtual-possibly-change-server server)
+    (if (stringp article)
+	;; This is a fetch by Message-ID.
+	(cond
+	 ((not nnvirtual-last-accessed-component-group)
+	  (nnheader-report
+	   'nnvirtual "Don't know what server to request from"))
+	 (t
+	  (save-excursion
+	    (when buffer 
+	      (set-buffer buffer))
+	    (let ((method (gnus-find-method-for-group
+			   nnvirtual-last-accessed-component-group)))
+	      (funcall (gnus-get-function method 'request-article)
+		       article nil (nth 1 method) buffer)))))
+      ;; This is a fetch by number.
+      (let* ((amap (nnvirtual-map-article article))
+	     (cgroup (car amap)))
+	(cond
+	 ((not amap)
+	  (nnheader-report 'nnvirtual "No such article: %s" article))
+	 ((not (gnus-check-group cgroup))
+	  (nnheader-report
+	   'nnvirtual "Can't open server where %s exists" cgroup))
+	 ((not (gnus-request-group cgroup t))
+	  (nnheader-report 'nnvirtual "Can't open component group %s" cgroup))
+	 (t
+	  (setq nnvirtual-last-accessed-component-group cgroup)
+	  (if buffer 
+	      (save-excursion
+		(set-buffer buffer)
+		(gnus-request-article-this-buffer (cdr amap) cgroup))
+	    (gnus-request-article (cdr amap) cgroup))))))))
 
 
 (deffoo nnvirtual-open-server (server &optional defs)
@@ -391,49 +407,49 @@ to virtual article number.")
   "Copy marks from the virtual group to the component groups.
 If READ-P is not nil, update the (un)read status of the components.
 If UPDATE-P is not nil, call gnus-group-update-group on the components."
-  (let ((unreads (and read-p
-		      (nnvirtual-partition-sequence 
-		       (gnus-list-of-unread-articles 
-			(nnvirtual-current-group)))))
-	(type-marks (mapcar (lambda (ml)
-			      (cons (car ml)
-				    (nnvirtual-partition-sequence (cdr ml))))
-			    (gnus-info-marks (gnus-get-info
-					      (nnvirtual-current-group)))))
-	mark type groups carticles info entry)
+  (when nnvirtual-current-group
+    (let ((unreads (and read-p
+			(nnvirtual-partition-sequence 
+			 (gnus-list-of-unread-articles 
+			  (nnvirtual-current-group)))))
+	  (type-marks (mapcar (lambda (ml)
+				(cons (car ml)
+				      (nnvirtual-partition-sequence (cdr ml))))
+			      (gnus-info-marks (gnus-get-info
+						(nnvirtual-current-group)))))
+	  mark type groups carticles info entry)
 
-    ;; Ok, atomically move all of the (un)read info, clear any old
-    ;; marks, and move all of the current marks.  This way if someone
-    ;; hits C-g, you won't leave the component groups in a half-way state.
-    (gnus-atomic-progn
-      ;; move (un)read
-      (let ((gnus-newsgroup-active nil)) ;workaround guns-update-read-articles
-	(while (setq entry (pop unreads))
-	  (gnus-update-read-articles (car entry) (cdr entry))))
+      ;; Ok, atomically move all of the (un)read info, clear any old
+      ;; marks, and move all of the current marks.  This way if someone
+      ;; hits C-g, you won't leave the component groups in a half-way state.
+      (gnus-atomic-progn
+	;; move (un)read
+	(let ((gnus-newsgroup-active nil)) ;workaround guns-update-read-articles
+	  (while (setq entry (pop unreads))
+	    (gnus-update-read-articles (car entry) (cdr entry))))
 
-      ;; clear all existing marks on the component groups
-      (setq groups nnvirtual-component-groups)
-      (while groups
-	(when (and (setq info (gnus-get-info (pop groups)))
-		   (gnus-info-marks info))
-	  (gnus-info-set-marks info nil)))
+	;; clear all existing marks on the component groups
+	(setq groups nnvirtual-component-groups)
+	(while groups
+	  (when (and (setq info (gnus-get-info (pop groups)))
+		     (gnus-info-marks info))
+	    (gnus-info-set-marks info nil)))
       
-      ;; Ok, currently type-marks is an assq list with keys of a mark type,
-      ;; with data of an assq list with keys of component group names
-      ;; and the articles which correspond to that key/group pair.
-      (while (setq mark (pop type-marks))
-	(setq type (car mark))
-	(setq groups (cdr mark))
-	(while (setq carticles (pop groups))
-	  (gnus-add-marked-articles (car carticles) type (cdr carticles) 
-				    nil t))))
+	;; Ok, currently type-marks is an assq list with keys of a mark type,
+	;; with data of an assq list with keys of component group names
+	;; and the articles which correspond to that key/group pair.
+	(while (setq mark (pop type-marks))
+	  (setq type (car mark))
+	  (setq groups (cdr mark))
+	  (while (setq carticles (pop groups))
+	    (gnus-add-marked-articles (car carticles) type (cdr carticles) 
+				      nil t))))
       
-    ;; possibly update the display, it is really slow
-    (when update-p
-      (setq groups nnvirtual-component-groups)
-      (while groups
-	(gnus-group-update-group (pop groups) t)))
-    ))
+      ;; possibly update the display, it is really slow
+      (when update-p
+	(setq groups nnvirtual-component-groups)
+	(while groups
+	  (gnus-group-update-group (pop groups) t))))))
 
 
 (defun nnvirtual-current-group ()
