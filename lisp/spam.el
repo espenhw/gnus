@@ -744,10 +744,8 @@ Respects the process/prefix convention."
 		   (spam-group-processor-p gnus-newsgroup-name processor))
 	  (spam-register-routine classification check))))
 
-    (if spam-move-spam-nonspam-groups-only
-	(when (not (spam-group-spam-contents-p gnus-newsgroup-name))
-	  (spam-mark-spam-as-expired-and-move-routine
-	   (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
+    (unless (and spam-move-spam-nonspam-groups-only
+		 (not (spam-group-spam-contents-p gnus-newsgroup-name)))
       (gnus-message 5 "Marking spam as expired and moving it to %s"
 		    gnus-newsgroup-name)
       (spam-mark-spam-as-expired-and-move-routine
@@ -985,6 +983,7 @@ When either list is nil, the other is returned."
 (defun spam-fetch-article-header (article)
   (save-excursion
     (set-buffer gnus-summary-buffer)
+    (gnus-read-header article)
     (nth 3 (assq article gnus-newsgroup-data))))
 
 
@@ -1245,21 +1244,19 @@ functions")
   (let ((mark-check (if (eq classification 'spam)
 			'spam-group-spam-mark-p
 		      'spam-group-ham-mark-p))
-	list mark-cache-yes mark-cache-no)
+	alist mark-cache-yes mark-cache-no)
     (dolist (article articles)
       (let ((mark (gnus-summary-article-mark article)))
-	(unless (memq mark mark-cache-no)
-	  (if (memq mark mark-cache-yes)
-	      (push article list)
-	    ;; else, we have to actually check the mark
-	    (if (funcall mark-check
-			 gnus-newsgroup-name
-			 mark)
-		(progn
-		  (push article list)
-		  (push mark mark-cache-yes))
-	      (push mark mark-cache-no))))))
-    list))
+	(unless (or (memq mark mark-cache-yes)
+		    (memq mark mark-cache-no))
+	  (if (funcall mark-check
+		       gnus-newsgroup-name
+		       mark)
+	      (push mark mark-cache-yes)
+	    (push mark mark-cache-no)))
+	(when (memq mark mark-cache-yes)
+	  (push article alist))))
+    alist))
 
 (defun spam-register-routine (classification
 			      check
@@ -1876,7 +1873,7 @@ REMOVE not nil, remove the ADDRESSES."
 	 (if blacklist 'spam-enter-blacklist 'spam-enter-whitelist))
 	(remove-function
 	 (if blacklist 'spam-enter-whitelist 'spam-enter-blacklist))
-	from addresses unregister-list)
+	from addresses unregister-list article-unregister-list)
     (dolist (article articles)
       (let ((from (spam-fetch-field-from-fast article))
 	    (id (spam-fetch-field-message-id-fast article))
@@ -1892,6 +1889,7 @@ REMOVE not nil, remove the ADDRESSES."
 		 (null unregister)
 		 (spam-log-unregistration-needed-p
 		  id 'process declassification de-symbol))
+	    (push article article-unregister-list)
 	    (push from unregister-list))
 	  (unless sender-ignored
 	    (push from addresses)))))
@@ -1900,7 +1898,7 @@ REMOVE not nil, remove the ADDRESSES."
 	(funcall enter-function addresses t) ; unregister all these addresses
       ;; else, register normally and unregister what we need to
       (funcall remove-function unregister-list t)
-      (dolist (article unregister-list)
+      (dolist (article article-unregister-list)
 	(spam-log-undo-registration
 	 (spam-fetch-field-message-id-fast article)
 	 'process

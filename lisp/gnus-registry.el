@@ -24,11 +24,11 @@
 
 ;;; Commentary:
 
-;; This is the gnus-registry.el package, works with other backends
-;; besides nnmail.  The major issue is that it doesn't go across
-;; backends, so for instance if an article is in nnml:sys and you see
-;; a reference to it in nnimap splitting, the article will end up in
-;; nnimap:sys
+;; This is the gnus-registry.el package, which works with all
+;; backends, not just nnmail (e.g. NNTP).  The major issue is that it
+;; doesn't go across backends, so for instance if an article is in
+;; nnml:sys and you see a reference to it in nnimap splitting, the
+;; article will end up in nnimap:sys
 
 ;; gnus-registry.el intercepts article respooling, moving, deleting,
 ;; and copying for all backends.  If it doesn't work correctly for

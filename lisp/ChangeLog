@@ -1,3 +1,13 @@
+2004-04-16  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-summary-prepare-exit): simplified logic
+	(spam-fetch-article-header): read the article header if it's not
+	available
+	(spam-list-articles): simplified logic
+	(spam-filelist-register-routine): found bug with unregister-list
+
+	* gnus-registry.el: clarified comments at beginning
+
 2004-04-16  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-cater-to-broken-inn): Remove.
