@@ -3732,7 +3732,9 @@ If given a prefix, show the hidden text instead."
 	   ;; Get the article and put into the article buffer.
 	   ((or (stringp article) (numberp article))
 	    (let ((gnus-override-method
-		   (and (stringp article) (car (gnus-refer-article-methods))))
+		   (or gnus-override-method
+		       (and (stringp article) 
+			    (car (gnus-refer-article-methods)))))
 		  (buffer-read-only nil))
 	      (erase-buffer)
 	      (gnus-kill-all-overlays)
