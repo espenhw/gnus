@@ -1,7 +1,8 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; Copyright (C) 2003 Free Software Foundation
+;; $Revision: 1.13 $
 ;; Copyright (C) 1997--2002 Paul E. Foley
+;; Copyright (C) 2003 Free Software Foundation
 
 ;; Maintainer: Paul Foley <mycroft@actrix.gen.nz>
 ;; Keywords: mail, hashcash
@@ -24,7 +25,7 @@
 (eval-and-compile
  (autoload 'executable-find "executable"))
 
-(defcustom hashcash-default-payment 0
+(defcustom hashcash-default-payment 10
   "*The default number of bits to pay to unknown users.
 If this is zero, no payment header will be generated.
 See `hashcash-payment-alist'."
@@ -74,6 +75,17 @@ is used instead.")
       (concat (match-string 1 addr) (match-string 2 addr))
     addr))
 
+(defun hashcash-token-substring ()
+  (save-excursion
+    (let ((token ""))
+      (loop
+	(setq token
+	  (concat token (buffer-substring (point) (hashcash-point-at-eol))))
+	(goto-char (hashcash-point-at-eol))
+	(forward-char 1)
+	(unless (looking-at "[ \t]") (return token))
+	(while (looking-at "[ \t]") (forward-char 1))))))
+
 (defun hashcash-payment-required (addr)
   "Return the hashcash payment value required for the given address."
   (let ((val (assoc addr hashcash-payment-alist)))
@@ -93,7 +105,7 @@ is used instead.")
 	(call-process hashcash-path nil t nil
 		      "-m" "-q" "-b" (number-to-string val) str)
 	(goto-char (point-min))
-	(buffer-substring (hashcash-point-at-bol) (hashcash-point-at-eol)))
+	(hashcash-token-substring))
     nil))
 
 (defun hashcash-check-payment (token str val)
@@ -127,17 +139,20 @@ is used instead.")
   (let ((pay (hashcash-generate-payment (hashcash-payment-to arg)
 					(hashcash-payment-required arg))))
     (when pay
-;      (insert-before-markers "X-Payment: hashcash "
-;			     (number-to-string (hashcash-version pay)) " "
-;			     pay "\n")
+;;      (insert-before-markers "X-Payment: hashcash "
+;;			     (number-to-string (hashcash-version pay)) " "
+;;			     pay "\n")
       (insert-before-markers "X-Hashcash: " pay "\n"))))
 
 ;;;###autoload
 (defun hashcash-verify-payment (token &optional resource amount)
   "Verify a hashcash payment"
-  (let ((key (if (< (hashcash-version token) 1.2)
-		 (nth 1 (split-string token ":"))
-		 (nth 2 (split-string token ":")))))
+  (let* ((split (split-string token ":"))
+	 (key (if (< (hashcash-version token) 1.2)
+		  (nth 1 split)
+		  (case (string-to-number (nth 0 split))
+		    (0 (nth 2 split))
+		    (1 (nth 3 split))))))
     (cond ((null resource)
 	   (let ((elt (assoc key hashcash-accept-resources)))
 	     (and elt (hashcash-check-payment token (car elt)
@@ -191,15 +206,12 @@ Prefix arg sets default accept amount temporarily."
 	    (ok nil))
 	(goto-char (point-min))
 	(while (and (not ok) (search-forward "X-Payment: hashcash " end t))
-	  (let ((value (split-string
-			  (buffer-substring (point) (hashcash-point-at-eol))
-			  " ")))
+	  (let ((value (split-string (hashcash-token-substring) " ")))
 	    (when (equal (car value) (number-to-string version))
 	      (setq ok (hashcash-verify-payment (cadr value))))))
 	(goto-char (point-min))
 	(while (and (not ok) (search-forward "X-Hashcash: " end t))
-	  (setq ok (hashcash-verify-payment
-		    (buffer-substring (point) (hashcash-point-at-eol)))))
+	  (setq ok (hashcash-verify-payment (hashcash-token-substring))))
 	(when ok
 	  (message "Payment valid"))
 	ok))))

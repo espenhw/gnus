@@ -1,3 +1,9 @@
+2004-09-27  Simon Josefsson  <jas@extundo.com>
+
+	* hashcash.el: New version, from
+	http://users.actrix.co.nz/mycroft/hashcash.el.  Previously in
+	../contrib/.
+
 2004-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mm-decode.el (mm-copy-to-buffer): Don't use set-buffer-multibyte.
