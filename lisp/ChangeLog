@@ -1,3 +1,11 @@
+2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-spec.el (gnus-parse-format): %C is a complex format.
+	(gnus-parse-format): Change to %~.
+
+	* message.el (message-generate-headers): Don't generate optional
+	empty headers.
+
 2003-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-cross-post-default)
