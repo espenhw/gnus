@@ -1,6 +1,6 @@
 ;;; smiley-ems.el --- displaying smiley faces
 
-;; Copyright (C) 2000 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Dave Love <fx@gnu.org>
 ;; Keywords: news mail multimedia
@@ -50,10 +50,11 @@
 
 ;; The XEmacs version has a baroque, if not rococo, set of these.
 (defcustom smiley-regexp-alist
-  ;; Perhaps :-) should be distinct -- it does appear in the Jargon File.
-  '(("\\([:;]-?)\\)\\W" 1 "smile.pbm")
+  '(("\\(:-?)\\)\\W" 1 "smile.pbm")
+    ("\\(;-?)\\)\\W" 1 "blink.pbm")
     ("\\(:-[/\\]\\)\\W" 1 "wry.pbm")
-    ("\\(:-[({]\\)\\W" 1 "frown.pbm"))
+    ("\\(:-(\\)\\W" 1 "sad.pbm")
+    ("\\(:-{\\)\\W" 1 "frown.pbm"))
   "*A list of regexps to map smilies to images.
 The elements are (REGEXP MATCH FILE), where MATCH is the submatch in
 rgexp to replace with IMAGE.  IMAGE is the name of a PBM file in

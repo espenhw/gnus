@@ -1,3 +1,8 @@
+2001-10-29  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* smiley-ems.el (smiley-regexp-alist): Add support for sad and
+	ironic smilies.
+
 2001-10-27  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-indent-citation): Don't add trailing
