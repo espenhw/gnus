@@ -143,7 +143,8 @@ and `altavista'.")
   (when (and group
 	     (not (equal group nnweb-group))
 	     (not nnweb-ephemeral-p))
-    (setq nnweb-group group)
+    (setq nnweb-group group
+	  nnweb-articles nil)
     (let ((info (assoc group nnweb-group-alist)))
       (when info
 	(setq nnweb-type (nth 2 info))
@@ -730,7 +731,8 @@ and `altavista'.")
 	Subject Score Date Newsgroups From
 	map url)
     (unless active
-      (push (list nnweb-group (setq active (cons 1 0)))
+      (push (list nnweb-group (setq active (cons 1 0)) 
+		  nnweb-type nnweb-search)
 	    nnweb-group-alist))
     ;; Go through all the article hits on this page.
     (goto-char (point-min))
