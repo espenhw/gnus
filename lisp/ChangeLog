@@ -1,3 +1,7 @@
+1999-12-17 10:38:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-dissect-region): Rewrite.
+
 1999-12-16 22:59:22  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el (webmail-hotmail-list): Search no-error.

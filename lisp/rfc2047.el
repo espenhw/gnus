@@ -154,18 +154,58 @@ permitted unencoded charset is us-ascii."
 
 (defun rfc2047-dissect-region (b e)
   "Dissect the region between B and E into words."
-  (let (words)
+  (let ((all-specials (concat ietf-drums-tspecials " \t\n\r"))
+	(special-list (string-to-char-list ietf-drums-tspecials))
+	(blank-list '(?  ?\t ?\n ?\r))
+	words current cs state)
     (save-restriction
       (narrow-to-region b e)
       (goto-char (point-min))
-      (while (re-search-forward
-	      (concat "[^" ietf-drums-tspecials " \t\n]+") nil t)
-	(push
-	 (list (match-beginning 0) (match-end 0)
-	       (car (delq 'ascii (mm-find-charset-region
-				  (match-beginning 0) (match-end 0)))))
-	 words))
-      words)))
+      (skip-chars-forward all-specials)
+      (setq b (point))
+      (while (not (eobp))
+	(cond
+	 ((not state)
+	  (if (memq (char-after) blank-list)
+	      (setq state 'blank)
+	    (setq state 'word)
+	    (if (not (eq (setq cs (mm-charset-after)) 'ascii))
+		(setq current cs)))
+	  (setq b (point)))
+	 ((eq state 'blank)
+	  (cond 
+	   ((memq (char-after) special-list)
+	    (setq state nil))
+	   ((memq (char-after) blank-list))
+	   (t
+	    (setq state 'word)
+	    (if (not (eq (setq cs (mm-charset-after)) 'ascii))
+		(setq current cs)))))
+	 ((eq state 'word)
+	  (cond 
+	   ((memq (char-after) special-list)
+	    (setq state nil)
+	    (push (list b (point) current) words)
+	    (setq current nil))
+	   ((memq (char-after) blank-list)
+	    (setq state 'blank)
+	    (push (list b (point) current) words)
+	    (setq current nil)
+	    (setq b (point)))
+	   ((or (eq (setq cs (mm-charset-after)) 'ascii)
+		(if current
+		    (eq current cs)
+		  (setq current cs))))
+	   (t
+	    (push (list b (point) current) words)
+	    (setq current cs)
+	    (setq b (point))))))
+	(if state
+	    (forward-char)
+	  (skip-chars-forward all-specials)))
+      (if (eq state 'word)
+	  (push (list b (point) current) words)))
+    words))
 
 (defun rfc2047-encode-region (b e)
   "Encode all encodable words in REGION."
