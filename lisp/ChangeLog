@@ -1,3 +1,7 @@
+2001-05-01 19:21:19 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.03 is released.
+
 2001-05-01 19:06:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-topic-article-to-article): Use the
