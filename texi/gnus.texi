@@ -2719,7 +2719,7 @@ news group.
 @item gcc-self
 @cindex gcc-self
 If @code{(gcc-self . t)} is present in the group parameter list, newly
-composed messages will be @code{Gcc}'d to the current group If
+composed messages will be @code{Gcc}'d to the current group.  If
 @code{(gcc-self . none)} is present, no @code{Gcc:} header will be
 generated, if @code{(gcc-self . "string")} is present, this string will
 be inserted literally as a @code{gcc} header.  This parameter takes
