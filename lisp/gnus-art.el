@@ -805,6 +805,13 @@ See the manual for details."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-leading-whitespace nil
+  "Remove leading whitespace in headers.
+Valid values are nil, t, `head', `last', an integer or a predicate.
+See the manual for details."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 (defcustom gnus-treat-hide-headers 'head
   "Hide headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
@@ -1110,6 +1117,7 @@ It is a string, such as \"PGP\". If nil, ask user."
     (gnus-treat-hide-citation gnus-article-hide-citation)
     (gnus-treat-hide-citation-maybe gnus-article-hide-citation-maybe)
     (gnus-treat-strip-list-identifiers gnus-article-hide-list-identifiers)
+    (gnus-treat-leading-whitespace gnus-article-remove-leading-whitespace)
     (gnus-treat-strip-pgp gnus-article-hide-pgp)
     (gnus-treat-strip-pem gnus-article-hide-pem)
     (gnus-treat-highlight-headers gnus-article-highlight-headers)
@@ -2405,6 +2413,17 @@ This format is defined by the `gnus-article-time-format' variable."
     (let ((buffer-read-only nil))
       (gnus-article-unhide-text (point-min) (point-max)))))
 
+(defun article-remove-leading-whitespace ()
+  "Remove excessive whitespace from all headers."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (let ((buffer-read-only nil))
+	(article-narrow-to-head)
+	(goto-char (point-min))
+	(while (re-search-forward "^[^ :]+: \\([ \t]+\\)" nil t)
+	  (delete-region (match-beginning 1) (match-end 1)))))))
+
 (defun article-emphasize (&optional arg)
   "Emphasize text according to `gnus-emphasis-alist'."
   (interactive (gnus-article-hidden-arg))
@@ -2841,6 +2860,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-fill-long-lines
      article-capitalize-sentences
      article-remove-cr
+     article-remove-leading-whitespace
      article-display-x-face
      article-de-quoted-unreadable
      article-de-base64-unreadable
@@ -2937,6 +2957,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Hide citation" gnus-article-hide-citation t]
        ["Treat overstrike" gnus-article-treat-overstrike t]
        ["Remove carriage return" gnus-article-remove-cr t]
+       ["Remove leading whitespace" gnus-article-remove-leading-whitespace t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
        ["Remove base64" gnus-article-de-base64-unreadable t]
        ["Treat html" gnus-article-wash-html t]

@@ -3623,11 +3623,12 @@ In fact, cleanup buffers except for group mode buffer.
 The hook gnus-suspend-gnus-hook is called before actually suspending."
   (interactive)
   (gnus-run-hooks 'gnus-suspend-gnus-hook)
+  (gnus-offer-save-summaries)
   ;; Kill Gnus buffers except for group mode buffer.
   (let ((group-buf (get-buffer gnus-group-buffer)))
     (mapcar (lambda (buf)
 	      (unless (member buf (list group-buf gnus-dribble-buffer))
-		(kill-buffer buf)))
+		(gnus-kill-buffer buf)))
 	    (gnus-buffers))
     (gnus-kill-gnus-frames)
     (when group-buf

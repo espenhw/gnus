@@ -1,3 +1,17 @@
+2001-02-11 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-group.el (gnus-group-suspend): Offer save summaries.
+
+	* gnus-art.el (gnus-treat-leading-whitespace): New.
+	(gnus-treatment-function-alist): Use it.
+	(article-remove-leading-whitespace): New.
+	(gnus-article-make-menu-bar): Use it.
+
+	* gnus-sum.el (gnus-summary-wash-empty-map): Add
+	remove-leading-whitespace.
+	(gnus-summary-wash-map): Bind strip-headers-in-body to `W a',
+	because of conflict.
+
 2001-02-09 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in: Hack generating gnus-load.el.
