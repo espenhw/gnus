@@ -936,7 +936,7 @@ If SOURCE is a directory spec, try to return the group name component."
      (if (search-forward "\n\n" nil t)
 	 (1- (point))
        ;; This will never happen, but just to be on the safe side --
-      ;; if there is no head-body delimiter, we search a bit manually.
+       ;; if there is no head-body delimiter, we search a bit manually.
        (while (and (looking-at "From \\|[^ \t]+:")
 		   (not (eobp)))
 	 (forward-line 1))
@@ -1186,7 +1186,8 @@ Return the number of characters in the body."
 	      nil t)
 	(delete-region (match-beginning 2) (match-end 0))
 	(beginning-of-line))
-      (when (re-search-forward "^Subject: +\\(\\(R[Ee]: +\\)+\\)R[Ee]: +" nil t)
+      (when (re-search-forward "^Subject: +\\(\\(R[Ee]: +\\)+\\)R[Ee]: +"
+			       nil t)
 	(delete-region (match-beginning 1) (match-end 1))
 	(beginning-of-line)))))
 
