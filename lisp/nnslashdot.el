@@ -90,7 +90,7 @@
             (nnslashdot-threaded-retrieve-headers articles group)
           (nnslashdot-sane-retrieve-headers articles group)))
     (search-failed (nnslashdot-lose why))))
-  
+
 (deffoo nnslashdot-threaded-retrieve-headers (articles group)
   (let ((last (car (last articles)))
 	(did nil)
@@ -153,14 +153,15 @@
 	    (forward-line 1)
 	    (if (looking-at
 		 "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
-		(setq point (match-end 0) 
-		      from (concat 
-			    (nnweb-decode-entities-string (match-string 1))
-			    " <" (match-string 2) ">"))
-	      (looking-at "by \\(.+\\) on ")
-	      (setq point (match-end 0) 
-		    from (nnweb-decode-entities-string (match-string 1))))
-	    (goto-char (- point 5))
+		(progn
+		  (goto-char (- (match-end 0) 5))
+		  (setq from (concat 
+			      (nnweb-decode-entities-string (match-string 1))
+			      " <" (match-string 2) ">")))
+	      (setq from "")
+	      (when (looking-at "by \\(.+\\) on ")
+		(goto-char (- (match-end 0) 5))
+		(setq from (nnweb-decode-entities-string (match-string 1)))))
 	    (search-forward " on ")
 	    (setq date
 		  (nnslashdot-date-to-date
@@ -254,11 +255,15 @@
 	  (forward-line 1)
 	  (if (looking-at
 	       "by <a[^>]+>\\([^<]+\\)</a>[ \t\n]*.*(\\([^)]+\\))")
-	      (setq from (concat (nnweb-decode-entities-string (match-string 1))
-                                 " <" (match-string 2) ">"))
-	    (looking-at "by \\(.+\\) on ")
-	    (setq from (nnweb-decode-entities-string (match-string 1))))
-	  (goto-char (- (match-end 0) 5))
+	      (progn
+		(goto-char (- (match-end 0) 5))
+		(setq from (concat 
+			    (nnweb-decode-entities-string (match-string 1))
+			    " <" (match-string 2) ">")))
+	    (setq from "")
+	    (when (looking-at "by \\(.+\\) on ")
+	      (goto-char (- (match-end 0) 5))
+	      (setq from (nnweb-decode-entities-string (match-string 1)))))
 	  (search-forward " on ")
 	  (setq date
 		(nnslashdot-date-to-date

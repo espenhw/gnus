@@ -1,3 +1,9 @@
+2000-08-16 13:05:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-threaded-retrieve-headers):
+	Failure proof for email addresses.
+	(nnslashdot-sane-retrieve-headers): Ditto.
+
 2000-08-14 20:08:40  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-send-mail): Only insert courtesy message
