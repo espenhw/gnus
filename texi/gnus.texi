@@ -4937,6 +4937,8 @@ Marked as dormant (@code{gnus-dormant-mark}).
 @dfn{Dormant articles} will only appear in the summary buffer if there
 are followups to it.  If you want to see them even if they don't have
 followups, you can use the @kbd{/ D} command (@pxref{Limiting}).
+Otherwise (except for the visibility issue), they are just like ticked
+messages.
 
 @item SPACE
 @vindex gnus-unread-mark

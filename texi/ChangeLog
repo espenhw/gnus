@@ -1,3 +1,8 @@
+2001-04-26  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Unread Articles): Say that dormants are similar to
+	ticked.
+
 2001-04-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Sorting Groups): Note `C-k' and `C-y' for manually
