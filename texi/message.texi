@@ -502,6 +502,7 @@ better than you do.
 * Movement::            Moving around in message buffers.
 * Insertion::           Inserting things into message buffers.
 * MIME::                @sc{mime} considerations.
+* IDNA::                Non-ASCII domain name considerations.
 * Security::            Signing and encrypting messages.
 * Various Commands::    Various things.
 * Sending::             Actually sending the message.
@@ -830,6 +831,37 @@ name and a @sc{mime} type.
 You can also create arbitrarily complex multiparts using the MML
 language (@pxref{Composing, , Composing, emacs-mime, The Emacs MIME
 Manual}).
+
+@node IDNA
+@section IDNA
+@cindex IDNA
+@cindex internationalized domain names
+@cindex non-ascii domain names
+
+Message is a @sc{idna}-compliant posting agent.  The user generally
+doesn't have to do anything to make the @sc{idna} happen---Message
+will encode non-ASCII domain names in @code{From}, @code{To}, and
+@code{Cc} headers automatically.
+
+Until IDNA becomes more well known, Message queries you whether IDNA
+encoding of the domain name really should occur.  Some users might not
+be aware that domain names can contain non-ASCII now, so this gives
+them a safety net if they accidently typed a non-ASCII domain name.
+
+@vindex message-use-idna
+The @code{message-use-idna} variable control whether @sc{idna} is
+used.  If the variable is @sc{nil} no IDNA encoding will ever happen,
+if it is set to the symbol @sc{ask} the user will be queried (the
+default), and if set to @sc{t} IDNA encoding happens automatically.
+
+@findex message-idna-to-ascii-rhs
+If you want to experiment with the IDNA encoding, you can invoke
+@kbd{M-x message-idna-to-ascii-rhs RET} in the message buffer to have
+the non-ASCII domain names encoded while you edit the message.
+
+Note that you must have GNU Libidn
+(@url{http://www.gnu.org/software/libidn/} installed in order to use
+this functionality.
 
 @node Security
 @section Security
