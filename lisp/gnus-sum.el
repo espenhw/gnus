@@ -1236,7 +1236,7 @@ For example:
 
 (defsubst gnus-simplify-subject-re (subject)
   "Remove \"Re:\" from subject lines."
-  (if (string-match "^[Rr][Ee]: *" subject)
+  (if (string-match message-subject-re-regexp subject)
       (substring subject (match-end 0))
     subject))
 
