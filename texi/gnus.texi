@@ -10930,19 +10930,23 @@ then the style is said to @dfn{match}.
 Each style may contain a arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @code{(@var{name} @var{value})} pair.  The
 attribute name can be one of @code{signature}, @code{signature-file},
-@code{organization}, @code{address}, @code{name} or @code{body}.  The
-attribute name can also be a string.  In that case, this will be used as
-a header name, and the value will be inserted in the headers of the
-article; if the value is @code{nil}, the header name will be removed.
-If the attribute name is @code{eval}, the form is evaluated, and the
-result is thrown away.
+@code{address} (user email address), @code{name} (user name) or
+@code{body}.  The attribute name can also be a string or a symbol.  In
+that case, this will be used as a header name, and the value will be
+inserted in the headers of the article; if the value is @code{nil}, the
+header name will be removed.  If the attribute name is @code{eval}, the
+form is evaluated, and the result is thrown away.
 
 The attribute value can be a string (used verbatim), a function with
 zero arguments (the return value will be used), a variable (its value
 will be used) or a list (it will be @code{eval}ed and the return value
 will be used).  The functions and sexps are called/@code{eval}ed in the
 message buffer that is being set up.  The headers of the current article
-are available through the @code{message-reply-headers} variable.
+are available through the @code{message-reply-headers} variable, which
+is a vector of the following headers: number subject from date id
+references chars lines xref extra.
+
+@vindex message-reply-headers
 
 If you wish to check whether the message you are about to compose is
 meant to be a news article or a mail message, you can check the values
@@ -10962,13 +10966,16 @@ So here's a new example:
          (organization "People's Front Against MWM"))
         ("^rec.humor"
          (signature my-funny-signature-randomizer))
-        ((equal (system-name) "gnarly")
+        ((equal (system-name) "gnarly")  ;; a sexp
          (signature my-quote-randomizer))
-        ((message-news-p)
+        (message-news-p        ;; a function symbol
          (signature my-news-signature))
+        (window-system         ;; a value symbol
+         ("X-Window-System" (format "%s" window-system)))
+        ;; If I'm replying to Larsi, set the Organization header.
         (header "to" "larsi.*org"
                 (Organization "Somewhere, Inc."))
-        ((posting-from-work-p)
+        ((posting-from-work-p) ;; a user defined function
          (signature-file "~/.work-signature")
          (address "user@@bar.foo")
          (body "You are fired.\n\nSincerely, your boss.")
