@@ -128,7 +128,7 @@
   `(let ((buf ,buffer))
      (when (gnus-buffer-exists-p buf)
        (when (boundp 'gnus-buffers)
-	 (setq gnus-buffers (delete buf gnus-buffers)))
+	 (setq gnus-buffers (delete (get-buffer buf) gnus-buffers)))
        (kill-buffer buf))))
 
 (defalias 'gnus-point-at-bol

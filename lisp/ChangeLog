@@ -1,3 +1,7 @@
+2003-02-02  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-util.el (gnus-kill-buffer): Use get-buffer.
+
 2003-02-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-draft.el (gnus-group-send-queue): Bind gnus-posting-styles
