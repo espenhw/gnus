@@ -297,20 +297,39 @@ This is taken from RFC 2396.")
 	    args (append mm-url-arguments (list url))))
     (apply 'call-process program nil t nil args)))
 
+(defvar mm-url-timeout 30
+  "The number of seconds before timing out an URL fetch.")
+
+(defvar mm-url-retries 10
+  "The number of retries after timing out when fetching an URL.")
+
 (defun mm-url-insert (url &optional follow-refresh)
   "Insert the contents from an URL in the current buffer.
 If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
-  (if follow-refresh
-      (save-restriction
-	(narrow-to-region (point) (point))
-	(mm-url-insert-file-contents url)
-	(goto-char (point-min))
-	(when (re-search-forward
-	       "<meta[ \t\r\n]*http-equiv=\"Refresh\"[^>]*URL=\\([^\"]+\\)\"" nil t)
-	  (let ((url (match-string 1)))
-	    (delete-region (point-min) (point-max))
-	    (mm-url-insert url t))))
-    (mm-url-insert-file-contents url)))
+  (let ((times mm-url-retries)
+	(done nil)
+	(first t)
+	result)
+    (message "%s" url)
+    (while (and (not (zerop (decf times)))
+		(not done))
+      (with-timeout (mm-url-timeout)
+	(unless first
+	  (message "Trying again (%s)..." (- mm-url-retries times)))
+	(setq first nil)
+	(if follow-refresh
+	    (save-restriction
+	      (narrow-to-region (point) (point))
+	      (mm-url-insert-file-contents url)
+	      (goto-char (point-min))
+	      (when (re-search-forward
+		     "<meta[ \t\r\n]*http-equiv=\"Refresh\"[^>]*URL=\\([^\"]+\\)\"" nil t)
+		(let ((url (match-string 1)))
+		  (delete-region (point-min) (point-max))
+		  (setq result (mm-url-insert url t)))))
+	  (setq result (mm-url-insert-file-contents url)))
+	(setq done t)))
+    result))
 
 (defun mm-url-decode-entities ()
   "Decode all HTML entities."

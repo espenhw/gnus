@@ -53,6 +53,9 @@
 (defvoo nnslashdot-backslash-url "http://slashdot.org/slashdot.xml"
   "Where nnslashdot will fetch the stories from.")
 
+(defvoo nnslashdot-use-front-page nil
+  "Use the front page in addition to the backslash page.")
+
 (defvoo nnslashdot-threshold -1
   "The article threshold.")
 
@@ -292,6 +295,7 @@
 (deffoo nnslashdot-request-list (&optional server)
   (nnslashdot-possibly-change-server nil server)
   (let ((number 0)
+	(first nnslashdot-use-front-page)
 	sid elem description articles gname)
     (condition-case why
 	;; First we do the Ultramode to get info on all the latest groups.
@@ -321,20 +325,22 @@
 	      (goto-char (point-max))
 	      (widen)))
 	  ;; Then do the older groups.
-	  (while (> (- nnslashdot-group-number number) 0)
+	  (while (or first
+		     (> (- nnslashdot-group-number number) 0))
+  	    (setq first nil)
 	    (mm-with-unibyte-buffer
 	      (let ((case-fold-search t))
 		(mm-url-insert (format nnslashdot-active-url number) t)
 		(goto-char (point-min))
 		(while (re-search-forward
-			"article.pl\\?sid=\\([^&]+\\).*<b>\\([^<]+\\)</b>"
+			"article.pl\\?sid=\\([^&]+\\).*>\\([^<]+\\)</a>"
 			nil t)
 		  (setq sid (match-string 1)
 			description
 			(mm-url-decode-entities-string (match-string 2)))
 		  (forward-line 1)
-		  (when (re-search-forward "<b>\\([0-9]+\\)</b>" nil t)
-		    (setq articles (string-to-number (match-string 1))))
+		  (when (re-search-forward "with \\([0-9]+\\) comment" nil t)
+		    (setq articles (1+ (string-to-number (match-string 1)))))
 		  (setq gname (concat description " (" sid ")"))
 		  (if (setq elem (assoc gname nnslashdot-groups))
 		      (setcar (cdr elem) articles)

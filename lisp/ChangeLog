@@ -1,3 +1,13 @@
+2002-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el (nnslashdot-request-list): Parse new html.
+	(nnslashdot-use-front-page): New variable.
+	(nnslashdot-request-list): Use it.
+
+	* mm-url.el (mm-url-timeout): New variable.
+	(mm-url-retries): Ditto.
+	(mm-url-insert): Use it.
+
 2002-05-16  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-simplify-all-whitespace): New function.
