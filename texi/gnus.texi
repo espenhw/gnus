@@ -11194,11 +11194,14 @@ An example @sc{imap} mail source:
 @end lisp
 
 @item webmail
-Get mail from a webmail server, such as www.hotmail.com, 
-mail.yahoo.com, www.netaddress.com and www.my-deja.com. 
+Get mail from a webmail server, such as www.hotmail.com,
+webmail.netscape.com, www.netaddress.com, www.my-deja.com.
 
-NOTE: Webmail largely depends on w3 (url) package, whose version of "WWW
-4.0pre.46 1999/10/01" or previous ones may not work.
+NOTE: Now mail.yahoo.com provides POP3 service, so @sc{pop} mail source
+is suggested.
+
+NOTE: Webmail largely depends cookies. A "one-line-cookie" patch is
+required for url "4.0pre.46".
 
 WARNING: Mails may lost.  NO WARRANTY.
 
@@ -11207,7 +11210,7 @@ Keywords:
 @table @code
 @item :subtype
 The type of the webmail server.  The default is @code{hotmail}.  The
-alternatives are @code{yahoo}, @code{netaddress}, @code{my-deja}.
+alternatives are @code{netscape}, @code{netaddress}, @code{my-deja}.
 
 @item :user
 The user name to give to the webmail server.  The default is the login
@@ -11226,7 +11229,7 @@ folder after finishing the fetch.
 An example webmail source:
 
 @lisp
-(webmail :subtype 'yahoo :user "user-name" :password "secret")
+(webmail :subtype 'hotmail :user "user-name" :password "secret")
 @end lisp
 @end table
 
