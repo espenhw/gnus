@@ -127,10 +127,10 @@ this:
 \(setq nnimap-split-rule '((\"INBOX.gnus-imap\"   \"From:.*gnus-imap\")
 			  (\"INBOX.junk\"        \"Subject:.*buy\")))
 
-As you can see, `nnimap-split-rule' is a list of lists, where the first
-element in each \"rule\" is the name of the IMAP mailbox, and the
-second is a regexp that nnimap will try to match on the header to find
-a fit.
+As you can see, `nnimap-split-rule' is a list of lists, where the
+first element in each \"rule\" is the name of the IMAP mailbox (or the
+symbol `junk' if you want to remove the mail), and the second is a
+regexp that nnimap will try to match on the header to find a fit.
 
 The second element can also be a function.  In that case, it will be
 called narrowed to the headers with the first element of the rule as
@@ -1217,7 +1217,7 @@ function is generally only called when Gnus is shutting down."
 			 (when nnmail-cache-accepted-message-ids
 			   (with-current-buffer nntp-server-buffer
                              (let (msgid)
-                               (and (setq msgid 
+                               (and (setq msgid
 					  (nnmail-fetch-field "message-id"))
                                     (nnmail-cache-insert msgid to-group)))))
 			 ;; Add the group-art list to the history list.
@@ -1298,7 +1298,10 @@ function is generally only called when Gnus is shutting down."
 (defun nnimap-expiry-target (arts group server)
   (unless (eq nnmail-expiry-target 'delete)
     (with-temp-buffer
-      (dolist (art (gnus-uncompress-sequence arts))
+      (dolist (art (imap-search (concat "UID " 
+					(imap-range-to-message-set
+					 (gnus-uncompress-sequence arts)))
+		    nnimap-server-buffer))
 	(nnimap-request-article art group server  (current-buffer))
 	;; hints for optimization in `nnimap-request-accept-article'
 	(let ((nnimap-current-move-article art)
@@ -1314,35 +1317,34 @@ function is generally only called when Gnus is shutting down."
   (let ((artseq (gnus-compress-sequence articles)))
     (when (and artseq (nnimap-possibly-change-group group server))
       (with-current-buffer nnimap-server-buffer
-	(if force
-	    (progn
-	      (nnimap-expiry-target artseq group server)
-	      (when (imap-message-flags-add (imap-range-to-message-set artseq)
-					    "\\Deleted")
-		(setq articles nil)))
-	  (let ((days (or (and nnmail-expiry-wait-function
-			       (funcall nnmail-expiry-wait-function group))
-			  nnmail-expiry-wait)))
-	    (cond ((eq days 'immediate)
-		   (nnimap-expiry-target artseq group server)
-		   (when (imap-message-flags-add
-			  (imap-range-to-message-set artseq) "\\Deleted")
-		     (setq articles nil)))
-		  ((numberp days)
-		   (let ((oldarts (imap-search
-				   (format nnimap-expunge-search-string
-					   (imap-range-to-message-set artseq)
-					   (nnimap-date-days-ago days))))
-			 (imap-fetch-data-hook
-			  '(nnimap-request-expire-articles-progress)))
-		     (nnimap-expiry-target oldarts group server)
-		     (and oldarts
-			  (imap-message-flags-add
-			   (imap-range-to-message-set
-			    (gnus-compress-sequence oldarts))
-			   "\\Deleted")
-			  (setq articles (gnus-set-difference
-					  articles oldarts)))))))))))
+	(let ((days (or (and nnmail-expiry-wait-function
+			     (funcall nnmail-expiry-wait-function group))
+			nnmail-expiry-wait)))
+	  (cond (force
+		 (nnimap-expiry-target artseq group server)
+		 (when (imap-message-flags-add
+			(imap-range-to-message-set artseq) "\\Deleted")
+		   (setq articles nil)))
+		((eq days 'immediate)
+		 (nnimap-expiry-target artseq group server)
+		 (when (imap-message-flags-add
+			(imap-range-to-message-set artseq) "\\Deleted")
+		   (setq articles nil)))
+		((numberp days)
+		 (let ((oldarts (imap-search
+				 (format nnimap-expunge-search-string
+					 (imap-range-to-message-set artseq)
+					 (nnimap-date-days-ago days))))
+		       (imap-fetch-data-hook
+			'(nnimap-request-expire-articles-progress)))
+		   (nnimap-expiry-target oldarts group server)
+		   (and oldarts
+			(imap-message-flags-add
+			 (imap-range-to-message-set
+			  (gnus-compress-sequence oldarts))
+			 "\\Deleted")
+			(setq articles (gnus-set-difference
+					articles oldarts))))))))))
   ;; return articles not deleted
   articles)
 
