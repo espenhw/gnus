@@ -5,6 +5,17 @@
 
 2003-03-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-check-news-header-syntax): Don't push
+	groups twice onto list of unknown groups.
+
+	* nndoc.el (nndoc-type-alist): Move exim-bounce a bit further
+	back.
+
+	* nnheader.el (nnheader-find-etc-directory): Doc fix.
+
+	* gnus-msg.el (gnus-inews-add-send-actions): Don't restore window
+	config unless the summary buffer exists.
+
 	* gnus-sum.el (gnus-summary-next-group): Semi-exit group first to
 	that target group is computed correctly when articles are marked
 	as read by Xref handling.

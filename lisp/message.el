@@ -3952,8 +3952,9 @@ Otherwise, generate and save a value for `canlock-password' first."
 		     (gnus-groups-from-server method)))
 	    errors)
        (while groups
-	 (unless (or (equal (car groups) "poster")
-		     (member (car groups) known-groups))
+	 (when (and (not (equal (car groups) "poster"))
+		    (not (member (car groups) known-groups))
+		    (not (member (car groups) errors)))
 	   (push (car groups) errors))
 	 (pop groups))
        (cond

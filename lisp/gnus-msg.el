@@ -534,7 +534,9 @@ Gcc: header for archiving purposes."
 	   (gnus-post-method arg ,gnus-newsgroup-name)))
   (setq message-newsreader (setq message-mailer (gnus-extended-version)))
   (message-add-action
-   `(set-window-configuration ,winconf) 'exit 'postpone 'kill)
+   `(when (gnus-buffer-exists-p ,buffer)
+      (set-window-configuration ,winconf))
+   'exit 'postpone 'kill)
   (let ((to-be-marked (cond
 		       (yanked yanked)
 		       (article (if (listp article) article (list article)))

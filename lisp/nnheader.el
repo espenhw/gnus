@@ -866,7 +866,9 @@ without formatting."
   (or (nth 7 (file-attributes file)) 0))
 
 (defun nnheader-find-etc-directory (package &optional file)
-  "Go through the path and find the \".../etc/PACKAGE\" directory.
+  "Go through `load-path' and find the \"../etc/PACKAGE\" directory.
+This function will look in the parent directory of each `load-path'
+entry, and look for the \"etc\" directory there.
 If FILE, find the \".../etc/PACKAGE\" file instead."
   (let ((path load-path)
 	dir result)
