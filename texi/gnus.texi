@@ -11261,7 +11261,7 @@ What stream to use for connecting to the server, this is one of the
 symbols in @code{imap-stream-alist}.  Right now, this means
 @samp{kerberos4}, @samp{ssl} or the default @samp{network}.
 
-@item :authenticator
+@item :authentication
 Which authenticator to use for authenticating to the server, this is one
 of the symbols in @code{imap-authenticator-alist}.  Right now, this
 means @samp{kerberos4}, @samp{cram-md5}, @samp{anonymous} or the default
