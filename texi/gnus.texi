@@ -1,0 +1,2989 @@
+\input texinfo                  @c -*-texinfo-*-
+@comment %**start of header (This is for running Texinfo on a region.)
+@setfilename gnus
+@settitle (ding) Gnus 1.0 Manual
+@synindex fn cp
+@synindex vr cp
+@synindex pg cp
+@iftex
+@finalout
+@end iftex
+@setchapternewpage odd
+@c      @smallbook
+@comment %**end of header (This is for running Texinfo on a region.)
+@tex
+\overfullrule=0pt
+%\global\baselineskip 30pt      % For printing in double spaces
+@end tex
+
+@ifinfo
+
+This file documents GNUS, the GNU Emacs newsreader.
+
+Copyright (C) 1989, 1990, 1993 Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through Tex and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+@end ifinfo
+
+@titlepage
+@title Gnus Manual
+
+@author by Lars Ingebrigtsen
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1989, 1990, 1993 Free Software Foundation, Inc. 
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+Cover art by Etienne Suvasa.
+@end titlepage
+@page
+
+@node Top
+@top The Gnus News Reader
+
+You can read news (and mail) from within Emacs by using (ding) Gnus.  The
+news can be gotten by any nefarious means you can think of - NNTP, local
+spool, mail spool.  All at the same time, if you want to push your luck.
+
+@menu
+* History::                 How Gnus got where it is today.
+* Starting Up::             Finding news can be a pain.
+* The Newsgroup Buffer::    Treating newsgroups.
+* The Summary Buffer::      Reading articles.
+* The Article Buffer::      Doing stuff to articles.
+* Various::                 General options.
+* Customization::           Tailoring Gnus to your needs.
+* Troubleshooting::         What you might try if things do not work.
+* Reporting Bugs::          Bugs? What bugs?!
+* Index::                   Index.
+* Key Index::               Key Index.
+@end menu
+
+@node History
+@chapter History
+
+GNUS was written by Masanobu UMEDA.  When autumn crept up in '94, Lars
+Ingebrigtsen grew bored and decided to write (ding) Gnus.
+
+(ding) Gnus is based on GNUS 4.1 and includes bits and pieces by Felix
+Lee and jwz.
+
+The recommended pronounciation of the name this program is "ding
+guh-noose", with "ding" being half-sung in a loud, high-pitched voice,
+and "guh-noose" being grumbled and a disaffected fashion.  Any irritation
+and/or damage this name may cause you is not the responsibility of the
+author, even though you might like to strangle him for the stupid idea.
+
+"(ding)", is, of course, short for "Ding Is Not Gnus", which is a total
+and utter lie, but who cares? (Besides, the "Gnus" in this abbreviation
+should probably be pronounced "news" as UMEDA intended, which makes it a
+more appropriate name, don't you think?)
+
+@menu
+* Compatibility::          Just how compatible is (ding) Gnus with GNUS?
+* New Features::           A short description of all the new stuff in Gnus.
+@end menu
+
+@node Compatibility
+@section Compatibility
+
+(ding) Gnus was designed to be fully compatible with GNUS.  Almost all
+key binding have been kept.  More key binding have been added, of course,
+but only in one or two obscure cases have key bindings been changed.
+
+All commands have kept their names.  Some internal functions have changed
+their names.
+
+Even though old methods of doing things are still supported, only the
+new methods are documented in this manual.  If you detect a new method of
+doing something while reading this manual, that does not mean you have
+to stop doing it the old way.
+
+(ding) Gnus understands all GNUS startup files.
+
+@kindex M-x gnus-bug
+Overall, a casual user who hasn't written much code that depends on GNUS
+internals should suffer no problems.  If problems occur, please let me
+know (@kbd{M-x gnus-bug}).
+
+However, code that depends on the buffers looking a particular way will
+almost invaribaly fail.  For instance, the Summary buffer does not
+display article numbers by default.
+
+@node New Features
+@section New Features
+
+The look of all buffers can be changed by setting format-like variables.
+ 
+Local spool and several NNTP servers can be used at once.  Virtual
+newsgroups and private mail newsgroups are featured.
+
+Killing can be done on arbitrary headers.
+
+Gnus can generate dummy roots for threads that have lost their roots
+(thereby gathering loose sub-threads in one thread) or it can go back
+and retrieve enough headers to build a complete thread.
+
+Killed groups can be displayed in the Newsgroup buffer, and you can read
+them as well.
+
+Gnus can do partial updates of new articles - you do not have to
+retrieve the entire active file just to check for new articles in a few
+groups.
+
+Gnus implements a sliding scale of subscribedness to newsgroups.
+
+Gnus can sort the displayed headers of articles.
+
+@node Starting Up
+@chapter Starting Gnus
+
+@kindex M-x gnus
+If your systems administrator has set thing up properly, starting Gnus
+and reading news is extremely easy - you just type @kbd{M-x gnus}.
+
+If things do not go smoothly at startup, you have to twiddle some
+variables. 
+
+@menu
+* Finding the News::    Choosing a method for getting news.
+* First Time::          What does Gnus do the first time you start it?
+* New Newsgroups::      What is Gnus supposed to do with new newsgroups?
+* Startup Files::       Those pesky startup files - @file{.newsrc}.
+* Auto Save::           Recovering from a crash.
+* The Active File::     Reading the active file over a slow line Takes Time.
+* Startup Variables::   Other variables you might change.
+@end menu
+
+@node Finding the News
+@section Finding the News
+
+@vindex gnus-default-select-method
+The @code{gnus-default-select-method} variable controls how Gnus finds
+news.  This variable should be a list where the first element says "how"
+and the second element says "where".
+
+For instance, if you want to get your daily dosage of news from the NNTP
+server "news.friendly.server", you'd say:
+
+@example
+(setq gnus-default-select-method '(nntp "news.friendly.server"))
+@end example
+
+If you want to use a local spool, say:
+
+@example
+(setq gnus-default-select-method '(nnspool ""))
+@end example
+
+If this variable is not set, Gnus will take a look at the
+@code{NNTPSERVER} environment variable.  If that isn't set either, it
+will try to use the machine that is running Emacs as an NNTP server.
+
+@vindex gnus-secondary-servers
+You can also make Gnus prompt you interactively for the name of an NNTP
+server.  If you give a non-numerical prefix to `gnus' (ie. `C-u M-x
+gnus'), Gnus will let you choose between the servers in the
+@code{gnus-secondary-servers} variable (if any).  You can also just type
+in the name of any server you feel like visiting.
+
+However, if you use one NNTP server regularly, and is just interested in
+a couple of newsgroups from a different server, you would be better
+served by using the @code{gnus-group-browse-foreign-server} command from
+the Newsgroup buffer.  It will let you have a look at what groups are
+available, and you can subscribe to any of the groups you want to.  This
+also makes @file{.newsrc} maintenance much tidier.
+
+@node First Time
+@section The First Time
+
+One time has to be the first, but it doesn't have to be painful.
+
+If no startup files exist, Gnus will try to determine what newsgroups
+should be subscribed by default.
+
+@vindex gnus-default-subscribed-newsgroups
+If the variable @code{gnus-default-subscribed-newsgroups} is set, Gnus
+will subscribe you to just those newsgroups in that list, leaving the
+rest killed.  Your systems administrator should have set this variable to
+something useful.
+
+Since he hasn't, Gnus will ask the NNTP server (if you use one) if it
+has any idea. 
+
+If that fails as well, Gnus will just subscribe you to a few randomly
+picked newsgroups (ie. @samp{*.newusers}).
+
+If @code{gnus-default-subscribed-newsgroups} is t, Gnus will just use
+the normal functions for treating new newsgroups, and not do anything
+special.
+
+@node New Newsgroups
+@section New Newsgroups
+
+@vindex gnus-subscribe-newsgroup-method
+What Gnus does when it encounters a new newsgroup is determined by the
+@code{gnus-subscribe-newsgroup-method} variable.
+
+This variable should contain a function.  Some handy ready-made values
+are:
+
+@table @code
+@item gnus-subscribe-randomly
+@vindex gnus-subscribe-randomly
+Subscribe all new newsgroups randomly.
+
+@item gnus-subscribe-alphabetically
+@vindex gnus-subscribe-alphabetically
+Subscribe all new newsgroups alphabetically.
+
+@item gnus-subscribe-hierarchically
+@vindex gnus-subscribe-hierarchically
+Subscribe all new newsgroups hierarchially.
+
+@item gnus-subscribe-interactively
+@vindex gnus-subscribe-interactively
+Subscribe new newsgroups interactively.  This means that Gnus will ask
+you about *all* new newsgroups.
+
+@item gnus-subscribe-zombies
+@vindex gnus-subscribe-zombies
+Make all new newsgroups zombies.  You can browse the zombies later and
+either kill them off properly or subscribe to them.  This is the
+default. 
+
+@end table
+
+@vindex gnus-subscribe-hierarchical-interactive
+A closely related variable is
+@code{gnus-subscribe-hierarchical-interactive}.  If this variable is
+non-nil, Gnus will ask you in a hierarchial fashion whether to subscribe
+to new newsgroups or not.  Gnus will ask you for each sub-hierarchy
+whether you want to descend the hierarchy or not. 
+
+@vindex gnus-check-new-newsgroups
+If you are satisfied that you never really want to see any new
+newsgroups, you could set @code{gnus-check-new-newsgroups} to
+nil.  This will also save you some time at startup.  Even if this
+variable is nil, you can always subscribe to the new newsgroups
+by just pressing @kbd{U} in the @dfn{Newsgroup buffer}.
+
+@node Startup Files
+@section Startup Files
+
+Now, you all know about the @file{.newsrc} files.  All information about
+what newsgroups you read is traditionally stored in this file, which has
+a rather rigid structure.
+
+Things got a bit more complicated with GNUS.  In addition to keeping the
+@file{.newsrc} file updated, it also used a file called @file{.newsrc.el} for
+storing all the information that didn't fit into the @file{.newsrc}
+file.  (Actually, it duplicated everything in the @file{.newsrc} file.)
+GNUS would read whichever one of these files that were the most recently
+saved, which enabled people to swap between GNUS and other newsreaders.
+
+That was kinda silly, so (ding) Gnus went one better: In addition to the
+@file{.newsrc} and @file{.newsrc.el} files, (ding) Gnus also has a file
+called @file{.newsrc.eld}.  It will read whichever of these files that
+are most recent, but it will never write a @file{.newsrc.el} file. 
+
+@vindex gnus-save-newsrc-file
+You can also turn off writing @file{.newsrc} by setting
+@code{gnus-save-newsrc-file} to nil, which means you can delete
+the file and save some space, as well as some time when quitting
+Gnus.  However, that will make it impossible to use other newsreaders
+than (ding) Gnus.  But hey, who would want to, right? 
+
+@vindex gnus-save-killed-list
+If @code{gnus-save-killed-list} is nil, Gnus will not save the list of
+killed groups to the startup file.  This will save both time (when
+starting and quitting) and space (on disk).  It will also means that Gnus
+has no record of what newsgroups are new or old, so the automatic new
+newsgroups subscription methods become meaningless.  You should always
+set `gnus-check-new-newsgroups' to nil if you set this variable to
+nil.
+
+@vindex gnus-startup-file
+The @code{gnus-startup-file} variable says where the startup files
+are.  The default value is @file{"~/.newsrc"}, with the Gnus (El Dingo)
+startup file being whatever that one is with a @samp{".eld"} appended.
+
+@vindex gnus-save-newsrc-hook
+@code{gnus-save-newsrc-hook} is called before saving the @file{.newsrc}
+file. 
+
+@node Auto Save
+@section Auto Save
+
+Whenever you do something that changes the Gnus data (reading articles,
+cathing up, killing/subscribing to newsgroups,) the change is added to a
+special @dfn{dribble} buffer.  This buffer is auto-saved the normal Emacs
+way.
+
+If Gnus detects this file at startup, it will ask the user whether to
+read it.
+
+The auto save file is deleted whenever the real startup file is saved. 
+
+@node The Active File
+@section The Active File
+
+When Gnus starts, or indeed whenever it tries to determine if new
+articles has arrived, it reads the active file.  This is a file stored on
+the NNTP server or in the local spool. 
+
+@vindex gnus-ignored-newsgroups
+Before examining the active file to see what newsgroups are available,
+Gnus deletes all lines in this file that match
+@code{gnus-ignored-newsgroups}.  You may even use this variable to make
+Gnus ignore hierarchies you aren't interested in.
+
+@vindex gnus-read-active-file
+The active file can be rather Huge, so if you have a slow network, you
+can set @code{gnus-read-active-file} to nil to prevent Gnus from reading
+the entire active file.
+
+Gnus will try to make do by just getting information on the newsgroups
+that you actually subscribe to.
+
+Note that if you subscribe to lots and lots of newsgroups, setting this
+variable to nil will probabaly make Gnus slower, not faster.
+
+
+
+@node Startup Variables
+@section Startup Variables
+
+@table @code
+@item gnus-check-bogus-newsgroups
+@vindex gnus-check-bogus-newsgroups
+If non-nil, Gnus will check for and delete all bogus newsgroups at
+startup.  A @dfn{bogus newsgroup} is a newsgroup that you have in you
+@file{.newsrc} file, but doesn't exist on the news server.  Checking for
+bogus newsgroups isn't very quick, so to save time and resources, it's
+best to leave this option off, and instead do the checking for bogus
+newsgroups once in a while from the Newsgroup buffer.
+@item gnus-inhibit-startup-message
+@vindex gnus-inhibit-startup-message
+If non-nil, the startup message won't be displayed.  That way, nobody will
+notice thay you are reading news instead of doing your job.
+@end table
+
+@node The Newsgroup Buffer
+@chapter The Newsgroup Buffer
+
+The @dfn{Newsgroup buffer} lists all (or parts) of the available
+newsgroups and displays various information regarding these groups. 
+It is the first buffer displayed when Gnus starts.
+
+@menu
+* Newsgroup Buffer Format::  Information listed and how you can change it.
+* Newsgroup Manouvering::    Commands for moving in the newsgroup buffer.
+* Selecting a Newsgroup::    Actually reading news.
+* Newsgroup Subscribing::    Unsubscribing, killing, subscribing.
+* Newsgroup Levels::         Levels? What are those, then?
+* Foreign Newsgroups::       How to create foreign newsgroups.
+* Listing Groups::           Gnus can list various portions of the groups.
+* Newsgroup Maintenance::    Maintaining a tidy @file{.newsrc} file.
+* Browse Foreign Server::    You can browse a server.  See what if has to offer.
+* Exiting Gnus::             Stop reading news and get some work done.
+* Misc Newsgroup Stuff::     Other stuff that you can to do.
+@end menu
+
+@node Newsgroup Buffer Format
+@section Newsgroup Buffer Format
+
+The default format of the Newsgroup buffer is nice and dull, but you can
+make it as exciting and ugly as you feel like.
+
+Here's a couple of example newsgroup lines:
+
+@example
+     25: news.announce.newusers
+ *    3: alt.fan.andrea-dworkin
+@end example
+
+Quite simple, huh?
+
+Those lines mean that there are 25 unread articles in
+@samp{news.announce.newusers} and 3 marked articles in
+@samp{alt.fan.andrea-dworkin} and no unread artcles (see that little
+asterisk at the beginning of the line?)
+
+@vindex gnus-group-line-format
+You can fuck that up to your hearts delight by fiddling with the
+@code{gnus-group-line-format} variable.  This variable works along the
+lines of a @code{format} specification, which is pretty much the same as
+a @code{printf} specifications, for those of you who use (feh!) C.
+
+One extension is that specifications like @samp{%7,12s} is allowed,
+which means that the field will be at least 7 characters long, and no
+more that 12 characters long.
+
+The default value that produced those lines above is 
+@samp{"%M%S%5N: %G\n"}.
+
+There should always be a colon on the line; the cursor is always moved
+to the colon.  Nothing else is required - not even the newsgroup name. 
+
+Here's a list of all available format characters:
+
+@table @samp
+@item M    
+Only marked articles
+@item S
+Whether the group is subscribed 
+@item L    
+Level of subscribedness 
+@item N
+Number of unread articles
+@item G
+Group name 
+@item m
+Number of marked articles 
+@item T
+Total number of articles; both read and unread 
+@item D
+Newsgroup description
+@item s
+Select method 
+@item n
+Select from where
+@item z
+A string that look like @samp{<%s:%n>} if a foreign select method is
+used. 
+@end table
+
+@vindex gnus-group-mode-line-format
+The mode line can also be changed by using the
+@code{gnus-group-mode-line-format} variable.  It does not understand that
+many format specifiers:
+
+@table @samp
+@item S
+Default news server
+@item M
+Default select method
+@end table
+
+@node Newsgroup Manouvering
+@section Newsgroup Manouvering
+
+All movement commands understand the numeric prefix and will behave as
+expected, hopefully. 
+
+@table @kbd
+@item n
+@kindex n (Group)
+@findex gnus-group-next-unread-group
+Go to the next group with unread articles
+(@code{gnus-group-next-unread-group}). 
+@item p, DEL
+@kindex DEL (Group)
+@kindex p (Group)
+@findex gnus-group-prev-unread-group
+Go to the previous group group with unread articles
+(@code{gnus-group-prev-unread-group}). 
+@item N, C-n
+@kindex N (Group)
+@kindex C-n (Group)
+@findex gnus-group-next-group
+Go to the next group (@code{gnus-group-next-group}).
+@item P, C-p
+@kindex P (Group)
+@kindex C-p (Group)
+@findex gnus-group-prev-group
+Go to the previous group (@code{gnus-group-prev-group}).
+@item M-p
+@kindex M-p (Group)
+@findex gnus-group-next-unread-group-same-level
+Go to the next unread group on the same level (or lower)
+(@code{gnus-group-next-unread-group-same-level}). 
+@item M-n
+@kindex M-n (Group)
+@findex gnus-group-prev-unread-group-same-level
+Go to the previous unread group on the same level (or lower)
+(@code{gnus-group-prev-unread-group-same-level}). 
+@item j
+@kindex j (Group)
+@findex gnus-group-jump-to-group
+Jump to a group (and make it visible if it isn't already)
+(@code{gnus-group-jump-to-group}). 
+@end table
+
+@node Selecting a Newsgroup
+@section Selecting a Newsgroup
+
+@table @kbd
+@item SPACE
+@kindex SPACE (Group)
+@findex gnus-group-read-group
+Select the current newsgroup, switch to the Summary buffer and display
+the first unread article in the newsgroup
+(@code{gnus-group-read-group}).  If there are no unread articles in the
+newsgroup, or if you give a prefix to this command, Gnus will offer to
+fetch all the old articles in this newsgroup from the server.
+server. 
+@item =
+@kindex = (Group)
+@findex gnus-group-select-group
+Select the current newsgroup and switch to the Summary buffer
+(@code{gnus-group-select-group}). 
+@item c
+@kindex c (Group)
+@findex gnus-group-catchup-current
+Mark all unticked articles in this newsgroup as read
+(@code{gnus-group-catchup-current}). 
+@item C
+@kindex C (Group)
+@findex gnus-group-catchup-current-all
+Mark all articles in this newsgroup, even the ticked ones, as read
+(@code{gnus-group-catchup-current-all}). 
+@end table
+
+@vindex gnus-large-newsgroup
+The @code{gnus-large-newsgroup} variable says what Gnus considers to be
+a "big" newsgroup.  If the newsgroup is big, Gnus will query the user
+before entering the newsgroup.  The user can then specify how many
+articles should be fetched from the server.  If the user specifies a
+negative number (@samp{-n}), the @samp{n} articles that have arrived
+most recently will be fetched.  If it is positive, the @samp{n} oldest
+articles will be fetched.
+
+@vindex gnus-auto-select-newsgroup
+If @code{gnus-auto-select-newsgroup} is non-nil, the first unread
+article in the newsgroup will be displayed when you enter the
+newsgroup.  If you want to prevent automatic selection in some newsgroup
+(say, in a binary newsgroup with Huge articles) you can set til variable
+to nil in `gnus-select-group-hook', which is called when a newsgroup is
+selected.  This hook is also popularly used for sorting headers before
+generating the Summary buffer.
+
+@node Newsgroup Subscribing
+@section Newsgroup Subscribing
+
+@table @kbd
+@item u
+@kindex u (Group)
+@findex gnus-group-unsubscribe-current-group
+Unsubscribe the current newsgroup, or, if it was unsubscribed already,
+subscribe it (@code{gnus-group-unsubscribe-current-group}). 
+@item U
+@kindex U (Group)
+@findex gnus-group-unsubscribe-group
+Ask the user for a newsgroup to unsubscribe, and then unsubscribe it.  If
+it was unsubscribed already, subscribe it instead
+(@code{gnus-group-unsubscribe-group}). 
+@item k
+@kindex k (Group)
+@findex gnus-group-kill-group
+Kill the current newsgroup (@code{gnus-group-kill-group}).
+@item y
+@kindex y (Group)
+@findex gnus-group-yank-group
+Yank the last killed newsgroup (@code{gnus-group-yank-group}).
+@item C-w
+@kindex C-w (Group)
+@findex gnus-group-kill-region
+Kill all newsgroups in the region (@code{gnus-group-kill-region}). 
+@item M-z
+@kindex M-z (Group)
+@findex gnus-group-kill-all-zombies
+Kill all zombie newsgroups (@code{gnus-group-kill-all-zombies}).
+@end table
+
+@node Newsgroup Levels
+@section Newsgroup Levels
+
+All newsgroups have a level of "subscribedness".  For instance, if a
+newsgroup is on level 2, it is "more" subscribed than a newsgroup on
+level 5.  You can ask Gnus to just list newsgroups on a given level and
+lower, or to just check new articles in newsgroups on a given level and
+lower, etc. 
+
+@table @kbd
+@item s
+@kindex s (Group)
+@findex gnus-group-set-current-level
+Set the level of the current newsgroup depending on the numeric
+prefix.  For instance, @kbd{3 s} will set the level of the current
+newsgroup to three (@code{gnus-group-set-current-level}).
+@end table
+
+Gnus considers groups on levels 1-5 to be subscribed, 6-7 to be
+unsubscribed, 8 to be zombies (walking dead) and 9 to be killed,
+completely dead.  Gnus treats subscribed and unsubscribed groups exactly
+the same, but zombie and killed groups have no information on what
+articles you have read, etc, stored.
+
+@vindex gnus-keep-same-level
+If @code{gnus-keep-same-level} is non-nil, some movement commands will
+only move to groups that are of the same level (or lower).  In
+particular, going from the last article in one newsgroup to the next
+newsgroup will go to the next newsgroup of the same level (or
+lower).  This might be handy if you want to read the most important
+newsgroups before you read the rest.
+
+@node Foreign Newsgroups
+@section Foreign Newsgroups
+
+A @dfn{foreign newsgroup} is a newsgroup that is not read by the usual
+(or default) means.  It could be, for instance, a newsgroup from a
+different NNTP server, it could be a virtual newsgroup or it could be a
+"newsgroup" of your own personal mail.
+
+@table @kbd
+@item M-a
+@kindex M-a (Group)
+@findex gnus-group-add-newsgroup
+Add a new newsgroup.  Gnus will prompt you for a name, a method and an
+"address" (@code{gnus-group-add-newsgroup}).
+@item M-e
+@kindex M-e (Group)
+@findex gnus-group-edit-newsgroup
+Edit a newsgroup entry.  Gnus will pop up a new buffer where you can edit
+the entry (@code{gnus-group-edit-newsgroup}). 
+@end table
+
+The different methods all have their peculiarities, of course.
+
+@menu
+* nntp::           Reading news from a different NNTP server
+* nnspool::        Reading news from the local spool
+* nnvirtual::      Combining articles from many newsgroups
+* Mail::           Reading your personal mail with Gnus
+@end menu
+
+@vindex gnus-activate-foreign-newsgroups
+If the @code{gnus-activate-foreign-newsgroups} is t, Gnus will
+check all foreign newsgroup at startup.  This might take quite a while,
+especially if you subscribe to lots of groups from different NNTP
+servers.  It is @code{nil} by default, which means that you won't be told
+whether there are new articles in these groups.  How many unread articles
+there are will be determined when, or if, you decide to enter them.
+
+@node nntp
+@subsection nntp
+
+Subscribing to a foreign group from an NNTP server is rather easy.  You
+just specify @code{nntp} as method and the address of the NNTP server as
+the, uhm, address. 
+
+The name of the foreign newsgroup can be the same as a native
+newsgroup.  However, two foreign newsgroup can not have the same names. 
+
+@node nnspool
+@subsection nnspool
+
+Subscribing to a foreign group from the local spool is extremely easy,
+even though I don't see quite why you'd want to.  If you have a local
+spool, why don't you use that as the default method?
+
+Anyways, you just specify @code{nnspool} as the method and @samp{""} as
+the address.
+
+@node nnvirtual
+@subsection nnvirtual
+
+A @dfn{virtual newsgroup} is really nothing more than a collection of
+other newsgroups. 
+
+You specify @code{nnvirtual} as the method and a regular expression that
+says which newsgroups that you wish to have in this one as the address. 
+
+For instance, if you are tired of reading many small newsgroup, you can
+put them all in one big newsgroup, and then grow tired of reading one
+big, unwieldy newsgroup.  The joys of computing!
+
+@example
+"^alt\\.fan\\.andrea-dworkin$\\|rec\\.dworkin.*"
+@end example
+
+These newsgroups can be native or foreign; everything should work
+smoothly, but if your computer should explode, it was probably my
+fault.  (Including other virtual newsgroups in this one will probably
+confuse Gnus, so don't do that.)
+
+One limitation, however - all newsgroups that are included in 
+a virtual newsgroup has to be alive (ie. subscribed or unsubscribed).  In
+fact, if you include a newsgroup in a virtual newsgroup, and it was
+killed, it will be subscribed automagically.
+
+@node Mail
+@subsection Mail
+
+Reading mail with a newsreader - isn't that just plain WeIrD? But of
+course.
+
+@menu
+* Creating Mail Newsgroups::     How to create mail newsgroups (duh).
+* Expiring Old Mail Articles::   Yes.
+@end menu
+
+Gnus will read the mail spool when you activate the newsgroup.  The mail
+file is first copied to your home directory.  What happens after that
+depends on what format you want to store you mail in.
+
+@menu
+* nnmail::    Using the quite standard Un*x mbox.
+* nnrmail::   Many Emacs programs use the rmail babyl format.
+* nnml::      Store your mail in a private spool?
+@end menu
+
+@vindex nnmail-read-incoming-hook
+The mail backends all call @code{nnmail-read-incoming-hook} after
+reading new mail.  You can use this hook to notify any mail watch
+programs, if you want to.
+
+Gnus gives you all the opportunity you want for shooting yourself in
+your foot.  Let's say you create a newsgroup that will contain all the
+mail you get from your boss.  And then you accidentally unsubscribe from
+the newsgroup.  Gnus will still put all the mail from your boss in the
+unsubscribed newsgroup, and so, when your boss mails you "Have that
+report ready by Monday or you're fired!", you'll never see it and, come
+Tuesday, you'll still beleive that you're gainfully unemplyed while you
+really should be out collecting empty bottles to save up for next
+month's rent money.
+
+@node Creating Mail Newsgroups
+@subsubsection Creating Mail Newsgroups
+
+There are two ways of making Gnus read your personal, private, secret
+mail.  One is pretty easy, and the other requires minor tinkering.
+
+@kindex M-x gnus-group-make-mail-groups (Summary)
+First the easy way: Type @kbd{M-x gnus-group-make-mail-groups}.  That
+will create a newsgroup called @samp{mail.misc} that will contain all
+your mail.
+
+Then the hard(er) way.
+
+@vindex nnmail-split-methods
+Set the variable @code{nnmail-split-methods} to specify how the incoming
+mail is to be split into newsgroups.
+
+@example
+(setq nnmail-split-methods
+  '(("mail.junk" "^From:.*Lars Ingebrigtsen")
+    ("mail.crazzy" "^Subject:.*die\\|^Organization:.*flabby")
+    ("mail.other" "")))
+@end example
+
+This variable is a list of lists, where the first element of each of
+these lists contain the name of the mail newsgroup (they do not have to
+be called something beginning with @samp{"mail"}, by the way), and the
+second element is a regular expression used on the header of each mail
+to determine if it belongs in this mail newsgroup.
+
+The last of these newsgroups should always be a general one, and the
+regular expression should *always* be @samp{""} so that it matches all
+mails.
+
+You should always do a @kbd{M-x gnus-group-make-mail-groups} after
+changing this variable to create all the newsgroups you have specified. 
+
+@node Expiring Old Mail Articles
+@subsubsection Expiring Old Mail Articles
+
+Traditional mail readers have a tendency to remove mail articles when
+you mark them as read, in some way.  Gnus takes a fundamentally different
+approach to mail reading.
+
+Gnus basically considers mail just to be news that has been received in
+a rather peculiar manner.  It does not think that it has the power to
+actually change the mail, or delete any mail messages.  If you enter a
+mail newsgroup, and mark articles as "read", or kill them in some other
+fashion, the mail articles will still exist on the system.  I repeat:
+Gnus will not delete your old, read mail.  Unless you ask it to, of
+course. 
+
+To make Gnus get rid of your unwanted mail, you have to mark the
+articles as @dfn{expirable}.  This does not mean that the articles will
+disappear right away, however.  In general, a mail article will be
+deleted from your system if, 1) it is marked as expirable, AND 2) it is
+more than one week old.  If you do not mark an article as expirable, it
+will remain on your system until hell freezes over.
+
+@vindex gnus-auto-expirable-newsgroups
+You do not have to mark articles as expirable by
+hand.  Newsgroups that match the regular expression
+@code{gnus-auto-expirable-newsgroups} will have all articles that you
+read marked as expirable automatically.  All articles that are marked as
+expirable have an "X" in the third column in the Summary buffer.
+
+Let's say you subscribe to a couple of mailing lists, and you want the
+articles you have read to disappear after a while:
+
+@example
+(setq gnus-auto-expirable-newsgroups 
+      "^mail.nonsense-list\\|^mail.nice-list")
+@end example
+
+@vindex nnmail-expiry-wait
+The @code{nnmail-expiry-wait} variable supplies the default time an
+expirable article has to live.  The default is 7 - seven days. 
+
+Gnus also supplies a function that lets you fine-tune how long articles
+are to live, based on what newsgroup they are in.  Let's say you want to
+have one month expiry period in the @samp{mail.private} newsgroup, a
+one day expiry period in the @samp{mail.junk} newsgroup, and a six day
+expiry period everywhere else:
+
+@example
+(setq nnmail-expiry-wait-function
+      '(lambda (group)
+        (cond ((string= group "mail.private")
+                31)
+              ((string= group "mail.junk")
+                1)
+              (t
+                6))))
+@end example
+
+@node nnmail
+@subsubsection nnmail
+
+@vindex nnmail-active-file
+@vindex nnmail-mbox-file
+The @dfn{nnmail} backend will use the standard Un*x mbox file to store
+mail.  The path of the mbox file is given by the @code{nnmail-mbox-file}
+variable.  In addition, Gnus needs to store information about active
+articles.  The file specified by @code{nnmail-active-file} will be used
+for that.
+
+@node nnrmail
+@subsubsection nnrmail
+
+@vindex nnrmail-active-file
+@vindex nnrmail-mbox-file
+The @dfn{nnrmail} backend will use a babyl mail box to store mail.  The
+path of the rmail mail box file is given by the @code{nnrmail-mbox-file}
+variable.  In addition, Gnus needs to store information about active
+articles.  The file specified by @code{nnrmail-active-file} will be used
+for that.
+
+@node nnml
+@subsubsection nnml
+
+The spool mail format (@code{nnml}) isn't compatible with any other
+known format.  It should be used with some caution.
+
+@vindex nnml-directory
+If you use this backend, Gnus will split all incoming mail into files;
+one file for each mail and put the articles into the correct directories
+under the directory specified by the @code{nnml-directory} variable.  The
+default value is @samp{"~/Mail/"}.
+
+You do not have to create any directories beforehand; Gnus will take
+care of all that.
+
+If you have a strict limit as to how many files you are allowed to store
+in your account, you should not use this backend.  As each mail gets its
+own file, you might very well occupy thousands of inodes within a few
+weeks.  If this is no problem for you, and it isn't a problem for you
+having your friendly systems administrator walking around, madly,
+shouting "Who is eating all my inodes?! Who? Who!?!", then you should
+know that this is probably the fastest format to use.  You do not have to
+trudge through a big mbox file just to read your new mail.
+
+@node Listing Groups
+@section Listing Groups
+
+@table @kbd
+@item l
+@kindex l (Group)
+@findex gnus-group-list-groups
+List all subscribed groups that have unread articles
+(@code{gnus-group-list-groups}). 
+If the numeric prefix is used, this command will list only newsgroups of
+level ARG and lower.  By default, it only lists newsgroups of level five
+or lower (ie. just subscribed groups).
+@item L
+@kindex L (Group)
+@findex gnus-group-list-all-groups
+List all subscribed and unsubscribed newsgroups, whether they have
+unread articles or not (@code{gnus-group-list-all-groups}).
+If the numeric prefix is used, this command will list only newsgroups of
+level ARG and lower.  By default, it lists newsgroups of level seven or
+lower (ie. just subscribed and unsubscribed groups). 
+@item C-c C-k
+@kindex C-c C-k (Group)
+@findex gnus-group-list-killed
+List all killed newsgroups (@code{gnus-group-list-killed}).
+@item C-c C-z
+@kindex C-c C-z (Group)
+@findex gnus-group-list-zombies
+List all zombie newsgroups (@code{gnus-group-list-zombies}).
+@end table
+
+@node Newsgroup Maintenance
+@section Newsgroup Maintenance
+
+@table @kbd
+@item b
+@kindex b (Group)
+@findex gnus-group-check-bogus-groups
+Check bogus groups and delete them
+(@code{gnus-group-check-bogus-groups}). 
+@item F
+@kindex F (Group)
+@findex gnus-find-new-newsgroups
+Find new newsgroups (@code{gnus-find-new-newsgroups}). 
+@item C-c C-x
+@kindex C-c C-x (Group)
+@findex gnus-group-expire-articles
+Run all expirable articles in the current newsgroup through the expiry
+process (if any) (@code{gnus-group-expire-articles}).
+@item C-c M-C-x
+@kindex C-c M-C-x (Group)
+@findex gnus-group-expire-all-groups
+Run all articles in all newsgroups through the expiry process
+(@code{gnus-group-expire-all-groups}). 
+@end table
+
+@node Browse Foreign Server
+@section Browse Foreign Server
+
+@table @kbd
+@item B
+@kindex B (Group)
+@findex gnus-group-browse-foreign-server
+You will be queried for a select method and a server name.  Gnus will
+then attempt to contact this server and let you browse the newsgroups
+there (@code{gnus-group-browse-foreign-server}).
+@end table
+
+A new buffer with a list of available newsgroups will appear.  This
+buffer will be in the @code{gnus-browse-server-mode}.  This buffer looks
+a bit (well, a lot) like a normal Newsgroup buffer, but with one major
+difference - you can't enter any of the newsgroups.  If you want to read
+any of the news available on that server, you have to subscribe to the
+newsgroups you think may be interesting, and then you have to exit this
+buffer.  The new groups will be added to the Newsgroup buffer, and then
+you can read them as you would any other newsgroup.
+
+Here's a list of keystrokes available in the browse mode:
+
+@table @kbd
+@item C-n, n
+@kindex C-n (Browse)
+@kindex n (Browse)
+@findex gnus-group-next-group
+Go to the next group (@code{gnus-group-next-group}).
+@item C-p, p
+@kindex C-p (Browse)
+@kindex p (Browse)
+@findex gnus-group-prev-group
+Go to the previous group (@code{gnus-group-prev-group}).
+@item u
+@kindex u (Browse)
+@findex gnus-browse-unsubscribe-current-group
+Unsubscribe to the current group, or, as will be the case here,
+subscribe to it (@code{gnus-browse-unsubscribe-current-group}). 
+@item q
+@kindex q (Browse)
+@findex gnus-browse-exit
+Exit browse mode (@code{gnus-browse-exit}).
+@item ?
+@kindex ? (Browse)
+@findex gnus-browse-describe-briefly
+Describe browse mode briefly (well, there's not much to describe, is
+there) (@code{gnus-browse-describe-briefly}).
+@end table
+
+@node Exiting Gnus
+@section Exiting Gnus
+
+Yes, Gnus is exiting.
+
+@table @kbd
+@item z
+@kindex z (Group)
+@findex gnus-group-suspend
+Suspend Gnus (@code{gnus-group-suspend}).
+@item q
+@kindex q (Group)
+@findex gnus-group-exit
+Quit Gnus (@code{gnus-group-exit}).
+@item Q
+@kindex Q (Group)
+@findex gnus-group-quit
+Quit Gnus without saving any startup files (@code{gnus-group-quit}).
+@end table
+
+@vindex gnus-exit-gnus-hook
+@vindex gnus-suspend-gnus-hook
+@code{gnus-suspend-gnus-hook} is called when you suspend Gnus and
+@code{gnus-exit-gnus-hook} is called when you quit Gnus.
+
+@node Misc Newsgroup Stuff
+@section Misc Newsgroup Stuff
+
+@table @kbd
+@item g
+@kindex g (Group)
+@findex gnus-group-get-new-news
+Check server for new articles. 
+If the numeric prefix is used, this command will check only newsgroups of
+level ARG and lower (@code{gnus-group-get-new-news}).
+@item R
+@kindex R (Group)
+@findex gnus-group-restart
+Restart Gnus (@code{gnus-group-restart}).
+@item D
+@kindex D (Group)
+@findex gnus-group-describe-group
+Give a description of the current newsgroup
+(@code{gnus-group-describe-group}). 
+@item a
+@kindex a (Group)
+@findex gnus-group-post-news
+Post an article to a newsgroup (@code{gnus-group-post-news}).
+@item m
+@kindex m (Group)
+@findex gnus-group-mail
+Mail a message somewhere (@code{gnus-group-mail}).
+@item C-x C-t
+@kindex C-x C-t (Group)
+@findex gnus-group-transpose-groups
+Transpose two newsgroups (@code{gnus-group-transpose-groups}).
+@item V
+@kindex V (Group)
+@findex gnus-version
+Display current Gnus version numbers (@code{gnus-version}).
+@item ?
+@kindex ? (Group)
+@findex gnus-group-describe-briefly
+Give a very short help message (@code{gnus-group-describe-briefly}).
+@item C-c C-i
+@kindex C-c C-i (Group)
+@findex gnus-info-find-node
+Go to the Gnus info node (@code{gnus-info-find-node}).
+@end table
+
+@vindex gnus-group-prepare-hook
+@code{gnus-group-prepare-hook} is called after the newsgroup list is
+created in the Newsgroup buffer.  It may be used to modify the newsgroup
+buffer in some strange, unnatural way.
+
+@node The Summary Buffer
+@chapter The Summary Buffer
+
+A line for each article is displayed in the Summay buffer.  You can move
+around, read articles, post articles and reply to them.
+
+@menu
+* Summary Buffer Format::       Deciding how the summar buffer is to look
+* Summary Manouvering::         Moving around the Summary buffer
+* Choosing Articles::           Reading articles
+* Paging the Article::          Scrolling the current article
+* Reply Followup and Post::     Posting articles
+* Cancelling and Superceding::  "Whoops, I shouldn't have called him that"
+* Ticking and Marking::         Marking articles as read, expirable, etc.
+* Threading::                   How threads are made
+* Exiting the Summary Buffer::  Returning to the Newsgroup buffer
+* Saving Articles::             Ways of customizing article saving
+* Decoding Articles::           Gnus can treat series of (uu)encoded articles.
+* Various Article Stuff::       Various stuff dealing with articles
+* Summary Sorting::             You can sort the summary buffer four ways
+* Finding the Parent::          No child support? Get the parent
+* Kill Files::                  Maintaining a kill file
+* Various Summary Stuff::       What didn't fit anywhere else
+@end menu
+
+@node Summary Buffer Format
+@section Summary Buffer Format
+
+@vindex gnus-summary-line-format
+You can change the format of the lines in the summary buffer by changing
+the @code{gnus-summary-line-format} variable.  It works along the same
+lines a a normal @code{format} string, with some extensions.
+
+The default string is @samp{"%U%R%X %I[%3L: %-20,20n]%T %S\n"}.
+
+The following format specification characters are understood:
+
+@table @samp
+@item N 
+Article number
+@item S
+Subject
+@item F
+From
+@item n
+The name (from the @code{From} header field)
+@item A
+The address (from the @code{From} header field)
+@item L
+Number of lines in the article
+@item I
+Indentation based on thread level
+@item T
+Nothing if the article is a root and lots of spaces if it isn't (it
+pushes everything after it off the screen)
+@item C
+Current article
+@item U
+Unread
+@item X
+Expirable
+@item R
+Replied
+@item x
+Xref
+@item D
+Date
+@item M
+Message-ID
+@item r
+References
+@end table
+
+No elements are required, except the @samp{%U}, @samp{%R} and @samp{%X}
+fields which have to be at the beginning of the line for reasons of
+efficiency.  If you try to remove those, or change them, you'll probably
+end up with a mess.
+
+@vindex gnus-summary-mode-line-format
+You can also change the format of the Summary mode bar.  Set
+@code{gnus-summary-mode-line-format} to whatever you like.  Here's what
+elements you have to play with:
+
+@table @samp
+@item G
+Group name
+@item A
+Current article number
+@item V
+Gnus version
+@item U
+Number of unread articles in this group
+@item u
+Number of unselected articles in this group
+@item Z
+A string with the number of unread and unselected articles represented
+either as @samp{<%U(+%u) more>} if there are both unselected articles,
+and just as @samp{<%U more>} if there are just unread articles and no
+unselected ones.
+@end table
+
+@node Summary Manouvering
+@section Summary Manouvering
+
+All the straight movement commands understand the numeric prefix and
+behave pretty much as you'd expect. 
+
+None of these commands select articles.
+
+@table @kbd
+@item C-n, down
+@kindex C-n (Summary)
+@kindex down (Summary)
+@findex gnus-summary-next-subject
+Go to the next subject line (@code{gnus-summary-next-subject}).
+@item C-p, up
+@kindex C-p (Summary)
+@kindex up (Summary)
+@findex gnus-summary-prev-subject
+Go to the previous subject line (@code{gnus-summary-prev-subject}).
+@item M-n
+@kindex M-n (Summary)
+@findex gnus-summary-next-unread-subject
+Go to the next summary line of an unread article
+(@code{gnus-summary-next-unread-subject}). 
+@item M-p
+@kindex M-p (Summary)
+@findex gnus-summary-prev-unread-subject
+Go to the previous summary line of an unread article
+(@code{gnus-summary-prev-unread-subject}). 
+@item j
+@kindex j (Summary)
+@findex gnus-summary-goto-subject
+Ask for an article number and then go to this summary line
+(@code{gnus-summary-goto-subject}). 
+@item l
+@kindex l (Summary)
+@findex gnus-summary-goto-last-article
+Go to the summary line of the previous article
+(@code{gnus-summary-goto-last-article}).
+@end table
+
+@vindex gnus-auto-select-next
+If you are at the end of the newsgroup and issue one of the movement
+commands, Gnus will offer to go to the next newsgroup.  If
+@code{gnus-auto-select-next} is t and the next newsgroup is empty, Gnus
+will exit Summary mode and return to the Newsgroup buffer.  If this
+variable is neither t nor nil, Gnus will select the next newsgroup, no
+matter if it has any unread articles or not.  As a special case, if this
+variable equals @code{quietly}, Gnus will select the next newsgroup
+without asking for confirmation.  Also see @code{gnus-keep-same-level}. 
+
+@vindex gnus-auto-center-summary
+If @code{gnus-auto-center-summary} is non-nil, Gnus will keep the point
+in the Summary buffer centered at all times.  This makes things quite
+tidy, but if you have a slow network connection, or do simply not like
+this un-Emacsism, you can set this variable to nil to get the normal
+Emacs scrolling action.
+
+@node Choosing Articles
+@section Choosing Articles
+
+All the movement commands understand the numeric prefix.
+
+All the following commands select an article.
+
+@table @kbd
+@item SPACE
+@kindex SPACE (Summary)
+@findex gnus-summary-next-page
+Select the current article, of, if that one's read already, the next
+unread article (@code{gnus-summary-next-page}).
+@item n
+@kindex n (Summary)
+@findex gnus-summary-next-unread-article
+Go to next unread article (@code{gnus-summary-next-unread-article}).
+@item p
+@kindex p (Summary)
+@findex gnus-summary-prev-unread-article
+Go to previous unread article (@code{gnus-summary-prev-unread-article}).
+@item N
+@kindex N (Summary)
+@findex gnus-summary-next-article
+Go to the next article (@code{gnus-summary-next-article}).
+@item P
+@kindex P (Summary)
+@findex gnus-summary-prev-article
+Go to the previous article (@code{gnus-summary-prev-article}).
+@item M-C-n
+@kindex M-C-n (Summary)
+@findex gnus-summary-next-same-subject
+Go to the next article with the same subject
+(@code{gnus-summary-next-same-subject}). 
+@item M-C-p
+@kindex M-C-p (Summary)
+@findex gnus-summary-prev-same-subject
+Go to the previous article with the same subject
+(@code{gnus-summary-prev-same-subject}). 
+@item .
+@kindex . (Summary)
+@findex gnus-summary-first-unread-article
+Go to the first unread article (@code{gnus-summary-first-unread-article}).
+@end table
+
+@vindex gnus-auto-extend-newsgroup
+All the movement commands will try to go to the previous (or next)
+article, even if that article isn't displayed in the Summary buffer if
+@code{gnus-auto-extend-newsgroup} is non-nil.  Gnus will fetch the
+article from the server and present it in the Article buffer.
+
+@vindex gnus-select-article-hook
+@code{gnus-select-article-hook} is called whenever an article is
+selected.  By default it makes any threads hidden under the current
+article visible.
+
+@vindex gnus-mark-article-hook
+@code{gnus-mark-article-hook} is called when an article is selected for
+the first time.  It is intended to be used for marking articles as read
+automatically when articles are selected.
+
+@node Paging the Article
+@section Scrolling the Article
+
+@table @kbd
+@item SPACE
+@kindex SPACE (Summary)
+@findex gnus-summary-next-page
+Pressing @kbd{SPACE} will scroll the current article forward one page,
+or, if you have come to the end of the current article, will choose the
+next article (@code{gnus-summary-next-page}).
+@item DEL
+@kindex DEL (Summary)
+@findex gnus-summary-prev-page
+Scoll the current article back one page (@code{gnus-summary-prev-page}). 
+@item RETURN
+@kindex RETURN (Summary)
+@findex gnus-summary-scroll-up
+Scroll the current article one line forward
+(@code{gnus-summary-scroll-up}).
+@item <
+@kindex < (Summary)
+@findex gnus-summary-beginning-of-article
+Scroll to the beginning of the article
+(@code{gnus-summary-beginning-of-article}).
+@item >
+@kindex > (Summary)
+@findex gnus-summary-end-of-article
+Scroll to the end of the article (@code{gnus-summary-end-of-article}).
+@end table
+
+@node Reply Followup and Post
+@section Reply Followup and Post
+
+@kindex C-c C-c (Post)
+All the commands for posting and mailing will put you in a post or mail
+buffer where you can edit the article all you like, before you send the
+article by pressing @kbd{C-c C-c}.
+
+@table @kbd
+@item a
+@kindex a (Summary)
+@findex gnus-summary-post-news
+Post an article to the current newsgroup
+(@code{gnus-summary-post-news}).
+@item f
+@kindex f (Summary)
+@findex gnus-summary-followup
+Post a followup to the current article (@code{gnus-summary-followup}).
+@item F
+@kindex F (Summary)
+@findex gnus-summary-followup-with-original
+Post a followup to the current article and include the original message
+(@code{gnus-summary-followup-with-original}). 
+@item r
+@kindex r (Summary)
+@findex gnus-summary-reply
+Mail a reply to the author of the current article
+(@code{gnus-summary-reply}). 
+@item R
+@kindex R (Summary)
+@findex gnus-summary-reply-with-original
+Mail a reply to the author of the current article and include the
+original message (@code{gnus-summary-reply-with-original}).
+@item C-c C-f
+@kindex C-c C-f (Summary)
+@findex gnus-summary-mail-forward
+Forward the current article to some other person
+(@code{gnus-summary-mail-forward}). 
+@item m
+@kindex m (Summary)
+@findex gnus-summary-mail-other-window
+Send a mail to some other person
+(@code{gnus-summary-mail-other-window}). 
+@end table
+
+@vindex gnus-required-headers
+Gnus determines which headers it should generate in outgoing posts by
+consulting the @code{gnus-required-headers} variable.  This is a list of
+headers that Gnus makes sure is present in all outgoing posts before it
+tries to post them.
+
+@vindex gnus-followup-to-function
+@vindex gnus-reply-to-function
+Gnus uses the normal methods to determine where replys and follow-ups
+are to go, but you can change the behaviour to suit your need by
+fiddling with the @code{gnus-reply-to-function} and
+@code{gnus-followup-to-function} variables.
+
+To take "reply" as an example: If you want the replies to go to the
+"sender" instead of the "from" in the newsgroup "mail.stupid-list", you
+could do something like this:
+
+@example
+(setq gnus-reply-to-function
+      '(lambda (group)
+        (cond ((string= group "mail.stupid-list")
+                (mail-fetch-field "sender"))
+              (t
+               nil))))
+@end example
+
+These functions will be called with point in the buffer of the article
+that is being replied to (or followed up).
+
+@vindex mail-signature
+@vindex gnus-signature-file
+If @code{gnus-signature-file} is non-nil, it should be the name of a
+file containing a signature (@samp{~/.signature} by default).  This
+signature will be appended to all outgoing post.  Most people find it
+more convenient to use @code{mail-signature}, which does the same, but
+inserts the signature into the buffer before you start editing the post
+(or mail).  So - if you have both of these variables set, you will get
+two signatures.
+
+@vindex gnus-post-prepare-function
+In any case, @code{gnus-post-prepare-function} is called with the name
+of the current newsgroup after the post buffer has been initialized, and
+can be used for inserting a signature.  Nice if you use different
+signatures in different newsgroups.
+
+@vindex gnus-auto-mail-to-author
+If @code{gnus-auto-mail-to-author} is non-nil, Gnus will send a mail
+with a copy of all follow-ups to the authors of the articles you follow
+up.  It's nice in one way - you make sure that the person you are
+responding to gets your response.  Other people loathe this method and
+will hate you dearly for it, because it means that they will first get a
+mail, and then have to read the same article later when they read the
+news.  It is nil by default.
+
+@vindex gnus-mail-send-method
+@code{gnus-mail-send-method} says how a mail should be mailed.  It uses
+the function in the @code{send-mail-function} as the default.
+
+@vindex gnus-prepare-article-hook
+@code{gnus-prepare-article-hook} is called before the header fields have
+been prepared.  By default it inserts the signature specified by
+@code{gnus-signature-file}. 
+
+@vindex gnus-inews-article-hook
+@code{gnus-inews-article-hook} is called right before the article is
+posted.  By default it handles FCC processing (ie. saving the article to
+a file.)
+
+@node Cancelling and Superceding
+@section Cancelling Articles
+
+Have you ever written something, and then decided that you really,
+really, really hadn't posted that? 
+
+Well, you can't cancel mail, but you can cancel posts.
+
+@findex gnus-summary-cancel-article
+@kindex C (Summary)
+Find the article you wish to cancel (you can only cancel your own
+articles, so don't try any funny stuff).  Then press @kbd{C}
+(@code{gnus-summary-cancel-article}).  Your article will be cancelled.
+
+Be aware, however, that not all sites honor cancels, so your article may
+live on in some parts of the world, while most sites will delete the
+cancelled article.
+
+If you discover that you have made some mistakes and want to do some
+corrections, you can post a @dfn{superceding} article that will replace
+your original article.
+
+@findex gnus-summary-supersede-article
+@kindex S (Summary)
+Go to the original article and press @kbd{S}
+(@code{gnus-summary-supersede-article}).  You will be put in a buffer
+where you can edit the article all you want before sending it off the
+usual way.  
+
+The same goes for superceding as for cancelling, only more so: Some
+sites do not honor superceding.  On those sites, it will appear that you
+have posted almost the same article twice.
+
+If you have just posted the article, and changed your mind right away,
+there is a trick yuo can use to cancel/supersede the article without
+waiting for the article to appear on your site first.  You simply return
+to the post buffer (which is called @code{*post-buf*}).  There you will
+find the article you just posted, with all the headers intact.  Change
+the @samp{Message-ID} header to a @samp{Cancel} or @samp{Supersedes}
+header by substituting one of those words for @samp{Message-ID}.  Then
+just press @kbd{C-c C-c} to send the article as you would do
+normally.  The previous article will be cancelled/superseded.
+
+@node Ticking and Marking
+@section Ticking and Marking
+
+There are four kinds of @dfn{marks}: Tick marks, process marks, read
+marks and expiry marks.  
+
+@dfn{Ticked articles} are articles that will remain visible always.  If
+you see an article that you find interesting, or you want to put off
+reading it, or replying to it, until sometime later, you'd typically
+tick it.  However, articles can be expired, so if you want to keep an
+article forever, you'll have to save it.  Ticked articles have a @samp{-}
+in the first column.
+
+Articles that are marked as read - are just that.  They have a @samp{D}
+in the first column.  Unread articles have a space in the first column.
+
+You can also mark articles as @dfn{expirable} (or have them marked as
+such automatically).  That doesn't make much sense in normal newsgroups,
+because a user does not control the expiring of news articles, but in
+mail newsgroups, for instance, articles that are marked as
+@dfn{expirable} can be deleted by Gnus at any time.  Expirable articles
+have a @samp{X} in the third column.
+
+Finally we have the @dfn{process mark}.  A variety of commands react to
+the presence of the process mark.  For instance, @kbd{C-c C-v M-C-v}
+(@code{gnus-uu-decode-and-view-marked-articles}) will uudecode and view
+all artciles that have been marked with the process mark.  Articles
+marked with the process mark have a @samp{#} in the third column.
+
+All the marking commands understand the numeric prefix.
+
+@table @kbd
+@item '
+@kindex ' (Summary)
+@findex gnus-summary-mark-as-unread-forward
+Tick the current article (@code{gnus-summary-mark-as-unread-forward}).
+@item d
+@kindex d (Summary)
+@findex gnus-summary-mark-as-read-forward
+Mark the current article as read
+(@code{gnus-summary-mark-as-read-forward}).
+@item k
+@kindex k (Summary)
+@findex gnus-summary-kill-same-subject-and-select
+Mark all articles that have the same subject as the current one as read,
+and then select the next unread article
+(@code{gnus-summary-kill-same-subject-and-select}).
+@item C-k
+@kindex C-k (Summary)
+@findex gnus-summary-kill-same-subject
+Mark all articles that have the same subject as the current one as read
+(@code{gnus-summary-kill-same-subject}).  
+@item M-u
+@kindex M-u (Summary)
+@findex gnus-summary-clear-mark-forward
+Clear tick and read marks from the current article
+(@code{gnus-summary-clear-mark-forward}).
+@item x
+@kindex x (Summary)
+@findex gnus-summary-mark-as-expirable
+Mark the current article as expirable
+(@code{gnus-summary-mark-as-expirable}).
+@item X
+@kindex X (Summary)
+@findex gnus-summary-unmark-as-expirable
+Remove the expiry mark from the current article
+(@code{gnus-summary-unmark-as-expirable}). 
+@item M-d
+@kindex M-d (Summary)
+@findex gnus-summary-delete-marked-as-read
+Remove all deleted articles from the Summary buffer
+(@code{gnus-summary-delete-marked-as-read}). 
+@item M-C-d
+@kindex M-C-d (Summary)
+@findex gnus-summary-delete-marked-with
+Ask for a mark and then remove all articles that have been marked with
+that mark (@code{gnus-summary-delete-marked-with}).
+@end table
+
+There are a few functions for setting the process mark:
+
+@table @kbd
+@item #
+@kindex # (Summary)
+@findex gnus-summary-mark-article-as-processable
+Mark the current article with the process mark
+(@code{gnus-summary-mark-article-as-processable}). 
+@findex gnus-summary-unmark-article-as-processable
+@item M-#
+@kindex M-# (Summary)
+Remove the process mark from the current article
+(@code{gnus-summary-unmark-article-as-processable}). 
+@item C-c M-#
+@kindex C-c M-# (Summary)
+@findex gnus-summary-unmark-all-articles-as-processable
+Remove the process mark from all articles
+(@code{gnus-summary-unmark-all-articles-as-processable}). 
+@item C-c C-v C-r 
+@kindex C-c C-v C-r  (Summary)
+@findex gnus-uu-mark-by-regexp
+Mark articles by a regular expression (@code{gnus-uu-mark-by-regexp}). 
+@item C-c C-v r
+@kindex C-c C-v r (Summary)
+@findex gnus-uu-mark-region
+Mark articles in the region (@code{gnus-uu-mark-region}).
+@item C-c C-v t
+@kindex C-c C-v t (Summary)
+@findex gnus-uu-mark-thread
+Mark all articles in the current (sub)thread
+(@code{gnus-uu-mark-thread}).
+@end table
+
+@findex gnus-uu-marked-universal-argument
+@kindex C-c C-v C-u (Summary)
+Finally, we have @kbd{C-c C-v C-u}
+(@code{gnus-uu-marked-universal-argument}) that will perform any
+operation on all articles that have been marked with the process mark. 
+
+@node Threading
+@section Threading
+
+Gnus @dfn{threads} articles by default.  @dfn{Threading} is to put
+replies to articles directly after the articles they reply to - in a
+hierarchial fashion.
+
+@menu
+* Customizing Threading::     Variables you can change to affect the threading
+* Threading Commands::        Thread based commands in the Summary Buffer
+@end menu
+
+@node Customizing Threading
+@subsection Customizing Threading
+
+@table @code
+@item gnus-show-threads
+@vindex gnus-show-threads
+If this variable is nil, no threading will be done, and all of the rest
+of the variables here will have no effect.  Turning threading off will
+speed newsgroup selection up a bit, but it is sure to make reading
+slower and more awkward.
+@item gnus-gather-loose-threads
+@vindex gnus-gather-loose-threads
+If non-nil, Gnus will gather all loose subtrees into one big tree and
+create a dummy root at the top.  (Wait a minute.  Root at the top? Yup.)
+Loose subtrees occur when the real root has expired, or you've read it
+in a previous session.
+@item gnus-summary-print-dummy-lines
+@vindex gnus-summary-print-dummy-lines
+If non-nil, Gnus will print those dummy roots described above.  It it is
+nil, the dummy roots won't be printed, but the gathering will still take
+place (if @code{gnus-gather-loose-threads} is non-nil, that is.) 
+@item gnus-thread-hide-subtree
+@vindex gnus-thread-hide-subtree
+If non-nil, all subtrees will be hidden when the Summary buffer is
+generated. 
+@item gnus-thread-hide-killed
+@vindex gnus-thread-hide-killed
+if you kill a thread and this variable is non-nil, the subtree will be
+hidden. 
+@item gnus-thread-ignore-subject
+@vindex gnus-thread-ignore-subject
+Sometimes somebody changes the subject in the middle of a thread.  If
+this variable is non-nil, the change in subject is ignored.  If it is
+nil, which is the default, a change in the subject will result in a new
+thread. 
+@item gnus-thread-indent-level
+@vindex gnus-thread-indent-level
+This is a number which says how many spaces to indent a thread.  The
+default is @samp{4}.
+@end table
+
+@node Threading Commands
+@subsection Threading Commands
+
+@table @kbd
+@item M-C-k
+@kindex M-C-k (Summary)
+@findex gnus-summary-kill-thread
+Mark all articles under the current one as read
+(@code{gnus-summary-kill-thread}).  If the prefix argument is positive,
+remove all marks.  If the prefix argument is negative, tick articles.
+@item M-C-t
+@kindex M-C-t (Summary)
+@findex gnus-summary-toggle-threads
+Toggle showing threads (@code{gnus-summary-toggle-threads}).
+@item M-C-s
+@kindex M-C-s (Summary)
+@findex gnus-summary-show-thread
+Show the thread hidden under the current article, if any
+(@code{gnus-summary-show-thread}). 
+@item M-C-h
+@kindex M-C-h (Summary)
+@findex gnus-summary-hide-thread
+Hide the current (sub)thread (@code{gnus-summary-hide-thread}).
+@end table
+
+The following commands are all thread movement commands.  They all
+understand the numeric prefix.
+
+@table @kbd
+@item M-C-f
+@kindex M-C-f (Summary)
+@findex gnus-summary-next-thread
+Go to the next thread (@code{gnus-summary-next-thread}).
+@item M-C-b
+@kindex M-C-b (Summary)
+@findex gnus-summary-prev-thread
+Go to the previous thread (@code{gnus-summary-prev-thread}).
+@item M-C-d
+@kindex M-C-d (Summary)
+@findex gnus-summary-down-thread
+Descend the thread (@code{gnus-summary-down-thread}).
+@item M-C-u
+@kindex M-C-u (Summary)
+@findex gnus-summary-up-thread
+Ascend the thread (@code{gnus-summary-up-thread}).
+@end table
+
+@node Exiting the Summary Buffer
+@section Exiting the Summary Buffer
+
+@table @kbd
+@item q
+@kindex q (Summary)
+@findex gnus-summary-exit
+Exit the current newsgroup and update all the information
+(@code{gnus-summary-exit}). 
+@item Q
+@kindex Q (Summary)
+@findex gnus-summary-quit
+Exit the current newsgroup without updating any information
+(@code{gnus-summary-quit}). 
+@item c
+@kindex c (Summary)
+@findex gnus-summary-catchup-and-exit
+Mark all articles in the newsgroup as read and exit
+(@code{gnus-summary-catchup-and-exit}). 
+@end table
+
+@vindex gnus-exit-group-hook
+@code{gnus-exit-group-hook} is called when you exit the current
+newsgroup.  
+
+@vindex gnus-use-cross-reference
+When you exit the Summary buffer, the data on the current newsgroup will
+be updated (which articles you have read, which articles you have
+replied to, etc.) If the @code{gnus-use-cross-reference} variable is
+non-nil, articles that are cross-referenced to this newsgroup, and are
+marked as read, will also be marked as read in the other newsgroups they
+were cross-posted to.  This ensures that you'll never have to read the
+same article more than once.
+
+Unless, of course, somebody has posted it to several newsgroups
+separately. 
+
+One other thing that may cause Gnus to not do the cross-posting thing
+correctly is if you use an NNTP server that supports xover (which is
+very nice, because it speeds things up considerably) which does not
+include the Xref header in its NOV lines.  This is Evil, but it's
+common.  Gnus tries to Do The Right Thing even with xover by registering
+the Xref lines of all articles you actually read, but if you kill the
+articles, or just mark them as read without reading them, Gnus will not
+get a chance to snoop the Xref lines out of these articles, and will be
+unable to use the cross reference mechanism. 
+
+@vindex nntp-xover-is-evil
+If you want Gnus to get the Xrefs right all the time, you have to set
+@code{nntp-xover-is-evil} to t, which slows things down considerably. 
+
+C'est la vie.
+
+@node Saving Articles
+@section Saving Articles
+
+Gnus can save articles in a number of ways.  Below is the documentation
+for saving articles in a fairly straight-forward fashion (ie. little
+processing of the article is done before it is saved).  For a different
+approach (uudecoding, unsharing, digesting) see gnus-uu.
+
+@vindex gnus-save-all-headers
+If @code{gnus-save-all-headers} is non-nil, Gnus will not delete
+unwanted headers before saving the article.
+
+@table @kbd
+@item o
+@kindex o (Summary)
+@findex gnus-summary-save-article
+Save the current article (@code{gnus-summary-save-article}).
+@item C-o
+@kindex C-o (Summary)
+@findex gnus-summary-save-in-mail
+Save the current article in mail format
+(@code{gnus-summary-save-in-mail}). 
+@end table
+
+@vindex gnus-default-article-saver
+You can customize the @code{gnus-default-article-saver} variable to make
+Gnus what you want it to.  You can use any of the four ready-made
+functions below, or you can create your own. 
+
+@table @code
+@item gnus-summary-save-in-rmail
+@vindex gnus-summary-save-in-rmail
+This is the format Gnus uses by default, @dfn{babyl}.
+Uses the function in the @code{gnus-rmail-save-name} variable to get a
+file name to save the article in.  The default is
+@code{gnus-plain-save-name}. 
+@item gnus-summary-save-in-mail
+@vindex gnus-summary-save-in-mail
+Save in a Unix mail (mbox) file.
+Uses the function in the @code{gnus-mail-save-name} variable to get a
+file name to save the article in.  The default is
+@code{gnus-plain-save-name}. 
+@item gnus-summary-save-in-file
+@vindex gnus-summary-save-in-file
+Append the article straight to an ordinary file.
+Uses the function in the @code{gnus-file-save-name} variable to get a
+file name to save the article in.  The default is
+@code{gnus-numeric-save-name}. 
+@item gnus-summary-save-in-folder
+@vindex gnus-summary-save-in-folder
+Save the article to an MH folder using @code{rcvstore} from the MH
+library.
+@end table
+
+All of these functions, except for the last one, will save the article
+in the @code{gnus-article-save-directory}, which is initialized from the
+@samp{SAVEDIR} environment variable.
+
+As you can see above, the functions use different functions to find a
+suitable name of a file to save the article in.  Below is a list of
+available functions that generates names:
+
+@table @code
+@item gnus-Numeric-save-name
+@findex gnus-Numeric-save-name
+Generates file names that look like @samp{~/News/Alt.andrea-dworkin/45}.
+@item gnus-numeric-save-name
+@findex gnus-numeric-save-name
+Generates file names that look like @samp{~/News/alt.andrea-dworkin/45}.
+@item gnus-Plain-save-name
+@findex gnus-Plain-save-name
+Generates file names that look like @samp{~/News/Alt.andrea-dworkin}.
+@item gnus-plain-save-name
+@findex gnus-plain-save-name
+Generates file names that look like @samp{~/News/alt.andrea-dworkin}.
+@end table
+
+@vindex gnus-use-long-file-name
+Finally, you have the @code{gnus-use-long-file-name} variable.  If it is
+nil, all the preceding functions will replace all periods (@samp{.}) in
+the newsgroup names with slashes (@samp{/}) - which means that the
+functions will generate hierarchies of directories instead of having all
+the files in the toplevel directory (@samp{~/News/alt/andrea-dworkin}
+instead of @samp{~/News/alt.andrea-dworkin}.)
+
+@node Decoding Articles
+@section Decoding Articles
+
+Gnus has a plethora of functions for handling series of (uu)encoded
+articles.  Gnus can find out by itself what articles belong to one
+series, decode all the articles and unpack/view/save the resulting
+file(s).  All these functions belong to the `gnus-uu' package and are
+reached from the Summary buffer as three-key keystrokes: @key{C-c C-v
+KEY}.  That last key varies, of course, but all these functions use the
+@key{C-c C-v} prefix keystroke.
+
+Gnus guesses what articles are in the series according to the following
+simplish rule: The subjects must be (nearly) identical, except for the
+last two numbers of the line.  (Spaces are largely ignored, however.)
+
+For example: If you choose a subject called @samp{cat.gif (2/3)}, Gnus
+will find all the articles that match the regexp @samp{^cat.gif
+([0-9]+/[0-9]+).*$}.  
+
+Subjects that are nonstandard, like @samp{cat.gif (2/3) Part 6 of a
+series}, will not be properly recognized by any of the automatic viewing
+commands, and you have to mark the articles manually with @key{#}.
+
+@menu
+* Decoding Commands::           Decoding in various ways.
+* Setting the Process Mark::    You can mark which articles to work on.
+* Other Related Commands::      Other related commands.
+* Viewing Files::               You can view the resulting decoded files.
+* Decoding Variables::          No, you do not have to decode any variables.
+@end menu
+
+@node Decoding Commands
+@subsection Decoding Commands
+
+All the keystrokes for decoding follow a strict pattern. 
+
+@table @key
+@item C-c C-v C-KEY
+This is a function for decoding and viewing.
+@item C-c C-v KEY
+This is a function for decoding and saving.
+@item C-c C-v M-C-KEY
+This is a function for decoding and viewing marked articles.
+@item C-c C-v M-KEY
+This is a function for decoding and saving marked articles.
+@end table
+ 
+@menu
+* Decoding With uudecode::         The most common encoding on the net.
+* Decoding With unshar::           This is used some in source groups.
+* Decoding With Other Decoders::   Binhex and plain save.
+@end menu
+
+@node Decoding With uudecode
+@subsubsection Decoding With uudecode
+
+@table @key
+@item C-c C-v C-v
+@kindex C-c C-v C-v (Summary)
+@findex gnus-uu-decode-and-view
+Decode and view the series of articles that the current article is a
+part of (@code{gnus-uu-decode-and-view}). 
+@item C-c C-v v
+@kindex C-c C-v v (Summary)
+@findex gnus-uu-decode-and-save
+Decode and save the series of articles that the current article is a
+part of (@code{gnus-uu-decode-and-save}). 
+@item C-c C-v M-C-v
+@kindex C-c C-v M-C-v (Summary)
+@findex gnus-uu-marked-decode-and-view
+Decode and view the marked articles
+(@code{gnus-uu-marked-decode-and-view}). 
+@item C-c C-v M-v
+@kindex C-c C-v M-v (Summary)
+@findex gnus-uu-marked-decode-and-view
+Decode and save the marked articles
+(@code{gnus-uu-marked-decode-and-view}). 
+@item C-c C-v C-w
+@kindex C-c C-v C-w (Summary)
+@findex gnus-uu-decode-and-view-all-articles
+Decode and view all articles in the newsgroup
+(@code{gnus-uu-decode-and-view-all-articles}).  
+@item C-c C-v w
+@kindex C-c C-v w (Summary)
+@findex gnus-uu-decode-and-save-all-articles
+Decode and save all articles in the newsgroup
+(@code{gnus-uu-decode-and-save-all-articles}).  
+@item C-c C-v M-C-w
+@kindex C-c C-v M-C-w (Summary)
+@findex gnus-uu-decode-and-view-all-marked-files
+Decode and view all series of articles that are marked
+(@code{gnus-uu-decode-and-view-all-marked-files}).  
+@item C-c C-v M-w
+@kindex C-c C-v M-w (Summary)
+@findex gnus-uu-decode-and-save-all-marked-files
+Decode and save all series of articles that are marked
+(@code{gnus-uu-decode-and-save-all-marked-files}).  
+@item C-c C-v C-a
+@kindex C-c C-v C-a (Summary)
+@findex gnus-uu-decode-and-view-all-articles
+Decode and view all unread articles in the newsgroup
+(@code{gnus-uu-decode-and-view-all-articles}).  
+@item C-c C-v a
+@kindex C-c C-v a (Summary)
+@findex gnus-uu-decode-and-save-all-articles
+Decode and save all unread articles in the newsgroup
+(@code{gnus-uu-decode-and-save-all-articles}).  
+@item C-c C-v C-b
+@kindex C-c C-v C-b (Summary)
+@findex gnus-uu-decode-and-show-in-buffer
+Decode the current article and show the result in the article
+buffer.  This might be useful if somebody has encoded (parts of) an
+article, for some strange reason
+(@code{gnus-uu-decode-and-show-in-buffer}). 
+@end table
+
+The @code{gnus-uu-decode-and-save-all-marked-files} need some
+explanation.  It allows you to mark all articles that are part of series
+of articles you are interested in in a newsgroup.  You only have to mark
+one article for each series of articles you want, and then you call this
+function, which will find all articles that are part of the series you
+want.  Is that clear? And they say it's a stupid idea getting drunk
+before writing documentation! Bah! 
+
+@node Decoding With unshar
+@subsubsection Decoding With unshar
+
+Using @code{unshar} introduces rather large security holes - it actually
+runs the code it finds in the articles.  So you should, at least, peek
+through the articles you want to unshar before using these functions.
+
+@table @kbd
+@item C-c C-v C-s
+@kindex C-c C-v C-s (Summary)
+@findex gnus-uu-shar-and-view
+@kindex C-c C-v C-s (Summary)
+@findex gnus-uu-shar-and-view
+Unshar and view the series of articles that the current article is a
+part of (@code{gnus-uu-shar-and-view}). 
+@item C-c C-v s
+@kindex C-c C-v s (Summary)
+@findex gnus-uu-shar-and-save
+@kindex C-c C-v s (Summary)
+@findex gnus-uu-shar-and-save
+Unshar and save the series of articles that the current article is a
+part of (@code{gnus-uu-shar-and-save}). 
+@item C-c C-v M-C-s
+@kindex C-c C-v M-C-s (Summary)
+@findex gnus-uu-marked-shar-and-view
+@kindex C-c C-v M-C-s (Summary)
+@findex gnus-uu-marked-shar-and-view
+Unshar and view the marked articles
+(@code{gnus-uu-marked-shar-and-view}). 
+@item C-c C-v M-s
+@kindex C-c C-v M-s (Summary)
+@findex gnus-uu-marked-shar-and-view
+@kindex C-c C-v M-s (Summary)
+@findex gnus-uu-marked-shar-and-view
+Unshar and save the marked articles
+(@code{gnus-uu-marked-shar-and-view}). 
+@end table
+
+@node Decoding With Other Decoders
+@subsubsection Decoding With Other Decoders
+
+These commands are entry points to all the decoding methods Gnus knows -
+uudecode, unshar, unbinhex and save.  You will be prompted for what
+method you want to employ.
+
+@table @kbd
+@item C-c C-v C-m
+@kindex C-c C-v C-m (Summary)
+@findex gnus-uu-multi-decode-and-view
+Decode (by some method) and view the series of articles that the current
+article is a part of (@code{gnus-uu-multi-decode-and-view}).
+@item C-c C-v m
+@kindex C-c C-v m (Summary)
+@findex gnus-uu-multi-decode-and-save
+Decode (by some method) and save the series of articles that the current
+article is a part of (@code{gnus-uu-multi-decode-and-save}).
+@item C-c C-v M-C-m
+@kindex C-c C-v M-C-m (Summary)
+@findex gnus-uu-marked-multi-decode-and-view
+Decode (by some method) and view the marked articles
+(@code{gnus-uu-marked-multi-decode-and-view}). 
+@item C-c C-v M-m
+@kindex C-c C-v M-m (Summary)
+@findex gnus-uu-marked-multi-decode-and-view
+Decode (by some method) and save the marked articles
+(@code{gnus-uu-marked-multi-decode-and-view}). 
+@item C-c C-v C-j
+@kindex C-c C-v C-j (Summary)
+@findex gnus-uu-threaded-multi-decode-and-view
+Decode (by some method) and view all articles in the current thread
+(@code{gnus-uu-threaded-multi-decode-and-view}). 
+@item C-c C-v C-j
+@kindex C-c C-v C-j (Summary)
+@findex gnus-uu-threaded-multi-decode-and-view
+Decode (by some method) and save all articles in the current thread
+(@code{gnus-uu-threaded-multi-decode-and-view}). 
+@end table
+
+@node Setting the Process Mark
+@subsection Setting the Process Mark
+
+The process mark is used by other parts of Gnus, not just the `gnus-uu'
+package.  However, this is where it is most useful, so it adds some
+further methods for setting the mark.
+
+@table @kbd
+@item C-c C-v C-r
+@kindex C-c C-v C-r (Summary)
+@findex gnus-uu-mark-by-regexp
+Mark articles by a regular expression (@code{gnus-uu-mark-by-regexp}). 
+@item C-c C-v r
+@kindex C-c C-v r (Summary)
+@findex gnus-uu-mark-region
+Mark all articles between point and mark (@code{gnus-uu-mark-region}). 
+@item C-c C-v t
+@kindex C-c C-v t (Summary)
+@findex gnus-uu-mark-thread
+Mark all articles downward in the current thread
+(@code{gnus-uu-mark-thread}). 
+@end table
+
+@node Other Related Commands
+@subsection Other Related Commands
+
+@table @key
+@item C-c C-v f
+@kindex C-c C-v f (Summary)
+@findex gnus-uu-digest-and-forward
+Digest and forward all articles that are part of a series
+(@code{gnus-uu-digest-and-forward}). 
+@item C-c C-v M-f
+@kindex C-c C-v M-f (Summary)
+@findex gnus-uu-marked-digest-and-forward
+Digest and forward all marked articles
+(@code{gnus-uu-marked-digest-and-forward}).
+@item C-c C-v C-i
+@kindex C-c C-v C-i (Summary)
+@findex gnus-uu-toggle-interactive-view
+Instead of having windows popping up automatically, it can be handy to
+view files interactivly, especially when viewing archives
+(@code{gnus-uu-toggle-interactive-view}).
+@item C-c C-v C-t
+@kindex C-c C-v C-t (Summary)
+@findex gnus-uu
+Toggle any of the most important @code{gnus-uu} variables
+(@code{gnus-uu-toggle-any-variable}).
+@item C-c C-v C-l
+@kindex C-c C-v C-l (Summary)
+@findex gnus-uu-edit-begin-line
+Edit the @samp{begin} line of an uuencoded article, if any
+(@code{gnus-uu-edit-begin-line}).  
+@item C-c C-v p
+@kindex C-c C-v p (Summary)
+@findex gnus-uu-post-news
+Uuencode and post an file.  If the file is large, it will be split into a
+series of articles that will be posted (@code{gnus-uu-post-news}).
+@end table
+
+@node Viewing Files
+@subsection Viewing Files
+
+When using the view commands, @code{gnus-uu-decode-and-view} for
+instance, Gnus will (normally, see below) try to view the file according
+to the rules given in @code{gnus-uu-default-view-rules} and
+@code{gnus-uu-user-view-rules}.  If it recognizes the file, it will
+display it immediately.  If the file is some sort of archive, Gnus will
+attempt to unpack the archive and see if any of the files in the archive
+can be viewed.  For instance, if you have a gzipped tar file
+@file{pics.tar.gz} containing the files @file{pic1.jpg} and
+@file{pic2.gif}, Gnus will uncompress and detar the main file, and then
+view the two pictures.  This unpacking process is recursive, so if the
+archive contains archives of archives, it'll all be unpacked.
+
+If the view command doesn't recognise the file type, or can't view it
+because you don't have the viewer, or can't view *any* of the files in
+the archive, the user will be asked if she wishes to have the file saved
+somewhere.  Note that if the decoded file is an archive, and Gnus
+manages to view some of the files in the archive, it won't tell the user
+that there were some files that were unviewable.  Try interactive view
+for a different approach.
+
+@node Decoding Variables
+@subsection Decoding Variables
+
+@menu 
+* Rule Variables::          Variables that say how a file is to be viewed.
+* Other Decode Variables::  Other decode variables.
+@end menu
+
+@node Rule Variables
+@subsubsection Rule Variables
+
+Gnus uses @dfn{rule} variables to decide how to view a file.  All these
+variables are on the form
+  
+@example
+      (list '(regexp1 command2)
+            '(regexp2 command2)
+            ...)
+@end example
+
+@table @code
+@item gnus-uu-user-view-rules
+@vindex gnus-uu-user-view-rules
+This variable is consulted first when viewing files.  If you wish to use,
+for instance, @code{sox} to convert an @samp{.au} sound file, you could
+say something like:
+@example
+       (setq gnus-uu-user-view-rules
+         (list '(\"\\\\.au$\" \"sox %s -t .aiff > /dev/audio\")))
+@end example
+@item gnus-uu-user-view-rules-end
+@vindex gnus-uu-user-view-rules-end
+This variable is consulted if Gnus couldn't make any matches from the
+user and default view rules.
+@item gnus-uu-user-interactive-view-rules
+@vindex gnus-uu-user-interactive-view-rules
+This is the variable used instead of @code{gnus-uu-user-view-rules}
+when in interactive mode.
+@item gnus-uu-user-interactive-view-rules-end
+@vindex gnus-uu-user-interactive-view-rules-end
+This variable is used instead of @code{gnus-uu-user-view-rules-end} when
+in interactive mode.
+@item gnus-uu-user-archive-rules
+@vindex gnus-uu-user-archive-rules
+This variable can be used to say what comamnds should be used to unpack
+archives.
+@end table
+
+@node Other Decode Variables
+@subsubsection Other Decode Variables
+
+@table @code
+@item gnus-uu-ignore-files-by-name
+@vindex gnus-uu-ignore-files-by-name
+Files with name matching this regular expression won't be viewed.
+
+@item gnus-uu-ignore-files-by-type
+@vindex gnus-uu-ignore-files-by-type
+Files with a MIME type matching this variable won't be viewed.  Note
+that Gnus tries to guess what type the file is based on the
+name.  gnus-uu is not a MIME package, so this is slightly kludgy.
+
+@item gnus-uu-tmp-dir
+@vindex gnus-uu-tmp-dir
+Where gnus-uu does its work.
+
+@item gnus-uu-do-not-unpack-archives
+@vindex gnus-uu-do-not-unpack-archives
+Non-nil means that gnus-uu won't peek inside archives looking for files
+to dispay.
+
+@item gnus-uu-view-and-save
+@vindex gnus-uu-view-and-save
+Non-nil means that the user will always be asked to save a file after
+viewing it.
+
+@item gnus-uu-asynchronous
+@vindex gnus-uu-asynchronous
+Non-nil means that files will be viewed asynchronously.  This can be
+useful if you're viewing long @file{.mod} files, for instance, which
+often takes several minutes.  Note, however, that since gnus-uu doesn't
+ask, and if you are viewing an archive with lots of viewable files,
+you'll get them all up more or less at once, which can be confusing, to
+say the least.  To get gnus-uu to ask you before viewing a file, set the
+@code{gnus-uu-ask-before-view} variable.
+
+@item gnus-uu-ask-before-view
+@vindex gnus-uu-ask-before-view
+Non-nil means that gnus-uu will ask you before viewing each file.
+
+@item gnus-uu-ignore-default-view-rules
+@vindex gnus-uu-ignore-default-view-rules
+Non-nil means that gnus-uu will ignore the default viewing rules.
+
+@item gnus-uu-ignore-default-archive-rules
+@vindex gnus-uu-ignore-default-archive-rules
+Non-nil means that gnus-uu will ignore the default archive unpacking
+commands.
+
+@item gnus-uu-kill-carriage-return
+@vindex gnus-uu-kill-carriage-return
+Non-nil means that gnus-uu will strip all carriage returns from
+articles.
+
+@item gnus-uu-unmark-articles-not-decoded
+@vindex gnus-uu-unmark-articles-not-decoded
+Non-nil means that gnus-uu will mark articles that were unsuccessfully
+decoded as unread.
+
+@item gnus-uu-output-window-height
+@vindex gnus-uu-output-window-height
+This variable says how tall the output buffer window is to be when using
+interactive view mode.
+
+@item gnus-uu-correct-stripped-uucode
+@vindex gnus-uu-correct-stripped-uucode
+Non-nil means that gnus-uu will *try* to fix uuencoded files that have
+had traling spaces deleted.
+
+@item gnus-uu-use-interactive-view
+@vindex gnus-uu-use-interactive-view
+Non-nil means that gnus-uu will use interactive viewing mode.
+
+@item gnus-uu-view-with-metamail
+@vindex gnus-uu-view-with-metamail
+Non-nil means that gnus-uu will ignore the viewing commands defined by
+the rule variables and just fudge a MIME content type based on the file
+name.  The result will be fed to metamail for viewing.
+
+@item gnus-uu-save-in-digest
+@vindex gnus-uu-save-in-digest
+Non-nil means that gnus-uu, when asked to save without decoding, will
+save in digests.  If this variable is nil, gnus-uu will just save
+everything in a file without any embellishments.  The digesting almost
+conforms to RFC1153 - no easy way to specify any meaningful volume and
+issue numbers were found, so I simply dropped them.
+
+@item gnus-uu-post-include-before-composing
+@vindex gnus-uu-post-include-before-composing
+Non-nil means that gnus-uu will ask for a file to encode before you
+compose the article.  If this variable is t, you can either include an
+encoded file with @key{C-c C-i} or have one included for you when you
+post the article.
+
+@item gnus-uu-post-length
+@vindex gnus-uu-post-length
+Maximum length of an article.  The encoded file will be split into how
+many articles it takes to post the entire file.
+
+@item gnus-uu-post-threaded
+@vindex gnus-uu-post-threaded
+Non-nil means that gnus-uu will post the encoded file in a thread.  This
+may not be smart, as no other decoder I have seen are able to follow
+threads when collecting uuencoded articles.  (Well, I have seen one
+package that does that - gnus-uu, but somehow, I don't think that
+counts...) Default is nil.
+
+@item gnus-uu-post-separate-description
+@vindex gnus-uu-post-separate-description
+Non-nil means that the description will be posted in a separate article.
+The first article will typically be numbered (0/x).  If this variable is
+nil, the description the user enters will be included at the beginning
+of the first article, which will be numbered (1/x).  Default is t.
+
+@end table
+
+@node Various Article Stuff 
+@section Various Article Stuff 
+
+@table @kbd
+@item w
+@kindex w (Summary)
+@findex gnus-summary-stop-page-breaking
+Remove page breaking from the current article
+(@code{gnus-summary-stop-page-breaking}). 
+@item C-c C-r
+@kindex C-c C-r (Summary)
+@findex gnus-summary-caesar-message
+Do a Caesar rotate (rot13) on the article buffer
+(@code{gnus-summary-caesar-message}). 
+@item g
+@kindex g (Summary)
+@findex gnus-summary-show-article
+Select the current article (@code{gnus-summary-show-article}).
+@item t
+@kindex t (Summary)
+@findex gnus-summary-toggle-header
+Toggle whether to display all headers in the article buffer
+(@code{gnus-summary-toggle-header}). 
+@item M-t
+@kindex M-t (Summary)
+@findex gnus-summary-toggle-mime
+Toggle whether to run the article through MIME before displaying
+(@code{gnus-summary-toggle-mime}). 
+@item |
+@kindex | (Summary)
+@findex gnus-summary-pipe-output
+Pipe the current article through a filter
+(@code{gnus-summary-pipe-output}). 
+@end table
+
+@node Summary Sorting
+@section Summary Sorting
+
+You can have the Summary buffer sorted in various ways, even though I
+can't really se why you'd want that.
+
+@table @kbd
+@item C-c C-s C-n
+@kindex C-c C-s C-n (Summary)
+@findex gnus-summary-sort-by-number
+Sort by article number (@code{gnus-summary-sort-by-number}).
+@item C-c C-s C-a
+@kindex C-c C-s C-a (Summary)
+@findex gnus-summary-sort-by-author
+Sort by author (@code{gnus-summary-sort-by-author}).
+@item C-c C-s C-s
+@kindex C-c C-s C-s (Summary)
+@findex gnus-summary-sort-by-subject
+Sort by subject (@code{gnus-summary-sort-by-subject}).
+@item C-c C-s C-d
+@kindex C-c C-s C-d (Summary)
+@findex gnus-summary-sort-by-date
+Sort by date (@code{gnus-summary-sort-by-date}).
+@end table
+
+@node Finding the Parent
+@section Finding the Parent
+
+@findex gnus-summary-refer-parent-article
+@kindex ^ (Summary)
+If you'd like to read the parent of the current article, and it is not
+displayed in the article buffer, you might still be able to.  That is, if
+the current group is fetched by NNTP, the parent hasn't expired and the
+References in the current article are not mangled, you can just press
+@kbd{^} (@code{gnus-summary-refer-parent-article}).  If everything goes
+well, you'll get the parent.
+
+@findex gnus-summary-refer-article
+@kindex M-^ (Summary)
+You can also ask the NNTP server for an arbitrary article, no matter
+what newsgroup it belongs to.  @kbd{M-^}
+(@code{gnus-summary-refer-article}) will ask you for a message-id, which
+is one of those long thingies that look something like
+@samp{<38o6up$6f2@@hymir.ifi.uio.no>}.  You have to get it all exactly
+right. 
+
+@node Kill Files
+@section Kill Files
+
+If a @dfn{kill file} for the current newsgroup exists, Gnus will read it
+just after having gotten the article headers from the server.
+
+The kill files are files that may contain, in general, any elisp
+functions.  However, it is most common just to put functions that either
+delete or undelete articles based on their headers in those files -
+in short, killing articles.  Hence the name. 
+
+There are several commands reachable from the Summary buffer that
+inserts commands for killing articles based on the current article.  You
+can, for instance, ask Gnus to kill all articles with a certain subject.
+
+If you get really irrirated with some annoying twit, you can kill the
+author.  Note that the author won't literally be killed, unless, of
+course, he has an SCSI Gun Extension fitted to his machine.
+
+@menu 
+* Summary Kill Commands::   Adding simple kill commands to the kill file.
+* Kill Mode::               A mode for editing the kill file.
+* Kill Variables::          Customize your killing.  (My, what terminology).
+@end menu
+
+One note: I have seen a few people confused about what killing an
+articles really does.  Killing an article does not remove it from the
+news server.  It does not inhibit other people from reading the
+article.  It only means that you won't ever see that article, nothing
+more.  To really remove an article from the news server, you have to send
+a cancel message, which you can't do if you haven't written the
+article.  (Well, you can, but that's Not Nice.)
+
+@node Summary Kill Commands
+@subsection Summary Kill Commands
+
+@table @kbd
+@item C-c C-k C-s
+@kindex C-c C-k C-s (Summary)
+@findex gnus-kill-file-kill-by-subject
+Kill all articles with the current subject
+(@code{gnus-kill-file-kill-by-subject}). 
+@item C-c C-k C-a
+@kindex C-c C-k C-a (Summary)
+@findex gnus-kill-file-kill-by-author
+Kill all articles from the current author
+(@code{gnus-kill-file-kill-by-author}). 
+@item C-c C-k C-t
+@kindex C-c C-k C-t (Summary)
+@findex gnus-kill-file-kill-by-thread
+Kill all articles in the current subthread
+(@code{gnus-kill-file-kill-by-thread}). 
+@item C-c C-k C-o
+@kindex C-c C-k C-o (Summary)
+@findex gnus-kill-file-kill-by-organization
+Kill all articles from the current organization
+(@code{gnus-kill-file-kill-by-organization}). 
+@item C-c C-k C-x
+@kindex C-c C-k C-x (Summary)
+@findex gnus-kill-file-kill-by-xref
+Kill all articles that have similar Xrefs to the current article
+(@code{gnus-kill-file-kill-by-xref}).  This is one way to get rid of
+cross-posts. 
+@end table
+
+@node Kill Mode
+@subsection Kill Mode
+
+To enter either the global or local kill file, you can use the following
+keystrokes in the Summary buffer:
+
+@table @kbd
+@item M-k
+@kindex M-k (Summary)
+@findex gnus-summary-edit-local-kill
+Edit the kill file for the current newsgroup
+(@code{gnus-summary-edit-local-kill}). 
+@item M-K
+@kindex M-K (Summary)
+@findex gnus-summary-edit-global-kill
+Edit the global kill file (@code{gnus-summary-edit-global-kill}). 
+@end table
+
+@node Kill Variables
+@subsection Kill Variables
+
+@table @code
+@item gnus-kill-killed
+@vindex gnus-kill-killed
+If this variable is nil, Gnus will never apply kill files to articles
+that have already been through the kill process.  While may save you lots
+of time, it also means that if you apply a kill file to a newsgroup, and
+then change the kill file and want to run it over you newsgroup again to
+kill more articles, it won't work.  You have to set this variable to t to
+do that.
+@item gnus-apply-kill-hook
+@vindex gnus-apply-kill-hook
+This hook is called to do the actual article killing.  This hook may do
+anything, of course, but it should call the @code{gnus-apply-kill-file}
+function, or some equivalent function, to do the killing.
+@item gnus-kill-files-directory
+@vindex gnus-kill-files-directory
+All kill files will be stored in this directory, which is initialized
+from the @samp{SAVEDIR} environment variable by default.
+@item gnus-kill-file-name
+@vindex gnus-kill-file-name
+This variable is a string that will be appended to newsgroup names to
+make a kill file name.  The default is @samp{KILL}.
+@end table
+
+@node Various Summary Stuff
+@section Various Summary Stuff
+
+@table @kbd
+@item &
+@kindex & (Summary)
+@findex gnus-summary-expand-window
+This command will prompt you for a header field, a regular expression to
+be matched this field, and a command to be executed if the match is
+made. 
+@item =
+@kindex = (Summary)
+@findex gnus-summary-expand-window
+Delete all other windows (@code{gnus-summary-expand-window}).
+@item C-x C-s
+@kindex C-x C-s (Summary)
+@findex gnus-summary-reselect-current-group
+Exit this group, and then enter it again
+(@code{gnus-summary-reselect-current-group}).
+@item V
+@kindex V (Summary)
+@findex gnus-version
+Display the Gnus version numbers (@code{gnus-version}).
+@item ?
+@kindex ? (Summary)
+@findex gnus-summary-describe-briefly
+Give a very brief description of the most important Summary keystrokes
+(@code{gnus-summary-describe-briefly}). 
+@item C-c C-i
+@kindex C-c C-i (Summary)
+@findex gnus-info-find-node
+Go to the Gnus info node (@code{gnus-info-find-node}).
+@end table
+
+@vindex gnus-summary-prepare-hook
+@code{gnus-summary-prepare-hook} is called after the Summary buffer has
+been generated.  You might use it to, for instance, hilight lines, modify
+the look, or anything else you feel like.  I don't care.
+
+@node The Article Buffer
+@chapter The Article Buffer
+
+The articles are displayed in the Article buffer, of which there is only
+one.  All the Summary buffer share the same Article buffer.
+
+@menu
+* Hiding Headers::        Deciding what headers should be displayed.
+* Using Mime::            Pushing articles through MIME before reading them.
+* Customizing Articles::  Tailoring the look of the articles.
+* Article Keymap::        Keystrokes available in the Article buffer
+* Misc Article::          Other stuff
+@end menu
+
+@node Hiding Headers
+@section Hiding Headers
+
+The top section of each article is the @dfn{header}.  (The rest is the
+@dfn{body}, but you may have guessed that already.) 
+
+@vindex gnus-show-all-headers
+There is a lot of information in the header - the name of the person who
+wrote the article, the date and the subject of the article.  That might
+be very useful, buf there's also lots of information most people do not
+want to see - what systems the article has passed through before
+reaching you, the message id, the references, etc. ad nauseum - and
+you'll probably want to get rid of some of those lines.  If you want to
+keep all those lines in the Article buffer, you can set
+@code{gnus-show-all-headers} to t.
+
+Gnus provides you with two variables for sifting header lines:
+
+@table @code
+@item gnus-visible-headers
+@vindex gnus-visible-headers
+If this variable is non-nil, it should be a regular expression that says
+what header lines you wish to keep in the Article buffer.  All header
+lines that does not match this variable will be hidden.
+
+For instance, if you only want to see the name of the person who wrote
+the article and the subject, you'd say:
+
+@example
+(setq gnus-visible-headers "^From:\\^Subject:")
+@end example
+
+@item gnus-ignored-headers
+@vindex gnus-ignored-headers
+This variable is the reverse of @code{gnus-visible-headers}.  If this
+variable is set (and @code{gnus-visible-headers} is nil), it should be a
+regular expression that matches all lines that you want to hide.  All
+lines that does not match this variable will remain visible.
+
+For instance, if you just want to get rid of the references line and the
+xref line, you might say:
+
+@example
+(setq gnus-ignored-headers "^References:\\^Xref:")
+@end example
+
+Note that if @code{gnus-visible-headers} is non-nil, this variable will
+have no effect.
+@end table
+
+@vindex gnus-sorted-header-list
+Gnus can also sort the headers for you.  (It does this by default.) You
+can control the sorting by setting the @code{gnus-sorted-header-list}
+variable.  It is a list of regular expressions that says in what order
+the header lines are to be displayed.
+
+For instance, if you want the name of the author of the article first,
+and then the subject, you might say something like:
+
+@example
+(setq gnus-sorted-header-list '("^From:" "^Subject:"))
+@end example
+
+Any headers that are to remain visible, but are not listed in this
+variable, will be displayed after all the headers that are listed in
+this variable.
+
+@node Using Mime
+@section Using Mime
+
+Mime is a standard for waving your hands through the air, aimlessly,
+while people stand around yawning.
+
+MIME, however, is a standard for encoding your articles, aimlessly,
+while all newsreaders die of fear.
+
+MIME may specify what character set the article uses, the encoding of
+the characters, and it also makes it possible to embed pictures and
+other naughty stuff in innocent-looking articles.
+
+@vindex gnus-show-mime
+@vindex gnus-show-mime-method
+Gnus handles MIME by shoving the articles through
+@code{gnus-show-mime-method}, which is @code{metamail-buffer} by
+default.  Set @code{gnus-show-mime} to t if you want to use MIME all the
+time; it might be best just use the toggling functions from the summary
+buffer to avoid getting nasty surprises (for instance, you enter the
+newsgroup @samp{alt.sing-a-long} and, before you know it, MIME has
+decoded the sounds file in the article and some horrible sing-a-long
+song comes streaming out out your speakers, and you can't find the
+volume button, because there isn't one, and people are starting to look
+at you, and you try to stop the program, but you can't, and you can't
+find the program to control the volume, and everybody else in the room
+suddenly decides to look at you disdainfully, and you'll feel rather
+stupid.
+
+Any similarity between real events and this info page is purely
+coincidental.  Ahem.
+
+@node Customizing Articles
+@section Customizing Articles
+
+@vindex gnus-article-display-hook
+The @code{gnus-article-display-hook} is called after the article has
+been inserted into the Article buffer.  It is meant to handle all
+treatment of the article before it is displayed.  By default it contains
+@code{gnus-article-hide-headers}, which hides unwanted headers.
+
+@findex gnus-article-subcite
+@findex gnus-article-hide-signature
+@findex gnus-article-hide-citation
+Other useful functions you might add to this hook is
+@code{gnus-article-hide-citation} (which hides all cited text),
+@code{gnus-article-hide-signature} (which, umn, hides the signature) and
+@code{gnus-article-subcite} (which tries to clean up the mess supercite
+makes in The Hands Of The Mad.
+
+You can, of course, write your own functions.  The functions are called
+in the Article buffer, and you can do anything you like, pretty
+much.  There is no information that you have to keep in the buffer - you
+can change everything.
+
+@node Article Keymap
+@section Article Keymap
+
+Not many keystrokes are available in the Article buffer.  You would,
+during normal reading, seldom put the point in that buffer.  All the
+really useful functions are more readily available from the Summary
+buffer. 
+
+@table @kbd
+@item SPACE
+@kindex SPACE (Article)
+@findex gnus-article-next-page
+Scroll forwards one page (@code{gnus-article-next-page}).
+@item DEL
+@kindex DEL (Article)
+@findex gnus-article-prev-page
+Scroll backwards one page (@code{gnus-article-prev-page}).
+@item r
+@kindex r (Article)
+@findex gnus-article-refer-article
+If point is in the neighborhood of a message-id and you press @kbd{r},
+Gnus will try to get that article from the server.  (Only available with
+nntp).  (@code{gnus-article-refer-article}).
+@item m
+@kindex m (Article)
+@findex gnus-article-mail
+Send a reply to the address near point (@code{gnus-article-mail}). 
+@item M
+@kindex M (Article)
+@findex gnus-article-mail-with-original
+Send a reply to the address near point and include the original article
+(@code{gnus-article-mail-with-original}). 
+@item s
+@kindex s (Article)
+@findex gnus-article-show-summary
+Reconfigure the buffers so that the Summary buffer becomes visible
+(@code{gnus-article-show-summary}).
+@item ?
+@kindex ? (Article)
+@findex gnus-article-describe-briefly
+Give a very brief description of the available keystrokes
+(@code{gnus-article-describe-briefly}). 
+@end table
+
+That's all, folks!
+
+@node Misc Article
+@section Misc Article
+
+@vindex gnus-article-display-hook
+@vindex gnus-article-prepare-hook
+The @code{gnus-article-prepare-hook} is called right after the article
+has been inserted into the Article buffer.  It is mainly intended for
+functions that do something depending on the contents; it should
+probably not be used for changing the contents of the Article
+buffer.  Use the @code{gnus-article-display-hook} for that, which is
+called after this hook is called.
+
+@vindex gnus-article-mode-line-format
+@code{gnus-article-mode-line-format} is a format string along the same
+lines as @code{gnus-summary-mode-line-format}.  It accepts exactly the
+same format specifications as that variable.
+
+@vindex gnus-break-pages
+The @code{gnus-break-pages} variable controls whether @dfn{page
+breaking} is to take place.  If this variable is non-nil, the articles
+will be divided into pages whenever a @code{gnus-page-delimiter} appears
+in the article.  If this variable is nil, paging will not be done.
+
+@vindex gnus-page-delimiter
+@code{gnus-page-delimiter} is @samp{^L} (linefeed) by default.
+
+@node Various
+@chapter Various
+
+@menu
+* Interactive::                Making Gnus ask you many questions.
+* Windows Configuration::      Configuring the Gnus buffer windows.
+* Various Various::            Things that are really various.
+@end menu
+
+@node Interactive
+@section Interactive
+
+@table @code
+@item gnus-novice-user
+@vindex gnus-novice-user
+If this variable is non-nil, you are either a newcomer to the usenet
+world, or you are very cautious, which is a nice thing to be,
+really.  You will be given questions of the type "Are you sure you want
+to do this?" before doing anything dangerous.
+@item gnus-expert-user
+@vindex gnus-expert-user
+If this variable is non-nil, you will never ever be asked any questions
+by Gnus.  It will simply assume you know what your are doing, no matter
+how strange.
+@item gnus-interactive-catchup
+@vindex gnus-interactive-catchup
+Require confirmation before catching up a newsgroup if non-nil.
+@item gnus-interactive-post
+@vindex gnus-interactive-post
+If non-nil, the user will be prompted for a newsgroup name when posting
+an article.
+@item gnus-interactive-exit
+@vindex gnus-interactive-exit
+Require confirmation before exiting Gnus.
+@end table
+
+@node Windows Configuration
+@section Windows Configuration
+
+No, there's nothing here about X, so be quiet.
+
+@table @code
+@item gnus-use-full-window
+@vindex gnus-use-full-window
+If non-nil, Gnus will delete all other windows and occupy the entire
+Emacs screen by itself.  It is t by default.
+@item gnus-window-configuration
+@vindex gnus-window-configuration
+This variable describes how much space each Gnus buffer should be given,
+compared to the other Gnus buffers.  Here's an example:
+
+@example
+(setq gnus-window-configuration
+  '((summary (0 1 0))
+    (newsgroups (1 0 0))
+    (article (0 3 10))))
+@end example
+
+This variable is a list of lists, where each of these small lists is on
+the form @var{(action (g s a))}.  As you can see, there are three
+possible @var{action}s - @code{newsgroup} (which is what happens when
+you first start Gnus, or returns from the Summary buffer),
+@code{summary} (which is what happens when there are no unread articles
+in the newsgroup, and @code{article} (which is what happens when there
+is an unread article in the newsgroup). 
+
+We see that in the first two actions, the respective buffers will fill
+the screen, and in the last, the Article buffer will take ten lines for
+each three the Summary buffer gets.
+
+@findex gnus-window-configuration-split
+This variable can also have a function as its value.  In that case,
+whenever Gnus tries to configure the Gnus buffers, that function will be
+called with the @var{action} as its parameter.  There is one pre-made
+function supplied, @code{gnus-window-configuration-split}, which may be
+suitable if you have a very wide Emacs window, and wants to have the
+Summary buffer and the Article buffer side by side.  Here's the
+definition of this function, which you may use as a template for your
+own function(s):
+
+@example
+(defun gnus-window-configuration-split (action)
+  ;; The group buffer always exists, so it's nice to use 
+  ;; it as a starting point.
+  (switch-to-buffer gnus-group-buffer t)
+  (delete-other-windows)
+  (split-window-horizontally)
+  (cond ((or (eq action 'newsgroup) (eq action 'summary))
+	 (if (and (get-buffer gnus-summary-buffer)
+		  (buffer-name gnus-summary-buffer))
+	     (switch-to-buffer-other-window gnus-summary-buffer)))
+	((eq action 'article)
+	 (switch-to-buffer gnus-summary-buffer t)
+	 (other-window 1)
+         ;; Create and initialize the Article buffer if it doesn't
+         ;; exist.
+	 (gnus-article-setup-buffer)
+	 (switch-to-buffer gnus-article-buffer t))))
+@end example
+@end table
+
+@node Various Various
+@section Various Various
+
+@vindex gnus-updated-mode-lines
+The @code{gnus-updated-mode-lines} variable is a list of buffers that
+should keep their mode lines updated.  The list may contain the symbols
+`group', `article' and `summary'.  If the corresponding symbol is
+present, Gnus will keep that mode line updated with information that may
+be pertinent.  If this variable is nil, screen refresh may be quicker.
+
+@node Customization
+@chapter Customization
+
+All variables are properly documented elsewhere in this manual.  This
+section is designed to give general pointers on how to customize Gnus
+for some quite common situations.
+
+@menu
+* Slow NNTP Connection::      You run a local Emacs and get the news elsewhere.
+* Slow Terminal Connection::  You run a remote Emacs.
+* Little Disk Space::         You feel that having large setup files is icky.
+* Slow Machine::              You feel like buying a faster machine.
+@end menu
+
+@node Slow NNTP Connection
+@section Slow NNTP Connection
+
+If you run Emacs on a machine locally, and get your news from a machine
+over some very thin strings, you want to cut down on the amount of data
+Gnus has to get from the NNTP server.
+
+@table @code
+@item gnus-read-active-file
+Set this to nil, which will inhibit Gnus from requesting the entire active
+file from the server.  This file is often v. large.  You also have to set
+@code{gnus-check-new-news} and @code{gnus-check-bogus-newsgroups} to nil
+to make sure that Gnus doesn't suddenly decide to fetch the active file
+anyway.  Note that this will make it difficult for you to get hold of new
+newsgroups. 
+@item nntp-xover-is-evil
+This one has to be nil.  If not, grabbing article headers from the NNTP
+server will not be very fast.  Not all NNTP servers support XOVER; Gnus
+will detect this by itself.
+@end table
+
+@node Slow Terminal Connection
+@section Slow Terminal Connection
+
+Let's say you use your home computer for dialling up the system that
+runs Emacs and Gnus.  If your modem is slow, you want to reduce the
+amount of data that is sent over the wires as much as possible.
+
+@table @code
+@item gnus-auto-center-summary
+Set this to nil to inhibit Gnus from recentering the Summary buffer all
+the time.
+@item gnus-visible-headers
+Cut down on the headers that are included in the articles to the
+minimum.  You can, in fact, make do without them altogether - most of the
+useful data is in the Summary buffer, anyway.  Set this variable to
+@samp{""} or @samp{"^Date:"}, or whatever you feel you need.
+@item gnus-article-display-hook
+Set this hook to all the available hiding commands:
+@example
+(setq gnus-article-display-hook 
+      '(gnus-article-hide-headers gnus-article-hide-signature
+        gnus-article-hide-citation))
+@end example
+@item gnus-use-full-window
+By setting this to nil, you can make all the windows smaller.  While this
+doesn't really cut down much generally, it means that you have to see
+smaller portions of articles before deciding that you didn't want to
+read them anyway.
+@item gnus-thread-hide-subtree
+If this is non-nil, all threads in the Summary buffer will be hidden
+initially. 
+@item gnus-updated-mode-lines
+If this is nil, Gnus will not put information in the buffer mode lines,
+which might save some time.
+@end table
+
+@node Little Disk Space
+@section Little Disk Space
+
+The startup files can get rather large, so you may want to keep their
+sizes down a bit if you are running out of space.
+
+@table
+@item gnus-save-newsrc-file
+If this is nil, Gnus will never save @file{.newsrc} - it will only save
+@file{.newsrc.eld}.  This means that you will not be able to use any
+other newsreaders than Gnus. 
+@item gnus-save-killed-list
+If this is nil, Gnus will not save the list of dead newsgroups.  That
+means that Gnus will not know whether newsgroups are new or old, which
+makes automatic handling of new newsgroups impossible.  You should also
+set @code{gnus-check-new-newsgroups} and
+@code{gnus-check-bogus-newsgroups} to nil if you set this variable to
+nil. 
+@end table
+
+@node Slow Machine
+@section Slow Machine
+
+If you have a slow machine, or are just really impatient, there are a
+few things you can do to make Gnus run faster.
+
+Set @code{gnus-read-active-file}, @code{gnus-check-new-newsgroups},
+@code{gnus-check-bogus-newsgroups} to nil to make startup faster. 
+
+Set @code{gnus-show-threads}, @code{gnus-use-cross-reference} and
+@code{nntp-xover-is-evil} to nil to make entering and exiting the
+Summary buffer faster.
+
+Set @code{gnus-article-display-hook} to nil to make article processing a
+bit faster.
+
+@node Troubleshooting
+@chapter Troubleshooting
+
+@node Reporting Bugs
+@chapter Reporting Bugs
+
+
+
+@node Index
+@chapter Index
+@printindex cp
+
+@node Key Index
+@chapter Key Index
+@printindex ky
+
+@summarycontents
+@contents
+@bye
+
+
+@c Local Variables:
+@c outline-regexp: "@chap\\|@\\(sub\\)*section\\|@appendix \\|@appendix\\(sub\\)*sec\\|\^L"
+@c End:

@@ -1,0 +1,199 @@
+Sat Dec 31 00:55:24 1994    <larsi@redleaf>
+
+	* gnus.el (gnus-newsgroup-marked): This variable had been re-named
+	`gnus-newsgroup-ticked'. It has been re-named back again.
+
+Fri Dec 30 11:45:27 1994    <larsi@redleaf>
+
+	* gnus.el (gnus-summary-set-bookmark,
+	gnus-summary-remove-bookmark): New commands and keystrokes to set
+	bookmarks. 
+	(gnus-summary-mark-as-interesting): New command and keystroke to
+	mark articles as interesting.
+	(gnus-article-prepare): Automatic moving to bookmarks added.
+	(gnus-summary-delete-interesting): Interesting articles that have
+	no children are not shown in the Summary buffer by default. 
+	(gnus-group-expire-articles, gnus-summary-expire-articles): Trying
+	to expire articles in groups that do not support expiring would
+	make Emacs barf.
+	(gnus-active-to-gnus-format): Modified to read information on
+	moderation, if wanted.
+	(gnus-summary-print-dummy-lines): Obsolete variable.
+	(gnus-summary-make-false-root): New variable that says what method
+	should be used when printing loose sub-threads.
+	(gnus-summary-prepare-threads): Let one article adopt the orphans
+	instead of printing dummy roots.
+
+Thu Dec 29 08:20:42 1994    <larsi@redleaf>
+
+	* gnus.el (gnus-summary-save-article, gnus-summary-pipe-output, 
+	gnus-summary-save-in-rmail, gnus-summary-save-in-mail, 
+	gnus-summary-save-in-file, gnus-summary-save-in-pipe): Rewritten
+	to save series of articles.
+	(gnus-summary-set-process-mark): Bug fix. It was possible to mark
+	dummy roots.
+	(gnus-group-describe-all-groups): New command and keystroke to
+	list newsgroups descriptions for all newsgroups.
+	(gnus-group-prepare): Removed tallying of articles in killed
+	groups to speed things up to enough to be of any use.
+	(gnus-summary-local-variables): `gnus-current-kill-articles' is no
+	longer buffer-local to the Summary buffers.
+
+	* nntp.el (nntp-request-article): Fix for multiple Summary buffers
+	using different nntp servers.
+
+	* gnus.el (gnus-dribble-save): Would barf if Gnus were fed a
+	non-existant nntp server host name. 
+	(gnus-summary-search-subject): Marking articles as read did not go
+	forward over ticked articles.
+	(gnus-post-method): New variable for specifying a method to use
+	for posting articles.
+	(gnus-request-post-buffer, gnus-request-post): Changed to use
+	`gnus-post-method'. 
+
+	* nntp.el (nntp-open-server-internal): The nntpd process will now
+	be killed without warning when Emacs shuts down.
+
+	* gnus.el (gnus-get-unread-articles-in-group): Returned wrong
+	results in groups with no articles.
+
+	* nntp.el (nntp-server-opened): This function gave totally
+	spurious results.
+
+	* gnus.el (gnus-check-first-time-used, gnus-find-new-newsgroups):
+	Changed to really subscribe newsgroups that are mentioned by the
+	"options -n" line(s). The variable
+	`gnus-subscribe-options-newsgroup-method' holds the subscribe
+	method, which is `gnus-subscribe-alphabetically' by default. 
+
+Wed Dec 28 17:36:49 1994    <larsi@redleaf>
+
+	* gnus.el (gnus-get-newsgroup-headers-xover): Fixed
+	cross-references when using xover.
+
+	* gnus.el (gnus-read-old-newsrc-el-file): Made it easier to switch
+	between .el and .eld files.
+	(gnus-group-mode-map): Removed bindings for `C-n' and
+	`C-p'. Changed `C-m' to `gnus-group-select-group'.
+	(gnus-summary-mode-map): Removed bindings for `C-n' and `C-p'.
+
+	* nntp.el (nntp-request-group): Fix when selecing non-existant
+	groups. 
+
+	* gnus.el (gnus-group-prepare): Faster listing of killed groups. 
+
+	* nntp.el (nntp-retrieve-headers-with-xover): Try both "xover" and
+	"xoverview" on nntp servers.
+
+	* gnus.el (gnus-activate-foreign-newsgroups): This variable has
+	changed from a toggle to a slide. Foreign newsgroups that have a
+	level equal or lower than this variable will be activated on
+	startup. 
+	(gnus-nntp-service): This variable has been obsoleted, except for
+	one tiny backwards compatibility issue.
+	(gnus-select-method): This variable now lets you specify nntp port
+	number as well.
+	(gnus-find-new-newsgroups): A message is displayed that says how
+	many new newsgroups has arrived.
+	(gnus-summary-position-cursor, gnus-group-position-cursor): Two
+	new functions that are both fset to `gnus-goto-colon', but can be
+	set to anything the user wishes.
+	(gnus-init-file, gnus-read-init-file, gnus-group-read-init-file):
+	New variable, function, command and keystroke to read the Gnus
+	init file (default: "~/.gnus").
+
+	* nnml.el (nnml-retrieve-header-with-nov): nnml now generates nov
+	databases. 
+	(nnml-choose-mail): Fix strange cutting and add Xref header.
+	(nnml-article-group): Mail articles can now be crossposted between
+	all groups that fit the regular expressions in
+	`nnmail-split-methods'. 
+	(nnml-generate-nov-databases): New command to generate nov
+	databases for a tree.
+
+	* nnheader.el (gnus-backends-are-talkative): New variable.
+
+	* nnml.el (nnml-nov-is-evil): New variable.
+
+Wed Dec 21 01:20:53 1994  Lars Magne Ingebrigtsen  <larsi@hnoss.ifi.uio.no>
+
+	* gnus.el (gnus-check-news-server): Buglet.
+	(gnus-mail-reply-using-mail): Use "none" as the subject if none
+	was used.
+
+Tue Dec 20 01:28:42 1994  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-request-move-article,
+	nnmail-request-accept-article): Functions for moving articles. One
+	can move articles between mail groups that use different select
+	methods, which also makes these functions double as conversion
+	routines.
+
+	* gnus.el (gnus-open-server): All the low-level backend functions
+	have been rewritten to make things cleaner and clearer. Most of
+	the function calls have also been changed throughout the program. 
+	(gnus-set-global-variables): Set the global equivalents of the
+	summary-local variables whenever a new article is chosen.
+
+Mon Dec 19 00:51:03 1994  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnml.el (nnml-request-move-article,
+	nnml-request-accept-article): Functions for moving articles. 
+
+	* gnus.el (gnus-summary-rescan-group): New command and keystroke
+	for exiting, getting new articles, and re-selecting a group. 
+	(gnus-group-make-mail-groups): Created mail groups
+	without the foreign group prefix, which is a serious bug.
+	(gnus-dribble-file-name): Change the name of the dribble file to
+	".newsrc-dribble". 
+	(gnus-group-startup-message): Changed startup screen. (Trés
+	important.) 
+	(gnus-summary-move-article): New command and keystroke for moving
+	articles between (mail) newsgroups.
+
+	* nnmail.el (nnmail-split-region): 
+	* nnml.el (nnml-choose-mail): Add a Lines header line to mails
+	that do not have them.
+
+	* gnus.el: Moved most functions to make the source code a bit more
+	structured. Added a few autoloads to kill the last few compiler
+	warnings. 
+	(gnus-group-clear-dribble): New command and keystroke to clear the
+	dribble buffer.
+
+	* nntp.el (nntp-open-server-internal): Further multiple nntp
+	server fixes.
+
+Sun Dec 18 01:48:28 1994  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-mh.el: All the mh-e functions have been moved to this new
+	file.
+
+	* gnus.el (gnus-summary-prepare-threads,
+	gnus-summary-insert-line): If the subject changes in the middle of
+	the thread, print the subject.
+	(gnus-save-newsrc-file): Save the newsrc file(s) even when the
+	dribble file has been saved, and don't save them when no changes
+	have been made.
+
+	* nntp.el (nntp-request-group): When using multiple nntp servers,
+	the backend often became a bit dizzy.
+	(nntp-open-server): Opening a server now correctly says whether a
+	connection was established.
+
+	* gnus.el (gnus-version): Rewrite to add version numbers from all
+	backends in use.
+	(gnus-extend-newsgroup): Small fix.
+	(gnus-find-header-by-number): Obsolete function.
+	(gnus-clear-system): Kill all generated buffers when exiting. 
+	(gnus-exit-group-hook): Kill the nntp connection(s) when exiting. 
+
+Mon Dec 12 18:15:03 1994  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: Version 0.2 released after some initial bugs were
+	fixed. 
+
+Sun Dec 11 06:32:40 1994  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: The very first (ding) Gnus pre-release. 
+
