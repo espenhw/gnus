@@ -2171,7 +2171,7 @@ It should typically alter the sending method in some way or other."
 	  (goto-char (point-max))
 	(goto-char (+ p message-send-mail-partially-limit))
 	(beginning-of-line)
-	(if (<= (point) p) (end-of-line))) ;; In case of bad message.
+	(if (<= (point) p) (forward-line 1))) ;; In case of bad message.
       (push p plist)
       (setq p (point)))
     (setq total (length plist))

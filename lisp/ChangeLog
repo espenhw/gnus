@@ -1,3 +1,7 @@
+2000-04-28 16:37:09  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail-partially): Use forward-line.
+
 2000-04-28 16:01:09  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-button-menu): Use call-interactively.
