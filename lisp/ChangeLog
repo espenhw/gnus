@@ -1,3 +1,8 @@
+2003-09-02  Jesper Harder  <harder@ifa.au.dk>
+
+	* rfc2047.el (rfc2047-fold-region): Don't fold at the beginning
+	of the field.
+
 2003-09-01  Simon Josefsson  <jas@extundo.com>
 
 	* mml.el (mml-insert-mime-headers-always): New variable.

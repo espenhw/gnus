@@ -492,7 +492,9 @@ By default, the region is treated as containing addresses (see
 	      (if (eq (char-after) ?=)
 		  (forward-char 1)
 		(skip-chars-forward "^ \t\n\r="))
-	    (setq qword-break (point))
+	    ;; Don't break at the start of the field.
+	    (unless (= (point) b)
+	      (setq qword-break (point)))
 	    (skip-chars-forward "^ \t\n\r")))
 	 (t
 	  (skip-chars-forward "^ \t\n\r"))))
