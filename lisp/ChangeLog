@@ -1,3 +1,12 @@
+2001-10-07  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-group.el (gnus-group-name-charset-group-alist): Make utf-8
+	default charset for newsgroup names in accordance with USEFOR.
+
+	* gnus-group.el (gnus-group-name-charset-method-alist,
+	gnus-group-name-charset-group-alist): Removed "*" from doc
+	strings, "*" should not be used for complex variables.
+	
 2001-10-06  Simon Josefsson  <jas@extundo.com>
 
 	Support UTF-8 group names better.
