@@ -1,3 +1,8 @@
+2005-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-generate-mime-1): Convert string into unibyte when
+	inserting " *mml*" buffer's contents into a unibyte temp buffer.
+
 2005-01-24  Harald Meland <harald.meland@usit.uio.no>  (tiny change)
 
 	* mail-source.el (mail-source-fetch-imap): Search for ^From case
