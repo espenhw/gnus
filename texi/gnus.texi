@@ -838,7 +838,7 @@ Filtering Spam Using The Spam ELisp Package
 * Blackholes::                  
 * Regular Expressions Header Matching::  
 * Bogofilter::                  
-* SpamAssassin backend::        
+* SpamAssassin back end::        
 * ifile spam filtering::        
 * spam-stat spam filtering::    
 * SpamOracle::                  
@@ -14129,7 +14129,7 @@ body of the messages:
 The buffer is narrowed to the message in question when @var{function}
 is run.  That's why @code{(widen)} needs to be called after
 @code{save-excursion} and @code{save-restriction} in the example
-above.  Also note that with the nnimap backend, message bodies will
+above.  Also note that with the nnimap back end, message bodies will
 not be downloaded by default.  You need to set
 @code{nnimap-split-download-body} to @code{t} to do that
 (@pxref{Splitting in IMAP}).
@@ -18605,8 +18605,8 @@ ask you to confirm your action (see
 @vindex gnus-agent
 Is the agent enabled?  The default is @code{t}.  When first enabled,
 the agent will use @code{gnus-agent-auto-agentize-methods} to
-automatically mark some backends as agentized.  You may change which
-backends are agentized using the agent commands in the server buffer.
+automatically mark some back ends as agentized.  You may change which
+back ends are agentized using the agent commands in the server buffer.
 
 To enter the server buffer, use the @kbd{^}
 (@code{gnus-group-enter-server-mode}) command in the group buffer.
@@ -18724,8 +18724,8 @@ prompt you to confirm that you really wish to proceed if you hit
 If you have never used the Agent before (or more technically, if
 @file{~/News/agent/lib/servers} does not exist), Gnus will
 automatically agentize a few servers for you.  This variable control
-which backends should be auto-agentized.  It is typically only useful
-to agentize remote backends.  The auto-agentizing has the same effect
+which back ends should be auto-agentized.  It is typically only useful
+to agentize remote back ends.  The auto-agentizing has the same effect
 as running @kbd{J a} on the servers (@pxref{Server Agent Commands}).
 If the file exist, you must manage the servers manually by adding or
 removing them, this variable is only applicable the first time you
@@ -22456,7 +22456,7 @@ call the external tools during splitting.  Example fancy split method:
           "spam"))))
 @end lisp
 
-Note that with the nnimap backend, message bodies will not be
+Note that with the nnimap back end, message bodies will not be
 downloaded by default.  You need to set
 @code{nnimap-split-download-body} to @code{t} to do that
 (@pxref{Splitting in IMAP}).
@@ -22546,7 +22546,7 @@ Gnus can verify hashcash cookies, although this can also be done by
 hand customized mail filtering scripts.  To verify a hashcash cookie
 in a message, use the @code{mail-check-payment} function in the
 @code{hashcash.el} library.  You can also use the @code{spam.el}
-package with the @code{spam-use-hashcash} backend to validate hashcash
+package with the @code{spam-use-hashcash} back end to validate hashcash
 cookies in incoming mail and filter mail accordingly (@pxref{Anti-spam
 Hashcash Payments}).
 
@@ -22631,7 +22631,7 @@ group.
 * Blackholes::                  
 * Regular Expressions Header Matching::  
 * Bogofilter::                  
-* SpamAssassin backend::        
+* SpamAssassin back end::        
 * ifile spam filtering::        
 * spam-stat spam filtering::    
 * SpamOracle::                  
@@ -22654,16 +22654,16 @@ Getting new mail in Gnus is done in one of two ways.  You can either
 split your incoming mail or you can classify new articles as ham or
 spam when you enter the group.
 
-Splitting incoming mail is better suited to mail backends such as
+Splitting incoming mail is better suited to mail back ends such as
 @code{nnml} or @code{nnimap} where new mail appears in a single file
 called a @dfn{Spool File}.  See @xref{Spam ELisp Package Filtering of
 Incoming Mail}.
 
 @vindex gnus-spam-autodetect
 @vindex gnus-spam-autodetect-methods
-For backends such as @code{nntp} there is no incoming mail spool, so
+For back ends such as @code{nntp} there is no incoming mail spool, so
 an alternate mechanism must be used.  This may also happen for
-backends where the server is in charge of splitting incoming mail, and
+back ends where the server is in charge of splitting incoming mail, and
 Gnus does not do further splitting.  The @code{spam-autodetect} and
 @code{spam-autodetect-methods} group parameters (accessible with
 @kbd{G c} and @kbd{G p} as usual), and the corresponding variables
@@ -22722,7 +22722,7 @@ which is what most people want.  If the
 @code{spam-process-destination} is @code{nil}, the spam is marked as
 expired, which is usually the right thing to do.
 
-If spam can not be moved---because of a read-only backend such as
+If spam can not be moved---because of a read-only back end such as
 @acronym{NNTP}, for example, it will be copied.
 
 If a ham mail is found in a ham group, as determined by the
@@ -22737,7 +22737,7 @@ no more than once.  Thus, ham is detected and processed only when
 necessary, which is what most people want.  More on this in
 @xref{Spam ELisp Package Configuration Examples}.
 
-If ham can not be moved---because of a read-only backend such as
+If ham can not be moved---because of a read-only back end such as
 @acronym{NNTP}, for example, it will be copied.
 
 If all this seems confusing, don't worry.  Soon it will be as natural
@@ -22838,7 +22838,7 @@ message headers.  If you use a @emph{statistical} filter,
 e.g. @code{spam-check-bogofilter}, @code{spam-check-ifile}, or
 @code{spam-check-stat} (the splitters that can benefit from the full
 message body), this variable will be set automatically.  It is not set
-for non-statistical backends by default because it will slow
+for non-statistical back ends by default because it will slow
 @acronym{IMAP} down.
 
 @xref{Splitting in IMAP}.
@@ -22947,7 +22947,7 @@ parameter is not set, ham articles are left in place.  If the
 @code{spam-mark-ham-unread-before-move-from-spam-group} parameter is
 set, the ham articles are marked as unread before being moved.
 
-If ham can not be moved---because of a read-only backend such as
+If ham can not be moved---because of a read-only back end such as
 @acronym{NNTP}, for example, it will be copied.
 
 Note that you can use multiples destinations per group or regular
@@ -22984,7 +22984,7 @@ articles are only expired.  The group name is fully qualified, meaning
 that if you see @samp{nntp:servername} before the group name in the
 group buffer then you need it here as well.
 
-If spam can not be moved---because of a read-only backend such as
+If spam can not be moved---because of a read-only back end such as
 @acronym{NNTP}, for example, it will be copied.
 
 Note that you can use multiples destinations per group or regular
@@ -23027,13 +23027,13 @@ spam.  It is recommended that you leave it off.
 You can display the spam score of articles in your summary buffer, and
 you can sort articles by their spam score.
 
-First you need to decide which backend you will be using.  If you use
+First you need to decide which back end you will be using.  If you use
 the @code{spam-use-spamassassin},
 @code{spam-use-spamassassin-headers}, or @code{spam-use-regex-headers}
-backend, the @code{X-Spam-Status} header will be used.  If you use
+back end, the @code{X-Spam-Status} header will be used.  If you use
 @code{spam-use-bogofilter}, the @code{X-Bogosity} header will be used.
 If you use @code{spam-use-crm114}, any header that matches the CRM114
-score format will be used.  As long as you set the appropriate backend
+score format will be used.  As long as you set the appropriate back end
 variable to t @emph{before} you load @code{spam.el}, you will be
 fine.  @code{spam.el} will automatically add the right header to the
 internal Gnus list of required headers.
@@ -23348,7 +23348,7 @@ classified as spammers.
 
 While @code{spam-use-BBDB-exclusive} @emph{can} be used as an alias
 for @code{spam-use-BBDB} as far as @code{spam.el} is concerned, it is
-@emph{not} a separate backend.  If you set
+@emph{not} a separate back end.  If you set
 @code{spam-use-BBDB-exclusive} to t, @emph{all} your BBDB splitting
 will be exclusive.
 
@@ -23596,8 +23596,8 @@ variables to indicate to spam-split that Bogofilter should either be
 used, or has already been used on the article.  The 0.9.2.1 version of
 Bogofilter was used to test this functionality.
 
-@node SpamAssassin backend
-@subsubsection SpamAssassin backend
+@node SpamAssassin back end
+@subsubsection SpamAssassin back end
 @cindex spam filtering
 @cindex spamassassin, spam filtering
 @cindex spam
@@ -23952,52 +23952,52 @@ Finally, use the appropriate @code{spam-install-*-backend} function in
 @item
 @code{spam-install-backend-alias}
 
-This function will simply install an alias for a backend that does
-everything like the original backend.  It is currently only used to
+This function will simply install an alias for a back end that does
+everything like the original back end.  It is currently only used to
 make @code{spam-use-BBDB-exclusive} act like @code{spam-use-BBDB}.
 
 @item
 @code{spam-install-nocheck-backend}
 
-This function installs a backend that has no check function, but can
-register/unregister ham or spam.  The @code{spam-use-gmane} backend is
-such a backend.
+This function installs a back end that has no check function, but can
+register/unregister ham or spam.  The @code{spam-use-gmane} back end is
+such a back end.
 
 @item
 @code{spam-install-checkonly-backend}
 
-This function will install a backend that can only check incoming mail
+This function will install a back end that can only check incoming mail
 for spam contents.  It can't register or unregister messages.
 @code{spam-use-blackholes} and @code{spam-use-hashcash} are such
-backends.
+back ends.
 
 @item
 @code{spam-install-statistical-checkonly-backend}
 
-This function installs a statistical backend (one which requires the
+This function installs a statistical back end (one which requires the
 full body of a message to check it) that can only check incoming mail
 for contents.  @code{spam-use-regex-body} is such a filter.
 
 @item
 @code{spam-install-statistical-backend}
 
-This function install a statistical backend with incoming checks and
+This function install a statistical back end with incoming checks and
 registration/unregistration routines.  @code{spam-use-bogofilter} is
 set up this way.
 
 @item
 @code{spam-install-backend}
 
-This is the most normal backend installation, where a backend that can
+This is the most normal back end installation, where a back end that can
 check and register/unregister messages is set up without statistical
-abilities.  The @code{spam-use-BBDB} is such a backend.
+abilities.  The @code{spam-use-BBDB} is such a back end.
 
 @item
 @code{spam-install-mover-backend}
 
-Mover backends are internal to @code{spam.el} and specifically move
+Mover back ends are internal to @code{spam.el} and specifically move
 articles around when the summary is exited.  You will very probably
-never install such a backend.
+never install such a back end.
 @end enumerate
 
 @end enumerate

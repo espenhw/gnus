@@ -1,5 +1,8 @@
 2004-11-21  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus.texi, gnus-news.texi, pgg.texi, sasl.texi: backend -> back
+	end.
+
 	* gnus.texi (MIME Commands, Hashcash): Markup fix.
 
 2004-11-17  Teodor Zlatanov  <tzz@lifelogs.com>

@@ -57,7 +57,7 @@ applications using different protocols.
 * Overview::                    What Emacs SASL library is.
 * How to use::                  Adding authentication support to your applications.
 * Data types::                  
-* Backend drivers::             Writing your own drivers.
+* Back end drivers::             Writing your own drivers.
 * Index::                       
 * Function Index::              
 * Variable Index::              
@@ -72,9 +72,9 @@ adding authentication support to various application protocols.
 
 The toplevel interface of this library is inspired by Java @sc{sasl}
 Application Program Interface.  It defines an abstraction over a series
-of authentication mechanism drivers (@ref{Backend drivers}).
+of authentication mechanism drivers (@ref{Back end drivers}).
 
-Backend drivers are designed to be close as possible to the
+Back end drivers are designed to be close as possible to the
 authentication mechanism.  You can access the additional configuration
 information anywhere from the implementation.
 
@@ -133,7 +133,7 @@ returns apropriate @code{sasl-mechanism} object.
 Return name of mechanism, a string.
 @end defun
 
-If you want to write an authentication mechanism driver (@ref{Backend
+If you want to write an authentication mechanism driver (@ref{Back end
 drivers}), use @code{sasl-make-mechanism} and modify
 @code{sasl-mechanisms} and @code{sasl-mechanism-alist} correctly.
 
@@ -241,8 +241,8 @@ Perform the authentication step.
 At the first time @var{step} should be set to @code{nil}.
 @end defun
 
-@node Backend drivers
-@chapter Backend drivers
+@node Back end drivers
+@chapter Back end drivers
 
 (Not yet written).
 
