@@ -4542,7 +4542,9 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (let ((display (gnus-group-find-parameter group 'display)))
       (setq gnus-newsgroup-display
 	    (cond
-	     (read-all
+	     ((not (zerop (or (car-safe read-all) 0)))
+	      ;; The user entered the group with C-u SPC/RET, let's show
+	      ;; all articles.
 	      'gnus-not-ignore)
 	     ((eq display 'all)
 	      'gnus-not-ignore)
