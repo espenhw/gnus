@@ -1,3 +1,17 @@
+2002-05-20  Jason  <jbaker@cs.utah.edu>
+
+	* gnus-art.el (gnus-request-article-this-buffer): Try
+	reconnecting if you don't get the message.
+
+2002-05-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-enter-digest-group): Only get
+	Reply-To headers from the headers.
+
+2002-05-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-url.el (mm-url-insert): Remove junk message.
+
 2002-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnslashdot.el (nnslashdot-request-list): Parse new html.

@@ -4940,6 +4940,8 @@ If given a prefix, show the hidden text instead."
 	    (let ((gnus-override-method gnus-override-method)
 		  (methods (and (stringp article)
 				gnus-refer-article-method))
+		  (backend (car (gnus-find-method-for-group
+				 gnus-newsgroup-name)))
 		  result
 		  (buffer-read-only nil))
 	      (if (or (not (listp methods))
@@ -4958,7 +4960,8 @@ If given a prefix, show the hidden text instead."
 		(gnus-kill-all-overlays)
 		(let ((gnus-newsgroup-name group))
 		  (gnus-check-group-server))
-		(when (gnus-request-article article group (current-buffer))
+		(cond
+		 ((gnus-request-article article group (current-buffer))
 		  (when (numberp article)
 		    (gnus-async-prefetch-next group article
 					      gnus-summary-buffer)
@@ -4966,10 +4969,13 @@ If given a prefix, show the hidden text instead."
 		      (gnus-backlog-enter-article
 		       group article (current-buffer))))
 		  (setq result 'article))
-		(if (not result)
-		    (if methods
-			(setq gnus-override-method (pop methods))
-		      (setq result 'done))))
+		 (methods
+		  (setq gnus-override-method (pop methods)))
+		 ((not (string-match "^400 "
+				     (nnheader-get-report backend)))
+		  ;; If we get 400 server disconnect, reconnect and
+		  ;; retry; otherwise, assume the article has expired.
+		  (setq result 'done))))
 	      (and (eq result 'article) 'article)))
 	   ;; It was a pseudo.
 	   (t article)))

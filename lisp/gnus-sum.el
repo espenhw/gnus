@@ -7813,8 +7813,8 @@ to guess what the document format is."
 	(set-buffer gnus-original-article-buffer)
 	;; Have the digest group inherit the main mail address of
 	;; the parent article.
-	(when (setq to-address (or (message-fetch-field "reply-to")
-				   (message-fetch-field "from")))
+	(when (setq to-address (or (gnus-fetch-field "reply-to")
+				   (gnus-fetch-field "from")))
 	  (setq params (append
 			(list (cons 'to-address
 				    (funcall gnus-decode-encoded-word-function
