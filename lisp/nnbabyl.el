@@ -505,7 +505,7 @@
 	   (setq incomings (cons incoming incomings))
 	   (save-excursion
 	     (let ((in-buf (nnmail-split-incoming 
-			    incoming 'nnbabyl-save-mail t)))
+			    incoming 'nnbabyl-save-mail t group)))
 	       (set-buffer in-buf)
 	       (goto-char (point-min))
 	       (while (search-forward "\n\^_\n" nil t)

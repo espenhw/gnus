@@ -1,4 +1,89 @@
+Wed May 24 02:35:49 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* nnfolder.el (nnfolder-close-group): New version. Don't close if
+	already closed.
+
+	* gnus-msg.el (gnus-inews-news): Wouldn't restore winconf.
+
+	* gnus.el (gnus-summary-delete-article): Would make all expirable
+	articles disappear.
+
+	* gnus-msg.el (gnus-summary-cancel-article): Don't mark as
+	cancelled before it actually is cancelled.
+	(gnus-mail-reply-using-mail): Did not narrow to headers. 
+	(gnus-group-mail): Use the mail-other-window method.
+
+	* gnus.el (gnus-signature-separator): Moved to gnus.el.
+	(gnus-debug): Ignore nils in load-path.
+	(gnus-score-score-files): Did not find adapt files when using
+	short file names. 
+	(gnus-score-score-files): Changing from short to long file names
+	would bug out.
+	(gnus-get-newsgroup-headers): Would bug out on empty articles.
+
+	* nnheader.el (nnheader-insert-head): Would stop before getting
+	the entire head.
+
+	* gnus-msg.el (gnus-mail-reply-using-mail): Would unmark process
+	marks in the wrong buffer.
+	(gnus-post-news): Ditto.
+	(gnus-inews-do-fcc): Would make a directory out of the file name. 
+
+Tue May 23 07:24:52 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-real-name): Get the word after the last
+	colon, not after the first colon.
+
+	* nnmail.el (nnmail-split-incoming): When "splitting" for just a
+	single group, narrow the split method to just the single group. 
+
+	* gnus-uu.el (gnus-uu-unpack-files): Expunge generated files on
+	group exit.
+
+	* gnus-score.el (gnus-score-load-file): Added the `local' atom.
+
+	* gnus.el (gnus-group-make-empty-virtual): New function and
+	keystroke. 
+	(gnus-dummy-mark): New variable.
+	(gnus-summary-remove-lines-marked-with): Remove dummy roots that
+	have no children.
+	(gnus-articles-to-read): Allow the user to specify how many
+	articles to read with a numerical prefix.
+	(gnus-browse-read-group): New command and keystroke.
+	(gnus-summary-insert-line): Go back to using normal plists for
+	article info. Changes all over in the summary code.
+	(gnus-summary-first-subject): New implementation.
+
+Tue May 23 02:54:05 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+	* nnmail.el (nnmail-move-inbox): tofile fix.
+
+	* gnus-msg.el (gnus-group-mail): Moved here.
+	(gnus-group-mail): Run gnus-mail-hook.
+
+	* gnus.el (gnus-article-prepare): Let buffer-read-only to nil.
+
+	* nnfolder.el (nnfolder-possibly-activate-groups): Don't use
+	gnus-group-real-name. 
+
+	* gnus.el (gnus-active-to-gnus-format): Add more error control.
+
+	* gnus-score.el (gnus-summary-increase-score): Would bug out on
+	certain keystrokes.
+
+	* gnus.el (gnus-group-sort-groups): Would rescan.
+	(gnus-group-sort-groups): Added keystroke.
+	(gnus-article-setup-buffer): Always set article mode.
+	(gnus-group-add-to-virtual): Prompt with nnvirtual:.
+
+Sun May 21 07:33:20 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-offer-save-summaries): Save any still-existing
+	summary buffer on exit from Gnus.
+
 Sun May 21 00:11:00 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el: 0.75 is released.
 
 	* gnus-cache.el (gnus-cache-retrieve-headers): Don't bug out on
 	changed source groups. 

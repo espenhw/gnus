@@ -177,7 +177,9 @@ highlight-headers-follow-url-netscape:
       ["Add a directory group" gnus-group-make-directory-group t]
       ["Add the help group" gnus-group-make-help-group t]
       ["Add the archive group" gnus-group-make-archive-group t]
-      ["Make a kiboze group" gnus-group-make-kiboze-group t])
+      ["Make a kiboze group" gnus-group-make-kiboze-group t]
+      ["Make a virtual group" gnus-group-make-empty-virtual t]
+      ["Add a group to a virtual" gnus-group-add-to-virtual t])
      ["Jump to group" gnus-group-jump-to-group t]
      ["Best unread group" gnus-group-best-unread-group t]
      ))
@@ -244,6 +246,7 @@ highlight-headers-follow-url-netscape:
    ""
    '("Browse"
      ["Subscribe" gnus-browse-unsubscribe-current-group t]
+     ["Read" gnus-group-read-group t]
      ["Exit" gnus-browse-exit t]
      )))
 
@@ -478,34 +481,34 @@ highlight-headers-follow-url-netscape:
 ;;;
 
 (defun gnus-highlight-selected-summary ()
-    ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
-    ;; Highlight selected article in summary buffer
-    (if gnus-summary-selected-face
-	(save-excursion
-	  (let* ((beg (progn (beginning-of-line) (point)))
-		 (end (progn (end-of-line) (point)))
-		 ;; Fix by Mike Dugan <dugan@bucrf16.bu.edu>.
-		 (from (if (get-text-property beg 'mouse-face) 
-			   beg
-			 (1+ (or (next-single-property-change 
-				  beg 'mouse-face nil end) 
-				 end))))
-		 (to (1- (or (next-single-property-change
-			      from 'mouse-face nil end)
-			     end))))
-            ;; If no mouse-face prop on line (e.g. xemacs) we 
-            ;; will have to = from = end, so we highlight the
-            ;; entire line instead.
-	    (if (= to from)
-		(progn
-		  (setq from beg)
-		  (setq to end)))
-	    (if gnus-newsgroup-selected-overlay
-		(move-overlay gnus-newsgroup-selected-overlay 
-			      from to (current-buffer))
-	      (setq gnus-newsgroup-selected-overlay (make-overlay from to))
-	      (overlay-put gnus-newsgroup-selected-overlay 'face 
-			   gnus-summary-selected-face))))))
+  ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+  ;; Highlight selected article in summary buffer
+  (if gnus-summary-selected-face
+      (save-excursion
+	(let* ((beg (progn (beginning-of-line) (point)))
+	       (end (progn (end-of-line) (point)))
+	       ;; Fix by Mike Dugan <dugan@bucrf16.bu.edu>.
+	       (from (if (get-text-property beg 'mouse-face) 
+			 beg
+		       (1+ (or (next-single-property-change 
+				beg 'mouse-face nil end) 
+			       beg))))
+	       (to (1- (or (next-single-property-change
+			    from 'mouse-face nil end)
+			   end))))
+	  ;; If no mouse-face prop on line (e.g. xemacs) we 
+	  ;; will have to = from = end, so we highlight the
+	  ;; entire line instead.
+	  (if (= to from)
+	      (progn
+		(setq from beg)
+		(setq to end)))
+	  (if gnus-newsgroup-selected-overlay
+	      (move-overlay gnus-newsgroup-selected-overlay 
+			    from to (current-buffer))
+	    (setq gnus-newsgroup-selected-overlay (make-overlay from to))
+	    (overlay-put gnus-newsgroup-selected-overlay 'face 
+			 gnus-summary-selected-face))))))
 
 
 ;; New implementation by Christian Limpach <Christian.Limpach@nice.ch>.
@@ -516,12 +519,12 @@ highlight-headers-follow-url-netscape:
 	 (end (progn (end-of-line) (point)))
 	 ;; now find out where the line starts and leave point there.
 	 (beg (progn (beginning-of-line) (point)))
-	 (score (or (cdr (assq (or (car (get-text-property beg 'gnus))
+	 (score (or (cdr (assq (or (get-text-property beg 'gnus-number)
 				   gnus-current-article)
 			       gnus-newsgroup-scored))
 		    gnus-summary-default-score 0))
 	 (default gnus-summary-default-score)
-	 (mark (car (cdr (get-text-property beg 'gnus))))
+	 (mark (get-text-property beg 'gnus-mark))
 	 (inhibit-read-only t))
     (while (and list (not (eval (car (car list)))))
       (setq list (cdr list)))
@@ -633,7 +636,7 @@ highlight-headers-follow-url-netscape:
   (suppress-keymap gnus-carpal-mode-map)
   (define-key gnus-carpal-mode-map " " 'gnus-carpal-select)
   (define-key gnus-carpal-mode-map "\r" 'gnus-carpal-select)
-  (define-key gnus-carpal-mode-map [mouse-2] 'gnus-carpal-mouse-select))
+  (define-key gnus-carpal-mode-map gnus-mouse-2 'gnus-carpal-mouse-select))
 
 (defun gnus-carpal-mode ()
   "Major mode clicking buttons.

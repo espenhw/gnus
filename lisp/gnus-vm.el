@@ -73,6 +73,16 @@ Has to be set before gnus-vm is loaded.")
     (vm-mode)
     tmp-folder))
   
+(defun gnus-summary-save-article-vm (arg)
+  "Append the current article to a vm folder.
+If N is a positive number, save the N next articles.
+If N is a negative number, save the N previous articles.
+If N is nil and any articles have been marked with the process mark,
+save those articles instead."
+  (interactive "P")
+  (let ((gnus-default-article-saver 'gnus-summary-save-in-vm))
+    (gnus-summary-save-article arg)))
+
 (defun gnus-summary-save-in-vm (&optional folder)
   (interactive)
   (let ((default-name

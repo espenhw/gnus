@@ -27,27 +27,6 @@
 
 (require 'gnus)
 
-(defvar gnus-score-find-score-files-function 'gnus-score-find-bnews
-  "*Function used to find SCORE files.
-The function will be called with the group name as the argument, and
-should return a list of score files to apply to that group.  The score
-files do not actually have to exist.
-
-Predefined values are:
-
-gnus-score-find-single: Only apply the group's own SCORE file.
-gnus-score-find-hierarchical: Also apply SCORE files from parent groups.
-gnus-score-find-bnews: Apply SCORE files whose names matches.
-
-See the documentation to these functions for more information.
-
-This variable can also be a list of functions to be called.  Each
-function should either return a list of score files, or a list of
-score alists.")
-
-(defvar gnus-adaptive-file-suffix "ADAPT"
-  "*Suffix of the adaptive score files.")
-
 (defvar gnus-score-expiry-days 7
   "*Number of days before unused score file entries are expired.")
 
@@ -83,8 +62,6 @@ always be used.")
 
 ;; Internal variables.
 
-(defvar gnus-internal-global-score-files nil)
-(defvar gnus-score-file-list nil)
 (defvar gnus-adaptive-score-alist gnus-default-adaptive-score-alist)
 
 (defvar gnus-score-trace nil)
@@ -157,10 +134,10 @@ of the last succesful match.")
 	    (?d "date")
 	    (?f "followup")))
 	 (char-to-type
-	  '((?e e) (?f f) (?s nil) (?r r) (?b before)
+	  '((?e e) (?f f) (?s s) (?r r) (?b before)
 	    (?a at) (?n now) (?< <) (?> >) (?= =)))
 	 (char-to-perm
-	  (list (list ?t (current-time-string)) '(?p nil) '(?i now)))
+	  (list (list ?t (current-time-string)) '(?p perm) '(?i now)))
 	 (mimic gnus-score-mimic-keymap)
 	 hchar entry temporary tchar pchar end type)
     ;; First we read the header to score.
@@ -224,8 +201,10 @@ of the last succesful match.")
        (nth 1 entry)			; Header
        (gnus-summary-header (or (nth 2 entry) (nth 1 entry))) ; Match
        type				; Type
-       score                		; Score
-       temporary                        ; Temp
+       (if (eq 's score) nil score)     ; Score
+       (if (eq 'perm temporary)         ; Temp
+           nil
+         temporary)
        (not (nth 3 entry)))		; Prompt
       )))
 
@@ -495,6 +474,7 @@ SCORE is the score to add."
 	  (exclude-files (gnus-score-get 'exclude-files alist))
           (orphan (car (gnus-score-get 'orphan alist)))
 	  (adapt (gnus-score-get 'adapt alist))
+	  (local (gnus-score-get 'local alist))
 	  (eval (car (gnus-score-get 'eval alist))))
       ;; We do not respect eval and files atoms from global score
       ;; files. 
@@ -505,6 +485,17 @@ SCORE is the score to add."
 				      files))))
       (and eval (not global) (eval eval))
       (setq gnus-scores-exclude-files exclude-files)
+      (if (not local)
+	  ()
+	(save-excursion
+	  (set-buffer gnus-summary-buffer)
+	  (while local
+	    (and (consp (car local))
+		 (symbolp (car (car local)))
+		 (progn
+		   (make-local-variable (car (car local)))
+		   (set (car (car local)) (nth 1 (car local)))))
+	    (setq local (cdr local)))))
       (if orphan (setq gnus-orphan-score orphan))
       (setq gnus-adaptive-score-alist
 	    (cond ((equal adapt '(t))
@@ -1453,203 +1444,6 @@ This mode is an extended emacs-lisp mode.
     (gnus-score-remove-from-cache bufnam)
     (gnus-score-load-file bufnam)
     (and winconf (set-window-configuration winconf))))
-
-;;; Finding score files. 
-
-(defvar gnus-global-score-files nil
-  "*List of global score files and directories.
-Set this variable if you want to use people's score files.  One entry
-for each score file or each score file directory.  Gnus will decide
-by itself what score files are applicable to which group.
-
-Say you want to use the single score file
-\"/ftp.ifi.uio.no@ftp:/pub/larsi/ding/score/soc.motss.SCORE\" and all
-score files in the \"/ftp.some-where:/pub/score\" directory.
-
- (setq gnus-global-score-files
-       '(\"/ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE\"
-         \"/ftp.some-where:/pub/score\"))")
-
-(defun gnus-score-score-files (group)
-  "Return a list of all possible score files."
-  ;; Search and set any global score files.
-  (and gnus-global-score-files 
-       (or gnus-internal-global-score-files
-	   (gnus-score-search-global-directories gnus-global-score-files)))
-  ;; Fix the kill-file dir variable.
-  (setq gnus-kill-files-directory 
-	(file-name-as-directory
-	 (or gnus-kill-files-directory "~/News/")))
-  ;; If er can't read it, there's no score files.
-  (if (not (file-readable-p (expand-file-name gnus-kill-files-directory)))
-      (setq gnus-score-file-list nil)
-    (if (gnus-use-long-file-name 'not-score)
-	;; We want long file names.
-	(if (or (not gnus-score-file-list)
-		(gnus-file-newer-than gnus-kill-files-directory
-				      (car gnus-score-file-list)))
-	      (setq gnus-score-file-list 
-		    (cons (nth 5 (file-attributes gnus-kill-files-directory))
-			  (nreverse 
-			   (directory-files 
-			    gnus-kill-files-directory t 
-			    (gnus-score-file-regexp))))))
-      ;; We do not use long file names, so we have to do some
-      ;; directory traversing.  
-      (let ((dir (expand-file-name
-		  (concat gnus-kill-files-directory
-			  (gnus-replace-chars-in-string group ?. ?/))))
-	    (mdir (length (expand-file-name gnus-kill-files-directory)))
-	    (suffixes (list gnus-score-file-suffix gnus-adaptive-file-suffix))
-	    files suffix)
-	(while suffixes
-	  (setq suffix (car suffixes)
-		suffixes (cdr suffixes))
-	  (if (file-exists-p (concat dir "/" suffix))
-	      (setq files (list (concat dir "/" suffix))))
-	  (while (>= (1+ (length dir)) mdir)
-	    (and (file-exists-p (concat dir "/all/" suffix))
-		 (setq files (cons (concat dir "/all/" suffix) files)))
-	    (string-match "/[^/]*$" dir)
-	    (setq dir (substring dir 0 (match-beginning 0)))))
-	(setq gnus-score-file-list 
-	      (cons nil (nreverse files)))))
-    (cdr gnus-score-file-list)))
-
-(defun gnus-score-file-regexp ()
-  (concat "\\(" gnus-score-file-suffix 
-	  "\\|" gnus-adaptive-file-suffix "\\)$"))
-	
-(defun gnus-score-find-bnews (group)
-  "Return a list of score files for GROUP.
-The score files are those files in the ~/News directory which matches
-GROUP using BNews sys file syntax."
-  (let* ((sfiles (append (gnus-score-score-files group)
-			 gnus-internal-global-score-files))
-	 (kill-dir (file-name-as-directory 
-		    (expand-file-name gnus-kill-files-directory)))
-	 (klen (length kill-dir))
-	 ofiles not-match regexp)
-    (save-excursion
-      (set-buffer (get-buffer-create "*gnus score files*"))
-      (buffer-disable-undo (current-buffer))
-      ;; Go through all score file names and create regexp with them
-      ;; as the source.  
-      (while sfiles
-	(erase-buffer)
-	(insert (car sfiles))
-	(goto-char (point-min))
-	;; First remove the suffix itself.
-	(re-search-forward (concat "." (gnus-score-file-regexp)))
-	(replace-match "" t t) 
-	(goto-char (point-min))
-	(if (looking-at (regexp-quote kill-dir))
-	    ;; If the file name was just "SCORE", `klen' is one character
-	    ;; too much.
-	    (delete-char (min (1- (point-max)) klen))
-	  (goto-char (point-max))
-	  (search-backward "/")
-	  (delete-region (1+ (point)) (point-min)))
-	;; Translate "all" to ".*".
-	(while (search-forward "all" nil t)
-	  (replace-match ".*" t t))
-	(goto-char (point-min))
-	;; Deal with "not."s.
-	(if (looking-at "not.")
-	    (progn
-	      (setq not-match t)
-	      (setq regexp (buffer-substring 5 (point-max))))
-	  (setq regexp (buffer-substring 1 (point-max)))
-	  (setq not-match nil))
-	;; Finally - if this resulting regexp matches the group name,
-	;; we add this score file to the list of score files
-	;; applicable to this group.
-	(if (or (and not-match
-		     (not (string-match regexp group)))
-		(and (not not-match)
-		     (string-match regexp group)))
-	    (setq ofiles (cons (car sfiles) ofiles)))
-	(setq sfiles (cdr sfiles)))
-      (kill-buffer (current-buffer))
-      ;; Slight kludge here - the last score file returned should be
-      ;; the local score file, whether it exists or not. This is so
-      ;; that any score commands the user enters will go to the right
-      ;; file, and not end up in some global score file.
-      (let ((localscore
-	     (expand-file-name
-	      (if (gnus-use-long-file-name 'not-score)
-		  (concat gnus-kill-files-directory group "." 
-			  gnus-score-file-suffix)
-		(concat gnus-kill-files-directory
-			(gnus-replace-chars-in-string group ?. ?/)
-			"/" gnus-score-file-suffix)))))
-	(and (member localscore ofiles)
-	     (delete localscore ofiles))
-	(setq ofiles (cons localscore ofiles)))
-      (nreverse ofiles))))
-
-(defun gnus-score-find-single (group)
-  "Return list containing the score file for GROUP."
-  (list (gnus-score-file-name group)))
-
-(defun gnus-score-find-hierarchical (group)
-  "Return list of score files for GROUP.
-This includes the score file for the group and all its parents."
-  (let ((all (copy-sequence '(nil)))
-	(start 0))
-    (while (string-match "\\." group (1+ start))
-      (setq start (match-beginning 0))
-      (setq all (cons (substring group 0 start) all)))
-    (setq all (cons group all))
-    (mapcar 'gnus-score-file-name (nreverse all))))
-
-(defun gnus-possibly-score-headers (&optional trace)
-  (let ((func gnus-score-find-score-files-function)
-	score-files scores)
-    (and func (not (listp func))
-	 (setq func (list func)))
-    ;; Go through all the functions for finding score files (or actual
-    ;; scores) and add them to a list.
-    (while func
-      (and (symbolp (car func))
-	   (fboundp (car func))
-	   (setq score-files 
-		 (nconc score-files (funcall (car func) gnus-newsgroup-name))))
-      (setq func (cdr func)))
-    (if score-files (gnus-score-headers score-files trace))))
-
-(defun gnus-score-file-name (newsgroup &optional suffix)
-  "Return the name of a score file for NEWSGROUP."
-  (let ((suffix (or suffix gnus-score-file-suffix)))
-    (cond  ((or (null newsgroup)
-		(string-equal newsgroup ""))
-	    ;; The global score file is placed at top of the directory.
-	    (expand-file-name 
-	     suffix (or gnus-kill-files-directory "~/News")))
-	   ((gnus-use-long-file-name 'not-score)
-	    ;; Append ".SCORE" to newsgroup name.
-	    (expand-file-name (concat newsgroup "." suffix)
-			      (or gnus-kill-files-directory "~/News")))
-	   (t
-	    ;; Place "SCORE" under the hierarchical directory.
-	    (expand-file-name (concat (gnus-newsgroup-directory-form newsgroup)
-				      "/" suffix)
-			      (or gnus-kill-files-directory "~/News"))))))
-
-(defun gnus-score-search-global-directories (files)
-  "Scan all global score directories for score files."
-  ;; Set the variable `gnus-internal-global-score-files' to all
-  ;; available global score files.
-  (interactive (list gnus-global-score-files))
-  (let (out)
-    (while files
-      (if (string-match "/$" (car files))
-	  (setq out (nconc (directory-files 
-			    (car files) t
-			    (concat (gnus-score-file-regexp) "$"))))
-	(setq out (cons (car files) out)))
-      (setq files (cdr files)))
-    (setq gnus-internal-global-score-files out)))
 
 (defun gnus-score-find-trace ()
   "Find all score rules applied to this article."

@@ -1,10 +1,16 @@
-EMACS=emacs
+.PHONY: lisp texi elc info
 
-all: elc info
+all: elc texi
+
+lisp:
+	cd lisp; $(MAKE) all
+
+texi:
+	cd texi; $(MAKE) all
+
 
 elc:
-	cd lisp; $(MAKE) EMACS=$(EMACS) elc
+	cd lisp; $(MAKE) elc
 
 info:
-	cd texi; makeinfo -o gnus gnus.texi
-
+	cd lisp; $(MAKE) info

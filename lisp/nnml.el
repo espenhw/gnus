@@ -495,7 +495,7 @@ all. This may very well take some time.")
 	   (setq incoming 
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnml-directory "Incoming")))
-	   (nnmail-split-incoming incoming 'nnml-save-mail)
+	   (nnmail-split-incoming incoming 'nnml-save-mail nil group)
 	   (setq incomings (cons incoming incomings))
 	   ;; The following has been commented away, just to make sure
 	   ;; that nobody ever loses any mail. If you feel safe that

@@ -136,9 +136,6 @@ string itself is inserted.
 If the function returns nil, the `gnus-signature-file' variable will
 be used instead.")
 
-(defvar gnus-signature-separator "^-- *$"
-  "Regexp matching signature separator.")
-
 (defvar gnus-required-headers
   '(From Date Newsgroups Subject Message-ID Organization Lines X-Newsreader)
   "*Headers to be generated or prompted for when posting an article.
@@ -243,6 +240,13 @@ headers.")
 
 ;;; Post news commands of Gnus group mode and summary mode
 
+(defun gnus-group-mail ()
+  "Start composing a mail."
+  (interactive)
+  (funcall gnus-mail-other-window-method)
+  (gnus-configure-windows 'group-mail)
+  (run-hooks 'gnus-mail-hook))
+
 (defun gnus-group-post-news ()
   "Post an article."
   (interactive)
@@ -288,6 +292,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 (defun gnus-summary-followup-and-reply (yank &optional yank-articles)
   "Compose a followup and do an auto mail to author."
   (interactive "P")
+  (gnus-set-global-variables)
   (let ((gnus-auto-mail-to-author t))
     (gnus-summary-followup yank yank-articles)))
 
@@ -303,9 +308,9 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (let ((articles (gnus-summary-work-articles n)))
     (while articles
       (gnus-summary-select-article t nil nil (car articles))
+      (gnus-eval-in-buffer-window gnus-article-buffer (gnus-cancel-news))
       (gnus-summary-remove-process-mark (car articles))
       (gnus-summary-mark-as-read (car articles) gnus-canceled-mark)
-      (gnus-eval-in-buffer-window gnus-article-buffer (gnus-cancel-news))
       (gnus-article-hide-headers-if-wanted)
       (setq articles (cdr articles)))))
 
@@ -344,10 +349,10 @@ header line with the old Message-ID."
 
 
 ;;;###autoload
-(fset 'sendnews 'gnus-post-news)
+(defalias 'sendnews 'gnus-post-news)
 
 ;;;###autoload
-(fset 'postnews 'gnus-post-news)
+(defalias 'postnews 'gnus-post-news)
 
 (defun gnus-copy-article-buffer (&optional article-buffer)
   ;; make a copy of the article buffer with all text properties removed
@@ -475,6 +480,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 		    (news-reply-yank-original nil)
 		  (while yank
 		    (save-window-excursion
+		      (set-buffer gnus-summary-buffer)
 		      (gnus-summary-select-article nil nil nil (car yank))
 		      (gnus-summary-remove-process-mark (car yank)))
 		    (let ((mail-reply-buffer gnus-article-copy))
@@ -656,9 +662,10 @@ will attempt to use the foreign server to post the article."
     ;; If NNTP server is opened by gnus-inews-news, close it by myself.
     (or server-running
 	(gnus-close-server (gnus-find-method-for-group gnus-newsgroup-name)))
-    (bury-buffer)
-    ;; Restore last window configuration.
-    (and gnus-prev-winconf (set-window-configuration gnus-prev-winconf))))
+    (let ((conf gnus-prev-winconf))
+      (bury-buffer)
+      ;; Restore last window configuration.
+      (and conf (set-window-configuration conf)))))
 
 (defun gnus-inews-check-post ()
   "Check whether the post looks ok."
@@ -1089,7 +1096,7 @@ a program specified by the rest of the value."
 		(t
 		 ;; Suggested by hyoko@flab.fujitsu.junet.
 		 ;; Save article in Unix mail format by default.
-		 (gnus-make-directory fcc-file)
+		 (gnus-make-directory (file-name-directory fcc-file))
 		 (if (and gnus-author-copy-saver
 			  (not (eq gnus-author-copy-saver 'rmail-output)))
 		     (funcall gnus-author-copy-saver fcc-file)
@@ -1286,6 +1293,7 @@ Customize the variable gnus-mail-reply-method to use another mailer."
   "Forward the current message to another user.
 Customize the variable gnus-mail-forward-method to use another mailer."
   (interactive "P")
+  (gnus-set-global-variables)
   (gnus-summary-select-article t)
   (gnus-copy-article-buffer)
   (let ((gnus-newsgroup-name gnus-newsgroup-name))
@@ -1304,6 +1312,7 @@ Customize the variable gnus-mail-forward-method to use another mailer."
 Customize the variable `gnus-mail-other-window-method' to use another
 mailer."
   (interactive)
+  (gnus-set-global-variables)
   (let ((gnus-newsgroup-name gnus-newsgroup-name))
     (funcall gnus-mail-other-window-method)))
 
@@ -1332,32 +1341,31 @@ mailer."
 	(erase-buffer)
 	(save-excursion
 	  (gnus-copy-article-buffer)
-	  (set-buffer gnus-article-copy)
-	  (if (and (boundp 'gnus-reply-to-function)
-		   gnus-reply-to-function)
-	      (save-excursion
-		(save-restriction
-		  (gnus-narrow-to-headers)
-		  (setq follow-to (funcall gnus-reply-to-function group)))))
-	  (setq from (mail-fetch-field "from"))
-	  (setq date (or (mail-fetch-field "date") 
-			 (header-date gnus-current-headers)))
-	  (and from
-	       (let ((stop-pos 
-		      (string-match "  *at \\|  *@ \\| *(\\| *<" from)))
-		 (setq message-of
-		       (concat (if stop-pos (substring from 0 stop-pos) from)
-			       "'s message of " date))))
-	  (setq sender (mail-fetch-field "sender"))
-	  (setq subject (or (mail-fetch-field "subject")
-			    "Re: none"))
-	  (or (string-match "^[Rr][Ee]:" subject)
-	      (setq subject (concat "Re: " subject)))
-	  (setq cc (mail-fetch-field "cc"))
-	  (setq reply-to (mail-fetch-field "reply-to"))
-	  (setq references (mail-fetch-field "references"))
-	  (setq message-id (mail-fetch-field "message-id")))
-	(setq news-reply-yank-from (or from "(nobody)"))
+	  (save-restriction
+	    (set-buffer gnus-article-copy)
+	    (gnus-narrow-to-headers)
+	    (if (and (boundp 'gnus-reply-to-function)
+		     gnus-reply-to-function)
+		(setq follow-to (funcall gnus-reply-to-function group)))
+	    (setq from (mail-fetch-field "from"))
+	    (setq date (or (mail-fetch-field "date") 
+			   (header-date gnus-current-headers)))
+	    (and from
+		 (let ((stop-pos 
+			(string-match "  *at \\|  *@ \\| *(\\| *<" from)))
+		   (setq message-of
+			 (concat (if stop-pos (substring from 0 stop-pos) from)
+				 "'s message of " date))))
+	    (setq sender (mail-fetch-field "sender"))
+	    (setq subject (or (mail-fetch-field "subject")
+			      "Re: none"))
+	    (or (string-match "^[Rr][Ee]:" subject)
+		(setq subject (concat "Re: " subject)))
+	    (setq cc (mail-fetch-field "cc"))
+	    (setq reply-to (mail-fetch-field "reply-to"))
+	    (setq references (mail-fetch-field "references"))
+	    (setq message-id (mail-fetch-field "message-id")))
+	  (setq news-reply-yank-from (or from "(nobody)")))
 	(setq news-reply-yank-message-id
 	      (or message-id "(unknown Message-ID)"))
 
@@ -1408,6 +1416,7 @@ mailer."
 		  (run-hooks 'news-reply-header-hook))
 	      (while yank
 		(save-window-excursion
+		  (set-buffer gnus-summary-buffer)
 		  (gnus-summary-select-article nil nil nil (car yank))
 		  (gnus-summary-remove-process-mark (car yank)))
 		(save-excursion
@@ -1484,7 +1493,8 @@ mailer."
     (re-search-forward "^To: " nil t)
     (gnus-configure-windows 'mail-forward)
     ;; You have a chance to arrange the message.
-    (run-hooks 'gnus-mail-forward-hook)))
+    (run-hooks 'gnus-mail-forward-hook)
+    (run-hooks 'gnus-mail-hook)))
 
 (defun gnus-forward-using-post (&optional buffer)
   (let* ((forward-buffer (or buffer (current-buffer))) 
@@ -1502,7 +1512,8 @@ mailer."
     (use-local-map (copy-keymap (current-local-map)))
     (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
     (make-local-variable 'gnus-prev-winconf)
-    (setq gnus-prev-winconf winconf)))
+    (setq gnus-prev-winconf winconf)
+    (run-hooks 'gnus-mail-hook)))
 
 (defun gnus-article-mail (yank)
   "Send a reply to the address near point.

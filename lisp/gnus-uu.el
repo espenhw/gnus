@@ -1357,6 +1357,7 @@ The headers will be included in the sequence they are matched.")
   (let* ((totfiles (gnus-uu-ls-r gnus-uu-work-dir))
 	 (ofiles files)
 	 file did-unpack)
+    (gnus-uu-add-file totfiles)
     (while files
       (setq file (cdr (assq 'name (car files))))
       (if (and (not (member file ignore))
@@ -1368,6 +1369,7 @@ The headers will be included in the sequence they are matched.")
 		(message "Error during unpacking of %s" file))
 	    (let* ((newfiles (gnus-uu-ls-r gnus-uu-work-dir))
 		   (nfiles newfiles))
+	      (gnus-uu-add-file newfiles)
 	      (while nfiles
 		(or (member (car nfiles) totfiles)
 		    (setq ofiles (cons (list (cons 'name (car nfiles))
@@ -1541,7 +1543,7 @@ uuencode and adds MIME headers.")
 (defvar gnus-uu-post-include-before-composing nil
   "Non-nil means that gnus-uu will ask for a file to encode before you compose the article.
 If this variable is t, you can either include an encoded file with
-\\<gnus-uu-post-reply-mode-map>\\[gnus-uu-post-insert-binary-in-article] or have one included for you when you post the article.")
+\\[gnus-uu-post-insert-binary-in-article] or have one included for you when you post the article.")
 
 (defvar gnus-uu-post-length 990
   "Maximum length of an article.
@@ -1577,7 +1579,6 @@ is t.")
 
   (use-local-map (copy-keymap (current-local-map)))
   (local-set-key "\C-c\C-c" 'gnus-summary-edit-article-done)
-  (local-set-key "\C-c\C-f\C-a" 'gnus-uu-post-reply-summary)
   (local-set-key "\C-c\C-c" 'gnus-uu-post-news-inews)
   (local-set-key "\C-c\C-s" 'gnus-uu-post-news-inews)
   (local-set-key "\C-c\C-i" 'gnus-uu-post-insert-binary-in-article)

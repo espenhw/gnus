@@ -312,12 +312,13 @@ Example:
 (defun nnmail-move-inbox (inbox tofile)
   (let ((inbox (file-truename
 		(expand-file-name (substitute-in-file-name inbox))))
-	(tofile (nnmail-make-complex-temp-name (expand-file-name tofile)))
 	movemail popmail errors)
     ;; Check whether the inbox is to be moved to the special tmp dir. 
     (if nnmail-tmp-directory
 	(setq tofile (concat (file-name-as-directory nnmail-tmp-directory)
 			     (file-name-nondirectory tofile))))
+    ;; Make the filename unique.
+    (setq tofile (nnmail-make-complex-temp-name (expand-file-name tofile)))
     ;; If getting from mail spool directory,
     ;; use movemail to move rather than just renaming,
     ;; so as to interlock with the mailer.
@@ -433,10 +434,15 @@ nn*-request-list should have been called before calling this function."
       (write-region 1 (point-max) (expand-file-name file-name) nil 'nomesg)
       (kill-buffer (current-buffer)))))
 
-(defun nnmail-split-incoming (incoming func &optional dont-kill)
+(defun nnmail-split-incoming (incoming func &optional dont-kill group)
   "Go through the entire INCOMING file and pick out each individual mail.
 FUNC will be called with the buffer narrowed to each mail."
   (let ((delim (concat "^" rmail-unix-mail-delimiter))
+	;; If this is a group-specific split, we bind the split
+	;; methods to just this group.
+	(nnmail-split-methods (if (and group (eq nnmail-spool-file 'procmail))
+				  (list (list group ""))
+				nnmail-split-methods))
 	start end content-length do-search)
     (save-excursion
       (set-buffer (get-buffer-create " *nnmail incoming*"))
@@ -457,7 +463,7 @@ FUNC will be called with the buffer narrowed to each mail."
 	    ;; Look for a Content-Length header.
 	    (if (not (save-excursion
 		       (and (re-search-backward 
-			     "^Content-Length: \\([0-9]+\\)" nil t)
+			     "^Content-Length: \\([0-9]+\\)" start t)
 			    (setq content-length (string-to-int
 						  (buffer-substring 
 						   (match-beginning 1)
@@ -500,51 +506,58 @@ FUNC will be called with the group name to determine the article number."
 	(obuf (current-buffer))
 	(beg (point-min))
 	end found group-art)
-    (save-excursion
-      ;; Find headers.
-      (goto-char beg)
-      (setq end (if (search-forward "\n\n" nil t) (point) (point-max)))
-      (set-buffer (get-buffer-create " *nnmail work*"))
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
-      ;; Copy the headers into the work buffer.
-      (insert-buffer-substring obuf beg end)
-      ;; Fold continuation lines.
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	(replace-match " " t t))
-      (if (and (symbolp nnmail-split-methods)
-	       (fboundp nnmail-split-methods))
-	  (setq group-art
-		(mapcar
-		 (lambda (group) (cons group (funcall func group)))
-		 (funcall nnmail-split-methods)))
-	;; Go throught the split methods to find a match.
-	(while (and methods (or nnmail-crosspost (not group-art)))
-	  (goto-char (point-max))
-	  (if (or (cdr methods)
-		  (not (equal "" (nth 1 (car methods)))))
-	      (if (and (condition-case () 
-			   (if (stringp (nth 1 (car methods)))
-			       (re-search-backward
-				(car (cdr (car methods))) nil t)
-			     ;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
-			     (funcall (nth 1 (car methods)) 
-				      (car (car methods))))
-			 (error nil))
-		       ;; Don't enter the article into the same group twice.
-		       (not (assoc (car (car methods)) group-art)))
-		  (setq group-art
-			(cons (cons (car (car methods))
-				    (funcall func (car (car methods)))) 
-			      group-art)))
-	    (or group-art
-		(setq group-art 
-		      (list (cons (car (car methods)) 
-				  (funcall func (car (car methods))))))))
-	  (setq methods (cdr methods))))
-      (kill-buffer (current-buffer))
-      group-art)))
+    (if (= (length methods) 1)
+	;; If there is only just one group to put everything in, we
+	;; just return a list with just this one method in.
+	(setq group-art
+	      (list (cons (car (car methods))
+			  (funcall func (car (car methods))))))
+      ;; We do actual comparison.
+      (save-excursion
+	;; Find headers.
+	(goto-char beg)
+	(setq end (if (search-forward "\n\n" nil t) (point) (point-max)))
+	(set-buffer (get-buffer-create " *nnmail work*"))
+	(buffer-disable-undo (current-buffer))
+	(erase-buffer)
+	;; Copy the headers into the work buffer.
+	(insert-buffer-substring obuf beg end)
+	;; Fold continuation lines.
+	(goto-char (point-min))
+	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	  (replace-match " " t t))
+	(if (and (symbolp nnmail-split-methods)
+		 (fboundp nnmail-split-methods))
+	    (setq group-art
+		  (mapcar
+		   (lambda (group) (cons group (funcall func group)))
+		   (funcall nnmail-split-methods)))
+	  ;; Go throught the split methods to find a match.
+	  (while (and methods (or nnmail-crosspost (not group-art)))
+	    (goto-char (point-max))
+	    (if (or (cdr methods)
+		    (not (equal "" (nth 1 (car methods)))))
+		(if (and (condition-case () 
+			     (if (stringp (nth 1 (car methods)))
+				 (re-search-backward
+				  (car (cdr (car methods))) nil t)
+			       ;; Suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
+			       (funcall (nth 1 (car methods)) 
+					(car (car methods))))
+			   (error nil))
+			 ;; Don't enter the article into the same group twice.
+			 (not (assoc (car (car methods)) group-art)))
+		    (setq group-art
+			  (cons (cons (car (car methods))
+				      (funcall func (car (car methods)))) 
+				group-art)))
+	      (or group-art
+		  (setq group-art 
+			(list (cons (car (car methods)) 
+				    (funcall func (car (car methods))))))))
+	    (setq methods (cdr methods))))
+	(kill-buffer (current-buffer))
+	group-art))))
 
 (defun nnmail-insert-lines ()
   "Insert how many lines and chars there are in the body of the mail."

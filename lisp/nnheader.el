@@ -184,10 +184,12 @@
 ;; Read the head of an article.
 (defun nnheader-insert-head (file)
   (let ((beg 0)
+	(chop 1024)
 	found)
-    (while (and (eq 1024 (nth 1 (insert-file-contents 
-				 file nil beg (setq beg (+ 1024 beg)))))
-		(search-backward "\n\n" nil t)))))
+    (while (and (eq chop (nth 1 (insert-file-contents 
+				 file nil beg (setq beg (+ chop beg)))))
+		(prog1 (not (search-backward "\n\n" nil t)) 
+		  (goto-char (point-max)))))))
     
 
 (provide 'nnheader)

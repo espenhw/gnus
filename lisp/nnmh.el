@@ -407,7 +407,7 @@
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnmh-directory "Incoming")))
 	   (setq incomings (cons incoming incomings))
-	   (nnmail-split-incoming incoming 'nnmh-save-mail)))
+	   (nnmail-split-incoming incoming 'nnmh-save-mail nil group)))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
       (if incoming 

@@ -37,6 +37,16 @@
 (require 'gnus)
 (require 'gnus-msg)
 
+(defun gnus-summary-save-article-folder (arg)
+  "Append the current article to an mh folder.
+If N is a positive number, save the N next articles.
+If N is a negative number, save the N previous articles.
+If N is nil and any articles have been marked with the process mark,
+save those articles instead."
+  (interactive "P")
+  (let ((gnus-default-article-saver 'gnus-summary-save-in-folder))
+    (gnus-summary-save-article arg)))
+
 (defun gnus-summary-save-in-folder (&optional folder)
   "Save this article to MH folder (using `rcvstore' in MH library).
 Optional argument FOLDER specifies folder name."

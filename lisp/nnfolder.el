@@ -239,22 +239,27 @@ such things as moving mail.  All buffers always get killed upon server close.")
 ;; way.
 
 (defun nnfolder-close-group (group &optional server force)
-  (nnfolder-possibly-change-group group)
-  (save-excursion
-    (set-buffer nnfolder-current-buffer)
-    ;; If the buffer was modified, write the file out now.
-    (and (buffer-modified-p) (save-buffer))
-    (if (or force
-	    nnfolder-always-close)
-	;; If we're shutting the server down, we need to kill the buffer and
-	;; remove it from the open buffer list.  Or, of course, if we're
-	;; trying to minimize our space impact.
-	(progn
-	  (kill-buffer (current-buffer))
-	  (setq nnfolder-buffer-alist (delq (assoc group nnfolder-buffer-alist)
-					    nnfolder-buffer-alist))))
-    (setq nnfolder-current-group nil
-	  nnfolder-current-buffer nil))
+  ;; Make sure we _had_ the group open.
+  (if (or (assoc group nnfolder-buffer-alist)
+	  (equal group nnfolder-current-group))
+      (progn
+	(nnfolder-possibly-change-group group)
+	(save-excursion
+	  (set-buffer nnfolder-current-buffer)
+	  ;; If the buffer was modified, write the file out now.
+	  (and (buffer-modified-p) (save-buffer))
+	  (if (or force
+		  nnfolder-always-close)
+	      ;; If we're shutting the server down, we need to kill the
+	      ;; buffer and remove it from the open buffer list.  Or, of
+	      ;; course, if we're trying to minimize our space impact.
+	      (progn
+		(kill-buffer (current-buffer))
+		(setq nnfolder-buffer-alist (delq (assoc group 
+							 nnfolder-buffer-alist)
+						  nnfolder-buffer-alist)))))))
+  (setq nnfolder-current-group nil
+	nnfolder-current-buffer nil)
   t)
 
 (defun nnfolder-request-list (&optional server)
@@ -508,7 +513,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (save-excursion
     ;; If we're looking for the activation of a specific group, find out
     ;; it's real name and switch to it.
-    (if group (nnfolder-possibly-change-group (gnus-group-real-name group)))
+    (if group (nnfolder-possibly-change-group group))
     ;; If the group alist isn't active, activate it now.
     (if (not nnfolder-group-alist)
 	(progn
@@ -625,7 +630,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		 (nnmail-move-inbox 
 		  (car spools) (concat nnfolder-directory "Incoming")))
 	   (setq incomings (cons incoming incomings))
-	   (nnmail-split-incoming incoming 'nnfolder-save-mail)))
+	   (nnmail-split-incoming incoming 'nnfolder-save-mail nil group)))
 	(setq spools (cdr spools)))
       ;; If we did indeed read any incoming spools, we save all info. 
       (if incoming 

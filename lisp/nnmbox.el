@@ -464,7 +464,7 @@
 		  (car spools) (concat nnmbox-mbox-file "-Incoming")))
 	   (save-excursion
 	     (let ((in-buf (nnmail-split-incoming 
-			    incoming 'nnmbox-save-mail t)))
+			    incoming 'nnmbox-save-mail t group)))
 	       (set-buffer nnmbox-mbox-buffer)
 	       (goto-char (point-max))
 	       (insert-buffer-substring in-buf)
