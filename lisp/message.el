@@ -4665,7 +4665,8 @@ Optional DIGEST will use digest to forward."
 ;;;###autoload
 (defun message-forward-rmail-make-body (forward-buffer)
   (with-current-buffer forward-buffer
-    (rmail-toggle-header 0))
+    (let (rmail-enable-mime)
+      (rmail-toggle-header 0)))
   (message-forward-make-body forward-buffer))
 
 ;;;###autoload
