@@ -1,3 +1,7 @@
+2000-05-13 12:03:29  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-mode): Two parameters for local-variable-p.
+
 2000-05-13 00:54:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-strip-list-identifiers): New function.

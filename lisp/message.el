@@ -1427,7 +1427,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body).
 C-c C-a  mml-attach-file (attach a file as MIME).
 M-RET    message-newline-and-reformat (break the line and reformat)."
   (interactive)
-  (if (local-variable-p 'mml-buffer-list)
+  (if (local-variable-p 'mml-buffer-list (current-buffer))
       (mml-destroy-buffers))
   (kill-all-local-variables)
   (set (make-local-variable 'message-reply-buffer) nil)
