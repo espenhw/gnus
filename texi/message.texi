@@ -702,9 +702,9 @@ care in handling it.
 
 @subsection Using PGP/MIME
 
-PGP/MIME require an external OpenPGP implementation, such as GNU Privacy
-Guard (@code{http://www.gnupg.org/}.  It also require a Emacs interface
-to it, such as Mailcrypt (available from
+PGP/MIME requires an external OpenPGP implementation, such as GNU
+Privacy Guard (@code{http://www.gnupg.org/}).  It also requires an Emacs
+interface to it, such as Mailcrypt (available from
 @code{http://www.nb.net/~lbudney/linux/software/mailcrypt.html}) or
 Florian Weimer's @code{gpg.el}.
 
