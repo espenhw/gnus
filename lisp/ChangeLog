@@ -1,4 +1,44 @@
+Tue May  9 04:49:53 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-rebuild-remove-articles): Would make all articles
+	read and go to the wrong article.
+	(gnus-summary-update-lines): Allow highlighting of a region.
+
+	* gnus-kill.el (gnus-kill-file-mode-map): Three commands bound to
+	the same key.
+
+	* gnus-vis.el: Hilit code transferred here.
+
+	* gnus-hilit.el: Obsolete file.
+
+	* gnus-cite.el (gnus-cite-face-list): New file.
+
+	* gnus.el (gnus-member-of-valid): New function.
+
+	* gnus-score.el (gnus-score-integer): Reversed comparison.
+
+	* gnus.el (gnus-maintainer): New address.
+	(gnus-get-unread-articles): Secondary groups would be doubly
+	activated. 
+
+Mon May  8 11:11:22 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-post-news): Use process/prefix.
+	(gnus-mail-reply-using-mail): Use process/prefix.
+	(gnus-summary-cancel-article): Ditto.
+
+	* gnus-vis.el (gnus-carpal-mode): New mode and stuff.
+
+	* gnus.el (gnus-configure-windows): New implementation.
+	(gnus-window-configuration): New syntax.
+	(gnus-windows-old-to-new): Conversion between old and new.
+	(gnus-split-window): Obsolete variable.
+	(gnus-remove-some-windows): New function.
+	(gnus-bug): Put point a different place.
+
 Sun May  7 01:12:04 1995  Lars Magne Ingebrigtsen  <larsi@bera.ifi.uio.no>
+
+        * gnus.el: 0.65 is released.
 
 	* gnus.el (gnus-get-unread-articles): Would not activate some
 	native groups. 
