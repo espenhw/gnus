@@ -1248,7 +1248,7 @@ functions")
 			    gnus-newsgroup-articles
 			    classification)))
 	;; process them
-	(gnus-message 5 "%s %d %s articles with classification %s, check %s"
+	(gnus-message 5 "%s %d %s articles: classification %s, spam-check %s"
 		      (if unregister "Unregistering" "Registering")
 		      (length articles)
 		      (if specific-articles "specific" "")
@@ -1280,8 +1280,10 @@ functions")
 	   type
 	   cell-list))
 
-      (gnus-error 5 (format "%s called with bad ID, type, classification, check, or group"
-			    "spam-log-processing-to-registry")))))
+      (gnus-error 
+       5 
+       (format "%s call with bad ID, type, classification, spam-check, or group"
+	       "spam-log-processing-to-registry")))))
 
 ;;; check if a ham- or spam-processor registration has been done
 (defun spam-log-registered-p (id type)
@@ -1290,8 +1292,10 @@ functions")
 	     (spam-process-type-valid-p type))
 	(cdr-safe (gnus-registry-fetch-extra id type))
       (progn
-	(gnus-error 5 (format "%s called with bad ID, type, classification, or check"
-			      "spam-log-registered-p"))
+	(gnus-error 
+	 5 
+	 (format "%s called with bad ID, type, classification, or spam-check"
+		 "spam-log-registered-p"))
 	nil))))
 
 ;;; check what a ham- or spam-processor registration says
@@ -1326,8 +1330,10 @@ functions")
 		(setq found t))))
 	  found)
       (progn
-	(gnus-error 5 (format "%s called with bad ID, type, classification, or check"
-			      "spam-log-unregistration-needed-p"))
+	(gnus-error 
+	 5 
+	 (format "%s called with bad ID, type, classification, or spam-check"
+		 "spam-log-unregistration-needed-p"))
 	nil))))
 
 
@@ -1350,7 +1356,7 @@ functions")
 	   type
 	   new-cell-list))
       (progn
-	(gnus-error 5 (format "%s called with bad ID, type, check, or group"
+	(gnus-error 5 (format "%s call with bad ID, type, spam-check, or group"
 			      "spam-log-undo-registration"))
 	nil))))
 

@@ -1,3 +1,10 @@
+2004-02-05  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-register-routine)
+	(spam-log-processing-to-registry, spam-log-registered-p)
+	(spam-log-unregistration-needed-p, spam-log-undo-registration):
+	change "check" to "spam-check" for semi-clarity
+
 2004-02-05  Jesper Harder  <harder@ifa.au.dk>
 
 	* pop3.el: Require nnheader.
