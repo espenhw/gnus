@@ -1922,7 +1922,8 @@ increase the score of each group you read."
              ["Fetch current thread" gnus-summary-refer-thread t]
              ["Fetch article with id..." gnus-summary-refer-article t]
              ["Setup Mailing List Params" gnus-mailing-list-insinuate t]
-             ["Redisplay" gnus-summary-show-article t])))
+             ["Redisplay" gnus-summary-show-article t]
+             ["Raw article" gnus-summary-show-raw-article t])))
       (easy-menu-define
        gnus-summary-article-menu gnus-summary-mode-map ""
        (cons "Article" innards))
@@ -4998,22 +4999,21 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    ;; Subject.
 	    (progn
 	      (goto-char p)
-	      (if (search-forward "\nsubject: " nil t)
+	      (if (search-forward "\nsubject:" nil t)
 		  (funcall gnus-decode-encoded-word-function
 			   (nnheader-header-value))
 		"(none)"))
 	    ;; From.
 	    (progn
 	      (goto-char p)
-	      (if (or (search-forward "\nfrom: " nil t)
-		      (search-forward "\nfrom:" nil t))
+	      (if (search-forward "\nfrom:" nil t)
 		  (funcall gnus-decode-encoded-word-function
 			   (nnheader-header-value))
 		"(nobody)"))
 	    ;; Date.
 	    (progn
 	      (goto-char p)
-	      (if (search-forward "\ndate: " nil t)
+	      (if (search-forward "\ndate:" nil t)
 		  (nnheader-header-value) ""))
 	    ;; Message-ID.
 	    (progn
@@ -5030,7 +5030,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    ;; References.
 	    (progn
 	      (goto-char p)
-	      (if (search-forward "\nreferences: " nil t)
+	      (if (search-forward "\nreferences:" nil t)
 		  (progn
 		    (setq end (point))
 		    (prog1
@@ -5047,7 +5047,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		;; Get the references from the in-reply-to header if there
 		;; were no references and the in-reply-to header looks
 		;; promising.
-		(if (and (search-forward "\nin-reply-to: " nil t)
+		(if (and (search-forward "\nin-reply-to:" nil t)
 			 (setq in-reply-to (nnheader-header-value))
 			 (string-match "<[^>]+>" in-reply-to))
 		    (let (ref2)
@@ -5077,7 +5077,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    ;; Xref.
 	    (progn
 	      (goto-char p)
-	      (and (search-forward "\nxref: " nil t)
+	      (and (search-forward "\nxref:" nil t)
 		   (nnheader-header-value)))
 	    ;; Extra.
 	    (when gnus-extra-headers
@@ -5086,7 +5086,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		(while extra
 		  (goto-char p)
 		  (when (search-forward
-			 (concat "\n" (symbol-name (car extra)) ": ") nil t)
+			 (concat "\n" (symbol-name (car extra)) ":") nil t)
 		    (push (cons (car extra) (nnheader-header-value))
 			  out))
 		  (pop extra))
@@ -7648,6 +7648,11 @@ without any article massaging functions being run."
   (gnus-summary-goto-subject gnus-current-article)
   (gnus-summary-position-point))
 
+(defun gnus-summary-show-raw-article ()
+  "Show the raw article without any article massaging functions being run."
+  (interactive)
+  (gnus-summary-show-article t))
+
 (defun gnus-summary-verbose-headers (&optional arg)
   "Toggle permanent full header display.
 If ARG is a positive number, turn header display on.
@@ -9552,7 +9557,10 @@ pipe those articles instead."
   (require 'gnus-art)
   (let ((gnus-default-article-saver 'gnus-summary-save-in-pipe))
     (gnus-summary-save-article arg t))
-  (gnus-configure-windows 'pipe))
+  (let ((buffer (get-buffer "*Shell Command Output*")))
+    (if (and buffer 
+             (with-current-buffer buffer (> (point-max) (point-min))))
+        (gnus-configure-windows 'pipe))))
 
 (defun gnus-summary-save-article-mail (&optional arg)
   "Append the current article to an mail file.

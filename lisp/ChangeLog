@@ -1,3 +1,37 @@
+2001-07-13 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-summary-line-format): Add %o.
+
+	* gnus-sum.el (gnus-summary-pipe-output): Don't configure as pipe
+	unless shell outputs something.
+
+2001-07-13 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-boring-article-headers): Better doc. 
+	(article-hide-headers): Better regexp.
+	Suggested by Matt Swift <swift@alum.mit.edu>.
+
+	* nnheader.el (nnheader-max-head-length): Better doc.
+	(nnheader-header-value): Skip spaces.
+	(nnheader-parse-head): Remove space.
+	Suggested by Matt Swift <swift@alum.mit.edu>.
+
+	* gnus-sum.el (gnus-summary-show-raw-article): New function.
+	(gnus-get-newsgroup-headers): Remove space.
+
+2001-07-12 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-msg-treat-broken-reply-to): Add force.
+	(gnus-summary-reply): Use it.
+	(gnus-summary-reply-broken-reply-to): New.
+	(gnus-msg-force-broken-reply-to): New.
+
+	* mm-view.el (mm-inline-text): Showing as text/plain when error.
+
+2001-07-12 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-draft.el (gnus-draft-setup): Restore gnus-newsgroup-name.
+
 2001-07-12 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-external-terminal-program): New variable.

@@ -94,9 +94,10 @@
 (defun gnus-draft-edit-message ()
   "Enter a mail/post buffer to edit and send the draft."
   (interactive)
-  (let ((article (gnus-summary-article-number)))
+  (let ((article (gnus-summary-article-number))
+        (group gnus-newsgroup-name))
     (gnus-summary-mark-as-read article gnus-canceled-mark)
-    (gnus-draft-setup article gnus-newsgroup-name t)
+    (gnus-draft-setup article group t)
     (set-buffer-modified-p t)
     (save-excursion
       (save-restriction
@@ -104,7 +105,7 @@
         (message-remove-header "date")))
     (save-buffer)
     (let ((gnus-verbose-backends nil))
-      (gnus-request-expire-articles (list article) gnus-newsgroup-name t))
+      (gnus-request-expire-articles (list article) group t))
     (push
      `((lambda ()
 	 (when (gnus-buffer-exists-p ,gnus-summary-buffer)
@@ -238,6 +239,8 @@
       (gnus-backlog-remove-article group narticle)
       (when (and ga
 		 (ignore-errors (setq ga (car (read-from-string ga)))))
+        (setq gnus-newsgroup-name 
+              (if (equal (car ga) "") nil (car ga)))
 	(setq message-post-method
 	      `(lambda (arg)
 		 (gnus-post-method arg ,(car ga))))
