@@ -62,21 +62,6 @@ The first regexp group should match the Supercite attribution.")
 (defvar gnus-cite-minimum-match-count 2
   "Minimum number of identical prefixes before we believe it's a citation.")
 
-;see gnus-cus.el
-;(defvar gnus-cite-face-list 
-;  (if (eq gnus-display-type 'color)
-;      (if (eq gnus-background-mode 'dark) 'light 'dark)
-;    '(italic))
-;  "Faces used for displaying different citations.
-;It is either a list of face names, or one of the following special
-;values:
-
-;dark: Create faces from `gnus-face-dark-name-list'.
-;light: Create faces from `gnus-face-light-name-list'.
-
-;The variable `gnus-make-foreground' determines whether the created
-;faces change the foreground or the background colors.")
-
 (defvar gnus-cite-attribution-prefix "in article\\|in <"
   "Regexp matching the beginning of an attribution line.")
 
@@ -85,32 +70,38 @@ The first regexp group should match the Supercite attribution.")
   "Regexp matching the end of an attribution line.
 The text matching the first grouping will be used as a button.")
 
-;see gnus-cus.el
-;(defvar gnus-cite-attribution-face 'underline
-;  "Face used for attribution lines.
-;It is merged with the face for the cited text belonging to the attribution.")
+(defvar gnus-cite-attribution-face 'underline
+  "Face used for attribution lines.
+It is merged with the face for the cited text belonging to the attribution.")
 
-;see gnus-cus.el
-;(defvar gnus-cite-hide-percentage 50
-;  "Only hide cited text if it is larger than this percent of the body.")
+(defvar gnus-cite-face-list 
+  (cond ((not (eq gnus-display-type 'color))
+	 '(italic))
+	((eq gnus-background-mode 'dark)
+	 (mapcar 'gnus-make-face 
+		 gnus-face-light-name-list))
+	(t 
+	 (mapcar 'gnus-make-face 
+		 gnus-face-dark-name-list)))
+  "List of faces used for highlighting citations. 
 
-;see gnus-cus.el
-;(defvar gnus-cite-hide-absolute 10
-;  "Only hide cited text if there is at least this number of cited lines.")
+When there are citations from multiple articles in the same message,
+Gnus will try to give each citation from each article its own face.
+This should make it easier to see who wrote what.")
 
-;see gnus-cus.el
-;(defvar gnus-face-light-name-list
-;  '("light blue" "light cyan" "light yellow" "light pink"
-;    "pale green" "beige" "orange" "magenta" "violet" "medium purple"
-;    "turquoise")
-;  "Names of light colors.")
+(defvar gnus-cite-hide-percentage 50
+  "Only hide excess citation if above this percentage of the body.")
 
-;see gnus-cus.el
-;(defvar gnus-face-dark-name-list
-;  '("dark salmon" "firebrick"
-;    "dark green" "dark orange" "dark khaki" "dark violet"
-;    "dark turquoise")
-;  "Names of dark colors.")
+(defvar gnus-cite-hide-absolute 10
+  "Only hide excess citation if above this number of lines in the body.")
+
+(defun gnus-custom-import-cite-face-list (custom alist)
+  ;; Backward compatible grokking of light and dark.
+  (cond ((eq alist 'light)
+	 (setq alist (mapcar 'gnus-make-face gnus-face-light-name-list)))
+	((eq alist 'dark)
+	 (setq alist (mapcar 'gnus-make-face gnus-face-dark-name-list))))
+  (funcall (custom-super custom 'import) custom alist))
 
 ;;; Internal Variables:
 

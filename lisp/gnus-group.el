@@ -211,6 +211,69 @@ variable.")
 		       file))))))
   "Alist of useful group-server pairs.")
 
+(defvar gnus-group-highlight
+  (cond 
+   ((not (eq gnus-display-type 'color))
+    '((mailp . bold)
+      ((= unread 0) . italic)))
+   ((eq gnus-background-mode 'dark)
+    `(((and (not mailp) (eq level 1)) .
+       ,(custom-face-lookup "PaleTurquoise" nil nil t))
+      ((and (not mailp) (eq level 2)) .
+       ,(custom-face-lookup "turquoise" nil nil t))
+      ((and (not mailp) (eq level 3)) .
+       ,(custom-face-lookup "MediumTurquoise" nil nil t))
+      ((and (not mailp) (>= level 4)) .
+       ,(custom-face-lookup "DarkTurquoise" nil nil t))
+      ((and mailp (eq level 1)) .
+       ,(custom-face-lookup "aquamarine1" nil nil t))
+      ((and mailp (eq level 2)) .
+       ,(custom-face-lookup "aquamarine2" nil nil t))
+      ((and mailp (eq level 3)) .
+       ,(custom-face-lookup "aquamarine3" nil nil t))
+      ((and mailp (>= level 4)) .
+       ,(custom-face-lookup "aquamarine4" nil nil t))
+      ))
+   (t
+    `(((and (not mailp) (<= level 3)) .
+       ,(custom-face-lookup "ForestGreen" nil nil t))
+      ((and (not mailp) (eq level 4)) .
+       ,(custom-face-lookup "DarkGreen" nil nil t))
+      ((and (not mailp) (eq level 5)) .
+       ,(custom-face-lookup "CadetBlue4" nil nil t))
+      ((and mailp (eq level 1)) .
+       ,(custom-face-lookup "DeepPink3" nil nil t))
+      ((and mailp (eq level 2)) .
+       ,(custom-face-lookup "HotPink3" nil nil t))
+      ((and mailp (eq level 3)) .
+       ,(custom-face-lookup "dark magenta" nil nil t))
+      ((and mailp (eq level 4)) .
+       ,(custom-face-lookup "DeepPink4" nil nil t))
+      ((and mailp (> level 4)) .
+       ,(custom-face-lookup "DarkOrchid4" nil nil t))
+      )))
+  "Controls the highlighting of group buffer lines. 
+
+Below is a list of `Form'/`Face' pairs.  When deciding how a a
+particular group line should be displayed, each form is
+evaluated.  The content of the face field after the first true form is
+used.  You can change how those group lines are displayed by
+editing the face field.  
+
+It is also possible to change and add form fields, but currently that
+requires an understanding of Lisp expressions.  Hopefully this will
+change in a future release.  For now, you can use the following
+variables in the Lisp expression:
+
+group: The name of the group.
+unread: The number of unread articles in the group.
+method: The select method used.
+mailp: Whether it's a mail group or not.
+level: The level of the group.
+score: The score of the group.
+ticked: The number of ticked articles.")
+
+
 ;;; Internal variables
 
 (defvar gnus-group-sort-alist-function 'gnus-group-sort-flat
@@ -565,7 +628,6 @@ variable.")
        ["Send a bug report" gnus-bug t]
        ["Send a mail" gnus-group-mail t]
        ["Post an article..." gnus-group-post-news t]
-       ["Customize score file" gnus-score-customize t]
        ["Check for new news" gnus-group-get-new-news t]     
        ["Activate all groups" gnus-activate-all-groups t]
        ["Delete bogus groups" gnus-group-check-bogus-groups t]

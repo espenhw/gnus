@@ -1,3 +1,15 @@
+Tue Sep 17 02:37:26 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-edit.el: Removed.
+
+	* custom.el: Removed.
+
+	* gnus-cus.el: Removed.
+
+Mon Sep 16 05:59:45 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.35 is released.
+
 Sun Sep 15 00:47:08 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
 
 	* nnmail.el (nnmail-default-file-modes): New default.

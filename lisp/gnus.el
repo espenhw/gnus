@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.35"
+(defconst gnus-version-number "0.36"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -39,6 +39,61 @@
 
 (defvar gnus-play-startup-jingle nil
   "If non-nil, play the Gnus jingle at startup.")
+
+;;; Kludges to help the transition from the old `custom.el'.
+
+;; XEmacs and Emacs 19.29 facep does different things.
+(defalias 'custom-facep
+  (cond ((fboundp 'find-face)
+	 'find-face)
+	((fboundp 'facep)
+	 'facep)
+	(t
+	 'ignore)))
+
+;; The XEmacs people think this is evil, so it must go.
+(defun custom-face-lookup (&optional fg bg stipple bold italic underline)
+  "Lookup or create a face with specified attributes."
+  (let ((name (intern (format "custom-face-%s-%s-%s-%S-%S-%S"
+			      (or fg "default")
+			      (or bg "default")
+			      (or stipple "default")
+			      bold italic underline))))
+    (if (and (custom-facep name)
+	     (fboundp 'make-face))
+	()
+      (copy-face 'default name)
+      (when (and fg
+		 (not (string-equal fg "default")))
+	(condition-case ()
+	    (set-face-foreground name fg)
+	  (error nil)))
+      (when (and bg
+		 (not (string-equal bg "default")))
+	(condition-case ()
+	    (set-face-background name bg)
+	  (error nil)))
+      (when (and stipple
+		 (not (string-equal stipple "default"))
+		 (not (eq stipple 'custom:asis))
+		 (fboundp 'set-face-stipple))
+	(set-face-stipple name stipple))
+      (when (and bold
+		 (not (eq bold 'custom:asis)))
+	(condition-case ()
+	    (make-face-bold name)
+	  (error nil)))
+      (when (and italic
+		 (not (eq italic 'custom:asis)))
+	(condition-case ()
+	    (make-face-italic name)
+	  (error nil)))
+      (when (and underline
+		 (not (eq underline 'custom:asis)))
+	(condition-case ()
+	    (set-face-underline-p name t)
+	  (error nil))))
+    name))
 
 ;;; Internal variables
 
@@ -249,7 +304,6 @@
 
 ;;; Load the compatability functions.
 
-(require 'gnus-cus)
 (require 'gnus-ems)
 
 

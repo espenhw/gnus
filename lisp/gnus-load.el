@@ -425,6 +425,71 @@ following hook:
   "Function run when a group level is changed.
 It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 
+;;; Face thingies.
+
+;; The following is just helper functions and data, not meant to be set
+;; by the user.
+(defun gnus-make-face (color)
+  ;; Create entry for face with COLOR.
+  (custom-face-lookup color nil nil nil nil nil))
+
+(defvar gnus-face-light-name-list
+  '("light blue" "light cyan" "light yellow" "light pink"
+    "pale green" "beige" "orange" "magenta" "violet" "medium purple"
+    "turquoise"))
+
+(defvar gnus-face-dark-name-list
+  '("MidnightBlue" "firebrick" "dark green" "OrangeRed" 
+    "dark khaki" "dark violet" "SteelBlue4"))
+; CornflowerBlue SeaGreen OrangeRed SteelBlue4 DeepPink3
+; DarkOlviveGreen4 
+
+(defvar gnus-visual 
+  '(summary-highlight group-highlight article-highlight 
+		      mouse-face
+		      summary-menu group-menu article-menu
+		      tree-highlight menu highlight
+		      browse-menu server-menu
+		      page-marker tree-menu binary-menu pick-menu
+		      grouplens-menu)
+  "Enable visual features.
+If `visual' is disabled, there will be no menus and few faces.  Most of
+the visual customization options below will be ignored.  Gnus will use
+less space and be faster as a result.")
+
+(defvar gnus-mouse-face
+  (condition-case ()
+      (if (gnus-visual-p 'mouse-face 'highlight)
+	  (if (boundp 'gnus-mouse-face)
+	      gnus-mouse-face
+	    'highlight)
+	'default)
+    (error nil))
+  "Face used for group or summary buffer mouse highlighting.
+The line beneath the mouse pointer will be highlighted with this
+face.")
+
+(defvar gnus-article-display-hook
+  (if (and (string-match "xemacs" emacs-version)
+	   (featurep 'xface))
+      '(gnus-article-hide-headers-if-wanted
+	gnus-article-hide-boring-headers
+	gnus-article-treat-overstrike
+	gnus-article-maybe-highlight
+	gnus-article-display-x-face)
+    '(gnus-article-hide-headers-if-wanted
+      gnus-article-hide-boring-headers
+      gnus-article-treat-overstrike
+      gnus-article-maybe-highlight))
+  "Controls how the article buffer will look.
+
+If you leave the list empty, the article will appear exactly as it is
+stored on the disk.  The list entries will hide or highlight various
+parts of the article, making it easier to find the information you
+want.")
+
+
+
 
 ;;; Internal variables
 
@@ -628,7 +693,6 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       (gnus-summary-score-map keymap) gnus-score-save gnus-score-headers
       gnus-current-score-file-nondirectory gnus-score-adaptive
       gnus-score-find-trace gnus-score-file-name)
-     ("gnus-edit" :interactive t gnus-score-customize)
      ("gnus-topic" :interactive t gnus-topic-mode)
      ("gnus-topic" gnus-topic-remove-group)
      ("gnus-salt" :interactive t gnus-pick-mode gnus-binary-mode)

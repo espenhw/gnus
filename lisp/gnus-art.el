@@ -134,17 +134,75 @@ See `gnus-summary-mode-line-format' for a closer description.")
   "*A hook called after an article has been prepared in the article buffer.
 If you want to run a special decoding program like nkf, use this hook.")
 
-;(defvar gnus-article-display-hook nil
-;  "*A hook called after the article is displayed in the article buffer.
-;The hook is designed to change the contents of the article
-;buffer.  Typical functions that this hook may contain are
-;`gnus-article-hide-headers' (hide selected headers),
-;`gnus-article-maybe-highlight' (perform fancy article highlighting),
-;`gnus-article-hide-signature' (hide signature) and
-;`gnus-article-treat-overstrike' (turn \"^H_\" into bold characters).")
-;(add-hook 'gnus-article-display-hook 'gnus-article-hide-headers-if-wanted)
-;(add-hook 'gnus-article-display-hook 'gnus-article-treat-overstrike)
-;(add-hook 'gnus-article-display-hook 'gnus-article-maybe-highlight)
+(defvar gnus-article-button-face 'bold
+  "Face used for highlighting buttons in the article buffer.
+
+An article button is a piece of text that you can activate by pressing
+`RET' or `mouse-2' above it.")
+
+(defvar gnus-article-mouse-face 'highlight
+  "Face used for mouse highlighting in the article buffer.
+
+Article buttons will be displayed in this face when the cursor is
+above them.")
+
+(defvar gnus-signature-face 'italic
+  "Face used for highlighting a signature in the article buffer.")
+
+(defvar gnus-header-face-alist
+  (cond 
+   ((not (eq gnus-display-type 'color))
+    '(("" bold italic)))
+   ((eq gnus-background-mode 'dark)
+    (list 
+     (list "From" nil 
+	   (custom-face-lookup "light blue" nil nil t t nil))
+     (list "Subject" nil 
+	   (custom-face-lookup "pink" nil nil t t nil))
+     (list "Newsgroups:.*," nil
+	   (custom-face-lookup "yellow" nil nil t t nil))
+     (list 
+      "" 
+      (custom-face-lookup "cyan" nil nil t nil nil)
+      (custom-face-lookup "forestgreen" nil nil nil t 
+			  nil))))
+   (t
+    (list
+     (list "From" nil
+	   (custom-face-lookup "MidnightBlue" nil nil t t nil))
+     (list "Subject" nil 
+	   (custom-face-lookup "firebrick" nil nil t t nil))
+     (list "Newsgroups:.*," nil
+	   (custom-face-lookup "indianred" nil nil t t nil))
+     (list ""
+	   (custom-face-lookup 
+	    "DarkGreen" nil nil t nil nil)
+	   (custom-face-lookup "DarkGreen" nil nil
+			       nil t nil)))))
+  "Controls highlighting of article header.
+
+[ This needs to be rewritten in lisp-talk ]
+
+Below is a list of article header names, and the faces used for
+displaying the name and content of the header.  The `Header' field
+should contain the name of the header.  The field actually contains a
+regular expression that should match the beginning of the header line,
+but if you don't know what a regular expression is, just write the
+name of the header.  The second field is the `Name' field, which
+determines how the header name (i. e., the part of the header left
+of the `:') is displayed.  The third field is the `Content' field,
+which determines how the content (i. e., the part of the header right of
+the `:') is displayed.  
+
+If you leave the last `Header' field in the list empty, the `Name' and
+`Content' fields will determine how headers not listed above are
+displayed.  
+
+If you only want to change the display of the name part for a specific
+header, specify `None' in the `Content' field.  Similarly, specify
+`None' in the `Name' field if you only want to leave the name part
+alone.")
+
 
 ;;; Internal variables
 

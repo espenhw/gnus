@@ -342,8 +342,7 @@ of the last successful match.")
   "f" gnus-score-edit-file
   "F" gnus-score-flush-cache
   "t" gnus-score-find-trace
-  "w" gnus-score-find-favourite-words
-  "C" gnus-score-customize)
+  "w" gnus-score-find-favourite-words)
 
 ;; Summary score file commands
 

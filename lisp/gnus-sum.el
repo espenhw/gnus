@@ -422,6 +422,123 @@ automatically when it is selected.")
 (defvar gnus-group-no-more-groups-hook nil
   "*A hook run when returning to group mode having no more (unread) groups.")
 
+(defvar gnus-summary-selected-face 'underline
+  "Face used for highlighting the current article in the summary buffer.")
+
+(defvar gnus-summary-highlight 
+  (cond
+   ((not (eq gnus-display-type 'color))
+    '(((> score default) . bold)
+      ((< score default) . italic)))
+   ((eq gnus-background-mode 'dark)
+    (list
+     (cons 
+      '(= mark gnus-canceled-mark)
+      (custom-face-lookup "yellow" "black" nil
+			  nil nil nil))
+     (cons '(and (> score default) 
+		 (or (= mark gnus-dormant-mark)
+		     (= mark gnus-ticked-mark)))
+	   (custom-face-lookup 
+	    "pink" nil nil t nil nil))
+     (cons '(and (< score default) 
+		 (or (= mark gnus-dormant-mark)
+		     (= mark gnus-ticked-mark)))
+	   (custom-face-lookup "pink" nil nil 
+			       nil t nil))
+     (cons '(or (= mark gnus-dormant-mark)
+		(= mark gnus-ticked-mark))
+	   (custom-face-lookup 
+	    "pink" nil nil nil nil nil))
+
+     (cons
+      '(and (> score default) (= mark gnus-ancient-mark))
+      (custom-face-lookup "medium blue" nil nil t
+			  nil nil))
+     (cons 
+      '(and (< score default) (= mark gnus-ancient-mark))
+      (custom-face-lookup "SkyBlue" nil nil
+			  nil t nil))
+     (cons 
+      '(= mark gnus-ancient-mark)
+      (custom-face-lookup "SkyBlue" nil nil
+			  nil nil nil))
+     (cons '(and (> score default) (= mark gnus-unread-mark))
+	   (custom-face-lookup "white" nil nil t
+			       nil nil))
+     (cons '(and (< score default) (= mark gnus-unread-mark))
+	   (custom-face-lookup "white" nil nil
+			       nil t nil))
+     (cons '(= mark gnus-unread-mark)
+	   (custom-face-lookup
+	    "white" nil nil nil nil nil))
+
+     (cons '(> score default) 'bold)
+     (cons '(< score default) 'italic)))
+   (t
+    (list
+     (cons
+      '(= mark gnus-canceled-mark)
+      (custom-face-lookup
+       "yellow" "black" nil nil nil nil))
+     (cons '(and (> score default) 
+		 (or (= mark gnus-dormant-mark)
+		     (= mark gnus-ticked-mark)))
+	   (custom-face-lookup "firebrick" nil nil
+			       t nil nil))
+     (cons '(and (< score default) 
+		 (or (= mark gnus-dormant-mark)
+		     (= mark gnus-ticked-mark)))
+	   (custom-face-lookup "firebrick" nil nil
+			       nil t nil))
+     (cons 
+      '(or (= mark gnus-dormant-mark)
+	   (= mark gnus-ticked-mark))
+      (custom-face-lookup 
+       "firebrick" nil nil nil nil nil))
+
+     (cons '(and (> score default) (= mark gnus-ancient-mark))
+	   (custom-face-lookup "RoyalBlue" nil nil
+			       t nil nil))
+     (cons '(and (< score default) (= mark gnus-ancient-mark))
+	   (custom-face-lookup "RoyalBlue" nil nil
+			       nil t nil))
+     (cons 
+      '(= mark gnus-ancient-mark)
+      (custom-face-lookup
+       "RoyalBlue" nil nil nil nil nil))
+
+     (cons '(and (> score default) (/= mark gnus-unread-mark))
+	   (custom-face-lookup "DarkGreen" nil nil
+			       t nil nil))
+     (cons '(and (< score default) (/= mark gnus-unread-mark))
+	   (custom-face-lookup "DarkGreen" nil nil
+			       nil t nil))
+     (cons
+      '(/= mark gnus-unread-mark)
+      (custom-face-lookup "DarkGreen" nil nil 
+			  nil nil nil))
+
+     (cons '(> score default) 'bold)
+     (cons '(< score default) 'italic))))
+  "Controls the highlighting of summary buffer lines. 
+
+Below is a list of `Form'/`Face' pairs.  When deciding how a a
+particular summary line should be displayed, each form is
+evaluated.  The content of the face field after the first true form is
+used.  You can change how those summary lines are displayed, by
+editing the face field.  
+
+It is also possible to change and add form fields, but currently that
+requires an understanding of Lisp expressions.  Hopefully this will
+change in a future release.  For now, you can use the following
+variables in the Lisp expression:
+
+score:   The article's score
+default: The default article score.
+below:   The score below which articles are automatically marked as read. 
+mark:    The article's mark.")
+
 ;;; Internal variables
 
 (defvar gnus-scores-exclude-files nil)
@@ -1114,7 +1231,6 @@ increase the score of each group you read."
 	  ["Clear above" gnus-summary-clear-above t])
 	 ["Current score" gnus-summary-current-score t]
 	 ["Set score" gnus-summary-set-score t]
-	 ["Customize score file" gnus-score-customize t]
 	 ["Switch current score file..." gnus-score-change-score-file t]
 	 ["Set mark below..." gnus-score-set-mark-below t]
 	 ["Set expunge below..." gnus-score-set-expunge-below t]
