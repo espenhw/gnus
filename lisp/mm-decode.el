@@ -833,16 +833,16 @@ external if displayed external."
 	    (string= total "'%s'")
 	    (string= total "\"%s\""))
 	(setq uses-stdin nil)
-	(push (mm-quote-arg
+	(push (shell-quote-argument
 	       (gnus-map-function mm-path-name-rewrite-functions file)) out))
        ((string= total "%t")
-	(push (mm-quote-arg (car type-list)) out))
+	(push (shell-quote-argument (car type-list)) out))
        (t
-	(push (mm-quote-arg (or (cdr (assq (intern sub) ctl)) "")) out))))
+	(push (shell-quote-argument (or (cdr (assq (intern sub) ctl)) "")) out))))
     (push (substring method beg (length method)) out)
     (when uses-stdin
       (push "<" out)
-      (push (mm-quote-arg
+      (push (shell-quote-argument
 	     (gnus-map-function mm-path-name-rewrite-functions file))
 	    out))
     (mapconcat 'identity (nreverse out) "")))

@@ -88,14 +88,14 @@ backslash and doublequote.")
 	  (push c out)))
        (range
 	(while (<= b c)
-	  (push (mm-make-char 'ascii b) out)
+	  (push (make-char 'ascii b) out)
 	  (incf b))
 	(setq range nil))
        ((= i (length token))
-	(push (mm-make-char 'ascii c) out))
+	(push (make-char 'ascii c) out))
        (t
 	(when b
-	  (push (mm-make-char 'ascii b) out))
+	  (push (make-char 'ascii b) out))
 	(setq b c))))
     (nreverse out)))
 

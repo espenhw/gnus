@@ -1,5 +1,19 @@
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
+	* mm-util.el (mm-quote-arg): Remove.
+
+	* mm-decode.el (mm-mailcap-command): Replace mm-quote-arg with
+	shell-quote-argument.
+
+	* gnus-uu.el (gnus-uu-command): do.
+
+	* gnus-sum.el (gnus-summary-insert-pseudos): do.
+
+	* ietf-drums.el (ietf-drums-token-to-list): Replace mm-make-char
+	with make-char.
+
+	* mm-util.el (mm-make-char): Remove.
+
 	* mml.el (mml-mode): Replace gnus-add-minor-mode with
 	add-minor-mode.
 

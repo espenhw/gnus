@@ -44,9 +44,6 @@
      (coding-system-equal . equal)
      (annotationp . ignore)
      (set-buffer-file-coding-system . ignore)
-     (make-char
-      . (lambda (charset int)
-	  (int-to-char int)))
      (read-charset
       . (lambda (prompt)
 	  "Return a charset."
@@ -671,21 +668,6 @@ Equivalent to `progn' in XEmacs"
 		      (car (last (assq mail-parse-charset
 				       mm-mime-mule-charset-alist)))))
 	    (list 'ascii (or charset 'latin-iso8859-1)))))))))
-
-(if (fboundp 'shell-quote-argument)
-    (defalias 'mm-quote-arg 'shell-quote-argument)
-  (defun mm-quote-arg (arg)
-    "Return a version of ARG that is safe to evaluate in a shell."
-    (let ((pos 0) new-pos accum)
-      ;; *** bug: we don't handle newline characters properly
-      (while (setq new-pos (string-match "[]*[;!'`\"$\\& \t{} |()<>]" arg pos))
-	(push (substring arg pos new-pos) accum)
-	(push "\\" accum)
-	(push (list (aref arg new-pos)) accum)
-	(setq pos (1+ new-pos)))
-      (if (= pos 0)
-	  arg
-	(apply 'concat (nconc (nreverse accum) (list (substring arg pos))))))))
 
 (defun mm-auto-mode-alist ()
   "Return an `auto-mode-alist' with only the .gz (etc) thingies."

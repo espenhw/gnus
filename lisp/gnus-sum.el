@@ -11053,7 +11053,7 @@ If REVERSE, save parts that do not match TYPE."
 				(lambda (f)
 				  (if (equal f " ")
 				      f
-				    (mm-quote-arg f)))
+				    (shell-quote-argument f)))
 				files " ")))))
 	  (setq ps (cdr ps)))))
     (if (and gnus-view-pseudos (not not-view))

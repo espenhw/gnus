@@ -1776,7 +1776,7 @@ Gnus might fail to display all of it.")
 ;; that the filename will be treated as a single argument when the shell
 ;; executes the command.
 (defun gnus-uu-command (action file)
-  (let ((quoted-file (mm-quote-arg file)))
+  (let ((quoted-file (shell-quote-argument file)))
     (if (string-match "%s" action)
 	(format action quoted-file)
       (concat action " " quoted-file))))
