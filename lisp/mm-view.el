@@ -113,6 +113,9 @@
 	    (save-window-excursion
 	      (save-restriction
 		(let ((w3-strict-width width)
+		      ;; Don't let w3 set the global version of
+		      ;; this variable.
+		      (fill-column fill-column)
 		      (url-standalone-mode t))
 		  (condition-case var
 		      (w3-region (point-min) (point-max))

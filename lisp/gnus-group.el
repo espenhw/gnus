@@ -3606,7 +3606,7 @@ and the second element is the address."
 
 (defun gnus-add-marked-articles (group type articles &optional info force)
   ;; Add ARTICLES of TYPE to the info of GROUP.
-  ;; If INFO is non-nil, use that info.         If FORCE is non-nil, don't
+  ;; If INFO is non-nil, use that info.  If FORCE is non-nil, don't
   ;; add, but replace marked articles of TYPE with ARTICLES.
   (let ((info (or info (gnus-get-info group)))
 	marked m)
