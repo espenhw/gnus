@@ -1446,7 +1446,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
 			     (set-buffer gnus-summary-buffer)
 			   (error))
 			 gnus-newsgroup-ignored-charsets))
-	ct cte ctl charset)
+	ct cte ctl charset format)
   (save-excursion
     (save-restriction
       (article-narrow-to-head)
@@ -1458,7 +1458,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
 		     (prompt
 		      (mm-read-coding-system "Charset to decode: "))
 		     (ctl
-		      (mail-content-type-get ctl 'charset))))
+		      (mail-content-type-get ctl 'charset)))
+	    format (and ctl (mail-content-type-get ctl 'format)))
       (when cte
 	(setq cte (mail-header-strip cte)))
       (if (and ctl (not (string-match "/" (car ctl)))) 
@@ -1468,7 +1469,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
     (save-restriction
       (narrow-to-region (point) (point-max))
       (when (and (or (not ctl)
-		     (equal (car ctl) "text/plain")))
+		     (equal (car ctl) "text/plain"))
+		 (not format)) ;; article with format will decode later.
 	(mm-decode-body
 	 charset (and cte (intern (downcase
 				   (gnus-strip-whitespace cte))))

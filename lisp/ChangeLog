@@ -1,3 +1,8 @@
+2000-05-07 10:50:02  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-decode-charset): Don't decode message with
+	format.
+
 2000-05-07  Florian Weimer  <fw@deneb.cygnus.argh.org>
 
 	* mailcap.el (mailcap-maybe-eval): Honor user request not to
