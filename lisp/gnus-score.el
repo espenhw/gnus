@@ -395,6 +395,9 @@ If nil, the user will be asked for a duration."
 
 ;; Internal variables.
 
+(defvar gnus-score-use-all-scores t
+  "If nil, only `gnus-score-find-score-files-function' is used.")
+
 (defvar gnus-adaptive-word-syntax-table
   (let ((table (copy-syntax-table (standard-syntax-table)))
 	(numbers '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)))
@@ -2707,19 +2710,20 @@ The list is determined from the variable gnus-score-file-alist."
       (and funcs
 	   (not (listp funcs))
 	   (setq funcs (list funcs)))
-      ;; Get the initial score files for this group.
-      (when funcs
-	(setq score-files (nreverse (gnus-score-find-alist group))))
-      ;; Add any home adapt files.
-      (let ((home (gnus-home-score-file group t)))
-	(when home
-	  (push home score-files)
-	  (setq gnus-newsgroup-adaptive-score-file home)))
-      ;; Check whether there is a `adapt-file' group parameter.
-      (let ((param-file (gnus-group-find-parameter group 'adapt-file)))
-	(when param-file
-	  (push param-file score-files)
-	  (setq gnus-newsgroup-adaptive-score-file param-file)))
+      (when gnus-score-use-all-scores
+	;; Get the initial score files for this group.
+	(when funcs
+	  (setq score-files (nreverse (gnus-score-find-alist group))))
+	;; Add any home adapt files.
+	(let ((home (gnus-home-score-file group t)))
+	  (when home
+	    (push home score-files)
+	    (setq gnus-newsgroup-adaptive-score-file home)))
+	;; Check whether there is a `adapt-file' group parameter.
+	(let ((param-file (gnus-group-find-parameter group 'adapt-file)))
+	  (when param-file
+	    (push param-file score-files)
+	    (setq gnus-newsgroup-adaptive-score-file param-file))))
       ;; Go through all the functions for finding score files (or actual
       ;; scores) and add them to a list.
       (while funcs
@@ -2727,14 +2731,15 @@ The list is determined from the variable gnus-score-file-alist."
 	  (setq score-files
 		(nconc score-files (nreverse (funcall (car funcs) group)))))
 	(setq funcs (cdr funcs)))
-      ;; Add any home score files.
-      (let ((home (gnus-home-score-file group)))
-	(when home
-	  (push home score-files)))
-      ;; Check whether there is a `score-file' group parameter.
-      (let ((param-file (gnus-group-find-parameter group 'score-file)))
-	(when param-file
-	  (push param-file score-files)))
+      (when gnus-score-use-all-scores
+	;; Add any home score files.
+	(let ((home (gnus-home-score-file group)))
+	  (when home
+	    (push home score-files)))
+	;; Check whether there is a `score-file' group parameter.
+	(let ((param-file (gnus-group-find-parameter group 'score-file)))
+	  (when param-file
+	    (push param-file score-files))))
       ;; Expand all files names.
       (let ((files score-files))
 	(while files

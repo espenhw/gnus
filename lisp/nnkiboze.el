@@ -207,7 +207,10 @@ Finds out what articles are to be part of the nnkiboze groups."
       (when (string-match "nnkiboze" (gnus-info-group info))
 	;; For each kiboze group, we call this function to generate
 	;; it.
-	(nnkiboze-generate-group (gnus-info-group info))))))
+	(nnkiboze-generate-group (gnus-info-group info) t))))
+  (save-excursion
+    (set-buffer gnus-group-buffer)
+    (gnus-group-list-groups)))
 
 (defun nnkiboze-score-file (group)
   (list (expand-file-name
@@ -216,7 +219,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 		  (concat (nnkiboze-prefixed-name nnkiboze-current-group)
 			  "." gnus-score-file-suffix))))))
 
-(defun nnkiboze-generate-group (group)
+(defun nnkiboze-generate-group (group &optional inhibit-list-groups)
   (let* ((info (nth 2 (gnus-gethash group gnus-newsrc-hashtb)))
 	 (newsrc-file (concat nnkiboze-directory
                               (nnheader-translate-file-chars
@@ -230,6 +233,9 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 (gnus-expert-user t)
 	 (gnus-large-newsgroup nil)
 	 (gnus-score-find-score-files-function 'nnkiboze-score-file)
+	 ;; Use only nnkiboze-score-file!
+	 (gnus-score-use-all-scores nil)
+	 (gnus-use-scoring t)
 	 (gnus-verbose (min gnus-verbose 3))
  	 gnus-select-group-hook gnus-summary-prepare-hook
 	 gnus-thread-sort-functions gnus-show-threads
@@ -332,9 +338,10 @@ Finds out what articles are to be part of the nnkiboze groups."
       (insert "(setq nnkiboze-newsrc '")
       (gnus-prin1 nnkiboze-newsrc)
       (insert ")\n")))
-  (save-excursion
-    (set-buffer gnus-group-buffer)
-    (gnus-group-list-groups))
+  (unless inhibit-list-groups
+    (save-excursion
+      (set-buffer gnus-group-buffer)
+      (gnus-group-list-groups)))
   t)
 
 (defun nnkiboze-enter-nov (buffer header group)
@@ -351,11 +358,11 @@ Finds out what articles are to be part of the nnkiboze groups."
 	(setq article 1))
       (mail-header-set-number oheader article)
       (with-temp-buffer
-	(insert (mail-header-xref oheader))
+	(insert (or (mail-header-xref oheader) ""))
 	(goto-char (point-min))
 	(if (re-search-forward " [^ ]+:[0-9]+" nil t)
 	    (goto-char (match-beginning 0))
-	(forward-char 1))
+	  (or (eobp) (forward-char 1)))
 	;; The first Xref has to be the group this article
 	;; really came for - this is the article nnkiboze
 	;; will request when it is asked for the article.
