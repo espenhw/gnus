@@ -138,7 +138,7 @@ See Info node `(gnus)Posting Styles'."
   :type 'boolean)
 
 (defcustom gnus-gcc-externalize-attachments nil
-  "Should local-file attachments be included as external parts?
+  "Should local-file attachments be included as external parts in Gcc copies?
 If it is `all', attach files as external parts;
 if a regexp and matches the Gcc group name, attach files as external parts;
 If nil, attach files as normal parts."

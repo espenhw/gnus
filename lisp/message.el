@@ -127,6 +127,11 @@ mailbox format."
 		(function :tag "Other"))
   :group 'message-sending)
 
+(defcustom message-fcc-externalize-attachments nil
+  "If non-nil, attachments are included as external parts in Fcc copies."
+  :type 'boolean
+  :group 'message-sending)
+
 (defcustom message-courtesy-message
   "The following message is a courtesy copy of an article\nthat has been posted to %s as well.\n\n"
   "*This is inserted at the start of a mailed copy of a posted message.
@@ -3433,7 +3438,8 @@ Otherwise, generate and save a value for `canlock-password' first."
   "Process Fcc headers in the current buffer."
   (let ((case-fold-search t)
 	(buf (current-buffer))
-	list file)
+	list file
+	(mml-externalize-attachments message-fcc-externalize-attachments))
     (save-excursion
       (save-restriction
 	(message-narrow-to-headers)

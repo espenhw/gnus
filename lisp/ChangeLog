@@ -1,5 +1,8 @@
 2002-01-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* message.el (message-fcc-externalize-attachments): New variable.
+	(message-do-fcc): Use it.
+
 	* gnus-msg.el (gnus-gcc-externalize-attachments): New variable.
 	(gnus-inews-do-gcc): Use it.
 
