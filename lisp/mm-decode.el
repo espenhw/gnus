@@ -151,6 +151,7 @@
      (lambda (handle)
        (locate-library "diff-mode")))
     ("application/emacs-lisp" mm-display-elisp-inline identity)
+    ("application/x-emacs-lisp" mm-display-elisp-inline identity)
     ("text/html"
      mm-inline-text
      (lambda (handle)
@@ -226,7 +227,9 @@ when selecting a different article."
 
 (defcustom mm-attachment-override-types '("text/x-vcard"
 					  "application/pkcs7-mime"
-					  "application/x-pkcs7-mime")
+					  "application/x-pkcs7-mime"
+					  "application/pkcs7-signature"
+					  "application/x-pkcs7-signature")
   "Types to have \"attachment\" ignored if they can be displayed inline."
   :type '(repeat string)
   :group 'mime-display)

@@ -1,5 +1,10 @@
 2001-09-09  Simon Josefsson  <jas@extundo.com>
 
+	* mm-decode.el (mm-inline-media-tests): Add
+	application/x-emacs-lisp.
+	(mm-attachment-override-types): Add
+	application/{x-,}pkcs7-signature.
+
 	* gnus-srvr.el (gnus-server-mode-hook, gnus-server-exit-hook) 
 	(gnus-server-line-format, gnus-server-mode-line-format) 
 	(gnus-server-browse-in-group-buffer): Customize.
