@@ -3053,11 +3053,23 @@ tag can be removed from the article subjects in the summary buffer for
 the group by putting @code{(gnus-list-identifiers "DOCBOOK-APPS:")}
 into the group parameters for the group.
 
-This can also be used as a group-specific hook function, if you'd like.
-If you want to hear a beep when you enter a group, you could put
-something like @code{(dummy-variable (ding))} in the parameters of that
-group.  @code{dummy-variable} will be set to the result of the
-@code{(ding)} form, but who cares?
+This can also be used as a group-specific hook function. If you want to
+hear a beep when you enter a group, you could put something like
+@code{(dummy-variable (ding))} in the parameters of that group.
+@code{dummy-variable} will be set to the (meaningless) result of the
+@code{(ding)} form.  
+
+Alternatively, since the VARIABLE becomes local to the group, this
+pattern can be used to temporarily change a hook.  For example, if the
+following is added to a group parameter
+
+@lisp
+(gnus-summary-prepared-hook
+  '(lambda nil (local-set-key "d" (local-key-binding "n"))))
+@end lisp
+
+when the group is entered, the 'd' key will not mark the article as
+expired.
 
 @end table
 

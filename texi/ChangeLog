@@ -1,3 +1,8 @@
+2004-05-19  Andre Srinivasan  <andre@e2open.com>
+
+	* gnus.texi (Group Parameters): Added more on hooks.  (Small
+	change.) 
+
 2004-05-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Oort Gnus): Mention new behavior of `F' and `R' when
