@@ -932,7 +932,7 @@ This only works when `display-time' is enabled."
 	       fetchflag nil buf))
 	    (if dontexpunge
 		(imap-mailbox-unselect buf)
-	      (imap-mailbox-close buf))
+	      (imap-mailbox-close nil buf))
 	    (imap-close buf))
 	(imap-close buf)
 	;; We nix out the password in case the error
