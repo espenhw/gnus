@@ -1,7 +1,12 @@
+2001-05-16  Didier Verna  <didier@lrde.epita.fr>
+
+	* message.el (message-mail): pass the 'send-actions argument to
+	`message-setup'.
+
 2001-05-16  Simon Josefsson  <simon@josefsson.org>
 	From Raymond Scholz <ray-2001@zonix.de>
 
-	* gnus-art.el (gnus-mime-view-part-as-charset): 
+	* gnus-art.el (gnus-mime-view-part-as-charset):
 	(gnus-mime-internalize-part): Doc fixes.
 
 2001-05-11  Simon Josefsson  <simon@josefsson.org>
@@ -79,7 +84,7 @@
 2001-04-15 14:55:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-retrieve-headers): Return all
-	available headers. 
+	available headers.
 
 	* gnus-sum.el (gnus-read-all-available-headers): New variable.
 	(gnus-get-newsgroup-headers-xover): Use it.
@@ -108,7 +113,7 @@
 	gnus-newsrc-file-version may be nil.
 
 	* nnmail.el (nnmail-get-new-mail): Use the exact file only.
-	Suggested by Michael Sperber [Mr. Preprocessor]  
+	Suggested by Michael Sperber [Mr. Preprocessor]
 	<sperber@informatik.uni-tuebingen.de>.
 
 2001-04-25  Per Abrahamsen  <abraham@dina.kvl.dk>
@@ -159,7 +164,7 @@
 
 	* gnus-sum.el (gnus-summary-find-matching): Clean up.
 	(gnus-find-matching-articles): New function.
-	(gnus-summary-limit-include-matching-articles): New command. 
+	(gnus-summary-limit-include-matching-articles): New command.
 	(gnus-summary-limit-include-thread): Include articles that have
 	matching subjects.
 	(gnus-offer-save-summaries): Clean up.
@@ -178,7 +183,7 @@
 
 	* gnus-msg.el (gnus-post-news): Fill the Newsgroups header by the
 	newsgroup names when the original article is a news message.
-	
+
 2001-04-12 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-cite-prefix-regexp): Use POSIX regexp if
@@ -211,12 +216,12 @@
 2001-04-05 21:43:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-update-summary-mark-positions): Use a valid
-	date. 
+	date.
 
 2001-04-04 16:13:17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-group-quit): Check that the dribble buffer
-	lives. 
+	lives.
 
 2001-04-02 00:40:12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -227,7 +232,7 @@
 	* gnus-group.el (gnus-group-quit): Only mark buffer in non-empty.
 
 	* gnus-start.el (gnus-read-newsrc-el-file): Nix out
-	gnus-format-specs. 
+	gnus-format-specs.
 
 	* message.el (message-check-news-header-syntax): Question even
 	when Gnus doesn't know the group names.
@@ -242,13 +247,13 @@
 
 	* gnus-score.el (gnus-score-orphans): Clean up.
 
-	* gnus-win.el (gnus-remove-some-windows): Leave one Gnus window. 
+	* gnus-win.el (gnus-remove-some-windows): Leave one Gnus window.
 
 	* gnus-sum.el (gnus-summary-exit): Kill the summary buffer a bit
-	later. 
+	later.
 
 	* gnus-start.el (gnus-close-all-servers): Find the right items to
-	close. 
+	close.
 
 	* qp.el (quoted-printable-decode-region): Just message
 	malformation; don't quit.
@@ -265,7 +270,7 @@
 	`assq-delete-all', if that function exists; otherwise use the old
 	definition. Documentation changed to match the one in
 	`assq-delete-all'.
-	
+
 2001-04-01 00:37:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-start.el (gnus-close-all-servers): New function.
@@ -274,7 +279,7 @@
 	(gnus-server-remove-denials): Clean up.
 
 	* gnus-sum.el (gnus-summary-sort-by-original): New command and
-	keystroke. 
+	keystroke.
 
 2001-03-31 02:56:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
@@ -288,9 +293,9 @@
 	* mm-decode.el (mm-default-directory): Customized.
 	(mm-tmp-directory): Ditto.
 
-	* gnus-sum.el (gnus-summary-catchup-and-exit): Doc fix. 
+	* gnus-sum.el (gnus-summary-catchup-and-exit): Doc fix.
 	(gnus-get-newsgroup-headers): Return -1 for articles without Lines
-	or Chars. 
+	or Chars.
 	(gnus-summary-line-format-alist): ?l is now a string.
 	(gnus-summary-prepare-threads): Output ? for unknown lines.
 	(gnus-summary-insert-line): Ditto.
@@ -309,7 +314,7 @@
 	when forcing news.
 
 	* gnus-sum.el (gnus-summary-mark-article-as-replied): Make into a
-	command. 
+	command.
 
 2001-03-31 01:04:54  Francis Litterio  <franl-removethis@world.omitthis.std.com>
 
@@ -326,14 +331,14 @@
 	* gnus-msg.el (gnus-put-message): Clean up.
 	(gnus-summary-reply): Mark all replied-to articles as replied to.
 	(gnus-inews-add-send-actions): Also mark as forwarded.
-	(gnus-summary-mail-forward): Mark as forwarded.  
+	(gnus-summary-mail-forward): Mark as forwarded.
 
 	* gnus-sum.el (gnus-summary-mark-article-as-replied): Take a list
-	of articles. 
+	of articles.
 	(gnus-summary-mark-article-as-forwarded): Ditto.
 
 	* gnus-msg.el (gnus-summary-resend-message): Mark article as
-	forwarded. 
+	forwarded.
 	(gnus-summary-mail-forward): Clean up.
 
 	* gnus.el (gnus-article-mark-lists): Added forward.
@@ -349,7 +354,7 @@
 	(gnus-summary-very-wide-reply): New command and keystroke.
 	(gnus-summary-very-wide-reply-with-original): Ditto.
 
-	* gnus-score.el (gnus-adaptive-word-length-limit): New variable. 
+	* gnus-score.el (gnus-adaptive-word-length-limit): New variable.
 	(gnus-score-adaptive): Use it.
 
 	* gnus-start.el (gnus-get-unread-articles): Clean up.
@@ -357,7 +362,7 @@
 2001-03-21 20:00:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nnultimate.el (nnultimate-retrieve-headers): Work for other
-	boards. 
+	boards.
 
 2001-03-21  Didier Verna  <didier@lrde.epita.fr>
 

@@ -339,7 +339,7 @@ The provided functions are:
 
 (defcustom message-cite-prefix-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
-      "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>»|:}+]\\)+" 
+      "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>»|:}+]\\)+"
     ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
     "\\([ \t]*\\(\\w\\|[-_.]\\)+>+\\|[ \t]*[]>»|:}+]\\)+")
   "*Regexp matching the longest possible citation prefix on a line."
@@ -1604,7 +1604,7 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 
 (defun message-setup-fill-variables ()
   "Setup message fill variables."
-  (set (make-local-variable 'fill-paragraph-function) 
+  (set (make-local-variable 'fill-paragraph-function)
        'message-fill-paragraph)
   (make-local-variable 'paragraph-separate)
   (make-local-variable 'paragraph-start)
@@ -2965,7 +2965,7 @@ to find out how to use this."
       (concat "^" (regexp-quote mail-header-separator) "$"))
      (forward-line 1)
      (while (and
-	     (or (looking-at 
+	     (or (looking-at
 		  "<#\\(/\\)?\\(multipart\\|part\\|external\\|mml\\)")
 		 (let ((p (point)))
 		   (end-of-line)
@@ -3748,8 +3748,8 @@ than 988 characters long, and if they are not, trim them until they are."
   (if message-send-rename-function
       (funcall message-send-rename-function)
     ;; Note: mail-abbrevs of XEmacs renames buffer name behind Gnus.
-    (when (string-match 
-	   "\\`\\*\\(sent \\|unsent \\)?\\(.+\\)\\*[^\\*]*\\|\\`mail to " 
+    (when (string-match
+	   "\\`\\*\\(sent \\|unsent \\)?\\(.+\\)\\*[^\\*]*\\|\\`mail to "
 	   (buffer-name))
       (let ((name (match-string 2 (buffer-name)))
 	    to group)
@@ -3760,7 +3760,7 @@ than 988 characters long, and if they are not, trim them until they are."
 	  (setq to (message-fetch-field "to"))
 	  (setq group (message-fetch-field "newsgroups"))
 	  (setq name
-		(cond 
+		(cond
 		 (to (concat "*sent mail to "
 			     (or (car (mail-extract-address-components to))
 				 to) "*"))
@@ -3936,7 +3936,7 @@ OTHER-HEADERS is an alist of header/value pairs."
      (nconc
       `((To . ,(or to "")) (Subject . ,(or subject "")))
       (when other-headers other-headers))
-     replybuffer)
+     replybuffer send-actions)
     ;; FIXME: Should return nil if failure.
     t))
 
@@ -4369,7 +4369,7 @@ The form is: [Source] Subject, where if the original message was mail,
 Source is the sender, and if the original message was news, Source is
 the list of newsgroups is was posted to."
   (concat "["
-	   (let ((prefix 
+	   (let ((prefix
 		  (or (message-fetch-field
 		       (if (message-news-p) "newsgroups" "from"))
 		      "(nowhere)")))
@@ -4421,7 +4421,7 @@ Optional NEWS will use news to forward instead of mail.
 Optional DIGEST will use digest to forward."
   (interactive "P")
   (let* ((cur (current-buffer))
-	 (message-forward-decoded-p 
+	 (message-forward-decoded-p
 	  (if (local-variable-p 'gnus-article-decoded-p (current-buffer))
 	      gnus-article-decoded-p  ;; In an article buffer.
 	    message-forward-decoded-p))
