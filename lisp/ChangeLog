@@ -1,5 +1,13 @@
 2001-09-29  Simon Josefsson  <jas@extundo.com>
 
+	* imap.el (imap-shell-host, imap-default-user, imap-use-utf7) 
+	(imap-log, imap-debug): Custom.
+	(imap-log-buffer, imap-debug-buffer): New constants.
+	(imap-kerberos4-open, imap-gssapi-open, imap-ssl-open) 
+	(imap-network-open, imap-shell-open, imap-starttls-open) 
+	(imap-send-command-1, imap-send-command, imap-arrival-filter) 
+	(imap-debug): Use imap-*-buffer.
+
 	* nndoc.el (nndoc-article-type): Add mailman.
 	(nndoc-type-alist): Ditto.
 	(nndoc-mailman-type-p): New function.
