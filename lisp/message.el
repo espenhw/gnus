@@ -3673,12 +3673,12 @@ Headers already prepared in the buffer are not modified."
 	  (nthcdr (+ (- cut 2) surplus 1) list)))
 
 (defun message-shorten-references (header references)
-  "Trim REFERENCES to be less than 31 Message-ID long, and fold them.
+  "Trim REFERENCES to be 21 Message-ID long or less, and fold them.
 If folding is disallowed, also check that the REFERENCES are less
 than 988 characters long, and if they are not, trim them until they are."
-  (let ((maxcount 31)
+  (let ((maxcount 21)
 	(count 0)
-	(cut 6)
+	(cut 2)
 	refs)
     (with-temp-buffer
       (insert references)

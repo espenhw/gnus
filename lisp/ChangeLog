@@ -1,3 +1,8 @@
+2001-07-18  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-shorten-references): Change `maxcount' and
+	`cut' to obey USEFOR draft 5.
+
 2001-07-12  Colin Walters  <walters@cis.ohio-state.edu>
 
 	* gnus-sum.el (gnus-summary-display-arrow): New variable.
