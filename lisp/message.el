@@ -2118,7 +2118,10 @@ prefix, and don't delete any headers."
       (while (looking-at "^[ \t]*$")
 	(forward-line -1))
       (forward-line 1)
-      (delete-region (point) end))
+      (delete-region (point) end)
+      (unless (search-backward "\n\n" start t)
+	;; Insert a blank line if it is peeled off.
+	(insert "\n")))
     (goto-char start)
     (while functions
       (funcall (pop functions)))

@@ -1,3 +1,8 @@
+2001-01-19 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-cite-original-without-signature): Don't peel
+	off the blank line.
+
 2001-01-20  Simon Josefsson  <sj@extundo.com>
 
 	* mm-decode.el (mm-handle-multipart-from): Add.
