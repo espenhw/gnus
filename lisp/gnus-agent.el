@@ -628,8 +628,12 @@ be a select method."
 (defun gnus-agent-read-servers ()
   "Read the alist of covered servers."
   (setq gnus-agent-covered-methods
-	(gnus-agent-read-file
-	 (nnheader-concat gnus-agent-directory "lib/servers"))))
+	(mapcar (lambda (m)
+		  (gnus-server-get-method
+		   nil
+		   (or m "native")))
+		(gnus-agent-read-file
+		 (nnheader-concat gnus-agent-directory "lib/servers")))))
 
 (defun gnus-agent-write-servers ()
   "Write the alist of covered servers."
@@ -637,7 +641,8 @@ be a select method."
   (let ((coding-system-for-write nnheader-file-coding-system)
 	(file-name-coding-system nnmail-pathname-coding-system))
     (with-temp-file (nnheader-concat gnus-agent-directory "lib/servers")
-      (prin1 gnus-agent-covered-methods (current-buffer)))))
+      (prin1 (mapcar 'gnus-method-simplify gnus-agent-covered-methods)
+	     (current-buffer)))))
 
 ;;;
 ;;; Summary commands
