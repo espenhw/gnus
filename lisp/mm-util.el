@@ -131,15 +131,9 @@ In XEmacs, also return non-nil if CS is a coding system object."
 
 (defvar mm-charset-synonym-alist
   `(
-    ;; Perfectly fine?  A valid MIME name, anyhow.
-    ,@(unless (mm-coding-system-p 'big5)
-       '((big5 . cn-big5)))
     ;; Not in XEmacs, but it's not a proper MIME charset anyhow.
     ,@(unless (mm-coding-system-p 'x-ctext)
        '((x-ctext . ctext)))
-    ;; Apparently not defined in Emacs 20, but is a valid MIME name.
-    ,@(unless (mm-coding-system-p 'gb2312)
-       '((gb2312 . cn-gb-2312)))
     ;; ISO-8859-15 is very similar to ISO-8859-1.  But it's _different_!
     ,@(unless (mm-coding-system-p 'iso-8859-15)
        '((iso-8859-15 . iso-8859-1)))
@@ -158,6 +152,11 @@ In XEmacs, also return non-nil if CS is a coding system object."
     ,@(if (and (not (mm-coding-system-p 'windows-1250))
 	       (mm-coding-system-p 'cp1250))
 	  '((windows-1250 . cp1250)))
+    ;; A Microsoft misunderstanding.
+    ,@(unless (mm-coding-system-p 'ks_c_5601-1987)
+	(if (mm-coding-system-p 'cp949)
+	    '((ks_c_5601-1987 . cp949))
+	  '((ks_c_5601-1987 . euc-kr))))
     )
   "A mapping from invalid charset names to the real charset names.")
 
