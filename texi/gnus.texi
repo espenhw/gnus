@@ -12334,7 +12334,7 @@ element is @code{&}, then process all @var{split}s in the list.
 
 @item
 @code{junk}: If the split is the symbol @code{junk}, then don't save
-this message.  Use with extreme caution.
+(i.e., delete) this message.  Use with extreme caution.
 
 @item
 @code{(: @var{function} @var{arg1} @var{arg2} @dots{})}:  If the split is
