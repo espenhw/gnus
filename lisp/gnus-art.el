@@ -3517,13 +3517,15 @@ In no internal viewer is available, use an external viewer."
     (setq b (point))
     (gnus-eval-format
      gnus-mime-button-line-format gnus-mime-button-line-format-alist
-     `(keymap ,gnus-mime-button-map
-       ;; Not for Emacs 21: fixme better.
-       ;; local-map ,gnus-mime-button-map
-       gnus-callback gnus-mm-display-part
-       gnus-part ,gnus-tmp-id
-       article-type annotation
-       gnus-data ,handle))
+     (append
+      (if (>= (string-to-number emacs-version) 21)
+	  nil ;; XEmacs doesn't care
+	(list 'local-map gnus-mime-button-map))
+      `(keymap ,gnus-mime-button-map
+	       gnus-callback gnus-mm-display-part
+	       gnus-part ,gnus-tmp-id
+	       article-type annotation
+	       gnus-data ,handle)))
     (setq e (point))
     (widget-convert-button
      'link b e
@@ -3758,20 +3760,22 @@ In no internal viewer is available, use an external viewer."
 	   (progn
 	     (insert (format "%d.  " id))
 	     (point))
-	   `(gnus-callback
-	     (lambda (handles)
-	       (unless ,(not ibegend)
-		 (setq gnus-article-mime-handle-alist
-		       ',gnus-article-mime-handle-alist))
-	       (gnus-mime-display-alternative
-		',ihandles ',not-pref ',begend ,id))
-	     ;; Not for Emacs 21: fixme better.
-	     ;; local-map ,gnus-mime-button-map
-	     ,gnus-mouse-face-prop ,gnus-article-mouse-face
-	     face ,gnus-article-button-face
-	     keymap ,gnus-mime-button-map
-	     gnus-part ,id
-	     gnus-data ,handle))
+	   (append
+	    (if (>= (string-to-number emacs-version) 21)
+		nil ;; XEmacs doesn't care
+	      (list 'local-map gnus-mime-button-map))
+	    `(gnus-callback
+	      (lambda (handles)
+		(unless ,(not ibegend)
+		  (setq gnus-article-mime-handle-alist
+			',gnus-article-mime-handle-alist))
+		(gnus-mime-display-alternative
+		 ',ihandles ',not-pref ',begend ,id))
+	      ,gnus-mouse-face-prop ,gnus-article-mouse-face
+	      face ,gnus-article-button-face
+	      keymap ,gnus-mime-button-map
+	      gnus-part ,id
+	      gnus-data ,handle)))
 	  (widget-convert-button 'link from (point)
 				 :action 'gnus-widget-press-button
 				 :button-keymap gnus-widget-button-keymap)
@@ -3784,20 +3788,22 @@ In no internal viewer is available, use an external viewer."
 			       (if (equal handle preferred) ?* ? )
 			       (mm-handle-media-type handle)))
 	       (point))
-	     `(gnus-callback
-	       (lambda (handles)
+	     (append
+	      (if (>= (string-to-number emacs-version) 21)
+		  nil ;; XEmacs doesn't care
+		(list 'local-map gnus-mime-button-map))
+	      `(gnus-callback
+		(lambda (handles)
 		 (unless ,(not ibegend)
 		   (setq gnus-article-mime-handle-alist
 			 ',gnus-article-mime-handle-alist))
 		 (gnus-mime-display-alternative
 		  ',ihandles ',handle ',begend ,id))
-	       ;; Not for Emacs 21: fixme better.
-	       ;; local-map ,gnus-mime-button-map
-	       ,gnus-mouse-face-prop ,gnus-article-mouse-face
-	       face ,gnus-article-button-face
-	       keymap ,gnus-mime-button-map
-	       gnus-part ,id
-	       gnus-data ,handle))
+		,gnus-mouse-face-prop ,gnus-article-mouse-face
+		face ,gnus-article-button-face
+		keymap ,gnus-mime-button-map
+		gnus-part ,id
+		gnus-data ,handle)))
 	    (widget-convert-button 'link from (point)
 				   :action 'gnus-widget-press-button
 				   :button-keymap gnus-widget-button-keymap)
@@ -5284,13 +5290,15 @@ For example:
     (gnus-eval-format
      gnus-mime-security-button-line-format 
      gnus-mime-security-button-line-format-alist
-     `(keymap ,gnus-mime-security-button-map
-	      ;; Not for Emacs 21: fixme better.
-	      ;;local-map ,gnus-mime-security-button-map
-	      gnus-callback gnus-mime-security-press-button
-	      gnus-line-format ,gnus-mime-security-button-line-format 
-	      article-type annotation
-	      gnus-data ,handle))
+     (append
+      (if (>= (string-to-number emacs-version) 21)
+	  nil ;; XEmacs doesn't care
+	(list 'local-map gnus-mime-security-button-map))
+      `(keymap ,gnus-mime-security-button-map
+	       gnus-callback gnus-mime-security-press-button
+	       gnus-line-format ,gnus-mime-security-button-line-format 
+	       article-type annotation
+	       gnus-data ,handle)))
     (setq e (point))
     (widget-convert-button
      'link b e
