@@ -781,8 +781,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	     (with-temp-buffer
 	       (insert article-string)
 	       (spam-stat-buffer-is-spam))))
-	 nil)
-	(spam-stat-save))
+	 nil))
 
       (defun spam-stat-register-ham-routine ()
 	(spam-generic-register-routine 
@@ -791,8 +790,9 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	   (let ((article-string (spam-get-article-as-string article)))
 	     (with-temp-buffer
 	       (insert article-string)
-	       (spam-stat-buffer-is-non-spam)))))
-	(spam-stat-save)))
+	       (spam-stat-buffer-is-non-spam))))))
+
+      (add-hook 'gnus-save-newsrc-hook 'spam-stat-save))
 
   (file-error (progn
 		(defalias 'spam-stat-register-ham-routine 'ignore)
