@@ -4531,7 +4531,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (setq gnus-newsgroup-display
 	  (cond
 	   ((eq gnus-newsgroup-display 'all)
-	    (setq gnus-newsgroup-display 'identity))
+	    'all)
 	   ((arrayp gnus-newsgroup-display)
 	    (gnus-summary-display-make-predicate
 	     (mapcar 'identity gnus-newsgroup-display)))
@@ -7130,7 +7130,7 @@ fetch-old-headers verbiage, and so on."
   ;; Most groups have nothing to remove.
   (if (or gnus-inhibit-limiting
 	  (and (null gnus-newsgroup-dormant)
-	       (eq gnus-newsgroup-display 'identity)
+	       (eq gnus-newsgroup-display 'all)
 	       (not (eq gnus-fetch-old-headers 'some))
 	       (not (numberp gnus-fetch-old-headers))
 	       (not (eq gnus-fetch-old-headers 'invisible))
@@ -7221,6 +7221,7 @@ fetch-old-headers verbiage, and so on."
 	      t)
 	    ;; Do the `display' group parameter.
 	    (and gnus-newsgroup-display
+		 (not (eq gnus-newsgroup-display 'all))
 		 (not (funcall gnus-newsgroup-display)))
 	    ;; Check NoCeM things.
 	    (if (and gnus-use-nocem
