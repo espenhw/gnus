@@ -1,3 +1,11 @@
+2001-09-10 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+
+	* gnus-sum.el (gnus-select-newsgroup): Make
+	`gnus-current-select-method' buffer-local.
+
+	* gnus-art.el (gnus-request-article-this-buffer): Refer
+	`gnus-current-select-method' in the current summary buffer.
+
 2001-09-10  Simon Josefsson  <jas@extundo.com>
 	From Daniel Pittman <daniel@rimspace.net>
 
