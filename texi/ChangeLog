@@ -1,5 +1,13 @@
 2004-03-04  Jesper Harder  <harder@ifa.au.dk>
 
+	* texi2latex.el (latexi-translate-file): Support accents.
+
+	* gnus.texi: Don't use 8bit chars (except ,A,(B).
+
+	* emacs-mime.texi: do.
+
+	* Makefile.in (.texi, makeinfo): Use --enable-encoding.
+
 	* gnus.texi: Move @documentencoding back, and change to latin-1.
 
 	* emacs-mime.texi: do.
