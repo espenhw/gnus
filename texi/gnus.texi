@@ -1702,10 +1702,10 @@ a @code{printf} specifications, for those of you who use (feh!) C.
 @samp{%M%S%5y: %(%g%)\n} is the value that produced those lines above.
 
 There should always be a colon on the line; the cursor always moves to
-the colon after performing an operation.  Nothing else is required---not
-even the group name.  All displayed text is just window dressing, and is
-never examined by Gnus.  Gnus stores all real information it needs using
-text properties.
+the colon after performing an operation.  @xref{Positioning
+Point}. Nothing else is required---not even the group name.  All
+displayed text is just window dressing, and is never examined by Gnus.
+Gnus stores all real information it needs using text properties.
 
 (Note that if you make a really strange, wonderful, spreadsheet-like
 layout, everybody will believe you are hard at work with the accounting
@@ -4257,6 +4257,7 @@ the cursor always moves to the point position marker or the colon after
 performing an operation.  (Of course, Gnus wouldn't be Gnus if it wasn't
 possible to change this.  Just write a new function
 @code{gnus-goto-colon} which does whatever you like with the cursor.)
+@xref{Positioning Point}.
 
 The default string is @samp{%U%R%z%I%(%[%4L: %-23,23n%]%) %s\n}.
 
