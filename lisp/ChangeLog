@@ -1,3 +1,21 @@
+2003-02-19  Simon Josefsson  <jas@extundo.com>
+
+	* sieve-manage.el (sieve-sasl-auth): Quote optional initial SASL
+	token.
+
+2002-08-07  Simon Josefsson  <jas@extundo.com>
+
+	* sieve-manage.el (require): Use SASL, not RFC2104/MD5.
+	(sieve-manage-authenticators):
+	(sieve-manage-authenticator-alist): Add some SASL mechs.
+	(sieve-sasl-auth): New function.
+	(sieve-manage-cram-md5-auth):
+	(sieve-manage-plain-auth): Rewrite using SASL library.
+	(sieve-manage-digest-md5-p, sieve-manage-digest-md5-auth)
+	(sieve-manage-scram-md5-p, sieve-manage-scram-md5-auth)
+	(sieve-manage-ntlm-p, sieve-manage-ntlm-auth)
+	(sieve-manage-login-p, sieve-manage-login-auth): Add wrappers.
+
 2004-01-05  Simon Josefsson  <jas@extundo.com>
 
 	* sasl.el, sasl-cram.el, sasl-digest.el, hmac-md5.el, hmac-def.el:
