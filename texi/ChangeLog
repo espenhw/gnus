@@ -1,3 +1,9 @@
+2004-02-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-news.texi: dnd attachments.
+
+	* message.texi (MIME): do.
+
 2004-02-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Batching Agents): Fixed typo in example.  Reported

@@ -18,6 +18,8 @@ this file (see `gnus-news.el').
 
 @itemize @bullet
 
+@item You can now drag and drop attachments to the Message buffer.
+
 @item @kbd{/ r} limits the summary buffer to replied articles.
 
 @item @acronym{ANSI} @acronym{SGR} control sequences can be transformed

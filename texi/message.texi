@@ -827,9 +827,10 @@ automatically add the @code{Content-Type} and
 @code{Content-Transfer-Encoding} headers.
 
 The most typical thing users want to use the multipart things in
-@acronym{MIME} for is to add ``attachments'' to mail they send out.  This can
-be done with the @kbd{C-c C-a} command, which will prompt for a file
-name and a @acronym{MIME} type.
+@acronym{MIME} for is to add ``attachments'' to mail they send out.
+This can be done with the @kbd{C-c C-a} command, which will prompt for
+a file name and a @acronym{MIME} type.  If your Emacs supports drag
+and drop, you can also drop the file in the Message buffer.
 
 You can also create arbitrarily complex multiparts using the @acronym{MML}
 language (@pxref{Composing, , Composing, emacs-mime, The Emacs MIME
