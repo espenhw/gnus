@@ -1,3 +1,8 @@
+2001-10-03  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): New param.
+	(gnus-summary-line-format-alist): Fix param.
+
 2001-10-02  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-request-move-article): Use imap.el directly,

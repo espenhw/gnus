@@ -1071,7 +1071,8 @@ that were fetched.  Say, for nnultimate groups."
     (?l (bbb-grouplens-score gnus-tmp-header) ?s)
     (?V (gnus-thread-total-score (and (boundp 'thread) (car thread))) ?d)
     (?U gnus-tmp-unread ?c)
-    (?f (gnus-summary-from-or-to-or-newsgroups gnus-tmp-header) ?s)
+    (?f (gnus-summary-from-or-to-or-newsgroups gnus-tmp-header gnus-tmp-from)
+	?s)
     (?t (gnus-summary-number-of-articles-in-thread
 	 (and (boundp 'thread) (car thread)) gnus-tmp-level)
 	?d)
@@ -2908,7 +2909,7 @@ buffer that was in action when the last article was fetched."
   (or (car (funcall gnus-extract-address-components from))
       from))
 
-(defun gnus-summary-from-or-to-or-newsgroups (header)
+(defun gnus-summary-from-or-to-or-newsgroups (header gnus-tmp-from)
   (let ((mail-parse-charset gnus-newsgroup-charset)
 	; Is it really necessary to do this next part for each summary line?
 	; Luckily, doesn't seem to slow things down much.
