@@ -223,7 +223,7 @@
 (defvar pgg-errors-buffer)
 
 (defun mml1991-pgg-sign (cont)
-  (let (headers)
+  (let (headers cte)
     ;; Don't sign headers.
     (goto-char (point-min))
     (while (not (looking-at "^$"))
@@ -232,7 +232,9 @@
       (setq headers (buffer-substring (point-min) (point)))
       (forward-line) ;; skip header/body separator
       (delete-region (point-min) (point)))
-    (quoted-printable-decode-region (point-min) (point-max))
+    (when (string-match "^Content-Transfer-Encoding: \\(.+\\)" headers)
+      (setq cte (intern (match-string 1 headers))))
+    (mm-decode-content-transfer-encoding cte)
     (unless (let ((pgg-default-user-id
 		   (or (message-options-get 'mml-sender)
 		       pgg-default-user-id)))
@@ -240,14 +242,14 @@
       (pop-to-buffer pgg-errors-buffer)
       (error "Encrypt error"))
     (delete-region (point-min) (point-max))
-    (mm-with-unibyte-current-buffer
-      (insert-buffer-substring pgg-output-buffer))
+    (insert-buffer-substring pgg-output-buffer)
     (goto-char (point-min))
     (while (re-search-forward "\r+$" nil t)
       (replace-match "" t t))
-    (quoted-printable-encode-region (point-min) (point-max))
+    (mm-encode-content-transfer-encoding cte)
     (goto-char (point-min))
-    (if headers (insert headers))
+    (when headers
+      (insert headers))
     (insert "\n")
     t))
 

@@ -1,3 +1,8 @@
+2003-12-25  Jesper Harder  <harder@ifa.au.dk>
+
+	* mml1991.el (mml1991-pgg-sign): Encode and decode according to
+	CTE header.  Don't insert gpg output as unibyte.
+
 2003-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Remove display-time-event-handler and open-ssl-stream;
