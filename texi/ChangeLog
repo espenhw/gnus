@@ -1,3 +1,29 @@
+2005-03-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-faq.texi: Generated from gnus-faq.xml using xml2texi.*.
+
+	* message.texi, gnus.texi: Update copyright.
+
+	* xml2texi.scm (+tag-for-gnus-faq-texi+): New variable.
+	(transform): Use it.  From Karl Pfl,Ad(Bsterer <sigurd@12move.de> with
+	minor modifications.
+	(boilerplate): Update copyright for the output file.
+
+2005-03-21  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* xml2texi.sh: Fix arch tag.
+
+2005-03-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* xml2texi.scm, xml2texi.sh: Added copyright.
+	(transform): Avoid redundant entries in @urefs.
+	(format-node): Don't insert optional arguments of @node.
+
+2005-03-20  Karl Pfl,Ad(Bsterer  <sigurd@12move.de>
+
+	* xml2texi.scm, xml2texi.sh: New files.  PLT Scheme program to
+	convert FAQ from xml to texi.
+
 2005-03-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Slow/Expensive Connection): Don't abbreviate "very".

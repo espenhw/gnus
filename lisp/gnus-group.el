@@ -2015,7 +2015,8 @@ confirmation is required."
 (defun gnus-group-read-ephemeral-group (group method &optional activate
 					      quit-config request-only
 					      select-articles
-					      parameters)
+					      parameters
+					      number)
   "Read GROUP from METHOD as an ephemeral group.
 If ACTIVATE, request the group first.
 If QUIT-CONFIG, use that window configuration when exiting from the
@@ -2023,6 +2024,7 @@ ephemeral group.
 If REQUEST-ONLY, don't actually read the group; just request it.
 If SELECT-ARTICLES, only select those articles.
 If PARAMETERS, use those as the group parameters.
+If NUMBER, fetch this number of articles.
 
 Return the name of the group if selection was successful."
   (interactive
@@ -2070,7 +2072,7 @@ Return the name of the group if selection was successful."
 	  (when (let ((gnus-large-newsgroup gnus-large-ephemeral-newsgroup)
 		      (gnus-fetch-old-headers
 		       gnus-fetch-old-ephemeral-headers))
-		  (gnus-group-read-group t t group select-articles))
+		  (gnus-group-read-group (or number t) t group select-articles))
 	    group)
 	;;(error nil)
 	(quit
