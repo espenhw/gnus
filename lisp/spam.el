@@ -50,10 +50,6 @@
   ;; executable-find is not autoloaded in Emacs 20
   (autoload 'executable-find "executable"))
 
-;; autoload ietf-drums-parse-addresses
-(eval-and-compile
-  (autoload 'ietf-drums-parse-addresses "ietf-drums"))
-
 ;; autoload query-dig
 (eval-and-compile
   (autoload 'query-dig "dig"))
@@ -1003,7 +999,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	  (setq address (buffer-substring (point) (spam-point-at-eol)))
 	  (forward-line 1)
 	  ;; insert the e-mail address if detected, otherwise the raw data
-	  (let ((pure-address (car (ietf-drums-parse-addresses address))))
+	  (let ((pure-address (cadr (gnus-extract-address-components address))))
 	    (push (or pure-address address) contents))))
       (nreverse contents))))
 
@@ -1011,7 +1007,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
   (let ((from (message-fetch-field "from"))
 	found)
     (while cache
-      (let* ((address (pop cache)))
+      (let ((address (pop cache)))
 	(unless (zerop (length address)) ; 0 for a nil address too
 	  (setq address (regexp-quote address))
 	  ;; fix regexp-quote's treatment of user-intended regexes
