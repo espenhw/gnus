@@ -135,7 +135,7 @@ indentation.  Sieve mode has its own abbrev table
 (@code{sieve-mode-syntax-table}).
 
 In addition to the editing utility functions, Sieve mode also contains
-bindings to manage Sieve scripts remotely. @pxref{Managing Sieve}.
+bindings to manage Sieve scripts remotely. @xref{Managing Sieve}.
 
 @table @kbd
 
