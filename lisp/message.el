@@ -5830,12 +5830,16 @@ Optional DIGEST will use digest to forward."
       (unless (message-mail-user-agent)
 	(set-buffer (get-buffer-create " *message resend*"))
 	(erase-buffer))
-      (let ((message-this-is-mail t))
+      (let ((message-this-is-mail t)
+	    message-setup-hook)
 	(message-setup `((To . ,address))))
       ;; Insert our usual headers.
       (message-generate-headers '(From Date To))
       (message-narrow-to-headers)
+      ;; Remove X-Draft-From header etc.
+      (message-remove-header message-ignored-mail-headers t)
       ;; Rename them all to "Resent-*".
+      (goto-char (point-min))
       (while (re-search-forward "^[A-Za-z]" nil t)
 	(forward-char -1)
 	(insert "Resent-"))

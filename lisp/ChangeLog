@@ -1,3 +1,8 @@
+2003-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-resend): Bind message-setup-hook to nil;
+	remove X-Draft-From header.
+
 2003-02-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-simplify-subject-fully, gnus-subject-equal)
