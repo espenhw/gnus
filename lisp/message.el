@@ -799,14 +799,6 @@ If nil, Message won't auto-save."
   :group 'message-buffers
   :type '(choice directory (const :tag "Don't auto-save" nil)))
 
-(defcustom message-buffer-naming-style 'unique
-  "*The way new message buffers are named.
-Valid valued are `unique' and `unsent'."
-  :version "21.1"
-  :group 'message-buffers
-  :type '(choice (const :tag "unique" unique)
-		 (const :tag "unsent" unsent)))
-
 (defcustom message-default-charset
   (and (not (mm-multibyte-p)) 'iso-8859-1)
   "Default charset used in non-MULE Emacsen.
@@ -5370,35 +5362,37 @@ which specify the range to operate on."
 (defun message-tool-bar-map ()
   (or message-tool-bar-map
       (setq message-tool-bar-map
-	    (and (fboundp 'tool-bar-add-item-from-menu)
-		 tool-bar-mode
-		 (let ((tool-bar-map (copy-keymap tool-bar-map))
-		       (load-path (mm-image-load-path)))
-		   ;; Zap some items which aren't so relevant and take
-		   ;; up space.
-		   (dolist (key '(print-buffer kill-buffer save-buffer
-					       write-file dired open-file))
-		     (define-key tool-bar-map (vector key) nil))
-		   (tool-bar-add-item-from-menu
-		    'message-send-and-exit "mail_send" message-mode-map)
-		   (tool-bar-add-item-from-menu
-		    'message-kill-buffer "close" message-mode-map)
-		   (tool-bar-add-item-from-menu
+	    (and 
+	     (condition-case nil (require 'tool-bar) (error nil))
+	     (fboundp 'tool-bar-add-item-from-menu)
+	     tool-bar-mode
+	     (let ((tool-bar-map (copy-keymap tool-bar-map))
+		   (load-path (mm-image-load-path)))
+	       ;; Zap some items which aren't so relevant and take
+	       ;; up space.
+	       (dolist (key '(print-buffer kill-buffer save-buffer
+					   write-file dired open-file))
+		 (define-key tool-bar-map (vector key) nil))
+	       (tool-bar-add-item-from-menu
+		'message-send-and-exit "mail_send" message-mode-map)
+	       (tool-bar-add-item-from-menu
+		'message-kill-buffer "close" message-mode-map)
+	       (tool-bar-add-item-from-menu
 		    'message-dont-send "cancel" message-mode-map)
-		   (tool-bar-add-item-from-menu
-		    'mml-attach-file "attach" mml-mode-map)
-		   (tool-bar-add-item-from-menu
-		    'ispell-message "spell" message-mode-map)
-		   (tool-bar-add-item-from-menu
-		    'message-insert-importance-high "important"
+	       (tool-bar-add-item-from-menu
+		'mml-attach-file "attach" mml-mode-map)
+	       (tool-bar-add-item-from-menu
+		'ispell-message "spell" message-mode-map)
+	       (tool-bar-add-item-from-menu
+		'message-insert-importance-high "important"
 		    message-mode-map)
-		   (tool-bar-add-item-from-menu
-		    'message-insert-importance-low "unimportant"
-		    message-mode-map)
-		   (tool-bar-add-item-from-menu
-		    'message-insert-disposition-notification-to "receipt"
-		    message-mode-map)
-		   tool-bar-map)))))
+	       (tool-bar-add-item-from-menu
+		'message-insert-importance-low "unimportant"
+		message-mode-map)
+	       (tool-bar-add-item-from-menu
+		'message-insert-disposition-notification-to "receipt"
+		message-mode-map)
+	       tool-bar-map)))))
 
 ;;; Group name completion.
 

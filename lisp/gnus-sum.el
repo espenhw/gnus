@@ -2326,10 +2326,15 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 (defvar gnus-summary-tool-bar-map nil)
 
 ;; Emacs 21 tool bar.  Should be no-op otherwise.
+;; NB: A new function tool-bar-local-item-from-menu is added in Emacs
+;; 21.2.50+.  Considering many users use Emacs 21, use
+;; tool-bar-add-item-from-menu here.
 (defun gnus-summary-make-tool-bar ()
-  (if (and (fboundp 'tool-bar-add-item-from-menu)
-	   (default-value 'tool-bar-mode)
-	   (not gnus-summary-tool-bar-map))
+  (if (and
+       (condition-case nil (require 'tool-bar) (error nil))
+       (fboundp 'tool-bar-add-item-from-menu)
+       (default-value 'tool-bar-mode)
+       (not gnus-summary-tool-bar-map))
       (setq gnus-summary-tool-bar-map
 	    (let ((tool-bar-map (make-sparse-keymap))
 		  (load-path (mm-image-load-path)))
