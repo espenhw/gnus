@@ -1,3 +1,7 @@
+2003-02-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.texi (News Headers): Update description of Message-ID.
+
 2003-02-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Startup Files): Addition.
