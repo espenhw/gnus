@@ -1208,7 +1208,6 @@ EXTRA is the possible non-standard header."
 		   (setq gnus-newsgroup-adaptive t)
 		   adapt)
 		  (t
-		   ;;(setq gnus-newsgroup-adaptive gnus-use-adaptive-scoring)
 		   gnus-default-adaptive-score-alist)))
       (setq gnus-thread-expunge-below
 	    (or thread-mark-and-expunge gnus-thread-expunge-below))

@@ -1869,13 +1869,15 @@ Returns whether the fetching was successful or not."
 ;; if selection was successful.
 (defun gnus-group-read-ephemeral-group (group method &optional activate
 					      quit-config request-only
-					      select-articles)
+					      select-articles
+					      parameters)
   "Read GROUP from METHOD as an ephemeral group.
 If ACTIVATE, request the group first.
 If QUIT-CONFIG, use that window configuration when exiting from the
 ephemeral group.
 If REQUEST-ONLY, don't actually read the group; just request it.
 If SELECT-ARTICLES, only select those articles.
+If PARAMETERS, use those as the group parameters.
 
 Return the name of the group if selection was successful."
   ;; Transform the select method into a unique server.
@@ -1892,10 +1894,14 @@ Return the name of the group if selection was successful."
      group
      `(-1 nil (,group
 	       ,gnus-level-default-subscribed nil nil ,method
-	       ((quit-config .
-			     ,(if quit-config quit-config
-				(cons gnus-summary-buffer
-				      gnus-current-window-configuration))))))
+	       ,(append
+		 parameters
+		 (list
+		  (cons
+		   'quit-config 
+		   ,(if quit-config quit-config
+		      (cons gnus-summary-buffer
+			    gnus-current-window-configuration)))))))
      gnus-newsrc-hashtb)
     (push method gnus-ephemeral-servers)
     (set-buffer gnus-group-buffer)

@@ -810,11 +810,8 @@ be set in `.emacs' instead."
 
 (defcustom gnus-logo-color-style 'oort
   "*Color styles used for the Gnus logo."
-  :type '(choice (const flame) (const pine) (const moss)
-		 (const irish) (const sky) (const tin)
-		 (const velvet) (const grape) (const labia)
-		 (const berry) (const neutral) (const september)
-		 (const dino))
+  :type `(choice ,@(mapcar (lambda (elem) (list 'const (car elem)))
+			   gnus-logo-color-alist))
   :group 'gnus-xmas)
 
 (defvar gnus-logo-colors

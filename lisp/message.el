@@ -3803,7 +3803,7 @@ give as trustworthy answer as possible."
       (match-string 1 user-mail))
      ;; Default to this bogus thing.
      (t
-      (concat system-name ".i-did-not-set--mail-host-address--so-shoot-me")))))
+      (concat system-name ".i-did-not-set--mail-host-address--so-tickle-me")))))
 
 (defun message-make-host-name ()
   "Return the name of the host."
@@ -5431,11 +5431,11 @@ regexp varstr."
 	(message-narrow-to-headers-or-head)
 	(message-remove-first-header "Content-Type")
 	(message-remove-first-header "Content-Transfer-Encoding"))
-      ;; We always make sure that the message has a Content-Type header.
-      ;; This is because some broken MTAs and MUAs get awfully confused
-      ;; when confronted with a message with a MIME-Version header and
-      ;; without a Content-Type header.  For instance, Solaris'
-      ;; /usr/bin/mail.
+      ;; We always make sure that the message has a Content-Type
+      ;; header.  This is because some broken MTAs and MUAs get
+      ;; awfully confused when confronted with a message with a
+      ;; MIME-Version header and without a Content-Type header.  For
+      ;; instance, Solaris' /usr/bin/mail.
       (unless content-type-p
 	(goto-char (point-min))
 	;; For unknown reason, MIME-Version doesn't exist.

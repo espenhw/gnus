@@ -1,3 +1,18 @@
+2002-01-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-make-fqdn): Be less violent.
+
+	* gnus.el (gnus-logo-color-style): Compute custom form
+	automatically. 
+
+	* gnus-sum.el (gnus-summary-enter-digest-group): Feed the adaptive
+	score file of the parent to the document group.
+
+	* gnus-group.el (gnus-group-read-ephemeral-group): Add an optional
+	parameters parameter.
+
+	* gnus-score.el (gnus-score-load-file): Clean up.
+
 2002-01-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-thread-sort-by-most-recent-number): Fix typo.

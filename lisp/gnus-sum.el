@@ -7672,8 +7672,11 @@ to guess what the document format is."
 		(gnus-group-read-ephemeral-group
 		 name `(nndoc ,name (nndoc-address ,(get-buffer dig))
 			      (nndoc-article-type
-			       ,(if force 'mbox 'guess))) t))
-	    ;; Make all postings to this group go to the parent group.
+			       ,(if force 'mbox 'guess)))
+		 t nil nil nil
+		 `((adapt-file . ,(gnus-score-file-name gnus-newsgroup-name
+							"ADAPT")))))
+	      ;; Make all postings to this group go to the parent group.
 	      (nconc (gnus-info-params (gnus-get-info name))
 		     params)
 	    ;; Couldn't select this doc group.
