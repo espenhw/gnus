@@ -1,3 +1,21 @@
+2001-12-12  Didier Verna  <didier@xemacs.org>
+
+	* gnus-msg.el (gnus-group-news): New function.
+	* gnus-group.el (gnus-group-mode-map): bind it to `i'.
+	* gnus-group.el (gnus-group-make-menu-bar): add a menu item for it.
+	* gnus-salt.el (gnus-carpal-group-buffer-buttons): add a button
+	for it.
+	* gnus-msg.el (gnus-summary-news-other-window): New function.
+	* gnus-msg.el ((gnus-summary-send-map "S" gnus-summary-mode-map)):
+	bind it to `i'.
+	* gnus-sum.el (gnus-summary-mode-map): bind it to `i'.
+	* gnus-sum.el (gnus-summary-make-menu-bar): add a menu item for it.
+	* gnus-salt.el (gnus-carpal-summary-buffer-buttons): add a button
+	for it (called with a prefix).
+	* gnus-msg.el (gnus-configure-posting-styles): add an optional
+	group-name argument.
+	* gnus-msg.el (gnus-setup-message): use it.
+
 2001-12-12 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-show-article): Fix doc.
@@ -47,7 +65,7 @@
 
 	* gnus-sum.el (gnus-summary-print-truncate-and-quote): New.
 	(gnus-summary-print-article): Use it.
-	
+
 	* gnus-util.el (gnus-replace-in-string): Typo.
 
 2001-12-06 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -65,7 +83,7 @@
 	* dgnushack.el (dgnushack-compile): nnrss.el and
 	nnslashdot.el don't depend on nnweb, url, w3.
 
-	* nnrss.el: Use mm-url. 
+	* nnrss.el: Use mm-url.
 
 2001-12-06 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
@@ -78,7 +96,7 @@
 
 2001-12-05 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-group.el (gnus-group-find-new-groups): Fix doc. 
+	* gnus-group.el (gnus-group-find-new-groups): Fix doc.
 	From:  Stefan Monnier  <monnier@cs.yale.edu>
 
 2001-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
@@ -116,7 +134,7 @@
 
 	* message.el (message-make-mft): Fix the m-s-a-file regexp.
 	From Paul Jarc <prj@po.cwru.edu>.
-	
+
 2001-11-30 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el: New variable message-subscribed-address-file;
@@ -127,7 +145,7 @@
 	* message.el (message-tab-body-function): Set to nil.
 	(message-tab): Use text-mode-map or global-map.
 	Suggested by Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>.
-	
+
 2001-11-30  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-agent.el (gnus-agent-fetch-headers): Use gnus-range-add

@@ -1082,7 +1082,7 @@ that were fetched.  Say, for nnultimate groups."
     (?u gnus-tmp-user-defined ?s)
     (?P (gnus-pick-line-number) ?d)
     (?B gnus-tmp-thread-tree-header-string ?s)
-    (user-date (gnus-user-date 
+    (user-date (gnus-user-date
 		,(macroexpand '(mail-header-date gnus-tmp-header))) ?s))
   "An alist of format specifications that can appear in summary lines.
 These are paired with what variables they correspond with, along with
@@ -1271,9 +1271,9 @@ These variables can be used to set variables in the group parameters
 while still allowing them to affect operations done in other
 buffers. For example:
 
-(setq gnus-newsgroup-variables 
+(setq gnus-newsgroup-variables
      '(message-use-followup-to
-       (gnus-visible-headers . 
+       (gnus-visible-headers .
 	 \"^From:\\\\|^Newsgroups:\\\\|^Subject:\\\\|^Date:\\\\|^To:\")))
 ")
 
@@ -1542,6 +1542,7 @@ increase the score of each group you read."
     gnus-mouse-2 gnus-mouse-pick-article
     "m" gnus-summary-mail-other-window
     "a" gnus-summary-post-news
+    "i" gnus-summary-news-other-window
     "x" gnus-summary-limit-to-unread
     "s" gnus-summary-isearch-article
     "t" gnus-summary-toggle-header
@@ -2012,7 +2013,7 @@ increase the score of each group you read."
     (easy-menu-define
       gnus-summary-post-menu gnus-summary-mode-map ""
       `("Post"
-	["Post an article" gnus-summary-post-news
+	["Send a message (mail or news)" gnus-summary-post-news
 	 ,@(if (featurep 'xemacs) '(t)
 	     '(:help "Post an article"))]
 	["Followup" gnus-summary-followup
@@ -2038,6 +2039,7 @@ increase the score of each group you read."
 	["Resend message" gnus-summary-resend-message t]
 	["Send bounced mail" gnus-summary-resend-bounced-mail t]
 	["Send a mail" gnus-summary-mail-other-window t]
+	["Create a local message" gnus-summary-news-other-window t]
 	["Uuencode and post" gnus-uu-post-news
 	 ,@(if (featurep 'xemacs) '(t)
 	     '(:help "Post a uuencoded article"))]
@@ -4389,20 +4391,20 @@ or a straight list of headers."
 			  (1+ (match-beginning 0)) (1- (match-end 0))))
 	      (t gnus-tmp-from))
 	     gnus-tmp-thread-tree-header-string
-	     (cond 
+	     (cond
 	      ((not gnus-show-threads) "")
 	      ((zerop gnus-tmp-level)
-	       (if (cdar thread) 
+	       (if (cdar thread)
 		   (or gnus-sum-thread-tree-root subject)
 		 (or gnus-sum-thread-tree-single-indent subject)))
 	      (t
 	       (concat (apply 'concat
-			      (mapcar (lambda (item) 
-					(if (= item 1) 
+			      (mapcar (lambda (item)
+					(if (= item 1)
 					    gnus-sum-thread-tree-vertical
 					  gnus-sum-thread-tree-indent))
 				      (cdr (reverse tree-stack))))
-		       (if (nth 1 thread) 
+		       (if (nth 1 thread)
 			   gnus-sum-thread-tree-leaf-with-other
 			 gnus-sum-thread-tree-single-leaf)))))
 	    (when (string= gnus-tmp-name "")
@@ -4552,7 +4554,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     (setq gnus-newsgroup-name group
 	  gnus-newsgroup-unselected nil
 	  gnus-newsgroup-unreads (gnus-list-of-unread-articles group))
-    
+
     (let ((display (gnus-group-find-parameter group 'display)))
       (setq gnus-newsgroup-display
 	    (cond
@@ -4584,7 +4586,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	      nil)
 	     (t
 	      nil))))
-      
+
     (gnus-summary-setup-default-charset)
 
     ;; Kludge to avoid having cached articles nixed out in virtual groups.
@@ -4603,7 +4605,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
     ;; Adjust and set lists of article marks.
     (when info
       (gnus-adjust-marked-articles info))
-    
+
     (if (setq articles select-articles)
 	(setq gnus-newsgroup-unselected
 	      (gnus-sorted-intersection
@@ -4936,7 +4938,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	      (setq list (cdr all)))))
 
 	(when (eq (cdr type) 'seen)
-	  (setq list 
+	  (setq list
 		(if list
 		    (gnus-add-to-range list gnus-newsgroup-unseen)
 		  (gnus-compress-sequence gnus-newsgroup-articles))))
@@ -6843,17 +6845,17 @@ If given a prefix, remove all limits."
 (defun gnus-summary-limit-to-subject (subject &optional header not-matching)
   "Limit the summary buffer to articles that have subjects that match a regexp.
 If NOT-MATCHING, excluding articles that have subjects that match a regexp."
-  (interactive 
+  (interactive
    (list (read-string (if current-prefix-arg
 			  "Exclude subject (regexp): "
-			"Limit to subject (regexp): ")) 
+			"Limit to subject (regexp): "))
 	 nil current-prefix-arg))
   (unless header
     (setq header "subject"))
   (when (not (equal "" subject))
     (prog1
 	(let ((articles (gnus-summary-find-matching
-			 (or header "subject") subject 'all nil nil 
+			 (or header "subject") subject 'all nil nil
 			 not-matching)))
 	  (unless articles
 	    (error "Found no matches for \"%s\"" subject))
@@ -6863,10 +6865,10 @@ If NOT-MATCHING, excluding articles that have subjects that match a regexp."
 (defun gnus-summary-limit-to-author (from &optional not-matching)
   "Limit the summary buffer to articles that have authors that match a regexp.
 If NOT-MATCHING, excluding articles that have authors that match a regexp."
-  (interactive 
+  (interactive
    (list (read-string (if current-prefix-arg
 			  "Exclude author (regexp): "
-			"Limit to author (regexp): ")) 
+			"Limit to author (regexp): "))
 	 current-prefix-arg))
   (gnus-summary-limit-to-subject from "from" not-matching))
 
@@ -6924,14 +6926,14 @@ articles that are younger than AGE days."
 	    nil
 	    t))))
      (list header
-	   (read-string (format "%s header %s (regexp): " 
+	   (read-string (format "%s header %s (regexp): "
 				(if current-prefix-arg "Exclude" "Limit to")
 				header))
 	   current-prefix-arg)))
   (when (not (equal "" regexp))
     (prog1
 	(let ((articles (gnus-summary-find-matching
-			 (cons 'extra header) regexp 'all nil nil 
+			 (cons 'extra header) regexp 'all nil nil
 			 not-matching)))
 	  (unless articles
 	    (error "Found no matches for \"%s\"" regexp))
@@ -7729,7 +7731,7 @@ The search stars on the current article and goes forwards unless
 BACKWARD is non-nil.  If BACKWARD is `all', do all articles.
 If UNREAD is non-nil, only unread articles will
 be taken into consideration.  If NOT-CASE-FOLD, case won't be folded
-in the comparisons. If NOT-MATCHING, return a list of all articles that 
+in the comparisons. If NOT-MATCHING, return a list of all articles that
 not match REGEXP on HEADER."
   (let ((case-fold-search (not not-case-fold))
 	articles d func)
@@ -7752,7 +7754,7 @@ not match REGEXP on HEADER."
 		     (gnus-data-unread-p d)) ; Or just unreads.
 		 (vectorp (gnus-data-header d)) ; It's not a pseudo.
 		 (if not-matching
-		     (not (string-match 
+		     (not (string-match
 			   regexp
 			   (funcall func (gnus-data-header d))))
 		   (string-match regexp
@@ -7817,7 +7819,7 @@ article.  If BACKWARD (the prefix) is non-nil, search backward instead."
 (defun gnus-summary-print-truncate-and-quote (string &optional len)
   "Truncate to LEN and quote all \"(\"'s in STRING."
   (gnus-replace-in-string (if (and len (> (length string) len))
-			      (substring string 0 len) 
+			      (substring string 0 len)
 			    string)
 			  "[()]" "\\\\\\&"))
 
@@ -7851,11 +7853,11 @@ to save in."
 		     (list
 		      (concat "("
 			      (gnus-summary-print-truncate-and-quote
-			       (mail-header-subject gnus-current-headers) 
+			       (mail-header-subject gnus-current-headers)
 			       66) ")")
 		      (concat "("
 			      (gnus-summary-print-truncate-and-quote
-			       (mail-header-from gnus-current-headers) 
+			       (mail-header-from gnus-current-headers)
 			       45) ")")))
 		    (ps-right-header
 		     (list

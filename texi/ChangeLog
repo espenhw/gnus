@@ -1,3 +1,9 @@
+2001-12-12  Didier Verna  <didier@lrde.epita.fr>
+
+	* gnus.texi (Misc Group Stuff): advertise `gnus-group-news'.
+	* gnus.texi (Summary Mail Commands): advertise
+	`gnus-summary-news-other-window'.
+
 2001-12-10  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Advanced Scoring Examples): Clarify that the
@@ -78,7 +84,7 @@
 2001-11-12  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Security, Using GPG):
-	* message.texi (Security): 
+	* message.texi (Security):
 	* emacs-mime.texi (MML Definition): Add PGP.
 
 2001-11-09  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
@@ -130,7 +136,7 @@
 
 	* Makefile.in: Add sieve.
 
-	* gnus.texi (Misc Group Stuff): 
+	* gnus.texi (Misc Group Stuff):
 	(Group Parameters): Add Sieve Commands.
 	(top-level): Include Sieve manual after Emacs MIME.
 
@@ -143,7 +149,7 @@
 
 	* gnus.texi (NNTP): Added documentation for
 	`nntp-prepare-post-hook'.
-	
+
 2001-10-29  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Customizing Articles): Sort list. Remove
@@ -186,10 +192,10 @@
 	users.
 
 2001-10-17 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
-	
+
 	* gnus.texi (Archived Messages): Add new line after @item.
 	From: Jesper Harder <harder@ifa.au.dk>
-	
+
 2001-10-17 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Formatting Basics): Extended format specs.
@@ -232,7 +238,7 @@
 
 	* gnuslogo-refcard.eps: Rename from gnuslog.refcard, and set a
 	suitable bounding box.
-	
+
 	* Makefile.in (.dvi.ps): New rule.
 	(refcard.pdf): Use gnuslogo-refcard.eps.
 
@@ -274,7 +280,7 @@
 	* infohack.el (infohack-remove-unsupported): Remove @iflatex lines.
 	(infohack): Specify a coding-system to save info files.
 	From Katsumi Yamaoka  <yamaoka@jpl.org>
-	
+
 2001-09-28 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnusconfig.tex.in: Use cmss if pfu is not found.
@@ -313,9 +319,9 @@
 	* gnus.texi: eps path fix.
 	* postamble.tex: Ditto.
 	* texi2latex.el: Ditto.
-	
+
 	* Makefile.in: Move some to ps/Makefile.in.
-	
+
 2001-09-24  Simon Josefsson  <jas@extundo.com>
 
 	* etc/*, herds/*, misc/*, picons/*, screen/*, smilies/*, xface/*:
@@ -478,7 +484,7 @@
 
 2001-08-17 14:24:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
-	* gnus.texi (Group Parameters): Document regexp substitution. 
+	* gnus.texi (Group Parameters): Document regexp substitution.
 	(Group Parameters): Addition.
 
 2001-08-11 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
@@ -553,7 +559,7 @@
 
 	* gnus.texi (Fancy Mail Splitting): New variable
         nnmail-split-fancy-with-parent-ignore-groups
-	
+
 2001-07-24  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Duplicates): Make split method regexp more specific,

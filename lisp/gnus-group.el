@@ -543,6 +543,7 @@ simple manner.")
     "l" gnus-group-list-groups
     "L" gnus-group-list-all-groups
     "m" gnus-group-mail
+    "i" gnus-group-news
     "g" gnus-group-get-new-news
     "\M-g" gnus-group-get-new-news-this-group
     "R" gnus-group-restart
@@ -867,7 +868,8 @@ simple manner.")
 	["Save areas" gnus-soup-save-areas (fboundp 'gnus-soup-pack-packet)]
 	["Brew SOUP" gnus-group-brew-soup (fboundp 'gnus-soup-pack-packet)])
        ["Send a mail" gnus-group-mail t]
-       ["Post an article..." gnus-group-post-news t]
+       ["Send a message (mail or news)" gnus-group-post-news t]
+       ["Create a local message" gnus-group-news t]
        ["Check for new news" gnus-group-get-new-news
 	,@(if (featurep 'xemacs) '(t)
 	    '(:help "Get newly arrived articles"))

@@ -899,6 +899,7 @@ Two predefined functions are available:
     ("matching" . gnus-group-list-matching)
     ("post" . gnus-group-post-news)
     ("mail" . gnus-group-mail)
+    ("local" . (lambda () (interactive) (gnus-group-news 0)))
     ("rescan" . gnus-group-get-new-news)
     ("browse-foreign" . gnus-group-browse-foreign)
     ("exit" . gnus-group-exit)))
@@ -929,7 +930,8 @@ Two predefined functions are available:
     ("kill" . gnus-summary-kill-thread)
     "post"
     ("post" . gnus-summary-post-news)
-    ("mail" . gnus-summary-mail)
+    ("local" . gnus-summary-news-other-window)
+    ("mail" . gnus-summary-mail-other-window)
     ("followup" . gnus-summary-followup-with-original)
     ("reply" . gnus-summary-reply-with-original)
     ("cancel" . gnus-summary-cancel-article)

@@ -315,7 +315,7 @@ license to the document, as described in section 6 of the license.
 
 This file documents Gnus, the GNU Emacs newsreader.
 
-Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001 
+Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
         Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -498,7 +498,7 @@ Summary Buffer
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
-* Delayed Articles::            
+* Delayed Articles::
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
@@ -543,16 +543,16 @@ Reply, Followup and Post
 * Summary Mail Commands::       Sending mail.
 * Summary Post Commands::       Sending news.
 * Summary Message Commands::    Other Message-related commands.
-* Canceling and Superseding::   
+* Canceling and Superseding::
 
 Marking Articles
 
 * Unread Articles::             Marks for unread articles.
 * Read Articles::               Marks for read articles.
 * Other Marks::                 Marks that do not affect readedness.
-* Setting Marks::               
-* Generic Marking Commands::    
-* Setting Process Marks::       
+* Setting Marks::
+* Generic Marking Commands::
+* Setting Process Marks::
 
 Marking Articles
 
@@ -607,7 +607,7 @@ Various Summary Stuff
 
 * Summary Group Information::   Information oriented commands.
 * Searching for Articles::      Multiple article commands.
-* Summary Generation Commands::  
+* Summary Generation Commands::
 * Really Various Summary Commands::  Those pesky non-conformant commands.
 
 Article Buffer
@@ -752,9 +752,9 @@ Agent Categories
 
 Agent Commands
 
-* Group Agent Commands::        
-* Summary Agent Commands::      
-* Server Agent Commands::       
+* Group Agent Commands::
+* Summary Agent Commands::
+* Server Agent Commands::
 
 Scoring
 
@@ -2792,7 +2792,7 @@ Predicates include @code{tick}, @code{unsend}, @code{undownload},
 
 The @code{display} parameter works by limiting the summary buffer to
 the subset specified.  You can pop the limit by using the @kbd{/ w}
-command (@pxref{Limiting}). 
+command (@pxref{Limiting}).
 
 @item comment
 @cindex comment
@@ -3843,14 +3843,33 @@ Enter the server buffer (@code{gnus-group-enter-server-mode}).
 @item a
 @kindex a (Group)
 @findex gnus-group-post-news
-Post an article to a group (@code{gnus-group-post-news}).  If given a
-prefix, the current group name will be used as the default.
-@xref{Composing Messages}.
+Start composing a message (a news by default)
+(@code{gnus-group-post-news}).  If given a prefix, post to the group
+under the point.  If the prefix is 1, prompt for a group to post to.
+Contrary to what the name of this function suggests, the prepared
+article might be a mail instead of a news, if a mail group is specified
+with the prefix argument.  @xref{Composing Messages}.
 
 @item m
 @kindex m (Group)
 @findex gnus-group-mail
-Mail a message somewhere (@code{gnus-group-mail}).  @xref{Composing Messages}.
+Mail a message somewhere (@code{gnus-group-mail}).  If given a prefix,
+use the posting style of the group under the point.  If the prefix is 1,
+prompt for a group name to find the posting style.
+@xref{Composing Messages}.
+
+@item i
+@kindex i (Group)
+@findex gnus-group-news
+Start composing a news (@code{gnus-group-news}).  If given a prefix,
+post to the group under the point.  If the prefix is 1, prompt
+for group to post to.  @xref{Composing Messages}.
+
+This function actually prepares a news even when using mail groups.
+This is useful for "posting" messages to mail groups without actually
+sending them over the network: they're just saved directly to the group
+in question.  The corresponding backend must have a request-post method
+for this to work though.
 
 @end table
 
@@ -4170,7 +4189,7 @@ You can have as many summary buffers open as you wish.
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
-* Delayed Articles::            
+* Delayed Articles::
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
@@ -4880,7 +4899,7 @@ Select the article buffer (@code{gnus-summary-select-article-buffer}).
 * Summary Mail Commands::       Sending mail.
 * Summary Post Commands::       Sending news.
 * Summary Message Commands::    Other Message-related commands.
-* Canceling and Superseding::   
+* Canceling and Superseding::
 @end menu
 
 
@@ -4960,8 +4979,24 @@ default, the message is decoded and forwarded as an rfc822 MIME section.
 @kindex S m (Summary)
 @findex gnus-summary-mail-other-window
 @c @icon{gnus-summary-mail-originate}
-Send a mail to some other person
-(@code{gnus-summary-mail-other-window}).
+Prepare a mail (@code{gnus-summary-mail-other-window}).  By default, use
+the posting style of the current group.  If given a prefix, disable that.
+If the prefix is 1, prompt for a group name to find the posting style.
+
+@item S i
+@itemx i
+@kindex i (Summary)
+@kindex S i (Summary)
+@findex gnus-summary-news-other-window
+Prepare a news (@code{gnus-summary-news-other-window}).  By default,
+post to the current group.  If given a prefix, disable that.  If the
+prefix is 1, prompt for a group to post to.
+
+This function actually prepares a news even when using mail groups.
+This is useful for "posting" messages to mail groups without actually
+sending them over the network: they're just saved directly to the group
+in question.  The corresponding backend must have a request-post method
+for this to work though.
 
 @item S D b
 @kindex S D b (Summary)
@@ -5039,8 +5074,9 @@ Commands for posting a news article:
 @kindex S p (Summary)
 @findex gnus-summary-post-news
 @c @icon{gnus-summary-post-news}
-Post an article to the current group
-(@code{gnus-summary-post-news}).
+Prepare for posting an article (@code{gnus-summary-post-news}).  By
+default, post to the current group.  If given a prefix, disable that.
+If the prefix is 1, prompt for another group instead.
 
 @item S f
 @itemx f
@@ -5475,7 +5511,7 @@ mark, in which case it simply never appear.
 @item
 @vindex gnus-unseen-mark
 Articles that haven't been seen by the user before are marked with a
-@samp{.} in the second column (@code{gnus-unseen-mark}). 
+@samp{.} in the second column (@code{gnus-unseen-mark}).
 
 @item
 @vindex gnus-not-empty-thread-mark
@@ -5954,7 +5990,7 @@ if @var{back-end}@code{-get-new-mail} is non-@code{nil}.
 @kindex / o (Summary)
 @findex gnus-summary-insert-old-articles
 Insert all old articles in the summary buffer. If given a numbered
-prefix, fetch this number of articles.  
+prefix, fetch this number of articles.
 
 @end table
 
@@ -8038,7 +8074,7 @@ will try to convert the @code{X-Face} header using external programs
 from the @code{pbmplus} package and friends.@footnote{On a GNU/Linux
 system look for packages with names like @code{netpbm} or
 @code{libgr-progs}.})  If you want to have this function in the display
-hook, it should probably come last.  
+hook, it should probably come last.
 (NOTE: @code{x-face} is used in the variable/function names, not @code{xface}).
 
 @item W b
@@ -9224,7 +9260,7 @@ suggestions you find reasonable.  (Note that
 @menu
 * Summary Group Information::   Information oriented commands.
 * Searching for Articles::      Multiple article commands.
-* Summary Generation Commands::  
+* Summary Generation Commands::
 * Really Various Summary Commands::  Those pesky non-conformant commands.
 @end menu
 
@@ -9289,9 +9325,9 @@ while still allowing them to affect operations done in other
 buffers. For example:
 
 @lisp
-(setq gnus-newsgroup-variables 
+(setq gnus-newsgroup-variables
      '(message-use-followup-to
-       (gnus-visible-headers . 
+       (gnus-visible-headers .
 	 "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^To:")))
 @end lisp
 
@@ -10273,7 +10309,7 @@ Displayed when cited text may be hidden in the article buffer.
 @item h
 Displayed when headers are hidden in the article buffer.
 
-@item p 
+@item p
 Displayed when article is digitally signed or encrypted, and Gnus has
 hidden the security headers.  (N.B. does not tell anything about
 security status, i.e. good or bad signature.)
@@ -16011,9 +16047,9 @@ toggles the plugged/unplugged state of the Gnus Agent.
 
 
 @menu
-* Group Agent Commands::        
-* Summary Agent Commands::      
-* Server Agent Commands::       
+* Group Agent Commands::
+* Summary Agent Commands::
+* Server Agent Commands::
 @end menu
 
 You can run a complete batch fetch from the command line with the
@@ -16105,7 +16141,7 @@ Mark all undownloaded articles as read (@code{gnus-agent-catchup}).
 @kindex J u (Agent Summary)
 @findex gnus-agent-summary-fetch-group
 Download all downloadable articles in the current group
-(@code{gnus-agent-summary-fetch-group}). 
+(@code{gnus-agent-summary-fetch-group}).
 
 @end table
 
@@ -17455,7 +17491,7 @@ Newsgroups} section of the manual, it's explained in greater detail what
 this mechanism does, but here's a cookbook example for @code{nnml} on
 how to allow scoring on the @samp{To} and @samp{Cc} headers.
 
-Put the following in your @file{.gnus.el} file. 
+Put the following in your @file{.gnus.el} file.
 
 @lisp
 (setq gnus-extra-headers '(To Cc Newsgroups Keywords)
@@ -21386,7 +21422,7 @@ New features in Gnus 5.8:
 
 @itemize @bullet
 
-@item 
+@item
 The mail-fetching functions have changed.  See the manual for the
 many details.  In particular, all procmail fetching variables are gone.
 
@@ -21410,7 +21446,7 @@ this now has changed to
 More information is available in the info doc at Select Methods ->
 Getting Mail -> Mail Sources
 
-@item 
+@item
 Gnus is now a MIME-capable reader.  This affects many parts of
 Gnus, and adds a slew of new commands.  See the manual for details.
 
