@@ -20406,9 +20406,9 @@ Message-ID, delete the "original".
  when replying to several messages at once, put the "other" message-ids
 into a See-Also header.
 @item
- support setext: @url{http://www.bsdi.com/setext/}
+ support setext: @uref{http://www.bsdi.com/setext/}
 @item
- support ProleText: @url{http://proletext.clari.net/prole/proletext.html}
+ support ProleText: @uref{http://proletext.clari.net/prole/proletext.html}
 @item
  when browsing a foreign server, the groups that are already subscribed
 should be listed as such and not as "K".
@@ -21021,7 +21021,7 @@ in the summary buffer.
 version branches as threading, checkin date as the date, etc.
 
 @item
-@url{http://www.dejanews.com/forms/dnsetfilter_exp.html}?
+@uref{http://www.dejanews.com/forms/dnsetfilter_exp.html}?
 This filter allows one to construct advance queries on the Dejanews
 database such as specifying start and end dates, subject, author,
 and/or newsgroup name.

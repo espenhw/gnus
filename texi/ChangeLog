@@ -1,3 +1,9 @@
+2001-01-04 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Newest Features): uref, not url.
+
+	* texi2latex.el (latexi-translate-file): Ignore anchor.
+
 2001-01-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Article Washing): Refer to `Customizing Articles' for

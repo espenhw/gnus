@@ -219,6 +219,8 @@
 	  ;; These are commands with {}.
 	  (setq arg (match-string 5))
 	  (cond 
+	   ((member command '("anchor"))
+	    (latexi-strip-line))
 	   ((member command '("xref" "pxref"))
 	    (latexi-exchange-command (concat "gnus" command) arg))
 	   ((member command '("sc" "file" "dfn" "emph" "kbd" "uref"
