@@ -1,3 +1,8 @@
+2002-11-25  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-sum.el (gnus-summary-insert-old-articles): Make result of
+	gnus-remove-from-range a list instead of a range.
+
 2002-11-24  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus-sum.el (gnus-summary-insert-old-articles): Use
