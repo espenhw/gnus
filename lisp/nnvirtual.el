@@ -224,6 +224,8 @@ virtual group.")
     
 (defun nnvirtual-close-group (group &optional server)
   (when (nnvirtual-possibly-change-group group server t)
+    ;; Copy (un)read articles.
+    (nnvirtual-update-reads)
     ;; We copy the marks from this group to the component
     ;; groups here.
     (nnvirtual-update-marked)
@@ -249,18 +251,28 @@ virtual group.")
     (let ((map nnvirtual-mapping)
 	  (marks (mapcar (lambda (m) (list (cdr m))) gnus-article-mark-lists))
 	  reads mr m op)
+      ;; Go through the mapping.
       (while map
-	(setq m (pop map))
-	(unless (nth 3 m)
+	(unless (nth 3 (setq m (pop map)))
+	  ;; Read article.
 	  (push (car m) reads))
+	;; Copy marks.
 	(when (setq mr (nth 4 m))
 	  (while mr
 	    (setcdr (setq op (assq (pop mr) marks)) (cons (car m) (cdr op))))))
+      ;; Compress the marks and the reads.
       (setq mr marks)
       (while mr
-	(setcdr (car mr) (gnus-compress-sequence (sort (cdar mr) '<)))
-	(setq mr (cdr mr)))
+	(setcdr (car mr) (gnus-compress-sequence (sort (cdr (pop mr)) '<))))
       (setcar (cddr info) (gnus-compress-sequence (nreverse reads)))
+      ;; Remove empty marks lists.
+      (while (and marks (not (cdar marks)))
+	(setq marks (cdr marks)))
+      (setq mr marks)
+      (while (cdr mr)
+	(if (cdadr mr)
+	    (setq mr (cdr mr))
+	  (setcdr mr (cddr mr))))
       
       ;; Enter these new marks into the info of the group.
       (if (nthcdr 3 info)
@@ -339,7 +351,9 @@ virtual group.")
 	    (and (string-match regexp (caar newsrc))
 		 (not (string= (caar newsrc) virt-group))
 		 (setq nnvirtual-component-groups
-		       (cons (caar newsrc) nnvirtual-component-groups)))
+		       (cons (caar newsrc) 
+			     (delete (caar newsrc)
+				     nnvirtual-component-groups))))
 	    (setq newsrc (cdr newsrc))))
 	(if nnvirtual-component-groups
 	    (progn
@@ -354,15 +368,12 @@ virtual group.")
 (defun nnvirtual-update-marked ()
   "Copy marks from the virtual group to the component groups."
   (let ((mark-lists gnus-article-mark-lists)
+	(marks (gnus-info-marks (gnus-get-info 
+				 (concat "nnvirtual:"
+					 nnvirtual-current-group))))
 	type list mart cgroups)
-    (when (and gnus-summary-buffer
-	       (get-buffer gnus-summary-buffer)
-	       (buffer-name (get-buffer gnus-summary-buffer)))
-      (set-buffer gnus-summary-buffer))
-    (while mark-lists
-      (setq type (cdar mark-lists))
-      (setq list (symbol-value (intern (format "gnus-newsgroup-%s"
-					       (car (pop mark-lists))))))
+    (while (setq type (cdr (pop mark-lists)))
+      (setq list (gnus-uncompress-range (cdr (assq type marks))))
       (setq cgroups 
 	    (mapcar (lambda (g) (list g)) nnvirtual-component-groups))
       (while list
@@ -373,6 +384,18 @@ virtual group.")
 	(gnus-add-marked-articles 
 	 (caar cgroups) type (cdar cgroups) nil t)
 	(gnus-group-update-group (car (pop cgroups)) t)))))
+
+(defun nnvirtual-update-reads ()
+  "Copy (un)reads from the current group to the component groups."
+  (let ((groups (mapcar (lambda (g) (list g)) nnvirtual-component-groups))
+	(articles (gnus-list-of-unread-articles
+		   (concat "nnvirtual:" nnvirtual-current-group)))
+	m)
+    (while articles
+      (setq m (assq (pop articles) nnvirtual-mapping))
+      (nconc (assoc (nth 1 m) groups) (list (nth 2 m))))
+    (while groups
+      (gnus-update-read-articles (caar groups) (cdr (pop groups))))))
 
 (defsubst nnvirtual-marks (article marks)
   "Return a list of mark types for ARTICLE."
@@ -385,49 +408,37 @@ virtual group.")
 
 (defun nnvirtual-create-mapping ()
   "Create an article mapping for the current group."
-  (let* (div m marks list article
+  (let* ((div nil)
+	 m marks list article unreads marks active
 	 (map (sort
 	       (apply 
 		'nconc
 		(mapcar
 		 (lambda (g)
-		   (let* ((active (or (gnus-active g) (gnus-activate-group g)))
-			  (unreads (and active (gnus-list-of-unread-articles
-						g)))
-			  (marks (gnus-uncompress-marks
-				  (gnus-info-marks (gnus-get-info g)))))
-		     (when active
-		       (when gnus-use-cache
-			 (push (cons 'cache (gnus-cache-articles-in-group g))
-			       marks))
-		       (when active
-			 (setq div (/ (float (car active)) 
-				      (if (zerop (cdr active))
-					  1 (cdr active)) ))
-			 (mapcar (lambda (n) 
-				   (list (* div (- n (car active)))
-					 g n (and (memq n unreads) t)
-					 (nnvirtual-marks n marks)))
-				 (gnus-uncompress-range active))))))	
-	 nnvirtual-component-groups))
+		   (when (setq active (or (gnus-active g)
+					  (gnus-activate-group g)))
+		     (setq unreads (gnus-list-of-unread-articles g)
+			   marks (gnus-uncompress-marks
+				  (gnus-info-marks (gnus-get-info g))))
+		     (when gnus-use-cache
+		       (push (cons 'cache (gnus-cache-articles-in-group g))
+			     marks))
+		     (setq div (/ (float (car active)) 
+				  (if (zerop (cdr active))
+				      1 (cdr active)) ))
+		     (mapcar (lambda (n) 
+			       (list (* div (- n (car active)))
+				     g n (and (memq n unreads) t)
+				     (inline (nnvirtual-marks n marks))))
+			     (gnus-uncompress-range active))))
+		 nnvirtual-component-groups))
 	       (lambda (m1 m2)
 		 (< (car m1) (car m2)))))
 	 (i 0))
     (setq nnvirtual-mapping map)
-    ;; Nix out any old marks.
-    (let ((marks gnus-article-mark-lists))
-      (set (intern (format "gnus-newsgroup-%s" (car (pop marks)))) nil))
-    ;; Copy in all marks from the component groups.
+    ;; Set the virtual article numbers.
     (while (setq m (pop map))
-      (setcar m (setq article (incf i)))
-      (when (setq marks (nth 4 m))
-	(while marks
-	  (set (setq list
-		     (intern (concat "gnus-newsgroup-" 
-				     (symbol-name 
-				      (car (rassq (pop marks)
-						  gnus-article-mark-lists))))))
-	       (cons article (symbol-value list))))))))
+      (setcar m (setq article (incf i))))))
 
 (provide 'nnvirtual)
 

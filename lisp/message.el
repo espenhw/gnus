@@ -27,46 +27,13 @@
 ;; consists mainly of large chunks of code from the sendmail.el,
 ;; gnus-msg.el and rnewspost.el files.
 
-;;; underline.el
-
-;; This code should be moved to underline.el (from which it is stolen). 
-
-;;;###autoload
-(defun bold-region (start end)
-  "Bold all nonblank characters in the region.
-Works by overstriking characters.
-Called from program, takes two arguments START and END
-which specify the range to operate on."
-  (interactive "r")
-  (save-excursion
-   (let ((end1 (make-marker)))
-     (move-marker end1 (max start end))
-     (goto-char (min start end))
-     (while (< (point) end1)
-       (or (looking-at "[_\^@- ]")
-	   (insert (following-char) "\b"))
-       (forward-char 1)))))
-
-;;;###autoload
-(defun unbold-region (start end)
-  "Remove all boldness (overstruck characters) in the region.
-Called from program, takes two arguments START and END
-which specify the range to operate on."
-  (interactive "r")
-  (save-excursion
-   (let ((end1 (make-marker)))
-     (move-marker end1 (max start end))
-     (goto-char (min start end)) 
-     (while (re-search-forward "\b" end1 t)
-       (if (eq (following-char) (char-after (- (point) 2)))
-	   (delete-char -2))))))
-
 ;;; Code:
 
 (eval-when-compile 
   (require 'cl))
 (require 'mail-header)
 (require 'nnheader)
+(require 'timezone)
 
 ;;;###autoload
 (defvar message-fcc-handler-function 'rmail-output
@@ -761,11 +728,11 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (search-forward (concat "\n" mail-header-separator "\n") nil t))
 
 (defun message-goto-signature ()
-  "Move point to the beginning of the message signature, 
-or the line sollowing `message-signature-separator'."
+  "Move point to the beginning of the message signature."
   (interactive)
   (goto-char (point-min))
-  (search-forward (concat "\n" message-signature-separator "\n") nil t))
+  (or (re-search-forward message-signature-separator nil t)
+      (goto-char (point-max))))
 
 
 
@@ -1012,10 +979,10 @@ The text will also be indented the normal way."
   "Send message like `message-send', then, if no errors, exit from mail buffer."
   (interactive)
   (let ((buf (current-buffer)))
-    (message-send)
-    (bury-buffer buf)
-    (when (eq buf (current-buffer))
-      (message-bury buf))))
+    (when (message-send)
+      (bury-buffer buf)
+      (when (eq buf (current-buffer))
+	(message-bury buf)))))
 
 (defun message-dont-send ()
   "Don't send the message you have been editing."
@@ -1073,7 +1040,9 @@ the user from the mailer."
 	  (condition-case nil
 	      (apply (caar actions) (cdar actions))
 	    (error))
-	  (pop actions))))))
+	  (pop actions)))
+      ;; Return success.
+      t)))
 
 (defun message-send-mail (&optional arg)
   (require 'mail-utils)
@@ -1118,9 +1087,6 @@ the user from the mailer."
 	    (replace-match "\n")
 	    (backward-char 1)
 	    (setq delimline (point-marker))
-	    (sendmail-synch-aliases)
-	    (when message-aliases
-	      (expand-mail-aliases (point-min) delimline))
 	    ;; Insert an extra newline if we need it to work around
 	    ;; Sun's bug that swallows newlines.
 	    (goto-char (1+ delimline))
@@ -1324,6 +1290,11 @@ the user from the mailer."
 		  ((not (string-match "@[^\\.]*\\." from))
 		   (message
 		    "Denied posting -- the From looks strange: \"%s\"." from)
+		   nil)
+		  ((string-match "@[^@]*@" from)
+		   (message 
+		    "Denied posting -- two \"@\"'s in the From header: %s."
+		    from)
 		   nil)
 		  ((string-match "(.*).*(.*)" from)
 		   (message
@@ -1830,12 +1801,24 @@ Headers already prepared in the buffer are not modified."
 (defun message-fill-header (header value)
   (let ((begin (point))
 	(fill-column 78)
-	(fill-prefix "\t"))
+	(fill-prefix "\t")
+	end)
     (insert (capitalize (symbol-name header))
 	    ": "
 	    (if (consp value) (car value) value)
 	    "\n")
-    (fill-region-as-paragraph begin (point))))
+    (save-restriction
+      (narrow-to-region begin (point))
+      (fill-region-as-paragraph begin (point))
+      ;; Tapdance around looong Message-IDs.
+      (forward-line -1)
+      (when (eolp)
+	(message-delete-line))
+      (goto-char begin)
+      (re-search-forward ":" nil t)
+      (when (looking-at "\n[ \t]+")
+	(replace-match " " t t))
+      (goto-char (point-max)))))
 
 (defun sendmail-synch-aliases ()
   (let ((modtime (nth 5 (file-attributes message-personal-alias-file))))
@@ -1894,6 +1877,8 @@ Headers already prepared in the buffer are not modified."
   (forward-line -1)
   (when message-default-headers
     (insert message-default-headers))
+  (insert mail-header-separator "\n")
+  (forward-line -1)
   (when (and (message-news-p)
 	     message-default-news-headers)
     (when message-generate-headers-first
@@ -1904,7 +1889,6 @@ Headers already prepared in the buffer are not modified."
     (when message-generate-headers-first
       (message-generate-headers message-required-mail-headers))
     (insert message-default-mail-headers))
-  (insert mail-header-separator "\n")
   (message-insert-signature)
   (message-set-auto-save-file-name)
   (save-restriction
@@ -2372,6 +2356,40 @@ you."
     (message-pop-to-buffer "*news message*"))
   (message-setup `((Newsgroups . ,(or newsgroups "")) 
 		   (Subject . ,(or subject "")))))
+
+;;; underline.el
+
+;; This code should be moved to underline.el (from which it is stolen). 
+
+;;;###autoload
+(defun bold-region (start end)
+  "Bold all nonblank characters in the region.
+Works by overstriking characters.
+Called from program, takes two arguments START and END
+which specify the range to operate on."
+  (interactive "r")
+  (save-excursion
+   (let ((end1 (make-marker)))
+     (move-marker end1 (max start end))
+     (goto-char (min start end))
+     (while (< (point) end1)
+       (or (looking-at "[_\^@- ]")
+	   (insert (following-char) "\b"))
+       (forward-char 1)))))
+
+;;;###autoload
+(defun unbold-region (start end)
+  "Remove all boldness (overstruck characters) in the region.
+Called from program, takes two arguments START and END
+which specify the range to operate on."
+  (interactive "r")
+  (save-excursion
+   (let ((end1 (make-marker)))
+     (move-marker end1 (max start end))
+     (goto-char (min start end)) 
+     (while (re-search-forward "\b" end1 t)
+       (if (eq (following-char) (char-after (- (point) 2)))
+	   (delete-char -2))))))
 
 (provide 'message)
 

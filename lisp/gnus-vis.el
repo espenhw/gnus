@@ -319,21 +319,27 @@ ticked: The number of ticked articles in the group.
      (easy-menu-define
       gnus-group-reading-menu gnus-group-mode-map ""
       '("Group"
-	["Read" gnus-group-read-group t]
-	["Select" gnus-group-select-group t]
+	["Read" gnus-group-read-group (gnus-group-group-name)]
+	["Select" gnus-group-select-group (gnus-group-group-name)]
 	["See old articles" (gnus-group-select-group 'all) :keys "C-u SPC"]
-	["Catch up" gnus-group-catchup-current t]
-	["Catch up all articles" gnus-group-catchup-current-all t]
-	["Check for new articles" gnus-group-get-new-news-this-group t]
-	["Toggle subscription" gnus-group-unsubscribe-current-group t]
-	["Kill" gnus-group-kill-group t]
-	["Yank" gnus-group-yank-group t]
-	["Describe" gnus-group-describe-group t]
-	["Fetch FAQ" gnus-group-fetch-faq t]
-	["Edit kill file" gnus-group-edit-local-kill t]
-	["Expire articles" gnus-group-expire-articles t]
-	["Set group level" gnus-group-set-current-level t]
-	["Select quick" gnus-group-quick-select-group t]
+	["Catch up" gnus-group-catchup-current (gnus-group-group-name)]
+	["Catch up all articles" gnus-group-catchup-current-all
+	 (gnus-group-group-name)]
+	["Check for new articles" gnus-group-get-new-news-this-group
+	 (gnus-group-group-name)]
+	["Toggle subscription" gnus-group-unsubscribe-current-group
+	 (gnus-group-group-name)]
+	["Kill" gnus-group-kill-group (gnus-group-group-name)]
+	["Yank" gnus-group-yank-group gnus-list-of-killed-groups]
+	["Describe" gnus-group-describe-group (gnus-group-group-name)]
+	["Fetch FAQ" gnus-group-fetch-faq (gnus-group-group-name)]
+	["Edit kill file" gnus-group-edit-local-kill
+	 (gnus-group-group-name)]
+	["Expire articles" gnus-group-expire-articles
+	 (gnus-group-group-name)]
+	["Set group level" gnus-group-set-current-level
+	 (gnus-group-group-name)]
+	["Select quick" gnus-group-quick-select-group (gnus-group-group-name)]
 	))
   
      (easy-menu-define
@@ -342,9 +348,8 @@ ticked: The number of ticked articles in the group.
 	("Listing"
 	 ["List subscribed groups" gnus-group-list-groups t]
 	 ["List all groups" gnus-group-list-all-groups t]
-	 ["List groups matching..." gnus-group-list-matching t]
-	 ["List killed groups" gnus-group-list-killed t]
-	 ["List zombie groups" gnus-group-list-zombies t]
+	 ["List killed groups" gnus-group-list-killed gnus-killed-list]
+	 ["List zombie groups" gnus-group-list-zombies gnus-zombie-list]
 	 ["List level" gnus-group-list-level t]
 	 ["Describe all groups" gnus-group-describe-all-groups t]
 	 ["Group apropos" gnus-group-apropos t]
@@ -361,8 +366,8 @@ ticked: The number of ticked articles in the group.
 	 ["Sort by unread" gnus-group-sort-groups-by-unread t]
 	 ["Sort by name" gnus-group-sort-groups-by-alphabet t])
 	("Mark"
-	 ["Mark group" gnus-group-mark-group t]
-	 ["Unmark group" gnus-group-unmark-group t]
+	 ["Mark group" gnus-group-mark-group (gnus-group-group-name)]
+	 ["Unmark group" gnus-group-unmark-group (gnus-group-group-name)]
 	 ["Unmark all" gnus-group-unmark-all-groups t]
 	 ["Mark regexp" gnus-group-mark-regexp t]
 	 ["Mark region" gnus-group-mark-region t]
@@ -371,7 +376,8 @@ ticked: The number of ticked articles in the group.
 	("Subscribe"
 	 ["Subscribe to random group" gnus-group-unsubscribe-group t]
 	 ["Kill all newsgroups in region" gnus-group-kill-region t]
-	 ["Kill all zombie groups" gnus-group-kill-all-zombies t]
+	 ["Kill all zombie groups" gnus-group-kill-all-zombies
+	  gnus-zombie-list]
 	 ["Kill all groups on level..." gnus-group-kill-level t])
 	("Foreign groups"
 	 ["Make a foreign group" gnus-group-make-group t]
@@ -385,9 +391,11 @@ ticked: The number of ticked articles in the group.
 	 ["Rename group" gnus-group-rename-group t]
 	 ["Delete group" gnus-group-delete-group t])
 	("Editing groups"
-	 ["Parameters" gnus-group-edit-group-parameters t]
-	 ["Select method" gnus-group-edit-group-method t]
-	 ["Info" gnus-group-edit-group t])
+	 ["Parameters" gnus-group-edit-group-parameters
+	  (gnus-group-group-name)]
+	 ["Select method" gnus-group-edit-group-method
+	  (gnus-group-group-name)]
+	 ["Info" gnus-group-edit-group (gnus-group-group-name)])
 	("Score file"
 	 ["Flush cache" gnus-score-flush-cache t])
 	("Move"
@@ -401,7 +409,8 @@ ticked: The number of ticked articles in the group.
 	 ["Jump to group" gnus-group-jump-to-group t]
 	 ["First unread group" gnus-group-first-unread-group t]
 	 ["Best unread group" gnus-group-best-unread-group t])
-	["Transpose" gnus-group-transpose-groups t]
+	["Transpose" gnus-group-transpose-groups
+	 (gnus-group-group-name)]
 	["Read a directory as a group" gnus-group-enter-directory t]
 	))
 

@@ -730,6 +730,7 @@ SCORE is the score to add."
   (gnus-score-load-file file)
   (gnus-set-mode-line 'summary))
 
+(defvar gnus-score-edit-exit-function)
 (defun gnus-score-edit-current-scores (file)
   "Edit the current score alist."
   (interactive (list gnus-current-score-file))
@@ -739,6 +740,7 @@ SCORE is the score to add."
     (setq gnus-score-edit-buffer (find-file-noselect file))
     (gnus-configure-windows 'edit-score)
     (gnus-score-mode)
+    (setq gnus-score-edit-exit-function 'gnus-score-edit-done)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf))
   (gnus-message 
@@ -755,6 +757,7 @@ SCORE is the score to add."
     (setq gnus-score-edit-buffer (find-file-noselect file))
     (gnus-configure-windows 'edit-score)
     (gnus-score-mode)
+    (setq gnus-score-edit-exit-function 'gnus-score-edit-done)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf))
   (gnus-message 
@@ -1794,75 +1797,9 @@ SCORE is the score to add."
 	      (setq elem (cdr elem)))))
 	(setq data (cdr data))))))
 
-;;;
-;;; Score mode.
-;;;
-
-(defvar gnus-score-mode-hook nil
-  "*Hook run in score mode buffers.")
-
-(defvar gnus-score-menu-hook nil
-  "*Hook run after creating the score mode menu.")
-
-(defvar gnus-score-mode-map nil)
-(unless gnus-score-mode-map
-  (setq gnus-score-mode-map (copy-keymap emacs-lisp-mode-map))
-  (gnus-define-keys 
-   gnus-score-mode-map
-   "\C-c\C-c" gnus-score-edit-done
-   "\C-c\C-d" gnus-score-edit-insert-date
-   "\C-c\C-p" gnus-score-pretty-print))
-
-(defun gnus-score-mode ()
-  "Mode for editing score files.
-This mode is an extended emacs-lisp mode.
-
-\\{gnus-score-mode-map}"
-  (interactive)
-  (kill-all-local-variables)
-  (use-local-map gnus-score-mode-map)
-  (when (and menu-bar-mode
-	     (gnus-visual-p 'score-menu 'menu))
-    (gnus-score-make-menu-bar))
-  (set-syntax-table emacs-lisp-mode-syntax-table)
-  (setq major-mode 'gnus-score-mode)
-  (setq mode-name "Score")
-  (lisp-mode-variables nil)
-  (run-hooks 'emacs-lisp-mode-hook 'gnus-score-mode-hook))
-
-(defun gnus-score-make-menu-bar ()
-  (unless (boundp 'gnus-score-menu)
-    (easy-menu-define
-     gnus-score-menu gnus-score-mode-map ""
-     '("Score"
-       ["Exit" gnus-score-edit-done t]
-       ["Insert date" gnus-score-edit-insert-date t]
-       ["Format" gnus-score-pretty-print t]
-       ))
-    (run-hooks 'gnus-score-menu-hook)))
-
-(defun gnus-score-edit-insert-date ()
-  "Insert date in numerical format."
-  (interactive)
-  (princ (gnus-day-number (current-time-string)) (current-buffer)))
-
-(defun gnus-score-pretty-print ()
-  "Format the current score file."
-  (interactive)
-  (goto-char (point-min))
-  (let ((form (read (current-buffer))))
-    (erase-buffer)
-    (pp form (current-buffer)))
-  (goto-char (point-min)))
-
 (defun gnus-score-edit-done ()
-  "Save the score file and return to the summary buffer."
-  (interactive)
   (let ((bufnam (buffer-file-name (current-buffer)))
 	(winconf gnus-prev-winconf))
-    (gnus-make-directory (file-name-directory (buffer-file-name)))
-    (save-buffer)
-    (kill-buffer (current-buffer))
     (and winconf (set-window-configuration winconf))
     (gnus-score-remove-from-cache bufnam)
     (gnus-score-load-file bufnam)))
@@ -1906,6 +1843,8 @@ This mode is an extended emacs-lisp mode.
   (gnus-message 6 "The score cache is now flushed"))
 
 (gnus-add-shutdown 'gnus-score-close 'gnus)
+
+(defvar gnus-score-file-alist-cache nil)
 
 (defun gnus-score-close ()
   "Clear all internal score variables."
@@ -2082,10 +2021,6 @@ GROUP using BNews sys file syntax."
 		 (search-forward "+")
 		 (forward-char -1)
 		 (insert "\\")))
-	  ;; Kludge to deal with "++" groups.
-	  (while (search-forward "++" nil t)
-	    (replace-match "\\+\\+" t t))
-	  (goto-char (point-min))
 	  ;; Translate "all" to ".*".
 	  (while (search-forward "all" nil t)
 	    (replace-match ".*" t t))
@@ -2135,8 +2070,6 @@ This includes the score file for the group and all its parents."
 	       (gnus-score-file-name newsgroup gnus-adaptive-file-suffix))
 	     (setq all (nreverse all)))
      (mapcar 'gnus-score-file-name all))))
-
-(defvar gnus-score-file-alist-cache nil)
 
 (defun gnus-score-find-alist (group)
   "Return list of score files for GROUP.

@@ -143,6 +143,10 @@
 ;;; Low-Level Interface
 
 (defun nndir-execute-nnmh-command (command)
+  (unless (nnmh-server-opened nndir-current-server)
+    (nnmh-open-server nndir-current-server 
+	       `((nnmh-directory ,nnml-directory)
+		 (nnmh-get-new-mail nil))))
   (let ((dir (file-name-as-directory (expand-file-name nndir-directory))))
     (if (and (not (file-directory-p nndir-group))
 	     (or (file-directory-p (concat dir nndir-group))
@@ -160,6 +164,11 @@
 	  (eval command))))))
 
 (defun nndir-execute-nnml-command (command)
+  (unless (nnml-server-opened nndir-current-server)
+    (nnml-open-server nndir-current-server 
+	       `((nnml-directory ,nnml-directory)
+		 (nnml-nov-is-evil ,nnml-nov-is-evil)
+		 (nnml-get-new-mail nil))))
   (let ((dir (file-name-as-directory (expand-file-name nndir-directory))))
     (if (and (not (file-directory-p nndir-group))
 	     (or (file-directory-p (concat dir nndir-group))
@@ -175,12 +184,7 @@
 	(let* ((nndir-group (substring dir (1+ (match-beginning 0))))
 	       (nnml-directory (substring dir 0 (1+ (match-beginning 0))))
 	       (nnml-nov-is-evil nndir-nov-is-evil)
-	       (nnml-get-new-mail nil)
-	       (defs `((nnml-directory ,nnml-directory)
-		       (nnml-nov-is-evil ,nnml-nov-is-evil)
-		       (nnml-get-new-mail))))
-	  (unless (nnml-server-opened nndir-current-server)
-	    (nnml-open-server nndir-current-server defs))
+	       (nnml-get-new-mail nil))
 	  (eval command))))))
 
 (provide 'nndir)

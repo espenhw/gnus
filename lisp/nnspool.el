@@ -35,7 +35,7 @@
   "Program to post news.
 This is most commonly `inews' or `injnews'.")
 
-(defvar nnspool-inews-switches '("-h -S")
+(defvar nnspool-inews-switches '("-h")
   "Switches for nnspool-request-post to pass to `inews' for posting news.
 If you are using Cnews, you probably should set this variable to nil.")
 

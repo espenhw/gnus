@@ -1,3 +1,28 @@
+;;; gnus-gl.el --- an interface to GroupLens for Gnus
+;; Copyright (C) 1995,96 Free Software Foundation, Inc.
+
+;; Author: Brad Miller <bmiller@cs.umn.edu>
+;; Keywords: news, score
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GroupLens software and documentation is copyright (c) 1995 by Paul
 ;; Resnick (Massachusetts Institute of Technology); Brad Miller, John
@@ -116,6 +141,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 
 
+;;; Code:
+
 (require 'gnus-score)
 (eval-and-compile (require 'cl))
 
@@ -132,8 +159,7 @@
   "*The line format spec in summary GroupLens mode buffers.")
 
 (defvar grouplens-pseudonym ""
-  "User's pseudonym.  This pseudonym is obtained during the registration 
-process")
+  "User's pseudonym.  This pseudonym is obtained during the registration process")
 
 (defvar grouplens-bbb-host "grouplens.cs.umn.edu"
   "Host where the bbbd is running" )
@@ -176,11 +202,10 @@ predictions with scores calculated by other score methods")
 The scale factor is applied after the offset.")
 
 (defvar gnus-grouplens-override-scoring t
-  "Tell Grouplens to override the normal Gnus scoring mechanism.  If
-  this variable is non-nill than Grouplens will completely override
-  the normal scoring mechanism of Gnus.  When nil, Grouplens will not
-  override the normal scoring mechanism so both can be used at once.")
- 
+  "Tell Grouplens to override the normal Gnus scoring mechanism.  
+If this variable is non-nill than Grouplens will completely override
+the normal scoring mechanism of Gnus.  When nil, Grouplens will not
+override the normal scoring mechanism so both can be used at once.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Program global variables
@@ -457,16 +482,12 @@ recommend using both scores and grouplens predictions together."
 (defconst grplens-minrating 1)
 (defconst grplens-predstringsize 12)
 
-(defalias 'bbb-grouplens-score 'gnus-user-format-function-G)
-
 (defvar gnus-tmp-score)
-(defun gnus-user-format-function-G (header)
+(defun bbb-grouplens-score (header)
   (let* ((rate-string (make-string 12 ? ))
 	 (mid (aref header (nth 1 (assoc "message-id" gnus-header-index))))
 	 (hashent (gethash mid grouplens-current-hashtable))
-	 (iscore (if (string-match "September" gnus-version) 
-		     gnus-tmp-score
-		   score))
+	 (iscore gnus-tmp-score)
 	 (low (car (cdr hashent)))
 	 (high (car (cdr (cdr hashent)))))
     (aset rate-string 0 ?|) 
@@ -718,13 +739,6 @@ recommend using both scores and grouplens predictions together."
 	    (nth 1 (assoc "message-id" gnus-header-index)))
     (gnus-message 3 "You must select an article before you rate it")))
 
-(defvar gnus-tmp-group)
-(defun gnus-user-format-function-I (header)
-  (let ((gname (if (string-match "September" gnus-version)
-		   gnus-tmp-group
-		 group)))
-    (if (member gname grouplens-newsgroups) "  (GroupLens Enhanced)" "")))
-
 (defun bbb-grouplens-group-p (group)
   "Say whether GROUP is a GroupLens group."
   (if (member group grouplens-newsgroups) " (GroupLens Enhanced)" ""))
@@ -864,4 +878,4 @@ recommend using both scores and grouplens predictions together."
 
 (provide 'gnus-gl)
 
-;;; end gnus-gl.el
+;;; gnus-gl.el ends here

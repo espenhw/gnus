@@ -1720,8 +1720,6 @@ is t.")
   "Inserts an encoded file in the buffer.
 The user will be asked for a file name."
   (interactive)
-  (if (not (eq (current-buffer) (get-buffer gnus-post-news-buffer)))
-      (error "Not in post-news buffer"))
   (save-excursion 
     (setq gnus-uu-post-inserted-file-name (gnus-uu-post-insert-binary))))
 
@@ -1757,7 +1755,7 @@ The user will be asked for a file name."
 		  file-name))
   (insert (format "Content-Transfer-Encoding: %s\n\n" encoding))
   (save-restriction
-    (set-buffer gnus-post-news-buffer)
+    (set-buffer gnus-message-buffer)
     (goto-char (point-min))
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line -1)
@@ -1778,8 +1776,6 @@ The user will be asked for a file name."
   "Posts the composed news article and encoded file.
 If no file has been included, the user will be asked for a file."
   (interactive)
-  (if (not (eq (current-buffer) (get-buffer gnus-post-news-buffer)))
-      (error "Not in post news buffer"))
 
   (let (file-name)
 
@@ -1788,10 +1784,10 @@ If no file has been included, the user will be asked for a file."
       (setq file-name (gnus-uu-post-insert-binary)))
   
     (if gnus-uu-post-threaded
-	(let ((gnus-required-headers 
-	       (if (memq 'Message-ID gnus-required-headers)
-		   gnus-required-headers
-		 (cons 'Message-ID gnus-required-headers)))
+	(let ((message-required-news-headers 
+	       (if (memq 'Message-ID message-required-news-headers)
+		   message-required-news-headers
+		 (cons 'Message-ID message-required-news-headers)))
 	      gnus-inews-article-hook)
 
 	  (setq gnus-inews-article-hook (if (listp gnus-inews-article-hook)

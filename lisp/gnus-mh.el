@@ -91,7 +91,7 @@ Optional argument FOLDER specifies folder name."
 	(insert "In-Reply-To: " in-reply-to "\n")))
     (setq mh-sent-from-folder gnus-original-article-buffer)
     (setq mh-sent-from-msg 1)
-    (setq gnus-mail-buffer (buffer-name (current-buffer)))
+    (setq gnus-message-buffer (buffer-name (current-buffer)))
     (setq mail-reply-buffer replybuffer)
     (save-excursion
       (set-buffer mh-sent-from-folder)
@@ -104,19 +104,10 @@ Optional argument FOLDER specifies folder name."
 (defun gnus-mh-mail-send-and-exit (&optional dont-send)
   "Send the current mail and return to Gnus."
   (interactive)
-  (let* ((reply gnus-article-reply)
-	 (winconf gnus-prev-winconf)
-	 (address-group gnus-add-to-address)
-	 (to-address (and address-group
-			  (mail-fetch-field "to"))))
-    (setq gnus-add-to-address nil)
+  (let ((reply gnus-article-reply)
+	(winconf gnus-prev-winconf))
     (or dont-send (mh-send-letter))
     (bury-buffer)
-    ;; This mail group doesn't have a `to-address', so we add one
-    ;; here.  Magic!  
-    (and to-address
-	 (gnus-group-add-parameter 
-	  address-group (cons 'to-address to-address)))
     (if (get-buffer gnus-group-buffer)
 	(progn
 	  (if (gnus-buffer-exists-p (car-safe reply))

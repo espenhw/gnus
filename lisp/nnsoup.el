@@ -248,14 +248,13 @@ The SOUP packet file name will be inserted at the %s.")
 
 (defun nnsoup-request-article (id &optional newsgroup server buffer)
   (nnsoup-possibly-change-group newsgroup)
-  (let ((buffer (or buffer nntp-server-buffer)))
+  (let (buf)
     (save-excursion
-      (set-buffer buffer)
+      (set-buffer (or buffer nntp-server-buffer))
       (erase-buffer)
-      (if (stringp id)
-	  ()
-	(insert-buffer-substring
-	 (nnsoup-narrow-to-article id))
+      (when (and (not (stringp id))
+		 (setq buf (nnsoup-narrow-to-article id)))
+	(insert-buffer-substring buf)
 	t))))
 
 (defun nnsoup-request-group (group &optional server dont-check)
@@ -515,61 +514,62 @@ The SOUP packet file name will be inserted at the %s.")
 
 (defun nnsoup-narrow-to-article (article &optional area head)
   (let* ((area (or area (nnsoup-article-to-area article nnsoup-current-group)))
-	 (prefix (gnus-soup-area-prefix (nth 1 area)))
-	 (msg-buf (nnsoup-index-buffer prefix 'msg))
+	 (prefix (and area (gnus-soup-area-prefix (nth 1 area))))
+	 (msg-buf (and prefix (nnsoup-index-buffer prefix 'msg)))
 	 beg end)
-    (save-excursion
-      (cond
-       ;; There is no MSG file.
-       ((null msg-buf)
-	nil)
+    (when area
+      (save-excursion
+	(cond
+	 ;; There is no MSG file.
+	 ((null msg-buf)
+	  nil)
        
-       ;; We use the index file to find out where the article begins and ends. 
-       ((and (= (gnus-soup-encoding-index 
-		 (gnus-soup-area-encoding (nth 1 area)))
-		?c)
-	     (file-exists-p (nnsoup-file prefix)))
-	(set-buffer (nnsoup-index-buffer prefix))
-	(widen)
+	 ;; We use the index file to find out where the article begins and ends. 
+	 ((and (= (gnus-soup-encoding-index 
+		   (gnus-soup-area-encoding (nth 1 area)))
+		  ?c)
+	       (file-exists-p (nnsoup-file prefix)))
+	  (set-buffer (nnsoup-index-buffer prefix))
+	  (widen)
+	  (goto-char (point-min))
+	  (forward-line (- article (caar area)))
+	  (setq beg (read (current-buffer)))
+	  (forward-line 1)
+	  (if (looking-at "[0-9]+")
+	      (progn
+		(setq end (read (current-buffer)))
+		(set-buffer msg-buf)
+		(widen)
+		(let ((format (gnus-soup-encoding-format
+			       (gnus-soup-area-encoding (nth 1 area)))))
+		  (goto-char end)
+		  (if (or (= format ?n) (= format ?m))
+		      (setq end (progn (forward-line -1) (point))))))
+	    (set-buffer msg-buf))
+	  (widen)
+	  (narrow-to-region beg (or end (point-max))))
+	 (t
+	  (set-buffer msg-buf)
+	  (widen)
+	  (goto-char (point-min))
+	  (let ((header (nnsoup-header 
+			 (gnus-soup-encoding-format 
+			  (gnus-soup-area-encoding (nth 1 area))))))
+	    (re-search-forward header nil t (- article (caar area)))
+	    (narrow-to-region
+	     (match-beginning 0)
+	     (if (re-search-forward header nil t)
+		 (match-beginning 0)
+	       (point-max))))))
 	(goto-char (point-min))
-	(forward-line (- article (caar area)))
-	(setq beg (read (current-buffer)))
-	(forward-line 1)
-	(if (looking-at "[0-9]+")
-	    (progn
-	      (setq end (read (current-buffer)))
-	      (set-buffer msg-buf)
-	      (widen)
-	      (let ((format (gnus-soup-encoding-format
-			     (gnus-soup-area-encoding (nth 1 area)))))
-		(goto-char end)
-		(if (or (= format ?n) (= format ?m))
-		    (setq end (progn (forward-line -1) (point))))))
-	  (set-buffer msg-buf))
-	(widen)
-	(narrow-to-region beg (or end (point-max))))
-       (t
-	(set-buffer msg-buf)
-	(widen)
-	(goto-char (point-min))
-	(let ((header (nnsoup-header 
-		       (gnus-soup-encoding-format 
-			(gnus-soup-area-encoding (nth 1 area))))))
-	  (re-search-forward header nil t (- article (caar area)))
+	(if (not head)
+	    ()
 	  (narrow-to-region
-	   (match-beginning 0)
-	   (if (re-search-forward header nil t)
-	       (match-beginning 0)
-	     (point-max))))))
-      (goto-char (point-min))
-      (if (not head)
-	  ()
-	(narrow-to-region
-	 (point-min)
-	 (if (search-forward "\n\n" nil t)
-	     (1- (point))
-	   (point-max))))
-      msg-buf)))
+	   (point-min)
+	   (if (search-forward "\n\n" nil t)
+	       (1- (point))
+	     (point-max))))
+	msg-buf))))
 
 (defun nnsoup-header (format)
   (cond 
@@ -626,70 +626,61 @@ The SOUP packet file name will be inserted at the %s.")
   (setq message-send-news-function (cadr nnsoup-old-functions)))
 
 (defun nnsoup-store-reply (kind)
-  ;; Mostly stolen from `sendmail.el'.
-  (let ((tembuf (generate-new-buffer " sendmail temp"))
+  ;; Mostly stolen from `message.el'.
+  (require 'mail-utils)
+  (let ((tembuf (generate-new-buffer " message temp"))
 	(case-fold-search nil)
-	(mailbuf (current-buffer))
-	delimline)
-    (save-excursion
-      (set-buffer tembuf)
-      (erase-buffer)
-      (insert-buffer-substring mailbuf)
-      (goto-char (point-max))
-      ;; require one newline at the end.
-      (or (= (preceding-char) ?\n)
-	  (insert ?\n))
-      ;; Change header-delimiter to be what sendmail expects.
-      (goto-char (point-min))
-      (if (re-search-forward
-	   (concat "^" (regexp-quote mail-header-separator) "\n") nil t)
-	  (replace-match "\n")
-	(search-forward "\n\n" nil t))
-      (backward-char 1)
-      (setq delimline (point-marker))
-      (if (and mail-aliases (fboundp 'expand-mail-aliases))
-	  (expand-mail-aliases (point-min) delimline))
-      (goto-char (point-min))
-      ;; ignore any blank lines in the header
-      (while (and (re-search-forward "\n\n\n*" delimline t)
-		  (< (point) delimline))
-	(replace-match "\n"))
-      (let ((case-fold-search t))
-	(goto-char (point-min))
-	;; Find and handle any FCC fields.
-	(goto-char (point-min))
-	(if (re-search-forward "^FCC:" delimline t)
-	    (mail-do-fcc delimline))
-	(goto-char (point-min))
-	;; "S:" is an abbreviation for "Subject:".
-	(goto-char (point-min))
-	(if (re-search-forward "^S:" delimline t)
-	    (replace-match "Subject:"))
-	;; Don't send out a blank subject line
-	(goto-char (point-min))
-	(if (re-search-forward "^Subject:[ \t]*\n" delimline t)
-	    (replace-match ""))
-	;; Insert an extra newline if we need it to work around
-	;; Sun's bug that swallows newlines.
-	(goto-char (1+ delimline))
-	(if (and (boundp 'mail-mailer-swallows-blank-line)
-		 (eval mail-mailer-swallows-blank-line))
-	    (newline)))
-      (let ((msg-buf
-	     (gnus-soup-store 
-	      nnsoup-replies-directory 
-	      (nnsoup-kind-to-prefix kind) nil nnsoup-replies-format-type
-	      nnsoup-replies-index-type))
-	    (num 0))
-	(when (and msg-buf (bufferp msg-buf))
-	  (save-excursion
-	    (set-buffer msg-buf)
+	(news (message-news-p))
+	(resend-to-addresses (mail-fetch-field "resent-to"))
+	delimline
+	(mailbuf (current-buffer)))
+    (unwind-protect
+	(save-excursion
+	  (set-buffer tembuf)
+	  (erase-buffer)
+	  (insert-buffer-substring mailbuf)
+	  ;; Remove some headers.
+	  (save-restriction
+	    (message-narrow-to-headers)
+	    ;; Remove some headers.
+	    (message-remove-header message-ignored-mail-headers t))
+	  (goto-char (point-max))
+	  ;; require one newline at the end.
+	  (or (= (preceding-char) ?\n)
+	      (insert ?\n))
+	  (when (and news
+		     (equal kind "mail")
+		     (or (mail-fetch-field "cc")
+			 (mail-fetch-field "to")))
+	    (message-insert-courtesy-copy))
+	  (let ((case-fold-search t))
+	    ;; Change header-delimiter to be what sendmail expects.
 	    (goto-char (point-min))
-	    (while (re-search-forward "^#! *rnews" nil t)
-	      (incf num)))
-	  (message "Stored %d messages" num)))
-      (nnsoup-write-replies)
-      (kill-buffer tembuf))))
+	    (re-search-forward
+	     (concat "^" (regexp-quote mail-header-separator) "\n"))
+	    (replace-match "\n")
+	    (backward-char 1)
+	    (setq delimline (point-marker))
+	    ;; Insert an extra newline if we need it to work around
+	    ;; Sun's bug that swallows newlines.
+	    (goto-char (1+ delimline))
+	    (when (eval message-mailer-swallows-blank-line)
+	      (newline))
+	    (let ((msg-buf
+		   (gnus-soup-store 
+		    nnsoup-replies-directory 
+		    (nnsoup-kind-to-prefix kind) nil nnsoup-replies-format-type
+		    nnsoup-replies-index-type))
+		  (num 0))
+	      (when (and msg-buf (bufferp msg-buf))
+		(save-excursion
+		  (set-buffer msg-buf)
+		  (goto-char (point-min))
+		  (while (re-search-forward "^#! *rnews" nil t)
+		    (incf num)))
+		(message "Stored %d messages" num)))
+	    (nnsoup-write-replies)
+	    (kill-buffer tembuf))))))
 
 (defun nnsoup-kind-to-prefix (kind)
   (unless nnsoup-replies-list

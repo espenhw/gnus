@@ -1,4 +1,84 @@
+Fri Apr  5 23:51:17 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no (Lars Magne Ingebrigtsen)>
+
+	* message.el (message-send-and-exit): Don't bury buffer on
+	unsucessful sending.
+
+Fri Apr  5 21:10:55 1996  Jens Lautenbacher  <jens@lemcbed.lem.uni-karlsruhe.de>
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Grey out certain items.
+
+Fri Apr  5 20:05:19 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-group-default-level): Would set
+	`gnus-group-default-list-level'. 
+
+	* gnus-score.el: Don't require gnus-scomo.
+
+	* gnus-msg.el (gnus-inews-do-gcc): Remove mail header separator.
+
+	* nndir.el (nndir-execute-nnml-command): Would set nnml
+	directory. 
+
+	* nnvirtual.el (nnvirtual-request-update-info): Would infloop.
+
+Fri Apr  5 17:53:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-best-unread-article): Return a proper
+ 	value.
+	(gnus-summary-read-group): Wouldn't configure windows properly
+	when the first article was canceled.
+
+	* nnvirtual.el (nnvirtual-create-mapping): Inline function.
+	(nnvirtual-create-mapping): Don't set the marks lists.
+	(nnvirtual-possibly-change-group): Would add groups twice,
+	possibly. 
+	(nnvirtual-update-reads): New function.
+
+Thu Apr  4 21:07:53 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnspool.el (nnspool-inews-switches): Changed default back.
+
+	* nnsoup.el (nnsoup-narrow-to-article): Would choke on fetching
+	non-existent articles.
+	(nnsoup-store-reply): Handle courtesy copies.
+
+Thu Apr  4 21:01:53 1996  Greg Stark  <gsstark@mit.edu>
+
+	* nnmail.el (nnmail-process-babyl-mail-format): Would parse empty
+	mails badly.
+
+Thu Apr  4 03:37:56 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-servers-using-backend): New function.
+	(gnus-summary-respool-article): Use real methods instead of
+	backend names.
+	(gnus-summary-move-article): Use the method.
+
+	* message.el (timezone): Require timezone.
+	(message-setup): Insert the separator before generating headers. 
+	(message-goto-signature): Goto point-max if there is no signature
+	separator. 
+
+	* gnus.el (gnus-article-date-ut): Don't call
+	`gnus-article-highlight-headers'. 
+	(gnus-server-get-method): Return the native select method when
+	needed. 
+
+Thu Apr  4 03:12:04 1996  Richard Mlynarik  <mly@adoc.xerox.com>
+
+	* gnus-kill.el (gnus-apply-kill-file-unless-scored): New
+	function. 
+
+Thu Apr  4 01:59:18 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-send-mail): Don't do the mailalias thing.
+	(message-fill-header): Would fill long Message-IDs badly.
+
+	* gnus.el (gnus-group-faq-directory): Wrong paths.
+
 Wed Apr  3 18:23:35 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.63 is released.
 
 	* message.el (message-insert-newsgroups): Capitilize Newsgroups.
 

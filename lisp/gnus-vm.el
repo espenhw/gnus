@@ -106,7 +106,7 @@ save those articles instead."
     (setq gnus-newsgroup-last-mail folder)))
 
 (defun gnus-vm-mail-setup (to subject in-reply-to cc replybuffer actions)
-  (gnus-sendmail-mail-setup to subject in-reply-to cc replybuffer actions)
+  ;;
   )
 
 (defun gnus-mail-forward-using-vm (&optional buffer)

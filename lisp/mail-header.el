@@ -46,6 +46,9 @@
 
 ;;; Code:
 
+;; Make the byte-compiler shut up.
+(defvar headers)
+
 (defun mail-header-extract ()
   "Extract headers from current buffer after point.
 Returns a header alist, where each element is a cons cell (name . value),

@@ -514,9 +514,9 @@ nn*-request-list should have been called before calling this function."
       ;; Go to the beginning of the next article - or to the end
       ;; of the buffer.  
       (if do-search
-	  (if (re-search-forward "\n" nil t)
-	      (goto-char (+ 1 (match-beginning 0)))
-	    (goto-char (- (point-max) 1))))
+	  (if (re-search-forward "^" nil t)
+	      (goto-char (match-beginning 0))
+	    (goto-char (1- (point-max)))))
       (delete-char 1)			; delete ^_
       (save-excursion
 	(save-restriction

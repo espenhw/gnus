@@ -177,13 +177,14 @@ instead.")
 
 (defvar gnus-group-faq-directory
   '("/ftp@mirrors.aol.com:/pub/rtfm/usenet/"
+    "/ftp@sunsite.auc.dk:/pub/usenet/"
     "/ftp@src.doc.ic.ac.uk:/usenet/news-FAQS/"
     "/ftp@ftp.seas.gwu.edu:/pub/rtfm/"
-    "/ftp@rtfm.mit.edu:/pub/usenet/news.answers/"
+    "/ftp@rtfm.mit.edu:/pub/usenet/"
     "/ftp@ftp.uni-paderborn.de:/pub/FAQ/"
     "/ftp@ftp.sunet.se:/pub/usenet/"
     "/ftp@nctuccca.edu.tw:/USENET/FAQ/"
-    "/ftp@hwarang.postech.ac.kr:/pub/usenet/news.answers/"
+    "/ftp@hwarang.postech.ac.kr:/pub/usenet/"
     "/ftp@ftp.hk.super.net:/mirror/faqs/")
   "*Directory where the group FAQs are stored.
 This will most commonly be on a remote machine, and the file will be
@@ -201,12 +202,13 @@ If the default site is too slow, try one of these:
 
    North America: mirrors.aol.com		 /pub/rtfm/usenet
 		  ftp.seas.gwu.edu		 /pub/rtfm
-		  rtfm.mit.edu			 /pub/usenet/news.answers
+		  rtfm.mit.edu			 /pub/usenet
    Europe:	  ftp.uni-paderborn.de		 /pub/FAQ
                   src.doc.ic.ac.uk               /usenet/news-FAQS
 		  ftp.sunet.se			 /pub/usenet
+	          sunsite.auc.dk                 /pub/usenet
    Asia:	  nctuccca.edu.tw		 /USENET/FAQ
-		  hwarang.postech.ac.kr		 /pub/usenet/news.answers
+		  hwarang.postech.ac.kr		 /pub/usenet
 		  ftp.hk.super.net		 /mirror/faqs")
 
 (defvar gnus-group-archive-directory
@@ -1693,7 +1695,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.63"
+(defconst gnus-version "September Gnus v0.64"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -4179,9 +4181,9 @@ The following commands are available:
 (defun gnus-group-default-level (&optional level number-or-nil)
   (cond
    (gnus-group-use-permanent-levels
-    (setq gnus-group-default-list-level
-	  (or level gnus-group-default-list-level))
-    (or gnus-group-default-list-level gnus-level-subscribed))
+;    (setq gnus-group-default-list-level
+;	  (or level gnus-group-default-list-level))
+    (or level gnus-group-default-list-level gnus-level-subscribed))
    (number-or-nil
     level)
    (t
@@ -4543,6 +4545,8 @@ If REGEXP, only list groups matching REGEXP."
   ;; select method, and return a select method.
   (cond ((stringp method)
 	 (gnus-server-to-method method))
+	((equal method gnus-select-method)
+	 gnus-select-method)
 	((and (stringp (car method)) group)
 	 (gnus-server-extend-method group method))
 	((and method (not group)
@@ -4587,6 +4591,16 @@ If REGEXP, only list groups matching REGEXP."
 		  ((stringp m2) (gnus-server-to-method m2))
 		  (t m2))))
     (gnus-method-equal m1 m2)))
+
+(defun gnus-servers-using-backend (backend)
+  "Return a list of known servers using BACKEND."
+  (let ((opened gnus-opened-servers)
+	out)
+    (while opened
+      (when (eq backend (caaar opened))
+	(push (caar opened) out))
+      (pop opened))
+    out))
 
 (defun gnus-group-prefixed-name (group method)
   "Return the whole name from GROUP and METHOD."
@@ -7605,9 +7619,10 @@ If NO-DISPLAY, don't generate a summary buffer."
 		 (not no-display)
 		 gnus-newsgroup-unreads
 		 gnus-auto-select-first)
-	    (if (eq gnus-auto-select-first 'best)
-		(gnus-summary-best-unread-article)
-	      (gnus-summary-first-unread-article))
+	    (unless (if (eq gnus-auto-select-first 'best)
+			(gnus-summary-best-unread-article)
+		      (gnus-summary-first-unread-article))
+	      (gnus-configure-windows 'summary))
 	  ;; Don't select any articles, just move point to the first
 	  ;; article in the group.
 	  (goto-char (point-min))
@@ -10347,10 +10362,11 @@ Return nil if there are no unread articles."
 	   (setq best score
 		 article (gnus-data-number (car data))))
       (setq data (cdr data)))
-    (if article
-	(gnus-summary-goto-article article)
-      (error "No unread articles"))
-    (gnus-summary-position-point)))
+    (prog1
+	(if article
+	    (gnus-summary-goto-article article)
+	  (error "No unread articles"))
+      (gnus-summary-position-point))))
 
 (defun gnus-summary-last-subject ()
   "Go to the last displayed subject line in the group."
@@ -11147,7 +11163,7 @@ If N is a negative number, move the N previous articles.
 If N is nil and any articles have been marked with the process mark,
 move those articles instead.
 If TO-NEWSGROUP is string, do not prompt for a newsgroup to move to.
-If SELECT-METHOD is symbol, do not move to a specific newsgroup, but
+If SELECT-METHOD is non-nil, do not move to a specific newsgroup, but
 re-spool using this method.
 
 For this function to work, both the current newsgroup and the
@@ -11183,10 +11199,8 @@ and `request-accept' functions."
 	     (cadr (assq action names))
 	     gnus-current-move-group articles prefix))
       (set (intern (format "gnus-current-%s-group" action)) to-newsgroup))
-    (setq to-method (if select-method (list select-method "")
-		      (gnus-find-method-for-group to-newsgroup)))
-    ;;(when (equal to-newsgroup gnus-newsgroup-name)
-    ;;(error "Can't %s to the same group you're already in" action))
+    (setq to-method (or select-method 
+			(gnus-find-method-for-group to-newsgroup)))
     ;; Check the method we are to move this article to...
     (or (gnus-check-backend-function 'request-accept-article (car to-method))
 	(error "%s does not support article copying" (car to-method)))
@@ -11194,7 +11208,7 @@ and `request-accept' functions."
 	(error "Can't open server %s" (car to-method)))
     (gnus-message 6 "%s to %s: %s..."
 		  (caddr (assq action names))
-		  (or select-method to-newsgroup) articles)
+		  (or (car select-method) to-newsgroup) articles)
     (while articles
       (setq article (pop articles))
       (setq
@@ -11208,9 +11222,7 @@ and `request-accept' functions."
 	  (nth 1 (gnus-find-method-for-group
 		  gnus-newsgroup-name)) ; Server
 	  (list 'gnus-request-accept-article
-		(if select-method
-		    (list 'quote select-method)
-		  to-newsgroup)
+		to-newsgroup (list 'quote select-method)
 		(not articles))		; Accept form
 	  (not articles)))		; Only save nov last time
 	;; Copy the article.
@@ -11219,8 +11231,7 @@ and `request-accept' functions."
 	   (set-buffer copy-buf)
 	   (gnus-request-article-this-buffer article gnus-newsgroup-name)
 	   (gnus-request-accept-article
-	    (if select-method select-method to-newsgroup)
-	    (not articles))))
+	    to-newsgroup select-method (not articles))))
 	;; Crosspost the article.
 	((eq action 'crosspost)
 	 (let ((xref (mail-header-xref (gnus-summary-article-header article))))
@@ -11236,8 +11247,7 @@ and `request-accept' functions."
 	     (gnus-request-article-this-buffer article gnus-newsgroup-name)
 	     (nnheader-replace-header "xref" new-xref)
 	     (gnus-request-accept-article
-	      (if select-method select-method to-newsgroup)
-	      (not articles)))))))
+	      to-newsgroup select-method (not articles)))))))
       (if (not art-group)
 	  (gnus-message 1 "Couldn't %s article %s"
 			(cadr (assq action names)) article)
@@ -11247,8 +11257,8 @@ and `request-accept' functions."
 		 (gnus-gethash
 		  (gnus-group-prefixed-name
 		   (car art-group)
-		   (if select-method (list select-method "")
-		     (gnus-find-method-for-group to-newsgroup)))
+		   (or select-method 
+		       (gnus-find-method-for-group to-newsgroup)))
 		  gnus-newsrc-hashtb)))
 	       (info (nth 2 entry))
 	       (to-group (gnus-info-group info)))
@@ -11324,7 +11334,7 @@ and `request-accept' functions."
 (defun gnus-summary-copy-article (&optional n to-newsgroup select-method)
   "Move the current article to a different newsgroup.
 If TO-NEWSGROUP is string, do not prompt for a newsgroup to move to.
-If SELECT-METHOD is symbol, do not move to a specific newsgroup, but
+If SELECT-METHOD is non-nil, do not move to a specific newsgroup, but
 re-spool using this method."
   (interactive "P")
   (gnus-summary-move-article n nil select-method 'copy))
@@ -11334,7 +11344,7 @@ re-spool using this method."
   (interactive "P")
   (gnus-summary-move-article n nil nil 'crosspost))
 
-(defun gnus-summary-respool-article (&optional n respool-method)
+(defun gnus-summary-respool-article (&optional n method)
   "Respool the current article.
 The article will be squeezed through the mail spooling process again,
 which means that it will be put in some mail newsgroup or other
@@ -11348,22 +11358,34 @@ Respooling can be done both from mail groups and \"real\" newsgroups.
 In the former case, the articles in question will be moved from the
 current group into whatever groups they are destined to.  In the
 latter case, they will be copied into the relevant groups."
-  (interactive "P")
+  (interactive 
+   (list current-prefix-arg
+	 (let* ((methods (gnus-methods-using 'respool))
+		(methname
+		 (symbol-name (car (gnus-find-method-for-group
+				    gnus-newsgroup-name))))
+		(method
+		 (completing-read
+		  "What backend do you want to use when respooling? "
+		  methods nil t (cons methname 0)))
+		ms)
+	   (cond
+	    ((zerop (length (setq ms (gnus-servers-using-backend method))))
+	     (list (intern method) ""))
+	    ((= 1 (length ms))
+	     (car ms))
+	    (t
+	     (cdr (completing-read 
+		   "Server name: "
+		   (mapcar (lambda (m) (cons (cadr m) m)) ms) nil t)))))))
   (gnus-set-global-variables)
-  (let ((respool-methods (gnus-methods-using 'respool))
-	(methname
-	 (symbol-name (car (gnus-find-method-for-group gnus-newsgroup-name)))))
-    (unless respool-method
-      (setq respool-method
-	    (completing-read
-	     "What method do you want to use when respooling? "
-	     respool-methods nil t (cons methname 0))))
-    (unless (string= respool-method "")
-      (if (assoc (symbol-name
-		  (car (gnus-find-method-for-group gnus-newsgroup-name)))
-		 respool-methods)
-	  (gnus-summary-move-article n nil (intern respool-method))
-	(gnus-summary-copy-article n nil (intern respool-method))))))
+  (unless method
+    (error "No method given for respooling"))
+  (if (assoc (symbol-name
+	      (car (gnus-find-method-for-group gnus-newsgroup-name)))
+	     (gnus-methods-using 'respool))
+      (gnus-summary-move-article n nil method)
+    (gnus-summary-copy-article n nil method)))
 
 (defun gnus-summary-import-article (file)
   "Import a random file into a mail newsgroup."
@@ -11396,7 +11418,7 @@ latter case, they will be copied into the relevant groups."
 		"Message-ID: " (gnus-inews-message-id) "\n"
 		"Lines: " (int-to-string lines) "\n"
 		"Chars: " (int-to-string (nth 7 atts)) "\n\n"))
-      (gnus-request-accept-article group t)
+      (gnus-request-accept-article group nil t)
       (kill-buffer (current-buffer)))))
 
 (defun gnus-summary-expire-articles ()
@@ -14020,7 +14042,8 @@ how much time has lapsed since DATE."
 	 (date (and (vectorp header) (mail-header-date header)))
 	 (date-regexp "^Date: \\|^X-Sent: ")
 	 (now (current-time))
-	 (inhibit-point-motion-hooks t))
+	 (inhibit-point-motion-hooks t)
+	 bface eface)
     (when (and date (not (string= date "")))
       (save-excursion
 	(set-buffer gnus-article-buffer)
@@ -14028,8 +14051,12 @@ how much time has lapsed since DATE."
 	  (nnheader-narrow-to-headers)
 	  (let ((buffer-read-only nil))
 	    ;; Delete any old Date headers.
-	    (if (zerop (message-remove-header date-regexp t))
-		(beginning-of-line)
+	    (if (re-search-forward date-regexp nil t)
+		(progn
+		  (setq bface (get-text-property (gnus-point-at-bol) 'face)
+			eface (get-text-property (gnus-point-at-eol) 'face))
+		  (message-remove-header date-regexp t)
+		  (beginning-of-line))
 	      (goto-char (point-max)))
 	    (insert
 	     (cond
@@ -14103,8 +14130,13 @@ how much time has lapsed since DATE."
 	      (t
 	       (error "Unknown conversion type: %s" type)))))
 	  ;; Do highlighting.
-	  (when (and highlight (gnus-visual-p 'article-highlight 'highlight))
-	    (gnus-article-highlight-headers)))))))
+	  (beginning-of-line)
+	  (when (and highlight (gnus-visual-p 'article-highlight 'highlight)
+		     (looking-at "\\([^:]\\): *\\(.*\\)$"))
+	    (put-text-property (match-beginning 1) (match-end 1)
+			       'face bface)
+	    (put-text-property (match-beginning 2) (match-end 2)
+			       'face eface)))))))
 
 (defun gnus-article-date-local (&optional highlight)
   "Convert the current article date to the local timezone."
@@ -14882,7 +14914,7 @@ If GROUP is nil, all groups on METHOD are scanned."
 	     article (gnus-group-real-name group)
 	     (nth 1 method) accept-function last)))
 
-(defun gnus-request-accept-article (group &optional last method)
+(defun gnus-request-accept-article (group method &optional last)
   ;; Make sure there's a newline at the end of the article.
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
@@ -14892,8 +14924,7 @@ If GROUP is nil, all groups on METHOD are scanned."
   (goto-char (point-max))
   (unless (bolp)
     (insert "\n"))
-  (let ((func (if (symbolp group) group
-		(car (or method (gnus-find-method-for-group group))))))
+  (let ((func (car (or method (gnus-find-method-for-group group)))))
     (funcall (intern (format "%s-request-accept-article" func))
 	     (if (stringp group) (gnus-group-real-name group) group)
 	     (cadr method)

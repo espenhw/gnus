@@ -796,9 +796,12 @@ this is a reply."
 	    (save-excursion
 	      (nnheader-set-temp-buffer " *acc*")
 	      (insert-buffer-substring cur)
-	      (unless (condition-case ()
-			  (gnus-request-accept-article group t method)
-			(error nil))
+	      (goto-char (point-min))
+	      (when (re-search-forward 
+		     (concat "^" (regexp-quote mail-header-separator) "$")
+		     nil t)
+		(replace-match "" t t ))
+	      (unless (gnus-request-accept-article group method t)
 		(gnus-message 1 "Couldn't store article in group %s: %s" 
 			      group (gnus-status-message method))
 		(sit-for 2))

@@ -432,9 +432,9 @@ will subscribe you to just those groups in that list, leaving the rest
 killed.  Your system administrator should have set this variable to
 something useful.
 
-Since she hasn't, Gnus will just subscribe you to a few randomly picked
-groups (i.e., @samp{*.newusers}).  (@dfn{Random} is here defined as
-@dfn{whatever Lars thinks you should read}.)
+Since she hasn't, Gnus will just subscribe you to a few arbitrarily
+picked groups (i.e., @samp{*.newusers}).  (@dfn{Arbitrary} is here
+defined as @dfn{whatever Lars thinks you should read}.)
 
 You'll also be subscribed to the Gnus documentation group, which should
 help you with most common problems.  
@@ -1618,7 +1618,7 @@ strings to match on headers (@code{gnus-group-make-kiboze-group}).
 @item G D
 @kindex G D (Group)
 @findex gnus-group-enter-directory
-Read a random directory as if with were a newsgroup with the
+Read an arbitrary directory as if with were a newsgroup with the
 @code{nneething} backend (@code{gnus-group-enter-directory}).
 
 @item G f
@@ -1765,7 +1765,7 @@ messages to the administrative address.  This parameter allows you to
 put the admin address somewhere convenient.
 
 @item comment
-This parameter allows you to enter a random comment on the group.
+This parameter allows you to enter a arbitrary comment on the group.
 
 @item @var{(variable form)}
 You can use the group parameters to set variables local to the group you
@@ -5753,7 +5753,7 @@ be properly updated.
 @item B i
 @kindex B i (Summary)
 @findex gnus-summary-import-article
-Import a random file into the current mail newsgroup
+Import an arbitrary file into the current mail newsgroup
 (@code{gnus-summary-import-article}).  You will be prompted for a file
 name, a @code{From} header and a @code{Subject} header.
 
@@ -7269,12 +7269,12 @@ referenced.  If it's a list, then that list will be @code{eval}ed.  In
 any case, if this returns a non-@code{nil} value, then the style is said
 to @dfn{match}.
 
-Each style may contain a random amount of @dfn{attributes}.  Each
-attribute consists of a @var{(name  . value)} pair.  The attribute name
-can be one of @code{signature}, @code{organization} or @code{from}.  
-The attribute name can also be a string.  In that case, this will be
-used as a header name, and the value will be inserted in the headers of
-the article. 
+Each style may contain a arbitrary amount of @dfn{attributes}.  Each
+attribute consists of a @var{(name . value)} pair.  The attribute name
+can be one of @code{signature}, @code{organization} or @code{from}.  The
+attribute name can also be a string.  In that case, this will be used as
+a header name, and the value will be inserted in the headers of the
+article.
 
 The attribute value can be a string (used verbatim), a function (the
 return value will be used), a variable (its value will be used) or a
@@ -7574,8 +7574,8 @@ As you can see, the first element in a select method is the name of the
 backend, and the second is the @dfn{address}, or @dfn{name}, if you
 will. 
 
-After these two elements, there may be a random number of @var{(variable
-form)} pairs.
+After these two elements, there may be a arbitrary number of
+@var{(variable form)} pairs.
 
 To go back to the first example---imagine that you want to read from
 port @code{15} from that machine.  This is what the select method should
@@ -8861,7 +8861,8 @@ methods if you feel the need to have a non-read-only @code{nndir}.
 
 From the @code{nndir} backend (which reads a single spool-like
 directory), it's just a hop and a skip to @code{nneething}, which
-pretends that any random directory is a newsgroup.  Strange, but true.
+pretends that any arbitrary directory is a newsgroup.  Strange, but
+true.
 
 When @code{nneething} is presented with a directory, it will scan this
 directory and assign article numbers to each file.  When you enter such
@@ -8870,9 +8871,9 @@ After all, Gnus is a newsreader, in case you're
 forgetting. @code{nneething} does this in a two-step process.  First, it
 snoops each file in question.  If the file looks like an article (i.e.,
 the first few lines look like headers), it will use this as the head.
-If this is just some random file without a head (eg. a C source file),
-@code{nneething} will cobble up a header out of thin air.  It will use
-file ownership, name and date and do whatever it can with these
+If this is just some arbitrary file without a head (eg. a C source
+file), @code{nneething} will cobble up a header out of thin air.  It
+will use file ownership, name and date and do whatever it can with these
 elements.
 
 All this should happen automatically for you, and you will be presented
@@ -9851,8 +9852,8 @@ final ``header'' you can score on is @code{Followup}.  These score
 entries will result in new score entries being added for all follow-ups
 to articles that matches these score entries.
 
-Following this key is a random number of score entries, where each score
-entry has one to four elements.
+Following this key is a arbitrary number of score entries, where each
+score entry has one to four elements.
 @enumerate
 
 @item 
@@ -10089,7 +10090,7 @@ might look something like this:
 
 As you see, each element in this alist has a mark as a key (either a
 variable name or a ``real'' mark---a character).  Following this key is
-a random number of header/score pairs.  If there are no header/score
+a arbitrary number of header/score pairs.  If there are no header/score
 pairs following the key, no adaptive scoring will be done on articles
 that have that key as the article mark.  For instance, articles with
 @code{gnus-unread-mark} in the example above will not get adaptive score
@@ -10399,9 +10400,13 @@ kills.
 
 @item gnus-apply-kill-hook
 @vindex gnus-apply-kill-hook
+@findex gnus-apply-kill-file-unless-scored
+@findex gnus-apply-kill-file
 A hook called to apply kill files to a group.  It is
-@code{(gnus-apply-kill-file)} by default.  If you don't want kill files
-to be processed, you should set this variable to @code{nil}. 
+@code{(gnus-apply-kill-file)} by default.  If you want to ignore the
+kill file if you have a score file for the same group, you can set this
+hook to @code{(gnus-apply-kill-file-unless-scored)}.  If you don't want
+kill files to be processed, you should set this variable to @code{nil}.
 
 @item gnus-kill-file-mode-hook
 @vindex gnus-kill-file-mode-hook
@@ -10576,7 +10581,7 @@ Currently Gnus uses the following formatting variables:
 Note that the @samp{%(} specs (and friends) do not make any sense on the
 mode-line variables.
 
-All these format variables can also be random elisp forms.  In that
+All these format variables can also be arbitrary elisp forms.  In that
 case, they will be @code{eval}ed to insert the required lines.
 
 @kindex M-x gnus-update-format
@@ -12951,7 +12956,7 @@ it.
 Emacs is the King of Editors because it's really a Lisp interpreter.
 Each and every key you tap runs some Emacs Lisp code snippet, and since
 Emacs Lisp is an interpreted language, that means that you can configure
-any key to run any random code.  You just, like, do it.  
+any key to run any arbitrary code.  You just, like, do it.
 
 Gnus is written in Emacs Lisp, and is run as a bunch of interpreted
 functions.  (These are byte-compiled for speed, but it's still
