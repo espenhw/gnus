@@ -1624,7 +1624,7 @@ in a while from the group buffer instead (@pxref{Group Maintenance}).
 If non-@code{nil}, the startup message won't be displayed.  That way,
 your boss might not notice as easily that you are reading news instead
 of doing your job.  Note that this variable is used before
-@file{.gnus.el} is loaded, so it should be set in @code{.emacs} instead.
+@file{.gnus.el} is loaded, so it should be set in @file{.emacs} instead.
 
 @item gnus-no-groups-message
 @vindex gnus-no-groups-message
@@ -4036,7 +4036,8 @@ For example:
 @vindex gnus-group-name-charset-group-alist
 An alist of regexp of group name and the charset for group names.  It
 is used to show non-ASCII group names.  @code{((".*" utf-8))} is the
-default value if UTF-8 is supported, otherwise the default is nil.
+default value if UTF-8 is supported, otherwise the default is
+@code{nil}.
 
 For example:
 @lisp
@@ -4144,10 +4145,10 @@ Fetch the control messages for the group from the archive at
 @code{ftp.isc.org} (@code{gnus-group-fetch-control}). Query for a
 group if given a prefix argument.
 
-If @code{gnus-group-fetch-control-use-browse-url} is non-nil, Gnus
-will open the control messages in a browser using @code{browse-url}.
-Otherwise they are fetched using @code{ange-ftp} and displayed in an
-ephemeral group.
+If @code{gnus-group-fetch-control-use-browse-url} is non-@code{nil},
+Gnus will open the control messages in a browser using
+@code{browse-url}.  Otherwise they are fetched using @code{ange-ftp}
+and displayed in an ephemeral group.
 
 Note that the control messages are compressed.  To use this command
 you need to turn on @code{auto-compression-mode}
@@ -4298,14 +4299,14 @@ regenerate the Sieve script.
 
 @vindex gnus-sieve-crosspost
 The variable @code{gnus-sieve-crosspost} controls how the Sieve script
-is generated.  If it is non-nil (the default) articles is placed in
-all groups that have matching rules, otherwise the article is only
-placed in the group with the first matching rule.  For example, the
-group parameter @samp{(sieve address "sender"
+is generated.  If it is non-@code{nil} (the default) articles is
+placed in all groups that have matching rules, otherwise the article
+is only placed in the group with the first matching rule.  For
+example, the group parameter @samp{(sieve address "sender"
 "owner-ding@@hpc.uh.edu")} will generate the following piece of Sieve
-code if @code{gnus-sieve-crosspost} is nil. (When
-@code{gnus-sieve-crosspost} is non-nil, it looks the same except that
-the line containing the call to @code{stop} is removed.)
+code if @code{gnus-sieve-crosspost} is @code{nil}. (When
+@code{gnus-sieve-crosspost} is non-@code{nil}, it looks the same
+except that the line containing the call to @code{stop} is removed.)
 
 @example
 if address "sender" "owner-ding@@hpc.uh.edu" @{
@@ -4487,7 +4488,52 @@ for example, @samp{1.2k} or @samp{0.4M}.
 Indentation based on thread level (@pxref{Customizing Threading}).
 @item B
 A complex trn-style thread tree, showing response-connecting trace
-lines.
+lines.  A thread could be drawn like this:
+
+@example
+>
++->
+| +->
+| | \->
+| |   \->
+| \->
++->
+\->
+@end example
+
+You can customize the appearance with the following options.  Note
+that it is possible to make the thread display look really neat by
+replacing the default ASCII characters with graphic line-drawing
+glyphs.
+@table @code
+@item gnus-sum-thread-tree-root
+@vindex gnus-sum-thread-tree-root
+Used for the root of a thread.  If @code{nil}, use subject
+instead. The default is @samp{> }.
+
+@item gnus-sum-thread-tree-single-indent
+@vindex gnus-sum-thread-tree-single-indent
+Used for a thread with just one message.  If @code{nil}, use subject
+instead.  The default is @samp{}.
+
+@item gnus-sum-thread-tree-vertical
+@vindex gnus-sum-thread-tree-vertical
+Used for drawing a vertical line.  The default is @samp{| }.
+
+@item gnus-sum-thread-tree-indent
+@vindex gnus-sum-thread-tree-indent
+Used for indenting.  The default is @samp{  }. 
+
+@item gnus-sum-thread-tree-leaf-with-other
+@vindex gnus-sum-thread-tree-leaf-with-other
+Used for a leaf with brothers.  The default is @samp{+-> }.
+
+@item gnus-sum-thread-tree-single-leaf
+@vindex gnus-sum-thread-tree-single-leaf
+Used for a leaf without brothers.  The default is @samp{\-> }
+
+@end table
+
 @item T
 Nothing if the article is a root and lots of spaces if it isn't (it
 pushes everything after it off the screen).
@@ -5504,7 +5550,7 @@ execute the @code{gnus-delay-send-queue} function.
 @findex gnus-delay-initialize
 By default, this function installs @code{gnus-delay-send-queue} in
 @code{gnus-get-new-news-hook}.  But it accepts the optional second
-argument @code{no-check}.  If it is non-nil,
+argument @code{no-check}.  If it is non-@code{nil},
 @code{gnus-get-new-news-hook} is not changed.  The optional first
 argument is ignored.
 
@@ -6341,7 +6387,7 @@ article.  @code{gnus-summary-dummy-line-format} is used to specify the
 format of the dummy roots.  It accepts only one format spec:  @samp{S},
 which is the subject of the article.  @xref{Formatting Variables}.
 If you want all threads to have a dummy root, even the non-gathered
-ones, set @code{gnus-summary-make-false-root-always} to t.
+ones, set @code{gnus-summary-make-false-root-always} to @code{t}.
 
 @item empty
 Gnus won't actually make any article the parent, but simply leave the
@@ -20055,7 +20101,7 @@ satisfied.  This will result in the new specs being byte-compiled, and
 you'll get top speed again.  Gnus will save these compiled specs in the
 @file{.newsrc.eld} file.  (User-defined functions aren't compiled by
 this function, though---you should compile them yourself by sticking
-them into the @code{.gnus.el} file and byte-compiling that file.)
+them into the @file{.gnus.el} file and byte-compiling that file.)
 
 
 @node Mode Lines
@@ -21631,19 +21677,19 @@ The following are the methods you can use to control the behavior of
 @cindex spam
 
 @defvar spam-use-blacklist
-Set this variable to t if you want to use blacklists when splitting
-incoming mail.  Messages whose senders are in the blacklist will be
-sent to the @code{spam-split-group}.  This is an explicit filter,
-meaning that it acts only on mail senders @emph{declared} to be
-spammers.
+Set this variable to @code{t} if you want to use blacklists when
+splitting incoming mail.  Messages whose senders are in the blacklist
+will be sent to the @code{spam-split-group}.  This is an explicit
+filter, meaning that it acts only on mail senders @emph{declared} to
+be spammers.
 @end defvar
 
 @defvar spam-use-whitelist
-Set this variable to t if you want to use whitelists when splitting
-incoming mail.  Messages whose senders are not in the whitelist will
-be sent to the @code{spam-split-group}.  This is an implicit filter,
-meaning it believes everyone to be a spammer unless told otherwise.
-Use with care.
+Set this variable to @code{t} if you want to use whitelists when
+splitting incoming mail.  Messages whose senders are not in the
+whitelist will be sent to the @code{spam-split-group}.  This is an
+implicit filter, meaning it believes everyone to be a spammer unless
+told otherwise.  Use with care.
 @end defvar
 
 @defvar gnus-group-spam-exit-processor-blacklist
@@ -21744,7 +21790,7 @@ The list of servers to consult for blackhole checks.
 @defvar spam-use-dig
 
 Use the @code{dig.el} package instead of the @code{dns.el} package.
-The default setting of t is recommended.
+The default setting of @code{t} is recommended.
 
 @end defvar
 
@@ -25912,10 +25958,10 @@ write the following:
 
 This function (really ``special form'') @code{setq} is the one that can
 set a variable to some value.  This is really all you need to know.  Now
-you can go and fill your @code{.emacs} file with lots of these to change
+you can go and fill your @file{.emacs} file with lots of these to change
 how Gnus works.
 
-If you have put that thing in your @code{.emacs} file, it will be read
+If you have put that thing in your @file{.emacs} file, it will be read
 and @code{eval}ed (which is lisp-ese for ``run'') the next time you
 start Emacs.  If you want to change the variable right away, simply say
 @kbd{C-x C-e} after the closing parenthesis.  That will @code{eval} the

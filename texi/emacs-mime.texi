@@ -724,7 +724,7 @@ by using the @code{encoding} MML tag (@pxref{MML Definition}).
 @item mm-coding-system-priorities
 @vindex mm-coding-system-priorities
 Prioritize coding systems to use for outgoing messages.  The default
-is nil, which means to use the defaults in Emacs.  It is a list of
+is @code{nil}, which means to use the defaults in Emacs.  It is a list of
 coding system symbols (aliases of coding systems does not work, use
 @kbd{M-x describe-coding-system} to make sure you are not specifying
 an alias in this variable).  For example, if you have configured Emacs
@@ -745,7 +745,7 @@ the @code{encoding} MML tag (@pxref{MML Definition}).
 
 @item mm-use-ultra-safe-encoding
 @vindex mm-use-ultra-safe-encoding
-When this is non-nil, it means that textual parts are encoded as
+When this is non-@code{nil}, it means that textual parts are encoded as
 quoted-printable if they contain lines longer than 76 characters or
 starting with "From " in the body.  Non-7bit encodings (8bit, binary)
 are generally disallowed.  This reduce the probability that a non-8bit
@@ -1595,7 +1595,7 @@ Interface functions:
 @table @code
 @item mailcap-parse-mailcaps
 @findex mailcap-parse-mailcaps
-Parse the @code{~/.mailcap} file.
+Parse the @file{~/.mailcap} file.
 
 @item mailcap-mime-info
 Takes a @sc{mime} type as its argument and returns the matching viewer.

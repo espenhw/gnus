@@ -1,3 +1,14 @@
+2003-01-20  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Summary Buffer Lines): Additions to %B.
+
+	* gnus.texi: Markup fixes: use @code for nil and t, use @file for
+	files.
+	
+	* message.texi: do.
+
+	* emacs-mime.texi: do.
+	
 2003-01-19  Jesper Harder  <harder@ifa.au.dk>
 
 	* dir (File): Add pgg.
