@@ -47,7 +47,7 @@ to values."
 	       (val (cdr (assq spec specification))))
 	  (delete-region (1- (match-beginning 0)) (match-end 0))
 	  (unless val
-	    (error "Invalid format character: %s" spec))
+           (error "Invalid format character: `%%%c'" spec))
 	  (insert (format (concat "%" num "s") val))))
        ;; Signal an error on bogus format strings.
        (t

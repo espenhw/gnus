@@ -1,3 +1,7 @@
+2004-11-28  Carl Henrik Lunde  <chlunde+bugs+@ping.uio.no>  (tiny change)
+
+	* format-spec.el (format-spec): Message the char.
+
 2004-11-26  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-art.el (gnus-split-methods): reformat comments
