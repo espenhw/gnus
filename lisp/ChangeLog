@@ -1,3 +1,8 @@
+1999-12-02  John Wiegley <jwiegley@inprise.com>
+
+	* mail-source.el (mail-source-keyword-map): Add backslash to
+	Delete-flag.
+
 1999-12-02 07:24:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-sum.el (gnus-group-charset-alist): Default nnweb groups to

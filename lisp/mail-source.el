@@ -105,7 +105,7 @@ Common keywords should be listed here.")
        (:password)
        (:mailbox "INBOX")
        (:predicate "UNSEEN UNDELETED")
-       (:fetchflag "\Deleted")
+       (:fetchflag "\\Deleted")
        (:dontexpunge))
       (webmail
        (:subtype hotmail)
