@@ -1728,6 +1728,8 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
   ;; Mmmm... Forbidden properties...
+  (unless (eq (get 'make-local-hook 'byte-compile) 'byte-compile-obsolete)
+    (eval '(make-local-hook 'after-change-functions)))
   (add-hook 'after-change-functions 'message-strip-forbidden-properties nil t)
   ;; Allow mail alias things.
   (when (eq message-mail-alias-type 'abbrev)
