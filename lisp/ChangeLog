@@ -1,3 +1,97 @@
+2003-03-02  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-enable-expiration): New
+	variable. Either ENABLE or DISABLE.  Sets default behavior for
+	selecting which groups are expired.
+	(gnus-agent-cat-set-property, gnus-agent-cat-defaccessor,
+	gnus-agent-set-cat-groups): Provides abstract interface for
+	accessing agent category.  Category now implemented by an alist.
+	(gnus-agent-add-group, gnus-agent-remove-group,
+	gnus-category-insert-line, gnus-category-edit-predicate,
+	gnus-category-edit-score, gnus-category-edit-groups,
+	gnus-category-copy, gnus-category-add, gnus-group-category): Use
+	new agent category abstraction.
+	(gnus-agent-find-parameter): New function. Search for agent
+	configuration parameter first in the group's parameters, then its
+	topics (if any), and then the group's category.  If not found
+	anywhere, use the original defined constants.
+	(gnus-agent-fetch-headers, gnus-agent-fetch-group-1): Use new
+	gnus-agent-find-parameter.
+	(gnus-agent-fetch-headers, gnus-agent-uncached-articles): Clearing
+	gnus-agent-cache now blocks retrieving headers and articles from
+	the local cache.  Fetched content is still added to the cache
+	before being returned.
+	(gnus-agent-fetch-session): Use error-message-string to generate
+	displayed error message.
+	(gnus-agent-customize-category): New Command. 'e' in category
+	buffer opens category customization buffer.
+	(gnus-category-read): Reads either positional or alist format;
+	returns alist format.
+	(gnus-category-write): Writes category file compatible with
+	current, and previous, versions of gnus-agent.
+	(gnus-category-make-function, gnus-category-make-function-1):
+	Corrected documentation; parameter is predicate NOT category.
+	(gnus-predicate-implies-unread): Now works in more cases per the
+	todo comment.
+	(gnus-function-implies-unread-1): New function. Supports
+	gnus-predicate-implies-unread.
+	(gnus-agent-expire-group): Command now provides default of group
+	under point.
+	(gnus-agent-expire-group-1): Obeys new agent-enable-expiration and
+	agent-days-until-old parameters. No longer supports
+	gnus-agent-expire-days being set to an alist.
+	(gnus-agent-request-article): Now performs its own checks of
+	gnus-agent, gnus-agent-cache, and gnus-plugged rather than
+	assuming that the caller will do them correctly.
+	(): Added one-time hook to gnus-group-prepare-hook.  Detects when
+	gnus-agent-expire-days is set to an alist.  Converts said alist
+	into group parameter so that gnus-agent-expire-days will not be
+	needed.
+	* gnus-art.el (gnus-request-article-this-buffer): Conditional
+	checks surrounding gnus-agent-request-article removed; now
+	performed by gnus-agent-request-article.
+	* gnus-cus.el (gnus-agent-parameters): New variable. List of
+	customizable group/topic parameters that regulate the agent.
+	(gnus-group-customize): Uses gnus-agent-parameters.  Replaced
+	kill-buffer with gnus-kill-buffer to remove the killed buffer from
+	the list of gnus buffers.
+	(gnus-trim-whitespace): Removes leading and trailing whitespace
+	from multiline strings.
+	(gnus-agent-cat-prepare-category-field,
+	gnus-agent-customize-category): Constructs a category
+	customization buffer.
+	* gnus-int.el (gnus-retrieve-headers,
+	gnus-request-expire-articles): No longer checks gnus-agent-cache
+	as it is handled internally by the agent.
+	(gnus-request-head, gnus-request-body): Conditional checks
+	surrounding gnus-agent-request-article removed; now performed by
+	gnus-agent-request-article.
+	
+	* gnus-start.el (): Added defvar statements to resolve compilation
+	warnings.
+	(gnus-long-file-names): New function. Isolates platform dependent
+	msdos-long-file-names.
+	(gnus-save-startup-file-via-temp-buffer): New variable. Provides
+	option of writing directly to file.  Avoids memory exhausted
+	errors when .newsrc.eld is huge.
+	(gnus-save-newsrc-file): Uses new
+	gnus-save-startup-file-via-temp-buffer.
+	(gnus-gnus-to-quick-newsrc-format): Rewritten to write to
+	standard-output.
+	(gnus-display-time-event-handler): Changed to alias from a defun
+	to avoid a compile-time warning when display-time-event-handler is
+	not defined.
+	* gnus-util.el (gnus-with-output-to-file): New macro. Binds
+	standard-output such that prin1 and princ will write directly to a
+	file.
+
+	* gnus.el (gnus-agent-cache): Expanded documentation.
+	(gnus-summary-high-undownloaded-face): Removed second bold keyword
+	so that this face is actually bold.
+
+	* nnkiboze.el (nnkiboze-request-article): Only use the cache when
+	gnus-use-cache has been set.
+
 2003-03-02  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnvirtual.el (nnvirtual-update-xref-header): Simplify.
@@ -103,12 +197,12 @@
 	spam-stat-register-ham-routine): remove spam-stat-save
 	(spam-stat hook): add spam-stat-save to the gnus-save-newsrc-hook
 
-2002-02-24  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-02-24  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-group.el (gnus-topic-mode-p): Fixed free variable
 	reference.
 
-2002-02-24  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-02-24  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* nnheader.el (nnheader-find-nov-line): Changed midpoint
 	calculation to avoid integer overflow.
@@ -149,7 +243,7 @@
 
 	* gnus-registry.el (puthash): Alias to cl-puthash for Emacs 20.
 
-2002-02-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-02-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-start.el (gnus-activate-group): Re-enabled the catch error
 	clause of the condition-case statement.  Errors connecting to a
@@ -465,7 +559,7 @@
 
 	* nnmail.el: Autoload gnus-kill-buffer.
 
-2002-02-11  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-02-11  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-summary-set-agent-mark): Added call to
 	gnus-summary-goto-subject as gnus-summary-update-mark operates on
@@ -495,7 +589,7 @@
 	* mm-util.el (mm-mule-charset-to-mime-charset): Use
 	sort-coding-systems to prefer utf-8 over utf-16.
 
-2002-02-09  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-02-09  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-expire-days):
 	gnus-request-move-article depends on gnus-agent-expire to clean up
@@ -913,7 +1007,7 @@
 
 	* gnus-sum.el (gnus-data-find-list): Remove *.
 
-2002-01-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-23  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-sum.el (gnus-summary-first-subject): Fixed bug that I
 	introduced on 2002-01-22.
@@ -929,7 +1023,7 @@
 
 	* gnus-sum.el (gnus-spam-mark): set to `$'
 
-2002-01-22  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-22  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-get-undownloaded-list): Now computes
 	gnus-newsgroup-unfetched, the list of articles whose headers have
@@ -1017,7 +1111,7 @@
 	* mailcap.el (mailcap-print-command): lpr-command might be
 	unbound in XEmacs.
 
-2002-01-18  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-18  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-regenerate-group): Added interactive form.
 
@@ -1158,7 +1252,7 @@
 	* nnimap.el (nnimap-split-download-body): New variable.
 	(nnimap-split-articles): Use it.
 
-2002-01-14  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-14  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-check-overview-buffer): This data
 	integrity checker was incorrectly flagging, and removing, articles
@@ -1185,7 +1279,7 @@
 	* gnus-msg.el (gnus-inews-add-send-actions): Allow a list of
 	articles to be marked as well.
 
-2002-01-14  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-14  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 	* gnus-agent.el (gnus-agent-get-undownloaded-list): Include the
 	fictious headers generated by nnagent (ie. Undownloaded Article
 	####) in the list of articles that have not been downloaded.
@@ -1314,7 +1408,7 @@
 	* gnus-msg.el (gnus-inews-do-gcc): Don't try to mark GCC's as read
 	if Gnus isn't alive.
 
-2002-01-11  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-11  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): Remove downloadable
 	marks from articles that are already stored in the agent.
@@ -1370,7 +1464,7 @@
 	* message.el (message-check-news-header-syntax): Compute the
 	header length correctly.
 
-2002-01-10  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-10  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-expire): Do not remove article from
 	alist when keeping fetched article file.
@@ -1452,7 +1546,7 @@
 	(spam-stat-reset): Set spam-stat-ngood and spam-stat-nbad to 0.
 	Changed copyright statement to FSF.
 
-2002-01-09  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-09  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-catchup): Do not mark cached nor
 	processable articles as read.
@@ -1608,7 +1702,7 @@
 	* gnus-sum.el (gnus-summary-make-menu-bar): Added
 	gnus-summary-refer-thread to thread menu.
 
-2002-01-07  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-07  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): When fetching within a
 	summary buffer, articles that cannot be fetched are marked as
@@ -1659,7 +1753,7 @@
 	gnus-sieve-crosspost.  One-line patch from Steinar Bang
 	<sb@dod.no>.
 
-2002-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus.el: Renamed gnus-summary-*-uncached-face as
 	gnus-summary-*-undownloaded-face to avoid confusing the agent with
@@ -1667,7 +1761,7 @@
 
 	* gnus-sum.el: Ditto.
 
-2002-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+2003-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-fetch-group): Modified to permit execution
 	in either the group or summary buffer.
