@@ -34,6 +34,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (require 'gnus-sum)
 
 (require 'gnus-uu)			; because of key prefix issues
