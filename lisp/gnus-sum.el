@@ -1523,443 +1523,442 @@ increase the score of each group you read."
 
 (defvar gnus-article-commands-menu)
 
-(when t
-  ;; Non-orthogonal keys
+;; Non-orthogonal keys
 
-  (gnus-define-keys gnus-summary-mode-map
-    " " gnus-summary-next-page
-    "\177" gnus-summary-prev-page
-    [delete] gnus-summary-prev-page
-    [backspace] gnus-summary-prev-page
-    "\r" gnus-summary-scroll-up
-    "\M-\r" gnus-summary-scroll-down
-    "n" gnus-summary-next-unread-article
-    "p" gnus-summary-prev-unread-article
-    "N" gnus-summary-next-article
-    "P" gnus-summary-prev-article
-    "\M-\C-n" gnus-summary-next-same-subject
-    "\M-\C-p" gnus-summary-prev-same-subject
-    "\M-n" gnus-summary-next-unread-subject
-    "\M-p" gnus-summary-prev-unread-subject
-    "." gnus-summary-first-unread-article
-    "," gnus-summary-best-unread-article
-    "\M-s" gnus-summary-search-article-forward
-    "\M-r" gnus-summary-search-article-backward
-    "<" gnus-summary-beginning-of-article
-    ">" gnus-summary-end-of-article
-    "j" gnus-summary-goto-article
-    "^" gnus-summary-refer-parent-article
-    "\M-^" gnus-summary-refer-article
-    "u" gnus-summary-tick-article-forward
-    "!" gnus-summary-tick-article-forward
-    "U" gnus-summary-tick-article-backward
-    "d" gnus-summary-mark-as-read-forward
-    "D" gnus-summary-mark-as-read-backward
-    "E" gnus-summary-mark-as-expirable
-    "\M-u" gnus-summary-clear-mark-forward
-    "\M-U" gnus-summary-clear-mark-backward
-    "k" gnus-summary-kill-same-subject-and-select
-    "\C-k" gnus-summary-kill-same-subject
-    "\M-\C-k" gnus-summary-kill-thread
-    "\M-\C-l" gnus-summary-lower-thread
-    "e" gnus-summary-edit-article
-    "#" gnus-summary-mark-as-processable
-    "\M-#" gnus-summary-unmark-as-processable
-    "\M-\C-t" gnus-summary-toggle-threads
-    "\M-\C-s" gnus-summary-show-thread
-    "\M-\C-h" gnus-summary-hide-thread
-    "\M-\C-f" gnus-summary-next-thread
-    "\M-\C-b" gnus-summary-prev-thread
-    [(meta down)] gnus-summary-next-thread
-    [(meta up)] gnus-summary-prev-thread
-    "\M-\C-u" gnus-summary-up-thread
-    "\M-\C-d" gnus-summary-down-thread
-    "&" gnus-summary-execute-command
-    "c" gnus-summary-catchup-and-exit
-    "\C-w" gnus-summary-mark-region-as-read
-    "\C-t" gnus-summary-toggle-truncation
-    "?" gnus-summary-mark-as-dormant
-    "\C-c\M-\C-s" gnus-summary-limit-include-expunged
-    "\C-c\C-s\C-n" gnus-summary-sort-by-number
-    "\C-c\C-s\C-l" gnus-summary-sort-by-lines
-    "\C-c\C-s\C-c" gnus-summary-sort-by-chars
-    "\C-c\C-s\C-a" gnus-summary-sort-by-author
-    "\C-c\C-s\C-s" gnus-summary-sort-by-subject
-    "\C-c\C-s\C-d" gnus-summary-sort-by-date
-    "\C-c\C-s\C-i" gnus-summary-sort-by-score
-    "\C-c\C-s\C-o" gnus-summary-sort-by-original
-    "\C-c\C-s\C-r" gnus-summary-sort-by-random
-    "=" gnus-summary-expand-window
-    "\C-x\C-s" gnus-summary-reselect-current-group
-    "\M-g" gnus-summary-rescan-group
-    "w" gnus-summary-stop-page-breaking
-    "\C-c\C-r" gnus-summary-caesar-message
-    "f" gnus-summary-followup
-    "F" gnus-summary-followup-with-original
-    "C" gnus-summary-cancel-article
-    "r" gnus-summary-reply
-    "R" gnus-summary-reply-with-original
-    "\C-c\C-f" gnus-summary-mail-forward
-    "o" gnus-summary-save-article
-    "\C-o" gnus-summary-save-article-mail
-    "|" gnus-summary-pipe-output
-    "\M-k" gnus-summary-edit-local-kill
-    "\M-K" gnus-summary-edit-global-kill
-    ;; "V" gnus-version
-    "\C-c\C-d" gnus-summary-describe-group
-    "q" gnus-summary-exit
-    "Q" gnus-summary-exit-no-update
-    "\C-c\C-i" gnus-info-find-node
-    gnus-mouse-2 gnus-mouse-pick-article
-    "m" gnus-summary-mail-other-window
-    "a" gnus-summary-post-news
-    "i" gnus-summary-news-other-window
-    "x" gnus-summary-limit-to-unread
-    "s" gnus-summary-isearch-article
-    "t" gnus-summary-toggle-header
-    "g" gnus-summary-show-article
-    "l" gnus-summary-goto-last-article
-    "\C-c\C-v\C-v" gnus-uu-decode-uu-view
-    "\C-d" gnus-summary-enter-digest-group
-    "\M-\C-d" gnus-summary-read-document
-    "\M-\C-e" gnus-summary-edit-parameters
-    "\M-\C-a" gnus-summary-customize-parameters
-    "\C-c\C-b" gnus-bug
-    "*" gnus-cache-enter-article
-    "\M-*" gnus-cache-remove-article
-    "\M-&" gnus-summary-universal-argument
-    "\C-l" gnus-recenter
-    "I" gnus-summary-increase-score
-    "L" gnus-summary-lower-score
-    "\M-i" gnus-symbolic-argument
-    "h" gnus-summary-select-article-buffer
+(gnus-define-keys gnus-summary-mode-map
+  " " gnus-summary-next-page
+  "\177" gnus-summary-prev-page
+  [delete] gnus-summary-prev-page
+  [backspace] gnus-summary-prev-page
+  "\r" gnus-summary-scroll-up
+  "\M-\r" gnus-summary-scroll-down
+  "n" gnus-summary-next-unread-article
+  "p" gnus-summary-prev-unread-article
+  "N" gnus-summary-next-article
+  "P" gnus-summary-prev-article
+  "\M-\C-n" gnus-summary-next-same-subject
+  "\M-\C-p" gnus-summary-prev-same-subject
+  "\M-n" gnus-summary-next-unread-subject
+  "\M-p" gnus-summary-prev-unread-subject
+  "." gnus-summary-first-unread-article
+  "," gnus-summary-best-unread-article
+  "\M-s" gnus-summary-search-article-forward
+  "\M-r" gnus-summary-search-article-backward
+  "<" gnus-summary-beginning-of-article
+  ">" gnus-summary-end-of-article
+  "j" gnus-summary-goto-article
+  "^" gnus-summary-refer-parent-article
+  "\M-^" gnus-summary-refer-article
+  "u" gnus-summary-tick-article-forward
+  "!" gnus-summary-tick-article-forward
+  "U" gnus-summary-tick-article-backward
+  "d" gnus-summary-mark-as-read-forward
+  "D" gnus-summary-mark-as-read-backward
+  "E" gnus-summary-mark-as-expirable
+  "\M-u" gnus-summary-clear-mark-forward
+  "\M-U" gnus-summary-clear-mark-backward
+  "k" gnus-summary-kill-same-subject-and-select
+  "\C-k" gnus-summary-kill-same-subject
+  "\M-\C-k" gnus-summary-kill-thread
+  "\M-\C-l" gnus-summary-lower-thread
+  "e" gnus-summary-edit-article
+  "#" gnus-summary-mark-as-processable
+  "\M-#" gnus-summary-unmark-as-processable
+  "\M-\C-t" gnus-summary-toggle-threads
+  "\M-\C-s" gnus-summary-show-thread
+  "\M-\C-h" gnus-summary-hide-thread
+  "\M-\C-f" gnus-summary-next-thread
+  "\M-\C-b" gnus-summary-prev-thread
+  [(meta down)] gnus-summary-next-thread
+  [(meta up)] gnus-summary-prev-thread
+  "\M-\C-u" gnus-summary-up-thread
+  "\M-\C-d" gnus-summary-down-thread
+  "&" gnus-summary-execute-command
+  "c" gnus-summary-catchup-and-exit
+  "\C-w" gnus-summary-mark-region-as-read
+  "\C-t" gnus-summary-toggle-truncation
+  "?" gnus-summary-mark-as-dormant
+  "\C-c\M-\C-s" gnus-summary-limit-include-expunged
+  "\C-c\C-s\C-n" gnus-summary-sort-by-number
+  "\C-c\C-s\C-l" gnus-summary-sort-by-lines
+  "\C-c\C-s\C-c" gnus-summary-sort-by-chars
+  "\C-c\C-s\C-a" gnus-summary-sort-by-author
+  "\C-c\C-s\C-s" gnus-summary-sort-by-subject
+  "\C-c\C-s\C-d" gnus-summary-sort-by-date
+  "\C-c\C-s\C-i" gnus-summary-sort-by-score
+  "\C-c\C-s\C-o" gnus-summary-sort-by-original
+  "\C-c\C-s\C-r" gnus-summary-sort-by-random
+  "=" gnus-summary-expand-window
+  "\C-x\C-s" gnus-summary-reselect-current-group
+  "\M-g" gnus-summary-rescan-group
+  "w" gnus-summary-stop-page-breaking
+  "\C-c\C-r" gnus-summary-caesar-message
+  "f" gnus-summary-followup
+  "F" gnus-summary-followup-with-original
+  "C" gnus-summary-cancel-article
+  "r" gnus-summary-reply
+  "R" gnus-summary-reply-with-original
+  "\C-c\C-f" gnus-summary-mail-forward
+  "o" gnus-summary-save-article
+  "\C-o" gnus-summary-save-article-mail
+  "|" gnus-summary-pipe-output
+  "\M-k" gnus-summary-edit-local-kill
+  "\M-K" gnus-summary-edit-global-kill
+  ;; "V" gnus-version
+  "\C-c\C-d" gnus-summary-describe-group
+  "q" gnus-summary-exit
+  "Q" gnus-summary-exit-no-update
+  "\C-c\C-i" gnus-info-find-node
+  gnus-mouse-2 gnus-mouse-pick-article
+  "m" gnus-summary-mail-other-window
+  "a" gnus-summary-post-news
+  "i" gnus-summary-news-other-window
+  "x" gnus-summary-limit-to-unread
+  "s" gnus-summary-isearch-article
+  "t" gnus-summary-toggle-header
+  "g" gnus-summary-show-article
+  "l" gnus-summary-goto-last-article
+  "\C-c\C-v\C-v" gnus-uu-decode-uu-view
+  "\C-d" gnus-summary-enter-digest-group
+  "\M-\C-d" gnus-summary-read-document
+  "\M-\C-e" gnus-summary-edit-parameters
+  "\M-\C-a" gnus-summary-customize-parameters
+  "\C-c\C-b" gnus-bug
+  "*" gnus-cache-enter-article
+  "\M-*" gnus-cache-remove-article
+  "\M-&" gnus-summary-universal-argument
+  "\C-l" gnus-recenter
+  "I" gnus-summary-increase-score
+  "L" gnus-summary-lower-score
+  "\M-i" gnus-symbolic-argument
+  "h" gnus-summary-select-article-buffer
 
-    "b" gnus-article-view-part
-    "\M-t" gnus-summary-toggle-display-buttonized
+  "b" gnus-article-view-part
+  "\M-t" gnus-summary-toggle-display-buttonized
 
-    "V" gnus-summary-score-map
-    "X" gnus-uu-extract-map
-    "S" gnus-summary-send-map)
+  "V" gnus-summary-score-map
+  "X" gnus-uu-extract-map
+  "S" gnus-summary-send-map)
 
-  ;; Sort of orthogonal keymap
-  (gnus-define-keys (gnus-summary-mark-map "M" gnus-summary-mode-map)
-    "t" gnus-summary-tick-article-forward
-    "!" gnus-summary-tick-article-forward
-    "d" gnus-summary-mark-as-read-forward
-    "r" gnus-summary-mark-as-read-forward
-    "c" gnus-summary-clear-mark-forward
-    " " gnus-summary-clear-mark-forward
-    "e" gnus-summary-mark-as-expirable
-    "x" gnus-summary-mark-as-expirable
-    "?" gnus-summary-mark-as-dormant
-    "b" gnus-summary-set-bookmark
-    "B" gnus-summary-remove-bookmark
-    "#" gnus-summary-mark-as-processable
-    "\M-#" gnus-summary-unmark-as-processable
-    "S" gnus-summary-limit-include-expunged
-    "C" gnus-summary-catchup
-    "H" gnus-summary-catchup-to-here
-    "h" gnus-summary-catchup-from-here
-    "\C-c" gnus-summary-catchup-all
-    "k" gnus-summary-kill-same-subject-and-select
-    "K" gnus-summary-kill-same-subject
-    "P" gnus-uu-mark-map)
+;; Sort of orthogonal keymap
+(gnus-define-keys (gnus-summary-mark-map "M" gnus-summary-mode-map)
+  "t" gnus-summary-tick-article-forward
+  "!" gnus-summary-tick-article-forward
+  "d" gnus-summary-mark-as-read-forward
+  "r" gnus-summary-mark-as-read-forward
+  "c" gnus-summary-clear-mark-forward
+  " " gnus-summary-clear-mark-forward
+  "e" gnus-summary-mark-as-expirable
+  "x" gnus-summary-mark-as-expirable
+  "?" gnus-summary-mark-as-dormant
+  "b" gnus-summary-set-bookmark
+  "B" gnus-summary-remove-bookmark
+  "#" gnus-summary-mark-as-processable
+  "\M-#" gnus-summary-unmark-as-processable
+  "S" gnus-summary-limit-include-expunged
+  "C" gnus-summary-catchup
+  "H" gnus-summary-catchup-to-here
+  "h" gnus-summary-catchup-from-here
+  "\C-c" gnus-summary-catchup-all
+  "k" gnus-summary-kill-same-subject-and-select
+  "K" gnus-summary-kill-same-subject
+  "P" gnus-uu-mark-map)
 
-  (gnus-define-keys (gnus-summary-mscore-map "V" gnus-summary-mark-map)
-    "c" gnus-summary-clear-above
-    "u" gnus-summary-tick-above
-    "m" gnus-summary-mark-above
-    "k" gnus-summary-kill-below)
+(gnus-define-keys (gnus-summary-mscore-map "V" gnus-summary-mark-map)
+  "c" gnus-summary-clear-above
+  "u" gnus-summary-tick-above
+  "m" gnus-summary-mark-above
+  "k" gnus-summary-kill-below)
 
-  (gnus-define-keys (gnus-summary-limit-map "/" gnus-summary-mode-map)
-    "/" gnus-summary-limit-to-subject
-    "n" gnus-summary-limit-to-articles
-    "w" gnus-summary-pop-limit
-    "s" gnus-summary-limit-to-subject
-    "a" gnus-summary-limit-to-author
-    "u" gnus-summary-limit-to-unread
-    "m" gnus-summary-limit-to-marks
-    "M" gnus-summary-limit-exclude-marks
-    "v" gnus-summary-limit-to-score
-    "*" gnus-summary-limit-include-cached
-    "D" gnus-summary-limit-include-dormant
-    "T" gnus-summary-limit-include-thread
-    "d" gnus-summary-limit-exclude-dormant
-    "t" gnus-summary-limit-to-age
-    "." gnus-summary-limit-to-unseen
-    "x" gnus-summary-limit-to-extra
-    "p" gnus-summary-limit-to-display-predicate
-    "E" gnus-summary-limit-include-expunged
-    "c" gnus-summary-limit-exclude-childless-dormant
-    "C" gnus-summary-limit-mark-excluded-as-read
-    "o" gnus-summary-insert-old-articles
-    "N" gnus-summary-insert-new-articles)
+(gnus-define-keys (gnus-summary-limit-map "/" gnus-summary-mode-map)
+  "/" gnus-summary-limit-to-subject
+  "n" gnus-summary-limit-to-articles
+  "w" gnus-summary-pop-limit
+  "s" gnus-summary-limit-to-subject
+  "a" gnus-summary-limit-to-author
+  "u" gnus-summary-limit-to-unread
+  "m" gnus-summary-limit-to-marks
+  "M" gnus-summary-limit-exclude-marks
+  "v" gnus-summary-limit-to-score
+  "*" gnus-summary-limit-include-cached
+  "D" gnus-summary-limit-include-dormant
+  "T" gnus-summary-limit-include-thread
+  "d" gnus-summary-limit-exclude-dormant
+  "t" gnus-summary-limit-to-age
+  "." gnus-summary-limit-to-unseen
+  "x" gnus-summary-limit-to-extra
+  "p" gnus-summary-limit-to-display-predicate
+  "E" gnus-summary-limit-include-expunged
+  "c" gnus-summary-limit-exclude-childless-dormant
+  "C" gnus-summary-limit-mark-excluded-as-read
+  "o" gnus-summary-insert-old-articles
+  "N" gnus-summary-insert-new-articles)
 
-  (gnus-define-keys (gnus-summary-goto-map "G" gnus-summary-mode-map)
-    "n" gnus-summary-next-unread-article
-    "p" gnus-summary-prev-unread-article
-    "N" gnus-summary-next-article
-    "P" gnus-summary-prev-article
-    "\C-n" gnus-summary-next-same-subject
-    "\C-p" gnus-summary-prev-same-subject
-    "\M-n" gnus-summary-next-unread-subject
-    "\M-p" gnus-summary-prev-unread-subject
-    "f" gnus-summary-first-unread-article
-    "b" gnus-summary-best-unread-article
-    "j" gnus-summary-goto-article
-    "g" gnus-summary-goto-subject
-    "l" gnus-summary-goto-last-article
-    "o" gnus-summary-pop-article)
+(gnus-define-keys (gnus-summary-goto-map "G" gnus-summary-mode-map)
+  "n" gnus-summary-next-unread-article
+  "p" gnus-summary-prev-unread-article
+  "N" gnus-summary-next-article
+  "P" gnus-summary-prev-article
+  "\C-n" gnus-summary-next-same-subject
+  "\C-p" gnus-summary-prev-same-subject
+  "\M-n" gnus-summary-next-unread-subject
+  "\M-p" gnus-summary-prev-unread-subject
+  "f" gnus-summary-first-unread-article
+  "b" gnus-summary-best-unread-article
+  "j" gnus-summary-goto-article
+  "g" gnus-summary-goto-subject
+  "l" gnus-summary-goto-last-article
+  "o" gnus-summary-pop-article)
 
-  (gnus-define-keys (gnus-summary-thread-map "T" gnus-summary-mode-map)
-    "k" gnus-summary-kill-thread
-    "l" gnus-summary-lower-thread
-    "i" gnus-summary-raise-thread
-    "T" gnus-summary-toggle-threads
-    "t" gnus-summary-rethread-current
-    "^" gnus-summary-reparent-thread
-    "s" gnus-summary-show-thread
-    "S" gnus-summary-show-all-threads
-    "h" gnus-summary-hide-thread
-    "H" gnus-summary-hide-all-threads
-    "n" gnus-summary-next-thread
-    "p" gnus-summary-prev-thread
-    "u" gnus-summary-up-thread
-    "o" gnus-summary-top-thread
-    "d" gnus-summary-down-thread
-    "#" gnus-uu-mark-thread
-    "\M-#" gnus-uu-unmark-thread)
+(gnus-define-keys (gnus-summary-thread-map "T" gnus-summary-mode-map)
+  "k" gnus-summary-kill-thread
+  "l" gnus-summary-lower-thread
+  "i" gnus-summary-raise-thread
+  "T" gnus-summary-toggle-threads
+  "t" gnus-summary-rethread-current
+  "^" gnus-summary-reparent-thread
+  "s" gnus-summary-show-thread
+  "S" gnus-summary-show-all-threads
+  "h" gnus-summary-hide-thread
+  "H" gnus-summary-hide-all-threads
+  "n" gnus-summary-next-thread
+  "p" gnus-summary-prev-thread
+  "u" gnus-summary-up-thread
+  "o" gnus-summary-top-thread
+  "d" gnus-summary-down-thread
+  "#" gnus-uu-mark-thread
+  "\M-#" gnus-uu-unmark-thread)
 
-  (gnus-define-keys (gnus-summary-buffer-map "Y" gnus-summary-mode-map)
-    "g" gnus-summary-prepare
-    "c" gnus-summary-insert-cached-articles
-    "d" gnus-summary-insert-dormant-articles)
+(gnus-define-keys (gnus-summary-buffer-map "Y" gnus-summary-mode-map)
+  "g" gnus-summary-prepare
+  "c" gnus-summary-insert-cached-articles
+  "d" gnus-summary-insert-dormant-articles)
 
-  (gnus-define-keys (gnus-summary-exit-map "Z" gnus-summary-mode-map)
-    "c" gnus-summary-catchup-and-exit
-    "C" gnus-summary-catchup-all-and-exit
-    "E" gnus-summary-exit-no-update
-    "Q" gnus-summary-exit
-    "Z" gnus-summary-exit
-    "n" gnus-summary-catchup-and-goto-next-group
-    "R" gnus-summary-reselect-current-group
-    "G" gnus-summary-rescan-group
-    "N" gnus-summary-next-group
-    "s" gnus-summary-save-newsrc
-    "P" gnus-summary-prev-group)
+(gnus-define-keys (gnus-summary-exit-map "Z" gnus-summary-mode-map)
+  "c" gnus-summary-catchup-and-exit
+  "C" gnus-summary-catchup-all-and-exit
+  "E" gnus-summary-exit-no-update
+  "Q" gnus-summary-exit
+  "Z" gnus-summary-exit
+  "n" gnus-summary-catchup-and-goto-next-group
+  "R" gnus-summary-reselect-current-group
+  "G" gnus-summary-rescan-group
+  "N" gnus-summary-next-group
+  "s" gnus-summary-save-newsrc
+  "P" gnus-summary-prev-group)
 
-  (gnus-define-keys (gnus-summary-article-map "A" gnus-summary-mode-map)
-    " " gnus-summary-next-page
-    "n" gnus-summary-next-page
-    "\177" gnus-summary-prev-page
-    [delete] gnus-summary-prev-page
-    "p" gnus-summary-prev-page
-    "\r" gnus-summary-scroll-up
-    "\M-\r" gnus-summary-scroll-down
-    "<" gnus-summary-beginning-of-article
-    ">" gnus-summary-end-of-article
-    "b" gnus-summary-beginning-of-article
-    "e" gnus-summary-end-of-article
-    "^" gnus-summary-refer-parent-article
-    "r" gnus-summary-refer-parent-article
-    "D" gnus-summary-enter-digest-group
-    "R" gnus-summary-refer-references
-    "T" gnus-summary-refer-thread
-    "g" gnus-summary-show-article
-    "s" gnus-summary-isearch-article
-    "P" gnus-summary-print-article
-    "M" gnus-mailing-list-insinuate
-    "t" gnus-article-babel)
+(gnus-define-keys (gnus-summary-article-map "A" gnus-summary-mode-map)
+  " " gnus-summary-next-page
+  "n" gnus-summary-next-page
+  "\177" gnus-summary-prev-page
+  [delete] gnus-summary-prev-page
+  "p" gnus-summary-prev-page
+  "\r" gnus-summary-scroll-up
+  "\M-\r" gnus-summary-scroll-down
+  "<" gnus-summary-beginning-of-article
+  ">" gnus-summary-end-of-article
+  "b" gnus-summary-beginning-of-article
+  "e" gnus-summary-end-of-article
+  "^" gnus-summary-refer-parent-article
+  "r" gnus-summary-refer-parent-article
+  "D" gnus-summary-enter-digest-group
+  "R" gnus-summary-refer-references
+  "T" gnus-summary-refer-thread
+  "g" gnus-summary-show-article
+  "s" gnus-summary-isearch-article
+  "P" gnus-summary-print-article
+  "M" gnus-mailing-list-insinuate
+  "t" gnus-article-babel)
 
-  (gnus-define-keys (gnus-summary-wash-map "W" gnus-summary-mode-map)
-    "b" gnus-article-add-buttons
-    "B" gnus-article-add-buttons-to-head
-    "o" gnus-article-treat-overstrike
-    "e" gnus-article-emphasize
-    "w" gnus-article-fill-cited-article
-    "Q" gnus-article-fill-long-lines
-    "C" gnus-article-capitalize-sentences
-    "c" gnus-article-remove-cr
-    "q" gnus-article-de-quoted-unreadable
-    "6" gnus-article-de-base64-unreadable
-    "Z" gnus-article-decode-HZ
-    "h" gnus-article-wash-html
-    "u" gnus-article-unsplit-urls
-    "s" gnus-summary-force-verify-and-decrypt
-    "f" gnus-article-display-x-face
-    "l" gnus-summary-stop-page-breaking
-    "r" gnus-summary-caesar-message
-    "m" gnus-summary-morse-message
-    "t" gnus-summary-toggle-header
-    "g" gnus-treat-smiley
-    "v" gnus-summary-verbose-headers
-    "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
-    "p" gnus-article-verify-x-pgp-sig
-    "d" gnus-article-treat-dumbquotes)
+(gnus-define-keys (gnus-summary-wash-map "W" gnus-summary-mode-map)
+  "b" gnus-article-add-buttons
+  "B" gnus-article-add-buttons-to-head
+  "o" gnus-article-treat-overstrike
+  "e" gnus-article-emphasize
+  "w" gnus-article-fill-cited-article
+  "Q" gnus-article-fill-long-lines
+  "C" gnus-article-capitalize-sentences
+  "c" gnus-article-remove-cr
+  "q" gnus-article-de-quoted-unreadable
+  "6" gnus-article-de-base64-unreadable
+  "Z" gnus-article-decode-HZ
+  "h" gnus-article-wash-html
+  "u" gnus-article-unsplit-urls
+  "s" gnus-summary-force-verify-and-decrypt
+  "f" gnus-article-display-x-face
+  "l" gnus-summary-stop-page-breaking
+  "r" gnus-summary-caesar-message
+  "m" gnus-summary-morse-message
+  "t" gnus-summary-toggle-header
+  "g" gnus-treat-smiley
+  "v" gnus-summary-verbose-headers
+  "a" gnus-article-strip-headers-in-body ;; mnemonic: wash archive
+  "p" gnus-article-verify-x-pgp-sig
+  "d" gnus-article-treat-dumbquotes)
 
-  (gnus-define-keys (gnus-summary-wash-deuglify-map "Y" gnus-summary-wash-map)
-    ;; mnemonic: deuglif*Y*
-    "u" gnus-article-outlook-unwrap-lines
-    "a" gnus-article-outlook-repair-attribution
-    "c" gnus-article-outlook-rearrange-citation
-    "f" gnus-article-outlook-deuglify-article) ;; mnemonic: full deuglify
+(gnus-define-keys (gnus-summary-wash-deuglify-map "Y" gnus-summary-wash-map)
+  ;; mnemonic: deuglif*Y*
+  "u" gnus-article-outlook-unwrap-lines
+  "a" gnus-article-outlook-repair-attribution
+  "c" gnus-article-outlook-rearrange-citation
+  "f" gnus-article-outlook-deuglify-article) ;; mnemonic: full deuglify
 
-  (gnus-define-keys (gnus-summary-wash-hide-map "W" gnus-summary-wash-map)
-    "a" gnus-article-hide
-    "h" gnus-article-hide-headers
-    "b" gnus-article-hide-boring-headers
-    "s" gnus-article-hide-signature
-    "c" gnus-article-hide-citation
-    "C" gnus-article-hide-citation-in-followups
-    "l" gnus-article-hide-list-identifiers
-    "p" gnus-article-hide-pgp
-    "B" gnus-article-strip-banner
-    "P" gnus-article-hide-pem
-    "\C-c" gnus-article-hide-citation-maybe)
+(gnus-define-keys (gnus-summary-wash-hide-map "W" gnus-summary-wash-map)
+  "a" gnus-article-hide
+  "h" gnus-article-hide-headers
+  "b" gnus-article-hide-boring-headers
+  "s" gnus-article-hide-signature
+  "c" gnus-article-hide-citation
+  "C" gnus-article-hide-citation-in-followups
+  "l" gnus-article-hide-list-identifiers
+  "p" gnus-article-hide-pgp
+  "B" gnus-article-strip-banner
+  "P" gnus-article-hide-pem
+  "\C-c" gnus-article-hide-citation-maybe)
 
-  (gnus-define-keys (gnus-summary-wash-highlight-map "H" gnus-summary-wash-map)
-    "a" gnus-article-highlight
-    "h" gnus-article-highlight-headers
-    "c" gnus-article-highlight-citation
-    "s" gnus-article-highlight-signature)
+(gnus-define-keys (gnus-summary-wash-highlight-map "H" gnus-summary-wash-map)
+  "a" gnus-article-highlight
+  "h" gnus-article-highlight-headers
+  "c" gnus-article-highlight-citation
+  "s" gnus-article-highlight-signature)
 
-  (gnus-define-keys (gnus-summary-wash-header-map "G" gnus-summary-wash-map)
-    "f" gnus-article-treat-fold-headers
-    "u" gnus-article-treat-unfold-headers
-    "n" gnus-article-treat-fold-newsgroups)
+(gnus-define-keys (gnus-summary-wash-header-map "G" gnus-summary-wash-map)
+  "f" gnus-article-treat-fold-headers
+  "u" gnus-article-treat-unfold-headers
+  "n" gnus-article-treat-fold-newsgroups)
 
-  (gnus-define-keys (gnus-summary-wash-display-map "D" gnus-summary-wash-map)
-    "x" gnus-article-display-x-face
-    "d" gnus-article-display-face
-    "s" gnus-treat-smiley
-    "D" gnus-article-remove-images
-    "f" gnus-treat-from-picon
-    "m" gnus-treat-mail-picon
-    "n" gnus-treat-newsgroups-picon)
+(gnus-define-keys (gnus-summary-wash-display-map "D" gnus-summary-wash-map)
+  "x" gnus-article-display-x-face
+  "d" gnus-article-display-face
+  "s" gnus-treat-smiley
+  "D" gnus-article-remove-images
+  "f" gnus-treat-from-picon
+  "m" gnus-treat-mail-picon
+  "n" gnus-treat-newsgroups-picon)
 
-  (gnus-define-keys (gnus-summary-wash-mime-map "M" gnus-summary-wash-map)
-    "w" gnus-article-decode-mime-words
-    "c" gnus-article-decode-charset
-    "v" gnus-mime-view-all-parts
-    "b" gnus-article-view-part)
+(gnus-define-keys (gnus-summary-wash-mime-map "M" gnus-summary-wash-map)
+  "w" gnus-article-decode-mime-words
+  "c" gnus-article-decode-charset
+  "v" gnus-mime-view-all-parts
+  "b" gnus-article-view-part)
 
-  (gnus-define-keys (gnus-summary-wash-time-map "T" gnus-summary-wash-map)
-    "z" gnus-article-date-ut
-    "u" gnus-article-date-ut
-    "l" gnus-article-date-local
-    "p" gnus-article-date-english
-    "e" gnus-article-date-lapsed
-    "o" gnus-article-date-original
-    "i" gnus-article-date-iso8601
-    "s" gnus-article-date-user)
+(gnus-define-keys (gnus-summary-wash-time-map "T" gnus-summary-wash-map)
+  "z" gnus-article-date-ut
+  "u" gnus-article-date-ut
+  "l" gnus-article-date-local
+  "p" gnus-article-date-english
+  "e" gnus-article-date-lapsed
+  "o" gnus-article-date-original
+  "i" gnus-article-date-iso8601
+  "s" gnus-article-date-user)
 
-  (gnus-define-keys (gnus-summary-wash-empty-map "E" gnus-summary-wash-map)
-    "t" gnus-article-remove-trailing-blank-lines
-    "l" gnus-article-strip-leading-blank-lines
-    "m" gnus-article-strip-multiple-blank-lines
-    "a" gnus-article-strip-blank-lines
-    "A" gnus-article-strip-all-blank-lines
-    "s" gnus-article-strip-leading-space
-    "e" gnus-article-strip-trailing-space
-    "w" gnus-article-remove-leading-whitespace)
+(gnus-define-keys (gnus-summary-wash-empty-map "E" gnus-summary-wash-map)
+  "t" gnus-article-remove-trailing-blank-lines
+  "l" gnus-article-strip-leading-blank-lines
+  "m" gnus-article-strip-multiple-blank-lines
+  "a" gnus-article-strip-blank-lines
+  "A" gnus-article-strip-all-blank-lines
+  "s" gnus-article-strip-leading-space
+  "e" gnus-article-strip-trailing-space
+  "w" gnus-article-remove-leading-whitespace)
 
-  (gnus-define-keys (gnus-summary-help-map "H" gnus-summary-mode-map)
-    "v" gnus-version
-    "f" gnus-summary-fetch-faq
-    "d" gnus-summary-describe-group
-    "h" gnus-summary-describe-briefly
-    "i" gnus-info-find-node
-    "c" gnus-group-fetch-charter
-    "C" gnus-group-fetch-control)
+(gnus-define-keys (gnus-summary-help-map "H" gnus-summary-mode-map)
+  "v" gnus-version
+  "f" gnus-summary-fetch-faq
+  "d" gnus-summary-describe-group
+  "h" gnus-summary-describe-briefly
+  "i" gnus-info-find-node
+  "c" gnus-group-fetch-charter
+  "C" gnus-group-fetch-control)
 
-  (gnus-define-keys (gnus-summary-backend-map "B" gnus-summary-mode-map)
-    "e" gnus-summary-expire-articles
-    "\M-\C-e" gnus-summary-expire-articles-now
-    "\177" gnus-summary-delete-article
-    [delete] gnus-summary-delete-article
-    [backspace] gnus-summary-delete-article
-    "m" gnus-summary-move-article
-    "r" gnus-summary-respool-article
-    "w" gnus-summary-edit-article
-    "c" gnus-summary-copy-article
-    "B" gnus-summary-crosspost-article
-    "q" gnus-summary-respool-query
-    "t" gnus-summary-respool-trace
-    "i" gnus-summary-import-article
-    "I" gnus-summary-create-article
-    "p" gnus-summary-article-posted-p)
+(gnus-define-keys (gnus-summary-backend-map "B" gnus-summary-mode-map)
+  "e" gnus-summary-expire-articles
+  "\M-\C-e" gnus-summary-expire-articles-now
+  "\177" gnus-summary-delete-article
+  [delete] gnus-summary-delete-article
+  [backspace] gnus-summary-delete-article
+  "m" gnus-summary-move-article
+  "r" gnus-summary-respool-article
+  "w" gnus-summary-edit-article
+  "c" gnus-summary-copy-article
+  "B" gnus-summary-crosspost-article
+  "q" gnus-summary-respool-query
+  "t" gnus-summary-respool-trace
+  "i" gnus-summary-import-article
+  "I" gnus-summary-create-article
+  "p" gnus-summary-article-posted-p)
 
-  (gnus-define-keys (gnus-summary-save-map "O" gnus-summary-mode-map)
-    "o" gnus-summary-save-article
-    "m" gnus-summary-save-article-mail
-    "F" gnus-summary-write-article-file
-    "r" gnus-summary-save-article-rmail
-    "f" gnus-summary-save-article-file
-    "b" gnus-summary-save-article-body-file
-    "h" gnus-summary-save-article-folder
-    "v" gnus-summary-save-article-vm
-    "p" gnus-summary-pipe-output
-    "P" gnus-summary-muttprint
-    "s" gnus-soup-add-article)
+(gnus-define-keys (gnus-summary-save-map "O" gnus-summary-mode-map)
+  "o" gnus-summary-save-article
+  "m" gnus-summary-save-article-mail
+  "F" gnus-summary-write-article-file
+  "r" gnus-summary-save-article-rmail
+  "f" gnus-summary-save-article-file
+  "b" gnus-summary-save-article-body-file
+  "h" gnus-summary-save-article-folder
+  "v" gnus-summary-save-article-vm
+  "p" gnus-summary-pipe-output
+  "P" gnus-summary-muttprint
+  "s" gnus-soup-add-article)
 
-  (gnus-define-keys (gnus-summary-mime-map "K" gnus-summary-mode-map)
-    "b" gnus-summary-display-buttonized
-    "m" gnus-summary-repair-multipart
-    "v" gnus-article-view-part
-    "o" gnus-article-save-part
-    "c" gnus-article-copy-part
-    "C" gnus-article-view-part-as-charset
-    "e" gnus-article-view-part-externally
-    "E" gnus-article-encrypt-body
-    "i" gnus-article-inline-part
-    "|" gnus-article-pipe-part)
+(gnus-define-keys (gnus-summary-mime-map "K" gnus-summary-mode-map)
+  "b" gnus-summary-display-buttonized
+  "m" gnus-summary-repair-multipart
+  "v" gnus-article-view-part
+  "o" gnus-article-save-part
+  "c" gnus-article-copy-part
+  "C" gnus-article-view-part-as-charset
+  "e" gnus-article-view-part-externally
+  "E" gnus-article-encrypt-body
+  "i" gnus-article-inline-part
+  "|" gnus-article-pipe-part)
 
-  (gnus-define-keys (gnus-uu-mark-map "P" gnus-summary-mark-map)
-    "p" gnus-summary-mark-as-processable
-    "u" gnus-summary-unmark-as-processable
-    "U" gnus-summary-unmark-all-processable
-    "v" gnus-uu-mark-over
-    "s" gnus-uu-mark-series
-    "r" gnus-uu-mark-region
-    "g" gnus-uu-unmark-region
-    "R" gnus-uu-mark-by-regexp
-    "G" gnus-uu-unmark-by-regexp
-    "t" gnus-uu-mark-thread
-    "T" gnus-uu-unmark-thread
-    "a" gnus-uu-mark-all
-    "b" gnus-uu-mark-buffer
-    "S" gnus-uu-mark-sparse
-    "k" gnus-summary-kill-process-mark
-    "y" gnus-summary-yank-process-mark
-    "w" gnus-summary-save-process-mark
-    "i" gnus-uu-invert-processable)
+(gnus-define-keys (gnus-uu-mark-map "P" gnus-summary-mark-map)
+  "p" gnus-summary-mark-as-processable
+  "u" gnus-summary-unmark-as-processable
+  "U" gnus-summary-unmark-all-processable
+  "v" gnus-uu-mark-over
+  "s" gnus-uu-mark-series
+  "r" gnus-uu-mark-region
+  "g" gnus-uu-unmark-region
+  "R" gnus-uu-mark-by-regexp
+  "G" gnus-uu-unmark-by-regexp
+  "t" gnus-uu-mark-thread
+  "T" gnus-uu-unmark-thread
+  "a" gnus-uu-mark-all
+  "b" gnus-uu-mark-buffer
+  "S" gnus-uu-mark-sparse
+  "k" gnus-summary-kill-process-mark
+  "y" gnus-summary-yank-process-mark
+  "w" gnus-summary-save-process-mark
+  "i" gnus-uu-invert-processable)
 
-  (gnus-define-keys (gnus-uu-extract-map "X" gnus-summary-mode-map)
-    ;;"x" gnus-uu-extract-any
-    "m" gnus-summary-save-parts
-    "u" gnus-uu-decode-uu
-    "U" gnus-uu-decode-uu-and-save
-    "s" gnus-uu-decode-unshar
-    "S" gnus-uu-decode-unshar-and-save
-    "o" gnus-uu-decode-save
-    "O" gnus-uu-decode-save
-    "b" gnus-uu-decode-binhex
-    "B" gnus-uu-decode-binhex
-    "p" gnus-uu-decode-postscript
-    "P" gnus-uu-decode-postscript-and-save)
+(gnus-define-keys (gnus-uu-extract-map "X" gnus-summary-mode-map)
+  ;;"x" gnus-uu-extract-any
+  "m" gnus-summary-save-parts
+  "u" gnus-uu-decode-uu
+  "U" gnus-uu-decode-uu-and-save
+  "s" gnus-uu-decode-unshar
+  "S" gnus-uu-decode-unshar-and-save
+  "o" gnus-uu-decode-save
+  "O" gnus-uu-decode-save
+  "b" gnus-uu-decode-binhex
+  "B" gnus-uu-decode-binhex
+  "p" gnus-uu-decode-postscript
+  "P" gnus-uu-decode-postscript-and-save)
 
-  (gnus-define-keys
-      (gnus-uu-extract-view-map "v" gnus-uu-extract-map)
-    "u" gnus-uu-decode-uu-view
-    "U" gnus-uu-decode-uu-and-save-view
-    "s" gnus-uu-decode-unshar-view
-    "S" gnus-uu-decode-unshar-and-save-view
-    "o" gnus-uu-decode-save-view
-    "O" gnus-uu-decode-save-view
-    "b" gnus-uu-decode-binhex-view
-    "B" gnus-uu-decode-binhex-view
-    "p" gnus-uu-decode-postscript-view
-    "P" gnus-uu-decode-postscript-and-save-view))
+(gnus-define-keys
+    (gnus-uu-extract-view-map "v" gnus-uu-extract-map)
+  "u" gnus-uu-decode-uu-view
+  "U" gnus-uu-decode-uu-and-save-view
+  "s" gnus-uu-decode-unshar-view
+  "S" gnus-uu-decode-unshar-and-save-view
+  "o" gnus-uu-decode-save-view
+  "O" gnus-uu-decode-save-view
+  "b" gnus-uu-decode-binhex-view
+  "B" gnus-uu-decode-binhex-view
+  "p" gnus-uu-decode-postscript-view
+  "P" gnus-uu-decode-postscript-and-save-view)
 
 (defvar gnus-article-post-menu nil)
 
