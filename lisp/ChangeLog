@@ -1,3 +1,10 @@
+1999-12-11 14:21:23  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnwarchive.el (nnwarchive-make-caesar-translation-table): A
+	new function to make modified caesar table.
+	(nnwarchive-from-r13): Use it.
+	(nnwarchive-mail-archive-article): Improved.
+
 1999-12-11 12:30:20  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el (webmail-url): Use mm-with-unibyte-current-buffer.

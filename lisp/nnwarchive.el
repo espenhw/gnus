@@ -23,18 +23,15 @@
 
 ;;; Commentary:
 
-;; Note: You need to have `url' and `w3' installed for this backend to
-;; work.
+;; Note: You need to have `url' and `w3' 0.46 or greater version
+;; installed for this backend to work.
 
 ;; A lot of codes stolen from mail-source, nnslashdot, nnweb.
 
 ;; Todo: 
 ;; 1. To support more web archives.
 ;; 2. Support nnwarchive-xover-is-evil.
-
-;; Known bugs: in w3 0.44, there are two copies of url-maybe-relative.
-;; If it is loaded from w3.el, (load-library "url").  Update to w3 0.46 
-;; or greater version.
+;; 3. Generalize webmail to other MHonArc archive.
 
 ;;; Code:
 
@@ -572,7 +569,7 @@
 	    subject (match-string 2))
       (forward-line 1)
       (unless (assq article nnwarchive-headers)
-	(if (looking-at "<UL><LI><EM>From</EM>:\\([^&]+\\)&lt;\\([^&]+\\)&gt;")
+	(if (looking-at "<UL><LI><EM>From</EM>:\\([^&]+\\)<\\([^&]+\\)>")
 	    (progn
 	      (setq from (match-string 1)
 		    date (identity (match-string 2))))
@@ -604,56 +601,144 @@
       (nnwarchive-mail-archive-xover group)
       (setq min (apply 'min (mapcar 'car nnwarchive-headers))))))
 
+(defvar nnwarchive-caesar-translation-table nil
+  "Modified rot13 table. tr/@A-Z[a-z/N-Z[@A-Mn-za-m/.")
+
+(defun nnwarchive-make-caesar-translation-table ()
+  "Create modified rot13 table. tr/@A-Z[a-z/N-Z[@A-Mn-za-m/."
+  (let ((i -1)
+	(table (make-string 256 0))
+	(a (mm-char-int ?a))
+	(A (mm-char-int ?A)))
+    (while (< (incf i) 256)
+      (aset table i i))
+    (concat
+     (substring table 0 (1- A))
+     (substring table (+ A 13) (+ A 27))
+     (substring table (1- A) (+ A 13))
+     (substring table (+ A 27) a)
+     (substring table (+ a 13) (+ a 26))
+     (substring table a (+ a 13))
+     (substring table (+ a 26) 255))))
+
+(defun nnwarchive-from-r13 (from-r13)
+  (when from-r13
+    (with-temp-buffer
+      (insert from-r13)
+      (let ((message-caesar-translation-table
+	     (or nnwarchive-caesar-translation-table
+		 (setq nnwarchive-caesar-translation-table 
+		       (nnwarchive-make-caesar-translation-table)))))
+	(message-caesar-region (point-min) (point-max))
+	(buffer-string)))))
+
 (defun nnwarchive-mail-archive-article (group article)
-  (let (p refs url mime file e)
+  (let (p refs url mime e 
+	  from subject date id 
+	  done
+	  (case-fold-serch t))
     (save-restriction
       (goto-char (point-min))
+      (when (search-forward "X-Head-End" nil t)
+	(beginning-of-line)
+	(narrow-to-region (point-min) (point))
+	(nnwarchive-decode-entities)
+	(goto-char (point-min))
+	(while (search-forward "<!--X-" nil t)
+	  (replace-match ""))
+	(goto-char (point-min))
+	(while (search-forward " -->" nil t)
+	  (replace-match ""))
+	(setq from 
+	      (or (mail-fetch-field "from")
+		  (nnwarchive-from-r13 
+		   (mail-fetch-field "from-r13"))))
+	(setq date (mail-fetch-field "date"))
+	(setq id (mail-fetch-field "message-id"))
+	(setq subject (mail-fetch-field "subject"))
+	(goto-char (point-max))
+	(widen))
       (when (search-forward "<ul>" nil t)
 	(forward-line)
 	(delete-region (point-min) (point))
 	(search-forward "</ul>" nil t)
-	(forward-line)
+	(end-of-line)
 	(narrow-to-region (point-min) (point))
 	(nnwarchive-remove-markup)
 	(nnwarchive-decode-entities)
 	(goto-char (point-min))
 	(delete-blank-lines)
+	(when from
+	  (message-remove-header "from")
+	  (goto-char (point-max))
+	  (insert "From: " from "\n"))
+	(when subject
+	  (message-remove-header "subject")
+	  (goto-char (point-max))
+	  (insert "Subject: " subject "\n"))
+	(when id
+	  (goto-char (point-max))
+	  (insert "X-Message-ID: <" id ">\n"))
+	(when date
+	  (message-remove-header "date")
+	  (goto-char (point-max))
+	  (insert "Date: " date "\n"))
 	(goto-char (point-max))
 	(widen)
 	(insert "\n"))
       (setq p (point)) 
       (when (search-forward "X-Body-of-Message" nil t)
-	  (forward-line)
-	  (delete-region p (point))
-	  (search-forward "X-Body-of-Message-End" nil t)
-	  (beginning-of-line)
-	  (save-restriction
-	    (narrow-to-region p (point))
-	    (goto-char (point-min))
-	    (if (looking-at "<PRE>") 
-		(progn
-		  (delete-char 5)
-		  (setq p (point))
-		  (when (search-forward "</PRE>" nil t)
-		    (goto-char (match-beginning 0))
-		    (delete-char 6)
-		    (save-restriction
-		      (narrow-to-region p (point))
-		      (nnwarchive-remove-markup)
-		      (nnwarchive-decode-entities)
-		      (goto-char (point-max))))
-		  (while (looking-at
-			  "[\040\n\r\t]*<P><A HREF=\"\\([^\"]+\\)[^>]*><[^>]*>\\([^<]+\\)")
-		    (setq url (match-string 1)
-			  file (match-string 2))
-		    (goto-char (match-beginning 1))
-		    (beginning-of-line)
-		    (setq p (point))
-		    (delete-region p (progn (forward-line) (point)))
-		    (insert (format "http://www.mail-archive.com/%s/%s\n"
-				    group url))))
+	(forward-line)
+	(delete-region p (point))
+	(search-forward "X-Body-of-Message-End" nil t)
+	(beginning-of-line)
+	(save-restriction
+	  (narrow-to-region p (point))
+	  (goto-char (point-min))
+	  (if (> (skip-chars-forward "\040\n\r\t") 0)
+	      (delete-region (point-min) (point)))
+	  (while (not (eobp))
+	    (cond 
+	     ((looking-at "<PRE>\r?\n?") 
+	      (delete-region (match-beginning 0) (match-end 0))
+	      (setq p (point))
+	      (when (search-forward "</PRE>" nil t)
+		(delete-region (match-beginning 0) (match-end 0))
+		(save-restriction
+		  (narrow-to-region p (point))
+		  (nnwarchive-remove-markup)
+		  (nnwarchive-decode-entities)
+		  (goto-char (point-max)))))
+	     ((looking-at "<P><A HREF=\"\\([^\"]+\\)")
+	      (setq url (match-string 1))
+	      (delete-region (match-beginning 0) 
+			     (progn (forward-line) (point)))
+	      ;; I hate to download the url encode it, then immediately 
+	      ;; decode it.
+	      ;; FixMe: Find a better solution to attach the URL.
+	      ;; Maybe do some hack in external part of mml-generate-mim-1.
+	      (insert "<#part>"
+		      "\n--\nExternal: \n"
+		      (format "<URL:http://www.mail-archive.com/%s/%s>" 
+			      group url)
+		      "\n--\n"
+		      "<#/part>")
 	      (setq mime t))
-	    (goto-char (point-max))))
+	     (t
+	      (setq p (point))
+	      (insert "<#part type=\"text/html\" disposition=inline>")
+	      (goto-char
+	       (if (re-search-forward 
+		    "[\040\n\r\t]*<PRE>\\|[\040\n\r\t]*<P><A HREF=\"" 
+		    nil t)
+		   (match-beginning 0)
+		 (point-max)))
+	      (insert "<#/part>")
+	      (setq mime t)))
+	    (setq p (point))
+	    (if (> (skip-chars-forward "\040\n\r\t") 0)
+		(delete-region p (point))))
+	  (goto-char (point-max))))
       (setq p (point))
       (when (search-forward "X-References-End" nil t)
 	(setq e (point))
@@ -670,8 +755,15 @@
 	  (insert " " (pop refs)))
 	(insert "\n"))
       (when mime
+	(unless (looking-at "$") 
+	  (search-forward "\n\n" nil t)
+	  (forward-line -1))
+	(narrow-to-region (point) (point-max))
 	(insert "MIME-Version: 1.0\n"
-		"Content-Type: text/html\n")))
+		(prog1
+		    (mml-generate-mime)
+		  (delete-region (point-min) (point-max))))
+	(widen)))
     (buffer-string)))
 
 (provide 'nnwarchive)
