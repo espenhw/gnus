@@ -308,7 +308,12 @@ If the charset is `composition', return the actual one."
 
 (defmacro mm-with-unibyte-buffer (&rest forms)
   "Create a temporary buffer, and evaluate FORMS there like `progn'.
-Use unibyte mode for this."
+See also `with-temp-file' and `with-output-to-string'."
+  (let ((temp-buffer (make-symbol "temp-buffer"))
+	(multibyte (make-symbol "multibyte")))
+    `(if (or (string-match "XEmacs\\|Lucid" emacs-version)
+	     (not (boundp 'enable-multibyte-characters)))
+	 (with-temp-buffer ,@forms)
        (let ((,multibyte (default-value 'enable-multibyte-characters))
 	     ,temp-buffer)
 	 (unwind-protect
