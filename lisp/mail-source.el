@@ -169,7 +169,7 @@ See Info node `(gnus)Mail Source Specifiers'."
 					  (string :tag "Mailbox"))
 				   (group :inline t
 					  (const :format "" :value :predicate)
-					  (function :tag "Predicate"))
+					  (string :tag "Predicate"))
 				   (group :inline t
 					  (const :format "" :value :fetchflag)
 					  (string :tag "Fetchflag"))
