@@ -8173,20 +8173,19 @@ If ARG is a negative number, hide the unwanted header lines."
       (let* ((buffer-read-only nil)
 	     (inhibit-point-motion-hooks t)
 	     hidden e)
-	(setq hidden
-	      (if (numberp arg)
-		  (>= arg 0)
-		(save-restriction
-		  (article-narrow-to-head)
-		  (gnus-article-hidden-text-p 'headers))))
-	(goto-char (point-min))
-	(when (search-forward "\n\n" nil t)
-	  (delete-region (point-min) (1- (point))))
+        (save-restriction
+          (article-narrow-to-head)
+          (setq e (point-max)
+                hidden (if (numberp arg)
+                           (>= arg 0)
+                         (gnus-article-hidden-text-p 'headers))))
+        (delete-region (point-min) e)
 	(goto-char (point-min))
 	(save-excursion
 	  (set-buffer gnus-original-article-buffer)
 	  (goto-char (point-min))
-	  (setq e (1- (or (search-forward "\n\n" nil t) (point-max)))))
+          (setq e (search-forward "\n\n" nil t)
+                e (if e (1- e) (point-max))))
 	(insert-buffer-substring gnus-original-article-buffer 1 e)
 	(save-restriction
 	  (narrow-to-region (point-min) (point))

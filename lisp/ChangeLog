@@ -1,3 +1,8 @@
+2002-02-19  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus-sum.el (gnus-summary-toggle-header): Fix handling of
+	articles with no body and no blank line after the header.
+
 2002-02-19  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-dissect-multipart): Consider the case of empty
