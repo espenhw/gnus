@@ -74,7 +74,7 @@ them into characters should be done separately."
 		   (mm-insert-byte byte 1)
 		   (delete-char 3)))
 		(t
-		 (error "Malformed quoted-printable text")
+		 (message "Malformed quoted-printable text")
 		 (forward-char)))))
       (if coding-system
 	  (mm-decode-coding-region (point-min) (point-max) coding-system)))))

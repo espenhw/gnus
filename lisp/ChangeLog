@@ -1,3 +1,8 @@
+2003-06-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* qp.el (quoted-printable-decode-region): Don't error out on
+	malformed text.
+
 2003-06-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* rfc2047.el (rfc2047-encode-region): Don't error out on invalid
