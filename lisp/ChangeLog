@@ -1,3 +1,8 @@
+2001-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* message.el (message-tamago-not-in-use-p): New function.
+	(message-strip-forbidden-properties): Use it.
+
 2001-11-26  Didier Verna  <didier@xemacs.org>
 
 	* gnus-start.el (gnus-check-first-time-used): only check for

@@ -1623,9 +1623,9 @@ Point is left at the beginning of the narrowed-to region."
 Emacs has a number of special text properties which can break message
 composing in various ways.  If this option is set, message will strip
 these properties from the message composition buffer.  However, some
-packages like Tamago requires these properties to be present in order
-to work.  If you use one of these packages, turn this option off, and
-hope the message composition doesn't break too bad."
+packages requires these properties to be present in order to work.
+If you use one of these packages, turn this option off, and hope the
+message composition doesn't break too bad."
   :group 'message-various
   :type 'boolean)
 
@@ -1644,11 +1644,26 @@ hope the message composition doesn't break too bad."
   "Property list of with properties.forbidden in message buffers.
 The values of the properties are ignored, only the property names are used.")
 
+(defun message-tamago-not-in-use-p (pos)
+  "Return t when tamago version 4 is not in use at the cursor position.
+Tamago version 4 is a popular input method for writing Japanese text.
+It uses the properties `intangible', `invisible', `modification-hooks'
+and `read-only' when translating ascii or kana text to kanji text.
+These properties are essential to work, so we should never strip them."
+  (not (and (boundp 'egg-modefull-mode)
+	    (symbol-value 'egg-modefull-mode)
+	    (or (memq (get-text-property pos 'intangible)
+		      '(its-part-1 its-part-2))
+		(get-text-property pos 'egg-end)
+		(get-text-property pos 'egg-lang)
+		(get-text-property pos 'egg-start)))))
+
 (defun message-strip-forbidden-properties (begin end &optional old-length)
   "Strip forbidden properties between BEGIN and END, ignoring the third arg.
 This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
-  (when message-strip-special-text-properties
+  (when (and message-strip-special-text-properties
+	     (message-tamago-not-in-use-p begin))
     (remove-text-properties begin end message-forbidden-properties)))
 
 ;;;###autoload
