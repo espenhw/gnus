@@ -35,7 +35,14 @@
 ;;
 ;; (password-cache-add "test" "foo")
 ;;  => nil
-;;
+
+;; Note the previous two can be replaced with:
+;; (password-read-and-add "Password? " "test")
+;; ;; Minibuffer prompt for password.
+;; => "foo"
+;; ;; "foo" is now cached with key "test"
+
+
 ;; (password-read "Password? " "test")
 ;; ;; No minibuffer prompt
 ;;  => "foo"
@@ -82,6 +89,15 @@ The variable `password-cache' control whether the cache is used."
 	   key
 	   (symbol-value (intern-soft key password-data)))
       (read-passwd prompt)))
+
+(defun password-read-and-add (prompt &optional key)
+  "Read password, for use with KEY, from user, or from cache if wanted.
+Then store the password in the cache.  Uses `password-read' and
+`password-cache-add'."
+  (let ((password (password-read prompt key)))
+    (when (and password key)
+      (password-cache-add key password))
+    password))
 
 (defun password-cache-remove (key)
   "Remove password indexed by KEY from password cache.

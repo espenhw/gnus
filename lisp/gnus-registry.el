@@ -358,8 +358,12 @@ References or In-Reply-To header and then looks in the registry to
 see which group that message was put in.  This group is returned.
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
-  (let ((refstr (or (message-fetch-field "references")
-		    (message-fetch-field "in-reply-to")))
+  (let* ((refstr (or (message-fetch-field "references") "")) ; guarantee string
+	 (reply-to (message-fetch-field "in-reply-to"))	     ; grab reply-to
+	 ;; now, if reply-to is valid, append it to the References
+	 (refstr (if reply-to 
+		     (concat refstr " " reply-to)
+		   refstr))
 	(nnmail-split-fancy-with-parent-ignore-groups
 	 (if (listp nnmail-split-fancy-with-parent-ignore-groups)
 	     nnmail-split-fancy-with-parent-ignore-groups

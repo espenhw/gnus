@@ -1,3 +1,18 @@
+2004-08-04  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): try
+	to append in-reply-to: data to the references: header
+
+	* netrc.el: removed old encryption support, autoload gnus-encrypt.el
+	(netrc-parse): use gnus-encrypt.el functions
+
+	* gnus-encrypt.el: new file for encryption support; currently
+	does only a few GPG ciphers and an internal XOR cipher
+
+	* password.el: add comments on using password-read-and-add
+	(password-read-and-add): new function to read and add the
+	password to the cache at once
+
 2004-07-28  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-pgp5.el (pgg-pgp5-encrypt-region): Accept sign
