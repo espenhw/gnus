@@ -1,3 +1,7 @@
+2002-01-23  Paul Jarc  <prj@po.cwru.edu>
+
+	* lpath.el: fbind make-symbolic-link and unix-sync for nnmaildir.
+
 2002-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-xmas.el (gnus-xmas-redefine): Quote `gnus-completing-read'
