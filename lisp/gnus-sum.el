@@ -1367,8 +1367,7 @@ This list will always be a subset of gnus-newsgroup-undownloaded.")
     gnus-newsgroup-data gnus-newsgroup-data-reverse
     gnus-newsgroup-limit gnus-newsgroup-limits
     gnus-newsgroup-charset gnus-newsgroup-display
-    gnus-summary-use-undownloaded-faces
-)
+    gnus-summary-use-undownloaded-faces)
   "Variables that are buffer-local to the summary buffers.")
 
 (defvar gnus-newsgroup-variables nil

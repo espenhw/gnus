@@ -335,6 +335,7 @@
 ;; age-depending date representations. (e.g. just the time if it's
 ;; from today, the day of the week if it's within the last 7 days and
 ;; the full date if it's older)
+
 (defun gnus-seconds-today ()
   "Returns the number of seconds passed today"
   (let ((now (decode-time (current-time))))
@@ -382,26 +383,21 @@ respectively.")
 Returns \"  ?  \" if there's bad input or if an other error occurs.
 Input should look like this: \"Sun, 14 Oct 2001 13:34:39 +0200\"."
   (condition-case ()
-      (let* ((messy-date (safe-date-to-time messy-date))
-	     (now (current-time))
+      (let* ((messy-date (time-to-seconds (safe-date-to-time messy-date)))
+	     (now (time-to-seconds (current-time)))
 	     ;;If we don't find something suitable we'll use this one
-	     (my-format "%b %m '%y")
-	     (high (lsh (- (car now) (car messy-date)) 16)))
-	(if (and (> high -1) (= (logand high 65535) 0))
-	    ;;overflow and bad input
-	    (let* ((difference (+ high (- (car (cdr now))
-					  (car (cdr messy-date)))))
-		   (templist gnus-user-date-format-alist)
-		   (top (eval (caar templist))))
-	      (while (if (numberp top) (< top difference) (not top))
-		(progn
-		  (setq templist (cdr templist))
-		  (setq top (eval (caar templist)))))
-	      (if (stringp (cdr (car templist)))
-		  (setq my-format (cdr (car templist))))))
-	(format-time-string (eval my-format) messy-date))
+	     (my-format "%b %d '%y"))
+	(let* ((difference (- now messy-date))
+	       (templist gnus-user-date-format-alist)
+	       (top (eval (caar templist))))
+	  (while (if (numberp top) (< top difference) (not top))
+	    (progn
+	      (setq templist (cdr templist))
+	      (setq top (eval (caar templist)))))
+	  (if (stringp (cdr (car templist)))
+	      (setq my-format (cdr (car templist)))))
+	(format-time-string (eval my-format) (seconds-to-time messy-date)))
     (error "  ?   ")))
-;;end of Frank's code
 
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string."

@@ -1,5 +1,11 @@
 2003-05-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-util.el (gnus-user-date): Use %d instead of %m.
+	(gnus-user-date): Use floating point time so that we don't get
+	overflows. 
+
+	* gnus-sum.el (gnus-summary-local-variables): Clean up.
+
 	* gnus-fun.el (gnus-display-x-face-in-from): Don't use centering
 	since none of the other image things do.
 
