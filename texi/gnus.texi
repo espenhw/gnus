@@ -8112,6 +8112,11 @@ message.@footnote{PGP keys for many hierarchies are available at
 Verify a signed (PGP, PGP/MIME or S/MIME) message
 (@code{gnus-summary-force-verify-and-decrypt}).
 
+@item W u
+@kindex W u (Summary)
+@findex gnus-article-treat-unfold-headers
+Unfold folded header lines (@code{gnus-article-treat-unfold-headers}).
+
 @item W W H
 @kindex W W H (Summary)
 @findex gnus-article-strip-headers-from-body
@@ -13096,17 +13101,17 @@ change the expiry period (@pxref{Group Parameters}).
 
 @vindex nnmail-expiry-target
 The normal action taken when expiring articles is to delete them.
-However, in some circumstances it might make more sense to move them to
-other groups instead of deleting them.  The variable @code{nnmail-expiry-target}
-(and the @code{expiry-target} group parameter) controls this.  The
-variable supplies a default value for all groups, which can be
-overridden for specific groups by the group parameter.
-default value is @code{delete}, but this can also be a string (which
-should be the name of the group the message should be moved to), or a
-function (which will be called in a buffer narrowed to the message in
-question, and with the name of the group being moved from as its
-parameter) which should return a target -- either a group name or
-@code{delete}.
+However, in some circumstances it might make more sense to move them
+to other groups instead of deleting them.  The variable
+@code{nnmail-expiry-target} (and the @code{expiry-target} group
+parameter) controls this.  The variable supplies a default value for
+all groups, which can be overridden for specific groups by the group
+parameter.  default value is @code{delete}, but this can also be a
+string (which should be the name of the group the message should be
+moved to), or a function (which will be called in a buffer narrowed to
+the message in question, and with the name of the group being moved
+from as its parameter) which should return a target -- either a group
+name or @code{delete}.
 
 Here's an example for specifying a group name:
 @lisp

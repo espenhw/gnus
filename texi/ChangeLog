@@ -1,4 +1,10 @@
+2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.texi (Message Headers): Addition.
+
 2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* emacs-mime.texi (Customization): Added example.
 
 	* gnus.texi (Selecting a Group): Addition.
 	(Tree Display): Addition.

@@ -1021,10 +1021,13 @@ last possible part of a message, as that is supposed to be the richest.
 However, users may prefer other types instead, and this list says what
 types are most unwanted.  If, for instance, @samp{text/html} parts are
 very unwanted, and @samp{text/richtech} parts are somewhat unwanted,
-then the value of this variable should be set to:
+you could say something like:
 
 @lisp
-("text/html" "text/richtext")
+(setq mm-discouraged-alternatives
+      '("text/html" "text/richtext")
+      mm-automatic-display
+      (remove "text/html" mm-automatic-display))
 @end lisp
 
 @item mm-inline-large-images-p
