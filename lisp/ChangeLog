@@ -2,14 +2,14 @@
 
 	* nnrss.el (nnrss-group-alist): Add and clear up.
 
-2003-01-07  Teodor Zlatanov  <tzz@beld.net>
+2003-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el: removed unnecessary condition-case for loading bbdb-com.el
 
 	* lpath.el (bbdb-search): added BBDB functions for a better way to
 	fix missing functions
 
-2003-01-07  Teodor Zlatanov  <tzz@lifelogs.com>
+	* spam.el (spam-check-ifile): if should be an unless
 
 	* spam.el: define 'ignore alias for spam-BBDB-register-routine,
 	spam-enter-ham-BBDB, and bbdb-create-internal initially to hush up warnings
