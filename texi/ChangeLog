@@ -1,3 +1,7 @@
+2005-02-14  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-news.texi: Add.
+
 2005-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Using MIME): gnus-mime-copy-part supports the charset

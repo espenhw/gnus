@@ -125,6 +125,9 @@ headers visible, use @code{(setq message-hidden-headers nil)}.
 @item @code{gnus-decay-scores} can be a regexp matching score files.
 This allows to decay only adaptive score files.  @ref{Score Decays}.
 
+@item @acronym{S/MIME} now feature @acronym{LDAP} user certificate searches.
+You need to configure the server in @code{smime-ldap-host-list}.
+
 @end itemize
 @c gnus-news.texi ends here.
 
