@@ -7152,9 +7152,12 @@ If ARG is a negative number, hide the unwanted header lines."
       (let* ((buffer-read-only nil)
 	     (inhibit-point-motion-hooks t)
 	     hidden e)
-	(save-restriction 
-	  (article-narrow-to-head)
-	  (setq hidden (gnus-article-hidden-text-p 'headers)))
+	(setq hidden
+	      (if (numberp arg)
+		  (>= arg 0)
+		(save-restriction 
+		  (article-narrow-to-head)
+		  (gnus-article-hidden-text-p 'headers))))
 	(goto-char (point-min))
 	(when (search-forward "\n\n" nil t)
 	  (delete-region (point-min) (1- (point))))
@@ -7167,8 +7170,7 @@ If ARG is a negative number, hide the unwanted header lines."
 	(save-restriction
 	  (narrow-to-region (point-min) (point))
 	  (article-decode-encoded-words)
-	  (if (or hidden
-		  (and (numberp arg) (< arg 0)))
+	  (if  hidden
 	      (let ((gnus-treat-hide-headers nil)
 		    (gnus-treat-hide-boring-headers nil))
 		(gnus-treat-article 'head))

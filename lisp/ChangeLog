@@ -1,3 +1,7 @@
+1999-11-03 16:08:56  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-toggle-header): Fix arg bug.
+
 1999-11-03 15:27:38  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mailcap.el (mailcap-viewer-lessp): Fix bug.
