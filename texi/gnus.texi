@@ -10919,13 +10919,13 @@ signature and the @samp{What me?} @code{Organization} header.
 
 The first element in each style is called the @code{match}.  If it's a
 string, then Gnus will try to regexp match it against the group name.
-If it is the symbol @code{header}, then Gnus will look for header (the
-next element in the match) in the original article , and compare that to
-the last regexp in the match.  If it's a function symbol, that function
-will be called with no arguments.  If it's a variable symbol, then the
-variable will be referenced.  If it's a list, then that list will be
-@code{eval}ed.  In any case, if this returns a non-@code{nil} value,
-then the style is said to @dfn{match}.
+If it is the form @code{(header match regexp)}, then Gnus will look
+for header (the second element in the form) in the original article , and
+compare that to the last regexp in the form.  If it's a function
+symbol, that function will be called with no arguments.  If it's a
+variable symbol, then the variable will be referenced.  If it's a list,
+then that list will be @code{eval}ed.  In any case, if this returns a
+non-@code{nil} value, then the style is said to @dfn{match}.
 
 Each style may contain a arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @code{(@var{name} @var{value})} pair.  The
@@ -10966,16 +10966,16 @@ So here's a new example:
          (organization "People's Front Against MWM"))
         ("^rec.humor"
          (signature my-funny-signature-randomizer))
-        ((equal (system-name) "gnarly")  ;; a sexp
+        ((equal (system-name) "gnarly")  ;; A form
          (signature my-quote-randomizer))
-        (message-news-p        ;; a function symbol
+        (message-news-p        ;; A function symbol
          (signature my-news-signature))
-        (window-system         ;; a value symbol
+        (window-system         ;; A value symbol
          ("X-Window-System" (format "%s" window-system)))
         ;; If I'm replying to Larsi, set the Organization header.
-        (header "to" "larsi.*org"
-                (Organization "Somewhere, Inc."))
-        ((posting-from-work-p) ;; a user defined function
+        ((header "to" "larsi.*org")
+         (Organization "Somewhere, Inc."))
+        ((posting-from-work-p) ;; A user defined function
          (signature-file "~/.work-signature")
          (address "user@@bar.foo")
          (body "You are fired.\n\nSincerely, your boss.")
