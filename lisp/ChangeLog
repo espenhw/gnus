@@ -1,3 +1,9 @@
+2003-04-05  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-split): (save-excursion) around (widen)
+	(spam-ham-move-routine): Use spam-group-ham-mark-p, not
+	spam-group-spam-mark-p (from Michael Shields <shields@msrl.com>)
+
 2003-04-05  Steve Youngs  <youngs@xemacs.org>
 
 	* gnus-sum.el: XEmacs doesn't support the 5th arg to 'load', so

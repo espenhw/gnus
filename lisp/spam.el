@@ -473,8 +473,8 @@ your main source of newsgroup names."
     (when (stringp group)		; this routine will do nothing
 					; without a valid group
       (dolist (article articles)
-	(when (spam-group-spam-mark-p gnus-newsgroup-name
-				      (gnus-summary-article-mark article))
+	(when (spam-group-ham-mark-p gnus-newsgroup-name
+				     (gnus-summary-article-mark article))
 	  (push article tomove)))
 
       ;; now do the actual move
@@ -595,7 +595,7 @@ example like this: (: spam-split)
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (interactive)
-
+  (save-excursion
   (dolist (check spam-list-of-statistical-checks)
     (when (symbol-value check)
       (widen)
@@ -612,7 +612,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	  (setq decision (funcall (cdr pair))))))
     (if (eq decision t)
 	nil
-      decision)))
+	decision))))
 
 (defun spam-setup-widening ()
   (dolist (check spam-list-of-statistical-checks)
