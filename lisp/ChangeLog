@@ -1,3 +1,9 @@
+2003-12-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus-score.el (gnus-summary-lower-score)
+	(gnus-summary-increase-score): Mention symbolic prefix in the
+	doc-string.  Suggested by Karl Pfl,Ad(Bsterer <sigurd@12move.de>.
+
 2003-12-21  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-agent.el (gnus-agent-read-agentview): Use
