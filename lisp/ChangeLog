@@ -1,3 +1,8 @@
+2004-09-23  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-cite-original): Fix use of
+	`message-cite-articles-with-x-no-archive'.
+
 2004-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-win.el (gnus-buffer-configuration): Add mml-preview.

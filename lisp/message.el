@@ -3302,7 +3302,7 @@ prefix, and don't delete any headers."
 	  (insert "\n"))
 	(funcall message-citation-line-function))
       (when (and x-no-archive
-		 message-cite-articles-with-x-no-archive
+		 (not message-cite-articles-with-x-no-archive)
 		 (string-match "yes" x-no-archive))
 	(undo-boundary)
 	(delete-region (point) (mark t))
