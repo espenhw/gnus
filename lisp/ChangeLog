@@ -1,3 +1,7 @@
+2000-09-30  Simon Josefsson  <simon@josefsson.org>
+
+	* starttls.el: New file, by Daiki Ueno.
+
 2000-08-02  Stanislav Shalunov <shalunov@internet2.edu>
 
 	* message.el (message-make-in-reply-to): In-Reply-To is message-id
