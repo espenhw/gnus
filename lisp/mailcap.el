@@ -623,11 +623,11 @@ If TEST is not given, it defaults to t."
 	(x-lisp (not (stringp (or (cdr-safe (assq 'viewer x)) ""))))
 	(y-lisp (not (stringp (or (cdr-safe (assq 'viewer y)) "")))))
     (cond
-     ((and x-lisp (not y-lisp))
-      t)
-     ((and (not y-lisp) x-wild (not y-wild))
-      t)
+     ((and x-wild (not y-wild))
+      nil)
      ((and (not x-wild) y-wild)
+      t)
+     ((and (not y-lisp) x-lisp)
       t)
      (t nil))))
 

@@ -1,3 +1,7 @@
+1999-11-03 15:27:38  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mailcap.el (mailcap-viewer-lessp): Fix bug.
+
 1999-11-02 17:28:33  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-search-article): Fix loop search bug.
