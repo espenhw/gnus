@@ -10910,21 +10910,18 @@ If REVERSE, save parts that do not match TYPE."
 
 (defun gnus-summary-highlight-line ()
   "Highlight current line according to `gnus-summary-highlight'."
-  (let*
-      ((list gnus-summary-highlight)
-       (beg (gnus-point-at-bol))
+  (let* ((beg (gnus-point-at-bol))
 	 (article (or (gnus-summary-article-number) gnus-current-article))
 	 (score (or (cdr (assq article
-			     gnus-newsgroup-scored))
-		  gnus-summary-default-score 0))
-       (mark (or (gnus-summary-article-mark) gnus-unread-mark))
-       (inhibit-read-only t)
-       (default gnus-summary-default-score)
-       (default-high gnus-summary-default-high-score)
-       (default-low gnus-summary-default-low-score)
+			       gnus-newsgroup-scored))
+		    gnus-summary-default-score 0))
+	 (mark (or (gnus-summary-article-mark) gnus-unread-mark))
+	 (inhibit-read-only t)
+	 (default gnus-summary-default-score)
+	 (default-high gnus-summary-default-high-score)
+	 (default-low gnus-summary-default-low-score)
 	 (uncached (memq article gnus-newsgroup-undownloaded))
-	 (downloaded (not uncached))
-	 )
+	 (downloaded (not uncached)))
     (let ((face (funcall (gnus-summary-highlight-line-0))))
       (unless (eq face (get-text-property beg 'face))
 	(gnus-put-text-property-excluding-characters-with-faces
