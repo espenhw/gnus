@@ -1,3 +1,8 @@
+2002-09-28  Simon Josefsson  <jas@extundo.com>
+
+	* mml2015.el (autoload): Autoload correct files.  Trivial patch
+	from dme@dme.org.
+
 2002-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-fixup-nnimap-unread-after-getting-new-news):

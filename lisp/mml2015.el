@@ -642,10 +642,10 @@ by you.")
   (defvar pgg-output-buffer))
 
 (eval-and-compile
-  (autoload 'pgg-decrypt-region "gpg")
-  (autoload 'pgg-verify-region "gpg")
-  (autoload 'pgg-sign-region "gpg")
-  (autoload 'pgg-encrypt-region "gpg"))
+  (autoload 'pgg-decrypt-region "pgg")
+  (autoload 'pgg-verify-region "pgg")
+  (autoload 'pgg-sign-region "pgg")
+  (autoload 'pgg-encrypt-region "pgg"))
 
 (defun mml2015-pgg-decrypt (handle ctl)
   (catch 'error
