@@ -95,7 +95,9 @@ one charsets.")
 	      struct))
        (t
 	(if (or (looking-at "<#part") (looking-at "<#mml"))
-	    (setq tag (mml-read-tag))
+	    (setq tag (mml-read-tag)
+		  no-markup-p nil
+		  warn nil)
 	  (setq tag (list 'part '(type . "text/plain"))
 		no-markup-p t
 		warn t))
