@@ -8147,6 +8147,13 @@ Regexp matching the end of an attribution line.
 Face used for attribution lines.  It is merged with the face for the
 cited text belonging to the attribution.
 
+@item gnus-cite-ignore-quoted-from
+@vindex gnus-cite-ignore-quoted-from
+If non-@code{nil}, no citation highlighting will be performed on lines
+beginning with @samp{>From }.  Those lines may have been quoted by MTAs
+in order not to mix up with the envelope From line.  The default value
+is @code{t}.
+
 @end table
 
 

@@ -1,3 +1,8 @@
+2004-06-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Article Highlighting): Add
+	gnus-cite-ignore-quoted-from.
+
 2004-06-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Various Message Variables): Add.
