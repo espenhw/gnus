@@ -1,3 +1,9 @@
+2001-01-18 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Hiding Headers): Add.
+
+	* emacs-mime.texi: Set dircategory to Emacs.
+
 2001-01-16  Jesper Harder <harder@ifa.au.dk>
 
 	* gnus.texi (Group Line Specification): Add.
