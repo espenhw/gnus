@@ -8,6 +8,12 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** TLS wrapper shipped with Gnus
+
+TLS/SSL is now supported in IMAP and NNTP via tls.el and GNUTLS.  The
+old TLS/SSL support via (external third party) ssl.el and OpenSSL
+still works.
+
 ** New make.bat for compiling and installing Gnus under MS Windows
 
 Use make.bat if you want to install Gnus under MS Windows, the first
