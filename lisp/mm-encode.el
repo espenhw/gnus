@@ -36,13 +36,17 @@
   '(("text/x-patch" 8bit)
     ("text/.*" qp-or-base64)
     ("message/rfc822" 8bit)
-    ("application/emacs-lisp" 8bit)
-    ("application/x-emacs-lisp" 8bit)
-    ("application/x-patch" 8bit)
+    ("application/emacs-lisp" qp-or-base64)
+    ("application/x-emacs-lisp" qp-or-base64)
+    ("application/x-patch" qp-or-base64)
     (".*" base64))
   "Alist of regexps that match MIME types and their encodings.
 If the encoding is `qp-or-base64', then either quoted-printable
 or base64 will be used, depending on what is more efficient.
+
+`qp-or-base64' has another effect.  It will fold long lines so that
+MIME parts may not be broken by MTA.  So do `quoted-printable' and
+`base64'.
 
 Note: It affects body encoding only when a part is a raw forwarded
 message (which will be made by `gnus-summary-mail-forward' with the

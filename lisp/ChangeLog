@@ -1,3 +1,8 @@
+2004-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-encode.el (mm-content-transfer-encoding-defaults): Use
+	qp-or-base64 for the application/* types.
+
 2004-07-02  Jesper Harder  <harder@ifa.au.dk>
 
 	* nnrss.el (nnrss-read-group-data): Fix off-by-one error.  From
