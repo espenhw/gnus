@@ -430,12 +430,11 @@ your main source of newsgroup names."
 
     (dolist (mark spam-ham-marks)
       (push (symbol-value mark) ham-mark-values))
-    
-    (dolist (article articles)
+    (dolist (article articles)      
       (when (and (memq (gnus-summary-article-mark article) ham-mark-values)
 		 (stringp group))
-	(let ((gnus-current-article article))
-	  (gnus-summary-move-article nil group))))))
+	(gnus-summary-set-process-mark article)
+	(gnus-summary-move-article nil group)))))
  
 (defun spam-generic-register-routine (spam-func ham-func)
   (let ((articles gnus-newsgroup-articles)

@@ -1,3 +1,8 @@
+2003-02-11  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-ham-move-routine): use the process-mark instead of
+	gnus-current-article when moving articles
+
 2003-02-11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-topic.el (gnus-topic-expire-articles): Recursive.
