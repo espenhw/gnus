@@ -182,6 +182,11 @@ considered spam."
   :type 'boolean
   :group 'spam)
 
+(defcustom spam-use-spamoracle nil
+  "Whether spamoracle should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
+
 (defcustom spam-install-hooks (or
 			       spam-use-dig
 			       spam-use-blacklist
@@ -195,7 +200,8 @@ considered spam."
 			       spam-use-BBDB 
 			       spam-use-BBDB-exclusive 
 			       spam-use-ifile 
-			       spam-use-stat)
+			       spam-use-stat
+			       spam-use-spamoracle)
   "Whether the spam hooks should be installed, default to t if one of
 the spam-use-* variables is set."
   :group 'gnus-registry
@@ -309,6 +315,23 @@ your main source of newsgroup names."
 		 (const :tag "Use the default"))
   :group 'spam-ifile)
 
+(defgroup spam-spamoracle nil
+  "Spam ifile configuration."
+  :group 'spam)
+
+(defcustom spam-spamoracle-database nil 
+  "Location of spamoracle database file. When nil, use the default
+spamoracle database."
+  :type '(choice (directory :tag "Location of spamoracle database file.")
+		 (const :tag "Use the default"))
+  :group 'spam-spamoracle)
+
+(defcustom spam-spamoracle-binary (executable-find "spamoracle")
+  "Location of the spamoracle binary."
+  :type '(choice (directory :tag "Location of the spamoracle binary")
+		 (const :tag "Use the default"))
+  :group 'spam-spamoracle)
+
 ;;; Key bindings for spam control.
 
 (gnus-define-keys gnus-summary-mode-map
@@ -383,6 +406,9 @@ your main source of newsgroup names."
 (defun spam-group-ham-processor-ifile-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-ifile))
 
+(defun spam-group-spam-processor-spamoracle-p (group)
+  (spam-group-processor-p group 'gnus-group-spam-exit-processor-spamoracle))
+
 (defun spam-group-ham-processor-bogofilter-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-bogofilter))
 
@@ -400,6 +426,9 @@ your main source of newsgroup names."
 
 (defun spam-group-ham-processor-copy-p (group)
   (spam-group-processor-p group 'gnus-group-ham-exit-processor-copy))
+
+(defun spam-group-ham-processor-spamoracle-p (group)
+  (spam-group-processor-p group 'gnus-group-ham-exit-processor-spamoracle))
 
 ;;; Summary entry and exit processing.
 
@@ -420,6 +449,10 @@ your main source of newsgroup names."
       (gnus-message 5 "Registering spam with ifile")
       (spam-ifile-register-spam-routine))
   
+    (when (spam-group-spam-processor-spamoracle-p gnus-newsgroup-name)
+      (gnus-message 5 "Registering spam with spamoracle")
+      (spam-spamoracle-learn-spam))
+
     (when (spam-group-spam-processor-stat-p gnus-newsgroup-name)
       (gnus-message 5 "Registering spam with spam-stat")
       (spam-stat-register-spam-routine))
@@ -460,7 +493,10 @@ your main source of newsgroup names."
 	(spam-stat-register-ham-routine))
       (when (spam-group-ham-processor-BBDB-p gnus-newsgroup-name)
 	(gnus-message 5 "Registering ham with the BBDB")
-	(spam-BBDB-register-routine)))
+	(spam-BBDB-register-routine))
+      (when (spam-group-ham-processor-spamoracle-p gnus-newsgroup-name)
+	(gnus-message 5 "Registering ham with spamoracle")
+	(spam-spamoracle-learn-ham)))
 
     (when (spam-group-ham-processor-copy-p gnus-newsgroup-name)
       (gnus-message 5 "Copying ham")
@@ -604,6 +640,7 @@ your main source of newsgroup names."
     (spam-use-whitelist  		. 	spam-check-whitelist)
     (spam-use-BBDB	 		. 	spam-check-BBDB)
     (spam-use-ifile	 		. 	spam-check-ifile)
+    (spam-use-spamoracle                .       spam-check-spamoracle)
     (spam-use-stat	 		. 	spam-check-stat)
     (spam-use-blackholes 		. 	spam-check-blackholes)
     (spam-use-hashcash  		. 	spam-check-hashcash)
@@ -622,7 +659,7 @@ name is the value of `spam-split-group', meaning that the message is
 definitely a spam.")
 
 (defvar spam-list-of-statistical-checks
-  '(spam-use-ifile spam-use-stat spam-use-bogofilter)
+  '(spam-use-ifile spam-use-stat spam-use-bogofilter spam-use-spamoracle)
 "The spam-list-of-statistical-checks list contains all the mail
 splitters that need to have the full message body available.")
 
@@ -1073,6 +1110,62 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
      (spam-bogofilter-register-with-bogofilter
       (spam-get-article-as-string article) nil))))
 
+
+;;;; spamoracle
+(defun spam-check-spamoracle ()
+  "Run spamoracle on an article to determine whether it's spam."
+  (let ((article-buffer-name (buffer-name)))
+    (with-temp-buffer
+      (let ((temp-buffer-name (buffer-name)))
+	(save-excursion
+	  (set-buffer article-buffer-name)
+	  (let ((status 
+		 (apply 'call-process-region 
+			(point-min) (point-max)
+			spam-spamoracle-binary 
+			nil temp-buffer-name nil
+			(if spam-spamoracle-database
+			    `("-f" ,spam-spamoracle-database "mark")
+			  '("mark")))))
+	    (if (zerop status)
+		(progn
+		  (set-buffer temp-buffer-name)
+		  (goto-char (point-min))
+		  (when (re-search-forward "^X-Spam: yes;" nil t)
+		    spam-split-group))
+	      (error "Error running spamoracle" status))))))))
+
+(defun spam-spamoracle-learn (article article-is-spam-p)
+  "Run spamoracle in training mode."
+  (with-temp-buffer
+    (let ((temp-buffer-name (buffer-name)))
+      (save-excursion
+	(goto-char (point-min))
+	(insert-string (spam-get-article-as-string article))
+	(let* ((arg (if article-is-spam-p "-spam" "-good"))
+	       (status 
+		(apply 'call-process-region
+		       (point-min) (point-max)
+		       spam-spamoracle-binary
+		       nil temp-buffer-name nil
+		       (if spam-spamoracle-database
+			   `("-f" ,spam-spamoracle-database 
+			     "add" ,arg)
+			 `("add" ,arg)))))
+	  (when (not (zerop status))
+	    (error "Error running spamoracle" status)))))))
+  
+(defun spam-spamoracle-learn-ham ()
+  (spam-generic-register-routine 
+   nil
+   (lambda (article)
+     (spam-spamoracle-learn article nil))))
+
+(defun spam-spamoracle-learn-spam ()
+  (spam-generic-register-routine 
+   (lambda (article)
+     (spam-spamoracle-learn article t))
+   nil))
 
 ;;;; Hooks
 

@@ -1843,6 +1843,9 @@ When a spam group is entered, all unread articles are marked as spam.")
     "The Gmane reporting summary exit spam processor.
 Only applicable to NNTP groups with articles from Gmane.  See spam-report.el")
 
+  (defvar gnus-group-spam-exit-processor-spamoracle "spamoracle-spam"
+    "The spamoracle summary exit spam processor.")
+
   (defvar gnus-group-ham-exit-processor-ifile "ifile-ham"
     "The ifile summary exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
@@ -1867,6 +1870,10 @@ Only applicable to non-spam (unclassified and ham) groups.")
     "The ham copy exit ham processor.
 Only applicable to non-spam (unclassified and ham) groups.")
 
+  (defvar gnus-group-ham-exit-processor-spamoracle "spamoracle-ham"
+    "The spamoracle summary exit ham processor. 
+Only applicable to non-spam (unclassified and ham) groups.")
+
   (gnus-define-group-parameter
    spam-process
    :type list
@@ -1879,12 +1886,14 @@ Only applicable to non-spam (unclassified and ham) groups.")
 				   (variable-item gnus-group-spam-exit-processor-bogofilter)
 				   (variable-item gnus-group-spam-exit-processor-blacklist)
 				   (variable-item gnus-group-spam-exit-processor-report-gmane)
+				   (variable-item gnus-group-spam-exit-processor-spamoracle)
 				   (variable-item gnus-group-ham-exit-processor-bogofilter)
 				   (variable-item gnus-group-ham-exit-processor-ifile)
 				   (variable-item gnus-group-ham-exit-processor-stat)
 				   (variable-item gnus-group-ham-exit-processor-whitelist)
 				   (variable-item gnus-group-ham-exit-processor-BBDB)
-				   (variable-item gnus-group-ham-exit-processor-copy))))
+				   (variable-item gnus-group-ham-exit-processor-copy)
+				   (variable-item gnus-group-ham-exit-processor-spamoracle))))
    :function-document
    "Which spam or ham processors will be applied to the GROUP articles at summary exit."
    :variable gnus-spam-process-newsgroups

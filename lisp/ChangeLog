@@ -1,3 +1,23 @@
+2003-06-09  Teodor Zlatanov  <tzz@lifelogs.com>
+	From Eric Knauel <knauel@informatik.uni-tuebingen.de>
+
+	* spam.el (spam-use-spamoracle): new variable
+	(spam-install-hooks): add spamoracle to the list of conditions
+	for activation of spam-install-hooks
+	(spam-spamoracle): new variable customization group
+	(spam-spamoracle, spam-spamoracle): new variables
+	(spam-group-spam-processor-spamoracle-p) 
+	(spam-group-ham-processor-spamoracle-p): new functions
+	(spam-summary-prepare-exit): added spamoracle ham/spam exit processing
+	(spam-list-of-checks, spam-list-of-statistical-checks): add
+	spam-use-spamoracle
+	(spam-check-spamoracle, spam-spamoracle-learn) 
+	(spam-spamoracle-learn-ham, spam-spamoracle-learn-spam): new functions
+
+	* gnus.el (gnus-group-spam-exit-processor-spamoracle)
+	(gnus-group-ham-exit-processor-spamoracle): new variables for SpamOracle
+	(spam-process, ham-process): added spamoracle spam/ham processors
+
 2003-06-08  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-beginning-of-line): Docstring improvement.
