@@ -10551,6 +10551,9 @@ An example @sc{imap} mail source:
 Get mail from a webmail server, such as www.hotmail.com, 
 mail.yahoo.com, and www.netaddress.com. 
 
+NOTE: Webmail largely depends on w3 (url) package, whose version of "WWW
+4.0pre.46 1999/10/01" or previous ones may not work.
+
 WARNING: Mails may lost. NO WARRANTY.
 
 Keywords:
