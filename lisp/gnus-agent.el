@@ -823,20 +823,27 @@ be a select method."
 
 (defun gnus-agent-synchronize-flags-server (method)
   "Synchronize flags set when unplugged for server."
-  (let ((gnus-command-method method))
+  (let ((gnus-command-method method)
+	(gnus-agent nil))
     (when (file-exists-p (gnus-agent-lib-file "flags"))
       (set-buffer (get-buffer-create " *Gnus Agent flag synchronize*"))
       (erase-buffer)
       (nnheader-insert-file-contents (gnus-agent-lib-file "flags"))
-      (if (null (gnus-check-server gnus-command-method))
-	  (gnus-message 1 "Couldn't open server %s" (nth 1 gnus-command-method))
-	(while (not (eobp))
-	  (if (null (eval (read (current-buffer))))
-	      (gnus-delete-line)
-	    (write-file (gnus-agent-lib-file "flags"))
-	    (error "Couldn't set flags from file %s"
-		   (gnus-agent-lib-file "flags"))))
-	(delete-file (gnus-agent-lib-file "flags")))
+      (cond ((null gnus-plugged)
+	     (gnus-message 
+	      1 "You must be plugged to synchronize flags with server %s" 
+	      (nth 1 gnus-command-method)))
+	    ((null (gnus-check-server gnus-command-method))
+	     (gnus-message 
+	      1 "Couldn't open server %s" (nth 1 gnus-command-method)))
+	    (t
+	     (while (not (eobp))
+	       (if (null (eval (read (current-buffer))))
+		   (gnus-delete-line)
+		 (write-file (gnus-agent-lib-file "flags"))
+		 (error "Couldn't set flags from file %s"
+			(gnus-agent-lib-file "flags"))))
+	     (delete-file (gnus-agent-lib-file "flags"))))
       (kill-buffer nil))))
 
 (defun gnus-agent-possibly-synchronize-flags-server (method)
