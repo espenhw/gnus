@@ -1421,7 +1421,7 @@ SCORE is the score to add."
 	    (setq match (funcall (car (car elem)) headers))
 	    (gnus-summary-score-entry 
 	     (nth 1 (car elem)) match
-	     ;; Whether we use regexp or exact matches are controlled
+	     ;; Whether we use substring or exact matches are controlled
 	     ;; here.  
 	     (if (or (not gnus-score-exact-adapt-limit)
 		     (< (length match) gnus-score-exact-adapt-limit))

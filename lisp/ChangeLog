@@ -1,3 +1,33 @@
+Wed Jun  7 15:04:20 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-select-newsgroup): Don't add an extra 1 if there
+	already is one. 
+	(gnus-summary-reselect-current-group): Did not allow reselecting. 
+
+	* nndoc.el (nndoc-retrieve-headers): Would fetch headers
+	strangely. 
+
+	* gnus.el (gnus-summary-search-subject): Don't bug out on
+	psedu-articles. 
+	(gnus-score-score-files): Use file-exists instead of
+	file-readable because of os/2 bug. 
+	(gnus-select-newsgroup): Didn't remove the first fetched article
+	when not using nov. 
+
+Wed Jun  7 12:59:46 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-configure-windows): Also make the selected buffer
+	in the selected window the current buffer.
+
+Mon Jun  5 23:04:27 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el: Anchor all lines with \n instead of $.
+
+Sun Jun  4 17:03:38 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-summary-remove-lines-marked-with): Unbalanced
+	parens. 
+
 Sun Jun  4 00:48:38 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.el (gnus-group-catchup): Would not properly catchup all
@@ -5,6 +35,8 @@ Sun Jun  4 00:48:38 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* nndoc.el (nndoc-number-of-articles): Would totally bug out on
 	mbox types. 
+
+	* gnus.el: 0.82 is released.
 
 Sat Jun  3 00:27:41 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 

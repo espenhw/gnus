@@ -250,7 +250,7 @@ instead call function `nntp-status-message' to get status message.")
 	(if (looking-at "^[23]")
 	    (while (progn
 		     (goto-char (- (point-max) 3))
-		     (not (looking-at "^\\.\r?$")))
+		     (not (looking-at "^\\.\r?\n")))
 	      (nntp-accept-response)))
 	(and (numberp nntp-large-newsgroup)
 	     (> number nntp-large-newsgroup)
@@ -308,7 +308,7 @@ instead call function `nntp-status-message' to get status message.")
 	      (if (looking-at "^[23]")
 		  (while (progn
 			   (goto-char (- (point-max) 3))
-			   (not (looking-at "^\\.\r?$")))
+			   (not (looking-at "^\\.\r?\n")))
 		    (nntp-accept-response)))))
 
 	;; Now all replies are received. We remove CRs.
@@ -458,7 +458,7 @@ instead call function `nntp-status-message' to get status message.")
 		  (art (or (and (numberp id) (int-to-string id)) id)))
 	      ;; If NEmacs, end of message may look like: "\256\215" (".^M")
 	      (prog1
-		  (nntp-send-command "^\\.\r?$" "ARTICLE" art)
+		  (nntp-send-command "^\\.\r?\n" "ARTICLE" art)
 		(nntp-decode-text)
 		(and nntp-async-articles (nntp-async-fetch-articles id)))))
 	(if buffer (set-process-buffer 
@@ -470,7 +470,7 @@ instead call function `nntp-status-message' to get status message.")
   (prog1
       ;; If NEmacs, end of message may look like: "\256\215" (".^M")
       (nntp-send-command
-       "^\\.\r?$" "BODY" (or (and (numberp id) (int-to-string id)) id))
+       "^\\.\r?\n" "BODY" (or (and (numberp id) (int-to-string id)) id))
     (nntp-decode-text)))
 
 (defun nntp-request-head (id &optional newsgroup server)
@@ -478,18 +478,18 @@ instead call function `nntp-status-message' to get status message.")
   (nntp-possibly-change-server newsgroup server)
   (prog1
       (nntp-send-command 
-       "^\\.\r?$" "HEAD" (or (and (numberp id) (int-to-string id)) id))
+       "^\\.\r?\n" "HEAD" (or (and (numberp id) (int-to-string id)) id))
     (nntp-decode-text)))
 
 (defun nntp-request-stat (id &optional newsgroup server)
   "Request STAT of article ID (message-id or number)."
   (nntp-possibly-change-server newsgroup server)
   (nntp-send-command 
-   "^[23].*\r?$" "STAT" (or (and (numberp id) (int-to-string id)) id)))
+   "^[23].*\r?\n" "STAT" (or (and (numberp id) (int-to-string id)) id)))
 
 (defun nntp-request-group (group &optional server dont-check)
   "Select GROUP."
-  (nntp-send-command "^.*\r?$" "GROUP" group)
+  (nntp-send-command "^.*\r?\n" "GROUP" group)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (goto-char (point-min))
@@ -514,13 +514,13 @@ instead call function `nntp-status-message' to get status message.")
      t)))
 
 (defun nntp-list-active-group (group &optional server)
-  (nntp-send-command "^.*\r?$" "LIST ACTIVE" group))
+  (nntp-send-command "^.*\r?\n" "LIST ACTIVE" group))
 
 (defun nntp-request-group-description (group &optional server)
   "Get description of GROUP."
   (if (nntp-possibly-change-server nil server)
       (prog1
-	  (nntp-send-command "^.*\r?$" "XGTITLE" group)
+	  (nntp-send-command "^.*\r?\n" "XGTITLE" group)
 	(nntp-decode-text))))
 
 (defun nntp-close-group (group &optional server)
@@ -530,14 +530,14 @@ instead call function `nntp-status-message' to get status message.")
   "List active groups."
   (nntp-possibly-change-server nil server)
   (prog1
-      (nntp-send-command "^\\.\r?$" "LIST")
+      (nntp-send-command "^\\.\r?\n" "LIST")
     (nntp-decode-text)))
 
 (defun nntp-request-list-newsgroups (&optional server)
   "List groups."
   (nntp-possibly-change-server nil server)
   (prog1
-      (nntp-send-command "^\\.\r?$" "LIST NEWSGROUPS")
+      (nntp-send-command "^\\.\r?\n" "LIST NEWSGROUPS")
     (nntp-decode-text)))
 
 (defun nntp-request-newgroups (date &optional server)
@@ -551,36 +551,36 @@ instead call function `nntp-status-message' to get status message.")
 		  (substring 
 		   (aref date 3) 3 5) (substring (aref date 3) 6 8))))
     (prog1
-	(nntp-send-command "^\\.\r?$" "NEWGROUPS" time-string)
+	(nntp-send-command "^\\.\r?\n" "NEWGROUPS" time-string)
       (nntp-decode-text))))
 
 (defun nntp-request-list-distributions (&optional server)
   "List distributions."
   (nntp-possibly-change-server nil server)
   (prog1
-      (nntp-send-command "^\\.\r?$" "LIST DISTRIBUTIONS")
+      (nntp-send-command "^\\.\r?\n" "LIST DISTRIBUTIONS")
     (nntp-decode-text)))
 
 (defun nntp-request-last (&optional newsgroup server)
   "Decrease the current article pointer."
   (nntp-possibly-change-server newsgroup server)
-  (nntp-send-command "^[23].*\r?$" "LAST"))
+  (nntp-send-command "^[23].*\r?\n" "LAST"))
 
 (defun nntp-request-next (&optional newsgroup server)
   "Advance the current article pointer."
   (nntp-possibly-change-server newsgroup server)
-  (nntp-send-command "^[23].*\r?$" "NEXT"))
+  (nntp-send-command "^[23].*\r?\n" "NEXT"))
 
 (defun nntp-request-post (&optional server)
   "Post the current buffer."
   (nntp-possibly-change-server nil server)
-  (if (nntp-send-command "^[23].*\r?$" "POST")
+  (if (nntp-send-command "^[23].*\r?\n" "POST")
       (progn
 	(nntp-encode-text)
 	(nntp-send-region-to-server (point-min) (point-max))
 	;; 1.2a NNTP's post command is buggy. "^M" (\r) is not
 	;;  appended to end of the status message.
-	(nntp-wait-for-response "^[23].*$"))))
+	(nntp-wait-for-response "^[23].*\n"))))
 
 (defun nntp-request-post-buffer 
   (post group subject header article-buffer info follow-to respect-poster)
@@ -676,14 +676,14 @@ post to this group instead.  If RESPECT-POSTER, heed the special
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will make innd servers spawn an nnrpd process to allow actual article
 reading."
-  (nntp-send-command "^.*\r?$" "MODE READER"))
+  (nntp-send-command "^.*\r?\n" "MODE READER"))
 
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
-  (nntp-send-command "^.*\r?$" "AUTHINFO USER" (user-login-name))
-  (nntp-send-command "^.*\r?$" "AUTHINFO PASS" (read-string "NNTP password: ")))
+  (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
+  (nntp-send-command "^.*\r?\n" "AUTHINFO PASS" (read-string "NNTP password: ")))
 
 (defun nntp-default-sentinel (proc status)
   "Default sentinel function for NNTP server process."
@@ -740,7 +740,7 @@ It will prompt for a password."
     ;; Delete `.' at end of the buffer (end of text mark).
     (goto-char (point-max))
     (forward-line -1)
-    (if (looking-at "^\\.$")
+    (if (looking-at "^\\.\n")
 	(delete-region (point) (progn (forward-line 1) (point))))
     ;; Replace `..' at beginning of line with `.'.
     (goto-char (point-min))
@@ -915,7 +915,7 @@ It will prompt for a password."
 	    (while (progn
 		     (goto-char (point-max))
 		     (forward-line -1)
-		     (not (looking-at "^\\.\r?$")))
+		     (not (looking-at "^\\.\r?\n")))
 	      (nntp-accept-response)))
 	
 	;; We remove any "." lines and status lines.
@@ -932,14 +932,14 @@ It will prompt for a password."
     (if (stringp nntp-server-xover)
 	;; If `nntp-server-xover' is a string, then we just send this
 	;; command. We do not wait for the reply.
-	(progn	
+	(progn
 	  (nntp-send-strings-to-server nntp-server-xover range)
 	  t)
       (let ((commands nntp-xover-commands))
 	;; `nntp-xover-commands' is a list of possible XOVER commands.
 	;; We try them all until we get at positive response. 
 	(while (and commands (eq nntp-server-xover 'try))
-	  (nntp-send-command "^\\.\r?$" (car commands) range)
+	  (nntp-send-command "^\\.\r?\n" (car commands) range)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (goto-char (point-min))
@@ -1022,7 +1022,7 @@ If SERVICE, this this as the port number."
 	   (setq nntp-address server)
 	   (setq status
 		 (condition-case nil
-		     (nntp-wait-for-response "^[23].*\r?$" 'slow)
+		     (nntp-wait-for-response "^[23].*\r?\n" 'slow)
 		   (error nil)
 		   (quit nil)))
 	   (or status (nntp-close-server-internal server))

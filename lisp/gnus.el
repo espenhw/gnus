@@ -1281,9 +1281,9 @@ variable (string, integer, character, etc).")
 (defvar gnus-have-read-active-file nil)
 
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
-  "The mail address of the Gnus maintainer.")
+  "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.82"
+(defconst gnus-version "(ding) Gnus v0.83"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2436,7 +2436,7 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
     (or jump-buffer (error "Missing `point' in spec for %s" setting))
 
     (select-window (get-buffer-window jump-buffer))
-    jump-buffer))
+    (set-buffer jump-buffer)))
       
 (defun gnus-remove-some-windows ()
   (let ((buffers gnus-window-to-buffer)
@@ -5356,8 +5356,10 @@ The following commands are available:
   (let ((i 32))
     (while (>= (setq i (1- i)) 0)
       (aset gnus-summary-display-table i [??])))
-  ;; ... but not newline, of course.
+  ;; ... but not newline and cr, of course. (cr is necessary for the
+  ;; selective display).  
   (aset gnus-summary-display-table ?\n nil)
+  (aset gnus-summary-display-table ?\r nil)
   ;; We nix out any glyphs over 126 that are not set already.  
   (let ((i 256))
     (while (>= (setq i (1- i)) 127)
@@ -6162,8 +6164,10 @@ If READ-ALL is non-nil, all articles in the group are selected."
       (setq gnus-newsgroup-headers 
 	    (if (eq 'nov (setq gnus-headers-retrieved-by
 			       (gnus-retrieve-headers 
-				(if gnus-fetch-old-headers 
-				    (cons 1 articles) articles) 
+				(if (and gnus-fetch-old-headers 
+					 (not (eq 1 (car articles))))
+				    (cons 1 articles)
+				  articles)
 				gnus-newsgroup-name)))
 		(progn
 		  (gnus-get-newsgroup-headers-xover articles))
@@ -6176,7 +6180,11 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	   gnus-fetch-old-headers
 	   gnus-newsgroup-headers
 	   (/= (header-number (car gnus-newsgroup-headers)) (car articles))
-	   (setq gnus-newsgroup-headers (cdr gnus-newsgroup-headers)))
+	   (progn
+	     (setcar (symbol-value 
+		      (intern (header-id (car gnus-newsgroup-headers)) 
+			      gnus-newsgroup-dependencies)) nil)
+	     (setq gnus-newsgroup-headers (cdr gnus-newsgroup-headers))))
       ;; Remove cancelled articles from the list of unread articles.
       (setq gnus-newsgroup-unreads
 	    (gnus-set-sorted-intersection 
@@ -6960,7 +6968,7 @@ searched for."
 		'next-single-property-change))
 	(beg (point))
 	(did t)
-	pos)
+	pos psubject)
     (beginning-of-line)
     (and gnus-summary-check-current unread
 	 (eq (get-text-property (point) 'gnus-mark) gnus-unread-mark)
@@ -6978,9 +6986,10 @@ searched for."
 			   (eq (get-text-property (point) 'gnus-mark)
 			       gnus-unread-mark))
 		       (or (not subject)
-			   (equal (gnus-simplify-subject-re subject)
-				  (gnus-simplify-subject-re
-				   (gnus-summary-subject-string)))))))
+			   (and (setq psubject (gnus-summary-subject-string))
+				(equal (gnus-simplify-subject-re subject)
+				       (gnus-simplify-subject-re
+					psubject)))))))
 	   (if backward (if (bobp) nil (forward-char -1) t)
 	     (if (eobp) nil (forward-char 1) t)))))
     (if did
@@ -7184,7 +7193,7 @@ The prefix argument ALL means to select all articles."
   (gnus-set-global-variables)
   (let ((current-subject (gnus-summary-article-number))
 	(group gnus-newsgroup-name))
-    (setq gnus-newsgroup-threads nil)
+    (setq gnus-newsgroup-begin nil)
     (gnus-summary-exit t)
     ;; We have to adjust the point of group mode buffer because the
     ;; current point was moved to the next unread newsgroup by
@@ -8998,11 +9007,11 @@ even ticked and dormant ones."
 	       (gnus-summary-subject-string)))
 	    ()
 	  (forward-line -1)
-	  (gnus-delete-line))))))
+	  (gnus-delete-line)))))
   (or (zerop (buffer-size))
       (if (eobp)
 	  (gnus-summary-prev-subject 1)
-	(gnus-summary-position-cursor)))
+	(gnus-summary-position-cursor))))
 
 (defun gnus-summary-expunge-below (score)
   "Remove articles with score less than SCORE."
@@ -11351,7 +11360,7 @@ The `-n' option line from .newsrc is respected."
 		       ((eq do-sub 'ignore)
 			nil)
 		       (t
-			(setq groups (1+ groups))
+ 			(setq groups (1+ groups))
 			(gnus-sethash group group gnus-killed-hashtb)
 			(if gnus-subscribe-hierarchical-interactive
 			    (setq new-newsgroups (cons group new-newsgroups))
@@ -11663,7 +11672,7 @@ newsgroup."
 
 ;; Go though `gnus-newsrc-alist' and compare with `gnus-active-hashtb'
 ;; and compute how many unread articles there are in each group.
-(defun gnus-get-unread-articles (&optional level)
+(defun gnus-get-unread-articles (&optional level) 
   (let* ((newsrc (cdr gnus-newsrc-alist))
 	 (conditional level)
 	 (level (or level (1+ gnus-level-subscribed)))
@@ -13023,8 +13032,8 @@ score files in the \"/ftp.some-where:/pub/score\" directory.
   (setq gnus-kill-files-directory 
 	(file-name-as-directory
 	 (or gnus-kill-files-directory "~/News/")))
-  ;; If er can't read it, there's no score files.
-  (if (not (file-readable-p (expand-file-name gnus-kill-files-directory)))
+  ;; If we can't read it, there are no score files.
+  (if (not (file-exists-p (expand-file-name gnus-kill-files-directory)))
       (setq gnus-score-file-list nil)
     (if (gnus-use-long-file-name 'not-score)
 	;; We want long file names.

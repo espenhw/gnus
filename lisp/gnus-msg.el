@@ -1328,6 +1328,23 @@ Customize the variable gnus-mail-forward-method to use another mailer."
   (interactive)
   (gnus-summary-mail-forward t))
 
+(defvar gnus-nastygram-message 
+  "The following article was inappropriately posted to %s.\n"
+  "Format string to insert in nastygrams.
+The current group name will be inserted at \"%s\".")
+
+(defun gnus-summary-mail-nastygram (n)
+  "Send a nastygram to the author of the current article."
+  (interactive "P")
+  (if (or gnus-expert-user
+	  (gnus-y-or-n-p 
+	   "Really send a nastygram to the author of the current article? "))
+      (let ((group gnus-newsgroup-name))
+	(gnus-summary-reply-with-original n)
+	(set-buffer "*mail*")
+	(insert (format gnus-nastygram-message group))
+	(gnus-mail-send-and-exit))))
+
 (defun gnus-summary-mail-other-window ()
   "Compose mail in other window.
 Customize the variable `gnus-mail-other-window-method' to use another

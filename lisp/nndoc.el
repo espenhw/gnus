@@ -42,8 +42,8 @@
 	      "^------------------------------*[\n \t]+"
 	      "^------------------------------[\n \t]+"
 	      nil "^ ?$"   
-	      "^------------------------------*[\n \t]+"
-	      "End of"))
+	      "^-----------------------------------------*[\n \t]+"
+	      "^End of"))
   "Regular expressions for articles of the various types.")
 
 
@@ -90,7 +90,7 @@
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let ((prev 1)
+    (let ((prev 2)
 	  article p beg end lines)
       (nndoc-possibly-change-buffer newsgroup server)
       (if (stringp (car sequence))
@@ -105,10 +105,12 @@
 	(while sequence
 	  (setq article (car sequence))
 	  (set-buffer nndoc-current-buffer)
-	  (if (not (nndoc-forward-article (- article prev)))
+	  (if (not (nndoc-forward-article (max 0 (- article prev))))
 	      ()
 	    (setq p (point))
-	    (setq beg (or (re-search-backward nndoc-article-begin nil t)
+	    (setq beg (or (and
+			   (re-search-backward nndoc-article-begin nil t)
+			   (match-end 0))
 			  (point-min)))
 	    (goto-char p)
 	    (setq lines (count-lines 
@@ -121,7 +123,7 @@
 
 	    (set-buffer nntp-server-buffer)
 	    (insert (format "221 %d Article retrieved.\n" article))
-	    (insert-buffer-substring nndoc-current-buffer beg end)
+	    (insert-buffer-substring nndoc-current-buffer beg p)
 	    (goto-char (point-max))
 	    (insert (format "Lines: %d\n" lines))
 	    (insert ".\n"))
