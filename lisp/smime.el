@@ -185,7 +185,21 @@ and the files themself should be in PEM format."
   :group 'smime)
 
 (defcustom smime-crl-check nil
-  "*Check revocation status of signers certificate using CRLs."
+  "*Check revocation status of signers certificate using CRLs.
+Enabling this will have OpenSSL check the signers certificate
+against a certificate revocation list (CRL).
+
+For this to work the CRL must be up-to-date and since they are
+normally updated quite often (ie. several times a day) you
+probably need some tool to keep them up-to-date. Unfortunately
+Gnus cannot do this for you.
+
+The CRL should either be appended (in PEM format) to your
+`smime-CA-file' or be located in a file (also in PEM format) in
+your `smime-certificate-directory' named to the X.509 hash of the
+certificate with .r0 as file name extension.
+
+At least OpenSSL version 0.9.7 is required for this to work."
   :type '(choice (const :tag "No check" nil)
 		 (const :tag "Check certificate" "-crl_check")
 		 (const :tag "Check certificate chain" "-crl_check_all"))
