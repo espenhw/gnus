@@ -1,3 +1,8 @@
+2001-01-19  Simon Josefsson  <sj@extundo.com>
+
+	* message.el (message-ignored-news-headers): Only search beginning
+	of line.
+
 2001-01-19  Alberto Lusiani <a.lusiani@noemail.org>
 
 	* message.el (message-send-mail): Content-Type may not be there.
