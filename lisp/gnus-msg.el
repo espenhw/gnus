@@ -1048,7 +1048,8 @@ this is a reply."
 		(message-encode-message-body)
 		(save-restriction
 		  (message-narrow-to-headers)
-		  (mail-encode-encoded-word-buffer))
+		  (let ((mail-parse-charset message-default-charset))
+		    (mail-encode-encoded-word-buffer)))
 		(goto-char (point-min))
 		(when (re-search-forward
 		       (concat "^" (regexp-quote mail-header-separator) "$")

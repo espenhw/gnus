@@ -1,3 +1,10 @@
+2000-05-03 14:23:38  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-inews-do-gcc): Set mail-parse-charset.
+	* gnus-int.el (gnus-request-accept-article): Ditto.
+	(gnus-request-replace-article): Ditto.
+	* mm-util.el (mm-mime-mule-charset-alist): Add a fake mule-charset.
+
 2000-05-03 14:11:23  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-encode): Test the validity of coding-system.
