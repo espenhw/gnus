@@ -1294,6 +1294,58 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
 	  contents)
       (nth 2 value))))
 
+(defun gnus-multiple-choice (prompt choice &optional idx)
+  "Ask user a multiple choice question.
+CHOICE is a list of the choice char and help message at IDX."
+  (let (tchar buf)
+    (save-window-excursion
+      (save-excursion
+	(while (not tchar)
+	  (setq tchar 
+		(read-char
+		 (format "%s (%s?): "
+			 prompt
+			 (mapconcat (lambda (s) (char-to-string (car s)))
+				    choice ""))))
+	  (when (not (assq tchar choice))
+	    (setq tchar nil)
+	    (setq buf (get-buffer-create "*Gnus Help*"))
+	    (pop-to-buffer buf)
+	    (fundamental-mode)		; for Emacs 20.4+
+	    (buffer-disable-undo)
+	    (erase-buffer)
+	    (insert prompt ":\n\n")
+	    (let ((max -1)
+		  (list choice)
+		  (alist choice)
+		  (idx (or idx 1))
+		  (i 0)
+		  n width pad format)
+	      ;; find the longest string to display
+	      (while list
+		(setq n (length (nth idx (car list))))
+		(unless (> max n)
+		  (setq max n))
+		(setq list (cdr list)))
+	      (setq max (+ max 4))	; %c, `:', SPACE, a SPACE at end
+	      (setq n (/ (1- (window-width)) max)) ; items per line
+	      (setq width (/ (1- (window-width)) n)) ; width of each item
+	      ;; insert `n' items, each in a field of width `width'
+	      (while alist
+		(if (< i n)
+		    ()
+		  (setq i 0)
+		  (delete-char -1)		; the `\n' takes a char
+		  (insert "\n"))
+		(setq pad (- width 3))
+		(setq format (concat "%c: %-" (int-to-string pad) "s"))
+		(insert (format format (caar alist) (nth idx (car alist))))
+		(setq alist (cdr alist))
+		(setq i (1+ i))))))))
+    (if (buffer-live-p buf)
+	(kill-buffer buf))
+    tchar))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

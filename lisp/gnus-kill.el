@@ -428,16 +428,6 @@ Returns the number of articles marked as read."
 	0))))
 
 ;; Parse a Gnus killfile.
-(defun gnus-score-insert-help (string alist idx)
-  (save-excursion
-    (pop-to-buffer "*Score Help*")
-    (buffer-disable-undo)
-    (erase-buffer)
-    (insert string ":\n\n")
-    (while alist
-      (insert (format " %c: %s\n" (caar alist) (nth idx (car alist))))
-      (setq alist (cdr alist)))))
-
 (defun gnus-kill-parse-gnus-kill-file ()
   (goto-char (point-min))
   (gnus-kill-file-mode)

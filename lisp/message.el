@@ -2704,7 +2704,42 @@ It should typically alter the sending method in some way or other."
 			       '(invisible nil highlight t)))
 	(unless (yes-or-no-p
 		 "Invisible text found and made visible; continue posting? ")
-	  (error "Invisible text found and made visible"))))))
+	  (error "Invisible text found and made visible")))))
+  (message-check 'illegible-text
+    (let (found choice)
+      (message-goto-body)
+      (skip-chars-forward mm-7bit-chars)
+      (while (not (eobp))
+	(when (let ((char (char-after)))
+		(or (< (mm-char-int char) 128)
+		    (and (fboundp 'char-charset)
+			 (memq (char-charset char)
+			       '(eight-bit-control eight-bit-graphic)))))
+	  (add-text-properties (point) (1+ (point)) '(highlight t))
+	  (forward-char)
+	  (setq found t))
+	(skip-chars-forward mm-7bit-chars))
+      (when found
+	(setq choice
+	      (gnus-multiple-choice 
+	       "Illegible text found. Continue posting? "
+	       '((?d "Remove and continue posting")
+		 (?r "Replace with dots and continue posting")
+		 (?e "Continue editing"))))
+	(if (eq choice ?e)
+	  (error "Illegible text found"))
+	(message-goto-body)
+	(skip-chars-forward mm-7bit-chars)
+	(while (not (eobp))
+	  (when (let ((char (char-after)))
+		  (or (< (mm-char-int char) 128)
+		      (and (fboundp 'char-charset)
+			   (memq (char-charset char)
+				 '(eight-bit-control eight-bit-graphic)))))
+	    (delete-char 1)
+	    (if (eq choice ?r)
+		(insert ".")))
+	  (skip-chars-forward mm-7bit-chars))))))
 
 (defun message-add-action (action &rest types)
   "Add ACTION to be performed when doing an exit of type TYPES."

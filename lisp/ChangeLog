@@ -1,3 +1,12 @@
+2002-03-01  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-fix-before-sending): Check illegible text.
+
+	* gnus-util.el (gnus-multiple-choice): New function.
+
+	* gnus-kill.el (gnus-score-insert-help): Removed, because it is
+	also defined in gnus-score.el.
+
 2002-03-01  Paul Jarc  <prj@po.cwru.edu>
 
 	* message.el (message-get-reply-headers): downcase email addresses
