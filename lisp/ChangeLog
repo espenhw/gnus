@@ -1,3 +1,8 @@
+2003-01-24  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-msg.el (gnus-message-replysign)
+	(gnus-message-replyencrypt): Fix typo.
+
 2003-01-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-mime-security-show-details): Toggle showing

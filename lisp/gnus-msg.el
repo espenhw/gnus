@@ -235,14 +235,14 @@ This variable is used only when `gnus-post-method' is `current'."
 
 (defcustom gnus-message-replysign
   nil
-  "Automatically sign replys to signed messages.
+  "Automatically sign replies to signed messages.
 See also the `mml-default-sign-method' variable."
   :group 'gnus-message
   :type 'boolean)
 
 (defcustom gnus-message-replyencrypt
   nil
-  "Automatically encrypt replys to encrypted messages.
+  "Automatically encrypt replies to encrypted messages.
 See also the `mml-default-encrypt-method' variable."
   :group 'gnus-message
   :type 'boolean)
