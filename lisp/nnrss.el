@@ -290,9 +290,8 @@ ARTICLE is the article number of the current headline.")
 (defvar nnrss-extra-categories '(nnrss-snarf-moreover-categories))
 
 (defun nnrss-generate-active ()
-  (if (y-or-n-p "Fetch extra categories? ")
-      (dolist (func nnrss-extra-categories)
-	(funcall func)))
+  (when (y-or-n-p "Fetch extra categories? ")
+    (mapc 'funcall nnrss-extra-categories))
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)

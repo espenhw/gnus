@@ -186,8 +186,7 @@ A numeric argument serves as a repeat count."
       (error "Nothing further to undo"))
     (setq gnus-undo-actions (delq action gnus-undo-actions))
     (setq gnus-undo-boundary t)
-    (while action
-      (funcall (pop action)))))
+    (mapc 'funcall action)))
 
 (provide 'gnus-undo)
 

@@ -1,5 +1,11 @@
 2004-09-26  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus.el (gnus-shutdown): Use dolist.
+
+	* gnus-undo.el (gnus-undo): Use mapc.
+
+	* nnrss.el (nnrss-generate-active): do.
+
 	* message.el (message-cite-original-without-signature)
 	(message-cite-original): Use mapc.
 	(message-do-actions, message-make-forward-subject): Use dolist.
