@@ -732,17 +732,14 @@ prompt the user for the name of an NNTP server to use."
 
 ;;;###autoload
 (defun gnus-unload ()
-  "Unload all Gnus features."
+  "Unload all Gnus features.
+\(For some value of `all' or `Gnus'.)  Currently, features whose names
+have prefixes `gnus-', `nn', `mm-' or `rfc' are unloaded.  Use
+cautiously -- unloading may cause trouble."
   (interactive)
-  (unless (boundp 'load-history)
-    (error "Sorry, `gnus-unload' is not implemented in this Emacs version"))
-  (let ((history load-history)
-	feature)
-    (while history
-      (and (string-match "^\\(gnus\\|nn\\)" (caar history))
-	   (setq feature (cdr (assq 'provide (car history))))
-	   (unload-feature feature 'force))
-      (setq history (cdr history)))))
+  (dolist (feature features)
+    (if (string-match "^\\(gnus-\\|nn\\|mm-\\|rfc\\)" (symbol-name feature))
+	(unload-feature feature 'force))))
 
 
 ;;;
