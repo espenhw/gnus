@@ -1,3 +1,7 @@
+2001-11-14  Sam Steingold  <sds@gnu.org>
+
+	* gnus-score.el: Fixed some doc strings to properly quote symbols.
+
 2001-11-15  Simon Josefsson  <jas@extundo.com>
 
 	Support "Importance:" header in Message.
