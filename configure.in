@@ -10,8 +10,10 @@ if test "${EMACS}" = "t"; then
    EMACS=""
 fi
 
-AC_ARG_WITH(xemacs,           --with-xemacs             Use XEmacs to build, [ if test "${withval}" = "yes"; then EMACS=xemacs; else EMACS=${withval}; fi ])
-AC_ARG_WITH(emacs,            --with-emacs              Use Emacs to build, [ if test "${withval}" = "yes"; then EMACS=emacs; else EMACS=${withval}; fi ])
+AC_ARG_WITH(xemacs,[  --with-xemacs           Use XEmacs to build], 
+	[ if test "${withval}" = "yes"; then EMACS=xemacs; else EMACS=${withval}; fi ])
+AC_ARG_WITH(emacs,[  --with-emacs            Use Emacs to build], 
+	[ if test "${withval}" = "yes"; then EMACS=emacs; else EMACS=${withval}; fi ])
 AC_CHECK_PROG(MAKEINFO, makeinfo, makeinfo, no)
 
 AC_CHECK_PROG(EMACS, emacs, emacs, xemacs)
