@@ -343,6 +343,23 @@ the first unread article."
   :group 'gnus-summary-maneuvering
   :type 'boolean)
 
+(defcustom gnus-auto-goto-ignores 'unfetched
+  "*Says how to handle unfetched articles when maneuvering.
+
+This variable can either be the symbols `nil' (maneuver to any
+article), `undownloaded' (maneuvering while unplugged ignores articles
+that have not been fetched), `always-undownloaded' (maneuvering always
+ignores articles that have not been fetched), `unfetched' (maneuvering
+ignores articles whose headers have not been fetched).
+
+NOTE: The list of unfetched articles will always be nil when plugged
+and, when unplugged, a subset of the undownloaded article list."
+  :group 'gnus-summary-maneuvering
+  :type '(choice (const :tag "None" nil)
+                 (const :tag "Undownloaded when unplugged" undownloaded)
+                 (const :tag "Undownloaded" always-undownloaded)
+                 (const :tag "Unfetched" unfetched)))
+
 (defcustom gnus-summary-check-current nil
   "*If non-nil, consider the current article when moving.
 The \"unread\" movement commands will stay on the same line if the
@@ -1254,7 +1271,10 @@ the type of the variable (string, integer, character, etc).")
   "Sorted list of articles in the current newsgroup that can be processed.")
 
 (defvar gnus-newsgroup-unfetched nil
-  "Sorted list of articles in the current newsgroup whose headers have not been fetched into the agent.")
+  "Sorted list of articles in the current newsgroup whose headers have
+not been fetched into the agent.
+
+This list will always be a subset of gnus-newsgroup-undownloaded.")
 
 (defvar gnus-newsgroup-undownloaded nil
   "List of articles in the current newsgroup that haven't been downloaded.")
@@ -6025,7 +6045,7 @@ If EXCLUDE-GROUP, do not go to this group."
       (gnus-group-best-unread-group exclude-group))))
 
 (defun gnus-summary-find-next (&optional unread article backward)
-  (if backward (gnus-summary-find-prev)
+  (if backward (gnus-summary-find-prev unread article)
     (let* ((dummy (gnus-summary-article-intangible-p))
 	   (article (or article (gnus-summary-article-number)))
 	   (data (gnus-data-find-list article))
@@ -6040,7 +6060,14 @@ If EXCLUDE-GROUP, do not go to this group."
 		      (progn
 			(while data
                           (unless (memq (gnus-data-number (car data)) 
-                                        gnus-newsgroup-unfetched)
+                                        (cond ((eq gnus-auto-goto-ignores 'always-undownloaded)
+                                               gnus-newsgroup-undownloaded)
+                                              (gnus-plugged
+                                               nil)
+                                              ((eq gnus-auto-goto-ignores 'unfetched)
+                                               gnus-newsgroup-unfetched)
+                                              ((eq gnus-auto-goto-ignores 'undownloaded)
+                                               gnus-newsgroup-undownloaded)))
                             (when (gnus-data-unread-p (car data))
                               (setq result (car data)
                                     data nil)))
@@ -6064,7 +6091,15 @@ If EXCLUDE-GROUP, do not go to this group."
 		(if unread
 		    (progn
 		      (while data
-                        (unless (memq (gnus-data-number (car data)) gnus-newsgroup-unfetched)
+                        (unless (memq (gnus-data-number (car data))
+                                      (cond ((eq gnus-auto-goto-ignores 'always-undownloaded)
+                                             gnus-newsgroup-undownloaded)
+                                            (gnus-plugged
+                                             nil)
+                                            ((eq gnus-auto-goto-ignores 'unfetched)
+                                             gnus-newsgroup-unfetched)
+                                            ((eq gnus-auto-goto-ignores 'undownloaded)
+                                             gnus-newsgroup-undownloaded)))
                           (when (gnus-data-unread-p (car data))
                             (setq result (car data)
                                   data nil)))
@@ -9777,7 +9812,7 @@ If NO-EXPIRE, auto-expiry will be inhibited."
   t)
 
 (defun gnus-summary-update-download-mark (article)
-  "Update the secondary (read, process, cache) mark."
+  "Update the download mark."
   (gnus-summary-update-mark
    (cond ((memq article gnus-newsgroup-undownloaded) 
           gnus-undownloaded-mark)
