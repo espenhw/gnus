@@ -1704,10 +1704,11 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 					      t)
 
 	  ;; eliminate duplicates
-	  (dolist (article ulist)
-	    (when (assq article rlist)
+	  (dolist (article (copy-sequence ulist))
+	    (when (memq article rlist)
 	      (incf delcount)
-	      (setq rlist (delq article rlist))))
+	      (setq rlist (delq article rlist))
+	      (setq ulist (delq article ulist))))
 	  
 	  (unless (zerop delcount)
 	    (gnus-message 

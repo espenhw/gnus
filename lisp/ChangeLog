@@ -1,3 +1,11 @@
+2004-10-18  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* encrypt.el: add autoload tags
+
+	* spam.el (spam-resolve-registrations-routine): remove article
+	from unregistration list too.  Reported by David Hanak
+	<dhanak@isis.vanderbilt.edu>
+
 2004-10-18  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-copy-article-ignored-headers): Default to
@@ -10,6 +18,8 @@
 	* gnus-sum.el (gnus-summary-move-article): Use it.
 
 2004-10-15  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* encrypt.el: add autoload cookies
 
 	* spam.el (spam-backend-article-list-property)
 	(spam-backend-get-article-todo-list)
