@@ -12566,7 +12566,7 @@ want to match articles based on the raw header data.
 @vindex nnmail-resplit-incoming
 By default, splitting is not performed on all incoming messages.  If
 you specify a @code{directory} entry for the variable
-@code{mail-sources} @pref{Mail Source Specifiers}, however, then
+@code{mail-sources} @pxref{Mail Source Specifiers}, however, then
 splitting does @emph{not} happen by default.  You can set the variable
 @code{nnmail-resplit-incoming} to a non-nil value to make splitting
 happen even in this case.
