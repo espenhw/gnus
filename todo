@@ -1,3 +1,6 @@
+.gnus repository:
+http://superdave.socom.com/gnus/
+
 I would like the zombie-page to contain an URL to the source of the
 latest version of gnus or some explanation on where to find it.
 
@@ -600,3 +603,8 @@ the header
 * cache the newsgroups file locally to avoid reloading it all the time.
 
 * a command to import a buffer into a group.
+
+* nnweb should allow fetching by Message-ID from servers.
+
+* point in the article buffer doesn't always go to the
+beginning of the buffer when selecting new articles.

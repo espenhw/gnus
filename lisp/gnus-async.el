@@ -196,7 +196,7 @@ It should return non-nil if the article is to be prefetched."
 		      (nntp-server-buffer
 		       (get-buffer gnus-async-prefetch-article-buffer)))
 		  (when do-message
-		    (gnus-message 7 "Prefetching article %d in group %s"
+		    (gnus-message 9 "Prefetching article %d in group %s"
 				  article group))
 		  (gnus-request-article article group))))))))))
 

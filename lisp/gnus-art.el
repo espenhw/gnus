@@ -419,10 +419,10 @@ above them."
 (defface gnus-header-from-face
   '((((class color)
       (background dark))
-     (:foreground "spring green" :bold t :italic t))
+     (:foreground "spring green" :bold t))
     (((class color)
       (background light))
-     (:foreground "indianred" :bold t :italic t))
+     (:foreground "red3" :bold t))
     (t
      (:bold t :italic t)))
   "Face used for displaying from headers."
@@ -432,10 +432,10 @@ above them."
 (defface gnus-header-subject-face
   '((((class color)
       (background dark))
-     (:foreground "SeaGreen3" :bold t :italic t))
+     (:foreground "SeaGreen3" :bold t))
     (((class color)
       (background light))
-     (:foreground "firebrick" :bold t :italic t))
+     (:foreground "red4" :bold t))
     (t
      (:bold t :italic t)))
   "Face used for displaying subject headers."
@@ -510,7 +510,7 @@ displayed by the first non-nil matching CONTENT face."
 
 (defvar gnus-article-mode-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
-    ;;(modify-syntax-entry ?_ "w" table)
+    (modify-syntax-entry ?- "w" table)
     table)
   "Syntax table used in article mode buffers.
 Initialized from `text-mode-syntax-table.")
@@ -2039,6 +2039,7 @@ If given a numerical ARG, move forward ARG pages."
   "Show the next page of the article."
   (interactive)
   (when (gnus-article-next-page)
+    (goto-char (point-min))
     (gnus-article-read-summary-keys nil (gnus-character-to-event ?n))))
 
 (defun gnus-article-goto-prev-page ()

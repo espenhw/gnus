@@ -2181,26 +2181,29 @@ SCORE is the score to add."
 (defun gnus-score-find-trace ()
   "Find all score rules that applies to the current article."
   (interactive)
-  (let ((gnus-newsgroup-headers
-	 (list (gnus-summary-article-header)))
-	(gnus-newsgroup-scored nil)
-	trace)
-    (save-excursion
-      (nnheader-set-temp-buffer "*Score Trace*"))
-    (setq gnus-score-trace nil)
-    (gnus-possibly-score-headers 'trace)
-    (if (not (setq trace gnus-score-trace))
-	(gnus-error
-	 1 "No score rules apply to the current article (default score %d)."
-	 gnus-summary-default-score)
-      (set-buffer "*Score Trace*")
-      (gnus-add-current-to-buffer-list)
-      (while trace
-	(insert (format "%S  ->  %s\n" (cdar trace)
-			(file-name-nondirectory (caar trace))))
-	(setq trace (cdr trace)))
-      (goto-char (point-min))
-      (gnus-configure-windows 'score-trace))))
+  (let ((old-scored gnus-newsgroup-scored))
+    (let ((gnus-newsgroup-headers
+	   (list (gnus-summary-article-header)))
+	  (gnus-newsgroup-scored nil)
+	  trace)
+      (save-excursion
+	(nnheader-set-temp-buffer "*Score Trace*"))
+      (setq gnus-score-trace nil)
+      (gnus-possibly-score-headers 'trace)
+      (if (not (setq trace gnus-score-trace))
+	  (gnus-error
+	   1 "No score rules apply to the current article (default score %d)."
+	   gnus-summary-default-score)
+	(set-buffer "*Score Trace*")
+	(gnus-add-current-to-buffer-list)
+	(while trace
+	  (insert (format "%S  ->  %s\n" (cdar trace)
+			  (file-name-nondirectory (caar trace))))
+	  (setq trace (cdr trace)))
+	(goto-char (point-min))
+	(gnus-configure-windows 'score-trace)))
+    (set-buffer gnus-summary-buffer)
+    (setq gnus-newsgroup-scored old-scored)))
 
 (defun gnus-score-find-favourite-words ()
   "List words used in scoring."
@@ -2618,9 +2621,9 @@ The list is determined from the variable gnus-score-file-alist."
       (pop score-files))
     (let ((files score-files))
       (while (cdr files)
-	(when (member (cadr files) (cddr files))
-	  (setcdr files (cddr files)))
-	(pop files)))
+ 	(if (member (cadr files) (cddr files))
+ 	    (setcdr files (cddr files))
+ 	  (pop files))))
     ;; Do the scoring if there are any score files for this group.
     score-files))
 

@@ -142,7 +142,8 @@ It is provided only to ease porting of broken FSF Emacs programs."
 This is ugly, but it works around a bug in `window-displayed-height'.")
 
 (defun gnus-xmas-switch-horizontal-scrollbar-off ()
-  (set-specifier scrollbar-height (cons (current-buffer) 0)))
+  (when (featurep 'scrollbar)
+    (set-specifier scrollbar-height (cons (current-buffer) 0))))
 
 (defun gnus-xmas-summary-recenter ()
   "\"Center\" point in the summary window.

@@ -13386,11 +13386,15 @@ manglers masquerading as newsreaders.
 
 @table @code
 
+@item gnus-home-directory
+All Gnus path variables will be initialized from this variable, which
+defaults to @file{~/}.
+
 @item gnus-directory
 @vindex gnus-directory
-All Gnus directories will be initialized from this variable, which
-defaults to the @samp{SAVEDIR} environment variable, or @file{~/News/}
-if that variable isn't set.
+Most Gnus storage path variables will be initialized from this variable,
+which defaults to the @samp{SAVEDIR} environment variable, or
+@file{~/News/} if that variable isn't set.
 
 @item gnus-default-directory
 @vindex gnus-default-directory

@@ -34,10 +34,11 @@
 
 ;;; User Variables:
 
-(defvar gnus-soup-directory "~/SoupBrew/"
+(defvar gnus-soup-directory (nnheader-concat gnus-home-directory "SoupBrew/")
   "*Directory containing an unpacked SOUP packet.")
 
-(defvar gnus-soup-replies-directory (concat gnus-soup-directory "SoupReplies/")
+(defvar gnus-soup-replies-directory
+  (nnheader-concat gnus-soup-directory "SoupReplies/")
   "*Directory where Gnus will do processing of replies.")
 
 (defvar gnus-soup-prefix-file "gnus-prefix"
@@ -53,7 +54,7 @@ inserted where %d appears.")
   "*Format string command for unpacking a SOUP packet.
 The SOUP packet file name will be inserted at the %s.")
 
-(defvar gnus-soup-packet-directory "~/"
+(defvar gnus-soup-packet-directory gnus-home-directory
   "*Where gnus-soup will look for REPLIES packets.")
 
 (defvar gnus-soup-packet-regexp "Soupin"

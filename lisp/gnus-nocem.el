@@ -48,7 +48,7 @@
    "clewis@ferret.ocunix.on.ca;" ; Chris Lewis
    "jem@xpat.com;"		 ; Despammer from Korea
    "snowhare@xmission.com"       ; Benjamin "Snowhare" Franz
-   "red@redpoll.mrfs.oh.us (Richard E. Depew)"
+   "red@redpoll.mrfs.oh.us (Richard E. Depew)" ; ARMM! ARMM!
    )
   "List of NoCeM issuers to pay attention to."
   :group 'gnus-nocem

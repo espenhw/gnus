@@ -188,69 +188,70 @@ If this variable is nil, no files will be excluded.")
 
 (defun nneething-create-mapping ()
   ;; Read nneething-active and nneething-map.
-  (let ((map-file (nneething-map-file))
-	(files (directory-files nneething-directory))
-	touched map-files)
-    (when (file-exists-p map-file)
-      (ignore-errors
-	(load map-file nil t t)))
-    (unless nneething-active
-      (setq nneething-active (cons 1 0)))
-    ;; Old nneething had a different map format.
-    (when (and (cdar nneething-map)
-	       (atom (cdar nneething-map)))
-      (setq nneething-map
-	    (mapcar (lambda (n)
-		      (list (cdr n) (car n)
-			    (nth 5 (file-attributes
-				    (nneething-file-name (car n))))))
-		    nneething-map)))
-    ;; Remove files matching the exclusion regexp.
-    (when nneething-exclude-files
-      (let ((f files)
+  (when (file-exists-p nneething-directory)
+    (let ((map-file (nneething-map-file))
+	  (files (directory-files nneething-directory))
+	  touched map-files)
+      (when (file-exists-p map-file)
+	(ignore-errors
+	  (load map-file nil t t)))
+      (unless nneething-active
+	(setq nneething-active (cons 1 0)))
+      ;; Old nneething had a different map format.
+      (when (and (cdar nneething-map)
+		 (atom (cdar nneething-map)))
+	(setq nneething-map
+	      (mapcar (lambda (n)
+			(list (cdr n) (car n)
+			      (nth 5 (file-attributes
+				      (nneething-file-name (car n))))))
+		      nneething-map)))
+      ;; Remove files matching the exclusion regexp.
+      (when nneething-exclude-files
+	(let ((f files)
+	      prev)
+	  (while f
+	    (if (string-match nneething-exclude-files (car f))
+		(if prev (setcdr prev (cdr f))
+		  (setq files (cdr files)))
+	      (setq prev f))
+	    (setq f (cdr f)))))
+      ;; Remove deleted files from the map.
+      (let ((map nneething-map)
 	    prev)
-	(while f
-	  (if (string-match nneething-exclude-files (car f))
-	      (if prev (setcdr prev (cdr f))
-		(setq files (cdr files)))
-	    (setq prev f))
-	  (setq f (cdr f)))))
-    ;; Remove deleted files from the map.
-    (let ((map nneething-map)
-	  prev)
-      (while map
-	(if (and (member (cadar map) files)
-		 ;; We also remove files that have changed mod times.
-		 (equal (nth 5 (file-attributes
-				(nneething-file-name (cadar map))))
-			(caddar map)))
-	    (progn
-	      (push (cadar map) map-files)
-	      (setq prev map))
+	(while map
+	  (if (and (member (cadar map) files)
+		   ;; We also remove files that have changed mod times.
+		   (equal (nth 5 (file-attributes
+				  (nneething-file-name (cadar map))))
+			  (caddar map)))
+	      (progn
+		(push (cadar map) map-files)
+		(setq prev map))
+	    (setq touched t)
+	    (if prev
+		(setcdr prev (cdr map))
+	      (setq nneething-map (cdr nneething-map))))
+	  (setq map (cdr map))))
+      ;; Find all new files and enter them into the map.
+      (while files
+	(unless (member (car files) map-files)
+	  ;; This file is not in the map, so we enter it.
 	  (setq touched t)
-	  (if prev
-	      (setcdr prev (cdr map))
-	    (setq nneething-map (cdr nneething-map))))
-	(setq map (cdr map))))
-    ;; Find all new files and enter them into the map.
-    (while files
-      (unless (member (car files) map-files)
-	;; This file is not in the map, so we enter it.
-	(setq touched t)
-	(setcdr nneething-active (1+ (cdr nneething-active)))
-	(push (list (cdr nneething-active) (car files)
-		    (nth 5 (file-attributes
-			    (nneething-file-name (car files)))))
-	      nneething-map))
-      (setq files (cdr files)))
-    (when (and touched
-	       (not nneething-read-only))
-      (nnheader-temp-write map-file
-	(insert "(setq nneething-map '")
-	(gnus-prin1 nneething-map)
-	(insert ")\n(setq nneething-active '")
-	(gnus-prin1 nneething-active)
-	(insert ")\n")))))
+	  (setcdr nneething-active (1+ (cdr nneething-active)))
+	  (push (list (cdr nneething-active) (car files)
+		      (nth 5 (file-attributes
+			      (nneething-file-name (car files)))))
+		nneething-map))
+	(setq files (cdr files)))
+      (when (and touched
+		 (not nneething-read-only))
+	(nnheader-temp-write map-file
+	  (insert "(setq nneething-map '")
+	  (gnus-prin1 nneething-map)
+	  (insert ")\n(setq nneething-active '")
+	  (gnus-prin1 nneething-active)
+	  (insert ")\n"))))))
 
 (defun nneething-insert-head (file)
   "Insert the head of FILE."

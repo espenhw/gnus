@@ -134,8 +134,7 @@ variable to \"^nnml\"."
   (when (and (or force (not (eq gnus-use-cache 'passive)))
 	     (numberp article)
 	     (> article 0)
-	     (vectorp headers))
-					; This might be a dummy article.
+	     (vectorp headers))		; This might be a dummy article.
     ;; If this is a virtual group, we find the real group.
     (when (gnus-virtual-group-p group)
       (let ((result (nnvirtual-find-group-art

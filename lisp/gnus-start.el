@@ -33,13 +33,13 @@
 (require 'gnus-util)
 (require 'message)
 
-(defcustom gnus-startup-file "~/.newsrc"
+(defcustom gnus-startup-file (nnheader-concat gnus-home-directory ".newsrc")
   "Your `.newsrc' file.
 `.newsrc-SERVER' will be used instead if that exists."
   :group 'gnus-start
   :type 'file)
 
-(defcustom gnus-init-file "~/.gnus"
+(defcustom gnus-init-file (nnheader-concat gnus-home-directory ".gnus")
   "Your Gnus elisp startup file.
 If a file with the .el or .elc suffixes exist, it will be read
 instead."

@@ -1,3 +1,79 @@
+Fri Mar 14 20:11:01 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.26 is released.
+
+Fri Mar 14 19:57:41 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-setup.el (gnus-use-sc): Changed default.
+
+Fri Mar 14 19:53:05 1997  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-art.el (gnus-article-goto-next-page): Place point.
+
+Fri Mar 14 18:46:54 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-mode-syntax-table): Make "-"
+	word-constituant. 
+
+	* gnus-sum.el (gnus-article-sort-by-author): Don't bug out on
+	Froms without names.
+
+	* messagexmas.el (message-xmas-make-caesar-translation-table): Use
+	char-int.
+
+Fri Mar 14 18:44:33 1997  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-faces): New group.
+
+Fri Mar 14 18:43:16 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-limit-to-unread): Also exclude souped
+	articles. 
+
+Fri Mar 14 18:35:06 1997  Matt Armstrong  <Matt_Armstrong@geoworks.com>
+
+	* gnus-score.el (gnus-all-score-files): Remove duplicates.
+
+Fri Mar 14 18:21:07 1997  Andy Norman  <ange@hplb.hpl.hp.com>
+
+	* gnus-xmas.el (gnus-xmas-switch-horizontal-scrollbar-off): Check
+	whether we have a scrollbar first.
+
+Fri Mar 14 18:15:32 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-save-mail): Don't fold case when doing
+	From_. 
+
+Wed Mar 12 06:51:49 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-possibly-change-group): Accept a
+	dont-check param.
+	(nnfolder-request-group): Don't load folder.
+
+	* gnus.el (gnus-home-directory): New variable.
+
+Tue Mar 11 17:25:46 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-async.el (gnus-async-prefetch-article): Raise the level of
+	the message.
+
+Mon Mar 10 06:30:59 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-score-find-trace): Would clobber the score
+	of other articles.
+
+	* nneething.el (nneething-create-mapping): Make sure
+	nneething-directory exists.
+
+	* nnfolder.el (nnfolder-adjust-min-active): New function.
+	(nnfolder-request-expire-articles): Use it.
+	(nnfolder-request-move-article): Ditto.
+	(nnfolder-request-scan): Switch to the right server first. 
+
+Mon Mar 10 06:28:58 1997  Joev Dubach  <dubach1@husc.harvard.edu>
+
+	* nnfolder.el (nnfolder-generate-active-file): Didn't work.
+
 Sun Mar  9 18:38:37 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.25 is released.

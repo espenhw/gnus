@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.25"
+(defconst gnus-version-number "5.4.26"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -711,7 +711,14 @@ be set in `.emacs' instead."
 (require 'gnus-util)
 (require 'nnheader)
 
-(defcustom gnus-directory (or (getenv "SAVEDIR") "~/News/")
+(defcustom gnus-home-directory "~/"
+  "Directory variable that specifies the \"home\" directory.
+All other Gnus path variables are initialized from this variable."
+  :group 'gnus-files
+  :type 'directory)
+
+(defcustom gnus-directory (or (getenv "SAVEDIR")
+			      (nnheader-concat gnus-home-directory "News/"))
   "Directory variable from which all other Gnus file variables are derived."
   :group 'gnus-files
   :type 'directory)

@@ -3190,11 +3190,11 @@ If NO-DISPLAY, don't generate a summary buffer."
    (let ((extract (funcall
 		   gnus-extract-address-components
 		   (mail-header-from h1))))
-     (or (car extract) (cdr extract)))
+     (or (car extract) (cadr extract) ""))
    (let ((extract (funcall
 		   gnus-extract-address-components
 		   (mail-header-from h2))))
-     (or (car extract) (cdr extract)))))
+     (or (car extract) (cadr extract) ""))))
 
 (defun gnus-thread-sort-by-author (h1 h2)
   "Sort threads by root author."
@@ -5668,7 +5668,7 @@ If ALL is non-nil, limit strictly to unread articles."
 	   gnus-killed-mark gnus-kill-file-mark
 	   gnus-low-score-mark gnus-expirable-mark
 	   gnus-canceled-mark gnus-catchup-mark gnus-sparse-mark
-	   gnus-duplicate-mark)
+	   gnus-duplicate-mark gnus-souped-mark)
      'reverse)))
 
 (defalias 'gnus-summary-delete-marked-with 'gnus-summary-limit-exclude-marks)

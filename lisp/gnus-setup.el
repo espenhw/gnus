@@ -75,7 +75,7 @@
   "Set this if you want to use SENDMAIL for mail reading")
 (defvar gnus-use-vm nil
   "Set this if you want to use the VM package for mail reading")
-(defvar gnus-use-sc t
+(defvar gnus-use-sc nil
   "Set this if you want to use Supercite")
 (defvar gnus-use-mailcrypt t
   "Set this if you want to use Mailcrypt for dealing with PGP messages")
