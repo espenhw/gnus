@@ -1574,7 +1574,7 @@ newsgroup."
 		 (t 0))
 	   level))
 	 scanned-methods info group active method retrieve-groups)
-    (gnus-message 5 "Checking new news...")
+    (gnus-message 6 "Checking new news...")
 
     (while newsrc
       (setq active (gnus-active (setq group (gnus-info-group
@@ -1682,7 +1682,7 @@ newsgroup."
 	      (gnus-set-active group nil)
 	      (setcar (gnus-gethash group gnus-newsrc-hashtb) t)))))))
 
-    (gnus-message 5 "Checking new news...done")))
+    (gnus-message 6 "Checking new news...done")))
 
 ;; Create a hash table out of the newsrc alist.  The `car's of the
 ;; alist elements are used as keys.

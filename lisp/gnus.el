@@ -3174,9 +3174,13 @@ You should probably use `gnus-find-method-for-group' instead."
 You should call this in the `gnus-group-buffer' buffer.
 The function `gnus-group-find-parameter' will do that for you."
   ;; The speed trick:  No cons'ing and quit early.
-  (or (let ((params (funcall gnus-group-get-parameter-function group)))
-	;; Start easy, check the "real" group parameters.
-	(gnus-group-parameter-value params symbol allow-list))
+  (let* ((params (funcall gnus-group-get-parameter-function group))
+	 ;; Start easy, check the "real" group parameters.
+	 (simple-results
+	  (gnus-group-parameter-value params symbol allow-list t)))
+    (if simple-results
+	;; Found results; return them.
+	(car simple-results)
       ;; We didn't found it there, try `gnus-parameters'.
       (let ((result nil)
 	    (head nil)
@@ -3198,7 +3202,7 @@ The function `gnus-group-find-parameter' will do that for you."
 	      ;; Exit the loop early.
 	      (setq tail nil))))
 	;; Done.
-	result)))
+	result))))
 
 (defun gnus-group-find-parameter (group &optional symbol allow-list)
   "Return the group parameters for GROUP.
@@ -3225,7 +3229,8 @@ also examines the topic parameters."
 	(gnus-group-parameter-value params symbol allow-list)
       params)))
 
-(defun gnus-group-parameter-value (params symbol &optional allow-list)
+(defun gnus-group-parameter-value (params symbol &optional
+					  allow-list present-p)
   "Return the value of SYMBOL in group PARAMS."
   ;; We only wish to return group parameters (dotted lists) and
   ;; not local variables, which may have the same names.
@@ -3239,7 +3244,8 @@ also examines the topic parameters."
 		       (eq (car elem) symbol)
 		       (or allow-list
 			   (atom (cdr elem))))
-	      (throw 'found (cdr elem))))))))
+	      (throw 'found (if present-p (list (cdr elem))
+			      (cdr elem)))))))))
 
 (defun gnus-group-add-parameter (group param)
   "Add parameter PARAM to GROUP."

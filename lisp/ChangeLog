@@ -1,5 +1,8 @@
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el (gnus-group-parameter-value): Take an extra param.
+	(gnus-group-fast-parameter): Let group param results be nil. 
+
 	* gnus-art.el (gnus-article-forward-header): New function.
 	(article-date-ut): Use it to remove continuation date headers. 
 
