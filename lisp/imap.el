@@ -950,6 +950,10 @@ If EXAMINE is non-nil, do a read-only select."
     (imap-utf7-decode 
      (imap-mailbox-select-1 (imap-utf7-encode mailbox) examine))))
 
+(defun imap-mailbox-examine-1 (mailbox &optional buffer)
+  (with-current-buffer (or buffer (current-buffer))
+    (imap-mailbox-select-1 mailbox 'exmine)))
+
 (defun imap-mailbox-examine (mailbox &optional buffer)
   "Examine MAILBOX on server in BUFFER."
   (imap-mailbox-select mailbox 'exmine buffer))
@@ -1288,7 +1292,7 @@ is non-nil return theese properties."
     (let ((old-mailbox imap-current-mailbox)
 	  (state imap-state)
 	  (imap-message-data (make-vector 2 0)))
-      (when (imap-mailbox-examine mailbox)
+      (when (imap-mailbox-examine-1 mailbox)
 	(prog1
 	    (and (imap-fetch "*" "UID")
 		 (list (imap-mailbox-get-1 'uidvalidity mailbox)
@@ -1329,7 +1333,7 @@ first element, rest of list contain the saved articles' UIDs."
     (let ((old-mailbox imap-current-mailbox)
 	  (state imap-state)
 	  (imap-message-data (make-vector 2 0)))
-      (when (imap-mailbox-examine mailbox)
+      (when (imap-mailbox-examine-1 mailbox)
 	(prog1
 	    (and (imap-fetch "*" "UID")
 		 (list (imap-mailbox-get-1 'uidvalidity mailbox)
@@ -2372,6 +2376,7 @@ Return nil if no complete line has arrived."
 	    imap-current-mailbox-p
 	    imap-mailbox-select-1
 	    imap-mailbox-select
+	    imap-mailbox-examine-1
 	    imap-mailbox-examine
 	    imap-mailbox-unselect
 	    imap-mailbox-expunge
