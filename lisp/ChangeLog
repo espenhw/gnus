@@ -1,3 +1,9 @@
+2000-04-25 20:12:17  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-dissect-region): Don't include LWS ahead of
+	word if not necessary.
+	(rfc2047-encode-region): Put space between encoded words.
+
 2000-04-24 21:11:48  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-netrc-machine): Another default to nntp.
