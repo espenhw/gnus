@@ -48,7 +48,8 @@ ANSI sequences are used in some Chinese hierarchies for highlighting
 articles (`gnus-article-treat-ansi-sequences').
 
 ** International host names (IDNA) can now be decoded inside article
-bodies using `W i' (`gnus-summary-idna-message').
+bodies using `W i' (`gnus-summary-idna-message').  This require that
+GNU Libidn (`http://www.gnu.org/software/libidn/') has been installed.
 
 ** Gnus includes an Emacs Lisp SASL library.
 
