@@ -1,3 +1,7 @@
+1999-11-08 05:33:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el: Autoload gnus-subscribe-topics.
+
 1999-11-07 22:56:46  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-save-group-info): Remove backslash
@@ -12,6 +16,7 @@
 	* gnus-agent.el (gnus-agent-group-path): Use it.
 	* nnmail.el (nnmail-group-pathname): Use it.
 
+>>>>>>> 5.147
 1999-11-07 21:07:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-start.el (gnus-active-to-gnus-format): Don't insert backslash
