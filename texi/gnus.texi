@@ -8467,7 +8467,9 @@ Morse decode the article buffer (@code{gnus-summary-morse-message}).
 Decode IDNA encoded domain names in the current articles.  IDNA
 encoded domain names looks like @samp{xn--bar}.  If a string remain
 unencoded after running invoking this, it is likely an invalid IDNA
-string (@samp{xn--bar} is invalid).
+string (@samp{xn--bar} is invalid).  You must have GNU Libidn
+(@url{http://www.gnu.org/software/libidn/}) installed for this command
+to work.
 
 @item W t
 @item t
