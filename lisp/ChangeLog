@@ -1,3 +1,9 @@
+2003-04-30  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+
+	* gnus-registry.el (gnus-registry-split-fancy-with-parent): added
+	diagnostic message
+	(gnus-registry-grep-in-list): don't run when word is nil
+
 2003-04-30  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
 	* gnus-delay.el (gnus-delay-article): Call

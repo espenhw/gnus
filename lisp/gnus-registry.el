@@ -139,15 +139,18 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			   nnmail-split-fancy-with-parent-ignore-groups))
 		  (setq res nil)))
 	      references)
+      (gnus-message 5 "gnus-registry-split-fancy-with-parent traced %s to group %s"
+		    refstr (if res res "nil"))
       res)))
 
 (defun gnus-registry-grep-in-list (word list)
-  (memq nil
-	(mapcar 'not
-	 (mapcar 
-	  (lambda (x)
-	    (string-match x word))
-	  list))))
+  (when word
+    (memq nil
+	  (mapcar 'not
+		  (mapcar 
+		   (lambda (x)
+		     (string-match x word))
+		   list)))))
 
 (defun gnus-registry-fetch-group (id)
   "Get the group of a message, based on the message ID.
