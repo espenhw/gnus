@@ -1,3 +1,7 @@
+2002-10-11  Jesper harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Formatting Fonts): Fix for balloon help in GNU Emacs.
+
 2002-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Delayed Articles): Fix gnus-delay-initialize.
@@ -287,7 +291,7 @@
 2002-05-01  Lars Magne Ingebrigtsen  <larsi@quimbies.gnus.org>
 
 	* message.texi (Message Headers): Remove colon from index
-	entries. 
+	entries.
 
 2002-05-01  Simon Josefsson  <jas@extundo.com>
 
