@@ -204,10 +204,9 @@ GLYPH can be either a glyph or a string."
 (defun gnus-picon-transform-newsgroups (header)
   (interactive)
   (gnus-with-article-headers
-    (let ((groups
-	   (sort
-	    (message-tokenize-header (mail-fetch-field header))
-	    (lambda (g1 g2) (> (length g1) (length g2)))))
+    (gnus-article-goto-header header)
+    (mail-header-narrow-to-field)
+    (let ((groups (message-tokenize-header (mail-fetch-field header)))
 	  spec file point)
       (dolist (group groups)
 	(setq spec (nreverse (split-string group "[.]")))
@@ -220,17 +219,16 @@ GLYPH can be either a glyph or a string."
 	    (setcar (nthcdr i spec)
 		    (cons (gnus-picon-create-glyph file)
 			  (nth i spec)))))
-	
-	(gnus-article-goto-header header)
-	(mail-header-narrow-to-field)
 	(when (search-forward group nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
-	  (setq point (point))
-	  (while spec
-	    (goto-char point)
-	    (if (> (length spec) 1)
-		(insert "."))
-	    (gnus-picon-insert-glyph (pop spec) 'newsgroups-picon)))))))
+	  (save-restriction
+	    (narrow-to-region (point) (point))
+	    (while spec
+	      (goto-char (point-min))
+	      (if (> (length spec) 1)
+		  (insert "."))
+	      (gnus-picon-insert-glyph (pop spec) 'newsgroups-picon))
+	    (goto-char (point-max))))))))
 
 ;;; Commands:
 
