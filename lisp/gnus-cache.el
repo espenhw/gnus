@@ -357,7 +357,7 @@ Returns the list of articles removed."
   (or (and ticked (memq 'ticked class))
       (and dormant (memq 'dormant class))
       (and unread (memq 'unread class))
-      (and (not unread) (memq 'read class))))
+      (and (not unread) (not ticked) (not dormant) (memq 'read class))))
 
 (defun gnus-cache-file-name (group article)
   (concat (file-name-as-directory gnus-cache-directory)
@@ -377,8 +377,8 @@ Returns the list of articles removed."
      gnus-newsgroup-name article (gnus-summary-article-header article)
      nil nil nil t)))
 
-(defun gnus-cache-possibly-remove-article 
-  (article ticked dormant unread &optional force)
+(defun gnus-cache-possibly-remove-article (article ticked dormant unread 
+						   &optional force)
   "Possibly remove ARTICLE from the cache."
   (let ((file (gnus-cache-file-name gnus-newsgroup-name article)))
     (when (and (file-exists-p file)

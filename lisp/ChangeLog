@@ -1,3 +1,29 @@
+Sun Mar 17 13:17:26 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-article-hide-pgp): Would hide one char too many.
+
+	* gnus-msg.el (gnus-inews-distribution): Fall back on the
+	Newsgroups header.
+
+	* gnus.el (gnus-read-header): Read sparse threads.
+
+Sun Mar 17 11:23:53 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-summary-scroll-up): Show threads.
+
+	* gnus-msg.el (gnus-mail-reply): Use prefixed group name.
+	(gnus-news-followup): Ditto.
+
+	* gnus-cache.el (gnus-cache-member-of-class): Would remove ticked
+	articles from the cache.
+
+	* gnus.el (gnus-hide-text): Would bug out at bob.
+	(gnus-unhide-text): Ditto.
+
+Sat Mar 16 13:28:57 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el: 0.53 is released.
+
 Sat Mar 16 14:46:29 1996  Brad Miller  <bmiller@cs.umn.edu>
 
 	* gnus-gl.el: New version.

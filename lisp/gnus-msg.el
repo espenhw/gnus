@@ -1651,7 +1651,10 @@ domain is undefined, the domain name is got from it."
   "Return the current Distribution header, if any."
   (when (and gnus-distribution-function
 	     (fboundp gnus-distribution-function))
-    (funcall gnus-distribution-function (or gnus-newsgroup-name ""))))
+    (funcall gnus-distribution-function 
+	     (or gnus-newsgroup-name
+		 (save-excursion (mail-fetch-field "newsgroups"))
+		 ""))))
 
 (defun gnus-inews-message-id ()
   "Generate unique Message-ID for user."
@@ -1878,7 +1881,7 @@ mailer."
 (defun gnus-mail-reply (&optional yank to-address followup)
   (save-excursion
     (set-buffer gnus-summary-buffer)
-    (let ((group (gnus-group-real-name gnus-newsgroup-name))
+    (let ((group gnus-newsgroup-name)
 	  (cur (cons (current-buffer) (cdr gnus-article-current)))
 	  (winconf (current-window-configuration))
 	  from subject date reply-to message-of to cc
@@ -2153,7 +2156,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 		 (gnus-y-or-n-p
 		  "Are you sure you want to post to all of USENET? ")))
 	()
-      (let ((group (gnus-group-real-name (or group gnus-newsgroup-name)))
+      (let ((group (or group gnus-newsgroup-name))
 	    (cur (cons (current-buffer) (cdr gnus-article-current)))
 	    (winconf (current-window-configuration))
 	    from subject date message-of
