@@ -1,3 +1,8 @@
+2001-12-19 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmaildir.el: New.
+	From Paul Jarc <prj@po.cwru.edu>.
+
 2001-12-19 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-type-alist): Move forward to the end.
