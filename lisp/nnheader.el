@@ -74,10 +74,10 @@ Integer values will in effect be rounded up to the nearest multiple of
 (defvar nnheader-read-timeout
   (if (string-match "windows-nt\\|os/2\\|emx\\|cygwin"
 		    (symbol-name system-type))
-      1.0
+      1.0				; why?
     0.1)
   "How long nntp should wait between checking for the end of output.
-Shorter values mean quicker response, but is more CPU intensive.")
+Shorter values mean quicker response, but are more CPU intensive.")
 
 (defvar nnheader-file-name-translation-alist
   (let ((case-fold-search t))
@@ -855,11 +855,6 @@ without formatting."
    (cond ((null file) "")
 	 ((numberp file) (int-to-string file))
 	 (t file))))
-
-(defun nnheader-functionp (form)
-  "Return non-nil if FORM is funcallable."
-  (or (and (symbolp form) (fboundp form))
-      (and (listp form) (eq (car form) 'lambda))))
 
 (defun nnheader-concat (dir &rest files)
   "Concat DIR as directory to FILES."
