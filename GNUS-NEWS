@@ -19,6 +19,14 @@ include support for DIGEST-MD5.
 The primary change this brings is support for DIGEST-MD5, when the
 server support it.
 
+** Gnus include a password cache mechanism in password.el.
+
+It is enabled by default (see `password-cache'), with a short timeout
+of 16 seconds (see `password-cache-expiry').  If PGG is used as the
+PGP backend, the PGP passphrase is managed by this mechanism.
+Passwords for ManageSieve connections are managed by this mechanism,
+after quering the user about whether to do so.
+
 ** IMAP identity (RFC 2971) is supported.
 
 By default, Gnus do not send any information about itself, but you can
