@@ -1,3 +1,8 @@
+2001-11-22  Simon Josefsson  <jas@extundo.com>
+
+	* sha1.el: Removed. (A FSF copyrighted sha1-el.el file is in
+	../lisp/).
+
 2001-10-30 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* canlock.el, hex-util.el, sha1-el.el: Move to lisp.
