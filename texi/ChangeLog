@@ -1,5 +1,7 @@
 2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* gnus-faq.texi: Wrap long lines in menus.  Index.
+
 	* gnus.texi (Image Enhancements): Mention missing images support
 	of Emacs on MS Windows.
 	(Oort Gnus): Mention Gnus FAQ.
