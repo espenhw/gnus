@@ -1516,6 +1516,7 @@ Point is left at the beginning of the narrowed-to region."
   (define-key message-mode-map "\C-c?" 'describe-mode)
 
   (define-key message-mode-map "\C-c\C-f\C-t" 'message-goto-to)
+  (define-key message-mode-map "\C-c\C-f\C-o" 'message-goto-from)
   (define-key message-mode-map "\C-c\C-f\C-b" 'message-goto-bcc)
   (define-key message-mode-map "\C-c\C-f\C-w" 'message-goto-fcc)
   (define-key message-mode-map "\C-c\C-f\C-c" 'message-goto-cc)
@@ -1533,6 +1534,9 @@ Point is left at the beginning of the narrowed-to region."
 
   (define-key message-mode-map "\C-c\C-t" 'message-insert-to)
   (define-key message-mode-map "\C-c\C-n" 'message-insert-newsgroups)
+
+  (define-key message-mode-map "\C-c\C-u" 'message-insert-or-toggle-importance)
+  (define-key message-mode-map "\C-c\M-n" 'message-insert-disposition-notification-to)
 
   (define-key message-mode-map "\C-c\C-y" 'message-yank-original)
   (define-key message-mode-map "\C-c\M-\C-y" 'message-yank-buffer)
@@ -1581,6 +1585,10 @@ Point is left at the beginning of the narrowed-to region."
     ["Flag As Unimportant" message-insert-importance-low
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Mark this message as unimportant"))]
+    ["Request Receipt" 
+     message-insert-disposition-notification-to
+     ,@(if (featurep 'xemacs) '(t)
+	 '(:help "Request a Disposition Notification of this article"))]
     ["Spellcheck" ispell-message
      ,@(if (featurep 'xemacs) '(t)
 	 '(:help "Spellcheck this message"))]
@@ -1605,6 +1613,7 @@ Point is left at the beginning of the narrowed-to region."
     ["Fetch Newsgroups" message-insert-newsgroups t]
     "----"
     ["To" message-goto-to t]
+    ["From" message-goto-from t]
     ["Subject" message-goto-subject t]
     ["Cc" message-goto-cc t]
     ["Reply-To" message-goto-reply-to t]
@@ -1706,6 +1715,7 @@ C-c C-z  `message-kill-to-signature' (kill the text up to the signature).
 C-c C-r  `message-caesar-buffer-body' (rot13 the message body).
 C-c C-a  `mml-attach-file' (attach a file as MIME).
 C-c C-u  `message-insert-or-toggle-importance'  (insert or cycle importance).
+C-c M-n  `message-insert-disposition-notification-to'  (request receipt).
 M-RET    `message-newline-and-reformat' (break the line and reformat)."
   (set (make-local-variable 'message-reply-buffer) nil)
   (make-local-variable 'message-send-actions)
@@ -1810,6 +1820,11 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
   "Move point to the To header."
   (interactive)
   (message-position-on-field "To"))
+
+(defun message-goto-from ()
+  "Move point to the From header."
+  (interactive)
+  (message-position-on-field "From"))
 
 (defun message-goto-subject ()
   "Move point to the Subject header."
@@ -2160,6 +2175,16 @@ and `low'."
 			 "high"))))
       (message-goto-eoh)
       (insert (format "Importance: %s\n" new)))))
+
+(defun message-insert-disposition-notification-to ()
+  "Request a disposition notification (return receipt) to this message.
+Note that this should not be used in newsgroups."
+  (interactive)
+  (save-excursion
+    (message-remove-header "Disposition-Notification-To")
+    (message-goto-eoh)
+    (insert (format "Disposition-Notification-To: %s\n"
+		    (or (message-fetch-field "From") (message-make-from))))))
 
 (defun message-elide-region (b e)
   "Elide the text in the region.
@@ -5216,6 +5241,9 @@ which specify the range to operate on."
 		    message-mode-map)
 		   (tool-bar-add-item-from-menu
 		    'message-insert-importance-low "unimportant"
+		    message-mode-map)
+		   (tool-bar-add-item-from-menu
+		    'message-insert-disposition-notification-to "receipt"
 		    message-mode-map)
 		   tool-bar-map)))))
 

@@ -1,3 +1,18 @@
+2002-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* message.el (message-mode-map): Bind message-goto-from to C-c C-f
+	C-o.
+	(message-mode-map): Bind message-insert-or-toggle-importance to
+	C-c C-u.
+	(message-mode-map): Bind message-disposition-notification-to to
+	C-c M-n.
+	(message-mode-menu): Add m-d-n-t.
+	(message-mode-field-menu): Add m-goto-from.
+	(message-mode): Doc fix.
+	(message-goto-from): New function.
+	(message-insert-disposition-notification-to): New function.
+	(message-tool-bar-map): Add receipt button.
+
 2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-mime-display-alternative): Use
