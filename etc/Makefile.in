@@ -30,7 +30,7 @@ install:
 	done
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(etcdir)/smilies
 	cd $(srcdir) \
-	&& for p in smilies/*.pbm; do \
+	&& for p in smilies/*.pbm smilies/*.xpm; do \
 	  echo " $(INSTALL_DATA) $$p $(etcdir)/$$p"; \
 	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
@@ -43,7 +43,7 @@ uninstall:
 	done
 	rmdir $(etcdir)/gnus 2> /dev/null || true
 	cd $(srcdir) \
-	&& for p in smilies/*.pbm; do \
+	&& for p in smilies/*.pbm smilies/*.xpm; do \
 	  rm -f "$(etcdir)/$$p"; \
 	done
 	rmdir $(etcdir)/smilies 2> /dev/null || true
