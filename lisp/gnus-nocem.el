@@ -86,9 +86,7 @@
 	(setq active (nth 1 (assoc group gnus-nocem-active)))
 	(when (and (not (< (cdr gactive) (car gactive))) ; Empty group.
 		   (or (not active)
-		       (< (cdr active) 
-			  (cdr (setq gactive (gnus-gethash 
-					      group gnus-newsrc-hashtb))))))
+		       (< (cdr active) (cdr gactive))))
 	  ;; Ok, there are new articles in this group, se we fetch the
 	  ;; headers.
 	  (let ((gnus-newsgroup-dependencies (make-vector 10 nil))
@@ -108,37 +106,39 @@
 	      ;; We take a closer look on all articles that have
 	      ;; "@@NCM" in the subject.  
 	      (when (string-match "@@NCM" (mail-header-subject (car headers)))
-		(gnus-nocem-check-article
-		 (mail-header-number (car headers)) group))
-	      (setq headers (cdr headers)))))))
+		(gnus-nocem-check-article group (car headers)))
+	      (setq headers (cdr headers)))))
+	(setq gnus-nocem-active
+	      (cons (list group gactive) 
+		    (delq (assoc group gnus-nocem-active)
+			  gnus-nocem-active)))))
     ;; Save the results, if any.
-    (gnus-nocem-save-cache)))
+    (gnus-nocem-save-cache)
+    (gnus-nocem-save-active)))
 
-(defun gnus-nocem-check-article (number group)
+(defun gnus-nocem-check-article (group header)
   "Check whether the current article is an NCM article and that we want it."
   (nnheader-temp-write nil
     ;; Get the article.
-    (gnus-message 7 "Check in article %d in %s for NoCeM..."
-		  number group)
-    (gnus-request-article-this-buffer number group)
-    (nnheader-narrow-to-headers)
-    (let ((date (mail-fetch-field "date"))
+    (gnus-message 7 "Checking article %d in %s for NoCeM..."
+		  (mail-header-number header) group)
+    (let ((date (mail-header-date header))
 	  issuer b e)
-      (widen)
-      ;; The article has to have proper NoCeM headers.
-      (when (and (setq b (search-forward "\n@@BEGIN NCM HEADERS\n" nil t))
-		 (setq e (search-forward "\n@@BEGIN NCM BODY\n" nil t))
-		 (or (not date)
-		     (nnmail-time-less 
-		      (nnmail-time-since (nnmail-date-to-time date))
-		      (nnmail-days-to-time gnus-nocem-expiry-wait))))
-	;; We get the name of the issuer.
-	(narrow-to-region b e)
-	(setq issuer (mail-fetch-field "issuer"))
-	(and (member issuer gnus-nocem-issuers) ; We like her...
-	     (gnus-nocem-verify-issuer issuer) ; She is who she says she is...
-	     (gnus-nocem-enter-article)))))) ; We gobble the message.
-
+      (when (or (not date)
+		(nnmail-time-less 
+		 (nnmail-time-since (nnmail-date-to-time date))
+		 (nnmail-days-to-time gnus-nocem-expiry-wait)))
+	(gnus-request-article-this-buffer (mail-header-number header) group)
+	;; The article has to have proper NoCeM headers.
+	(when (and (setq b (search-forward "\n@@BEGIN NCM HEADERS\n" nil t))
+		   (setq e (search-forward "\n@@BEGIN NCM BODY\n" nil t)))
+	  ;; We get the name of the issuer.
+	  (narrow-to-region b e)
+	  (setq issuer (mail-fetch-field "issuer"))
+	  (and (member issuer gnus-nocem-issuers) ; We like her...
+	       (gnus-nocem-verify-issuer issuer) ; She is who she says she is..
+	       (gnus-nocem-enter-article))))))) ; We gobble the message.
+  
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
   t)
@@ -186,8 +186,14 @@
 	     gnus-nocem-touched-alist)
     (nnheader-temp-write (gnus-nocem-cache-file)
       (insert (prin1-to-string
-	       (list 'setq 'gnus-nocem-alist gnus-nocem-alist))))
+	       `(setq gnus-nocem-alist ',gnus-nocem-alist))))
     (setq gnus-nocem-touched-alist nil)))
+
+(defun gnus-nocem-save-active ()
+  "Save the NoCeM active file."
+  (nnheader-temp-write (gnus-nocem-active-file)
+    (insert (prin1-to-string
+	     `(setq gnus-nocem-active ',gnus-nocem-active)))))
 
 (defun gnus-nocem-alist-to-hashtb ()
   "Create a hashtable from the Message-IDs we have."

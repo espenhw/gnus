@@ -1694,7 +1694,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.44"
+(defconst gnus-version "September Gnus v0.45"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -6219,7 +6219,8 @@ re-scanning.  If ARG is non-nil and not a number, this will force
   (interactive "P")
   (run-hooks 'gnus-get-new-news-hook)
   ;; We might read in new NoCeM messages here.
-  (when gnus-use-nocem 
+  (when (and gnus-use-nocem 
+	     (null arg))
     (gnus-nocem-scan-groups))
   ;; If ARG is not a number, then we read the active file.
   (when (and arg (not (numberp arg)))
@@ -13097,7 +13098,9 @@ The following commands are available:
 	;; If the article number is negative, that means that this article
 	;; doesn't belong in this newsgroup (possibly), so we find its
 	;; message-id and request it by id instead of number.
-	(when (numberp article)
+	(when (and (numberp article)
+		   gnus-summary-buffer
+		   (buffer-name gnus-summary-buffer))
 	  (save-excursion
 	    (set-buffer gnus-summary-buffer)
 	    (let ((header (gnus-summary-article-header article)))

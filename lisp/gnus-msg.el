@@ -959,6 +959,7 @@ called."
     ;; article is empty or has only quoted text.
     (or
      (gnus-check-before-posting 'new-text)
+     (not gnus-article-check-size)
      (if (and (= (buffer-size) (car gnus-article-check-size))
 	      (= (gnus-article-checksum) (cdr gnus-article-check-size)))
 	 (gnus-y-or-n-p

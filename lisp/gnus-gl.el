@@ -22,9 +22,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Author: Brad Miller
 ;;
-;; $Id: gnus-gl.el,v 1.2 1996/02/25 03:46:03 steve Exp $
-;;
-;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; User Documentation:
@@ -118,8 +115,7 @@
 ;; 
 
 (require 'gnus-score)
-(eval-when-compile (require 'cl))
-(require 'cl)
+(eval-and-compile (require 'cl))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; User variables
@@ -130,7 +126,8 @@
   "*The line format spec in summary GroupLens mode buffers.")
 
 (defvar grouplens-pseudonym ""
-  "User's pseudonym.  This pseudonym is obtained during the registration process")
+  "User's pseudonym.  This pseudonym is obtained during the registration 
+process")
 
 (defvar grouplens-bbb-host "grouplens.cs.umn.edu"
   "Host where the bbbd is running" )
@@ -141,7 +138,8 @@
 (defvar grouplens-newsgroups 
   '("comp.lang.c++" "rec.humor" "rec.food.recipes" "comp.groupware"
     "mn.general" "rec.arts.movies" "rec.arts.movies.current-films"
-    "comp.lang.java")
+    "comp.lang.java" "comp.os.linux.announce" "comp.os.linux.misc"
+    "comp.os.linux.development.apps" "comp.os.linux.development.system")
   "*Groups that are part of the GroupLens experiment.")
 
 (defvar grouplens-prediction-display 'prediction-spot
@@ -156,33 +154,39 @@
 
 (defvar grouplens-score-offset 0
   "Offset the prediction by this value.  
-   Setting this variable to -2 would have the following effect
-   on grouplens scores:
+Setting this variable to -2 would have the following effect on grouplens 
+scores:
    1   -->   -2
    2   -->   -1
    3   -->    0
    4   -->    1
    5   -->    2
    
-   the reason a user might want to do this is to combine grouplens 
-   predictions with scores calculated by other score methods"
-)
+the reason a user might want to do this is to combine grouplens 
+predictions with scores calculated by other score methods")
 
 (defvar grouplens-score-scale-factor 1
-   "This variable allow sthe user to magify the effect of 
-    grouplens scores. The scale factor is applied after
-    the offset.")
+  "This variable allow sthe user to magify the effect of grouplens scores. 
+The scale factor is applied after the offset.")
+
+(defvar gnus-grouplens-override-scoring t
+  "Tell Grouplens to override the normal Gnus scoring mechanism.  If
+  this variable is non-nill than Grouplens will completely override
+  the normal scoring mechanism of Gnus.  When nil, Grouplens will not
+  override the normal scoring mechanism so both can be used at once.")
+ 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Program global variables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 (defvar grouplens-bbb-token "0"
   "Current session token number")
 
 (defvar grouplens-bbb-process nil
   "Process Id of current bbbd network stream process")
+
+(defvar grouplens-bbb-buffer nil
+  "Buffer associated with the BBBD process")
 
 (defvar grouplens-rating-alist nil
   "Current set of  message-id rating pairs")
@@ -204,63 +208,63 @@
   "Number of seconds to wait for some response from the BBB before
     we give up and assume that something has died..." )
 
-(defvar starting-time nil)
+(defvar grouplens-previous-article nil
+  "message-id of the last article read")
 
-(defvar elapsed-time 0)
-
-(defvar previous-article nil)
-
-(defvar process-buffer)
 (defvar bbb-read-point)
 (defvar bbb-response-point)
-(defvar login-response)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;  Utility Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun connect-to-bbbd (host port)
-  (setq process-buffer
-	(get-buffer-create (format "trace of BBBD session to %s" host)))
+(defun bbb-connect-to-bbbd (host port)
+  (unless grouplens-bbb-buffer 
+    (setq grouplens-bbb-buffer 
+	  (get-buffer-create (format " *BBBD trace: %s*" host)))
+    (save-excursion
+      (set-buffer grouplens-bbb-buffer)
+      (make-local-variable 'bbb-read-point)
+      (setq bbb-read-point (point-min))))
   ;; clear the trace buffer of old output
   (save-excursion
-    (set-buffer process-buffer)
+    (set-buffer grouplens-bbb-buffer)
     (erase-buffer))
   ;; open the connection to the server
   (setq grouplens-bbb-process nil)
   (catch 'done
     (condition-case error
 	(setq grouplens-bbb-process 
-	      (open-network-stream "BBBD" process-buffer host port))
+	      (open-network-stream "BBBD" grouplens-bbb-buffer host port))
       (error (gnus-message 3 "Error: Failed to connect to BBB")
 	     nil))
-    (and (null grouplens-bbb-process) (throw 'done nil))
-    (set-process-filter grouplens-bbb-process 'bbb-process-filter)
+    (and (null grouplens-bbb-process) 
+	 (throw 'done nil))
+    ;; (set-process-filter grouplens-bbb-process 'bbb-process-filter)
     (save-excursion
-      (set-buffer process-buffer)
-      (make-local-variable 'bbb-read-point)
+      (set-buffer grouplens-bbb-buffer)
       (setq bbb-read-point (point-min))
-      (and (null (setq greeting (bbb-read-response grouplens-bbb-process t)))
-	   (throw 'done nil))
-      ))
-  grouplens-bbb-process )
+      (or (bbb-read-response grouplens-bbb-process)
+	  (throw 'done nil))))
+  grouplens-bbb-process)
 
-(defun bbb-process-filter (process output)
-  (save-excursion
-    (set-buffer (process-buffer process))
-    (goto-char (point-max))
-    (insert output)))
+;; (defun bbb-process-filter (process output)
+;;   (save-excursion
+;;     (set-buffer (bbb-process-buffer process))
+;;     (goto-char (point-max))
+;;     (insert output)))
 
 (defun bbb-send-command (process command)
   (goto-char (point-max))
-  (insert command "\r\n")
+  (insert command) 
+  (insert "\r\n")
   (setq bbb-read-point (point))
   (setq bbb-response-point (point))
+  (set-marker (process-mark process) (point)) ; process output also comes here
   (process-send-string process command)
   (process-send-string process "\r\n"))
 
-;; This function eats the initial response of OK or ERROR from 
-;; the BBB.
-(defun bbb-read-response (process &optional return-response-string)
+(defun bbb-read-response (process) ; &optional return-response-string)
+  "This function eats the initial response of OK or ERROR from the BBB."
   (let ((case-fold-search nil)
 	 match-end)
     (goto-char bbb-read-point)
@@ -269,33 +273,29 @@
       (goto-char bbb-read-point))
     (setq match-end (point))
     (goto-char bbb-read-point)
-    (if (not (looking-at "OK"))
-	(progn (setq bbb-read-point match-end) nil)
-      (setq bbb-read-point match-end)
-      (if return-response-string
-	  (buffer-substring (point) match-end)
-	t ))))
+    (setq bbb-read-point match-end)
+    (looking-at "OK")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;       Login Functionons
+;;;;       Login Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun bbb-login ()
   "return the token number if login is successful, otherwise return nil"
   (interactive)
+  (setq grouplens-bbb-token nil)
   (if (not (equal grouplens-pseudonym ""))
-      (let ((bbb-process (connect-to-bbbd grouplens-bbb-host grouplens-bbb-port)))
+      (let ((bbb-process 
+	     (bbb-connect-to-bbbd grouplens-bbb-host grouplens-bbb-port)))
 	(if bbb-process
-	    (save-excursion (set-buffer (process-buffer bbb-process))
-			    (bbb-send-command bbb-process 
-					      (concat "login " grouplens-pseudonym))
-			    (if (setq login-response 
-				      (bbb-read-response bbb-process t))
-				(setq grouplens-bbb-token (extract-token-number))
-			      (gnus-message 3 "Error: Grouplens login failed")
-			      (setq grouplens-bbb-token "0")
-			      nil))) )
+	    (save-excursion 
+	      (set-buffer (process-buffer bbb-process))
+	      (bbb-send-command bbb-process 
+				(concat "login " grouplens-pseudonym))
+	      (if (bbb-read-response bbb-process)
+		  (setq grouplens-bbb-token (extract-token-number))
+		(gnus-message 3 "Error: Grouplens login failed")))))
     (gnus-message 3 "Error: you must set a pseudonym"))
-    nil)
+  grouplens-bbb-token)
 
 (defun extract-token-number ()
   (let ((token-pos (search-forward "token=" nil t) ))
@@ -304,62 +304,58 @@
 
 (defun bbb-logout ()
   "logout of bbb session"
-  (let ((bbb-process (connect-to-bbbd grouplens-bbb-host grouplens-bbb-port)))
+  (let ((bbb-process 
+	 (bbb-connect-to-bbbd grouplens-bbb-host grouplens-bbb-port)))
     (if bbb-process
-	(save-excursion (set-buffer (process-buffer bbb-process))
-			(bbb-send-command bbb-process 
-					  (concat "logout " grouplens-bbb-token))
-			(if (bbb-read-response bbb-process t)
-			    t
-			  nil) ))))
+	(save-excursion 
+	  (set-buffer (process-buffer bbb-process))
+	  (bbb-send-command bbb-process (concat "logout " grouplens-bbb-token))
+	  (bbb-read-response bbb-process))
+      nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;       Get Predictions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; this function can be called as part of the function
-;; to return the list of score files to use.
-;; See the gnus variable gnus-score-find-score-files-function
-;; *Note:*  If you want to use grouplens scores along with
-;; calculated scores, you should see the offset and scale variables.
-;; At this point, I don't recommend using both scores and grouplens 
-;; predictions together.
 (defun bbb-build-mid-scores-alist (groupname)
+  "this function can be called as part of the function to return the 
+list of score files to use. See the gnus variable 
+gnus-score-find-score-files-function.  
+
+*Note:*  If you want to use grouplens scores along with calculated scores, 
+you should see the offset and scale variables.  At this point, I don't 
+recommend using both scores and grouplens predictions together."
+  (setq grouplens-current-group groupname)
   (if (member groupname grouplens-newsgroups)
       (let* ((mid-list (get-all-mids))
 	     (predict-list (bbb-get-predictions mid-list groupname)))
-					; alist should be a list of lists 
-					; ((("message-id" ("<message-id>"
-					; score nil s)))
-	(setq grouplens-current-group groupname)
-	(setq previous-article nil)
+	(setq grouplens-previous-article nil)
+	;; scores-alist should be a list of lists:
+	;;  ((("message-id" ("<mid1>" score1 nil s) ("<mid2> score2 nil s))))
+	;;`((("message-id" . ,predict-list))) ; Yes, this is the return value
 	(list (list (list (append (list "message-id") predict-list)))))
-    (progn (setq grouplens-current-group groupname)
-	   nil))
-  )
+    nil))
 
-;; Ask the bbb for predictions, and build up the score alist.
 (defun bbb-get-predictions (midlist groupname)
-  (if (equal grouplens-bbb-token "0")
+  "Ask the bbb for predictions, and build up the score alist."
+  (if (or (null grouplens-bbb-token)
+	  (equal grouplens-bbb-token "0"))
       (gnus-message 3 "Error: You are not logged in to a BBB")
     (gnus-message 5 "Fetching Predictions...")
-    (let* ((predict-command (build-predict-command 
-			     midlist groupname grouplens-bbb-token ))
-	   (predict-list nil)
-	   (bbb-process (connect-to-bbbd grouplens-bbb-host grouplens-bbb-port)))
+    (let (predict-list
+	  (predict-command (build-predict-command midlist groupname 
+						  grouplens-bbb-token))
+	  (bbb-process (bbb-connect-to-bbbd grouplens-bbb-host 
+					    grouplens-bbb-port)))
       (if bbb-process
-	  (save-excursion (set-buffer (process-buffer bbb-process))
-			  (bbb-send-command bbb-process predict-command)
-			  (if (bbb-read-response bbb-process nil)
-			      (setq predict-list 
-				    (bbb-get-prediction-response bbb-process))
-			    (gnus-message 1 "Invalid Token, login and try again")
-			    (ding)
-			    )))
-      (setq bbb-alist predict-list))
-    ))
-
-
+	  (save-excursion 
+	    (set-buffer (process-buffer bbb-process))
+	    (bbb-send-command bbb-process predict-command)
+	    (if (bbb-read-response bbb-process)
+		(setq predict-list (bbb-get-prediction-response bbb-process))
+	      (gnus-message 1 "Invalid Token, login and try again")
+	      (ding))))
+      (setq bbb-alist predict-list))))
 
 (defun get-all-mids ()
   (let ((index (nth 1 (assoc "message-id" gnus-header-index)))
@@ -371,8 +367,7 @@
 		   this (aref art index)
 		   articles (cdr articles))
 	     (setq bbb-mid-list (cons this bbb-mid-list))))
-    bbb-mid-list)
-  )
+    bbb-mid-list))
 
 (defun build-predict-command (mlist grpname token)
   (let ((cmd (concat "getpredictions " token " " grpname "\r\n"))
@@ -382,8 +377,7 @@
 	    cmd (concat cmd art "\r\n")
 	    mlist (cdr mlist)))
     (setq cmd (concat cmd ".\r\n"))
-  cmd)
-  )
+  cmd))
 
 (defun bbb-get-prediction-response (process)
   (let ((case-fold-search nil)
@@ -406,28 +400,25 @@
     (setq grouplens-current-hashtable (make-hash-table :test 'equal :size 100))
     (while
 	(cond ((looking-at "\\(<.*>\\) :nopred=")
-	       (setq resp (cons  (list (get-mid) 
-				       gnus-summary-default-score 
-				       nil 's) resp))
+	       (push `(,(get-mid) ,gnus-summary-default-score nil s) resp)
 	       (forward-line 1)
 	       t)
 	      ((looking-at "\\(<.*>\\) :pred=\\([0-9]\.[0-9][0-9]\\) :conflow=\\([0-9]\.[0-9][0-9]\\) :confhigh=\\([0-9]\.[0-9][0-9]\\)")
-	       (setq resp (cons  (list (get-mid) (get-pred) nil 's) resp))
+	       (push `(,(get-mid) ,(get-pred) nil s) resp)
 	       (cl-puthash (get-mid)
 			   (list (get-pred) (get-confl) (get-confh))
 			   grouplens-current-hashtable)
 	       (forward-line 1)
 	       t)
 	      ((looking-at "\\(<.*>\\) :pred=\\([0-9]\.[0-9][0-9]\\)")
-	       (setq resp (cons  (list (get-mid) (get-pred) nil 's) resp))
+	       (push `(,(get-mid) ,(get-pred) nil s) resp)
 	       (cl-puthash (get-mid)
 			   (list (get-pred) 0 0)
 			   grouplens-current-hashtable)
 	       (forward-line 1)
 	       t)
-	      (t nil) ))
-    resp)
-)
+	      (t nil)))
+    resp))
 
 ;; these two functions assume that there is an active match lying
 ;; around.  Where the first parenthesized expression is the
@@ -442,8 +433,7 @@
 				      (match-end 2))))))
     (if (> tpred 0)
 	(* grouplens-score-scale-factor (+ grouplens-score-offset  tpred))
-      1))
-)
+      1)))
 
 (defun get-confl ()
   (string-to-number (buffer-substring (match-beginning 3) (match-end 3))))
@@ -464,24 +454,23 @@
 (defvar gnus-tmp-score)
 (defun gnus-user-format-function-G (header)
   (let* ((rate-string (make-string 12 ? ))
-	 (mid
-	  (aref header
-		(nth 1 (assoc "message-id" gnus-header-index))))
+	 (mid (aref header (nth 1 (assoc "message-id" gnus-header-index))))
 	 (hashent (gethash mid grouplens-current-hashtable))
-	 (iscore (if (string-match "September" gnus-version)
-		    gnus-tmp-score
-		  score))
+	 (iscore (if (string-match "September" gnus-version) 
+		     gnus-tmp-score
+		   score))
 	 (low (car (cdr hashent)))
 	 (high (car (cdr (cdr hashent)))))
-    (aset rate-string 0 ?|) (aset rate-string 11 ?|)
-    (if (not (member grouplens-current-group grouplens-newsgroups))
-	(progn 
-	  (if (not (equal grouplens-prediction-display 'prediction-num))
-	      (cond ((< iscore 0)
-		     (setq iscore 1))
-		    ((> iscore 5)
-		     (setq iscore 5))))
-	  (setq low 0) (setq high 0)))
+    (aset rate-string 0 ?|) 
+    (aset rate-string 11 ?|)
+    (unless (member grouplens-current-group grouplens-newsgroups)
+      (unless (equal grouplens-prediction-display 'prediction-num)
+	(cond ((< iscore 0)
+	       (setq iscore 1))
+	      ((> iscore 5)
+	       (setq iscore 5))))
+      (setq low 0) 
+      (setq high 0))
     (if (and (grouplens-valid-score iscore) 
 	     (not (null mid)))
 	(cond 
@@ -507,8 +496,7 @@
 	 ((equal grouplens-prediction-display 'confidence-plus-minus)
 	       (setq rate-string (fmt-confidence-plus-minus iscore low high))
 	       )
-	 (t (gnus-message 3 "Invalid prediction display type"))
-	 )
+	 (t (gnus-message 3 "Invalid prediction display type")))
       (aset rate-string 5 ?N) (aset rate-string 6 ?A))
     rate-string))
 
@@ -521,70 +509,54 @@
       ;; Return an empty string
       ""
     (let* ((rate-string (make-string 12 ? ))
-           (mid
-            (aref header
-                  (nth 1 (assoc "message-id" gnus-header-index))))
+           (mid (aref header (nth 1 (assoc "message-id" gnus-header-index))))
            (hashent (gethash mid grouplens-current-hashtable))
            (pred (nth 0 hashent))
            (low (nth 1 hashent))
            (high (nth 2 hashent)))
-      (gnus-message 3 (concat "mid = " mid))
+      (gnus-message 5 (concat "mid = " mid))
       ;; Init rate-string
       (aset rate-string 0 ?|) 
       (aset rate-string 11 ?|)
       
       ;; If no entry in BBB hash mark rate string as NA and return
-      (if (null hashent)
-          (progn
-            (aset rate-string 5 ?N) 
-            (aset rate-string 6 ?A)
-            rate-string)
-        ;; Otherwise
-        (cond 
-         ;; prediction-spot
-         ((equal grouplens-prediction-display 'prediction-spot)
-          (fmt-prediction-spot rate-string pred))
+      (cond 
+       ((null hashent) 
+	(aset rate-string 5 ?N) 
+	(aset rate-string 6 ?A)
+	rate-string)
 
-         ;; confidence-interval
-         ((equal grouplens-prediction-display 'confidence-interval)
-          (fmt-confidence-interval pred low high))
+       ((equal grouplens-prediction-display 'prediction-spot)
+	(fmt-prediction-spot rate-string pred))
+       
+       ((equal grouplens-prediction-display 'confidence-interval)
+	(fmt-confidence-interval pred low high))
+       
+       ((equal grouplens-prediction-display 'prediction-bar)
+	(fmt-prediction-bar rate-string pred))
 
-         ;; prediction-bar
-         ((equal grouplens-prediction-display 'prediction-bar)
-          (fmt-prediction-bar rate-string pred))
+       ((equal grouplens-prediction-display 'confidence-bar)
+	(format "|   %4.2f   |" pred))
 
-         ;; confidence-bar
-         ((equal grouplens-prediction-display 'confidence-bar)
-          (format "|   %4.2f   |" pred))
-
-         ;; confidence-spot
-         ((equal grouplens-prediction-display 'confidence-spot)
-          (format "|   %4.2f   |" pred))
-
-         ;; prediction-num
-         ((equal grouplens-prediction-display 'prediction-num)
-          (fmt-prediction-num pred))
-
-         ;; confidence-plus-minus
-         ((equal grouplens-prediction-display 'confidence-plus-minus)
-          (fmt-confidence-plus-minus pred low high))
-
-         (t 
-          (gnus-message 3 "Invalid prediction display type")
-          (aset rate-string 0 ?|) 
-          (aset rate-string 11 ?|)
-          rate-string)
-         )
-        )
-      )
-    )
-  )
+       ((equal grouplens-prediction-display 'confidence-spot)
+	(format "|   %4.2f   |" pred))
+       
+       ((equal grouplens-prediction-display 'prediction-num)
+	(fmt-prediction-num pred))
+       
+       ((equal grouplens-prediction-display 'confidence-plus-minus)
+	(fmt-confidence-plus-minus pred low high))
+       
+       (t 
+	(gnus-message 3 "Invalid prediction display type")
+	(aset rate-string 0 ?|) 
+	(aset rate-string 11 ?|)
+	rate-string)))))
 
 (defun grouplens-valid-score (score)
-  (if (equal grouplens-prediction-display 'prediction-num)
-      t
-    (and (>= score grplens-minrating)
-	 (<= score grplens-maxrating))))
+  (or (equal grouplens-prediction-display 'prediction-num)
+      (and (>= score grplens-minrating)
+	   (<= score grplens-maxrating))))
 
 (defun requires-confidence (format-type)
   (or (equal format-type 'confidence-plus-minus)
@@ -594,7 +566,6 @@
 (defun have-confidence (clow chigh)
   (not (or (null clow)
 	   (null chigh))))
-
 
 (defun fmt-prediction-spot (rate-string score)
   (aset rate-string
@@ -628,85 +599,88 @@
   rate-string)
 
 (defun fmt-prediction-num (score)
-  (format "|   %4.2f   |" score)
-)
+  (format "|   %4.2f   |" score))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;       Put Ratings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; The message-id for the current article can be found in
 ;; (aref gnus-current-headers (nth 1 (assoc "message-id" gnus-header-index)))
-;;
-
-;; 
 
 (defun bbb-put-ratings ()
   (if (and grouplens-rating-alist 
 	   (member gnus-newsgroup-name grouplens-newsgroups))
-      (let ((bbb-process (connect-to-bbbd grouplens-bbb-host 
+      (let ((bbb-process (bbb-connect-to-bbbd grouplens-bbb-host 
 					  grouplens-bbb-port))
 	    (rate-command (build-rate-command grouplens-rating-alist)))
 	(if bbb-process
-	    (save-excursion (set-buffer (process-buffer bbb-process))
-			    (gnus-message 5 "Sending Ratings...")
-			    (bbb-send-command bbb-process rate-command)
-			    (if (bbb-read-response bbb-process t)
-				(setq grouplens-rating-alist nil)
-			      (gnus-message 1
-			    "Token timed out: call bbb-login and quit again")
-			      (ding))
-			    (gnus-message 5 "Sending Ratings...Done"))
+	    (save-excursion 
+	      (set-buffer (process-buffer bbb-process))
+	      (gnus-message 5 "Sending Ratings...")
+	      (bbb-send-command bbb-process rate-command)
+	      (if (bbb-read-response bbb-process)
+		  (setq grouplens-rating-alist nil)
+		(gnus-message 1 
+			      "Token timed out: call bbb-login and quit again")
+		(ding))
+	      (gnus-message 5 "Sending Ratings...Done"))
 	  (gnus-message 3 "No BBB connection")))
-    (setq grouplens-rating-alist nil))
-)
+    (setq grouplens-rating-alist nil)))
 
 (defun build-rate-command (rate-alist)
-  (let ((cmd (concat "putratings " grouplens-bbb-token 
-		     " " grouplens-current-group " \r\n"))
-	this)
+  (let (this
+	(cmd (concat "putratings " grouplens-bbb-token 
+		     " " grouplens-current-group " \r\n")))
     (while rate-alist
       (setq this (car rate-alist)
 	    cmd (concat cmd (car this) " :rating=" (cadr this) ".00"
 			" :time=" (cddr this) "\r\n")
 	    rate-alist (cdr rate-alist)))
-    (concat cmd ".\r\n"))
-)
+    (concat cmd ".\r\n")))
 
 ;; Interactive rating functions.
-(defun  bbb-summary-rate-article (rating &optional midin)
+(defun bbb-summary-rate-article (rating &optional midin)
   (interactive "nRating: ")
-  (let ((mid (or midin (get-current-id)))
-	oldrating)
-  (if (and rating (or (>  rating 0) 
-		      (<  rating 6))
-	   mid
-	   (member gnus-newsgroup-name grouplens-newsgroups))
-      (progn
-	(if (not (setq oldrating (assoc mid grouplens-rating-alist)))
-	    (setq grouplens-rating-alist (cons (cons mid (cons rating 0))
-					       grouplens-rating-alist))
-	  (setcdr oldrating (cons rating 0)))
-	(gnus-summary-mark-article nil (int-to-string rating)))	
-    (gnus-message 3 "Invalid rating"))))
+  (when (member gnus-newsgroup-name grouplens-newsgroups)
+    (let ((mid (or midin (get-current-id))))
+      (if (and rating 
+	       (>= rating grplens-minrating) 
+	       (<= rating grplens-maxrating)
+	       mid)
+	  (let ((oldrating (assoc mid grouplens-rating-alist)))
+	    (if oldrating
+		(setcdr oldrating (cons rating 0))
+	      (push `(,mid . (,rating . 0)) grouplens-rating-alist))
+	    (gnus-summary-mark-article nil (int-to-string rating)))	
+	(gnus-message 3 "Invalid rating")))))
 
 (defun grouplens-next-unread-article (rating)
   "Select unread article after current one."
   (interactive "P")
-  (if rating
-      (bbb-summary-rate-article rating))
-  (gnus-summary-next-article t (and gnus-auto-select-same
-				    (gnus-summary-subject-string))))
+  (if rating (bbb-summary-rate-article rating))
+  (gnus-summary-next-unread-article))
 
 (defun grouplens-best-unread-article (rating)
   "Select unread article after current one."
   (interactive "P")
-  (if rating
-      (bbb-summary-rate-article rating))
+  (if rating (bbb-summary-rate-article rating))
   (gnus-summary-best-unread-article))
 
-(defun grouplens-score-thread-sept (score)
+(defun grouplens-summary-catchup-and-exit (rating)
+   "Mark all articles not marked as unread in this newsgroup as read, 
+    then exit.   If prefix argument ALL is non-nil, all articles are 
+    marked as read."
+   (interactive "P")
+   (if rating
+       (bbb-summary-rate-article rating))
+   (if (numberp rating)
+       (gnus-summary-catchup-and-exit)
+     (gnus-summary-catchup-and-exit rating)))
+
+(defun grouplens-score-thread (score)
   "Raise the score of the articles in the current thread with SCORE."
-  (interactive "nRating:")
+  (interactive "nRating: ")
   (let (e)
     (save-excursion
       (let ((articles (gnus-summary-articles-in-thread)))
@@ -714,8 +688,9 @@
 	  (gnus-summary-goto-subject (car articles))
 	  (gnus-set-global-variables)
 	  (bbb-summary-rate-article score
-			    (mail-header-id 
-			     (gnus-summary-article-header (car articles))))
+				    (mail-header-id 
+				     (gnus-summary-article-header 
+				      (car articles))))
 	  (setq articles (cdr articles))))
       (setq e (point)))
     (let ((gnus-summary-check-current t))
@@ -725,118 +700,81 @@
   (gnus-summary-position-point)
   (gnus-set-mode-line 'summary))
 
-(defun grouplens-score-thread-v5 (score)
-  "Raise the score of the articles in the current thread with SCORE."
-  (interactive "nRating: ")
-  (gnus-set-global-variables)
-  (let ((scoring t)
-	(level (gnus-summary-thread-level)))
-    (save-excursion
-      (while scoring
-	(bbb-summary-rate-article score
-				  (mail-header-id
-				   (gnus-get-header-by-number 
-				    (gnus-summary-article-number))))
-	;; ...and go forward until either the buffer ends or the subtree
-	;; ends. 
-	(if (not (and (zerop (forward-line 1))
-		      (> (gnus-summary-thread-level) level)))
-	    (setq scoring nil))))
-    ;; Go to next unread subject.
-    (gnus-summary-next-subject 1 t))
-  (gnus-set-mode-line 'summary))
-
-(if (string-match "September" gnus-version)
-    (defalias 'grouplens-score-thread 'grouplens-score-thread-sept)
-  (defalias 'grouplens-score-thread 'grouplens-score-thread-v5))
 
 (defun get-current-id ()
   (if gnus-current-headers
-      (aref gnus-current-headers (nth 1 (assoc "message-id" gnus-header-index)))
+      (aref gnus-current-headers 
+	    (nth 1 (assoc "message-id" gnus-header-index)))
     (gnus-message 3 "You must select an article before you rate it")))
-
 
 (defvar gnus-tmp-group)
 (defun gnus-user-format-function-I (header)
   (let ((gname (if (string-match "September" gnus-version)
 		   gnus-tmp-group
 		 group)))
-    (if (member gname grouplens-newsgroups)
-	"  (GroupLens Enhanced)"
-      ""))
-)
+    (if (member gname grouplens-newsgroups) "  (GroupLens Enhanced)" "")))
 
 (defun bbb-grouplens-group-p (group)
   "Say whether GROUP is a GroupLens group."
-  (if (member group grouplens-newsgroups)
-      " (GroupLens Enhanced)"
-    ""))
+  (if (member group grouplens-newsgroups) " (GroupLens Enhanced)" ""))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          TIME SPENT READING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar grouplens-current-starting-time nil)
 
 (defun grouplens-start-timer ()
-  (setq starting-time (current-time))
-)
+  (setq grouplens-current-starting-time (current-time)))
 
 (defun grouplens-elapsed-time ()
   (let ((et (time-float (current-time))))
-    (- et (time-float starting-time)))
-)
+    (- et (time-float grouplens-current-starting-time))))
 
 (defun time-float (timeval)
   (+ (* (car timeval) 65536) 
 	(cadr timeval)))
 
 (defun grouplens-do-time ()
-  (let (oldrating)
-    (if (member gnus-newsgroup-name grouplens-newsgroups)
-	(progn
-	  (cond ((not (null previous-article))
-		 (setq  elapsed-time (grouplens-elapsed-time))
-		 (if (not (setq oldrating (assoc previous-article
-						 grouplens-rating-alist)))
-		     (setq grouplens-rating-alist (cons (cons previous-article
-							      (cons 0
-								    elapsed-time))
-							grouplens-rating-alist))
-		   (setcdr oldrating (cons (cadr oldrating) elapsed-time)))
-		 ))
-	  (grouplens-start-timer)
-	  (setq previous-article (get-current-id)))
-      )					; end if
-    ))
-
+  (when (member gnus-newsgroup-name grouplens-newsgroups)
+    (when grouplens-previous-article
+      (let ((elapsed-time (grouplens-elapsed-time))
+	    (oldrating (assoc grouplens-previous-article 
+			      grouplens-rating-alist)))
+	(if (not oldrating)
+	    (push `(,grouplens-previous-article . (0 . ,elapsed-time))
+		  grouplens-rating-alist)
+	  (setcdr oldrating (cons (cadr oldrating) elapsed-time)))))
+    (grouplens-start-timer)
+    (setq grouplens-previous-article (get-current-id))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          BUG REPORTING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst gnus-gl-version "$Id: gnus-gl.el,v 1.2 1996/02/25 03:46:03 steve Exp $")
+(defconst gnus-gl-version "gnus-gl.el 2.5lars/rrh")
 (defconst gnus-gl-maintainer-address "grouplens-bug@cs.umn.edu")
 (defun gnus-gl-submit-bug-report ()
   "Submit via mail a bug report on gnus-gl"
   (interactive)
   (require 'reporter)
-  (reporter-submit-bug-report
-   gnus-gl-maintainer-address
-   (concat "gnus-gl.el " gnus-gl-version)
-   (list 'grouplens-pseudonym
-         'grouplens-bbb-host
-         'grouplens-bbb-port
-         'grouplens-newsgroups
-	 'grouplens-bbb-token
-	 'grouplens-bbb-process
-	 'grouplens-current-group
-         'grouplens-previous-article
-	 'grouplens-mid-list
-	 'bbb-alist)
-   nil
-   'gnus-gl-get-trace))
+  (reporter-submit-bug-report gnus-gl-maintainer-address
+			      (concat "gnus-gl.el " gnus-gl-version)
+			      (list 'grouplens-pseudonym
+				    'grouplens-bbb-host
+				    'grouplens-bbb-port
+				    'grouplens-newsgroups
+				    'grouplens-bbb-token
+				    'grouplens-bbb-process
+				    'grouplens-current-group
+				    'grouplens-previous-article
+				    'grouplens-mid-list
+				    'bbb-alist)
+			      nil
+			      'gnus-gl-get-trace))
 
 (defun gnus-gl-get-trace ()
-(insert-buffer (concat "trace of BBBD session to " grouplens-bbb-host)))
+  "Insert the contents of the BBBD trace buffer"
+  (if grouplens-bbb-buffer (insert-buffer grouplens-bbb-buffer)))
 
 ;;;
 ;;; Additions to make gnus-grouplens-mode  Warning Warning!!
@@ -844,7 +782,6 @@
 ;;;      not work with gnus-5.x.  The "old" way of
 ;;;      setting up GroupLens still works however.
 ;;;
-
 (defvar gnus-grouplens-mode nil
   "Minor mode for providing a GroupLens interface in Gnus summary buffers.")
 
@@ -857,6 +794,7 @@
    "n" grouplens-next-unread-article
    "r" bbb-summary-rate-article
    "k" grouplens-score-thread
+   "c" grouplens-summary-catchup-and-exit
    "," grouplens-best-unread-article))
 
 (defun gnus-grouplens-make-menu-bar ()
@@ -868,7 +806,7 @@
        ["Rate" bbb-summary-rate-article t]
        ["Next article" grouplens-next-unread-article t]
        ["Best article" grouplens-best-unread-article t]
-       ["Raise thread" grouplens-score-thread-sept t]
+       ["Raise thread" grouplens-score-thread t]
        ["Report bugs" gnus-gl-submit-bug-report t]))))
 
 (defun gnus-grouplens-mode (&optional arg)
@@ -882,10 +820,16 @@
 	    (> (prefix-numeric-value arg) 0)))
     (when gnus-grouplens-mode
       (make-local-hook 'gnus-select-article-hook)
-      (add-hook 'gnus-select-article-hook 'grouplens-do-time)
-      (make-local-hook 'bbb-put-ratings)
-      (add-hook 'gnus-exit-group-hook 'bbb-put-ratings)
-      (setq gnus-score-find-score-files-function 'bbb-build-mid-scores-alist)
+      (add-hook 'gnus-select-article-hook 'grouplens-do-time nil 'local)
+      (make-local-hook 'gnus-exit-group-hook)
+      (add-hook 'gnus-exit-group-hook 'bbb-put-ratings nil 'local)
+      (make-local-variable 'gnus-score-find-score-files-function)
+      (if gnus-grouplens-override-scoring
+          (setq gnus-score-find-score-files-function 
+                'bbb-build-mid-scores-alist)
+        (add-hook 'gnus-select-group-hook 
+                  '(lambda() 
+                     (bbb-build-mid-scores-alist gnus-newsgroup-name))))
       (make-local-variable 'gnus-summary-line-format)
       (setq gnus-summary-line-format gnus-summary-grouplens-line-format)
       (make-local-variable 'gnus-summary-line-format-spec)
@@ -893,8 +837,7 @@
       ;; Set up the menu.
       (when (and menu-bar-mode
 		 (gnus-visual-p 'grouplens-menu 'menu))
-	(gnus-grouplens-make-menu-bar)
-	(easy-menu-add 'gnus-grouplens-menu))
+	(gnus-grouplens-make-menu-bar))
       (unless (assq 'gnus-grouplens-mode minor-mode-alist)
 	(push '(gnus-grouplens-mode " GroupLens") minor-mode-alist))
       (unless (assq 'gnus-grouplens-mode minor-mode-map-alist)
@@ -904,5 +847,4 @@
 
 (provide 'gnus-gl)
 
-
-
+;;; end gnus-gl.el

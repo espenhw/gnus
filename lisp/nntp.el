@@ -149,6 +149,9 @@ If this variable is nil, which is the default, no timers are set.")
   "*Number of seconds to wait for a response when sending a command.
 If this variable is nil, which is the default, no timers are set.")
 
+(defvar nntp-retry-on-break nil
+  "*If non-nil, re-send the command when the user types `C-g'.")
+
 (defvar nntp-news-default-headers nil
   "*If non-nil, override `mail-default-headers' when posting news.")
 
@@ -778,15 +781,22 @@ It will prompt for a password."
 	    (setq nntp-retry-command nil)
 	    ;; Clear communication buffer.
 	    (set-buffer nntp-server-buffer)
+	    (widen)
 	    (erase-buffer)
-	    (condition-case ()
-		(progn
-		  (apply 'nntp-send-strings-to-server cmd args)
-		  (setq result
-			(if response
-			    (nntp-wait-for-response response)
-			  t)))
-	      (quit (setq nntp-retry-command t))))
+	    (if nntp-retry-on-break
+		(condition-case ()
+		    (progn
+		      (apply 'nntp-send-strings-to-server cmd args)
+		      (setq result
+			    (if response
+				(nntp-wait-for-response response)
+			      t)))
+		  (quit (setq nntp-retry-command t)))
+	      (apply 'nntp-send-strings-to-server cmd args)
+	      (setq result
+		    (if response
+			(nntp-wait-for-response response)
+		      t))))
 	  result)
       (when timer 
 	(cancel-timer timer)))))
