@@ -1552,13 +1552,13 @@ newsgroup."
 	    ;; on the group, so we must perform a scan for every group
 	    ;; if the users has any directory mail sources.
 	    ;; hack: if `nnmail-scan-directory-mail-source-once' is non-nil,
-	    ;; for it scan all spool files even when the groups are 
+	    ;; for it scan all spool files even when the groups are
 	    ;; not required.
-	    (if (and 
+	    (if (and
 		 (or nnmail-scan-directory-mail-source-once
 		     (null (assq 'directory
 				 (or mail-sources
-				     (if (listp nnmail-spool-file) 
+				     (if (listp nnmail-spool-file)
 					 nnmail-spool-file
 				       (list nnmail-spool-file))))))
 		 (member method scanned-methods))
@@ -1788,14 +1788,14 @@ newsgroup."
       (gnus-check-server method)
       (let ((list-type (gnus-retrieve-groups groups method)))
 	(cond ((not list-type)
-	       (gnus-error 
+	       (gnus-error
 		1.2 "Cannot read partial active file from %s server."
 		(car method)))
 	      ((eq list-type 'active)
 	       (gnus-active-to-gnus-format method gnus-active-hashtb nil t))
 	      (t
 	       (gnus-groups-to-gnus-format method gnus-active-hashtb t)))))))
-  
+
 ;; Read an active file and place the results in `gnus-active-hashtb'.
 (defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors
 					     real-active)
@@ -2651,7 +2651,8 @@ If FORCE is non-nil, the .newsrc file is read."
   "Declare backend NAME with ABILITIES as a Gnus backend."
   (setq gnus-valid-select-methods
 	(nconc gnus-valid-select-methods
-	       (list (apply 'list name abilities)))))
+	       (list (apply 'list name abilities))))
+  (gnus-redefine-select-method-widget))
 
 (defun gnus-set-default-directory ()
   "Set the default directory in the current buffer to `gnus-default-directory'.
