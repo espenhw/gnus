@@ -41,7 +41,15 @@
 (require 'time-date)
 (require 'gnus-ems)
 
-(eval-when-compile (require 'mm-url))
+(eval-when-compile 
+  (require 'mm-url)
+  (let ((features (cons 'gnus-group features)))
+    (require 'gnus-sum))
+  (unless (boundp 'gnus-cache-active-hashtb)
+    (defvar gnus-cache-active-hashtb nil)))
+
+(autoload 'gnus-agent-total-fetched-for "gnus-agent")
+(autoload 'gnus-cache-total-fetched-for "gnus-cache")
 
 (defcustom gnus-group-archive-directory
   "/ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"
@@ -177,6 +185,7 @@ with some simple extensions.
 %z    A string that look like `<%s:%n>' if a foreign select method is used
 %d    The date the group was last entered.
 %E    Icon as defined by `gnus-group-icon-list'.
+%F    The disk space used by the articles fetched by both the cache and agent.
 %u    User defined specifier.  The next character in the format string should
       be a letter.  Gnus will call the function gnus-user-format-function-X,
       where X is the letter following %u.  The function will be passed a
@@ -191,10 +200,10 @@ output may end up looking strange when listing both alive and killed
 groups.
 
 If you use %o or %O, reading the active file will be slower and quite
-a bit of extra memory will be used.  %D will also worsen performance.
-Also note that if you change the format specification to include any
-of these specs, you must probably re-start Gnus to see them go into
-effect.
+a bit of extra memory will be used.  %D and %F will also worsen
+performance.  Also note that if you change the format specification to
+include any of these specs, you must probably re-start Gnus to see
+them go into effect.
 
 General format specifiers can also be used.
 See Info node `(gnus)Formatting Variables'."
@@ -496,7 +505,9 @@ simple manner.")
     (?z gnus-tmp-news-method-string ?s)
     (?m (gnus-group-new-mail gnus-tmp-group) ?c)
     (?d (gnus-group-timestamp-string gnus-tmp-group) ?s)
-    (?u gnus-tmp-user-defined ?s)))
+    (?u gnus-tmp-user-defined ?s)
+    (?F (gnus-total-fetched-for gnus-tmp-group) ?s)
+    ))
 
 (defvar gnus-group-mode-line-format-alist
   `((?S gnus-tmp-news-server ?s)
@@ -1662,6 +1673,18 @@ If FIRST-TOO, the current line is also eligible as a target."
       (goto-char (or pos beg))
       (and pos t))))
 
+(defun gnus-total-fetched-for (group)
+  (let* ((size-in-cache (or (gnus-cache-total-fetched-for group) 0))
+	 (size-in-agent (or (gnus-agent-total-fetched-for group) 0))
+	 (size (+ size-in-cache size-in-agent))
+	 (suffix '("B" "K" "M" "G"))
+	 (scale 1024.0)
+	 (cutoff (* 10 scale)))
+    (while (> size cutoff)
+      (setq size (/ size scale)
+	    suffix (cdr suffix)))
+    (format "%5.1f%s" size (car suffix))))
+
 ;;; Gnus group mode commands
 
 ;; Group marking.
@@ -2271,8 +2294,6 @@ ADDRESS."
 	(lambda (group)
 	  (gnus-group-delete-group group nil t))))))
 
-(defvar gnus-cache-active-altered)
-
 (defun gnus-group-delete-group (group &optional force no-prompt)
   "Delete the current group.  Only meaningful with editable groups.
 If FORCE (the prefix) is non-nil, all the articles in the group will
@@ -2302,10 +2323,6 @@ be removed from the server, even when it's empty."
 	  (gnus-group-goto-group group)
 	  (gnus-group-kill-group 1 t)
 	  (gnus-set-active group nil)
-	  (if (boundp 'gnus-cache-active-hashtb)
-	      (when gnus-cache-active-hashtb
-		(gnus-sethash group nil gnus-cache-active-hashtb)
-		(setq gnus-cache-active-altered t)))
 	  t))
     (gnus-group-position-point)))
 
@@ -3504,7 +3521,7 @@ entail asking the server for the groups."
   ;; First we make sure that we have really read the active file.
   (unless (gnus-read-active-file-p)
     (let ((gnus-read-active-file t)
-	  (gnus-agent nil))		; Trick the agent into ignoring the active file.
+	  (gnus-agent gnus-plugged)); If we're actually plugged, store the active file in the agent.
       (gnus-read-active-file)))
   ;; Find all groups and sort them.
   (let ((groups
