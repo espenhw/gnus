@@ -1,3 +1,8 @@
+2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-mdrtn.el (gnus-moderation-cancel-article): Insert an extra
+	newline. 
+
 2001-12-26  Florian Weimer  <fw@deneb.enyo.de>
 
 	* gpg.el (gpg-command-default-alist): Using gpg-2comp is no longer
