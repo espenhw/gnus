@@ -203,10 +203,13 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 		    "0" "\t" ;; chars
 		    "0" "\t" ;; lines
 		    "" "\t" ;; Xref
-		    (if (memq nnrss-description-field nnmail-extra-headers)
+		    (if (and (nth 6 e)
+                             (memq nnrss-description-field 
+                                   nnmail-extra-headers))
 			(concat (symbol-name nnrss-description-field)
 				": "
-				(nnrss-format-string (nth 6 e)) "\t")
+                                (nnrss-format-string (nth 6 e))
+                                "\t")
 		      "")
 		    "\n")))))
   'nov)

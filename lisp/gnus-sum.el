@@ -2996,6 +2996,7 @@ the thread are to be displayed."
 (defun gnus-summary-set-local-parameters (group)
   "Go through the local params of GROUP and set all variable specs in that list."
   (let ((params (gnus-group-find-parameter group))
+        (vars '(quit-config)) ; Ignore quit-config.
 	elem)
     (while params
       (setq elem (car params)
@@ -3003,8 +3004,9 @@ the thread are to be displayed."
       (and (consp elem)			; Has to be a cons.
 	   (consp (cdr elem))		; The cdr has to be a list.
 	   (symbolp (car elem))		; Has to be a symbol in there.
-	   (not (memq (car elem) '(quit-config))) ; Ignore quit-config.
+           (not (memq (car elem) vars))
 	   (ignore-errors		; So we set it.
+             (push (car elem) vars)
 	     (make-local-variable (car elem))
 	     (set (car elem) (eval (nth 1 elem))))))))
 

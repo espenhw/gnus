@@ -1,3 +1,11 @@
+2001-06-26 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-retrieve-headers): The description may exist.
+	Suggested by Christoph Conrad <C.Conrad@cli.de>.
+
+	* gnus-sum.el (gnus-summary-set-local-parameters): Don't override
+	group variables.
+
 2001-06-25 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-write-groups): Use gnus-prin1.
