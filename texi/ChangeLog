@@ -1,3 +1,7 @@
+2001-09-28 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnusconfig.tex.in: Use cmss if pfu is not found.
+
 2001-09-27 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in: Illustrated manual.
