@@ -5218,7 +5218,8 @@ command uses the process/prefix convention.
 Mail a wide reply to the author of the current article
 (@code{gnus-summary-wide-reply}).  A @dfn{wide reply} is a reply that
 goes out to all people listed in the @code{To}, @code{From} (or
-@code{Reply-to}) and @code{Cc} headers.
+@code{Reply-to}) and @code{Cc} headers.  If @code{Mail-Followup-To} is
+present, that's used instead.
 
 @item S W
 @kindex S W (Summary)
