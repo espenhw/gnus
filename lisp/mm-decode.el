@@ -1041,13 +1041,16 @@ like underscores."
 	  (prog1
 	      (setq spec
 		    (ignore-errors
-		     ;; Avoid testing `make-glyph' since W3 may define
+		      ;; Avoid testing `make-glyph' since W3 may define
 		      ;; a bogus version of it.
 		      (if (fboundp 'create-image)
-			  (create-image (buffer-string) (intern type) 'data-p)
+			  (or
+			   (create-image (buffer-string) nil 'data-p)
+			   (create-image (buffer-string) (intern type) 
+					 'data-p))
 			(cond
 			 ((equal type "xbm")
-			 ;; xbm images require special handling, since
+			  ;; xbm images require special handling, since
 			  ;; the only way to create glyphs from these
 			  ;; (without a ton of work) is to write them
 			  ;; out to a file, and then create a file

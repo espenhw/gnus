@@ -3430,7 +3430,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 			    (mm-handle-undisplayer handle)
 			    (mm-handle-disposition handle)
 			    (mm-handle-description handle)
-			    (mm-handle-cache handle)
+			    nil
 			    (mm-handle-id handle)))
       (setq gnus-article-mime-handles
 	    (mm-merge-handles gnus-article-mime-handles handle))

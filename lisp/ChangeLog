@@ -1,3 +1,11 @@
+2001-07-25 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-bcklg.el (gnus-backlog-shutdown): Make interactive.
+
+	* mm-decode.el (mm-get-image): Guess then use the type.
+
+	* gnus-art.el (gnus-mime-view-part-as-type): Don't copy cache.
+
 2001-07-25 12:54:00  Danny Siu <dsiu@adobe.com>
 	
 	* gnus-sum.el (gnus-summary-prepare-threads): Shouldn't do tree
