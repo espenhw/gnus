@@ -1,3 +1,13 @@
+2001-03-04 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-preview): Disable local map.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Make
+	gnus-article-post-menu here.
+	
+	* gnus-art.el (gnus-article-make-menu-bar): Make summary-menu bar
+	if it has not been made.
+
 2001-03-02 02:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-describe-key): Map key to event.

@@ -1753,6 +1753,8 @@ increase the score of each group you read."
     "i" gnus-article-inline-part
     "|" gnus-article-pipe-part))
 
+(defvar gnus-article-post-menu nil)
+
 (defun gnus-summary-make-menu-bar ()
   (gnus-turn-off-edit-menu 'summary)
 
@@ -1983,6 +1985,16 @@ increase the score of each group you read."
        ;;["Send" gnus-summary-send-draft t]
        ;;["Send bounced" gnus-resend-bounced-mail t])
        ))
+
+    (cond 
+     ((not (keymapp gnus-summary-post-menu))
+      (setq gnus-article-post-menu gnus-summary-post-menu))
+     ((not gnus-article-post-menu)
+      ;; Don't share post menu.
+      (setq gnus-article-post-menu
+	    (copy-keymap gnus-summary-post-menu))))
+    (define-key gnus-article-mode-map [menu-bar post]
+      (cons "Post" gnus-article-post-menu))
 
     (easy-menu-define
      gnus-summary-misc-menu gnus-summary-mode-map ""

@@ -889,7 +889,8 @@ If RAW, don't highlight the article."
 	(run-hooks 'gnus-article-decode-hook)
 	(let ((gnus-newsgroup-name "dummy"))
 	  (gnus-article-prepare-display))))
-    (fundamental-mode)
+    ;; Disable article-mode-map. 
+    (use-local-map nil)
     (setq buffer-read-only t)
     (local-set-key "q" (lambda () (interactive) (kill-buffer nil)))
     (goto-char (point-min))))
