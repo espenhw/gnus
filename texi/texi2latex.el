@@ -72,6 +72,7 @@
     (latexi-translate-string "@code{\\264}" "@code{\\gnusbackslash{}264}")
     (latexi-translate-string "@samp{\\Deleted}" "@samp{\\gnusbackslash{}Deleted}")
     (latexi-translate-string "@samp{\\Seen}" "@samp{\\gnusbackslash{}Seen}")
+    (latexi-translate-string "@file{c:\\myhome}" "@file{c:\\gnusbackslash{}myhome}")
 ;    (while (re-search-forward "{\"[^\"]*\\(\\\\\\)[^\"]*\"}\\\\" nil t)
 ;      (replace-match "\\verb+\\\\+ " t t))
     (while (not (zerop (decf times)))
@@ -109,6 +110,14 @@
 		(if as-a-chapter
 		    (latexi-switch-line (format "sub%s" command) arg)
 		  (latexi-switch-line command arg)))
+	       ((member command '("heading"))
+		(if as-a-chapter
+		    (latexi-switch-line "subsection*" arg)
+		  (latexi-switch-line "section*" arg)))
+	       ((member command '("subheading"))
+		(if as-a-chapter
+		    (latexi-switch-line "subsubsection*" arg)
+		  (latexi-switch-line "subsection*" arg)))
 	       ((member command '("chapter"))
 		(if (string-match "Index" arg)
 		    (latexi-strip-line)
@@ -263,11 +272,13 @@
 	    (latexi-exchange-command (concat "gnus" command) arg))
 	   ((member command '("sc" "file" "dfn" "emph" "kbd" "key" "uref"
 			      "code" "samp" "var" "strong" "i"
-			      "result" "acronym" "email"))
+			      "result" "email" "env" "r"))
 	    (goto-char (match-beginning 0))
 	    (delete-char 1)
 	    (insert "\\gnus"))
-	   ((member command '("copyright" "footnote"))
+	   ((member command '("acronym"))
+	    (latexi-exchange-command (concat "gnus" command) (downcase arg)))
+	   ((member command '("copyright" "footnote" "TeX"))
 	    (goto-char (match-beginning 0))
 	    (delete-char 1)
 	    (insert "\\"))

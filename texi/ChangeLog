@@ -1,3 +1,14 @@
+2003-04-26  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-faq.texi: Make it compile in the LaTeX version.  Remove
+	redundant entries in @urefs.
+
+	* texi2latex.el (latexi-translate-file): Support @r, @env,
+	@heading, @subheading, @TeX.
+
+	* gnus.texi, message.texi, emacs-mime.texi: Markup improvements
+	and fixes.
+
 2003-04-24  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus.texi (Selecting a Group): Add gnus-large-ephemeral-newsgroup.

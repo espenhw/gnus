@@ -309,9 +309,9 @@ constructed.  The default value is @code{nil}.
 @item message-forward-as-mime
 @vindex message-forward-as-mime
 If this variable is @code{t} (the default), forwarded messages are
-included as inline @sc{mime} RFC822 parts.  If it's @code{nil}, forwarded
+included as inline @acronym{MIME} RFC822 parts.  If it's @code{nil}, forwarded
 messages will just be copied inline to the new message, like previous,
-non @sc{mime}-savvy versions of gnus would do.
+non @acronym{MIME}-savvy versions of gnus would do.
 
 @item message-forward-before-signature
 @vindex message-forward-before-signature
@@ -502,8 +502,8 @@ better than you do.
 * Header Commands::     Commands for moving headers or changing headers.
 * Movement::            Moving around in message buffers.
 * Insertion::           Inserting things into message buffers.
-* MIME::                @sc{mime} considerations.
-* IDNA::                Non-ASCII domain name considerations.
+* MIME::                @acronym{MIME} considerations.
+* IDNA::                Non-@acronym{ASCII} domain name considerations.
 * Security::            Signing and encrypting messages.
 * Various Commands::    Various things.
 * Sending::             Actually sending the message.
@@ -819,15 +819,15 @@ See @code{message-mark-insert-begin} and @code{message-mark-insert-end}.
 @cindex multipart
 @cindex attachment
 
-Message is a @sc{mime}-compliant posting agent.  The user generally
-doesn't have to do anything to make the @sc{mime} happen---Message will
+Message is a @acronym{MIME}-compliant posting agent.  The user generally
+doesn't have to do anything to make the @acronym{MIME} happen---Message will
 automatically add the @code{Content-Type} and
 @code{Content-Transfer-Encoding} headers.
 
 The most typical thing users want to use the multipart things in
-@sc{mime} for is to add ``attachments'' to mail they send out.  This can
+@acronym{MIME} for is to add ``attachments'' to mail they send out.  This can
 be done with the @kbd{C-c C-a} command, which will prompt for a file
-name and a @sc{mime} type.
+name and a @acronym{MIME} type.
 
 You can also create arbitrarily complex multiparts using the MML
 language (@pxref{Composing, , Composing, emacs-mime, The Emacs MIME
@@ -839,29 +839,31 @@ Manual}).
 @cindex internationalized domain names
 @cindex non-ascii domain names
 
-Message is a @sc{idna}-compliant posting agent.  The user generally
-doesn't have to do anything to make the @sc{idna} happen---Message
-will encode non-ASCII domain names in @code{From}, @code{To}, and
-@code{Cc} headers automatically.
+Message is a @acronym{IDNA}-compliant posting agent.  The user
+generally doesn't have to do anything to make the @acronym{IDNA}
+happen---Message will encode non-@acronym{ASCII} domain names in @code{From},
+@code{To}, and @code{Cc} headers automatically.
 
-Until IDNA becomes more well known, Message queries you whether IDNA
-encoding of the domain name really should occur.  Some users might not
-be aware that domain names can contain non-ASCII now, so this gives
-them a safety net if they accidently typed a non-ASCII domain name.
+Until @acronym{IDNA} becomes more well known, Message queries you
+whether @acronym{IDNA} encoding of the domain name really should
+occur.  Some users might not be aware that domain names can contain
+non-@acronym{ASCII} now, so this gives them a safety net if they accidently
+typed a non-@acronym{ASCII} domain name.
 
 @vindex message-use-idna
-The @code{message-use-idna} variable control whether @sc{idna} is
-used.  If the variable is @sc{nil} no IDNA encoding will ever happen,
-if it is set to the symbol @sc{ask} the user will be queried (the
-default), and if set to @sc{t} IDNA encoding happens automatically.
+The @code{message-use-idna} variable control whether @acronym{IDNA} is
+used.  If the variable is @code{nil} no @acronym{IDNA} encoding will
+ever happen, if it is set to the symbol @code{ask} the user will be
+queried (the default), and if set to @code{t} @acronym{IDNA} encoding
+happens automatically.
 
 @findex message-idna-to-ascii-rhs
-If you want to experiment with the IDNA encoding, you can invoke
-@kbd{M-x message-idna-to-ascii-rhs RET} in the message buffer to have
-the non-ASCII domain names encoded while you edit the message.
+If you want to experiment with the @acronym{IDNA} encoding, you can
+invoke @kbd{M-x message-idna-to-ascii-rhs RET} in the message buffer
+to have the non-@acronym{ASCII} domain names encoded while you edit the message.
 
 Note that you must have GNU Libidn
-(@url{http://www.gnu.org/software/libidn/} installed in order to use
+(@uref{http://www.gnu.org/software/libidn/} installed in order to use
 this functionality.
 
 @node Security
@@ -876,8 +878,8 @@ this functionality.
 
 Using the MML language, Message is able to create digitally signed and
 digitally encrypted messages.  Message (or rather MML) currently
-support PGP (RFC 1991), @sc{pgp/mime} (RFC 2015/3156) and @sc{s/mime}.
-Instructing MML to perform security operations on a @sc{mime} part is
+support @acronym{PGP} (RFC 1991), @acronym{PGP/MIME} (RFC 2015/3156) and @acronym{S/MIME}.
+Instructing MML to perform security operations on a @acronym{MIME} part is
 done using the @kbd{C-c C-m s} key map for signing and the @kbd{C-c
 C-m c} key map for encryption, as follows.
 
@@ -887,37 +889,37 @@ C-m c} key map for encryption, as follows.
 @kindex C-c C-m s s
 @findex mml-secure-message-sign-smime
 
-Digitally sign current message using @sc{s/mime}.
+Digitally sign current message using @acronym{S/MIME}.
 
 @item C-c C-m s o
 @kindex C-c C-m s o
 @findex mml-secure-message-sign-pgp
 
-Digitally sign current message using PGP.
+Digitally sign current message using @acronym{PGP}.
 
 @item C-c C-m s p
 @kindex C-c C-m s p
 @findex mml-secure-message-sign-pgpmime
 
-Digitally sign current message using @sc{pgp/mime}.
+Digitally sign current message using @acronym{PGP/MIME}.
 
 @item C-c C-m c s
 @kindex C-c C-m c s
 @findex mml-secure-message-encrypt-smime
 
-Digitally encrypt current message using @sc{s/mime}.
+Digitally encrypt current message using @acronym{S/MIME}.
 
 @item C-c C-m c o
 @kindex C-c C-m c o
 @findex mml-secure-message-encrypt-pgp
 
-Digitally encrypt current message using PGP.
+Digitally encrypt current message using @acronym{PGP}.
 
 @item C-c C-m c p
 @kindex C-c C-m c p
 @findex mml-secure-message-encrypt-pgpmime
 
-Digitally encrypt current message using @sc{pgp/mime}.
+Digitally encrypt current message using @acronym{PGP/MIME}.
 
 @item C-c C-m C-n
 @kindex C-c C-m C-n
@@ -930,9 +932,9 @@ These commands do not immediately sign or encrypt the message, they
 merely insert the proper MML secure tag to instruct the MML engine to
 perform that operation when the message is actually sent. They may
 perform other operations too, such as locating and retrieving a
-@sc{s/mime} certificate of the person you wish to send encrypted mail
+@acronym{S/MIME} certificate of the person you wish to send encrypted mail
 to.  When the mml parsing engine converts your MML into a properly
-encoded @sc{mime} message, the secure tag will be replaced with either
+encoded @acronym{MIME} message, the secure tag will be replaced with either
 a part or a multipart tag.  If your message contains other mml parts,
 a multipart tag will be used; if no other parts are present in your
 message a single part tag will be used.  This way, message mode will
@@ -958,7 +960,7 @@ example:
 Will cause Gnus to sign and encrypt in one pass, thus generating a
 single signed and encrypted part.  Note that combined sign and encrypt
 does not work with all supported OpenPGP implementations (in
-particular, PGP version 2 do not support this).
+particular, @acronym{PGP} version 2 do not support this).
 
 Since signing and especially encryption often is used when sensitive
 information is sent, you may want to have some way to ensure that your
@@ -969,8 +971,8 @@ verify that your long rant about what your ex-significant other or
 whomever actually did with that funny looking person at that strange
 party the other night, actually will be sent encrypted.
 
-@emph{Note!}  Neither @sc{pgp/mime} nor @sc{s/mime} encrypt/signs
-RFC822 headers.  They only operate on the @sc{mime} object.  Keep this
+@emph{Note!}  Neither @acronym{PGP/MIME} nor @acronym{S/MIME} encrypt/signs
+RFC822 headers.  They only operate on the @acronym{MIME} object.  Keep this
 in mind before sending mail with a sensitive Subject line.
 
 Actually using the security commands above is not very difficult.  At
@@ -981,33 +983,33 @@ programs are required to make things work, and some small general hints.
 @subsection Using S/MIME
 
 @emph{Note!}  This section assume you have a basic familiarity with
-modern cryptography, @sc{s/mime}, various PKCS standards, OpenSSL and
+modern cryptography, @acronym{S/MIME}, various PKCS standards, OpenSSL and
 so on.
 
-The @sc{s/mime} support in Message (and MML) require OpenSSL.  OpenSSL
-perform the actual @sc{s/mime} sign/encrypt operations.  OpenSSL can
+The @acronym{S/MIME} support in Message (and MML) require OpenSSL.  OpenSSL
+perform the actual @acronym{S/MIME} sign/encrypt operations.  OpenSSL can
 be found at @uref{http://www.openssl.org/}.  OpenSSL 0.9.6 and later
 should work.  Version 0.9.5a cannot extract mail addresses from
-certificates, and it insert a spurious CR character into @sc{mime}
+certificates, and it insert a spurious CR character into @acronym{MIME}
 separators so you may wish to avoid it if you would like to avoid
 being regarded as someone who send strange mail. (Although by sending
-@sc{s/mime} messages you've probably already lost that contest.)
+@acronym{S/MIME} messages you've probably already lost that contest.)
 
 To be able to send encrypted mail, a personal certificate is not
 required.  Message (MML) need a certificate for the person to whom you
 wish to communicate with though.  You're asked for this when you type
 @kbd{C-c C-m c s}.  Currently there are two ways to retrieve this
 certificate, from a local file or from DNS.  If you chose a local
-file, it need to contain a X.509 certificate in PEM format.  If you
-chose DNS, you're asked for the domain name where the certificate is
-stored, the default is a good guess.  To my belief, Message (MML) is
-the first mail agent in the world to support retrieving @sc{s/mime}
-certificates from DNS, so you're not likely to find very many
-certificates out there.  At least there should be one, stored at the
-domain @code{simon.josefsson.org}.  LDAP is a more popular method of
-distributing certificates, support for it is planned.  (Meanwhile, you
-can use @code{ldapsearch} from the command line to retrieve a
-certificate into a file and use it.)
+file, it need to contain a X.509 certificate in @acronym{PEM} format.
+If you chose DNS, you're asked for the domain name where the
+certificate is stored, the default is a good guess.  To my belief,
+Message (MML) is the first mail agent in the world to support
+retrieving @acronym{S/MIME} certificates from DNS, so you're not
+likely to find very many certificates out there.  At least there
+should be one, stored at the domain @code{simon.josefsson.org}.  LDAP
+is a more popular method of distributing certificates, support for it
+is planned.  (Meanwhile, you can use @code{ldapsearch} from the
+command line to retrieve a certificate into a file and use it.)
 
 As for signing messages, OpenSSL can't perform signing operations
 without some kind of configuration.  Especially, you need to tell it
@@ -1019,7 +1021,7 @@ contain a @code{custom} group used for this configuration.  So, try
 Currently there is no support for talking to a CA (or RA) to create
 your own certificate.  None is planned either.  You need to do this
 manually with OpenSSL or using some other program.  I used Netscape
-and got a free @sc{s/mime} certificate from one of the big CA's on the
+and got a free @acronym{S/MIME} certificate from one of the big CA's on the
 net.  Netscape is able to export your private key and certificate in
 PKCS #12 format.  Use OpenSSL to convert this into a plain X.509
 certificate in PEM format as follows.
@@ -1036,15 +1038,16 @@ care in handling it.
 
 @subsection Using PGP/MIME
 
-@sc{pgp/mime} requires an external OpenPGP implementation, such as GNU
-Privacy Guard (@uref{http://www.gnupg.org/}).  One Emacs interface to
-OpenPGP implementations, PGG (@pxref{Top, ,PGG, pgg, PGG Manual}), is
-included, but Mailcrypt and Florian Weimer's @code{gpg.el} are also
-supported.
+@acronym{PGP/MIME} requires an external OpenPGP implementation, such
+as GNU Privacy Guard (@uref{http://www.gnupg.org/}).  One Emacs
+interface to OpenPGP implementations, PGG (@pxref{Top, ,PGG, pgg, PGG
+Manual}), is included, but Mailcrypt and Florian Weimer's
+@code{gpg.el} are also supported.
 
 @vindex gpg-temp-directory
 Note, if you are using the @code{gpg.el} you must make sure that the
-directory specified by @code{gpg-temp-directory} have permissions 0700.
+directory specified by @code{gpg-temp-directory} have permissions
+0700.
 
 Creating your own OpenPGP key is described in detail in the
 documentation of your OpenPGP implementation, so we refer to it.
@@ -1451,9 +1454,9 @@ command line.  Doing so would be even more evil than leaving it out.
 @item message-sendmail-envelope-from
 @vindex message-sendmail-envelope-from
 When @code{message-sendmail-f-is-evil} is @code{nil}, this specifies
-the address to use in the SMTP envelope.  If it is @code{nil}, use
-@code{user-mail-address}.  If it is the symbol @code{header}, use the
-@samp{From} header of the message.
+the address to use in the @acronym{SMTP} envelope.  If it is
+@code{nil}, use @code{user-mail-address}.  If it is the symbol
+@code{header}, use the @samp{From} header of the message.
 
 @item message-mailer-swallows-blank-line
 @vindex message-mailer-swallows-blank-line
@@ -1803,8 +1806,9 @@ signature.  So don't remove those characters, even though you might feel
 that they ruin your beautiful design, like, totally.
 
 Also note that no signature should be more than four lines long.
-Including ASCII graphics is an efficient way to get everybody to believe
-that you are silly and have nothing important to say.
+Including @acronym{ASCII} graphics is an efficient way to get
+everybody to believe that you are silly and have nothing important to
+say.
 
 
 @node Various Message Variables
@@ -1814,13 +1818,12 @@ that you are silly and have nothing important to say.
 @item message-default-charset
 @vindex message-default-charset
 @cindex charset
-Symbol naming a @sc{mime} charset.  Non-ASCII characters in messages are
-assumed to be encoded using this charset.  The default is @code{nil},
-which means ask the user.  (This variable is used only on non-@sc{mule}
-Emacsen.
-@xref{Charset Translation, , Charset Translation, emacs-mime,
-      Emacs MIME Manual}, for details on the @sc{mule}-to-@sc{mime}
-translation process.
+Symbol naming a @acronym{MIME} charset.  Non-@acronym{ASCII}
+characters in messages are assumed to be encoded using this charset.
+The default is @code{nil}, which means ask the user.  (This variable
+is used only on non-@sc{mule} Emacsen.  @xref{Charset Translation, ,
+Charset Translation, emacs-mime, Emacs MIME Manual}, for details on
+the @sc{mule}-to-@acronym{MIME} translation process.
 
 @item message-signature-separator
 @vindex message-signature-separator
