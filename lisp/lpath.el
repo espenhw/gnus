@@ -89,7 +89,8 @@
 		     url-retrieve w3-form-encode-xwfu window-at
 		     window-edges x-color-values x-popup-menu browse-url
 		     frame-char-height frame-char-width
-		     url-generic-parse-url xml-parse-region))
+		     url-generic-parse-url xml-parse-region
+		     make-network-process))
       (maybe-bind '(buffer-display-table
 		    buffer-file-coding-system font-lock-defaults
 		    global-face-data gnus-article-x-face-too-ugly
@@ -120,7 +121,7 @@
 		 specifier-instance url-generic-parse-url
 		 valid-image-instantiator-format-p w3-do-setup
 		 window-pixel-height window-pixel-width
-		 xml-parse-region)))
+		 xml-parse-region make-network-process)))
 
 (require 'custom)
 

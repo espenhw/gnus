@@ -1,3 +1,7 @@
+2002-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* lpath.el (featurep): Bind make-network-process.
+
 2002-03-31  Paul Jarc <prj@po.cwru.edu>
 
 	* nnmaildir.el: Use defstruct.  Use a single copy of
