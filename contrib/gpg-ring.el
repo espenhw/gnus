@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-28
 
-;; $Id: gpg-ring.el,v 1.2 2001/07/13 19:31:08 zsh Exp $
+;; $Id: gpg-ring.el,v 7.1 2004/01/04 21:50:49 larsi Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -480,4 +480,5 @@ used."
 
 (provide 'gpg-ring)
 
+;;; arch-tag: a4c5b2d1-aff0-4ab6-96e9-267727226c2d
 ;;; gpg-ring.el ends here

@@ -106,4 +106,5 @@ paragraph-separate: \"[ 	]*$\"\nend:\n")
       (insert gnus-news-trailer)
       (write-region (point-min) (point-max) outfile))))
 
+;;; arch-tag: e23cdd27-eafd-4ba0-816f-98f5edb0dc29
 ;;; gnus-news.el ends here

@@ -853,4 +853,5 @@ Warning: Don't insert text immediately after the image."
 
 (provide 'gnus-xmas)
 
+;;; arch-tag: 4e84de3f-ea0a-4ee3-bfeb-e03d46fcacef
 ;;; gnus-xmas.el ends here

@@ -498,4 +498,5 @@ The first line indented with INDENT-STRING."
 
 (provide 'xml)
 
+;; arch-tag: 5864b283-5a68-4b59-a20d-36a72b353b9b
 ;;; xml.el ends here

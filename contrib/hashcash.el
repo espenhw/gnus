@@ -1,6 +1,6 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; $Revision: 1.12 $
+;; $Revision: 7.1 $
 ;; Copyright (C) 2003 Free Software Foundation
 ;; Copyright (C) 1997--2002 Paul E. Foley
 
@@ -206,3 +206,5 @@ Prefix arg sets default accept amount temporarily."
 	ok))))
 
 (provide 'hashcash)
+
+;;; arch-tag: 0e7fe983-a124-4392-9788-0dbcbd2c4d62

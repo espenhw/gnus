@@ -198,4 +198,5 @@ If FORCE is non-nil, replace the old ones."
 
 (provide 'gnus-ml)
 
+;;; arch-tag: 936c0fe6-acce-4c16-87d0-eded88078896
 ;;; gnus-ml.el ends here

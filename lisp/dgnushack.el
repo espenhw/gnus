@@ -409,5 +409,6 @@ dgnushack-compile."
 ;;; End:
 ;;; gnus-load.el ends here"))))
 
-
 ;;; dgnushack.el ends here
+
+;;; arch-tag: 579f585a-24eb-4e1c-8d34-4808e11b68f2

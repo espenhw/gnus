@@ -233,4 +233,5 @@
 
 (provide 'gnus-ems)
 
+;;; arch-tag: e7360b45-14b5-4171-aa39-69a44aed3cdb
 ;;; gnus-ems.el ends here

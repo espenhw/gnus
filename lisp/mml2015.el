@@ -918,4 +918,5 @@ Valid packages include `pgg', `gpg' and `mailcrypt'.")
 
 (provide 'mml2015)
 
+;;; arch-tag: b04701d5-0b09-44d8-bed8-de901bf435f2
 ;;; mml2015.el ends here

@@ -1936,4 +1936,5 @@ this is a reply."
 
 (provide 'gnus-msg)
 
+;;; arch-tag: 9f22b2f5-1c0a-49de-916e-4c88e984852b
 ;;; gnus-msg.el ends here

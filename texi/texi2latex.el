@@ -393,3 +393,4 @@
       (insert "\\end{tabular}\n")
       (widen))))
 	
+;;; arch-tag: 31e30f7f-4876-4dd1-ba3a-6f9f7ea0d256

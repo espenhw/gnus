@@ -6851,4 +6851,5 @@ regexp VARSTR."
 ;; coding: iso-8859-1
 ;; End:
 
+;;; arch-tag: 94b32cac-4504-4b6c-8181-030ebf380ee0
 ;;; message.el ends here

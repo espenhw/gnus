@@ -85,4 +85,5 @@ Whether the passphrase is cached at all is controlled by
 
 (provide 'pgg-def)
 
+;;; arch-tag: c425f3ab-ed75-4055-bb46-431a418c94b7
 ;;; pgg-def.el ends here

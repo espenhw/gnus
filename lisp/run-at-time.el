@@ -93,4 +93,5 @@ or `cancel-timer'."
 
 (provide 'run-at-time)
 
+;;; arch-tag: 2c318dc9-8871-4473-9aa4-96c24fb91d4c
 ;;; run-at-time.el ends here

@@ -2476,4 +2476,5 @@ Interactively, prompts for a hex string giving the code."
 
 (provide 'ucs-tables)
 
+;;; arch-tag: b497e22b-7fe1-486a-9352-e2d7f7d76a76
 ;;; ucs-tables.el ends here

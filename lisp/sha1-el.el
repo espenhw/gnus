@@ -437,4 +437,5 @@ If BINARY is non-nil, return a string in binary form."
 
 (provide 'sha1-el)
 
+;;; arch-tag: c0f9abd0-ffc1-4557-aac6-ece7f2d4c901
 ;;; sha1-el.el ends here

@@ -707,4 +707,5 @@ Returns the first place where the trail finds a group name."
 
 (provide 'gnus-registry)
 
+;;; arch-tag: 5cba0a32-718a-4a97-8c91-0a15af21da94
 ;;; gnus-registry.el ends here

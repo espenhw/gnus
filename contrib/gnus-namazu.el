@@ -896,4 +896,5 @@ is called."
 
 (provide 'gnus-namazu)
 
+;;; arch-tag: a6814a35-593a-4563-8157-a2b762c29ed8
 ;; gnus-namazu.el ends here.

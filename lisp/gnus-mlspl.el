@@ -228,4 +228,5 @@ Calling (gnus-group-split-fancy nil nil \"mail.others\") returns:
 
 (provide 'gnus-mlspl)
 
+;;; arch-tag: 62b3381f-1e45-4b61-be1a-29fb27703322
 ;;; gnus-mlspl.el ends here

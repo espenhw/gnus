@@ -286,3 +286,7 @@ set GNUS_INFO_DIR=
 set GNUS_ETC_DIR=
 set subdirwarning=
 set ERROR=
+
+goto skipArchTag
+   arch-tag: 502dd14c-acde-4f69-8e82-43203b12a82c
+:skipArchTag

@@ -211,3 +211,5 @@ possible that the hook was persistently saved."
 ;; gnus-agent-unhook-expire-days is safe in that it does not modify
 ;; the .newsrc.eld file.
 (gnus-convert-mark-converter-prompt 'gnus-agent-unhook-expire-days t)
+
+;;; arch-tag: 845c7b8a-88f7-4468-b8d7-94e8fc72cf1a

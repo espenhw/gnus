@@ -1,7 +1,7 @@
 ;;; ssl.el --- ssl functions for emacsen without them builtin
-;; Author: $Author: zsh $
-;; Created: $Date: 2001/07/13 19:31:09 $
-;; Version: $Revision: 1.2 $
+;; Author: $Author: larsi $
+;; Created: $Date: 2004/01/04 21:50:49 $
+;; Version: $Revision: 7.1 $
 ;; Keywords: comm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -199,3 +199,5 @@ specifying a port number to connect to."
     proc))
 
 (provide 'ssl)
+
+;;; arch-tag: 659fae92-1c67-4055-939f-32153c2f5114

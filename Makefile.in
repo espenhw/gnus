@@ -59,3 +59,7 @@ Makefile: $(srcdir)/Makefile.in config.status
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
+
+m4_if(dnl	Do not change this comment
+   arch-tag: 9aa23320-10af-4c6d-814e-94cb575e38bc
+)dnl

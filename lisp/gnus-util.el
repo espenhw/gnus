@@ -1475,4 +1475,5 @@ empty directories from OLD-PATH."
 
 (provide 'gnus-util)
 
+;;; arch-tag: f94991af-d32b-4c97-8c26-ca12a934de49
 ;;; gnus-util.el ends here

@@ -9,3 +9,7 @@
 %%% mode: latex
 %%% TeX-master: t
 %%% End: 
+
+m4_if(dnl	Do not change this comment
+   arch-tag: c5d3af43-9822-47f4-8560-3784a0350d14
+)dnl

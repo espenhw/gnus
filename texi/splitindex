@@ -4,3 +4,5 @@ fun='\{gnus-|\{nn.*-|\{grouplens-'
 egrep "$match" gnus.idx > gnus.kidx
 egrep "$fun" gnus.idx > gnus.gidx
 egrep -v "$match|$fun" gnus.idx > gnus.cidx
+
+# arch-tag: 2e32a8e5-4eae-46dd-a3d0-90f514ba27d7

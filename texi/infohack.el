@@ -85,4 +85,5 @@ Both characters must have the same length of multi-byte form."
   (infohack (car command-line-args-left))
   (setq command-line-args-left nil))
 
+;;; arch-tag: 9ca2f71f-b280-48b3-9826-8dc052dfbbfe
 ;;; infohack.el ends here

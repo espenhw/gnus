@@ -321,3 +321,7 @@ else
 fi
 AC_SUBST(USE_FONTS)
 ])
+
+ifelse(dnl	Do not change this comment
+   arch-tag: 5c987641-c3ef-4f12-b067-028302282c66
+)dnl

@@ -371,4 +371,5 @@ If FULLP, return the entire record returned."
 
 (provide 'dns)
 
+;;; arch-tag: d0edd0c4-4cce-4538-ae92-06c3356ee80a
 ;;; dns.el ends here

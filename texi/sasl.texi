@@ -263,3 +263,7 @@ At the first time @var{step} should be set to @code{nil}.
 @bye
 
 @c End:
+
+@ignore
+   arch-tag: dc9650be-a953-40bf-bc55-24fe5f19d875
+@end ignore

@@ -11760,4 +11760,5 @@ If ALL is a number, fetch this number of articles."
 ;; coding: iso-8859-1
 ;; End:
 
+;;; arch-tag: 17c6748f-6d00-4d36-bf01-835c42f31235
 ;;; gnus-sum.el ends here

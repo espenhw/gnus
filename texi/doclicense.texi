@@ -366,3 +366,7 @@ If your document contains nontrivial examples of program code, we
 recommend releasing these examples in parallel under your choice of
 free software license, such as the GNU General Public License,
 to permit their use in free software.
+
+@ignore
+   arch-tag: 261f9376-a0f0-4e90-ba5b-06a297b6053d
+@end ignore

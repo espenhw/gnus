@@ -270,4 +270,5 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 
 (provide 'pgg-gpg)
 
+;;; arch-tag: 2aa5d5d8-93a0-4865-9312-33e29830e000
 ;;; pgg-gpg.el ends here
