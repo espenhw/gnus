@@ -871,8 +871,11 @@ See the manual for details."
   :type gnus-article-treat-custom)
 (put 'gnus-treat-overstrike 'highlight t)
 
-(defcustom gnus-treat-display-xface (if (and gnus-xemacs (featurep 'xface))
-					'head nil)
+(defcustom gnus-treat-display-xface 
+  (and (or (and (fboundp 'image-type-available-p)
+		(image-type-available-p 'xbm))
+	   (and gnus-xemacs (featurep 'xface)))
+       'head)
   "Display X-Face headers.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
