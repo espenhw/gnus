@@ -74,8 +74,8 @@
 
 (defcustom spam-move-spam-nonspam-groups-only t
   "Whether spam should be moved in non-spam groups only.
-When nil, only ham and unclassified groups will have their spam moved
-to the spam-process-destination.  When t, spam will also be moved from
+When t, only ham and unclassified groups will have their spam moved
+to the spam-process-destination.  When nil, spam will also be moved from
 spam groups."
   :type 'boolean
   :group 'spam)

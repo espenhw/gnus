@@ -1,3 +1,8 @@
+2003-10-25  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-move-spam-nonspam-groups-only): documentation fix
+	for the variable
+
 2003-10-25  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* Makefile.in (clean-some): Remove auto-autoloads.* and
