@@ -3,7 +3,7 @@
 	* gnus-news.el (gnus-news-makeinfo-switches): Add --no-validate to
 	allow unresolved references.
 
-	* gnus-news.texi: Use xref.
+	* gnus-news.texi: Use xref.  Add `gnus-picon-style'.
 
 	* Makefile.in (GNUS-NEWS): Depend on gnus-news.el.
 
