@@ -1608,32 +1608,33 @@ of FILE placing the combined headers in nntp-server-buffer."
                 (setq gnus-newsgroup-undownloaded
                       (gnus-sorted-ndifference gnus-newsgroup-undownloaded
                                                (setq fetched-articles (gnus-agent-fetch-articles group (cdr arts)))))
-                (if gnus-newsgroup-active
-                    (progn
-                      (dolist (article (cdr arts))
-                        (setq gnus-newsgroup-downloadable
-                              (delq article gnus-newsgroup-downloadable))
-                        (when (gnus-summary-goto-subject article nil t)
-                          (gnus-summary-update-download-mark article)))
-                      (dolist (article fetched-articles)
-                        (if gnus-agent-mark-unread-after-downloaded
-                            (gnus-summary-mark-article article gnus-unread-mark))))
-                  ;; When some, or all, of the marked articles came
-                  ;; from the download mark.  Remove that mark.  I
-                  ;; didn't do this earlier as I only want to remove
-                  ;; the marks after the fetch is completed.
 
-                  (when (cdr arts)
+                (let ((unfetched-articles (gnus-sorted-ndifference (cdr arts) fetched-articles)))
+                  (if gnus-newsgroup-active
+                      (progn
+                        (dolist (article (cdr arts))
+                          (setq gnus-newsgroup-downloadable
+                                (delq article gnus-newsgroup-downloadable))
+                          (when (gnus-summary-goto-subject article nil t)
+                            (gnus-summary-update-download-mark article)))
+                        (dolist (article fetched-articles)
+                          (if gnus-agent-mark-unread-after-downloaded
+                              (gnus-summary-mark-article article gnus-unread-mark)))
+                        (dolist (article unfetched-articles)
+                          (gnus-summary-mark-article article gnus-canceled-mark)))
+                    ;; When some, or all, of the marked articles came
+                    ;; from the download mark.  Remove that mark.  I
+                    ;; didn't do this earlier as I only want to remove
+                    ;; the marks after the fetch is completed.
+
                     (dolist (mark gnus-agent-download-marks)
                       (when (eq mark 'download)
                         (let ((marked-arts (assq mark (gnus-info-marks
                                                        (setq info (gnus-get-info group))))))
                           (when (cdr marked-arts)
                             (setq marks (delq marked-arts (gnus-info-marks info)))
-                            (gnus-info-set-marks info marks)
-                            ))))
-                    (let ((unfetched-articles (gnus-sorted-ndifference (cdr arts) fetched-articles))
-                          (read (gnus-info-read (or info (setq info (gnus-get-info group))))))
+                            (gnus-info-set-marks info marks)))))
+                    (let ((read (gnus-info-read (or info (setq info (gnus-get-info group))))))
                       (gnus-info-set-read info (gnus-add-to-range read unfetched-articles)))
 
                     (gnus-group-update-group group t)
