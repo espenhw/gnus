@@ -2725,9 +2725,11 @@ last signature or any of the elements of the alist
 
 @end table
 
-Use the @kbd{G p} command to edit group parameters of a group.  You
-might also be interested in reading about topic parameters (@pxref{Topic
-Parameters}).
+Use the @kbd{G p} or the @kbd{G c} command to edit group parameters of a
+group.  (@kbd{G p} presents you with a Lisp-based interface, @kbd{G c}
+presents you with a Customize-like interface.  The latter helps avoid
+silly Lisp errors.)  You might also be interested in reading about topic
+parameters (@pxref{Topic Parameters}).
 
 
 @node Listing Groups
@@ -4108,7 +4110,8 @@ You also have to instruct Gnus to display the data by changing the
 @code{%n} spec to the @code{%f} spec in the
 @code{gnus-summary-line-format} variable.
 
-In summary, you'd typically do something like the following:
+In summary, you'd typically put something like the following in
+@file{~/.gnus}:
 
 @lisp
 (setq gnus-extra-headers

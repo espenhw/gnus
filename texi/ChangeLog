@@ -1,4 +1,11 @@
+2001-02-08  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Group Parameters): Mention `G c' in addition to `G p'.
+
 2001-02-07  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (To From Newsgroups): Make it clear where to put the
+	sample code.  Kudos to Dan Jacobson for pointing it out.
 
 	* gnus.texi (Mail Source Specifiers, IMAP, Agent and IMAP):
 	Improve IMAP discussion.
