@@ -1,6 +1,6 @@
 2004-05-20  Magnus Henoch  <mange@freemail.hu>
 
-	* dns.el (dns-read-type): Add support for SVR.
+	* dns.el (dns-read-type): Add support for SVR.  (small patch)
 
 2004-05-20  Teodor Zlatanov  <tzz@lifelogs.com>
 
