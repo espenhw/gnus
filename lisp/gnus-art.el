@@ -1472,13 +1472,13 @@ Initialized from `text-mode-syntax-table.")
 (defsubst gnus-article-header-rank ()
   "Give the rank of the string HEADER as given by `gnus-sorted-header-list'."
   (let ((list gnus-sorted-header-list)
-	(i 0))
+	(i 1))
     (while list
-      (when (looking-at (car list))
-	(setq list nil))
-      (setq list (cdr list))
-      (incf i))
-    i))
+      (if (looking-at (car list))
+	  (setq list nil)
+	(setq list (cdr list))
+	(incf i)))
+      i))
 
 (defun article-hide-headers (&optional arg delete)
   "Hide unwanted headers and possibly sort them as well."
