@@ -1,3 +1,59 @@
+2002-01-06  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-fetch-group): Modified to permit execution
+	in either the group or summary buffer.  
+	New command "JS", in summary buffer, will fetch articles per the
+	group's category, predicate, and processable flags.
+	(gnus-agent-summary-fetch-series): Rewritten to call
+	gnus-agent-session-fetch-group once with all articles in the
+	series.
+	(gnus-agent-summary-fetch-group): Fixed bug and modified code to
+	return list of fetched articles.
+	(gnus-agent-fetch-articles): Split fetch list into sublists such
+	that the article buffer is only slightly larger than
+	gnus-agent-max-fetch-size.  Added unwind-protect to ensure that
+	the group's article alist is saved.
+	(gnus-agent-fetch-headers): The 'killed' and 'cached' marks no
+	longer result in the agent trying to fetch an article.
+	(gnus-agent-fetch-group-1): Can now be called in either the group
+	or summary buffer.  Removed the max-fetch-size code that I added
+	on 2002-12-13 as that capability is now part of
+	gnus-agent-fetch-articles.  Added code to update summary buffer.
+	When called in the group buffer, articles that can not be fetched
+	are AUTOMATICALLY MARKED AS READ.
+
+	* gnus-sum.el (): Modified eval-when-compile to minimize
+	misleading compilation warnings.
+	(gnus-update-summary-mark-positions): Changed code to use
+	gnus-undownloaded-mark rather than gnus-downloaded-mark.
+
+	* nnheader.el (nnheader-insert-nov-file): Do not try to insert an
+	empty file as the parser assumes that the file isn't empty.
+
+	* nntp.el (nntp-send-string): The process-send-string call can,
+	because it performs I/O on the process, change the process' state
+	from open to closed.  If this happens, call nntp-report
+	immediately to report the broken connection.
+	(nntp-report): Rewritten to avoid needing a global variable to
+	determine the appropriate course of action.  Instead, two function
+	implementations are provided and the nntp-report function value is
+	bound to the appropriate implementation.
+	(nntp-retrieve-data): Moved nntp-report call to end of implementation.
+	(nntp-with-open-group): Now binds nntp-report's function cell
+	rather than binding gnus-with-open-group-first-pass.  Added a
+	condition-case to detect a quit during a nntp command.  When the
+	quit occurs, the current connection is closed as a fetch articles
+	request could have several megabytes queued up for reading.
+	(nntp-retrieve-headers): Bind articles to itself.  If
+	nntp-with-open-group repeats this command, I must have access to
+	the original list of articles.
+	(nntp-retrieve-groups): Ditto for groups.
+	(nntp-retrieve-articles): Ditto for articles.
+	(*): Replaced nntp-possibly-change-group calls to
+	nntp-with-open-group forms in all, but one, occurrance.
+	(nntp-accept-process-output): Bug fix. Detect when called with
+	null process.
+	
 2003-01-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-util.el (mm-find-mime-charset-region): Don't do Latin-9 hack
