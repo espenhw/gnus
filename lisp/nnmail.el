@@ -1964,14 +1964,12 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (with-output-to-temp-buffer "*nnmail split history*"
     (with-current-buffer standard-output
       (fundamental-mode))		; for Emacs 20.4+
-    (let ((history nnmail-split-history)
-	  elem)
-      (while (setq elem (pop history))
+      (dolist (elem nnmail-split-history)
 	(princ (mapconcat (lambda (ga)
 			    (concat (car ga) ":" (int-to-string (cdr ga))))
 			  elem
 			  ", "))
-	(princ "\n")))))
+	(princ "\n"))))
 
 (defun nnmail-purge-split-history (group)
   "Remove all instances of GROUP from `nnmail-split-history'."

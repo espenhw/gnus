@@ -1,3 +1,31 @@
+2004-10-02  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-partial.el (mm-partial-find-parts): Use with-current-buffer.
+
+	* nnfolder.el (nnfolder-generate-active-file): Use dolist.
+
+	* nnmail.el (nnmail-split-history): do.
+
+	* nnml.el (nnml-generate-nov-databases-1, nnml-request-rename-group)
+	(nnml-request-delete-group): do.
+
+	* nnslashdot.el (nnslashdot-read-groups): do.
+
+	* nnsoup.el (nnsoup-delete-unreferenced-message-files): do.
+	(nnsoup-unpack-packets, nnsoup-make-active): Simplify.
+
+	* nnspool.el (nnspool-find-id): Use with-temp-buffer.
+	(nnspool-sift-nov-with-sed): Use last
+	(nnspool-retrieve-headers-with-nov): Use mapc.
+	(nnspool-request-newgroups): Use dolist.
+	(nnspool-request-group): Use last.
+
+	* nntp.el (nntp-read-server-type): Use dolist.
+
+	* nnvirtual.el (nnvirtual-create-mapping)
+	(nnvirtual-update-read-and-marked): Use dolist.
+	(nnvirtual-convert-headers): Simplify.
+
 2004-10-01  Kevin Greiner  <kgreiner@compsol.cc>
 
 	* gnus-agent.el (gnus-agent-synchronize-group-flags): Added

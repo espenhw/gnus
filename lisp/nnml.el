@@ -445,10 +445,8 @@ marks file will be regenerated properly by Gnus.")
 	    nnml-current-directory t
 	    (concat nnheader-numerical-short-files
 		    "\\|" (regexp-quote nnml-nov-file-name) "$"
-		    "\\|" (regexp-quote nnml-marks-file-name) "$")))
-	  article)
-      (while articles
-	(setq article (pop articles))
+		    "\\|" (regexp-quote nnml-marks-file-name) "$"))))
+      (dolist (article articles)
 	(when (file-writable-p article)
 	  (nnheader-message 5 "Deleting article %s in %s..." article group)
 	  (funcall nnmail-delete-file-function article))))
@@ -473,12 +471,10 @@ marks file will be regenerated properly by Gnus.")
       ;; We move the articles file by file instead of renaming
       ;; the directory -- there may be subgroups in this group.
       ;; One might be more clever, I guess.
-      (let ((files (nnheader-article-to-file-alist old-dir)))
-	(while files
-	  (rename-file
-	   (concat old-dir (cdar files))
-	   (concat new-dir (cdar files)))
-	  (pop files)))
+      (dolist (file (nnheader-article-to-file-alist old-dir))
+	(rename-file
+	 (concat old-dir (cdr file))
+	 (concat new-dir (cdr file))))
       ;; Move .overview file.
       (let ((overview (concat old-dir nnml-nov-file-name)))
 	(when (file-exists-p overview)
@@ -770,12 +766,10 @@ marks file will be regenerated properly by Gnus.")
   (unless (member (file-truename dir) seen)
     (push (file-truename dir) seen)
     ;; We descend recursively
-    (let ((dirs (directory-files dir t nil t))
-	  dir)
-      (while (setq dir (pop dirs))
-	(when (and (not (string-match "^\\." (file-name-nondirectory dir)))
-		   (file-directory-p dir))
-	  (nnml-generate-nov-databases-1 dir seen))))
+    (dolist (dir (directory-files dir t nil t))
+      (when (and (not (string-match "^\\." (file-name-nondirectory dir)))
+		 (file-directory-p dir))
+	(nnml-generate-nov-databases-1 dir seen)))
     ;; Do this directory.
     (let ((files (sort (nnheader-article-to-file-alist dir)
 		       'car-less-than-car)))

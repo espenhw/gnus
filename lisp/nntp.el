@@ -1252,12 +1252,9 @@ password contained in '~/.nntp-authinfo'."
   "Find out what the name of the server we have connected to is."
   ;; Wait for the status string to arrive.
   (setq nntp-server-type (buffer-string))
-  (let ((alist nntp-server-action-alist)
-	(case-fold-search t)
-	entry)
+  (let ((case-fold-search t))
     ;; Run server-specific commands.
-    (while alist
-      (setq entry (pop alist))
+    (dolist (entry nntp-server-action-alist)
       (when (string-match (car entry) nntp-server-type)
 	(if (and (listp (cadr entry))
 		 (not (eq 'lambda (caadr entry))))

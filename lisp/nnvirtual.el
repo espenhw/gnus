@@ -383,14 +383,11 @@ component group will show up when you enter the virtual group.")
 
 (defun nnvirtual-convert-headers ()
   "Convert HEAD headers into NOV headers."
-  (save-excursion
-    (set-buffer nntp-server-buffer)
+  (with-current-buffer nntp-server-buffer
     (let* ((dependencies (make-vector 100 0))
-	   (headers (gnus-get-newsgroup-headers dependencies))
-	   header)
+	   (headers (gnus-get-newsgroup-headers dependencies)))
       (erase-buffer)
-      (while (setq header (pop headers))
-	(nnheader-insert-nov header)))))
+      (mapc 'nnheader-insert-nov headers))))
 
 
 (defun nnvirtual-update-xref-header (group article prefix system-name)
@@ -464,7 +461,7 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
 				   (nnvirtual-partition-sequence (cdr ml)))))
 			 (gnus-info-marks (gnus-get-info
 					   (nnvirtual-current-group))))))
-	  mark type groups carticles info entry)
+	  type groups info)
 
       ;; Ok, atomically move all of the (un)read info, clear any old
       ;; marks, and move all of the current marks.  This way if someone
@@ -473,13 +470,12 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
 	;; move (un)read
 	;; bind for workaround guns-update-read-articles
 	(let ((gnus-newsgroup-active nil))
-	  (while (setq entry (pop unreads))
+	  (dolist (entry unreads)
 	    (gnus-update-read-articles (car entry) (cdr entry))))
 
 	;; clear all existing marks on the component groups
-	(setq groups nnvirtual-component-groups)
-	(while groups
-	  (when (and (setq info (gnus-get-info (pop groups)))
+	(dolist (group nnvirtual-component-groups)
+	  (when (and (setq info (gnus-get-info group))
 		     (gnus-info-marks info))
 	    (gnus-info-set-marks
 	     info
@@ -490,18 +486,17 @@ If UPDATE-P is not nil, call gnus-group-update-group on the components."
 	;; Ok, currently type-marks is an assq list with keys of a mark type,
 	;; with data of an assq list with keys of component group names
 	;; and the articles which correspond to that key/group pair.
-	(while (setq mark (pop type-marks))
+	(dolist (mark type-marks)
 	  (setq type (car mark))
 	  (setq groups (cdr mark))
-	  (while (setq carticles (pop groups))
+	  (dolist (carticles groups)
 	    (gnus-add-marked-articles (car carticles) type (cdr carticles)
 				      nil t))))
 
       ;; possibly update the display, it is really slow
       (when update-p
-	(setq groups nnvirtual-component-groups)
-	(while groups
-	  (gnus-group-update-group (pop groups) t))))))
+	(dolist (group nnvirtual-component-groups)
+	  (gnus-group-update-group group t))))))
 
 
 (defun nnvirtual-current-group ()
@@ -783,10 +778,9 @@ based on the marks on the component groups."
 
     ;; Remove any empty marks lists, and store.
     (setq nnvirtual-mapping-marks nil)
-    (while marks
-      (if (cdr (car marks))
-	  (push (car marks) nnvirtual-mapping-marks))
-      (setq marks (cdr marks)))
+    (dolist (mark marks)
+      (when (cdr mark)
+	(push mark nnvirtual-mapping-marks)))
 
     ;; We need to convert the unreads to reads.  We compress the
     ;; sequence as we go, otherwise it could be huge.
