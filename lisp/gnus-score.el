@@ -2551,7 +2551,7 @@ GROUP using BNews sys file syntax."
 	      ;; too much.
 	      (delete-char (min (1- (point-max)) klen))
 	    (goto-char (point-max))
-	    (search-backward "/")
+	    (search-backward (string directory-sep-char))
 	    (delete-region (1+ (point)) (point-min)))
 	  ;; If short file names were used, we have to translate slashes.
 	  (goto-char (point-min))

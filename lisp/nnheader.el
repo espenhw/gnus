@@ -633,10 +633,24 @@ If FULL, translate everything."
 		      2 0))
 	;; We translate -- but only the file name.  We leave the directory
 	;; alone.
-	(if (string-match "/[^/]+\\'" file)
-	    ;; This is needed on NT's and stuff.
-	    (setq leaf (substring file (1+ (match-beginning 0)))
-		  path (substring file 0 (1+ (match-beginning 0))))
+	(if (memq system-type '(win32 w32 mswindows windows-nt))
+	    ;; This is needed on NT and stuff, because
+	    ;; file-name-nondirectory is not enough to split
+	    ;; file names, containing ':', e.g.
+	    ;; "d:\\Work\\News\\nntp+news.fido7.ru:fido7.ru.gnu.SCORE"
+	    ;; 
+	    ;; we are trying to correctly split such names:
+	    ;; "d:file.name" -> "a:" "file.name"
+	    ;; "aaa:bbb.ccc" -> "" "aaa:bbb.ccc"
+	    ;; "d:aaa\\bbb:ccc"   -> "d:aaa\\" "bbb:ccc"
+	    ;; etc.
+	    ;; to translate then only the file name part.
+	    (progn
+	      (setq leaf file
+		    path "")
+	      (if (string-match "\\(^\\w:\\|[/\\]\\)\\([^/\\]+\\)$" file)
+		  (setq leaf (substring file (match-beginning 2))
+			path (substring file 0 (match-beginning 2)))))
 	  ;; Fall back on this.
 	  (setq leaf (file-name-nondirectory file)
 		path (file-name-directory file))))

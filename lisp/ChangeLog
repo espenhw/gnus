@@ -1,3 +1,11 @@
+2000-07-16 Dmitry Bely <dbely@mail.ru>
+
+	* nnheader.el (nnheader-translate-file-chars): Path splitting on NT.
+
+2000-09-20 18:33:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-score.el (gnus-score-find-bnews): Use directory-sep-char.
+
 2000-09-20 17:37:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-default-charset): Set default value in
