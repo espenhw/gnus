@@ -25,79 +25,82 @@
 ;;; Commentary:
 
 ;; This package implements a simple wrapper around the GNU TLS command
-;; line application "gnutls-cli" to make Emacs support STARTTLS.
+;; line application "gnutls-cli" to make Emacs support STARTTLS.  It
+;; is backwards compatible (same API functions) with the "starttls.el"
+;; that is part of Emacs 21 (that version used an external program
+;; "starttls" that isn't widely installed, and was based on OpenSSL).
+
+;; This package require GNUTLS 0.9.90 (released 2003-10-08) or later.
+
+;; Usage is similar to `open-network-stream'.  Evaluating the following:
 ;;
-;; This package require GNUTLS 0.9.8 (released 2003-10-02) or later.
+;; (progn
+;;   (setq tmp (open-starttls-stream "test" (current-buffer) "mail.example.com" 143))
+;;   (process-send-string tmp ". starttls\n")
+;;   (sit-for 4)
+;;   (message "STARTTLS output:\n%s" (negotiate-starttls tmp))
+;;   (process-send-string tmp ". capability\n"))
 ;;
-;; Usage is similar to `open-network-stream', i.e.:
+;; in, e.g., the *scratch* buffer, yields the following output:
 ;;
-;; (setq tmp (open-starttls-stream "test" (current-buffer) "cyrus.andrew.cmu.edu" 143))
-;; #<process test<9>>
-;; (process-send-string tmp ". starttls\n")
+;; * OK imap.example.com Cyrus IMAP4 v2.1.15 server ready
+;; . OK Begin TLS negotiation now
+;; * CAPABILITY IMAP4 IMAP4rev1 ACL QUOTA ...
+;; . OK Completed
 ;; nil
-;; (negotiate-starttls tmp)
-;; "*** Starting TLS handshake
-;; - Certificate type: X.509
-;;  - Certificate info:
-;;  # Certificate is valid since: Thu Jun 26 19:00:00 CEST 2003
-;;  # Certificate expires: Sat Jun 26 19:00:00 CEST 2004
-;;  # Certificate fingerprint: 8d 59 d6 e1 c9 91 dc 5a bb 38 47 8c ec 85 1b 99
-;;  # Certificate serial number: 3e fb 52 ce
-;;  # Certificate version: #3
-;;  # Certificate public key algorithm: RSA
-;;  #   Modulus: 1024 bits
-;;  # CN=cyrus.andrew.cmu.edu,OU=Computing Services,O=Carnegie Mellon University,L=Pittsburgh,ST=Pennsylvania,C=US
-;;  # Certificate Issuer's info:
-;;  # CN=CMU CA mail 1,OU=Computing Services,O=Carnegie Mellon University,L=Pittsburgh,ST=Pennsylvania,C=US
 ;;
+;; And the message buffer contains:
+;;
+;; STARTTLS output:
+;; *** Starting TLS handshake
+;; - Server's trusted authorities:
+;;    [0]: O=Sendmail,OU=Sendmail Server,CN=imap.example.com,EMAIL=admin@imap.example.com
+;; - Certificate type: X.509
+;;  - Got a certificate list of 1 certificates.
+;;
+;;  - Certificate[0] info:
+;;  # The hostname in the certificate matches 'imap.example.com'.
+;;  # valid since: Wed Aug 28 12:47:00 CEST 2002
+;;  # expires at: Thu Aug 28 12:47:00 CEST 2003
+;;  # serial number: 00
+;;  # fingerprint: 06 3f 25 cb 44 aa 5c 1e 79 d7 63 86 f8 b1 9a cf
+;;  # version: #3
+;;  # public key algorithm: RSA
+;;  #   Modulus: 1024 bits
+;;  # Subject's DN: O=Sendmail,OU=Sendmail Server,CN=imap.example.com,EMAIL=admin@imap.example.com
+;;  # Issuer's DN: O=Sendmail,OU=Sendmail Server,CN=imap.example.com,EMAIL=admin@imap.example.com
+;;
+;;
+;; - Peer's certificate issuer is unknown
 ;; - Peer's certificate is NOT trusted
 ;; - Version: TLS 1.0
 ;; - Key Exchange: RSA
 ;; - Cipher: ARCFOUR 128
 ;; - MAC: SHA
 ;; - Compression: NULL
-;; "
-;; (process-send-string tmp ". capability\n")
-;; nil
-;; (process-send-string tmp ". logout\n")
-;; nil
+
+;; Revision history:
 ;;
-;; Resolving 'cyrus.andrew.cmu.edu'...
-;; Connecting to '128.2.10.174:143'...
-;;
-;; - Simple Client Mode:
-;;
-;; * OK mail-fe4.andrew.cmu.edu Cyrus IMAP4 Murder v2.1.15-077 server ready
-;; . OK Begin TLS negotiation now
-;; * CAPABILITY IMAP4 IMAP4rev1 ACL QUOTA LITERAL+ MAILBOX-REFERRALS NAMESPACE UIDPLUS ID NO_ATOMIC_RENAME UNSELECT CHILDREN MULTIAPPEND SORT THREAD=ORDEREDSUBJECT THREAD=REFERENCES AUTH=PLAIN AUTH=KERBEROS_V4 AUTH=GSSAPI AUTH=ANONYMOUS ANNOTATEMORE
-;; . OK Completed
-;; * BYE LOGOUT received
-;; . OK Completed
-;; *** Received corrupted data(-9) - server has terminated the connection abnormally
-;;
-;; Process test<9> finished
+;; 2003-11-15: cleanup, and posted to gnu.emacs.sources.
 
 ;;; Code:
-
-(eval-and-compile
-  (autoload 'format-spec "format-spec")
-  (autoload 'format-spec-make "format-spec"))
 
 (defgroup starttls nil
   "Negotiated Transport Layer Security (STARTTLS) parameters."
   :group 'comm)
 
-(defcustom starttls-program "gnutls-cli"
-  "The program to run in a subprocess to open an STARTTLS connection.
-The program should read input on stdin and write output to
-stdout.  Also see `starttls-connect' and `starttls-success' for
-what the program should output after initial connection and
-successful negotiation respectively."
+(defcustom starttls-file-name "gnutls-cli"
+  "Name of the program to run in a subprocess to open an STARTTLS connection.
+The program should read input on stdin, write output to stdout,
+and initiate TLS negotiation when receiving the SIGALRM signal.
+Also see `starttls-connect', `starttls-failure', and
+`starttls-success' for what the program should output after
+initial connection and successful negotiation respectively."
   :type 'string
   :group 'starttls)
 
-(defcustom starttls-extra-args nil
-  "List of extra arguments to `starttls-program'.
+(defcustom starttls-extra-arguments nil
+  "List of extra arguments to `starttls-file-name'.
 E.g., (\"--protocols\" \"ssl3\")."
   :type '(repeat string)
   :group 'starttls)
@@ -110,26 +113,27 @@ E.g., (\"--protocols\" \"ssl3\")."
 (defcustom starttls-connect "- Simple Client Mode:\n\n"
   "*Regular expression indicating successful connection.
 The default is what GNUTLS's \"gnutls-cli\" outputs."
-  ;; cli.c:main() print this string when it is starting to run in the
-  ;; application read/write phase.  If the logic, or the string
-  ;; itself, is modified, this have to be updated.
+  ;; GNUTLS cli.c:main() print this string when it is starting to run
+  ;; in the application read/write phase.  If the logic, or the string
+  ;; itself, is modified, this must be updated.
   :type 'regexp
   :group 'starttls)
 
 (defcustom starttls-failure "*** Handshake has failed"
   "*Regular expression indicating failed TLS handshake.
 The default is what GNUTLS's \"gnutls-cli\" outputs."
-  ;; cli.c:do_handshake() print this string on failure.  If the logic,
-  ;; or the string itself, is modified, this have to be updated.
+  ;; GNUTLS cli.c:do_handshake() print this string on failure.  If the
+  ;; logic, or the string itself, is modified, this must be updated.
   :type 'regexp
   :group 'starttls)
 
 (defcustom starttls-success "- Compression: "
   "*Regular expression indicating completed TLS handshakes.
 The default is what GNUTLS's \"gnutls-cli\" outputs."
-  ;; cli.c:do_handshake() calls, on success, common.c:print_info(),
-  ;; that unconditionally print this string last.  If that logic, or
-  ;; the string itself, is modified, this have to be updated.
+  ;; GNUTLS cli.c:do_handshake() calls, on success,
+  ;; common.c:print_info(), that unconditionally print this string
+  ;; last.  If that logic, or the string itself, is modified, this
+  ;; must be updated.
   :type 'regexp
   :group 'starttls)
 
@@ -140,29 +144,26 @@ multi-line informational message with information about the
 handshake, or NIL on failure."
   (let (buffer info old-max done-ok done-bad)
     (if (null (setq buffer (process-buffer process)))
-	;; XXX how to remove/extract the TLS negotiation junk?
+	;; XXX How to remove/extract the TLS negotiation junk?
 	(signal-process (process-id process) 'SIGALRM)
       (with-current-buffer buffer
 	(save-excursion
-	  (goto-char (point-max))
-	  (setq old-max (point))
+	  (setq old-max (goto-char (point-max)))
 	  (signal-process (process-id process) 'SIGALRM)
-	  (while (and process
-		      (memq (process-status process) '(open run))
+	  (while (and (processp process)
+		      (eq (process-status process) 'run)
 		      (save-excursion
-			(set-buffer buffer) ;; XXX "blue moon" nntp.el bug
 			(goto-char old-max)
-			(progn
-			  (setq
-			   done-ok (re-search-forward starttls-success nil t)
-			   done-bad (re-search-forward starttls-failure nil t))
-			  (not (or done-ok done-bad)))))
+			(not (or (setq done-ok (re-search-forward
+						starttls-success nil t))
+				 (setq done-bad (re-search-forward
+						 starttls-failure nil t))))))
 	    (accept-process-output process 1 100)
 	    (sit-for 0.1))
 	  (setq info (buffer-substring-no-properties old-max (point-max)))
 	  (delete-region old-max (point-max))
 	  (if (or (and done-ok (not done-bad))
-		  ;; prevent mitm that fake success msg after failure msg.
+		  ;; Prevent mitm that fake success msg after failure msg.
 		  (and done-ok done-bad (< done-ok done-bad)))
 	      info
 	    (message "STARTTLS negotiation failed: %s" info)
@@ -185,32 +186,35 @@ specifying a port number to connect to."
 	 (old-max (with-current-buffer buffer (point-max)))
 	 (process-connection-type starttls-process-connection-type)
 	 (process (apply #'start-process name buffer
-			 starttls-program "-s" host
+			 starttls-file-name "-s" host
 			 "-p" (if (integerp service)
 				  (int-to-string service)
 				service)
-			 starttls-extra-args)))
+			 starttls-extra-arguments)))
     (process-kill-without-query process)
-    (while (and process
-		(memq (process-status process) '(open run))
+    (while (and (processp process)
+		(eq (process-status process) 'run)
 		(save-excursion
-		  (set-buffer buffer) ;; XXX "blue moon" nntp.el bug
-		  (goto-char (point-min))
+		  (set-buffer buffer)
+		  (goto-char old-max)
 		  (not (setq done (re-search-forward
 				   starttls-connect nil t)))))
       (accept-process-output process 0 100)
       (sit-for 0.1))
     (if done
-	(progn
-	  (with-current-buffer buffer
-	    (delete-region old-max done))
-	  (setq done process))
-      (delete-process process))
+	(with-current-buffer buffer
+	  (delete-region old-max done))
+      (delete-process process)
+      (setq process nil))
     (message "Opening STARTTLS connection to `%s'...%s"
 	     host (if done "done" "failed"))
-    done))
+    process))
 
 ;; Compatibility with starttls.el by Daiki Ueno <ueno@unixuser.org>:
+(defvaralias 'starttls-program 'starttls-file-name)
+(make-obsolete-variable 'starttls-program 'starttls-file-name)
+(defvaralias 'starttls-extra-args 'starttls-extra-arguments)
+(make-obsolete-variable 'starttls-extra-args 'starttls-extra-arguments)
 (defalias 'starttls-open-stream 'open-starttls-stream)
 (defalias 'starttls-negotiate 'negotiate-starttls)
 

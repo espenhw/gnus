@@ -1,3 +1,7 @@
+2003-11-15  Simon Josefsson  <jas@extundo.com>
+
+	* starttls.el: Sync with recent gnu.emacs.sources post.
+
 2003-10-24  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* nnir.el: Autoload `read-kbd-macro' at compile time.
