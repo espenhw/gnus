@@ -12,11 +12,10 @@ all: gnus message
 
 most: texi2latex.elc latex latexps
 
-gnus: gnus.texi
-	$(MAKEINFO) -eval '(find-file "gnus.texi")' $(XINFOSWI)
+.SUFFIXES: .texi .dvi .ps
 
-message: message.texi
-	$(MAKEINFO) -eval '(find-file "message.texi")' $(XINFOSWI)
+.texi:
+	$(MAKEINFO) -eval '(find-file "$<")' $(XINFOSWI)
 
 dvi: gnus.dvi message.dvi
 

@@ -1558,7 +1558,7 @@ be permanent."
 Returns whether the fetching was successful or not."
   (interactive "sGroup name: ")
   (unless (get-buffer gnus-group-buffer)
-    (gnus))
+    (gnus-no-server))
   (gnus-group-read-group nil nil group))
 
 (defvar gnus-ephemeral-group-server 0)

@@ -56,8 +56,9 @@ nil means let mailer mail back a message to report errors.")
   "Normal hook, run each time a new outgoing message is initialized.
 The function `message-setup' runs this hook.")
 
-(defvar message-mode-hook mail-mode-hook
-  "Hook run in message mode buffers.")
+(if (boundp 'mail-mode-hook)
+    (defvar message-mode-hook mail-mode-hook
+      "Hook run in message mode buffers."))
 
 (defvar message-indentation-spaces mail-indentation-spaces
   "*Number of spaces to insert at the beginning of each cited line.

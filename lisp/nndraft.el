@@ -125,6 +125,8 @@
   "Request a new buffer that is restored to the state of ARTICLE."
   (nndraft-possibly-change-group group)
   (when (nndraft-request-article article group server (current-buffer))
+    (message-remove-header "xrefs")
+    (message-remove-header "lines")
     (let ((gnus-verbose-backends nil))
       (nndraft-request-expire-articles (list article) group server t))
     t))
@@ -162,9 +164,8 @@
 (deffoo nndraft-request-expire-articles (articles group &optional server force)
   (nndraft-possibly-change-group group)
   (let* ((nnmh-allow-delete-final t)
-	 (res (nndraft-execute-nnmh-command
-	       `(nnmh-request-expire-articles
-		 ',articles group ,server ,force)))
+	 (res (nnmh-request-expire-articles
+	       articles group server force))
 	 article)
     ;; Delete all the "state" files of articles that have been expired.
     (while articles
@@ -178,8 +179,7 @@
 (deffoo nndraft-request-accept-article (group &optional server last noinsert)
   (nndraft-possibly-change-group group)
   (let ((gnus-verbose-backends nil))
-    (nndraft-execute-nnmh-command
-     `(nnmh-request-accept-article group ,server ,last noinsert))))
+    (nnmh-request-accept-article group server last noinsert)))
 
 (deffoo nndraft-request-create-group (group &optional server args)
   (nndraft-possibly-change-group group)
@@ -199,18 +199,10 @@
 (defun nndraft-possibly-change-group (group)
   (when (and group
 	     (not (equal group nndraft-current-group)))
+    (nndraft-open-server "")
     (setq nndraft-current-group group)
     (setq nndraft-current-directory
 	  (nnheader-concat nndraft-directory group))))
-
-(defun nndraft-execute-nnmh-command (command)
-  (let* ((dir (directory-file-name
-	       (expand-file-name nndraft-current-directory)))
-	 (group (file-name-nondirectory dir))
-	 (nnmh-directory (file-name-directory dir))
-	 (nnmail-keep-last-article nil)
-	 (nnmh-get-new-mail nil))
-    (eval command)))
 
 (defun nndraft-article-filename (article &rest args)
   (apply 'concat

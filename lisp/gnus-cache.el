@@ -362,9 +362,12 @@ Returns the list of articles removed."
   (let ((cached gnus-newsgroup-cached)
 	(gnus-verbose (max 6 gnus-verbose)))
     (unless cached
-      (error "No cached articles for this group"))
+      (gnus-message 3 "No cached articles for this group"))
     (while cached
       (gnus-summary-goto-subject (pop cached) t))))
+
+(defalias 'gnus-summary-limit-include-cached
+  'gnus-summary-insert-cached-articles)
 
 ;;; Internal functions.
 

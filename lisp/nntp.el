@@ -168,6 +168,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defvar nntp-process-decode nil)
 (defvar nntp-process-start-point nil)
 (defvar nntp-inside-change-function nil)
+(defvoo nntp-last-command-time nil)
 
 (defvar nntp-connection-list nil)
 
@@ -261,6 +262,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defsubst nntp-retrieve-data (command address port buffer
 				   &optional wait-for callback decode)
   "Use COMMAND to retrieve data into BUFFER from PORT on ADDRESS."
+  (setq nntp-last-command-time (current-time))
   (let ((process (or (nntp-find-connection buffer)
 		     (nntp-open-connection buffer))))
     (if (not process)
@@ -896,7 +898,12 @@ This function is supposed to be called from `nntp-server-opened-hook'."
       (insert "\n"))
     ;; Insert `.' at end of buffer (end of text mark).
     (goto-char (point-max))
-    (insert "." nntp-end-of-line)))
+    (insert ".\n")
+    (goto-char (point-min))
+    (while (not (eobp))
+      (end-of-line)
+      (insert "\r")
+      (forward-line 1))))
 
 (defun nntp-retrieve-headers-with-xover (articles &optional fetch-old)
   (set-buffer nntp-server-buffer)

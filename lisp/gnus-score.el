@@ -1019,7 +1019,6 @@ SCORE is the score to add."
     (gnus-make-directory (file-name-directory file))
     (setq gnus-score-edit-buffer (find-file-noselect file))
     (gnus-configure-windows 'edit-score)
-    (select-window (get-buffer-window gnus-score-edit-buffer))
     (gnus-score-mode)
     (setq gnus-score-edit-exit-function 'gnus-score-edit-done)
     (make-local-variable 'gnus-prev-winconf)

@@ -43,55 +43,55 @@ also add gnus-article-display-picons to gnus-article-display-hook."
   :group 'gnus-visual)
 
 (defcustom gnus-picons-display-where 'picons
-  "Where to display the group and article icons.
+  "*Where to display the group and article icons.
 Legal values are `article' and `picons'."
   :type '(choice symbol string)
   :group 'picons)
 
 (defcustom gnus-picons-has-modeline-p t
-  "Wether the picons window should have a modeline.
+  "*Wether the picons window should have a modeline.
 This is only useful if `gnus-picons-display-where' is `picons'."
   :type 'boolean
   :group 'picons)
 
 (defcustom gnus-picons-database "/usr/local/faces"
-  "Defines the location of the faces database.
+  "*Defines the location of the faces database.
 For information on obtaining this database of pretty pictures, please
 see http://www.cs.indiana.edu/picons/ftp/index.html"
   :type 'directory
   :group 'picons)
 
 (defcustom gnus-picons-news-directories '("news")
-  "Sub-directory of the faces database containing the icons for newsgroups."
+  "*Sub-directory of the faces database containing the icons for newsgroups."
   :type '(repeat string)
   :group 'picons)
 (define-obsolete-variable-alias 'gnus-picons-news-directory
   'gnus-picons-news-directories)
 
 (defcustom gnus-picons-user-directories '("local" "users" "usenix" "misc")
-  "List of directories to search for user faces."
+  "*List of directories to search for user faces."
   :type '(repeat string)
   :group 'picons)
 
 (defcustom gnus-picons-domain-directories '("domains")
-  "List of directories to search for domain faces.
+  "*List of directories to search for domain faces.
 Some people may want to add \"unknown\" to this list."
   :type '(repeat string)
   :group 'picons)
 
 (defcustom gnus-picons-refresh-before-display nil
-  "If non-nil, display the article buffer before computing the picons."
+  "*If non-nil, display the article buffer before computing the picons."
   :type 'boolean
   :group 'picons)
 
 (defcustom gnus-picons-x-face-file-name
   (format "/tmp/picon-xface.%s.xbm" (user-login-name))
-  "The name of the file in which to store the converted X-face header."
+  "*The name of the file in which to store the converted X-face header."
   :type 'string
   :group 'picons)
 
 (defcustom gnus-picons-convert-x-face (format "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | pbmtoxbm > %s" gnus-picons-x-face-file-name)
-  "Command to convert the x-face header into a xbm file."
+  "*Command to convert the x-face header into a xbm file."
   :type 'string
   :group 'picons)
 
@@ -108,7 +108,7 @@ Some people may want to add \"unknown\" to this list."
       (when (featurep 'xpm)
 	(push "xpm" types))
       types))
-  "List of suffixes on picon file names to try."
+  "*List of suffixes on picon file names to try."
   :type '(repeat string)
   :group 'picons)
 

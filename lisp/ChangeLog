@@ -1,3 +1,100 @@
+Sat Oct  4 00:53:55 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.12 is released.
+
+Sat Oct  4 00:16:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-plugged): Moved here.
+
+	* nnmail.el (nnmail-delete-incoming): Changed default to nil.
+
+	* gnus-int.el (gnus-request-scan): Don't do anything if
+	unplugged. 
+
+Fri Oct  3 21:09:19 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-ignored-headers): Doc fix.
+
+	* gnus-demon.el (gnus-demon-add-nntp-close-connection): New
+	function. 
+	(gnus-demon-nntp-close-connection): Ditto.
+
+	* nntp.el (nntp-last-command-time): New variable.
+	(nntp-retrieve-data): Use it.
+
+	* message.el (message-news-p): Messages with Posted-To aren't
+	news. 
+	(message-mode): Heed message-yank-prefix when filling.
+
+	* nndraft.el (nndraft-request-restore-buffer): Remove Xrefs and
+	Lines headers.
+
+	* nntp.el (nntp-encode-text): Encode according to RFC977.
+
+Wed Oct  1 18:27:26 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): gcc-self didn't
+	work if `gnus-message-archive-method' was nil.
+
+	* nnmail.el (nnmail-article-group): Allow \\1 substitution.
+
+Sat Sep 27 12:57:44 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-salt.el (gnus-pick-mouse-pick-region): Use it.
+
+	* gnus-xmas.el (gnus-xmas-window-edges): New function.
+
+	* gnus-score.el (gnus-score-edit-current-scores): Don't select
+	window. 
+
+Sat Sep 27 12:52:31 1997  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* messcompat.el ((boundp 'mail-mode-hook)): Check.
+
+Sat Sep 27 09:22:15 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nndraft.el (nndraft-possibly-change-group): Always open server.
+
+	* gnus-sum.el (gnus-summary-pop-article): Force.
+
+	* gnus-art.el (gnus-article-prepare): Push the article onto the
+	history. 
+
+	* gnus-sum.el (gnus-summary-pop-article): Pop to the right
+	article. 
+
+	* gnus-demon.el (gnus-demon-scan-news): Save excursion.
+
+Sat Sep 27 09:06:55 1997  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* gnus-cache.el (gnus-summary-limit-include-cached): New command
+	and keystroke.
+
+Sat Sep 27 06:45:58 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-invert-processable): Make interactive.
+
+Sat Sep 27 06:43:38 1997  Kim-Minh Kaplan  <kimminh.kaplan@utopia.eunet.fr>
+
+	* gnus-picon.el: Doc fixes.
+
+1997-09-23  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus.el: Removed definition of `custom-face-lookup'.
+
+Sat Sep 27 05:36:11 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nndraft.el: Would block nnmh.
+
+	* gnus-sum.el (gnus-mark-article-as-unread): Don't allow marking
+	negative articles.
+
+	* gnus-group.el (gnus-fetch-group): Use `gnus-no-server'.
+
+	* gnus-agent.el (gnus-agent-with-fetch): Moved.
+
+	* gnus-sum.el (gnus-nov-read-integer): Really skip to next field.
+
 Sat Sep 27 04:32:45 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.11 is released.

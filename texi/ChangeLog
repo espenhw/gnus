@@ -1,3 +1,17 @@
+Wed Oct  1 18:37:55 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Startup Files): Addition.
+
+Sat Sep 27 09:37:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Sending Variables): Fix.
+
+	* gnus.texi (Choosing Commands): Addition.
+
+Sat Sep 27 05:56:44 1997  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* gnus.texi: Various fixes.
+
 Sat Sep 27 04:24:41 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* message.texi (Various Commands): Addition.

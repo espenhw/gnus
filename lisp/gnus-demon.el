@@ -30,6 +30,7 @@
 (require 'gnus)
 (require 'gnus-int)
 (require 'nnheader)
+(require 'nntp)
 (eval-and-compile
   (if (string-match "XEmacs" (emacs-version))
       (require 'itimer)
@@ -259,6 +260,18 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
   (save-window-excursion
     (gnus-close-backends)))
 
+(defun gnus-demon-add-nntp-close-connection ()
+  "Add daemonic nntp server disconnection to Gnus.
+If no commands have gone out via nntp during the last five
+minutes, the connection is closed."
+  (gnus-demon-add-handler 'gnus-demon-close-connections 5 nil))
+
+(defun gnus-demon-nntp-close-connection ()
+  (save-window-excursion
+    (when (nnmail-time-less '(0 300)
+			    (nnmail-time-since nntp-last-command-time))
+      (nntp-close-server))))
+
 (defun gnus-demon-add-scanmail ()
   "Add daemonic scanning of mail from the mail backends."
   (gnus-demon-add-handler 'gnus-demon-scan-mail 120 60))
@@ -278,11 +291,15 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
   (gnus-demon-add-handler 'gnus-demon-scan-news 120 60))
 
 (defun gnus-demon-scan-news ()
-  (save-window-excursion
-    (when (gnus-alive-p)
-      (save-excursion
-	(set-buffer gnus-group-buffer)
-	(gnus-group-get-new-news)))))
+  (let ((win (current-window-configuration)))
+    (unwind-protect
+	(save-window-excursion
+	  (save-excursion
+	    (when (gnus-alive-p)
+	      (save-excursion
+		(set-buffer gnus-group-buffer)
+		(gnus-group-get-new-news)))))
+      (set-window-configuration win))))
 
 (defun gnus-demon-add-scan-timestamps ()
   "Add daemonic updating of timestamps in empty newgroups."

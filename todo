@@ -740,10 +740,9 @@ sorted to if `gnus-group-sort-function' were run.
 * gnus-{group,summary}-highlight should respect any `face' text props set
 on the lines.
 
-* check posting via msnews.microsoft.com.
-
 * use run-with-idle-timer for gnus-demon instead of the
 home-brewed stuff for better reliability.
 
 * add a way to select which NoCeM type to apply -- spam, troll, etc.
 
+* nndraft-request-group should tally autosave files.

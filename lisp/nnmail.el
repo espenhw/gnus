@@ -405,7 +405,7 @@ Example:
   :group 'nnmail-split
   :type '(repeat (cons :format "%v" symbol regexp)))
 
-(defcustom nnmail-delete-incoming t
+(defcustom nnmail-delete-incoming nil
   "*If non-nil, the mail backends will delete incoming files after
 splitting."
   :group 'nnmail-retrieve
@@ -1038,14 +1038,13 @@ FUNC will be called with the buffer narrowed to each mail."
 	(funcall exit-func))
       (kill-buffer (current-buffer)))))
 
-;; Mail crossposts suggested by Brian Edmonds <edmonds@cs.ubc.ca>.
 (defun nnmail-article-group (func)
   "Look at the headers and return an alist of groups that match.
 FUNC will be called with the group name to determine the article number."
   (let ((methods nnmail-split-methods)
 	(obuf (current-buffer))
 	(beg (point-min))
-	end group-art method)
+	end group-art method regrepp)
     (if (and (sequencep methods) (= (length methods) 1))
 	;; If there is only just one group to put everything in, we
 	;; just return a list with just this one method in.
@@ -1092,21 +1091,31 @@ FUNC will be called with the group name to determine the article number."
 		       (lambda (group) (cons group (funcall func group)))
 		       split))))
 	  ;; Go through the split methods to find a match.
-	  (while (and methods (or nnmail-crosspost (not group-art)))
+	  (while (and methods
+		      (or nnmail-crosspost
+			  (not group-art)))
 	    (goto-char (point-max))
-	    (setq method (pop methods))
+	    (setq method (pop methods)
+		  regrepp nil)
 	    (if (or methods
 		    (not (equal "" (nth 1 method))))
 		(when (and
 		       (ignore-errors
 			 (if (stringp (nth 1 method))
-			     (re-search-backward (cadr method) nil t)
+			     (progn
+			       (setq regrepp
+				     (string-match "\\\\[0-9&]" (car method)))
+			       (re-search-backward (cadr method) nil t))
 			   ;; Function to say whether this is a match.
 			   (funcall (nth 1 method) (car method))))
 		       ;; Don't enter the article into the same
 		       ;; group twice.
 		       (not (assoc (car method) group-art)))
-		  (push (cons (car method) (funcall func (car method)))
+		  (push (cons (if regrepp
+				  (replace-match
+				   (car method) nil nil (car method))
+				(car method))
+			      (funcall func (car method)))
 			group-art))
 	      ;; This is the final group, which is used as a
 	      ;; catch-all.

@@ -833,7 +833,9 @@ files was the most recently saved, which enabled people to swap between
 That was kinda silly, so Gnus went one better: In addition to the
 @file{.newsrc} and @file{.newsrc.el} files, Gnus also has a file called
 @file{.newsrc.eld}.  It will read whichever of these files that are most
-recent, but it will never write a @file{.newsrc.el} file.
+recent, but it will never write a @file{.newsrc.el} file.  You should
+never delete the @file{.newsrc.eld} file---it contains much information
+not stored in the @file{.newsrc} file.
 
 @vindex gnus-save-newsrc-file
 You can turn off writing the @file{.newsrc} file by setting
@@ -3157,7 +3159,7 @@ cases.  If this is unacceptable to you, use the other function instead.
 @vindex gnus-summary-same-subject
 @code{gnus-summary-same-subject} is a string indicating that the current
 article has the same subject as the previous.  This string will be used
-with those specs that require it.  The default is @samp{}.
+with those specs that require it.  The default is @code{""}.
 
 
 @node Summary Buffer Lines
@@ -3181,7 +3183,7 @@ Subject string.
 @item s
 Subject if the article is the root of the thread or the previous article
 had a different subject, @code{gnus-summary-same-subject} otherwise.
-(@code{gnus-summary-same-subject} defaults to @samp{}.)
+(@code{gnus-summary-same-subject} defaults to @code{""}.)
 @item F
 Full @code{From} header.
 @item n
@@ -3543,8 +3545,9 @@ Go to the previous article read (@code{gnus-summary-goto-last-article}).
 Pop an article off the summary history and go to this article
 (@code{gnus-summary-pop-article}).  This command differs from the
 command above in that you can pop as many previous articles off the
-history as you like.  For a somewhat related issue (if you use this
-command a lot), @pxref{Article Backlog}.
+history as you like, while @kbd{l} toggles the two last read articles.
+For a somewhat related issue (if you use these commands a lot),
+@pxref{Article Backlog}.
 @end table
 
 
@@ -6879,7 +6882,7 @@ A hook called in all tree mode buffers.
 @item gnus-tree-mode-line-format
 @vindex gnus-tree-mode-line-format
 A format string for the mode bar in the tree mode buffers.  The default
-is @samp{Gnus: %%b [%A] %Z}.  For a list of valid specs, @pxref{Summary
+is @samp{Gnus: %%b %S %Z}.  For a list of valid specs, @pxref{Summary
 Buffer Mode Line}. 
 
 @item gnus-selected-tree-face
@@ -6922,7 +6925,7 @@ Variables related to the display are:
 This is used for differentiating between ``real'' articles and
 ``sparse'' articles.  The format is @var{((real-open . real-close)
 (sparse-open . sparse-close) (dummy-open . dummy-close))}, and the
-default is @code{((?[ . ?]) (?( . ?)) (?@{ . ?@}))}.
+default is @code{((?[ . ?]) (?( . ?)) (?@{ . ?@}) (?< . ?>))}.
 
 @item gnus-tree-parent-child-edges
 @vindex gnus-tree-parent-child-edges
@@ -8028,7 +8031,10 @@ use to store sent messages.  The default is:
 
 @lisp
 (nnfolder "archive"
-          (nnfolder-directory "~/Mail/archive/"))
+          (nnfolder-directory   "~/Mail/archive")
+          (nnfolder-active-file "~/Mail/archive/active")
+          (nnfolder-get-new-mail nil)
+          (nnfolder-inhibit-expiry t))
 @end lisp
 
 You can, however, use any mail select method (@code{nnml},
@@ -8972,7 +8978,7 @@ and might be useful, for instance, to speed up reading groups that
 contain very big articles---@samp{alt.binaries.pictures.furniture}, for
 instance. 
 
-Anyways, you just specify @code{nnspool} as the method and @samp{} (or
+Anyways, you just specify @code{nnspool} as the method and @code{""} (or
 anything else) as the address.
 
 If you have access to a local spool, you should probably use that as the
@@ -9118,7 +9124,13 @@ This variable is a list of lists, where the first element of each of
 these lists is the name of the mail group (they do not have to be called
 something beginning with @samp{mail}, by the way), and the second
 element is a regular expression used on the header of each mail to
-determine if it belongs in this mail group.
+determine if it belongs in this mail group.  The first string may
+contain @samp{\\1} forms, like the ones used by @code{replace-match} to
+insert sub-expressions from the matched text.  For instance:
+
+@lisp
+("list.\\1" "From:.*\\(.*\\)-list@@majordomo.com")
+@end lisp
 
 If the first element is the special symbol @code{junk}, then messages
 that match the regexp will disappear into the aether.  Use with
@@ -13992,6 +14004,7 @@ your @file{.gnus} file:
 @findex gnus-demon-add-disconnection
 Some ready-made functions to do this have been created:
 @code{gnus-demon-add-nocem}, @code{gnus-demon-add-disconnection},
+@code{gnus-demon-add-nntp-close-connection}, 
 @code{gnus-demon-add-scan-timestamps}, @code{gnus-demon-add-rescan}, and
 @code{gnus-demon-add-scanmail}.  Just put those functions in your
 @file{.gnus} if you want those abilities.
@@ -14049,7 +14062,8 @@ default is @code{("news.lists.filters" "news.admin.net-abuse.bulletins"
 @vindex gnus-nocem-issuers
 There are many people issuing NoCeM messages.  This list says what
 people you want to listen to.  The default is @code{("Automoose-1"
-"clewis@@ferret.ocunix.on.ca;" "jem@@xpat.com;" "red@@redpoll.mrfs.oh.us
+"rbraver@@ohww.norman.ok.us" "clewis@@ferret.ocunix.on.ca"
+"jem@@xpat.com" "snowhare@@xmission.com" "red@@redpoll.mrfs.oh.us
 (Richard E. Depew)")}; fine, upstanding citizens all of them.
 
 Known despammers that you can put in this list include:
@@ -15847,6 +15861,7 @@ could point your Web browser over that-a-way.
 
 @iftex
 
+@page
 @node The Manual
 @section The Manual
 @cindex colophon
@@ -15908,6 +15923,7 @@ of the mysteries of this world, I guess.)
 @end iftex
 
 
+@page
 @node Terminology
 @section Terminology
 
@@ -16092,6 +16108,7 @@ specified by RFC1153.
 @end table
 
 
+@page
 @node Customization
 @section Customization
 @cindex general customization
@@ -16218,6 +16235,7 @@ Set @code{gnus-article-display-hook} to @code{nil} to make article
 processing a bit faster.
 
 
+@page
 @node Troubleshooting
 @section Troubleshooting
 @cindex troubleshooting
@@ -16294,6 +16312,7 @@ You can also ask on the ding mailing list---@samp{ding@@gnus.org}.
 Write to @samp{ding-request@@gnus.org} to subscribe.
 
 
+@page
 @node A Programmers Guide to Gnus
 @section A Programmer@'s Guide to Gnus
 
@@ -17646,6 +17665,7 @@ description   = <string>
 @end example
 
 
+@page
 @node Emacs for Heathens
 @section Emacs for Heathens
 
@@ -17765,7 +17785,7 @@ On the other hand, if the manual says ``set @code{gnus-nntp-server} to
 So be careful not to mix up strings (the latter) with symbols (the
 former).  The manual is unambiguous, but it can be confusing.
 
-
+@page
 @include gnus-faq.texi
 
 @node Index

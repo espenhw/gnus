@@ -33,6 +33,7 @@
 (require 'gnus-range)
 (require 'gnus-int)
 (require 'gnus-undo)
+(autoload 'gnus-summary-limit-include-cached "gnus-cache" nil t)
 
 (defcustom gnus-kill-summary-on-exit t
   "*If non-nil, kill the summary buffer when you exit from it.
@@ -1248,6 +1249,7 @@ increase the score of each group you read."
     "u" gnus-summary-limit-to-unread
     "m" gnus-summary-limit-to-marks
     "v" gnus-summary-limit-to-score
+    "*" gnus-summary-limit-include-cached
     "D" gnus-summary-limit-include-dormant
     "T" gnus-summary-limit-include-thread
     "d" gnus-summary-limit-exclude-dormant
@@ -4408,7 +4410,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	 (let ((num (ignore-errors (read buffer))))
 	   (if (numberp num) num 0)))
      (unless (eobp)
-       (forward-char 1))))
+       (search-forward "\t" eol 'move))))
 
 (defmacro gnus-nov-skip-field ()
   '(search-forward "\t" eol 'move))
@@ -5824,7 +5826,7 @@ NUMBER articles will be popped off."
     (setq gnus-newsgroup-history
 	  (cdr (setq to (nthcdr number gnus-newsgroup-history))))
     (if to
-	(gnus-summary-goto-article (car to))
+	(gnus-summary-goto-article (car to) nil t)
       (error "Article history empty")))
   (gnus-summary-position-point))
 
@@ -7603,8 +7605,8 @@ returned."
 (defun gnus-summary-mark-article-as-unread (mark)
   "Mark the current article quickly as unread with MARK."
   (let ((article (gnus-summary-article-number)))
-    (if (< article 0)
-	(gnus-error 1 "Unmarkable article")
+    (if (<= article 0)
+	(gnus-error 1 "Can't mark negative article numbers")
       (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
       (setq gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant))
       (setq gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable))
@@ -7740,19 +7742,24 @@ marked."
 	  gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable)
 	  gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
 
-    ;; Unsuppress duplicates?
-    (when gnus-suppress-duplicates
-      (gnus-dup-unsuppress-article article))
+    (if (<= article 0)
+	(progn
+	  (gnus-error 1 "Can't mark negative article numbers")
+	  nil)
+      ;; Unsuppress duplicates?
+      (when gnus-suppress-duplicates
+	(gnus-dup-unsuppress-article article))
 
-    (cond ((= mark gnus-ticked-mark)
-	   (push article gnus-newsgroup-marked))
-	  ((= mark gnus-dormant-mark)
-	   (push article gnus-newsgroup-dormant))
-	  (t
-	   (push article gnus-newsgroup-unreads)))
-    (setq gnus-newsgroup-reads
-	  (delq (assq article gnus-newsgroup-reads)
-		gnus-newsgroup-reads))))
+      (cond ((= mark gnus-ticked-mark)
+	     (push article gnus-newsgroup-marked))
+	    ((= mark gnus-dormant-mark)
+	     (push article gnus-newsgroup-dormant))
+	    (t
+	     (push article gnus-newsgroup-unreads)))
+      (setq gnus-newsgroup-reads
+	    (delq (assq article gnus-newsgroup-reads)
+		  gnus-newsgroup-reads))
+      t)))
 
 (defalias 'gnus-summary-mark-as-unread-forward
   'gnus-summary-tick-article-forward)

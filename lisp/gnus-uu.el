@@ -634,6 +634,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 (defun gnus-uu-invert-processable ()
   "Invert the list of process-marked articles."
+  (interactive)
   (let ((data gnus-newsgroup-data)
 	d number)
     (save-excursion

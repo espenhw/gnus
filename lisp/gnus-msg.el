@@ -981,8 +981,12 @@ this is a reply."
   "Insert the Gcc to say where the article is to be archived."
   (let* ((var gnus-message-archive-group)
 	 (group (or group gnus-newsgroup-name ""))
-	 result
-	 gcc-self-val
+	 (gcc-self-val
+	  (and gnus-newsgroup-name
+	       (setq gcc-self-val
+		     (gnus-group-find-parameter
+		      gnus-newsgroup-name 'gcc-self))))
+	 result 
 	 (groups
 	  (cond
 	   ((null gnus-message-archive-method)
@@ -1018,7 +1022,7 @@ this is a reply."
 	      (setq var (cdr var)))
 	    result)))
 	 name)
-    (when groups
+    (when (or groups gcc-self-val)
       (when (stringp groups)
 	(setq groups (list groups)))
       (save-excursion
@@ -1026,10 +1030,8 @@ this is a reply."
 	  (message-narrow-to-headers)
 	  (goto-char (point-max))
 	  (insert "Gcc: ")
-	  (if (and gnus-newsgroup-name
-		   (setq gcc-self-val
-			 (gnus-group-find-parameter
-			  gnus-newsgroup-name 'gcc-self)))
+	  (if gcc-self-val
+	      ;; Use the `gcc-self' param value instead.
 	      (progn
 		(insert
 		 (if (stringp gcc-self-val)
@@ -1040,6 +1042,7 @@ this is a reply."
 		  (progn
 		    (beginning-of-line)
 		    (kill-line))))
+	    ;; Use the list of groups.
 	    (while (setq name (pop groups))
 	      (insert (if (string-match ":" name)
 			  name

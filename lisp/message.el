@@ -199,13 +199,13 @@ included.  Organization, Lines and X-Mailer are optional."
   :type 'sexp)
 
 (defcustom message-ignored-news-headers
-  "^NNTP-Posting-Host:\\|^Xref:\\|^Bcc:\\|^Gcc:\\|^Fcc:\\|^Resent-Fcc:"
+  "^NNTP-Posting-Host:\\|^Xref:\\|^[BGF]cc:\\|^Resent-Fcc:"
   "*Regexp of headers to be removed unconditionally before posting."
   :group 'message-news
   :group 'message-headers
   :type 'regexp)
 
-(defcustom message-ignored-mail-headers "^Gcc:\\|^Fcc:\\|^Resent-Fcc:"
+(defcustom message-ignored-mail-headers "^[GF]cc:\\|^Resent-Fcc:"
   "*Regexp of headers to be removed unconditionally before mailing."
   :group 'message-mail
   :group 'message-headers
@@ -1074,7 +1074,8 @@ Return the number of headers removed."
       (save-excursion
 	(save-restriction
 	  (message-narrow-to-headers)
-	  (message-fetch-field "newsgroups")))))
+	  (and (message-fetch-field "newsgroups")
+	       (not (message-fetch-field "posted-to")))))))
 
 (defun message-mail-p ()
   "Say whether the current buffer contains a mail message."
@@ -1267,16 +1268,19 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 	facemenu-remove-face-function t)
   (make-local-variable 'paragraph-separate)
   (make-local-variable 'paragraph-start)
-  (setq paragraph-start (concat (regexp-quote mail-header-separator)
-				"$\\|[ \t]*[-_][-_][-_]+$\\|"
-				"-- $\\|"
-				"[> ]+$\\|"
-				paragraph-start))
-  (setq paragraph-separate (concat (regexp-quote mail-header-separator)
-				   "$\\|[ \t]*[-_][-_][-_]+$\\|"
-				   "-- $\\|"
-				   "[> ]+$\\|"
-				   paragraph-separate))
+  (setq paragraph-start
+	(concat (regexp-quote mail-header-separator)
+		"$\\|[ \t]*[-_][-_][-_]+$\\|"
+		"-- $\\|"
+		;;!!! Uhm... shurely this can't be right.
+		"[> " (regexp-quote message-yank-prefix) "]+$\\|"
+		paragraph-start))
+  (setq paragraph-separate
+	(concat (regexp-quote mail-header-separator)
+		"$\\|[ \t]*[-_][-_][-_]+$\\|"
+		"-- $\\|"
+		"[> " (regexp-quote message-yank-prefix) "]+$\\|"
+		paragraph-separate))
   (make-local-variable 'message-reply-headers)
   (setq message-reply-headers nil)
   (make-local-variable 'message-newsreader)

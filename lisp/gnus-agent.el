@@ -62,9 +62,6 @@
 (defvar gnus-agent-file-name nil)
 (defvar gnus-agent-send-mail-function nil)
 
-(defvar gnus-plugged t
-  "Whether Gnus is plugged or not.")
-
 ;; Dynamic variables
 (defvar gnus-headers)
 (defvar gnus-score)
@@ -117,6 +114,33 @@
 (defun gnus-agent-lib-file (file)
   "The full path of the Gnus agent library FILE."
   (concat (gnus-agent-directory) "agent.lib/" file))
+
+;;; Fetching setup functions.
+
+(defun gnus-agent-start-fetch ()
+  "Initialize data structures for efficient fetching."
+  (gnus-agent-open-history)
+  (setq gnus-agent-current-history (gnus-agent-history-buffer)))
+
+(defun gnus-agent-stop-fetch ()
+  "Save all data structures and clean up."
+  (gnus-agent-save-history)
+  (gnus-agent-close-history)
+  (setq gnus-agent-spam-hashtb nil)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (widen)))
+
+(defmacro gnus-agent-with-fetch (&rest forms)
+  "Do FORMS safely."
+  `(unwind-protect
+       (progn
+	 (gnus-agent-start-fetch)
+	 ,@forms)
+     (gnus-agent-stop-fetch)))
+
+(put 'gnus-agent-with-fetch 'lisp-indent-function 0)
+(put 'gnus-agent-with-fetch 'edebug-form-spec '(body))
 
 ;;;
 ;;; Mode infestation
@@ -521,31 +545,6 @@ the actual number of articles toggled is returned."
 ;;;
 ;;; Fetching
 ;;;
-
-(defun gnus-agent-start-fetch ()
-  "Initialize data structures for efficient fetching."
-  (gnus-agent-open-history)
-  (setq gnus-agent-current-history (gnus-agent-history-buffer)))
-
-(defun gnus-agent-stop-fetch ()
-  "Save all data structures and clean up."
-  (gnus-agent-save-history)
-  (gnus-agent-close-history)
-  (setq gnus-agent-spam-hashtb nil)
-  (save-excursion
-    (set-buffer nntp-server-buffer)
-    (widen)))
-
-(defmacro gnus-agent-with-fetch (&rest forms)
-  "Do FORMS safely."
-  `(unwind-protect
-       (progn
-	 (gnus-agent-start-fetch)
-	 ,@forms)
-     (gnus-agent-stop-fetch)))
-
-(put 'gnus-agent-with-fetch 'lisp-indent-function 0)
-(put 'gnus-agent-with-fetch 'edebug-form-spec '(body))
 
 (defun gnus-agent-fetch-articles (group articles)
   "Fetch ARTICLES from GROUP and put them into the agent."

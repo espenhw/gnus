@@ -95,7 +95,7 @@
     "^Date-Received:" "^References:" "^Control:" "^Xref:" "^Lines:"
     "^Posted:" "^Relay-Version:" "^Message-ID:" "^Nf-ID:" "^Nf-From:"
     "^Approved:" "^Sender:" "^Received:" "^Mail-from:")
-  "All headers that match this regexp will be hidden.
+  "All headers that start with this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :type '(choice :custom-show nil
@@ -1953,9 +1953,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      (progn
 		(save-excursion
 		  (set-buffer summary-buffer)
+		  (push article gnus-newsgroup-history)
 		  (setq gnus-last-article gnus-current-article
-			gnus-newsgroup-history (cons gnus-current-article
-						     gnus-newsgroup-history)
 			gnus-current-article 0
 			gnus-current-headers nil
 			gnus-article-current nil)
@@ -1973,9 +1972,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      ;; `gnus-current-article' must be an article number.
 	      (save-excursion
 		(set-buffer summary-buffer)
+		(push article gnus-newsgroup-history)
 		(setq gnus-last-article gnus-current-article
-		      gnus-newsgroup-history (cons gnus-current-article
-						   gnus-newsgroup-history)
 		      gnus-current-article article
 		      gnus-current-headers
 		      (gnus-summary-article-header gnus-current-article)

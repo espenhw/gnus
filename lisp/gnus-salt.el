@@ -203,7 +203,7 @@ This must be bound to a button-down mouse event."
          (start-line (1+ (count-lines 1 start-point)))
 	 (start-window (posn-window start-posn))
 	 (start-frame (window-frame start-window))
-	 (bounds (window-edges start-window))
+	 (bounds (gnus-window-edges start-window))
 	 (top (nth 1 bounds))
 	 (bottom (if (window-minibuffer-p start-window)
 		     (nth 3 bounds)

@@ -51,3 +51,5 @@ limit.
 
 *** `M-RET' is a new Message command for breaking cited text.
 
+*** \\1-expressions are now valid in `nnmail-split-methods'.
+

@@ -244,7 +244,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.11"
+(defconst gnus-version-number "0.12"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -281,46 +281,8 @@ be set in `.emacs' instead."
   (defalias 'gnus-mode-line-buffer-identification 'identity)
   (defalias 'gnus-characterp 'numberp)
   (defalias 'gnus-deactivate-mark 'deactivate-mark)
+  (defalias 'gnus-window-edges 'window-edges)
   (defalias 'gnus-key-press-event-p 'numberp))
-
-;; The XEmacs people think this is evil, so it must go.
-(defun custom-face-lookup (&optional fg bg stipple bold italic underline)
-  "Lookup or create a face with specified attributes."
-  (let ((name (intern (format "custom-face-%s-%s-%s-%S-%S-%S"
-			      (or fg "default")
-			      (or bg "default")
-			      (or stipple "default")
-			      bold italic underline))))
-    (if (and (custom-facep name)
-	     (fboundp 'make-face))
-	()
-      (copy-face 'default name)
-      (when (and fg
-		 (not (string-equal fg "default")))
-	(ignore-errors
-	  (set-face-foreground name fg)))
-      (when (and bg
-		 (not (string-equal bg "default")))
-	(ignore-errors
-	  (set-face-background name bg)))
-      (when (and stipple
-		 (not (string-equal stipple "default"))
-		 (not (eq stipple 'custom:asis))
-		 (fboundp 'set-face-stipple))
-	(set-face-stipple name stipple))
-      (when (and bold
-		 (not (eq bold 'custom:asis)))
-	(ignore-errors
-	  (make-face-bold name)))
-      (when (and italic
-		 (not (eq italic 'custom:asis)))
-	(ignore-errors
-	  (make-face-italic name)))
-      (when (and underline
-		 (not (eq underline 'custom:asis)))
-	(ignore-errors
-	  (set-face-underline-p name t))))
-    name))
 
 ;; We define these group faces here to avoid the display
 ;; update forced when creating new faces.
@@ -1396,6 +1358,9 @@ want."
   "*Name of the directory articles will be saved in (default \"~/News\")."
   :group 'gnus-article-saving
   :type 'directory)
+
+(defvar gnus-plugged t
+  "Whether Gnus is plugged or not.")
 
 
 ;;; Internal variables
