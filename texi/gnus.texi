@@ -6271,6 +6271,13 @@ Limit the summary buffer to articles that match some author
 (@code{gnus-summary-limit-to-author}).  If given a prefix, exclude
 matching articles.
 
+@item / R
+@kindex / R (Summary)
+@findex gnus-summary-limit-to-recipient
+Limit the summary buffer to articles that match some recipient
+(@code{gnus-summary-limit-to-recipient}).  If given a prefix, exclude
+matching articles.
+
 @item / x
 @kindex / x (Summary)
 @findex gnus-summary-limit-to-extra
@@ -6968,6 +6975,7 @@ Matching}).
 @findex gnus-thread-sort-by-score
 @findex gnus-thread-sort-by-subject
 @findex gnus-thread-sort-by-author
+@c @findex gnus-thread-sort-by-recipient
 @findex gnus-thread-sort-by-number
 @findex gnus-thread-sort-by-random
 @vindex gnus-thread-sort-functions
@@ -9553,6 +9561,11 @@ Sort by article number (@code{gnus-summary-sort-by-number}).
 @kindex C-c C-s C-a (Summary)
 @findex gnus-summary-sort-by-author
 Sort by author (@code{gnus-summary-sort-by-author}).
+
+@item C-c C-s C-t
+@kindex C-c C-s C-t (Summary)
+@findex gnus-summary-sort-by-recipient
+Sort by recipient (@code{gnus-summary-sort-by-recipient}).
 
 @item C-c C-s C-s
 @kindex C-c C-s C-s (Summary)

@@ -2,6 +2,8 @@
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package): Index
 	`spam-initialize'.
+	(Limiting): Add `gnus-summary-limit-to-recipient'.
+	(Summary Sorting): Add `gnus-summary-sort-by-recipient'.
 
 2004-11-30  Simon Josefsson  <jas@extundo.com>
 
