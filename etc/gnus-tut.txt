@@ -195,7 +195,7 @@ which are both faster and more accurated.
 
 There is absolutely no chance, whatsoever, of getting Gnus to work
 with Emacs 18.  It won't even work on Emacsen older than Emacs
-20.3/XEmacs 20.4.  Upgrade your Emacs or die.
+20.7/XEmacs 21.1.  Upgrade your Emacs or die.
 
 	
 From lars Thu Feb 23 23:20:38 1995
@@ -569,7 +569,7 @@ Frequently Asked Questions with Answers
 1.5.  Which version of Emacs do I need?
 
       Gnus 5.10.0 requires an Emacs version that is greater than or equal
-      to Emacs 20.3 or XEmacs 20.1.
+      to Emacs 20.7 or XEmacs 21.1.
 
 1.6.  How do I run Gnus on both Emacs and XEmacs?
 
