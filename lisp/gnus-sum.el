@@ -9432,6 +9432,8 @@ ARTICLE can also be a list of articles."
   (interactive (list (gnus-summary-article-number)))
   (let ((articles (if (listp article) article (list article))))
     (dolist (article articles)
+      (unless (numberp article)
+	(error "%s is not a number" article))
       (push article gnus-newsgroup-replied)
       (let ((buffer-read-only nil))
 	(when (gnus-summary-goto-subject article nil t)

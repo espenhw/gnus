@@ -1,3 +1,8 @@
+2003-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-mark-article-as-replied): Added
+	debugging statements.
+
 2003-01-21  Andreas Fuchs  <asf@void.at>
 
 	* mml-sec.el (mml-sign-alist): Added pgpauto.
