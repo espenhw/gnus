@@ -946,10 +946,10 @@ ARG is passed to the first function."
        (when (and sym
 		  (boundp sym)
 		  (symbol-value sym))
-	 (insert (format "%s %d %d y\n"
+	 (insert (format "%S %d %d y\n"
 			 (if full-names
-			     (symbol-name sym)
-			   (gnus-group-real-name (symbol-name sym)))
+			     sym
+			   (intern (gnus-group-real-name (symbol-name sym))))
 			 (or (cdr (symbol-value sym))
 			     (car (symbol-value sym)))
 			 (car (symbol-value sym))))))

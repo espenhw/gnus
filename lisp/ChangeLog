@@ -1,6 +1,14 @@
+1999-11-07 21:07:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-active-to-gnus-format): Don't insert backslash
+	if cooked.
+	* gnus-util.el (gnus-write-active-file): Write cooked active file.
+	* gnus-agent.el (gnus-agent-save-group-info): Ditto.
+	* gnus.el (gnus-short-group-name): "..." proof.
+
 1999-11-07 20:03:16  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
-	* gnus-srvr.el (gnus-browse-foreign-server): Keeping use `read' to
+	* gnus-srvr.el (gnus-browse-foreign-server): Keep using `read' to
 	support nnslashdot.
 
 1999-11-08 00:06:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>

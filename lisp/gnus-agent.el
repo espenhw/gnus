@@ -623,8 +623,8 @@ the actual number of articles toggled is returned."
 	(when (re-search-forward
 	       (concat "^" (regexp-quote group) " ") nil t)
 	  (gnus-delete-line))
-	(insert group " " (number-to-string (cdr active)) " "
-		(number-to-string (car active)) " y\n")))))
+	(insert (format "%S %d %d y\n" (intern group) (cdr active)
+			(car active)))))))
 
 (defun gnus-agent-group-path (group)
   "Translate GROUP into a path."

@@ -1760,11 +1760,13 @@ newsgroup."
      (t
       (delete-matching-lines (concat "^to\\.\\|" gnus-ignored-newsgroups))))
 
-    ;; Make the group names readable as a lisp expression even if they
-    ;; contain special characters.
-    (goto-char (point-max))
-    (while (re-search-backward "[][';?()#]" nil t)
-      (insert ?\\))
+    (goto-char (point-min))
+    (unless (re-search-forward "[\\\"]" nil t)
+      ;; Make the group names readable as a lisp expression even if they
+      ;; contain special characters.
+      (goto-char (point-max))
+      (while (re-search-backward "[][';?()#]" nil t)
+	(insert ?\\)))
 
     ;; Let the Gnus agent save the active file.
     (when (and gnus-agent real-active gnus-plugged)
