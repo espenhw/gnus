@@ -1,3 +1,8 @@
+1999-12-03 08:49:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnfolder.el (nnfolder-request-article): Return -1 if not find
+ 	the article number.
+
 1999-12-03 01:12:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-find-method-for-group): The method of a new group

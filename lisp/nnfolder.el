@@ -184,11 +184,13 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
 	  (if (numberp article)
 	      (cons nnfolder-current-group article)
 	    (goto-char (point-min))
-	    (search-forward (concat "\n" nnfolder-article-marker))
 	    (cons nnfolder-current-group
-		  (string-to-int
-		   (buffer-substring
-		    (point) (progn (end-of-line) (point)))))))))))
+		  (if (search-forward (concat "\n" nnfolder-article-marker) 
+				      nil t)
+		      (string-to-int
+		       (buffer-substring
+			(point) (progn (end-of-line) (point))))
+		    -1))))))))
 
 (deffoo nnfolder-request-group (group &optional server dont-check)
   (nnfolder-possibly-change-group group server t)
