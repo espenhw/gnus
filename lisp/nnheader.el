@@ -138,14 +138,14 @@ on your system, you could say something like:
 
 (defvar nnheader-newsgroup-none-id 1)
 
-(defun nnheader-parse-head ()
+(defun nnheader-parse-head (&optional naked)
   (let ((case-fold-search t)
 	(cur (current-buffer))
 	end ref in-reply-to lines p)
     (goto-char (point-min))
     ;; Search to the beginning of the next header. Error messages
     ;; do not begin with 2 or 3.
-    (when (re-search-forward "^[23][0-9]+ " nil t)
+    (when (or naked (re-search-forward "^[23][0-9]+ " nil t))
       ;; This implementation of this function, with nine
       ;; search-forwards instead of the one re-search-forward and
       ;; a case (which basically was the old function) is actually
@@ -154,14 +154,18 @@ on your system, you could say something like:
       ;; doesn't always go hand in hand.
       (vector
        ;; Number.
-       (prog1
-	   (read cur)
-	 (end-of-line)
-	 (setq p (point))
-	 (narrow-to-region (point)
-			   (or (and (search-forward "\n.\n" nil t)
-				    (- (point) 2))
-			       (point))))
+       (if naked
+	   (progn
+	     (setq p (point-min))
+	     0)
+	 (prog1
+	     (read cur)
+	   (end-of-line)
+	   (setq p (point))
+	   (narrow-to-region (point)
+			     (or (and (search-forward "\n.\n" nil t)
+				      (- (point) 2))
+				 (point)))))
        ;; Subject.
        (progn
 	 (goto-char p)
@@ -220,8 +224,8 @@ on your system, you could say something like:
   (princ (mail-header-number header) (current-buffer))
   (insert 
    "\t"
-   (or (mail-header-subject header) "") "\t"
-   (or (mail-header-from header) "") "\t"
+   (or (mail-header-subject header) "(none)") "\t"
+   (or (mail-header-from header) "(nobody)") "\t"
    (or (mail-header-date header) "") "\t"
    (or (mail-header-id header) "") "\t"
    (or (mail-header-references header) "") "\t")

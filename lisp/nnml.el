@@ -351,8 +351,8 @@ all. This may very well take some time.")
 	()
       (let ((chars (nnmail-insert-lines))
 	    (art (concat (int-to-string article) "\t"))
-	    nov-line)
-	(setq nov-line (nnml-make-nov-line chars))
+	    headers)
+	(setq headers (nnml-parse-head chars article))
 	;; Replace the NOV line in the NOV file.
 	(save-excursion 
 	  (set-buffer (nnml-open-nov group))
@@ -372,7 +372,7 @@ all. This may very well take some time.")
 			   article)
 			(zerop (forward-line 1)))))
 	  (beginning-of-line)
-	  (insert (int-to-string article) nov-line)
+	  (nnheader-insert-nov headers)
 	  (nnml-save-nov)
 	  t)))))
 
@@ -541,7 +541,7 @@ all. This may very well take some time.")
 (defun nnml-save-mail ()
   "Called narrowed to an article."
   (let ((group-art (nreverse (nnmail-article-group 'nnml-active-number)))
-	chars nov-line)
+	chars headers)
     (setq chars (nnmail-insert-lines))
     (nnmail-insert-xref group-art)
     (run-hooks 'nnmail-prepare-save-mail-hook)
@@ -569,11 +569,11 @@ all. This may very well take some time.")
     ;; Generate a nov line for this article. We generate the nov
     ;; line after saving, because nov generation destroys the
     ;; header. 
-    (setq nov-line (nnml-make-nov-line chars))
+    (setq headers (nnml-parse-head chars))
     ;; Output the nov line to all nov databases that should have it.
     (let ((ga group-art))
       (while ga
-	(nnml-add-nov (caar ga) (cdar ga) nov-line)
+	(nnml-add-nov (caar ga) (cdar ga) headers)
 	(setq ga (cdr ga))))
     group-art))
 
@@ -605,70 +605,35 @@ all. This may very well take some time.")
       (setcdr active (1+ (cdr active))))
     (cdr active)))
 
-(defun nnml-add-nov (group article line)
+(defun nnml-add-nov (group article headers)
   "Add a nov line for the GROUP base."
   (save-excursion 
     (set-buffer (nnml-open-nov group))
     (goto-char (point-max))
-    (insert (int-to-string article) line)))
+    (mail-header-set-number headers article)
+    (nnheader-insert-nov headers)))
 
 (defsubst nnml-header-value ()
   (buffer-substring (match-end 0) (progn (end-of-line) (point))))
 
-(defun nnml-make-nov-line (chars)
-  "Create a nov from the current headers."
-  (let ((case-fold-search t)
-	subject from date id references lines xref in-reply-to char)
-    (save-excursion
-      (save-restriction
-	(goto-char (point-min))
-	(narrow-to-region 
-	 (point)
-	 (1- (or (search-forward "\n\n" nil t) (point-max))))
-	;; Fold continuation lines.
-	(goto-char (point-min))
-	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
-	(subst-char-in-region (point-min) (point-max) ?\t ? )
-	;; [number subject from date id references chars lines xref]
-	(save-excursion
-	  (goto-char (point-min))
-	  (while (re-search-forward "^\\(from\\|subject\\|message-id\\|date\\|lines\\|xref\\|references\\|in-reply-to\\): "
-				    nil t)
-	    (beginning-of-line)
-	    (setq char (downcase (following-char))) 
-	    (cond
-	     ((eq char ?s)
-	      (setq subject (nnml-header-value)))
-	     ((eq char ?f)
-	      (setq from (nnml-header-value)))
-	     ((eq char ?x)
-	      (setq xref (buffer-substring (match-beginning 0) 
-					   (progn (end-of-line) (point)))))
-	     ((eq char ?l)
-	      (setq lines (nnml-header-value)))
-	     ((eq char ?d)
-	      (setq date (nnml-header-value)))
-	     ((eq char ?m)
-	      (setq id (setq id (nnml-header-value))))
-	     ((eq char ?r)
-	      (setq references (nnml-header-value)))
-	     ((eq char ?i)
-	      (setq in-reply-to (nnml-header-value))))
-	    (forward-line 1))
-      
-	  (and (not references)
-	       in-reply-to
-	       (string-match "<[^>]+>" in-reply-to)
-	       (setq references
-		     (substring in-reply-to (match-beginning 0)
-				(match-end 0)))))
-	;; [number subject from date id references chars lines xref]
-	(format "\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t%s\t\n"
-		(or subject "(none)") (or from "(nobody)") (or date "")
-		(or id (nnmail-message-id))
-		(or references "") (or chars 0) (or lines "0") 
-		(or xref ""))))))
+(defun nnml-parse-head (chars &optional number)
+  "Parse the head of the current buffer."
+  (save-excursion
+    (save-restriction
+      (goto-char (point-min))
+      (narrow-to-region 
+       (point)
+       (1- (or (search-forward "\n\n" nil t) (point-max))))
+      ;; Fold continuation lines.
+      (goto-char (point-min))
+      (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
+	(replace-match " " t t))
+      ;; Remove any tabs; they are too confusing.
+      (subst-char-in-region (point-min) (point-max) ?\t ? )
+      (let ((headers (nnheader-parse-head t)))
+	(mail-header-set-chars headers chars)
+	(mail-header-set-number headers number)
+	headers))))
 
 (defun nnml-open-nov (group)
   (or (cdr (assoc group nnml-nov-buffer-alist))
@@ -771,11 +736,11 @@ all. This may very well take some time.")
 	  (when (and (not (= 0 chars))	; none of them empty files...
 		     (not (= (point-min) (point-max))))
 	    (goto-char (point-min))
-	    (setq nov-line (nnml-make-nov-line chars))
+	    (setq headers (nnml-parse-head chars (car files)))
 	    (save-excursion
 	      (set-buffer nov-buffer)
 	      (goto-char (point-max))
-	      (insert (int-to-string (car files)) nov-line)))
+	      (nnheader-insert-nov headers)))
 	  (widen))
 	(setq files (cdr files)))
       (save-excursion

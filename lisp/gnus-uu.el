@@ -586,7 +586,8 @@ The headers will be included in the sequence they are matched.")
     (setq gnus-newsgroup-processable nil)
     (save-excursion
       (while marked
-	(and (setq headers (gnus-summary-article-header (car marked)))
+	(and (vectorp (setq headers 
+			    (gnus-summary-article-header (car marked))))
 	     (setq subject (mail-header-subject headers)
 		   articles (gnus-uu-find-articles-matching 
 			     (gnus-uu-reginize-string subject))
@@ -608,8 +609,9 @@ The headers will be included in the sequence they are matched.")
     (let ((data gnus-newsgroup-data)
 	  number)
       (while data
-	(unless (memq (setq number (gnus-data-number (car data)))
-		      gnus-newsgroup-processable)
+	(when (and (not (memq (setq number (gnus-data-number (car data)))
+			      gnus-newsgroup-processable))
+		   (vectorp (gnus-data-header (car data))))
 	  (gnus-summary-goto-subject number)
 	  (gnus-uu-mark-series))
 	(setq data (cdr data)))))
@@ -1611,9 +1613,9 @@ The headers will be included in the sequence they are matched.")
 
 (defun gnus-uu-delete-work-dir (&optional dir)
   "Delete recursively all files and directories under `gnus-uu-work-dir'."
-  (unless dir
+  (if dir
+      (gnus-message 7 "Deleting directory %s..." dir)
     (setq dir gnus-uu-work-dir))
-  (gnus-message 7 "Deleting directory %s..." dir)
   (when (and dir
 	     (file-exists-p dir))
     (let ((files (directory-files dir t nil t))

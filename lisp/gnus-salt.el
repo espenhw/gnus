@@ -214,9 +214,6 @@ Two predefined functions are available:
 (defvar gnus-tree-mode-hook nil
   "*Hook run in tree mode buffers.")
 
-(defvar gnus-tree-buffer "*Tree*"
-  "Buffer where Gnus thread trees are displayed.")
-
 ;;; Internal variables.
 
 (defvar gnus-tree-line-format-alist 

@@ -111,29 +111,30 @@ It is provided only to ease porting of broken FSF Emacs programs."
 			 gnus-summary-selected-face))))
 
 (defun gnus-xmas-summary-recenter ()
-  "Center point in the summary window.
+  "\"Center\" point in the summary window.
 If `gnus-auto-center-summary' is nil, or the article buffer isn't
 displayed, no centering will be performed."
   ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
   ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
-  (let* ((top (cond ((< (window-height) 4) 0)
-		    ((< (window-height) 7) 1)
-		    (t 2)))
-	 (height (- (window-height) 3))
-	 (bottom (save-excursion (goto-char (point-max))
-				 (forward-line (- height))
-				 (point)))
-	 (window (get-buffer-window (current-buffer))))
-    ;; The user has to want it.
-    (when gnus-auto-center-summary
+  (when gnus-auto-center-summary
+    (let* ((height (if (fboundp 'window-displayed-height)
+		       (window-displayed-height)
+		     (- (window-height) 2)))
+	   (top (cond ((< height 4) 0)
+		      ((< height 7) 1)
+		      (t 2)))
+	   (bottom (save-excursion (goto-char (point-max))
+				   (forward-line (- height))
+				   (point)))
+	   (window (get-buffer-window (current-buffer))))
       (when (get-buffer-window gnus-article-buffer)
-       ;; Only do recentering when the article buffer is displayed,
-       ;; Set the window start to either `bottom', which is the biggest
-       ;; possible valid number, or the second line from the top,
-       ;; whichever is the least.
-       (set-window-start
-	window (min bottom (save-excursion 
-			     (forward-line (- top)) (point)))))
+	;; Only do recentering when the article buffer is displayed,
+	;; Set the window start to either `bottom', which is the biggest
+	;; possible valid number, or the second line from the top,
+	;; whichever is the least.
+	(set-window-start
+	 window (min bottom (save-excursion 
+			      (forward-line (- top)) (point)))))
       ;; Do horizontal recentering while we're at it.
       (when (and (get-buffer-window (current-buffer) t)
 		 (not (eq gnus-auto-center-summary 'vertical)))

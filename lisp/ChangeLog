@@ -1,4 +1,86 @@
+Sun May 12 01:29:12 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no (Lars Magne Ingebrigtsen)>
+
+	* gnus-xmas.el (gnus-xmas-summary-recenter): Protect against evil.
+
+Sat May 11 23:23:15 1996  Michael Sperber  <sperber@informatik.uni-tuebingen.de>
+
+	* gnus-xmas.el (gnus-xmas-summary-recenter): Would act oddly.
+
+Fri May 10 22:49:46 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* nnheader.el (nnheader-parse-head): Deal with naked heads.
+
+	* nnml.el (nnml-parse-head): `naked' heads.
+
+Fri May 10 00:27:59 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-group-mark-group): Didn't work well in topic
+	buffers. 
+	(gnus-read-active-file-p): New function.
+	(gnus-group-list-killed): Read active file.
+	(gnus-group-list-active): Ditto.
+	(gnus-group-list-matching): Possibly read active file.
+	(gnus-get-killed-groups): Separated into own function.
+	(gnus-update-group-mark-positions): Don't define "dummy.group".
+
+	* gnus-topic.el (gnus-topic-rename): Use topic under point.
+	(gnus-topic-create-topic): Don't prompt for parent topic.
+	(gnus-topic-create-topic): Go to the new topic.
+
+	* gnus.el (gnus-mime-decode-quoted-printable): Preserve text
+	props. 
+	(gnus-article-date-ut): Would bug out on read-only.
+
+Thu May  9 11:12:30 1996  Steven L Baur  <steve@miranova.com>
+
+	* message.el (message-followup): Correct typos in regular expression
+	matching ``Re:''.
+
+Thu May  9 20:38:10 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-uu.el (gnus-uu-delete-work-dir): Don't message so much.
+
+Wed May  8 03:20:23 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-process-unix-mail-format): Didn't nix out
+	bogus Message-ID headers properly.
+
+	* nnml.el (nnml-parse-head): Use nnheader functions for parsing
+	and generating nov headers.
+
+Wed May  8 22:55:56 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-execute-command): Make sure the buffer isn't
+	read-onl|y. 
+	(gnus-article-prepare): Would perform hooks on pseudo articles.
+
+	* gnus-uu.el (gnus-uu-mark-sparse): Would bug out on pseudos.
+	(gnus-uu-mark-all): Ditto.
+
+	* gnus.el (gnus-request-article-this-buffer): Ignore canceled
+	articles. 
+	(gnus-summary-next-page): Pass by canceled articles.
+
+	* message.el (message-check-element): Reverse logic.
+
+Wed May  8 22:36:18 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-tree-buffer): Moved from gnus-salt.el.
+
+Wed May  8 23:45:46 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el (gnus-no-server): New definition.
+	(gnus-group-default-level): Use permanent levels.
+
+Wed May  8 21:35:35 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-summary-select-article): 
+
 Tue May  7 21:49:30 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: 0.83 is released.
+
+	* gnus.el: September Gnus v0.83 is released.
 
 	* gnus.el (gnus-summary-insert-subject): Would change article
 	number. 

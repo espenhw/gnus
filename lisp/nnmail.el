@@ -573,7 +573,7 @@ nn*-request-list should have been called before calling this function."
 	(if (re-search-forward "^Message-ID:[ \t]*\\(<[^>]+>\\)" nil t)
 	    (setq message-id (match-string 1))
 	  (save-excursion
-	    (when (re-search-backward "^Message-ID:" nil t)
+	    (when (re-search-forward "^Message-ID:" nil t)
 	      (beginning-of-line)
 	      (insert "Original-")))
 	  ;; There is no Message-ID here, so we create one.

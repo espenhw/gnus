@@ -1478,7 +1478,7 @@ the user from the mailer."
 (defun message-check-element (type)
   "Returns non-nil if this type is not to be checked."
   (if (eq message-syntax-checks 'dont-check-for-anything-just-trust-me)
-      nil
+      t
     (let ((able (assq type message-syntax-checks)))
       (and (consp able)
 	   (eq (cdr able) 'disabled)))))
@@ -2117,7 +2117,7 @@ Headers already prepared in the buffer are not modified."
 	    message-id (mail-fetch-field "message-id"))
       ;; Remove any (buggy) Re:'s that are present and make a
       ;; proper one.
-      (when (string-match "^[ \t]*[Re][Ee]:[ \t]*" subject)
+      (when (string-match "^[ \t]*[Rr][Ee]:[ \t]*" subject)
 	(setq subject (substring subject (match-end 0))))
       (setq subject (concat "Re: " subject))
 
@@ -2219,7 +2219,7 @@ Headers already prepared in the buffer are not modified."
 	   (setq distribution nil))
       ;; Remove any (buggy) Re:'s that are present and make a
       ;; proper one.
-      (when (string-match "^[ \t]*[Re][Ee]:[ \t]*" subject)
+      (when (string-match "^[ \t]*[Rr][Ee]:[ \t]*" subject)
 	(setq subject (substring subject (match-end 0))))
       (setq subject (concat "Re: " subject))
       (widen))

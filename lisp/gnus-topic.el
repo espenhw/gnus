@@ -499,17 +499,11 @@ articles in the topic and its subtopics."
        parent (- old-unread (gnus-group-topic-unread))))
     unread))
 
-(defun gnus-topic-grok-active (&optional force read-active)
+(defun gnus-topic-grok-active (&optional force)
   "Parse all active groups and create topic structures for them."
   ;; First we make sure that we have really read the active file. 
   (when (or force
 	    (not gnus-topic-active-alist))
-    (when (and read-active
-	       (or force
-		   (not (member gnus-select-method 
-				gnus-have-read-active-file))))
-      (let ((gnus-read-active-file t))
-	(gnus-read-active-file)))
     (let (groups)
       ;; Get a list of all groups available.
       (mapatoms (lambda (g) (when (symbol-value g)
@@ -702,8 +696,7 @@ group."
   (interactive 
    (list
     (read-string "Create topic: ")
-    (completing-read "Parent topic: " gnus-topic-alist nil t
-		     (cons (gnus-group-parent-topic) 0))))
+    (gnus-group-parent-topic)))
   ;; Check whether this topic already exists.
   (when (gnus-topic-find-topology topic)
     (error "Topic aleady exists"))
@@ -723,7 +716,8 @@ group."
     (unless (assoc topic gnus-topic-alist)
       (push (list topic) gnus-topic-alist)))
   (gnus-topic-enter-dribble)
-  (gnus-group-list-groups))
+  (gnus-group-list-groups)
+  (gnus-topic-goto-topic topic))
 
 (defun gnus-topic-move-group (n topic &optional copyp)
   "Move the current group to a topic."
@@ -971,11 +965,9 @@ group."
 (defun gnus-topic-rename (old-name new-name)
   "Rename a topic."
   (interactive
-   (let (topic)
-     (list
-      (setq topic (completing-read "Rename topic: " gnus-topic-alist nil t
-				   (cons (gnus-group-parent-topic) 0)))
-      (read-string (format "Rename %s to: " topic)))))
+   (let ((topic (gnus-group-parent-topic)))
+     (list topic
+	   (read-string (format "Rename %s to: " topic)))))
   (let ((top (gnus-topic-find-topology old-name))
 	(entry (assoc old-name gnus-topic-alist)))
     (when top
@@ -1022,7 +1014,9 @@ If UNINDENT, remove an indentation."
   "List all groups that Gnus knows about in a topicsified fashion.
 If FORCE, always re-read the active file."
   (interactive "P")
-  (gnus-topic-grok-active force force)
+  (when force
+    (gnus-get-killed-groups))
+  (gnus-topic-grok-active force)
   (let ((gnus-topic-topology gnus-topic-active-topology)
 	(gnus-topic-alist gnus-topic-active-alist)
 	gnus-killed-list gnus-zombie-list)
