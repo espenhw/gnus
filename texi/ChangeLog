@@ -1,3 +1,7 @@
+2002-01-26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Mail Spool): Addition.
+
 2002-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Customization): Added documentation for

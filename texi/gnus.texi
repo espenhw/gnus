@@ -13778,7 +13778,12 @@ default is @code{nil}.
 
 @item nnml-marks-file-name
 @vindex nnml-marks-file-name
-The name of the @sc{marks} files.  The default is @file{.marks}.
+The name of the @dfn{marks} files.  The default is @file{.marks}.
+
+@item nnml-use-compressed-files
+@vindex nnml-use-compressed-files
+If non-@code{nil}, @code{nnml} will allow using compressed message
+files.
 
 @end table
 
