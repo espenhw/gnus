@@ -7346,6 +7346,11 @@ Cleaner, perhaps.
 
 @table @kbd
 
+@item C-u g
+This is not really washing, it's sort of the opposite of washing.  If
+you press this, you see the article exactly as it exists on disk or on
+the server.
+
 @item W l
 @kindex W l (Summary)
 @findex gnus-summary-stop-page-breaking

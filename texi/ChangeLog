@@ -1,3 +1,8 @@
+2001-01-03  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus.texi (Article Washing): Mention `C-u g' as a sort of
+	anti-washing. 
+
 2001-01-01 11:40:34  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (extensions): Removed.
