@@ -11,8 +11,8 @@
 
 (maybe-fbind '(Info-directory
 	       Info-menu bbdb-create-internal bbdb-records create-image
-	       display-graphic-p display-time-event-handler find-image
-	       image-size image-type-available-p insert-image
+	       display-graphic-p display-time-event-handler find-coding-system
+	       find-image image-size image-type-available-p insert-image
 	       make-mode-line-mouse-map make-temp-file open-ssl-stream
 	       propertize put-image replace-regexp-in-string
 	       rmail-msg-is-pruned rmail-msg-restore-non-pruned-header

@@ -85,8 +85,8 @@ Used for APOP authentication.")
     (setq message-count (car (pop3-stat process)))
     (unwind-protect
 	(while (<= n message-count)
-	  (message (format "Retrieving message %d of %d from %s..."
-			   n message-count pop3-mailhost))
+	  (message "Retrieving message %d of %d from %s..."
+		   n message-count pop3-mailhost)
 	  (pop3-retr process n crashbuf)
 	  (save-excursion
 	    (set-buffer crashbuf)
