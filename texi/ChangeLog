@@ -2,6 +2,7 @@
 
 	* gnus.texi (Image Enhancements): Mention missing images support
 	of Emacs on MS Windows.
+	(Oort Gnus): Mention Gnus FAQ.
 
 2003-04-30  Teodor Zlatanov  <tzz@lifelogs.com>
 

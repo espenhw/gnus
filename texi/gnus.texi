@@ -24659,6 +24659,11 @@ Gnus can now read @acronym{IMAP} mail via @code{nnimap}.
 New features in Gnus 5.10:
 
 @itemize @bullet
+
+@item
+The revised Gnus FAQ is included in the manual, @xref{Frequently Asked
+Questions}.
+
 @item
 Upgrading from previous (stable) version if you have used Oort.
 
