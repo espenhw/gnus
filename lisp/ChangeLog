@@ -1,3 +1,12 @@
+2004-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-fetch-field-fast, spam-fetch-field-from-fast)
+	(spam-fetch-field-subject-fast)
+	(spam-fetch-field-message-id-fast, spam-generate-fake-headers)
+	(spam-fetch-article-header): new functions to deal with Gnus
+	internals for fast retrieval of article header data
+	(spam-initialize): put spam-find-spam in the gnus-summary-prepared-hook
+
 2004-01-09  Jesper Harder  <harder@ifa.au.dk>
 
 	* pop3.el (pop3-md5): Remove.

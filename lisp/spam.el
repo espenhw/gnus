@@ -815,47 +815,60 @@ Respects the process/prefix convention."
 ;; 	article-filename
 ;;       nil)))
 
-(defun spam-fetch-field-fast (article field)
+(defun spam-fetch-field-fast (article field &optional prepared-data-header)
   "Fetch a field quickly, using the internal gnus-data-list function"
   (when (numberp article)
-    (let* ((header (assoc article (gnus-data-list nil)))
-	   (data-header (if header (gnus-data-header header) nil)))
-      (cond
-       ((equal field 'from)
-	(mail-header-from data-header))
-       ((equal field 'message-id)
-	(mail-header-message-id data-header))
-       ((equal field 'subject)
-	(mail-header-subject data-header))
-       ((equal field 'references)
-	(mail-header-references data-header))
-       ((equal field 'date)
-	(mail-header-date data-header))
-       ((equal field 'xref)
-	(mail-header-xref data-header))
-       ((equal field 'extra)
-	(mail-header-extra data-header))
-       (t
-	nil)))))
+    (let* ((data-header (or prepared-data-header
+			    (spam-fetch-article-header article))))
+      (if (arrayp data-header)
+	(cond
+	 ((equal field 'from)
+	  (mail-header-from data-header))
+	 ((equal field 'message-id)
+	  (mail-header-message-id data-header))
+	 ((equal field 'subject)
+	  (mail-header-subject data-header))
+	 ((equal field 'references)
+	  (mail-header-references data-header))
+	 ((equal field 'date)
+	  (mail-header-date data-header))
+	 ((equal field 'xref)
+	  (mail-header-xref data-header))
+	 ((equal field 'extra)
+	  (mail-header-extra data-header))
+	 (t
+	  nil))
+	(gnus-error 5 "Article %d has a nil data header" article)))))
 
-(defun spam-fetch-field-from-fast (article)
-  (spam-fetch-field-fast article 'from))
+(defun spam-fetch-field-from-fast (article &optional prepared-data-header)
+  (spam-fetch-field-fast article 'from prepared-data-header))
 
-(defun spam-fetch-field-subject-fast (article)
-  (spam-fetch-field-fast article 'subject))
+(defun spam-fetch-field-subject-fast (article &optional prepared-data-header)
+  (spam-fetch-field-fast article 'subject prepared-data-header))
 
-(defun spam-fetch-field-message-id-fast (article)
-  (spam-fetch-field-fast article 'message-id))
+(defun spam-fetch-field-message-id-fast (article &optional prepared-data-header)
+  (spam-fetch-field-fast article 'message-id prepared-data-header))
+
+(defun spam-generate-fake-headers (article &optional dh)
+  (concat
+   (format "From: %s\n" (spam-fetch-field-fast article 'from dh))
+   (format "Subject: %s\n" (spam-fetch-field-fast article 'subject dh))
+   (format "Message-ID: %s\n" (spam-fetch-field-fast article 'message-id dh))
+   (format "Date: %s\n" (spam-fetch-field-fast article 'date dh))
+   (format "References: %s\n" (spam-fetch-field-fast article 'references dh))
+   (format "Xref: %s\n" (spam-fetch-field-fast article 'xref dh))
+   (when (spam-fetch-field-fast article 'extra dh)
+     (format "%s\n" (spam-fetch-field-fast article 'extra dh)))))
 
 (defun spam-insert-fake-headers (article)
-  (insert (format "From: %s\n" (spam-fetch-field-fast article 'from)))
-  (insert (format "Subject: %s\n" (spam-fetch-field-fast article 'subject)))
-  (insert (format "Message-ID: %s\n" (spam-fetch-field-fast article 'message-id)))
-  (insert (format "Date: %s\n" (spam-fetch-field-fast article 'date)))
-  (insert (format "References: %s\n" (spam-fetch-field-fast article 'references)))
-  (insert (format "Xref: %s\n" (spam-fetch-field-fast article 'xref)))
-  (when (spam-fetch-field-fast article 'extra)
-    (insert (format "%s\n" (spam-fetch-field-fast article 'extra)))))
+  (let ((dh (spam-fetch-article-header article)))
+    (if dh
+	(insert (spam-generate-fake-headers article dh))
+;      (debug article gnus-newsgroup-data)
+)))
+
+(defun spam-fetch-article-header (article)
+  (nth 3 (gnus-data-find article)))
 
 
 ;;;; Spam determination.
@@ -1006,6 +1019,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			   (gnus-request-article-this-buffer
 			    article
 			    group)
+			 ;; else, we fake the article
 			 (spam-insert-fake-headers article))
 		       (if (or (null first-method)
 			       (equal first-method 'default))
@@ -1925,7 +1939,7 @@ REMOVE not nil, remove the ADDRESSES."
   (add-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
   (add-hook 'gnus-summary-prepare-hook 'spam-summary-prepare)
   (add-hook 'gnus-get-new-news-hook 'spam-setup-widening)
-  (add-hook 'gnus-summary-prepare-hook 'spam-find-spam))
+  (add-hook 'gnus-summary-prepared-hook 'spam-find-spam))
 
 (defun spam-unload-hook ()
   "Uninstall the spam.el hooks"
