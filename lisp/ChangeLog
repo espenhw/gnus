@@ -1,3 +1,8 @@
+2000-07-14  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus.el (gnus-invalid-group-regexp): New variable.
+	(gnus-read-group): Use it.
+
 2000-07-14 12:40:51  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): mark-below, 
