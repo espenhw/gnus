@@ -898,6 +898,7 @@ find-file-hooks, etc.
 (defalias 'nnheader-run-at-time 'run-at-time)
 (defalias 'nnheader-cancel-timer 'cancel-timer)
 (defalias 'nnheader-cancel-function-timers 'cancel-function-timers)
+(defalias 'nnheader-string-as-multibyte 'string-as-multibyte)
 
 (when (featurep 'xemacs)
   (require 'nnheaderxm))

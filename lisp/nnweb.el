@@ -689,7 +689,7 @@ and `altavista'.")
 (defun nnweb-insert-html (parse)
   "Insert HTML based on a w3 parse tree."
   (if (stringp parse)
-      (insert parse)
+      (insert (nnheader-string-as-multibyte parse))
     (insert "<" (symbol-name (car parse)) " ")
     (insert (mapconcat
 	     (lambda (param)

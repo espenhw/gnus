@@ -1,5 +1,11 @@
 2000-12-28 19:44:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* nnheaderxm.el (nnheader-string-as-multibyte): New alias.
+
+	* nnheader.el (nnheader-string-as-multibyte): New alias.
+
+	* mm-view.el (mm-inline-text): Warn when bugging out in w3. 
+
 	* gnus-uu.el (gnus-message-process-mark): New function.
 	(gnus-uu-mark-by-regexp): Use it.
 	(gnus-new-processable): New function.

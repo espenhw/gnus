@@ -37,6 +37,7 @@
 (require 'gnus-win)
 (require 'gnus-undo)
 (require 'time-date)
+(require 'gnus-ems)
 
 (defcustom gnus-group-archive-directory
   "*ftp@ftp.hpc.uh.edu:/pub/emacs/ding-list/"

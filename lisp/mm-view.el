@@ -119,7 +119,9 @@
 		      (url-standalone-mode t))
 		  (condition-case var
 		      (w3-region (point-min) (point-max))
-		    (error)))))
+		    (error
+		     (message
+		      "Error while rendering html; showing as text/plain"))))))
 	    (mm-handle-set-undisplayer
 	     handle
 	     `(lambda ()

@@ -1776,7 +1776,7 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 	    (put-text-property (1- (point)) (point) 'articles alike))
 	  (setq alike (list art)
 		last this)))
-      (when last ; Bwadr, duplicate code.
+      (when last			; Bwadr, duplicate code.
 	(insert last ?\n)
 	(put-text-property (1- (point)) (point) 'articles alike))
 
@@ -1785,7 +1785,7 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 	(setq alist (car scores)
 	      scores (cdr scores)
 	      entries (assoc header alist))
-	(while (cdr entries) ;First entry is the header index.
+	(while (cdr entries)		;First entry is the header index.
 	  (let* ((rest (cdr entries))
 		 (kill (car rest))
 		 (match (nth 0 kill))

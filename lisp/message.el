@@ -1285,7 +1285,7 @@ Return the number of headers removed."
   (goto-char (point-min)))
 
 (defun message-narrow-to-head-1 ()
-  "Like `message-narrow-to-head'. Don't widen."
+  "Like `message-narrow-to-head'.  Don't widen."
   (narrow-to-region
    (goto-char (point-min))
    (if (search-forward "\n\n" nil 1)
@@ -3957,20 +3957,21 @@ responses here are directed to other addresses.")))
       ;; Allow customizations to have their say.
       (if (not wide)
 	  ;; This is a regular reply.
-	  (if (message-functionp message-reply-to-function)
-	      (setq follow-to (funcall message-reply-to-function)))
-	;; This is a followup.
-	(if (message-functionp message-wide-reply-to-function)
+	  (when (message-functionp message-reply-to-function)
 	    (save-excursion
-	      (setq follow-to
-		    (funcall message-wide-reply-to-function)))))
+	      (setq follow-to (funcall message-reply-to-function))))
+	;; This is a followup.
+	(when (message-functionp message-wide-reply-to-function)
+	  (save-excursion
+	    (setq follow-to
+		  (funcall message-wide-reply-to-function)))))
       (setq message-id (message-fetch-field "message-id" t)
 	    references (message-fetch-field "references")
 	    date (message-fetch-field "date")
 	    from (message-fetch-field "from")
 	    subject (or (message-fetch-field "subject") "none"))
-    (if gnus-list-identifiers
-	(setq subject (message-strip-list-identifiers subject)))
+    (when gnus-list-identifiers
+      (setq subject (message-strip-list-identifiers subject)))
     (setq subject (concat "Re: " (message-strip-subject-re subject)))
 
     (when (and (setq gnus-warning (message-fetch-field "gnus-warning"))
