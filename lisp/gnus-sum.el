@@ -2775,7 +2775,7 @@ display only a single character."
 
 (defun gnus-summary-buffer-name (group)
   "Return the summary buffer name of GROUP."
-  (concat "*Summary " group "*"))
+  (concat "*Summary " (gnus-group-decoded-name group) "*"))
 
 (defun gnus-summary-setup-buffer (group)
   "Initialize summary buffer."

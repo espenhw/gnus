@@ -1,3 +1,10 @@
+2001-12-09 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-buffer-name): Decode group name.
+	* gnus-group.el (gnus-group-name-decode): Decode unibyte
+	strings only.
+	From TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+
 2001-12-08  Nevin Kapur  <nevin@jhu.edu>
 
 	* nnmail.el (nnmail-fancy-expiry-targets): New variable.
