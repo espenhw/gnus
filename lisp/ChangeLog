@@ -1,3 +1,7 @@
+2000-09-23  Simon Josefsson  <jas@nada.kth.se>
+
+	* rfc2104.el: Add SHA-1 example.
+
 2000-09-22  Simon Josefsson  <simon@josefsson.org>
 
 	* imap.el (imap-parse-body): Work around bug in Sun SIMS.

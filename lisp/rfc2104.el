@@ -1,5 +1,5 @@
 ;;; rfc2104.el --- RFC2104 Hashed Message Authentication Codes
-;; Copyright (C) 1998,1999 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <jas@pdc.kth.se>
 ;; Keywords: mail
@@ -31,10 +31,16 @@
 ;;; (rfc2104-hash 'md5 64 16 "Jefe" "what do ya want for nothing?")
 ;;; "750c783e6ab0b503eaa86e310a5db738"
 ;;;
+;;; (require 'sha-1)
+;;; (rfc2104-hash 'sha1-encode 64 20 "Jefe" "what do ya want for nothing?")
+;;; "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79"
+;;;
 ;;; 64 is block length of hash function (64 for MD5 and SHA), 16 is
 ;;; resulting hash length (16 for MD5, 20 for SHA).
 ;;;
 ;;; Tested with Emacs 20.2 and XEmacs 20.3.
+;;;
+;;; Test case reference: RFC 2202.
 
 ;;; Release history:
 ;;;
@@ -43,6 +49,7 @@
 ;;; 1998-08-26  don't require hexl
 ;;; 1998-09-25  renamed from hmac.el to rfc2104.el, also renamed functions
 ;;; 1999-10-23  included in pgnus
+;;; 2000-05-12  added sha-1 example, added test case reference
  
 (eval-when-compile (require 'cl))
 
