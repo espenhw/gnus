@@ -692,6 +692,8 @@ prompt the user for the name of an NNTP server to use."
     (nnheader-init-server-buffer)
     (setq gnus-slave slave)
     (gnus-read-init-file)
+    (if gnus-agent
+	(gnus-agentize))
 
     (when gnus-simple-splash
       (setq gnus-simple-splash nil)

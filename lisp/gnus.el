@@ -1765,8 +1765,11 @@ face."
 (defvar gnus-plugged t
   "Whether Gnus is plugged or not.")
 
-(defvar gnus-agent-cache t
-  "Whether Gnus use agent cache.")
+(defcustom gnus-agent-cache t
+  "Whether Gnus use agent cache."
+  :version "21.1"
+  :group 'gnus-agent
+  :type 'boolean)
 
 (defcustom gnus-default-charset 'iso-8859-1
   "Default charset assumed to be used when viewing non-ASCII characters.
@@ -1775,6 +1778,12 @@ gnus-group-charset-alist variable and is only used on groups not
 covered by that variable."
   :type 'symbol
   :group 'gnus-charset)
+
+(defcustom gnus-agent nil
+  "Whether we want to use the Gnus agent or not."
+  :version "21.1"
+  :group 'gnus-agent
+  :type 'boolean)
 
 
 ;;; Internal variables
@@ -1787,9 +1796,6 @@ covered by that variable."
 (defvar gnus-newsgroup-name nil)
 (defvar gnus-ephemeral-servers nil)
 (defvar gnus-server-method-cache nil)
-
-(defvar gnus-agent nil
-  "Whether we want to use the Gnus agent or not.")
 
 (defvar gnus-agent-fetching nil
   "Whether Gnus agent is in fetching mode.")

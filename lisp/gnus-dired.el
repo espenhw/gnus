@@ -1,0 +1,167 @@
+;;; gnus-dired.el --- utility functions where gnus and dired meet
+
+;; Copyright (C) 1996, 1997, 1998, 1999, 2001, 2002
+;;        Free Software Foundation, Inc.
+
+;; Authors: Benjamin Rutt <brutt@bloomington.in.us>,
+;;          Shenghuo Zhu <zsh@cs.rochester.edu>
+;; Keywords: mail, news, extensions
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
+
+;; This package provides utility functions for intersections of gnus
+;; and dired.  To enable the gnus-dired-mode minor mode which will
+;; have the effect of installing keybindings in dired-mode, place the
+;; following in your ~/.gnus:
+
+;; (require 'gnus-dired)
+;; (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
+
+;; Note that if you visit dired buffers before your ~/.gnus file has
+;; been read, those dired buffers won't have the keybindings in
+;; effect.  To get around that problem, you may want to add the above
+;; statements to your ~/.emacs instead.
+
+;;; Code:
+
+(require 'dired)
+(require 'gnus-ems)
+(require 'gnus-msg)
+(require 'gnus-util)
+(require 'message)
+(require 'mm-encode)
+(require 'mml)
+
+(defvar gnus-dired-mode nil
+  "Minor mode for intersections of gnus and dired.")
+
+(defvar gnus-dired-mode-map nil)
+
+(unless gnus-dired-mode-map
+  (setq gnus-dired-mode-map (make-sparse-keymap))
+
+  (gnus-define-keys gnus-dired-mode-map
+    "\C-c\C-a" gnus-dired-attach
+    "\C-c\C-f" gnus-dired-find-file-mailcap))
+
+(defun gnus-dired-mode (&optional arg)
+  "Minor mode for intersections of gnus and dired.
+
+\\{gnus-dired-mode-map}"
+  (interactive "P")
+  (when (eq major-mode 'dired-mode)
+    (set (make-local-variable 'gnus-dired-mode)
+	 (if (null arg) (not gnus-dired-mode)
+	   (> (prefix-numeric-value arg) 0)))
+    (when gnus-dired-mode
+      (gnus-add-minor-mode 'gnus-dired-mode "" gnus-dired-mode-map)
+      (gnus-run-hooks 'gnus-dired-mode-hook))))
+
+;; Convenience method to turn on gnus-dired-mode.
+(defsubst turn-on-gnus-dired-mode ()
+  (gnus-dired-mode 1))
+
+;; Method to attach files to a gnus composition.
+(defun gnus-dired-attach (files-to-attach)
+  "Attach dired's marked files to a gnus message composition.
+If called non-interactively, FILES-TO-ATTACH should be a list of
+filenames."
+  (interactive
+   (list
+    (delq nil
+	  (mapcar
+	   ;; don't attach directories
+	   (lambda (f) (if (file-directory-p f) nil f))
+	   (nreverse (dired-map-over-marks (dired-get-filename) nil))))))
+  (let ((destination nil)
+	(files-str nil)
+	(bufs nil))
+    ;; warn if user tries to attach without any files marked 
+    (if (null files-to-attach)
+	(error "No files to attach")
+      (setq files-str
+	    (mapconcat
+	     (lambda (f) (file-name-nondirectory f))
+	     files-to-attach ", "))
+      (setq bufs (message-buffers))
+    
+      ;; set up destination message buffer
+      (if (and bufs
+	       (y-or-n-p "Attach files to existing message buffer? "))
+	  (setq destination
+		(if (= (length bufs) 1)
+		    (get-buffer (car bufs))
+		  (completing-read "Attach to which message buffer: "
+				   (mapcar
+				    (lambda (b)
+				      (cons b (get-buffer b)))
+				    bufs)
+				   nil t)))
+	;; setup a new gnus message buffer
+	(gnus-setup-message 'message (message-mail))
+	(setq destination (current-buffer)))
+
+      ;; set buffer to destination buffer, and attach files
+      (set-buffer destination)
+      (goto-char (point-max))		;attach at end of buffer
+      (while files-to-attach
+	(mml-attach-file (car files-to-attach)
+			 (or (mm-default-file-encoding (car files-to-attach))
+			     "application/octet-stream") nil)
+	(setq files-to-attach (cdr files-to-attach)))
+      (message "Attached file(s) %s" files-str))))
+
+(autoload 'mailcap-parse-mailcaps "mailcap" "" t)
+
+(defun gnus-dired-find-file-mailcap (&optional file-name arg)
+  "In dired, visit FILE-NAME according to the mailcap file.
+If ARG is non-nil, open it in a new buffer."
+  (interactive (list
+		(file-name-sans-versions (dired-get-filename) t)
+		current-prefix-arg))
+  (mailcap-parse-mailcaps)
+  (if (and (file-exists-p file-name)
+	   (not (file-directory-p file-name)))
+      (let (mime-type method)
+	(if (and (not arg)
+		 (string-match "\\.[^\\.]+$" file-name)
+		 (setq mime-type
+		       (mailcap-extension-to-mime 
+			(match-string 0 file-name)))
+		 (stringp 
+		  (setq method
+			(cdr (assoc 'viewer 
+				    (car (mailcap-mime-info mime-type 
+							    'all)))))))
+	    (let ((view-command (mm-mailcap-command method file-name nil)))
+	      (message "viewing via %s" view-command)
+	      (start-process "*display*"
+			     nil
+			     shell-file-name
+			     shell-command-switch
+			     view-command))
+	  (find-file file-name)))
+    (if (file-symlink-p file-name)
+	(error "File is a symlink to a nonexistent target")
+      (error "File no longer exists; type `g' to update Dired buffer"))))
+
+(provide 'gnus-dired)
+
+;;; gnus-dired.el ends here

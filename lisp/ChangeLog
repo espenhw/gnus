@@ -1,5 +1,14 @@
 2002-02-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-start.el (gnus-1): Call gnus-agentize if gnus-agent is
+	t. This makes gnus-agent customizable without putting
+	gnus-agentize into .gnus.
+
+	* gnus.el (gnus-agent): Make it customizable.
+
+	* gnus-dired.el: New file.
+	From Benjamin Rutt <brutt@bloomington.in.us>
+
 	* gnus-cache.el (gnus-cache-articles-in-group): Remove from active
 	if no article.
 	(gnus-cache-possibly-remove-article): Ditto.
