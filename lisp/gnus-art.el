@@ -2060,10 +2060,14 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		      (cons gnus-newsgroup-name article))
 		(set-buffer gnus-summary-buffer)
 		(setq gnus-current-article article)
-		(gnus-summary-mark-article article gnus-canceled-mark))
-	      (unless (memq article gnus-newsgroup-sparse)
-		(gnus-error
-		 1 "No such article (may have expired or been canceled)")))
+		(if (eq (gnus-article-mark article) gnus-undownloaded-mark)
+		    (progn
+		      (gnus-summary-set-agent-mark article)
+		      (message "Message marked for downloading"))
+		  (gnus-summary-mark-article article gnus-canceled-mark)
+		  (unless (memq article gnus-newsgroup-sparse)
+		    (gnus-error 1 
+		     "No such article (may have expired or been canceled)")))))
 	  (if (or (eq result 'pseudo) (eq result 'nneething))
 	      (progn
 		(save-excursion
@@ -2340,7 +2344,7 @@ Argument LINES specifies lines to be scrolled down."
 	 '("\C-d"))
         (up-to-top
          '("n" "Gn" "p" "Gp"))
-	keys)
+	keys new-sum-point)
     (save-excursion
       (set-buffer gnus-article-current-summary)
       (let (gnus-pick-mode)
@@ -2361,22 +2365,26 @@ Argument LINES specifies lines to be scrolled down."
 	      (ding)
 	    (unless (member keys nosave-in-article)
 	      (set-buffer gnus-article-current-summary))
-	    (call-interactively func))
+	    (call-interactively func)
+	    (setq new-sum-point (point)))
 	  (when (member keys nosave-but-article)
 	    (pop-to-buffer gnus-article-buffer 'norecord)))
       ;; These commands should restore window configuration.
       (let ((obuf (current-buffer))
 	    (owin (current-window-configuration))
 	    (opoint (point))
+	    (summary gnus-article-current-summary)
 	    func in-buffer)
 	(if not-restore-window
-	    (pop-to-buffer gnus-article-current-summary 'norecord)
-	  (switch-to-buffer gnus-article-current-summary 'norecord))
+	    (pop-to-buffer summary 'norecord)
+	  (switch-to-buffer summary 'norecord))
 	(setq in-buffer (current-buffer))
 	;; We disable the pick minor mode commands.
 	(if (setq func (let (gnus-pick-mode)
 			 (lookup-key (current-local-map) keys)))
-	    (call-interactively func)
+	    (progn
+	      (call-interactively func)
+	      (setq new-sum-point (point)))
 	  (ding))
 	(when (eq in-buffer (current-buffer))
 	  (set-buffer obuf)
@@ -2384,7 +2392,10 @@ Argument LINES specifies lines to be scrolled down."
 	    (set-window-configuration owin))
           (unless (member keys up-to-top)
             (set-window-point (get-buffer-window (current-buffer))
-                              opoint)))))))
+                              opoint))
+	  (let ((win (get-buffer-window gnus-article-current-summary)))
+	    (when win
+	      (set-window-point win new-sum-point))))))))
 
 (defun gnus-article-hide (&optional arg force)
   "Hide all the gruft in the current article.

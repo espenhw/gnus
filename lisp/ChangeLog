@@ -1,3 +1,97 @@
+Sat Mar  7 17:19:04 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.35 is released.
+
+Sat Mar  7 15:01:57 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-picon.el (gnus-picons-x-face-sentinel): Check whether
+	gnus-picons-x-face-file-name exists.
+
+	* gnus-art.el (gnus-article-read-summary-keys): Move window point
+	in the summary buffer.
+
+	* nndoc.el (nndoc-type-alist): Allow spaces around separator.
+
+	* gnus-sum.el (gnus-summary-edit-parameters): Interactive.
+
+Sat Mar  7 15:00:05 1998  Wes Hardaker  <wjhardaker@ucdavis.edu>
+
+	* gnus-art.el (gnus-article-prepare): Mark articles as
+	downloadable. 
+
+Wed Mar  4 22:33:27 1998  Ken Raeburn  <raeburn@cygnus.com>
+
+	* gnus-int.el (gnus-get-function): New version, caches symbol
+	names.
+
+Fri Mar  6 01:10:22 1998  Ken Raeburn  <raeburn@cygnus.com>
+
+	* nnml.el (nnml-article-to-file): Build pathname using
+	expand-file-name.  (Thanks, Colin Rafferty, for catching
+	this.)
+
+Sat Feb 28 23:33:40 1998  Ken Raeburn  <raeburn@cygnus.com>
+
+	* nnml.el (nnml-article-to-file): Don't add extra "/" when
+	building pathname.
+
+	* nnheader.el (nnheader-file-to-number): Check value of
+	nnheader-numerical-short-files instead of checking if jka-compr is
+	loaded.
+
+1998-03-03  Dave Love  <d.love@dl.ac.uk>
+
+	* nnheader.el (nnheader-parse-head): Fix in-reply-to code. Return
+	nil consistently if not found.
+
+Sat Mar  7 13:50:44 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el: Check whether the connection died.
+
+1998-03-01  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* gnus.texi (Easy Picons): Removed references to
+	`gnus-group-display-picons'.
+	(Hard Picons): Ditto.
+
+Mon Mar  2 16:17:36 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-exit-no-update): Run
+	gnus-summary-prepare-exit-hook here as well.
+
+Sat Feb 28 13:35:26 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-authinforc-file): Changed default.
+	(nntp-authinfo-file): Changed name.
+	(nntp-record-commands): New variable.
+	(nntp-record-command): New function.
+
+	* gnus-agent.el (gnus-agent-group-path): Use real name of group. 
+
+	* gnus-sum.el (gnus-summary-insert-subject): Don't allow nil
+	articles. 
+	(gnus-summary-read-group): Respect backward movement.
+
+1998-03-01  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* gnus-win.el (gnus-window-to-buffer): change "*Picons*" to
+	`gnus-picons-buffer'.
+	(gnus-window-to-buffer-helper): Support dynamic picon buffer
+	name (i.e a symbol that names a function to be called).
+	(gnus-configure-frame): Use it.
+	(gnus-delete-windows-in-gnusey-frames): Use it.
+	(gnus-all-windows-visible-p): Use it.
+	(gnus-remove-some-windows): Use it.
+
+	* gnus-picon.el (gnus-get-buffer-name): Use it.
+	(gnus-picons-kill-buffer): New function.
+	(gnus-picons-setup-buffer): New function.
+	(gnus-picons-set-buffer): Use them.
+	(gnus-picons-display-x-face): Put back the `buf' binding: it is
+ 	needed when `gnus-picons-display-where' is not set to article.
+  	Also move the X-Face to the left, near the address.  It seems more
+ 	logical.
+
 Sat Feb 28 08:27:20 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.34 is released.

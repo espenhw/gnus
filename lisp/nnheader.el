@@ -241,8 +241,9 @@ on your system, you could say something like:
 		       (setq ref2 (substring in-reply-to (match-beginning 0)
 					     (match-end 0)))
 		       (when (> (length ref2) (length ref))
-			 (setq ref ref2))))
-		 "")))
+			 (setq ref ref2)))
+                     ref)
+		 nil)))
 	   ;; Chars.
 	   0
 	   ;; Lines.
@@ -562,7 +563,7 @@ If FILE is t, return the buffer contents as a string."
 
 (defsubst nnheader-file-to-number (file)
   "Take a file name and return the article number."
-  (if (not (boundp 'jka-compr-compression-info-list))
+  (if (string= nnheader-numerical-short-files "^[0-9]+$")
       (string-to-int file)
     (string-match nnheader-numerical-short-files file)
     (string-to-int (match-string 0 file))))

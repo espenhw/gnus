@@ -134,17 +134,24 @@ If it is down, start it up (again)."
     (error "Attempted use of a nil select method"))
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
-  (let ((func (intern (format "%s-%s" (if gnus-agent
-					  (gnus-agent-get-function method)
-					(car method))
-			      function))))
-    ;; If the functions isn't bound, we require the backend in
-    ;; question.
+  ;; Check cache of constructed names.
+  (let* ((method-sym (if gnus-agent
+			 (gnus-agent-get-function method)
+		       (car method)))
+	 (method-fns (get method-sym 'gnus-method-functions))
+	 (func (let ((method-fnlist-elt (assq function method-fns)))
+		 (unless method-fnlist-elt
+		   (setq method-fnlist-elt
+			 (cons function
+			       (intern (format "%s-%s" method-sym function))))
+		   (put method-sym 'gnus-method-functions
+			(cons method-fnlist-elt method-fns)))
+		 (cdr method-fnlist-elt))))
+    ;; Maybe complain if there is no function.
     (unless (fboundp func)
       (require (car method))
       (when (and (not (fboundp func))
 		 (not noerror))
-	;; This backend doesn't implement this function.
 	(error "No such function: %s" func)))
     func))
 

@@ -1,3 +1,28 @@
+Sat Mar  7 17:09:49 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi: Took direntries out again, since makeinfo doesn't
+	understand them.
+
+Sat Mar  7 16:14:10 1998  Dan Christensen  <jdc@chow.mat.jhu.edu>
+
+	* gnus.texi (Group Parameters): Mention add-to-list.
+
+Sat Feb 28 14:21:12 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (NNTP): Addition.
+
+1998-03-01  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* gnus.texi (Easy Picons): Removed references to
+	`gnus-group-display-picons'.
+	(Hard Picons): Ditto.
+
+1998-03-01  Kim-Minh Kaplan  <KimMinh.Kaplan@utopia.eunet.fr>
+
+	* gnus.texi (Easy Picons): Removed references to
+	`gnus-group-display-picons'.
+	(Hard Picons): Ditto.
+
 Mon Feb 23 18:05:09 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi: Direntry not handled by Emacs 19.34.

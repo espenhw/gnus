@@ -166,7 +166,7 @@ server there that you can connect to.  See also
 (defvoo nntp-coding-system-for-write 'binary
   "*Coding system to write to NNTP.")
 
-(defcustom nntp-authinforc-file "~/.authinforc"
+(defcustom nntp-authinfo-file "~/.authinfo"
   "Docstring."
   :type
   '(choice file
@@ -186,6 +186,9 @@ server there that you can connect to.  See also
 
 
 ;;; Internal variables.
+
+(defvar nntp-record-commands nil
+  "*If non-nil, nntp will record all commands in the \"*nntp-log*\" buffer.")
 
 (defvar nntp-have-messaged nil)
 
@@ -220,9 +223,21 @@ server there that you can connect to.  See also
 
 (defsubst nntp-send-string (process string)
   "Send STRING to PROCESS."
+  ;; We need to store the time to provide timeouts, and
+  ;; to store the command so the we can replay the command
+  ;; if the server gives us an AUTHINFO challenge.
   (setq nntp-last-command-time (current-time)
 	nntp-last-command string)
+  (when nntp-record-commands
+    (nntp-record-command string))
   (process-send-string process (concat string nntp-end-of-line)))
+
+(defun nntp-record-command (string)
+  "Record the command STRING."
+  (save-excursion
+    (set-buffer (get-buffer-create "*nntp-log*"))
+    (insert (format-time-string "%Y%m%dT%H%M%S" (current-time))
+	    " " nntp-address " " string "\n")))
 
 (defsubst nntp-wait-for (process wait-for buffer &optional decode discard)
   "Wait for WAIT-FOR to arrive from PROCESS."
@@ -236,10 +251,14 @@ server there that you can connect to.  See also
       (nntp-accept-process-output process)
       (goto-char (point-min)))
     (prog1
-	(if (looking-at "[45]")
-	    (progn
-	      (nntp-snarf-error-message)
-	      nil)
+	(cond
+	 ((looking-at "[45]")
+	  (progn
+	    (nntp-snarf-error-message)
+	    nil))
+	 ((memq (process-status process) '(open run))
+	  (nnheader-report 'nntp "Server closed connection"))
+	 (t
 	  (goto-char (point-max))
 	  (let ((limit (point-min)))
 	    (while (not (re-search-backward wait-for limit t))
@@ -258,7 +277,7 @@ server there that you can connect to.  See also
 	      (when nntp-have-messaged
 		(setq nntp-have-messaged nil)
 		(message ""))
-	      t)))
+	      t))))
       (unless discard
 	(erase-buffer)))))
 
@@ -658,7 +677,6 @@ server there that you can connect to.  See also
   (let (process)
     (while (setq process (car (pop nntp-connection-alist)))
       (when (memq (process-status process) '(open run))
-	(set-process-sentinel process nil)
 	(ignore-errors
 	  (nntp-send-string process "QUIT")
 	  (unless (eq nntp-open-connection-function 'nntp-open-network-stream)
@@ -671,7 +689,6 @@ server there that you can connect to.  See also
   (let (process)
     (while (setq process (pop nntp-connection-list))
       (when (memq (process-status process) '(open run))
-	(set-process-sentinel process nil)
 	(ignore-errors
 	  (nntp-send-string process "QUIT")
 	  (unless (eq nntp-open-connection-function 'nntp-open-network-stream)
@@ -729,10 +746,10 @@ reading."
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
-It will look in the \"~/.authinforc\" file for matching entries.  If
+It will look in the \"~/.authinfo\" file for matching entries.  If
 nothing suitable is found there, it will prompt for a user name
 and a password."
-  (let* ((list (gnus-parse-netrc nntp-authinforc-file))
+  (let* ((list (gnus-parse-netrc nntp-authinfo-file))
 	 (alist (gnus-netrc-machine list nntp-address))
 	 (user (gnus-netrc-get alist "login"))
 	 (passwd (gnus-netrc-get alist "password")))

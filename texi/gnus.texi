@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.34 Manual
+@settitle Quassia Gnus 0.35 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.34 Manual
+@title Quassia Gnus 0.35 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.34.
+This manual corresponds to Quassia Gnus 0.35.
 
 @end ifinfo
 
@@ -1981,6 +1981,12 @@ doing a @kbd{a} in that group.  It is totally ignored when doing a
 followup---except that if it is present in a news group, you'll get mail
 group semantics when doing @kbd{f}.
 
+If you do an @kbd{a} command in a mail group and you have neither a
+@code{to-list} group parameter nor a @code{to-address} group paramater,
+then a @code{to-list} group parameter will be added automatically upon
+sending the message if @code{gnus-add-to-list} is set to @code{t}.
+@vindex gnus-add-to-list
+
 If you do an @kbd{a} command in a mail group and you don't have a
 @code{to-list} group parameter, one will be added automatically upon
 sending the message.
@@ -2096,15 +2102,15 @@ group.  @code{dummy-variable} will be set to the result of the
 
 @end table
 
-Use the @kbd{G p} command to edit group parameters of a group.
-
-@pxref{Topic Parameters}.
+Use the @kbd{G p} command to edit group parameters of a group.  You
+might also be interested in reading about topic parameters (@pxref{Topic
+Parameters}).
 
 Here's an example group parameter list:
 
 @example
 ((to-address . "ding@@gnus.org")
- (auto-expiry . t))
+ (auto-expire . t))
 @end example
 
 
@@ -8860,13 +8866,13 @@ present in this hook.
 @item nntp-authinfo-function 
 @vindex nntp-authinfo-function 
 @findex nntp-send-authinfo
-@vindex nntp-authinforc-file
+@vindex nntp-authinfo-file
 This function will be used to send @samp{AUTHINFO} to the @sc{nntp}
 server.  The default function is @code{nntp-send-authinfo}, which looks
-through your @file{~/.authinforc} (or whatever you've set the
-@code{nntp-authinforc-file} variable to) for applicable entries.  If
+through your @file{~/.authinfo} (or whatever you've set the
+@code{nntp-authinfo-file} variable to) for applicable entries.  If
 none are found, it will prompt you for a login name and a password.  The
-format of the @file{~/.authinforc} file is the same as the @code{ftp}
+format of the @file{~/.authinfo} file is the same as the @code{ftp}
 @file{~/.netrc} file, which is defined in the @code{ftp} manual page,
 but here are the salient facts:
 
@@ -8894,7 +8900,7 @@ In this example, both login name and password have been supplied for the
 former server, while the latter has only the login name listed, and the
 user will be prompted for the password.
 
-Remember to not leave the @file{~/.authinforc} file world-readable.
+Remember to not leave the @file{~/.authinfo} file world-readable.
 
 @item nntp-server-action-alist 
 @vindex nntp-server-action-alist 
@@ -9093,6 +9099,13 @@ A hook run before attempting to connect to an @sc{nntp} server.
 @vindex nntp-warn-about-losing-connection
 If this variable is non-@code{nil}, some noise will be made when a
 server closes connection.
+
+@item nntp-record-commands
+@vindex nntp-record-commands
+If non-@code{nil}, @code{nntp} will log all commands it sends to the
+@sc{nntp} server (along with a timestep) in the @samp{*nntp-log*}
+buffer.  This is useful if you are debugging a Gnus/@sc{nntp} connection
+that doesn't seem to work.
 
 @end table
 
@@ -14554,7 +14567,6 @@ To enable displaying picons, simply put the following line in your
 @lisp
 (setq gnus-use-picons t)
 (add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-(add-hook 'gnus-summary-prepare-hook 'gnus-group-display-picons t)
 (add-hook 'gnus-article-display-hook 'gnus-picons-article-display-x-face)
 @end lisp
 
@@ -14633,13 +14645,6 @@ at the right time.
 Looks up and displays the picons for the author and the author's domain
 in the @code{gnus-picons-display-where} buffer.  Should be added to the
 @code{gnus-article-display-hook}.
-
-@item gnus-group-display-picons
-@findex gnus-article-display-picons
-Displays picons representing the current group.  This function should
-be added to the @code{gnus-summary-prepare-hook} or to the
-@code{gnus-article-display-hook} if @code{gnus-picons-display-where}
-is set to @code{article}.
 
 @item gnus-picons-article-display-x-face
 @findex gnus-article-display-picons
@@ -18866,7 +18871,7 @@ second is a more complex one:
 ("nnml:my.mail" 3 ((1 . 5) 9 (20 . 55))
                 ((tick (15 . 19)) (replied 3 6 (19 . 3)))
                 (nnml "")
-                (auto-expire (to-address "ding@@gnus.org")))
+                ((auto-expire . t) (to-address "ding@@gnus.org")))
 @end example
 
 The first element is the @dfn{group name}---as Gnus knows the group,

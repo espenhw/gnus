@@ -2601,7 +2601,7 @@ the thread are to be displayed."
 	     (set (car elem) (eval (nth 1 elem))))))))
 
 (defun gnus-summary-read-group (group &optional show-all no-article
-				      kill-buffer no-display)
+				      kill-buffer no-display backward)
   "Start reading news in newsgroup GROUP.
 If SHOW-ALL is non-nil, already read articles are also listed.
 If NO-ARTICLE is non-nil, no article is selected initially.
@@ -2616,6 +2616,11 @@ If NO-DISPLAY, don't generate a summary buffer."
 				  (setq show-all nil)))))
 		(eq gnus-auto-select-next 'quietly))
       (set-buffer gnus-group-buffer)
+      ;; The entry function called above goes to the next
+      ;; group automatically, so we go two groups back
+      ;; if we are searching for the previous group.
+      (when backward
+	(gnus-group-prev-unread-group 2))
       (if (not (equal group (gnus-group-group-name)))
 	  (setq group (gnus-group-group-name))
 	(setq group nil)))
@@ -4653,7 +4658,8 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
       ;; article we have fetched.
       (when (and (not gnus-show-threads)
 		 old-header)
-	(when (setq d (gnus-data-find (mail-header-number old-header)))
+	(when (and number
+		   (setq d (gnus-data-find (mail-header-number old-header))))
 	  (goto-char (gnus-data-pos d))
 	  (gnus-data-remove
 	   number
@@ -5169,6 +5175,7 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	      gnus-expert-user
 	      (gnus-y-or-n-p "Discard changes to this group and exit? "))
       (gnus-async-halt-prefetch)
+      (gnus-run-hooks 'gnus-summary-prepare-exit-hook)
       ;; If we have several article buffers, we kill them at exit.
       (unless gnus-single-article-buffer
 	(gnus-kill-buffer gnus-article-buffer)
@@ -5386,7 +5393,8 @@ previous group instead."
 		       (and unreads (not (zerop unreads))))
 		   (gnus-summary-read-group
 		    target-group nil no-article
-		    (and (buffer-name current-buffer) current-buffer)))
+		    (and (buffer-name current-buffer) current-buffer)
+		    nil backward))
 	      (setq entered t)
 	    (setq current-group target-group
 		  target-group nil)))))))
@@ -6461,6 +6469,7 @@ or `gnus-select-method', no matter what backend the article comes from."
 
 (defun gnus-summary-edit-parameters ()
   "Edit the group parameters of the current group."
+  (interactive)
   (gnus-group-edit-group gnus-newsgroup-name 'params))
 
 (defun gnus-summary-enter-digest-group (&optional force)

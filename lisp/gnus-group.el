@@ -776,7 +776,7 @@ The following commands are available:
 
 (defun gnus-update-group-mark-positions ()
   (save-excursion
-    (let ((gnus-process-mark 128)
+    (let ((gnus-process-mark ?\200)
 	  (gnus-group-marked '("dummy.group"))
 	  (gnus-active-hashtb (make-vector 10 0))
 	  (topic ""))

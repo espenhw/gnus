@@ -488,9 +488,9 @@ the actual number of articles toggled is returned."
 (defun gnus-agent-group-path (group)
   "Translate GROUP into a path."
   (if nnmail-use-long-file-names
-      group
+      (gnus-group-real-name group)
     (nnheader-replace-chars-in-string
-     (nnheader-translate-file-chars group)
+     (nnheader-translate-file-chars (gnus-group-real-name group))
      ?. ?/)))
 
 

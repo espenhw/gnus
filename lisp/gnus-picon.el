@@ -184,17 +184,38 @@ arguments necessary for the job.")
 
 (defun gnus-get-buffer-name (variable)
   "Returns the buffer name associated with the contents of a variable."
-  (cond ((symbolp variable) (let ((newvar (cdr (assq variable
-						     gnus-window-to-buffer))))
-			      (cond ((symbolp newvar)
-				     (symbol-value newvar))
-				    ((stringp newvar) newvar))))
-        ((stringp variable) variable)))
+  (buffer-name (get-buffer (gnus-window-to-buffer-helper variable))))
+
+(defun gnus-picons-buffer-name ()
+  (cond ((or (stringp gnus-picons-display-where)
+	     (bufferp gnus-picons-display-where))
+	 gnus-picons-display-where)
+	((eq gnus-picons-display-where 'picons)
+	 (if gnus-single-article-buffer
+	     "*Picons*"
+	   (concat "*Picons " gnus-newsgroup-name "*")))
+	(t
+	 (gnus-get-buffer-name gnus-picons-display-where))))
+
+(defun gnus-picons-kill-buffer ()
+  (let ((buf (get-buffer (gnus-picons-buffer-name))))
+    (if (buffer-live-p buf)
+	(kill-buffer buf))))
+
+(defun gnus-picons-setup-buffer ()
+  (let ((name (gnus-picons-buffer-name)))
+    (save-excursion
+      (if (get-buffer name)
+	  (set-buffer name)
+	(set-buffer (get-buffer-create name))
+	(buffer-disable-undo)
+	(setq buffer-read-only t)
+	(gnus-add-current-to-buffer-list)
+	(add-hook 'gnus-summary-prepare-exit-hook 'gnus-picons-kill-buffer))
+      (current-buffer))))
 
 (defun gnus-picons-set-buffer ()
-  (set-buffer
-   (get-buffer-create (gnus-get-buffer-name gnus-picons-display-where)))
-  (gnus-add-current-to-buffer-list)
+  (set-buffer (gnus-picons-setup-buffer))
   (goto-char (point-min))
   (if (and (eq gnus-picons-display-where 'article)
 	   gnus-picons-display-article-move-p)
@@ -233,7 +254,8 @@ arguments necessary for the job.")
     (gnus-picons-set-buffer)
     (gnus-picons-make-annotation (make-glyph gnus-picons-x-face-file-name)
 				 nil 'text)
-    (delete-file gnus-picons-x-face-file-name)))
+    (when (file-exists-p gnus-picons-x-face-file-name)
+      (delete-file gnus-picons-x-face-file-name))))
 
 (defun gnus-picons-display-x-face (beg end)
   "Function to display the x-face header in the picons window.
@@ -242,11 +264,16 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
   (if (featurep 'xface)
       ;; Use builtin support
       (save-excursion
-	(gnus-picons-set-buffer)
-	(gnus-picons-make-annotation
-	 (vector 'xface
-		 :data (concat "X-Face: " (buffer-substring beg end)))
-	 nil 'text))
+	;; Don't remove this binding, it is really needed: when
+	;; `gnus-picons-set-buffer' changes buffer (like when it is
+	;; set to display picons outside of the article buffer), BEG
+	;; and END still refer the buffer current now !
+	(let ((buf (current-buffer)))
+	  (gnus-picons-set-buffer)
+	  (gnus-picons-make-annotation
+	   (vector 'xface
+		   :data (concat "X-Face: " (buffer-substring beg end buf)))
+	   nil 'text nil nil nil t)))
     ;; convert the x-face header to a .xbm file
     (let* ((process-connection-type nil)
 	   (process (start-process-shell-command "gnus-x-face" nil 

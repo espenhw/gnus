@@ -182,7 +182,7 @@ See the Gnus manual for an explanation of the syntax used.")
     (mail . gnus-message-buffer)
     (post-news . gnus-message-buffer)
     (faq . gnus-faq-buffer)
-    (picons . "*Picons*")
+    (picons . gnus-picons-buffer-name)
     (tree . gnus-tree-buffer)
     (score-trace . "*Score Trace*")
     (info . gnus-info-buffer)
@@ -267,6 +267,13 @@ See the Gnus manual for an explanation of the syntax used.")
 
 (defvar gnus-frame-list nil)
 
+(defun gnus-window-to-buffer-helper (obj)
+  (if (symbolp obj)
+      (if (boundp obj)
+	  (symbol-value obj)
+	(funcall obj))
+    obj))
+
 (defun gnus-configure-frame (split &optional window)
   "Split WINDOW according to SPLIT."
   (unless window
@@ -300,15 +307,11 @@ See the Gnus manual for an explanation of the syntax used.")
      ;; This is a buffer to be selected.
      ((not (memq type '(frame horizontal vertical)))
       (let ((buffer (cond ((stringp type) type)
-			  (t (cdr (assq type gnus-window-to-buffer)))))
-	    buf)
+			  (t (cdr (assq type gnus-window-to-buffer))))))
 	(unless buffer
 	  (error "Illegal buffer type: %s" type))
-	(unless (setq buf (get-buffer (if (symbolp buffer)
-					  (symbol-value buffer) buffer)))
-	  (setq buf (get-buffer-create (if (symbolp buffer)
-					   (symbol-value buffer) buffer))))
-	(switch-to-buffer buf)
+	(switch-to-buffer (get-buffer-create
+			   (gnus-window-to-buffer-helper buffer)))
 	;; We return the window if it has the `point' spec.
 	(and (memq 'point split) window)))
      ;; This is a frame split.
@@ -439,12 +442,7 @@ See the Gnus manual for an explanation of the syntax used.")
   (let ((buffers
 	 (mapcar
 	  (lambda (elem)
-	    (if (symbolp (cdr elem))
-		(when (and (boundp (cdr elem))
-			   (symbol-value (cdr elem)))
-		  (get-buffer (symbol-value (cdr elem))))
-	      (when (cdr elem)
-		(get-buffer (cdr elem)))))
+	    (get-buffer (gnus-window-to-buffer-helper (cdr elem))))
 	  gnus-window-to-buffer)))
     (mapcar
      (lambda (frame)
@@ -493,12 +491,9 @@ should have point."
 			   (t (cdr (assq type gnus-window-to-buffer)))))
 	(unless buffer
 	  (error "Illegal buffer type: %s" type))
-	(when (setq buf (get-buffer (if (symbolp buffer)
-					(symbol-value buffer)
-				      buffer)))
-	  (setq win (get-buffer-window buf t)))
-	(if win
-	    (when (memq 'point split)
+	(if (and (setq buf (get-buffer (gnus-window-to-buffer-helper buffer)))
+		 (setq win (get-buffer-window buf t)))
+	    (if (memq 'point split)
 	      (setq all-visible win))
 	  (setq all-visible nil)))
        (t
@@ -517,10 +512,7 @@ should have point."
     (save-excursion
       ;; Remove windows on all known Gnus buffers.
       (while buffers
-	(setq buf (cdar buffers))
-	(when (symbolp buf)
-	  (setq buf (and (boundp buf) (symbol-value buf))))
-	(and buf
+	(and (setq buf (gnus-window-to-buffer-helper (cdar buffers)))
 	     (get-buffer-window buf)
 	     (progn
 	       (push buf bufs)

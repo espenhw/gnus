@@ -480,8 +480,8 @@ all.  This may very well take some time.")
       ;; Just to make sure nothing went wrong when reading over NFS --
       ;; check once more.
       (when (file-exists-p
-	     (setq file (concat nnml-current-directory "/"
-				(number-to-string article))))
+	     (setq file (expand-file-name (number-to-string article)
+					  nnml-current-directory)))
 	(nnml-update-file-alist t)
 	file))))
 
