@@ -724,6 +724,14 @@ To see e.g. security buttons you could set this to
   :group 'gnus-article-mime
   :type '(repeat regexp))
 
+(defcustom gnus-inhibit-mime-unbuttonizing nil
+  "If non-nil, all MIME parts get buttons.
+When nil (the default value), then some MIME parts do not get buttons,
+as described by the variables `gnus-buttonized-mime-types' and
+`gnus-unbuttonized-mime-types'."
+  :version "21.3"
+  :type 'boolean)
+
 (defcustom gnus-body-boundary-delimiter "_"
   "String used to delimit header and body.
 This variable is used by `gnus-article-treat-body-boundary' which can

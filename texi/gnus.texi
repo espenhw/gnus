@@ -8915,7 +8915,12 @@ displayed.  This variable overrides
 
 To see e.g. security buttons but no other buttons, you could set this
 variable to @code{("multipart/signed")} and leave
-@code{gnus-unbuttonized-mime-types} to the default value.
+@code{gnus-unbuttonized-mime-types} at the default value.
+
+@item gnus-inhibit-mime-unbuttonizing
+@vindex gnus-inhibit-mime-unbuttonizing
+If this is non-nil, then all @sc{mime} parts get buttons.  The default
+value is @code{nil}.
 
 @item gnus-article-mime-part-function
 @vindex gnus-article-mime-part-function

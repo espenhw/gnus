@@ -1,3 +1,11 @@
+2002-11-29  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-art.el (gnus-inhibit-mime-unbuttonizing): Moved here from
+	gnus-sum.  Made into a user option.
+
+	* gnus-sum.el (gnus-simplify-ignored-prefixes) 
+	(gnus-summary-mark-article-as-unread) 
+
 2002-11-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* time-date.el (date-to-time): Typo.
@@ -53,6 +61,7 @@
 	(gnus-summary-mark-article-as-unread)
 	(gnus-mark-article-as-unread, gnus-summary-highlight-line):
 	Reformatting to avoid long lines.
+	(gnus-inhibit-mime-unbuttonizing): Moved to gnus-art.
 
 2002-11-28  Daiki Ueno  <ueno@unixuser.org>
 

@@ -1043,7 +1043,6 @@ the MIME-Version header is missed."
 (defvar gnus-article-ignored-charsets nil)
 (defvar gnus-scores-exclude-files nil)
 (defvar gnus-page-broken nil)
-(defvar gnus-inhibit-mime-unbuttonizing nil)
 
 (defvar gnus-original-article nil)
 (defvar gnus-article-internal-prepare-hook nil)
