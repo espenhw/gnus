@@ -255,15 +255,13 @@ variable to \"^nnml\"."
 
 (defun gnus-cache-possibly-alter-active (group active)
   "Alter the ACTIVE info for GROUP to reflect the articles in the cache."
-  (when (equal group "no.norsk") (error "hie"))
   (when gnus-cache-active-hashtb
     (let ((cache-active (gnus-gethash group gnus-cache-active-hashtb)))
-      (and cache-active
-	   (< (car cache-active) (car active))
-	   (setcar active (car cache-active)))
-      (and cache-active
-	   (> (cdr cache-active) (cdr active))
-	   (setcdr active (cdr cache-active))))))
+      (when cache-active
+	(when (< (car cache-active) (car active))
+	  (setcar active (car cache-active)))
+	(when (> (cdr cache-active) (cdr active))
+	  (setcdr active (cdr cache-active)))))))
 
 (defun gnus-cache-retrieve-headers (articles group &optional fetch-old)
   "Retrieve the headers for ARTICLES in GROUP."
@@ -452,11 +450,18 @@ Returns the list of articles removed."
 
 (defun gnus-cache-articles-in-group (group)
   "Return a sorted list of cached articles in GROUP."
-  (let ((dir (file-name-directory (gnus-cache-file-name group 1))))
+  (let ((dir (file-name-directory (gnus-cache-file-name group 1)))
+	articles)
     (when (file-exists-p dir)
-      (sort (mapcar (lambda (name) (string-to-int name))
-		    (directory-files dir nil "^[0-9]+$" t))
-	    '<))))
+      (setq articles
+	    (sort (mapcar (lambda (name) (string-to-int name))
+			  (directory-files dir nil "^[0-9]+$" t))
+		  '<))
+      ;; Update the cache active file, just to synch more.
+      (when articles
+	(gnus-cache-update-active group (car articles) t)
+	(gnus-cache-update-active group (car (last articles))))
+      articles)))
 
 (defun gnus-cache-braid-nov (group cached)
   (let ((cache-buf (get-buffer-create " *gnus-cache*"))
@@ -553,8 +558,8 @@ $ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
 (defun gnus-cache-read-active (&optional force)
   "Read the cache active file."
   (gnus-make-directory gnus-cache-directory)
-  (if (not (and (file-exists-p gnus-cache-active-file)
-		(or force (not gnus-cache-active-hashtb))))
+  (if (or (not (file-exists-p gnus-cache-active-file))
+	  force)
       ;; There is no active file, so we generate one.
       (gnus-cache-generate-active)
     ;; We simply read the active file.

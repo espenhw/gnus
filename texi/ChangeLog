@@ -1,3 +1,11 @@
+Sat May 24 05:26:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Score File Format): Update.
+
+Tue May 20 21:56:03 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Document Server Internals): Typo.
+
 Sun May 18 05:59:24 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Topic Commands): Addition.

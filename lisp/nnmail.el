@@ -1042,6 +1042,9 @@ FUNC will be called with the group name to determine the article number."
 		 (fboundp nnmail-split-methods))
 	    (let ((split
 		   (condition-case nil
+		       ;; `nnmail-split-methods' is a function, so we
+		       ;; just call this function here and use the
+		       ;; result.
 		       (or (funcall nnmail-split-methods)
 			   '("bogus"))
 		     (error
@@ -1049,9 +1052,13 @@ FUNC will be called with the group name to determine the article number."
 		       "Error in `nnmail-split-methods'; using `bogus' mail group")
 		      (sit-for 1)
 		      '("bogus")))))
-	      (unless (equal split '(junk))
-		;; `nnmail-split-methods' is a function, so we just call
-		;; this function here and use the result.
+	      ;; The article may be "cross-posted" to `junk'.  What
+	      ;; to do?  Just remove the `junk' spec.  Don't really
+	      ;; see anything else to do...
+	      (let (elem)
+		(while (setq elem (assq 'junk split))
+		  (setq split (delq elem split))))
+	      (when split
 		(setq group-art
 		      (mapcar
 		       (lambda (group) (cons group (funcall func group)))
@@ -1085,7 +1092,10 @@ FUNC will be called with the group name to determine the article number."
 	  ;; The article may be "cross-posted" to `junk'.  What
 	  ;; to do?  Just remove the `junk' spec.  Don't really
 	  ;; see anything else to do...
-	  (nreverse (delq (assq 'junk group-art) group-art)))))))
+	  (let (elem)
+	    (while (setq elem (assq 'junk group-art))
+	      (setq group-art (delq elem group-art)))
+	    (nreverse group-art)))))))
 
 (defun nnmail-insert-lines ()
   "Insert how many lines there are in the body of the mail.

@@ -762,6 +762,7 @@ prompt the user for the name of an NNTP server to use."
 	  ;; Set the file modes to reflect the .newsrc file modes.
 	  (save-buffer)
 	  (when (and (file-exists-p gnus-current-startup-file)
+		     (file-exists-p dribble-file)
 		     (setq modes (file-modes gnus-current-startup-file)))
 	    (set-file-modes dribble-file modes))
 	  ;; Possibly eval the file later.
@@ -1648,7 +1649,7 @@ newsgroup."
 				(gnus-make-hashtable
 				 (count-lines (point-min) (point-max)))
 			      (gnus-make-hashtable 4096)))))))
-    ;; Delete unnecessary lines, cleaned up dmoore@ucsd.edu 31.10.1996
+    ;; Delete unnecessary lines.
     (goto-char (point-min))
     (cond ((gnus-ignored-newsgroups-has-to-p)
 	   (delete-matching-lines gnus-ignored-newsgroups))
@@ -1660,21 +1661,20 @@ newsgroup."
 
     ;; Make the group names readable as a lisp expression even if they
     ;; contain special characters.
-    ;; Fix by Luc Van Eycken <Luc.VanEycken@esat.kuleuven.ac.be>.
     (goto-char (point-max))
     (while (re-search-backward "[][';?()#]" nil t)
       (insert ?\\))
 
     ;; If these are groups from a foreign select method, we insert the
     ;; group prefix in front of the group names.
-    (and method (not (gnus-server-equal
-		      (gnus-server-get-method nil method)
-		      (gnus-server-get-method nil gnus-select-method)))
-	 (let ((prefix (gnus-group-prefixed-name "" method)))
-	   (goto-char (point-min))
-	   (while (and (not (eobp))
-		       (progn (insert prefix)
-			      (zerop (forward-line 1)))))))
+    (when (not (gnus-server-equal
+		(gnus-server-get-method nil method)
+		(gnus-server-get-method nil gnus-select-method)))
+      (let ((prefix (gnus-group-prefixed-name "" method)))
+	(goto-char (point-min))
+	(while (and (not (eobp))
+		    (progn (insert prefix)
+			   (zerop (forward-line 1)))))))
     ;; Store the active file in a hash table.
     (goto-char (point-min))
     (let (group max min)

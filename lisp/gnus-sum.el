@@ -5858,7 +5858,7 @@ If ALL, mark even excluded ticked and dormants as read."
 		    '<)
 		   (sort gnus-newsgroup-limit '<)))
 	article)
-    (setq gnus-newsgroup-unreads nil)
+    (setq gnus-newsgroup-unreads gnus-newsgroup-limit)
     (if all
 	(setq gnus-newsgroup-dormant nil
 	      gnus-newsgroup-marked nil
@@ -6334,7 +6334,7 @@ Optional argument BACKWARD means do search for backward.
 `gnus-select-article-hook' is not called during the search."
   ;; We have to require this here to make sure that the following
   ;; dynamic binding isn't shadowed by autoloading.
-  (require 'gnus-asynch)
+  (require 'gnus-async)
   (let ((gnus-select-article-hook nil)	;Disable hook.
 	(gnus-article-display-hook nil)
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
@@ -6663,6 +6663,8 @@ and `request-accept' functions."
        (cond
 	;; Move the article.
 	((eq action 'move)
+	 ;; Remove this article from future suppression.
+	 (gnus-dup-unsuppress-article article)
 	 (gnus-request-move-article
 	  article			; Article to move
 	  gnus-newsgroup-name		; From newsgroup

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.53 Manual
+@settitle Gnus 5.4.54 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.53 Manual
+@title Gnus 5.4.54 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.53.
+This manual corresponds to Gnus 5.4.54.
 
 @end ifinfo
 
@@ -9943,7 +9943,7 @@ the article.
 @item body-end
 If present, this should match the end of the body of the article.
 
-@item nndoc-file-end
+@item file-end
 If present, this should match the end of the file.  All text after this
 regexp will be totally ignored. 
 
@@ -11144,7 +11144,8 @@ articles, but also all followups to the matching articles.  This allows
 you e.g. increase the score of followups to your own articles, or
 decrease the score of followups to the articles of some known
 trouble-maker.  Uses the same match types as the @code{From} header
-uses.
+uses.  (Using this match key will lead to creation of @file{ADAPT}
+files.) 
 
 @item Thread
 This match key works along the same lines as the @code{Followup} match
@@ -11156,7 +11157,8 @@ article that has @var{X} in its @code{References} header.  (These new
 articles.)  This will ensure that you can raise/lower the score of an
 entire thread, even though some articles in the thread may not have
 complete @code{References} headers.  Note that using this may lead to
-undeterministic scores of the articles in the thread.
+undeterministic scores of the articles in the thread.  (Using this match
+key will lead to creation of @file{ADAPT} files.)
 @end table
 @end enumerate
 

@@ -680,3 +680,37 @@ saving living summary buffers.
 
 * a function for selecting a particular group which will contain
 the articles listed in a list of article numbers/id's.
+
+* a battery of character translation functions to translate common
+Mac, MS (etc) characters into ISO 8859-1.
+
+(defun article-fix-m$word ()
+  "Fix M$Word smartquotes in an article."
+  (interactive)
+  (save-excursion
+    (let ((buffer-read-only nil))
+      (goto-char (point-min))
+      (while (search-forward "\221" nil t)
+	(replace-match "`" t t))
+      (goto-char (point-min))
+      (while (search-forward "\222" nil t)
+	(replace-match "'" t t))
+      (goto-char (point-min))
+      (while (search-forward "\223" nil t)
+	(replace-match "\"" t t))
+      (goto-char (point-min))
+      (while (search-forward "\224" nil t)
+	(replace-match "\"" t t)))))
+
+* (add-hook 'gnus-exit-query-functions
+'(lambda ()
+   (if (and (file-exists-p nnmail-spool-file)
+	    (> (nnheader-file-size nnmail-spool-file) 0))
+       (yes-or-no-p "New mail has arrived.  Quit Gnus anyways? ")
+       (y-or-n-p "Are you sure you want to quit Gnus? "))))
+
+* allow message-default-headers to be a function.
+
+* new Date score match types -- < > = (etc) that take floating point
+numbers and match on the age of the article.
+

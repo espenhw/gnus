@@ -2968,7 +2968,9 @@ Headers already prepared in the buffer are not modified."
     (let ((name (make-temp-name
 		 (expand-file-name
 		  (concat (file-name-as-directory message-autosave-directory)
-			  "msg." (buffer-name))))))
+			  "msg."
+			  (nnheader-replace-chars-in-string
+			   (buffer-name) ?* ?.))))))
       (setq buffer-auto-save-file-name
 	    (save-excursion
 	      (prog1
