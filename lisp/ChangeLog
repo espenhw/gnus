@@ -1,5 +1,7 @@
 2002-01-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-group.el (gnus-group-mark-article-read): Typo. Increase n.
+
 	* gnus-art.el (gnus-header-button-alist): Handle mailto.
 
 	* mml.el (mml-preview): Bind gnus-original-article-buffer because
