@@ -11714,7 +11714,7 @@ string, then Gnus will try to regexp match it against the group name.
 If it is the form @code{(header @var{match} @var{regexp})}, then Gnus
 will look in the original article for a header whose name is
 @var{match} and compare that @var{regexp}.  @var{match} and
-@var{regexp} are strings.  (There original article is the one you are
+@var{regexp} are strings.  (The original article is the one you are
 replying or following up to.  If you are not composing a reply or a
 followup, then there is nothing to match against.)  If the
 @code{match} is a function symbol, that function will be called with
@@ -11725,15 +11725,22 @@ said to @dfn{match}.
 
 Each style may contain an arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @code{(@var{name} @var{value})} pair.  The
-attribute name can be one of @code{signature}, @code{signature-file},
-@code{x-face-file}, @code{address} (overriding
-@code{user-mail-address}), @code{name} (overriding
-@code{(user-full-name)}) or @code{body}.  The attribute name can also
-be a string or a symbol.  In that case, this will be used as a header
-name, and the value will be inserted in the headers of the article; if
-the value is @code{nil}, the header name will be removed.  If the
-attribute name is @code{eval}, the form is evaluated, and the result
-is thrown away.
+attribute name can be one of:
+
+@itemize @bullet
+@item @code{signature}
+@item @code{signature-file}
+@item @code{x-face-file}
+@item @code{address}, overriding @code{user-mail-address}
+@item @code{name}, overriding @code{(user-full-name)}
+@item @code{body}
+@end itemize
+
+The attribute name can also be a string or a symbol.  In that case,
+this will be used as a header name, and the value will be inserted in
+the headers of the article; if the value is @code{nil}, the header
+name will be removed.  If the attribute name is @code{eval}, the form
+is evaluated, and the result is thrown away.
 
 The attribute value can be a string (used verbatim), a function with
 zero arguments (the return value will be used), a variable (its value

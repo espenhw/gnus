@@ -1,3 +1,7 @@
+2003-09-15  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus.texi (Posting Styles): Fix typo.  @itemize attribute names.
+
 2003-09-14  Jesper Harder  <harder@ifa.au.dk>
 
 	* pgg.texi (Selecting an implementation, Caching passphrase)
