@@ -125,6 +125,7 @@
 ;; o Don't use `read' at all (important places already fixed)
 ;; o Accept list of articles instead of message set string in most
 ;;   imap-message-* functions.
+;; o Send strings as literal if they contain, e.g., ".
 ;;
 ;; Revision history:
 ;;
