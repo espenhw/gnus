@@ -8,6 +8,23 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Upgrading from previous (stable) version if you have used Oort.
+
+If you have tried Oort (the unstable Gnus branch leading to this
+release) but went back to a stable version, be careful when upgrading
+to this version.  In particular, you will probably want to remove all
+.marks (nnml) and .mrk (nnfolder) files, so that flags are read from
+your .newsrc.eld instead of from the .marks/.mrk file where this
+release store flags.  See a later entry for more information about
+marks.  Note that downgrading isn't save in general.
+
+** Article Buttons
+
+More buttons for URLs, mail addresses, Message-IDs, Info links, man pages and
+Emacs or Gnus related references, see the info node "Article Buttons".  The
+variables `gnus-button-*-level' can be used to control the appearance of all
+article buttons, see the info node "Article Button Levels".
+
 ** Dired integration
 `gnus-dired-minor-mode' installs key bindings in dired buffers to send
 a file as an attachment (`C-c C-a'), open a file using the approriate
