@@ -77,6 +77,11 @@
 (defvar mml2015-decrypt-function 'mailcrypt-decrypt)
 (defvar mml2015-verify-function 'mailcrypt-verify)
 
+(defun mml2015-format-error (err)
+  (if (stringp (cadr err))
+      (cadr err)
+    (format "%S" (cdr err))))
+
 (defun mml2015-mailcrypt-decrypt (handle ctl)
   (catch 'error
     (let (child handles result)
@@ -93,7 +98,7 @@
 		  (funcall mml2015-decrypt-function)
 		(error
 		 (mm-set-handle-multipart-parameter
-		  mm-security-handle 'gnus-details (cadr err))
+		  mm-security-handle 'gnus-details (mml2015-format-error err))
 		 nil)
 		(quit
 		 (mm-set-handle-multipart-parameter
@@ -118,7 +123,7 @@
 	      (funcall mml2015-decrypt-function)
 	    (error
 	     (mm-set-handle-multipart-parameter
-	      mm-security-handle 'gnus-details (cadr err))
+	      mm-security-handle 'gnus-details (mml2015-format-error err))
 	     nil)
 	    (quit
 	     (mm-set-handle-multipart-parameter
@@ -194,7 +199,7 @@
 			    (kill-buffer mc-gpg-debug-buffer)))
 		    (error
 		     (mm-set-handle-multipart-parameter
-		      mm-security-handle 'gnus-details (cadr err))
+		      mm-security-handle 'gnus-details (mml2015-format-error err))
 		     nil)
 		    (quit
 		     (mm-set-handle-multipart-parameter
@@ -227,7 +232,7 @@
 		  (kill-buffer mc-gpg-debug-buffer)))
 	  (error
 	   (mm-set-handle-multipart-parameter
-	    mm-security-handle 'gnus-details (cadr err))
+	    mm-security-handle 'gnus-details (mml2015-format-error err))
 	   nil)
 	  (quit
 	   (mm-set-handle-multipart-parameter
@@ -401,7 +406,7 @@
 			   (buffer-string))))
 		    (error
 		     (mm-set-handle-multipart-parameter
-		      mm-security-handle 'gnus-details (cadr err))
+		      mm-security-handle 'gnus-details (mml2015-format-error err))
 		     nil)
 		    (quit
 		     (mm-set-handle-multipart-parameter
@@ -426,7 +431,7 @@
 	       (buffer-string))))
 	(error
 	 (mm-set-handle-multipart-parameter
-	  mm-security-handle 'gnus-details (cadr err))
+	  mm-security-handle 'gnus-details (mml2015-format-error err))
 	 nil)
 	(quit
 	 (mm-set-handle-multipart-parameter
