@@ -248,13 +248,14 @@ by nnmaildir-request-article.")
   (delete-directory dir))
 
 (defun nnmaildir--group-maxnum (server group)
-  (let ((x (nnmaildir--srvgrp-dir (nnmaildir--srv-dir server)
-				  (nnmaildir--grp-name group))))
-    (setq x (nnmaildir--nndir x)
-	  x (nnmaildir--num-dir x)
-	  x (nnmaildir--num-file x)
-	  x (file-attributes x))
-    (if x (1- (nth 1 x)) 0)))
+  (if (zerop (nnmaildir--grp-count group)) 0
+    (let ((x (nnmaildir--srvgrp-dir (nnmaildir--srv-dir server)
+				    (nnmaildir--grp-name group))))
+      (setq x (nnmaildir--nndir x)
+	    x (nnmaildir--num-dir x)
+	    x (nnmaildir--num-file x)
+	    x (file-attributes x))
+      (if x (1- (nth 1 x)) 0))))
 
 ;; Make the given server, if non-nil, be the current server.  Then make the
 ;; given group, if non-nil, be the current group of the current server.  Then
