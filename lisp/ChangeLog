@@ -1,8 +1,17 @@
+2001-10-23  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (post-method): Use `native' instead of `nil'.
+	* gnus-msg.el (gnus-post-method): Ditto.
+
+2001-10-23  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-define-group-parameter): Grammar fix.
+
 2001-10-22  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-msg.el (gnus-extended-version): Include
-	system-configuration, suggested by Per Abrahamsen
-	<abraham@dina.kvl.dk>.
+	system-configuration.
+	Suggested by Kai.Grossjohann@CS.Uni-Dortmund.DE (Kai Gro,A_(Bjohann).
 
 2001-10-22  Per Abrahamsen  <abraham@dina.kvl.dk>
 

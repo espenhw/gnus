@@ -38,19 +38,19 @@
   "*Preferred method for posting USENET news.
 
 If this variable is `current' (which is the default), Gnus will use
-the \"current\" select method when posting.  If it is nil, Gnus will
-use the native select method when posting.
+the \"current\" select method when posting.  If it is `native', Gnus
+will use the native select method when posting.
 
 This method will not be used in mail groups and the like, only in
 \"real\" newsgroups.
 
-If not nil nor `current', the value must be a valid method as discussed
+If not `native' nor `current', the value must be a valid method as discussed
 in the documentation of `gnus-select-method'.  It can also be a list of
 methods.  If that is the case, the user will be queried for what select
 method to use when posting."
   :group 'gnus-group-foreign
   :link '(custom-manual "(gnus)Posting Server")
-  :type `(choice (const nil)
+  :type `(choice (const native)
 		 (const current)
 		 (sexp :tag "Methods" ,gnus-select-method)))
 
@@ -667,8 +667,11 @@ If SILENT, don't prompt the user."
      ;; If the group-method is nil (which shouldn't happen) we use
      ;; the default method.
      ((null group-method)
-      (or (and (not (eq gnus-post-method 'current)) gnus-post-method)
-	  gnus-select-method message-post-method))
+      (or (and (listp gnus-post-method)	;If not current/native/nil
+	       (not (listp (car gnus-post-method))) ; and not a list of methods
+	       gnus-post-method)	;then use it.
+	  gnus-select-method 
+	  message-post-method))
      ;; We want the inverse of the default
      ((and arg (not (eq arg 0)))
       (if (eq gnus-post-method 'current)
@@ -676,14 +679,12 @@ If SILENT, don't prompt the user."
 	group-method))
      ;; We query the user for a post method.
      ((or arg
-	  (and gnus-post-method
-	       (not (eq gnus-post-method 'current))
+	  (and (listp gnus-post-method)
 	       (listp (car gnus-post-method))))
       (let* ((methods
 	      ;; Collect all methods we know about.
 	      (append
-	       (when (and gnus-post-method
-			  (not (eq gnus-post-method 'current)))
+	       (when (listp gnus-post-method)
 		 (if (listp (car gnus-post-method))
 		     gnus-post-method
 		   (list gnus-post-method)))
@@ -723,13 +724,14 @@ If SILENT, don't prompt the user."
      ;; Override normal method.
      ((and (eq gnus-post-method 'current)
 	   (not (eq (car group-method) 'nndraft))
-	   (gnus-get-function group-method 'request-post t)
-	   (not arg))
+	   (gnus-get-function group-method 'request-post t))
+      (assert (not arg))
       group-method)
-     ((and gnus-post-method
-	   (not (eq gnus-post-method 'current)))
+     ;; Use gnus-post-method.
+     ((listp gnus-post-method)		;A method...
+      (assert (not (listp (car gnus-post-method)))) ;... not a list of methods.
       gnus-post-method)
-     ;; Use the normal select method.
+     ;; Use the normal select method (nil or native).
      (t gnus-select-method))))
 
 

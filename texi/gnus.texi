@@ -10273,7 +10273,7 @@ If that's the case, Gnus will always prompt you for what method to use
 for posting.
 
 Finally, if you want to always post using the native select method,
-you can set this variable to @code{nil}.
+you can set this variable to @code{native}.
 
 
 @node Mail and Post

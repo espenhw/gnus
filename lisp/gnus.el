@@ -883,11 +883,11 @@ For example:
 REST is a plist of following:
 :type               One of `bool', `list' or `nil'.
 :function           The name of the function.
-:function-document  The document of the function.
+:function-document  The documentation of the function.
 :parameter-type     The type for customizing the parameter.
-:parameter-document The document for the parameter.
+:parameter-document The documentation for the parameter.
 :variable           The name of the variable.
-:variable-document  The document for the variable.
+:variable-document  The documentation for the variable.
 :variable-group     The group for customizing the variable.
 :variable-type      The type for customizing the variable.
 :variable-default   The default value of the variable."
@@ -1590,7 +1590,7 @@ posting an article."
  :variable-group gnus-group-foreign
  :parameter-type
  '(choice :tag "Posting Method"
-	  (const :tag "Use native server" nil)
+	  (const :tag "Use native server" native)
 	  (const :tag "Use current server" current)
 	  (list :convert-widget
 		(lambda (widget)
