@@ -1,3 +1,8 @@
+2003-01-02  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-agent.el (gnus-agent-fetch-selected-article): Update whole
+	summary buffer line, not just the download mark.
+
 2003-01-02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* nndraft.el (nndraft-request-associate-buffer): Use
