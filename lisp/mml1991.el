@@ -26,6 +26,13 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl)
+  (require 'mm-util))
+
+(autoload 'quoted-printable-decode-region "qp")
+(autoload 'quoted-printable-encode-region "qp")
+
 (defvar mml1991-use mml2015-use
   "The package used for PGP.")
 
