@@ -1,4 +1,14 @@
-Tue Aug  8 09:58:27 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+Tue Aug  8 12:39:28 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-group-unsubscribe-group): Wouldn't let you sub to
+	groups not in active. 
+	(gnus): Would barf on second startup.
+	(gnus-select-newsgroup): Would refuse entry of non-activated
+	dead groups. 
+
+Tue Aug  8 09:58:27 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.8 is released.
 
 	* gnus-ems.el (gnus-summary-insert-pseudos-xemacs): Would bug out
 	on the end of the buffer.
@@ -23,6 +33,8 @@ Tue Aug  8 07:22:17 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci7.cern.ch>
 	file. 
 
 Mon Aug  7 02:32:03 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.7 is released.
 
 	* gnus.el (gnus-group-list-mode): New variable.
 	(gnus-have-all-newsgroups): Obsolete variable.

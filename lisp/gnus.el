@@ -1308,7 +1308,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.8"
+(defconst gnus-version "(ding) Gnus v0.99.9"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -3214,7 +3214,6 @@ prompt the user for the name of an NNTP server to use."
 	  ;; Read the dribble file.
 	  (and gnus-use-dribble-file (gnus-dribble-read-file))
 
-	  (gnus-update-format-specifications)
 	  (gnus-summary-make-display-table)
 	  (let ((buffer-read-only nil))
 	    (erase-buffer)
@@ -3223,6 +3222,7 @@ prompt the user for the name of an NNTP server to use."
 		  (gnus-group-startup-message)
 		  (sit-for 0))))
 	  (gnus-setup-news nil level)
+	  (gnus-update-format-specifications)
 	  (gnus-group-list-groups level)
 	  (gnus-configure-windows 'group))))))
 
@@ -4402,7 +4402,7 @@ New newsgroup is added to .newsrc automatically."
 				     gnus-level-default-subscribed)))
 	   (gnus-group-update-group group))
 	  ((and (stringp group)
-		(or (not gnus-have-read-active-file)
+		(or (not (memq gnus-select-method gnus-have-read-active-file))
 		    (gnus-gethash group gnus-active-hashtb)))
 	   ;; Add new newsgroup.
 	   (gnus-group-change-level 
@@ -6473,7 +6473,9 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	(gnus-open-server gnus-current-select-method)
 	(error "Couldn't open server"))
     
-    (or (and (eq (car entry) t)
+    (or (and (null entry)
+	     (gnus-activate-newsgroup group))
+	(and (eq (car entry) t)
 	     (gnus-activate-newsgroup (car info)))
 	(gnus-request-group group t)
 	(progn
