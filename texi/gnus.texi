@@ -5800,6 +5800,18 @@ thread or not.  Finally, if this variable is @code{more}, Gnus won't cut
 off sparse leaf nodes that don't lead anywhere.  This variable is
 @code{nil} by default.
 
+@item gnus-read-all-available-headers
+@vindex gnus-read-all-available-headers
+This is a rather obscure variable that few will find useful.  It's
+intended for those non-news newsgroups where the backend has to fetch
+quite a lot to present the summary buffer, and where it's impossible to
+go back to parents of articles.  This is mostly the case in the
+web-based groups, like the @code{nnultimate} groups.
+
+If you don't use those, then it's safe to leave this as the default
+@code{nil}.  If you want to use this variable, it should be a regexp
+that matches the group name, or @code{t} for all groups.
+
 @end table
 
 
@@ -9779,7 +9791,8 @@ you're in, you could say something like the following:
 (add-hook 'gnus-select-group-hook
           (lambda ()
             (cond
-             ((string-match "^de\\." gnus-newsgroup-name)
+             ((string-match
+               "^de\\." (gnus-group-real-name gnus-newsgroup-name))
               (ispell-change-dictionary "deutsch"))
              (t
               (ispell-change-dictionary "english")))))
