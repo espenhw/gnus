@@ -5096,9 +5096,6 @@ In addition, you also have marks that do not affect readedness.
 * Unread Articles::             Marks for unread articles.
 * Read Articles::               Marks for read articles.
 * Other Marks::                 Marks that do not affect readedness.
-* Setting Marks::               
-* Generic Marking Commands::    
-* Setting Process Marks::       
 @end menu
 
 @ifinfo
