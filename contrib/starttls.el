@@ -1,6 +1,6 @@
 ;;; starttls.el --- STARTTLS support via wrapper around GNU TLS
 
-;; Copyright (C) 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: comm, tls, gnutls, ssl
@@ -123,7 +123,7 @@ The default is what GNUTLS's \"gnutls-cli\" outputs."
   :type 'regexp
   :group 'starttls)
 
-(defcustom starttls-failure "*** Handshake has failed"
+(defcustom starttls-failure "\\*\\*\\* Handshake has failed"
   "*Regular expression indicating failed TLS handshake.
 The default is what GNUTLS's \"gnutls-cli\" outputs."
   ;; GNUTLS cli.c:do_handshake() print this string on failure.  If the
