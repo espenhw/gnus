@@ -1,3 +1,7 @@
+2004-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Bump.
+
 2004-01-03 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	* gnus.el: Gnus v5.10.4 is released.
