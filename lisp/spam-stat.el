@@ -398,7 +398,8 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
   "Save the `spam-stat' hash table as lisp file."
   (interactive)
   (with-temp-buffer
-    (let ((standard-output (current-buffer)))
+    (let ((standard-output (current-buffer))
+	  (font-lock-maximum-size 0))
       (insert "(setq spam-stat-ngood "
               (number-to-string spam-stat-ngood)
               " spam-stat-nbad "
@@ -409,8 +410,8 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 			      (spam-stat-good entry)
 			      (spam-stat-bad entry))))
 	       spam-stat)
-      (insert ")))"))
-    (write-file spam-stat-file)))
+      (insert ")))")
+    (write-file spam-stat-file))))
 
 (defun spam-stat-load ()
   "Read the `spam-stat' hash table from disk."

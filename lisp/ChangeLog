@@ -1,3 +1,8 @@
+2003-04-29  Karl Pflästerer  <sigurd@12move.de>
+
+	* spam-stat.el (spam-stat-save): No longer font-locks the file
+	when saving
+
 2003-04-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* canlock.el: Bind mail-header-separator when compiling (XEmacs
