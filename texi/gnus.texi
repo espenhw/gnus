@@ -1039,6 +1039,9 @@ The level of the group.
 The score of the group.
 @item ticked 
 The number of ticked articles in the group.
+@item topic
+When using the topic minor mode, this variable is bound to the current
+topic being inserted.
 @end table
 
 When the forms are @code{eval}ed, point is at the beginning of the line
@@ -2410,6 +2413,11 @@ created.
 @code{gnus-group-prepare-hook} is called after the group buffer is
 generated.  It may be used to modify the buffer in some strange,
 unnatural way.
+
+@item gnus-permanently-visible-groups
+@vindex gnus-permanently-visible-groups
+Groups matching this regexp will always be listed in the group buffer,
+whether they are empty or not.
 
 @end table
 

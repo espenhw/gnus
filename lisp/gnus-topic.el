@@ -78,8 +78,8 @@ with some simple extensions.
 
 (defun gnus-group-topic-name ()
   "The name of the topic on the current line."
-  (let ((group (get-text-property (gnus-point-at-bol) 'gnus-topic)))
-    (and group (symbol-name group))))
+  (let ((topic (get-text-property (gnus-point-at-bol) 'gnus-topic)))
+    (and topic (symbol-name topic))))
 
 (defun gnus-group-topic-level ()
   "The level of the topic on the current line."
@@ -146,25 +146,26 @@ If LOWEST is non-nil, list all newsgroups of level LOWEST or higher."
   (setq gnus-group-list-mode (cons level all))
   (run-hooks 'gnus-group-prepare-hook))
 
-(defun gnus-topic-prepare-topic (topic level &optional list-level all silent)
+(defun gnus-topic-prepare-topic (topicl level &optional list-level all silent)
   "Insert TOPIC into the group buffer.
 If SILENT, don't insert anything.  Return the number of unread
 articles in the topic and its subtopics."
-  (let* ((type (pop topic))
+  (let* ((type (pop topicl))
 	 (entries (gnus-topic-find-groups (car type) list-level all))
 	 (visiblep (and (eq (nth 1 type) 'visible) (not silent)))
 	 (gnus-group-indentation 
 	  (make-string (* gnus-topic-indent-level level) ? ))
 	 (beg (progn (beginning-of-line) (point)))
-	 (topic (reverse topic))
+	 (topicl (reverse topicl))
 	 (all-entries entries)
 	 (unread 0)
+	 (topic (car type))
 	 info entry end active)
     ;; Insert any sub-topics.
-    (while topic
+    (while topicl
       (incf unread
 	    (gnus-topic-prepare-topic 
-	     (pop topic) (1+ level) list-level all
+	     (pop topicl) (1+ level) list-level all
 	     (not visiblep))))
     (setq end (point))
     (goto-char beg)
@@ -293,11 +294,10 @@ articles in the topic and its subtopics."
 	 (active-topic (eq gnus-topic-alist gnus-topic-active-alist)))
     (beginning-of-line)
     ;; Insert the text.
-    (add-text-properties 
+    (gnus-add-text-properties 
      (point)
      (prog1 (1+ (point)) 
-       (eval gnus-topic-line-format-spec)
-       (gnus-topic-remove-excess-properties))
+       (eval gnus-topic-line-format-spec))
      (list 'gnus-topic (intern name)
 	   'gnus-topic-level level
 	   'gnus-topic-unread unread
@@ -307,7 +307,7 @@ articles in the topic and its subtopics."
 (defun gnus-topic-previous-topic (topic)
   "Return the previous topic on the same level as TOPIC."
   (let ((top (cddr (gnus-topic-find-topology
-			(gnus-topic-parent-topic topic)))))
+		    (gnus-topic-parent-topic topic)))))
     (unless (equal topic (caaar top))
       (while (and top (not (equal (caaadr top) topic)))
 	(setq top (cdr top)))

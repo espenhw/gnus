@@ -1718,7 +1718,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.87"
+(defconst gnus-version "September Gnus v0.88"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2782,7 +2782,7 @@ Thank you for your help in stamping out bugs.
 If PROPS, insert the result."
   (let ((form (gnus-parse-format format alist props)))
     (if props
-	(add-text-properties (point) (progn (eval form) (point)) props)
+	(gnus-add-text-properties (point) (progn (eval form) (point)) props)
       (eval form))))
 
 (defun gnus-remove-text-with-property (prop)
@@ -3744,8 +3744,8 @@ simple-first is t, first argument is already simplified."
     name))
 
 (defsubst gnus-hide-text (b e props)
-  "Set text PROPS on the B to E region, extending `intangble' 1 past B."
-  (add-text-properties b e props)
+  "Set text PROPS on the B to E region, extending `intangible' 1 past B."
+  (gnus-add-text-properties b e props)
   (when (memq 'intangible props)
     (put-text-property (max (1- b) (point-min))
 		       b 'intangible (cddr (memq 'intangible props)))))
@@ -4571,7 +4571,7 @@ If REGEXP, only list groups matching REGEXP."
 	(while groups
 	  (setq group (pop groups))
 	  (when (string-match regexp group)
-	    (add-text-properties
+	    (gnus-add-text-properties
 	     (point) (prog1 (1+ (point))
 		       (insert " " mark "     *: " group "\n"))
 	     (list 'gnus-group (gnus-intern-safe group gnus-active-hashtb)
@@ -4579,7 +4579,7 @@ If REGEXP, only list groups matching REGEXP."
 		   'gnus-level level))))
       ;; This loop is used when listing all groups.
       (while groups
-	(add-text-properties
+	(gnus-add-text-properties
 	 (point) (prog1 (1+ (point))
 		   (insert " " mark "     *: "
 			   (setq group (pop groups)) "\n"))
@@ -4928,7 +4928,7 @@ increase the score of each group you read."
 	 (buffer-read-only nil)
 	 header gnus-tmp-header)	; passed as parameter to user-funcs.
     (beginning-of-line)
-    (add-text-properties
+    (gnus-add-text-properties
      (point)
      (prog1 (1+ (point))
        ;; Insert the text.
@@ -4943,9 +4943,7 @@ increase the score of each group you read."
     (when (inline (gnus-visual-p 'group-highlight 'highlight))
       (forward-line -1)
       (run-hooks 'gnus-group-update-hook)
-      (forward-line))
-    ;; Allow XEmacs to remove front-sticky text properties.
-    (gnus-group-remove-excess-properties)))
+      (forward-line))))
 
 (defun gnus-group-update-group (group &optional visible-only)
   "Update all lines where GROUP appear.
@@ -5008,6 +5006,12 @@ already."
 	   gnus-tmp-header			;Dummy binding for user-defined formats
 	   ;; Get the resulting string.
 	   (mode-string (eval gformat)))
+      ;; Say whether the dribble buffer has been modified.
+      (setq mode-line-modified
+	    (if (and gnus-dribble-buffer
+		     (buffer-name gnus-dribble-buffer)
+		     (buffer-modified-p gnus-dribble-buffer))
+		"-* " "-- "))
       ;; If the line is too long, we chop it off.
       (when (> (length mode-string) max-len)
 	(setq mode-string (substring mode-string 0 (- max-len 4))))
@@ -6464,7 +6468,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
        (setq b (point))
        (insert (format "      *: %-20s %s\n" (symbol-name group)
 		       (symbol-value group)))
-       (add-text-properties
+       (gnus-add-text-properties
 	b (1+ b) (list 'gnus-group group
 		       'gnus-unread t 'gnus-marked nil
 		       'gnus-level (1+ gnus-level-subscribed))))
@@ -7406,7 +7410,7 @@ This is all marks except unread, ticked, dormant, and expirable."
 (defun gnus-summary-insert-dummy-line (gnus-tmp-subject gnus-tmp-number)
   "Insert a dummy root in the summary buffer."
   (beginning-of-line)
-  (add-text-properties
+  (gnus-add-text-properties
    (point) (progn (eval gnus-summary-dummy-line-format-spec) (point))
    (list 'gnus-number gnus-tmp-number 'gnus-intangible gnus-tmp-number)))
 
@@ -13183,7 +13187,7 @@ is initialized from the SAVEDIR environment variable."
 		  ": " (or (cdr (assq 'execute (car pslist))) "") "\n")
 	  (setq e (point))
 	  (forward-line -1)		; back to `b'
-	  (add-text-properties
+	  (gnus-add-text-properties
 	   b e (list 'gnus-number gnus-reffed-article-number
 		     gnus-mouse-face-prop gnus-mouse-face))
 	  (gnus-data-enter

@@ -1,7 +1,22 @@
+Sat May 18 08:42:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-group-set-mode-line): Say whether the dribble
+	buffer has been modified.
+
+	* gnus-xmas.el (gnus-xmas-add-text-properties): New function.
+	(gnus-xmas-group-remove-excess-properties): Removed.
+
+	* gnus-ems.el (gnus-add-text-properties): New alias.
+
+	* gnus-xmas.el (gnus-xmas-group-remove-excess-properties): Open
+	text props.
+
 Fri May 17 16:27:42 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.el (gnus-article-hide-headers): Would make headers
 	iinvisible under XEmacs.
+
+	* gnus.el: 0.87 is released.
 
 Fri May 17 11:38:52 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
