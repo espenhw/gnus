@@ -1,3 +1,7 @@
+2003-04-28  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile.in (FLAGS): Use @FLAGS@.
+
 2003-04-27  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-mime-display-multipart-as-mixed) 
