@@ -27,6 +27,7 @@
 
 (require 'custom)
 (require 'gnus-ems)
+(require 'browse-url)
 
 ;; The following is just helper functions and data, not ment to be set
 ;; by the user.

@@ -464,6 +464,7 @@ header line with the old Message-ID."
 Type \\[describe-mode] in the buffer to get a list of commands."
   (interactive (list t))
   (let* ((group (or group gnus-newsgroup-name))
+	 (pgroup group)
 	 (to-address 
 	  (when group
 	    (gnus-group-get-parameter group 'to-address)))
@@ -476,7 +477,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
     (when group
       (setq group (gnus-group-real-name group)))
     (if (or to-group
-	    (and (gnus-member-of-valid 'post (or group gnus-newsgroup-name))
+	    (and (gnus-member-of-valid 'post (or pgroup gnus-newsgroup-name))
 		 (not mailing-list)
 		 (not to-address)))
 	;; This is news.
@@ -1676,10 +1677,9 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 	 (fboundp gnus-post-prepare-function)
 	 (funcall gnus-post-prepare-function group))
     (goto-char (point-min))
-    (if (re-search-forward 
-	 (concat "^" (regexp-quote mail-header-separator) "$") nil t)
-	(forward-line 1)
-      (goto-char (point-max)))
+    (if group
+	(re-search-forward "^Subject: " nil t)
+      (re-search-forward "^Newsgroups: " nil t))
     (run-hooks 'gnus-post-prepare-hook)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
@@ -2279,21 +2279,17 @@ Headers will be generated before sending."
 (defun gnus-inews-insert-bfcc ()
   "Insert Bcc and Fcc headers."
   (save-excursion
-    (save-restriction
-      (gnus-inews-narrow-to-headers)
-      ;; Handle author copy using BCC field.
-      (if (and gnus-mail-self-blind
+    ;; Handle author copy using BCC field.
+    (when (and gnus-mail-self-blind
 	       (not (mail-fetch-field "bcc")))
-	  (progn
-	    (mail-position-on-field "Bcc")
-	    (insert (if (stringp gnus-mail-self-blind)
-			gnus-mail-self-blind
-		      (user-login-name)))))
-      ;; Handle author copy using FCC field.
-      (if gnus-author-copy
-	  (progn
-	    (mail-position-on-field "Fcc")
-	    (insert gnus-author-copy))))))
+      (mail-position-on-field "Bcc")
+      (insert (if (stringp gnus-mail-self-blind)
+		  gnus-mail-self-blind
+		(user-login-name))))
+    ;; Handle author copy using FCC field.
+    (when gnus-author-copy
+      (mail-position-on-field "Fcc")
+      (insert gnus-author-copy))))
 
 (defun gnus-inews-insert-gcc ()
   (let* ((group gnus-outgoing-message-group)

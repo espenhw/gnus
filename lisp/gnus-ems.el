@@ -84,6 +84,9 @@
  '(progn
     (if (string-match "XEmacs\\|Lucid" emacs-version)
 	()
+
+      (defvar gnus-mouse-face-prop 'mouse-face)
+
       ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
       (defvar gnus-display-type 
 	(condition-case nil

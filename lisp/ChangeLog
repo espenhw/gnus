@@ -1,4 +1,38 @@
+Fri Nov 17 03:35:58 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus-vis.el ((require 'cl)): Require cl.
+
+	* gnus.el (gnus-active): New macro.
+	(gnus-intern-safe): Ditto.
+	(gnus-set-active): Ditto.
+
+Fri Nov 17 01:33:26 1995  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-max-width-function): Totally bugged out.
+
+	* gnus-msg.el (gnus-new-news): Set point on Subject.
+	(gnus-inews-insert-bfcc): Don't narrow to headers.
+
+	* gnus.el (gnus-articles-to-read): `C-u SPC' would have no real
+	effect. 
+	(gnus-article-date-ut): Would chop up lines.
+
+	* nnheader.el: Require cl.
+
+Fri Nov 17 00:11:10 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el (gnus-select-newsgroup): Expiry marks would disappear.
+	(gnus-headers-decode-quoted-printable): Use subst-char instead of
+	search/replace. 
+	(gnus-remove-thread): Didn't remove properly.
+
+Thu Nov 16 06:28:17 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: Intern group in active hashtb throughout.
+
 Wed Nov 15 06:13:48 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: 0.13 is released.
 
 	* gnus-score.el (gnus-score-get): Turned into a defsubst.
 	(gnus-score-find-bnews): Slightly less funcalling.

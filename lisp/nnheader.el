@@ -37,6 +37,7 @@
 ;;; Code:
 
 (require 'mail-utils)
+(eval-when-compile (require 'cl))
 
 (defvar nnheader-max-head-length 4096
   "*Max length of the head of articles.")

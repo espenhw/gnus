@@ -29,6 +29,8 @@
 (require 'gnus-ems)
 (require 'easymenu)
 (require 'custom)
+(require 'browse-url)
+(eval-when-compile (require 'cl))
 
 (defvar gnus-group-menu-hook nil
   "*Hook run after the creation of the group mode menu.")
@@ -220,10 +222,10 @@
 	   (assq (1+ lines) gnus-cite-attribution-alist)))
      gnus-button-message-id 3)
     ;; This is how URLs _should_ be embedded in text...
-    ("<URL:\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
+    ("<URL:\\([^\n\r>]*\\)>" 0 t browse-url-browser-function 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
-    (,gnus-button-url-regexp 0 t gnus-button-url 0))
+    (,gnus-button-url-regexp 0 t browse-url-browser-function 0))
   "Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -242,7 +244,7 @@ variable it the real callback function.")
     ("^\\(From\\|Reply-To\\): " ": *\\(.+\\)$" 1 t gnus-button-reply 0)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+" 
      0 t gnus-button-mailto 0)
-    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t gnus-button-url 0))
+    ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t browse-url-browser-function 0))
   "Alist of headers and regexps to match buttons in article heads.
 
 This alist is very similar to `gnus-button-alist', except that each
@@ -256,22 +258,6 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 ;see gnus-cus.el
 ;(eval-when-compile
 ;  (defvar browse-url-browser-function))
-
-;see gnus-cus.el
-;(defvar gnus-button-url
-;  (cond ((boundp 'browse-url-browser-function) browse-url-browser-function)
-;	((fboundp 'w3-fetch) 'w3-fetch)
-;	((eq window-system 'x) 'gnus-netscape-open-url))
-;  "*Function to fetch URL.
-;The function will be called with one argument, the URL to fetch.
-;Useful values of this function are:
-
-;w3-fetch: 
-;   defined in the w3 emacs package by William M. Perry.
-;gnus-netscape-open-url:
-;   open url in existing netscape, start netscape if none found.
-;gnus-netscape-start-url:
-;   start new netscape with url.")
 
 
 
@@ -935,13 +921,13 @@ If nil, the user will be asked for a duration.")
 	(let* ((beg (progn (beginning-of-line) (point)))
 	       (end (progn (end-of-line) (point)))
 	       ;; Fix by Mike Dugan <dugan@bucrf16.bu.edu>.
-	       (from (if (get-text-property beg 'mouse-face) 
+	       (from (if (get-text-property beg gnus-mouse-face-prop) 
 			 beg
 		       (1+ (or (next-single-property-change 
-				beg 'mouse-face nil end) 
+				beg gnus-mouse-face-prop nil end) 
 			       beg))))
 	       (to (1- (or (next-single-property-change
-			    from 'mouse-face nil end)
+			    from gnus-mouse-face-prop nil end)
 			   end))))
 	  ;; If no mouse-face prop on line (e.g. xemacs) we 
 	  ;; will have to = from = end, so we highlight the
@@ -1131,7 +1117,7 @@ The following commands are available:
 	       (prog2 (insert (car button)) (point) (insert " "))
 	       (list 'gnus-callback (cdr button)
 		     'face gnus-carpal-button-face
-		     'mouse-face 'highlight))))
+		     gnus-mouse-face-prop 'highlight))))
 	  (let ((fill-column (- (window-width) 2)))
 	    (fill-region (point-min) (point-max)))
 	  (set-window-point (get-buffer-window (current-buffer)) 
@@ -1414,7 +1400,7 @@ specified by `gnus-button-alist'."
   (add-text-properties 
    from to
    (nconc (and gnus-article-mouse-face
-	       (list 'mouse-face gnus-article-mouse-face))
+	       (list gnus-mouse-face-prop gnus-article-mouse-face))
 	  (list 'gnus-callback fun)
 	  (and data (list 'gnus-data data)))))
 

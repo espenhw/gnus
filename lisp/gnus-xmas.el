@@ -135,7 +135,7 @@ It is provided only to ease porting of broken FSF Emacs programs."
 	(progn
 	  (setq info (nth 2 entry))
 	  (gnus-group-insert-group-line 
-	   nil group (gnus-info-group info) (gnus-info-marks info)
+	   nil group (gnus-info-level info) (gnus-info-marks info)
 	   (car entry) (gnus-info-method info)))
       (setq active (gnus-gethash group gnus-active-hashtb))
 	  
@@ -258,6 +258,8 @@ call it with the value of the `gnus-data' text property."
   (or (boundp 'standard-display-table) (setq standard-display-table nil))
   (or (boundp 'read-event) (fset 'read-event 'next-command-event))
 
+  (defvar gnus-mouse-face-prop 'highlight)
+      
   ;; Fix by "jeff (j.d.) sparkes" <jsparkes@bnr.ca>.
   (defvar gnus-display-type (device-class)
     "A symbol indicating the display Emacs is running under.
