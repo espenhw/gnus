@@ -318,7 +318,9 @@
 	       (buffer-string)))
 	    (mm-set-handle-multipart-parameter 
 	     mm-security-handle 'gnus-info "Failed")
-	    (throw 'error handle))))
+	    (throw 'error handle)))
+	(mm-set-handle-multipart-parameter 
+	 mm-security-handle 'gnus-info "OK"))
       handle)))
 
 (defun mml2015-gpg-sign (cont)

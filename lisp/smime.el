@@ -26,9 +26,9 @@
 ;; This library perform S/MIME operations from within Emacs.
 ;;
 ;; Functions for fetching certificates from public repositories are
-;; NOT provided (yet).
+;; provided, currently only from DNS.  LDAP support (via EUDC) is planned.
 ;;
-;; It uses OpenSSL (tested with version 0.9.5a) for signing,
+;; It uses OpenSSL (tested with version 0.9.5a and 0.9.6) for signing,
 ;; encryption and decryption.
 ;;
 ;; Some general knowledge of S/MIME, X.509, PKCS#12, PEM etc is
@@ -152,6 +152,8 @@ If nil, use system defaults."
 		 string)
   :group 'dig)
 
+(defvar smime-details-buffer "*S/MIME OpenSSL output*")
+
 ;; OpenSSL wrappers.
 
 (defun smime-call-openssl-region (b e buf &rest args)
@@ -179,6 +181,9 @@ private key and certificate."
 	  (when (looking-at "^MIME-Version: 1.0$")
 	    (delete-region (point) (progn (forward-line 1) (point))))
 	  t)
+      (with-current-buffer (get-buffer-create smime-details-buffer)
+	(goto-char (point-max))
+	(insert-buffer buffer))
       (kill-buffer buffer))))
 
 (defun smime-encrypt-region (b e certfiles)
@@ -195,6 +200,9 @@ is expected to contain of a PEM encoded certificate."
 	  (when (looking-at "^MIME-Version: 1.0$")
 	    (delete-region (point) (progn (forward-line 1) (point))))
 	  t)
+      (with-current-buffer (get-buffer-create smime-details-buffer)
+	(goto-char (point-max))
+	(insert-buffer buffer))
       (kill-buffer buffer))))
 
 ;; Sign+encrypt buffer
@@ -240,6 +248,9 @@ nil."
 	    (message "S/MIME message verified succesfully.")
 	  (message "S/MIME message NOT verified successfully.")
 	  nil)
+      (with-current-buffer (get-buffer-create smime-details-buffer)
+	(goto-char (point-max))
+	(insert-buffer buffer))
       (kill-buffer buffer))))
   
 (defun smime-decrypt-region (b e keyfile)
@@ -249,6 +260,9 @@ nil."
 		 "-recip" keyfile)
       
       )
+    (with-current-buffer (get-buffer-create smime-details-buffer)
+      (goto-char (point-max))
+      (insert-buffer buffer))
     (kill-buffer buffer)))
   
 ;; Verify+Decrypt buffer

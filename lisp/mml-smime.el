@@ -40,7 +40,18 @@
 		    (mm-handle-multipart-ctl-parameter ctl 'micalg)))
     (insert (format "boundary=\"%s\"\n\n"
 		    (mm-handle-multipart-ctl-parameter ctl 'boundary)))
-    (smime-verify-buffer)
+    (when (get-buffer smime-details-buffer)
+      (kill-buffer smime-details-buffer))
+    (if (smime-verify-buffer)
+	(progn
+	  (mm-set-handle-multipart-parameter 
+	   mm-security-handle 'gnus-info "OK")
+	  (kill-buffer smime-details-buffer))
+      (mm-set-handle-multipart-parameter 
+       mm-security-handle 'gnus-info "Failed")
+      (mm-set-handle-multipart-parameter
+       mm-security-handle 'gnus-details (with-current-buffer smime-details-buffer 
+					  (buffer-string))))
     handle))
 
 (provide 'mml-smime)
