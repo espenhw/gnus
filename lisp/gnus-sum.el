@@ -8576,7 +8576,7 @@ If ARG is a negative number, hide the unwanted header lines."
 		      (1- (point))
 		    (point-max))))
 	(insert-buffer-substring gnus-original-article-buffer s e)
-	(article-decode-encoded-words)
+	(run-hooks 'gnus-article-decode-hook)
 	(if hidden
 	    (let ((gnus-treat-hide-headers nil)
 		  (gnus-treat-hide-boring-headers nil))
