@@ -1,5 +1,13 @@
 2004-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* lpath.el: Bind w3m-safe-url-regexp.
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Make the
+	w3m-safe-url-regexp variable buffer-local and set it as the value
+	of mm-w3m-safe-url-regexp.
+
+	* mm-view.el (mm-inline-text-html-render-with-w3m): Ditto.
+
 	* gnus-msg.el (gnus-setup-message): Ignore an article copy while
 	parsing gnus-posting-styles when the message is not for replying.
 

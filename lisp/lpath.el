@@ -29,7 +29,7 @@
 	      w3-meta-content-type-charset-regexp
 	      w3m-cid-retrieve-function-alist w3m-current-buffer
 	      w3m-display-inline-images w3m-meta-content-type-charset-regexp
-	      w3m-minor-mode-map))
+	      w3m-minor-mode-map w3m-safe-url-regexp))
 
 (if (featurep 'xemacs)
     (progn

@@ -222,6 +222,7 @@
 (defun mm-inline-text-html-render-with-w3m (handle)
   "Render a text/html part using emacs-w3m."
   (mm-setup-w3m)
+  (set (make-local-variable 'w3m-safe-url-regexp) mm-w3m-safe-url-regexp)
   (let ((text (mm-get-part handle))
 	(b (point))
 	(charset (mail-content-type-get (mm-handle-type handle) 'charset)))
@@ -236,8 +237,7 @@
 	(when charset
 	  (delete-region (point-min) (point-max))
 	  (insert (mm-decode-string text charset)))
-	(let ((w3m-safe-url-regexp mm-w3m-safe-url-regexp)
-	      w3m-force-redisplay)
+	(let (w3m-force-redisplay)
 	  (w3m-region (point-min) (point-max)))
 	(when (and mm-inline-text-html-with-w3m-keymap
 		   (boundp 'w3m-minor-mode-map)
