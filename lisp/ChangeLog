@@ -3192,7 +3192,26 @@
 
 	* gnus.el (gnus-logo-color-style): Changed colors to `no'.
 
-	* Moved to Changelog.1.
+	* Moved to Changelog.2.
+
+2004-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Bump version.
+
+2004-01-04 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: No Gnus v0.1 is released.
+
+2004-01-04 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: No Gnus v0.0 is released.
+
+2004-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Bump.
+	(gnus-version): No.
+
+See ChangeLog.2 for earlier changes.
 
     Copyright (C) 2000, 2001, 2002, 2004 Free Software Foundation, Inc.
   Copying and distribution of this file, with or without modification,
