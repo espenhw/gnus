@@ -1,3 +1,8 @@
+2003-06-10  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-check-bogofilter-headers): fix for when the score
+	is requested but the message is not spam
+
 2003-06-09  Teodor Zlatanov  <tzz@lifelogs.com>
 	From Eric Knauel <knauel@informatik.uni-tuebingen.de>
 

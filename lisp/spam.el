@@ -1043,13 +1043,15 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 ;;;; Bogofilter
 (defun spam-check-bogofilter-headers (&optional score)
   (let ((header (message-fetch-field spam-bogofilter-header)))
-      (when (and header
-		 (string-match spam-bogofilter-bogosity-positive-spam-header
-			       header))
-	  (if score
-	      (when (string-match "spamicity=\\([0-9.]+\\)" header)
-		(match-string 1 header))
-	    spam-split-group))))
+    (when header			; return nil when no header
+      (if score				; scoring mode
+	  (if (string-match "spamicity=\\([0-9.]+\\)" header)
+	      (match-string 1 header)
+	    "0")
+	;; spam detection mode
+	(when (string-match spam-bogofilter-bogosity-positive-spam-header
+			    header)
+	  spam-split-group)))))
 
 ;; return something sensible if the score can't be determined
 (defun spam-bogofilter-score ()
