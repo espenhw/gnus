@@ -1,5 +1,7 @@
 2003-01-12  Jesper Harder  <harder@ifa.au.dk>
 
+	* message.el (message-fetch-reply-field): Narrow to headers.
+
 	* gnus-msg.el (gnus-inews-do-gcc): Don't try to mark GCC's as read
 	if Gnus isn't alive.
 

@@ -1520,7 +1520,9 @@ is used by default."
 (defun message-fetch-reply-field (header)
   "Fetch field HEADER from the message we're replying to."
   (message-with-reply-buffer
-    (message-fetch-field header)))
+    (save-restriction
+      (mail-narrow-to-head)
+      (message-fetch-field header))))
 
 (defun message-set-work-buffer ()
   (if (get-buffer " *message work*")
