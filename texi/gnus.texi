@@ -583,7 +583,7 @@ Customizing Threading
 * Loose Threads::               How Gnus gathers loose threads into bigger threads.
 * Filling In Threads::          Making the threads displayed look fuller.
 * More Threading::              Even more variables for fiddling with threads.
-* Low-Level Threading::         You thought it was over... but you were wrong!
+* Low-Level Threading::         You thought it was over@dots{} but you were wrong!
 
 Decoding Articles
 
@@ -722,7 +722,7 @@ Browsing the Web
 * Splitting in IMAP::           Splitting mail with nnimap.
 * Expiring in IMAP::            Expiring mail with nnimap.
 * Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
-* Expunging mailboxes::         Equivalent of a "compress mailbox" button.
+* Expunging mailboxes::         Equivalent of a ``compress mailbox'' button.
 * A note on namespaces::        How to (not) use IMAP namespace in Gnus.
 
 Other Sources
@@ -1136,8 +1136,8 @@ information in the normal (i.e., master) @file{.newsrc} file.
 
 If the @file{.newsrc*} files have not been saved in the master when the
 slave starts, you may be prompted as to whether to read an auto-save
-file.  If you answer "yes", the unsaved changes to the master will be
-incorporated into the slave.  If you answer "no", the slave may see some
+file.  If you answer ``yes'', the unsaved changes to the master will be
+incorporated into the slave.  If you answer ``no'', the slave may see some
 messages as unread that have been read in the master.
 
 @node Fetching a Group
@@ -1948,8 +1948,8 @@ The score of the group.
 @item ticked
 The number of ticked articles in the group.
 @item total
-The total number of articles in the group.  Or rather, MAX-NUMBER minus
-MIN-NUMBER plus one.
+The total number of articles in the group.  Or rather,
+@var{max-number} minus @var{min-number} plus one.
 @item topic
 When using the topic minor mode, this variable is bound to the current
 topic being inserted.
@@ -2056,10 +2056,10 @@ Select the current group, switch to the summary buffer and display the
 first unread article (@code{gnus-group-read-group}).  If there are no
 unread articles in the group, or if you give a non-numerical prefix to
 this command, Gnus will offer to fetch all the old articles in this
-group from the server.  If you give a numerical prefix @var{N}, @var{N}
-determines the number of articles Gnus will fetch.  If @var{N} is
-positive, Gnus fetches the @var{N} newest articles, if @var{N} is
-negative, Gnus fetches the @code{abs(@var{N})} oldest articles.
+group from the server.  If you give a numerical prefix @var{n}, @var{n}
+determines the number of articles Gnus will fetch.  If @var{n} is
+positive, Gnus fetches the @var{n} newest articles, if @var{n} is
+negative, Gnus fetches the @code{abs(@var{n})} oldest articles.
 
 Thus, @kbd{SPC} enters the group normally, @kbd{C-u SPC} offers old
 articles, @kbd{C-u 4 2 SPC} fetches the 42 newest articles, and @kbd{C-u
@@ -2654,7 +2654,7 @@ Here's an example group parameter list:
  (auto-expire . t))
 @end example
 
-We see that each element consists of a "dotted pair"---the thing before
+We see that each element consists of a ``dotted pair''---the thing before
 the dot is the key, while the thing after the dot is the value.  All the
 parameters have this form @emph{except} local variable specs, which are
 not dotted pairs, but proper lists.
@@ -3488,10 +3488,10 @@ To get this @emph{fab} functionality you simply turn on (ooh!) the
 is a toggling command.)
 
 Go ahead, just try it.  I'll still be here when you get back.  La de
-dum...  Nice tune, that...  la la la...  What, you're back?  Yes, and
-now press @kbd{l}.  There.  All your groups are now listed under
-@samp{misc}.  Doesn't that make you feel all warm and fuzzy?  Hot and
-bothered?
+dum@dots{} Nice tune, that@dots{} la la la@dots{} What, you're back?
+Yes, and now press @kbd{l}.  There.  All your groups are now listed
+under @samp{misc}.  Doesn't that make you feel all warm and fuzzy?
+Hot and bothered?
 
 If you want this permanently enabled, you should add that minor mode to
 the hook for the group mode.  Put the following line in your
@@ -3993,7 +3993,7 @@ post to the group under the point.  If the prefix is 1, prompt
 for group to post to.  @xref{Composing Messages}.
 
 This function actually prepares a news even when using mail groups.
-This is useful for "posting" messages to mail groups without actually
+This is useful for ``posting'' messages to mail groups without actually
 sending them over the network: they're just saved directly to the group
 in question.  The corresponding back end must have a request-post method
 for this to work though.
@@ -5259,7 +5259,7 @@ post to the current group.  If given a prefix, disable that.  If the
 prefix is 1, prompt for a group to post to.
 
 This function actually prepares a news even when using mail groups.
-This is useful for "posting" messages to mail groups without actually
+This is useful for ``posting'' messages to mail groups without actually
 sending them over the network: they're just saved directly to the group
 in question.  The corresponding back end must have a request-post method
 for this to work though.
@@ -6361,7 +6361,7 @@ displayed as empty lines in the summary buffer.
 * Loose Threads::               How Gnus gathers loose threads into bigger threads.
 * Filling In Threads::          Making the threads displayed look fuller.
 * More Threading::              Even more variables for fiddling with threads.
-* Low-Level Threading::         You thought it was over... but you were wrong!
+* Low-Level Threading::         You thought it was over@dots{} but you were wrong!
 @end menu
 
 
@@ -6979,7 +6979,7 @@ loaded than if you didn't use article pre-fetch.  The server itself will
 also become more loaded---both with the extra article requests, and the
 extra connection.
 
-Ok, so now you know that you shouldn't really use this thing...  unless
+Ok, so now you know that you shouldn't really use this thing@dots{} unless
 you really want to.
 
 @vindex gnus-asynchronous
@@ -6997,13 +6997,15 @@ pre-fetch all the articles it can without bound.  If it is
 @vindex gnus-async-prefetch-article-p
 @findex gnus-async-read-p
 There are probably some articles that you don't want to pre-fetch---read
-articles, for instance.  The @code{gnus-async-prefetch-article-p} variable controls whether an article is to be pre-fetched.  This function should
-return non-@code{nil} when the article in question is to be
-pre-fetched.  The default is @code{gnus-async-read-p}, which returns
-@code{nil} on read articles.  The function is called with an article
-data structure as the only parameter.
+articles, for instance.  The @code{gnus-async-prefetch-article-p}
+variable controls whether an article is to be pre-fetched.  This
+function should return non-@code{nil} when the article in question is
+to be pre-fetched.  The default is @code{gnus-async-read-p}, which
+returns @code{nil} on read articles.  The function is called with an
+article data structure as the only parameter.
 
-If, for instance, you wish to pre-fetch only unread articles shorter than 100 lines, you could say something like:
+If, for instance, you wish to pre-fetch only unread articles shorter
+than 100 lines, you could say something like:
 
 @lisp
 (defun my-async-short-unread-p (data)
@@ -7834,7 +7836,7 @@ Non-@code{nil} means that @code{gnus-uu} will post the encoded file in a
 thread.  This may not be smart, as no other decoder I have seen is able
 to follow threads when collecting uuencoded articles.  (Well, I have
 seen one package that does that---@code{gnus-uu}, but somehow, I don't
-think that counts...) Default is @code{nil}.
+think that counts@dots{}) Default is @code{nil}.
 
 @item gnus-uu-post-separate-description
 @vindex gnus-uu-post-separate-description
@@ -9784,7 +9786,7 @@ when respooling, if any (@code{gnus-summary-respool-trace}).
 @item B p
 @kindex B p (Summary)
 @findex gnus-summary-article-posted-p
-Some people have a tendency to send you "courtesy" copies when they
+Some people have a tendency to send you ``courtesy'' copies when they
 follow up to articles you have posted.  These usually have a
 @code{Newsgroups} header in them, but not always.  This command
 (@code{gnus-summary-article-posted-p}) will try to fetch the current
@@ -11419,16 +11421,17 @@ signature and the @samp{What me?} @code{Organization} header.
 
 The first element in each style is called the @code{match}.  If it's a
 string, then Gnus will try to regexp match it against the group name.
-If it is the form @code{(header MATCH REGEXP)}, then Gnus will look in
-the original article for a header whose name is MATCH and compare that
-REGEXP.  MATCH and REGEXP are strings.  (There original article is the
-one you are replying or following up to.  If you are not composing a
-reply or a followup, then there is nothing to match against.)  If the
-@code{match} is a function symbol, that function will be called with no
-arguments.  If it's a variable symbol, then the variable will be
+If it is the form @code{(header @var{match} @var{regexp})}, then Gnus
+will look in the original article for a header whose name is
+@var{match} and compare that @var{regexp}.  @var{match} and
+@var{regexp} are strings.  (There original article is the one you are
+replying or following up to.  If you are not composing a reply or a
+followup, then there is nothing to match against.)  If the
+@code{match} is a function symbol, that function will be called with
+no arguments.  If it's a variable symbol, then the variable will be
 referenced.  If it's a list, then that list will be @code{eval}ed.  In
-any case, if this returns a non-@code{nil} value, then the style is said
-to @dfn{match}.
+any case, if this returns a non-@code{nil} value, then the style is
+said to @dfn{match}.
 
 Each style may contain an arbitrary amount of @dfn{attributes}.  Each
 attribute consists of a @code{(@var{name} @var{value})} pair.  The
@@ -11991,8 +11994,8 @@ buffer, and you should be able to enter any of the groups displayed.
 One sticky point when defining variables (both on back ends and in Emacs
 in general) is that some variables are typically initialized from other
 variables when the definition of the variables is being loaded.  If you
-change the "base" variable after the variables have been loaded, you
-won't change the "derived" variables.
+change the ``base'' variable after the variables have been loaded, you
+won't change the ``derived'' variables.
 
 This typically affects directory and file variables.  For instance,
 @code{nnml-directory} is @file{~/Mail/} by default, and all @code{nnml}
@@ -12423,7 +12426,7 @@ session, which is not a good idea.
 These functions are called indirect because they connect to an
 intermediate host before actually connecting to the @sc{nntp} server.
 All of these functions and related variables are also said to belong to
-the "via" family of connection: they're all prefixed with "via" to make
+the ``via'' family of connection: they're all prefixed with ``via'' to make
 things cleaner.  The behavior of these functions is also affected by
 commonly understood variables (@pxref{Common Variables}).
 
@@ -12723,8 +12726,8 @@ It's quite easy to use Gnus to read your new mail.  You just plonk the
 mail back end of your choice into @code{gnus-secondary-select-methods},
 and things will happen automatically.
 
-For instance, if you want to use @code{nnml} (which is a "one file per
-mail" back end), you could put the following in your @file{.gnus.el} file:
+For instance, if you want to use @code{nnml} (which is a ``one file per
+mail'' back end), you could put the following in your @file{.gnus.el} file:
 
 @lisp
 (setq gnus-secondary-select-methods '((nnml "")))
@@ -12789,11 +12792,11 @@ argument.  It should return a non-@code{nil} value if it thinks that the
 mail belongs in that group.
 
 The last of these groups should always be a general one, and the regular
-expression should @emph{always} be @samp{} so that it matches any mails
+expression should @emph{always} be @samp{*} so that it matches any mails
 that haven't been matched by any of the other regexps.  (These rules are
 processed from the beginning of the alist toward the end.  The first
-rule to make a match will "win", unless you have crossposting enabled.
-In that case, all matching rules will "win".)
+rule to make a match will ``win'', unless you have crossposting enabled.
+In that case, all matching rules will ``win''.)
 
 If you like to tinker with this yourself, you can set this variable to a
 function of your choice.  This function will be called without any
@@ -12810,7 +12813,7 @@ some add @code{X-Gnus-Group} headers; most rename the Unix mbox
 The mail back ends all support cross-posting.  If several regexps match,
 the mail will be ``cross-posted'' to all those groups.
 @code{nnmail-crosspost} says whether to use this mechanism or not.  Note
-that no articles are crossposted to the general (@samp{}) group.
+that no articles are crossposted to the general (@samp{*}) group.
 
 @vindex nnmail-crosspost-link-function
 @cindex crosspost
@@ -14391,12 +14394,12 @@ is @file{~/Mail}).
 @item nnml-active-file
 @vindex nnml-active-file
 The active file for the @code{nnml} server.  The default is
-@file{~/Mail/active"}.
+@file{~/Mail/active}.
 
 @item nnml-newsgroups-file
 @vindex nnml-newsgroups-file
 The @code{nnml} group descriptions file.  @xref{Newsgroups File
-Format}.  The default is @file{~/Mail/newsgroups"}.
+Format}.  The default is @file{~/Mail/newsgroups}.
 
 @item nnml-get-new-mail
 @vindex nnml-get-new-mail
@@ -14517,7 +14520,7 @@ The name of the active file.  The default is @file{~/Mail/active}.
 @item nnfolder-newsgroups-file
 @vindex nnfolder-newsgroups-file
 The name of the group descriptions file.  @xref{Newsgroups File
-Format}.  The default is @file{~/Mail/newsgroups"}
+Format}.  The default is @file{~/Mail/newsgroups}
 
 @item nnfolder-get-new-mail
 @vindex nnfolder-get-new-mail
@@ -15186,7 +15189,7 @@ follow the link.
 @cindex nnimap
 @cindex @sc{imap}
 
-@sc{imap} is a network protocol for reading mail (or news, or ...),
+@sc{imap} is a network protocol for reading mail (or news, or @dots{}),
 think of it as a modernized @sc{nntp}.  Connecting to a @sc{imap}
 server is much similar to connecting to a news server, you just
 specify the network address of the server.
@@ -15401,7 +15404,7 @@ The possible options are:
 @table @code
 
 @item always
-The default behavior, delete all articles marked as "Deleted" when
+The default behavior, delete all articles marked as ``Deleted'' when
 closing a mailbox.
 @item never
 Never actually delete articles.  Currently there is no way of showing
@@ -15465,7 +15468,7 @@ variable @code{nntp-authinfo-file} for exact syntax; also see
 * Splitting in IMAP::           Splitting mail with nnimap.
 * Expiring in IMAP::            Expiring mail with nnimap.
 * Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
-* Expunging mailboxes::         Equivalent of a "compress mailbox" button.
+* Expunging mailboxes::         Equivalent of a ``compress mailbox'' button.
 * A note on namespaces::        How to (not) use IMAP namespace in Gnus.
 @end menu
 
@@ -15561,8 +15564,8 @@ unread articles in your inbox, since the splitting code would go over
 them every time you fetch new mail.)
 
 These rules are processed from the beginning of the alist toward the
-end.  The first rule to make a match will "win", unless you have
-crossposting enabled.  In that case, all matching rules will "win".
+end.  The first rule to make a match will ``win'', unless you have
+crossposting enabled.  In that case, all matching rules will ``win''.
 
 This variable can also have a function as its value, the function will
 be called with the headers narrowed and should return a group where it
@@ -15665,7 +15668,7 @@ messages.  Most do, fortunately.
 @item nnmail-expiry-wait-function
 
 These variables are fully supported.  The expire value can be a
-number, the symbol @var{immediate} or @var{never}.
+number, the symbol @code{immediate} or @code{never}.
 
 @item nnmail-expiry-target
 
@@ -15697,12 +15700,12 @@ Some possible uses:
 
 @itemize @bullet
 @item
-Giving "anyone" the "lrs" rights (lookup, read, keep seen/unseen flags)
+Giving ``anyone'' the ``lrs'' rights (lookup, read, keep seen/unseen flags)
 on your mailing list mailboxes enables other users on the same server to
 follow the list without subscribing to it.
 @item
 At least with the Cyrus server, you are required to give the user
-"anyone" posting ("p") capabilities to have "plussing" work (that is,
+``anyone'' posting ("p") capabilities to have ``plussing'' work (that is,
 mail sent to user+mailbox@@domain ending up in the @sc{imap} mailbox
 INBOX.mailbox).
 @end itemize
@@ -15755,7 +15758,7 @@ Specifically, University of Washington's IMAP server uses mailbox
 names like @code{#driver.mbx/read-mail} which are valid only in the
 @sc{create} and @sc{append} commands.  After the mailbox is created
 (or a messages is appended to a mailbox), it must be accessed without
-the namespace prefix, i.e @code{read-mail}.  Since Gnus do not make it
+the namespace prefix, i.e. @code{read-mail}.  Since Gnus do not make it
 possible for the user to guarantee that user entered mailbox names
 will only be used with the CREATE and APPEND commands, you should
 simply not use the namespace prefixed mailbox names in Gnus.
@@ -16331,7 +16334,7 @@ The default is @file{~/SOUP/}.
 @item nnsoup-replies-directory
 @vindex nnsoup-replies-directory
 All replies will be stored in this directory before being packed into a
-reply packet.  The default is @file{~/SOUP/replies/"}.
+reply packet.  The default is @file{~/SOUP/replies/}.
 
 @item nnsoup-replies-format-type
 @vindex nnsoup-replies-format-type
@@ -16745,7 +16748,7 @@ all @code{nntp} and @code{nnimap} groups in @code{gnus-select-method} and
 Decide on download policy.  @xref{Agent Categories}.
 
 @item
-Uhm... that's it.
+Uhm@dots{} that's it.
 @end itemize
 
 
@@ -17422,12 +17425,12 @@ Creating/deleting nnimap groups when unplugged.
 
 @end itemize
 
-Technical note: the synchronization algorithm does not work by "pushing"
+Technical note: the synchronization algorithm does not work by ``pushing''
 all local flags to the server, but rather incrementally update the
 server view of flags by changing only those flags that were changed by
 the user.  Thus, if you set one flag on a article, quit the group and
 re-select the group and remove the flag; the flag will be set and
-removed from the server when you "synchronize".  The queued flag
+removed from the server when you ``synchronize''.  The queued flag
 operations can be found in the per-server @code{flags} file in the Agent
 directory.  It's emptied when you synchronize flags.
 
@@ -17800,7 +17803,7 @@ Score on the number of lines.
 Score on the @code{Message-ID} header.
 
 @item e
-Score on an "extra" header, that is, one of those in gnus-extra-headers,
+Score on an ``extra'' header, that is, one of those in gnus-extra-headers,
 if your @sc{nntp} server tracks additional header data in overviews.
 
 @item f
@@ -18384,11 +18387,12 @@ file for a number of groups.
 
 @item local
 @cindex local variables
-The value of this entry should be a list of @code{(VAR VALUE)} pairs.
-Each @var{var} will be made buffer-local to the current summary buffer,
-and set to the value specified.  This is a convenient, if somewhat
-strange, way of setting variables in some groups if you don't like hooks
-much.  Note that the @var{value} won't be evaluated.
+The value of this entry should be a list of @code{(@var{var}
+@var{value})} pairs.  Each @var{var} will be made buffer-local to the
+current summary buffer, and set to the value specified.  This is a
+convenient, if somewhat strange, way of setting variables in some
+groups if you don't like hooks much.  Note that the @var{value} won't
+be evaluated.
 @end table
 
 
@@ -18915,7 +18919,7 @@ should probably have a long expiry period, though, as some sites keep
 old articles for a long time.
 @end itemize
 
-... I wonder whether other newsreaders will support global score files
+@dots{} I wonder whether other newsreaders will support global score files
 in the future.  @emph{Snicker}.  Yup, any day now, newsreaders like Blue
 Wave, xrn and 1stReader are bound to implement scoring.  Should we start
 holding our breath yet?
@@ -19109,8 +19113,8 @@ you, based on how the people you usually agree with have already rated.
 In GroupLens, an article is rated on a scale from 1 to 5, inclusive.
 Where 1 means something like this article is a waste of bandwidth and 5
 means that the article was really good.  The basic question to ask
-yourself is, "on a scale from 1 to 5 would I like to see more articles
-like this one?"
+yourself is, ``on a scale from 1 to 5 would I like to see more articles
+like this one?''
 
 There are four ways to enter a rating for an article in GroupLens.
 
@@ -21472,7 +21476,7 @@ In spam groups, all messages are considered to be spam by default:
 they get the @samp{$} mark when you enter the group.  You must review
 these messages from time to time and remove the @samp{$} mark for
 every message that is not spam after all.  To remove the @samp{$}
-mark, you can use @kbd{M-u} to "unread" the article, or @kbd{d} for
+mark, you can use @kbd{M-u} to ``unread'' the article, or @kbd{d} for
 declaring it read the non-spam way.  When you leave a group, all
 spam-marked (@samp{$}) articles are sent to a spam processor which
 will study them as spam samples.
@@ -22815,7 +22819,7 @@ off> no, wait, that absolutely does not work'' policy for releases.
 Micro$oft---bah.  Amateurs.  I'm @emph{much} worse.  (Or is that
 ``worser''? ``much worser''?  ``worsest''?)
 
-I would like to take this opportunity to thank the Academy for...  oops,
+I would like to take this opportunity to thank the Academy for@dots{}  oops,
 wrong show.
 
 @itemize @bullet
@@ -23694,12 +23698,12 @@ re-highlighting of the article buffer.
  New element in @code{gnus-boring-article-headers}---@code{long-to}.
 
 @item
- @kbd{M-i} symbolic prefix command.  See the section "Symbolic
-Prefixes" in the Gnus manual for details.
+ @kbd{M-i} symbolic prefix command.  See the section ``Symbolic
+Prefixes'' in the Gnus manual for details.
 
 @item
  @kbd{L} and @kbd{I} in the summary buffer now take the symbolic prefix
-@kbd{a} to add the score rule to the "all.SCORE" file.
+@kbd{a} to add the score rule to the @file{all.SCORE} file.
 
 @item
  @code{gnus-simplify-subject-functions} variable to allow greater
@@ -23769,7 +23773,7 @@ been added.
 @code{gnus-adaptive-word-minimum} variable.
 
 @item
- The "lapsed date" article header can be kept continually
+ The ``lapsed date'' article header can be kept continually
 updated by the @code{gnus-start-date-timer} command.
 
 @item
@@ -24365,7 +24369,7 @@ evaluate expressions using @kbd{M-:} or inspect variables using
 @cindex slow
 Sometimes, a problem do not directly generate a elisp error but
 manifests itself by causing Gnus to be very slow.  In these cases, you
-can use @kbd{M-x toggle-debug-on-quit} and press C-j when things are
+can use @kbd{M-x toggle-debug-on-quit} and press @kbd{C-j} when things are
 slow, and then try to analyze the backtrace (repeating the procedure
 helps isolating the real problem areas).  A fancier approach is to use
 the elisp profiler, ELP.  The profiler is (or should be) fully
@@ -24387,8 +24391,8 @@ If you just need help, you are better off asking on
 
 @cindex gnu.emacs.gnus
 @cindex ding mailing list
-You can also ask on the ding mailing list---@samp{ding@@gnus.org}.
-Write to @samp{ding-request@@gnus.org} to subscribe.
+You can also ask on the ding mailing list---@email{ding@@gnus.org}.
+Write to @email{ding-request@@gnus.org} to subscribe.
 
 
 @page
@@ -24647,8 +24651,8 @@ value should either be @code{headers} or @code{nov} to reflect this.
 This might later be expanded to @code{various}, which will be a mixture
 of HEADs and @sc{nov} lines, but this is currently not supported by Gnus.
 
-If @var{fetch-old} is non-@code{nil} it says to try fetching "extra
-headers", in some meaning of the word.  This is generally done by
+If @var{fetch-old} is non-@code{nil} it says to try fetching ``extra
+headers'', in some meaning of the word.  This is generally done by
 fetching (at most) @var{fetch-old} extra headers less than the smallest
 article number in @code{articles}, and filling the gaps as well.  The
 presence of this parameter can be ignored if the back end finds it
@@ -25030,8 +25034,7 @@ able to delete.
 There should be no result data returned.
 
 
-@item (nnchoke-request-move-article ARTICLE GROUP SERVER ACCEPT-FORM
-&optional LAST)
+@item (nnchoke-request-move-article ARTICLE GROUP SERVER ACCEPT-FORM &optional LAST)
 
 This function should move @var{article} (which is a number) from
 @var{group} by calling @var{accept-form}.
