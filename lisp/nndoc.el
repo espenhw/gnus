@@ -36,14 +36,15 @@
   (list (list 'mbox 
 	      (concat "^" rmail-unix-mail-delimiter)
 	      (concat "^" rmail-unix-mail-delimiter)
-	      nil "^$" nil nil)
-	(list 'babyl "\^_\^L *\n" "\^_" nil "^$" nil nil)
+	      nil "^$" nil nil nil)
+	(list 'babyl "\^_\^L *\n" "\^_" nil "^$" nil nil
+	      "\\*\\*\\* EOOH \\*\\*\\*\n\\(^.+\n\\)*")
 	(list 'digest
 	      "^------------------------------*[\n \t]+"
 	      "^------------------------------[\n \t]+"
 	      nil "^ ?$"   
 	      "^------------------------------*[\n \t]+"
-	      "^End of"))
+	      "^End of" nil))
   "Regular expressions for articles of the various types.")
 
 
@@ -54,6 +55,7 @@
 (defvar nndoc-head-end nil)
 (defvar nndoc-first-article nil)
 (defvar nndoc-end-of-file nil)
+(defvar nndoc-body-begin nil)
 
 (defvar nndoc-current-server nil)
 (defvar nndoc-server-alist nil)
@@ -68,6 +70,7 @@
    '(nndoc-current-buffer nil)
    '(nndoc-group-alist nil)
    '(nndoc-end-of-file nil)
+   '(nndoc-body-begin nil)
    '(nndoc-address nil)))
 
 (defconst nndoc-version "nndoc 0.1"
@@ -158,7 +161,8 @@
       (setq nndoc-head-begin (nth 2 defs))
       (setq nndoc-head-end (nth 3 defs))
       (setq nndoc-first-article (nth 4 defs))
-      (setq nndoc-end-of-file (nth 5 defs)))
+      (setq nndoc-end-of-file (nth 5 defs))
+      (setq nndoc-body-begin (nth 6 defs)))
     t))
 
 (defun nndoc-close-server (&optional server)
@@ -180,8 +184,7 @@
       (erase-buffer)
       (if (stringp article)
 	  nil
-	(nndoc-narrow-to-article article)
-	(insert-buffer-substring nndoc-current-buffer)
+	(nndoc-insert-article article)
 	t))))
 
 (defun nndoc-request-group (group &optional server dont-check)
@@ -304,6 +307,31 @@
 		(match-beginning 0))
 	   (point-max)))
       t)))
+
+;; Insert article ARTICLE in the current buffer.
+(defun nndoc-insert-article (article)
+  (let ((ibuf (current-buffer)))
+    (save-excursion
+      (set-buffer nndoc-current-buffer)
+      (widen)
+      (goto-char (point-min))
+      (while (and (re-search-forward nndoc-article-begin nil t)
+		  (not (zerop (setq article (1- article))))))
+      (if (not (zerop article))
+	  ()
+	(narrow-to-region 
+	 (match-end 0)
+	 (or (and (re-search-forward nndoc-article-end nil t)
+		  (match-beginning 0))
+	     (point-max)))
+	(goto-char (point-min))
+	(or (re-search-forward nndoc-head-end nil t)
+	    (goto-char (point-max)))
+	(append-to-buffer ibuf (point-min) (point))
+	(and nndoc-body-begin 
+	     (re-search-forward nndoc-body-begin nil t))
+	(append-to-buffer ibuf (point) (point-max))
+	t))))
 
 (provide 'nndoc)
 

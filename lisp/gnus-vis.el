@@ -218,107 +218,107 @@ gnus-netscape-start-url:
 
 (defun gnus-group-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'group)
-  (and 
-   (not (boundp 'gnus-group-reading-menu)) ;JMP
-   (easy-menu-define
-    gnus-group-reading-menu
-    gnus-group-mode-map
-    ""
-    '("Group"
-      ["Read" gnus-group-read-group t]
-      ["Select" gnus-group-select-group t]
-      ["Catch up" gnus-group-catchup-current t]
-      ["Catch up all articles" gnus-group-catchup-current-all t]
-      ["Check for new articles" gnus-group-get-new-news-this-group t]
-      ["Toggle subscription" gnus-group-unsubscribe-current-group t]
-      ["Kill" gnus-group-kill-group t]
-      ["Yank" gnus-group-yank-group t]
-      ["Describe" gnus-group-describe-group t]
-      ["Fetch FAQ" gnus-group-fetch-faq t]
-      ["Edit kill file" gnus-group-edit-local-kill t]
-      ["Expire articles" gnus-group-expire-articles t]
-      ["Set group level" gnus-group-set-current-level t]
-      ))
+  (or 
+   (boundp 'gnus-group-reading-menu)
+   (progn
+     (easy-menu-define
+      gnus-group-reading-menu
+      gnus-group-mode-map
+      ""
+      '("Group"
+	["Read" gnus-group-read-group t]
+	["Select" gnus-group-select-group t]
+	["Catch up" gnus-group-catchup-current t]
+	["Catch up all articles" gnus-group-catchup-current-all t]
+	["Check for new articles" gnus-group-get-new-news-this-group t]
+	["Toggle subscription" gnus-group-unsubscribe-current-group t]
+	["Kill" gnus-group-kill-group t]
+	["Yank" gnus-group-yank-group t]
+	["Describe" gnus-group-describe-group t]
+	["Fetch FAQ" gnus-group-fetch-faq t]
+	["Edit kill file" gnus-group-edit-local-kill t]
+	["Expire articles" gnus-group-expire-articles t]
+	["Set group level" gnus-group-set-current-level t]
+	))
   
-   (easy-menu-define
-    gnus-group-group-menu
-    gnus-group-mode-map
-    ""
-    '("Groups"
-      ("Listing"
-       ["List subscribed groups" gnus-group-list-groups t]
-       ["List all groups" gnus-group-list-all-groups t]
-       ["List groups matching..." gnus-group-list-matching t]
-       ["List killed groups" gnus-group-list-killed t]
-       ["List zombie groups" gnus-group-list-zombies t]
-       ["Describe all groups" gnus-group-describe-all-groups t]
-       ["Group apropos" gnus-group-apropos t]
-       ["Group and description apropos" gnus-group-description-apropos t]
-       ["List groups matching..." gnus-group-list-matching t])
-      ("Mark"
-       ["Mark group" gnus-group-mark-group t]
-       ["Unmark group" gnus-group-unmark-group t]
-       ["Mark region" gnus-group-mark-region t])
-      ("Subscribe"
-       ["Subscribe to random group" gnus-group-unsubscribe-group t]
-       ["Kill all newsgroups in region" gnus-group-kill-region t]
-       ["Kill all zombie groups" gnus-group-kill-all-zombies t])
-      ("Foreign groups"
-       ["Make a foreign group" gnus-group-make-group t]
-       ["Edit a group entry" gnus-group-edit-group t]
-       ["Add a directory group" gnus-group-make-directory-group t]
-       ["Add the help group" gnus-group-make-help-group t]
-       ["Add the archive group" gnus-group-make-archive-group t]
-       ["Make a doc group" gnus-group-make-doc-group t]
-       ["Make a kiboze group" gnus-group-make-kiboze-group t]
-       ["Make a virtual group" gnus-group-make-empty-virtual t]
-       ["Add a group to a virtual" gnus-group-add-to-virtual t])
-      ["Read a directory as a group" gnus-group-enter-directory t]
-      ["Jump to group" gnus-group-jump-to-group t]
-      ["Best unread group" gnus-group-best-unread-group t]
-      ))
+     (easy-menu-define
+      gnus-group-group-menu
+      gnus-group-mode-map
+      ""
+      '("Groups"
+	("Listing"
+	 ["List subscribed groups" gnus-group-list-groups t]
+	 ["List all groups" gnus-group-list-all-groups t]
+	 ["List groups matching..." gnus-group-list-matching t]
+	 ["List killed groups" gnus-group-list-killed t]
+	 ["List zombie groups" gnus-group-list-zombies t]
+	 ["Describe all groups" gnus-group-describe-all-groups t]
+	 ["Group apropos" gnus-group-apropos t]
+	 ["Group and description apropos" gnus-group-description-apropos t]
+	 ["List groups matching..." gnus-group-list-matching t])
+	("Mark"
+	 ["Mark group" gnus-group-mark-group t]
+	 ["Unmark group" gnus-group-unmark-group t]
+	 ["Mark region" gnus-group-mark-region t])
+	("Subscribe"
+	 ["Subscribe to random group" gnus-group-unsubscribe-group t]
+	 ["Kill all newsgroups in region" gnus-group-kill-region t]
+	 ["Kill all zombie groups" gnus-group-kill-all-zombies t])
+	("Foreign groups"
+	 ["Make a foreign group" gnus-group-make-group t]
+	 ["Edit a group entry" gnus-group-edit-group t]
+	 ["Add a directory group" gnus-group-make-directory-group t]
+	 ["Add the help group" gnus-group-make-help-group t]
+	 ["Add the archive group" gnus-group-make-archive-group t]
+	 ["Make a doc group" gnus-group-make-doc-group t]
+	 ["Make a kiboze group" gnus-group-make-kiboze-group t]
+	 ["Make a virtual group" gnus-group-make-empty-virtual t]
+	 ["Add a group to a virtual" gnus-group-add-to-virtual t])
+	["Read a directory as a group" gnus-group-enter-directory t]
+	["Jump to group" gnus-group-jump-to-group t]
+	["Best unread group" gnus-group-best-unread-group t]
+	))
 
-   (easy-menu-define
-    gnus-group-post-menu
-    gnus-group-mode-map
-    ""
-    '("Post"
-      ["Send a mail" gnus-group-mail t]
-      ["Post an article" gnus-group-post-news t]
-      ))
+     (easy-menu-define
+      gnus-group-post-menu
+      gnus-group-mode-map
+      ""
+      '("Post"
+	["Send a mail" gnus-group-mail t]
+	["Post an article" gnus-group-post-news t]
+	))
   
-   (easy-menu-define
-    gnus-group-misc-menu
-    gnus-group-mode-map
-    ""
-    '("Misc"
-      ["Send a bug report" gnus-bug t]
-      ["Check for new news" gnus-group-get-new-news t]     
-      ["Delete bogus groups" gnus-group-check-bogus-groups t]
-      ["Find new newsgroups" gnus-find-new-newsgroups t]
-      ["Restart Gnus" gnus-group-restart t]
-      ["Read init file" gnus-group-read-init-file t]
-      ["Browse foreign server" gnus-group-browse-foreign-server t]
-      ["Enter server buffer" gnus-group-enter-server-mode t]
-      ["Expire expirable articles" gnus-group-expire-all-groups t]
-      ["Generate any kiboze groups" nnkiboze-generate-groups t]
-      ["Gnus version" gnus-version t]
-      ["Save .newsrc files" gnus-group-save-newsrc t]
-      ["Suspend Gnus" gnus-group-suspend t]
-      ["Clear dribble buffer" gnus-group-clear-dribble t]
-      ["Exit from Gnus" gnus-group-exit t]
-      ["Exit without saving" gnus-group-quit t]
-      ["Edit global kill file" gnus-group-edit-global-kill t]
-      ["Sort group buffer" gnus-group-sort-groups t]
-      ))
-   )					;JMP
-  )
+     (easy-menu-define
+      gnus-group-misc-menu
+      gnus-group-mode-map
+      ""
+      '("Misc"
+	["Send a bug report" gnus-bug t]
+	["Check for new news" gnus-group-get-new-news t]     
+	["Delete bogus groups" gnus-group-check-bogus-groups t]
+	["Find new newsgroups" gnus-find-new-newsgroups t]
+	["Restart Gnus" gnus-group-restart t]
+	["Read init file" gnus-group-read-init-file t]
+	["Browse foreign server" gnus-group-browse-foreign-server t]
+	["Enter server buffer" gnus-group-enter-server-mode t]
+	["Expire expirable articles" gnus-group-expire-all-groups t]
+	["Generate any kiboze groups" nnkiboze-generate-groups t]
+	["Gnus version" gnus-version t]
+	["Save .newsrc files" gnus-group-save-newsrc t]
+	["Suspend Gnus" gnus-group-suspend t]
+	["Clear dribble buffer" gnus-group-clear-dribble t]
+	["Exit from Gnus" gnus-group-exit t]
+	["Exit without saving" gnus-group-quit t]
+	["Edit global kill file" gnus-group-edit-global-kill t]
+	["Sort group buffer" gnus-group-sort-groups t]
+	))
+     )))
 
 ;; Server mode
 (defun gnus-server-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'server)
-  (and 
-   (not (boundp 'gnus-server-menu))	;JMP
+  (or
+   (boundp 'gnus-server-menu)
    (easy-menu-define
     gnus-server-menu
     gnus-server-mode-map
@@ -337,8 +337,8 @@ gnus-netscape-start-url:
 ;; Browse mode
 (defun gnus-browse-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'browse)
-  (and 
-   (not (boundp 'gnus-browse-menu))	;JMP
+  (or
+   (boundp 'gnus-browse-menu)
    (easy-menu-define
     gnus-browse-menu
     gnus-browse-mode-map
@@ -353,203 +353,203 @@ gnus-netscape-start-url:
 (defun gnus-summary-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'summary)
 
-  (and 
-   (not (boundp 'gnus-summary-mark-menu)) ;JMP
-   (easy-menu-define
-    gnus-summary-mark-menu
-    gnus-summary-mode-map
-    ""
-    '("Mark"
-      ("Read"
-       ["Mark as read" gnus-summary-mark-as-read-forward t]
-       ["Mark same subject and select" gnus-summary-kill-same-subject-and-select t]
-       ["Mark same subject" gnus-summary-kill-same-subject t]
-       ["Catchup" gnus-summary-catchup t]
-       ["Catchup all" gnus-summary-catchup-all t]
-       ["Catchup to here" gnus-summary-catchup-to-here t]
-       ["Catchup region" gnus-summary-mark-region-as-read t])
-      ("Various"
-       ["Tick" gnus-summary-tick-article-forward t]
-       ["Mark as dormant" gnus-summary-mark-as-dormant t]
-       ["Remove marks" gnus-summary-clear-mark-forward t]
-       ["Set expirable mark" gnus-summary-mark-as-expirable t]
-       ["Set bookmark" gnus-summary-set-bookmark t]
-       ["Remove bookmark" gnus-summary-remove-bookmark t])
-      ("Display"
-       ["Remove lines marked as read" gnus-summary-remove-lines-marked-as-read t]
-       ["Remove lines marked with..." gnus-summary-remove-lines-marked-with t]
-       ["Show dormant articles" gnus-summary-show-all-dormant t]
-       ["Hide dormant articles" gnus-summary-hide-all-dormant t]
-       ["Show expunged articles" gnus-summary-show-all-expunged t])
-      ("Process mark"
-       ["Set mark" gnus-summary-mark-as-processable t]
-       ["Remove mark" gnus-summary-unmark-as-processable t]
-       ["Remove all marks" gnus-summary-unmark-all-processable t]
-       ["Mark series" gnus-uu-mark-series t]
-       ["Mark region" gnus-uu-mark-region t]
-       ["Mark by regexp" gnus-uu-mark-by-regexp t]
-       ["Mark all" gnus-uu-mark-all t]
-       ["Mark sparse" gnus-uu-mark-sparse t]
-       ["Mark thread" gnus-uu-mark-thread t]
-       )
-      ))
+  (or
+   (boundp 'gnus-summary-mark-menu)
+   (progn
+     (easy-menu-define
+      gnus-summary-mark-menu
+      gnus-summary-mode-map
+      ""
+      '("Mark"
+	("Read"
+	 ["Mark as read" gnus-summary-mark-as-read-forward t]
+	 ["Mark same subject and select" gnus-summary-kill-same-subject-and-select t]
+	 ["Mark same subject" gnus-summary-kill-same-subject t]
+	 ["Catchup" gnus-summary-catchup t]
+	 ["Catchup all" gnus-summary-catchup-all t]
+	 ["Catchup to here" gnus-summary-catchup-to-here t]
+	 ["Catchup region" gnus-summary-mark-region-as-read t])
+	("Various"
+	 ["Tick" gnus-summary-tick-article-forward t]
+	 ["Mark as dormant" gnus-summary-mark-as-dormant t]
+	 ["Remove marks" gnus-summary-clear-mark-forward t]
+	 ["Set expirable mark" gnus-summary-mark-as-expirable t]
+	 ["Set bookmark" gnus-summary-set-bookmark t]
+	 ["Remove bookmark" gnus-summary-remove-bookmark t])
+	("Display"
+	 ["Remove lines marked as read" gnus-summary-remove-lines-marked-as-read t]
+	 ["Remove lines marked with..." gnus-summary-remove-lines-marked-with t]
+	 ["Show dormant articles" gnus-summary-show-all-dormant t]
+	 ["Hide dormant articles" gnus-summary-hide-all-dormant t]
+	 ["Show expunged articles" gnus-summary-show-all-expunged t])
+	("Process mark"
+	 ["Set mark" gnus-summary-mark-as-processable t]
+	 ["Remove mark" gnus-summary-unmark-as-processable t]
+	 ["Remove all marks" gnus-summary-unmark-all-processable t]
+	 ["Mark series" gnus-uu-mark-series t]
+	 ["Mark region" gnus-uu-mark-region t]
+	 ["Mark by regexp" gnus-uu-mark-by-regexp t]
+	 ["Mark all" gnus-uu-mark-all t]
+	 ["Mark sparse" gnus-uu-mark-sparse t]
+	 ["Mark thread" gnus-uu-mark-thread t]
+	 )
+	))
 
-   (easy-menu-define
-    gnus-summary-move-menu
-    gnus-summary-mode-map
-    ""
-    '("Move"
-      ["Scroll article forwards" gnus-summary-next-page t]
-      ["Next unread article" gnus-summary-next-unread-article t]
-      ["Previous unread article" gnus-summary-prev-unread-article t]
-      ["Next article" gnus-summary-next-article t]
-      ["Previous article" gnus-summary-prev-article t]
-      ["Next article same subject" gnus-summary-next-same-subject t]
-      ["Previous article same subject" gnus-summary-prev-same-subject t]
-      ["First unread article" gnus-summary-first-unread-article t]
-      ["Go to subject number..." gnus-summary-goto-subject t]
-      ["Go to the last article" gnus-summary-goto-last-article t]
-      ["Pop article off history" gnus-summary-pop-article t]
-      ))
+     (easy-menu-define
+      gnus-summary-move-menu
+      gnus-summary-mode-map
+      ""
+      '("Move"
+	["Scroll article forwards" gnus-summary-next-page t]
+	["Next unread article" gnus-summary-next-unread-article t]
+	["Previous unread article" gnus-summary-prev-unread-article t]
+	["Next article" gnus-summary-next-article t]
+	["Previous article" gnus-summary-prev-article t]
+	["Next article same subject" gnus-summary-next-same-subject t]
+	["Previous article same subject" gnus-summary-prev-same-subject t]
+	["First unread article" gnus-summary-first-unread-article t]
+	["Go to subject number..." gnus-summary-goto-subject t]
+	["Go to the last article" gnus-summary-goto-last-article t]
+	["Pop article off history" gnus-summary-pop-article t]
+	))
 
-   (easy-menu-define
-    gnus-summary-article-menu
-    gnus-summary-mode-map
-    ""
-    '("Article"
-      ("Hide"
-       ("Date"
-	["Local" gnus-article-date-local t]
-	["UT" gnus-article-date-local t]
-	["Lapsed" gnus-article-date-local t])
-       ["Headers" gnus-article-hide-headers t]
-       ["Signature" gnus-article-hide-signature t]
-       ["Citation" gnus-article-hide-citation t]
-       ["Overstrike" gnus-article-treat-overstrike t]
-       ["Word wrap" gnus-article-word-wrap t]
-       ["CR" gnus-article-remove-cr t]
-       ["Show X-Face" gnus-article-display-x-face t]
-       ["Quoted-Printable" gnus-article-de-quoted-unreadable t])
-      ("Extract"
-       ["Uudecode" gnus-uu-decode-uu t]
-       ["Uudecode and save" gnus-uu-decode-uu-and-save t]
-       ["Unshar" gnus-uu-decode-unshar t]
-       ["Unshar and save" gnus-uu-decode-unshar-and-save t]
-       ["Save" gnus-uu-decode-save t]
-       ["Binhex" gnus-uu-decode-binhex t])
-      ["Enter digest buffer" gnus-summary-enter-digest-group t]
-      ["Isearch article" gnus-summary-isearch-article t]
-      ["Search all articles" gnus-summary-search-article-forward t]
-      ["Beginning of the article" gnus-summary-beginning-of-article t]
-      ["End of the article" gnus-summary-end-of-article t]
-      ["Fetch parent of article" gnus-summary-refer-parent-article t]
-      ["Fetch article with id..." gnus-summary-refer-article t]
-      ["Stop page breaking" gnus-summary-stop-page-breaking t]
-      ["Rot 13" gnus-summary-caesar-message t]
-      ["Redisplay" gnus-summary-show-article t]
-      ["Toggle header" gnus-summary-toggle-header t]
-      ["Toggle MIME" gnus-summary-toggle-mime t]
-      ["Save" gnus-summary-save-article t]
-      ["Save in mail format" gnus-summary-save-article-mail t]
-      ["Pipe through a filter" gnus-summary-pipe-output t]
-      ("Mail articles"
-       ["Respool article" gnus-summary-respool-article t]
-       ["Move article" gnus-summary-move-article t]
-       ["Copy article" gnus-summary-copy-article t]
-       ["Import file" gnus-summary-import-article t]
-       ["Edit article" gnus-summary-edit-article t]
-       ["Delete article" gnus-summary-delete-article t])
-      ))
+     (easy-menu-define
+      gnus-summary-article-menu
+      gnus-summary-mode-map
+      ""
+      '("Article"
+	("Hide"
+	 ("Date"
+	  ["Local" gnus-article-date-local t]
+	  ["UT" gnus-article-date-local t]
+	  ["Lapsed" gnus-article-date-local t])
+	 ["Headers" gnus-article-hide-headers t]
+	 ["Signature" gnus-article-hide-signature t]
+	 ["Citation" gnus-article-hide-citation t]
+	 ["Overstrike" gnus-article-treat-overstrike t]
+	 ["Word wrap" gnus-article-word-wrap t]
+	 ["CR" gnus-article-remove-cr t]
+	 ["Show X-Face" gnus-article-display-x-face t]
+	 ["Quoted-Printable" gnus-article-de-quoted-unreadable t])
+	("Extract"
+	 ["Uudecode" gnus-uu-decode-uu t]
+	 ["Uudecode and save" gnus-uu-decode-uu-and-save t]
+	 ["Unshar" gnus-uu-decode-unshar t]
+	 ["Unshar and save" gnus-uu-decode-unshar-and-save t]
+	 ["Save" gnus-uu-decode-save t]
+	 ["Binhex" gnus-uu-decode-binhex t])
+	["Enter digest buffer" gnus-summary-enter-digest-group t]
+	["Isearch article" gnus-summary-isearch-article t]
+	["Search all articles" gnus-summary-search-article-forward t]
+	["Beginning of the article" gnus-summary-beginning-of-article t]
+	["End of the article" gnus-summary-end-of-article t]
+	["Fetch parent of article" gnus-summary-refer-parent-article t]
+	["Fetch article with id..." gnus-summary-refer-article t]
+	["Stop page breaking" gnus-summary-stop-page-breaking t]
+	["Rot 13" gnus-summary-caesar-message t]
+	["Redisplay" gnus-summary-show-article t]
+	["Toggle header" gnus-summary-toggle-header t]
+	["Toggle MIME" gnus-summary-toggle-mime t]
+	["Save" gnus-summary-save-article t]
+	["Save in mail format" gnus-summary-save-article-mail t]
+	["Pipe through a filter" gnus-summary-pipe-output t]
+	("Mail articles"
+	 ["Respool article" gnus-summary-respool-article t]
+	 ["Move article" gnus-summary-move-article t]
+	 ["Copy article" gnus-summary-copy-article t]
+	 ["Import file" gnus-summary-import-article t]
+	 ["Edit article" gnus-summary-edit-article t]
+	 ["Delete article" gnus-summary-delete-article t])
+	))
 
-   (easy-menu-define
-    gnus-summary-thread-menu
-    gnus-summary-mode-map
-    ""
-    '("Threads"
-      ["Toggle threading" gnus-summary-toggle-threads t]
-      ["Display hidden thread" gnus-summary-show-thread t]
-      ["Hide thread" gnus-summary-hide-thread t]
-      ["Go to next thread" gnus-summary-next-thread t]
-      ["Go to previous thread" gnus-summary-prev-thread t]
-      ["Go down thread" gnus-summary-down-thread t]
-      ["Go up thread" gnus-summary-up-thread t]
-      ["Mark thread as read" gnus-summary-kill-thread t]
-      ["Lower thread score" gnus-summary-lower-thread t]
-      ["Raise thread score" gnus-summary-raise-thread t]
-      ))
+     (easy-menu-define
+      gnus-summary-thread-menu
+      gnus-summary-mode-map
+      ""
+      '("Threads"
+	["Toggle threading" gnus-summary-toggle-threads t]
+	["Display hidden thread" gnus-summary-show-thread t]
+	["Hide thread" gnus-summary-hide-thread t]
+	["Go to next thread" gnus-summary-next-thread t]
+	["Go to previous thread" gnus-summary-prev-thread t]
+	["Go down thread" gnus-summary-down-thread t]
+	["Go up thread" gnus-summary-up-thread t]
+	["Mark thread as read" gnus-summary-kill-thread t]
+	["Lower thread score" gnus-summary-lower-thread t]
+	["Raise thread score" gnus-summary-raise-thread t]
+	))
 
-   (easy-menu-define
-    gnus-summary-misc-menu
-    gnus-summary-mode-map
-    ""
-    '("Misc"
-      ("Sort"
-       ["Sort by number" gnus-summary-sort-by-number t]
-       ["Sort by author" gnus-summary-sort-by-author t]
-       ["Sort by subject" gnus-summary-sort-by-subject t]
-       ["Sort by date" gnus-summary-sort-by-date t]
-       ["Sort by score" gnus-summary-sort-by-score t])
-      ("Exit"
-       ["Catchup and exit" gnus-summary-catchup-and-exit t]
-       ["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
-       ["Exit group" gnus-summary-exit t]
-       ["Exit group without updating" gnus-summary-exit-no-update t]
-       ["Reselect group" gnus-summary-reselect-current-group t]
-       ["Rescan group" gnus-summary-rescan-group t])
-      ["Fetch group FAQ" gnus-summary-fetch-faq t]
-      ["Filter articles" gnus-summary-execute-command t]
-      ["Toggle line truncation" gnus-summary-toggle-truncation t]
-      ["Expire expirable articles" gnus-summary-expire-articles t]
-      ["Describe group" gnus-summary-describe-group t]
-      ["Edit local kill file" gnus-summary-edit-local-kill t]
-      ))
+     (easy-menu-define
+      gnus-summary-misc-menu
+      gnus-summary-mode-map
+      ""
+      '("Misc"
+	("Sort"
+	 ["Sort by number" gnus-summary-sort-by-number t]
+	 ["Sort by author" gnus-summary-sort-by-author t]
+	 ["Sort by subject" gnus-summary-sort-by-subject t]
+	 ["Sort by date" gnus-summary-sort-by-date t]
+	 ["Sort by score" gnus-summary-sort-by-score t])
+	("Exit"
+	 ["Catchup and exit" gnus-summary-catchup-and-exit t]
+	 ["Catchup and goto next" gnus-summary-catchup-and-goto-next-group t]
+	 ["Exit group" gnus-summary-exit t]
+	 ["Exit group without updating" gnus-summary-exit-no-update t]
+	 ["Reselect group" gnus-summary-reselect-current-group t]
+	 ["Rescan group" gnus-summary-rescan-group t])
+	["Fetch group FAQ" gnus-summary-fetch-faq t]
+	["Filter articles" gnus-summary-execute-command t]
+	["Toggle line truncation" gnus-summary-toggle-truncation t]
+	["Expire expirable articles" gnus-summary-expire-articles t]
+	["Describe group" gnus-summary-describe-group t]
+	["Edit local kill file" gnus-summary-edit-local-kill t]
+	))
 
-   (easy-menu-define
-    gnus-summary-post-menu
-    gnus-summary-mode-map
-    ""
-    '("Post"
-      ["Post an article" gnus-summary-post-news t]
-      ["Followup" gnus-summary-followup t]
-      ["Followup and yank" gnus-summary-followup-with-original t]
-      ["Supersede article" gnus-summary-supersede-article t]
-      ["Cancel article" gnus-summary-cancel-article t]
-      ["Reply" gnus-summary-reply t]
-      ["Reply and yank" gnus-summary-reply-with-original t]
-      ["Mail forward" gnus-summary-mail-forward t]
-      ["Post forward" gnus-summary-post-forward t]
-      ["Digest and mail" gnus-uu-digest-mail-forward t]
-      ["Digest and post" gnus-uu-digest-post-forward t]
-      ["Send a mail" gnus-summary-mail-other-window t]
-      ["Reply & followup" gnus-summary-followup-and-reply t]
-      ["Reply & followup and yank" gnus-summary-followup-and-reply-with-original t]
-      ["Uuencode and post" gnus-uu-post-news t]
-      ))
+     (easy-menu-define
+      gnus-summary-post-menu
+      gnus-summary-mode-map
+      ""
+      '("Post"
+	["Post an article" gnus-summary-post-news t]
+	["Followup" gnus-summary-followup t]
+	["Followup and yank" gnus-summary-followup-with-original t]
+	["Supersede article" gnus-summary-supersede-article t]
+	["Cancel article" gnus-summary-cancel-article t]
+	["Reply" gnus-summary-reply t]
+	["Reply and yank" gnus-summary-reply-with-original t]
+	["Mail forward" gnus-summary-mail-forward t]
+	["Post forward" gnus-summary-post-forward t]
+	["Digest and mail" gnus-uu-digest-mail-forward t]
+	["Digest and post" gnus-uu-digest-post-forward t]
+	["Send a mail" gnus-summary-mail-other-window t]
+	["Reply & followup" gnus-summary-followup-and-reply t]
+	["Reply & followup and yank" gnus-summary-followup-and-reply-with-original t]
+	["Uuencode and post" gnus-uu-post-news t]
+	))
 
-   (easy-menu-define
-    gnus-summary-kill-menu
-    gnus-summary-mode-map
-    ""
-    (cons
-     "Score"
-     (nconc
-      (list
-       ["Enter score" gnus-summary-score-entry t])
-      (gnus-visual-score-map 'increase)
-      (gnus-visual-score-map 'lower)
-      '(["Current score" gnus-summary-current-score t]
-	["Set score" gnus-summary-set-score t]
-	("Score file"
-	 ["Customize score file" gnus-score-customize t]
-	 ["Switch current score file" gnus-score-change-score-file t]
-	 ["Set mark below" gnus-score-set-mark-below t]
-	 ["Set expunge below" gnus-score-set-expunge-below t]
-	 ["Edit current score file" gnus-score-edit-alist t]
-	 ["Edit score file" gnus-score-edit-file t]
-	 ["Trace score" gnus-score-find-trace t])
-	))))
-   )					; not done already - JMP
-  )
+     (easy-menu-define
+      gnus-summary-kill-menu
+      gnus-summary-mode-map
+      ""
+      (cons
+       "Score"
+       (nconc
+	(list
+	 ["Enter score" gnus-summary-score-entry t])
+	(gnus-visual-score-map 'increase)
+	(gnus-visual-score-map 'lower)
+	'(["Current score" gnus-summary-current-score t]
+	  ["Set score" gnus-summary-set-score t]
+	  ("Score file"
+	   ["Customize score file" gnus-score-customize t]
+	   ["Switch current score file" gnus-score-change-score-file t]
+	   ["Set mark below" gnus-score-set-mark-below t]
+	   ["Set expunge below" gnus-score-set-expunge-below t]
+	   ["Edit current score file" gnus-score-edit-alist t]
+	   ["Edit score file" gnus-score-edit-file t]
+	   ["Trace score" gnus-score-find-trace t])
+	  ))))
+     )))
 
 (defun gnus-visual-score-map (type)
   (if t
@@ -630,35 +630,36 @@ gnus-netscape-start-url:
 ;; Article buffer
 (defun gnus-article-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'summary)
-  (and 
-   (not (boundp 'gnus-article-article-menu)) ;JMP
-   (easy-menu-define
-    gnus-article-article-menu
-    gnus-article-mode-map
-    ""
-    '("Article"
-      ["Scroll forwards" gnus-article-next-page t]
-      ["Scroll backwards" gnus-article-prev-page t]
-      ["Show summary" gnus-article-show-summary t]
-      ["Fetch Message-ID at point" gnus-article-refer-article t]
-      ["Mail to address at point" gnus-article-mail t]
-      ["Mail to address at point and include original"
-       gnus-article-mail-with-original t]
-      ))
+  (or
+   (boundp 'gnus-article-article-menu)
+   (progn
+     (easy-menu-define
+      gnus-article-article-menu
+      gnus-article-mode-map
+      ""
+      '("Article"
+	["Scroll forwards" gnus-article-next-page t]
+	["Scroll backwards" gnus-article-prev-page t]
+	["Show summary" gnus-article-show-summary t]
+	["Fetch Message-ID at point" gnus-article-refer-article t]
+	["Mail to address at point" gnus-article-mail t]
+	["Mail to address at point and include original"
+	 gnus-article-mail-with-original t]
+	))
 
-   (easy-menu-define
-    gnus-article-treatment-menu
-    gnus-article-mode-map
-    ""
-    '("Treatment"
-      ["Hide headers" gnus-article-hide-headers t]
-      ["Hide signature" gnus-article-hide-signature t]
-      ["Hide citation" gnus-article-hide-citation t]
-      ["Treat overstrike" gnus-article-treat-overstrike t]
-      ["Remove carriage return" gnus-article-remove-cr t]
-      ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
-      ))
-   ))
+     (easy-menu-define
+      gnus-article-treatment-menu
+      gnus-article-mode-map
+      ""
+      '("Treatment"
+	["Hide headers" gnus-article-hide-headers t]
+	["Hide signature" gnus-article-hide-signature t]
+	["Hide citation" gnus-article-hide-citation t]
+	["Treat overstrike" gnus-article-treat-overstrike t]
+	["Remove carriage return" gnus-article-remove-cr t]
+	["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]
+	))
+     )))
 
 ;;;
 ;;; summary highlights
@@ -712,8 +713,6 @@ gnus-netscape-start-url:
     (while (and list (not (eval (car (car list)))))
       (setq list (cdr list)))
     (let ((face (and list (cdr (car list)))))
-      ;; BUG! For some reason the text properties of the first
-      ;; characters get mangled.
       (or (eobp)
 	  (eq face (get-text-property beg 'face))
 	  (put-text-property beg end 'face face)))
@@ -1078,9 +1077,9 @@ External references are things like message-ids and URLs, as specified by
 				"-remote" 
 				(concat "openUrl(" url ")'"))))
     (set-process-sentinel process 
-			  `(lambda (process change)
-			     (or (eq (process-exit-status process) 0)
-				 (gnus-netscape-start-url ,url))))))
+			  (` (lambda (process change)
+			       (or (eq (process-exit-status process) 0)
+				   (gnus-netscape-start-url (, url))))))))
 
 (defun gnus-netscape-start-url (url)
   "Start netscape with URL."

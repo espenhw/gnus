@@ -5833,6 +5833,7 @@ Toggle truncation of summary lines (@code{gnus-summary-toggle-truncation}).
 @kindex V e (Summary)
 @findex gnus-summary-expand-window
 Expand the summary buffer window (@code{gnus-summary-expand-window}).
+If given a prefix, force an @code{article} window configuration. 
 @end table
 
 @node The Article Buffer

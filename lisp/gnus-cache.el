@@ -42,45 +42,59 @@
 
 
 (defun gnus-cache-change-buffer (group)
-  (save-excursion
-    (cond ((null gnus-cache-buffer)
-	   ;; No current cache, so we create and init the buffer.
-	   (setq gnus-cache-buffer
-		 (cons group (get-buffer-create " *gnus-cache-overview*")))
-	   (set-buffer (cdr gnus-cache-buffer))
-	   (buffer-disable-undo (current-buffer))
-	   (erase-buffer)
-	   (gnus-add-current-to-buffer-list)
-	   (let ((file (gnus-cache-file-name group ".overview")))
-	     (and (file-exists-p file)
-		  (insert-file-contents file))))
-	  ((not (string= group (car gnus-cache-buffer)))
-	   ;; If a different overview cache is the current, we
-	   ;; (possibly) save it and change to this groups.
-	   (set-buffer (cdr gnus-cache-buffer))
-	   (and (buffer-modified-p)
-		(write-region (point-min) (point-max)
-			      (gnus-cache-file-name
-			       (car gnus-cache-buffer) ".overview")
-			      nil 'quiet))
-	   (erase-buffer)
-	   (setcar gnus-cache-buffer group)
-	   (let ((file (gnus-cache-file-name group ".overview")))
-	     (and (file-exists-p file)
-		  (insert-file-contents file)))))))
-
-
-;; Just save the overview buffer.
-(defun gnus-cache-save-buffers ()
   (and gnus-cache-buffer
-       (save-excursion
-	 (set-buffer (cdr gnus-cache-buffer))
-	 (and (buffer-modified-p)
-	      (write-region (point-min) (point-max)
-			    (gnus-cache-file-name (car gnus-cache-buffer)
-						  ".overview")
-			    nil 'quiet))))
-  (setq gnus-cache-buffer nil))
+       ;; see if the current group's overview cache has been loaded 
+       (or (string= group (car gnus-cache-buffer))
+	   ;; another overview cache is current, save it
+	   (gnus-cache-save-buffers)))
+  ;; if gnus-cache buffer is nil, create it
+  (or gnus-cache-buffer
+      ;; create cache buffer
+      (save-excursion
+	(setq gnus-cache-buffer
+	      (cons group
+		    (set-buffer (get-buffer-create " *gnus-cache-overview*"))))
+	(buffer-disable-undo (current-buffer))
+	;; insert the contents of this groups cache overview
+	(erase-buffer)
+	(let ((file (gnus-cache-file-name group ".overview")))
+	  (and (file-exists-p file)
+	       (insert-file-contents file)))
+	;; we have a fresh (empty/just loaded) buffer, 
+	;; mark it as unmodified to save a redundant write later.
+	(set-buffer-modified-p nil))))
+
+
+(defun gnus-cache-save-buffers ()
+;; save the overview buffer if it exists and has been modified
+;; delete empty cache subdirectories
+  (if (null gnus-cache-buffer)
+      ()
+    (let ((buffer (cdr gnus-cache-buffer))
+	  (overview-file (gnus-cache-file-name
+			  (car gnus-cache-buffer) ".overview")))
+      ;; write the overview only if it was modified
+      (if (buffer-modified-p buffer)
+	  (save-excursion
+	    (set-buffer buffer)
+	    (if (> (buffer-size) 0)
+		;; non-empty overview, write it out
+		(write-region (point-min) (point-max)
+			      overview-file nil 'quietly)
+	      ;; empty overview file, remove it
+	      (and (file-exists-p overview-file)
+		   (delete-file overview-file))
+	      ;; if possible, remove group's cache subdirectory
+	      (condition-case nil
+		  ;; FIXME: we can detect the error type and warn the user
+		  ;; of any inconsistencies (articles w/o nov entries?).
+		  ;; for now, just be conservative...delete only if safe -- sj
+		  (delete-directory (file-name-directory overview-file))
+		(error nil)))))
+      ;; kill the buffer, it's either unmodified or saved
+      (gnus-kill-buffer buffer)
+      (setq gnus-cache-buffer nil))))
+
 
 ;; Return whether an article is a member of a class.
 (defun gnus-cache-member-of-class (class ticked dormant unread)
@@ -146,24 +160,7 @@
   (setq gnus-cache-removeable-articles
 	(cons article gnus-cache-removeable-articles)))
 
-(defun gnus-cache-possibly-remove-articles ()
-  (let ((articles gnus-cache-removeable-articles)
-	(cache-articles (gnus-cache-articles-in-group gnus-newsgroup-name))
-	article)
-    (gnus-cache-change-buffer gnus-newsgroup-name)
-    (while articles
-      (setq article (car articles)
-	    articles (cdr articles))
-      (if (memq article cache-articles)
-	  ;; The article was in the cache, so we see whether we are
-	  ;; supposed to remove it from the cache.
-	  (gnus-cache-possibly-remove-article
-	   article (memq article gnus-newsgroup-marked)
-	   (memq article gnus-newsgroup-dormant)
-	   (or (memq article gnus-newsgroup-unreads)
-	       (memq article gnus-newsgroup-unselected)))))))
-
-(defun gnus-cache-possibly-remove-article 
+(defsubst gnus-cache-possibly-remove-article 
   (article ticked dormant unread)
   (let ((file (gnus-cache-file-name gnus-newsgroup-name article)))
     (if (or (not (file-exists-p file))
@@ -179,6 +176,27 @@
 				(point-max) t))
 	    (delete-region (progn (beginning-of-line) (point))
 			   (progn (forward-line 1) (point))))))))
+
+(defun gnus-cache-possibly-remove-articles ()
+  (let ((articles gnus-cache-removeable-articles)
+	(cache-articles (gnus-cache-articles-in-group gnus-newsgroup-name))
+	article)
+    (gnus-cache-change-buffer gnus-newsgroup-name)
+    (while articles
+      (setq article (car articles)
+	    articles (cdr articles))
+      (if (memq article cache-articles)
+	  ;; The article was in the cache, so we see whether we are
+	  ;; supposed to remove it from the cache.
+	  (gnus-cache-possibly-remove-article
+	   article (memq article gnus-newsgroup-marked)
+	   (memq article gnus-newsgroup-dormant)
+	   (or (memq article gnus-newsgroup-unreads)
+	       (memq article gnus-newsgroup-unselected))))))
+  ;; the overview file might have been modified, save it
+  ;; safe because we're only called at group exit anyway
+  (gnus-cache-save-buffers))
+
 
 (defun gnus-cache-request-article (article group)
   (let ((file (gnus-cache-file-name group article)))

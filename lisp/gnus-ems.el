@@ -38,25 +38,6 @@
    ((string-match "XEmacs\\|Lucid" emacs-version)
     ;; XEmacs definitions.
 
-    (defvar gnus-summary-highlight
-      '(((> score default) . bold)
-	((< score default) . italic))
-      "*Alist of `(FORM . FACE)'.
-Summary lines are highlighted with the FACE for the first FORM which
-evaluate to a non-nil value.  
-
-Point will be at the beginning of the line when FORM is evaluated.
-The following can be used for convenience:
-
-score:   (gnus-summary-article-score)
-default: gnus-summary-default-score
-below:   gnus-summary-mark-below
-
-To check for marks, e.g. to underline replied articles, use
-`gnus-summary-article-mark': 
-
-   ((= (gnus-summary-article-mark) gnus-replied-mark) . underline)")
-
     (setq gnus-mouse-2 [button2])
     (setq gnus-easymenu 'auc-menu)
 
@@ -85,23 +66,25 @@ To check for marks, e.g. to underline replied articles, use
     (or (boundp 'standard-display-table) (setq standard-display-table nil))
     (or (boundp 'read-event) (fset 'read-event 'next-command-event))
 
-    (setq gnus-display-type 
-	  (let ((display-resource 
-		 (x-get-resource ".displayType" "DisplayType" 'string)))
-	    (cond (display-resource (intern (downcase display-resource)))
-		  ((x-display-color-p) 'color)
-		  ((x-display-grayscale-p) 'grayscale)
-		  (t 'mono))))
+    ;; Fix by "jeff (j.d.) sparkes" <jsparkes@bnr.ca>.
+    (setq gnus-display-type (device-class))
 
+    (or (fboundp 'x-color-values)
+	(fset 'x-color-values 
+	      (lambda (color)
+		(color-instance-rgb-components
+		 (make-color-instance color)))))
+    
     (setq gnus-background-mode 
 	  (let ((bg-resource 
 		 (x-get-resource ".backgroundMode" "BackgroundMode" 'string))
 		(params (frame-parameters)))
 	    (cond (bg-resource (intern (downcase bg-resource)))
-;		  ((< (apply '+ (x-color-values
-;				 (cdr (assq 'background-color params))))
-;		      (/ (apply '+ (x-color-values "white")) 3))
-;		   'dark)
+		  ((and (assq 'background-color params)
+			(< (apply '+ (x-color-values
+				      (cdr (assq 'background-color params))))
+			   (/ (apply '+ (x-color-values "white")) 3)))
+		   'dark)
 		  (t 'light))))
 
     (if (not gnus-visual)
@@ -380,8 +363,9 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 			      'gnus-mark gnus-unread-mark 
 			      'gnus-level 0
 			      'gnus-pseudo (car pslist)))
-	      (remove-text-properties (b) (gnus-point-at-eol)
-				      '(gnus-number nil gnus-mark nil gnus-level nil))
+	      (remove-text-properties
+	       b (gnus-point-at-eol)
+	       '(gnus-number nil gnus-mark nil gnus-level nil))
 	      (forward-line -1)
 	      (gnus-sethash (int-to-string gnus-reffed-article-number)
 			    (car pslist) gnus-newsgroup-headers-hashtb-by-number)
@@ -399,6 +383,30 @@ call it with the value of the `gnus-data' text property."
 	     (data (get-text-property pos 'gnus-data))
 	     (fun (get-text-property pos 'gnus-callback)))
 	(if fun (funcall fun data))))
+
+    ;; Re-build the thread containing ID.
+    (defun gnus-rebuild-thread (id)
+      (let ((dep gnus-newsgroup-dependencies)
+	    (buffer-read-only nil)
+	    parent headers refs thread art)
+	(while (and id (setq headers
+			     (car (setq art (gnus-gethash (downcase id) dep)))))
+	  (setq parent art)
+	  (setq id (and (setq refs (header-references headers))
+			(string-match "\\(<[^>]+>\\) *$" refs)
+			(substring refs (match-beginning 1) (match-end 1)))))
+	(setq thread (gnus-make-sub-thread (car parent)))
+	(gnus-rebuild-remove-articles thread)
+	(let ((beg (point)))
+	  (gnus-summary-prepare-threads (list thread) 0)
+	  (save-excursion
+	    (while (>= (point) beg)
+	      (remove-text-properties
+	       (1+ (gnus-point-at-bol)) (1+ (gnus-point-at-eol))
+	       '(gnus-number nil gnus-mark nil gnus-level nil))
+	      (forward-line -1)))
+	  (gnus-summary-update-lines beg (point)))))
+
 
     )
 

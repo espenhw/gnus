@@ -452,7 +452,13 @@
 (defun nnbabyl-active-number (group)
   ;; Find the next article number in GROUP.
   (let ((active (car (cdr (assoc group nnbabyl-group-alist)))))
-    (setcdr active (1+ (cdr active)))
+    (if active
+	(setcdr active (1+ (cdr active)))
+      ;; This group is new, so we create a new entry for it.
+      ;; This might be a bit naughty... creating groups on the drop of
+      ;; a hat, but I don't know...
+      (setq nnbabyl-group-alist (cons (list group (setq active (cons 1 1)))
+				      nnbabyl-group-alist)))
     (cdr active)))
 
 (defun nnbabyl-read-mbox ()

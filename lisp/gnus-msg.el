@@ -340,7 +340,7 @@ header line with the old Message-ID."
   (interactive)
   (gnus-set-global-variables)
   (gnus-summary-select-article t)
-  (if (or
+  (if (not
        (string-equal
 	(downcase (mail-strip-quoted-names 
 		   (header-from gnus-current-headers)))
@@ -1403,6 +1403,8 @@ Customize the variable `gnus-mail-other-window-method' to use another
 mailer."
   (interactive)
   (gnus-set-global-variables)
+  (let ((gnus-mail-buffer nntp-server-buffer))
+    (gnus-configure-windows 'summary-mail))
   (let ((gnus-newsgroup-name gnus-newsgroup-name))
     (funcall gnus-mail-other-window-method)))
 

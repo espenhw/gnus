@@ -135,8 +135,10 @@ STRING should be given if the last search was by `string-match' on STRING."
 (defvar custom-mouse-face nil)
 (defvar custom-field-active-face nil)
 
-(or (fboundp 'modify-face)
-    ;; Introduced in Emacs 19.29.
+(or (and (fboundp 'modify-face) (not (featurep 'face-lock)))
+    ;; Introduced in Emacs 19.29.  Incompatible definition also introduced
+    ;; by face-lock.el version 3.00 and above for Emacs 19.28 and below.
+    ;; face-lock does not call modify-face, so we can safely redefine it.
     (defun modify-face (face foreground background stipple
 			     bold-p italic-p underline-p)
   "Change the display attributes for face FACE.

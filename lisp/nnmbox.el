@@ -411,9 +411,15 @@
     t))
 
 (defun nnmbox-active-number (group)
-  "Find the next article number in GROUP."
+  ;; Find the next article number in GROUP.
   (let ((active (car (cdr (assoc group nnmbox-group-alist)))))
-    (setcdr active (1+ (cdr active)))
+    (if active
+	(setcdr active (1+ (cdr active)))
+      ;; This group is new, so we create a new entry for it.
+      ;; This might be a bit naughty... creating groups on the drop of
+      ;; a hat, but I don't know...
+      (setq nnmbox-group-alist (cons (list group (setq active (cons 1 1)))
+				      nnmbox-group-alist)))
     (cdr active)))
 
 (defun nnmbox-read-mbox ()

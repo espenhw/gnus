@@ -1,8 +1,73 @@
-Sat Jul 15 20:08:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+Mon Jul 17 12:28:36 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-prepare-threads): New implementation.
+
+	* gnus-vis.el (gnus-netscape-open-url): Used 10.29isms. 
+
+	* gnus.el (gnus-summary-exit-no-update): Removed call to the cache
+	removal company.
+	(gnus-summary-prepare-untreaded): New function to prepare an
+	unthreaded summary buffer faster.
+	(gnus-summary-mode-map): Bound hide-citation-maybe to `W C'. 
+
+Mon Jul 17 04:24:40 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
+
+	* gnus-cache.el (gnus-cache-save-buffers): Only save the overview
+	  file if absolutely necessary.  Delete cache subdirectories when
+	  the overview file is empty...actually when the buffer to be saved
+	  is empty, so it doesn't delete any existing empty subdirs.
+
+	* gnus-cache.el (gnus-cache-change-buffer): All saving of
+	  overviews is through gnus-cache-save-buffers now.  More careful
+	  about modification flags on overview buffers to save redundant
+	  file reads/writes.
+
+	* gnus-cache.el (gnus-cache-possibly-remove-articles): Added call
+	  to gnus-cache-save-buffers to ensure that overviews are written
+	  out on group exit.
+
+Mon Jul 17 10:15:35 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-update-lines): Faster implementation.
+
+	* gnus-uu.el (gnus-uu-command): Also escape &'s.
+
+	* gnus-vis.el (gnus-article-make-menu-bar): Only the first menu
+	bar item was defined.
+
+Sun Jul 16 15:15:01 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-msg.el (gnus-summary-supersede-article): Reversed comaprison.
+
+	* gnus.el (gnus-read-old-newsrc-el-file): Add "options" to the
+	options string.
+
+	* nndoc.el (nndoc-insert-article): Weed out babyl extra headers. 
+
+	* gnus-msg.el (gnus-summary-mail-other-window): Configure windows
+	better. 
+
+	* gnus-ems.el (gnus-ems-redefine): Redefine gnus-rebuild-thread
+	for XEmacs. 
+
+	* gnus.el (gnus-all-windows-visible-p): New function. Don't
+	configure windows if all buffers are visible. 
+	(gnus-summary-expand-window): Allow forcing of `article' config. 
+
+	* nnbabyl.el (nnbabyl-active-number): Create new groups on the
+	fly. 
+	* nnfolder.el (nnfolder-active-number): Ditto.
+	* nnmbox.el (nnmbox-active-number): Ditto.
+	
+	* gnus.el (gnus-summary-expire-articles): Didn't use total-expire.
+
+Sat Jul 15 20:08:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
 
 	* gnus-kill.el (gnus-kill-save-kill-file): New variable.
 	(gnus-kill-parse-gnus-kill-file): Don't save kill files unless you
 	really want to.
+
+	* gnus.el: 0.96 is released.
 
 Sat Jul 15 03:54:00 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
 
@@ -67,6 +132,8 @@ Thu Jul 13 12:12:15 1995  Scott Byer  <byer@mv.us.adobe.com>
  	first starting up (ding).
 
 Thu Jul 13 00:14:09 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* 0.95 is released.
 
 	* nndoc.el (nndoc-type-to-regexp): Some digests do not start with
 	the required over-long --- line.

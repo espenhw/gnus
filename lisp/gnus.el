@@ -1002,9 +1002,10 @@ your `~/.emacs' or set the resource `Emacs.displayType' in your
 					 "BackgroundMode"))
 	    (params (frame-parameters)))
 	(cond (bg-resource (intern (downcase bg-resource)))
-	      ((< (apply '+ (x-color-values
-			     (cdr (assq 'background-color params))))
-		  (/ (apply '+ (x-color-values "white")) 3))
+	      ((and (cdr (assq 'background-color params))
+		    (< (apply '+ (x-color-values
+				  (cdr (assq 'background-color params))))
+		       (/ (apply '+ (x-color-values "white")) 3)))
 	       'dark)
 	      (t 'light)))
     (error 'light))
@@ -1340,7 +1341,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.96"
+(defconst gnus-version "(ding) Gnus v0.97"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2423,107 +2424,136 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
 	(cons conf (delq (assq (car conf) gnus-buffer-configuration)
 			 gnus-buffer-configuration))))
 
-(defun gnus-configure-windows (setting)
+(defun gnus-configure-windows (setting &optional force)
   (setq setting (gnus-windows-old-to-new setting))
   (let ((r (if (symbolp setting)
-		  (cdr (assq setting gnus-buffer-configuration))
-		setting))
+	       (cdr (assq setting gnus-buffer-configuration))
+	     setting))
 	(in-buf (current-buffer))
 	rule val w height hor ohor heights sub jump-buffer
-	rel total to-buf)
+	rel total to-buf all-visible)
     (or r (error "No such setting: %s" setting))
 
-    ;; Either remove all windows or just remove all Gnus windows.
-    (if gnus-use-full-window
-	(delete-other-windows)
-      (gnus-remove-some-windows)
-      (switch-to-buffer nntp-server-buffer))
+    (if (and (not force) (setq all-visible (gnus-all-windows-visible-p r)))
+	;; All the windows mentioned are already visibe, so we just
+	;; put point in the assigned buffer, and do not touch the
+	;; winconf. 
+	(select-window (get-buffer-window all-visible))
 
-    (while r
-      (setq hor (car r)
-	    ohor nil)
+      ;; Either remove all windows or just remove all Gnus windows.
+      (if gnus-use-full-window
+	  (delete-other-windows)
+	(gnus-remove-some-windows)
+	(switch-to-buffer nntp-server-buffer))
 
-      ;; We have to do the (possible) horizontal splitting before the
-      ;; vertical. 
-      (if (and (listp (car hor)) 
-	       (eq (car (car hor)) 'horizontal))
-	  (progn
-	    (split-window 
-	     nil
-	     (if (integerp (nth 1 (car hor)))
-		 (nth 1 (car hor))
-	       (- (frame-width) (floor (* (frame-width) (nth 1 (car hor))))))
-	     t)
-	    (setq hor (cdr hor))))
+      (while r
+	(setq hor (car r)
+	      ohor nil)
 
-      ;; Go through the rules and eval the elements that are to be
-      ;; evaled.  
-      (while hor
+	;; We have to do the (possible) horizontal splitting before the
+	;; vertical. 
+	(if (and (listp (car hor)) 
+		 (eq (car (car hor)) 'horizontal))
+	    (progn
+	      (split-window 
+	       nil
+	       (if (integerp (nth 1 (car hor)))
+		   (nth 1 (car hor))
+		 (- (frame-width) (floor (* (frame-width) (nth 1 (car hor))))))
+	       t)
+	      (setq hor (cdr hor))))
+
+	;; Go through the rules and eval the elements that are to be
+	;; evaled.  
+	(while hor
+	  (if (setq val (if (vectorp (car hor)) (car hor) (eval (car hor))))
+	      (progn
+		;; Expand short buffer name.
+		(setq w (aref val 0))
+		(and (setq w (cdr (assq w gnus-window-to-buffer)))
+		     (progn
+		       (setq val (apply 'vector (mapcar 'identity val)))
+		       (aset val 0 w)))
+		(setq ohor (cons val ohor))))
+	  (setq hor (cdr hor)))
+	(setq rule (cons (nreverse ohor) rule))
+	(setq r (cdr r)))
+      (setq rule (nreverse rule))
+
+      ;; We tally the window sizes.
+      (setq total (window-height))
+      (while rule
+	(setq hor (car rule))
+	(if (and (listp (car hor)) (eq (car (car hor)) 'horizontal))
+	    (setq hor (cdr hor)))
+	(setq sub 0)
+	(while hor
+	  (setq rel (aref (car hor) 1)
+		heights (cons
+			 (cond ((and (floatp rel) (= 1.0 rel))
+				'x)
+			       ((integerp rel)
+				rel)
+			       (t
+				(max (floor (* total rel)) 4)))
+			 heights)
+		sub (+ sub (if (numberp (car heights)) (car heights) 0))
+		hor (cdr hor)))
+	(setq heights (nreverse heights)
+	      hor (car rule))
+
+	;; We then go through these heighs and create windows for them.
+	(while heights
+	  (setq height (car heights)
+		heights (cdr heights))
+	  (and (eq height 'x)
+	       (setq height (- total sub)))
+	  (and heights
+	       (split-window nil height))
+	  (setq to-buf (aref (car hor) 0))
+	  (switch-to-buffer 
+	   (cond ((not to-buf)
+		  in-buf)
+		 ((symbolp to-buf)
+		  (symbol-value (aref (car hor) 0)))
+		 (t
+		  (aref (car hor) 0))))
+	  (and (> (length (car hor)) 2)
+	       (eq (aref (car hor) 2) 'point)
+	       (setq jump-buffer (current-buffer)))
+	  (other-window 1)
+	  (setq hor (cdr hor)))
+      
+	(setq rule (cdr rule)))
+
+      ;; Finally, we pop to the buffer that's supposed to have point. 
+      (or jump-buffer (error "Missing `point' in spec for %s" setting))
+
+      (select-window (get-buffer-window jump-buffer))
+      (set-buffer jump-buffer))))
+
+(defun gnus-all-windows-visible-p (rule)
+  (let (invisible hor jump-buffer val buffer)
+    ;; Go through the rules and eval the elements that are to be
+    ;; evaled.  
+    (while (and rule (not invisible))
+      (setq hor (car rule)
+	    rule (cdr rule))
+      (while (and hor (not invisible))
 	(if (setq val (if (vectorp (car hor)) (car hor) (eval (car hor))))
 	    (progn
 	      ;; Expand short buffer name.
-	      (setq w (aref val 0))
-	      (and (setq w (cdr (assq w gnus-window-to-buffer)))
-		   (progn
-		     (setq val (apply 'vector (mapcar (lambda (v) v) val)))
-		     (aset val 0 w)))
-	      (setq ohor (cons val ohor))))
-	(setq hor (cdr hor)))
-      (setq rule (cons (nreverse ohor) rule))
-      (setq r (cdr r)))
-    (setq rule (nreverse rule))
+	      (setq buffer (or (cdr (assq (aref val 0) gnus-window-to-buffer))
+			       (aref val 0)))
+	      (setq buffer (if (symbolp buffer) (symbol-value buffer)
+			     buffer))
+	      (setq jump-buffer (and (> (length val) 2)
+				     (eq 'point (aref val 2))
+				     buffer))
+	      (setq invisible (not (get-buffer-window buffer)))))
+	(setq hor (cdr hor))))
+    (and (not invisible) jump-buffer)))
 
-    ;; We tally the window sizes.
-    (setq total (window-height))
-    (while rule
-      (setq hor (car rule))
-      (if (and (listp (car hor)) (eq (car (car hor)) 'horizontal))
-	  (setq hor (cdr hor)))
-      (setq sub 0)
-      (while hor
-	(setq rel (aref (car hor) 1)
-	      heights (cons
-		       (cond ((and (floatp rel) (= 1.0 rel))
-			      'x)
-			     ((integerp rel)
-			      rel)
-			     (t
-			      (max (floor (* total rel)) 4)))
-		       heights)
-	      sub (+ sub (if (numberp (car heights)) (car heights) 0))
-	      hor (cdr hor)))
-      (setq heights (nreverse heights)
-	    hor (car rule))
-
-      ;; We then go through these heighs and create windows for them.
-      (while heights
-	(setq height (car heights)
-	      heights (cdr heights))
-	(and (eq height 'x)
-	     (setq height (- total sub)))
-	(and heights
-	     (split-window nil height))
-	(setq to-buf (aref (car hor) 0))
-	(switch-to-buffer 
-	 (cond ((not to-buf)
-		in-buf)
-	       ((symbolp to-buf)
-		(symbol-value (aref (car hor) 0)))
-	       (t
-		(aref (car hor) 0))))
-	(and (> (length (car hor)) 2)
-	     (eq (aref (car hor) 2) 'point)
-	     (setq jump-buffer (current-buffer)))
-	(other-window 1)
-	(setq hor (cdr hor)))
-      
-      (setq rule (cdr rule)))
-
-    ;; Finally, we pop to the buffer that's supposed to have point. 
-    (or jump-buffer (error "Missing `point' in spec for %s" setting))
-
-    (select-window (get-buffer-window jump-buffer))
-    (set-buffer jump-buffer)))
       
 (defun gnus-remove-some-windows ()
   (let ((buffers gnus-window-to-buffer)
@@ -5262,6 +5292,7 @@ buffer.
   (define-key gnus-summary-wash-map "h" 'gnus-article-hide-headers)
   (define-key gnus-summary-wash-map "s" 'gnus-article-hide-signature)
   (define-key gnus-summary-wash-map "c" 'gnus-article-hide-citation)
+  (define-key gnus-summary-wash-map "C" 'gnus-article-hide-citation-maybe)
   (define-key gnus-summary-wash-map "o" 'gnus-article-treat-overstrike)
   (define-key gnus-summary-wash-map "w" 'gnus-article-word-wrap)
   (define-key gnus-summary-wash-map "d" 'gnus-article-remove-cr)
@@ -5550,15 +5581,35 @@ The following commands are available:
 	       (run-hooks 'gnus-summary-update-hook))))))
 
 (defun gnus-summary-update-lines (&optional beg end)
-  ;; Rehighlight summary buffer according to `gnus-summary-highlight'.
+  ;; Mark article as read (or not) by taking into account scores.
   (let ((beg (or beg (point-min)))
 	(end (or end (point-max))))
-    (save-excursion
-      (set-buffer gnus-summary-buffer)
-      (goto-char beg)
-      (while (and (not (eobp)) (< (point) end))
-	(gnus-summary-update-line)
-	(forward-line 1)))))
+    (if (or (not gnus-summary-default-score)
+	    gnus-summary-inhibit-highlight)
+	()
+      (let ((gnus-summary-inhibit-highlight t)
+	    article)
+	(save-excursion
+	  (set-buffer gnus-summary-buffer)
+	  (goto-char beg)
+	  (beginning-of-line)
+	  (while (and (not (eobp)) (< (point) end))
+	    (if (and gnus-summary-mark-below
+		     (< (or (cdr (assq (get-text-property (point) 'gnus-number)
+				       gnus-newsgroup-scored))
+			    gnus-summary-default-score 0)
+			gnus-summary-mark-below))
+		;; We want to possibly mark it as read...
+		(and (not (memq article gnus-newsgroup-marked))
+		     (not (memq article gnus-newsgroup-dormant))
+		     (memq article gnus-newsgroup-unreads)
+		     (gnus-summary-mark-article nil gnus-low-score-mark))
+	      ;; We want to possibly mark it as unread.
+	      (and (eq (get-text-property (point) 'gnus-mark) gnus-low-score-mark)
+		   (gnus-summary-mark-article nil gnus-unread-mark)))
+	    ;; Do the visual highlights at the same time.
+	    (and gnus-visual (run-hooks 'gnus-summary-update-hook))
+	    (forward-line 1)))))))
 
 (defun gnus-summary-number-of-articles-in-thread (thread &optional char)
   ;; Sum up all elements (and sub-elements) in a list.
@@ -5709,7 +5760,7 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	       (gnus-make-threads-and-expunge)
 	     (gnus-make-threads))))
        gnus-newsgroup-headers)
-     0 nil nil t)
+     'cull)
     ;; Erase header retrieval message.
     (gnus-summary-update-lines)
     (message "")
@@ -5984,7 +6035,7 @@ If NO-ARTICLE is non-nil, no article is selected initially."
     (setq thread (gnus-make-sub-thread (car parent)))
     (gnus-rebuild-remove-articles thread)
     (let ((beg (point)))
-      (gnus-summary-prepare-threads (list thread) 0)
+      (gnus-summary-prepare-threads (list thread))
       (gnus-summary-update-lines beg (point)))))
 
 ;; Delete all lines in the summary buffer that correspond to articles
@@ -6002,7 +6053,7 @@ If NO-ARTICLE is non-nil, no article is selected initially."
 	    fun (cdr fun))))
   threads)
 
-(defun gnus-thread-header (thread)
+(defsubst gnus-thread-header (thread)
   ;; Return header of first article in THREAD.
   (if (consp thread)
       (if (stringp (car thread))
@@ -6082,101 +6133,142 @@ Unscored articles will be counted as having a score of zero."
 (defvar gnus-tmp-prev-subject "")
 (defvar gnus-tmp-adopt-thread nil)
 
-;; Basic ideas by Paul Dworkin <paul@media-lab.media.mit.edu>.
-(defun gnus-summary-prepare-threads 
-  (threads level &optional not-child no-subject cull)
+(defun gnus-summary-prepare-threads (threads &optional cull)
   "Prepare summary buffer from THREADS and indentation LEVEL.  
 THREADS is either a list of `(PARENT [(CHILD1 [(GRANDCHILD ...]...) ...])'  
 or a straight list of headers."
-  (let (thread header number subject clevel)
-    (while threads
-      (setq thread (car threads)
-	    threads (cdr threads))
-      ;; If `thread' is a cons, hierarchical threads are used.  If not,
-      ;; `thread' is the header.
-      (if (consp thread)
-	  (setq header (car thread))
-	(setq header thread)
-	(and cull
-	     (or (memq (setq number (header-number header))
-		       gnus-newsgroup-dormant)
-		 (and gnus-summary-expunge-below
-		      (< (or (cdr (assq number gnus-newsgroup-scored))
-			     gnus-summary-default-score 0)
-			 gnus-summary-expunge-below)))
-	     (progn
-	       (setq header nil)
-	       (setq gnus-newsgroup-unreads 
-		     (delq number gnus-newsgroup-unreads)))))
-      (cond 
-       ((stringp header)
-	;; The header is a dummy root.
-	(cond ((eq gnus-summary-make-false-root 'adopt)
-	       ;; We let the first article adopt the rest.
-	       (let ((gnus-tmp-adopt-thread (list (cdr thread))))
-		 (gnus-summary-prepare-threads (list (car (cdr thread))) 0))
-	       (setq thread (cdr (cdr thread)))
-	       (while thread
-		 (gnus-summary-prepare-threads (list (car thread)) 1 t)
-		 (setq thread (cdr thread))))
-	      ((eq gnus-summary-make-false-root 'dummy)
-	       ;; We output a dummy root.
-	       (gnus-summary-insert-dummy-line 
-		nil header (header-number (car (car (cdr thread)))))
-	       (setq clevel 1))
-	      ((eq gnus-summary-make-false-root 'empty)
-	       ;; We print the articles with empty subject fields. 
-	       (let ((gnus-tmp-adopt-thread (list (cdr thread))))
-		 (gnus-summary-prepare-threads (list (car (cdr thread))) 0))
-	       (setq thread (cdr (cdr thread)))
-	       (while thread
-		 (gnus-summary-prepare-threads 
-		  (list (car thread)) 0 nil
-		  (not (and (eq gnus-summary-gather-subject-limit 'fuzzy)
-			    (not (string=  
-				  (gnus-simplify-subject-re 
-				   (header-subject (car (car thread))))
-				  (gnus-simplify-subject-re header))))))
-		 (setq thread (cdr thread))))
-	      (t
-	       ;; We do not make a root for the gathered
-	       ;; sub-threads at all.  
-	       (setq clevel 0)))
-	;; Print the sub-threads.
-	(and (consp thread) (cdr thread)
-	     (gnus-summary-prepare-threads (cdr thread) clevel)))
-       ;; The header is a real article.
-       (header
-	(setq number (header-number header)
-	      subject (header-subject header))
-	(and gnus-newsgroup-async
-	     (setq gnus-newsgroup-threads
-		   (cons (cons (header-number header)
-			       (header-lines header)) gnus-newsgroup-threads)))
-	(gnus-summary-insert-line
-	 nil header level nil 
-	 (cond ((memq number gnus-newsgroup-marked) gnus-ticked-mark)
-	       ((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
-	       ((memq number gnus-newsgroup-unreads) gnus-unread-mark)
-	       ((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
-	       (t gnus-ancient-mark))
-	 (memq number gnus-newsgroup-replied)
-	 (memq number gnus-newsgroup-expirable)
-	 (if no-subject 
-	     gnus-summary-same-subject
-	   (if (or (zerop level)
-		   (and gnus-thread-ignore-subject
-			(not (string= 
-			      (gnus-simplify-subject-re gnus-tmp-prev-subject)
-			      (gnus-simplify-subject-re subject)))))
-	       subject
-	     gnus-summary-same-subject))
-	 not-child
-	 (cdr (assq number gnus-newsgroup-scored)))
- 	(setq gnus-tmp-prev-subject subject)
-	;; Recursively print subthreads.
-	(and (consp thread) (cdr thread)
-	     (gnus-summary-prepare-threads (cdr thread) (1+ level))))))))
+  (let (thread header number subject stack state gathered level)
+    (if (vectorp (car threads))
+	;; If this is a straight (sic) list of headers, then a
+	;; threaded summary display isn't required, so we just create
+	;; an unthreaded one.
+	(gnus-summary-prepare-unthreaded threads)
+
+      ;; Do the threaded display.
+      (setq stack (cons (cons 0 threads) stack))
+
+      (while stack
+	(setq state (car stack)
+	      level (car state)
+	      thread (cdr state)
+	      stack (cdr stack)
+	      header (car (car thread)))
+
+	(if (stringp header)
+	    (progn
+	      ;; The header is a dummy root.
+	      (cond 
+	       ((eq gnus-summary-make-false-root 'adopt)
+		;; We let the first article adopt the rest.
+		(let ((th (car (cdr (car thread)))))
+		  (while (cdr th)
+		    (setq th (cdr th)))
+		  (setcdr th (cdr (cdr (car thread))))
+		  (setq gathered 
+			(nconc (mapcar
+				(lambda (h) (header-number (car h)))
+				(cdr (cdr (car thread))))
+			       gathered))
+		  (setcdr (cdr (car thread)) nil))
+		(setq level -1))
+	       ((eq gnus-summary-make-false-root 'empty)
+		;; We print adopted articles with empty subject fields.
+		(setq gathered 
+		      (nconc (mapcar
+			      (lambda (h) (header-number (car h)))
+			      (cdr (cdr (car thread))))
+			     gathered))
+		(setq level -1))
+	       ((eq gnus-summary-make-false-root 'dummy)
+		;; We output a dummy root.
+		(gnus-summary-insert-dummy-line 
+		 nil header (header-number (car (car (cdr thread))))))
+	       (t
+		;; We do not make a root for the gathered
+		;; sub-threads at all.  
+		(setq level -1))))
+      
+	  (setq number (header-number header)
+		subject (header-subject header))
+
+	  ;; Do the async thing.
+	  (and gnus-newsgroup-async
+	       (setq gnus-newsgroup-threads
+		     (cons (cons number (header-lines header)) 
+			   gnus-newsgroup-threads)))
+
+	  ;; We may have to root out some bad articles...
+	  (and cull
+	       (= level 0)
+	       (cond ((memq (setq number (header-number header))
+			    gnus-newsgroup-dormant)
+		      (setq header nil))
+		     ((and gnus-summary-expunge-below
+			   (< (or (cdr (assq number gnus-newsgroup-scored))
+				  gnus-summary-default-score 0)
+			      gnus-summary-expunge-below))
+		      (setq header nil)
+		      (setq gnus-newsgroup-unreads 
+			    (delq number gnus-newsgroup-unreads)))))
+
+	  (gnus-summary-insert-line
+	   nil header level nil 
+	   (cond ((memq number gnus-newsgroup-marked) gnus-ticked-mark)
+		 ((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
+		 ((memq number gnus-newsgroup-unreads) gnus-unread-mark)
+		 ((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
+		 (t gnus-ancient-mark))
+	   (memq number gnus-newsgroup-replied)
+	   (memq number gnus-newsgroup-expirable)
+	   (if (and (eq gnus-summary-make-false-root 'empty)
+		    (memq number gathered))
+	       gnus-summary-same-subject
+	     (if (or (zerop level)
+		     (and gnus-thread-ignore-subject
+			  (not (string= 
+				(gnus-simplify-subject-re
+				 gnus-tmp-prev-subject)
+				(gnus-simplify-subject-re
+				 subject)))))
+		 subject
+	       gnus-summary-same-subject))
+	   (and (eq gnus-summary-make-false-root 'adopt)
+		(memq number gathered))
+	   (cdr (assq number gnus-newsgroup-scored))))
+
+	(setq gnus-tmp-prev-subject subject)
+
+	(if (nth 1 thread) 
+	    (setq stack (cons (cons (max 0 level) (nthcdr 1 thread)) stack)))
+	(if (cdr (car thread))
+	    (setq stack (cons (cons (1+ level) (cdr (car thread))) stack)))))))
+
+
+(defun gnus-summary-prepare-unthreaded (headers)
+  (let (header number)
+
+    ;; Do the async thing, if that is required.
+    (if gnus-newsgroup-async
+	(setq gnus-newsgroup-threads
+	      (mapcar (lambda (h) (cons (header-number h) (header-lines h)))
+		      headers)))
+
+    (while headers
+      (setq header (car headers)
+	    headers (cdr headers)
+	    number (header-number header))
+
+      (gnus-summary-insert-line
+       nil header 0 nil 
+       (cond ((memq number gnus-newsgroup-marked) gnus-ticked-mark)
+	     ((memq number gnus-newsgroup-dormant) gnus-dormant-mark)
+	     ((memq number gnus-newsgroup-unreads) gnus-unread-mark)
+	     ((memq number gnus-newsgroup-expirable) gnus-expirable-mark)
+	     (t gnus-ancient-mark))
+       (memq number gnus-newsgroup-replied)
+       (memq number gnus-newsgroup-expirable)
+       (header-subject header) nil
+       (cdr (assq number gnus-newsgroup-scored))))))
 
 (defun gnus-select-newsgroup (group &optional read-all)
   "Select newsgroup GROUP.
@@ -7386,7 +7478,6 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
 	    gnus-expert-user
 	    (gnus-y-or-n-p "Do you really wanna quit reading this group? "))
 	(progn
-	  (and gnus-use-cache (gnus-cache-possibly-remove-articles))
 	  (gnus-close-group group)
 	  (gnus-summary-clear-local-variables)
 	  (set-buffer gnus-group-buffer)
@@ -7627,11 +7718,14 @@ If optional argument UNREAD is non-nil, only unread article is selected."
 
 ;; Walking around summary lines with displaying articles.
 
-(defun gnus-summary-expand-window ()
-  "Make the summary buffer take up the entire Emacs frame."
-  (interactive)
+(defun gnus-summary-expand-window (arg)
+  "Make the summary buffer take up the entire Emacs frame.
+Given a prefix, will force an `article' buffer configuration."
+  (interactive "P")
   (gnus-set-global-variables)
-  (gnus-configure-windows 'summary))
+  (if arg
+      (gnus-configure-windows 'article 'force)
+    (gnus-configure-windows 'summary)))
 
 (defun gnus-summary-display-article (article &optional all-header)
   "Display ARTICLE in article buffer."
@@ -7714,7 +7808,7 @@ If BACKWARD, the previous article is selected instead of the next."
       (gnus-extend-newsgroup header backward)
       (let ((buffer-read-only nil))
 	(goto-char (if backward (point-min) (point-max)))
-	(gnus-summary-prepare-threads (list header) 0))
+	(gnus-summary-prepare-threads (list header)))
       (gnus-summary-goto-article (if backward gnus-newsgroup-begin
 				   gnus-newsgroup-end)))
      ;; Go to next/previous group.
@@ -8539,12 +8633,18 @@ functions. (Ie. mail newsgroups at present.)"
   (if (and gnus-newsgroup-expirable
 	   (gnus-check-backend-function 
 	    'request-expire-articles gnus-newsgroup-name))
-      (let ((expirable gnus-newsgroup-expirable))
+      (let* ((info (nth 2 (gnus-gethash gnus-newsgroup-name 
+					gnus-newsrc-hashtb)))
+	     (total (memq 'total-expire (nth 5 info)))
+	     (expirable (if total
+			    (gnus-list-of-read-articles gnus-newsgroup-name)
+			  (setq gnus-newsgroup-expirable
+				(sort gnus-newsgroup-expirable '<))))
+	     es)
 	(gnus-message 6 "Expiring articles...")
 	;; The list of articles that weren't expired is returned.
-	(setq gnus-newsgroup-expirable 
-	      (gnus-request-expire-articles gnus-newsgroup-expirable
-					    gnus-newsgroup-name))
+	(setq es (gnus-request-expire-articles expirable gnus-newsgroup-name))
+	(or total (setq gnus-newsgroup-expirable es))
 	;; We go through the old list of expirable, and mark all
 	;; really expired articles as non-existent.
 	(while expirable
@@ -8552,7 +8652,6 @@ functions. (Ie. mail newsgroups at present.)"
 	      (gnus-summary-mark-as-read (car expirable) gnus-canceled-mark))
 	  (setq expirable (cdr expirable)))
 	(gnus-message 6 "Expiring articles...done"))))
-
 
 (defun gnus-summary-expire-articles-now ()
   "Expunge all expirable articles in the current group.
@@ -9283,7 +9382,7 @@ even ticked and dormant ones."
 	(gnus-summary-update-lines 
 	 (point)
 	 (progn
-	   (gnus-summary-prepare-threads (nreverse headers) 0)
+	   (gnus-summary-prepare-threads (nreverse headers))
 	   (point)))))
     (goto-char (point-min))
     (gnus-summary-position-cursor)))
@@ -9305,7 +9404,7 @@ even ticked and dormant ones."
 	(gnus-summary-update-lines 
 	 (point)
 	 (progn
-	   (gnus-summary-prepare-threads (nreverse headers) 0)
+	   (gnus-summary-prepare-threads (nreverse headers))
 	   (point)))))
     (goto-char (point-min))
     (gnus-summary-position-cursor)))
@@ -12401,6 +12500,16 @@ If FORCE is non-nil, the .newsrc file is read."
 	(setcar newsrc (car (car newsrc)))
 	(setq newsrc (cdr newsrc)))
       (setq gnus-killed-list killed))
+    ;; The .el file version of this variable does not begin with
+    ;; "options", while the .eld version does, so we just add it if it
+    ;; isn't there.
+    (and
+     gnus-newsrc-options 
+     (progn
+       (and (not (string-match "^ *options" gnus-newsrc-options))
+	    (setq gnus-newsrc-options (concat "options " gnus-newsrc-options)))
+       (and (not (string-match "\n$" gnus-newsrc-options))
+	    (setq gnus-newsrc-options (concat gnus-newsrc-options "\n")))))
     (setq gnus-newsrc-alist (nreverse gnus-newsrc-alist))
     (gnus-make-hashtable-from-newsrc-alist)))
       
