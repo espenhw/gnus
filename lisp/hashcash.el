@@ -1,7 +1,7 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; Copyright (C) 1997--2002 Paul E. Foley
 ;; Copyright (C) 2003, 2004 Free Software Foundation
+;; Copyright (C) 1997--2002 Paul E. Foley
 
 ;; Maintainer: Paul Foley <mycroft@actrix.gen.nz>
 ;; Keywords: mail, hashcash
@@ -130,7 +130,10 @@ is used instead.")
 			   "-b" (number-to-string val)
 			   "-r" str
 			   token))
-    (error "No `hashcash' binary found")))
+    (progn
+      (message "No hashcash binary found")
+      (sleep-for 1)
+      nil)))
 
 (defun hashcash-version (token)
   "Find the format version of a hashcash token."

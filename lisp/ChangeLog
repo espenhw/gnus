@@ -1,7 +1,6 @@
 2004-09-28  Simon Josefsson  <jas@extundo.com>
 
-	* hashcash.el (hashcash-generate-payment)
-	(hashcash-check-payment): Use error.
+	* hashcash.el (hashcash-generate-payment): Revert.
 
 2004-09-28  Teodor Zlatanov  <tzz@lifelogs.com>
 
