@@ -68,24 +68,27 @@
 
 (defun gnus-idna-to-ascii-rhs-1 (header)
   (save-excursion
-    (let (address header-data new-header-data rhs ace)
-      (setq header-data (message-fetch-field header))
-      (when header-data
-	(dolist (element (message-tokenize-header header-data))
-	  (setq address (car (rfc822-addresses element)))
-	  (when (string-match "\\(.*\\)@\\([^@]+\\)" address)
-	    (setq ace (if (setq rhs (match-string 2 address))
-			  (idna-to-ascii rhs)))
-	    (push (if (string= rhs ace)
-		      element
-		    (gnus-replace-in-string element (regexp-quote rhs) ace t))
-		  new-header-data)))
-	(message-remove-header header)
-	(message-position-on-field header)
-	(dolist (addr (reverse new-header-data))
-	  (insert addr ", "))
-	(when new-header-data
-	  (delete-backward-char 2))))))
+    (save-restriction
+      (let (address header-data new-header-data rhs ace)
+	(message-narrow-to-head)
+	(setq header-data (message-fetch-field header))
+	(when header-data
+	  (dolist (element (message-tokenize-header header-data))
+	    (setq address (car (rfc822-addresses element)))
+	    (when (string-match "\\(.*\\)@\\([^@]+\\)" address)
+	      (setq ace (if (setq rhs (match-string 2 address))
+			    (idna-to-ascii rhs)))
+	      (push (if (string= rhs ace)
+			element
+		      (gnus-replace-in-string
+		       element (regexp-quote rhs) ace t))
+		    new-header-data)))
+	  (message-remove-header header)
+	  (message-position-on-field header)
+	  (dolist (addr (reverse new-header-data))
+	    (insert addr ", "))
+	  (when new-header-data
+	    (delete-backward-char 2)))))))
 
 (defun gnus-idna-to-ascii-rhs ()
   (gnus-idna-to-ascii-rhs-1 "From")
