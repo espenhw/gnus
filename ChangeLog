@@ -1,3 +1,8 @@
+2001-11-01 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* etc/smilies/blink.xpm: New set of xpm. From Oliver Scholz
+	<oscholz@my.gnus.org>.
+
 2001-10-29  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* etc/smilies/sad.pbm: New bitmap.
