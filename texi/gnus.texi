@@ -25780,6 +25780,11 @@ New features in Gnus 5.10:
 @itemize @bullet
 
 @item
+@kbd{F} (@code{gnus-article-followup-with-original}) and @kbd{R}
+(@code{gnus-article-reply-with-original}) only yank the text in the
+region if the region is active.
+
+@item
 @code{gnus-group-read-ephemeral-group} can be called interactively,
 using @kbd{G M}.
 

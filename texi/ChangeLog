@@ -1,3 +1,8 @@
+2004-05-19  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Oort Gnus): Mention new behavior of `F' and `R' when
+	the region is active.
+
 2004-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.texi (Various Commands): Add.
