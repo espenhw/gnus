@@ -361,10 +361,12 @@ human readable response text (a string).")
 The actually value is really the text on the continuation line.")
 
 (defvar imap-log nil
-  "Imap session trace.")
+  "Name of buffer for imap session trace.
+For example: (setq imap-log \"*imap-log*\")")
 
 (defvar imap-debug nil			;"*imap-debug*"
-  "Random debug spew.")
+  "Name of buffer for random debug spew.
+For example: (setq imap-debug \"*imap-debug*\")")
 
 
 ;; Utility functions:

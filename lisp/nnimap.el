@@ -281,7 +281,9 @@ restrict visible folders.")
 
 ;; Internal variables:
 
-(defvar nnimap-debug nil);; "*nnimap-debug*")
+(defvar nnimap-debug nil
+  "Name of buffer to record debugging info.
+For example: (setq nnimap-debug \"*nnimap-debug*\")")
 (defvar nnimap-current-move-server nil)
 (defvar nnimap-current-move-group nil)
 (defvar nnimap-current-move-article nil)
