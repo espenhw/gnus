@@ -5170,17 +5170,23 @@ which specify the range to operate on."
 
 ;;; Group name completion.
 
-(defvar message-newgroups-header-regexp
+(defcustom message-newgroups-header-regexp
   "^\\(Newsgroups\\|Followup-To\\|Posted-To\\|Gcc\\):"
-  "Regexp that match headers that lists groups.")
+  "Regexp that match headers that lists groups."
+  :group 'message
+  :type 'regexp)
 
-(defvar message-completion-alist
+(defcustom message-completion-alist
   (list (cons message-newgroups-header-regexp 'message-expand-group)
 	'("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . message-expand-name))
-  "Alist of (RE . FUN).  Use FUN for completion on header lines matching RE.")
+  "Alist of (RE . FUN).  Use FUN for completion on header lines matching RE."
+  :group 'message
+  :type '(alist :key-type regexp :value-type function))
 
-(defvar message-tab-body-function 'indent-relative
-  "*Function to execute when `message-tab' (TAB) is executed in the body.")
+(defcustom message-tab-body-function 'indent-relative
+  "*Function to execute when `message-tab' (TAB) is executed in the body."
+  :group 'message
+  :type 'function)
 
 (defun message-tab ()
   "Complete names according to `message-completion-alist'.
