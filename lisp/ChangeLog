@@ -1,5 +1,13 @@
 2003-02-02  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-art.el (gnus-button-handle-describe-key): Implement it.
+	(gnus-button-alist): Fix regexp for describe-key.
+	(gnus-button-handle-describe-function)
+	(gnus-button-handle-describe-variable)
+	(gnus-button-handle-apropos, gnus-button-handle-apropos-command)
+	(gnus-button-handle-apropos-variable)
+	(gnus-button-handle-apropos-documentation): Docstring fix.
+
 	* gnus-util.el (gnus-kill-buffer): Use get-buffer.
 
 2003-02-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>

@@ -5469,40 +5469,43 @@ respectivly."
 (defvar gnus-button-handle-describe-prefix "^\\(C-h\\|<?[Ff]1>?\\)")
 
 (defun gnus-button-handle-describe-function (url)
-  "Call describe-function when pushing the corresponding URL button."
+  "Call `describe-function' when pushing the corresponding URL button."
   (describe-function
    (intern
     (gnus-replace-in-string url gnus-button-handle-describe-prefix ""))))
 
 (defun gnus-button-handle-describe-variable (url)
-  "Call describe-variable when pushing the corresponding URL button."
+  "Call `describe-variable' when pushing the corresponding URL button."
   (describe-variable
    (intern
     (gnus-replace-in-string url gnus-button-handle-describe-prefix ""))))
 
-;; FIXME: Is is possible to implement this?  Else it should be removed here
-;; and in `gnus-button-alist'.
 (defun gnus-button-handle-describe-key (url)
-  "Call describe-key when pushing the corresponding URL button."
-  (error "not implemented"))
+  "Call `describe-key' when pushing the corresponding URL button."
+  (let* ((key-string
+	  (gnus-replace-in-string url gnus-button-handle-describe-prefix ""))
+	 (keys (ignore-errors (eval `(kbd ,key-string)))))
+    (if keys
+	(describe-key keys)
+      (gnus-message 3 "Invalid key sequence in button: %s" key-string))))
 
 (defun gnus-button-handle-apropos (url)
-  "Call apropos when pushing the corresponding URL button."
+  "Call `apropos' when pushing the corresponding URL button."
   (apropos (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
 (defun gnus-button-handle-apropos-command (url)
-  "Call apropos when pushing the corresponding URL button."
+  "Call `apropos' when pushing the corresponding URL button."
   (apropos-command
    (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
 (defun gnus-button-handle-apropos-variable (url)
-  "Call apropos when pushing the corresponding URL button."
+  "Call `apropos' when pushing the corresponding URL button."
   (funcall
    (if (fboundp 'apropos-variable) 'apropos-variable 'apropos)
    (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
 
 (defun gnus-button-handle-apropos-documentation (url)
-  "Call apropos when pushing the corresponding URL button."
+  "Call `apropos' when pushing the corresponding URL button."
   (funcall
    (if (fboundp 'apropos-documentation) 'apropos-documentation 'apropos)
    (gnus-replace-in-string url gnus-button-handle-describe-prefix "")))
@@ -5594,9 +5597,10 @@ positives are possible."
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-function 2)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+v[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+RET"
      0 (>= gnus-button-emacs-level 1) gnus-button-handle-describe-variable 2)
-    ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^ \t\n]+\\)[ \t\n]+" 0
-     ;; this regexp needs to be fixed!
-     (>= gnus-button-emacs-level 9) gnus-button-handle-describe-key 2)
+    ("`\\(\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+k[ \t\n]+\\([^']+\\)\\)'" 1
+     ;; Unlike the other regexps we really have to require quoting
+     ;; here to determine where it ends.
+     (>= gnus-button-emacs-level 1) gnus-button-handle-describe-key 3)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^<>]*\\)>" 1 t gnus-button-embedded-url 1)
     ;; Raw URLs.
