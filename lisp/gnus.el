@@ -42,7 +42,7 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.68"
+(defconst gnus-version-number "0.69"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -173,6 +173,8 @@ be set in `.emacs' instead."
       (while (search-forward "\t" nil t)
 	(replace-match "        " t t)))))
 
+(defvar gnus-simple-splash nil)
+
 (defun gnus-group-startup-message (&optional x y)
   "Insert startup message in current buffer."
   ;; Insert the message.
@@ -212,6 +214,7 @@ be set in `.emacs' instead."
   (put-text-property (point-min) (point-max) 'face 'gnus-splash-face)
   (goto-char (point-min))
   (setq mode-line-buffer-identification gnus-version)
+  (setq gnus-simple-splash t)
   (set-buffer-modified-p t))
 
 (eval-when (load)
@@ -1350,7 +1353,7 @@ This restriction may disappear in later versions of Gnus."
 
 (defun gnus-info-set-entry (info entry number)
   ;; Extend the info until we have enough elements.
-  (while (< (length info) number)
+  (while (<= (length info) number)
     (nconc info (list nil)))
   ;; Set the entry.
   (setcar (nthcdr number info) entry))

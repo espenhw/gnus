@@ -254,6 +254,7 @@ variable to \"^nnml\"."
 
 (defun gnus-cache-possibly-alter-active (group active)
   "Alter the ACTIVE info for GROUP to reflect the articles in the cache."
+  (when (equal group "no.norsk") (error "hie"))
   (when gnus-cache-active-hashtb
     (let ((cache-active (gnus-gethash group gnus-cache-active-hashtb)))
       (and cache-active 
@@ -587,9 +588,9 @@ If LOW, update the lower bound instead."
       ;; Update the lower or upper bound.
       (if low
 	  (setcar active number)
-	(setcdr active number))
-      ;; Mark the active hashtb as altered.
-      (setq gnus-cache-active-altered t))))
+	(setcdr active number)))
+    ;; Mark the active hashtb as altered.
+    (setq gnus-cache-active-altered t)))
 
 ;;;###autoload
 (defun gnus-cache-generate-active (&optional directory)

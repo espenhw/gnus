@@ -678,11 +678,13 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]))
 
-    (define-key gnus-article-mode-map [menu-bar commands]
-      (cons "Commands" gnus-summary-article-menu))
+    (when (boundp 'gnus-summary-article-menu)
+      (define-key gnus-article-mode-map [menu-bar commands]
+	(cons "Commands" gnus-summary-article-menu)))
 
-    (define-key gnus-article-mode-map [menu-bar post]
-      (cons "Post" gnus-summary-post-menu))
+    (when (boundp 'gnus-summary-post-menu)
+      (define-key gnus-article-mode-map [menu-bar post]
+	(cons "Post" gnus-summary-post-menu)))
 
     (run-hooks 'gnus-article-menu-hook)))
 
@@ -702,8 +704,7 @@ commands:
 \\[gnus-article-describe-briefly]\t Describe the current mode briefly
 \\[gnus-info-find-node]\t Go to the Gnus info node"
   (interactive)
-  (when (and menu-bar-mode
-	     (gnus-visual-p 'article-menu 'menu))
+  (when (gnus-visual-p 'article-menu 'menu)
     (gnus-article-make-menu-bar))
   (kill-all-local-variables)
   (gnus-simplify-mode-line)

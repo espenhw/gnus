@@ -174,10 +174,8 @@
 	(while (setq def (pop defs))
 	  (unless (assq (car def) bvariables)
 	    (nconc bvariables
-		   (list (cons (car def)
-			       (condition-case ()
-				   (symbol-value (car def))
-				 (error nil))))))
+ 		   (list (cons (car def) (and (boundp (car def))
+ 					      (symbol-value (car def)))))))
 	  (set (car def) (cadr def))))
       (while parents
 	(nnoo-change-server 

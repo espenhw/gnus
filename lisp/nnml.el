@@ -706,26 +706,28 @@ all.  This may very well take some time.")
   ;; Save the active file.
   (nnmail-save-active nnml-group-alist nnml-active-file))
 
-(defun nnml-generate-nov-databases-1 (dir)
+(defun nnml-generate-nov-databases-1 (dir &optional seen)
   (setq dir (file-name-as-directory dir))
-  ;; We descend recursively 
-  (let ((dirs (directory-files dir t nil t))
-	dir)
-    (while dirs 
-      (setq dir (pop dirs))
-      (when (and (not (member (file-name-nondirectory dir) '("." "..")))
-		 (file-directory-p dir))
-	(nnml-generate-nov-databases-1 dir))))
-  ;; Do this directory.
-  (let ((files (sort
-		(mapcar
-		 (lambda (name) (string-to-int name))
-		 (directory-files dir nil "^[0-9]+$" t))
-		'<)))
-    (when files
-      (funcall nnml-generate-active-function dir)
-      ;; Generate the nov file.
-      (nnml-generate-nov-file dir files))))
+  ;; Only scan this sub-tree if we haven't been here yet.
+  (unless (member (file-truename dir) seen)
+    (push (file-truename dir) seen)
+    ;; We descend recursively
+    (let ((dirs (directory-files dir t nil t))
+	  dir)
+      (while (setq dir (pop dirs))
+	(when (and (not (member (file-name-nondirectory dir) '("." "..")))
+		   (file-directory-p dir))
+	  (nnml-generate-nov-databases-1 dir seen))))
+    ;; Do this directory.
+    (let ((files (sort
+		  (mapcar
+		   (lambda (name) (string-to-int name))
+		   (directory-files dir nil "^[0-9]+$" t))
+		  '<)))
+      (when files
+	(funcall nnml-generate-active-function dir)
+	;; Generate the nov file.
+	(nnml-generate-nov-file dir files)))))
 
 (defvar files)
 (defun nnml-generate-active-info (dir)

@@ -1,3 +1,115 @@
+Sat Nov 23 05:00:36 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cache.el (gnus-cache-update-active): Wouldn't mark the
+	cache active file as changed.
+
+	* gnus-start.el (gnus-setup-news): Slaves shouldn't check for new
+	newsgroups. 
+
+	* gnus-sum.el (gnus-group-make-articles-read): Update group line
+	on undo.
+
+	* gnus-move.el (gnus-move-group-to-server): Check whether
+	to-active is nil.
+
+	* gnus-score.el (gnus-score-find-hierarchical): Do the right thing
+	for prefixed group names.
+
+	* nnml.el (nnml-generate-nov-databases-1): Don't infloop.
+
+Sat Nov 23 04:58:49 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus-score.el (gnus-score-score-files-1): Don't infloop. 
+
+Sat Nov 23 04:40:55 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-make-menu-bar): Protect against
+	undefined menu vars.
+
+	* gnus-group.el (gnus-group-rename-group): Prompt fix.
+
+Fri Nov 22 12:17:14 1996  David Moore  <dmoore@ucsd.edu>
+
+	* nnml.el (nnml-generate-nov-databases-1): Don't infloop.
+
+	* gnus-score.el (gnus-score-score-files-1): Don't infloop, be
+	slightly faster.
+
+Fri Nov 22 22:18:52 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-move.el (gnus-move-group-to-server): Looking-at bug.
+	(gnus-move-group-to-server): Extend.
+
+	* message.el (message-check-news-header-syntax): Change shoot-me
+	line. 
+
+Thu Nov 21 18:31:56 1996  David Moore  <dmoore@ucsd.edu>
+
+	* gnus-util.el (gnus-atomic-progn, gnus-atomic-progn-assign,
+	gnus-atomic-setq): Routines to help protect against corruption to
+	internal Gnus datastructures from C-g or error signals.
+
+	* gnus-util.el (gnus-atomic-be-safe): Variable which can set to
+	nil to disable the C-g atomic protection.
+
+	* nnvirtual.el (nnvirtual-update-read-and-marked): Replaces
+	nnvirtual-update-reads and nnvirtual-update-marked.  Does updates
+	to component groups atomically.
+	(nnvirtual-request-update-info): Update the virtual group
+	atomically.
+
+Fri Nov 22 00:19:23 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Create menu bar even when not using menu-bar-mode.
+
+	* gnus-start.el (gnus-1): Don't paint picture gnu twice.
+
+	* gnus-sum.el (gnus-group-make-articles-read): Undo in the right
+	buffer.
+	(gnus-update-read-articles): Ditto.
+
+Fri Nov 22 00:04:59 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+	* nnheader.el (nnheader-generate-fake-message-id): Interact better
+	with duplicate suppression.
+
+Thu Nov 21 23:31:30 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-info-set-entry): Wouldn't extend far enough.
+
+	* gnus-salt.el (gnus-tree-minimize): Ignore errors.
+
+	* gnus-sum.el (gnus-summary-article-sparse-p): New macro.
+	(gnus-summary-article-ancient-p): Ditto.
+	(gnus-summary-search-article): Skip sparse articles.
+
+	* article.el (article-date-ut): Wouldn't pick out the date right. 
+
+Thu Nov 21 23:07:34 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+	* gnus-dup.el (gnus-dup-enter-articles): Ignore sparse articles. 
+
+Thu Nov 21 21:57:52 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-dup.el (gnus-dup-suppress-articles): Only suppress read
+	articles. 
+
+	* article.el (article-delete-text-of-type): Would bug out.
+
+Thu Nov 21 11:02:36 1996  David Moore  <dmoore@ucsd.edu>
+
+	* nnoo.el (nnoo-change-server): Only preserve un-ooed variables if
+	they exist globally.
+
+Thu Nov 21 10:52:39 1996  Steven L Baur  <steve@miranova.com>
+
+	* article.el (article-date-ut): Extend date header recognition to
+	deal with systems that put a TAB after the colon.
+
+Thu Nov 21 19:50:26 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.68 is released.
+
 Thu Nov 21 05:33:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nnoo.el (nnoo-change-server): Protect against void vars.

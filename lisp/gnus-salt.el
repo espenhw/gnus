@@ -115,8 +115,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
       (gnus-update-summary-mark-positions)
       (set (make-local-variable 'gnus-summary-goto-unread) 'never)
       ;; Set up the menu.
-      (when (and menu-bar-mode
-		 (gnus-visual-p 'pick-menu 'menu))
+      (when (gnus-visual-p 'pick-menu 'menu)
 	(gnus-pick-make-menu-bar))
       (unless (assq 'gnus-pick-mode minor-mode-alist)
 	(push '(gnus-pick-mode " Pick") minor-mode-alist))
@@ -311,8 +310,7 @@ This must be bound to a button-down mouse event."
       (make-local-variable 'gnus-summary-display-article-function)
       (setq gnus-summary-display-article-function 'gnus-binary-display-article)
       ;; Set up the menu.
-      (when (and menu-bar-mode
-		 (gnus-visual-p 'binary-menu 'menu))
+      (when (gnus-visual-p 'binary-menu 'menu)
 	(gnus-binary-make-menu-bar))
       (unless (assq 'gnus-binary-mode minor-mode-alist)
 	(push '(gnus-binary-mode " Binary") minor-mode-alist))
@@ -419,8 +417,7 @@ Two predefined functions are available:
   (setq gnus-tree-line-format-spec 
 	(gnus-parse-format gnus-tree-line-format 
 			   gnus-tree-line-format-alist t))
-  (when (and menu-bar-mode
-	     (gnus-visual-p 'tree-menu 'menu))
+  (when (gnus-visual-p 'tree-menu 'menu)
     (gnus-tree-make-menu-bar))
   (kill-all-local-variables)
   (gnus-simplify-mode-line)
@@ -532,9 +529,9 @@ Two predefined functions are available:
 	(when (and win
 		   (not (eq tot wh)))
 	  (let ((selected (selected-window)))
-	    (select-window win)
-	    (enlarge-window (- tot wh))
-	    (select-window selected)))))))
+	    (when (ignore-errors (select-window win))
+	      (enlarge-window (- tot wh))
+	      (select-window selected))))))))
 
 ;;; Generating the tree.
 

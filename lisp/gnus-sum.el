@@ -1997,8 +1997,7 @@ The following commands are available:
 
 \\{gnus-summary-mode-map}"
   (interactive)
-  (when (and menu-bar-mode
-	     (gnus-visual-p 'summary-menu 'menu))
+  (when (gnus-visual-p 'summary-menu 'menu)
     (gnus-summary-make-menu-bar))
   (kill-all-local-variables)
   (gnus-summary-make-local-variables)
@@ -2170,6 +2169,14 @@ The following commands are available:
 (defun gnus-summary-article-pseudo-p (article)
   "Say whether this article is a pseudo article or not."
   (not (vectorp (gnus-data-header (gnus-data-find article)))))
+
+(defmacro gnus-summary-article-sparse-p (article)
+  "Say whether this article is a sparse article or not."
+  ` (memq ,article gnus-newsgroup-sparse))
+
+(defmacro gnus-summary-article-ancient-p (article)
+  "Say whether this article is a sparse article or not."
+  `(memq ,article gnus-newsgroup-ancient))
 
 (defun gnus-article-parent-p (number)
   "Say whether this article is a parent or not."
@@ -3489,8 +3496,8 @@ or a straight list of headers."
 			default-score)
 		    gnus-summary-mark-below)
 		 ;; Don't touch sparse articles.
-		 (not (memq number gnus-newsgroup-sparse))
-		 (not (memq number gnus-newsgroup-ancient)))
+		 (not (gnus-summary-article-sparse-p number))
+		 (not (gnus-summary-article-ancient-p number)))
 	    (setq gnus-newsgroup-unreads
 		  (delq number gnus-newsgroup-unreads))
 	    (if gnus-newsgroup-auto-expire
@@ -3611,7 +3618,7 @@ or a straight list of headers."
 		   (< (or (cdr (assq number gnus-newsgroup-scored))
 			  gnus-summary-default-score 0)
 		      gnus-summary-mark-below)
-		   (not (memq number gnus-newsgroup-ancient)))
+		   (not (gnus-summary-article-ancient-p number)))
 	  (setq gnus-newsgroup-unreads
 		(delq number gnus-newsgroup-unreads))
 	  (if gnus-newsgroup-auto-expire
@@ -4057,11 +4064,14 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	  (when (or (> id (cdr active))
 		    (< id (car active)))
 	    (setq articles (delq id articles))))))
-    (gnus-undo-register
-      `(progn
-	 (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
-	 (gnus-info-set-read ',info ',(gnus-info-read info))
-	 (gnus-group-update-group ,group t)))
+    (save-excursion
+      (set-buffer gnus-group-buffer)
+      (gnus-undo-register
+	`(progn
+	   (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
+	   (gnus-info-set-read ',info ',(gnus-info-read info))
+	   (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
+	   (gnus-group-update-group ,group t))))
     ;; If the read list is nil, we init it.
     (and active
 	 (null (gnus-info-read info))
@@ -4161,14 +4171,11 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    ;; Message-ID.
 	    (progn
 	      (goto-char p)
-	      (if (search-forward "\nmessage-id: " nil t)
-		  (setq id (nnheader-header-value))
-		;; If there was no message-id, we just fake one to make
-		;; subsequent routines simpler.
-		(setq id (concat "none+"
-				 (int-to-string
-				  (setq gnus-newsgroup-none-id
-					(1+ gnus-newsgroup-none-id)))))))
+	      (setq id (if (search-forward "\nmessage-id: " nil t)
+			   (nnheader-header-value)
+			 ;; If there was no message-id, we just fake one
+			 ;; to make subsequent routines simpler.
+			 (nnheader-generate-fake-message-id))))
 	    ;; References.
 	    (progn
 	      (goto-char p)
@@ -4262,7 +4269,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 (defmacro gnus-nov-field ()
   '(buffer-substring (point) (if (gnus-nov-skip-field) (1- (point)) eol)))
 
-(defvar gnus-nov-none-counter 0)
+;; (defvar gnus-nov-none-counter 0)
 
 ;; This function has to be called with point after the article number
 ;; on the beginning of the line.
@@ -4283,9 +4290,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	   (gnus-nov-field)		; from
 	   (gnus-nov-field)		; date
 	   (setq id (or (gnus-nov-field)
-			(concat "none+"
-				(int-to-string
-				 (incf gnus-nov-none-counter))))) ; id
+			(nnheader-generate-fake-message-id))) ; id
 	   (progn
 	     (let ((beg (point)))
 	       (search-forward "\t" eol)
@@ -5845,8 +5850,9 @@ If ALL, mark even excluded ticked and dormants as read."
     (while (and
 	    thread
 	    (or
-	     (memq (mail-header-number (car thread)) gnus-newsgroup-sparse)
-	     (memq (mail-header-number (car thread)) gnus-newsgroup-ancient))
+	     (gnus-summary-article-sparse-p (mail-header-number (car thread)))
+	     (gnus-summary-article-ancient-p
+	      (mail-header-number (car thread))))
 	    (or (<= (length (cdr thread)) 1)
 		(gnus-invisible-cut-children (cdr thread))))
       (setq thread (cadr thread))))
@@ -5925,12 +5931,12 @@ fetch-old-headers verbiage, and so on."
 	    ;; If this is "fetch-old-headered" and there is only one
 	    ;; visible child (or less), then we don't want this article.
 	    (and (eq gnus-fetch-old-headers 'some)
-		 (memq number gnus-newsgroup-ancient)
+		 (gnus-summary-article-ancient-p number)
 		 (zerop children))
 	    ;; If this is a sparsely inserted article with no children,
 	    ;; we don't want it.
 	    (and (eq gnus-build-sparse-threads 'some)
-		 (memq number gnus-newsgroup-sparse)
+		 (gnus-summary-article-sparse-p number)
 		 (zerop children))
 	    ;; If we use expunging, and this article is really
 	    ;; low-scored, then we don't want this article.
@@ -6057,8 +6063,8 @@ Return how many articles were fetched."
       (setq message-id (concat message-id ">")))
     (let* ((header (gnus-id-to-header message-id))
 	   (sparse (and header
-			(memq (mail-header-number header)
-			      gnus-newsgroup-sparse))))
+			(gnus-summary-article-sparse-p 
+			 (mail-header-number header)))))
       (if header
 	  (prog1
 	      ;; The article is present in the buffer, to we just go to it.
@@ -6251,15 +6257,20 @@ Optional argument BACKWARD means do search for backward.
 	      (setq point (point)))
 	  ;; We didn't find it, so we go to the next article.
 	  (set-buffer sum)
-	  (if (not (if backward (gnus-summary-find-prev)
-		     (gnus-summary-find-next)))
-	      ;; No more articles.
-	      (setq found t)
-	    ;; Select the next article and adjust point.
-	    (gnus-summary-select-article)
-	    (set-buffer gnus-article-buffer)
-	    (widen)
-	    (goto-char (if backward (point-max) (point-min))))))
+	  (while (and (not found)
+		      (gnus-summary-article-sparse-p
+		       (gnus-summary-article-number)))
+	    (if (not (if backward (gnus-summary-find-prev)
+		       (gnus-summary-find-next)))
+		;; No more articles.
+		(setq found t)
+	      ;; Select the next article and adjust point.
+	      (unless (gnus-summary-article-sparse-p
+		       (gnus-summary-article-number))
+		(gnus-summary-select-article)
+		(set-buffer gnus-article-buffer)
+		(widen)
+		(goto-char (if backward (point-max) (point-min))))))))
       (gnus-message 7 ""))
     ;; Return whether we found the regexp.
     (when (eq found 'found)
@@ -8293,7 +8304,7 @@ save those articles instead."
       ;; This is an article number.
       (setq header (or header (gnus-summary-article-header id))))
     (if (and header
-	     (not (memq (mail-header-number header) gnus-newsgroup-sparse)))
+	     (not (gnus-summary-article-sparse-p (mail-header-number header))))
 	;; We have found the header.
 	header
       ;; We have to really fetch the header to this article.
@@ -8313,7 +8324,7 @@ save those articles instead."
 	  (insert " Article retrieved.\n"))
 	(if (not (setq header (car (gnus-get-newsgroup-headers nil t))))
 	    ()				; Malformed head.
-	  (unless (memq (mail-header-number header) gnus-newsgroup-sparse)
+	  (unless (gnus-summary-article-sparse-p (mail-header-number header))
 	    (when (and (stringp id)
 		       (not (string= (gnus-group-real-name group)
 				     (car where))))
@@ -8439,11 +8450,14 @@ save those articles instead."
 	(setq unread (cdr unread)))
       (when (<= prev (cdr active))
 	(push (cons prev (cdr active)) read))
-      (gnus-undo-register
-	`(progn
-	   (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
-	   (gnus-info-set-read ',info ',(gnus-info-read info))
-	   (gnus-get-unread-articles-in-group ',info (gnus-active ,group))))
+      (save-excursion
+	(set-buffer gnus-group-buffer)
+	(gnus-undo-register
+	  `(progn
+	     (gnus-info-set-marks ',info ',(gnus-info-marks info) t)
+	     (gnus-info-set-read ',info ',(gnus-info-read info))
+	     (gnus-get-unread-articles-in-group ',info (gnus-active ,group))
+	     (gnus-group-update-group ,group t))))
       ;; Enter this list into the group info.
       (gnus-info-set-read
        info (if (> (length read) 1) (nreverse read) read))

@@ -597,6 +597,85 @@ Bind `print-quoted' to t while printing."
   (when (file-exists-p file)
     (delete-file file)))
 
+
+;;; Protected and atomic operations.  dmoore@ucsd.edu 21.11.1996
+;;; The primary idea here is to try to protect internal datastructures
+;;; from becoming corrupted when the user hits C-g, or if a hook or
+;;; similar blows up.  Often in Gnus multiple tables/lists need to be
+;;; updated at the same time, or information can be lost.
+
+(defvar gnus-atomic-be-safe t
+  "If t, certain operations will be protected from interruption by C-g.")
+
+(defmacro gnus-atomic-progn (&rest forms)
+  "Evaluate FORMS atomically, which means to protect the evaluation
+from being interrupted by the user.  An error from the forms themselves
+will return without finishing the operation.  Since interrupts from
+the user are disabled, it is recommended that only the most minimal
+operations are performed by FORMS.  If you wish to assign many
+complicated values atomically, compute the results into temporary
+variables and then do only the assignment atomically."
+  `(let ((inhibit-quit gnus-atomic-be-safe))
+     ,@forms))
+
+(put 'gnus-atomic-progn 'lisp-indent-function 0)
+
+
+(defmacro gnus-atomic-progn-assign (protect &rest forms)
+  "Evaluate FORMS, but insure that the variables listed in PROTECT
+are not changed if anything in FORMS signals an error or otherwise
+non-locally exits.  The variables listed in PROTECT are updated atomically.
+It is safe to use gnus-atomic-progn-assign with long computations.
+
+Note that if any of the symbols in PROTECT were unbound, they will be
+set to nil on a sucessful assignment.  In case of an error or other
+non-local exit, it will still be unbound."
+  (let* ((temp-sym-map (mapcar (lambda (x) (list (make-symbol
+						  (concat (symbol-name x)
+							  "-tmp"))
+						 x))
+			       protect))
+	 (sym-temp-map (mapcar (lambda (x) (list (cadr x) (car x)))
+			       temp-sym-map))
+	 (temp-sym-let (mapcar (lambda (x) (list (car x)
+						 `(and (boundp ',(cadr x))
+						       ,(cadr x))))
+			       temp-sym-map))
+	 (sym-temp-let sym-temp-map)
+	 (temp-sym-assign (apply 'append temp-sym-map))
+	 (sym-temp-assign (apply 'append sym-temp-map))
+	 (result (make-symbol "result-tmp")))
+    `(let (,@temp-sym-let
+	   ,result)
+       (let ,sym-temp-let
+	 (setq ,result (progn ,@forms))
+	 (setq ,@temp-sym-assign))
+       (let ((inhibit-quit gnus-atomic-be-safe))
+	 (setq ,@sym-temp-assign))
+       ,result)))
+
+(put 'gnus-atomic-progn-assign 'lisp-indent-function 1)
+;(put 'gnus-atomic-progn-assign 'edebug-form-spec '(sexp body))
+
+
+(defmacro gnus-atomic-setq (&rest pairs)
+  "Similar to setq, except that the real symbols are only assigned when
+there are no errors.  And when the real symbols are assigned, they are
+done so atomically.  If other variables might be changed via side-effect,
+see gnus-atomic-progn-assign.  It is safe to use gnus-atomic-setq
+with potentially long computations."
+  (let ((tpairs pairs)
+	syms)
+    (while tpairs
+      (push (car tpairs) syms)
+      (setq tpairs (cddr tpairs)))
+    `(gnus-atomic-progn-assign ,syms
+       (setq ,@pairs))))
+
+;(put 'gnus-atomic-setq 'edebug-form-spec '(body))
+
+
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

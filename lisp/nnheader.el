@@ -143,12 +143,21 @@ on your system, you could say something like:
   "Create a new mail header structure initialized with the parameters given."
   (vector number subject from date id references chars lines xref))
   
+;; fake message-ids: generation and detection
+
+(defvar nnheader-fake-message-id 1)
+
+(defsubst nnheader-generate-fake-message-id ()
+  (concat "fake+none+" (int-to-string (incf nnheader-fake-message-id))))
+
+(defsubst nnheader-fake-message-id-p (id)
+  (save-match-data			; regular message-id's are <.*>
+    (string-match "\\`fake\\+none\\+[0-9]+\\'" id)))
+
 ;; Parsing headers and NOV lines.
 
 (defsubst nnheader-header-value ()
   (buffer-substring (match-end 0) (gnus-point-at-eol)))
-
-(defvar nnheader-newsgroup-none-id 1)
 
 (defun nnheader-parse-head (&optional naked)
   (let ((case-fold-search t)
@@ -204,9 +213,7 @@ on your system, you could say something like:
 		 (nnheader-header-value)
 	       ;; If there was no message-id, we just fake one to make
 	       ;; subsequent routines simpler.
-	       (concat "none+"
-		       (int-to-string
-			(incf nnheader-newsgroup-none-id)))))
+	       (nnheader-generate-fake-message-id)))
 	   ;; References.
 	   (progn
 	     (goto-char p)
@@ -253,7 +260,7 @@ on your system, you could say something like:
 	   (if (numberp num) num 0)))
      (or (eobp) (forward-char 1))))
 
-(defvar nnheader-none-counter 0)
+;; (defvar nnheader-none-counter 0)
 
 (defun nnheader-parse-nov ()
   (let ((eol (gnus-point-at-eol)))
@@ -263,9 +270,7 @@ on your system, you could say something like:
      (nnheader-nov-field)		; from
      (nnheader-nov-field)		; date
      (or (nnheader-nov-field)
-	 (concat "none+"
-		 (int-to-string
-		  (incf nnheader-none-counter)))) ; id
+	 (nnheader-generate-fake-message-id)) ; id
      (nnheader-nov-field)		; refs
      (nnheader-nov-read-integer)	; chars
      (nnheader-nov-read-integer)	; lines

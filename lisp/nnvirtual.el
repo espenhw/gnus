@@ -268,9 +268,7 @@ to virtual article number.")
 (deffoo nnvirtual-close-group (group &optional server)
   (when (and (nnvirtual-possibly-change-server server)
 	     (not (gnus-ephemeral-group-p (nnvirtual-current-group))))
-    ;; Copy (un)read status and marks back to component groups.
-    (nnvirtual-update-reads)
-    (nnvirtual-update-marked t))
+    (nnvirtual-update-read-and-marked t t))
   t)
     
 
@@ -288,12 +286,14 @@ to virtual article number.")
 
 (deffoo nnvirtual-request-update-info (group info &optional server)
   (when (nnvirtual-possibly-change-server server)
-    ;; Install the lists.
-    (setcar (cddr info) nnvirtual-mapping-reads)
-    (if (nthcdr 3 info)
-	(setcar (nthcdr 3 info) nnvirtual-mapping-marks)
-      (when nnvirtual-mapping-marks
-	(setcdr (nthcdr 2 info) (list nnvirtual-mapping-marks))))
+    ;; Install the precomputed lists atomically, so the virtual group
+    ;; is not left in a half-way state in case of C-g.
+    (gnus-atomic-progn
+      (setcar (cddr info) nnvirtual-mapping-reads)
+      (if (nthcdr 3 info)
+	  (setcar (nthcdr 3 info) nnvirtual-mapping-marks)
+	(when nnvirtual-mapping-marks
+	  (setcdr (nthcdr 2 info) (list nnvirtual-mapping-marks)))))
     t))
       
 
@@ -301,7 +301,7 @@ to virtual article number.")
   (when (and (nnvirtual-possibly-change-server server)
 	     (not (gnus-ephemeral-group-p (nnvirtual-current-group))))
     ;; copy over existing marks first, in case they set anything
-    (nnvirtual-update-marked nil)
+    (nnvirtual-update-read-and-marked nil nil)
     ;; do a catchup on all component groups
     (let ((gnus-group-marked (copy-sequence nnvirtual-component-groups))
 	  (gnus-expert-user t))
@@ -381,42 +381,45 @@ to virtual article number.")
       (nnvirtual-open-server server)))
 
 
-(defun nnvirtual-update-reads ()
-  "Copy (un)read status from the virtual group to the component groups."
-  (let ((unreads (nnvirtual-partition-sequence (gnus-list-of-unread-articles
-						(nnvirtual-current-group))))
-	entry)
-    (while (setq entry (pop unreads))
-      (gnus-update-read-articles (car entry) (cdr entry)))))
-
-
-(defun nnvirtual-update-marked (update-p)
+(defun nnvirtual-update-read-and-marked (read-p update-p)
   "Copy marks from the virtual group to the component groups.
+If READ-P is not nil, update the (un)read status of the components.
 If UPDATE-P is not nil, call gnus-group-update-group on the components."
-  (let ((type-marks (mapcar (lambda (ml)
+  (let ((unreads (and read-p
+		      (nnvirtual-partition-sequence 
+		       (gnus-list-of-unread-articles 
+			(nnvirtual-current-group)))))
+	(type-marks (mapcar (lambda (ml)
 			      (cons (car ml)
 				    (nnvirtual-partition-sequence (cdr ml))))
 			    (gnus-info-marks (gnus-get-info
 					      (nnvirtual-current-group)))))
-	mark type groups carticles info)
+	mark type groups carticles info entry)
 
-    ;; clear all existing marks on the component groups, since
-    ;; we install new versions below.
-    (setq groups nnvirtual-component-groups)
-    (while groups
-      (when (and (setq info (gnus-get-info (pop groups)))
-		 (gnus-info-marks info))
-	(gnus-info-set-marks info nil)))
+    ;; Ok, atomically move all of the (un)read info, clear any old
+    ;; marks, and move all of the current marks.  This way if someone
+    ;; hits C-g, you won't leave the component groups in a half-way state.
+    (gnus-atomic-progn
+      ;; move (un)read
+      (while (setq entry (pop unreads))
+	(gnus-update-read-articles (car entry) (cdr entry)))
 
-    ;; Ok, currently type-marks is an assq list with keys of a mark type,
-    ;; with data of an assq list with keys of component group names
-    ;; and the articles which correspond to that key/group pair.
-    (while (setq mark (pop type-marks))
-      (setq type (car mark))
-      (setq groups (cdr mark))
-      (while (setq carticles (pop groups))
-	(gnus-add-marked-articles (car carticles) type (cdr carticles) 
-				  nil t)))
+      ;; clear all existing marks on the component groups
+      (setq groups nnvirtual-component-groups)
+      (while groups
+	(when (and (setq info (gnus-get-info (pop groups)))
+		   (gnus-info-marks info))
+	  (gnus-info-set-marks info nil)))
+      
+      ;; Ok, currently type-marks is an assq list with keys of a mark type,
+      ;; with data of an assq list with keys of component group names
+      ;; and the articles which correspond to that key/group pair.
+      (while (setq mark (pop type-marks))
+	(setq type (car mark))
+	(setq groups (cdr mark))
+	(while (setq carticles (pop groups))
+	  (gnus-add-marked-articles (car carticles) type (cdr carticles) 
+				    nil t))))
       
     ;; possibly update the display, it is really slow
     (when update-p

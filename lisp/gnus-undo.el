@@ -90,8 +90,7 @@
   (set (make-local-variable 'gnus-undo-boundary) t)
   (when gnus-undo-mode
     ;; Set up the menu.
-    (when (and menu-bar-mode
-	       (gnus-visual-p 'undo-menu 'menu))
+    (when (gnus-visual-p 'undo-menu 'menu)
       (gnus-undo-make-menu-bar))
     ;; Don't display anything in the mode line -- too annoying.
     ;;(unless (assq 'gnus-undo-mode minor-mode-alist)

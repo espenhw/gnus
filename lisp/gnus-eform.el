@@ -73,8 +73,7 @@ It is a slightly enhanced emacs-lisp-mode.
 
 \\{gnus-edit-form-mode-map}"
   (interactive)
-  (when (and menu-bar-mode
-	     (gnus-visual-p 'group-menu 'menu))
+  (when (gnus-visual-p 'group-menu 'menu)
     (gnus-edit-form-make-menu-bar))
   (kill-all-local-variables)
   (setq major-mode 'gnus-edit-form-mode)

@@ -65,8 +65,10 @@ Update the .newsrc.eld file to reflect the change of nntp server."
       (setq to-active (gnus-parse-active)
 	    hashtb (make-vector 1023 0))
       ;; Fetch the headers from the `to-server'.
-      (when (setq type (gnus-retrieve-headers
-			(gnus-uncompress-range to-active) group to-server))
+      (when (and to-active
+		 (setq type (gnus-retrieve-headers
+			     (gnus-uncompress-range to-active)
+			     group to-server)))
 	;; Convert HEAD headers.  I don't care.
 	(when (eq type 'headers)
 	  (nnvirtual-convert-headers))
@@ -74,8 +76,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	(set-buffer nntp-server-buffer)
 	(goto-char (point-min))
 	(while (looking-at
-		"^[0-9]+\t[^\t]*\t[^\t]*\t[^\t]*\t\\([^\t]*\\)\t"
-		nil t)
+		"^[0-9]+\t[^\t]*\t[^\t]*\t[^\t]*\t\\([^\t]*\\)\t")
 	  (gnus-sethash 
 	   (buffer-substring (match-beginning 1) (match-end 1))
 	   (read (current-buffer))
@@ -106,8 +107,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	  (set-buffer nntp-server-buffer)
 	  (goto-char (point-min))
 	  (while (looking-at
-		  "^[0-9]+\t[^\t]*\t[^\t]*\t[^\t]*\t\\([^\t]*\\)\t"
-		  nil t)
+		  "^[0-9]+\t[^\t]*\t[^\t]*\t[^\t]*\t\\([^\t]*\\)\t")
 	    (setq to-article 
 		  (gnus-gethash 
 		   (buffer-substring (match-beginning 1) (match-end 1))
@@ -144,7 +144,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 	    (while a
 	      (setcdr (car a) (gnus-compress-sequence (sort (cdar a) '<)))
 	      (pop a))
-	    (gnus-info-set-marks info lists)))))
+	    (gnus-info-set-marks info lists t)))))
     (gnus-message 7 "Translating %s...done" group)))
 
 (defun gnus-group-move-group-to-server (info from-server to-server)

@@ -54,8 +54,7 @@ This mode is an extended emacs-lisp mode.
   (interactive)
   (kill-all-local-variables)
   (use-local-map gnus-score-mode-map)
-  (when menu-bar-mode
-    (gnus-score-make-menu-bar))
+  (gnus-score-make-menu-bar)
   (set-syntax-table emacs-lisp-mode-syntax-table)
   (setq major-mode 'gnus-score-mode)
   (setq mode-name "Score")

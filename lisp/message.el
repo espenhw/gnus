@@ -1844,7 +1844,7 @@ to find out how to use this."
    ;; Check "Shoot me".
    (message-check 'shoot
      (if (re-search-forward
-	  "Message-ID.*.i-have-a-misconfigured-system-so-shoot-me" nil t)
+	  "Message-ID.*.i-did-not-set--mail-host-address--so-shoot-me" nil t)
 	 (y-or-n-p "You appear to have a misconfigured system.  Really post? ")
        t))
    ;; Check for Approved.
@@ -2316,7 +2316,7 @@ give as trustworthy answer as possible."
       (match-string 1 user-mail))
      ;; Default to this bogus thing.
      (t
-      (concat system-name ".i-have-a-misconfigured-system-so-shoot-me")))))
+      (concat system-name ".i-did-not-set--mail-host-address--so-shoot-me")))))
 
 (defun message-make-host-name ()
   "Return the name of the host."

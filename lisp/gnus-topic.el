@@ -891,8 +891,7 @@ articles in the topic and its subtopics."
 	    (> (prefix-numeric-value arg) 0)))
     ;; Infest Gnus with topics.
     (when gnus-topic-mode
-      (when (and menu-bar-mode
-		 (gnus-visual-p 'topic-menu 'menu))
+      (when (gnus-visual-p 'topic-menu 'menu)
 	(gnus-topic-make-menu-bar))
       (setq gnus-topic-line-format-spec 
 	    (gnus-parse-format gnus-topic-line-format 

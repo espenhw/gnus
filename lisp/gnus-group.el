@@ -922,8 +922,7 @@ The following commands are available:
 
 \\{gnus-group-mode-map}"
   (interactive)
-  (when (and menu-bar-mode
-	     (gnus-visual-p 'group-menu 'menu))
+  (when (gnus-visual-p 'group-menu 'menu)
     (gnus-group-make-menu-bar))
   (kill-all-local-variables)
   (gnus-simplify-mode-line)
@@ -1965,7 +1964,7 @@ and NEW-NAME will be prompted for."
       (unless (gnus-check-backend-function
 	       'request-rename-group (gnus-group-group-name))
 	(error "This backend does not support renaming groups"))
-      (read-string "New group name: " (gnus-group-group-name)))))
+      (read-string "Rename group to: " (gnus-group-group-name)))))
 
   (unless (gnus-check-backend-function 'request-rename-group group)
     (error "This backend does not support renaming groups"))

@@ -29,6 +29,7 @@
 (require 'nnheader)
 (require 'gnus-util)
 (require 'message)
+(require 'gnus-sum)
 
 (defgroup article nil
   "Article display."
@@ -232,9 +233,8 @@ is the face used for highlighting."
 (defun article-delete-text-of-type (type)
   "Delete text of TYPE in the current buffer."
   (save-excursion
-    (let ((b (point-min))
-	  (e (point-max)))
-      (while (setq b (text-property-any b e 'article-type type))
+    (let ((b (point-min)))
+      (while (setq b (text-property-any b (point-max) 'article-type type))
 	(delete-region b (incf b))))))
 
 (defun article-text-type-exists-p (type)
@@ -792,10 +792,12 @@ If HIDE, hide the text instead."
 If TYPE is `local', convert to local time; if it is `lapsed', output
 how much time has lapsed since DATE."
   (interactive (list 'ut t))
-  (let* ((header (or header (message-fetch-field "date") ""))
+  (let* ((header (or header (message-fetch-field "date")
+		     (mail-header-date gnus-current-headers)
+		     ""))
 	 (date (if (vectorp header) (mail-header-date header)
 		 header))
-	 (date-regexp "^Date: \\|^X-Sent: ")
+	 (date-regexp "^Date:[ \t]\\|^X-Sent:[ \t]")
 	 (inhibit-point-motion-hooks t)
 	 bface eface)
     (when (and date (not (string= date "")))

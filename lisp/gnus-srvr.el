@@ -143,8 +143,7 @@ The following commands are available:
 
 \\{gnus-server-mode-map}"
   (interactive)
-  (when (and menu-bar-mode
-	     (gnus-visual-p 'server-menu 'menu))
+  (when (gnus-visual-p 'server-menu 'menu)
     (gnus-server-make-menu-bar))
   (kill-all-local-variables)
   (gnus-simplify-mode-line)
@@ -610,8 +609,7 @@ buffer.
 3) `\\[gnus-browse-exit]' to return to the group buffer."
   (interactive)
   (kill-all-local-variables)
-  (when (and menu-bar-mode
-	     (gnus-visual-p 'browse-menu 'menu))
+  (when (gnus-visual-p 'browse-menu 'menu)
     (gnus-browse-make-menu-bar))
   (gnus-simplify-mode-line)
   (setq major-mode 'gnus-browse-mode)

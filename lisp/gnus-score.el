@@ -2361,18 +2361,20 @@ SCORE is the score to add."
 
 (defun gnus-score-score-files-1 (dir)
   "Return all possible score files under DIR."
-  (let ((files (directory-files (expand-file-name dir) t nil t))
+  (let ((files (list (expand-file-name dir)))
 	(regexp (gnus-score-file-regexp))
 	(case-fold-search nil)
-	out file)
+	seen out file)
     (while (setq file (pop files))
       (cond 
        ;; Ignore "." and "..".
        ((member (file-name-nondirectory file) '("." ".."))
 	nil)
-       ;; Recurse down directories.
-       ((file-directory-p file)
-	(setq out (nconc (gnus-score-score-files-1 file) out)))
+       ;; Add subtrees of directory to also be searched.
+       ((and (file-directory-p file)
+	     (not (member (file-truename file) seen)))
+	(push (file-truename file) seen)
+	(setq files (nconc (directory-files file t nil t) files)))
        ;; Add files to the list of score files.
        ((string-match regexp file)
 	(push file out))))
@@ -2473,17 +2475,27 @@ GROUP using BNews sys file syntax."
 (defun gnus-score-find-hierarchical (group)
   "Return list of score files for GROUP.
 This includes the score file for the group and all its parents."
-  (let ((all (copy-sequence '(nil)))
-	(start 0))
+  (let* ((prefix (gnus-group-real-prefix group))
+	 (all (list nil))
+	 (group (gnus-group-real-name group))
+	 (start 0))
     (while (string-match "\\." group (1+ start))
       (setq start (match-beginning 0))
       (push (substring group 0 start) all))
     (push group all)
-    (nconc
-     (mapcar (lambda (newsgroup)
-	       (gnus-score-file-name newsgroup gnus-adaptive-file-suffix))
-	     (setq all (nreverse all)))
-     (mapcar 'gnus-score-file-name all))))
+    (setq all
+	  (nconc
+	   (mapcar (lambda (group)
+		     (gnus-score-file-name group gnus-adaptive-file-suffix))
+		   (setq all (nreverse all)))
+	   (mapcar 'gnus-score-file-name all)))
+    (if (equal prefix "")
+	all
+      (mapcar 
+       (lambda (file)
+	 (concat (file-name-directory file) prefix
+		 (file-name-nondirectory file)))
+       all))))
 
 (defun gnus-score-file-rank (file)
   "Return a number that says how specific score FILE is.

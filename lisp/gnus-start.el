@@ -636,7 +636,9 @@ prompt the user for the name of an NNTP server to use."
     (gnus-read-init-file)
     (setq gnus-slave slave)
 
-    (when (string-match "XEmacs" (emacs-version))
+    (when (and (string-match "XEmacs" (emacs-version))
+	       gnus-simple-splash)
+      (setq gnus-simple-splash nil)
       (gnus-xmas-splash))
 
     (let ((level (and (numberp arg) (> arg 0) arg))
@@ -849,7 +851,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 
     ;; Find new newsgroups and treat them.
     (when (and init gnus-check-new-newsgroups (not level)
-	       (gnus-check-server gnus-select-method))
+	       (gnus-check-server gnus-select-method)
+	       (not gnus-slave))
       (gnus-find-new-newsgroups))
 
     ;; We might read in new NoCeM messages here.
