@@ -935,7 +935,6 @@ EXTRA is the possible non-standard header."
 
 ;; All score code written by Per Abrahamsen <abraham@iesd.auc.dk>.
 
-;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
 (defun gnus-score-set-mark-below (score)
   "Automatically mark articles with score below SCORE as read."
   (interactive

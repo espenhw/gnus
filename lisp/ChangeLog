@@ -1,5 +1,8 @@
 2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-topic.el (gnus-topic-display-missing-topic): New function.
+	(gnus-topic-goto-missing-group): Use it.
+
 	* message.el (message-required-news-headers): Removed Lines.
 	(message-reply): Don't insert References first.
 	(message-followup): Ditto.
