@@ -708,16 +708,12 @@ spam-use-* variable.")
  
 (defun spam-ham-copy-or-move-routine (copy groups)
   (gnus-summary-kill-process-mark)
-  (let ((articles gnus-newsgroup-articles)
+  (let ((todo (spam-list-articles gnus-newsgroup-articles 'ham))
 	(backend-supports-deletions
 	 (gnus-check-backend-function
 	  'request-move-article gnus-newsgroup-name))
 	(respool-method (gnus-find-method-for-group gnus-newsgroup-name))
 	article mark todo deletep respool)
-    (dolist (article articles)
-      (when (spam-group-ham-mark-p gnus-newsgroup-name
-				   (gnus-summary-article-mark article))
-	(push article todo)))
 
     (when (member 'respool groups)
       (setq respool t)			; boolean for later
@@ -1038,12 +1034,20 @@ functions")
   (let ((mark-check (if (eq classification 'spam) 
 			'spam-group-spam-mark-p 
 		      'spam-group-ham-mark-p))
-	mark list)
+	list mark-cache-yes mark-cache-no)
     (dolist (article articles)
-      (when (funcall mark-check 
-		     gnus-newsgroup-name 
-		     (gnus-summary-article-mark article))
-	(push article list)))
+      (let ((mark (gnus-summary-article-mark article)))
+	(unless (memq mark mark-cache-no)
+	  (if (memq mark mark-cache-yes)
+	      (push article list)
+	    ;; else, we have to actually check the mark
+	    (if (funcall mark-check
+			 gnus-newsgroup-name 
+			 mark)
+		(progn
+		  (push article list)
+		  (push mark mark-cache-yes))
+	      (push mark mark-cache-no))))))
     list))
 
 (defun spam-register-routine (classification 

@@ -1,3 +1,9 @@
+2004-01-02  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-ham-copy-or-move-routine): use spam-list-articles
+	(spam-list-articles): rewritten to only check a mark once per
+	invocation
+
 2004-01-01  Simon Josefsson  <jas@extundo.com>
 
 	* mml-sec.el (mml-default-encrypt-method)
