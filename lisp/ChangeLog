@@ -1,3 +1,7 @@
+1999-12-08  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-select-method): Made the option list prettier.
+
 1999-12-08  Florian Weimer  <fw@s.netic.de>
 
 	* gnus-msg.el (gnus-group-posting-charset-alist): Use iso-8859-1

@@ -1284,10 +1284,11 @@ this variable.	I think."
 				    (intern (car entry))))
 			    gnus-valid-select-methods))
 	  (string :tag "Address")
-	  (editable-list  :inline t
-			  (list :format "%v"
-				variable
-				(sexp :tag "Value")))))
+	  (repeat :tag "Options"
+		  :inline t
+		  (list :format "%v"
+			variable
+			(sexp :tag "Value")))))
 
 (defcustom gnus-updated-mode-lines '(group article summary tree)
   "List of buffers that should update their mode lines.
