@@ -1,3 +1,31 @@
+\gnuscleardoublepage
+
+\pagestyle{gnusindex}
+
+\renewcommand\indexname{Key Index}
+\renewcommand{\gnuschaptername}{Key Index}
 \input{gnus.kind}
+\gnuscleardoublepage
+
+\renewcommand\indexname{Function and Variable Index}
+\renewcommand{\gnuschaptername}{Function and Variable Index}
+\input{gnus.gind}
+\gnuscleardoublepage
+\thispagestyle{empty}
+
+\renewcommand\indexname{Concept Index}
+\renewcommand{\gnuschaptername}{Concept Index}
 \input{gnus.cind}
+
+\gnuscleardoublepage
+\mbox{}
+\thispagestyle{empty}
+\clearpage
+\mbox{}
+\thispagestyle{empty}
+\vfill
+\hspace*{-1cm}\epsfig{figure=gnus-big-logo.eps,height=15cm}
+\vfill
+\mbox{}
+
 \end{document}

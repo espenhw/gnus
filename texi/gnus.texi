@@ -67,12 +67,27 @@
 \marginpar[\hspace{2.5cm}\gnushead]{\gnushead}
 }
 
-\newcommand{\gnuschapter}[1]{
+\newcommand{\gnuscleardoublepage}{\ifodd\count0\clearpage\thispagestyle{empty}\mbox{}\clearpage\else\clearpage\fi}
+
+\newcommand{\gnuspagechapter}[1]{
+{\mbox{}}
+}
+
+\newdimen{\gnusdimen}
+\gnusdimen 0pt
+
+\newcommand{\gnuschapter}[2]{
+\gnuscleardoublepage
+\ifdim \gnusdimen = 0pt\setcounter{page}{1}\pagestyle{gnus}\pagenumbering{arabic} \gnusdimen 1pt\fi
+\chapter{#2}
 \renewcommand{\gnussectionname}{}
-\chapter{#1}
-\renewcommand{\gnuschaptername}{#1}
+\renewcommand{\gnuschaptername}{#2}
 \thispagestyle{empty}
-% \epsfig{figure=gnus-herd-\arabic{chapter}.eps,height=15cm}
+\hspace*{-2cm}
+\begin{picture}(500,500)(0,0)
+\put(0,0){\makebox(480,350)[tr]{#1}}
+\put(40,300){\makebox(500,50)[bl]{{\Huge\bf{#2}}}}
+\end{picture}
 \clearpage
 }
 
@@ -119,27 +134,21 @@
 }
 }{\end{list}}
 
-\newpagestyle{gnus}%
+\newlength\gnusheadtextwidth
+\setlength{\gnusheadtextwidth}{\headtextwidth}
+\addtolength{\gnusheadtextwidth}{1cm}
+
+\newpagestyle{gnuspreamble}%
 {
 {
 \ifodd\count0
 {
-\hspace*{-2ex}
-\underline{
-\makebox[\headtextwidth]{
-\hspace*{-2.3ex}
-\textbf{\arabic{chapter}.\arabic{section}}
-\textbf{\gnussectionname\hfill\arabic{page}}
-}}
+\hspace*{-0.23cm}\underline{\makebox[\gnusheadtextwidth]{\mbox{}}\textbf{\hfill\roman{page}}}
 }
 \else
 {
-\hspace*{-2.25cm}
-\underline{
-\hspace*{-2.3ex}
-\makebox[\headtextwidth]{
-\textbf{\arabic{page}\hfill\gnuschaptername}
-}}
+\hspace*{-3.25cm}\underline{\makebox[\gnusheadtextwidth]{\textbf{\roman{page}\hfill\mbox{}}}
+}
 }
 \fi
 }
@@ -153,7 +162,61 @@
 \hfill \mbox{}
 \fi
 }
-\pagestyle{gnus}
+
+\newpagestyle{gnusindex}%
+{
+{
+\ifodd\count0
+{
+\hspace*{-0.23cm}\underline{\makebox[\gnusheadtextwidth]{\textbf{\gnuschaptername\hfill\arabic{page}
+}
+}
+}
+}
+\else
+{
+\hspace*{-3.25cm}\underline{\makebox[\gnusheadtextwidth]{\textbf{\arabic{page}\hfill\gnuschaptername}}
+}
+}
+\fi
+}
+}
+{
+\ifodd\count0
+\mbox{} \hfill 
+\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\else
+\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\hfill \mbox{}
+\fi
+}
+
+\newpagestyle{gnus}%
+{
+{
+\ifodd\count0
+{
+\hspace*{-0.23cm}\underline{\makebox[\gnusheadtextwidth]{\textbf{\arabic{chapter}.\arabic{section}} \textbf{\gnussectionname\hfill\arabic{page}}}}
+}
+\else
+{
+\hspace*{-3.25cm}\underline{\makebox[\gnusheadtextwidth]{\textbf{\arabic{page}\hfill\gnuschaptername}}}
+}
+\fi
+}
+}
+{
+\ifodd\count0
+\mbox{} \hfill 
+\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\else
+\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\hfill \mbox{}
+\fi
+}
+
+\pagenumbering{roman}
+\pagestyle{gnuspreamble}
 
 @end iflatex
 @end iftex
@@ -272,7 +335,8 @@ luck.
 @iftex
 
 @iflatex
-\thispagestyle{empty}
+\tableofcontents
+\gnuscleardoublepage
 @end iflatex
 
 Gnus is the advanced, self-documenting, customizable, extensible
@@ -310,8 +374,6 @@ the program.
 * Index::                 Variable, function and concept index.
 * Key Index::             Key Index.
 @end menu
-
-
 
 @node Starting Up
 @chapter Starting Gnus
@@ -767,11 +829,11 @@ startup files.  If you want to backup creation off, say something like:
 @end lisp
 
 @vindex gnus-init-file
-When Gnus starts, it will read the @code{gnus-site-init-file} (default
-@file{.../site-lisp/gnus.el}) and @code{gnus-init-file} (default
-@file{~/.gnus.el}) files.  These are normal Emacs Lisp files and can be
-used to avoid cluttering your @file{.emacs} and @file{site-init} files
-with Gnus stuff.
+When Gnus starts, it will read the @code{gnus-site-init-file}
+(@file{.../site-lisp/gnus.el} by default) and @code{gnus-init-file}
+(@file{~/.gnus.el} by default) files.  These are normal Emacs Lisp files
+and can be used to avoid cluttering your @file{.emacs} and
+@file{site-init} files with Gnus stuff.
 
 
 @node Auto Save
@@ -957,8 +1019,7 @@ lines of a @code{format} specification, which is pretty much the same as
 a @code{printf} specifications, for those of you who use (feh!) C.
 @xref{Formatting Variables}. 
 
-The default value that produced those lines above is 
-@samp{%M%S%5y: %(%g%)\n}.
+@samp{%M%S%5y: %(%g%)\n} is the value that produced those lines above.
 
 There should always be a colon on the line; the cursor always moves to
 the colon after performing an operation.  Nothing else is required---not
@@ -1769,8 +1830,8 @@ broken behavior.  So there!
 
 @item to-group
 @cindex to-group
-If the group parameter list contains an element like @code{(to-group
-. "some.group.name")}, all posts will be sent to that group.
+Elements like @code{(to-group . "some.group.name")} means that all
+posts in that group will be sent to @code{some.group.name}.  
 
 @item gcc-self
 @cindex gcc-self
@@ -1838,18 +1899,17 @@ This parameter allows you to enter a arbitrary comment on the group.
 
 @item @var{(variable form)}
 You can use the group parameters to set variables local to the group you
-are entering.  Say you want to turn threading off in
-@samp{news.answers}.  You'd then put @code{(gnus-show-threads nil)} in
-the group parameters of that group.  @code{gnus-show-threads} will be
-made into a local variable in the summary buffer you enter, and the form
-@code{nil} will be @code{eval}ed there.  
+are entering.  If you want to turn threading off in @samp{news.answers},
+you could put @code{(gnus-show-threads nil)} in the group parameters of
+that group.  @code{gnus-show-threads} will be made into a local variable
+in the summary buffer you enter, and the form @code{nil} will be
+@code{eval}ed there.
 
 This can also be used as a group-specific hook function, if you'd like.
-If you want to hear a beep when you enter the group
-@samp{alt.binaries.pictures.furniture}, you could put something like
-@code{(dummy-variable (ding))} in the parameters of that group.
-@code{dummy-variable} will be set to the result of the @code{(ding)}
-form, but who cares?
+If you want to hear a beep when you enter a group, you could put
+something like @code{(dummy-variable (ding))} in the parameters of that
+group.  @code{dummy-variable} will be set to the result of the
+@code{(ding)} form, but who cares?
 
 @end table
 
@@ -2349,21 +2409,21 @@ Prompt for a new topic name and create it
 @kindex T m (Topic)
 @findex gnus-topic-move-group
 Move the current group to some other topic
-(@code{gnus-topic-move-group}).  This command understands the
-process/prefix convention (@pxref{Process/Prefix}).
+(@code{gnus-topic-move-group}).  This command uses the process/prefix
+convention (@pxref{Process/Prefix}).
 
 @item T c
 @kindex T c (Topic)
 @findex gnus-topic-copy-group
 Copy the current group to some other topic
-(@code{gnus-topic-copy-group}).  This command understands the
-process/prefix convention (@pxref{Process/Prefix}).
+(@code{gnus-topic-copy-group}).  This command uses the process/prefix
+convention (@pxref{Process/Prefix}).
 
 @item T D
 @kindex T D (Topic)
 @findex gnus-topic-remove-group
 Remove a group from the current topic (@code{gnus-topic-remove-group}).
-This command understands the process/prefix convention
+This command uses the process/prefix convention
 (@pxref{Process/Prefix}).
 
 @item T M
@@ -2567,18 +2627,18 @@ Gnus
    452: alt.sex.emacs
 @end example
 
-Now, the @samp{Emacs} topic has the topic parameter 
-@code{(score-file . "emacs.SCORE")}; the @samp{Relief} topic has the topic
-parameter @code{(score-file . "relief.SCORE")}; and the @samp{Misc}
-topic has the topic parameter @code{(score-file . "emacs.SCORE")}.  In
-addition, @samp{alt.religion.emacs} has the group parameter
-@code{(score-file . "religion.SCORE")}.
+The @samp{Emacs} topic has the topic parameter @code{(score-file
+. "emacs.SCORE")}; the @samp{Relief} topic has the topic parameter
+@code{(score-file . "relief.SCORE")}; and the @samp{Misc} topic has the
+topic parameter @code{(score-file . "emacs.SCORE")}.  In addition,
+@samp{alt.religion.emacs} has the group parameter @code{(score-file
+. "religion.SCORE")}.
 
 Now, when you enter @samp{alt.sex.emacs} in the @samp{Relief} topic, you
 will get the @file{relief.SCORE} home score file.  If you enter the same
 group in the @samp{Emacs} topic, you'll get the @file{emacs.SCORE} home
-score file.  If you enter @samp{alt.religion.emacs}, you'll get the
-@file{religion.SCORE} home score file.  
+score file.  If you enter the group @samp{alt.religion.emacs}, you'll
+get the @file{religion.SCORE} home score file.
 
 This seems rather simple and self-evident, doesn't it?  Well, yes.  But
 there are some problems, especially with the @code{total-expiry}
@@ -2664,10 +2724,9 @@ backend(s).
 @findex gnus-group-get-new-news-this-group
 @vindex gnus-goto-next-group-when-activating
 Check whether new articles have arrived in the current group
-(@code{gnus-group-get-new-news-this-group}).  The
-@code{gnus-goto-next-group-when-activating} variable controls whether
-this command is to move point to the next group or not.  It is @code{t}
-by default.
+(@code{gnus-group-get-new-news-this-group}).
+@code{gnus-goto-next-group-when-activating} says whether this command is
+to move point to the next group or not.  It is @code{t} by default.
 
 @findex gnus-activate-all-groups
 @cindex activating groups
@@ -3761,8 +3820,7 @@ Mark all articles that have the same subject as the current one as read
 @item M C
 @kindex M C (Summary)
 @findex gnus-summary-catchup
-Mark all unread articles in the group as read
-(@code{gnus-summary-catchup}).
+Mark all unread articles as read (@code{gnus-summary-catchup}).
 
 @item M C-c
 @kindex M C-c (Summary)
@@ -4135,20 +4193,21 @@ as 10, you might consider setting this variable to something sensible:
 (setq gnus-simplify-ignored-prefixes
       (concat 
        "\\`\\[?\\("
+       (mapconcat 
+        'identity
+        '("looking"
+          "wanted" "followup" "summary\\( of\\)?"
+          "help" "query" "problem" "question" 
+          "answer" "reference" "announce"
+          "How can I" "How to" "Comparison of"
+          ;; ...
+          )
+        "\\|")
+       "\\)\\s *\\("
        (mapconcat 'identity
-                  '("looking"
-                     "wanted" "followup" "summary\\( of\\)?"
-                     "help" "query" "problem" "question" 
-                     "answer" "reference" "announce"
-                     "How can I" "How to" "Comparison of"
-                     ;; ...
-                     )
+                  '("for" "for reference" "with" "about")
                   "\\|")
-                  "\\)\\s *\\("
-                  (mapconcat 'identity
-                             '("for" "for reference" "with" "about")
-                             "\\|")
-                  "\\)?\\]?:?[ \t]*"))
+       "\\)?\\]?:?[ \t]*"))
 @end lisp
 
 All words that match this regexp will be removed before comparing two
@@ -4836,19 +4895,19 @@ available functions that generate names:
 
 @item gnus-Numeric-save-name
 @findex gnus-Numeric-save-name
-Generates file names that look like @file{~/News/Alt.andrea-dworkin/45}.
+File names like @file{~/News/Alt.andrea-dworkin/45}.
 
 @item gnus-numeric-save-name
 @findex gnus-numeric-save-name
-Generates file names that look like @file{~/News/alt.andrea-dworkin/45}.
+File names like @file{~/News/alt.andrea-dworkin/45}.
 
 @item gnus-Plain-save-name
 @findex gnus-Plain-save-name
-Generates file names that look like @file{~/News/Alt.andrea-dworkin}.
+File names like @file{~/News/Alt.andrea-dworkin}.
 
 @item gnus-plain-save-name
 @findex gnus-plain-save-name
-Generates file names that look like @file{~/News/alt.andrea-dworkin}.
+File names like @file{~/News/alt.andrea-dworkin}.
 @end table
 
 @vindex gnus-split-methods
@@ -5097,8 +5156,8 @@ This variable is consulted first when viewing files.  If you wish to use,
 for instance, @code{sox} to convert an @samp{.au} sound file, you could
 say something like:
 @lisp
-       (setq gnus-uu-user-view-rules
-         (list '(\"\\\\.au$\" \"sox %s -t .aiff > /dev/audio\")))
+(setq gnus-uu-user-view-rules
+      (list '(\"\\\\.au$\" \"sox %s -t .aiff > /dev/audio\")))
 @end lisp
 
 @item gnus-uu-user-view-rules-end
@@ -5763,7 +5822,7 @@ Each article is divided into two parts---the head and the body.  The
 body can be divided into a signature part and a text part.  The variable
 that says what is to be considered a signature is
 @code{gnus-signature-separator}.  This is normally the standard
-@samp{"^-- $"} as mandated by son-of-RFC 1036.  However, many people use
+@samp{^-- $} as mandated by son-of-RFC 1036.  However, many people use
 non-standard signature separators, so this variable can also be a list
 of regular expressions to be tested, one by one.  (Searches are done
 from the end of the body towards the beginning.)  One likely value is:
@@ -5882,9 +5941,9 @@ header of the article by pushing @kbd{A R}
 You can also ask the @sc{nntp} server for an arbitrary article, no
 matter what group it belongs to.  @kbd{M-^}
 (@code{gnus-summary-refer-article}) will ask you for a
-@code{Message-ID}, which is one of those long thingies that look
-something like @samp{<38o6up$6f2@@hymir.ifi.uio.no>}.  You have to get
-it all exactly right.  No fuzzy searches, I'm afraid.
+@code{Message-ID}, which is one of those long, hard-to-read thingies
+that look something like @samp{<38o6up$6f2@@hymir.ifi.uio.no>}.  You
+have to get it all exactly right.  No fuzzy searches, I'm afraid.
 
 @vindex gnus-refer-article-method
 If the group you are reading is located on a backend that does not
@@ -6338,8 +6397,8 @@ rereading the description from the server.
 @item H h
 @kindex H h (Summary)
 @findex gnus-summary-describe-briefly
-Give a very brief description of the most important summary keystrokes
-(@code{gnus-summary-describe-briefly}). 
+Give an extremely brief description of the most important summary
+keystrokes (@code{gnus-summary-describe-briefly}).
 
 @item H i
 @kindex H i (Summary)
@@ -6834,7 +6893,7 @@ other naughty stuff in innocent-looking articles.
 @vindex gnus-show-mime-method
 @vindex gnus-strict-mime
 @findex metamail-buffer
-Gnus handles @sc{mime} by shoving the articles through
+Gnus handles @sc{mime} by pushing the articles through
 @code{gnus-show-mime-method}, which is @code{metamail-buffer} by
 default.  Set @code{gnus-show-mime} to @code{t} if you want to use
 @sc{mime} all the time.  However, if @code{gnus-strict-mime} is
@@ -6866,7 +6925,7 @@ been inserted into the article buffer.  It is meant to handle all
 treatment of the article before it is displayed. 
 
 @findex gnus-article-maybe-highlight
-By default it contains @code{gnus-article-hide-headers},
+By default this hook just contains @code{gnus-article-hide-headers},
 @code{gnus-article-treat-overstrike}, and
 @code{gnus-article-maybe-highlight}, but there are thousands, nay
 millions, of functions you can put in this hook.  For an overview of
@@ -7146,12 +7205,17 @@ the mail.  If you want to disable this completely, you should set
 
 @vindex gnus-message-archive-method
 @code{gnus-message-archive-method} says what virtual server Gnus is to
-use to store sent messages.  It is @code{(nnfolder "archive"
-(nnfolder-directory "~/Mail/archive/"))} by default, but you can use any
-mail select method (@code{nnml}, @code{nnmbox}, etc.).  However,
-@code{nnfolder} is a quite likeable select method for doing this sort of
-thing.  If you don't like the default directory chosen, you could say
-something like:
+use to store sent messages.  The default is:
+
+@lisp
+(nnfolder "archive"
+          (nnfolder-directory "~/Mail/archive/"))
+@end lisp
+
+You can, however, use any mail select method (@code{nnml},
+@code{nnmbox}, etc.).  @code{nnfolder} is a quite likeable select method
+for doing this sort of thing, though.  If you don't like the default
+directory chosen, you could say something like:
 
 @lisp
 (setq gnus-message-archive-method
@@ -7230,14 +7294,13 @@ if (using @kbd{G r} in the group buffer) to something
 nice---@samp{misc-mail-september-1995}, or whatever.  New messages will
 continue to be stored in the old (now empty) group.
 
-That's the default method of archiving sent mail.  Gnus also offers two
-other variables for the people who don't like the default method.  In
-that case you should set @code{gnus-message-archive-group} to
-@code{nil}; this will disable archiving.
+That's the default method of archiving sent mail.  Gnus also a different
+way for the people who don't like the default method.  In that case you
+should set @code{gnus-message-archive-group} to @code{nil}; this will
+disable archiving.
 
 XEmacs 19.13 doesn't have @code{format-time-string}, so you'll have to
 use a different value for @code{gnus-message-archive-group} there.
-
 
 @table @code
 @item gnus-outgoing-message-group 
@@ -7442,9 +7505,9 @@ group as.
 
 For instance, the group @samp{soc.motss} on the @sc{nntp} server
 @samp{some.where.edu} will have the name @samp{soc.motss} and select
-method @code{(nntp "some.where.edu")}.  Gnus will call this group, in
-all circumstances, @samp{nntp+some.where.edu:soc.motss}, even though the
-@code{nntp} backend just knows this group as @samp{soc.motss}.
+method @code{(nntp "some.where.edu")}.  Gnus will call this group
+@samp{nntp+some.where.edu:soc.motss}, even though the @code{nntp}
+backend just knows this group as @samp{soc.motss}.
 
 The different methods all have their peculiarities, of course.
 
@@ -7671,9 +7734,9 @@ Change that to:
 
 @lisp
 (nnspool "cache"
-	 (nnspool-spool-directory "~/News/cache/")
-	 (nnspool-nov-directory "~/News/cache/")
-	 (nnspool-active-file "~/News/cache/active"))
+         (nnspool-spool-directory "~/News/cache/")
+         (nnspool-nov-directory "~/News/cache/")
+         (nnspool-active-file "~/News/cache/active"))
 @end lisp
 
 Type @kbd{C-c C-c} to return to the server buffer.  If you now press
@@ -7980,8 +8043,9 @@ server closes connection.
 @cindex news spool
 
 Subscribing to a foreign group from the local spool is extremely easy,
-and might be useful, for instance, to speed up reading groups like
-@samp{alt.binaries.pictures.furniture}.
+and might be useful, for instance, to speed up reading groups that
+contain very big articles---@samp{alt.binaries.pictures.furniture}, for
+instance. 
 
 Anyways, you just specify @code{nnspool} as the method and @samp{} (or
 anything else) as the address.
@@ -8094,12 +8158,12 @@ You will probably want to split the mail into several groups, though:
 
 @lisp
 (setq nnmail-split-methods
-  '(("junk" "^From:.*Lars Ingebrigtsen")
-    ("crazy" "^Subject:.*die\\|^Organization:.*flabby")
-    ("other" "")))
+      '(("junk" "^From:.*Lars Ingebrigtsen")
+       ("crazy" "^Subject:.*die\\|^Organization:.*flabby")
+       ("other" "")))
 @end lisp
 
-This will result in three new mail groups being created:
+This will result in three new @code{nnml} mail groups being created:
 @samp{nnml:junk}, @samp{nnml:crazy}, and @samp{nnml:other}.  All the
 mail that doesn't fit into the first two groups will be placed in the
 latter group.
@@ -9033,9 +9097,10 @@ wonderful of all wonderful Emacs packages.  When I wrote @code{nndir}, I
 didn't think much about it---a backend to read directories.  Big deal.
 
 @code{ange-ftp} changes that picture dramatically.  For instance, if you
-enter @file{"/ftp.hpc.uh.edu:/pub/emacs/ding-list/"} as the the
-directory name, ange-ftp will actually allow you to read this directory
-over at @samp{sina} as a newsgroup.  Distributed news ahoy!
+enter the @code{ange-ftp} file name
+@file{/ftp.hpc.uh.edu:/pub/emacs/ding-list/} as the the directory name,
+@code{ange-ftp} will actually allow you to read this directory over at
+@samp{sina} as a newsgroup.  Distributed news ahoy!
 
 @code{nndir} will use @sc{nov} files if they are present.
 
@@ -9237,7 +9302,7 @@ article.
 
 @item nndoc-head-end
 This should match the end of the head of the article.  It defaults to
-@samp{"^$"}---the empty line.
+@samp{^$}---the empty line.
 
 @item body-begin-function
 If present, this function should move point to the beginning of the body
@@ -9441,7 +9506,7 @@ Directory where Gnus will save intermediate files while composing
 @item gnus-soup-replies-directory
 @vindex gnus-soup-replies-directory
 This is what Gnus will use as a temporary directory while sending our
-reply packets.  The default is @file{~/SoupBrew/SoupReplies/}. 
+reply packets.  @file{~/SoupBrew/SoupReplies/} is the default.
 
 @item gnus-soup-prefix-file
 @vindex gnus-soup-prefix-file
@@ -9912,7 +9977,7 @@ Display all score rules that have been used on the current article
 (@code{gnus-score-find-trace}).   
 
 @item V R
-@cindex V R (Summary)
+@kindex V R (Summary)
 @findex gnus-summary-rescore
 Run the current summary through the scoring process
 (@code{gnus-summary-rescore}).  This might be useful if you're playing
@@ -10219,7 +10284,7 @@ Only apply the group's own score file.
 @item gnus-score-find-bnews
 @findex gnus-score-find-bnews
 Apply all score files that match, using bnews syntax.  This is the
-default.  For instance, if the current group is @samp{gnu.emacs.gnus},
+default.  If the current group is @samp{gnu.emacs.gnus}, for instance, 
 @file{all.emacs.all.SCORE}, @file{not.alt.all.SCORE} and
 @file{gnu.all.SCORE} would all apply.  In short, the instances of
 @samp{all} in the score file names are translated into @samp{.*}, and
@@ -10236,9 +10301,8 @@ file names---discarding the @samp{all} elements.
 @item gnus-score-find-hierarchical
 @findex gnus-score-find-hierarchical
 Apply all score files from all the parent groups.  This means that you
-can't have score files like @file{all.SCORE} or @file{all.emacs.SCORE},
-but you can have @file{SCORE},  @file{comp.SCORE} and
-@file{comp.emacs.SCORE}. 
+can't have score files like @file{all.SCORE}, but you can have
+@file{SCORE}, @file{comp.SCORE} and @file{comp.emacs.SCORE}.
 
 @end table
 This variable can also be a list of functions.  In that case, all these
@@ -10385,15 +10449,17 @@ Once burnt, twice shy.  Don't judge a book by its cover.  Never not have
 sex on a first date.  (I have been told that at least one person, and I
 quote, ``found this function indispensable'', however.)
 
+@cindex ISO8601
+@cindex date
 A more useful match type is @code{regexp}.  With it, you can match the
 date string using a regular expression.  The date is normalized to
-ISO8601 compact format first, which looks like @samp{YYYYMMDDTHHMMSS}.
-If you want to match all articles that have been posted on April 1st in
-every year, you could use @samp{....0401.........} as a match string,
-for instance.  (Note that the date is kept in its original time zone, so
-this will match articles that were posted when it was April 1st where
-the article was posted from.  Time zones are such wholesome fun for the
-whole family, eh?)
+ISO8601 compact format first---@samp{YYYYMMDDTHHMMSS}.  If you want to
+match all articles that have been posted on April 1st in every year, you
+could use @samp{....0401.........} as a match string, for instance.
+(Note that the date is kept in its original time zone, so this will
+match articles that were posted when it was April 1st where the article
+was posted from.  Time zones are such wholesome fun for the whole
+family, eh?)
 
 @item Head, Body, All
 These three match keys use the same match types as the @code{From} (etc)
@@ -10456,8 +10522,8 @@ will only follow a few of the threads, also want to see any new threads.
 You can do this with the following two score file entries:
 
 @example
-	(orphan -500)
-	(mark-and-expunge -100)
+        (orphan -500)
+        (mark-and-expunge -100)
 @end example
 
 When you enter the group the first time, you will only see the new
@@ -10901,9 +10967,9 @@ All you have to do to use other people's score files is to set the
 or each score file directory.  Gnus will decide by itself what score
 files are applicable to which group.
 
-Say you want to use all score files in the
-@file{/ftp@@ftp.some-where:/pub/score} directory and the single score
-file @file{/ftp@@ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE}:
+Say you want to use the score file
+@file{/ftp@@ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE} and
+all score files in the @file{/ftp@@ftp.some-where:/pub/score} directory:
 
 @lisp
 (setq gnus-global-score-files
@@ -11083,8 +11149,9 @@ article.
 @subsection Using GroupLens
 
 To use GroupLens you must register a pseudonym with your local Better
-Bit Bureau (BBB).  At the moment the only better bit in town is at
-@samp{http://www.cs.umn.edu/Research/GroupLens/bbb.html}.
+Bit Bureau (BBB).
+@samp{http://www.cs.umn.edu/Research/GroupLens/bbb.html} is the only
+better bit in town is at the moment.
 
 Once you have registered you'll need to set a couple of variables.
 
@@ -11230,8 +11297,8 @@ enhanced.  It accepts the same specs as the normal summary line format
 @samp{%U%R%z%l%I%(%[%4L: %-20,20n%]%) %s\n}.
 
 @item grouplens-bbb-host
-Host running the bbbd server.  The default is
-@samp{grouplens.cs.umn.edu}. 
+Host running the bbbd server.  @samp{grouplens.cs.umn.edu} is the
+default.
 
 @item grouplens-bbb-port
 Port of the host running the bbbd server.  The default is 9000.
@@ -11440,10 +11507,10 @@ definition of that function:
   (floor
    (- score
       (* (if (< score 0) 1 -1)
-	 (min score
-	      (max gnus-score-decay-constant
-		   (* (abs score)
-		      gnus-score-decay-scale)))))))
+         (min score
+              (max gnus-score-decay-constant
+                   (* (abs score)
+                      gnus-score-decay-scale)))))))
 @end lisp
 
 @vindex gnus-score-decay-scale
@@ -11949,11 +12016,11 @@ might be used:
 
 @lisp
 (message (horizontal 1.0
-		     (vertical 1.0 (message 1.0 point))
-		     (vertical 0.24
-			       (if (buffer-live-p gnus-summary-buffer)
-				   '(summary 0.5))
-			       (group 1.0)))))
+                     (vertical 1.0 (message 1.0 point))
+                     (vertical 0.24
+                               (if (buffer-live-p gnus-summary-buffer)
+                                   '(summary 0.5))
+                               (group 1.0)))))
 @end lisp
 
 @findex gnus-add-configuration
@@ -12401,8 +12468,7 @@ over your shoulder as you read news.
 @node Picon Basics
 @subsection Picon Basics
 
-What are Picons?  To quote directly from the Picons Web site
-(@samp{http://www.cs.indiana.edu/picons/ftp/index.html}):
+What are Picons?  To quote directly from the Picons Web site:
 
 @quotation 
 @dfn{Picons} is short for ``personal icons''.  They're small,
@@ -12414,9 +12480,9 @@ in either monochrome @code{XBM} format or color @code{XPM} and
 @code{GIF} formats.
 @end quotation
 
-Please see the above mentioned web site for instructions on obtaining
-and installing the picons databases, or the following ftp site:
-@samp{http://www.cs.indiana.edu/picons/ftp/index.html}.
+For instructions on obtaining and installing the picons databases, point
+your Web browser at
+@file{http://www.cs.indiana.edu/picons/ftp/index.html}.
 
 @vindex gnus-picons-database
 Gnus expects picons to be installed into a location pointed to by
@@ -12468,7 +12534,7 @@ feature, you need to first decide where to display them.
 Where the picon images should be displayed.  It is @code{picons} by
 default (which by default maps to the buffer @samp{*Picons*}).  Other
 valid places could be @code{article}, @code{summary}, or
-@samp{"*scratch*"} for all I care.  Just make sure that you've made the
+@samp{*scratch*} for all I care.  Just make sure that you've made the
 buffer visible using the standard Gnus window configuration
 routines---@xref{Windows Configuration}.
 
@@ -12534,7 +12600,7 @@ newsgroups.
 @item gnus-picons-user-directories
 @vindex gnus-picons-user-directories
 List of subdirectories to search in @code{gnus-picons-database} for user
-faces.  Defaults to @code{("local" "users" "usenix" "misc/MISC")}.
+faces.  @code{("local" "users" "usenix" "misc/MISC")} is the default.
 
 @item gnus-picons-domain-directories
 @vindex gnus-picons-domain-directories
@@ -12587,7 +12653,7 @@ supposed to work:
 @item 
 You split your incoming mail by matching on
 @samp{Newsgroups:.*rec.zoofle}, which will put all the to-be-posted
-articles in some mail group---@samp{nnml:rec.zoofle}, for instance.
+articles in some mail group---for instance, @samp{nnml:rec.zoofle}.
 
 @item
 You enter that group once in a while and post articles using the @kbd{e}
@@ -13610,7 +13676,7 @@ Write to @samp{ding-request@@ifi.uio.no} to subscribe.
 
 
 @node A Programmers Guide to Gnus
-@section A Programmer's Guide to Gnus
+@section A Programmer@'s Guide to Gnus
 
 It is my hope that other people will figure out smart stuff that Gnus
 can do, and that other people will write those smart things as well.  To
@@ -14284,16 +14350,16 @@ Below is a slightly shortened version of the @code{nndir} backend.
 
 (deffoo nndir-open-server (server &optional defs)
   (setq nndir-directory
-	(or (cadr (assq 'nndir-directory defs))
-	    server))
+        (or (cadr (assq 'nndir-directory defs))
+            server))
   (unless (assq 'nndir-directory defs)
     (push `(nndir-directory ,server) defs))
   (push `(nndir-current-group
-	  ,(file-name-nondirectory (directory-file-name nndir-directory)))
-	defs)
+          ,(file-name-nondirectory (directory-file-name nndir-directory)))
+        defs)
   (push `(nndir-top-directory
-	  ,(file-name-directory (directory-file-name nndir-directory)))
-	defs)
+          ,(file-name-directory (directory-file-name nndir-directory)))
+        defs)
   (nnoo-change-server 'nndir server defs))
 
 (nnoo-map-functions nndir

@@ -74,7 +74,7 @@ new mail into folder numbers that Gnus has marked as expired.")
 If nil, groups like \"mail.misc\" will end up in directories like
 \"mail/misc/\".")
 
-(defvar nnmail-default-file-modes 384
+(defvar nnmail-default-file-modes ?\600
   "Set the mode bits of all new mail files to this integer.")
 
 (defvar nnmail-expiry-wait 7

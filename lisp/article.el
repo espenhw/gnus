@@ -425,18 +425,20 @@ always hide."
       (narrow-to-region
        (goto-char (point-min))
        (or (search-forward "\n\n" nil t) (point-max)))
-
       (goto-char (point-min))
       (while (re-search-forward 
 	      "=\\?iso-8859-1\\?q\\?\\([^?\t\n]*\\)\\?=" nil t)
 	(setq string (match-string 1))
-	(narrow-to-region (match-beginning 0) (match-end 0))
-	(delete-region (point-min) (point-max))
-	(insert string)
-	(article-mime-decode-quoted-printable
-	 (goto-char (point-min)) (point-max))
-	(subst-char-in-region (point-min) (point-max) ?_ ? )
-	(widen)
+	(save-restriction
+	  (narrow-to-region (match-beginning 0) (match-end 0))
+	  (delete-region (point-min) (point-max))
+	  (insert string)
+	  (article-mime-decode-quoted-printable (goto-char (point-min))
+						(point-max))
+	  (subst-char-in-region (point-min) (point-max) ?_ ? )
+	  (goto-char (point-max)))
+	(if (looking-at "\\([ \t\n]+\\)=\\?")
+	    (replace-match "" t t nil 1))
 	(goto-char (point-min))))))
 
 (defun article-de-quoted-unreadable (&optional force)

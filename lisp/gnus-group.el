@@ -195,10 +195,12 @@ highlight the line according to the `gnus-group-highlight'
 variable.")
 
 (defvar gnus-useful-groups
-  `(("emacs.ding"
+  `(("(ding) mailing list mirrored at sunsite.auc.dk"
+     "emacs.ding"
      (nntp "sunsite.auc.dk"
 			(nntp-address "sunsite.auc.dk")))
-    ("gnus-help"
+    ("Gnus help group"
+     "gnus-help"
      (nndoc "gnus-help"
 	    (nndoc-article-type mbox)
 	    (eval `(nndoc-address 
@@ -1759,7 +1761,7 @@ and NEW-NAME will be prompted for."
    (let ((entry (assoc (completing-read "Create group: " gnus-useful-groups
 					nil t)
 		       gnus-useful-groups)))
-     (list (car entry) (cadr entry))))
+     (list (cadr entry) (caddr entry))))
   (setq method (gnus-copy-sequence method))
   (let (entry)
     (while (setq entry (memq (assq 'eval method) method))
@@ -1793,7 +1795,7 @@ and NEW-NAME will be prompted for."
 	  char found)
       (while (not found)
 	(message
-	 "%sFile type (mbox, babyl, digest, forward, mmfd, guess) [mbdfag]: "
+	 "%sFile type (mbox, babyl, digest, forward, mmdf, guess) [mbdfag]: "
 	 err)
 	(setq found (cond ((= (setq char (read-char)) ?m) 'mbox)
 			  ((= char ?b) 'babyl)
@@ -2600,6 +2602,11 @@ re-scanning.  If ARG is non-nil and not a number, this will force
 \"hard\" re-reading of the active files from all servers."
   (interactive "P")
   (run-hooks 'gnus-get-new-news-hook)
+
+  ;; Read any slave files.
+  (unless gnus-slave
+    (gnus-master-read-slave-newsrc))
+
   ;; We might read in new NoCeM messages here.
   (when (and gnus-use-nocem 
 	     (null arg))

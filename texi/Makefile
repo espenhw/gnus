@@ -23,11 +23,15 @@ dvi: gnus.texi
 refcard.dvi: refcard.tex gnuslogo.refcard gnusref.tex
 	$(LATEX) refcard.tex
 
-clean:
+sclean:
 	rm -f gnus.*.bak gnus.ky gnus.cp gnus.fn gnus.cps gnus.kys *.log \
-	gnus.log gnus.pg gnus.tp gnus.vr gnus.toc gnus.latexi *.aux gnus.cidx \
-	gnus.cind gnus.ilg gnus.ind gnus.kidx gnus.kind gnus.idx \
-	gnus.tmptexi gnus.tmplatexi *.latexi texput.log *.orig *.rej
+	gnus.log gnus.pg gnus.tp gnus.vr gnus.toc *.aux gnus.[cgk]idx \
+	gnus.ilg gnus.ind gnus.[cgk]ind gnus.idx \
+	gnus.tmptexi gnus.tmplatexi gnus.tmplatexi1 texput.log *.orig *.rej
+
+clean:
+	make sclean 
+	rm -f *.latexi 
 
 makeinfo: 
 	makeinfo -o gnus gnus.texi	
@@ -40,11 +44,13 @@ latex: gnus.texi
 	$(EMACS) -batch -q -no-site-file gnus.texi -l ./texi2latex.elc -f latexi-translate
 
 latexps: 
-	$(LATEX) gnus.latexi 
+	egrep -v "label.*Index|chapter.*Index" gnus.latexi > gnus.tmplatexi1
+	$(LATEX) gnus.tmplatexi1
 	splitindex
 	makeindex -o gnus.kind gnus.kidx
 	makeindex -o gnus.cind gnus.cidx
-	egrep -v "end{document}|label.*Index|chapter.*Index" gnus.latexi > gnus.tmplatexi
+	makeindex -o gnus.gind gnus.gidx
+	egrep -v "end{document}" gnus.tmplatexi1 > gnus.tmplatexi
 	cat postamble.tex >> gnus.tmplatexi
 	$(LATEX) gnus.tmplatexi 
 	$(DVIPS) -f gnus.dvi > gnus.ps
@@ -59,3 +65,6 @@ latexboth:
 	mv gnus.ps gnus-manual-standard.ps 
 	gzip gnus-manual-standard.ps 
 
+out:
+	mv gnus-manual-standard.ps.gz gnus-manual-a4.ps.gz \
+	/hom/larsi/www_docs/gnus/manual

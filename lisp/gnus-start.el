@@ -767,6 +767,10 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 	       (not dont-connect))
       (gnus-nocem-scan-groups))
 
+    ;; Read any slave files.
+    (unless gnus-slave
+      (gnus-master-read-slave-newsrc))
+
     ;; Find the number of unread articles in each non-dead group.
     (let ((gnus-read-active-file (and (not level) gnus-read-active-file)))
       (gnus-get-unread-articles level))
@@ -1681,10 +1685,6 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (gnus-newsrc-to-gnus-format)
 	    (kill-buffer (current-buffer))
 	    (gnus-message 5 "Reading %s...done" newsrc-file)))
-
-      ;; Read any slave files.
-      (unless gnus-slave
-	(gnus-master-read-slave-newsrc))
       
       ;; Convert old to new.
       (gnus-convert-old-newsrc))))

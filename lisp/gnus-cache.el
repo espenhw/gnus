@@ -506,7 +506,10 @@ Returns the list of articles removed."
 
 ;;;###autoload
 (defun gnus-jog-cache ()
-  "Go through all groups and put the articles into the cache."
+  "Go through all groups and put the articles into the cache.
+
+Usage:
+$ emacs -batch -l ~/.emacs -l gnus -f gnus-jog-cache"
   (interactive)
   (let ((gnus-mark-article-hook nil)
 	(gnus-expert-user t)

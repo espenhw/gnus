@@ -1,3 +1,32 @@
+Sun Sep 15 00:47:08 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* nnmail.el (nnmail-default-file-modes): New default.
+
+Sat Sep 14 01:48:58 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-group.el (gnus-group-make-doc-group): Typo.
+	(gnus-useful-groups): New format.
+
+	* gnus-cache.el (gnus-jog-cache): Doc fix.
+
+Fri Sep 13 02:28:47 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus-group.el (gnus-group-get-new-news): Read slave files here. 
+
+Fri Sep 13 01:04:50 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* article.el (article-decode-rfc1522): New version.
+
+Fri Sep 13 00:00:25 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus-msg.el (gnus-crosspost-complaint): Added a newline.
+	(gnus-summary-mail-crosspost-complaint): Insert message at the
+	head of the message.
+
+Thu Sep 12 01:56:07 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.34 is released.
+
 Thu Sep 12 01:16:38 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.el: Red Gnus v0.33 is released.

@@ -81,6 +81,7 @@ of this message.  Please trim your Newsgroups header to exclude this
 group before posting in the future.
 
 Thank you.
+
 "
   "Format string to be inserted when complaining about crossposts.
 The first %s will be replaced by the Newsgroups header;
@@ -627,6 +628,7 @@ The current group name will be inserted at \"%s\".")
 	  (set-buffer gnus-summary-buffer)
 	  (gnus-summary-reply-with-original 1)
 	  (set-buffer gnus-message-buffer)
+	  (message-goto-body)
 	  (insert (format gnus-crosspost-complaint newsgroups group))
 	  (when (gnus-y-or-n-p "Send this complaint? ")
 	    (message-send-and-exit)))))))
