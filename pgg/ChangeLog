@@ -11,7 +11,7 @@
 	mcs-xmu.el mel.el, mime-def.el, path-util.el, pccl-20.el, pccl.el,
 	pces-20.el pces-e20.el, pces-raw.el, pces-xfc.el, pces-xm.el,
 	pces.el, pcustom.el poe-xemacs.el, poe.el, poem-xm.el, poem.el,
-	product.el, pym.el: Removed.
+	product.el, pym.el, apel-ver.el: Removed.
 
 2002-09-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
