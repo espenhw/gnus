@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.9 2000/12/20 03:05:26 zsh Exp $
+;; $Id: gpg.el,v 1.10 2001/01/14 04:44:54 zsh Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -632,7 +632,7 @@ adjust according to `gpg-command-passphrase-env'."
       ;; temporary file resides in a world-writable directory.
       (unless (or (memq system-type '(windows-nt cygwin32 win32 w32 mswindows))
 		  (eq (file-modes gpg-temp-directory) 448)) ; mode 0700
-	(error "Directory for temporary files must have mode 0700."))
+	(error "Directory for temporary files (%s) must have mode 0700." gpg-temp-directory))
       (setq name (make-temp-name name))
       (let ((mode (default-file-modes)))
 	(unwind-protect
