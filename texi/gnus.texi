@@ -448,6 +448,7 @@ Other related manuals
 * Emacs-MIME:(emacs-mime).      Composing messages; @acronym{MIME}-specific parts.
 * Sieve:(sieve).                Managing Sieve scripts in Emacs.
 * PGG:(pgg).                    @acronym{PGP/MIME} with Gnus.
+* SASL:(sasl).                  @acronym{SASL} authentication in Emacs.
 
 @detailmenu
  --- The Detailed Node Listing ---
@@ -18914,6 +18915,12 @@ There aren't many of these as yet, I'm afraid.
 
 @table @kbd
 
+@item W e
+@kindex W e (Group)
+@findex gnus-score-edit-all-score
+Edit the apply-to-all-groups all.SCORE file.  You will be popped into
+a @code{gnus-score-mode} buffer (@pxref{Score File Editing}).
+
 @item W f
 @kindex W f (Group)
 @findex gnus-score-flush-cache
@@ -20476,6 +20483,8 @@ four days, Gnus will decay the scores four times, for instance.
 @include sieve.texi
 @chapter PGG
 @include pgg.texi
+@chapter SASL
+@include sasl.texi
 @end iflatex
 @end iftex
 

@@ -1,5 +1,20 @@
 2004-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.texi: Fix the last commit.
+
+2004-01-05  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Top): Add SASL.
+	* texi2latex.el (latexi-translate): Do sasl.
+
+	* pgg.texi (Caching passphrase): Fix PGG passphrase caching
+	section.
+
+	* sasl.texi: New file.
+	* Makefile.in: Add sasl.texi.
+
+2004-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
 	* gnus.texi (Emacsen): Bump numbers.
 
 2004-01-04  Reiner Steib  <Reiner.Steib@gmx.de>
