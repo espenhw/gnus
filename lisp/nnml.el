@@ -126,8 +126,9 @@ This variable is a virtual server slot.  See the Gnus manual for details.")
 
 (defvoo nnml-marks nil)
 
-
+(defvar nnml-marks-modtime (makehash))
 
+
 ;;; Interface functions.
 
 (nnoo-define-basics nnml)
@@ -944,7 +945,7 @@ Use the nov database for the current group if available."
 
 (deffoo nnml-request-update-info (group info &optional server)
   (nnml-possibly-change-directory group server)
-  (unless nnml-marks-is-evil
+  (when (and (not nnml-marks-is-evil) (nnml-marks-changed-p group))
     (nnheader-message 8 "Updating marks for %s..." group)
     (nnml-open-marks group server)
     ;; Update info using `nnml-marks'.
@@ -966,6 +967,14 @@ Use the nov database for the current group if available."
     (nnheader-message 8 "Updating marks for %s...done" group))
   info)
 
+(defun nnml-marks-changed-p (group)
+  (let ((file (expand-file-name nnml-marks-file-name
+				(nnmail-group-pathname group nnml-directory))))
+    (if (null (gethash file nnml-marks-modtime))
+	t ;; never looked at marks file, assume it has changed
+      (not (eq (gethash fil nnml-marks-modtime)
+	     (nth 5 (file-attributes file)))))))
+
 (defun nnml-save-marks (group server)
   (let ((file-name-coding-system nnmail-pathname-coding-system)
 	(file (expand-file-name nnml-marks-file-name
@@ -976,7 +985,10 @@ Use the nov database for the current group if available."
 	  (with-temp-file file
 	    (erase-buffer)
 	    (princ nnml-marks (current-buffer))
-	    (insert "\n")))
+	    (insert "\n"))
+	  (puthash file
+		   (nth 5 (file-attributes file))
+		   nnml-marks-modtime))
       (error (or (gnus-yes-or-no-p
 		  (format "Could not write to %s (%s).  Continue? " file err))
 		 (error "Cannot write to %s (%s)" err))))))
@@ -988,6 +1000,9 @@ Use the nov database for the current group if available."
     (if (file-exists-p file)
 	(setq nnml-marks (condition-case err
 			     (with-temp-buffer
+			       (puthash file
+					(nth 5 (file-attributes file))
+					nnml-marks-modtime)
 			       (nnheader-insert-file-contents file)
 			       (read (current-buffer)))
 			   (error (or (gnus-yes-or-no-p
