@@ -1,5 +1,5 @@
 ;;; gnus-msg.el --- mail and post interface for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -590,7 +590,8 @@ a news."
 	   ""))
 	;; make sure last viewed article doesn't affect posting styles:
 	(gnus-article-copy))
-    (gnus-post-news 'post gnus-newsgroup-name)))
+    (gnus-post-news 'post gnus-newsgroup-name nil nil nil nil
+		    (string= gnus-newsgroup-name ""))))
 
 (defun gnus-summary-mail-other-window (&optional arg)
   "Start composing a mail in another window.
