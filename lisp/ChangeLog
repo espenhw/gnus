@@ -1,5 +1,8 @@
 2001-02-23 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* nnml.el (nnml-generate-active-info): Fix the case when there is
+	no file.
+
 	* gnus-sum.el (gnus-summary-import-article): Display it. Enable edit. 
 	(gnus-summary-create-article): New.
 

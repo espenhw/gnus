@@ -753,15 +753,18 @@ all.  This may very well take some time.")
 (eval-when-compile (defvar files))
 (defun nnml-generate-active-info (dir)
   ;; Update the active info for this group.
-  (let ((group (nnheader-file-to-group
-		(directory-file-name dir) nnml-directory)))
-    (setq nnml-group-alist
-	  (delq (assoc group nnml-group-alist) nnml-group-alist))
+  (let* ((group (nnheader-file-to-group
+		 (directory-file-name dir) nnml-directory))
+	 (entry (assoc group nnml-group-alist))
+	 (last (or (caadr entry) 0)))
+    (setq nnml-group-alist (delq entry nnml-group-alist))
     (push (list group
-		(cons (caar files)
-		      (let ((f files))
-			(while (cdr f) (setq f (cdr f)))
-			(caar f))))
+		(cons (or (caar files) (1+ last))
+		      (max last
+			   (or (let ((f files))
+				 (while (cdr f) (setq f (cdr f)))
+				 (caar f))
+			       0))))
 	  nnml-group-alist)))
 
 (defun nnml-generate-nov-file (dir files)
