@@ -1917,11 +1917,7 @@ unfolded."
   "Display any Face headers in the header."
   (interactive)
   (gnus-with-article-headers
-    (let ((face nil))
-      (save-excursion
-	(when (gnus-buffer-live-p gnus-original-article-buffer)
-	  (set-buffer gnus-original-article-buffer)
-	  (setq face (message-fetch-field "face"))))
+    (let ((face (message-fetch-field "face")))
       (when face
 	(let ((png (gnus-convert-face-to-png face))
 	      image)
