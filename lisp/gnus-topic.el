@@ -430,8 +430,7 @@ articles in the topic and its subtopics."
 			      gnus-topic-tallied-groups)))
 	(push (gnus-info-group info) gnus-topic-tallied-groups)
 	(incf unread (car entry)))
-      (when (and (listp entry)
-		 (numberp (car entry)))
+      (when (listp entry)
 	(setq tick t)))
     (goto-char beg)
     ;; Insert the topic line.

@@ -748,15 +748,21 @@ XEmacs compatibility workaround."
 (defun gnus-xmas-mode-line-buffer-identification (line)
   (let ((line (car line))
 	chop)
-    (if (not (stringp line))
-	(list line)
-      (when (string-match "^Gnus:" line)
-	(setq chop (match-end 0))
-	(list 
-	 (if gnus-xmas-modeline-glyph
-	     (cons gnus-xmas-modeline-left-extent gnus-xmas-modeline-glyph)
-	   (cons gnus-xmas-modeline-left-extent (substring line 0 chop)))
-	 (cons gnus-xmas-modeline-right-extent (substring line chop)))))))
+    (cond
+     ;; This is some weird type of id.
+     ((not (stringp line))
+      (list line))
+     ;; This is non-standard, so we just pass it through.
+     ((not (string-match "^Gnus:" line))
+      (list line))
+     ;; We have a standard line, so we colorize and glyphize it a bit.
+     (t
+      (setq chop (match-end 0))
+      (list 
+       (if gnus-xmas-modeline-glyph
+	   (cons gnus-xmas-modeline-left-extent gnus-xmas-modeline-glyph)
+	 (cons gnus-xmas-modeline-left-extent (substring line 0 chop)))
+       (cons gnus-xmas-modeline-right-extent (substring line chop)))))))
 
 (defun gnus-xmas-splash ()
   (when (eq (device-type) 'x)

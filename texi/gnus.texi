@@ -1805,9 +1805,9 @@ Make a group based on some file or other
 (@code{gnus-group-make-doc-group}).  If you give a prefix to this
 command, you will be prompted for a file name and a file type.
 Currently supported types are @code{babyl}, @code{mbox}, @code{digest},
-@code{mmdf}, @code{news}, @code{rnews}, @code{clari-briefs}, and
-@code{forward}.  If you run this command without a prefix, Gnus will
-guess at the file type.  @xref{Document Groups}.
+@code{mmdf}, @code{news}, @code{rnews}, @code{clari-briefs},
+@code{rfc934} and @code{forward}.  If you run this command without a
+prefix, Gnus will guess at the file type.  @xref{Document Groups}.
 
 @item G w
 @kindex G w (Group)
@@ -7931,6 +7931,7 @@ To enter the server buffer, user the @kbd{^}
 * Server Commands::           Commands to manipulate servers.
 * Example Methods::           Examples server specifications.
 * Creating a Virtual Server:: An example session.
+* Server Variables::          Which variables to set.
 * Servers and Methods::       You can use server names as select methods.
 * Unavailable Servers::       Some servers you try to contact may be down.
 @end menu
@@ -8145,6 +8146,33 @@ Change that to:
 Type @kbd{C-c C-c} to return to the server buffer.  If you now press
 @kbd{RET} over this virtual server, you should be entered into a browse
 buffer, and you should be able to enter any of the groups displayed.
+
+
+@node Server Variables
+@subsection Server Variables
+
+One sticky point when defining variables (both on backends and in Emacs
+in general) is that some variables are typically initialized from other
+variables when the definition of the variables is being loaded.  If you
+change the "base" variable after the variables have been loaded, you
+won't change the "derived" variables.
+
+This typically affects directory and file variables.  For instance,
+@code{nnml-directory} is @file{~/Mail/} by default, and all @code{nnml}
+directory variables are initialized from that variable, so
+@code{nnml-active-file} will be @file{~/Mail/active}.  If you define a
+new virtual @code{nnml} server, it will @emph{not} suffice to set just
+@code{nnml-directory}---you have to explicitly set all the file
+variables to be what you want them to be.  For a complete list of
+variables for each backend, see each backend's section later in this
+manual, but here's an example @code{nnml} definition:
+
+@lisp
+(nnml "public" 
+      (nnml-directory "~/my-mail/")
+      (nnml-active-file "~/my-mail/active")
+      (nnml-newsgroups-file "~/my-mail/newsgroups"))
+@end lisp
 
 
 @node Servers and Methods
@@ -9706,7 +9734,7 @@ Virtual server variables:
 @item nndoc-article-type
 @vindex nndoc-article-type
 This should be one of @code{mbox}, @code{babyl}, @code{digest},
-@code{mmdf}, @code{forward}, @code{news}, @code{rnews},
+@code{mmdf}, @code{forward}, @code{rfc934}, @code{news}, @code{rnews},
 @code{mime-digest}, @code{clari-briefs}, or @code{guess}.
 
 @item nndoc-post-type
@@ -12556,8 +12584,8 @@ Here's a list of all possible keys for
 @code{browse}, @code{message}, @code{pick}, @code{info},
 @code{summary-faq}, @code{edit-group}, @code{edit-server},
 @code{edit-score}, @code{post}, @code{reply}, @code{forward},
-@code{reply-yank}, @code{mail-bounce}, @code{draft},
-@code{pipe}, @code{bug}, @code{compose-bounce}.  
+@code{reply-yank}, @code{mail-bounce}, @code{draft}, @code{pipe},
+@code{bug}, @code{compose-bounce}.
 
 Note that the @code{message} key is used for both
 @code{gnus-group-mail} and @code{gnus-summary-mail-other-window}.  If

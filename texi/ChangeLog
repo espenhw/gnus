@@ -1,3 +1,11 @@
+Thu Feb 20 03:29:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Foreign Groups): Addition.
+
+Wed Feb 19 02:57:51 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Server Variables): New.
+
 Sun Feb 16 15:43:34 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Mail Backend Variables): Fix.

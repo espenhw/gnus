@@ -2705,14 +2705,16 @@ If ADAPT, return the home adaptive file instead."
   (if (string-match "^[^.]+\\." group)
       (concat (match-string 0 group) gnus-score-file-suffix)
     ;; Group name without any dots.
-    (concat group "." gnus-score-file-suffix)))
+    (concat group (if (gnus-use-long-file-name 'not-score) "." "/")
+	    gnus-score-file-suffix)))
       
 (defun gnus-hierarchial-home-adapt-file (group)
   "Return the adapt file of the top-level hierarchy of GROUP."
   (if (string-match "^[^.]+\\." group)
       (concat (match-string 0 group) gnus-adaptive-file-suffix)
     ;; Group name without any dots.
-    (concat group "." gnus-adaptive-file-suffix)))
+    (concat group (if (gnus-use-long-file-name 'not-score) "." "/")
+	    gnus-adaptive-file-suffix)))
 
 ;;;
 ;;; Score decays

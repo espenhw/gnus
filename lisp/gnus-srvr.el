@@ -736,8 +736,9 @@ buffer.
 	      'request-regenerate (car (gnus-server-to-method server))))
 	(error "This backend doesn't support regeneration")
       (gnus-message 5 "Requesting regeneration of %s..." server)
-      (when (gnus-request-regenerate server)
-	(gnus-message 5 "Requesting regeneration of %s...done" server)))))
+      (if (gnus-request-regenerate server)
+	  (gnus-message 5 "Requesting regeneration of %s...done" server)
+	(gnus-message 5 "Couldn't regenerate %s" server)))))
 					  
 (provide 'gnus-srvr)
 

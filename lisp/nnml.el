@@ -159,7 +159,8 @@ all.  This may very well take some time.")
 
 (defun nnml-request-regenerate (server)
   (nnml-possibly-change-directory nil server)
-  (nnml-generate-nov-databases))
+  (nnml-generate-nov-databases)
+  t)
 
 (deffoo nnml-request-article (id &optional group server buffer)
   (nnml-possibly-change-directory group server)

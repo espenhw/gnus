@@ -37,8 +37,8 @@
 (defvoo nndoc-article-type 'guess
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
-`mime-digest', `standard-digest', `slack-digest', `clari-briefs' or
-`guess'.")
+`rfc934', `mime-digest', `standard-digest', `slack-digest',
+`clari-briefs' or `guess'.")
 
 (defvoo nndoc-post-type 'mail
   "*Whether the nndoc group is `mail' or `post'.")
@@ -63,6 +63,10 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (forward
      (article-begin . "^-+ Start of forwarded message -+\n+")
      (body-end . "^-+ End of forwarded message -+$")
+     (prepare-body-function . nndoc-unquote-dashes))
+    (rfc934
+     (article-begin . "^-.*\n+")
+     (body-end . "^-.*$")
      (prepare-body-function . nndoc-unquote-dashes))
     (clari-briefs
      (article-begin . "^ \\*")
@@ -402,6 +406,13 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 
 (defun nndoc-forward-type-p ()
   (when (and (re-search-forward "^-+ Start of forwarded message -+\n+" nil t)
+	     (not (re-search-forward "^Subject:.*digest" nil t))
+	     (not (re-search-backward "^From:" nil t 2))
+	     (not (re-search-forward "^From:" nil t 2)))
+    t))
+
+(defun nndoc-rfc934-type-p ()
+  (when (and (re-search-forward "^-+ Start of forwarded.*\n+" nil t)
 	     (not (re-search-forward "^Subject:.*digest" nil t))
 	     (not (re-search-backward "^From:" nil t 2))
 	     (not (re-search-forward "^From:" nil t 2)))

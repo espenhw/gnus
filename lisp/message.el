@@ -2973,7 +2973,9 @@ You should normally obey the Followup-To: header.
 
 A typical situation where `Followup-To: poster' is used is when the poster
 does not read the newsgroup, so he wouldn't see any replies sent to it."))
-		  (cons 'To (or reply-to from ""))
+		  (progn
+		    (setq message-this-is-news nil)
+		    (cons 'To (or reply-to from "")))
 		(cons 'Newsgroups newsgroups)))
 	     (t
 	      (if (or (equal followup-to newsgroups)

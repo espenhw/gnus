@@ -155,7 +155,7 @@ with some simple extensions.
 %l    Whether there are GroupLens predictions for this group (string)
 %n    Select from where (string)
 %z    A string that look like `<%s:%n>' if a foreign select method is used
-?d    The date the group was last entered.
+%d    The date the group was last entered.
 %u    User defined specifier.  The next character in the format string should
       be a letter.  Gnus will call the function gnus-user-format-function-X,
       where X is the letter following %u.  The function will be passed the
@@ -1208,7 +1208,7 @@ already."
 	     (mode-string (eval gformat)))
 	;; Say whether the dribble buffer has been modified.
 	(setq mode-line-modified
-	      (if modified "---*- " "----- "))
+	      (if modified "--**- " "----- "))
 	;; If the line is too long, we chop it off.
 	(when (> (length mode-string) max-len)
 	  (setq mode-string (substring mode-string 0 (- max-len 4))))
@@ -1413,10 +1413,7 @@ Take into consideration N (the prefix) and the list of marked groups."
 	  (setq n (1- n))
 	  (gnus-group-next-group way)))
       (nreverse groups)))
-   ((and (boundp 'transient-mark-mode)
-	 transient-mark-mode
-	 (boundp 'mark-active)
-	 mark-active)
+   ((gnus-region-active-p)
     ;; Work on the region between point and mark.
     (let ((max (max (point) (mark)))
 	  groups)

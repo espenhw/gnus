@@ -1037,32 +1037,6 @@ simple-first is t, first argument is already simplified."
     (equal s1
 	   (gnus-simplify-subject-fully s2)))))
 
-(defun gnus-offer-save-summaries ()
-  "Offer to save all active summary buffers."
-  (save-excursion
-    (let ((buflist (buffer-list))
-	  buffers bufname)
-      ;; Go through all buffers and find all summaries.
-      (while buflist
-	(and (setq bufname (buffer-name (car buflist)))
-	     (string-match "Summary" bufname)
-	     (save-excursion
-	       (set-buffer bufname)
-	       ;; We check that this is, indeed, a summary buffer.
-	       (and (eq major-mode 'gnus-summary-mode)
-		    ;; Also make sure this isn't bogus.
-		    gnus-newsgroup-prepared
-		    ;; Also make sure that this isn't a dead summary buffer.
-		    (not gnus-dead-summary-mode)))
-	     (push bufname buffers))
-	(setq buflist (cdr buflist)))
-      ;; Go through all these summary buffers and offer to save them.
-      (when buffers
-	(map-y-or-n-p
-	 "Update summary buffer %s? "
-	 (lambda (buf) (switch-to-buffer buf) (gnus-summary-exit))
-	 buffers)))))
-
 (defun gnus-summary-bubble-group ()
   "Increase the score of the current group.
 This is a handy function to add to `gnus-summary-exit-hook' to
@@ -3910,8 +3884,7 @@ If WHERE is `summary', the summary mode line format will be used."
 	  (setq mode-string (format (format "%%-%ds" max-len) mode-string))))
       ;; Update the mode line.
       (setq mode-line-buffer-identification 
-	    (gnus-mode-line-buffer-identification
-	     (list mode-string)))
+	    (gnus-mode-line-buffer-identification (list mode-string)))
       (set-buffer-modified-p t))))
 
 (defun gnus-create-xref-hashtb (from-newsgroup headers unreads)
@@ -8539,6 +8512,32 @@ save those articles instead."
       ;; Set the number of unread articles in gnus-newsrc-hashtb.
       (gnus-get-unread-articles-in-group info (gnus-active group))
       t)))
+
+(defun gnus-offer-save-summaries ()
+  "Offer to save all active summary buffers."
+  (save-excursion
+    (let ((buflist (buffer-list))
+	  buffers bufname)
+      ;; Go through all buffers and find all summaries.
+      (while buflist
+	(and (setq bufname (buffer-name (car buflist)))
+	     (string-match "Summary" bufname)
+	     (save-excursion
+	       (set-buffer bufname)
+	       ;; We check that this is, indeed, a summary buffer.
+	       (and (eq major-mode 'gnus-summary-mode)
+		    ;; Also make sure this isn't bogus.
+		    gnus-newsgroup-prepared
+		    ;; Also make sure that this isn't a dead summary buffer.
+		    (not gnus-dead-summary-mode)))
+	     (push bufname buffers))
+	(setq buflist (cdr buflist)))
+      ;; Go through all these summary buffers and offer to save them.
+      (when buffers
+	(map-y-or-n-p
+	 "Update summary buffer %s? "
+	 (lambda (buf) (switch-to-buffer buf) (gnus-summary-exit))
+	 buffers)))))
 
 (provide 'gnus-sum)
 
