@@ -41,15 +41,20 @@
 			       'gpg)))
   "The package used for PGP/MIME.")
 
+;; Something is not RFC2015.
 (defvar mml2015-function-alist
   '((mailcrypt mml2015-mailcrypt-sign
 	       mml2015-mailcrypt-encrypt
 	       mml2015-mailcrypt-verify
-	       mml2015-mailcrypt-decrypt)
+	       mml2015-mailcrypt-decrypt
+	       mml2015-mailcrypt-clear-verify
+	       mml2015-mailcrypt-clear-decrypt)
     (gpg mml2015-gpg-sign
 	 mml2015-gpg-encrypt
 	 mml2015-gpg-verify
-	 mml2015-gpg-decrypt))
+	 mml2015-gpg-decrypt
+	 nil
+	 mml2015-gpg-clear-decrypt))
   "Alist of PGP/MIME functions.")
 
 (defvar mml2015-result-buffer nil)
@@ -87,6 +92,12 @@
 	handles
       (list handles))))
 
+(defun mml2015-mailcrypt-clear-decrypt ()
+  (let (result)
+    (setq result (funcall mml2015-decrypt-function))
+    (unless (car result)
+      (error "Decrypting error."))))
+
 (defun mml2015-fix-micalg (alg)
   (upcase
    (if (and alg (string-match "^pgp-" alg))
@@ -113,6 +124,10 @@
       (unless (funcall mml2015-verify-function)
 	(error "Verify error.")))
     handle))
+
+(defun mml2015-mailcrypt-clear-verify ()
+  (unless (funcall mml2015-verify-function)
+    (error "Verify error.")))
 
 (defun mml2015-mailcrypt-sign (cont)
   (mc-sign-generic (message-options-get 'message-sender)
@@ -214,6 +229,12 @@
   (let ((mml2015-decrypt-function 'mml2015-gpg-decrypt-1))
     (mml2015-mailcrypt-decrypt handle ctl)))
 
+(defun mml2015-gpg-clear-decrypt ()
+  (let (result)
+    (setq result (mml2015-gpg-decrypt-1))
+    (unless (car result)
+      (error "Decrypting error."))))
+
 (defun mml2015-gpg-verify (handle ctl)
   (let (part message signature)
     (unless (setq part (mm-find-raw-part-by-type 
@@ -310,6 +331,12 @@
     (setq mml2015-result-buffer
 	  (gnus-get-buffer-create "*MML2015 Result*"))
     nil))
+
+(defsubst mml2015-clear-decrypt-function ()
+  (nth 6 (assq mml2015-use mml2015-function-alist)))
+
+(defsubst mml2015-clear-verify-function ()
+  (nth 5 (assq mml2015-use mml2015-function-alist)))
 
 ;;;###autoload
 (defun mml2015-decrypt (handle ctl)

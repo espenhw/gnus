@@ -2,7 +2,7 @@
 ;; Copyright (c) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; Keywords: postscript uudecode binhex shar forward news
+;; Keywords: postscript uudecode binhex shar forward gnatsweb pgp 
 
 ;; This file is part of GNU Emacs.
 
@@ -31,28 +31,13 @@
 (require 'nnheader)
 (require 'mm-decode)
 (require 'mailcap)
+(require 'mml2015)
 
 (eval-and-compile
   (autoload 'binhex-decode-region "binhex")
   (autoload 'binhex-decode-region-external "binhex")
   (autoload 'uudecode-decode-region "uudecode")
   (autoload 'uudecode-decode-region-external "uudecode"))
-
-(defun mm-uu-copy-to-buffer (from to)
-  "Copy the contents of the current buffer to a fresh buffer."
-  (save-excursion
-    (let ((obuf (current-buffer)))
-      (set-buffer (generate-new-buffer " *mm-uu*"))
-      (insert-buffer-substring obuf from to)
-      (current-buffer))))
-
-;;; postscript
-
-(defconst mm-uu-postscript-begin-line "^%!PS-")
-(defconst mm-uu-postscript-end-line "^%%EOF$")
-
-(defconst mm-uu-uu-begin-line "^begin[ \t]+[0-7][0-7][0-7][ \t]+")
-(defconst mm-uu-uu-end-line "^end[ \t]*$")
 
 (defcustom mm-uu-decode-function 'uudecode-decode-region
   "*Function to uudecode.
@@ -63,10 +48,6 @@ decoder, such as uudecode."
 		 (item :tag "external" uudecode-decode-region-external))
   :group 'gnus-article-mime) 
 
-(defconst mm-uu-binhex-begin-line
-  "^:...............................................................$")
-(defconst mm-uu-binhex-end-line ":$")
-
 (defcustom mm-uu-binhex-decode-function 'binhex-decode-region
   "*Function to binhex decode.
 Internal function is done in elisp by default, therefore decoding may
@@ -76,23 +57,101 @@ decoder, such as hexbin."
 		 (item :tag "external" binhex-decode-region-external))
   :group 'gnus-article-mime) 
 
-(defconst mm-uu-shar-begin-line "^#! */bin/sh")
-(defconst mm-uu-shar-end-line "^exit 0\\|^$")
-
-;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and 
-;;; Peter von der Ah\'e <pahe@daimi.au.dk>
-(defconst mm-uu-forward-begin-line "^-+ \\(Start of \\)?Forwarded message")
-(defconst mm-uu-forward-end-line "^-+ End \\(of \\)?forwarded message")
+(defvar mm-uu-pgp-begin-signature
+     "^-----BEGIN PGP SIGNATURE-----")
 
 (defvar mm-uu-begin-line nil)
-
-(defconst mm-uu-identifier-alist
-  '((?% . postscript) (?b . uu) (?: . binhex) (?# . shar)
-    (?- . forward)))
 
 (defvar mm-dissect-disposition "inline"
   "The default disposition of uu parts.
 This can be either \"inline\" or \"attachment\".")
+
+(defvar mm-uu-type-alist
+  '((postscript 
+     "^%!PS-"
+     "^%%EOF$"
+     mm-uu-postscript-extract
+     nil)
+    (uu 
+     "^begin[ \t]+[0-7][0-7][0-7][ \t]+"
+     "^end[ \t]*$"
+     mm-uu-uu-extract
+     mm-uu-uu-filename)
+    (binhex
+     "^:...............................................................$"
+     ":$"
+     mm-uu-binhex-extract
+     nil
+     mm-uu-binhex-filename)
+    (shar 
+     "^#! */bin/sh"
+     "^exit 0\\|^$"
+     mm-uu-shar-extract)
+    (forward 
+;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and 
+;;; Peter von der Ah\'e <pahe@daimi.au.dk>
+     "^-+ \\(Start of \\)?Forwarded message"
+     "^-+ End \\(of \\)?forwarded message"
+     mm-uu-forward-extract
+     nil
+     mm-uu-forward-test)
+    (gnatsweb
+     "^----gnatsweb-attachment----"
+     nil
+     mm-uu-gnatsweb-extract)
+    (pgp-signed
+     "^-----BEGIN PGP SIGNED MESSAGE-----"
+     "^-----END PGP SIGNATURE-----"
+     mm-uu-pgp-signed-extract
+     nil
+     mm-uu-pgp-signed-test)
+    (pgp-encrypted
+     "^-----BEGIN PGP MESSAGE-----"
+     "^-----END PGP MESSAGE-----"
+     mm-uu-pgp-encrypted-extract
+     nil
+     mm-uu-pgp-encrypted-test)))
+
+(defcustom mm-uu-configure-list nil
+  "A list of mm-uu configuration.
+To disable dissecting shar codes, for instance, add
+`(shar . disabled)' to this list."
+  :type `(repeat (cons 
+		  ,(cons 'choice
+			 (mapcar
+			  (lambda (entry)
+			    (cons 'item (car entry)))
+			  mm-uu-type-alist))
+		  (choice (item disabled))))
+  :group 'gnus-article-mime)
+
+;; functions
+
+(defsubst mm-uu-type (entry)
+  (car entry))
+
+(defsubst mm-uu-begin-regexp (entry)
+  (nth 1 entry))
+
+(defsubst mm-uu-end-regexp (entry)
+  (nth 2 entry))
+
+(defsubst mm-uu-function-extract (entry)
+  (nth 3 entry))
+
+(defsubst mm-uu-function-1 (entry)
+  (nth 4 entry))
+
+(defsubst mm-uu-function-2 (entry)
+  (nth 5 entry))
+
+(defun mm-uu-copy-to-buffer (from to)
+  "Copy the contents of the current buffer to a fresh buffer."
+  (save-excursion
+    (let ((obuf (current-buffer)))
+      (set-buffer (generate-new-buffer " *mm-uu*"))
+      (insert-buffer-substring obuf from to)
+      (current-buffer))))
 
 (defun mm-uu-configure-p  (key val)
   (member (cons key val) mm-uu-configure-list))
@@ -100,149 +159,201 @@ This can be either \"inline\" or \"attachment\".")
 (defun mm-uu-configure (&optional symbol value)
   (if symbol (set-default symbol value))
   (setq mm-uu-begin-line nil)
-  (mapcar '(lambda (type)
-	     (if (mm-uu-configure-p type 'disabled) 
+  (mapcar (lambda (entry)
+	     (if (mm-uu-configure-p (mm-uu-type entry) 'disabled) 
 		 nil
 	       (setq mm-uu-begin-line
 		     (concat mm-uu-begin-line
 			     (if mm-uu-begin-line "\\|")
-			     (symbol-value
-			      (intern (concat "mm-uu-" (symbol-name type)
-					      "-begin-line")))))))
-	  '(uu postscript binhex shar forward)))
-
-(defcustom mm-uu-configure-list nil
-  "A list of mm-uu configuration.
-To disable dissecting shar codes, for instance, add
-`(shar . disabled)' to this list."
-  :type '(repeat (cons 
-		  (choice (item postscript)
-			  (item uu) 
-			  (item binhex)
-			  (item shar)
-			  (item forward))
-		  (choice (item disabled))))
-  :group 'gnus-article-mime
-  :set 'mm-uu-configure) 
+			     (mm-uu-begin-regexp entry)))))
+	  mm-uu-type-alist))
 
 (mm-uu-configure)
 
-;;;### autoload
+(eval-when-compile
+  (defvar file-name)
+  (defvar start-point)
+  (defvar end-point)
+  (defvar entry))
 
+(defun mm-uu-uu-filename ()
+  (if (looking-at ".+")
+      (setq file-name
+	    (let ((nnheader-file-name-translation-alist
+		   '((?/ . ?,) (? . ?_) (?* . ?_) (?$ . ?_))))
+	      (nnheader-translate-file-chars (match-string 0))))))
+
+(defun mm-uu-binhex-filename ()
+  (setq file-name
+	(ignore-errors
+	  (binhex-decode-region start-point end-point t))))
+
+(defun mm-uu-forward-test ()
+  (save-excursion
+    (goto-char start-point)
+    (forward-line)
+    (looking-at "[\r\n]*[a-zA-Z][a-zA-Z0-9-]*:")))
+
+(defun mm-uu-postscript-extract ()
+  (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
+		  '("application/postscript")))
+
+(defun mm-uu-forward-extract ()
+  (mm-make-handle (mm-uu-copy-to-buffer 
+		   (progn (goto-char start-point) (forward-line) (point))
+		   (progn (goto-char end-point) (forward-line -1) (point)))
+		  '("message/rfc822" (charset . gnus-decoded))))
+
+(defun mm-uu-uu-extract ()
+  (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
+		  (list (or (and file-name
+				 (string-match "\\.[^\\.]+$"
+					       file-name)
+				 (mailcap-extension-to-mime
+				  (match-string 0 file-name)))
+			    "application/octet-stream"))
+		  'x-uuencode nil
+		  (if (and file-name (not (equal file-name "")))
+		      (list mm-dissect-disposition
+			    (cons 'filename file-name)))))
+
+(defun mm-uu-binhex-extract ()
+  (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
+		  (list (or (and file-name
+				 (string-match "\\.[^\\.]+$" file-name)
+				 (mailcap-extension-to-mime
+				  (match-string 0 file-name)))
+			    "application/octet-stream"))
+		  'x-binhex nil
+		  (if (and file-name (not (equal file-name "")))
+		      (list mm-dissect-disposition
+			    (cons 'filename file-name)))))
+
+(defun mm-uu-shar-extract ()
+  (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
+		  '("application/x-shar")))
+
+(defun mm-uu-gnatsweb-extract ()
+  (save-restriction
+    (goto-char start-point)
+    (forward-line)
+    (narrow-to-region (point) end-point)
+    (mm-dissect-buffer t)))
+
+(defun mm-uu-pgp-signed-test ()
+  (and
+   mml2015-use
+   (mml2015-clear-verify-function)
+   (cond
+    ((eq mm-verify-option 'never) nil)
+    ((eq mm-verify-option 'always) t)
+    ((eq mm-verify-option 'known) t)
+    (t (y-or-n-p "Verify pgp signed part?")))))
+
+(defun mm-uu-pgp-signed-extract ()
+  (or (memq 'signed gnus-article-wash-types)
+      (push 'signed gnus-article-wash-types))
+  (let ((buf (mm-uu-copy-to-buffer start-point end-point)))
+    (with-current-buffer buf
+      (condition-case err
+	  (funcall (mml2015-clear-verify-function))
+	(error
+	 (unless (y-or-n-p (format "%s, continue?" err))
+	   (kill-buffer buf)
+	   (error "Verify failure."))))
+      (goto-char (point-min))
+      (if (search-forward "\n\n" nil t)
+	  (delete-region (point-min) (point)))
+      (if (re-search-forward mm-uu-pgp-begin-signature nil t)
+	  (delete-region (match-beginning 0) (point-max))))
+    (mm-make-handle buf
+		    '("text/plain"  (charset . gnus-decoded)))))
+
+(defun mm-uu-pgp-encrypted-test ()
+  (and
+   mml2015-use
+   (mml2015-clear-decrypt-function)
+   (cond
+    ((eq mm-decrypt-option 'never) nil)
+    ((eq mm-decrypt-option 'always) t)
+    ((eq mm-decrypt-option 'known) t)
+    (t (y-or-n-p "Decrypt pgp encrypted part?")))))
+
+(defun mm-uu-pgp-encrypted-extract ()
+  (or (memq 'encrypted gnus-article-wash-types)
+      (push 'encrypted gnus-article-wash-types))
+  (let ((buf (mm-uu-copy-to-buffer start-point end-point)))
+    (with-current-buffer buf
+      (condition-case err
+	  (funcall (mml2015-clear-decrypt-function))
+	(error
+	 (unless (y-or-n-p (format "%s, continue?" err))
+	   (kill-buffer buf)
+	   (error "Decrypt failure.")))))
+    (mm-make-handle buf
+		    '("text/plain"  (charset . gnus-decoded)))))
+
+;;;### autoload
 (defun mm-uu-dissect ()
   "Dissect the current buffer and return a list of uu handles."
-  (let (text-start start-char end-char
-		   type file-name end-line result text-plain-type 
-		   start-char-1 end-char-1
-		   (case-fold-search t))
+  (let ((case-fold-search t)
+	text-start start-point end-point file-name result 
+	text-plain-type entry func)
     (save-excursion
-      (save-restriction
-	(mail-narrow-to-head)
-	(goto-char (point-max)))
-      (forward-line)
+      (goto-char (point-min))
+      (cond 
+       ((looking-at "\n")
+	(forward-line))
+       ((search-forward "\n\n" nil t)
+	t)
+       (t (goto-char (point-max))))
       ;;; gnus-decoded is a fake charset, which means no further
       ;;; decoding.
       (setq text-start (point)
 	    text-plain-type '("text/plain"  (charset . gnus-decoded)))
       (while (re-search-forward mm-uu-begin-line nil t)
-	(setq start-char (match-beginning 0))
-	(setq type (cdr (assq (aref (match-string 0) 0)
-			      mm-uu-identifier-alist)))
-	(setq file-name
-	      (if (and (eq type 'uu)
-		       (looking-at "\\(.+\\)$"))
-		  (and (match-string 1)
-		       (let ((nnheader-file-name-translation-alist
-			      '((?/ . ?,) (? . ?_) (?* . ?_) (?$ . ?_))))
-			 (nnheader-translate-file-chars (match-string 1))))))
+	(setq start-point (match-beginning 0))
+	(let ((alist mm-uu-type-alist)
+	      (begin-line (match-string 0)))
+	  (while (not entry)
+	    (if (string-match (mm-uu-begin-regexp (car alist)) begin-line)
+		(setq entry (car alist))
+	      (pop alist))))
+	(if (setq func (mm-uu-function-1 entry))
+	    (funcall func))
 	(forward-line);; in case of failure
-	(setq start-char-1 (point))
-	(setq end-line (symbol-value
-			(intern (concat "mm-uu-" (symbol-name type)
-					"-end-line"))))
-	(when (and (re-search-forward end-line nil t)
-		   (not (eq (match-beginning 0) (match-end 0))))
-	  (setq end-char-1 (match-beginning 0))
-	  (forward-line)
-	  (setq end-char (point))
-	  (when (cond 
-		 ((eq type 'binhex)
-		  (setq file-name
-			(ignore-errors
-			  (binhex-decode-region start-char end-char t))))
-		 ((eq type 'forward)
-		  (save-excursion
-		    (goto-char start-char-1)
-		    (looking-at "[\r\n]*[a-zA-Z][a-zA-Z0-9-]*:")))
-		 (t t))
-	    (if (> start-char text-start)
-		(push
-		 (mm-make-handle (mm-uu-copy-to-buffer text-start start-char)
-				 text-plain-type)
-		 result))
-	    (push
-	     (cond
-	      ((eq type 'postscript)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
-			       '("application/postscript")))
-	      ((eq type 'forward)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char-1 end-char-1)
-			       '("message/rfc822" (charset . gnus-decoded))))
-	      ((eq type 'uu)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
-			       (list (or (and file-name
-					      (string-match "\\.[^\\.]+$"
-							    file-name)
-					      (mailcap-extension-to-mime
-					       (match-string 0 file-name)))
-					 "application/octet-stream"))
-			       'x-uuencode nil
-			       (if (and file-name (not (equal file-name "")))
-				   (list mm-dissect-disposition
-					 (cons 'filename file-name)))))
-	      ((eq type 'binhex)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
-			       (list (or (and file-name
-					      (string-match "\\.[^\\.]+$" file-name)
-					      (mailcap-extension-to-mime
-					       (match-string 0 file-name)))
-					 "application/octet-stream"))
-			       'x-binhex nil
-			       (if (and file-name (not (equal file-name "")))
-				   (list mm-dissect-disposition
-					 (cons 'filename file-name)))))
-	      ((eq type 'shar)
-	       (mm-make-handle (mm-uu-copy-to-buffer start-char end-char)
-			       '("application/x-shar"))))
-	     result)
-	    (setq text-start end-char))))
+	(when (and (not (mm-uu-configure-p (mm-uu-type entry) 'disabled))
+                   (let ((end-line (mm-uu-end-regexp entry)))
+		     (if (not end-line)
+			 (or (setq end-point (point-max)) t)
+		       (prog1
+			   (re-search-forward end-line nil t)
+			 (forward-line)
+			 (setq end-point (point)))))
+		   (or (not (setq func (mm-uu-function-2 entry)))
+		       (funcall func)))
+	  (if (and (> start-point text-start)
+		   (progn
+		     (goto-char text-start)
+		     (re-search-forward "." start-point t)))
+	      (push
+	       (mm-make-handle (mm-uu-copy-to-buffer text-start start-point)
+			       text-plain-type)
+	       result))
+	  (push
+	   (funcall (mm-uu-function-extract entry))
+	   result)
+	  (goto-char (setq text-start end-point))))
       (when result
-	(if (> (point-max) (1+ text-start))
+	(if (and (> (point-max) (1+ text-start))
+		 (save-excursion
+		   (goto-char text-start)
+		   (re-search-forward "." nil t)))
 	    (push
 	     (mm-make-handle (mm-uu-copy-to-buffer text-start (point-max))
 			     text-plain-type)
 	     result))
 	(setq result (cons "multipart/mixed" (nreverse result))))
-      result)))
-
-;;;### autoload
-(defun mm-uu-test ()
-  "Check whether the current buffer contains uu stuffs."
-  (save-excursion
-    (goto-char (point-min))
-    (let (type end-line result
-	       (case-fold-search t))
-      (while (and mm-uu-begin-line
-		  (not result) (re-search-forward mm-uu-begin-line nil t))
-	(forward-line)
-	(setq type (cdr (assq (aref (match-string 0) 0)
-			      mm-uu-identifier-alist)))
-	(setq end-line (symbol-value
-			(intern (concat "mm-uu-" (symbol-name type)
-					"-end-line"))))
-	(if (and (re-search-forward end-line nil t)
-		 (not (eq (match-beginning 0) (match-end 0))))
-	    (setq result t)))
       result)))
 
 (provide 'mm-uu)
