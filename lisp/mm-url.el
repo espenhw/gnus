@@ -251,7 +251,11 @@ This is taken from RFC 2396.")
       (if (string-match "^file:/+" url)
 	  (insert-file-contents (substring url (1- (match-end 0))))
 	(mm-url-insert-file-contents-external url))
-    (url-insert-file-contents url)))
+    (require 'url-handlers)
+    (let ((name buffer-file-name))
+      (prog1
+	  (url-insert-file-contents url)
+	(setq buffer-file-name name)))))
 
 (defun mm-url-insert-file-contents-external (url)
   (let (program args)
@@ -266,19 +270,17 @@ This is taken from RFC 2396.")
 (defun mm-url-insert (url &optional follow-refresh)
   "Insert the contents from an URL in the current buffer.
 If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
-  (let ((name buffer-file-name))
-    (if follow-refresh
-	(save-restriction
-	  (narrow-to-region (point) (point))
-	  (mm-url-insert-file-contents url)
-	  (goto-char (point-min))
-	  (when (re-search-forward
-		 "<meta[ \t\r\n]*http-equiv=\"Refresh\"[^>]*URL=\\([^\"]+\\)\"" nil t)
-	    (let ((url (match-string 1)))
-	      (delete-region (point-min) (point-max))
-	      (mm-url-insert url t))))
-      (mm-url-insert-file-contents url))
-    (setq buffer-file-name name)))
+  (if follow-refresh
+      (save-restriction
+	(narrow-to-region (point) (point))
+	(mm-url-insert-file-contents url)
+	(goto-char (point-min))
+	(when (re-search-forward
+	       "<meta[ \t\r\n]*http-equiv=\"Refresh\"[^>]*URL=\\([^\"]+\\)\"" nil t)
+	  (let ((url (match-string 1)))
+	    (delete-region (point-min) (point-max))
+	    (mm-url-insert url t))))
+    (mm-url-insert-file-contents url)))
 
 (defun mm-url-decode-entities ()
   "Decode all HTML entities."
@@ -295,6 +297,11 @@ If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
       (unless (stringp elem)
 	(setq elem (char-to-string elem)))
       (replace-match elem t t))))
+
+(defun mm-url-decode-entities-nbsp ()
+  "Decode all HTML entities and &nbsp; to a space."
+  (let ((mm-url-html-entities (cons '(nbsp . 32) mm-url-html-entities)))
+    (mm-url-decode-entities)))
 
 (defun mm-url-decode-entities-string (string)
   (with-temp-buffer
@@ -326,6 +333,46 @@ spaces.  Die Die Die."
 				 buffer-file-coding-system))
      chunk)
    ""))
+
+(defun mm-url-encode-www-form-urlencoded (pairs)
+  "Return PAIRS encoded for forms."
+  (mapconcat
+   (lambda (data)
+     (concat (mm-url-form-encode-xwfu (car data)) "="
+	     (mm-url-form-encode-xwfu (cdr data))))
+   pairs "&"))
+
+(defun mm-url-fetch-form (url pairs)
+  "Fetch a form from URL with PAIRS as the data using the POST method."
+  (require 'url-handlers)
+  (let ((url-request-data (mm-url-encode-www-form-urlencoded pairs))
+	(url-request-method "POST")
+	(url-request-extra-headers
+	 '(("Content-type" . "application/x-www-form-urlencoded"))))
+    (url-insert-file-contents url)
+    (setq buffer-file-name nil))
+  t)
+
+(defun mm-url-fetch-simple (url content)
+  (require 'url-handlers)
+  (let ((url-request-data content)
+	(url-request-method "POST")
+	(url-request-extra-headers
+	 '(("Content-type" . "application/x-www-form-urlencoded"))))
+    (url-insert-file-contents url)
+    (setq buffer-file-name nil))
+  t)
+
+(defun mm-url-remove-markup ()
+  "Remove all HTML markup, leaving just plain text."
+  (goto-char (point-min))
+  (while (search-forward "<!--" nil t)
+    (delete-region (match-beginning 0)
+		   (or (search-forward "-->" nil t)
+		       (point-max))))
+  (goto-char (point-min))
+  (while (re-search-forward "<[^>]+>" nil t)
+    (replace-match "" t t)))
 
 (provide 'mm-url)
 

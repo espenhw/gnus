@@ -1,3 +1,17 @@
+2001-12-07 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-decode-entities-unibyte-string): Use
+	mm-url-decode-entities-nbsp.
+
+	* nnlistserv.el, nnultimate.el, nnwarchive.el, nnweb.el,
+	webmail.el, nnwfm.el: Use mm-url.
+
+	* mm-url.el (mm-url-fetch-form): Move from nnweb.
+	(mm-url-remove-markup): Move from nnweb.
+	(mm-url-fetch-simple): Move from webmail.
+
+	* nnslashdot.el (nnslashdot-request-post): mm-url-fetch-form.
+
 2001-12-07 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-print-truncate-and-quote): New.

@@ -354,7 +354,6 @@
   t)
 
 (deffoo nnslashdot-request-post (&optional server)
-  (require 'nnweb)
   (nnslashdot-possibly-change-server nil server)
   (let ((sid (nnslashdot-sid-strip (message-fetch-field "newsgroups")))
 	(subject (message-fetch-field "subject"))
@@ -391,7 +390,7 @@
     (message-goto-body)
     (setq body (buffer-substring (point) (point-max)))
     (erase-buffer)
-    (nnweb-fetch-form
+    (mm-url-fetch-form
      "http://slashdot.org/comments.pl"
      `(("sid" . ,sid)
        ("pid" . ,pid)

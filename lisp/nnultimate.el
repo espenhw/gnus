@@ -37,11 +37,9 @@
 (require 'gnus)
 (require 'nnmail)
 (require 'mm-util)
-(eval-when-compile
-  (ignore-errors
-    (require 'nnweb)))
-;; Report failure to find w3 at load time if appropriate.
-(eval '(require 'nnweb))
+(require 'mm-url)
+(require 'nnweb)
+(autoload 'w3-parse-buffer "w3-parse")
 
 (nnoo-declare nnultimate)
 
@@ -126,9 +124,9 @@
 	      (setq subject (nth 2 (assq (car elem) topics)))
 	      (setq href (nth 3 (assq (car elem) topics)))
 	      (if (= current-page 1)
-		  (nnweb-insert href)
+		  (mm-url-insert href)
 		(string-match "\\.html$" href)
-		(nnweb-insert (concat (substring href 0 (match-beginning 0))
+		(mm-url-insert (concat (substring href 0 (match-beginning 0))
 				      "-" (number-to-string current-page)
 				      (match-string 0 href))))
 	      (goto-char (point-min))
@@ -270,7 +268,7 @@
 (deffoo nnultimate-request-list (&optional server)
   (nnultimate-possibly-change-server nil server)
   (mm-with-unibyte-buffer
-    (nnweb-insert
+    (mm-url-insert
      (if (string-match "/$" nnultimate-address)
 	 (concat nnultimate-address "Ultimate.cgi")
        nnultimate-address))
@@ -335,7 +333,7 @@
     (mm-with-unibyte-buffer
       (while furls
 	(erase-buffer)
-	(nnweb-insert (pop furls))
+	(mm-url-insert (pop furls))
 	(goto-char (point-min))
 	(setq parse (w3-parse-buffer (current-buffer)))
 	(setq contents

@@ -449,7 +449,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 (defun nnrss-decode-entities-unibyte-string (string)
   (mm-with-unibyte-buffer
     (insert string)
-    (mm-url-decode-entities)
+    (mm-url-decode-entities-nbsp)
     (buffer-substring (point-min) (point-max))))
 
 (defalias 'nnrss-insert 'nnrss-insert-w3)
@@ -461,8 +461,7 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 ;;; Snarf functions
 
 (defun nnrss-check-group (group server)
-  (let ((mm-url-html-entities (cons '(nbsp . 32) mm-url-html-entities))
-	file xml subject url extra changed author date)
+  (let (file xml subject url extra changed author date)
     (condition-case err
 	(mm-with-unibyte-buffer
 	  (if (and nnrss-use-local

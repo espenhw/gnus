@@ -24,7 +24,7 @@
 ;;; Commentary:
 
 ;; Note: You need to have `url' (w3 0.46) or greater version
-;; installed for this backend to work.
+;; installed for some functions of this backend to work.
 
 ;; Todo:
 ;; 1. To support more web archives.
@@ -42,18 +42,7 @@
 (require 'nnmail)
 (require 'mm-util)
 (require 'mail-source)
-(eval-when-compile
-  (ignore-errors
-    (require 'w3)
-    (require 'url)
-    (require 'w3-forms)
-    (require 'nnweb)))
-;; Report failure to find w3 at load time if appropriate.
-(eval '(progn
-	 (require 'w3)
-	 (require 'url)
-	 (require 'w3-forms)
-	 (require 'nnweb)))
+(require 'mm-url)
 
 (nnoo-declare nnwarchive)
 
@@ -360,23 +349,6 @@
 	     (format " *nnwarchive %s %s*" nnwarchive-type server)))))
   (nnwarchive-set-default nnwarchive-type))
 
-(defun nnwarchive-encode-www-form-urlencoded (pairs)
-  "Return PAIRS encoded for forms."
-  (mapconcat
-   (function
-    (lambda (data)
-      (concat (w3-form-encode-xwfu (car data)) "="
-	      (w3-form-encode-xwfu (cdr data)))))
-   pairs "&"))
-
-(defun nnwarchive-fetch-form (url pairs)
-  (let ((url-request-data (nnwarchive-encode-www-form-urlencoded pairs))
-	(url-request-method "POST")
-	(url-request-extra-headers
-	 '(("Content-type" . "application/x-www-form-urlencoded"))))
-    (nnweb-insert url))
-  t)
-
 (defun nnwarchive-eval (expr)
   (cond
    ((consp expr)
@@ -388,14 +360,14 @@
 
 (defun nnwarchive-url (xurl)
   (mm-with-unibyte-current-buffer
-    (let ((url-confirmation-func 'identity)
+    (let ((url-confirmation-func 'identity) ;; Some hacks.
 	  (url-cookie-multiple-line nil))
       (cond
        ((eq (car xurl) 'post)
 	(pop xurl)
-	(nnwarchive-fetch-form (car xurl) (nnwarchive-eval (cdr xurl))))
+	(mm-url-fetch-form (car xurl) (nnwarchive-eval (cdr xurl))))
        (t
-	(nnweb-insert (apply 'format (nnwarchive-eval xurl))))))))
+	(mm-url-insert (apply 'format (nnwarchive-eval xurl))))))))
 
 (defun nnwarchive-generate-active ()
   (save-excursion
@@ -470,8 +442,8 @@
 	       article
 	       (make-full-mail-header
 		article
-		(nnweb-decode-entities-string subject)
-		(nnweb-decode-entities-string from)
+		(mm-url-decode-entities-string subject)
+		(mm-url-decode-entities-string from)
 		date
 		(concat "<" group "%"
 			(number-to-string article)
@@ -490,7 +462,7 @@
   (goto-char (point-min))
   (while (re-search-forward "<a[^>]+>\\([^<]+\\)</a>" nil t)
     (replace-match "\\1"))
-  (nnweb-decode-entities)
+  (mm-url-decode-entities)
   (buffer-string))
 
 (defun nnwarchive-egroups-xover-files (group articles)
@@ -559,8 +531,8 @@
 	       article
 	       (make-full-mail-header
 		article
-		(nnweb-decode-entities-string subject)
-		(nnweb-decode-entities-string from)
+		(mm-url-decode-entities-string subject)
+		(mm-url-decode-entities-string from)
 		date
 		(format "<%05d%%%s>\n" (1- article) group)
 		""
@@ -623,7 +595,7 @@
       (when (search-forward "X-Head-End" nil t)
 	(beginning-of-line)
 	(narrow-to-region (point-min) (point))
-	(nnweb-decode-entities)
+	(mm-url-decode-entities)
 	(goto-char (point-min))
 	(while (search-forward "<!--X-" nil t)
 	  (replace-match ""))
@@ -645,8 +617,8 @@
 	(search-forward "</ul>" nil t)
 	(end-of-line)
 	(narrow-to-region (point-min) (point))
-	(nnweb-remove-markup)
-	(nnweb-decode-entities)
+	(mm-url-remove-markup)
+	(mm-url-decode-entities)
 	(goto-char (point-min))
 	(delete-blank-lines)
 	(when from
@@ -687,8 +659,8 @@
 		(delete-region (match-beginning 0) (match-end 0))
 		(save-restriction
 		  (narrow-to-region p (point))
-		  (nnweb-remove-markup)
-		  (nnweb-decode-entities)
+		  (mm-url-remove-markup)
+		  (mm-url-decode-entities)
 		  (goto-char (point-max)))))
 	     ((looking-at "<P><A HREF=\"\\([^\"]+\\)")
 	      (setq url (match-string 1))

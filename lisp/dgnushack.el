@@ -234,9 +234,8 @@ Modify to suit your needs."))
     (condition-case code
 	(require 'w3-forms)
       (error
-       (message "No w3: %s %s" code (locate-library "w3-forms"))
-       (dolist (file '("nnweb.el" "nnlistserv.el" "nnultimate.el"
-		       "nnwarchive.el" "webmail.el" "nnwfm.el"))
+       (message "No w3: %s %s" code (locate-library "w3-parse"))
+       (dolist (file '("nnultimate.el" "webmail.el" "nnwfm.el"))
 	 (setq files (delete file files)))))
     (condition-case code
 	(require 'mh-e)

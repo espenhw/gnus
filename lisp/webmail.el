@@ -48,21 +48,16 @@
 (require 'gnus)
 (require 'nnmail)
 (require 'mm-util)
+(require 'mm-url)
 (require 'mml)
 (eval-when-compile
   (ignore-errors
-    (require 'w3)
     (require 'url)
-    (require 'url-cookie)
-    (require 'w3-forms)
-    (require 'nnweb)))
+    (require 'url-cookie)))
 ;; Report failure to find w3 at load time if appropriate.
 (eval '(progn
-	 (require 'w3)
 	 (require 'url)
-	 (require 'url-cookie)
-	 (require 'w3-forms)
-	 (require 'nnweb)))
+	 (require 'url-cookie)))
 
 ;;;
 
@@ -226,31 +221,6 @@
 	  (set (intern (concat "webmail-" (symbol-name var))) (cdr pair))
 	(set (intern (concat "webmail-" (symbol-name var))) nil)))))
 
-(defun webmail-encode-www-form-urlencoded (pairs)
-  "Return PAIRS encoded for forms."
-  (mapconcat
-   (function
-    (lambda (data)
-      (concat (w3-form-encode-xwfu (car data)) "="
-	      (w3-form-encode-xwfu (cdr data)))))
-   pairs "&"))
-
-(defun webmail-fetch-simple (url content)
-  (let ((url-request-data content)
-	(url-request-method "POST")
-	(url-request-extra-headers
-	 '(("Content-type" . "application/x-www-form-urlencoded"))))
-    (nnweb-insert url))
-  t)
-
-(defun webmail-fetch-form (url pairs)
-  (let ((url-request-data (webmail-encode-www-form-urlencoded pairs))
-	(url-request-method "POST")
-	(url-request-extra-headers
-	 '(("Content-type" . "application/x-www-form-urlencoded"))))
-    (nnweb-insert url))
-  t)
-
 (defun webmail-eval (expr)
   (cond
    ((consp expr)
@@ -265,15 +235,15 @@
     (cond
      ((eq (car xurl) 'content)
       (pop xurl)
-      (webmail-fetch-simple (if (stringp (car xurl))
+      (mm-url-fetch-simple (if (stringp (car xurl))
 				(car xurl)
 			      (apply 'format (webmail-eval (car xurl))))
 			    (apply 'format (webmail-eval (cdr xurl)))))
      ((eq (car xurl) 'post)
       (pop xurl)
-      (webmail-fetch-form (car xurl) (webmail-eval (cdr xurl))))
+      (mm-url-fetch-form (car xurl) (webmail-eval (cdr xurl))))
      (t
-      (nnweb-insert (apply 'format (webmail-eval xurl)))))))
+      (mm-url-insert (apply 'format (webmail-eval xurl)))))))
 
 (defun webmail-init ()
   "Initialize buffers and such."
@@ -315,7 +285,7 @@
     (let ((url (match-string 1)))
       (erase-buffer)
       (mm-with-unibyte-current-buffer
-	(nnweb-insert url)))
+	(mm-url-insert url)))
     (goto-char (point-min))))
 
 (defun webmail-fetch (file subtype user password)
@@ -357,7 +327,7 @@
 	(message "Fetching mail #%d..." (setq n (1+ n)))
 	(erase-buffer)
 	(mm-with-unibyte-current-buffer
-	  (nnweb-insert (cdr item)))
+	  (mm-url-insert (cdr item)))
 	(setq id (car item))
 	(if webmail-article-snarf
 	    (funcall webmail-article-snarf file id))
@@ -459,9 +429,8 @@
     (if (not (search-forward "</pre>" nil t))
 	(webmail-error "article@3.1"))
     (delete-region (match-beginning 0) (point-max))
-    (nnweb-remove-markup)
-    (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-      (nnweb-decode-entities))
+    (mm-url-remove-markup)
+    (mm-url-decode-entities-nbsp)
     (goto-char (point-min))
     (while (re-search-forward "\r\n?" nil t)
       (replace-match "\n"))
@@ -492,9 +461,8 @@
 	(setq p (match-beginning 0))
 	(search-forward "</a>" nil t)
 	(delete-region p (match-end 0)))
-      (nnweb-remove-markup)
-      (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-	(nnweb-decode-entities))
+      (mm-url-remove-markup)
+      (mm-url-decode-entities-nbsp)
       (goto-char (point-min))
       (delete-blank-lines)
       (goto-char (point-min))
@@ -514,7 +482,7 @@
 	      (delete-region p (match-end 0))
 	      (save-excursion
 		(set-buffer (generate-new-buffer " *webmail-att*"))
-		(nnweb-insert attachment)
+		(mm-url-insert attachment)
 		(push (current-buffer) webmail-buffer-list)
 		(setq bufname (buffer-name)))
 	      (setq mime t)
@@ -549,9 +517,8 @@
 	    (goto-char (match-end 0))
 	    (if (looking-at "$") (forward-char))
 	    (delete-region (point-min) (point))
-	    (nnweb-remove-markup)
-	    (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-	      (nnweb-decode-entities))
+	    (mm-url-remove-markup)
+	    (mm-url-decode-entities-nbsp)
 	    nil)
 	   (t
 	    (setq mime t)
@@ -646,9 +613,8 @@
 	(setq p (match-beginning 0))
 	(search-forward "</a>" nil t)
 	(delete-region p (match-end 0)))
-      (nnweb-remove-markup)
-      (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-	(nnweb-decode-entities))
+      (mm-url-remove-markup)
+      (mm-url-decode-entities-nbsp)
       (goto-char (point-min))
       (delete-blank-lines)
       (goto-char (point-max))
@@ -664,9 +630,8 @@
 	  (if (not (search-forward "</table>" nil t))
 	      (webmail-error "article@5"))
 	  (narrow-to-region p (match-end 0))
-	  (nnweb-remove-markup)
-	  (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-	    (nnweb-decode-entities))
+	  (mm-url-remove-markup)
+	  (mm-url-decode-entities-nbsp)
 	  (goto-char (point-min))
 	  (delete-blank-lines)
 	  (setq ct (mail-fetch-field "content-type")
@@ -679,7 +644,7 @@
 	  (widen)
 	  (save-excursion
 	    (set-buffer (generate-new-buffer " *webmail-att*"))
-	    (nnweb-insert (concat webmail-aux attachment))
+	    (mm-url-insert (concat webmail-aux attachment))
 	    (push (current-buffer) webmail-buffer-list)
 	    (setq bufname (buffer-name)))
 	  (insert "<#part")
@@ -774,9 +739,8 @@
     (goto-char (point-min))
     (while (re-search-forward "<br>" nil t)
       (replace-match "\n"))
-    (nnweb-remove-markup)
-    (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-      (nnweb-decode-entities))
+    (mm-url-remove-markup)
+    (mm-url-decode-entities-nbsp)
     nil)
    (t
     (insert "<#part type=\"text/html\" disposition=inline>")
@@ -804,9 +768,8 @@
       (goto-char (point-min))
       (while (search-forward "<b>" nil t)
 	(replace-match "\n"))
-      (nnweb-remove-markup)
-      (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-	(nnweb-decode-entities))
+      (mm-url-remove-markup)
+      (mm-url-decode-entities-nbsp)
       (goto-char (point-min))
       (delete-blank-lines)
       (goto-char (point-min))
@@ -848,7 +811,7 @@
 	      (let (bufname);; Attachment
 		(save-excursion
 		  (set-buffer (generate-new-buffer " *webmail-att*"))
-		  (nnweb-insert (concat (car webmail-open-url) attachment))
+		  (mm-url-insert (concat (car webmail-open-url) attachment))
 		  (push (current-buffer) webmail-buffer-list)
 		  (setq bufname (buffer-name)))
 		(insert "<#part type=" type)
@@ -932,9 +895,8 @@
       (goto-char (point-min))
       (while (search-forward "<b>" nil t)
 	(replace-match "\n"))
-      (nnweb-remove-markup)
-      (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-	(nnweb-decode-entities))
+      (mm-url-remove-markup)
+      (mm-url-decode-entities-nbsp)
       (goto-char (point-min))
       (delete-blank-lines)
       (goto-char (point-min))
@@ -976,7 +938,7 @@
 	      (let (bufname);; Attachment
 		(save-excursion
 		  (set-buffer (generate-new-buffer " *webmail-att*"))
-		  (nnweb-insert (concat (car webmail-open-url) attachment))
+		  (mm-url-insert (concat (car webmail-open-url) attachment))
 		  (push (current-buffer) webmail-buffer-list)
 		  (setq bufname (buffer-name)))
 		(insert "<#part type=" type)
@@ -1056,7 +1018,7 @@
       (let ((url (match-string 1)))
 	(setq base (match-string 2))
 	(erase-buffer)
-	(nnweb-insert url)))
+	(mm-url-insert url)))
     (goto-char (point-min))
     (when (re-search-forward
 	   "(\\([0-9]+\\) Message.?-[^>]*\\([0-9]+\\) New"
@@ -1093,9 +1055,8 @@
 			      (match-beginning 0)
 			    (point-max)))
 	(goto-char (point-min))
-	(nnweb-remove-markup)
-	(let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-	  (nnweb-decode-entities))
+	(mm-url-remove-markup)
+	(mm-url-decode-entities-nbsp)
 	(goto-char (point-max))))
      ((looking-at "[\t\040\r\n]*<TABLE")
       (save-restriction
@@ -1124,7 +1085,7 @@
 	  (delete-region (point-min) (point-max))
 	  (save-excursion
 	    (set-buffer (generate-new-buffer " *webmail-att*"))
-	    (nnweb-insert url)
+	    (mm-url-insert url)
 	    (push (current-buffer) webmail-buffer-list)
 	    (setq bufname (buffer-name)))
 	  (insert "<#part type=\"" type "\"")
@@ -1157,9 +1118,8 @@
       (narrow-to-region (point-min) (point))
       (while (search-forward "\r\n" nil t)
 	(replace-match "\n"))
-      (nnweb-remove-markup)
-      (let ((w3-html-entities (cons '(nbsp . 32) w3-html-entities)))
-	(nnweb-decode-entities))
+      (mm-url-remove-markup)
+      (mm-url-decode-entities-nbsp)
       (goto-char (point-min))
       (while (re-search-forward "\n\n+" nil t)
 	(replace-match "\n"))

@@ -24,8 +24,7 @@
 
 ;;; Commentary:
 
-;; Note: You need to have `url' and `w3' installed for this
-;; backend to work.
+;; Note: You need to have `w3' installed for some functions to work.
 
 ;;; Code:
 
@@ -37,18 +36,8 @@
 (require 'gnus)
 (require 'nnmail)
 (require 'mm-util)
-(eval-when-compile
-  (ignore-errors
-    (require 'w3)
-    (require 'url)
-    (require 'w3-forms)))
-
-;; Report failure to find w3 at load time if appropriate.
-(unless noninteractive
-  (eval '(progn
-	   (require 'w3)
-	   (require 'url)
-	   (require 'w3-forms))))
+(require 'mm-url)
+(autoload 'w3-parse-buffer "w3-parse")
 
 (nnoo-declare nnweb)
 
@@ -197,7 +186,7 @@ and `altavista'.")
 	   (url (and header (mail-header-xref header))))
       (when (or (and url
 		     (mm-with-unibyte-current-buffer
-		       (nnweb-fetch-url url)))
+		       (mm-url-insert url)))
 		(and (stringp article)
 		     (nnweb-definition 'id t)
 		     (let ((fetch (nnweb-definition 'id))
@@ -207,7 +196,7 @@ and `altavista'.")
 		       (when (and fetch art)
 			 (setq url (format fetch art))
 			 (mm-with-unibyte-current-buffer
-			   (nnweb-fetch-url url))
+			   (mm-url-insert url))
 			 (if (nnweb-definition 'reference t)
 			     (setq article
 				   (funcall (nnweb-definition
@@ -336,55 +325,55 @@ and `altavista'.")
 		       nnweb-type nnweb-search server))
 	      (current-buffer))))))
 
-(defun nnweb-fetch-url (url)
-  (let (buf)
-    (save-excursion
-      (if (not nnheader-callback-function)
-	  (progn
-	    (with-temp-buffer
-	      (mm-enable-multibyte)
-	      (let ((coding-system-for-read 'binary)
-		    (coding-system-for-write 'binary)
-		    (default-process-coding-system 'binary))
-		(nnweb-insert url))
-	      (setq buf (buffer-string)))
-	    (erase-buffer)
-	    (insert buf)
-	    t)
-	(nnweb-url-retrieve-asynch
-	 url 'nnweb-callback (current-buffer) nnheader-callback-function)
-	t))))
+;; (defun nnweb-fetch-url (url)
+;;   (let (buf)
+;;     (save-excursion
+;;       (if (not nnheader-callback-function)
+;; 	  (progn
+;; 	    (with-temp-buffer
+;; 	      (mm-enable-multibyte)
+;; 	      (let ((coding-system-for-read 'binary)
+;; 		    (coding-system-for-write 'binary)
+;; 		    (default-process-coding-system 'binary))
+;; 		(nnweb-insert url))
+;; 	      (setq buf (buffer-string)))
+;; 	    (erase-buffer)
+;; 	    (insert buf)
+;; 	    t)
+;; 	(nnweb-url-retrieve-asynch
+;; 	 url 'nnweb-callback (current-buffer) nnheader-callback-function)
+;; 	t))))
 
-(defun nnweb-callback (buffer callback)
-  (when (gnus-buffer-live-p url-working-buffer)
-    (save-excursion
-      (set-buffer url-working-buffer)
-      (funcall (nnweb-definition 'article))
-      (nnweb-decode-entities)
-      (set-buffer buffer)
-      (goto-char (point-max))
-      (insert-buffer-substring url-working-buffer))
-    (funcall callback t)
-    (gnus-kill-buffer url-working-buffer)))
+;; (defun nnweb-callback (buffer callback)
+;;   (when (gnus-buffer-live-p url-working-buffer)
+;;     (save-excursion
+;;       (set-buffer url-working-buffer)
+;;       (funcall (nnweb-definition 'article))
+;;       (nnweb-decode-entities)
+;;       (set-buffer buffer)
+;;       (goto-char (point-max))
+;;       (insert-buffer-substring url-working-buffer))
+;;     (funcall callback t)
+;;     (gnus-kill-buffer url-working-buffer)))
 
-(defun nnweb-url-retrieve-asynch (url callback &rest data)
-  (let ((url-request-method "GET")
-	(old-asynch url-be-asynchronous)
-	(url-request-data nil)
-	(url-request-extra-headers nil)
-	(url-working-buffer (generate-new-buffer-name " *nnweb*")))
-    (setq-default url-be-asynchronous t)
-    (save-excursion
-      (set-buffer (get-buffer-create url-working-buffer))
-      (setq url-current-callback-data data
-	    url-be-asynchronous t
-	    url-current-callback-func callback)
-      (url-retrieve url nil))
-    (setq-default url-be-asynchronous old-asynch)))
+;; (defun nnweb-url-retrieve-asynch (url callback &rest data)
+;;   (let ((url-request-method "GET")
+;; 	(old-asynch url-be-asynchronous)
+;; 	(url-request-data nil)
+;; 	(url-request-extra-headers nil)
+;; 	(url-working-buffer (generate-new-buffer-name " *nnweb*")))
+;;     (setq-default url-be-asynchronous t)
+;;     (save-excursion
+;;       (set-buffer (get-buffer-create url-working-buffer))
+;;       (setq url-current-callback-data data
+;; 	    url-be-asynchronous t
+;; 	    url-current-callback-func callback)
+;;       (url-retrieve url nil))
+;;     (setq-default url-be-asynchronous old-asynch)))
 
-(if (fboundp 'url-retrieve-synchronously)
-    (defun nnweb-url-retrieve-asynch (url callback &rest data)
-      (url-retrieve url callback data)))
+;; (if (fboundp 'url-retrieve-synchronously)
+;;     (defun nnweb-url-retrieve-asynch (url callback &rest data)
+;;       (url-retrieve url callback data)))
 
 ;;;
 ;;; DejaNews functions.
@@ -448,17 +437,17 @@ and `altavista'.")
 	    ;; Yup -- fetch it.
 	    (setq more (match-string 1))
 	    (erase-buffer)
-	    (url-insert-file-contents more)))
+	    (mm-url-insert more)))
 	;; Return the articles in the right order.
 	(setq nnweb-articles
 	      (sort (nconc nnweb-articles map) 'car-less-than-car))))))
 
 (defun nnweb-dejanews-search (search)
-  (nnweb-insert
+  (mm-url-insert
    (concat
     (nnweb-definition 'address)
     "?"
-    (nnweb-encode-www-form-urlencoded
+    (mm-url-encode-www-form-urlencoded
      `(("ST" . "PS")
        ("svcclass" . "dnyr")
        ("QRY" . ,search)
@@ -474,19 +463,19 @@ and `altavista'.")
        ("ageweight" . "1")))))
   t)
 
-(defun nnweb-dejanewsold-search (search)
-  (nnweb-fetch-form
-   (nnweb-definition 'address)
-   `(("query" . ,search)
-     ("defaultOp" . "AND")
-     ("svcclass" . "dnold")
-     ("maxhits" . "100")
-     ("format" . "verbose2")
-     ("threaded" . "0")
-     ("showsort" . "date")
-     ("agesign" . "1")
-     ("ageweight" . "1")))
-  t)
+;; (defun nnweb-dejanewsold-search (search)
+;;   (nnweb-fetch-form
+;;    (nnweb-definition 'address)
+;;    `(("query" . ,search)
+;;      ("defaultOp" . "AND")
+;;      ("svcclass" . "dnold")
+;;      ("maxhits" . "100")
+;;      ("format" . "verbose2")
+;;      ("threaded" . "0")
+;;      ("showsort" . "date")
+;;      ("agesign" . "1")
+;;      ("ageweight" . "1")))
+;;   t)
 
 (defun nnweb-dejanews-identity (url)
   "Return an unique identifier based on URL."
@@ -526,7 +515,7 @@ and `altavista'.")
 	    (goto-char (point-min))
 	    (when (looking-at ".*href=\"\\([^\"]+\\)\"")
 	      (setq url (match-string 1)))
-	    (nnweb-remove-markup)
+	    (mm-url-remove-markup)
 	    (goto-char (point-min))
 	    (while (search-forward "\t" nil t)
 	      (replace-match " "))
@@ -561,7 +550,7 @@ and `altavista'.")
     (let ((body (point-marker)))
       (search-forward "</pre>" nil t)
       (delete-region (point) (point-max))
-      (nnweb-remove-markup)
+      (mm-url-remove-markup)
       (goto-char (point-min))
       (while (looking-at " *$")
 	(gnus-delete-line))
@@ -588,15 +577,15 @@ and `altavista'.")
 	(while (search-forward "," nil t)
 	  (replace-match " " t t)))
       (widen)
-      (nnweb-decode-entities)
+      (mm-url-decode-entities)
       (set-marker body nil))))
 
 (defun nnweb-reference-search (search)
-  (url-insert-file-contents
+  (mm-url-insert
    (concat
     (nnweb-definition 'address)
     "?"
-    (nnweb-encode-www-form-urlencoded
+    (mm-url-encode-www-form-urlencoded
      `(("search" . "advanced")
        ("querytext" . ,search)
        ("subj" . "")
@@ -648,7 +637,7 @@ and `altavista'.")
 	    (goto-char (point-min))
 	    (while (search-forward "<dt>" nil t)
 	      (replace-match "\n<blubb>"))
-	    (nnweb-decode-entities)
+	    (mm-url-decode-entities)
 	    (goto-char (point-min))
 	    (while (re-search-forward "<blubb>.*href=\"\\([^\"]+\\)\"><strong>\\([^>]*\\)</strong></a><dd>\\([^-]+\\)- <b>\\([^<]+\\)<.*href=\"news:\\([^\"]+\\)\">.*\">\\(.+\\)</a><P>"
 				      nil t)
@@ -693,15 +682,15 @@ and `altavista'.")
       (while (re-search-forward "<A.*\\?id@\\([^\"]+\\)\">[0-9]+</A>" nil t)
 	(replace-match "&lt;\\1&gt; " t)))
     (widen)
-    (nnweb-remove-markup)
-    (nnweb-decode-entities)))
+    (mm-url-remove-markup)
+    (mm-url-decode-entities)))
 
 (defun nnweb-altavista-search (search &optional part)
-  (url-insert-file-contents
+  (mm-url-insert
    (concat
     (nnweb-definition 'address)
     "?"
-    (nnweb-encode-www-form-urlencoded
+    (mm-url-encode-www-form-urlencoded
      `(("pg" . "aq")
        ("what" . "news")
        ,@(when part `(("stq" . ,(int-to-string (* part 30)))))
@@ -731,7 +720,7 @@ and `altavista'.")
     (goto-char (point-min))
     (while (search-forward "<br>" nil t)
       (replace-match "\n"))
-    (nnweb-remove-markup)
+    (mm-url-remove-markup)
     (goto-char (point-min))
     (while (re-search-forward "^[ \t]*\n" nil t)
       (replace-match ""))
@@ -741,7 +730,7 @@ and `altavista'.")
     (narrow-to-region (point) (point-max))
     (search-forward "</pre>" nil t)
     (delete-region (point) (point-max))
-    (nnweb-remove-markup)
+    (mm-url-remove-markup)
     (widen)))
 
 (defun nnweb-google-parse-1 (&optional Message-ID)
@@ -763,8 +752,8 @@ and `altavista'.")
 		 "http://groups.google.com/groups?selm=%s&output=gplain" mid))
       (narrow-to-region (search-forward ">" nil t)
 			(search-forward "</a>" nil t))
-      (nnweb-remove-markup)
-      (nnweb-decode-entities)
+      (mm-url-remove-markup)
+      (mm-url-decode-entities)
       (setq Subject (buffer-string))
       (goto-char (point-max))
       (widen)
@@ -775,8 +764,8 @@ and `altavista'.")
 	  (skip-chars-forward " \t")
 	(narrow-to-region (point)
 			  (search-forward "</a>" nil t))
-	(nnweb-remove-markup)
-	(nnweb-decode-entities)
+	(mm-url-remove-markup)
+	(mm-url-decode-entities)
 	(setq Newsgroups (buffer-string))
 	(goto-char (point-max))
 	(widen)
@@ -807,7 +796,7 @@ and `altavista'.")
 	  (nconc nnweb-articles map))
     (when (setq header (cadar map))
       (mm-with-unibyte-current-buffer
-	(nnweb-fetch-url (mail-header-xref header)))
+	(mm-url-insert (mail-header-xref header)))
       (caar map))))
 
 (defun nnweb-google-create-mapping ()
@@ -827,11 +816,11 @@ and `altavista'.")
 		(sort nnweb-articles 'car-less-than-car))))))
 
 (defun nnweb-google-search (search)
-  (nnweb-insert
+  (mm-url-insert
    (concat
     (nnweb-definition 'address)
     "?"
-    (nnweb-encode-www-form-urlencoded
+    (mm-url-encode-www-form-urlencoded
      `(("q" . ,search)
        ("num". "100")
        ("hq" . "")
@@ -868,75 +857,6 @@ and `altavista'.")
     (insert ">\n")
     (mapcar 'nnweb-insert-html (nth 2 parse))
     (insert "</" (symbol-name (car parse)) ">\n")))
-
-(defun nnweb-encode-www-form-urlencoded (pairs)
-  "Return PAIRS encoded for forms."
-  (mapconcat
-   (function
-    (lambda (data)
-      (concat (w3-form-encode-xwfu (car data)) "="
-	      (w3-form-encode-xwfu (cdr data)))))
-   pairs "&"))
-
-(defun nnweb-fetch-form (url pairs)
-  "Fetch a form from URL with PAIRS as the data using the POST method."
-  (let ((url-request-data (nnweb-encode-www-form-urlencoded pairs))
-	(url-request-method "POST")
-	(url-request-extra-headers
-	 '(("Content-type" . "application/x-www-form-urlencoded"))))
-    (url-insert-file-contents url)
-    (setq buffer-file-name nil))
-  t)
-
-(defun nnweb-decode-entities ()
-  "Decode all HTML entities."
-  (goto-char (point-min))
-  (while (re-search-forward "&\\(#[0-9]+\\|[a-z]+\\);" nil t)
-    (let ((elem (if (eq (aref (match-string 1) 0) ?\#)
-			(let ((c
-			       (string-to-number (substring
-						  (match-string 1) 1))))
-			  (if (mm-char-or-char-int-p c) c 32))
-		      (or (cdr (assq (intern (match-string 1))
-				     w3-html-entities))
-			  ?#))))
-      (unless (stringp elem)
-	(setq elem (char-to-string elem)))
-      (replace-match elem t t))))
-
-(defun nnweb-decode-entities-string (string)
-  (with-temp-buffer
-    (insert string)
-    (nnweb-decode-entities)
-    (buffer-substring (point-min) (point-max))))
-
-(defun nnweb-remove-markup ()
-  "Remove all HTML markup, leaving just plain text."
-  (goto-char (point-min))
-  (while (search-forward "<!--" nil t)
-    (delete-region (match-beginning 0)
-		   (or (search-forward "-->" nil t)
-		       (point-max))))
-  (goto-char (point-min))
-  (while (re-search-forward "<[^>]+>" nil t)
-    (replace-match "" t t)))
-
-(defun nnweb-insert (url &optional follow-refresh)
-  "Insert the contents from an URL in the current buffer.
-If FOLLOW-REFRESH is non-nil, redirect refresh url in META."
-  (let ((name buffer-file-name))
-    (if follow-refresh 
-	(save-restriction
-	  (narrow-to-region (point) (point))
-	  (url-insert-file-contents url)
-	  (goto-char (point-min))
-	  (when (re-search-forward
-		 "<meta[ \t\r\n]*http-equiv=\"Refresh\"[^>]*URL=\\([^\"]+\\)\"" nil t)
-	    (let ((url (match-string 1)))
-	      (delete-region (point-min) (point-max))
-	      (nnweb-insert url t))))
-      (url-insert-file-contents url))
-    (setq buffer-file-name name)))
 
 (defun nnweb-parse-find (type parse &optional maxdepth)
   "Find the element of TYPE in PARSE."
