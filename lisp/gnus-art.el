@@ -2299,43 +2299,50 @@ always hide."
 	     (match-beginning 0) (match-end 0) 'pem)))))))
 
 (defun article-strip-banner ()
-  "Strip the banner specified by the `banner' group parameter."
+  "Strip the banners specified by the `banner' group parameter and by
+`gnus-article-address-banner-alist'."
   (interactive)
   (save-excursion
     (save-restriction
+      (let ((inhibit-point-motion-hooks t))
+	(when (gnus-parameter-banner gnus-newsgroup-name)
+	  (article-really-strip-banner
+	   (gnus-parameter-banner gnus-newsgroup-name)))
+	(when gnus-article-address-banner-alist
+	  (article-really-strip-banner
+	   (let ((from (save-restriction
+			 (widen)
+			 (article-narrow-to-head)
+			 (mail-fetch-field "from"))))
+	     (when (and from
+			(setq from
+			      (caar (mail-header-parse-addresses from))))
+	       (catch 'found
+		 (dolist (pair gnus-article-address-banner-alist)
+		   (when (string-match (car pair) from)
+		     (throw 'found (cdr pair)))))))))))))
+
+(defun article-really-strip-banner (banner)
+  "Strip the banner specified by the argument."
+  (save-excursion
+    (save-restriction
       (let ((inhibit-point-motion-hooks t)
-	    (banner (gnus-parameter-banner gnus-newsgroup-name))
 	    (gnus-signature-limit nil)
-	    buffer-read-only beg end)
-	(when (and gnus-article-address-banner-alist
-		   (not banner))
-	  (setq banner
-		(let ((from (save-restriction
-			      (widen)
-			      (article-narrow-to-head)
-			      (mail-fetch-field "from"))))
-		  (when (and from
-			     (setq from
-				   (caar (mail-header-parse-addresses from))))
-		    (catch 'found
-		      (dolist (pair gnus-article-address-banner-alist)
-			(when (string-match (car pair) from)
-			  (throw 'found (cdr pair)))))))))
-	(when banner
-	  (article-goto-body)
-	  (cond
-	   ((eq banner 'signature)
-	    (when (gnus-article-narrow-to-signature)
-	      (widen)
-	      (forward-line -1)
-	      (delete-region (point) (point-max))))
-	   ((symbolp banner)
-	    (if (setq banner (cdr (assq banner gnus-article-banner-alist)))
-		(while (re-search-forward banner nil t)
-		  (delete-region (match-beginning 0) (match-end 0)))))
-	   ((stringp banner)
-	    (while (re-search-forward banner nil t)
-	      (delete-region (match-beginning 0) (match-end 0))))))))))
+	    buffer-read-only)
+	(article-goto-body)
+	(cond
+	 ((eq banner 'signature)
+	  (when (gnus-article-narrow-to-signature)
+	    (widen)
+	    (forward-line -1)
+	    (delete-region (point) (point-max))))
+	 ((symbolp banner)
+	  (if (setq banner (cdr (assq banner gnus-article-banner-alist)))
+	      (while (re-search-forward banner nil t)
+		(delete-region (match-beginning 0) (match-end 0)))))
+	 ((stringp banner)
+	  (while (re-search-forward banner nil t)
+	    (delete-region (match-beginning 0) (match-end 0)))))))))
 
 (defun article-babel ()
   "Translate article using an online translation service."
