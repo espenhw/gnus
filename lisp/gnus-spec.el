@@ -251,10 +251,16 @@
     'balloon-help
     ,(intern (format "gnus-balloon-face-%d" type))))
 
+(eval-and-compile
+  (defalias 'gnus-char-width
+    (if (fboundp 'char-width)
+	'char-width
+      (lambda (ch) 1)))) ;; A simple hack.
+
 (defun gnus-correct-length (string)
   "Return the correct width of STRING."
   (let ((length 0))
-    (mapcar (lambda (char) (incf length (char-width char))) string)
+    (mapcar (lambda (char) (incf length (gnus-char-width char))) string)
     length))
 
 (defun gnus-correct-substring (string start end)
@@ -265,14 +271,14 @@
     ;; Find the start position.
     (while (and (< seek length)
 		(< wstart start))
-      (incf wstart (char-width (aref string seek)))
+      (incf wstart (gnus-char-width (aref string seek)))
       (incf seek))
     (setq wend wstart
 	  wstart seek)
     ;; Find the end position.
     (while (and (< seek length)
 		(< wend end))
-      (incf wend (char-width (aref string seek)))
+      (incf wend (gnus-char-width (aref string seek)))
       (incf seek))
     (setq wend seek)
     (substring string wstart (1- wend))))
