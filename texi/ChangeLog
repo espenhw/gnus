@@ -1,3 +1,7 @@
+2003-09-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.texi (Reply): Fix typo.
+
 2003-09-22  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus.texi (Fancy Mail Splitting, SpamAssassin): corrected fancy
