@@ -742,6 +742,38 @@ SCORE is the score to add."
 	   (setcdr alist
 		   (cons (cons symbol value) (cdr alist)))))))
 
+(defun gnus-summary-raise-score (n)
+  "Raise the score of the current article by N."
+  (interactive "p")
+  (gnus-set-global-variables)
+  (gnus-summary-set-score (+ (gnus-summary-article-score) 
+			     (or n gnus-score-interactive-default-score ))))
+
+(defun gnus-summary-set-score (n)
+  "Set the score of the current article to N."
+  (interactive "p")
+  (gnus-set-global-variables)
+  (save-excursion
+    (gnus-summary-show-thread)
+    (let ((buffer-read-only nil))
+      ;; Set score.
+      (gnus-summary-update-mark
+       (if (= n (or gnus-summary-default-score 0)) ? 
+	 (if (< n (or gnus-summary-default-score 0))
+	     gnus-score-below-mark gnus-score-over-mark)) 'score))
+    (let* ((article (gnus-summary-article-number))
+	   (score (assq article gnus-newsgroup-scored)))
+      (if score (setcdr score n)
+	(setq gnus-newsgroup-scored
+	      (cons (cons article n) gnus-newsgroup-scored))))
+    (gnus-summary-update-line)))
+
+(defun gnus-summary-current-score ()
+  "Return the score of the current article."
+  (interactive)
+  (gnus-set-global-variables)
+  (gnus-message 1 "%s" (gnus-summary-article-score)))
+
 (defun gnus-score-change-score-file (file)
   "Change current score alist."
   (interactive 

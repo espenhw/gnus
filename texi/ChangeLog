@@ -1,3 +1,7 @@
+Wed May 22 23:41:28 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Troubleshooting): Addition.
+
 Tue May 21 12:52:34 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi: Excised message documentation.

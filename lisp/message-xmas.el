@@ -37,17 +37,8 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 `right-toolbar', and `left-toolbar'.")
 
 (defvar message-toolbar 
-  '(
-    [message-reply message-reply t "Reply"]
-    [message-get message-get t "Message get"]
-    [message-originate message-originate t "Originate"]
-    [message-save message-save t "Save"]
-    [message-copy message-copy t "Copy message"]
-    [message-delete message-delete t "Delete message"]
-    [message-forward message-forward t "Forward message"]
-    [message-spell message-spell t "Spell"]
-    [message-help message-help  t "Message help"]
-    )
+  '([message-spell toolbar-ispell t "Spell"]
+    [message-help toolbar-info t "Message help"])
   "The message buffer toolbar.")
 
 (defun message-xmas-find-glyph-directory (&optional package)

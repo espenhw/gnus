@@ -1,4 +1,43 @@
+Wed May 22 21:56:56 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-setup-news): Slave Gnusii should clear the dribble
+	buffer.
+
+Wed May 22 22:32:21 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-summary-set-score): Moved here.
+	(gnus-summary-raise-score): Would bug out on nil arguments.
+
+	* message-xmas.el (message-toolbar): Changed.
+
+	* gnus-xmas.el (gnus-summary-mail-toolbar): New toolbar.
+	(gnus-xmas-setup-summary-toolbar): Use it.
+
+Wed May 22 19:24:04 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-message-archive-method): Buggy definition.
+	(gnus-summary-prepare-threads): Don't mark ancient as low-scored. 
+	(gnus-summary-prepare-unthreaded): Ditto.
+
+Wed May 22 02:14:42 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-save-hidden-threads): New macro.
+	(gnus-hidden-threads-configuration): New function.
+	(gnus-restore-hidden-threads-configuration): New function.
+	(gnus-summary-search-article): Use it.
+
+	* gnus-picon.el (gnus-picons-reverse-domain-path): New definition.
+
+	* message.el: Required wrong file under XEmacs.
+
+	* gnus-gl.el (bbb-get-predictions): Return nil on errors.
+
+	* nnfolder.el (nnfolder-close-group): Make sure the buffer is
+	alive before killing it.
+
 Tue May 21 20:08:33 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.90 is released.
 
 	* gnus.el (gnus-dribble-read-file): Don't do modes unless they are
 	available. 

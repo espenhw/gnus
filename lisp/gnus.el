@@ -133,10 +133,11 @@ There is a lot more to know about select methods and virtual servers -
 see the manual for details.")
 
 (defvar gnus-message-archive-method 
-  '(nnfolder
+  `(nnfolder
     "archive"
-    (nnfolder-directory (nnheader-concat message-directory "archive"))
-    (nnfolder-active-file (nnheader-concat message-directory "archive/active"))
+    (nnfolder-directory ,(nnheader-concat message-directory "archive"))
+    (nnfolder-active-file 
+     ,(nnheader-concat message-directory "archive/active"))
     (nnfolder-get-new-mail nil)
     (nnfolder-inhibit-expiry t))
   "*Method used for archiving messages you've sent.
@@ -1721,7 +1722,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.90"
+(defconst gnus-version "September Gnus v0.91"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2048,7 +2049,8 @@ Thank you for your help in stamping out bugs.
       gnus-score-raise-same-subject gnus-score-default
       gnus-score-raise-thread gnus-score-lower-same-subject-and-select
       gnus-score-lower-same-subject gnus-score-lower-thread
-      gnus-possibly-score-headers)
+      gnus-possibly-score-headers gnus-summary-raise-score 
+      gnus-summary-set-score gnus-summary-current-score)
      ("gnus-score"
       (gnus-summary-score-map keymap) gnus-score-save gnus-score-headers
       gnus-current-score-file-nondirectory gnus-score-adaptive
@@ -4366,7 +4368,8 @@ prompt the user for the name of an NNTP server to use."
 		(gnus-make-newsrc-file gnus-startup-file))
 
 	  ;; Read the dribble file.
-	  (and (or gnus-slave gnus-use-dribble-file) (gnus-dribble-read-file))
+	  (when (or gnus-slave gnus-use-dribble-file)
+	    (gnus-dribble-read-file))
 
 	  ;; Allow using GroupLens predictions.
 	  (when gnus-use-grouplens
@@ -7395,6 +7398,38 @@ This is all marks except unread, ticked, dormant, and expirable."
 	   (= mark gnus-dormant-mark)
 	   (= mark gnus-expirable-mark))))
 
+;; Saving hidden threads.
+
+(put 'gnus-save-hidden-threads 'lisp-indent-function 0)
+(put 'gnus-save-hidden-threads 'lisp-indent-hook 0)
+
+(defmacro gnus-save-hidden-threads (&rest forms)
+  "Save hidden threads, eval FORMS, and restore the hidden threads."
+  (let ((config (make-symbol "config")))
+    `(let ((,config (gnus-hidden-threads-configuration)))
+       (unwind-protect
+	   (progn
+	     ,@forms)
+	 (gnus-restore-hidden-threads-configuration ,config)))))
+
+(defun gnus-hidden-threads-configuration ()
+  "Return the current hidden threads configuration."
+  (save-excursion
+    (let (config)
+      (goto-char (point-min))
+      (while (search-forward "\r" nil t)
+	(push (1- (point)) config))
+      config)))
+
+(defun gnus-restore-hidden-threads-configuration (config)
+  "Restore hidden threads configuration from CONFIG."
+  (let (point buffer-read-only)
+    (while (setq point (pop config))
+      (when (and (< point (point-max))
+		 (goto-char point)
+		 (= (following-char) ?\n))
+	(subst-char-in-region point (1+ point) ?\n ?\r)))))
+
 ;; Various summary mode internalish functions.
 
 (defun gnus-mouse-pick-article (e)
@@ -8443,7 +8478,8 @@ or a straight list of headers."
 			default-score)
 		    gnus-summary-mark-below)
 		 ;; Don't touch sparse articles.
-		 (not (memq number gnus-newsgroup-sparse)))
+		 (not (memq number gnus-newsgroup-sparse))
+		 (not (memq number gnus-newsgroup-ancient)))
 	    (setq gnus-newsgroup-unreads
 		  (delq number gnus-newsgroup-unreads))
 	    (if gnus-newsgroup-auto-expire
@@ -8567,7 +8603,8 @@ or a straight list of headers."
 	(when (and gnus-summary-mark-below
 		   (< (or (cdr (assq number gnus-newsgroup-scored))
 			  gnus-summary-default-score 0)
-		      gnus-summary-mark-below))
+		      gnus-summary-mark-below)
+		   (not (memq number gnus-newsgroup-ancient)))
 	  (setq gnus-newsgroup-unreads
 		(delq number gnus-newsgroup-unreads))
 	  (if gnus-newsgroup-auto-expire
@@ -11073,36 +11110,40 @@ Optional argument BACKWARD means do search for backward.
 	     're-search-backward 're-search-forward))
 	(sum (current-buffer))
 	(found nil))
-    ;; Hidden thread subtrees must be searched, too.
-    (gnus-summary-show-all-threads)
-    (gnus-summary-select-article)
-    (set-buffer gnus-article-buffer)
-    (while (not found)
-      (gnus-message 7 "Searching article: %d..." gnus-current-article)
-      (if (if backward
-	      (re-search-backward regexp nil t)
-	    (re-search-forward regexp nil t))
-	  ;; We found the regexp.
-	  (progn
-	    (setq found 'found)
-	    (beginning-of-line)
-	    (set-window-start
-	     (get-buffer-window (current-buffer))
-	     (point)))
-	;; We didn't find it, so we go to the next article.
-	(set-buffer sum)
-	(if (not (if backward (gnus-summary-find-prev)
-		   (gnus-summary-find-next)))
-	    ;; No more articles.
-	    (setq found t)
-	  ;; Select the next article and adjust point.
-	  (gnus-summary-select-article)
-	  (set-buffer gnus-article-buffer)
-	  (widen)
-	  (goto-char (if backward (point-max) (point-min))))))
-    (set-buffer sum)
+    (gnus-save-hidden-threads
+      (gnus-summary-select-article)
+      (set-buffer gnus-article-buffer)
+      (while (not found)
+	(gnus-message 7 "Searching article: %d..." (cdr gnus-article-current))
+	(if (if backward
+		(re-search-backward regexp nil t)
+	      (re-search-forward regexp nil t))
+	    ;; We found the regexp.
+	    (progn
+	      (setq found 'found)
+	      (beginning-of-line)
+	      (set-window-start
+	       (get-buffer-window (current-buffer))
+	       (point)))
+	  ;; We didn't find it, so we go to the next article.
+	  (set-buffer sum)
+	  (if (not (if backward (gnus-summary-find-prev)
+		     (gnus-summary-find-next)))
+	      ;; No more articles.
+	      (setq found t)
+	    ;; Select the next article and adjust point.
+	    (gnus-summary-select-article)
+	    (set-buffer gnus-article-buffer)
+	    (widen)
+	    (goto-char (if backward (point-max) (point-min))))))
+      (set-buffer sum)
+      (gnus-message 7 ""))
     ;; Return whether we found the regexp.
-    (eq found 'found)))
+    (when (eq found 'found)
+      (gnus-summary-show-thread)
+      (gnus-summary-goto-subject gnus-current-article)
+      (gnus-summary-position-point)
+      t)))
 
 (defun gnus-summary-find-matching (header regexp &optional backward unread
 					  not-case-fold)
@@ -11734,41 +11775,6 @@ groups."
       (narrow-to-region (point-min) (point))
       (pp-eval-expression
        (list 'quote (mapcar 'car (nnmail-article-group 'identity)))))))
-
-;; Summary score commands.
-
-;; Suggested by boubaker@cenatls.cena.dgac.fr.
-
-(defun gnus-summary-raise-score (n)
-  "Raise the score of the current article by N."
-  (interactive "p")
-  (gnus-set-global-variables)
-  (gnus-summary-set-score (+ (gnus-summary-article-score) n)))
-
-(defun gnus-summary-set-score (n)
-  "Set the score of the current article to N."
-  (interactive "p")
-  (gnus-set-global-variables)
-  (save-excursion
-    (gnus-summary-show-thread)
-    (let ((buffer-read-only nil))
-      ;; Set score.
-      (gnus-summary-update-mark
-       (if (= n (or gnus-summary-default-score 0)) ? 
-	 (if (< n (or gnus-summary-default-score 0))
-	     gnus-score-below-mark gnus-score-over-mark)) 'score))
-    (let* ((article (gnus-summary-article-number))
-	   (score (assq article gnus-newsgroup-scored)))
-      (if score (setcdr score n)
-	(setq gnus-newsgroup-scored
-	      (cons (cons article n) gnus-newsgroup-scored))))
-    (gnus-summary-update-line)))
-
-(defun gnus-summary-current-score ()
-  "Return the score of the current article."
-  (interactive)
-  (gnus-set-global-variables)
-  (gnus-message 1 "%s" (gnus-summary-article-score)))
 
 ;; Summary marking commands.
 
@@ -14760,8 +14766,7 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	    (setq gnus-dribble-eval-file t)))))))
 
 (defun gnus-dribble-eval-file ()
-  (if (not gnus-dribble-eval-file)
-      ()
+  (when gnus-dribble-eval-file
     (setq gnus-dribble-eval-file nil)
     (save-excursion
       (let ((gnus-dribble-ignore t))
@@ -14769,32 +14774,31 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	(eval-buffer (current-buffer))))))
 
 (defun gnus-dribble-delete-file ()
-  (if (file-exists-p (gnus-dribble-file-name))
-      (delete-file (gnus-dribble-file-name)))
-  (if gnus-dribble-buffer
-      (save-excursion
-	(set-buffer gnus-dribble-buffer)
-	(let ((auto (make-auto-save-file-name)))
-	  (if (file-exists-p auto)
-	      (delete-file auto))
-	  (erase-buffer)
-	  (set-buffer-modified-p nil)))))
+  (when (file-exists-p (gnus-dribble-file-name))
+    (delete-file (gnus-dribble-file-name)))
+  (when gnus-dribble-buffer
+    (save-excursion
+      (set-buffer gnus-dribble-buffer)
+      (let ((auto (make-auto-save-file-name)))
+	(if (file-exists-p auto)
+	    (delete-file auto))
+	(erase-buffer)
+	(set-buffer-modified-p nil)))))
 
 (defun gnus-dribble-save ()
-  (if (and gnus-dribble-buffer
-	   (buffer-name gnus-dribble-buffer))
-      (save-excursion
-	(set-buffer gnus-dribble-buffer)
-	(save-buffer))))
+  (when (and gnus-dribble-buffer
+	     (buffer-name gnus-dribble-buffer))
+    (save-excursion
+      (set-buffer gnus-dribble-buffer)
+      (save-buffer))))
 
 (defun gnus-dribble-clear ()
-  (save-excursion
-    (if (gnus-buffer-exists-p gnus-dribble-buffer)
-	(progn
-	  (set-buffer gnus-dribble-buffer)
-	  (erase-buffer)
-	  (set-buffer-modified-p nil)
-	  (setq buffer-saved-size (buffer-size))))))
+  (when (gnus-buffer-exists-p gnus-dribble-buffer)
+    (save-excursion
+      (set-buffer gnus-dribble-buffer)
+      (erase-buffer)
+      (set-buffer-modified-p nil)
+      (setq buffer-saved-size (buffer-size)))))
 
 
 ;;;
@@ -15259,6 +15263,10 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 
     ;; Possibly eval the dribble file.
     (and init (or gnus-use-dribble-file gnus-slave) (gnus-dribble-eval-file))
+
+    ;; Slave Gnusii should then clear the dribble buffer.
+    (when (and init gnus-slave)
+      (gnus-dribble-clear))
 
     (gnus-update-format-specifications)
 

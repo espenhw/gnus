@@ -238,7 +238,8 @@ it.")
   (when (or (assoc group nnfolder-buffer-alist)
 	    (equal group nnfolder-current-group))
     (nnfolder-possibly-change-group group server)
-    (when nnfolder-current-buffer
+    (when (and nnfolder-current-buffer
+	       (buffer-name nnfolder-current-buffer))
       (save-excursion
 	(set-buffer nnfolder-current-buffer)
 	;; If the buffer was modified, write the file out now.

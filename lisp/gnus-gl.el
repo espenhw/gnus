@@ -348,7 +348,9 @@ recommend using both scores and grouplens predictions together."
   "Ask the bbb for predictions, and build up the score alist."
   (if (or (null grouplens-bbb-token)
 	  (equal grouplens-bbb-token "0"))
-      (gnus-message 3 "Error: You are not logged in to a BBB")
+      (progn 
+	(gnus-message 3 "Error: You are not logged in to a BBB")
+	nil)
     (gnus-message 5 "Fetching Predictions...")
     (let (predict-list
 	  (predict-command (bbb-build-predict-command midlist groupname 

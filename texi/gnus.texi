@@ -11927,6 +11927,11 @@ insulting me about.  Always over-explain everything.  It's much easier
 for all of us---if I don't have all the information I need, I will just
 mail you and ask for more info, and everything takes more time.
 
+If the problem you're seeing is very visual, and you can't quite explain
+it, copy the Emacs window to a file (with @code{xwd}, for instance), put
+it somewhere it can be reached, and include the URL of the picture in
+the bug report.a
+
 If you just need help, you are better off asking on
 @samp{gnu.emacs.gnus}.  I'm not very helpful.
 
@@ -12575,16 +12580,12 @@ Below is a slightly shortened version of the @code{nndir} backend.
   "*Non-nil means that nndir will never retrieve NOV headers."
   nnml-nov-is-evil)
 
-
-
 (defvoo nndir-current-group "" nil nnml-current-group nnmh-current-group)
 (defvoo nndir-top-directory nil nil nnml-directory nnmh-directory)
 (defvoo nndir-get-new-mail nil nil nnml-get-new-mail nnmh-get-new-mail)
 
 (defvoo nndir-status-string "" nil nnmh-status-string)
 (defconst nndir-version "nndir 1.0")
-
-
 
 ;;; Interface functions.
 

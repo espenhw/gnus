@@ -558,59 +558,73 @@ If it is non-nil, it must be a toolbar.  The five legal values are
 `right-toolbar', and `left-toolbar'.")
 
 (defvar gnus-group-toolbar 
-  '([gnus-group-exit-icon gnus-group-exit t "Exit Gnus"]
-    [gnus-group-kill-group-icon gnus-group-kill-group t "Kill group"]
-    [gnus-group-get-new-news-icon gnus-group-get-new-news t "Get new news"]
-    [gnus-group-get-new-news-this-group-icon 
+  '([gnus-group-exit gnus-group-exit t "Exit Gnus"]
+    [gnus-group-kill-group gnus-group-kill-group t "Kill group"]
+    [gnus-group-get-new-news gnus-group-get-new-news t "Get new news"]
+    [gnus-group-get-new-news-this-group 
      gnus-group-get-new-news-this-group t "Get new news in this group"]
-    [gnus-group-catchup-current-icon 
+    [gnus-group-catchup-current 
      gnus-group-catchup-current t "Catchup group"]
-    [gnus-group-describe-group-icon 
+    [gnus-group-describe-group 
      gnus-group-describe-group t "Describe group"])
   "The group buffer toolbar.")
 
 (defvar gnus-summary-toolbar 
-  '([gnus-summary-post-news-icon 
+  '([gnus-summary-post-news 
      gnus-summary-post-news t "Post an article"]
-    [gnus-summary-save-article-file-icon
+    [gnus-summary-save-article-file
      gnus-summary-save-article-file t "Save article in file"]
-    [gnus-summary-save-article-icon
+    [gnus-summary-save-article
      gnus-summary-save-article t "Save article"]
-    [gnus-summary-reply-icon 
+    [gnus-summary-reply 
      gnus-summary-reply t "Mail a reply"]
-    [gnus-summary-reply-with-original-icon
+    [gnus-summary-reply-with-original
      gnus-summary-reply-with-original t "Mail a reply and yank the original"]
-    [gnus-summary-followup-icon 
+    [gnus-summary-followup 
      gnus-summary-followup t "Post a followup"]
-    [gnus-summary-followup-with-original-icon
+    [gnus-summary-followup-with-original
      gnus-summary-followup-with-original t 
      "Post a followup and yank the original"]
-    [gnus-uu-decode-uu-icon
+    [gnus-uu-decode-uu
      gnus-uu-decode-uu t "Decode uuencoded articles"]
-    [gnus-uu-post-news-icon 
+    [gnus-uu-post-news 
      gnus-uu-post-news t "Post an uuencoded article"]
-    [gnus-summary-caesar-message-icon
+    [gnus-summary-caesar-message
      gnus-summary-caesar-message t "Rot 13"]
-    [gnus-summary-cancel-article-icon
+    [gnus-summary-cancel-article
      gnus-summary-cancel-article t "Cancel article"])
   "The summary buffer toolbar.")
+
+(defvar gnus-summary-mail-toolbar
+  '([gnus-summary-mail-reply gnus-summary-reply t "Reply"]
+    [gnus-summary-mail-get gnus-mail-get t "Message get"]
+    [gnus-summary-mail-originate gnus-summary-post-news t "Originate"]
+    [gnus-summary-mail-save gnus-summary-save-article t "Save"]
+    [gnus-summary-mail-copy gnus-summary-copy-article t "Copy message"]
+    [gnus-summary-mail-delete gnus-summary-delete-article t "Delete message"]
+    [gnus-summary-mail-forward gnus-summary-mail-forward t "Forward message"]
+;    [gnus-summary-mail-spell gnus-mail-spell t "Spell"]
+;    [gnus-summary-mail-help gnus-mail-help  t "Message help"]
+    )
+  "The summary buffer mail toolbar.")
 
 (defun gnus-xmas-setup-group-toolbar ()
   (let (dir)
     (and gnus-use-toolbar
 	 (setq dir (message-xmas-setup-toolbar gnus-group-toolbar nil "gnus"))
-	 (file-exists-p (concat dir "gnus-group-catchup-current-icon-up.xpm"))
+	 (file-exists-p (concat dir "gnus-group-catchup-current-up.xpm"))
 	 (set-specifier (symbol-value gnus-use-toolbar)
 			(cons (current-buffer) gnus-group-toolbar)))))
 
 (defun gnus-xmas-setup-summary-toolbar ()
-  (let (dir)
+  (let ((bar (if (gnus-news-group-p gnus-newsgroup-name)
+		 gnus-summary-toolbar gnus-summary-mail-toolbar))
+	dir)
     (and gnus-use-toolbar
-	 (setq dir (message-xmas-setup-toolbar gnus-summary-toolbar 
-					       nil "gnus"))
-	 (file-exists-p (concat dir "gnus-group-catchup-current-icon-up.xpm"))
+	 (setq dir (message-xmas-setup-toolbar bar nil "gnus"))
+	 (file-exists-p (concat dir "gnus-group-catchup-current-up.xpm"))
 	 (set-specifier (symbol-value gnus-use-toolbar)
-			(cons (current-buffer) gnus-summary-toolbar)))))
+			(cons (current-buffer) bar)))))
 
 ;; Written by Erik Naggum <erik@naggum.no>.
 ;; Saved by Steve Baur <steve@miranova.com>.

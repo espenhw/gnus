@@ -36,7 +36,7 @@
 (require 'timezone)
 (require 'easymenu)
 (if (string-match "XEmacs\\|Lucid" emacs-version)
-    (require 'mail-abbrev)
+    (require 'mail-abbrevs)
   (require 'mailabbrev))
 
 (defvar message-directory "~/Mail/"

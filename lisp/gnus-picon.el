@@ -327,11 +327,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 
 (defun gnus-picons-reverse-domain-path (str)
   "a/b/c/d -> d/c/b/a"
-  (if (equal (replace-in-string str "^[^/]*$" "") "")
-      str
-    (concat (replace-in-string str "^.*/\\([_a-zA-Z0-9-]+\\)$" "\\1") "/"
-            (gnus-picons-reverse-domain-path 
-             (replace-in-string str "^\\(.*\\)/[_a-zA-Z0-9-]+$" "\\1")))))
+  (mapconcat 'identity (nreverse (message-tokenize-header str "/")) "/"))
 
 (provide 'gnus-picon)
 
