@@ -1341,10 +1341,11 @@ returned, if ITEMS is a symbol only its value is returned."
 	   (imap-send-command-wait (list "STATUS \""
 					 (imap-utf7-encode mailbox)
 					 "\" "
-					 (format "%s"
-						 (if (listp items)
-						     items
-						   (list items))))))
+					 (upcase
+					  (format "%s"
+						  (if (listp items)
+						      items
+						    (list items)))))))
       (if (listp items)
 	  (mapcar (lambda (item)
 		    (imap-mailbox-get item mailbox))
