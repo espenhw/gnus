@@ -33,7 +33,7 @@
 \makeindex
 \begin{document}
 
-\newcommand{\gnusversionname}{Oort Gnus v0.05}
+\newcommand{\gnusversionname}{Oort Gnus v0.06}
 \newcommand{\gnuschaptername}{}
 \newcommand{\gnussectionname}{}
 
@@ -382,7 +382,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Oort Gnus v0.05
+This manual corresponds to Oort Gnus v0.06
 
 @end ifinfo
 
@@ -16563,11 +16563,15 @@ If you use the list form, the last element must always be the default
 method---it must always match all groups.
 
 @vindex gnus-agent-expire-all
-if @code{gnus-agent-expire-all} is non-@code{nil}, this command will
+If @code{gnus-agent-expire-all} is non-@code{nil}, this command will
 expire all articles---unread, read, ticked and dormant.  If @code{nil}
 (which is the default), only read articles are eligible for expiry, and
 unread, ticked and dormant articles will be kept indefinitely.
 
+@findex gnus-agent-regenerate
+If you find that some articles eligible for expiry are never expired,
+perhaps some Gnus Agent files are corrupted.  There's a special
+@code{gnus-agent-regenerate} command to fix possible problems.
 
 @node Agent and IMAP
 @subsection Agent and IMAP

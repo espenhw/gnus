@@ -1,3 +1,7 @@
+2002-01-28  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Agent Expiry): Addition.
+
 2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-mime.texi (Customization): Added documentation for
