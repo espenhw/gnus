@@ -284,36 +284,36 @@ node `(gnus)Server Buffer'.")
                     (setq category (cdr category)))))))
   category)
 
-;; Fixme: These two can probably be in eval-when-compile.
-
-(defmacro gnus-agent-cat-defaccessor (name prop-name)
-  "Define accessor and setter methods for manipulating a list of the form
+(eval-when-compile
+  (defmacro gnus-agent-cat-defaccessor (name prop-name)
+    "Define accessor and setter methods for manipulating a list of the form
 \(NAME (PROPERTY1 VALUE1) ... (PROPERTY_N VALUE_N)).
 Given the call (gnus-agent-cat-defaccessor func PROPERTY1), the list may be
 manipulated as follows:
   (func LIST): Returns VALUE1
   (setf (func LIST) NEW_VALUE1): Replaces VALUE1 with NEW_VALUE1."
-  `(progn (defmacro ,name (category)
-            (list (quote cdr) (list (quote assq)
-                                    (quote (quote ,prop-name)) category)))
+    `(progn (defmacro ,name (category)
+              (list (quote cdr) (list (quote assq)
+                                      (quote (quote ,prop-name)) category)))
 
-          (define-setf-method ,name (category)
-            (let* ((--category--temp-- (make-symbol "--category--"))
-                   (--value--temp-- (make-symbol "--value--")))
-              (list (list --category--temp--) ; temporary-variables
-                    (list category)     ; value-forms
-                    (list --value--temp--) ; store-variables
-                    (let* ((category --category--temp--) ; store-form
-                           (value --value--temp--))
-                      (list (quote gnus-agent-cat-set-property)
-                            category
-                            (quote (quote ,prop-name))
-                            value))
-                    (list (quote ,name) --category--temp--) ; access-form
-                    )))))
+            (define-setf-method ,name (category)
+              (let* ((--category--temp-- (make-symbol "--category--"))
+                     (--value--temp-- (make-symbol "--value--")))
+                (list (list --category--temp--) ; temporary-variables
+                      (list category)   ; value-forms
+                      (list --value--temp--) ; store-variables
+                      (let* ((category --category--temp--) ; store-form
+                             (value --value--temp--))
+                        (list (quote gnus-agent-cat-set-property)
+                              category
+                              (quote (quote ,prop-name))
+                              value))
+                      (list (quote ,name) --category--temp--) ; access-form
+                      )))))
 
-(defmacro gnus-agent-cat-name (category)
-  `(car ,category))
+  (defmacro gnus-agent-cat-name (category)
+    `(car ,category))
+  )
 
 (gnus-agent-cat-defaccessor
  gnus-agent-cat-days-until-old    agent-days-until-old)
@@ -434,7 +434,8 @@ manipulated as follows:
 						     buffer))))
 	    minor-mode-map-alist))
     (when (eq major-mode 'gnus-group-mode)
-      (let ((init-plugged gnus-plugged))
+      (let ((init-plugged gnus-plugged)
+            (gnus-agent-go-online nil))
         ;; g-a-t-p does nothing when gnus-plugged isn't changed.
         ;; Therefore, make certain that the current value does not
         ;; match the desired initial value.
@@ -916,28 +917,28 @@ article's mark is toggled."
 	    (cond ((< a h)
 		   ;; Ignore IDs in the alist that are not being
 		   ;; displayed in the summary.
-		   (pop alist))
+		   (setq alist (cdr alist)))
 		  ((> a h)
                    ;; Headers that are not in the alist should be
                    ;; fictious (see nnagent-retrieve-headers); they
                    ;; imply that this article isn't in the agent.
 		   (gnus-agent-append-to-list tail-undownloaded h)
 		   (gnus-agent-append-to-list tail-unfetched    h)
-                   (pop headers)) 
+                   (setq headers (cdr headers))) 
 		  ((cdar alist)
-		   (pop alist)
-		   (pop headers)
+		   (setq alist (cdr alist))
+		   (setq headers (cdr headers))
 		   nil                  ; ignore already downloaded
 		   )
 		  (t
-		   (pop alist)
-		   (pop headers)
+		   (setq alist (cdr alist))
+		   (setq headers (cdr headers))
                    
                    ;; This article isn't in the agent.  Check to see
                    ;; if it is in the cache.  If it is, it's been
                    ;; downloaded.
                    (while (and cached (< (car cached) a))
-                     (pop cached))
+                     (setq cached (cdr cached)))
                    (unless (equal a (car cached))
                      (gnus-agent-append-to-list tail-undownloaded a))))))
 
@@ -1327,7 +1328,7 @@ This can be added to `gnus-select-article-hook' or
                       (gnus-agent-append-to-list
 		       tail-fetched-articles (caar pos)))
                     (widen)
-                    (pop pos))))
+                    (setq pos (cdr pos)))))
 
             (gnus-agent-save-alist group (cdr fetched-articles) date)
             (gnus-message 7 ""))
@@ -1361,7 +1362,7 @@ This can be added to `gnus-select-article-hook' or
 	(insert (string-to-number (cdar crosses)))
 	(insert-buffer-substring gnus-agent-overview-buffer beg end)
         (gnus-agent-check-overview-buffer))
-      (pop crosses))))
+      (setq crosses (cdr crosses)))))
 
 (defun gnus-agent-backup-overview-buffer ()
   (when gnus-newsgroup-name
@@ -1429,7 +1430,7 @@ and that there are no duplicates."
 		      (gnus-agent-article-name ".overview"
 					       (caar gnus-agent-buffer-alist))
 		      nil 'silent))
-      (pop gnus-agent-buffer-alist))
+      (setq gnus-agent-buffer-alist (cdr gnus-agent-buffer-alist)))
     (while gnus-agent-group-alist
       (with-temp-file (gnus-agent-article-name
 		       ".agentview" (caar gnus-agent-group-alist))
@@ -1437,7 +1438,7 @@ and that there are no duplicates."
 	(insert "\n")
         (princ 1 (current-buffer))
 	(insert "\n"))
-      (pop gnus-agent-group-alist))))
+      (setq gnus-agent-group-alist (cdr gnus-agent-group-alist)))))
 
 (defun gnus-agent-find-parameter (group symbol)
   "Search for GROUPs SYMBOL in the group's parameters, the group's
@@ -1808,7 +1809,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
 				       (error-message-string err)))
 		       (signal 'quit
 			       "Cannot fetch articles into the Gnus agent")))))))))
-	(pop methods))
+	(setq methods (cdr methods)))
       (gnus-run-hooks 'gnus-agent-fetched-hook)
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
 
@@ -2952,7 +2953,7 @@ articles in every agentized group."))
 			(gnus-agent-append-to-list tail-unread candidate)
 			nil)
 		       ((> candidate max)
-			(pop read)))))))
+			(setq read (cdr read))))))))
     (while known
       (gnus-agent-append-to-list tail-unread (car (pop known))))
     (cdr unread)))
@@ -2980,14 +2981,14 @@ has been fetched."
               (v2 (caar ref)))
           (cond ((< v1 v2) ; v1 does not appear in the reference list
 		 (gnus-agent-append-to-list tail-uncached v1)
-                 (pop arts))
+                 (setq arts (cdr arts)))
                 ((= v1 v2)
                  (unless (or cached-header (cdar ref)) ; v1 is already cached
 		   (gnus-agent-append-to-list tail-uncached v1))
-                 (pop arts)
-                 (pop ref))
+                 (setq arts (cdr arts))
+                 (setq ref (cdr ref)))
                 (t ; reference article (v2) preceeds the list being filtered
-                 (pop ref)))))
+                 (setq ref (cdr ref))))))
       (while arts
 	(gnus-agent-append-to-list tail-uncached (pop arts)))
       (cdr uncached))
@@ -3208,7 +3209,7 @@ If REREAD is not nil, downloaded articles are marked as unread."
 			   (gnus-message 4 "gnus-agent-regenerate-group: NOV\
  entries contained duplicate of article %s.	 Duplicate deleted." l1)
                            (gnus-delete-line)
-                           (pop nov-arts)))))
+                           (setq nov-arts (cdr nov-arts))))))
                  (t
 		  (gnus-message 1 "gnus-agent-regenerate-group: NOV\
  entries contained line that did not begin with an article number.  Deleted\
@@ -3254,12 +3255,12 @@ If REREAD is not nil, downloaded articles are marked as unread."
                            (nth 5 (file-attributes
                                    (concat dir (number-to-string
                                                 (car downloaded))))))) alist)
-              (pop downloaded)
-              (pop nov-arts))
+              (setq downloaded (cdr downloaded))
+              (setq nov-arts (cdr nov-arts)))
              (t
               ;; This entry in the overview has not been downloaded
               (push (cons (car nov-arts) nil) alist)
-              (pop nov-arts))))
+              (setq nov-arts (cdr nov-arts)))))
 
      ;; When gnus-agent-consider-all-articles is set,
      ;; gnus-agent-regenerate-group should NOT remove article IDs from
@@ -3283,15 +3284,15 @@ If REREAD is not nil, downloaded articles are marked as unread."
                    (oID (caar o)))
                (cond ((not nID)
                       (setq n (setcdr n (list (list oID))))
-                      (pop o))
+                      (setq o (cdr o)))
                      ((< oID nID)
                       (setcdr n (cons (list oID) (cdr n)))
-                      (pop o))
+                      (setq o (cdr o)))
                      ((= oID nID)
-                      (pop o)
-                      (pop n))
+                      (setq o (cdr o))
+                      (setq n (cdr n)))
                      (t
-                      (pop n)))))
+                      (setq n (cdr n))))))
            (setq alist (cdr merged)))
        ;; Restore the last article ID if it is not already in the new alist
        (let ((n (last alist))
@@ -3443,7 +3444,7 @@ If CLEAN, don't read existing active files."
                                                  (caar days)
                                                  group))
                                       (throw 'found (cadar days)))
-                                    (pop days))
+                                    (setq days (cdr days)))
                                   nil)))
                       (when day
                         (gnus-group-set-parameter group 'agent-days-until-old
