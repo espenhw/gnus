@@ -704,11 +704,15 @@ decodable."
   ;; Be more liberal to accept buggy base64 strings. If
   ;; base64-decode-string accepts buggy strings, this function could
   ;; be aliased to identity.
-  (case (mod (length string) 4)
-    (0 string)
-    (1 string) ;; Error, don't pad it.
-    (2 (concat string "=="))
-    (3 (concat string "="))))
+  (if (= 0 (mod (length string) 4))
+      string
+    (when (string-match "=+$" string)
+      (setq string (substring string 0 (match-beginning 0))))
+    (case (mod (length string) 4)
+      (0 string)
+      (1 string) ;; Error, don't pad it.
+      (2 (concat string "=="))
+      (3 (concat string "=")))))
 
 (defun rfc2047-decode (charset encoding string)
   "Decode STRING from the given MIME CHARSET in the given ENCODING.
