@@ -57,15 +57,7 @@
     (defalias 'gnus-replace-in-string 'replace-in-string))
    ((fboundp 'replace-regexp-in-string)
     (defun gnus-replace-in-string  (string regexp newtext &optional literal)
-      (replace-regexp-in-string regexp newtext string nil literal)))
-   (t
-    (defun gnus-replace-in-string (string regexp newtext &optional literal)
-      (let ((start 0) tail)
-	(while (string-match regexp string start)
-	  (setq tail (- (length string) (match-end 0)))
-	  (setq string (replace-match newtext nil literal string))
-	  (setq start (- (length string) tail))))
-      string))))
+      (replace-regexp-in-string regexp newtext string nil literal)))))
 
 ;;; bring in the netrc functions as aliases
 (defalias 'gnus-netrc-get 'netrc-get)
