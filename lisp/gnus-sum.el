@@ -7762,6 +7762,8 @@ groups."
      ((eq arg 2) (setq raw t
 		       force t))
      (t (setq force t)))
+    (if (and raw (not force) (equal gnus-newsgroup-name "nndraft:drafts"))
+	(error "Can't edit the raw article in group nndraft:drafts."))
     (save-excursion
       (set-buffer gnus-summary-buffer)
       (let ((mail-parse-charset gnus-newsgroup-charset)
@@ -7774,6 +7776,8 @@ groups."
 	(when (and (not raw) (gnus-buffer-live-p gnus-article-buffer))
 	  (with-current-buffer gnus-article-buffer
 	    (mm-enable-multibyte)))
+	(if (equal gnus-newsgroup-name "nndraft:drafts")
+	    (setq raw t))
 	(gnus-article-edit-article
 	 (if raw 'ignore 
 	   #'(lambda () 

@@ -1,3 +1,8 @@
+2000-05-14 14:02:12  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-edit-article): Better support for
+	nndraft:drafts.
+
 2000-05-14  Dave Love  <fx@gnu.org>
 
 	* nnheader.el: Replace uses of `fset' with `defalias'.
