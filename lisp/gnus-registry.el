@@ -41,7 +41,7 @@
   "*The article registry by Message ID.")
 
 (defvar gnus-registry-headers-hashtb nil
-  "*The article header registry by Message ID.")
+  "*The article header registry by Message ID.  Unused for now.")
 
 (defcustom gnus-registry-unfollowed-groups '("delayed" "drafts" "queue")
   "List of groups that gnus-registry-split-fancy-with-parent won't follow.
@@ -57,14 +57,10 @@ The group names are matched, they don't have to be fully qualified."
     (defalias 'puthash 'cl-puthash)))
 
 (defun gnus-registry-translate-to-alist ()
-  (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb))
-  (setq gnus-registry-headers-alist (hashtable-to-alist 
-				     gnus-registry-headers-hashtb)))
+  (setq gnus-registry-alist (hashtable-to-alist gnus-registry-hashtb)))
 
 (defun gnus-registry-translate-from-alist ()
-  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist))
-  (setq gnus-registry-headers-hashtb (alist-to-hashtable 
-				      gnus-registry-headers-alist)))
+  (setq gnus-registry-hashtb (alist-to-hashtable gnus-registry-alist)))
 
 (defun alist-to-hashtable (alist)
   "Build a hashtable from the values in ALIST."
@@ -90,30 +86,28 @@ The group names are matched, they don't have to be fully qualified."
   (let* ((id (mail-header-id data-header))
 	(from (gnus-group-guess-full-name from))
 	(to (if to (gnus-group-guess-full-name to) nil))
-	(to-name (if to to "the Bit Bucket")))
+	(to-name (if to to "the Bit Bucket"))
+	(old-entry (gethash id gnus-registry-hashtb)))
     (gnus-message 5 "Registry: article %s %s from %s to %s"
 		  id
 		  (if method "respooling" "going")
 		  from
-		  to)   
-    (unless (gethash id gnus-registry-headers-hashtb)
-      (puthash id (list data-header) gnus-registry-headers-hashtb))
-    (puthash id (cons (list action from to)
-		      (gethash id gnus-registry-hashtb)) 
-	     gnus-registry-hashtb)))
+		  to)
+
+    (cond
+     ((equal 'delete action) (gnus-registry-delete-group id from))
+     (t (gnus-registry-add-group id to)))))
 
 (defun gnus-register-spool-action (id group)
   ;; do not process the draft IDs
 ;  (unless (string-match "totally-fudged-out-message-id" id)
-    (let ((group (gnus-group-guess-full-name group)))
-    (when (string-match "\r$" id)
-      (setq id (substring id 0 -1)))
-    (gnus-message 5 "Registry: article %s spooled to %s"
-		  id
-		  group)
-    (puthash id (cons (list 'spool nil group) 
-		      (gethash id gnus-registry-hashtb)) 
-	     gnus-registry-hashtb)))
+;    (let ((group (gnus-group-guess-full-name group)))
+  (when (string-match "\r$" id)
+    (setq id (substring id 0 -1)))
+  (gnus-message 5 "Registry: article %s spooled to %s"
+		id
+		group)
+  (gnus-registry-add-group id group))
 ;)
 
 ;; Function for nn{mail|imap}-split-fancy: look up all references in
@@ -155,17 +149,38 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	    (string-match x word))
 	  list))))
 
-
 (defun gnus-registry-fetch-group (id)
   "Get the group of a message, based on the message ID.
 Returns the first place where the trail finds a spool action."
   (let ((trail (gethash id gnus-registry-hashtb)))
-    (dolist (crumb trail)
-      (let ((action (nth 0 crumb))
-	    (from (nth 1 crumb))
-	    (to (nth 2 crumb)))
-	(when (eq action 'spool)
-	  (return to))))))
+    (if trail
+	(car trail)
+      nil)))
+
+(defun gnus-registry-delete-group (id group)
+  "Get the group of a message, based on the message ID.
+Returns the first place where the trail finds a spool action."
+  (let ((trail (gethash id gnus-registry-hashtb))
+	(group (gnus-group-short-name group)))
+    (puthash id (if trail
+		    (delete group trail)
+		  nil)
+    gnus-registry-hashtb))
+  ;; now, clear the entry if it's empty
+  (unless (gethash id gnus-registry-hashtb)
+    (remhash id gnus-registry-hashtb)))
+
+(defun gnus-registry-add-group (id group)
+  "Get the group of a message, based on the message ID.
+Returns the first place where the trail finds a spool action."
+  ;; make sure there are no duplicate entries
+  (let ((group (gnus-group-short-name group)))
+    (gnus-registry-delete-group id group)	
+    (let ((trail (gethash id gnus-registry-hashtb)))
+      (puthash id (if trail
+		      (cons group trail)
+		    (list group))
+	       gnus-registry-hashtb))))
 
 (defun gnus-registry-clear ()
   "Clear the Gnus registry."

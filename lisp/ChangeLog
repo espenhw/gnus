@@ -1,3 +1,14 @@
+2003-04-29  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-fetch-group): faster
+	(gnus-registry-delete-group): new function
+	(gnus-registry-add-group): new function
+	(gnus-register-spool-action): use it
+	(gnus-register-action): use it
+	(gnus-registry-translate-from-alist) 
+	(gnus-registry-translate-to-alist): remove the headers registry
+	for now
+
 2003-04-29  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-alist): Fixed CTAN regexp.
