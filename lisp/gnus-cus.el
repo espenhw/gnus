@@ -984,7 +984,7 @@ articles in the thread.
                    (widgets category-fields))
               (while widgets
                 (let* ((widget (pop widgets))
-                       (value (condition-case nil (widget-value widget) (error)))))
+                       (value (condition-case nil (widget-value widget) (error))))
                   (eval `(setf (,(widget-get widget :accessor) ',info)
                                ',value)))))
             (gnus-category-write)
