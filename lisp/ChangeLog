@@ -1,3 +1,17 @@
+2003-04-03  Jesper Harder  <harder@ifa.au.dk>
+
+	* pgg-gpg.el (pgg-gpg-process-region): do.
+
+	* pgg-pgp.el (pgg-pgp-process-region, pgg-pgp-verify-region)
+	(pgg-pgp-snarf-keys-region): do.
+
+	* pgg-pgp5.el (pgg-pgp5-verify-region)
+	(pgg-pgp5-snarf-keys-region, pgg-pgp5-process-region): Use it.
+
+	* pgg.el (pgg-make-temp-file): New function. `make-temp-name' is
+	unsafe.
+	(pgg-temporary-file-directory): Remove.
+
 2003-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* lpath.el: Fbind Info-directory and Info-menu.
@@ -383,7 +397,7 @@
 2003-03-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-bodies.el (mm-decode-coding-region-safely): Don't use
-	find-charset-region which is slooow in XEmacs.
+	find-charset-string which is slooow in XEmacs.
 
 2003-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
