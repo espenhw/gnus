@@ -25147,6 +25147,13 @@ It was aliased to @kbd{Y c}
 (@code{gnus-summary-insert-cached-articles}). The new function filters
 out other articles.
 
+@item Some limiting commands accept a @kbd{C-u} prefix to negate the match.
+
+If @kbd{C-u} is used on subject, author or extra headers, i.e., @kbd{/
+s'}, @kbd{/ a}, and @kbd{/ x}
+(@code{gnus-summary-limit-to-{subject,author,extra}}) respectively, the
+result will be to display all articles that do not match the expression.
+
 @item
 Group names are treated as UTF-8 by default.
 
