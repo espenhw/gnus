@@ -1,3 +1,7 @@
+2001-06-07 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el: Fix a few bugs.
+
 2001-06-05  Simon Josefsson  <jas@extundo.com>
 
 	* mm-decode.el (mm-handle-set-external-undisplayer): Don't

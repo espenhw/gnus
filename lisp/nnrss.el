@@ -168,10 +168,11 @@
 	(if (setq e (assq article nnrss-group-data))
 	    (insert (number-to-string (car e)) "\t" ;; number
 		    (if (nth 3 e)
-			(nnrss-string-as-multibyte (nth 3 e)) "")
+			(nnrss-format-string (nth 3 e)) "")
 		    "\t" ;; subject
 		    (if (nth 4 e)
-			(nnrss-string-as-multibyte (nth 4 e)) "")
+			(nnrss-format-string (nth 4 e))
+			"(nobody)")
 		    "\t" ;;from
 		    (or (nth 5 e) "")
 		    "\t" ;; date
@@ -208,11 +209,12 @@
 	  (erase-buffer)
 	  (goto-char (point-min))
 	  (if (nth 3 e)
-	      (insert "Subject: " (nnrss-string-as-multibyte (nth 3 e)) "\n"))
-	  (if (nth 4 e)
-	      (insert "From: " (nnrss-string-as-multibyte (nth 4 e)) "\n"))
+	      (insert "Subject: " (nnrss-format-string (nth 3 e)) "\n"))
+	  (insert "From: " (if (nth 4 e)
+			       (nnrss-format-string (nth 4 e))
+			     "(nobody)" "\n"))
 	  (if (nth 5 e)
-	      (insert "Date: " (nnrss-string-as-multibyte (nth 5 e)) "\n"))
+	      (insert "Date: " (nnrss-format-string (nth 5 e)) "\n"))
 	  (insert "Message-ID: " (format "<%d@%s.nnrss>" (car e) group) "\n")
 	  (insert "\n")
 	  (if (nth 6 e)
@@ -457,14 +459,14 @@
     (dolist (item (nreverse xml))
        (when (and (listp item)
 		  (eq 'item (car item))
-		  (setq url (caddr (assq 'link (cddr item))))
+		  (setq url (nnrss-node-text (assq 'link (cddr item))))
 		  (setq url (nnrss-decode-entities-unibyte-string url))
 		  (not (gnus-gethash url nnrss-group-hashtb)))
-	 (setq subject (caddr (assq 'title (cddr item))))
-	 (setq extra (or (caddr (assq 'description (cddr item)))
-			 (caddr (assq 'dc:description (cddr item)))))
-	 (setq author (caddr (assq 'dc:creator (cddr item))))
-	 (setq date (or (caddr (assq 'dc:date (cddr item)))
+	 (setq subject (nnrss-node-text (assq 'title (cddr item))))
+	 (setq extra (or (nnrss-node-text (assq 'description (cddr item)))
+			 (nnrss-node-text (assq 'dc:description (cddr item)))))
+	 (setq author (nnrss-node-text (assq 'dc:creator (cddr item))))
+	 (setq date (or (nnrss-node-text (assq 'dc:date (cddr item)))
 			(message-make-date)))
 	 (push
 	  (list
@@ -531,6 +533,13 @@ It is useful when `(setq nnrss-use-local t)'."
 	    (push (list name 0 url) nnrss-server-data)))))
     (if changed
 	(nnrss-save-server-data ""))))
+
+(defun nnrss-format-string (string)
+  (nnweb-replace-in-string (nnrss-string-as-multibyte string) " *\n *" " "))
+
+(defun nnrss-node-text (node)
+  (if (stringp node) node
+    (mapconcat 'nnrss-node-text (xml-node-children node) "")))
 
 (provide 'nnrss)
 
