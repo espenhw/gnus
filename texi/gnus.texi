@@ -21473,8 +21473,7 @@ for unread articles in @emph{spam} groups.
 @findex spam-bogofilter-score
 @code{spam-bogofilter-score}.
 
-You must have bogofilter processing enabled for that command to work
-properly.
+You must have Bogofilter installed for that command to work properly.
 
 @xref{Bogofilter}.
 
@@ -21550,7 +21549,10 @@ marked as expired after processing with the spam processor.  This is
 not done for @emph{unclassified} or @emph{ham} groups.  Also, any
 @strong{ham} articles in a spam group will be moved to a location
 determined by either the @code{ham-process-destination} group
-parameter or the @code{gnus-ham-process-destinations} variable.  The
+parameter or a match in the @code{gnus-ham-process-destinations}
+variable, which is a list of regular expressions matched with group
+names (it's easiest to customize this variable with
+@code{customize-variable gnus-ham-process-destinations}).  The ultimate
 location is a group name.  If the @code{ham-process-destination}
 parameter is not set, spam articles are only expired.
 
@@ -21559,10 +21561,13 @@ a ham processor, which will study these as non-spam samples.
 
 When you leave a @emph{ham} or @emph{unclassified} group, all
 @strong{spam} articles are moved to a location determined by either
-the @code{spam-process-destination} group parameter or the
-@code{gnus-spam-process-destinations} variable.  The location is a
-group name.  If the @code{spam-process-destination} parameter is not
-set, the spam articles are only expired.
+the @code{spam-process-destination} group parameter or a match in the
+@code{gnus-spam-process-destinations} variable, which is a list of
+regular expressions matched with group names (it's easiest to
+customize this variable with @code{customize-variable
+gnus-spam-process-destinations}).  The ultimate location is a group
+name.  If the @code{spam-process-destination} parameter is not set,
+the spam articles are only expired.
 
 To use the @code{spam.el} facilities for incoming mail filtering, you
 must add the following to your fancy split list
@@ -21599,7 +21604,7 @@ The following are the methods you can use to control the behavior of
 * Bogofilter::                  
 * ifile spam filtering::        
 * spam-stat spam filtering::    
-* Extending the spam elist package::  
+* Extending the spam elisp package::  
 @end menu
 
 @node Blacklists and Whitelists
@@ -21739,36 +21744,71 @@ ham processor for blackholes.
 @defvar spam-use-bogofilter
 
 Set this variable if you want @code{spam-split} to use Eric Raymond's
-speedy Bogofilter.  This has been tested with a locally patched copy
-of version 0.4.  Make sure to read the installation comments in
-@code{spam.el}.
+speedy Bogofilter.
 
 With a minimum of care for associating the @samp{H} mark for spam
 articles only, Bogofilter training all gets fairly automatic.  You
 should do this until you get a few hundreds of articles in each
-category, spam or not.  The shell command @command{head -1
-~/.bogofilter/*} shows both article counts.  The command @kbd{S t} in
-summary mode, either for debugging or for curiosity, triggers
-Bogofilter into displaying in another buffer the @emph{spamicity}
-score of the current article (between 0.0 and 1.0), together with the
-article words which most significantly contribute to the score.
+category, spam or not.  The command @kbd{S t} in summary mode, either
+for debugging or for curiosity, shows the @emph{spamicity} score of
+the current article (between 0.0 and 1.0).
+
+Bogofilter determines if a message is spam based on an internal
+threshold, set at compilation time.  That threshold can't be
+customized.
 
 If the @code{bogofilter} executable is not in your path, Bogofilter
 processing will be turned off.
 
+You should not enable this if you use @code{spam-use-bogofilter-headers}.
+
 @end defvar
 
+@defvar spam-use-bogofilter-headers
+
+Set this variable if you want @code{spam-split} to use Eric Raymond's
+speedy Bogofilter, looking only at the message headers.  It works
+similarly to @code{spam-use-bogofilter}, but the @code{X-Bogosity} header
+must be in the message already.  Normally you would do this with a
+procmail recipe or something similar; consult the Bogofilter
+installation documents for details.
+
+You should not enable this if you use @code{spam-use-bogofilter}.
+
+@end defvar
 
 @defvar gnus-group-spam-exit-processor-bogofilter
 Add this symbol to a group's @code{spam-process} parameter by
 customizing the group parameters or the
 @code{gnus-spam-process-newsgroups} variable.  When this symbol is
 added to a group's @code{spam-process} parameter, spam-marked articles
-will be added to the bogofilter spam database, and ham-marked articles
-will be added to the bogofilter ham database.  @strong{Note that the
-Bogofilter spam processor is the only spam processor to also do ham
-processing.}
+will be added to the Bogofilter spam database.
 @end defvar
+
+@defvar gnus-group-ham-exit-processor-bogofilter
+Add this symbol to a group's @code{spam-process} parameter by
+customizing the group parameters or the
+@code{gnus-spam-process-newsgroups} variable.  When this symbol is
+added to a group's @code{spam-process} parameter, the ham-marked
+articles in @emph{ham} groups will be added to the Bogofilter database
+of non-spam messages.  Note that this ham processor has no effect in
+@emph{spam} or @emph{unclassified} groups.
+@end defvar
+
+@defvar spam-bogofilter-database-directory
+
+This is the directory where Bogofilter will store its databases.  It
+is not specified by default, so Bogofilter will use its own default
+database directory.
+
+@end defvar
+
+The Bogofilter mail classifier is similar to ifile in intent and
+purpose.  A ham and a spam processor are provided, plus the
+@code{spam-use-bogofilter} and @code{spam-use-bogofilter-headers}
+variables to indicate to spam-split that Bogofilter should either be
+used, or has already been used on the article.  The 0.9.2.1 version of
+Bogofilter was used to test this functionality.
 
 @node ifile spam filtering
 @subsubsection ifile spam filtering
@@ -21851,7 +21891,7 @@ Bogofilter does not require external programs.  A spam and a ham
 processor, and the @code{spam-use-stat} variable for @code{spam-split}
 are provided.
 
-@node Extending the spam elist package
+@node Extending the spam elisp package
 @subsubsection Extending the spam elisp package
 @cindex spam filtering
 @cindex spam elisp package, extending
