@@ -1,3 +1,7 @@
+2000-05-13 16:49:41  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el: Translate &nbsp; to SP.
+
 2000-05-13 13:00:17  Robin S. Socha <robin@socha.net>
 
 	* message.el (message-bounce): Doc typo.
