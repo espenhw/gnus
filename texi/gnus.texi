@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.65 Manual
+@settitle Gnus 5.4.66 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.65 Manual
+@title Gnus 5.4.66 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.65.
+This manual corresponds to Gnus 5.4.66.
 
 @end ifinfo
 
@@ -4165,6 +4165,7 @@ numeric prefix) (@code{gnus-summary-kill-below}).
 @kindex M c (Summary)
 @kindex M-u (Summary)
 @findex gnus-summary-clear-mark-forward
+@cindex mark as unread
 Clear all readedness-marks from the current article
 (@code{gnus-summary-clear-mark-forward}).
 
@@ -8551,8 +8552,8 @@ You probably don't want to do that, though.
 The default value is
 
 @lisp
-  '(("nntpd 1\\.5\\.11t" 
-     (remove-hook 'nntp-server-opened-hook nntp-send-mode-reader)))
+'(("nntpd 1\\.5\\.11t" 
+   (remove-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)))
 @end lisp
 
 This ensures that Gnus doesn't send the @code{MODE READER} command to

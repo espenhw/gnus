@@ -449,7 +449,7 @@ time saver for large mailboxes.")
 	   t))))
 
 (defun nnfolder-request-regenerate (server)
-  (nnfolder-possibly-change-directory nil server)
+  (nnfolder-possibly-change-group nil server)
   (nnfolder-generate-active-file)
   t)
 

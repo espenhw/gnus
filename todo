@@ -753,3 +753,9 @@ do the threading and then exclude all the fetched headers.
 
 * use run-with-idle-timer for gnus-demon instead of the
 home-brewed stuff for better reliability.
+
+* boring header hiding -- Long To lines.
+
+* `C-u C-c C-c' should avoid highlighting after editing an article.
+
+* nntp-rlogin-program -- new variable.

@@ -483,7 +483,7 @@ ticked: The number of ticked articles."
     "m" gnus-group-mark-group
     "u" gnus-group-unmark-group
     "w" gnus-group-mark-region
-    "m" gnus-group-mark-buffer
+    "b" gnus-group-mark-buffer
     "r" gnus-group-mark-regexp
     "U" gnus-group-unmark-all-groups)
 
