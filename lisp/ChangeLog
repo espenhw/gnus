@@ -1,9 +1,12 @@
 2002-04-05  Per Abrahamsen  <abraham@dina.kvl.dk>
 
-	* gnus-art.el (gnus-treat-from-picon): Add to gnus-picon group.
+	* gnus-art.el (gnus-treat-from-picon): Add to gnus-picon group and
+	add link.
 	(gnus-treat-mail-picon): Ditto.
+	(gnus-treat-newsgroups-picon): Ditto.
 	(gnus-picon-databases): Fix custom type.
 	(gnus-picon-databases): Add link.
+	(gnus-article-x-face-command): Add to gnus-picon group.
 
 2002-04-01  Jesper Harder  <harder@ifa.au.dk>
 

@@ -242,6 +242,7 @@ asynchronously.	 The compressed face will be piped to this command."
 		 (function-item gnus-display-x-face-in-from)
 		 function)
   :version "21.1"
+  :group 'gnus-picon
   :group 'gnus-article-washing)
 
 (defcustom gnus-article-x-face-too-ugly nil
