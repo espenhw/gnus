@@ -1,3 +1,13 @@
+2002-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (article-display-x-face): Check whether valid grey
+	face was returned.
+	(article-display-x-face): Place image in the right spot. 
+
+	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Get rid of
+	stderr. 
+	(gnus-convert-gray-x-face-to-xpm): Check whether output is valid. 
+
 2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-xmas.el (gnus-xmas-create-image): Take optional

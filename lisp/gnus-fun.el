@@ -105,13 +105,15 @@
 (defun gnus-convert-gray-x-face-to-xpm (faces)
   (let* ((depth (length faces))
 	 (scale (/ 255 (1- (expt 2 depth))))
+	 (ok-p t)
 	 bit-list bit-lists pixels pixel)
     (dolist (face faces)
+      (setq bit-list nil)
       (with-temp-buffer
 	(insert (uncompface face))
 	(shell-command-on-region
 	 (point-min) (point-max)
-	 "pnmnoraw"
+	 "pnmnoraw 2>/dev/null"
 	 (current-buffer) t)
 	(goto-char (point-min))
 	(forward-line 2)
@@ -122,21 +124,24 @@
 	   ((eq (following-char) ?1)
 	    (push 1 bit-list)))
 	  (forward-char 1)))
+      (unless (= (length bit-list) (* 48 48))
+	(setq ok-p nil))
       (push bit-list bit-lists))
-    (dotimes (i (* 48 48))
-      (setq pixel 0)
-      (dotimes (plane depth)
-	(setq pixel (+ (* pixel 2) (nth i (nth plane bit-lists)))))
-      (push pixel pixels))
-    (with-temp-buffer
-      (insert "P2\n48 48\n255\n")
-      (dolist (pixel pixels)
-	(insert (number-to-string (* scale pixel)) " "))
-      (shell-command-on-region
-       (point-min) (point-max)
-       "ppmtoxpm 2>/dev/null"
-       (current-buffer) t)
-      (buffer-string))))
+    (when ok-p
+      (dotimes (i (* 48 48))
+	(setq pixel 0)
+	(dotimes (plane depth)
+	  (setq pixel (+ (* pixel 2) (nth i (nth plane bit-lists)))))
+	(push pixel pixels))
+      (with-temp-buffer
+	(insert "P2\n48 48\n255\n")
+	(dolist (pixel pixels)
+	  (insert (number-to-string (* scale pixel)) " "))
+	(shell-command-on-region
+	 (point-min) (point-max)
+	 "ppmtoxpm 2>/dev/null"
+	 (current-buffer) t)
+	(buffer-string)))))
 
 ;;;###autoload
 (defun gnus-convert-gray-x-face-region (beg end)

@@ -1802,9 +1802,15 @@ unfolded."
 	      (push (mail-header-field-value) x-faces))
 	    (setq from (message-fetch-field "from"))))
 	(if grey
-	    (gnus-put-image
-	     (gnus-create-image
-	      (gnus-convert-gray-x-face-to-xpm x-faces) 'xpm t))
+	    (let ((xpm (gnus-convert-gray-x-face-to-xpm x-faces))
+		  image)
+	      (when xpm
+		(setq image (gnus-create-image xpm 'xpm t))
+		(goto-char (point-min))
+		(re-search-forward "^From:" nil 'move)
+		(gnus-add-wash-type 'xface)
+		(gnus-add-image 'xface image)
+		(gnus-put-image image)))
 	  ;; Sending multiple EOFs to xv doesn't work, so we only do a
 	  ;; single external face.
 	  (when (stringp gnus-article-x-face-command)
