@@ -2741,7 +2741,7 @@ score file entries for articles to include in the group."
       (make-directory score-dir))
     (with-temp-file score-file
       (let (emacs-lisp-mode-hook)
-	(pp scores (current-buffer))))))
+	(gnus-pp scores)))))
 
 (defun gnus-group-add-to-virtual (n vgroup)
   "Add the current group to a virtual group."

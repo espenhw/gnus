@@ -1,3 +1,24 @@
+2004-08-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-util.el (gnus-bind-print-variables): New macro.
+	(gnus-prin1): Use it.
+	(gnus-prin1-to-string): Use it.
+	(gnus-pp): New function.
+	(gnus-pp-to-string): New function.
+
+	* gnus-cus.el (gnus-agent-cat-prepare-category-field): Replace
+	pp-to-string with gnus-pp-to-string.
+	* gnus-eform.el (gnus-edit-form): Replace pp with gnus-pp.
+	* gnus-group.el (gnus-group-make-kiboze-group): Ditto.
+	* gnus-msg.el (gnus-debug): Ditto.
+	* gnus-score.el (gnus-score-save): Ditto.
+	* gnus-spec.el (gnus-update-format): Replace pp-to-string with
+	gnus-pp-to-string.
+	* legacy-gnus-agent.el (gnus-agent-unlist-expire-days): Replace pp
+	with gnus-pp.
+	* score-mode.el (gnus-score-pretty-print): Ditto.
+	* webmail.el (webmail-debug): Ditto.
+
 2004-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-display-face, article-display-x-face): Use

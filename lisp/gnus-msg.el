@@ -1521,14 +1521,14 @@ The source file has to be in the Emacs load path."
     (while olist
       (if (boundp (car olist))
 	  (ignore-errors
-	    (pp `(setq ,(car olist)
-		       ,(if (or (consp (setq sym (symbol-value (car olist))))
-				(and (symbolp sym)
-				     (not (or (eq sym nil)
-					      (eq sym t)))))
-			    (list 'quote (symbol-value (car olist)))
-			  (symbol-value (car olist))))
-		(current-buffer)))
+	    (gnus-pp
+	     `(setq ,(car olist)
+		    ,(if (or (consp (setq sym (symbol-value (car olist))))
+			     (and (symbolp sym)
+				  (not (or (eq sym nil)
+					   (eq sym t)))))
+			 (list 'quote (symbol-value (car olist)))
+		       (symbol-value (car olist))))))
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))
     (insert "\n\n")

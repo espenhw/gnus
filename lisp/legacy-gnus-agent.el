@@ -109,7 +109,7 @@ converted to the compressed format."
             (set-buffer buffer)
             (erase-buffer)
             (insert "The definition of gnus-agent-expire-days has been changed.\nYou currently have it set to the list:\n  ")
-            (let (print-level print-length) (pp gnus-agent-expire-days (current-buffer)))
+            (gnus-pp gnus-agent-expire-days)
 
             (insert "\nIn order to use version '" converting-to "' of gnus, you will need to set\n")
             (insert "gnus-agent-expire-days to an integer. If you still wish to set different\n")
