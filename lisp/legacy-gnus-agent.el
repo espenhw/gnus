@@ -6,6 +6,8 @@
 ; Oort Gnus v0.08 - This release updated agent to no longer use
 ;                   history file and to support a compressed alist.
 
+(defvar gnus-agent-compressed-agentview-search-only nil)
+
 (defun gnus-agent-convert-to-compressed-agentview (converting-to)
   "Iterates over all agentview files to ensure that they have been
 converted to the compressed format."
@@ -29,6 +31,13 @@ converted to the compressed format."
 
     (if converted-something
         (gnus-message 4 "Successfully converted Gnus %s offline (agent) files to %s" gnus-newsrc-file-version converting-to))))
+
+(defun gnus-agent-convert-to-compressed-agentview-prompt ()
+  (catch 'found-file-to-convert
+    (let ((gnus-agent-compressed-agentview-search-only t))
+      (gnus-agent-convert-to-compressed-agentview nil))))
+
+(gnus-convert-mark-converter-prompt 'gnus-agent-convert-to-compressed-agentview 'gnus-agent-convert-to-compressed-agentview-prompt)
 
 (defun gnus-agent-convert-agentview (file)
   "Load FILE and do a `read' there."
@@ -68,6 +77,9 @@ converted to the compressed format."
 	  (setq changed-version t)))
 
         (when changed-version
+	  (when gnus-agent-compressed-agentview-search-only
+	    (throw 'found-file-to-convert t))
+
           (erase-buffer)
           (let ((compressed nil))
             (mapcar (lambda (pair)
