@@ -1,3 +1,12 @@
+2000-03-01  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-sum.el (gnus-read-move-group-name): 
+	(gnus-summary-move-article): Use `gnus-group-method' to find out
+	what method the manually entered group belong to.
+	`gnus-group-name-to-method' doesn't return any method parameters
+	and `gnus-find-method-for-group' uses `gnus-group-name-to-method'
+	for new groups so they wouldn't work.
+
 2000-04-21 22:27:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-msg.el (gnus-configure-posting-styles): Allow nil values to

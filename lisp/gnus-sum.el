@@ -7333,7 +7333,8 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	     articles prefix))
       (set (intern (format "gnus-current-%s-group" action)) to-newsgroup))
     (setq to-method (or select-method
-			(gnus-group-method to-newsgroup)))
+			(gnus-server-to-method
+			 (gnus-group-method to-newsgroup))))
     ;; Check the method we are to move this article to...
     (unless (gnus-check-backend-function
 	     'request-accept-article (car to-method))
@@ -9030,7 +9031,8 @@ save those articles instead."
 				  (mapcar (lambda (el) (list el))
 					  (nreverse split-name))
 				  nil nil nil
-				  'gnus-group-history)))))
+				  'gnus-group-history))))
+         (to-method (gnus-server-to-method (gnus-group-method to-newsgroup))))
     (when to-newsgroup
       (if (or (string= to-newsgroup "")
 	      (string= to-newsgroup prefix))
@@ -9038,15 +9040,12 @@ save those articles instead."
       (unless to-newsgroup
 	(error "No group name entered"))
       (or (gnus-active to-newsgroup)
-	  (gnus-activate-group to-newsgroup nil nil
-			       (gnus-group-method to-newsgroup))
+	  (gnus-activate-group to-newsgroup nil nil to-method)
 	  (if (gnus-y-or-n-p (format "No such group: %s.  Create it? "
 				     to-newsgroup))
-	      (or (and (gnus-request-create-group
-			to-newsgroup (gnus-group-method to-newsgroup))
+	      (or (and (gnus-request-create-group to-newsgroup to-method)
 		       (gnus-activate-group
-			to-newsgroup nil nil
-			(gnus-group-method to-newsgroup))
+			to-newsgroup nil nil to-method)
 		       (gnus-subscribe-group to-newsgroup))
 		  (error "Couldn't create group %s" to-newsgroup)))
 	  (error "No such group: %s" to-newsgroup)))
