@@ -808,11 +808,11 @@ If optional argument `EXTRA' is non-nil, it's a non-standard overview header."
 		       (int-to-string match)
 		     match))))
 
-    (set-text-properties 0 (length match) nil match)
-
     ;; If this is an integer comparison, we transform from string to int.
-    (when (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)
-      (setq match (string-to-int match)))
+    (if (eq (nth 2 (assoc header gnus-header-index)) 'gnus-score-integer)
+	(if (stringp match)
+	    (setq match (string-to-int match)))
+      (set-text-properties 0 (length match) nil match))
 
     (unless (eq date 'now)
       ;; Add the score entry to the score file.
