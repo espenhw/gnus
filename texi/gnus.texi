@@ -2949,7 +2949,7 @@ if address \"sender\" \"sieve-admin@@extundo.com\" @{
 @end example
 
 The Sieve language is described in RFC 3028. @xref{Top, , Top, sieve,
-Emacs Sieve.}
+Emacs Sieve}.
 
 @item (@var{variable} @var{form})
 You can use the group parameters to set variables local to the group you
@@ -15612,7 +15612,7 @@ groups updated.
 The easiest way to get started with @code{nnwarchive} is to say
 something like the following in the group buffer: @kbd{M-x
 gnus-group-make-warchive-group RET @var{an_egroup} RET egroups RET
-www.egroups.com RET @var{your@@email.address RET}}.  (Substitute the
+www.egroups.com RET @var{your@@email.address} RET}.  (Substitute the
 @var{an_egroup} with the mailing list you subscribed, the
 @var{your@@email.address} with your email address.), or to browse the
 back end by @kbd{B nnwarchive RET mail-archive RET}.

@@ -1,3 +1,8 @@
+2003-04-27  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Group Parameters): Fix markup.
+	(Web Archive): Ditto.
+
 2003-04-27  Jesper Harder  <harder@ifa.au.dk>
 
 	* texi2latex.el (latexi-translate-file): Support @display,
