@@ -114,7 +114,8 @@ Common keywords should be listed here.")
        (:password)
        (:authentication password))
       (maildir
-       (:path "~/Maildir/new/")
+       (:path (or (getenv "MAILDIR") "~/Maildir/"))
+       (:subdirs ("tmp" "new" "cur"))
        (:function))
       (imap
        (:server (getenv "MAILHOST"))
@@ -606,13 +607,28 @@ This only works when `display-time' is enabled."
   "Fetcher for maildir sources."
   (mail-source-bind (maildir source)
     (let ((found 0)
-	  (mail-source-string (format "maildir:%s" path)))
-      (dolist (file (directory-files path t))
-	(when (and (not (file-directory-p file))
-		   (not (if function
-			    (funcall function file mail-source-crash-box)
-			  (rename-file file mail-source-crash-box))))
-	  (incf found (mail-source-callback callback file))))
+	  mail-source-string)
+      (unless (string-match "/$" path)
+	(setq path (concat path "/")))
+      (dolist (subdir subdirs)
+	(when (file-directory-p (concat path subdir))
+	  (setq mail-source-string (format "maildir:%s%s" path subdir))
+	  (dolist (file (directory-files (concat path subdir) t))
+	    (when (and (not (file-directory-p file))
+		       (not (if function
+				(funcall function file mail-source-crash-box)
+			      (let ((coding-system-for-write 
+				     mm-text-coding-system)
+				    (coding-system-for-read 
+				     mm-text-coding-system))
+				(with-temp-file mail-source-crash-box
+				  (insert-file-contents file)
+				  (goto-char (point-min))
+				  (unless (looking-at "\n*From ")
+				    (insert "From maildir " 
+					    (current-time-string) "\n"))))
+			      (delete-file file))))
+	      (incf found (mail-source-callback callback file))))))
       found)))
 
 (eval-and-compile

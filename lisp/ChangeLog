@@ -1,3 +1,8 @@
+2000-05-15 09:46:47  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mail-source.el (mail-source-fetch-maildir): Insert "From ".
+	(mail-source-keyword-map): Add "subdirs" for maildir.
+
 2000-05-14 16:19:28  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-scan-directory-mail-source-once): New variable.
