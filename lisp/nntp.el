@@ -549,7 +549,7 @@ If this variable is nil, which is the default, no timers are set.")
 	  (nntp-inhibit-erase t)
 	  (map (apply 'vector articles))
 	  (point 1)
-	  article alist)
+	  article)
       (set-buffer buf)
       (erase-buffer)
       ;; Send ARTICLE command.

@@ -18,6 +18,9 @@ total:
 all:
 	rm -f *.elc ; $(EMACS) $(FLAGS) -f dgnushack-compile
 
+warn:
+	rm -f *.elc ; $(EMACS) $(FLAGS) --eval '(dgnushack-compile t)' 2>&1 | egrep -v "variable G|inhibit-point-motion-hooks|coding-system|temp-results|variable gnus|variable nn|scroll-in-place|deactivate-mark|filladapt-mode|byte-code-function-p|print-quoted|ps-right-header|ps-left-header|article-inhibit|print-escape|ssl-program-arguments|message-log-max"
+
 clever:
 	$(EMACS) $(FLAGS) -f dgnushack-compile
 

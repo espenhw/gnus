@@ -355,7 +355,7 @@ header line with the old Message-ID."
   (setq gnus-article-copy (gnus-get-buffer-create " *gnus article copy*"))
   (buffer-disable-undo gnus-article-copy)
   (let ((article-buffer (or article-buffer gnus-article-buffer))
-	end beg contents)
+	end beg)
     (if (not (and (get-buffer article-buffer)
 		  (gnus-buffer-exists-p article-buffer)))
 	(error "Can't find any article buffer")

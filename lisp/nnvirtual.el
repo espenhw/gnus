@@ -276,10 +276,8 @@ to virtual article number.")
 	(let ((mart (nnvirtual-map-article article)))
 	  (if mart
 	      (gnus-request-type (car mart) (cdr mart))))
-      (let ((method (gnus-find-method-for-group
-		     nnvirtual-last-accessed-component-group)))
-	(gnus-request-type
-	 nnvirtual-last-accessed-component-group nil)))))
+      (gnus-request-type
+       nnvirtual-last-accessed-component-group nil))))
 
 (deffoo nnvirtual-request-update-mark (group article mark)
   (let* ((nart (nnvirtual-map-article article))

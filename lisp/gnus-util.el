@@ -835,8 +835,7 @@ with potentially long computations."
 (defun gnus-map-function (funs arg)
   "Applies the result of the first function in FUNS to the second, and so on.
 ARG is passed to the first function."
-  (let ((myfuns funs)
-        (myarg arg))
+  (let ((myfuns funs))
     (while myfuns
       (setq arg (funcall (pop myfuns) arg)))
     arg))
@@ -937,6 +936,7 @@ ARG is passed to the first function."
 
 ;;; Various
 
+(defvar gnus-group-buffer) ; Compiler directive
 (defun gnus-alive-p ()
   "Say whether Gnus is running or not."
   (and (boundp 'gnus-group-buffer)

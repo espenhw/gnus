@@ -1,3 +1,27 @@
+Thu Aug 27 11:03:59 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.41 is released.
+
+1998-08-27  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-agent.el (gnus-agent-fetch-group-1): Leave the calculation
+	of `articles' to `gnus-agent-fetch-headers'.
+	(gnus-agent-fetch-headers): We only want headers that are after
+	the last entry in `gnus-group-alist'.
+
+1998-08-27 09:45:42  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* Makefile.in (warn): New.
+
+	* gnus.el: Removed unreferenced bound variables all over.
+
+	* gnus-group.el (gnus-update-group-mark-positions): Removed topic.
+
+	* gnus-cus.el (gnus-group-customize): No part.
+
+	* gnus-agent.el (gnus-category-line-format-alist): Renamed specs.
+	(gnus-category-insert-line): Use it.
+
 Thu Aug 27 09:29:53 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.40 is released.

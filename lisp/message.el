@@ -1778,6 +1778,7 @@ prefix, and don't delete any headers."
 	(insert "\n"))
       (funcall message-citation-line-function))))
 
+(defvar mail-citation-hook) ;Compiler directive
 (defun message-cite-original ()
   "Cite function in the standard Message manner."
   (if (and (boundp 'mail-citation-hook)
@@ -3110,8 +3111,7 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-pop-to-buffer (name)
   "Pop to buffer NAME, and warn if it already exists and is modified."
-  (let ((buffer (get-buffer name))
-	(cur (current-buffer)))
+  (let ((buffer (get-buffer name)))
     (if (and buffer
 	     (buffer-name buffer))
 	(progn
@@ -3907,7 +3907,6 @@ Do a `tab-to-tab-stop' if not in those headers."
 					    (point))))
 	 (hashtb (and (boundp 'gnus-active-hashtb) gnus-active-hashtb))
 	 (completions (all-completions string hashtb))
-	 (cur (current-buffer))
 	 comp)
     (delete-region b (point))
     (cond

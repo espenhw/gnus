@@ -468,9 +468,9 @@ Returns the number of articles marked as read."
 	   (?h . "")
 	   (?f . "from")
 	   (?: . "subject")))
-	(com-to-com
-	 '((?m . " ")
-	   (?j . "X")))
+	;;(com-to-com
+	;; '((?m . " ")
+	;;   (?j . "X")))
 	pattern modifier commands)
     (while (not (eobp))
       (if (not (looking-at "[ \t]*/\\([^/]*\\)/\\([ahfcH]\\)?:\\([a-z=:]*\\)"))

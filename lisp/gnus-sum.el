@@ -2035,8 +2035,7 @@ The following commands are available:
 (defun gnus-data-compute-positions ()
   "Compute the positions of all articles."
   (setq gnus-newsgroup-data-reverse nil)
-  (let ((data gnus-newsgroup-data)
-	pos)
+  (let ((data gnus-newsgroup-data))
     (save-excursion
       (goto-char (point-min))
       (while data
@@ -2356,7 +2355,7 @@ marks of articles."
 	  (gnus-score-over-mark 130)
 	  (gnus-download-mark 131)
 	  (spec gnus-summary-line-format-spec)
-	  thread gnus-visual pos)
+	  gnus-visual pos)
       (save-excursion
 	(gnus-set-work-buffer)
 	(let ((gnus-summary-line-format-spec spec)
@@ -2962,7 +2961,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
   (let ((headers gnus-newsgroup-headers)
 	(gnus-summary-ignore-duplicates t)
 	header references generation relations
-	cthread subject child end pthread relation new-child date)
+	subject child end new-child date)
     ;; First we create an alist of generations/relations, where
     ;; generations is how much we trust the relation, and the relation
     ;; is parent/child.
@@ -3120,7 +3119,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
   "Read all the headers."
   (let ((gnus-summary-ignore-duplicates t)
 	(dependencies gnus-newsgroup-dependencies)
-	found header article)
+	header article)
     (save-excursion
       (set-buffer nntp-server-buffer)
       (let ((case-fold-search nil))
@@ -3201,9 +3200,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 		  references))
 	       "none")))
 	 (buffer-read-only nil)
-	 (old (car thread))
-	 (number (mail-header-number header))
-	 pos)
+	 (old (car thread)))
     (when thread
       (unless iheader
 	(setcar thread nil)
@@ -4373,7 +4370,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	 (or dependencies
 	     (save-excursion (set-buffer gnus-summary-buffer)
 			     gnus-newsgroup-dependencies)))
-	headers id id-dep ref-dep end ref)
+	headers id end ref)
     (save-excursion
       (set-buffer nntp-server-buffer)
       ;; Translate all TAB characters into SPACE characters.
@@ -4593,7 +4590,7 @@ the subject line on."
 		      (t
 		       (gnus-read-header id))))
 	(number (and (numberp id) id))
-	pos d)
+	d)
     (when header
       ;; Rebuild the thread that this article is part of and go to the
       ;; article we have fetched.
@@ -6381,8 +6378,7 @@ of what's specified by the `gnus-refer-thread-limit' variable."
   (interactive "P")
   (let ((id (mail-header-id (gnus-summary-article-header)))
 	(limit (if limit (prefix-numeric-value limit)
-		 gnus-refer-thread-limit))
-	fmethod root)
+		 gnus-refer-thread-limit)))
     ;; We want to fetch LIMIT *old* headers, but we also have to
     ;; re-fetch all the headers in the current buffer, because many of
     ;; them may be undisplayed.  So we adjust LIMIT.
@@ -6417,8 +6413,7 @@ or `gnus-select-method', no matter what backend the article comes from."
 			(gnus-summary-article-sparse-p
 			 (mail-header-number header))
 			(memq (mail-header-number header)
-			      gnus-newsgroup-limit)))
-	   h)
+			      gnus-newsgroup-limit))))
       (cond
        ;; If the article is present in the buffer we just go to it.
        ((and header
@@ -8534,8 +8529,7 @@ save those articles instead."
   "Pipe the current article through PROGRAM."
   (interactive "sProgram: ")
   (gnus-summary-select-article)
-  (let ((mail-header-separator "")
-        (art-buf (get-buffer gnus-article-buffer)))
+  (let ((mail-header-separator ""))
     (gnus-eval-in-buffer-window gnus-article-buffer
       (save-restriction
         (widen)

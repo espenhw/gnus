@@ -59,15 +59,15 @@ The following specs are understood:
 (defvar gnus-inserted-opened-servers nil)
 
 (defvar gnus-server-line-format-alist
-  `((?h how ?s)
-    (?n name ?s)
-    (?w where ?s)
-    (?s status ?s)))
+  `((?h gnus-tmp-how ?s)
+    (?n gnus-tmp-name ?s)
+    (?w gnus-tmp-where ?s)
+    (?s gnus-tmp-status ?s)))
 
 (defvar gnus-server-mode-line-format-alist
-  `((?S news-server ?s)
-    (?M news-method ?s)
-    (?u user-defined ?s)))
+  `((?S gnus-tmp-news-server ?s)
+    (?M gnus-tmp-news-method ?s)
+    (?u gnus-tmp-user-defined ?s)))
 
 (defvar gnus-server-line-format-spec nil)
 (defvar gnus-server-mode-line-format-spec nil)
@@ -166,11 +166,11 @@ The following commands are available:
   (setq buffer-read-only t)
   (gnus-run-hooks 'gnus-server-mode-hook))
 
-(defun gnus-server-insert-server-line (name method)
-  (let* ((how (car method))
-	 (where (nth 1 method))
+(defun gnus-server-insert-server-line (gnus-tmp-name method)
+  (let* ((gnus-tmp-how (car method))
+	 (gnus-tmp-where (nth 1 method))
 	 (elem (assoc method gnus-opened-servers))
-	 (status (cond ((eq (nth 1 elem) 'denied)
+	 (gnus-tmp-status (cond ((eq (nth 1 elem) 'denied)
 			"(denied)")
 		       ((or (gnus-server-opened method)
 			    (eq (nth 1 elem) 'ok))
@@ -183,7 +183,7 @@ The following commands are available:
      (prog1 (1+ (point))
        ;; Insert the text.
        (eval gnus-server-line-format-spec))
-     (list 'gnus-server (intern name)))))
+     (list 'gnus-server (intern gnus-tmp-name)))))
 
 (defun gnus-enter-server-buffer ()
   "Set up the server buffer."

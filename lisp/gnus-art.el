@@ -670,7 +670,7 @@ always hide."
 			     (listp gnus-visible-headers))
 			(mapconcat 'identity gnus-visible-headers "\\|"))))
 		(inhibit-point-motion-hooks t)
-		want-list beg)
+		beg)
 	    ;; First we narrow to just the headers.
 	    (widen)
 	    (goto-char (point-min))
@@ -1272,8 +1272,7 @@ means show, 0 means toggle."
 
 (defun gnus-article-hidden-text-p (type)
   "Say whether the current buffer contains hidden text of type TYPE."
-  (let ((start (point-min))
-	(pos (text-property-any (point-min) (point-max) 'article-type type)))
+  (let ((pos (text-property-any (point-min) (point-max) 'article-type type)))
     (while (and pos
 		(not (get-text-property pos 'invisible)))
       (setq pos
@@ -2045,7 +2044,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
     (setq gnus-summary-buffer (current-buffer))
     (let* ((gnus-article (if header (mail-header-number header) article))
 	   (summary-buffer (current-buffer))
-	   (internal-hook gnus-article-internal-prepare-hook)
+	   (gnus-tmp-internal-hook gnus-article-internal-prepare-hook)
 	   (group gnus-newsgroup-name)
 	   result)
       (save-excursion
@@ -2129,7 +2128,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      ;; Hooks for getting information from the article.
 	      ;; This hook must be called before being narrowed.
 	      (let (buffer-read-only)
-		(gnus-run-hooks 'internal-hook)
+		(gnus-run-hooks 'gnus-tmp-internal-hook)
 		(gnus-run-hooks 'gnus-article-prepare-hook)
 		;; Decode MIME message.
 		(when gnus-show-mime
@@ -3188,7 +3187,7 @@ forbidden in URL encoding."
   ;; Send mail to someone
   (when (string-match "mailto:/*\\(.*\\)" url)
     (setq url (substring url (match-beginning 1) nil)))
-  (let (to args source-url subject func)
+  (let (to args subject func)
     (if (string-match (regexp-quote "?") url)
         (setq to (gnus-url-unhex-string (substring url 0 (match-beginning 0)))
               args (gnus-url-parse-query-string

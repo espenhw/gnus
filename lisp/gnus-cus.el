@@ -170,11 +170,10 @@ DOC is a documentation string for the parameter.")
 (defvar gnus-custom-method)
 (defvar gnus-custom-group)
 
-(defun gnus-group-customize (group &optional part)
+(defun gnus-group-customize (group)
   "Edit the group on the current line."
   (interactive (list (gnus-group-group-name)))
-  (let ((part (or part 'info))
-	info
+  (let (info
 	(types (mapcar (lambda (entry)
 			 `(cons :format "%v%h\n"
 				:doc ,(nth 2 entry)

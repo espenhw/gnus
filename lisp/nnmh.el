@@ -242,13 +242,7 @@
 (deffoo nnmh-request-expire-articles (articles newsgroup
 					       &optional server force)
   (nnmh-possibly-change-directory newsgroup server)
-  (let* ((active-articles
-	  (mapcar
-	   (function
-	    (lambda (name)
-	      (string-to-int name)))
-	   (directory-files nnmh-current-directory nil "^[0-9]+$" t)))
-	 (is-old t)
+  (let* ((is-old t)
 	 article rest mod-time)
     (nnheader-init-server-buffer)
 

@@ -155,7 +155,7 @@ it's not cached."
 	      headers (copy-sequence headers))
 	(mail-header-set-number headers (cdr result))))
     (let ((number (mail-header-number headers))
-	  file dir)
+	  file)
       (when (and number
 		 (> number 0)		; Reffed article.
 		 (or force
@@ -169,7 +169,7 @@ it's not cached."
 		 (not (file-exists-p (setq file (gnus-cache-file-name
 						 group number)))))
 	;; Possibly create the cache directory.
-	(gnus-make-directory (setq dir (file-name-directory file)))
+	(gnus-make-directory (file-name-directory file))
 	;; Save the article in the cache.
 	(if (file-exists-p file)
 	    t				; The article already is saved.

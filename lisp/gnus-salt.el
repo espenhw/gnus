@@ -219,7 +219,6 @@ This must be bound to a button-down mouse event."
 	 (start-point (posn-point start-posn))
          (start-line (1+ (count-lines 1 start-point)))
 	 (start-window (posn-window start-posn))
-	 (start-frame (window-frame start-window))
 	 (bounds (gnus-window-edges start-window))
 	 (top (nth 1 bounds))
 	 (bottom (if (window-minibuffer-p start-window)
@@ -239,7 +238,7 @@ This must be bound to a button-down mouse event."
     ;; end-of-range is used only in the single-click case.
     ;; It is the place where the drag has reached so far
     ;; (but not outside the window where the drag started).
-    (let (event end end-point last-end-point (end-of-range (point)))
+    (let (event end end-point (end-of-range (point)))
       (track-mouse
 	(while (progn
 		 (setq event (cdr (gnus-read-event-char)))
@@ -249,8 +248,6 @@ This must be bound to a button-down mouse event."
 	      nil
 	    (setq end (event-end event)
 		  end-point (posn-point end))
-	    (when end-point
-	      (setq last-end-point end-point))
 
 	    (cond
 	     ;; Are we moving within the original window?

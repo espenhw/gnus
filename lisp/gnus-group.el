@@ -2012,8 +2012,7 @@ and NEW-NAME will be prompted for."
   "Create the Gnus documentation group."
   (interactive)
   (let ((name (gnus-group-prefixed-name "gnus-help" '(nndoc "gnus-help")))
-	(file (nnheader-find-etc-directory "gnus-tut.txt" t))
-	dir)
+	(file (nnheader-find-etc-directory "gnus-tut.txt" t)))
     (when (gnus-gethash name gnus-newsrc-hashtb)
       (error "Documentation group already exists"))
     (if (not file)
@@ -3332,7 +3331,6 @@ and the second element is the address."
   ;; If INFO is non-nil, use that info.	 If FORCE is non-nil, don't
   ;; add, but replace marked articles of TYPE with ARTICLES.
   (let ((info (or info (gnus-get-info group)))
-	(uncompressed '(score bookmark killed))
 	marked m)
     (or (not info)
 	(and (not (setq marked (nthcdr 3 info)))

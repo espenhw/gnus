@@ -32,7 +32,7 @@
 (require 'bytecomp)
 (push "~/lisp/custom" load-path)
 (push "." load-path)
-(load "./lpath.el")
+(load "./lpath.el" nil t)
 
 (defalias 'device-sound-enabled-p 'ignore)
 (defalias 'play-sound-file 'ignore)
@@ -48,11 +48,11 @@
     (fset 'x-defined-colors 'ignore)
     (fset 'read-color 'ignore)))
 
-(setq byte-compile-warnings
-      '(free-vars unresolved callargs redefine))
-
-(defun dgnushack-compile ()
+(defun dgnushack-compile (&optional warn)
   ;;(setq byte-compile-dynamic t)
+  (unless warn
+    (setq byte-compile-warnings
+	  '(free-vars unresolved callargs redefine)))
   (unless (locate-library "cus-edit")
     (error "You do not seem to have Custom installed.
 Fetch it from <URL:http://www.dina.kvl.dk/~abraham/custom/>.

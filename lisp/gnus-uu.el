@@ -513,7 +513,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   (interactive "P")
   (let ((gnus-uu-save-in-digest t)
 	(file (make-temp-name (nnheader-concat gnus-uu-tmp-dir "forward")))
-	buf subject from newsgroups)
+	buf subject from)
     (gnus-setup-message 'forward
       (setq gnus-uu-digest-from-subject nil)
       (gnus-uu-decode-save n file)
@@ -638,7 +638,7 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   "Invert the list of process-marked articles."
   (interactive)
   (let ((data gnus-newsgroup-data)
-	d number)
+	number)
     (save-excursion
       (while data
 	(if (memq (setq number (gnus-data-number (pop data)))
@@ -828,7 +828,6 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 		  (mail-header-subject header))
 	    gnus-uu-digest-from-subject))
     (let ((name (file-name-nondirectory gnus-uu-saved-article-name))
-	  (delim (concat "^" (make-string 30 ?-) "$"))
 	  beg subj headers headline sorthead body end-string state)
       (if (or (eq in-state 'first)
 	      (eq in-state 'first-and-last))
@@ -1023,34 +1022,33 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
   ;; replaces the last thing that looks like "2/3" with "[0-9]+/3"
   ;; or, if it can't find something like that, tries "2 of 3", then
   ;; finally just replaces the next to last number with "[0-9]+".
-  (let ((count 2))
-    (save-excursion
-      (set-buffer (gnus-get-buffer-create gnus-uu-output-buffer-name))
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
-      (insert (regexp-quote string))
+  (save-excursion
+    (set-buffer (gnus-get-buffer-create gnus-uu-output-buffer-name))
+    (buffer-disable-undo (current-buffer))
+    (erase-buffer)
+    (insert (regexp-quote string))
 
-      (setq case-fold-search nil)
+    (setq case-fold-search nil)
+
+    (end-of-line)
+    (if (re-search-backward "\\([^0-9]\\)[0-9]+/\\([0-9]+\\)" nil t)
+	(replace-match "\\1[0-9]+/\\2")
 
       (end-of-line)
-      (if (re-search-backward "\\([^0-9]\\)[0-9]+/\\([0-9]+\\)" nil t)
-	  (replace-match "\\1[0-9]+/\\2")
+      (if (re-search-backward "\\([^0-9]\\)[0-9]+[ \t]*of[ \t]*\\([0-9]+\\)"
+			      nil t)
+	  (replace-match "\\1[0-9]+ of \\2")
 
 	(end-of-line)
-	(if (re-search-backward "\\([^0-9]\\)[0-9]+[ \t]*of[ \t]*\\([0-9]+\\)"
+	(if (re-search-backward "\\([^0-9]\\)[0-9]+\\([^0-9]+\\)[0-9]+"
 				nil t)
-	    (replace-match "\\1[0-9]+ of \\2")
+	    (replace-match "\\1[0-9]+\\2[0-9]+" t nil nil nil))))
 
-	  (end-of-line)
-          (if (re-search-backward "\\([^0-9]\\)[0-9]+\\([^0-9]+\\)[0-9]+"
-                                  nil t)
-              (replace-match "\\1[0-9]+\\2[0-9]+" t nil nil nil))))
+    (goto-char 1)
+    (while (re-search-forward "[ \t]+" nil t)
+      (replace-match "[ \t]+" t t))
 
-      (goto-char 1)
-      (while (re-search-forward "[ \t]+" nil t)
-	(replace-match "[ \t]+" t t))
-
-      (buffer-substring 1 (point-max)))))
+    (buffer-substring 1 (point-max))))
 
 (defun gnus-uu-get-list-of-articles (n)
   ;; If N is non-nil, the article numbers of the N next articles
@@ -1927,7 +1925,7 @@ If no file has been included, the user will be asked for a file."
 	(top-string "[ cut here %s (%s %d/%d) %s gnus-uu ]")
 	(separator (concat mail-header-separator "\n\n"))
 	uubuf length parts header i end beg
-	beg-line minlen buf post-buf whole-len beg-binary end-binary)
+	beg-line minlen post-buf whole-len beg-binary end-binary)
 
     (setq post-buf (current-buffer))
 

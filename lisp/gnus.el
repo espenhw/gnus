@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.40"
+(defconst gnus-version-number "5.6.41"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1707,7 +1707,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-start-date-timer gnus-stop-date-timer)
      ("gnus-int" gnus-request-type)
      ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1
-      gnus-dribble-enter gnus-read-init-file)
+      gnus-dribble-enter gnus-read-init-file gnus-dribble-touch)
      ("gnus-dup" gnus-dup-suppress-articles gnus-dup-unsuppress-article
       gnus-dup-enter-articles)
      ("gnus-range" gnus-copy-sequence)
@@ -1978,12 +1978,9 @@ STRINGS will be evaluated in normal `or' order."
   "Version number of this version of Gnus.
 If ARG, insert string at point."
   (interactive "P")
-  (let ((methods gnus-valid-select-methods)
-	(mess gnus-version)
-	meth)
-    (if arg
-	(insert (message mess))
-      (message mess))))
+  (if arg
+      (insert (message gnus-version))
+    (message gnus-version)))
 
 (defun gnus-continuum-version (version)
   "Return VERSION as a floating point number."
