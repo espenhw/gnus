@@ -1025,7 +1025,7 @@ command whose response triggered the error."
   t)
 
 (deffoo nntp-request-set-mark (group actions &optional server)
-  (nntp-possibly-change-group group server)
+  (nntp-possibly-create-directory group server)
   (unless nntp-marks-is-evil
     (nntp-open-marks group server)
     (dolist (action actions)
@@ -1045,7 +1045,7 @@ command whose response triggered the error."
   nil)
 
 (deffoo nntp-request-update-info (group info &optional server)
-  (nntp-possibly-change-group group server)
+  (nntp-possibly-create-directory group server)
   (when (and (not nntp-marks-is-evil) (nntp-marks-changed-p group))
     (nnheader-message 8 "Updating marks for %s..." group)
     (nntp-open-marks group server)
