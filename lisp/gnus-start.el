@@ -34,6 +34,7 @@
 (require 'gnus-util)
 (autoload 'message-make-date "message")
 (autoload 'gnus-agent-read-servers-validate "gnus-agent")
+(autoload 'gnus-agent-possibly-alter-active "gnus-agent")
 (eval-when-compile (require 'cl))
 
 (defcustom gnus-startup-file (nnheader-concat gnus-home-directory ".newsrc")
@@ -660,6 +661,7 @@ the first newsgroup."
   (setq gnus-list-of-killed-groups nil
 	gnus-have-read-active-file nil
         gnus-agent-covered-methods nil
+        gnus-server-method-cache nil
 	gnus-newsrc-alist nil
 	gnus-newsrc-hashtb nil
 	gnus-killed-list nil
@@ -1529,8 +1531,8 @@ newsgroup."
 
       ;; If the agent is enabled, we may have to alter the active info.
       (when (and gnus-agent info)
-	(inline (gnus-agent-possibly-alter-active
-		 (gnus-info-group info) active)))
+	(gnus-agent-possibly-alter-active
+		 (gnus-info-group info) active))
 
       ;; Modify the list of read articles according to what articles
       ;; are available; then tally the unread articles and add the
