@@ -19874,6 +19874,9 @@ before.
 @section GroupLens
 @cindex GroupLens
 
+@sc{Note:} Unfortunately the GroupLens system seems to have shut down,
+so this section is mostly of historical interest.
+
 @uref{http://www.cs.umn.edu/Research/GroupLens/, GroupLens} is a
 collaborative filtering system that helps you work together with other
 people to find the quality news articles out of the huge volume of
@@ -19888,9 +19891,6 @@ Once it has found some people you agree with it tells you, in the form
 of a prediction, what they thought of the article.  You can use this
 prediction to help you decide whether or not you want to read the
 article.
-
-@sc{Note:} Unfortunately the GroupLens system seems to have shut down,
-so this section is mostly of historical interest.
 
 @menu
 * Using GroupLens::             How to make Gnus use GroupLens.

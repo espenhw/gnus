@@ -1,3 +1,7 @@
+2003-08-20  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (GroupLens): Move text around.
+
 2003-08-16  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Searching for Articles): Fix example.
