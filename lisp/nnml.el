@@ -710,11 +710,7 @@ all.  This may very well take some time.")
 		   (file-directory-p dir))
 	  (nnml-generate-nov-databases-1 dir seen))))
     ;; Do this directory.
-    (let ((files (sort
-		  (mapcar
-		   (lambda (name) (string-to-int name))
-		   (directory-files dir nil "^[0-9]+$" t))
-		  '<)))
+    (let ((files (nnheader-article-to-file-alist dir)))
       (when files
 	(funcall nnml-generate-active-function dir)
 	;; Generate the nov file.
@@ -749,8 +745,7 @@ all.  This may very well take some time.")
       (when (file-exists-p nov)
 	(funcall nnmail-delete-file-function nov))
       (while files
-	(unless (file-directory-p 
-		 (setq file (concat dir (int-to-string (car files)))))
+	(unless (file-directory-p (setq file (concat dir (cdar files))))
 	  (erase-buffer)
 	  (nnheader-insert-file-contents file)
 	  (narrow-to-region 
@@ -762,7 +757,7 @@ all.  This may very well take some time.")
 	  (when (and (not (= 0 chars))	; none of them empty files...
 		     (not (= (point-min) (point-max))))
 	    (goto-char (point-min))
-	    (setq headers (nnml-parse-head chars (car files)))
+	    (setq headers (nnml-parse-head chars (caar files)))
 	    (save-excursion
 	      (set-buffer nov-buffer)
 	      (goto-char (point-max))

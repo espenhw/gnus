@@ -1129,7 +1129,7 @@ If COPYP, copy the groups instead."
 
 (defun gnus-topic-mark-topic (topic &optional unmark)
   "Mark all groups in the topic with the process mark."
-  (interactive (list (gnus-current-topic)))
+  (interactive (list (gnus-group-topic-name)))
   (if (not topic)
       (call-interactively 'gnus-group-mark-group)
     (save-excursion
@@ -1140,7 +1140,7 @@ If COPYP, copy the groups instead."
 
 (defun gnus-topic-unmark-topic (topic &optional unmark)
   "Remove the process mark from all groups in the topic."
-  (interactive (list (gnus-current-topic)))
+  (interactive (list (gnus-group-topic-name)))
   (if (not topic)
       (call-interactively 'gnus-group-mark-group)
     (gnus-topic-mark-topic topic t)))

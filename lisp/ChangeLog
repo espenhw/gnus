@@ -1,8 +1,45 @@
+Tue Jan 28 18:11:54 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.6 is released.
+
+Tue Jan 28 13:55:12 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-check-hidden-text): Widen before doing
+	anything.
+
+	* gnus.el (gnus-visual): Doc fix.
+
+	* gnus-art.el (gnus-visible-headers): Just include "Resent-From". 
+
+Mon Jan 27 19:40:37 1997  Paul Franklin  <paul@cs.washington.edu>
+
+	* gnus-sum.el (gnus-read-header): Make sure nntp-server-buffer is
+	empty on failure.
+
+Tue Jan 28 00:33:27 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnmail.el (nnmail-delete-incoming): Changed default.
+
+	* gnus-topic.el (gnus-topic-mark-topic): Let groups be marked.
+	(gnus-topic-unmark-topic): Ditto.
+
+	* nnmail.el (nnmail-process-babyl-mail-format): Unquote ">From ". 
+
+	* gnus-sum.el (gnus-summary-read-group): Only beep dead groups. 
+
+Mon Jan 27 18:24:27 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnml.el (nnml-generate-nov-databases-1): Work properly on
+	compressed files.
+	(nnml-generate-nov-file): Ditto.
+
+	* gnus.el (gnus-article-mode-map): Don't unconditionally suppress
+	all the major keymaps.
+
+	* gnus-sum.el (gnus-summary-read-group): Beep dead non-native
+	groups can't be entered. 
+
 Mon Jan 27 18:03:17 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
-
-	* gnus.el: Gnus v5.4.5 is released.
-
-Mon Jan 27 18:00:46 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.5 is released.
 

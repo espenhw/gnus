@@ -349,7 +349,7 @@ Example:
   :group 'gnus-mail
   :type '(repeat (cons :format "%v" symbol regexp)))
 
-(defcustom nnmail-delete-incoming nil
+(defcustom nnmail-delete-incoming t
   "*If non-nil, the mail backends will delete incoming files after
 splitting."
   :group 'gnus-mail
@@ -658,6 +658,10 @@ is a spool.  If not using procmail, return GROUP."
 	     (search-forward-regexp "^[^:]*\\( .*\\|\\)$" nil t)
 	     (search-forward ""))
 	 (point)))
+      ;; Unquote the ">From " line, if any.
+      (goto-char (point-min))
+      (when (looking-at ">From ")
+	(replace-match "X-From-Line: ") )
       (run-hooks 'nnmail-prepare-incoming-header-hook)
       (goto-char (point-max))
       ;; Find the Message-ID header.

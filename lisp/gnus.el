@@ -1210,7 +1210,18 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL."
   "Enable visual features.
 If `visual' is disabled, there will be no menus and few faces.  Most of
 the visual customization options below will be ignored.  Gnus will use
-less space and be faster as a result."
+less space and be faster as a result.
+
+This variable can also be a list of visual elements to switch on.  For
+instance, to switch off all visual things except menus, you can say:
+
+   (setq gnus-visual '(menu))
+
+Valid elements include `summary-highlight', `group-highlight',
+`article-highlight', `mouse-face', `summary-menu', `group-menu',
+`article-menu', `tree-highlight', `menu', `highlight', `browse-menu',
+`server-menu', `page-marker', `tree-menu', `binary-menu', `pick-menu',
+and `grouplens-menu'."
   :group 'gnus-meta
   :group 'gnus-visual
   :type '(set (const summary-highlight)
@@ -1668,12 +1679,18 @@ This restriction may disappear in later versions of Gnus."
     (while keys
       (define-key keymap (pop keys) 'undefined))))
 
-(defvar gnus-article-mode-map (make-keymap))
-(gnus-suppress-keymap gnus-article-mode-map)
-(defvar gnus-summary-mode-map (make-keymap))
-(gnus-suppress-keymap gnus-summary-mode-map)
-(defvar gnus-group-mode-map (make-keymap))
-(gnus-suppress-keymap gnus-group-mode-map)
+(defvar gnus-article-mode-map
+  (let ((keymap (make-keymap)))
+    (gnus-suppress-keymap keymap)
+    keymap))
+(defvar gnus-summary-mode-map 
+  (let ((keymap (make-keymap)))
+    (gnus-suppress-keymap keymap)
+    keymap))
+(defvar gnus-group-mode-map
+  (let ((keymap (make-keymap)))
+    (gnus-suppress-keymap keymap)
+    keymap))
 
 
 

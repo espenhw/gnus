@@ -2474,6 +2474,10 @@ the thread are to be displayed."
 If SHOW-ALL is non-nil, already read articles are also listed.
 If NO-ARTICLE is non-nil, no article is selected initially.
 If NO-DISPLAY, don't generate a summary buffer."
+  ;; Killed foreign groups can't be entered.
+  (when (and (not (gnus-group-native-p group))
+	     (not (gnus-gethash group gnus-newsrc-hashtb)))
+    (error "Dead non-native groups can't be entered"))
   (gnus-message 5 "Retrieving newsgroup: %s..." group)
   (let* ((new-group (gnus-summary-setup-buffer group))
 	 (quit-config (gnus-group-quit-config group))
@@ -4701,9 +4705,8 @@ The prefix argument ALL means to select all articles."
 	(group gnus-newsgroup-name))
     (setq gnus-newsgroup-begin nil)
     (gnus-summary-exit)
-    ;; We have to adjust the point of group mode buffer because the
-    ;; current point was moved to the next unread newsgroup by
-    ;; exiting.
+    ;; We have to adjust the point of group mode buffer because 
+    ;; point was moved to the next unread newsgroup by exiting.
     (gnus-summary-jump-to-group group)
     (when rescan
       (save-excursion

@@ -102,7 +102,7 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-visible-headers 
-  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-"
+  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From"
   "All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `gnus-ignored-headers' will be ignored."
@@ -948,7 +948,8 @@ always hide."
 	  (narrow-to-region beg end)
 	  (goto-char (point-min))
 	  (while (re-search-forward "^- " nil t)
-	    (gnus-article-hide-text-type (match-beginning 0) (match-end 0) 'pgp))
+	    (gnus-article-hide-text-type 
+	     (match-beginning 0) (match-end 0) 'pgp))
 	  (widen))))))
 
 (defun article-hide-pem (&optional arg)
@@ -1089,17 +1090,19 @@ Put point at the beginning of the signature separator."
 Arg can be nil or a number.  Nil and positive means hide, negative
 means show, 0 means toggle."
   (save-excursion
-    (let ((hide (gnus-article-hidden-text-p type)))
-      (cond
-       ((or (null arg)
-	    (> arg 0))
-	nil)
-       ((< arg 0)
-	(gnus-article-show-hidden-text type))
-       (t
-	(if (eq hide 'hidden)
-	    (gnus-article-show-hidden-text type)
-	  nil))))))
+    (save-restriction
+      (widen)
+      (let ((hide (gnus-article-hidden-text-p type)))
+	(cond
+	 ((or (null arg)
+	      (> arg 0))
+	  nil)
+	 ((< arg 0)
+	  (gnus-article-show-hidden-text type))
+	 (t
+	  (if (eq hide 'hidden)
+	      (gnus-article-show-hidden-text type)
+	    nil)))))))
 
 (defun gnus-article-hidden-text-p (type)
   "Say whether the current buffer contains hidden text of type TYPE."
@@ -1672,7 +1675,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 
     "\C-d" gnus-article-read-summary-keys
     "\M-*" gnus-article-read-summary-keys
-    "\M-^" gnus-article-read-summary-keys
+    "\M-#" gnus-article-read-summary-keys
     "\M-g" gnus-article-read-summary-keys)
 
   (substitute-key-definition
