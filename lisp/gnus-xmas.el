@@ -794,9 +794,8 @@ XEmacs compatibility workaround."
 		      gnus-mailing-list-menu))
 
 (defun gnus-xmas-image-type-available-p (type)
-  (when (eq type 'pbm)
-    (setq type 'xbm))
-  (featurep type))
+  (and window-system
+       (featurep (if (eq type 'pmb) 'xbm type))))
 
 (defun gnus-xmas-create-image (file &optional type data-p &rest props)
   (let ((type (if type

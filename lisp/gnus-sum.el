@@ -4813,8 +4813,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
   (when (= (length display) 1)
     (setq display (car display)))
   (unless gnus-summary-display-cache
-    (dolist (elem (append (list (cons 'read 'read)
-				(cons 'unseen 'unseen))
+    (dolist (elem (append '((unread . unread)
+			    (unseen . unseen))
 			  gnus-article-mark-lists))
       (push (cons (cdr elem)
 		  (gnus-byte-compile
