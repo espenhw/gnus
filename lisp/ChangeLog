@@ -1,5 +1,10 @@
 2004-05-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-skip-to-next-address): New function.
+	(message-fill-header-address): Refactor.
+	(message-fill-address): Use it.
+	(message-delete-address): Use it.
+
 	* rfc2047.el (rfc2047-field-value): Strip props.
 
 	* mail-parse.el (mail-header-make-address): New alias.
