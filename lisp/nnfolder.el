@@ -101,24 +101,16 @@ time saver for large mailboxes.")
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
-    (let (article art-string start stop)
+    (let (article start stop)
       (nnfolder-possibly-change-group group server)
       (when nnfolder-current-buffer
 	(set-buffer nnfolder-current-buffer)
 	(goto-char (point-min))
 	(if (stringp (car articles))
 	    'headers
-	  (while articles
-	    (setq article (car articles))
-	    (setq art-string (nnfolder-article-string article))
+	  (while (setq article (pop articles))
 	    (set-buffer nnfolder-current-buffer)
-	    (when (or (search-forward art-string nil t)
-		      ;; Don't search the whole file twice!  Also, articles
-		      ;; probably have some locality by number, so searching
-		      ;; backwards will be faster.  Especially if we're at the
-		      ;; beginning of the buffer :-). -SLB
-		      (search-backward art-string nil t))
-	      (nnmail-search-unix-mail-delim-backward)
+	    (when (nnfolder-goto-article article)
 	      (setq start (point))
 	      (search-forward "\n\n" nil t)
 	      (setq stop (1- (point)))
@@ -126,8 +118,7 @@ time saver for large mailboxes.")
 	      (insert (format "221 %d Article retrieved.\n" article))
 	      (insert-buffer-substring nnfolder-current-buffer start stop)
 	      (goto-char (point-max))
-	      (insert ".\n"))
-	    (setq articles (cdr articles)))
+	      (insert ".\n")))
 
 	  (set-buffer nntp-server-buffer)
 	  (nnheader-fold-continuation-lines)
@@ -165,9 +156,8 @@ time saver for large mailboxes.")
   (save-excursion
     (set-buffer nnfolder-current-buffer)
     (goto-char (point-min))
-    (when (search-forward (nnfolder-article-string article) nil t)
+    (when (nnfolder-goto-article article)
       (let (start stop)
-	(nnmail-search-unix-mail-delim-backward)
 	(setq start (point))
 	(forward-line 1)
 	(unless (and (nnmail-search-unix-mail-delim)
@@ -309,7 +299,7 @@ time saver for large mailboxes.")
       (set-buffer nnfolder-current-buffer)
       (while (and articles is-old)
 	(goto-char (point-min))
-	(when (search-forward (nnfolder-article-string (car articles)) nil t)
+	(when (nnfolder-goto-article (car articles))
 	  (if (setq is-old
 		    (nnmail-expired-article-p
 		     newsgroup
@@ -354,7 +344,7 @@ time saver for large mailboxes.")
 	 (nnfolder-possibly-change-group group server)
 	 (set-buffer nnfolder-current-buffer)
 	 (goto-char (point-min))
-	 (when (search-forward (nnfolder-article-string article) nil t)
+	 (when (nnfolder-goto-article article)
 	   (nnfolder-delete-mail))
 	 (when last
 	   (nnfolder-save-buffer)
@@ -409,7 +399,7 @@ time saver for large mailboxes.")
     (nnfolder-normalize-buffer)
     (set-buffer nnfolder-current-buffer)
     (goto-char (point-min))
-    (if (not (search-forward (nnfolder-article-string article) nil t))
+    (if (not (nnfolder-goto-article article))
 	nil
       (nnfolder-delete-mail t t)
       (insert-buffer-substring buffer)
@@ -483,6 +473,26 @@ time saver for large mailboxes.")
   (if (numberp article)
       (concat "\n" nnfolder-article-marker (int-to-string article) " ")
     (concat "\nMessage-ID: " article)))
+
+(defun nnfolder-goto-article (article)
+  "Place point at the start of the headers of ARTICLE.
+ARTICLE can be an article number or a Message-ID."
+  (let ((art-string (nnfolder-article-string article))
+	end-search end)
+    (while (not end-search)
+      (if (or (search-forward art-string nil t)
+	      ;; Don't search the whole file twice!  Also, articles
+	      ;; probably have some locality by number, so searching
+	      ;; backwards will be faster.  Especially if we're at the
+	      ;; beginning of the buffer :-). -SLB
+	      (search-backward art-string nil t))
+	  (progn
+	    (setq end (point))
+	    (nnmail-search-unix-mail-delim-backward)
+	    (unless (save-excursion (search-forward "\n\n" nil end))
+	      (setq end-search 'found)))
+	(setq end-search t)))
+    (eq end-search 'found)))
 
 (defun nnfolder-delete-mail (&optional force leave-delim)
   "Delete the message that point is in."

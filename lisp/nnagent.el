@@ -108,6 +108,7 @@
   nil)
 
 (deffoo nnagent-request-post (&optional server)
+  (gnus-agent-insert-meta-information 'news gnus-command-method)
   (gnus-request-accept-article "nndraft:queue"))
 
 ;; Use nnml functions for just about everything.

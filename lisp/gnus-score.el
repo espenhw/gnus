@@ -269,6 +269,11 @@ This variable allows the same syntax as `gnus-home-score-file'."
   :group 'gnus-score-adapt
   :type '(choice (const nil) integer))
 
+(defcustom gnus-adaptive-word-no-group-words nil
+  "If t, don't adaptively score words included in the group name."
+  :group 'gnus-score-adapt
+  :type 'boolean)
+
 (defcustom gnus-score-mimic-keymap nil
   "*Have the score entry functions pretend that they are a keymap."
   :group 'gnus-score-default
@@ -2089,6 +2094,10 @@ SCORE is the score to add."
       (set-syntax-table syntab))
     ;; Make all the ignorable words ignored.
     (let ((ignored (append gnus-ignored-adaptive-words
+			   (if gnus-adaptive-word-no-group-words
+			       (message-tokenize-header
+				(gnus-group-real-name gnus-newsgroup-name)
+				"."))
 			   gnus-default-ignored-adaptive-words)))
       (while ignored
 	(gnus-sethash (pop ignored) nil hashtb)))))
@@ -2217,6 +2226,11 @@ SCORE is the score to add."
 	    (set-syntax-table syntab))
 	  ;; Make all the ignorable words ignored.
 	  (let ((ignored (append gnus-ignored-adaptive-words
+				 (if gnus-adaptive-word-no-group-words
+				     (message-tokenize-header
+				      (gnus-group-real-name 
+				       gnus-newsgroup-name)
+				      "."))
 				 gnus-default-ignored-adaptive-words)))
 	    (while ignored
 	      (gnus-sethash (pop ignored) nil hashtb)))

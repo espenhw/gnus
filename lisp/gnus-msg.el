@@ -484,7 +484,8 @@ If SILENT, don't prompt the user."
 		   (cons (or gnus-last-posting-server "") 0))))
 	  method-alist))))
      ;; Override normal method.
-     ((eq gnus-post-method 'current)
+     ((and (eq gnus-post-method 'current)
+	   (not arg))
       group-method) 
      (gnus-post-method
       gnus-post-method)

@@ -485,6 +485,10 @@ always hide."
 		(setq beg nil)
 	      (setq beg (point-marker))))
 	  (when (and beg end)
+	    ;; We use markers for the end-points to facilitate later
+	    ;; wrapping and mangling of text.
+	    (setq beg (set-marker (make-marker) beg)
+		  end (set-marker (make-marker) end))
 	    (gnus-add-text-properties beg end props)
 	    (goto-char beg)
 	    (unless (save-excursion (search-backward "\n\n" nil t))
@@ -496,10 +500,7 @@ always hide."
 		(point)
 		(progn (eval gnus-cited-text-button-line-format-spec) (point))
 		`gnus-article-toggle-cited-text
-		;; We use markers for the end-points to facilitate later
-		;; wrapping and mangling of text.
-		(cons (set-marker (make-marker) beg)
-		      (set-marker (make-marker) end)))
+		(cons beg end))
 	       (point))
 	     'article-type 'annotation)
 	    (set-marker beg (point)))))))))

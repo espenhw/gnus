@@ -77,6 +77,8 @@ If nil, only read articles will be expired."
 
 ;;; Internal variables
 
+(defvar gnus-agent-meta-information-header "X-Gnus-Agent-Meta-Information")
+
 (defvar gnus-agent-history-buffers nil)
 (defvar gnus-agent-buffer-alist nil)
 (defvar gnus-agent-article-alist nil)
@@ -330,7 +332,22 @@ agent minor mode in all Gnus buffers."
     (re-search-forward
      (concat "^" (regexp-quote mail-header-separator) "\n"))
     (replace-match "\n")
+    (gnus-agent-insert-meta-information 'mail)
     (gnus-request-accept-article "nndraft:queue")))
+
+(defun gnus-agent-insert-meta-information (type &optional method)
+  "Insert meta-information into the message that says how it's to be posted.
+TYPE can be either `mail' or `news'.  If the latter METHOD can
+be a select method."
+  (save-excursion
+    (message-remove-header gnus-agent-meta-information-header)
+    (goto-char (point-min))
+    (insert gnus-agent-meta-information-header ": "
+	    (symbol-name type) " " (format "%S" method)
+	    "\n")
+    (forward-char -1)
+    (while (search-backward "\n" nil t)
+      (replace-match "\\n" t t))))
 
 ;;;
 ;;; Group mode commands
@@ -1246,6 +1263,7 @@ The following commands are available:
 	(set-buffer
 	 (setq gnus-agent-current-history
 	       (setq history (gnus-agent-history-buffer))))
+	(goto-char (point-min))
 	(unless (zerop (buffer-size))
 	  (goto-char (point-min))
 	  (while (not (eobp))

@@ -711,16 +711,11 @@ server there that you can connect to.  See also
   (nntp-possibly-change-group nil server)
   (save-excursion
     (set-buffer nntp-server-buffer)
-    (let* ((date (timezone-parse-date date))
-	   (time-string
-	    (format "%s%02d%02d %s%s%s"
-		    (substring (aref date 0) 2) (string-to-int (aref date 1))
-		    (string-to-int (aref date 2)) (substring (aref date 3) 0 2)
-		    (substring
-		     (aref date 3) 3 5) (substring (aref date 3) 6 8))))
-      (prog1
-	  (nntp-send-command "^\\.\r?\n" "NEWGROUPS" time-string)
-	(nntp-decode-text)))))
+    (prog1
+	(nntp-send-command
+	 "^\\.\r?\n" "NEWGROUPS"
+	 (format-time-string "%y%m%d %H%M%S" (nnmail-date-to-time date)))
+      (nntp-decode-text))))
 
 (deffoo nntp-request-post (&optional server)
   (nntp-possibly-change-group nil server)

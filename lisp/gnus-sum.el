@@ -3234,6 +3234,11 @@ If NO-DISPLAY, don't generate a summary buffer."
 		  ;; If we use dummy roots, then we have to remove the
 		  ;; dummy root as well.
 		  (when (eq gnus-summary-make-false-root 'dummy)
+		    ;; We go to the dummy root by going to
+		    ;; the first sub-"thread", and then one line up.
+		    (gnus-summary-goto-article
+		     (mail-header-number (caadr thread)))
+		    (forward-line -1)
 		    (gnus-delete-line)
 		    (gnus-data-compute-positions))
 		  (setq thread (cdr thread))

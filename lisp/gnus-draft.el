@@ -30,6 +30,7 @@
 (require 'message)
 (require 'gnus-msg)
 (require 'nndraft)
+(require 'gnus-agent)
 (eval-when-compile (require 'cl))
 
 ;;; Draft minor mode
@@ -117,8 +118,26 @@
   "Send message ARTICLE."
   (gnus-draft-setup article (or group "nndraft:queue"))
   (let ((message-syntax-checks 'dont-check-for-anything-just-trust-me)
-	message-send-hook)
-    (message-send-and-exit)))
+	message-send-hook type method)
+    ;; We read the meta-information that says how and where
+    ;; this message is to be sent.
+    (save-restriction
+      (message-narrow-to-head)
+      (when (re-search-forward
+	     (concat "^" (regexp-quote gnus-agent-meta-information-header) ":")
+	     nil t)
+	(setq type (ignore-errors (read (current-buffer)))
+	      method (ignore-errors (read (current-buffer))))
+	(message-remove-header gnus-agent-meta-information-header)))
+    ;; Then we send it.  If we have no meta-information, we just send
+    ;; it and let Message figure out how.
+    (if type
+	(let ((message-this-is-news (eq type 'news))
+	      (message-this-is-mail (eq type 'mail))
+	      (gnus-post-method method)
+	      (message-post-method method))
+	  (message-send-and-exit))
+      (message-send-and-exit))))
 
 (defun gnus-draft-send-all-messages ()
   "Send all the sendable drafts."

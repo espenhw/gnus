@@ -1,3 +1,54 @@
+Fri May  1 19:45:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.8 is released.
+
+Fri May  1 18:51:21 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-request-newgroups): Use format-time-string.
+
+	* message.el (message-fetch-field): Inhibit point-motion hooks.
+
+Fri May  1 18:33:06 1998  Wes Hardaker  <wjhardaker@ucdavis.edu>
+
+	* gnus-score.el (gnus-adaptive-word-no-group-words): New variable.
+
+Fri May  1 16:56:32 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-expire): Put point at the start of the
+	buffer.
+
+	* gnus-soup.el (gnus-soup-parse-areas): Check whether the file
+	exists. 
+
+	* gnus-draft.el (gnus-draft-send): Use meta-information.
+
+	* nnagent.el (nnagent-request-post): Store meta-information.
+
+	* gnus-agent.el (gnus-agent-meta-information-header): New variable.
+	(gnus-agent-insert-meta-information): New function.
+
+Fri May  1 16:43:35 1998  Paul Franklin  <paul@cs.washington.edu>
+
+	* message.el (message-generate-headers): Insert Sender when
+	required. 
+
+Fri May  1 15:28:55 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-dd-mmm): Accept "" dates.
+
+	* gnus-cite.el (gnus-article-hide-citation): Don't remove button
+	when hiding.
+
+	* gnus-msg.el (gnus-post-method): Allow ARG to override
+	`current'. 
+
+	* gnus-sum.el (gnus-remove-thread): Remove the dummy root
+	properly. 
+
+	* nnfolder.el (nnfolder-goto-article): New function.
+	(nnfolder-retrieve-headers): Use it.
+	(nnfolder-request-article): Ditto.
+
 Wed Apr 29 22:48:33 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.7 is released.

@@ -992,7 +992,8 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 (defun message-fetch-field (header &optional not-all)
   "The same as `mail-fetch-field', only remove all newlines."
-  (let ((value (mail-fetch-field header nil (not not-all))))
+  (let* ((inhibit-point-motion-hooks t)
+	 (value (mail-fetch-field header nil (not not-all))))
     (when value
       (nnheader-replace-chars-in-string value ?\n ? ))))
 
@@ -1095,22 +1096,24 @@ Return the number of headers removed."
 
 (defun message-news-p ()
   "Say whether the current buffer contains a news message."
-  (or message-this-is-news
-      (save-excursion
-	(save-restriction
-	  (message-narrow-to-headers)
-	  (and (message-fetch-field "newsgroups")
-	       (not (message-fetch-field "posted-to")))))))
+  (and (not message-this-is-mail)
+       (or message-this-is-news
+	   (save-excursion
+	     (save-restriction
+	       (message-narrow-to-headers)
+	       (and (message-fetch-field "newsgroups")
+		    (not (message-fetch-field "posted-to"))))))))
 
 (defun message-mail-p ()
   "Say whether the current buffer contains a mail message."
-  (or message-this-is-mail
-      (save-excursion
-	(save-restriction
-	  (message-narrow-to-headers)
-	  (or (message-fetch-field "to")
-	      (message-fetch-field "cc")
-	      (message-fetch-field "bcc"))))))
+  (and (not message-this-is-news)
+       (or message-this-is-mail
+	   (save-excursion
+	     (save-restriction
+	       (message-narrow-to-headers)
+	       (or (message-fetch-field "to")
+		   (message-fetch-field "cc")
+		   (message-fetch-field "bcc")))))))
 
 (defun message-next-header ()
   "Go to the beginning of the next header."
@@ -2916,7 +2919,7 @@ Headers already prepared in the buffer are not modified."
 	    (insert "Original-")
 	    (beginning-of-line))
 	  (when (or (message-news-p)
-		    (string-match "^[^@]@.+\\..+" secure-sender))
+		    (string-match "@.+\\.." secure-sender))
 	    (insert "Sender: " secure-sender "\n")))))))
 
 (defun message-insert-courtesy-copy ()

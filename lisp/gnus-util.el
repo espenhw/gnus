@@ -344,19 +344,21 @@
 ;; it yet.  -erik selberg@cs.washington.edu
 (defun gnus-dd-mmm (messy-date)
   "Return a string like DD-MMM from a big messy string"
-  (let ((datevec (ignore-errors (timezone-parse-date messy-date))))
-    (if (not datevec)
-	"??-???"
-      (format "%2s-%s"
-	      (condition-case ()
-		  ;; Make sure leading zeroes are stripped.
-		  (number-to-string (string-to-number (aref datevec 2)))
-		(error "??"))
-	      (capitalize
-	       (or (car
-		    (nth (1- (string-to-number (aref datevec 1)))
-			 timezone-months-assoc))
-		   "???"))))))
+  (if (equal messy-date "")
+      "??-???"
+    (let ((datevec (ignore-errors (timezone-parse-date messy-date))))
+      (if (not datevec)
+	  "??-???"
+	(format "%2s-%s"
+		(condition-case ()
+		    ;; Make sure leading zeroes are stripped.
+		    (number-to-string (string-to-number (aref datevec 2)))
+		  (error "??"))
+		(capitalize
+		 (or (car
+		      (nth (1- (string-to-number (aref datevec 1)))
+			   timezone-months-assoc))
+		     "???")))))))
 
 (defmacro gnus-date-get-time (date)
   "Convert DATE string to Emacs time.
