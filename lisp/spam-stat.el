@@ -542,7 +542,7 @@ You can use this to determine error rates."
       (dolist (f files)
 	(when (and (file-readable-p f)
 		   (file-regular-p f)
-                   (> (nth 7 (file-attributes f))))
+                   (> (nth 7 (file-attributes f)) 0))
 	  (setq count (1+ count))
 	  (message "Reading %.2f%%, score %.2f%%"
 		   (/ count max) (/ score count))

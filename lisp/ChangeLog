@@ -1,3 +1,7 @@
+2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* spam-stat.el (spam-stat-test-directory): Compare against zero. 
+
 2003-05-01  Trey Jackson <tjackson@ichips.intel.com>  (tiny change)
 
 	* spam-stat.el (spam-stat-test-directory): Skip 0 length files.
