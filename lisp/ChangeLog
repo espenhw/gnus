@@ -1,3 +1,12 @@
+2004-01-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* deuglify.el (gnus-article-outlook-unwrap-lines)
+	(gnus-outlook-rearrange-article)
+	(gnus-outlook-repair-attribution-outlook)
+	(gnus-outlook-repair-attribution-block)
+	(gnus-outlook-repair-attribution-other): Remove redundant
+	save-excursion.
+
 2004-01-09  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-fetch-field-fast, spam-fetch-field-from-fast)
