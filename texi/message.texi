@@ -481,108 +481,28 @@ Insert a signature at the end of the buffer
 @findex message-insert-headers
 Insert the message headers (@code{message-insert-headers}).
 
-@end table
+@item C-c C-p
+@kindex C-c C-p
+@findex message-insert-or-toggle-importance
+This inserts the @samp{Importance:} header with a value of
+@samp{high}.  This header is used to signal the importance of the
+message to the receiver.  If the header is already present in the
+buffer, it cycles between the three valid values according to RFC
+1376: @samp{low}, @samp{normal} and @samp{high}.
 
-@table @code
-@item message-ignored-cited-headers
-@vindex message-ignored-cited-headers
-All headers that match this regexp will be removed from yanked
-messages.  The default is @samp{.}, which means that all headers will be
-removed.
+@item M-x message-insert-importance-high
+@kindex M-x message-insert-importance-high
+@findex message-insert-importance-high
+Insert a @samp{Importance:} header with a value of @samp{high},
+deleting headers if necessary.
 
-@item message-cite-prefix-regexp
-@vindex message-cite-prefix-regexp
-Regexp matching the longest possible citation prefix on a line.
-
-@item message-citation-line-function
-@vindex message-citation-line-function
-@cindex attribution line
-Function called to insert the citation line.  The default is
-@code{message-insert-citation-line}, which will lead to citation lines
-that look like:
-
-@example
-Hallvard B Furuseth <h.b.furuseth@@usit.uio.no> writes:
-@end example
-
-Point will be at the beginning of the body of the message when this
-function is called.
-
-Note that Gnus provides a feature where clicking on `writes:' hides the
-cited text.  If you change the citation line too much, readers of your
-messages will have to adjust their Gnus, too.  See the variable
-@code{gnus-cite-attribution-suffix}.  @xref{Article Highlighting, ,
-Article Highlighting, gnus}, for details.
-
-@item message-yank-prefix
-@vindex message-yank-prefix
-@cindex yanking
-@cindex quoting
-When you are replying to or following up an article, you normally want
-to quote the person you are answering.  Inserting quoted text is done
-by @dfn{yanking}, and each line you yank will have
-@code{message-yank-prefix} prepended to it (except for quoted and
-empty lines which uses @code{message-yank-cited-prefix}). The default
-is @samp{> }.
-
-@item message-yank-cited-prefix
-@vindex message-yank-cited-prefix
-@cindex yanking
-@cindex cited
-@cindex quoting
-When yanking text from a article which contains no text or already
-cited text, each line will be prefixed with the contents of this
-variable.  The default is @samp{>}.  See also
-@code{message-yank-prefix}.
-
-@item message-indentation-spaces
-@vindex message-indentation-spaces
-Number of spaces to indent yanked messages.
-
-@item message-cite-function
-@vindex message-cite-function
-@findex message-cite-original
-@findex sc-cite-original
-@findex message-cite-original-without-signature
-@cindex Supercite
-Function for citing an original message.  The default is
-@code{message-cite-original}, which simply inserts the original message
-and prepends @samp{> } to each line.
-@code{message-cite-original-without-signature} does the same, but elides
-the signature.  You can also set it to @code{sc-cite-original} to use
-Supercite.
-
-@item message-indent-citation-function
-@vindex message-indent-citation-function
-Function for modifying a citation just inserted in the mail buffer.
-This can also be a list of functions.  Each function can find the
-citation between @code{(point)} and @code{(mark t)}.  And each function
-should leave point and mark around the citation text as modified.
-
-@item message-signature
-@vindex message-signature
-String to be inserted at the end of the message buffer.  If @code{t}
-(which is the default), the @code{message-signature-file} file will be
-inserted instead.  If a function, the result from the function will be
-used instead.  If a form, the result from the form will be used instead.
-If this variable is @code{nil}, no signature will be inserted at all.
-
-@item message-signature-file
-@vindex message-signature-file
-File containing the signature to be inserted at the end of the buffer.
-The default is @samp{~/.signature}.
+@item M-x message-insert-importance-low
+@kindex M-x message-insert-importance-low
+@findex message-insert-importance-low
+Insert a @samp{Importance:} header with a value of @samp{low},
+deleting headers if necessary.
 
 @end table
-
-Note that RFC1036bis says that a signature should be preceded by the three
-characters @samp{-- } on a line by themselves.  This is to make it
-easier for the recipient to automatically recognize and process the
-signature.  So don't remove those characters, even though you might feel
-that they ruin your beautiful design, like, totally.
-
-Also note that no signature should be more than four lines long.
-Including ASCII graphics is an efficient way to get everybody to believe
-that you are silly and have nothing important to say.
 
 
 @node MIME
@@ -786,7 +706,7 @@ Delete all text in the body of the message that is outside the region
 
 @item M-RET
 @kindex M-RET
-@kindex message-newline-and-reformat
+@findex message-newline-and-reformat
 Insert four newlines, and then reformat if inside quoted text.
 
 Here's an example:
@@ -941,6 +861,7 @@ installed.
 * Mail Variables::              Other mail variables.
 * News Headers::                Customizing news headers.
 * News Variables::              Other news variables.
+* Insertion Variables::         Customizing how things are inserted.
 * Various Message Variables::   Other message variables.
 * Sending Variables::           Variables for sending.
 * Message Buffers::             How Message names its buffers.
@@ -1282,6 +1203,111 @@ Gnusish @dfn{select method} (see the Gnus manual for details) used for
 posting a prepared news message.
 
 @end table
+
+
+@node Insertion Variables
+@section Insertion Variables
+
+@table @code
+@item message-ignored-cited-headers
+@vindex message-ignored-cited-headers
+All headers that match this regexp will be removed from yanked
+messages.  The default is @samp{.}, which means that all headers will be
+removed.
+
+@item message-cite-prefix-regexp
+@vindex message-cite-prefix-regexp
+Regexp matching the longest possible citation prefix on a line.
+
+@item message-citation-line-function
+@vindex message-citation-line-function
+@cindex attribution line
+Function called to insert the citation line.  The default is
+@code{message-insert-citation-line}, which will lead to citation lines
+that look like:
+
+@example
+Hallvard B Furuseth <h.b.furuseth@@usit.uio.no> writes:
+@end example
+
+Point will be at the beginning of the body of the message when this
+function is called.
+
+Note that Gnus provides a feature where clicking on `writes:' hides the
+cited text.  If you change the citation line too much, readers of your
+messages will have to adjust their Gnus, too.  See the variable
+@code{gnus-cite-attribution-suffix}.  @xref{Article Highlighting, ,
+Article Highlighting, gnus}, for details.
+
+@item message-yank-prefix
+@vindex message-yank-prefix
+@cindex yanking
+@cindex quoting
+When you are replying to or following up an article, you normally want
+to quote the person you are answering.  Inserting quoted text is done
+by @dfn{yanking}, and each line you yank will have
+@code{message-yank-prefix} prepended to it (except for quoted and
+empty lines which uses @code{message-yank-cited-prefix}). The default
+is @samp{> }.
+
+@item message-yank-cited-prefix
+@vindex message-yank-cited-prefix
+@cindex yanking
+@cindex cited
+@cindex quoting
+When yanking text from a article which contains no text or already
+cited text, each line will be prefixed with the contents of this
+variable.  The default is @samp{>}.  See also
+@code{message-yank-prefix}.
+
+@item message-indentation-spaces
+@vindex message-indentation-spaces
+Number of spaces to indent yanked messages.
+
+@item message-cite-function
+@vindex message-cite-function
+@findex message-cite-original
+@findex sc-cite-original
+@findex message-cite-original-without-signature
+@cindex Supercite
+Function for citing an original message.  The default is
+@code{message-cite-original}, which simply inserts the original message
+and prepends @samp{> } to each line.
+@code{message-cite-original-without-signature} does the same, but elides
+the signature.  You can also set it to @code{sc-cite-original} to use
+Supercite.
+
+@item message-indent-citation-function
+@vindex message-indent-citation-function
+Function for modifying a citation just inserted in the mail buffer.
+This can also be a list of functions.  Each function can find the
+citation between @code{(point)} and @code{(mark t)}.  And each function
+should leave point and mark around the citation text as modified.
+
+@item message-signature
+@vindex message-signature
+String to be inserted at the end of the message buffer.  If @code{t}
+(which is the default), the @code{message-signature-file} file will be
+inserted instead.  If a function, the result from the function will be
+used instead.  If a form, the result from the form will be used instead.
+If this variable is @code{nil}, no signature will be inserted at all.
+
+@item message-signature-file
+@vindex message-signature-file
+File containing the signature to be inserted at the end of the buffer.
+The default is @samp{~/.signature}.
+
+@end table
+
+Note that RFC1036bis says that a signature should be preceded by the three
+characters @samp{-- } on a line by themselves.  This is to make it
+easier for the recipient to automatically recognize and process the
+signature.  So don't remove those characters, even though you might feel
+that they ruin your beautiful design, like, totally.
+
+Also note that no signature should be more than four lines long.
+Including ASCII graphics is an efficient way to get everybody to believe
+that you are silly and have nothing important to say.
 
 
 @node Various Message Variables

@@ -1,3 +1,12 @@
+2001-11-15  Simon Josefsson  <jas@extundo.com>
+
+	* message.texi (Insertion): Add C-c C-p,
+	message-insert-importance-{low,high}.
+	(Various Commands): Fix typo.
+	(Insertion Variables): New section, all variables moved from
+	Commands->Insertion into this node, Variables->Insertion
+	Variables.
+
 2001-11-15 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Various Summary Stuff): Add gnus-newsgroup-variables.
