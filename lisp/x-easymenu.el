@@ -1,11 +1,11 @@
 ;;; easymenu.el - Easy menu support for Emacs 19 and XEmacs.
 ;; 
-;; $Id: x-easymenu.el,v 1.2 1996/02/23 03:24:58 steve Exp $
+;; $Id: x-easymenu.el,v 1.1 1996/05/29 05:36:45 steve Exp $
 ;;
 ;; LCD Archive Entry:
 ;; easymenu|Per Abrahamsen|abraham@iesd.auc.dk|
 ;; Easy menu support for XEmacs|
-;; $Date: 1996/02/23 03:24:58 $|$Revision: 1.2 $|~/misc/easymenu.el.gz|
+;; $Date: 1996/05/29 05:36:45 $|$Revision: 1.1 $|~/misc/easymenu.el.gz|
 
 ;; Copyright (C) 1992, 1993, 1994, 1995 Free Software Foundation, Inc.
 ;;
