@@ -156,11 +156,6 @@ If it is a regexp, only decay score files matching regexp."
 			,(concat "\\." gnus-adaptive-file-suffix "\\'"))
 		 (regexp)))
 
-(defcustom gnus-decay-scores nil
-  "*If non-nil, decay non-permanent scores."
-  :group 'gnus-score-decay
-  :type 'boolean)
-
 (defcustom gnus-decay-score-function 'gnus-decay-score
   "*Function called to decay a score.
 It is called with one parameter -- the score to be decayed."
