@@ -241,7 +241,7 @@ See also the `mml-default-encrypt-method' variable."
 
 (defcustom gnus-confirm-mail-reply-to-news nil
   "If non-nil, Gnus requests confirmation when replying to news.
-This is done because new users often reply by misstake when reading
+This is done because new users often reply by mistake when reading
 news."
   :group 'gnus-message
   :type 'boolean)

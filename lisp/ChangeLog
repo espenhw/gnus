@@ -1,5 +1,8 @@
 2002-05-23  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-msg.el (gnus-confirm-mail-reply-to-news): Typo.  Trivial
+	change from Benjamin Rutt <rutt+news@cis.ohio-state.edu>.
+
 	* nnweb.el (nnweb-type): Remove dejanewsold.  Trivial change from
 	Niklas Morberg <niklas.morberg@axis.com>.
 
