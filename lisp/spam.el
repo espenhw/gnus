@@ -138,12 +138,15 @@ All unmarked article in such group receive the spam mark on group entry."
   :type '(repeat (string :tag "Group"))
   :group 'spam)
 
-(defcustom spam-blackhole-servers '("bl.spamcop.net" "relays.ordb.org" "dev.null.dk" "relays.visi.com")
+(defcustom spam-blackhole-servers '("bl.spamcop.net" "relays.ordb.org" 
+				    "dev.null.dk" "relays.visi.com")
   "List of blackhole servers."
   :type '(repeat (string :tag "Server"))
   :group 'spam)
 
-(defcustom spam-ham-marks (list 'gnus-del-mark 'gnus-read-mark 'gnus-killed-mark 'gnus-kill-file-mark 'gnus-low-score-mark)
+(defcustom spam-ham-marks (list 'gnus-del-mark 'gnus-read-mark 
+				'gnus-killed-mark 'gnus-kill-file-mark 
+				'gnus-low-score-mark)
   "Marks considered as being ham (positively not spam).
 Such articles will be processed as ham (non-spam) on group exit."
   :type '(set
@@ -199,7 +202,8 @@ Such articles will be transmitted to `bogofilter -s' on group exit."
 ;; (and previously X-NoSpam) are produced by the `NoSpam' tool, which has
 ;; never been published, so it might not be reasonable leaving it in the
 ;; list.
-(defcustom spam-bogofilter-spaminfo-header-regexp "^X-\\(jf\\|Junk\\|NoSpam\\|Spam\\|SB\\)[^:]*:"
+(defcustom spam-bogofilter-spaminfo-header-regexp 
+  "^X-\\(jf\\|Junk\\|NoSpam\\|Spam\\|SB\\)[^:]*:"
   "Regexp for spam markups in headers.
 Markup from spam recognisers, as well as `Xref', are to be removed from
 articles before they get registered by Bogofilter."
@@ -226,12 +230,14 @@ articles before they get registered by Bogofilter."
 (defun spam-group-spam-contents-p (group)
   (if (stringp group)
       (or (member group spam-junk-mailgroups)
-	  (memq 'gnus-group-spam-classification-spam (gnus-parameter-spam-contents group)))
+	  (memq 'gnus-group-spam-classification-spam 
+		(gnus-parameter-spam-contents group)))
     nil))
   
 (defun spam-group-ham-contents-p (group)
   (if (stringp group)
-      (memq 'gnus-group-spam-classification-ham (gnus-parameter-spam-contents group))
+      (memq 'gnus-group-spam-classification-ham 
+	    (gnus-parameter-spam-contents group))
     nil))
 
 (defun spam-group-processor-p (group processor)
@@ -274,7 +280,8 @@ articles before they get registered by Bogofilter."
 
   ;; Only for spam groups, we expire and maybe move articles
   (when (spam-group-spam-contents-p gnus-newsgroup-name)
-    (spam-mark-spam-as-expired-and-move-routine (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
+    (spam-mark-spam-as-expired-and-move-routine 
+     (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
 
   (when (spam-group-ham-contents-p gnus-newsgroup-name)
     (when (spam-group-processor-whitelist-p gnus-newsgroup-name)
@@ -286,7 +293,8 @@ articles before they get registered by Bogofilter."
 (add-hook 'gnus-summary-prepare-exit-hook 'spam-summary-prepare-exit)
 
 (defun spam-mark-junk-as-spam-routine ()
-  ;; check the global list of group names spam-junk-mailgroups and the group parameters
+  ;; check the global list of group names spam-junk-mailgroups and the
+  ;; group parameters
   (when (spam-group-spam-contents-p gnus-newsgroup-name)
     (let ((articles gnus-newsgroup-articles)
 	  article)
@@ -308,10 +316,12 @@ articles before they get registered by Bogofilter."
  
 (defun spam-generic-register-routine (spam-func ham-func)
   (let ((articles gnus-newsgroup-articles)
-	article mark ham-articles spam-articles spam-mark-values ham-mark-values)
+	article mark ham-articles spam-articles spam-mark-values 
+	ham-mark-values)
 
-    ;; marks are stored as symbolic values, so we have to dereference them for memq to work
-    ;; we wouldn't have to do this if gnus-summary-article-mark returned a symbol.
+    ;; marks are stored as symbolic values, so we have to dereference
+    ;; them for memq to work we wouldn't have to do this if
+    ;; gnus-summary-article-mark returned a symbol.
     (dolist (mark spam-ham-marks)
       (push (symbol-value mark) ham-mark-values))
 
@@ -325,12 +335,16 @@ articles before they get registered by Bogofilter."
 	    ((memq article gnus-newsgroup-saved))
 	    ((memq mark ham-mark-values) (push article ham-articles))))
     (when (and ham-articles ham-func)
-      (mapc ham-func ham-articles))	; we use mapc because unlike mapcar it discards the return values
+      (mapc ham-func ham-articles))	; we use mapc because unlike
+					; mapcar it discards the
+					; return values
     (when (and spam-articles spam-func)
-      (mapc spam-func spam-articles))))	; we use mapc because unlike mapcar it discards the return values
+      (mapc spam-func spam-articles))))	; we use mapc because unlike
+					; mapcar it discards the
+					; return values
 
 (defun spam-fetch-field-from-fast (article)
-  "Fetch the `from' field quickly, using the Gnus internal gnus-data-list function"
+  "Fetch the `from' field quickly, using the internal gnus-data-list function"
   (if (and (numberp article)
 	   (assoc article (gnus-data-list nil)))
       (mail-header-from (gnus-data-header (assoc article (gnus-data-list nil))))
@@ -399,7 +413,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	    (if spam-use-dig
 		(let ((query-result (query-dig query-string)))
 		  (when query-result
-		    (message "spam detected with blackhole check of relay %s (dig query result '%s')" query-string query-result)
+		    (message "spam: positive blackhole check '%s'" query-result)
 		    (push (list ip server query-result)
 			  matches)))
 	      ;; else, if not using dig.el
@@ -409,8 +423,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (when matches
       spam-split-group)))
 
-;;;; BBDB
-;;; original idea for spam-check-BBDB from Alexander Kotelnikov <sacha@giotto.sj.ru>
+;;;; BBDB original idea for spam-check-BBDB from Alexander Kotelnikov
+;;; <sacha@giotto.sj.ru>
 
 ;; all this is done inside a condition-case to trap errors
 (condition-case nil
@@ -427,7 +441,8 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	    (message "Adding address %s to BBDB" from)
 	    (when (and net-address
 		       (not (bbdb-search (bbdb-records) nil nil net-address)))
-	      (bbdb-create-internal name nil net-address nil nil "ham sender added by spam.el")))))
+	      (bbdb-create-internal name nil net-address nil nil 
+				    "ham sender added by spam.el")))))
 
       (defun spam-BBDB-register-routine ()
 	(spam-generic-register-routine 
@@ -441,8 +456,10 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	"Mail from people in the BBDB is never considered spam"
 	(let ((who (message-fetch-field "from")))
 	  (when who
-	    (setq who (regexp-quote (cadr (gnus-extract-address-components who))))
-	    (if (bbdb-search (bbdb-records) nil nil who) nil spam-split-group)))))
+	    (setq who (regexp-quote (cadr 
+				     (gnus-extract-address-components who))))
+	    (if (bbdb-search (bbdb-records) nil nil who) 
+		nil spam-split-group)))))
 
   (file-error (progn
 		(setq spam-list-of-checks
@@ -455,9 +472,15 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 
 ;;;; ifile
-;;; uses ifile-gnus.el from http://www.ai.mit.edu/people/jhbrown/ifile-gnus.html
-;;; check the ifile backend; return nil if the mail was NOT classified as spam
-;;; TODO: we can't (require 'ifile-gnus), because it will insinuate itself automatically
+
+;;; uses ifile-gnus.el from
+;;; http://www.ai.mit.edu/people/jhbrown/ifile-gnus.html
+
+;;; check the ifile backend; return nil if the mail was NOT classified
+;;; as spam
+
+;;; TODO: we can't (require 'ifile-gnus), because it will insinuate
+;;; itself automatically
 (defun spam-check-ifile ()
   (let ((ifile-primary-spam-group spam-split-group))
     (ifile-spam-filter nil)))
@@ -566,14 +589,15 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 
 ;;; See Paul Graham article, at `http://www.paulgraham.com/spam.html'.
 
-;;; This page is for those wanting to control spam with the help of Eric
-;;; Raymond's speedy Bogofilter, see http://www.tuxedo.org/~esr/bogofilter.
-;;; This has been tested with a locally patched copy of version 0.4.
+;;; This page is for those wanting to control spam with the help of
+;;; Eric Raymond's speedy Bogofilter, see
+;;; http://www.tuxedo.org/~esr/bogofilter.  This has been tested with
+;;; a locally patched copy of version 0.4.
 
-;;; Make sure Bogofilter is installed.  Bogofilter internally uses Judy fast
-;;; associative arrays, so you need to install Judy first, and Bogofilter
-;;; next.  Fetch both distributions by visiting the following links and
-;;; downloading the latest version of each:
+;;; Make sure Bogofilter is installed.  Bogofilter internally uses
+;;; Judy fast associative arrays, so you need to install Judy first,
+;;; and Bogofilter next.  Fetch both distributions by visiting the
+;;; following links and downloading the latest version of each:
 ;;;
 ;;;     http://sourceforge.net/projects/judy/
 ;;;     http://www.tuxedo.org/~esr/bogofilter/
@@ -584,14 +608,15 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 ;;;     make
 ;;;     make install
 ;;;
-;;; You will likely need to become super-user for the last step.  Then, unpack
-;;; the Bogofilter distribution and enter its main directory:
+;;; You will likely need to become super-user for the last step.
+;;; Then, unpack the Bogofilter distribution and enter its main
+;;; directory:
 ;;;
 ;;;     make
 ;;;     make install
 ;;;
-;;; Here as well, you need to become super-user for the last step.  Now,
-;;; initialize your word lists by doing, under your own identity:
+;;; Here as well, you need to become super-user for the last step.
+;;; Now, initialize your word lists by doing, under your own identity:
 ;;;
 ;;;     mkdir ~/.bogofilter
 ;;;     touch ~/.bogofilter/badlist
@@ -599,52 +624,59 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 ;;;
 ;;; These two files are text files you may edit, but you normally don't!
 
-;;; The `M-d' command gets added to Gnus summary mode, marking current article
-;;; as spam, showing it with the `H' mark.  Whenever you see a spam article,
-;;; make sure to mark its summary line with `M-d' before leaving the group.
-;;; Some groups, as per variable `spam-junk-mailgroups' below, receive articles
-;;; from Gnus splitting on clues added by spam recognisers, so for these
-;;; groups, we tack an `H' mark at group entry for all summary lines which
-;;; would otherwise have no other mark.  Make sure to _remove_ `H' marks for
-;;; any article which is _not_ genuine spam, before leaving such groups: you
-;;; may use `M-u' to "unread" the article, or `d' for declaring it read the
-;;; non-spam way.  When you leave a group, all `H' marked articles, saved or
-;;; unsaved, are sent to Bogofilter which will study them as spam samples.
+;;; The `M-d' command gets added to Gnus summary mode, marking current
+;;; article as spam, showing it with the `H' mark.  Whenever you see a
+;;; spam article, make sure to mark its summary line with `M-d' before
+;;; leaving the group.  Some groups, as per variable
+;;; `spam-junk-mailgroups' below, receive articles from Gnus splitting
+;;; on clues added by spam recognisers, so for these groups, we tack
+;;; an `H' mark at group entry for all summary lines which would
+;;; otherwise have no other mark.  Make sure to _remove_ `H' marks for
+;;; any article which is _not_ genuine spam, before leaving such
+;;; groups: you may use `M-u' to "unread" the article, or `d' for
+;;; declaring it read the non-spam way.  When you leave a group, all
+;;; `H' marked articles, saved or unsaved, are sent to Bogofilter
+;;; which will study them as spam samples.
 
 ;;; Messages may also be deleted in various other ways, and unless
-;;; `spam-ham-marks-form' gets overridden below, marks `R' and `r' for default
-;;; read or explicit delete, marks `X' and 'K' for automatic or explicit
-;;; kills, as well as mark `Y' for low scores, are all considered to be
-;;; associated with articles which are not spam.  This assumption might be
-;;; false, in particular if you use kill files or score files as means for
-;;; detecting genuine spam, you should then adjust `spam-ham-marks-form'.  When
-;;; you leave a group, all _unsaved_ articles bearing any the above marks are
-;;; sent to Bogofilter which will study these as not-spam samples.  If you
-;;; explicit kill a lot, you might sometimes end up with articles marked `K'
-;;; which you never saw, and which might accidentally contain spam.  Best is
-;;; to make sure that real spam is marked with `H', and nothing else.
+;;; `spam-ham-marks-form' gets overridden below, marks `R' and `r' for
+;;; default read or explicit delete, marks `X' and 'K' for automatic
+;;; or explicit kills, as well as mark `Y' for low scores, are all
+;;; considered to be associated with articles which are not spam.
+;;; This assumption might be false, in particular if you use kill
+;;; files or score files as means for detecting genuine spam, you
+;;; should then adjust `spam-ham-marks-form'.  When you leave a group,
+;;; all _unsaved_ articles bearing any the above marks are sent to
+;;; Bogofilter which will study these as not-spam samples.  If you
+;;; explicit kill a lot, you might sometimes end up with articles
+;;; marked `K' which you never saw, and which might accidentally
+;;; contain spam.  Best is to make sure that real spam is marked with
+;;; `H', and nothing else.
 
-;;; All other marks do not contribute to Bogofilter pre-conditioning.  In
-;;; particular, ticked, dormant or souped articles are likely to contribute
-;;; later, when they will get deleted for real, so there is no need to use
-;;; them prematurely.  Explicitly expired articles do not contribute, command
-;;; `E' is a way to get rid of an article without Bogofilter ever seeing it.
+;;; All other marks do not contribute to Bogofilter pre-conditioning.
+;;; In particular, ticked, dormant or souped articles are likely to
+;;; contribute later, when they will get deleted for real, so there is
+;;; no need to use them prematurely.  Explicitly expired articles do
+;;; not contribute, command `E' is a way to get rid of an article
+;;; without Bogofilter ever seeing it.
 
-;;; In a word, with a minimum of care for associating the `H' mark for spam
-;;; articles only, Bogofilter training all gets fairly automatic.  You should
-;;; do this until you get a few hundreds of articles in each category, spam
-;;; or not.  The shell command `head -1 ~/.bogofilter/*' shows both article
-;;; counts.  The command `S S' in summary mode, either for debugging or for
-;;; curiosity, triggers Bogofilter into displaying in another buffer the
-;;; "spamicity" score of the current article (between 0.0 and 1.0), together
-;;; with the article words which most significantly contribute to the score.
+;;; In a word, with a minimum of care for associating the `H' mark for
+;;; spam articles only, Bogofilter training all gets fairly automatic.
+;;; You should do this until you get a few hundreds of articles in
+;;; each category, spam or not.  The shell command `head -1
+;;; ~/.bogofilter/*' shows both article counts.  The command `S S' in
+;;; summary mode, either for debugging or for curiosity, triggers
+;;; Bogofilter into displaying in another buffer the "spamicity" score
+;;; of the current article (between 0.0 and 1.0), together with the
+;;; article words which most significantly contribute to the score.
 
-;;; The real way for using Bogofilter, however, is to have some use tool like
-;;; `procmail' for invoking it on message reception, then adding some
-;;; recognisable header in case of detected spam.  Gnus splitting rules might
-;;; later trip on these added headers and react by sorting such articles into
-;;; specific junk folders as per `spam-junk-mailgroups'.  Here is a possible
-;;; `.procmailrc' contents (still untested -- please tell me how it goes):
+;;; The real way for using Bogofilter, however, is to have some use
+;;; tool like `procmail' for invoking it on message reception, then
+;;; adding some recognisable header in case of detected spam.  Gnus
+;;; splitting rules might later trip on these added headers and react
+;;; by sorting such articles into specific junk folders as per
+;;; `spam-junk-mailgroups'.  Here is a possible `.procmailrc' contents
+;;; (still untested -- please tell me how it goes):
 ;;;
 ;;; :0HBf:
 ;;; * ? bogofilter
@@ -681,10 +713,12 @@ spamicity coefficient of each, and the overall article spamicity."
 
 (defun spam-bogofilter-register-routine ()
   (let ((articles gnus-newsgroup-articles)
-	article mark ham-articles spam-articles spam-mark-values ham-mark-values)
+	article mark ham-articles spam-articles spam-mark-values 
+	ham-mark-values)
 
-    ;; marks are stored as symbolic values, so we have to dereference them for memq to work
-    ;; we wouldn't have to do this if gnus-summary-article-mark returned a symbol.
+    ;; marks are stored as symbolic values, so we have to dereference
+    ;; them for memq to work we wouldn't have to do this if
+    ;; gnus-summary-article-mark returned a symbol.
     (dolist (mark spam-ham-marks)
       (push (symbol-value mark) ham-mark-values))
 
@@ -705,7 +739,8 @@ spamicity coefficient of each, and the overall article spamicity."
 (defun spam-bogofilter-articles (type option articles)
   (let ((output-buffer (get-buffer-create spam-bogofilter-output-buffer-name))
 	(article-copy (get-buffer-create " *Bogofilter Article Copy*"))
-	(remove-regexp (concat spam-bogofilter-spaminfo-header-regexp "\\|Xref:"))
+	(remove-regexp (concat spam-bogofilter-spaminfo-header-regexp 
+			       "\\|Xref:"))
 	(counter 0)
 	prefix process article)
     (when type
