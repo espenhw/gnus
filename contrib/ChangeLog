@@ -9,6 +9,8 @@
 	(mail-add-payment): Also look at Newsgroups.
 	(top-level): Add provide and EOF comment.
 	(mail-add-payment): Autoload.
+	(hashcash-insert-payment): s/Hashcode/Hashcash/
+	(mail-add-payment): Doc fix.
 
 2002-05-20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 

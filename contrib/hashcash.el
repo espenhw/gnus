@@ -1,6 +1,6 @@
 ;;; hashcash.el --- Add hashcash payments to email
 
-;; $Revision: 1.2 $
+;; $Revision: 1.3 $
 ;; Copyright (C) 1997,2001 Paul E. Foley
 
 ;; Maintainer: Paul Foley <mycroft@actrix.gen.nz>
@@ -75,16 +75,16 @@ present, is the string to be hashed; if not present ADDR will be used.")
     nil))
 
 (defun hashcash-insert-payment (arg)
-  "Insert an X-Hashcode header with a payment for ARG"
+  "Insert an X-Hashcash header with a payment for ARG"
   (interactive "sPay to: ")
   (let ((pay (hashcash-generate-payment (hashcash-payment-to arg)
 					(hashcash-payment-required arg))))
     (when pay
-      (insert-before-markers "X-Hashcode: " pay "\n"))))
+      (insert-before-markers "X-Hashcash: " pay "\n"))))
 
 ;;;###autoload
 (defun mail-add-payment (&optional arg)
-  "Add an X-Hashcode: header with a hashcash payment for each recipient address
+  "Add an X-Hashcash: header with a hashcash payment for each recipient address
 Prefix arg sets default payment temporarily."
   (interactive "P")
   (let ((hashcash-default-payment (if arg (prefix-numeric-value arg)
