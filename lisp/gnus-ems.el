@@ -38,7 +38,7 @@
 (eval-and-compile
   (autoload 'gnus-xmas-define "gnus-xmas")
   (autoload 'gnus-xmas-redefine "gnus-xmas")
-  (autoload 'appt-select-lowest-window "appt.el"))
+  (autoload 'appt-select-lowest-window "appt"))
 
 (or (fboundp 'mail-file-babyl-p)
     (fset 'mail-file-babyl-p 'rmail-file-p))

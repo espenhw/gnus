@@ -602,8 +602,7 @@ ticked: The number of ticked articles."
 	 (gnus-group-group-name)]
 	["Info" gnus-group-edit-group (gnus-group-group-name)]
 	["Local kill file" gnus-group-edit-local-kill (gnus-group-group-name)]
-	["Global kill file" gnus-group-edit-global-kill t])
-       ))
+	["Global kill file" gnus-group-edit-global-kill t])))
 
     (easy-menu-define
      gnus-group-group-menu gnus-group-mode-map ""
@@ -693,8 +692,7 @@ ticked: The number of ticked articles."
        ["Find new newsgroups" gnus-find-new-newsgroups t]
        ["Transpose" gnus-group-transpose-groups
 	(gnus-group-group-name)]
-       ["Read a directory as a group..." gnus-group-enter-directory t]
-       ))
+       ["Read a directory as a group..." gnus-group-enter-directory t]))
 
     (easy-menu-define
      gnus-group-misc-menu gnus-group-mode-map ""
@@ -725,8 +723,7 @@ ticked: The number of ticked articles."
        ["Flush score cache" gnus-score-flush-cache t]
        ["Toggle topics" gnus-topic-mode t]
        ["Exit from Gnus" gnus-group-exit t]
-       ["Exit without saving" gnus-group-quit t]
-       ))
+       ["Exit without saving" gnus-group-quit t]))
 
     (run-hooks 'gnus-group-menu-hook)))
 

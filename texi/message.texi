@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 5.4.45 Manual
+@settitle Message 5.4.46 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 5.4.45 Manual
+@title Message 5.4.46 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -79,7 +79,7 @@ buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 5.4.45.  Message is distributed with
+This manual corresponds to Message 5.4.46.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -567,7 +567,12 @@ Kill the message buffer and exit (@code{message-kill-buffer}).
 @cindex mail aliases
 @cindex aliases
 
-Message uses @code{mailabbrev} to handle mail aliases.  
+@vindex message-mail-alias-type
+The @code{message-mail-alias-type} variable controls what type of mail
+alias expansion to use.  Currently only one form is supported---Message
+uses @code{mailabbrev} to handle mail aliases.  If this variable is
+@code{nil}, no mail alias expansion will be performed.
+
 @code{mailabbrev} works by parsing the @file{/etc/mailrc} and
 @file{~/.mailrc} files.  These files look like:
 
@@ -978,6 +983,35 @@ Hook run after sending messages.
 @item message-mode-syntax-table
 @vindex message-mode-syntax-table
 Syntax table used in message mode buffers.
+
+@item message-send-method-alist
+@vindex message-send-method-alist
+
+Alist of ways to send outgoing messages.  Each element has the form
+
+@lisp
+(TYPE PREDICATE FUNCTION)
+@end lisp
+
+@table @var
+@item type
+A symbol that names the method.
+
+@item predicate
+A function called without any parameters to determine whether the
+message is a message of type @var{type}.
+
+@item function
+A function to be called if @var{predicate} returns non-@code{nil}.
+@var{function} is called with one parameter -- the prefix.
+@end table
+
+@lisp
+((news message-news-p message-send-via-news)
+ (mail message-mail-p message-send-via-mail))
+@end lisp
+
+
 
 @end table
 

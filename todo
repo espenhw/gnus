@@ -638,3 +638,27 @@ and/or newsgroup name.
 * new Date header scoring type -- older, newer
 
 * use the summary toolbar in the article buffer.
+
+* a command to fetch all articles that are less than X days old.
+
+* in pick mode, `q' should save the list of selected articles in the
+group info.  The next time the group is selected, these articles
+will automatically get the process mark.
+
+* Isn't it possible to (also?) allow M-^ to automatically try the
+default server if it fails on the current server?  (controlled by a
+user variable, {nil, t, 'ask}).
+
+* make it possible to cancel articles using the select method for the
+current group.
+
+* `gnus-summary-select-article-on-entry' or something.  It'll default
+to t and will select whatever article decided by `gnus-auto-select-first'.
+
+* a new variable to control which selection commands should be unselecting.
+`first', `best', `next', `prev', `next-unread', `prev-unread' are
+candidates.
+
+* be able to select groups that have no articles in them
+to be able to post in them (using the current select method).
+

@@ -1,5 +1,5 @@
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: So you want to use the new Gnus
 Message-ID: <lars-doc1@eyesore.no>
@@ -47,7 +47,7 @@ heart's delight at <URL:http://www.ifi.uio.no/~larsi/larsi.html>.
 ;; Boston, MA 02111-1307, USA.
 
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: Starting up
 Message-ID: <lars-doc2@eyesore.no>
@@ -76,7 +76,7 @@ the "Foreign groups" article for that.
 
 
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: Where are all the groups, then?
 Message-ID: <lars-doc3@eyesore.no>
@@ -109,7 +109,7 @@ prompted for groups to subscribe to.)
 
 
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: I want to read my mail!
 Message-ID: <lars-doc4@eyesore.no>
@@ -147,7 +147,7 @@ these variables and re-start Gnus.
 
 
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: Foreign newsgroups
 Message-ID: <lars-doc5@eyesore.no>
@@ -170,7 +170,7 @@ the info pages to find out more.
 
 
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: Low level changes in GNUS, or, Wrong type argument: stringp, nil
 Message-ID: <lars-doc6@eyesore.no>
@@ -198,7 +198,7 @@ with Emacs 18.  It won't even work on Emacsen older than Emacs
 
 	
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: How do I re-scan my mail groups?
 Message-ID: <lars-doc8@eyesore.no>
@@ -212,7 +212,7 @@ You can also re-scan all the mail groups by putting them on level 1
 
 
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: How do I set up virtual newsgroups?
 Message-ID: <lars-doc9@eyesore.no>
@@ -266,7 +266,7 @@ the lines of:
 
 
 From lars Thu Feb 23 23:20:38 1995
-From: larsi@ifi.uio.no (ding)
+From: larsi@gnus.org (ding)
 Date: Fri Feb 24 13:40:45 1995
 Subject: Bugs & stuff
 Message-ID: <lars-doc7@eyesore.no>
@@ -288,7 +288,7 @@ If I am not able to reproduce the bug, I won't be able to fix it.
 I would, of course, prefer that you locate the bug, fix it, and mail
 me the patches, but one can't have everything. 
 
-If you have any questions on usage, the "ding@ifi.uio.no" mailing list
+If you have any questions on usage, the "ding@gnus.org" mailing list
 is where to post the questions.
 
 

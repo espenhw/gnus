@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.45"
+(defconst gnus-version-number "5.4.46"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1342,7 +1342,6 @@ want."
 	     gnus-article-fill-cited-article
 	     gnus-article-remove-cr
 	     gnus-article-de-quoted-unreadable
-	     gnus-article-display-x-face
 	     gnus-summary-stop-page-breaking
 	     ;; gnus-summary-caesar-message
 	     ;; gnus-summary-verbose-headers
@@ -1366,7 +1365,9 @@ want."
 	     gnus-article-strip-leading-blank-lines
 	     gnus-article-strip-multiple-blank-lines
 	     gnus-article-strip-blank-lines
-	     gnus-article-treat-overstrike))
+	     gnus-article-treat-overstrike
+	     gnus-article-display-x-face
+	     gnus-smiley-display))
 
 (defcustom gnus-article-save-directory gnus-directory
   "*Name of the directory articles will be saved in (default \"~/News\")."

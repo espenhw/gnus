@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.45 Manual
+@settitle Gnus 5.4.46 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.45 Manual
+@title Gnus 5.4.46 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.45.
+This manual corresponds to Gnus 5.4.46.
 
 @end ifinfo
 
@@ -3727,8 +3727,11 @@ headers of the forwarded article.
 @item S O p
 @kindex S O p (Summary)
 @findex gnus-uu-digest-post-forward
+@cindex digests
+@cindex making digests
 Digest the current series and forward the result to a newsgroup
-(@code{gnus-uu-digest-mail-forward}).  
+(@code{gnus-uu-digest-mail-forward}).  This command uses the
+process/prefix convention.
 
 @item S u
 @kindex S u (Summary)
@@ -6369,10 +6372,10 @@ Gnus, we offer a small selection of minor modes for the summary buffers.
 @subsection Pick and Read
 @cindex pick and read
 
-Some newsreaders (like @code{nn} and, uhm, @code{nn}) use a two-phased
-reading interface.  The user first marks the articles she wants to read
-from a summary buffer.  Then she starts reading the articles with just
-an article buffer displayed.
+Some newsreaders (like @code{nn} and, uhm, @code{Netnews} on VM/CMS) use
+a two-phased reading interface.  The user first marks the articles she
+wants to read from a summary buffer.  Then she starts reading the
+articles with just an article buffer displayed.
 
 @findex gnus-pick-mode
 @kindex M-x gnus-pick-mode
@@ -13474,7 +13477,10 @@ The way to deal with this is having Gnus split out all spam into a
 
 First, pick one (1) legal mail address that you can be reached at, and
 put it in your @code{From} header of all your news articles.  (I've
-chosen @samp{larsi@@trym.ifi.uio.no}.)
+chosen @samp{larsi@@trym.ifi.uio.no}, but for many addresses on the form
+@samp{larsi+usenet@@ifi.uio.no} will be a better choice.  Ask your
+sysadm whether your sendmail installation accepts keywords in the local
+part of the mail address.)
 
 @lisp
 (setq message-default-news-headers
@@ -13519,6 +13525,12 @@ group.  You still have to check the @samp{spam} group from time to time to
 check for legitimate mail, though.  If you feel like being a good net
 citizen, you can even send off complaints to the proper authorities on
 each unsolicited commercial email---at your leisure.
+
+If you are also a lazy net citizen, you will probably prefer complaining
+automatically with the @file{gnus-junk.el} package, availiable FOR FREE
+at @file{<URL:http://stud2.tuwien.ac.at/~e9426626/gnus-junk.html>}.
+Since most e-mail spam is sent automatically, this may reconcile the
+cosmic balance somewhat.
 
 This works for me.  It allows people an easy way to contact me (they can
 just press @kbd{r} in the usual way), and I'm not bothered at all with
@@ -16022,7 +16034,7 @@ mark-and-expunge = "mark-and-expunge" space nil-or-number
 files            = "files" *[ space <string> ]
 exclude-files    = "exclude-files" *[ space <string> ]
 read-only        = "read-only" [ space "nil" / space "t" ]
-adapt            = "adapt" [ space "nil" / space "t" / space adapt-rule ]
+adapt            = "adapt" [ space "ignore" / space "t" / space adapt-rule ]
 adapt-rule       = "(" *[ <string> *[ "(" <string> <integer> ")" ] ")"
 local            = "local" *[ space "(" <string> space <form> ")" ]
 eval             = "eval" space <form>

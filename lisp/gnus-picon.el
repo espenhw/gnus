@@ -370,11 +370,12 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 				picons)))
 	(when domainp
 	  (setq picons
-		(nconc (list (make-annotation
-			      (if first (concat (if (not rightp) ".") cur
-						(if rightp ".")) cur)
-					      (point) 'text nil nil nil rightp))
-		       picons))))
+		(nconc
+		 (list (make-annotation
+			(if first (concat (if (not rightp) ".") cur
+					  (if rightp ".")) cur)
+			(point) 'text nil nil nil rightp))
+		 picons))))
       (when (and bar (or domainp found))
 	(setq bar-ann (gnus-picons-try-to-find-face
 		       (concat gnus-xmas-glyph-directory "bar.xbm")
@@ -385,9 +386,14 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (setq first t))
     (when (and addrs domainp)
       (let ((it (mapconcat 'downcase (nreverse addrs) ".")))
-	(make-annotation
-	 (if first (concat (if (not rightp) ".") it (if rightp ".")) it)
-	 (point) 'text nil nil nil rightp)))
+	(setq picons
+	      (nconc picons (list (make-annotation
+				   (if first
+				       (concat (if (not rightp) ".")
+					       it (if rightp "."))
+				     it)
+				   (point) 'text
+				   nil nil nil rightp))))))
     picons))
 
 (defvar gnus-picons-glyph-alist nil)

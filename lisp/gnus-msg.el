@@ -691,6 +691,7 @@ The current group name will be inserted at \"%s\".")
 	  (message-goto-subject)
 	  (re-search-forward " *$")
 	  (replace-match " (crosspost notification)" t t)
+	  (deactivate-mark)
 	  (when (gnus-y-or-n-p "Send this complaint? ")
 	    (message-send-and-exit)))))))
 

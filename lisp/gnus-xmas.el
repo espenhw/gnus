@@ -200,7 +200,6 @@ displayed, no centering will be performed."
   ;; Setup the display table -- like `gnus-summary-setup-display-table',
   ;; but done in an XEmacsish way.
   (let ((table (make-display-table))
-	(default-table (specifier-instance current-display-table))
 	(i 32))
     ;; Nix out all the control chars...
     (while (>= (setq i (1- i)) 0)
@@ -209,13 +208,10 @@ displayed, no centering will be performed."
     ;; selective display).
     (aset table ?\n nil)
     (aset table ?\r nil)
-    ;; We nix out any glyphs over 126 that are not set already.
-    (when default-table
-      (let ((i 256))
-	(while (>= (setq i (1- i)) 127)
-	  ;; Only modify if the default entry is nil.
-	  (unless (aref default-table i)
-	    (aset table i [??])))))
+    ;; We nix out any glyphs over 126 below ctl-arrow.
+    (let ((i (if (integerp ctl-arrow) ctl-arrow 160)))
+      (while (>= (setq i (1- i)) 127)
+	(aset table i [??])))
     ;; Can't use `set-specifier' because of a bug in 19.14 and earlier
     (add-spec-to-specifier current-display-table table (current-buffer) nil)))
 
@@ -735,24 +731,22 @@ XEmacs compatibility workaround."
 (defun gnus-xmas-article-display-xface (beg end)
   "Display any XFace headers in the current article."
   (save-excursion
-    (let (xface-glyph)
-      (if (featurep 'xface)
-	  (setq xface-glyph
-		(make-glyph (vector 'xface :data
-				    (concat "X-Face: "
-					    (buffer-substring beg end)))))
-	(let ((cur (current-buffer)))
-	  (save-excursion
-	    (gnus-set-work-buffer)
-	    (insert (format "%s" (buffer-substring beg end cur)))
-	    (gnus-xmas-call-region "uncompface")
-	    (goto-char (point-min))
-	    (insert "/* Width=48, Height=48 */\n")
-	    (gnus-xmas-call-region "icontopbm")
-	    (gnus-xmas-call-region "ppmtoxpm")
-	    (setq xface-glyph
-		  (make-glyph
-		   (vector 'xpm :data (buffer-string )))))))
+    (let ((xface-glyph
+	   (if (featurep 'xface)
+	       (make-glyph (vector 'xface :data
+				   (concat "X-Face: "
+					   (buffer-substring beg end))))
+	     (let ((cur (current-buffer)))
+	       (save-excursion
+		 (gnus-set-work-buffer)
+		 (insert (format "%s" (buffer-substring beg end cur)))
+		 (gnus-xmas-call-region "uncompface")
+		 (goto-char (point-min))
+		 (insert "/* Width=48, Height=48 */\n")
+		 (gnus-xmas-call-region "icontopbm")
+		 (gnus-xmas-call-region "ppmtoxpm")
+		 (make-glyph
+		  (vector 'xpm :data (buffer-string))))))))
       (set-glyph-face xface-glyph 'gnus-x-face)
       (goto-char (point-min))
       (re-search-forward "^From:" nil t)

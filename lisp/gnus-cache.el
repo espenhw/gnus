@@ -144,7 +144,8 @@ variable to \"^nnml\"."
 	(mail-header-set-number headers (cdr result))))
     (let ((number (mail-header-number headers))
 	  file dir)
-      (when (and (> number 0)		; Reffed article.
+      (when (and number
+		 (> number 0)		; Reffed article.
 		 (or force
 		     (and (or (not gnus-uncacheable-groups)
 			      (not (string-match

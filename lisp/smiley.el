@@ -251,6 +251,7 @@ above them."
 (defvar gnus-article-buffer)
 ;;;###autoload
 (defun gnus-smiley-display ()
+  "Display \"smileys\" as small graphical icons." 
   (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)

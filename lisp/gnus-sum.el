@@ -4195,7 +4195,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (progn
 	      (goto-char p)
 	      (if (search-forward "\nlines: " nil t)
-		  (if (numberp (setq lines (read cur)))
+		  (if (numberp (setq lines (ignore-errors (read cur))))
 		      lines 0)
 		0))
 	    ;; Xref.
@@ -8678,6 +8678,8 @@ save those articles instead."
 	 "Update summary buffer %s? "
 	 (lambda (buf) (switch-to-buffer buf) (gnus-summary-exit))
 	 buffers)))))
+
+(gnus-ems-redefine)
 
 (provide 'gnus-sum)
 

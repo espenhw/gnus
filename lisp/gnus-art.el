@@ -411,9 +411,17 @@ above them."
   :type 'face
   :group 'gnus-article-buttons)
 
-(defcustom gnus-signature-face 'italic
-  "Face used for highlighting a signature in the article buffer."
+(defcustom gnus-signature-face 'gnus-signature-face
+  "Face used for highlighting a signature in the article buffer.
+Obsolete; use the face `gnus-signature-face' for customizations instead."
   :type 'face
+  :group 'gnus-article-highlight
+  :group 'gnus-article-signature)
+
+(defface gnus-signature-face
+  '((((type x))
+     (:italic t)))
+  "Face used for highlighting a signature in the article buffer."
   :group 'gnus-article-highlight
   :group 'gnus-article-signature)
 
@@ -826,33 +834,34 @@ always hide."
 	(nnheader-narrow-to-headers)
 	(setq from (message-fetch-field "from"))
 	(goto-char (point-min))
-	(when (and gnus-article-x-face-command
-		   (or force
-		       ;; Check whether this face is censored.
-		       (not gnus-article-x-face-too-ugly)
-		       (and gnus-article-x-face-too-ugly from
-			    (not (string-match gnus-article-x-face-too-ugly
-					       from))))
-		   ;; Has to be present.
-		   (re-search-forward "^X-Face: " nil t))
+	(while (and gnus-article-x-face-command
+		    (or force
+			;; Check whether this face is censored.
+			(not gnus-article-x-face-too-ugly)
+			(and gnus-article-x-face-too-ugly from
+			     (not (string-match gnus-article-x-face-too-ugly
+						from))))
+		    ;; Has to be present.
+		    (re-search-forward "^X-Face: " nil t))
 	  ;; We now have the area of the buffer where the X-Face is stored.
 	  (let ((beg (point))
 		(end (1- (re-search-forward "^\\($\\|[^ \t]\\)" nil t))))
-	    ;; We display the face.
-	    (if (symbolp gnus-article-x-face-command)
-		;; The command is a lisp function, so we call it.
-		(if (gnus-functionp gnus-article-x-face-command)
-		    (funcall gnus-article-x-face-command beg end)
-		  (error "%s is not a function" gnus-article-x-face-command))
-	      ;; The command is a string, so we interpret the command
-	      ;; as a, well, command, and fork it off.
-	      (let ((process-connection-type nil))
-		(process-kill-without-query
-		 (start-process
-		  "article-x-face" nil shell-file-name shell-command-switch
-		  gnus-article-x-face-command))
-		(process-send-region "article-x-face" beg end)
-		(process-send-eof "article-x-face")))))))))
+	    (save-excursion
+	      ;; We display the face.
+	      (if (symbolp gnus-article-x-face-command)
+		  ;; The command is a lisp function, so we call it.
+		  (if (gnus-functionp gnus-article-x-face-command)
+		      (funcall gnus-article-x-face-command beg end)
+		    (error "%s is not a function" gnus-article-x-face-command))
+		;; The command is a string, so we interpret the command
+		;; as a, well, command, and fork it off.
+		(let ((process-connection-type nil))
+		  (process-kill-without-query
+		   (start-process
+		    "article-x-face" nil shell-file-name shell-command-switch
+		    gnus-article-x-face-command))
+		  (process-send-region "article-x-face" beg end)
+		  (process-send-eof "article-x-face"))))))))))
 
 (defalias 'gnus-decode-rfc1522 'article-decode-rfc1522)
 (defalias 'gnus-article-decode-rfc1522 'article-decode-rfc1522)
@@ -1450,7 +1459,8 @@ This format is defined by the `gnus-article-time-format' variable."
 		  default-name))
 		;; A single split name was found
 		((= 1 (length split-name))
-		 (let* ((name (car split-name))
+		 (let* ((name (expand-file-name
+			       (car split-name) gnus-article-save-directory))
 			(dir (cond ((file-directory-p name)
 				    (file-name-as-directory name))
 				   ((file-exists-p name) name)

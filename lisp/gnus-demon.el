@@ -150,21 +150,35 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
   "Find out how many seconds to TIME, which is on the form \"17:43\"."
   (if (not (stringp time))
       time
-    (let* ((date (current-time-string))
-	   (dv (timezone-parse-date date))
-	   (tdate (timezone-make-arpa-date
-		   (string-to-number (aref dv 0))
-		   (string-to-number (aref dv 1))
-		   (string-to-number (aref dv 2)) time
-		   (or (aref dv 4) "UT")))
-	   (nseconds (gnus-time-minus
-		      (gnus-encode-date tdate) (gnus-encode-date date))))
-      (round
-       (/ (+ (if (< (car nseconds) 0)
- 		 86400 0)
- 	     (* 65536 (car nseconds))
- 	     (nth 1 nseconds))
- 	  gnus-demon-timestep)))))
+    (let* ((now (current-time))
+           ;; obtain NOW as discrete components -- make a vector for speed
+           (nowParts (apply 'vector (decode-time now)))
+           ;; obtain THEN as discrete components
+           (thenParts (timezone-parse-time time))
+           (thenHour (string-to-int (elt thenParts 0)))
+           (thenMin (string-to-int (elt thenParts 1)))
+           ;; convert time as elements into number of seconds since EPOCH.
+           (then (encode-time 0
+                              thenMin
+                              thenHour
+                              ;; If THEN is earlier than NOW, make it
+                              ;; same time tomorrow. Doc for encode-time
+                              ;; says that this is OK.
+                              (+ (elt nowParts 3)
+                                 (if (or (< thenHour (elt nowParts 2))
+                                         (and (= thenHour (elt nowParts 2))
+                                              (<= thenMin (elt nowParts 1))))
+                                     1 0))
+                              (elt nowParts 4)
+                              (elt nowParts 5)
+                              (elt nowParts 6)
+                              (elt nowParts 7)
+                              (elt nowParts 8)))
+           ;; calculate number of seconds between NOW and THEN
+           (diff (+ (* 65536 (- (car then) (car now)))
+                    (- (cadr then) (cadr now)))))
+      ;; return number of timesteps in the number of seconds
+      (round (/ diff gnus-demon-timestep)))))
 
 (defun gnus-demon ()
   "The Gnus daemon that takes care of running all Gnus handlers."
@@ -200,7 +214,7 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 		  (t (< 0 gnus-demon-idle-time)))) ; Or just need to be idle.
 	       ;; So we call the handler.
 	       (progn
-		 (funcall (car handler))
+		 (ignore-errors (funcall (car handler)))
 		 ;; And reset the timer.
 		 (setcar (nthcdr 1 handler)
 			 (gnus-demon-time-to-step
@@ -212,14 +226,14 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's."
 	 ((not (numberp idle))
 	  ;; We want to call this handler each and every time that
 	  ;; Emacs is idle.
-	  (funcall (car handler)))
+	  (ignore-errors (funcall (car handler))))
 	 (t
 	  ;; We want to call this handler only if Emacs has been idle
 	  ;; for a specified number of timesteps.
 	  (and (not (memq (car handler) gnus-demon-idle-has-been-called))
 	       (< idle gnus-demon-idle-time)
 	       (progn
-		 (funcall (car handler))
+		 (ignore-errors (funcall (car handler)))
 		 ;; Make sure the handler won't be called once more in
 		 ;; this idle-cycle.
 		 (push (car handler) gnus-demon-idle-has-been-called)))))))))

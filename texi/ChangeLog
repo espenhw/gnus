@@ -1,3 +1,13 @@
+Sat Apr 12 16:51:32 1997  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* gnus.texi (Thwarting Email Spam): Addition.
+
+Tue Apr 15 16:11:38 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.texi (Various Message Variables): Addition.
+
+	* gnus.texi (Thwarting Email Spam): Addition.
+
 Sat Apr 12 00:26:47 1997  Francois Felix Ingrand  <felix@laas.fr>
 
 	* gnus.texi (NoCeM): Addition.

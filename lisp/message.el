@@ -591,6 +591,25 @@ actually occur."
 (defvar message-mh-deletable-headers '(Message-ID Date Lines Sender)
   "If non-nil, delete the deletable headers before feeding to mh.")
 
+(defvar message-send-method-alist
+  '((news message-news-p message-send-via-news)
+    (mail message-mail-p message-send-via-mail))
+  "Alist of ways to send outgoing messages.
+Each element has the form
+
+  \(TYPE PREDICATE FUNCTION)
+
+where TYPE is a symbol that names the method; PREDICATE is a function
+called without any parameters to determine whether the message is
+a message of type TYPE; and FUNCTION is a function to be called if
+PREDICATE returns non-nil.  FUNCTION is called with one parameter --
+the prefix.")
+
+(defvar message-mail-alias-type 'abbrev
+  "*What alias expansion type to use in Message buffers.
+The default is `abbrev', which uses mailabbrev.  nil switches
+mail aliases off.")
+
 ;;; Internal variables.
 ;;; Well, not really internal.
 
@@ -720,16 +739,16 @@ Defaults to `text-mode-abbrev-table'.")
   (let* ((cite-prefix "A-Za-z")
 	 (cite-suffix (concat cite-prefix "0-9_.@-"))
 	 (content "[ \t]*\\(.+\\(\n[ \t].*\\)*\\)"))
-    `((,(concat "^\\(To:\\)" content)
+    `((,(concat "^\\([Tt]o:\\)" content)
        (1 'message-header-name-face)
        (2 'message-header-to-face nil t))
-      (,(concat "^\\(^[GBF]?[Cc][Cc]:\\|^Reply-To:\\)" content)
+      (,(concat "^\\(^[GBF]?[Cc][Cc]:\\|^[Rr]eply-[Tt]o:\\)" content)
        (1 'message-header-name-face)
        (2 'message-header-cc-face nil t))
-      (,(concat "^\\(Subject:\\)" content)
+      (,(concat "^\\([Ss]ubject:\\)" content)
        (1 'message-header-name-face)
        (2 'message-header-subject-face nil t))
-      (,(concat "^\\(Newsgroups:\\|Followup-to:\\)" content)
+      (,(concat "^\\([Nn]ewsgroups:\\|Followup-[Tt]o:\\)" content)
        (1 'message-header-name-face)
        (2 'message-header-newsgroups-face nil t))
       (,(concat "^\\([^: \n\t]+:\\)" content)
@@ -1242,9 +1261,10 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
   ;; Allow mail alias things.
-  (if (fboundp 'mail-abbrevs-setup)
-      (mail-abbrevs-setup)
-    (funcall (intern "mail-aliases-setup")))
+  (when (eq message-mail-alias-type 'abbrev)
+    (if (fboundp 'mail-abbrevs-setup)
+	(mail-abbrevs-setup)
+      (funcall (intern "mail-aliases-setup"))))
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -1327,11 +1347,15 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 
 
 
-(defun message-insert-to ()
-  "Insert a To header that points to the author of the article being replied to."
-  (interactive)
+(defun message-insert-to (&optional force)
+  "Insert a To header that points to the author of the article being replied to.
+If the original author requested not to be sent mail, the function signals
+an error.
+With the prefix argument FORCE, insert the header anyway."
+  (interactive "P")
   (let ((co (message-fetch-reply-field "mail-copies-to")))
-    (when (and co
+    (when (and (null force)
+	       co
 	       (equal (downcase co) "never"))
       (error "The user has requested not to have copies sent via mail")))
   (when (and (message-position-on-field "To")
@@ -1712,30 +1736,41 @@ the user from the mailer."
     (message-fix-before-sending)
     (run-hooks 'message-send-hook)
     (message "Sending...")
-    (when (and (or (not (message-news-p))
-		   (and (or (not (memq 'news message-sent-message-via))
-			    (y-or-n-p
-			     "Already sent message via news; resend? "))
-			(funcall message-send-news-function arg)))
-	       (or (not (message-mail-p))
-		   (and (or (not (memq 'mail message-sent-message-via))
-			    (y-or-n-p
-			     "Already sent message via mail; resend? "))
-			(message-send-mail arg))))
-      (message-do-fcc)
-      ;;(when (fboundp 'mail-hist-put-headers-into-history)
-      ;; (mail-hist-put-headers-into-history))
-      (run-hooks 'message-sent-hook)
-      (message "Sending...done")
-      ;; If buffer has no file, mark it as unmodified and delete autosave.
-      (unless buffer-file-name
-	(set-buffer-modified-p nil)
-	(delete-auto-save-file-if-necessary t))
-      ;; Delete other mail buffers and stuff.
-      (message-do-send-housekeeping)
-      (message-do-actions message-send-actions)
-      ;; Return success.
-      t)))
+    (let ((alist message-send-method-alist)
+	  elem sent)
+      (while (setq elem (pop alist))
+	(when (and (or (not (funcall (cadr elem)))
+		       (and (or (not (memq (car elem)
+					   message-sent-message-via))
+				(y-or-n-p
+				 (format
+				  "Already sent message via %s; resend? "
+				  (car elem))))
+			    (funcall (caddr elem) arg))))
+	  (setq sent t)))
+      (when sent
+	(message-do-fcc)
+	;;(when (fboundp 'mail-hist-put-headers-into-history)
+	;; (mail-hist-put-headers-into-history))
+	(run-hooks 'message-sent-hook)
+	(message "Sending...done")
+	;; If buffer has no file, mark it as unmodified and delete autosave.
+	(unless buffer-file-name
+	  (set-buffer-modified-p nil)
+	  (delete-auto-save-file-if-necessary t))
+	;; Delete other mail buffers and stuff.
+	(message-do-send-housekeeping)
+	(message-do-actions message-send-actions)
+	;; Return success.
+	t))))
+
+(defun message-send-via-mail (arg)
+  "Send the current message via mail."  
+  (message-send-mail arg))
+
+(defun message-send-via-news (arg)
+  "Send the current message via news."
+  (funcall message-send-news-function arg))
 
 (defun message-fix-before-sending ()
   "Do various things to make the message nice before sending it."
@@ -2918,6 +2953,7 @@ Headers already prepared in the buffer are not modified."
     (message-narrow-to-headers)
     (run-hooks 'message-header-setup-hook))
   (set-buffer-modified-p nil)
+  (setq buffer-undo-list nil)
   (run-hooks 'message-setup-hook)
   (message-position-point)
   (undo-boundary))
@@ -3225,9 +3261,10 @@ responses here are directed to other newsgroups."))
 		mail-header-separator "\n"
 		message-cancel-message)
 	(message "Canceling your article...")
-	(let ((message-syntax-checks 'dont-check-for-anything-just-trust-me))
-	  (funcall message-send-news-function))
-	(message "Canceling your article...done")
+	(if (let ((message-syntax-checks
+		   'dont-check-for-anything-just-trust-me))
+	      (funcall message-send-news-function))
+	    (message "Canceling your article...done"))
 	(kill-buffer buf)))))
 
 ;;;###autoload
