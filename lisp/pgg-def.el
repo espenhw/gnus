@@ -53,7 +53,7 @@
   :group 'pgg
   :type 'boolean)
 
-(defcustom pgg-encrypt-for-me nil
+(defcustom pgg-encrypt-for-me t
   "If t, encrypt all outgoing messages with user's public key."
   :group 'pgg
   :type 'boolean)

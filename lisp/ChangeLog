@@ -1,3 +1,7 @@
+2003-11-10  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-def.el (pgg-encrypt-for-me): Change default from nil to t.
+
 2003-11-09  Simon Josefsson  <jas@extundo.com>
 
 	* pgg-gpg.el (pgg-gpg-encrypt-region): Cache passphrase under hex
