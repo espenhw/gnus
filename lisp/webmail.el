@@ -726,6 +726,7 @@
     (webmail-error "login@1")))
 
 (defun webmail-netaddress-list ()
+  (webmail-refresh-redirect)
   (let (item id)
     (goto-char (point-min))
     (when (re-search-forward 
@@ -768,6 +769,7 @@
     t)))
 
 (defun webmail-netaddress-article (file id)
+  (webmail-refresh-redirect)
   (let (p p1 attachment count mime type)
     (save-restriction
       (webmail-encode-8bit)
