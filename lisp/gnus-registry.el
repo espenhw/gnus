@@ -94,11 +94,14 @@ Registry entries are considered empty when they have no groups."
   :type 'boolean)
 
 (defcustom gnus-registry-track-extra nil
-  "Whether the registry should track other things about a message.
+  "Whether the registry should track extra data about a message.
 The Subject and Sender (From:) headers are currently tracked this
 way."
   :group 'gnus-registry
-  :type 'boolean)
+  :type      
+  '(set :tag "Tracking choices"
+    (const :tag "Track by subject (Subject: header)" subject)
+    (const :tag "Track by sender (From: header)"  sender)))
 
 (defcustom gnus-registry-entry-caching t
   "Whether the registry should cache extra information."
@@ -132,6 +135,12 @@ way."
   (unless (fboundp 'puthash)
     ;; alias puthash is missing from Emacs 20 cl-extra.el
     (defalias 'puthash 'cl-puthash)))
+
+(defun gnus-registry-track-subject-p ()
+  (memq 'subject gnus-registry-track-extra))
+
+(defun gnus-registry-track-sender-p ()
+  (memq 'sender gnus-registry-track-extra))
 
 (defun gnus-registry-cache-read ()
   "Read the registry cache file."
@@ -362,44 +371,63 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			       nnmail-split-fancy-with-parent-ignore-groups))
 		      (setq res nil)))
 		  references))
-      ;; there were no references, now try the extra tracking
-      (when gnus-registry-track-extra
-	(let ((sender (message-fetch-field "from"))
-	      (subject (gnus-registry-simplify-subject
-			(message-fetch-field "subject"))))
-	  (when (and subject
-		     (< gnus-registry-minimum-subject-length (length subject)))
-	    (maphash
-	     (lambda (key value)
-	       (let ((this-subject (cdr 
-				    (gnus-registry-fetch-extra key 'subject))))
-		 (when (and this-subject
-			    (equal subject this-subject))
-		   (setq res (gnus-registry-fetch-group key))
-		   (gnus-message
-		    ;; raise level of messaging if gnus-registry-track-extra
-		    (if gnus-registry-track-extra 5 9)
-		    "%s (extra tracking) traced subject %s to group %s"
-		    "gnus-registry-split-fancy-with-parent"
-		    subject
-		    (if res res "nil")))))
-	     gnus-registry-hashtb))
-	  (when sender
-	    (maphash
-	     (lambda (key value)
-	       (let ((this-sender (cdr 
-				    (gnus-registry-fetch-extra key 'sender))))
-		 (when (and this-sender
-			    (equal sender this-sender))
-		   (setq res (gnus-registry-fetch-group key))
-		   (gnus-message
-		    ;; raise level of messaging if gnus-registry-track-extra
-		    (if gnus-registry-track-extra 5 9)
-		    "%s (extra tracking) traced sender %s to group %s"
-		    "gnus-registry-split-fancy-with-parent"
-		    sender
-		    (if res res "nil")))))
-	     gnus-registry-hashtb)))))
+
+      ;; else: there were no references, now try the extra tracking
+      (let ((sender (message-fetch-field "from"))
+	    (subject (gnus-registry-simplify-subject
+		      (message-fetch-field "subject")))
+	    (single-match t))
+	(when (and single-match
+		   (gnus-registry-track-sender-p)
+		   sender)
+	  (maphash
+	   (lambda (key value)
+	     (let ((this-sender (cdr 
+				 (gnus-registry-fetch-extra key 'sender))))
+	       (when (and single-match
+			  this-sender
+			  (equal sender this-sender))
+		 ;; too many matches, bail
+		 (unless (equal res (gnus-registry-fetch-group key))
+		   (setq single-match nil))
+		 (setq res (gnus-registry-fetch-group key))
+		 (gnus-message
+		  ;; raise level of messaging if gnus-registry-track-extra
+		  (if gnus-registry-track-extra 5 9)
+		  "%s (extra tracking) traced sender %s to group %s"
+		  "gnus-registry-split-fancy-with-parent"
+		  sender
+		  (if res res "nil")))))
+	   gnus-registry-hashtb))
+	(when (and single-match
+		   (gnus-registry-track-subject-p)
+		   subject
+		   (< gnus-registry-minimum-subject-length (length subject)))
+	  (maphash
+	   (lambda (key value)
+	     (let ((this-subject (cdr 
+				  (gnus-registry-fetch-extra key 'subject))))
+	       (when (and single-match
+			  this-subject
+			  (equal subject this-subject))
+		 ;; too many matches, bail
+		 (unless (equal res (gnus-registry-fetch-group key))
+		   (setq single-match nil))
+		 (setq res (gnus-registry-fetch-group key))
+		 (gnus-message
+		  ;; raise level of messaging if gnus-registry-track-extra
+		  (if gnus-registry-track-extra 5 9)
+		  "%s (extra tracking) traced subject %s to group %s"
+		  "gnus-registry-split-fancy-with-parent"
+		  subject
+		  (if res res "nil")))))
+	   gnus-registry-hashtb))
+	(unless single-match
+	  (gnus-message
+	   5
+	   "gnus-registry-split-fancy-with-parent: too many extra matches for %s"
+	   refstr)
+	  (setq res nil))))
     (gnus-message
      5 
      "gnus-registry-split-fancy-with-parent traced %s to group %s"
@@ -607,17 +635,18 @@ Returns the first place where the trail finds a group name."
 			(list group))
 		   gnus-registry-hashtb)
 
-	  (when gnus-registry-track-extra
-	    (when subject
-	      (gnus-registry-store-extra-entry
-	       id 
-	       'subject 
-	       (gnus-registry-simplify-subject subject)))
-	    (when sender
-	      (gnus-registry-store-extra-entry
-	       id 
-	       'sender
-	       sender)))
+	  (when (and (gnus-registry-track-subject-p)
+		     subject)
+	    (gnus-registry-store-extra-entry
+	     id 
+	     'subject 
+	     (gnus-registry-simplify-subject subject)))
+	  (when (and (gnus-registry-track-sender-p)
+		     sender)
+	    (gnus-registry-store-extra-entry
+	     id 
+	     'sender
+	     sender))
 	  
 	  (gnus-registry-store-extra-entry id 'mtime (current-time)))))))
 

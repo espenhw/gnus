@@ -1975,7 +1975,10 @@ mail groups."
      :tag "Destination for ham articles at summary exit from a spam group"
      (string :tag "Move to a group")
      (repeat :tag "Move to multiple groups"
-	     (string :tag "Destination group"))
+	     (choice
+	      (string :tag "Destination group")
+	      (const  :tag "Respool" respool)))
+     (const :tag "Respool" respool)
      (const :tag "Do nothing" nil))
    :function-document
    "Where ham articles will go at summary exit from a spam group."
@@ -1998,7 +2001,10 @@ mail groups, and only works in spam groups."
        :tag "Destination for ham articles at summary exit from spam group"
        (string :tag "Move to a group")
        (repeat :tag "Move to multiple groups"
-	       (string :tag "Destination group"))
+	       (choice
+		(string :tag "Destination group")
+		(const  :tag "Respool" respool)))
+       (const :tag "Respool" respool)
        (const :tag "Expire" nil))))
    :parameter-document
    "Where ham articles will go at summary exit from a spam group.")

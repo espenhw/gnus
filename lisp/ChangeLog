@@ -1,3 +1,18 @@
+2003-11-19  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus-registry.el (gnus-registry-track-extra): make it a set of
+	choices instead of a boolean
+	(gnus-registry-track-subject-p, gnus-registry-track-sender-p):
+	new convenience functions
+	(gnus-registry-split-fancy-with-parent): use convenience
+	functions, also don't return extra tracking info if sender or
+	subject is found in more than one groups
+	(gnus-registry-add-group): use new convenience functions to
+	decide if sender and subject should be tracked
+
+	* gnus.el (ham-process-destination): add 'respool option,
+	unused by spam.el yet
+
 2003-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-score.el (gnus-decay-score): Return a surely smaller value
