@@ -867,13 +867,29 @@ the actual number of articles toggled is returned."
 	(insert "\n"))
       (pop gnus-agent-group-alist))))
 
+(if (fboundp 'union)
+    (defalias 'gnus-agent-union 'union)
+  (defun gnus-agent-union (l1 l2)
+    "Set union of lists L1 and L2."
+    (cond ((null l1) l2)
+	  ((null l2) l1)
+	  ((equal l1 l2) l1)
+	  (t
+	   (or (>= (length l1) (length l2))
+	       (setq l1 (prog1 l2 (setq l2 l1))))
+	   (while l2
+	     (or (memq (car l2) l1)
+		 (push (car l2) l1))
+	     (pop l2))
+	   l1))))
+
 (defun gnus-agent-fetch-headers (group &optional force)
   (let ((articles (gnus-list-of-unread-articles group))
 	(gnus-decode-encoded-word-function 'identity)
 	(file (gnus-agent-article-name ".overview" group)))
     ;; Add article with marks to list of article headers we want to fetch.
     (dolist (arts (gnus-info-marks (gnus-get-info group)))
-      (setq articles (union (gnus-uncompress-sequence (cdr arts))
+      (setq articles (gnus-agent-union (gnus-uncompress-sequence (cdr arts))
 			    articles)))
     (setq articles (sort articles '<))
     ;; Remove known articles.
