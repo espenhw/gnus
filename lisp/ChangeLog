@@ -1,3 +1,13 @@
+2003-01-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-audio.el (gnus-audio-au-player): Use executable-find. 
+
+2003-01-13  Jhair Tocancipa Triana <jhair_tocancipa@@gmx.net>
+
+	* gnus-audio.el (gnus-audio-au-player, gnus-audio-wav-player): Use
+	  /usr/bin/play as default player. 
+	  (gnus-audio-play): Added ARG-DESCRIPTOR to prompt for a file to play.
+
 2003-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-inews-add-send-actions): Allow a list of
