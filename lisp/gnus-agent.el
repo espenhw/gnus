@@ -788,30 +788,39 @@ be a select method."
 ;;; Server mode commands
 ;;;
 
-(defun gnus-agent-add-server (server)
+(defun gnus-agent-add-server ()
   "Enroll SERVER in the agent program."
-  (interactive (list (gnus-server-server-name)))
-  (unless server
-    (error "No server on the current line"))
-  (let ((method (gnus-server-get-method nil (gnus-server-server-name))))
+  (interactive)
+  (let* ((server       (gnus-server-server-name))
+         (named-server (gnus-server-named-server))
+         (method       (and server
+                            (gnus-server-get-method nil server))))
+    (unless server
+      (error "No server on the current line"))
+
     (when (gnus-agent-method-p method)
       (error "Server already in the agent program"))
-    (push (gnus-method-to-server method) gnus-agent-covered-methods)
+
+    (push named-server gnus-agent-covered-methods)
+
     (setq gnus-agent-method-p-cache nil)
     (gnus-server-update-server server)
     (gnus-agent-write-servers)
     (gnus-message 1 "Entered %s into the Agent" server)))
 
-(defun gnus-agent-remove-server (server)
+(defun gnus-agent-remove-server ()
   "Remove SERVER from the agent program."
-  (interactive (list (gnus-server-server-name)))
-  (unless server
-    (error "No server on the current line"))
-  (let* ((server (gnus-server-server-name)))
-    (unless (member server gnus-agent-covered-methods)
+  (interactive)
+  (let* ((server       (gnus-server-server-name))
+         (named-server (gnus-server-named-server)))
+    (unless server
+      (error "No server on the current line"))
+
+    (unless (member named-server gnus-agent-covered-methods)
       (error "Server not in the agent program"))
+
     (setq gnus-agent-covered-methods 
-          (delete server gnus-agent-covered-methods)
+          (delete named-server gnus-agent-covered-methods)
           gnus-agent-method-p-cache nil)
 
     (gnus-server-update-server server)
