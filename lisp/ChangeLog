@@ -1,3 +1,12 @@
+2000-07-11 18:00:49  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el (nnslashdot-request-close): New function.
+
+2000-07-04 23:23:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnslashdot.el (nnslashdot-threaded-retrieve-headers): Get the
+	right line number for the article.
+
 2000-07-10 22:41:58  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-threaded-retrieve-headers): Save point.

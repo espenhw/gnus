@@ -113,11 +113,9 @@
 	  (search-forward " on ")
 	  (setq date (nnslashdot-date-to-date
 		      (buffer-substring (point) (1- (search-forward "<")))))
-	  (forward-line 2)
-	  (setq lines (count-lines
-		       (point)
-		       (re-search-forward
-			"A href=\"\\(http://slashdot.org\\)?/article" nil t)))
+	  (setq lines (/ (- (point)
+			    (progn (forward-line 1) (point)))
+			 60))
 	  (push
 	   (cons
 	    1
@@ -488,6 +486,10 @@
   (setq nnslashdot-groups (delq (assoc group nnslashdot-groups)
 				nnslashdot-groups))
   (nnslashdot-write-groups))
+
+(deffoo nnslashdot-request-close ()
+  (setq nnslashdot-headers nil
+	nnslashdot-groups nil))
 
 (nnoo-define-skeleton nnslashdot)
 
