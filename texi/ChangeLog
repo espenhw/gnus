@@ -1,3 +1,7 @@
+2001-02-02  David Masterson <dmasters@Rational.Com>
+
+	* gnus.texi (The Server is Down): Add link to Group Levels.
+
 2001-01-24  Simon Josefsson  <sj@extundo.com>
 
 	* gnus.texi (Mail Source Specifiers): Add IMAP :program, fix POP

@@ -1035,7 +1035,7 @@ your mail without bothering with the server at all, you can use the
 if you're in a hurry as well.  This command will not attempt to contact
 your primary server---instead, it will just activate all groups on level
 1 and 2.  (You should preferably keep no native groups on those two
-levels.)
+levels.) Also @pxref{Group Levels}.
 
 
 @node Slave Gnusae
