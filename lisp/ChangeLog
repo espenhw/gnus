@@ -1,3 +1,8 @@
+2000-12-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-art.el (article-treat-dumbquotes): More doc, provided by
+	Paul Stevenson <p.stevenson@surrey.ac.uk>
+
 2000-12-21 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-ml.el (gnus-mailing-list-mode-map): Use C-c C-n prefix.
@@ -1091,6 +1096,7 @@
 	* gnus-group.el (gnus-group-jump-to-group-prompt): New variable by
 	Stein Arild Str,Ax(Bmme.
 	(gnus-group-jump-to-group): Use it.
+	(gnus-group-jump-to-group-prompt): Customize.
 
 2000-11-14 10:32:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

@@ -7372,13 +7372,18 @@ Treat overstrike (@code{gnus-article-treat-overstrike}).
 @findex gnus-article-treat-dumbquotes
 @vindex gnus-article-dumbquotes-map
 @cindex Smartquotes
-@cindex M******** sm*rtq**t*s
+@cindex M****s*** sm*rtq**t*s
 @cindex Latin 1
-Treat M******** sm*rtq**t*s according to
+Treat M****s*** sm*rtq**t*s according to
 @code{gnus-article-dumbquotes-map}
 (@code{gnus-article-treat-dumbquotes}).  Note that this function guesses
 whether a character is a sm*rtq**t* or not, so it should only be used
 interactively.
+
+Sm*rtq**t*s are M****s***'s unilateral extension to the character map in
+an attempt to provide more quoting characters.  If you see something
+like @code{\222} or @code{\264} where you're expecting some kind of
+apostrophe or quotation mark, then try this wash.
 
 @item W w
 @kindex W w (Summary)
