@@ -1148,6 +1148,7 @@ the actual number of articles toggled is returned."
 		  (caddr category)))
 	;; Translate score-param into real one
 	(cond
+	 ((not score-param))
 	 ((eq score-param 'file)
 	  (setq score-param (gnus-all-score-files group)))
 	 ((stringp (car score-param)))
