@@ -1,4 +1,14 @@
+Sun Apr  7 01:11:57 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnvirtual.el (nnvirtual-close-group): Don't nix out
+	group-relevant variables.
+
+	* message.el (message-send-and-exit): Would choke on sending bug
+	reports. 
+
 Sat Apr  6 19:03:10 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.65 is released.
 
 	* nnvirtual.el (nnvirtual-close-group): Don't update component
 	groups so much.

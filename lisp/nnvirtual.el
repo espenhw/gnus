@@ -228,13 +228,7 @@ virtual group.")
     (nnvirtual-update-reads)
     ;; We copy the marks from this group to the component
     ;; groups here.
-    (nnvirtual-update-marked)
-    ;; Reset all relevant variables.
-    (setq nnvirtual-current-group nil
-	  nnvirtual-component-groups nil
-	  nnvirtual-mapping nil)
-    (setq nnvirtual-group-alist 
-	  (delq (assoc group nnvirtual-group-alist) nnvirtual-group-alist)))
+    (nnvirtual-update-marked))
   t)
     
 (defun nnvirtual-request-list (&optional server) 

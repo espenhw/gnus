@@ -979,7 +979,8 @@ The text will also be indented the normal way."
   "Send message like `message-send', then, if no errors, exit from mail buffer."
   (interactive "P")
   (let ((buf (current-buffer)))
-    (when (message-send arg)
+    (when (and (message-send arg)
+	       (buffer-name buf))
       (bury-buffer buf)
       (when (eq buf (current-buffer))
 	(message-bury buf)))))
