@@ -149,7 +149,8 @@ by you.")
 
 (defun mml2015-fix-micalg (alg)
   (and alg
-       (upcase (if (string-match "^pgp-" alg)
+       ;; Mutt/1.2.5i has seen sending micalg=php-sha1
+       (upcase (if (string-match "^p[gh]p-" alg)
 		   (substring alg (match-end 0))
 		 alg))))
 
@@ -361,7 +362,10 @@ by you.")
 	       (buffer-string)))
 	    (set-buffer cipher)
 	    (erase-buffer)
-	    (insert-buffer plain)))
+	    (insert-buffer plain)
+	    (goto-char (point-min))
+	    (while (search-forward "\r\n" nil t)
+	      (replace-match "\n" t t))))
 	'(t)
       ;; Some wrong with the return value, check plain text buffer.
       (if (> (point-max) (point-min))

@@ -1,3 +1,9 @@
+2001-10-16  Simon Josefsson  <jas@extundo.com>
+
+	* mml2015.el (mml2015-fix-micalg): Fix for Mutt-bug.
+	(mml2015-gpg-decrypt-1): Decanonicalize decrypted MIME
+	body. (Mailcrypt seem to do this, but gpg.el doesn't.)
+
 2001-10-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	Patch by Oliver Scholz <oscholz@my.gnus.org>.
 
