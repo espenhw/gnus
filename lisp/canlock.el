@@ -101,18 +101,23 @@ buffer does not look like a news message."
 
 (defun canlock-sha1-with-openssl (message)
   "Make a SHA-1 digest of MESSAGE using OpenSSL."
-  (with-temp-buffer
-    (let ((coding-system-for-read 'binary)
-	  (coding-system-for-write 'binary)
-	  selective-display
-	  (case-fold-search t))
-      (insert message)
-      (apply 'call-process-region (point-min) (point-max)
-	     canlock-openssl-program t t nil canlock-openssl-args)
-      (goto-char (point-min))
-      (while (re-search-forward "[0-9a-f][0-9a-f]" nil t)
-	(replace-match (read (concat "\"\\x" (match-string 0) "\""))))
-      (buffer-substring (point-min) (point)))))
+  (let (default-enable-multibyte-characters)
+    (with-temp-buffer
+      (let ((coding-system-for-read 'binary)
+	    (coding-system-for-write 'binary)
+	    selective-display
+	    (case-fold-search t)
+	    (str ""))
+	(insert message)
+	(apply 'call-process-region (point-min) (point-max)
+	       canlock-openssl-program t t nil canlock-openssl-args)
+	(goto-char (point-min))
+	(insert "\"")
+	(while (re-search-forward "[0-9a-f][0-9a-f]" nil t)
+	  (replace-match (concat "\\\\x" (match-string 0))))
+	(insert "\"")
+	(goto-char (point-min))
+	(read (current-buffer))))))
 
 (defvar canlock-read-passwd nil)
 (defun canlock-read-passwd (prompt &rest args)
