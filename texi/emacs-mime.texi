@@ -1216,6 +1216,10 @@ RFC822 date when the part was modified (@code{Content-Disposition}).
 @item read-date
 RFC822 date when the part was read (@code{Content-Disposition}).
 
+@item recipients
+Who to encrypt/sign the part to.  This field is used to override any
+auto-detection based on the To/CC headers.
+
 @item size
 The size (in octets) of the part (@code{Content-Disposition}).
 

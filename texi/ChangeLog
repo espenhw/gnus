@@ -1,3 +1,10 @@
+2002-01-22  Josh Huber  <huber@alum.wpi.edu>
+
+	* emacs-mime.texi (MML Definition): Added a few words about the
+	recipients option.
+	* message.texi (Security): Changed documentation to reflect use of
+	the new secure tag.
+
 2002-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Article Washing): Addition.

@@ -663,6 +663,7 @@ Manual}).
 @cindex PGP/MIME
 @cindex sign
 @cindex encrypt
+@cindex secure
 
 Using the MML language, Message is able to create digitally signed and
 digitally encrypted messages.  Message (or rather MML) currently
@@ -675,47 +676,53 @@ c} key map for encryption, as follows.
 
 @item C-c C-m s s
 @kindex C-c C-m s s
-@findex mml-secure-sign-smime
+@findex mml-secure-message-sign-smime
 
-Digitally sign current MIME part using S/MIME.
+Digitally sign current message using S/MIME.
 
 @item C-c C-m s o
 @kindex C-c C-m s o
-@findex mml-secure-sign-pgp
+@findex mml-secure-message-sign-pgp
 
-Digitally sign current MIME part using PGP.
+Digitally sign current message using PGP.
 
 @item C-c C-m s p
 @kindex C-c C-m s p
-@findex mml-secure-sign-pgp
+@findex mml-secure-message-sign-pgp
 
-Digitally sign current MIME part using PGP/MIME.
+Digitally sign current message using PGP/MIME.
 
 @item C-c C-m c s
 @kindex C-c C-m c s
-@findex mml-secure-encrypt-smime
+@findex mml-secure-message-encrypt-smime
 
-Digitally encrypt current MIME part using S/MIME.
+Digitally encrypt current message using S/MIME.
 
 @item C-c C-m c o
 @kindex C-c C-m c o
-@findex mml-secure-encrypt-pgp
+@findex mml-secure-message-encrypt-pgp
 
-Digitally encrypt current MIME part using PGP.
+Digitally encrypt current message using PGP.
 
 @item C-c C-m c p
 @kindex C-c C-m c p
-@findex mml-secure-encrypt-pgpmime
+@findex mml-secure-message-encrypt-pgpmime
 
-Digitally encrypt current MIME part using PGP/MIME.
+Digitally encrypt current message using PGP/MIME.
 
 @end table
 
 These commands do not immediately sign or encrypt the message, they
-merely insert proper MML tags to instruct the MML engine to perform that
-operation when the message is actually sent.  They may perform other
-operations too, such as locating and retrieving a S/MIME certificate of
-the person you wish to send encrypted mail to.
+merely insert the proper MML secure tag to instruct the MML engine to
+perform that operation when the message is actually sent. They may
+perform other operations too, such as locating and retrieving a S/MIME
+certificate of the person you wish to send encrypted mail to.  When the
+mml parsing engine converts your MML into a properly encoded MIME
+message, the secure tag will be replaced with either a part or a
+multipart tag.  If your message contains other mml parts, a multipart
+tag will be used; if no other parts are present in your message a single
+part tag will be used.  This way, message mode will do the Right Thing
+(TM) with signed/encrypted multipart messages.
 
 Since signing and especially encryption often is used when sensitive
 information is sent, you may want to have some way to ensure that your

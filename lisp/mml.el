@@ -150,7 +150,7 @@ one charsets.")
 	;; included in the message
 	(let* (secure-mode
 	       (taginfo (mml-read-tag))
-	       (recipient (cdr (assq 'recipient taginfo)))
+	       (recipients (cdr (assq 'recipients taginfo)))
 	       (location (cdr (assq 'tag-location taginfo))))
 	  (save-excursion
 	    (if
@@ -165,8 +165,8 @@ one charsets.")
 	  (mml-insert-tag secure-mode
 			  (cdr (assq 'mode taginfo))
 			  (cdr (assq 'method taginfo))
-			  (and recipient 'recipient)
-			  recipient)
+			  (and recipients 'recipients)
+			  recipients)
 	  ;; restart the parse
 	  (goto-char location)))
        ((looking-at "<#multipart")

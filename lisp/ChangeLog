@@ -1,5 +1,10 @@
 2002-01-22  Josh Huber  <huber@alum.wpi.edu>
 
+	* mml.el (mml-parse-1): Fixed usage of recipients in the secure
+	tag.
+
+2002-01-22  Josh Huber  <huber@alum.wpi.edu>
+
 	* message.el (message-font-lock-keywords): Added the secure tag.
 	* mml-sec.el: Added functions to generate/modify/remove the secure
 	tag while in message mode.
