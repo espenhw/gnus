@@ -39,6 +39,10 @@
 (require 'dns)
 (require 'message)
 
+;; BBDB autoloads
+(autoload 'bbdb-search "bbdb-com")
+(autoload 'bbdb-records "bbdb-com")
+
 ;;; Main parameters.
 
 (defvar spam-use-blacklist t
@@ -261,8 +265,6 @@ The regular expression is matched against the address.")
   (if (spam-from-listed-p spam-whitelist-cache) nil spam-split-group))
 
 ;;; copied from code by Alexander Kotelnikov <sacha@giotto.sj.ru>
-;; FIXME: assumes that bbdb.el is loaded
-;; FIXME: broken right now, if the "from" field can't be retrieved
 (defun spam-check-bbdb ()
   "We want messages from people who are in the BBDB not to be split to spam"
   (let ((who (message-fetch-field "from")))
