@@ -24,7 +24,7 @@
 	       mule-write-region-no-coding-system put-image
 	       ring-elements
 	       charsetp sort-coding-systems
-	       coding-system-p
+	       coding-system-p coding-system-list
 	       propertize make-mode-line-mouse2-map
 	       make-mode-line-mouse-map
 	       rmail-select-summary rmail-summary-exists rmail-update-summary

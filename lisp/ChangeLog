@@ -1,3 +1,10 @@
+2001-11-01 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-iso-8859-15-compatible): Add inconvertible chars.
+	(mm-iso-8859-x-to-15-table): Ditto.
+	(mm-iso-8859-x-to-15-region): Ditto.
+	(mm-find-mime-charset-region): Ditto.
+
 2001-11-01  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-close-asynchronous): New variable.

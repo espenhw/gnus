@@ -241,27 +241,32 @@
 (defvar mm-hack-charsets '(iso-8859-15 iso-2022-jp-2)
   "A list of special charsets when encoding.
 The each element could be one of the following:
-`iso-8859-15'    convert ISO-8859-1, -2 to ISO-8859-15 if ISO-8859-15 exists.
+`iso-8859-15'    convert ISO-8859-1, -9 to ISO-8859-15 if ISO-8859-15 exists.
 `iso-2022-jp-2'  convert ISO-2022-jp to ISO-2022-jp-2 if ISO-2022-jp-2 exists."
 )
 
 ;; FIXME: what the value should be?
-(defvar mm-iso-8859-15-compatible '(iso-8859-1 iso-8859-2)
-  "Coding systems that are compatible with iso-8859-15.")
+(defvar mm-iso-8859-15-compatible 
+  '((iso-8859-1 "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE")
+    (iso-8859-9 "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE\xD0\xDD\xDE\xF0\xFD\xFE"))
+  "Coding systems (inconvertible characters) to ISO-8859-15.")
 
 (defvar mm-iso-8859-x-to-15-table
   (and (fboundp 'coding-system-p)
        (mm-coding-system-p 'iso-8859-15)
-       (mapcar (lambda (cs)
-		 (if (mm-coding-system-p cs)
-		     (let ((c (string-to-char
-			       (decode-coding-string "\341" cs))))
-		       (cons (char-charset c)
-			     (- (string-to-char
-				 (decode-coding-string "\341" 'iso-8859-15))
-				c)))
-		   '(gnus-charset . 0)))
-	       mm-iso-8859-15-compatible))
+       (mapcar 
+	(lambda (cs)
+	  (if (mm-coding-system-p (car cs))
+	      (let ((c (string-to-char 
+			(decode-coding-string "\341" (car cs)))))
+		(cons (char-charset c)
+		      (cons
+		       (- (string-to-char 
+			   (decode-coding-string "\341" 'iso-8859-15)) c)
+		       (string-to-list (decode-coding-string (car (cdr cs)) 
+							     (car cs))))))
+	    '(gnus-charset 0)))
+	mm-iso-8859-15-compatible))
   "A table of the difference character between ISO-8859-X and ISO-8859-15.")
 
 ;;; Internal variables:
@@ -449,19 +454,24 @@ If the charset is `composition', return the actual one."
     (featurep 'mule)))
 
 (defun mm-iso-8859-x-to-15-region (&optional b e)
-  (let (charset item)
-    (save-restriction
-      (if e (narrow-to-region b e))
-      (goto-char (point-min))
-      (skip-chars-forward "\0-\177")
-      (while (not (eobp))
-	(cond 
-	 ((setq item (assq (charset-after) mm-iso-8859-x-to-15-table))
-	  (insert (prog1
-		      (+ (char-after) (cdr item))
-		    (delete-char 1))))
-	 (t (forward-char)))
-	(skip-chars-forward "\0-\177")))))
+  (if (fboundp 'char-charset)
+      (let (charset item c inconvertible)
+	(save-restriction
+	  (if e (narrow-to-region b e))
+	  (goto-char (point-min))
+	  (skip-chars-forward "\0-\177")
+	  (while (not (eobp))
+	    (cond 
+	     ((not (setq item (assq (char-charset (setq c (char-after))) 
+				    mm-iso-8859-x-to-15-table)))
+	      (forward-char))
+	     ((memq c (cdr (cdr item)))
+	      (setq inconvertible t)
+	      (forward-char))
+	     (t
+	      (insert (prog1 (+ c (car (cdr item))) (delete-char 1))))
+	    (skip-chars-forward "\0-\177"))))
+	(not inconvertible))))
 
 (defun mm-find-mime-charset-region (b e &optional hack-charsets)
   "Return the MIME charsets needed to encode the region between B and E.
@@ -491,17 +501,15 @@ charset, and a longer list means no appropriate charset."
 	       (mapcar 'mm-mime-charset
 		       (delq 'ascii
 			     (mm-find-charset-region b e))))))
-    (when (and (memq 'iso-8859-15 charsets)
-	     (memq 'iso-8859-15 hack-charsets))
-      (save-excursion
-	(mm-iso-8859-x-to-15-region b e))
-      (mapcar (lambda (x)
-		(setq charsets (delq x charsets)))
-	      mm-iso-8859-15-compatible))
+    (if (and (memq 'iso-8859-15 charsets)
+	     (memq 'iso-8859-15 hack-charsets)
+	     (save-excursion (mm-iso-8859-x-to-15-region b e)))
+	(mapcar (lambda (x) (setq charsets (delq (car x) charsets)))
+		mm-iso-8859-15-compatible))
     (if (and (memq 'iso-2022-jp-2 charsets)
 	     (memq 'iso-2022-jp-2 hack-charsets))
-	(setq charsets (delq 'iso-2022-jp charsets))
-	  charsets)))
+	(setq charsets (delq 'iso-2022-jp charsets)))
+    charsets))
 
 (defmacro mm-with-unibyte-buffer (&rest forms)
   "Create a temporary buffer, and evaluate FORMS there like `progn'.
