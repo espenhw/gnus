@@ -1,3 +1,8 @@
+2004-08-15  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (IMAP): Add example.  Suggested and partially written
+	by Steinar Bang <sb@dod.no>.
+
 2004-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Posting Styles): Addition.

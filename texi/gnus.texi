@@ -16369,7 +16369,15 @@ RFC 2060 for more information on valid strings.
 A file containing credentials used to log in on servers.  The format is
 (almost) the same as the @code{ftp} @file{~/.netrc} file.  See the
 variable @code{nntp-authinfo-file} for exact syntax; also see
-@ref{NNTP}.
+@ref{NNTP}.  An example of an .authinfo line for an IMAP server, is: 
+
+@example
+machine students.uio.no login larsi password geheimnis port imap
+@end example
+
+Note that it should be @code{port imap}, or @code{port 143}, if you
+use a @code{nnimap-stream} of @code{tls} or @code{ssl}, even if the
+actual port number used is port 993 for secured imap.
 
 @item nnimap-need-unselect-to-notice-new-mail
 @vindex nnimap-need-unselect-to-notice-new-mail
