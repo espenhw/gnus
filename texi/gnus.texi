@@ -15622,7 +15622,7 @@ Please note that the value of @code{nnimap-stream} is a symbol!
 @itemize @bullet
 @item
 @dfn{gssapi:} Connect with GSSAPI (usually Kerberos 5). Requires the
-@samp{imtest} program.
+@samp{gsasl} or @samp{imtest} program.
 @item
 @dfn{kerberos4:} Connect with Kerberos 4. Requires the @samp{imtest} program.
 @item
@@ -15656,6 +15656,15 @@ For TLS connection, the @code{gnutls-cli} program from GNUTLS is
 needed.  It is available from
 @uref{http://www.gnu.org/software/gnutls/}.
 
+@vindex imap-gssapi-program
+This parameter specifies a list of command lines that invoke a GSSAPI
+authenticated IMAP stream in a subshell.  They are tried sequentially
+until a connection is made, or the list has been exhausted.  By
+default, @samp{gsasl} from GNU SASL, available from
+@uref{http://www.gnu.org/software/gsasl/}, and the @samp{imtest}
+program from Cyrus IMAPD (see @code{imap-kerberos4-program}), are
+tried.
+
 @vindex imap-ssl-program
 For SSL connections, the OpenSSL program is available from
 @uref{http://www.openssl.org/}. OpenSSL was formerly known as SSLeay,
@@ -15688,7 +15697,7 @@ Please note that the value of @code{nnimap-authenticator} is a symbol!
 @itemize @bullet
 @item
 @dfn{gssapi:} GSSAPI (usually kerberos 5) authentication. Requires
-external program @code{imtest}.
+external program @code{gsasl} or @code{imtest}.
 @item
 @dfn{kerberos4:} Kerberos 4 authentication. Requires external program
 @code{imtest}.
