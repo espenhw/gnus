@@ -157,11 +157,12 @@
 		  (vcard-parse-string (mm-get-part handle)
 				      'vcard-standard-filter))))))
      (t
-      (setq text (mm-get-part handle))
       (let ((b (point))
 	    (charset (mail-content-type-get
 		      (mm-handle-type handle) 'charset)))
-	(insert (mm-decode-string text charset))
+	(if (eq charset 'gnus-decoded)
+	    (mm-insert-part handle)
+	  (insert (mm-decode-string (mm-get-part handle) charset)))
 	(when (and (equal type "plain")
 		   (equal (cdr (assoc 'format (mm-handle-type handle)))
 			  "flowed"))

@@ -31,7 +31,7 @@
 (eval-and-compile
   (autoload 'message-make-message-id "message")
   (autoload 'gnus-setup-posting-charset "gnus-msg")
-  (audoload 'message-fetch-field "message")
+  (autoload 'message-fetch-field "message")
   (autoload 'message-posting-charset "message"))
 
 (defvar mml-generate-multipart-alist nil
