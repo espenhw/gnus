@@ -130,6 +130,8 @@ add n-f-u-a-g-n-n again.  If you were happy with the estimate and want
 to save some (minimal) time when getting new mail, remove the
 function.
 
+** gnus-inews-mark-gcc-as-read has been renamed to gnus-gcc-mark-as-read.
+
 ** Group Carbon Copy (GCC) quoting
 
 To support groups that contains SPC and other weird characters, groups
