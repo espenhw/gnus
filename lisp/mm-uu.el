@@ -1,8 +1,8 @@
 ;;; mm-uu.el -- Return uu stuff as mm handles
-;; Copyright (c) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; Keywords: postscript uudecode binhex shar forward gnatsweb pgp 
+;; Keywords: postscript uudecode binhex shar forward gnatsweb pgp
 
 ;; This file is part of GNU Emacs.
 
@@ -56,7 +56,7 @@ appear to be horribly slow . You can make Gnus use the external Unix
 decoder, such as hexbin."
   :type '(choice (item :tag "internal" binhex-decode-region)
 		 (item :tag "external" binhex-decode-region-external))
-  :group 'gnus-article-mime) 
+  :group 'gnus-article-mime)
 
 (defvar mm-uu-pgp-beginning-signature
      "^-----BEGIN PGP SIGNATURE-----")
@@ -67,13 +67,16 @@ decoder, such as hexbin."
   "The default disposition of uu parts.
 This can be either \"inline\" or \"attachment\".")
 
+(defvar mm-uu-emacs-sources-regexp "gnu\\.emacs\\.sources"
+  "The regexp of emacs sources groups.")
+
 (defvar mm-uu-type-alist
-  '((postscript 
+  '((postscript
      "^%!PS-"
      "^%%EOF$"
      mm-uu-postscript-extract
      nil)
-    (uu 
+    (uu
      "^begin[ \t]+[0-7][0-7][0-7][ \t]+"
      "^end[ \t]*$"
      mm-uu-uu-extract
@@ -84,12 +87,12 @@ This can be either \"inline\" or \"attachment\".")
      mm-uu-binhex-extract
      nil
      mm-uu-binhex-filename)
-    (shar 
+    (shar
      "^#! */bin/sh"
      "^exit 0$"
      mm-uu-shar-extract)
-    (forward 
-;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and 
+    (forward
+;;; Thanks to Edward J. Sabol <sabol@alderaan.gsfc.nasa.gov> and
 ;;; Peter von der Ah\'e <pahe@daimi.au.dk>
      "^-+ \\(Start of \\)?Forwarded message"
      "^-+ End \\(of \\)?forwarded message"
@@ -117,13 +120,19 @@ This can be either \"inline\" or \"attachment\".")
      "^-----END PGP PUBLIC KEY BLOCK-----"
      mm-uu-pgp-key-extract
      mm-uu-gpg-key-skip-to-last
-     nil)))
+     nil)
+    (emacs-sources
+     "^;;;?[ \t]*[^ \t]+\\.el[ \t]*--"
+     "^;;;?[ \t]*\\([^ \t]+\\.el\\)[ \t]+ends here"
+     mm-uu-emacs-sources-extract
+     nil
+     mm-uu-emacs-sources-test)))
 
 (defcustom mm-uu-configure-list nil
   "A list of mm-uu configuration.
 To disable dissecting shar codes, for instance, add
 `(shar . disabled)' to this list."
-  :type `(repeat (cons 
+  :type `(repeat (cons
 		  ,(cons 'choice
 			 (mapcar
 			  (lambda (entry)
@@ -168,7 +177,7 @@ Return that buffer."
   (if symbol (set-default symbol value))
   (setq mm-uu-beginning-regexp nil)
   (mapcar (lambda (entry)
-	     (if (mm-uu-configure-p (mm-uu-type entry) 'disabled) 
+	     (if (mm-uu-configure-p (mm-uu-type entry) 'disabled)
 		 nil
 	       (setq mm-uu-beginning-regexp
 		     (concat mm-uu-beginning-regexp
@@ -206,8 +215,24 @@ Return that buffer."
   (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
 		  '("application/postscript")))
 
+(defun mm-uu-emacs-sources-extract ()
+  (mm-make-handle (mm-uu-copy-to-buffer start-point end-point)
+		  '("application/emacs-lisp")
+		  nil nil
+		  (list mm-dissect-disposition
+			(cons 'filename file-name))))
+
+(eval-when-compile
+  (defvar gnus-newsgroup-name))
+
+(defun mm-uu-emacs-sources-test ()
+  (setq file-name (match-string 1))
+  (and gnus-newsgroup-name
+       mm-uu-emacs-sources-regexp
+       (string-match mm-uu-emacs-sources-regexp gnus-newsgroup-name)))
+
 (defun mm-uu-forward-extract ()
-  (mm-make-handle (mm-uu-copy-to-buffer 
+  (mm-make-handle (mm-uu-copy-to-buffer
 		   (progn (goto-char start-point) (forward-line) (point))
 		   (progn (goto-char end-point) (forward-line -1) (point)))
 		  '("message/rfc822" (charset . gnus-decoded))))
@@ -258,6 +283,9 @@ Return that buffer."
     ((eq mm-verify-option 'known) t)
     (t (y-or-n-p "Verify pgp signed part?")))))
 
+(eval-when-compile
+  (defvar gnus-newsgroup-charset))
+
 (defun mm-uu-pgp-signed-extract-1 (handles ctl)
   (let ((buf (mm-uu-copy-to-buffer (point-min) (point-max))))
     (with-current-buffer buf
@@ -269,7 +297,7 @@ Return that buffer."
 	      (funcall (mml2015-clear-verify-function))))
 	(when (and mml2015-use (null (mml2015-clear-verify-function)))
 	  (mm-set-handle-multipart-parameter
-	   mm-security-handle 'gnus-details 
+	   mm-security-handle 'gnus-details
 	   (format "Clear verification not supported by `%s'.\n" mml2015-use))))
       (goto-char (point-min))
       (if (search-forward "\n\n" nil t)
@@ -284,7 +312,7 @@ Return that buffer."
 
 (defun mm-uu-pgp-signed-extract ()
   (let ((mm-security-handle (list (format "multipart/signed"))))
-    (mm-set-handle-multipart-parameter 
+    (mm-set-handle-multipart-parameter
      mm-security-handle 'protocol "application/x-gnus-pgp-signature")
     (save-restriction
       (narrow-to-region start-point end-point)
@@ -292,7 +320,7 @@ Return that buffer."
 			   (list 'buffer (mm-uu-copy-to-buffer))
 			   (car mm-security-handle))
       (setcdr mm-security-handle
-	      (mm-uu-pgp-signed-extract-1 nil 
+	      (mm-uu-pgp-signed-extract-1 nil
 					  mm-security-handle)))
     mm-security-handle))
 
@@ -318,7 +346,7 @@ Return that buffer."
 
 (defun mm-uu-pgp-encrypted-extract ()
   (let ((mm-security-handle (list (format "multipart/encrypted"))))
-    (mm-set-handle-multipart-parameter 
+    (mm-set-handle-multipart-parameter
      mm-security-handle 'protocol "application/x-gnus-pgp-encrypted")
     (save-restriction
       (narrow-to-region start-point end-point)
@@ -326,7 +354,7 @@ Return that buffer."
 			   (list 'buffer (mm-uu-copy-to-buffer))
 			   (car mm-security-handle))
       (setcdr mm-security-handle
-	      (mm-uu-pgp-encrypted-extract-1 nil 
+	      (mm-uu-pgp-encrypted-extract-1 nil
 					     mm-security-handle)))
     mm-security-handle))
 
@@ -351,11 +379,11 @@ Return that buffer."
 (defun mm-uu-dissect ()
   "Dissect the current buffer and return a list of uu handles."
   (let ((case-fold-search t)
-	text-start start-point end-point file-name result 
+	text-start start-point end-point file-name result
 	text-plain-type entry func)
     (save-excursion
       (goto-char (point-min))
-      (cond 
+      (cond
        ((looking-at "\n")
 	(forward-line))
        ((search-forward "\n\n" nil t)
@@ -370,7 +398,7 @@ Return that buffer."
 	(let ((alist mm-uu-type-alist)
 	      (beginning-regexp (match-string 0)))
 	  (while (not entry)
-	    (if (string-match (mm-uu-beginning-regexp (car alist)) 
+	    (if (string-match (mm-uu-beginning-regexp (car alist))
 			      beginning-regexp)
 		(setq entry (car alist))
 	      (pop alist))))
