@@ -1,6 +1,12 @@
 2001-07-11 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
-	* nnfolder.el (nnfolder-read-folder): Force to use multibyte buffer.
+	* mm-encode.el (mm-content-transfer-encoding-defaults): Use base64
+	for the default encoding.
+
+	* nnrss.el (nnrss-url-field): New field.
+	(nnrss-request-article): Add newsgroups.
+
+	* nnfolder.el (nnfolder-read-folder): Force to use a multibyte buffer.
 
 2001-07-11 04:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

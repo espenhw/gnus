@@ -175,6 +175,10 @@
   "Field name used for DESCRIPTION.
 To use the description in headers, put this name into `nnmail-extra-headers'.")
 
+(defvar nnrss-url-field 'X-Gnus-Url
+  "Field name used for URL.
+To use the description in headers, put this name into `nnmail-extra-headers'.")
+
 (nnoo-define-basics nnrss)
 
 ;;; Interface functions
@@ -211,6 +215,14 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
                                 (nnrss-format-string (nth 6 e))
                                 "\t")
 		      "")
+                    (if (and (nth 2 e)
+                             (memq nnrss-url-field 
+                                   nnmail-extra-headers))
+			(concat (symbol-name nnrss-url-field)
+				": "
+                                (nnrss-format-string (nth 2 e))
+                                "\t")
+		      "")
 		    "\n")))))
   'nov)
 
@@ -238,6 +250,8 @@ To use the description in headers, put this name into `nnmail-extra-headers'.")
 	(with-current-buffer nntp-server-buffer
 	  (erase-buffer)
 	  (goto-char (point-min))
+          (if group
+              (insert "Newsgroups: " group "\n"))
 	  (if (nth 3 e)
 	      (insert "Subject: " (nnrss-format-string (nth 3 e)) "\n"))
 	  (if (nth 4 e)
