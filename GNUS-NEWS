@@ -8,6 +8,12 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** gnus-default-charset
+
+The default value is determined from the current-language-environment
+variable, instead of 'iso-8859-1. Also the ".*" item in
+gnus-group-charset-alist is removed.
+
 ** gnus-posting-styles
 
 Add a new format of match like
