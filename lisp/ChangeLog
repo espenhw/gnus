@@ -1,3 +1,10 @@
+2004-03-04  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-int.el (gnus-request-accept-article): Inform the agent that
+	articles are being added to a group.
+	(gnus-request-replace-article): Inform the agent that articles
+	need to be uncached as the cached contents are no longer valid.
+	
 2004-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* binhex.el: Don't autoload executable-find.
@@ -38,7 +45,7 @@
 
 	* uudecode.el: Don't autoload executable-find.
 
-2004-03-02  Kevin Greiner <kgreiner@xpediantsolutions.com>
+2004-03-04  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
         * gnus-agent.el (gnus-agent-file-header-cache): Removed.
 	(gnus-agent-possibly-alter-active): Avoid null in numeric
