@@ -2599,6 +2599,8 @@ The return value is the number of articles that were marked as read,
 or nil if no action could be taken."
   (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
 	 (num (car entry)))
+    ;; Remove entries for this group.
+    (nnmail-purge-split-history (gnus-group-real-name group))
     ;; Do the updating only if the newsgroup isn't killed.
     (if (not (numberp (car entry)))
 	(gnus-message 1 "Can't catch up %s; non-active group" group)

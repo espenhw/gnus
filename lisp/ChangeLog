@@ -1,3 +1,7 @@
+2000-01-18 22:03:51  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-catchup): Purge split history.
+
 2000-01-14 02:43:55  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-generate-active): Support extended group name.
