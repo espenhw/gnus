@@ -34,7 +34,6 @@
 (require 'gnus-util)
 (autoload 'message-make-date "message")
 (autoload 'gnus-agent-read-servers-validate "gnus-agent")
-(autoload 'gnus-agent-load-alist "gnus-agent")
 (eval-when-compile (require 'cl))
 
 (defcustom gnus-startup-file (nnheader-concat gnus-home-directory ".newsrc")
@@ -1508,18 +1507,6 @@ newsgroup."
 		    (gnus-active group))
 	       (gnus-active group)
 
-             (when (and gnus-agent
-                        (gnus-agent-method-p method))
-               ;; The agent may be storing articles that are no longer in the
-               ;; server's active range.  If that is the case, the active range
-               ;; needs to be expanded such that the agent's articles can be
-               ;; included in the summary.
-               (let* ((gnus-command-method method)
-                      (alist (gnus-agent-load-alist group)))
-                 (if (and (car alist)
-                          (< (caar alist) (car active)))
-                     (setcar active (caar alist)))))
-
 	     (gnus-set-active group active)
 	     ;; Return the new active info.
 	     active)))))
@@ -1539,6 +1526,12 @@ newsgroup."
       (when (and gnus-use-cache info)
 	(inline (gnus-cache-possibly-alter-active
 		 (gnus-info-group info) active)))
+
+      ;; If the agent is enabled, we may have to alter the active info.
+      (when (and gnus-agent info)
+	(inline (gnus-agent-possibly-alter-active
+		 (gnus-info-group info) active)))
+
       ;; Modify the list of read articles according to what articles
       ;; are available; then tally the unread articles and add the
       ;; number to the group hash table entry.
