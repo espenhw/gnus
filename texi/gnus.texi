@@ -10370,7 +10370,8 @@ determined by the @code{gnus-message-archive-group} variable.
 This variable can be used to do the following:
 
 @itemize @bullet
-@item a string
+@item
+a string
 Messages will be saved in that group.
 
 Note that you can include a select method in the group name, then the
@@ -10382,11 +10383,14 @@ has the default value shown above.  Then setting
 messages are stored in @samp{nnfolder+archive:foo}, but if you use the
 value @code{"nnml:foo"}, then outgoing messages will be stored in
 @samp{nnml:foo}.
-@item a list of strings
+@item
+a list of strings
 Messages will be saved in all those groups.
-@item an alist of regexps, functions and forms
+@item
+an alist of regexps, functions and forms
 When a key ``matches'', the result is used.
-@item @code{nil}
+@item
+@code{nil}
 No message archiving will take place.  This is the default.
 @end itemize
 
