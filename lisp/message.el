@@ -986,6 +986,16 @@ Except if it is nil, use Gnus native MUA; if it is t, use
   :version "21.1"
   :group 'message)
 
+(defcustom message-wide-reply-confirm-recipients nil
+  "Whether to confirm a wide reply to multiple email recipients.
+If this variable is nil, don't ask whether to reply to all recipients.
+If this variable is non-nil, pose the question \"Reply to all
+recipients?\" before a wide reply to multiple recipients.  If the user
+answers yes, reply to all recipients as usual.  If the user answers
+no, only reply back to the author."
+  :group 'message-headers
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar message-sending-message "Sending...")
@@ -4043,7 +4053,12 @@ responses here are directed to other addresses.")))
 				(lambda (addr) (cdr addr)) ccalist ", "))))
 	    (when (string-match "^ +" (cdr ccs))
 	      (setcdr ccs (substring (cdr ccs) (match-end 0))))
-	    (push ccs follow-to)))))
+	    (push ccs follow-to)))
+	;; Allow the user to be asked whether or not to reply to all
+	;; recipients in a wide reply.
+	(if (and ccalist wide message-wide-reply-confirm-recipients
+		 (not (y-or-n-p "Reply to all recipients?")))
+	    (setq follow-to (delq (assoc 'Cc follow-to) follow-to)))))
     follow-to))
 
 

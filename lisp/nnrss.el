@@ -154,6 +154,10 @@
 
 (defvar nnrss-use-local nil)
 
+(defvar nnrss-description-field 'X-Gnus-Description
+  "Field name used for DESCRIPTION.
+To use the description in headers, put this name into `nnmail-extra-headers'.")
+
 (nnoo-define-basics nnrss)
 
 ;;; Interface functions
@@ -181,6 +185,12 @@
 		    "\t" ;; refs
 		    "0" "\t" ;; chars
 		    "0" "\t" ;; lines
+		    "" "\t" ;; Xref
+		    (if (memq nnrss-description-field nnmail-extra-headers)
+			(concat (symbol-name nnrss-description-field)
+				": "
+				(nnrss-format-string (nth 6 e)) "\t")
+		      "")
 		    "\n")))))
   'nov)
 
@@ -210,9 +220,8 @@
 	  (goto-char (point-min))
 	  (if (nth 3 e)
 	      (insert "Subject: " (nnrss-format-string (nth 3 e)) "\n"))
-	  (insert "From: " (if (nth 4 e)
-			       (nnrss-format-string (nth 4 e))
-			     "(nobody)" "\n"))
+	  (if (nth 4 e)
+	      (insert "From: " (nnrss-format-string (nth 4 e)) "\n"))
 	  (if (nth 5 e)
 	      (insert "Date: " (nnrss-format-string (nth 5 e)) "\n"))
 	  (insert "Message-ID: " (format "<%d@%s.nnrss>" (car e) group) "\n")

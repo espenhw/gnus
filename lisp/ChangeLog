@@ -1,3 +1,24 @@
+2001-06-03  Dale Hagglund  <rdh@best.com>
+	
+       * gnus-mlspl.el (gnus-group-split-fancy): Fix generation of split
+       restrict clauses.
+
+2001-06-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
+	From Benjamin Rutt <brutt+news@bloomington.in.us>
+	
+	* message.el (message-wide-reply-confirm-recipients): New variable.
+
+2001-06-06  Mark Thomas  <mthomas@edrc.cmu.edu>
+
+	* nnmail.el (nnmail-fix-eudora-headers): Change the In-Reply-To
+	fix so it works with XEmacs.
+	
+2001-06-07 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnrss.el (nnrss-retrieve-headers): Support description as extra
+	headers.
+
 2001-06-07 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnrss.el: Fix a few bugs.

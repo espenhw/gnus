@@ -1120,8 +1120,8 @@ Return the number of characters in the body."
       (beginning-of-line)
       (insert "X-Gnus-Broken-Eudora-"))
     (goto-char (point-min))
-    (when (re-search-forward "^In-Reply-To:[^\n]+\\(\n[ \t]+\\)" nil t)
-      (replace-match "" t t nil 1))))
+    (when (re-search-forward "^\\(In-Reply-To:[^\n]+\\)\n[ \t]+" nil t)
+      (replace-match "\\1" t))))
 
 (custom-add-option 'nnmail-prepare-incoming-header-hook
 		   'nnmail-fix-eudora-headers)
