@@ -46,7 +46,7 @@
 
 (defvar assistant-data nil)
 (defvar assistant-current-node nil)
-(defvar assistant-previous-node nil)
+(defvar assistant-previous-nodes nil)
 (defvar assistant-widgets nil)
 
 (defun assistant-parse-buffer ()
@@ -159,8 +159,8 @@
 (defun assistant-render (ast)
   (let ((first-node (assistant-get (nth 1 ast) "node")))
     (set (make-local-variable 'assistant-data) ast)
-    (set (make-local-variable 'assistant-current-node) first-node)
-    (set (make-local-variable 'assistant-previous-node) nil)
+    (set (make-local-variable 'assistant-current-node) nil)
+    (set (make-local-variable 'assistant-previous-nodes) nil)
     (assistant-render-node first-node)))
 
 (defun assistant-find-node (node-name)
@@ -171,10 +171,11 @@
     (car ast)))
 
 (defun assistant-previous-node-text (node)
-  (format "[ << Go back to %s ]  " node))
+  (format "<< Go back to %s" node))
 
 (defun assistant-next-node-text (node)
-  (if node
+  (if (and node
+	   (not (eq node 'finish)))
       (format "Proceed to %s >>" node)
     "Finish"))
 
@@ -186,7 +187,7 @@
       (setcar (nthcdr 3 variable)
 	      (assistant-eval (nth 2 variable))))))
 
-(defun assistant-get-variable (node variable)
+(defun assistant-get-variable (node variable &optional type raw)
   (let ((variables (assistant-get-list node "variable"))
 	(result nil)
 	elem)
@@ -194,7 +195,10 @@
 		(not result))
       (setq elem (cadr elem))
       (when (eq (intern variable) (car elem))
-	(setq result (format "%s" (nth 3 elem)))))
+	(if type
+	    (setq result (nth 1 elem))
+	  (setq result (if raw (nth 3 elem)
+			 (format "%s" (nth 3 elem)))))))
     result))
     
 (defun assistant-set-variable (node variable value)
@@ -208,51 +212,82 @@
 (defun assistant-render-text (text node)
   (dolist (elem text)
     (if (stringp elem)
+	;; Ordinary text
 	(insert elem)
-      (let ((start (point)))
-	(push 
-	 (widget-create
-	  'editable-field
-	  :value-face 'assistant-field-face
-	  :assistant-variable (cadr elem)
-	  (assistant-get-variable node (cadr elem)))
-	 assistant-widgets)
-	;; The editable-field widget apparently inserts a newline;
-	;; remove it.
-	(delete-char -1)
-	(add-text-properties start (point)
-			     (list
-			      'bold t
-			      'face 'assistant-field-face
-			      'not-read-only t))))))
+      ;; A variable to be inserted as a widget.
+      (let* ((start (point))
+	     (variable (cadr elem))
+	     (type (assistant-get-variable node variable 'type)))
+	(cond
+	 ((and (consp type)
+	       (eq (car type) :radio))
+	  (push 
+	   (apply
+	    #'widget-create
+	    'radio-button-choice
+	    :assistant-variable variable
+	    :assistant-node node
+	    :value (assistant-get-variable node variable)
+	    :notify (lambda (widget &rest ignore)
+		      (assistant-set-variable
+		       (widget-get widget :assistant-node)
+		       (widget-get widget :assistant-variable)
+		       (widget-value widget))
+		      (assistant-render-node
+		       (assistant-get
+			(widget-get widget :assistant-node)
+			"node")))
+	    (cadr type))
+	   assistant-widgets))
+	 (t
+	  (push 
+	   (widget-create
+	    'editable-field
+	    :value-face 'assistant-field-face
+	    :assistant-variable variable
+	    (assistant-get-variable node variable))
+	   assistant-widgets)
+	  ;; The editable-field widget apparently inserts a newline;
+	  ;; remove it.
+	  (delete-char -1)
+	  (add-text-properties start (point)
+			       (list
+				'bold t
+				'face 'assistant-field-face
+				'not-read-only t))))))))
 
 (defun assistant-render-node (node-name)
   (let ((node (assistant-find-node node-name))
 	(inhibit-read-only t)
+	(previous assistant-current-node)
 	(buffer-read-only nil))
     (set (make-local-variable 'assistant-widgets) nil)
     (assistant-set-defaults node)
-    (setq assistant-current-node node-name)
-    (erase-buffer)
-    (insert (cadar assistant-data) "\n\n")
-    (insert node-name "\n\n")
-    (assistant-render-text (assistant-get node "text") node)
-    (insert "\n\n")
-    (when assistant-previous-node
-      (assistant-node-button 'previous assistant-previous-node))
-    (widget-create
-     'push-button
-     :assistant-node node-name
-     :notify (lambda (widget &rest ignore)
-	       (let* ((node (widget-get widget :assistant-node)))
-		 (assistant-set-defaults (assistant-find-node node) 'force)
-		 (assistant-render-node node)))
-     "Reset")
-    (insert " ")
-    (assistant-node-button 'next (assistant-find-next-node))
-    (insert "\n")
-    (goto-char (point-min))
-    (assistant-make-read-only)))
+    (if (equal (assistant-get node "type") "interstitial")
+	(assistant-render-node (assistant-find-next-node node-name))
+      (setq assistant-current-node node-name)
+      (when previous
+	(push previous assistant-previous-nodes))
+      (erase-buffer)
+      (insert (cadar assistant-data) "\n\n")
+      (insert node-name "\n\n")
+      (assistant-render-text (assistant-get node "text") node)
+      (insert "\n\n")
+      (when assistant-previous-nodes
+	(assistant-node-button 'previous (car assistant-previous-nodes)))
+      (widget-create
+       'push-button
+       :assistant-node node-name
+       :notify (lambda (widget &rest ignore)
+		 (let* ((node (widget-get widget :assistant-node)))
+		   (assistant-set-defaults (assistant-find-node node) 'force)
+		   (assistant-render-node node)))
+       "Reset")
+      (insert " ")
+      (assistant-node-button 'next (assistant-find-next-node))
+      (insert "\n")
+      (goto-char (point-min))
+      (assistant-make-read-only))))
 
 (defun assistant-make-read-only ()
   (let ((start (point-min))
@@ -276,7 +311,10 @@
      :notify (lambda (widget &rest ignore)
 	       (let* ((node (widget-get widget :assistant-node))
 		      (type (widget-get widget :assistant-type)))
-		 (when (eq type 'next)
+		 (if (eq type 'previous)
+		     (progn
+		       (setq assistant-current-node nil)
+		       (pop assistant-previous-nodes))
 		   (assistant-get-widget-values)
 		   (assistant-validate))
 		 (if (null node)
@@ -317,14 +355,14 @@
 	  (error "%s" result))))
     (assistant-set node "save" t)))
 
-(defun assistant-find-next-node ()
-  (let* ((node (assistant-find-node assistant-current-node))
+(defun assistant-find-next-node (&optional node)
+  (let* ((node (assistant-find-node (or node assistant-current-node)))
 	 (nexts (assistant-get-list node "next"))
 	 next elem)
     (while (and (setq elem (cadr (pop nexts)))
 		(not next))
-      (when (assistant-eval (car elem))
-	(setq next (cadr elem))))
+      (when (setq next (assistant-eval (car elem)))
+	(setq next (or (cadr elem) next))))
     next))
 
 (defun assistant-get-all-variables ()
@@ -381,6 +419,9 @@
 	       (if (eq type 'user)
 		   "login"
 		 "password"))))
+
+(defun assistant-password-required-p ()
+  nil)
 
 (provide 'assistant)
 
