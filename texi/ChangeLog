@@ -1,3 +1,21 @@
+2001-09-23  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Top): Move IMAP up from "Other Sources" to "Select
+	Methods".
+	(Charsets): Update default value.
+	(Finding the Parent): Add nnimap.
+	(Security): Add.
+	(Mailing List): Add.
+	(Archived Messages): Comment out XEmacs 19 stuff.
+	(Using GPG): Add reference to message manual.
+	(Direct Functions): Mention OpenSSL as well as SSLeay.
+	(Mail Source Specifiers): Add recent IMAP :stream and
+	:authentication.
+	(Agent Commands): Fix.
+	(GroupLens): Add URL and note about this being historical.
+	(Wide Characters): Update default value.
+	(Picon Requirements): Remove old XEmacs 19 stuff.
+
 2001-09-22  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Other Marks): Add Recent.

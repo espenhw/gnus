@@ -620,6 +620,7 @@ Select Methods
 * Getting News::                Reading USENET news with Gnus.
 * Getting Mail::                Reading your personal mail with Gnus.
 * Browsing the Web::            Getting messages from a plethora of Web sources.
+* IMAP::                        Using Gnus as a @sc{imap} client.
 * Other Sources::               Reading directories, files, SOUP packets.
 * Combined Groups::             Combining groups into one group.
 * Gnus Unplugged::              Reading news and mail offline.
@@ -686,6 +687,12 @@ Browsing the Web
 * RSS::                         Reading RDF site summary.
 * Customizing w3::              Doing stuff to Emacs/w3 from Gnus.
 
+@sc{imap}
+
+* Splitting in IMAP::           Splitting mail with nnimap.
+* Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
+* Expunging mailboxes::         Equivalent of a "compress mailbox" button.
+
 Other Sources
 
 * Directory Groups::            You can read a directory as if it was a newsgroup.
@@ -693,7 +700,6 @@ Other Sources
 * Document Groups::             Single files can be the basis of a group.
 * SOUP::                        Reading @sc{soup} packets ``offline''.
 * Mail-To-News Gateways::       Posting articles via mail-to-news gateways.
-* IMAP::                        Using Gnus as a @sc{imap} client.
 
 Document Groups
 
@@ -704,12 +710,6 @@ SOUP
 * SOUP Commands::               Commands for creating and sending @sc{soup} packets
 * SOUP Groups::                 A backend for reading @sc{soup} packets.
 * SOUP Replies::                How to enable @code{nnsoup} to take over mail and news.
-
-@sc{imap}
-
-* Splitting in IMAP::           Splitting mail with nnimap.
-* Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
-* Expunging mailboxes::         Equivalent of a "compress mailbox" button.
 
 Combined Groups
 
@@ -8427,13 +8427,13 @@ variable, which is an alist of regexps (use the first item to match full
 group names) and default charsets to be used when reading these groups.
 
 In addition, some people do use soi-disant @sc{mime}-aware agents that
-aren't.  These blithely mark messages as being in @code{iso-8859-1} even
-if they really are in @code{koi-8}.  To help here, the
+aren't.  These blithely mark messages as being in @code{iso-8859-1}
+even if they really are in @code{koi-8}.  To help here, the
 @code{gnus-newsgroup-ignored-charsets} variable can be used.  The
-charsets that are listed here will be ignored.  The variable can be set
-on a group-by-group basis using the group parameters (@pxref{Group
-Parameters}).  The default value is @code{(unknown-8bit)}, which is
-something some agents insist on having in there.
+charsets that are listed here will be ignored.  The variable can be
+set on a group-by-group basis using the group parameters (@pxref{Group
+Parameters}).  The default value is @code{(unknown-8bit x-unknown)},
+which includes values some agents insist on having in there.
 
 @vindex gnus-group-posting-charset-alist
 When posting, @code{gnus-group-posting-charset-alist} is used to
@@ -8660,12 +8660,13 @@ then ask Deja if that fails:
         (nnweb "refer" (nnweb-type dejanews))))
 @end lisp
 
-Most of the mail backends support fetching by @code{Message-ID}, but do
-not do a particularly excellent job at it.  That is, @code{nnmbox} and
-@code{nnbabyl} are able to locate articles from any groups, while
-@code{nnml} and @code{nnfolder} are only able to locate articles that
-have been posted to the current group.  (Anything else would be too time
-consuming.)  @code{nnmh} does not support this at all.
+Most of the mail backends support fetching by @code{Message-ID}, but
+do not do a particularly excellent job at it.  That is, @code{nnmbox}
+and @code{nnbabyl} are able to locate articles from any groups, while
+@code{nnml}, @code{nnfolder} and @code{nnimap}1 are only able to locate
+articles that have been posted to the current group.  (Anything else
+would be too time consuming.)  @code{nnmh} does not support this at
+all.
 
 
 @node Alternative Approaches
@@ -9534,15 +9535,23 @@ to you to figure out, I think.
 @node Security
 @section Security
 
-Gnus is able to verify PGP or S/MIME signed messages or decrypt PGP
-encrypted messages.
+Gnus is able to verify signed messages or decrypt encrypted messages.
+The formats that are supported are PGP and S/MIME, however you need
+some external programs to get things to work:
 
 @enumerate
 @item
 To verify or decrypt PGP messages, you have to install mailcrypt or
-gpg.el.
+gpg.el as well as a OpenPGP implementation (such as GnuPG). @xref{Using GPG}.
+
+@item
+To verify or decrypt S/MIME message, you need to install OpenSSL.
+OpenSSL 0.9.6 or newer is recommended.
 
 @end enumerate
+
+More information on how to set things up can be found in the message
+manual. @xref{Security, ,Security, message, The Message Manual}.
 
 @table @code
 @item mm-verify-option
@@ -9562,7 +9571,15 @@ protocols. Otherwise, ask user.
 @node Mailing List
 @section Mailing List
 
-Gnus understands some mailing list fields of RFC 2369.
+Gnus understands some mailing list fields of RFC 2369.  To enable it,
+either add a `to-list' group parameter (@pxref{Group Parameters}),
+possibly using @kbd{A M} in the summary buffer, or say:
+
+@lisp
+(add-hook 'gnus-summary-mode-hook 'turn-on-gnus-mailing-list-mode)
+@end lisp
+
+That enables the following commands to the summary buffer:
 
 @table @kbd
 
@@ -10338,8 +10355,8 @@ messages in one file per month:
           (concat "mail." (format-time-string "%Y-%m")))))
 @end lisp
 
-(XEmacs 19.13 doesn't have @code{format-time-string}, so you'll have to
-use a different value for @code{gnus-message-archive-group} there.)
+@c (XEmacs 19.13 doesn't have @code{format-time-string}, so you'll have to
+@c use a different value for @code{gnus-message-archive-group} there.)
 
 Now, when you send a message off, it will be stored in the appropriate
 group.  (If you want to disable storing for just one particular message,
@@ -10614,10 +10631,11 @@ your @file{~/.emacs} or @file{~/.gnus}:
 @end lisp
 
 To sign or encrypt your message you may choose to use the MML Security
-menu or @kbd{C-c C-m s p} to sign your message using PGP/MIME, @kbd{C-c
-C-m s s} to sign your message using S/MIME. There's also @kbd{C-c C-m c
-p} to encrypt your message with PGP/MIME and @kbd{C-c C-m c s} to
-encrypt using S/MIME.
+menu or @kbd{C-c C-m s p} to sign your message using PGP/MIME,
+@kbd{C-c C-m s s} to sign your message using S/MIME. There's also
+@kbd{C-c C-m c p} to encrypt your message with PGP/MIME and @kbd{C-c
+C-m c s} to encrypt using S/MIME. @xref{Security, ,Security, message,
+The Message Manual}.
 
 Gnus will ask for your passphrase and then it will send your message, if
 you've typed it correctly.
@@ -10658,6 +10676,7 @@ The different methods all have their peculiarities, of course.
 * Getting News::                Reading USENET news with Gnus.
 * Getting Mail::                Reading your personal mail with Gnus.
 * Browsing the Web::            Getting messages from a plethora of Web sources.
+* IMAP::                        Using Gnus as a @sc{imap} client.
 * Other Sources::               Reading directories, files, SOUP packets.
 * Combined Groups::             Combining groups into one group.
 * Gnus Unplugged::              Reading news and mail offline.
@@ -11301,10 +11320,10 @@ remote system.
 
 @findex nntp-open-ssl-stream
 @item nntp-open-ssl-stream
-Opens a connection to a server over a @dfn{secure} channel.  To use this
-you must have SSLay installed
-(@uref{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}, and you also need
-@file{ssl.el} (from the W3 distribution, for instance).  You then
+Opens a connection to a server over a @dfn{secure} channel.  To use
+this you must have OpenSSL (@uref{http://www.openssl.org}) or SSLeay
+installed (@uref{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}, and you also
+need @file{ssl.el} (from the W3 distribution, for instance).  You then
 define a server as follows:
 
 @lisp
@@ -12044,13 +12063,14 @@ prompted.
 @item :stream
 What stream to use for connecting to the server, this is one of the
 symbols in @code{imap-stream-alist}.  Right now, this means
-@samp{kerberos4}, @samp{ssl} or the default @samp{network}.
+@samp{gssapi}, @samp{kerberos4}, @samp{starttls}, @samp{ssl},
+@samp{shell} or the default @samp{network}.
 
 @item :authentication
-Which authenticator to use for authenticating to the server, this is one
-of the symbols in @code{imap-authenticator-alist}.  Right now, this
-means @samp{kerberos4}, @samp{cram-md5}, @samp{anonymous} or the default
-@samp{login}.
+Which authenticator to use for authenticating to the server, this is
+one of the symbols in @code{imap-authenticator-alist}.  Right now,
+this means @samp{gssapi}, @samp{kerberos4}, @samp{digest-md5},
+@samp{cram-md5}, @samp{anonymous} or the default @samp{login}.
 
 @item :program
 When using the `shell' :stream, the contents of this variable is
@@ -13896,6 +13916,488 @@ Put that in your @file{.emacs} file, and hitting links in w3-rendered
 @sc{html} in the Gnus article buffers will use @code{browse-url} to
 follow the link.
 
+@node IMAP
+@section @sc{imap}
+@cindex nnimap
+@cindex @sc{imap}
+
+@sc{imap} is a network protocol for reading mail (or news, or ...),
+think of it as a modernized @sc{nntp}.  Connecting to a @sc{imap}
+server is much similar to connecting to a news server, you just
+specify the network address of the server.
+
+@sc{imap} has two properties.  First, @sc{imap} can do everything that
+POP can, it can hence be viewed as POP++.  Secondly, @sc{imap} is a
+mail storage protocol, similar to @sc{nntp} being a news storage
+protocol.  (@sc{imap} offers more features than @sc{nntp} because news
+is more or less read-only whereas mail is read-write.)
+
+If you want to use @sc{imap} as POP++, use an imap entry in
+mail-sources.  With this, Gnus will fetch mails from the @sc{imap}
+server and store them on the local disk.  This is not the usage
+described in this section.  @xref{Mail Sources}.
+
+If you want to use @sc{imap} as a mail storage protocol, use an nnimap
+entry in gnus-secondary-select-methods.  With this, Gnus will
+manipulate mails stored on the @sc{imap} server.  This is the kind of
+usage explained in this section.
+
+A server configuration in @code{~/.gnus} with a few @sc{imap} servers
+might look something like this:
+
+@lisp
+(setq gnus-secondary-select-methods
+      '((nnimap "simpleserver") ; no special configuration
+        ; perhaps a ssh port forwarded server:
+        (nnimap "dolk"
+                (nnimap-address "localhost")
+                (nnimap-server-port 1430))
+        ; a UW server running on localhost
+        (nnimap "barbar"
+                (nnimap-server-port 143)
+                (nnimap-address "localhost")
+                (nnimap-list-pattern ("INBOX" "mail/*")))
+        ; anonymous public cyrus server:
+        (nnimap "cyrus.andrew.cmu.edu"
+                (nnimap-authenticator anonymous)
+                (nnimap-list-pattern "archive.*")
+                (nnimap-stream network))
+        ; a ssl server on a non-standard port:
+        (nnimap "vic20"
+                (nnimap-address "vic20.somewhere.com")
+                (nnimap-server-port 9930)
+                (nnimap-stream ssl))))
+@end lisp
+
+The following variables can be used to create a virtual @code{nnimap}
+server:
+
+@table @code
+
+@item nnimap-address
+@vindex nnimap-address
+
+The address of the remote @sc{imap} server.  Defaults to the virtual
+server name if not specified.
+
+@item nnimap-server-port
+@vindex nnimap-server-port
+Port on server to contact.  Defaults to port 143, or 993 for SSL.
+
+Note that this should be a integer, example server specification:
+
+@lisp
+(nnimap "mail.server.com"
+        (nnimap-server-port 4711))
+@end lisp
+
+@item nnimap-list-pattern
+@vindex nnimap-list-pattern
+String or list of strings of mailboxes to limit available groups to.
+This is used when the server has very many mailboxes and you're only
+interested in a few -- some servers export your home directory via
+@sc{imap}, you'll probably want to limit the mailboxes to those in
+@file{~/Mail/*} then.
+
+The string can also be a cons of REFERENCE and the string as above, what
+REFERENCE is used for is server specific, but on the University of
+Washington server it's a directory that will be concatenated with the
+mailbox.
+
+Example server specification:
+
+@lisp
+(nnimap "mail.server.com"
+        (nnimap-list-pattern ("INBOX" "Mail/*" "alt.sex.*"
+                               ("~friend/Mail/" . "list/*"))))
+@end lisp
+
+@item nnimap-stream
+@vindex nnimap-stream
+The type of stream used to connect to your server.  By default, nnimap
+will detect and automatically use all of the below, with the exception
+of SSL. (SSL is being replaced by STARTTLS, which can be automatically
+detected, but it's not widely deployed yet).
+
+Example server specification:
+
+@lisp
+(nnimap "mail.server.com"
+        (nnimap-stream ssl))
+@end lisp
+
+Please note that the value of @code{nnimap-stream} is a symbol!
+
+@itemize @bullet
+@item
+@dfn{gssapi:} Connect with GSSAPI (usually kerberos 5). Requires the
+@samp{imtest} program.
+@item
+@dfn{kerberos4:} Connect with kerberos 4. Requires the @samp{imtest} program.
+@item
+@dfn{starttls:} Connect via the STARTTLS extension (similar to
+SSL). Requires the external library @samp{starttls.el} and program
+@samp{starttls}.
+@item
+@dfn{ssl:} Connect through SSL. Requires OpenSSL (the
+program @samp{openssl}) or SSLeay (@samp{s_client}).
+@item
+@dfn{shell:} Use a shell command to start @sc{imap} connection.
+@item
+@dfn{network:} Plain, TCP/IP network connection.
+@end itemize
+
+@vindex imap-kerberos4-program
+The @samp{imtest} program is shipped with Cyrus IMAPD.  If you're
+using @samp{imtest} from Cyrus IMAPD < 2.0.14 (which includes version
+1.5.x and 1.6.x) you need to frob @code{imap-process-connection-type}
+to make @code{imap.el} use a pty instead of a pipe when communicating
+with @samp{imtest}.  You will then suffer from a line length
+restrictions on IMAP commands, which might make Gnus seem to hang
+indefinitely if you have many articles in a mailbox.  The variable
+@code{imap-kerberos4-program} contain parameters to pass to the imtest
+program.
+
+@vindex imap-ssl-program
+For SSL connections, the OpenSSL program is available from
+@uref{http://www.openssl.org/}. OpenSSL was formerly known as SSLeay,
+and nnimap support it too - altough the most recent versions of
+SSLeay, 0.9.x, are known to have serious bugs making it
+useless. Earlier versions, especially 0.8.x, of SSLeay are known to
+work. The variable @code{imap-ssl-program} contain parameters to pass
+to OpenSSL/SSLeay.
+
+@vindex imap-shell-program
+@vindex imap-shell-host
+For @sc{imap} connections using the @code{shell} stream, the variable
+@code{imap-shell-program} specify what program to call.
+
+@item nnimap-authenticator
+@vindex nnimap-authenticator
+
+The authenticator used to connect to the server.  By default, nnimap
+will use the most secure authenticator your server is capable of.
+
+Example server specification:
+
+@lisp
+(nnimap "mail.server.com"
+        (nnimap-authenticator anonymous))
+@end lisp
+
+Please note that the value of @code{nnimap-authenticator} is a symbol!
+
+@itemize @bullet
+@item
+@dfn{gssapi:} GSSAPI (usually kerberos 5) authentication. Require
+external program @code{imtest}.
+@item
+@dfn{kerberos4:} Kerberos authentication. Require external program
+@code{imtest}.
+@item
+@dfn{digest-md5:} Encrypted username/password via DIGEST-MD5. Require
+external library @code{digest-md5.el}.
+@item
+@dfn{cram-md5:} Encrypted username/password via CRAM-MD5.
+@item
+@dfn{login:} Plain-text username/password via LOGIN.
+@item
+@dfn{anonymous:} Login as `anonymous', supplying your emailadress as password.
+@end itemize
+
+@item nnimap-expunge-on-close
+@cindex Expunging
+@vindex nnimap-expunge-on-close
+Unlike Parmenides the @sc{imap} designers has decided that things that
+doesn't exist actually does exist.  More specifically, @sc{imap} has
+this concept of marking articles @code{Deleted} which doesn't actually
+delete them, and this (marking them @code{Deleted}, that is) is what
+nnimap does when you delete a article in Gnus (with @kbd{G DEL} or
+similar).
+
+Since the articles aren't really removed when we mark them with the
+@code{Deleted} flag we'll need a way to actually delete them.  Feel like
+running in circles yet?
+
+Traditionally, nnimap has removed all articles marked as @code{Deleted}
+when closing a mailbox but this is now configurable by this server
+variable.
+
+The possible options are:
+
+@table @code
+
+@item always
+The default behavior, delete all articles marked as "Deleted" when
+closing a mailbox.
+@item never
+Never actually delete articles.  Currently there is no way of showing
+the articles marked for deletion in nnimap, but other @sc{imap} clients
+may allow you to do this.  If you ever want to run the EXPUNGE command
+manually, @xref{Expunging mailboxes}.
+@item ask
+When closing mailboxes, nnimap will ask if you wish to expunge deleted
+articles or not.
+
+@end table
+
+@item nnimap-importantize-dormant
+@vindex nnimap-importantize-dormant
+
+If non-nil, marks dormant articles as ticked (as well), for other IMAP
+clients. Within Gnus, dormant articles will naturally still (only) be
+marked as ticked.  This is to make dormant articles stand out, just
+like ticked articles, in other IMAP clients. (In other words, Gnus has
+two ``Tick'' marks and IMAP has only one.)
+
+Probably the only reason for frobing this would be if you're trying
+enable per-user persistant dormant flags, using something like:
+
+@lisp
+(setcdr (assq 'dormant nnimap-mark-to-flag-alist)
+        (format "gnus-dormant-%s" (user-login-name)))
+(setcdr (assq 'dormant nnimap-mark-to-predicate-alist)
+        (format "KEYWORD gnus-dormant-%s" (user-login-name)))
+@end lisp
+
+In this case, you would not want the per-user dormant flag showing up
+as ticked for other users.
+
+@item nnimap-expunge-search-string
+@cindex Expunging
+@vindex nnimap-expunge-search-string
+
+This variable contain the IMAP search command sent to server when
+searching for articles eligible for expiring.  The default is
+@code{"UID %s NOT SINCE %s"}, where the first @code{%s} is replaced by
+UID set and the second @code{%s} is replaced by a date.
+
+Probably the only useful value to change this to is
+@code{"UID %s NOT SENTSINCE %s"}, which makes nnimap use the Date: in
+messages instead of the internal article date. See section 6.4.4 of
+RFC 2060 for more information on valid strings.
+
+@item nnimap-authinfo-file
+@vindex nnimap-authinfo-file
+
+A file containing credentials used to log in on servers.  The format is
+(almost) the same as the @code{ftp} @file{~/.netrc} file.  See the
+variable @code{nntp-authinfo-file} for exact syntax; also see
+@ref{NNTP}.
+
+@end table
+
+@menu
+* Splitting in IMAP::           Splitting mail with nnimap.
+* Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
+* Expunging mailboxes::         Equivalent of a "compress mailbox" button.
+@end menu
+
+
+
+@node Splitting in IMAP
+@subsection Splitting in @sc{imap}
+@cindex splitting imap mail
+
+Splitting is something Gnus users has loved and used for years, and now
+the rest of the world is catching up.  Yeah, dream on, not many
+@sc{imap} server has server side splitting and those that have splitting
+seem to use some non-standard protocol.  This means that @sc{imap}
+support for Gnus has to do it's own splitting.
+
+And it does.
+
+Here are the variables of interest:
+
+@table @code
+
+@item nnimap-split-crosspost
+@cindex splitting, crosspost
+@cindex crosspost
+@vindex nnimap-split-crosspost
+
+If non-nil, do crossposting if several split methods match the mail.  If
+nil, the first match in @code{nnimap-split-rule} found will be used.
+
+Nnmail equivalent: @code{nnmail-crosspost}.
+
+@item nnimap-split-inbox
+@cindex splitting, inbox
+@cindex inbox
+@vindex nnimap-split-inbox
+
+A string or a list of strings that gives the name(s) of @sc{imap}
+mailboxes to split from.  Defaults to nil, which means that splitting is
+disabled!
+
+@lisp
+(setq nnimap-split-inbox
+      '("INBOX" ("~/friend/Mail" . "lists/*") "lists.imap"))
+@end lisp
+
+No nnmail equivalent.
+
+@item nnimap-split-rule
+@cindex Splitting, rules
+@vindex nnimap-split-rule
+
+New mail found in @code{nnimap-split-inbox} will be split according to
+this variable.
+
+This variable contains a list of lists, where the first element in the
+sublist gives the name of the @sc{imap} mailbox to move articles
+matching the regexp in the second element in the sublist.  Got that?
+Neither did I, we need examples.
+
+@lisp
+(setq nnimap-split-rule
+      '(("INBOX.nnimap"
+         "^Sender: owner-nnimap@@vic20.globalcom.se")
+        ("INBOX.junk"    "^Subject:.*MAKE MONEY")
+        ("INBOX.private" "")))
+@end lisp
+
+This will put all articles from the nnimap mailing list into mailbox
+INBOX.nnimap, all articles containing MAKE MONEY in the Subject: line
+into INBOX.junk and everything else in INBOX.private.
+
+The first string may contain `\\1' forms, like the ones used by
+replace-match to insert sub-expressions from the matched text.  For
+instance:
+
+@lisp
+("INBOX.lists.\\1"     "^Sender: owner-\\([a-z-]+\\)@@")
+@end lisp
+
+The second element can also be a function.  In that case, it will be
+called with the first element of the rule as the argument, in a buffer
+containing the headers of the article.  It should return a non-nil value
+if it thinks that the mail belongs in that group.
+
+Nnmail users might recollect that the last regexp had to be empty to
+match all articles (like in the example above).  This is not required in
+nnimap.  Articles not matching any of the regexps will not be moved out
+of your inbox.  (This might affect performance if you keep lots of
+unread articles in your inbox, since the splitting code would go over
+them every time you fetch new mail.)
+
+These rules are processed from the beginning of the alist toward the
+end.  The first rule to make a match will "win", unless you have
+crossposting enabled.  In that case, all matching rules will "win".
+
+This variable can also have a function as its value, the function will
+be called with the headers narrowed and should return a group where it
+thinks the article should be split to.  See @code{nnimap-split-fancy}.
+
+The splitting code tries to create mailboxes if it need too.
+
+To allow for different split rules on different virtual servers, and
+even different split rules in different inboxes on the same server,
+the syntax of this variable have been extended along the lines of:
+
+@lisp
+(setq nnimap-split-rule
+      '(("my1server"    (".*"    (("ding"    "ding@@gnus.org")
+                                  ("junk"    "From:.*Simon")))
+        ("my2server"    ("INBOX" nnimap-split-fancy))
+        ("my[34]server" (".*"    (("private" "To:.*Simon")
+                                  ("junk"    my-junk-func)))))
+@end lisp
+
+The virtual server name is in fact a regexp, so that the same rules
+may apply to several servers.  In the example, the servers
+@code{my3server} and @code{my4server} both use the same rules.
+Similarly, the inbox string is also a regexp.  The actual splitting
+rules are as before, either a function, or a list with group/regexp or
+group/function elements.
+
+Nnmail equivalent: @code{nnmail-split-methods}.
+
+@item nnimap-split-predicate
+@cindex splitting
+@vindex nnimap-split-predicate
+
+Mail matching this predicate in @code{nnimap-split-inbox} will be
+split, it is a string and the default is @samp{UNSEEN UNDELETED}.
+
+This might be useful if you use another @sc{imap} client to read mail in
+your inbox but would like Gnus to split all articles in the inbox
+regardless of readedness. Then you might change this to
+@samp{UNDELETED}.
+
+@item nnimap-split-fancy
+@cindex splitting, fancy
+@findex nnimap-split-fancy
+@vindex nnimap-split-fancy
+
+It's possible to set @code{nnimap-split-rule} to
+@code{nnmail-split-fancy} if you want to use fancy
+splitting. @xref{Fancy Mail Splitting}.
+
+However, to be able to have different fancy split rules for nnmail and
+nnimap backends you can set @code{nnimap-split-rule} to
+@code{nnimap-split-fancy} and define the nnimap specific fancy split
+rule in @code{nnimap-split-fancy}.
+
+Example:
+
+@lisp
+(setq nnimap-split-rule 'nnimap-split-fancy
+      nnimap-split-fancy ...)
+@end lisp
+
+Nnmail equivalent: @code{nnmail-split-fancy}.
+
+@end table
+
+@node Editing IMAP ACLs
+@subsection Editing @sc{imap} ACLs
+@cindex editing imap acls
+@cindex Access Control Lists
+@cindex Editing @sc{imap} ACLs
+@kindex G l
+@findex gnus-group-nnimap-edit-acl
+
+ACL stands for Access Control List.  ACLs are used in @sc{imap} for
+limiting (or enabling) other users access to your mail boxes.  Not all
+@sc{imap} servers support this, this function will give an error if it
+doesn't.
+
+To edit a ACL for a mailbox, type @kbd{G l}
+(@code{gnus-group-edit-nnimap-acl}) and you'll be presented with a ACL
+editing window with detailed instructions.
+
+Some possible uses:
+
+@itemize @bullet
+@item
+Giving "anyone" the "lrs" rights (lookup, read, keep seen/unseen flags)
+on your mailing list mailboxes enables other users on the same server to
+follow the list without subscribing to it.
+@item
+At least with the Cyrus server, you are required to give the user
+"anyone" posting ("p") capabilities to have "plussing" work (that is,
+mail sent to user+mailbox@@domain ending up in the @sc{imap} mailbox
+INBOX.mailbox).
+@end itemize
+
+@node Expunging mailboxes
+@subsection Expunging mailboxes
+@cindex expunging
+
+@cindex Expunge
+@cindex Manual expunging
+@kindex G x
+@findex gnus-group-nnimap-expunge
+
+If you're using the @code{never} setting of @code{nnimap-expunge-on-close},
+you may want the option of expunging all deleted articles in a mailbox
+manually.  This is exactly what @kbd{G x} does.
+
+Currently there is no way of showing deleted articles, you can just
+delete them.
+
+
 
 @node Other Sources
 @section Other Sources
@@ -13910,7 +14412,6 @@ newsgroups.
 * Document Groups::             Single files can be the basis of a group.
 * SOUP::                        Reading @sc{soup} packets ``offline''.
 * Mail-To-News Gateways::       Posting articles via mail-to-news gateways.
-* IMAP::                        Using Gnus as a @sc{imap} client.
 @end menu
 
 
@@ -14579,489 +15080,6 @@ So, to use this, simply say something like:
 @lisp
 (setq gnus-post-method '(nngateway "GATEWAY.ADDRESS"))
 @end lisp
-
-
-
-@node IMAP
-@subsection @sc{imap}
-@cindex nnimap
-@cindex @sc{imap}
-
-@sc{imap} is a network protocol for reading mail (or news, or ...),
-think of it as a modernized @sc{nntp}.  Connecting to a @sc{imap}
-server is much similar to connecting to a news server, you just
-specify the network address of the server.
-
-@sc{imap} has two properties.  First, @sc{imap} can do everything that
-POP can, it can hence be viewed as POP++.  Secondly, @sc{imap} is a
-mail storage protocol, similar to @sc{nntp} being a news storage
-protocol.  (@sc{imap} offers more features than @sc{nntp} because news
-is more or less read-only whereas mail is read-write.)
-
-If you want to use @sc{imap} as POP++, use an imap entry in
-mail-sources.  With this, Gnus will fetch mails from the @sc{imap}
-server and store them on the local disk.  This is not the usage
-described in this section.  @xref{Mail Sources}.
-
-If you want to use @sc{imap} as a mail storage protocol, use an nnimap
-entry in gnus-secondary-select-methods.  With this, Gnus will
-manipulate mails stored on the @sc{imap} server.  This is the kind of
-usage explained in this section.
-
-A server configuration in @code{~/.gnus} with a few @sc{imap} servers
-might look something like this:
-
-@lisp
-(setq gnus-secondary-select-methods
-      '((nnimap "simpleserver") ; no special configuration
-        ; perhaps a ssh port forwarded server:
-        (nnimap "dolk"
-                (nnimap-address "localhost")
-                (nnimap-server-port 1430))
-        ; a UW server running on localhost
-        (nnimap "barbar"
-                (nnimap-server-port 143)
-                (nnimap-address "localhost")
-                (nnimap-list-pattern ("INBOX" "mail/*")))
-        ; anonymous public cyrus server:
-        (nnimap "cyrus.andrew.cmu.edu"
-                (nnimap-authenticator anonymous)
-                (nnimap-list-pattern "archive.*")
-                (nnimap-stream network))
-        ; a ssl server on a non-standard port:
-        (nnimap "vic20"
-                (nnimap-address "vic20.somewhere.com")
-                (nnimap-server-port 9930)
-                (nnimap-stream ssl))))
-@end lisp
-
-The following variables can be used to create a virtual @code{nnimap}
-server:
-
-@table @code
-
-@item nnimap-address
-@vindex nnimap-address
-
-The address of the remote @sc{imap} server.  Defaults to the virtual
-server name if not specified.
-
-@item nnimap-server-port
-@vindex nnimap-server-port
-Port on server to contact.  Defaults to port 143, or 993 for SSL.
-
-Note that this should be a integer, example server specification:
-
-@lisp
-(nnimap "mail.server.com"
-        (nnimap-server-port 4711))
-@end lisp
-
-@item nnimap-list-pattern
-@vindex nnimap-list-pattern
-String or list of strings of mailboxes to limit available groups to.
-This is used when the server has very many mailboxes and you're only
-interested in a few -- some servers export your home directory via
-@sc{imap}, you'll probably want to limit the mailboxes to those in
-@file{~/Mail/*} then.
-
-The string can also be a cons of REFERENCE and the string as above, what
-REFERENCE is used for is server specific, but on the University of
-Washington server it's a directory that will be concatenated with the
-mailbox.
-
-Example server specification:
-
-@lisp
-(nnimap "mail.server.com"
-        (nnimap-list-pattern ("INBOX" "Mail/*" "alt.sex.*"
-                               ("~friend/Mail/" . "list/*"))))
-@end lisp
-
-@item nnimap-stream
-@vindex nnimap-stream
-The type of stream used to connect to your server.  By default, nnimap
-will detect and automatically use all of the below, with the exception
-of SSL. (SSL is being replaced by STARTTLS, which can be automatically
-detected, but it's not widely deployed yet).
-
-Example server specification:
-
-@lisp
-(nnimap "mail.server.com"
-        (nnimap-stream ssl))
-@end lisp
-
-Please note that the value of @code{nnimap-stream} is a symbol!
-
-@itemize @bullet
-@item
-@dfn{gssapi:} Connect with GSSAPI (usually kerberos 5). Requires the
-@samp{imtest} program.
-@item
-@dfn{kerberos4:} Connect with kerberos 4. Requires the @samp{imtest} program.
-@item
-@dfn{starttls:} Connect via the STARTTLS extension (similar to
-SSL). Requires the external library @samp{starttls.el} and program
-@samp{starttls}.
-@item
-@dfn{ssl:} Connect through SSL. Requires OpenSSL (the
-program @samp{openssl}) or SSLeay (@samp{s_client}).
-@item
-@dfn{shell:} Use a shell command to start @sc{imap} connection.
-@item
-@dfn{network:} Plain, TCP/IP network connection.
-@end itemize
-
-@vindex imap-kerberos4-program
-The @samp{imtest} program is shipped with Cyrus IMAPD.  If you're
-using @samp{imtest} from Cyrus IMAPD < 2.0.14 (which includes version
-1.5.x and 1.6.x) you need to frob @code{imap-process-connection-type}
-to make @code{imap.el} use a pty instead of a pipe when communicating
-with @samp{imtest}.  You will then suffer from a line length
-restrictions on IMAP commands, which might make Gnus seem to hang
-indefinitely if you have many articles in a mailbox.  The variable
-@code{imap-kerberos4-program} contain parameters to pass to the imtest
-program.
-
-@vindex imap-ssl-program
-For SSL connections, the OpenSSL program is available from
-@uref{http://www.openssl.org/}. OpenSSL was formerly known as SSLeay,
-and nnimap support it too - altough the most recent versions of
-SSLeay, 0.9.x, are known to have serious bugs making it
-useless. Earlier versions, especially 0.8.x, of SSLeay are known to
-work. The variable @code{imap-ssl-program} contain parameters to pass
-to OpenSSL/SSLeay.
-
-@vindex imap-shell-program
-@vindex imap-shell-host
-For @sc{imap} connections using the @code{shell} stream, the variable
-@code{imap-shell-program} specify what program to call.
-
-@item nnimap-authenticator
-@vindex nnimap-authenticator
-
-The authenticator used to connect to the server.  By default, nnimap
-will use the most secure authenticator your server is capable of.
-
-Example server specification:
-
-@lisp
-(nnimap "mail.server.com"
-        (nnimap-authenticator anonymous))
-@end lisp
-
-Please note that the value of @code{nnimap-authenticator} is a symbol!
-
-@itemize @bullet
-@item
-@dfn{gssapi:} GSSAPI (usually kerberos 5) authentication. Require
-external program @code{imtest}.
-@item
-@dfn{kerberos4:} Kerberos authentication. Require external program
-@code{imtest}.
-@item
-@dfn{digest-md5:} Encrypted username/password via DIGEST-MD5. Require
-external library @code{digest-md5.el}.
-@item
-@dfn{cram-md5:} Encrypted username/password via CRAM-MD5.
-@item
-@dfn{login:} Plain-text username/password via LOGIN.
-@item
-@dfn{anonymous:} Login as `anonymous', supplying your emailadress as password.
-@end itemize
-
-@item nnimap-expunge-on-close
-@cindex Expunging
-@vindex nnimap-expunge-on-close
-Unlike Parmenides the @sc{imap} designers has decided that things that
-doesn't exist actually does exist.  More specifically, @sc{imap} has
-this concept of marking articles @code{Deleted} which doesn't actually
-delete them, and this (marking them @code{Deleted}, that is) is what
-nnimap does when you delete a article in Gnus (with @kbd{G DEL} or
-similar).
-
-Since the articles aren't really removed when we mark them with the
-@code{Deleted} flag we'll need a way to actually delete them.  Feel like
-running in circles yet?
-
-Traditionally, nnimap has removed all articles marked as @code{Deleted}
-when closing a mailbox but this is now configurable by this server
-variable.
-
-The possible options are:
-
-@table @code
-
-@item always
-The default behavior, delete all articles marked as "Deleted" when
-closing a mailbox.
-@item never
-Never actually delete articles.  Currently there is no way of showing
-the articles marked for deletion in nnimap, but other @sc{imap} clients
-may allow you to do this.  If you ever want to run the EXPUNGE command
-manually, @xref{Expunging mailboxes}.
-@item ask
-When closing mailboxes, nnimap will ask if you wish to expunge deleted
-articles or not.
-
-@end table
-
-@item nnimap-importantize-dormant
-@vindex nnimap-importantize-dormant
-
-If non-nil, marks dormant articles as ticked (as well), for other IMAP
-clients. Within Gnus, dormant articles will naturally still (only) be
-marked as ticked.  This is to make dormant articles stand out, just
-like ticked articles, in other IMAP clients. (In other words, Gnus has
-two ``Tick'' marks and IMAP has only one.)
-
-Probably the only reason for frobing this would be if you're trying
-enable per-user persistant dormant flags, using something like:
-
-@lisp
-(setcdr (assq 'dormant nnimap-mark-to-flag-alist)
-        (format "gnus-dormant-%s" (user-login-name)))
-(setcdr (assq 'dormant nnimap-mark-to-predicate-alist)
-        (format "KEYWORD gnus-dormant-%s" (user-login-name)))
-@end lisp
-
-In this case, you would not want the per-user dormant flag showing up
-as ticked for other users.
-
-@item nnimap-expunge-search-string
-@cindex Expunging
-@vindex nnimap-expunge-search-string
-
-This variable contain the IMAP search command sent to server when
-searching for articles eligible for expiring.  The default is
-@code{"UID %s NOT SINCE %s"}, where the first @code{%s} is replaced by
-UID set and the second @code{%s} is replaced by a date.
-
-Probably the only useful value to change this to is
-@code{"UID %s NOT SENTSINCE %s"}, which makes nnimap use the Date: in
-messages instead of the internal article date. See section 6.4.4 of
-RFC 2060 for more information on valid strings.
-
-@item nnimap-authinfo-file
-@vindex nnimap-authinfo-file
-
-A file containing credentials used to log in on servers.  The format is
-(almost) the same as the @code{ftp} @file{~/.netrc} file.  See the
-variable @code{nntp-authinfo-file} for exact syntax; also see
-@ref{NNTP}.
-
-@end table
-
-@menu
-* Splitting in IMAP::           Splitting mail with nnimap.
-* Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
-* Expunging mailboxes::         Equivalent of a "compress mailbox" button.
-@end menu
-
-
-
-@node Splitting in IMAP
-@subsubsection Splitting in @sc{imap}
-@cindex splitting imap mail
-
-Splitting is something Gnus users has loved and used for years, and now
-the rest of the world is catching up.  Yeah, dream on, not many
-@sc{imap} server has server side splitting and those that have splitting
-seem to use some non-standard protocol.  This means that @sc{imap}
-support for Gnus has to do it's own splitting.
-
-And it does.
-
-Here are the variables of interest:
-
-@table @code
-
-@item nnimap-split-crosspost
-@cindex splitting, crosspost
-@cindex crosspost
-@vindex nnimap-split-crosspost
-
-If non-nil, do crossposting if several split methods match the mail.  If
-nil, the first match in @code{nnimap-split-rule} found will be used.
-
-Nnmail equivalent: @code{nnmail-crosspost}.
-
-@item nnimap-split-inbox
-@cindex splitting, inbox
-@cindex inbox
-@vindex nnimap-split-inbox
-
-A string or a list of strings that gives the name(s) of @sc{imap}
-mailboxes to split from.  Defaults to nil, which means that splitting is
-disabled!
-
-@lisp
-(setq nnimap-split-inbox
-      '("INBOX" ("~/friend/Mail" . "lists/*") "lists.imap"))
-@end lisp
-
-No nnmail equivalent.
-
-@item nnimap-split-rule
-@cindex Splitting, rules
-@vindex nnimap-split-rule
-
-New mail found in @code{nnimap-split-inbox} will be split according to
-this variable.
-
-This variable contains a list of lists, where the first element in the
-sublist gives the name of the @sc{imap} mailbox to move articles
-matching the regexp in the second element in the sublist.  Got that?
-Neither did I, we need examples.
-
-@lisp
-(setq nnimap-split-rule
-      '(("INBOX.nnimap"
-         "^Sender: owner-nnimap@@vic20.globalcom.se")
-        ("INBOX.junk"    "^Subject:.*MAKE MONEY")
-        ("INBOX.private" "")))
-@end lisp
-
-This will put all articles from the nnimap mailing list into mailbox
-INBOX.nnimap, all articles containing MAKE MONEY in the Subject: line
-into INBOX.junk and everything else in INBOX.private.
-
-The first string may contain `\\1' forms, like the ones used by
-replace-match to insert sub-expressions from the matched text.  For
-instance:
-
-@lisp
-("INBOX.lists.\\1"     "^Sender: owner-\\([a-z-]+\\)@@")
-@end lisp
-
-The second element can also be a function.  In that case, it will be
-called with the first element of the rule as the argument, in a buffer
-containing the headers of the article.  It should return a non-nil value
-if it thinks that the mail belongs in that group.
-
-Nnmail users might recollect that the last regexp had to be empty to
-match all articles (like in the example above).  This is not required in
-nnimap.  Articles not matching any of the regexps will not be moved out
-of your inbox.  (This might affect performance if you keep lots of
-unread articles in your inbox, since the splitting code would go over
-them every time you fetch new mail.)
-
-These rules are processed from the beginning of the alist toward the
-end.  The first rule to make a match will "win", unless you have
-crossposting enabled.  In that case, all matching rules will "win".
-
-This variable can also have a function as its value, the function will
-be called with the headers narrowed and should return a group where it
-thinks the article should be split to.  See @code{nnimap-split-fancy}.
-
-The splitting code tries to create mailboxes if it need too.
-
-To allow for different split rules on different virtual servers, and
-even different split rules in different inboxes on the same server,
-the syntax of this variable have been extended along the lines of:
-
-@lisp
-(setq nnimap-split-rule
-      '(("my1server"    (".*"    (("ding"    "ding@@gnus.org")
-                                  ("junk"    "From:.*Simon")))
-        ("my2server"    ("INBOX" nnimap-split-fancy))
-        ("my[34]server" (".*"    (("private" "To:.*Simon")
-                                  ("junk"    my-junk-func)))))
-@end lisp
-
-The virtual server name is in fact a regexp, so that the same rules
-may apply to several servers.  In the example, the servers
-@code{my3server} and @code{my4server} both use the same rules.
-Similarly, the inbox string is also a regexp.  The actual splitting
-rules are as before, either a function, or a list with group/regexp or
-group/function elements.
-
-Nnmail equivalent: @code{nnmail-split-methods}.
-
-@item nnimap-split-predicate
-@cindex splitting
-@vindex nnimap-split-predicate
-
-Mail matching this predicate in @code{nnimap-split-inbox} will be
-split, it is a string and the default is @samp{UNSEEN UNDELETED}.
-
-This might be useful if you use another @sc{imap} client to read mail in
-your inbox but would like Gnus to split all articles in the inbox
-regardless of readedness. Then you might change this to
-@samp{UNDELETED}.
-
-@item nnimap-split-fancy
-@cindex splitting, fancy
-@findex nnimap-split-fancy
-@vindex nnimap-split-fancy
-
-It's possible to set @code{nnimap-split-rule} to
-@code{nnmail-split-fancy} if you want to use fancy
-splitting. @xref{Fancy Mail Splitting}.
-
-However, to be able to have different fancy split rules for nnmail and
-nnimap backends you can set @code{nnimap-split-rule} to
-@code{nnimap-split-fancy} and define the nnimap specific fancy split
-rule in @code{nnimap-split-fancy}.
-
-Example:
-
-@lisp
-(setq nnimap-split-rule 'nnimap-split-fancy
-      nnimap-split-fancy ...)
-@end lisp
-
-Nnmail equivalent: @code{nnmail-split-fancy}.
-
-@end table
-
-@node Editing IMAP ACLs
-@subsubsection Editing @sc{imap} ACLs
-@cindex editing imap acls
-@cindex Access Control Lists
-@cindex Editing @sc{imap} ACLs
-@kindex G l
-@findex gnus-group-nnimap-edit-acl
-
-ACL stands for Access Control List.  ACLs are used in @sc{imap} for
-limiting (or enabling) other users access to your mail boxes.  Not all
-@sc{imap} servers support this, this function will give an error if it
-doesn't.
-
-To edit a ACL for a mailbox, type @kbd{G l}
-(@code{gnus-group-edit-nnimap-acl}) and you'll be presented with a ACL
-editing window with detailed instructions.
-
-Some possible uses:
-
-@itemize @bullet
-@item
-Giving "anyone" the "lrs" rights (lookup, read, keep seen/unseen flags)
-on your mailing list mailboxes enables other users on the same server to
-follow the list without subscribing to it.
-@item
-At least with the Cyrus server, you are required to give the user
-"anyone" posting ("p") capabilities to have "plussing" work (that is,
-mail sent to user+mailbox@@domain ending up in the @sc{imap} mailbox
-INBOX.mailbox).
-@end itemize
-
-@node Expunging mailboxes
-@subsubsection Expunging mailboxes
-@cindex expunging
-
-@cindex Expunge
-@cindex Manual expunging
-@kindex G x
-@findex gnus-group-nnimap-expunge
-
-If you're using the @code{never} setting of @code{nnimap-expunge-on-close},
-you may want the option of expunging all deleted articles in a mailbox
-manually.  This is exactly what @kbd{G x} does.
-
-Currently there is no way of showing deleted articles, you can just
-delete them.
 
 
 
@@ -15737,7 +15755,7 @@ Articles that have a score higher than this have a high score.  Default
 @subsection Agent Commands
 
 All the Gnus Agent commands are on the @kbd{J} submap.  The @kbd{J j}
-(@code{gnus-agent-toggle-plugged} command works in all modes, and
+(@code{gnus-agent-toggle-plugged}) command works in all modes, and
 toggles the plugged/unplugged state of the Gnus Agent.
 
 
@@ -17468,9 +17486,10 @@ before.
 @section GroupLens
 @cindex GroupLens
 
-GroupLens is a collaborative filtering system that helps you work
-together with other people to find the quality news articles out of the
-huge volume of news articles generated every day.
+GroupLens (@uref{http://www.cs.umn.edu/Research/GroupLens/}) is a
+collaborative filtering system that helps you work together with other
+people to find the quality news articles out of the huge volume of
+news articles generated every day.
 
 To accomplish this the GroupLens system combines your opinions about
 articles you have already read with the opinions of others who have done
@@ -17481,6 +17500,9 @@ Once it has found some people you agree with it tells you, in the form
 of a prediction, what they thought of the article.  You can use this
 prediction to help you decide whether or not you want to read the
 article.
+
+@sc{Note:} Unfortunately the GroupLens system seems to have shut down,
+so this section is mostly of historical interest.
 
 @menu
 * Using GroupLens::             How to make Gnus use GroupLens.
@@ -18306,7 +18328,7 @@ these coutries, that's not true.
 @vindex gnus-use-correct-string-widths
 To help fix this, you can set @code{gnus-use-correct-string-widths} to
 @code{t}.  This makes buffer generation slower, but the results will be
-prettieer.  The default value is @code{nil}.
+prettieer.  The default value is @code{t}.
 
 
 
@@ -19197,13 +19219,10 @@ picons to be installed into a location pointed to by
 @node Picon Requirements
 @subsubsection Picon Requirements
 
-To have Gnus display Picons for you, you must be running XEmacs
-19.13 or greater since all other versions of Emacs aren't yet able to
-display images.
-
-Additionally, you must have @code{x} support compiled into XEmacs.  To
-display color picons which are much nicer than the black & white one,
-you also need one of @code{xpm} or @code{gif} compiled into XEmacs.
+To have Gnus display Picons for you, you must have @code{x} support
+compiled into XEmacs.  To display color picons which are much nicer
+than the black & white one, you also need one of @code{xpm} or
+@code{gif} compiled into XEmacs.
 
 @vindex gnus-picons-convert-x-face
 If you want to display faces from @code{X-Face} headers, you should have
