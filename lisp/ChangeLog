@@ -1,3 +1,7 @@
+2001-08-18 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-save-part-to-file): Insert the handle.
+
 2001-08-18 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-threaded-retrieve-headers):
