@@ -60,7 +60,7 @@ Output to the current buffer, replace text, and don't mingle error."
 
 ;;;###autoload
 (defun gnus-random-x-face ()
-  "Insert a random X-Face header from `gnus-x-face-directory'."
+  "Return X-Face header data chosen randomly from `gnus-x-face-directory'."
   (interactive)
   (when (file-exists-p gnus-x-face-directory)
     (let* ((files (directory-files gnus-x-face-directory t "\\.pbm$"))
@@ -69,6 +69,19 @@ Output to the current buffer, replace text, and don't mingle error."
 	(gnus-shell-command-to-string
 	 (format gnus-convert-pbm-to-x-face-command
 		 (shell-quote-argument file)))))))
+
+;;;###autoload
+(defun gnus-insert-random-x-face-header ()
+  "Insert a random X-Face header from `gnus-x-face-directory'."
+  (interactive)
+  (let ((data (gnus-random-x-face)))
+    (save-excursion
+      (message-goto-eoh)
+      (if data
+	  (insert "X-Face: " data)
+	(message
+	 "No face returned by `gnus-random-x-face'.  Does %s/*.pbm exist?"
+	 gnus-x-face-directory)))))
 
 ;;;###autoload
 (defun gnus-x-face-from-file (file)
