@@ -156,9 +156,9 @@
        (boundp 'mark-active)
        mark-active))
 
-(defun gnus-add-minor-mode (mode name map)
-  (if (fboundp 'add-minor-mode)
-      (add-minor-mode mode name map)
+(if (fboundp 'add-minor-mode)
+    (defalias 'gnus-add-minor-mode 'add-minor-mode)
+  (defun gnus-add-minor-mode (mode name map)
     (set (make-local-variable mode) t)
     (unless (assq mode minor-mode-alist)
       (push `(,mode ,name) minor-mode-alist))
@@ -249,7 +249,7 @@ for XEmacs."
       (when image
 	(goto-char (point-min))
 	(re-search-forward "^From:" nil 'move)
-	(insert-image image " ")))))
+	(insert-image image)))))
 
 (provide 'gnus-ems)
 
