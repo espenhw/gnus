@@ -2294,13 +2294,16 @@ It should typically alter the sending method in some way or other."
 	  ;; require one newline at the end.
 	  (or (= (preceding-char) ?\n)
 	      (insert ?\n))
-	  (when (and news
+	  (when 
+	      (save-restriction
+		(message-narrow-to-headers)
+		(and news
 		     (or (message-fetch-field "cc")
 			 (message-fetch-field "to"))
 		     (string= "text/plain"
 			      (car
 			       (mail-header-parse-content-type
-				(message-fetch-field "content-type")))))
+				(message-fetch-field "content-type"))))))
 	    (message-insert-courtesy-copy))
 	  (if (or (not message-send-mail-partially-limit)
 		  (< (point-max) message-send-mail-partially-limit)

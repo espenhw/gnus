@@ -1,3 +1,7 @@
+2000-08-24 23:49:23  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-send-mail): Narrow-to-headers.
+
 2000-08-24  Dave Love  <fx@gnu.org>
 
 	* gnus-art.el (gnus-insert-mime-button): Fix help-echo for Emacs
