@@ -68,60 +68,63 @@ Optional argument FOLDER specifies folder name."
   "Compose reply mail using mh-e.
 Optional argument YANK means yank original article.
 The command \\[mh-yank-cur-msg] yank the original message into current buffer."
-  ;; First of all, prepare mhe mail buffer.
-  ;; Bug fix by Timo METZEMAKERS <metzemakers@labri.u-bordeaux.fr>.
   (let (from cc subject date to reply-to to-userid orig-to
 	     (config (current-window-configuration))
-	     (buffer))
+	     buffer)
     (pop-to-buffer gnus-article-buffer)
     (setq buffer (current-buffer))
-    (save-restriction
-      (or gnus-user-login-name ;; here cuz we need it here.
-	  (setq gnus-user-login-name (or (getenv "USER")
-					 (getenv "LOGNAME"))))
-      ;; junk which mh-send did, but now we do. also better, cuz doesn't
-      ;; call delete-other-windows when we don't want it to.
-      (if gnus-split-window 
-	  (progn
-	    (split-window-vertically)
-	    ))
+    (save-excursion
+      (save-restriction
+	(or gnus-user-login-name ; we need this
+	    (setq gnus-user-login-name (or (getenv "USER")
+					   (getenv "LOGNAME"))))
 
-      (gnus-article-show-all-headers)	;I don't think this is really needed.
-      (setq from (gnus-fetch-field "from")
-	    subject (let ((subject (or (gnus-fetch-field "subject")
-				       "(None)")))
-		      (if (and subject
-			       (not (string-match "^[Rr][Ee]:.+$" subject)))
-			  (concat "Re: " subject) subject))
-	    reply-to (gnus-fetch-field "reply-to")
-	    cc (gnus-fetch-field "cc")
-	    orig-to (or (gnus-fetch-field "to") "")
-	    date (gnus-fetch-field "date"))
-      (setq to (or reply-to from))
-      (setq to-userid (mail-strip-quoted-names orig-to))
-      (if (or (string-match "," orig-to)
-	      (not (string-match (substring to-userid 0 (string-match "@" to-userid))
-			    gnus-user-login-name)))
-	  (setq cc (concat (if cc (concat cc ", ") "") orig-to))
-	)
-;      (setq mh-show-buffer buffer)
+	(gnus-article-show-all-headers) ;; so colors are happy
+	;; lots of junk to avoid mh-send deleting other windows
+	(if gnus-split-window 
+	      (split-window-vertically)
+	  )
 
-      (mh-find-path)
-      (mh-goto-header-end 0)
-      (if gnus-split-window
-	  (mh-send-sub to (or cc "") (or subject "(None)") config) ;; Erik Selberg 1/23/94
-	(mh-send to (or cc "") subject) ;; shouldn't use according to mhe
-	)
-      (save-excursion
-	(mh-insert-fields
-	 "In-reply-to:"
-	 (concat
-	  (substring from 0 (string-match "  *at \\|  *@ \\| *(\\| *<" from))
-	  "'s message of " date)))
-      (setq mh-sent-from-folder buffer)
-      (setq mh-sent-from-msg 1)
-      (setq mh-previous-window-config config)
-      ))
+	(setq from (gnus-fetch-field "from")
+	      subject (let ((subject (or (gnus-fetch-field "subject")
+					 "(None)")))
+			(if (and subject
+				 (not (string-match "^[Rr][Ee]:.+$" subject)))
+			    (concat "Re: " subject) subject))
+	      reply-to (gnus-fetch-field "reply-to")
+	      cc (gnus-fetch-field "cc")
+	      orig-to (or (gnus-fetch-field "to") "")
+	      date (gnus-fetch-field "date"))
+	(setq to (or reply-to from))
+	(setq to-userid (mail-strip-quoted-names orig-to))
+	(if (or (string-match "," orig-to)
+		(not (string-match (substring to-userid 0 (string-match "@" to-userid))
+				   gnus-user-login-name)))
+	    (setq cc (concat (if cc (concat cc ", ") "") orig-to))
+	  )
+	;;    (setq mh-show-buffer buffer)
+	)) ;; save excursion/restriction
+
+    (mh-find-path)
+    (if gnus-split-window
+	(mh-send-sub to (or cc "") (or subject "(None)") config);; Erik Selberg 1/23/94
+      (mh-send to (or cc "") subject);; shouldn't use according to mhe
+      )
+    
+    ;; note - current buffer is now draft!
+    (save-excursion
+      (mh-insert-fields
+       "In-reply-to:"
+       (concat
+	(substring from 0 (string-match "  *at \\|  *@ \\| *(\\| *<" from))
+	"'s message of " date)))
+
+    ;; need this for mh-yank-cur-msg
+    (setq mh-sent-from-folder buffer)
+    (setq mh-sent-from-msg 1)
+    (setq mh-show-buffer buffer)
+    (setq mh-previous-window-config config)
+    )
 
     ;; Then, yank original article if requested.
   (if yank
