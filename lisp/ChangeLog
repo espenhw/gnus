@@ -1,3 +1,8 @@
+2001-08-19 16:14:41  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-inews-group-method): Use and return the
+	method, not the server.
+
 2001-08-19  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-srvr.el (gnus-server-agent-face): New.

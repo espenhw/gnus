@@ -4779,7 +4779,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
       (set (setq var (intern (format "gnus-newsgroup-%s"
 				     (car (rassq (setq mark (car marks))
 						 types)))))
-	   (if (memq (car marks) uncompressed) (cdr marks)
+	   (if (memq (car marks) uncompressed)
+	       (cdr marks)
 	     (gnus-uncompress-range (cdr marks))))
 
       (setq articles (symbol-value var))

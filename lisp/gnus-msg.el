@@ -1189,19 +1189,18 @@ this is a reply."
 ;;; Gcc handling.
 
 (defun gnus-inews-group-method (group)
-  (cond ((and (null (gnus-get-info group))
-	      (eq (car gnus-message-archive-method)
-		  (car
-		   (gnus-server-to-method
-		    (gnus-group-method group)))))
-	 ;; If the group doesn't exist, we assume
-	 ;; it's an archive group...
-	 gnus-message-archive-method)
-	;; Use the method.
-	((gnus-info-method (gnus-get-info group))
-	 (gnus-info-method (gnus-get-info group)))
-	;; Find the method.
-	(t (gnus-group-method group))))
+  (cond
+   ;; If the group doesn't exist, we assume
+   ;; it's an archive group...
+   ((and (null (gnus-get-info group))
+	 (eq (car (gnus-server-to-method gnus-message-archive-method))
+	     (car (gnus-server-to-method (gnus-group-method group)))))
+    gnus-message-archive-method)
+   ;; Use the method.
+   ((gnus-info-method (gnus-get-info group))
+    (gnus-info-method (gnus-get-info group)))
+   ;; Find the method.
+   (t (gnus-server-to-method (gnus-group-method group)))))
 
 ;; Do Gcc handling, which copied the message over to some group.
 (defun gnus-inews-do-gcc (&optional gcc)
