@@ -8,6 +8,12 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Group names are treated as UTF-8 by default.
+
+This is supposedly what USEFOR wants to migrate to.  See
+`gnus-group-name-charset-group-alist' and
+`gnus-group-name-charset-method-alist' for customization.
+
 ** The nnml and nnfolder backends store marks for each groups.
 
 This makes it possible to take backup of nnml/nnfolder servers/groups
