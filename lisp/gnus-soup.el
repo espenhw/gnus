@@ -67,9 +67,9 @@ The SOUP packet file name will be inserted at the %s.")
 
 ;;; Internal Variables:
 
-(defvar gnus-soup-encoding-type ?n
+(defvar gnus-soup-encoding-type ?u
   "*Soup encoding type.
-`n' is news format, `m' is Unix mbox format, and `M' is MMDF mailbox
+`u' is USENET news format, `m' is Unix mbox format, and `M' is MMDF mailbox
 format.")
 
 (defvar gnus-soup-index-type ?c
@@ -245,7 +245,8 @@ Note -- this function hasn't been implemented yet."
       ;; a soup header.
       (setq head-line
 	    (cond
-	     ((= gnus-soup-encoding-type ?n)
+	     ((or (= gnus-soup-encoding-type ?u)
+		  (= gnus-soup-encoding-type ?n)) ;;Gnus back compatibility.
 	      (format "#! rnews %d\n" (buffer-size)))
 	     ((= gnus-soup-encoding-type ?m)
 	      (while (search-forward "\nFrom " nil t)
@@ -513,9 +514,12 @@ Return whether the unpacking was successful."
 	       (tmp-buf (gnus-get-buffer-create " *soup send*"))
 	       beg end)
 	  (cond
-	   ((/= (gnus-soup-encoding-format
-		 (gnus-soup-reply-encoding (car replies)))
-		?n)
+	   ((and (/= (gnus-soup-encoding-format
+		      (gnus-soup-reply-encoding (car replies)))
+		     ?u)
+		 (/= (gnus-soup-encoding-format
+		      (gnus-soup-reply-encoding (car replies)))
+		     ?n)) ;; Gnus back compatibility.
 	    (error "Unsupported encoding"))
 	   ((null msg-buf)
 	    t)

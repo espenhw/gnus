@@ -1,3 +1,13 @@
+2000-05-13 12:25:21  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-soup.el (gnus-soup-encoding-type): u is USENET news format.
+	(gnus-soup-store): Ditto.
+	(gnus-soup-send-packet): Ditto.
+	* nnsoup.el (nnsoup-replies-format-type): Ditto.
+	(nnsoup-dissect-buffer): Ditto.
+	(nnsoup-narrow-to-article): Ditto.
+	(nnsoup-make-active): Ditto
+
 2000-05-13 12:03:29  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-mode): Two parameters for local-variable-p.
