@@ -46,6 +46,7 @@ Update the .newsrc.eld file to reflect the change of nntp server."
 
   ;; First start Gnus.
   (let ((gnus-activate-level 0)
+	(mail-sources nil)
 	(nnmail-spool-file nil))
     (gnus))
 

@@ -184,6 +184,7 @@
 Finds out what articles are to be part of the nnkiboze groups."
   (interactive)
   (let ((nnmail-spool-file nil)
+	(mail-sources nil)
 	(gnus-use-dribble-file nil)
 	(gnus-read-active-file t)
 	(gnus-expert-user t))

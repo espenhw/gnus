@@ -1,6 +1,11 @@
 2000-09-13 09:14:57  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-get-new-mail): Don't test nnmail-spool-file.
+	
+	* gnus-cache.el (gnus-jog-cache): Temporarily disable mail-sources.
+	* gnus-kill.el (gnus-batch-score): Ditto.
+	* gnus-move.el (gnus-change-server): Ditto.
+	* nnkiboze.el (nnkiboze-generate-groups): Ditto.
 
 2000-09-12  Simon Josefsson  <simon@josefsson.org>
 
