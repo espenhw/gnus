@@ -351,6 +351,7 @@ by you.")
   (autoload 'gpg-verify-cleartext "gpg")
   (autoload 'gpg-sign-detached "gpg")
   (autoload 'gpg-sign-encrypt "gpg")
+  (autoload 'gpg-encrypt "gpg")
   (autoload 'gpg-passphrase-read "gpg"))
 
 (defun mml2015-gpg-passphrase ()
@@ -566,17 +567,20 @@ by you.")
       (insert (format "--%s--\n" boundary))
       (goto-char (point-max)))))
 
-(defun mml2015-gpg-encrypt (cont &optional sign-also)
+(defun mml2015-gpg-encrypt (cont &optional sign)
   (let ((boundary
 	 (funcall mml-boundary-function (incf mml-multipart-number)))
 	(text (current-buffer))
 	cipher)
     (mm-with-unibyte-current-buffer-mule4
       (with-temp-buffer
+	;; set up a function to call the correct gpg encrypt routine
+	;; with the right arguments. (FIXME: this should be done
+	;; differently.)
 	(flet ((gpg-encrypt-func 
 		 (sign plaintext ciphertext result recipients &optional
 		       passphrase sign-with-key armor textmode)
-		 (if sign-also
+		 (if sign
 		     (gpg-sign-encrypt
 		      plaintext ciphertext result recipients passphrase
 		      sign-with-key armor textmode)
@@ -584,7 +588,7 @@ by you.")
 		    plaintext ciphertext result recipients passphrase
 		    armor textmode))))
 	  (unless (gpg-encrypt-func
-		    sign-also ; passed in when using signencrypt
+		    sign ; passed in when using signencrypt
 		    text (setq cipher (current-buffer))
 		    mml2015-result-buffer
 		    (split-string

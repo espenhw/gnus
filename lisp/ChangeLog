@@ -1,3 +1,9 @@
+2002-05-06  Josh Huber  <huber@alum.wpi.edu>
+
+	* mml2015.el (mml2015-gpg-encrypt): Changed name of optional
+	argument, and fixed compiler warning. (added autoload for
+	gpg-encrypt).
+
 2002-05-04  Simon Josefsson  <jas@extundo.com>
 
 	* mml1991.el (mml1991-function-alist): Doc fix.
