@@ -1,3 +1,7 @@
+Sat Aug 10 07:00:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.9 is released.
+
 Sat Aug 10 06:03:07 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-soup.el (gnus-soup-write-prefixes): Protect against

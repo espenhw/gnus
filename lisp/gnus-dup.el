@@ -131,7 +131,7 @@ seen in the same session.")
   "Stop suppression of ARTICLE."
   (let ((id (mail-header-id (gnus-data-header (gnus-data-find article)))))
     (when id
-      (setq gnus-duplicate-list (delete id gnus-dup-list))
+      (setq gnus-dup-list (delete id gnus-dup-list))
       (unintern id gnus-dup-hashtb))))
 
 (provide 'gnus-dup)

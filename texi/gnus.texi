@@ -11045,7 +11045,7 @@ Cut off the specified number of characters from the right.
 Return an empty string if the field is equal to the specified value. 
 
 @item form
-Use the specified form as the field value when the @samp{@} spec is
+Use the specified form as the field value when the @samp{@@} spec is
 used. 
 @end table
 
@@ -11063,7 +11063,7 @@ last operation, padding.
 If you use lots of these advanced thingies, you'll find that Gnus gets
 quite slow.  This can be helped enourmously by running @kbd{M-x
 gnus-compile} when you are setisfied with the look of your lines.
-@xref{Compiling}. 
+@xref{Compilation}. 
 
 
 @node User-Defined Specs
