@@ -44,7 +44,12 @@
 
 (defcustom mm-body-charset-encoding-alist
   '((iso-2022-jp . 7bit)
-    (iso-2022-jp-2 . 7bit))
+    (iso-2022-jp-2 . 7bit)
+    ;; We MUST encode UTF-16 because it can contain \0's which is
+    ;; known to break servers.
+    (utf-16 . base64)
+    (utf-16be . base64)
+    (utf-16le . base64))
   "Alist of MIME charsets to encodings.
 Valid encodings are `7bit', `8bit', `quoted-printable' and `base64'."
   :type '(repeat (cons (symbol :tag "charset")
@@ -85,8 +90,7 @@ If no encoding was done, nil is returned."
 	    charset)
 	(goto-char (point-min))
 	(let ((charsets (mm-find-mime-charset-region (point-min) (point-max)
-						     mm-hack-charsets))
-	      start)
+						     mm-hack-charsets)))
 	  (cond
 	   ;; No encoding.
 	   ((null charsets)
@@ -96,24 +100,11 @@ If no encoding was done, nil is returned."
 	    charsets)
 	   ;; We encode.
 	   (t
-	    (setq charset (car charsets))
-	    (while (not (eobp))
-	      (if (eq (mm-charset-after) 'ascii)
-		  (when start
-		    (save-restriction
-		      (narrow-to-region start (point))
-		      (mm-encode-coding-region
-		       start (point) (mm-charset-to-coding-system charset))
-		      (goto-char (point-max)))
-		    (setq start nil))
-		(unless start
-		  (setq start (point))))
-	      (forward-char 1))
-	    (when start
-	      (mm-encode-coding-region start (point)
-				       (mm-charset-to-coding-system charset))
-	      (setq start nil))
-	    charset)))))))
+	    (prog1
+		(setq charset (car charsets))
+	      (mm-encode-coding-region (point-min) (point-max)
+				       (mm-charset-to-coding-system charset))))
+	   ))))))
 
 (defun mm-long-lines-p (length)
   "Say whether any of the lines in the buffer is longer than LINES."
@@ -143,7 +134,7 @@ If no encoding was done, nil is returned."
       bits)
      ((and (not mm-use-ultra-safe-encoding)
 	   (not longp)
-	   (not (eq '7bit (cdr (assq charset mm-body-charset-encoding-alist))))
+	   (not (cdr (assq charset mm-body-charset-encoding-alist)))
 	   (or (eq t (cdr message-posting-charset))
 	       (memq charset (cdr message-posting-charset))
 	       (eq charset mail-parse-charset)))
