@@ -50,6 +50,9 @@
 ;; autoload executable-find
 (autoload 'executable-find "executable")
 
+;; autoload ifile-spam-filter
+(autoload 'ifile-spam-filter "ifile-gnus")
+
 ;;; Main parameters.
 
 (defvar spam-use-blacklist t
@@ -67,6 +70,9 @@
 
 (defvar spam-use-bbdb t
   "True if BBDB should be used.")
+
+(defvar spam-use-bbdb t
+  "True if ifile should be used.")
 
 (defvar spam-split-group "spam"
   "Usual group name where spam should be split.")
@@ -161,6 +167,7 @@ Such articles will be transmitted to `bogofilter -s' on group exit.")
   '((spam-use-blacklist  . spam-check-blacklist)
     (spam-use-whitelist  . spam-check-whitelist)
     (spam-use-bbdb	 . spam-check-bbdb)
+    (spam-use-ifile	 . spam-check-ifile)
     (spam-use-blackholes . spam-check-blackholes)
     (spam-use-bogofilter . spam-check-bogofilter))
 "The spam-list-of-checks list contains pairs associating a parameter
@@ -275,10 +282,10 @@ The regular expression is matched against the address.")
     (setq spam-whitelist-cache (spam-parse-list spam-whitelist)))
   (if (spam-from-listed-p spam-whitelist-cache) nil spam-split-group))
 
+;;; original idea from Alexander Kotelnikov <sacha@giotto.sj.ru>
 (condition-case nil
     (progn
       (require 'bbdb-com)
-        ;;; copied from code by Alexander Kotelnikov <sacha@giotto.sj.ru>
       (defun spam-check-bbdb ()
 	"We want messages from people who are in the BBDB not to be split to spam"
 	(let ((who (message-fetch-field "from")))
@@ -287,6 +294,18 @@ The regular expression is matched against the address.")
 	    (if (bbdb-search (bbdb-records) nil nil who) nil spam-split-group)))))
   (file-error (setq spam-list-of-checks
 		    (delete (assoc 'spam-use-bbdb spam-list-of-checks)
+			    spam-list-of-checks))))
+
+;;; check the ifile backend; return nil if the mail was NOT classified as spam
+(condition-case nil
+    (progn
+      (require 'ifile-gnus)
+        ;;; 
+      (defun spam-check-ifile ()
+	(let ((ifile-primary-spam-group spam-split-group))
+	  (ifile-spam-filter nil))))
+  (file-error (setq spam-list-of-checks
+		    (delete (assoc 'spam-use-ifile spam-list-of-checks)
 			    spam-list-of-checks))))
 
 (defun spam-check-blacklist ()
