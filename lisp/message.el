@@ -2729,7 +2729,8 @@ to find out how to use this."
 		  rfc2047-header-encoding-alist))
 	 (messbuf (current-buffer))
 	 (message-syntax-checks
-	  (if arg
+	  (if (and arg
+		   (listp message-syntax-checks))
 	      (cons '(existing-newsgroups . disabled)
 		    message-syntax-checks)
 	    message-syntax-checks))
@@ -2747,7 +2748,8 @@ to find out how to use this."
 	(run-hooks 'message-header-hook))
       ;; Note: This check will be disabled by the ".*" default value for
       ;; gnus-group-name-charset-group-alist. -- Pa 2001-10-07.
-      (when group-field-charset
+      (when (and group-field-charset
+		 (listp message-syntax-checks))
 	(setq message-syntax-checks
 	      (cons '(valid-newsgroups . disabled)
 		    message-syntax-checks)))

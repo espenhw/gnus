@@ -1,5 +1,11 @@
 2001-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* message.el (message-send-news): Don't modify the value of
+	`message-syntax-checks' if it is not a list (possibly it is
+	`dont-check-for-anything-just-trust-me').
+	
+2001-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* gnus-group.el (gnus-group-name-charset-group-alist): Use
 	`find-coding-system' for XEmacs to check whether the coding-system
 	`utf-8' is available.
