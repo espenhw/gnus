@@ -1,5 +1,5 @@
 ;;; dig.el --- Domain Name System dig interface
-;; Copyright (c) 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (c) 2000, 2001, 2003 Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Keywords: DNS BIND dig

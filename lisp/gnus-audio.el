@@ -1,5 +1,5 @@
 ;;; gnus-audio.el --- Sound effects for Gnus
-;; Copyright (C) 1996, 2000 Free Software Foundation
+;; Copyright (C) 1996, 2000, 2003 Free Software Foundation
 
 ;; Author: Steven L. Baur <steve@miranova.com>
 ;; Keywords: news, mail, multimedia

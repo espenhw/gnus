@@ -1,7 +1,7 @@
 ;;; deuglify.el --- deuglify broken Outlook (Express) articles
 
-;; Copyright (C) 2002 Free Software Foundation, Inc.
-;; Copyright (C) 2001,2002 Raymond Scholz
+;; Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2002 Raymond Scholz
 
 ;; Author: Raymond Scholz <rscholz@zonix.de>
 ;;         Thomas Steffen (unwrapping algorithm,
