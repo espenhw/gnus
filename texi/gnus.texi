@@ -1816,7 +1816,10 @@ Group comment (@pxref{Group Parameters}) or group name if there is no
 comment element in the group parameters.
 
 @item D
-Newsgroup description.
+Newsgroup description.  You need to read the group descriptions
+before these will appear, and to do that, you either have to set
+@code{gnus-read-active-file} or use the group buffer @kbd{M-d}
+command. 
 
 @item o
 @samp{m} if moderated.
