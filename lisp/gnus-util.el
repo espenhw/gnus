@@ -813,7 +813,13 @@ with potentially long computations."
        ;; requires tm and apel packages.  However, there may be those
        ;; who haven't installed those packages.  This macro helps such
        ;; people even if they install those packages later.
-       `(eval '(rmail-select-summary ,@body)))))
+       `(eval '(rmail-select-summary ,@body)))
+     ;; If there's rmail but there's no tm (or there's apel of the
+     ;; mainstream, not the XEmacs version), loading rmail of the XEmacs
+     ;; version fails halfway, however it provides the rmail-select-summary
+     ;; macro which uses the following functions:
+     (autoload 'rmail-summary-displayed "rmail")
+     (autoload 'rmail-maybe-display-summary "rmail")))
   (defvar rmail-default-rmail-file)
   (defvar mm-text-coding-system))
 
