@@ -1,3 +1,39 @@
+2004-09-10  Miles Bader  <miles@gnu.ai.mit.edu>
+
+	* gnus-art.el (article-decode-mime-words, article-babel)
+	(gnus-article-highlight-signature, gnus-article-add-buttons)
+	(gnus-signature-toggle): Remove unnecessary bindings of
+	`inhibit-read-only' inherited from v5.10 merge.
+
+2004-09-08  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* nntp.el (nntp): New customization group.
+	(nntp-authinfo-file): Added customization group.
+
+	* mml2015.el (mml2015-unabbrev-trust-alist): Added customization
+	group.
+
+	* mml-sec.el (mml-signencrypt-style-alist): Ditto.
+
+	* gnus.el (to-address, to-list, subscribed)
+	(large-newsgroup-initial): Ditto.
+
+	* flow-fill.el (fill-flowed-display-column)
+	(fill-flowed-encode-column): Ditto.
+
+2004-09-06  Stefan  <monnier@iro.umontreal.ca>
+
+	* message.el (message-tokenize-header, message-send-mail-with-qmail):
+	Use point-min rather than 1.
+	(message-send-mail): Use buffer-size rather than point-max.
+
+	* gnus-sum.el (gnus-summary-search-article-forward):
+	Signal a specific `search-failed' rather than a generic `error'.
+
+	* gnus-salt.el (gnus-pick-mouse-pick-region): Switch 1 => point-min.
+	(gnus-generate-vertical-tree): Usue `bobp' rather than compare to 1.
+	(gnus-highlight-selected-tree): Use point-min rather than 1 and 2.
+
 2004-09-10  Simon Josefsson  <jas@extundo.com>
 
 	* nndb.el (require): Remove tcp and duplicate cl.
@@ -7,10 +43,12 @@
 	* gnus-agent.el (directory-files-and-attributes): Move forward.
 
 2004-09-09  Kevin Greiner  <kgreiner@compsol.cc>
+
 	* gnus-agent.el (directory-files-and-attributes): Optionally
 	defined to support XEmacs.
 
 2004-09-09  Kevin Greiner  <kgreiner@compsol.cc>
+
 	* gnus-agent.el (gnus-agent-cat-groups): rewrote avoiding defsetf
 	to avoid run-time CL dependencies.
 	(gnus-agent-unfetch-articles): New function.

@@ -383,7 +383,7 @@ Use `spam-stat-ngood', `spam-stat-nbad', `spam-stat-good',
 ;; Saving and Loading
 
 (defun spam-stat-save (&optional force)
-  "Save the `spam-stat' hash table as Lisp file.
+  "Save the `spam-stat' hash table as lisp file.
 With a prefix argument save unconditionally."
   (interactive "P")
   (when (or force spam-stat-dirty)
