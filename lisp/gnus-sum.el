@@ -612,6 +612,11 @@ If you want to modify the summary buffer, you can use this hook."
   :group 'gnus-summary-various
   :type 'hook)
 
+(defcustom gnus-summary-prepared-hook nil
+  "*A hook called as the last thing after the summary buffer has been generated."
+  :group 'gnus-summary-various
+  :type 'hook)
+
 (defcustom gnus-summary-generate-hook nil
   "*A hook run just before generating the summary buffer.
 This hook is commonly used to customize threading variables and the
@@ -1066,6 +1071,10 @@ See `gnus-simplify-buffer-fuzzy' for details."
   (save-excursion
     (gnus-set-work-buffer)
     (let ((case-fold-search t))
+      ;; Remove uninteresting prefixes.
+      (when (and gnus-simplify-ignored-prefixes
+		 (string-match gnus-simplify-ignored-prefixes subject))
+	(setq subject (substring subject (match-end 0))))
       (insert subject)
       (inline (gnus-simplify-buffer-fuzzy))
       (buffer-string))))
@@ -1381,6 +1390,7 @@ increase the score of each group you read."
     "l" gnus-article-strip-leading-blank-lines
     "m" gnus-article-strip-multiple-blank-lines
     "a" gnus-article-strip-blank-lines
+    "A" gnus-article-strip-all-blank-lines
     "s" gnus-article-strip-leading-space)
 
   (gnus-define-keys (gnus-summary-help-map "H" gnus-summary-mode-map)
@@ -1584,6 +1594,7 @@ increase the score of each group you read."
 	 ["Multiple" gnus-article-strip-multiple-blank-lines t]
 	 ["Trailing" gnus-article-remove-trailing-blank-lines t]
 	 ["All of the above" gnus-article-strip-blank-lines t]
+	 ["All" gnus-article-strip-all-blank-lines t]
 	 ["Leading space" gnus-article-strip-leading-space t])
 	["Overstrike" gnus-article-treat-overstrike t]
 	["Dumb quotes" gnus-article-treat-dumbquotes t]
@@ -2298,6 +2309,8 @@ This is all marks except unread, ticked, dormant, and expirable."
     ;; selective display).
     (aset table ?\n nil)
     (aset table ?\r nil)
+    ;; We keep TAB as well.
+    (aset table ?\t nil)
     ;; We nix out any glyphs over 126 that are not set already.
     (let ((i 256))
       (while (>= (setq i (1- i)) 127)
@@ -2728,6 +2741,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	    (select-window owin)))
 	;; Mark this buffer as "prepared".
 	(setq gnus-newsgroup-prepared t)
+	(run-hooks 'gnus-summary-prepared-hook)
 	t)))))
 
 (defun gnus-summary-prepare ()
@@ -4349,8 +4363,14 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		(if (and (search-forward "\nin-reply-to: " nil t)
 			 (setq in-reply-to (nnheader-header-value))
 			 (string-match "<[^>]+>" in-reply-to))
-		    (setq ref (substring in-reply-to (match-beginning 0)
-					 (match-end 0)))
+		    (let (ref2)
+		      (setq ref (substring in-reply-to (match-beginning 0)
+					   (match-end 0)))
+		      (while (string-match "<[^>]+>" in-reply-to (match-end 0))
+			(setq ref2 (substring in-reply-to (match-beginning 0)
+					      (match-end 0)))
+			(when (> (length ref2) (length ref))
+			  (setq ref ref2))))
 		  (setq ref nil))))
 	    ;; Chars.
 	    0

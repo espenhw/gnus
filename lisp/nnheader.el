@@ -166,7 +166,7 @@ on your system, you could say something like:
   (let ((case-fold-search t)
 	(cur (current-buffer))
 	(buffer-read-only nil)
-	in-reply-to lines p)
+	in-reply-to lines p ref)
     (goto-char (point-min))
     (when naked
       (insert "\n"))
@@ -231,8 +231,14 @@ on your system, you could say something like:
 	       (if (and (search-forward "\nin-reply-to: " nil t)
 			(setq in-reply-to (nnheader-header-value))
 			(string-match "<[^>]+>" in-reply-to))
-		   (substring in-reply-to (match-beginning 0)
-			      (match-end 0))
+		   (let (ref2)
+		     (setq ref (substring in-reply-to (match-beginning 0)
+					  (match-end 0)))
+		     (while (string-match "<[^>]+>" in-reply-to (match-end 0))
+		       (setq ref2 (substring in-reply-to (match-beginning 0)
+					     (match-end 0)))
+		       (when (> (length ref2) (length ref))
+			 (setq ref ref2))))
 		 "")))
 	   ;; Chars.
 	   0

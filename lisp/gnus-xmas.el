@@ -210,6 +210,8 @@ displayed, no centering will be performed."
     ;; selective display).
     (aset table ?\n nil)
     (aset table ?\r nil)
+    ;; We keep TAB as well.
+    (aset table ?\t nil)
     ;; We nix out any glyphs over 126 below ctl-arrow.
     (let ((i (if (integerp ctl-arrow) ctl-arrow 160)))
       (while (>= (setq i (1- i)) 127)

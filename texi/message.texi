@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 0.22 Manual
+@settitle Message 0.23 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 0.22 Manual
+@title Message 0.23 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -80,7 +80,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 0.22.  Message is distributed with
+This manual corresponds to Message 0.23.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -465,11 +465,14 @@ Number of spaces to indent yanked messages.
 @vindex message-cite-function
 @findex message-cite-original
 @findex sc-cite-original
+@findex message-cite-original-without-signature
 @cindex Supercite
 Function for citing an original message.  The default is
 @code{message-cite-original}, which simply inserts the original message
-and prepends @samp{> } to each line.  You can also set it to
-@code{sc-cite-original} to use Supercite.
+and prepends @samp{> } to each line.
+@code{message-cite-original-without-signature} does the same, but elides
+the signature.  You can also set it to @code{sc-cite-original} to use
+Supercite.
 
 @item message-indent-citation-function
 @vindex message-indent-citation-function

@@ -645,10 +645,7 @@ startup level.	If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use."
   (interactive "P")
 
-  (if (and (get-buffer gnus-group-buffer)
-	   (save-excursion
-	     (set-buffer gnus-group-buffer)
-	     (eq major-mode 'gnus-group-mode)))
+  (if (gnus-alive-p)
       (progn
 	(switch-to-buffer gnus-group-buffer)
 	(gnus-group-get-new-news

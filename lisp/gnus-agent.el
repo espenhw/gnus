@@ -46,6 +46,11 @@
   :group 'gnus-agent
   :type 'hook)
 
+(defcustom gnus-agent-handle-level gnus-level-subscribed
+  "Groups on levels higher than this variable will be ignored by the Agent."
+  :group 'gnus-agent
+  :type 'integer)
+
 ;;; Internal variables
 
 (defvar gnus-agent-history-buffers nil)
@@ -249,7 +254,7 @@
       (gnus-close-server (pop methods)))))
 
 ;;;###autoload
-(defun gnus-unplugged ()
+(defun gnus-ungplugged ()
   "Start Gnus unplugged."
   (interactive)
   (setq gnus-plugged nil)
@@ -791,10 +796,11 @@ the actual number of articles toggled is returned."
     (save-excursion
       (while methods
 	(setq gnus-command-method (car methods)
-	      groups (gnus-groups-from-server (pop methods)))
+	      groups (nreverse (gnus-groups-from-server (pop methods))))
 	(gnus-agent-with-fetch
 	  (while (setq group (pop groups))
-	    (gnus-agent-fetch-group-1 group gnus-command-method))))
+	    (when (<= (gnus-group-level group) gnus-agent-handle-level)
+	      (gnus-agent-fetch-group-1 group gnus-command-method)))))
       (gnus-message 6 "Finished fetching articles into the Gnus agent"))))
 
 (defun gnus-agent-fetch-group-1 (group method)
@@ -995,7 +1001,7 @@ The following commands are available:
   (setq gnus-category-alist
 	(or (gnus-agent-read-file
 	     (nnheader-concat gnus-agent-directory "lib/categories"))
-	    (list (list 'default 'true nil nil)))))
+	    (list (list 'default 'short nil nil)))))
     
 (defun gnus-category-write ()
   "Write the category alist."

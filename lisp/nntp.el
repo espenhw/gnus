@@ -216,10 +216,10 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	  (goto-char (point-max))
 	  (let ((limit (point-min)))
 	    (while (not (re-search-backward wait-for limit t))
+	      (nntp-accept-process-output process)
 	      ;; We assume that whatever we wait for is less than 1000
 	      ;; characters long.
 	      (setq limit (max (- (point-max) 1000) (point-min)))
-	      (nntp-accept-process-output process)
 	      (goto-char (point-max))))
 	  (nntp-decode-text (not decode))
 	  (unless discard

@@ -155,7 +155,8 @@
 	(search-forward "\n\n")
 	(forward-char -1)
 	(insert mail-header-separator)
-	(forward-line 1))))))
+	(forward-line 1)
+	(message-set-auto-save-file-name))))))
 
 (defun gnus-draft-article-sendable-p (article)
   "Say whether ARTICLE is sendable."

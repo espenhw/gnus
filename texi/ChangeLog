@@ -1,3 +1,15 @@
+Sun Feb  8 16:28:35 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Newest Features): Addition.
+
+Mon Feb  2 19:21:43 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Agent Variables): Addition.
+
+Sun Feb  1 18:08:45 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Using MIME): Addition.
+
 Tue Jan  6 07:22:41 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Batching Agents): New.

@@ -1122,6 +1122,17 @@ always hide."
   (article-remove-trailing-blank-lines)
   (article-strip-multiple-blank-lines))
 
+(defun article-strip-all-blank-lines ()
+  "Strip all blank lines."
+  (interactive)
+  (save-excursion
+    (let ((inhibit-point-motion-hooks t)
+	  buffer-read-only)
+      (goto-char (point-min))
+      (search-forward "\n\n" nil t)
+      (while (re-search-forward "^[ \t]*\n" nil t)
+	(replace-match "" t t)))))
+
 (defvar mime::preview/content-list)
 (defvar mime::preview-content-info/point-min)
 (defun gnus-article-narrow-to-signature ()
@@ -1815,6 +1826,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
      article-strip-multiple-blank-lines
      article-strip-leading-space
      article-strip-blank-lines
+     article-strip-all-blank-lines
      article-date-local
      article-date-original
      article-date-ut
@@ -2087,7 +2099,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		(when gnus-show-mime
 		  (if (or (not gnus-strict-mime)
 			  (gnus-fetch-field "Mime-Version"))
-		      (funcall gnus-show-mime-method)
+		      (let ((coding-system-for-write 'binary)
+			    (coding-system-for-read 'binary))
+			(funcall gnus-show-mime-method))
 		    (funcall gnus-decode-encoded-word-method)))
 		;; Perform the article display hooks.
 		(run-hooks 'gnus-article-display-hook))
@@ -2451,6 +2465,8 @@ If given a prefix, show the hidden text instead."
 	   ;; Check asynchronous pre-fetch.
 	   ((gnus-async-request-fetched-article group article (current-buffer))
 	    (gnus-async-prefetch-next group article gnus-summary-buffer)
+	    (when (and (numberp article) gnus-keep-backlog)
+	      (gnus-backlog-enter-article group article (current-buffer)))
 	    'article)
 	   ;; Check the cache.
 	   ((and gnus-use-cache

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.22 Manual
+@settitle Quassia Gnus 0.23 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.22 Manual
+@title Quassia Gnus 0.23 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.22.
+This manual corresponds to Quassia Gnus 0.23.
 
 @end ifinfo
 
@@ -2911,6 +2911,11 @@ created.
 is called after the group buffer is
 generated.  It may be used to modify the buffer in some strange,
 unnatural way.
+
+@item gnus-group-prepared-hook
+@vindex gnus-group-prepare-hook
+is called as the very last thing after the group buffer has been
+generated.  It may be used to move point around, for instance.
 
 @item gnus-permanently-visible-groups
 @vindex gnus-permanently-visible-groups
@@ -6404,6 +6409,12 @@ Remove all blank lines at the end of the article
 Do all the three commands above
 (@code{gnus-article-strip-blank-lines}).
 
+@item W E A
+@kindex W E A (Summary)
+@findex gnus-article-strip-all-blank-lines
+Remove all blank lines
+(@code{gnus-article-strip-all-blank-lines}).
+
 @item W E s
 @kindex W E s (Summary)
 @findex gnus-article-strip-leading-space
@@ -7763,7 +7774,19 @@ other naughty stuff in innocent-looking articles.
 @findex metamail-buffer
 Gnus handles @sc{mime} by pushing the articles through
 @code{gnus-show-mime-method}, which is @code{metamail-buffer} by
-default.  Set @code{gnus-show-mime} to @code{t} if you want to use
+default.  This function calls the external @code{metamail} program to
+actually do the work.  One common problem with this program is that is
+thinks that it can't display 8-bit things in the Emacs buffer.  To tell
+it the truth, put something like the following in your
+@file{.bash_profile} file.  (You do use @code{bash}, don't you?)
+
+@example
+export MM_CHARSET="iso-8859-1"
+@end example
+
+For more information on @code{metamail}, see its manual page.
+
+Set @code{gnus-show-mime} to @code{t} if you want to use
 @sc{mime} all the time.  However, if @code{gnus-strict-mime} is
 non-@code{nil}, the @sc{mime} method will only be used if there are
 @sc{mime} headers in the article.  If you have @code{gnus-show-mime}
@@ -11477,6 +11500,13 @@ messages in the draft group.
 @vindex gnus-agent-directory
 Where the Gnus Agent will store its files.  The default is
 @file{~/News/agent/}.
+
+@item gnus-agent-handle-level
+@vindex gnus-agent-handle-level
+Groups on levels (@pxref{Group Levels}) higher than this variable will
+be ignored by the Agent.  The default is @code{gnus-level-subscribed},
+which means that only subscribed group will be considered by the Agent
+by default.
 
 @item gnus-agent-plugged-hook
 @vindex gnus-agent-plugged-hook
@@ -17111,11 +17141,15 @@ when sending the message and the nntp server asks for AUTH, Gnus hangs.
 One command to edit the original version if an article, and one to edit
 the displayed version.
 
+@item
+@kbd{T v} -- make all process-marked articles the children of the
+current article.
+
+@item
+Solve the halting problem.
+
 @c TODO
 @end itemize
-
-And much, much, much more.  There is more to come than has already been
-implemented.  (But that's always true, isn't it?)
 
 @iftex
 

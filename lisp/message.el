@@ -466,8 +466,11 @@ Used by `message-yank-original' via `message-yank-cite'."
 	   mail-citation-hook)
       mail-citation-hook
     'message-cite-original)
-  "*Function for citing an original message."
+  "*Function for citing an original message.
+Pre-defined functions include `message-cite-original' and
+`message-cite-original-without-signature'."
   :type '(radio (function-item message-cite-original)
+		(function-item message-cite-original-without-signature)
 		(function-item sc-cite-original)
 		(function :tag "Other"))
   :group 'message-insertion)
@@ -898,7 +901,7 @@ The cdr of ech entry is a function for applying the face to a region.")
     (Lines)
     (Expires)
     (Message-ID)
-    (References)
+    (References . message-fill-header)
     (X-Mailer)
     (X-Newsreader))
   "Alist used for formatting headers.")
@@ -1448,7 +1451,10 @@ With the prefix argument FORCE, insert the header anyway."
   (interactive)
   (let ((point (point)))
     (message-goto-signature)
-    (kill-region point (point))))
+    (forward-line -2)
+    (kill-region point (point))
+    (unless (bolp)
+      (insert "\n"))))
 
 (defun message-newline-and-reformat ()
   "Insert four newlines, and then reformat if inside quoted text."
@@ -1686,6 +1692,26 @@ prefix, and don't delete any headers."
 	(insert ?\n))
       (unless modified
 	(setq message-checksum (cons (message-checksum) (buffer-size)))))))
+
+(defun message-cite-original-without-signature ()
+  "Cite function in the standard Message manner."
+  (let ((start (point))
+	(end (mark t))
+	(functions
+	 (when message-indent-citation-function
+	   (if (listp message-indent-citation-function)
+	       message-indent-citation-function
+	     (list message-indent-citation-function)))))
+    (goto-char end)
+    (when (re-search-backward "^-- $" start t)
+      (delete-region (point) end))
+    (goto-char start)
+    (while functions
+      (funcall (pop functions)))
+    (when message-citation-line-function
+      (unless (bolp)
+	(insert "\n"))
+      (funcall message-citation-line-function))))
 
 (defun message-cite-original ()
   "Cite function in the standard Message manner."
@@ -3681,7 +3707,7 @@ Do a `tab-to-tab-stop' if not in those headers."
 
 (defvar gnus-active-hashtb)
 (defun message-expand-group ()
-  (let* ((b (save-excursion
+  "Expand the group name under point."  (let* ((b (save-excursion
 	      (save-restriction
 		(narrow-to-region
 		 (save-excursion

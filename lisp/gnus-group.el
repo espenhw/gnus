@@ -775,7 +775,8 @@ The following commands are available:
   (save-excursion
     (let ((gnus-process-mark 128)
 	  (gnus-group-marked '("dummy.group"))
-	  (gnus-active-hashtb (make-vector 10 0)))
+	  (gnus-active-hashtb (make-vector 10 0))
+	  (topic ""))
       (gnus-set-active "dummy.group" '(0 . 0))
       (gnus-set-work-buffer)
       (gnus-group-insert-group-line "dummy.group" 0 nil 0 nil)
@@ -2600,7 +2601,7 @@ group line."
 	  'gnus-group-history)))
   (let ((newsrc (gnus-gethash group gnus-newsrc-hashtb)))
     (cond
-     ((string-match "^[ \t]$" group)
+     ((string-match "^[ \t]*$" group)
       (error "Empty group name"))
      (newsrc
       ;; Toggle subscription flag.

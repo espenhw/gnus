@@ -1,3 +1,83 @@
+Sun Feb  8 18:13:58 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.23 is released.
+
+Sun Feb  8 17:20:40 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-update-group-mark-positions): Bind `topic'. 
+
+	* message.el (message-expand-group): Added doc string.
+
+	* nntp.el (nntp-wait-for): Don't change limit until after
+	accepting output.
+
+Sun Feb  8 16:44:36 1998  Richard Hoskins  <rmh@interlaced.net>
+
+	* message.el (message-kill-to-signature): Don't kill the
+	delimiter. 
+
+Sun Feb  8 16:15:33 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-prepared-hook): New hook.
+	(gnus-summary-read-group-1): Use it.
+
+	* message.el (message-cite-original-without-signature): New
+	function. 
+	(message-cite-function): Added to custom.
+
+1998-01-13  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus/message.el (message-cite-original): Don't quote signature.
+
+Sun Feb  8 15:50:20 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-group.el (gnus-group-unsubscribe-group): Protest against
+	empty group names.
+
+Mon Feb  2 18:56:22 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-draft.el (gnus-draft-setup): Associate with drafts group.
+
+	* message.el (message-header-format-alist): Fill references.
+
+	* gnus-agent.el (gnus-category-read): Changed default.
+	(gnus-agent-handle-level): New variable.
+	(gnus-agent-fetch-session): Use it.
+
+	* gnus-art.el (article-strip-all-blank-lines): New command and
+	keystroke. 
+
+Sun Feb  1 18:00:54 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-reject-message): Removed function.
+	(gnus-sent-message-ids-file): Removed.
+	(gnus-sent-message-ids-length): Ditto.
+
+	* gnus-xmas.el (gnus-xmas-summary-set-display-table): Ditto.
+
+	* gnus-sum.el (gnus-simplify-subject-fuzzy): Respect
+	`gnus-simplify-ignored-prefixes'.
+	(gnus-summary-set-display-table): Keep TAB.
+
+Thu Jan 15 22:47:38 1998   <Use-Author-Address-Header@[127.1]>
+
+	* gnus-art.el (gnus-request-article-this-buffer): Put it into the
+	backlog. 
+
+Mon Jan 12 23:30:59 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Use the longest ID.
+
+	* nnheader.el (nnheader-parse-head): Ditto.
+
+Thu Jan  8 09:47:18 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-1): Use gnus-alive-p.
+
+Tue Jan  6 11:53:09 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-prepare): Bind coding systems.
+
 Tue Jan  6 07:45:39 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.22 is released.

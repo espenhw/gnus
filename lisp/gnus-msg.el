@@ -66,13 +66,6 @@ the group.")
 (defvar gnus-add-to-list nil
   "*If non-nil, add a `to-list' parameter automatically.")
 
-(defvar gnus-sent-message-ids-file
-  (nnheader-concat gnus-directory "Sent-Message-IDs")
-  "File where Gnus saves a cache of sent message ids.")
-
-(defvar gnus-sent-message-ids-length 1000
-  "The number of sent Message-IDs to save.")
-
 (defvar gnus-crosspost-complaint
   "Hi,
 
@@ -481,36 +474,6 @@ If SILENT, don't prompt the user."
       gnus-post-method)
      ;; Use the normal select method.
      (t gnus-select-method))))
-
-;;;
-;;; Check whether the message has been sent already.
-;;;
-
-(defvar gnus-inews-sent-ids nil)
-
-(defun gnus-inews-reject-message ()
-  "Check whether this message has already been sent."
-  (when gnus-sent-message-ids-file
-    (let ((message-id (save-restriction (message-narrow-to-headers)
-					(mail-fetch-field "message-id")))
-	  end)
-      (when message-id
-	(unless gnus-inews-sent-ids
-	  (ignore-errors
-	    (load t t t)))
-	(if (member message-id gnus-inews-sent-ids)
-	    ;; Reject this message.
-	    (not (gnus-yes-or-no-p
-		  (format "Message %s already sent.  Send anyway? "
-			  message-id)))
-	  (push message-id gnus-inews-sent-ids)
-	  ;; Chop off the last Message-IDs.
-	  (when (setq end (nthcdr gnus-sent-message-ids-length
-				  gnus-inews-sent-ids))
-	    (setcdr end nil))
-	  (nnheader-temp-write gnus-sent-message-ids-file
-	    (gnus-prin1 `(setq gnus-inews-sent-ids ',gnus-inews-sent-ids)))
-	  nil)))))
 
 
 
@@ -1052,11 +1015,6 @@ this is a reply."
 	      (when groups
 		(insert " ")))
 	    (insert "\n")))))))
-
-(gnus-add-shutdown 'gnus-inews-close 'gnus)
-
-(defun gnus-inews-close ()
-  (setq gnus-inews-sent-ids nil))
 
 ;;; Allow redefinition of functions.
 
