@@ -1,3 +1,14 @@
+2003-04-30  Mark A. Hershberger  <mah@everybody.org>
+
+	* mm-url.el (mm-url-insert-file-contents): set url-current-object
+	in the case where mm-url-use-external is set.
+
+	* nnrss.el (nnrss-request-article): Change the messages created to
+	multipart/alternative.  Hopefully fixes a problem interaction with
+	w3m.
+	(nnrss-find-rss-via-syndic8): Better handling if xml-rpc.el isn't
+	around.
+
 2003-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-check-news-header-syntax): Alter "posting"
