@@ -49,7 +49,6 @@
 (require 'gnus)
 (require 'nnmail)
 (require 'mm-util)
-(require 'mail-source)
 (require 'mml)
 (eval-when-compile
   (ignore-errors
@@ -64,13 +63,12 @@
 	 (require 'w3-forms)
 	 (require 'nnweb)))
 
-
 ;;;
 
 (defvar webmail-type-definition
   '((hotmail
      ;; Hotmail hate other HTTP user agents and use one line cookie
-     (paranoid agent cookie)
+     (paranoid agent cookie post)
      (address . "www.hotmail.com")
      (open-url "http://www.hotmail.com")
      (open-snarf . webmail-hotmail-open)
@@ -78,11 +76,28 @@
      (login-url
       "http://%s/cgi-bin/dologin?login=%s&passwd=%s&enter=Sign+in&sec=no&curmbox=ACTIVE&_lang=&js=yes&id=2&tw=-10000&beta="
        webmail-aux user password)
+     (list-snarf . webmail-hotmail-list)
+     (article-snarf . webmail-hotmail-article)
      (trash-url 
       "%s&login=%s&f=33792&curmbox=ACTIVE&_lang=&js=&foo=inbox&page=&%s=on&Move+To.x=Move+To&tobox=trAsH" 
-      webmail-aux user id)    
-     (list-snarf . webmail-hotmail-list)
-     (article-snarf . webmail-hotmail-article))))
+      webmail-aux user id))
+    (yahoo
+     (paranoid cookie post)
+     (address . "mail.yahoo.com")
+     (open-url "http://mail.yahoo.com")
+     (open-snarf . webmail-yahoo-open)
+     (login-url ;; yahoo will not accept GET
+      content 
+      ("%s" webmail-aux)
+      ".tries=1&.src=ym&.last=&promo=&lg=us&.intl=us&.bypass=&.chkP=Y&.done=http%%253a%%2F%%2Fedit.yahoo.com%%2Fconfig%%2Fmail%%253f.intl%%3D&login=%s&passwd=%s" 
+      user password)
+     (login-snarf . webmail-yahoo-login)
+     (list-url "%s&rb=Inbox&YN=1" webmail-aux)
+     (list-snarf . webmail-yahoo-list)
+     (article-snarf . webmail-yahoo-article)
+     (trash-url 
+      "%s/ym/us/ShowFolder?YY=52107&inc=50&order=down&sort=date&pos=0&box=Inbox&DEL=Delete&destBox=&Mid=%s&destBox2="
+      webmail-aux id))))
 
 (defvar webmail-variables
   '(address article-snarf article-url list-snarf list-url 
@@ -115,6 +130,7 @@
 (defvar webmail-post-process nil)
 
 (defvar webmail-buffer nil)
+(defvar webmail-buffer-list nil)
 ;;; Interface functions
 
 (defun webmail-setdefault (type)
@@ -161,19 +177,18 @@
     expr)))
 
 (defun webmail-url (xurl)
-  (let ((url-confirmation-func 'identity))
-    (cond 
-     ((eq (car xurl) 'content)
-      (pop xurl)
-      (webmail-fetch-simple (if (stringp (car xurl))
-				(car xurl)
-			      (apply 'format (webmail-eval (car xurl))))
-			    (apply 'format (webmail-eval (cdr xurl)))))
-     ((eq (car xurl) 'post)
-      (pop xurl)
-      (webmail-fetch-form (car xurl) (webmail-eval (cdr xurl))))
-     (t
-      (nnweb-insert (apply 'format (webmail-eval xurl)))))))
+  (cond 
+   ((eq (car xurl) 'content)
+    (pop xurl)
+    (webmail-fetch-simple (if (stringp (car xurl))
+			      (car xurl)
+			    (apply 'format (webmail-eval (car xurl))))
+			  (apply 'format (webmail-eval (cdr xurl)))))
+   ((eq (car xurl) 'post)
+    (pop xurl)
+    (webmail-fetch-form (car xurl) (webmail-eval (cdr xurl))))
+   (t
+    (nnweb-insert (apply 'format (webmail-eval xurl))))))
 
 (defun webmail-decode-entities ()
   (goto-char (point-min))
@@ -212,44 +227,80 @@
 (defvar url-package-name)
 (defvar url-package-version)
 (defvar url-cookie-multiple-line)
+(defvar url-confirmation-func)
 
-(defun webmail-fetch (file wmtype user password)
-  (webmail-setdefault wmtype)
-  (let ((url-package-name (if (memq 'agent webmail-paranoid)
-			      "Mozilla"
-			    url-package-name))
-	(url-package-version (if (memq 'agent webmail-paranoid)
-				 "4.0"
-			       url-package-version))
-	(url-cookie-multiple-line (if (memq 'cookie webmail-paranoid)
-				      nil
-				    url-cookie-multiple-line)))
-    (webmail-init)
-    (when webmail-open-url 
-      (erase-buffer)
-      (webmail-url webmail-open-url))
-    (if webmail-open-snarf (funcall webmail-open-snarf))
-    (when webmail-login-url 
-      (erase-buffer)
-      (webmail-url webmail-login-url))
-    (if webmail-login-snarf 
-	(funcall webmail-login-snarf))
-    (when webmail-list-url 
-      (erase-buffer)
-      (webmail-url webmail-list-url))
-    (if webmail-list-snarf 
-	(funcall webmail-list-snarf))
-    (let (item id (n 0))
-      (while (setq item (pop webmail-articles))
-	(message "Fetching mail #%d..." (setq n (1+ n)))
+;; Hack W3 POST redirect. See `url-parse-mime-headers'.
+;;
+;; Netscape uses "GET" as redirect method when orignal method is POST
+;; and status is 302, .i.e no security risks by default without
+;; confirmation.
+;;
+;; Some web servers (at least Apache used by yahoo) return status 302
+;; instead of 303, though they mean 303.
+
+(defun webmail-url-confirmation-func (prompt)
+  (cond 
+   ((equal prompt (concat "Honor redirection with non-GET method "
+		       "(possible security risks)? "))
+    nil)
+   ((equal prompt "Continue (with method of GET)? ")
+    t)
+   (t (error prompt))))
+
+
+(defun webmail-fetch (file subtype user password)
+  (save-excursion
+    (webmail-setdefault subtype)
+    (let ((url-package-name (if (memq 'agent webmail-paranoid)
+				"Mozilla"
+			      url-package-name))
+	  (url-package-version (if (memq 'agent webmail-paranoid)
+				   "4.0"
+				 url-package-version))
+	  (url-cookie-multiple-line (if (memq 'cookie webmail-paranoid)
+					nil
+				      url-cookie-multiple-line))
+	  (url-confirmation-func (if (memq 'post webmail-paranoid)
+				     'webmail-url-confirmation-func
+				   url-confirmation-func))
+	  url-cookie-storage url-cookie-secure-storage
+	  url-cookie-confirmation
+	  item id (n 0))
+      (webmail-init)
+      (when webmail-open-url 
 	(erase-buffer)
-	(nnweb-insert (cdr item))
-	(setq id (car item))
-	(if webmail-article-snarf 
-	    (funcall webmail-article-snarf file id))
-	(when (and webmail-trash-url webmail-move-to-trash-can)
-	  (message "Move mail #%d to trash can..." n)
-	  (webmail-url webmail-trash-url))))
+	(webmail-url webmail-open-url))
+      (if webmail-open-snarf (funcall webmail-open-snarf))
+      (when webmail-login-url 
+	(erase-buffer)
+	(webmail-url webmail-login-url))
+      (if webmail-login-snarf 
+	  (funcall webmail-login-snarf))
+      (when webmail-list-url 
+	(erase-buffer)
+	(webmail-url webmail-list-url))
+      (if webmail-list-snarf 
+	  (funcall webmail-list-snarf))
+      (while (setq item (pop webmail-articles))
+	  (message "Fetching mail #%d..." (setq n (1+ n)))
+	  (erase-buffer)
+	  (nnweb-insert (cdr item))
+	  (setq id (car item))
+	  (if webmail-article-snarf 
+	      (funcall webmail-article-snarf file id))
+	  (when (and webmail-trash-url webmail-move-to-trash-can)
+	    (message "Move mail #%d to trash can..." n)
+	    (condition-case err
+		(progn
+		  (webmail-url webmail-trash-url)
+		  (let (buf)
+		    (while (setq buf (pop webmail-buffer-list))
+		      (kill-buffer buf))))
+	      (error 
+	       (let (buf)
+		 (while (setq buf (pop webmail-buffer-list))
+		   (kill-buffer buf)))
+	       (error err))))))
     (if webmail-post-process
 	(funcall webmail-post-process))))
 
@@ -294,7 +345,7 @@
 	(setq newp t)))))
 
 (defun webmail-hotmail-article (file id)
-  (let (p attachment count tbufs mime)
+  (let (p attachment count mime)
     (save-restriction
       (goto-char (point-min))
       (if (not (search-forward "FILE: wc_pnames.asp -->" nil t))
@@ -323,7 +374,7 @@
 	      (save-excursion
 		(set-buffer (generate-new-buffer " *webmail-att*"))
 		(nnweb-insert attachment)
-		(push (current-buffer) tbufs)
+		(push (current-buffer) webmail-buffer-list)
 		(setq bufname (buffer-name)))
 	      (setq mime t)
 	      (insert "<#part type=" 
@@ -334,7 +385,7 @@
 			  "application/octet-stream"))
 	      (insert " buffer=\"" bufname "\"")
 	      (insert " filename=\"" filename "\"")
-	      (insert " description=\"inline\"")
+	      (insert " disposition=\"inline\"")
 	      (insert "><#/part>\n")
 	      (setq p (point)))
 	  (delete-region p (match-end 0))
@@ -385,9 +436,131 @@
 	(while (re-search-forward "^From " nil t)
 	  (beginning-of-line)
 	  (insert ">"))))
-    (mm-append-to-file (point-min) (point-max) file)
-    (dolist (buf tbufs)
-      (kill-buffer buf))))
+    (mm-append-to-file (point-min) (point-max) file)))
+
+;;; yahoo
+
+(defun webmail-yahoo-open ()
+  (goto-char (point-min))
+  (if (re-search-forward "action=\"\\([^\"]+\\)\"" nil t)
+      (setq webmail-aux (match-string 1))
+    (error "Can't find login url (open@1)")))
+
+(defun webmail-yahoo-login ()
+  (goto-char (point-min))
+  (if (re-search-forward "http://[a-zA-Z][0-9]\\.mail\\.yahoo\\.com/" nil t)
+      (setq webmail-aux (match-string 0))
+    (error "Can't find login url (login@1)"))
+  (if (re-search-forward "YY=[0-9]+" nil t)
+      (setq webmail-aux (concat webmail-aux "ym/us/ShowFolder?"
+				(match-string 0)))
+    (error "Can't find login url (login@2)")))
+
+(defun webmail-yahoo-list ()
+  (let (url (newp t) (tofetch 0))
+    (goto-char (point-min))
+    (when (re-search-forward 
+	   "showing [0-9]+-\\([0-9]+\\) of \\([0-9]+\\)" nil t) 
+      ;(setq listed (match-string 1))
+      (message "Found %s mail(s)" (match-string 2)))
+    (if (string-match "http://[^/]+" webmail-aux)
+	(setq webmail-aux (match-string 0 webmail-aux))
+      (error "Can't find server url (list@1)"))
+    (goto-char (point-min))
+    (while (re-search-forward 
+	    "bgcolor=\"#eeeeee\"\\|href=\"\\(/ym/us/ShowLetter\\?MsgId=\\([^&]+\\)&[^\"]*\\)\""
+	    nil t)
+      (if (setq url (match-string 1))
+	  (progn
+	    (when (or newp (not webmail-newmail-only))
+	      (push (cons (match-string 2) (concat webmail-aux url "&toc=1")) 
+		    webmail-articles)
+	      (setq tofetch (1+ tofetch)))
+	    (setq newp t))
+	(setq newp nil)))
+    (message "Fetching %d mail(s)" tofetch)))
+
+(defun webmail-yahoo-article (file id)
+  (let (p attachment)
+	(save-restriction
+	  (goto-char (point-min))
+	  (if (not (search-forward "value=\"Done\"" nil t))
+	      (error "Can't find start label (article@1)"))
+	  (if (not (search-forward "<table" nil t))
+	      (error "Can't find start label (article@2)"))
+	  (delete-region (point-min) (match-beginning 0)) 
+	  (if (not (search-forward "</table>" nil t))
+	      (error "Can't find start label (article@3)"))
+	  (narrow-to-region (point-min) (match-end 0))
+	  (while (search-forward "<a href=" nil t)
+	    (setq p (match-beginning 0))
+	    (search-forward "</a>" nil t)
+	    (delete-region p (match-end 0)))
+	  (webmail-remove-markup)
+	  (webmail-decode-entities)
+	  (goto-char (point-min))
+	  (delete-blank-lines)
+	  (goto-char (point-max))
+	  (widen)
+	  (insert "\n")
+	  (setq p (point))
+	  (while (re-search-forward "[^\"]*/ShowLetter/[^\?]+\?[^\"]*" nil t)
+	(setq attachment (match-string 0))
+	(let (bufname ct ctl cd description)
+	  (if (not (search-forward "<table" nil t))
+	      (error "Can't find start label (article@4)"))
+	  (delete-region p (match-beginning 0))
+	  (if (not (search-forward "</table>" nil t))
+	      (error "Can't find start label (article@5)"))
+	  (narrow-to-region p (match-end 0))
+	  (webmail-remove-markup)
+	  (webmail-decode-entities)
+	  (goto-char (point-min))
+	  (delete-blank-lines)
+	  (setq ct (mail-fetch-field "content-type")
+		ctl (ignore-errors (mail-header-parse-content-type ct))
+		;;cte (mail-fetch-field "content-transfer-encoding")
+		cd (mail-fetch-field "content-disposition")
+		description (mail-fetch-field "content-description")
+		id (mail-fetch-field "content-id"))
+	  (delete-region (point-min) (point-max))
+	  (widen)
+	  (save-excursion
+	    (set-buffer (generate-new-buffer " *webmail-att*"))
+	    (nnweb-insert (concat webmail-aux attachment))
+	    (push (current-buffer) webmail-buffer-list)
+	    (setq bufname (buffer-name)))
+	  (insert "<#part")
+	  (if (and ctl (not (equal (car ctl) "text/")))
+	      (insert " type=\"" (car ctl) "\""))
+	  (insert " buffer=\"" bufname "\"")
+	  (if cd
+	      (insert " disposition=\"" cd "\""))
+	  (if description
+	      (insert " description=\"" description "\""))
+	  (insert "><#/part>\n")
+	  (setq p (point))))
+      (delete-region p (point-max))
+      (goto-char (point-min))
+      ;; Some blank line to seperate mails.
+      (insert "\n\nFrom nobody " (current-time-string) "\n")
+      (if id
+	  (insert "Message-ID: <" id "@yahoo.com>\n"))
+      (unless (looking-at "$") 
+	(search-forward "\n\n" nil t)
+	(forward-line -1))
+      (narrow-to-region (point) (point-max))
+      (insert "MIME-Version: 1.0\n"
+	      (prog1
+		  (mml-generate-mime)
+		(delete-region (point-min) (point-max))))
+      (goto-char (point-min))
+      (widen)
+      (let (case-fold-search)
+	(while (re-search-forward "^From " nil t)
+	  (beginning-of-line)
+	  (insert ">"))))
+    (mm-append-to-file (point-min) (point-max) file)))
 
 (provide 'webmail)
 

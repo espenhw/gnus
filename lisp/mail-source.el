@@ -103,9 +103,10 @@ This variable is a list of mail source specifiers."
        (:fetchflag "\Deleted")
        (:dontexpunge))
       (webmail
-       (:wmtype hotmail)
+       (:subtype hotmail)
        (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
-       (:password)))
+       (:password)
+       (:authentication password)))
     "Mapping from keywords to default values.
 All keywords that can be used must be listed here."))
 
@@ -501,9 +502,13 @@ If ARGS, PROMPT is used as an argument to `format'."
 (defun mail-source-fetch-webmail (source callback)
   "Fetch for webmail source."
   (mail-source-bind (webmail source)
-    (save-excursion
-      (webmail-fetch mail-source-crash-box wmtype user password)
-      (mail-source-callback callback (symbol-name wmtype)))))
+    (when (eq authentication 'password)
+      (setq password
+	    (or password
+		(mail-source-read-passwd
+		 (format "Password for %s at %s: " user subtype)))))
+    (webmail-fetch mail-source-crash-box subtype user password)
+    (mail-source-callback callback (symbol-name subtype))))
 
 (provide 'mail-source)
 

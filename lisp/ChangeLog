@@ -1,3 +1,10 @@
+1999-11-23 02:33:13  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el: Support mail.yahoo.com.
+	
+	* mail-source.el (mail-source-fetch-webmail): Add password check.
+	(mail-source-keyword-map): Use `subtype'.
+
 1999-11-22 04:35:43  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mail-source.el (mail-source-keyword-map): Add webmail.
