@@ -1,3 +1,7 @@
+Sun Jul  2 15:11:35 2000  Lars Magne Ingebrigtsen  <lmi@quimbies.gnus.org>
+
+	* gnus.el: Gnus v5.8.7 is released.
+
 2000-05-19 06:32:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mm-decode.el (mm-insert-part): Characters doubly decoded.

@@ -355,7 +355,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.8.6.
+This manual corresponds to Gnus 5.8.7.
 
 @end ifinfo
 
