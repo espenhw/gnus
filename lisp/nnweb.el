@@ -211,7 +211,7 @@
 	  (setq header (nnheader-parse-nov))
 	  (forward-line 1)
 	  (push (list (mail-header-number header)
-		      header (nnheader-header-xref header))
+		      header (mail-header-xref header))
 		nnweb-articles)
 	  (nnweb-set-hashtb header (car nnweb-articles)))))))
 
@@ -223,7 +223,7 @@
 	(nnheader-insert-nov (cadr (pop articles)))))))
 
 (defun nnweb-set-hashtb (header data)
-  (gnus-sethastb (nnweb-identifier (mail-header-xrefs header))
+  (gnus-sethash (nnweb-identifier (mail-header-xref header))
 		 data nnweb-hashtb))
 
 (defun nnweb-get-hashtb (url)

@@ -150,9 +150,10 @@ This variable will only be used if the value of
   :type 'string)
 
 (defcustom gnus-summary-goto-unread t
-  "*If non-nil, marking commands will go to the next unread article.
-If `never', \\<gnus-summary-mode-map>\\[gnus-summary-next-page] will go to the next article,
-whether it is read or not."
+  "*If t, marking commands will go to the next unread article.
+If `never', commands that usually go to the next unread article, will
+go to the next article, whether it is read or not.
+If nil, only the marking commands will go to the next (un)read article."
   :group 'gnus-summary
   :type '(choice (const :tag "off" nil)
 		 (const never)
@@ -1771,7 +1772,7 @@ increase the score of each group you read."
        ["Uuencode and post" gnus-uu-post-news t]
        ["Followup via news" gnus-summary-followup-to-mail t]
        ["Followup via news and yank"
-	gnus-summary-followup-with-original-to-mail t]
+	gnus-summary-followup-to-mail-with-original t]
        ;;("Draft"
        ;;["Send" gnus-summary-send-draft t]
        ;;["Send bounced" gnus-resend-bounced-mail t])

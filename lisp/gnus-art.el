@@ -675,9 +675,10 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Remove carriage return" gnus-article-remove-cr t]
        ["Remove quoted-unreadable" gnus-article-de-quoted-unreadable t]))
 
+    (when nil
     (define-key gnus-article-mode-map 
       (vector 'menu-bar (car gnus-summary-article-menu))
-      gnus-summary-article-menu)
+      gnus-summary-article-menu))
 
     (run-hooks 'gnus-article-menu-hook)))
 

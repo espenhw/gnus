@@ -130,7 +130,7 @@ asynchronously.	 The compressed face will be piped to this command."
 	   ("\\*/" "/\\*" bold-italic)
 	   ("_\\*/" "/\\*_" underline-bold-italic))))
     `(("\\(\\s-\\|^\\)\\(_\\(\\(\\w\\|_\\)+\\)_\\)\\(\\s-\\|[?!.,;]\\)"
-       2 3 'gnus-emphasis-underline)
+       2 3 gnus-emphasis-underline)
       ,@(mapcar
 	 (lambda (spec)
 	   (list
@@ -140,7 +140,7 @@ asynchronously.	 The compressed face will be piped to this command."
   "Alist that says how to fontify certain phrases.
 Each item looks like this:
 
-  (\"_\\\\([[\\w+\\\\)_\" 0 1 'underline)
+  (\"_\\\\(\\\\w+\\\\)_\" 0 1 'underline)
 
 The first element is a regular expression to be matched.  The second
 is a number that says what regular expression grouping used to find
@@ -456,7 +456,8 @@ always hide."
       (delete-region
        (point)
        (progn
-	 (while (looking-at "^[ \t]*$")
+	 (while (and (not (bobp))
+		     (looking-at "^[ \t]*$"))
 	   (forward-line -1))
 	 (forward-line 1)
 	 (point))))))

@@ -568,9 +568,7 @@ If FILE is t, return the buffer contents as a string."
 
 (defun nnheader-fold-continuation-lines ()
   "Fold continuation lines in the current buffer."
-  (goto-char (point-min))
-  (while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-    (replace-match " " t t)))
+  (nnheader-replace-regexp "\\(\r?\n[ \t]+\\)+" " "))
 
 (defun nnheader-translate-file-chars (file)
   (if (null nnheader-file-name-translation-alist)
@@ -757,6 +755,40 @@ find-file-hooks, etc.
 	(push (car files) out))
       (pop files))
     (nreverse out)))
+
+(defmacro nnheader-skeleton-replace (from &optional to regexp)
+  `(let ((new (generate-new-buffer " *nnheader replace*"))
+	 (cur (current-buffer))
+	 (start (point-min)))
+     (set-buffer new)
+     (buffer-disable-undo (current-buffer))
+     (set-buffer cur)
+     (goto-char (point-min))
+     (while (,(if regexp 're-search-forward 'search-forward)
+	     ,from nil t)
+       (insert-buffer-substring 
+	cur start (prog1 (match-beginning 0) (set-buffer new)))
+       (goto-char (point-max))
+       ,(when to `(insert ,to))
+       (set-buffer cur)
+       (setq start (point)))
+     (insert-buffer-substring 
+      cur start (prog1 (point-max) (set-buffer new)))
+     (copy-to-buffer cur (point-min) (point-max))
+     (kill-buffer (current-buffer))
+     (set-buffer cur)))
+
+(defun nnheader-replace-string (from to)
+  "Do a fast replacement of FROM to TO from point to point-max."
+  (nnheader-skeleton-replace from to))
+
+(defun nnheader-replace-regexp (from to)
+  "Do a fast regexp replacement of FROM to TO from point to point-max."
+  (nnheader-skeleton-replace from to t))
+
+(defun nnheader-strip-cr ()
+  "Strip all \r's from the current buffer."
+  (nnheader-skeleton-replace "\r"))
 
 (fset 'nnheader-run-at-time 'run-at-time)
 (fset 'nnheader-cancel-timer 'cancel-timer)

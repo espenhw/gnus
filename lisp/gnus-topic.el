@@ -446,7 +446,9 @@ articles in the topic and its subtopics."
 		(list (if insert 'visible 'invisible)
 		      (if hide 'hide nil)
 		      (cadddr data))))
-      (unless total-remove
+      (if total-remove
+	  (setq gnus-topic-alist
+		(delq (assoc topic gnus-topic-alist) gnus-topic-alist))
 	(gnus-topic-insert-topic topic in-level)))))
 
 (defun gnus-topic-insert-topic (topic &optional level)

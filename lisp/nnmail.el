@@ -1019,7 +1019,11 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       ;; Someone might want to do a \N sub on this match, so get the
       ;; correct match positions.
       (goto-char (match-end 0))
-      (re-search-backward (nth 1 split) (match-end 1))
+      (let ((value (nth 1 split)))
+	(re-search-backward (if (symbolp value)
+				(cdr (assq value nnmail-split-abbrev-alist))
+			      value)
+			    (match-end 1)))
       (nnmail-split-it (nth 2 split))))
 
    ;; Not in cache, compute a regexp for the field/value pair.

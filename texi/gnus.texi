@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.57 Manual
+@settitle Red Gnus 0.60 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.57 Manual
+@title Red Gnus 0.60 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -1881,6 +1881,12 @@ broken behavior.  So there!
 @cindex to-group
 Elements like @code{(to-group . "some.group.name")} means that all
 posts in that group will be sent to @code{some.group.name}.  
+
+@item newsgroup
+@cindex newsgroup
+If this symbol is present in the group parameter list, Gnus will treat
+all responses as if they were responses to news articles.  This can be
+useful if you have a mail group that's really a mirror of a news group. 
 
 @item gcc-self
 @cindex gcc-self

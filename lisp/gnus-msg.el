@@ -358,16 +358,19 @@ header line with the old Message-ID."
 			      (t 'message))
       (let* ((group (or group gnus-newsgroup-name))
 	     (pgroup group)
-	     to-address to-group mailing-list to-list)
+	     to-address to-group mailing-list to-list 
+	     newsgroup-p)
 	(when group
 	  (setq to-address (gnus-group-find-parameter group 'to-address)
 		to-group (gnus-group-find-parameter group 'to-group)
 		to-list (gnus-group-find-parameter group 'to-list)
+		newsgroup-p (gnus-group-find-parameter group 'newsgroup)
 		mailing-list (when gnus-mailing-list-groups
 			       (string-match gnus-mailing-list-groups group))
 		group (gnus-group-real-name group)))
 	(if (or (and to-group
 		     (gnus-news-group-p to-group))
+		newsgroup-p
 		force-news
 		(and (gnus-news-group-p 
 		      (or pgroup gnus-newsgroup-name)
@@ -380,7 +383,7 @@ header line with the old Message-ID."
 	    (if post
 		(message-news (or to-group group))
 	      (set-buffer gnus-article-copy)
-	      (message-followup (if force-news nil to-group)))
+	      (message-followup (if (or newsgroup-p force-news) nil to-group)))
 	  ;; The is mail.
 	  (if post
 	      (progn
@@ -798,7 +801,8 @@ The source file has to be in the Emacs load path."
 	    (goto-char (point-min))
 	    (while (setq expr (ignore-errors (read (current-buffer))))
 	      (ignore-errors
-		(and (eq (car expr) 'defvar)
+		(and (or (eq (car expr) 'defvar)
+			 (eq (car expr) 'defcustom))
 		     (stringp (nth 3 expr))
 		     (or (not (boundp (nth 1 expr)))
 			 (not (equal (eval (nth 2 expr))

@@ -1,3 +1,69 @@
+Sun Nov 10 06:31:36 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.59 is released.
+
+Sun Nov 10 06:09:37 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-decode-text): Erased everything.
+
+	* article.el (article-remove-trailing-blank-lines): Would
+	infloop. 
+
+Sun Nov 10 06:06:31 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.58 is released.
+
+Sun Nov 10 06:02:51 1996  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* nntp.el (nntp-possibly-change-group): Bind callback function to
+	nil. 
+
+Sun Nov 10 05:35:25 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-remove-topic): Remove from alist. 
+
+	* gnus-score.el (gnus-score-string): Didn't trace fuzzies and
+	words. 
+
+Sat Nov  9 18:14:42 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnweb.el (nnweb-set-hashtb): Typo.
+	(nnweb-read-overview): Typo.
+
+	* nnheader.el (nnheader-skeleton-replace): New macro.
+	(nnheader-replace-string): Use it.
+	(nnheader-replace-regexp): Use it.
+	(nnheader-strip-cr): Use it.
+
+	* nntp.el (nntp-retrieve-headers): Be faster.
+	(nntp-decode-text): Use faster algorithm.
+
+	* nnheader.el (nnheader-replace-string): New function.
+
+Sat Nov  9 17:22:16 1996  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* article.el (gnus-emphasis-alist): Doc fix.
+
+Sat Nov  9 16:27:27 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* nnmail.el (nnmail-split-it): Fix bug in abbrev handling.
+
+Sat Nov  9 05:59:02 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnweb.el (nnweb-set-hashtb): Typo.
+
+	* article.el (gnus-emphasis-alist): One ' too many.
+
+	* gnus-async.el (gnus-async-prefetch-article): Only message when
+	in the summary buffer.
+
+	* gnus-msg.el (gnus-post-news): Handle `newsgroup' param.
+	(gnus-debug): Be `defcustom' aware.
+
+Sat Nov  9 05:41:27 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.57 is released.
+
 Fri Nov  8 22:56:59 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus.el: Added customize support.

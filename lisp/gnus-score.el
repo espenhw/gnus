@@ -1858,10 +1858,10 @@ SCORE is the score to add."
 	  (cond
 	   ;; Fuzzy matches.  We save these for later.
 	   ((= dmt ?f)
-	    (push entries fuzzies))
+	    (push (cons entries alist) fuzzies))
 	   ;; Word matches.  Save these for even later.
 	   ((= dmt ?w)
-	    (push entries words))
+	    (push (cons entries alist) words))
 	   ;; Exact matches.
 	   ((= dmt ?e)
 	    ;; Do exact matching.
@@ -1930,7 +1930,7 @@ SCORE is the score to add."
     (when fuzzies
       ;; Simplify the entire buffer for easy matching.
       (gnus-simplify-buffer-fuzzy)
-      (while (setq kill (cadar fuzzies))
+      (while (setq kill (cadaar fuzzies))
 	(let* ((match (nth 0 kill))
 	       (type (nth 3 kill))
 	       (score (or (nth 1 kill) gnus-score-interactive-default-score))
@@ -1948,7 +1948,8 @@ SCORE is the score to add."
 		  (while (setq art (pop arts))
 		    (setcdr art (+ score (cdr art)))
 		    (push (cons
-			   (car-safe (rassq alist gnus-score-cache)) kill)
+			   (car-safe (rassq (cdar fuzzies) gnus-score-cache)) 
+			   kill)
 			  gnus-score-trace))
 		;; Found a match, update scores.
 		(while (setq art (pop arts))
@@ -1961,12 +1962,12 @@ SCORE is the score to add."
 	    )
 	   ;; Match, update date.
 	   ((and found gnus-update-score-entry-dates)
-	    (gnus-score-set 'touched '(t) alist)
+	    (gnus-score-set 'touched '(t) (cdar fuzzies))
 	    (setcar (nthcdr 2 kill) now))
 	   ;; Old entry, remove.
 	   ((and expire (< date expire))
-	    (gnus-score-set 'touched '(t) alist)
-	    (setcdr (car fuzzies) (cddar fuzzies))))
+	    (gnus-score-set 'touched '(t) (cdar fuzzies))
+	    (setcdr (caar fuzzies) (cddaar fuzzies))))
 	  (setq fuzzies (cdr fuzzies)))))
 
     (when words
@@ -1974,7 +1975,7 @@ SCORE is the score to add."
       (let ((hashtb (gnus-make-hashtable
 		     (* 10 (count-lines (point-min) (point-max))))))
 	(gnus-enter-score-words-into-hashtb hashtb)
-	(while (setq kill (cadar words))
+	(while (setq kill (cadaar words))
 	  (let* ((score (or (nth 1 kill) gnus-score-interactive-default-score))
 		 (date (nth 2 kill))
 		 found)
@@ -1984,7 +1985,9 @@ SCORE is the score to add."
 	      (if trace
 		  (while (setq art (pop arts))
 		    (setcdr art (+ score (cdr art)))
-		    (push (cons (car-safe (rassq alist gnus-score-cache)) kill)
+		    (push (cons
+			   (car-safe (rassq (cdar words) gnus-score-cache))
+			   kill)
 			  gnus-score-trace))
 		;; Found a match, update scores.
 		(while (setq art (pop arts))
@@ -1996,12 +1999,12 @@ SCORE is the score to add."
 	      )
 	     ;; Match, update date.
 	     ((and found gnus-update-score-entry-dates)
-	      (gnus-score-set 'touched '(t) alist)
+	      (gnus-score-set 'touched '(t) (cdar words))
 	      (setcar (nthcdr 2 kill) now))
 	     ;; Old entry, remove.
 	     ((and expire (< date expire))
-	      (gnus-score-set 'touched '(t) alist)
-	      (setcdr (car words) (cddar words))))
+	      (gnus-score-set 'touched '(t) (cdar words))
+	      (setcdr (caar words) (cddaar words))))
 	    (setq words (cdr words))))))
     nil))
 

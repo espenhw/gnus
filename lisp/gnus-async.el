@@ -151,7 +151,8 @@ It should return non-nil if the article is to be prefetched."
       (when next
 	(gnus-async-with-semaphore
 	 (pop gnus-async-fetch-list)))
-      (let ((do-fetch next))
+      (let ((do-fetch next)
+	    (do-message t)) ;(eq major-mode 'gnus-summary-mode)))
 	(when (and (gnus-group-asynchronous-p group)
 		   (gnus-buffer-live-p summary)
 		   (or (not next)
@@ -194,8 +195,9 @@ It should return non-nil if the article is to be prefetched."
 			group article mark summary next))
 		      (nntp-server-buffer 
 		       (get-buffer gnus-async-prefetch-article-buffer)))
-		  (gnus-message 7 "Prefetching article %d in group %s"
-				article group)
+		  (when do-message
+		    (gnus-message 7 "Prefetching article %d in group %s"
+				  article group))
 		  (gnus-request-article article group))))))))))
 
 (defun gnus-make-async-article-function (group article mark summary next)

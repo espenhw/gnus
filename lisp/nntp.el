@@ -239,9 +239,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	;; Now all of replies are received.  Fold continuation lines.
 	(nnheader-fold-continuation-lines)
 	;; Remove all "\r"'s.
-	(goto-char (point-min))
-	(while (search-forward "\r" nil t)
-	  (replace-match "" t t))
+	(nnheader-strip-cr)
 	(copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	'headers))))
 
@@ -745,15 +743,15 @@ It will prompt for a password."
   (when group
     (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
       (when (not (equal group (caddr entry)))
-	(nntp-request-group group)
-	(save-excursion
-	  (set-buffer nntp-server-buffer)
-	  (erase-buffer))))))
+	(let ((nnheader-callback-function nil))
+	  (nntp-request-group group)
+	  (save-excursion
+	    (set-buffer nntp-server-buffer)
+	    (erase-buffer)))))))
 
 (defun nntp-decode-text (&optional cr-only)
   "Decode the text in the current buffer."
   (goto-char (point-min))
-  ;; Remove \R's.
   (while (search-forward "\r" nil t)
     (delete-char -1))
   (unless cr-only
