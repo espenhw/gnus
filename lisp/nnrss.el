@@ -81,7 +81,7 @@
      "http://www.cnn.com/cnn.rss"
      "The world's news leader.")
     ("FreshMeat"
-     "http://freshmeat.net/backend/fm.rdf"
+     "http://freshmeat.net/backend/fm-releases.rdf"
      "The one-stop-shop for all your Linux software needs.")
     ("The.Guardian.newspaper"
      "http://www.guardianunlimited.co.uk/rss/1,,,00.xml"

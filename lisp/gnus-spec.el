@@ -125,7 +125,7 @@
 
 (defvar gnus-format-specs
   `((version . ,emacs-version)
-    (gnus-version . ,(gnus-continuum-version)
+    (gnus-version . ,(gnus-continuum-version))
     (group "%M\%S\%p\%P\%5y: %(%g%)%l\n" ,gnus-group-line-format-spec)
     (summary-dummy "*  %(:                          :%) %S\n"
 		   ,gnus-summary-dummy-line-format-spec)
