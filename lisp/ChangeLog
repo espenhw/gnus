@@ -1,3 +1,8 @@
+2000-05-19  Dave Love  <fx@gnu.org>
+
+	* gnus-art.el (gnus-mime-externalize-part): Bind mm-inlined-types,
+	not mm-inline-large-images.
+
 2000-05-19 01:45:40  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-parse-1): Don't test multiple-charsets within mml tag.
