@@ -1,3 +1,9 @@
+2003-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-save-killed-list): Fix customization type.
+	* gnus-sum.el (gnus-thread-hide-subtree): Ditto.
+	* gnus.el (gnus-use-long-file-name): Ditto.
+
 2003-08-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-group.el (gnus-group-rename-group): Don't allow renaming to

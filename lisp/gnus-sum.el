@@ -253,7 +253,12 @@ If threads are hidden, you have to run the command
 `gnus-summary-show-thread' by hand or use `gnus-select-article-hook'
 to expose hidden threads."
   :group 'gnus-thread
-  :type 'boolean)
+  :type '(radio (sexp :format "Non-nil\n"
+		      :match (lambda (widget value)
+			       (not (or (consp value) (functionp value))))
+		      :value t)
+		(const nil)
+		(sexp :tag "Predicate specifier" :size 0)))
 
 (defcustom gnus-thread-hide-killed t
   "*If non-nil, hide killed threads automatically."

@@ -242,7 +242,12 @@ nil if you set this variable to nil.
 This variable can also be a regexp.  In that case, all groups that do
 not match this regexp will be removed before saving the list."
   :group 'gnus-newsrc
-  :type 'boolean)
+  :type '(radio (sexp :format "Non-nil\n"
+		      :match (lambda (widget value)
+			       (and value (not (stringp value))))
+		      :value t)
+		(const nil)
+		(regexp :size 0)))
 
 (defcustom gnus-ignored-newsgroups
   (mapconcat 'identity

@@ -1364,7 +1364,14 @@ Note that the default for this variable varies according to what system
 type you're using.  On `usg-unix-v' and `xenix' this variable defaults
 to nil while on all other systems it defaults to t."
   :group 'gnus-start
-  :type 'boolean)
+  :type '(radio (sexp :format "Non-nil\n"
+		      :match (lambda (widget value)
+			       (and value (not (listp value))))
+		      :value t)
+		(const nil)
+		(checklist (const :format "%v " not-score)
+			   (const :format "%v " not-save)
+			   (const not-kill))))
 
 (defcustom gnus-kill-files-directory gnus-directory
   "*Name of the directory where kill files will be stored (default \"~/News\")."
