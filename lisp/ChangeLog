@@ -1,3 +1,29 @@
+2002-09-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Reiner Steib <reiner.steib@gmx.de>.
+
+	* message.el (message-strip-subject-trailing-was)
+	(message-change-subject, message-add-archive-header)
+	(message-xpost-fup2-header, message-xpost-insert-note)
+	(message-xpost-fup2, message-reduce-to-to-cc): New functions
+	adopted from message-utils.el.  Add functions to the keymap, mode
+	describtion and menu.
+	(message-change-subject,message-xpost-fup2): Signal error if
+	current header is empty.
+	(message-xpost-insert-note): Changed insert position.
+	(message-archive-note): Ensure to insert note in message body (not
+	in head).
+	(message-archive-header, message-archive-note)
+	(message-xpost-default, message-xpost-note, message-fup2-note)
+	(message-xpost-note-function): New variables adopted from
+	message-utils.el.  Changed some doc-strings.
+	(message-mark-insert-{begin,end}): Rename from
+	message-{begin,end}-inserted-text-mark (message-utils.el), changed
+	values.
+	(message-subject-trailing-was-query)
+	(message-subject-trailing-was-ask-regexp)
+	(message-subject-trailing-was-regexp): New variables.
+	(message-to-list-only): Added doc-string and menu entry.
+
 2002-09-16  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-reply-with-original,
