@@ -1,3 +1,8 @@
+2000-09-29 12:36:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi: Remove @c lines in the directory due to a bug in
+	makeinfo 1.68 (GNU texinfo 3.12).
+
 2000-09-22  Dave Love  <fx@gnu.org>
 
 	* message.texi, gnus.texi, emacs-mime.texi: Convert to GFDL.

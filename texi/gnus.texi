@@ -717,7 +717,6 @@ Scoring
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
 * Kill Files::               They are still here, but they can be ignored.
-@c * Converting Kill Files::    Translating kill files to score files.
 * GroupLens::                Getting predictions on what you like to read.
 * Advanced Scoring::         Using logical expressions to build score rules.
 * Score Decays::             It can be useful to let scores wither away.
@@ -14929,7 +14928,6 @@ silently to help keep the sizes of the score files down.
 * Reverse Scoring::          That problem child of old is not problem.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
 * Kill Files::               They are still here, but they can be ignored.
-@c * Converting Kill Files::    Translating kill files to score files.
 * GroupLens::                Getting predictions on what you like to read.
 * Advanced Scoring::         Using logical expressions to build score rules.
 * Score Decays::             It can be useful to let scores wither away.
