@@ -1,6 +1,8 @@
 2000-10-26  Simon Josefsson  <sj@extundo.com>
 
 	* mail-source.el (mail-sources): IMAP predicate is a string.
+	(mail-sources): Add default values for IMAP mailbox, predicate and
+	fetchflag.
 
 2000-10-26  Dave Love  <fx@gnu.org>
 

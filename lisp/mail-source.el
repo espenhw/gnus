@@ -166,13 +166,16 @@ See Info node `(gnus)Mail Source Specifiers'."
 						  ,@mail-source-imap-authenticators))
 				   (group :inline t
 					  (const :format "" :value :mailbox)
-					  (string :tag "Mailbox"))
+					  (string :tag "Mailbox"
+						  :value "INBOX"))
 				   (group :inline t
 					  (const :format "" :value :predicate)
-					  (string :tag "Predicate"))
+					  (string :tag "Predicate" 
+						  :value "UNSEEN UNDELETED"))
 				   (group :inline t
 					  (const :format "" :value :fetchflag)
-					  (string :tag "Fetchflag"))
+					  (string :tag "Fetchflag"
+						  :value  "\\Deleted"))
 				   (group :inline t
 					  (const :format ""
 						 :value :dontexpunge)
