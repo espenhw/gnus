@@ -1349,7 +1349,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "Gnus v5.0.4"
+(defconst gnus-version "Gnus v5.0.5"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5324,7 +5324,7 @@ buffer.
   (define-key gnus-summary-mode-map 
     "\C-c\C-s\C-s" 'gnus-summary-sort-by-subject)
   (define-key gnus-summary-mode-map "\C-c\C-s\C-d" 'gnus-summary-sort-by-date)
-  (define-key gnus-summary-mode-map "\C-c\C-s\C-i" 'gnus-summary-sort-by-score)
+  (define-key gnus-summary-mode-map "\C-c\C-s\C-v" 'gnus-summary-sort-by-score)
   (define-key gnus-summary-mode-map "=" 'gnus-summary-expand-window)
   (define-key gnus-summary-mode-map 
     "\C-x\C-s" 'gnus-summary-reselect-current-group)
@@ -8347,46 +8347,20 @@ Return nil if there are no unread articles."
   "Select the unread article with the highest score."
   (interactive)
   (gnus-set-global-variables)
-  (let ((scored gnus-newsgroup-scored)
-	(best -1000000)
-	article art)
-    (while scored
-      (or (> best (cdr (car scored)))
-	  (and (memq (setq art (car (car scored))) gnus-newsgroup-unreads)
-	       (not (memq art gnus-newsgroup-marked))
-	       (not (memq art gnus-newsgroup-dormant))
-	       (if (= best (cdr (car scored)))
-		   (setq article (min art article))
-		 (setq article art)
-		 (setq best (cdr (car scored))))))
-      (setq scored (cdr scored)))
-    (cond
-     ((or (not article) (null gnus-newsgroup-unreads))
-      ;; We didn't find any scored articles, so we just jump to the
-      ;; first article. 
-      (gnus-summary-first-unread-article))
-     ((> best gnus-summary-default-score)
-      ;; We found one, and it's bigger than the default score, so we
-      ;; select it.
-      (gnus-summary-goto-article article))
-     (t
-      ;; We found an article, but it has a score lower than the
-      ;; defaults, so we try to find an article with the default
-      ;; score. 
-      (goto-char (point-min))
-      (while (and (or (not (= (gnus-summary-article-mark) gnus-unread-mark))
-		      (and (assq (gnus-summary-article-number)
-				 gnus-newsgroup-scored)
-			   (< (cdr (assq (gnus-summary-article-number)
-					 gnus-newsgroup-scored))
-			      gnus-summary-default-score)))
-		  (zerop (forward-line 1))
-		  (not (eobp))))
-      (if (= (gnus-summary-article-mark) gnus-unread-mark)
-	  ;; We jump to the article we have finally found.
-	  (gnus-summary-goto-article (gnus-summary-article-number))
-	;; Or there were no default-scored articles.
-	(gnus-summary-goto-article article))))
+  (let ((best -1000000)
+	article score)
+    (save-excursion
+      (or (gnus-summary-first-subject t)
+	  (error "No unread articles"))
+      (while 
+	  (and
+	   (progn
+	     (and (> (setq score (gnus-summary-article-score)) best)
+		  (setq best score
+			article (gnus-summary-article-number)))
+	     t)
+	   (gnus-summary-search-subject nil t))))
+    (gnus-summary-goto-article article)
     (gnus-summary-position-cursor)))
 
 (defun gnus-summary-goto-article (article &optional all-headers)
@@ -12091,8 +12065,10 @@ The `-n' option line from .newsrc is respected."
 	      (gnus-subscribe-hierarchical-interactive new-newsgroups))
 	  ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
 	  (if (> groups 0)
-	      (gnus-message 6 "%d new newsgroup%s arrived." 
-			    groups (if (> groups 1) "s have" " has"))
+	      (progn
+		(gnus-dribble-enter "")
+		(gnus-message 6 "%d new newsgroup%s arrived." 
+			      groups (if (> groups 1) "s have" " has")))
 	    (gnus-message 6 "No new newsgroups."))))))
 
 (defun gnus-matches-options-n (group)
@@ -12175,8 +12151,10 @@ The `-n' option line from .newsrc is respected."
 	(gnus-subscribe-hierarchical-interactive new-newsgroups))
     ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
     (if (> groups 0)
-	(gnus-message 6 "%d new newsgroup%s arrived." 
-		      groups (if (> groups 1) "s have" " has")))
+	(progn
+	  (gnus-dribble-enter "")
+	  (gnus-message 6 "%d new newsgroup%s arrived." 
+			groups (if (> groups 1) "s have" " has"))))
     got-new))
 
 (defun gnus-check-first-time-used ()

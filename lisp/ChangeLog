@@ -1,4 +1,19 @@
-Sat Sep 16 06:44:33 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
+Tue Sep 19 17:32:14 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el (gnus-find-new-newsgroups): Would not save .newsrc if
+		all new group were made into zombies.
+
+	* gnus-ems.el (gnus-set-text-properties-xemacs): Would bug out on
+		strings that happened to be buffer names.
+
+Sat Sep 16 10:24:02 1995  Lars Magne Ingebrigtsen  <larsi@surt.ifi.uio.no>
+
+	* gnus.el (gnus-summary-best-unread-article): Didn't select the
+		first best unread article.
+
+Sat Sep 16 06:44:33 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: 5.0.4 is released.
 
 	* gnus.el (gnus-group-make-group): Be able to create native
 		groups. 

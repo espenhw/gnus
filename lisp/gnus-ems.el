@@ -72,7 +72,7 @@
 (defun gnus-set-text-properties-xemacs (start end props &optional buffer)
   "You should NEVER use this function.  It is ideologically blasphemous.
 It is provided only to ease porting of broken FSF Emacs programs."
-  (if (and (stringp buffer) (not (setq buffer (get-buffer buffer))))
+  (if (stringp buffer)
       nil
     (map-extents (lambda (extent ignored)
 		   (remove-text-properties 
