@@ -1,5 +1,5 @@
 2001-12-16  Simon Josefsson  <jas@extundo.com>
-	Inspired by code by Bernhard Walle <Bernhard.Walle@gmx.de>.
+	Inspired by code by Dirk Meyer <dischi@tzi.de>.
 
 	* gnus-sum.el (gnus-summary-muttprint-program): New variable.
 	(gnus-summary-save-map): Add muttprint.
