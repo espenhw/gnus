@@ -8823,11 +8823,10 @@ This is the delimiter mentioned above.  By default, it is @samp{^L}
 
 @kindex C-c C-c (Post)
 All commands for posting and mailing will put you in a message buffer
-where you can edit the article all you like, before you send the article
-by pressing @kbd{C-c C-c}.  @xref{Top, , Top, message, The Message
-Manual}.  If you are in a foreign news group, and you wish to post the
-article using the foreign server, you can give a prefix to @kbd{C-c C-c}
-to make Gnus try to post using the foreign server.
+where you can edit the article all you like, before you send the
+article by pressing @kbd{C-c C-c}.  @xref{Top, , Top, message, The
+Message Manual}.  Where the message will be posted/mailed to depends
+on your setup (@pxref{Posting Server}).
 
 @menu
 * Mail::                 Mailing and replying.
