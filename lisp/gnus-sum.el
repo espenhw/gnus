@@ -4257,19 +4257,26 @@ or a straight list of headers."
   "Remove list identifiers in `gnus-list-identifiers' from articles in the current group."
   (let ((regexp (if (stringp gnus-list-identifiers)
 		    gnus-list-identifiers
-		  (mapconcat 'identity gnus-list-identifiers " *\\|"))))
+		  (mapconcat 'identity gnus-list-identifiers " *\\|")))
+	changed subject)
     (dolist (header gnus-newsgroup-headers)
-      (when (string-match (concat "\\(\\(\\(Re: +\\)?\\(" regexp
-				  " *\\)\\)+\\(Re: +\\)?\\)")
-			  (mail-header-subject header))
-	(mail-header-set-subject
-	 header (concat (substring (mail-header-subject header)
-				   0 (match-beginning 1))
-			(or
-			 (match-string 3 (mail-header-subject header))
-			 (match-string 5 (mail-header-subject header)))
-			(substring (mail-header-subject header)
-				   (match-end 1))))))))
+      (setq subject (mail-header-subject header)
+	    changed nil)
+      (while (string-match
+	      (concat "^\\(R[Ee]: +\\)*\\(" regexp " *\\)")
+	      subject)
+	(setq subject
+	      (concat (substring subject 0 (match-beginning 2))
+		      (substring subject (match-end 0)))
+	      changed t))
+      (when (and changed
+		 (string-match
+		   "^\\(\\(R[Ee]: +\\)+\\)R[Ee]: +" subject))
+	(setq subject
+	      (concat (substring subject 0 (match-beginning 1))
+		      (substring subject (match-end 1)))))
+      (when changed
+	(mail-header-set-subject header subject)))))
 
 (defun gnus-select-newsgroup (group &optional read-all select-articles)
   "Select newsgroup GROUP.

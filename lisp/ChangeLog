@@ -1,3 +1,13 @@
+2001-01-31 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-remove-list-identifiers): Similar.
+
+	* gnus-art.el (article-hide-list-identifiers): Similar.
+
+2001-01-31  Karl Kleinpaste <karl@charcoal.com>
+
+	* nnmail.el (nnmail-remove-list-identifiers): Improved.
+
 2001-01-31 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-score.el (gnus-summary-score-entry): match may be an integer.

@@ -1096,10 +1096,14 @@ Return the number of characters in the body."
 		  (mapconcat 'identity nnmail-list-identifiers " *\\|"))))
     (when regexp
       (goto-char (point-min))
-      (when (re-search-forward
-	     (concat "^Subject: +\\(Re: +\\)?\\(" regexp " *\\)")
-	     nil t)
-	(delete-region (match-beginning 2) (match-end 0))))))
+      (while (re-search-forward
+              (concat "^Subject: +\\(R[Ee]: +\\)*\\(" regexp " *\\)")
+              nil t)
+        (delete-region (match-beginning 2) (match-end 0))
+        (beginning-of-line))
+      (when (re-search-forward "^Subject: +\\(\\(R[Ee]: +\\)+\\)R[Ee]: +" nil t)
+        (delete-region (match-beginning 1) (match-end 1))
+	(beginning-of-line)))))
 
 (defun nnmail-remove-tabs ()
   "Translate TAB characters into SPACE characters."

@@ -1826,15 +1826,14 @@ The `gnus-list-identifiers' variable specifies what to do."
 			(mapconcat 'identity gnus-list-identifiers " *\\|"))))
 	  (when regexp
 	    (goto-char (point-min))
-	    (when (re-search-forward
-		   (concat "^Subject: +\\(\\(\\(Re: +\\)?\\(" regexp
-			   " *\\)\\)+\\(Re: +\\)?\\)")
-		   nil t)
-	      (let ((s (or (match-string 3) (match-string 5))))
-		(delete-region (match-beginning 1) (match-end 1))
-		(when s
-		  (goto-char (match-beginning 1))
-		  (insert s))))))))))
+	    (while (re-search-forward
+		    (concat "^Subject: +\\(R[Ee]: +\\)*\\(" regexp " *\\)")
+		    nil t)
+	      (delete-region (match-beginning 2) (match-end 0))
+	      (beginning-of-line))
+	    (when (re-search-forward 
+		   "^Subject: +\\(\\(R[Ee]: +\\)+\\)R[Ee]: +" nil t)
+	      (delete-region (match-beginning 1) (match-end 1)))))))))
 
 (defun article-hide-pgp ()
   "Remove any PGP headers and signatures in the current article."
