@@ -1,3 +1,7 @@
+2000-10-05  Dave Love  <fx@gnu.org>
+
+	* rfc1843.el: Require cl when compiling.
+
 2000-10-05 12:25:08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-agent.el (gnus-agent-fetch-group-1): Score-param could be nil.
@@ -20,7 +24,7 @@
 
 2000-10-05  Stefan Monnier <monnier+gnu/emacs@rum.cs.yale.edu>
 
-       * nnimap.el (require): cl.
+	* nnimap.el (require): cl.
 
 2000-10-04 15:24:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
