@@ -1076,6 +1076,15 @@ If RAW, don't highlight the article."
 		  (mm-destroy-parts gnus-article-mime-handles)) nil t)
       (setq buffer-read-only t)
       (local-set-key "q" (lambda () (interactive) (kill-buffer nil)))
+      (local-set-key "=" (lambda () (interactive) (delete-other-windows)))
+      (local-set-key "\r"
+		     (lambda ()
+		       (interactive)
+		       (widget-button-press (point))))
+      (local-set-key gnus-mouse-2
+		     (lambda (event)
+		       (interactive "@e")
+		       (widget-button-press (widget-event-point event) event)))
       (goto-char (point-min)))))
 
 (defun mml-validate ()
