@@ -4,6 +4,7 @@ gnus
 gnus-[0-9]*
 message
 message-[0-9]*
+sasl
 sieve
 pgg
 gnustmp.texi
