@@ -1,3 +1,13 @@
+2001-10-10 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnusref.tex, refcard.tex: Use epsfig.
+
+	* gnuslogo-refcard.eps: Rename from gnuslog.refcard, and set a
+	suitable bounding box.
+	
+	* Makefile.in (.dvi.ps): New rule.
+	(refcard.pdf): Use gnuslogo-refcard.eps.
+
 2001-10-09 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi: Add href and bookmarks for pdf version.

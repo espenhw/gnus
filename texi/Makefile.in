@@ -44,18 +44,20 @@ pdf: gnus.pdf message.pdf refcard.pdf emacs-mime.pdf
 	cp gnustmp.dvi $*.dvi
 	rm -f gnustmp.*
 
+.dvi.ps :
+	TEXINPUTS=$(srcdir):$$TEXINPUTS $(DVIPS) -t $(PAPERTYPE) -f $< > $@
+
 .texi.pdf :
 	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
 	$(TEXI2PDF) -I $(srcdir) gnustmp.texi
 	cp gnustmp.pdf $*.pdf
 	rm -f gnustmp.*
 
-refcard.dvi: refcard.tex gnuslogo.refcard gnusref.tex
+refcard.dvi: refcard.tex gnuslogo-refcard.eps gnusref.tex
 	TEXINPUTS=$(srcdir):$$TEXINPUTS $(LATEX) refcard.tex
 
-
-refcard.pdf: refcard.tex gnuslogo.refcard gnusref.tex
-	epstopdf $(srcdir)/gnuslogo.refcard --outfile=gnuslogo.refcard.pdf
+refcard.pdf: refcard.tex gnuslogo-refcard.eps gnusref.tex
+	epstopdf $(srcdir)/gnuslogo-refcard.eps --outfile=gnuslogo-refcard.pdf
 	TEXINPUTS=$(srcdir):$$TEXINPUTS $(PDFLATEX) refcard.tex
 
 clean:
