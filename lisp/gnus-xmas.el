@@ -410,6 +410,7 @@ call it with the value of the `gnus-data' text property."
     (fset 'gnus-characterp 'characterp)))
 
   (fset 'gnus-make-overlay 'make-extent)
+  (fset 'gnus-delete-overlay 'delete-extent)
   (fset 'gnus-overlay-put 'set-extent-property)
   (fset 'gnus-move-overlay 'gnus-xmas-move-overlay)
   (fset 'gnus-overlay-end 'extent-end-position)

@@ -258,6 +258,7 @@ This should make it easier to see who wrote what."
 ;;; Internal Variables:
 
 (defvar gnus-cite-article nil)
+(defvar gnus-cite-overlay-list nil)
 
 (defvar gnus-cite-prefix-alist nil)
 ;; Alist of citation prefixes.
@@ -577,6 +578,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 	  gnus-cite-attribution-alist nil
 	  gnus-cite-loose-prefix-alist nil
 	  gnus-cite-loose-attribution-alist nil)
+    (while gnus-cite-overlay-list
+      (gnus-delete-overlay (pop gnus-cite-overlay-list)))
     ;; Parse if not too large.
     (if (and (not force)
 	     gnus-cite-parse-max-size
@@ -858,7 +861,7 @@ See also the documentation for `gnus-article-highlight-citation'."
     (let ((inhibit-point-motion-hooks t)
 	  from to)
       (goto-line number)
-      (unless (eobp);; Sometimes things become confused.
+      (unless (eobp)			; Sometimes things become confused.
 	(forward-char (length prefix))
 	(skip-chars-forward " \t")
 	(setq from (point))
@@ -866,7 +869,9 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(skip-chars-backward " \t")
 	(setq to (point))
 	(when (< from to)
-	  (gnus-overlay-put (gnus-make-overlay from to) 'face face))))))
+	  (push (setq overlay (gnus-make-overlay from to))
+		gnus-cite-overlay-list)
+	  (gnus-overlay-put overlay 'face face))))))
 
 (defun gnus-cite-toggle (prefix)
   (save-excursion

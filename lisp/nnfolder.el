@@ -493,9 +493,7 @@ time saver for large mailboxes.")
      (progn
        (forward-line 1)
        (if (nnmail-search-unix-mail-delim)
-	   (if (and (not (bobp)) leave-delim)
-	       (progn (forward-line -2) (point))
-	     (point))
+	   (point)
 	 (point-max))))))
 
 (defun nnfolder-possibly-change-group (group &optional server dont-check)

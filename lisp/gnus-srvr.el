@@ -473,7 +473,7 @@ The following commands are available:
   (interactive (list (gnus-server-server-name)))
   (let ((buf (current-buffer)))
     (prog1
-	(gnus-browse-foreign-server (gnus-server-to-method server) buf)
+	(gnus-browse-foreign-server server buf)
       (save-excursion
 	(set-buffer buf)
 	(gnus-server-update-server (gnus-server-server-name))
@@ -543,14 +543,13 @@ The following commands are available:
 
 (defvar gnus-browse-buffer "*Gnus Browse Server*")
 
-(defun gnus-browse-foreign-server (method &optional return-buffer)
-  "Browse the server METHOD."
-  (setq gnus-browse-current-method method)
+(defun gnus-browse-foreign-server (server &optional return-buffer)
+  "Browse the server SERVER."
+  (setq gnus-browse-current-method server)
   (setq gnus-browse-return-buffer return-buffer)
-  (when (stringp method)
-    (setq method (gnus-server-to-method method)))
-  (let ((gnus-select-method method)
-	groups group)
+  (let* ((method (gnus-server-to-method server))
+	 (gnus-select-method method)
+	 groups group)
     (gnus-message 5 "Connecting to %s..." (nth 1 method))
     (cond
      ((not (gnus-check-server method))
@@ -710,7 +709,10 @@ buffer.
 	  (progn
 	    (gnus-group-change-level
 	     (list t group gnus-level-default-subscribed
-		   nil nil gnus-browse-current-method)
+		   nil nil (if (gnus-server-equal
+				gnus-browse-current-method "native")
+			       nil
+			     gnus-browse-current-method))
 	     gnus-level-default-subscribed gnus-level-killed
 	     (and (car (nth 1 gnus-newsrc-alist))
 		  (gnus-gethash (car (nth 1 gnus-newsrc-alist))

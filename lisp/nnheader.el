@@ -792,6 +792,16 @@ find-file-hooks, etc.
       (pop files))
     (nreverse out)))
 
+(defun nnheader-directory-files (&rest args)
+  "Same as `directory-files', but prune \".\" and \"..\"."
+  (let ((files (apply 'directory-files args))
+	out)
+    (while files
+      (unless (member (file-name-nondirectory (car files)) '("." ".."))
+	(push (car files) out))
+      (pop files))
+    (nreverse out)))
+
 (defmacro nnheader-skeleton-replace (from &optional to regexp)
   `(let ((new (generate-new-buffer " *nnheader replace*"))
 	 (cur (current-buffer))

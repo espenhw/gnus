@@ -244,7 +244,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.15"
+(defconst gnus-version-number "0.16"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -266,6 +266,7 @@ be set in `.emacs' instead."
 
 (unless (featurep 'gnus-xmas)
   (defalias 'gnus-make-overlay 'make-overlay)
+  (defalias 'gnus-delete-overlay 'delete-overlay)
   (defalias 'gnus-overlay-put 'overlay-put)
   (defalias 'gnus-move-overlay 'move-overlay)
   (defalias 'gnus-overlay-end 'overlay-end)
@@ -1648,7 +1649,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-date-original gnus-article-date-lapsed
       gnus-article-show-all-headers
       gnus-article-edit-mode gnus-article-edit-article
-      gnus-article-edit-done gnus-decode-rfc1522 article-decode-rfc1522)
+      gnus-article-edit-done gnus-decode-rfc1522 article-decode-rfc1522
+      gnus-start-date-timer gnus-stop-date-timer)
      ("gnus-int" gnus-request-type)
      ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1
       gnus-dribble-enter)
@@ -2296,7 +2298,8 @@ that that variable is buffer-local to the summary buffers."
 (defun gnus-group-prefixed-name (group method)
   "Return the whole name from GROUP and METHOD."
   (and (stringp method) (setq method (gnus-server-to-method method)))
-  (if (not method)
+  (if (or (not method)
+	  (gnus-server-equal method "native"))
       group
     (concat (format "%s" (car method))
 	    (when (and

@@ -526,6 +526,8 @@ displayed by the first non-nil matching CONTENT face."
 
 ;;; Internal variables
 
+(defvar article-lapsed-timer nil)
+
 (defvar gnus-article-mode-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
     (modify-syntax-entry ?- "w" table)
@@ -1292,14 +1294,15 @@ how much time has lapsed since DATE."
 		  (setq bface (get-text-property (gnus-point-at-bol) 'face)
 			eface (get-text-property (1- (gnus-point-at-eol))
 						 'face))
-		  (message-remove-header date-regexp t)
+		  (delete-region (progn (beginning-of-line) (point))
+				 (progn (end-of-line) (point)))
 		  (beginning-of-line))
 	      (goto-char (point-max)))
 	    (insert (article-make-date-line date type))
 	    ;; Do highlighting.
-	    (forward-line -1)
+	    (beginning-of-line)
 	    (when (looking-at "\\([^:]+\\): *\\(.*\\)$")
-	      (put-text-property (match-beginning 1) (match-end 1)
+	      (put-text-property (match-beginning 1) (1+ (match-end 1))
 				 'face bface)
 	      (put-text-property (match-beginning 2) (match-end 2)
 				 'face eface))))))))
@@ -1314,18 +1317,16 @@ how much time has lapsed since DATE."
    ((eq type 'local)
     (concat "Date: " (condition-case ()
 			 (timezone-make-date-arpa-standard date)
-		       (error date))
-	    "\n"))
+		       (error date))))
    ;; Convert to Universal Time.
    ((eq type 'ut)
     (concat "Date: "
 	    (condition-case ()
 		(timezone-make-date-arpa-standard date nil "UT")
-	      (error date))
-	    "\n"))
+	      (error date))))
    ;; Get the original date from the article.
    ((eq type 'original)
-    (concat "Date: " date "\n"))
+    (concat "Date: " date))
    ;; Let the user define the format.
    ((eq type 'user)
     (concat
@@ -1334,8 +1335,7 @@ how much time has lapsed since DATE."
 			 (ignore-errors
 			   (gnus-encode-date
 			    (timezone-make-date-arpa-standard
-			     date nil "UT"))))
-     "\n"))
+			     date nil "UT"))))))
    ;; Do an X-Sent lapsed format.
    ((eq type 'lapsed)
     ;; If the date is seriously mangled, the timezone functions are
@@ -1386,8 +1386,8 @@ how much time has lapsed since DATE."
 	 ;; If dates are odd, then it might appear like the
 	 ;; article was sent in the future.
 	 (if (> real-sec 0)
-	     " ago\n"
-	   " in the future\n"))))))
+	     " ago"
+	   " in the future"))))))
    (t
     (error "Unknown conversion type: %s" type))))
 
@@ -1407,6 +1407,29 @@ function and want to see what the date was before converting."
   "Convert the current article date to time lapsed since it was sent."
   (interactive (list t))
   (article-date-ut 'lapsed highlight))
+
+(defun article-update-date-lapsed ()
+  "Function to be run from a timer to update the lapsed time line."
+  (save-excursion
+    (when (gnus-buffer-live-p gnus-article-buffer)
+      (set-buffer gnus-article-buffer)
+      (goto-char (point-min))
+      (when (re-search-forward "^X-Sent:" nil t)
+	(article-date-lapsed t)))))
+
+(defun gnus-start-date-timer ()
+  "Start a timer to update the X-Sent header in the article buffers."
+  (interactive)
+  (gnus-stop-date-timer)
+  (setq article-lapsed-timer 
+	(nnheader-run-at-time 1 1 'article-update-date-lapsed)))
+
+(defun gnus-stop-date-timer ()
+  "Stop the X-Sent timer."
+  (interactive)
+  (when article-lapsed-timer
+    (nnheader-delete-timer article-lapsed-timer)
+    (setq article-lapsed-timer nil)))
 
 (defun article-date-user (&optional highlight)
   "Convert the current article date to the user-defined format.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.15 Manual
+@settitle Quassia Gnus 0.16 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.15 Manual
+@title Quassia Gnus 0.16 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.15.
+This manual corresponds to Quassia Gnus 0.16.
 
 @end ifinfo
 
@@ -6522,8 +6522,19 @@ for a list of possible format specs.
 @item W T e
 @kindex W T e (Summary)
 @findex gnus-article-date-lapsed
+@findex gnus-start-date-timer
+@findex gnus-stop-date-timer
 Say how much time has elapsed between the article was posted and now
-(@code{gnus-article-date-lapsed}).
+(@code{gnus-article-date-lapsed}).  If you want to have this line
+updated continually, you can put
+
+@lisp
+(gnus-start-date-timer)
+@end lisp
+
+in your @file{.gnus.el} file, or you can run it off of some hook.  If
+you want to stop the timer, you can use the @code{gnus-stop-date-timer}
+command.
 
 @item W T o
 @kindex W T o (Summary)
@@ -9446,7 +9457,7 @@ be stored in one or more groups.
 
 @item 
 @code{junk}: If the split is the symbol @code{junk}, then don't save
-this message anywhere.
+this message.
 
 @item
 @var{(: function arg1 arg2 ...)}:  If the split is a list, and the first
@@ -9478,7 +9489,7 @@ information in the headers (i.e., do @code{replace-match}-like
 substitions in the group names), you can say things like:
 
 @example
-(any "debian-\(\\w*\\)@@lists.debian.org" "mail.debian.\\1")
+(any "debian-\\(\\w*\\)@@lists.debian.org" "mail.debian.\\1")
 @end example
 
 @node Mail and Procmail

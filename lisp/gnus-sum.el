@@ -4399,7 +4399,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 		    (mail-header-set-id header id))
 		(setcar (symbol-value id-dep) header))
 	    (set id-dep (list header)))
-	  (when  header
+	  (when header
 	    (if (boundp (setq ref-dep (intern (or ref "none") dependencies)))
 		(setcdr (symbol-value ref-dep)
 			(nconc (cdr (symbol-value ref-dep))
@@ -5979,7 +5979,9 @@ Returns how many articles were removed."
       (gnus-summary-position-point))))
 
 (defun gnus-summary-limit-include-dormant ()
-  "Display all the hidden articles that are marked as dormant."
+  "Display all the hidden articles that are marked as dormant.
+Note that this command only works on a subset of the articles currently
+fetched for this group."
   (interactive)
   (unless gnus-newsgroup-dormant
     (error "There are no dormant articles in this group"))
@@ -6362,17 +6364,20 @@ or `gnus-select-method', no matter what backend the article comes from."
 			(gnus-summary-article-sparse-p
 			 (mail-header-number header))
 			(memq (mail-header-number header)
-			      gnus-newsgroup-limit))))
-      (if (and header
-	       (or (not (gnus-summary-article-sparse-p
-			 (mail-header-number header)))
-		   sparse))
-	  (prog1
-              ;; The article is present in the buffer, so we just go to it.
-	      (gnus-summary-goto-article
-               (mail-header-number header) nil t)
-	    (when sparse
-	      (gnus-summary-update-article (mail-header-number header))))
+			      gnus-newsgroup-limit)))
+	   h)
+      (cond
+       ;; If the article is present in the buffer we just go to it.
+       ((and header
+	     (or (not (gnus-summary-article-sparse-p
+		       (mail-header-number header)))
+		 sparse))
+	(prog1
+	    (gnus-summary-goto-article
+	     (mail-header-number header) nil t)
+	  (when sparse
+	    (gnus-summary-update-article (mail-header-number header)))))
+       (t
 	;; We fetch the article
 	(let ((gnus-override-method
 	       (cond ((gnus-news-group-p gnus-newsgroup-name)
@@ -6388,7 +6393,7 @@ or `gnus-select-method', no matter what backend the article comes from."
 	  ;; Fetch the header, and display the article.
 	  (if (setq number (gnus-summary-insert-subject message-id))
 	      (gnus-summary-select-article nil nil nil number)
-	    (gnus-message 3 "Couldn't fetch article %s" message-id)))))))
+	    (gnus-message 3 "Couldn't fetch article %s" message-id))))))))
 
 (defun gnus-summary-enter-digest-group (&optional force)
   "Enter an nndoc group based on the current article.
@@ -7571,7 +7576,9 @@ returned."
   "Mark the current article quickly as unread with MARK."
   (let ((article (gnus-summary-article-number)))
     (if (<= article 0)
-	(gnus-error 1 "Can't mark negative article numbers")
+	(progn
+	  (gnus-error 1 "Can't mark negative article numbers")
+	  nil)
       (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked))
       (setq gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant))
       (setq gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable))
@@ -7597,8 +7604,8 @@ returned."
 	      (= mark gnus-dormant-mark) (= mark gnus-unread-mark))))
 
       ;; Fix the mark.
-      (gnus-summary-update-mark mark 'unread))
-    t))
+      (gnus-summary-update-mark mark 'unread)
+      t)))
 
 (defun gnus-summary-mark-article (&optional article mark no-expire)
   "Mark ARTICLE with MARK.  MARK can be any character.
@@ -7624,29 +7631,29 @@ marked."
 	 (article (or article (gnus-summary-article-number))))
     (unless article
       (error "No article on current line"))
-    (if (or (= mark gnus-unread-mark)
-	    (= mark gnus-ticked-mark)
-	    (= mark gnus-dormant-mark))
-	(gnus-mark-article-as-unread article mark)
-      (gnus-mark-article-as-read article mark))
+    (if (not (if (or (= mark gnus-unread-mark)
+		     (= mark gnus-ticked-mark)
+		     (= mark gnus-dormant-mark))
+		 (gnus-mark-article-as-unread article mark)
+	       (gnus-mark-article-as-read article mark)))
+	t
+      ;; See whether the article is to be put in the cache.
+      (and gnus-use-cache
+	   (not (= mark gnus-canceled-mark))
+	   (vectorp (gnus-summary-article-header article))
+	   (save-excursion
+	     (gnus-cache-possibly-enter-article
+	      gnus-newsgroup-name article
+	      (gnus-summary-article-header article)
+	      (= mark gnus-ticked-mark)
+	      (= mark gnus-dormant-mark) (= mark gnus-unread-mark))))
 
-    ;; See whether the article is to be put in the cache.
-    (and gnus-use-cache
-	 (not (= mark gnus-canceled-mark))
-	 (vectorp (gnus-summary-article-header article))
-	 (save-excursion
-	   (gnus-cache-possibly-enter-article
-	    gnus-newsgroup-name article
-	    (gnus-summary-article-header article)
-	    (= mark gnus-ticked-mark)
-	    (= mark gnus-dormant-mark) (= mark gnus-unread-mark))))
-
-    (when (gnus-summary-goto-subject article nil t)
-      (let ((buffer-read-only nil))
-	(gnus-summary-show-thread)
-	;; Fix the mark.
-	(gnus-summary-update-mark mark 'unread)
-	t))))
+      (when (gnus-summary-goto-subject article nil t)
+	(let ((buffer-read-only nil))
+	  (gnus-summary-show-thread)
+	  ;; Fix the mark.
+	  (gnus-summary-update-mark mark 'unread)
+	  t)))))
 
 (defun gnus-summary-update-secondary-mark (article)
   "Update the secondary (read, process, cache) mark."
@@ -7702,15 +7709,15 @@ marked."
 (defun gnus-mark-article-as-unread (article &optional mark)
   "Enter ARTICLE in the pertinent lists and remove it from others."
   (let ((mark (or mark gnus-ticked-mark)))
-    (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked)
-	  gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant)
-	  gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable)
-	  gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
-
     (if (<= article 0)
 	(progn
 	  (gnus-error 1 "Can't mark negative article numbers")
 	  nil)
+      (setq gnus-newsgroup-marked (delq article gnus-newsgroup-marked)
+	    gnus-newsgroup-dormant (delq article gnus-newsgroup-dormant)
+	    gnus-newsgroup-expirable (delq article gnus-newsgroup-expirable)
+	    gnus-newsgroup-unreads (delq article gnus-newsgroup-unreads))
+
       ;; Unsuppress duplicates?
       (when gnus-suppress-duplicates
 	(gnus-dup-unsuppress-article article))
@@ -8665,6 +8672,14 @@ save those articles instead."
 	     (not (gnus-summary-article-sparse-p (mail-header-number header))))
 	;; We have found the header.
 	header
+      ;; If this is a sparse article, we have to nix out its
+      ;; previous entry in the thread hashtb.
+      (when (and header
+		 (gnus-summary-article-sparse-p (mail-header-number header)))
+	(let ((thread (gnus-gethash
+		       (gnus-parent-id (mail-header-references header))
+		       gnus-newsgroup-dependencies)))
+	  (delq (assq header thread) thread)))
       ;; We have to really fetch the header to this article.
       (save-excursion
 	(set-buffer nntp-server-buffer)
