@@ -5362,7 +5362,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	 (min (car active))
 	 (max (cdr active))
 	 (types gnus-article-mark-lists)
-	 marks var articles article mark mark-type
+	 marks var articles article mark mark-type p-articles
          bgn end)
 
     (dolist (marks marked-lists)
@@ -5376,7 +5376,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
        ;; Adjust "simple" lists - compressed yet unsorted
        ((eq mark-type 'list)
         ;; Simultaneously uncompress and clip to active range
-        (setq articles (cdr marks))
+        (setq p-articles marks
+              articles (cdr p-articles))
         (while (setq article (car articles))
           (when (cond ((consp article)
                        (setq bgn (max (car article) min)
@@ -5388,19 +5389,22 @@ If SELECT-ARTICLES, only select those articles from GROUP."
                          (while (<= bgn end)
                            (setq articles (setcdr articles (cons bgn (cdr articles)))
                                  bgn (1+ bgn)))
-                         (setq articles (cdr articles))
+                         (setq p-articles articles
+                               articles (cdr articles))
                          nil))
                       ((or (< article min)
                            (> article max))
                        t        ; value excluded - splice out of marks
                        )
                       (t
-                       (setq articles (cdr articles))
+                       (setq p-articles articles
+                             articles (cdr articles))
                        nil))
-            ; perform slice to remove article
-            (setcar articles (cadr articles))
-            (setcdr articles (cddr articles))))
-          (set var (cdr marks)))
+            ;; perform slice to remove article
+            (if (setcar articles (cadr articles))
+                (setcdr articles (cddr articles))
+              (setcdr p-articles nil))))
+        (set var (cdr marks)))
        ;; Adjust assocs.
        ((eq mark-type 'tuple)
 	(set var (setq articles (cdr marks)))

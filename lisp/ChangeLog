@@ -1,3 +1,8 @@
+2004-01-22  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-sum.el (gnus-adjust-marks): Avoid splicing null INTO the
+	uncompressed list.
+
 2004-01-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* spam-stat.el (spam-stat-strip-xref): New function.
