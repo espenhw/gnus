@@ -1,17 +1,30 @@
-** Gnus changes since 5.8.
+GNUS NEWS -- history of user-visible changes.
+Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+See the end for copying conditions.
 
-*** MML (Mime compose) prefix changed from `M-m' to `C-c C-m'.
+Please send Gnus bug reports to bugs@gnus.org.
+For older news, see Gnus info node "New Features".
+
+
+* Changes in Oort Gnus
+
+** Gnus now supports PGP-MIME (RFC2015) and SMIME.
+
+** Gnus inlines external parts (message/external).
+
+** MML (Mime compose) prefix changed from `M-m' to `C-c C-m'.
 
 This change was made to avoid conflict with the standard binding of
 `back-to-indentation', which is also useful in message mode.
 
-** Gnus changes.
+
+* Changes in Pterodactyl Gnus (5.8/5.9)
 
 The Gnus NEWS entries are short, but they reflect sweeping changes in
 four areas: Article display treatment, MIME treatment,
 internationalization and mail-fetching.
 
-*** The mail-fetching functions have changed.  See the manual for the
+** The mail-fetching functions have changed.  See the manual for the
 many details.  In particular, all procmail fetching variables are gone.
 
 If you used procmail like in
@@ -30,30 +43,47 @@ this now has changed to
 More information is available in the info doc at Select Methods ->
 Getting Mail -> Mail Sources
 
-*** Gnus is now a MIME-capable reader.  This affects many parts of
+** Gnus is now a MIME-capable reader.  This affects many parts of
 Gnus, and adds a slew of new commands.  See the manual for details.
 
-*** Gnus has also been multilingualized.  This also affects too
+** Gnus has also been multilingualized.  This also affects too
 many parts of Gnus to summarize here, and adds many new variables.
 
-*** gnus-auto-select-first can now be a function to be
+** gnus-auto-select-first can now be a function to be
 called to position point.
 
-*** The user can now decide which extra headers should be included in
+** The user can now decide which extra headers should be included in
 summary buffers and NOV files.
 
-*** `gnus-article-display-hook' has been removed.  Instead, a number
+** `gnus-article-display-hook' has been removed.  Instead, a number
 of variables starting with `gnus-treat-' have been added.
 
-*** The Gnus posting styles have been redone again and now works in a
+** The Gnus posting styles have been redone again and now works in a
 subtly different manner.
 
-*** New web-based backends have been added: nnslashdot, nnwarchive
+** New web-based backends have been added: nnslashdot, nnwarchive
 and nnultimate.  nnweb has been revamped, again, to keep up with
 ever-changing layouts.
 
-*** Gnus can now read IMAP mail via nnimap.
+** Gnus can now read IMAP mail via nnimap.
 
+
+* For older news, see Gnus info node "New Features".
+
+----------------------------------------------------------------------
+Copyright information:
+
+Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+
+   Permission is granted to anyone to make or distribute verbatim copies
+   of this document as received, in any medium, provided that the
+   copyright notice and this permission notice are preserved,
+   thus giving the recipient permission to redistribute in turn.
+
+   Permission is granted to distribute modified versions
+   of this document, or of portions of it,
+   under the above conditions, provided also that they
+   carry prominent notices stating who last changed them.
 
 Local variables:
 mode: outline
