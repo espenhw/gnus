@@ -1,4 +1,13 @@
+2002-02-03  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-forward-rmail-make-body): Directly use
+	rmail-msg-restore-non-pruned-header to avoid calling
+	vertical-motion.
+
 2002-02-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cache.el (gnus-summary-insert-cached-articles): 
+	(gnus-summary-limit-include-cached): gnus-newsgroup-cached is sorted.
 
 	* gnus-group.el (gnus-group-mark-article-read): Nreverse
 	gnus-newsgroups-unselected.

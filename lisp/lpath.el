@@ -32,7 +32,7 @@
 	       frames-on-display-list
 	       make-mode-line-mouse-map
 	       rmail-select-summary rmail-summary-exists rmail-update-summary
-	       rmail-toggle-header
+	       rmail-msg-is-pruned rmail-msg-restore-non-pruned-header
 	       sc-cite-regexp set-font-family set-font-size temp-directory
 	       string-as-multibyte
 	       tool-bar-add-item tool-bar-add-item-from-menu

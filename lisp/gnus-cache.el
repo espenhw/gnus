@@ -362,7 +362,7 @@ Returns the list of articles removed."
 (defun gnus-summary-insert-cached-articles ()
   "Insert all the articles cached for this group into the current buffer."
   (interactive)
-  (let ((cached (sort (copy-sequence gnus-newsgroup-cached) '>))
+  (let ((cached gnus-newsgroup-cached)
 	(gnus-verbose (max 6 gnus-verbose)))
     (if (not cached)
 	(gnus-message 3 "No cached articles for this group")
@@ -375,11 +375,10 @@ Returns the list of articles removed."
 (defun gnus-summary-limit-include-cached ()
   "Limit the summary buffer to articles that are cached."
   (interactive)
-  (let ((cached (sort (copy-sequence gnus-newsgroup-cached) '>))
-	(gnus-verbose (max 6 gnus-verbose)))
-    (if cached
+  (let ((gnus-verbose (max 6 gnus-verbose)))
+    (if gnus-newsgroup-cached
         (progn
-          (gnus-summary-limit cached)
+          (gnus-summary-limit gnus-newsgroup-cached)
           (gnus-summary-position-point))
         (gnus-message 3 "No cached articles for this group"))))
 
