@@ -5246,7 +5246,7 @@ Push the current process mark set onto the stack
 
 @end table
 
-Also see the @kbd{&} command in @xref{Searching for Articles} for how to
+Also see the @kbd{&} command in @pxref{Searching for Articles} for how to
 set process marks based on article body contents.
 
 
@@ -20933,7 +20933,7 @@ Allow mail splitting on bodies when using advanced mail splitting.
 
 @lisp
   (body "whatever.text")
-@lisp
+@end lisp
 
 @item
 Solve the halting problem.

@@ -2,6 +2,7 @@
 
 	* gnus.texi (Splitting Mail): Mention gnus-summary-respool-trace. 
 	(Searching for Articles): Fix.
+	(Newest Features): Fix.
 
 2000-06-28  Simon Josefsson  <simon@josefsson.org>
 
