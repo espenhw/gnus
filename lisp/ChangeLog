@@ -1,5 +1,8 @@
 2003-10-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* rfc2047.el (rfc2047-encode): See which encoding is shorter --
+	base64 or QP.
+
 	* nnmail.el (nnmail-article-group): Default to "bogus".
 
 	* mail-source.el (mail-source-delete-incoming): Change to nil.

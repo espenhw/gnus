@@ -405,11 +405,15 @@ By default, the region is treated as containing addresses (see
 	       (mm-charset-to-coding-system mime-charset)))
 	 ;; Fixme: Better, calculate the number of non-ASCII
 	 ;; characters, at least for 8-bit charsets.
-	 (encoding (if (assq mime-charset
-			     rfc2047-charset-encoding-alist)
-		       (cdr (assq mime-charset
+	 (encoding (or (cdr (assq mime-charset
 				  rfc2047-charset-encoding-alist))
-		     'B))
+		       ;; For the charsets that don't have a preferred
+		       ;; encoding, choose the one that's shorter.
+		       (save-restriction
+			 (narrow-to-region b e)
+			 (if (eq (mm-qp-or-base64) 'base64)
+			     'B
+			   'Q))))
 	 (start (concat
 		 "=?" (downcase (symbol-name mime-charset)) "?"
 		 (downcase (symbol-name encoding)) "?"))
