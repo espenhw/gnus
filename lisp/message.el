@@ -5020,7 +5020,7 @@ OTHER-HEADERS is an alist of header/value pairs."
     (message-setup `((Newsgroups . ,(or newsgroups ""))
 		     (Subject . ,(or subject ""))))))
 
-(defun message-get-reply-headers (wide &optional to-address)
+(defun message-get-reply-headers (wide &optional to-address address-headers)
   (let (follow-to mct never-mct to cc author mft recipients)
     ;; Find all relevant headers we need.
     (setq to (message-fetch-field "to")
@@ -5048,6 +5048,11 @@ OTHER-HEADERS is an alist of header/value pairs."
       (cond
        ((not wide)
 	(setq recipients (concat ", " author)))
+       (address-headers
+	(dolist (header address-headers)
+	  (let ((value (message-fetch-field header)))
+	    (when value
+	      (setq recipients (concat recipients ", " value))))))
        ((and mft
 	     (string-match "[^ \t,]" mft)
 	     (or (not (eq message-use-mail-followup-to 'ask))

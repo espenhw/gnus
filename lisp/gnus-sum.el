@@ -109,6 +109,11 @@ given by the `gnus-summary-same-subject' variable.)"
 		 (const adopt)
 		 (const empty)))
 
+(defcustom gnus-summary-make-false-root-always t
+  "Always make a false dummy root."
+  :group 'gnus-thread
+  :type 'boolean)
+
 (defcustom gnus-summary-gather-exclude-subject "^ *$\\|^(none)$"
   "*A regexp to match subjects to be excluded from loose thread gathering.
 As loose thread gathering is done on subjects only, that means that
@@ -583,7 +588,7 @@ list of parameters to that command."
   :type 'boolean)
 
 (defcustom gnus-summary-dummy-line-format
-  "  %(:                          :%) %S\n"
+  "   %(:                             :%) %S\n"
   "*The format specification for the dummy roots in the summary buffer.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -3586,7 +3591,16 @@ If NO-DISPLAY, don't generate a summary buffer."
 		(setcdr prev (cdr threads))
 		(setq threads prev))
 	    ;; Enter this thread into the hash table.
-	    (gnus-sethash subject threads hashtb)))
+	    (gnus-sethash subject
+			  (if gnus-summary-make-false-root-always
+			      (progn
+				;; If you want a dummy root above all
+				;; threads...
+				(setcar threads (list whole-subject
+						      (car threads)))
+				threads)
+			    threads)
+			  hashtb)))
 	(setq prev threads)
 	(setq threads (cdr threads)))
       result)))

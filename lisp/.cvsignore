@@ -2,3 +2,4 @@ Makefile
 version
 *.elc
 gnus-load.el
+old
