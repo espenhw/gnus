@@ -1,3 +1,7 @@
+2003-01-12 13:46:20 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Oort Gnus v0.11 is released.
+
 2003-01-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-fetch-reply-field): Narrow to headers.
