@@ -768,30 +768,6 @@ If INHIBIT is non-nil, inhibit `mm-inhibit-file-name-handlers'."
     (let ((cs (mm-detect-coding-region start end)))
       cs)))
 
-(defun mm-guess-mime-charset ()
-  "Guess the default MIME charset from the language environment."
-  (let ((language-info
-	 (and (boundp 'current-language-environment)
-	      (assoc current-language-environment
-		     language-info-alist)))
-	item)
-    (cond
-     ((null language-info)
-      'iso-8859-1)
-     ((setq item
-	    (cadr
-	     (or (assq 'coding-priority language-info)
-		 (assq 'coding-system language-info))))
-      (if (fboundp 'coding-system-get)
-	  (or (coding-system-get item 'mime-charset)
-	      item)
-	item))
-     ((setq item (car (last (assq 'charset language-info))))
-      (if (eq item 'ascii)
-	  'iso-8859-1
-	(mm-mime-charset item)))
-     (t
-      'iso-8859-1))))
 
 (provide 'mm-util)
 

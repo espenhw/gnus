@@ -234,66 +234,41 @@ If TYPE is `text/plain' CRLF->LF translation may occur."
       (while (search-forward "\r\n" nil t)
 	(replace-match "\n" t t)))))
 
-(defun mm-decode-body (charset &optional encoding type force)
+(defun mm-decode-body (charset &optional encoding type)
   "Decode the current article that has been encoded with ENCODING.
 The characters in CHARSET should then be decoded.  If FORCE is non-nil
 use the supplied charset unconditionally."
-  (let ((charset-supplied charset))
-    (when (stringp charset)
-      (setq charset (intern (downcase charset))))
-    (when (or (not charset)
-	      (eq 'gnus-all mail-parse-ignored-charsets)
-	      (memq 'gnus-all mail-parse-ignored-charsets)
-	      (memq charset mail-parse-ignored-charsets))
-      (setq charset mail-parse-charset
-	    charset-supplied nil))
-    (save-excursion
-      (when encoding
-	(mm-decode-content-transfer-encoding encoding type))
-      (when (featurep 'mule)
-	(let ((coding-system (mm-charset-to-coding-system charset)))
-	  (if (and (not coding-system)
-		   (listp mail-parse-ignored-charsets)
-		   (memq 'gnus-unknown mail-parse-ignored-charsets))
-	      (setq coding-system
-		    (mm-charset-to-coding-system mail-parse-charset)))
-	  (when (and charset coding-system
-		     ;; buffer-file-coding-system
-		     ;;Article buffer is nil coding system
-		     ;;in XEmacs
-		     (mm-multibyte-p)
-		     (or (not (eq coding-system 'ascii))
-			 (setq coding-system mail-parse-charset))
-		     (not (eq coding-system 'gnus-decoded)))
-	    (if (or force
-		    ;; If a charset was supplied, then use the
-		    ;; supplied charset unconditionally.
-		    charset-supplied)
-		(mm-decode-coding-region (point-min) (point-max)
-					 coding-system)
-	      ;; Otherwise allow Emacs to auto-detect the charset.
-	      (mm-decode-coding-region-safely (point-min) (point-max)
-					      coding-system)))
-	  (setq buffer-file-coding-system
-		(if (boundp 'last-coding-system-used)
-		    (symbol-value 'last-coding-system-used)
-		  coding-system)))))))
-
-(defun mm-decode-coding-region-safely (start end coding-system)
-  "Decode region between START and END with CODING-SYSTEM.
-If CODING-SYSTEM is not a valid coding system for the text, let Emacs
-decide which coding system to use."
-  (let* ((orig (buffer-substring start end))
-	 charsets)
-    (save-restriction
-      (narrow-to-region start end)
-      (mm-decode-coding-region (point-min) (point-max) coding-system)
-      (setq charsets (find-charset-region (point-min) (point-max)))
-      (when (or (memq 'eight-bit-control charsets)
-		(memq 'eight-bit-graphic charsets))
-	(delete-region (point-min) (point-max))
-	(insert orig)
-	(mm-decode-coding-region (point-min) (point-max) 'undecided)))))
+  (when (stringp charset)
+    (setq charset (intern (downcase charset))))
+  (when (or (not charset)
+	    (eq 'gnus-all mail-parse-ignored-charsets)
+	    (memq 'gnus-all mail-parse-ignored-charsets)
+	    (memq charset mail-parse-ignored-charsets))
+    (setq charset mail-parse-charset))
+  (save-excursion
+    (when encoding
+      (mm-decode-content-transfer-encoding encoding type))
+    (when (featurep 'mule)
+      (let ((coding-system (mm-charset-to-coding-system charset)))
+	(if (and (not coding-system)
+		 (listp mail-parse-ignored-charsets)
+		 (memq 'gnus-unknown mail-parse-ignored-charsets))
+	    (setq coding-system
+		  (mm-charset-to-coding-system mail-parse-charset)))
+	(when (and charset coding-system
+		   ;; buffer-file-coding-system
+		   ;;Article buffer is nil coding system
+		   ;;in XEmacs
+		   (mm-multibyte-p)
+		   (or (not (eq coding-system 'ascii))
+		       (setq coding-system mail-parse-charset))
+		   (not (eq coding-system 'gnus-decoded)))
+	  (mm-decode-coding-region (point-min) (point-max)
+				   coding-system))
+	(setq buffer-file-coding-system
+	      (if (boundp 'last-coding-system-used)
+		  (symbol-value 'last-coding-system-used)
+		coding-system))))))
 
 (defun mm-decode-string (string charset)
   "Decode STRING with CHARSET."

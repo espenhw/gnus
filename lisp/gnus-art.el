@@ -2108,7 +2108,7 @@ If PROMPT (the prefix), prompt for a coding system to use."
 	(mm-decode-body
 	 charset (and cte (intern (downcase
 				   (gnus-strip-whitespace cte))))
-	 (car ctl) prompt))))))
+	 (car ctl)))))))
 
 (defun article-decode-encoded-words ()
   "Remove encoded-word encoding from headers."

@@ -35,10 +35,6 @@
 (require 'mm-util)
 (require 'nnheader)
 
-;; Make sure it was the right mm-util.
-(unless (fboundp 'mm-guess-mime-charset)
-  (error "Wrong `mm-util' found in `load-path'.  Make sure the Gnus one is found first."))
-
 (defgroup gnus nil
   "The coffee-brewing, all singing, all dancing, kitchen sink newsreader."
   :group 'news
@@ -2126,7 +2122,7 @@ You also need to enable `gnus-agent' for this to have any affect."
   :group 'gnus-agent
   :type 'boolean)
 
-(defcustom gnus-default-charset (mm-guess-mime-charset)
+(defcustom gnus-default-charset 'undecided
   "Default charset assumed to be used when viewing non-ASCII characters.
 This variable is overridden on a group-to-group basis by the
 `gnus-group-charset-alist' variable and is only used on groups not
