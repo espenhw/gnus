@@ -1,3 +1,8 @@
+2002-01-15  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-close-asynchronous): Enable.
+	(nnimap-close-group): Expunge.
+
 2002-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-user-date-format-alist): Typo.

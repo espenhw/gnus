@@ -196,7 +196,7 @@ RFC2060 section 6.4.4."
 
 ;; Performance / bug workaround variables
 
-(defcustom nnimap-close-asynchronous nil
+(defcustom nnimap-close-asynchronous t
   "Close mailboxes asynchronously in `nnimap-close-group'.
 This means that errors cought by nnimap when closing the mailbox will
 not prevent Gnus from updating the group status, which may be harmful.
@@ -859,15 +859,17 @@ function is generally only called when Gnus is shutting down."
     (when (and (imap-opened)
 	       (nnimap-possibly-change-group group server))
       (case nnimap-expunge-on-close
-	(always (unless nnimap-dont-close
+	(always (progn
 		  (imap-mailbox-expunge nnimap-close-asynchronous)
-		  (imap-mailbox-close nnimap-close-asynchronous)))
+		  (unless nnimap-dont-close
+		    (imap-mailbox-close nnimap-close-asynchronous))))
 	(ask (if (and (imap-search "DELETED")
 		      (gnus-y-or-n-p (format "Expunge articles in group `%s'? "
 					     imap-current-mailbox)))
-		 (unless nnimap-dont-close
+		 (progn
 		   (imap-mailbox-expunge nnimap-close-asynchronous)
-		   (imap-mailbox-close nnimap-close-asynchronous))
+		   (unless nnimap-dont-close
+		     (imap-mailbox-close nnimap-close-asynchronous)))
 	       (imap-mailbox-unselect)))
 	(t (imap-mailbox-unselect)))
       (not imap-current-mailbox))))
