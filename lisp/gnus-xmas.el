@@ -650,7 +650,7 @@ XEmacs compatibility workaround."
   :group 'gnus-xmas)
 
 (defun gnus-xmas-article-display-xface (data)
-  "Display any XFace headers in BUFFER."
+  "Display the XFace in DATA."
   (save-excursion
     (let ((xface-glyph
 	   (cond
@@ -658,7 +658,7 @@ XEmacs compatibility workaround."
 	     (make-glyph (vector 'xface :data
 				 (concat "X-Face: " data))))
 	    ((featurep 'xpm)
-	     (let ((cur (or buffer (current-buffer))))
+	     (let ((cur (current-buffer)))
 	       (save-excursion
 		 (gnus-set-work-buffer)
 		 (insert data)
@@ -672,15 +672,13 @@ XEmacs compatibility workaround."
 		   (make-glyph
 		    (vector 'xpm :data (buffer-string)))))))
 	    (t
-	     (make-glyph [nothing]))))
-	  (ext (make-extent (progn
-			      (goto-char (point-min))
-			      (re-search-forward "^From:" nil t)
-			      (point))
-			    (1+ (point)))))
-      (set-glyph-face xface-glyph 'gnus-x-face)
-      (set-extent-begin-glyph ext xface-glyph)
-      (set-extent-property ext 'duplicable t))))
+	     (make-glyph [nothing])))))
+      ;;(set-glyph-face xface-glyph 'gnus-x-face)
+
+      (gnus-article-goto-header "from")
+      (gnus-put-image xface-glyph " ")
+      (gnus-add-wash-type 'xface)
+      (gnus-add-image 'xface xface-glyph))))
 
 (defvar gnus-xmas-modeline-left-extent
   (let ((ext (copy-extent modeline-buffer-id-left-extent)))
@@ -830,12 +828,21 @@ XEmacs compatibility workaround."
     (mm-create-image-xemacs (car (last (split-string file "[.]"))))))
 
 (defun gnus-xmas-put-image (glyph &optional string)
-  (let ((annot (make-annotation glyph nil 'text)))
-    (set-extent-property annot 'mm t)
-    (set-extent-property annot 'duplicable t)))
+  (let ((begin (point))
+	extent)
+    (insert " ")
+    (setq extent (make-extent begin (point)))
+    (set-extent-property extent 'gnus-image t)
+    (set-extent-property extent 'duplicable t)
+    (set-extent-property extent 'begin-glyph glyph)))
 
 (defun gnus-xmas-remove-image (image)
-  )
+  (map-extents
+   (lambda (ext unused)
+     (when (equal (extent-begin-glyph ext) image)
+       (set-extent-property ext 'begin-glyph nil))
+     nil)
+   nil nil nil nil nil 'gnus-image))
 
 (provide 'gnus-xmas)
 
