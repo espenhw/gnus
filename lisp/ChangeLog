@@ -1,3 +1,24 @@
+2000-08-14  Rod Whitby <list.ding@rwhitby.net>
+
+	* nnmail.el (nnmail-expiry-target-group): Fix the call to
+	gnus-request-accept-article so that body encoding is *not* done.
+	Encoding is not done on incoming mail, so why should it be done on
+	expired mail?
+
+
+2000-08-14  Rod Whitby <list.ding@rwhitby.net>
+
+	* nnml.el (nnml-request-expire-articles): Fix the calls to
+	nnml-request-article (the filename was being passed instead of the
+	article number) and nnmail-expiry-target-group
+	(nnml-current-directory is changed by nnml-request-accept-article,
+	causing it to be incorrect for the next article to be expired).
+
+2000-08-14  Rod Whitby <list.ding@rwhitby.net>
+
+	* gnus-sum.el (gnus-summary-expire-articles): Fix the handling of
+	expiry-target group parameters. 
+
 2000-08-13 18:53:08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-topic.el (gnus-topic-select-group): Touch the dribble

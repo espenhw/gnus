@@ -289,12 +289,13 @@ all.  This may very well take some time.")
 		;; Allow a special target group.
 		(unless (eq nnmail-expiry-target 'delete)
 		  (with-temp-buffer
-		    (nnml-request-article article group server
+		    (nnml-request-article number group server
 					  (current-buffer))
-		    (nnmail-expiry-target-group
-		     nnmail-expiry-target group)))
+		    (let ((nnml-current-directory nil))
+		      (nnmail-expiry-target-group
+		       nnmail-expiry-target group))))
 		(nnheader-message 5 "Deleting article %s in %s"
-				  article group)
+				  number group)
 		(condition-case ()
 		    (funcall nnmail-delete-file-function article)
 		  (file-error

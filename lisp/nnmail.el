@@ -1616,7 +1616,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (when (nnheader-functionp target)
     (setq target (funcall target group)))
   (unless (eq target 'delete)
-    (gnus-request-accept-article target)))
+    (gnus-request-accept-article target nil nil t)))
 
 (defun nnmail-check-syntax ()
   "Check (and modify) the syntax of the message in the current buffer."

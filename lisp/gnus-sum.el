@@ -7683,6 +7683,9 @@ This will be the case if the article has both been mailed and posted."
 	   (expiry-wait (if now 'immediate
 			  (gnus-group-find-parameter
 			   gnus-newsgroup-name 'expiry-wait)))
+	   (nnmail-expiry-target
+	    (or (gnus-group-find-parameter gnus-newsgroup-name 'expiry-target)
+		nnmail-expiry-target))
 	   es)
       (when expirable
 	;; There are expirable articles in this group, so we run them
