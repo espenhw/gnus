@@ -839,13 +839,13 @@ Respects the process/prefix convention."
 	nil)))))
 
 (defun spam-fetch-field-from-fast (article)
-  (spam-fetch-field-fast 'from))
+  (spam-fetch-field-fast article 'from))
 
 (defun spam-fetch-field-subject-fast (article)
-  (spam-fetch-field-fast 'subject))
+  (spam-fetch-field-fast article 'subject))
 
 (defun spam-fetch-field-message-id-fast (article)
-  (spam-fetch-field-fast 'message-id))
+  (spam-fetch-field-fast article 'message-id))
 
 (defun spam-insert-fake-headers (article)
   (insert (format "From: %s\n" (spam-fetch-field-fast article 'from)))
