@@ -723,14 +723,11 @@ the actual number of articles toggled is returned."
 	(goto-char (point-min))
 	(when (re-search-forward
 	       (concat "^" (regexp-quote group) " ") nil t)
-	  (save-excursion
-	    (save-restriction
-	      (narrow-to-region (match-beginning 0)
-				(progn
-				  (forward-line 1)
-				  (point)))
-	      (setq oactive (car (nnmail-parse-active)))))
-	  (gnus-delete-line))
+	  (delete-region (point-min) (match-beginning 0))
+	  (delete-region (progn 
+			   (forward-line 1)
+			   (point)) (point-max))
+	  (setq oactive (car-safe (cdr-safe (car-safe (nnmail-parse-active))))))
 	(insert (format "%S %d %d y\n" (intern group)
 			(cdr active)
 			(or (car oactive) (car active))))
