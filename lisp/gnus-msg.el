@@ -1127,7 +1127,10 @@ this is a reply."
 			     (setq gnus-newsgroup-active (gnus-active group))
 			     t)))
 		      (gnus-group-make-articles-read group 
-						     (list article)))))
+						     (list article))
+		      (when (gnus-group-auto-expirable-p group)
+			(gnus-add-marked-articles
+			 group 'expire (list article))))))
 		(kill-buffer (current-buffer))))))))))
 
 (defun gnus-inews-insert-gcc ()
