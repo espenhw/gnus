@@ -5433,16 +5433,16 @@ regexp varstr."
 	  (forward-line 1)
 	  (insert "Content-Type: text/plain; charset=us-ascii\n"))))))
 
-(defun message-read-from-minibuffer (prompt)
+(defun message-read-from-minibuffer (prompt &optional initial-contents)
   "Read from the minibuffer while providing abbrev expansion."
   (if (fboundp 'mail-abbrevs-setup)
       (let ((mail-abbrev-mode-regexp "")
 	    (minibuffer-setup-hook 'mail-abbrevs-setup)
 	    (minibuffer-local-map message-minibuffer-local-map))
-	(read-from-minibuffer prompt))
+	(read-from-minibuffer prompt initial-contents))
     (let ((minibuffer-setup-hook 'mail-abbrev-minibuffer-setup-hook)
 	  (minibuffer-local-map message-minibuffer-local-map))
-      (read-string prompt))))
+      (read-string prompt initial-contents))))
 
 (defun message-use-alternative-email-as-from ()
   (require 'mail-utils)

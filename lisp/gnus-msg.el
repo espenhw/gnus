@@ -1053,7 +1053,14 @@ For the `inline' alternatives, also see the variable
 (defun gnus-summary-resend-message (address n)
   "Resend the current article to ADDRESS."
   (interactive
-   (list (message-read-from-minibuffer "Resend message(s) to: ")
+   (list (message-read-from-minibuffer 
+	  "Resend message(s) to: "
+	  (when (gnus-buffer-live-p gnus-original-article-buffer)
+	    ;; If some other article is currently selected, the
+	    ;; initial-contents is wrong. Whatever, it is just the
+	    ;; initial-contents.
+	    (with-current-buffer gnus-original-article-buffer
+	      (nnmail-fetch-field "to"))))
 	 current-prefix-arg))
   (let ((articles (gnus-summary-work-articles n))
 	article)
