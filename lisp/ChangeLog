@@ -1,8 +1,35 @@
+Wed Jun 28 16:24:38 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* nnfolder.el (nnfolder-directory): file-name-as-directory thing. 
+
+	* gnus-mh.el (gnus-mail-reply-using-mhe): Set gnus-mail-buffer to
+	the right buffer.
+
+	* gnus.el (gnus-article-mode-map): Copy all summary keystrokes. 
+	(gnus-summary-insert-pseudos): Don't view if you ask to save 
+	(gnus-summary-edit-article): Enable undo.
+
+Sun Jun 25 11:47:24 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-next-group): Fixed possible bug on `n' on
+	last group. 
+	(gnus-remove-some-windows): Didn't delete all Gnus windows.
+	(gnus-group-unsubscribe-current-group): Use universal-argument as
+	expected. 
+	(gnus-summary-beginning-of-article): Didn't configure windows. 
+	(gnus-compress-newsrc-alist): Be more lenient in compressing.
+	(gnus-newsrc-parse-options): "-" was counted as a non-word
+	character for some reason.
+	(gnus-articles-to-read): Accept white space.
+	(gnus-truncate-string): Did the opposite of what it should. 
+
 Sat Jun 24 14:11:58 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el: 0.88 is released.
 
 	* gnus.el (gnus-bug): Use gnus-mail-send-and-exit. 
 	(gnus-summary-line-format-alist): Int instead of char with %e.
-	(gnus-format-max-width): Mule defefinition.
+	(gnus-format-max-width): Mule refefinition.
 
 Sat Jun 24 13:14:40 1995  Lars INGEBRIGTSEN UiO  <lingebri@sunsci4.cern.ch>
 

@@ -1291,7 +1291,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.88"
+(defconst gnus-version "(ding) Gnus v0.89"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1661,6 +1661,7 @@ Thank you for your help in stamping out bugs.
   (autoload 'gnus-mail-other-window-using-mail "gnus-msg")
   (autoload 'gnus-article-mail-with-original "gnus-msg")
   (autoload 'gnus-article-mail "gnus-msg")
+  (autoload 'gnus-bug "gnus-msg")
 
   ;; gnus-vm
   (autoload 'gnus-summary-save-in-vm "gnus-vm" nil t)
@@ -1711,7 +1712,7 @@ Thank you for your help in stamping out bugs.
 ;;   character.
 
 (defun gnus-truncate-string (str width)
-  (substring str width))
+  (substring str 0 width))
 
 (defsubst gnus-simplify-subject-re (subject)
   "Remove \"Re:\" from subject lines."
@@ -2471,22 +2472,31 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
   (let ((buffers gnus-window-to-buffer)
 	(first t)
 	buf)
-    (while buffers
-      (setq buf (cdr (car buffers)))
-      (if (symbolp buf)
-	  (setq buf (and (boundp buf) (symbol-value buf))))
-      (and buf 
-	   (get-buffer-window buf)
-	   (progn
-	     (set-buffer buf)
-	     (if first
-		 (progn
-		   (switch-to-buffer nntp-server-buffer)
-		   (setq first nil))
-	       (delete-window (get-buffer-window buf)))))
-      (setq buffers (cdr buffers)))
-    (set-buffer nntp-server-buffer)))
-
+    (save-excursion
+      ;; Remove windows on all known Gnus buffers.
+      (while buffers
+	(setq buf (cdr (car buffers)))
+	(if (symbolp buf)
+	    (setq buf (and (boundp buf) (symbol-value buf))))
+	(and buf 
+	     (get-buffer-window buf)
+	     (progn
+	       (if first
+		   (progn
+		     (pop-to-buffer buf)
+		     (switch-to-buffer nntp-server-buffer)
+		     (setq first nil))
+		 (delete-window (get-buffer-window buf)))))
+	(setq buffers (cdr buffers)))
+      ;; Remove windows on *all* summary buffers.
+      (let ((buffers (buffer-list)))
+	(while buffers
+	  (if (and (string-match 
+		    "^\\*Summary" (or (buffer-name (car buffers)) ""))
+		   (get-buffer-window (car buffers)))
+	      (delete-window (get-buffer-window (car buffers))))
+	  (setq buffers (cdr buffers)))))))
+			  
 (defun gnus-version ()
   "Version numbers of this version of Gnus."
   (interactive)
@@ -2512,79 +2522,6 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
   (let ((mode major-mode))
     (gnus-configure-windows 'info)
     (Info-goto-node (car (cdr (assq mode gnus-info-nodes))))))
-
-(defun gnus-bug ()
-  "Send a bug report to the Gnus maintainers."
-  (interactive)
-  (let ((winconf (current-window-configuration)))
-    (delete-other-windows)
-    (switch-to-buffer "*Gnus Bug Help*")
-    (erase-buffer)
-    (insert gnus-bug-message)
-    (goto-char (point-min))
-    (pop-to-buffer "*Gnus Bug*")
-    (erase-buffer)
-    (mail-mode)
-    (mail-setup gnus-maintainer nil nil nil nil nil)
-    (make-local-variable 'gnus-prev-winconf)
-    (setq gnus-prev-winconf winconf)
-    (use-local-map (copy-keymap mail-mode-map))
-    (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
-    (goto-char (point-min))
-    (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
-    (forward-line 1)
-    (insert (format "%s\n%s\n\n\n\n\n" (gnus-version) (emacs-version)))
-    (let ((b (point)))
-      (gnus-debug)
-      (goto-char (- b 3)))
-    (message "")))
-
-(defun gnus-debug ()
-  "Attemps to go through the Gnus source file and report what variables have been changed.
-The source file has to be in the Emacs load path."
-  (interactive)
-  (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el"))
-	file dirs expr olist)
-    (save-excursion
-      (set-buffer (get-buffer-create " *gnus bug info*"))
-      (buffer-disable-undo (current-buffer))
-      (message "Please wait while we snoop your variables...")
-      (sit-for 0)
-      (while files
-	(erase-buffer)
-	(setq dirs load-path)
-	(while dirs
-	  (if (or (not (car dirs))
-		  (not (stringp (car dirs)))
-		  (not (file-exists-p 
-			(setq file (concat (file-name-as-directory 
-					    (car dirs)) (car files))))))
-	      (setq dirs (cdr dirs))
-	    (setq dirs nil)
-	    (insert-file-contents file)
-	    (goto-char (point-min))
-	    (or (re-search-forward "^;;* Internal variables" nil t)
-		(error "Malformed sources in file %s" file))
-	    (narrow-to-region (point-min) (point))
-	    (goto-char (point-min))
-	    (while (setq expr (condition-case () 
-				  (read (current-buffer)) (error nil)))
-	      (and (eq (car expr) 'defvar)
-		   (stringp (nth 3 expr))
-		   (or (not (boundp (nth 1 expr)))
-		       (not (equal (eval (nth 2 expr))
-				   (symbol-value (nth 1 expr)))))
-		   (setq olist (cons (nth 1 expr) olist))))))
-	(setq files (cdr files)))
-      (kill-buffer (current-buffer)))
-    (insert "------------------- Environment follows -------------------\n\n")
-    (while olist
-      (if (boundp (car olist))
-	  (insert "(setq " (symbol-name (car olist)) " '" 
-		  (prin1-to-string (symbol-value (car olist))) ")\n")
-	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
-      (setq olist (cdr olist)))
-    (insert "\n\n")))
 
 (defun gnus-overload-functions (&optional overloads)
   "Overload functions specified by optional argument OVERLOADS.
@@ -4293,15 +4230,21 @@ or nil if no action could be taken."
       (gnus-group-update-group-line)))
   (gnus-group-position-cursor))
 
-(defun gnus-group-unsubscribe-current-group (arg)
-  "Toggle subscribe from/to unsubscribe current group."
+(defun gnus-group-unsubscribe-current-group (n)
+  "Toggle subscription of the current group.
+If given numerical prefix, toggle the N next groups."
   (interactive "P")
-  (let ((group (gnus-group-group-name)))
-    (or group (error "No newsgroup on current line"))
-    (or arg (setq arg (if (<= (gnus-group-group-level) gnus-level-subscribed)
-			  gnus-level-default-unsubscribed
-			gnus-level-default-subscribed)))
-    (gnus-group-unsubscribe-group group arg)
+  (let ((groups (gnus-group-process-prefix n))
+	group)
+    (while groups
+      (setq group (car groups)
+	    groups (cdr groups))
+      (gnus-group-remove-mark group)
+      (gnus-group-unsubscribe-group
+       group (if (<= (gnus-group-group-level) gnus-level-subscribed)
+		 gnus-level-default-unsubscribed
+	       gnus-level-default-subscribed))
+      (gnus-group-update-group-line))
     (gnus-group-next-group 1)))
 
 (defun gnus-group-unsubscribe-group (group &optional level)
@@ -6298,7 +6241,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 				"%s %s (%d scored, %d total): "
 				"How many articles from"
 				group scored number))))
-			 (if (string-equal input "")
+			 (if (string-match "^[ \t]*$" input)
 			     number input)))
 		      (t number))
 	      (quit nil)))))
@@ -7433,8 +7376,7 @@ If BACKWARD, go to previous group instead."
 	  (setq group nil))
       (gnus-group-jump-to-group ingroup))
     (gnus-summary-search-group backward)
-    (let ((group (or group (gnus-summary-search-group backward)))
-	  (buf gnus-summary-buffer))
+    (let ((group (or group (gnus-summary-search-group backward))))
       (set-buffer sumbuf)
       (gnus-summary-exit t)		;Update all information.
       (if (null group)
@@ -7446,14 +7388,14 @@ If BACKWARD, go to previous group instead."
 	(gnus-group-jump-to-group group)
 	(if (not (eq gnus-auto-select-next 'quietly))
 	    (progn
-	      (gnus-summary-read-group group nil no-article buf)
+	      (gnus-summary-read-group group nil no-article sumbuf)
 	      (and (string= gnus-newsgroup-name ingroup)
 		   (bufferp sumbuf) (buffer-name sumbuf)
 		   (progn
 		     (set-buffer (setq gnus-summary-buffer sumbuf))
 		     (gnus-summary-exit-no-update t))))
 	  (let ((prevgroup group))
-	    (gnus-summary-read-group group nil no-article buf)
+	    (gnus-summary-read-group group nil no-article sumbuf)
 	    (while (and (string= gnus-newsgroup-name ingroup)
 			(bufferp sumbuf) 
 			(buffer-name sumbuf)
@@ -7461,7 +7403,7 @@ If BACKWARD, go to previous group instead."
 	      (set-buffer gnus-group-buffer)
 	      (gnus-summary-read-group 
 	       (setq prevgroup (gnus-group-group-name)) 
-	       nil no-article buf))
+	       nil no-article sumbuf))
 	    (and (string= prevgroup (gnus-group-group-name))
 		 ;; We have reached the final group in the group
 		 ;; buffer.
@@ -8115,6 +8057,7 @@ article. If BACKWARD (the prefix) is non-nil, search backward instead."
   (interactive)
   (gnus-set-global-variables)
   (gnus-summary-select-article)
+  (gnus-configure-windows 'article)
   (gnus-eval-in-buffer-window
    gnus-article-buffer
    (widen)
@@ -8126,6 +8069,7 @@ article. If BACKWARD (the prefix) is non-nil, search backward instead."
   (interactive)
   (gnus-set-global-variables)
   (gnus-summary-select-article)
+  (gnus-configure-windows 'article)
   (gnus-eval-in-buffer-window 
    gnus-article-buffer
    (widen)
@@ -8527,6 +8471,7 @@ This will have permanent effect only in mail groups."
   (text-mode)
   (use-local-map (copy-keymap (current-local-map)))
   (local-set-key "\C-c\C-c" 'gnus-summary-edit-article-done)
+  (buffer-enable-undo)
   (goto-char (point-min))
   (search-forward "\n\n" nil t))
 
@@ -8540,6 +8485,7 @@ This will have permanent effect only in mail groups."
     (gnus-article-mode)
     (use-local-map gnus-article-mode-map)
     (setq buffer-read-only t)
+    (buffer-disable-undo)
     (pop-to-buffer gnus-summary-buffer)))      
 
 (defun gnus-summary-fancy-query ()
@@ -9789,7 +9735,7 @@ is initialized from the SAVEDIR environment variable."
 
 ;; Summary extract commands
 
-(defun gnus-summary-insert-pseudos (pslist)
+(defun gnus-summary-insert-pseudos (pslist &optional not-view)
   (let ((buffer-read-only nil)
 	(article (gnus-summary-article-number))
 	b)
@@ -9824,7 +9770,7 @@ is initialized from the SAVEDIR environment variable."
 				  action 
 				  (mapconcat (lambda (f) f) files " ")))))
 	  (setq ps (cdr ps)))))
-    (if gnus-view-pseudos
+    (if (and gnus-view-pseudos (not not-view))
 	(while pslist
 	  (and (assq 'execute (car pslist))
 	       (gnus-execute-command (cdr (assq 'execute (car pslist)))
@@ -9928,20 +9874,39 @@ is initialized from the SAVEDIR environment variable."
   
   ;; Duplicate almost all summary keystrokes in the article mode map.
   (let ((commands 
-	 (list "#" "\M-#" "\C-c\M-#" "n" "p"
-	       "N" "P" "\M-\C-n" "\M-\C-p" "." "\M-s" "\M-r"
-	       "<" ">" "l" "j" "^" "\M-^" "-" "u" "U" "d" "D"
-	       "\M-u" "\M-U" "k" "\C-k" "\M-\C-k""x" "X" 
-	       "\M-\C-x" "\M-\177" "b" "B" "$" "w" "\C-c\C-r"
-	       "t" "\M-t" "C" "S"
-	       "m" "o" "\C-o" "|" "\M-m" "\M-\C-m" "\M-k" "M"
-	       "V" "\C-c\C-d")))
+	 (list 
+	  " " "\177" "\r" "n" "p" "N" "P" "\M-\C-n" "\M-\C-p"
+	  "\M-n" "\M-p" "." "," "\M-s" "\M-r" "<" ">" "j" "^" "\M-^"
+	  "u" "!" "U" "d" "D" "E" "\M-u" "\M-U" "k" "\C-k" "\M-\C-k"
+	  "\M-\C-l" "e" "#" "\M-#" "\M-\C-t" "\M-\C-s" "\M-\C-h"
+	  "\M-\C-f" "\M-\C-b" "\M-\C-u" "\M-\C-d" "&" "\C-w"
+	  "\C-t" "?" "\C-c\M-\C-s" "\C-c\C-s\C-n" "\C-c\C-s\C-a"
+	  "\C-c\C-s\C-s" "\C-c\C-s\C-d" "\C-c\C-s\C-i" "\C-x\C-s"
+	  "\M-g" "w" "\C-c\C-r" "\M-t" "C"
+	  "o" "\C-o" "|" "\M-k" "\M-K" "V" "\C-c\C-d"
+	  "\C-c\C-i" "x" "X" "s" "t" "g" "?" "l"
+	  "\C-c\C-v\C-v" "\C-d" "v" "\C-c\C-b" 
+;;	  "Mt" "M!" "Md" "Mr"
+;;	  "Mc" "M " "Me" "Mx" "M?" "Mb" "MB" "M#" "M\M-#" "M\M-r"
+;;	  "M\M-\C-r" "MD" "M\M-D" "MS" "MC" "MH" "M\C-c" "Mk" "MK"
+;;	  "Ms" "Mc" "Mu" "Mm" "Mk" "Gn" "Gp" "GN" "GP" "G\C-n" "G\C-p"
+;;	  "G\M-n" "G\M-p" "Gf" "Gb" "Gg" "Gl" "Gp" "Tk" "Tl" "Ti" "TT"
+;;	  "Ts" "TS" "Th" "TH" "Tn" "Tp" "Tu" "Td" "T#" "A " "An" "A\177" "Ap"
+;;	  "A\r" "A<" "A>" "Ab" "Ae" "A^" "Ar" "Aw" "Ac" "Ag" "At" "Am"
+;;	  "As" "Wh" "Ws" "Wc" "Wo" "Ww" "Wd" "Wq" "Wf" "Wt" "W\C-t"
+;;	  "WT" "WA" "Wa" "WH" "WC" "WS" "Wb" "Hv" "Hf" "Hd" "Hh" "Hi"
+;;	  "Be" "B\177" "Bm" "Br" "Bw" "Bc" "Bq" "Bi" "Oo" "Om" "Or"
+;;	  "Of" "Oh" "Ov" "Op" "Vu" "V\C-s" "V\C-r" "Vr" "V&" "VT" "Ve"
+;;	  "VD" "Vk" "VK" "Vsn" "Vsa" "Vss" "Vsd" "Vsi"
+	  )))
     (while commands
       (define-key gnus-article-mode-map (car commands) 
 	'gnus-article-summary-command)
       (setq commands (cdr commands))))
 
-  (let ((commands (list "q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F")))
+  (let ((commands (list "q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
+;;			"Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP" 
+			 "=")))
     (while commands
       (define-key gnus-article-mode-map (car commands) 
 	'gnus-article-summary-command-nosave)
@@ -9990,6 +9955,8 @@ The following commands are available:
   (if (get-buffer gnus-article-buffer)
       (save-excursion
 	(set-buffer gnus-article-buffer)
+	(buffer-disable-undo)
+	(setq buffer-read-only t)
 	(gnus-add-current-to-buffer-list)
 	(or (eq major-mode 'gnus-article-mode)
 	    (gnus-article-mode)))
@@ -10321,7 +10288,7 @@ Provided for backwards compatability."
       (goto-char (point-min))
       (search-forward "\n\n" nil t)
       (end-of-line 1)
-      (let ((paragraph-start "^\\W")
+      (let ((paragraph-start "^[>|#:<;* ]*[ \t]*$")
 	    (adaptive-fill-regexp "[ \t]*\\([|#:<;>*]+ *\\)?")
 	    (adaptive-fill-mode t))
 	(while (not (eobp))
@@ -12378,7 +12345,10 @@ If FORCE is non-nil, the .newsrc file is read."
 	      (eq 'bookmark (car (car marked)))
 	      (eq 'killed (car (car marked)))
 	      (setcdr (car marked) 
-		      (gnus-compress-sequence (sort (cdr (car marked)) '<) t)))
+		      (condition-case ()
+			  (gnus-compress-sequence 
+			   (sort (cdr (car marked)) '<) t)
+			(error (cdr (car marked))))))
 	  (setq marked (cdr marked))))
       (setq newsrc (cdr newsrc)))))
 
@@ -12603,7 +12573,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			 (- (point) 2)))
 		  (gnus-point-at-eol)))
 	;; Search for all "words"...
-	(while (re-search-forward "[^ \t,\n-]+" eol t)
+	(while (re-search-forward "[^ \t,\n]+" eol t)
 	  (if (= (char-after (match-beginning 0)) ?!)
 	      ;; If the word begins with a bang (!), this is a "not"
 	      ;; spec. We put this spec (minus the bang) and the

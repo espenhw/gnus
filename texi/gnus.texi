@@ -908,6 +908,11 @@ argument.  The function should return a string, which will be inserted
 into the buffer just like information from any other specifier.
 @end table
 
+@cindex *
+All the "number-of" specs will be filled with an asterisk (@samp{*}) if
+no info is available - for instance, if it is a non-activated foreign
+group, or a bogus (or semi-bogus) native group.
+
 @vindex gnus-group-mode-line-format
 The mode line can be changed by setting
 (@code{gnus-group-mode-line-format}).  It doesn't understand that many
@@ -3633,6 +3638,7 @@ Just remember, kids: There is no 'c' in 'supersede'.
 @section Ticking and Marking
 @cindex article marking
 @cindex article ticking
+@cindex marks
 
 There are several marks you can set on an article. 
 

@@ -38,7 +38,8 @@
 (defvar nnfolder-directory (expand-file-name "~/Mail/")
   "The name of the mail box file in the users home directory.")
 
-(defvar nnfolder-active-file (concat nnfolder-directory "active")
+(defvar nnfolder-active-file 
+  (concat (file-name-as-directory nnfolder-directory) "active")
   "The name of the active file.")
 
 ;; I renamed this variable to somehting more in keeping with the general GNU
@@ -60,7 +61,8 @@ attempt to keep the buffers around (saving the nnfolder's buffer upon group
 close, but not killing it), speeding some things up tremendously, especially
 such things as moving mail.  All buffers always get killed upon server close.")
 
-(defvar nnfolder-newsgroups-file (concat nnfolder-directory "newsgroups")
+(defvar nnfolder-newsgroups-file 
+  (concat (file-name-as-directory  nnfolder-directory) "newsgroups")
   "Mail newsgroups description file.")
 
 (defvar nnfolder-get-new-mail t
@@ -432,7 +434,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (make-directory (directory-file-name nnfolder-directory)))
   (nnfolder-possibly-activate-groups nil)
   (or (assoc group nnfolder-group-alist)
-      (not (file-exists-p (concat nnfolder-directory group)))
+      (not (file-exists-p (concat (file-name-as-directory nnfolder-directory)
+				  group)))
       (progn
 	(setq nnfolder-group-alist 
 	      (cons (list group (cons 1 0)) nnfolder-group-alist))
@@ -469,7 +472,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
       (if inf
 	  ()
 	(save-excursion
-	  (setq file (concat nnfolder-directory group))
+	  (setq file (concat (file-name-as-directory nnfolder-directory)
+			     group))
 	  (if (file-directory-p (file-truename file))
 	      ()
 	    (if (not (file-exists-p file))
@@ -648,7 +652,9 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		(message "nnfolder: Reading incoming mail..."))
 	   (setq incoming 
 		 (nnmail-move-inbox 
-		  (car spools) (concat nnfolder-directory "Incoming")))
+		  (car spools) 
+		  (concat (file-name-as-directory nnfolder-directory)
+			  "Incoming")))
 	   (setq incomings (cons incoming incomings))
 	   (setq group (nnmail-get-split-group (car spools) group-in))
 	   (nnmail-split-incoming incoming 'nnfolder-save-mail nil group)))

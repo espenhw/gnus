@@ -294,7 +294,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
 	     (or (not (eq gnus-use-followup-to t))
 		 (not (gnus-y-or-n-p 
 		       "Do you want to ignore `Followup-To: poster'? "))))
-	;; Mail to the poster.  Gnus is now RFC1036 compliant.
+	;; Mail to the poster. 
 	(gnus-summary-reply yank)
       (gnus-post-news nil gnus-newsgroup-name
 		      headers gnus-article-buffer 
@@ -1595,6 +1595,79 @@ If YANK is non-nil, include the original article."
   "Send a reply to the address near point and include the original article."
   (interactive)
   (gnus-article-mail 'yank))
+
+(defun gnus-bug ()
+  "Send a bug report to the Gnus maintainers."
+  (interactive)
+  (let ((winconf (current-window-configuration)))
+    (delete-other-windows)
+    (switch-to-buffer "*Gnus Bug Help*")
+    (erase-buffer)
+    (insert gnus-bug-message)
+    (goto-char (point-min))
+    (pop-to-buffer "*Gnus Bug*")
+    (erase-buffer)
+    (mail-mode)
+    (mail-setup gnus-maintainer nil nil nil nil nil)
+    (make-local-variable 'gnus-prev-winconf)
+    (setq gnus-prev-winconf winconf)
+    (use-local-map (copy-keymap mail-mode-map))
+    (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
+    (goto-char (point-min))
+    (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
+    (forward-line 1)
+    (insert (format "%s\n%s\n\n\n\n\n" (gnus-version) (emacs-version)))
+    (let ((b (point)))
+      (gnus-debug)
+      (goto-char (- b 3)))
+    (message "")))
+
+(defun gnus-debug ()
+  "Attemps to go through the Gnus source file and report what variables have been changed.
+The source file has to be in the Emacs load path."
+  (interactive)
+  (let ((files '("gnus.el" "gnus-msg.el" "gnus-score.el"))
+	file dirs expr olist)
+    (save-excursion
+      (set-buffer (get-buffer-create " *gnus bug info*"))
+      (buffer-disable-undo (current-buffer))
+      (message "Please wait while we snoop your variables...")
+      (sit-for 0)
+      (while files
+	(erase-buffer)
+	(setq dirs load-path)
+	(while dirs
+	  (if (or (not (car dirs))
+		  (not (stringp (car dirs)))
+		  (not (file-exists-p 
+			(setq file (concat (file-name-as-directory 
+					    (car dirs)) (car files))))))
+	      (setq dirs (cdr dirs))
+	    (setq dirs nil)
+	    (insert-file-contents file)
+	    (goto-char (point-min))
+	    (or (re-search-forward "^;;* Internal variables" nil t)
+		(error "Malformed sources in file %s" file))
+	    (narrow-to-region (point-min) (point))
+	    (goto-char (point-min))
+	    (while (setq expr (condition-case () 
+				  (read (current-buffer)) (error nil)))
+	      (and (eq (car expr) 'defvar)
+		   (stringp (nth 3 expr))
+		   (or (not (boundp (nth 1 expr)))
+		       (not (equal (eval (nth 2 expr))
+				   (symbol-value (nth 1 expr)))))
+		   (setq olist (cons (nth 1 expr) olist))))))
+	(setq files (cdr files)))
+      (kill-buffer (current-buffer)))
+    (insert "------------------- Environment follows -------------------\n\n")
+    (while olist
+      (if (boundp (car olist))
+	  (insert "(setq " (symbol-name (car olist)) " '" 
+		  (prin1-to-string (symbol-value (car olist))) ")\n")
+	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
+      (setq olist (cdr olist)))
+    (insert "\n\n")))
 
 (provide 'gnus-msg)
 

@@ -105,19 +105,20 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 	(setq to (or reply-to from))
 	(setq to-userid (mail-strip-quoted-names orig-to))
 	(if (or (string-match "," orig-to)
-		(not (string-match (substring to-userid 0 (string-match "@" to-userid))
+		(not (string-match (substring to-userid 0 
+					      (string-match "@" to-userid))
 				   gnus-user-login-name)))
-	    (setq cc (concat (if cc (concat cc ", ") "") orig-to))
-	  )
+	    (setq cc (concat (if cc (concat cc ", ") "") orig-to)))
         ;; mh-yank-cur-msg needs to have mh-show-buffer set in the 
         ;; *Article* buffer
-	(setq mh-show-buffer buffer)
-	)) ;; save excursion/restriction
+	(setq mh-show-buffer buffer)))
 
     (mh-find-path)
-    (mh-send-sub to (or cc "") (or subject "(None)") config) ;; Erik Selberg 1/23/94
+    (mh-send-sub to (or cc "") 
+		 (or subject "(None)") config) ;; Erik Selberg 1/23/94
 
     (let ((draft (current-buffer))
+	  (gnus-mail-buffer (current-buffer))
 	  mail-buf)
       (if (not yank)
 	  (gnus-configure-windows 'reply)
@@ -149,8 +150,7 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
   (if yank
       (let ((last (point)))
 	(mh-yank-cur-msg)
-	(goto-char last)
-	)))
+	(goto-char last)))) 
 
 ;; gnus-mail-forward-using-mhe is contributed by Jun-ichiro Itoh
 ;; <itojun@ingram.mt.cs.keio.ac.jp>
@@ -167,9 +167,10 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
     (mh-find-path)
     (mh-send-sub to (or cc "") (or subject "(None)") config) ;; Erik Selberg 1/23/94
     (let ((draft (current-buffer))
+	  (gnus-mail-buffer (current-buffer))
 	  mail-buf)
       (gnus-configure-windows 'reply-yank)
-      (setq mail-buf (cdr (assq 'mail gnus-window-to-buffer)))
+      (setq mail-buf (eval (cdr (assq 'mail gnus-window-to-buffer))))
       (pop-to-buffer mail-buf) ;; always in the display, so won't have window probs
       (switch-to-buffer draft)
       (kill-buffer mail-buf) ;; mh-e don't use it!
