@@ -8,6 +8,16 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** gnus-agent
+
+The Gnus Agent is now enabled by default.  This means that, e.g.,
+headers are not downloaded from agentized servers by default (agentize
+servers by using `J a' in the server buffer).  Gnus will not start to
+download articles unless you instruct it to do so, though, by using
+e.g. J u or J s from the group buffer.  Revert to the old behaviour
+with `(setq gnus-agent nil)'.  Note that putting (gnus-agentize) in
+~/.gnus is not needed any more.
+
 ** gnus-summary-line-format
 
 The default value changed to "%U%R%z%I%(%[%4L: %-23,23f%]%) %s\n".
@@ -172,8 +182,8 @@ variables should change those regexps accordingly. For example:
 
    ("^han\\>" euc-kr) -> ("\\(^\\|:\\)han\\>" euc-kr)
 
-** Gnus supports PGP (RFC 1991/2440), PGP-MIME (RFC 2015/3156) and
-SMIME.
+** Gnus supports PGP (RFC 1991/2440), PGP/MIME (RFC 2015/3156) and
+S/MIME (RFC 2630-2633).
 
 ** Gnus inlines external parts (message/external).
 
