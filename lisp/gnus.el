@@ -1388,6 +1388,7 @@ slower."
     ("nnweb" none)
     ("nnslashdot" post)
     ("nnultimate" none)
+    ("nnrss" none)
     ("nnwfm" none)
     ("nnwarchive" none)
     ("nnlistserv" none)
