@@ -142,13 +142,13 @@ server there that you can connect to.")
 ;;; Internal variables.
 
 (defvoo nntp-server-type nil)
-(defvar nntp-connection-alist nil)
-(defvar nntp-status-string "")
+(defvoo nntp-connection-alist nil)
+(defvoo nntp-status-string "")
 (defconst nntp-version "nntp 5.0")
-(defvar nntp-inhibit-erase nil)
+(defvoo nntp-inhibit-erase nil)
 
-(defvar nntp-server-xover 'try)
-(defvar nntp-server-list-active-group 'try)
+(defvoo nntp-server-xover 'try)
+(defvoo nntp-server-list-active-group 'try)
 
 
 
@@ -238,7 +238,7 @@ server there that you can connect to.")
 
 (deffoo nntp-request-body (article &optional group server)
   (nntp-possibly-change-group group server)
-  (nntp-send-command
+  (nntp-send-command-and-decode
    "\r\n\\.\r\n" "BODY"
    (if (numberp article) (int-to-string article) article)))
 
@@ -286,11 +286,13 @@ server there that you can connect to.")
 
 (deffoo nntp-request-list (&optional server)
   (nntp-possibly-change-group nil server)
-  (nntp-send-command "\r\n\\.\r\n" "LIST"))
+  (prog1 (nntp-send-command "\r\n\\.\r\n" "LIST")
+    (nntp-decode-text t)))
 
 (deffoo nntp-request-list-newsgroups (&optional server)
   (nntp-possibly-change-group nil server)
-  (nntp-send-command "\r\n\\.\r\n" "LIST NEWSGROUPS"))
+  (prog1 (nntp-send-command "\r\n\\.\r\n" "LIST NEWSGROUPS")
+    (nntp-decode-text t)))
 
 (deffoo nntp-request-newgroups (date &optional server)
   (nntp-possibly-change-group nil server)
@@ -305,9 +307,13 @@ server there that you can connect to.")
 	(nntp-send-command "^\\.\r?\n" "NEWGROUPS" time-string)
       (nntp-decode-text))))
 
-
 (deffoo nntp-asynchronous-p ()
   t)
+
+(deffoo nntp-request-post (&optional server)
+  (nntp-possibly-change-group nil server)
+  (when (nntp-send-command "^[23].*\r?\n" "POST")
+    (nntp-send-buffer "^[23].*\n")))
   
 ;;; Hooky functions.
 
@@ -376,6 +382,19 @@ It will prompt for a password."
    nntp-address nntp-port-number nntp-server-buffer
    wait-for nnheader-callback-function t))
 
+(defun nntp-send-buffer (wait-for)
+  "Send the current buffer to server and wait until WAIT-FOR returns."
+  (unless nnheader-callback-function
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)))
+  (nntp-encode-text)
+  (process-send-region (nntp-find-connection nntp-server-buffer)
+		       (point-min) (point-max))
+  (nntp-retrieve-data
+   nil nntp-address nntp-port-number nntp-server-buffer
+   wait-for nnheader-callback-function))
+
 (defun nntp-find-connection (buffer)
   "Find the connection delivering to BUFFER."
   (let ((alist nntp-connection-alist)
@@ -408,7 +427,10 @@ It will prompt for a password."
 			      (buffer-name (get-buffer buffer)))))
 		    (buffer-disable-undo (current-buffer))
 		    (current-buffer)))
-	 (process (funcall nntp-open-connection-function pbuffer)))
+	 (process
+	  (condition-case ()
+	      (funcall nntp-open-connection-function pbuffer)
+	    (error nil))))
     (when process
       (process-kill-without-query process)
       (nntp-wait-for process "^.*\r\n" buffer)
@@ -490,7 +512,8 @@ It will prompt for a password."
 	(save-excursion
 	  (set-buffer (process-buffer process))
 	  (erase-buffer)))
-      (nntp-send-string process command)
+      (when command
+	(nntp-send-string process command))
       (cond 
        ((eq callback 'ignore)
 	t)
@@ -575,6 +598,21 @@ It will prompt for a password."
     (while (search-forward "\n.." nil t)
       (delete-char -1))))
 
+(defun nntp-encode-text ()
+  "Encode the text in the current buffer."
+  (save-excursion
+    ;; Replace "." at beginning of line with "..".
+    (goto-char (point-min))
+    (while (re-search-forward "^\\." nil t)
+      (insert "."))
+    (goto-char (point-max))
+    ;; Insert newline at the end of the buffer.
+    (unless (bolp)
+      (insert "\n"))
+    ;; Insert `.' at end of buffer (end of text mark).
+    (goto-char (point-max))
+    (insert "." nntp-end-of-line)))
+
 (defun nntp-retrieve-headers-with-xover (articles &optional fetch-old)
   (erase-buffer)
   (cond 
@@ -592,7 +630,7 @@ It will prompt for a password."
 	     (max 1 (- (car articles) fetch-old)) 
 	   1)
        (car articles))
-     (last articles) 'wait)
+     (car (last articles)) 'wait)
 
     (goto-char (point-min))
     (when (looking-at "[1-5][0-9][0-9] ")
@@ -668,11 +706,7 @@ It will prompt for a password."
 	  (delete-char -1))
 	(goto-char (point-min))
 	(delete-matching-lines "^\\.$\\|^[1-5][0-9][0-9] ")
-	;(save-excursion
-	;  (set-buffer nntp-server-buffer)
-	;  (insert-buffer-substring buf))
-	;(erase-buffer)
-	))))
+	(copy-to-buffer nntp-server-buffer (point-min) (point-max))))))
 
   nntp-server-xover)
 

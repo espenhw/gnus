@@ -29,7 +29,7 @@
 (require 'gnus-sum)
 (require 'nntp)
 
-(defvar gnus-use-article-prefetch 5
+(defvar gnus-use-article-prefetch 30
   "*If non-nil, prefetch articles in groups that allow this.
 If a number, prefetch only that many articles forward;
 if t, prefetch as many articles as possible.")

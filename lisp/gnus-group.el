@@ -253,13 +253,9 @@ variable.")
 ;;; Gnus group mode
 ;;;
 
-(defvar gnus-group-mode-map nil)
 (put 'gnus-group-mode 'mode-class 'special)
 
-(unless gnus-group-mode-map
-  (setq gnus-group-mode-map (make-keymap))
-  (suppress-keymap gnus-group-mode-map)
-
+(when t
   (gnus-define-keys gnus-group-mode-map
     " " gnus-group-read-group
     "=" gnus-group-select-group
@@ -307,7 +303,7 @@ variable.")
     "V" gnus-version
     "s" gnus-group-save-newsrc
     "z" gnus-group-suspend
-;    "Z" gnus-group-clear-dribble
+					;    "Z" gnus-group-clear-dribble
     "q" gnus-group-exit
     "Q" gnus-group-quit
     "?" gnus-group-describe-briefly
@@ -350,49 +346,49 @@ variable.")
     "\177" gnus-group-delete-group
     [delete] gnus-group-delete-group)
 
-   (gnus-define-keys (gnus-group-soup-map "s" gnus-group-group-map)
-     "b" gnus-group-brew-soup
-     "w" gnus-soup-save-areas
-     "s" gnus-soup-send-replies
-     "p" gnus-soup-pack-packet
-     "r" nnsoup-pack-replies)
+  (gnus-define-keys (gnus-group-soup-map "s" gnus-group-group-map)
+    "b" gnus-group-brew-soup
+    "w" gnus-soup-save-areas
+    "s" gnus-soup-send-replies
+    "p" gnus-soup-pack-packet
+    "r" nnsoup-pack-replies)
 
-   (gnus-define-keys (gnus-group-sort-map "S" gnus-group-group-map)
-     "s" gnus-group-sort-groups
-     "a" gnus-group-sort-groups-by-alphabet
-     "u" gnus-group-sort-groups-by-unread
-     "l" gnus-group-sort-groups-by-level
-     "v" gnus-group-sort-groups-by-score
-     "r" gnus-group-sort-groups-by-rank
-     "m" gnus-group-sort-groups-by-method)
+  (gnus-define-keys (gnus-group-sort-map "S" gnus-group-group-map)
+    "s" gnus-group-sort-groups
+    "a" gnus-group-sort-groups-by-alphabet
+    "u" gnus-group-sort-groups-by-unread
+    "l" gnus-group-sort-groups-by-level
+    "v" gnus-group-sort-groups-by-score
+    "r" gnus-group-sort-groups-by-rank
+    "m" gnus-group-sort-groups-by-method)
 
-   (gnus-define-keys (gnus-group-list-map "A" gnus-group-mode-map)
-     "k" gnus-group-list-killed
-     "z" gnus-group-list-zombies
-     "s" gnus-group-list-groups
-     "u" gnus-group-list-all-groups
-     "A" gnus-group-list-active
-     "a" gnus-group-apropos
-     "d" gnus-group-description-apropos
-     "m" gnus-group-list-matching
-     "M" gnus-group-list-all-matching
-     "l" gnus-group-list-level)
+  (gnus-define-keys (gnus-group-list-map "A" gnus-group-mode-map)
+    "k" gnus-group-list-killed
+    "z" gnus-group-list-zombies
+    "s" gnus-group-list-groups
+    "u" gnus-group-list-all-groups
+    "A" gnus-group-list-active
+    "a" gnus-group-apropos
+    "d" gnus-group-description-apropos
+    "m" gnus-group-list-matching
+    "M" gnus-group-list-all-matching
+    "l" gnus-group-list-level)
 
-   (gnus-define-keys (gnus-group-score-map "W" gnus-group-mode-map)
-     "f" gnus-score-flush-cache)
+  (gnus-define-keys (gnus-group-score-map "W" gnus-group-mode-map)
+    "f" gnus-score-flush-cache)
 
-   (gnus-define-keys (gnus-group-help-map "H" gnus-group-mode-map)
-     "f" gnus-group-fetch-faq)
+  (gnus-define-keys (gnus-group-help-map "H" gnus-group-mode-map)
+    "f" gnus-group-fetch-faq)
 
-   (gnus-define-keys (gnus-group-sub-map "S" gnus-group-mode-map)
-     "l" gnus-group-set-current-level
-     "t" gnus-group-unsubscribe-current-group
-     "s" gnus-group-unsubscribe-group
-     "k" gnus-group-kill-group
-     "y" gnus-group-yank-group
-     "w" gnus-group-kill-region
-     "\C-k" gnus-group-kill-level
-     "z" gnus-group-kill-all-zombies))
+  (gnus-define-keys (gnus-group-sub-map "S" gnus-group-mode-map)
+    "l" gnus-group-set-current-level
+    "t" gnus-group-unsubscribe-current-group
+    "s" gnus-group-unsubscribe-group
+    "k" gnus-group-kill-group
+    "y" gnus-group-yank-group
+    "w" gnus-group-kill-region
+    "\C-k" gnus-group-kill-level
+    "z" gnus-group-kill-all-zombies))
 
 (defun gnus-group-mode ()
   "Major mode for reading news.
@@ -1359,21 +1355,26 @@ doing the deletion."
     (gnus-group-position-point)))
 
 (defun gnus-group-rename-group (group new-name)
+  "Rename group from GROUP to NEW-NAME.
+When used interactively, GROUP is the group under point
+and NEW-NAME will be prompted for."
   (interactive
    (list
     (gnus-group-group-name)
     (progn
-      (or (gnus-check-backend-function
-	   'request-rename-group (gnus-group-group-name))
-	  (error "This backend does not support renaming groups"))
-      (read-string "New group name: "))))
+      (unless (gnus-check-backend-function
+	       'request-rename-group (gnus-group-group-name))
+	(error "This backend does not support renaming groups"))
+      (read-string "New group name: " (gnus-group-group-name)))))
 
-  (or (gnus-check-backend-function 'request-rename-group group)
-      (error "This backend does not support renaming groups"))
-
-  (or group (error "No group to rename"))
-  (and (string-match "^[ \t]*$" new-name)
-       (error "Not a valid group name"))
+  (unless (gnus-check-backend-function 'request-rename-group group)
+    (error "This backend does not support renaming groups"))
+  (unless group 
+    (error "No group to rename"))
+  (when (string-match "^[ \t]*$" new-name)
+    (error "Not a valid group name"))
+  (when (equal group new-name)
+    (error "Can't rename to the same name"))
 
   ;; We find the proper prefixed name.
   (setq new-name
@@ -2515,6 +2516,7 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
     (gnus-dribble-save)
     (gnus-close-backends)
     (gnus-clear-system)
+    (gnus-kill-buffer gnus-group-buffer)
     ;; Allow the user to do things after cleaning up.
     (run-hooks 'gnus-after-exiting-gnus-hook)))
 

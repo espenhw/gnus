@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.1"
+(defconst gnus-version-number "0.2"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -42,12 +42,13 @@
   "*If non-nil, the startup message will not be displayed.")
 
 (defun gnus-splash ()
-  (switch-to-buffer gnus-group-buffer)
-  (let ((buffer-read-only nil))
-    (erase-buffer)
-    (unless gnus-inhibit-startup-message
-      (gnus-group-startup-message)
-      (sit-for 0))))
+  (save-excursion
+    (switch-to-buffer gnus-group-buffer)
+    (let ((buffer-read-only nil))
+      (erase-buffer)
+      (unless gnus-inhibit-startup-message
+	(gnus-group-startup-message)
+	(sit-for 0)))))
 
 (defun gnus-indent-rigidly (start end arg)
   "Indent rigidly using only spaces and no tabs."
@@ -102,9 +103,8 @@
   (setq mode-line-buffer-identification gnus-version)
   (set-buffer-modified-p t))
 
-;(unless (string-match "xemacs" (emacs-version))
-  (gnus-splash)
-;)
+(eval-when (load)
+  (gnus-splash))
 
 ;;; Do the rest.
 
@@ -750,10 +750,7 @@ If ARG is non-nil and not a positive number, Gnus will
 prompt the user for the name of an NNTP server to use.
 As opposed to `gnus', this command will not connect to the local server."
   (interactive "P")
-  (let ((val (or arg (1- gnus-level-default-subscribed))))
-    (gnus val t slave)
-    (make-local-variable 'gnus-group-use-permanent-levels)
-    (setq gnus-group-use-permanent-levels val)))
+  (gnus-no-server-1 arg slave))
 
 ;;;###autoload
 (defun gnus-slave (&optional arg)

@@ -290,8 +290,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (set (pop vars) nil)))
   (let (defs)
     ;; Guess away until we find the real file type.
-    (while (setq defs (cdr (assq nndoc-article-type nndoc-type-alist))
-		 guess (assq 'guess defs))
+    (while (assq 'guess (setq defs (cdr (assq nndoc-article-type 
+					      nndoc-type-alist))))
       (setq nndoc-article-type (nndoc-guess-type nndoc-article-type)))
     ;; Set the nndoc variables.
     (while defs
@@ -511,13 +511,19 @@ If POSITION is nil or `last', the definition will be added
 as the last checked definition, if t or `first', add as the
 first definition, and if any other symbol, add after that
 symbol in the alist."
+  ;; First remove any old instances.
+  (setq nndoc-type-alist
+	(delq (assq (car definition) nndoc-type-alist)
+	      nndoc-type-alist))
+  ;; Then enter the new definition in the proper place.
   (cond
    ((or (null position) (eq position 'last))
     (setq nndoc-type-alist (nconc nndoc-type-alist (list definition))))
    ((or (eq position t) (eq position 'first))
     (push definition nndoc-type-alist))
    (t
-    (let ((list (memq (assq position nndoc-type-alist))))
+    (let ((list (memq (assq position nndoc-type-alist)
+		      nndoc-type-alist)))
       (unless list
 	(error "No such position: %s" position))
       (setcdr list (cons definition (cdr list)))))))

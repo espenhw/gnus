@@ -268,9 +268,10 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 	(unless (eolp)
 	  (push (make-annotation "\n" (point) 'text)
 		gnus-group-annotations)))
-      (cond 
+      (cond
        ((listp gnus-group-annotations)
-	(mapcar 'delete-annotation gnus-group-annotations)
+	(mapc #'(lambda (ext) (if (extent-live-p ext) (delete-annotation ext)))
+	      gnus-group-annotations)
 	(setq gnus-group-annotations nil))
        ((annotationp gnus-group-annotations)
 	(delete-annotation gnus-group-annotations)

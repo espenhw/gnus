@@ -1349,7 +1349,7 @@ do the highlighting.  See the documentation for those functions."
 (defun gnus-article-highlight-signature ()
   "Highlight the signature in an article.
 It does this by highlighting everything after
-`article-signature-separator' using `gnus-signature-face'." 
+`gnus-signature-separator' using `gnus-signature-face'." 
   (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)
@@ -1361,7 +1361,7 @@ It does this by highlighting everything after
 	  (gnus-overlay-put (gnus-make-overlay (point-min) (point-max))
 			    'face gnus-signature-face)
 	  (widen)
-	  (re-search-backward article-signature-separator nil t)
+	  (re-search-backward gnus-signature-separator nil t)
 	  (let ((start (match-beginning 0))
 		(end (set-marker (make-marker) (1+ (match-end 0)))))
 	    (gnus-article-add-button start (1- end) 'gnus-signature-toggle
@@ -1466,7 +1466,7 @@ specified by `gnus-button-alist'."
 	  (inhibit-point-motion-hooks t))
       (if (get-text-property end 'invisible)
 	  (article-unhide-text end (point-max))
-	(article-hide-text end (point-max) article-hidden-properties)))))
+	(article-hide-text end (point-max) gnus-hidden-properties)))))
 
 (defun gnus-button-entry ()
   ;; Return the first entry in `gnus-button-alist' matching this place.

@@ -408,29 +408,34 @@ all. This may very well take some time.")
 
 (deffoo nnml-request-rename-group (group new-name &optional server)
   (nnml-possibly-change-directory group server)
-  ;; Rename directory.
-  (and (file-writable-p nnml-current-directory)
-       (condition-case ()
-	   (let ((parent 
-		  (file-name-directory
-		   (directory-file-name 
-		    (nnmail-group-pathname new-name nnml-directory)))))
-	     (unless (file-exists-p parent)
-	       (make-directory parent t))
-	     (rename-file 
-	      (directory-file-name nnml-current-directory)
-	      (directory-file-name 
-	       (nnmail-group-pathname new-name nnml-directory)))
-	     t)
-	 (error nil))
-       ;; That went ok, so we change the internal structures.
-       (let ((entry (assoc group nnml-group-alist)))
-	 (and entry (setcar entry new-name))
-	 (setq nnml-current-directory nil
-	       nnml-current-group nil)
-	 ;; Save the new group alist.
-	 (nnmail-save-active nnml-group-alist nnml-active-file)
-	 t)))
+  (let ((new-dir (nnmail-group-pathname new-name nnml-directory))
+	(old-dir (nnmail-group-pathname group nnml-directory)))
+    (when (condition-case ()
+	      (progn
+		(make-directory new-dir t)
+		t)
+	    (error nil))
+      ;; We move the articles file by file instead of renaming
+      ;; the directory -- there may be subgroups in this group.
+      ;; One might be more clever, I guess.
+      (let ((files (nnheader-article-to-file-alist old-dir)))
+	(while files
+	  (rename-file 
+	   (concat old-dir (cdar files))
+	   (concat new-dir (cdar files)))
+	  (pop files)))
+      (when (<= (length (directory-files old-dir)) 2)
+	(condition-case ()
+	    (delete-directory old-dir)
+	  (error nil)))
+      ;; That went ok, so we change the internal structures.
+      (let ((entry (assoc group nnml-group-alist)))
+	(and entry (setcar entry new-name))
+	(setq nnml-current-directory nil
+	      nnml-current-group nil)
+	;; Save the new group alist.
+	(nnmail-save-active nnml-group-alist nnml-active-file)
+	t))))
 
 
 ;;; Internal functions.

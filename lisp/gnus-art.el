@@ -46,7 +46,7 @@ saving large batches of articles.  If this variable is neither nil not
 `always', there the user will be prompted once for a file name for
 each invocation of the saving commands.")
 
-(defvar gnus-saved-headers article-visible-headers
+(defvar gnus-saved-headers gnus-visible-headers
   "*Headers to keep if `gnus-save-all-headers' is nil.
 If `gnus-save-all-headers' is non-nil, this variable will be ignored.
 If that variable is nil, however, all headers that match this regexp
@@ -196,8 +196,8 @@ If you want to run a special decoding program like nkf, use this hook.")
   "Save the currently selected article."
   (unless gnus-save-all-headers
     ;; Remove headers accoring to `gnus-saved-headers'.
-    (let ((article-visible-headers
-	   (or gnus-saved-headers article-visible-headers))
+    (let ((gnus-visible-headers
+	   (or gnus-saved-headers gnus-visible-headers))
 	  (gnus-article-buffer save-buffer))
       (gnus-article-hide-headers 1 t)))
   (save-window-excursion
@@ -463,14 +463,9 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 ;;; Gnus article mode
 ;;;
 
-(defvar gnus-article-mode-map nil)
 (put 'gnus-article-mode 'mode-class 'special)
 
-(if gnus-article-mode-map
-    nil
-  (setq gnus-article-mode-map (make-keymap))
-  (suppress-keymap gnus-article-mode-map)
-
+(when t
   (gnus-define-keys gnus-article-mode-map
     " " gnus-article-goto-next-page
     "\177" gnus-article-goto-prev-page
@@ -726,7 +721,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "Hide unwanted headers if `gnus-have-all-headers' is nil.
 Provided for backwards compatibility."
   (or (save-excursion (set-buffer gnus-summary-buffer) gnus-have-all-headers)
-      article-inhibit-hiding
+      gnus-inhibit-hiding
       (gnus-article-hide-headers)))
 
 ;;; Article savers.
@@ -1158,6 +1153,47 @@ how much time has lapsed since DATE."
     (save-excursion
       (set-buffer gnus-article-buffer)
       (article-date-ut type highlight headers))))
+
+;;;
+;;; Article editing
+;;;
+
+(defvar gnus-article-edit-mode-hook nil
+  "*Hook run in article edit mode buffers.")
+
+(defvar gnus-article-edit-mode-map nil)
+
+(unless gnus-article-edit-mode-map 
+  (setq gnus-article-edit-mode-map (copy-keymap text-mode-map))
+
+  (gnus-define-keys gnus-article-edit-mode-map
+    "\C-c\C-c" 'gnus-summary-edit-article-done)
+
+  (gnus-define-keys (gnus-article-edit-wash-map
+		     "\C-c\C-w" gnus-article-edit-mode-map)
+    "f" gnus-article-edit-full-stops))
+
+(defun gnus-article-edit-mode ()
+  "Major mode for editing articles.
+This is an extended text-mode.
+
+\\{gnus-article-edit-mode-map}"
+  (interactive)
+  (kill-all-local-variables)
+  (setq major-mode 'gnus-article-edit-mode)
+  (setq mode-name "Article Edit")
+  (make-local-variable 'minor-mode-alist)
+  (use-local-map gnus-article-edit-mode-map)
+  (run-hooks 'text-mode 'gnus-article-edit-mode-hook))
+
+(defun gnus-article-edit-full-stops ()
+  "Interactively repair spacing at end of sentences."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward-regexp "^$" nil t)
+    (let ((case-fold-search nil))
+      (query-replace-regexp "\\([.!?][])}]* \\)\\([[({A-Z]\\)" "\\1 \\2"))))
 
 (provide 'gnus-art)
 

@@ -34,6 +34,13 @@
 ;; Site dependent variables.  These variables should be defined in
 ;; paths.el.
 
+(defvar gnus-default-nntp-server nil
+  "Specify a default NNTP server.
+This variable should be defined in paths.el, and should never be set
+by the user.
+If you want to change servers, you should use `gnus-select-method'.
+See the documentation to that variable.")
+
 ;; Don't touch this variable.
 (defvar gnus-nntp-service "nntp"
   "*NNTP service name (\"nntp\" or 119).
@@ -139,13 +146,6 @@ If, for instance, you want to read your mail with the nnml backend,
 you could set this variable:
 
 (setq gnus-secondary-select-methods '((nnml \"\")))")
-
-(defvar gnus-default-nntp-server nil
-  "Specify a default NNTP server.
-This variable should be defined in paths.el, and should never be set
-by the user.
-If you want to change servers, you should use `gnus-select-method'.
-See the documentation to that variable.")
 
 (defvar gnus-backup-default-subscribed-newsgroups
   '("news.announce.newusers" "news.groups.questions" "gnu.emacs.gnus")
@@ -663,14 +663,34 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-article-strip-leading-blank-lines gnus-article-date-local
       gnus-article-date-original gnus-article-date-lapsed
       gnus-decode-rfc1522 gnus-article-show-all-headers)
-     ("gnus-start" gnus-newsrc-parse-options gnus-1)
+     ("gnus-int" gnus-request-type)
+     ("gnus-start" gnus-newsrc-parse-options gnus-1 gnus-no-server-1)
      ("gnus-range" gnus-copy-sequence)
      ("gnus-vm" gnus-vm-mail-setup)
      ("gnus-logic" gnus-score-advanced)
      ("gnus-async" gnus-async-request-fetched-article gnus-async-prefetch-next
-      gnus-async-prefetch-article)
+      gnus-async-prefetch-article gnus-async-prefetch-remove-group)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
       gnus-summary-save-article-vm))))
+
+;;;
+;;; Skeleton keymaps
+;;;
+
+(defun gnus-suppress-keymap (keymap)
+  (suppress-keymap keymap)
+  (let ((keys `([delete] "\177" "\M-u"))) ;gnus-mouse-2 
+    (while keys
+      (define-key keymap (pop keys) 'undefined))))
+
+(defvar gnus-article-mode-map (make-keymap))
+(gnus-suppress-keymap gnus-article-mode-map)
+(defvar gnus-summary-mode-map (make-keymap))
+(gnus-suppress-keymap gnus-summary-mode-map)
+(defvar gnus-group-mode-map (make-keymap))
+(gnus-suppress-keymap gnus-group-mode-map)
+
+;;; Function aliases later to be redefined for XEmacs usage.
 
 (defalias 'gnus-make-overlay 'make-overlay)
 (defalias 'gnus-overlay-put 'overlay-put)

@@ -29,18 +29,18 @@
 (require 'gnus-util)
 (require 'message)
 
-(defvar article-ignored-headers
+(defvar gnus-ignored-headers
    "^Path:\\|^Posting-Version:\\|^Article-I.D.:\\|^Expires:\\|^Date-Received:\\|^References:\\|^Control:\\|^Xref:\\|^Lines:\\|^Posted:\\|^Relay-Version:\\|^Message-ID:\\|^Nf-ID:\\|^Nf-From:\\|^Approved:\\|^Sender:\\|^Received:\\|^Mail-from:"
   "*All headers that match this regexp will be hidden.
 This variable can also be a list of regexps of headers to be ignored.
 If `article-visible-headers' is non-nil, this variable will be ignored.")
 
-(defvar article-visible-headers "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-"
+(defvar gnus-visible-headers "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-"
   "*All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `article-ignored-headers' will be ignored.")
 
-(defvar article-sorted-header-list
+(defvar gnus-sorted-header-list
   '("^From:" "^Subject:" "^Summary:" "^Keywords:" "^Newsgroups:" "^To:"
     "^Cc:" "^Date:" "^Organization:")
   "*This variable is a list of regular expressions.
@@ -48,19 +48,16 @@ If it is non-nil, headers that match the regular expressions will
 be placed first in the article buffer in the sequence specified by
 this list.")
 
-(defvar article-boring-article-headers
+(defvar gnus-boring-article-headers
   '(empty followup-to reply-to)
   "*Headers that are only to be displayed if they have interesting data.
 Possible values in this list are `empty', `newsgroups', `followup-to',
 `reply-to', and `date'.")
 
-(defvar article-signature-separator "^-- *$"
-  "Regexp matching signature separator.")
-
 (defvar gnus-signature-separator "^-- *$"
   "Regexp matching signature separator.")
 
-(defvar article-signature-limit nil
+(defvar gnus-signature-limit nil
   "Provide a limit to what is considered a signature.
 If it is a number, no signature may not be longer (in characters) than
 that number.  If it is a function, the function will be called without
@@ -68,19 +65,19 @@ any parameters, and if it returns nil, there is no signature in the
 buffer.  If it is a string, it will be used as a regexp.  If it
 matches, the text in question is not a signature.")
 
-(defvar article-hidden-properties '(invisible t intangible t)
+(defvar gnus-hidden-properties '(invisible t intangible t)
   "Property list to use for hiding text.")
 
-(defvar article-x-face-command
+(defvar gnus-article-x-face-command
   "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -"
   "String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command.")
 
-(defvar article-x-face-too-ugly nil
+(defvar gnus-article-x-face-too-ugly nil
   "Regexp matching posters whose face shouldn't be shown automatically.")
 
-(defvar article-emphasis-alist
+(defvar gnus-emphasis-alist
   '(("_\\(\\w+\\)_" 0 1 'underline)
     ("\\W\\(/\\(\\w+\\)/\\)\\W" 1 2 'italic)
     ("\\(_\\*\\|\\*_\\)\\(\\w+\\)\\(_\\*\\|\\*_\\)" 0 2 'bold-underline)
@@ -103,7 +100,7 @@ is the face used for highlighting.")
 
 ;;; Internal variables.
 
-(defvar article-inhibit-hiding nil)
+(defvar gnus-inhibit-hiding nil)
 (defvar gnus-newsgroup-name)
 
 (defsubst article-hide-text (b e props)
@@ -116,27 +113,27 @@ is the face used for highlighting.")
 
 (defsubst article-unhide-text (b e)
   "Remove hidden text properties from region between B and E."
-  (remove-text-properties b e article-hidden-properties)
-  (when (memq 'intangible article-hidden-properties)
+  (remove-text-properties b e gnus-hidden-properties)
+  (when (memq 'intangible gnus-hidden-properties)
     (put-text-property (max (1- b) (point-min))
 			    b 'intangible nil)))
 
 (defun article-hide-text-type (b e type)
   "Hide text of TYPE between B and E."
   (article-hide-text
-   b e (cons 'article-type (cons type article-hidden-properties))))
+   b e (cons 'article-type (cons type gnus-hidden-properties))))
 
 (defun article-unhide-text-type (b e type)
   "Hide text of TYPE between B and E."
   (remove-text-properties
-   b e (cons 'article-type (cons type article-hidden-properties)))
-  (when (memq 'intangible article-hidden-properties)
+   b e (cons 'article-type (cons type gnus-hidden-properties)))
+  (when (memq 'intangible gnus-hidden-properties)
     (put-text-property (max (1- b) (point-min))
 			    b 'intangible nil)))
 
 (defsubst article-header-rank ()
   "Give the rank of the string HEADER as given by `article-sorted-header-list'."
-  (let ((list article-sorted-header-list)
+  (let ((list gnus-sorted-header-list)
 	(i 0))
     (while list
       (when (looking-at (car list))
@@ -154,25 +151,25 @@ always hide."
       ;; Show boring headers as well.
       (article-show-hidden-text 'boring-headers)
     ;; This function might be inhibited.
-    (unless article-inhibit-hiding
+    (unless gnus-inhibit-hiding
       (save-excursion
 	(save-restriction
 	  (let ((buffer-read-only nil)
 		(props (nconc (list 'article-type 'headers)
-			      article-hidden-properties))
-		(max (1+ (length article-sorted-header-list)))
-		(ignored (when (not (stringp article-visible-headers))
-			   (cond ((stringp article-ignored-headers)
-				  article-ignored-headers)
-				 ((listp article-ignored-headers)
-				  (mapconcat 'identity article-ignored-headers
+			      gnus-hidden-properties))
+		(max (1+ (length gnus-sorted-header-list)))
+		(ignored (when (not (stringp gnus-visible-headers))
+			   (cond ((stringp gnus-ignored-headers)
+				  gnus-ignored-headers)
+				 ((listp gnus-ignored-headers)
+				  (mapconcat 'identity gnus-ignored-headers
 					     "\\|")))))
 		(visible
-		 (cond ((stringp article-visible-headers)
-			article-visible-headers)
-		       ((and article-visible-headers
-			     (listp article-visible-headers))
-			(mapconcat 'identity article-visible-headers "\\|"))))
+		 (cond ((stringp gnus-visible-headers)
+			gnus-visible-headers)
+		       ((and gnus-visible-headers
+			     (listp gnus-visible-headers))
+			(mapconcat 'identity gnus-visible-headers "\\|"))))
 		(inhibit-point-motion-hooks t)
 		want-list beg)
 	    ;; First we narrow to just the headers.
@@ -190,14 +187,13 @@ always hide."
 	     (point)
 	     (progn (search-forward "\n\n" nil t) (forward-line -1) (point)))
 	    ;; Then we use the two regular expressions
-	    ;; `article-ignored-headers' and `article-visible-headers' to
+	    ;; `gnus-ignored-headers' and `gnus-visible-headers' to
 	    ;; select which header lines is to remain visible in the
 	    ;; article buffer.
 	    (goto-char (point-min))
 	    (while (re-search-forward "^[^ \t]*:" nil t)
 	      (beginning-of-line)
-	      ;; We add the headers we want to keep to a list and delete
-	      ;; them from the buffer.
+	      ;; Mark the rank of the header.
 	      (put-text-property 
 	       (point) (1+ (point)) 'message-rank
 	       (if (or (and visible (looking-at visible))
@@ -226,7 +222,7 @@ always hide."
     (save-excursion
       (save-restriction
 	(let ((buffer-read-only nil)
-	      (list article-boring-article-headers)
+	      (list gnus-boring-article-headers)
 	      (inhibit-point-motion-hooks t)
 	      elem)
 	  (nnheader-narrow-to-headers)
@@ -236,7 +232,7 @@ always hide."
 	    (cond
 	     ;; Hide empty headers.
 	     ((eq elem 'empty)
-	      (while (re-search-forward "^[^:]+:[ \t]\n[^ \t]" nil t)
+	      (while (re-search-forward "^[^:]+:[ \t]*\n[^ \t]" nil t)
 		(forward-line -1)
 		(article-hide-text-type
 		 (progn (beginning-of-line) (point))
@@ -367,12 +363,12 @@ always hide."
 	(nnheader-narrow-to-headers)
 	(setq from (message-fetch-field "from"))
 	(goto-char (point-min))
-	(when (and article-x-face-command
+	(when (and gnus-article-x-face-command
 		   (or force
 		       ;; Check whether this face is censored.
-		       (not article-x-face-too-ugly)
-		       (and article-x-face-too-ugly from
-			    (not (string-match article-x-face-too-ugly
+		       (not gnus-article-x-face-too-ugly)
+		       (and gnus-article-x-face-too-ugly from
+			    (not (string-match gnus-article-x-face-too-ugly
 					       from))))
 		   ;; Has to be present.
 		   (re-search-forward "^X-Face: " nil t))
@@ -380,22 +376,21 @@ always hide."
 	  (let ((beg (point))
 		(end (1- (re-search-forward "^\\($\\|[^ \t]\\)" nil t))))
 	    ;; We display the face.
-	    (if (symbolp article-x-face-command)
+	    (if (symbolp gnus-article-x-face-command)
 		;; The command is a lisp function, so we call it.
-		(if (gnus-functionp article-x-face-command)
-		    (funcall article-x-face-command beg end)
-		  (error "%s is not a function" article-x-face-command))
+		(if (gnus-functionp gnus-article-x-face-command)
+		    (funcall gnus-article-x-face-command beg end)
+		  (error "%s is not a function" gnus-article-x-face-command))
 	      ;; The command is a string, so we interpret the command
 	      ;; as a, well, command, and fork it off.
 	      (let ((process-connection-type nil))
 		(process-kill-without-query
 		 (start-process
 		  "article-x-face" nil shell-file-name shell-command-switch
-		  article-x-face-command))
+		  gnus-article-x-face-command))
 		(process-send-region "article-x-face" beg end)
 		(process-send-eof "article-x-face")))))))))
 
-(defalias 'article-headers-decode-quoted-printable 'article-decode-rfc1522)
 (defun article-decode-rfc1522 ()
   "Hack to remove QP encoding from headers."
   (let ((case-fold-search t)
@@ -414,7 +409,8 @@ always hide."
 	(narrow-to-region (match-beginning 0) (match-end 0))
 	(delete-region (point-min) (point-max))
 	(insert string)
-	(article-mime-decode-quoted-printable (goto-char (point-min)) (point-max))
+	(article-mime-decode-quoted-printable
+	 (goto-char (point-min)) (point-max))
 	(subst-char-in-region (point-min) (point-max) ?_ ? )
 	(widen)
 	(goto-char (point-min))))))
@@ -553,15 +549,15 @@ always hide."
 	     (point-max))
 	  (error nil))))
   (goto-char (point-max))
-  (when (re-search-backward article-signature-separator nil t)
+  (when (re-search-backward gnus-signature-separator nil t)
     (forward-line 1)
-    (when (or (null article-signature-limit)
-	      (and (numberp article-signature-limit)
-		   (< (- (point-max) (point)) article-signature-limit))
-	      (and (gnus-functionp article-signature-limit)
-		   (funcall article-signature-limit))
-	      (and (stringp article-signature-limit)
-		   (not (re-search-forward article-signature-limit nil t))))
+    (when (or (null gnus-signature-limit)
+	      (and (numberp gnus-signature-limit)
+		   (< (- (point-max) (point)) gnus-signature-limit))
+	      (and (gnus-functionp gnus-signature-limit)
+		   (funcall gnus-signature-limit))
+	      (and (stringp gnus-signature-limit)
+		   (not (re-search-forward gnus-signature-limit nil t))))
       (narrow-to-region (point) (point-max))
       t)))
 
@@ -608,7 +604,7 @@ If HIDE, hide the text instead."
 	(setq beg (point))
 	(forward-char)
 	(if hide
-	    (article-hide-text beg (point) article-hidden-properties)
+	    (article-hide-text beg (point) gnus-hidden-properties)
 	  (article-unhide-text beg (point)))
 	(setq beg (point)))
       t)))
@@ -759,14 +755,14 @@ function and want to see what the date was before converting."
       (article-unhide-text (point-min) (point-max)))))
 
 (defun article-emphasize (&optional arg)
-  "Empasize text according to `article-emphasis-alist'."
+  "Empasize text according to `gnus-emphasis-alist'."
   (interactive (article-hidden-arg))
   (unless (article-check-hidden-text 'emphasis arg)
     (save-excursion
-      (let ((alist article-emphasis-alist)
+      (let ((alist gnus-emphasis-alist)
 	    (buffer-read-only nil)
 	    (props (append '(article-type emphasis)
-			   article-hidden-properties))
+			   gnus-hidden-properties))
 	    regexp elem beg invisible visible face)
 	(goto-char (point-min))
 	(search-forward "\n\n" nil t)

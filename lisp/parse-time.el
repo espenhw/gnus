@@ -43,6 +43,10 @@
 (defvar parse-time-syntax (make-char-table 'parse-time-syntax))
 (defvar parse-time-digits (make-char-table 'parse-time-syntax))
 
+;; Byte-compiler warnings
+(defvar elt)
+(defvar val)
+
 (unless (aref parse-time-digits ?0)
   (loop for i from ?0 to ?9
 	do (set-char-table-range parse-time-digits i (- i ?0))))

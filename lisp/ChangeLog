@@ -1,3 +1,98 @@
+Wed Jul 31 21:38:08 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-load.el (gnus-suppress-keymap): New function.
+
+Wed Jul 31 01:20:58 1996  Sudish Joseph  <sudish@mindspring.com>
+
+	* gnus-picon.el (gnus-group-display-picons): Delete just the live
+        extents. 
+
+Wed Jul 31 21:15:01 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el ((load)): Only eval splash when loading.
+
+	* gnus-group.el (gnus-group-quit): Always kill group buffer.
+
+	* nntp.el (nntp-open-connection): Escape errors.
+
+Wed Jul 31 16:09:22 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnml.el (nnml-request-rename-group): Would move subgroups as
+	well. 
+	* nnmh.el: Ditto.
+
+	* gnus-group.el (gnus-group-rename-group): Use current group name
+	as default.
+	(gnus-group-rename-group): Added doc string.
+
+	* gnus-sum.el (gnus-general-simplify-subject): Renamed.
+
+Wed Jul 31 16:05:06 1996  Paul Franklin  <paul@transmeta.com>
+
+	* gnus-sum.el (gnus-pdf-simplify-subject): New version.
+
+Wed Jul 31 15:59:04 1996  Raja R. Harinath  <harinath@cs.umn.edu>
+
+	* nntp.el (nntp-retrieve-headers-with-xover): `last' returns cdr. 
+
+Wed Jul 31 15:18:33 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-retrieve-headers-with-xover): Put the result in
+	the right buffer.
+	(nntp-request-body): Decode.
+
+	* gnus.el (gnus-no-server): Would bug out when gnus-start wasn't
+	loaded. 
+
+	* gnus-art.el (gnus-article-edit-mode): New command.
+	(gnus-article-edit-mode-hook): New variable.
+	(gnus-article-edit-mode-map): New variable.
+
+Wed Jul 31 15:18:26 1996  François Pinard  <pinard@progiciels-bpi.ca>
+
+	* gnus-art.el (gnus-article-edit-full-stops): New command.
+
+Wed Jul 31 13:03:48 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-summary-edit-wash): New command and keystroke.
+
+	* message.el (message-sort-headers-1): Sort properly on totally
+	empty headers.
+
+	* article.el (article-hide-boring-headers): Didn't hide completely
+	empty headers.
+
+	* nntp.el (nntp-encode-text): Rescued.
+	(nntp-send-buffer): New function.
+	(nntp-request-post): New function.
+
+	* gnus-util.el (gnus-define-keys-safe): New macro.
+	(gnus-define-keys-1): Accept `safe' param.
+
+	* gnus-load.el (gnus-summary-mode-map): Define the main three
+	keymaps prematurely here.
+
+Wed Jul 31 12:48:23 1996  Steven L. Baur  <steve@miranova.com>
+
+	* gnus-load.el (gnus-default-nntp-server): Moved.
+
+Wed Jul 31 03:15:02 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nndoc.el (nndoc-add-type): Remove old type definition.
+
+	* article.el: Changed variable names back to `gnus-'.
+
+Tue Jul 30 23:07:04 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-connection-alist): Define as oo.
+
+	* nndoc.el (nndoc-add-type): Wrong number of args.
+	(nndoc-set-delims): Free var.
+
+Tue Jul 30 23:02:51 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.1 is released.
+
 Tue Jul 30 22:34:11 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* nntp.el (nntp-find-connection-buffer): New function.

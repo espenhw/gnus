@@ -844,14 +844,9 @@ increase the score of each group you read."
 ;;; Gnus summary mode
 ;;;
 
-(defvar gnus-summary-mode-map nil)
-
 (put 'gnus-summary-mode 'mode-class 'special)
 
-(unless gnus-summary-mode-map
-  (setq gnus-summary-mode-map (make-keymap))
-  (suppress-keymap gnus-summary-mode-map)
-
+(when t
   ;; Non-orthogonal keys
 
   (gnus-define-keys gnus-summary-mode-map
@@ -1876,36 +1871,34 @@ If NO-DISPLAY, don't generate a summary buffer."
     (goto-char (point-min))
     (run-hooks 'gnus-summary-prepare-hook)))
 
-(defsubst gnus-pdf-simplify-subject (whole-subject)
-  "Simplify subject by the same rules as gnus-gather-threads-by-subject."
-  (let* ((sub nil)
-	 (subject
-	  (cond
-	   ;; Truncate the subject.
-	   ((numberp gnus-summary-gather-subject-limit)
-	    (setq sub (gnus-simplify-subject-re whole-subject))
-	    (if (> (length sub) gnus-summary-gather-subject-limit)
-		(substring sub 0 gnus-summary-gather-subject-limit)
-	      sub))
-	   ;; Fuzzily simplify it.
-	   ((eq 'fuzzy gnus-summary-gather-subject-limit)
-	    (gnus-simplify-subject-fuzzy whole-subject))
-	   ;; Just remove the leading "Re:".
-	   (t
-	    (gnus-simplify-subject-re whole-subject)))))
-       
-    (if (and gnus-summary-gather-exclude-subject
-	     (string-match gnus-summary-gather-exclude-subject
-			   subject))
-	nil				; This article shouldn't be gathered
-      subject)))
+(defsubst gnus-general-simplify-subject (subject)
+  "Simply subject by the same rules as gnus-gather-threads-by-subject."
+  (setq subject
+	(cond
+	 ;; Truncate the subject.
+	 ((numberp gnus-summary-gather-subject-limit)
+	  (setq subject (gnus-simplify-subject-re subject))
+	  (if (> (length subject) gnus-summary-gather-subject-limit)
+	      (substring subject 0 gnus-summary-gather-subject-limit)
+	    subject))
+	 ;; Fuzzily simplify it.
+	 ((eq 'fuzzy gnus-summary-gather-subject-limit)
+	  (gnus-simplify-subject-fuzzy subject))
+	 ;; Just remove the leading "Re:".
+	 (t
+	  (gnus-simplify-subject-re subject))))
+  
+  (if (and gnus-summary-gather-exclude-subject
+	   (string-match gnus-summary-gather-exclude-subject subject))
+      nil				; This article shouldn't be gathered
+    subject))
 
 (defun gnus-summary-simplify-subject-query ()
   "Query where the respool algorithm would put this article."
   (interactive)
   (gnus-set-global-variables)
   (gnus-summary-select-article)
-  (message (gnus-pdf-simplify-subject (gnus-summary-article-subject))))
+  (message (gnus-general-simplify-subject (gnus-summary-article-subject))))
 
 (defun gnus-gather-threads-by-subject (threads)
   "Gather threads by looking at Subject headers."
@@ -1916,7 +1909,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	  (result threads)
 	  subject hthread whole-subject)
       (while threads
-	(setq subject (gnus-pdf-simplify-subject
+	(setq subject (gnus-general-simplify-subject
 		       (setq whole-subject (mail-header-subject 
 					    (caar threads)))))
 	(if subject
@@ -5773,9 +5766,7 @@ groups."
     (select-window (get-buffer-window gnus-article-buffer))
     (gnus-message 6 "C-c C-c to end edits")
     (setq buffer-read-only nil)
-    (text-mode)
-    (use-local-map (copy-keymap (current-local-map)))
-    (local-set-key "\C-c\C-c" 'gnus-summary-edit-article-done)
+    (gnus-article-edit-mode)
     (buffer-enable-undo)
     (widen)
     (goto-char (point-min))
@@ -5830,6 +5821,20 @@ groups."
   (gnus-configure-windows 'summary)
   (and (gnus-visual-p 'summary-highlight 'highlight)
        (run-hooks 'gnus-visual-mark-article-hook)))
+
+(defun gnus-summary-edit-wash (key)
+  "Perform editing command in the article buffer."
+  (interactive 
+   (list
+    (progn
+      (message "%s" (concat (this-command-keys) "- "))
+      (read-char))))
+  (message "")
+  (gnus-summary-edit-article)
+  (execute-kbd-macro (concat (this-command-keys) key))
+  (gnus-summary-edit-article-done))
+
+;;; Respooling
 
 (defun gnus-summary-respool-query ()
   "Query where the respool algorithm would put this article."

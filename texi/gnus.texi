@@ -543,7 +543,7 @@ Subscribe all new groups alphabetically.
 @vindex gnus-subscribe-hierarchically
 Subscribe all new groups hierarchically.  The difference between this
 function and @code{gnus-subscribe-alphabetically} is slight.
-{gnus-subscribe-alphabetically} will subscribe new groups in a strictly
+@code{gnus-subscribe-alphabetically} will subscribe new groups in a strictly
 alphabetical fashion, while this function will enter groups into it's
 hierarchy.  So if you want to have the @samp{rec} hierarchy before the
 @samp{comp} hierarchy, this function will not mess that configuration
@@ -10249,57 +10249,57 @@ and a match type.  A typical match operator looks like @samp{("from"
 simple scoring, and the match types are also the same.
 
 
-@node Advanced Scoring Example
-@subsection Advanced Scoring Example
+@node Advanced Scoring Examples
+@subsection Advanced Scoring Examples
 
 Let's say you want to increase the score of articles written by Lars
 when he's talking about Gnus:
 
-@samp
+@example
 ((& 
   ("from" "Lars Ingebrigtsen")
   ("subject" "Gnus"))
  1000)
-@end samp
+@end example
 
 Quite simple, huh?
 
 When he writes long articles, he sometimes has something nice to say: 
 
-@samp
+@example
 ((& 
   ("from" "Lars Ingebrigtsen")
   (|
    ("subject" "Gnus")
    ("lines" 100 >)))
  1000)
-@end samp
+@end example
 
 However, when he responds to things written by Reig Eigil Logge, you
 really don't want to read what he's written:
 
-@samp
+@example
 ((&
   ("from" "Lars Ingebrigtsen")
   (1- ("from" "Reig Eigir Logge")))
  -100000)
-@end samp
+@end example
 
 Everybody that follows up Redmondo when he writes about disappearing
 socks should have their scores raised, but only when they talk about
 white socks.  However, when Lars talks about socks, it's usually not
 very interesting:
 
-@samp
+@example
 ((&
   (1-
    (&
-    ("from" "redmondo@.*no" r)
+    ("from" "redmondo@@.*no" r)
     ("body" "disappearing.*socks" t)))
   (! ("from" "Lars Ingebrigtsen"))
   ("body" "white.*socks"))
  1000)
-@end samp
+@end example
 
 The possibilities are endless.
 
@@ -10319,31 +10319,31 @@ The indirection arguments (@code{1-} and so on) will make their
 arguments work on previous generations of the thread.  If you say
 something like:
 
-@samp
+@example
 ...
 (1-
  (1-
   ("from" "lars")))
 ...
-@end samp
+@end example
 
 Then that means "score on the from header of the grandparent of the
 current article".  An indirection is quite fast, but it's better to say:
 
-@samp
+@example
 (1-
  (& 
   ("from" "Lars")
   ("subject" "Gnus")))
-@end samp
+@end example
 
 than it is to say:
 
-@samp
+@example
 (&
  (1- ("from" "Lars"))
  (1- ("subject" "Gnus")))
-@end samp
+@end example
 
 
 

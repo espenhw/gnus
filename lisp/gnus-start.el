@@ -506,7 +506,19 @@ the first newsgroup."
   ;; Remove Gnus frames.
   (gnus-kill-gnus-frames))
 
-;;;###autoload
+(defun gnus-no-server-1 (&optional arg slave)
+  "Read network news.
+If ARG is a positive number, Gnus will use that as the
+startup level.	If ARG is nil, Gnus will be started at level 2.
+If ARG is non-nil and not a positive number, Gnus will
+prompt the user for the name of an NNTP server to use.
+As opposed to `gnus', this command will not connect to the local server."
+  (interactive "P")
+  (let ((val (or arg (1- gnus-level-default-subscribed))))
+    (gnus val t slave)
+    (make-local-variable 'gnus-group-use-permanent-levels)
+    (setq gnus-group-use-permanent-levels val)))
+
 (defun gnus-1 (&optional arg dont-connect slave)
   "Read network news.
 If ARG is non-nil and a positive number, Gnus will use that as the

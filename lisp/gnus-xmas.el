@@ -57,7 +57,7 @@ automatically.")
   (cdr (assq gnus-xmas-logo-color-style gnus-xmas-logo-color-alist))
   "Colors used for the Gnus logo.")
 
-(defvar article-x-face-command
+(defvar gnus-article-x-face-command
   (if (featurep 'xface)
       'gnus-xmas-article-display-xface
     "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -")

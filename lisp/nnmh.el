@@ -32,9 +32,9 @@
 
 (require 'nnheader)
 (require 'nnmail)
-(require 'gnus)
+(require 'gnus-start)
 (require 'nnoo)
-(eval-and-compile (require 'cl))
+(require 'cl)
 
 (nnoo-declare nnmh)
 
@@ -355,21 +355,31 @@
 
 (deffoo nnmh-request-rename-group (group new-name &optional server)
   (nnmh-possibly-change-directory group server)
-  ;; Rename directory.
-  (and (file-writable-p nnmh-current-directory)
-       (condition-case ()
-	   (progn
-	     (rename-file 
-	      (directory-file-name nnmh-current-directory)
-	      (directory-file-name 
-	       (nnmail-group-pathname new-name nnmh-directory)))
-	     t)
-	 (error nil))
-       ;; That went ok, so we change the internal structures.
-       (let ((entry (assoc group nnmh-group-alist)))
-	 (and entry (setcar entry new-name))
-	 (setq nnmh-current-directory nil)
-	 t)))
+  (let ((new-dir (nnmail-group-pathname new-name nnmh-directory))
+	(old-dir (nnmail-group-pathname group nnmh-directory)))
+    (when (condition-case ()
+	      (progn
+		(make-directory new-dir t)
+		t)
+	    (error nil))
+      ;; We move the articles file by file instead of renaming
+      ;; the directory -- there may be subgroups in this group.
+      ;; One might be more clever, I guess.
+      (let ((files (nnheader-article-to-file-alist old-dir)))
+	(while files
+	  (rename-file 
+	   (concat old-dir (cdar files))
+	   (concat new-dir (cdar files)))
+	  (pop files)))
+      (when (<= (length (directory-files old-dir)) 2)
+	(condition-case ()
+	    (delete-directory old-dir)
+	  (error nil)))
+      ;; That went ok, so we change the internal structures.
+      (let ((entry (assoc group nnmh-group-alist)))
+	(and entry (setcar entry new-name))
+	(setq nnmh-current-directory nil)
+	t))))
 
 
 ;;; Internal functions.

@@ -663,7 +663,7 @@ Return the number of headers removed."
        (forward-char -1)))
    (lambda ()
      (or (get-text-property (point) 'message-rank)
-	 0))))
+	 10000))))
 
 (defun message-sort-headers ()
   "Sort the headers of the current message according to `message-header-format-alist'."

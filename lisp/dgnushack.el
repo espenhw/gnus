@@ -27,7 +27,7 @@
 ;;; Code:
 
 (require 'cl)
-(setq load-path (cons "." load-path))
+(push "." load-path)
 
 (setq custom-file "/THIS FILE DOES NOT eXiST!")
 

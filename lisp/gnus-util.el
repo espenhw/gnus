@@ -264,16 +264,22 @@
   "Define all keys in PLIST in KEYMAP."
   `(gnus-define-keys-1 (quote ,keymap) (quote ,plist)))
 
+(defmacro gnus-define-keys-safe (keymap &rest plist)
+  "Define all keys in PLIST in KEYMAP without overwriting previous definitions."
+  `(gnus-define-keys-1 (quote ,keymap) (quote ,plist) t))
+
 (put 'gnus-define-keys 'lisp-indent-function 1)
 (put 'gnus-define-keys 'lisp-indent-hook 1)
-(put 'gnus-define-keymap 'lisp-indent-function 1)
-(put 'gnus-define-keymap 'lisp-indent-hook 1)
+(put 'gnus-define-keys-safe 'lisp-indent-function 1)
+(put 'gnus-define-keys-safe 'lisp-indent-hook 1)
+(put 'gnus-local-set-keys 'lisp-indent-function 1)
+(put 'gnus-local-set-keys 'lisp-indent-hook 1)
 
 (defmacro gnus-define-keymap (keymap &rest plist)
   "Define all keys in PLIST in KEYMAP."
   `(gnus-define-keys-1 ,keymap (quote ,plist)))
 
-(defun gnus-define-keys-1 (keymap plist)
+(defun gnus-define-keys-1 (keymap plist &optional safe)
   (when (null keymap)
     (error "Can't set keys in a null keymap"))
   (cond ((symbolp keymap)
@@ -288,7 +294,10 @@
     (while plist
       (when (symbolp (setq key (pop plist)))
 	(setq key (symbol-value key)))
-      (define-key keymap key (pop plist)))))
+      (if (or (not safe)
+	      (eq (lookup-key keymap key) 'undefined))
+	  (define-key keymap key (pop plist))
+	(pop plist)))))
 
 (defun gnus-completing-read (default prompt &rest args)
   ;; Like `completing-read', except that DEFAULT is the default argument.
