@@ -84,7 +84,8 @@ The group names are matched, they don't have to be fully qualified."
 
 (defcustom gnus-registry-clean-empty t
   "Whether the empty registry entries should be deleted.
-Registry entries are considered empty when they have no groups."
+Registry entries are considered empty when they have no groups
+and no extra data."
   :group 'gnus-registry
   :type 'boolean)
 
@@ -248,7 +249,11 @@ way."
   (let ((count 0))
     (maphash
      (lambda (key value)
-       (unless (gnus-registry-fetch-group key)
+       (unless (or
+		(gnus-registry-fetch-group key)
+		;; TODO: look for specific extra data here!
+		;; in this example, we look for 'label
+		(gnus-registry-fetch-extra key 'label)) 
 	 (incf count)
 	 (remhash key gnus-registry-hashtb)))
      gnus-registry-hashtb)
