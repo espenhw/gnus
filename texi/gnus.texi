@@ -735,6 +735,9 @@ topic parameter that looks like
 will mean that all groups that match that regex will be subscribed under 
 that topic.
 
+If no topics match the groups, the groups will be subscribed in the
+top-level topic.
+
 @end table
 
 @vindex gnus-subscribe-hierarchical-interactive
@@ -2964,6 +2967,18 @@ allowed---@code{visible} and @code{invisible}.
 All groups in a topic will inherit group parameters from the parent (and
 ancestor) topic parameters.  All valid group parameters are valid topic
 parameters (@pxref{Group Parameters}).
+
+In addition, the following parameters are only valid as topic
+parameters:
+
+@table @code
+@item subscribe
+When subscribing new groups by topic (@pxref{Subscription Methods}), the 
+@code{subscribe} topic parameter says what groups go in what topic.  Its 
+value should be a regexp to match the groups that should go in that
+topic. 
+
+@end table
 
 Group parameters (of course) override topic parameters, and topic
 parameters in sub-topics override topic parameters in super-topics.  You

@@ -1,3 +1,7 @@
+1999-12-01 14:21:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Topic Parameters): Addition.
+
 1999-11-30 10:54:31  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Mail Source Specifiers): Add a note.
