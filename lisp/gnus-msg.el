@@ -283,21 +283,23 @@ If nil, the address field will always be empty after invoking
   :group 'gnus-message
   :type 'boolean)
 
-(defcustom gnus-user-agent 'full
+(defcustom gnus-user-agent 'emacs-gnus-type
   "Which information should be exposed in the User-Agent header.
 
-It can be one of the symbols `full' \(show full information, i.e. Emacs and
-Gnus version and system configuration\), `emacs-gnus' \(show only Emacs and
-Gnus version\), `emacs-gnus-type' \(same as `emacs-gnus' plus system type\),
-`gnus' \(show only Gnus version\) or a custom string.  If you set it to a
+It can be one of the symbols `gnus' \(show only Gnus version\) `emacs-gnus'
+\(show only Emacs and Gnus versions\), `emacs-gnus-config' \(same as
+`emacs-gnus' plus system configuration\), `emacs-gnus-type' \(same as
+`emacs-gnus' plus system type\) or a custom string.  If you set it to a
 string, be sure to use a valid format, see RFC 2616."
   :group 'gnus-message
-  :type '(choice (item :tag "Show full info" full)
-		 (item :tag "Show Gnus and Emacs versions and system type"
-		       emacs-gnus-type)
-		 (item :tag "Show Gnus and Emacs versions" emacs-gnus)
-		 (item :tag "Show only Gnus version" gnus)
-		 (string :tag "Other")))
+  :type '(choice
+	  (item :tag "Show Gnus and Emacs versions and system type"
+		emacs-gnus-type)
+	  (item :tag "Show Gnus and Emacs versions and system configuration"
+		emacs-gnus-config)
+	  (item :tag "Show Gnus and Emacs versions" emacs-gnus)
+	  (item :tag "Show only Gnus version" gnus)
+	  (string :tag "Other")))
 
 ;;; Internal variables.
 
