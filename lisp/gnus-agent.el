@@ -2344,7 +2344,7 @@ return only unread articles."
          nil)
         ((not function)
          nil)
-        ((symbolp function)
+        ((gnus-functionp function)
          'ignore)
         ((memq (car function) '(or and not))
          (apply (car function)

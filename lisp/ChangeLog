@@ -1,3 +1,8 @@
+2003-03-04  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* gnus-agent.el (gnus-function-implies-unread-1): Grok
+	byte-compiled functions.
+
 2003-03-04  Kevin Greiner  <kgreiner@xpediantsolutions.com>
 
 	* gnus-sum.el (gnus-auto-goto-ignores): New variable. Provides
