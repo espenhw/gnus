@@ -1,5 +1,8 @@
 2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* pop3.el (pop3-read-response): Check whether the process is
+	alive. 
+
 	* gnus-sum.el (gnus-summary-refer-article): Strip spaces.
 
 	* rfc2047.el (rfc2047-encode-region): Do error out on invalid

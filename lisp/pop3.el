@@ -173,7 +173,8 @@ Return the response string if optional second argument is non-nil."
     (save-excursion
       (set-buffer (process-buffer process))
       (goto-char pop3-read-point)
-      (while (not (search-forward "\r\n" nil t))
+      (while (and (memq (process-status process) '(open run))
+		  (not (search-forward "\r\n" nil t)))
 	(nnheader-accept-process-output process)
 	(goto-char pop3-read-point))
       (setq match-end (point))
