@@ -443,8 +443,12 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		      (setq encoding (mm-body-7-or-8))))
 		   (t
 		    ;; Perform format=flowed filling on text/plain
-		    ;; parts when use-hard-newlines is enabled.
-		    (when (and use-hard-newlines (string= type "text/plain"))
+		    ;; parts when use-hard-newlines is enabled, and
+		    ;; there are hard newlines in the buffer (they
+		    ;; must be present on, e.g., the headers).
+		    (when (and use-hard-newlines (string= type "text/plain")
+			       (text-property-any (point-min) (point-max)
+						  'hard 't))
 		      (fill-flowed-encode)
 		      ;; Indicate that `mml-insert-mime-headers' should
 		      ;; insert a "; format=flowed" string unless the
