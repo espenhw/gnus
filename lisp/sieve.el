@@ -131,6 +131,13 @@ require \"fileinto\";
   (define-key sieve-manage-mode-map [(down-mouse-2)] 'sieve-edit-script)
   (define-key sieve-manage-mode-map [(down-mouse-3)] 'sieve-manage-mode-menu))
 
+(easy-menu-define sieve-manage-mode-menu sieve-manage-mode-map
+  "Sieve Menu."
+  '("Manage Sieve"
+    ["Edit script" sieve-edit-script t]
+    ["Activate script" sieve-activate t]
+    ["Deactivate script" sieve-deactivate t]))
+
 (define-derived-mode sieve-manage-mode fundamental-mode "SIEVE"
   "Mode used for sieve script management."
   (setq mode-name "SIEVE")
@@ -139,13 +146,6 @@ require \"fileinto\";
   (easy-menu-add-item nil nil sieve-manage-mode-menu))
 
 (put 'sieve-manage-mode 'mode-class 'special)
-
-(easy-menu-define sieve-manage-mode-menu sieve-manage-mode-map
-  "Sieve Menu."
-  '("Manage Sieve"
-    ["Edit script" sieve-edit-script t]
-    ["Activate script" sieve-activate t]
-    ["Deactivate script" sieve-deactivate t]))
 
 ;; This is necessary to allow correct handling of \\[cvs-mode-diff-map]
 ;; in substitute-command-keys.
