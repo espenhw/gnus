@@ -283,9 +283,13 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	      (let ((mml-boundary (funcall mml-boundary-function
 					   (incf mml-multipart-number))))
 		(mml-to-mime))
-	      (setq encoding (mm-body-7-or-8)))
+	      (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
+		;; ignore 0x1b, it is part of iso-2022-jp
+		(setq encoding (mm-body-7-or-8))))
 	     ((string= (car (split-string type "/")) "message")
-	      (setq encoding (mm-body-7-or-8)))
+	      (let ((mm-7bit-chars (concat mm-7bit-chars "\x1b")))
+		;; ignore 0x1b, it is part of iso-2022-jp
+		(setq encoding (mm-body-7-or-8))))
 	     (t 
 	      (setq charset (mm-encode-body))
 	      (setq encoding (mm-body-encoding
@@ -498,7 +502,13 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
     (if (stringp (car handles))
 	(mml-insert-mime handles)
       (mml-insert-mime handles t))
-    (mm-destroy-parts handles)))
+    (mm-destroy-parts handles))
+  (save-restriction
+    (message-narrow-to-head)
+    ;; Remove them, they are confusing.
+    (message-remove-header "Content-Type")
+    (message-remove-header "MIME-Version")
+    (message-remove-header "Content-Transfer-Encoding")))
 
 (defun mml-to-mime ()
   "Translate the current buffer from MML to MIME."
@@ -520,7 +530,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	      (mime-to-mml)))))
     (if mmlp
 	(mml-insert-mml-markup handle nil t t)
-      (unless no-markup
+      (unless (and no-markup
+		   (equal (mm-handle-media-type handle) "text/plain"))
 	(mml-insert-mml-markup handle buffer textp)))
     (cond
      (mmlp 
