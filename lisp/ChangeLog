@@ -2,6 +2,8 @@
 
 	* nntp.el (nntp-request-set-mark, nntp-request-update-info): Call
 	nntp-possibly-create-directory, not nntp-possibly-change-group.
+	(nntp-marks-changed-p): New arg SERVER.
+	(nntp-request-update-info): Adjust caller.
 
 2004-05-14  Kai Grossjohann  <kai@emptydomain.de>
 
