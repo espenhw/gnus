@@ -22627,7 +22627,7 @@ backends where the server is in charge of splitting incoming mail, and
 Gnus does not do further splitting.  The @code{spam-autodetect} and
 @code{spam-autodetect-methods} group parameters (accessible with
 @kbd{G c} and @kbd{G p} as usual), and the corresponding variables
-@code{gnus-spam-autodetect-methods} and
+@code{gnus-spam-autodetect} and
 @code{gnus-spam-autodetect-methods} (accessible with @kbd{M-x
 customize-variable} as usual).
 

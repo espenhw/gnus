@@ -1,3 +1,7 @@
+2004-01-22  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Spam ELisp Package Sequence of Events): fix typo
+
 2004-01-21  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus.texi (Outgoing Messages, Agent Variables): Add
