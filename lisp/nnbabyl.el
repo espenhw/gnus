@@ -313,6 +313,7 @@
 
 (deffoo nnbabyl-request-accept-article (group &optional server last)
   (nnbabyl-possibly-change-newsgroup group server)
+  (nnmail-check-syntax)
   (let ((buf (current-buffer))
 	result beg)
     (and 

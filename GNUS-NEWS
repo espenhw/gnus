@@ -2,15 +2,15 @@
 
 Gnus, the Emacs newsreader, has undergone further rewriting.  Many new
 commands and variables have been added.  There should be no
-significant imcompatabilities between this Gnus version and the
-previosly released version, except in the message composition area.
+significant incompatibilities between this Gnus version and the
+previously released version, except in the message composition area.
 
 Below is a list of the more user-visible changes.  Coding changes
 between Gnus 5.1 and 5.2 are more extensive.
 
 *** A new message composition mode is used.  All old customization 
 variables for mail-mode, rnews-reply-mode and gnus-msg are now
-absolete.
+obsolete.
 
 *** Gnus is now able to generate "sparse" threads -- threads where
 missing articles are represented by empty nodes.
@@ -49,7 +49,7 @@ buffers.
 
     (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 
-*** Gnus can resend and bounce mail.
+*** Gnus can re-send and bounce mail.
 
     Use the `S D r' and `S D b'.
 

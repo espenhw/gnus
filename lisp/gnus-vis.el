@@ -214,14 +214,14 @@
 (defvar gnus-button-alist 
   `(("\\bin\\( +article\\)? +\\(<\\([^\n @<>]+@[^\n @<>]+\\)>\\)" 2 
      t gnus-button-message-id 3)
+    ("\\(<?\\(url: ?\\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
+     gnus-button-message-id 3)
+    ("\\(<URL: *\\)?mailto: *\\([^ \n\t]+\\)>?" 0 t gnus-button-reply 2)
     ;; This is how URLs _should_ be embedded in text...
     ("<URL: *\\([^\n\r>]*\\)>" 0 t gnus-button-url 1)
     ;; Next regexp stolen from highlight-headers.el.
     ;; Modified by Vladimir Alexiev.
-    (,gnus-button-url-regexp 0 t gnus-button-url 0)
-    ("\\(<?\\(url: \\)?news:\\([^>\n\t ]*\\)>?\\)" 1 t
-     gnus-button-message-id 3)
-    ("\\(<URL: *\\)?mailto: *\\([^ \n\t]+\\)>?" 0 t gnus-button-reply 2))
+    (,gnus-button-url-regexp 0 t gnus-button-url 0))
   "Alist of regexps matching buttons in article bodies.
 
 Each entry has the form (REGEXP BUTTON FORM CALLBACK PAR...), where
@@ -1493,14 +1493,15 @@ specified by `gnus-button-alist'."
 			      0 (length string) nil string)
 			     string))
 			 (nthcdr 4 entry))))
-      (cond ((fboundp fun)
-	     (apply fun args))
-	    ((and (boundp fun)
-		  (fboundp (symbol-value fun)))
-	     (apply (symbol-value fun) args))
-	    (t
-	     (gnus-message 1 "You must define `%S' to use this button"
-			   (cons fun args)))))))
+      (cond
+       ((fboundp fun)
+	(apply fun args))
+       ((and (boundp fun)
+	     (fboundp (symbol-value fun)))
+	(apply (symbol-value fun) args))
+       (t
+	(gnus-message 1 "You must define `%S' to use this button"
+		      (cons fun args)))))))
 
 (defun gnus-button-message-id (message-id)
   "Fetch MESSAGE-ID."

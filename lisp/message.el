@@ -47,6 +47,9 @@
 (defvar message-max-buffers 10
   "*How many buffers to keep before starting to kill them off.")
 
+(defvar message-send-rename-function nil
+  "Function called to rename the buffer after sending it.")
+
 ;;;###autoload
 (defvar message-fcc-handler-function 'rmail-output
   "*A function called to save outgoing articles.
@@ -139,7 +142,10 @@ nil means let mailer mail back a message to report errors.")
 
 ;;;###autoload
 (defvar message-generate-new-buffers t
-  "*Non-nil means that a new message buffer will be created whenever `mail-setup' is called.")
+  "*Non-nil means that a new message buffer will be created whenever `mail-setup' is called.
+If this is a function, call that function with three parameters:  The type,
+the to address and the group name.  (Any of these may be nil.)  The function
+should return the new buffer name.")
 
 ;;;###autoload
 (defvar message-kill-buffer-on-exit nil
@@ -942,10 +948,10 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
       ;; Remove blank lines at the end of the message.
       (goto-char (point-max))
       (skip-chars-backward " \t\n")
-      (end-of-line)
+      (forward-line 1)
       (delete-region (point) (point-max))
       ;; Insert the signature.
-      (insert "\n\n-- \n")
+      (insert "\n-- \n")
       (if (eq signature t)
 	  (insert-file-contents message-signature-file)
 	(insert signature))
@@ -1214,6 +1220,8 @@ the user from the mailer."
 	      (y-or-n-p "No changes in the buffer; really send? ")))
     ;; Make it possible to undo the coming changes.
     (undo-boundary)
+    (let ((inhibit-read-only t))
+      (put-text-property (point-min) (point-max) 'read-only nil))
     (message-fix-before-sending)
     (run-hooks 'message-send-hook)
     (message "Sending...")
@@ -1495,7 +1503,14 @@ the user from the mailer."
 		(goto-char (point-min))
 		(insert "Followup-To: " to "\n"))
 	      t))
-
+	;; Check "Shoot me".
+	(or (message-check-element 'shoot)
+	    (save-excursion
+	      (if (search-forward
+		   ".i-have-a-misconfigured-system-so-shoot-me" nil t)
+		  (y-or-n-p
+		   "You appear to have a misconfigured system.  Really post? ")
+		t)))
 	;; Check for Approved.
 	(or (message-check-element 'approved)
 	    (save-excursion
@@ -1778,7 +1793,7 @@ the user from the mailer."
 			    (mail-header-subject message-reply-headers))
 			   (message-strip-subject-re psubject))))
 		"_-_" ""))
-	  "@" (message-make-fqdm) ">"))
+	  "@" (message-make-fqdn) ">"))
 
 (defvar message-unique-id-char nil)
 
@@ -1966,34 +1981,37 @@ give as trustworthy answer as possible."
   (when user-mail-address
     (nth 1 (mail-extract-address-components user-mail-address))))
 
-(defun message-make-fqdm ()
+(defun message-make-fqdn ()
   "Return user's fully qualified domain name."
-  (let ((system-name (system-name)))
+  (let ((system-name (system-name))
+	(user-mail (message-user-mail-address)))
     (cond 
      ((string-match "[^.]\\.[^.]" system-name)
       ;; `system-name' returned the right result.
       system-name)
-     ;; We try `user-mail-address' as a backup.
-     ((string-match "@\\(.*\\)\\'" (message-user-mail-address))
-      (match-string 1 user-mail-address))
      ;; Try `mail-host-address'.
      ((and (boundp 'mail-host-address)
-	   mail-host-address)
+	   (stringp mail-host-address)
+	   (string-match "\\." mail-host-address))
       mail-host-address)
+     ;; We try `user-mail-address' as a backup.
+     ((and (string-match "\\." user-mail)
+	   (string-match "@\\(.*\\)\\'" user-mail))
+      (match-string 1 user-mail))
      ;; Default to this bogus thing.
      (t
       (concat system-name ".i-have-a-misconfigured-system-so-shoot-me")))))
 
 (defun message-make-host-name ()
   "Return the name of the host."
-  (let ((fqdm (message-make-fqdm)))
-    (string-match "^[^.]+\\." fqdm)
-    (substring fqdm 0 (1- (match-end 0)))))
+  (let ((fqdn (message-make-fqdn)))
+    (string-match "^[^.]+\\." fqdn)
+    (substring fqdn 0 (1- (match-end 0)))))
 
 (defun message-make-domain ()
   "Return the domain name."
   (or mail-host-address
-      (message-make-fqdm)))
+      (message-make-fqdn)))
 
 (defun message-generate-headers (headers)
   "Prepare article HEADERS.
@@ -2205,17 +2223,25 @@ Headers already prepared in the buffer are not modified."
 
 (defun message-buffer-name (type &optional to group)
   "Return a new (unique) buffer name based on TYPE and TO."
-  (if message-generate-new-buffers
-      (generate-new-buffer-name
-       (concat "*" type
-	       (if to
-		   (concat " to "
-			   (or (car (mail-extract-address-components to))
-			       to) "")
-		 "")
-	       (if group (concat " on " group) "")
-	       "*"))
-    (format "*%s message*" type)))
+  (cond
+   ;; Check whether `message-generate-new-buffers' is a function, 
+   ;; and if so, call it.
+   ((message-functionp message-generate-new-buffers)
+    (funcall message-generate-new-buffers type to group))
+   ;; Generate a new buffer name The Message Way.
+   (message-generate-new-buffers
+    (generate-new-buffer-name
+     (concat "*" type
+	     (if to
+		 (concat " to "
+			 (or (car (mail-extract-address-components to))
+			     to) "")
+	       "")
+	     (if group (concat " on " group) "")
+	     "*")))
+   ;; Use standard name.
+   (t
+    (format "*%s message*" type))))
 
 (defun message-pop-to-buffer (name)
   "Pop to buffer NAME, and warn if it already exists and is modified."
@@ -2245,9 +2271,11 @@ Headers already prepared in the buffer are not modified."
 		 (not (buffer-modified-p buffer)))
 	(kill-buffer buffer))))
   ;; Rename the buffer.
-  (when (string-match "\\`\\*" (buffer-name))
-    (rename-buffer 
-     (concat "*sent " (substring (buffer-name) (match-end 0))) t))
+  (if message-send-rename-function
+      (funcall message-send-rename-function)
+    (when (string-match "\\`\\*" (buffer-name))
+      (rename-buffer 
+       (concat "*sent " (substring (buffer-name) (match-end 0))) t)))
   ;; Push the current buffer onto the list.
   (when message-max-buffers
     (setq message-buffer-list 
@@ -2281,7 +2309,7 @@ Headers already prepared in the buffer are not modified."
    (point)
    (progn
      (insert mail-header-separator "\n")
-     (point))
+     (1- (point)))
    'read-only nil)
   (forward-line -1)
   (when (message-news-p)

@@ -283,7 +283,11 @@ If this variable is a list, and the list contains the element
 `not-score', long file names will not be used for score files; if it
 contains the element `not-save', long file names will not be used for
 saving; and if it contains the element `not-kill', long file names
-will not be used for kill files.")
+will not be used for kill files.
+
+Note that the default for this variable varies according to what system
+type you're using.  On `usg-unix-v' and `xenix' this variable defaults
+to nil while on all other systems it defaults to t.")
 
 (defvar gnus-article-save-directory gnus-directory
   "*Name of the directory articles will be saved in (default \"~/News\").")
@@ -1726,7 +1730,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.15"
+(defconst gnus-version-number "5.2.16"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2078,13 +2082,12 @@ Thank you for your help in stamping out bugs.
       gnus-uu-decode-binhex-view)
      ("gnus-msg" (gnus-summary-send-map keymap)
       gnus-mail-yank-original gnus-mail-send-and-exit
-      gnus-sendmail-setup-mail gnus-article-mail
-      gnus-inews-message-id gnus-new-mail gnus-mail-reply)
+      gnus-article-mail gnus-new-mail gnus-mail-reply)
      ("gnus-msg" :interactive t
       gnus-group-post-news gnus-group-mail gnus-summary-post-news
       gnus-summary-followup gnus-summary-followup-with-original
       gnus-summary-cancel-article gnus-summary-supersede-article
-      gnus-post-news gnus-inews-news gnus-cancel-news
+      gnus-post-news gnus-inews-news 
       gnus-summary-reply gnus-summary-reply-with-original
       gnus-summary-mail-forward gnus-summary-mail-other-window
       gnus-bug)
@@ -6511,7 +6514,8 @@ If N is negative, this group and the N-1 previous groups will be checked."
   "Fetch the FAQ for the current group."
   (interactive
    (list
-    (gnus-group-real-name (gnus-group-group-name))
+    (and (gnus-group-group-name)
+	 (gnus-group-real-name (gnus-group-group-name)))
     (cond (current-prefix-arg
 	   (completing-read
 	    "Faq dir: " (and (listp gnus-group-faq-directory)
@@ -11201,6 +11205,8 @@ Optional argument BACKWARD means do search for backward.
     (gnus-save-hidden-threads
       (gnus-summary-select-article)
       (set-buffer gnus-article-buffer)
+      (when backward
+	(forward-line -1))
       (while (not found)
 	(gnus-message 7 "Searching article: %d..." (cdr gnus-article-current))
 	(if (if backward
@@ -11680,7 +11686,7 @@ latter case, they will be copied into the relevant groups."
 			  (current-time-string (nth 5 atts))
 			  (current-time-zone now)
 			  (current-time-zone now)) "\n"
-		"Message-ID: " (gnus-inews-message-id) "\n"
+		"Message-ID: " (message-make-message-id) "\n"
 		"Lines: " (int-to-string lines) "\n"
 		"Chars: " (int-to-string (nth 7 atts)) "\n\n"))
       (gnus-request-accept-article group nil t)

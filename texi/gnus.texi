@@ -5734,11 +5734,6 @@ Import an arbitrary file into the current mail newsgroup
 (@code{gnus-summary-import-article}).  You will be prompted for a file
 name, a @code{From} header and a @code{Subject} header.
 
-Something similar can be done by just starting to compose a mail
-message.  Instead of typing @kbd{C-c C-c} to mail it off, you can type
-@kbd{C-c M-C-p} instead.  This will put the message you have just created
-into the current mail group.
-
 @item B r
 @kindex B r (Summary)
 @findex gnus-summary-respool-article

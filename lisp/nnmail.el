@@ -269,9 +269,6 @@ parameter.  It should return nil, `warn' or `delete'.")
 
 ;;; Internal variables.
 
-(eval-and-compile
-  (autoload 'ange-ftp-read-passwd "ange-ftp"))
-
 (defvar nnmail-split-fancy-syntax-table
   (copy-syntax-table (standard-syntax-table))
   "Syntax table used by `nnmail-split-fancy'.")
@@ -378,7 +375,7 @@ parameter.  It should return nil, `warn' or `delete'.")
 	    (setq password nnmail-pop-password)
 	    (when (and nnmail-pop-password-required (not nnmail-pop-password))
 	      (setq password
-		    (ange-ftp-read-passwd
+		    (nnmail-read-passwd
 		     (format "Password for %s: "
 			     (substring inbox (+ popmail 3))))))
 	    (message "Getting mail from post office ..."))
@@ -899,7 +896,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 				    (cdr (assq value
 					       nnmail-split-abbrev-alist))
 				  value)
-				"\\>\\)")))
+				"\\)\\>")))
 	   (setq nnmail-split-cache 
 		 (cons (cons split regexp) nnmail-split-cache))
 	   (goto-char (point-max))
@@ -1172,6 +1169,23 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	     (setq days (nnmail-days-to-time days))
 	     ;; Compare the time with the current time.
 	     (nnmail-time-less days (nnmail-time-since time)))))))
+
+(defvar nnmail-read-passwd nil)
+(defun nnmail-read-passwd (prompt)
+  (unless nnmail-read-passwd
+    (if (load "passwd" t)
+	(setq nnmail-read-passwd 'read-passwd)
+      (autoload 'ange-ftp-read-passwd "ange-ftp")
+      (setq nnmail-read-passwd 'ange-ftp-read-passwd)))
+  (funcall nnmail-read-passwd prompt))
+
+(defun nnmail-check-syntax ()
+  "Check (and modify) the syntax of the message in the current buffer."
+  (save-restriction
+    (message-narrow-to-head)
+    (let ((case-fold-search t))
+      (unless (re-search-forward "^Message-Id:" nil t)
+	(insert "Message-ID: " (nnmail-message-id) "\n")))))
 
 (run-hooks 'nnmail-load-hook)
 	    

@@ -278,6 +278,7 @@
 
 (deffoo nnmh-request-accept-article (group &optional server last noinsert)
   (nnmh-possibly-change-directory group server)
+  (nnmail-check-syntax)
   (if (stringp group)
       (and 
        (nnmail-activate 'nnmh)

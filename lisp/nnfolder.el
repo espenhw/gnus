@@ -372,6 +372,7 @@ time saver for large mailboxes.")
 
 (deffoo nnfolder-request-accept-article (group &optional server last)
   (nnfolder-possibly-change-group group server)
+  (nnmail-check-syntax)
   (and (stringp group) (nnfolder-possibly-change-group group))
   (let ((buf (current-buffer))
 	result)

@@ -1,4 +1,83 @@
+Thu Jun 13 02:28:26 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnheader.el (nnheader-insert-nov): Fudge a message-id if
+	necessary. 
+
+	* nnml.el (nnml-request-accept-article): Use it.
+
+	* nnmail.el (nnmail-check-syntax): New function.
+
+	* gnus.el (gnus-group-fetch-faq): Would bug out when not called in
+	the group buffer.
+	(gnus-use-long-file-name): Doc fix.
+	(gnus-summary-search-article): Search backward from where we left
+	off. 
+
+	* gnus-xmas.el (gnus-xmas-server-menu-add): New function.
+	(gnus-xmas-browse-menu-add): Ditto.
+
+Wed Jun 12 18:32:57 1996  Christoph Wedler  <wedler@fmi.uni-passau.de>
+
+	* gnus-srvr.el (gnus-server-make-menu-bar): Use
+	`gnus-server-deny-server'
+
+Wed Jun 12 23:02:19 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-send-rename-function): New variable.
+	(message-do-send-housekeeping): Use it.
+
+Wed Jun 12 22:53:32 1996  Richard Mlynarik  <mly@adoc.xerox.com>
+
+	* message.el (message-make-fqdn): Make sure `user-mail-address'
+	and `mail-host-address' looks like a full address.
+
+Wed Jun 12 22:06:39 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-generate-new-buffers): Extended syntax.
+	(message-buffer-name): Use it.
+	(message-make-fqdn): Checked `user-mail-address' directly.
+	(message-check-news-syntax): Check for misconfiguration.
+
+	* nnmail.el (nnmail-move-inbox): Use it.
+
+Wed Jun 12 22:06:10 1996  Richard Pieri  <ratinox@unilab.dfci.harvard.edu>
+
+	* nnmail.el (nnmail-read-password): New function.
+
+Wed Jun 12 21:59:40 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-send): Make buffer read/write before
+	sending. 
+
+	* gnus-score.el (gnus-score-edit-current-scores): Correct
+	message. 
+
+Wed Jun 12 19:31:50 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): If ":" in name,
+	just use name.
+	(gnus-message-archive-group): Doc fix.
+
+	* nnmail.el (nnmail-split-it): Regexp bogosity.
+
+	* gnus-vis.el (gnus-button-alist): Have "news:" rule come before
+	URL rule.
+
+	* message.el (message-setup): Really be read-only.
+
+	* gnus.el (gnus-summary-import-article): Use message.
+
+Tue Jun 11 10:04:55 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-make-fqdm): Use `mail-host-address' before
+	`user-mail-address'. 
+	(message-make-fqdn): Typo is function name.
+
+	* nndb.el: Make byte-compiler silent.
+
 Tue Jun 11 02:29:33 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.15 is released.
 
 	* gnus-score.el (gnus-score-find-trace): Erase contents first.
 

@@ -233,7 +233,8 @@ on your system, you could say something like:
    (or (mail-header-subject header) "(none)") "\t"
    (or (mail-header-from header) "(nobody)") "\t"
    (or (mail-header-date header) "") "\t"
-   (or (mail-header-id header) "") "\t"
+   (or (mail-header-id header) 
+       (nnmail-message-id)) "\t"
    (or (mail-header-references header) "") "\t")
   (princ (or (mail-header-chars header) 0) (current-buffer))
   (insert "\t")

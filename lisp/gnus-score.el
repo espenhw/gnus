@@ -797,7 +797,7 @@ SCORE is the score to add."
     (setq gnus-prev-winconf winconf))
   (gnus-message 
    4 (substitute-command-keys 
-      "\\<gnus-score-mode-map>\\[gnus-score-edit-done] to save edits")))
+      "\\<gnus-score-mode-map>\\[gnus-score-edit-exit] to save edits")))
   
 (defun gnus-score-edit-file (file)
   "Edit a score file."

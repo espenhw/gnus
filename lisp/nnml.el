@@ -318,6 +318,7 @@ all. This may very well take some time.")
 
 (deffoo nnml-request-accept-article (group &optional server last)
   (nnml-possibly-change-directory group server)
+  (nnmail-check-syntax)
   (let (result)
     (if (stringp group)
 	(and 

@@ -103,6 +103,11 @@
 
 (nnoo-define-basics nndb)
 
+;; Import other stuff from nntp as is.
+
+(nnoo-import nndb
+  (nntp))
+
 ;;- maybe this should be mail??
 ;;-(defun nndb-request-type (group &optional article)
 ;;-  'news)
@@ -218,15 +223,6 @@ with the contents of the BUFFER."
 
 ; nndb-request-rename-group does not exist
 ; todo -- maybe later
-
-;; Import stuff from nntp
-
-
-
-;; Import other stuff from nntp as is.
-
-(nnoo-import nndb
-  (nntp))
 
 (provide 'nndb)
 

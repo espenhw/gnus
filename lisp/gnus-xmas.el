@@ -316,6 +316,14 @@ call it with the value of the `gnus-data' text property."
   (gnus-xmas-menu-add tree
     gnus-tree-menu))
 
+(defun gnus-xmas-server-menu-add ()
+  (gnus-xmas-menu-add menu
+    gnus-server-menu))
+
+(defun gnus-xmas-browse-menu-add ()
+  (gnus-xmas-menu-add browse
+    gnus-browse-menu))
+
 (defun gnus-xmas-grouplens-menu-add ()
   (gnus-xmas-menu-add grouplens
     gnus-grouplens-menu))
@@ -496,6 +504,8 @@ pounce directly on the real variables themselves.")
   (add-hook 'gnus-tree-mode-hook 'gnus-xmas-tree-menu-add)
   (add-hook 'gnus-binary-mode-hook 'gnus-xmas-binary-menu-add)
   (add-hook 'gnus-grouplens-mode-hook 'gnus-xmas-grouplens-menu-add)
+  (add-hook 'gnus-server-mode-hook 'gnus-xmas-server-menu-add)
+  (add-hook 'gnus-browse-mode-hook 'gnus-xmas-browse-menu-add)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-setup-group-toolbar)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-setup-summary-toolbar)
@@ -680,8 +690,8 @@ XEmacs compatibility workaround."
       (when (featurep 'xface)
 	(setq xface-glyph
 	      (make-glyph (vector 'xface :data 
-				  (concat "X-Face: "
-					  (buffer-substring beg end)))))
+				  (setq my (concat "X-Face: "
+					  (buffer-substring beg end))))))
 	(goto-char (point-min))
 	(re-search-forward "^From:" nil t)
 	(beginning-of-line)

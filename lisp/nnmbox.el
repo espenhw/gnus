@@ -282,6 +282,7 @@
 
 (deffoo nnmbox-request-accept-article (group &optional server last)
   (nnmbox-possibly-change-newsgroup group server)
+  (nnmail-check-syntax)
   (let ((buf (current-buffer))
 	result)
     (goto-char (point-min))

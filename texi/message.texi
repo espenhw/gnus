@@ -921,15 +921,30 @@ message buffers are kept alive.
 
 @table @code
 @item message-generate-new-buffers
-@findex message-generate-new-buffers
-If non-@code{nil}, generate new buffers.  The default is @code{t}.
+@vindex message-generate-new-buffers
+If non-@code{nil}, generate new buffers.  The default is @code{t}.  If
+this is a function, call that function with three parameters: The type,
+the to address and the group name.  (Any of these may be @code{nil}.)
+The function should return the new buffer name.
 
 @item message-max-buffers
-@findex message-max-buffers
+@vindex message-max-buffers
 This variable says how many old message buffers to keep.  If there are
 more message buffers than this, the oldest buffer will be killed.  The
 default is 10.  If this variable is @code{nil}, no old message buffers
 will ever be killed.
+
+@item message-send-rename-function
+@vindex message-send-rename-function
+After sending a message, the buffer is renamed from, for instance,
+@samp{*reply to Lars*} to @samp{*sent reply to Lars*}.  If you don't
+like this, set this variable to a function that renames the buffer in a
+manner you like.  If you don't want to rename the buffer at all, you can
+say:
+
+@lisp
+(setq message-send-rename-function 'ignore)
+@end lisp
 
 @item message-kill-buffer-on-exit
 @findex message-kill-buffer-on-exit

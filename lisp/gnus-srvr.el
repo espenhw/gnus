@@ -68,32 +68,30 @@ with some simple extensions.")
 
 (defun gnus-server-make-menu-bar ()
   (gnus-visual-turn-off-edit-menu 'server)
-  (or
-   (boundp 'gnus-server-menu)
-   (progn
-     (easy-menu-define
-      gnus-server-menu gnus-server-mode-map ""
-      '("Server"
-	["Add" gnus-server-add-server t]
-	["Browse" gnus-server-read-server t]
-	["List" gnus-server-list-servers t]
-	["Kill" gnus-server-kill-server t]
-	["Yank" gnus-server-yank-server t]
-	["Copy" gnus-server-copy-server t]
-	["Edit" gnus-server-edit-server t]
-	["Exit" gnus-server-exit t]
-	))
+  (unless (boundp 'gnus-server-menu)
+    (easy-menu-define
+     gnus-server-menu gnus-server-mode-map ""
+     '("Server"
+       ["Add" gnus-server-add-server t]
+       ["Browse" gnus-server-read-server t]
+       ["List" gnus-server-list-servers t]
+       ["Kill" gnus-server-kill-server t]
+       ["Yank" gnus-server-yank-server t]
+       ["Copy" gnus-server-copy-server t]
+       ["Edit" gnus-server-edit-server t]
+       ["Exit" gnus-server-exit t]
+       ))
 
-     (easy-menu-define
-      gnus-server-menu gnus-server-mode-map ""
-      '("Connections"
-	["Open" gnus-server-open-server t]
-	["Close" gnus-server-close-server t]
-	["Deny" gnus-server-deny-servers t]
-	["Reset" gnus-server-remove-denials t]
-	))
+    (easy-menu-define
+     gnus-server-menu gnus-server-mode-map ""
+     '("Connections"
+       ["Open" gnus-server-open-server t]
+       ["Close" gnus-server-close-server t]
+       ["Deny" gnus-server-deny-server t]
+       ["Reset" gnus-server-remove-denials t]
+       ))
 
-     (run-hooks 'gnus-server-menu-hook))))
+    (run-hooks 'gnus-server-menu-hook)))
 
 (defvar gnus-server-mode-map nil)
 (put 'gnus-server-mode 'mode-class 'special)
