@@ -4655,11 +4655,12 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 
       (let ((marks (assq 'seen (gnus-info-marks info))))
 	;; The `seen' marks are treated specially.
-	(when (setq gnus-newsgroup-seen (cdr marks))
-	  (dolist (article gnus-newsgroup-articles)
-	    (unless (gnus-member-of-range
-		     article gnus-newsgroup-seen)
-	      (push article gnus-newsgroup-unseen)))))
+	(if (setq gnus-newsgroup-seen (cdr marks))
+	    (dolist (article gnus-newsgroup-articles)
+	      (unless (gnus-member-of-range article gnus-newsgroup-seen)
+		(setq gnus-newsgroup-unseen
+		      (append gnus-newsgroup-unseen (list article)))))
+	  (setq gnus-newsgroup-unseen gnus-newsgroup-articles)))
 
       ;; Removed marked articles that do not exist.
       (gnus-update-missing-marks
@@ -4948,7 +4949,8 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	(when (eq (cdr type) 'seen)
 	  (setq list
 		(if list
-		    (gnus-add-to-range list gnus-newsgroup-unseen)
+		    (gnus-range-add (gnus-uncompress-sequence list) 
+				    gnus-newsgroup-unseen)
 		  (gnus-compress-sequence gnus-newsgroup-articles))))
 
 	(when (eq (gnus-article-mark-to-type (cdr type)) 'list)
@@ -5265,11 +5267,11 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	      (goto-char p)
 	      (setq id (if (re-search-forward
 			    "^message-id: *\\(<[^\n\t> ]+>\\)" nil t)
-		      ;; We do it this way to make sure the Message-ID
+			   ;; We do it this way to make sure the Message-ID
 			   ;; is (somewhat) syntactically valid.
 			   (buffer-substring (match-beginning 1)
 					     (match-end 1))
-		       ;; If there was no message-id, we just fake one
+			 ;; If there was no message-id, we just fake one
 			 ;; to make subsequent routines simpler.
 			 (nnheader-generate-fake-message-id))))
 	    ;; References.
@@ -5289,7 +5291,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 			     (progn
 			       (search-backward "<" end t)
 			       (point))))))
-	    ;; Get the references from the in-reply-to header if there
+		;; Get the references from the in-reply-to header if there
 		;; were no references and the in-reply-to header looks
 		;; promising.
 		(if (and (search-forward "\nin-reply-to:" nil t)

@@ -1,3 +1,12 @@
+2001-12-27  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-sum.el (gnus-select-newsgroup): Make
+	`gnus-newsgroup-unseen' sorted.  Make `gnus-newsgroup-unseen'
+	contain all articles (instead of none) when no seen marks have
+	been set for the group.
+	(gnus-update-marks): Use `gnus-range-add' on a uncompressed list
+	instead, it seems to result in shorter ranges.
+
 2001-12-26 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-iso-8859-x-to-15-region): Use
