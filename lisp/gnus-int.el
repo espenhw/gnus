@@ -124,7 +124,10 @@ If it is down, start it up (again)."
 			(format " on %s" (nth 1 method)))))
       (gnus-run-hooks 'gnus-open-server-hook)
       (prog1
-	  (gnus-open-server method)
+	  (condition-case ()
+	      (gnus-open-server method)
+	    (quit (message "Quit gnus-check-server")
+		  nil))
 	(unless silent
 	  (message ""))))))
 

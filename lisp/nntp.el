@@ -290,8 +290,8 @@ noticing asynchronous data.")
 	      ;; Nix out "nntp reading...." message.
 	      (when nntp-have-messaged
 		(setq nntp-have-messaged nil)
-		(nnheader-message 5 ""))
-	      t))))
+		(nnheader-message 5 ""))))
+	  t))
       (unless discard
 	(erase-buffer)))))
 
@@ -899,8 +899,8 @@ password contained in '~/.nntp-authinfo'."
     (when (and (buffer-name pbuffer)
 	       process)
       (process-kill-without-query process)
-      (nntp-wait-for process "^.*\n" buffer nil t)
-      (if (memq (process-status process) '(open run))
+      (if (and (nntp-wait-for process "^200.*\n" buffer nil t)
+	       (memq (process-status process) '(open run)))
 	  (prog1
 	      (caar (push (list process buffer nil) nntp-connection-alist))
 	    (push process nntp-connection-list)

@@ -1,3 +1,12 @@
+2001-01-24 12:22:47  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nntp.el (nntp-wait-for): Return the success code.
+	(nntp-open-connection): Use it.
+
+2001-01-11 11:49:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-int.el (gnus-check-server): Allow breaking the opening. 
+
 2001-01-23 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-print-article): Remove process mark.
