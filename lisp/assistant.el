@@ -38,6 +38,7 @@
 
 (defvar assistant-data nil)
 (defvar assistant-current-node nil)
+(defvar assistant-previous-node nil)
 
 (defun assistant-parse-buffer ()
   (let (results command value)
@@ -94,7 +95,7 @@
 
 (defun assistant-variable-reader (value)
   (let ((section (car (read-from-string (concat "(" value ")")))))
-    (append section (list (nth 2 section)))))
+    (append section (list 'default))))
 
 (defun assistant-sexp-reader (value)
   (if (zerop (length value))
@@ -110,7 +111,7 @@
 (defun assistant-set (ast command value)
   (let ((elem (assoc command ast)))
     (when elem
-      (setcar (nthcdr 3 elem) value))))
+      (setcar (cdr elem) value))))
 
 (defun assistant-get-list (ast command)
   (let ((result nil))
@@ -151,8 +152,16 @@
       (format "[ Proceed to %s >> ]" node)
     "[ Finish ]"))
 
+(defun assistant-set-defaults (node)
+  (dolist (variable (assistant-get-list node "variable"))
+    (setq variable (cadr variable))
+    (when (eq (nth 3 variable) 'default)
+      (setcar (nthcdr 3 variable)
+	      (eval (nth 2 variable))))))
+
 (defun assistant-render-node (node-name)
   (let ((node (assistant-find-node node-name)))
+    (assistant-set-defaults node)
     (setq assistant-current-node node-name)
     (erase-buffer)
     (insert (cadar assistant-data) "\n\n")
@@ -172,20 +181,35 @@
      :assistant-node node
      :assistant-type type
      :notify (lambda (widget &rest ignore)
-	       (let* ((node (widget-get widget ':assistant-node))
-		      (type (widget-get widget ':assistant-type)))
+	       (let* ((node (widget-get widget :assistant-node))
+		      (type (widget-get widget :assistant-type)))
 		 (when (eq type 'next)
-		   (assistant-validate node))
+		   (assistant-validate))
 		 (if (null node)
 		     (assistant-finish)
 		   (assistant-render-node node))))
      text)
     (use-local-map widget-keymap)))
 
-(defun assistant-validate (node-name)
-  (let* ((node (assistant-find-node node-name))
+(defun assistant-validate-types (node)
+  (dolist (variable (assistant-get-list node "variable"))
+    (setq variable (cadr variable))
+    (let ((type (nth 1 variable))
+	  (value (nth 3 variable)))
+      (when 
+	  (cond
+	   ((eq type :number)
+	    (not (numberp value)))
+	   (t
+	    nil))
+	(error "%s is not of type %s: %s"
+	       (car variable) type value)))))
+
+(defun assistant-validate ()
+  (let* ((node (assistant-find-node assistant-current-node))
 	 (validation (assistant-get node "validate"))
 	 result)
+    (assistant-validate-types node)
     (when validation
       (when (setq result (assistant-eval validation node))
 	(unless (y-or-n-p (format "Error: %s.  Continue? " result))
@@ -193,9 +217,9 @@
     (assistant-set node "save" t)))
 
 (defun assistant-find-next-node ()
-  (let* ((node (assistant-find-node node-name))
+  (let* ((node (assistant-find-node assistant-current-node))
 	 (nexts (assistant-get-list node "next"))
-	 next)
+	 next elem)
     (while (and (setq elem (pop nexts))
 		(not next))
       (when (assistant-eval (car elem) node)
@@ -205,11 +229,12 @@
 (defun assistant-eval (form node)
   (let ((bindings nil))
     (dolist (variable (assistant-get-list node "variable"))
+      (setq variable (cadr variable))
       (push (list (car variable) (nth 3 variable))
-	    bingdings))
+	    bindings))
     (eval
      `(let ,bindings
-	,@form))))
+	,form))))
 
 (defun assistant-finish ()
   (let ((results nil)
@@ -220,7 +245,7 @@
 	(push (list (car result)
 		    (assistant-eval (cadr result) node))
 	      results)))
-    (message "Results: "
+    (message "Results: %s"
 	     (nreverse results))))
 
 (provide 'assistant)
