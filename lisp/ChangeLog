@@ -1,3 +1,8 @@
+2000-11-02 19:51:19  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mml.el (mml-generate-mime-1): Support external url.
+	* nnwarchive.el (nnwarchive-mail-archive-article): Use external url.
+
 2000-11-02 16:53:32  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-partial.el (mm-inline-partial): Buffer name with a leading space.

@@ -696,14 +696,17 @@
 			     (progn (forward-line) (point)))
 	      ;; I hate to download the url encode it, then immediately 
 	      ;; decode it.
-	      ;; FixMe: Find a better solution to attach the URL.
-	      ;; Maybe do some hack in external part of mml-generate-mim-1.
-	      (insert "<#part>"
-		      "\n--\nExternal: \n"
-		      (format "<URL:http://www.mail-archive.com/%s/%s>" 
+	      (insert "<#external"
+		      " type="
+		      (or (and url
+			       (string-match "\\.[^\\.]+$" url)
+			       (mailcap-extension-to-mime
+				(match-string 0 url)))
+			  "application/octet-stream")
+		      (format " url=\"http://www.mail-archive.com/%s/%s\"" 
 			      group url)
-		      "\n--\n"
-		      "<#/part>")
+		      ">\n"
+		      "<#/external>")
 	      (setq mime t))
 	     (t
 	      (setq p (point))

@@ -347,7 +347,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	(insert "Content-Type: message/external-body")
 	(let ((parameters (mml-parameter-string
 			   cont '(expiration size permission)))
-	      (name (cdr (assq 'name cont))))
+	      (name (cdr (assq 'name cont)))
+	      (url (cdr (assq 'url cont))))
 	  (when name
 	    (setq name (mml-parse-file-name name))
 	    (if (stringp name)
@@ -365,6 +366,10 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 		       (if (member (nth 0 name) '("ftp@" "anonymous@"))
 			   "anon-ftp"
 			 "ftp")))))      
+	  (when url
+	    (mml-insert-parameter
+	     (mail-header-encode-parameter "url" url)
+	     "access-type=url"))
 	  (when parameters
 	    (mml-insert-parameter-string
 	     cont '(expiration size permission))))
