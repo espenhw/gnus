@@ -3676,6 +3676,12 @@ Sort the current topic by group rank
 Sort the current topic alphabetically by back end name
 (@code{gnus-topic-sort-groups-by-method}).
 
+@item T S e
+@kindex T S e (Topic)
+@findex gnus-topic-sort-groups-by-server
+Sort the current topic alphabetically by server name
+(@code{gnus-topic-sort-groups-by-server}).
+
 @end table
 
 @xref{Sorting Groups}, for more information about group sorting.

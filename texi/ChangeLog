@@ -1,3 +1,7 @@
+2001-09-04 21:43:05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Topic Sorting): Addition.
+
 2001-10-13 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* refcard.tex, gnusref.tex: Merge with the version
