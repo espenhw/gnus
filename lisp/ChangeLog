@@ -1,3 +1,9 @@
+2001-04-02  Nevin Kapur  <nevin@jhu.edu>
+	Committed by Kai Gro,A_(Bjohann <Kai.Grossjohann@CS.Uni-Dortmund.DE>.
+
+	* nnmail.el (nnmail-split-it): Added check for .* at the end of
+	regexp in nnmail-split-fancy.
+
 2001-04-10  Simon Josefsson  <simon@josefsson.org>
 
 	* message.el (message-options-set-recipient): Look at Cc and Bcc too.
@@ -61,6 +67,7 @@
 	* qp.el (quoted-printable-decode-region): Just message
 	malformation; don't quit.
 
+>>>>>>> 6.401
 2001-03-31 21:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Gerd Moellmann <gerd@gnu.org>.
 
