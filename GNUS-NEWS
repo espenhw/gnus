@@ -10,17 +10,19 @@ For older news, see Gnus info node "New Features".
 
 ** gnus-agent
 
-The Gnus Agent is now enabled by default.  This means that, e.g.,
-headers are not downloaded from agentized servers by default (agentize
-servers by using `J a' in the server buffer).  Gnus will not start to
-download articles unless you instruct it to do so, though, by using
-e.g. J u or J s from the group buffer.  Revert to the old behaviour
-with `(setq gnus-agent nil)'.  Note that putting (gnus-agentize) in
-~/.gnus is not needed any more.  Now, by default all nntp and nnimap
+The Gnus Agent is now enabled by default, and all nntp and nnimap
 servers from gnus-select-method and gnus-secondary-select-method are
-agentized by default (earlier only the server in gnus-select-method
-was agentized).  You can view and change which servers should be
-agentized in the Server Buffer.
+agentized by default. Earlier only the server in gnus-select-method
+was agentized by the default, and the agent was disabled by default.
+When the agent is enabled, headers are now also retrieved from the
+Agent cache instead of the backends when possible. Earlier this only
+happened in the unplugged state.  You can enroll or remove servers
+with `J a' and `J r' in the server buffer.  Gnus will not download
+articles into the Agent cache, unless you instruct it to do so,
+though, by using `J u' or `J s' from the Group buffer.  You revert to
+the old behaviour of having the Agent disabled with `(setq gnus-agent
+nil)'.  Note that putting (gnus-agentize) in ~/.gnus is not needed any
+more.
 
 ** gnus-summary-line-format
 
