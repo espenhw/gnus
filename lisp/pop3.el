@@ -234,7 +234,10 @@ Return the response string if optional second argument is non-nil."
 				  (substring From_ (match-end 0)))))
 	    (goto-char (point-min))
 	    (insert From_)
-	    (re-search-forward "\n\n")
+	    (if (search-forward "\n\n" nil t)
+		nil
+	      (goto-char (point-max))
+	      (insert "\n"))
 	    (narrow-to-region (point) (point-max))
 	    (let ((size (- (point-max) (point-min))))
 	      (goto-char (point-min))
