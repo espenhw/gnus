@@ -1,3 +1,20 @@
+2002-01-03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-reply-with-original): New command.
+	(gnus-article-followup-with-original): New command.
+
+	* gnus-msg.el (gnus-copy-article-buffer): Take optional BEG and
+	END parameters.
+	(gnus-summary-followup): Take a list of list of articles.
+	(gnus-inews-yank-articles): Allow lists of article/regions.
+
+	* gnus-art.el (gnus-article-read-summary-keys): `R' and `F' are no
+	longer the usual commands.
+
+	* gnus-fun.el (gnus-convert-image-to-gray-x-face): Use pnmnoraw. 
+	(gnus-convert-gray-x-face-to-xpm): Don't use six parameters to
+	shell-command-on-region. 
+
 2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-picon.el (gnus-picon-transform-newsgroups): Fix for the case

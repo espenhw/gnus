@@ -3162,6 +3162,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
   ">" end-of-buffer
   "\C-c\C-i" gnus-info-find-node
   "\C-c\C-b" gnus-bug
+  "R" gnus-article-reply-with-original
+  "F" gnus-article-followup-with-original
   "\C-hk" gnus-article-describe-key
   "\C-hc" gnus-article-describe-key-briefly
 
@@ -4553,7 +4555,7 @@ Argument LINES specifies lines to be scrolled down."
   (interactive "P")
   (gnus-article-check-buffer)
   (let ((nosaves
-	 '("q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
+	 '("q" "Q"  "c" "r" "\C-c\C-f" "m"  "a" "f"
 	   "Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP"
 	   "=" "^" "\M-^" "|"))
 	(nosave-but-article
@@ -4666,6 +4668,28 @@ Argument LINES specifies lines to be scrolled down."
 	    (setq key (read-key-sequence "Describe key: "))))
 	(describe-key-briefly key insert))
     (describe-key-briefly key insert)))
+
+(defun gnus-article-reply-with-original (&optional wide)
+  "Start composing a reply mail to the current message.
+The text in the region will be yanked.  If the region isn't active,
+the entire article will be yanked."
+  (interactive "P")
+  (let ((article (cdr gnus-article-current)))
+    (if (not mark-active)
+	(gnus-summary-reply (list (list article)) wide)
+      (gnus-summary-reply
+       (list (list article (buffer-substring (point) (mark)))) wide))))
+
+(defun gnus-article-followup-with-original ()
+  "Compose a followup to the current article.
+The text in the region will be yanked.  If the region isn't active,
+the entire article will be yanked."
+  (interactive)
+  (let ((article (cdr gnus-article-current)))
+    (if (not mark-active)
+	(gnus-summary-followup (list (list article)))
+      (gnus-summary-followup
+       (list (list article (buffer-substring (point) (mark))))))))
 
 (defun gnus-article-hide (&optional arg force)
   "Hide all the gruft in the current article.

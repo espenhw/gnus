@@ -74,7 +74,7 @@
 	(push (cons (* step i) i) color-alist)))
     (when (file-exists-p file)
       (with-temp-buffer
-	(insert (shell-command-to-string (format "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmquant -map %s 2>/dev/null | ppmtopgm | pnmtoplainpnm"
+	(insert (shell-command-to-string (format "giftopnm '%s' | ppmnorm 2>/dev/null | pnmscale -width 48 -height 48 | ppmquant -map %s 2>/dev/null | ppmtopgm | pnmnoraw"
 			       file mapfile)))
 	(goto-char (point-min))
 	(forward-line 3)
@@ -107,7 +107,7 @@
 	(insert face)
 	(shell-command-on-region
 	 (point-min) (point-max)
-	 "uncompface -X | xbmtopbm | pnmtoplainpnm"
+	 "uncompface -X | xbmtopbm | pnmnoraw"
 	 (current-buffer) t)
 	(goto-char (point-min))
 	(forward-line 2)
@@ -130,8 +130,8 @@
 	(insert (number-to-string (* scale pixel)) " "))
       (shell-command-on-region
        (point-min) (point-max)
-       "ppmtoxpm"
-       (current-buffer) t (get-buffer-create " *junk"))
+       "ppmtoxpm 2>/dev/null"
+       (current-buffer) t)
       (buffer-string))))
 
 ;;;###autoload

@@ -560,12 +560,19 @@ a news."
 
 (defun gnus-summary-followup (yank &optional force-news)
   "Compose a followup to an article.
-If prefix argument YANK is non-nil, original article is yanked automatically."
+If prefix argument YANK is non-nil, the original article is yanked
+automatically.
+YANK is a list of elements, where the car of each element is the
+article number, and the two following numbers is the region to be
+yanked."
   (interactive
    (list (and current-prefix-arg
 	      (gnus-summary-work-articles 1))))
   (when yank
-    (gnus-summary-goto-subject (car yank)))
+    (gnus-summary-goto-subject
+     (if (listp (car yank))
+	 (caar yank)
+       (car yank))))
   (save-window-excursion
     (gnus-summary-select-article))
   (let ((headers (gnus-summary-article-header (gnus-summary-article-number)))
@@ -593,18 +600,21 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (gnus-summary-followup (gnus-summary-work-articles arg) t))
 
 (defun gnus-inews-yank-articles (articles)
-  (let (beg article)
+  (let (beg article yank-string)
     (message-goto-body)
     (while (setq article (pop articles))
+      (when (listp article)
+	(setq yank-string (nth 1 article)
+	      article (nth 0 article)))
       (save-window-excursion
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-select-article nil nil nil article)
 	(gnus-summary-remove-process-mark article))
-      (gnus-copy-article-buffer)
+      (gnus-copy-article-buffer nil yank-string)
       (let ((message-reply-buffer gnus-article-copy)
 	    (message-reply-headers
+	     ;; The headers are decoded.
 	     (with-current-buffer gnus-article-copy
-	       ;; The headers are decoded.
 	       (nnheader-parse-head t))))
 	(message-yank-original)
 	(setq beg (or beg (mark t))))
@@ -654,7 +664,7 @@ header line with the old Message-ID."
 
 
 
-(defun gnus-copy-article-buffer (&optional article-buffer)
+(defun gnus-copy-article-buffer (&optional article-buffer yank-string)
   ;; make a copy of the article buffer with all text properties removed
   ;; this copy is in the buffer gnus-article-copy.
   ;; if ARTICLE-BUFFER is nil, gnus-article-buffer is used
@@ -681,6 +691,10 @@ header line with the old Message-ID."
 	    (widen)
 	    (copy-to-buffer gnus-article-copy (point-min) (point-max))
 	    (set-buffer gnus-article-copy)
+	    (when yank-string
+	      (message-goto-body)
+	      (delete-region (point) (point-max))
+	      (insert yank-string))
 	    (gnus-article-delete-text-of-type 'annotation)
 	    (gnus-remove-text-with-property 'gnus-prev)
 	    (gnus-remove-text-with-property 'gnus-next)
@@ -693,8 +707,8 @@ header line with the old Message-ID."
 	    (goto-char (point-min))
 	    (while (looking-at message-unix-mail-delimiter)
 	      (forward-line 1))
-	    (setq beg (point))
-	    (setq end (or (message-goto-body) beg))
+	    (setq beg (point)
+		  end (or (message-goto-body) beg))
 	    ;; Delete the headers from the displayed articles.
 	    (set-buffer gnus-article-copy)
 	    (delete-region (goto-char (point-min))
@@ -904,7 +918,10 @@ If VERY-WIDE, make a very wide reply."
 	      (gnus-summary-work-articles 1))))
   ;; Stripping headers should be specified with mail-yank-ignored-headers.
   (when yank
-    (gnus-summary-goto-subject (car yank)))
+    (gnus-summary-goto-subject
+     (if (listp (car yank))
+	 (caar yank)
+       (car yank))))
   (let ((gnus-article-reply (or yank (gnus-summary-article-number)))
 	(headers ""))
     (gnus-setup-message (if yank 'reply-yank 'reply)

@@ -412,7 +412,7 @@ For example:
 
 (defcustom gnus-group-name-charset-group-alist
   (if (or (and (fboundp 'find-coding-system) (find-coding-system 'utf-8))
-         (and (fboundp 'coding-system-p) (coding-system-p 'utf-8)))
+	  (and (fboundp 'coding-system-p) (coding-system-p 'utf-8)))
       '((".*" . utf-8))
     nil)
   "Alist of group regexp and the charset for group names.
