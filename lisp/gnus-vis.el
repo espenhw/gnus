@@ -26,12 +26,15 @@
 
 ;;; Code:
 
-(require 'gnus)
+(require 'gnus-load)
 (require 'gnus-ems)
 (require 'easymenu)
 (require 'custom)
 (require 'browse-url)
 (require 'gnus-score)
+(require 'gnus-art)
+(require 'gnus-group)
+(require 'gnus-range)
 (eval-when-compile (require 'cl))
 
 (defvar gnus-group-menu-hook nil
@@ -625,6 +628,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	["Lapsed" gnus-article-date-lapsed t])
        ("Filter"
 	["Overstrike" gnus-article-treat-overstrike t]
+	["Emphasis" gnus-article-emphasize t]
 	["Word wrap" gnus-article-fill-cited-article t]
 	["CR" gnus-article-remove-cr t]
 	["Trailing blank lines" gnus-article-remove-trailing-blank-lines t]
@@ -1345,7 +1349,7 @@ do the highlighting.  See the documentation for those functions."
 (defun gnus-article-highlight-signature ()
   "Highlight the signature in an article.
 It does this by highlighting everything after
-`gnus-signature-separator' using `gnus-signature-face'." 
+`article-signature-separator' using `gnus-signature-face'." 
   (interactive)
   (save-excursion
     (set-buffer gnus-article-buffer)
@@ -1353,11 +1357,11 @@ It does this by highlighting everything after
 	  (inhibit-point-motion-hooks t))
       (save-restriction
 	(when (and gnus-signature-face
-		   (gnus-narrow-to-signature))
+		   (article-narrow-to-signature))
 	  (gnus-overlay-put (gnus-make-overlay (point-min) (point-max))
 			    'face gnus-signature-face)
 	  (widen)
-	  (re-search-backward gnus-signature-separator nil t)
+	  (re-search-backward article-signature-separator nil t)
 	  (let ((start (match-beginning 0))
 		(end (set-marker (make-marker) (1+ (match-end 0)))))
 	    (gnus-article-add-button start (1- end) 'gnus-signature-toggle
@@ -1461,8 +1465,8 @@ specified by `gnus-button-alist'."
     (let ((buffer-read-only nil)
 	  (inhibit-point-motion-hooks t))
       (if (get-text-property end 'invisible)
-	  (gnus-unhide-text end (point-max))
-	(gnus-hide-text end (point-max) gnus-hidden-properties)))))
+	  (article-unhide-text end (point-max))
+	(article-hide-text end (point-max) article-hidden-properties)))))
 
 (defun gnus-button-entry ()
   ;; Return the first entry in `gnus-button-alist' matching this place.

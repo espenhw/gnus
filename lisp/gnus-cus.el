@@ -26,10 +26,10 @@
 
 ;;; Code:
 
+(require 'gnus-load)
 (require 'custom)
 (require 'gnus-ems)
 (require 'browse-url)
-(eval-when-compile (require 'cl))
 
 ;; The following is just helper functions and data, not meant to be set
 ;; by the user.

@@ -25,9 +25,9 @@
 
 ;;; Code:
 
+(require 'gnus-load)
+(require 'gnus-int)
 (require 'gnus)
-
-(eval-when-compile (require 'cl))
 
 (defvar gnus-demon-handlers nil
   "Alist of daemonic handlers to be run at intervals.

@@ -33,11 +33,12 @@
 
 ;;; Code:
 
+(require 'gnus-load)
 (require 'mh-e)
 (require 'mh-comp)
 (require 'gnus)
 (require 'gnus-msg)
-(eval-when-compile (require 'cl))
+(require 'gnus-sum)
 
 (defun gnus-summary-save-article-folder (&optional arg)
   "Append the current article to an mh folder.

@@ -26,8 +26,9 @@
 
 ;;; Code:
 
-(require 'gnus)
-(eval-when-compile (require 'cl))
+(require 'gnus-load)
+(require 'gnus-sum)
+(require 'gnus-range)
 
 (defvar gnus-global-score-files nil
   "*List of global score files and directories.
@@ -190,6 +191,7 @@ If nil, the user will be asked for a duration.")
 
 ;; Internal variables.
 
+(defvar gnus-scores-exclude-files nil)
 (defvar gnus-internal-global-score-files nil)
 (defvar gnus-score-file-list nil)
 
@@ -243,20 +245,19 @@ of the last successful match.")
 
 ;;; Summary mode score maps.
 
-(gnus-define-keys
- (gnus-summary-score-map "V" gnus-summary-mode-map)
- "s" gnus-summary-set-score
- "a" gnus-summary-score-entry
- "S" gnus-summary-current-score
- "c" gnus-score-change-score-file
- "m" gnus-score-set-mark-below
- "x" gnus-score-set-expunge-below
- "R" gnus-summary-rescore
- "e" gnus-score-edit-current-scores
- "f" gnus-score-edit-file
- "F" gnus-score-flush-cache
- "t" gnus-score-find-trace
- "C" gnus-score-customize)
+(gnus-define-keys (gnus-summary-score-map "V" gnus-summary-mode-map)
+  "s" gnus-summary-set-score
+  "a" gnus-summary-score-entry
+  "S" gnus-summary-current-score
+  "c" gnus-score-change-score-file
+  "m" gnus-score-set-mark-below
+  "x" gnus-score-set-expunge-below
+  "R" gnus-summary-rescore
+  "e" gnus-score-edit-current-scores
+  "f" gnus-score-edit-file
+  "F" gnus-score-flush-cache
+  "t" gnus-score-find-trace
+  "C" gnus-score-customize)
 
 ;; Summary score file commands
 
@@ -810,7 +811,7 @@ SCORE is the score to add."
   (interactive (list gnus-current-score-file))
   (let ((winconf (current-window-configuration)))
     (and (buffer-name gnus-summary-buffer) (gnus-score-save))
-    (gnus-make-directory (file-name-directory file))
+    (make-directory (file-name-directory file) t)
     (setq gnus-score-edit-buffer (find-file-noselect file))
     (gnus-configure-windows 'edit-score)
     (gnus-score-mode)
@@ -825,7 +826,7 @@ SCORE is the score to add."
   "Edit a score file."
   (interactive 
    (list (read-file-name "Edit score file: " gnus-kill-files-directory)))
-  (gnus-make-directory (file-name-directory file))
+  (make-directory (file-name-directory file) t)
   (and (buffer-name gnus-summary-buffer) (gnus-score-save))
   (let ((winconf (current-window-configuration)))
     (setq gnus-score-edit-buffer (find-file-noselect file))
@@ -1090,7 +1091,7 @@ SCORE is the score to add."
 		;; This is a normal score file, so we print it very
 		;; prettily. 
 		(pp score (current-buffer))))
-	    (if (not (gnus-make-directory (file-name-directory file)))
+	    (if (not (make-directory (file-name-directory file) t))
 		()
 	      ;; If the score file is empty, we delete it.
 	      (if (zerop (buffer-size))
@@ -1125,7 +1126,7 @@ SCORE is the score to add."
     ;; Prune the score files that are to be excluded, if any.
     (when gnus-scores-exclude-files
       (let ((s scores)
-	    c)
+	    c type)
 	(while s
 	  (and (setq c (rassq (car s) gnus-score-cache))
 	       (member (car c) gnus-scores-exclude-files)
@@ -1193,6 +1194,13 @@ SCORE is the score to add."
 			    gnus-newsgroup-scored)))
 	    (setq gnus-scores-articles (cdr gnus-scores-articles)))
 
+	  (let (score)
+	    (while (setq score (pop scores))
+	      (while score
+		(when (listp (caar score))
+		  (gnus-score-advanced (car score) trace))
+		(pop score))))
+		
 	  (gnus-message 5 "Scoring...done"))))))
 
 
@@ -1294,18 +1302,14 @@ SCORE is the score to add."
 	  ;; matches on numbers that any cleverness will take more
 	  ;; time than one would gain.
 	  (while articles
-	    (and (funcall match-func 
+	    (when (funcall match-func 
 			  (or (aref (caar articles) gnus-score-index) 0)
 			  match)
-		 (progn
-		   (and trace (setq gnus-score-trace 
-				    (cons
-				     (cons
-				      (car-safe (rassq alist gnus-score-cache))
-				      kill)
-				     gnus-score-trace)))
-		   (setq found t)
-		   (setcdr (car articles) (+ score (cdar articles)))))
+	      (when trace 
+		(push (cons (car-safe (rassq alist gnus-score-cache)) kill)
+		      gnus-score-trace))
+	      (setq found t)
+	      (setcdr (car articles) (+ score (cdar articles))))
 	    (setq articles (cdr articles)))
 	  ;; Update expire date
 	  (cond ((null date))		;Permanent entry.

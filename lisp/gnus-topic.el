@@ -26,8 +26,10 @@
 
 ;;; Code:
 
+(require 'gnus-load)
+(require 'gnus-group)
+(require 'gnus-start)
 (require 'gnus)
-(eval-when-compile (require 'cl))
 
 (defvar gnus-topic-mode nil
   "Minor mode for Gnus group buffers.")
@@ -378,7 +380,6 @@ articles in the topic and its subtopics."
 	gnus-topic-tallied-groups nil
 	gnus-topology-checked-p nil))
 
-
 (defun gnus-topic-check-topology ()  
   ;; The first time we set the topology to whatever we have
   ;; gotten here, which can be rather random.
@@ -426,6 +427,7 @@ articles in the topic and its subtopics."
 
 (defvar gnus-tmp-topics nil)
 (defun gnus-topic-list (&optional topology)
+  "Return a list of all topics in the topology."
   (unless topology
     (setq topology gnus-topic-topology 
 	  gnus-tmp-topics nil))

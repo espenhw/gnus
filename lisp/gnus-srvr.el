@@ -25,8 +25,12 @@
 
 ;;; Code:
 
+(require 'gnus-load)
+(require 'gnus-spec)
 (require 'gnus)
-(eval-when-compile (require 'cl))
+(require 'gnus-group)
+(require 'gnus-int)
+(require 'gnus-range)
 
 (defvar gnus-server-mode-hook nil
   "Hook run in `gnus-server-mode' buffers.")

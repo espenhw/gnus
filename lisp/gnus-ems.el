@@ -29,25 +29,6 @@
 
 (defvar gnus-mouse-2 [mouse-2])
 
-(defalias 'gnus-make-overlay 'make-overlay)
-(defalias 'gnus-overlay-put 'overlay-put)
-(defalias 'gnus-move-overlay 'move-overlay)
-(defalias 'gnus-overlay-end 'overlay-end)
-(defalias 'gnus-extent-detached-p 'ignore)
-(defalias 'gnus-extent-start-open 'ignore)
-(defalias 'gnus-set-text-properties 'set-text-properties)
-(defalias 'gnus-group-remove-excess-properties 'ignore)
-(defalias 'gnus-topic-remove-excess-properties 'ignore)
-(defalias 'gnus-appt-select-lowest-window 'appt-select-lowest-window)
-(defalias 'gnus-mail-strip-quoted-names 'mail-strip-quoted-names)
-(defalias 'gnus-make-local-hook 'make-local-hook)
-(defalias 'gnus-add-hook 'add-hook)
-(defalias 'gnus-character-to-event 'identity)
-(defalias 'gnus-add-text-properties 'add-text-properties)
-(defalias 'gnus-put-text-property 'put-text-property)
-(defalias 'gnus-mode-line-buffer-identification 'identity)
-
-
 (eval-and-compile 
   (autoload 'gnus-xmas-define "gnus-xmas")
   (autoload 'gnus-xmas-redefine "gnus-xmas")

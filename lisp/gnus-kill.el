@@ -26,8 +26,9 @@
 
 ;;; Code:
 
-(require 'gnus)
-(eval-when-compile (require 'cl))
+(require 'gnus-load)
+(require 'gnus-art)
+(require 'gnus-range)
 
 (defvar gnus-kill-file-mode-hook nil
   "*A hook for Gnus kill file mode.")
@@ -39,6 +40,12 @@
   "*If non-nil, will save kill files after processing them.")
 
 (defvar gnus-winconf-kill-file nil)
+
+(defvar gnus-kill-killed t
+  "*If non-nil, Gnus will apply kill files to already killed articles.
+If it is nil, Gnus will never apply kill files to articles that have
+already been through the scoring process, which might very well save lots
+of time.")
 
 
 
@@ -145,7 +152,7 @@ gnus-kill-file-mode-hook with no arguments, if that value is non-nil."
 If NEWSGROUP is nil, the global kill file is selected."
   (interactive "sNewsgroup: ")
   (let ((file (gnus-newsgroup-kill-file newsgroup)))
-    (gnus-make-directory (file-name-directory file))
+    (make-directory (file-name-directory file) t)
     ;; Save current window configuration if this is first invocation.
     (or (and (get-file-buffer file)
 	     (get-buffer-window (get-file-buffer file)))
@@ -649,6 +656,53 @@ marked as read or ticked are ignored."
 	     (setq killed-no (1+ killed-no))))
       ;; Return the number of killed articles.
       killed-no)))
+
+;;;###autoload
+(defalias 'gnus-batch-kill 'gnus-batch-score)
+;;;###autoload
+(defun gnus-batch-score ()
+  "Run batched scoring.
+Usage: emacs -batch -l gnus -f gnus-batch-score <newsgroups> ...
+Newsgroups is a list of strings in Bnews format.  If you want to score
+the comp hierarchy, you'd say \"comp.all\".  If you would not like to
+score the alt hierarchy, you'd say \"!alt.all\"."
+  (interactive)
+  (let* ((yes-and-no
+	  (gnus-newsrc-parse-options
+	   (apply (function concat)
+		  (mapcar (lambda (g) (concat g " "))
+			  command-line-args-left))))
+	 (gnus-expert-user t)
+	 (nnmail-spool-file nil)
+	 (gnus-use-dribble-file nil)
+	 (yes (car yes-and-no))
+	 (no (cdr yes-and-no))
+	 group newsrc entry
+	 ;; Disable verbose message.
+	 gnus-novice-user gnus-large-newsgroup)
+    ;; Eat all arguments.
+    (setq command-line-args-left nil)
+    ;; Start Gnus.
+    (gnus)
+    ;; Apply kills to specified newsgroups in command line arguments.
+    (setq newsrc (cdr gnus-newsrc-alist))
+    (while newsrc
+      (setq group (caar newsrc))
+      (setq entry (gnus-gethash group gnus-newsrc-hashtb))
+      (if (and (<= (nth 1 (car newsrc)) gnus-level-subscribed)
+	       (and (car entry)
+		    (or (eq (car entry) t)
+			(not (zerop (car entry)))))
+	       (if yes (string-match yes group) t)
+	       (or (null no) (not (string-match no group))))
+	  (progn
+	    (gnus-summary-read-group group nil t nil t)
+	    (and (eq (current-buffer) (get-buffer gnus-summary-buffer))
+		 (gnus-summary-exit))))
+      (setq newsrc (cdr newsrc)))
+    ;; Exit Emacs.
+    (switch-to-buffer gnus-group-buffer)
+    (gnus-group-save-newsrc)))
 
 (provide 'gnus-kill)
 

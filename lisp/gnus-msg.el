@@ -26,10 +26,11 @@
 
 ;;; Code:
 
-(require 'gnus)
+(require 'gnus-load)
 (require 'gnus-ems)
 (require 'message)
-(eval-when-compile (require 'cl))
+(require 'gnus-art)
+(require 'gnus)
 
 ;; Added by Sudish Joseph <joseph@cis.ohio-state.edu>.
 (defvar gnus-post-method nil
@@ -73,6 +74,26 @@ the group.")
 (defvar gnus-message-buffer "*Mail Gnus*")
 (defvar gnus-article-copy nil)
 (defvar gnus-last-posting-server nil)
+
+(defconst gnus-bug-message
+  "Sending a bug report to the Gnus Towers.
+========================================
+
+The buffer below is a mail buffer.  When you press `C-c C-c', it will
+be sent to the Gnus Bug Exterminators.
+
+At the bottom of the buffer you'll see lots of variable settings.
+Please do not delete those.  They will tell the Bug People what your
+environment is, so that it will be easier to locate the bugs.
+
+If you have found a bug that makes Emacs go \"beep\", set
+debug-on-error to t (`M-x set-variable RET debug-on-error RET t RET')
+and include the backtrace in your bug report.
+
+Please describe the bug in annoying, painstaking detail.
+
+Thank you for your help in stamping out bugs.
+")
 
 (eval-and-compile
   (autoload 'gnus-uu-post-news "gnus-uu" nil t)

@@ -121,6 +121,7 @@
 
 (require 'gnus-score)
 (require 'cl)
+(require 'gnus-load)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; User variables

@@ -25,10 +25,10 @@
 
 ;;; Code:
 
+(require 'gnus-load)
 (require 'gnus)
-(require 'gnus-msg)
-(require 'gnus-ems)
-(eval-when-compile (require 'cl))
+(require 'gnus-art)
+(require 'gnus-range)
 
 (eval-and-compile
   (autoload 'gnus-article-add-button "gnus-vis"))
@@ -245,7 +245,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
       (search-forward "\n\n" nil t)
       (push (cons (point-marker) "") marks)
       (goto-char (point-max))
-      (re-search-backward gnus-signature-separator nil t)
+      (re-search-backward article-signature-separator nil t)
       (push (cons (point-marker) "") marks)
       (setq marks (sort marks (lambda (m1 m2) (< (car m1) (car m2)))))
       (let* ((omarks marks))
@@ -273,7 +273,6 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 	    (setq m (cdr m))))
 	marks))))
 	    
-
 (defun gnus-article-fill-cited-article (&optional force)
   "Do word wrapping in the current article."
   (interactive (list t))
@@ -301,18 +300,18 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 See the documentation for `gnus-article-highlight-citation'.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
-  (interactive (append (gnus-hidden-arg) (list 'force)))
+  (interactive (append (article-hidden-arg) (list 'force)))
   (setq gnus-cited-text-button-line-format-spec 
 	(gnus-parse-format gnus-cited-text-button-line-format 
 			   gnus-cited-text-button-line-format-alist t))
-  (unless (gnus-article-check-hidden-text 'cite arg)
+  (unless (article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
       (let ((buffer-read-only nil)
 	    (marks (gnus-dissect-cited-text))
 	    (inhibit-point-motion-hooks t)
 	    (props (nconc (list 'gnus-type 'cite)
-			  gnus-hidden-properties))
+			  article-hidden-properties))
 	    beg end)
 	(while marks
 	  (setq beg nil
@@ -349,9 +348,9 @@ always hide."
     (funcall
      (if (text-property-any
 	  (car region) (1- (cdr region))
-	  (car gnus-hidden-properties) (cadr gnus-hidden-properties))
+	  (car article-hidden-properties) (cadr article-hidden-properties))
 	 'remove-text-properties 'gnus-add-text-properties)
-     (car region) (cdr region) gnus-hidden-properties)))
+     (car region) (cdr region) article-hidden-properties)))
 
 (defun gnus-article-hide-citation-maybe (&optional arg force)
   "Toggle hiding of cited text that has an attribution line.
@@ -362,8 +361,8 @@ percent and at least `gnus-cite-hide-absolute' lines of the body is
 cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."
-  (interactive (append (gnus-hidden-arg) (list 'force)))
-  (unless (gnus-article-check-hidden-text 'cite arg)
+  (interactive (append (article-hidden-arg) (list 'force)))
+  (unless (article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)
       (gnus-cite-parse-maybe force)
@@ -376,7 +375,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	    (hiden 0)
 	    total)
 	(goto-char (point-max))
-	(re-search-backward gnus-signature-separator nil t)
+	(re-search-backward article-signature-separator nil t)
 	(setq total (count-lines start (point)))
 	(while atts
 	  (setq hiden (+ hiden (length (cdr (assoc (cdar atts)
@@ -398,7 +397,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 		      (gnus-add-text-properties 
 		       (point) (progn (forward-line 1) (point))
 		       (nconc (list 'gnus-type 'cite)
-			      gnus-hidden-properties)))))))))))
+			      article-hidden-properties)))))))))))
 
 (defun gnus-article-hide-citation-in-followups ()
   "Hide cited text in non-root articles."
@@ -442,7 +441,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(case-fold-search t)
 	(max (save-excursion
 	       (goto-char (point-max))
-	       (re-search-backward gnus-signature-separator nil t)
+	       (re-search-backward article-signature-separator nil t)
 	       (point)))
 	alist entry start begin end numbers prefix)
     ;; Get all potential prefixes in `alist'.
@@ -700,13 +699,13 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(goto-line number)
 	(cond ((get-text-property (point) 'invisible)
 	       (remove-text-properties (point) (progn (forward-line 1) (point))
-				       gnus-hidden-properties))
+				       article-hidden-properties))
 	      ((assq number gnus-cite-attribution-alist))
 	      (t
 	       (gnus-add-text-properties 
 		(point) (progn (forward-line 1) (point))
 		 (nconc (list 'gnus-type 'cite)
-			gnus-hidden-properties))))))))
+			article-hidden-properties))))))))
 
 (defun gnus-cite-find-prefix (line)
   ;; Return citation prefix for LINE.

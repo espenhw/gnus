@@ -24,8 +24,8 @@
 
 ;;; Code:
 
-(require 'gnus)
-(eval-when-compile (require 'cl))
+(require 'gnus-load)
+(require 'gnus-sum)
 
 ;;;
 ;;; gnus-pick-mode

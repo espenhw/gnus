@@ -74,9 +74,9 @@
 
 ;;; Code:
 
+(require 'gnus-load)
 (require 'xpm)
 (require 'annotations)
-(eval-when-compile (require 'cl))
 
 (defvar gnus-picons-buffer "*Icon Buffer*"
   "Buffer name to display the icons in if gnus-picons-display-where is 'picons.")

@@ -968,8 +968,8 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 		      (file-exists-p message-signature-file))
 		 signature))))
     (when signature
-      ;; Insert the signature.
       (goto-char (point-max))
+      ;; Insert the signature.
       (unless (bolp)
 	(insert "\n"))
       (insert "\n-- \n")

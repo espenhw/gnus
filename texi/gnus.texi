@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.2 Manual
+@settitle Red Gnus Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus Manual
+@title Red Gnus Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -6369,8 +6369,16 @@ Hook called in article mode buffers.
 @vindex gnus-article-mode-line-format
 @item gnus-article-mode-line-format
 This variable is a format string along the same lines as
-@code{gnus-summary-mode-line-format}.  It accepts exactly the same
-format specifications as that variable.
+@code{gnus-summary-mode-line-format}.  It accepts the same
+format specifications as that variable, with one extension:
+
+@table @samp
+@item w
+The @dfn{wash status} of the article.  This is a short string with one
+character for each possible article wash operation that may have been
+performed. 
+@end table
+
 @vindex gnus-break-pages
 
 @item gnus-break-pages
@@ -8421,6 +8429,133 @@ a mail group.  There are two legal values:  @code{mail} (the default)
 and @code{news}.
 @end table
 
+@menu
+* Document Server Internals::   How to add your own document types.
+@end menu
+
+
+@node Document Server Internals
+@subsubsection Document Server Internals
+
+Adding new document types to be recognized by @code{nndoc} isn't
+difficult.  You just have to whip up a definition of what the document
+looks like, write a predicate function to recognize that document type,
+and then hook into @code{nndoc}.
+
+First, here's an example document type definition:
+
+@example
+(mmdf 
+ (article-begin .  "^\^A\^A\^A\^A\n")
+ (body-end .  "^\^A\^A\^A\^A\n"))
+@end example
+
+The definition is simply a unique @dfn{name} followed by a series of
+regexp pseudo-variable settings.  Below are the possible
+variables---don't be daunted by the number of variables; most document
+types can be defined with very few settings:
+
+@table @code
+@item first-article
+If present, @code{nndoc} will skip past all text until it finds
+something that match this regexp.  All text before this will be
+totally ignored. 
+
+@item article-begin
+This setting has to be present in all document type definitions.  It
+says what the beginning of each article looks like.
+
+@item head-begin-function
+If present, this should be a function that moves point to the head of
+the article.
+
+@item nndoc-head-begin
+If present, this should be a regexp that matches the head of the
+article. 
+
+@item nndoc-head-end
+This should match the end of the head of the article.  It defaults to
+@samp{"^$"}---the empty line.
+
+@item body-begin-function
+If present, this function should move point to the beginning of the body
+of the article.
+
+@item body-begin
+This should match the beginning of the body of the article.  It defaults
+to @samp{^\n}.
+
+@item body-end-function
+If present, this function should move point to the end of the body of
+the article.
+
+@item body-end
+If present, this should match the end of the body of the article.
+
+@item nndoc-file-end
+If present, this should match the end of the file.  All text after this
+regexp will be totally ignored. 
+
+@end table
+
+So, using these variables @code{nndoc} is able to dissect a document
+file into a series of articles, each with a head and a body.  However, a
+few more variables are needed since not all document types are all that
+news-like---variables needed to transform the head or the body into
+something that's palatable for Gnus:
+
+@table @code
+@item prepare-body-function
+If present, this function will be called when requesting an article.  It
+will be called with point at the start of the body, and is useful if the
+document has encoded some parts of its contents. 
+
+@item article-transform-function
+If present, this function is called when requesting an article.  It's
+meant to be used how more wide-ranging transformation of both head and
+body of the article.
+
+@item generate-head-function
+If present, this function is called to generate a head that Gnus can
+understand.  It is called with the article number as a parameter, and is
+expected to generate a nice head for the article in question.  It is
+called when requesting the headers of all articles.
+
+@end table
+
+Let's look at the most complicated example I can come up with---standard
+digests:
+
+@example
+(standard-digest
+ (first-article . ,(concat "^" (make-string 70 ?-) "\n\n+"))
+ (article-begin . ,(concat "\n\n" (make-string 30 ?-) "\n\n+"))
+ (prepare-body-function . nndoc-unquote-dashes)
+ (body-end-function . nndoc-digest-body-end)
+ (head-end . "^ ?$")
+ (body-begin . "^ ?\n")
+ (file-end . "^End of .*digest.*[0-9].*\n\\*\\*\\|^End of.*Digest *$")
+ (subtype digest guess))
+@end example
+
+We see that all text before a 70-width line of dashes is ignored; all
+text after a line that starts with that @samp{^End of} is also ignored;
+each article begins with a 30-width line of dashes; the line separating
+the head from the body may contain a single spcae; and that the body is
+run through @code{nndoc-unquote-dashes} before being delivered.
+
+To hook your own document definition into @code{nndoc}, use the
+@code{nndoc-add-type} function.  It takes two parameters---the first is
+the definition itself and the second (optional) parameter says where in
+the document type definition alist to put this definition.  The alist is
+traversed sequentially, and @code{nndoc-TYPE-type-p} is called for each
+type.  So @code{nndoc-mmdf-type-p} is called to see whether a document
+is of @code{mmdf} type, and so on.  These type predicates should return
+@code{nil} if the document is not of the correct type; @code{t} if it is
+of the correct type; and a number if the document might be of the
+correct type.  A high number means high probability; a low number means
+low probability with @samp{0} being the lowest legal number.
+
 
 @node SOUP
 @subsection SOUP
@@ -8832,6 +8967,7 @@ silently to help keep the sizes of the score files down.
 * Global Score Files::       Earth-spanning, ear-splitting score files.
 * Kill Files::               They are still here, but they can be ignored.
 * GroupLens::                Getting predictions on what you like to read.
+* Advanced Scoring::         Using logical expressions to build score rules.
 @end menu
 
 
@@ -10044,6 +10180,172 @@ The scale factor is applied after the offset.  The default is 1.
 @end table
 
 
+@node Advanced Scoring
+@section Advanced Scoring
+
+Scoring on Subjects and From headers is nice enough, but what if you're
+really interested in what a person has to say only when she's talking
+about a particular subject?  Or what about if you really don't want to
+read what person A has to say when she's following up to person B, but
+want to read what she says when she's following up to person C?
+
+By using advanced scoring rules you may create arbitrarily complex
+scoring patterns.
+
+@menu
+* Advanced Scoring Syntax::     A definition.
+* Advanced Scoring Examples::   What they look like.
+* Advanced Scoring Tips::       Getting the most out of it.
+@end menu
+
+
+@node Advanced Scoring Syntax
+@subsection Advanced Scoring Syntax
+
+Ordinary scoring rules have a string as the first element in the rule.
+Advanced scoring rules have a list as the first element.  The second
+element is the score to be applied if the first element evaluated to a
+non-@code{nil} value.
+
+These lists may consist of three logical operators, one redirection
+operator, and various match operators.
+
+Logical operators:
+
+@table @code
+@item &
+@itemx and
+This logical operator will evaluate each of its arguments until it finds
+one that evaluates to @code{false}, and then it'll stop.  If all arguments
+evaluate to @code{true} values, then this operator will return
+@code{true}. 
+
+@item |
+@itemx or
+This logical operator will evaluate each of its arguments until it finds
+one that evaluates to @code{true}.  If no arguments are @code{true},
+then this operator will return @code{false}.
+
+@item !
+@itemx not
+@itemx ¬
+This logical operator only takes a single argument.  It returns the
+inverse of the value of its argument.
+
+@end table
+
+There is an @dfn{indirection operator} that will make its arguments
+apply to the ancenstors of the current article being scored.  For
+instance, @code{1-} will make score rules apply to the parent of the
+current article.  @code{2-} will make score fules apply to the
+grandparent of the current article.  Alternatively, you can write
+@code{^^}, where the number of @code{^}s (carets) say how far back into
+the ancestry you want to go.
+
+Finally, we have the match operators.  These are the ones that do the
+real work.  Match operators are header name strings followed by a match
+and a match type.  A typical match operator looks like @samp{("from"
+"Lars Ingebrigtsen" s)}.  The header names are the same as when using
+simple scoring, and the match types are also the same.
+
+
+@node Advanced Scoring Example
+@subsection Advanced Scoring Example
+
+Let's say you want to increase the score of articles written by Lars
+when he's talking about Gnus:
+
+@samp
+((& 
+  ("from" "Lars Ingebrigtsen")
+  ("subject" "Gnus"))
+ 1000)
+@end samp
+
+Quite simple, huh?
+
+When he writes long articles, he sometimes has something nice to say: 
+
+@samp
+((& 
+  ("from" "Lars Ingebrigtsen")
+  (|
+   ("subject" "Gnus")
+   ("lines" 100 >)))
+ 1000)
+@end samp
+
+However, when he responds to things written by Reig Eigil Logge, you
+really don't want to read what he's written:
+
+@samp
+((&
+  ("from" "Lars Ingebrigtsen")
+  (1- ("from" "Reig Eigir Logge")))
+ -100000)
+@end samp
+
+Everybody that follows up Redmondo when he writes about disappearing
+socks should have their scores raised, but only when they talk about
+white socks.  However, when Lars talks about socks, it's usually not
+very interesting:
+
+@samp
+((&
+  (1-
+   (&
+    ("from" "redmondo@.*no" r)
+    ("body" "disappearing.*socks" t)))
+  (! ("from" "Lars Ingebrigtsen"))
+  ("body" "white.*socks"))
+ 1000)
+@end samp
+
+The possibilities are endless.
+
+
+@node Advanced Scoring Tips
+@subsection Advanced Scoring Tips
+
+The @code{&} and @code{|} logical operators do short-circuit logic.
+That is, they stop processing their arguments when it's clear what the
+result of the operation will be.  For instance, if one of the arguments
+of an @code{&} evaluates to @code{false}, there's no point in evaluating
+the rest of the arguments.  This means that you should put slow matches
+(@samp{body}, @code{header}) last and quick matches (@samp{from},
+@samp{subject}) first.
+
+The indirection arguments (@code{1-} and so on) will make their
+arguments work on previous generations of the thread.  If you say
+something like:
+
+@samp
+...
+(1-
+ (1-
+  ("from" "lars")))
+...
+@end samp
+
+Then that means "score on the from header of the grandparent of the
+current article".  An indirection is quite fast, but it's better to say:
+
+@samp
+(1-
+ (& 
+  ("from" "Lars")
+  ("subject" "Gnus")))
+@end samp
+
+than it is to say:
+
+@samp
+(&
+ (1- ("from" "Lars"))
+ (1- ("subject" "Gnus")))
+@end samp
+
+
 
 @node Various
 @chapter Various
@@ -11139,6 +11441,8 @@ was included in the Emacs 19.30 distribution.
 
 In May 1996 the next Gnus generation (aka.  ``September Gnus'') was
 released under the name ``Gnus 5.2''.  
+
+On July 28th 1996 work on Red Gnus was begun.
 
 @menu
 * Why?::                What's the point of Gnus?

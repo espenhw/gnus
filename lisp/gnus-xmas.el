@@ -25,8 +25,8 @@
 
 ;;; Code:
 
+(require 'gnus-load)
 (require 'text-props)
-(eval-when-compile (require 'cl))
 (defvar menu-bar-mode (featurep 'menubar))
 (require 'messagexmas)
 
@@ -50,14 +50,14 @@ automatically.")
     (september "#bf9900" "#ffcc00"))
   "Color alist used for the Gnus logo.")
 
-(defvar gnus-xmas-logo-color-style 'september
+(defvar gnus-xmas-logo-color-style 'flame
   "Color styles used for the Gnus logo.")
 
 (defvar gnus-xmas-logo-colors
   (cdr (assq gnus-xmas-logo-color-style gnus-xmas-logo-color-alist))
   "Colors used for the Gnus logo.")
 
-(defvar gnus-article-x-face-command
+(defvar article-x-face-command
   (if (featurep 'xface)
       'gnus-xmas-article-display-xface
     "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | xv -quit -")
@@ -747,8 +747,8 @@ If HIDE, hide the text instead."
 	(setq beg (point))
 	(forward-char)
 	(if hide
-	    (gnus-hide-text beg (point) gnus-hidden-properties)
-	  (gnus-unhide-text beg (point)))
+	    (article-hide-text beg (point) gnus-hidden-properties)
+	  (article-unhide-text beg (point)))
 	(setq beg (point)))
       (save-window-excursion
 	(select-window (get-buffer-window (current-buffer)))

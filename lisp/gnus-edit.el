@@ -13,7 +13,8 @@
 
 (require 'custom)
 (require 'gnus-score)
-(eval-when-compile (require 'cl))
+(require 'gnus-load)
+(require 'gnus-sum)
 
 (defconst gnus-score-custom-data
   '((tag . "Score")
@@ -620,7 +621,7 @@ groups matched by the current score file.")
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (pp score (current-buffer))
-      (gnus-make-directory (file-name-directory file))
+      (make-directory (file-name-directory file) t)
       (write-region (point-min) (point-max) file nil 'silent)
       (kill-buffer (current-buffer))))
   (gnus-message 4 "Saved"))

@@ -26,9 +26,9 @@
 
 ;;; Code: 
 
-(require 'gnus)
-(require 'gnus-msg)
-(eval-when-compile (require 'cl))
+(require 'gnus-load)
+(require 'gnus-art)
+(require 'message)
 
 ;; Default viewing action rules
 
@@ -1581,7 +1581,7 @@ The headers will be included in the sequence they are matched.")
       (setq gnus-uu-work-dir 
 	    (make-temp-name (concat gnus-uu-tmp-dir "gnus")))
       (if (not (file-directory-p gnus-uu-work-dir)) 
-	  (gnus-make-directory gnus-uu-work-dir))
+	  (make-directory gnus-uu-work-dir t))
       (set-file-modes gnus-uu-work-dir 448)
       (setq gnus-uu-work-dir (file-name-as-directory gnus-uu-work-dir))
       (setq gnus-uu-tmp-alist (cons (cons gnus-newsgroup-name gnus-uu-work-dir)

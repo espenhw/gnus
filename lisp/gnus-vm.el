@@ -34,6 +34,7 @@
 (require 'message)
 (require 'gnus)
 (require 'gnus-msg)
+(require 'gnus-load)
 
 (eval-when-compile
   (autoload 'vm-mode "vm")
@@ -95,7 +96,7 @@ save those articles instead."
 		(folder folder)
 		(t (gnus-read-save-file-name 
 		    "Save article in VM folder:" default-name))))
-    (gnus-make-directory (file-name-directory folder))
+    (make-directory (file-name-directory folder) t)
     (set-buffer gnus-original-article-buffer)
     (save-excursion
       (save-restriction

@@ -25,9 +25,10 @@
 
 ;;; Code:
 
-(require 'gnus)
+(require 'gnus-load)
 (require 'nnmail)
-(eval-when-compile (require 'cl))
+(require 'gnus-art)
+(require 'gnus-range)
 
 (defvar gnus-nocem-groups 
   '("alt.nocem.misc" "news.admin.net-abuse.announce")

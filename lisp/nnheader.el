@@ -269,14 +269,14 @@ on your system, you could say something like:
 (defun nnheader-init-server-buffer ()
   "Initialize the Gnus-backend communication buffer."
   (save-excursion
-    (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
+    (unless (gnus-buffer-live-p nntp-server-buffer)
+      (setq nntp-server-buffer (get-buffer-create " *nntpd*")))
     (set-buffer nntp-server-buffer)
     (buffer-disable-undo (current-buffer))
     (erase-buffer)
     (kill-all-local-variables)
     (setq case-fold-search t)		;Should ignore case.
     t))
-
 
 ;;; Various functions the backends use.
 
