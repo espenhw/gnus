@@ -7484,11 +7484,13 @@ The number of articles marked as read is returned."
 		      (gnus-summary-find-next (not all)))))
 	    (unless to-here
 	      (setq gnus-newsgroup-unreads nil))
-	    (gnus-set-mode-line 'summary)))
-	(let ((method (gnus-find-method-for-group gnus-newsgroup-name)))
-	  (when (and (not to-here) (eq 'nnvirtual (car method)))
-	    (nnvirtual-catchup-group
-	     (gnus-group-real-name gnus-newsgroup-name) (nth 1 method) all))))
+	    (gnus-set-mode-line 'summary))
+	  (let ((method (gnus-find-method-for-group gnus-newsgroup-name)))
+	    (when (and (not to-here) (eq 'nnvirtual (car method)))
+	      (nnvirtual-catchup-group
+	       (gnus-group-real-name gnus-newsgroup-name)
+	       (nth 1 method) all)))
+	  t))
     (gnus-summary-position-point)))
 
 (defun gnus-summary-catchup-to-here (&optional all)

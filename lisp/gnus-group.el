@@ -400,10 +400,10 @@ variable."
 (defface gnus-group-mail-2-empty-face
   '((((class color)
       (background dark))
-     (:foreground "aquamarine2" :bold t))
+     (:foreground "aquamarine2"))
     (((class color)
       (background light))
-     (:foreground "HotPink3" :bold t))
+     (:foreground "HotPink3"))
     (t
      (:bold t)))
   "Level 2 empty mailgroup face.")
@@ -444,10 +444,10 @@ variable."
 (defface gnus-group-mail-low-empty-face
   '((((class color)
       (background dark))
-     (:foreground "aquamarine4" :bold t))
+     (:foreground "aquamarine4"))
     (((class color)
       (background light))
-     (:foreground "DeepPink4" :bold t))
+     (:foreground "DeepPink4"))
     (t
      (:bold t)))
   "Low level empty mailgroup face.")

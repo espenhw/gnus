@@ -199,6 +199,7 @@ all.  This may very well take some time.")
     (nnheader-report 'nnml "Group %s selected" group)
     t)
    (t
+    (nnheader-re-read-dir nnml-current-directory)
     (nnmail-activate 'nnml)
     (let ((active (nth 1 (assoc group nnml-group-alist))))
       (if (not active)

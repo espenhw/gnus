@@ -1,3 +1,21 @@
+Wed Oct 16 21:01:41 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-summary-catchup): Return t.
+
+Wed Oct 16 20:32:53 1996  Kees de Bruin  <kees_de_bruin@tasking.nl>
+
+	* gnus-group.el (gnus-group-mail-low-empty-face): Face fix.
+
+Wed Oct 16 20:00:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-mode): Doc fix.
+
+	* nnml.el (nnml-request-group): Re-read directory.
+
+Wed Oct 16 04:01:27 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.51 is released.
+
 Wed Oct 16 03:49:12 1996  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* gnus-start.el (gnus-setup-news): Make sure
