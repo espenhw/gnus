@@ -27,6 +27,7 @@
 
 (require 'gnus)
 (require 'gnus-msg)
+(eval-when-compile (require 'cl))
 
 ;; Default viewing action rules
 
@@ -973,20 +974,20 @@ The headers will be included in the sequence they are matched.")
 	  ()
 	;; Collect all subjects matching subject.
 	(let ((case-fold-search t)
-	      subj mark)
-	  (goto-char (point-min))
-	  (while (not (eobp))
-	    (and (setq subj (gnus-summary-article-subject))
-		 (string-match subject subj)
-		 (or (not only-unread)
-		     (= (setq mark (gnus-summary-article-mark)) 
+	      (data gnus-newsgroup-data)
+	      subj mark d)
+	  (while data
+	    (setq d (pop data))
+	    (and (or (not only-unread)
+		     (= (setq mark (gnus-data-mark d))
 			gnus-unread-mark)
 		     (= mark gnus-ticked-mark)
 		     (= mark gnus-dormant-mark))
+		 (setq subj (mail-header-subject (gnus-data-header d)))
+		 (string-match subject subj)
 		 (setq list-of-subjects 
 		       (cons (cons subj (gnus-summary-article-number))
-			     list-of-subjects)))
-	    (forward-line 1)))
+			     list-of-subjects)))))
 
 	;; Expand numbers, sort, and return the list of article
 	;; numbers.
@@ -1109,8 +1110,9 @@ The headers will be included in the sequence they are matched.")
 
       (if (not (= (or gnus-current-article 0) article))
 	  (let ((nntp-async-number nil))
-	    (gnus-request-article article gnus-newsgroup-name
-				  nntp-server-buffer)
+	    (save-excursion
+	      (set-buffer nntp-server-buffer)
+	      (gnus-request-article-this-buffer article gnus-newsgroup-name))
 	    (setq gnus-last-article gnus-current-article)
 	    (setq gnus-current-article article)
 	    (setq gnus-article-current (cons gnus-newsgroup-name article))

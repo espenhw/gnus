@@ -1495,6 +1495,7 @@ SCORE is the score to add."
     (let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
 	   (alist malist)
 	   (date (current-time-string)) 
+	   (data gnus-newsgroup-data)
 	   elem headers match)
       ;; First we transform the adaptive rule alist into something
       ;; that's faster to process.
@@ -1505,25 +1506,28 @@ SCORE is the score to add."
 	(setq elem (cdr elem))
 	(while elem
 	  (setcdr (car elem) 
-		  (cons (symbol-name (car (car elem))) (cdr (car elem))))
+		  (cons (if (eq (car (car elem)) 'followup)
+			    "references"
+			  (symbol-name (car (car elem))))
+			(cdr (car elem))))
 	  (setcar (car elem) 
 		  (intern 
 		   (concat "gnus-header-" 
-			   (downcase (symbol-name (car (car elem)))))))
+			   (if (eq (car (car elem)) 'followup)
+			       "message-id"
+			     (downcase (symbol-name (car (car elem))))))))
 	  (setq elem (cdr elem)))
 	(setq malist (cdr malist)))
       ;; We change the score file to the adaptive score file.
       (gnus-score-load-file (gnus-score-file-name 
 			     gnus-newsgroup-name gnus-adaptive-file-suffix))
       ;; The we score away.
-      (goto-char (point-min))
-      (while (not (eobp))
-	(setq elem (cdr (assq (gnus-summary-article-mark) alist)))
+      (while data
+	(setq elem (cdr (assq (gnus-data-mark (car data)) alist)))
 	(if (or (not elem)
-		(get-text-property (point) 'gnus-pseudo))
+		(gnus-data-pseudo-p (car data)))
 	    ()
-	  (when (and (setq headers (gnus-summary-article-header))
-		     (vectorp headers))
+	  (when (setq headers (gnus-data-header (car data)))
 	    (while elem 
 	      (setq match (funcall (car (car elem)) headers))
 	      (gnus-summary-score-entry 
@@ -1543,54 +1547,7 @@ SCORE is the score to add."
 		       'f 's))))
 	       (nth 2 (car elem)) date nil t)
 	      (setq elem (cdr elem)))))
-	(forward-line 1)))))
-
-(defun gnus-score-remove-lines-adaptive (marks)
-  (save-excursion
-    (let* ((malist (gnus-copy-sequence gnus-adaptive-score-alist))
-	   (alist malist)
-	   (date (current-time-string)) 
-	   (cur-score gnus-current-score-file)
-	   elem headers match)
-      ;; First we transform the adaptive rule alist into something
-      ;; that's faster to process.
-      (while malist
-	(setq elem (car malist))
-	(if (symbolp (car elem))
-	    (setcar elem (symbol-value (car elem))))
-	(setq elem (cdr elem))
-	(while elem
-	  (setcdr (car elem) 
-		  (cons (symbol-name (car (car elem))) (cdr (car elem))))
-	  (setcar (car elem) 
-		  (intern 
-		   (concat "gnus-header-" 
-			   (downcase (symbol-name (car (car elem)))))))
-	  (setq elem (cdr elem)))
-	(setq malist (cdr malist)))
-      ;; The we score away.
-      (goto-char (point-min))
-      ;; We change the score file to the adaptive score file.
-      (gnus-score-load-file (gnus-score-file-name 
-			     gnus-newsgroup-name gnus-adaptive-file-suffix))
-      (while (re-search-forward marks nil t)
-	(beginning-of-line)
-	(setq elem (cdr (assq (gnus-summary-article-mark) alist)))
-	(if (or (not elem)
-		(get-text-property (gnus-point-at-bol) 'gnus-pseudo))
-	    ()
-	  (setq headers (gnus-summary-article-header))
-	  (while elem
-	    (setq match (funcall (car (car elem)) headers))
-	    (gnus-summary-score-entry 
-	     (nth 1 (car elem)) match
-	     (if (or (not gnus-score-exact-adapt-limit)
-		     (< (length match) gnus-score-exact-adapt-limit))
-		 'e 's) 
-	     (nth 2 (car elem)) date nil t)
-	    (setq elem (cdr elem)))))
-      ;; Switch back to the old score file.
-      (gnus-score-load-file cur-score))))
+	(setq data (cdr data))))))
 
 ;;;
 ;;; Score mode.

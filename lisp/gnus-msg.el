@@ -28,6 +28,7 @@
 (require 'gnus)
 (require 'sendmail)
 (require 'gnus-ems)
+(eval-when-compile (require 'cl))
 
 (defvar gnus-organization-file "/usr/lib/news/organization"
   "*Local news organization file.")
@@ -130,6 +131,14 @@ the group.")
    (concat (file-name-as-directory gnus-article-save-directory)
 	   "drafts"))
   "*The directory where draft messages will be stored.")
+
+(defvar gnus-posting-styles nil
+  "*Alist of styles to use when posting.")
+
+(defvar gnus-posting-style-alist
+  '((organization . gnus-organization-file)
+    (signature . gnus-signature-file)
+    (from . gnus-user-from-line)))
 
 (defvar gnus-user-login-name nil
   "*The login name of the user.
@@ -1634,6 +1643,8 @@ mailer."
     (pop-to-buffer gnus-post-news-buffer)  
     (erase-buffer)
     (news-reply-mode)
+    ;; Let posting styles be configured.
+    (gnus-configure-posting-styles)
     (news-setup nil subject nil group nil)
     (gnus-inews-insert-signature)
     (and gnus-post-prepare-function
@@ -1708,6 +1719,9 @@ mailer."
 	      (while (setq elt (assoc "Newsgroups" follow-to))
 		(setq sendto (concat sendto (and sendto ", ") (cdr elt)))
 		(setq follow-to (delq elt follow-to))))
+
+	  ;; Let posting styles be configured.
+	  (gnus-configure-posting-styles)
 
 	  (news-setup nil subject nil 
 		      (or group sendto 
@@ -1953,7 +1967,6 @@ mailer."
 	 (winconf (current-window-configuration))
 	 (subject (gnus-forward-make-subject forward-buffer)))
     (set-buffer (get-buffer-create gnus-mail-buffer))
-    (mail-mode)
     (if (and (buffer-modified-p)
 	     (> (buffer-size) 0)
 	     (not (gnus-y-or-n-p 
@@ -2183,6 +2196,8 @@ Headers will be generated before sending."
 
 (defun gnus-mail-setup (type &optional to subject in-reply-to cc
 			     replybuffer actions)
+  ;; Let posting styles be configured.
+  (gnus-configure-posting-styles)
   (funcall
    (cond
     ((or 
@@ -2360,6 +2375,61 @@ Headers will be generated before sending."
     ;; Put point where you left it.
     (goto-char (nth 3 type))))
   
+(defun gnus-configure-posting-styles ()
+  "Configure posting styles according to `gnus-posting-styles'."
+  (let ((styles gnus-posting-styles)
+	style match variable attribute value value-value)
+    ;; Go through all styles and look for matches.
+    (while styles
+      (setq style (pop styles)
+	    match (pop style))
+      (when (cond ((stringp match)
+		   ;; Regexp string match on the group name.
+		   (string-match match gnus-newsgroup-name))
+		  ((symbolp match)
+		   (cond ((fboundp match)
+			  ;; Function to be called.
+			  (funcall match))
+			 ((boundp match)
+			  ;; Variable to be checked.
+			  (symbol-value match))))
+		  ((listp match)
+		   ;; This is a form to be evaled.
+		   (eval match)))
+	;; We have a match, so we set the variables.
+	(while style
+	  (setq attribute (pop style)
+		value (cdr attribute))
+	  ;; We find the variable that is to be modified.
+	  (if (and (not (stringp (car attribute)))
+		   (not (setq variable (cdr (assq (car attribute) 
+						  gnus-posting-style-alist)))))
+	      (message "Couldn't find attribute %s" (car attribute))
+	    ;; We set the variable.
+	    (setq value-value
+		  (cond ((stringp value)
+			 value)
+			((symbolp value)
+			 (cond ((fboundp value)
+				(funcall value))
+			       ((boundp value)
+				(symbol-value value))))
+			((listp value)
+			 (eval value))))
+	    (if variable
+		(progn
+		  ;; This is an ordinary variable.
+		  (make-local-variable variable)
+		  (set variable value-value))
+	      ;; This is a header to be added to the headers when
+	      ;; posting. 
+	      (when value-value
+		(make-local-variable gnus-required-headers)
+		(make-local-variable gnus-required-mail-headers)
+		(push (cons (car attribute) value-value) 
+		      gnus-required-headers)
+		(push (cons (car attribute) value-value) 
+		      gnus-required-mail-headers)))))))))
 
 ;;; Allow redefinition of functions.
 

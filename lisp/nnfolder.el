@@ -426,18 +426,15 @@ such things as moving mail.  All buffers always get killed upon server close.")
       t)))
 
 (defun nnfolder-request-delete-group (group &optional force server)
-  (nnfolder-possibly-change-group group)
+  (nnfolder-close-group group server t)
   ;; Delete all articles in GROUP.
   (if (not force)
       ()				; Don't delete the articles.
-    ;; Delete the file that holds the group and kill the buffer as
-    ;; well.  
-    (save-excursion
-      (and (set-buffer nnfolder-current-buffer)
-	   (progn
-	     (and (file-writable-p buffer-file-name)
-		  (delete-file buffer-file-name))
-	     (kill-buffer (current-buffer))))))
+    ;; Delete the file that holds the group.
+    (condition-case nil
+	(delete-file (concat (file-name-as-directory nnfolder-directory)
+			     group))
+      (error nil)))
   ;; Remove the group from all structures.
   (setq nnfolder-group-alist 
 	(delq (assoc group nnfolder-group-alist) nnfolder-group-alist)

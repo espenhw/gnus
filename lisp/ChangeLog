@@ -1,4 +1,52 @@
+Sun Oct 15 03:16:03 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus.el (gnus-summary-limit-to-marks): Don't do any adaptive
+	thingies. 
+
+Sun Oct 15 01:27:57 1995  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-limit-to-marks): Doc fix.
+	(gnus-remove-articles-1): Updated positions incorrectly. 
+	(gnus-parse-simple-format): User-defined specs bugged out.
+
+Sat Oct 14 10:04:27 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-posting-styles): New variable.
+	(gnus-posting-style-alist): New variable.
+	(gnus-configure-posting-styles): New function.
+	(gnus-new-news): Use it. 
+	(gnus-news-followup): Use it.
+	(gnus-mail-setup): Use it.
+
+	* gnus-score.el (gnus-score-adaptive): Iterate over data, not the
+	buffer. 
+
+	* gnus.el (gnus-data-pseudo-p): New function.
+
+	* gnus-score.el: Removed `gnus-score-remove-lines-adaptive'.
+
+	* nnfolder.el (nnfolder-request-delete-group): Didn't totally
+	remove the group from all structures.
+
+	* gnus.el (gnus-summary-move-article): Don't remove lines that
+	correspond to moved articles.
+	(gnus-summary-copy-article): Copy into the cache, possibly.
+	(gnus-summary-move-article): Ditto.
+
+	* gnus-uu.el (gnus-uu-find-articles-matching): Iterate over the
+	data instead of the buffer.
+
+	* gnus.el (gnus-rebuild-thread): Didn't work on untreaded displays
+	(or anywhere else).
+	(gnus-summary-insert-dummy-line): New implementation.
+	(gnus-summary-prepare-threads): Don't output dummy lines that
+	don't have children.
+	(gnus-summary-skip-intangible): New function.
+	(gnus-summary-article-intangible-p): New function.
+
 Sat Oct 14 02:07:39 1995  Lars Magne Ingebrigtsen  <larsi@narfi.ifi.uio.no>
+
+	* gnus.el: 0.9 is released.
 
 	* gnus.el (gnus-summary-refer-parent-article): Take a look at the
 	actual References header.

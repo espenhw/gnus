@@ -370,9 +370,9 @@ Ricardo Nassif did the proof-reading.
 @item
 Kevin Davidson came up with the name @dfn{ding}, so blame him.
 @item 
-Stainless Steel Rat, Ulrik Dickow, Jack Vinson, Daniel Quinlan, Frank
-D. Cringle, Geoffrey T. Dairiki and Andrew Eskilsson have all
-contributed code and suggestions.
+Peter Arius, Stainless Steel Rat, Ulrik Dickow, Jack Vinson, Daniel
+Quinlan, Frank D. Cringle, Geoffrey T. Dairiki and Andrew Eskilsson have
+all contributed code and suggestions.
 @end itemize
 
 
@@ -3628,6 +3628,7 @@ server.
 * Mail::                 Mailing & replying.
 * Post::                 Posting and following up.
 * Mail & Post::          Mailing and posting at the same time.
+* Posting Styles::       An easier way to configure some key elements.
 * Drafts::               Postponing messages and rejected messages.
 * Rejected Articles::    What happens if the server doesn't like your article?
 @end menu
@@ -4235,6 +4236,82 @@ spell-checking via the @code{ispell} package:
 If you want to insert some @sc{mime} headers into the articles you post,
 without doing any actual encoding, you could add
 @code{gnus-inews-insert-mime-headers} to @code{gnus-inews-article-hook}.
+
+
+@node Posting Styles
+@subsection Posting Styles
+@cindex posting styles
+@cindex styles
+
+All them variables, they make my head swim.  
+
+So what if you want a different @code{Organization} and signature based
+on what groups you post to?  And you post both from your home machine
+and your work machine, and you want different @code{From} lines, and so
+on? 
+
+@vindex gnus-posting-styles
+One way to do stuff like that is to write clever hooks that change the
+variables you need to have changed.  That's a bit boring, so somebody
+came up with the bright idea of letting the user specify these things in
+a handy alist.  Here's an example of a @code{gnus-posting-styles}
+variable: 
+
+@lisp
+((".*" (signature . "Peace and happiness") (organization . "What me?"))
+ ("^comp" (signature . "Death to everybody"))
+ ("comp.emacs.i-love-it" (organization . "Emacs is it")))
+@end lisp
+
+As you might surmise from this example, this alist consists of several
+@dfn{styles}.  Each style will be applicable if the first element
+"matches", in some form or other.  The entire alist will be iterated
+over, from the beginning towards the end, and each match will be
+applied, which means that attributes in later styles that match override
+the same attributes in earlier matching styles.  So
+@samp{comp.programming.literate} will have the @samp{Death to everybody}
+signature and the @samp{What me?} @code{Organization} header. 
+
+The first element in each style is called the @code{match}.  If it's a
+string, then Gnus will try to regexp match it against the group name.
+If it's a function symbol, that function will be called with no
+arguments.  If it's a variable symbol, then the variable will be
+referenced.  If it's a list, then that list will be @code{eval}ed.  In
+any case, if this returns a non-@code{nil} value, then the style is said
+to @dfn{match}.
+
+Each style may contain a random amount of @dfn{attributes}.  Each
+attribute consists of a @var{(name  . value)} pair.  The attribute name
+can be one of @code{signature}, @code{organization} or @code{from}.  
+The attribute name can also be a string.  In that case, this will be
+used as a header name, and the value will be inserted in the headers of
+the article. 
+
+The attribute value can be a string (used verbatim), a function (the
+return value will be used), a variable (its value will be used) or a
+list (it will be @code{eval}ed and the return value will be used).
+
+So here's a new example:
+
+@lisp
+(setq gnus-posting-styles
+      '((".*" 
+           (signature . "~/.signature") 
+           (from . "user@@foo (user)")
+           ("X-Home-Page" . (getenv "WWW_HOME"))
+           (organization . "People's Front Against MWM"))
+        ("^rec.humor" 
+           (signature . my-funny-signature-randomizer))
+        ((equal (system-name) "gnarly") 
+           (signature . my-quote-randomizer))
+        (posting-from-work-p
+           (signature . "~/.work-signature")
+           (from . "user@@bar.foo (user)")
+           (organization . "Important Work, Inc"))
+        ("^nn.+:" 
+           (signature . "~/.mail-signature"))))
+@end lisp
+
 
 
 @node Drafts
@@ -7370,6 +7447,13 @@ To take @code{gnus-del-mark} as an example---this alist says that all
 articles that have that mark (i.e., are marked with @samp{D}) will have a
 score entry added to lower based on the @code{From} header by -4, and
 lowered by @code{Subject} by -1.  Change this to fit your prejudices. 
+
+The headers you can score on are @code{from}, @code{subject},
+@code{message-id}, @code{references}, @code{xref}, @code{lines},
+@code{chars} and @code{date}.  In addition, you can score on
+@code{followup}, which will create an adaptive score entry that matches
+on the @code{References} header using the @code{Message-ID} of the
+current article, thereby matching the following thread.
 
 If you use this scheme, you should set @code{mark-below} to something
 small---like -300, perhaps, to avoid having small random changes result
