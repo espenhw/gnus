@@ -197,8 +197,7 @@ all. This may very well take some time.")
 		(> (nth 1 timestamp) (nth 1 nnml-active-timestamp)))
 	    (progn
 	      (setq nnml-active-timestamp timestamp)
-	      (nnml-request-list)
-	      (setq nnml-group-alist (nnmail-get-active))))
+	      (nnmail-activate 'nnml)))
 	(let ((active (nth 1 (assoc group nnml-group-alist))))
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
@@ -219,8 +218,7 @@ all. This may very well take some time.")
   t)
 
 (defun nnml-request-create-group (group &optional server) 
-  (nnml-request-list)
-  (setq nnml-group-alist (nnmail-get-active))
+  (nnmail-activate 'nnml)
   (or (assoc group nnml-group-alist)
       (let (active)
 	(setq nnml-group-alist (cons (list group (setq active (cons 0 0)))
@@ -271,8 +269,7 @@ all. This may very well take some time.")
 	 (max-article (and active-articles (apply 'max active-articles)))
 	 (is-old t)
 	 article rest mod-time)
-    (nnml-request-list)
-    (setq nnml-group-alist (nnmail-get-active))
+    (nnmail-activate 'nnml)
 
     (while (and articles is-old)
       (setq article (concat nnml-current-directory 
@@ -334,8 +331,7 @@ all. This may very well take some time.")
   (let (result)
     (if (stringp group)
 	(and 
-	 (nnml-request-list)
-	 (setq nnml-group-alist (nnmail-get-active))
+	 (nnmail-activate 'nnml)
 	 ;; We trick the choosing function into believing that only one
 	 ;; group is availiable.  
 	 (let ((nnmail-split-methods (list (list group ""))))
@@ -344,8 +340,7 @@ all. This may very well take some time.")
 	   (nnmail-save-active nnml-group-alist nnml-active-file)
 	   (and last (nnml-save-nov))))
       (and
-       (nnml-request-list)
-       (setq nnml-group-alist (nnmail-get-active))
+       (nnmail-activate 'nnml)
        (setq result (car (nnml-save-mail)))
        (progn
 	 (nnmail-save-active nnml-group-alist nnml-active-file)
@@ -370,17 +365,28 @@ all. This may very well take some time.")
 	    (art (concat (int-to-string article) "\t"))
 	    nov-line)
 	(setq nov-line (nnml-make-nov-line chars))
+	;; Replace the NOV line in the NOV file.
 	(save-excursion 
 	  (set-buffer (nnml-open-nov group))
 	  (goto-char (point-min))
 	  (if (or (looking-at art)
-		  (search-forward (concat "\n" art)))
-	      (progn
-		(delete-region (progn (beginning-of-line) (point))
-			       (progn (forward-line 1) (point)))
-		(insert (int-to-string article) nov-line)
-		(nnml-save-nov))
-	    (kill-buffer (current-buffer)))
+		  (search-forward (concat "\n" art) nil t))
+	      ;; Delete the old NOV line.
+	      (delete-region (progn (beginning-of-line) (point))
+			     (progn (forward-line 1) (point)))
+	    ;; The line isn't here, so we have to find out where
+	    ;; we should insert it. (This situation should never
+	    ;; occur, but one likes to make sure...)
+	    (while (and (looking-at "[0-9]+\t")
+			(< (string-to-int 
+			    (buffer-substring 
+			     (match-beginning 0) (match-end 0)))
+			   article)
+			(zerop (forward-line 1)))))
+	  (beginning-of-line)
+	  (insert (int-to-string article) nov-line)
+	  (nnml-save-nov)
+	  (kill-buffer (current-buffer))
 	  t)))))
 
 
@@ -491,9 +497,7 @@ all. This may very well take some time.")
 	()
       ;; We first activate all the groups.
       (if (or (not group) (not nnml-group-alist))
-	  (progn
-	    (nnml-request-list)
-	    (setq nnml-group-alist (nnmail-get-active))))
+	  (nnmail-activate 'nnml))
       ;; The we go through all the existing spool files and split the
       ;; mail from each.
       (while spools

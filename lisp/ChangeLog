@@ -1,4 +1,81 @@
-Tue Jul 18 13:38:27 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+Thu Jul 20 00:02:30 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-vis.el (gnus-article-add-buttons): Buttonize the headers. 
+
+	* nndoc.el (nndoc-insert-article): Don't insert the status line. 
+
+	* gnus-vis.el (gnus-article-add-buttons): Do a `nil t' on the
+	search.
+
+	* nnml.el (nnml-request-replace-article): Would bug out on
+	slightly corrupted NOV files.
+
+	* gnus-ems.el (gnus-ems-redefine): max-width for Mule was wrong. 
+
+	* nnbabyl.el (nnbabyl-request-expire-articles): Didn't use the
+	is-old shortcut.
+	* nnmbox.el (nnmbox-request-expire-articles): Ditto.
+
+	* gnus-msg.el (gnus-mail-forward-using-mail): Force window config.
+	(gnus-bug-mail-send-and-exit): New command.
+	(gnus-bug): Use it.
+	(gnus-summary-mail-other-window): Configured windows strangely. 
+
+	* gnus.el (gnus-gnus-to-newsrc-format): Wouldn't save
+	.newsrc-SERVER, but just .newsrc.
+	(gnus-make-newsrc-file): Would not find .newsrc-SERVER.eld if
+	.newsrc-SERVER didn't exist.
+
+	* nndoc.el (nndoc-set-header-dependent-regexps): New function.
+	(nndoc-request-group): Use it.
+
+Wed Jul 19 17:07:11 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-ems.el: Defvar instead of setq.
+
+	* gnus.el (gnus-summary-expire-articles): Don't do anything if
+	there are no articles to expire.
+	(gnus-unload): New command.
+
+	* nnmh.el (nnmh-possibly-create-directory): Would create "a/b/c"
+	dirs when "a.b.c" dir was requested.
+
+	* gnus.el (gnus-newsrc-to-gnus-format): Also recognize "Options". 
+
+	* nnmail.el (nnmail-activate): New function for faster activation.
+
+	* gnus.el (gnus-summary-expire-articles): Be slightly faster.
+
+	* gnus-cache.el (gnus-cache-possibly-enter-article): Bugged out on
+	dummy roots.
+
+	* gnus.el (gnus-summary-update-lines): Didn't set the article number.
+	(gnus-summary-exit): Force a group window config.
+	(gnus-select-newsgroup): Copy all marks lists.
+	(gnus-group-sort-groups): Would not heed the last `l' or `L'. 
+
+	* nndoc.el (nndoc-retrieve-headers): Would sometimes be in the
+	wrong buffer for folding continuation lines.
+
+	* gnus-ems.el (gnus-ems-redefine): Redefine
+	`gnus-article-add-button' for XEmacs.
+
+	* gnus.el (gnus-summary-mark-forward): Never go to the next unread
+	article when marking as unread.
+
+	* gnus-kill.el (gnus-kill-file-enter-kill): Wouldn't allow editing
+	of the global kill file. 
+
+	* gnus.el (gnus-summary-mode): Don't update format specs.
+
+Tue Jul 18 16:39:31 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-summary-number-of-articles-in-thread): Didn't work
+	with the new thread machine.
+
+Tue Jul 18 13:38:27 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.97.2 is released.
 
 	* gnus.el (gnus-thread-header): Define as a macro.
 	(gnus-all-windows-visible-p): Don't barf on horizontal specs. 

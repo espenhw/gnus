@@ -234,12 +234,11 @@
 		   nnmail-expiry-wait))
 	 (is-old t)
 	 rest)
-    (nnmbox-request-list)
-    (setq nnmbox-group-alist (nnmail-get-active))
+    (nnmail-activate 'nnmbox)
 
     (save-excursion 
       (set-buffer nnmbox-mbox-buffer)
-      (while articles
+      (while (and articles is-old)
 	(goto-char (point-min))
 	(if (search-forward (nnmbox-article-string (car articles)) nil t)
 	    (if (or force
@@ -304,8 +303,7 @@
 	(replace-match "From ")
       (insert "From nobody " (current-time-string) "\n"))
     (and 
-     (nnmbox-request-list)
-     (setq nnmbox-group-alist (nnmail-get-active))
+     (nnmail-activate 'nnmbox)
      (progn
        (set-buffer buf)
        (goto-char (point-min))
@@ -375,9 +373,7 @@
 			  (find-file-noselect nnmbox-mbox-file)))
 	(buffer-disable-undo (current-buffer))))
   (if (not nnmbox-group-alist)
-      (progn
-	(nnmbox-request-list)
-	(setq nnmbox-group-alist (nnmail-get-active))))
+      (nnmail-activate 'nnmbox))
   (if newsgroup
       (if (assoc newsgroup nnmbox-group-alist)
 	  (setq nnmbox-current-group newsgroup))))
@@ -423,8 +419,7 @@
     (cdr active)))
 
 (defun nnmbox-read-mbox ()
-  (nnmbox-request-list)
-  (setq nnmbox-group-alist (nnmail-get-active))
+  (nnmail-activate 'nnmbox)
   (if (not (file-exists-p nnmbox-mbox-file))
       (write-region 1 1 nnmbox-mbox-file t 'nomesg))
   (if (and nnmbox-mbox-buffer

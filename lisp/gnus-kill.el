@@ -185,7 +185,9 @@ If NEWSGROUP is nil, the global kill file is selected."
   ;; REGEXP: The string to kill.
   (save-excursion
     (let (string)
-      (gnus-kill-set-kill-buffer)
+      (or (eq major-mode 'gnus-kill-file-mode)
+	  (gnus-kill-set-kill-buffer))
+      (current-buffer)
       (goto-char (point-max))
       (insert (setq string (format "(gnus-kill %S %S)\n" field regexp)))
       (gnus-kill-file-apply-string string))))
@@ -195,25 +197,34 @@ If NEWSGROUP is nil, the global kill file is selected."
   (interactive)
   (gnus-kill-file-enter-kill
    "Subject" 
-   (regexp-quote 
-    (gnus-simplify-subject (header-subject gnus-current-headers)))))
+   (if (vectorp gnus-current-headers)
+       (regexp-quote 
+	(gnus-simplify-subject (header-subject gnus-current-headers)))
+     "")))
   
 (defun gnus-kill-file-kill-by-author ()
   "Kill by author."
   (interactive)
   (gnus-kill-file-enter-kill
-   "From" (regexp-quote (header-from gnus-current-headers))))
+   "From" 
+   (if (vectorp gnus-current-headers)
+       (regexp-quote (header-from gnus-current-headers))
+     "")))
  
 (defun gnus-kill-file-kill-by-thread ()
   "Kill by author."
   (interactive "p")
   (gnus-kill-file-enter-kill
-   "References" (regexp-quote (header-id gnus-current-headers))))
+   "References" 
+   (if (vectorp gnus-current-headers)
+       (regexp-quote (header-id gnus-current-headers))
+     "")))
  
 (defun gnus-kill-file-kill-by-xref ()
   "Kill by Xref."
   (interactive)
-  (let ((xref (header-xref gnus-current-headers))
+  (let ((xref (and (vectorp gnus-current-headers) 
+		   (header-xref gnus-current-headers)))
 	(start 0)
 	group)
     (if xref

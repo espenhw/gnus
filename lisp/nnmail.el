@@ -711,6 +711,13 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	  (t
 	   procmails))))
 
+(defun nnmail-activate (backend)
+  (if (not (symbol-value (intern (format "%s-group-alist" backend))))
+      (save-excursion
+	(funcall (intern (format "%s-request-list" backend)))
+	(set (intern (format "%s-group-alist" backend)) (nnmail-get-active)))))
+
+
 (provide 'nnmail)
 
 ;;; nnmail.el ends here

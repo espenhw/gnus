@@ -34,104 +34,141 @@
 ;; bore.  
 
 (eval
- '(cond 
-   ((string-match "XEmacs\\|Lucid" emacs-version)
-    ;; XEmacs definitions.
-
-    (setq gnus-mouse-2 [button2])
-    (setq gnus-easymenu 'auc-menu)
-
-    (or (memq 'underline (list-faces))
-	(funcall (intern "make-face") 'underline))
-    ;; Must avoid calling set-face-underline-p directly, because it
-    ;; is a defsubst in emacs19, and will make the .elc files non
-    ;; portable!
-    (or (face-differs-from-default-p 'underline)
-  	(funcall 'set-face-underline-p 'underline t))
-    (or (fboundp 'set-text-properties)
-	(defun set-text-properties (start end props &optional buffer)
-	  (if (or (null buffer) (bufferp buffer))
-	      (if props
-		  (while props
-		    (put-text-property 
-		     start end (car props) (nth 1 props) buffer)
-		    (setq props (nthcdr 2 props)))
-		(remove-text-properties start end ())))))
-
-    (or (fboundp 'make-overlay) (fset 'make-overlay 'make-extent))
-    (or (fboundp 'overlay-put) (fset 'overlay-put 'set-extent-property))
-    (or (fboundp 'move-overlay) 
-        (defun move-overlay (extent start end &optional buffer)
-          (set-extent-endpoints extent start end)))
-    (or (boundp 'standard-display-table) (setq standard-display-table nil))
-    (or (boundp 'read-event) (fset 'read-event 'next-command-event))
-
-    ;; Fix by "jeff (j.d.) sparkes" <jsparkes@bnr.ca>.
-    (setq gnus-display-type (device-class))
-
-    (or (fboundp 'x-color-values)
-	(fset 'x-color-values 
-	      (lambda (color)
-		(color-instance-rgb-components
-		 (make-color-instance color)))))
-    
-    (setq gnus-background-mode 
-	  (let ((bg-resource 
-		 (x-get-resource ".backgroundMode" "BackgroundMode" 'string))
-		(params (frame-parameters)))
-	    (cond (bg-resource (intern (downcase bg-resource)))
-		  ((and (assq 'background-color params)
-			(< (apply '+ (x-color-values
-				      (cdr (assq 'background-color params))))
-			   (/ (apply '+ (x-color-values "white")) 3)))
-		   'dark)
-		  (t 'light))))
-
-    (if (not gnus-visual)
+ '(progn
+    (if (string-match "XEmacs\\|Lucid" emacs-version)
 	()
-      (setq gnus-group-mode-hook
-	    (cons
-	     '(lambda ()
-	       (easy-menu-add gnus-group-reading-menu)
-	       (easy-menu-add gnus-group-group-menu)
-	       (easy-menu-add gnus-group-post-menu)
-	       (easy-menu-add gnus-group-misc-menu)
-	       (gnus-install-mouse-tracker)) 
-	     gnus-group-mode-hook))
-      (setq gnus-summary-mode-hook
-	    (cons
-	     '(lambda ()
-	       (easy-menu-add gnus-summary-mark-menu)
-	       (easy-menu-add gnus-summary-move-menu)
-	       (easy-menu-add gnus-summary-article-menu)
-	       (easy-menu-add gnus-summary-thread-menu)
-	       (easy-menu-add gnus-summary-misc-menu)
-	       (easy-menu-add gnus-summary-post-menu)
-	       (easy-menu-add gnus-summary-kill-menu)
-	       (gnus-install-mouse-tracker)) 
-	     gnus-summary-mode-hook))
-      (setq gnus-article-mode-hook
-	    (cons
-	     '(lambda ()
-	       (easy-menu-add gnus-article-article-menu)
-	       (easy-menu-add gnus-article-treatment-menu))
-	     gnus-article-mode-hook)))
+      ;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
+      (defvar gnus-display-type 
+	(condition-case nil
+	    (let ((display-resource (x-get-resource ".displayType" "DisplayType")))
+	      (cond (display-resource (intern (downcase display-resource)))
+		    ((x-display-color-p) 'color)
+		    ((x-display-grayscale-p) 'grayscale)
+		    (t 'mono)))
+	  (error 'mono))
+	"A symbol indicating the display Emacs is running under.
+The symbol should be one of `color', `grayscale' or `mono'. If Emacs
+guesses this display attribute wrongly, either set this variable in
+your `~/.emacs' or set the resource `Emacs.displayType' in your
+`~/.Xdefaults'. See also `gnus-background-mode'.
 
-    (defun gnus-install-mouse-tracker ()
-      (require 'mode-motion)
-      (setq mode-motion-hook 'mode-motion-highlight-line)))
+This is a meta-variable that will affect what default values other
+variables get.  You would normally not change this variable, but
+pounce directly on the real variables themselves.")
 
-   ((and (not (string-match "28.9" emacs-version)) 
-	 (not (string-match "29" emacs-version)))
-    (setq gnus-hidden-properties '(invisible t))
-    (or (fboundp 'buffer-substring-no-properties)
-	(defun buffer-substring-no-properties (beg end)
-	  (format "%s" (buffer-substring beg end)))))
+      (defvar gnus-background-mode 
+	(condition-case nil
+	    (let ((bg-resource (x-get-resource ".backgroundMode"
+					       "BackgroundMode"))
+		  (params (frame-parameters)))
+	      (cond (bg-resource (intern (downcase bg-resource)))
+		    ((and (cdr (assq 'background-color params))
+			  (< (apply '+ (x-color-values
+					(cdr (assq 'background-color params))))
+			     (/ (apply '+ (x-color-values "white")) 3)))
+		     'dark)
+		    (t 'light)))
+	  (error 'light))
+	"A symbol indicating the Emacs background brightness.
+The symbol should be one of `light' or `dark'.
+If Emacs guesses this frame attribute wrongly, either set this variable in
+your `~/.emacs' or set the resource `Emacs.backgroundMode' in your
+`~/.Xdefaults'.
+See also `gnus-display-type'.
+
+This is a meta-variable that will affect what default values other
+variables get.  You would normally not change this variable, but
+pounce directly on the real variables themselves."))
+
+    (cond 
+     ((string-match "XEmacs\\|Lucid" emacs-version)
+      ;; XEmacs definitions.
+
+      (setq gnus-mouse-2 [button2])
+      (setq gnus-easymenu 'auc-menu)
+
+      (or (memq 'underline (list-faces))
+	  (funcall (intern "make-face") 'underline))
+      ;; Must avoid calling set-face-underline-p directly, because it
+      ;; is a defsubst in emacs19, and will make the .elc files non
+      ;; portable!
+      (or (face-differs-from-default-p 'underline)
+	  (funcall 'set-face-underline-p 'underline t))
+      (or (fboundp 'set-text-properties)
+	  (defun set-text-properties (start end props &optional buffer)
+	    (if (or (null buffer) (bufferp buffer))
+		(if props
+		    (while props
+		      (put-text-property 
+		       start end (car props) (nth 1 props) buffer)
+		      (setq props (nthcdr 2 props)))
+		  (remove-text-properties start end ())))))
+
+      (or (fboundp 'make-overlay) (fset 'make-overlay 'make-extent))
+      (or (fboundp 'overlay-put) (fset 'overlay-put 'set-extent-property))
+      (or (fboundp 'move-overlay) 
+	  (defun move-overlay (extent start end &optional buffer)
+	    (set-extent-endpoints extent start end)))
+      (or (boundp 'standard-display-table) (setq standard-display-table nil))
+      (or (boundp 'read-event) (fset 'read-event 'next-command-event))
+
+      ;; Fix by "jeff (j.d.) sparkes" <jsparkes@bnr.ca>.
+      (defvar gnus-display-type (device-class)
+	"A symbol indicating the display Emacs is running under.
+The symbol should be one of `color', `grayscale' or `mono'. If Emacs
+guesses this display attribute wrongly, either set this variable in
+your `~/.emacs' or set the resource `Emacs.displayType' in your
+`~/.Xdefaults'. See also `gnus-background-mode'.
+
+This is a meta-variable that will affect what default values other
+variables get.  You would normally not change this variable, but
+pounce directly on the real variables themselves.")
+
+
+      (or (fboundp 'x-color-values)
+	  (fset 'x-color-values 
+		(lambda (color)
+		  (color-instance-rgb-components
+		   (make-color-instance color)))))
+    
+      (defvar gnus-background-mode 
+	(let ((bg-resource 
+	       (x-get-resource ".backgroundMode" "BackgroundMode" 'string))
+	      (params (frame-parameters)))
+	  (cond (bg-resource (intern (downcase bg-resource)))
+		((and (assq 'background-color params)
+		      (< (apply '+ (x-color-values
+				    (cdr (assq 'background-color params))))
+			 (/ (apply '+ (x-color-values "white")) 3)))
+		 'dark)
+		(t 'light)))
+	"A symbol indicating the Emacs background brightness.
+The symbol should be one of `light' or `dark'.
+If Emacs guesses this frame attribute wrongly, either set this variable in
+your `~/.emacs' or set the resource `Emacs.backgroundMode' in your
+`~/.Xdefaults'.
+See also `gnus-display-type'.
+
+This is a meta-variable that will affect what default values other
+variables get.  You would normally not change this variable, but
+pounce directly on the real variables themselves.")
+
+
+      (defun gnus-install-mouse-tracker ()
+	(require 'mode-motion)
+	(setq mode-motion-hook 'mode-motion-highlight-line)))
+
+     ((and (not (string-match "28.9" emacs-version)) 
+	   (not (string-match "29" emacs-version)))
+      (setq gnus-hidden-properties '(invisible t))
+      (or (fboundp 'buffer-substring-no-properties)
+	  (defun buffer-substring-no-properties (beg end)
+	    (format "%s" (buffer-substring beg end)))))
    
-   ((boundp 'MULE)
-    (provide 'gnusutil))
+     ((boundp 'MULE)
+      (provide 'gnusutil))
    
-   ))
+     )))
 
 (eval-and-compile
   (cond
@@ -390,7 +427,8 @@ call it with the value of the `gnus-data' text property."
 	    (buffer-read-only nil)
 	    parent headers refs thread art)
 	(while (and id (setq headers
-			     (car (setq art (gnus-gethash (downcase id) dep)))))
+			     (car (setq art (gnus-gethash (downcase id) 
+							  dep)))))
 	  (setq parent art)
 	  (setq id (and (setq refs (header-references headers))
 			(string-match "\\(<[^>]+>\\) *$" refs)
@@ -406,6 +444,49 @@ call it with the value of the `gnus-data' text property."
 	       '(gnus-number nil gnus-mark nil gnus-level nil))
 	      (forward-line -1)))
 	  (gnus-summary-update-lines beg (point)))))
+
+    ;; Fixed by Christopher Davis <ckd@loiosh.kei.com>.
+    (defun gnus-article-add-button (from to fun &optional data)
+      "Create a button between FROM and TO with callback FUN and data DATA."
+      (and gnus-article-button-face
+	   (overlay-put (make-overlay from to) 'face gnus-article-button-face))
+      (add-text-properties from to
+			   (append
+			    (and gnus-article-mouse-face
+				 (list 'mouse-face gnus-article-mouse-face))
+			    (list 'gnus-callback fun)
+			    (and data (list 'gnus-data data))
+			    (list 'highlight t))))
+
+    (if (not gnus-visual)
+	()
+      (setq gnus-group-mode-hook
+	    (cons
+	     '(lambda ()
+	       (easy-menu-add gnus-group-reading-menu)
+	       (easy-menu-add gnus-group-group-menu)
+	       (easy-menu-add gnus-group-post-menu)
+	       (easy-menu-add gnus-group-misc-menu)
+	       (gnus-install-mouse-tracker)) 
+	     gnus-group-mode-hook))
+      (setq gnus-summary-mode-hook
+	    (cons
+	     '(lambda ()
+	       (easy-menu-add gnus-summary-mark-menu)
+	       (easy-menu-add gnus-summary-move-menu)
+	       (easy-menu-add gnus-summary-article-menu)
+	       (easy-menu-add gnus-summary-thread-menu)
+	       (easy-menu-add gnus-summary-misc-menu)
+	       (easy-menu-add gnus-summary-post-menu)
+	       (easy-menu-add gnus-summary-kill-menu)
+	       (gnus-install-mouse-tracker)) 
+	     gnus-summary-mode-hook))
+      (setq gnus-article-mode-hook
+	    (cons
+	     '(lambda ()
+	       (easy-menu-add gnus-article-article-menu)
+	       (easy-menu-add gnus-article-treatment-menu))
+	     gnus-article-mode-hook)))
 
 
     )
@@ -448,7 +529,7 @@ call it with the value of the `gnus-data' text property."
 	    (if (< from to)
 		(overlay-put (make-overlay from to) 'face face)))))
 
-    (defun gnus-max-width-function (form)
+    (defun gnus-max-width-function (el max-width)
       (` (let* ((val (eval (, el)))
 		(valstr (if (numberp val)
 			    (int-to-string val) val)))

@@ -254,8 +254,7 @@
 	 (max-article (and active-articles (apply 'max active-articles)))
 	 (is-old t)
 	 article rest mod-time)
-    (nnmh-request-list)
-    (setq nnmh-group-alist (nnmail-get-active))
+    (nnmail-activate 'nnmh)
 
     (while (and articles is-old)
       (setq article (concat nnmh-current-directory 
@@ -307,15 +306,13 @@
 (defun nnmh-request-accept-article (group &optional last)
   (if (stringp group)
       (and 
-       (nnmh-request-list)
-       (setq nnmh-group-alist (nnmail-get-active))
+       (nnmail-activate 'nnmh)
        ;; We trick the choosing function into believing that only one
        ;; group is availiable.  
        (let ((nnmail-split-methods (list (list group ""))))
 	 (car (nnmh-save-mail))))
     (and
-     (nnmh-request-list)
-     (setq nnmh-group-alist (nnmail-get-active))
+     (nnmail-activate 'nnmh)
      (car (nnmh-save-mail)))))
 
 (defun nnmh-request-replace-article (article group buffer)
@@ -343,7 +340,7 @@
 
 (defun nnmh-possibly-create-directory (group)
   (let (dir dirs)
-    (setq dir (nnmail-article-pathname group nnmh-directory))
+    (setq dir (nnmh-article-pathname group nnmh-directory))
     (while (not (file-directory-p dir))
       (setq dirs (cons dir dirs))
       (setq dir (file-name-directory (directory-file-name dir))))

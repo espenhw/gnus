@@ -204,8 +204,7 @@
   t)
 
 (defun nnbabyl-request-create-group (group &optional server) 
-  (nnbabyl-request-list)
-  (setq nnbabyl-group-alist (nnmail-get-active))
+  (nnmail-activate 'nnbabyl)
   (or (assoc group nnbabyl-group-alist)
       (let (active)
 	(setq nnbabyl-group-alist (cons (list group (setq active (cons 1 0)))
@@ -242,12 +241,11 @@
 		   nnmail-expiry-wait))
 	 (is-old t)
 	 rest)
-    (nnbabyl-request-list)
-    (setq nnbabyl-group-alist (nnmail-get-active))
+    (nnmail-activate 'nnbabyl)
 
     (save-excursion 
       (set-buffer nnbabyl-mbox-buffer)
-      (while articles
+      (while (and articles is-old)
 	(goto-char (point-min))
 	(if (search-forward (nnbabyl-article-string (car articles)) nil t)
 	    (if (or force
@@ -306,8 +304,7 @@
   (let ((buf (current-buffer))
 	result beg)
     (and 
-     (nnbabyl-request-list)
-     (setq nnbabyl-group-alist (nnmail-get-active))
+     (nnmail-activate 'nnbabyl)
      (save-excursion
        (goto-char (point-min))
        (search-forward "\n\n" nil t)
@@ -381,9 +378,7 @@
 	  (not (buffer-name nnbabyl-mbox-buffer)))
       (save-excursion (nnbabyl-read-mbox)))
   (or nnbabyl-group-alist
-      (progn
-	(nnbabyl-request-list)
-	(setq nnbabyl-group-alist (nnmail-get-active))))
+      (nnmail-activate 'nnbabyl))
   (if newsgroup
       (if (assoc newsgroup nnbabyl-group-alist)
 	  (setq nnbabyl-current-group newsgroup)
@@ -462,8 +457,7 @@
     (cdr active)))
 
 (defun nnbabyl-read-mbox ()
-  (nnbabyl-request-list)
-  (setq nnbabyl-group-alist (nnmail-get-active))
+  (nnmail-activate 'nnbabyl)
   (or (file-exists-p nnbabyl-mbox-file)
       (save-excursion
 	(set-buffer (setq nnbabyl-mbox-buffer

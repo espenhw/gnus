@@ -268,9 +268,9 @@ Ricardo Nassif did the proof-reading.
 @item
 Kevin Davidson came up with the name @dfn{ding}, so blame him.
 @item 
-Stainless Steel Rat, Jack Vinson, Daniel Quinlan, Ilja Weis, Frank D.
-Cringle, Geoffrey T. Dairiki and Andrew Eskilsson have all contributed
-code and suggestions.
+Stainless Steel Rat, Ulrik Dickow, Jack Vinson, Daniel Quinlan, Ilja
+Weis, Frank D. Cringle, Geoffrey T. Dairiki and Andrew Eskilsson have
+all contributed code and suggestions.
 @end itemize
 
 
@@ -2506,6 +2506,12 @@ Quit Gnus without saving any startup files (@code{gnus-group-quit}).
 @code{gnus-suspend-gnus-hook} is called when you suspend Gnus and
 @code{gnus-exit-gnus-hook} is called when you quit Gnus.
 
+@findex gnus-unload
+@cindex unloading
+If you wish to completely unload Gnus and all its adherents, you can use
+the @code{gnus-unload} command.  This command is also very handy when
+trying to custoize meta-variables.
+
 Note:
 
 @quotation
@@ -2741,6 +2747,8 @@ default level.  If the difference between
 @item t
 Number of articles in the current sub-thread.  Using this spec will slow
 down summary buffer generation somewhat.
+@item e
+A single character will be displayed if the article has any children. 
 @item u
 User defined specifier.  The next character in the format string should
 be a letter.  @sc{gnus} will call the function
@@ -6450,6 +6458,23 @@ file.
 @vindex gnus-mouse-face
 This is the face (i.e., font) used for mouse highlighting in Gnus.  No
 mouse highlights will be done if @code{gnus-visual} is @code{nil}.
+
+@item gnus-display-type
+@vindex gnus-display-type
+This variable is symbol indicating the display Emacs is running under.
+The symbol should be one of @code{color}, @code{grayscale} or
+@code{mono}. If Gnus guesses this display attribute wrongly, either set
+this variable in your @file{~/.emacs} or set the resource
+@code{Emacs.displayType} in your @file{~/.Xdefaults}.
+
+@item gnus-background-mode 
+@vindex gnus-background-mode 
+This is a symbol indicating the Emacs background brightness. The symbol
+should be one of @code{light} or @code{dark}. If Gnus guesses this
+frame attribute wrongly, either set this variable in your @file{~/.emacs} or
+set the resource @code{Emacs.backgroundMode} in your @file{~/.Xdefaults}. 
+`gnus-display-type'.
+
 @end table
 
 @node Customization

@@ -229,8 +229,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		     (> (nth 1 timestamp) (nth 1 nnfolder-active-timestamp)))
 		 (progn
 		   (setq nnfolder-active-timestamp timestamp)
-		   (nnfolder-request-list)
-		   (setq nnfolder-group-alist (nnmail-get-active))))
+		   (nnmail-activate 'nnfolder)))
 	     (let* ((active (assoc group nnfolder-group-alist))
 		   (group (car active))
 		   (range (car (cdr active)))
@@ -277,8 +276,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   t)
 
 (defun nnfolder-request-create-group (group &optional server) 
-  (nnfolder-request-list)
-  (setq nnfolder-group-alist (nnmail-get-active))
+  (nnmail-activate 'nnfolder)
   (or (assoc group nnfolder-group-alist)
       (let (active)
 	(setq nnfolder-group-alist 
@@ -320,8 +318,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 		   nnmail-expiry-wait))
 	 (is-old t)
 	 rest)
-    (nnfolder-request-list)
-    ;;(setq nnfolder-group-alist (nnmail-get-active))
+    (nnmail-activate 'nnfolder)
 
     (save-excursion 
       (set-buffer nnfolder-current-buffer)
@@ -556,10 +553,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
     ;; it's real name and switch to it.
     (if group (nnfolder-possibly-change-group group))
     ;; If the group alist isn't active, activate it now.
-    (if (not nnfolder-group-alist)
-	(progn
-	  (nnfolder-request-list)
-	  (setq nnfolder-group-alist (nnmail-get-active))))))
+    (or nnfolder-group-alist
+	(nnmail-activate 'nnfolder))))
 
 (defun nnfolder-active-number (group)
   (save-excursion 

@@ -114,10 +114,11 @@
   (group article headers ticked dormant unread)
   (let ((number (header-number headers))
 	file dir)
-    (if (or (not (gnus-cache-member-of-class
+    (if (or (not (vectorp headers)) ; This might be a dummy article.
+	    (not (gnus-cache-member-of-class
 		  gnus-cache-enter-articles ticked dormant unread))
 	    (file-exists-p (setq file (gnus-cache-file-name group article))))
-	()
+	() ; Do nothing.
       ;; Possibly create the cache directory.
       (or (file-exists-p (setq dir (file-name-directory file)))
 	  (gnus-make-directory dir))
@@ -127,7 +128,9 @@
 	(gnus-summary-select-article)
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
-	  (write-region (point-min) (point-max) file nil 'quiet)
+	  (save-restriction
+	    (widen)
+	    (write-region (point-min) (point-max) file nil 'quiet))
 	  (gnus-cache-change-buffer group)
 	  (set-buffer (cdr gnus-cache-buffer))
 	  (goto-char (point-max))

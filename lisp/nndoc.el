@@ -134,6 +134,7 @@
 		sequence (cdr sequence)))
 
 	;; Fold continuation lines.
+	(set-buffer nntp-server-buffer)
 	(goto-char (point-min))
 	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
 	  (replace-match " " t t))
@@ -185,6 +186,12 @@
       (if (stringp article)
 	  nil
 	(nndoc-insert-article article)
+	;; Unquote quoted non-separators in digests.
+	(if (eq nndoc-article-type 'digest)
+	    (progn
+	      (goto-char (point-min))
+	      (while (re-search-forward "^- -"nil t)
+		(replace-match "-" t t))))
 	t))))
 
 (defun nndoc-request-group (group &optional server dont-check)
@@ -194,6 +201,7 @@
 	(progn
 	  (setq nndoc-status-string "No such file or buffer")
 	  nil)
+      (nndoc-set-header-dependent-regexps) ; hack for MIME digests
       (if dont-check
 	  t
 	(save-excursion
@@ -264,6 +272,30 @@
 	  (insert-buffer-substring nndoc-address))
 	t)))))
 
+;; MIME (RFC 1341) digest hack by Ulrik Dickow <dickow@nbi.dk>.
+(defun nndoc-set-header-dependent-regexps ()
+  (if (not (eq nndoc-article-type 'digest))
+      ()
+    (let ((case-fold-search t)	    ; We match a bit too much, keep it simple.
+	  (boundary-id) (b-delimiter))
+      (save-excursion
+	(set-buffer nndoc-current-buffer)
+	(goto-char (point-min))
+	(and
+	 (re-search-forward
+	  (concat "\n\n\\|^Content-Type: multipart/digest;[ \t\n]*[ \t]"
+		  "boundary=\"\\([^\"\n]*[^\" \t\n]\\)\"")
+	  nil t)
+	 (match-beginning 1)
+	 (setq boundary-id (buffer-substring-no-properties (match-beginning 1)
+							   (match-end 1))
+	       b-delimiter       (concat "\n--" boundary-id "[\n \t]+")
+	       nndoc-article-begin b-delimiter ; Too strict: "[ \t]*$"
+	       nndoc-article-end (concat "\n--" boundary-id
+					 "\\(--\\)?[\n \t]+")
+	       nndoc-first-article b-delimiter ; ^end-of-file ends article too.
+	       nndoc-end-of-file (concat "\n--" boundary-id "--[ \t]*$")))))))
+
 (defun nndoc-forward-article (n)
   (while (and (> n 0)
 	      (re-search-forward nndoc-article-begin nil t)
@@ -325,6 +357,9 @@
 		  (match-beginning 0))
 	     (point-max)))
 	(goto-char (point-min))
+	(and nndoc-head-begin
+	     (re-search-forward nndoc-head-begin nil t)
+	     (narrow-to-region (point) (point-max)))
 	(or (re-search-forward nndoc-head-end nil t)
 	    (goto-char (point-max)))
 	(append-to-buffer ibuf (point-min) (point))

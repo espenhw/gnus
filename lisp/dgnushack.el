@@ -29,10 +29,12 @@
 
 ;;; Code:
 
+(setq byte-compile-warnings '(free-vars unresolved callargs redefine))
+
 (setq load-path (cons "." load-path))
 
 (defun dgnushack-recompile ()
-  (byte-recompile-directory "."))
+  (byte-recompile-directory "." 0))
 
 ;;; dgnushack.el ends here  
 

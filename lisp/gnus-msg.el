@@ -449,10 +449,10 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 			   (funcall gnus-followup-to-function group))))
 		 gnus-use-followup-to))
 	  (if post
-	      (gnus-configure-windows 'post)
+	      (gnus-configure-windows 'post 'force)
 	    (if yank
-		(gnus-configure-windows 'followup-yank)
-	      (gnus-configure-windows 'followup)))
+		(gnus-configure-windows 'followup-yank 'force)
+	      (gnus-configure-windows 'followup 'force)))
 	  (gnus-overload-functions)
 	  (make-local-variable 'gnus-article-reply)
 	  (make-local-variable 'gnus-article-check-size)
@@ -1402,8 +1402,6 @@ Customize the variable `gnus-mail-other-window-method' to use another
 mailer."
   (interactive)
   (gnus-set-global-variables)
-  (let ((gnus-mail-buffer nntp-server-buffer))
-    (gnus-configure-windows 'summary-mail))
   (let ((gnus-newsgroup-name gnus-newsgroup-name))
     (funcall gnus-mail-other-window-method)))
 
@@ -1497,7 +1495,7 @@ mailer."
 	 (concat "^" (regexp-quote mail-header-separator) "$"))
 	(forward-line 1)
 	(if (not yank)
-	    (gnus-configure-windows 'reply)
+	    (gnus-configure-windows 'reply 'force)
 	  (let ((last (point))
 		end)
 	    (if (not (listp yank))
@@ -1520,7 +1518,7 @@ mailer."
 		(goto-char end)
 		(setq yank (cdr yank))))
 	    (goto-char last))
-	  (gnus-configure-windows 'reply-yank))
+	  (gnus-configure-windows 'reply-yank 'force))
 	(run-hooks 'gnus-mail-hook)))))
 
 (defun gnus-mail-yank-original ()
@@ -1585,7 +1583,7 @@ mailer."
     (gnus-forward-insert-buffer forward-buffer)
     (goto-char (point-min))
     (re-search-forward "^To: " nil t)
-    (gnus-configure-windows 'mail-forward)
+    (gnus-configure-windows 'mail-forward 'force)
     ;; You have a chance to arrange the message.
     (run-hooks 'gnus-mail-forward-hook)
     (run-hooks 'gnus-mail-hook)))
@@ -1607,7 +1605,8 @@ mailer."
     (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
-    (run-hooks 'gnus-mail-hook)))
+    (run-hooks 'gnus-mail-hook)
+    (gnus-configure-windows 'summary-mail 'force)))
 
 (defun gnus-article-mail (yank)
   "Send a reply to the address near point.
@@ -1643,7 +1642,7 @@ If YANK is non-nil, include the original article."
     (make-local-variable 'gnus-prev-winconf)
     (setq gnus-prev-winconf winconf)
     (use-local-map (copy-keymap mail-mode-map))
-    (local-set-key "\C-c\C-c" 'gnus-mail-send-and-exit)
+    (local-set-key "\C-c\C-c" 'gnus-bug-mail-send-and-exit)
     (goto-char (point-min))
     (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
     (forward-line 1)
@@ -1652,6 +1651,13 @@ If YANK is non-nil, include the original article."
       (gnus-debug)
       (goto-char (- b 3)))
     (message "")))
+
+(defun gnus-bug-mail-send-and-exit ()
+  "Send the bug message and exit."
+  (interactive)
+  (and (get-buffer "*Gnus Help Bug*")
+       (kill-buffer "*Gnus Help Bug*"))
+  (gnus-mail-send-and-exit))
 
 (defun gnus-debug ()
   "Attemps to go through the Gnus source file and report what variables have been changed.
