@@ -1,5 +1,8 @@
 2001-07-09 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-view.el (mm-inline-text): w3-coding-system-for-mime-charset
+	may not defined. From: Raja R Harinath <harinath@cs.umn.edu>.
+
 	* message.el (message-send-mail-real-function): New variable.
 	(message-send-mail-partially, message-send-mail): 
 

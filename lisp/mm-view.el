@@ -104,11 +104,14 @@
 		    (and (boundp 'w3-meta-charset-content-type-regexp)
 			 (re-search-forward
 			  w3-meta-charset-content-type-regexp nil t)))
-		(setq charset (or (w3-coding-system-for-mime-charset
-				   (buffer-substring-no-properties
-				    (match-beginning 2)
-				    (match-end 2)))
-				  charset)))
+                (setq charset
+                     (or (let ((bsubstr (buffer-substring-no-properties
+                                         (match-beginning 2)
+                                         (match-end 2))))
+                           (if (fboundp 'w3-coding-system-for-mime-charset)
+                               (w3-coding-system-for-mime-charset bsubstr)
+                             (mm-charset-to-coding-system bsubstr)))
+                         charset)))
 	    (delete-region (point-min) (point-max))
 	    (insert (mm-decode-string text charset))
 	    (save-window-excursion
