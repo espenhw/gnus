@@ -8898,7 +8898,8 @@ If REVERSE, save parts that do not match TYPE."
       (set-buffer gnus-article-buffer)
       (let ((handles (or (mm-dissect-buffer) (mm-uu-dissect))))
 	(when handles
-	  (gnus-summary-save-parts-1 type dir handles reverse))))))
+	  (gnus-summary-save-parts-1 type dir handles reverse)
+	  (mm-destroy-parts handles))))))
 
 (defun gnus-summary-save-parts-1 (type dir handle reverse)
   (if (stringp (car handle))
