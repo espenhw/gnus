@@ -251,7 +251,7 @@
 			     days)))
 		(progn
 		  (and gnus-verbose-backends
-		       (message "Deleting: %s" (car articles)))
+		       (message "Deleting article %s..." (car articles)))
 		  (nnmbox-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))

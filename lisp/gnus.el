@@ -1340,7 +1340,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.95"
+(defconst gnus-version "(ding) Gnus v0.96"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1507,6 +1507,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar rmail-default-file (expand-file-name "~/XMBOX"))
 (defvar rmail-default-rmail-file (expand-file-name "~/XNEWS"))
 
+(defvar gnus-cache-removeable-articles nil)
+
 (defconst gnus-summary-local-variables 
   '(gnus-newsgroup-name 
     gnus-newsgroup-begin gnus-newsgroup-end 
@@ -1526,7 +1528,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
     gnus-score-alist gnus-current-score-file gnus-summary-expunge-below 
     gnus-summary-mark-below gnus-newsgroup-active gnus-scores-exclude-files
     gnus-newsgroup-history gnus-newsgroup-ancient
-    (gnus-newsgroup-adaptive . gnus-use-adaptive-scoring))
+    (gnus-newsgroup-adaptive . gnus-use-adaptive-scoring)
+    gnus-cache-removeable-articles)
   "Variables that are buffer-local to the summary buffers.")
 
 (defconst gnus-bug-message
@@ -3496,6 +3499,7 @@ moves the point to the colon."
 	 (process-marked (if (member qualified-group gnus-group-marked)
 			     gnus-process-mark ? ))
 	 (buffer-read-only nil)
+	 header ; passed as parameter to user-funcs.
 	 b)
     (beginning-of-line)
     (setq b (point))
@@ -3598,9 +3602,9 @@ If LEVEL is non-nil, find group with level LEVEL, or higher if no such
 group exists.
 If FIRST-TOO, the current line is also eligible as a target."
   (let ((way (if backward -1 1))
-	(low 10)
+	(low gnus-level-killed)
 	(beg (point))
-	pos found)
+	pos found lev)
     (if (and backward (progn (beginning-of-line)) (bobp))
 	nil
       (or first-too (forward-line way))
@@ -3613,27 +3617,24 @@ If FIRST-TOO, the current line is also eligible as a target."
 			      (let ((unread 
 				     (get-text-property (point) 'gnus-unread)))
 				(or (eq unread t) (and unread (> unread 0))))
-			      (let ((lev (get-text-property
-					  (point) 'gnus-level)))
-				(and lev (<= (get-text-property 
-					      (point) 'gnus-level)
-					     gnus-level-subscribed)))))
+			      (setq lev (get-text-property (point)
+							   'gnus-level))
+			      (<= lev gnus-level-subscribed)))
 			 (or (not level)
-			     (let ((lev (get-text-property (point)
-							   'gnus-level)))
-			       (if (and lev (= lev level))
-				   t
-				 (if (and (< lev low)
-					  (< level low))
-				     (progn
-				       (setq low lev)
-				       (setq pos (point))))
-				 nil))))))
+			     (and (setq lev (get-text-property (point)
+							       'gnus-level))
+				  (or (= lev level)
+				      (and (< lev low)
+					   (< level lev)
+					   (progn
+					     (setq low lev)
+					     (setq pos (point))
+					     nil))))))))
 	      (zerop (forward-line way)))))
     (if found 
 	(progn (gnus-group-position-cursor) t)
-      (if pos (goto-char pos) (goto-char beg))
-      nil)))
+      (goto-char (or pos beg))
+      (and pos t))))
 
 ;;; Gnus group mode commands
 
@@ -4474,23 +4475,22 @@ If ARG is non-nil, it should be a number between one and nine to
 specify which levels you are interested in re-scanning."
   (interactive "P")
   (run-hooks 'gnus-get-new-news-hook)
-  (let ((level arg))
-    (if gnus-group-use-permanent-levels
-	(if level
-	    (setq gnus-group-default-list-level level)
-	  (setq level (or gnus-group-default-list-level 
-			  gnus-level-subscribed))))
-    (if (and gnus-read-active-file (not level))
-	(progn
-	  (gnus-read-active-file)
-	  (gnus-get-unread-articles (or level (1+ gnus-level-subscribed))))
-      (let ((gnus-read-active-file nil)
-	    (gnus-have-read-active-file (not arg)))
-	(gnus-get-unread-articles (or level (1+ gnus-level-subscribed)))))
-    (gnus-group-list-groups (or (and gnus-group-use-permanent-levels level)
-				gnus-group-default-list-level
-				gnus-level-subscribed)
-			    gnus-have-all-newsgroups)))
+  (if gnus-group-use-permanent-levels
+      (setq arg
+	    (setq gnus-group-default-list-level 
+		  (or arg gnus-group-default-list-level
+		      gnus-level-subscribed))))
+  (if (and gnus-read-active-file (not arg))
+      (progn
+	(gnus-read-active-file)
+	(gnus-get-unread-articles (or arg (1+ gnus-level-subscribed))))
+    (let ((gnus-read-active-file nil)
+	  (gnus-have-read-active-file (not arg)))
+      (gnus-get-unread-articles (or arg (1+ gnus-level-subscribed)))))
+  (gnus-group-list-groups (or (and gnus-group-use-permanent-levels arg)
+			      gnus-group-default-list-level
+			      gnus-level-subscribed)
+			  gnus-have-all-newsgroups))
 
 (defun gnus-group-get-new-news-this-group (n)
   "Check for newly arrived news in the current group (and the N-1 next groups).
@@ -8035,8 +8035,7 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 		  (let ((buffer-read-only nil))
 		    (and tmp-point
 			 (set-window-start (get-buffer-window (current-buffer))
-					   tmp-point))))
-		(kill-buffer tmp-buf))))))))
+					   tmp-point)))))))))))
 
 (defun gnus-summary-enter-digest-group ()
   "Enter a digest group based on the current article."
@@ -8541,6 +8540,7 @@ functions. (Ie. mail newsgroups at present.)"
 	   (gnus-check-backend-function 
 	    'request-expire-articles gnus-newsgroup-name))
       (let ((expirable gnus-newsgroup-expirable))
+	(gnus-message 6 "Expiring articles...")
 	;; The list of articles that weren't expired is returned.
 	(setq gnus-newsgroup-expirable 
 	      (gnus-request-expire-articles gnus-newsgroup-expirable
@@ -8550,7 +8550,9 @@ functions. (Ie. mail newsgroups at present.)"
 	(while expirable
 	  (or (memq (car expirable) gnus-newsgroup-expirable)
 	      (gnus-summary-mark-as-read (car expirable) gnus-canceled-mark))
-	  (setq expirable (cdr expirable))))))
+	  (setq expirable (cdr expirable)))
+	(gnus-message 6 "Expiring articles...done"))))
+
 
 (defun gnus-summary-expire-articles-now ()
   "Expunge all expirable articles in the current group.
@@ -10031,7 +10033,7 @@ is initialized from the SAVEDIR environment variable."
   ;; Duplicate almost all summary keystrokes in the article mode map.
   (let ((commands 
 	 (list 
-	  " " "\177" "n" "p" "N" "P" "\M-\C-n" "\M-\C-p"
+	  " " "\177" "p" "N" "P" "\M-\C-n" "\M-\C-p"
 	  "\M-n" "\M-p" "." "," "\M-s" "\M-r" "<" ">" "j" "^" "\M-^"
 	  "u" "!" "U" "d" "D" "E" "\M-u" "\M-U" "k" "\C-k" "\M-\C-k"
 	  "\M-\C-l" "e" "#" "\M-#" "\M-\C-t" "\M-\C-s" "\M-\C-h"
@@ -10062,7 +10064,7 @@ is initialized from the SAVEDIR environment variable."
 
   (let ((commands (list "q" "Q"  "c" "r" "R" "\C-c\C-f" "m"  "a" "f" "F"
 ;;			"Zc" "ZC" "ZE" "ZQ" "ZZ" "Zn" "ZR" "ZG" "ZN" "ZP" 
-			 "=")))
+			 "=" "n")))
     (while commands
       (define-key gnus-article-mode-map (car commands) 
 	'gnus-article-summary-command-nosave)
@@ -10836,7 +10838,7 @@ Argument LINES specifies lines to be scrolled down."
   "Execute the last keystroke in the summary buffer."
   (interactive)
   (let (func)
-    (switch-to-buffer gnus-summary-buffer 'norecord)
+    (pop-to-buffer gnus-summary-buffer 'norecord)
     (setq func (lookup-key (current-local-map) (this-command-keys)))
     (call-interactively func)))
 
@@ -12783,8 +12785,7 @@ If FORCE is non-nil, the .newsrc file is read."
       (kill-buffer (current-buffer)))))
 
 (defun gnus-read-all-descriptions-files ()
-  (let ((methods (nconc (list gnus-select-method) 
-			gnus-secondary-select-methods)))
+  (let ((methods (cons gnus-select-method gnus-secondary-select-methods)))
     (while methods
       (gnus-read-descriptions-file (car methods))
       (setq methods (cdr methods)))

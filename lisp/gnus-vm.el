@@ -118,7 +118,8 @@ save those articles instead."
 	(if gnus-use-full-window
 	    (pop-to-buffer gnus-article-buffer)
 	  (switch-to-buffer gnus-article-buffer)))
-    (set-buffer gnus-article-buffer)
+    (gnus-copy-article-buffer)
+    (set-buffer gnus-article-copy)
     (save-excursion
       (save-restriction
 	(widen)
@@ -147,11 +148,12 @@ save those articles instead."
 Optional argument YANK means yank original article.
 The command \\[vm-yank-message] yank the original message into current buffer."
   (let ((gnus-buffer (current-buffer)))
-    (set-buffer gnus-article-buffer)
+    (gnus-copy-article-buffer)
+    (set-buffer gnus-article-copy)
     (save-excursion
       (save-restriction
 	(widen)
-	(let ((vm-folder (gnus-vm-make-folder gnus-article-buffer)))
+	(let ((vm-folder (gnus-vm-make-folder gnus-article-copy)))
 	  (vm-reply 1)
 	  (gnus-vm-init-reply-buffer gnus-buffer)
 	  (setq gnus-buffer (current-buffer))

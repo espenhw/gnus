@@ -38,7 +38,6 @@
 
 
 (defvar gnus-cache-buffer nil)
-(defvar gnus-cache-removeable-articles nil)
 
 
 
@@ -68,8 +67,7 @@
 	   (setcar gnus-cache-buffer group)
 	   (let ((file (gnus-cache-file-name group ".overview")))
 	     (and (file-exists-p file)
-		  (insert-file-contents file))))))
-  (setq gnus-cache-removeable-articles nil))
+		  (insert-file-contents file)))))))
 
 
 ;; Just save the overview buffer.
@@ -152,6 +150,7 @@
   (let ((articles gnus-cache-removeable-articles)
 	(cache-articles (gnus-cache-articles-in-group gnus-newsgroup-name))
 	article)
+    (gnus-cache-change-buffer gnus-newsgroup-name)
     (while articles
       (setq article (car articles)
 	    articles (cdr articles))
@@ -159,22 +158,20 @@
 	  ;; The article was in the cache, so we see whether we are
 	  ;; supposed to remove it from the cache.
 	  (gnus-cache-possibly-remove-article
-	   gnus-newsgroup-name article 
-	   (memq article gnus-newsgroup-marked)
+	   article (memq article gnus-newsgroup-marked)
 	   (memq article gnus-newsgroup-dormant)
 	   (or (memq article gnus-newsgroup-unreads)
 	       (memq article gnus-newsgroup-unselected)))))))
 
 (defun gnus-cache-possibly-remove-article 
-  (group article ticked dormant unread)
-  (let ((file (gnus-cache-file-name group article)))
+  (article ticked dormant unread)
+  (let ((file (gnus-cache-file-name gnus-newsgroup-name article)))
     (if (or (not (file-exists-p file))
 	    (not (gnus-cache-member-of-class
 		  gnus-cache-remove-articles ticked dormant unread)))
 	nil
       (save-excursion
 	(delete-file file)
-	(gnus-cache-change-buffer group)
 	(set-buffer (cdr gnus-cache-buffer))
 	(goto-char (point-min))
 	(if (or (looking-at (concat (int-to-string article) "\t"))

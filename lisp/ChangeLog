@@ -1,3 +1,71 @@
+Sat Jul 15 20:08:47 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus-kill.el (gnus-kill-save-kill-file): New variable.
+	(gnus-kill-parse-gnus-kill-file): Don't save kill files unless you
+	really want to.
+
+Sat Jul 15 03:54:00 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
+
+	* gnus-vis.el (gnus-article-add-button): Use overlays for
+	  gnus-article-button-face to ensure that it gets priority
+	  during display.
+
+Sat Jul 15 17:50:23 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-article-summary-command-nosave): Pop instead of
+	switch to the summary buffer. 
+
+	* gnus-score.el (gnus-summary-increase-score): Make sure
+	gnus-score-winconf isn't nil. 
+
+	* gnus-vm.el: Use gnus-article-copy instead of the article buffer.
+
+	* gnus-vis.el (gnus-summary-make-menu-bar): Don't recreate menus
+	if the are already created. 
+
+	* gnus.el (gnus-group-get-new-news): Would not check unread
+	articles when using permament levels. 
+
+	* nnfolder.el (nnfolder-request-accept-article): Didn't accept a
+	respool request. 
+
+	* gnus-score.el (gnus-score-add-followups): Bugged out all over
+	the place. 
+
+Fri Jul 14 15:25:20 1995  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-vis.el (gnus-button-url): Default to `gnus-netscape-open-url'.
+	(gnus-netscape-open-url): New function.
+	(gnus-netscape-start-url): New function.
+
+Fri Jul 14 10:03:07 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
+
+	* gnus.el (gnus-cache-removeable-articles): Make this a local
+	variable to the summary buffers.
+
+	* gnus-cache.el (gnus-cache-change-buffer): Don't reset 
+	 gnus-cache-removeable-articles here.
+
+	* gnus-msg.el (gnus-summary-followup): Make sure we get the
+	current headers. 
+
+	* gnus-ems.el: Removed def for `gnus-header-face-alist'.
+	(gnus-ems-redefine): Redefined gnus-article-push-button for
+	XEmacs. 
+
+Thu Jul 13 12:12:15 1995  Scott Byer  <byer@mv.us.adobe.com>
+
+	* nnfolder.el (nnfolder-request-expire-articles) commented out
+ 	line that was causing a problem when exiting group.
+
+	* nnfolder.el (nnfolder-request-list) always get the active list
+ 	from the file, since we're being more careful to keep it up to
+ 	date.  Fixes new-group creation problems.
+
+	* nnfolder.el (nnfolder-request-group) added timestamp check on
+ 	active file.  Fixed problem of new messages not being shown upon
+ 	first starting up (ding).
+
 Thu Jul 13 00:14:09 1995  Lars Magne Ingebrigtsen  <lingebri@sunscipw.cern.ch>
 
 	* nndoc.el (nndoc-type-to-regexp): Some digests do not start with

@@ -33,6 +33,9 @@
 (defvar gnus-kill-expiry-days 7
   "*Number of days before expiring unused kill file entries.")
 
+(defvar gnus-kill-save-kill-file nil
+  "*If non-nil, will save kill files after processing them.")
+
 (defvar gnus-winconf-kill-file nil)
 
 
@@ -411,7 +414,10 @@ Returns the number of articles marked as read."
 	(save-excursion
 	  (set-buffer gnus-summary-buffer)
 	  (condition-case () (eval form) (error nil)))))
-    (and (buffer-modified-p) (save-buffer))))
+    (and (buffer-modified-p) 
+	 gnus-kill-save-kill-file
+	 (save-buffer))
+    (set-buffer-modified-p nil)))
 
 ;; Parse an rn killfile.
 (defun gnus-kill-parse-rn-kill-file ()

@@ -170,7 +170,8 @@ of the last successful match.")
     (and (get-buffer "*Score Help*")
 	 (progn
 	   (kill-buffer "*Score Help*")
-	   (set-window-configuration gnus-score-help-winconf)))
+	   (and gnus-score-help-winconf
+		(set-window-configuration gnus-score-help-winconf))))
 
     (or (setq entry (assq (downcase hchar) char-to-header))
 	(progn
@@ -207,7 +208,8 @@ of the last successful match.")
 
       (and (get-buffer "*Score Help*")
 	   (progn
-	     (set-window-configuration gnus-score-help-winconf)
+	     (and gnus-score-help-winconf
+		  (set-window-configuration gnus-score-help-winconf))
 	     (kill-buffer "*Score Help*")))
       
       (or (setq type (nth 1 (assq (downcase tchar) char-to-type)))
@@ -239,7 +241,8 @@ of the last successful match.")
 
 	(and (get-buffer "*Score Help*")
 	     (progn
-	       (set-window-configuration gnus-score-help-winconf)
+	       (and gnus-score-help-winconf
+		    (set-window-configuration gnus-score-help-winconf))
 	       (kill-buffer "*Score Help*")))
 
 	(if mimic (message "%c %c %c" prefix hchar tchar pchar)
@@ -1082,6 +1085,7 @@ SCORE is the score to add."
   ;; Insert the unique article headers in the buffer.
   (let ((gnus-score-index (nth 1 (assoc header gnus-header-index)))
 	(current-score-file gnus-current-score-file)
+	(all-scores scores)
 	;; gnus-score-index is used as a free variable.
 	alike last this art entries alist articles)
 
@@ -1147,7 +1151,8 @@ SCORE is the score to add."
 		       (while arts
 			 (setq art (car arts)
 			       arts (cdr arts))
-			 (gnus-score-add-followups (car art) score)))))
+			 (gnus-score-add-followups 
+			  (car art) score all-scores)))))
 	    (while (funcall search-func match nil t)
 	      (end-of-line)
 	      (setq found (setq arts (get-text-property (point) 'articles)))
@@ -1155,7 +1160,7 @@ SCORE is the score to add."
 	      (while arts
 		(setq art (car arts)
 		      arts (cdr arts))
-		(gnus-score-add-followups (car art) score))))
+		(gnus-score-add-followups (car art) score all-scores))))
 	  ;; Update expire date
 	  (cond ((null date))		;Permanent entry.
 		(found			;Match, update date.
@@ -1169,21 +1174,22 @@ SCORE is the score to add."
     ;; We change the score file back to the previous one.
     (gnus-score-load-file current-score-file)))
 
-(defun gnus-score-add-followups (header score)
+(defun gnus-score-add-followups (header score scores)
   (save-excursion
     (set-buffer gnus-summary-buffer)
-    (let ((id (header-id header))
-	  dont)
+    (let* ((id (header-id header))
+	   (scores (car scores))
+	   entry dont)
       ;; Don't enter a score if there already is one.
-      (while score
-	(and (equal "references" (car (car score)))
-	     (or (null (nth 3 (car score)))
-		 (eq 's (nth 3 (car score))))
+      (while scores
+	(setq entry (car scores))
+	(and (equal "references" (car entry))
+	     (or (null (nth 3 (car (cdr entry))))
+		 (eq 's (nth 3 (car (cdr entry)))))
 	     (progn
-	       (if (assoc id (car score))
-		   (setq dont t))
-	       (setq score nil)))
-	(setq score (cdr score)))
+	       (if (assoc id entry)
+		   (setq dont t))))
+	(setq scores (cdr scores)))
       (or dont
 	  (gnus-summary-score-entry 
 	   "references" id 's score (current-time-string) nil t)))))

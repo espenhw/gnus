@@ -5663,6 +5663,11 @@ this file name is detailed by the @code{gnus-kill-file-name} variable.
 The "global" kill file (not in the score file sense of "global", of
 course) is called just @file{KILL}.
 
+@vindex gnus-kill-save-kill-file
+If @code{gnus-kill-save-kill-file} is non-@code{nil}, Gnus will save the
+kill file after processing, which is necessary if you use expiring
+kills. 
+
 
 @node Mail Group Commands
 @section Mail Group Commands

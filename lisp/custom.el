@@ -123,6 +123,18 @@ STRING should be given if the last search was by `string-match' on STRING."
 	   (and (symbolp x) (assq x global-face-data)))
        t)))
       
+(defvar x-colors nil)
+(defvar custom-button-face nil)
+(defvar custom-modified-list nil)
+(defvar custom-field-uninitialized-face nil)
+(defvar custom-field-invalid-face nil)
+(defvar custom-field-modified-face nil)
+(defvar custom-field-face nil)
+(defvar custom-button-properties nil)
+(defvar custom-documentation-properties nil)
+(defvar custom-mouse-face nil)
+(defvar custom-field-active-face nil)
+
 (or (fboundp 'modify-face)
     ;; Introduced in Emacs 19.29.
     (defun modify-face (face foreground background stipple

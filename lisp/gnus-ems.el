@@ -77,9 +77,6 @@ To check for marks, e.g. to underline replied articles, use
 		    (setq props (nthcdr 2 props)))
 		(remove-text-properties start end ())))))
 
-    (defvar gnus-header-face-alist 
-      '(("" bold italic)))
-    
     (or (fboundp 'make-overlay) (fset 'make-overlay 'make-extent))
     (or (fboundp 'overlay-put) (fset 'overlay-put 'set-extent-property))
     (or (fboundp 'move-overlay) 
@@ -392,6 +389,16 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 	      (setq pslist (cdr pslist)))))))
 
 
+    (defun gnus-article-push-button (event)
+      "Check text under the mouse pointer for a callback function.
+If the text under the mouse pointer has a `gnus-callback' property,
+call it with the value of the `gnus-data' text property."
+      (interactive "e")
+      (set-buffer (window-buffer (event-window event)))
+      (let* ((pos (event-closest-point event))
+	     (data (get-text-property pos 'gnus-data))
+	     (fun (get-text-property pos 'gnus-callback)))
+	(if fun (funcall fun data))))
 
     )
 

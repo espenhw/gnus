@@ -289,7 +289,8 @@ all. This may very well take some time.")
 				 (current-time-string mod-time))
 				days))))
 	      (progn
-		(and gnus-verbose-backends (message "Deleting %s..." article))
+		(and gnus-verbose-backends 
+		     (message "Deleting article %s..." article))
 		(condition-case ()
 		    (delete-file article)
 		  (file-error

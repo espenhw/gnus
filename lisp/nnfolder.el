@@ -66,7 +66,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
   "Mail newsgroups description file.")
 
 (defvar nnfolder-get-new-mail t
-  "If non-nil, nnml will check the incoming mail file and split the mail.")
+  "If non-nil, nnfolder will check the incoming mail file and split the mail.")
 
 (defvar nnfolder-prepare-save-mail-hook nil
   "Hook run narrowed to an article before saving.")
@@ -84,6 +84,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 (defvar nnfolder-status-string "")
 (defvar nnfolder-group-alist nil)
 (defvar nnfolder-buffer-alist nil)
+(defvar nnfolder-active-timestamp nil)
 
 (defmacro nnfolder-article-string (article)
   (` (concat "\n" nnfolder-article-marker (int-to-string (, article)) " ")))
@@ -102,7 +103,8 @@ such things as moving mail.  All buffers always get killed upon server close.")
    '(nnfolder-current-buffer nil)
    '(nnfolder-status-string "")
    '(nnfolder-group-alist nil)
-   '(nnfolder-buffer-alist nil)))
+   '(nnfolder-buffer-alist nil)
+   '(nnfolder-active-timestamp nil)))
 
 
 
@@ -220,19 +222,30 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	   (if dont-check
 	       t
 	     (nnfolder-get-new-mail group))
-	   (let* ((active (assoc group nnfolder-group-alist))
-		  (group (car active))
-		  (range (car (cdr active)))
-		  (minactive (car range))
-		  (maxactive (cdr range)))
-	     ;; I've been getting stray 211 lines in my nnfolder active
-	     ;; file.  So, let's make sure that doesn't happen. -SLB
-	     (set-buffer nntp-server-buffer)
-	     (erase-buffer)
-	     (insert (format "211 %d %d %d %s\n" 
-			     (1+ (- maxactive minactive))
-			     minactive maxactive group))
-	     t)))))
+	   (let ((timestamp (nth 5 (file-attributes nnfolder-active-file))))
+	     ;; Make sure we get the latest active file
+	     (if (or (not nnfolder-active-timestamp)
+		     (> (nth 0 timestamp) (nth 0 nnfolder-active-timestamp))
+		     (> (nth 1 timestamp) (nth 1 nnfolder-active-timestamp)))
+		 (progn
+		   (setq nnfolder-active-timestamp timestamp)
+		   (nnfolder-request-list)
+		   (setq nnfolder-group-alist (nnmail-get-active))))
+	     (let* ((active (assoc group nnfolder-group-alist))
+		   (group (car active))
+		   (range (car (cdr active)))
+		   (minactive (car range))
+		   (maxactive (cdr range)))
+	       ;; I've been getting stray 211 lines in my nnfolder active
+	       ;; file.  So, let's make sure that doesn't happen. -SLB
+	       (set-buffer nntp-server-buffer)
+	       (erase-buffer)
+	       (if (not active)
+		   ()
+		 (insert (format "211 %d %d %d %s\n" 
+				 (1+ (- maxactive minactive))
+				 minactive maxactive group))
+		 t)))))))
 
 ;; Don't close the buffer if we're not shutting down the server.  This way,
 ;; we can keep the buffer in the group buffer cache, and not have to grovel
@@ -267,21 +280,25 @@ such things as moving mail.  All buffers always get killed upon server close.")
   (nnfolder-request-list)
   (setq nnfolder-group-alist (nnmail-get-active))
   (or (assoc group nnfolder-group-alist)
-      (progn
+      (let (active)
 	(setq nnfolder-group-alist 
-	      (cons (list group (cons 0 0)) nnfolder-group-alist))
+	      (cons (list group (setq active (cons 0 0))) nnfolder-group-alist))
+	(nnfolder-possibly-change-group group)
 	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
   t)
 
 (defun nnfolder-request-list (&optional server)
   (if server (nnfolder-get-new-mail))
   (save-excursion
-    (or nnfolder-group-alist
-	(nnmail-find-file nnfolder-active-file)
-	(progn
-	  (setq nnfolder-group-alist (nnmail-get-active))
-	  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-	  (nnmail-find-file nnfolder-active-file)))))
+    (nnmail-find-file nnfolder-active-file)
+    (setq nnfolder-group-alist (nnmail-get-active))))
+
+;;    (or nnfolder-group-alist
+;;	(nnmail-find-file nnfolder-active-file)
+;;	(progn
+;;	  (setq nnfolder-group-alist (nnmail-get-active))
+;;	  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+;;	  (nnmail-find-file nnfolder-active-file)))))
 
 (defun nnfolder-request-newgroups (date &optional server)
   (nnfolder-request-list server))
@@ -304,7 +321,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	 (is-old t)
 	 rest)
     (nnfolder-request-list)
-    (setq nnfolder-group-alist (nnmail-get-active))
+    ;;(setq nnfolder-group-alist (nnmail-get-active))
 
     (save-excursion 
       (set-buffer nnfolder-current-buffer)
@@ -320,7 +337,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 			     days)))
 		(progn
 		  (and gnus-verbose-backends
-		       (message "Deleting: %s" (car articles)))
+		       (message "Deleting article %s..." (car articles)))
 		  (nnfolder-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
@@ -374,7 +391,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
     result))
 
 (defun nnfolder-request-accept-article (group &optional last)
-  (nnfolder-possibly-change-group group)
+  (and (stringp group) (nnfolder-possibly-change-group group))
   (let ((buf (current-buffer))
 	result)
     (goto-char (point-min))

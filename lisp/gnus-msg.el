@@ -287,7 +287,7 @@ If prefix argument YANK is non-nil, original article is yanked automatically."
   (if yank-articles (gnus-summary-goto-subject (car yank-articles)))
   (save-window-excursion
     (gnus-summary-select-article))
-  (let ((headers gnus-current-headers)
+  (let ((headers (gnus-get-header-by-number (gnus-summary-article-number)))
 	(gnus-newsgroup-name gnus-newsgroup-name))
     ;; Check Followup-To: poster.
     (set-buffer gnus-article-buffer)
