@@ -7606,6 +7606,16 @@ Add clickable buttons to the article (@code{gnus-article-add-buttons}).
 Add clickable buttons to the article headers
 (@code{gnus-article-add-buttons-to-head}).
 
+@item W p
+@kindex W p (Summary)
+@findex gnus-article-verify-x-pgp-sig
+Verify a signed control message (@code{gnus-article-verify-x-pgp-sig}).
+Control messages such as @code{newgroup} and @code{checkgroups} are 
+usually signed by the hierarchy maintainer.  You need to add the PGP 
+public key of the maintainer to your keyring to verify the
+message.@footnote{PGP keys for many hierarchies are available at
+@uref{ftp://ftp.isc.org/pub/pgpcontrol/README.html}}
+
 @item W W H
 @kindex W W H (Summary)
 @findex gnus-article-strip-headers-from-body
@@ -9537,6 +9547,7 @@ possible but those listed are probably sufficient for most people.
 @item gnus-treat-hide-citation (t, integer)
 @item gnus-treat-hide-citation-maybe (t, integer)
 @item gnus-treat-strip-pgp (t, last, integer)
+@item gnus-treat-x-pgp-sig (head)
 @item gnus-treat-strip-pem (t, last, integer)
 @item gnus-treat-highlight-headers (head)
 @item gnus-treat-highlight-citation (t, integer)
