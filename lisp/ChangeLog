@@ -1,3 +1,11 @@
+2002-01-15  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-retrieve-headers): Use
+	nnheader-file-coding-system and nnmail-active-file-coding-system.
+	(gnus-agent-regenerate-group): Ditto.
+	(gnus-agent-regenerate): Ditto.
+	(gnus-agent-write-active): Ditto.
+
 2002-01-14  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-button-alist): Don't highlight <URL:.

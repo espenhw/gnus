@@ -763,7 +763,7 @@ the actual number of articles toggled is returned."
 	     (set (intern (symbol-name sym) orig) (symbol-value sym)))))
        new))
     (gnus-make-directory (file-name-directory file))
-    (let ((coding-system-for-write gnus-agent-file-coding-system))
+    (let ((nnmail-active-file-coding-system gnus-agent-file-coding-system))
       ;; The hashtable contains real names of groups,  no more prefix
       ;; removing, so set `full' to `t'.
       (gnus-write-active-file file orig t))))
@@ -1800,11 +1800,11 @@ The following commands are available:
 	  (file (gnus-agent-article-name ".overview" group))
 	  cached-articles uncached-articles)
       (gnus-make-directory (nnheader-translate-file-chars
-			  (file-name-directory file) t))
+			    (file-name-directory file) t))
       (when (file-exists-p file)
 	(with-current-buffer gnus-agent-overview-buffer
 	  (erase-buffer)
-	  (let ((coding-system-for-read
+	  (let ((nnheader-file-coding-system
 		 gnus-agent-file-coding-system))
 	    (nnheader-insert-file-contents file))
 	  (goto-char (point-min)) 
@@ -1883,7 +1883,8 @@ The following commands are available:
 			  (file-name-directory file) t))
     (mm-with-unibyte-buffer
       (if (file-exists-p file)
-	  (let ((coding-system-for-read gnus-agent-file-coding-system))
+	  (let ((nnheader-file-coding-system
+		 gnus-agent-file-coding-system))
 	    (nnheader-insert-file-contents file)))
       (goto-char (point-min)) 
       (while (not (eobp))
@@ -1974,7 +1975,8 @@ If CLEAN, don't read existing active and agentview files."
 	  (setq active-hashtb (gnus-make-hashtable 1000))
 	(mm-with-unibyte-buffer
 	  (if (file-exists-p active-file)
-	      (let ((coding-system-for-read gnus-agent-file-coding-system))
+	      (let ((nnheader-file-coding-system
+		     gnus-agent-file-coding-system))
 		(nnheader-insert-file-contents active-file))
 	    (setq active-changed t))
 	  (gnus-active-to-gnus-format
@@ -2060,7 +2062,7 @@ If CLEAN, don't read existing active and agentview files."
       (gnus-agent-close-history)
       (when active-changed
 	(message "Regenerate %s" active-file) 
-	(let ((coding-system-for-write gnus-agent-file-coding-system))
+	(let ((nnmail-active-file-coding-system gnus-agent-file-coding-system))
 	  (gnus-write-active-file active-file active-hashtb)))))
   (message "Regenerating Gnus agent files...done"))
 
