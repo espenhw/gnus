@@ -431,7 +431,8 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 	    (error
 	     (error "Invalid data for rfc2047 encoding: %s"
 		    (mm-replace-in-string orig-text "[ \t\n]+" " ")))))))
-    (rfc2047-fold-region b (point))))
+    (rfc2047-fold-region b (point))
+    (goto-char (point-max))))
 
 (defun rfc2047-encode-string (string)
   "Encode words in STRING.

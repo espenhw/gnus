@@ -1,3 +1,9 @@
+2004-06-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* rfc2047.el (rfc2047-encode-region): Move point to the end of the
+	region after encoding.
+	Suggested by IRIE Tetsuya <irie@t.email.ne.jp>.
+
 2004-06-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cite.el (gnus-cite-parse): Don't ignore case when finding
