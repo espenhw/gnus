@@ -8958,7 +8958,10 @@ forward."
   "Decode IDNA encoded domain names in the current articles.
 IDNA encoded domain names looks like `xn--bar'.  If a string
 remain unencoded after running this function, it is likely an
-invalid IDNA string (`xn--bar' is invalid)."
+invalid IDNA string (`xn--bar' is invalid).
+
+You must have GNU Libidn (`http://www.gnu.org/software/libidn/')
+installed for this command to work."
   (interactive "P")
   (if (not (and (condition-case nil (require 'idna)
 		  (file-error))

@@ -2,6 +2,8 @@
 
 	* gnus-sum.el (gnus-summary-idna-message): Fail gracefully if
 	idn/idna.el isn't available.
+	(gnus-summary-idna-message): Doc fix.  Suggested by Michael Cook
+	<michael@waxrat.com>.
 
 	* hashcash.el: Remove non-FSF copyright header.
 
