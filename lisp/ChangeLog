@@ -1,3 +1,7 @@
+1999-12-18 01:08:10  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-enter-history): Bad group name.
+
 1999-12-17 19:36:47  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc2047.el (rfc2047-dissect-region): Use mapcar instead of

@@ -701,7 +701,8 @@ the actual number of articles toggled is returned."
     (goto-char (point-max))
     (insert id "\t" (number-to-string date) "\t")
     (while group-arts
-      (insert (caar group-arts) " " (number-to-string (cdr (pop group-arts)))
+      (insert (format "%S" (caar group-arts)) 
+	      " " (number-to-string (cdr (pop group-arts)))
 	      " "))
     (insert "\n")))
 
