@@ -1,3 +1,17 @@
+2004-06-07  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-report-articles-resend)
+	(spam-report-resend-register-routine): allow ham reporting
+	(spam-report-resend-register-ham-routine): simple wrapper
+	(spam-registration-functions): add ham resending functions
+	(spam-list-of-processors): add ham resend processor
+
+	* gnus.el (ham-resend-to): new group parameter
+	(spam-process): add ham resend option
+
+	* spam-report.el (spam-report-resend): allow reporting ham
+	(spam-report-resend-ham): simple wrapper
+
 2004-06-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-cite-articles-with-x-no-archive): New

@@ -1841,6 +1841,24 @@ When a spam group is entered, all unread articles are marked as spam.")
    :parameter-document
    "The address to get spam resent (through spam-report-resend).")
 
+  (gnus-define-group-parameter
+   ham-resend-to
+   :type list
+   :function-document
+   "The address to get ham resent (through spam-report-resend)."
+   :variable gnus-ham-resend-to
+   :variable-default nil
+   :variable-document
+   "The address to get ham resent (through spam-report-resend)."
+   :variable-group spam
+   :variable-type '(repeat
+		    (list :tag "Group address for resending ham"
+			  (regexp :tag "Group")
+			  (string :tag "E-mail address for resending ham (requires the spam-use-resend exit processor)")))
+   :parameter-type 'string :tag "E-mail address for resending ham (requires the spam-use-resend exit processor)"
+   :parameter-document
+   "The address to get ham resent (through spam-report-resend).")
+
   (defvar gnus-group-spam-exit-processor-ifile "ifile"
     "OBSOLETE: The ifile summary exit spam processor.")
 
@@ -1911,6 +1929,7 @@ Only applicable to non-spam (unclassified and ham) groups.")
 	    (const :tag "Ham: Bogofilter"     (ham spam-use-bogofilter))
 	    (const :tag "Ham: Bsfilter"       (ham spam-use-bsfilter))
 	    (const :tag "Ham: Copy"	      (ham spam-use-ham-copy))
+	    (const :tag "Ham: Resend Message" (ham spam-use-resend))
 	    (const :tag "Ham: ifile"	      (ham spam-use-ifile))
 	    (const :tag "Ham: Spam Oracle"    (ham spam-use-spamoracle))
 	    (const :tag "Ham: Spam-stat"      (ham spam-use-stat))
@@ -1949,8 +1968,9 @@ spam processing, associated with the appropriate processor."
 		   (const :tag "Spam: Bogofilter"    (spam spam-use-bogofilter))
 		   (const :tag "Spam: Blacklist"     (spam spam-use-blacklist))
 		   (const :tag "Spam: Bsfilter"	     (spam spam-use-bsfilter))
-		   (const :tag "Spam: ifile"	     (spam spam-use-ifile))
 		   (const :tag "Spam: Gmane Report"  (spam spam-use-gmane))
+		   (const :tag "Spam: Resend Message"(spam spam-use-resend))
+		   (const :tag "Spam: ifile"	     (spam spam-use-ifile))
 		   (const :tag "Spam: Spam-stat"     (spam spam-use-stat))
 		   (const :tag "Spam: Spam Oracle"   (spam spam-use-spamoracle))
 		   (const :tag "Spam: SpamAssassin"  (spam spam-use-spamassassin))
@@ -1959,6 +1979,7 @@ spam processing, associated with the appropriate processor."
 		   (const :tag "Ham: Bogofilter"     (ham spam-use-bogofilter))
 		   (const :tag "Ham: Bsfilter"	     (ham spam-use-bsfilter))
 		   (const :tag "Ham: Copy"	     (ham spam-use-ham-copy))
+		   (const :tag "Ham: Resend Message" (ham spam-use-resend))
 		   (const :tag "Ham: ifile"	     (ham spam-use-ifile))
 		   (const :tag "Ham: Spam-stat"	     (ham spam-use-stat))
 		   (const :tag "Ham: Spam Oracle"    (ham spam-use-spamoracle))

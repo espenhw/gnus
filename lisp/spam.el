@@ -730,6 +730,8 @@ finds ham or spam.")
     (gnus-group-spam-exit-processor-spamoracle   spam spam-use-spamoracle)
     (nil spam spam-use-crm114)
     (gnus-group-spam-exit-processor-spamassassin spam spam-use-spamassassin)
+
+    (nil ham spam-use-resend)
     (gnus-group-ham-exit-processor-ifile         ham spam-use-ifile)
     (gnus-group-ham-exit-processor-bogofilter    ham spam-use-bogofilter)
     (gnus-group-ham-exit-processor-bsfilter      ham spam-use-bsfilter)
@@ -775,17 +777,19 @@ Respects the process/prefix convention."
     (gnus-summary-remove-process-mark article)
     (spam-report-gmane article)))
 
-(defun spam-report-articles-resend (n)
+(defun spam-report-articles-resend (n &optional ham)
   "Report the current message as spam by resending it.
 Respects the process/prefix convention.  Also see
-`spam-report-resend-to'."
+`spam-report-resend-to'.  Operates as ham when HAM is set."
   (interactive "P")
   (let* ((gp
-	  (gnus-parameter-spam-resend-to gnus-newsgroup-name))
+	  (if ham 
+	      (gnus-parameter-ham-resend-to gnus-newsgroup-name)
+	    (gnus-parameter-spam-resend-to gnus-newsgroup-name)))
          (spam-report-resend-to (or (car-safe gp)
                                     spam-report-resend-to))
          (articles (gnus-summary-work-articles n)))
-    (spam-report-resend articles)
+    (spam-report-resend articles ham)
     (dolist (article articles)
       (gnus-summary-remove-process-mark article))))
 
@@ -1383,7 +1387,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 			 ;; does Gmane support unregistration?
 			 nil
 			 nil)
-    (spam-use-resend     nil
+    (spam-use-resend     spam-report-resend-register-ham-routine
 			 spam-report-resend-register-routine
 			 nil
 			 nil)
@@ -2120,11 +2124,17 @@ REMOVE not nil, remove the ADDRESSES."
   (when articles
     (apply 'spam-report-gmane articles)))
 
-(defun spam-report-resend-register-routine (articles)
-  (let* ((resend-to-gp (gnus-parameter-spam-resend-to gnus-newsgroup-name))
+(defun spam-report-resend-register-ham-routine (articles)
+  (spam-report-resend-register-routine articles t))
+
+(defun spam-report-resend-register-routine (articles &optional ham)
+  (let* ((resend-to-gp 
+	  (if ham
+	      (gnus-parameter-ham-resend-to gnus-newsgroup-name)
+	    (gnus-parameter-spam-resend-to gnus-newsgroup-name)))
          (spam-report-resend-to (or (car-safe resend-to-gp)
                                     spam-report-resend-to)))
-    (spam-report-resend articles)))
+    (spam-report-resend articles ham)))
 
 
 ;;;; Bogofilter

@@ -92,16 +92,18 @@ This variable will store the value of `spam-report-url-ping-function' from
 before `spam-report-agentize' was run, so that `spam-report-deagentize' can
 undo that change.")
 
-(defun spam-report-resend (articles)
-  "Report an article as spam by resending via email."
+(defun spam-report-resend (articles &optional ham)
+  "Report an article as spam by resending via email.
+Reports is as ham when HAM is set."
   (dolist (article articles)
     (gnus-message 6 
-		  "Reporting spam article %d to <%s>..." 
+		  "Reporting %s article %d to <%s>..."
+		  (if ham "ham" "spam")
 		  article spam-report-resend-to)
     (unless spam-report-resend-to
       (customize-set-variable 
        spam-report-resend-to
-       (read-from-minibuffer "email address to resend SPAM to? ")))
+       (read-from-minibuffer "email address to resend SPAM/HAM to? ")))
     ;; This is ganked from the `gnus-summary-resend-message' function.
     ;; It involves rendering the SPAM, which is undesirable, but there does
     ;; not seem to be a nicer way to achieve this.
@@ -111,6 +113,10 @@ undo that change.")
     (save-excursion
       (set-buffer gnus-original-article-buffer)
       (message-resend spam-report-resend-to))))
+
+(defun spam-report-resend-ham (articles)
+  "Report an article as ham by resending via email."
+  (spam-report-resend articles t))
 
 (defun spam-report-gmane (&rest articles)
   "Report an article as spam through Gmane"
