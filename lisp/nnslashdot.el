@@ -117,7 +117,7 @@
 	  (setq lines (count-lines
 		       (point)
 		       (search-forward
-			"A href=\"/article" nil t)))
+			"A href=\"\\(http://slashdot.org\\)?/article" nil t)))
 	  (push
 	   (cons
 	    1
@@ -220,7 +220,7 @@
 	(forward-line 2)
 	(setq lines (count-lines (point)
 				 (search-forward
-				  "A href=\"/article")))
+				  "A href=\"\\(http://slashdot.org\\)?/article")))
 	(push
 	 (cons
 	  1
@@ -336,7 +336,7 @@
 			   (point)
 			   (progn
 			     (re-search-forward
-			      "<p>.*A href=\"/article")
+			      "<p>.*A href=\"\\(http://slashdot.org\\)?/article")
 			     (match-beginning 0)))))
 		(search-forward (format "<a name=\"%d\">" (1- article)))
 		(setq contents

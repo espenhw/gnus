@@ -5,6 +5,7 @@
 	(nnslashdot-sane-retrieve-headers): Ditto.
 	(nnslashdot-request-article): Ditto.
 	(nnslashdot-threaded-retrieve-headers): Thread properly.
+	(nnslashdot-request-article): Be more lenient.
 
 2000-05-09 13:23:50  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
