@@ -69,12 +69,9 @@
   :type 'integer)
 
 (defcustom gnus-agent-expire-days 7
-  "Read articles older than this will be expired.
-This can also be a list of regexp/day pairs.  The regexps will be
-matched against group names."
+  "Read articles older than this will be expired."
   :group 'gnus-agent
-  :type '(choice (number :tag "days")
-		 (sexp :tag "List" nil)))
+  :type '(number :tag "days"))
 
 (defcustom gnus-agent-expire-all nil
   "If non-nil, also expire unread, ticked and dormant articles.
@@ -556,7 +553,7 @@ manipulated as follows:
 
 (defun gnus-agent-close-connections ()
   "Close all methods covered by the Gnus agent."
-  (let ((methods gnus-agent-covered-methods))
+  (let ((methods (gnus-agent-covered-methods)))
     (while methods
       (gnus-close-server (pop methods)))))
 
@@ -598,18 +595,19 @@ minor mode in all Gnus buffers."
   (unless gnus-agent-send-mail-function
     (setq gnus-agent-send-mail-function
 	  (or message-send-mail-real-function
-					 message-send-mail-function)
+              message-send-mail-function)
 	  message-send-mail-real-function 'gnus-agent-send-mail))
 
   (unless gnus-agent-covered-methods
-    (mapcar
-     (lambda (server)
-       (if (memq (car (gnus-server-to-method server)) 
-		 gnus-agent-auto-agentize-methods)
-	   (setq gnus-agent-covered-methods 
-		 (cons (gnus-server-to-method server)
-		       gnus-agent-covered-methods ))))
-     (append (list gnus-select-method) gnus-secondary-select-methods))))
+    (mapc
+     (lambda (server-or-method)
+       (let ((method (gnus-server-to-method server-or-method)))
+         (when (memq (car method)
+                     gnus-agent-auto-agentize-methods)
+           (push (gnus-method-to-server method)
+                 gnus-agent-covered-methods)
+           (setq gnus-agent-method-p-cache nil))))
+     (cons gnus-select-method gnus-secondary-select-methods))))
 
 (defun gnus-agent-queue-setup (&optional group-name)
   "Make sure the queue group exists.
@@ -747,7 +745,7 @@ be a select method."
   "Synchronize unplugged flags with servers."
   (interactive)
   (save-excursion
-    (dolist (gnus-command-method gnus-agent-covered-methods)
+    (dolist (gnus-command-method (gnus-agent-covered-methods))
       (when (file-exists-p (gnus-agent-lib-file "flags"))
 	(gnus-agent-synchronize-flags-server gnus-command-method)))))
 
@@ -755,7 +753,7 @@ be a select method."
   "Synchronize flags according to `gnus-agent-synchronize-flags'."
   (interactive)
   (save-excursion
-    (dolist (gnus-command-method gnus-agent-covered-methods)
+    (dolist (gnus-command-method (gnus-agent-covered-methods))
       (when (file-exists-p (gnus-agent-lib-file "flags"))
 	(gnus-agent-possibly-synchronize-flags-server gnus-command-method)))))
 
@@ -798,7 +796,8 @@ be a select method."
   (let ((method (gnus-server-get-method nil (gnus-server-server-name))))
     (when (gnus-agent-method-p method)
       (error "Server already in the agent program"))
-    (push method gnus-agent-covered-methods)
+    (push (gnus-method-to-server method) gnus-agent-covered-methods)
+    (setq gnus-agent-method-p-cache nil)
     (gnus-server-update-server server)
     (gnus-agent-write-servers)
     (gnus-message 1 "Entered %s into the Agent" server)))
@@ -808,27 +807,52 @@ be a select method."
   (interactive (list (gnus-server-server-name)))
   (unless server
     (error "No server on the current line"))
-  (let ((method (gnus-server-get-method nil (gnus-server-server-name))))
-    (unless (gnus-agent-method-p method)
+  (let* ((server (gnus-server-server-name)))
+    (unless (member server gnus-agent-covered-methods)
       (error "Server not in the agent program"))
-    (setq gnus-agent-covered-methods
-	  (delete method gnus-agent-covered-methods))
+    (setq gnus-agent-covered-methods 
+          (delete server gnus-agent-covered-methods)
+          gnus-agent-method-p-cache nil)
+
     (gnus-server-update-server server)
     (gnus-agent-write-servers)
     (gnus-message 1 "Removed %s from the agent" server)))
 
 (defun gnus-agent-read-servers ()
   "Read the alist of covered servers."
-  (mapcar (lambda (m)
-	    (let ((method (gnus-server-get-method
-			   nil
-			   (or m "native"))))
-	      (if method
-                  (unless (member method gnus-agent-covered-methods)
-                    (push method gnus-agent-covered-methods))
-		(gnus-message 1 "Ignoring disappeared server `%s'" m))))
-	  (gnus-agent-read-file
-	   (nnheader-concat gnus-agent-directory "lib/servers"))))
+  (setq gnus-agent-covered-methods 
+        (gnus-agent-read-file
+         (nnheader-concat gnus-agent-directory "lib/servers"))
+        gnus-agent-method-p-cache nil)
+
+  ;; I am called so early in start-up that I can not validate server
+  ;; names.  When that is the case, I skip the validation.  That is
+  ;; alright as the gnus startup code calls the validate methods
+  ;; directly.
+  (if gnus-server-alist
+      (gnus-agent-read-servers-validate)))
+
+(defun gnus-agent-read-servers-validate ()
+  (mapcar (lambda (server-or-method)
+            (let* ((server (if (stringp server-or-method)
+                               server-or-method
+                             (gnus-method-to-server server-or-method)))
+                   (method (gnus-server-to-method server)))
+              (if method
+                  (unless (member server gnus-agent-covered-methods)
+                    (push server gnus-agent-covered-methods)
+                    (setq gnus-agent-method-p-cache nil))
+                (gnus-message 1 "Ignoring disappeared server `%s'" server))))
+          (prog1 gnus-agent-covered-methods
+            (setq gnus-agent-covered-methods nil))))
+
+(defun gnus-agent-read-servers-validate-native (native-method)
+  (setq gnus-agent-covered-methods
+        (mapcar (lambda (method)
+                  (if (or (not method)
+                          (equal method native-method))
+                      "native"
+                    method)) gnus-agent-covered-methods)))
 
 (defun gnus-agent-write-servers ()
   "Write the alist of covered servers."
@@ -836,7 +860,7 @@ be a select method."
   (let ((coding-system-for-write nnheader-file-coding-system)
 	(file-name-coding-system nnmail-pathname-coding-system))
     (with-temp-file (nnheader-concat gnus-agent-directory "lib/servers")
-      (prin1 (mapcar 'gnus-method-simplify gnus-agent-covered-methods)
+      (prin1 gnus-agent-covered-methods
 	     (current-buffer)))))
 
 ;;;
@@ -1174,6 +1198,10 @@ This can be added to `gnus-select-article-hook' or
       (car method)
     (require 'nnagent)
     'nnagent))
+
+(defun gnus-agent-covered-methods ()
+  "Return the subset of methods that are covered by the agent."
+  (mapcar #'gnus-server-to-method gnus-agent-covered-methods))
 
 ;;; History functions
 
@@ -1783,7 +1811,7 @@ FILE and places the combined headers into `nntp-server-buffer'."
     (error "No servers are covered by the Gnus agent"))
   (unless gnus-plugged
     (error "Can't fetch articles while Gnus is unplugged"))
-  (let ((methods gnus-agent-covered-methods)
+  (let ((methods (gnus-agent-covered-methods))
 	groups group gnus-command-method)
     (save-excursion
       (while methods
@@ -2458,29 +2486,32 @@ FORCE is equivalent to setting the expiration predicates to true."
 
   (if (not group)
       (gnus-agent-expire articles group force)
-    (if (or (not (eq articles t))
-            (yes-or-no-p
-             (concat "Are you sure that you want to "
-                     "expire all articles in " group ".")))
-        (let ((gnus-command-method (gnus-find-method-for-group group))
-              (overview (gnus-get-buffer-create " *expire overview*"))
-              orig)
-          (unwind-protect
-              (let ((active-file (gnus-agent-lib-file "active")))
-                (when (file-exists-p active-file)
-                  (with-temp-buffer
-                    (nnheader-insert-file-contents active-file)
-                    (gnus-active-to-gnus-format
-                     gnus-command-method
-                     (setq orig (gnus-make-hashtable
-                                 (count-lines (point-min) (point-max))))))
-                  (save-excursion
-                    (gnus-agent-expire-group-1
-                     group overview (gnus-gethash-safe group orig)
-                     articles force))
-                  (gnus-agent-write-active active-file orig t)))
-            (kill-buffer overview))))
-    (gnus-message 4 "Expiry...done")))
+    (let ( ;; Bind gnus-agent-expire-stats to enable tracking of
+	   ;; expiration statistics of this single group
+          (gnus-agent-expire-stats (list 0 0 0.0)))
+      (if (or (not (eq articles t))
+              (yes-or-no-p
+               (concat "Are you sure that you want to "
+                       "expire all articles in " group ".")))
+          (let ((gnus-command-method (gnus-find-method-for-group group))
+                (overview (gnus-get-buffer-create " *expire overview*"))
+                orig)
+            (unwind-protect
+                (let ((active-file (gnus-agent-lib-file "active")))
+                  (when (file-exists-p active-file)
+                    (with-temp-buffer
+                      (nnheader-insert-file-contents active-file)
+                      (gnus-active-to-gnus-format
+                       gnus-command-method
+                       (setq orig (gnus-make-hashtable
+                                   (count-lines (point-min) (point-max))))))
+                    (save-excursion
+                      (gnus-agent-expire-group-1
+                       group overview (gnus-gethash-safe group orig)
+                       articles force))
+                    (gnus-agent-write-active active-file orig t)))
+              (kill-buffer overview))))
+      (gnus-message 4 (gnus-agent-expire-done-message)))))
 
 (defun gnus-agent-expire-group-1 (group overview active articles force)
   ;; Internal function - requires caller to have set
@@ -2499,7 +2530,12 @@ FORCE is equivalent to setting the expiration predicates to true."
         (gnus-message 5 "Expiry skipping over %s" group)
       (gnus-message 5 "Expiring articles in %s" group)
       (gnus-agent-load-alist group)
-      (let* ((info (gnus-get-info group))
+      (let* ((stats (if (boundp 'gnus-agent-expire-stats)
+                        ;; Use the list provided by my caller
+                        (symbol-value 'gnus-agent-expire-stats)
+                      ;; otherwise use my own temporary list
+                      (list 0 0 0.0)))
+             (info (gnus-get-info group))
              (alist gnus-agent-article-alist)
              (day (- (time-to-days (current-time))
                      (gnus-agent-find-parameter group 'agent-days-until-old)))
@@ -2539,7 +2575,7 @@ FORCE is equivalent to setting the expiration predicates to true."
                        (cons (caar alist)
                              (caar (last alist))))
                       (sort articles '<)))))
-             (marked ;; More articles that are exluded from the
+             (marked ;; More articles that are excluded from the
               ;; expiration process
               (cond (gnus-agent-expire-all
                      ;; All articles are unmarked by global decree
@@ -2691,8 +2727,8 @@ line." (point) nov-file)))
                ;; Kept articles are unread, marked, or special.
                (keep
                 (gnus-agent-message 10
-                                    "gnus-agent-expire: Article %d: Kept %s article."
-                                    article-number keep)
+                                    "gnus-agent-expire: Article %d: Kept %s article%s."
+                                    article-number keep (if fetch-date " and file" ""))
                 (when fetch-date
                   (unless (file-exists-p
                            (concat dir (number-to-string
@@ -2736,8 +2772,11 @@ missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
                 (let ((actions nil))
                   (when (memq type '(forced expired))
                     (ignore-errors      ; Just being paranoid.
-                      (delete-file (concat dir (number-to-string
-                                                article-number)))
+                      (let ((file-name (concat dir (number-to-string
+                                                article-number))))
+                        (incf (nth 2 stats) (nth 7 (file-attributes file-name)))
+                        (incf (nth 1 stats))
+                        (delete-file file-name))
                       (push "expired cached article" actions))
                     (setf (nth 1 entry) nil)
                     )
@@ -2745,7 +2784,13 @@ missing NOV entry.  Run gnus-agent-regenerate-group to restore it.")))
                   (when marker
                     (push "NOV entry removed" actions)
                     (goto-char marker)
-                    (gnus-delete-line))
+
+                    (incf (nth 0 stats))
+
+                    (let ((from (gnus-point-at-bol))
+                          (to (progn (forward-line 1) (point))))
+                      (incf (nth 2 stats) (- to from))
+                      (delete-region from to)))
 
                   ;; If considering all articles is set, I can only
                   ;; expire article IDs that are no longer in the
@@ -2820,10 +2865,13 @@ FORCE is equivalent to setting the expiration predicates to true."
     (if (or (not (eq articles t))
             (yes-or-no-p "Are you sure that you want to expire all \
 articles in every agentized group."))
-        (let ((methods gnus-agent-covered-methods)
+        (let ((methods (gnus-agent-covered-methods))
               ;; Bind gnus-agent-expire-current-dirs to enable tracking
               ;; of agent directories.
               (gnus-agent-expire-current-dirs nil)
+              ;; Bind gnus-agent-expire-stats to enable tracking of
+              ;; expiration statistics across all groups
+              (gnus-agent-expire-stats (list 0 0 0.0))
               gnus-command-method overview orig)
           (setq overview (gnus-get-buffer-create " *expire overview*"))
           (unwind-protect
@@ -2848,7 +2896,25 @@ articles in every agentized group."))
                     (gnus-agent-write-active active-file orig t))))
             (kill-buffer overview))
           (gnus-agent-expire-unagentized-dirs)
-          (gnus-message 4 "Expiry...done")))))
+          (gnus-message 4 (gnus-agent-expire-done-message))))))
+
+(defun gnus-agent-expire-done-message ()
+  (if (and (> gnus-verbose 4)
+           (boundp 'gnus-agent-expire-stats))
+      (let* ((stats (symbol-value 'gnus-agent-expire-stats))
+             (size (nth 2 stats))
+            (units '(B KB MB GB)))
+        (while (and (> size 1024.0)
+                    (cdr units))
+          (setq size (/ size 1024.0)
+                units (cdr units)))
+
+        (format "Expiry recovered %d NOV entries, deleted %d files,\
+ and freed %f %s." 
+                (nth 0 stats) 
+                (nth 1 stats) 
+                size (car units)))
+    "Expiry...done"))
 
 (defun gnus-agent-expire-unagentized-dirs ()
   (when (and gnus-agent-expire-unagentized-dirs
@@ -2959,7 +3025,12 @@ articles in every agentized group."))
 			(gnus-agent-append-to-list tail-unread candidate)
 			nil)
 		       ((> candidate max)
-			(setq read (cdr read))))))))
+			(setq read (cdr read))
+                        ;; return t so that I always loop one more
+                        ;; time.  If I just iterated off the end of
+                        ;; read, min will become nil and the current
+                        ;; candidate will be added to the unread list.
+                        t))))))
     (while known
       (gnus-agent-append-to-list tail-unread (car (pop known))))
     (cdr unread)))
@@ -3164,9 +3235,19 @@ If REREAD is not nil, downloaded articles are marked as unread."
                       def)
                  def
                select)))
-         (intern-soft
-          (read-string
-           "Reread (nil)? (t=>all, nil=>none, some=>all downloaded): "))))
+         (catch 'mark
+           (while (let ((c (read-char-exclusive 
+                            "Mark as unread: (n)one / (a)ll / all (d)ownloaded articles? (n)"
+                            )))
+                    (cond ((or (eq c ?\r) (eq c ?n) (eq c ?N))
+                           (throw 'mark nil))
+                          ((or (eq c ?a) (eq c ?A))
+                           (throw 'mark t))
+                          ((or (eq c ?d) (eq c ?D))
+                           (throw 'mark 'some)))
+                    (message "Ignoring unexpected input")
+                    (sit-for 1)
+                    t)))))
   (gnus-message 5 "Regenerating in %s" group)
   (let* ((gnus-command-method (or gnus-command-method
                                   (gnus-find-method-for-group group)))
@@ -3351,7 +3432,7 @@ If CLEAN, don't read existing active files."
   (interactive "P")
   (let (regenerated)
     (gnus-message 4 "Regenerating Gnus agent files...")
-    (dolist (gnus-command-method gnus-agent-covered-methods)
+    (dolist (gnus-command-method (gnus-agent-covered-methods))
       (let ((active-file (gnus-agent-lib-file "active"))
             active-hashtb active-changed
             point)
@@ -3422,8 +3503,7 @@ If CLEAN, don't read existing active files."
 	     (if (eq status 'offline) 'online 'offline))))
 
 (defun gnus-agent-group-covered-p (group)
-  (member (gnus-group-method group)
-	  gnus-agent-covered-methods))
+  (gnus-agent-method-p (gnus-group-method group)))
 
 (add-hook 'gnus-group-prepare-hook
           (lambda ()
