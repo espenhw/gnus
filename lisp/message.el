@@ -1313,7 +1313,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 		"-- $\\|---+$\\|"
 		page-delimiter
 		;;!!! Uhm... shurely this can't be right?
-		"[> " (regexp-quote message-yank-prefix) "]+$\\|"))
+		"[> " (regexp-quote message-yank-prefix) "]+$"))
   (setq paragraph-separate paragraph-start)
   (make-local-variable 'message-reply-headers)
   (setq message-reply-headers nil)
@@ -1720,7 +1720,7 @@ prefix, and don't delete any headers."
       (unless (bolp)
 	(insert ?\n))
       (unless modified
-	(setq message-checksum (cons (message-checksum) (buffer-size)))))))
+	(setq message-checksum (message-checksum))))))
 
 (defun message-cite-original-without-signature ()
   "Cite function in the standard Message manner."
@@ -2438,8 +2438,7 @@ to find out how to use this."
    (message-check 'new-text
      (or
       (not message-checksum)
-      (not (and (eq (message-checksum) (car message-checksum))
-		(eq (buffer-size) (cdr message-checksum))))
+      (not (eq (message-checksum) (car message-checksum)))
       (y-or-n-p
        "It looks like no new text has been added.  Really post? ")))
    ;; Check the length of the signature.

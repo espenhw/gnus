@@ -1,3 +1,22 @@
+Sat Jun 27 07:50:50 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.18 is released.
+
+Sat Jun 27 03:18:57 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-soup.el (gnus-soup-save-areas): Made interactive.
+
+	* nnfolder.el (nnfolder-request-replace-article): Check all X-From
+	headers.
+
+	* gnus-sum.el (gnus-update-marks): Don't nix out cache lists.  
+
+	* nngateway.el (nngateway-mail2news-header-transformation):
+	Changed semantics.
+
+	* message.el (message-check-news-body-syntax): Don't look at
+	buffer size to see whether text has been added.
+
 Fri Jun 26 15:46:05 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.16 is released.

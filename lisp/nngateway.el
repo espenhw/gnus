@@ -81,7 +81,7 @@ parameter -- the gateway address.")
   (message-remove-header "to")
   (message-remove-header "cc")
   (goto-char (point-min))
-  (insert "To: mail2news@" gateway "\n"))
+  (insert "To: " gateway "\n"))
 
 (nnoo-define-skeleton nngateway)
 

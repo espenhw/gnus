@@ -1,6 +1,6 @@
-1998-06-26  Simon Josefsson  <jas@pdc.kth.se>
+Sat Jun 27 04:37:14 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
-	* gnus-sum.el (gnus-get-newsgroup-headers): parse Chars: headers
+	* gnus.texi (Mail-To-News Gateways): Addition.
 
 Fri Jun 26 13:33:00 1998  Yoshiki Hayashi  <g740685@komaba.ecc.u-tokyo.ac.jp>
 

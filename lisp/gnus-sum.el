@@ -4078,8 +4078,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 
 (defun gnus-update-marks ()
   "Enter the various lists of marked articles into the newsgroup info list."
-  (let ((types (gnus-delete-alist 'cached
-				  (copy-sequence gnus-article-mark-lists)))
+  (let ((types gnus-article-mark-lists)
 	(info (gnus-get-info gnus-newsgroup-name))
 	(uncompressed '(score bookmark killed))
 	type list newmarked symbol)

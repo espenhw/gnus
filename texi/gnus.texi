@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.16 Manual
+@settitle Gnus 5.6.18 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.16 Manual
+@title Gnus 5.6.18 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.16.
+This manual corresponds to Gnus 5.6.18.
 
 @end ifinfo
 
@@ -11071,7 +11071,16 @@ Creates a @code{To} header that looks like
 
 @item nngateway-mail2news-header-transformation
 Creates a @code{To} header that looks like
-@samp{mail2news}@@@code{nngateway-address}.
+@code{nngateway-address}.
+
+Here's an example:
+
+@lisp
+(setq gnus-post-method
+      '(nngateway "mail2news@replay.com"
+                  (nngateway-header-transformation
+                   nngateway-mail2news-header-transformation)))
+@end lisp
 
 @end table
 
@@ -13680,7 +13689,7 @@ lots of percentages everywhere.
 
 @menu
 * Formatting Basics::     A formatting variable is basically a format string.
-* Mode Line Formatting::  Some rules about mode line formatting varsables.
+* Mode Line Formatting::  Some rules about mode line formatting variables.
 * Advanced Formatting::   Modifying output in various ways.
 * User-Defined Specs::    Having Gnus call your own functions.
 * Formatting Fonts::      Making the formatting look colorful and nice.
@@ -15657,6 +15666,7 @@ Also thanks to the following for patches and stuff:
 
 Jari Aalto,
 Adrian Aichner,
+Vladimir Alexiev,
 Russ Allbery,
 Peter Arius,
 Matt Armstrong,
@@ -15675,7 +15685,9 @@ Alastair Burt,
 Joao Cachopo,
 Zlatko Calusic,
 Massimo Campostrini,
+Castor,
 Dan Christensen,
+Kevin Christian,
 Michael R. Cook,
 Glenn Coombs,
 Frank D. Cringle,
@@ -15694,6 +15706,7 @@ Luc Van Eycken,
 Sam Falkner,
 Nelson Jose dos Santos Ferreira,
 Sigbjorn Finne,
+Decklin Foster,
 Gary D. Foster,
 Paul Franklin,
 Guy Geens,
@@ -15776,6 +15789,7 @@ Loren Schall,
 Dan Schmidt,
 Ralph Schleicher,
 Philippe Schnoebelen,
+Andreas Schwab,
 Randal L. Schwartz,
 Justin Sheehy,
 Danny Siu,
@@ -15787,6 +15801,7 @@ Michael Sperber,
 Darren Stalder,
 Richard Stallman,
 Greg Stark,
+Sam Steingold,
 Paul Stodghill,
 Kurt Swanson,
 Samuel Tardieu,
@@ -15826,7 +15841,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.16.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.18.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16361,7 +16376,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.16:
+New features in Gnus 5.6.18:
 
 @itemize @bullet
 

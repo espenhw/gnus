@@ -310,6 +310,8 @@ If NOT-ALL, don't pack ticked articles."
 	   (or (mail-header-lines header) "0"))))
 
 (defun gnus-soup-save-areas ()
+  "Write all SOUP buffers."
+  (interactive)
   (gnus-soup-write-areas)
   (save-excursion
     (let (buf)
