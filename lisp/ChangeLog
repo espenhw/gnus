@@ -1,3 +1,11 @@
+2000-09-26  Dave Love  <fx@gnu.org>
+
+	* gnus-draft.el: Don't require gnus-agent.
+
+	* mm-view.el: Use featurep for XEmacs test.
+	(mm-inline-message): Test for `remove-specifier'; don't use
+	condition-case.
+
 2000-09-24  Simon Josefsson  <simon@josefsson.org>
 
 	* nnimap.el (nnimap-request-accept-article): Remove From[^:] lines.
