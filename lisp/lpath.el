@@ -22,6 +22,7 @@
 	       ring-elements
 	       rmail-select-summary rmail-summary-exists rmail-update-summary
 	       sc-cite-regexp set-font-family set-font-size temp-directory
+	       string-as-multibyte
 	       tool-bar-add-item tool-bar-add-item-from-menu
 	       url-view-url vcard-pretty-print
 	       url-insert-file-contents
@@ -30,6 +31,7 @@
 
 (maybe-bind '(adaptive-fill-first-line-regexp
 	      adaptive-fill-regexp babel-history babel-translations
+	      default-enable-multibyte-characters
 	      display-time-mail-function imap-password mail-mode-hook
 	      mc-pgp-always-sign
 	      nnoo-definition-alist

@@ -32,7 +32,7 @@
 (eval-and-compile
   (autoload 'mm-inline-partial "mm-partial")
   (autoload 'mm-inline-external-body "mm-extern")
-  (autoload 'mm-inline-external-body "mm-view"))
+  (autoload 'mm-insert-inline "mm-view"))
 
 (defgroup mime-display ()
   "Display of MIME in mail and news articles."
