@@ -26,6 +26,7 @@
 \ifx\pdfoutput\undefined
 \else
 \usepackage[pdftex,bookmarks]{hyperref}
+\usepackage{thumbpdf}
 \pdfcompresslevel=9
 \fi
 
@@ -18698,7 +18699,7 @@ used.
 Here's an example:
 
 @lisp
-"~(form (current-time-string))@"
+"~(form (current-time-string))@@"
 @end lisp
 
 @end table

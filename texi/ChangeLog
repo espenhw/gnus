@@ -1,3 +1,10 @@
+2002-01-05  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in (.latexi.pdf-x): Use thumbpdf.
+
+	* gnus.texi (Advanced Formatting): Double @'s. Use thumbpdf.
+	
+
 2002-01-05  Norman Walsh  <ndw@nwalsh.com>
 
 	* gnus-faq.texi: Fix typo.
