@@ -1,3 +1,7 @@
+2001-09-24 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* configure.in: Generate texi/ps/Makefile.
+
 2001-09-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* make.bat: Use parameter "/copy" rather than "copy" for increased

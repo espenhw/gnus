@@ -106,7 +106,7 @@
 	       ((member command '("chapter"))
 		(latexi-switch-line 
 		 (format 
-		  "gnus%s{\\epsfig{figure=tmp/new-herd-%d.ps,scale=.5}}"
+		  "gnus%s{\\epsfig{figure=ps/new-herd-%d.ps,scale=.5}}"
 		   command (incf chapter))
 		 arg))
 	       ((member command '("section"))

@@ -23,4 +23,4 @@ AC_PATH_ETCDIR
 AC_CHECK_URL
 AC_CHECK_W3
 
-AC_OUTPUT(Makefile lisp/Makefile texi/Makefile etc/Makefile)
+AC_OUTPUT(Makefile lisp/Makefile texi/Makefile etc/Makefile texi/ps/Makefile)
