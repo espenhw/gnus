@@ -2991,6 +2991,15 @@ If NEWSGROUP is nil, return the global kill file name instead."
 	  (list (intern server) "")))
     gnus-select-method))
 
+(defun gnus-server-string (server)
+  "Return a readable string that describes SERVER."
+  (let* ((server (gnus-server-to-method server))
+	 (address (nth 1 server)))
+    (if (and address
+	     (not (zerop (length address))))
+	(format "%s via %s" address (car server))
+      (format "%s" (car server)))))
+
 (defun gnus-find-method-for-group (group &optional info)
   "Find the select method that GROUP uses."
   (or gnus-override-method

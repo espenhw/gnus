@@ -407,9 +407,8 @@ The following commands are available:
 (defun gnus-server-close-all-servers ()
   "Close all servers."
   (interactive)
-  (let ((servers gnus-inserted-opened-servers))
-    (while servers
-      (gnus-server-close-server (car (pop servers))))))
+  (dolist (server gnus-inserted-opened-servers)
+    (gnus-server-close-server (car server))))
 
 (defun gnus-server-deny-server (server)
   "Make sure SERVER will never be attempted opened."
@@ -425,11 +424,9 @@ The following commands are available:
 (defun gnus-server-remove-denials ()
   "Make all denied servers into closed servers."
   (interactive)
-  (let ((servers gnus-opened-servers))
-    (while servers
-      (when (eq (nth 1 (car servers)) 'denied)
-	(setcar (nthcdr 1 (car servers)) 'closed))
-      (setq servers (cdr servers))))
+  (dolist (server gnus-opened-servers)
+    (when (eq (nth 1 server) 'denied)
+      (setcar (nthcdr 1 server) 'closed)))
   (gnus-server-list-servers))
 
 (defun gnus-server-copy-server (from to)

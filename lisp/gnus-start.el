@@ -602,6 +602,12 @@ the first newsgroup."
 (defvar nnoo-state-alist)
 (defvar gnus-current-select-method)
 
+(defun gnus-close-all-servers ()
+  "Close all servers."
+  (interactive)
+  (dolist (server gnus-opened-servers)
+    (gnus-close-server server)))
+
 (defun gnus-clear-system ()
   "Clear all variables and buffers."
   ;; Clear Gnus variables.

@@ -222,15 +222,23 @@ to:
   :type '(repeat string)
   :group 'mime-display)
 
-(defvar mm-tmp-directory
+(defcustom mm-tmp-directory
   (cond ((fboundp 'temp-directory) (temp-directory))
 	((boundp 'temporary-file-directory) temporary-file-directory)
 	("/tmp/"))
-  "Where mm will store its temporary files.")
+  "Where mm will store its temporary files."
+  :type 'directory
+  :group 'mime-display)
 
 (defcustom mm-inline-large-images nil
   "If non-nil, then all images fit in the buffer."
   :type 'boolean
+  :group 'mime-display)
+
+(defcustom mm-default-directory nil
+  "The default directory where mm will save files.
+If not set, `default-directory' will be used."
+  :type 'directory
   :group 'mime-display)
 
 ;;; Internal variables.
@@ -800,8 +808,6 @@ external if displayed external."
 	  (let ((temp (current-buffer)))
 	    (set-buffer cur)
 	    (insert-buffer-substring temp)))))))
-
-(defvar mm-default-directory nil)
 
 (defun mm-save-part (handle)
   "Write HANDLE to a file."

@@ -1093,6 +1093,7 @@ Except if it is nil, use Gnus native MUA; if it is t, use
   (autoload 'gnus-open-server "gnus-int")
   (autoload 'gnus-request-post "gnus-int")
   (autoload 'gnus-alive-p "gnus-util")
+  (autoload 'gnus-server-string "gnus")
   (autoload 'gnus-group-name-charset "gnus-group")
   (autoload 'rmail-output "rmailout"))
 
@@ -2509,6 +2510,7 @@ It should typically alter the sending method in some way or other."
 		  (< (point-max) message-send-mail-partially-limit)
 		  (not (y-or-n-p "The message size is too large, should it be sent partially? ")))
 	      (mm-with-unibyte-current-buffer
+		(message "Sending via mail...")
 		(funcall message-send-mail-function))
 	    (message-send-mail-partially)))
       (kill-buffer tembuf))
@@ -2712,6 +2714,7 @@ to find out how to use this."
 		(backward-char 1))
 	      (run-hooks 'message-send-news-hook)
 	      (gnus-open-server method)
+	      (message "Sending news with %s..." (gnus-server-string method))
 	      (setq result (let ((mail-header-separator ""))
 			     (gnus-request-post method))))
 	  (kill-buffer tembuf))

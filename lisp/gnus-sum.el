@@ -1441,6 +1441,7 @@ increase the score of each group you read."
     "\C-c\C-s\C-s" gnus-summary-sort-by-subject
     "\C-c\C-s\C-d" gnus-summary-sort-by-date
     "\C-c\C-s\C-i" gnus-summary-sort-by-score
+    "\C-c\C-s\C-o" gnus-summary-sort-by-original
     "=" gnus-summary-expand-window
     "\C-x\C-s" gnus-summary-reselect-current-group
     "\M-g" gnus-summary-rescan-group
@@ -2066,7 +2067,8 @@ increase the score of each group you read."
 	["Sort by date" gnus-summary-sort-by-date t]
 	["Sort by score" gnus-summary-sort-by-score t]
 	["Sort by lines" gnus-summary-sort-by-lines t]
-	["Sort by characters" gnus-summary-sort-by-chars t])
+	["Sort by characters" gnus-summary-sort-by-chars t]
+	["Original sort" gnus-summary-sort-by-original t])
        ("Help"
 	["Fetch group FAQ" gnus-summary-fetch-faq t]
 	["Describe group" gnus-summary-describe-group t]
@@ -9287,7 +9289,7 @@ taken."
 
 (defun gnus-summary-up-thread (n)
   "Go up thread N steps.
-If N is negative, go up instead.
+If N is negative, go down instead.
 Returns the difference between N and how many steps down that were
 taken."
   (interactive "p")
@@ -9375,6 +9377,18 @@ Argument REVERSE means reverse order."
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'chars reverse))
+
+(defun gnus-summary-sort-by-original (&optional reverse)
+  "Sort the summary buffer using the default sorting method.
+Argument REVERSE means reverse order."
+  (interactive "P")
+  (let* ((buffer-read-only)
+	 (gnus-summary-prepare-hook nil))
+    ;; We do the sorting by regenerating the threads.
+    (gnus-summary-prepare)
+    ;; Hide subthreads if needed.
+    (when (and gnus-show-threads gnus-thread-hide-subtree)
+      (gnus-summary-hide-all-threads))))
 
 (defun gnus-summary-sort (predicate reverse)
   "Sort summary buffer by PREDICATE.  REVERSE means reverse order."

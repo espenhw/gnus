@@ -1,4 +1,24 @@
+2001-04-01 00:37:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el (gnus-close-all-servers): New function.
+
+	* gnus-srvr.el (gnus-server-close-all-servers): Clean up.
+	(gnus-server-remove-denials): Clean up.
+
+	* gnus-sum.el (gnus-summary-sort-by-original): New command and
+	keystroke. 
+
 2001-03-31 02:56:55  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-news): Message where we are sending.
+	(message-send-mail): Ditto.
+
+	* gnus.el (gnus-server-string): New function.
+
+	* gnus-sum.el (gnus-summary-up-thread): Doc fix.
+
+	* mm-decode.el (mm-default-directory): Customized.
+	(mm-tmp-directory): Ditto.
 
 	* gnus-sum.el (gnus-summary-catchup-and-exit): Doc fix. 
 	(gnus-get-newsgroup-headers): Return -1 for articles without Lines
