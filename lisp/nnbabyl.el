@@ -230,7 +230,7 @@
 (deffoo nnbabyl-close-group (group &optional server)
   t)
 
-(deffoo nnbabyl-request-create-group (group &optional server) 
+(deffoo nnbabyl-request-create-group (group &optional server args) 
   (nnmail-activate 'nnbabyl)
   (unless (assoc group nnbabyl-group-alist)
     (setq nnbabyl-group-alist (cons (list group (cons 1 0))

@@ -239,6 +239,41 @@ on your system, you could say something like:
 	(goto-char (point-min))
 	(delete-char 1)))))
 
+(defmacro nnheader-nov-skip-field ()
+  '(search-forward "\t" eol 'move))
+
+(defmacro nnheader-nov-field ()
+  '(buffer-substring (point) (if (nnheader-nov-skip-field) (1- (point)) eol)))
+
+(defmacro nnheader-nov-read-integer ()
+  '(prog1
+       (if (= (following-char) ?\t)
+	   0
+	 (let ((num (condition-case nil (read (current-buffer)) (error nil))))
+	   (if (numberp num) num 0)))
+     (or (eobp) (forward-char 1))))
+
+(defvar nnheader-none-counter 0)
+
+(defun nnheader-parse-nov ()
+  (let ((eol (gnus-point-at-eol)))
+    (vector
+     (nnheader-nov-read-integer)	; number
+     (nnheader-nov-field)		; subject
+     (nnheader-nov-field)		; from
+     (nnheader-nov-field)		; date
+     (or (nnheader-nov-field)
+	 (concat "none+"
+		 (int-to-string
+		  (incf nnheader-none-counter)))) ; id
+     (nnheader-nov-field)		; refs
+     (nnheader-nov-read-integer)	; chars
+     (nnheader-nov-read-integer)	; lines
+     (if (= (following-char) ?\n)
+	 nil
+       (nnheader-nov-field))		; misc
+     )))
+
 (defun nnheader-insert-nov (header)
   (princ (mail-header-number header) (current-buffer))
   (insert 
@@ -630,9 +665,9 @@ without formatting."
   (or (and (symbolp form) (fboundp form))
       (and (listp form) (eq (car form) 'lambda))))
 
-(defun nnheader-concat (dir file)
+(defun nnheader-concat (dir &rest files)
   "Concat DIR as directory to FILE."
-  (concat (file-name-as-directory dir) file))
+  (apply 'concat (file-name-as-directory dir) files))
 
 (defun nnheader-ms-strip-cr ()
   "Strip ^M from the end of all lines."

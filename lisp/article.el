@@ -52,7 +52,7 @@ If `article-visible-headers' is non-nil, this variable will be ignored."
     "^Gnus-Warning:" "^Resent-")
   "All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
-If this variable is non-nil, `article-ignored-headers' will be ignored."
+If this variable is non-nil, `gnus-article-ignored-headers' will be ignored."
   :type '(repeat string)		;Leave monster regexp to lisp.
   :group 'article)
 

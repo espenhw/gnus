@@ -3946,6 +3946,75 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 (defmacro gnus-nov-field ()
   '(buffer-substring (point) (if (gnus-nov-skip-field) (1- (point)) eol)))
 
+;; This function has to be called with point after the article number
+;; on the beginning of the line.
+(defun gnus-nov-parse-line (number dependencies &optional force-new)
+  (let ((none 0)
+	(eol (gnus-point-at-eol))
+	(buffer (current-buffer))
+	header ref id id-dep ref-dep)
+
+    ;; overview: [num subject from date id refs chars lines misc]
+    (narrow-to-region (point) eol)
+    (or (eobp) (forward-char))
+
+    (setq header
+	  (vector
+	   number			; number
+	   (gnus-nov-field)		; subject
+	   (gnus-nov-field)		; from
+	   (gnus-nov-field)		; date
+	   (setq id (or (gnus-nov-field)
+			(concat "none+"
+				(int-to-string
+				 (setq none (1+ none)))))) ; id
+	   (progn
+	     (save-excursion
+	       (let ((beg (point)))
+		 (search-forward "\t" eol)
+		 (if (search-backward ">" beg t)
+		     (setq ref
+			   (buffer-substring
+			    (1+ (point))
+			    (search-backward "<" beg t)))
+		   (setq ref nil))))
+	     (gnus-nov-field))		; refs
+	   (gnus-nov-read-integer)	; chars
+	   (gnus-nov-read-integer)	; lines
+	   (if (= (following-char) ?\n)
+	       nil
+	     (gnus-nov-field))		; misc
+	   ))
+
+    (widen)
+
+    ;; We build the thread tree.
+    (when (equal id ref)
+      ;; This article refers back to itself.  Naughty, naughty.
+      (setq ref nil))
+    (if (boundp (setq id-dep (intern id dependencies)))
+	(if (and (car (symbol-value id-dep))
+		 (not force-new))
+	    ;; An article with this Message-ID has already been seen,
+	    ;; so we ignore this one, except we add any additional
+	    ;; Xrefs (in case the two articles came from different
+	    ;; servers.
+	    (progn
+	      (mail-header-set-xref
+	       (car (symbol-value id-dep))
+	       (concat (or (mail-header-xref
+			    (car (symbol-value id-dep))) "")
+		       (or (mail-header-xref header) "")))
+	      (setq header nil))
+	  (setcar (symbol-value id-dep) header))
+      (set id-dep (list header)))
+    (if (boundp (setq ref-dep (intern (or ref "none") dependencies)))
+	(setcdr (symbol-value ref-dep)
+		(nconc (cdr (symbol-value ref-dep))
+		       (list (symbol-value id-dep))))
+      (set ref-dep (list nil (symbol-value id-dep))))
+    header))
+
 ;; Goes through the xover lines and returns a list of vectors
 (defun gnus-get-newsgroup-headers-xover (sequence &optional 
 						  force-new dependencies)
@@ -3962,97 +4031,26 @@ list of headers that match SEQUENCE (see `nntp-retrieve-headers')."
       ;; Allow the user to mangle the headers before parsing them.
       (run-hooks 'gnus-parse-headers-hook)
       (goto-char (point-min))
-      (while (and sequence (not (eobp)))
-	(setq number (read cur))
-	(while (and sequence (< (car sequence) number))
-	  (setq sequence (cdr sequence)))
-	(and sequence
-	     (eq number (car sequence))
-	     (progn
-	       (setq sequence (cdr sequence))
-	       (if (setq header
-			 (inline (gnus-nov-parse-line
-				  number dependencies force-new)))
-		   (setq headers (cons header headers)))))
-	(forward-line 1))
-      (setq headers (nreverse headers)))
-    headers))
-
-;; This function has to be called with point after the article number
-;; on the beginning of the line.
-(defun gnus-nov-parse-line (number dependencies &optional force-new)
-  (let ((none 0)
-	(eol (gnus-point-at-eol))
-	(buffer (current-buffer))
-	header ref id id-dep ref-dep)
-
-    ;; overview: [num subject from date id refs chars lines misc]
-    (narrow-to-region (point) eol)
-    (or (eobp) (forward-char))
-
-    (condition-case nil
-	(setq header
-	      (vector
-	       number			; number
-	       (gnus-nov-field)		; subject
-	       (gnus-nov-field)		; from
-	       (gnus-nov-field)		; date
-	       (setq id (or (gnus-nov-field)
-			    (concat "none+"
-				    (int-to-string
-				     (setq none (1+ none)))))) ; id
-	       (progn
-		 (save-excursion
-		   (let ((beg (point)))
-		     (search-forward "\t" eol)
-		     (if (search-backward ">" beg t)
-			 (setq ref
-			       (buffer-substring
-				(1+ (point))
-				(search-backward "<" beg t)))
-		       (setq ref nil))))
-		 (gnus-nov-field))	; refs
-	       (gnus-nov-read-integer)	; chars
-	       (gnus-nov-read-integer)	; lines
-	       (if (= (following-char) ?\n)
-		   nil
-		 (gnus-nov-field))	; misc
-	       ))
-      (error (progn
-	       (gnus-error 4 "Strange nov line")
-	       (setq header nil)
-	       (goto-char eol))))
-
-    (widen)
-
-    ;; We build the thread tree.
-    (when header
-      (when (equal id ref)
-	;; This article refers back to itself.  Naughty, naughty.
-	(setq ref nil))
-      (if (boundp (setq id-dep (intern id dependencies)))
-	  (if (and (car (symbol-value id-dep))
-		   (not force-new))
-	      ;; An article with this Message-ID has already been seen,
-	      ;; so we ignore this one, except we add any additional
-	      ;; Xrefs (in case the two articles came from different
-	      ;; servers.
-	      (progn
-		(mail-header-set-xref
-		 (car (symbol-value id-dep))
-		 (concat (or (mail-header-xref
-			      (car (symbol-value id-dep))) "")
-			 (or (mail-header-xref header) "")))
-		(setq header nil))
-	    (setcar (symbol-value id-dep) header))
-	(set id-dep (list header))))
-    (when header
-      (if (boundp (setq ref-dep (intern (or ref "none") dependencies)))
-	  (setcdr (symbol-value ref-dep)
-		  (nconc (cdr (symbol-value ref-dep))
-			 (list (symbol-value id-dep))))
-	(set ref-dep (list nil (symbol-value id-dep)))))
-    header))
+      (while (not (eobp))
+	(condition-case ()
+	    (while (and sequence (not (eobp)))
+	      (setq number (read cur))
+	      (while (and sequence
+			  (< (car sequence) number))
+		(setq sequence (cdr sequence)))
+	      (and sequence
+		   (eq number (car sequence))
+		   (progn
+		     (setq sequence (cdr sequence))
+		     (push (inline (gnus-nov-parse-line
+				    number dependencies force-new))
+			   headers)))
+	      (forward-line 1))
+	  (error
+	   (progn
+	     (gnus-error 4 "Strange nov line")
+	     (forward-line 1)))))
+      (nreverse headers))))
 
 (defun gnus-article-get-xrefs ()
   "Fill in the Xref value in `gnus-current-headers', if necessary.
@@ -7901,9 +7899,6 @@ save those articles instead."
 		  (t gnus-reffed-article-number))
 		 (current-buffer))
 	  (insert " Article retrieved.\n"))
-					;(when (and header
-					;	   (memq (mail-header-number header) gnus-newsgroup-sparse))
-					;  (setcar (gnus-id-to-thread id) nil))
 	(if (not (setq header (car (gnus-get-newsgroup-headers))))
 	    ()				; Malformed head.
 	  (unless (memq (mail-header-number header) gnus-newsgroup-sparse)

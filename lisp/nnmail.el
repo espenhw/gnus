@@ -514,20 +514,16 @@ nn*-request-list should have been called before calling this function."
 (defun nnmail-save-active (group-assoc file-name)
   "Save GROUP-ASSOC in ACTIVE-FILE."
   (when file-name
-    (let (group)
-      (save-excursion
-	(set-buffer (get-buffer-create " *nnmail active*"))
-	(buffer-disable-undo (current-buffer))
-	(erase-buffer)
-	(while group-assoc
-	  (setq group (pop group-assoc))
-	  (insert (format "%s %d %d y\n" (car group) (cdadr group) 
-			  (caadr group))))
-	(unless (file-exists-p (file-name-directory file-name))
-	  (make-directory (file-name-directory file-name) t))
-	(nnmail-write-region
-	 1 (point-max) (expand-file-name file-name) nil 'nomesg)
-	(kill-buffer (current-buffer))))))
+    (nnheader-temp-write file-name
+      (nnmail-generate-active group-assoc))))
+
+(defun nnmail-generate-active (alist)
+  "Generate an active file from group-alist ALIST."
+  (erase-buffer)
+  (let (group)
+    (while (setq group (pop alist))
+      (insert (format "%s %d %d y\n" (car group) (cdadr group) 
+		      (caadr group))))))
 
 (defun nnmail-get-split-group (file group)
   "Find out whether this FILE is to be split into GROUP only.

@@ -552,7 +552,20 @@ Bind `print-quoted' to t while printing."
   (when (not (file-exists-p directory))
     (make-directory directory t))
   t)
- 
+
+(defmacro gnus-delete-assq (key list)
+  `(let ((listval (eval ,list)))
+     (setq ,list (delq (assq ,key listval) listval))))
+
+(defmacro gnus-delete-assoc (key list)
+  `(let ((listval ,list))
+     (setq ,list (delq (assoc ,key listval) listval))))
+
+(defun gnus-delete-file (file)
+  "Delete FILE if it exists."
+  (when (file-exists-p file)
+    (delete-file file)))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

@@ -590,6 +590,7 @@ ticked: The number of ticked articles.")
 	["Add the help group" gnus-group-make-help-group t]
 	["Add the archive group" gnus-group-make-archive-group t]
 	["Make a doc group" gnus-group-make-doc-group t]
+	["Make a web group" gnus-group-make-web-group t]
 	["Make a kiboze group" gnus-group-make-kiboze-group t]
 	["Make a virtual group" gnus-group-make-empty-virtual t]
 	["Add a group to a virtual" gnus-group-add-to-virtual t]
@@ -1435,10 +1436,10 @@ Return the name of the group is selection was successful."
     (unless (gnus-check-server method)
       (error "Unable to contact server: %s" (gnus-status-message method)))
     (when activate
+      (gnus-activate-group group 'scan t)
       (unless (gnus-request-group group)
 	(error "Couldn't request group: %s" 
-	       (nnheader-get-report (car method))))
-      (gnus-activate-group group nil t))
+	       (nnheader-get-report (car method)))))
     (if request-only
 	group
       (condition-case ()
@@ -1609,7 +1610,7 @@ If EXCLUDE-GROUP, do not go to that group."
   (interactive)
   (gnus-enter-server-buffer))
 
-(defun gnus-group-make-group (name &optional method address)
+(defun gnus-group-make-group (name &optional method address args)
   "Add a new newsgroup.
 The user will be prompted for a NAME, for a select METHOD, and an
 ADDRESS."
@@ -1653,7 +1654,7 @@ ADDRESS."
       (require backend))
     (gnus-check-server meth)
     (and (gnus-check-backend-function 'request-create-group nname)
-	 (gnus-request-create-group nname))
+	 (gnus-request-create-group nname nil args))
     t))
 
 (defun gnus-group-delete-group (group &optional force)
@@ -1889,9 +1890,10 @@ If SOLID (the prefix), create a solid group."
 	   'gnus-group-web-search-history))
 	 (method
 	  `(nnweb ,group (nnweb-search ,search)
-		  (nnweb-type ,(intern type)))))
+		  (nnweb-type ,(intern type))
+		  (nnweb-ephemeral-p t))))
     (if solid
-	(gnus-group-make-group group method)
+	(gnus-group-make-group group "nnweb" "" `(,(intern type) ,search))
       (gnus-group-read-ephemeral-group
        group method t
        (cons (current-buffer)

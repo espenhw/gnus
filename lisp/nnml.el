@@ -217,21 +217,19 @@ all.  This may very well take some time.")
   (setq nnml-article-file-alist nil)
   t)
 
-(deffoo nnml-request-create-group (group &optional server) 
+(deffoo nnml-request-create-group (group &optional server args) 
   (nnmail-activate 'nnml)
-  (or (assoc group nnml-group-alist)
-      (let (active)
-	(setq nnml-group-alist (cons (list group (setq active (cons 1 0)))
-				     nnml-group-alist))
-	(nnml-possibly-create-directory group)
-	(nnml-possibly-change-directory group server)
-	(let ((articles 
-	       (nnheader-directory-articles nnml-current-directory )))
-	  (and articles
-	       (progn
-		 (setcar active (apply 'min articles))
-		 (setcdr active (apply 'max articles)))))
-	(nnmail-save-active nnml-group-alist nnml-active-file)))
+  (unless (assoc group nnml-group-alist)
+    (let (active)
+      (push (list group (setq active (cons 1 0)))
+	    nnml-group-alist)
+      (nnml-possibly-create-directory group)
+      (nnml-possibly-change-directory group server)
+      (let ((articles (nnheader-directory-articles nnml-current-directory)))
+	(when articles
+	  (setcar active (apply 'min articles))
+	  (setcdr active (apply 'max articles))))
+      (nnmail-save-active nnml-group-alist nnml-active-file)))
   t)
 
 (deffoo nnml-request-list (&optional server)

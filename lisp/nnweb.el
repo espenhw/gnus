@@ -37,6 +37,9 @@
 
 (nnoo-declare nnweb)
 
+(defvoo nnweb-directory (nnheader-concat gnus-directory "nnweb/")
+  "Where nnweb will save its files.")
+
 (defvoo nnweb-type 'dejanews
   "What search engine type is being used.")
 
@@ -65,17 +68,23 @@
 (defvoo nnweb-max-hits 100
   "Maximum number of hits to display.")
 
+(defvoo nnweb-ephemeral-p nil
+  "Whether this nnweb server is ephemeral.")
+
 ;;; Internal variables
 
 (defvoo nnweb-articles nil)
 (defvoo nnweb-buffer nil)
+(defvoo nnweb-group-alist nil)
+(defvoo nnweb-group nil)
+(defvoo nnweb-hashtb nil)
 
 ;;; Interface functions
 
 (nnoo-define-basics nnweb)
 
 (deffoo nnweb-retrieve-headers (articles &optional group server fetch-old)
-  (nnweb-possibly-change-server server)
+  (nnweb-possibly-change-server group server)
   (save-excursion
     (set-buffer nntp-server-buffer)
     (erase-buffer)
@@ -85,23 +94,38 @@
 	  (nnheader-insert-nov header)))
       'nov)))
 
+(deffoo nnweb-request-scan (&optional group server)
+  (nnweb-possibly-change-server group server)
+  (funcall (nnweb-definition 'map))
+  (unless nnweb-ephemeral-p
+    (nnweb-write-active)
+    (nnweb-write-overview group)))
+
 (deffoo nnweb-request-group (group &optional server dont-check)
-  (nnweb-possibly-change-server server)
-  (when (or (not dont-check)
-	    (not nnweb-articles))
-    (funcall (nnweb-definition 'map)))
+  (nnweb-possibly-change-server nil server)
+  (when (and (not (equal group nnweb-group))
+	     (not nnweb-ephemeral-p))
+    (let ((info (assoc group nnweb-group-alist)))
+      (setq nnweb-group group)
+      (setq nnweb-type (nth 2 info))
+      (setq nnweb-search (nth 3 info))
+      (unless dont-check
+	(nnweb-read-overview group))))
   (cond
    ((not nnweb-articles)
     (nnheader-report 'nnweb "No matching articles"))
    (t
-    (nnheader-report 'nnweb "Opened group %s" group)
-    (nnheader-insert
-     "211 %d %d %d %s\n" (length nnweb-articles)
-     (caar nnweb-articles) (caar (last nnweb-articles))
-     group))))
+    (let ((active (if nnweb-ephemeral-p
+		      (cons (caar nnweb-articles)
+			    (caar (last nnweb-articles)))
+		    (cadr (assoc group nnweb-group-alist)))))
+      (nnheader-report 'nnweb "Opened group %s" group)
+      (nnheader-insert
+       "211 %d %d %d %s\n" (length nnweb-articles)
+       (car active) (cdr active) group)))))
 
 (deffoo nnweb-close-group (group &optional server)
-  (nnweb-possibly-change-server server)
+  (nnweb-possibly-change-server group server)
   (when (gnus-buffer-live-p nnweb-buffer)
     (save-excursion
       (set-buffer nnweb-buffer)
@@ -110,7 +134,7 @@
   t)
 
 (deffoo nnweb-request-article (article &optional group server buffer)
-  (nnweb-possibly-change-server server)
+  (nnweb-possibly-change-server group server)
   (save-excursion
     (set-buffer (or buffer nntp-server-buffer))
     (let ((url (caddr (assq article nnweb-articles))))
@@ -140,17 +164,85 @@
       (kill-buffer nnweb-buffer)))
   (nnoo-close-server 'nnweb server))
 
+(deffoo nnweb-request-list (&optional server)
+  (nnweb-possibly-change-server nil server)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (nnmail-generate-active nnweb-group-alist)
+    t))
+
 (deffoo nnweb-request-update-info (group info &optional server)
-  (nnweb-possibly-change-server server)
-  (setcar (cddr info) nil))
+  (nnweb-possibly-change-server group server)
+  ;;(setcar (cddr info) nil)
+  )
 
 (deffoo nnweb-asynchronous-p ()
   t)
 
+(deffoo nnweb-request-create-group (group &optional server args)
+  (nnweb-possibly-change-server nil server)
+  (nnweb-request-delete-group group)
+  (push `(,group ,(cons 1 0) ,@args) nnweb-group-alist)
+  (nnweb-write-active)
+  t)
+
+(deffoo nnweb-request-delete-group (group &optional force server)
+  (nnweb-possibly-change-server group server)
+  (gnus-delete-assoc group nnweb-group-alist)
+  (gnus-delete-file (nnweb-overview-file group))
+  t)
+  
 (nnoo-define-skeleton nnweb)
 
 ;;; Internal functions
 
+(defun nnweb-read-overview (group)
+  "Read the overview of GROUP and build the map."
+  (when (file-exists-p (nnweb-overview-file group))
+    (nnheader-temp-write nil
+      (insert-file-contents (nnweb-overview-file group))
+      (goto-char (point-min))
+      (setq nnweb-hashtb (gnus-make-hashtable
+			  (count-lines (point-min) (point-max))))
+      (let (header)
+	(while (not (eobp))
+	  (setq header (nnheader-parse-nov))
+	  (forward-line 1)
+	  (push (list (mail-header-number header)
+		      header (mail-header-xrefs header))
+		nnweb-articles)
+	  (nnweb-set-hashtb header (car nnweb-articles)))))))
+
+(defun nnweb-write-overview (group)
+  "Write the overview file for GROUP."
+  (nnheader-temp-write (nnweb-overview-file group)
+    (let ((articles nnweb-articles))
+      (while articles
+	(nnheader-insert-nov (cadr (pop articles)))))))
+
+(defun nnweb-set-hashtb (header data)
+  (gnus-sethasb (nnweb-identifier (mail-header-xrefs header))
+		data nnweb-hashtb))
+
+(defun nnweb-get-hashtb (url)
+  (gnus-gethash (nnweb-identifier url) nnweb-hashtb))
+
+(defun nnweb-identifier (ident)
+  ident)
+
+(defun nnweb-overview-file (group)
+  "Return the name of the overview file of GROUP."
+  (nnheader-concat nnweb-directory group ".overview"))
+
+(defun nnweb-write-active ()
+  "Save the active file."
+  (nnheader-temp-write (nnheader-concat nnweb-directory "active")
+    (prin1 `(setq nnweb-group-alist ',nnweb-group-alist) (current-buffer))))
+
+(defun nnweb-read-active ()
+  "Read the active file."
+  (load (nnheader-concat nnweb-directory "active") t t t))
+	   
 (defun nnweb-definition (type)
   "Return the definition of TYPE."
   (let ((def (cdr (assq type (assq nnweb-type nnweb-type-definition)))))
@@ -158,11 +250,15 @@
       (error "Undefined definition %s" type))
     def))
 
-(defun nnweb-possibly-change-server (&optional server)
+(defun nnweb-possibly-change-server (&optional group server)
   (nnweb-init server)
   (when server
     (unless (nnweb-server-opened server)
-      (nnweb-open-server server))))
+      (nnweb-open-server server)))
+  (when group
+    (when (and (not nnweb-ephemeral-p)
+	       (not (equal group nnweb-group)))
+      (nnweb-request-group group nil t))))
 
 (defun nnweb-init (server)
   "Initialize buffers and such."
@@ -261,6 +357,8 @@
       (let ((i 0)
 	    (more t)
 	    (case-fold-search t)
+	    (active (or (cadr (assoc nnweb-group nnweb-group-alist))
+			(cons 1 0)))
 	    Subject Score Date Newsgroup Author
 	    map url)
 	(while more
@@ -290,16 +388,18 @@
 	    (widen)
 	    (when (string-match "#[0-9]+/[0-9]+ *$" Subject)
 	      (setq Subject (substring Subject 0 (match-beginning 0))))
-	    (push
-	     (list
+	    (unless (nnweb-get-hashtb url)
 	      (incf i)
-	      (make-full-mail-header
-	       i (concat  "(" Newsgroup ") " Subject) Author Date
-	       (concat "<" (message-unique-id) "-" (int-to-string i)
-		       "@dejanews>")
-	       nil 0 (string-to-int Score) nil)
-	      url)
-	     map))
+	      (push
+	       (list
+		(incf (cdr active))
+		(make-full-mail-header
+		 (cdr active) (concat  "(" Newsgroup ") " Subject) Author Date
+		 (concat "<" (message-unique-id) "-" (int-to-string i)
+			 "@dejanews>")
+		 nil 0 (string-to-int Score) nil)
+		url)
+	       map)))
 	  ;; See whether there is a "Get next 20 hits" button here.
 	  (if (or (not (re-search-forward
 			"HREF=\"\\([^\"]+\\)\">Get next" nil t))
@@ -310,7 +410,8 @@
 	    (erase-buffer)
 	    (url-insert-file-contents more)))
 	;; Return the articles in the right order.
-	(setq nnweb-articles (nreverse map))))))
+	(setq nnweb-articles
+	      (sort map (lambda (s1 s2) (< (car s1) (car s2)))))))))
 
 (defun nnweb-dejanews-wash-article ()
   (let ((case-fold-search t))
@@ -357,6 +458,8 @@
       (let ((i 0)
 	    (more t)
 	    (case-fold-search t)
+	    (active (or (cadr (assoc nnweb-group nnweb-group-alist))
+			(cons 1 0)))
 	    Subject Score Date Newsgroups From Message-ID
 	    map url)
 	(while more
@@ -384,18 +487,21 @@
 	      (set (intern (match-string 1)) (match-string 2)))
 	    (widen)
 	    (search-forward "</pre>" nil t)
-	    (push
-	     (list
+	    (unless (nnweb-get-hashtb url)
 	      (incf i)
-	      (make-full-mail-header
-	       i (concat  "(" Newsgroups ") " Subject) From Date
-	       Message-ID
-	       nil 0 (string-to-int Score) nil)
-	      url)
-	     map))
+	      (push
+	       (list
+		(incf (cdr active))
+		(make-full-mail-header
+		 (cdr active) (concat  "(" Newsgroups ") " Subject) From Date
+		 Message-ID
+		 nil 0 (string-to-int Score) nil)
+		url)
+	       map)))
 	  (setq more nil))
 	;; Return the articles in the right order.
-	(setq nnweb-articles (nreverse map))))))
+	(setq nnweb-articles
+	      (sort map (lambda (s1 s2) (< (car s1) (car s2)))))))))
 
 (defun nnweb-reference-wash-article ()
   (let ((case-fold-search t))
@@ -482,6 +588,8 @@
 	(let ((i 0)
 	      (more t)
 	      (case-fold-search t)
+	      (active (or (cadr (assoc nnweb-group nnweb-group-alist))
+			  (cons 1 0)))
 	      subject date from id group
 	      map url)
 	  (while more
@@ -502,14 +610,16 @@
 		    group (match-string 4)
 		    id (concat "<" (match-string 5) ">")
 		    from (match-string 6))
-	      (push
-	       (list
+	      (unless (nnweb-get-hashtb url)
 		(incf i)
-		(make-full-mail-header
-		 i (concat  "(" group ") " subject) from date
-		 id nil 0 0 nil)
-		url)
-	       map))
+		(push
+		 (list
+		  (incf (cdr active))
+		  (make-full-mail-header
+		   (cdr active) (concat  "(" group ") " subject) from date
+		   id nil 0 0 nil)
+		  url)
+		 map)))
 	    ;; See if we want more.
 	    (when (or (not nnweb-articles)
 		      (>= i nnweb-max-hits)
@@ -517,13 +627,12 @@
 				    nnweb-search (incf part))))
 	      (setq more nil)))
 	  ;; Return the articles in the right order.
-	  (setq nnweb-articles (nreverse map)))))))
+	  (setq nnweb-articles
+		(sort map (lambda (s1 s2) (< (car s1) (car s2))))))))))
 
 (defun nnweb-altavista-wash-article ()
   (goto-char (point-min))
   (let ((case-fold-search t))
-    (when (re-search-forward "<H1>\\(.*\\)</H1>" nil t)
-      (setq subject (match-string 1)))
     (re-search-forward "^<strong>" nil t)
     (delete-region (point-min) (match-beginning 0))
     (goto-char (point-min))
@@ -534,9 +643,9 @@
       (narrow-to-region (point) (progn (forward-line 1) (point)))
       (goto-char (point-min))
       (while (re-search-forward "<A.*\\?id@\\([^\"]+\\)\">[0-9]+</A>" nil t)
-	(replace-match "&lt;\\1&gt; " t))
-      (widen)
-      (nnweb-remove-markup))))
+	(replace-match "&lt;\\1&gt; " t)))
+    (widen)
+    (nnweb-remove-markup)))
 
 (defun nnweb-altavista-search (search &optional part)
   (prog1

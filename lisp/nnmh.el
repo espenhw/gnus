@@ -311,7 +311,7 @@
 	  t)
       (error nil))))
 
-(deffoo nnmh-request-create-group (group &optional server) 
+(deffoo nnmh-request-create-group (group &optional server args) 
   (nnmail-activate 'nnmh)
   (unless (assoc group nnmh-group-alist)
     (let (active)

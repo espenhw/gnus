@@ -203,7 +203,7 @@
 (deffoo nndraft-close-group (group &optional server)
   t)
 
-(deffoo nndraft-request-create-group (group &optional server)
+(deffoo nndraft-request-create-group (group &optional server args)
   (if (file-exists-p nndraft-directory)
       (if (file-directory-p nndraft-directory)
 	  t

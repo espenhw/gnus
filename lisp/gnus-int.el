@@ -369,12 +369,12 @@ If GROUP is nil, all groups on METHOD are scanned."
     (funcall (gnus-get-function method 'request-restore-buffer)
 	     article (gnus-group-real-name group) (nth 1 method))))
 
-(defun gnus-request-create-group (group &optional method)
+(defun gnus-request-create-group (group &optional method args)
   (when (stringp method)
     (setq method (gnus-server-to-method method)))
   (let ((method (or method (gnus-find-method-for-group group))))
     (funcall (gnus-get-function method 'request-create-group)
-	     (gnus-group-real-name group) (nth 1 method))))
+	     (gnus-group-real-name group) (nth 1 method) args)))
 
 (defun gnus-request-delete-group (group &optional force)
   (let ((method (gnus-find-method-for-group group)))

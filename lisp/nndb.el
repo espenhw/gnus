@@ -127,7 +127,7 @@
 ; get new mail from somewhere -- maybe this is not needed?
 ; --> todo
 
-(deffoo nndb-request-create-group (group &optional server)
+(deffoo nndb-request-create-group (group &optional server args)
   "Creates a group if it doesn't exist yet."
   (nntp-send-command "^[23].*\n" "MKGROUP" group))
 

@@ -275,7 +275,7 @@ time saver for large mailboxes.")
 	nnfolder-current-buffer nil)
   t)
 
-(deffoo nnfolder-request-create-group (group &optional server) 
+(deffoo nnfolder-request-create-group (group &optional server args) 
   (nnfolder-possibly-change-group nil server)
   (nnmail-activate 'nnfolder)
   (when group 

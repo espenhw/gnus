@@ -203,7 +203,7 @@ above them."
 (defface gnus-header-from-face 
   '((((class color)
       (background dark))
-     (:foreground "light-blue" :bold t :italic t))
+     (:foreground "light blue" :bold t :italic t))
     (((class color)
       (background light))
      (:foreground "MidnightBlue" :bold t :italic t))
@@ -251,7 +251,7 @@ above them."
 (defface gnus-header-content-face
   '((((class color)
       (background dark))
-     (:foreground "foerestgreen" :italic t))
+     (:foreground "forest green" :italic t))
     (((class color)
       (background light))
      (:foreground "DarkGreen" :italic t))

@@ -1,3 +1,37 @@
+Thu Sep 26 22:13:00 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnweb.el (nnweb-altavista-wash-article): Didn't remove all
+	markup. 
+
+	* gnus-nocem.el (gnus-nocem-check-article): Fix security hole. 
+
+Thu Sep 26 20:23:11 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-group.el (gnus-group-make-group): Accept an ARGS param.
+
+	* nnheader.el (nnheader-concat): Accept many file names.
+
+Thu Sep 26 19:53:09 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-art.el (gnus-header-content-face): Buggy color names.
+
+Thu Sep 26 14:57:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-save-active): Rewrite.
+	(nnmail-generate-active): New function.
+
+	* gnus-util.el (gnus-delete-assq): New macro.
+	(gnus-delete-assoc): Ditto.
+
+Wed Sep 25 23:44:40 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers-xover): Just use one
+	single condition-case.
+
+Wed Sep 25 21:15:59 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.42 is released.
+
 Wed Sep 25 19:40:34 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-art.el (gnus-header-newsgroups-face): Yucky on light
