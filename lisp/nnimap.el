@@ -610,7 +610,12 @@ function is generally only called when Gnus is shutting down."
   (with-current-buffer nnimap-callback-buffer
     (insert
      (with-current-buffer nnimap-server-buffer
-       (nnimap-demule (imap-message-get (imap-current-message) 'RFC822)))) ;xxx
+       (nnimap-demule
+        (if (imap-capability 'IMAP4rev1) 
+            ;; xxx don't just use car? alist doesn't contain
+            ;; anything else now, but it might...
+            (nth 2 (car (imap-message-get (imap-current-message) 'BODYDETAIL)))
+          (imap-message-get (imap-current-message) 'RFC822)))))
     (nnheader-ms-strip-cr)
     (funcall nnimap-callback-callback-function t)))
 

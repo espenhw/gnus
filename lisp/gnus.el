@@ -1087,11 +1087,6 @@ newsgroups."
   :group 'gnus-summary-marks
   :type 'character)
 
-(defcustom gnus-asynchronous nil
-  "*If non-nil, Gnus will supply backends with data needed for async article fetching."
-  :group 'gnus-asynchronous
-  :type 'boolean)
-
 (defcustom gnus-large-newsgroup 200
   "*The number of articles which indicates a large newsgroup.
 If the number of articles in a newsgroup is greater than this value,

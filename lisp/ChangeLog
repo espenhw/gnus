@@ -1,3 +1,10 @@
+2000-06-21  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.el (gnus-asynchronous): Removed (defined in gnus-async.el).
+
+	* nnimap.el (nnimap-callback): Update for IMAP4rev1 servers (see
+	patch commited 2000-04-02).
+
 2000-06-20  Simon Josefsson  <jas@pdc.kth.se>
 
 	* imap.el (imap-mailbox-examine-1): New function.
