@@ -1,3 +1,9 @@
+2003-12-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* mml.el (mml-minibuffer-read-disposition): New function.
+	(mml-attach-file): Use it.
+	(mml-preview): Added MIME preview to gnus-buffers.
+
 2003-12-30  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Add ellipses.
