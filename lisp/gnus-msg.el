@@ -509,6 +509,7 @@ If SILENT, don't prompt the user."
 	  method-alist))))
      ;; Override normal method.
      ((and (eq gnus-post-method 'current)
+	   (not (eq (car group-method) 'nndraft))
 	   (not arg))
       group-method) 
      (gnus-post-method

@@ -62,6 +62,8 @@
 \newcommand{\gnustilde}{\symbol{"7E}}
 \newcommand{\gnusless}{{$<$}}
 \newcommand{\gnusgreater}{{$>$}}
+\newcommand{\gnusbraceleft}{{$>$}}
+\newcommand{\gnusbraceright}{{$>$}}
 
 \newcommand{\gnushead}{\raisebox{-1cm}{\epsfig{figure=ps/gnus-head.eps,height=1cm}}}
 \newcommand{\gnusinteresting}{
@@ -1274,11 +1276,16 @@ Here's an example value for this variable that might look nice if the
 background is dark:
 
 @lisp
-(face-spec-set 'my-group-face-1 '((t (:foreground "Red" :bold t))))
-(face-spec-set 'my-group-face-2 '((t (:foreground "SeaGreen" :bold t))))
-(face-spec-set 'my-group-face-3 '((t (:foreground "SpringGreen" :bold t))))
-(face-spec-set 'my-group-face-4 '((t (:foreground "SteelBlue" :bold t))))
-(face-spec-set 'my-group-face-5 '((t (:foreground "SkyBlue" :bold t))))
+(face-spec-set 'my-group-face-1
+               '((t (:foreground "Red" :bold t))))
+(face-spec-set 'my-group-face-2
+               '((t (:foreground "SeaGreen" :bold t))))
+(face-spec-set 'my-group-face-3
+               '((t (:foreground "SpringGreen" :bold t))))
+(face-spec-set 'my-group-face-4
+               '((t (:foreground "SteelBlue" :bold t))))
+(face-spec-set 'my-group-face-5
+               '((t (:foreground "SkyBlue" :bold t))))
 
 (setq gnus-group-highlight
       '(((> unread 200) . my-group-face-1)
@@ -2886,7 +2893,7 @@ The @samp{Emacs} topic has the topic parameter @code{(score-file
 . "emacs.SCORE")}; the @samp{Relief} topic has the topic parameter
 @code{(score-file . "relief.SCORE")}; and the @samp{Misc} topic has the
 topic parameter @code{(score-file . "emacs.SCORE")}.  In addition,
-@samp{alt.religion.emacs} has the group parameter @code{(score-file
+@* @samp{alt.religion.emacs} has the group parameter @code{(score-file
 . "religion.SCORE")}.
 
 Now, when you enter @samp{alt.sex.emacs} in the @samp{Relief} topic, you
@@ -9721,8 +9728,8 @@ substitutions in the group names), you can say things like:
 @end example
 
 If the string contains the element @samp{\&}, then the previously
-matched string will be substituted.  Similarly, the elements @samp{\1}
-up to @samp{\9} will be substituted with the text matched by the
+matched string will be substituted.  Similarly, the elements @samp{\\1}
+up to @samp{\\9} will be substituted with the text matched by the
 groupings 1 through 9.
 
 
@@ -11199,7 +11206,7 @@ If you would like to read @samp{soc.motss} both from a server in Japan
 and a server in Norway, you could use the following as the group regexp:
 
 @example
-"^nntp\\+some\\.server\\.jp:soc\\.motss$\\|^nntp\\+some\\.server\\.no:soc\\.motss$"
+"^nntp\\+server\\.jp:soc\\.motss$\\|^nntp\\+server\\.no:soc\\.motss$"
 @end example
 
 (Remember, though, that if you're creating the group with @kbd{G m}, you
@@ -11695,7 +11702,7 @@ Mark the article for downloading (@code{gnus-agent-mark-article}).
 Remove the downloading mark from the article
 (@code{gnus-agent-unmark-article}).
 
-@item @@
+@item @@ 
 @kindex @@ (Agent Summary)
 @findex gnus-agent-toggle-mark
 Toggle whether to download the article (@code{gnus-agent-toggle-mark}).
@@ -13565,7 +13572,9 @@ definition of that function:
 
 @lisp
 (defun gnus-decay-score (score)
-  "Decay SCORE according to `gnus-score-decay-constant' and `gnus-score-decay-scale'."
+  "Decay SCORE.
+This is done according to `gnus-score-decay-constant'
+and `gnus-score-decay-scale'."
   (floor
    (- score
       (* (if (< score 0) 1 -1)
@@ -14784,12 +14793,12 @@ in either monochrome @code{XBM} format or color @code{XPM} and
 @vindex gnus-picons-piconsearch-url
 If you have a permanent connection to the Internet you can use Steve
 Kinzler's Picons Search engine by setting
-@code{gnus-picons-piconsearch-url} to the string
+@code{gnus-picons-piconsearch-url} to the string @*
 @file{http://www.cs.indiana.edu/picons/search.html}.
 
 @vindex gnus-picons-database
 Otherwise you need a local copy of his database.  For instructions on
-obtaining and installing the picons databases, point your Web browser at
+obtaining and installing the picons databases, point your Web browser at @*
 @file{http://www.cs.indiana.edu/picons/ftp/index.html}.  Gnus expects
 picons to be installed into a location pointed to by
 @code{gnus-picons-database}.
@@ -14821,8 +14830,10 @@ To enable displaying picons, simply put the following line in your
 
 @lisp
 (setq gnus-use-picons t)
-(add-hook 'gnus-article-display-hook 'gnus-article-display-picons t)
-(add-hook 'gnus-article-display-hook 'gnus-picons-article-display-x-face)
+(add-hook 'gnus-article-display-hook
+          'gnus-article-display-picons t)
+(add-hook 'gnus-article-display-hook
+          'gnus-picons-article-display-x-face)
 @end lisp
 
 and make sure @code{gnus-picons-database} points to the directory
@@ -14831,7 +14842,8 @@ containing the Picons databases.
 Alternatively if you want to use the web piconsearch engine add this:
 
 @lisp
-(setq gnus-picons-piconsearch-url "http://www.cs.indiana.edu:800/piconsearch")
+(setq gnus-picons-piconsearch-url
+      "http://www.cs.indiana.edu:800/piconsearch")
 @end lisp
 
 
@@ -15247,7 +15259,7 @@ each unsolicited commercial email---at your leisure.
 
 If you are also a lazy net citizen, you will probably prefer complaining
 automatically with the @file{gnus-junk.el} package, available FOR FREE
-at @file{<URL:http://stud2.tuwien.ac.at/~e9426626/gnus-junk.html>}.
+at @* @file{<URL:http://stud2.tuwien.ac.at/~e9426626/gnus-junk.html>}.
 Since most e-mail spam is sent automatically, this may reconcile the
 cosmic balance somewhat.
 
@@ -15434,7 +15446,7 @@ On July 28th 1996 work on Red Gnus was begun, and it was released on
 January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
 
 On September 13th 1997, Quassia Gnus was started and lasted 37
-releases.  If was released as ``Gnus 5.6.33' on March 8th 1998.
+releases.  If was released as ``Gnus 5.6 on March 8th 1998.
 
 If you happen upon a version of Gnus that has a prefixed name --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -15911,7 +15923,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.33.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16437,7 +16449,8 @@ mail before saving the mail (@pxref{Washing Mail}).
 Emphasized text can be properly fontisized:
 
 @lisp
-(add-hook 'gnus-article-display-hook 'gnus-article-emphasize)
+(add-hook 'gnus-article-display-hook
+          'gnus-article-emphasize)
 @end lisp
 
 @end itemize
@@ -16446,7 +16459,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.33:
+New features in Gnus 5.6:
 
 @itemize @bullet
 
@@ -17191,7 +17204,7 @@ you could also try to read the archive for that group.  Part of the
 problem is that archives are spread all over the net, unlike FAQs.
 What would be best I suppose is to find the one closest to your site.
 
-In any case, there is a list of general news group archives at
+In any case, there is a list of general news group archives at @*
 ftp://ftp.neosoft.com/pub/users/claird/news.lists/newsgroup_archives.html
 
 
@@ -18093,7 +18106,8 @@ useful data is in the summary buffer, anyway.  Set this variable to
 Set this hook to all the available hiding commands:
 @lisp
 (setq gnus-article-display-hook
-      '(gnus-article-hide-headers gnus-article-hide-signature
+      '(gnus-article-hide-headers
+        gnus-article-hide-signature
         gnus-article-hide-citation))
 @end lisp
 

@@ -1,3 +1,5 @@
+prefix = @prefix@
+datadir = @datadir@
 lispdir = @lispdir@
 srcdir = @srcdir@
 

@@ -1,3 +1,14 @@
+Wed Aug 12 21:09:58 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.34 is released.
+
+1998-08-12 13:32:38  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-msg.el (gnus-post-method): Don't use `current' in drafts.
+
+	* gnus-score.el (gnus-summary-increase-score): Changed T to h and
+	downcase. 
+
 Tue Aug 11 20:46:25 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.33 is released.

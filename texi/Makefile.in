@@ -16,6 +16,7 @@ PERL=perl
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
+PAPERTYPE=a4
 
 all: gnus message
 
@@ -73,7 +74,7 @@ latexps:
 	cat postamble.tex >> gnus.tmplatexi
 	$(LATEX) gnus.tmplatexi
 	$(LATEX) gnus.tmplatexi
-	$(DVIPS) -f gnus.dvi > gnus.ps
+	$(DVIPS) -t $(PAPERTYPE) -f gnus.dvi > gnus.ps
 
 pss:
 	make latex
@@ -87,25 +88,25 @@ psout:
 latexboth:
 	rm -f gnus-manual-a4.ps.gz gnus-manual-standard.ps.gz
 	make latexps
-	mv /local/tmp/larsi/gnus.ps /local/tmp/larsi/gnus-manual-a4.ps
-	gzip /local/tmp/larsi/gnus-manual-a4.ps
-	sed 's/,a4paper//' gnus.latexi > gnus-standard.latexi
+	mv gnus.ps gnus-manual-a4.ps
+	gzip gnus-manual-a4.ps
+	sed 's/,a4paper/,letterpaper/' gnus.latexi > gnus-standard.latexi
 	mv gnus-standard.latexi gnus.latexi
-	make latexps
-	mv /local/tmp/larsi/gnus.ps /local/tmp/larsi/gnus-manual-standard.ps
-	gzip /local/tmp/larsi/gnus-manual-standard.ps
+	make latexps PAPERTYPE=letter
+	mv gnus.ps gnus-manual-standard.ps
+	gzip gnus-manual-standard.ps
 
 out:
-	cp /local/tmp/larsi/gnus-manual-standard.ps.gz \
-	/local/tmp/larsi/gnus-manual-a4.ps.gz \
+	cp gnus-manual-standard.ps.gz \
+	gnus-manual-a4.ps.gz \
 	/local/ftp/pub/emacs/gnus/manual
-	mv /local/tmp/larsi/gnus-manual-standard.ps.gz \
-	/local/tmp/larsi/gnus-manual-a4.ps.gz \
+	mv gnus-manual-standard.ps.gz \
+	gnus-manual-a4.ps.gz \
 	/hom/larsi/www_docs/www.gnus.org/documents
 
 veryclean:
 	make clean
-	rm -f gnus.dvi gnus.ps
+	rm -f gnus.dvi gnus.ps texi2latex.elc
 
 distclean:
 	make clean
