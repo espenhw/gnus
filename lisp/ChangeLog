@@ -1,3 +1,8 @@
+2003-04-30  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
+
+	* gnus-int.el (gnus-open-server): Try to open unagentized servers
+	even when unplugged.
+
 2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-button-prefer-mid-or-mail): Fixed typo in

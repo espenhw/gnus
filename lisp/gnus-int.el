@@ -207,16 +207,18 @@ If it is down, start it up (again)."
           ((eq (nth 1 state) 'offline)
            ;; If this method was previously opened offline, we just return t.
            t)
-          ((not gnus-plugged)
+          ((and (not gnus-plugged)
+		(member gnus-command-method
+			gnus-agent-covered-methods))
            ;; I'm opening servers while unplugged.  Set the status to
            ;; either 'offline or 'denied without asking (I'm assuming
            ;; that the user wants to go 'offline on every agentized
            ;; server when opening while unplugged.)
            (setcar (cdr state) (if (and gnus-agent
-                                       (gnus-agent-method-p gnus-command-method))
-                                  (or gnus-server-unopen-status
-                                      'offline)
-                                'denied))
+					(gnus-agent-method-p gnus-command-method))
+				   (or gnus-server-unopen-status
+				       'offline)
+				 'denied))
            
            (if (eq (nth 1 state) 'offline)
                ;; Invoke the agent's backend to open the offline server.
