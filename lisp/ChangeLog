@@ -1,5 +1,7 @@
 2003-06-24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-picon.el: Written by moi, moi, moi.
+
 	* gnus-group.el (gnus-group-kill-group): Clean up.
 
 2003-06-23  Teodor Zlatanov  <tzz@lifelogs.com>

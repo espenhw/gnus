@@ -3,7 +3,7 @@
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;      Free Software Foundation, Inc.
 
-;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
+;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; Keywords: news xpm annotation glyph faces
 
 ;; This file is part of GNU Emacs.
@@ -35,7 +35,9 @@
 ;;          domain/dom/subdomain/unknown/face.gif
 ;; Groups:  comp.lang.lisp
 ;;          news/comp/lang/lisp/unknown/face.gif
-
+;;
+;; Original implementation by Wes Hardaker <hardaker@ece.ucdavis.edu>.
+;;
 ;;; Code:
 
 (require 'gnus)
