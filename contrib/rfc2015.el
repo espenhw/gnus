@@ -23,8 +23,10 @@
 
 ;;; Commentary:
 
-;; Usage:
+;; Installation: put the following statement in ~/.gnus:
 ;;    (rfc2015-setup)
+;; You may have to make sure that the directory where this file lives
+;; is mentioned in `load-path'.
 ;; 
 ;; Insert an attribute, postprocess=pgp-sign (or pgp-encrypt), into
 ;; the mml tag to be signed (or encrypted).
