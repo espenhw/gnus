@@ -321,13 +321,13 @@ place point on some subject line."
 (defcustom gnus-auto-select-next t
   "*If non-nil, offer to go to the next group from the end of the previous.
 If the value is t and the next newsgroup is empty, Gnus will exit
-summary mode and go back to group mode.	 If the value is neither nil
-nor t, Gnus will select the following unread newsgroup.	 In
+summary mode and go back to group mode.  If the value is neither nil
+nor t, Gnus will select the following unread newsgroup.  In
 particular, if the value is the symbol `quietly', the next unread
 newsgroup will be selected without any confirmation, and if it is
 `almost-quietly', the next group will be selected without any
 confirmation if you are located on the last article in the group.
-Finally, if this variable is `slightly-quietly', the `Z n' command
+Finally, if this variable is `slightly-quietly', the `\\<gnus-summary-mode-map>\\[gnus-summary-catchup-and-goto-next-group]' command
 will go to the next group without confirmation."
   :group 'gnus-summary-maneuvering
   :type '(choice (const :tag "off" nil)
@@ -1034,9 +1034,10 @@ For example: ((1 . cn-gb-2312) (2 . big5))."
 		 integer))
 
 (defcustom gnus-summary-save-parts-default-mime "image/.*"
-  "*A regexp to match MIME parts when saving multiple parts of a message
-with gnus-summary-save-parts (X m). This regexp will be used by default
-when prompting the user for which type of files to save."
+  "*A regexp to match MIME parts when saving multiple parts of a
+message with `gnus-summary-save-parts' (\\<gnus-summary-mode-map>\\[gnus-summary-save-parts]).
+This regexp will be used by default when prompting the user for which
+type of files to save."
   :group 'gnus-summary
   :type 'regexp)
 
@@ -1256,7 +1257,7 @@ the type of the variable (string, integer, character, etc).")
   "Sorted list of articles in the current newsgroup whose headers have not been fetched into the agent.")
 
 (defvar gnus-newsgroup-undownloaded nil
-  "List of articles in the current newsgroup that haven't been downloaded..")
+  "List of articles in the current newsgroup that haven't been downloaded.")
 
 (defvar gnus-newsgroup-unsendable nil
   "List of articles in the current newsgroup that won't be sent.")
@@ -1505,7 +1506,7 @@ See `gnus-simplify-buffer-fuzzy' for details."
       (buffer-string))))
 
 (defsubst gnus-simplify-subject-fully (subject)
-  "Simplify a subject string according to gnus-summary-gather-subject-limit."
+  "Simplify a subject string according to `gnus-summary-gather-subject-limit'."
   (cond
    (gnus-simplify-subject-functions
     (gnus-map-function gnus-simplify-subject-functions subject))
@@ -1521,7 +1522,7 @@ See `gnus-simplify-buffer-fuzzy' for details."
 
 (defsubst gnus-subject-equal (s1 s2 &optional simple-first)
   "Check whether two subjects are equal.
-If optional argument simple-first is t, first argument is already
+If optional argument SIMPLE-FIRST is t, first argument is already
 simplified."
   (cond
    ((null simple-first)
