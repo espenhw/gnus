@@ -246,7 +246,10 @@
 		 (gnus-post-method arg ,(car ga))))
 	(unless (equal (cadr ga) "")
 	  (message-add-action
-	   `(gnus-add-mark ,(car ga) 'replied ,(cadr ga))
+	   `(progn
+	      (gnus-add-mark ,(car ga) 'replied ,(cadr ga))
+	      (gnus-request-set-mark ,(car ga) (list (list (list ,(cadr ga))
+							   'add '(reply)))))
 	   'send))))))
 
 (defun gnus-draft-article-sendable-p (article)
