@@ -1,3 +1,14 @@
+2001-01-08 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmail.el (nnmail-get-new-mail): Find group only if file is not
+	orig-file. Use ,source.
+
+2001-01-08 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-xmas.el (gnus-xmas-modeline-glyph): 
+	(gnus-xmas-group-startup-message): 
+	Detect gnus-xmas-glyph-directory when it is nil.
+
 2001-01-08 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* pop3.el (pop3-get-message-count): Andrew Innes
