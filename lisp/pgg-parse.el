@@ -47,19 +47,22 @@
   '((1 . RSA) (2 . RSA-E) (3 . RSA-S) (16 . ELG-E) (17 . DSA) (20 . ELG))
   "Alist of the assigned number to the public key algorithm."
   :group 'pgg-parse
-  :type 'alist)
+  :type '(repeat 
+	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-parse-symmetric-key-algorithm-alist
   '((1 . IDEA) (2 . 3DES) (4 . CAST5) (5 . SAFER-SK128))
   "Alist of the assigned number to the simmetric key algorithm."
   :group 'pgg-parse
-  :type 'alist)
+  :type '(repeat 
+	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-parse-hash-algorithm-alist
   '((1 . MD5) (2 . SHA1) (3 . RIPEMD160) (5 . MD2))
   "Alist of the assigned number to the cryptographic hash algorithm."
   :group 'pgg-parse
-  :type 'alist)
+  :type '(repeat 
+	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-parse-compression-algorithm-alist
   '((0 . nil); Uncompressed
@@ -67,7 +70,8 @@
     (2 . ZLIB))
   "Alist of the assigned number to the compression algorithm."
   :group 'pgg-parse
-  :type 'alist)
+  :type '(repeat 
+	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-parse-signature-type-alist
   '((0 . "Signature of a binary document")
@@ -85,7 +89,8 @@
     (64 . "Timestamp signature."))
   "Alist of the assigned number to the signature type."
   :group 'pgg-parse
-  :type 'alist)
+  :type '(repeat 
+	  (cons (sexp :tag "Number") (sexp :tag "Type"))))
 
 (defcustom pgg-ignore-packet-checksum t; XXX
   "If non-nil checksum of each ascii armored packet will be ignored."

@@ -39,7 +39,9 @@
 (defcustom pgg-gpg-extra-args nil
   "Extra arguments for every GnuPG invocation."
   :group 'pgg-gpg
-  :type 'string)
+  :type '(choice
+	  (const :tag "None" nil)
+	  (string :tag "Arguments")))
 
 (defvar pgg-gpg-user-id nil
   "GnuPG ID of your default identity.")

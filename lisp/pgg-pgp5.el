@@ -65,7 +65,9 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 (defcustom pgg-pgp5-extra-args nil
   "Extra arguments for every PGP 5.* invocation."
   :group 'pgg-pgp5
-  :type 'string)
+  :type '(choice
+	  (const :tag "None" nil)
+	  (string :tag "Arguments")))
 
 (defvar pgg-pgp5-user-id nil
   "PGP 5.* ID of your default identity.")

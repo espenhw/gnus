@@ -50,7 +50,9 @@ Bourne shell or its equivalent \(not tcsh) is needed for \"2>\"."
 (defcustom pgg-pgp-extra-args nil
   "Extra arguments for every PGP invocation."
   :group 'pgg-pgp
-  :type 'string)
+  :type '(choice
+	  (const :tag "None" nil)
+	  (string :tag "Arguments")))
 
 (defvar pgg-pgp-user-id nil
   "PGP ID of your default identity.")

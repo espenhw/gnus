@@ -1,3 +1,18 @@
+2002-10-20  Steve Youngs  <youngs@xemacs.org>
+
+	* pgg-parse.el (pgg-parse-public-key-algorithm-alist): XEmacs
+	doesn't have the 'alist custom type, use cons cells instead.
+	(pgg-parse-symmetric-key-algorithm-alist): Ditto.
+	(pgg-parse-hash-algorithm-alist): Ditto.
+	(pgg-parse-compression-algorithm-alist): Ditto.
+	(pgg-parse-signature-type-alist): Ditto.
+
+	* pgg-gpg.el (pgg-gpg-extra-args): Fix custom mismatch.
+
+	* pgg-pgp5.el (pgg-pgp5-extra-args): Ditto.
+
+	* pgg-pgp.el (pgg-pgp-extra-args): Ditto.
+
 2002-10-19  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-open-server): Check imap-state in IMAP server
