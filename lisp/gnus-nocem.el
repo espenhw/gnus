@@ -38,14 +38,14 @@
  '("AutoMoose-1" "Automoose-1"   ; CancelMoose[tm]
    "rbraver@ohww.norman.ok.us"   ; Robert Braver
    "clewis@ferret.ocunix.on.ca;" ; Chris Lewis
-   "jem@xpat.com;"		 ; Korean DeSpammer 
-   "snowhare@xmission.com" ; Benjamin "Snowhare" Franz
+   "jem@xpat.com;"		 ; Despammer from Korea
+   "snowhare@xmission.com"       ; Benjamin "Snowhare" Franz
    "red@redpoll.mrfs.oh.us (Richard E. Depew)"
    )
   "*List of NoCeM issuers to pay attention to.")
 
 (defvar gnus-nocem-directory 
-  (concat (file-name-as-directory gnus-article-save-directory) "NoCeM/")
+  (nnheader-concat gnus-article-save-directory "NoCeM/")
   "*Directory where NoCeM files will be stored.")
 
 (defvar gnus-nocem-expiry-wait 15

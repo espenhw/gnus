@@ -1,3 +1,40 @@
+Wed Sep 18 10:36:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-async.el (gnus-async-prefetch-article-p): New variable.
+	(gnus-async-prefetch-article): Use it.
+	(gnus-async-unread-p): New function.
+
+Tue Sep 17 14:41:56 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-cite.el (gnus-custom-import-cite-face-list): Removed.
+
+Wed Sep 18 04:28:16 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-split-history): mapcar instead of mapconcat.
+
+Tue Sep 17 14:41:56 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el: Customized.
+
+	* dgnushack.el (custom-file): Removed.
+
+Wed Sep 18 03:04:17 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-check-duplication): Do splitting after
+	duplicate suppression.
+
+	* gnus-salt.el (gnus-pick-mode): Don't go to unread article.
+
+	* gnus-dup.el (gnus-dup-enter-articles): Don't enter Message-IDs
+	ento lists multiple times.
+
+Tue Sep 17 03:44:08 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-grab-articles): Don't prefetch.  Ask before
+	deleting. 
+
+	* gnus.el: Red Gnus v0.37 is released.
+
 Tue Sep 17 03:15:26 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* custom.el: 0.9 included.

@@ -28,16 +28,34 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.37"
+(require 'custom)
+
+(defgroup gnus nil
+  :group 'emacs
+  "The coffee-brewing, all singing, all dancing, kitchen sink newsreader.")
+
+(defgroup gnus-start nil
+  :group 'gnus
+  "Starting your favorite newsreader.")
+
+(defgroup gnus-score nil
+  :group 'gnus 
+  "Score and kill file handling.")
+
+(defconst gnus-version-number "0.38"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
-(defvar gnus-inhibit-startup-message nil
+(defcustom gnus-inhibit-startup-message nil
+  :group 'gnus-start
+  :type 'toggle
   "*If non-nil, the startup message will not be displayed.")
 
-(defvar gnus-play-startup-jingle nil
+(defcustom gnus-play-startup-jingle nil
+  :group 'gnus-start
+  :type 'toggle
   "If non-nil, play the Gnus jingle at startup.")
 
 ;;; Kludges to help the transition from the old `custom.el'.
@@ -756,7 +774,9 @@ Returns the number of articles marked as read."
 	(and (buffer-modified-p) (save-buffer))
 	(kill-buffer (current-buffer))))))
 
-(defvar gnus-kill-file-name "KILL"
+(defcustom gnus-kill-file-name "KILL"
+  :group 'gnus-score
+  :type 'string
   "Suffix of the kill files.")
 
 (defun gnus-newsgroup-kill-file (newsgroup)

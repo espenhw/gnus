@@ -1138,6 +1138,7 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-grab-articles (articles process-function 
 				       &optional sloppy limit no-errors)
   (let ((state 'first) 
+	(gnus-asynchronous nil)
 	has-been-begin article result-file result-files process-state
 	gnus-summary-display-article-function
 	gnus-article-display-hook gnus-article-prepare-hook
@@ -1183,7 +1184,10 @@ The headers will be included in the sequence they are matched.")
 	    ;; If there is a `result-file' here, that means that the
 	    ;; file was unsuccessfully decoded, so we delete it.
 	    (when (and result-file 
-		       (file-exists-p result-file)) 
+		       (file-exists-p result-file)
+		       (gnus-y-or-n-p
+			(format "Delete unsuccessfully decoded file %s"
+				result-file)))
 	      (delete-file result-file)))
 	(when (memq 'begin process-state)
 	  (setq result-file (car process-state)))
@@ -1208,6 +1212,7 @@ The headers will be included in the sequence they are matched.")
 	      (setq funcs (list funcs)))
 	    (while funcs
 	      (funcall (pop funcs) result-file))))
+	(setq result-file nil)
 	;; Check whether we have decoded enough articles.
 	(and limit (= (length result-files) limit)
 	     (setq articles nil)))
@@ -1219,6 +1224,7 @@ The headers will be included in the sequence they are matched.")
 	   (not (memq 'end process-state))
 	   result-file 
 	   (file-exists-p result-file)
+	   (gnus-y-or-n-p (format "Delete incomplete file %s? " result-file))
 	   (delete-file result-file))
 
       ;; If this was a file of the wrong sort, then 

@@ -1155,16 +1155,14 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		     (funcall nnmail-treat-duplicates message-id))
 		    (t
 		     nnmail-treat-duplicates))))
-	 (group-art (nreverse (nnmail-article-group artnum-func))))
+	 group-art)
     ;; Let the backend save the article (or not).
     (cond
-     ((null group-art)
-      (delete-region (point-min) (point-max)))
      ((not duplication)
       (nnmail-cache-insert message-id)
-      (funcall func group-art))
+      (funcall func (setq group-art
+			  (nreverse (nnmail-article-group artnum-func)))))
      ((eq action 'delete)
-      (delete-region (point-min) (point-max))
       (setq group-art nil))
      ((eq action 'warn)
       ;; We insert a warning.
@@ -1179,11 +1177,15 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	 "Message-ID: " newid "\n"
 	 "Gnus-Warning: This is a duplicate of message " message-id "\n")
 	(nnmail-cache-insert newid)
-	(funcall func group-art)))
+	(funcall func (setq group-art
+			    (nreverse (nnmail-article-group artnum-func))))))
      (t
-      (funcall func group-art)))
+      (funcall func (setq group-art
+			  (nreverse (nnmail-article-group artnum-func))))))
     ;; Add the group-art list to the history list.
-    (push group-art nnmail-split-history)))
+    (if group-art
+	(push group-art nnmail-split-history)
+      (delete-region (point-min) (point-max)))))
 
 ;;; Get new mail.
 
@@ -1375,10 +1377,10 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (let ((history nnmail-split-history)
 	elem ga)
     (while (setq elem (pop history))
-      (insert (mapcar (lambda (ga)
-			(concat (car ga) ":" (int-to-string (cdr ga))))
-		      elem
-		      ", ")
+      (insert (mapconcat (lambda (ga)
+			   (concat (car ga) ":" (int-to-string (cdr ga))))
+			 elem
+			 ", ")
 	      "\n"))
     (goto-char (point-min))))
 	

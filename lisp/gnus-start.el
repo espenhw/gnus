@@ -1357,7 +1357,7 @@ newsgroup."
 	   t)
 	 (condition-case ()
 	     (gnus-request-group group dont-check method)
-					;   (error nil)
+	   (error nil)
 	   (quit nil))
 	 (gnus-set-active group (setq active (gnus-parse-active)))
 	 ;; Return the new active info.

@@ -48,6 +48,11 @@ from that group.")
 (defvar gnus-use-header-prefetch nil
   "*If non-nil, prefetch the headers to the next group.")
 
+(defvar gnus-async-prefetch-article-p 'gnus-async-unread-p
+  "*Function called to say whether an article should be prefetched or not.
+The function is called with one parameter -- the article data.
+It should return non-nil if the article is to be prefetched.")
+
 ;;; Internal variables.
 
 (defvar gnus-async-prefetch-article-buffer " *Async Prefetch Article*")
@@ -147,7 +152,8 @@ from that group.")
 			     n))
 		 (unless (or (gnus-async-prefetched-article-entry
 			      group (setq article (gnus-data-number d)))
-			     (not (natnump article)))
+			     (not (natnump article))
+			     (not (funcall gnus-async-prefetch-article-p d)))
 		   ;; Not already fetched -- so we add it to the list.
 		   (push article gnus-async-fetch-list)))
 	       (setq gnus-async-fetch-list
@@ -188,6 +194,10 @@ from that group.")
 	   (gnus-async-with-semaphore
 	    (setq gnus-async-fetch-list nil))
 	 (gnus-async-prefetch-article ,group ,next ,summary t)))))
+
+(defun gnus-async-unread-p (data)
+  "Return non-nil if DATA represents an unread article."
+  (gnus-data-unread-p data))
 
 (defun gnus-async-request-fetched-article (group article buffer)
   "See whether we have ARTICLE from GROUP and put it in BUFFER."

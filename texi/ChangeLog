@@ -1,3 +1,15 @@
+Wed Sep 18 07:33:11 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Other Marks): Edited.
+	(The Manual): New.
+	(Contributors): Updated.
+	(Asynchronous Fetching): Addition.
+	(New Features): Split.
+	((ding) Gnus): Renamed.
+	(September Gnus): New.
+	(Red Gnus): New,
+	(Undo): New.
+
 Thu Sep 12 23:55:53 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
 
 	* gnus.texi (Archived Messages): Fix.

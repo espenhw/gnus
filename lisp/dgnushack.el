@@ -29,8 +29,6 @@
 (require 'cl)
 (push "." load-path)
 
-(setq custom-file "/THIS FILE DOES NOT eXiST!")
-
 (defalias 'device-sound-enabled-p 'ignore)
 (defalias 'play-sound-file 'ignore)
 (defalias 'nndb-request-article 'ignore)

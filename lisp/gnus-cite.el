@@ -95,14 +95,6 @@ This should make it easier to see who wrote what.")
 (defvar gnus-cite-hide-absolute 10
   "Only hide excess citation if above this number of lines in the body.")
 
-(defun gnus-custom-import-cite-face-list (custom alist)
-  ;; Backward compatible grokking of light and dark.
-  (cond ((eq alist 'light)
-	 (setq alist (mapcar 'gnus-make-face gnus-face-light-name-list)))
-	((eq alist 'dark)
-	 (setq alist (mapcar 'gnus-make-face gnus-face-dark-name-list))))
-  (funcall (custom-super custom 'import) custom alist))
-
 ;;; Internal Variables:
 
 (defvar gnus-cite-article nil)

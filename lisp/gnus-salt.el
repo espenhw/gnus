@@ -113,6 +113,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
       (setq gnus-summary-line-format-spec nil)
       (gnus-update-format-specifications nil 'summary)
       (gnus-update-summary-mark-positions)
+      (set (make-local-variable 'gnus-summary-goto-unread) 'never)
       ;; Set up the menu.
       (when (and menu-bar-mode
 		 (gnus-visual-p 'pick-menu 'menu))
