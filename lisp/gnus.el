@@ -1669,7 +1669,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-score-find-trace gnus-score-file-name)
      ("gnus-cus" :interactive t gnus-group-customize gnus-score-customize)
      ("gnus-topic" :interactive t gnus-topic-mode)
-     ("gnus-topic" gnus-topic-remove-group gnus-topic-set-parameters)
+     ("gnus-topic" gnus-topic-remove-group gnus-topic-set-parameters
+      gnus-subscribe-topics)
      ("gnus-salt" :interactive t gnus-pick-mode gnus-binary-mode)
      ("gnus-uu" (gnus-uu-extract-map keymap) (gnus-uu-mark-map keymap))
      ("gnus-uu" :interactive t
