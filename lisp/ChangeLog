@@ -1,3 +1,26 @@
+2004-03-08  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-read-agentview): Removed support for
+	old file versions.
+	(gnus-group-prepare-hook): Removed function that converted list
+	form of gnus-agent-expire-days to group properties.
+
+	* gnus-int.el: Autoload gnus-agent-regenerate-group.
+	(gnus-request-accept-article): Re-indented.
+
+	* gnus-start.el (gnus-convert-old-newsrc): Registered new
+	converters to handle old agent file formats.  Added logic for a
+	"backup before upgrading warning".
+	(gnus-convert-mark-converter-prompt): Developers can mark
+	functions as needing (default), or not needing,
+	gnus-convert-old-newsrc's "backup before upgrading warning".
+	(gnus-convert-converter-needs-prompt): Tests whether the user
+	should be protected from potentially irreversable changes by the
+	function.
+
+	* legacy-gnus-agent.el (): New. Provides converters that are only
+	loaded when gnus-convert-old-newsrc needs to call them.
+	
 2004-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mail-source.el (mail-source-touch-pop): Doc fix.
