@@ -1,3 +1,27 @@
+2001-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* canlock.el: (canlock-base64-encode-function): Removed.
+	(canlock-mmencode-program): Removed.
+	(canlock-mmencode-args-for-encoding): Removed.
+	(canlock-openssl-program): Renamed from `canlock-ssleay-program'.
+	(canlock-openssl-args): Renamed from `canlock-ssleay-args'.
+	(canlock-load-hook): Removed.
+	(canlock-base64-encode-string-with-mmencode): Removed.
+	(canlock-sha1-with-openssl): Renamed from
+	`canlock-sha1-with-ssleay'.
+	(canlock-hex-string-to-int): Removed.
+	(canlock-fetch-fields): Don't use `mapcar'.
+	(canlock-fetch-id-for-key): Don't use Cancel header if there is no
+	cancel command.
+	(gnus-summary-canlock-verify): Removed.
+	(wl-summary-canlock-verify): Removed.
+	(canlock-mew-summary-display): Removed.
+	(mew-summary-canlock-verify): Removed.
+	(mh-summary-canlock-verify): Removed.
+	(vm-summary-canlock-verify): Removed.
+	(cmail-summary-canlock-verify): Removed.
+	(rmail-summary-canlock-verify): Removed.
+
 2001-10-25  Simon Josefsson  <jas@extundo.com>
 
 	* canlock.el (canlock-password, canlock-password-for-verify) 

@@ -1,14 +1,7 @@
-;;; canlock.el --- Functions for Cancel-Lock feature.
-;; Copyright (C) 1998,1999 Katsumi Yamaoka
+;;; canlock.el --- Functions for Cancel-Lock feature
+;; Copyright (C) 1998, 1999, 2001 Free Software Foundation, Inc.
 
-;; Author: Katsumi Yamaoka   <yamaoka@jpl.org>
-;;         Yuuichi Teranishi <teranisi@gohome.org>
-;;         Hideyuki SHIRAI   <shirai@rdmg.mgcs.mei.co.jp>
-;;         Hidekazu Nakamura <u90121@uis-inf.co.jp>
-;;         Ken'ichi Okada    <kokada@tamaru.kuee.kyoto-u.ac.jp>
-;;         Shuhei KOBAYASHI  <shuhei@aqua.ocn.ne.jp>
-;; Created: 1998-11-24
-;; Revised: 1999-06-14
+;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news, cancel-lock, hmac, sha1, rfc2104
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -22,148 +15,103 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, write to the Free Software
-;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-;; USA.
+;; along with this program; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 
-;; This library is based on draft-ietf-usefor-cancel-lock-01.txt,
-;; released on 1998-11-03.
+;; Canlock is a library for generating and verifying Cancel-Lock and/or
+;; Cancel-Key header in news articles.  This is used to protect articles
+;; from rogue cancel, supersede or replace attacks.  The method is based
+;; on draft-ietf-usefor-cancel-lock-01.txt which was released on November
+;; 3rd 1998.  For instance, you can add Cancel-Lock (and possibly Cancel-
+;; Key) header in a news article by using a hook which will be evaluated
+;; just before sending an article as follows:
+;;
+;; (add-hook '*e**a*e-header-hook 'canlock-insert-header t)
+;;
+;; Verifying Cancel-Lock is mainly a function of news servers, however,
+;; you can verify your own article using the command `canlock-verify' in
+;; the (raw) article buffer.  You will be prompted for the password for
+;; each time if the option `canlock-password' or `canlock-password-for-
+;; verify' is nil.  Note that setting these options is a bit unsafe.
 
 ;;; Code:
 
-(defconst canlock-version "0.6")
+(defconst canlock-version "0.8")
 
-(eval-when-compile (require 'cl))
-(require 'custom)
-(require 'mail-utils)
+(eval-when-compile
+  (require 'cl))
 
-(autoload 'sha1-encode-binary "sha1")
 (autoload 'sha1-binary "sha1-el")
+(autoload 'sha1-encode-binary "sha1")
 (autoload 'base64-encode "base64")
 
 (defgroup canlock nil
-  "Cancel-Lock feature."
-  :prefix "canlock-"
+  "The Cancel-Lock feature."
   :group 'applications)
 
-(defcustom canlock-base64-encode-function 'base64-encode-string
-  "*Function called to encode string to base64."
-  :type '(radio (function-item base64-encode-string)
-		(function-item base64-encode)
-		(function-item canlock-base64-encode-string-with-mmencode)
-		(function :tag "Other"))
-  :group 'canlock)
-
-(defcustom canlock-mmencode-program "mmencode"
-  "*Name of mmencode program."
-  :type 'string
-  :group 'canlock)
-
-(defcustom canlock-mmencode-args-for-encoding nil
-  "*Arguments passed to mmencode program for encoding."
-  :type 'sexp
-  :group 'canlock)
-
 (defcustom canlock-sha1-function 'sha1-binary
-  "*Function called to make a SHA1 digest from a message (string)."
+  "Function to call to make a SHA-1 message digest."
   :type '(radio (function-item sha1-encode-binary)
 		(function-item sha1-binary)
-		(function-item canlock-sha1-with-ssleay)
+		(function-item canlock-sha1-with-openssl)
 		(function :tag "Other"))
   :group 'canlock)
 
 (defcustom canlock-sha1-function-for-verify canlock-sha1-function
-  "*Function called to make a SHA1 digest for verifying."
+  "Function to call to make a SHA-1 message digest for verifying."
   :type '(radio (function-item sha1-encode-binary)
 		(function-item sha1-binary)
-		(function-item canlock-sha1-with-ssleay)
+		(function-item canlock-sha1-with-openssl)
 		(function :tag "Other"))
   :group 'canlock)
 
-(defcustom canlock-ssleay-program "ssleay"
-  "*Name of SSLeay program."
+(defcustom canlock-openssl-program "openssl"
+  "Name of OpenSSL program."
   :type 'string
   :group 'canlock)
 
-(defcustom canlock-ssleay-args '("sha1")
-  "*Arguments passed to SSLeay program."
+(defcustom canlock-openssl-args '("sha1")
+  "Arguments passed to the OpenSSL program."
   :type 'sexp
   :group 'canlock)
 
 (defcustom canlock-ignore-errors nil
-  "*If non-nil, ignore any error signals."
+  "If non-nil, ignore any error signals."
   :type 'boolean
   :group 'canlock)
 
-(defcustom canlock-load-hook nil
-  "*Hook to be run after the canlock package has been loaded."
-  :type 'hook
-  :group 'canlock)
-
 (defcustom canlock-password nil
-  "*Password to use when signing a Cancel-Lock or a Cancel-Key header."
+  "Password to use when signing a Cancel-Lock or a Cancel-Key header."
   :type 'string
   :group 'canlock)
 
 (defcustom canlock-password-for-verify canlock-password
-  "*Password to use when verifying a Cancel-Lock or a Cancel-Key header."
+  "Password to use when verifying a Cancel-Lock or a Cancel-Key header."
   :type 'string
   :group 'canlock)
 
 (defcustom canlock-force-insert-header nil
-  "*If non-nil, insert a Cancel-Lock or a Cancel-Key header even though the
-buffer does not contain a news message."
+  "If non-nil, insert a Cancel-Lock or a Cancel-Key header even if the
+buffer does not look like a news message."
   :type 'boolean
   :group 'canlock)
 
-;;; Functions.
-
-(defun canlock-base64-encode-string-with-mmencode (string)
-  "Encode string to base64 with mmencode."
-  (with-temp-buffer
-    (let ((coding-system-for-read 'raw-text)
-	  (coding-system-for-write 'binary)
-	  ;; For Mule 2 with APEL 9.12 or later.
-	  (default-process-coding-system '(raw-text . binary))
-	  mc-flag program-coding-system-alist)
-      (insert string)
-      (apply 'call-process-region (point-min) (point-max)
-	     canlock-mmencode-program t t nil
-	     canlock-mmencode-args-for-encoding)
-      (goto-char (point-max))
-      (skip-chars-backward "\n")
-      (buffer-substring (point-min) (point)))))
-
-(defun canlock-hex-string-to-int (string)
-  "Convert hexadecimal string to integer."
-  (let ((integer 0))
-    (mapcar
-     (lambda (hex)
-       (setq integer (+ (* 16 integer)
-			(logand hex 15)
-			(* (lsh hex -6) 9))))
-     string)
-    integer))
-
-(defun canlock-sha1-with-ssleay (message)
-  "Make a SHA1 digest from a specified message (string) with SSLeay."
+(defun canlock-sha1-with-openssl (message)
+  "Make a SHA-1 digest of MESSAGE using OpenSSL."
   (with-temp-buffer
     (let ((coding-system-for-read 'binary)
 	  (coding-system-for-write 'binary)
-	  ;; For Mule 2 with APEL 9.12 or later.
-	  (default-process-coding-system '(binary . binary))
-	  mc-flag program-coding-system-alist
+	  selective-display
 	  (case-fold-search t))
       (insert message)
       (apply 'call-process-region (point-min) (point-max)
-	     canlock-ssleay-program t t nil canlock-ssleay-args)
+	     canlock-openssl-program t t nil canlock-openssl-args)
       (goto-char (point-min))
-      (while (re-search-forward "[0-9A-F][0-9A-F]" nil t)
-	(goto-char (match-beginning 0))
-	(insert-char (canlock-hex-string-to-int (match-string 0)) 1)
-	(delete-char 2))
+      (while (re-search-forward "[0-9a-f][0-9a-f]" nil t)
+	(replace-match (read (concat "\"\\x" (match-string 0) "\""))))
       (buffer-substring (point-min) (point)))))
 
 (defvar canlock-read-passwd nil)
@@ -197,15 +145,14 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(opad (mapconcat (lambda (char)
 			   (char-to-string (logxor 92 char)))
 			 password "")))
-    (funcall canlock-base64-encode-function
-	     (funcall canlock-sha1-function
-		      (concat
-		       opad
-		       (funcall canlock-sha1-function
-				(concat ipad message-id)))))))
+    (base64-encode-string (funcall canlock-sha1-function
+				   (concat
+				    opad
+				    (funcall canlock-sha1-function
+					     (concat ipad message-id)))))))
 
 (defun canlock-narrow-to-header ()
-  "Narrow to the message header."
+  "Narrow the buffer to the head of the message."
   (let (case-fold-search)
     (narrow-to-region
      (goto-char (point-min))
@@ -217,8 +164,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 		  (point-max))))))
 
 (defun canlock-delete-headers ()
-  "Delete Canlock headers if they already exist.
-The buffer is expected to be narrowed to just the headers of the message."
+  "Delete Cancel-Key or Cancel-Lock headers in the narrowed buffer."
   (let ((case-fold-search t))
     (goto-char (point-min))
     (while (re-search-forward "^Cancel-\\(Key\\|Lock\\):" nil t)
@@ -228,28 +174,30 @@ The buffer is expected to be narrowed to just the headers of the message."
 		       (point-max))))))
 
 (defun canlock-fetch-fields (&optional key)
-  "Return the list of values of Cancel-Lock field.
-If the optional arg KEY is non-nil, Cancel-Key field will be fetched.
-The buffer is expected to be narrowed to just the headers of the message."
-  (let ((feild (mail-fetch-field (if key "Cancel-Key" "Cancel-Lock")))
+  "Return a list of the values of Cancel-Lock header.
+If KEY is non-nil, look for a Cancel-Key header instead.  The buffer
+is expected to be narrowed to just the headers of the message."
+  (let ((field (mail-fetch-field (if key "Cancel-Key" "Cancel-Lock")))
+	fields rest
 	(case-fold-search t))
-    (when feild
-      (mapcar (lambda (str)
-		(string-match "^sha1:" str)
-		(substring str (match-end 0)))
-	      (split-string feild "[\t\n\r ,]+")))))
+    (when field
+      (setq fields (split-string field "[\t\n\r ,]+"))
+      (while fields
+	(when (string-match "^sha1:" (setq field (pop fields)))
+	  (push (substring field 5) rest)))
+      (nreverse rest))))
 
 (defun canlock-fetch-id-for-key ()
-  "Return the Message-ID for Cancel-Key.
-The buffer is expected to be narrowed to just the headers of the message."
-  (let ((cancel (mail-fetch-field "Control")))
-    (if cancel
-	(progn
-	  (string-match "^cancel[\t ]+\\(<[^\t\n @<>]+@[^\t\n @<>]+>\\)"
-			cancel)
-	  (match-string 1 cancel))
-      (or (mail-fetch-field "Supersedes")
-	  (mail-fetch-field "Replaces")))))
+  "Return a Message-ID in Cancel, Supersedes or Replaces header.
+The buffer is expected to be narrowed to just the headers of the
+message."
+  (or (let ((cancel (mail-fetch-field "Control")))
+	(and cancel
+	     (string-match "^cancel[\t ]+\\(<[^\t\n @<>]+@[^\t\n @<>]+>\\)"
+			   cancel)
+	     (match-string 1 cancel)))
+      (mail-fetch-field "Supersedes")
+      (mail-fetch-field "Replaces")))
 
 ;;;###autoload
 (defun canlock-insert-header (&optional id-for-key id-for-lock password)
@@ -273,13 +221,13 @@ The buffer is expected to be narrowed to just the headers of the message."
 	  (goto-char (point-max))))
       (when news
 	(if (not (or id-for-key id-for-lock))
-	    (message "There are no Message-ID(s).")
+	    (message "There are no Message-ID(s)")
 	  (unless password
 	    (setq password (or canlock-password
 			       (canlock-read-passwd
 				"Password for Canlock: "))))
 	  (if (or (not (stringp password)) (zerop (length password)))
-	      (message "Password for Canlock is bad.")
+	      (message "Password for Canlock is bad")
 	    (setq key-for-key (when id-for-key
 				(canlock-make-cancel-key
 				 id-for-key password))
@@ -287,21 +235,22 @@ The buffer is expected to be narrowed to just the headers of the message."
 				 (canlock-make-cancel-key
 				  id-for-lock password)))
 	    (if (not (or key-for-key key-for-lock))
-		(message "Couldn't insert Canlock header.")
+		(message "Couldn't insert Canlock header")
 	      (when key-for-key
 		(insert "Cancel-Key: sha1:" key-for-key "\n"))
 	      (when key-for-lock
 		(insert "Cancel-Lock: sha1:"
-			(funcall canlock-base64-encode-function
-				 (funcall canlock-sha1-function
-					  key-for-lock))
+			(base64-encode-string (funcall canlock-sha1-function
+						       key-for-lock))
 			"\n")))))))))
 
 ;;;###autoload
 (defun canlock-verify (&optional buffer)
-  "Verify Cancel-Lock or Cancel-Key. If failed, returns non-nil or signals
-an error if `canlock-ignore-errors' is nil.  If the optional arg BUFFER
-is not specified, it runs in place."
+  "Verify Cancel-Lock or Cancel-Key in BUFFER.
+If BUFFER is nil, the current buffer is assumed.  Signal an error if
+it fails.  You can modify the behavior of this function to return non-
+nil instead of to signal an error by setting the option
+`canlock-ignore-errors' to non-nil."
   (interactive)
   (let ((canlock-sha1-function (or canlock-sha1-function-for-verify
 				   canlock-sha1-function))
@@ -317,11 +266,11 @@ is not specified, it runs in place."
 	      locks (canlock-fetch-fields))
 	(if (not (or keys locks))
 	    (setq errmsg
-		  "There are neither Cancel-Lock nor Cancel-Key fields.")
+		  "There are neither Cancel-Lock nor Cancel-Key headers")
 	  (setq id-for-key (canlock-fetch-id-for-key)
 		id-for-lock (mail-fetch-field "Message-ID"))
 	  (or id-for-key id-for-lock
-	      (setq errmsg "There are no Message-ID(s).")))))
+	      (setq errmsg "There are no Message-ID(s)")))))
 
     (if errmsg
 	(if canlock-ignore-errors
@@ -332,7 +281,7 @@ is not specified, it runs in place."
 			 (canlock-read-passwd "Password for Canlock: ")))
       (if (or (not (stringp password)) (zerop (length password)))
 	  (progn
-	    (setq errmsg "Password for Canlock is bad.")
+	    (setq errmsg "Password for Canlock is bad")
 	    (if canlock-ignore-errors
 		errmsg
 	      (error "%s" errmsg)))
@@ -348,10 +297,9 @@ is not specified, it runs in place."
 	(when locks
 	  (when id-for-lock
 	    (setq key-for-lock
-		  (funcall canlock-base64-encode-function
-			   (funcall canlock-sha1-function
-				    (canlock-make-cancel-key
-				     id-for-lock password))))
+		  (base64-encode-string (funcall canlock-sha1-function
+						 (canlock-make-cancel-key
+						  id-for-lock password))))
 	    (when (and locks (not match))
 	      (setq match (string-equal key-for-lock (pop locks)))))
 	  (setq locks (if match "good" "bad")))
@@ -360,123 +308,12 @@ is not specified, it runs in place."
 	    (when (member "bad" (list keys locks))
 	      "bad")
 	  (cond ((and keys locks)
-		 (message "Cancel-Key is %s, Cancel-Lock is %s." keys locks))
+		 (message "Cancel-Key is %s, Cancel-Lock is %s" keys locks))
 		(locks
-		 (message "Cancel-Lock is %s." locks))
+		 (message "Cancel-Lock is %s" locks))
 		(keys
-		 (message "Cancel-Key is %s." keys))))))))
-
-;; Avoid byte compile warnings.
-(defvar gnus-show-all-headers)
-(defvar gnus-original-article-buffer)
-(defvar mh-show-buffer)
-(defvar vm-mail-buffer)
-(defvar vm-message-pointer)
-(defvar cmail-current-folder)
-(defvar rmail-buffer)
-
-;;;###autoload
-(defun gnus-summary-canlock-verify ()
-  "Run `canlock-verify' from gnus summary buffer."
-  (interactive)
-  (gnus-summary-select-article gnus-show-all-headers)
-  (canlock-verify gnus-original-article-buffer))
-
-;;;###autoload
-(defun wl-summary-canlock-verify ()
-  "Run `canlock-verify' from Wanderlust summary buffer."
-  (interactive)
-  (wl-summary-set-message-buffer-or-redisplay)
-  (canlock-verify (wl-message-get-original-buffer)))
-
-(eval-when-compile
-  (if (or (featurep 'use-mew-1.94b20-or-later)
-	  (and (fboundp 'function-max-args)
-	       (or (fboundp 'mew-summary-display)
-		   (load "mew-summary" t))
-	       (eq 2 (function-max-args 'mew-summary-display))))
-      (progn
-	(defmacro canlock-mew-summary-display ()
-	  '(mew-summary-display t))
-	(message "Use mew-1.94b20 or later."))
-    (defmacro canlock-mew-summary-display ()
-      '(condition-case nil
-	   (mew-summary-display)
-	 (wrong-number-of-arguments
-	  (mew-summary-display t))))
-    ))
-
-;;;###autoload
-(defun mew-summary-canlock-verify ()
-  "Run `canlock-verify' from Mew summary buffer."
-  (interactive)
-  (canlock-mew-summary-display)
-  (canlock-verify (mew-buffer-message)))
-
-;;;###autoload
-(defun mh-summary-canlock-verify ()
-  "Run `canlock-verify' from MH folder buffer."
-  (interactive)
-  (mh-header-display)
-  (canlock-verify mh-show-buffer))
-
-;;;###autoload
-(defun vm-summary-canlock-verify ()
-  "Run `canlock-verify' from VM summary buffer."
-  (interactive)
-  (vm-follow-summary-cursor)
-  (if (and vm-mail-buffer (buffer-name vm-mail-buffer))
-      (save-excursion
-	(set-buffer vm-mail-buffer)
-	(let* ((mp (car vm-message-pointer))
-	       (header (save-restriction
-			 (widen)
-			 (buffer-substring
-			  (aref (aref mp 0) 0) (vm-text-of mp)))))
-	  (with-temp-buffer
-	    (insert header)
-	    (canlock-verify))))
-    (or canlock-ignore-errors
-	(error "Folder buffer has been killed"))))
-
-;;;###autoload
-(defun cmail-summary-canlock-verify ()
-  "Run `canlock-verify' from cmail summary buffer."
-  (interactive)
-  (let* ((page (cmail-get-page-number-from-summary))
-	 (header (save-excursion
-		   (set-buffer (cmail-folder-buffer cmail-current-folder))
-		   (cmail-n-page page)
-		   (buffer-substring (point)
-				     (if (search-forward "\n\n" nil t)
-					 (1- (point))
-				       (point-max))))))
-    (with-temp-buffer
-      (insert header)
-      (canlock-verify))))
-
-;;;###autoload
-(defun rmail-summary-canlock-verify ()
-  "Run `canlock-verify' from RMAIL summary buffer."
-  (interactive)
-  (rmail-summary-rmail-update)
-  (let ((header (save-excursion
-		  (set-buffer rmail-buffer)
-		  (goto-char (point-min))
-		  (save-restriction
-		    (widen)
-		    (search-backward "\n\C-_\C-l\n") ;; ^_^L
-		    (re-search-forward "^[^\t\n ]+:")
-		    (buffer-substring
-		     (goto-char (match-beginning 0))
-		     (progn (search-forward "\n\n")
-			    (1- (point))))))))
-    (with-temp-buffer
-      (insert header)
-      (canlock-verify))))
+		 (message "Cancel-Key is %s" keys))))))))
 
 (provide 'canlock)
-
-(run-hooks 'canlock-load-hook)
 
 ;;; canlock.el ends here
