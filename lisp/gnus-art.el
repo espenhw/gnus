@@ -6179,10 +6179,11 @@ For example:
   (let ((func (cdr (assoc protocol gnus-article-encrypt-protocol-alist))))
     (unless func
       (error (format "Can't find the encrypt protocol %s" protocol)))
-    (if (equal gnus-newsgroup-name "nndraft:drafts")
-	(error "Can't encrypt the article in group nndraft:drafts"))
-    (if (equal gnus-newsgroup-name "nndraft:queue")
-	(error "Don't encrypt the article in group nndraft:queue"))
+    (if (member gnus-newsgroup-name '("nndraft:delayed"
+				      "nndraft:drafts"
+				      "nndraft:queue"))
+	(error "Can't encrypt the article in group %s"
+	       gnus-newsgroup-name))
     (gnus-summary-iterate n
       (save-excursion
 	(set-buffer gnus-summary-buffer)

@@ -8949,8 +8949,12 @@ groups."
 		     (setq gnus-article-mime-handles nil))))))
      (t
       (setq force t)))
-    (when (and raw (not force) (equal gnus-newsgroup-name "nndraft:drafts"))
-      (error "Can't edit the raw article in group nndraft:drafts"))
+    (when (and raw (not force)
+	       (member gnus-newsgroup-name '("nndraft:delayed"
+					     "nndraft:drafts"
+					     "nndraft:queue")))
+      (error "Can't edit the raw article in group %s"
+	     gnus-newsgroup-name))
     (save-excursion
       (set-buffer gnus-summary-buffer)
       (let ((mail-parse-charset gnus-newsgroup-charset)
@@ -8963,7 +8967,7 @@ groups."
 	(when (and (not raw) (gnus-buffer-live-p gnus-article-buffer))
 	  (with-current-buffer gnus-article-buffer
 	    (mm-enable-multibyte)))
-	(if (equal gnus-newsgroup-name "nndraft:drafts")
+	(if (member gnus-newsgroup-name '("nndraft:delayed" "nndraft:drafts"))
 	    (setq raw t))
 	(gnus-article-edit-article
 	 (if raw 'ignore
@@ -10927,7 +10931,7 @@ UNREAD is a sorted list."
 
 (defun gnus-summary-setup-default-charset ()
   "Setup newsgroup default charset."
-  (if (equal gnus-newsgroup-name "nndraft:drafts")
+  (if (member gnus-newsgroup-name '("nndraft:delayed" "nndraft:drafts"))
       (setq gnus-newsgroup-charset nil)
     (let* ((ignored-charsets
 	    (or gnus-newsgroup-ephemeral-ignored-charsets

@@ -1,3 +1,21 @@
+2002-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-encrypt-body): Inhibit encrypting of
+	a delayed or a queued article as well as a draft.
+
+	* gnus-sum.el (gnus-summary-edit-article): Inhibit editing of a
+	delayed or a queued article in the raw format; treat a delayed
+	article as a raw article as well as a draft.
+	(gnus-summary-setup-default-charset): Clear gnus-newsgroup-charset
+	for the delayed group.
+
+	* nndraft.el (nndraft-request-article): Ignore auto save files for
+	a delayed or a queued article; don't bother to decode a queued
+	article; don't bind nnmail-file-coding-system for a queued article.
+
+	* nnmail.el (nnmail-split-fancy-with-parent): Ignore the delayed
+	and the queue group.
+
 2002-11-04  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-group.el (gnus-group-delete-group):
