@@ -6398,6 +6398,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
   "Quit reading current newsgroup without updating read article info."
   (interactive)
   (let* ((group gnus-newsgroup-name)
+	 (gnus-group-is-exiting-p t)
 	 (quit-config (gnus-group-quit-config group)))
     (when (or no-questions
 	      gnus-expert-user
@@ -6441,6 +6442,7 @@ If FORCE (the prefix), also save the .newsrc file(s)."
       (gnus-configure-windows 'group 'force)
       ;; Clear the current group name.
       (setq gnus-newsgroup-name nil)
+      (gnus-group-update-group group)
       (when (equal (gnus-group-group-name) group)
 	(gnus-group-next-unread-group 1))
       (when quit-config

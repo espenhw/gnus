@@ -2,6 +2,7 @@
 
 	* gnus-sum.el (gnus-summary-exit): Bind gnus-group-is-exiting-p. 
 	(gnus-summary-read-group-1): Update group line.
+	(gnus-summary-exit-no-update): Update group on exit.
 
 	* gnus-group.el (gnus-group-line-format): Add %*.
 	(gnus-group-line-format-alist): Ditto.
