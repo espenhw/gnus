@@ -35,6 +35,7 @@
     ("text/.*" qp-or-base64)
     ("message/rfc822" 8bit)
     ("application/emacs-lisp" 8bit)
+    ("application/x-emacs-lisp" 8bit)
     ("application/x-patch" 8bit)
     (".*" base64))
   "Alist of regexps that match MIME types and their encodings.

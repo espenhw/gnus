@@ -1,5 +1,10 @@
 2002-01-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-encode.el (mm-content-transfer-encoding-defaults): Add
+	application/x-emacs-lisp.
+
+	* gnus-msg.el (gnus-bug): Use application/emacs-lisp.
+
 	* nntp.el (nntp-request-article): Add group parameter.
 	(nntp-request-head): Ditto.
 	(nntp-find-group-and-number): Add parameter group. Figure out
