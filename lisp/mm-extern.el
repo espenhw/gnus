@@ -49,7 +49,7 @@
 	(coding-system-for-read mm-binary-coding-system))
     (unless name
       (error "The filename is not specified"))
-    (mm-disable-multibyte-mule4)
+    (mm-disable-multibyte)
     (if (file-exists-p name)
 	(mm-insert-file-contents name nil nil nil nil t)
       (error (format "File %s is gone" name)))))
@@ -61,9 +61,9 @@
 	(coding-system-for-read mm-binary-coding-system))
     (unless url
       (error "URL is not specified"))
-    (mm-with-unibyte-current-buffer-mule4
+    (mm-with-unibyte-current-buffer
       (mm-url-insert-file-contents url))
-    (mm-disable-multibyte-mule4)
+    (mm-disable-multibyte)
     (setq buffer-file-name name)))
 
 (defun mm-extern-anon-ftp (handle)
@@ -79,7 +79,7 @@
 	 (coding-system-for-read mm-binary-coding-system))
     (unless name
       (error "The filename is not specified"))
-    (mm-disable-multibyte-mule4)
+    (mm-disable-multibyte)
     (mm-insert-file-contents path nil nil nil nil t)))
 
 (defun mm-extern-ftp (handle)
