@@ -6653,6 +6653,7 @@ Matching}).
 @findex gnus-thread-sort-by-subject
 @findex gnus-thread-sort-by-author
 @findex gnus-thread-sort-by-number
+@findex gnus-thread-sort-by-random
 @vindex gnus-thread-sort-functions
 @findex gnus-thread-sort-by-most-recent-thread
 If you are using a threaded summary display, you can sort the threads by
@@ -6665,7 +6666,8 @@ predicate functions include @code{gnus-thread-sort-by-number},
 @code{gnus-thread-sort-by-author}, @code{gnus-thread-sort-by-subject},
 @code{gnus-thread-sort-by-date}, @code{gnus-thread-sort-by-score},
 @code{gnus-thread-sort-by-most-recent-number},
-@code{gnus-thread-sort-by-most-recent-date} and
+@code{gnus-thread-sort-by-most-recent-date},
+@code{gnus-thread-sort-by-random} and
 @code{gnus-thread-sort-by-total-score}.
 
 Each function takes two threads and returns non-@code{nil} if the first
@@ -6716,14 +6718,18 @@ tickles your fancy.
 @findex gnus-article-sort-by-score
 @findex gnus-article-sort-by-subject
 @findex gnus-article-sort-by-author
+@findex gnus-article-sort-by-random
 @findex gnus-article-sort-by-number
-If you are using an unthreaded display for some strange reason or other,
-you have to fiddle with the @code{gnus-article-sort-functions} variable.
-It is very similar to the @code{gnus-thread-sort-functions}, except that
-it uses slightly different functions for article comparison.  Available
-sorting predicate functions are @code{gnus-article-sort-by-number},
-@code{gnus-article-sort-by-author}, @code{gnus-article-sort-by-subject},
-@code{gnus-article-sort-by-date}, and @code{gnus-article-sort-by-score}.
+If you are using an unthreaded display for some strange reason or
+other, you have to fiddle with the @code{gnus-article-sort-functions}
+variable.  It is very similar to the
+@code{gnus-thread-sort-functions}, except that it uses slightly
+different functions for article comparison.  Available sorting
+predicate functions are @code{gnus-article-sort-by-number},
+@code{gnus-article-sort-by-author},
+@code{gnus-article-sort-by-subject}, @code{gnus-article-sort-by-date},
+@code{gnus-article-sort-by-random}, and
+@code{gnus-article-sort-by-score}.
 
 If you want to sort an unthreaded summary display by subject, you could
 say something like:
@@ -8996,6 +9002,11 @@ Sort by article length (@code{gnus-summary-sort-by-chars}).
 @kindex C-c C-s C-i (Summary)
 @findex gnus-summary-sort-by-score
 Sort by score (@code{gnus-summary-sort-by-score}).
+
+@item C-c C-s C-r
+@kindex C-c C-s C-r (Summary)
+@findex gnus-summary-sort-by-random
+Randomize (@code{gnus-summary-sort-by-random}).
 
 @item C-c C-s C-o
 @kindex C-c C-s C-o (Summary)
