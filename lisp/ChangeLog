@@ -1,3 +1,7 @@
+2001-07-26  Simon Josefsson  <jas@extundo.com>
+
+	* nnimap.el (nnimap-version): Bump version number.
+
 2001-07-26 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Steven E. Harris <seh@speakeasy.org>
 

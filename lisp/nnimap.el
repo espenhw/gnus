@@ -73,7 +73,7 @@
 
 (nnoo-declare nnimap)
 
-(defconst nnimap-version "nnimap 0.131")
+(defconst nnimap-version "nnimap 1.0")
 
 (defvoo nnimap-address nil
   "Address of physical IMAP server.  If nil, use the virtual server's name.")
