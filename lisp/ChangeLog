@@ -1,3 +1,9 @@
+2004-05-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-get-unread-articles): Don't invalidate
+	active for foreign groups even if the group level is higher than
+	the specified value.
+
 2004-05-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-picon-databases): Add /usr/share/picons.

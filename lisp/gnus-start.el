@@ -1694,7 +1694,7 @@ newsgroup."
 		   (when (fboundp (intern (concat (symbol-name (car method))
 						  "-request-update-info")))
 		     (inline (gnus-request-update-info info method))))
-	       (setq active 'ignore)))
+	       (setq active nil)))
 	    ;; These groups are native or secondary.
 	    ((> (gnus-info-level info) level)
 	     ;; We don't want these groups.
