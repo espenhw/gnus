@@ -683,8 +683,10 @@ yanked."
 	    (message-reply-headers
 	     ;; The headers are decoded.
 	     (with-current-buffer gnus-article-copy
-	       (nnheader-fold-continuation-lines)
-	       (nnheader-parse-head t))))
+	       (save-restriction
+		 (nnheader-narrow-to-headers)
+		 (ietf-drums-unfold-fws)
+		 (nnheader-parse-head t)))))
 	(message-yank-original)
 	(setq beg (or beg (mark t))))
       (when articles
