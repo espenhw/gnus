@@ -131,10 +131,10 @@
        mm-security-handle 'gnus-info "Failed"))))
 
 (defun mml2015-fix-micalg (alg)
-  (upcase
-   (if (and alg (string-match "^pgp-" alg))
-       (substring alg (match-end 0))
-     alg)))
+  (and alg
+       (upcase (if (string-match "^pgp-" alg)
+		   (substring alg (match-end 0))
+		 alg))))
 
 (defun mml2015-mailcrypt-verify (handle ctl)
   (catch 'error
