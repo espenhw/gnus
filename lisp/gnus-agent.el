@@ -1841,6 +1841,7 @@ The following commands are available:
 	 (time-to-days (current-time)))
 	(gnus-agent-save-history)))
     (set-buffer nntp-server-buffer)
+    (erase-buffer)
     (insert-buffer-substring gnus-agent-overview-buffer)
     (if (and fetch-old
 	     (not (numberp fetch-old)))
