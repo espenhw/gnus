@@ -10551,6 +10551,7 @@ Browse the mailing list archive, if List-Archive field exists.
 
 @end table
 
+
 @node Article Buffer
 @chapter Article Buffer
 @cindex article buffer
@@ -11116,6 +11117,11 @@ Hook called in article mode buffers.
 @vindex gnus-article-mode-syntax-table
 Syntax table used in article buffers.  It is initialized from
 @code{text-mode-syntax-table}.
+
+@vindex gnus-article-over-scroll
+@item gnus-article-over-scroll
+If non-@code{nil}, allow scrolling the article buffer even when there
+no more new text to scroll in.  The default is @code{nil}.
 
 @vindex gnus-article-mode-line-format
 @item gnus-article-mode-line-format
