@@ -1,3 +1,7 @@
+2003-03-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-uu.el (mm-uu-pgp-encrypted-test): Fix message.
+
 2003-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-cus.el (gnus-group-customize): Don't use delete-if which is

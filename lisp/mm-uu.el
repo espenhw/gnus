@@ -361,7 +361,7 @@ Return that buffer."
     ((eq mm-decrypt-option 'never) nil)
     ((eq mm-decrypt-option 'always) t)
     ((eq mm-decrypt-option 'known) t)
-    (t (y-or-n-p "Decrypt pgp encrypted part?")))))
+    (t (y-or-n-p "Decrypt pgp encrypted part? ")))))
 
 (defun mm-uu-pgp-encrypted-extract-1 (handles ctl)
   (let ((buf (mm-uu-copy-to-buffer (point-min) (point-max))))
