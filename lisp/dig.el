@@ -175,10 +175,10 @@ Optional arguments are passed to `dig-invoke'."
 Optional arguments are passed to `dig-invoke' and `dig-extract-rr'.  Returns nil for a nonexistent domain."
 (let ((buffer (dig-invoke domain query-type query-class query-option dig-option server)))
   (when buffer
-      (switch-to-buffer buffer)
-      (setq digger (dig-extract-rr domain query-type query-class))
+    (switch-to-buffer buffer)
+    (let ((digger (dig-extract-rr domain query-type query-class)))
       (kill-buffer buffer)
-      digger)))
+      digger))))
 
 (provide 'dig)
 
