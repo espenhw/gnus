@@ -1,3 +1,8 @@
+2000-05-08 22:34:19  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.el (message-supersede): Use mime-to-mml.
+	* mm-decode.el (mm-insert-part): Test the buffer if no encoding.
+
 2000-05-08 22:34:24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-group-list-cached): Don't use

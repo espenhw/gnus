@@ -3896,6 +3896,7 @@ header line with the old Message-ID."
     ;; Get a normal message buffer.
     (message-pop-to-buffer (message-buffer-name "supersede"))
     (insert-buffer-substring cur)
+    (mime-to-mml)
     (message-narrow-to-head)
     ;; Remove unwanted headers.
     (when message-ignored-supersedes-headers
