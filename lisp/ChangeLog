@@ -1,3 +1,11 @@
+2003-04-12  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-hidden-headers): New variable.
+	(message-hide-headers): New function.
+	(message-hide-header-p): New function.
+
+	* lpath.el (featurep): Bind Info-directory, Info-menu.
+
 2003-04-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* mm-bodies.el (mm-body-charset-encoding-alist): UTF-16 *must* be

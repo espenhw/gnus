@@ -31,6 +31,7 @@
 (if (featurep 'xemacs)
     (progn
       (maybe-fbind '(ccl-execute-on-string
+		     Info-directory Info-menu
 		     char-charset charsetp coding-system-get
 		     coding-system-list coding-system-p decode-coding-region
 		     decode-coding-string define-ccl-program delete-overlay

@@ -982,6 +982,13 @@ candidates:
   (or (not (listp message-shoot-gnksa-feet))
       (memq feature message-shoot-gnksa-feet)))
 
+(defcustom message-hidden-headers nil
+  "Regexp of headers to be hidden when composing new messages.
+This can also be a list of regexps to match headers.  Or, instead of
+regexps, the elements can be on the form `(not REGEXP)'."
+  :group 'message
+  :type '(repeat regexp))
+
 ;;; Internal variables.
 ;;; Well, not really internal.
 
@@ -6467,6 +6474,38 @@ regexp varstr."
 			     (or cc "")
 			     (if (and (or to cc) bcc) ", ")
 			     (or bcc "")))))))
+
+(defun message-hide-headers ()
+  "Hide headers based on the `message-hidden-headers' variable."
+  (let ((regexps (if (stringp message-hidden-headers)
+		     (list message-hidden-headers)
+		   message-hidden-headers))
+	(inhibit-point-motion-hooks t))
+    (when regexps
+      (goto-char (point-min))
+      (while (not (eobp))
+	(if (not (message-hide-header-p regexps))
+	    (message-next-header)
+	  (let ((begin (point)))
+	    (message-next-header)
+	    (add-text-properties begin (point)
+				 '(intangible t invisible t
+					      message-hidden t))))))))
+
+(defun message-hide-header-p (regexps)
+  (let ((result nil))
+    (dolist (regexp regexps)
+      (setq result
+	    (or result
+		(cond
+		 ((stringp regexp)
+		  (looking-at regexp))
+		 ((and (consp regexp)
+		       (eq (car regexp) 'not))
+		  (not (looking-at (cadr regexp))))
+		 (t
+		  (error "Invalid header match: %s" regexp))))))
+    result))
 
 (when (featurep 'xemacs)
   (require 'messagexmas)
