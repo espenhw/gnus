@@ -1,3 +1,7 @@
+Fri Dec  3 20:09:41 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v5.8.1 is released.
+
 1999-11-11  Hrvoje Niksic  <hniksic@iskon.hr>
 
 	* mml.el (mml-insert-tag): Don't close the tag.
