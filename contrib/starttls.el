@@ -27,6 +27,8 @@
 ;; This package implements a simple wrapper around the GNU TLS command
 ;; line application "gnutls-cli" to make Emacs support STARTTLS.
 ;;
+;; This package require GNUTLS 0.9.8 (released 2003-10-02) or later.
+;;
 ;; Usage is similar to `open-network-stream', i.e.:
 ;;
 ;; (setq tmp (open-starttls-stream "test" (current-buffer) "cyrus.andrew.cmu.edu" 143))
