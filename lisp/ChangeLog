@@ -1,3 +1,7 @@
+2001-07-21  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-delay.el: New file.
+
 2001-07-21 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-read-coding-system): Take two arguments.
