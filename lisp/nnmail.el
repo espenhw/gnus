@@ -772,7 +772,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 			  (> (nth 1 file-time) (nth 1 timestamp))))))
 	(save-excursion
 	  (or (eq timestamp 'none)
-	      (set (intern (format "%s-active-timestamp" backend)) file-time))
+	      (set (intern (format "%s-active-timestamp" backend)) 
+		   (current-time)))
 	  (funcall (intern (format "%s-request-list" backend)))
 	  (set (intern (format "%s-group-alist" backend)) 
 	       (nnmail-get-active))))

@@ -581,7 +581,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
     ;; and add it if it isn't.
     ;;(if (not (assoc nnfoler-current-group nnfolder-group-alist)
     (set-buffer (setq nnfolder-current-buffer 
-		      (nnheader-find-file-noselect file)))
+		      (nnheader-find-file-noselect file nil 'raw)))
     (buffer-disable-undo (current-buffer))
     (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	  (marker (concat "\n" nnfolder-article-marker))

@@ -5528,12 +5528,13 @@ The adaptive score entries will be put into a file where the name is the
 group name with @code{gnus-adaptive-file-suffix} appended.
 
 @vindex gnus-score-exact-adapt-limit
-When doing adaptive scoring, substring matching would probably give you
-the best results in most cases.  However, if the header one matches is
-short, the possibility for false positives is great, so if the length of
-the match is less than @code{gnus-score-exact-adapt-limit}, exact
-matching will be used.  If this variable is @code{nil}, which it is by
-default, exact matching will always be used to avoid this problem. 
+When doing adaptive scoring, substring or fuzzy matching would probably
+give you the best results in most cases. However, if the header one
+matches is short, the possibility for false positives is great, so if
+the length of the match is less than
+@code{gnus-score-exact-adapt-limit}, exact matching will be used. If
+this variable is @code{nil}, exact matching will always be used to avoid
+this problem.
 
 @node Scoring Tips
 @subsection Scoring Tips

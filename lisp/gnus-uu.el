@@ -502,11 +502,10 @@ The headers will be included in the sequence they are matched.")
   "Marks all articles downwards in this thread."
   (interactive)
   (gnus-set-global-variables)
-  (save-excursion
-    (let ((level (gnus-summary-thread-level)))
+  (let ((level (gnus-summary-thread-level)))
     (while (and (gnus-summary-set-process-mark (gnus-summary-article-number))
 		(zerop (gnus-summary-next-subject 1))
-		(> (gnus-summary-thread-level) level)))))
+		(> (gnus-summary-thread-level) level))))
   (gnus-summary-position-cursor))
 
 (defun gnus-uu-mark-sparse ()

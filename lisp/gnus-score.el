@@ -48,15 +48,14 @@
 (defvar gnus-score-mimic-keymap nil
   "*Have the score entry functions pretend that they are a keymap.")
 
-(defvar gnus-score-exact-adapt-limit nil
+(defvar gnus-score-exact-adapt-limit 10
   "*Number that says how long a match has to be before using substring matching.
-When doing adaptive scoring, one normally uses substring matching.
-However, if the header one matches is short, the possibility for false
-positives is great, so if the length of the match is less than this
-variable, exact matching will be used.
+When doing adaptive scoring, one normally uses fuzzy or substring
+matching. However, if the header one matches is short, the possibility
+for false positives is great, so if the length of the match is less
+than this variable, exact matching will be used.
 
-If this variable is nil, which it is by default, exact matching will
-always be used.")
+If this variable is nil, exact matching will always be used.")
 
 
 
@@ -89,7 +88,9 @@ of the last successful match.")
 (defvar gnus-header-index nil)
 (defvar gnus-score-index nil)
 
-(autoload 'gnus-uu-ctl-map "gnus-uu" nil nil 'keymap)
+(eval-and-compile
+  (autoload 'gnus-uu-ctl-map "gnus-uu" nil nil 'keymap)
+  (autoload 'appt-select-lowest-window "appt.el"))
 
 ;;; Summary mode score maps.
 
@@ -269,21 +270,48 @@ of the last successful match.")
        (if (eq 'perm temporary)         ; Temp
            nil
          temporary)
-       (not (nth 3 entry)))		; Prompt
-      )))
-
+         (not (nth 3 entry)))		; Prompt
+        )))
+  
 (defun gnus-score-insert-help (string alist idx)
   (setq gnus-score-help-winconf (current-window-configuration))
   (save-excursion
-    (pop-to-buffer "*Score Help*")
+    (set-buffer (get-buffer-create "*Score Help*"))
     (buffer-disable-undo (current-buffer))
     (erase-buffer)
     (insert string ":\n\n")
-    (while alist
-      (insert (format " %c: %s\n" (car (car alist)) (nth idx (car alist))))
-      (setq alist (cdr alist))))
-  (select-window (get-buffer-window gnus-summary-buffer)))
-
+    (let ((max -1)
+	  (list alist)
+	  (i 0)
+	  n width pad format)
+      ;; find the longest string to display
+      (while list
+	(setq n (length (nth idx (car list))))
+	(or (> max n)
+	    (setq max n))
+	(setq list (cdr list)))
+      (setq max (+ max 4))		; %c, `:', SPACE, a SPACE at end
+      (setq n (/ (window-width) max))	; items per line
+      (setq width (/ (window-width) n)) ; width of each item
+      ;; insert `n' items, each in a field of width `width' 
+      (while alist
+	(if (< i n)
+	    ()
+	  (setq i 0)
+	  (delete-char -1)		; the `\n' takes a char
+	  (insert "\n"))
+	(setq pad (- width 3))
+	(setq format (concat "%c: %-" (int-to-string pad) "s"))
+	(insert (format format (car (car alist)) (nth idx (car alist))))
+	(setq alist (cdr alist))
+	(setq i (1+ i))))
+    ;; display ourselves in a small window at the bottom
+    (appt-select-lowest-window)
+    (split-window)
+    (pop-to-buffer "*Score Help*")
+    (shrink-window-if-larger-than-buffer)
+    (select-window (get-buffer-window gnus-summary-buffer))))
+  
 (defun gnus-summary-header (header &optional no-err)
   ;; Return HEADER for current articles, or error.
   (let ((article (gnus-summary-article-number))
@@ -1451,7 +1479,9 @@ SCORE is the score to add."
 	     ;; here.  
 	     (if (or (not gnus-score-exact-adapt-limit)
 		     (< (length match) gnus-score-exact-adapt-limit))
-		 'e 's) 
+		 'e 
+	       (if (equal (nth 1 (car elem)) "subject")
+		   'f 's))
 	     (nth 2 (car elem)) date nil t)
 	    (setq elem (cdr elem))))
 	(forward-line 1)))))

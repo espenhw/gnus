@@ -63,7 +63,7 @@
       (let ((map nnvirtual-current-mapping)
 	    (offset 0)
 	    articles beg group active top article result prefix
-	    fetched-articles)
+	    fetched-articles group-method)
 	(while sequence
 	  (while (< (car (car map)) (car sequence))
 	    (setq offset (car (car map)))
@@ -79,7 +79,13 @@
 	    (setq sequence (cdr sequence)))
 	  (setq articles (nreverse articles))
 	  (if (and articles
-		   (setq result (gnus-retrieve-headers articles group)))
+		   (setq result 
+			 (progn
+			   (setq group-method 
+				 (gnus-find-method-for-group group))
+			   (and (or (gnus-server-opened group-method)
+				    (gnus-open-server group-method))
+				(gnus-retrieve-headers articles group)))))
 	      (save-excursion
 		(set-buffer nntp-server-buffer)
 		;; If we got HEAD headers, we convert them into NOV
@@ -175,10 +181,14 @@ If the stream is opened, return T, otherwise return NIL."
   (nnvirtual-possibly-change-newsgroups newsgroup server t)
   (and (numberp article)
        (let ((map nnvirtual-current-mapping)
-	     (offset 0))
+	     (offset 0)
+	     group-method)
 	 (while (< (car (car map)) article)
 	   (setq offset (car (car map)))
 	   (setq map (cdr map)))
+	 (setq group-method (gnus-find-method-for-group (nth 1 (car map))))
+	 (or (gnus-server-opened group-method)
+	     (gnus-open-server group-method))
 	 (gnus-request-group (nth 1 (car map)) t)
 	 (gnus-request-article (- (+ (nth 2 (car map)) article) offset)
 			       (nth 1 (car map)) buffer))))
@@ -276,12 +286,13 @@ If the stream is opened, return T, otherwise return NIL."
 			 (delq inf nnvirtual-group-alist)))
 	  (setq nnvirtual-current-mapping nil)
 	  (setq nnvirtual-current-group group)
-	  (let ((newsrc gnus-newsrc-alist))
+	  (let ((newsrc gnus-newsrc-alist)
+		(virt-group (gnus-group-prefixed-name 
+			     nnvirtual-current-group '(nnvirtual ""))))
 	    (setq nnvirtual-current-groups nil)
 	    (while newsrc
 	      (and (string-match regexp (car (car newsrc)))
-		   (not (string= (gnus-group-real-name (car (car newsrc)))
-				 nnvirtual-current-group))
+		   (not (string= (car (car newsrc)) virt-group))
 		   (setq nnvirtual-current-groups
 			 (cons (car (car newsrc)) nnvirtual-current-groups)))
 	      (setq newsrc (cdr newsrc))))

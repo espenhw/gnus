@@ -1,4 +1,40 @@
+Mon Aug  7 02:32:03 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-group-list-mode): New variable.
+	(gnus-have-all-newsgroups): Obsolete variable.
+	(gnus-group-list-groups): Use new variable.
+
+Sun Aug  6 06:34:37 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el (gnus-group-check-bogus-groups): Would list all groups.
+
+Thu Jul 20 05:19:06 1995  Sudish Joseph <joseph@cis.ohio-state.edu>
+
+	* gnus-score.el (gnus-score-insert-help): Now displays help in
+	  shrink-wrapped window at bottom of frame with items aligned in
+	  columns.
+
+Sun Aug  6 02:25:31 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus-score.el (gnus-score-adaptive): Use fuzzy matches.
+
+	* gnus-uu.el (gnus-uu-mark-thread): Move cursor.
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Did not properly open
+	methods.
+	(nnvirtual-possibly-change-newsgroups): Would refuse to include
+	component groups with similar names to itself. 
+
+	* nnmail.el (nnmail-activate): Did not set timestamp properly. 
+
+	* gnus.el (gnus-group-default-level): New function.
+	(gnus-group-get-new-news): Use it.
+	(gnus-group-list-groups): Ditto.
+	(gnus-setup-news): Would not activate groups for `gnus-no-server'.
+
 Sat Aug  5 00:12:33 1995  Lars Magne Ingebrigtsen  <lingebri@sunsci4.cern.ch>
+
+	* gnus.el: 0.99.6 is released.
 
 	* gnus.el (gnus-summary-next-article): Don't bug out on the end of
 	the group buffer.

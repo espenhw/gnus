@@ -1308,7 +1308,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.99.6"
+(defconst gnus-version "(ding) Gnus v0.99.7"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1396,7 +1396,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 (defvar gnus-current-select-method nil
   "The current method for selecting a newsgroup.")
 
-(defvar gnus-have-all-newsgroups nil)
+(defvar gnus-group-list-mode nil)
 
 (defvar gnus-article-internal-prepare-hook nil)
 
@@ -3148,6 +3148,21 @@ The following commands are available:
   (mouse-set-point e)
   (gnus-group-read-group nil))
 
+;; Look at LEVEL and find out what the level is really supposed to be.
+;; If LEVEL is non-nil, LEVEL will be returned, if not, what happens
+;; will depend on whether `gnus-group-use-permanent-levels' is used.
+(defun gnus-group-default-level (&optional level number-or-nil)
+  (cond  
+   (gnus-group-use-permanent-levels
+    (setq gnus-group-default-list-level 
+	  (or level gnus-group-default-list-level))
+    (or gnus-group-default-list-level gnus-level-subscribed))
+   (number-or-nil
+    level)
+   (t
+    (or level gnus-group-default-list-level gnus-level-subscribed))))
+  
+
 ;;;###autoload
 (defun gnus-no-server (&optional arg)
   "Read network news.
@@ -3261,19 +3276,18 @@ prompt the user for the name of an NNTP server to use."
 	(gnus-group-mode)
 	(and gnus-carpal (gnus-carpal-setup-buffer 'group)))))
 
-(defun gnus-group-list-groups (level &optional unread)
+(defun gnus-group-list-groups (&optional level unread)
   "List newsgroups with level LEVEL or lower that have unread articles.
 Default is all subscribed groups.
-If argument UNREAD is non-nil, groups with no unread articles are also listed."
-  (interactive (list (and current-prefix-arg
-			  (prefix-numeric-value current-prefix-arg))))
-  (if gnus-group-use-permanent-levels
-      (progn
-	(setq gnus-group-default-list-level 
-	      (or level gnus-group-default-list-level))
-	(setq level (or gnus-group-default-list-level gnus-level-subscribed)))
-    (setq level (or level gnus-group-default-list-level 
-		    gnus-level-subscribed)))
+If argument UNREAD is non-nil, groups with no unread articles are also
+listed." 
+  (interactive (list (if current-prefix-arg
+			 (prefix-numeric-value current-prefix-arg)
+		       gnus-level-subscribed)))
+  (or level
+      (setq level (car gnus-group-list-mode)
+	    unread (cdr gnus-group-list-mode)))
+  (setq level (gnus-group-default-level level))
   (gnus-group-setup-buffer)	;May call from out of group buffer
   (let ((case-fold-search nil)
 	(group (gnus-group-group-name)))
@@ -3345,7 +3359,7 @@ If REGEXP, only list groups matching REGEXP."
 	  gnus-level-killed ?K regexp))
 
     (gnus-group-set-mode-line)
-    (setq gnus-have-all-newsgroups all)
+    (setq gnus-group-list-mode (cons level all))
     (run-hooks 'gnus-group-prepare-hook)))
 
 (defun gnus-group-prepare-flat-list-dead (groups level mark regexp)
@@ -4223,8 +4237,7 @@ score file entries for articles to include in the group."
   (setq gnus-newsrc-alist 
 	(sort (cdr gnus-newsrc-alist) gnus-group-sort-function))
   (gnus-make-hashtable-from-newsrc-alist)
-  (gnus-group-list-groups (if gnus-have-all-newsgroups gnus-level-unsubscribed)
-			  gnus-have-all-newsgroups))
+  (gnus-group-list-groups))
 
 (defun gnus-group-sort-by-alphabet (info1 info2)
   (string< (car info1) (car info2)))
@@ -4502,7 +4515,7 @@ Default is gnus-level-unsubscribed, which lists all subscribed and most
 unsubscribed groups."
   (interactive "P")
   (setq arg (or arg gnus-level-unsubscribed))
-  (gnus-group-list-groups arg t))
+  (gnus-group-list-groups gnus-level-unsubscribed t))
 
 (defun gnus-group-list-killed ()
   "List all killed newsgroups in the group buffer."
@@ -4528,11 +4541,7 @@ If ARG is non-nil, it should be a number between one and nine to
 specify which levels you are interested in re-scanning."
   (interactive "P")
   (run-hooks 'gnus-get-new-news-hook)
-  (if gnus-group-use-permanent-levels
-      (setq arg
-	    (setq gnus-group-default-list-level 
-		  (or arg gnus-group-default-list-level
-		      gnus-level-subscribed))))
+  (setq arg (gnus-group-default-level arg t))
   (if (and gnus-read-active-file (not arg))
       (progn
 	(gnus-read-active-file)
@@ -4541,10 +4550,7 @@ specify which levels you are interested in re-scanning."
 	  (gnus-have-read-active-file 
 	   (and (not arg) gnus-have-read-active-file)))
       (gnus-get-unread-articles (or arg (1+ gnus-level-subscribed)))))
-  (gnus-group-list-groups (or (and gnus-group-use-permanent-levels arg)
-			      gnus-group-default-list-level
-			      gnus-level-subscribed)
-			  gnus-have-all-newsgroups))
+  (gnus-group-list-groups arg))
 
 (defun gnus-group-get-new-news-this-group (&optional n)
   "Check for newly arrived news in the current group (and the N-1 next groups).
@@ -4716,7 +4722,7 @@ If LOWEST, don't list groups with level lower than LOWEST."
   (interactive "P")
   (gnus-save-newsrc-file)
   (gnus-setup-news 'force)
-  (gnus-group-list-groups arg gnus-have-all-newsgroups))
+  (gnus-group-list-groups arg))
 
 (defun gnus-group-read-init-file ()
   "Read the Gnus elisp init file."
@@ -4729,7 +4735,7 @@ If given a prefix, don't ask for confirmation before removing a bogus
 group."
   (interactive "P")
   (gnus-check-bogus-newsgroups (and (not silent) (not gnus-expert-user)))
-  (gnus-group-list-groups nil gnus-have-all-newsgroups))
+  (gnus-group-list-groups))
 
 (defun gnus-group-edit-global-kill (&optional article group)
   "Edit the global kill file.
@@ -8925,7 +8931,18 @@ This will have permanent effect only in mail groups."
       (use-local-map gnus-article-mode-map)
       (setq buffer-read-only t)
       (buffer-disable-undo (current-buffer))
+      (run-hooks 'gnus-visual-mark-article-hook)
       (gnus-configure-windows 'summary))))
+
+(defun gnus-summary-edit-article-abort ()
+  "Abort changes to the current article."
+  (interactive)
+  (gnus-article-mode)
+  (use-local-map gnus-article-mode-map)
+  (setq buffer-read-only t)
+  (buffer-disable-undo (current-buffer))
+  (run-hooks 'gnus-visual-mark-article-hook)
+  (gnus-configure-windows 'summary))
 
 (defun gnus-summary-fancy-query ()
   "Query where the fancy respool algorithm would put this article."
@@ -11900,7 +11917,8 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
     (and init gnus-use-dribble-file (gnus-dribble-eval-file))
 
     ;; Find the number of unread articles in each non-dead group.
-    (gnus-get-unread-articles (or level (1+ gnus-level-subscribed)))
+    (let ((gnus-read-active-file (and (not level) gnus-read-active-file)))
+      (gnus-get-unread-articles (or level (1+ gnus-level-subscribed))))
     ;; Find new newsgroups and treat them.
     (if (and init gnus-check-new-newsgroups gnus-read-active-file (not level)
 	     (gnus-server-opened gnus-select-method))
