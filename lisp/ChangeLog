@@ -1,7 +1,7 @@
 2003-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (nnspool-rejected-article-hook): Remove defvar.
-	(xemacs-codename): Move defvar to gnus-util.el
+	(xemacs-codename): Move defvar to gnus-util.el.
 
 	* gnus-util.el (xemacs-codename): Defvar when compiling.
 
