@@ -117,6 +117,13 @@ If NO-DISPLAY is nil, display it. Otherwise, do nothing after replacing."
 	(if (<= n total)
 	    (error "Missing part %d" n))
 	(kill-buffer (mm-handle-buffer handle))
+	(goto-char (point-min))
+	(let ((point (if (search-forward "\n\n" nil t) 
+			 (1- (point))
+		       (point-max))))
+	  (goto-char (point-min))
+	  (unless (re-search-forward "^mime-version:" point t)
+	    (insert "MIME-Version: 1.0\n")))
 	(setcar handle (current-buffer))
 	(mm-handle-set-cache handle t)))
     (unless no-display

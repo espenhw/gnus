@@ -1,3 +1,7 @@
+2000-11-10 01:23:20  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-partial.el (mm-inline-partial): Insert MIME-Version.
+
 2000-11-09 17:02:50  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnheader.el (nnheader-directory-files-is-safe): New variable.
