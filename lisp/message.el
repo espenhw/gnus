@@ -2413,6 +2413,7 @@ Headers already prepared in the buffer are not modified."
   (let ((cur (current-buffer))
 	from subject date reply-to to cc
 	references message-id follow-to 
+	(inhibit-point-motion-hooks t)
 	mct never-mct gnus-warning)
     (save-restriction
       (narrow-to-region
@@ -2517,6 +2518,7 @@ Headers already prepared in the buffer are not modified."
   (let ((cur (current-buffer))
 	from subject date reply-to mct
 	references message-id follow-to 
+	(inhibit-point-motion-hooks t)
 	followup-to distribution newsgroups gnus-warning)
     (save-restriction
       (narrow-to-region

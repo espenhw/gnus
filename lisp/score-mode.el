@@ -1,4 +1,4 @@
-;;; gnus-scomo.el --- mode for editing Gnus score files
+;;; score-mode.el --- mode for editing Gnus score files
 ;; Copyright (C) 1996 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
@@ -105,6 +105,6 @@ This mode is an extended emacs-lisp mode.
     (timezone-absolute-from-gregorian
      (nth 4 dat) (nth 3 dat) (nth 5 dat))))
 
-(provide 'gnus-scomo)
+(provide 'score-mode)
 
-;;; gnus-scomo.el ends here
+;;; score-mode.el ends here

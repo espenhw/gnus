@@ -670,6 +670,8 @@ articles in the topic and its subtopics."
       (make-local-variable 'gnus-group-indentation-function)
       (setq gnus-group-indentation-function
 	    'gnus-topic-group-indentation)
+      (gnus-make-local-hook 'gnus-check-bogus-groups-hook)
+      (add-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist)
       (setq gnus-topology-checked-p nil)
       ;; We check the topology.
       (when gnus-newsrc-alist
@@ -680,6 +682,7 @@ articles in the topic and its subtopics."
       (remove-hook 'gnus-summary-exit-hook 'gnus-topic-update-topic)
       (remove-hook 'gnus-group-change-level-function 
 		   'gnus-topic-change-level)
+      (remove-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist)
       (setq gnus-group-prepare-function 'gnus-group-prepare-flat))
     (when redisplay
       (gnus-group-list-groups))))
@@ -789,6 +792,22 @@ If COPYP, copy the groups instead."
       (or (save-excursion
 	    (gnus-topic-goto-topic (gnus-group-parent-topic))
 	    (gnus-group-topic-level)) 0)) ? ))
+
+(defun gnus-topic-clean-alist ()
+  "Remove bogus groups from the topic alist."
+  (let ((topic-alist gnus-topic-alist)
+	result topic)
+    (unless gnus-killed-hashtb
+      (gnus-make-hashtable-from-killed))
+    (while (setq topic (pop topic-alist))
+      (let ((topic-name (pop topic))
+	    group filtered-topic)
+	(while (setq group (pop topic))
+	  (if (and (gnus-gethash group gnus-active-hashtb)
+		   (not (gnus-gethash group gnus-killed-hashtb)))
+	      (push group filtered-topic)))
+	(push (cons topic-name (nreverse filtered-topic)) result)))
+    (setq gnus-topic-alist (nreverse result))))
 
 (defun gnus-topic-change-level (group level oldlevel)
   "Run when changing levels to enter/remove groups from topics."

@@ -24,9 +24,10 @@ refcard.dvi: refcard.tex
 	$(LATEX) refcard.tex
 
 clean:
-	rm -f gnus.*.bak gnus.ky gnus.cp gnus.fn gnus.dvi gnus.cps gnus.kys \
+	rm -f gnus.*.bak gnus.ky gnus.cp gnus.fn gnus.cps gnus.kys \
 	gnus.log gnus.pg gnus.tp gnus.vr gnus.toc gnus.latexi *.aux gnus.cidx \
-	gnus.cind gnus.ilg gnus.ind gnus.kidx gnus.kind gnus.idx 
+	gnus.cind gnus.ilg gnus.ind gnus.kidx gnus.kind gnus.idx \
+	gnus.tmptexi gnus.tmplatexi *.latexi texput.log *.orig *.rej
 
 makeinfo: 
 	makeinfo -o gnus gnus.texi	

@@ -156,6 +156,14 @@ of regexps/functions/forms to be evaluated to return a string (or a list
 of strings).  The functions are called with the name of the current
 group (or nil) as a parameter.
 
+If you want to save your mail in one group and the news articles you
+write in another group, you could say something like:
+
+ \(setq gnus-message-archive-group 
+        '((if (message-news-p)
+              \"misc-news\" 
+            \"misc-mail\")))
+
 Normally the group names returned by this variable should be
 unprefixed -- which implictly means \"store on the archive server\".
 However, you may wish to store the message on some other server.  In
@@ -499,7 +507,7 @@ If this variable is `fuzzy', Gnus will use a fuzzy algorithm when
 comparing subjects.")
 
 (defvar gnus-simplify-ignored-prefixes nil
-  "*Regexp, matches for which are removed from subject lines when simplifying.")
+  "*Regexp, matches for which are removed from subject lines when simplifying fuzzily.")
 
 (defvar gnus-build-sparse-threads nil
   "*If non-nil, fill in the gaps in threads.
@@ -1389,6 +1397,9 @@ It calls `gnus-summary-expire-articles' by default.")
 (defvar gnus-summary-exit-hook nil
   "*A hook called on exit from the summary buffer.")
 
+(defvar gnus-check-bogus-groups-hook nil
+  "A hook run after removing bogus groups.")
+
 (defvar gnus-group-catchup-group-hook nil
   "*A hook run when catching up a group from the group buffer.")
 
@@ -1750,7 +1761,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.31"
+(defconst gnus-version-number "5.2.32"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2033,7 +2044,7 @@ Thank you for your help in stamping out bugs.
       gnus-group-brew-soup gnus-brew-soup gnus-soup-add-article
       gnus-soup-send-replies gnus-soup-save-areas gnus-soup-pack-packet)
      ("nnsoup" nnsoup-pack-replies)
-     ("gnus-scomo" :interactive t gnus-score-mode)
+     ("score-mode" :interactive t gnus-score-mode)
      ("gnus-mh" gnus-mh-mail-setup gnus-summary-save-article-folder
       gnus-Folder-save-name gnus-folder-save-name)
      ("gnus-mh" :interactive t gnus-summary-save-in-folder)
@@ -4491,7 +4502,8 @@ prompt the user for the name of an NNTP server to use."
 	    (setcar (cddr entry) (gnus-byte-code 'gnus-tmp-func)))))
 
       (push (cons 'version emacs-version) gnus-format-specs)
-
+      ;; Mark the .newsrc.eld file as "dirty".
+      (gnus-dribble-enter " ")
       (gnus-message 7 "Compiling user specs...done"))))
 
 (defun gnus-indent-rigidly (start end arg)
@@ -5502,15 +5514,15 @@ Returns whether the fetching was successful or not."
 					     group gnus-active-hashtb))))
       (and b (goto-char b)))))
 
-(defun gnus-group-next-group (n)
+(defun gnus-group-next-group (n &optional silent)
   "Go to next N'th newsgroup.
 If N is negative, search backward instead.
 Returns the difference between N and the number of skips actually
 done."
   (interactive "p")
-  (gnus-group-next-unread-group n t))
+  (gnus-group-next-unread-group n t nil silent))
 
-(defun gnus-group-next-unread-group (n &optional all level)
+(defun gnus-group-next-unread-group (n &optional all level silent)
   "Go to next N'th unread newsgroup.
 If N is negative, search backward instead.
 If ALL is non-nil, choose any newsgroup, unread or not.
@@ -5526,8 +5538,10 @@ made."
 		(gnus-group-search-forward
 		 backward (or (not gnus-group-goto-unread) all) level))
       (setq n (1- n)))
-    (if (/= 0 n) (gnus-message 7 "No more%s newsgroups%s" (if all "" " unread")
-			       (if level " on this level or higher" "")))
+    (when (and (/= 0 n)
+	       (not silent))
+      (gnus-message 7 "No more%s newsgroups%s" (if all "" " unread")
+		    (if level " on this level or higher" "")))
     n))
 
 (defun gnus-group-prev-group (n)
@@ -7861,7 +7875,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(cond (gnus-newsgroup-dormant
 	       (gnus-summary-limit-include-dormant))
 	      ((and gnus-newsgroup-scored show-all)
-	       (gnus-summary-limit-include-expunged))))
+	       (gnus-summary-limit-include-expunged t))))
       ;; Function `gnus-apply-kill-file' must be called in this hook.
       (run-hooks 'gnus-apply-kill-hook)
       (if (and (zerop (buffer-size))
@@ -12496,7 +12510,7 @@ even ticked and dormant ones."
 
 ;; Suggested by Daniel Quinlan <quinlan@best.com>.
 (defalias 'gnus-summary-show-all-expunged 'gnus-summary-limit-include-expunged)
-(defun gnus-summary-limit-include-expunged ()
+(defun gnus-summary-limit-include-expunged (&optional no-error)
   "Display all the hidden articles that were expunged for low scores."
   (interactive)
   (gnus-set-global-variables)
@@ -12509,11 +12523,14 @@ even ticked and dormant ones."
 		 (< (cdar scored) gnus-summary-expunge-below)
 		 (setq headers (cons h headers))))
 	(setq scored (cdr scored)))
-      (or headers (error "No expunged articles hidden."))
-      (goto-char (point-min))
-      (gnus-summary-prepare-unthreaded (nreverse headers)))
-    (goto-char (point-min))
-    (gnus-summary-position-point)))
+      (if (not headers)
+	  (when (not no-error)
+	    (error "No expunged articles hidden."))
+	(goto-char (point-min))
+	(gnus-summary-prepare-unthreaded (nreverse headers))
+	(goto-char (point-min))
+	(gnus-summary-position-point)
+	t))))
 
 (defun gnus-summary-catchup (&optional all quietly to-here not-mark)
   "Mark all articles not marked as unread in this newsgroup as read.
@@ -15928,6 +15945,7 @@ newsgroup."
 	      (set (car dead-lists)
 		   (delete group (symbol-value (car dead-lists))))))
 	  (setq dead-lists (cdr dead-lists))))
+      (run-hooks 'gnus-check-bogus-groups-hook)
       (gnus-message 5 "Checking bogus newsgroups...done"))))
 
 (defun gnus-check-duplicate-killed-groups ()

@@ -238,7 +238,7 @@ variable it the real callback function.")
 (defvar gnus-header-button-alist 
   `(("^\\(References\\|Message-I[Dd]\\):" "<[^>]+>"
      0 t gnus-button-message-id 0)
-    ("^\\(From\\|Reply-To\\): " ": *\\(.+\\)$" 1 t gnus-button-reply 0)
+    ("^\\(From\\|Reply-To\\):" ": *\\(.+\\)$" 1 t gnus-button-reply 1)
     ("^\\(Cc\\|To\\):" "[^ \t\n<>,()\"]+@[^ \t\n<>,()\"]+" 
      0 t gnus-button-mailto 0)
     ("^X-[Uu][Rr][Ll]:" ,gnus-button-url-regexp 0 t gnus-button-url 0)

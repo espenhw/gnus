@@ -1,3 +1,29 @@
+Sun Jun 30 21:57:31 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-check-bogus-groups-hook): New hook.
+
+Sun Jun 30 21:54:46 1996  Joe Wells  <jbw@cs.bu.edu>
+
+	* gnus-topic.el (gnus-topic-clean-alist): New function.
+
+Sun Jun 30 20:00:18 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-group-next-unread-group): Allow silence.
+
+	* gnus-cache.el (gnus-cache-possibly-alter-active): Would check
+	the obarray.
+
+	* gnus.el (gnus-summary-read-group): Don't signal an error when
+	including expunged articles.
+
+	* gnus-vis.el (gnus-header-button-alist): Would include ":".
+
+	* message.el (message-reply): Inhibit point-motion hooks.
+
+	* gnus.el (gnus-compile): Mark the .newsrc.eld file as dirty.
+
+	* gnus-scomo.el: Renamed to "score-mode".
+
 Sat Jun 29 01:03:19 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.el: Gnus v5.2.30 is released.
