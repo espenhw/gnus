@@ -3969,6 +3969,16 @@ modified."
 	 (gnus-agent-update-view-total-fetched-for  group t   method path)
 	 (gnus-agent-update-files-total-fetched-for group nil method path))))))
 
+;; Added to support XEmacs
+(eval-and-compile
+  (unless (fboundp 'directory-files-and-attributes)
+    (defun directory-files-and-attributes (directory
+					   &optional full match nosort)
+      (let (result)
+	(dolist (file (directory-files directory full match nosort))
+	  (push (cons file (file-attributes file)) result))
+	(nreverse result)))))
+
 (provide 'gnus-agent)
 
 ;;; arch-tag: b0ba4afc-5229-4cee-ad25-9956daa4e91e

@@ -1,4 +1,8 @@
 2004-09-09  Kevin Greiner  <kgreiner@compsol.cc>
+	* gnus-agent.el (directory-files-and-attributes): Optionally
+	defined to support XEmacs.
+
+2004-09-09  Kevin Greiner  <kgreiner@compsol.cc>
 	* gnus-agent.el (gnus-agent-cat-groups): rewrote avoiding defsetf
 	to avoid run-time CL dependencies.
 	(gnus-agent-unfetch-articles): New function.
