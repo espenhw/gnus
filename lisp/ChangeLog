@@ -1,3 +1,18 @@
+2003-10-31  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el
+	(spam-log-processing-to-registry): improved message and comments
+	(spam-log-unregistration-needed-p): new function
+	(spam-ifile-register-spam-routine)
+	(spam-ifile-register-ham-routine, spam-stat-register-spam-routine)
+	(spam-stat-register-ham-routine)
+	(spam-blacklist-register-routine)
+	(spam-whitelist-register-routine)
+	(spam-bogofilter-register-spam-routine)
+	(spam-bogofilter-register-ham-routine)
+	(spam-spamoracle-learn-ham, spam-spamoracle-learn-spam): change
+	spam-log-processing-to-registry invocations appropriately
+
 2003-10-31  Simon Josefsson  <jas@extundo.com>
 
 	* imap.el (imap-kerberos4-open): Ignore output from ATHENA imtest.
@@ -5,7 +20,7 @@
 	(imap-process-connection-type): Improve docstring.  Suggested by
 	Derek Atkins <warlord@MIT.EDU>.
 
-2003-10-31  Teodor Zlatanov  <tzz@beld.net>
+2003-10-31  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (autoload): autoload the gnus-registry functions we'll
 	need
