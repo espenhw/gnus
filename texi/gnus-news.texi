@@ -1,0 +1,58 @@
+@c -*-texinfo-*-
+
+@c Copyright (C) 2004 Free Software Foundation, Inc.
+
+@c    Permission is granted to anyone to make or distribute verbatim copies
+@c    of this document as received, in any medium, provided that the
+@c    copyright notice and this permission notice are preserved,
+@c    thus giving the recipient permission to redistribute in turn.
+
+@c    Permission is granted to distribute modified versions
+@c    of this document, or of portions of it,
+@c    under the above conditions, provided also that they
+@c    carry prominent notices stating who last changed them.
+
+This file contains a list of news features Gnus.  It is supposed to be
+included in `gnus.texi'.  `GNUS-NEWS' is automatically generated from
+this file (see `gnus-news.el').
+
+@itemize @bullet
+
+@item @acronym{ANSI} @acronym{SGR} control sequences can be transformed
+using @kbd{W A}.
+
+@acronym{ANSI} sequences are used in some Chinese hierarchies for
+highlighting articles (@code{gnus-article-treat-ansi-sequences}).
+
+@item Gnus includes an Emacs Lisp @acronym{SASL} library.
+
+This provide a clean @acronym{API} to @acronym{SASL} mechanisms from
+within Emacs.  The user visible aspects of this, compared to the earlier
+situation, include support for @acronym{DIGEST}-@acronym{MD5} and
+@acronym{NTLM}.
+
+@item ManageSieve connections uses the @acronym{SASL} library by default.
+
+The primary change this brings is support for @acronym{DIGEST-MD5} and
+@acronym{NTLM}, when the server support it.
+
+@item Gnus include a password cache mechanism in password.el.
+
+It is enabled by default (see @code{password-cache}), with a short
+timeout of 16 seconds (see @code{password-cache-expiry}).  If
+@acronym{PGG} is used as the @acronym{PGP} backend, the @acronym{PGP}
+passphrase is managed by this mechanism.  Passwords for ManageSieve
+connections are managed by this mechanism, after quering the user about
+whether to do so.
+
+@item @acronym{IMAP} identity (@acronym{RFC} 2971) is supported.
+
+By default, Gnus do not send any information about itself, but you can
+customize it using @code{nnimap-id}.
+
+@item The @file{all.SCORE} file can now be edited from the group buffer 
+using @kbd{W e}.
+
+@end itemize
+
+@c gnus-news.texi ends here.

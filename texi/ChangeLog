@@ -2,6 +2,12 @@
 
 	* gnus.texi (SpamOracle): Fixed typo.
 
+	* gnus-news.texi, gnus-news.el: New files.
+
+	* Makefile.in: Use `gnus-news.*' to create GNUS-NEWS.
+
+	* gnus.texi (No Gnus): New node.  Includes `gnus-news.texi'.
+
 2004-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi: Fix the last commit.

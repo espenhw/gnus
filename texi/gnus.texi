@@ -927,6 +927,7 @@ New Features
 * Quassia Gnus::                Two times two is four, or Gnus 5.6/5.7.
 * Pterodactyl Gnus::            Pentad also starts with P, AKA Gnus 5.8/5.9.
 * Oort Gnus::                   It's big.  It's far out.  Gnus 5.10.
+* No Gnus::                     Lars, FIXME!
 
 Customization
 
@@ -8565,6 +8566,13 @@ has been done.  If a prefix is given, a charset will be asked for.
 Treat HZ or HZP (@code{gnus-article-decode-HZ}).  HZ (or HZP) is one
 common encoding employed when sending Chinese articles.  It typically
 makes strings look like @samp{~@{<:Ky2;S@{#,NpJ)l6HK!#~@}}.
+
+@item W A
+@kindex W A (Summary)
+@findex gnus-article-treat-ansi-sequences
+Translate ANSI SGR control sequences into overlays or extents
+(@code{gnus-article-treat-ansi-sequences}).  ANSI sequences are used in
+some Chinese hierarchies for highlighting.
 
 @item W u
 @kindex W u (Summary)
@@ -24946,6 +24954,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * Quassia Gnus::                Two times two is four, or Gnus 5.6/5.7.
 * Pterodactyl Gnus::            Pentad also starts with P, AKA Gnus 5.8/5.9.
 * Oort Gnus::                   It's big.  It's far out.  Gnus 5.10.
+* No Gnus::                     Lars, FIXME!
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -26221,6 +26230,15 @@ convert to @acronym{MIME}) when appropriate.  @acronym{MML} will not be
 used when forwarding signed or encrypted messages, as the conversion
 invalidate the digital signature.
 @end itemize
+
+@node No Gnus
+@subsubsection No Gnus
+@cindex No Gnus
+
+New features in No Gnus:
+@c FIXME: Gnus 5.12?
+
+@include gnus-news.texi
 
 @iftex
 
