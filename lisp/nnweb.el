@@ -748,15 +748,21 @@ and `altavista'.")
 	    (setq Subject (buffer-string))
 	    (goto-char (point-max))
 	    (widen)
-	    (narrow-to-region (re-search-forward "<a[^>]+>" nil t)
-			      (search-forward "</a>" nil t))
-	    (nnweb-remove-markup)
-	    (nnweb-decode-entities)
-	    (setq Newsgroups (buffer-string))
-	    (goto-char (point-max))
-	    (widen)
-	    (when (looking-at
-		   "[ \t]*-[ \t]*\\([0-9]+/[A-Za-z]+/[0-9]+\\)[ \t]*by[ \t]*\\([^<]*\\) - <a")
+	    (forward-line 2)
+	    (when (looking-at "<br><font[^>]+>")
+	      (goto-char (match-end 0)))
+	    (if (not (looking-at "<a[^>]+>"))
+		(skip-chars-forward " \t")
+	      (narrow-to-region (point)
+				(search-forward "</a>" nil t))
+	      (nnweb-remove-markup)
+	      (nnweb-decode-entities)
+	      (setq Newsgroups (buffer-string))
+	      (goto-char (point-max))
+	      (widen)
+	      (skip-chars-forward "- \t"))
+	    (when (looking-at 
+		   "\\([0-9]+/[A-Za-z]+/[0-9]+\\)[ \t]*by[ \t]*\\([^<]*\\) - <a")
 	      (setq From (match-string 2)
 		    Date (match-string 1)))
 	    (forward-line 1)
@@ -766,8 +772,10 @@ and `altavista'.")
 	       (list
 		(incf (cdr active))
 		(make-full-mail-header
-		 (cdr active) (concat  "(" Newsgroups ") " Subject) From Date
-		 Message-ID
+		 (cdr active) (if Newsgroups
+				  (concat  "(" Newsgroups ") " Subject) 
+				Subject)
+		 From Date Message-ID
 		 nil 0 0 url))
 	       map)
 	      (nnweb-set-hashtb (cadar map) (car map))))
