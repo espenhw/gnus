@@ -2225,6 +2225,10 @@ This should be an alist for Emacs, or a plist for XEmacs."
 
 (defvar gnus-agent-gcc-header "X-Gnus-Agent-Gcc")
 (defvar gnus-agent-meta-information-header "X-Gnus-Agent-Meta-Information")
+(defvar gnus-agent-method-p-cache nil
+  ; Reset each time gnus-agent-covered-methods is changed else
+  ; gnus-agent-method-p may mis-report a methods status.
+  )
 (defvar gnus-agent-target-move-group-header "X-Gnus-Agent-Move-To")
 (defvar gnus-draft-meta-information-header "X-Draft-From")
 (defvar gnus-group-get-parameter-function 'gnus-group-get-parameter)
@@ -2236,7 +2240,8 @@ This should be an alist for Emacs, or a plist for XEmacs."
 (defvar gnus-agent-fetching nil
   "Whether Gnus agent is in fetching mode.")
 
-(defvar gnus-agent-covered-methods nil)
+(defvar gnus-agent-covered-methods nil
+  "A list of servers, NOT methods, showing which servers are covered by the agent.")
 
 (defvar gnus-command-method nil
   "Dynamically bound variable that says what the current back end is.")
@@ -2348,7 +2353,7 @@ such as a mark that says whether an article is stored in the cache
 			gnus-newsrc-alist gnus-server-alist
 			gnus-killed-list gnus-zombie-list
 			gnus-topic-topology gnus-topic-alist
-			gnus-agent-covered-methods gnus-format-specs)
+			gnus-format-specs)
   "Gnus variables saved in the quick startup file.")
 
 (defvar gnus-newsrc-alist nil
@@ -3149,8 +3154,41 @@ that that variable is buffer-local to the summary buffers."
 						       (cadar servers)))))
 		  (pop servers))
 		(car servers)))))
-	(push (cons server result) gnus-server-method-cache)
+        (when result
+          (push (cons server result) gnus-server-method-cache))
 	result)))
+
+(defsubst gnus-method-to-server (method)
+  (catch 'server-name
+    (setq method (or method gnus-select-method))
+
+    ;; Perhaps it is already in the cache.
+    (mapc (lambda (name-method)
+            (if (equal (cdr name-method) method)
+                (throw 'server-name (car name-method))))
+          gnus-server-method-cache)
+
+    (mapc
+     (lambda (server-alist)
+       (mapc (lambda (name-method)
+               (when (gnus-methods-equal-p (cdr name-method) method)
+                 (unless (member name-method gnus-server-method-cache)
+                   (push name-method gnus-server-method-cache))
+                 (throw 'server-name (car name-method))))
+             server-alist))
+     (let ((alists (list gnus-server-alist
+                         gnus-predefined-server-alist)))
+       (if gnus-select-method
+           (push (list (cons "native" gnus-select-method)) alists))
+       alists))
+
+    (let* ((name (if (member (cadr method) '(nil ""))
+                     (format "%s" (car method))
+                   (format "%s:%s" (car method) (cadr method))))
+           (name-method (cons name method)))
+      (unless (member name-method gnus-server-method-cache)
+        (push name-method gnus-server-method-cache))
+      name)))
 
 (defsubst gnus-server-get-method (group method)
   ;; Input either a server name, and extended server name, or a
@@ -3801,7 +3839,11 @@ Allow completion over sensible values."
 
 (defun gnus-agent-method-p (method)
   "Say whether METHOD is covered by the agent."
-  (member method gnus-agent-covered-methods))
+  (or (eq (car gnus-agent-method-p-cache) method)
+      (setq gnus-agent-method-p-cache 
+            (cons method
+                  (member (gnus-method-to-server method) gnus-agent-covered-methods))))
+  (cdr gnus-agent-method-p-cache))
 
 (defun gnus-online (method)
   (not
