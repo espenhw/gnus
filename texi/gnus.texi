@@ -14182,7 +14182,7 @@ Neither did I, we need examples.
 
 This will put all articles from the nnimap mailing list into mailbox
 INBOX.nnimap, all articles containing MAKE MONEY in the Subject: line
-into INBOX.spam and everything else in INBOX.private.
+into INBOX.junk and everything else in INBOX.private.
 
 The first string may contain `\\1' forms, like the ones used by
 replace-match to insert sub-expressions from the matched text.  For

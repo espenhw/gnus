@@ -1,3 +1,7 @@
+2001-04-07  Ryan Yeske <rcyeske@vcn.bc.ca>
+
+	* gnus.texi (Splitting in IMAP): Fix.
+
 2001-04-07  Jesper Harder <harder@ifa.au.dk>
 
 	* gnus.texi (More Threading): Fix.
