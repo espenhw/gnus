@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.15 Manual
+@settitle Pterodactyl Gnus 0.16 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.15 Manual
+@title Pterodactyl Gnus 0.16 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.15.
+This manual corresponds to Pterodactyl Gnus 0.16.
 
 @end ifinfo
 
@@ -2340,7 +2340,11 @@ Sort the group buffer alphabetically by backend name
 
 @end table
 
-When given a prefix, all these commands will sort in reverse order.
+All the commands below obeys the process/prefix convention
+(@pxref{Process/Prefix}).
+
+When given a symbolic prefix (@pxref{Symbolic Prefixes}), all these
+commands will sort in reverse order.  
 
 You can also sort a subset of the groups:
 
@@ -2348,38 +2352,38 @@ You can also sort a subset of the groups:
 @item G P a
 @kindex G P a (Group)
 @findex gnus-group-sort-selected-groups-by-alphabet
-Sort the process/prefixed groups in the group buffer alphabetically by
-group name (@code{gnus-group-sort-selected-groups-by-alphabet}).
+Sort the groups alphabetically by group name
+(@code{gnus-group-sort-selected-groups-by-alphabet}).
 
 @item G P u
 @kindex G P u (Group)
 @findex gnus-group-sort-selected-groups-by-unread
-Sort the process/prefixed groups in the group buffer by the number of
-unread articles (@code{gnus-group-sort-selected-groups-by-unread}).
+Sort the groups by the number of unread articles
+(@code{gnus-group-sort-selected-groups-by-unread}).
 
 @item G P l
 @kindex G P l (Group)
 @findex gnus-group-sort-selected-groups-by-level
-Sort the process/prefixed groups in the group buffer by group level
+Sort the groups by group level
 (@code{gnus-group-sort-selected-groups-by-level}).
 
 @item G P v
 @kindex G P v (Group)
 @findex gnus-group-sort-selected-groups-by-score
-Sort the process/prefixed groups in the group buffer by group score
+Sort the groups by group score
 (@code{gnus-group-sort-selected-groups-by-score}).  @xref{Group Score}.
 
 @item G P r
 @kindex G P r (Group)
 @findex gnus-group-sort-selected-groups-by-rank
-Sort the process/prefixed groups in the group buffer by group rank
+Sort the groups by group rank
 (@code{gnus-group-sort-selected-groups-by-rank}).  @xref{Group Score}.
 
 @item G P m
 @kindex G P m (Group)
 @findex gnus-group-sort-selected-groups-by-method
-Sort the process/prefixed groups in the group buffer alphabetically by
-backend name (@code{gnus-group-sort-selected-groups-by-method}).
+Sort the groups alphabetically by backend name
+(@code{gnus-group-sort-selected-groups-by-method}).
 
 @end table
 

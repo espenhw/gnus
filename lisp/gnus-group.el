@@ -2300,46 +2300,52 @@ If REVERSE, sort in reverse order."
     ;; Go through all the infos and replace the old entries
     ;; with the new infos.
     (while infos
-      (setcar entries (pop infos))
+      (setcar (car entries) (pop infos))
       (pop entries))
     ;; Update the hashtable.
     (gnus-make-hashtable-from-newsrc-alist)))
 
-(defun gnus-group-sort-selected-groups-by-alphabet (&optional reverse)
+(defun gnus-group-sort-selected-groups-by-alphabet (&optional n reverse)
   "Sort the group buffer alphabetically by group name.
-If REVERSE, sort in reverse order."
-  (interactive "P")
-  (gnus-group-sort-selected-groups 'gnus-group-sort-by-alphabet reverse))
+Obeys the process/prefix convention.  If REVERSE (the symbolic prefix),
+sort in reverse order."
+  (interactive (gnus-interactive "P\ny"))
+  (gnus-group-sort-selected-groups n 'gnus-group-sort-by-alphabet reverse))
 
-(defun gnus-group-sort-selected-groups-by-unread (&optional reverse)
+(defun gnus-group-sort-selected-groups-by-unread (&optional n reverse)
   "Sort the group buffer by number of unread articles.
-If REVERSE, sort in reverse order."
-  (interactive "P")
-  (gnus-group-sort-selected-groups 'gnus-group-sort-by-unread reverse))
+Obeys the process/prefix convention.  If REVERSE (the symbolic prefix),
+sort in reverse order."
+  (interactive (gnus-interactive "P\ny"))
+  (gnus-group-sort-selected-groups n 'gnus-group-sort-by-unread reverse))
 
-(defun gnus-group-sort-selected-groups-by-level (&optional reverse)
+(defun gnus-group-sort-selected-groups-by-level (&optional n reverse)
   "Sort the group buffer by group level.
-If REVERSE, sort in reverse order."
-  (interactive "P")
-  (gnus-group-sort-selected-groups 'gnus-group-sort-by-level reverse))
+Obeys the process/prefix convention.  If REVERSE (the symbolic prefix),
+sort in reverse order."
+  (interactive (gnus-interactive "P\ny"))
+  (gnus-group-sort-selected-groups n 'gnus-group-sort-by-level reverse))
 
-(defun gnus-group-sort-selected-groups-by-score (&optional reverse)
+(defun gnus-group-sort-selected-groups-by-score (&optional n reverse)
   "Sort the group buffer by group score.
-If REVERSE, sort in reverse order."
-  (interactive "P")
-  (gnus-group-sort-selected-groups 'gnus-group-sort-by-score reverse))
+Obeys the process/prefix convention.  If REVERSE (the symbolic prefix),
+sort in reverse order."
+  (interactive (gnus-interactive "P\ny"))
+  (gnus-group-sort-selected-groups n 'gnus-group-sort-by-score reverse))
 
-(defun gnus-group-sort-selected-groups-by-rank (&optional reverse)
+(defun gnus-group-sort-selected-groups-by-rank (&optional n reverse)
   "Sort the group buffer by group rank.
-If REVERSE, sort in reverse order."
-  (interactive "P")
-  (gnus-group-sort-selected-groups 'gnus-group-sort-by-rank reverse))
+Obeys the process/prefix convention.  If REVERSE (the symbolic prefix),
+sort in reverse order."
+  (interactive (gnus-interactive "P\ny"))
+  (gnus-group-sort-selected-groups n 'gnus-group-sort-by-rank reverse))
 
-(defun gnus-group-sort-selected-groups-by-method (&optional reverse)
+(defun gnus-group-sort-selected-groups-by-method (&optional n reverse)
   "Sort the group buffer alphabetically by backend name.
-If REVERSE, sort in reverse order."
-  (interactive "P")
-  (gnus-group-sort-selected-groups 'gnus-group-sort-by-method reverse))
+Obeys the process/prefix convention.  If REVERSE (the symbolic prefix),
+sort in reverse order."
+  (interactive (gnus-interactive "P\ny"))
+  (gnus-group-sort-selected-groups n 'gnus-group-sort-by-method reverse))
 
 ;;; Sorting predicates.
 

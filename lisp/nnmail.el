@@ -1631,7 +1631,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 	    ((numberp days)
 	     (setq days (days-to-time days))
 	     ;; Compare the time with the current time.
-	     (subtract-time days (time-since time)))))))
+	     (time-less-p days (time-since time)))))))
 
 (defvar nnmail-read-passwd nil)
 (defun nnmail-read-passwd (prompt &rest args)

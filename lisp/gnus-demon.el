@@ -268,7 +268,7 @@ minutes, the connection is closed."
 
 (defun gnus-demon-nntp-close-connection ()
   (save-window-excursion
-    (when (subtract-time '(0 300) (time-since nntp-last-command-time))
+    (when (time-less-p '(0 300) (time-since nntp-last-command-time))
       (nntp-close-server))))
 
 (defun gnus-demon-add-scanmail ()

@@ -3483,7 +3483,7 @@ If LINE, insert the rebuilt thread starting on line LINE."
 
 (defsubst gnus-article-sort-by-date (h1 h2)
   "Sort articles by root article date."
-  (time-less
+  (time-less-p
    (gnus-date-get-time (mail-header-date h1))
    (gnus-date-get-time (mail-header-date h2))))
 
@@ -5934,7 +5934,7 @@ articles that are younger than AGE days."
 	(while (setq d (pop data))
 	  (when (and (vectorp (gnus-data-header d))
 		     (setq date (mail-header-date (gnus-data-header d))))
-	    (setq is-younger (subtract-time
+	    (setq is-younger (time-less-p
 			      (time-since (date-to-time date))
 			      cutoff))
 	    (when (if younger-p

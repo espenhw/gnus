@@ -190,7 +190,7 @@ matches an previously scanned and verified nocem message."
   (let ((date (mail-header-date header))
 	issuer b e type)
     (when (or (not date)
-	      (time-less
+	      (time-less-p
 	       (time-since (date-to-time date))
 	       (days-to-time gnus-nocem-expiry-wait)))
       (gnus-request-article-this-buffer (mail-header-number header) group)
@@ -320,7 +320,7 @@ matches an previously scanned and verified nocem message."
 	 entry)
     (setq gnus-nocem-hashtb (gnus-make-hashtable (* (length alist) 51)))
     (while (setq entry (car alist))
-      (if (not (subtract-time (time-since (car entry)) expiry))
+      (if (not (time-less-p (time-since (car entry)) expiry))
 	  ;; This entry has expired, so we remove it.
 	  (setcdr prev (cdr alist))
 	(setq prev alist)

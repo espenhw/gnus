@@ -960,21 +960,22 @@ If PROMPT (the prefix), prompt for a coding system to use."
   (interactive "P")
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (let* ((inhibit-point-motion-hooks t)
-	   (ct (message-fetch-field "Content-Type" t))
-	   (cte (message-fetch-field "Content-Transfer-Encoding" t))
-	   (charset (cond
-		     (prompt
-		      (mm-read-coding-system "Charset to decode: "))
-		     (ct
-		      (mm-content-type-charset ct))
-		     (gnus-newsgroup-name
-		      (gnus-group-find-parameter
-		       gnus-newsgroup-name 'charset))))
-	   buffer-read-only)
-      (save-restriction
-	(goto-char (point-min))
-	(search-forward "\n\n" nil 'move)
+    (save-restriction
+      (message-narrow-to-head)
+      (let* ((inhibit-point-motion-hooks t)
+	     (ct (message-fetch-field "Content-Type" t))
+	     (cte (message-fetch-field "Content-Transfer-Encoding" t))
+	     (charset (cond
+		       (prompt
+			(mm-read-coding-system "Charset to decode: "))
+		       (ct
+			(mm-content-type-charset ct))
+		       (gnus-newsgroup-name
+			(gnus-group-find-parameter
+			 gnus-newsgroup-name 'charset))))
+	     buffer-read-only)
+	(goto-char (point-max))
+	(widen)
 	(narrow-to-region (point) (point-max))
 	(mm-decode-body
 	 charset (and cte (intern (downcase (gnus-strip-whitespace cte)))))))))

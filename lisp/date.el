@@ -47,7 +47,7 @@
   "Convert DATE into time."
   (apply 'encode-time (parse-time-string date)))
 
-(defun time-less (t1 t2)
+(defun time-less-p (t1 t2)
   "Say whether time T1 is less than time T2."
   (or (< (car t1) (car t2))
       (and (= (car t1) (car t2))

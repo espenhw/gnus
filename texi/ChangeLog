@@ -1,3 +1,7 @@
+1998-09-05 17:36:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Sorting Groups): Change.
+
 1998-09-04 00:40:07  David S. Goldberg  <dsg@mitre.org>
 
 	* gnus.texi (Article Hiding): Verify.
