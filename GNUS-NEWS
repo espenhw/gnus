@@ -8,6 +8,12 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Gnus reads the NOV and articles in the Agent if plugged.
+
+If one reads an article while plugged, and the article already exists
+in the Agent, it won't get downloaded once more.  (setq
+gnus-agent-cache nil) reverts to the old behavior.
+
 ** Gnus supports the "format=flowed" (RFC 2646) parameter.
 
 On composing messages, it is enabled by `use-hard-newlines'.  Decoding
