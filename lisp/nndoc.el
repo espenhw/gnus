@@ -63,7 +63,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (article-begin . "\^_\^L *\n")
      (body-end . "\^_")
      (body-begin-function . nndoc-babyl-body-begin)
-     (head-begin . "^[0-9].*\n"))
+     (head-begin-function . nndoc-babyl-head-begin))
     (forward
      (article-begin . "^-+ Start of forwarded message -+\n+")
      (body-end . "^-+ End of forwarded message -+$")
@@ -113,6 +113,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 (defvoo nndoc-body-begin nil)
 (defvoo nndoc-body-end-function nil)
 (defvoo nndoc-body-begin-function nil)
+(defvoo nndoc-head-begin-function nil)
 (defvoo nndoc-body-end nil)
 (defvoo nndoc-dissection-alist nil)
 (defvoo nndoc-prepare-body nil)
@@ -336,7 +337,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 		nndoc-file-end nndoc-article-begin
 		nndoc-body-begin nndoc-body-end-function nndoc-body-end
 		nndoc-prepare-body nndoc-article-transform
-		nndoc-generate-head nndoc-body-begin-function)))
+		nndoc-generate-head nndoc-body-begin-function
+		nndoc-head-begin-function)))
     (while vars
       (set (pop vars) nil)))
   (let* (defs guess)
@@ -371,8 +373,10 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 		 (nndoc-search nndoc-first-article)
 	       (nndoc-search nndoc-article-begin))
 	(setq first nil)
-	(when nndoc-head-begin 
- 	  (nndoc-search nndoc-head-begin))
+	(cond (nndoc-head-begin-function
+	       (funcall nndoc-head-begin-function))
+	      (nndoc-head-begin 
+	       (nndoc-search nndoc-head-begin)))
  	(if (and nndoc-file-end
 		 (looking-at nndoc-file-end))
 	    (goto-char (point-max))
@@ -460,6 +464,12 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
   (re-search-forward "^\n" nil t)
   (when (looking-at "\*\*\* EOOH \*\*\*")
     (re-search-forward "^\n" nil t)))
+
+(defun nndoc-babyl-head-begin ()
+  (when (re-search-forward "^[0-9].*\n" nil t)
+    (when (looking-at "\*\*\* EOOH \*\*\*")
+      (forward-line 1))
+    t))
 
 (provide 'nndoc)
 

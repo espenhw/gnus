@@ -1,3 +1,82 @@
+Wed Jun  5 17:17:00 1996  Lars Magne Ingebrigtsen  <larsi@trym.ifi.uio.no>
+
+	* nndoc.el (nndoc-type-alist): New babyl head begin.
+	(nndoc-babyl-head-begin): New function.
+
+Wed Jun  5 16:26:55 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-summary-save-article): Remove headers.
+
+Wed Jun  5 18:16:55 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-read-old-newsrc-el-file): Would bug out.
+
+Wed Jun  5 12:43:22 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus-score.el: `V f' to flush the cache.
+	(gnus-score-flush-cache): Save scores before flushing.
+
+	* gnus-cite.el (gnus-cite-prefix-regexp): Removed "-" as cite
+	prefix. 
+
+	* gnus.el (gnus-summary-caesar-message): Use message.
+
+	* gnus-cite.el (gnus-cite-prefix-regexp): Allow "-" as a cite
+	prefix. 
+
+	* nnvirtual.el (nnvirtual-convert-headers): Wouldn't convert.
+
+	* gnus-cus.el (()): Have `gnus-mouse-face' respect gnus-visual.
+
+Wed Jun  5 12:52:15 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* dgnushack.el (custom-file): Changed setq.
+
+Tue Jun  4 13:46:45 1996  Scott Byer  <byer@mv.us.adobe.com>
+
+	* nnfolder.el (nnfolder-read-folder) Take an additional parameter,
+ 	scanning, which is t when we are only scanning for new news.  In
+ 	this case, if the modtime of the file hasn't changed since we last
+ 	scanned it, we don't bother reading the file in, and simply return
+ 	nil.  When we do scan it, pay attention to the
+ 	nnfolder-distrust-mbox variable, and only scan forward from the
+ 	last marked message when nil.  After scanning, remember the
+ 	modtime of the visited buffer.
+
+	* nnfolder.el (nnfolder-save-mail) If nnfolder-current-buffer is
+ 	nil, make sure any open group is closed before changing the group
+ 	- in the case where a group was opened for scanning but not read
+ 	in because it wasn't touched, this forces the read.
+
+	* nnfolder.el (nnfolder-possibly-change-group) Take an additional
+ 	optional variable, which indicated if we're scanning.  Passes it
+ 	on to nnfolder-read-folder, and is prepared for
+ 	nnfolder-read-folder to return nil for nnfolder-current-buffer.
+  	If we get a request to change to the currently open group, and
+ 	nnfolder-current-buffer is nil (we're on the tail end of a scan),
+ 	simply return.
+
+	* nnfolder.el (nnfolder-request-scan) Inform
+ 	nnfolder-possibly-change-group that we're scanning.
+
+	* nnfolder.el (nnfolder-scantime-alist) New internal variable.
+  	Keep track of the last scantime of each mbox.
+
+	* nnfolder.el (nnfolder-distrust-mbox) New variable.  When t,
+ 	nnfolder-read-folder reverts to it's old behavior of scanning an
+ 	entire file looking for unmarked messages.  When nil (the
+ 	default), scans forward from the last marked message.  Unless you
+ 	have an external mailer which inserts new messages in the middle
+ 	of your mailboxes, leave nil.
+
+Wed Jun  5 09:20:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-goto-body): Expand abbrev.
+
+Tue Jun  4 17:12:06 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.7 is released.
+
 Tue Jun  4 18:26:24 1996  Christoph Wedler  <wedler@fmi.uni-passau.de>
 
 	* message-xms.el (message-xmas-find-glyph-directory): Wouldn't use

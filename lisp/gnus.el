@@ -1728,7 +1728,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.7"
+(defconst gnus-version-number "5.2.8"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2311,6 +2311,16 @@ Thank you for your help in stamping out bugs.
 	  (setcar flist 'byte-code)
 	  flist)
       (cons 'progn (cddr fval)))))
+
+;; Find out whether the gnus-visual TYPE is wanted.
+(defun gnus-visual-p (&optional type class)
+  (and gnus-visual			; Has to be non-nil, at least.
+       (if (not type)			; We don't care about type.
+	   gnus-visual
+	 (if (listp gnus-visual)	; It's a list, so we check it.
+	     (or (memq type gnus-visual)
+		 (memq class gnus-visual))
+	   t))))
 
 ;;; Load the compatability functions.
 
@@ -3809,16 +3819,6 @@ simple-first is t, first argument is already simplified."
 (defun gnus-hide-text-type (b e type)
   "Hide text of TYPE between B and E."
   (gnus-hide-text b e (cons 'gnus-type (cons type gnus-hidden-properties))))
-
-;; Find out whether the gnus-visual TYPE is wanted.
-(defun gnus-visual-p (&optional type class)
-  (and gnus-visual			; Has to be non-nil, at least.
-       (if (not type)			; We don't care about type.
-	   gnus-visual
-	 (if (listp gnus-visual)	; It's a list, so we check it.
-	     (or (memq type gnus-visual)
-		 (memq class gnus-visual))
-	   t))))
 
 (defun gnus-parent-headers (headers &optional generation)
   "Return the headers of the GENERATIONeth parent of HEADERS."
@@ -11382,8 +11382,9 @@ forward."
      gnus-article-buffer
      (save-restriction
        (widen)
-       (let ((start (window-start)))
-	 (news-caesar-buffer-body arg)
+       (let ((start (window-start))
+	     buffer-read-only)
+	 (message-caesar-buffer-body arg)
 	 (set-window-start (get-buffer-window (current-buffer)) start))))))
 
 (defun gnus-summary-stop-page-breaking ()
@@ -12929,7 +12930,7 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	  ;; Remove headers accoring to `gnus-saved-headers'.
 	  (let ((gnus-visible-headers
 		 (or gnus-saved-headers gnus-visible-headers)))
-	    (gnus-article-hide-headers nil t)))
+	    (gnus-article-hide-headers 1 t)))
 	;; Remove any X-Gnus lines.
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
@@ -16420,8 +16421,8 @@ If FORCE is non-nil, the .newsrc file is read."
 		  killed gnus-killed-assoc
 		  marked gnus-marked-assoc)))
       (setq gnus-newsrc-alist nil)
-      (while (setq info (gnus-get-info (setq group (pop newsrc))))
-	(if info
+      (while (setq group (pop newsrc))
+	(if (setq info (gnus-get-info (car group)))
 	    (progn
 	      (gnus-info-set-read info (cddr group))
 	      (gnus-info-set-level

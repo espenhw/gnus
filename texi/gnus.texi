@@ -8906,6 +8906,12 @@ File Editing}).
 Edit a score file and make this score file the current one
 (@code{gnus-score-edit-file}).
 
+@item V F
+@kindex V F (Summary)
+@findex gnus-score-flush-cache
+Flush the score cahe (@code{gnus-score-flush-cache}).  This is useful
+after editing score files.
+
 @item V C
 @kindex V C (Summary)
 @findex gnus-score-customize

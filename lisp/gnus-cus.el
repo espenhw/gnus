@@ -43,7 +43,7 @@
     "turquoise"))
 
 (defvar gnus-face-dark-name-list
-  '("RoyalBlue" "firebrick" "dark green" "OrangeRed" 
+  '("dark blue" "firebrick" "dark green" "OrangeRed" 
     "dark khaki" "dark violet" "SteelBlue4"))
 ; CornflowerBlue SeaGreen OrangeRed SteelBlue4 DeepPink3
 ; DarkOlviveGreen4 
@@ -67,6 +67,7 @@ less space and be faster as a result.")
 	(default . 
 	  (summary-highlight group-highlight
 			     article-highlight 
+			     mouse-face
 			     summary-menu group-menu article-menu
 			     tree-highlight menu highlight
 			     browse-menu server-menu
@@ -107,9 +108,11 @@ Face used for group or summary buffer mouse highlighting.
 The line beneath the mouse pointer will be highlighted with this
 face.")
 	(name . gnus-mouse-face)
-	(calculate . (if (boundp 'gnus-mouse-face)
-			 gnus-mouse-face
-		       'highlight))
+	(calculate . (if (gnus-visual-p 'mouse-face 'highlight)
+			 (if (boundp 'gnus-mouse-face)
+			     gnus-mouse-face
+			   'highlight)
+		       'default))
 	(type . face))
        ((tag . "Article Display")
 	(doc . "Controls how the article buffer will look.
@@ -357,7 +360,7 @@ alone.")
 	    (t
 	     (list
 	      (list "From" nil
-		    (custom-face-lookup "RoyalBlue" nil nil t t nil))
+		    (custom-face-lookup "MidnightBlue" nil nil t t nil))
 	      (list "Subject" nil 
 		    (custom-face-lookup "firebrick" nil nil t t nil))
 	      (list "Newsgroups:.*," nil
@@ -608,7 +611,7 @@ ticked: The number of ticked articles.")
 	       ((and (not mailp) (eq level 4)) .
 		,(custom-face-lookup "DarkGreen" nil nil t))
 	       ((and (not mailp) (eq level 5)) .
-		,(custom-face-lookup "Red" nil nil t))
+		,(custom-face-lookup "CadetBlue4" nil nil t))
 	       ((and mailp (eq level 1)) .
 		,(custom-face-lookup "DeepPink3" nil nil t))
 	       ((and mailp (eq level 2)) .

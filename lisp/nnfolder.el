@@ -51,10 +51,17 @@
 ;; style. -SLB
 
 (defvoo nnfolder-ignore-active-file nil
-  "If non-nil, causes nnfolder to do some extra work in order to determine the true active ranges of an mbox file.  
-Note that the active file is still saved, but it's values are not
-used.  This costs some extra time when scanning an mbox when opening
-it.")
+  "If non-nil, causes nnfolder to do some extra work in order to determine
+the true active ranges of an mbox file.  Note that the active file is still
+saved, but it's values are not used.  This costs some extra time when 
+scanning an mbox when opening it.")
+
+(defvoo nnfolder-distrust-mbox nil
+  "If non-nil, causes nnfolder to not trust the user with respect to
+inserting unaccounted for mail in the middle of an mbox file.  This can greatly
+slow down scans, which now must scan the entire file for unmarked messages.
+When nil, scans occur forward from the last marked message, a huge
+time saver for large mailboxes.")
 
 (defvoo nnfolder-newsgroups-file 
   (concat (file-name-as-directory nnfolder-directory) "newsgroups")
@@ -85,7 +92,7 @@ it.")
 (defvoo nnfolder-status-string "")
 (defvoo nnfolder-group-alist nil)
 (defvoo nnfolder-buffer-alist nil)
-(defvoo nnfolder-active-timestamp nil)
+(defvoo nnfolder-scantime-alist nil)
 
 
 
@@ -217,7 +224,7 @@ it.")
 			     (car range) (cdr range) group))))))))
 
 (deffoo nnfolder-request-scan (&optional group server)
-  (nnfolder-possibly-change-group group server)
+  (nnfolder-possibly-change-group group server t)
   (nnmail-get-new-mail
    'nnfolder 
    (lambda ()
@@ -466,11 +473,14 @@ it.")
 	     (match-beginning 0))
 	 (point-max))))))
 
-(defun nnfolder-possibly-change-group (group &optional server)
+;; When scanning, we're not looking t immediately switch into the group - if
+;; we know our information is up to date, don't even bother reading the file.
+(defun nnfolder-possibly-change-group (group &optional server scanning)
   (when (and server
 	     (not (nnfolder-server-opened server)))
     (nnfolder-open-server server))
-  (when group
+  (when (and group (or nnfolder-current-buffer
+		       (not (equal group nnfolder-current-group))))
     (unless (file-exists-p nnfolder-directory)
       (make-directory (directory-file-name nnfolder-directory) t))
     (nnfolder-possibly-activate-groups nil)
@@ -520,10 +530,14 @@ it.")
 		(unless (file-exists-p (file-name-directory file))
 		  (make-directory (file-name-directory file) t))
 		(write-region 1 1 file t 'nomesg))
-	      (setq nnfolder-current-buffer 
-		    (set-buffer (nnfolder-read-folder file)))
-	      (setq nnfolder-buffer-alist (cons (list group (current-buffer))
-						nnfolder-buffer-alist)))))))
+	      (setq nnfolder-current-buffer
+		    (nnfolder-read-folder file scanning))
+	      (if nnfolder-current-buffer 
+		  (progn
+		    (set-buffer nnfolder-current-buffer)
+		    (setq nnfolder-buffer-alist 
+			  (cons (list group nnfolder-current-buffer)
+				nnfolder-buffer-alist)))))))))
     (setq nnfolder-current-group group)))
 
 (defun nnfolder-save-mail (&optional group)
@@ -566,6 +580,7 @@ it.")
       ;; Insert the new newsgroup marker.
       (nnfolder-insert-newsgroup-line group-art)
       (unless nnfolder-current-buffer
+	(nnfolder-close-group (car group-art))
 	(nnfolder-request-create-group (car group-art))
 	(nnfolder-possibly-change-group (car group-art)))
       (let ((beg (point-min))
@@ -633,71 +648,101 @@ it.")
 ;; shouldn't cost us much extra time at all, but will be a lot less
 ;; vulnerable to glitches between the mbox and the active file.
 
-(defun nnfolder-read-folder (file)
-  (save-excursion
-    (nnfolder-possibly-activate-groups nil)
-    ;; We should be paranoid here and make sure the group is in the alist,
-    ;; and add it if it isn't.
-    ;;(if (not (assoc nnfoler-current-group nnfolder-group-alist)
-    (set-buffer (setq nnfolder-current-buffer 
-		      (nnheader-find-file-noselect file nil 'raw)))
-    (buffer-disable-undo (current-buffer))
-    (let* ((delim (concat "^" message-unix-mail-delimiter))
-	   (marker (concat "\n" nnfolder-article-marker))
-	   (number "[0-9]+")
-	   (active (cadr (assoc nnfolder-current-group 
-				nnfolder-group-alist)))
-	   ;; Set min to Big Number.
-	   (min (max (1- (lsh 1 23)) (1- (lsh 1 24)) (1- (lsh 1 25)))) 
-	   (max (cdr active))
-	   start end)
-      (goto-char (point-min))
+(defun nnfolder-read-folder (file &optional scanning)
+  ;; This is an attempt at a serious shortcut - don't even read in the file
+  ;; if we know we've seen it since the last time it was touched.
+  (let ((scantime (cadr (assoc nnfolder-current-group 
+			       nnfolder-scantime-alist)))
+	(modtime (nth 5 (or (file-attributes file) '(nil nil nil nil nil)))))
+    (if (and scanning scantime
+	     (eq (car scantime) (car modtime))
+	     (eq (cdr scantime) (cadr modtime)))
+	nil
+      (save-excursion
+	(nnfolder-possibly-activate-groups nil)
+	;; Read in the file.
+	(set-buffer (setq nnfolder-current-buffer 
+			  (nnheader-find-file-noselect file nil 'raw)))
+	(buffer-disable-undo (current-buffer))
+	;; If the file hasn't been touched since the last time we scanned it,
+	;; don't bother doing anything with it.
+	(let ((delim (concat "^" message-unix-mail-delimiter))
+	      (marker (concat "\n" nnfolder-article-marker))
+	      (number "[0-9]+")
+	      (active (cadr (assoc nnfolder-current-group nnfolder-group-alist)))
+	      (scantime (assoc nnfolder-current-group nnfolder-scantime-alist))
+	      (minid (lsh -1 -1))
+	      oldactive maxid start end newscantime)
 
-      ;; Anytime the active number is 1 or 0, it is suspect.  In that case,
-      ;; search the file manually to find the active number.  Or, of course,
-      ;; if we're being paranoid.  (This would also be the place to build
-      ;; other lists from the header markers, such as expunge lists, etc., if
-      ;; we ever desired to abandon the active file entirely for mboxes.)
-      (when (or nnfolder-ignore-active-file
-		(< max 2))
-	(while (and (search-forward marker nil t)
-		    (re-search-forward number nil t))
-	  (let ((newnum (string-to-number (match-string 0))))
-	    (setq max (max max newnum))
-	    (setq min (min min newnum))))
-	(setcar active (max 1 (min min max)))
-	(setcdr active (max max (cdr active)))
-	(goto-char (point-min)))
+	  (setq maxid (or (cdr active) 0))
+	  (setq oldactive active)
+	  (goto-char (point-min))
 
-      ;; Keep track of the active number on our own, and insert it back into
-      ;; the active list when we're done. Also, prime the pump to cut down on
-      ;; the number of searches we do.
-      (setq end (point-marker))
-      (set-marker end (or (and (re-search-forward delim nil t)
-			       (match-beginning 0))
-			  (point-max)))
-      (while (not (= end (point-max)))
-	(setq start (marker-position end))
-	(goto-char end)
-	;; There may be more than one "From " line, so we skip past
-	;; them.  
-	(while (looking-at delim) 
-	  (forward-line 1))
-	(set-marker end (or (and (re-search-forward delim nil t)
-				 (match-beginning 0))
-			    (point-max)))
-	(goto-char start)
-	(if (not (search-forward marker end t))
-	    (progn
-	      (narrow-to-region start end)
-	      (nnmail-insert-lines)
-	      (nnfolder-insert-newsgroup-line
-	       (cons nil (nnfolder-active-number nnfolder-current-group)))
-	      (widen))))
+	  ;; Anytime the active number is 1 or 0, it is suspect.  In that
+	  ;; case, search the file manually to find the active number.  Or,
+	  ;; of course, if we're being paranoid.  (This would also be the
+	  ;; place to build other lists from the header markers, such as
+	  ;; expunge lists, etc., if we ever desired to abandon the active
+	  ;; file entirely for mboxes.)
+	  (when (or nnfolder-ignore-active-file
+		    (< maxid 2))
+		(while (and (search-forward marker nil t)
+			    (re-search-forward number nil t))
+		  (let ((newnum (string-to-number (match-string 0))))
+		    (setq maxid (max maxid newnum))
+		    (setq minid (min minid newnum))))
+		(setcar active (max 1 (min minid maxid)))
+		(setcdr active (max maxid (cdr active)))
+		(goto-char (point-min)))
 
-      ;; Make absolutely sure that the active list reflects reality!
-      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-      (current-buffer))))
+	  ;; As long as we trust that the user will only insert unmarked mail
+	  ;; at the end, go to the end and search backwards for the last
+	  ;; marker.  Find the start of that message, and begin to search for
+	  ;; unmarked messages from there.
+	  (if (not (or nnfolder-distrust-mbox
+		       (< maxid 2)))
+	      (progn
+		(goto-char (point-max))
+		(if (not (re-search-backward marker nil t))
+		    (goto-char (point-min))
+		  (if (not (re-search-backward delim nil t))
+		      (goto-char (point-min))))))
+
+	  ;; Keep track of the active number on our own, and insert it back
+	  ;; into the active list when we're done. Also, prime the pump to
+	  ;; cut down on the number of searches we do.
+	  (setq end (point-marker))
+	  (set-marker end (or (and (re-search-forward delim nil t)
+				   (match-beginning 0))
+			      (point-max)))
+	  (while (not (= end (point-max)))
+	    (setq start (marker-position end))
+	    (goto-char end)
+	    ;; There may be more than one "From " line, so we skip past
+	    ;; them.  
+	    (while (looking-at delim) 
+	      (forward-line 1))
+	    (set-marker end (or (and (re-search-forward delim nil t)
+				     (match-beginning 0))
+				(point-max)))
+	    (goto-char start)
+	    (if (not (search-forward marker end t))
+		(progn
+		  (narrow-to-region start end)
+		  (nnmail-insert-lines)
+		  (nnfolder-insert-newsgroup-line
+		   (cons nil (nnfolder-active-number nnfolder-current-group)))
+		  (widen))))
+
+	  ;; Make absolutely sure that the active list reflects reality!
+	  (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+	  ;; Set the scantime for this group.
+	  (setq newscantime (visited-file-modtime))
+	  (if scantime
+	      (setcdr scantime (list newscantime))
+	    (push (list nnfolder-current-group newscantime) 
+		  nnfolder-scantime-alist))
+	  (current-buffer))))))
 
 ;;;###autoload
 (defun nnfolder-generate-active-file ()

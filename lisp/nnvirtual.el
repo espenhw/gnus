@@ -319,7 +319,7 @@ virtual group.")
 	   header)
       (erase-buffer)
       (while (setq header (pop headers))
-))))
+	(nnheader-insert-nov header)))))
 
 (defun nnvirtual-possibly-change-server (server)
   (or (not server)

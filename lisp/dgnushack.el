@@ -29,7 +29,7 @@
 (require 'cl)
 (setq load-path (cons "." load-path))
 
-(setq custom-file "/dev/null")
+(setq custom-file "/THIS FILE DOES NOT eXiST!")
 
 (defun dgnushack-compile ()
   ;(setq byte-compile-dynamic t)

@@ -254,6 +254,7 @@ of the last successful match.")
  "R" gnus-summary-rescore
  "e" gnus-score-edit-current-scores
  "f" gnus-score-edit-file
+ "F" gnus-score-flush-cache
  "t" gnus-score-find-trace
  "C" gnus-score-customize)
 
@@ -1882,7 +1883,9 @@ SCORE is the score to add."
 (defun gnus-score-flush-cache ()
   "Flush the cache of score files."
   (interactive)
+  (gnus-score-save)
   (setq gnus-score-cache nil
+	gnus-score-alist nil
 	gnus-short-name-score-file-cache nil)
   (gnus-message 6 "The score cache is now flushed"))
 

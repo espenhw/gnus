@@ -883,6 +883,7 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
 (defun message-goto-body ()
   "Move point to the beginning of the message body."
   (interactive)
+  (if (looking-at "[ \t]*\n") (expand-abbrev))
   (goto-char (point-min))
   (search-forward (concat "\n" mail-header-separator "\n") nil t))
 
