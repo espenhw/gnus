@@ -11194,12 +11194,12 @@ still a pain, though.
 @cindex User-Agent
 
 This variable controls which information should be exposed in the
-User-Agent header.  It can be one of the symbols @code{full} (show full
-information, i.e. Emacs and Gnus version and system configuration),
-@code{emacs-gnus} (show only Emacs and Gnus version),
-@code{emacs-gnus-type} (same as @code{emacs-gnus} plus system type),
-@code{gnus} (show only Gnus version) or a custom string.  If you set it
-to a string, be sure to use a valid format, see RFC 2616.
+User-Agent header.  It can be one of the symbols @code{gnus} (show only
+Gnus version), @code{emacs-gnus} (show only Emacs and Gnus versions),
+@code{emacs-gnus-config} (same as @code{emacs-gnus} plus system
+configuration), @code{emacs-gnus-type} (same as @code{emacs-gnus} plus
+system type) or a custom string.  If you set it to a string, be sure to
+use a valid format, see RFC 2616."
 
 @end table
 
