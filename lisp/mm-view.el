@@ -37,6 +37,28 @@
   (unless (fboundp 'diff-mode)
     (autoload 'diff-mode "diff-mode" "" t nil)))
 
+(defvar mm-text-html-renderer-alist
+  '((w3  . mm-inline-text-html-render-with-w3)
+    (w3m . mm-inline-text-html-render-with-w3m)
+    (links mm-inline-render-with-file 
+	   mm-links-remove-leading-blank
+	   "links" "-dump" file)
+    (lynx  mm-inline-render-with-stdin nil
+	   "lynx" "-dump" "-force_html" "-stdin"))
+  "The attributes of renderer types.")
+
+(defvar mm-text-html-washer-alist
+  '((w3  . gnus-article-wash-html-with-w3)
+    (w3m . gnus-article-wash-html-with-w3m)
+    (links mm-inline-wash-with-file 
+	   mm-links-remove-leading-blank
+	   "links" "-dump" file)
+    (lynx  mm-inline-wash-with-stdin nil
+	   "lynx" "-dump" "-force_html" "-stdin"))
+  "The attributes of washer types.")
+
+;;; Internal variables.
+
 ;;;
 ;;; Functions for displaying various formats inline
 ;;;
@@ -279,55 +301,114 @@ will not be substituted.")
 	    (delete-region ,(point-min-marker)
 			   ,(point-max-marker))))))))
 
-(defun mm-inline-text (handle)
-  (let ((type (mm-handle-media-subtype handle))
-	buffer-read-only)
+(defun mm-links-remove-leading-blank ()
+  ;; Delete the annoying three spaces preceding each line of links
+  ;; output.
+  (goto-char (point-min))
+  (while (re-search-forward "^   " nil t)
+    (delete-region (match-beginning 0) (match-end 0))))
+
+(defun mm-inline-wash-with-file (post-func cmd &rest args)
+  (let ((file (make-temp-name 
+	       (expand-file-name "mm" mm-tmp-directory))))
+    (write-region (point-min) (point-max) file nil 'silent)
+    (delete-region (point-min) (point-max))
+    (unwind-protect
+	(apply 'call-process cmd nil t nil (mapcar 'eval args))
+      (delete-file file))
+    (and post-func (funcall post-func))))
+
+(defun mm-inline-wash-with-stdin (post-func cmd &rest args)
+  (apply 'call-process-region (point-min) (point-max)
+	 cmd t t nil args)
+  (and post-func (funcall post-func)))
+
+(defun mm-inline-render-with-file (handle post-func cmd &rest args)
+  (let ((source (mm-get-part handle)))
+    (mm-insert-inline
+     handle
+     (with-temp-buffer
+       (insert source)
+       (apply 'mm-inline-wash-with-file post-func cmd args)
+       (buffer-string)))))
+
+(defun mm-inline-render-with-stdin (handle post-func cmd &rest args)
+  (let ((source (mm-get-part handle)))
+    (mm-insert-inline 
+     handle 
+     (with-temp-buffer
+       (insert source)
+       (apply 'mm-inline-wash-with-stdin post-func cmd args)
+       (buffer-string)))))
+
+(defun mm-inline-render-with-function (handle func &rest args)
+  (let ((source (mm-get-part handle)))
+    (mm-insert-inline 
+     handle 
+     (with-temp-buffer
+       (insert source)
+       (apply func args)
+       (buffer-string)))))
+
+(defun mm-inline-text-html (handle)
+  (let* ((func (or mm-inline-text-html-renderer mm-text-html-renderer))
+	 (entry (assq func mm-text-html-renderer-alist))
+	 buffer-read-only)
+    (if entry
+	(setq func (cdr entry)))
     (cond
-     ((equal type "html")
-      (funcall mm-inline-text-html-renderer handle))
-     ((equal type "x-vcard")
-      (mm-insert-inline
-       handle
-       (concat "\n-- \n"
-	       (ignore-errors
-		 (if (fboundp 'vcard-pretty-print)
-		     (vcard-pretty-print (mm-get-part handle))
-		   (vcard-format-string
-		    (vcard-parse-string (mm-get-part handle)
-					'vcard-standard-filter)))))))
+     ((gnus-functionp func)
+      (funcall func handle))
      (t
-      (let ((b (point))
-	    (charset (mail-content-type-get
-		      (mm-handle-type handle) 'charset)))
-	(if (or (eq charset 'gnus-decoded)
-		;; This is probably not entirely correct, but
-		;; makes rfc822 parts with embedded multiparts work.
-		(eq mail-parse-charset 'gnus-decoded))
-	    (save-restriction
-	      (narrow-to-region (point) (point))
-	      (mm-insert-part handle)
-	      (goto-char (point-max)))
-	  (insert (mm-decode-string (mm-get-part handle) charset)))
-	(when (and (equal type "plain")
-		   (equal (cdr (assoc 'format (mm-handle-type handle)))
-			  "flowed"))
-	  (save-restriction
-	    (narrow-to-region b (point))
-	    (goto-char b)
-	    (fill-flowed)
-	    (goto-char (point-max))))
+      (apply (car func) handle (cdr func))))))
+
+(defun mm-inline-text-vcard (handle)
+  (let (buffer-read-only)
+    (mm-insert-inline
+     handle
+     (concat "\n-- \n"
+	     (ignore-errors
+	       (if (fboundp 'vcard-pretty-print)
+		   (vcard-pretty-print (mm-get-part handle))
+		 (vcard-format-string
+		  (vcard-parse-string (mm-get-part handle)
+				      'vcard-standard-filter))))))))
+
+(defun mm-inline-text (handle)
+  (let ((b (point))
+	(type (mm-handle-media-subtype handle))
+	(charset (mail-content-type-get
+		  (mm-handle-type handle) 'charset))
+	buffer-read-only)
+    (if (or (eq charset 'gnus-decoded)
+	    ;; This is probably not entirely correct, but
+	    ;; makes rfc822 parts with embedded multiparts work.
+	    (eq mail-parse-charset 'gnus-decoded))
 	(save-restriction
-	  (narrow-to-region b (point))
-	  (set-text-properties (point-min) (point-max) nil)
-	  (when (or (equal type "enriched")
-		    (equal type "richtext"))
-	    (enriched-decode (point-min) (point-max)))
-	  (mm-handle-set-undisplayer
-	   handle
-	   `(lambda ()
-	      (let (buffer-read-only)
-		(delete-region ,(point-min-marker)
-			       ,(point-max-marker)))))))))))
+	  (narrow-to-region (point) (point))
+	  (mm-insert-part handle)
+	  (goto-char (point-max)))
+      (insert (mm-decode-string (mm-get-part handle) charset)))
+    (when (and (equal type "plain")
+	       (equal (cdr (assoc 'format (mm-handle-type handle)))
+		      "flowed"))
+      (save-restriction
+	(narrow-to-region b (point))
+	(goto-char b)
+	(fill-flowed)
+	(goto-char (point-max))))
+    (save-restriction
+      (narrow-to-region b (point))
+      (set-text-properties (point-min) (point-max) nil)
+      (when (or (equal type "enriched")
+		(equal type "richtext"))
+	(enriched-decode (point-min) (point-max)))
+      (mm-handle-set-undisplayer
+       handle
+       `(lambda ()
+	  (let (buffer-read-only)
+	    (delete-region ,(point-min-marker)
+			   ,(point-max-marker))))))))
 
 (defun mm-insert-inline (handle text)
   "Insert TEXT inline from HANDLE."

@@ -1,5 +1,31 @@
 2002-02-17  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	Some ideas is inspired by code from Hrvoje Niksic
+	<hniksic@arsdigita.com>
+	
+	* gnus-art.el (gnus-article-wash-function): Set the default to
+	nil, so that we use mm-text-html-renderer instead.
+	(article-wash-html): Use mm-text-html-renderer.
+
+	* mm-decode.el (mm-inline-media-tests): Use mm-inline-text-*.
+	(mm-text-html-renderer): New variable.
+	(mm-inline-text-html-renderer): Set the default to nil, so that we
+	use mm-text-html-renderer instead.
+	
+	* mm-view.el (mm-inline-text-html): New function.
+	(mm-text-html-renderer-alist): New variable.
+	(mm-inline-text-vcard): New function.
+	(mm-inline-text): Split.
+	(mm-links-remove-leading-blank): New function.
+	(mm-inline-render-with-file): New function.
+	(mm-inline-render-with-stdin): New function.
+	(mm-inline-render-with-function): New function.
+	(mm-text-html-washer-alist): New variable.
+	(mm-inline-wash-with-file): New function.
+	(mm-inline-wash-with-stdin): New function.
+
+2002-02-17  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	
 	* message-utils.el: Fix installation doc.
 	From: Reiner Steib <4uce.02.r.steib@gmx.net>
 

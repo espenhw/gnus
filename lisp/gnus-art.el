@@ -1211,15 +1211,8 @@ It is a string, such as \"PGP\". If nil, ask user."
   :type 'string
   :group 'mime-security)
 
-(defcustom gnus-article-wash-function
-  (cond ((locate-library "w3")
-	 'gnus-article-wash-html-with-w3)
-	((locate-library "w3m")
-	 'gnus-article-wash-html-with-w3m))
-  "Function used for converting HTML into text."
-  :type '(radio (function-item gnus-article-wash-html-with-w3)
-		(function-item gnus-article-wash-html-with-w3m))
-  :group 'gnus-article)
+(defvar gnus-article-wash-function nil
+  "Function used for converting HTML into text.")
 
 ;;; Internal variables
 
@@ -2108,7 +2101,15 @@ If READ-CHARSET, ask for a coding system."
       (save-window-excursion
 	(save-restriction
 	  (narrow-to-region (point) (point-max))
-	  (funcall gnus-article-wash-function))))))
+	  (let* ((func (or gnus-article-wash-function mm-text-html-renderer))
+		 (entry (assq func mm-text-html-washer-alist)))
+	    (if entry
+		(setq func (cdr entry)))
+	    (cond
+	     ((gnus-functionp func)
+	      (funcall func))
+	     (t
+	      (apply (car func) (cdr func))))))))))
 
 (defun gnus-article-wash-html-with-w3 ()
   "Wash the current buffer with w3."

@@ -31,6 +31,7 @@
 		   (require 'term))
 
 (eval-and-compile
+  (autoload 'executable-find "executable")
   (autoload 'mm-inline-partial "mm-partial")
   (autoload 'mm-inline-external-body "mm-extern")
   (autoload 'mm-insert-inline "mm-view"))
@@ -95,19 +96,29 @@
   `(list ,buffer ,type ,encoding ,undisplayer
 	 ,disposition ,description ,cache ,id))
 
-(defcustom mm-inline-text-html-renderer
-  (cond ((locate-library "w3")
-	 'mm-inline-text-html-render-with-w3)
-	((locate-library "w3m")
-	 'mm-inline-text-html-render-with-w3m))
-  "Function used for rendering HTML contents.  The function will be
-called with a MIME handle as the argument.  There are two pre-defined
-functions: `mm-inline-text-html-render-with-w3', which uses Emacs/w3;
-and `mm-inline-text-html-render-with-w3m', which uses emacs-w3m."
-  :type '(radio (function-item mm-inline-text-html-render-with-w3)
-		(function-item mm-inline-text-html-render-with-w3m)
-		(function))
+(defcustom mm-text-html-renderer
+  (cond ((locate-library "w3") 'w3)
+	((locate-library "w3m") 'w3m)
+	((executable-find "links") 'links)
+	((executable-find "lynx") 'lynx))
+  "Render of HTML contents.
+It is one of defined renderer types, or a rendering function.
+The defined renderer types are:
+`w3'   : using Emacs/W3;
+`w3m'  : using emacs-w3m;
+`links': using links;
+`lynx' : using lynx."
+  :type '(choice (symbol w3)
+		 (symbol w3m)
+		 (symbol links)
+		 (symbol lynx)
+		 (function))
+  :version "21.3"
   :group 'mime-display)
+
+(defvar mm-inline-text-html-renderer nil
+  "Function used for rendering inline HTML contents.
+It is suggested to customize `mm-text-html-renderer' instead.")
 
 (defcustom mm-inline-text-html-with-images nil
   "If non-nil, Gnus will allow retrieving images in the HTML contents
@@ -174,11 +185,12 @@ images, however this behavior may be changed in the future."
     ("application/emacs-lisp" mm-display-elisp-inline identity)
     ("application/x-emacs-lisp" mm-display-elisp-inline identity)
     ("text/html"
-     mm-inline-text
+     mm-inline-text-html
      (lambda (handle)
-       (gnus-functionp mm-inline-text-html-renderer)))
+       (or mm-inline-text-html-renderer
+	   mm-text-html-renderer)))
     ("text/x-vcard"
-     mm-inline-text
+     mm-inline-text-vcard
      (lambda (handle)
        (or (featurep 'vcard)
 	   (locate-library "vcard"))))
