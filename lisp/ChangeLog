@@ -1,3 +1,9 @@
+2004-05-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dns.el (dns-get-txt-answer): New function.
+	(dns-read-txt): Ditto.
+	(query-dns): Use it.
+
 2004-05-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-start.el (gnus-get-unread-articles): Don't invalidate

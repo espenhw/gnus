@@ -306,6 +306,25 @@ If TCP-P, the first two bytes of the package with be the length field."
 	(push (match-string 1) dns-servers))
       (setq dns-servers (nreverse dns-servers)))))
 
+(defun dns-read-txt (string)
+  (if (> (length string) 1)
+      (substring string 1)
+    string))
+
+(defun dns-get-txt-answer (answers)
+  (let ((result "")
+	(do-next nil))
+    (dolist (answer answers)
+      (dolist (elem answer)
+	(when (consp elem)
+	  (cond
+	   ((eq (car elem) 'type)
+	    (setq do-next (eq (cadr elem) 'TXT)))
+	   ((eq (car elem) 'data)
+	    (when do-next
+	      (setq result (concat result (dns-read-txt (cadr elem))))))))))
+    result))
+
 ;;; Interface functions.
 (defmacro dns-make-network-process (server)
   (if (featurep 'xemacs)
@@ -373,7 +392,9 @@ If FULLP, return the entire record returned."
 		  result
 		(let ((answer (car (dns-get 'answers result))))
 		  (when (eq type (dns-get 'type answer))
-		    (dns-get 'data answer)))))))))))
+		    (if (eq type 'TXT)
+			(dns-get-txt-answer (dns-get 'answers result))
+		      (dns-get 'data answer))))))))))))
 
 (provide 'dns)
 
