@@ -2919,9 +2919,20 @@ to find out how to use this."
 		     (if followup-to
 			 (concat newsgroups "," followup-to)
 		       newsgroups)))
-	    (method (if (message-functionp message-post-method)
-			(funcall message-post-method)
-		      message-post-method))
+	    (post-method (if (message-functionp message-post-method)
+			     (funcall message-post-method)
+			   message-post-method))
+	    ;; KLUDGE to handle nnvirtual groups.  Doing this right
+	    ;; would probably involve a new nnoo function.
+	    ;; -- Per Abrahamsen <abraham@dina.kvl.dk>, 2001-10-17.
+	    (method (if (and (consp post-method) 
+			     (eq (car post-method) 'nnvirtual)
+			     gnus-message-group-art)
+			(let ((group (car (nnvirtual-find-group-art
+					   (car gnus-message-group-art)
+					   (cdr gnus-message-group-art)))))
+			  (gnus-find-method-for-group group))
+		      post-method))
 	    (known-groups
 	     (mapcar (lambda (n)
 		       (gnus-group-name-decode 

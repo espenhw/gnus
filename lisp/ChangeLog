@@ -1,5 +1,8 @@
 2001-10-17  Per Abrahamsen  <abraham@dina.kvl.dk>
 
+	* message.el (message-check-news-header-syntax): Special case
+	nnvirtual groups.
+
 	* gnus-sum.el (gnus-summary-respool-default-method): Changed
 	customize type to `symbol'.
 
