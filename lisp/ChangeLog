@@ -1,3 +1,17 @@
+2001-02-12 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-topic.el (gnus-subscribe-topics): Return nil if not
+	subscribe.
+
+	* gnus-start.el (gnus-call-subscribe-functions): New.
+	(gnus-find-new-newsgroups): Use it.
+	(gnus-ask-server-for-new-groups): Use it.
+	(gnus-check-first-time-used): Use it.
+	(gnus-subscribe-newsgroup-method): Grok a list of functions.
+	(gnus-subscribe-options-newsgroup-method): Ditto.
+	(gnus-subscribe-hierarchically): Return gnus-subscribe-newsgroup's
+	return .
+
 2001-02-12  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus-cus.el (gnus-score-customize): Doc fix.

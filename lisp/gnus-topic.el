@@ -1663,7 +1663,8 @@ If REVERSE, reverse the sorting order."
 	  (gnus-subscribe-alphabetically newsgroup)
 	  ;; Add the group to the topic.
 	  (nconc (assoc topic gnus-topic-alist) (list newsgroup))
-	  (throw 'end t))))))
+	  (throw 'end t)))
+      nil)))
 
 (provide 'gnus-topic)
 

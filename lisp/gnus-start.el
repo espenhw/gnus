@@ -1,5 +1,5 @@
 ;;; gnus-start.el --- startup functions for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -241,7 +241,7 @@ thus making them effectively non-existent."
   :type 'regexp)
 
 (defcustom gnus-subscribe-newsgroup-method 'gnus-subscribe-zombies
-  "*Function called with a group name when new group is detected.
+  "*Function(s) called with a group name when new group is detected.
 A few pre-made functions are supplied: `gnus-subscribe-randomly'
 inserts new groups at the beginning of the list of groups;
 `gnus-subscribe-alphabetically' inserts new groups in strict
@@ -259,11 +259,12 @@ claim them."
 		(function-item gnus-subscribe-killed)
 		(function-item gnus-subscribe-zombies)
 		(function-item gnus-subscribe-topics)
-		function))
+		function
+		(repeat function)))
 
 (defcustom gnus-subscribe-options-newsgroup-method
   'gnus-subscribe-alphabetically
-  "*This function is called to subscribe newsgroups mentioned on \"options -n\" lines.
+  "*Function(s) called to subscribe newsgroups mentioned on \"options -n\" lines.
 If, for instance, you want to subscribe to all newsgroups in the
 \"no\" and \"alt\" hierarchies, you'd put the following in your
 .newsrc file:
@@ -280,7 +281,8 @@ the subscription method in this variable."
 		(function-item gnus-subscribe-killed)
 		(function-item gnus-subscribe-zombies)
 		(function-item gnus-subscribe-topics)
-		function))
+		function
+		(repeat function)))
 
 (defcustom gnus-subscribe-hierarchical-interactive nil
   "*If non-nil, Gnus will offer to subscribe hierarchically.
@@ -528,22 +530,22 @@ Can be used to turn version control on or off."
   ;; Basic ideas by mike-w@cs.aukuni.ac.nz (Mike Williams)
   (save-excursion
     (set-buffer (nnheader-find-file-noselect gnus-current-startup-file))
-    (let ((groupkey newgroup)
-	  before)
-      (while (and (not before) groupkey)
-	(goto-char (point-min))
-	(let ((groupkey-re
-	       (concat "^\\(" (regexp-quote groupkey) ".*\\)[!:]")))
-	  (while (and (re-search-forward groupkey-re nil t)
-		      (progn
-			(setq before (match-string 1))
-			(string< before newgroup)))))
-	;; Remove tail of newsgroup name (eg. a.b.c -> a.b)
-	(setq groupkey
-	      (when (string-match "^\\(.*\\)\\.[^.]+$" groupkey)
-		(substring groupkey (match-beginning 1) (match-end 1)))))
-      (gnus-subscribe-newsgroup newgroup before))
-    (kill-buffer (current-buffer))))
+    (prog1
+	(let ((groupkey newgroup) before)
+	  (while (and (not before) groupkey)
+	    (goto-char (point-min))
+	    (let ((groupkey-re
+		   (concat "^\\(" (regexp-quote groupkey) ".*\\)[!:]")))
+	      (while (and (re-search-forward groupkey-re nil t)
+			  (progn
+			    (setq before (match-string 1))
+			    (string< before newgroup)))))
+	    ;; Remove tail of newsgroup name (eg. a.b.c -> a.b)
+	    (setq groupkey
+		  (when (string-match "^\\(.*\\)\\.[^.]+$" groupkey)
+		    (substring groupkey (match-beginning 1) (match-end 1)))))
+	  (gnus-subscribe-newsgroup newgroup before))
+      (kill-buffer (current-buffer)))))
 
 (defun gnus-subscribe-interactively (group)
   "Subscribe the new GROUP interactively.
@@ -572,7 +574,8 @@ the first newsgroup."
      newsgroup gnus-level-default-subscribed
      gnus-level-killed (gnus-gethash (or next "dummy.group")
 				     gnus-newsrc-hashtb))
-    (gnus-message 5 "Subscribe newsgroup: %s" newsgroup)))
+    (gnus-message 5 "Subscribe newsgroup: %s" newsgroup)
+    t))
 
 (defun gnus-read-active-file-p ()
   "Say whether the active file has been read from `gnus-select-method'."
@@ -946,6 +949,21 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 	       (gnus-server-opened gnus-select-method))
       (gnus-check-bogus-newsgroups))))
 
+(defun gnus-call-subscribe-functions (method group)
+  "Call METHOD to subscribe GROUP.
+If no function returns `non-nil', call `gnus-subscribe-zombies'."
+  (unless (cond
+	   ((gnus-functionp method)
+	    (funcall method group))
+	   ((listp method)
+	    (catch 'found
+	      (dolist (func method)
+		(if (funcall func group)
+		    (throw 'found t)))
+	      nil))
+	   (t nil))
+    (gnus-subscribe-zombies group)))
+
 (defun gnus-find-new-newsgroups (&optional arg)
   "Search for new newsgroups and add them.
 Each new newsgroup will be treated with `gnus-subscribe-newsgroup-method'.
@@ -998,7 +1016,8 @@ for new groups, and subscribe the new groups as zombies."
 		  ((eq do-sub 'subscribe)
 		   (setq groups (1+ groups))
 		   (gnus-sethash group group gnus-killed-hashtb)
-		   (funcall gnus-subscribe-options-newsgroup-method group))
+		   (gnus-call-subscribe-functions
+		    gnus-subscribe-options-newsgroup-method group))
 		  ((eq do-sub 'ignore)
 		   nil)
 		  (t
@@ -1006,7 +1025,8 @@ for new groups, and subscribe the new groups as zombies."
 		   (gnus-sethash group group gnus-killed-hashtb)
 		   (if gnus-subscribe-hierarchical-interactive
 		       (push group new-newsgroups)
-		     (funcall gnus-subscribe-newsgroup-method group)))))))
+		     (gnus-call-subscribe-functions
+		      gnus-subscribe-newsgroup-method group)))))))
 	   gnus-active-hashtb)
 	  (when new-newsgroups
 	    (gnus-subscribe-hierarchical-interactive new-newsgroups))
@@ -1091,7 +1111,8 @@ for new groups, and subscribe the new groups as zombies."
 		((eq do-sub 'subscribe)
 		 (incf groups)
 		 (gnus-sethash group group gnus-killed-hashtb)
-		 (funcall gnus-subscribe-options-newsgroup-method group))
+		 (gnus-call-subscribe-functions
+		  gnus-subscribe-options-newsgroup-method group))
 		((eq do-sub 'ignore)
 		 nil)
 		(t
@@ -1099,7 +1120,8 @@ for new groups, and subscribe the new groups as zombies."
 		 (gnus-sethash group group gnus-killed-hashtb)
 		 (if gnus-subscribe-hierarchical-interactive
 		     (push group new-newsgroups)
-		   (funcall gnus-subscribe-newsgroup-method group)))))))
+		   (gnus-call-subscribe-functions
+		    gnus-subscribe-newsgroup-method group)))))))
 	 hashtb))
       (when new-newsgroups
 	(gnus-subscribe-hierarchical-interactive new-newsgroups)))
@@ -1141,7 +1163,8 @@ for new groups, and subscribe the new groups as zombies."
 	       (cond
 		((eq do-sub 'subscribe)
 		 (gnus-sethash group group gnus-killed-hashtb)
-		 (funcall gnus-subscribe-options-newsgroup-method group))
+		 (gnus-call-subscribe-functions
+		  gnus-subscribe-options-newsgroup-method group))
 		((eq do-sub 'ignore)
 		 nil)
 		(t
