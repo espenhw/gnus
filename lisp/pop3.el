@@ -244,11 +244,14 @@ If NOW, use that time instead."
 		   (looking-at "\001\001\001\001\n") ; MMDF
 		   (looking-at "BABYL OPTIONS:") ; Babyl
 		   ))
-	  (let ((from (mail-strip-quoted-names (mail-fetch-field "From")))
-		(date (split-string (or (mail-fetch-field "Date")
-					(pop3-make-date))
-				    " "))
-		(From_))
+	  (let* ((from (mail-strip-quoted-names (mail-fetch-field "From")))
+		 (tdate (mail-fetch-field "Date"))
+		 (date (split-string (or (and tdate
+					      (not (string= "" tdate))
+					      tdate)
+					 (pop3-make-date))
+				     " "))
+		 (From_))
 	    ;; sample date formats I have seen
 	    ;; Date: Tue, 9 Jul 1996 09:04:21 -0400 (EDT)
 	    ;; Date: 08 Jul 1996 23:22:24 -0400
