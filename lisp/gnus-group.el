@@ -907,7 +907,7 @@ The following commands are available:
       result)))
 
 (defsubst gnus-group-name-decode (string charset)
-  (if (and charset (featurep 'mule))
+  (if (and string charset (featurep 'mule))
       (mm-decode-coding-string string charset)
     string))
 
@@ -3304,11 +3304,13 @@ to use."
 	(while groups
 	  ;; Groups may be entered twice into the list of groups.
 	  (when (not (string= (car groups) prev))
-	    (insert (setq prev (car groups)) "\n")
-	    (when (and gnus-description-hashtb
-		       (setq des (gnus-gethash (car groups)
-					       gnus-description-hashtb)))
-	      (insert "  " des "\n")))
+	    (setq prev (car groups))
+	    (let ((charset (gnus-group-name-charset nil prev)))
+	      (insert (gnus-group-name-decode prev charset) "\n")
+	      (when (and gnus-description-hashtb
+			 (setq des (gnus-gethash (car groups)
+						 gnus-description-hashtb)))
+		(insert "  " (gnus-group-name-decode des charset) "\n"))))
 	  (setq groups (cdr groups)))
 	(goto-char (point-min))))
     (pop-to-buffer obuf)))
