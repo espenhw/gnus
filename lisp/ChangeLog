@@ -1,3 +1,12 @@
+2001-12-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-picon.el (gnus-treat-from-picon): Autoload.
+	(picon): Fix doc.
+
+	* gnus-win.el (gnus-window-to-buffer): gnus-picon-buffer-name no
+	longer exists. Remove those codes.
+	* gnus.el (gnus-use-picons): Ditto.
+
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-article-treat-fold-newsgroups): Don't

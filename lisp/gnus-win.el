@@ -76,17 +76,6 @@ used to display Gnus windows."
 	       (if gnus-carpal '(summary-carpal 4))))
     (article
      (cond
-      ((and gnus-use-picons
-	    (eq gnus-picons-display-where 'picons))
-       '(frame 1.0
-	       (vertical 1.0
-			 (summary 0.25 point)
-			 (if gnus-carpal '(summary-carpal 4))
-			 (article 1.0))
-	       (vertical ((height . 5) (width . 15)
-			  (user-position . t)
-			  (left . -1) (top . 1))
-			 (picons 1.0))))
       (gnus-use-trees
        '(vertical 1.0
 		  (summary 0.25 point)
@@ -198,7 +187,6 @@ See the Gnus manual for an explanation of the syntax used.")
     (mail . gnus-message-buffer)
     (post-news . gnus-message-buffer)
     (faq . gnus-faq-buffer)
-    (picons . gnus-picons-buffer-name)
     (tree . gnus-tree-buffer)
     (score-trace . "*Score Trace*")
     (split-trace . "*Split Trace*")

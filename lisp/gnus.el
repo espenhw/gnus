@@ -1350,11 +1350,6 @@ articles.  This is not a good idea."
   :group 'gnus-meta
   :type 'boolean)
 
-(defcustom gnus-use-picons nil
-  "*If non-nil, display picons in a frame of their own."
-  :group 'gnus-meta
-  :type 'boolean)
-
 (defcustom gnus-summary-prepare-exit-hook
   '(gnus-summary-expire-articles)
   "*A hook called when preparing to exit from the summary buffer.
@@ -2058,7 +2053,6 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-summary-post-forward gnus-summary-wide-reply-with-original
       gnus-summary-post-forward)
      ("gnus-picon" :interactive t gnus-treat-from-picon)
-     ("gnus-picon" gnus-picons-buffer-name)
      ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p
       gnus-grouplens-mode)
      ("smiley" :interactive t gnus-smiley-display)

@@ -41,14 +41,11 @@
 (require 'gnus)
 (require 'custom)
 (require 'gnus-art)
-(require 'gnus-win)
 
 ;;; User variables:
 
 (defgroup picon nil
-  "Show pictures of people, domains, and newsgroups.
-For this to work, you must switch on the `gnus-treat-display-picon'
-variable."
+  "Show pictures of people, domains, and newsgroups."
   :group 'gnus-visual)
 
 (defcustom gnus-picon-databases '("/usr/lib/picon" "/usr/local/faces")
@@ -222,15 +219,18 @@ GLYPH can be either a glyph or a string."
 
 ;;; Commands:
 
+;;;###autoload
 (defun gnus-treat-from-picon ()
   (interactive)
   (gnus-picon-transform-address "from"))
 
+;;;###autoload
 (defun gnus-treat-mail-picon ()
   (interactive)
   (gnus-picon-transform-address "cc")
   (gnus-picon-transform-address "to"))
 
+;;;###autoload
 (defun gnus-treat-newsgroups-picon ()
   (interactive)
   (gnus-picon-transform-newsgroups "newsgroups")
