@@ -1,3 +1,8 @@
+2004-04-28  Jesper Harder  <harder@ifa.au.dk>
+
+	* message.el (message-setup-1): Remove redundant put-text-property
+	on mail-header-separator.
+
 2004-04-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* gnus-registry.el (gnus-registry-cache-whitespace)

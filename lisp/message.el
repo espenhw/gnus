@@ -5449,12 +5449,7 @@ are not included."
   (when message-default-headers
     (insert message-default-headers)
     (or (bolp) (insert ?\n)))
-  (put-text-property
-   (point)
-   (progn
-     (insert mail-header-separator "\n")
-     (1- (point)))
-   'read-only nil)
+  (insert mail-header-separator "\n")
   (forward-line -1)
   (when (message-news-p)
     (when message-default-news-headers
