@@ -876,7 +876,7 @@ prompt the user for the name of an NNTP server to use."
 	  (when (and (file-exists-p gnus-current-startup-file)
 		     (file-exists-p dribble-file)
 		     (setq modes (file-modes gnus-current-startup-file)))
-	    (set-file-modes dribble-file modes))
+	    (gnus-set-file-modes dribble-file modes))
 	  (goto-char (point-min))
 	  (when (search-forward "Gnus was exited on purpose" nil t)
 	    (setq purpose t))
@@ -2765,7 +2765,7 @@ If FORCE is non-nil, the .newsrc file is read."
 
                       ;; Replace the existing startup file with the temp file.
                       (rename-file working-file startup-file t)
-                      (set-file-modes startup-file setmodes)))
+                      (gnus-set-file-modes startup-file setmodes)))
                 (condition-case nil
                     (delete-file working-file)
                   (file-error nil)))))
@@ -2910,7 +2910,7 @@ If FORCE is non-nil, the .newsrc file is read."
       (let ((coding-system-for-write gnus-ding-file-coding-system))
 	(gnus-write-buffer slave-name))
       (when modes
-	(set-file-modes slave-name modes)))))
+	(gnus-set-file-modes slave-name modes)))))
 
 (defun gnus-master-read-slave-newsrc ()
   (let ((slave-files

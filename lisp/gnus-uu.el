@@ -1751,7 +1751,7 @@ Gnus might fail to display all of it.")
 
       (setq gnus-uu-work-dir
 	    (mm-make-temp-file (concat gnus-uu-tmp-dir "gnus") 'dir))
-      (set-file-modes gnus-uu-work-dir 448)
+      (gnus-set-file-modes gnus-uu-work-dir 448)
       (setq gnus-uu-work-dir (file-name-as-directory gnus-uu-work-dir))
       (push (cons gnus-newsgroup-name gnus-uu-work-dir)
 	    gnus-uu-tmp-alist))))

@@ -202,7 +202,7 @@ way."
 		
 		;; Replace the existing startup file with the temp file.
 		(rename-file working-file startup-file t)
-		(set-file-modes startup-file setmodes)))
+		(gnus-set-file-modes startup-file setmodes)))
 	  (condition-case nil
 	      (delete-file working-file)
 	    (file-error nil)))))
