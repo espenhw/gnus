@@ -98,7 +98,9 @@ encode lines starting with \"From\"."
       ;; Encode all the non-ascii and control characters.
       (goto-char (point-min))
       (while (and (skip-chars-forward
-		   (or class "^\000-\007\013\015-\037\200-\377="))
+		   ;; Avoid using 8bit characters. = is \075.
+		   ;; Equivalent to "^\000-\007\013\015-\037\200-\377="
+		   (or class "\010-\012\014\040-\074\076-\177"))
 		  (not (eobp)))
 	(insert
 	 (prog1

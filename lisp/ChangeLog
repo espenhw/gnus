@@ -1,3 +1,9 @@
+2000-09-17 01:13:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-q-encoding-alist): Remove = and _ from the
+	pattern. Avoid using 8 bit chars.
+	* qp.el (quoted-printable-encode-region): Avoid using 8 bit chars.
+
 2000-09-16 15:57:42  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* smiley.el (smiley-buffer-ems, smiley-create-glyph-ems,
