@@ -1,5 +1,10 @@
 2002-02-12  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mailcap.el (mailcap-mime-data): Use enriched-decode.
+
+	* gnus-cite.el (gnus-article-fill-cited-article): Bind
+	use-hard-newlines to nil.
+
 	* gnus-xmas.el (gnus-xmas-image-type-available-p): Assume that
 	image is not available if window-system is not available.
 

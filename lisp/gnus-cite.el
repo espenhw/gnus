@@ -441,7 +441,8 @@ If WIDTH (the numerical prefix), use that text width when filling."
 		 (concat "^" (regexp-quote (cdar marks)) " *"))
 		(fill-prefix
 		 (if (string= (cdar marks) "") ""
-		   (concat (cdar marks) " "))))
+		   (concat (cdar marks) " ")))
+		use-hard-newlines)
 	    (fill-region (point-min) (point-max)))
 	  (set-marker (caar marks) nil)
 	  (setq marks (cdr marks)))

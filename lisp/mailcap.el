@@ -223,7 +223,7 @@
       (viewer  . fundamental-mode)
       (type    . "text/plain"))
      ("enriched"
-      (viewer . enriched-decode-region)
+      (viewer . enriched-decode)
       (test   . (fboundp 'enriched-decode))
       (type   . "text/enriched"))
      ("html"
