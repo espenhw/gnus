@@ -569,17 +569,19 @@ you could set this variable to something like:
  '((\"^Subject:.*gnus\\|^Newsgroups:.*gnus\" \"gnus-stuff\")
    (\"^Subject:.*vm\\|^Xref:.*vm\" \"vm-stuff\"))
 
-This variable is an alist where the where the key is the match and the
-value is a list of possible files to save in if the match is non-nil.
+This variable is an alist where the key is the match and the
+value is a list of possible files to save in if the match is
+non-nil.
 
 If the match is a string, it is used as a regexp match on the
 article.  If the match is a symbol, that symbol will be funcalled
-from the buffer of the article to be saved with the newsgroup as the
-parameter.  If it is a list, it will be evaled in the same buffer.
+from the buffer of the article to be saved with the newsgroup as
+the parameter.  If it is a list, it will be evaled in the same
+buffer.
 
-If this form or function returns a string, this string will be used as
-a possible file name; and if it returns a non-nil list, that list will
-be used as possible file names."
+If this form or function returns a string, this string will be
+used as a possible file name; and if it returns a non-nil list,
+that list will be used as possible file names."
   :group 'gnus-article-saving
   :type '(repeat (choice (list :value (fun) function)
 			 (cons :value ("" "") regexp (repeat string))

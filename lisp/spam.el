@@ -1315,6 +1315,10 @@ addition to the set values for the group."
   (unless gnus-group-is-exiting-without-update-p
     (gnus-message 6 "Exiting summary buffer and applying spam rules")
 
+    ;; before we begin, remove any article limits
+    (ignore-errors
+      (universal-argument (gnus-summary-pop-limit)))
+
     ;; first of all, unregister any articles that are no longer ham or spam
     ;; we have to iterate over the processors, or else we'll be too slow
     (dolist (classification (spam-classifications))
