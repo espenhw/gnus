@@ -1,3 +1,17 @@
+2004-01-15  Jesper Harder  <harder@ifa.au.dk>
+
+	* pgg-parse.el: Remove unnecessary (require 'custom).
+
+	* pgg-def.el: do.
+
+	* nnmail.el: do.
+
+	* gnus-undo.el: do.
+
+	* gnus-picon.el: do.
+
+	* gnus-util.el: do.
+
 2004-01-15  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-sum.el (gnus-pick-line-number): Add autoload.

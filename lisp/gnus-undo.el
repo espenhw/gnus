@@ -50,7 +50,6 @@
 
 (require 'gnus-util)
 (require 'gnus)
-(require 'custom)
 
 (defgroup gnus-undo nil
   "Undoing in Gnus buffers."

@@ -34,7 +34,6 @@
 
 ;;; Code:
 
-(require 'custom)
 (eval-when-compile
   (require 'cl)
   ;; Fixme: this should be a gnus variable, not nnmail-.
