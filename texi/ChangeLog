@@ -1,3 +1,9 @@
+2001-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Optional Backend Functions): The default function to
+	make a date format is `message-make-date', which should produce a
+	time zone.
+
 2001-09-04  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Optional Backend Functions): More detail about the

@@ -22133,7 +22133,7 @@ description-buffer = *description-line
 The result data from this function should be all groups that were
 created after @samp{date}, which is in normal human-readable date format
 (i.e., the date format used in mail and news headers, and returned by
-the function @code{current-time-string} by default).  The data should be
+the function @code{message-make-date} by default).  The data should be
 in the active buffer format.
 
 It is okay for this function to return `too many' groups; some backends
