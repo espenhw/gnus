@@ -40,8 +40,6 @@
 
 ;;; Code:
 
-(defconst canlock-version "0.8")
-
 (eval-when-compile
   (require 'cl))
 
@@ -97,13 +95,6 @@ buffer does not look like a news message."
   :type 'boolean
   :group 'canlock)
 
-(eval-when-compile
-  (defmacro canlock-string-as-unibyte (string)
-    "Return a unibyte string with the same individual bytes as STRING."
-    (if (fboundp 'string-as-unibyte)
-	(list 'string-as-unibyte string)
-      string)))
-
 (defun canlock-sha1-with-openssl (message)
   "Make a SHA-1 digest of MESSAGE using OpenSSL."
   (let (default-enable-multibyte-characters)
@@ -117,11 +108,22 @@ buffer does not look like a news message."
 	       canlock-openssl-program t t nil canlock-openssl-args)
 	(goto-char (point-min))
 	(insert "\"")
-	(while (re-search-forward "[0-9a-f][0-9a-f]" nil t)
-	  (replace-match (concat "\\\\x" (match-string 0))))
+	(while (re-search-forward "\\([0-9a-f][0-9a-f]\\)" nil t)
+	  (replace-match "\\\\x\\1"))
 	(insert "\"")
 	(goto-char (point-min))
-	(canlock-string-as-unibyte (read (current-buffer)))))))
+	(read (current-buffer))))))
+
+(eval-when-compile
+  (defmacro canlock-string-as-unibyte (string)
+    "Return a unibyte string with the same individual bytes as STRING."
+    (if (fboundp 'string-as-unibyte)
+	(list 'string-as-unibyte string)
+      string)))
+
+(defun canlock-sha1 (message)
+  "Make a SHA-1 digest of MESSAGE as a unibyte string of length 20 bytes."
+  (canlock-string-as-unibyte (funcall canlock-sha1-function message)))
 
 (defvar canlock-read-passwd nil)
 (defun canlock-read-passwd (prompt &rest args)
@@ -141,27 +143,20 @@ If ARGS, PROMPT is used as an argument to `format'."
 
 (defun canlock-make-cancel-key (message-id password)
   "Make a Cancel-Key header."
-  (cond ((> (length password) 20)
-	 (setq password (funcall canlock-sha1-function password)))
-	((< (length password) 20)
-	 (setq password (concat
-			 password
-			 (make-string (- 20 (length password)) 0)))))
-  (setq password (concat password (make-string 44 0)))
-  (let ((ipad (mapconcat (lambda (char)
-			   (char-to-string (logxor 54 char)))
+  (when (> (length password) 20)
+    (setq password (canlock-sha1 password)))
+  (setq password (concat password (make-string (- 64 (length password)) 0)))
+  (let ((ipad (mapconcat (lambda (byte)
+			   (char-to-string (logxor 54 byte)))
 			 password ""))
-	(opad (mapconcat (lambda (char)
-			   (char-to-string (logxor 92 char)))
+	(opad (mapconcat (lambda (byte)
+			   (char-to-string (logxor 92 byte)))
 			 password "")))
     (base64-encode-string
-     (canlock-string-as-unibyte
-      (funcall canlock-sha1-function
-	       (concat
-		opad
-		(funcall canlock-sha1-function
-			 (concat ipad
-				 (canlock-string-as-unibyte message-id)))))))))
+     (canlock-sha1
+      (concat opad
+	      (canlock-sha1
+	       (concat ipad (canlock-string-as-unibyte message-id))))))))
 
 (defun canlock-narrow-to-header ()
   "Narrow the buffer to the head of the message."
@@ -252,8 +247,7 @@ message."
 		(insert "Cancel-Key: sha1:" key-for-key "\n"))
 	      (when key-for-lock
 		(insert "Cancel-Lock: sha1:"
-			(base64-encode-string (funcall canlock-sha1-function
-						       key-for-lock))
+			(base64-encode-string (canlock-sha1 key-for-lock))
 			"\n")))))))))
 
 ;;;###autoload
@@ -309,9 +303,9 @@ nil instead of to signal an error by setting the option
 	(when locks
 	  (when id-for-lock
 	    (setq key-for-lock
-		  (base64-encode-string (funcall canlock-sha1-function
-						 (canlock-make-cancel-key
-						  id-for-lock password))))
+		  (base64-encode-string
+		   (canlock-sha1 (canlock-make-cancel-key id-for-lock
+							  password))))
 	    (when (and locks (not match))
 	      (setq match (string-equal key-for-lock (pop locks)))))
 	  (setq locks (if match "good" "bad")))

@@ -1,12 +1,23 @@
+2002-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* canlock.el (canlock-version): Remove.
+	(canlock-sha1-with-openssl): Don't use `canlock-string-as-unibyte'
+	here; simplify \x insertions.
+	(canlock-sha1): New function, always return a unibyte string.
+	(canlock-make-cancel-key): Use `canlock-sha1'; simplify truncation
+	of a password.
+	(canlock-insert-header): Use `canlock-sha1'.
+	(canlock-verify): Ditto.
+
 2002-03-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* message.el (message-fix-before-sending): Add an option that
 	ignores illegible text.
 	Trivial change from Mark Milhollan <mlm@attglobal.net>
-	
+
 	* message.el (message-font-lock-keywords): Support multi-line MML
 	tags.
-	
+
 	* gnus-sum.el (gnus-print-buffer): Remove gnus-decoration.
 	Trivial change from lorentey@elte.hu (L,Bu(Brentey K,Ba(Broly)
 
@@ -26,10 +37,10 @@
 
 2002-03-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* gnus-sum.el (gnus-sum-thread-tree-root) 
-	(gnus-sum-thread-tree-single-indent) 
-	(gnus-sum-thread-tree-vertical, gnus-sum-thread-tree-indent) 
-	(gnus-sum-thread-tree-leaf-with-other) 
+	* gnus-sum.el (gnus-sum-thread-tree-root)
+	(gnus-sum-thread-tree-single-indent)
+	(gnus-sum-thread-tree-vertical, gnus-sum-thread-tree-indent)
+	(gnus-sum-thread-tree-leaf-with-other)
 	(gnus-sum-thread-tree-single-leaf): Make customizable.
 
 2002-03-16  Simon Josefsson  <jas@extundo.com>
