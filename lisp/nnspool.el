@@ -419,7 +419,7 @@ Newsgroup must be selected before calling this function."
       (erase-buffer)
       (call-process "grep" nil t nil id nnspool-history-file)
       (goto-char (point-min))
-      (if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ \t]*\\)")
+       (if (looking-at "<[^>]+>[ \t]+[-0-9~]+[ \t]+\\([^ \t\n]*\\)")
 	  (concat nnspool-spool-directory
 		  (nnspool-replace-chars-in-string 
 		   (buffer-substring (match-beginning 1) (match-end 1)) 

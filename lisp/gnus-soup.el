@@ -2,6 +2,7 @@
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <abraham@iesd.auc.dk>
+;;	Lars Magne Ingebrigtsen <larsi@ifi.uio.no>
 ;; Keywords: news, mail
 
 ;; This file is part of GNU Emacs.
@@ -423,6 +424,8 @@ file. The vector contain three strings, [prefix name encoding]."
 	    (gnus-soup-parse-areas (concat gnus-soup-directory "AREAS")))))
 
 (defun gnus-soup-write-areas ()
+  "Write all areas to disk."
+  (interactive)
   (if (not gnus-soup-areas)
       ()
     (save-excursion

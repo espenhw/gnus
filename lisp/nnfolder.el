@@ -439,6 +439,7 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	(nnmail-save-active nnfolder-group-alist nnfolder-active-file)))
   (let (inf file)
     (if (and (equal group nnfolder-current-group)
+	     nnfolder-current-buffer
 	     (buffer-name nnfolder-current-buffer))
 	()
       (setq nnfolder-current-group group)
@@ -452,12 +453,14 @@ such things as moving mail.  All buffers always get killed upon server close.")
       ;; If the buffer is not live, make sure it isn't in the alist.  If it
       ;; is live, verify that nobody else has touched the file since last
       ;; time.
-      (if (or (not (buffer-name nnfolder-current-buffer))
+      (if (or (not (and nnfolder-current-buffer
+			(buffer-name nnfolder-current-buffer)))
 	      (not (and (bufferp nnfolder-current-buffer)
 			(verify-visited-file-modtime 
 			 nnfolder-current-buffer))))
 	  (progn
-	    (if (and (buffer-name nnfolder-current-buffer)
+	    (if (and nnfolder-current-buffer
+		     (buffer-name nnfolder-current-buffer)
 		     (bufferp nnfolder-current-buffer))
 		(kill-buffer nnfolder-current-buffer))
 	    (setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist))
@@ -467,14 +470,14 @@ such things as moving mail.  All buffers always get killed upon server close.")
 	  ()
 	(save-excursion
 	  (setq file (concat nnfolder-directory group))
-	  (if (or (file-directory-p file)
-		  (file-symlink-p file))
+	  (if (file-directory-p (file-truename file))
 	      ()
 	    (if (not (file-exists-p file))
 		(write-region 1 1 file t 'nomesg))
+	    (setq nnfolder-current-buffer 
+		  (set-buffer (nnfolder-read-folder file)))
 	    (setq nnfolder-buffer-alist (cons (list group (current-buffer))
-					      nnfolder-buffer-alist))
-	    (set-buffer (nnfolder-read-folder file)))))))
+					      nnfolder-buffer-alist)))))))
   (setq nnfolder-current-group group))
 
 (defun nnfolder-save-mail (&optional group)

@@ -542,6 +542,10 @@ If this variable is nil, scoring will be disabled.")
 Articles with scores closer than this to `gnus-summary-default-score'
 will not be marked.")
 
+(defvar gnus-simplify-subject-fuzzy-regexp nil
+  "*Regular expression that will be removed from subject strings if
+fuzzy subject simplification is selected.")
+
 (defvar gnus-group-default-list-level gnus-level-subscribed
   "*Default listing level. 
 Ignored if `gnus-group-use-permanent-levels' is nil.")
@@ -719,7 +723,7 @@ buffer configuration.")
     (summary-carpal . gnus-carpal-summary-buffer)
     (server-carpal . gnus-carpal-server-buffer)
     (browse-carpal . gnus-carpal-browse-buffer)
-    (mail . "*mail*")
+    (mail . gnus-mail-buffer)
     (post . gnus-post-news-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")
 
@@ -795,7 +799,7 @@ for the groups to be sorted.  Pre-made functions include
 (defvar gnus-ancient-mark ?A
   "*Mark used for ancient articles.")
 (defvar gnus-canceled-mark ?G
-  "*Mark used for cancelled articles.")
+  "*Mark used for canceled articles.")
 (defvar gnus-score-over-mark ?+
   "*Score mark used for articles with high scores.")
 (defvar gnus-score-below-mark ?-
@@ -1283,7 +1287,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls & Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "(ding) Gnus v0.85"
+(defconst gnus-version "(ding) Gnus v0.86"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1765,6 +1769,8 @@ Thank you for your help in stamping out bugs.
 	(and (string-match "(.+)" from)
 	     (setq name (substring from (1+ (match-beginning 0)) 
 				   (1- (match-end 0)))))
+	(and (string-match "()" from)
+	     (setq name address))
 	;; Fix by MORIOKA Tomohiko <morioka@jaist.ac.jp>.
 	;; XOVER might not support folded From headers.
 	(and (string-match "(.*" from)
@@ -2217,7 +2223,11 @@ If optional argument RE-ONLY is non-nil, strip `Re:' only."
     (replace-match "" t t))
   (goto-char (point-min))
   (while (re-search-forward "^[ \t]+" nil t)
-    (replace-match "" t t)))
+    (replace-match "" t t))
+  (if gnus-simplify-subject-fuzzy-regexp
+      (while (re-search-forward gnus-simplify-subject-fuzzy-regexp nil t)
+	(replace-match "" t t)))
+    )
 
 ;; Add the current buffer to the list of buffers to be killed on exit. 
 (defun gnus-add-current-to-buffer-list ()
@@ -4698,6 +4708,9 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 	  gnus-expert-user
 	  (gnus-y-or-n-p "Are you sure you want to quit reading news? "))
       (progn
+	(if gnus-use-full-window
+	    (delete-other-windows)
+	  (gnus-remove-some-windows))
 	(run-hooks 'gnus-exit-gnus-hook)
 	(gnus-offer-save-summaries)
 	(gnus-save-newsrc-file)
@@ -4728,6 +4741,9 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
 		   (file-name-nondirectory gnus-current-startup-file))))
       (progn
 	(run-hooks 'gnus-exit-gnus-hook)
+	(if gnus-use-full-window
+	    (delete-other-windows)
+	  (gnus-remove-some-windows))
 	(gnus-dribble-save)
 	(gnus-close-backends)
 	(gnus-clear-system))))
@@ -6178,21 +6194,21 @@ If READ-ALL is non-nil, all articles in the group are selected."
 				gnus-newsgroup-name)))
 		(progn
 		  (gnus-get-newsgroup-headers-xover articles))
+	      ;; If we were to fetch old headers, but the backend didn't
+	      ;; support XOVER, then it is possible we fetched one article
+	      ;; that we shouldn't have. If that's the case, we pop it off the
+	      ;; list of headers.
+	      (if (not gnus-fetch-old-headers)
+		  ()
+		(save-excursion
+		  (set-buffer nntp-server-buffer)
+		  (goto-char (point-min))
+		  (and (looking-at "[0-9]+[ \t]+1[ \t]")
+		       (delete-region 
+			(point) 
+			(search-forward "\n.\n" nil t)))))
 	      (gnus-get-newsgroup-headers)))
-      ;; If we were to fetch old headers, but the backend didn't
-      ;; support XOVER, then it is possible we fetched one article
-      ;; that we shouldn't have. If that's the case, we pop it off the
-      ;; list of headers.
-      (and (not (eq gnus-headers-retrieved-by 'nov))
-	   gnus-fetch-old-headers
-	   gnus-newsgroup-headers
-	   (/= (header-number (car gnus-newsgroup-headers)) (car articles))
-	   (let ((val (gnus-gethash 
-		       (downcase (header-id (car gnus-newsgroup-headers)))
-		       gnus-newsgroup-dependencies)))
-	     (and val (setcar val nil))
-	     (setq gnus-newsgroup-headers (cdr gnus-newsgroup-headers))))
-      ;; Remove cancelled articles from the list of unread articles.
+      ;; Remove canceled articles from the list of unread articles.
       (setq gnus-newsgroup-unreads
 	    (gnus-set-sorted-intersection 
 	     gnus-newsgroup-unreads
@@ -7065,7 +7081,7 @@ displayed, no centering will be performed."
   ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
   ;; Recenter only when requested. Suggested by popovich@park.cs.columbia.edu.
   (let* ((top (cond ((< (window-height) 4) 0)
-		    ((< (window-height) 6) 1)
+		    ((< (window-height) 7) 1)
 		    (t 2)))
 	 (height (1- (window-height)))
 	 (bottom (save-excursion (goto-char (point-max))
@@ -7897,6 +7913,7 @@ NOTE: This command only works with newsgroups that use real or simulated NNTP."
 		(setq number (header-number gnus-current-headers))
 		(gnus-rebuild-thread message-id)
 		(gnus-summary-goto-subject number)
+		(gnus-summary-recenter)
 		(gnus-article-set-window-start 
 		 (cdr (assq number gnus-newsgroup-bookmarks)))
 		message-id)
@@ -8538,7 +8555,7 @@ This will have permanent effect only in mail groups."
     gnus-score-interactive-default-score))
 
 (defun gnus-summary-raise-thread (score)
-  "Raise articles under current thread with SCORE."
+  "Raise the score of the articles in the current thread with SCORE."
   (interactive "P")
   (setq score (1- (gnus-score-default score)))
   (let (e)
@@ -8567,7 +8584,7 @@ This will have permanent effect only in mail groups."
   (gnus-summary-raise-same-subject (- score)))
 
 (defun gnus-summary-lower-thread (score)
-  "Raise articles under current thread with SCORE."
+  "Lower score of articles in the current thread with SCORE."
   (interactive "P")
   (gnus-summary-raise-thread (- (1- (gnus-score-default score)))))
 
@@ -9171,7 +9188,7 @@ The number of articles marked as read is returned."
 			       gnus-newsgroup-dormant nil))
 		(setq gnus-newsgroup-unreads 
 		      (append gnus-newsgroup-marked gnus-newsgroup-dormant)))
-	    ;; We actually mark all articles as cancelled, which we
+	    ;; We actually mark all articles as canceled, which we
 	    ;; have to do when using auto-expiry or adaptive scoring. 
 	    (let ((unreads (length gnus-newsgroup-unreads)))
 	      (if (gnus-summary-first-subject (not all))
@@ -11303,7 +11320,7 @@ is returned insted of the status string."
 ;;  (67 . 99)) ...)
 ;; The only element in each entry in this hash table is a range of
 ;; (possibly) available articles. (Articles in this range may have
-;; been expired or cancelled.)
+;; been expired or canceled.)
 ;;
 ;; Gnus internal format of gnus-killed-list and gnus-zombie-list:
 ;; ("alt.misc" "alt.test" "alt.general" ...)
@@ -11704,20 +11721,20 @@ newsgroup."
       ;; unread articles, but it has no idea how many.
       (if (and (setq method (nth 4 info))
 	       (not (gnus-server-equal gnus-select-method
-				       (gnus-server-get-method nil method))))
+				       (gnus-server-get-method nil method)))
+	       (not (gnus-secondary-method-p method)))
 	  ;; These groups are foreign.
 	  (if (or (and gnus-activate-foreign-newsgroups 
 		       (not (numberp gnus-activate-foreign-newsgroups)))
 		  (and (numberp gnus-activate-foreign-newsgroups)
 		       (<= (nth 1 info) gnus-activate-foreign-newsgroups)
-		       (<= (nth 1 info) level))
-		  (gnus-secondary-method-p method))
+		       (<= (nth 1 info) level)))
 	      (if (eq (car (if (stringp method) 
 			       (gnus-server-to-method method)
 			     (nth 4 info))) 'nnvirtual)
 		  (setq virtuals (cons info virtuals))
 		(setq active (gnus-activate-newsgroup (car info)))))
-	;; These groups are native.
+	;; These groups are native or secondary. 
 	(if (and (not gnus-read-active-file)
 		 (<= (nth 1 info) level))
 	    (progn
@@ -11968,8 +11985,8 @@ Returns whether the updating was successful."
 	      (gnus-remove-from-range (nth 2 info) (nreverse news)))
       (gnus-group-update-group group t))))
 
+;; Get the active file(s) from the backend(s).
 (defun gnus-read-active-file ()
-  "Get active file from NNTP server."
   (gnus-group-set-mode-line)
   (let ((methods (cons gnus-select-method gnus-secondary-select-methods))
 	(not-first nil)
@@ -12017,9 +12034,9 @@ Returns whether the updating was successful."
 		  (gnus-message 1 "Cannot read active file from %s server." 
 				(car (car methods)))
 		  (ding))
-	      (gnus-active-to-gnus-format 
-	       (and gnus-have-read-active-file (car methods)))
-	      (setq gnus-have-read-active-file t)
+	      (gnus-active-to-gnus-format (and not-first (car methods)))
+	      (setq gnus-have-read-active-file t
+		    not-first t)
 	      (gnus-message 5 "%sdone" mesg)))))
 	(setq methods (cdr methods))))))
 
@@ -12283,6 +12300,8 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-newsrc-to-gnus-format ()
   (setq gnus-newsrc-options "")
+  (setq gnus-newsrc-options-n nil)
+
   (or gnus-active-hashtb
       (setq gnus-active-hashtb (make-vector 4095 0)))
   (let ((buf (current-buffer))
@@ -12440,8 +12459,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (prev gnus-newsrc-alist)
 	    entry mentry)
 	(while rc
-	  (or (assoc (car (car rc)) newsrc) ; It's already in the alist.
-	      (null (nth 4 (car rc))) ; It's a native group.
+	  (or (null (nth 4 (car rc))) ; It's a native group.
+	      (assoc (car (car rc)) newsrc) ; It's already in the alist.
 	      (if (setq entry (assoc (car (car prev)) newsrc))
 		  (setcdr (setq mentry (memq entry newsrc))
 			  (cons (car rc) (cdr mentry)))
@@ -13178,8 +13197,9 @@ This includes the score file for the group and all its parents."
       (setq all (cons (substring group 0 start) all)))
     (setq all (cons group all))
     (nconc
-     (mapcar 'gnus-score-file-name (setq all (nreverse all))
-	     gnus-adaptive-file-suffix)
+     (mapcar (lambda (newsgroup)
+	       (gnus-score-file-name newsgroup gnus-adaptive-file-suffix))
+	     (setq all (nreverse all)))
      (mapcar 'gnus-score-file-name all))))
 
 (defvar gnus-score-file-alist-cache nil)

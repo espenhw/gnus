@@ -1,4 +1,4 @@
-\input texinfo                  @c -*-texinfo-*-
+x      \input texinfo                  @c -*-texinfo-*-
 @comment %**start of header (This is for running Texinfo on a region.)
 @setfilename gnus
 @settitle (ding) Gnus 0.84 Manual
@@ -116,12 +116,39 @@ abbreviation should probably be pronounced "news" as UMEDA intended,
 which makes it a more appropriate name, don't you think?)
 
 @menu
+* Why?::                What's the point of Gnus?
 * Compatibility::       Just how compatible is (ding) Gnus with @sc{gnus}?
 * Contributors::        Oodles of people.  
 * Gnus & hilit::        Old hilit19 code will not work with (ding) Gnus.
 * New Features::        A short description of all the new stuff in Gnus.
 * Newest Features::     Features so new that they haven't been written yet.
 @end menu
+
+@node Why?
+@section Why?
+
+What's the point of Gnus?  
+
+I want to provide a "rad", "happening", "way cool" and "hep" newsreader,
+that lets you do anything you can think of.  That was my original
+motivation, but while working on Gnus, it has become clear to me that
+this generation of newsreaders really belong in the stone age.
+Newsreaders haven't developed much since the infancy of the net.  If the
+volume continues to rise with the current rate of increase, all current
+newsreaders will be pretty much useless.  How do you deal with
+newsgroups that have hundreds (or thousands) of new articles each day? 
+
+(ding) Gnus offer no real solutions to these questions, but I would very
+much like to see Gnus being used as a testing ground for new methods of
+reading and fetching news.  Expanding on Umeda-san's wise decision to
+separate the newsreader from the backends, (ding) Gnus now offers a
+simple interface for anybody who wants to write new backends for
+fetching mail and news from different sources.  I have added hooks for
+customizations everywhere I can imagine useful.  By doing so, I'm
+inviting every one of you to explore and invent new ways of reading
+news. 
+
+May Gnus never be complete. @kbd{C-u 100 M-x hail-emacs}. 
 
 @node Compatibility
 @section Compatibility
@@ -1761,11 +1788,12 @@ mail by themselves.  It is quite likely that Gnus supports POP-mail.
 Set this variable to begin with the string @samp{po:}, and everything
 should go smoothly, even though I have never tested this.
 
-If this variable is @code{procmail}, the mail backends will look in
-@code{nnmail-procmail-directory} for incoming mail.  All the files in
-that directory that have names ending in @code{gnus-procmail-suffix}
-will be considered incoming mailboxes, and will be searched for new
-mail. 
+@vindex nnmail-use-procmail
+If @code{nnmail-use-procmail} is non-@code{nil}, the mail backends will
+look in @code{nnmail-procmail-directory} for incoming mail.  All the
+files in that directory that have names ending in
+@code{gnus-procmail-suffix} will be considered incoming mailboxes, and
+will be searched for new mail.
 
 @vindex nnmail-prepare-incoming-hook
 @code{nnmail-prepare-incoming-hook} is run in a buffer that holds all
@@ -3989,7 +4017,7 @@ There are four possible values:
 Gnus will make the first of the orphaned articles the parent.  This
 parent will adopt all the other articles.  The adopted articles will be
 marked as such by pointy brackets (@samp{<>}) instead of the standard
-square brackets (@samp{[]]).  This is the default method.
+square brackets (@samp{[]}).  This is the default method.
 @item dummy
 Gnus will create a dummy summary line that will pretend to be the
 parent.  This dummy line does not correspond to any real article, so

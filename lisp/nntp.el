@@ -958,9 +958,7 @@ It will prompt for a password."
   (let ((cmd (concat (mapconcat 'identity strings " ") "\r\n")))
     ;; We open the nntp server if it is down.
     (or (nntp-server-opened nntp-current-server)
-	(progn
-	  (nntp-close-server nntp-address)
-	  (nntp-open-server nntp-address))
+	(nntp-open-server nntp-current-server)
 	(error (nntp-status-message)))
     ;; Send the strings.
     (process-send-string nntp-server-process cmd)))

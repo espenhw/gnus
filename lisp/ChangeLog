@@ -1,3 +1,53 @@
+Thu Jun 15 03:34:23 1995  Lars Magne Ingebrigtsen  <larsi@hymir.ifi.uio.no>
+
+	* gnus.el (gnus-summary-refer-article): Recenter after fetching. 
+
+Wed Jun 14 10:34:20 1995  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Don't initialize
+	twice. 
+
+	* gnus-msg.el (gnus-mail-buffer): New variable. 
+
+	* gnus-score.el (gnus-summary-increase-score): Restore window
+	config after help.
+
+	* nnmail.el (nnmail-use-procmail): New variable. 
+
+	* nntp.el (nntp-send-strings-to-server): Really reopen connection
+	if closed. 
+
+	* gnus.el (gnus-group-exit): Remove carpal window on exit. 
+	(gnus-summary-recenter): Center on line 2 when in small windows. 
+	(gnus-newsrc-to-gnus-format): Reset the options list. 
+	(gnus-read-active-file): Would not activate primary groups when
+	'some. 
+	(gnus-get-unread-articles): Don't activate secondary groups
+	again. 
+
+Tue Jun 13 00:26:45 1995  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* Treat empty comments fields. 
+
+	* gnus.el (gnus-newsrc-to-gnus-format): Exponentiality revealed. 
+	(gnus-score-find-hierarchical): Didn't really work for adaptive
+	files. 
+	(gnus-select-newsgroup): Really strip the first unwanted article. 
+
+	* gnus-score.el (gnus-summary-score-entry): Doc fix. 
+
+Tue Jun 13 10:02:57 1995  Scott Byer  <byer@mv.us.adobe.com>
+
+	* nnfolder.el (nnfolder-possibly-change-group) An added check for
+        a file being a directory also checked for a symlink without
+        verifying that the symlink actually pointed to a directory.  This
+        would seriosly mess up some mail setups.
+
+	* nnfolder.el (nnfolder-server-opened)
+        (nnfolder-possibly-change-group) Made sure checks for buffer
+        existence included checks for the name being nil, since
+        buffer-name with a nil name returns some random buffer.
+
 Sat Jun 10 00:15:13 1995  Lars Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.el (gnus-ask-server-for-new-groups): Ignore errors while

@@ -424,9 +424,8 @@ The headers will be included in the sequence they are matched.")
 (defun gnus-uu-digest-mail-forward (n &optional post)
   "Digests and forwards all articles in this series."
   (interactive "P")
-  (gnus-uu-initialize)
   (let ((gnus-uu-save-in-digest t)
-	(file (concat gnus-uu-work-dir (make-temp-name "forward")))
+	(file (make-temp-name (concat gnus-uu-tmp-dir "forward")))
 	(winconf (current-window-configuration))
 	buf)
     (gnus-uu-decode-save n file)
@@ -449,6 +448,7 @@ The headers will be included in the sequence they are matched.")
     (if post
 	(gnus-forward-using-post)
       (funcall gnus-mail-forward-method))
+    (delete-file file)
     (kill-buffer buf)))
 
 (defun gnus-uu-digest-post-forward (n)

@@ -219,6 +219,7 @@ headers.")
 ;;; Internal variables.
 
 (defvar gnus-post-news-buffer "*post-news*")
+(defvar gnus-mail-buffer "*mail*")
 (defvar gnus-summary-send-map nil)
 (defvar gnus-article-copy nil)
 (defvar gnus-reply-subject nil)
@@ -849,7 +850,7 @@ will attempt to use the foreign server to post the article."
 	    (message-id nil)
 	    (distribution nil))
 	(or (gnus-member-of-valid 'post gnus-newsgroup-name)
-	    (error "This backend does not support cancelling"))
+	    (error "This backend does not support canceling"))
 	(save-excursion
 	  ;; Get header info. from original article.
 	  (save-restriction
@@ -1356,7 +1357,7 @@ The current group name will be inserted at \"%s\".")
 	   "Really send a nastygram to the author of the current article? "))
       (let ((group gnus-newsgroup-name))
 	(gnus-summary-reply-with-original n)
-	(set-buffer "*mail*")
+	(set-buffer gnus-mail-buffer)
 	(insert (format gnus-nastygram-message group))
 	(gnus-mail-send-and-exit))))
 
@@ -1378,7 +1379,7 @@ mailer."
 	  (winconf (current-window-configuration))
 	  from subject date to reply-to message-of
 	  references message-id sender follow-to cc sendto elt)
-      (set-buffer (get-buffer-create "*mail*"))
+      (set-buffer (get-buffer-create gnus-mail-buffer))
       (mail-mode)
       (make-local-variable 'gnus-article-reply)
       (setq gnus-article-reply cur)

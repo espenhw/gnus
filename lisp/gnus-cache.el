@@ -103,11 +103,13 @@
 		  gnus-cache-enter-articles ticked dormant unread))
 	    (file-exists-p (setq file (gnus-cache-file-name group article))))
 	()
-      (gnus-summary-select-article)
+      ;; Possibly create the cache directory.
       (or (file-exists-p (setq dir (file-name-directory file)))
 	  (gnus-make-directory dir))
+      ;; Save the article in the cache.
       (if (file-exists-p file)
-	  t
+	  t ; The article already is saved, so we end here.
+	(gnus-summary-select-article)
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
 	  (write-region (point-min) (point-max) file nil 'quiet)

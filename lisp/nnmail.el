@@ -91,9 +91,11 @@ Eg.:
 This variable is \"/usr/spool/mail/$user\" by default.
 If this variable is nil, no mail backends will read incoming mail.
 If this variable is a list, all files mentioned in this list will be
-used as incoming mailboxes.
-If this variable is `procmail', the mail backends will look in
-`nnmail-procmail-directory' for spool files.")
+used as incoming mailboxes.")
+
+(defvar nnmail-use-procmail nil
+  "*If non-nil, the mail backends will look in `nnmail-procmail-directory' for spool files.
+The file(s) in `nnmail-spool-file' will also be read.")
 
 (defvar nnmail-procmail-directory "~/incoming/"
   "*When using procmail (and the like), incoming mail is put in this directory.
@@ -445,7 +447,8 @@ nn*-request-list should have been called before calling this function."
       (kill-buffer (current-buffer)))))
 
 (defun nnmail-get-split-group (file group)
-  (if (eq nnmail-spool-file 'procmail)
+  (if (or (eq nnmail-spool-file 'procmail)
+	  nnmail-use-procmail)
       (cond (group group)
 	    ((string-match (concat "^" (expand-file-name
 					nnmail-procmail-directory)
@@ -464,7 +467,8 @@ FUNC will be called with the buffer narrowed to each mail."
 	;; If this is a group-specific split, we bind the split
 	;; methods to just this group.
 	(nnmail-split-methods (if (and group
-				       (eq nnmail-spool-file 'procmail)
+				       (or (eq nnmail-spool-file 'procmail)
+					   nnmail-use-procmail)
 				       (not nnmail-resplit-incoming))
 				  (list (list group ""))
 				nnmail-split-methods))

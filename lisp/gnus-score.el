@@ -62,8 +62,8 @@ always be used.")
 
 ;; Internal variables.
 
+(defvar gnus-score-help-winconf nil)
 (defvar gnus-adaptive-score-alist gnus-default-adaptive-score-alist)
-
 (defvar gnus-score-trace nil)
 
 (defvar gnus-score-alist nil
@@ -168,8 +168,8 @@ of the last successful match.")
 
     (and (get-buffer "*Score Help*")
 	 (progn
-	   (delete-windows-on "*Score Help*")
-	   (kill-buffer "*Score Help*")))
+	   (kill-buffer "*Score Help*")
+	   (set-window-configuration gnus-score-help-winconf)))
 
     (or (setq entry (assq (downcase hchar) char-to-header))
 	(progn
@@ -206,7 +206,7 @@ of the last successful match.")
 
       (and (get-buffer "*Score Help*")
 	   (progn
-	     (delete-windows-on "*Score Help*")
+	     (set-window-configuration gnus-score-help-winconf)
 	     (kill-buffer "*Score Help*")))
       
       (or (setq type (nth 1 (assq (downcase tchar) char-to-type)))
@@ -238,7 +238,7 @@ of the last successful match.")
 
 	(and (get-buffer "*Score Help*")
 	     (progn
-	       (delete-windows-on "*Score Help*")
+	       (set-window-configuration gnus-score-help-winconf)
 	       (kill-buffer "*Score Help*")))
 
 	(if mimic (message "%c %c %c" prefix hchar tchar pchar)
@@ -267,6 +267,7 @@ of the last successful match.")
       )))
 
 (defun gnus-score-insert-help (string alist idx)
+  (setq gnus-score-help-winconf (current-window-configuration))
   (save-excursion
     (pop-to-buffer "*Score Help*")
     (buffer-disable-undo (current-buffer))
@@ -289,7 +290,7 @@ of the last successful match.")
   "Enter score file entry.
 HEADER is the header being scored.
 MATCH is the string we are looking for.
-TYPE is a flag indicating if it is a regexp or substring.
+TYPE is the match type: substring, regexp, exact, fuzzy.
 SCORE is the score to add.
 DATE is the expire date, or nil for no expire, or 'now for immediate expire.
 If optional argument `PROMPT' is non-nil, allow user to edit match.
@@ -308,7 +309,10 @@ If optional argument `SILENT' is nil, show effect of score entry."
 	       ((y-or-n-p "Expire kill? ")
 		(current-time-string))
 	       (t nil))))
-  (if (or (eq type 'r) (eq type 's))
+  ;; Regexp is the default type.
+  (if (eq type t) (setq type 'r))
+  ;; Simplify matches...
+  (if (or (eq type 'r) (eq type 's) (eq type nil))
       (setq match (gnus-simplify-subject-re match)))
   (let ((score (gnus-score-default score))
 	(header (downcase header)))
