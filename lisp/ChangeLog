@@ -1,3 +1,9 @@
+2001-12-08  Nevin Kapur  <nevin@jhu.edu>
+
+	* nnmail.el (nnmail-fancy-expiry-targets): New variable.
+	(nnmail-fancy-expiry-target): Use it.
+	Suggestions from Simon Josefsson <jas@extundo.com>.
+
 2001-12-07 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-show-article): Recount lines if not exist.

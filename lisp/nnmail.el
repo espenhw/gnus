@@ -190,6 +190,39 @@ The return value should be `delete' or a group name (a string)."
 		 (function :format "%v" nnmail-)
 		 string))
 
+(defcustom nnmail-fancy-expiry-targets nil 
+  "Determine expiry target based on articles using fancy techniques.
+
+This is a list of (\"HEADER\" \"REGEXP\" \"TARGET\") entries.  If
+`nnmail-expiry-target' is set to the function
+`nnmail-fancy-expiry-target' and HEADER of the article matches REGEXP,
+the message will be expired to a group determined by invoking
+`format-time-string' with TARGET used as the format string and the
+time extracted from the articles' Date header (if missing the current
+time is used).
+
+In the special cases that HEADER is the symbol `to-from', the regexp
+will try to match against both the From and the To header.
+
+Example:
+
+\(setq nnmail-fancy-expiry-targets
+      '((to-from \"boss\" \"nnfolder:Work\")
+	(\"Subject\" \"IMPORTANT\" \"nnfolder:IMPORTANT.%Y.%b\")
+	(\"from\" \".*\" \"nnfolder:Archive-%Y\")))
+
+In this case, articles containing the string \"boss\" in the To or the
+From header will be expired to the group \"nnfolder:Work\";
+articles containing the sting \"IMPORTANT\" in the Subject header will
+be expired to the group \"nnfolder:IMPORTANT.YYYY.MMM\"; and
+everything else will be expired to \"nnfolder:Archive-YYYY\"."
+  :group 'nnmail-expire
+  :type '(repeat (list (choice :tag "Match against"
+			       (string :tag "Header")
+			       (const to-from))
+                       regexp
+                       (string :tag "Target group format string"))))
+
 (defcustom nnmail-cache-accepted-message-ids nil
   "If non-nil, put Message-IDs of Gcc'd articles into the duplicate cache.
 If non-nil, also update the cache when copy or move articles."
@@ -1699,6 +1732,31 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       (setq target (funcall target group)))
     (unless (eq target 'delete)
       (gnus-request-accept-article target nil nil t))))
+
+(defun nnmail-fancy-expiry-target (group)
+  "Returns a target expiry group determined by `nnmail-fancy-expiry-targets'."
+  (let* (header
+	 (case-fold-search nil)
+	 (from (or (message-fetch-field "from") ""))
+	 (to (or (message-fetch-field "to") ""))
+	 (date (date-to-time
+		(or (message-fetch-field "date") (current-time-string))))
+	 (target 'delete))
+    (dolist (regexp-target-pair (reverse nnmail-fancy-expiry-targets) target)
+      (setq header (car regexp-target-pair))
+      (cond
+       ;; If the header is to-from then match against the
+       ;; To or From header
+       ((and (equal header 'to-from)
+	     (or (string-match (cadr regexp-target-pair) from)
+		 (and (string-match message-dont-reply-to-names from)
+		      (string-match (cadr regexp-target-pair) to))))
+	(setq target (format-time-string (caddr regexp-target-pair) date)))
+       ((and (not (equal header 'to-from))
+	     (string-match (cadr regexp-target-pair)
+			   (message-fetch-field header)))
+	(setq target
+	      (format-time-string (caddr regexp-target-pair) date)))))))
 
 (defun nnmail-check-syntax ()
   "Check (and modify) the syntax of the message in the current buffer."
