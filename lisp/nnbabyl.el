@@ -1,4 +1,4 @@
-;;; nnmbox.el --- mail mbox access for Gnus
+;;; nnbabyl.el --- mail mbox access for Gnus
 ;; Copyright (C) 1995 Free Software Foundation, Inc.
 
 ;; Author: Lars Ingebrigtsen <larsi@ifi.uio.no>
@@ -29,32 +29,34 @@
 (require 'rmail)
 (require 'nnmail)
 
-(defvar nnmbox-mbox-file (expand-file-name "~/mbox")
+(defvar nnbabyl-mbox-file (expand-file-name "~/RMAIL")
   "The name of the mail box file in the users home directory.")
 
-(defvar nnmbox-active-file (expand-file-name "~/.mbox-active")
+(defvar nnbabyl-active-file (expand-file-name "~/.rmail-active")
   "The name of the active file for the mail box.")
 
-(defvar nnmbox-get-new-mail t
+(defvar nnbabyl-get-new-mail t
   "If non-nil, nnml will check the incoming mail file and split the mail.")
 
 
 
-(defconst nnmbox-version "nnmbox 0.1"
-  "nnmbox version.")
+(defvar nnbabyl-mail-delimiter "\^_")
 
-(defvar nnmbox-current-group nil
-  "Current nnmbox news group directory.")
+(defconst nnbabyl-version "nnbabyl 0.1"
+  "nnbabyl version.")
 
-(defconst nnmbox-mbox-buffer " *nnmbox mbox buffer*")
+(defvar nnbabyl-current-group nil
+  "Current nnbabyl news group directory.")
 
-(defvar nnmbox-status-string "")
+(defconst nnbabyl-mbox-buffer " *nnbabyl mbox buffer*")
 
-(defvar nnmbox-group-alist nil)
+(defvar nnbabyl-status-string "")
+
+(defvar nnbabyl-group-alist nil)
 
 ;;; Interface functions
 
-(defun nnmbox-retrieve-headers (sequence &optional newsgroup server)
+(defun nnbabyl-retrieve-headers (sequence &optional newsgroup server)
   "Retrieve the headers for the articles in SEQUENCE.
 Newsgroup must be selected before calling this function."
   (save-excursion
@@ -64,11 +66,11 @@ Newsgroup must be selected before calling this function."
 	  (number (length sequence))
 	  (count 0)
 	  beg article art-string start stop)
-      (nnmbox-possibly-change-newsgroup newsgroup)
+      (nnbabyl-possibly-change-newsgroup newsgroup)
       (while sequence
 	(setq article (car sequence))
-	(setq art-string (nnmbox-article-string article))
-	(set-buffer nnmbox-mbox-buffer)
+	(setq art-string (nnbabyl-article-string article))
+	(set-buffer nnbabyl-mbox-buffer)
 	(if (or (search-forward art-string nil t)
 		(progn (goto-char 1)
 		       (search-forward art-string nil t)))
@@ -76,14 +78,16 @@ Newsgroup must be selected before calling this function."
 	      (setq start 
 		    (save-excursion
 		      (re-search-backward 
-		       (concat "^" rmail-unix-mail-delimiter) nil t)
+		       (concat "^" nnbabyl-mail-delimiter) nil t)
+		      (while (and (not (looking-at ".+:"))
+				  (zerop (forward-line 1))))
 		      (point)))
 	      (search-forward "\n\n" nil t)
 	      (setq stop (1- (point)))
 	      (set-buffer nntp-server-buffer)
 	      (insert (format "221 %d Article retrieved.\n" article))
 	      (setq beg (point))
-	      (insert-buffer-substring nnmbox-mbox-buffer start stop)
+	      (insert-buffer-substring nnbabyl-mbox-buffer start stop)
 	      (goto-char (point-max))
 	      (insert ".\n")))
 	(setq sequence (cdr sequence))
@@ -92,13 +96,13 @@ Newsgroup must be selected before calling this function."
 	     (> number nnmail-large-newsgroup)
 	     (zerop (% count 20))
 	     gnus-verbose-backends
-	     (message "nnmbox: Receiving headers... %d%%"
+	     (message "nnbabyl: Receiving headers... %d%%"
 		      (/ (* count 100) number))))
 
       (and (numberp nnmail-large-newsgroup)
 	   (> number nnmail-large-newsgroup)
 	   gnus-verbose-backends
-	   (message "nnmbox: Receiving headers... done"))
+	   (message "nnbabyl: Receiving headers... done"))
 
       ;; Fold continuation lines.
       (goto-char 1)
@@ -106,61 +110,68 @@ Newsgroup must be selected before calling this function."
 	(replace-match " " t t))
       'headers)))
 
-(defun nnmbox-open-server (host &optional service)
+(defun nnbabyl-open-server (host &optional service)
   "Open mbox backend."
-  (setq nnmbox-status-string "")
-  (setq nnmbox-group-alist nil)
+  (setq nnbabyl-status-string "")
+  (setq nnbabyl-group-alist nil)
   (nnheader-init-server-buffer))
 
-(defun nnmbox-close-server (&optional server)
+(defun nnbabyl-close-server (&optional server)
   "Close news server."
   t)
 
-(defun nnmbox-server-opened (&optional server)
+(defun nnbabyl-server-opened (&optional server)
   "Return server process status, T or NIL.
 If the stream is opened, return T, otherwise return NIL."
   (and nntp-server-buffer
        (get-buffer nntp-server-buffer)))
 
-(defun nnmbox-status-message ()
+(defun nnbabyl-status-message ()
   "Return server status response as string."
-  nnmbox-status-string)
+  nnbabyl-status-string)
 
-(defun nnmbox-request-article (article &optional newsgroup server buffer)
+(defun nnbabyl-request-article (article &optional newsgroup server buffer)
   "Select ARTICLE by number."
-  (nnmbox-possibly-change-newsgroup newsgroup)
+  (nnbabyl-possibly-change-newsgroup newsgroup)
   (if (stringp article)
       nil
     (save-excursion
-      (set-buffer nnmbox-mbox-buffer)
+      (set-buffer nnbabyl-mbox-buffer)
       (goto-char 1)
-      (if (search-forward (nnmbox-article-string article) nil t)
+      (if (search-forward (nnbabyl-article-string article) nil t)
 	  (let (start stop)
-	    (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
-	    (forward-line 1)
+	    (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
+	    (while (and (not (looking-at ".+:"))
+			(zerop (forward-line 1))))
 	    (setq start (point))
 	    (or (and (re-search-forward 
-		      (concat "^" rmail-unix-mail-delimiter) nil t)
+		      (concat "^" nnbabyl-mail-delimiter) nil t)
 		     (forward-line -1))
 		(goto-char (point-max)))
 	    (setq stop (point))
 	    (let ((nntp-server-buffer (or buffer nntp-server-buffer)))
 	      (set-buffer nntp-server-buffer)
 	      (erase-buffer)
-	      (insert-buffer-substring nnmbox-mbox-buffer start stop)
+	      (insert-buffer-substring nnbabyl-mbox-buffer start stop)
+	      (goto-char (point-min))
+	      (if (search-forward "\n*** EOOH ***" nil t)
+		  (progn
+		    (delete-region (progn (beginning-of-line) (point))
+				   (or (search-forward "\n\n" nil t)
+				       (point)))))
 	      t))))))
 
-(defun nnmbox-request-group (group &optional server dont-check)
+(defun nnbabyl-request-group (group &optional server dont-check)
   "Select news GROUP."
   (save-excursion
-    (if (nnmbox-possibly-change-newsgroup group)
+    (if (nnbabyl-possibly-change-newsgroup group)
 	(if dont-check
 	    t
-	  (nnmbox-get-new-mail)
+	  (nnbabyl-get-new-mail)
 	  (save-excursion
 	    (set-buffer nntp-server-buffer)
 	    (erase-buffer)
-	    (let ((active (assoc group nnmbox-group-alist)))
+	    (let ((active (assoc group nnbabyl-group-alist)))
 	      (insert (format "211 %d %d %d %s\n" 
 			      (1+ (- (cdr (car (cdr active)))
 				     (car (car (cdr active)))))
@@ -169,45 +180,45 @@ If the stream is opened, return T, otherwise return NIL."
 			      (car active))))
 	    t)))))
 
-(defun nnmbox-close-group (group &optional server)
+(defun nnbabyl-close-group (group &optional server)
   t)
 
-(defun nnmbox-request-list (&optional server)
+(defun nnbabyl-request-list (&optional server)
   "List active newsgoups."
-  (if server (nnmbox-get-new-mail))
-  (nnmail-find-file nnmbox-active-file))
+  (if server (nnbabyl-get-new-mail))
+  (nnmail-find-file nnbabyl-active-file))
 
-(defun nnmbox-request-newgroups (date &optional server)
+(defun nnbabyl-request-newgroups (date &optional server)
   "List groups created after DATE."
-  (nnmbox-request-list server))
+  (nnbabyl-request-list server))
 
-(defun nnmbox-request-list-newsgroups (&optional server)
+(defun nnbabyl-request-list-newsgroups (&optional server)
   "List newsgroups (defined in NNTP2)."
-  (setq nnmbox-status-string "nnmbox: LIST NEWSGROUPS is not implemented.")
+  (setq nnbabyl-status-string "nnbabyl: LIST NEWSGROUPS is not implemented.")
   nil)
 
-(defun nnmbox-request-post (&optional server)
+(defun nnbabyl-request-post (&optional server)
   "Post a new news in current buffer."
   (mail-send-and-exit nil))
 
-(fset 'nnmbox-request-post-buffer 'nnmail-request-post-buffer)
+(fset 'nnbabyl-request-post-buffer 'nnmail-request-post-buffer)
 
-(defun nnmbox-request-expire-articles (articles newsgroup &optional server force)
+(defun nnbabyl-request-expire-articles (articles newsgroup &optional server force)
   "Expire all articles in the ARTICLES list in group GROUP.
 The list of unexpired articles will be returned (ie. all articles that
 were too fresh to be expired).
 If FORCE is non-nil, the ARTICLES will be deleted without looking at
 the date."
-  (nnmbox-possibly-change-newsgroup newsgroup)
+  (nnbabyl-possibly-change-newsgroup newsgroup)
   (let* ((days (or (and nnmail-expiry-wait-function
 			(funcall nnmail-expiry-wait-function newsgroup))
 		   nnmail-expiry-wait))
 	 article rest)
     (save-excursion 
-      (set-buffer nnmbox-mbox-buffer)
+      (set-buffer nnbabyl-mbox-buffer)
       (while articles
 	(goto-char 1)
-	(if (search-forward (nnmbox-article-string (car articles)) nil t)
+	(if (search-forward (nnbabyl-article-string (car articles)) nil t)
 	    (if (or force
 		    (> (nnmail-days-between 
 			(current-time-string)
@@ -217,18 +228,18 @@ the date."
 		(progn
 		  (and gnus-verbose-backends
 		       (message "Deleting: %s" (car articles)))
-		  (nnmbox-delete-mail))
+		  (nnbabyl-delete-mail))
 	      (setq rest (cons (car articles) rest))))
 	(setq articles (cdr articles)))
       (save-buffer)
       rest)))
 
-(defun nnmbox-request-move-article (article group server accept-form)
-  (nnmbox-possibly-change-newsgroup group)
-  (let ((buf (get-buffer-create " *nnmbox move*"))
+(defun nnbabyl-request-move-article (article group server accept-form)
+  (nnbabyl-possibly-change-newsgroup group)
+  (let ((buf (get-buffer-create " *nnbabyl move*"))
 	result)
     (and 
-     (nnmbox-request-article article group server)
+     (nnbabyl-request-article article group server)
      (save-excursion
        (set-buffer buf)
        (insert-buffer-substring nntp-server-buffer)
@@ -242,20 +253,20 @@ the date."
        (kill-buffer (current-buffer))
        result)
      (save-excursion
-       (set-buffer nnmbox-mbox-buffer)
+       (set-buffer nnbabyl-mbox-buffer)
        (goto-char 1)
-       (if (search-forward (nnmbox-article-string article) nil t)
-	   (nnmbox-delete-mail))
+       (if (search-forward (nnbabyl-article-string article) nil t)
+	   (nnbabyl-delete-mail))
        (save-buffer)))
     result))
 
-(defun nnmbox-request-accept-article (group)
+(defun nnbabyl-request-accept-article (group)
   (let ((buf (current-buffer))
 	result beg)
     (and 
-     (setq nnmbox-group-alist (nnmail-get-active))
+     (setq nnbabyl-group-alist (nnmail-get-active))
      (save-excursion
-       (set-buffer nnmbox-mbox-buffer)
+       (set-buffer nnbabyl-mbox-buffer)
        (setq beg (goto-char (point-max)))
        (insert-buffer-substring buf)
        (goto-char beg)
@@ -266,21 +277,21 @@ the date."
 	     (save-excursion
 	       (while (re-search-backward "^X-Gnus-Newsgroup: " beg t)
 		 (delete-region (point) (progn (forward-line 1) (point)))))
-	     (setq result (nnmbox-insert-newsgroup-line group)))
-	 (setq result (nnmbox-save-mail)))
+	     (setq result (nnbabyl-insert-newsgroup-line group)))
+	 (setq result (nnbabyl-save-mail)))
        (save-buffer)
        result)
-     (nnmail-save-active nnmbox-group-alist nnmbox-active-file))
+     (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file))
     result))
 
-(defun nnmbox-request-replace-article (article group buffer)
-  (nnmbox-possibly-change-newsgroup group)
+(defun nnbabyl-request-replace-article (article group buffer)
+  (nnbabyl-possibly-change-newsgroup group)
   (save-excursion
-    (set-buffer nnmbox-mbox-buffer)
+    (set-buffer nnbabyl-mbox-buffer)
     (goto-char 1)
-    (if (not (search-forward (nnmbox-article-string article) nil t))
+    (if (not (search-forward (nnbabyl-article-string article) nil t))
 	nil
-      (nnmbox-delete-mail t t)
+      (nnbabyl-delete-mail t t)
       (insert-buffer-substring buffer)
       (save-buffer)
       t)))
@@ -288,7 +299,7 @@ the date."
 
 ;;; Low-Level Interface
 
-(defun nnmbox-delete-mail (&optional force leave-delim)
+(defun nnbabyl-delete-mail (&optional force leave-delim)
   "If FORCE, delete article no matter how many X-Gnus-Newsgroup
 headers there are. If LEAVE-DELIM, don't delete the Unix mbox
 delimeter line."
@@ -302,12 +313,12 @@ delimeter line."
     (save-restriction
       (narrow-to-region
        (save-excursion
-	 (re-search-backward (concat "^" rmail-unix-mail-delimiter) nil t)
+	 (re-search-backward (concat "^" nnbabyl-mail-delimiter) nil t)
 	 (if leave-delim (progn (forward-line 1) (point))
 	   (match-beginning 0)))
        (progn
 	 (forward-line 1)
-	 (or (and (re-search-forward (concat "^" rmail-unix-mail-delimiter) 
+	 (or (and (re-search-forward (concat "^" nnbabyl-mail-delimiter) 
 				     nil t)
 		  (if (and (not (bobp)) leave-delim)
 		      (progn (forward-line -2) (point))
@@ -318,32 +329,40 @@ delimeter line."
       (if (or force (not (re-search-forward "^X-Gnus-Newsgroup: " nil t)))
 	  (delete-region (point-min) (point-max))))))
 
-(defun nnmbox-possibly-change-newsgroup (newsgroup)
-  (if (not (get-buffer nnmbox-mbox-buffer))
+(defun nnbabyl-possibly-change-newsgroup (newsgroup)
+  (if (not (get-buffer nnbabyl-mbox-buffer))
       (save-excursion
-	(set-buffer (setq nnmbox-mbox-buffer 
-			  (find-file-noselect nnmbox-mbox-file)))
+	(let ((buf (or (get-buffer (file-name-nondirectory nnbabyl-mbox-file))
+		       (create-file-buffer nnbabyl-mbox-file))))
+	  (set-buffer (setq nnbabyl-mbox-buffer buf))
+	  (insert-file-contents nnbabyl-mbox-file)
+	  (setq buffer-file-name nnbabyl-mbox-file))
 	(buffer-disable-undo (current-buffer))))
-  (if (not nnmbox-group-alist)
-      (setq nnmbox-group-alist (nnmail-get-active)))
+  (if (not nnbabyl-group-alist)
+      (setq nnbabyl-group-alist (nnmail-get-active)))
   (if newsgroup
-      (if (assoc newsgroup nnmbox-group-alist)
-	  (setq nnmbox-current-group newsgroup))))
+      (if (assoc newsgroup nnbabyl-group-alist)
+	  (setq nnbabyl-current-group newsgroup))))
 
-(defun nnmbox-article-string (article)
-  (concat "\nX-Gnus-Newsgroup: " nnmbox-current-group ":" 
+(defun nnbabyl-article-string (article)
+  (concat "\nX-Gnus-Newsgroup: " nnbabyl-current-group ":" 
 	  (int-to-string article)))
 
-(defun nnmbox-save-mail ()
+(defun nnbabyl-save-mail ()
   "Called narrowed to an article."
-  (let ((group-art (nreverse (nnmail-article-group 'nnmbox-active-number))))
+  (let ((group-art (nreverse (nnmail-article-group 'nnbabyl-active-number))))
     (nnmail-insert-lines)
     (nnmail-insert-xref group-art)
-    (nnmbox-insert-newsgroup-line group-art)))
+    (nnbabyl-insert-newsgroup-line group-art)))
 
-(defun nnmbox-insert-newsgroup-line (group-art)
+(defun nnbabyl-insert-newsgroup-line (group-art)
   (save-excursion
     (goto-char (point-min))
+    (or (looking-at "\^_")
+	(insert "\^_\^L\n0, unseen,,\n*** EOOH ***\n"))
+    (while (looking-at "From ")
+      (replace-match "Mail-from: ")
+      (forward-line 1))
     (if (search-forward "\n\n" nil t)
 	(progn
 	  (forward-char -1)
@@ -353,29 +372,33 @@ delimeter line."
 			    (current-time-string)))
 	    (setq group-art (cdr group-art)))))))
 
-(defun nnmbox-active-number (group)
+(defun nnbabyl-active-number (group)
   "Find the next article number in GROUP."
-  (let ((active (car (cdr (assoc group nnmbox-group-alist)))))
+  (let ((active (car (cdr (assoc group nnbabyl-group-alist)))))
     (setcdr active (1+ (cdr active)))
     (cdr active)))
 
-(defun nnmbox-read-mbox ()
-  (nnmbox-request-list)
-  (setq nnmbox-group-alist (nnmail-get-active))
-  (if (not (file-exists-p nnmbox-mbox-file))
-      (write-region 1 1 nnmbox-mbox-file t 'nomesg))
-  (if (and nnmbox-mbox-buffer
-	   (get-buffer nnmbox-mbox-buffer)
-	   (buffer-name nnmbox-mbox-buffer)
+(defun nnbabyl-read-mbox ()
+  (nnbabyl-request-list)
+  (setq nnbabyl-group-alist (nnmail-get-active))
+  (if (not (file-exists-p nnbabyl-mbox-file))
+      (write-region 1 1 nnbabyl-mbox-file t 'nomesg))
+  (if (and nnbabyl-mbox-buffer
+	   (get-buffer nnbabyl-mbox-buffer)
+	   (buffer-name nnbabyl-mbox-buffer)
 	   (save-excursion
-	     (set-buffer nnmbox-mbox-buffer)
-	     (= (buffer-size) (nth 7 (file-attributes nnmbox-mbox-file)))))
+	     (set-buffer nnbabyl-mbox-buffer)
+	     (= (buffer-size) (nth 7 (file-attributes nnbabyl-mbox-file)))))
       ()
     (save-excursion
-      (let ((delim (concat "^" rmail-unix-mail-delimiter))
+      (let ((delim (concat "^" nnbabyl-mail-delimiter))
+	    (buf (or (get-buffer (file-name-nondirectory nnbabyl-mbox-file))
+		     (create-file-buffer nnbabyl-mbox-file)))
 	    start end)
-	(set-buffer (setq nnmbox-mbox-buffer 
-			  (find-file-noselect nnmbox-mbox-file)))
+	(set-buffer (setq nnbabyl-mbox-buffer buf))
+	(insert-file-contents nnbabyl-mbox-file)
+	(setq buffer-file-name nnbabyl-mbox-file)
+
 	(buffer-disable-undo (current-buffer))
 	(goto-char (point-min))
 	(while (re-search-forward delim nil t)
@@ -389,43 +412,45 @@ delimeter line."
 					     (match-beginning 0))
 					    (point-max))))
 				   t))
+	      (goto-char end)
 	      (save-excursion
 		(save-restriction
+		  (goto-char start)
 		  (narrow-to-region start end)
-		  (nnmbox-save-mail))))
-	  (goto-char end))))))
+		  (nnbabyl-save-mail))))
+	  )))))
 
-(defun nnmbox-get-new-mail ()
+(defun nnbabyl-get-new-mail ()
   (let (incoming)
-    (nnmbox-read-mbox)
+    (nnbabyl-read-mbox)
     (if (and nnmail-spool-file
 	     (file-exists-p nnmail-spool-file)
 	     (> (nth 7 (file-attributes nnmail-spool-file)) 0))
 	(progn
 	  (and gnus-verbose-backends
-	       (message "nnmbox: Reading incoming mail..."))
+	       (message "nnbabyl: Reading incoming mail..."))
 	  (setq incoming 
 		(nnmail-move-inbox nnmail-spool-file
-				   (concat nnmbox-mbox-file "-Incoming")))
+				   (concat nnbabyl-mbox-file "-Incoming")))
 	  (save-excursion
 	    (let ((in-buf (nnmail-split-incoming 
-			   incoming 'nnmbox-save-mail t)))
-	      (set-buffer nnmbox-mbox-buffer)
+			   incoming 'nnbabyl-save-mail t)))
+	      (set-buffer nnbabyl-mbox-buffer)
 	      (goto-char (point-max))
+	      (search-backward "\n\^_" nil t)
 	      (insert-buffer-substring in-buf)
 	      (kill-buffer in-buf)))
 	  (run-hooks 'nnmail-read-incoming-hook)
 	  (and gnus-verbose-backends
-	       (message "nnmbox: Reading incoming mail...done"))))
-    (and (buffer-modified-p nnmbox-mbox-buffer) 
+	       (message "nnbabyl: Reading incoming mail...done"))))
+    (and (buffer-modified-p nnbabyl-mbox-buffer) 
 	 (save-excursion
-	   (nnmail-save-active nnmbox-group-alist nnmbox-active-file)
-	   (set-buffer nnmbox-mbox-buffer)
+	   (nnmail-save-active nnbabyl-group-alist nnbabyl-active-file)
+	   (set-buffer nnbabyl-mbox-buffer)
 	   (save-buffer)))
-;    (if incoming
-;	(delete-file incoming))
+    ;; (if incoming (delete-file incoming))
     ))
 
-(provide 'nnmbox)
+(provide 'nnbabyl)
 
-;;; nnmbox.el ends here
+;;; nnbabyl.el ends here

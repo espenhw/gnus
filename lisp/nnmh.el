@@ -103,13 +103,11 @@ Newsgroup must be selected before calling this function."
 (defun nnmh-open-server (host &optional service)
   "Open nnmh mail backend."
   (setq nnmh-status-string "")
-  (nnmh-open-server-internal host service))
+  (nnheader-init-server-buffer))
 
 (defun nnmh-close-server (&optional server)
   "Close news server."
-  (nnmh-close-server-internal))
-
-(fset 'nnmh-request-quit (symbol-function 'nnmh-close-server))
+  t)
 
 (defun nnmh-server-opened (&optional server)
   "Return server process status, T or NIL.
@@ -273,24 +271,20 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
      (setq nnmh-group-alist (nnmail-get-active))
      (nnmh-save-mail))))
 
-
-;;; Low-Level Interface
-
-(defun nnmh-open-server-internal (host &optional service)
-  "Open connection to news server on HOST by SERVICE."
+(defun nnmh-request-replace-article (article group buffer)
+  (nnmh-possibly-change-directory group)
   (save-excursion
-    ;; Initialize communication buffer.
-    (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
-    (set-buffer nntp-server-buffer)
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
-    (kill-all-local-variables)
-    (setq case-fold-search t)		;Should ignore case.
-    t))
+    (set-buffer buffer)
+    (condition-case ()
+	(progn
+	  (write-region (point-min) (point-max)
+			(concat nnmh-current-directory (int-to-string article))
+			nil (if gnus-verbose-backends nil 'nomesg))
+	  t)
+      (error nil))))
 
-(defun nnmh-close-server-internal ()
-  "Close connection to news server."
-  nil)
+
+;;; Internal functions.
 
 (defun nnmh-possibly-change-directory (newsgroup)
   (if newsgroup

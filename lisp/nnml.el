@@ -120,18 +120,12 @@ Newsgroup must be selected before calling this function."
 	'headers))))
 
 (defun nnml-open-server (host &optional service)
-  "Open news server on HOST.
-If HOST is nil, use value of environment variable `NNTPSERVER'.
-If optional argument SERVICE is non-nil, open by the service name."
-  (let ((host (or host (getenv "NNTPSERVER"))))
-    (setq nnml-status-string "")
-    (nnml-open-server-internal host service)))
+  (setq nnml-status-string "")
+  (nnheader-init-server-buffer))
 
 (defun nnml-close-server (&optional server)
   "Close news server."
-  (nnml-close-server-internal))
-
-(fset 'nnml-request-quit (symbol-function 'nnml-close-server))
+  t)
 
 (defun nnml-server-opened (&optional server)
   "Return server process status, T or NIL.
@@ -158,35 +152,22 @@ If the stream is opened, return T, otherwise return NIL."
 
 (defun nnml-request-group (group &optional server dont-check)
   "Select news GROUP."
-  (if (not dont-check)
-      (nnml-get-new-mail))
-  (let ((pathname (nnmail-article-pathname group nnml-directory))
-	dir)
-    (if (file-directory-p pathname)
-	(progn
-	  (setq nnml-current-directory pathname)
-	  (if (not dont-check)
-	      (progn
-		(setq dir 
-		      (sort
-		       (mapcar
-			(function
-			 (lambda (name)
-			   (string-to-int name)))
-			(directory-files pathname nil "^[0-9]+$" t))
-		       '<))
-		(save-excursion
-		  (set-buffer nntp-server-buffer)
-		  (erase-buffer)
-		  (if dir
-		      (insert (format "211 %d %d %d %s\n" (length dir) 
-				      (car dir)
-				      (progn (while (cdr dir)
-					       (setq dir (cdr dir)))
-					     (car dir))
-				      group))
-		    (insert (format "211 0 1 0 %s\n" group))))))
-	  t))))
+  (nnml-possibly-change-directory group)
+  (or dont-check (nnml-get-new-mail))
+  (or nnml-group-alist 
+      (progn
+	(nnml-request-list)
+	(setq nnml-group-alist (nnmail-get-active))))
+  (let ((active (nth 1 (assoc group nnml-group-alist))))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer)
+      (if (not active)
+	  ()
+	(insert (format "211 %d %d %d %s\n" 
+			(max (1+ (- (cdr active) (car active))) 0)
+			(car active) (cdr active) group))
+	t))))
 
 (defun nnml-close-group (group &optional server)
   t)
@@ -284,8 +265,39 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 	 (nnml-save-nov))))
     result))
 
+(defun nnml-request-replace-article (article group buffer)
+  (nnml-possibly-change-directory group)
+  (save-excursion
+    (set-buffer buffer)
+    (if (not (condition-case ()
+		 (progn
+		   (write-region (point-min) (point-max)
+				 (concat nnml-current-directory 
+					 (int-to-string article))
+				 nil (if gnus-verbose-backends nil 'nomesg))
+		   t)
+	       (error nil)))
+	()
+      (let ((chars (nnmail-insert-lines))
+	    (art (concat (int-to-string article) "\t"))
+	    nov-line)
+	(setq nov-line (nnml-make-nov-line chars))
+	(save-excursion 
+	  (set-buffer (nnml-open-nov group))
+	  (goto-char (point-min))
+	  (if (or (looking-at art)
+		  (search-forward (concat "\n" art)))
+	      (progn
+		(delete-region (progn (beginning-of-line) (point))
+			       (progn (forward-line 1) (point)))
+		(insert (int-to-string article) nov-line)
+		(nnml-save-nov))
+	    (kill-buffer (current-buffer)))
+	  t)))))
+
+
 
-;;; Low-Level Interface
+;;; Internal functions
 
 (defun nnml-retrieve-headers-with-nov (articles)
   (if (or gnus-nov-is-evil nnml-nov-is-evil)
@@ -309,22 +321,6 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 	    (beginning-of-line)
 	    (if (not (eobp)) (delete-region (point) (point-max)))
 	    t)))))
-
-(defun nnml-open-server-internal (host &optional service)
-  "Open connection to news server on HOST by SERVICE."
-  (save-excursion
-    ;; Initialize communication buffer.
-    (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
-    (set-buffer nntp-server-buffer)
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
-    (kill-all-local-variables)
-    (setq case-fold-search t)		;Should ignore case.
-    t))
-
-(defun nnml-close-server-internal ()
-  "Close connection to news server."
-  nil)
 
 (defun nnml-possibly-change-directory (newsgroup)
   (if newsgroup
@@ -416,6 +412,11 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 	  (nnmail-save-active nnml-group-alist nnml-active-file)
 	  (nnml-save-nov)
 	  (run-hooks 'nnmail-read-incoming-hook)
+	  ;; The following has been commented away, just to make sure
+	  ;; that nobody ever loses any mail. If you feel safe that
+	  ;; nnml will never do anything strange, just remove those
+	  ;; two semicolons, and avoid having lots of "Incoming*"
+	  ;; files. 
 ;;         (delete-file incoming)
 	  (and gnus-verbose-backends
 	       (message "nnml: Reading incoming mail...done"))))))
@@ -479,7 +480,7 @@ If FORCE is non-nil, ARTICLES will be deleted whether they are old or not."
 		     (substring in-reply-to (match-beginning 0)
 				(match-end 0)))))
 	;; [number subject from date id references chars lines xref]
-	(format "\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t%s\n"
+	(format "\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t%s\t\n"
 		(or subject "(none)")
 		(or from "(nobody)") (or date "")
 		(or id "") (or references "")

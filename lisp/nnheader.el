@@ -136,6 +136,16 @@
 (defvar news-reply-yank-from nil)
 (defvar news-reply-yank-message-id nil)
 
+(defun nnheader-init-server-buffer ()
+  (save-excursion
+    (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
+    (set-buffer nntp-server-buffer)
+    (buffer-disable-undo (current-buffer))
+    (erase-buffer)
+    (kill-all-local-variables)
+    (setq case-fold-search t)		;Should ignore case.
+    t))
+
 (provide 'nnheader)
 
 ;;; nnheader.el ends here

@@ -73,7 +73,9 @@ You can read news (and mail) from within Emacs by using (ding) Gnus.  The
 news can be gotten by any nefarious means you can think of - NNTP, local
 spool, mail spool.  All at the same time, if you want to push your luck.
 
-This manual documents (ding) Gnus 0.11.
+This manual documents (ding) Gnus 0.11. Gnus is now up to 0.29, so this
+documentation is totally out of date. The only authoratative
+documentation available is the source code.
 
 @menu
 * History::                 How Gnus got where it is today.
@@ -89,11 +91,14 @@ This manual documents (ding) Gnus 0.11.
 * Key Index::               Key Index.
 @end menu
 
+Note: This is a work of fiction. Any similarity between this manual and
+real programs is purely coincidental.
+
 @node History
 @chapter History
 
 GNUS was written by Masanobu UMEDA.  When autumn crept up in '94, Lars
-Ingebrigtsen grew bored and decided to write (ding) Gnus.
+Magne Ingebrigtsen grew bored and decided to write (ding) Gnus.
 
 (ding) Gnus is based on GNUS 4.1 and includes bits and pieces by Per
 Abrahamsen, Sudish Joseph, Felix Lee and jwz. 
@@ -1682,12 +1687,12 @@ marked with the process mark have a @samp{#} in the third column.
 All the marking commands understand the numeric prefix.
 
 @table @kbd
-@item -
-@kindex - (Summary)
+@item !
+@kindex ! (Summary)
 @findex gnus-summary-mark-as-unread-forward
 Tick the current article (@code{gnus-summary-mark-as-unread-forward}).
-@item +
-@kindex + (Summary)
+@item ?
+@kindex ? (Summary)
 @findex gnus-summary-mark-as-dormant
 Mark the current article as dormant
 (@code{gnus-summary-mark-as-dormant}).

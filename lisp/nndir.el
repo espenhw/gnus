@@ -53,13 +53,11 @@
 (defun nndir-open-server (host &optional service)
   "Open nndir backend."
   (setq nndir-status-string "")
-  (nndir-open-server-internal host service))
+  (nnheader-init-server-buffer))
 
 (defun nndir-close-server (&optional server)
   "Close news server."
-  (nndir-close-server-internal))
-
-(defalias 'nndir-request-quit 'nndir-close-server)
+  t)
 
 (defun nndir-server-opened (&optional server)
   "Return server process status, T or NIL.
@@ -113,22 +111,6 @@ If the stream is opened, return T, otherwise return NIL."
 
 
 ;;; Low-Level Interface
-
-(defun nndir-open-server-internal (host &optional service)
-  "Open connection to news server on HOST by SERVICE."
-  (save-excursion
-    ;; Initialize communication buffer.
-    (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
-    (set-buffer nntp-server-buffer)
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
-    (kill-all-local-variables)
-    (setq case-fold-search t)		;Should ignore case.
-    t))
-
-(defun nndir-close-server-internal ()
-  "Close connection to news server."
-  nil)
 
 (defun nndir-execute-nnmh-command (command server)
   (let ((dir (expand-file-name server)))

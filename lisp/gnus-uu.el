@@ -245,7 +245,6 @@ so I simply dropped them.")
 (defconst gnus-uu-shar-name-marker "begin [0-7][0-7][0-7][ \t]+\\(\\(\\w\\|\\.\\)*\\b\\)")
 
 (defvar gnus-uu-file-name nil)
-(defvar gnus-uu-list-of-files-decoded nil)
 (defconst gnus-uu-uudecode-process nil)
 
 (defvar gnus-uu-generated-file-list nil)
@@ -290,6 +289,43 @@ so I simply dropped them.")
   (interactive "P\nDWhere do you want to save the file(s)? ")
   (gnus-uu-decode-with-method 'gnus-uu-binhex-article n dir))
 
+(defun gnus-uu-decode-uu-view (n)
+  "Uudecodes and views the current article."    
+  (interactive "P")
+  (let ((gnus-view-pseudos 'automatic))
+    (gnus-uu-decode-uu n)))
+
+(defun gnus-uu-decode-uu-and-save-view (n dir)
+  "Decodes, views and saves the resulting file."
+  (interactive "P\nDWhere do you want to save the file(s)? ")
+  (let ((gnus-view-pseudos 'automatic))
+    (gnus-uu-decode-uu-and-save n dir)))
+
+(defun gnus-uu-decode-unshar-view (n)
+  "Unshars and views the current article."
+  (interactive "P")
+  (let ((gnus-view-pseudos 'automatic))
+    (gnus-uu-decode-unshar n)))
+
+(defun gnus-uu-decode-unshar-and-save-view (n dir)
+  "Unshars and saves the current article."
+  (interactive "P\nDWhere do you want to save the file(s)? ")
+  (let ((gnus-view-pseudos 'automatic))
+    (gnus-uu-decode-unshar-and-save n dir)))
+
+(defun gnus-uu-decode-save-view (n file)
+  "Saves and views the current article."
+  (interactive "P\nDWhere do you want to save the file(s)? ")
+  (let ((gnus-view-pseudos 'automatic))
+    (gnus-uu-decode-save n file)))
+
+(defun gnus-uu-decode-binhex-view (n file)
+  "Unbinhexes and views the current article."
+  (interactive "P\nDWhere do you want to save the file(s)? ")
+  (let ((gnus-view-pseudos 'automatic))
+    (gnus-uu-decode-binhex n file)))
+
+
 ;; Digest and forward articles
 
 (defun gnus-uu-digest-and-forward (n)
@@ -312,6 +348,16 @@ so I simply dropped them.")
   "Ask for a regular expression and set the process mark on all articles that match."
   (interactive (list (read-from-minibuffer "Mark (regexp): ")))
   (let ((articles (gnus-uu-find-articles-matching regexp)))
+    (while articles
+      (gnus-summary-set-process-mark (car articles))
+      (setq articles (cdr articles)))
+    (message ""))
+  (gnus-summary-position-cursor))
+
+(defun gnus-uu-mark-series ()
+  "Mark the current series with the process mark."
+  (interactive)
+  (let ((articles (gnus-uu-find-articles-matching)))
     (while articles
       (gnus-summary-set-process-mark (car articles))
       (setq articles (cdr articles)))
@@ -362,7 +408,21 @@ so I simply dropped them.")
       (setq gnus-newsgroup-processable (nreverse total)))
     (gnus-summary-position-cursor)))
 
-;; Work functions
+(defun gnus-uu-mark-all ()
+  "Mark all articles in \"series\" order."
+  (interactive)
+  (setq gnus-newsgroup-processable nil)
+  (save-excursion
+    (goto-char (point-min))
+    (let (number)
+      (while (and (not (eobp)) 
+		  (setq number (gnus-summary-article-number)))
+	(if (not (memq number gnus-newsgroup-processable))
+	    (save-excursion (gnus-uu-mark-series)))
+	(forward-line 1))))
+  (gnus-summary-position-cursor))
+
+;; Internal functions.
 
 (defun gnus-uu-decode-with-method (method n &optional save)
   (gnus-uu-initialize)
@@ -372,7 +432,7 @@ so I simply dropped them.")
     (and save (gnus-uu-save-files files save))
     (setq files (gnus-uu-unpack-files files))
     (gnus-uu-add-file (mapcar (lambda (file) (cdr (assq 'name file))) files))
-    (setq files (gnus-uu-get-actions files))
+    (setq files (nreverse (gnus-uu-get-actions files)))
     (gnus-summary-insert-pseudos files)))
 
 (defun gnus-uu-save-files (files dir)
@@ -765,7 +825,8 @@ so I simply dropped them.")
   (let ((state 'first) 
 	(wrong-type t)
 	has-been-begin has-been-end 
-	article result-file result-files process-state article-buffer)
+	article result-file result-files process-state article-buffer
+	begin-article)
  
     (if (not (gnus-server-opened gnus-current-select-method))
 	(progn
@@ -820,13 +881,16 @@ so I simply dropped them.")
 		    (delete-file result-file)))
 	    (if (memq 'begin process-state)
 		(setq result-file (car process-state)))
+	    (setq begin-article article)
 	    (setq has-been-begin t)
 	    (setq has-been-end nil)))
 
       (if (memq 'end process-state)
 	  (progn
 	    (setq gnus-uu-has-been-grabbed nil)
-	    (setq result-files (cons result-file result-files))
+	    (setq result-files (cons (list (cons 'name result-file)
+					   (cons 'article article))
+				     result-files))
 	    (setq has-been-end t)
 	    (setq has-been-begin nil)
 	    (and limit (= (length result-files) limit)
@@ -836,8 +900,6 @@ so I simply dropped them.")
 	       (not (memq 'end process-state)))
 		(if (and result-file (file-exists-p result-file))
 		    (delete-file result-file)))
-
-;      (setq result-file nil)
 
       (if (not (memq 'wrong-type process-state))
 	  (setq wrong-type nil)
@@ -882,9 +944,7 @@ so I simply dropped them.")
 		    (message "End of articles reached before end of file"))
 		(setq result-files nil))
 	    (gnus-uu-unmark-list-of-grabbed)))))
-    (setq gnus-uu-list-of-files-decoded result-files)
-    (and result-files
-	 (mapcar (lambda (file) (list (cons 'name file))) result-files))))
+    result-files))
 
 (defun gnus-uu-uudecode-sentinel (process event)
   (delete-process (get-process process)))

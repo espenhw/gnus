@@ -1,6 +1,5 @@
 ;;; nnspool.el --- spool access for GNU Emacs
-
-;; Copyright (C) 1988, 89, 90, 93, 94, 95 Free Software Foundation, Inc.
+;; Copyright (C) 1988,89,90,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;; 	Lars Ingebrigtsen <larsi@ifi.uio.no>
@@ -25,8 +24,8 @@
 ;;; Commentary:
 
 ;; All the Gnus backends have the same interface, and should return
-;; data in a similar format. Below is and overview of what functions
-;; these packages must supply and what result they should return.
+;; data in a similar format. Below is an overview of what functions
+;; these packages must supply and what results they should return.
 ;;
 ;; Variables:
 ;;
@@ -49,7 +48,9 @@
 ;; is called when Gnus exits a group.
 ;;
 ;; `choke-request-article ARTICLE &optional GROUP SERVER'
-;; Return ARTICLE, which is either an article number or id.
+;; Return ARTICLE, which is either an article number or
+;; message-id. Note that not all backends can return articles based on
+;; message-id. 
 ;;
 ;; `choke-request-list SERVER'
 ;; Return a list of all active newsgroups on SERVER.
@@ -57,11 +58,17 @@
 ;; `choke-request-list-newsgroups SERVER'
 ;; Return a list of descriptions of all newsgroups on SERVER.
 ;;
+;; `choke-request-newgroups DATE &optional SERVER'
+;; Return a list of all groups that have arrived after DATE on
+;; SERVER. Note that the date doesn't have to be respected - Gnus will
+;; always check whether the groups are old or not. Backends that do
+;; not store date information may just return the entire list of
+;; groups. 
+;;
 ;; `choke-request-post-buffer METHOD HEADER ARTICLE-BUFFER GROUP INFO'
 ;; Should return a buffer that is suitable for "posting". nnspool and
 ;; nntp return a `*post-buffer*', and nnmail return a `*mail*'
-;; buffer. This function should fill out the appropriate header
-;; fields. 
+;; buffer. This function should fill out the appropriate headers. 
 ;;
 ;; `choke-request-post &optional SERVER'
 ;; Function that will be called from a buffer to be posted. 
@@ -70,25 +77,60 @@
 ;; Open a connection to SERVER.
 ;;
 ;; `choke-close-server &optional SERVER'
-;; Close the connection to server.
+;; Close the connection to SERVER.
 ;;
 ;; `choke-server-opened &optional SERVER'
-;; Whether the server is opened or not.
+;; Whether the conenction to SERVER is opened or not.
 ;;
 ;; `choke-server-status &optional SERVER'
-;; Should return a status string (not in nntp buffer, but as the
+;; Should return a status string (not in the nntp buffer, but as the
 ;; result of the function).
+;;
+;; The following functions are optional and apply only to backends
+;; that are able to control the contents of their groups totally
+;; (ie. mail backends.)  Backends that aren't able to do that
+;; shouldn't define these functions at all. Gnus will check for their
+;; presence before attempting to call them.
 ;;
 ;; `choke-request-expire-articles ARTICLES &optional NEWSGROUP SERVER'
 ;; Should expire (according to some aging scheme) all ARTICLES. Most
 ;; backends will not be able to expire articles. Should return a list
 ;; of all articles that were not expired.
 ;;
+;; `choke-request-move-article ARTICLE GROUP SERVER ACCEPT-FORM'
+;; Should move ARTICLE from GROUP on SERVER by using ACCEPT-FORM.
+;; Removes any information it has added to the article (extra headers,
+;; whatever - make it as clean as possible), and then passes the
+;; article on by evaling ACCEPT-FORM, which is normally a call to the
+;; function described below. If the ACCEPT-FORM returns a non-nil
+;; value, the article should then be deleted.
+;;
+;; `choke-request-accept-article GROUP'
+;; The contents of the current buffer will be put into GROUP. There
+;; should, of course, be an article in the current buffer. This
+;; function is normally only called by the function described above. 
+;;
+;; `choke-request-replace-article ARTICLE GROUP BUFFER'
+;; Replace ARTICLE in GROUP with the contents of BUFFER.
+;; This provides an easy interface for allowing editing of
+;; articles. Note that even headers may be edited, so the backend has
+;; to update any tables (nov buffers, etc) that it maintains after
+;; replacing the article.
+;;
 ;; All these functions must return nil if they couldn't service the
 ;; request. If the optional arguments are not supplied, some "current"
 ;; or "default" values should be used. In short, one should emulate an
-;; NNTP server, in a way. All results should be returned in the NNTP
-;; format. (See RFC977).
+;; NNTP server, in a way.
+;;
+;; If you want to write a new backend, you just have to supply the
+;; functions listed above. In addition, you must enter the new backend
+;; into the list of valid select methods:
+;; (setq gnus-valid-select-methods 
+;;       (cons '("choke" mail) gnus-valid-select-methods))
+;; The first element in this list is the name of the backend. Other
+;; elemnets may be `mail' (for mail groups),  `post' (for news
+;; groups), `none' (neither), `respool' (for groups that can control
+;; their contents). 
 
 ;;; Code:
 
@@ -192,7 +234,7 @@ Newsgroup must be selected before calling this function."
   (setq nnspool-status-string "")
   (cond ((and (file-directory-p nnspool-spool-directory)
 	      (file-exists-p nnspool-active-file))
-	 (nnspool-open-server-internal host service))
+	 (nnheader-init-server-buffer))
 	(t
 	 (setq nnspool-status-string
 	       (format "NNSPOOL: cannot talk to %s." host))
@@ -200,9 +242,7 @@ Newsgroup must be selected before calling this function."
 
 (defun nnspool-close-server (&optional server)
   "Close news server."
-  (nnspool-close-server-internal))
-
-(fset 'nnspool-request-quit (symbol-function 'nnspool-close-server))
+  t)
 
 (defun nnspool-server-opened (&optional server)
   "Return server process status, T or NIL.
@@ -338,7 +378,7 @@ If the stream is opened, return T, otherwise return NIL."
 (defun nnspool-retrieve-headers-with-nov (articles)
   (if (or gnus-nov-is-evil nnspool-nov-is-evil)
       nil
-    (let ((nov (concat nnspool-current-directory ".nov"))
+    (let ((nov (concat nnspool-current-directory ".overview"))
 	  article)
       (if (file-exists-p nov)
 	  (save-excursion
@@ -380,21 +420,6 @@ If the stream is opened, return T, otherwise return NIL."
 		    (forward-line 2)
 		    (delete-region (point) (point-max)))))
 	    (or articles (progn (erase-buffer) nil)))))))
-
-(defun nnspool-open-server-internal (host &optional service)
-  (save-excursion
-    ;; Initialize communication buffer.
-    (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
-    (set-buffer nntp-server-buffer)
-    (buffer-disable-undo (current-buffer))
-    (erase-buffer)
-    (kill-all-local-variables)
-    (setq case-fold-search t)		;Should ignore case.
-    t))
-
-(defun nnspool-close-server-internal ()
-  "Close connection to news server."
-  )
 
 (defun nnspool-find-article-by-message-id (id)
   "Return full pathname of an article identified by message-ID."

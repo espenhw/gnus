@@ -273,35 +273,6 @@ messages will be shown to indicate the current status.")
     tofile))
 
 
-(defun nnmail-move-inbox-old (inbox tofile)
-  (let ((inbox (expand-file-name inbox))
-	(tofile (make-temp-name (expand-file-name tofile)))
-	errors)
-    (unwind-protect
-	(save-excursion
-	  (setq errors (generate-new-buffer " *nnmail loss*"))
-	  (buffer-disable-undo errors)
-	  (call-process
-	   (expand-file-name "movemail" exec-directory)
-	   nil errors nil inbox tofile)
-	  (if (not (buffer-modified-p errors))
-	      ;; No output => movemail won
-	      nil
-	    (set-buffer errors)
-	    (subst-char-in-region (point-min) (point-max) ?\n ?\  )
-	    (goto-char (point-max))
-	    (skip-chars-backward " \t")
-	    (delete-region (point) (point-max))
-	    (goto-char (point-min))
-	    (if (looking-at "movemail: ")
-		(delete-region (point-min) (match-end 0)))
-	    (error (concat "movemail: "
-			   (buffer-substring (point-min)
-					     (point-max)))))))
-    (if (buffer-name errors)
-	(kill-buffer errors))
-    tofile))
-
 (defun nnmail-get-active ()
   "Returns an assoc of group names and active ranges.
 nn*-request-list should have been called before calling this function."
@@ -364,7 +335,7 @@ FUNC will be called with the buffer narrowed to each mail."
 	  ;; and then carry on until the bitter end.
 	  (while (not (eobp))
 	    (setq start (point))
-	    ;; Skip all the headers in case there are mode "From "s...
+	    ;; Skip all the headers in case there are more "From "s...
 	    (if (not (search-forward "\n\n" nil t))
 		(forward-line 1))
 	    (if (re-search-forward delim nil t)

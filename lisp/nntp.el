@@ -1,5 +1,4 @@
 ;;; nntp.el --- NNTP (RFC977) Interface for GNU Emacs
-
 ;; Copyright (C) 1987,88,89,90,92,93,94,95 Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
@@ -70,7 +69,7 @@ waiting for the server response, the variable must be set to t.  In
 case of Fujitsu UTS, it is set to T since `accept-process-output'
 doesn't work properly.")
 
-(defvar nntp-maximum-request 1
+(defvar nntp-maximum-request 400
   "The maximum number of the requests sent to the NNTP server at one time.
 If Emacs hangs up while retrieving headers, set the variable to a
 lower value.")
@@ -171,6 +170,7 @@ instead call function `nntp-status-message' to get status message.")
 	(and (numberp nntp-large-newsgroup)
 	     (> number nntp-large-newsgroup)
 	     (message "NNTP: Receiving headers... done"))
+
 	;; Now all of replies are received.
 	(setq received number)
 	;; First, fold continuation lines.
@@ -405,8 +405,12 @@ in the current news group."
 		 (and (not gnus-mail-self-blind) mail-self-blind))
 		(mail-archive-file-name
 		 (and (not gnus-author-copy) mail-archive-file-name)))
-	    (news-setup (and gnus-auto-mail-to-author from)
-			subject message-of newsgroups article-buffer))
+	    (news-setup 
+	     ;; Suggested by Daniel Quinlan <quinlan@best.com>.
+	     (if (eq gnus-auto-mail-to-author 'ask)
+		 (and (y-or-n-p "Also send mail to author? ") from)
+	       (and gnus-auto-mail-to-author from))
+	     subject message-of newsgroups article-buffer))
 	  ;; Fold long references line to follow RFC1036.
 	  (mail-position-on-field "References")
 	  (let ((begin (- (point) (length "References: ")))
@@ -596,8 +600,7 @@ in the current news group."
 		  (setq nntp-server-xover nil))
 	      (setcar (nthcdr 2 (assoc nntp-current-server nntp-server-alist))
 		      nntp-server-xover)
-	      nntp-server-xover)
-	    t)
+	      nntp-server-xover))
 	(if nntp-server-xover (nntp-decode-text) (erase-buffer))))))
 
 (defun nntp-send-strings-to-server (&rest strings)
@@ -662,12 +665,8 @@ in the current news group."
       (or (fboundp 'open-network-stream)
 	  (require 'tcp))
       ;; Initialize communication buffer.
-      (setq nntp-server-buffer (get-buffer-create " *nntpd*"))
+      (nnheader-init-server-buffer)
       (set-buffer nntp-server-buffer)
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
-      (kill-all-local-variables)
-      (setq case-fold-search t)		;Should ignore case.
       (if (setq proc
 		(condition-case nil
 		    (open-network-stream "nntpd" (current-buffer)
@@ -684,7 +683,6 @@ in the current news group."
 	    ;; It is possible to change kanji-fileio-code in this hook.
 	    (run-hooks 'nntp-server-hook)
 	    nntp-server-process)))))
-      
 
 (defun nntp-close-server-internal (&optional server)
   "Close connection to news server."

@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-;(require 'gnus)
+(require 'gnus)
 (require 'easymenu)
 
 (defvar gnus-summary-selected-face 'underline
@@ -80,6 +80,7 @@ The `.' will match any character.")
    ""
    '("Groups"
      ["Jump to group" gnus-group-jump-to-group t]
+     ["Best unread group" gnus-group-best-unread-group t]
      ["List subscribed groups" gnus-group-list-groups t]
      ["List all groups" gnus-group-list-all-groups t]
      ["List groups matching..." gnus-group-list-matching t]
@@ -89,6 +90,8 @@ The `.' will match any character.")
      ["Group and description apropos" gnus-group-description-apropos t]
      ["Add a foreign group" gnus-group-add-newsgroup t]
      ["Edit a group entry" gnus-group-edit-newsgroup t]
+     ["Add a directory group" gnus-group-make-directory-group t]
+     ["Add the documentation group" gnus-group-make-doc-group t]
      ["Kill all newsgroups in region" gnus-group-kill-region t]
      ["Kill all zombie groups" gnus-group-kill-all-zombies t]
      ["List killed groups" gnus-group-list-killed t]
@@ -136,9 +139,6 @@ The `.' will match any character.")
    gnus-summary-mode-map
    ""
    '("Mark"
-     ["Set process mark" gnus-summary-mark-as-processable t]
-     ["Remove process mark" gnus-summary-unmark-as-processable t]
-     ["Remove all process marks" gnus-summary-unmark-all-processable t]
      ["Tick" gnus-summary-tick-article-forward t]
      ["Mark as read" gnus-summary-mark-as-read-forward t]
      ["Mark as unread" gnus-summary-clear-mark-forward t]
@@ -152,9 +152,22 @@ The `.' will match any character.")
      ["Remove expirable mark" gnus-summary-unmark-as-expirable t]
      ["Set bookmark" gnus-summary-set-bookmark t]
      ["Remove bookmark" gnus-summary-remove-bookmark t]
+     ["Catchup" gnus-summary-catchup t]
+     ["Catchup all" gnus-summary-catchup-all t]
+     ["Catchup to here" gnus-summary-catchup-to-here t]
      ["Raise score" gnus-summary-raise-score t]
      ["Lower score" gnus-summary-lower-score t]
      ["Set score" gnus-summary-set-score t]
+     ("Process mark"
+      ["Set mark" gnus-summary-mark-as-processable t]
+      ["Remove mark" gnus-summary-unmark-as-processable t]
+      ["Remove all marks" gnus-summary-unmark-all-processable t]
+      ["Mark series" gnus-uu-mark-series t]
+      ["Mark region" gnus-uu-mark-region t]
+      ["Mark by regexp" gnus-uu-mark-by-regexp t]
+      ["Mark all" gnus-uu-mark-all t]
+      ["Mark sparse" gnus-uu-mark-sparse t]
+      )
      ))
 
   (easy-menu-define
@@ -179,6 +192,14 @@ The `.' will match any character.")
    gnus-summary-mode-map
    ""
    '("Article"
+     ("Hide"
+      ["Headers" gnus-article-hide-headers t]
+      ["Signature" gnus-article-hide-signature t]
+      ["Citation" gnus-article-hide-citation t]
+      ["Overstrike" gnus-article-treat-overstrike t]
+      ["Word Wrap" gnus-article-word-wrap t]
+      ["CR" gnus-article-remove-cr t]
+      ["Quoted-Printable" gnus-article-de-quoted-unreadable t])
      ["Interactive search in the article" gnus-summary-isearch-article t]
      ["Search for an regexp in articles" gnus-summary-search-article-forward t]
      ["Beginning of the article" gnus-summary-beginning-of-article t]
@@ -195,6 +216,7 @@ The `.' will match any character.")
      ["Pipe through a filter" gnus-summary-pipe-output t]
      ["Respool article" gnus-summary-respool-article t]
      ["Move article" gnus-summary-move-article t]
+     ["Edit article" gnus-summary-edit-article t]
      ))
 
   (easy-menu-define
@@ -210,6 +232,8 @@ The `.' will match any character.")
      ["Go down thread" gnus-summary-down-thread t]
      ["Go up thread" gnus-summary-up-thread t]
      ["Mark thread as read" gnus-summary-kill-thread t]
+     ["Lower thread score" gnus-summary-lower-thread t]
+     ["Raise thread score" gnus-summary-raise-thread t]
      ))
 
   (easy-menu-define
@@ -250,6 +274,8 @@ The `.' will match any character.")
      ["Mail a reply and include original" gnus-summary-reply-with-original t]
      ["Forward an article via mail" gnus-summary-mail-forward t]
      ["Send a mail" gnus-summary-mail-other-window t]
+     ["Send a reply and a followup" gnus-summary-followup-and-reply t]
+     ["Send a reply and a followup and include original" gnus-summary-followup-and-reply-with-original t]
      ))
 
   (easy-menu-define
