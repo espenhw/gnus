@@ -1,10 +1,21 @@
+2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-inline-text-html-with-images): New user option.
+
+	* mm-view.el (mm-inline-text-html-render-with-w3m): Bind the value
+	of `w3m-display-inline-images' with the value of
+	`mm-inline-text-html-with-images'.
+	From: TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Ditto.
+
 2002-01-27  Richard M. Stallman  <rms@gnu.org>
 
 	* time-date.el: Add autoload cookies.  Many doc fixes.
 	(time-add): New function.
 	(time-subtract): Renamed from subtract-time.
 	(subtract-time): New alias for time-subtract.
-	
+
 2002-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (gnus-article-wash-html-with-w3m): Replace w3m to

@@ -192,7 +192,8 @@
 	(when charset
 	  (delete-region (point-min) (point-max))
 	  (insert (mm-decode-string text charset)))
-	(let ((w3m-safe-url-regexp "\\`cid:"))
+	(let ((w3m-safe-url-regexp "\\`cid:")
+	      (w3m-display-inline-images mm-inline-text-html-with-images))
 	  (w3m-region (point-min) (point-max)))
 	(setq mm-w3m-minor-mode t))
       (mm-handle-set-undisplayer
