@@ -10995,16 +10995,6 @@ This variable is a format string along the same lines as
 accepts the same format specifications as that variable, with two
 extensions:
 
-@cindex IDNA
-@cindex internationalized domain names
-@vindex gnus-use-idna
-@item gnus-use-idna
-This variable controls whether Gnus performs IDNA decoding of
-internationalized domain names inside @sc{From:}, @sc{To:} and
-@sc{Cc:} headers.  This requires GNU Libidn
-(@url{http://www.gnu.org/software/libidn/}, and this variable is only
-enabled if you have installed it.
-
 @table @samp
 
 @item w
@@ -11053,6 +11043,17 @@ paging will not be done.
 @vindex gnus-page-delimiter
 This is the delimiter mentioned above.  By default, it is @samp{^L}
 (formfeed).
+
+@cindex IDNA
+@cindex internationalized domain names
+@vindex gnus-use-idna
+@item gnus-use-idna
+This variable controls whether Gnus performs IDNA decoding of
+internationalized domain names inside @sc{From:}, @sc{To:} and
+@sc{Cc:} headers.  This requires GNU Libidn
+(@url{http://www.gnu.org/software/libidn/}, and this variable is only
+enabled if you have installed it.
+
 @end table
 
 
