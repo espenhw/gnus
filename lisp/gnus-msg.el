@@ -101,14 +101,34 @@ the second with the current group name.")
   "*Alist of styles to use when posting.")
 
 (defcustom gnus-group-posting-charset-alist
-  '(("^no\\." iso-8859-1)
-    ("^de\\." iso-8859-1)
-    (message-this-is-mail nil)
-    (".*" iso-8859-1)
-    (message-this-is-news iso-8859-1))
-  "Alist of regexps (to match group names) and default charsets to be unencoded when posting."
-  :type '(repeat (list (regexp :tag "Group")
-		       (symbol :tag "Charset")))
+  '(("^\\(no\\|fr\\|dk\\)\\.[^,]*" iso-8859-1 (iso-8859-1))
+    (message-this-is-mail nil nil)
+    (message-this-is-news nil t))
+  "Alist of regexps and permitted unencoded charsets for posting.
+Each element of the alist has the form (TEST HEADER BODY-LIST), where
+TEST is either a regular expression matching the newsgroup header or a
+variable to query,
+HEADER is the charset which may be left unencoded in the header (nil
+means encode all charsets),
+BODY-LIST is a list of charsets which may be encoded using 8bit
+content-transfer encoding in the body, or one of the special values
+nil (always encode using quoted-printable) or t (always use 8bit).
+
+Note that any value other tha nil for HEADER infringes some RFCs, so
+use this option with care."
+  :type '(repeat (list 
+		  (choice :tag "Where"
+		   (regexp :tag "Group")
+		   (const :tag "Mail message" :value message-this-is-mail)
+		   (const :tag "News article" :value message-this-is-news))
+		  (choice :tag "Header"
+		   (const :tag "Always encoded" nil)
+		   (symbol :tag "Permitted charset"))
+		  (choice :tag "Body"
+			  (const :tag "Any charset" :value t)
+			  (const :tag "Always encoded" :value nil)
+			  (repeat :tag "Permitted charsets"
+				  (symbol :tag "Charset")))))
   :group 'gnus-charset)
 
 ;;; Internal variables.
@@ -198,10 +218,6 @@ Thank you for your help in stamping out bugs.
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-gcc)
        (add-hook 'message-header-setup-hook 'gnus-inews-insert-archive-gcc)
        (add-hook 'message-mode-hook 'gnus-configure-posting-styles)
-       (add-hook 'message-mode-hook
-		 (lambda ()
-		   (set (make-local-variable 'message-posting-charset)
-			(gnus-setup-posting-charset ,group))))
        (unwind-protect
 	   (progn
 	     ,@forms)
@@ -228,7 +244,7 @@ Thank you for your help in stamping out bugs.
 			 (funcall (car elem) group))
 		    (and (symbolp (car elem))
 			 (symbol-value (car elem))))
-	    (throw 'found (cadr elem))))))))
+	    (throw 'found (cons (cadr elem) (caddr elem)))))))))
 
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (make-local-hook 'message-sent-hook)
