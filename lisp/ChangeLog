@@ -42,7 +42,7 @@
 2002-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-fun.el (gnus-convert-gray-x-face-to-xpm): Remove unused
-	local varriable.
+	local variable.
 
 	* gnus-art.el (article-display-x-face): Don't sort multiple
 	X-Faces.
@@ -8821,7 +8821,7 @@
 2000-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-insert-line): Work with quoted
-	double-quote charcters.
+	double-quote characters.
 	(gnus-summary-prepare-threads): Ditto.
 
 2000-10-31 08:36:03  ShengHuo ZHU  <zsh@cs.rochester.edu>
