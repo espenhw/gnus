@@ -1,5 +1,5 @@
 ;;; binhex.el --- elisp native binhex decode
-;; Copyright (c) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Keywords: binhex news
@@ -43,7 +43,7 @@ input and write the converted data to its standard output."
   :group 'gnus-extract)
 
 (defcustom binhex-decoder-switches '("-d")
-  "*List of command line flags passed to the command named by binhex-decoder-program."
+  "*List of command line flags passed to the command `binhex-decoder-program'."
   :group 'gnus-extract
   :type '(repeat string))
 

@@ -1,3 +1,8 @@
+2002-02-04  Simon Josefsson  <jas@extundo.com>
+
+	* binhex.el (binhex-decoder-switches): Fix doc.  From
+	Pavel@Janik.cz (Pavel Jan,Bm(Bk).
+
 2002-02-04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-treatment-function-alist): Move hide-citation,
