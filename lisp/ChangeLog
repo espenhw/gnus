@@ -2,6 +2,10 @@
 
 	* mml2015.el (mml2015-pgg-decrypt): Set gnus details even when
 	decrypt failed.
+	(mml2015-trust-boundaries-alist): Removed.
+	(mml2015-gpg-extract-signature-details): Don't use it.
+	(mml2015-unabbrev-trust-alist): New.
+	(mml2015-gpg-extract-signature-details): Use it.
 
 2002-10-10  Ted Zlatanov <tzz@lifelogs.com>
         * spam.el: compilation fixes, spam-check-bbdb function is nil if no

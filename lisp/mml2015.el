@@ -75,17 +75,15 @@
 
 (defvar mml2015-result-buffer nil)
 
-(defvar mml2015-trust-boundaries-alist
-  '((trust-undefined . nil)
-    (trust-none      . nil)
-    (trust-marginal  . t)
-    (trust-full      . t)
-    (trust-ultimate  . t))
-  "Trust boundaries for a signer's GnuPG key.
-This alist contains pairs of the form (trust-symbol . boolean), with
-symbols that are contained in `gpg-unabbrev-trust-alist'. The boolean
-specifies whether the given trust value is good enough to be trusted
-by you.")
+(defcustom mml2015-unabbrev-trust-alist
+  '(("TRUST_UNDEFINED" . nil)
+    ("TRUST_NEVER"     . nil)
+    ("TRUST_MARGINAL"  . t)
+    ("TRUST_FULLY"     . t)
+    ("TRUST_ULTIMATE"  . t))
+  "Map GnuPG trust output values to a boolean saying if you trust the key."
+  :type '(repeat (cons (regexp :tag "GnuPG output regexp")
+		       (boolean :tag "Trust key"))))
 
 ;;; mailcrypt wrapper
 
@@ -427,38 +425,36 @@ by you.")
 
 (defun mml2015-gpg-extract-signature-details ()
   (goto-char (point-min))
-  (if (boundp 'gpg-unabbrev-trust-alist)
-      (let* ((expired (re-search-forward
-		       "^\\[GNUPG:\\] SIGEXPIRED$"
-		       nil t))
-	     (signer (and (re-search-forward
-			   "^\\[GNUPG:\\] GOODSIG \\([0-9A-Za-z]*\\) \\(.*\\)$"
-			   nil t)
-			  (cons (match-string 1) (match-string 2))))
-	     (fprint (and (re-search-forward
-			   "^\\[GNUPG:\\] VALIDSIG \\([0-9a-zA-Z]*\\) "
-			   nil t)
-			  (match-string 1)))
-	     (trust  (and (re-search-forward
-			   "^\\[GNUPG:\\] \\(TRUST_.*\\)$"
-			   nil t)
-			  (match-string 1)))
-	     (trust-good-enough-p
-	      (cdr (assoc (cdr (assoc trust gpg-unabbrev-trust-alist))
-			  mml2015-trust-boundaries-alist))))
-	(cond ((and signer fprint)
-	       (concat (cdr signer)
-		       (unless trust-good-enough-p
-			 (concat "\nUntrusted, Fingerprint: "
-				 (mml2015-gpg-pretty-print-fpr fprint)))
-		       (when expired
-			 (format "\nWARNING: Signature from expired key (%s)"
-			  (car signer)))))
-	      (t
-	       "From unknown user")))
-    (if (re-search-forward "^\\(gpg: \\)?Good signature from \"\\(.*\\)\"$" nil t)
-	(match-string 2)
-      "From unknown user")))
+  (let* ((expired (re-search-forward
+		   "^\\[GNUPG:\\] SIGEXPIRED$"
+		   nil t))
+	 (signer (and (re-search-forward
+		       "^\\[GNUPG:\\] GOODSIG \\([0-9A-Za-z]*\\) \\(.*\\)$"
+		       nil t)
+		      (cons (match-string 1) (match-string 2))))
+	 (fprint (and (re-search-forward
+		       "^\\[GNUPG:\\] VALIDSIG \\([0-9a-zA-Z]*\\) "
+		       nil t)
+		      (match-string 1)))
+	 (trust  (and (re-search-forward
+		       "^\\[GNUPG:\\] \\(TRUST_.*\\)$"
+		       nil t)
+		      (match-string 1)))
+	 (trust-good-enough-p
+	  (cdr (assoc trust mml2015-unabbrev-trust-alist))))
+    (cond ((and signer fprint)
+	   (concat (cdr signer)
+		   (unless trust-good-enough-p
+		     (concat "\nUntrusted, Fingerprint: "
+			     (mml2015-gpg-pretty-print-fpr fprint)))
+		   (when expired
+		     (format "\nWARNING: Signature from expired key (%s)"
+			     (car signer)))))
+	  ((re-search-forward
+	    "^\\(gpg: \\)?Good signature from \"\\(.*\\)\"$" nil t)
+	   (match-string 2))
+	  (t
+	   "From unknown user"))))
 
 (defun mml2015-gpg-verify (handle ctl)
   (catch 'error
