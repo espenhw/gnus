@@ -1,3 +1,7 @@
+2002-08-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version-number): Bumped version number.
+
 2002-08-04 01:48:57 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
 
 	* gnus.el: Oort Gnus v0.07 is released.
