@@ -1,3 +1,7 @@
+2003-03-23  Simon Josefsson  <jas@extundo.com>
+
+	* GNUS-NEWS: Add IDNA.  Add TLS.  Fix USEFOR reference.
+
 2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
 	* make.bat: Redone from scratch; supports both Emacs and XEmacs
 	now; correctly generate gnus-load.el; check for errors; use
