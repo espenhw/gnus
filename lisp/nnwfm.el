@@ -297,7 +297,8 @@
 	(when (re-search-forward "href=\"\\(Thread.*DateLast=\\([^\"]+\\)\\)"
 				 nil t)
 	  (setq url (match-string 1)
-		time (nnwfm-date-to-time (url-unhex-string (match-string 2))))
+		time (nnwfm-date-to-time (gnus-url-unhex-string 
+					  (match-string 2))))
 	  (when (and (nnwfm-new-threads-p group time)
 		     (not (member
 			   (setq url (concat

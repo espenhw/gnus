@@ -5240,38 +5240,6 @@ specified by `gnus-button-alist'."
 	  (setq retval (cons (list key val) retval)))))
     retval))
 
-(defun gnus-url-unhex (x)
-  (if (> x ?9)
-      (if (>= x ?a)
-	  (+ 10 (- x ?a))
-	(+ 10 (- x ?A)))
-    (- x ?0)))
-
-(defun gnus-url-unhex-string (str &optional allow-newlines)
-  "Remove %XXX embedded spaces, etc in a url.
-If optional second argument ALLOW-NEWLINES is non-nil, then allow the
-decoding of carriage returns and line feeds in the string, which is normally
-forbidden in URL encoding."
-  (setq str (or (mm-subst-char-in-string ?+ ?  str) ""))
-  (let ((tmp "")
-	(case-fold-search t))
-    (while (string-match "%[0-9a-f][0-9a-f]" str)
-      (let* ((start (match-beginning 0))
-	     (ch1 (gnus-url-unhex (elt str (+ start 1))))
-	     (code (+ (* 16 ch1)
-		      (gnus-url-unhex (elt str (+ start 2))))))
-	(setq tmp (concat
-		   tmp (substring str 0 start)
-		   (cond
-		    (allow-newlines
-		     (char-to-string code))
-		    ((or (= code ?\n) (= code ?\r))
-		     " ")
-		    (t (char-to-string code))))
-	      str (substring str (match-end 0)))))
-    (setq tmp (concat tmp str))
-    tmp))
-
 (defun gnus-url-mailto (url)
   ;; Send mail to someone
   (when (string-match "mailto:/*\\(.*\\)" url)

@@ -13,6 +13,7 @@
 
 (maybe-fbind '(babel-fetch
 	       babel-wash create-image decode-coding-string display-graphic-p
+	       replace-regexp-in-string
 	       bbdb-complete-name
 	       display-time-event-handler
 	       find-image font-create-object gnus-mule-get-coding-system
@@ -72,6 +73,7 @@
 		     make-overlay mouse-minibuffer-check mouse-movement-p
 		     mouse-scroll-subr overlay-buffer overlay-end
 		     overlay-get overlay-lists overlay-put
+		     overlays-in
 		     overlay-start posn-point posn-window
 		     read-event read-event run-with-idle-timer
 		     set-buffer-multibyte set-char-table-range
