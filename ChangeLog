@@ -1,3 +1,8 @@
+2003-04-22  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* make.bat: Flag as binary to ensure DOS line terminators.  Delete
+	trailing whitespace.
+
 2003-04-21  Reiner Steib  <Reiner.Steib@gmx.de>
 	From Frank Schmitt  <ich@frank-schmitt.net>
 
