@@ -195,6 +195,14 @@ RFC2060 section 6.4.4."
   :group 'nnimap
   :type 'sexp)
 
+(defcustom nnimap-split-download-body nil
+  "Whether to download entire articles during splitting.
+This is generally not required, and will slow things down considerably.
+You may need it if you want to use an advanced splitting function that
+analyses the body before splitting the article."
+  :group 'nnimap
+  :type 'boolean)
+
 ;; Performance / bug workaround variables
 
 (defcustom nnimap-close-asynchronous t
@@ -1246,7 +1254,10 @@ function is generally only called when Gnus is shutting down."
 	  (when (setq rule (nnimap-split-find-rule server inbox))
 	    ;; iterate over articles
 	    (dolist (article (imap-search nnimap-split-predicate))
-	      (when (nnimap-request-head article)
+	      (when (if nnimap-split-download-body
+			(and (nnimap-request-article article)
+			     (mail-narrow-to-head))
+		      (nnimap-request-head article))
 		;; copy article to right group(s)
 		(setq removeorig nil)
 		(dolist (to-group (nnimap-split-to-groups rule))
@@ -1270,6 +1281,8 @@ function is generally only called when Gnus is shutting down."
 			(t
 			 (message "IMAP split failed to move %s:%s:%d to %s"
 				  server inbox article to-group))))
+		(if nnimap-split-download-body
+		    (widen))
 		;; remove article if it was successfully copied somewhere
 		(and removeorig
 		     (imap-message-flags-add (format "%d" article)
