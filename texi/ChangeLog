@@ -1,3 +1,7 @@
+2000-10-31  Simon Josefsson  <sj@extundo.com>
+
+	* gnus.texi (NNTP): Explain `port'.
+
 2000-10-30  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Archived Messages): Explain what happens when group

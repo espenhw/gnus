@@ -10472,14 +10472,16 @@ manual page, but here are the salient facts:
 The file contains one or more line, each of which define one server.
 
 @item
-Each line may contain an arbitrary number of token/value pairs.  The
-valid tokens include @samp{machine}, @samp{login}, @samp{password},
-@samp{default}, @samp{port} and @samp{force}.  (The latter is not a
-valid @file{.netrc}/@code{ftp} token, which is almost the only way the
-@file{.authinfo} file format deviates from the @file{.netrc} file
-format.)
-
+Each line may contain an arbitrary number of token/value pairs.  
 @end enumerate
+
+The valid tokens include @samp{machine}, @samp{login}, @samp{password},
+@samp{default}.  Gnus introduce two new tokens, not present in the
+original @file{.netrc}/@code{ftp} syntax, namely @samp{port} and
+@samp{force}.  (This is the only way the @file{.authinfo} file format
+deviates from the @file{.netrc} file format.) @samp{port} is used to
+indicate what port on the server the credentials apply to, @samp{force}
+is explained below.
 
 Here's an example file:
 
