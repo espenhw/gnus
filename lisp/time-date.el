@@ -129,6 +129,11 @@ The Gregorian date Sunday, December 31, 1bce is imaginary."
        (- (/ (1- year) 100))		;	- century years
        (/ (1- year) 400))))		;	+ Gregorian leap years
 
+(defun time-to-number-of-days (time)
+  "Return the number of days represented by TIME.
+The number of days will be returned as a floating point number."
+  (/ (+ (* 1.0 65536 (car time)) (cadr time)) (* 60 60 24)))
+
 ;;;###autoload
 (defun safe-date-to-time (date)
   "Parse DATE and return a time structure.

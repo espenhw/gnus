@@ -1,3 +1,7 @@
+2001-01-05 06:49:37  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* time-date.el (time-to-number-of-days): New function.
+
 2001-01-04 11:06:14  Gregory Chernov  <greg@visiontech-dml.com>
 
 	* nnslashdot.el (nnslashdot-request-list): Always get the right
