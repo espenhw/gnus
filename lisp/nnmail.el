@@ -1511,12 +1511,16 @@ See the documentation for the variable `nnmail-split-fancy' for details."
 (defun nnmail-cache-primary-mail-backend ()
   (let ((be-list (cons gnus-select-method gnus-secondary-select-methods))
 	(be nil)
-	(res nil))
+	(res nil)
+        (get-new-mail nil))
     (while (and (null res) be-list)
       (setq be (car be-list))
       (setq be-list (cdr be-list))
       (when (and (gnus-method-option-p be 'respool)
-		 (eval (intern (format "%s-get-new-mail" (car be)))))
+                 (setq get-new-mail
+                       (intern (format "%s-get-new-mail" (car be))))
+                 (boundp get-new-mail)
+		 (symbol-value get-new-mail))
 	(setq res be)))
     res))
 

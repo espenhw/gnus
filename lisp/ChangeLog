@@ -1,3 +1,9 @@
+2003-03-12  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmail.el (nnmail-cache-primary-mail-backend): Not all
+	'respool-able backends define a global nnchoke-get-new-mail
+	variable.
+
 2003-03-17  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-mime-delete-part): New function.
@@ -24,7 +30,7 @@
 	imap-open.
 
 	* message.el (message-send-mail): Add courtesy string to Bcc's,
-	too. 
+	too.
 
 	* gnus-cite.el (gnus-cited-line-p): New function.
 
