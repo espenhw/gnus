@@ -193,8 +193,10 @@ displayed, no centering will be performed."
 	;; Set the window start to either `bottom', which is the biggest
 	;; possible valid number, or the second line from the top,
 	;; whichever is the least.
+	;; NOFORCE parameter suggested by Daniel Pittman <daniel@danann.net>.
 	(set-window-start
-	 window (min bottom (save-excursion (forward-line (- top)) (point)))))
+	 window (min bottom (save-excursion (forward-line (- top)) (point))) 
+	 t))
       ;; Do horizontal recentering while we're at it.
       (when (and (get-buffer-window (current-buffer) t)
 		 (not (eq gnus-auto-center-summary 'vertical)))
