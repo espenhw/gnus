@@ -7,7 +7,7 @@
 
 	* nnrss.el (nnrss-request-delete-group): Delete entries in
 	nnrss-group-alist as well.
-	(nnrss-save-server-data): Inser newline.
+	(nnrss-save-server-data): Insert newline.
 
 2005-01-10  Reiner Steib  <Reiner.Steib@gmx.de>
 
