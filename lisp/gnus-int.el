@@ -149,6 +149,8 @@ If it is down, start it up (again)."
 		 (cdr method-fnlist-elt))))
     ;; Maybe complain if there is no function.
     (unless (fboundp func)
+      (unless (car method)
+	(error "Trying to require a method that doesn't exist"))
       (require (car method))
       (when (not (fboundp func))
 	(if noerror

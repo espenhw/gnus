@@ -1,3 +1,14 @@
+1998-08-11 11:44:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Group Maintenance): Fix.
+
+1998-08-10 08:59:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Article Highlighting): Addition.
+	(Article Fontisizing): Fix.
+	(Article Hiding): Change.
+	(Article Hiding): Fix.
+
 1998-08-09 15:32:24  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Hiding Headers): Fix.

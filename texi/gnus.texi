@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.31 Manual
+@settitle Gnus 5.6.32 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.31 Manual
+@title Gnus 5.6.32 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.31.
+This manual corresponds to Gnus 5.6.32.
 
 @end ifinfo
 
@@ -2381,8 +2381,10 @@ Find bogus groups and delete them
 @kindex F (Group)
 @findex gnus-group-find-new-groups
 Find new groups and process them (@code{gnus-group-find-new-groups}).
-If given a prefix, use the @code{ask-server} method to query the server
-for new groups.
+With 1 @kbd{C-u{, use the @code{ask-server} method to query the server
+for new groups.  With 2 @kbd{C-u}'s, use most complete method possible
+to query the server for new groups, and subscribe the new groups as
+zombies.
 
 @item C-c C-x
 @kindex C-c C-x (Group)
@@ -6062,17 +6064,25 @@ these articles easier.
 
 @node Article Highlighting
 @subsection Article Highlighting
-@cindex highlight
+@cindex highlighting
 
 Not only do you want your article buffer to look like fruit salad, but
-you want it to look like technicolor fruit salad.
+you want it to look like technicolor fruit salad.  
 
 @table @kbd
 
 @item W H a
 @kindex W H a (Summary)
 @findex gnus-article-highlight
-Highlight the current article (@code{gnus-article-highlight}).
+@findex gnus-article-maybe-highlight
+Do much highlighting of the current article
+(@code{gnus-article-highlight}).  This function highlights header, cited
+text, the signature, and adds buttons to the body and the head.
+
+Most users would prefer using @code{gnus-article-maybe-highlight} in
+@code{gnus-article-display-hook} (@pxref{Customizing Articles}) instead.
+This is a bit less agressive---it highlights only the headers, the
+signature and adds buttons.
 
 @item W H h
 @kindex W H h (Summary)
@@ -6158,6 +6168,8 @@ default.
 
 @end table
 
+@xref{Customizing Articles} for how to highlight articles automatically.
+
 
 @node Article Fontisizing
 @subsection Article Fontisizing
@@ -6171,9 +6183,9 @@ like @samp{_this_} or @samp{*this*}.  Gnus can make this look nicer by
 running the article through the @kbd{W e}
 (@code{gnus-article-emphasize}) command.
 
-@vindex gnus-article-emphasis
+@vindex gnus-emphasis-alist
 How the emphasis is computed is controlled by the
-@code{gnus-article-emphasis} variable.  This is an alist where the first
+@code{gnus-emphasis-alist} variable.  This is an alist where the first
 element is a regular expression to be matched.  The second is a number
 that says what regular expression grouping is used to find the entire
 emphasized word.  The third is a number that says what regexp grouping
@@ -6210,6 +6222,8 @@ say something like:
 (copy-face 'red 'gnus-emphasis-italic)
 @end lisp
 
+@xref{Customizing Articles} for how to fontize articles automatically.
+
 
 @node Article Hiding
 @subsection Article Hiding
@@ -6223,7 +6237,7 @@ too much cruft in most articles.
 @item W W a
 @kindex W W a (Summary)
 @findex gnus-article-hide
-Do quote a lot of hiding on the article buffer
+Do quite a lot of hiding on the article buffer
 (@kbd{gnus-article-hide}).  In particular, this function will hide
 headers, PGP, cited text and the signature.  
 
@@ -6267,11 +6281,13 @@ customizing the hiding:
 
 @table @code
 
-@item gnus-cited-text-button-line-format
-@vindex gnus-cited-text-button-line-format
+@item gnus-cited-opened-text-button-line-format
+@itemx gnus-cited-closed-text-button-line-format
+@vindex gnus-cited-closed-text-button-line-format
+@vindex gnus-cited-opened-text-button-line-format
 Gnus adds buttons to show where the cited text has been hidden, and to
 allow toggle hiding the text.  The format of the variable is specified
-by this format-like variable (@pxref{Formatting Variables}).  These
+by these format-like variable (@pxref{Formatting Variables}).  These
 specs are valid:
 
 @table @samp
@@ -6324,6 +6340,9 @@ hidden.  If you give a positive prefix, they will always hide.
 
 Also @pxref{Article Highlighting} for further variables for
 citation customization.
+
+@xref{Customizing Articles} for how to hide article elements
+automatically.
 
 
 @node Article Washing
@@ -6493,6 +6512,8 @@ body (@code{gnus-article-strip-leading-space}).
 
 @end table
 
+@xref{Customizing Articles} for how to wash articles automatically.
+
 
 @node Article Buttons
 @subsection Article Buttons
@@ -6577,6 +6598,8 @@ Face used when the mouse cursor is over a button.
 
 @end table
 
+@xref{Customizing Articles} for how to buttonize articles automatically.
+
 
 @node Article Date
 @subsection Article Date
@@ -6643,6 +6666,9 @@ that the article was posted in 1854.  Although something like that is
 @emph{totally} impossible.  Don't you trust me? *titter*
 
 @end table
+
+@xref{Customizing Articles} for how to display the date in your
+preferred format automatically.
 
 
 @node Article Signature
@@ -7873,9 +7899,12 @@ been inserted into the article buffer.  It is meant to handle all
 treatment of the article before it is displayed.
 
 @findex gnus-article-maybe-highlight
-By default this hook just contains @code{gnus-article-hide-headers},
-@code{gnus-article-treat-overstrike}, and
-@code{gnus-article-maybe-highlight}, but there are thousands, nay
+@findex gnus-article-maybe-hide-headers
+By default this hook just contains
+@code{gnus-article-maybe-hide-headers},
+@code{gnus-hide-boring-headers}, @code{gnus-article-treat-overstrike},
+and @code{gnus-article-maybe-highlight} (and under XEmacs,
+@code{gnus-article-display-x-face}), but there are thousands, nay
 millions, of functions you can put in this hook.  For an overview of
 functions @pxref{Article Highlighting}, @pxref{Article Hiding},
 @pxref{Article Washing}, @pxref{Article Buttons} and @pxref{Article
@@ -9660,6 +9689,9 @@ this message. Use with extreme caution.
 element is @code{:}, then the second element will be called as a
 function with @var{args} given as arguments.  The function should return
 a SPLIT.
+
+@item
+@code{nil}: If the split is @code{nil}, it is ignored.
 
 @end enumerate
 
@@ -15402,7 +15434,7 @@ On July 28th 1996 work on Red Gnus was begun, and it was released on
 January 25th 1997 (after 84 releases) as ``Gnus 5.4'' (67 releases).
 
 On September 13th 1997, Quassia Gnus was started and lasted 37
-releases.  If was released as ``Gnus 5.6.31' on March 8th 1998.
+releases.  If was released as ``Gnus 5.6.32' on March 8th 1998.
 
 If you happen upon a version of Gnus that has a prefixed name --
 ``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
@@ -15879,7 +15911,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.31.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.32.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16414,7 +16446,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.31:
+New features in Gnus 5.6.32:
 
 @itemize @bullet
 
@@ -16639,8 +16671,6 @@ stuff just skips past them.  Read articles are the same.
 articles aren't displayed.
 @item
  nndoc should always allocate unique Message-IDs.
-@item
- implement gnus-score-thread
 @item
  If there are mail groups the first time you use Gnus, Gnus'll
 make the mail groups killed.

@@ -74,9 +74,6 @@ from the document.")
      (article-begin . "^--.*\n+")
      (body-end . "^--.*$")
      (prepare-body-function . nndoc-unquote-dashes))
-    (mime-parts
-     (generate-head-function . nndoc-generate-mime-parts-head)
-     (article-transform-function . nndoc-transform-mime-parts))
     (clari-briefs
      (article-begin . "^ \\*")
      (body-end . "^\t------*[ \t]^*\n^ \\*")
@@ -90,6 +87,9 @@ from the document.")
      (body-end . "")
      (file-end . "")
      (subtype digest guess))
+    (mime-parts
+     (generate-head-function . nndoc-generate-mime-parts-head)
+     (article-transform-function . nndoc-transform-mime-parts))
     (standard-digest
      (first-article . ,(concat "^" (make-string 70 ?-) "\n *\n+"))
      (article-begin . ,(concat "^\n" (make-string 30 ?-) "\n *\n+"))

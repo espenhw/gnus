@@ -1900,6 +1900,8 @@ and NEW-NAME will be prompted for."
 	(gnus-set-active new-name (gnus-active group))
 	(gnus-message 6 "Renaming group %s to %s...done" group new-name)
 	new-name)
+    (setq gnus-killed-list (delete group gnus-killed-list))
+    (gnus-set-active group nil)
     (gnus-dribble-touch)
     (gnus-group-position-point)))
 
@@ -3121,10 +3123,12 @@ group."
 (defun gnus-group-find-new-groups (&optional arg)
   "Search for new groups and add them.
 Each new group will be treated with `gnus-subscribe-newsgroup-method.'
-If ARG (the prefix), use the `ask-server' method to query
-the server for new groups."
-  (interactive "P")
-  (gnus-find-new-newsgroups arg)
+With 1 C-u, use the `ask-server' method to query the server for new
+groups.
+With 2 C-u's, use most complete method possible to query the server
+for new groups, and subscribe the new groups as zombies."
+  (interactive "p")
+  (gnus-find-new-newsgroups (or arg 1))
   (gnus-group-list-groups))
   
 (defun gnus-group-edit-global-kill (&optional article group)

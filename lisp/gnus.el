@@ -250,7 +250,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.6.31"
+(defconst gnus-version-number "5.6.32"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1421,10 +1421,10 @@ want."
 (defvar gnus-predefined-server-alist
   `(("cache"
      nnspool "cache"
-     (nnspool-spool-directory gnus-cache-directory)
-     (nnspool-nov-directory gnus-cache-directory)
+     (nnspool-spool-directory ,gnus-cache-directory)
+     (nnspool-nov-directory ,gnus-cache-directory)
      (nnspool-active-file
-      (nnheader-concat gnus-cache-directory "active"))))
+      ,(nnheader-concat gnus-cache-directory "active"))))
   "List of predefined (convenience) servers.")
 
 (defvar gnus-topic-indentation "") ;; Obsolete variable.
@@ -1958,16 +1958,6 @@ If ARG, insert string at point."
   (let ((methods gnus-valid-select-methods)
 	(mess gnus-version)
 	meth)
-    ;; Go through all the legal select methods and add their version
-    ;; numbers to the total version string.  Only the backends that are
-    ;; currently in use will have their message numbers taken into
-    ;; consideration.
-    (while methods
-      (setq meth (intern (concat (caar methods) "-version")))
-      (and (boundp meth)
-	   (stringp (symbol-value meth))
-	   (setq mess (concat mess "; " (symbol-value meth))))
-      (setq methods (cdr methods)))
     (if arg
 	(insert (message mess))
       (message mess))))

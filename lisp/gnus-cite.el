@@ -47,8 +47,13 @@ article has citations."
   :type '(choice (const :tag "no" nil)
 		  (const :tag "yes" t)))
 
-(defcustom gnus-cited-text-button-line-format "%(%{[...]%}%)\n"
-  "Format of cited text buttons."
+(defcustom gnus-cited-opened-text-button-line-format "%(%{<->%}%)\n"
+  "Format of opened cited text buttons."
+  :group 'gnus-cite
+  :type 'string)
+
+(defcustom gnus-cited-closed-text-button-line-format "%(%{<+>%}%)\n"
+  "Format of closed cited text buttons."
   :group 'gnus-cite
   :type 'string)
 
@@ -109,7 +114,7 @@ The text matching the first grouping will be used as a button."
   :type 'regexp)
 
 (defface gnus-cite-attribution-face '((t
-				       (:underline t)))
+				       (:italic t)))
   "Face used for attribution lines.")
 
 (defcustom gnus-cite-attribution-face 'gnus-cite-attribution-face
@@ -276,11 +281,15 @@ This should make it easier to see who wrote what."
 ;; PREFIX: Is the citation prefix of the attribution line(s), and
 ;; TAG: Is a Supercite tag, if any.
 
-(defvar gnus-cited-text-button-line-format-alist
+(defvar gnus-cited-opened-text-button-line-format-alist
   `((?b (marker-position beg) ?d)
     (?e (marker-position end) ?d)
     (?l (- end beg) ?d)))
-(defvar gnus-cited-text-button-line-format-spec nil)
+(defvar gnus-cited-opened-text-button-line-format-spec nil)
+(defvar gnus-cited-closed-text-button-line-format-alist
+  gnus-cited-opened-text-button-line-format-alist)
+(defvar gnus-cited-closed-text-button-line-format-spec nil)
+
 
 ;;; Commands:
 
@@ -445,7 +454,8 @@ See the documentation for `gnus-article-highlight-citation'.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
   (interactive (append (gnus-article-hidden-arg) (list 'force)))
-  (gnus-set-format 'cited-text-button t)
+  (gnus-set-format 'cited-opened-text-button t)
+  (gnus-set-format 'cited-closed-text-button t)
   (save-excursion
     (set-buffer gnus-article-buffer)
     (cond
@@ -460,7 +470,7 @@ always hide."
 	    (inhibit-point-motion-hooks t)
 	    (props (nconc (list 'article-type 'cite)
 			  gnus-hidden-properties))
-	    beg end)
+	    beg end start)
 	(while marks
 	  (setq beg nil
 		end nil)
@@ -489,26 +499,49 @@ always hide."
 	    (unless (save-excursion (search-backward "\n\n" nil t))
 	      (insert "\n"))
 	    (put-text-property
-	     (point)
+	     (setq start (point-marker))
 	     (progn
 	       (gnus-article-add-button
 		(point)
-		(progn (eval gnus-cited-text-button-line-format-spec) (point))
+		(progn (eval gnus-cited-closed-text-button-line-format-spec)
+		       (point))
 		`gnus-article-toggle-cited-text
-		(cons beg end))
+		(list (cons beg end) start))
 	       (point))
 	     'article-type 'annotation)
 	    (set-marker beg (point)))))))))
 
-(defun gnus-article-toggle-cited-text (region)
+(defun gnus-article-toggle-cited-text (args)
   "Toggle hiding the text in REGION."
-  (let (buffer-read-only)
+  (let* ((region (car args))
+	 (start (cadr args))
+	 (hidden
+	  (text-property-any
+	   (car region) (1- (cdr region))
+	   (car gnus-hidden-properties) (cadr gnus-hidden-properties)))
+	 (inhibit-point-motion-hooks t)
+	 buffer-read-only)
     (funcall 
-     (if (text-property-any
-	  (car region) (1- (cdr region))
-	  (car gnus-hidden-properties) (cadr gnus-hidden-properties))
+     (if hidden
 	 'remove-text-properties 'gnus-add-text-properties)
-     (car region) (cdr region) gnus-hidden-properties)))
+     (car region) (cdr region) gnus-hidden-properties)
+    (save-excursion
+      (goto-char start)
+      (gnus-delete-line)
+      (put-text-property
+       (point)
+       (progn
+	 (gnus-article-add-button
+	  (point)
+	  (progn (eval
+		  (if hidden
+		      gnus-cited-opened-text-button-line-format-spec
+		    gnus-cited-closed-text-button-line-format-spec))
+		 (point))
+	  `gnus-article-toggle-cited-text
+	  args)
+	 (point))
+       'article-type 'annotation))))
 
 (defun gnus-article-hide-citation-maybe (&optional arg force)
   "Toggle hiding of cited text that has an attribution line.

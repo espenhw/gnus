@@ -942,13 +942,25 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
   "Search for new newsgroups and add them.
 Each new newsgroup will be treated with `gnus-subscribe-newsgroup-method.'
 The `-n' option line from .newsrc is respected.
-If ARG (the prefix), use the `ask-server' method to query the server
-for new groups."
-  (interactive "P")
-  (let ((check (if (or (and arg (not (listp gnus-check-new-newsgroups)))
-		       (null gnus-read-active-file)
-		       (eq gnus-read-active-file 'some))
-		   'ask-server gnus-check-new-newsgroups)))
+
+With 1 C-u, use the `ask-server' method to query the server for new
+groups.
+With 2 C-u's, use most complete method possible to query the server
+for new groups, and subscribe the new groups as zombies."
+  (interactive "p")
+  (let* ((gnus-subscribe-newsgroup-method
+	  gnus-subscribe-newsgroup-method)
+	 (check (cond
+		((or (and (= (or arg 1) 4)
+			  (not (listp gnus-check-new-newsgroups)))
+		     (null gnus-read-active-file)
+		     (eq gnus-read-active-file 'some))
+		 'ask-server)
+		((= (or arg 1) 16)
+		 (setq gnus-subscribe-newsgroup-method
+		       'gnus-subscribe-zombies)
+		 t)
+		(t gnus-check-new-newsgroups))))
     (unless (gnus-check-first-time-used)
       (if (or (consp check)
 	      (eq check 'ask-server))

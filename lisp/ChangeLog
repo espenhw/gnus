@@ -1,3 +1,58 @@
+Tue Aug 11 19:42:42 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.32 is released.
+
+1998-08-11 13:36:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nndoc.el (nndoc-type-alist): Do MIME digests before multiparts. 
+
+	* gnus.el (gnus-predefined-server-alist): Expand vars.
+
+1998-08-09  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-art.el (article-display-x-face): Don't try (and fail) to
+	display multiple faces.
+
+1998-08-11 11:41:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-header-newsgroups-face): Don't bold so much. 
+
+	* gnus-group.el (gnus-group-rename-group): Remove old group name
+	from list of killed groups.
+
+	* gnus-int.el (gnus-get-function): Error better.
+
+	* gnus-art.el (gnus-article-narrow-to-signature): Inhibit motion
+	hooks. 
+	(article-hide-pgp): Delete text instead of hiding it.
+
+	* gnus-group.el (gnus-group-find-new-groups): Ditto.
+
+	* gnus-start.el (gnus-find-new-newsgroups): Accept C-u C-u as a
+	total query.
+
+1998-08-10 09:31:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-prepare): Place point at the beginning
+	of the body.
+
+	* gnus-cite.el (gnus-cite-attribution-face): Changed to italic.
+
+	* gnus-art.el (gnus-article-edit-article): Delete "annotation"
+	text. 
+	(gnus-insert-prev-page-button): Mark as annotation.
+	(gnus-insert-next-page-button): Ditto.
+
+	* gnus-cite.el (gnus-cited-closed-text-button-line-format): New
+	variable. 
+	(gnus-cited-closed-text-button-line-format-alist): Ditto.
+	(gnus-article-toggle-cited-text): Toggle between different
+	symbols. 
+
+1998-08-09 19:58:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-version): Remove backend info.
+
 Sun Aug  9 19:37:40 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.31 is released.

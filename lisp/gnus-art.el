@@ -444,12 +444,12 @@ Obsolete; use the face `gnus-signature-face' for customizations instead."
 (defface gnus-header-from-face
   '((((class color)
       (background dark))
-     (:foreground "spring green" :bold t))
+     (:foreground "spring green"))
     (((class color)
       (background light))
-     (:foreground "red3" :bold t))
+     (:foreground "red3"))
     (t
-     (:bold t :italic t)))
+     (:italic t)))
   "Face used for displaying from headers."
   :group 'gnus-article-headers
   :group 'gnus-article-highlight)
@@ -457,10 +457,10 @@ Obsolete; use the face `gnus-signature-face' for customizations instead."
 (defface gnus-header-subject-face
   '((((class color)
       (background dark))
-     (:foreground "SeaGreen3" :bold t))
+     (:foreground "SeaGreen3"))
     (((class color)
       (background light))
-     (:foreground "red4" :bold t))
+     (:foreground "red4"))
     (t
      (:bold t :italic t)))
   "Face used for displaying subject headers."
@@ -470,12 +470,12 @@ Obsolete; use the face `gnus-signature-face' for customizations instead."
 (defface gnus-header-newsgroups-face
   '((((class color)
       (background dark))
-     (:foreground "yellow" :bold t :italic t))
+     (:foreground "yellow" :italic t))
     (((class color)
       (background light))
-     (:foreground "MidnightBlue" :bold t :italic t))
+     (:foreground "MidnightBlue" :italic t))
     (t
-     (:bold t :italic t)))
+     (:italic t)))
   "Face used for displaying newsgroups headers."
   :group 'gnus-article-headers
   :group 'gnus-article-highlight)
@@ -895,15 +895,19 @@ characters to translate to."
 	(nnheader-narrow-to-headers)
 	(setq from (message-fetch-field "from"))
 	(goto-char (point-min))
-	(while (and gnus-article-x-face-command
-		    (or force
-			;; Check whether this face is censored.
-			(not gnus-article-x-face-too-ugly)
-			(and gnus-article-x-face-too-ugly from
-			     (not (string-match gnus-article-x-face-too-ugly
-						from))))
-		    ;; Has to be present.
-		    (re-search-forward "^X-Face: " nil t))
+	;; This used to try to do multiple faces (`while' instead of
+	;; `when' below), but (a) sending multiple EOFs to xv doesn't
+	;; work (b) it can crash some versions of Emacs (c) are
+	;; multiple faces really something to encourage?
+	(when (and gnus-article-x-face-command
+		   (or force
+		       ;; Check whether this face is censored.
+		       (not gnus-article-x-face-too-ugly)
+		       (and gnus-article-x-face-too-ugly from
+			    (not (string-match gnus-article-x-face-too-ugly
+					       from))))
+		   ;; Has to be present.
+		   (re-search-forward "^X-Face: " nil t))
 	  ;; We now have the area of the buffer where the X-Face is stored.
 	  (save-excursion
 	    (let ((beg (point))
@@ -1016,27 +1020,25 @@ always hide."
 	(goto-char (point-min))
 	;; Hide the "header".
 	(when (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
-	  (gnus-article-hide-text-type (1+ (match-beginning 0))
-				       (match-end 0) 'pgp)
+	  (delete-region (1+ (match-beginning 0)) (match-end 0))
 	  (setq beg (point))
 	  ;; Hide the actual signature.
 	  (and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
 	       (setq end (1+ (match-beginning 0)))
-	       (gnus-article-hide-text-type
+	       (delete-region
 		end
 		(if (search-forward "\n-----END PGP SIGNATURE-----\n" nil t)
 		    (match-end 0)
 		  ;; Perhaps we shouldn't hide to the end of the buffer
 		  ;; if there is no end to the signature?
-		  (point-max))
-		'pgp))
+		  (point-max))))
 	  ;; Hide "- " PGP quotation markers.
 	  (when (and beg end)
 	    (narrow-to-region beg end)
 	    (goto-char (point-min))
 	    (while (re-search-forward "^- " nil t)
-	      (gnus-article-hide-text-type
-	       (match-beginning 0) (match-end 0) 'pgp))
+	      (delete-region
+	       (match-beginning 0) (match-end 0)))
 	    (widen))
 	  (gnus-run-hooks 'gnus-article-hide-pgp-hook))))))
 
@@ -1144,37 +1146,38 @@ always hide."
 (defun gnus-article-narrow-to-signature ()
   "Narrow to the signature; return t if a signature is found, else nil."
   (widen)
-  (when (and (boundp 'mime::preview/content-list)
-	     mime::preview/content-list)
-    ;; We have a MIMEish article, so we use the MIME data to narrow.
-    (let ((pcinfo (car (last mime::preview/content-list))))
-      (ignore-errors
-	(narrow-to-region
-	 (funcall (intern "mime::preview-content-info/point-min") pcinfo)
-	 (point-max)))))
+  (let ((inhibit-point-motion-hooks t))
+    (when (and (boundp 'mime::preview/content-list)
+	       mime::preview/content-list)
+      ;; We have a MIMEish article, so we use the MIME data to narrow.
+      (let ((pcinfo (car (last mime::preview/content-list))))
+	(ignore-errors
+	  (narrow-to-region
+	   (funcall (intern "mime::preview-content-info/point-min") pcinfo)
+	   (point-max)))))
 
-  (when (gnus-article-search-signature)
-    (forward-line 1)
-    ;; Check whether we have some limits to what we consider
-    ;; to be a signature.
-    (let ((limits (if (listp gnus-signature-limit) gnus-signature-limit
-		    (list gnus-signature-limit)))
-	  limit limited)
-      (while (setq limit (pop limits))
-	(if (or (and (integerp limit)
-		     (< (- (point-max) (point)) limit))
-		(and (floatp limit)
-		     (< (count-lines (point) (point-max)) limit))
-		(and (gnus-functionp limit)
-		     (funcall limit))
-		(and (stringp limit)
-		     (not (re-search-forward limit nil t))))
-	    ()				; This limit did not succeed.
-	  (setq limited t
-		limits nil)))
-      (unless limited
-	(narrow-to-region (point) (point-max))
-	t))))
+    (when (gnus-article-search-signature)
+      (forward-line 1)
+      ;; Check whether we have some limits to what we consider
+      ;; to be a signature.
+      (let ((limits (if (listp gnus-signature-limit) gnus-signature-limit
+		      (list gnus-signature-limit)))
+	    limit limited)
+	(while (setq limit (pop limits))
+	  (if (or (and (integerp limit)
+		       (< (- (point-max) (point)) limit))
+		  (and (floatp limit)
+		       (< (count-lines (point) (point-max)) limit))
+		  (and (gnus-functionp limit)
+		       (funcall limit))
+		  (and (stringp limit)
+		       (not (re-search-forward limit nil t))))
+	      ()			; This limit did not succeed.
+	    (setq limited t
+		  limits nil)))
+	(unless limited
+	  (narrow-to-region (point) (point-max))
+	  t)))))
 
 (defun gnus-article-search-signature ()
   "Search the current buffer for the signature separator.
@@ -2131,6 +2134,8 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (gnus-set-mode-line 'article)
 	    (gnus-configure-windows 'article)
 	    (goto-char (point-min))
+	    (search-forward "\n\n" nil t)
+	    (set-window-point (get-buffer-window (current-buffer)) (point))
 	    t))))))
 
 (defun gnus-article-wash-status ()
@@ -2155,7 +2160,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	      (if mime ?m ? )
 	      (if emphasis ?e ? )))))
 
-(defun gnus-article-hide-headers-if-wanted ()
+(fset 'gnus-article-hide-headers-if-wanted 'gnus-article-maybe-hide-headers)
+
+(defun gnus-article-maybe-hide-headers ()
   "Hide unwanted headers if `gnus-have-all-headers' is nil.
 Provided for backwards compatibility."
   (or (save-excursion (set-buffer gnus-summary-buffer) gnus-have-all-headers)
@@ -2619,6 +2626,7 @@ groups."
   (let ((winconf (current-window-configuration)))
     (set-buffer gnus-article-buffer)
     (gnus-article-edit-mode)
+    (gnus-article-delete-text-of-type 'annotation)
     (gnus-set-text-properties (point-min) (point-max) nil)
     (gnus-configure-windows 'edit-article)
     (setq gnus-article-edit-done-function exit-func)
@@ -3220,7 +3228,8 @@ forbidden in URL encoding."
     (gnus-eval-format
      gnus-prev-page-line-format nil
      `(gnus-prev t local-map ,gnus-prev-page-map
-		 gnus-callback gnus-article-button-prev-page))))
+		 gnus-callback gnus-article-button-prev-page
+		 gnus-type annotation))))
 
 (defvar gnus-next-page-map nil)
 (unless gnus-next-page-map
@@ -3248,9 +3257,10 @@ forbidden in URL encoding."
 (defun gnus-insert-next-page-button ()
   (let ((buffer-read-only nil))
     (gnus-eval-format gnus-next-page-line-format nil
-		      `(gnus-next t local-map ,gnus-next-page-map
-				  gnus-callback
-				  gnus-article-button-next-page))))
+		      `(gnus-next
+			t local-map ,gnus-next-page-map
+			gnus-callback gnus-article-button-next-page
+			gnus-type annotation))))
 
 (defun gnus-article-button-next-page (arg)
   "Go to the next page."
