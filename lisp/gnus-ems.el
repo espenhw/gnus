@@ -182,7 +182,7 @@
     (fset 'gnus-summary-set-display-table 'ignore)
     (fset 'gnus-encode-coding-string 'encode-coding-string)
     (fset 'gnus-decode-coding-string 'decode-coding-string)
-
+    
     (when (boundp 'gnus-check-before-posting)
       (setq gnus-check-before-posting
 	    (delq 'long-lines

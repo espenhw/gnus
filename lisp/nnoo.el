@@ -103,7 +103,13 @@
     (nnoo-change-server pbackend
 			(nnoo-current-server backend)
 			(cdr (assq pbackend (nnoo-parents backend))))
-    (apply function args)))
+    (prog1
+	(apply function args)
+    ;; Copy the changed variables back into the child.
+    (let ((vars (cdr (assq pbackend (nnoo-parents backend)))))
+      (while vars
+	(set (cadar vars) (symbol-value (caar vars)))
+	(setq vars (cdr vars)))))))
 
 (defun nnoo-execute (backend function &rest args)
   "Execute FUNCTION on behalf of BACKEND."
@@ -112,7 +118,13 @@
     (nnoo-change-server pbackend
 			(nnoo-current-server backend)
 			(cdr (assq pbackend (nnoo-parents backend))))
-    (apply function args)))
+    (prog1
+	(apply function args)
+      ;; Copy the changed variables back into the child.
+      (let ((vars (cdr (assq pbackend (nnoo-parents backend)))))
+	(while vars
+	  (set (cadar vars) (symbol-value (caar vars)))
+	  (setq vars (cdr vars)))))))
 
 (defmacro nnoo-map-functions (backend &rest maps)
   `(nnoo-map-functions-1 ',backend ',maps))

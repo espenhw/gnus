@@ -1183,6 +1183,7 @@ Return the number of headers removed."
 
   (define-key message-mode-map "\C-c\C-e" 'message-elide-region)
   (define-key message-mode-map "\C-c\C-v" 'message-delete-not-region)
+  (define-key message-mode-map "\C-c\C-z" 'message-kill-to-signature)
   (define-key message-mode-map "\M-\r" 'message-newline-and-reformat)
 
   (define-key message-mode-map "\t" 'message-tab))
@@ -1198,6 +1199,7 @@ Return the number of headers removed."
    ["Caesar (rot13) Region" message-caesar-region (mark t)]
    ["Elide Region" message-elide-region (mark t)]
    ["Delete Outside Region" message-delete-not-region (mark t)]
+   ["Kill To Signature" message-kill-to-signature t]
    ["Newline and Reformat" message-newline-and-reformat t]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message t]
@@ -1440,6 +1442,13 @@ With the prefix argument FORCE, insert the header anyway."
 			      (point))))
   (message-goto-signature)
   (forward-line -2))
+
+(defun message-kill-to-signature ()
+  "Deletes all text up to the signature."
+  (interactive)
+  (let ((point (point)))
+    (message-goto-signature)
+    (kill-region point (point))))
 
 (defun message-newline-and-reformat ()
   "Insert four newlines, and then reformat if inside quoted text."

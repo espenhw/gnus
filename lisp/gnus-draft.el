@@ -148,7 +148,6 @@
     (let ((article narticle))
       (message-mail)
       (erase-buffer)
-      (message "%s %s" group article)
       (if (not (gnus-request-restore-buffer article group))
 	  (error "Couldn't restore the article")
 	;; Insert the separator.

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.21 Manual
+@settitle Quassia Gnus 0.22 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.21 Manual
+@title Quassia Gnus 0.22 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.21.
+This manual corresponds to Quassia Gnus 0.22.
 
 @end ifinfo
 
@@ -11062,6 +11062,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Outgoing Messages::      What happens when you post/mail something?
 * Agent Variables::        Customizing is fun.
 * Example Setup::          An example @file{.gnus.el} file for offline people.
+* Batching Agents::        How to fetch news from a @code{cron} job.
 @end menu
 
 
@@ -11532,6 +11533,20 @@ back all the killed groups.)
 You can now read the groups at once, or you can download the articles
 with the @kbd{J s} command.  And then read the rest of this manual to
 find out which of the other gazillion things you want to customize.
+
+
+@node Batching Agents
+@subsection Batching Agents
+
+Having the Gnus Agent fetch articles (and post whatever messages you've
+written) is quite easy once you've gotten things set up properly.  The
+following shell script will do everything that is necessary:
+
+@example
+#!/bin/sh
+emacs -batch -l ~/.emacs -f gnus-agent-batch >/dev/null
+@end example
+
 
 
 @node Scoring
@@ -16745,7 +16760,7 @@ Article-mode
 			next-article;
 		else 
 			next-group;
-@end example	
+@end example
 
 @item
 My precise need here would have been to limit files to Incoming*.
@@ -17091,6 +17106,10 @@ snews://secnews.netscape.com/netscape.communicator.unix
 @item
 When the nntp server hangs up while the user is composing the message,
 when sending the message and the nntp server asks for AUTH, Gnus hangs. 
+
+@item
+One command to edit the original version if an article, and one to edit
+the displayed version.
 
 @c TODO
 @end itemize

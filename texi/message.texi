@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 0.21 Manual
+@settitle Message 0.22 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 0.21 Manual
+@title Message 0.22 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -80,7 +80,7 @@ Message mode buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 0.21.  Message is distributed with
+This manual corresponds to Message 0.22.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -524,6 +524,12 @@ many places to rotate the text.  The default is 13.
 Elide the text between point and mark (@code{message-elide-region}).
 The text is killed and an ellipsis (@samp{[...]}) will be inserted in
 its place.
+
+@item C-c C-z
+@kindex C-c C-x
+@findex message-kill-to-signature
+Kill all the text up to the signature, or if that's missing, up to the
+end of the message (@code{message-kill-to-signature}).
 
 @item C-c C-v
 @kindex C-c C-v

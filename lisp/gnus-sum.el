@@ -6698,8 +6698,19 @@ to save in."
 	      (copy-to-buffer buffer (point-min) (point-max))
 	      (set-buffer buffer)
 	      (gnus-article-delete-invisible-text)
-	      (run-hooks 'gnus-ps-print-hook)
-	      (ps-print-buffer-with-faces filename))
+	      (let ((ps-left-header
+		     (list 
+		      (concat "("
+			      (mail-header-subject gnus-current-headers) ")")
+		      (concat "("
+			      (mail-header-from gnus-current-headers) ")")))
+		    (ps-right-header 
+		     (list 
+		      "/pagenumberstring load" 
+		      (concat "("
+			      (mail-header-date gnus-current-headers) ")"))))
+		(run-hooks 'gnus-ps-print-hook)
+		(ps-print-buffer-with-faces filename)))
 	  (kill-buffer buffer))))))
 
 (defun gnus-summary-show-article (&optional arg)

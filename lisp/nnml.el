@@ -738,7 +738,12 @@ all.  This may very well take some time.")
     ;; Do this directory.
     (let ((files (sort (nnheader-article-to-file-alist dir)
 		       'car-less-than-car)))
-      (when files
+      (if (not files)
+	  (let* ((group (nnheader-file-to-group
+			 (directory-file-name dir) nnml-directory))
+		 (info (cadr (assoc group nnml-group-alist))))
+	    (when info
+	      (setcar info (1+ (cdr info)))))
 	(funcall nnml-generate-active-function dir)
 	;; Generate the nov file.
 	(nnml-generate-nov-file dir files)

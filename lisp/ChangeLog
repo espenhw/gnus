@@ -1,3 +1,34 @@
+Tue Jan  6 07:45:39 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.22 is released.
+
+Tue Jan  6 07:32:02 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-kill-to-signature): Don't use mark.
+
+Tue Jan  6 07:30:46 1998  Russ Allbery  <rra@stanford.edu>
+
+	* message.el (message-kill-to-signature): New command and keystroke.
+
+Tue Jan  6 06:39:29 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-print-article): New defaults for
+	headers and stuff.
+
+	* gnus-agent.el (gnus-agent-batch): New command.
+
+	* nnoo.el (nnoo-execute): Copy vars from parent into child.
+	(nnoo-parent-function): Ditto.
+
+	* gnus-draft.el (gnus-draft-setup): Removed message.
+
+	* gnus-start.el (gnus-read-descriptions-file): Naked muleism.
+
+Mon Jan  5 05:20:16 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnml.el (nnml-generate-nov-databases-1): Fix lower bound on
+	empty groups.
+
 Sun Jan  4 14:38:36 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.21 is released.

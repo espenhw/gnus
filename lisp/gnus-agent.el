@@ -1258,6 +1258,15 @@ The following commands are available:
 		(delete-file file))))))
       (gnus-agent-save-alist nil nil nil dir))))
 
+;;;###autoload
+(defun gnus-agent-batch ()
+  (interactive)
+  (let ((init-file-user "")
+	(gnus-always-read-dribble-file t))
+    (gnus))
+  (gnus-group-send-drafts)
+  (gnus-agent-fetch-session))
+
 (provide 'gnus-agent)
 
 ;;; gnus-agent.el ends here

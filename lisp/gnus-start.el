@@ -384,6 +384,9 @@ Can be used to turn version control on or off."
 
 ;;; Internal variables
 
+(defvar gnus-always-read-dribble-file nil
+  "Uncoditionally read the dribble file.")
+
 (defvar gnus-newsrc-file-version nil)
 (defvar gnus-override-subscribe-method nil)
 (defvar gnus-dribble-buffer nil)
@@ -795,8 +798,9 @@ prompt the user for the name of an NNTP server to use."
 		     (setq modes (file-modes gnus-current-startup-file)))
 	    (set-file-modes dribble-file modes))
 	  ;; Possibly eval the file later.
-	  (when (gnus-y-or-n-p
-		 "Gnus auto-save file exists.  Do you want to read it? ")
+	  (when (or gnus-always-read-dribble-file
+		    (gnus-y-or-n-p
+		     "Gnus auto-save file exists.  Do you want to read it? "))
 	    (setq gnus-dribble-eval-file t)))))))
 
 (defun gnus-dribble-eval-file ()
@@ -2488,7 +2492,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			  (fboundp 'gnus-mule-get-coding-system)
 			  (gnus-mule-get-coding-system (symbol-name group)))))
 		(if coding
-		    (setq str (decode-coding-string str (car coding))))
+		    (setq str (gnus-decode-coding-string str (car coding))))
 		(set group str)))
 	    (forward-line 1))))
       (gnus-message 5 "Reading descriptions file...done")
