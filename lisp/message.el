@@ -320,7 +320,7 @@ The provided functions are:
   :group 'message-interface
   :type 'regexp)
 
-(defcustom message-forward-ignored-headers "Content-Transfer-Encoding"
+(defcustom message-forward-ignored-headers "^Content-Transfer-Encoding:\\|^X-Gnus"
   "*All headers that match this regexp will be deleted when forwarding a message."
   :group 'message-forwarding
   :type '(choice (const :tag "None" nil)
@@ -4080,9 +4080,7 @@ Optional DIGEST will use digest to forward."
 	    (narrow-to-region (point) 
 			      (or (search-forward "\n\n" nil t) (point)))
 	    (delete-region (point-min) (point-max)))
-	(when (and (or message-forward-show-mml
-		       (not message-forward-as-mime))
-		   (not current-prefix-arg)
+	(when (and (not current-prefix-arg)
 		   message-forward-ignored-headers)
 	  (save-restriction
 	    (narrow-to-region b e)
