@@ -1,3 +1,18 @@
+2003-05-12  Kevin Greiner <kgreiner@xpediantsolutions.com>
+
+	* gnus-agent.el (gnus-agent-cat-name): Eval macro while compiling.
+	(gnus-agent-cat-disable-undownloaded-faces): New function.
+	Accessor for new agent property
+	'agent-disable-undownloaded-faces'.
+	gnus-cus.el (gnus-agent-parameters): Added
+	agent-disable-undownloaded-faces and corrected documentation.
+	(gnus-agent-cat-prepare-category-field,
+	gnus-agent-customize-category): Changed to avoid creating free
+	references to each field's symbol.
+	gnus-sum.el (gnus-summary-use-undownloaded-faces): New local variable.
+	(gnus-select-newgroup): Initialize it.
+	(gnus-summary-highlight-line): Use it.	
+
 2003-05-12  Dave Love  <fx@gnu.org>
 
 	* rfc2047.el (rfc2047-point-at-bol, rfc2047-point-at-bol): Eval
