@@ -150,11 +150,7 @@
 ;; Usage
 ;; -----
 ;;
-;; Put this in your .gnus:
-;;
-;; (require 'gnus-outlook-deuglify)
-;;
-;; and you're enabled to press `W k' in the Summary Buffer.
+;; Press `W k' in the Summary Buffer.
 ;;
 ;; Non recommended usage :-)
 ;; ---------------------
@@ -195,10 +191,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; $Log: deuglify.el,v $
-;; Revision 6.1  2002/02/22 21:14:46  zsh
-;; 	* deuglify.el: New file. The original file name is
-;; 	gnus-outlook-deuglify.el from Raymond Scholz <rscholz@zonix.de>.
+;; See ChangeLog for other changes.
 ;;
 ;; Revision 1.5  2002/01/27 14:39:17  rscholz
 ;; * New variable `gnus-outlook-deuglify-no-wrap-chars' to inhibit
@@ -231,7 +224,7 @@
 (require 'gnus-art)
 (require 'gnus-sum)
 
-(defconst gnus-outlook-deuglify-version "1.5"
+(defconst gnus-outlook-deuglify-version "1.5 Gnus version"
   "Version of gnus-outlook-deuglify.")
 
 ;;; User Customizable Variables:
