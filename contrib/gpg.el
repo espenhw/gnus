@@ -7,7 +7,7 @@
 ;; Keywords: crypto
 ;; Created: 2000-04-15
 
-;; $Id: gpg.el,v 1.16 2001/08/24 21:09:02 larsi Exp $
+;; $Id: gpg.el,v 1.17 2001/12/26 15:23:03 fw Exp $
 
 ;; This file is NOT (yet?) part of GNU Emacs.
 
@@ -342,7 +342,7 @@ endings; the input data shall be treated as binary."
   :group 'gpg-commands)
 
 (defcustom gpg-command-decrypt
-  '(gpg . ("--decrypt" "--batch" "--passphrase-fd=0"))
+  '(gpg . ("--status-fd" "2" "--decrypt" "--batch" "--passphrase-fd=0"))
   "Command to decrypt a message.
 The invoked program has to read the passphrase from standard
 input, followed by the encrypted message.  It writes the decrypted

@@ -1,3 +1,9 @@
+2002-01-25  Josh Huber  <huber@alum.wpi.edu>
+
+	* mml2015.el (mml2015-mailcrypt-decrypt): Display a signature if
+	one exists in the case of an encrypted message with an internal
+	signature.
+
 2002-01-25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-agent.el (gnus-agent-save-alist): Optimized.

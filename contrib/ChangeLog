@@ -1,3 +1,9 @@
+2002-01-25  Josh Huber  <huber@alum.wpi.edu>
+
+	* gpg.el (gpg-command-decrypt): Enable the status-fd command line
+	option to gpg when decrypting so `mml2015-mailcrypt-decrypt' can
+	parse and display the output.
+
 2002-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-mdrtn.el (gnus-moderation-cancel-article): Insert an extra

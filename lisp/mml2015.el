@@ -126,7 +126,11 @@ by you.")
 	(setq handles (mm-dissect-buffer t)))
       (mm-destroy-parts handle)
       (mm-set-handle-multipart-parameter
-       mm-security-handle 'gnus-info "OK")
+       mm-security-handle 'gnus-info
+       (concat "OK"
+	       (let ((sig (with-current-buffer mml2015-result-buffer
+			    (mml2015-gpg-extract-signature-details))))
+		 (concat ", Signer: " sig))))
       (if (listp (car handles))
 	  handles
 	(list handles)))))
