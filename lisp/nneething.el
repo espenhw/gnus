@@ -213,7 +213,7 @@ If this variable is nil, no files will be excluded.")
 	  (error nil)))
     (or nneething-active (setq nneething-active (cons 1 0)))
     ;; Old nneething had a different map format.
-    (when (and (cdr (car nneething-map))
+    (when (and (cdar nneething-map)
 	       (atom (cdar nneething-map)))
       (setq nneething-map
 	    (mapcar (lambda (n)

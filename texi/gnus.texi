@@ -7766,9 +7766,13 @@ unfortunate problem, you can set this command to a number.  Gnus will
 then, if it sits waiting longer than that number of seconds for a reply
 from the server, shut down the connection, start a new one, and resend
 the command.  This should hopefully be transparent to the user.  A
-likely number is 30 seconds.  (You can also @kbd{C-g} if Gnus hangs in
-this manner.  The same thing will hopefully happen, but it can be
-somewhat unsafe.)
+likely number is 30 seconds. 
+
+@item nntp-retry-on-break
+@vindex nntp-retry-on-break
+If this variable is non-@code{nilp, you can also @kbd{C-g} if Gnus
+hangs.  This will have much the same effect as the command timeout
+described above.
 
 @item nntp-server-hook
 @vindex nntp-server-hook
@@ -11864,7 +11868,9 @@ amount of data that is sent over the wires as much as possible.
 
 @item gnus-auto-center-summary
 Set this to @code{nil} to inhibit Gnus from re-centering the summary
-buffer all the time.  
+buffer all the time.  If it is @code{vertical}, do only vertical
+re-centering.  If it is neither @code{nil} nor @code{vertical}, do both
+horizontal and vertical recentering.
 
 @item gnus-visible-headers
 Cut down on the headers that are included in the articles to the

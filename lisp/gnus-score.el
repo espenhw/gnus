@@ -442,7 +442,7 @@ used as score."
 	  (insert "\n"))
 	(setq pad (- width 3))
 	(setq format (concat "%c: %-" (int-to-string pad) "s"))
-	(insert (format format (car (car alist)) (nth idx (car alist))))
+	(insert (format format (caar alist) (nth idx (car alist))))
 	(setq alist (cdr alist))
 	(setq i (1+ i))))
     ;; display ourselves in a small window at the bottom
@@ -821,10 +821,10 @@ SCORE is the score to add."
 	  (set-buffer gnus-summary-buffer)
 	  (while local
 	    (and (consp (car local))
-		 (symbolp (car (car local)))
+		 (symbolp (caar local))
 		 (progn
-		   (make-local-variable (car (car local)))
-		   (set (car (car local)) (nth 1 (car local)))))
+		   (make-local-variable (caar local))
+		   (set (caar local) (nth 1 (car local)))))
 	    (setq local (cdr local)))))
       (if orphan (setq gnus-orphan-score orphan))
       (setq gnus-adaptive-score-alist
@@ -912,9 +912,9 @@ SCORE is the score to add."
 	 (cond
 	  ((not (listp (car a)))
 	   (format "Illegal score element %s in %s" (car a) file))
-	  ((stringp (car (car a)))
+	  ((stringp (caar a))
 	   (cond 
-	    ((not (listp (setq sr (cdr (car a)))))
+	    ((not (listp (setq sr (cdar a))))
 	     (format "Illegal header match %s in %s" (nth 1 (car a)) file))
 	    (t
 	     (setq type (caar a))
@@ -955,7 +955,7 @@ SCORE is the score to add."
 	    (setq out (cons entry out))
 	    (while scor
 	      (setcar scor
-		      (list (car (car scor)) (nth 2 (car scor))
+		      (list (caar scor) (nth 2 (car scor))
 			    (and (nth 3 (car scor))
 				 (gnus-day-number (nth 3 (car scor))))
 			    (if (nth 1 (car scor)) 'r 's)))
@@ -1093,11 +1093,11 @@ SCORE is the score to add."
 
 	  ;; Add articles to `gnus-newsgroup-scored'.
 	  (while gnus-scores-articles
-	    (or (= gnus-summary-default-score (cdr (car gnus-scores-articles)))
+	    (or (= gnus-summary-default-score (cdar gnus-scores-articles))
 		(setq gnus-newsgroup-scored
 		      (cons (cons (mail-header-number 
-				   (car (car gnus-scores-articles)))
-				  (cdr (car gnus-scores-articles)))
+				   (caar gnus-scores-articles))
+				  (cdar gnus-scores-articles))
 			    gnus-newsgroup-scored)))
 	    (setq gnus-scores-articles (cdr gnus-scores-articles)))
 
@@ -1203,7 +1203,7 @@ SCORE is the score to add."
 	  ;; time than one would gain.
 	  (while articles
 	    (and (funcall match-func 
-			  (or (aref (car (car articles)) gnus-score-index) 0)
+			  (or (aref (caar articles) gnus-score-index) 0)
 			  match)
 		 (progn
 		   (and trace (setq gnus-score-trace 
@@ -1213,7 +1213,7 @@ SCORE is the score to add."
 				      kill)
 				     gnus-score-trace)))
 		   (setq found t)
-		   (setcdr (car articles) (+ score (cdr (car articles))))))
+		   (setcdr (car articles) (+ score (cdar articles)))))
 	    (setq articles (cdr articles)))
 	  ;; Update expire date
 	  (cond ((null date))		;Permanent entry.
@@ -1258,7 +1258,7 @@ SCORE is the score to add."
 	  ;; time than one would gain.
 	  (while articles
 	    (and
-	     (setq l (aref (car (car articles)) gnus-score-index))
+	     (setq l (aref (caar articles) gnus-score-index))
 	     (funcall match-func match (timezone-make-date-sortable l))
 	     (progn
 	       (and trace (setq gnus-score-trace 
@@ -1268,7 +1268,7 @@ SCORE is the score to add."
 				  kill)
 				 gnus-score-trace)))
 	       (setq found t)
-	       (setcdr (car articles) (+ score (cdr (car articles))))))
+	       (setcdr (car articles) (+ score (cdar articles)))))
 	    (setq articles (cdr articles)))
 	  ;; Update expire date
 	  (cond ((null date))		;Permanent entry.
@@ -1288,7 +1288,7 @@ SCORE is the score to add."
     (save-restriction
       (let* ((buffer-read-only nil)
 	     (articles gnus-scores-articles)
-	     (last (mail-header-number (car (car gnus-scores-articles))))
+	     (last (mail-header-number (caar gnus-scores-articles)))
 	     (all-scores scores)
 	     (request-func (cond ((string= "head" (downcase header))
 				  'gnus-request-head)
@@ -1307,7 +1307,7 @@ SCORE is the score to add."
 	      (setq ofunc request-func)
 	      (setq request-func 'gnus-request-article)))
 	(while articles
-	  (setq article (mail-header-number (car (car articles))))
+	  (setq article (mail-header-number (caar articles)))
 	  (gnus-message 7 "Scoring on article %s of %s..." article last)
 	  (if (not (funcall request-func article gnus-newsgroup-name))
 	      ()
@@ -1355,7 +1355,7 @@ SCORE is the score to add."
 		  (if (funcall search-func match nil t)
 		      ;; Found a match, update scores.
 		      (progn
-			(setcdr (car articles) (+ score (cdr (car articles))))
+			(setcdr (car articles) (+ score (cdar articles)))
 			(setq found t)
 			(and trace (setq gnus-score-trace 
 					 (cons
@@ -1489,8 +1489,8 @@ SCORE is the score to add."
       ;; Don't enter a score if there already is one.
       (while (setq entry (pop scores))
 	(and (equal "references" (car entry))
-	     (or (null (nth 3 (car (cdr entry))))
-		 (eq 's (nth 3 (car (cdr entry)))))
+	     (or (null (nth 3 (cadr entry)))
+		 (eq 's (nth 3 (cadr entry))))
 	     (assoc id entry)
 	     (setq dont t)))
       (unless dont
@@ -1734,17 +1734,17 @@ SCORE is the score to add."
 	(setq elem (cdr elem))
 	(while elem
 	  (setcdr (car elem) 
-		  (cons (if (eq (car (car elem)) 'followup)
+		  (cons (if (eq (caar elem) 'followup)
 			    "references"
-			  (symbol-name (car (car elem))))
-			(cdr (car elem))))
+			  (symbol-name (caar elem)))
+			(cdar elem)))
 	  (setcar (car elem) 
 		  `(lambda (h)
 		     (,(intern 
 			(concat "mail-header-" 
-				(if (eq (car (car elem)) 'followup)
+				(if (eq (caar elem) 'followup)
 				    "message-id"
-				  (downcase (symbol-name (car (car elem)))))))
+				  (downcase (symbol-name (caar elem))))))
 		      h)))
 	  (setq elem (cdr elem)))
 	(setq malist (cdr malist)))
@@ -1761,7 +1761,7 @@ SCORE is the score to add."
 	    ()
 	  (when (setq headers (gnus-data-header (car data)))
 	    (while elem 
-	      (setq match (funcall (car (car elem)) headers))
+	      (setq match (funcall (caar elem) headers))
 	      (gnus-summary-score-entry 
 	       (nth 1 (car elem)) match
 	       (cond
@@ -1870,8 +1870,8 @@ This mode is an extended emacs-lisp mode.
     (gnus-add-current-to-buffer-list)
     (erase-buffer)
     (while trace
-      (insert (format "%S  ->  %s\n"  (cdr (car trace))
-		      (file-name-nondirectory (car (car trace)))))
+      (insert (format "%S  ->  %s\n" (cdar trace)
+		      (file-name-nondirectory (caar trace))))
       (setq trace (cdr trace)))
     (goto-char (point-min))
     (pop-to-buffer buf)))
@@ -2122,21 +2122,21 @@ The list is determined from the variable gnus-score-file-alist."
 	(cdr score-files)		;ensures caching groups with no matches
       ;; handle the multiple match alist
       (while alist
-	(and (string-match (car (car alist)) group)
+	(and (string-match (caar alist) group)
 	     (setq score-files
-		   (nconc score-files (copy-sequence (cdr (car alist))))))
+		   (nconc score-files (copy-sequence (cdar alist)))))
 	(setq alist (cdr alist)))
       (setq alist gnus-score-file-single-match-alist)
       ;; handle the single match alist
       (while alist
-	(and (string-match (car (car alist)) group)
+	(and (string-match (caar alist) group)
 	     ;; progn used just in case ("regexp") has no files
 	     ;; and score-files is still nil. -sj
 	     ;; this can be construed as a "stop searching here" feature :>
 	     ;; and used to simplify regexps in the single-alist 
 	     (progn
 	       (setq score-files
-		     (nconc score-files (copy-sequence (cdr (car alist)))))
+		     (nconc score-files (copy-sequence (cdar alist))))
 	       (setq alist nil)))
 	(setq alist (cdr alist)))
       ;; cache the score files

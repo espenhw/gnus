@@ -226,10 +226,10 @@ Finds out what articles are to be part of the nnkiboze groups."
     ;; We have copied all the newsrc alist info over to local copies
     ;; so that we can mess all we want with these lists.
     (while newsrc
-      (if (string-match "nnkiboze" (car (car newsrc)))
+      (if (string-match "nnkiboze" (caar newsrc))
 	  ;; For each kiboze group, we call this function to generate
 	  ;; it.  
-	  (nnkiboze-generate-group (car (car newsrc))))
+	  (nnkiboze-generate-group (caar newsrc)))
       (setq newsrc (cdr newsrc)))))
 
 (defun nnkiboze-score-file (group)
@@ -284,14 +284,14 @@ Finds out what articles are to be part of the nnkiboze groups."
     (setq newsrc nnkiboze-newsrc)
     (while newsrc
       (if (not (setq active (gnus-gethash 
-			     (car (car newsrc)) gnus-active-hashtb)))
+			     (caar newsrc) gnus-active-hashtb)))
 	  ;; This group isn't active after all, so we remove it from
 	  ;; the list of component groups.
 	  (setq nnkiboze-newsrc (delq (car newsrc) nnkiboze-newsrc))
-	(setq lowest (cdr (car newsrc)))
+	(setq lowest (cdar newsrc))
 	;; Ok, we have a valid component group, so we jump to it. 
 	(switch-to-buffer gnus-group-buffer)
-	(gnus-group-jump-to-group (car (car newsrc)))
+	(gnus-group-jump-to-group (caar newsrc))
 	;; We set all list of article marks to nil.  Since we operate
 	;; on copies of the real lists, we can destroy anything we
 	;; want here.
@@ -315,13 +315,13 @@ Finds out what articles are to be part of the nnkiboze groups."
 	  (and (eq method gnus-select-method) (setq method nil))
 	  ;; We go through the list of scored articles.
 	  (while gnus-newsgroup-scored
-	    (if (> (car (car gnus-newsgroup-scored)) lowest)
+	    (if (> (caar gnus-newsgroup-scored) lowest)
 		;; If it has a good score, then we enter this article
 		;; into the kiboze group.
 		(nnkiboze-enter-nov 
 		 nov-buffer
 		 (gnus-summary-article-header 
-		  (car (car gnus-newsgroup-scored)))
+		  (caar gnus-newsgroup-scored))
 		 (if method
 		     (gnus-group-prefixed-name gnus-newsgroup-name method)
 		   gnus-newsgroup-name)))

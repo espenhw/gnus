@@ -68,17 +68,21 @@
   (nnheader-change-server 'nndir server defs)
   (unless (assq 'nndir-directory defs)
     (setq nndir-directory server))
-  (cond 
-   ((not (file-exists-p nndir-directory))
-    (nndir-close-server)
-    (nnheader-report 'nndir "No such file or directory: %s" nndir-directory))
-   ((not (file-directory-p (file-truename nndir-directory)))
-    (nndir-close-server)
-    (nnheader-report 'nndir "Not a directory: %s" nndir-directory))
-   (t
-    (nnheader-report 'nndir "Opened server %s using directory %s"
-		     server nndir-directory)
-    t)))
+  (let (err)
+    (cond 
+     ((not (condition-case arg
+	       (file-exists-p nndir-directory)
+	     (ftp-error (setq err (format "%s" arg)))))
+      (nndir-close-server)
+      (nnheader-report 
+       'nndir (or err "No such file or directory: %s" nndir-directory)))
+     ((not (file-directory-p (file-truename nndir-directory)))
+      (nndir-close-server)
+      (nnheader-report 'nndir "Not a directory: %s" nndir-directory))
+     (t
+      (nnheader-report 'nndir "Opened server %s using directory %s"
+		       server nndir-directory)
+      t))))
 
 (defun nndir-close-server (&optional server)
   (setq nndir-current-server nil)

@@ -201,9 +201,8 @@ The following commands are available:
     (while opened 
       (unless (member (caar opened) done)
 	(gnus-server-insert-server-line 
-	 (setq op-ser (format "%s:%s" (car (car (car opened))) 
-			      (nth 1 (car (car opened)))))
-	 (car (car opened)))
+	 (setq op-ser (format "%s:%s" (caaar opened) (nth 1 (caar opened))))
+	 (caar opened))
 	(push (list op-ser (caar opened)) gnus-inserted-opened-servers))
       (setq opened (cdr opened))))
   (goto-char (point-min))
@@ -275,10 +274,10 @@ The following commands are available:
 	(killed (car gnus-server-killed-servers)))
     (if (not server) 
 	(setq gnus-server-alist (nconc gnus-server-alist (list killed)))
-      (if (string= server (car (car gnus-server-alist)))
+      (if (string= server (caar gnus-server-alist))
 	  (setq gnus-server-alist (cons killed gnus-server-alist))
 	(while (and (cdr alist)
-		    (not (string= server (car (car (cdr alist))))))
+		    (not (string= server (caadr alist))))
 	  (setq alist (cdr alist)))
 	(if alist
 	    (setcdr alist (cons killed (cdr alist)))
@@ -534,7 +533,7 @@ The following commands are available:
       (setq mode-line-buffer-identification
 	    (list
 	     (format
-	      "Gnus: %%b {%s:%s}" (car method) (car (cdr method)))))
+	      "Gnus: %%b {%s:%s}" (car method) (cadr method))))
       (save-excursion
 	(set-buffer nntp-server-buffer)
 	(let ((cur (current-buffer)))

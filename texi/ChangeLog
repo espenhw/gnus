@@ -1,3 +1,7 @@
+Wed Feb 28 04:54:41 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Slow Terminal Connection): Addition.
+
 Sat Feb 24 01:11:40 1996  Mark Borges  <mdb@cdc.noaa.gov>
 
 	* gnus.texi: Typo fixes.

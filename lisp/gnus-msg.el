@@ -1391,14 +1391,13 @@ Headers in `gnus-required-headers' will be generated."
       (when (and from 
 		 (not (gnus-check-before-posting 'sender))
 		 (not (string=
-		       (downcase (car (cdr (gnus-extract-address-components
-					    from))))
+		       (downcase (cadr (gnus-extract-address-components from)))
 		       (downcase (gnus-inews-real-user-address))))
 		 (or (null sender)
 		     (not 
 		      (string=
-		       (downcase (car (cdr (gnus-extract-address-components
-					    sender))))
+		       (downcase
+			(cadr (gnus-extract-address-components sender)))
 		       (downcase secure-sender)))))
 	(goto-char (point-min))    
 	;; Rename any old Sender headers to Original-Sender.
@@ -1884,9 +1883,23 @@ mailer."
 	      (setq message-id (match-string 0 gnus-warning)))
 	    
 	    (setq mctdo (not (equal mct "never")))
+	    (when (and mct (string= (downcase mct) "always"))
+	      (setq mct (or reply-to from)))
 
 	    (if (not (and followup (not to-address)))
-		(setq new-to (or reply-to from))
+		(setq new-to (or reply-to from)
+		      new-cc 
+		      (if (and mctdo
+			       (not (string= 
+				     (mail-strip-quoted-names mct)
+				     (mail-strip-quoted-names
+				      (or to-address 
+					  (if (and follow-to 
+						   (not (stringp follow-to)))
+					      sendto
+					    (or follow-to new-to
+						sender "")))))))
+			  mct))
 	      (let (ccalist)
 		(save-excursion
 		  (gnus-set-work-buffer)
@@ -2199,8 +2212,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 		(and (re-search-forward "^Newsgroups:" nil t)
 		     (forward-line 1))
 		(while follow-to
-		  (insert (car (car follow-to)) ": " 
-			  (cdr (car follow-to)) "\n")
+		  (insert (caar follow-to) ": " (cdar follow-to) "\n")
 		  (setq follow-to (cdr follow-to)))))
 	  
 	  ;; If a distribution existed, we use it.
@@ -2556,15 +2568,17 @@ The source file has to be in the Emacs load path."
     (while olist
       (if (boundp (car olist))
 	  (insert 
-	   (pp-to-string
-	    `(setq ,(symbol-name (car olist))
-		   ,(if (or (consp (setq sym (symbol-value (car olist))))
-			    (and (symbolp sym)
-				 (not (or (eq sym nil)
-					  (eq sym t)))))
-			(list 'quote (symbol-value (car olist)))
-		      (symbol-value (car olist)))
-		   "\n")))
+	   (condition-case ()
+	       (pp-to-string
+		`(setq ,(car olist)
+		       ,(if (or (consp (setq sym (symbol-value (car olist))))
+				(and (symbolp sym)
+				     (not (or (eq sym nil)
+					      (eq sym t)))))
+			    (list 'quote (symbol-value (car olist)))
+			  (symbol-value (car olist)))))
+	     (error
+	      (format "(setq %s 'whatever)\n" (car olist)))))
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))
     (insert "\n\n")
@@ -2792,6 +2806,9 @@ Headers will be generated before sending."
 	 result
 	 (groups
 	  (cond 
+	   ((null gnus-message-archive-method)
+	    ;; Ignore.
+	    nil)
 	   ((stringp var)
 	    ;; Just a single group.
 	    (list var))
@@ -2841,7 +2858,7 @@ Headers will be generated before sending."
 (defun gnus-draft-group ()
   "Return the name of the draft group."
   (gnus-group-prefixed-name 
-   (file-name-nondirectory gnus-draft-group-directory)
+   (file-name-nondirectory (directory-file-name gnus-draft-group-directory))
    (list 'nndraft gnus-draft-group-directory)))
 
 (defun gnus-make-draft-group ()

@@ -111,7 +111,7 @@ The SOUP packet file name will be inserted at the %s.")
 	;; articles in SEQUENCE come from.
 	(while (and areas sequence)
 	  ;; Peel off areas that are below sequence.
-	  (while (and areas (< (cdr (car (car areas))) (car sequence)))
+	  (while (and areas (< (cdaar areas) (car sequence)))
 	    (setq areas (cdr areas)))
 	  (when areas
 	    ;; This is a useful area.
@@ -127,7 +127,7 @@ The SOUP packet file name will be inserted at the %s.")
 	      (setq use-nov nil))
 	    ;; We assign the portion of `sequence' that is relevant to
 	    ;; this MSG packet to this packet.
-	    (while (and sequence (<= (car sequence) (cdr (car (car areas)))))
+	    (while (and sequence (<= (car sequence) (cdaar areas)))
 	      (push (car sequence) this-area-seq)
 	      (setq sequence (cdr sequence)))
 	    (setcar useful-areas (cons (nreverse this-area-seq)
@@ -165,12 +165,12 @@ The SOUP packet file name will be inserted at the %s.")
 	      'nov)
 	  ;; We insert HEADs.
 	  (while useful-areas
-	    (setq articles (car (car useful-areas))
+	    (setq articles (caar useful-areas)
 		  useful-areas (cdr useful-areas))
 	    (while articles
 	      (when (setq msg-buf
 			  (nnsoup-narrow-to-article 
-			   (car articles) (cdr (car useful-areas)) 'head))
+			   (car articles) (cdar useful-areas) 'head))
 		(goto-char (point-max))
 		(insert (format "221 %d Article retrieved.\n" (car articles)))
 		(insert-buffer-substring msg-buf)
@@ -344,7 +344,7 @@ The SOUP packet file name will be inserted at the %s.")
       (when (not mod-time)
 	(setcdr (cdr total-infolist) (delq info (cddr total-infolist)))))
     (if (cddr total-infolist)
-	(setcar active (car (car (car (cdr (cdr total-infolist))))))
+	(setcar active (caaadr (cdr total-infolist)))
       (setcar active (1+ (cdr active))))
     (nnsoup-write-active-file)
     ;; Return the articles that weren't expired.
@@ -513,7 +513,7 @@ The SOUP packet file name will be inserted at the %s.")
 	(set-buffer (nnsoup-index-buffer prefix))
 	(widen)
 	(goto-char (point-min))
-	(forward-line (- article (car (car area))))
+	(forward-line (- article (caar area)))
 	(setq beg (read (current-buffer)))
 	(forward-line 1)
 	(if (looking-at "[0-9]+")
@@ -536,7 +536,7 @@ The SOUP packet file name will be inserted at the %s.")
 	(let ((header (nnsoup-header 
 		       (gnus-soup-encoding-format 
 			(gnus-soup-area-encoding (nth 1 area))))))
-	  (re-search-forward header nil t (- article (car (car area))))
+	  (re-search-forward header nil t (- article (caar area)))
 	  (narrow-to-region
 	   (match-beginning 0)
 	   (if (re-search-forward header nil t)
@@ -585,7 +585,7 @@ The SOUP packet file name will be inserted at the %s.")
 (defun nnsoup-article-to-area (article group)
   "Return the area that ARTICLE in GROUP is located in."
   (let ((areas (cddr (assoc group nnsoup-group-alist))))
-    (while (and areas (< (cdr (car (car areas))) article))
+    (while (and areas (< (cdaar areas) article))
       (setq areas (cdr areas)))
     (and areas (car areas))))
 
@@ -725,8 +725,7 @@ The SOUP packet file name will be inserted at the %s.")
 		active)
 	(nconc elem
 	       (list
-		(list (cons (setq min (1+ (cdr (car (car
-						     (cdr elem))))))
+		(list (cons (setq min (1+ (cdaadr elem)))
 			    (+ min lines))
 		      (vector ident group "ncm" "" lines))))
 	(setcdr (cadr elem) (+ min lines)))
@@ -734,7 +733,7 @@ The SOUP packet file name will be inserted at the %s.")
     (message "")
     (setq nnsoup-group-alist active)
     (while active
-      (setcdr (car active) (nreverse (cdr (car active))))
+      (setcdr (car active) (nreverse (cdar active)))
       (setq active (cdr active)))
     (nnsoup-write-active-file)))
 

@@ -177,7 +177,7 @@ Uses the process/prefix convention."
 	(newsrc (cdr gnus-newsrc-alist)))
     (while newsrc
       (and (<= (nth 1 (car newsrc)) level)
-	   (gnus-soup-group-brew (car (car newsrc))))
+	   (gnus-soup-group-brew (caar newsrc)))
       (setq newsrc (cdr newsrc)))
     (gnus-soup-save-areas)))
 
@@ -309,12 +309,10 @@ If NOT-ALL, don't pack ticked articles."
     (save-excursion
       (while prefix
 	(gnus-set-work-buffer)
-	(insert (format "(setq gnus-soup-prev-prefix %d)\n" 
-			(cdr (car prefix))))
-	(gnus-make-directory (car (car prefix)))
+	(insert (format "(setq gnus-soup-prev-prefix %d)\n" (cdar prefix)))
+	(gnus-make-directory (caar prefix))
 	(write-region (point-min) (point-max)
-		      (concat (car (car prefix)) 
-			      gnus-soup-prefix-file) 
+		      (concat (caar prefix) gnus-soup-prefix-file) 
 		      nil 'nomesg)
 	(setq prefix (cdr prefix))))))
 

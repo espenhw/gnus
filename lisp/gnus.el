@@ -760,6 +760,14 @@ will be kept while the rest will be deleted before saving.")
 (defvar gnus-signature-separator "^-- *$"
   "Regexp matching signature separator.")
 
+(defvar gnus-signature-limit nil
+  "Provide a limit to what is considered a signature.
+If it is a number, no signature may not be longer (in characters) than
+that number.  If it is a function, the function will be called without
+any parameters, and if it returns nil, there is no signature in the
+buffer.  If it is a string, it will be used as a regexp.  If it
+matches, the text in question is not a signature.")
+
 (defvar gnus-auto-extend-newsgroup t
   "*If non-nil, extend newsgroup forward and backward when requested.")
 
@@ -794,7 +802,9 @@ The \"unread\" movement commands will stay on the same line if the
 current article is unread.")
 
 (defvar gnus-auto-center-summary t
-  "*If non-nil, always center the current summary buffer.")
+  "*If non-nil, always center the current summary buffer.
+In particular, if `vertical' do only vertical recentering.  If non-nil
+and non-`vertical', do both horizontal and vertical recentering.")
 
 (defvar gnus-break-pages t
   "*If non-nil, do page breaking on articles.
@@ -866,7 +876,7 @@ beginning of a line.")
 	       (mail 1.0 point)))
     (summary-reply
      (vertical 1.0
-	       (article 0.5)
+	       (article-copy 0.5)
 	       (mail 1.0 point)))
     (pick
      (vertical 1.0
@@ -895,7 +905,7 @@ beginning of a line.")
 	       (post 1.0 point)))
     (reply
      (vertical 1.0
-	       (article 0.5)
+	       (article-copy 0.5)
 	       (mail 1.0 point)))
     (mail-forward
      (vertical 1.0
@@ -920,7 +930,7 @@ beginning of a line.")
 	       ("*Shell Command Output*" 1.0)))
     (followup
      (vertical 1.0
-	       (article 0.5)
+	       (article-copy 0.5)
 	       (post 1.0 point)))
     (followup-yank
      (vertical 1.0
@@ -959,6 +969,7 @@ buffer configuration.")
     (picons . "*Picons*")
     (tree . gnus-tree-buffer)
     (info . gnus-info-buffer)
+    (article-copy . gnus-article-copy)
     (draft . gnus-draft-buffer))
   "Mapping from short symbols to buffer names or buffer variables.")
 
@@ -1694,7 +1705,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.45"
+(defconst gnus-version "September Gnus v0.46"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -1908,7 +1919,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
     (gnus-newsgroup-adaptive . gnus-use-adaptive-scoring)
     gnus-newsgroup-adaptive-score-file
     (gnus-newsgroup-expunged-tally . 0)
-    gnus-cache-removeable-articles gnus-newsgroup-cached
+    gnus-cache-removable-articles gnus-newsgroup-cached
     gnus-newsgroup-data gnus-newsgroup-data-reverse
     gnus-newsgroup-limit gnus-newsgroup-limits)
   "Variables that are buffer-local to the summary buffers.")
@@ -4861,7 +4872,7 @@ already."
 			      (gnus-parse-format
 			       gnus-group-mode-line-format
 			       gnus-group-mode-line-format-alist))))
-	   (gnus-tmp-news-server (car (cdr gnus-select-method)))
+	   (gnus-tmp-news-server (cadr gnus-select-method))
 	   (gnus-tmp-news-method (car gnus-select-method))
 	   (max-len 60)
 	   gnus-tmp-header			;Dummy binding for user-defined formats
@@ -5411,8 +5422,7 @@ of the Earth\".	 There is no undo."
 	(gnus-group-goto-group group)
 	(gnus-group-kill-group)
 	;; ... changing its name ...
-	(setcar (cdr (car gnus-list-of-killed-groups))
-		new-name)
+	(setcar (cdar gnus-list-of-killed-groups) new-name)
 	;; ... and then yanking it.  Magic!
 	(gnus-group-yank-group)
 	(gnus-set-active new-name (gnus-active group))
@@ -6060,7 +6070,7 @@ of groups killed."
 	   ((setq entry (gnus-gethash group gnus-newsrc-hashtb))
 	    (push (cons (car entry) (nth 2 entry))
 		  gnus-list-of-killed-groups)
-	    (setcdr (cdr entry) (cdr (cdr (cdr entry)))))
+	    (setcdr (cdr entry) (cdddr entry)))
 	   ((member group gnus-zombie-list)
 	    (setq gnus-zombie-list (delete group gnus-zombie-list)))))
 	(gnus-make-hashtable-from-newsrc-alist)))
@@ -6509,7 +6519,7 @@ The hook `gnus-exit-gnus-hook' is called before actually exiting."
   (let ((methods gnus-valid-select-methods)
 	func)
     (while methods
-      (if (fboundp (setq func (intern (concat (car (car methods))
+      (if (fboundp (setq func (intern (concat (caar methods)
 					      "-request-close"))))
 	  (funcall func))
       (setq methods (cdr methods)))))
@@ -6915,8 +6925,8 @@ The following commands are available:
     (while locals
       (if (consp (car locals))
 	  (progn
-	    (make-local-variable (car (car locals)))
-	    (set (car (car locals)) (eval (cdr (car locals)))))
+	    (make-local-variable (caar locals))
+	    (set (caar locals) (eval (cdar locals))))
 	(make-local-variable (car locals))
 	(set (car locals) nil))
       (setq locals (cdr locals))))
@@ -6963,8 +6973,8 @@ The following commands are available:
   (let ((locals gnus-summary-local-variables))
     (while locals
       (if (consp (car locals))
-	  (and (vectorp (car (car locals)))
-	       (set (car (car locals)) nil))
+	  (and (vectorp (caar locals))
+	       (set (caar locals) nil))
 	(and (vectorp (car locals))
 	     (set (car locals) nil)))
       (setq locals (cdr locals)))))
@@ -7018,7 +7028,7 @@ The following commands are available:
     (setcdr data (cons (gnus-data-make number mark pos header level)
 		       (cdr data)))
     (setq gnus-newsgroup-data-reverse nil)
-    (gnus-data-update-list (cdr (cdr data)) offset)))
+    (gnus-data-update-list (cddr data) offset)))
 
 (defun gnus-data-enter-list (after-article list &optional offset)
   (when list
@@ -7045,9 +7055,9 @@ The following commands are available:
 	(setq gnus-newsgroup-data (cdr gnus-newsgroup-data)
 	      gnus-newsgroup-data-reverse nil)
       (while (cdr data)
-	(and (= (gnus-data-number (car (cdr data))) article)
+	(and (= (gnus-data-number (cadr data)) article)
 	     (progn
-	       (setcdr data (cdr (cdr data)))
+	       (setcdr data (cddr data))
 	       (and offset (gnus-data-update-list (cdr data) offset))
 	       (setq data nil
 		     gnus-newsgroup-data-reverse nil)))
@@ -7573,7 +7583,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	  (result threads)
 	  subject hthread whole-subject)
       (while threads
-	(setq whole-subject (mail-header-subject (car (car threads))))
+	(setq whole-subject (mail-header-subject (caar threads)))
 	(if (and gnus-summary-gather-exclude-subject
 		 (string-match gnus-summary-gather-exclude-subject
 			       whole-subject))
@@ -7599,12 +7609,12 @@ If NO-DISPLAY, don't generate a summary buffer."
 	      (progn
 		;; We enter a dummy root into the thread, if we
 		;; haven't done that already.
-		(unless (stringp (car (car hthread)))
+		(unless (stringp (caar hthread))
 		  (setcar hthread (list whole-subject (car hthread))))
 		;; We add this new gathered thread to this gathered
 		;; thread.
 		(setcdr (car hthread)
-			(nconc (cdr (car hthread)) (list (car threads))))
+			(nconc (cdar hthread) (list (car threads))))
 		;; Remove it from the list of threads.
 		(setcdr prev (cdr threads))
 		(setq threads prev))
@@ -7657,9 +7667,9 @@ If NO-DISPLAY, don't generate a summary buffer."
   "Sort subtreads inside each gathered thread by article number."
   (let ((result threads))
     (while threads
-      (when (stringp (car (car threads)))
+      (when (stringp (caar threads))
 	(setcdr (car threads)
-		(sort (cdr (car threads)) 'gnus-thread-sort-by-number)))
+		(sort (cdar threads) 'gnus-thread-sort-by-number)))
       (setq threads (cdr threads)))
     result))
 
@@ -7744,7 +7754,7 @@ If NO-DISPLAY, don't generate a summary buffer."
        (when (not (car (symbol-value refs)))
 	 (setq heads (cdr (symbol-value refs)))
 	 (while heads
-	   (if (memq (mail-header-number (car (car heads)))
+	   (if (memq (mail-header-number (caar heads))
 		     gnus-newsgroup-dormant)
 	       (setq heads (cdr heads))
 	     (setq id (symbol-name refs))
@@ -7817,7 +7827,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(while thread
 	  (unless (memq (setq thr (gnus-id-to-thread
 				      (gnus-root-id
-				       (mail-header-id (car (car thread))))))
+				       (mail-header-id (caar thread)))))
 			roots)
 	    (push thr roots))
 	  (setq thread (cdr thread)))
@@ -7883,7 +7893,7 @@ If NO-DISPLAY, don't generate a summary buffer."
     ;; First go up in this thread until we find the root.
     (setq last-id (gnus-root-id id))
     (setq headers (list (car (gnus-id-to-thread last-id))
-			(car (car (cdr (gnus-id-to-thread last-id))))))
+			(caadr (gnus-id-to-thread last-id))))
     ;; We have now found the real root of this thread.	It might have
     ;; been gathered into some loose thread, so we have to search
     ;; through the threads to find the thread we wanted.
@@ -7898,7 +7908,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	    (progn
 	      (setq sub (cdr sub))
 	      (while sub
-		(when (member (car (car sub)) headers)
+		(when (member (caar sub) headers)
 		  (setq thread (car threads)
 			threads nil
 			sub nil))
@@ -8118,31 +8128,31 @@ or a straight list of headers."
 	(if (and (= gnus-tmp-level 0)
 		 (not (setq gnus-tmp-dummy-line nil))
 		 (or (not stack)
-		     (= (car (car stack)) 0))
+		     (= (caar stack) 0))
 		 (not gnus-tmp-false-parent)
 		 (or gnus-tmp-new-adopts new-roots))
 	    (if gnus-tmp-new-adopts
 		(setq gnus-tmp-level (if gnus-tmp-root-expunged 0 1)
 		      thread (list (car gnus-tmp-new-adopts))
-		      gnus-tmp-header (car (car thread))
+		      gnus-tmp-header (caar thread)
 		      gnus-tmp-new-adopts (cdr gnus-tmp-new-adopts))
 	      (if new-roots
 		  (setq thread (list (car new-roots))
-			gnus-tmp-header (car (car thread))
+			gnus-tmp-header (caar thread)
 			new-roots (cdr new-roots))))
 
 	  (if threads
 	      ;; If there are some threads, we do them before the
 	      ;; threads on the stack.
 	      (setq thread threads
-		    gnus-tmp-header (car (car thread)))
+		    gnus-tmp-header (caar thread))
 	    ;; There were no current threads, so we pop something off
 	    ;; the stack.
 	    (setq state (car stack)
 		  gnus-tmp-level (car state)
 		  thread (cdr state)
 		  stack (cdr stack)
-		  gnus-tmp-header (car (car thread)))))
+		  gnus-tmp-header (caar thread))))
 
 	(setq gnus-tmp-false-parent nil)
 	(setq gnus-tmp-root-expunged nil)
@@ -8154,14 +8164,14 @@ or a straight list of headers."
 	     ((eq gnus-summary-make-false-root 'adopt)
 	      ;; We let the first article adopt the rest.
 	      (setq gnus-tmp-new-adopts (nconc gnus-tmp-new-adopts
-					       (cdr (cdr (car thread)))))
+					       (cddar thread)))
 	      (setq gnus-tmp-gathered
 		    (nconc (mapcar
 			    (lambda (h) (mail-header-number (car h)))
-			    (cdr (cdr (car thread))))
+			    (cddar thread))
 			   gnus-tmp-gathered))
-	      (setq thread (cons (list (car (car thread))
-				       (car (cdr (car thread))))
+	      (setq thread (cons (list (caar thread)
+				       (cadar thread))
 				 (cdr thread)))
 	      (setq gnus-tmp-level -1
 		    gnus-tmp-false-parent t))
@@ -8170,7 +8180,7 @@ or a straight list of headers."
 	      (setq gnus-tmp-gathered
 		    (nconc (mapcar
 			    (lambda (h) (mail-header-number (car h)))
-			    (cdr (cdr (car thread))))
+			    (cddar thread))
 			   gnus-tmp-gathered))
 	      (setq gnus-tmp-level -1))
 	     ((eq gnus-summary-make-false-root 'dummy)
@@ -8204,11 +8214,11 @@ or a straight list of headers."
 	    (setq gnus-tmp-gathered
 		  (nconc (mapcar
 			  (lambda (h) (mail-header-number (car h)))
-			  (cdr (car thread)))
+			  (cdar thread))
 			 gnus-tmp-gathered))
-	    (setq gnus-tmp-new-adopts (if (cdr (car thread))
+	    (setq gnus-tmp-new-adopts (if (cdar thread)
 					  (append gnus-tmp-new-adopts
-						  (cdr (car thread)))
+						  (cdar thread))
 					gnus-tmp-new-adopts)
 		  thread-end t
 		  gnus-tmp-header nil)
@@ -8326,7 +8336,7 @@ or a straight list of headers."
 	(when (nth 1 thread)
 	  (push (cons (max 0 gnus-tmp-level) (nthcdr 1 thread)) stack))
 	(incf gnus-tmp-level)
-	(setq threads (if thread-end nil (cdr (car thread))))
+	(setq threads (if thread-end nil (cdar thread)))
 	(unless threads
 	  (setq gnus-tmp-level 0)))))
   (gnus-message 7 "Generating summary...done"))
@@ -8651,15 +8661,20 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	marked m)
     (or (not info)
 	(and (not (setq marked (nthcdr 3 info)))
-	     (setcdr (nthcdr 2 info)
-		     (list (list (cons type (gnus-compress-sequence
-					     articles t))))))
+	     (or (null articles)
+		 (setcdr (nthcdr 2 info)
+			 (list (list (cons type (gnus-compress-sequence
+						 articles t)))))))
 	(and (not (setq m (assq type (car marked))))
-	     (setcar marked
-		     (cons (cons type (gnus-compress-sequence articles t) )
-			   (car marked))))
+	     (or (null articles)
+		 (setcar marked
+			 (cons (cons type (gnus-compress-sequence articles t) )
+			       (car marked)))))
 	(if force
-	    (setcdr m (gnus-compress-sequence articles t))
+	    (if (null articles)
+		(setcar (nthcdr 3 info)
+			(delq (assq type marked) marked))
+	      (setcdr m (gnus-compress-sequence articles t)))
 	  (setcdr m (gnus-compress-sequence
 		     (sort (nconc (gnus-uncompress-range m)
 				  (copy-sequence articles)) '<) t))))))
@@ -8829,8 +8844,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 	    (while range
 	      (if (numberp (car range))
 		  (setq num (1+ num))
-		(setq num (+ num (- (1+ (cdr (car range)))
-				    (car (car range))))))
+		(setq num (+ num (- (1+ (cdar range)) (caar range)))))
 	      (setq range (cdr range)))
 	    (setq num (- (cdr active) num))))
 	  ;; Update the number of unread articles.
@@ -9300,7 +9314,9 @@ articles with that subject.  If BACKWARD, search backward instead."
   "Center point in window and redisplay frame.
 Also do horizontal recentering."
   (interactive)
-  (gnus-horizontal-recenter)
+  (when (and gnus-auto-center-summary
+	     (not (eq gnus-auto-center-summary 'vertical)))
+    (gnus-horizontal-recenter))
   (recenter n))
 
 (defun gnus-summary-recenter ()
@@ -9420,17 +9436,15 @@ displayed, no centering will be performed."
 	  (setq first (1+ (cdr read)))
 	;; `read' is a list of ranges.
 	(if (/= (setq nlast (or (and (numberp (car read)) (car read))
-				(car (car read)))) 1)
+				(caar read))) 1)
 	    (setq first 1))
 	(while read
 	  (if first
 	      (while (< first nlast)
 		(setq unread (cons first unread))
 		(setq first (1+ first))))
-	  (setq first (1+ (if (atom (car read)) (car read) (cdr (car read)))))
-	  (setq nlast (if (atom (car (cdr read)))
-			  (car (cdr read))
-			(car (car (cdr read)))))
+	  (setq first (1+ (if (atom (car read)) (car read) (cdar read))))
+	  (setq nlast (if (atom (cadr read)) (cadr read) (caadr read)))
 	  (setq read (cdr read)))))
     ;; And add the last unread articles.
     (while (<= first last)
@@ -10069,7 +10083,7 @@ If BACKWARD, the previous article is selected instead of the next."
 	  (switch-to-buffer gnus-group-buffer)
 	  (and group
 	       (gnus-group-jump-to-group group))
-	  (eval (car (cdr (assq key keystrokes))))
+	  (eval (cadr (assq key keystrokes)))
 	  (setq group (gnus-group-group-name))
 	  (switch-to-buffer obuf))
 	(setq ended nil))
@@ -12010,9 +12024,9 @@ even ticked and dormant ones."
     (let ((scored gnus-newsgroup-scored)
 	  headers h)
       (while scored
-	(or (gnus-summary-goto-subject (car (car scored)))
-	    (and (setq h (gnus-summary-article-header (car (car scored))))
-		 (< (cdr (car scored)) gnus-summary-expunge-below)
+	(or (gnus-summary-goto-subject (caar scored))
+	    (and (setq h (gnus-summary-article-header (caar scored)))
+		 (< (cdar scored) gnus-summary-expunge-below)
 		 (setq headers (cons h headers))))
 	(setq scored (cdr scored)))
       (or headers (error "No expunged articles hidden."))
@@ -12690,7 +12704,7 @@ save those articles instead."
 			   (concat prompt " ") split-name nil nil)))
 	      (concat gnus-article-save-directory
 		      (if (string= result "")
-			  (car (car split-name))
+			  (caar split-name)
 			result)))))))
     ;; If we have read a directory, we append the default file name.
     (when (file-directory-p file)
@@ -12858,9 +12872,9 @@ is initialized from the SAVEDIR environment variable."
 	  (setq files (list (cdr (assq 'name (car ps)))))
 	  (while (and ps (cdr ps)
 		      (string= (or action "1")
-			       (or (cdr (assq 'action (car (cdr ps)))) "2")))
-	    (setq files (cons (cdr (assq 'name (car (cdr ps)))) files))
-	    (setcdr ps (cdr (cdr ps))))
+			       (or (cdr (assq 'action (cadr ps))) "2")))
+	    (setq files (cons (cdr (assq 'name (cadr ps))) files))
+	    (setcdr ps (cddr ps)))
 	  (if (not files)
 	      ()
 	    (if (not (string-match "%s" action))
@@ -13742,14 +13756,6 @@ always hide."
 	     (nconc (list 'gnus-type 'signature)
 		    gnus-hidden-properties))))))))
 
-(defvar gnus-signature-limit nil
-  "Provide a limit to what is considered a signature.
-If it is a number, no signature may not be longer (in characters) than
-that number.  If it is a function, the function will be called without
-any parameters, and if it returns nil, there is no signature in the
-buffer.  If it is a string, it will be used as a regexp.  If it
-matches, the text in question is not a signature.")
-
 (defun gnus-narrow-to-signature ()
   "Narrow to the signature."
   (widen)
@@ -14235,7 +14241,7 @@ score the alt hierarchy, you'd say \"!alt.all\"."
     ;; Apply kills to specified newsgroups in command line arguments.
     (setq newsrc (cdr gnus-newsrc-alist))
     (while newsrc
-      (setq group (car (car newsrc)))
+      (setq group (caar newsrc))
       (setq entry (gnus-gethash group gnus-newsrc-hashtb))
       (if (and (<= (nth 1 (car newsrc)) gnus-level-subscribed)
 	       (and (car entry)
@@ -14464,7 +14470,7 @@ If CONFIRM is non-nil, the user will be asked for an NNTP server."
     (or (gnus-server-opened method)
 	(gnus-open-server method))))
 
-(defun gnus-check-server (&optional method)
+(defun gnus-check-server (&optional method silent)
   "Check whether the connection to METHOD is down.
 If METHOD is nil, use `gnus-select-method'.
 If it is down, start it up (again)."
@@ -14476,13 +14482,15 @@ If it is down, start it up (again)."
 	;; The stream is already opened.
 	t
       ;; Open the server.
-      (gnus-message 5 "Opening %s server%s..." (car method)
-		    (if (equal (nth 1 method) "") ""
-		      (format " on %s" (nth 1 method))))
+      (unless silent
+	(gnus-message 5 "Opening %s server%s..." (car method)
+		      (if (equal (nth 1 method) "") ""
+			(format " on %s" (nth 1 method)))))
       (run-hooks 'gnus-open-server-hook)
       (prog1
 	  (gnus-open-server method)
-	(message "")))))
+	(unless silent
+	  (message ""))))))
 
 (defun gnus-get-function (method function)
   "Return a function symbol based on METHOD and FUNCTION."
@@ -14746,8 +14754,9 @@ If GROUP is nil, all groups on METHOD are scanned."
       (let ((info (or info (gnus-get-info group)))
 	    method)
 	(if (or (not info)
-		(not (setq method (gnus-info-method info))))
-	    (setq method gnus-select-method)
+		(not (setq method (gnus-info-method info)))
+		(equal method "native"))
+	    gnus-select-method
 	  (setq method
 		(cond ((stringp method)
 		       (gnus-server-to-method method))
@@ -14755,7 +14764,9 @@ If GROUP is nil, all groups on METHOD are scanned."
 		       (gnus-server-extend-method group method))
 		      (t
 		       method)))
-	  (gnus-server-add-address method)))))
+	  (if (equal (cadr method) "")
+	      method
+	    (gnus-server-add-address method))))))
 
 (defun gnus-check-backend-function (func group)
   "Check whether GROUP supports function FUNC."
@@ -14916,9 +14927,9 @@ the server for new groups."
    (t
     (let ((regs gnus-newsrc-options-n))
       (while (and regs
-		  (not (string-match (car (car regs)) group)))
+		  (not (string-match (caar regs) group)))
 	(setq regs (cdr regs)))
-      (and regs (cdr (car regs)))))))
+      (and regs (cdar regs))))))
 
 (defun gnus-ask-server-for-new-groups ()
   (let* ((date (or gnus-newsrc-last-checked-date (current-time-string)))
@@ -15060,7 +15071,7 @@ the server for new groups."
 	(setq entry (gnus-gethash entry gnus-newsrc-hashtb)))
     (if (and (not oldlevel)
 	     (consp entry))
-	(setq oldlevel (car (cdr (nth 2 entry)))))
+	(setq oldlevel (cadr (nth 2 entry))))
     (if (stringp previous)
 	(setq previous (gnus-gethash previous gnus-newsrc-hashtb)))
 
@@ -15093,7 +15104,7 @@ the server for new groups."
 		  (setcdr (gnus-gethash (car (nth 3 entry))
 					gnus-newsrc-hashtb)
 			  (cdr entry)))
-	      (setcdr (cdr entry) (cdr (cdr (cdr entry))))))))
+	      (setcdr (cdr entry) (cdddr entry))))))
 
       ;; Finally we enter (if needed) the list where it is supposed to
       ;; go, and change the subscription level.  If it is to be killed,
@@ -15116,7 +15127,7 @@ the server for new groups."
 	    ;; It was alive, and it is going to stay alive, so we
 	    ;; just change the level and don't change any pointers or
 	    ;; hash table entries.
-	    (setcar (cdr (car (cdr (cdr entry)))) level)
+	    (setcar (cdaddr entry) level)
 	  (if (listp entry)
 	      (setq info (cdr entry)
 		    num (car entry))
@@ -15134,10 +15145,10 @@ the server for new groups."
 	  (unless previous
 	    (setq previous
 		  (let ((p gnus-newsrc-alist))
-		    (while (cdr (cdr p))
+		    (while (cddr p)
 		      (setq p (cdr p)))
 		    p)))
-	  (setq entry (cons info (cdr (cdr previous))))
+	  (setq entry (cons info (cddr previous)))
 	  (if (cdr previous)
 	      (progn
 		(setcdr (cdr previous) entry)
@@ -15147,8 +15158,7 @@ the server for new groups."
 	    (gnus-sethash group (cons num previous)
 			  gnus-newsrc-hashtb))
 	  (when (cdr entry)
-	    (setcdr (gnus-gethash (car (car (cdr entry))) gnus-newsrc-hashtb)
-		    entry)))))
+	    (setcdr (gnus-gethash (caadr entry) gnus-newsrc-hashtb) entry)))))
       (when gnus-group-change-level-function
 	(funcall gnus-group-change-level-function group level oldlevel)))))
 
@@ -15223,13 +15233,12 @@ newsgroup."
 		  gnus-activate-foreign-newsgroups)
 		 (t 0))
 	   level))
-	 info group active virtuals method)
+	 info group active method)
     (gnus-message 5 "Checking new news...")
 
     (while newsrc
-      (setq info (car newsrc)
-	    group (gnus-info-group info)
-	    active (gnus-active group))
+      (setq active (gnus-active (setq group (gnus-info-group
+					     (setq info (pop newsrc))))))
 
       ;; Check newsgroups.  If the user doesn't want to check them, or
       ;; they can't be checked (for instance, if the news server can't
@@ -15257,9 +15266,7 @@ newsgroup."
 	;; The group couldn't be reached, so we nix out the number of
 	;; unread articles and stuff.
 	(gnus-set-active group nil)
-	(setcar (gnus-gethash group gnus-newsrc-hashtb) t))
-
-      (setq newsrc (cdr newsrc)))
+	(setcar (gnus-gethash group gnus-newsrc-hashtb) t)))
 
     (gnus-message 5 "Checking new news...done")))
 
@@ -15272,14 +15279,14 @@ newsgroup."
     (setq gnus-newsrc-hashtb (gnus-make-hashtable (length alist)))
     (setq alist
 	  (setq prev (setq gnus-newsrc-alist
-			   (if (equal (car (car gnus-newsrc-alist))
+			   (if (equal (caar gnus-newsrc-alist)
 				      "dummy.group")
 			       gnus-newsrc-alist
 			     (cons (list "dummy.group" 0 nil) alist)))))
     (while alist
       (gnus-sethash
-       (car (car alist))
-       (cons (and ohashtb (car (gnus-gethash (car (car alist)) ohashtb)))
+       (caar alist)
+       (cons (and ohashtb (car (gnus-gethash (caar alist) ohashtb)))
 	     prev)
        gnus-newsrc-hashtb)
       (setq prev alist
@@ -15334,30 +15341,30 @@ newsgroup."
 	;; active limit.
 	(while (and (cdr range)
 		    (>= (car active)
-			(or (and (atom (car (cdr range))) (car (cdr range)))
-			    (car (car (cdr range))))))
+			(or (and (atom (cadr range)) (cadr range))
+			    (caadr range))))
 	  (if (numberp (car range))
 	      (setcar range
 		      (cons (car range)
-			    (or (and (numberp (car (cdr range)))
-				     (car (cdr range)))
-				(cdr (car (cdr range))))))
+			    (or (and (numberp (cadr range))
+				     (cadr range))
+				(cdadr range))))
 	    (setcdr (car range)
 		    (or (and (numberp (nth 1 range)) (nth 1 range))
-			(cdr (car (cdr range))))))
-	  (setcdr range (cdr (cdr range))))
+			(cdadr range))))
+	  (setcdr range (cddr range)))
 	;; Adjust the first element to be the same as the lower limit.
 	(if (and (not (atom (car range)))
-		 (< (cdr (car range)) (car active)))
+		 (< (cdar range) (car active)))
 	    (setcdr (car range) (1- (car active))))
 	;; Then we want to peel off any elements that are higher
 	;; than the upper active limit.
 	(let ((srange range))
 	  ;; Go past all legal elements.
 	  (while (and (cdr srange)
-		      (<= (or (and (atom (car (cdr srange)))
-				   (car (cdr srange)))
-			      (car (car (cdr srange)))) (cdr active)))
+		      (<= (or (and (atom (cadr srange))
+				   (cadr srange))
+			      (caadr srange)) (cdr active)))
 	    (setq srange (cdr srange)))
 	  (if (cdr srange)
 	      ;; Nuke all remaining illegal elements.
@@ -15365,14 +15372,14 @@ newsgroup."
 
 	  ;; Adjust the final element.
 	  (if (and (not (atom (car srange)))
-		   (> (cdr (car srange)) (cdr active)))
+		   (> (cdar srange) (cdr active)))
 	      (setcdr (car srange) (cdr active))))
 	;; Compute the number of unread articles.
 	(while range
 	  (setq num (+ num (- (1+ (or (and (atom (car range)) (car range))
-				      (cdr (car range))))
+				      (cdar range)))
 			      (or (and (atom (car range)) (car range))
-				  (car (car range))))))
+				  (caar range)))))
 	  (setq range (cdr range)))
 	(setq num (max 0 (- (cdr active) num)))))
       ;; Set the number of unread articles.
@@ -15508,8 +15515,7 @@ Returns whether the updating was successful."
 				 (concat " from " where) "")
 			     (car method))))
 	  (gnus-message 5 mesg)
-	  (if (not (gnus-check-server method))
-	      ()
+	  (when (gnus-check-server method)
 	    ;; Request that the backend scan its incoming messages.
 	    (and (gnus-check-backend-function 'request-scan (car method))
 		 (gnus-request-scan nil method))
@@ -15518,28 +15524,28 @@ Returns whether the updating was successful."
 		   (gnus-check-backend-function 'retrieve-groups (car method)))
 	      (let ((newsrc (cdr gnus-newsrc-alist))
 		    (gmethod (gnus-server-get-method nil method))
-		    groups)
-		(while newsrc
-		  (and (gnus-server-equal
-			(gnus-find-method-for-group
-			 (car (car newsrc)) (car newsrc))
-			gmethod)
-		       (setq groups (cons (gnus-group-real-name
-					   (car (car newsrc))) groups)))
-		  (setq newsrc (cdr newsrc)))
-		(gnus-check-server method)
-		(setq list-type (gnus-retrieve-groups groups method))
-		(cond
-		 ((not list-type)
-		  (gnus-message
-		   1 "Cannot read partial active file from %s server."
-		   (car method))
-		  (ding)
-		  (sit-for 2))
-		 ((eq list-type 'active)
-		  (gnus-active-to-gnus-format method gnus-active-hashtb))
-		 (t
-		  (gnus-groups-to-gnus-format method gnus-active-hashtb)))))
+		    groups info)
+		(while (setq info (pop newsrc))
+		  (when (gnus-server-equal
+			 (gnus-find-method-for-group 
+			  (gnus-info-group info) info)
+			 gmethod)
+		    (push (gnus-group-real-name (gnus-info-group info)) 
+			  groups)))
+		(when groups
+		  (gnus-check-server method)
+		  (setq list-type (gnus-retrieve-groups groups method))
+		  (cond
+		   ((not list-type)
+		    (gnus-message
+		     1 "Cannot read partial active file from %s server."
+		     (car method))
+		    (ding)
+		    (sit-for 2))
+		   ((eq list-type 'active)
+		    (gnus-active-to-gnus-format method gnus-active-hashtb))
+		   (t
+		    (gnus-groups-to-gnus-format method gnus-active-hashtb))))))
 	     (t
 	      (if (not (gnus-request-list method))
 		  (progn
@@ -15785,7 +15791,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	(let ((info (gnus-get-info (car group))))
 	  (if info
 	      (progn
-		(gnus-info-set-read info (cdr (cdr group)))
+		(gnus-info-set-read info (cddr group))
 		(gnus-info-set-level
 		 info (if (nth 1 group) gnus-level-default-subscribed
 			gnus-level-default-unsubscribed))
@@ -15796,7 +15802,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			 (list (car group)
 			       (if (nth 1 group) gnus-level-default-subscribed
 				 gnus-level-default-unsubscribed)
-			       (cdr (cdr group))))
+			       (cddr group)))
 		   gnus-newsrc-alist)))
 	  (if (setq m (assoc (car group) marked))
 	      (gnus-info-set-marks
@@ -15806,7 +15812,7 @@ If FORCE is non-nil, the .newsrc file is read."
 	(setq newsrc (cdr newsrc)))
       (setq newsrc killed)
       (while newsrc
-	(setcar newsrc (car (car newsrc)))
+	(setcar newsrc (caar newsrc))
 	(setq newsrc (cdr newsrc)))
       (setq gnus-killed-list killed))
     ;; The .el file version of this variable does not begin with
@@ -16005,8 +16011,8 @@ If FORCE is non-nil, the .newsrc file is read."
 	    entry mentry)
 	(while rc
 	  (or (null (nth 4 (car rc)))	; It's a native group.
-	      (assoc (car (car rc)) newsrc) ; It's already in the alist.
-	      (if (setq entry (assoc (car (car prev)) newsrc))
+	      (assoc (caar rc) newsrc) ; It's already in the alist.
+	      (if (setq entry (assoc (caar prev) newsrc))
 		  (setcdr (setq mentry (memq entry newsrc))
 			  (cons (car rc) (cdr mentry)))
 		(setq newsrc (cons (car rc) newsrc))))
@@ -16233,7 +16239,7 @@ If FORCE is non-nil, the .newsrc file is read."
 			      (list (nth 5 (file-attributes file)) file))
 			    slave-files)
 		    (lambda (f1 f2)
-		      (or (< (car (car f1)) (car (car f2)))
+		      (or (< (caar f1) (caar f2))
 			  (< (nth 1 (car f1)) (nth 1 (car f2)))))))
 	(while slave-files
 	  (erase-buffer)

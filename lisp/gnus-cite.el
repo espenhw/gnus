@@ -278,11 +278,10 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
       (save-restriction
 	(while (cdr marks)
 	  (widen)
-	  (narrow-to-region (car (car marks)) (car (cadr marks)))
-	  (let ((adaptive-fill-regexp (concat "^" (regexp-quote
-						   (cdr (car marks)))
-					      " *"))
-		(fill-prefix (cdr (car marks))))
+	  (narrow-to-region (caar marks) (caadr marks))
+	  (let ((adaptive-fill-regexp
+		 (concat "^" (regexp-quote (cdar marks)) " *"))
+		(fill-prefix (cdar marks)))
 	    (fill-region (point-min) (point-max)))
 	  (set-marker (caar marks) nil)
 	  (setq marks (cdr marks)))
@@ -369,7 +368,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(re-search-backward gnus-signature-separator nil t)
 	(setq total (count-lines start (point)))
 	(while atts
-	  (setq hiden (+ hiden (length (cdr (assoc (cdr (car atts))
+	  (setq hiden (+ hiden (length (cdr (assoc (cdar atts)
 						   gnus-cite-prefix-alist))))
 		atts (cdr atts)))
 	(if (or force
@@ -378,8 +377,7 @@ See also the documentation for `gnus-article-highlight-citation'."
 	    (progn
 	      (setq atts gnus-cite-attribution-alist)
 	      (while atts
-		(setq total (cdr (assoc (cdr (car atts)) 
-					gnus-cite-prefix-alist))
+		(setq total (cdr (assoc (cdar atts) gnus-cite-prefix-alist))
 		      atts (cdr atts))
 		(while total
 		  (setq hiden (car total)

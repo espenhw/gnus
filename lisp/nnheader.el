@@ -164,16 +164,16 @@ on your system, you could say something like:
     ;; use the definitions from the `defs' list where that is
     ;; possible. 
     (while s
-      (set (car (car s)) 
-	   (if (setq val (assq (car (car s)) defs))
+      (set (caar s) 
+	   (if (setq val (assq (caar s) defs))
 	       (nth 1 val)
 	     (nth 1 (car s))))
       (setq s (cdr s)))
     ;; The we go through the defs list and set any variables that were
     ;; not set in the first sweep.
     (while defs
-      (if (not (assq (car (car defs)) server))
-	  (set (car (car defs)) 
+      (if (not (assq (caar defs) server))
+	  (set (caar defs) 
 	       (if (and (symbolp (nth 1 (car defs)))
 			(not (boundp (nth 1 (car defs)))))
 		   (nth 1 (car defs))
@@ -183,15 +183,13 @@ on your system, you could say something like:
 (defun nnheader-save-variables (server)
   (let (out)
     (while server
-      (setq out (cons (list (car (car server)) 
-			    (symbol-value (car (car server))))
-		      out))
+      (push (list (caar server) (symbol-value (caar server))) out)
       (setq server (cdr server)))
     (nreverse out)))
 
 (defun nnheader-restore-variables (state)
   (while state
-    (set (car (car state)) (nth 1 (car state)))
+    (set (caar state) (nth 1 (car state)))
     (setq state (cdr state))))
 
 (defun nnheader-change-server (backend server defs)

@@ -466,14 +466,14 @@
 	  (forward-char -1)
 	  (while group-art
 	    (insert (format "X-Gnus-Newsgroup: %s:%d   %s\n" 
-			    (car (car group-art)) (cdr (car group-art))
+			    (caar group-art) (cdar group-art)
 			    (current-time-string)))
 	    (setq group-art (cdr group-art)))))
     t))
 
 (defun nnmbox-active-number (group)
   ;; Find the next article number in GROUP.
-  (let ((active (car (cdr (assoc group nnmbox-group-alist)))))
+  (let ((active (cadr (assoc group nnmbox-group-alist))))
     (if active
 	(setcdr active (1+ (cdr active)))
       ;; This group is new, so we create a new entry for it.

@@ -401,7 +401,7 @@ Returns the number of articles marked as read."
     (erase-buffer)
     (insert string ":\n\n")
     (while alist
-      (insert (format " %c: %s\n" (car (car alist)) (nth idx (car alist))))
+      (insert (format " %c: %s\n" (caar alist) (nth idx (car alist))))
       (setq alist (cdr alist)))))
 
 (defun gnus-kill-parse-gnus-kill-file ()
@@ -531,14 +531,14 @@ COMMAND must be a lisp expression or a string representing a key sequence."
   (if (or (not (consp (nth 2 object)))
 	  (not (consp (cdr (nth 2 object))))
 	  (and (eq 'quote (car (nth 2 object)))
-	       (not (consp (cdr (car (cdr (nth 2 object))))))))
+	       (not (consp (cdadr (nth 2 object))))))
       (concat "\n" (prin1-to-string object))
     (save-excursion
       (set-buffer (get-buffer-create "*Gnus PP*"))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert (format "\n(%S %S\n  '(" (nth 0 object) (nth 1 object)))
-      (let ((klist (car (cdr (nth 2 object))))
+      (let ((klist (cadr (nth 2 object)))
 	    (first t))
 	(while klist
 	  (insert (if first (progn (setq first nil) "")  "\n    ")

@@ -144,8 +144,8 @@
     (save-excursion
       (set-buffer nnbabyl-mbox-buffer)
       (narrow-to-region
-       (car (car nnbabyl-previous-buffer-mode))
-       (cdr (car nnbabyl-previous-buffer-mode)))
+       (caar nnbabyl-previous-buffer-mode)
+       (cdar nnbabyl-previous-buffer-mode))
       (funcall (cdr nnbabyl-previous-buffer-mode))))
   (setq nnbabyl-current-server nil
 	nnbabyl-mbox-buffer nil)
@@ -519,14 +519,14 @@
 	  (forward-char -1)
 	  (while group-art
 	    (insert (format "X-Gnus-Newsgroup: %s:%d   %s\n" 
-			    (car (car group-art)) (cdr (car group-art))
+			    (caar group-art) (cdar group-art)
 			    (current-time-string)))
 	    (setq group-art (cdr group-art)))))
     t))
 
 (defun nnbabyl-active-number (group)
   ;; Find the next article number in GROUP.
-  (let ((active (car (cdr (assoc group nnbabyl-group-alist)))))
+  (let ((active (cadr (assoc group nnbabyl-group-alist))))
     (if active
 	(setcdr active (1+ (cdr active)))
       ;; This group is new, so we create a new entry for it.

@@ -379,7 +379,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       (setq nndoc-article-type (funcall (cdr guess))))
     ;; Set the nndoc variables.
     (while defs
-      (set (intern (format "nndoc-%s" (car (car defs))))
+      (set (intern (format "nndoc-%s" (caar defs)))
 	   (cdr (pop defs))))))
 
 (defun nndoc-search (regexp)

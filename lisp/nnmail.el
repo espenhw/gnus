@@ -436,8 +436,8 @@ nn*-request-list should have been called before calling this function."
 	(erase-buffer)
 	(while group-assoc
 	  (setq group (pop group-assoc))
-	  (insert (format "%s %d %d y\n" (car group) (cdr (car (cdr group)) )
-			  (car (car (cdr group))))))
+	  (insert (format "%s %d %d y\n" (car group) (cdadr group) 
+			  (caadr group))))
 	(unless (file-exists-p (file-name-directory file-name))
 	  (make-directory (file-name-directory file-name) t))
 	(write-region 1 (point-max) (expand-file-name file-name) nil 'nomesg)
@@ -529,7 +529,7 @@ nn*-request-list should have been called before calling this function."
 	found)
     (while (not found)
       (if (re-search-forward delim nil t)
-	  (when (looking-at "[^ :]+:")
+	  (when (looking-at "[^\000-\037\177-\377\ :]+:")
 	    (forward-line -1)
 	    (setq found 'yes))
 	(setq found 'no)))
@@ -709,8 +709,7 @@ FUNC will be called with the group name to determine the article number."
 	;; If there is only just one group to put everything in, we
 	;; just return a list with just this one method in.
 	(setq group-art
-	      (list (cons (car (car methods))
-			  (funcall func (car (car methods))))))
+	      (list (cons (caar methods) (funcall func (caar methods)))))
       ;; We do actual comparison.
       (save-excursion
 	;; Find headers.
@@ -747,7 +746,7 @@ FUNC will be called with the group name to determine the article number."
 		(when (and
 		       (condition-case () 
 			   (if (stringp (nth 1 method))
-			       (re-search-backward (car (cdr method)) nil t)
+			       (re-search-backward (cadr method) nil t)
 			     ;; Function to say whether this is a match.
 			     (funcall (nth 1 method) (car method)))
 			 (error nil))
@@ -791,8 +790,7 @@ Return the number of characters in the body."
 			 (progn (forward-line 1) (point))))
       (insert (format "Xref: %s" (system-name)))
       (while group-alist
-	(insert (format " %s:%d" (car (car group-alist)) 
-			(cdr (car group-alist))))
+	(insert (format " %s:%d" (caar group-alist) (cdar group-alist)))
 	(setq group-alist (cdr group-alist)))
       (insert "\n"))))
 

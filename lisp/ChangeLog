@@ -1,4 +1,58 @@
+Wed Feb 28 04:39:49 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-read-active-file): Don't try to retrieve groups
+	when no can be found.
+	(gnus-find-method-for-group): Return "cleaner" select methods.
+
+	* gnus-uu.el (gnus-uu-uustrip-article): Don't loop forever if the
+	uudecode is silent.
+
+	* nnmail.el (nnmail-search-unix-mail-delim): Stricter 822-delim
+	format. 
+
+	* gnus.el (gnus-summary-local-variables): Didn't clear
+	`gnus-cache-removable-articles'.
+	(gnus-buffer-configuration): Display article-copy in reply and
+	followup. 
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Always insert new
+	Xref headers.
+
+	* gnus.el (gnus-add-marked-articles): Remove empty mark lists. 
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Propagate
+	`fetch-old'. 
+
+	* gnus.el (gnus-check-server): Accept a `silent' parameter.
+
+	* nnvirtual.el (nnvirtual-retrieve-headers): Make sure the proper
+	server is opened. 
+
+	* gnus.el (gnus-recenter): Don't do unconditional horizontal
+	recentering. 
+
+	* gnus-vis.el (gnus-article-next-button): Skip past intangible
+	buttons. 
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Don't do archiving
+	if `gnus-message-archive-method' is nil.
+
+	* gnus.el (gnus-find-method-for-group): Don't add `*-address'
+	indiscriminately. 
+
+Tue Feb 27 08:50:10 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-draft-group): Would return a bogus group
+	name. 
+
+	* nndir.el (nndir-open-server): Escape ftp errors.
+
+	* gnus-msg.el (gnus-mail-reply): Handle "always" Mail-Reply-To. 
+	(gnus-debug): Produced messy bug reports.
+
 Tue Feb 27 04:04:17 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: 0.45 is released.
 
 	* nntp.el (nntp-retry-on-break): New variable.
 	(nntp-send-command): Use it.

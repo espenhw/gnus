@@ -415,10 +415,10 @@
     (let ((ga group-art)
 	  first)
       (while ga
-	(nnmh-possibly-create-directory (car (car ga)))
+	(nnmh-possibly-create-directory (caar ga))
 	(let ((file (concat (nnmail-group-pathname 
-			     (car (car ga)) nnmh-directory) 
-			    (int-to-string (cdr (car ga))))))
+			     (caar ga) nnmh-directory) 
+			    (int-to-string (cdar ga)))))
 	  (if first
 	      ;; It was already saved, so we just make a hard link.
 	      (funcall nnmail-crosspost-link-function first file t)
@@ -430,7 +430,7 @@
 
 (defun nnmh-active-number (group)
   "Compute the next article number in GROUP."
-  (let ((active (car (cdr (assoc group nnmh-group-alist)))))
+  (let ((active (cadr (assoc group nnmh-group-alist))))
     ;; The group wasn't known to nnmh, so we just create an active
     ;; entry for it.   
     (or active
@@ -468,7 +468,7 @@
     ;; Remove all deleted articles.
     (let ((art articles))
       (while art
-	(if (not (memq (car (car art)) files))
+	(if (not (memq (caar art) files))
 	    (setq articles (delq (car art) articles)))
 	(setq art (cdr art))))
     ;; Check whether the highest-numbered articles really are the ones
@@ -477,10 +477,10 @@
       (while (and art 
 		  (not (equal 
 			(nth 5 (file-attributes 
-				(concat dir (int-to-string (car (car art))))))
-			(cdr (car art)))))
+				(concat dir (int-to-string (caar art)))))
+			(cdar art))))
 	(setq articles (delq (car art) articles))
-	(setq new (cons (car (car art)) new))
+	(setq new (cons (caar art) new))
 	(setq art (cdr art))))
     ;; Go through all the new articles and add them, and their
     ;; time-stamps to the list.

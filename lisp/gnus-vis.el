@@ -855,14 +855,14 @@ ticked: The number of ticked articles in the group.
 			      (cons 
 			       (apply 
 				'nconc
-				(list (car (car ts)))
+				(list (caar ts))
 				(let ((ps perms)
 				      outp)
 				  (while ps
 				    (setq outp
 					  (cons
 					   (vector
-					    (car (car ps)) 
+					    (caar ps) 
 					    (list
 					     'gnus-summary-score-entry
 					     (nth 1 header)
@@ -1229,6 +1229,7 @@ If N is negative, move backward instead."
   (interactive "p")
   (let ((function (if (< n 0) 'prev-single-property-change
 		    'next-single-property-change))
+	(inhibit-point-motion-hooks t)
 	(limit (if (< n 0) (point-min) (point-max))))
     (setq n (abs n))
     (while (and (not (= limit (point)))
@@ -1238,6 +1239,9 @@ If N is negative, move backward instead."
 	(goto-char (funcall function (point) 'gnus-callback nil limit)))
       ;; Go to the next (or previous) button.
       (gnus-goto-char (funcall function (point) 'gnus-callback nil limit))
+      ;; Skip past intangible buttons.
+      (when (get-text-property (point) 'intangible)
+	(incf n))
       (decf n))
     (unless (zerop n)
       (gnus-message 5 "No more buttons"))

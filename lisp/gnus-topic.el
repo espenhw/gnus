@@ -235,10 +235,10 @@ articles in the topic and its subtopics."
       (while (and (zerop (forward-line 1))
 		  (> (or (gnus-group-topic-level) (1+ level)) level)))
       (delete-region beg (point))
-      (setcar (cdr (car (cdr (gnus-topic-find-topology topic))))
+      (setcar (cdadr (gnus-topic-find-topology topic))
 	      (if insert 'visible 'invisible))
       (when hide
-	(setcdr (cdr (car (cdr (gnus-topic-find-topology topic))))
+	(setcdr (cdadr (gnus-topic-find-topology topic))
 		(list hide)))
       (unless total-remove
 	(gnus-topic-insert-topic topic in-level)))))
@@ -292,12 +292,12 @@ articles in the topic and its subtopics."
 
 (defun gnus-topic-previous-topic (topic)
   "Return the previous topic on the same level as TOPIC."
-  (let ((top (cdr (cdr (gnus-topic-find-topology
-			(gnus-topic-parent-topic topic))))))
-    (unless (equal topic (car (car (car top))))
-      (while (and top (not (equal (car (car (car (cdr top)))) topic)))
+  (let ((top (cddr (gnus-topic-find-topology
+			(gnus-topic-parent-topic topic)))))
+    (unless (equal topic (caaar top))
+      (while (and top (not (equal (caaadr top) topic)))
 	(setq top (cdr top)))
-      (car (car (car top))))))
+      (caaar top))))
 
 (defun gnus-topic-parent-topic (topic &optional topology)
   "Return the parent of TOPIC."
@@ -306,7 +306,7 @@ articles in the topic and its subtopics."
   (let ((parent (car (pop topology)))
 	result found)
     (while (and topology
-		(not (setq found (equal (car (car (car topology))) topic)))
+		(not (setq found (equal (caaar topology) topic)))
 		(not (setq result (gnus-topic-parent-topic topic 
 							   (car topology)))))
       (setq topology (cdr topology)))
@@ -319,7 +319,7 @@ articles in the topic and its subtopics."
     (setq level 0))
   (let ((top topology)
 	result)
-    (if (equal (car (car topology)) topic)
+    (if (equal (caar topology) topic)
 	(progn
 	  (when remove
 	    (delq topology remove))
@@ -342,9 +342,9 @@ articles in the topic and its subtopics."
 	(alist gnus-topic-alist)
 	changed)
     (while alist
-      (unless (member (car (car alist)) topics)
+      (unless (member (caar alist) topics)
 	(nconc gnus-topic-topology
-	       (list (list (list (car (car alist)) 'visible))))
+	       (list (list (list (caar alist) 'visible))))
 	(setq changed t))
       (setq alist (cdr alist)))
     (when changed
@@ -363,7 +363,7 @@ articles in the topic and its subtopics."
   (unless topology
     (setq topology gnus-topic-topology 
 	  gnus-tmp-topics nil))
-  (push (car (car topology)) gnus-tmp-topics)
+  (push (caar topology) gnus-tmp-topics)
   (mapcar 'gnus-topic-list (cdr topology))
   gnus-tmp-topics)
 
@@ -391,8 +391,8 @@ articles in the topic and its subtopics."
   (let ((alist gnus-topic-alist)
 	out)
     (while alist
-      (when (member group (cdr (car alist)))
-	(setq out (car (car alist))
+      (when (member group (cdar alist))
+	(setq out (caar alist)
 	      alist nil))
       (setq alist (cdr alist)))
     out))
@@ -669,14 +669,14 @@ group."
   (when (gnus-topic-find-topology topic)
     (error "Topic aleady exists"))
   (unless parent
-    (setq parent (car (car gnus-topic-topology))))
+    (setq parent (caar gnus-topic-topology)))
   (let ((top (cdr (gnus-topic-find-topology parent))))
     (unless top
       (error "No such parent topic: %s" parent))
     (if previous
 	(progn
 	  (while (and (cdr top)
-		      (not (equal (car (car (car (cdr top)))) previous)))
+		      (not (equal (caaadr top) previous)))
 	    (setq top (cdr top)))
 	  (setcdr top (cons (list (list topic 'visible)) (cdr top))))
       (nconc top (list (list (list topic 'visible)))))
@@ -802,7 +802,7 @@ group."
 	(if (not (cdr alist))
 	    (setcdr alist (nconc yanked (cdr alist)))
 	  (while (cdr alist)
-	    (when (equal (car (cdr alist)) prev)
+	    (when (equal (cadr alist) prev)
 	      (setcdr alist (nconc yanked (cdr alist)))
 	      (setq alist nil))
 	    (setq alist (cdr alist))))))
@@ -884,7 +884,7 @@ group."
   (let ((top (gnus-topic-find-topology old-name))
 	(entry (assoc old-name gnus-topic-alist)))
     (when top
-      (setcar (car (cdr top)) new-name))
+      (setcar (cadr top) new-name))
     (when entry 
       (setcar entry new-name))
     (gnus-group-list-groups)))

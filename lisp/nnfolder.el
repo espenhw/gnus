@@ -171,7 +171,7 @@ it.")
 (defun nnfolder-request-close ()
   (let ((alist nnfolder-buffer-alist))
     (while alist
-      (nnfolder-close-group (car (car alist)) nil t)
+      (nnfolder-close-group (caar alist) nil t)
       (setq alist (cdr alist))))
   (setq nnfolder-buffer-alist nil
 	nnfolder-current-server nil
@@ -225,7 +225,7 @@ it.")
 	    t)
 	(let* ((active (assoc group nnfolder-group-alist))
 	       (group (car active))
-	       (range (car (cdr active)))
+	       (range (cadr active))
 	       (minactive (car range))
 	       (maxactive (cdr range)))
 	  (cond 
@@ -322,7 +322,7 @@ it.")
 	(setq articles (cdr articles)))
       (and (buffer-modified-p) (save-buffer))
       ;; Find the lowest active article in this group.
-      (let* ((active (car (cdr (assoc newsgroup nnfolder-group-alist))))
+      (let* ((active (cadr (assoc newsgroup nnfolder-group-alist)))
 	     (marker (concat "\n" nnfolder-article-marker))
 	     (number "[0-9]+")
 	     (activemin (cdr active)))
@@ -601,7 +601,7 @@ it.")
   (save-excursion 
     ;; Find the next article number in GROUP.
     (prog1
-	(let ((active (car (cdr (assoc group nnfolder-group-alist)))))
+	(let ((active (cadr (assoc group nnfolder-group-alist))))
 	  (if active
 	      (setcdr active (1+ (cdr active)))
 	    ;; This group is new, so we create a new entry for it.
@@ -642,8 +642,8 @@ it.")
     (let ((delim (concat "^" rmail-unix-mail-delimiter))
 	  (marker (concat "\n" nnfolder-article-marker))
 	  (number "[0-9]+")
-	  (active (car (cdr (assoc nnfolder-current-group 
-				   nnfolder-group-alist))))
+	  (active (cadr (assoc nnfolder-current-group 
+				   nnfolder-group-alist)))
 	  activenumber activemin start end)
       (goto-char (point-min))
       ;;

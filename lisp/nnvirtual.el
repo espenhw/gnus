@@ -74,11 +74,13 @@ virtual group.")
 	      beg cgroup active article result prefix)
 	  (while articles
 	    (setq article (assq (pop articles) nnvirtual-mapping))
-	    (when (setq cgroup (cadr article))
-	      (gnus-request-group cgroup t)
+	    (when (and (setq cgroup (cadr article))
+		       (gnus-check-server
+			(gnus-find-method-for-group cgroup) t)
+		       (gnus-request-group cgroup t))
 	      (setq prefix (gnus-group-real-prefix cgroup))
 	      (when (setq result (gnus-retrieve-headers 
-				  (list (caddr article)) cgroup))
+				  (list (caddr article)) cgroup fetch-old))
 		(set-buffer nntp-server-buffer)
 		(if (zerop (buffer-size))
 		    (nconc (assq cgroup unfetched) (list (caddr article)))
@@ -111,6 +113,8 @@ virtual group.")
 			      (insert ?\t))
 			  (insert (format "Xref: %s %s:%d\t" (system-name) 
 					  cgroup (caddr article))))
+		      (insert (format "Xref: %s %s:%d " (system-name) 
+				      cgroup (caddr article)))
 		      (if (not (string= "" prefix))
 			  (while (re-search-forward 
 				  "[^ ]+:[0-9]+"
@@ -325,10 +329,10 @@ virtual group.")
 			 nnvirtual-current-group '(nnvirtual ""))))
 	(setq nnvirtual-component-groups nil)
 	(while newsrc
-	  (and (string-match regexp (car (car newsrc)))
-	       (not (string= (car (car newsrc)) virt-group))
+	  (and (string-match regexp (caar newsrc))
+	       (not (string= (caar newsrc) virt-group))
 	       (setq nnvirtual-component-groups
-		     (cons (car (car newsrc)) nnvirtual-component-groups)))
+		     (cons (caar newsrc) nnvirtual-component-groups)))
 	  (setq newsrc (cdr newsrc))))
       (if nnvirtual-component-groups
 	  (progn

@@ -476,7 +476,7 @@ there.")
 			    (nth 2 tdate) (nth 1 tdate) (nth 0 tdate) 
 			    (nth 4 tdate))))
     (+ (* (car unix) 65536.0)
-       (car (cdr unix)))))
+       (cadr unix))))
 
 (provide 'nnspool)
 

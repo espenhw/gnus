@@ -477,12 +477,12 @@ all. This may very well take some time.")
 	;; It wasn't there, so we look through the other groups as well.
 	(while (and (not number)
 		    alist)
-	  (or (string= (car (car alist)) nnml-current-group)
-	      (setq number (nnml-find-id (car (car alist)) id)))
+	  (or (string= (caar alist) nnml-current-group)
+	      (setq number (nnml-find-id (caar alist) id)))
 	  (or number
 	      (setq alist (cdr alist))))
 	(and number
-	     (cons (car (car alist)) number))))))
+	     (cons (caar alist) number))))))
 
 (defun nnml-find-id (group id)
   (erase-buffer)
@@ -570,10 +570,10 @@ all. This may very well take some time.")
     (let ((ga group-art)
 	  first)
       (while ga
-	(nnml-possibly-create-directory (car (car ga)))
+	(nnml-possibly-create-directory (caar ga))
 	(let ((file (concat (nnmail-group-pathname 
-			     (car (car ga)) nnml-directory)
-			    (int-to-string (cdr (car ga))))))
+			     (caar ga) nnml-directory)
+			    (int-to-string (cdar ga)))))
 	  (if first
 	      ;; It was already saved, so we just make a hard link.
 	      (funcall nnmail-crosspost-link-function first file t)
@@ -589,13 +589,13 @@ all. This may very well take some time.")
     ;; Output the nov line to all nov databases that should have it.
     (let ((ga group-art))
       (while ga
-	(nnml-add-nov (car (car ga)) (cdr (car ga)) nov-line)
+	(nnml-add-nov (caar ga) (cdar ga) nov-line)
 	(setq ga (cdr ga))))
     group-art))
 
 (defun nnml-active-number (group)
   "Compute the next article number in GROUP."
-  (let ((active (car (cdr (assoc group nnml-group-alist)))))
+  (let ((active (cadr (assoc group nnml-group-alist))))
     ;; The group wasn't known to nnml, so we just create an active
     ;; entry for it.   
     (or active
@@ -689,8 +689,8 @@ all. This may very well take some time.")
 (defun nnml-save-nov ()
   (save-excursion
     (while nnml-nov-buffer-alist
-      (when (buffer-name (cdr (car nnml-nov-buffer-alist)))
-	(set-buffer (cdr (car nnml-nov-buffer-alist)))
+      (when (buffer-name (cdar nnml-nov-buffer-alist))
+	(set-buffer (cdar nnml-nov-buffer-alist))
 	(and (buffer-modified-p)
 	     (write-region 
 	      1 (point-max) (buffer-file-name) nil 'nomesg))

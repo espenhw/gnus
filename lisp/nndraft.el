@@ -152,7 +152,7 @@
       nndraft-buffer-name)))
 
 (defun nndraft-request-update-info (group info &optional server)
-  (setcar (cdr (cdr info)) nil)
+  (setcar (cddr info) nil)
   (when (nth 3 info)
     (setcar (nthcdr 3 info) nil)))
 

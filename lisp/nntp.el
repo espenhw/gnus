@@ -689,7 +689,7 @@ It will prompt for a password."
 		  (not (equal proc (nth 1 (assq 'nntp-server-process
 						(car servers))))))
 	(setq servers (cdr servers)))
-      (setq server (car (car servers))))
+      (setq server (caar servers)))
     (when (and server
 	       nntp-warn-about-losing-connection)
       (message "nntp: Connection closed to server %s" server)
@@ -1325,7 +1325,7 @@ defining this function as macro."
 	  nart)
       (while (and (>= (setq max (1- max)) 0)
 		  articles)
-	(or (memq (setq nart (car (car articles))) nntp-async-fetched)
+	(or (memq (setq nart (caar articles)) nntp-async-fetched)
 	    (progn
 	      (nntp-async-send-strings "ARTICLE " (int-to-string nart))
 	      (setq nntp-async-fetched (cons nart nntp-async-fetched))))
