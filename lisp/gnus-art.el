@@ -756,7 +756,11 @@ See the manual for details."
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-buttonize-head 'highlight t)
 
-(defcustom gnus-treat-emphasize 50000
+(defcustom gnus-treat-emphasize 
+  (and (or window-system
+	   (featurep 'xemacs)
+	   (>= (string-to-number emacs-version) 21))
+       50000)
   "Emphasize text.
 Valid values are nil, t, `head', `last', an integer or a predicate.
 See the manual for details."
