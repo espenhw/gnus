@@ -1,3 +1,7 @@
+2002-12-05  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* etc/smilies/*.pbm: Made them binary.
+
 2002-11-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* etc/smilies/blink.xpm: Changed smileys and some new ones from
