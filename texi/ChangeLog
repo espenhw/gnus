@@ -1,3 +1,8 @@
+2003-11-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Finding the Parent): nnml does supports fetching by
+	MID.
+
 2003-11-20  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Debugging IMAP): Add.

@@ -9620,10 +9620,10 @@ then ask Google if that fails:
         (nnweb "google" (nnweb-type google))))
 @end lisp
 
-Most of the mail back ends support fetching by @code{Message-ID}, but
-do not do a particularly excellent job at it.  That is, @code{nnmbox},
-@code{nnbabyl}, and @code{nnmaildir} are able to locate articles from
-any groups, while @code{nnml}, @code{nnfolder}, and @code{nnimap} are
+Most of the mail back ends support fetching by @code{Message-ID}, but do
+not do a particularly excellent job at it.  That is, @code{nnmbox},
+@code{nnbabyl}, @code{nnmaildir}, @code{nnml}, are able to locate
+articles from any groups, while @code{nnfolder}, and @code{nnimap} are
 only able to locate articles that have been posted to the current group.
 (Anything else would be too time consuming.)  @code{nnmh} does not
 support this at all.
