@@ -1,3 +1,11 @@
+2002-12-30  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-use-dig): new variable for blackhole checking
+	through dig.el
+	(spam-check-blackholes): added dig.el checking functionality and
+	more verbose reporting; query-dig is autoloaded from dig.el
+	
+
 2002-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* message.el (message-required-headers): New variable.
