@@ -507,10 +507,10 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 	   (gnus-get-function gnus-command-method 'request-expire-articles)
 	   articles (gnus-group-real-name group) (nth 1 gnus-command-method)
 	   force)))
-    (when (and gnus-agent gnus-agent-cache
-	       (gnus-sorted-difference articles not-deleted))
-      (gnus-agent-expire (gnus-sorted-difference articles not-deleted)
-			 group 'force))
+    (when (and gnus-agent gnus-agent-cache (gnus-agent-method-p gnus-command-method))
+      (let ((expired-articles (gnus-sorted-difference articles not-deleted)))
+        (when expired-articles
+          (gnus-agent-expire expired-articles group 'force))))
     not-deleted))
 
 (defun gnus-request-move-article (article group server accept-function &optional last)
@@ -518,7 +518,7 @@ If GROUP is nil, all groups on GNUS-COMMAND-METHOD are scanned."
 	 (result (funcall (gnus-get-function gnus-command-method 'request-move-article)
 			  article (gnus-group-real-name group)
 			  (nth 1 gnus-command-method) accept-function last)))
-    (when (and result gnus-agent gnus-agent-cache)
+    (when (and result gnus-agent gnus-agent-cache (gnus-agent-method-p gnus-command-method))
       (gnus-agent-expire (list article) group 'force))
     result))
     
