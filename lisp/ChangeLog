@@ -1,3 +1,7 @@
+1999-11-05 01:27:49  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-expire): Remove bad line in NOV.
+
 1999-11-04 22:20:35  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml.el (mml-generate-mime-1): Read attached binary file in

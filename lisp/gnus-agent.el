@@ -1471,9 +1471,10 @@ The following commands are available:
 				 (or (not (numberp
 					   (setq art (read (current-buffer)))))
 				     (< art article)))
-		       (if (file-exists-p
-			    (gnus-agent-article-name
-			     (number-to-string art) group))
+		       (if (and (numberp art) 
+				(file-exists-p
+				 (gnus-agent-article-name
+				  (number-to-string art) group)))
 			   (progn
 			     (unless lowest
 			       (setq lowest art))
