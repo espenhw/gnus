@@ -113,6 +113,29 @@ than subr.el."
 	      (put 'car 'side-effect-free tmp)))
 	ad-do-it))))
 
+(when (and (not (featurep 'xemacs))
+	   (byte-optimize-form '(and (> 0 1) foo) t))
+  (defadvice byte-optimize-form-code-walker
+    (around fix-bug-in-and/or-forms (form for-effect) activate)
+    "Optimize the rest of the and/or forms.
+It has been fixed in XEmacs before releasing 21.4 and also has been
+fixed in Emacs after 21.3."
+    (if (and for-effect (memq (car-safe form) '(and or)))
+	(let ((fn (car form))
+	      (backwards (reverse (cdr form))))
+	  (while (and backwards
+		      (null (setcar backwards
+				    (byte-optimize-form (car backwards) t))))
+	    (setq backwards (cdr backwards)))
+	  (if (and (cdr form) (null backwards))
+	      (byte-compile-log
+	       "  all subforms of %s called for effect; deleted" form))
+	  (when backwards
+	    (setcdr backwards
+		    (mapcar 'byte-optimize-form (cdr backwards))))
+	  (setq ad-return-value (cons fn (nreverse backwards))))
+      ad-do-it)))
+
 (push srcdir load-path)
 (load (expand-file-name "lpath.el" srcdir) nil t)
 
