@@ -1027,7 +1027,7 @@ When either list is nil, the other is returned."
 	 (gnus-check-backend-function
 	  'request-move-article gnus-newsgroup-name))
 	(respool-method (gnus-find-method-for-group gnus-newsgroup-name))
-	article mark todo deletep respool)
+	article mark deletep respool)
 
     (when (member 'respool groups)
       (setq respool t)			; boolean for later
