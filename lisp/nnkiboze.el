@@ -153,17 +153,19 @@
 (deffoo nnkiboze-request-delete-group (group &optional force server)
   (nnkiboze-possibly-change-group group)
   (when force
-     (let ((files (list (nnkiboze-nov-file-name)
-			(concat nnkiboze-directory
-                                (nnheader-translate-file-chars
-                                 (concat group ".newsrc")))
-			(nnkiboze-score-file group))))
+     (let ((files (nconc
+		   (nnkiboze-score-file group)
+		   (list (nnkiboze-nov-file-name)
+			 (concat nnkiboze-directory
+				 (nnheader-translate-file-chars
+				  (concat group ".newsrc")))))))
        (while files
 	 (and (file-exists-p (car files))
 	      (file-writable-p (car files))
 	      (delete-file (car files)))
 	 (setq files (cdr files)))))
-  (setq nnkiboze-current-group nil))
+  (setq nnkiboze-current-group nil)
+  t)
 
 (nnoo-define-skeleton nnkiboze)
 

@@ -1258,6 +1258,7 @@ C-c C-w  message-insert-signature (insert `message-signature-file' file).
 C-c C-y  message-yank-original (insert current message, if any).
 C-c C-q  message-fill-yanked-message (fill what was yanked).
 C-c C-e  message-elide-region (elide the text between point and mark).
+C-c C-z  message-kill-to-signature (kill the text up to the signature).
 C-c C-r  message-caesar-buffer-body (rot13 the message body)."
   (interactive)
   (kill-all-local-variables)

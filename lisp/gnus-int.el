@@ -353,10 +353,31 @@ If BUFFER, insert the article in that group."
 
 (defun gnus-request-body (article group)
   "Request the body of ARTICLE in GROUP."
-  (let ((gnus-command-method (gnus-find-method-for-group group)))
-    (funcall (gnus-get-function gnus-command-method 'request-body)
-	     article (gnus-group-real-name group)
-	     (nth 1 gnus-command-method))))
+  (let* ((gnus-command-method (gnus-find-method-for-group group))
+	 (head (gnus-get-function gnus-command-method 'request-body t))
+	 res clean-up)
+    (cond
+     ;; Check the cache.
+     ((and gnus-use-cache
+	   (numberp article)
+	   (gnus-cache-request-article article group))
+      (setq res (cons group article)
+	    clean-up t))
+     ;; Use `head' function.
+     ((fboundp head)
+      (setq res (funcall head article (gnus-group-real-name group)
+			 (nth 1 gnus-command-method))))
+     ;; Use `article' function.
+     (t
+      (setq res (gnus-request-article article group)
+	    clean-up t)))
+    (when clean-up
+      (save-excursion
+	(set-buffer nntp-server-buffer)
+	(goto-char (point-min))
+	(when (search-forward "\n\n" nil t)
+	  (delete-region (point-min) (1- (point))))))
+    res))
 
 (defun gnus-request-post (gnus-command-method)
   "Post the current buffer using GNUS-COMMAND-METHOD."

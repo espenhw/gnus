@@ -330,7 +330,7 @@ Should be one of the following symbols.
  f: fuzzy string
  r: regexp string
  b: before date
- a: at date
+ a: after date
  n: this date
  <: less than number
  >: greater than number
@@ -343,7 +343,7 @@ If nil, the user will be asked for a match type."
 		 (const :tag "fuzzy string" f)
 		 (const :tag "regexp string" r)
 		 (const :tag "before date" b)
-		 (const :tag "at date" a)
+		 (const :tag "after date" a)
 		 (const :tag "this date" n)
 		 (const :tag "less than number" <)
 		 (const :tag "greater than number" >)
@@ -509,8 +509,8 @@ used as score."
 	    (?z s "substring" body-string)
 	    (?p r "regexp string" body-string)
 	    (?b before "before date" date)
-	    (?a at "at date" date)
-	    (?n now "this date" date)
+	    (?a after "after date" date)
+	    (?n at "this date" date)
 	    (?< < "less than number" number)
 	    (?> > "greater than number" number)
 	    (?= = "equal to number" number)))

@@ -1,3 +1,44 @@
+Sun Mar 29 09:56:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.4 is released.
+
+Sun Mar 29 09:47:58 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnkiboze.el (nnkiboze-request-delete-group): Would bug out when
+	deleting files.
+
+Sat Mar 28 08:48:31 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-encode-text): Use `nntp-end-of-line'.
+
+Thu Mar 26 15:29:51 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-agent.el (gnus-agent-expire): Check size of history file.
+
+	* message.el (message-mode): Doc fix.
+
+Mon Mar 23 14:21:34 1998  Mike McEwan  <mike@lotusland.demon.co.uk>
+
+	* gnus-score.el (gnus-score-default-type): Doc fix.
+
+Mon Mar 23 14:12:01 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-int.el (gnus-request-body): Do the same as HEAD.
+
+	* gnus-art.el (gnus-article-edit-article-hook): Removed.
+
+Mon Mar 23 14:09:56 1998  jari aalto  <jari.aalto@poboxes.com>
+
+	* gnus-art.el (gnus-article-edit-article-hook): New hook.
+
+1998-03-19  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* nntp.el (nntp-open-rlogin): Wrap in save-excursion
+
+Thu Mar 19 16:43:59 1998  Joe Buehler  <jhpb@hekimian.com>
+
+	* gnus-util.el (gnus-date-iso8601): Use simple string.
+
 Thu Mar 19 15:18:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.3 is released.

@@ -984,8 +984,12 @@ password contained in '~/.nntp-authinfo'."
     (goto-char (point-min))
     (while (not (eobp))
       (end-of-line)
-      (insert "\r")
-      (forward-line 1))))
+      (delete-char 1)
+      (insert nntp-end-of-line)
+      (forward-line 1))
+    (forward-char -1)
+    (unless (eq (char-after (1- (point))) ?\r)
+      (insert "\r"))))
 
 (defun nntp-retrieve-headers-with-xover (articles &optional fetch-old)
   (set-buffer nntp-server-buffer)
@@ -1192,11 +1196,12 @@ password contained in '~/.nntp-authinfo'."
 		(apply 'start-process
 		       "nntpd" buffer nntp-rlogin-program nntp-address
 		       nntp-rlogin-parameters))))
-    (set-buffer buffer)
-    (nntp-wait-for-string "^\r*20[01]")
-    (beginning-of-line)
-    (delete-region (point-min) (point))
-    proc))
+    (save-excursion
+      (set-buffer buffer)
+      (nntp-wait-for-string "^\r*20[01]")
+      (beginning-of-line)
+      (delete-region (point-min) (point))
+      proc)))
 
 (defun nntp-find-group-and-number ()
   (save-excursion

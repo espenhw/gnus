@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.6.3 Manual
+@settitle Gnus 5.6.4 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -316,7 +316,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.6.3 Manual
+@title Gnus 5.6.4 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -352,7 +352,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.6.3.
+This manual corresponds to Gnus 5.6.4.
 
 @end ifinfo
 
@@ -4483,6 +4483,11 @@ Display all expunged articles
 @kindex / D (Summary)
 @findex gnus-summary-limit-include-dormant
 Display all dormant articles (@code{gnus-summary-limit-include-dormant}).
+
+@item / *
+@kindex / * (Summary)
+@findex gnus-summary-limit-include-cached
+Display all cached articles (@code{gnus-summary-limit-include-cached}).
 
 @item / d
 @kindex / d (Summary)
@@ -8676,6 +8681,24 @@ should probably look something like this:
        ("telnet" "the.real.nntp.host" "nntp")))
 @end lisp
 
+If you want to use the wonderful @code{ssh} program to provide a
+compressed connection over the modem line, you could create a virtual
+server that would look something like this:
+
+@lisp
+(nntp "news"
+       (nntp-address "copper.uio.no")
+       (nntp-rlogin-program "ssh")
+       (nntp-open-connection-function nntp-open-rlogin)
+       (nntp-end-of-line "\n")
+       (nntp-rlogin-parameters
+        ("telnet" "news.uio.no" "nntp")))
+@end lisp
+
+This means that you have to have set up @code{ssh-agent} correctly to
+provide automatic authorization, of course.  And to get a compressed
+connection, you have to have the @samp{Compression} option in the
+@code{ssh} @file{config} file.
 
 
 @node Creating a Virtual Server
@@ -11911,7 +11934,7 @@ Regexp matching
 Before date.
 
 @item a
-At date.
+After date.
 
 @item n
 This date.
@@ -15642,8 +15665,9 @@ Pete Ware,
 Barry A. Warsaw,
 Christoph Wedler,
 Joe Wells,
+Katsumi Yamaoka, @c Yamaoka
 and
-Katsumi Yamaoka. @c Yamaoka
+Shenghuo Zhu. @c Zhu
 
 For a full overview of what each person has done, the ChangeLogs
 included in the Gnus alpha distributions should give ample reading
@@ -15664,7 +15688,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
 * Red Gnus::           Third time best---Gnus 5.4/5.5.
-* Quassia Gnus::       Two times two is four, or Gnus 5.6.3.
+* Quassia Gnus::       Two times two is four, or Gnus 5.6.4.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
@@ -16199,7 +16223,7 @@ Emphasized text can be properly fontisized:
 @node Quassia Gnus
 @subsubsection Quassia Gnus
 
-New features in Gnus 5.6.3:
+New features in Gnus 5.6.4:
 
 @itemize @bullet
 
@@ -17483,6 +17507,10 @@ in a special, unique buffer.
 
 @item
 A command to send a mail to the admin-address group param.
+
+@item
+A Date scoring type that will match if the article
+is less than a certain number of days old.
 
 @item
 Solve the halting problem.

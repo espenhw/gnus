@@ -376,10 +376,10 @@ Cache the result as a text property stored in DATE."
   "Return a string of TIME in YYMMDDTHHMMSS format."
   (format-time-string "%Y%m%dT%H%M%S" time))
 
-(defun gnus-date-iso8601 (header)
-  "Convert the date field in HEADER to YYMMDDTHHMMSS"
+(defun gnus-date-iso8601 (date)
+  "Convert the DATE to YYMMDDTHHMMSS"
   (condition-case ()
-      (gnus-time-iso8601 (gnus-date-get-time (mail-header-date header)))
+      (gnus-time-iso8601 (gnus-date-get-time date))
     (error "")))
 
 (defun gnus-mode-string-quote (string)
