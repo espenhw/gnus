@@ -168,9 +168,10 @@ this list."
 (defcustom gnus-boring-article-headers '(empty followup-to reply-to)
   "Headers that are only to be displayed if they have interesting data.
 Possible values in this list are `empty', `newsgroups', `followup-to',
-`reply-to', `date', `long-to', and `many-to'."
+`to-address', `reply-to', `date', `long-to', and `many-to'."
   :type '(set (const :tag "Headers with no content." empty)
 	      (const :tag "Newsgroups with only one group." newsgroups)
+	      (const :tag "To identical to to-address." to-address)
 	      (const :tag "Followup-to identical to newsgroups." followup-to)
 	      (const :tag "Reply-to identical to from." reply-to)
 	      (const :tag "Date less than four days old." date)
@@ -1314,6 +1315,19 @@ always hide."
 				gnus-newsgroup-name
 			      "")))
 		(gnus-article-hide-header "newsgroups")))
+	     ((eq elem 'to-address)
+	      (let ((to (message-fetch-field "to"))
+		    (to-address
+		     (gnus-group-find-parameter 
+		      (if (boundp 'gnus-newsgroup-name)
+			  gnus-newsgroup-name "") 'to-address)))
+		(when (and to to-address
+			   (ignore-errors
+			     (equal
+			      ;; only one address in To
+			      (nth 1 (mail-extract-address-components to))
+			      to-address)))
+		  (gnus-article-hide-header "to"))))
 	     ((eq elem 'followup-to)
 	      (when (equal (message-fetch-field "followup-to")
 			   (message-fetch-field "newsgroups"))

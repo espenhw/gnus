@@ -223,6 +223,7 @@
 
 (defun mm-inline-message (handle)
   (let ((b (point))
+	(bolp (bolp))
 	(charset (mail-content-type-get
 		  (mm-handle-type handle) 'charset))
 	gnus-displaying-mime handles)
@@ -243,6 +244,9 @@
 	  (run-hooks 'gnus-article-decode-hook)
 	  (gnus-article-prepare-display)
 	  (setq handles gnus-article-mime-handles))
+	(goto-char (point-min))
+	(unless bolp
+	  (insert "\n"))
 	(goto-char (point-max))
 	(unless (bolp)
 	  (insert "\n"))
