@@ -1,3 +1,7 @@
+2001-06-19  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-faq.texi (Frequently Asked Questions): Fix URL.
+
 2001-06-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Group Line Specification): Explain why %t is only an

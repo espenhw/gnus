@@ -8,7 +8,7 @@
 
 This is the Gnus Frequently Asked Questions list.
 If you have a Web browser, the official hypertext version is at
-@file{http://www.ccs.neu.edu/software/gnus/}, and has
+@file{http://www.ccs.neu.edu/software/contrib/gnus/}, and has
 probably been updated since you got this manual.
 
 @menu
