@@ -938,13 +938,13 @@ ARG is passed to the first function."
       (setq tail (cdr tail)))
     (nreverse new)))
 
-(defun gnus-delete-if (predicate list)
-  "Delete elements from LIST that satisfy PREDICATE."
+(defun gnus-remove-if (predicate list)
+  "Return a copy of LIST with all items satisfying PREDICATE removed."
   (let (out)
     (while list
       (unless (funcall predicate (car list))
 	(push (car list) out))
-      (pop list))
+      (setq list (cdr list)))
     (nreverse out)))
 
 (if (fboundp 'assq-delete-all)

@@ -1,3 +1,18 @@
+2003-02-05  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-util.el (gnus-delete-if): Rename to gnus-remove-if.
+	"delete-if" is misleading because it isn't actually destructive.
+
+	* gnus-topic.el (gnus-group-prepare-topics): Use new name.
+	
+	* nnmail.el (nnmail-purge-split-history): do.
+
+	* gnus-win.el (gnus-get-buffer-window): do.
+	
+	* gnus-sum.el (gnus-simplify-whitespace): Remove unnecessary
+	let-binding.
+	(gnus-simplify-all-whitespace): do.
+
 2003-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-delay.el (gnus-delay-article): Fix binding of the

@@ -1,5 +1,5 @@
 ;;; gnus-win.el --- window configuration functions for Gnus
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -571,7 +571,7 @@ should have point."
 	      (memq frame '(t 0 visible)))
 	 (car
 	  (let ((frames (gnus-frames-on-display-list)))
-	    (gnus-delete-if (lambda (win) (not (memq (window-frame win)
+	    (gnus-remove-if (lambda (win) (not (memq (window-frame win)
 						     frames)))
 			    (get-buffer-window-list buffer nil frame)))))
 	(t

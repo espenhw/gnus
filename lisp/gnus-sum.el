@@ -1392,26 +1392,24 @@ For example:
 
 (defun gnus-simplify-whitespace (str)
   "Remove excessive whitespace from STR."
-  (let ((mystr str))
-    ;; Multiple spaces.
-    (while (string-match "[ \t][ \t]+" mystr)
-      (setq mystr (concat (substring mystr 0 (match-beginning 0))
-			  " "
-			  (substring mystr (match-end 0)))))
-    ;; Leading spaces.
-    (when (string-match "^[ \t]+" mystr)
-      (setq mystr (substring mystr (match-end 0))))
-    ;; Trailing spaces.
-    (when (string-match "[ \t]+$" mystr)
-      (setq mystr (substring mystr 0 (match-beginning 0))))
-    mystr))
+  ;; Multiple spaces.
+  (while (string-match "[ \t][ \t]+" str)
+    (setq str (concat (substring str 0 (match-beginning 0))
+			" "
+			(substring str (match-end 0)))))
+  ;; Leading spaces.
+  (when (string-match "^[ \t]+" str)
+    (setq str (substring str (match-end 0))))
+  ;; Trailing spaces.
+  (when (string-match "[ \t]+$" str)
+    (setq str (substring str 0 (match-beginning 0))))
+  str)
 
 (defun gnus-simplify-all-whitespace (str)
   "Remove all whitespace from STR."
-  (let ((mystr str))
-    (while (string-match "[ \t\n]+" mystr)
-      (setq mystr (replace-match "" nil nil mystr)))
-    mystr))
+  (while (string-match "[ \t\n]+" str)
+    (setq str (replace-match "" nil nil str)))
+  str)
 
 (defsubst gnus-simplify-subject-re (subject)
   "Remove \"Re:\" from subject lines."

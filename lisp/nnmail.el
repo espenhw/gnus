@@ -1880,7 +1880,7 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   "Remove all instances of GROUP from `nnmail-split-history'."
   (let ((history nnmail-split-history))
     (while history
-      (setcar history (gnus-delete-if (lambda (e) (string= (car e) group))
+      (setcar history (gnus-remove-if (lambda (e) (string= (car e) group))
 				      (car history)))
       (pop history))
     (setq nnmail-split-history (delq nil nnmail-split-history))))
