@@ -596,24 +596,25 @@ example like this: (: spam-split)
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (interactive)
   (save-excursion
-  (dolist (check spam-list-of-statistical-checks)
-    (when (symbol-value check)
-      (widen)
-      (gnus-message 8 "spam-split: widening the buffer (%s requires it)"
-		    (symbol-name check))
-      (return)))
-;;   (progn (widen) (debug (buffer-string)))
-  (let ((list-of-checks spam-list-of-checks)
-	decision)
-    (while (and list-of-checks (not decision))
-      (let ((pair (pop list-of-checks)))
-	(when (symbol-value (car pair))
-	  (gnus-message 5 "spam-split: calling the %s function" (symbol-name (cdr pair)))
-	  (setq decision (funcall (cdr pair))))))
-    (if (eq decision t)
-	nil
-	decision))))
-
+    (save-restriction
+      (dolist (check spam-list-of-statistical-checks)
+	(when (symbol-value check)
+	  (widen)
+	  (gnus-message 8 "spam-split: widening the buffer (%s requires it)"
+			(symbol-name check))
+	  (return)))
+      ;;   (progn (widen) (debug (buffer-string)))
+      (let ((list-of-checks spam-list-of-checks)
+	    decision)
+	(while (and list-of-checks (not decision))
+	  (let ((pair (pop list-of-checks)))
+	    (when (symbol-value (car pair))
+	      (gnus-message 5 "spam-split: calling the %s function" (symbol-name (cdr pair)))
+	      (setq decision (funcall (cdr pair))))))
+	(if (eq decision t)
+	    nil
+	  decision)))))
+  
 (defun spam-setup-widening ()
   (dolist (check spam-list-of-statistical-checks)
     (when (symbol-value check)

@@ -1,3 +1,7 @@
+2003-04-15  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-split): added save-restriction to save-excursion
+
 2003-04-15  Reiner Steib  <Reiner.Steib@gmx.de>
 	From Julien Avarre <julien@avarre.com>
 
