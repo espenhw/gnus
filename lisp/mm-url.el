@@ -30,6 +30,7 @@
 ;;; Code:
 
 (require 'mm-util)
+(require 'executable)
 
 (eval-when-compile (require 'cl))
 

@@ -17,6 +17,7 @@
 	       display-time-event-handler
 	       find-image font-create-object gnus-mule-get-coding-system
 	       font-lock-set-defaults
+	       find-coding-systems-string
 	       image-size image-type-available-p insert-image
 	       image-type-from-file-header
 	       make-temp-file message-xmas-redefine
