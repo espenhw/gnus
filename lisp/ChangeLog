@@ -1,5 +1,10 @@
 2004-05-19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-start.el (gnus-subscribe-hierarchical-interactive): Match
+	on real group name.
+
+	* gnus-art.el (gnus-signature-limit): Doc fix.
+
 	* gnus-msg.el (gnus-inews-make-draft): Quote list.
 
 	* pgg-pgp.el (pgg-pgp-verify-region): Clean up.

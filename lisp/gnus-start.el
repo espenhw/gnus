@@ -496,19 +496,23 @@ Can be used to turn version control on or off."
 
 (defun gnus-subscribe-hierarchical-interactive (groups)
   (let ((groups (sort groups 'string<))
-	prefixes prefix start ans group starts)
+	prefixes prefix start ans group starts real-group)
     (while groups
       (setq prefixes (list "^"))
       (while (and groups prefixes)
-	(while (not (string-match (car prefixes) (car groups)))
+	(while (not (string-match (car prefixes)
+				  (gnus-group-real-name (car groups))))
 	  (setq prefixes (cdr prefixes)))
 	(setq prefix (car prefixes))
 	(setq start (1- (length prefix)))
-	(if (and (string-match "[^\\.]\\." (car groups) start)
+	(if (and (string-match "[^\\.]\\." (gnus-group-real-name (car groups))
+			       start)
 		 (cdr groups)
 		 (setq prefix
-		       (concat "^" (substring (car groups) 0 (match-end 0))))
-		 (string-match prefix (cadr groups)))
+		       (concat "^" (substring
+				    (gnus-group-real-name (car groups))
+				    0 (match-end 0))))
+		 (string-match prefix (gnus-group-real-name (cadr groups))))
 	    (progn
 	      (push prefix prefixes)
 	      (message "Descend hierarchy %s? ([y]nsq): "
@@ -520,16 +524,18 @@ Can be used to turn version control on or off."
 			 (substring prefix 1 (1- (length prefix)))))
 	      (cond ((= ans ?n)
 		     (while (and groups
-				 (string-match prefix
-					       (setq group (car groups))))
+				 (setq group (car groups)
+				       real-group (gnus-group-real-name group))
+				 (string-match prefix real-group))
 		       (push group gnus-killed-list)
 		       (gnus-sethash group group gnus-killed-hashtb)
 		       (setq groups (cdr groups)))
 		     (setq starts (cdr starts)))
 		    ((= ans ?s)
 		     (while (and groups
-				 (string-match prefix
-					       (setq group (car groups))))
+				 (setq group (car groups)
+				       real-group (gnus-group-real-name group))
+				 (string-match prefix real-group))
 		       (gnus-sethash group group gnus-killed-hashtb)
 		       (gnus-subscribe-alphabetically (car groups))
 		       (setq groups (cdr groups)))

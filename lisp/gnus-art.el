@@ -232,7 +232,9 @@ that number.  If it is a floating point number, no signature may be
 longer (in lines) than that number.  If it is a function, the function
 will be called without any parameters, and if it returns nil, there is
 no signature in the buffer.  If it is a string, it will be used as a
-regexp.  If it matches, the text in question is not a signature."
+regexp.  If it matches, the text in question is not a signature.
+
+This can also be a list of the above values."
   :type '(choice (integer :value 200)
 		 (number :value 4.0)
 		 (function :value fun)
