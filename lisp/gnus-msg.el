@@ -283,6 +283,11 @@ If nil, the address field will always be empty after invoking
   :group 'gnus-message
   :type 'boolean)
 
+(defcustom gnus-version-expose-system nil
+  "If non-nil, `system-configuration' is exposed in `gnus-extended-version'."
+  :group 'gnus-message
+  :type 'boolean)
+
 ;;; Internal variables.
 
 (defvar gnus-inhibit-posting-styles nil
@@ -1028,7 +1033,9 @@ If SILENT, don't prompt the user."
    (cond
     ((string-match "^\\(\\([.0-9]+\\)*\\)\\.[0-9]+$" emacs-version)
      (concat "Emacs/" (match-string 1 emacs-version)
-	     " (" system-configuration ")"))
+	     (if gnus-version-expose-system
+		 " (" system-configuration ")"
+	       "")))
     ((string-match "\\([A-Z]*[Mm][Aa][Cc][Ss]\\)[^(]*\\(\\((beta.*)\\|'\\)\\)?"
 		   emacs-version)
      (concat (match-string 1 emacs-version)
@@ -1037,8 +1044,10 @@ If SILENT, don't prompt the user."
 		 (match-string 3 emacs-version)
 	       "")
 	     (if (boundp 'xemacs-codename)
+	     (if gnus-version-expose-system
 		 (concat " (" xemacs-codename ", " system-configuration ")")
-	       "")))
+	       (concat " (" xemacs-codename ")"))
+	     "")))
     (t emacs-version))))
 
 

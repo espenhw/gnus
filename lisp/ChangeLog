@@ -1,3 +1,14 @@
+2003-02-07  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-refer-thread): Don't re-fetch current
+	articles. 
+
+	* gnus-msg.el (gnus-version-expose-system): Change default.
+
+2003-02-07  Vasily Korytov  <deskpot@myrealbox.com>
+
+	* gnus-msg.el (gnus-version-expose-system): New variable.
+
 2003-02-07  Simon Josefsson  <jas@extundo.com>
 
 	* mml-sec.el (mml-unsecure-message): Don't use kill-region.  Tiny

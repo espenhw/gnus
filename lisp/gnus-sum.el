@@ -7941,16 +7941,16 @@ of what's specified by the `gnus-refer-thread-limit' variable."
   (let ((id (mail-header-id (gnus-summary-article-header)))
 	(limit (if limit (prefix-numeric-value limit)
 		 gnus-refer-thread-limit)))
-    ;; We want to fetch LIMIT *old* headers, but we also have to
-    ;; re-fetch all the headers in the current buffer, because many of
-    ;; them may be undisplayed.  So we adjust LIMIT.
-    (when (numberp limit)
-      (incf limit (- gnus-newsgroup-end gnus-newsgroup-begin)))
     (unless (eq gnus-fetch-old-headers 'invisible)
       (gnus-message 5 "Fetching headers for %s..." gnus-newsgroup-name)
       ;; Retrieve the headers and read them in.
       (if (eq (gnus-retrieve-headers
-	       (list gnus-newsgroup-end) gnus-newsgroup-name limit)
+	       (list (min
+		      (+ (mail-header-number
+			  (gnus-summary-article-header))
+			 limit)
+		      gnus-newsgroup-end))
+	       gnus-newsgroup-name (* limit 2))
 	      'nov)
 	  (gnus-build-all-threads)
 	(error "Can't fetch thread from backends that don't support NOV"))
