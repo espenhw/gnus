@@ -1011,7 +1011,8 @@ Use the nov database for the current group if available."
 	(push (cons 'read (gnus-info-read info)) nnml-marks)
 	(dolist (el gnus-article-unpropagated-mark-lists)
 	  (setq nnml-marks (gnus-remassoc el nnml-marks)))
-	(nnml-save-marks group server)))))
+	(nnml-save-marks group server)
+	(nnheader-message 7 "Bootstrapping marks for %s...done" group)))))
 
 (provide 'nnml)
 

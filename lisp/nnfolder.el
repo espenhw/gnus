@@ -1234,7 +1234,8 @@ This command does not work if you use short group names."
 	(push (cons 'read (gnus-info-read info)) nnfolder-marks)
 	(dolist (el gnus-article-unpropagated-mark-lists)
 	  (setq nnfolder-marks (gnus-remassoc el nnfolder-marks)))
-	(nnfolder-save-marks group server)))))
+	(nnfolder-save-marks group server)
+	(nnheader-message 7 "Bootstrapping marks for %s...done" group)))))
 
 (provide 'nnfolder)
 

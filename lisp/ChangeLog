@@ -1,3 +1,10 @@
+2002-02-04  Simon Josefsson  <jas@extundo.com>
+
+	* nnfolder.el (nnfolder-open-marks): 
+
+	* nnml.el (nnml-open-marks): Message when done.  From David
+	Edmondson <dme@sun.com>.
+
 2002-02-03  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	
 	* imap.el (imap-anonymous-auth): Fix typo. 
