@@ -2,7 +2,7 @@
 
 	* nndoc.el (nndoc-guess-type): Reverse the sort order.  Suggested
 	by ARISAWA Akihiro <ari@mbf.ocn.ne.jp>.
-	(nndoc-dissect-buffer): Don't miss odd-numbered articles in digest.
+	(nndoc-dissect-buffer): Don't miss even-numbered articles.
 
 2003-10-24  Steve Youngs  <sryoungs@bigpond.net.au>
 
