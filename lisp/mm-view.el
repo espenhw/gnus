@@ -1,5 +1,5 @@
 ;;; mm-view.el --- functions for viewing MIME objects
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
 ;; This file is part of GNU Emacs.
@@ -63,6 +63,11 @@
 	   "lynx" "-dump" "-force_html" "-stdin" "-nolist")
     (html2text  html2text))
   "The attributes of washer types for text/html.")
+
+(defcustom mm-fill-flowed t
+  "If non-nil an format=flowed article will be displayed flowed."
+  :type 'boolean
+  :group 'mime-display)
 
 ;;; Internal variables.
 
@@ -345,7 +350,8 @@
 	  (mm-insert-part handle)
 	  (goto-char (point-max)))
       (insert (mm-decode-string (mm-get-part handle) charset)))
-    (when (and (equal type "plain")
+    (when (and mm-fill-flowed
+	       (equal type "plain")
 	       (equal (cdr (assoc 'format (mm-handle-type handle)))
 		      "flowed"))
       (save-restriction
