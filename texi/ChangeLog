@@ -1,3 +1,7 @@
+2000-10-07  Dave Love  <fx@gnu.org>
+
+	* doclicense.texi: New file.
+
 2000-10-07 16:50:14  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* Makefile.in: Use install-info.
