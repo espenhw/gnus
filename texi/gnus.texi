@@ -9243,7 +9243,7 @@ then ask Google if that fails:
 @lisp
 (setq gnus-refer-article-method
       '(current
-        (nnweb "refer" (nnweb-type google))))
+        (nnweb "google" (nnweb-type google))))
 @end lisp
 
 Most of the mail back ends support fetching by @code{Message-ID}, but

@@ -2,6 +2,7 @@
 
 	* gnus.texi (Loose Threads): add
 	gnus-summary-make-false-root-always. 
+	(Finding the Parent): Change name of nnweb server.
 
 2002-12-22  Jesper Harder  <harder@ifa.au.dk>
 
