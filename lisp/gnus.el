@@ -2318,16 +2318,14 @@ This restriction may disappear in later versions of Gnus."
   "Return a regexp matching the addresses of all subscribed mail groups.
 It consists of the `to-address' or `to-list' parameter of all groups
 with a `subscribed' parameter."
-  (let ((addresses))
-    (mapc (lambda (entry)
-	    (let ((group (car entry)))
-	      (when (gnus-group-find-parameter group 'subscribed)
-		(let ((address (or
-				(gnus-group-fast-parameter group 'to-address)
-				(gnus-group-fast-parameter group 'to-list))))
-		  (when address
-		    (setq addresses (cons address addresses)))))))
-	  (cdr gnus-newsrc-alist))
+  (let (group address addresses)
+    (dolist (entry (cdr gnus-newsrc-alist))
+      (setq group (car entry))
+      (when (gnus-group-find-parameter group 'subscribed)
+	(setq address (or (gnus-group-fast-parameter group 'to-address)
+			  (gnus-group-fast-parameter group 'to-list)))
+	(when address
+	  (push address addresses))))
     (list (mapconcat 'regexp-quote addresses "\\|"))))
 
 (defmacro gnus-string-or (&rest strings)
