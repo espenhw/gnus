@@ -3555,7 +3555,7 @@ It should typically alter the sending method in some way or other."
   "Perform all actions in ACTIONS."
   ;; Now perform actions on successful sending.
   (while actions
-    (progn ;; jah ignore-errors 
+    (ignore-errors
       (cond
        ;; A simple function.
        ((functionp (car actions))
