@@ -762,10 +762,13 @@ by you.")
   handle)
 
 (defun mml2015-pgg-clear-verify ()
-  (let ((pgg-errors-buffer mml2015-result-buffer))
+  (let ((pgg-errors-buffer mml2015-result-buffer)
+	(text (current-buffer)))
     (if (condition-case err
 	    (prog1
-		(pgg-verify-region (point-min) (point-max) nil t)
+		(mm-with-unibyte-buffer
+		  (insert-buffer text)
+		  (pgg-verify-region (point-min) (point-max) nil t))
 	      (mm-set-handle-multipart-parameter
 	       mm-security-handle 'gnus-details
 	       (with-current-buffer mml2015-result-buffer

@@ -1,3 +1,8 @@
+2002-09-30  Simon Josefsson  <jas@extundo.com>
+
+	* mml2015.el (mml2015-pgg-clear-verify): Verifying in a unibyte
+	buffer seem to be needed?
+
 2002-09-29  Simon Josefsson  <jas@extundo.com>
 
 	* mml1991.el (pgg-output-buffer, pgg-errors-buffer): Prevent byte
