@@ -1,3 +1,8 @@
+2002-12-06  Paul Jarc  <prj@po.cwru.edu>
+
+	* nnmaildir.el (nnmaildir-request-group): bugfix: don't erase
+	nntp-server-buffer if we aren't going to write to it.
+
 2002-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 	Trivial patch from Itai Zukerman <zukerman@math-hat.com>.
 

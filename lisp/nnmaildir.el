@@ -924,16 +924,16 @@ by nnmaildir-request-article.")
 (defun nnmaildir-request-group (gname &optional server fast)
   (let ((group (nnmaildir--prepare server gname))
 	deactivate-mark)
-    (nnmaildir--with-nntp-buffer
-      (erase-buffer)
-      (catch 'return
-	(unless group
-	  (insert "411 no such news group\n")
-	  (setf (nnmaildir--srv-error nnmaildir--cur-server)
-		(concat "No such group: " gname))
-	  (throw 'return nil))
-	(setf (nnmaildir--srv-curgrp nnmaildir--cur-server) group)
-	(if fast (throw 'return t))
+    (catch 'return
+      (unless group
+	;; (insert "411 no such news group\n")
+	(setf (nnmaildir--srv-error nnmaildir--cur-server)
+	      (concat "No such group: " gname))
+	(throw 'return nil))
+      (setf (nnmaildir--srv-curgrp nnmaildir--cur-server) group)
+      (if fast (throw 'return t))
+      (nnmaildir--with-nntp-buffer
+	(erase-buffer)
 	(insert "211 ")
 	(princ (nnmaildir--grp-count group) nntp-server-buffer)
 	(insert " ")
