@@ -3,6 +3,7 @@ emacs-mime
 gnus
 gnus-[0-9]*
 message
+message-[0-9]*
 sieve
 gnustmp.texi
 *.dvi
