@@ -1116,6 +1116,7 @@ string containing the @sc{mime} message.
 * Advanced MML Example::           Another example MML document.
 * Charset Translation::            How charsets are mapped from @sc{mule} to MIME.
 * Conversion::                     Going from @sc{mime} to MML and vice versa.
+* Flowed text::                    Soft and hard newlines.
 @end menu
 
 
@@ -1428,6 +1429,27 @@ other.  The resulting contents of the message should remain equivalent,
 if not identical.
 
 
+@node Flowed text
+@section Flowed text
+@cindex format=flowed
+
+The Emacs @sc{mime} library will respect the @code{use-hard-newlines}
+variable (@pxref{Hard and Soft Newlines, ,Hard and Soft Newlines,
+emacs, Emacs Manual}) when encoding a message, and the
+``format=flowed'' Content-Type parameter when decoding a message.
+
+On encoding text, lines terminated by soft newline characters are
+filled together and wrapped after the column decided by
+@code{fill-flowed-encode-column}.  This variable controls how the text
+will look in a client that does not support flowed text, the default
+is to wrap after 66 characters.  If hard newline characters are not
+present in the buffer, no flow encoding occurs.
+
+On decoding flowed text, lines with soft newline characters are filled
+together and wrapped after the column decided by
+@code{fill-flowed-display-column}.  The default is to wrap after
+@code{fill-column}.
+
 @node Standards
 @chapter Standards
 
@@ -1480,6 +1502,9 @@ Administrative Messages
 @item RFC2183
 Communicating Presentation Information in Internet Messages: The
 Content-Disposition Header Field
+
+@item RFC2646
+Documentation of the text/plain format parameter for flowed text.
 
 @end table
 

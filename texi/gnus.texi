@@ -20750,7 +20750,7 @@ look into implementing the changes when the draft is accepted as an RFC.
 @cindex MIME
 All the various MIME RFCs are supported.
 
-@item Disposition Notifications - RFC 2289
+@item Disposition Notifications - RFC 2298
 Message Mode is able to request notifications from the receiver.
 
 @item PGP - RFC 1991 and RFC 2440
