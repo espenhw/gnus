@@ -89,7 +89,8 @@
 (defsubst gnus-functionp (form)
   "Return non-nil if FORM is funcallable."
   (or (and (symbolp form) (fboundp form))
-      (and (listp form) (eq (car form) 'lambda))))
+      (and (listp form) (eq (car form) 'lambda))
+      (compiled-function-p form)))
 
 (defsubst gnus-goto-char (point)
   (and point (goto-char point)))

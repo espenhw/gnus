@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.37 Manual
+@settitle Gnus 5.4.38 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.37 Manual
+@title Gnus 5.4.38 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.37.
+This manual corresponds to Gnus 5.4.38.
 
 @end ifinfo
 
@@ -2013,7 +2013,7 @@ Also @pxref{Topic Parameters}.
 Here's an example group parameter list:
 
 @example
-((to-address . "ding@@ifi.uio.no")
+((to-address . "ding@@gnus.org")
  (auto-expiry . t))
 @end example
 
@@ -7518,6 +7518,11 @@ Variables for customizing outgoing mail:
 List of regexps to match headers included in digested messages.  The
 headers will be included in the sequence they are matched.
 
+@item gnus-add-to-list
+@vindex gnus-add-to-list
+If non-@code{nil}, add a @code{to-list} group parameter to mail groups
+that have none when you do a @kbd{a}.
+
 @end table
 
 
@@ -11577,12 +11582,12 @@ or each score file directory.  Gnus will decide by itself what score
 files are applicable to which group.
 
 Say you want to use the score file
-@file{/ftp@@ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE} and
+@file{/ftp@@ftp.gnus.org:/pub/larsi/ding/score/soc.motss.SCORE} and
 all score files in the @file{/ftp@@ftp.some-where:/pub/score} directory:
 
 @lisp
 (setq gnus-global-score-files
-      '("/ftp@@ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE"
+      '("/ftp@@ftp.gnus.org:/pub/larsi/ding/score/soc.motss.SCORE"
         "/ftp@@ftp.some-where:/pub/score/"))
 @end lisp
 
@@ -13302,7 +13307,7 @@ command.
 
 If you are a moderator, you can use the @file{gnus-mdrtn.el} package.
 It is not included in the standard Gnus package.  Write a mail to
-@samp{larsi@@ifi.uio.no} and state what group you moderate, and you'll
+@samp{larsi@@gnus.org} and state what group you moderate, and you'll
 get a copy.
 
 The moderation package is implemented as a minor mode for summary
@@ -15010,8 +15015,8 @@ If you just need help, you are better off asking on
 
 @cindex gnu.emacs.gnus
 @cindex ding mailing list
-You can also ask on the ding mailing list---@samp{ding@@ifi.uio.no}.
-Write to @samp{ding-request@@ifi.uio.no} to subscribe.
+You can also ask on the ding mailing list---@samp{ding@@gnus.org}.
+Write to @samp{ding-request@@gnus.org} to subscribe.
 
 
 @node A Programmers Guide to Gnus
@@ -16003,7 +16008,7 @@ second is a more complex one:
 ("nnml:my.mail" 3 ((1 . 5) 9 (20 . 55))
                 ((tick (15 . 19)) (replied 3 6 (19 . 3)))
                 (nnml "")
-                (auto-expire (to-address "ding@@ifi.uio.no")))
+                (auto-expire (to-address "ding@@gnus.org")))
 @end example
 
 The first element is the @dfn{group name}---as Gnus knows the group,

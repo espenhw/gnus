@@ -309,7 +309,8 @@
        (setq result (if (stringp group)
 			(list (cons group (nnmbox-active-number group)))
 		      (nnmail-article-group 'nnmbox-active-number)))
-       (if (null result)
+       (if (and (null result)
+		(yes-or-no-p "Moved to `junk' group; delete article? "))
 	   (setq result 'junk)
 	 (setq result (car (nnmbox-save-mail result)))))
      (save-excursion

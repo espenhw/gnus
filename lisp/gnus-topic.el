@@ -558,8 +558,23 @@ articles in the topic and its subtopics."
 	  (forward-line 1)
 	  (setq unfound nil)))
       (when unfound
-	(gnus-topic-goto-topic topic)
-	(forward-line 1)))))
+	(gnus-topic-goto-missing-topic topic)
+	(gnus-topic-insert-topic-line
+	 topic t t (car (gnus-topic-find-topology topic)) nil 0)))))
+
+(defun gnus-topic-goto-missing-topic (topic)
+  (if (gnus-topic-goto-topic topic)
+      (forward-line 1)
+    ;; Topic not displayed.
+    (let* ((top (gnus-topic-find-topology
+		 (gnus-topic-parent-topic topic)))
+	   (tp (reverse (cddr top))))
+      (while (not (equal (caaar tp) topic))
+	(setq tp (cdr tp)))
+      (while (and tp
+		  (not (gnus-topic-goto-topic (caar (pop tp))))))
+      (unless tp
+	(gnus-topic-goto-missing-topic (cadr top))))))
 
 (defun gnus-topic-update-topic-line (topic-name &optional reads)
   (let* ((top (gnus-topic-find-topology topic-name))

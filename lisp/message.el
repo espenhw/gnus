@@ -928,6 +928,19 @@ The cdr of ech entry is a function for applying the face to a region.")
     (when value
       (nnheader-replace-chars-in-string value ?\n ? ))))
 
+(defun message-add-header (&rest headers)
+  "Add the HEADERS to the message header, skipping those already present."
+  (while headers
+    (let (hclean)
+      (unless (string-match "^\\([^:]+\\):[ \t]*[^ \t]" (car headers))
+	(error "Invalid header `%s'" (car headers)))
+      (setq hclean (match-string 1 (car headers)))
+    (save-restriction
+      (message-narrow-to-headers)
+      (unless (re-search-forward (concat "^" (regexp-quote hclean) ":") nil t)
+	(insert (car headers) ?\n))))
+    (setq headers (cdr headers))))
+
 (defun message-fetch-reply-field (header)
   "Fetch FIELD from the message we're replying to."
   (when (and message-reply-buffer
@@ -948,7 +961,8 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defun message-functionp (form)
   "Return non-nil if FORM is funcallable."
   (or (and (symbolp form) (fboundp form))
-      (and (listp form) (eq (car form) 'lambda))))
+      (and (listp form) (eq (car form) 'lambda))
+      (compiled-function-p form)))
 
 (defun message-strip-subject-re (subject)
   "Remove \"Re:\" from subject lines."
@@ -1316,7 +1330,7 @@ C-c C-r  message-caesar-buffer-body (rot13 the message body)."
 (defun message-insert-to ()
   "Insert a To header that points to the author of the article being replied to."
   (interactive)
-  (let ((co (message-fetch-field "courtesy-copies-to")))
+  (let ((co (message-fetch-field "mail-copies-to")))
     (when (and co
 	       (equal (downcase co) "never"))
       (error "The user has requested not to have copies sent via mail")))
@@ -3005,7 +3019,7 @@ Headers already prepared in the buffer are not modified."
 	      (message-set-work-buffer)
 	      (unless never-mct
 		(insert (or reply-to from "")))
-	      (insert (if (bolp) "" ", ") (or to ""))
+	      (insert (if to (concat (if (bolp) "" ", ") to "") ""))
 	      (insert (if mct (concat (if (bolp) "" ", ") mct) ""))
 	      (insert (if cc (concat (if (bolp) "" ", ") cc) ""))
 	      (goto-char (point-min))

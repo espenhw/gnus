@@ -115,8 +115,8 @@ If this variable is non-nil, `gnus-ignored-headers' will be ignored."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-sorted-header-list
-  '("^From:" "^Subject:" "^Summary:" "^Keywords:" "^Newsgroups:" "^To:"
-    "^Cc:" "^Date:" "^Organization:")
+  '("^From:" "^Subject:" "^Summary:" "^Keywords:" "^Newsgroups:"
+    "^Followup-To:" "^To:" "^Cc:" "^Date:" "^Organization:")
   "This variable is a list of regular expressions.
 If it is non-nil, headers that match the regular expressions will
 be placed first in the article buffer in the sequence specified by
@@ -174,7 +174,7 @@ asynchronously.	 The compressed face will be piped to this command."
 
 (defcustom gnus-emphasis-alist
   (let ((format
-	 "\\(\\s-\\|^\\|[-\"\(]\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\s-\\|[-?!.,;:\"\)]\\)")
+	 "\\(\\s-\\|^\\|[-\"]\\|\\s(\\|\\s)\\)\\(%s\\(\\w+\\(\\s-+\\w+\\)*[.,]?\\)%s\\)\\(\\s-\\|[-?!.,;:\"]\\|\\s(\\|\\s)\\)")
 	(types
 	 '(("_" "_" underline)
 	   ("/" "/" italic)
@@ -512,6 +512,8 @@ displayed by the first non-nil matching CONTENT face."
 (defvar gnus-article-mode-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
     (modify-syntax-entry ?- "w" table)
+    (modify-syntax-entry ?> ")" table)
+    (modify-syntax-entry ?< "(" table)
     table)
   "Syntax table used in article mode buffers.
 Initialized from `text-mode-syntax-table.")
@@ -2759,8 +2761,8 @@ specified by `gnus-button-alist'."
 	  (let* ((start (and entry (match-beginning (nth 1 entry))))
 		 (end (and entry (match-end (nth 1 entry))))
 		 (from (match-beginning 0)))
-	    (when (and (or (eq t (nth 1 entry))
-			   (eval (nth 1 entry)))
+	    (when (and (or (eq t (nth 2 entry))
+			   (eval (nth 2 entry)))
 		       (not (gnus-button-in-region-p
 			     start end 'gnus-callback)))
 	      ;; That optional form returned non-nil, so we add the

@@ -302,7 +302,8 @@
 	(and
 	 (nnmail-activate 'nnmh)
 	 (let ((resu|t (nnmail-article-group 'nnmh-active-number)))
-	   (if (not result)
+	   (if (and (null result)
+		    (yes-or-no-p "Moved to `junk' group; delete article? "))
 	       'junk
 	     (car (nnmh-save-mail result noinsert))))))
     (when (and last nnmail-cache-accepted-message-ids)

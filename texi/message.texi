@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename message
-@settitle Message 5.4.37 Manual
+@settitle Message 5.4.38 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -39,7 +39,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Message 5.4.37 Manual
+@title Message 5.4.38 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -79,7 +79,7 @@ buffers.
 * Key Index::         List of Message mode keys.
 @end menu
 
-This manual corresponds to Message 5.4.37.  Message is distributed with
+This manual corresponds to Message 5.4.38.  Message is distributed with
 the Gnus distribution bearing the same version number as this manual
 has. 
 
@@ -947,6 +947,21 @@ you send to mailing lists, you could do something like the following:
 @item message-send-hook
 @vindex message-send-hook
 Hook run before sending messages.
+
+If you want to add certain headers before sending, you can use the
+@code{message-add-header} function in this hook.  For instance:
+@findex message-add-header
+
+@lisp
+(add-hook 'message-send-hook 'my-message-add-content)
+(defun my-message-add-content ()
+  (message-add-header
+   "Mime-Version: 1.0"
+   "Content-Type: text/plain"
+   "Content-Transfer-Encoding: 7bit"))
+@end lisp
+
+This function won't add the header if the header is already present.
 
 @item message-send-mail-hook
 @vindex message-send-mail-hook

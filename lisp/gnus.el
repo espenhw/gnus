@@ -226,7 +226,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.37"
+(defconst gnus-version-number "5.4.38"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -1431,7 +1431,7 @@ want."
 (defvar gnus-have-read-active-file nil)
 
 (defconst gnus-maintainer
-  "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
+  "bugs@gnus.org (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
 (defvar gnus-info-nodes

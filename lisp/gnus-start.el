@@ -2302,9 +2302,12 @@ If FORCE is non-nil, the .newsrc file is read."
   (save-excursion
     (set-buffer gnus-dribble-buffer)
     (let ((slave-name
-	   (make-temp-name (concat gnus-current-startup-file "-slave-"))))
+	   (make-temp-name (concat gnus-current-startup-file "-slave-")))
+	  (modes (ignore-errors
+		   (file-modes (concat gnus-current-startup-file ".eld")))))
       (gnus-write-buffer slave-name)
-      (set-file-modes slave-name (file-modes gnus-current-startup-file)))))
+      (when modes
+	(set-file-modes slave-name modes)))))
 
 (defun gnus-master-read-slave-newsrc ()
   (let ((slave-files

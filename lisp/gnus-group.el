@@ -2063,7 +2063,7 @@ Given a prefix, create a full group."
 	   (list 'nndir-directory
 		 (if all gnus-group-archive-directory
 		   gnus-group-recent-archive-directory))))
-    (gnus-group-add-parameter group (cons 'to-address "ding@ifi.uio.no"))))
+    (gnus-group-add-parameter group (cons 'to-address "ding@gnus.org"))))
 
 (defun gnus-group-make-directory-group (dir)
   "Create an nndir group.

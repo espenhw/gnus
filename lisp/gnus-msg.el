@@ -61,6 +61,9 @@ This is useful when you're reading a mailing list that has been
 gatewayed to a newsgroup, and you want to followup to an article in
 the group.")
 
+(defvar gnus-add-to-list nil
+  "*If non-nil, add a `to-list' parameter automatically.")
+
 (defvar gnus-sent-message-ids-file
   (nnheader-concat gnus-directory "Sent-Message-IDs")
   "File where Gnus saves a cache of sent message ids.")
@@ -367,7 +370,8 @@ header line with the old Message-ID."
 			    force-news)
   (when article-buffer
     (gnus-copy-article-buffer))
-  (let ((gnus-article-reply article-buffer))
+  (let ((gnus-article-reply article-buffer)
+	(add-to-list gnus-add-to-list))
     (gnus-setup-message (cond (yank 'reply-yank)
 			      (article-buffer 'reply)
 			      (t 'message))
@@ -406,7 +410,8 @@ header line with the old Message-ID."
 		;; Arrange for mail groups that have no `to-address' to
 		;; get that when the user sends off the mail.
 		(when (and (not to-list)
-			   (not to-address))
+			   (not to-address)
+			   add-to-list)
 		  (push (list 'gnus-inews-add-to-address pgroup)
 			message-send-actions)))
 	    (set-buffer gnus-article-copy)
@@ -818,7 +823,7 @@ The source file has to be in the Emacs load path."
   (interactive)
   (let ((files '("gnus.el" "gnus-sum.el" "gnus-group.el"
 		 "gnus-art.el" "gnus-start.el" "gnus-async.el"
-		 "gnus-msg.el" "gnus-score.el" "gnus-win.el"
+		 "gnus-msg.el" "gnus-score.el" "gnus-win.el" "gnus-topic.el"
 		 "nnmail.el" "message.el"))
 	file expr olist sym)
     (gnus-message 4 "Please wait while we snoop your variables...")

@@ -68,7 +68,12 @@
   (setq gnus-undo-mode-map (make-sparse-keymap))
 
   (gnus-define-keys gnus-undo-mode-map
-   "\M-\C-_" gnus-undo))
+   "\M-\C-_"     gnus-undo
+   "\C-_"        gnus-undo
+   "\C-xu"       gnus-undo
+   [(control /)] gnus-undo    ; many people are used to type `C-/' on
+			      ; X terminals and get `C-_'.
+   ))
 
 (defun gnus-undo-make-menu-bar ()
   (when nil

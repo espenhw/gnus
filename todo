@@ -617,3 +617,9 @@ do more gathering by subject.
 
 * gnus-uu-mark-in-numerical-order -- process mark articles in
 article numerical order.
+
+* (gnus-thread-total-score
+ (gnus-id-to-thread (mail-header-id (gnus-summary-article-header))))
+bind to a key.
+
+* sorting by score is wrong when using sparse threads.

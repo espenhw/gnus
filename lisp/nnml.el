@@ -325,7 +325,8 @@ all.  This may very well take some time.")
 	   (and last (nnml-save-nov))))
       (and
        (nnmail-activate 'nnml)
-       (if (not (setq result (nnmail-article-group 'nnml-active-number)))
+       (if (and (not (setq result (nnmail-article-group 'nnml-active-number)))
+		(yes-or-no-p "Moved to `junk' group; delete article? "))
 	   (setq result 'junk)
 	 (setq result (car (nnml-save-mail result))))
        (when last

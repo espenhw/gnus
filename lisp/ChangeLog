@@ -1,3 +1,75 @@
+Mon Mar 31 16:34:37 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.38 is released.
+
+Mon Mar 31 16:12:31 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-add-header): New function.
+
+	* gnus-art.el (gnus-sorted-header-list): List `Followup-To' after
+	`Newsgroups'.
+
+	* gnus-undo.el (gnus-undo-mode-map): Bind `gnus-undo' to `C-_',
+	`C-x u' and `C-/'.
+
+Mon Mar 31 16:02:47 1997  Toby Speight  <tms@ansa.co.uk>
+
+	* gnus-art.el (gnus-article-add-buttons): Eval the right element. 
+
+Mon Mar 31 15:57:17 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-msg.el (gnus-add-to-list): New variable.
+	(gnus-post-news): Use it.
+
+Mon Mar 31 15:46:34 1997  Francois Felix Ingrand  <felix@laas.fr>
+
+	* gnus-start.el (gnus-slave-save-newsrc): Get modes right.
+
+Mon Mar 31 15:43:29 1997  Michael Sperber  <sperber@informatik.uni-tuebingen.de>
+
+	* message.el (message-functionp): Recognize compiled functions.
+
+Mon Mar 31 15:43:57 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-util.el (gnus-functionp): Ditto.
+
+Mon Mar 31 15:18:11 1997  Katsumi Yamaoka  <yamaoka@ga.sony.co.jp>
+
+	* gnus-ems.el (gnus-ems-redefine): Don't change display table. 
+
+Mon Mar 24 11:33:59 1997  Michael Welsh Duggan  <md5i@schenley.com>
+
+      * message.el (message-insert-to): Use mail-copies-to.
+
+Mon Mar 31 12:35:12 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-topic.el (gnus-topic-goto-missing-topic): New function.
+	(gnus-topic-goto-missing-group): Use it.
+
+	* gnus-msg.el (gnus-debug): Scan gnus-topic.el.
+
+	* message.el (message-reply): Don't insert extra , when not to
+	header. 
+
+	* nntp.el (nntp-connection-alist): Un-voo.
+
+Sun Mar 30 09:48:41 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (gnus-article-mode-syntax-table): Make <> paren
+	chars. 
+	(gnus-emphasis-alist): Use it.
+
+	* gnus.el (gnus-maintainer): Changed.
+
+	* nnfolder.el (nnfolder-request-accept-article): Ask before
+	junking. 
+	(nnfolder-save-mail): Make buffer read/write.
+
+	* nnmh.el (nnmh-request-accept-article): Ditto.
+	* nnbabyl.el (nnbabyl-request-accept-article): Ditto.
+	* nnmbox.el (nnmbox-request-accept-article): Ditto.
+	* nnml.el (nnml-request-accept-article): Ditto.
+
 Mon Mar 24 16:57:26 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.37 is released.

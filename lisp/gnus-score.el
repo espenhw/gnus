@@ -37,11 +37,11 @@ for each score file or each score file directory.  Gnus will decide
 by itself what score files are applicable to which group.
 
 Say you want to use the single score file
-\"/ftp.ifi.uio.no@ftp:/pub/larsi/ding/score/soc.motss.SCORE\" and all
+\"/ftp.gnus.org@ftp:/pub/larsi/ding/score/soc.motss.SCORE\" and all
 score files in the \"/ftp.some-where:/pub/score\" directory.
 
  (setq gnus-global-score-files
-       '(\"/ftp.ifi.uio.no:/pub/larsi/ding/score/soc.motss.SCORE\"
+       '(\"/ftp.gnus.org:/pub/larsi/ding/score/soc.motss.SCORE\"
          \"/ftp.some-where:/pub/score\"))"
   :group 'gnus-score-files
   :type '(repeat file))
