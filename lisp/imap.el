@@ -2296,26 +2296,32 @@ Return nil if no complete line has arrived."
 
 (defun imap-parse-status ()
   (let ((mailbox (imap-parse-mailbox)))
-    (when (and mailbox (search-forward "(" nil t))
-      (while (not (eq (char-after) ?\)))
-	(let ((token (read (current-buffer))))
-	  (cond ((eq token 'MESSAGES)
-		 (imap-mailbox-put 'messages (read (current-buffer)) mailbox))
-		((eq token 'RECENT)
-		 (imap-mailbox-put 'recent (read (current-buffer)) mailbox))
-		((eq token 'UIDNEXT)
-		 (and (looking-at " \\([0-9]+\\)")
+    (when (and mailbox (eq (char-after) ? ) (eq (char-after (char-after)) ?\())
+      (forward-char 2)
+      (while (cond ((looking-at "MESSAGES ?")
+		    (goto-char (match-end 0))
+		    (imap-mailbox-put 'messages 
+				      (read (current-buffer)) mailbox))
+		   ((looking-at "RECENT ?")
+		    (goto-char (match-end 0))
+		    (imap-mailbox-put 'recent (read (current-buffer)) mailbox))
+		   ((looking-at "UIDNEXT ?")
+		    (goto-char (match-end 0))
+		    (if (not (looking-at "\\([0-9]+\\)"))
+			t
 		      (imap-mailbox-put 'uidnext (match-string 1) mailbox)
 		      (goto-char (match-end 1))))
-		((eq token 'UIDVALIDITY)
-		 (and (looking-at " \\([0-9]+\\)")
+		   ((looking-at "UIDVALIDITY ?")
+		    (goto-char (match-end 0))
+		    (if (not (looking-at "\\([0-9]+\\)"))
+			t
 		      (imap-mailbox-put 'uidvalidity (match-string 1) mailbox)
 		      (goto-char (match-end 1))))
-		((eq token 'UNSEEN)
-		 (imap-mailbox-put 'unseen (read (current-buffer)) mailbox))
-		(t
-		 (message "Unknown status data %s in mailbox %s ignored"
-			  token mailbox))))))))
+		   ((looking-at "UNSEEN ?")
+		    (goto-char (match-end 0))
+		    (imap-mailbox-put 'unseen (read (current-buffer)) mailbox))
+		   (t nil))
+	(forward-char)))))
 
 ;;   acl_data        ::= "ACL" SPACE mailbox *(SPACE identifier SPACE
 ;;                        rights)
