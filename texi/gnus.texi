@@ -710,6 +710,7 @@ Browsing the Web
 * Splitting in IMAP::           Splitting mail with nnimap.
 * Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
 * Expunging mailboxes::         Equivalent of a "compress mailbox" button.
+* A note on namespaces::        How to (not) use IMAP namespace in Gnus.
 
 Other Sources
 
@@ -15172,6 +15173,7 @@ variable @code{nntp-authinfo-file} for exact syntax; also see
 * Splitting in IMAP::           Splitting mail with nnimap.
 * Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
 * Expunging mailboxes::         Equivalent of a "compress mailbox" button.
+* A note on namespaces::        How to (not) use IMAP namespace in Gnus.
 @end menu
 
 
@@ -15381,7 +15383,46 @@ manually.  This is exactly what @kbd{G x} does.
 Currently there is no way of showing deleted articles, you can just
 delete them.
 
+@node A note on namespaces
+@subsection A note on namespaces
+@cindex IMAP namespace
+@cindex namespaces
 
+The IMAP protocol has a concept called namespaces, described by the
+following text in the RFC:
+
+@example
+5.1.2.  Mailbox Namespace Naming Convention
+
+   By convention, the first hierarchical element of any mailbox name
+   which begins with "#" identifies the "namespace" of the remainder of
+   the name.  This makes it possible to disambiguate between different
+   types of mailbox stores, each of which have their own namespaces.
+
+      For example, implementations which offer access to USENET
+      newsgroups MAY use the "#news" namespace to partition the USENET
+      newsgroup namespace from that of other mailboxes.  Thus, the
+      comp.mail.misc newsgroup would have an mailbox name of
+      "#news.comp.mail.misc", and the name "comp.mail.misc" could refer
+      to a different object (e.g. a user's private mailbox).
+@end example
+
+While there is nothing in this text that warrants concern for the IMAP
+implementation in Gnus, some servers use namespace prefixes in a way
+that does not work with how Gnus uses mailbox names.
+
+Specifically, University of Washington's IMAP server uses mailbox
+names like @code{#driver.mbx/read-mail} which are valid only in the
+@sc{create} and @sc{append} commands.  After the mailbox is created
+(or a messages is appended to a mailbox), it must be accessed without
+the namespace prefix, i.e @code{read-mail}.  Since Gnus do not make it
+possible for the user to guarantee that user entered mailbox names
+will only be used with the CREATE and APPEND commands, you should
+simply not use the namespace prefixed mailbox names in Gnus.
+
+See the UoW @sc{imapd} documentation for the @code{#driver.*/} prefix
+for more information on how to use the prefixes.  They are a power
+tool and should be used only if you are sure what the effects are.
 
 @node Other Sources
 @section Other Sources

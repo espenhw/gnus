@@ -1,3 +1,7 @@
+2002-09-18  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (A note on namespaces): New.
+
 2002-09-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Splitting Mail): "By default, splitting is performed
