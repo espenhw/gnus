@@ -65,7 +65,7 @@
   "The attributes of washer types for text/html.")
 
 (defcustom mm-fill-flowed t
-  "If non-nil an format=flowed article will be displayed flowed."
+  "If non-nil a format=flowed article will be displayed flowed."
   :type 'boolean
   :group 'mime-display)
 

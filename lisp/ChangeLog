@@ -2,7 +2,7 @@
 
 	* mm-view.el (mm-fill-flowed): Add.
 	(mm-inline-text): Use it.  Tiny patch from Ralf Angeli
-	<dev.null@iwi.uni-sb.de>.
+	<angeli@iwi.uni-sb.de>.
 
 2004-01-27  Teodor Zlatanov  <tzz@lifelogs.com>
 

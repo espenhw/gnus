@@ -975,7 +975,7 @@ together and wrapped after the column decided by
 @table @code
 @item mm-fill-flowed
 @findex mm-fill-flowed
-If non-nil an format=flowed article will be displayed flowed.
+If non-nil a format=flowed article will be displayed flowed.
 @end table
 
 
