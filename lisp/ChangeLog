@@ -1,3 +1,7 @@
+2000-04-19  Dave Love  <fx@gnu.org>
+
+	* mailcap.el (mailcap-parse-mimetypes): Add ...mime.types.
+
 2000-04-18 12:28:24  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnwarchive.el (nnwarchive-type-definition): New egroups html.
