@@ -22003,13 +22003,13 @@ mail can be useful.
 
 Another approach to filtering e-mail is the distributed spam
 processing, for instance DCC implements such a system.  In essence,
-@code{N} systems around the world agree that a machine @samp{X} in
+@var{N} systems around the world agree that a machine @var{X} in
 China, Ghana, or California is sending out spam e-mail, and these
-@code{N} systems enter @samp{X} or the spam e-mail from @samp{X} into
+@var{N} systems enter @var{X} or the spam e-mail from @var{X} into
 a database.  The criteria for spam detection vary---it may be the
 number of messages sent, the content of the messages, and so on.  When
 a user of the distributed processing system wants to find out if a
-message is spam, he consults one of those @code{N} systems.
+message is spam, he consults one of those @var{N} systems.
 
 Distributed spam processing works very well against spammers that send
 a large number of messages at once, but it requires the user to set up
@@ -22103,7 +22103,7 @@ to non-existent domains is yucky, in my opinion.
 @cindex DCC
 
 The days where the hints in the previous section was sufficient in
-avoiding spam is coming to an end.  There are many tools out there
+avoiding spam are coming to an end.  There are many tools out there
 that claim to reduce the amount of spam you get.  This section could
 easily become outdated fast, as new products replace old, but
 fortunately most of these tools seem to have similar interfaces.  Even
@@ -22113,7 +22113,7 @@ easy to adapt it to most other tools.
 If the tool you are using is not installed on the mail server, you
 need to invoke it yourself.  Ideas on how to use the
 @code{:postscript} mail source parameter (@pxref{Mail Source
-Specifiers}) follows.
+Specifiers}) follow.
 
 @lisp
 (setq mail-sources
@@ -22123,8 +22123,8 @@ Specifiers}) follows.
              :postscript "mv %t /tmp/foo; formail -bs spamc < /tmp/foo > %t")))
 @end lisp
 
-Once you managed to process your incoming spool somehow, thus making
-the mail contain e.g. a header indicating it is spam, you are ready to
+Once you manage to process your incoming spool somehow, thus making
+the mail contain e.g.@: a header indicating it is spam, you are ready to
 filter it out.  Using normal split methods (@pxref{Splitting Mail}):
 
 @lisp
@@ -22179,7 +22179,7 @@ spam.  And here is the nifty function:
 
 A novel technique to fight spam is to require senders to do something
 costly for each message they send.  This has the obvious drawback that
-you cannot rely on that everyone in the world uses this technique,
+you cannot rely on everyone in the world using this technique,
 since it is not part of the Internet standards, but it may be useful
 in smaller communities.
 
@@ -22211,7 +22211,7 @@ like:
 (add-hook 'message-send-hook 'mail-add-payment)
 @end lisp
 
-The @code{hashcash.el} library can be found in the Gnus development
+The @file{hashcash.el} library can be found in the Gnus development
 contrib directory or at
 @uref{http://users.actrix.gen.nz/mycroft/hashcash.el}.
 
@@ -22251,13 +22251,13 @@ a useful contribution, however.
 @cindex spam filtering
 @cindex spam
 
-The idea behind @code{spam.el} is to have a control center for spam detection
-and filtering in Gnus.  To that end, @code{spam.el} does two things: it
+The idea behind @file{spam.el} is to have a control center for spam detection
+and filtering in Gnus.  To that end, @file{spam.el} does two things: it
 filters incoming mail, and it analyzes mail known to be spam or ham.
-@emph{Ham} is the name used throughout @code{spam.el} to indicate
+@dfn{Ham} is the name used throughout @file{spam.el} to indicate
 non-spam messages.
 
-So, what happens when you load @code{spam.el}?  First of all, you get
+So, what happens when you load @file{spam.el}?  First of all, you get
 the following keyboard commands:
 
 @table @kbd
@@ -22289,7 +22289,7 @@ You must have Bogofilter installed for that command to work properly.
 
 @end table
 
-Also, when you load @code{spam.el}, you will be able to customize its
+Also, when you load @file{spam.el}, you will be able to customize its
 variables.  Try @code{customize-group} on the @samp{spam} variable
 group.
 
@@ -22393,7 +22393,7 @@ gnus-spam-process-destinations}).  The ultimate location is a group
 name.  If the @code{spam-process-destination} parameter is not set,
 the spam articles are only expired.
 
-To use the @code{spam.el} facilities for incoming mail filtering, you
+To use the @file{spam.el} facilities for incoming mail filtering, you
 must add the following to your fancy split list
 @code{nnmail-split-fancy} or @code{nnimap-split-fancy}:
 
@@ -22455,7 +22455,7 @@ split.  Go crazy.
 You still have to have specific checks such as
 @code{spam-use-regex-headers} set to t, even if you specifically
 invoke @code{spam-split} with the check.  The reason is that when
-loading @code{spam.el}, some conditional loading is done depending on
+loading @file{spam.el}, some conditional loading is done depending on
 what @code{spam-use-xyz} variables you have set.
 
 @emph{Note for IMAP users}
@@ -22664,7 +22664,7 @@ list is fairly comprehensive, but make sure to let us know if it
 contains outdated servers.
 
 The blackhole check uses the @code{dig.el} package, but you can tell
-@code{spam.el} to use @code{dns.el} instead for better performance if
+@file{spam.el} to use @code{dns.el} instead for better performance if
 you set @code{spam-use-dig} to @code{nil}.  It is not recommended at
 this time to set @code{spam-use-dig} to @code{nil} despite the
 possible performance improvements, because some users may be unable to
@@ -22797,7 +22797,7 @@ database directory.
 
 @end defvar
 
-The Bogofilter mail classifier is similar to ifile in intent and
+The Bogofilter mail classifier is similar to @command{ifile} in intent and
 purpose.  A ham and a spam processor are provided, plus the
 @code{spam-use-bogofilter} and @code{spam-use-bogofilter-headers}
 variables to indicate to spam-split that Bogofilter should either be
@@ -22812,7 +22812,7 @@ Bogofilter was used to test this functionality.
 
 @defvar spam-use-ifile
 
-Enable this variable if you want @code{spam-split} to use ifile, a
+Enable this variable if you want @code{spam-split} to use @command{ifile}, a
 statistical analyzer similar to Bogofilter.
 
 @end defvar
@@ -22879,11 +22879,11 @@ of non-spam messages.  Note that this ham processor has no effect in
 @emph{spam} or @emph{unclassified} groups.
 @end defvar
 
-This enables spam.el to cooperate with spam-stat.el.  spam-stat.el
-provides an internal (Lisp-only) spam database, which unlike ifile or
-Bogofilter does not require external programs.  A spam and a ham
-processor, and the @code{spam-use-stat} variable for @code{spam-split}
-are provided.
+This enables @file{spam.el} to cooperate with @file{spam-stat.el}.
+@file{spam-stat.el} provides an internal (Lisp-only) spam database,
+which unlike ifile or Bogofilter does not require external programs.
+A spam and a ham processor, and the @code{spam-use-stat} variable for
+@code{spam-split} are provided.
 
 @node SpamOracle
 @subsubsection Using SpamOracle with Gnus
@@ -22904,11 +22904,11 @@ One possibility is to run SpamOracle as a @code{:prescript} from the
 @xref{Mail Source Specifiers}, (@pxref{SpamAssassin}).  This method has
 the advantage that the user can see the @emph{X-Spam} headers.
 
-The easiest method is to make @code{spam.el} (@pxref{Filtering Spam
+The easiest method is to make @file{spam.el} (@pxref{Filtering Spam
 Using The Spam ELisp Package}) call SpamOracle.
 
 @vindex spam-use-spamoracle
-To enable SpamOracle usage by @code{spam.el}, set the variable
+To enable SpamOracle usage by @file{spam.el}, set the variable
 @code{spam-use-spamoracle} to @code{t} and configure the
 @code{nnmail-split-fancy} or @code{nnimap-split-fancy} as described in
 the section @xref{Filtering Spam Using The Spam ELisp Package}.  In
@@ -22951,7 +22951,7 @@ false hits or misses, SpamOracle needs training.  SpamOracle learns the
 characteristics of your spam mails.  Using the @emph{add} mode
 (training mode) one has to feed good (ham) and spam mails to
 SpamOracle.  This can be done by pressing @kbd{|} in the Summary buffer
-and pipe the mail to a SpamOracle process or using @code{spam.el}'s
+and pipe the mail to a SpamOracle process or using @file{spam.el}'s
 spam- and ham-processors, which is much more convenient.  For a
 detailed description of spam- and ham-processors, see @xref{Filtering Spam Using The Spam ELisp Package}.
 
