@@ -1,3 +1,7 @@
+2000-05-24  Dave Love  <fx@gnu.org>
+
+	* mml.el (mml-parse-file-name): Fix ange-ftp part.
+
 2000-05-22  Didier Verna  <didier@lrde.epita.fr>
 
 	* gnus.el (gnus-redefine-select-method-widget): new function, call
