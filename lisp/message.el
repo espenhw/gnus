@@ -3911,7 +3911,7 @@ Otherwise, generate and save a value for `canlock-password' first."
    ;; Check "Shoot me".
    (message-check 'shoot
      (if (re-search-forward
-	  "Message-ID.*.i-did-not-set--mail-host-address--so-shoot-me" nil t)
+	  "Message-ID.*.i-did-not-set--mail-host-address--so-tickle-me" nil t)
 	 (y-or-n-p "You appear to have a misconfigured system.  Really post? ")
        t))
    ;; Check for Approved.

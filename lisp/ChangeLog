@@ -1,3 +1,7 @@
+2003-03-20  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* message.el (message-check-news-header-syntax): Fixed regexp.
+
 2003-03-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-url.el (mm-url-insert): Move url-current-object stuff into
