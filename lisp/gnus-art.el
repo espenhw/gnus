@@ -1676,11 +1676,11 @@ unfolded."
 	    (with-temp-buffer
 	      (insert header)
 	      (goto-char (point-min))
-	      (while (re-search-forward "[\t ]*\n[\t ]+" nil t)
+	      (while (re-search-forward "\n[\t ]" nil t)
 		(replace-match " " t t)))
 	    (setq length (- (point-max) (point-min) 1)))
 	  (when (< length (window-width))
-	    (while (re-search-forward "[\t ]*\n[\t ]+" nil t)
+	    (while (re-search-forward "\n[\t ]" nil t)
 	      (replace-match " " t t)))
 	  (goto-char (point-max)))))))
 

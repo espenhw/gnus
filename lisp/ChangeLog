@@ -1,5 +1,12 @@
 2002-02-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-art.el (gnus-article-treat-unfold-headers): Don't remove
+	too many spaces.
+	
+	* rfc2047.el (rfc2047-unfold-region): Ditto.
+	(rfc2047-decode-region): Don't unfold. Let
+	gnus-article-treat-unfold-headers do it.
+
 	* gnus-sum.el (gnus-dependencies-add-header): Fix typo.
 	From: Jesper Harder <harder@ifa.au.dk>
 
@@ -1908,7 +1915,7 @@
 2001-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-art.el (gnus-treat-unfold-lines): New variable.
-	(gnus-treat-unfold-headers): Remamed.
+	(gnus-treat-unfold-headers): Renamed.
 	(gnus-article-treat-unfold-headers): New command and keystroke.
 
 	* rfc2047.el (rfc2047-encode-message-header): Clean up.

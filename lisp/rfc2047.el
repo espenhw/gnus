@@ -433,18 +433,15 @@ The buffer may be narrowed."
     (let ((bol (save-restriction
 		 (widen)
 		 (gnus-point-at-bol)))
-	  (eol (gnus-point-at-eol))
-	  leading)
+	  (eol (gnus-point-at-eol)))
       (forward-line 1)
       (while (not (eobp))
-	(looking-at "[ \t]*")
-	(setq leading (- (match-end 0) (match-beginning 0)))
-	(if (< (- (gnus-point-at-eol) bol leading) 76)
-	    (progn
-	      (goto-char eol)
-	      (delete-region eol (progn
-				   (skip-chars-forward " \t\n\r")
-				   (1- (point)))))
+	(if (and (looking-at "[ \t]")
+		 (< (- (gnus-point-at-eol) bol) 76))
+	    (delete-region eol (progn
+				 (goto-char eol)
+				 (skip-chars-forward "\r\n")
+				 (point)))
 	  (setq bol (gnus-point-at-bol)))
 	(setq eol (gnus-point-at-eol))
 	(forward-line 1)))))
@@ -530,8 +527,7 @@ The buffer may be narrowed."
 		   mail-parse-charset
 		   (not (eq mail-parse-charset 'us-ascii))
 		   (not (eq mail-parse-charset 'gnus-decoded)))
-	  (mm-decode-coding-region b (point-max) mail-parse-charset))
-	(rfc2047-unfold-region (point-min) (point-max))))))
+	  (mm-decode-coding-region b (point-max) mail-parse-charset))))))
 
 (defun rfc2047-decode-string (string)
   "Decode the quoted-printable-encoded STRING and return the results."
