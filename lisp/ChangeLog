@@ -1,3 +1,8 @@
+2002-03-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-request-article): Remove javascript
+	too.
+
 2002-03-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-save-parts-default-mime): Remove
