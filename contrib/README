@@ -24,6 +24,13 @@ gpg.el
 
 hashcash.el
 
+nnir.el
+
+	Interface to various full-text search engines.  Provides less
+	functionality than gnus-namazu.el, but also supports programs
+	other than Namazu.  Current implementation is restricted to
+	nnml folders, but could be extended for other backends.
+
 one-line-cookie.diff
 
 ssl.el
