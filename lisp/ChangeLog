@@ -1,3 +1,7 @@
+2003-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-xmas.el (gnus-xmas-mime-button-menu): Accept a prefix arg.
+
 2003-02-20  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.el (message-user-fqdn, message-valid-fqdn-regexp): New
