@@ -849,6 +849,17 @@ This variable uses the same syntax as `gnus-emphasis-alist'."
 					     gnus-emphasis-highlight-words)))))
   :group 'gnus-summary-visual)
 
+(defcustom gnus-summary-show-article-charset-alist
+  nil
+  "Alist of number and charset.
+The article will be shown with the charset corresponding to the
+numbered argument.
+For example: ((1 . cn-gb-2312) (2 . big5))."
+  :type '(repeat (cons (number :tag "Argument" 1)
+		       (symbol :tag "Charset")))
+  :group 'gnus-charset)
+
+
 ;;; Internal variables
 
 (defvar gnus-article-mime-handles nil)
@@ -7110,12 +7121,23 @@ to save in."
 
 (defun gnus-summary-show-article (&optional arg)
   "Force re-fetching of the current article.
-If ARG (the prefix) is non-nil, show the raw article without any
-article massaging functions being run."
+If ARG (the prefix) is a number, show the article with the charset 
+defined in `gnus-summary-show-article-charset-alist', or the charset
+inputed.
+If ARG (the prefix) is non-nil and not a number, show the raw article 
+without any article massaging functions being run."
   (interactive "P")
-  (if (not arg)
-      ;; Select the article the normal way.
-      (gnus-summary-select-article nil 'force)
+  (cond 
+   ((numberp arg)
+    (let ((gnus-newsgroup-charset 
+	   (or (cdr (assq arg gnus-summary-show-article-charset-alist))
+	       (read-coding-system "Charset: ")))
+	  (gnus-newsgroup-ignored-charsets 'gnus-all))
+      (gnus-summary-select-article nil 'force)))
+   ((not arg)
+    ;; Select the article the normal way.
+    (gnus-summary-select-article nil 'force))
+   (t
     ;; We have to require this here to make sure that the following
     ;; dynamic binding isn't shadowed by autoloading.
     (require 'gnus-async)
@@ -7132,7 +7154,7 @@ article massaging functions being run."
 	(save-excursion
 	  (set-buffer gnus-article-buffer)
 	  (mm-destroy-parts gnus-article-mime-handles)))
-      (gnus-summary-select-article nil 'force)))
+      (gnus-summary-select-article nil 'force))))
   (gnus-summary-goto-subject gnus-current-article)
   (gnus-summary-position-point))
 

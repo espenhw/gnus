@@ -179,15 +179,22 @@ If no encoding was done, nil is returned."
 The characters in CHARSET should then be decoded."
   (if (stringp charset)
     (setq charset (intern (downcase charset))))
-  (if (or (not charset) (memq charset mail-parse-ignored-charsets))
+  (if (or (not charset) 
+	  (eq 'gnus-all mail-parse-ignored-charsets)
+	  (memq 'gnus-all mail-parse-ignored-charsets)
+	  (memq charset mail-parse-ignored-charsets))
       (setq charset mail-parse-charset))
   (save-excursion
     (when encoding
       (mm-decode-content-transfer-encoding encoding type))
     (when (featurep 'mule)
-      (let (mule-charset)
-	(when (and charset
-		   (setq mule-charset (mm-charset-to-coding-system charset))
+      (let ((mule-charset (mm-charset-to-coding-system charset)))
+	(if (and (not mule-charset)
+		 (listp mail-parse-ignored-charsets)
+		 (memq 'gnus-unknown mail-parse-ignored-charsets))
+	    (setq mule-charset 
+		  (mm-charset-to-coding-system mail-parse-charset)))
+	(when (and charset mule-charset
 		   ;; buffer-file-coding-system
 		   ;;Article buffer is nil coding system
 		   ;;in XEmacs
@@ -201,13 +208,20 @@ The characters in CHARSET should then be decoded."
   "Decode STRING with CHARSET."
   (if (stringp charset)
     (setq charset (intern (downcase charset))))
-  (if (or (not charset) (memq charset mail-parse-ignored-charsets))
+  (if (or (not charset) 
+	  (eq 'gnus-all mail-parse-ignored-charsets)
+	  (memq 'gnus-all mail-parse-ignored-charsets)
+	  (memq charset mail-parse-ignored-charsets))
       (setq charset mail-parse-charset))
   (or
    (when (featurep 'mule)
-     (let (mule-charset)
-       (when (and charset
-		  (setq mule-charset (mm-charset-to-coding-system charset))
+      (let ((mule-charset (mm-charset-to-coding-system charset)))
+	(if (and (not mule-charset)
+		 (listp mail-parse-ignored-charsets)
+		 (memq 'gnus-unknown mail-parse-ignored-charsets))
+	    (setq mule-charset 
+		  (mm-charset-to-coding-system mail-parse-charset)))
+       (when (and charset mule-charset
 		  (mm-multibyte-p)
 		  (or (not (eq mule-charset 'ascii))
 		      (setq mule-charset mail-parse-charset)))
