@@ -1,3 +1,7 @@
+2004-09-29  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-verify-bogofilter): -V, not -sV option
+
 2004-09-28  Kevin Greiner  <kgreiner@compsol.cc>
 
 	* gnus-agent.el (gnus-agent-synchronize-group-flags): Replaced

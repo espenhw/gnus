@@ -2361,7 +2361,7 @@ REMOVE not nil, remove the ADDRESSES."
     (setq spam-bogofilter-valid
 	  (not (string-match "^bogofilter version 0\\.\\([0-9]\\|1[01]\\)\\."
 			     (shell-command-to-string 
-			      (format "%s -sV" spam-bogofilter-path))))))
+			      (format "%s -V" spam-bogofilter-path))))))
   spam-bogofilter-valid)
   
 (defun spam-check-bogofilter (&optional score)
