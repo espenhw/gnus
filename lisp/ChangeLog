@@ -1,3 +1,18 @@
+2000-08-17  Dave Love  <fx@gnu.org>
+
+	* gnus-group.el (gnus-group-running-xemacs): Deleted.
+
+	* gnus-demon.el (gnus-demon): Bind use-dialog-box and
+	last-nonmenu-event.
+
+	* uudecode.el (char-int): Use defalias, not fset.
+
+	* score-mode.el: Don't require easymenu.  Require mm-util.
+	(score-mode-coding-system): Use mm-auto-save-coding-system.
+
+	* nneething.el (nneething-create-mapping): Don't use cadar & al.
+	(nneething-file-name): Use expand-file-name, not concat.
+
 2000-08-16 13:05:46  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnslashdot.el (nnslashdot-threaded-retrieve-headers):
