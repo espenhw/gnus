@@ -1,3 +1,11 @@
+2002-05-27  Jesper Harder  <harder@ifa.au.dk>
+
+	* mailcap.el (mailcap-mime-data): Test window-system rather than
+	mm-device-type.
+	(mailcap-mime-data): Call xdvi and gv with "-safer".
+
+	* mm-util.el: Don't define mm-device-type.
+
 2002-08-05  Simon Josefsson  <jas@extundo.com>
 
 	* mm-util.el (mm-coding-system-priorities): coding-system type not

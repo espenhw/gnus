@@ -40,7 +40,6 @@
      (coding-system-list . ignore)
      (decode-coding-region . ignore)
      (char-int . identity)
-     (device-type . ignore)
      (coding-system-equal . equal)
      (annotationp . ignore)
      (set-buffer-file-coding-system . ignore)

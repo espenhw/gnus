@@ -76,8 +76,8 @@
 ;;       (type   . "application/dvi")
 ;;       (test   . (eq (mm-device-type) 'ns)))
      ("dvi"
-      (viewer . "xdvi %s")
-      (test   . (eq (mm-device-type) 'x))
+      (viewer . "xdvi -safer %s")
+      (test   . (eq window-system 'x))
       ("needsx11")
       (type   . "application/dvi"))
      ("dvi"
@@ -121,13 +121,13 @@
       ("copiousoutput"))
      ;; Prefer free viewers.
      ("pdf"
-      (viewer . "gv %s")
+      (viewer . "gv -safer %s")
       (type . "application/pdf")
       (test . window-system))
      ("pdf"
       (viewer . "xpdf %s")
       (type . "application/pdf")
-      (test . (eq (mm-device-type) 'x)))
+      (test . (eq window-system 'x)))
      ("pdf"
       (viewer . "acroread %s")
       (type   . "application/pdf"))
@@ -144,7 +144,7 @@
      ("postscript"
       (viewer . "ghostview -dSAFER %s")
       (type . "application/postscript")
-      (test   . (eq (mm-device-type) 'x))
+      (test   . (eq window-system 'x))
       ("needsx11"))
      ("postscript"
       (viewer . "ps2ascii %s")
@@ -184,19 +184,19 @@
       (viewer  . "xwud -in %s")
       (type    . "image/x-xwd")
       ("compose" . "xwd -frame > %s")
-      (test    . (eq (mm-device-type) 'x))
+      (test    . (eq window-system 'x))
       ("needsx11"))
      ("x11-dump"
       (viewer . "xwud -in %s")
       (type . "image/x-xwd")
       ("compose" . "xwd -frame > %s")
-      (test   . (eq (mm-device-type) 'x))
+      (test   . (eq window-system 'x))
       ("needsx11"))
      ("windowdump"
       (viewer . "xwud -in %s")
       (type . "image/x-xwd")
       ("compose" . "xwd -frame > %s")
-      (test   . (eq (mm-device-type) 'x))
+      (test   . (eq window-system 'x))
       ("needsx11"))
 ;;; XEmacs says `ns' device-type not implemented.
 ;;      (".*"
@@ -206,12 +206,12 @@
      (".*"
       (viewer . "display %s")
       (type . "image/*")
-      (test   . (eq (mm-device-type) 'x))
+      (test   . (eq window-system 'x))
       ("needsx11"))
      (".*"
       (viewer . "ee %s")
       (type . "image/*")
-      (test   . (eq (mm-device-type) 'x))
+      (test   . (eq window-system 'x))
       ("needsx11")))
     ("text"
      ("plain"
@@ -237,7 +237,7 @@
      ("mpeg"
       (viewer . "mpeg_play %s")
       (type   . "video/mpeg")
-      (test   . (eq (mm-device-type) 'x))
+      (test   . (eq window-system 'x))
       ("needsx11")))
     ("x-world"
      ("x-vrml"
