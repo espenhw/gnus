@@ -1,5 +1,10 @@
 2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-agent.el (gnus-agent-regenerate-group): Add clean option.
+	(gnus-agent-regenerate): Ditto.
+
+2002-01-11  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
 	* message.el (message-ignored-news-headers) 
 	(message-ignored-mail-headers): Add X-Gnus-Agent-Meta-Information:.
 	Suggested by ARISAWA Akihiro <ari@atesoft.advantest.co.jp>

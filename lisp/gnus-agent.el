@@ -1854,7 +1854,7 @@ The following commands are available:
 	(insert-file-contents file))
       t)))
 
-(defun gnus-agent-regenerate-group (group)
+(defun gnus-agent-regenerate-group (group &optional clean)
   "Regenerate GROUP."
   (let ((dir (concat (gnus-agent-directory)
 		     (gnus-agent-group-path group) "/"))
@@ -1905,7 +1905,9 @@ The following commands are available:
       (if changed
 	  (let ((coding-system-for-write gnus-agent-file-coding-system))
 	    (write-region (point-min) (point-max) file nil 'silent))))
-    (gnus-agent-load-alist group)
+    (setq gnus-agent-article-alist nil)
+    (unless clean
+      (gnus-agent-load-alist group))
     (setq alist (sort alist 'car-less-than-car))
     (setq gnus-agent-article-alist (sort gnus-agent-article-alist 
 					 'car-less-than-car))
@@ -1944,24 +1946,27 @@ The following commands are available:
        (time-to-days (nth 5 (file-attributes file)))))))
 
 ;;;###autoload
-(defun gnus-agent-regenerate ()
-  "Regenerate all agent covered files."
-  (interactive)
+(defun gnus-agent-regenerate (&optional clean)
+  "Regenerate all agent covered files.
+If CLEAN, don't read existing active and agentview files."
+  (interactive "P")
   (message "Regenerating Gnus agent files...")
   (dolist (gnus-command-method gnus-agent-covered-methods)
     (let ((active-file (gnus-agent-lib-file "active"))
 	  history-hashtb active-hashtb active-changed 
 	  history-changed point)
       (gnus-make-directory (file-name-directory active-file))
-      (mm-with-unibyte-buffer
-	(if (file-exists-p active-file)
-	    (let ((coding-system-for-read gnus-agent-file-coding-system))
-	      (nnheader-insert-file-contents active-file))
-	  (setq active-changed t))
-	(gnus-active-to-gnus-format
-	 nil (setq active-hashtb
-		   (gnus-make-hashtable
-		    (count-lines (point-min) (point-max))))))
+      (if clean
+	  (setq active-hashtb (gnus-make-hashtable 1000))
+	(mm-with-unibyte-buffer
+	  (if (file-exists-p active-file)
+	      (let ((coding-system-for-read gnus-agent-file-coding-system))
+		(nnheader-insert-file-contents active-file))
+	    (setq active-changed t))
+	  (gnus-active-to-gnus-format
+	   nil (setq active-hashtb
+		     (gnus-make-hashtable
+		      (count-lines (point-min) (point-max)))))))
       (gnus-agent-open-history)
       (setq history-hashtb (gnus-make-hashtable 1000))
       (with-current-buffer
@@ -1985,7 +1990,7 @@ The following commands are available:
 	    (delete-region point (point))
 	    (setq history-changed t))))
       (dolist (group (gnus-groups-from-server gnus-command-method))
-	(gnus-agent-regenerate-group group)
+	(gnus-agent-regenerate-group group clean)
 	(let ((min (or (caar gnus-agent-article-alist) 1))
 	      (max (or (caar (last gnus-agent-article-alist)) 0))
 	      (active (gnus-gethash-safe (gnus-group-real-name group)
