@@ -67,8 +67,9 @@
     (unwind-protect
 	(progn
 	  (set-default-file-modes 448)
-          (let* ((coding-system-for-write 'binary)
-                 (input (buffer-substring-no-properties start end)))
+          (let ((coding-system-for-write 'binary)
+		(input (buffer-substring-no-properties start end))
+		(default-enable-multibyte-characters nil))
             (with-temp-buffer
               (when passphrase
                 (insert passphrase "\n"))
