@@ -18468,6 +18468,18 @@ have not been fetched), @code{always-undownloaded} (maneuvering always
 ignores articles that have not been fetched), @code{unfetched}
 (maneuvering ignores articles whose headers have not been fetched).
 
+@item gnus-agent-auto-agentize-methods
+@vindex gnus-agent-auto-agentize-methods
+If you have never used the Agent before (or more technically, if
+@file{~/News/agent/lib/servers} does not exist), Gnus will
+automatically agentize a few servers for you.  This variable control
+which backends should be auto-agentized.  It is typically only useful
+to agentize remote backends.  The auto-agentizing has the same effect
+as running @kbd{J a} on the servers (@pxref{Server Agent Commands}).
+If the file exist, you must manage the servers manually by adding or
+removing them, this variable is only applicable the first time you
+start Gnus.  The default is @samp{(nntp nnimap)}.
+
 @end table
 
 
@@ -18872,6 +18884,12 @@ pretend they are keymaps or not.
 There aren't many of these as yet, I'm afraid.
 
 @table @kbd
+
+@item W e
+@kindex W e (Group)
+@findex gnus-score-edit-all-score
+Edit the apply-to-all-groups all.SCORE file.  You will be popped into
+a @code{gnus-score-mode} buffer (@pxref{Score File Editing}).
 
 @item W f
 @kindex W f (Group)
