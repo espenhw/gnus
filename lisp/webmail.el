@@ -171,6 +171,8 @@
 ;;; Interface functions
 
 (defun webmail-error (str)
+  (message "%s HTML has changed; please get a new version of webmail (%s)"
+	   webmail-type str)
   (error "%s HTML has changed; please get a new version of webmail (%s)"
 	 webmail-type str))
 
@@ -238,7 +240,8 @@
   (if (gnus-buffer-live-p webmail-buffer)
       (set-buffer webmail-buffer)
     (setq webmail-buffer
-	  (nnheader-set-temp-buffer " *webmail*"))))
+	  (mm-with-unibyte
+	    (nnheader-set-temp-buffer " *webmail*")))))
 
 (defvar url-package-name)
 (defvar url-package-version)
@@ -333,6 +336,14 @@
     (if webmail-post-process
 	(funcall webmail-post-process))))
 
+(defun webmail-encode-8bit ()
+  (goto-char (point-min))
+  (skip-chars-forward "^\200-\377")
+  (while (not (eobp))
+    (insert (format "&%d;" (mm-char-int (char-after))))
+    (delete-char 1)
+    (skip-chars-forward "^\200-\377")))
+
 ;;; hotmail
 
 (defun webmail-hotmail-open ()
@@ -375,12 +386,16 @@
 	(setq newp t)))))
 
 (defun webmail-hotmail-article (file id)
-  (let (p attachment count mime)
+  (let (p attachment count mime hotmail-direct)
     (save-restriction
+      (webmail-encode-8bit)
       (goto-char (point-min))
       (if (not (search-forward "<DIV>" nil t))
-	  (webmail-error "article@1"))
-      (narrow-to-region (point-min) (match-beginning 0))
+	  (if (not (search-forward "Reply&nbsp;All" nil t))
+	      (webmail-error "article@1")
+	    (setq hotmail-direct t))
+	(goto-char (match-beginning 0)))
+      (narrow-to-region (point-min) (point))
       (if (not (search-backward "<table" nil t 2))
 	  (webmail-error "article@1.1"))
       (delete-region (point-min) (match-beginning 0)) 
@@ -401,7 +416,7 @@
       (insert "\n")
       (setq p (point))
       (while (re-search-forward 
-	      "<div>\\|\\(http://[^/]+/cgi-bin/getmsg/\\([^\?]+\\)\?[^\"]*\\)\"" 
+	      "<tt>\\|<div>\\|\\(http://[^/]+/cgi-bin/getmsg/\\([^\?]+\\)\?[^\"]*\\)\"" 
 	      nil t)
 	(if (setq attachment (match-string 1))
 	    (let ((filename (match-string 2))
@@ -425,14 +440,18 @@
 	      (insert "><#/part>\n")
 	      (setq p (point)))
 	  (delete-region p (match-end 0))
-	  (setq count 1)
-	  (while (and (> count 0) 
-		      (re-search-forward "</div>\\|\\(<div>\\)" nil t))
-	    (if (match-string 1)
-		(setq count (1+ count))
-	      (if (= (setq count (1- count)) 0)
-		  (delete-region (match-beginning 0)
-				 (match-end 0)))))
+	  (if hotmail-direct
+	      (if (not (search-forward "</tt>" nil t))
+		  (webmail-error "article@1.2")
+		(delete-region (match-beginning 0) (match-end 0)))
+	    (setq count 1)
+	    (while (and (> count 0) 
+			(re-search-forward "</div>\\|\\(<div>\\)" nil t))
+	      (if (match-string 1)
+		  (setq count (1+ count))
+		(if (= (setq count (1- count)) 0)
+		    (delete-region (match-beginning 0)
+				   (match-end 0))))))
 	  (narrow-to-region p (point))
 	  (goto-char (point-min))
 	  (cond 
@@ -456,7 +475,7 @@
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")
       (if id
-	  (insert "Message-ID: <" id "@hotmail.com>\n"))
+	  (insert (format "Message-ID: <%s@hotmail.com>\n" id)))
       (unless (looking-at "$") 
 	(if (search-forward "\n\n" nil t)
 	    (forward-line -1)
@@ -515,6 +534,7 @@
 	      (setq tofetch (1+ tofetch)))
 	    (setq newp t))
 	(setq newp nil)))
+    (setq webmail-articles (nreverse webmail-articles))
     (message "Fetching %d mail(s)" tofetch)))
 
 (defun webmail-yahoo-article (file id)
@@ -582,7 +602,7 @@
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")
       (if id
-	  (insert "Message-ID: <" id "@yahoo.com>\n"))
+	  (insert (format "Message-ID: <%s@yahoo.com>\n" id)))
       (unless (looking-at "$") 
 	(if (search-forward "\n\n" nil t)
 	    (forward-line -1)
@@ -633,7 +653,8 @@
 			      webmail-session id)))
 	(if (or (not webmail-newmail-only)
 		(equal (match-string 1) "True"))
-	    (push item webmail-articles))))))
+	    (push item webmail-articles))))
+    (setq webmail-articles (nreverse webmail-articles))))
 
 (defun webmail-netaddress-single-part ()
   (goto-char (point-min))
@@ -658,6 +679,7 @@
 (defun webmail-netaddress-article (file id)
   (let (p p1 attachment count mime type)
     (save-restriction
+      (webmail-encode-8bit)
       (goto-char (point-min))
       (if (not (search-forward "Trash" nil t))
 	  (webmail-error "article@1"))
@@ -744,7 +766,7 @@
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")
       (if id
-	  (insert "Message-ID: <" id "@usa.net>\n"))
+	  (insert (format "Message-ID: <%s@usa.net>\n" id)))
       (unless (looking-at "$") 
 	(if (search-forward "\n\n" nil t)
 	    (forward-line -1)
