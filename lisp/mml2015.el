@@ -662,8 +662,9 @@ by you.")
 	(if (condition-case err
 		(prog1
 		    (pgg-decrypt-region (point-min) (point-max))
-		  (setq decrypt-status (with-current-buffer mml2015-result-buffer
-					 (buffer-string))))
+		  (setq decrypt-status 
+			(with-current-buffer mml2015-result-buffer
+			  (buffer-string))))
 	      (error
 	       (mm-set-handle-multipart-parameter
 		mm-security-handle 'gnus-details (mml2015-format-error err))
@@ -679,7 +680,10 @@ by you.")
 	       mm-security-handle 'gnus-info "OK")
 	      (mm-set-handle-multipart-parameter
 	       mm-security-handle 'gnus-details
-	       (concat decrypt-status "\n" (mm-handle-multipart-ctl-parameter handles 'gnus-details)))
+	       (concat decrypt-status
+		       (when (stringp (car handles))
+			 "\n" (mm-handle-multipart-ctl-parameter
+			       handles 'gnus-details))))
 	      (if (listp (car handles))
 		  handles
 		(list handles)))

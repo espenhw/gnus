@@ -1,3 +1,8 @@
+2002-09-26  Simon Josefsson  <jas@extundo.com>
+
+	* mml2015.el (mml2015-pgg-decrypt): Only add security information
+	if dissecting resulting buffer actually had any information.
+
 2002-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-group-sort-by-method): Remove `symbol-name'
