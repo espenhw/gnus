@@ -1,3 +1,8 @@
+1999-11-17 13:09:37  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-recenter): set-window-start with
+	NOFORCE in Emacs case.
+
 1999-11-17 13:04:01  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-request-article-this-buffer): Set

@@ -5107,7 +5107,8 @@ displayed, no centering will be performed."
 	;; whichever is the least.
 	(set-window-start
 	 window (min bottom (save-excursion
-			      (forward-line (- top)) (point)))))
+			      (forward-line (- top)) (point)))
+	 t))
       ;; Do horizontal recentering while we're at it.
       (when (and (get-buffer-window (current-buffer) t)
 		 (not (eq gnus-auto-center-summary 'vertical)))
