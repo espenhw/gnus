@@ -1033,9 +1033,9 @@ the actual number of articles toggled is returned."
     (setq articles (sort (gnus-uncompress-sequence articles) '<))
     ;; Remove known articles.
     (when (gnus-agent-load-alist group)
-      (setq articles (gnus-sorted-intersection
+      (setq articles (gnus-list-range-intersection 
 		      articles
-		      (gnus-uncompress-range
+		      (list
 		       (cons (1+ (caar (last gnus-agent-article-alist)))
 			     (cdr (gnus-active group)))))))
     ;; Fetch them.

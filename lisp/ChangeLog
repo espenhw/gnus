@@ -1,5 +1,19 @@
 2002-01-29  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-sum.el (gnus-summary-update-info): Use
+	gnus-list-range-intersection.
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Use
+	gnus-list-range-intersection.
+
+	* gnus-range.el (gnus-range-normalize): Use correct predicate.
+	(gnus-list-range-intersection): Use it.
+	(gnus-inverse-list-range-intersection): Ditto.
+	(gnus-sorted-intersection): Add doc.
+	(gnus-set-sorted-intersection): Add doc.
+	(gnus-sorted-union): New function.
+	(gnus-set-sorted-union): New function.
+
 	* gnus-range.el (gnus-list-range-intersection): Correct the logic.
 	(gnus-inverse-list-range-intersection): Ditto.
 
@@ -1200,7 +1214,7 @@
 	(gnus-convert-image-to-gray-x-face): Ditto.
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Add a :keys to
-	gnus-summary0show-raw-article.
+	gnus-summary-show-raw-article.
 
 2002-01-02  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

@@ -34,7 +34,7 @@
 (defsubst gnus-range-normalize (range)
   "Normalize RANGE.
 If RANGE is a single range, return (RANGE). Otherwise, return RANGE."
-  (if (listp (cdr range)) (list range) range))
+  (if (listp (cdr-safe range)) range (list range)))
 
 (defun gnus-last-element (list)
   "Return last element of LIST."
@@ -88,7 +88,8 @@ Both lists have to be sorted over <."
     result))
 
 (defun gnus-sorted-intersection (list1 list2)
-  ;; LIST1 and LIST2 have to be sorted over <.
+  "Return intersection of LIST1 and LIST2.
+LIST1 and LIST2 have to be sorted over <."
   (let (out)
     (while (and list1 list2)
       (cond ((= (car list1) (car list2))
@@ -102,8 +103,8 @@ Both lists have to be sorted over <."
     (nreverse out)))
 
 (defun gnus-set-sorted-intersection (list1 list2)
-  ;; LIST1 and LIST2 have to be sorted over <.
-  ;; This function modifies LIST1.
+  "Return intersection of LIST1 and LIST2 by modifying cdr pointers of LIST1.
+LIST1 and LIST2 have to be sorted over <."
   (let* ((top (cons nil list1))
 	 (prev top))
     (while (and list1 list2)
@@ -117,6 +118,53 @@ Both lists have to be sorted over <."
 	    (t
 	     (setq list2 (cdr list2)))))
     (setcdr prev nil)
+    (cdr top)))
+
+(defun gnus-sorted-union (list1 list2)
+  "Return union of LIST1 and LIST2.
+LIST1 and LIST2 have to be sorted over <."
+  (let (out)
+    (while (and list1 list2)
+      (cond ((= (car list1) (car list2))
+	     (setq out (cons (car list1) out)
+		   list1 (cdr list1)
+		   list2 (cdr list2)))
+	    ((< (car list1) (car list2))
+	     (setq out (cons (car list1) out)
+		   list1 (cdr list1)))
+	    (t
+	     (setq out (cons (car list2) out)
+		   list2 (cdr list2)))))
+    (while list1
+      (setq out (cons (car list1) out)
+	    list1 (cdr list1)))
+    (while list2
+      (setq out (cons (car list2) out)
+	    list2 (cdr list2)))
+    (nreverse out)))
+
+(defun gnus-set-sorted-union (list1 list2)
+  "Return union of LIST1 and LIST2 by modifying cdr pointers of LIST1.
+LIST1 and LIST2 have to be sorted over <."
+  (let* ((top (cons nil list1))
+	 (prev top))
+    (while (and list1 list2)
+      (cond ((= (car list1) (car list2))
+	     (setq prev list1
+		   list1 (cdr list1)
+		   list2 (cdr list2)))
+	    ((< (car list1) (car list2))
+	     (setq prev list1
+		   list1 (cdr list1)))
+	    (t
+	     (setcdr prev (list (car list2)))
+	     (setq prev (cdr prev)
+		   list2 (cdr list2))
+	     (setcdr prev list1))))
+    (while list2
+      (setcdr prev (list (car list2)))
+      (setq prev (cdr prev)
+	    list2 (cdr list2)))
     (cdr top)))
 
 (defun gnus-compress-sequence (numbers &optional always-list)
@@ -328,6 +376,7 @@ modified."
 (defun gnus-list-range-intersection (list ranges)
   "Return a list of numbers in LIST that are members of RANGES.
 LIST is a sorted list."
+  (setq ranges (gnus-range-normalize ranges))
   (let (number result)
     (while (setq number (pop list))
       (while (and ranges
@@ -346,6 +395,7 @@ LIST is a sorted list."
 (defun gnus-inverse-list-range-intersection (list ranges)
   "Return a list of numbers in LIST that are not members of RANGES.
 LIST is a sorted list."
+  (setq ranges (gnus-range-normalize ranges))
   (let (number result)
     (while (setq number (pop list))
       (while (and ranges

@@ -5985,10 +5985,10 @@ The prefix argument ALL means to select all articles."
 	  (setq gnus-newsgroup-killed
 		(gnus-compress-sequence
 		 (nconc
-		  (gnus-set-sorted-intersection
-		   (gnus-uncompress-range gnus-newsgroup-killed)
+		  (gnus-list-range-intersection
 		   (setq gnus-newsgroup-unselected
-			 (sort gnus-newsgroup-unselected '<)))
+			 (sort gnus-newsgroup-unselected '<))
+		   gnus-newsgroup-killed)
 		  (setq gnus-newsgroup-unreads
 			(sort gnus-newsgroup-unreads '<)))
 		 t)))
