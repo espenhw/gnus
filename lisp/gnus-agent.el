@@ -1098,6 +1098,7 @@ and that there are no duplicates."
 				"Duplicate overview line for %d" cur)
 		  (delete-region (point) (progn (forward-line 1) (point))))
 		 ((< cur prev-num)
+		  (sort-numeric-fields 1 (point-min) (point-max))
 		  (gnus-message 1 "Overview buffer not sorted!"))
 		 (t
 		  (setq prev-num cur)))

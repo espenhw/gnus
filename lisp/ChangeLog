@@ -1,3 +1,8 @@
+2002-12-28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-agent.el (gnus-agent-check-overview-buffer): Sort lines if
+	they aren't already sorted.
+
 2002-12-28  Jesper Harder  <harder@ifa.au.dk>
 
 	* message.el (message-mode-menu): Add ellipses to menu items
