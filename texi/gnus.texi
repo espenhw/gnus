@@ -14139,16 +14139,16 @@ Please note that the value of @code{nnimap-stream} is a symbol!
 
 @itemize @bullet
 @item
-@dfn{gssapi:} Connect with GSSAPI (usually kerberos 5). Require the
+@dfn{gssapi:} Connect with GSSAPI (usually kerberos 5). Requires the
 @samp{imtest} program.
 @item
-@dfn{kerberos4:} Connect with kerberos 4. Require the @samp{imtest} program.
+@dfn{kerberos4:} Connect with kerberos 4. Requires the @samp{imtest} program.
 @item
 @dfn{starttls:} Connect via the STARTTLS extension (similar to
-SSL). Require the external library @samp{starttls.el} and program
+SSL). Requires the external library @samp{starttls.el} and program
 @samp{starttls}.
 @item
-@dfn{ssl:} Connect through SSL. Require OpenSSL (the
+@dfn{ssl:} Connect through SSL. Requires OpenSSL (the
 program @samp{openssl}) or SSLeay (@samp{s_client}).
 @item
 @dfn{shell:} Use a shell command to start @sc{imap} connection.
@@ -14157,8 +14157,13 @@ program @samp{openssl}) or SSLeay (@samp{s_client}).
 @end itemize
 
 @vindex imap-kerberos4-program
-The @samp{imtest} program is shipped with Cyrus IMAPD, nnimap support
-both @samp{imtest} version 1.5.x and version 1.6.x.  The variable
+The @samp{imtest} program is shipped with Cyrus IMAPD.  If you're
+using @samp{imtest} from Cyrus IMAPD < 2.0.14 (which includes version
+1.5.x and 1.6.x) you need to frob @code{imap-process-connection-type}
+to make @code{imap.el} use a pty instead of a pipe when communicating
+with @samp{imtest}.  You will then suffer from a line length
+restrictions on IMAP commands, which might make Gnus seem to hang
+indefinitely if you have many articles in a mailbox.  The variable
 @code{imap-kerberos4-program} contain parameters to pass to the imtest
 program.
 

@@ -1,5 +1,7 @@
 2001-06-19  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.texi (IMAP): Fix `imtest' discussion.
+
 	* gnus-faq.texi (Frequently Asked Questions): Fix URL.
 
 2001-06-17  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
