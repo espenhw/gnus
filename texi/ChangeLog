@@ -1,7 +1,12 @@
+2002-03-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* message.texi (Sending Variables): Fix typo.
+	Trivial change from Raymond Scholz <rscholz@zonix.de>
+
 2002-03-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Other Marks): Remove duplication.
-	From: David Aspinwall <aspinwall@timesten.com>
+	Trivial change from David Aspinwall <aspinwall@timesten.com>
 
 2002-03-09  Paul Jarc  <prj@po.cwru.edu>
 

@@ -1634,7 +1634,7 @@ The default value is @samp{"The following message is a courtesy copy of
 an article\\nthat has been posted to %s as well.\\n\\n"}.
 
 @item message-fcc-externalize-attachments
-@vindex message-gcc-externalize-attachments
+@vindex message-fcc-externalize-attachments
 If @code{nil}, attach files as normal parts in Fcc copies; if it is
 non-@code{nil}, attach local files as external parts.
 
