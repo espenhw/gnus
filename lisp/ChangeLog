@@ -1,5 +1,7 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* Update copyright for several files.
+
 	* spam-report.el (spam-report-gmane): Adjust verbosity.
 	Delete trailing whitespace.  Update copyright.
 

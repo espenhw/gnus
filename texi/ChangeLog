@@ -1,5 +1,7 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* message.texi, gnus.texi, gnus-faq.texi: Update copyright.
+
 	* gnus-faq.texi ([5.12]): Fix code example for FQDN in Message-Ids.
 
 	* message.texi (Message Headers): Add message-header-synonyms.

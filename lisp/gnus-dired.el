@@ -1,6 +1,6 @@
 ;;; gnus-dired.el --- utility functions where gnus and dired meet
 
-;; Copyright (C) 1996, 1997, 1998, 1999, 2001, 2002, 2003
+;; Copyright (C) 1996, 1997, 1998, 1999, 2001, 2002, 2003, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Authors: Benjamin Rutt <brutt@bloomington.in.us>,

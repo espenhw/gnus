@@ -1,5 +1,7 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
+	* GNUS-NEWS: Update copyright.
+
 	* etc/gnus-tut.txt (Gnus FAQ): Remove text version.  Refer to info
 	documentation and online version instead.
 
