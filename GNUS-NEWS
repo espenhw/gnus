@@ -8,6 +8,10 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** Message supports the Importance: header.
+
+In the message buffer, C-c C-p cycles through the valid values.
+
 ** Gnus supports Cancel Locks in News.
 
 This means a header "Cancel-Lock" is inserted in news posting. It is
