@@ -3223,13 +3223,13 @@ Copy the current group to some other topic
 (@code{gnus-topic-copy-group}).  This command uses the process/prefix
 convention (@pxref{Process/Prefix}).
 
-@itek T h
+@item T h
 @kindex T h (Topic)
 @findex gnus-topic-hide-topic
 Hide the current topic (@code{gnus-topic-hide-topic}).  If given
 a prefix, hide the topic permanently.
 
-@itek T s
+@item T s
 @kindex T s (Topic)
 @findex gnus-topic-show-topic
 Show the current topic (@code{gnus-topic-show-topic}).  If given

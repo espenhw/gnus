@@ -1,3 +1,7 @@
+2000-08-13 20:00:35  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Topic Commands): Fix typo.
+
 2000-08-13 20:20:56  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Topic Commands): Addition.
