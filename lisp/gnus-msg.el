@@ -1187,7 +1187,8 @@ this is a reply."
 		      `(lambda ()
 			 (save-excursion
 			   (let ((message-signature ,(cdr result)))
-			     (message-insert-signature)))))
+			     (when message-signature
+			       (message-insert-signature))))))
 		     (t
 		      (let ((header
 			     (if (symbolp (car result))

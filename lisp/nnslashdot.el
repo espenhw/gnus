@@ -1,4 +1,4 @@
-;;; nnslashdot.el --- interfacing with Slashdot  
+;;; nnslashdot.el --- interfacing with Slashdot
 ;; Copyright (C) 1999 Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>

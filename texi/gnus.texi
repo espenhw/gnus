@@ -729,7 +729,7 @@ parameter (@pxref{Topic Parameters}).  For instance, a @code{subscribe}
 topic parameter that looks like
 
 @example
-"nntp\\+somewhere"
+"nnslashdot"
 @end example
 
 will mean that all groups that match that regex will be subscribed under 
@@ -11768,10 +11768,12 @@ following in your @file{.gnus.el} file:
       '((nnslashdot "")))
 @end lisp
 
-This will make Gnus query the @code{nnslashdot} backend for new comments 
-and groups.  The @kbd{F} command will subscribe each new news article as 
+This will make Gnus query the @code{nnslashdot} backend for new comments
+and groups.  The @kbd{F} command will subscribe each new news article as
 a new Gnus group, and you can read the comments by entering these
-groups.
+groups.  (Note that the default subscription method is to subscribe new
+groups as zombies.  Other methods are available (@pxref{Subscription
+Methods}).
 
 The following variables can be altered to change its behavior:
 

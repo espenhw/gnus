@@ -321,8 +321,10 @@ If NIL, NNFOLDER-FILE-CODING-SYSTEM is used.")
   (let* ((is-old t)
 	 ;; The articles we have deleted so far.
 	 (deleted-articles nil)
-	 ;; The articles that really exist and will be expired if they are old enough.
-	 (maybe-expirable (gnus-intersection articles (nnfolder-existing-articles))))
+	 ;; The articles that really exist and will
+	 ;; be expired if they are old enough.
+	 (maybe-expirable
+	  (gnus-intersection articles (nnfolder-existing-articles))))
     (nnmail-activate 'nnfolder)
 
     (save-excursion
