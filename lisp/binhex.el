@@ -1,8 +1,7 @@
 ;;; binhex.el -- elisp native binhex decode
-;; Copyright (c) 1998 Free Software Foundation, Inc.
+;; Copyright (c) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; Create Date: Oct 1, 1998
 ;; Keywords: binhex news
 
 ;; This file is part of GNU Emacs.

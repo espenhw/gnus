@@ -1,5 +1,7 @@
 ;;; gnus-picon.el --- displaying pretty icons in Gnus
-;; Copyright (C) 1996,97,98,99 Free Software Foundation, Inc.
+
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000
+;;      Free Software Foundation, Inc.
 
 ;; Author: Wes Hardaker <hardaker@ece.ucdavis.edu>
 ;; Keywords: news xpm annotation glyph faces

@@ -1622,9 +1622,6 @@ If nil, no default charset is assumed when posting."
 (defvar gnus-agent-fetching nil
   "Whether Gnus agent is in fetching mode.")
 
-(defvar gnus-agent-fetching nil
-  "Whether Gnus agent is in fetching mode.")
-
 (defvar gnus-command-method nil
   "Dynamically bound variable that says what the current backend is.")
 
