@@ -1,3 +1,14 @@
+2003-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-msg.el (gnus-summary-yank-message): Don't bind
+	gnus-display-mime-function to nil so that non-ascii text is
+	decoded and attachments are not shown.
+
+	* message.el (message-cite-original-without-signature): Replace
+	the value of message-reply-headers with the yanked article since
+	it may be a different article from the original.
+	(message-cite-original): Ditto.
+
 2003-11-25  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-blacklist-ignored-regexes): new variable, so

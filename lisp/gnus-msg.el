@@ -1480,8 +1480,7 @@ If YANK is non-nil, include the original article."
    (list (completing-read "Buffer: " (mapcar 'list (message-buffers)) nil t)
 	 current-prefix-arg))
   (gnus-summary-iterate n
-    (let ((gnus-display-mime-function nil)
-	  (gnus-inhibit-treatment t))
+    (let ((gnus-inhibit-treatment t))
       (gnus-summary-select-article))
     (save-excursion
       (set-buffer buffer)

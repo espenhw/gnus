@@ -3093,13 +3093,27 @@ prefix, and don't delete any headers."
 
 (defun message-cite-original-without-signature ()
   "Cite function in the standard Message manner."
-  (let ((start (point))
-	(end (mark t))
-	(functions
-	 (when message-indent-citation-function
-	   (if (listp message-indent-citation-function)
-	       message-indent-citation-function
-	     (list message-indent-citation-function)))))
+  (let* ((start (point))
+	 (end (mark t))
+	 (functions
+	  (when message-indent-citation-function
+	    (if (listp message-indent-citation-function)
+		message-indent-citation-function
+	      (list message-indent-citation-function))))
+	 ;; This function may be called by `gnus-summary-yank-message' and
+	 ;; may insert a different article from the original.  So, we will
+	 ;; modify the value of `message-reply-headers' with that article.
+	 (message-reply-headers
+	  (save-restriction
+	    (narrow-to-region start end)
+	    (message-narrow-to-head-1)
+	    (vector 0
+		    (or (message-fetch-field "subject") "none")
+		    (message-fetch-field "from")
+		    (message-fetch-field "date")
+		    (message-fetch-field "message-id" t)
+		    (message-fetch-field "references")
+		    0 0 ""))))
     (mml-quote-region start end)
     ;; Allow undoing.
     (undo-boundary)
@@ -3128,13 +3142,27 @@ prefix, and don't delete any headers."
   (if (and (boundp 'mail-citation-hook)
 	   mail-citation-hook)
       (run-hooks 'mail-citation-hook)
-    (let ((start (point))
-	  (end (mark t))
-	  (functions
-	   (when message-indent-citation-function
-	     (if (listp message-indent-citation-function)
-		 message-indent-citation-function
-	       (list message-indent-citation-function)))))
+    (let* ((start (point))
+	   (end (mark t))
+	   (functions
+	    (when message-indent-citation-function
+	      (if (listp message-indent-citation-function)
+		  message-indent-citation-function
+		(list message-indent-citation-function))))
+	   ;; This function may be called by `gnus-summary-yank-message' and
+	   ;; may insert a different article from the original.  So, we will
+	   ;; modify the value of `message-reply-headers' with that article.
+	   (message-reply-headers
+	    (save-restriction
+	      (narrow-to-region start end)
+	      (message-narrow-to-head-1)
+	      (vector 0
+		      (or (message-fetch-field "subject") "none")
+		      (message-fetch-field "from")
+		      (message-fetch-field "date")
+		      (message-fetch-field "message-id" t)
+		      (message-fetch-field "references")
+		      0 0 ""))))
       (mml-quote-region start end)
       (goto-char start)
       (while functions
