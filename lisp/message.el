@@ -3943,7 +3943,6 @@ than 988 characters long, and if they are not, trim them until they are."
   (when message-default-headers
     (insert message-default-headers)
     (or (bolp) (insert ?\n)))
-  (put-text-property (point-min) (point) 'field 'header)
   (put-text-property
    (point)
    (progn
@@ -3979,6 +3978,9 @@ than 988 characters long, and if they are not, trim them until they are."
   (set-buffer-modified-p nil)
   (setq buffer-undo-list nil)
   (run-hooks 'message-setup-hook)
+  (save-restriction
+    (message-narrow-to-headers)
+    (put-text-property (point-min) (point-max) 'field 'header))
   (message-position-point)
   (undo-boundary))
 

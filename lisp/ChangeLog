@@ -1,3 +1,11 @@
+2001-10-16  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	Patch by Oliver Scholz <oscholz@my.gnus.org>.
+
+	* gnus-draft.el (gnus-draft-edit-message): Add text property
+	`field' with value `header' to message headers.
+	* message.el (message-setup-1): Really add text property to all of
+	the header, not just part of it.
+
 2001-09-04 21:42:23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-group.el (gnus-group-sort-by-server): Use it.
