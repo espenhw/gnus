@@ -194,7 +194,8 @@ Checks include `subject-cmsg', `multiple-headers', `sendsys',
 
 (defcustom message-required-news-headers
   '(From Newsgroups Subject Date Message-ID
-	 (optional . Organization) Lines
+	 (optional . Organization)
+	 (optional . References)
 	 (optional . User-Agent))
   "*Headers to be generated or prompted for when posting an article.
 RFC977 and RFC1036 require From, Date, Newsgroups, Subject,
@@ -207,7 +208,8 @@ header, remove it from this list."
 
 (defcustom message-required-mail-headers
   '(From Subject Date (optional . In-Reply-To) Message-ID
-	 (optional . User-Agent))
+	 (optional . User-Agent)
+	 (optional . References))
   "*Headers to be generated or prompted for when mailing a message.
 It is recommended that From, Date, To, Subject and Message-ID be
 included.  Organization and User-Agent are optional."
@@ -4247,6 +4249,17 @@ If NOW, use that time instead."
       (message-goto-body)
       (int-to-string (count-lines (point) (point-max))))))
 
+(defun message-make-references ()
+  "Return the References header for this message."
+  (when message-reply-headers
+    (let ((message-id (mail-header-message-id message-reply-headers))
+	  (references (mail-header-references message-reply-headers))
+	  new-references)
+      (if (or references message-id)
+	  (concat (or references "") (and references " ")
+		  (or message-id ""))
+	nil))))
+
 (defun message-make-in-reply-to ()
   "Return the In-Reply-To header for this message."
   (when message-reply-headers
@@ -4461,6 +4474,7 @@ Headers already prepared in the buffer are not modified."
 	   (Subject nil)
 	   (Newsgroups nil)
 	   (In-Reply-To (message-make-in-reply-to))
+	   (References (message-make-references))
 	   (To nil)
 	   (Distribution (message-make-distribution))
 	   (Lines (message-make-lines))
@@ -5193,11 +5207,7 @@ responses here are directed to other addresses.")))
 
     (message-setup
      `((Subject . ,subject)
-       ,@follow-to
-       ,@(if (or references message-id)
-	     `((References . ,(concat (or references "") (and references " ")
-				      (or message-id ""))))
-	   nil))
+       ,@follow-to)
      cur)))
 
 ;;;###autoload
@@ -5256,6 +5266,9 @@ If TO-NEWSGROUPS, use that as the new Newsgroups line."
 
     (message-pop-to-buffer (message-buffer-name "followup" from newsgroups))
 
+    (setq message-reply-headers
+	  (vector 0 subject from date message-id references 0 0 ""))
+    
     (message-setup
      `((Subject . ,subject)
        ,@(cond
@@ -5304,9 +5317,6 @@ responses here are directed to other newsgroups."))
 	  (t
 	   `((Newsgroups . ,newsgroups))))
        ,@(and distribution (list (cons 'Distribution distribution)))
-       ,@(if (or references message-id)
-	     `((References . ,(concat (or references "") (and references " ")
-				      (or message-id "")))))
        ,@(when (and mct
 		    (not (or (equal (downcase mct) "never")
 			     (equal (downcase mct) "nobody"))))
@@ -5315,10 +5325,7 @@ responses here are directed to other newsgroups."))
 			       (or mrt reply-to from "")
 			     mct)))))
 
-     cur)
-
-    (setq message-reply-headers
-	  (vector 0 subject from date message-id references 0 0 ""))))
+     cur)))
 
 
 ;;;###autoload

@@ -8713,9 +8713,8 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		       to-group (cdar marks) (list to-article) info)))
 		  (setq marks (cdr marks)))
 
-		(gnus-request-set-mark to-group (list (list (list to-article)
-							    'add
-							    to-marks))))
+		(gnus-request-set-mark
+		 to-group (list (list (list to-article) 'add to-marks))))
 
 	      (gnus-dribble-enter
 	       (concat "(gnus-group-set-info '"

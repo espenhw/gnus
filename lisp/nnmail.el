@@ -1746,7 +1746,9 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (when (nnheader-functionp target)
       (setq target (funcall target group)))
     (unless (eq target 'delete)
-      (gnus-request-accept-article target nil nil t))))
+      (let ((group-art (gnus-request-accept-article target nil nil t)))
+	(when (consp group-art)
+	  (gnus-group-mark-article-read target (cdr group-art)))))))
 
 (defun nnmail-fancy-expiry-target (group)
   "Returns a target expiry group determined by `nnmail-fancy-expiry-targets'."

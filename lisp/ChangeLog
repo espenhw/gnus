@@ -1,5 +1,22 @@
 2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* message.el (message-required-news-headers): Removed Lines.
+	(message-reply): Don't insert References first.
+	(message-followup): Ditto.
+	(message-make-references): New function.
+	(message-followup): Set message-reply-headers before generating
+	the buffer stuff.
+
+2002-12-29  Jesper Harder  <harder@ifa.au.dk>
+
+	* mml.el (mml-generate-mime-1): Reverse the order of
+	encoding/flowing. 
+
+2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-expiry-target-group): Mark articles as read
+	after moving them.
+
 	* gnus-sum.el (gnus-summary-dummy-line-format): Update format to
 	fit with newer standard format.
 	(gnus-summary-make-false-root-always): New variable.
