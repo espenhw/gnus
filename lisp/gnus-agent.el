@@ -1176,18 +1176,13 @@ and that there are no duplicates."
               (gnus-message 1
 			    "Duplicate overview line for %d" cur)
 	      (delete-region (point) (progn (forward-line 1) (point))))
-	     ((< cur 0)
+	     ((< cur prev-num)
 	      (or backed-up
                   (setq backed-up (gnus-agent-backup-overview-buffer)))
-              (gnus-message 1 "Junk article number %d" cur)
-	      (delete-region (point) (progn (forward-line 1) (point))))
-	     ((< cur prev-num)
+              (gnus-message 1 "Overview buffer not sorted!")
 	      (sort-numeric-fields 1 (point-min) (point-max))
 	      (goto-char (point-min))
-	      (setq prev-num -1)
-	      (or backed-up
-                  (setq backed-up (gnus-agent-backup-overview-buffer)))
-              (gnus-message 1 "Overview buffer not sorted!"))
+	      (setq prev-num -1))
 	     (t
 	      (setq prev-num cur)))
 	    (forward-line 1)))))))
