@@ -1,3 +1,8 @@
+2001-10-27  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.el (gnus-group-faq-directory): Fix.  From Jesper Harder
+	<harder@ifa.au.dk>.
+
 2001-10-26 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnweb.el (nnweb-possibly-change-server): Create nnweb-hashtb if

@@ -1162,10 +1162,10 @@ list, Gnus will try all the methods in the list until it finds a match."
 
 (defcustom gnus-group-faq-directory
   '("/ftp@mirrors.aol.com:/pub/rtfm/usenet/"
-    "/ftp@sunsite.auc.dk:/pub/usenet/"
     "/ftp@sunsite.doc.ic.ac.uk:/pub/usenet/news-faqs/"
     "/ftp@src.doc.ic.ac.uk:/usenet/news-FAQS/"
     "/ftp@ftp.seas.gwu.edu:/pub/rtfm/"
+    "/ftp@ftp.pasteur.fr:/pub/FAQ/"
     "/ftp@rtfm.mit.edu:/pub/usenet/"
     "/ftp@ftp.uni-paderborn.de:/pub/FAQ/"
     "/ftp@ftp.sunet.se:/pub/usenet/"
@@ -1192,7 +1192,7 @@ If the default site is too slow, try one of these:
    Europe:	  ftp.uni-paderborn.de		 /pub/FAQ
 		  src.doc.ic.ac.uk               /usenet/news-FAQS
 		  ftp.sunet.se			 /pub/usenet
-		  sunsite.auc.dk                 /pub/usenet
+		  ftp.pasteur.fr                 /pub/FAQ
    Asia:	  nctuccca.edu.tw		 /USENET/FAQ
 		  hwarang.postech.ac.kr		 /pub/usenet
 		  ftp.hk.super.net		 /mirror/faqs"
