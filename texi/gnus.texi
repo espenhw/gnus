@@ -7491,7 +7491,7 @@ has been done.
 \include{xface}
 @end iflatex
 @end iftex
-@anchor{X-Face}
+@c @anchor{X-Face}
 Look for and display any X-Face headers
 (@code{gnus-article-display-x-face}).  The command executed by this
 function is given by the @code{gnus-article-x-face-command} variable.

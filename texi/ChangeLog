@@ -1,3 +1,7 @@
+2001-01-10 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Article Washing): makeinfo 1.69 doesn't grok `anchor'. 
+
 2001-01-07 18:18:53  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (myself): Quote .
