@@ -1,3 +1,10 @@
+2002-10-10  Ted Zlatanov <tzz@lifelogs.com>
+        * spam.el: compilation fixes, spam-check-bbdb function is nil if no
+        BBDB installed
+    
+        * spam-stat.el: added code from Alex Schroeder <alex@gnu.org> to do
+        statistical analysis of spam in Lisp only
+
 2002-10-10  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (nnimap-open-server): Re-open server if it isn't in
