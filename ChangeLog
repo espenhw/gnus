@@ -1,3 +1,9 @@
+2000-07-12 15:47:06  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* aclocal.m4: Stolen macros from w3.
+	* configure.in: Use them.
+	* configure: Generate it.
+
 2000-04-22 20:25:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* GNUS-NEWS: Outline.

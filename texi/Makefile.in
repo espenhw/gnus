@@ -8,13 +8,13 @@ VPATH=$(srcdir)
 TEXI2DVI=texi2dvi
 TEXI2PDF=texi2pdf
 MAKEINFO=@MAKEINFO@
+EMACS=@EMACS@
 EMACSINFO=$(EMACS) -batch -q -no-site-file
 INFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 XINFOSWI=-l texinfmt -f texinfo-every-node-update -f texinfo-format-buffer -f save-buffer
 PDFLATEX=pdflatex
 LATEX=latex
 DVIPS=dvips
-PERL=perl
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 SHELL = /bin/sh
@@ -27,7 +27,7 @@ most: texi2latex.elc latex latexps
 .SUFFIXES: .texi .dvi .ps .pdf
 
 .texi:
-	if test -x $(MAKEINFO); then \
+	if test "x$(MAKEINFO)" != "xno" ; then \
 	  makeinfo -o $* $<; \
 	else \
 	  $(EMACSINFO) -eval '(find-file "$<")' $(XINFOSWI); \
@@ -38,13 +38,13 @@ dvi: gnus.dvi message.dvi refcard.dvi emacs-mime.dvi
 pdf: gnus.pdf message.pdf refcard.pdf emacs-mime.pdf
  
 .texi.dvi :
-	$(PERL) -n -e 'print unless (/\@iflatex/ .. /\@end iflatex/)' $< > gnustmp.texi
+	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
 	$(TEXI2DVI) gnustmp.texi
 	cp gnustmp.dvi $*.dvi
 	rm gnustmp.*
 
 .texi.pdf :
-	$(PERL) -n -e 'print unless (/\@iflatex/ .. /\@end iflatex/)' $< > gnustmp.texi
+	sed -e '/@iflatex/,/@end iflatex/d' $< > gnustmp.texi 
 	$(TEXI2PDF) gnustmp.texi
 	cp gnustmp.pdf $*.pdf
 	rm gnustmp.*
@@ -59,7 +59,7 @@ refcard.pdf: refcard.tex gnuslogo.refcard gnusref.tex
 
 clean:
 	rm -f gnus.*.bak *.ky *.cp *.fn *.cps *.kys *.log *.aux *.dvi *.vr \
-	*.tp *.toc *.pg gnus.latexi *.aux *.[cgk]idx \
+	*.pdf *.tp *.toc *.pg gnus.latexi *.aux *.[cgk]idx \
 	gnus.ilg gnus.ind gnus.[cgk]ind gnus.idx \
 	gnus.tmptexi *.tmplatexi gnus.tmplatexi1 texput.log *.orig *.rej \
 	gnus.latexi*~* tmp/*.ps xface.tex picons.tex smiley.tex *.latexi
