@@ -1,3 +1,7 @@
+2000-10-05 09:04:32  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el (webmail-hotmail-list): Fix.
+
 2000-10-05  Stefan Monnier <monnier+gnu/emacs@rum.cs.yale.edu>
 
        * nnimap.el (require): cl.

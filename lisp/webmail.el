@@ -428,7 +428,7 @@
 	  (setq site (match-string 1))
 	(webmail-error "list@1"))
       (goto-char (point-min))
-      (if (re-search-forward "disk=\\([^&]+\\)&" nil t)
+      (if (re-search-forward "disk=\\([^&]*\\)&" nil t)
 	  (setq webmail-aux 
 		(concat "http://" site "/cgi-bin/HoTMaiL?disk=" 
 			(match-string 1)))
