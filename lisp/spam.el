@@ -30,13 +30,14 @@
 ;;; The integration with Gnus is not yet complete.  See various `FIXME'
 ;;; comments, below, for supplementary explanations or discussions.
 
+;;; Several TODO items are marked as such
+
 ;;; Code:
 
 (require 'gnus-sum)
 
-;; FIXME!  We should not require `dns' nor `message' until we actually
-;; need them.  Best would be to declare needed functions as auto-loadable.
-(require 'dns)
+;; FIXME!  We should not require `message' until we actually need
+;; them.  Best would be to declare needed functions as auto-loadable.
 (require 'message)
 
 ;; Attempt to load BBDB macros
@@ -58,81 +59,137 @@
 (eval-and-compile
   (autoload 'query-dig "dig"))
 
+;; autoload query-dns
+(eval-and-compile
+  (autoload 'query-dns "dns"))
+
 ;;; Main parameters.
 
-(defvar spam-use-dig t
-  "True if query-dig should be used instead of query-dns.")
+(defgroup spam nil
+  "Spam configuration.")
 
-(defvar spam-use-blacklist t
-  "True if the blacklist should be used.")
+(defcustom spam-directory "~/News/spam/"
+  "Directory for spam whitelists and blacklists."
+  :type 'directory
+  :group 'spam)
 
-(defvar spam-use-whitelist nil
-  "True if the whitelist should be used.")
+(defcustom spam-whitelist (expand-file-name "whitelist" spam-directory)
+  "The location of the whitelist.
+The file format is one regular expression per line.
+The regular expression is matched against the address."
+  :type 'file
+  :group 'spam)
 
-(defvar spam-use-blackholes nil
-  "True if blackholes should be used.")
+(defcustom spam-blacklist (expand-file-name "blacklist" spam-directory)
+  "The location of the blacklist.
+The file format is one regular expression per line.
+The regular expression is matched against the address."
+  :type 'file
+  :group 'spam)
 
-(defvar spam-use-bogofilter nil
-  "True if bogofilter should be used.")
+(defcustom spam-use-dig t
+  "Whether query-dig should be used instead of query-dns."
+  :type 'boolean
+  :group 'spam)
 
-(defvar spam-use-bbdb nil
-  "True if BBDB should be used.")
+(defcustom spam-use-blacklist t
+  "Whether the blacklist should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
 
-(defvar spam-use-ifile nil
-  "True if ifile should be used.")
+(defcustom spam-use-whitelist nil
+  "Whether the whitelist should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
 
-(defvar spam-split-group "spam"
-  "Usual group name where spam should be split.")
+(defcustom spam-use-blackholes nil
+  "Whether blackholes should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
 
-(defvar spam-junk-mailgroups
-  ;; FIXME!  The mailgroup list evidently depends on other choices made by the
-  ;; user, so the built-in default below is not likely to be appropriate.
-  (cons spam-split-group '("mail.junk" "poste.pourriel"))
-  "Mailgroups which are dedicated by splitting to receive various junk.
-All unmarked article in such group receive the spam mark on group entry.")
+(defcustom spam-use-bogofilter nil
+  "Whether bogofilter should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
 
-;; FIXME!  For `spam-ham-marks' and `spam-spam-marks', I wonder if it would
-;; not be easier for the user to just accept a string of mark letters, instead
-;; of a list of Gnus variable names.  In such case, the stunt of deferred
-;; evaluation would not be useful anymore.  Lars?? :-)
+(defcustom spam-use-bbdb nil
+  "Whether BBDB should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
 
-;; FIXME!  It is rather questionable to see `K', `X' and `Y' as indicating
-;; positive ham.  It much depends on how and why people use kill files, score
-;; files, and the kill command.  Maybe it would be better, by default, to not
-;; process a message neither as ham nor spam, that is, just ignore it for
-;; learning purposes, when we are not sure of how the user sees it.
-;; But `r' and `R' should undoubtedly be seen as ham.
+(defcustom spam-use-ifile nil
+  "Whether ifile should be used by spam-split."
+  :type 'boolean
+  :group 'spam)
 
-;; FIXME!  Some might consider overkill to define a list of spam marks.  On
-;; the other hand, who knows, some users might for example like that
-;; explicitly `E'xpired articles be processed as positive spam.
+(defcustom spam-split-group "spam"
+  "Group name where incoming spam should be put by spam-split."
+  :type 'string
+  :group 'spam)
 
-(defvar spam-ham-marks
-  (list gnus-del-mark gnus-read-mark gnus-killed-mark
-	 gnus-kill-file-mark gnus-low-score-mark)
+;; FIXME!  The mailgroup list evidently depends on other choices made by the
+;; user, so the built-in default below is not likely to be appropriate.
+(defcustom spam-junk-mailgroups (cons spam-split-group '("mail.junk" "poste.pourriel"))
+  "Mailgroups with spam contents.
+All unmarked article in such group receive the spam mark on group entry."
+  :type '(repeat string)
+  :group 'spam)
+
+(defcustom spam-ham-marks (list gnus-del-mark gnus-read-mark gnus-killed-mark gnus-kill-file-mark gnus-low-score-mark)
   "Marks considered as being ham (positively not spam).
-Such articles will be transmitted to `bogofilter -n' on group exit.")
+Such articles will be processed as ham (non-spam) on group exit."
+  :type '(repeat (character))
+  :group 'spam)
 
-(defvar spam-spam-marks
-  (list gnus-spam-mark)
+(defcustom spam-spam-marks (list gnus-spam-mark)
   "Marks considered as being spam (positively spam).
-Such articles will be transmitted to `bogofilter -s' on group exit.")
+Such articles will be transmitted to `bogofilter -s' on group exit."
+  :type '(repeat (character))
+  :group 'spam)
 
-;; FIXME!  Ideally, the remainder of this page should be fully integrated
-;; within `gnus-sum.el'.
+(defcustom spam-face 'gnus-splash-face
+  "Face for spam-marked articles"
+  :type 'face
+  :group 'spam)
+
+(defgroup spam-bogofilter nil
+  "Spam bogofilter configuration."
+  :group 'spam)
+
+(defcustom spam-bogofilter-output-buffer-name "*Bogofilter Output*"
+  "Name of buffer when displaying `bogofilter -v' output."  
+  :type 'string
+  :group 'spam-bogofilter)
+
+(defcustom spam-bogofilter-initial-timeout 40
+  "Timeout in seconds for the initial reply from the `bogofilter' program."
+  :type 'integer
+  :group 'spam-bogofilter)
+
+(defcustom spam-bogofilter-subsequent-timeout 15
+  "Timeout in seconds for any subsequent reply from the `bogofilter' program."
+  :type 'integer
+  :group 'spam-bogofilter)
+
+(defcustom spam-bogofilter-path (executable-find "bogofilter")
+  "File path of the Bogofilter executable program."
+  :type '(choice (file :tag "Location of bogofilter")
+		 (const :tag "Bogofilter is not installed"))
+  :group 'spam-bogofilter)
+
+;; FIXME!  In the following regexp, we should explain which tool produces
+;; which kind of header.  I do not even remember them all by now.  X-Junk
+;; (and previously X-NoSpam) are produced by the `NoSpam' tool, which has
+;; never been published, so it might not be reasonable leaving it in the
+;; list.
+(defcustom spam-bogofilter-spaminfo-header-regexp "^X-\\(jf\\|Junk\\|NoSpam\\|Spam\\|SB\\)[^:]*:"
+  "Regexp for spam markups in headers.
+Markup from spam recognisers, as well as `Xref', are to be removed from
+articles before they get registered by Bogofilter."
+  :type 'regexp
+  :group 'spam-bogofilter)
 
 ;;; Key bindings for spam control.
-
-;; FIXME!  The justification for `M-d' is that this is what Paul Graham
-;; suggests in his original article, and what Eric Raymond's patch for Mutt
-;; uses.  But more importantly, that binding was still free in Summary mode!
-
-;; FIXME!  Lars has not blessed the following key bindings yet.  It looks
-;; convenient that the score analysis command uses a sequence ending with the
-;; letter `t', so it nicely parallels `B t' or `V t'.  `M-d' is a kind of
-;; "alternate" `d', it is also the sequence suggested in Paul Graham article,
-;; and also in Eric Raymond's patch for Mutt.  `S x' might be the more
-;; official key binding for `M-d'.
 
 (gnus-define-keys gnus-summary-mode-map
   "St" spam-bogofilter-score
@@ -143,10 +200,9 @@ Such articles will be transmitted to `bogofilter -s' on group exit.")
 
 ;;; How to highlight a spam summary line.
 
-;; FIXME!  Of course, `gnus-splash-face' has another purpose.  Maybe a
-;; special face should be created, named and used instead, for spam lines.
+;; TODO: How do we redo this every time spam-face is customized?
 
-(push '((eq mark gnus-spam-mark) . gnus-splash-face)
+(push '((eq mark gnus-spam-mark) . spam-face)
       gnus-summary-highlight)
 
 ;;; Hooks dispatching.  A bit raw for now.
@@ -249,19 +305,6 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
       spam-split-group)))
 
 ;;;; Blacklists and whitelists.
-
-(defvar spam-directory "~/News/spam/"
-  "When spam files are kept.")
-
-(defvar spam-whitelist (expand-file-name "whitelist" spam-directory)
-  "The location of the whitelist.
-The file format is one regular expression per line.
-The regular expression is matched against the address.")
-
-(defvar spam-blacklist (expand-file-name "blacklist" spam-directory)
-  "The location of the blacklist.
-The file format is one regular expression per line.
-The regular expression is matched against the address.")
 
 (defvar spam-whitelist-cache nil)
 (defvar spam-blacklist-cache nil)
@@ -448,31 +491,13 @@ The regular expression is matched against the address.")
 ;;; * ? bogofilter
 ;;; | formail -bfI "X-Spam-Status: Yes"
 
-(defvar spam-output-buffer-name "*Bogofilter Output*"
-  "Name of buffer when displaying `bogofilter -v' output.")
-
-(defvar spam-spaminfo-header-regexp
-  ;; FIXME!  In the following regexp, we should explain which tool produces
-  ;; which kind of header.  I do not even remember them all by now.  X-Junk
-  ;; (and previously X-NoSpam) are produced by the `NoSpam' tool, which has
-  ;; never been published, so it might not be reasonable leaving it in the
-  ;; list.
-  "^X-\\(jf\\|Junk\\|NoSpam\\|Spam\\|SB\\)[^:]*:"
-  "Regexp for spam markups in headers.
-Markup from spam recognisers, as well as `Xref', are to be removed from
-articles before they get registered by Bogofilter.")
-
-(defvar spam-bogofilter-path (executable-find "bogofilter")
-  "File path of the Bogofilter executable program.
-Force this variable to nil if you want to inhibit the functionality.")
-
 (defun spam-check-bogofilter ()
   ;; Dynamic spam check.  I do not know how to check the exit status,
   ;; so instead, read `bogofilter -v' output.
   (when (and spam-use-bogofilter spam-bogofilter-path)
     (spam-bogofilter-articles nil "-v" (list (gnus-summary-article-number)))
     (when (save-excursion
-	    (set-buffer spam-output-buffer-name)
+	    (set-buffer spam-bogofilter-output-buffer-name)
 	    (goto-char (point-min))
 	    (re-search-forward "Spamicity: \\(0\\.9\\|1\\.0\\)" nil t))
       spam-split-group)))
@@ -484,7 +509,7 @@ spamicity coefficient of each, and the overall article spamicity."
   (interactive)
   (when (and spam-use-bogofilter spam-bogofilter-path)
     (spam-bogofilter-articles nil "-v" (list (gnus-summary-article-number)))
-    (with-current-buffer spam-output-buffer-name
+    (with-current-buffer spam-bogofilter-output-buffer-name
       (unless (zerop (buffer-size))
 	(if (<= (count-lines (point-min) (point-max)) 1)
 	    (progn
@@ -510,16 +535,10 @@ spamicity coefficient of each, and the overall article spamicity."
       (when spam-articles
 	(spam-bogofilter-articles "SPAM" "-s" spam-articles)))))
 
-(defvar spam-bogofilter-initial-timeout 40
-  "Timeout in seconds for the initial reply from the `bogofilter' program.")
-
-(defvar spam-bogofilter-subsequent-timeout 15
-  "Timeout in seconds for any subsequent reply from the `bogofilter' program.")
-
 (defun spam-bogofilter-articles (type option articles)
-  (let ((output-buffer (get-buffer-create spam-output-buffer-name))
+  (let ((output-buffer (get-buffer-create spam-bogofilter-output-buffer-name))
 	(article-copy (get-buffer-create " *Bogofilter Article Copy*"))
-	(remove-regexp (concat spam-spaminfo-header-regexp "\\|Xref:"))
+	(remove-regexp (concat spam-bogofilter-spaminfo-header-regexp "\\|Xref:"))
 	(counter 0)
 	prefix process article)
     (when type

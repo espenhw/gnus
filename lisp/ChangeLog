@@ -1,5 +1,7 @@
 2002-12-31  Teodor Zlatanov  <tzz@lifelogs.com>
 
+	* spam.el: most defvars are defcustoms now
+
 	patches from Michael Shields  <shields@msrl.com>
 
 	* spam.el (spam-bogofilter-articles): Select the article
