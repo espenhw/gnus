@@ -2,7 +2,7 @@
 ;; Copyright (C) 1999 Free Software Foundation, Inc.
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
-;; Keywords: hotmail yahoo netaddress my-deja
+;; Keywords: hotmail netaddress my-deja netscape
 
 ;; This file is part of GNU Emacs.
 
@@ -77,7 +77,7 @@
      (list-snarf . webmail-hotmail-list)
      (article-snarf . webmail-hotmail-article)
      (trash-url 
-      "%s&login=%s&f=33792&curmbox=ACTIVE&_lang=&js=&foo=inbox&page=&%s=on&Move+To.x=Move+To&tobox=trAsH" 
+      "%s&login=%s&f=33792&curmbox=ACTIVE&_lang=&foo=inbox&js=&page=&%s=on&_HMaction=MoveTo&tobox=trAsH&nullbox=" 
       webmail-aux user id))
     (yahoo
      (paranoid cookie post)
@@ -111,9 +111,30 @@
       "http://www.netaddress.com/tpl/Mail/%s/List?FolderID=-4&SortUseCase=True"
       webmail-session)
      (list-snarf . webmail-netaddress-list)
+     (article-url "http://www.netaddress.com/")
      (article-snarf . webmail-netaddress-article)
      (trash-url 
       "http://www.netaddress.com/tpl/Message/%s/Move?FolderID=-4&Q=%s&N=&Sort=Date&F=-1"
+      webmail-session id))
+    (netscape
+     (paranoid cookie post agent)
+     (address . "webmail.netscape.com")
+     (open-url "http://ureg.netscape.com/iiop/UReg2/login/login?U2_LA=en&U2_BACK_FROM_CJ=true&U2_CS=iso-8859-1&U2_ENDURL=http://webmail.netscape.com/tpl/Subscribe/Step1&U2_NEW_ENDURL=http://webmail.netscape.com/tpl/Subscribe/Step1&U2_EXITURL=http://home.netscape.com/&U2_SOURCE=Webmail")
+     (open-snarf . webmail-netscape-open)
+     (login-url
+      content 
+      ("http://ureg.netscape.com/iiop/UReg2/login/loginform")
+      "%s&U2_USERNAME=%s&U2_PASSWORD=%s"
+      webmail-aux user password)
+     (login-snarf . webmail-netaddress-login)
+     (list-url 
+      "http://webmail.netscape.com/tpl/Mail/%s/List?FolderID=-4&SortUseCase=True"
+      webmail-session)
+     (list-snarf . webmail-netaddress-list)
+     (article-url "http://webmail.netscape.com/")
+     (article-snarf . webmail-netscape-article)
+     (trash-url 
+      "http://webmail.netscape.com/tpl/Message/%s/Move?FolderID=-4&Q=%s&N=&Sort=Date&F=-1"
       webmail-session id))
     (my-deja
      (paranoid cookie post)
@@ -356,7 +377,7 @@
 (defun webmail-hotmail-list ()
   (let (site url newp)
     (goto-char (point-min))
-    (if (re-search-forward "[0-9]+ messages, [0-9]+ new" nil t) 
+    (if (re-search-forward "[0-9]+ new" nil t) 
 	(message "Found %s" (match-string 0))
       (webmail-error "maybe your w3 version is too old"))
     (goto-char (point-min))
@@ -644,6 +665,12 @@
 
 ;;; netaddress
 
+(defun webmail-netscape-open ()
+  (goto-char (point-min))
+  (if (re-search-forward "login/hint\\?\\([^\"]+\\)\"" nil t)
+      (setq webmail-aux (match-string 1))
+    (webmail-error "open@1")))
+
 (defun webmail-netaddress-open ()
   (goto-char (point-min))
   (if (re-search-forward "action=\"\\([^\"]+\\)\"" nil t)
@@ -671,7 +698,7 @@
 	  (setq item 
 		(cons id 
 		      (format "%s/tpl/Message/%s/Read?Q=%s&FolderID=-4&SortUseCase=True&Sort=Date&Headers=True"
-			      (car webmail-open-url)
+			      (car webmail-article-url)
 			      webmail-session id)))
 	(if (or (not webmail-newmail-only)
 		(equal (match-string 1) "True"))
@@ -788,7 +815,132 @@
       ;; Some blank line to seperate mails.
       (insert "\n\nFrom nobody " (current-time-string) "\n")
       (if id
-	  (insert (format "Message-ID: <%s@usa.net>\n" id)))
+	  (insert (format "Message-ID: <%s@%s>\n" id webmail-address)))
+      (unless (looking-at "$") 
+	(if (search-forward "\n\n" nil t)
+	    (forward-line -1)
+	  (webmail-error "article@2")))
+      (when mime
+	(narrow-to-region (point-min) (point))
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (if (looking-at "MIME-Version\\|Content-Type")
+	      (delete-region (point) 
+			     (progn
+			       (forward-line 1)
+			       (if (re-search-forward "^[^ \t]" nil t)
+				   (goto-char (match-beginning 0))
+				 (point-max))))
+	    (forward-line 1)))
+	(goto-char (point-max))
+	(widen)
+	(narrow-to-region (point) (point-max))
+	(insert "MIME-Version: 1.0\n"
+		(prog1
+		    (mml-generate-mime)
+		  (delete-region (point-min) (point-max))))
+	(goto-char (point-min))
+	(widen))
+      (let (case-fold-search)
+	(while (re-search-forward "^From " nil t)
+	  (beginning-of-line)
+	  (insert ">"))))
+    (mm-append-to-file (point-min) (point-max) file)))
+
+(defun webmail-netscape-article (file id)
+  (let (p p1 attachment count mime type)
+    (save-restriction
+      (webmail-encode-8bit)
+      (goto-char (point-min))
+      (if (not (search-forward "Trash" nil t))
+	  (webmail-error "article@1"))
+      (if (not (search-forward "<form>" nil t))
+	  (webmail-error "article@2"))
+      (delete-region (point-min) (match-beginning 0)) 
+      (if (not (search-forward "</form>" nil t))
+	  (webmail-error "article@3"))
+      (narrow-to-region (point-min) (match-end 0))
+      (goto-char (point-min))
+      (while (re-search-forward "[\040\t\r\n]+" nil t)
+	(replace-match " "))
+      (goto-char (point-min))
+      (while (re-search-forward "<a href=[^>]*>[^<]*</a>" nil t)
+	(replace-match ""))
+      (goto-char (point-min))
+      (while (search-forward "<b>" nil t)
+	(replace-match "\n"))
+      (nnweb-remove-markup)
+      (nnweb-decode-entities)
+      (goto-char (point-min))
+      (delete-blank-lines)
+      (goto-char (point-min))
+      (while (re-search-forward "^\040+\\|\040+$" nil t)
+	(replace-match ""))
+      (goto-char (point-min))
+      (while (re-search-forward "\040+" nil t)
+	(replace-match " "))
+      (goto-char (point-max))
+      (widen)
+      (insert "\n\n")
+      (setq p (point))
+      (unless (search-forward "<!-- Data -->" nil t)
+	(webmail-error "article@4"))
+      (forward-line 14)
+      (delete-region p (point))
+      (goto-char (point-max))
+      (unless (re-search-backward 
+	       "<form name=\"Transfer2\"" p t)
+	(webmail-error "article@5"))
+      (delete-region (point) (point-max))
+      (goto-char p)
+      (while (search-forward
+	      "<TABLE border=\"0\" WIDTH=\"98%\" cellpadding=0 cellspacing=0>"
+	      nil t 2)
+	(setq mime t)
+	(unless (search-forward "</TABLE>" nil t)
+	  (webmail-error "article@6"))
+	(setq p1 (point))
+	(if (search-backward "<IMG " p t)
+	    (progn
+	      (unless (re-search-forward "HREF=\"\\(/tpl/Attachment/[^/]+/\\([^/]+/[^\?]+\\)[^\"]+\\)\"" p1 t)
+		(webmail-error "article@7"))
+	      (setq attachment (match-string 1))
+	      (setq type (match-string 2))
+	      (unless (search-forward "</TABLE>" nil t)
+		(webmail-error "article@8"))
+	      (delete-region p (point))
+	      (let (bufname);; Attachment
+		(save-excursion
+		  (set-buffer (generate-new-buffer " *webmail-att*"))
+		  (nnweb-insert (concat (car webmail-open-url) attachment))
+		  (push (current-buffer) webmail-buffer-list)
+		  (setq bufname (buffer-name)))
+		(insert "<#part type=" type)
+		(insert " buffer=\"" bufname "\"")
+		(insert " disposition=\"inline\"")
+		(insert "><#/part>\n")
+		(setq p (point))))
+	  (delete-region p p1)
+	  (narrow-to-region 
+	   p
+	   (if (search-forward 
+		"<TABLE border=\"0\" WIDTH=\"98%\" cellpadding=0 cellspacing=0>"
+		nil t)
+	       (match-beginning 0)
+	     (point-max)))
+	  (webmail-netaddress-single-part)
+	  (goto-char (point-max))
+	  (setq p (point))
+	  (widen)))
+      (unless mime
+	(narrow-to-region p (point-max))
+	(setq mime (webmail-netaddress-single-part))
+	(widen))
+      (goto-char (point-min))
+      ;; Some blank line to seperate mails.
+      (insert "\n\nFrom nobody " (current-time-string) "\n")
+      (if id
+	  (insert (format "Message-ID: <%s@%s>\n" id webmail-address)))
       (unless (looking-at "$") 
 	(if (search-forward "\n\n" nil t)
 	    (forward-line -1)

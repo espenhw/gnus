@@ -1,3 +1,7 @@
+2000-04-09 18:13:47  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* webmail.el: Add netscape mail and fix HotMail mail.
+
 2000-04-08  Simon Josefsson  <jas@pdc.kth.se>
 
 	* imap.el (imap-kerberos4-open): Work with recent `imtest's.
