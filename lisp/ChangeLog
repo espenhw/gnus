@@ -1,3 +1,11 @@
+2004-01-06  Jesper Harder  <harder@ifa.au.dk>
+
+	* mm-view.el (mm-view-pkcs7-decrypt): Replace
+	gnus-completing-read-maybe-default with completing-read.
+
+	* gnus-util.el (gnus-completing-read): do.
+	(gnus-completing-read-maybe-default): Remove.
+
 2004-01-06  Steve Youngs  <sryoungs@bigpond.net.au>
 
 	* password.el: Only autoload `run-at-time' if not XEmacs.

@@ -566,8 +566,6 @@ this keymap, add them to `w3m-minor-mode-map' instead of this keymap.")))
   (sit-for 1)
   t)
 
-(autoload 'gnus-completing-read-maybe-default "gnus-util" nil nil 'macro)
-
 (defun mm-view-pkcs7-decrypt (handle)
   (insert-buffer-substring (mm-handle-buffer handle))
   (goto-char (point-min))
@@ -578,7 +576,7 @@ this keymap, add them to `w3m-minor-mode-map' instead of this keymap.")))
    (if (= (length smime-keys) 1)
        (cadar smime-keys)
      (smime-get-key-by-email
-      (gnus-completing-read-maybe-default
+      (completing-read
        (concat "Decipher using which key? "
 	       (if smime-keys (concat "(default " (caar smime-keys) ") ")
 		 ""))

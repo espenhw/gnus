@@ -1238,22 +1238,12 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
    (t
     (list 'local-map map))))
 
-(defmacro gnus-completing-read-maybe-default (prompt table &optional predicate
-					      require-match initial-contents
-					      history default)
-  "Like `completing-read', allowing for non-existent 7th arg in older XEmacsen."
-  `(completing-read ,prompt ,table ,predicate ,require-match
-                    ,initial-contents ,history
-                    ,@(if (and (featurep 'xemacs) (< emacs-minor-version 2))
-                          ()
-                        (list default))))
-
 (defun gnus-completing-read (prompt table &optional predicate require-match
 				    history)
   (when (and history
 	     (not (boundp history)))
     (set history nil))
-  (gnus-completing-read-maybe-default
+  (completing-read
    (if (symbol-value history)
        (concat prompt " (" (car (symbol-value history)) "): ")
      (concat prompt ": "))
