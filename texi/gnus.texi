@@ -15657,7 +15657,8 @@ Score on the @code{Message-ID} header.
 
 @item f
 Score on followups---this matches the author name, and adds scores to
-the followups to this author.
+the followups to this author.  (Using this key leads to the creation of
+@file{ADAPT} files.)
 
 @item b
 Score on the body.
@@ -15666,7 +15667,8 @@ Score on the body.
 Score on the head.
 
 @item t
-Score on thread.
+Score on thread.  (Using this key leads to the creation of @file{ADAPT}
+files.)
 
 @end table
 
