@@ -1,3 +1,8 @@
+2000-08-02  Stanislav Shalunov <shalunov@internet2.edu>
+
+	* message.el (message-make-in-reply-to): In-Reply-To is message-id
+	(see DRUMS).
+	
 2000-09-29  Simon Josefsson  <simon@josefsson.org>
 
 	* nntp.el (nntp-async-trigger): Fix authinfo in asynchronous
