@@ -1,3 +1,8 @@
+2000-04-24 16:01:15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-treat-article): Make sure that the summary
+	buffer is live.
+
 2000-04-24 15:42:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mailcap.el (mailcap-parse-mailcaps): Reorder.

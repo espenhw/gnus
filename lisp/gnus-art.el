@@ -4581,7 +4581,8 @@ For example:
     (while (setq elem (pop alist))
       (setq val
 	    (save-excursion
-	      (set-buffer gnus-summary-buffer)
+	      (if (gnus-buffer-live-p gnus-summary-buffer)
+		  (set-buffer gnus-summary-buffer))
 	      (symbol-value (car elem))))
       (when (and (or (consp val)
 		     treated-type)
