@@ -1054,7 +1054,8 @@ It will prompt for a password."
       ;; large, so we send it piecemeal.
       (let ((last (point-min))
 	    (size 100))			;Size of text sent at once.
-	(while (/= last (point-max))
+	(while (and (/= last (point-max))
+		    (memq (process-status nntp-server-process) '(open run)))
 	  (process-send-region 
 	   nntp-server-process
 	   last (setq last (min (+ last size) (point-max))))

@@ -87,7 +87,6 @@
 					  nnmh-current-directory)
 					 (int-to-string
 					  (setq article (pop articles))))))
-
 		     (not (file-directory-p file)))
 	    (insert (format "221 %d Article retrieved.\n" article))
 	    (setq beg (point))
@@ -195,7 +194,7 @@
 	dir)
     ;; Recurse down directories.
     (while (setq dir (pop dirs))
-      (when (and (not (member (file-name-nondirectory file) '("." "..")))
+      (when (and (not (member (file-name-nondirectory dir) '("." "..")))
 		 (file-directory-p dir)
 		 (file-readable-p dir))
 	(nnmh-request-list-1 dir))))

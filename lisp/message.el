@@ -2253,6 +2253,7 @@ Headers already prepared in the buffer are not modified."
     (setq message-buffer-list 
 	  (nconc message-buffer-list (list (current-buffer))))))
 
+(defvar mc-modes-alist)
 (defun message-setup (headers &optional replybuffer actions)
   (when (and (boundp 'mc-modes-alist)
 	     (not (assq 'message-mode mc-modes-alist)))

@@ -1859,6 +1859,10 @@ SCORE is the score to add."
 	(gnus-newsgroup-scored nil)
 	(buf (current-buffer))
 	trace)
+    (when (get-buffer "*Gnus Scores*")
+      (save-excursion
+	(set-buffer "*Gnus Scores*")
+	(erase-buffer)))
     (setq gnus-score-trace nil)
     (gnus-possibly-score-headers 'trace)
     (if (not (setq trace gnus-score-trace))

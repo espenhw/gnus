@@ -1,4 +1,40 @@
+Tue Jun 11 02:29:33 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus-score.el (gnus-score-find-trace): Erase contents first.
+
+	* nntp.el (nntp-send-region-to-server): Make sure the server is
+	up. 
+
+	* gnus.el (gnus-summary-edit-article-done): Reversed parameters. 
+
+	* nnheaderxm.el: Renamed.
+
+	* nnmail.el ((eq system-type 'windows-nt)): Moved here.
+
+Tue Jun 11 02:11:30 1996  Lars Magne Ingebrigtsen  <larsi@eistla.ifi.uio.no>
+
+	* nnmail.el (nnmail-pop-password): New variable.
+	(nnmail-pop-password-required): New variable.
+	(nnmail-move-inbox): Use them.
+
+Mon Jun 10 21:40:13 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-xmas.el (gnus-xmas-summary-recenter): Don't sit-for on
+	XEmacs 19.13. 
+
+	* gnus-picon.el (gnus-group-display-picons): `set-to-buffer'?
+
+	* gnus.el (gnus-articles-to-read): Don't prompt for scored unless
+	there are many unscored ones.
+	(gnus-read-move-group-name): Prompt when group doesn't exist.
+	(gnus-output-to-file): New implementation.
+	(gnus-summary-save-article): Would duplicate while saving.
+	(gnus-summary-save-article): Prompts wouldn't be remembered.
+	(gnus-article-hide-headers): Inhibit point motion hooks. 
+
 Mon Jun 10 05:20:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.14 is released.
 
 	* gnus-cus.el (()): Display X face by default.
 

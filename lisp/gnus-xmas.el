@@ -145,9 +145,10 @@ displayed, no centering will be performed."
   ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
   ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
   (when gnus-auto-center-summary
-    (sit-for 0)
     (let* ((height (if (fboundp 'window-displayed-height)
-		       (window-displayed-height)
+		       (progn
+			 (sit-for 0)
+			 (window-displayed-height))
 		     (- (window-height) 2)))
 	   (top (cond ((< height 4) 0)
 		      ((< height 7) 1)

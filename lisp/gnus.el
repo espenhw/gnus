@@ -1726,7 +1726,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.14"
+(defconst gnus-version-number "5.2.15"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -8848,7 +8848,8 @@ If READ-ALL is non-nil, all articles in the group are selected."
 			   "How many articles from %s (default %d): "
 			   gnus-newsgroup-name number))))
 		    (if (string-match "^[ \t]*$" input) number input)))
-		 ((and (> scored marked) (< scored number))
+		 ((and (> scored marked) (< scored number)
+		       (> (- scored number) 20))
 		  (let ((input
 			 (read-string
 			  (format "%s %s (%d scored, %d total): "
@@ -11823,8 +11824,8 @@ groups."
 	(gnus-configure-windows 'summary)
 	(gnus-summary-update-article (cdr gnus-article-current))
 	(when gnus-use-cache
-	  (gnus-cache-update-article 
-	   (cdr gnus-article-current) (car gnus-article-current)))
+	  (gnus-cache-update-article 	
+	   (car gnus-article-current) (cdr gnus-article-current)))
 	(when gnus-keep-backlog
 	  (gnus-backlog-remove-article 
 	   (car gnus-article-current) (cdr gnus-article-current))))
@@ -12950,6 +12951,7 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	  (gnus-summary-select-article t nil nil article))
 	(save-excursion
 	  (set-buffer save-buffer)
+	  (erase-buffer)
 	  (insert-buffer-substring gnus-original-article-buffer))
 	(unless gnus-save-all-headers
 	  ;; Remove headers accoring to `gnus-saved-headers'.
@@ -12962,9 +12964,10 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	      (error "No default saver is defined.")
 	    ;; !!! Magic!  The saving functions all save
 	    ;; `gnus-original-article-buffer' (or so they think),
-	    ;; but we bind that variable to out save-buffer.
+	    ;; but we bind that variable to our save-buffer.
 	    (set-buffer gnus-article-buffer)
 	    (let ((gnus-original-article-buffer save-buffer))
+	      (set-buffer gnus-summary-buffer)
 	      (setq file (funcall
 			  gnus-default-article-saver
 			  (cond
@@ -13115,6 +13118,10 @@ save those articles instead."
 	  (setq to-newsgroup (or default "")))
       (or (gnus-active to-newsgroup)
 	  (gnus-activate-group to-newsgroup)
+	  (if (gnus-y-or-n-p (format "No such group: %s.  Create it? "
+				     to-newsgroup))
+	      (or (gnus-request-create-group to-newsgroup)
+		  (error "Couldn't create group %s" to-newsgroup)))
 	  (error "No such group: %s" to-newsgroup)))
     to-newsgroup))
 
@@ -13912,6 +13919,7 @@ always hide."
 		       ((and gnus-visible-headers
 			     (listp gnus-visible-headers))
 			(mapconcat 'identity gnus-visible-headers "\\|"))))
+		(inhibit-point-motion-hooks t)
 		want-list beg)
 	    ;; First we narrow to just the headers.
 	    (widen)
@@ -14540,20 +14548,14 @@ function and want to see what the date was before converting."
 
 (defun gnus-output-to-file (file-name)
   "Append the current article to a file named FILE-NAME."
-  (setq file-name (expand-file-name file-name))
-  (let ((artbuf (current-buffer))
-	(tmpbuf (get-buffer-create " *Gnus-output*")))
-    (save-excursion
-      (set-buffer tmpbuf)
-      (buffer-disable-undo (current-buffer))
-      (erase-buffer)
+  (let ((artbuf (current-buffer)))
+    (nnheader-temp-write nil
       (insert-buffer-substring artbuf)
       ;; Append newline at end of the buffer as separator, and then
       ;; save it to file.
       (goto-char (point-max))
       (insert "\n")
-      (append-to-file (point-min) (point-max) file-name))
-    (kill-buffer tmpbuf)))
+      (append-to-file (point-min) (point-max) file-name))))
 
 (defun gnus-convert-article-to-rmail ()
   "Convert article in current buffer to Rmail message format."

@@ -49,7 +49,7 @@
 	(setq byte-compile-warnings 
 	      '(free-vars unresolved callargs redefine obsolete))))
       (when (or (not (member file '("gnus-xmas.el" "gnus-picon.el" 
-				    "messagexmas.el")))
+				    "messagexmas.el" "nnheaderxm.el")))
 		xemacs)
 	(condition-case ()
 	    (byte-compile-file file)

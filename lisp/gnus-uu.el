@@ -185,11 +185,6 @@ Default is \"/tmp/\".")
   "*Non-nil means that gnus-uu won't peek inside archives looking for files to display. 
 Default is nil.")
 
-(defvar gnus-uu-view-and-save nil 
-  "*Non-nil means that the user will always be asked to save a file after viewing it.
-If the variable is nil, the user will only be asked to save if the
-viewing is unsuccessful. Default is nil.")
-
 (defvar gnus-uu-ignore-default-view-rules nil
   "*Non-nil means that gnus-uu will ignore the default viewing rules.
 Only the user viewing rules will be consulted. Default is nil.")

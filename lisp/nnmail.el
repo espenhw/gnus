@@ -137,6 +137,12 @@ links, you could set this variable to `copy-file' instead.")
   "*A command to be executed to move mail from the inbox.
 The default is \"movemail\".")
 
+(defvar nnmail-pop-password nil
+  "*Password to use when reading mail from a POP server, if required.")
+
+(defvar nnmail-pop-password-required nil
+  "*Non-nil if a password is required when reading mail using POP.")
+
 (defvar nnmail-read-incoming-hook nil
   "*Hook that will be run after the incoming mail has been transferred.
 The incoming mail is moved from `nnmail-spool-file' (which normally is
@@ -163,6 +169,9 @@ If you use `display-time', you could use something like this:
 	    ;; the flag that says you have mail.
 	    (if (eq (process-status \"display-time\") 'run)
 		(display-time-filter display-time-process \"\"))))") 
+
+(when (eq system-type 'windows-nt)
+  (add-hook 'nnmail-prepare-incoming-hook 'nnheader-ms-strip-cr))
 
 ;; Suggested by Erik Selberg <speed@cs.washington.edu>.
 (defvar nnmail-prepare-incoming-hook nil
@@ -260,6 +269,9 @@ parameter.  It should return nil, `warn' or `delete'.")
 
 ;;; Internal variables.
 
+(eval-and-compile
+  (autoload 'ange-ftp-read-passwd "ange-ftp"))
+
 (defvar nnmail-split-fancy-syntax-table
   (copy-syntax-table (standard-syntax-table))
   "Syntax table used by `nnmail-split-fancy'.")
@@ -339,14 +351,14 @@ parameter.  It should return nil, `warn' or `delete'.")
     (list (- (+ (car current) (if rest -1 0)) (car time))
 	  (- (+ (or rest 0) (nth 1 current)) (nth 1 time)))))
 
-;; Function taken from rmail.el.
+;; Function rewritten from rmail.el.
 (defun nnmail-move-inbox (inbox)
   "Move INBOX to `nnmail-crash-box'."
   (let ((inbox (file-truename
 		(expand-file-name (substitute-in-file-name inbox))))
 	(tofile (file-truename (expand-file-name 
 				(substitute-in-file-name nnmail-crash-box))))
-	movemail popmail errors)
+	movemail popmail errors password)
     ;; If getting from mail spool directory,
     ;; use movemail to move rather than just renaming,
     ;; so as to interlock with the mailer.
@@ -362,7 +374,14 @@ parameter.  It should return nil, `warn' or `delete'.")
     (if (member inbox nnmail-moved-inboxes)
 	nil
       (if popmail
-	  (message "Getting mail from post office ...")
+	  (progn
+	    (setq password nnmail-pop-password)
+	    (when (and nnmail-pop-password-required (not nnmail-pop-password))
+	      (setq password
+		    (ange-ftp-read-passwd
+		     (format "Password for %s: "
+			     (substring inbox (+ popmail 3))))))
+	    (message "Getting mail from post office ..."))
 	(when (or (and (file-exists-p tofile)
 		       (/= 0 (nth 7 (file-attributes tofile))))
 		  (and (file-exists-p inbox)
@@ -400,9 +419,13 @@ parameter.  It should return nil, `warn' or `delete'.")
 	      (setq errors (generate-new-buffer " *nnmail loss*"))
 	      (buffer-disable-undo errors)
 	      (let ((default-directory "/"))
-		(call-process
-		 (expand-file-name nnmail-movemail-program exec-directory)
-		 nil errors nil inbox tofile))
+		(apply 
+		 'call-process
+		 (append
+		  (list
+		   (expand-file-name nnmail-movemail-program exec-directory)
+		   nil errors nil inbox tofile)
+		  (when password (list password)))))
 	      (if (not (buffer-modified-p errors))
 		  ;; No output => movemail won
 		  (push tofile nnmail-moved-inboxes)

@@ -227,7 +227,7 @@ with the contents of the BUFFER."
 
 (nnoo-import nndb
   (nntp))
- 
+
 (provide 'nndb)
 
 

@@ -543,7 +543,21 @@ without formatting."
   "Concat DIR as directory to FILE."
   (concat (file-name-as-directory dir) file))
 
-(require 'nnheaderems)
+(defun nnheader-ms-strip-cr ()
+  "Strip ^M from the end of all lines."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "\r$" nil t)
+      (delete-backward-char 1))))
+
+(fset 'nnheader-run-at-time 'run-at-time)
+(fset 'nnheader-cancel-timer 'cancel-timer)
+(fset 'nnheader-find-file-noselect 'find-file-noselect)
+(fset 'nnheader-insert-file-contents-literally
+      'insert-file-contents-literally)
+
+(when (string-match "XEmacs\\|Lucid" emacs-version)
+  (require 'nnheaderxm))
 
 (run-hooks 'nnheader-load-hook)
 

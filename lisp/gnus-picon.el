@@ -212,7 +212,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
 			  (replace-in-string from ".*@\\([_a-zA-Z0-9-.]+\\).*" 
 					     "\\1") 
 			  "\\." "/")) "/")))
-          (set-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
+          (set-buffer (gnus-get-buffer-name gnus-picons-display-where))
           (gnus-add-current-to-buffer-list)
           (beginning-of-buffer)
           (setq iconpoint (point))
@@ -264,7 +264,7 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
       (save-excursion
 	(let
 	    ((iconpoint (point)))
-	  (set-to-buffer (gnus-get-buffer-name gnus-picons-display-where))
+	  (set-buffer (gnus-get-buffer-name gnus-picons-display-where))
 	  (gnus-add-current-to-buffer-list)
 	  (beginning-of-buffer)
 	  (cond 

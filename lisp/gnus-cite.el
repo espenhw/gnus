@@ -300,7 +300,7 @@ Lines matching `gnus-cite-attribution-suffix' and perhaps
 See the documentation for `gnus-article-highlight-citation'.
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
-  (interactive (append (gnus-hidden-arg) 'force))
+  (interactive (append (gnus-hidden-arg) (list 'force)))
   (setq gnus-cited-text-button-line-format-spec 
 	(gnus-parse-format gnus-cited-text-button-line-format 
 			   gnus-cited-text-button-line-format-alist t))
@@ -361,7 +361,7 @@ percent and at least `gnus-cite-hide-absolute' lines of the body is
 cited text with attributions.  When called interactively, these two
 variables are ignored.
 See also the documentation for `gnus-article-highlight-citation'."
-  (interactive (append (gnus-hidden-arg) 'force))
+  (interactive (append (gnus-hidden-arg) (list 'force)))
   (unless (gnus-article-check-hidden-text 'cite arg)
     (save-excursion
       (set-buffer gnus-article-buffer)

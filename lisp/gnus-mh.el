@@ -67,18 +67,17 @@ Optional argument FOLDER specifies folder name."
 	(errbuf (get-buffer-create " *Gnus rcvstore*"))
 	;; Find the rcvstore program.
 	(exec-path (if mh-lib (cons mh-lib exec-path) exec-path)))
-    (gnus-eval-in-buffer-window 
-     gnus-original-article-buffer
-     (save-restriction
-       (widen)
-       (unwind-protect
-	   (call-process-region 
-	    (point-min) (point-max) "rcvstore" nil errbuf nil folder)
-	 (set-buffer errbuf)
-	 (if (zerop (buffer-size))
-	     (message "Article saved in folder: %s" folder)
-	   (message "%s" (buffer-string)))
-	 (kill-buffer errbuf))))
+    (gnus-eval-in-buffer-window gnus-original-article-buffer
+      (save-restriction
+	(widen)
+	(unwind-protect
+	    (call-process-region 
+	     (point-min) (point-max) "rcvstore" nil errbuf nil folder)
+	  (set-buffer errbuf)
+	  (if (zerop (buffer-size))
+	      (message "Article saved in folder: %s" folder)
+	    (message "%s" (buffer-string)))
+	  (kill-buffer errbuf))))
     (setq gnus-newsgroup-last-folder folder)))
 
 (defun gnus-Folder-save-name (newsgroup headers &optional last-folder)
