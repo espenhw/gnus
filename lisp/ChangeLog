@@ -1,3 +1,7 @@
+2003-10-18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-hidden-headers): Doc fix.
+
 2003-10-18  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-msg.el (gnus-summary-resend-message-edit): Avoid error when

@@ -1013,7 +1013,7 @@ candidates:
 (defcustom message-hidden-headers nil
   "Regexp of headers to be hidden when composing new messages.
 This can also be a list of regexps to match headers.  Or a list
-starting with `not' and followed by regexps.."
+starting with `not' and followed by regexps."
   :group 'message
   :type '(repeat regexp))
 
