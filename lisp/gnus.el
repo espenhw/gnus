@@ -1,5 +1,6 @@
 ;;; gnus.el --- a newsreader for GNU Emacs
-;; Copyright (C) 1987-1990,1993-1999 Free Software Foundation, Inc.
+;; Copyright (C) 1987, 88, 89, 90, 93, 94, 95, 96, 97, 98, 99
+;;   Free Software Foundation, Inc.
 
 ;; Author: Masanobu UMEDA <umerin@flab.flab.fujitsu.junet>
 ;;	Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -31,10 +32,6 @@
 (eval-when-compile (require 'cl))
 (require 'mm-util)
 
-(require 'custom)
-(eval-and-compile
-  (if (< emacs-major-version 20)
-      (require 'gnus-load)))
 (require 'message)
 
 (defgroup gnus nil
@@ -1616,17 +1613,16 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
 	    (when (consp function)
 	      (setq keymap (car (memq 'keymap function)))
 	      (setq function (car function)))
-	    (autoload function (car package) nil interactive keymap)))
+	    (unless (fboundp function)
+	      (autoload function (car package) nil interactive keymap))))
 	(if (eq (nth 1 package) ':interactive)
-	    (cdddr package)
+	    (nthcdr 3 package)
 	  (cdr package)))))
-   '(("metamail" metamail-buffer)
-     ("info" Info-goto-node)
+   '(("info" :interactive t Info-goto-node)
      ("pp" pp pp-to-string pp-eval-expression)
      ("qp" quoted-printable-decode-region quoted-printable-decode-string)
      ("ps-print" ps-print-preprint)
-     ("mail-extr" mail-extract-address-components)
-     ("browse-url" browse-url)
+     ("browse-url" :interactive t browse-url)
      ("message" :interactive t
       message-send-and-exit message-yank-original)
      ("babel" babel-as-string)
