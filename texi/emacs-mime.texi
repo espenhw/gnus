@@ -1336,11 +1336,6 @@ library does.
 The following variables are tweakable:
 
 @table @code
-@item rfc2047-default-charset
-@vindex rfc2047-default-charset
-Characters in this charset should not be decoded by this library.
-This defaults to @code{iso-8859-1}.
-
 @item rfc2047-header-encoding-alist
 @vindex rfc2047-header-encoding-alist
 This is an alist of header / encoding-type pairs.  Its main purpose is
@@ -1348,9 +1343,10 @@ to prevent encoding of certain headers.
 
 The keys can either be header regexps, or @code{t}.
 
-The values can be either @code{nil}, in which case the header(s) in
-question won't be encoded, or @code{mime}, which means that they will be
-encoded.
+The values can be @code{nil}, in which case the header(s) in question
+won't be encoded, @code{mime}, which means that they will be encoded, or
+@code{address-mime}, which means the header(s) will be encoded carefully
+assuming they contain addresses.
 
 @item rfc2047-charset-encoding-alist
 @vindex rfc2047-charset-encoding-alist
@@ -1358,21 +1354,19 @@ RFC2047 specifies two forms of encoding---@code{Q} (a
 Quoted-Printable-like encoding) and @code{B} (base64).  This alist
 specifies which charset should use which encoding.
 
-@item rfc2047-encoding-function-alist
-@vindex rfc2047-encoding-function-alist
+@item rfc2047-encode-function-alist
+@vindex rfc2047-encode-function-alist
 This is an alist of encoding / function pairs.  The encodings are
 @code{Q}, @code{B} and @code{nil}.
-
-@item rfc2047-q-encoding-alist
-@vindex rfc2047-q-encoding-alist
-The @code{Q} encoding isn't quite the same for all headers.  Some
-headers allow a narrower range of characters, and that is what this
-variable is for.  It's an alist of header regexps / allowable character
-ranges.
 
 @item rfc2047-encoded-word-regexp
 @vindex rfc2047-encoded-word-regexp
 When decoding words, this library looks for matches to this regexp.
+
+@item rfc2047-encode-encoded-words
+@vindex rfc2047-encode-encoded-words
+The boolean variable specifies whether encoded words
+(e.g. @samp{=?hello?=}) should be encoded again.
 
 @end table
 
@@ -1403,6 +1397,24 @@ Decode the encoded words in the region.
 @item rfc2047-decode-string
 @findex rfc2047-decode-string
 Decode a string and return the results.
+
+@item rfc2047-encode-parameter
+@findex rfc2047-encode-parameter
+Encode a parameter in the RFC2047-like style.  This is a replacement for
+the @code{rfc2231-encode-string} function.  @xref{rfc2231}.
+
+When attaching files as @acronym{MIME} parts, we should use the RFC2231
+encoding to specify the file names containing non-@acronym{ASCII}
+characters.  However, many mail softwares don't support it in practice
+and recipients won't be able to extract files with correct names.
+Instead, the RFC2047-like encoding is acceptable generally.  This
+function provides the very RFC2047-like encoding, resigning to such a
+regrettable trend.  To use it, put the following line in your
+@file{~/.gnus.el} file:
+
+@lisp
+(defalias 'mail-header-encode-parameter 'rfc2047-encode-parameter)
+@end lisp
 
 @end table
 
