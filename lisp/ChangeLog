@@ -11,6 +11,10 @@
 	(imap-open): Return nil on failure.
 	(imap-open): Setup temp buffer correctly.
 	(imap-open): Return buffer only on success.
+	(imap-interactive-login, imap-interactive-login): Tell the user
+	which stream/authenticator is used for the queried
+	username/password.
+	(imap-open, imap-authenticate): Set variables.
 
 2002-01-17  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
