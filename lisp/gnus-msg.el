@@ -138,7 +138,7 @@ the group.")
     
 (defun gnus-inews-add-send-actions (winconf buffer article)
   (gnus-make-local-hook 'message-sent-hook)
-  (add-hook 'message-sent-hook 'gnus-inews-do-gcc nil t)
+  (gnus-add-hook 'message-sent-hook 'gnus-inews-do-gcc nil t)
   (setq message-post-method
 	`(lambda (arg)
 	   (gnus-post-method arg ,gnus-newsgroup-name)))

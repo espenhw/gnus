@@ -1,4 +1,51 @@
+Thu May 30 05:04:07 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-article-hide-headers): Show boring headers as
+	well. 
+
+Tue May 28 15:47:15 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* custom.el ((fboundp 'event-point)): Wrong test.
+
+Thu May 30 03:19:21 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el (gnus-headers-decode-quoted-printable): Wrong name.
+
+	* message.el (message-header-hook): Defvarred.
+
+	* gnus-nocem.el (gnus-nocem-verifyer): Couldn't verify that it
+	works. 
+
+Thu May 30 00:25:46 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-nocem.el (gnus-nocem-verify-issuer): Widen before
+	verifying. 
+
+Wed May 29 23:19:46 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* custom.el (custom-xmas-set-text-properties): Changed name.
+
+Wed May 29 23:01:52 1996  Paul D. Smith  <psmith@baynetworks.com>
+
+	* gnus-cus.el: toggle -> sexp.
+
+Wed May 29 23:00:48 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-msg.el (gnus-inews-add-send-actions): Use `gnus-add-hook'. 
+
+Wed May 29 22:52:47 1996  Francois Felix Ingrand  <felix@laas.fr>
+
+	* gnus-topic.el (gnus-topic-remove-group): Would not delete groups
+	from topics.
+
+Wed May 29 08:57:20 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* custom.el (custom-face-lookup): Avoid `modify-face' to speed up
+	face retrieval on Indys & over slow modem lines.
+
 Wed May 29 05:08:04 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.2 is released.
 
 	* custom.el (custom-xmas-add-text-properties,
 	custom-xmas-put-text-property): New functions used throughout.

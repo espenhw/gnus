@@ -31,7 +31,7 @@
 
 (eval-when-compile 
   (require 'cl))
-(require 'mail-header)
+(require 'mailheader)
 (require 'nnheader)
 (require 'timezone)
 (require 'easymenu)
@@ -255,6 +255,9 @@ The function `message-setup' runs this hook.")
 (defvar message-mode-hook nil
   "Hook run in message mode buffers.")
 
+(defvar message-header-hook nil
+  "Hook run in a message mode buffer narrowed to the headers.")
+
 (defvar message-header-setup-hook nil
   "Hook called narrowed to the headers when setting up a message buffer.")
 
@@ -467,7 +470,7 @@ The cdr of ech entry is a function for applying the face to a region.")
   "Alist used for formatting headers.")
 
 (eval-and-compile
-  (autoload 'message-setup-toolbar "message-xmas")
+  (autoload 'message-setup-toolbar "message-xms")
   (autoload 'mh-send-letter "mh-comp"))
 
 
@@ -733,6 +736,9 @@ Return the number of headers removed."
     "----"
     ["Send Message" message-send-and-exit t]
     ["Abort Message" message-dont-send t]))
+
+(defvar facemenu-add-face-function)
+(defvar facemenu-remove-face-function)
 
 ;;;###autoload
 (defun message-mode ()
@@ -2757,7 +2763,7 @@ which specify the range to operate on."
 
 ;; Support for toolbar
 (when (string-match "XEmacs\\|Lucid" emacs-version)
-  (require 'message-xmas))
+  (require 'message-xms))
 
 ;;; Group name completion.
 

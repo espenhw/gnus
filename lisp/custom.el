@@ -89,18 +89,26 @@
     (progn
       (fset 'custom-add-text-properties 'custom-xmas-add-text-properties)
       (fset 'custom-put-text-property 'custom-xmas-put-text-property)
-      (fset 'custom-extent-start-open 'custom-xmas-extent-start-open))
+      (fset 'custom-extent-start-open 'custom-xmas-extent-start-open)
+      (fset 'custom-set-text-properties
+	    (if (fboundp 'set-text-properties)
+		'set-text-properties))
+      (fset 'custom-buffer-substring-no-properties
+	    (if (fboundp 'buffer-substring-no-properties)
+		'buffer-substring-no-properties
+	      'custom-xmas-buffer-substring-no-properties)))
   (fset 'custom-add-text-properties 'add-text-properties)
   (fset 'custom-put-text-property 'put-text-property)
-  (fset 'custom-extent-start-open 'ignore))
+  (fset 'custom-extent-start-open 'ignore)
+  (fset 'custom-set-text-properties 'set-text-properties)
+  (fset 'custom-buffer-substring-no-properties 
+	'buffer-substring-no-properties))
 
-(or (fboundp 'buffer-substring-no-properties)
-    ;; Introduced in Emacs 19.29.
-    (defun buffer-substring-no-properties (beg end)
-      "Return the text from BEG to END, without text properties, as a string."
-      (let ((string (buffer-substring beg end)))
-	(set-text-properties 0 (length string) nil string)
-	string)))
+(defun custom-xmas-buffer-substring-no-properties (beg end)
+  "Return the text from BEG to END, without text properties, as a string."
+  (let ((string (buffer-substring beg end)))
+    (custom-set-text-properties 0 (length string) nil string)
+    string))
 
 (or (fboundp 'add-to-list)
     ;; Introduced in Emacs 19.29.
@@ -195,18 +203,16 @@ STRING should be given if the last search was by `string-match' on STRING."
       (and (fboundp 'set-face-underline-p)
 	   (funcall 'set-face-underline-p 'underline t))))
 
-(or (fboundp 'set-text-properties)
-    ;; Missing in XEmacs 19.12.
-    (defun set-text-properties (start end props &optional buffer)
-      (if (or (null buffer) (bufferp buffer))
-	  (if props
-	      (while props
-		(custom-put-text-property 
-		 start end (car props) (nth 1 props) buffer)
-		(setq props (nthcdr 2 props)))
-	    (remove-text-properties start end ())))))
+(defun custom-xmas-set-text-properties (start end props &optional buffer)
+  (if (or (null buffer) (bufferp buffer))
+      (if props
+	  (while props
+	    (custom-put-text-property 
+	     start end (car props) (nth 1 props) buffer)
+	    (setq props (nthcdr 2 props)))
+	(remove-text-properties start end ()))))
 
-(or (fboundp 'event-closest-point)
+(or (fboundp 'event-point)
     ;; Missing in Emacs 19.29.
     (defun event-point (event)
       "Return the character position of the given mouse-motion, button-press,
@@ -1523,8 +1529,7 @@ custom-face-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)-\\(.*\\)"
 	    value))))
 
 (defun custom-face-lookup (fg bg stipple bold italic underline)
-  "Lookup or create a face with specified attributes.
-FG BG STIPPLE BOLD ITALIC UNDERLINE"
+  "Lookup or create a face with specified attributes."
   (let ((name (intern (format "custom-face-%s-%s-%s-%S-%S-%S"
 			      (or fg "default")
 			      (or bg "default")
@@ -1533,12 +1538,25 @@ FG BG STIPPLE BOLD ITALIC UNDERLINE"
     (if (and (custom-facep name)
 	     (fboundp 'make-face))
 	()
-      (make-face name)
-      (modify-face name
-		   (if (string-equal fg "default") nil fg)
-		   (if (string-equal bg "default") nil bg)
-		   (if (string-equal stipple "default") nil stipple)
-		   bold italic underline))
+      (copy-face 'default name)
+      (when (and fg
+		 (not (string-equal fg "default")))
+	(set-face-foreground name fg))
+      (when (and bg
+		 (not (string-equal fg "default")))
+	(set-face-background name bg))
+      (when (and stipple
+		 (not (eq stipple 'as-is)))
+	(set-face-stipple name))
+      (when (and bold
+		 (not (eq bold 'as-is)))
+	(make-face-bold name))
+      (when (and italic
+		 (not (eq italic 'as-is)))
+	(make-face-italic name))
+      (when (and underline
+		 (not (eq underline 'as-is)))
+	(set-face-underline-p name)))
     name))
 
 (defun custom-face-hack (field value)
@@ -1875,13 +1893,13 @@ If the optional argument SAVE is non-nil, use that for saving changes."
   "Describe how to execute COMMAND."
   (let ((from (point)))
     (insert "`" (key-description (where-is-internal command nil t)) "'")
-    (set-text-properties from (point)
-			 (list 'face custom-button-face
-			       mouse-face custom-mouse-face
-			       'custom-jump t ;Make TAB jump over it.
-			       'custom-tag command
-			       'start-open t
-			       'end-open t))
+    (custom-set-text-properties from (point)
+				(list 'face custom-button-face
+				      mouse-face custom-mouse-face
+				      'custom-jump t ;Make TAB jump over it.
+				      'custom-tag command
+				      'start-open t
+				      'end-open t))
     (custom-category-set from (point) 'custom-documentation-properties))
   (custom-help-insert ": " (custom-first-line (documentation command)) "\n"))
 
@@ -2203,7 +2221,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
     (insert-char (custom-padding custom)
 		 (- (custom-width custom) (- (point) from)))
     (custom-field-move field from (point))
-    (set-text-properties 
+    (custom-set-text-properties 
      from (point)
      (list 'custom-field field
 	   'custom-tag field
@@ -2214,7 +2232,7 @@ If the optional argument is non-nil, show text iff the argument is positive."
 (defun custom-field-read (field)
   ;; Read the screen content of FIELD.
   (custom-read (custom-field-custom field)
-	       (buffer-substring-no-properties (custom-field-start field)
+	       (custom-buffer-substring-no-properties (custom-field-start field)
 					       (custom-field-end field))))
 
 ;; Fields are shown in a special `active' face when point is inside

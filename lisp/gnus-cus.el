@@ -74,7 +74,7 @@ less space and be faster as a result.")
 			     page-marker tree-menu binary-menu pick-menu
 			     grouplens-menu))
 	(name . gnus-visual)
-	(type . toggle))
+	(type . sexp))
        ((tag . "WWW Browser")
 	(doc . "\
 WWW Browser to call when clicking on an URL button in the article buffer.

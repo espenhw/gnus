@@ -48,10 +48,10 @@
 (defvar gnus-nocem-expiry-wait 15
   "*Number of days to keep NoCeM headers in the cache.")
 
-(defvar gnus-nocem-verifyer 'mc-verify
+(defvar gnus-nocem-verifyer nil
   "*Function called to verify that the NoCeM message is valid.
-If the function in this variable isn't bound, the message will
-be used unconditionally.")
+One likely value is `mc-verify'.  If the function in this variable
+isn't bound, the message will be used unconditionally.")
 
 ;;; Internal variables
 
@@ -151,6 +151,7 @@ be used unconditionally.")
   
 (defun gnus-nocem-verify-issuer (person)
   "Verify using PGP that the canceler is who she says she is."
+  (widen)
   (if (fboundp gnus-nocem-verifyer)
       (funcall gnus-nocem-verifyer)
     ;; If we don't have MailCrypt, then we use the message anyway.
@@ -158,7 +159,6 @@ be used unconditionally.")
 
 (defun gnus-nocem-enter-article ()
   "Enter the current article into the NoCeM cache."
-  (widen)
   (goto-char (point-min))
   (let ((b (search-forward "\n@@BEGIN NCM BODY\n" nil t))
 	(e (search-forward "\n@@END NCM BODY\n" nil t))

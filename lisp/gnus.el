@@ -1723,7 +1723,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.2"
+(defconst gnus-version-number "5.2.3"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -13807,7 +13807,9 @@ Provided for backwards compatibility."
 If given a negative prefix, always show; if given a positive prefix,
 always hide."
   (interactive "P")
-  (unless (gnus-article-check-hidden-text 'headers arg)
+  (if (gnus-article-check-hidden-text 'headers arg)
+      ;; Show boring headers as well.
+      (gnus-article-show-hidden-text 'boring-headers)
     ;; This function might be inhibited.
     (unless gnus-inhibit-hiding
       (save-excursion
@@ -14047,7 +14049,7 @@ always hide."
 		(process-send-region "gnus-x-face" beg end)
 		(process-send-eof "gnus-x-face")))))))))
 
-(defalias 'gnus-header-decode-quoted-printable 'gnus-decode-rfc1522)
+(defalias 'gnus-headers-decode-quoted-printable 'gnus-decode-rfc1522)
 (defun gnus-decode-rfc1522 ()
   "Hack to remove QP encoding from headers."
   (let ((case-fold-search t)

@@ -772,7 +772,7 @@ If COPYP, copy the groups instead."
 	(buffer-read-only nil))
     (when (and topicl group)
       (gnus-delete-line)
-      (delq (gnus-group-group-name) topicl))
+      (delete group topicl))
     (gnus-group-position-point)))
 
 (defun gnus-topic-copy-group (n topic)
