@@ -128,15 +128,16 @@
 If optional argument SIGN is non-nil, do a combined sign and encrypt."
   (let* ((pgg-gpg-user-id (or pgg-gpg-user-id pgg-default-user-id))
 	 (args
-	  `("--batch" "--armor" "--always-trust"
-	    ,(if sign "--sign --encrypt" "--encrypt")
-	    ,@(if recipients
-		  (apply #'nconc
-			 (mapcar (lambda (rcpt)
-				   (list "--remote-user" rcpt))
-				 (append recipients
-					 (if pgg-encrypt-for-me
-					     (list pgg-gpg-user-id)))))))))
+	  (append
+	   (list "--batch" "--armor" "--always-trust" "--encrypt")
+	   (if sign '("--sign"))
+	   (if recipients
+	       (apply #'nconc
+		      (mapcar (lambda (rcpt)
+				(list "--remote-user" rcpt))
+			      (append recipients
+				      (if pgg-encrypt-for-me
+					  (list pgg-gpg-user-id)))))))))
     (pgg-as-lbt start end 'CRLF
       (pgg-gpg-process-region start end nil pgg-gpg-program args))
     (pgg-process-when-success)))
