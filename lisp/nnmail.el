@@ -1233,22 +1233,29 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
      (t
       (let* ((field (nth 0 split))
 	     (value (nth 1 split))
-	     partial regexp)
+	     partial-front regexp
+	     partial-rear  regexp)
 	(if (symbolp value)
 	    (setq value (cdr (assq value nnmail-split-abbrev-alist))))
 	(if (and (>= (length value) 2)
 		 (string= ".*" (substring value 0 2)))
 	    (setq value (substring value 2)
-		  partial ""))
+		  partial-front ""))
+	;; Same trick for the rear of the regexp
+	(if (and (>= (length value) 2)
+		 (string= ".*" (substring value -2)))
+	    (setq value (substring value 0 -2)
+		  partial-rear ""))
 	(setq regexp (concat "^\\(\\("
 			     (if (symbolp field)
 				 (cdr (assq field nnmail-split-abbrev-alist))
 			       field)
 			     "\\):.*\\)"
-			     (or partial "\\<")
+			     (or partial-front "\\<")
 			     "\\("
 			     value
-			     "\\)\\>"))
+			     "\\)"
+			     (or partial-rear "\\>")))
 	(push (cons split regexp) nnmail-split-cache)
 	;; Now that it's in the cache, just call nnmail-split-it again
 	;; on the same split, which will find it immediately in the cache.
