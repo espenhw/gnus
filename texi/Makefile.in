@@ -181,6 +181,21 @@ install: $(INFO_DEPS)
 	  done; \
 	else : ; fi
 
+uninstall:
+	@list='$(INFO_DEPS)'; \
+	for file in $$list; do \
+	  for ifile in `echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do \
+	    rm -f $(infodir)/$$ifile; \
+	  done; \
+	done
+	@if $(SHELL) -c 'install-info --version | sed 1q | fgrep -s -v -i debian' >/dev/null 2>&1; then \
+	  list='$(INFO_DEPS)'; \
+	  for file in $$list; do \
+	    echo " install-info --delete --info-dir=$(infodir) $(infodir)/$$file";\
+	    install-info --delete --info-dir=$(infodir) $(infodir)/$$file || :;\
+	  done; \
+	else : ; fi
+
 tmps: 
 	cd ps; make all
 	for j in ps/picons-*.ps; do \

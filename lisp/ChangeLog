@@ -1,3 +1,7 @@
+2001-10-06 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in: Install el in install. Add uninstall.
+
 2001-10-05  Simon Josefsson  <jas@extundo.com>
 
 	* nnheader.el (gnus-verbose-backends, gnus-nov-is-evil): Custom.

@@ -29,7 +29,21 @@ warn: clean-some gnus-load.elc
 clever some: gnus-load.elc
 	$(EMACS_COMP) -f dgnushack-compile
 
-install: clever
+install: install-el install-elc 
+
+install-el:
+	$(SHELL) $(top_srcdir)/mkinstalldirs $(lispdir)
+	echo " $(INSTALL_DATA) gnus-load.el $(lispdir)/gnus-load.el"
+	$(INSTALL_DATA) gnus-load.el $(lispdir)/gnus-load.el
+	for p in *.elc; do \
+	  p=`basename $$p c`; \
+	  if [ -e "$(srcdir)/$$p" ]; then \
+	    echo " $(INSTALL_DATA) $$p $(lispdir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(lispdir)/$$p; \
+	  fi; \
+	done
+
+install-elc: clever
 	rm -f dgnushack.elc
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(lispdir)
 	for p in *.elc; do \
@@ -37,12 +51,13 @@ install: clever
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p; \
 	done
 
-install-el:
-	$(SHELL) $(top_srcdir)/mkinstalldirs $(lispdir)
-	cd $(srcdir) \
-	&& for p in *.el; do \
-	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p"; \
-	  $(INSTALL_DATA) $$p $(lispdir)/$$p; \
+uninstall:
+	for p in *.elc; do \
+	  rm -f "$(lispdir)/$$p"; \
+	done
+	cd $(srcdir); \
+	for p in *.el; do \
+	  rm -f "$(lispdir)/$$p"; \
 	done
 
 tags:

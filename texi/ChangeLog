@@ -1,3 +1,7 @@
+2001-10-06 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in (uninstall): Add uninstall.
+
 2001-10-05  Simon Josefsson  <jas@extundo.com>
 
 	* Makefile.in (clean): Add gnusconfig.tex.  Suggested by Henrik

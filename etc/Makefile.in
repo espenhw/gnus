@@ -35,6 +35,19 @@ install:
 	  $(INSTALL_DATA) $$p $(etcdir)/$$p; \
 	done
 
+uninstall: 
+	rm -f $(etcdir)/gnus-tut.txt
+	cd $(srcdir) \
+	&& for p in gnus/*.xpm gnus/*.pbm gnus/*.xbm gnus/x-splash; do \
+	  rm -f "$(etcdir)/$$p"; \
+	done
+	rmdir $(etcdir)/gnus 2> /dev/null || true
+	cd $(srcdir) \
+	&& for p in smilies/*.pbm; do \
+	  rm -f "$(etcdir)/$$p"; \
+	done
+	rmdir $(etcdir)/smilies 2> /dev/null || true
+
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd .. \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
