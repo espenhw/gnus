@@ -1225,7 +1225,7 @@ This can be added to `gnus-select-article-hook' or
 	(gnus-cache-file-contents
 	 (gnus-agent-article-name ".agentview" group)
 	 'gnus-agent-file-loading-cache
-	 'gnus-agent-read-file))))
+	 'gnus-agent-read-file)))
 
 (defun gnus-agent-save-alist (group &optional articles state)
   "Save the article-state alist for GROUP."
