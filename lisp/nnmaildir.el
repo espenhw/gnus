@@ -310,11 +310,11 @@ by nnmaildir-request-article.")
 
 (defun nnmaildir--emlink-p (err)
   (and (eq (car err) 'file-error)
-       (string= (caddr err) "too many links")))
+       (string= (downcase (caddr err)) "too many links")))
 
 (defun nnmaildir--enoent-p (err)
   (and (eq (car err) 'file-error)
-       (string= (caddr err) "no such file or directory")))
+       (string= (downcase (caddr err)) "no such file or directory")))
 
 (defun nnmaildir--eexist-p (err)
   (eq (car err) 'file-already-exists))
