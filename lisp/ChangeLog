@@ -1,3 +1,7 @@
+2004-02-26  Andrew Cohen <cohen@andy.bu.edu>
+
+	* spam-wash.el: New file.
+
 2004-02-26  Mark A. Hershberger <mah@everybody.org> 
 
 	* nnrss.el (nnrss-opml-import, nnrss-opml-export): New functions.
