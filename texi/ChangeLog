@@ -1,3 +1,31 @@
+2002-11-21  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi:
+	added new keyboard commands
+
+	* gnus.texi: added extended section on spam
+
+2002-11-18  jas
+
+	* gnus.texi: Fix IMAP expiring typos.
+
+2002-11-18  kaig
+
+	* gnus.texi: *** empty log message ***
+
+2002-11-18  jas
+
+	* gnus.texi: More morse.
+
+	* gnus.texi (Article Washing): Add morse.
+
+2002-11-17  jas
+
+	* gnus.texi: Fix typo.
+
+	* gnus.texi (Expiring in IMAP): Add.
+	(Group Parameters): Add reference.
+
 2002-11-16  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.texi (Expiring Mail): Give summary on difference between
