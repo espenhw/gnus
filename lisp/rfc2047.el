@@ -267,6 +267,7 @@ The buffer may be narrowed."
   ;; arg of `make-syntax-table':
 ;;   (let ((table (make-char-table 'syntax-table '(2))))
   (let ((table (make-syntax-table)))
+    ;; N.b. this currently doesn't work in Emacs 22.
     (map-char-table (lambda (k v) (modify-syntax-entry k "w" table)) table)
     (modify-syntax-entry ?\\ "\\" table)
     (modify-syntax-entry ?\" "\"" table)
@@ -311,7 +312,7 @@ Dynamically bind `rfc2047-encoding-type' to change that."
 	      (while (not (eobp))
 		(setq start (point))
 		;; Skip whitespace.
-		(unless (= 0 (skip-chars-forward " \t"))
+		(unless (= 0 (skip-chars-forward " \t\n"))
 		  (setq start (point)))
 		(cond
 		 ((not (char-after)))	; eob
