@@ -59,9 +59,8 @@
 
   (gnus-define-keys gnus-dired-mode-map
     "\C-c\C-a" gnus-dired-attach
-    "\C-c\C-f" gnus-dired-find-file-mailcap
-    "\C-cP" gnus-dired-print
-    ))
+    "\C-c\C-l" gnus-dired-find-file-mailcap
+    "\C-cP" gnus-dired-print))
 
 (defun gnus-dired-mode (&optional arg)
   "Minor mode for intersections of gnus and dired.

@@ -1,3 +1,7 @@
+2003-05-01  Vasily Korytov  <deskpot@despammed.com>
+
+	* gnus-dired.el (gnus-dired-mode-map): Move to C-c C-l.
+
 2003-04-30  Mark A. Hershberger  <mah@everybody.org>
 
 	* mm-url.el (mm-url-insert-file-contents): set url-current-object

@@ -24703,7 +24703,7 @@ Dired integration
 
 @code{gnus-dired-minor-mode} installs key bindings in dired buffers to send
 a file as an attachment (@kbd{C-c C-a}), open a file using the approriate
-mailcap entry (@kbd{C-c C-f}), and print a file using the mailcap entry
+mailcap entry (@kbd{C-c C-l}), and print a file using the mailcap entry
 (@kbd{C-c P}).  It is enabled with 
 @lisp
 (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
