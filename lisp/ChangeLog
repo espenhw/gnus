@@ -1,3 +1,8 @@
+2004-11-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-strip-forbidden-properties): Bind
+	buffer-read-only (etc) to nil.
+
 2004-11-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* rfc2047.el (rfc2047-header-encoding-alist): Add In-Reply-To to

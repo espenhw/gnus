@@ -2440,12 +2440,14 @@ These properties are essential to work, so we should never strip them."
   "Strip forbidden properties between BEGIN and END, ignoring the third arg.
 This function is intended to be called from `after-change-functions'.
 See also `message-forbidden-properties'."
-  (when (and message-strip-special-text-properties
-	     (message-tamago-not-in-use-p begin))
-    (dolist (from-to (message-text-with-property 'message-hidden
-						 begin end t))
-      (remove-text-properties (car from-to) (cdr from-to)
-			      message-forbidden-properties))))
+  (let ((buffer-read-only nil)
+	(inhibit-read-only t))
+    (when (and message-strip-special-text-properties
+	       (message-tamago-not-in-use-p begin))
+      (dolist (from-to (message-text-with-property 'message-hidden
+						   begin end t))
+	(remove-text-properties (car from-to) (cdr from-to)
+				message-forbidden-properties)))))
 
 ;;;###autoload
 (define-derived-mode message-mode text-mode "Message"
