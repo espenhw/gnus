@@ -1,3 +1,13 @@
+2003-06-12  Dave Love  <fx@gnu.org>
+
+	* nnheader.el (nnheader-functionp): Deleted.
+
+	* nnmail.el (nnmail-split-fancy-syntax-table): Define all in
+	defvar.
+	(nnmail-version): Deleted.
+	(nnmail-check-duplication, nnmail-expiry-target-group): Don't use
+	nnheader-functionp.
+
 2003-06-10  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-check-bogofilter-headers): fix for when the score
