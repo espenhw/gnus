@@ -1,3 +1,9 @@
+2001-08-27  Simon Josefsson  <jas@extundo.com>
+
+	* nnfolder.el (nnfolder-request-set-mark) 
+	(nnfolder-request-update-info): Don't open group.
+	(nnfolder-open-marks): Fix message.
+
 2001-08-25  Simon Josefsson  <jas@extundo.com>
 
 	* nnfolder.el (nnfolder-save-marks): Don't create directory named
