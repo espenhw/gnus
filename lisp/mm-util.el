@@ -135,7 +135,7 @@ In XEmacs, also return non-nil if CS is a coding system object.
 If CS is available, return CS itself in Emacs, and return a coding
 system object in XEmacs."
   (if (fboundp 'find-coding-system)
-      (find-coding-system cs)
+      (and cs (find-coding-system cs))
     (if (fboundp 'coding-system-p)
 	(when (coding-system-p cs)
 	  cs)

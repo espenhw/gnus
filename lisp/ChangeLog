@@ -1,4 +1,17 @@
-005-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
+2005-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-util.el (mm-coding-system-p): Don't return binary for the nil
+	argument in XEmacs.
+
+	* nnrss.el (nnrss-compatible-encoding-alist): New variable.
+	(nnrss-request-group): Decode group name first.
+	(nnrss-request-article): Make a text/plain article if mml-to-mime
+	failed.
+	(nnrss-get-encoding): Return a compatible encoding according to
+	nnrss-compatible-encoding-alist.
+	(nnrss-find-el): Use consp instead of listp.
+
+2005-04-04  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* nnimap.el (nnimap-date-days-ago): Add defvars in order to
 	silence the byte compiler inside the defun
