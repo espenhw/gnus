@@ -1,3 +1,8 @@
+2000-07-07 23:46:22  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnweb.el (nnweb-insert): Stricter test.
+	* webmail.el (webmail-refresh-redirect): Ditto.
+
 2000-07-06 14:17:48  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-decode.el (mm-dissect-multipart): Match the EOL of boundary.

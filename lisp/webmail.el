@@ -314,7 +314,7 @@
   "Redirect refresh url in META."
   (goto-char (point-min))
   (while (re-search-forward 
-	  "HTTP-EQUIV=\"Refresh\"[^>]*URL=\\([^\"]+\\)\""
+	  "<meta[ \t\r\n]*http-equiv=\"Refresh\"[^>]*URL=\\([^\"]+\\)\""
 	  nil t)
     (let ((url (match-string 1)))
       (erase-buffer)
