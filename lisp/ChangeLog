@@ -2,7 +2,7 @@
 
 	* gnus.el: Oort Gnus v0.06 is released.
 
-2002-05-01  Lars Magne Ingebrigtsen  <>
+2002-05-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* lpath.el: Bind url-package-version.
 
