@@ -103,7 +103,6 @@ Output to the current buffer, replace text, and don't mingle error."
   (when (file-exists-p file)
     (let ((done nil)
 	  (attempt "")
-	  (step 72)
 	  (quant 16))
       (while (and (not done)
 		  (> quant 1))
@@ -121,125 +120,44 @@ Output to the current buffer, replace text, and don't mingle error."
       (if done
 	  (mm-with-unibyte-buffer	
 	    (insert attempt)
-	    (base64-encode-region (point-min) (point-max))
-	    (goto-char (point-min))
-	    (while (search-forward "\n" nil t)
-	      (replace-match ""))
-	    (goto-char (point-min))
-	    (while (> (- (point-max) (point))
-		      step)
-	      (forward-char step)
-	      (insert "\n ")
-	      (setq step 76))
-	    (buffer-string))
+	    (gnus-face-encode))
 	nil))))
+
+(defun gnus-face-encode ()
+  (let ((step 72))
+    (base64-encode-region (point-min) (point-max))
+    (goto-char (point-min))
+    (while (search-forward "\n" nil t)
+      (replace-match ""))
+    (goto-char (point-min))
+    (while (> (- (point-max) (point))
+	      step)
+      (forward-char step)
+      (insert "\n ")
+      (setq step 76))
+    (buffer-string)))
 
 ;;;###autoload
 (defun gnus-convert-face-to-png (face)
+  "Convert FACE (which is base64-encoded) to a PNG.
+The PNG is returned as a string."
   (mm-with-unibyte-buffer
     (insert face)
     (ignore-errors
       (base64-decode-region (point-min) (point-max)))
     (buffer-string)))
 
-(defun gnus-convert-image-to-gray-x-face (file depth)
-  (let* ((mapfile (mm-make-temp-file (expand-file-name "gnus." 
-						       mm-tmp-directory)))
-	 (levels (expt 2 depth))
-	 (step (/ 255 (1- levels)))
-	 color-alist bits bits-list mask pixel x-faces)
-    (with-temp-file mapfile
-      (insert "P3\n")
-      (insert (format "%d 1\n" levels))
-      (insert "255\n")
-      (dotimes (i levels)
-	(insert (format "%d %d %d\n"
-			(* step i) (* step i) (* step i)))
-	(push (cons (* step i) i) color-alist)))
-    (when (file-exists-p file)
-      (with-temp-buffer
-	(insert (gnus-shell-command-to-string
-		 (format "giftopnm %s | ppmnorm | pnmscale -width 48 -height 48 | ppmquant -fs -map %s | ppmtopgm | pnmnoraw"
-			 (shell-quote-argument file)
-			 mapfile)))
-	(goto-char (point-min))
-	(forward-line 3)
-	(while (setq pixel (ignore-errors (read (current-buffer))))
-	  (push (cdr (assq pixel color-alist)) bits-list))
-	(setq bits-list (nreverse bits-list))
-	(dotimes (bit-number depth)
-	  (setq mask (expt 2 bit-number))
-	  (with-temp-buffer
-	    (insert "P1\n48 48\n")
-	    (dolist (bits bits-list)
-	      (insert (if (zerop (logand bits mask)) "0 " "1 ")))
-	    (gnus-shell-command-on-region
-	     (point-min) (point-max)
-	     ;; the following is taken from xbmtoikon:
-	     "pbmtoicon | sed '/^[ 	]*[*\\\\/]/d; s/[ 	]//g; s/,$//' | tr , '\\012' | sed 's/^0x//; s/^/0x/' | pr -l1 -t -w22 -3 -s, | sed 's/,*$/,/' | compface")
-	    (push (buffer-string) x-faces))))
-      (dotimes (i (length x-faces))
-	(insert (if (zerop i) "X-Face:" (format "X-Face-%s:" i))
-		(nth i x-faces))))
-    (delete-file mapfile)))
-
-;;;###autoload
-(defun gnus-convert-gray-x-face-to-xpm (faces)
-  (let* ((depth (length faces))
-	 (scale (/ 255 (1- (expt 2 depth))))
-	 (ok-p t)
-	 (coding-system-for-read 'binary)
-	 (coding-system-for-write 'binary)
-	 default-enable-multibyte-characters
-	 start bit-array bit-arrays pixel)
-    (with-temp-buffer
-      (dolist (face faces)
-	(erase-buffer)
-	(insert (uncompface face))
-	(gnus-shell-command-on-region
-	 (point-min) (point-max)
-	 "pnmnoraw")
-	(goto-char (point-min))
-	(forward-line 2)
-	(setq start (point))
-	(insert "[")
-	(while (not (eobp))
-	  (forward-char 1)
-	  (insert " "))
-	(insert "]")
-	(goto-char start)
-	(setq bit-array (read (current-buffer)))
-	(unless (= (length bit-array) (* 48 48))
-	  (setq ok-p nil))
-	(push bit-array bit-arrays))
-      (when ok-p
-	(erase-buffer)
-	(insert "P2\n48 48\n255\n")
-	(dotimes (i (* 48 48))
-	  (setq pixel 0)
-	  (dotimes (plane depth)
-	    (setq pixel (+ (* pixel 2) (aref (nth plane bit-arrays) i))))
-	  (insert (number-to-string (* scale pixel)) " "))
-	(gnus-shell-command-on-region
-	 (point-min) (point-max)
-	 "ppmtoxpm")
-	(buffer-string)))))
-
-;;;###autoload
-(defun gnus-convert-gray-x-face-region (beg end)
-  "Convert the X-Faces in region to a PPM file."
-  (interactive "r")
-  (let ((input (buffer-substring beg end))
-	faces)
-    (with-temp-buffer
-      (insert input)
-      (goto-char (point-min))
-      (while (not (eobp))
-	(save-restriction
-	  (mail-header-narrow-to-field)
-	  (push (mail-header-field-value) faces)
-	  (goto-char (point-max)))))
-    (gnus-convert-gray-x-face-to-xpm faces)))
+;;;#autoload
+(defun gnus-convert-png-to-face (file)
+  "Convert FILE to a Face.
+FILE should be a PNG file that's 48x48 and smaller than or equal to
+740 bytes."
+  (mm-with-unibyte-buffer
+    (insert-file-contents file)
+    (when (> (buffer-size) 740)
+      (error "The file is %d bytes long, which is too long"
+	     (buffer-size)))
+    (gnus-face-encode)))
 
 (defface gnus-x-face '((t (:foreground "black" :background "white")))
   "Face to show X-Face.
@@ -290,23 +208,25 @@ colors of the displayed X-Faces."
       (delete-file file)
       (buffer-string))))
 
-(defun gnus-grab-gray-x-face ()
+(defun gnus-grab-cam-face ()
   "Grab a picture off the camera and make it into an X-Face."
   (interactive)
   (shell-command "xawtv-remote snap ppm")
-  (let ((file nil))
+  (let ((file nil)
+	result)
     (while (null (setq file (directory-files "/tftpboot/sparky/tmp"
 					     t "snap.*ppm")))
       (sleep-for 1))
     (setq file (car file))
-    (with-temp-buffer
-      (shell-command
-       (format "pnmcut -left 70 -top 100 -width 144 -height 144 '%s' | ppmquant 256 2>/dev/null | ppmtogif > '%s.gif'"
-	       file file)
-       (current-buffer))
-      (delete-file file))
-    (gnus-convert-image-to-gray-x-face (concat file ".gif") 3)
-    (delete-file (concat file ".gif"))))
+    (shell-command
+     (format "pnmcut -left 110 -top 30 -width 144 -height 144 '%s' | ppmnorm 2>/dev/null | ppmnorm | pnmscale -width 48 -height 48 > /tmp/gnus.face.ppm"
+	     file))
+    (let ((gnus-convert-image-to-face-command
+	   "cat '%s' | ppmquant %d | pnmtopng"))
+      (setq result (gnus-face-from-file "/tmp/gnus.face.ppm")))
+    (delete-file file)
+    ;;(delete-file "/tmp/gnus.face.ppm")
+    result))
 
 (provide 'gnus-fun)
 

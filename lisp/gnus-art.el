@@ -1164,17 +1164,6 @@ See Info node `(gnus)Customizing Articles' and Info node
   :type gnus-article-treat-head-custom)
 (put 'gnus-treat-display-xface 'highlight t)
 
-(defcustom gnus-treat-display-grey-xface
-  (and (not noninteractive)
-       (string-match "^0x" (shell-command-to-string "uncompface"))
-       t)
-  "Display grey X-Face headers.
-Valid values are nil, t."
-  :group 'gnus-article-treat
-  :version "21.3"
-  :type 'boolean)
-(put 'gnus-treat-display-grey-xface 'highlight t)
-
 (defcustom gnus-treat-display-smileys
   (if (or (and (featurep 'xemacs)
 	       (featurep 'xpm))
@@ -1959,7 +1948,7 @@ unfolded."
 	  ;; instead.
 	  (gnus-delete-images 'xface)
 	;; Display X-Faces.
-	(let (x-faces from face grey)
+	(let (x-faces from face)
 	  (save-excursion
 	    (when (and wash-face-p
 		       (progn
@@ -1973,67 +1962,39 @@ unfolded."
 	      (set-buffer gnus-original-article-buffer))
 	    (save-restriction
 	      (mail-narrow-to-head)
-	      (if gnus-treat-display-grey-xface
-		  (progn
-		    (while (gnus-article-goto-header "X-Face\\(-[0-9]+\\)?")
-		      (if (match-beginning 2)
-			  (progn
-			    (setq grey t)
-			    (push (cons (- (string-to-number (match-string 2)))
-					(mail-header-field-value))
-				  x-faces))
-			(push (cons 0 (mail-header-field-value)) x-faces)))
-		    (dolist (x-face (prog1
-					(if grey
-					    (sort x-faces 'car-less-than-car)
-					  (nreverse x-faces))
-				      (setq x-faces nil)))
-		      (push (cdr x-face) x-faces)))
-		(while (gnus-article-goto-header "X-Face")
-		  (push (mail-header-field-value) x-faces)))
+	      (while (gnus-article-goto-header "X-Face")
+		(push (mail-header-field-value) x-faces))
 	      (setq from (message-fetch-field "from"))))
-	  (if grey
-	      (let ((xpm (gnus-convert-gray-x-face-to-xpm x-faces))
-		    image)
-		(when xpm
-		  (setq image (gnus-create-image xpm 'xpm t))
-		  (gnus-article-goto-header "from")
-		  (when (bobp)
-		    (insert "From: [no `from' set]\n")
-		    (forward-char -17))
-		  (gnus-add-wash-type 'xface)
-		  (gnus-add-image 'xface image)
-		  (gnus-put-image image)))
-	    ;; Sending multiple EOFs to xv doesn't work, so we only do a
-	    ;; single external face.
-	    (when (stringp gnus-article-x-face-command)
-	      (setq x-faces (list (car x-faces))))
-	    (while (and (setq face (pop x-faces))
-			gnus-article-x-face-command
-			(or force
-			    ;; Check whether this face is censored.
-			    (not gnus-article-x-face-too-ugly)
-			    (and gnus-article-x-face-too-ugly from
-				 (not (string-match gnus-article-x-face-too-ugly
-						    from)))))
-	      ;; We display the face.
-	      (if (symbolp gnus-article-x-face-command)
-		  ;; The command is a lisp function, so we call it.
-		  (if (gnus-functionp gnus-article-x-face-command)
-		      (funcall gnus-article-x-face-command face)
-		    (error "%s is not a function" gnus-article-x-face-command))
-		;; The command is a string, so we interpret the command
-		;; as a, well, command, and fork it off.
-		(let ((process-connection-type nil))
-		  (process-kill-without-query
-		   (start-process
-		    "article-x-face" nil shell-file-name shell-command-switch
-		    gnus-article-x-face-command))
-		  (with-temp-buffer
-		    (insert face)
-		    (process-send-region "article-x-face"
-					 (point-min) (point-max)))
-		  (process-send-eof "article-x-face"))))))))))
+	  ;; Sending multiple EOFs to xv doesn't work, so we only do a
+	  ;; single external face.
+	  (when (stringp gnus-article-x-face-command)
+	    (setq x-faces (list (car x-faces))))
+	  (while (and (setq face (pop x-faces))
+		      gnus-article-x-face-command
+		      (or force
+			  ;; Check whether this face is censored.
+			  (not gnus-article-x-face-too-ugly)
+			  (and gnus-article-x-face-too-ugly from
+			       (not (string-match gnus-article-x-face-too-ugly
+						  from)))))
+	    ;; We display the face.
+	    (if (symbolp gnus-article-x-face-command)
+		;; The command is a lisp function, so we call it.
+		(if (gnus-functionp gnus-article-x-face-command)
+		    (funcall gnus-article-x-face-command face)
+		  (error "%s is not a function" gnus-article-x-face-command))
+	      ;; The command is a string, so we interpret the command
+	      ;; as a, well, command, and fork it off.
+	      (let ((process-connection-type nil))
+		(process-kill-without-query
+		 (start-process
+		  "article-x-face" nil shell-file-name shell-command-switch
+		  gnus-article-x-face-command))
+		(with-temp-buffer
+		  (insert face)
+		  (process-send-region "article-x-face"
+				       (point-min) (point-max)))
+		(process-send-eof "article-x-face")))))))))
 
 (defun article-decode-mime-words ()
   "Decode all MIME-encoded words in the article."
@@ -3090,6 +3051,7 @@ Directory to save to is default to `gnus-article-save-directory'."
       (save-restriction
 	(widen)
 	(if (and (file-readable-p filename)
+		 (file-regular-p filename)
 		 (mail-file-babyl-p filename))
 	    (rmail-output-to-rmail-file filename t)
 	  (gnus-output-to-mail filename)))))
