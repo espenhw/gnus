@@ -1593,6 +1593,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
   (unless nnmail-split-history
     (error "No current split history"))
   (with-output-to-temp-buffer "*nnmail split history*"
+    (with-current-buffer standard-output
+      (fundamental-mode))		; for Emacs 20.4+
     (let ((history nnmail-split-history)
 	  elem)
       (while (setq elem (pop history))
