@@ -242,7 +242,7 @@ This will modify the `gnus-before-startup-hook', `gnus-post-method',
 and `message-send-mail-function' variables, and install the Gnus
 agent minor mode in all Gnus buffers."
   (interactive)
-  (add-hook 'gnus-before-startup-hook 'gnus-open-agent)
+  (gnus-open-agent)
   (add-hook 'gnus-setup-news-hook 'gnus-agent-queue-setup)
   (unless gnus-agent-send-mail-function 
     (setq gnus-agent-send-mail-function message-send-mail-function

@@ -90,7 +90,7 @@
   "Return non-nil if FORM is funcallable."
   (or (and (symbolp form) (fboundp form))
       (and (listp form) (eq (car form) 'lambda))
-      (compiled-function-p form)))
+      (byte-code-function-p form)))
 
 (defsubst gnus-goto-char (point)
   (and point (goto-char point)))
@@ -146,7 +146,7 @@
 (defun gnus-byte-code (func)
   "Return a form that can be `eval'ed based on FUNC."
   (let ((fval (symbol-function func)))
-    (if (compiled-function-p fval)
+    (if (byte-code-function-p fval)
 	(let ((flist (append fval nil)))
 	  (setcar flist 'byte-code)
 	  flist)
@@ -826,6 +826,15 @@ with potentially long computations."
       (replace-match "\n^_" t t))	;2 chars: "^" and "_"
     (goto-char (point-max))
     (insert "\^_")))
+
+(defun gnus-map-function (funs arg)
+  "Applies the result of the first function in FUNS to the second, and so on.
+ARG is passed to the first function."
+  (let ((myfuns funs)
+        (myarg arg))
+    (while myfuns
+      (setq arg (funcall (pop myfuns) arg)))
+    arg))
 
 (provide 'gnus-util)
 

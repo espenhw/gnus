@@ -244,7 +244,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.8"
+(defconst gnus-version-number "0.9"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -640,17 +640,17 @@ be set in `.emacs' instead."
 (defface gnus-splash-face
   '((((class color)
       (background dark))
-     (:foreground "green"))
+     (:foreground "ForestGreen"))
     (((class color)
       (background light))
-     (:foreground "green"))
+     (:foreground "ForestGreen"))
     (t
      ()))
   "Level 1 newsgroup face.")
 
 (defun gnus-splash ()
   (save-excursion
-    (switch-to-buffer gnus-group-buffer)
+    (switch-to-buffer (get-buffer-create gnus-group-buffer))
     (let ((buffer-read-only nil))
       (erase-buffer)
       (unless gnus-inhibit-startup-message
@@ -1697,7 +1697,8 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-async-prefetch-article gnus-async-prefetch-remove-group
       gnus-async-halt-prefetch)
      ("gnus-agent" gnus-open-agent gnus-agent-get-function
-      gnus-agent-save-groups gnus-agent-save-active gnus-agent-method-p)
+      gnus-agent-save-groups gnus-agent-save-active gnus-agent-method-p
+      gnus-agent-get-undownloaded-list)
      ("gnus-agent" :interactive t
       gnus-unplugged gnus-agentize)
      ("gnus-vm" :interactive t gnus-summary-save-in-vm
@@ -2013,6 +2014,122 @@ If ARG, insert string at point."
     (Info-goto-node (cadr (assq major-mode gnus-info-nodes)))
     (setq gnus-info-buffer (current-buffer))
     (gnus-configure-windows 'info)))
+
+;;;
+;;; gnus-interactive
+;;;
+
+(defvar gnus-current-prefix-symbol nil
+  "Current prefix symbol.")
+
+(defvar gnus-current-prefix-symbols nil
+  "List of current prefix symbols.")
+
+(defun gnus-interactive (string &optional params)
+  "Return a list that can be fed to `interactive'.
+See `interactive' for full documentation.
+
+Adds the following specs:
+
+y -- The current symbolic prefix.
+Y -- A list of the current symbolic prefix(es).
+A -- Article number.
+H -- Article header.
+g -- Group name."
+  (let ((i 0)
+	out c prompt)
+    (while (< i (length string))
+      (string-match ".\\([^\n]*\\)\n?" string i)
+      (setq c (aref string i))
+      (when (match-end 1)
+	(setq prompt (match-string 1 string)))
+      (setq i (match-end 0))
+      ;; We basically emulate just about everything that
+      ;; `interactive' does, but adds the "g" and "G" specs.
+      (push
+       (cond
+	((= c ?a)
+	 (completing-read prompt obarray 'fboundp t))
+	((= c ?b)
+	 (read-buffer prompt (current-buffer) t))
+	((= c ?B)
+	 (read-buffer prompt (other-buffer (current-buffer))))
+	((= c ?c)
+	 (read-char))
+	((= c ?C)
+	 (completing-read prompt obarray 'commandp t))
+	((= c ?d)
+	 (point))
+	((= c ?D)
+	 (read-file-name prompt nil default-directory 'lambda))
+	((= c ?f)
+	 (read-file-name prompt nil nil 'lambda))
+	((= c ?F)
+	 (read-file-name prompt))
+	((= c ?k)
+	 (read-key-sequence prompt))
+	((= c ?K)
+	 (error "Not implemented spec"))
+	((= c ?e)
+	 (error "Not implemented spec"))
+	((= c ?m)
+	 (mark))
+	((= c ?N)
+	 (error "Not implemented spec"))
+	((= c ?n)
+	 (string-to-number (read-from-minibuffer prompt)))
+	((= c ?p)
+	 (prefix-numeric-value current-prefix-arg))
+	((= c ?P)
+	 current-prefix-arg)
+	((= c ?r)
+	 'gnus-prefix-nil)
+	((= c ?s)
+	 (read-string prompt))
+	((= c ?S)
+	 (intern (read-string prompt)))
+	((= c ?v)
+	 (read-variable prompt))
+	((= c ?x)
+	 (read-minibuffer prompt))
+	((= c ?x)
+	 (eval-minibuffer prompt))
+	;; And here the new specs come.
+	((= c ?y)
+	 gnus-current-prefix-symbol)
+	((= c ?Y)
+	 gnus-current-prefix-symbols)
+	((= c ?g)
+	 (gnus-group-group-name))
+	((= c ?A)
+	 (gnus-summary-article-number))
+	((= c ?H)
+	 (gnus-summary-article-header))
+	(t
+	 (error "Not implemented spec")))
+       out)
+      (cond
+       ((= c ?r)
+	(push (if (< (point) (mark) (point) (mark))) out)
+	(push (if (> (point) (mark) (point) (mark))) out))))
+    (setq out (delq 'gnus-prefix-nil out))
+    (nreverse out)))
+
+(defun gnus-symbolic-argument (&optional arg)
+  "Read a symbolic argument and a command, and then execute command."
+  (interactive "P")
+  (let* ((in-command (this-command-keys))
+	 (command in-command)
+	 gnus-current-prefix-symbols
+	 gnus-current-prefix-symbol
+	 syms)
+    (while (equal in-command command)
+      (message "%s-" (key-description (this-command-keys)))
+      (push (intern (char-to-string (read-char))) syms)
+      (setq command (read-key-sequence nil t)))
+    (setq gnus-current-prefix-symbols (nreverse syms)
+	  gnus-current-prefix-symbol (car gnus-current-prefix-symbols))
+    (call-interactively (key-binding command t))))
 
 ;;; More various functions.
 

@@ -53,17 +53,25 @@
 
 (defun dgnushack-compile ()
   ;;(setq byte-compile-dynamic t)
+  (unless (locate-library "custom")
+    (error "You do not seem to have Custom installed.
+Fetch it from <URL:http://www.dina.kvl.dk/~abraham/custom/>.
+You also then need to add the following to the lisp/dgnushack.el file:
+
+     (push \"~/lisp/custom\" load-path)
+
+Modify to suit your needs."))
   (let ((files (directory-files "." nil "^[^=].*\\.el$"))
 	(xemacs (string-match "XEmacs" emacs-version))
 	;;(byte-compile-generate-call-tree t)
-	byte-compile-warnings file elc)
+	file elc)
     (condition-case ()
 	(require 'w3-forms)
       (error (setq files (delete "nnweb.el" files))))
     (while (setq file (pop files))
       (when (or (not (member file '("gnus-xmas.el" "gnus-picon.el"
 				    "messagexmas.el" "nnheaderxm.el"
-				    "smiley.el")))
+				    "smiley.el" "x-overlay.el")))
 		xemacs)
 	(when (or (not (file-exists-p (setq elc (concat file "c"))))
 		  (file-newer-than-file-p file elc))

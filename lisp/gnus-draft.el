@@ -29,6 +29,7 @@
 (require 'gnus-sum)
 (require 'message)
 (require 'gnus-msg)
+(require 'nndraft)
 (eval-when-compile (require 'cl))
 
 ;;; Draft minor mode
@@ -112,9 +113,9 @@
 
 (defun gnus-draft-send (article)
   "Send message ARTICLE."
-  (message "In gnus-draft-send, article is %s" article)
   (gnus-draft-setup article "nndraft:queue")
-  (message-send-and-exit))
+  (let ((message-syntax-checks 'dont-check-for-anything-just-trust-me))
+    (message-send-and-exit)))
 
 (defun gnus-draft-send-all-messages ()
   "Send all the sendable drafts."
@@ -139,21 +140,18 @@
 
 ;;; Utility functions
 
-(defun gnus-draft-setup (article group)
-  (message "In gnus-draft-setup, article is %s %s" article group)
+(defun gnus-draft-setup (narticle group)
   (gnus-setup-message 'forward
     (message-mail)
     (erase-buffer)
-    (message "Article is %s" article)
-    (if (not (gnus-request-restore-buffer article group))
+    (if (not (gnus-request-restore-buffer narticle group))
 	(error "Couldn't restore the article")
       ;; Insert the separator.
       (goto-char (point-min))
       (search-forward "\n\n")
       (forward-char -1)
       (insert mail-header-separator)
-      (forward-line 1)
-      (save-buffer 0))))
+      (forward-line 1))))
 
 (defun gnus-draft-article-sendable-p (article)
   "Say whether ARTICLE is sendable."

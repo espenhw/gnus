@@ -271,7 +271,7 @@ Return the response string if optional second argument is non-nil."
   "*Program to encode its input in MD5.")
 
 (defun pop3-md5 (string)
-  (with-temp-buffer
+  (nnheader-temp-write nil
     (insert string)
     (call-process-region (point-min) (point-max)
 			 (or shell-file-name "/bin/sh")

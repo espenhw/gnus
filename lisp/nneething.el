@@ -64,6 +64,7 @@ If this variable is nil, no files will be excluded.")
 (defvoo nneething-map nil)
 (defvoo nneething-read-only nil)
 (defvoo nneething-active nil)
+(defvoo nneething-directory nil)
 
 
 

@@ -342,6 +342,15 @@ to virtual article number.")
   "Return the real group and article for virtual GROUP and ARTICLE."
   (nnvirtual-map-article article))
 
+
+(deffoo nnvirtual-request-post (&optional server)
+  (if (not gnus-message-group-art)
+      (nnheader-report 'nnvirtual "Can't post to an nnvirtual group")
+    (let ((group (car (nnvirtual-find-group-art
+		       (car gnus-message-group-art)
+		       (cdr gnus-message-group-art)))))
+      (gnus-request-post (gnus-find-method-for-group group)))))
+
 
 ;;; Internal functions.
 

@@ -47,10 +47,11 @@ If an unread article in the group refers to an older, already read (or
 just marked as read) article, the old article will not normally be
 displayed in the Summary buffer.  If this variable is non-nil, Gnus
 will attempt to grab the headers to the old articles, and thereby
-build complete threads.	 If it has the value `some', only enough
-headers to connect otherwise loose threads will be displayed.
-This variable can also be a number.  In that case, no more than that
-number of old headers will be fetched.
+build complete threads.  If it has the value `some', only enough
+headers to connect otherwise loose threads will be displayed.  This
+variable can also be a number.  In that case, no more than that number
+of old headers will be fetched.  If it has the value `invisible', all
+old headers will be fetched, but none will be displayed.
 
 The server has to support NOV for any of this to work."
   :group 'gnus-thread
@@ -111,6 +112,12 @@ comparing subjects."
 		 (const fuzzy)
 		 (sexp :menu-tag "on" t)))
 
+(defcustom gnus-simplify-subject-functions nil
+  "List of functions taking a string argument that simplify subjects.
+The functions are applied recursively."
+  :group 'gnus-thread
+  :type '(repeat (list function)))
+
 (defcustom gnus-simplify-ignored-prefixes nil
   "*Regexp, matches for which are removed from subject lines when simplifying fuzzily."
   :group 'gnus-thread
@@ -140,7 +147,6 @@ headers of the articles to find matches."
 		(function-item gnus-gather-threads-by-references)
 		(function :tag "other")))
 
-;; Added by Per Abrahamsen <amanda@iesd.auc.dk>.
 (defcustom gnus-summary-same-subject ""
   "*String indicating that the current article has the same subject as the previous.
 This variable will only be used if the value of
@@ -965,6 +971,22 @@ variable (string, integer, character, etc).")
 
 ;; Subject simplification.
 
+(defun gnus-simplify-whitespace (str)
+  "Remove excessive whitespace."
+  (let ((mystr str))
+    ;; Multiple spaces.
+    (while (string-match "[ \t][ \t]+" mystr)
+      (setq mystr (concat (substring mystr 0 (match-beginning 0))
+                          " "
+                          (substring mystr (match-end 0)))))
+    ;; Leading spaces.
+    (when (string-match "^[ \t]+" mystr)
+      (setq mystr (substring mystr (match-end 0))))
+    ;; Trailing spaces.
+    (when (string-match "[ \t]+$" mystr)
+      (setq mystr (substring mystr 0 (match-beginning 0))))
+    mystr))
+
 (defsubst gnus-simplify-subject-re (subject)
   "Remove \"Re:\" from subject lines."
   (if (string-match "^[Rr][Ee]: *" subject)
@@ -1028,7 +1050,7 @@ gnus-simplify-subject-fuzzy-regexp."
 
 (defun gnus-simplify-subject-fuzzy (subject)
   "Simplify a subject string fuzzily.
-See gnus-simplify-buffer-fuzzy for details."
+See `gnus-simplify-buffer-fuzzy' for details."
   (save-excursion
     (gnus-set-work-buffer)
     (let ((case-fold-search t))
@@ -1039,6 +1061,8 @@ See gnus-simplify-buffer-fuzzy for details."
 (defsubst gnus-simplify-subject-fully (subject)
   "Simplify a subject string according to gnus-summary-gather-subject-limit."
   (cond
+   (gnus-simplify-subject-functions
+    (gnus-map-function gnus-simplify-subject-functions subject))
    ((null gnus-summary-gather-subject-limit)
     (gnus-simplify-subject-re subject))
    ((eq gnus-summary-gather-subject-limit 'fuzzy)
@@ -1050,8 +1074,9 @@ See gnus-simplify-buffer-fuzzy for details."
     subject)))
 
 (defsubst gnus-subject-equal (s1 s2 &optional simple-first)
-  "Check whether two subjects are equal.  If optional argument
-simple-first is t, first argument is already simplified."
+  "Check whether two subjects are equal.
+If optional argument simple-first is t, first argument is already
+simplified."
   (cond
    ((null simple-first)
     (equal (gnus-simplify-subject-fully s1)
@@ -1172,7 +1197,8 @@ increase the score of each group you read."
     "\C-l" gnus-recenter
     "I" gnus-summary-increase-score
     "L" gnus-summary-lower-score
-
+    "\M-i" gnus-symbolic-argument
+    
     "V" gnus-summary-score-map
     "X" gnus-uu-extract-map
     "S" gnus-summary-send-map)
@@ -2705,6 +2731,8 @@ If NO-DISPLAY, don't generate a summary buffer."
   (setq subject
 	(cond
 	 ;; Truncate the subject.
+	 (gnus-simplify-subject-functions
+	  (gnus-map-function gnus-simplify-subject-functions subject))
 	 ((numberp gnus-summary-gather-subject-limit)
 	  (setq subject (gnus-simplify-subject-re subject))
 	  (if (> (length subject) gnus-summary-gather-subject-limit)
@@ -2865,7 +2893,7 @@ If NO-DISPLAY, don't generate a summary buffer."
   (let ((headers gnus-newsgroup-headers)
 	(deps gnus-newsgroup-dependencies)
 	header references generation relations
-	cthread subject child end pthread relation)
+	cthread subject child end pthread relation new-child)
     ;; First we create an alist of generations/relations, where
     ;; generations is how much we trust the relation, and the relation
     ;; is parent/child.
@@ -4089,7 +4117,8 @@ The resulting hash table is returned, or nil if no Xrefs were found."
 (defun gnus-compute-read-articles (group articles)
   (let* ((entry (gnus-gethash group gnus-newsrc-hashtb))
 	 (info (nth 2 entry))
-	 (active (gnus-active group)))
+	 (active (gnus-active group))
+	 ninfo)
     (when entry
       ;; First peel off all illegal article numbers.
       (when active
@@ -5863,7 +5892,7 @@ If REVERSE (the prefix), limit the summary buffer to articles that are
 not marked with MARKS.  MARKS can either be a string of marks or a
 list of marks.
 Returns how many articles were removed."
-  (interactive (list (read-string "Marks: ") current-prefix-arg))
+  (interactive "sMarks: \nP")
   (gnus-set-global-variables)
   (prog1
       (let ((data gnus-newsgroup-data)
@@ -6013,6 +6042,7 @@ If ALL, mark even excluded ticked and dormants as read."
 (defsubst gnus-cut-thread (thread)
   "Go forwards in the thread until we find an article that we want to display."
   (when (or (eq gnus-fetch-old-headers 'some)
+	    (eq gnus-fetch-old-headers 'invisible)	    
 	    (eq gnus-build-sparse-threads 'some)
 	    (eq gnus-build-sparse-threads 'more))
     ;; Deal with old-fetched headers and sparse threads.
@@ -6022,25 +6052,26 @@ If ALL, mark even excluded ticked and dormants as read."
 	     (gnus-summary-article-sparse-p (mail-header-number (car thread)))
 	     (gnus-summary-article-ancient-p
 	      (mail-header-number (car thread))))
-	    (progn
-	      (if (<= (length (cdr thread)) 1)
-		  (setq gnus-newsgroup-limit
-			(delq (mail-header-number (car thread))
+	    (if (or (<= (length (cdr thread)) 1)
+		    (eq gnus-fetch-old-headers 'invisible))
+		(setq gnus-newsgroup-limit
+		      (delq (mail-header-number (car thread))
+			    gnus-newsgroup-limit)
+		      thread (cadr thread))
+	      (when (gnus-invisible-cut-children (cdr thread))
+		(let ((th (cdr thread)))
+		  (while th
+		    (if (memq (mail-header-number (caar th))
 			      gnus-newsgroup-limit)
-			thread (cadr thread))
-		(when (gnus-invisible-cut-children (cdr thread))
-		  (let ((th (cdr thread)))
-		    (while th
-		      (if (memq (mail-header-number (caar th))
-				gnus-newsgroup-limit)
-			  (setq thread (car th)
-				th nil)
-			(setq th (cdr th)))))))))))
+			(setq thread (car th)
+			      th nil)
+		      (setq th (cdr th))))))))))
   thread)
 
 (defun gnus-cut-threads (threads)
   "Cut off all uninteresting articles from the beginning of threads."
   (when (or (eq gnus-fetch-old-headers 'some)
+	    (eq gnus-fetch-old-headers 'invisible)
 	    (eq gnus-build-sparse-threads 'some)
 	    (eq gnus-build-sparse-threads 'more))
     (let ((th threads))
@@ -6058,6 +6089,7 @@ fetch-old-headers verbiage, and so on."
   (if (or gnus-inhibit-limiting
 	  (and (null gnus-newsgroup-dormant)
 	       (not (eq gnus-fetch-old-headers 'some))
+	       (not (eq gnus-fetch-old-headers 'invisible))
 	       (null gnus-summary-expunge-below)
 	       (not (eq gnus-build-sparse-threads 'some))
 	       (not (eq gnus-build-sparse-threads 'more))
@@ -6113,6 +6145,10 @@ fetch-old-headers verbiage, and so on."
 	    (and (eq gnus-fetch-old-headers 'some)
 		 (gnus-summary-article-ancient-p number)
 		 (zerop children))
+	    ;; If this is "fetch-old-headered" and `invisible', then
+	    ;; we don't want this article.
+	    (and (eq gnus-fetch-old-headers 'invisible)
+		 (gnus-summary-article-ancient-p number))
 	    ;; If this is a sparsely inserted article with no children,
 	    ;; we don't want it.
 	    (and (eq gnus-build-sparse-threads 'some)
@@ -7137,14 +7173,15 @@ groups."
       (gnus-summary-select-article t))
     (gnus-article-date-original)
     (gnus-article-edit-article
-     `(lambda ()
+     `(lambda (no-highlight)
 	(gnus-summary-edit-article-done
 	 ,(or (mail-header-references gnus-current-headers) "")
-	 ,(gnus-group-read-only-p) ,gnus-summary-buffer)))))
+	 ,(gnus-group-read-only-p) ,gnus-summary-buffer no-highlight)))))
 
 (defalias 'gnus-summary-edit-article-postpone 'gnus-article-edit-exit)
 
-(defun gnus-summary-edit-article-done (&optional references read-only buffer)
+(defun gnus-summary-edit-article-done (&optional references read-only buffer
+						 no-highlight)
   "Make edits to the current article permanent."
   (interactive)
   ;; Replace the article.
@@ -7186,12 +7223,14 @@ groups."
       (set-buffer (or buffer gnus-summary-buffer))
       (gnus-summary-update-article (cdr gnus-article-current)))
     ;; Prettify the article buffer again.
-    (save-excursion
-      (set-buffer gnus-article-buffer)
-      (run-hooks 'gnus-article-display-hook)
-      (set-buffer gnus-original-article-buffer)
-      (gnus-request-article
-       (cdr gnus-article-current) (car gnus-article-current) (current-buffer)))
+    (unless no-highlight
+      (save-excursion
+	(set-buffer gnus-article-buffer)
+	(run-hooks 'gnus-article-display-hook)
+	(set-buffer gnus-original-article-buffer)
+	(gnus-request-article
+	 (cdr gnus-article-current)
+	 (car gnus-article-current) (current-buffer))))
     ;; Prettify the summary buffer line.
     (when (gnus-visual-p 'summary-highlight 'highlight)
       (run-hooks 'gnus-visual-mark-article-hook))))
@@ -7356,7 +7395,7 @@ the actual number of articles marked is returned."
 
 (defun gnus-summary-set-bookmark (article)
   "Set a bookmark in current article."
-  (interactive (list (gnus-summary-article-number)))
+  (interactive (gnus-summary-article-number))
   (gnus-set-global-variables)
   (when (or (not (get-buffer gnus-article-buffer))
 	    (not gnus-current-article)
@@ -7386,7 +7425,7 @@ the actual number of articles marked is returned."
 
 (defun gnus-summary-remove-bookmark (article)
   "Remove the bookmark from the current article."
-  (interactive (list (gnus-summary-article-number)))
+  (interactive (gnus-summary-article-number))
   (gnus-set-global-variables)
   ;; Remove old bookmark, if one exists.
   (let ((old (assq article gnus-newsgroup-bookmarks)))
@@ -8574,7 +8613,7 @@ save those articles instead."
 
 (defun gnus-summary-edit-global-kill (article)
   "Edit the \"global\" kill file."
-  (interactive (list (gnus-summary-article-number)))
+  (interactive (gnus-summary-article-number))
   (gnus-set-global-variables)
   (gnus-group-edit-global-kill article))
 

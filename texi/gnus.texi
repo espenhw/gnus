@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.8 Manual
+@settitle Quassia Gnus 0.9 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.8 Manual
+@title Quassia Gnus 0.9 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.8.
+This manual corresponds to Quassia Gnus 0.9.
 
 @end ifinfo
 
@@ -4627,6 +4627,32 @@ as 10, you might consider setting this variable to something sensible:
 All words that match this regexp will be removed before comparing two
 subjects. 
 
+@item gnus-simplify-subject-functions
+@vindex gnus-simplify-subject-functions
+If non-@code{nil}, this variable overrides
+@code{gnus-summary-gather-subject-limit}.  This variable should be a
+list of functions to apply to the @code{Subject} string iteratively to
+arrive at the simplified version of the string.
+
+Useful functions to put in this list include:
+
+@table @code
+@item gnus-simplify-subject-re
+@findex gnus-simplify-subject-re
+Strip the leading @samp{Re:}.
+
+@item gnus-simplify-subject-fuzzy
+@findex gnus-simplify-subject-fuzzy
+Simplify fuzzily.
+
+@item gnus-simplify-whitespace
+@findex gnus-simplify-whitespace
+Remove excessive whitespace.
+@end table
+
+You may also write your own functions, of course.
+
+
 @item gnus-summary-gather-exclude-subject
 @vindex gnus-summary-gather-exclude-subject
 Since loose thread gathering is done on subjects only, that might lead
@@ -7022,7 +7048,8 @@ which means that the current group select method will be used instead.
 @kindex C-c C-c (Article)
 Edit the current article (@code{gnus-summary-edit-article}).  To finish
 editing and make the changes permanent, type @kbd{C-c C-c}
-(@kbd{gnus-summary-edit-article-done}).
+(@kbd{gnus-summary-edit-article-done}).  If you give a prefix to the
+@kbd{C-c C-c} command, Gnus won't re-highlight the article.
 
 @item B q
 @kindex B q (Summary)
@@ -7610,7 +7637,9 @@ Remove the @code{Reply-To} header if it lists the same address as the
 @code{From} header.
 @item date
 Remove the @code{Date} header if the article is less than three days
-old. 
+old.
+@item long-to
+Remove the @code{To} header if it is very long.
 @end table
 
 To include the four first elements, you could say something like;
@@ -8797,6 +8826,11 @@ to the remote system and then another @samp{telnet} to get to the
 @code{nntp-open-rlogin}-related variables:
 
 @table @code
+
+@item nntp-rlogin-program 
+@vindex nntp-rlogin-program 
+Program used to log in on remote machines.  The default is @samp{rsh},
+but @samp{ssh} is a popular alternative.
 
 @item nntp-rlogin-parameters
 @vindex nntp-rlogin-parameters
@@ -11534,6 +11568,9 @@ The keystrokes for actually making score entries follow a very regular
 pattern, so there's no need to list all the commands.  (Hundreds of
 them.)  
 
+@findex gnus-summary-increase-score
+@findex gnus-summary-lower-score
+
 @enumerate
 @item
 The first key is either @kbd{I} (upper case i) for increasing the score
@@ -11652,6 +11689,12 @@ a capital letter on either the second or third keys, Gnus will use
 defaults for the remaining one or two keystrokes.  The defaults are
 ``substring'' and ``temporary''.  So @kbd{I A} is the same as @kbd{I a s
 t}, and @kbd{I a R} is the same as @kbd{I a r t}.
+
+These functions take both the numerical prefix and the symbolic prefix
+(@pxref{Symbolic Prefixes}).  A numerical prefix says how much to lower
+(or increase) the score of the article.  A symbolic prefix of @code{a}
+says to use the @file{all.SCORE} file for the command instead of the
+current score file.
 
 @vindex gnus-score-mimic-keymap
 The @code{gnus-score-mimic-keymap} says whether these commands will
@@ -13078,6 +13121,7 @@ four days, Gnus will decay the scores four times, for instance.
 @menu
 * Process/Prefix::             A convention used by many treatment commands.
 * Interactive::                Making Gnus ask you many questions.
+* Symbolic Prefixes::          How to supply some Gnus functions with options.
 * Formatting Variables::       You can specify what buffers should look like.
 * Windows Configuration::      Configuring the Gnus buffer windows.
 * Compilation::                How to speed Gnus up.
@@ -13171,6 +13215,41 @@ is @code{t} by default.
 Require confirmation before exiting Gnus.  This variable is @code{t} by
 default. 
 @end table
+
+
+@node Symbolic Prefixes
+@section Symbolic Prefixes
+@cindex symbolic prefixes
+
+Quite a lot of Emacs commands react to the (numeric) prefix.  For
+instance, @kbd{C-u 4 C-f} moves point four charaters forward, and
+@kbd{C-u 9 0 0 I s s p} adds a permanent @code{Subject} substring score
+rule of 900 to the current article.
+
+This is all nice and well, but what if you want to give a command some
+additional information?  Well, what most commands do is interpret the
+``raw'' prefix in some special way.  @kbd{C-u 0 C-x C-s} means that one
+doesn't want a backup file to be created when saving the current buffer,
+for instance.  But what if you want to save without making a backup
+file, and you want Emacs to flash lights and play a nice tune at the
+same time?  You can't, and you're probably perfectly happy that way.
+
+@kindex M-i (Summary)
+@findex gnus-symbolic-argument
+I'm not, so I've added a second prefix---the @dfn{symbolic prefix}.  The
+prefix key is @kbd{M-i} (@code{gnus-symbolic-argument}), and the next
+character typed in is the value.  You can stack as many @kbd{M-i}
+prefixes as you want.  @kbd{M-i a M-C-u} means ``feed the @kbd{M-C-u}
+command the symbolic prefix @code{a}''.  @kbd{M-i a M-i b M-C-u} means
+``feed the @kbd{M-C-u} command the symbolic prefixes @code{a} and
+@code{b}''.  You get the drift.
+
+Typing in symbolic prefixes to commands that don't accept them doesn't
+hurt, but it doesn't do any good either.  Currently not many Gnus
+functions make use of the symbolic prefix.
+
+If you're interested in how Gnus implements this, @pxref{Extended
+Interactive}.
 
 
 @node Formatting Variables
@@ -16165,6 +16244,7 @@ and general methods of operation.
 * Headers::                  How Gnus stores headers internally.
 * Ranges::                   A handy format for storing mucho numbers.
 * Group Info::               The group info format.
+* Extended Interactive::     Symbolic prefixes and stuff.
 * Emacs/XEmacs Code::        Gnus can be run under all modern Emacsen.
 * Various File Formats::     Formats of files that Gnus use.
 @end menu
@@ -17334,6 +17414,59 @@ The last three elements in the group info aren't mandatory, so it may be
 necessary to extend the group info before setting the element.  If this
 is necessary, you can just pass on a non-@code{nil} third parameter to
 the three final setter functions to have this happen automatically.
+
+
+@node Extended Interactive
+@subsection Extended Interactive
+@cindex interactive
+@findex gnus-interactive
+
+Gnus extends the standard Emacs @code{interactive} specification
+slightly to allow easy use of the symbolic prefix (@pxref{Symbolic
+Prefixes}).  Here's an example of how this is used:
+
+@lisp
+(defun gnus-summary-increase-score (&optional score symp)
+  (interactive (gnus-interactive "P\ny"))
+  ...
+  )
+@end lisp
+
+The best thing to do would have been to implement
+@code{gnus-interactive} as a macro which would have returned an
+@code{interactive} form, but this isn't possible since Emacs checks
+whether a function is interactive or not by simply doing an @code{assq}
+on the lambda form.  So, instead we have @code{gnus-interactive}
+function that takes a string and returns values that are usable to
+@code{interactive}.
+
+This function accepts (almost) all normal @code{interactive} specs, but
+adds a few more.
+
+@table @samp
+@item y
+@vindex gnus-current-prefix-symbol
+The current symbolic prefix---the @code{gnus-current-prefix-symbol}
+variable.
+
+@item Y
+@vindex gnus-current-prefix-symbols
+A list of the current symbolic prefixes---the
+@code{gnus-current-prefix-symbol} variable.
+
+@item A
+The current article number---the @code{gnus-summary-article-number}
+function. 
+
+@item H
+The current article header---the @code{gnus-summary-article-header}
+function. 
+
+@item g
+The current group name---the @code{gnus-group-group-name}
+function. 
+
+@end table
 
 
 @node Emacs/XEmacs Code

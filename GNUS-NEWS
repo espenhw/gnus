@@ -25,3 +25,23 @@ values.
 *** A new Message command for deleting text in the body of a message
 outside the region: `C-c C-v'.
 
+*** You can now post to component group in nnvirtual groups with
+`C-u C-c C-c'.
+
+*** `nntp-rlogin-program' -- new variable to ease customization.
+
+*** `C-u C-c C-c' in `gnus-article-edit-mode' will now inhibit
+re-highlighting of the article buffer.
+
+*** New element in `gnus-boring-article-headers' -- `long-to'.
+
+*** `M-i' symbolic prefix command.  See the section "Symbolic
+Prefixes" in the Gnus manual for details.
+
+*** `L' and `I' in the summary buffer now take the symbolic prefix
+`a' to add the score rule to the "all.SCORE" file.
+
+*** `gnus-simplify-subject-functions' variable to allow greater
+control over simplification.
+
+

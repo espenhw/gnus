@@ -134,7 +134,8 @@ Possible values in this list are `empty', `newsgroups', `followup-to',
 	      (const :tag "Newsgroups with only one group." newsgroups)
 	      (const :tag "Followup-to identical to newsgroups." followup-to)
 	      (const :tag "Reply-to identical to from." reply-to)
-	      (const :tag "Date less than four days old." date))
+	      (const :tag "Date less than four days old." date)
+	      (const :tag "Very long To header." long-to))
   :group 'gnus-article-hiding)
 
 (defcustom gnus-signature-separator '("^-- $" "^-- *$")
@@ -742,7 +743,11 @@ always hide."
 		(when (and date
 			   (< (gnus-days-between (current-time-string) date)
 			      4))
-		  (gnus-article-hide-header "date")))))))))))
+		  (gnus-article-hide-header "date"))))
+	     ((eq elem 'long-to)
+	      (let ((to (message-fetch-field "to")))
+		(when (> (length to) 1024)
+		  (gnus-article-hide-header "to")))))))))))
 
 (defun gnus-article-hide-header (header)
   (save-excursion
@@ -1129,7 +1134,8 @@ Put point at the beginning of the signature separator."
 
 (eval-and-compile
   (autoload 'w3-display "w3-parse")
-  (autoload 'w3-do-setup "w3" "" t))
+  (autoload 'w3-do-setup "w3" "" t)
+  (autoload 'w3-region "w3-display" "" t))
 
 (defun gnus-article-treat-html ()
   "Render HTML."
@@ -2477,10 +2483,10 @@ groups."
 	     (gnus-group-read-only-p))
     (error "The current newsgroup does not support article editing"))
   (gnus-article-edit-article
-   `(lambda ()
+   `(lambda (no-highlight)
       (gnus-summary-edit-article-done
        ,(or (mail-header-references gnus-current-headers) "")
-       ,(gnus-group-read-only-p) ,gnus-summary-buffer))))
+       ,(gnus-group-read-only-p) ,gnus-summary-buffer no-highlight))))
 
 (defun gnus-article-edit-article (exit-func)
   "Start editing the contents of the current article buffer."
@@ -2493,9 +2499,9 @@ groups."
     (setq gnus-prev-winconf winconf)
     (gnus-message 6 "C-c C-c to end edits")))
 
-(defun gnus-article-edit-done ()
+(defun gnus-article-edit-done (&optional arg)
   "Update the article edits and exit."
-  (interactive)
+  (interactive "P")
   (let ((func gnus-article-edit-done-function)
 	(buf (current-buffer))
 	(start (window-start)))
@@ -2503,7 +2509,7 @@ groups."
     (save-excursion
       (set-buffer buf)
       (let ((buffer-read-only nil))
-	(funcall func)))
+	(funcall func arg)))
     (set-buffer buf)
     (set-window-start (get-buffer-window buf) start)
     (set-window-point (get-buffer-window buf) (point))))

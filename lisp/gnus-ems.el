@@ -224,7 +224,7 @@
   (let ((dir (nnheader-find-etc-directory "gnus"))
 	pixmap file height beg i)
     (save-excursion
-      (switch-to-buffer gnus-group-buffer)
+      (switch-to-buffer (get-buffer-create gnus-group-buffer))
       (let ((buffer-read-only nil))
 	(erase-buffer)
 	(when (and dir
@@ -240,7 +240,7 @@
 	    (make-face 'gnus-splash))
 	  (setq height (/ (car pixmap) (frame-char-height))
 		width (/ (cadr pixmap) (frame-char-width)))
-	  (set-face-foreground 'gnus-splash "green")
+	  (set-face-foreground 'gnus-splash "ForestGreen")
 	  (set-face-stipple 'gnus-splash pixmap)
 	  (insert-char ?\n (* (/ (window-height) 2 height) height))
 	  (setq i height)

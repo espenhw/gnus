@@ -810,7 +810,7 @@ The following commands are available:
     (or level gnus-group-default-list-level gnus-level-subscribed))))
 
 (defun gnus-group-setup-buffer ()
-  (switch-to-buffer gnus-group-buffer)
+  (switch-to-buffer (get-buffer-create gnus-group-buffer))
   (unless (eq major-mode 'gnus-group-mode)
     (gnus-add-current-to-buffer-list)
     (gnus-group-mode)
@@ -1444,20 +1444,25 @@ Take into consideration N (the prefix) and the list of marked groups."
     (let ((group (gnus-group-group-name)))
       (and group (list group))))))
 
-;;;!!! All the variables below should be gensymmed.
-(defun gnus-group-iterate (arg gnus-group-iterate-function)
-  "Iterate FUNCTION over all process/prefixed groups.
-  FUNCTION will be called with the group name as the paremeter
-  and with point over the group in question."
-  (let ((groups (gnus-group-process-prefix arg))
- 	(window (selected-window))
- 	group)
-    (while (setq group (pop groups))
-      (select-window window)
-      (gnus-group-remove-mark group)
-      (save-selected-window
- 	(save-excursion
- 	  (funcall function group))))))
+(eval-and-compile
+  (let ((function (make-symbol "gnus-group-iterate-function"))
+	(window (make-symbol "gnus-group-iterate-window"))
+	(groups (make-symbol "gnus-group-iterate-groups"))
+	(group (make-symbol "gnus-group-iterate-group")))
+    (eval
+     `(defun gnus-group-iterate (arg ,function)
+	"Iterate FUNCTION over all process/prefixed groups.
+FUNCTION will be called with the group name as the paremeter
+and with point over the group in question."
+	(let ((,groups (gnus-group-process-prefix arg))
+	      (,window (selected-window))
+	      ,group)
+	  (while (setq ,group (pop ,groups))
+	    (select-window ,window)
+	    (gnus-group-remove-mark ,group)
+	    (save-selected-window
+	      (save-excursion
+		(funcall ,function ,group)))))))))
   
 (put 'gnus-group-iterate 'lisp-indent-function 1)
 

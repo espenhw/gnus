@@ -1,3 +1,107 @@
+Sun Sep 21 23:54:50 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.9 is released.
+
+Sun Sep 21 23:38:46 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-splash-face): ForestGreen everywhere.
+
+	* gnus-sum.el (gnus-simplify-subject-fully): Use new variable.
+	(gnus-general-simplify-subject): Ditto.
+
+Sun Sep 21 23:34:13 1997  Kurt Swanson  <kurt@dna.lth.se>
+
+	* gnus-sum.el (gnus-simplify-subject-functions): New variable.
+	(gnus-simplify-whitespace): New function.
+
+	* gnus-util.el (gnus-map-function): New function.
+
+Sun Sep 21 23:22:04 1997  Michelangelo Grigni  <mic@mathcs.emory.edu>
+
+	* gnus-score.el (gnus-score-regexp-bad-p): New function.
+
+Sun Sep 21 00:14:40 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-score.el (gnus-summary-lower-score): Use sym pref.
+	(gnus-summary-increase-score): Use it.
+
+	* gnus.el (gnus-current-prefix-symbol): New variable.
+	(gnus-current-prefix-symbols): New variable.
+
+	* gnus-score.el (gnus-summary-increase-score): Take symbolic
+	prefix. 
+
+	* gnus.el (gnus-interactive): Removed.
+	(gnus-interactive): Renamed from gnus-interactive-1.
+	(gnus-symbolic-argument): New command.
+
+	* gnus-draft.el (gnus-draft-send-message): Disable message
+	checks. 
+	(gnus-draft-send): Ditto.
+	(gnus-draft-setup): Don't save buffer.
+
+	* dgnushack.el (dgnushack-compile): Warn people about Custom.
+
+	* gnus-group.el (gnus-group-iterate): Use gensymmed variables.
+
+	* pop3.el (pop3-md5): `with-temp-buffer' doesn't exist in Emacs
+	19.34. 
+
+	* nneething.el (nneething-directory): Defvarred.
+
+	* message.el: Autoloaded nndraft things.
+	(message-set-auto-save-file-name): Use it.
+
+	* dgnushack.el (dgnushack-compile): Warn about things.
+
+	* gnus-art.el: Autoload w3-region.
+
+	* gnus-vm.el (gnus-summary-save-in-vm): Simplified.
+
+	* gnus.el: Changed `compiled-function-p' to `byte-code-function-p'
+	throughout.
+
+	* gnus-sum.el (gnus-summary-edit-article): Supply additional
+	param. 
+
+	* gnus-group.el (gnus-group-iterate): Undo bogus change.
+
+	* gnus-agent.el (gnus-agentize): Just call gnus-open-agent
+	directly. 
+
+	* gnus.el (gnus-interactive): New macro.
+	(gnus-interactive-1): New function.
+
+	* gnus-sum.el (gnus-fetch-old-headers): Allow `invisible'.
+	(gnus-cut-thread): Use it.
+	(gnus-cut-threads): Ditto.
+	(gnus-summary-initial-limit): Ditto.
+	(gnus-summary-limit-children): Ditto.
+
+	* gnus-art.el (gnus-article-edit-done): Accept a prefix arg.
+	(gnus-boring-article-headers): Allow `long-to' param.
+	(article-hide-boring-headers): Use it.
+
+	* gnus-sum.el (gnus-summary-edit-article-done): Accept a
+	no-highlight param.
+
+	* nntp.el (nntp-rlogin-program): New variable.
+	(nntp-open-rlogin): Use it.
+
+	* nnvirtual.el (nnvirtual-request-post): New function.
+
+	* gnus-msg.el (gnus-message-group-art): New variable.
+
+	* gnus-draft.el (gnus-draft-setup): Don't use message-setup.
+
+	* nndraft.el (nndraft): Allow editing articles.
+
+	* gnus-ems.el (gnus-x-splash): Ditto.
+
+	* gnus.el (gnus-splash-face): Darker face.
+
+	* gnus-draft.el (gnus-draft-setup): Clobbered variables.
+
 Sat Sep 20 23:23:49 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.8 is released.

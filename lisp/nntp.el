@@ -79,6 +79,10 @@ the NNTP server available there (see nntp-rlogin-parameters) and
 `nntp-open-telnet' which telnets to a remote system, logs in and does
 the same.")
 
+(defvoo nntp-rlogin-program "rsh"
+  "*Program used to log in on remote machines.
+The default is \"rsh\", but \"ssh\" is a popular alternative.")
+
 (defvoo nntp-rlogin-parameters '("telnet" "-8" "${NNTPSERVER:=news}" "nntp")
   "*Parameters to `nntp-open-login'.
 That function may be used as `nntp-open-connection-function'.  In that
@@ -371,7 +375,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 	    (received 0)
 	    (last-point (point-min))
 	    (buf (nntp-find-connection-buffer nntp-server-buffer))
-	    (nntp-inhibit-erase t))
+	    (nntp-inhibit-erase t)
+	    article)
 	;; Send HEAD commands.
       (while (setq article (pop articles))
 	(nntp-send-command
@@ -1087,12 +1092,12 @@ This function is supposed to be called from `nntp-server-opened-hook'."
   "Open a connection to SERVER using rsh."
   (let ((proc (if nntp-rlogin-user-name
 		  (start-process
-		   "nntpd" buffer "rsh"
+		   "nntpd" buffer nntp-rlogin-program
 		   nntp-address "-l" nntp-rlogin-user-name
 		   (mapconcat 'identity
 			      nntp-rlogin-parameters " "))
 		(start-process
-		 "nntpd" buffer "rsh" nntp-address
+		 "nntpd" buffer nntp-rlogin-program nntp-address
 		 (mapconcat 'identity
 			    nntp-rlogin-parameters " ")))))
     (set-buffer buffer)

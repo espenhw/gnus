@@ -8,18 +8,12 @@ DVIPS=dvips
 PERL=perl
 INFODIR=/usr/local/info
 
-all: gnus message custom widget
+all: gnus message
 
 most: texi2latex.elc latex latexps
 
 gnus: gnus.texi
 	$(MAKEINFO) -eval '(find-file "gnus.texi")' $(XINFOSWI)
-
-custom: custom.texi
-	$(MAKEINFO) -eval '(find-file "custom.texi")' $(XINFOSWI)
-
-widget: widget.texi
-	$(MAKEINFO) -eval '(find-file "widget.texi")' $(XINFOSWI)
 
 message: message.texi
 	$(MAKEINFO) -eval '(find-file "message.texi")' $(XINFOSWI)
@@ -51,8 +45,6 @@ clean:
 makeinfo: 
 	makeinfo -o gnus gnus.texi	
 	makeinfo -o message message.texi	
-	makeinfo -o widget widget.texi	
-	makeinfo -o custom custom.texi	
 
 texi2latex.elc: texi2latex.el
 	$(EMACS) -batch -l bytecomp -f batch-byte-recompile-directory
@@ -117,11 +109,9 @@ veryclean:
 distclean:
 	make clean
 	rm -f *.orig *.rej *.elc *~ gnus gnus-[0-9] gnus-[0-9][0-9]
-	rm -f message message-[0-9] widget custom
+	rm -f message message-[0-9]
 
 install:
 	cp gnus gnus-[0-9] gnus-[0-9][0-9] $(INFODIR)
 	cp message $(INFODIR)
-	cp widget $(INFODIR)
-	cp custom $(INFODIR)
 

@@ -902,7 +902,9 @@ The cdr of ech entry is a function for applying the face to a region.")
   (autoload 'gnus-point-at-bol "gnus-util")
   (autoload 'gnus-output-to-mail "gnus-util")
   (autoload 'gnus-output-to-rmail "gnus-util")
-  (autoload 'mail-abbrev-in-expansion-header-p "mailabbrev"))
+  (autoload 'mail-abbrev-in-expansion-header-p "mailabbrev")
+  (autoload 'nndraft-request-associate-buffer "nndraft")
+  (autoload 'nndraft-request-expire-articles "nndraft"))
 
 
 
@@ -1003,7 +1005,7 @@ The cdr of ech entry is a function for applying the face to a region.")
   "Return non-nil if FORM is funcallable."
   (or (and (symbolp form) (fboundp form))
       (and (listp form) (eq (car form) 'lambda))
-      (compiled-function-p form)))
+      (byte-code-function-p form)))
 
 (defun message-strip-subject-re (subject)
   "Remove \"Re:\" from subject lines."
@@ -3036,37 +3038,14 @@ Headers already prepared in the buffer are not modified."
 (defun message-set-auto-save-file-name ()
   "Associate the message buffer with a file in the drafts directory."
   (when message-autosave-directory
-    (cond
-     ((fboundp 'nndraft-request-associate-buffer)
-      (setq message-draft-article (nndraft-request-associate-buffer "drafts"))
-      (clear-visited-file-modtime))
-     (t (unless (file-exists-p message-autosave-directory)
-	  (make-directory message-autosave-directory t))
-	(let ((name (make-temp-name
-		     (expand-file-name
-		      (concat (file-name-as-directory
-			       message-autosave-directory)
-			      "msg."
-			      (message-replace-chars-in-string
-			       (message-replace-chars-in-string
-				(buffer-name) ?* ?.)
-			       ?/ ?-))))))
-	  (setq buffer-auto-save-file-name
-		(save-excursion
-		  (prog1
-		      (progn
-			(set-buffer (get-buffer-create " *draft tmp*"))
-			(setq buffer-file-name name)
-			(make-auto-save-file-name))
-		    (kill-buffer (current-buffer)))))
-	  (clear-visited-file-modtime))))))
+    (setq message-draft-article (nndraft-request-associate-buffer "drafts"))
+    (clear-visited-file-modtime)))
 
 (defun message-disassociate-draft ()
   "Disassociate the message buffer from the drafts directory."
   (when message-draft-article
-    (if (fboundp 'nndraft-request-expire-articles)
-	(nndraft-request-expire-articles
-	  (list message-draft-article) "drafts" nil t))))
+    (nndraft-request-expire-articles
+     (list message-draft-article) "drafts" nil t)))
 
 
 

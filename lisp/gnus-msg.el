@@ -99,6 +99,7 @@ the second with the current group name.")
 (defvar gnus-message-buffer "*Mail Gnus*")
 (defvar gnus-article-copy nil)
 (defvar gnus-last-posting-server nil)
+(defvar gnus-message-group-art nil)
 
 (defconst gnus-bug-message
   "Sending a bug report to the Gnus Towers.
@@ -176,6 +177,8 @@ Thank you for your help in stamping out bugs.
 	     ,@forms)
 	 (gnus-inews-add-send-actions ,winconf ,buffer ,article)
 	 (setq gnus-message-buffer (current-buffer))
+	 (set (make-local-variable 'gnus-message-group-art)
+	      (cons ,gnus-newsgroup-name ,article))
 	 (make-local-variable 'gnus-newsgroup-name)
 	 (run-hooks 'gnus-message-setup-hook))
        (gnus-configure-windows ,config t)
@@ -802,7 +805,7 @@ If YANK is non-nil, include the original article."
     (error "Gnus has been shut down"))
   (gnus-setup-message 'bug
     (delete-other-windows)
-    (switch-to-buffer "*Gnus Help Bug*")
+    (switch-to-buffer (get-buffer-create "*Gnus Help Bug*"))
     (erase-buffer)
     (insert gnus-bug-message)
     (goto-char (point-min))

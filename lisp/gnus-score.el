@@ -449,13 +449,13 @@ of the last successful match.")
 ;; Much modification of the kill (ahem, score) code and lots of the
 ;; functions are written by Per Abrahamsen <amanda@iesd.auc.dk>.
 
-(defun gnus-summary-lower-score (&optional score)
+(defun gnus-summary-lower-score (&optional score symp)
   "Make a score entry based on the current article.
 The user will be prompted for header to score on, match type,
 permanence, and the string to be used.  The numerical prefix will be
 used as score."
-  (interactive "P")
-  (gnus-summary-increase-score (- (gnus-score-default score))))
+  (interactive (gnus-interactive "P\ny"))
+  (gnus-summary-increase-score (- (gnus-score-default score)) symp))
 
 (defun gnus-score-kill-help-buffer ()
   (when (get-buffer "*Score Help*")
@@ -463,12 +463,12 @@ used as score."
     (when gnus-score-help-winconf
       (set-window-configuration gnus-score-help-winconf))))
 
-(defun gnus-summary-increase-score (&optional score)
+(defun gnus-summary-increase-score (&optional score symp)
   "Make a score entry based on the current article.
 The user will be prompted for header to score on, match type,
 permanence, and the string to be used.  The numerical prefix will be
 used as score."
-  (interactive "P")
+  (interactive (gnus-interactive "P\ny"))
   (gnus-set-global-variables)
   (let* ((nscore (gnus-score-default score))
 	 (prefix (if (< nscore 0) ?L ?I))
@@ -498,6 +498,7 @@ used as score."
 	    (?< < "less than number" number)
 	    (?> > "greater than number" number)
 	    (?= = "equal to number" number)))
+	 (current-score-file gnus-current-score-file)
 	 (char-to-perm
 	  (list (list ?t (current-time-string) "temporary")
 		'(?p perm "permanent") '(?i now "immediate")))
@@ -615,6 +616,13 @@ used as score."
     (when (memq type '(r R regexp Regexp))
       (setq match (regexp-quote match)))
 
+    ;; Change score file to the "all.SCORE" file.
+    (when (eq symp 'a)
+      (save-excursion
+	(set-buffer gnus-summary-buffer)
+	(gnus-score-load-file
+	 (gnus-score-file-name "all"))))
+    
     (gnus-summary-score-entry
      (nth 1 entry)			; Header
      match				; Match
@@ -624,7 +632,12 @@ used as score."
 	 nil
        temporary)
      (not (nth 3 entry)))		; Prompt
-    ))
+
+    (when (eq symp 'a)
+      ;; We change the score file back to the previous one.
+      (save-excursion
+	(set-buffer gnus-summary-buffer)
+	(gnus-score-load-file current-score-file)))))
 
 (defun gnus-score-insert-help (string alist idx)
   (setq gnus-score-help-winconf (current-window-configuration))
@@ -2761,6 +2774,63 @@ If ADAPT, return the home adaptive file instead."
 				 (cdr (cdr kill)))))))))
     ;; Return whether this score file needs to be saved.  By Je-haysuss!
     updated))
+
+(defun gnus-score-regexp-bad-p (regexp)
+  "Test whether REGEXP is safe for Gnus scoring.
+A regexp is unsafe if it matches newline or a buffer boundary.
+
+If the regexp is good, return nil.  If the regexp is bad, return a
+cons cell (SYM . STRING), where the symbol SYM is `new' or `bad'.
+In the `new' case, the string is a safe replacement for REGEXP.
+In the `bad' case, the string is a unsafe subexpression of REGEXP,
+and we do not have a simple replacement to suggest.
+
+See `(Gnus)Scoring Tips' for examples of good regular expressions."
+  (let (case-fold-search)
+    (and
+     ;; First, try a relatively fast necessary condition.
+     ;; Notice ranges (like [^:] or [\t-\r]), \s>, \Sw, \W, \', \`:
+     (string-match "\n\\|\\\\[SsW`']\\|\\[\\^\\|[\0-\n]-" regexp)
+     ;; Now break the regexp into tokens, and check each:
+     (let ((tail regexp)		; remaining regexp to check
+	   tok				; current token
+	   bad				; nil, or bad subexpression
+	   new				; nil, or replacement regexp so far
+	   end)				; length of current token
+       (while (and (not bad)
+		   (string-match
+		    "\\`\\(\\\\[sS]?.\\|\\[\\^?]?[^]]*]\\|[^\\]\\)"
+		    tail))
+	 (setq end (match-end 0)
+	       tok (substring tail 0 end)
+	       tail (substring tail end))
+	 (if;; Is token `bad' (matching newline or buffer ends)?
+	     (or (member tok '("\n" "\\W" "\\`" "\\'"))
+		 ;; This next handles "[...]", "\\s.", and "\\S.":
+		 (and (> end 2) (string-match tok "\n")))
+	     (let ((newtok
+		    ;; Try to suggest a replacement for tok ...
+		    (cond ((string-equal tok "\\`") "^") ; or "\\(^\\)"
+			  ((string-equal tok "\\'") "$") ; or "\\($\\)"
+			  ((string-match "\\[\\^" tok) ; very common
+			   (concat (substring tok 0 -1) "\n]")))))
+	       (if newtok
+		   (setq new
+			 (concat
+			  (or new
+			      ;; good prefix so far:
+			      (substring regexp 0 (- (+ (length tail) end))))
+			  newtok))
+		 ;; No replacement idea, so give up:
+		 (setq bad tok)))
+	   ;; tok is good, may need to extend new
+	   (and new (setq new (concat new tok)))))
+       ;; Now return a value:
+       (cond
+	(bad (cons 'bad bad))
+	(new (cons 'new new))
+	;; or nil
+	)))))
 
 (provide 'gnus-score)
 

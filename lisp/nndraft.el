@@ -241,7 +241,9 @@
    nnmh-request-group
    nnmh-close-group
    nnmh-request-list 
-   nnmh-request-newsgroups))
+   nnmh-request-newsgroups
+   nnmh-request-move-article
+   nnmh-request-replace-article))
 
 (provide 'nndraft)
 

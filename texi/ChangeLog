@@ -1,3 +1,11 @@
+Sun Sep 21 04:35:56 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (NNTP): Addition.
+	(Hiding Headers): Addition.
+	(Symbolic Prefixes): New.
+	(Extended Interactive): New.
+	(Summary Score Commands): Addition.
+
 Sat Sep 20 20:53:43 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Startup Variables): Addition.
