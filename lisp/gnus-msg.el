@@ -1464,7 +1464,8 @@ this is a reply."
       (setq name (assq 'name results)
 	    address (assq 'address results))
       (setq results (delq name (delq address results)))
-      (make-local-variable 'message-setup-hook)
+      ;; make-local-hook is not obsolete in Emacs 20 or XEmacs.
+      (make-local-hook 'message-setup-hook)
       (dolist (result results)
 	(add-hook 'message-setup-hook
 		  (cond
@@ -1496,7 +1497,8 @@ this is a reply."
 			   (let ((value ,(cdr result)))
 			     (when value
 			       (message-goto-eoh)
-			       (insert ,header ": " value "\n"))))))))))
+			       (insert ,header ": " value "\n")))))))) 
+		  nil 'local))
       (when (or name address)
 	(add-hook 'message-setup-hook
 		  `(lambda ()
@@ -1508,7 +1510,8 @@ this is a reply."
 		       (save-excursion
 			 (message-remove-header "From")
 			 (message-goto-eoh)
-			 (insert "From: " (message-make-from) "\n")))))))))
+			 (insert "From: " (message-make-from) "\n"))))
+		  nil 'local)))))
 
 ;;; Allow redefinition of functions.
 

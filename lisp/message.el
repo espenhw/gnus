@@ -1727,10 +1727,12 @@ M-RET    `message-newline-and-reformat' (break the line and reformat)."
 	(set (make-local-variable 'tool-bar-map) (message-tool-bar-map))))
   (easy-menu-add message-mode-menu message-mode-map)
   (easy-menu-add message-mode-field-menu message-mode-map)
+  ;; make-local-hook is harmless though obsolete in Emacs 21.
+  ;; Emacs 20 and XEmacs need make-local-hook. 
+  (make-local-hook 'after-change-functions)
   ;; Mmmm... Forbidden properties...
-  (unless (eq (get 'make-local-hook 'byte-compile) 'byte-compile-obsolete)
-    (eval '(make-local-hook 'after-change-functions)))
-  (add-hook 'after-change-functions 'message-strip-forbidden-properties nil t)
+  (add-hook 'after-change-functions 'message-strip-forbidden-properties 
+	    nil 'local)
   ;; Allow mail alias things.
   (when (eq message-mail-alias-type 'abbrev)
     (if (fboundp 'mail-abbrevs-setup)

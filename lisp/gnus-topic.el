@@ -1104,7 +1104,8 @@ articles in the topic and its subtopics."
       (setq gnus-group-change-level-function 'gnus-topic-change-level)
       (setq gnus-goto-missing-group-function 'gnus-topic-goto-missing-group)
       (make-local-hook 'gnus-check-bogus-groups-hook)
-      (add-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist)
+      (add-hook 'gnus-check-bogus-groups-hook 'gnus-topic-clean-alist 
+		nil 'local)
       (setq gnus-topology-checked-p nil)
       ;; We check the topology.
       (when gnus-newsrc-alist

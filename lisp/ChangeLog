@@ -1,3 +1,12 @@
+2001-11-27 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-topic.el (gnus-topic-mode): Add LOCAL for add-hook.
+
+	* message.el (message-mode): make-local-hook is harmless in Emacs 21.
+
+	* gnus-msg.el (gnus-configure-posting-styles): use
+	make-local-hook. Add LOCAL for add-hook.
+
 2001-11-27  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* message.el (message-mode): Use `make-local-hook' unless
