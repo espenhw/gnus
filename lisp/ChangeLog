@@ -1,3 +1,8 @@
+2000-12-22 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (gnus-mime-security-button-map): 
+	(gnus-mime-button-map): Add parent.
+
 2000-12-22 09:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* messagexmas.el (message-xmas-redefine): New function.

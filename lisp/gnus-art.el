@@ -3102,8 +3102,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 
 (defvar gnus-mime-button-map
   (let ((map (make-sparse-keymap)))
-    ;; Not for Emacs 21: fixme better.
-    ;; (set-keymap-parent map gnus-article-mode-map)
+    (unless (>= (string-to-number emacs-version) 21)
+      ;; XEmacs doesn't care.
+      (set-keymap-parent map gnus-article-mode-map))
     (define-key map gnus-mouse-2 'gnus-article-push-button)
     (define-key map gnus-down-mouse-3 'gnus-mime-button-menu)
     (dolist (c gnus-mime-button-commands)
@@ -5212,8 +5213,8 @@ For example:
 
 (defvar gnus-mime-security-button-map
   (let ((map (make-sparse-keymap)))
-    ;; Not for Emacs 21: fixme better.
-    ;;(set-keymap-parent map gnus-article-mode-map)
+    (unless (>= (string-to-number emacs-version) 21)
+      (set-keymap-parent map gnus-article-mode-map))
     (define-key map gnus-mouse-2 'gnus-article-push-button)
     (define-key map "\r" 'gnus-article-press-button)
     map))
