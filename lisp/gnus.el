@@ -679,9 +679,9 @@ be set in `.emacs' instead."
 (defface gnus-summary-high-undownloaded-face
    '((((class color)
        (background light))
-      (:bold t :foreground "cyan4" :bold nil))
+      (:bold t :foreground "cyan4"))
      (((class color) (background dark))
-      (:bold t :foreground "LightGray" :bold nil))
+      (:bold t :foreground "LightGray"))
      (t (:inverse-video t :bold t)))
   "Face used for high interest uncached articles.")
 
@@ -2075,8 +2075,9 @@ face."
   "Whether Gnus is plugged or not.")
 
 (defcustom gnus-agent-cache t
-  "Whether Gnus use agent cache.
-You also need to enable `gnus-agent'."
+  "Controls use of the agent cache while plugged.  When set, Gnus will prefer
+using the locally stored content rather than re-fetching it from the server.
+You also need to enable `gnus-agent' for this to have any affect."
   :version "21.3"
   :group 'gnus-agent
   :type 'boolean)
