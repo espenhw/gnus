@@ -601,7 +601,9 @@ If ARGS, PROMPT is used as an argument to `format'."
   (let ((cmds (if (listp imap-ssl-program) imap-ssl-program
 		(list imap-ssl-program)))
 	cmd done)
-    (ignore-errors (require 'ssl))
+    (condition-case ()
+	(require 'ssl)
+      (error))
     (while (and (not done) (setq cmd (pop cmds)))
       (message "imap: Opening SSL connection with `%s'..." cmd)
       (let* ((port (or port imap-default-ssl-port))
@@ -614,8 +616,9 @@ If ARGS, PROMPT is used as an argument to `format'."
 				      ?s server
 				      ?p (number-to-string port)))))
 	     process)
-	(when (setq process (ignore-errors (open-ssl-stream
-					    name buffer server port)))
+	(when (setq process (condition-case ()
+				(open-ssl-stream name buffer server port)
+			      (error)))
 	  (with-current-buffer buffer
 	    (goto-char (point-min))
 	    (while (and (memq (process-status process) '(open run))
@@ -2205,7 +2208,9 @@ Return nil if no complete line has arrived."
 	(let ((token (read (current-buffer))))
 	  (imap-forward)
 	  (cond ((eq token 'UID)
-		 (setq uid (ignore-errors (read (current-buffer)))))
+		 (setq uid (condition-case ()
+			       (read (current-buffer))
+			     (error))))
 		((eq token 'FLAGS)
 		 (setq flags (imap-parse-flag-list))
 		 (if (not flags)

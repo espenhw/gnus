@@ -1,3 +1,8 @@
+2002-01-06  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-ssl-open, imap-ssl-open, imap-parse-fetch): Use
+	condition-case, not ignore-errors.
+
 2002-01-06  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-sum.el (gnus-summary-insert-old-articles): Bind
