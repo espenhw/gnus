@@ -1,3 +1,8 @@
+2001-08-19 17:31:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Other Marks): Addition.
+	(Positioning Point): New.
+
 2001-08-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* gnus.texi (Getting Started Reading Mail): Use (nnml "") rather

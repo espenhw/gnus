@@ -4046,9 +4046,10 @@ the @code{gnus-summary-line-format} variable.  It works along the same
 lines as a normal @code{format} string, with some extensions
 (@pxref{Formatting Variables}).
 
-There should always be a colon on the line; the cursor always moves to
-the colon after performing an operation.  (Of course, Gnus wouldn't be
-Gnus if it wasn't possible to change this.  Just write a new function
+There should always be a colon or a point position marker on the line;
+the cursor always moves to the point position marker or the colon after
+performing an operation.  (Of course, Gnus wouldn't be Gnus if it wasn't
+possible to change this.  Just write a new function
 @code{gnus-goto-colon} which does whatever you like with the cursor.)
 
 The default string is @samp{%U%R%z%I%(%[%4L: %-23,23n%]%) %s\n}.
@@ -5148,6 +5149,11 @@ the second column (@code{gnus-cached-mark}).  @xref{Article Caching}.
 Articles ``saved'' (in some manner or other; not necessarily
 religiously) are marked with an @samp{S} in the second column
 (@code{gnus-saved-mark}).
+
+@item
+@vindex gnus-unseen-mark
+Articles that haven't been seen by the user before are marked with a
+@samp{.} in the second column (@code{gnus-unseen-mark}). 
 
 @item
 @vindex gnus-not-empty-thread-mark
@@ -17741,6 +17747,7 @@ lots of percentages everywhere.
 * Advanced Formatting::   Modifying output in various ways.
 * User-Defined Specs::    Having Gnus call your own functions.
 * Formatting Fonts::      Making the formatting look colorful and nice.
+* Positioning Point::     Moving point to a position after an operation.
 * Wide Characters::       Dealing with wide characters.
 @end menu
 
@@ -17940,6 +17947,25 @@ and extremely vulgar displays.  Have fun!
 
 Note that the @samp{%(} specs (and friends) do not make any sense on the
 mode-line variables.
+
+
+@node Positioning Point
+@subsection Positioning Point
+
+Gnus usually moves point to a pre-defined place on each line in most
+buffers.  By default, point move to the first colon character on the
+line.  You can customize this behaviour in three different ways.
+
+You can move the colon character to somewhere else on the line.
+
+@findex gnus-goto-colon
+You can redefine the function that moves the point to the colon.  The
+function is called @code{gnus-goto-colon}.
+
+But perhaps the most convenient way to deal with this, if you don't want
+to have a colon in your line, is to use the @samp{%C} specifier.  If you
+put a @samp{%C} somewhere in your format line definition, Gnus will
+place point there.
 
 
 @node Wide Characters
