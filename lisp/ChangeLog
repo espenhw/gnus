@@ -1,3 +1,10 @@
+2001-02-19  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* gnus-sum.el (gnus-thread-sort-functions): Doc fix.  Refer to
+	gnus-article-sort-functions.
+	(gnus-article-sort-functions): Doc fix.  Refer to
+	gnus-thread-sort-functions. 
+
 2001-02-18 20:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 	From Paul Jarc <prj@po.cwru.edu>.
 

@@ -583,7 +583,22 @@ score file."
 
 (defcustom gnus-article-sort-functions '(gnus-article-sort-by-number)
   "*List of functions used for sorting articles in the summary buffer.
-This variable is only used when not using a threaded display."
+
+Each function takes two articles and returns non-nil if the first
+article should be sorted before the other.  If you use more than one
+function, the primary sort function should be the last.  You should
+probably always include `gnus-article-sort-by-number' in the list of
+sorting functions -- preferably first.  Also note that sorting by date
+is often much slower than sorting by number, and the sorting order is
+very similar.  (Sorting by date means sorting by the time the message
+was sent, sorting by number means sorting by arrival time.)
+
+Ready-made functions include `gnus-article-sort-by-number',
+`gnus-article-sort-by-author', `gnus-article-sort-by-subject',
+`gnus-article-sort-by-date' and `gnus-article-sort-by-score'.
+
+When threading is turned on, the variable `gnus-thread-sort-functions'
+controls how articles are sorted."
   :group 'gnus-summary-sort
   :type '(repeat (choice (function-item gnus-article-sort-by-number)
 			 (function-item gnus-article-sort-by-author)
@@ -596,16 +611,22 @@ This variable is only used when not using a threaded display."
   "*List of functions used for sorting threads in the summary buffer.
 By default, threads are sorted by article number.
 
-Each function takes two threads and return non-nil if the first thread
-should be sorted before the other.  If you use more than one function,
-the primary sort function should be the last.  You should probably
-always include `gnus-thread-sort-by-number' in the list of sorting
-functions -- preferably first.
+Each function takes two threads and returns non-nil if the first
+thread should be sorted before the other.  If you use more than one
+function, the primary sort function should be the last.  You should
+probably always include `gnus-thread-sort-by-number' in the list of
+sorting functions -- preferably first.  Also note that sorting by date
+is often much slower than sorting by number, and the sorting order is
+very similar.  (Sorting by date means sorting by the time the message
+was sent, sorting by number means sorting by arrival time.)
 
 Ready-made functions include `gnus-thread-sort-by-number',
 `gnus-thread-sort-by-author', `gnus-thread-sort-by-subject',
 `gnus-thread-sort-by-date', `gnus-thread-sort-by-score' and
-`gnus-thread-sort-by-total-score' (see `gnus-thread-score-function')."
+`gnus-thread-sort-by-total-score' (see `gnus-thread-score-function').
+
+When threading is turned off, the variable
+`gnus-article-sort-functions' controls how articles are sorted."
   :group 'gnus-summary-sort
   :type '(repeat (choice (function-item gnus-thread-sort-by-number)
 			 (function-item gnus-thread-sort-by-author)
