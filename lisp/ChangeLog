@@ -1,3 +1,7 @@
+Sat Jun 29 01:03:19 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.30 is released.
+
 Sat Jun 29 00:23:44 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* gnus.el (gnus-article-read-summary-keys): Deal with message
