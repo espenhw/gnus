@@ -450,12 +450,6 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
 	    "")
 	  mml-base-boundary))
 
-(defun mml-make-string (num string)
-  (let ((out ""))
-    (while (not (zerop (decf num)))
-      (setq out (concat out string)))
-    out))
-
 (defun mml-insert-mime-headers (cont type charset encoding)
   (let (parameters disposition description)
     (setq parameters
