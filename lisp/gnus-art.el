@@ -200,6 +200,7 @@ regexp.  If it matches, the text in question is not a signature."
 
 ;; Fixme: This isn't the right thing for mixed graphical and and
 ;; non-graphical frames in a session.
+;; gnus-xmas.el overrides this for XEmacs.
 (defcustom gnus-article-x-face-command
   (if (and (fboundp 'image-type-available-p)
 	   (image-type-available-p 'xbm))
@@ -2287,8 +2288,8 @@ This format is defined by the `gnus-article-time-format' variable."
 	 (gnus-make-directory (file-name-directory file))
 	 ;; If we have read a directory, we append the default file name.
 	 (when (file-directory-p file)
-	   (setq file (concat (file-name-as-directory file)
-			      (file-name-nondirectory default-name))))
+	   (setq file (expand-file-name (file-name-nondirectory default-name)
+					(file-name-as-directory file))))
 	 ;; Possibly translate some characters.
 	 (nnheader-translate-file-chars file)))))
     (gnus-make-directory (file-name-directory result))
@@ -2456,7 +2457,7 @@ If variable `gnus-use-long-file-name' is non-nil, it is
       (expand-file-name
        (if (gnus-use-long-file-name 'not-save)
 	   newsgroup
-	 (concat (gnus-newsgroup-directory-form newsgroup) "/news"))
+	 (expand-file-name "news" (gnus-newsgroup-directory-form newsgroup)))
        gnus-article-save-directory)))
 
 (eval-and-compile
@@ -2842,15 +2843,14 @@ If ALL-HEADERS is non-nil, no headers are hidden."
       (format " (%d parts)" (length gnus-article-mime-handle-alist-1))
     ""))
 
-(defvar gnus-mime-button-map nil)
-(unless gnus-mime-button-map
-  (setq gnus-mime-button-map (make-sparse-keymap))
-  (set-keymap-parent gnus-mime-button-map gnus-article-mode-map)
-  (define-key gnus-mime-button-map gnus-mouse-2 'gnus-article-push-button)
-  (define-key gnus-mime-button-map gnus-down-mouse-3 'gnus-mime-button-menu)
-  (mapcar (lambda (c)
-	    (define-key gnus-mime-button-map (cadr c) (car c)))
-	  gnus-mime-button-commands))
+(defvar gnus-mime-button-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map gnus-article-mode-map)
+    (define-key map gnus-mouse-2 'gnus-article-push-button)
+    (define-key map gnus-down-mouse-3 'gnus-mime-button-menu)
+    (dolist (c gnus-mime-button-commands)
+      (define-key map (cadr c) (car c)))
+    map))
 
 (defun gnus-mime-button-menu (event)
   "Construct a context-sensitive menu of MIME commands."
@@ -2916,7 +2916,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (interactive
    (list (completing-read
 	  "View as MIME type: "
-	  (mapcar (lambda (i) (list i i)) (mailcap-mime-types))
+	  (mapcar #'list (mailcap-mime-types))
 	  nil nil
 	  (gnus-mime-view-part-as-type-internal))))
   (gnus-article-check-buffer)
@@ -3779,11 +3779,11 @@ If given a prefix, show the hidden text instead."
 			       gnus-newsgroup-name)))
 		  (when (and (eq (car method) 'nneething)
 			     (vectorp header))
-		    (let ((dir (concat
+		    (let ((dir (expand-file-name
+				(mail-header-subject header)
 				(file-name-as-directory
 				 (or (cadr (assq 'nneething-address method))
-				     (nth 1 method)))
-				(mail-header-subject header))))
+				     (nth 1 method))))))
 		      (when (file-directory-p dir)
 			(setq article 'nneething)
 			(gnus-group-enter-directory dir))))))))
