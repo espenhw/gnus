@@ -1,6 +1,7 @@
 2003-08-29  Simon Josefsson  <jas@extundo.com>
 
-	* gnus-group.el (gnus-group-delete-group): Doc fix.
+	* gnus-group.el (gnus-group-delete-group): Doc fix.  Suggested by
+	Jochen K,A|(Bpper <jochen@jochen-kuepper.de>.
 
 2003-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
