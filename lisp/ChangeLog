@@ -1,3 +1,13 @@
+2004-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Don't use
+	mm-w3m-local-map-property.
+
+	* mm-view.el (mm-w3m-mode-map): Remove.
+	(mm-w3m-local-map-property): Remove.
+	(mm-inline-text-html-render-with-w3m): Don't use
+	mm-w3m-local-map-property.
+
 2004-01-06  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* run-at-time.el: New file.

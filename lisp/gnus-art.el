@@ -2405,11 +2405,14 @@ If READ-CHARSET, ask for a coding system."
 				 "\\`cid:"))
 	  w3m-force-redisplay)
       (w3m-region (point-min) (point-max)))
-    (when mm-inline-text-html-with-w3m-keymap
+    (when (and mm-inline-text-html-with-w3m-keymap
+	       (boundp 'w3m-minor-mode-map)
+	       w3m-minor-mode-map)
       (add-text-properties
        (point-min) (point-max)
-       (nconc (mm-w3m-local-map-property)
-	      '(mm-inline-text-html-with-w3m t))))))
+       (list 'keymap w3m-minor-mode-map
+	     ;; Put the mark meaning this part was rendered by emacs-w3m.
+	     'mm-inline-text-html-with-w3m t)))))
 
 (defun article-hide-list-identifiers ()
   "Remove list identifies from the Subject header.

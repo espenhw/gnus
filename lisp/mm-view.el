@@ -216,27 +216,6 @@
 	      (mm-w3m-cid-retrieve-1 url handle))
 	  (mm-w3m-cid-retrieve-1 url handles))))))
 
-(eval-and-compile
-  (unless (or (featurep 'xemacs)
-	      (>= emacs-major-version 21))
-    (defvar mm-w3m-mode-map nil
-      "Keymap for text/html parts rendered by emacs-w3m.
-This keymap will be bound only when Emacs 20 is running and overwritten
-by the value of `w3m-minor-mode-map'.  In order to add some commands to
-this keymap, add them to `w3m-minor-mode-map' instead of this keymap.")))
-
-(defun mm-w3m-local-map-property ()
-  (when (and (boundp 'w3m-minor-mode-map) w3m-minor-mode-map)
-    (if (or (featurep 'xemacs)
-	    (>= emacs-major-version 21))
-	(list 'keymap w3m-minor-mode-map)
-      (list 'local-map
-	    (or mm-w3m-mode-map
-		(progn
-		  (setq mm-w3m-mode-map (copy-keymap w3m-minor-mode-map))
-		  (set-keymap-parent mm-w3m-mode-map gnus-article-mode-map)
-		  mm-w3m-mode-map))))))
-
 (defun mm-inline-text-html-render-with-w3m (handle)
   "Render a text/html part using emacs-w3m."
   (mm-setup-w3m)
@@ -257,12 +236,14 @@ this keymap, add them to `w3m-minor-mode-map' instead of this keymap.")))
 	(let ((w3m-safe-url-regexp mm-w3m-safe-url-regexp)
 	      w3m-force-redisplay)
 	  (w3m-region (point-min) (point-max)))
-	(when mm-inline-text-html-with-w3m-keymap
+	(when (and mm-inline-text-html-with-w3m-keymap
+		   (boundp 'w3m-minor-mode-map)
+		   w3m-minor-mode-map)
 	  (add-text-properties
 	   (point-min) (point-max)
-	   (nconc (mm-w3m-local-map-property)
-		  ;; Put the mark meaning this part was rendered by emacs-w3m.
-		  '(mm-inline-text-html-with-w3m t)))))
+	   (list 'keymap w3m-minor-mode-map
+		 ;; Put the mark meaning this part was rendered by emacs-w3m.
+		 'mm-inline-text-html-with-w3m t))))
       (mm-handle-set-undisplayer
        handle
        `(lambda ()
