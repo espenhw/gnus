@@ -5713,6 +5713,7 @@ The resulting hash table is returned, or nil if no Xrefs were found."
       ;; Translate all TAB characters into SPACE characters.
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (subst-char-in-region (point-min) (point-max) ?\r ?  t)
+      (ietf-drums-unfold-fws)
       (gnus-run-hooks 'gnus-parse-headers-hook)
       (let ((case-fold-search t)
 	    in-reply-to header p lines chars)
