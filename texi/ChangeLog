@@ -1,6 +1,7 @@
 2003-03-19  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Misc Article): Add.
+	(Agent Basics): Fix makeinfo warnings.
 
 	* message.texi (IDNA): New.
 

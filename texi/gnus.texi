@@ -17040,12 +17040,13 @@ you are going to use agent categories, topic parameters, and/or group
 parameters to implement your policy.  If you're new to gnus, it
 is probably best to start with a category @xref{Agent Categories}.
 
-Both topic parameters (@xref{Topic Parameters}) and agent 
-categories (@xref{Agent Categories}) provide for setting a policy that 
-applies to multiple groups.  Which you use is entirely up to you.  Topic
-parameters do override categories so, if you mix the two, you'll have to
-take that into account.  If you have a few groups that deviate from your
-policy, you can use @xref{Group Parameters} to configure them.
+Both topic parameters (@pxref{Topic Parameters}) and agent categories
+(@pxref{Agent Categories}) provide for setting a policy that applies
+to multiple groups.  Which you use is entirely up to you.  Topic
+parameters do override categories so, if you mix the two, you'll have
+to take that into account.  If you have a few groups that deviate from
+your policy, you can use grou parameters (@pxref{Group Parameters}) to
+configure them.
 
 @item
 Uhm@dots{} that's it.
