@@ -1,6 +1,6 @@
 ;;; nnmbox.el --- mail mbox access for Gnus
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;	Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -602,7 +602,8 @@
 	       nnmbox-file-coding-system))
 	  (dir (file-name-directory nnmbox-mbox-file)))
       (and dir (gnus-make-directory dir))
-      (nnmail-write-region 1 1 nnmbox-mbox-file t 'nomesg))))
+      (nnmail-write-region (point-min) (point-min)
+			   nnmbox-mbox-file t 'nomesg))))
 
 (defun nnmbox-read-mbox ()
   (nnmail-activate 'nnmbox)

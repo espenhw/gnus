@@ -1,5 +1,5 @@
 ;;; nnfolder.el --- mail folder access for Gnus
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org> (adding MARKS)
@@ -711,7 +711,8 @@ deleted.  Point is left where the deleted region was."
 		(let ((nnmail-file-coding-system
 		       (or nnfolder-file-coding-system-for-write
 			   nnfolder-file-coding-system-for-write)))
-		  (nnmail-write-region 1 1 file t 'nomesg)))
+		  (nnmail-write-region (point-min) (point-min)
+				       file t 'nomesg)))
 	      (when (setq nnfolder-current-buffer (nnfolder-read-folder group))
 		(set-buffer nnfolder-current-buffer)
 		(push (list group nnfolder-current-buffer)
