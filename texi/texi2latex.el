@@ -221,7 +221,7 @@
 	  (cond 
 	   ((member command '("xref" "pxref"))
 	    (latexi-exchange-command (concat "gnus" command) arg))
-	   ((member command '("sc" "file" "dfn" "emph" "kbd" 
+	   ((member command '("sc" "file" "dfn" "emph" "kbd" "uref"
 			      "code" "samp" "var" "strong" "i"
 			      "result"))
 	    (goto-char (match-beginning 0))

@@ -5,7 +5,7 @@
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
-@dircategory Editors
+@dircategory Emacs
 @direntry
 * Gnus: (gnus).         The newsreader Gnus.
 @end direntry
@@ -272,7 +272,8 @@
 
 \thispagestyle{empty}
 
-Copyright \copyright{} 1995,96,97,98,99,2000 Free Software Foundation, Inc.
+Copyright \copyright{} 1995, 1996, 1997, 1998, 1999, 2000 
+Free Software Foundation, Inc.
 
 
 Permission is granted to copy, distribute and/or modify this document
@@ -300,7 +301,7 @@ license to the document, as described in section 6 of the license.
 
 This file documents Gnus, the GNU Emacs newsreader.
 
-Copyright (C) 1995,96,97,98,99,2000 Free Software Foundation, Inc.
+Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -329,7 +330,7 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1995,96,97,98,99,2000 Free Software Foundation, Inc.
+Copyright @copyright{} 1995, 1996, 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -638,7 +639,7 @@ Getting Mail
 * Group Mail Splitting::         Use group customize to drive mail splitting.
 * Incorporating Old Mail::       What about the old mail you have?
 * Expiring Mail::                Getting rid of unwanted mail.
-* Washing Mail::                 Removing gruft from the mail you get.
+* Washing Mail::                 Removing cruft from the mail you get.
 * Duplicates::                   Dealing with duplicated mail.
 * Not Reading Mail::             Using mail backends for reading other files.
 * Choosing a Mail Backend::      Gnus can read a variety of mail formats.
@@ -7479,6 +7480,7 @@ has been done.
 \include{xface}
 @end iflatex
 @end iftex
+@anchor{X-Face}
 Look for and display any X-Face headers
 (@code{gnus-article-display-x-face}).  The command executed by this
 function is given by the @code{gnus-article-x-face-command} variable.
@@ -9294,7 +9296,7 @@ Output the @sc{mime} object to a process (@code{gnus-mime-pipe-part}).
 @item i (Article)
 Insert the contents of the @sc{mime} object into the buffer
 (@code{gnus-mime-inline-part}) as text/plain.  If given a prefix, insert
-the raw contens without decoding.  If given a numerical prefix, you can
+the raw contents without decoding.  If given a numerical prefix, you can
 do semi-manual charset stuff (see
 @code{gnus-summary-show-article-charset-alist} in @pxref{Paging the
 Article}).
@@ -10607,15 +10609,16 @@ The file contains one or more line, each of which define one server.
 
 @item
 Each line may contain an arbitrary number of token/value pairs.  
-@end enumerate
 
 The valid tokens include @samp{machine}, @samp{login}, @samp{password},
-@samp{default}.  Gnus introduce two new tokens, not present in the
-original @file{.netrc}/@code{ftp} syntax, namely @samp{port} and
+@samp{default}.  In addition Gnus introduces two new tokens, not present
+in the original @file{.netrc}/@code{ftp} syntax, namely @samp{port} and
 @samp{force}.  (This is the only way the @file{.authinfo} file format
-deviates from the @file{.netrc} file format.) @samp{port} is used to
-indicate what port on the server the credentials apply to, @samp{force}
-is explained below.
+deviates from the @file{.netrc} file format.)  @samp{port} is used to
+indicate what port on the server the credentials apply to and
+@samp{force} is explained below.
+
+@end enumerate
 
 Here's an example file:
 
@@ -10797,7 +10800,7 @@ This works for Solaris @code{telnet}, for instance.
 @item nntp-open-ssl-stream
 Opens a connection to a server over a @dfn{secure} channel.  To use this
 you must have SSLay installed
-(@file{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}, and you also need
+(@uref{ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL}, and you also need
 @file{ssl.el} (from the W3 distributeion, for instance).  You then
 define a server as follows:
 
@@ -11311,7 +11314,8 @@ The name of the POP server.  The default is taken from the
 The port number of the POP server.  This can be a number (eg,
 @samp{:port 1234}) or a string (eg, @samp{:port "pop3"}).  If it is a
 string, it should be a service name as listed in @file{/etc/services} on
-Unix systems.  The default is @samp{"pop3"}.
+Unix systems.  The default is @samp{"pop3"}.  On some systems you might
+need to specify it as @samp{"pop-3"} instead.
 
 @item :user
 The user name to give to the POP server.  The default is the login
@@ -11899,9 +11903,11 @@ When it has found a parent, it returns the corresponding group name.  It
 is recommended that you set @code{nnmail-message-id-cache-length} to a
 somewhat higher number than the default so that the message ids are
 still in the cache.  (A value of 5000 appears to create a file some 300
-kBytes in size.)  When @code{nnmail-cache-accepted-message-ids} is
-non-nil, Gnus also records the message ids of moved articles, so that
-the followup messages goes into the new group.
+kBytes in size.)
+@vindex nnmail-cache-accepted-message-ids
+When @code{nnmail-cache-accepted-message-ids} is non-@code{nil}, Gnus
+also records the message ids of moved articles, so that the followup
+messages goes into the new group.
 
 
 @node Group Mail Splitting
@@ -12024,7 +12030,7 @@ you.  For example, add to your @file{.gnus}:
 If @var{auto-update} is non-@code{nil}, @code{gnus-group-split-update}
 will be added to @code{nnmail-pre-get-new-mail-hook}, so you won't ever
 have to worry about updating @code{nnmail-split-fancy} again.  If you
-don't omit @var{catch-all} (it's optional; same as nil),
+don't omit @var{catch-all} (it's optional, equivalent to @code{nil}),
 @code{gnus-group-split-default-catch-all-group} will be set to its
 value.
 
@@ -12932,7 +12938,7 @@ Format string URL to fetch an article by @code{Message-ID}.
 @cindex Slashdot
 @cindex nnslashdot
 
-Slashdot (@file{http://slashdot.org/}) is a popular news site, with
+Slashdot (@uref{http://slashdot.org/}) is a popular news site, with
 lively discussion following the news articles.  @code{nnslashdot} will
 let you read this forum in a convenient manner.
 
@@ -13022,7 +13028,7 @@ updated.  The default is 0.
 @cindex nnultimate
 @cindex Ultimate Bulletin Board
 
-The Ultimate Bulletin Board (@file{http://www.ultimatebb.com/}) is
+The Ultimate Bulletin Board (@uref{http://www.ultimatebb.com/}) is
 probably the most popular Web bulletin board system used.  It has a
 quite regular and nice interface, and it's possible to get the
 information Gnus needs to keep groups updated.
@@ -13051,8 +13057,8 @@ The directory where @code{nnultimate} stores its files.  The default is
 @cindex Web Archive
 
 Some mailing lists only have archives on Web servers, such as
-@file{http://www.egroups.com/} and
-@file{http://www.mail-archive.com/}.  It has a quite regular and nice
+@uref{http://www.egroups.com/} and
+@uref{http://www.mail-archive.com/}.  It has a quite regular and nice
 interface, and it's possible to get the information Gnus needs to keep
 groups updated.
 
@@ -13920,7 +13926,7 @@ program.
 
 @vindex imap-ssl-program
 For SSL connections, the OpenSSL program is available from
-@file{http://www.openssl.org/}. OpenSSL was formerly known as SSLeay,
+@uref{http://www.openssl.org/}. OpenSSL was formerly known as SSLeay,
 and nnimap support it too - altough the most recent versions of
 SSLeay, 0.9.x, are known to have serious bugs making it
 useless. Earlier versions, especially 0.8.x, of SSLeay are known to
@@ -16559,7 +16565,7 @@ by hand.
 
 The kill to score conversion package isn't included in Gnus by default.
 You can fetch it from
-@file{http://www.stud.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el}.
+@uref{http://www.stud.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el}.
 
 If your old kill files are very complex---if they contain more
 non-@code{gnus-kill} forms than not, you'll have to convert them by
@@ -16598,7 +16604,7 @@ article.
 
 To use GroupLens you must register a pseudonym with your local Better
 Bit Bureau (BBB).
-@samp{http://www.cs.umn.edu/Research/GroupLens/bbb.html} is the only
+@uref{http://www.cs.umn.edu/Research/GroupLens/bbb.html} is the only
 better bit in town at the moment.
 
 Once you have registered you'll need to set a couple of variables.
@@ -17998,7 +18004,7 @@ people you want to listen to.  The default is @code{("Automoose-1"
 "hweede@@snafu.de")}; fine, upstanding citizens all of them.
 
 Known despammers that you can put in this list are listed at
-@file{http://www.xs4all.nl/~rosalind/nocemreg/nocemreg.html}.
+@uref{http://www.xs4all.nl/~rosalind/nocemreg/nocemreg.html}.
 
 You do not have to heed NoCeM messages from all these people---just the
 ones you want to listen to.  You also don't have to accept all NoCeM
@@ -18189,7 +18195,7 @@ advantage of that.
 @end iflatex
 @end iftex
 
-So...  You want to slow down your news reader even more!  This is a
+So@dots{}  You want to slow down your news reader even more!  This is a
 good way to do so.  Its also a great way to impress people staring
 over your shoulder as you read news.
 
@@ -18227,12 +18233,12 @@ in either monochrome @code{XBM} format or color @code{XPM} and
 If you have a permanent connection to the Internet you can use Steve
 Kinzler's Picons Search engine by setting
 @code{gnus-picons-piconsearch-url} to the string @*
-@file{http://www.cs.indiana.edu/picons/search.html}.
+@uref{http://www.cs.indiana.edu/picons/search.html}.
 
 @vindex gnus-picons-database
 Otherwise you need a local copy of his database.  For instructions on
 obtaining and installing the picons databases, point your Web browser at @*
-@file{http://www.cs.indiana.edu/picons/ftp/index.html}.  Gnus expects
+@uref{http://www.cs.indiana.edu/picons/ftp/index.html}.  Gnus expects
 picons to be installed into a location pointed to by
 @code{gnus-picons-database}.
 
@@ -18306,7 +18312,7 @@ subdirectories.  This is only useful if
 @item gnus-picons-piconsearch-url
 @vindex gnus-picons-piconsearch-url
 The URL for the web picons search engine.  The only currently known
-engine is @file{http://www.cs.indiana.edu:800/piconsearch}.  To
+engine is @uref{http://www.cs.indiana.edu:800/piconsearch}.  To
 workaround network delays, icons will be fetched in the background.  If
 this is @code{nil} 'the default), then picons are fetched from local
 database indicated by @code{gnus-picons-database}.
@@ -18687,7 +18693,7 @@ each unsolicited commercial email---at your leisure.
 
 If you are also a lazy net citizen, you will probably prefer complaining
 automatically with the @file{gnus-junk.el} package, available FOR FREE
-at @* @file{<URL:http://stud2.tuwien.ac.at/~e9426626/gnus-junk.html>}.
+at @* @uref{http://stud2.tuwien.ac.at/~e9426626/gnus-junk.html}.
 Since most e-mail spam is sent automatically, this may reconcile the
 cosmic balance somewhat.
 
@@ -18859,7 +18865,7 @@ but at the common table.@*
 
 If you want to investigate the person responsible for this outrage,
 you can point your (feh!) web browser to
-@file{http://quimby.gnus.org/~larsi/}.  This is also the primary
+@uref{http://quimby.gnus.org/}.  This is also the primary
 distribution point for the new and spiffy versions of Gnus, and is
 known as The Site That Destroys Newsrcs And Drives People Mad.
 
@@ -20153,7 +20159,7 @@ latest version of gnus or some explanation on where to find it.
  A way to continue editing the latest Message composition.
 
 @item
- http://www.sonicnet.com/feature/ari3/
+@uref{http://www.sonicnet.com/feature/ari3/}
 
 @item
  facep is not declared.
@@ -20419,9 +20425,9 @@ Message-ID, delete the "original".
  when replying to several messages at once, put the "other" message-ids
 into a See-Also header.
 @item
- support setext: URL:http://www.bsdi.com/setext/
+ support setext: @url{http://www.bsdi.com/setext/}
 @item
- support ProleText: <URL:http://proletext.clari.net/prole/proletext.html>
+ support ProleText: @url{http://proletext.clari.net/prole/proletext.html}
 @item
  when browsing a foreign server, the groups that are already subscribed
 should be listed as such and not as "K".
@@ -20737,7 +20743,7 @@ problem is that archives are spread all over the net, unlike FAQs.
 What would be best I suppose is to find the one closest to your site.
 
 In any case, there is a list of general news group archives at @*
-ftp://ftp.neosoft.com/pub/users/claird/news.lists/newsgroup_archives.html
+@uref{ftp://ftp.neosoft.com/pub/users/claird/news.lists/newsgroup_archives.html}
 
 
 
@@ -21034,7 +21040,7 @@ in the summary buffer.
 version branches as threading, checkin date as the date, etc.
 
 @item
- http://www.dejanews.com/forms/dnsetfilter_exp.html ?
+@url{http://www.dejanews.com/forms/dnsetfilter_exp.html}?
 This filter allows one to construct advance queries on the Dejanews
 database such as specifying start and end dates, subject, author,
 and/or newsgroup name.
@@ -21128,7 +21134,7 @@ Mac, MS (etc) characters into ISO 8859-1.
 @item
 @example
  (add-hook 'gnus-exit-query-functions
-'(lambda ()
+ (lambda ()
    (if (and (file-exists-p nnmail-spool-file)
             (> (nnheader-file-size nnmail-spool-file) 0))
        (yes-or-no-p "New mail has arrived.  Quit Gnus anyways? ")
