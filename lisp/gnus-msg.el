@@ -288,6 +288,7 @@ Thank you for your help in stamping out bugs.
 	   (setq mml-buffer-list mbl)))
        (gnus-add-buffer)
        (gnus-configure-windows ,config t)
+       (run-hooks 'post-command-hook)
        (set-buffer-modified-p nil))))
 
 (defun gnus-inews-insert-draft-meta-information (group article)

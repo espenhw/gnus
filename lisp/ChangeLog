@@ -1,3 +1,7 @@
+2001-10-28 16:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-msg.el (gnus-setup-message): Call post-command-hook.
+
 2001-10-29  Simon Josefsson  <jas@extundo.com>
 
 	* mml.el (mml-preview): Bind message-this-is-news if it is
