@@ -1,3 +1,17 @@
+2004-01-23  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-xmas.el (gnus-xmas-grouplens-menu-add): Remove.
+
+	* gnus-sum.el (gnus-summary-line-format-alist): Remove grouplens.
+
+	* gnus-start.el (gnus-1): do.
+
+	* gnus-group.el (gnus-group-line-format-alist): do.
+
+	* gnus.el: (gnus-use-grouplens, gnus-visual): do.
+
+	* gnus-gl.el: Remove.
+
 2004-01-23  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-sum.el (gnus-adjust-marks): Now correctly handles a list of

@@ -494,7 +494,6 @@ simple manner.")
     (?P gnus-group-indentation ?s)
     (?E gnus-tmp-group-icon ?s)
     (?B gnus-tmp-summary-live ?c)
-    (?l gnus-tmp-grouplens ?s)
     (?z gnus-tmp-news-method-string ?s)
     (?m (gnus-group-new-mail gnus-tmp-group) ?c)
     (?d (gnus-group-timestamp-string gnus-tmp-group) ?s)
@@ -1425,10 +1424,6 @@ if it is a string, only list groups matching REGEXP."
 	 (gnus-tmp-process-marked
 	  (if (member gnus-tmp-group gnus-group-marked)
 	      gnus-process-mark ? ))
-	 (gnus-tmp-grouplens
-	  (or (and gnus-use-grouplens
-		   (bbb-grouplens-group-p gnus-tmp-group))
-	      ""))
 	 (buffer-read-only nil)
 	 header gnus-tmp-header)	; passed as parameter to user-funcs.
     (beginning-of-line)

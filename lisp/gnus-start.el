@@ -776,11 +776,6 @@ prompt the user for the name of an NNTP server to use."
 	  (when (or gnus-slave gnus-use-dribble-file)
 	    (gnus-dribble-read-file))
 
-	  ;; Allow using GroupLens predictions.
-	  (when gnus-use-grouplens
-	    (bbb-login)
-	    (add-hook 'gnus-summary-mode-hook 'gnus-grouplens-mode))
-
 	  ;; Do the actual startup.
 	  (if gnus-agent
 	      (gnus-request-create-group "queue" '(nndraft "")))

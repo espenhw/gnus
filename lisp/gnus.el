@@ -1411,11 +1411,6 @@ cache to the full extent of the law."
   :group 'gnus-meta
   :type 'boolean)
 
-(defcustom gnus-use-grouplens nil
-  "*If non-nil, use GroupLens ratings."
-  :group 'gnus-meta
-  :type 'boolean)
-
 (defcustom gnus-keep-backlog 20
   "*If non-nil, Gnus will keep read articles for later re-retrieval.
 If it is a number N, then Gnus will only keep the last N articles
@@ -2217,8 +2212,7 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL."
 		      summary-menu group-menu article-menu
 		      tree-highlight menu highlight
 		      browse-menu server-menu
-		      page-marker tree-menu binary-menu pick-menu
-		      grouplens-menu)
+		      page-marker tree-menu binary-menu pick-menu)
   "*Enable visual features.
 If `visual' is disabled, there will be no menus and few faces.  Most of
 the visual customization options below will be ignored.  Gnus will use
@@ -2232,8 +2226,7 @@ instance, to switch off all visual things except menus, you can say:
 Valid elements include `summary-highlight', `group-highlight',
 `article-highlight', `mouse-face', `summary-menu', `group-menu',
 `article-menu', `tree-highlight', `menu', `highlight', `browse-menu',
-`server-menu', `page-marker', `tree-menu', `binary-menu', `pick-menu',
-and `grouplens-menu'."
+`server-menu', `page-marker', `tree-menu', `binary-menu', and`pick-menu'."
   :group 'gnus-meta
   :group 'gnus-visual
   :type '(set (const summary-highlight)
@@ -2251,8 +2244,7 @@ and `grouplens-menu'."
 	      (const page-marker)
 	      (const tree-menu)
 	      (const binary-menu)
-	      (const pick-menu)
-	      (const grouplens-menu)))
+	      (const pick-menu)))
 
 ;; Byte-compiler warning.
 (defvar gnus-visual)
@@ -2662,8 +2654,6 @@ gnus-registry.el will populate this if it's loaded.")
       gnus-summary-post-forward gnus-summary-wide-reply-with-original
       gnus-summary-post-forward)
      ("gnus-picon" :interactive t gnus-treat-from-picon)
-     ("gnus-gl" bbb-login bbb-logout bbb-grouplens-group-p
-      gnus-grouplens-mode)
      ("smiley" :interactive t smiley-region)
      ("gnus-win" gnus-configure-windows gnus-add-configuration)
      ("gnus-sum" gnus-summary-insert-line gnus-summary-read-group
