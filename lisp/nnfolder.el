@@ -1205,8 +1205,8 @@ This command does not work if you use short group names."
   (let ((file (nnfolder-group-marks-pathname group)))
     (if (null (gnus-gethash file nnfolder-marks-modtime))
 	t ;; never looked at marks file, assume it has changed
-      (not (eq (gnus-gethash file nnfolder-marks-modtime)
-	       (nth 5 (file-attributes file)))))))
+      (not (equal (gnus-gethash file nnfolder-marks-modtime)
+		  (nth 5 (file-attributes file)))))))
 
 (defun nnfolder-save-marks (group server)
   (let ((file-name-coding-system nnmail-pathname-coding-system)

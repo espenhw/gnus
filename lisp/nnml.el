@@ -979,8 +979,8 @@ Use the nov database for the current group if available."
 				(nnmail-group-pathname group nnml-directory))))
     (if (null (gnus-gethash file nnml-marks-modtime))
 	t ;; never looked at marks file, assume it has changed
-      (not (eq (gnus-gethash file nnml-marks-modtime)
-	       (nth 5 (file-attributes file)))))))
+      (not (equal (gnus-gethash file nnml-marks-modtime)
+		  (nth 5 (file-attributes file)))))))
 
 (defun nnml-save-marks (group server)
   (let ((file-name-coding-system nnmail-pathname-coding-system)

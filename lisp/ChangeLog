@@ -1,3 +1,10 @@
+2001-10-20  Simon Josefsson  <jas@extundo.com>
+
+	* nnml.el (nnml-marks-changed-p): Use `equal' when comparing
+	conses.  From David Z Maze <dmaze@MIT.EDU>.
+
+	* nnfolder.el (nnfolder-marks-changed-p): Ditto.
+
 2001-10-19  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* mm-decode.el (mm-default-directory): Fix customize type.
