@@ -10,8 +10,10 @@
 	Bogofilter interface
 	(spam-summary-prepare-exit): use the new Bogofilter functions
 	(spam-list-of-checks): added spam-use-bogofilter-headers
-	(gnus-summary-mode-map): removed the spam-bogofilter-score entries
-	for now
+	(spam-bogofilter-score): rewrote function
+	(spam-check-bogofilter): optional score parameter, uses
+	spam-check-bogofilter-headers better
+	(spam-check-bogofilter-headers): optional score parameter
 
 	* gnus.el (gnus-install-group-spam-parameters): new variable, t by
 	default, in the gnus-start customization group.  Used to disable

@@ -229,11 +229,9 @@ your main source of newsgroup names."
 ;;; Key bindings for spam control.
 
 (gnus-define-keys gnus-summary-mode-map
-;;; bogofilter scores don't work yet
-;;;  "St" spam-bogofilter-score
+  "St" spam-bogofilter-score
   "Sx" gnus-summary-mark-as-spam
-;;; bogofilter scores don't work yet
-;;;  "Mst" spam-bogofilter-score
+  "Mst" spam-bogofilter-score
   "Msx" gnus-summary-mark-as-spam
   "\M-d" gnus-summary-mark-as-spam)
 
@@ -768,18 +766,25 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 
 ;;;; Bogofilter
 
-(defun spam-check-bogofilter-headers ()
+(defun spam-check-bogofilter-headers (&optional score)
   (let ((header (message-fetch-field spam-bogofilter-header)))
-      (if (and header
+      (when (and header
 	       (string-match "^Yes" header))
-	  spam-split-group
-	nil)))
+	  (if score
+	      (when (string-match "spamicity=\\([0-9.]+\\)" header)
+		(match-string 1 header))
+	    spam-split-group))))
 	  
 
-(defun spam-check-bogofilter ()
+;; return something sensible if the score can't be determined
+(defun spam-bogofilter-score ()
+  (or (spam-check-bogofilter t)
+      0))
+
+(defun spam-check-bogofilter (&optional score)
   "Check the Bogofilter backend for the classification of this message"
   (let ((article-buffer-name (buffer-name)) 
-	return bogorun)
+	return)
     (with-temp-buffer
       (let ((temp-buffer-name (buffer-name)))
 	(save-excursion
@@ -791,8 +796,7 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 				   "-d" spam-bogofilter-database-directory)
 	    (call-process-region (point-min) (point-max) spam-bogofilter-path
 				 nil temp-buffer-name nil "-v")))
-	(when (spam-check-bogofilter-headers)
-	  (setq return spam-split-group))))
+	(setq return (spam-check-bogofilter-headers score))))
     return))
 
 (defun spam-bogofilter-register-with-bogofilter (article-string spam)
