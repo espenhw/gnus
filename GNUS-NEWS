@@ -8,6 +8,21 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** message-minibuffer-local-map
+
+The line below enables BBDB in resending a message:
+
+(define-key message-minibuffer-local-map [(tab)] 'bbdb-complete-name)
+
+** Externalize attachments.
+
+If gnus-gcc-externalize-attachments (or
+message-fcc-externalize-attachments) is non-nil, attach local files as
+external parts.
+
+Command gnus-mime-save-part-and-strip (bound to \C-o on MIME buttons)
+saves a part and replaces the part with an external one.
+
 ** gnus-default-charset
 
 The default value is determined from the current-language-environment
