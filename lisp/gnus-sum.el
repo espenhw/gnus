@@ -3248,8 +3248,8 @@ buffer that was in action when the last article was fetched."
 	; Is it really necessary to do this next part for each summary line?
 	; Luckily, doesn't seem to slow things down much.
 	(mail-parse-ignored-charsets
-	 (save-excursion (set-buffer gnus-summary-buffer)
-			 gnus-newsgroup-ignored-charsets)))
+	 (with-current-buffer gnus-summary-buffer
+	   gnus-newsgroup-ignored-charsets)))
     (or
      (and gnus-ignored-from-addresses
 	  (string-match gnus-ignored-from-addresses gnus-tmp-from)

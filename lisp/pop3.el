@@ -304,7 +304,7 @@ If NOW, use that time instead."
 	(setq pass
 	      (read-passwd (format "Password for %s: " pop3-maildrop))))
     (if pass
-	(let ((hash (pop3-md5 (concat pop3-timestamp pass))))
+	(let ((hash (md5 (concat pop3-timestamp pass))))
 	  (pop3-send-command process (format "APOP %s %s" user hash))
 	  (let ((response (pop3-read-response process t)))
 	    (if (not (and response (string-match "+OK" response)))
@@ -312,22 +312,6 @@ If NOW, use that time instead."
     ))
 
 ;; TRANSACTION STATE
-
-(eval-and-compile
-  (if (fboundp 'md5)
-      (defalias 'pop3-md5 'md5)
-    (defvar pop3-md5-program "md5"
-      "*Program to encode its input in MD5.")
-
-    (defun pop3-md5 (string)
-      (with-temp-buffer
-	(insert string)
-	(call-process-region (point-min) (point-max)
-			     pop3-md5-program
-			     t (current-buffer) nil)
-	;; The meaningful output is the first 32 characters.
-	;; Don't return the newline that follows them!
-	(buffer-substring (point-min) (+ 32 (point-min)))))))
 
 (defun pop3-stat (process)
   "Return the number of messages in the maildrop and the maildrop's size."

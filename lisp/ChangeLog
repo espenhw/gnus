@@ -1,3 +1,13 @@
+2004-01-09  Jesper Harder  <harder@ifa.au.dk>
+
+	* pop3.el (pop3-md5): Remove.
+	(pop3-apop): Replace pop3-md5 with md5.
+
+	* mm-bodies.el: base64 is always built-in.
+
+	* gnus-sum.el (gnus-summary-from-or-to-or-newsgroups): Use
+	with-current-buffer.
+
 2004-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* canlock.el (canlock-insert-header): Remove excessive grouping in
