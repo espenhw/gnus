@@ -6,7 +6,7 @@
 	* gnus-ems.el (gnus-remove-image): Don't use
 	message-text-with-property; remove only the image found first.
 
-	* gnus-smas.el (gnus-xmas-remove-image): Remove only the image
+	* gnus-xmas.el (gnus-xmas-remove-image): Remove only the image
 	found first.
 
 2004-06-09  Jesper Harder  <harder@ifa.au.dk>
