@@ -1,3 +1,8 @@
+2002-01-03  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Use correct syntax for
+	:keys, it works on both Emacsen.
+
 2002-01-03  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-util.el (mm-charset-to-coding-system): Don't setq charset.
