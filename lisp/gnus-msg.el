@@ -137,7 +137,7 @@ the group.")
        (gnus-configure-windows ,config t))))
     
 (defun gnus-inews-add-send-actions (winconf buffer article)
-  (make-local-hook 'message-sent-hook)
+  (gnus-make-local-hook 'message-sent-hook)
   (add-hook 'message-sent-hook 'gnus-inews-do-gcc)
   (setq message-post-method
 	`(lambda (arg)

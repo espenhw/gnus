@@ -1688,7 +1688,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.59"
+(defconst gnus-version "September Gnus v0.60"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5367,20 +5367,23 @@ ADDRESS."
 	   (completing-read
 	    "Method: " (append gnus-valid-select-methods gnus-server-alist)
 	    nil t)))
-      (if (assoc method gnus-valid-select-methods)
-	  (list method
-		(if (memq 'prompt-address
-			  (assoc method gnus-valid-select-methods))
-		    (read-string "Address: ")
-		  ""))
-	(list method "")))))
+      (cond ((assoc method gnus-valid-select-methods)
+	     (list method
+		   (if (memq 'prompt-address
+			     (assoc method gnus-valid-select-methods))
+		       (read-string "Address: ")
+		     "")))
+	    ((assoc method gnus-server-alist)
+	     (list method))
+	    (t
+	     (list method ""))))))
 
   (save-excursion
     (set-buffer gnus-group-buffer)
     (let* ((meth (and method (if address (list (intern method) address)
 			       method)))
 	   (nname (if method (gnus-group-prefixed-name name meth) name))
-	   info)
+	   backend info)
       (and (gnus-gethash nname gnus-newsrc-hashtb)
 	   (error "Group %s already exists" nname))
       (gnus-group-change-level
@@ -5396,8 +5399,10 @@ ADDRESS."
 	   (concat "(gnus-group-set-info '" (prin1-to-string (cdr info)) ")")))
       (gnus-group-insert-group-line-info nname)
 
-      (when (assoc (symbol-name (car meth)) gnus-valid-select-methods)
-	(require (car meth)))
+      (when (assoc (symbol-name (setq backend (car (gnus-server-get-method
+						    nil meth))))
+		   gnus-valid-select-methods)
+	(require backend))
       (gnus-check-server meth)
       (and (gnus-check-backend-function 'request-create-group nname)
 	   (gnus-request-create-group nname))

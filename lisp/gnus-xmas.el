@@ -165,7 +165,8 @@ It is provided only to ease porting of broken FSF Emacs programs."
 	  (setq buf (buffer-substring (point-min) (point-max)))
 	  (set-buffer gnus-article-copy)
 	  (erase-buffer)
-	  (insert (format "%s" buf))))))
+	  (insert (format "%s" buf))))
+    gnus-article-copy))
 
 (defun gnus-xmas-article-push-button (event)
   "Check text under the mouse pointer for a callback function.
@@ -422,6 +423,7 @@ pounce directly on the real variables themselves.")
   (fset 'gnus-appt-select-lowest-window 
 	'gnus-xmas-appt-select-lowest-window)
   (fset 'gnus-mail-strip-quoted-names 'gnus-xmas-mail-strip-quoted-names)
+  (fset 'gnus-make-local-hook 'make-local-variable)
 
   (add-hook 'gnus-group-mode-hook 'gnus-xmas-group-menu-add)
   (add-hook 'gnus-summary-mode-hook 'gnus-xmas-summary-menu-add)

@@ -1,4 +1,48 @@
+Thu Mar 28 06:12:28 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-send-mail): Remove Gcc header.
+	(message-setup): Would insert default headers in the body.
+
+Wed Mar 27 11:25:41 1996  Jack Vinson  <jvinson@cheux.ecs.umass.edu>
+
+	* message.el:  Lots of small typos corrected.
+	(message-goto-signature): Added missing function.
+	(message-mode): Updated the description.
+	(message-send): Corrected format for first y-or-n-p.
+	(message-forward): Added description.
+
+Thu Mar 28 05:31:48 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* message.el (message-send-mail): Make sure point is in the right
+	buffer. 
+	(message-send-mail): Would remove Bcc headers.
+	(message-insert-courtesy-copy): Would bug out in non-news
+	buffers. 
+	(message-send-news): Don't remove Gcc headers from the message
+	buffer. 
+	(message-ignored-mail-headers): New variable. 
+
+Thu Mar 28 05:30:02 1996  Lars Magne Ingebrigtsen  <larsi@larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-copy-article-buffer): Return the proper
+	value. 
+
+	* message.el (message-mode-map): Would make XEmacs barf.
+
+Thu Mar 28 03:49:32 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el (gnus-group-make-group): Wouldn't allow usage of virtual
+	server names.
+
+	* message.el (message-cite-hook): New variable.
+
+Thu Mar 28 03:48:54 1996  Kai Grossjohann  <grossjoh@dusty.informatik.uni-dortmund.de>
+
+	* message.el (message-yank-original): Run `message-cite-hook'.
+
 Wed Mar 27 05:06:16 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.59 is released.
 
 	* message.el (message-remove-header): Allow reverse removal.
 	(message-news-p): Narrow to headers first. 
