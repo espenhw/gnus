@@ -1,3 +1,11 @@
+2003-01-19  Jesper Harder  <harder@ifa.au.dk>
+
+	* dir (File): Add pgg.
+
+	* gnus.texi (Selecting a Group): Index gnus-auto-select-subject
+
+	* emacs-mime.texi (Display Customization): Add mm-keep-viewer-alive-types
+
 2003-01-16  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Summary Agent Commands): Addition.

@@ -20,3 +20,4 @@ File: dir	Node: Top	This is the Gnus Info tree
 * Message: (message).		The Message sending thingamabob.
 * Emacs MIME: (emacs-mime).	Libraries for handling MIME.
 * Sieve: (sieve).	        Managing Sieve scripts in Emacs.
+* PGG: (pgg).   		Emacs interface to various PGP implementations.
