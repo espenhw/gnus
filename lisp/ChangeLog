@@ -1,3 +1,7 @@
+2000-12-31 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* qp.el (quoted-printable-decode-region): Don't backward-char.
+
 2000-12-31 03:57:31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-draft.el: Mark articles as replied.

@@ -53,7 +53,7 @@ coding-system."
 	(if coding-system
 	    (mm-encode-coding-region (point-min) (point-max) coding-system))
 	(goto-char (point-min))
-	(while (and (skip-chars-forward "^=" to)
+	(while (and (skip-chars-forward "^=")
 		    (not (eobp)))
 	  (cond ((eq (char-after (1+ (point))) ?\n)
 		 (delete-char 2))
@@ -63,8 +63,10 @@ coding-system."
 					    16)))
 		   (insert byte)
 		   (delete-char 3)
-		   (unless (eq byte ?=)
-		     (backward-char))))
+		   ;; Why backward-char??? 
+		   ;;(unless (eq byte 61) ;; 61 is not ?= in XEmacs
+		   ;;  (backward-char))
+		   ))
 		(t
 		 (error "Malformed quoted-printable text")
 		 (forward-char)))))
