@@ -28,8 +28,9 @@ default.  See the variables `message-required-headers',
 Message now asks if you wish to remove "(was: <old subject>)" from
 subject lines (see `message-subject-trailing-was-query').  C-c M-m and
 C-c M-f inserts markers indicating included text.  C-c C-f a adds a
-X-No-Archive: header.  Improved crosspost follow behaviour with
-`message-cross-post-*'.
+X-No-Archive: header.  C-c C-f x inserts appropriate headers and a
+note in the body for cross-postings and followups (see the variables
+`message-cross-post-*').
 
 ** References and X-Draft-Headers are no longer generated when you
    start composing messages.
