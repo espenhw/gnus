@@ -25,8 +25,8 @@
 
 ;;; Code:
 
-(require 'easymenu)
 (eval-when-compile (require 'cl))
+(require 'mm-util)			; for mm-auto-save-coding-system
 
 (defvar gnus-score-mode-hook nil
   "*Hook run in score mode buffers.")
@@ -51,7 +51,8 @@
     table)
   "Syntax table used in score-mode buffers.")
 
-(defvar score-mode-coding-system 'binary)
+;; We need this to cope with non-ASCII scoring.
+(defvar score-mode-coding-system mm-auto-save-coding-system)
 
 ;;;###autoload
 (defun gnus-score-mode ()
