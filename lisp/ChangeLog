@@ -1,3 +1,7 @@
+2000-11-17 13:44  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* lpath.el: Shut up.
+
 2000-11-17  Per Abrahamsen  <abraham@dina.kvl.dk>
 
 	* gnus-msg.el (gnus-group-posting-charset-alist): No longer allow
