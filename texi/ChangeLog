@@ -1,3 +1,8 @@
+2004-01-23  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (Spam ELisp Package Filtering of Incoming Mail):
+	mention spam-split does not modify incoming mail
+
 2004-01-23  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (GroupLens): Remove.

@@ -22512,6 +22512,8 @@ Note that the fancy split may be called @code{nnmail-split-fancy} or
 @code{nnimap-split-fancy}, depending on whether you use the nnmail or
 nnimap back ends to retrieve your mail.
 
+Also, @code{spam-split} will not modify incoming mail in any way.
+
 The @code{spam-split} function will process incoming mail and send the
 mail considered to be spam into the group name given by the variable
 @code{spam-split-group}.  By default that group name is @samp{spam},
