@@ -562,6 +562,11 @@ should go, and further checks are also inhibited.  The usual mailgroup
 name is the value of `spam-split-group', meaning that the message is
 definitely a spam.")
 
+(defvar spam-list-of-statistical-checks
+  '(spam-use-ifile spam-use-stat spam-use-bogofilter)
+"The spam-list-of-statistical-checks list contains all the mail
+splitters that need to have the full message body available.")
+
 (defun spam-split ()
   "Split this message into the `spam' group if it is spam.
 This function can be used as an entry in `nnmail-split-fancy', for
@@ -569,7 +574,14 @@ example like this: (: spam-split)
 
 See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (interactive)
-  
+
+  (dolist (check spam-list-of-statistical-checks)
+    (when (symbol-value check)
+      (widen)
+      (gnus-message 8 "spam-split: widening the buffer (%s requires it)"
+		    (symbol-name check))
+      (return)))
+;;   (progn (widen) (debug (buffer-string)))
   (let ((list-of-checks spam-list-of-checks)
 	decision)
     (while (and list-of-checks (not decision))
@@ -580,6 +592,15 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (if (eq decision t)
 	nil
       decision)))
+
+(defun spam-setup-widening ()
+  (dolist (check spam-list-of-statistical-checks)
+    (when (symbol-value check)
+      (setq nnimap-split-download-body t)
+      (return))))
+
+(add-hook 'gnus-get-new-news-hook 'spam-setup-widening)
+
 
 ;;;; Regex headers
 

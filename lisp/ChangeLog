@@ -1,3 +1,12 @@
+2003-02-28  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* spam.el (spam-setup-widening): new function to set
+	nnimap-split-download-body, we add it to gnus-get-new-news-hook
+	(spam-list-of-statistical-checks): list of statistical splitter
+	checks
+	(spam-split): added a widen call when a statistical check is
+	enabled
+
 2003-02-28  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-msg.el (gnus-user-agent): Changed default to
