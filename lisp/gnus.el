@@ -1869,14 +1869,45 @@ to do spam-processed article moving, associated with the destination
 group or `nil' for explicit expiration.  This only makes sense for
 mail groups."
  :variable-group spam
- :variable-type '(repeat :tag "Spam-processed articles destination" 
-			 (list
-			  (regexp :tag "Group Regexp") 
-			  (choice :tag "Destination for spam-processed articles at summary exit"
-				  (string :tag "Move to a group")
-				  (other :tag "Expire" nil))))
+ :variable-type '(repeat 
+		  :tag "Spam-processed articles destination" 
+		  (list
+		   (regexp :tag "Group Regexp") 
+		   (choice 
+		    :tag "Destination for spam-processed articles at summary exit"
+		    (string :tag "Move to a group")
+		    (other :tag "Expire" nil))))
  :parameter-document
  "Where spam-processed articles will go at summary exit.")
+
+(gnus-define-group-parameter
+ ham-process-destination
+ :parameter-type '(choice 
+		   :tag "Destination for ham articles at summary exit from a spam group"
+			  (string :tag "Move to a group")
+			  (other :tag "Do nothing" nil))
+ :function-document
+ "Where ham articles will go at summary exit from a spam group."
+ :variable gnus-ham-process-destinations
+ :variable-default nil
+ :variable-document
+ "*Groups in which to explicitly send ham articles to
+another group, or do nothing (the default).  If non-nil, this should
+be a list of group name regexps that should match all groups in which
+to do ham article moving, associated with the destination
+group or `nil' for explicit ignoring.  This only makes sense for
+mail groups, and only works in spam groups."
+ :variable-group spam
+ :variable-type '(repeat 
+		  :tag "Ham articles destination" 
+		  (list
+		   (regexp :tag "Group Regexp") 
+		   (choice 
+		    :tag "Destination for ham articles at summary exit from spam group"
+		    (string :tag "Move to a group")
+		    (other :tag "Expire" nil))))
+ :parameter-document
+ "Where ham articles will go at summary exit from a spam group.")
 
 (defcustom gnus-group-uncollapsed-levels 1
   "Number of group name elements to leave alone when making a short group name."

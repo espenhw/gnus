@@ -1,3 +1,21 @@
+2003-01-08  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.el (ham-process-destination): added new parameter for
+	destination of ham articles found in spam groups at summary exit
+
+	* spam.el (spam-get-ifile-database-parameter): use spam-ifile-database-path
+	(spam-check-ifile, spam-ifile-register-with-ifile): use spam-get-ifile-database-parameter
+	(spam-ifile-database-path): added new parameter for ifile's database
+	(spam-move-spam-nonspam-groups-only): new parameter to determine
+	if spam should be moved from all groups or only some
+	(spam-summary-prepare-exit): fixed logic to use
+	spam-move-spam-nonspam-groups-only when deciding to invoke
+	spam-mark-spam-as-expired-and-move-routine; always invoke that
+	routine after the spam has been expired-or-moved in case there's
+	some spam left over; use spam-ham-move-routine in spam groups
+	(spam-ham-move-routine): new function to move ham articles to the
+	ham-process-destinations group parameter
+
 2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus-spec.el (gnus-parse-complex-format): %~ => ~*.
