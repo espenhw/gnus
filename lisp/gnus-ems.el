@@ -209,65 +209,18 @@
 	  (goto-char (point-min))
 	  (sit-for 0))))))
 
-(defvar gnus-article-xface-ring-internal nil
-  "Cache for face data.")
-
-;; Worth customizing?
-(defvar gnus-article-xface-ring-size 6
-  "Length of the ring used for `gnus-article-xface-ring-internal'.")
-
-(defun gnus-article-display-xface (data)
-  "Display the XFace header FACE in the current buffer.
-Requires support for images in your Emacs and the external programs
-`uncompface', and `icontopbm'.  On a GNU/Linux system these
-might be in packages with names like `compface' or `faces-xface' and
-`netpbm' or `libgr-progs', for instance.  See also
-`gnus-article-compface-xbm'.
-
-This function is for Emacs 21+.  See `gnus-xmas-article-display-xface'
-for XEmacs."
-  ;; It might be worth converting uncompface's output in Lisp.
-
-  (when (if (fboundp 'display-graphic-p)
-	    (display-graphic-p))
-    (unless gnus-article-xface-ring-internal ; Only load ring when needed.
-      (setq gnus-article-xface-ring-internal
-	    (make-ring gnus-article-xface-ring-size)))
-    (save-excursion
-      (let* ((cur (current-buffer))
-	     (image (cdr-safe (assoc data (ring-elements
-					   gnus-article-xface-ring-internal))))
-	     default-enable-multibyte-characters
-	     face)
-	(unless image
-	  (when (setq face (uncompface data))
-	    ;; Miles Bader says that faces don't look right as
-	    ;; light on dark.
-	    (if (eq 'dark (cdr-safe (assq 'background-mode
-					  (frame-parameters))))
-		(setq image (create-image face 'pbm
-					  t
-					  :ascent 'center
-					  :foreground "black"
-					  :background "white"))
-	      (setq image (create-image face 'pbm
-					t :ascent 'center))))
-	  (ring-insert gnus-article-xface-ring-internal (cons data image)))
-	(when image
-	  (goto-char (point-min))
-	  (re-search-forward "^From:" nil 'move)
-	  (gnus-add-wash-type 'xface)
-	  (gnus-add-image 'xface image)
-	  (gnus-put-image image))))))
-
 ;;; Image functions.
 
 (defun gnus-image-type-available-p (type)
   (and (fboundp 'image-type-available-p)
        (image-type-available-p type)))
 
-(defun gnus-create-image (file &optional type data-p)
-  (create-image file type data-p))
+(defun gnus-create-image (file &optional type data-p &rest props)
+  (let ((face (plist-get props :face)))
+    (when face
+      (setq props (plist-put props :foreground (face-foreground face)))
+      (setq props (plist-put props :background (face-background face))))
+    (apply 'create-image file type data-p props)))
 
 (defun gnus-put-image (glyph &optional string)
   (insert-image glyph (or string " "))
@@ -279,8 +232,8 @@ for XEmacs."
   (dolist (position (message-text-with-property 'display))
     (when (equal (get-text-property position 'display) image)
       (put-text-property position (1+ position) 'display nil)
-      (if (get-text-property position 'gnus-image-text-deletable)
-	  (delete-region position (1+ position))))))
+      (when (get-text-property position 'gnus-image-text-deletable)
+	(delete-region position (1+ position))))))
 
 (provide 'gnus-ems)
 

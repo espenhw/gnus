@@ -228,15 +228,13 @@ regexp.  If it matches, the text in question is not a signature."
 (defcustom gnus-article-x-face-command
   (if (featurep 'xemacs)
       (if (or (gnus-image-type-available-p 'xface)
-	      (gnus-image-type-available-p 'xpm))
-	  'gnus-xmas-article-display-xface
+	      (gnus-image-type-available-p 'pbm))
+	  'gnus-display-x-face-in-from
 	"{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | ee -")
-    (if (gnus-image-type-available-p 'xbm)
-	'gnus-article-display-xface
-      (if gnus-article-compface-xbm
-	  "{ echo '/* Width=48, Height=48 */'; uncompface; } | display -"
-	"{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | \
-display -")))
+    (if (gnus-image-type-available-p 'pbm)
+	'gnus-display-x-face-in-from
+      "{ echo '/* Width=48, Height=48 */'; uncompface; } | icontopbm | \
+display -"))
   "*String or function to be executed to display an X-Face header.
 If it is a string, the command will be executed in a sub-shell
 asynchronously.	 The compressed face will be piped to this command."
@@ -1806,8 +1804,7 @@ unfolded."
 		  image)
 	      (when xpm
 		(setq image (gnus-create-image xpm 'xpm t))
-		(goto-char (point-min))
-		(re-search-forward "^From:" nil 'move)
+		(gnus-article-goto-header "from")
 		(gnus-add-wash-type 'xface)
 		(gnus-add-image 'xface image)
 		(gnus-put-image image)))

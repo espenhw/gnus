@@ -159,6 +159,29 @@
 	  (goto-char (point-max)))))
     (gnus-convert-gray-x-face-to-xpm faces)))
 
+(defface gnus-x-face '((t (:foreground "black" :background "white")))
+  "Face to show X-Face.
+The colors from this face are used as the foreground and background
+colors of the displayed X-Faces."
+  :group 'gnus-article-headers)
+
+(defun gnus-display-x-face-in-from (data)
+  "Display the X-Face DATA in the From header."
+  (let ((default-enable-multibyte-characters nil)
+	pbm)
+    (when (and (gnus-image-type-available-p 'pbm)
+	       (setq pbm (uncompface data)))
+      (save-excursion
+	(save-restriction
+	  (article-narrow-to-head)
+	  (gnus-article-goto-header "from")
+	  (gnus-add-image 'xface (gnus-put-image
+				  (gnus-create-image
+				   pbm 'pbm t
+				   :ascent 'center
+				   :face 'gnus-x-face)))
+	  (gnus-add-wash-type 'xface))))))
+
 (provide 'gnus-fun)
 
 ;;; gnus-fun.el ends here

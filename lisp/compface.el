@@ -30,19 +30,26 @@
   "Convert FACE to pbm.
 Requires the external programs `uncompface', and `icontopbm'.  On a
 GNU/Linux system these might be in packages with names like `compface'
-or `faces-xface' and `netpbm' or `libgr-progs', for instance.  See
-also `compface-xbm-p'."
+or `faces-xface' and `netpbm' or `libgr-progs', for instance."
   (with-temp-buffer
     (insert face)
-    (and (eq 0 (apply #'call-process-region (point-min) (point-max)
+    (and (eq 0 (apply 'call-process-region (point-min) (point-max)
 		      "uncompface"
 		      'delete '(t nil) nil))
 	 (progn
 	   (goto-char (point-min))
-	   (progn (insert "/* Width=48, Height=48 */\n") t)
-	   (eq 0 (call-process-region (point-min) (point-max)
-				      "icontopbm"
-				      'delete '(t nil))))
+	   (insert "/* Width=48, Height=48 */\n")
+	   ;; I just can't get "icontopbm" to work correctly on its
+	   ;; own in XEmacs.  And Emacs doesn't understand un-raw pbm
+	   ;; files.
+	   (if (not (featurep 'xemacs))
+	       (eq 0 (call-process-region (point-min) (point-max)
+					  "icontopbm"
+					  'delete '(t nil)))
+	     (shell-command-on-region (point-min) (point-max)
+				      "icontopbm | pnmnoraw"
+				      (current-buffer) t)
+	     t))
 	 (buffer-string))))
 
 (provide 'compface)

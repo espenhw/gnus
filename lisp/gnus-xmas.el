@@ -645,41 +645,6 @@ XEmacs compatibility workaround."
    'call-process-region (point-min) (point-max) command t '(t nil) nil
    args))
 
-(defface gnus-x-face '((t (:foreground "black" :background "white")))
-  "Face to show X face"
-  :group 'gnus-xmas)
-
-(defun gnus-xmas-article-display-xface (data)
-  "Display the XFace in DATA."
-  (save-excursion
-    (let ((xface-glyph
-	   (cond
-	    ((featurep 'xface)
-	     (make-glyph (vector 'xface :data
-				 (concat "X-Face: " data))))
-	    ((featurep 'xpm)
-	     (let ((cur (current-buffer)))
-	       (save-excursion
-		 (gnus-set-work-buffer)
-		 (insert data)
-		 (let ((coding-system-for-read 'binary)
-		       (coding-system-for-write 'binary))
-		   (gnus-xmas-call-region "uncompface")
-		   (goto-char (point-min))
-		   (insert "/* Width=48, Height=48 */\n")
-		   (gnus-xmas-call-region "icontopbm")
-		   (gnus-xmas-call-region "ppmtoxpm")
-		   (make-glyph
-		    (vector 'xpm :data (buffer-string)))))))
-	    (t
-	     (make-glyph [nothing])))))
-      (set-glyph-face xface-glyph 'gnus-x-face)
-
-      (gnus-article-goto-header "from")
-      (gnus-put-image xface-glyph)
-      (gnus-add-wash-type 'xface)
-      (gnus-add-image 'xface xface-glyph))))
-
 (defvar gnus-xmas-modeline-left-extent
   (let ((ext (copy-extent modeline-buffer-id-left-extent)))
     ext))
@@ -820,23 +785,41 @@ XEmacs compatibility workaround."
 		      gnus-mailing-list-menu))
 
 (defun gnus-xmas-image-type-available-p (type)
+  (when (eq type 'pbm)
+    (setq type 'xbm))
   (featurep type))
 
-(defun gnus-xmas-create-image (file &optional type data-p)
+(defun gnus-xmas-create-image (file &optional type data-p &rest props)
   (let ((type (if type
 		  (symbol-name type)
-		(car (last (split-string file "[.]"))))))
-    (if (equal type "xbm")
-	(make-glyph (list (cons 'x file)))
+		(car (last (split-string file "[.]")))))
+	(face (plist-get props :face))
+	glyph)
+    (when (equal type "pbm")
       (with-temp-buffer
-       (if data-p
-	   (insert file)
-	 (insert-file-contents file))
-       (make-glyph
-	(vector 
-	 (or (mm-image-type-from-buffer)
-	     (intern type))
-	 :data (buffer-string)))))))
+	(if data-p
+	    (insert file)
+	  (insert-file-contents file))
+	(shell-command-on-region (point-min) (point-max)
+				 "ppmtoxpm 2>/dev/null" t)
+	(setq file (buffer-string)
+	      type "xpm"
+	      data-p t)))
+    (setq glyph
+	  (if (equal type "xbm")
+	      (make-glyph (list (cons 'x file)))
+	    (with-temp-buffer
+	      (if data-p
+		  (insert file)
+		(insert-file-contents file))
+	      (make-glyph
+	       (vector 
+		(or (intern type)
+		    (mm-image-type-from-buffer))
+		:data (buffer-string))))))
+    (when face
+      (set-glyph-face glyph face))
+    glyph))
 
 (defun gnus-xmas-put-image (glyph &optional string)
   "Insert STRING, but display GLYPH.
@@ -851,7 +834,8 @@ Warning: Don't insert text immediately after the image."
     (set-extent-property extent 'duplicable t)
     (if string
 	(set-extent-property extent 'invisible t))
-    (set-extent-property extent 'end-glyph glyph)))
+    (set-extent-property extent 'end-glyph glyph))
+  glyph)
 
 (defun gnus-xmas-remove-image (image)
   (map-extents

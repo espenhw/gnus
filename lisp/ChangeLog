@@ -1,3 +1,35 @@
+2002-01-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* compface.el (uncompface): XEmacs and Emacs have differing
+	capabilities. 
+
+	* gnus-fun.el (gnus-display-x-face-in-from): Use face.
+
+	* gnus-ems.el (gnus-article-xface-ring-internal): Removed.
+	(gnus-article-xface-ring-size): Removed.
+	(gnus-article-display-xface): Removed.
+	(gnus-remove-image): Cleaned up.
+
+	* gnus-xmas.el (gnus-xmas-create-image): Convert pbm to xbm.
+	(gnus-xmas-create-image): Take pbm files.
+	(gnus-x-face): Removed.
+	(gnus-xmas-article-display-xface): Removed.
+
+	* gnus-fun.el (gnus-display-x-face-in-from): Bind
+	default-enable-multibyte-characters. 
+
+	* compface.el (uncompface): Doc fix.
+
+	* gnus-art.el (gnus-article-x-face-command): Use
+	gnus-display-x-face-in-from. 
+
+	* gnus-xmas.el (gnus-xmas-put-image): Return the image.
+
+	* gnus-ems.el (gnus-put-image): Return the image.
+
+	* gnus-fun.el (gnus-display-x-face-in-from): New function.
+	(gnus-x-face): Moved here.
+
 2002-01-04  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-xmas.el (gnus-xmas-put-image): Don't insert SPC or make
