@@ -1,3 +1,7 @@
+2001-12-20 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnmaildir.el: Copyright changes. Require cl only at compile time.
+
 2001-12-20  Simon Josefsson  <jas@extundo.com>
 
 	* nnimap.el (top-level): Don't require cl.  Suggested by ShengHuo
