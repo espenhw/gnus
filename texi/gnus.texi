@@ -21918,7 +21918,7 @@ The group to use for spam.  Default is @samp{mail.spam}.
 @end defvar
 
 If you also filter mail with specific subjects into other groups, use
-the following expression.  It only the mails not matching the regular
+the following expression.  Only mails not matching the regular
 expression are considered potential spam.
 
 @example
