@@ -1,3 +1,7 @@
+2001-01-12 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-art.el (article-make-date-line): 11th.
+
 2001-01-11 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mml2015.el (mml2015-gpg-encrypt): Remove CR.

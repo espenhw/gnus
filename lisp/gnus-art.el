@@ -2259,6 +2259,7 @@ should replace the \"Date:\" one, or should be added below it."
 	 (number-to-string (nth 3 dtime))
 	 (let ((digit (% (nth 3 dtime) 10)))
 	   (cond
+	    ((memq (nth 3 dtime) '(11 12)) "th")
 	    ((= digit 1) "st")
 	    ((= digit 2) "nd")
 	    ((= digit 3) "rd")
