@@ -1,3 +1,7 @@
+2003-04-30  Reiner Steib  <Reiner.Steib@gmx.de>
+
+	* gnus.texi (Oort Gnus): New features in Gnus 5.10 from GNUS-NEWS.
+
 2003-04-30  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Filtering Spam Using The Spam ELisp Package): Index.
