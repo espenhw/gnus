@@ -6295,12 +6295,15 @@ square brackets (@samp{[]}).  This is the default method.
 
 @item dummy
 @vindex gnus-summary-dummy-line-format
+@vindex gnus-summary-make-false-root-always
 Gnus will create a dummy summary line that will pretend to be the
 parent.  This dummy line does not correspond to any real article, so
 selecting it will just select the first real article after the dummy
 article.  @code{gnus-summary-dummy-line-format} is used to specify the
 format of the dummy roots.  It accepts only one format spec:  @samp{S},
 which is the subject of the article.  @xref{Formatting Variables}.
+If you want all threads to have a dummy root, even the non-gathered
+ones, set @code{gnus-summary-make-false-root-always} to t.
 
 @item empty
 Gnus won't actually make any article the parent, but simply leave the
@@ -21323,7 +21326,7 @@ the following keyboard commands:
 @kindex S x
 @kindex M s x
 @findex gnus-summary-mark-as-spam
-(@code{gnus-summary-mark-as-spam})
+@code{gnus-summary-mark-as-spam}.
 
 Mark current article as spam, showing it with the @samp{H} mark.
 Whenever you see a spam article, make sure to mark its summary line
@@ -21334,7 +21337,7 @@ with @kbd{M-d} before leaving the group.
 @kindex M s t
 @kindex S t
 @findex spam-bogofilter-score
-(@code{spam-bogofilter-score}
+@code{spam-bogofilter-score}.
 
 You must have bogofilter processing enabled for that command to work
 properly.

@@ -1,3 +1,8 @@
+2002-12-29  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Loose Threads): add
+	gnus-summary-make-false-root-always. 
+
 2002-12-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* emacs-mime.texi: Fix typos.  Index variables.  Add
