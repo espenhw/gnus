@@ -763,6 +763,7 @@ time saver for large mailboxes.")
   "Save the buffer."
   (when (buffer-modified-p)
     (run-hooks 'nnfolder-save-buffer-hook)
+    (gnus-make-directory (file-name-directory (buffer-file-name)))
     (save-buffer)))
 
 (provide 'nnfolder)

@@ -759,8 +759,7 @@ all.  This may very well take some time.")
 	     (search-forward "\n\n" nil t)
 	     (setq chars (- (point-max) (point)))
 	     (max 1 (1- (point)))))
-	  (when (and (not (= 0 chars))	; none of them empty files...
-		     (not (= (point-min) (point-max))))
+	  (unless (zerop (buffer-size))
 	    (goto-char (point-min))
 	    (setq headers (nnml-parse-head chars (caar files)))
 	    (save-excursion

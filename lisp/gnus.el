@@ -143,6 +143,18 @@
   :link '(custom-manual "(gnus)Various Summary Stuff")
   :group 'gnus-summary)
 
+(defgroup gnus-summary-pick nil
+  "Pick mode in the summary buffer."
+  :link '(custom-manual "(gnus)Pick and Read")
+  :prefix "gnus-pick-"
+  :group 'gnus-summary)
+
+(defgroup gnus-summary-tree nil
+  "Tree display of threads in the summary buffer."
+  :link '(custom-manual "(gnus)Tree Display")
+  :prefix "gnus-tree-"
+  :group 'gnus-summary)
+
 ;; Belongs to gnus-uu.el
 (defgroup gnus-extract-view nil
   "Viewing extracted files."
@@ -226,7 +238,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "5.4.59"
+(defconst gnus-version-number "5.4.60"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)

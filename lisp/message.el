@@ -2972,7 +2972,9 @@ Headers already prepared in the buffer are not modified."
 		  (concat (file-name-as-directory message-autosave-directory)
 			  "msg."
 			  (nnheader-replace-chars-in-string
-			   (buffer-name) ?* ?.))))))
+			   (nnheader-replace-chars-in-string
+			    (buffer-name) ?* ?.)
+			   ?/ ?-))))))
       (setq buffer-auto-save-file-name
 	    (save-excursion
 	      (prog1

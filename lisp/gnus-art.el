@@ -981,8 +981,8 @@ always hide."
 	    (while (re-search-forward "^- " nil t)
 	      (gnus-article-hide-text-type
 	       (match-beginning 0) (match-end 0) 'pgp))
-	    (widen)))
-	(run-hooks 'gnus-article-hide-pgp-hook)))))
+	    (widen))
+	  (run-hooks 'gnus-article-hide-pgp-hook))))))
 
 (defun article-hide-pem (&optional arg)
   "Toggle hiding of any PEM headers and signatures in the current article.

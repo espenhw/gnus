@@ -34,22 +34,32 @@
 (defvar gnus-pick-mode nil
   "Minor mode for providing a pick-and-read interface in Gnus summary buffers.")
 
-(defvar gnus-pick-display-summary nil
-  "*Display summary while reading.")
+(defcustom gnus-pick-display-summary nil
+  "*Display summary while reading."
+  :type 'boolean
+  :group 'gnus-summary-pick)
 
-(defvar gnus-pick-mode-hook nil
-  "Hook run in summary pick mode buffers.")
+(defcustom gnus-pick-mode-hook nil
+  "Hook run in summary pick mode buffers."
+  :type 'hook
+  :group 'gnus-summary-pick)
 
-(defvar gnus-mark-unpicked-articles-as-read nil
-  "*If non-nil, mark all unpicked articles as read.")
+(defcustom gnus-mark-unpicked-articles-as-read nil
+  "*If non-nil, mark all unpicked articles as read."
+  :type 'boolean
+  :group 'gnus-summary-pick)
 
-(defvar gnus-pick-elegant-flow t
-  "If non-nil, gnus-pick-start-reading will run gnus-summary-next-group when no articles have been picked.")
+(defcustom gnus-pick-elegant-flow t
+  "If non-nil, gnus-pick-start-reading will run gnus-summary-next-group when no articles have been picked."
+  :type 'boolean
+  :group 'gnus-summary-pick)
 
-(defvar gnus-summary-pick-line-format
+(defcustom gnus-summary-pick-line-format
   "%-5P %U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
   "*The format specification of the lines in pick buffers.
-It accepts the same format specs that `gnus-summary-line-format' does.")
+It accepts the same format specs that `gnus-summary-line-format' does."
+  :type 'string
+  :group 'gnus-summary-pick)
 
 ;;; Internal variables.
 
@@ -350,16 +360,22 @@ This must be bound to a button-down mouse event."
 ;;; gnus-tree-mode
 ;;;
 
-(defvar gnus-tree-line-format "%(%[%3,3n%]%)"
-  "Format of tree elements.")
+(defcustom gnus-tree-line-format "%(%[%3,3n%]%)"
+  "Format of tree elements."
+  :type 'string
+  :group 'gnus-summary-tree)
 
-(defvar gnus-tree-minimize-window t
+(defcustom gnus-tree-minimize-window t
   "If non-nil, minimize the tree buffer window.
 If a number, never let the tree buffer grow taller than that number of
-lines.")
+lines."
+  :type 'boolean
+  :group 'gnus-summary-tree)
 
-(defvar gnus-selected-tree-face 'modeline
-  "*Face used for highlighting selected articles in the thread tree.")
+(defcustom gnus-selected-tree-face 'modeline
+  "*Face used for highlighting selected articles in the thread tree."
+  :type 'face
+  :group 'gnus-summary-tree)
 
 (defvar gnus-tree-brackets '((?\[ . ?\]) (?\( . ?\))
 			     (?\{ . ?\}) (?< . ?>))
@@ -368,16 +384,24 @@ lines.")
 (defvar gnus-tree-parent-child-edges '(?- ?\\ ?|)
   "Characters used to connect parents with children.")
 
-(defvar gnus-tree-mode-line-format "Gnus: %%b %S %Z"
-  "*The format specification for the tree mode line.")
+(defcustom gnus-tree-mode-line-format "Gnus: %%b %S %Z"
+  "*The format specification for the tree mode line."
+  :type 'string
+  :group 'gnus-summary-tree)
 
-(defvar gnus-generate-tree-function 'gnus-generate-vertical-tree
+(defcustom gnus-generate-tree-function 'gnus-generate-vertical-tree
   "*Function for generating a thread tree.
 Two predefined functions are available:
-`gnus-generate-horizontal-tree' and `gnus-generate-vertical-tree'.")
+`gnus-generate-horizontal-tree' and `gnus-generate-vertical-tree'."
+  :type '(radio (function-item gnus-generate-vertical-tree)
+		(function-item gnus-generate-horizontal-tree)
+		(function :tag "Other" nil))
+  :group 'gnus-summary-tree)
 
-(defvar gnus-tree-mode-hook nil
-  "*Hook run in tree mode buffers.")
+(defcustom gnus-tree-mode-hook nil
+  "*Hook run in tree mode buffers."
+  :type 'hook
+  :group 'gnus-summary-tree)
 
 ;;; Internal variables.
 
@@ -410,6 +434,7 @@ Two predefined functions are available:
    "\r" gnus-tree-select-article
    gnus-mouse-2 gnus-tree-pick-article
    "\C-?" gnus-tree-read-summary-keys
+   "h" gnus-tree-show-summary
 
    "\C-c\C-i" gnus-info-find-node)
 
@@ -459,6 +484,14 @@ Two predefined functions are available:
       (when gnus-selected-tree-overlay
 	(goto-char (or (gnus-overlay-end gnus-selected-tree-overlay) 1)))
       (gnus-tree-minimize))))
+
+(defun gnus-tree-show-summary ()
+  "Reconfigure windows to show summary buffer."
+  (interactive)
+  (if (not (gnus-buffer-live-p gnus-summary-buffer))
+      (error "There is no summary buffer for this tree buffer")
+    (gnus-configure-windows 'article)
+    (gnus-summary-goto-subject gnus-current-article)))
 
 (defun gnus-tree-select-article (article)
   "Select the article under point, if any."
@@ -646,7 +679,9 @@ Two predefined functions are available:
   "Generate a horizontal tree."
   (let* ((dummy (stringp (car thread)))
 	 (do (or dummy
-		 (memq (mail-header-number (car thread)) gnus-tmp-limit)))
+		 (and (car thread)
+		      (memq (mail-header-number (car thread))
+			    gnus-tmp-limit))))
 	 col beg)
     (if (not do)
 	;; We don't want this article.
@@ -718,13 +753,12 @@ Two predefined functions are available:
 	  (delete-char -1)
 	  (insert (cadr gnus-tree-parent-child-edges))
 	  (setq beg (point))
+	  (forward-char -1)
 	  ;; Draw "-" lines leftwards.
-	  (while (progn
-		   (unless (bolp)
-		     (forward-char -2))
-		   (= (following-char) ? ))
-	    (delete-char 1)
-	    (insert (car gnus-tree-parent-child-edges)))
+	  (while (= (char-after (1- (point))) ? )
+	    (delete-char -1)
+	    (insert (car gnus-tree-parent-child-edges))
+	    (forward-char -1))
 	  (goto-char beg)
 	  (gnus-tree-forward-line 1)))
       (setq dummyp nil)

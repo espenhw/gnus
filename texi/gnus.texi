@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Gnus 5.4.59 Manual
+@settitle Gnus 5.4.60 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -309,7 +309,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Gnus 5.4.59 Manual
+@title Gnus 5.4.60 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -345,7 +345,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Gnus 5.4.59.
+This manual corresponds to Gnus 5.4.60.
 
 @end ifinfo
 
@@ -6754,6 +6754,25 @@ Here's the same thread displayed in a vertical tree buffer:
                         [Paa]
 @end example
 
+If you're using horizontal trees, it might be nice to display the trees
+side-by-side with the summary buffer.  You could add something like the
+following to your @file{.gnus.el} file:
+
+@lisp
+(setq gnus-use-trees t
+      gnus-generate-tree-function 'gnus-generate-horizontal-tree
+      gnus-tree-minimize-window nil)
+(gnus-add-configuration
+ '(article
+   (vertical 1.0
+             (horizontal 0.25
+                         (summary 0.75 point)
+                         (tree 1.0))
+             (article 1.0))))
+@end lisp
+
+@xref{Windows Configuration}.
+
 
 @node Mail Group Commands
 @section Mail Group Commands
@@ -12835,7 +12854,9 @@ frame will be created where picons will be shown.  As you can see,
 instead of the normal @code{1.0} top-level spec, each additional split
 should have a frame parameter alist as the size spec.
 @xref{Frame Parameters, , Frame Parameters, elisp, The GNU Emacs Lisp
-Reference Manual}.
+Reference Manual}.  Under XEmacs, a frame property list will be
+accepted, too---for instance, @code{(height 5 width 15 left -1 top 1)}
+is such a plist.
 
 Here's a list of all possible keys for
 @code{gnus-buffer-configuration}:

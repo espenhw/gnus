@@ -1,3 +1,59 @@
+Sun Jun 29 21:32:13 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.60 is released.
+
+Sun Jun 29 21:14:27 1997  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-salt.el: Customized.
+
+1997-06-27  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-salt.el (gnus-tree-show-summary): New function.
+	(gnus-tree-mode-map): Use it.
+
+Sun Jun 29 20:19:27 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-salt.el (gnus-generate-horizontal-tree): Protect against
+	nil threads.
+
+	* gnus-sum.el (gnus-adjust-marked-articles): Change.
+
+Sun Jun 29 20:19:03 1997  Scott Byer  <byer@adobe.com>
+
+	* gnus-sum.el (gnus-adjust-marked-articles): Improper lists.
+
+1997-06-24  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* gnus-sum.el (gnus-summary-search-article): Inhibit updating tree 
+	buffer.
+
+Sun Jun 29 19:36:48 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-activate-group): Ignore zero returns.
+
+	* gnus-salt.el (gnus-generate-vertical-tree): Use a safer
+	line-drawing algorithm.
+
+	* nnml.el (nnml-generate-nov-file): Articles with null bodies are
+	legal. 
+
+Sun Jun 22 15:44:02 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (article-hide-pgp): Only run hook when hiding pgp. 
+
+	* nnfolder.el (nnfolder-save-buffer): Make sure the directory
+	exists. 
+
+	* gnus-uu.el (gnus-uu-post-news-inews): Didn't work when posting
+	threaded. 
+	(gnus-uu-post-encoded): Include sequence numbers in threaded
+	posts. 
+
+Sat Jun 21 00:17:16 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-set-auto-save-file-name): Translate / in
+	buffer names.
+
 Wed Jun 18 17:26:35 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.59 is released.

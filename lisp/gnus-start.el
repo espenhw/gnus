@@ -1284,12 +1284,11 @@ newsgroup."
     "Alter the ACTIVE info for GROUP to reflect the articles in the cache."
     (when gnus-cache-active-hashtb
       (let ((cache-active (gnus-gethash group gnus-cache-active-hashtb)))
-	(and cache-active
-	     (< (car cache-active) (car active))
-	     (setcar active (car cache-active)))
-	(and cache-active
-	     (> (cdr cache-active) (cdr active))
-	     (setcdr active (cdr cache-active)))))))
+	(when cache-active
+	  (when (< (car cache-active) (car active))
+	    (setcar active (car cache-active)))
+	  (when (> (cdr cache-active) (cdr active))
+	    (setcdr active (cdr cache-active))))))))
 
 (defun gnus-activate-group (group &optional scan dont-check method)
   ;; Check whether a group has been activated or not.
@@ -1309,7 +1308,15 @@ newsgroup."
 	     (inline (gnus-request-group group dont-check method))
 	   (error nil)
 	   (quit nil))
-	 (gnus-set-active group (setq active (gnus-parse-active)))
+	 (setq active (gnus-parse-active))
+	 ;; If there are no articles in the group, the GROUP
+	 ;; command may have responded with the `(0 . 0)'.  We
+	 ;; ignore this if we already have an active entry
+	 ;; for the group.
+	 (unless (and (zerop (car active))
+		      (zerop (cdr active))
+		      (gnus-active group))
+	   (gnus-set-active group active))
 	 ;; Return the new active info.
 	 active)))
 

@@ -3826,6 +3826,10 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	    (set var (delq article (symbol-value var))))))
        ;; Adjust assocs.
        ((memq mark uncompressed)
+	(when (not (listp (car (symbol-value var)))))
+	  (set var (list (symbol-value var)))
+	(when (not (listp (cdr articles)))
+	  (setq articles (list articles)))
 	(while articles
 	  (when (or (not (consp (setq article (pop articles))))
 		    (< (car article) min)
@@ -6341,6 +6345,7 @@ Optional argument BACKWARD means do search for backward.
 	(gnus-mark-article-hook nil)	;Inhibit marking as read.
 	(gnus-use-article-prefetch nil)
 	(gnus-xmas-force-redisplay nil)	;Inhibit XEmacs redisplay.
+	(gnus-use-trees nil)		;Inhibit updating tree buffer.
 	(sum (current-buffer))
 	(found nil)
 	point)
