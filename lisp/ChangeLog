@@ -3,6 +3,9 @@
 	* gnus-sum.el (gnus-summary-limit-to-recipient): New function.
 	Suggested David Mazieres in analogy to rmail-summary-by-recipients.
 	(gnus-summary-limit-map, gnus-summary-make-menu-bar): Add it.
+	(gnus-article-sort-by-recipient, gnus-summary-sort-by-recipient):
+	New functions.  Suggested by Uwe Brauer <oub@mat.ucm.es>.
+	(gnus-summary-mode-map, gnus-summary-make-menu-bar): Add it.
 
 2004-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 

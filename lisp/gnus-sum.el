@@ -1729,6 +1729,7 @@ increase the score of each group you read."
   "\C-c\C-s\C-l" gnus-summary-sort-by-lines
   "\C-c\C-s\C-c" gnus-summary-sort-by-chars
   "\C-c\C-s\C-a" gnus-summary-sort-by-author
+  "\C-c\C-s\C-t" gnus-summary-sort-by-recipient
   "\C-c\C-s\C-s" gnus-summary-sort-by-subject
   "\C-c\C-s\C-d" gnus-summary-sort-by-date
   "\C-c\C-s\C-i" gnus-summary-sort-by-score
@@ -2542,6 +2543,7 @@ gnus-summary-show-article-from-menu-as-charset-%s" cs))))
 	("Sort"
 	 ["Sort by number" gnus-summary-sort-by-number t]
 	 ["Sort by author" gnus-summary-sort-by-author t]
+	 ["Sort by recipient" gnus-summary-sort-by-recipient t]
 	 ["Sort by subject" gnus-summary-sort-by-subject t]
 	 ["Sort by date" gnus-summary-sort-by-date t]
 	 ["Sort by score" gnus-summary-sort-by-score t]
@@ -4569,6 +4571,18 @@ using some other form will lead to serious barfage."
   "Sort threads by root author."
   (gnus-article-sort-by-author
    (gnus-thread-header h1)  (gnus-thread-header h2)))
+
+(defsubst gnus-article-sort-by-recipient (h1 h2)
+  "Sort articles by recipient."
+  (string-lessp
+   (let ((extract (funcall
+		   gnus-extract-address-components
+		   (or (cdr (assq 'To (mail-header-extra h1))) ""))))
+     (or (car extract) (cadr extract)))
+   (let ((extract (funcall
+		   gnus-extract-address-components
+		   (or (cdr (assq 'To (mail-header-extra h2))) ""))))
+     (or (car extract) (cadr extract)))))
 
 (defsubst gnus-article-sort-by-subject (h1 h2)
   "Sort articles by root subject."
@@ -10867,6 +10881,13 @@ If `case-fold-search' is non-nil, case of letters is ignored.
 Argument REVERSE means reverse order."
   (interactive "P")
   (gnus-summary-sort 'author reverse))
+
+(defun gnus-summary-sort-by-recipient (&optional reverse)
+  "Sort the summary buffer by recipient name alphabetically.
+If `case-fold-search' is non-nil, case of letters is ignored.
+Argument REVERSE means reverse order."
+  (interactive "P")
+  (gnus-summary-sort 'recipient reverse))
 
 (defun gnus-summary-sort-by-subject (&optional reverse)
   "Sort the summary buffer by subject alphabetically.  `Re:'s are ignored.
