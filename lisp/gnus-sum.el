@@ -8077,7 +8077,7 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		      (mail-header-xref (gnus-summary-article-header article))
 		      " ")))
 	   (setq new-xref (concat (gnus-group-real-name gnus-newsgroup-name)
-				  ":" article))
+				  ":" (number-to-string article)))
 	   (unless xref
 	     (setq xref (list (system-name))))
 	   (setq new-xref
@@ -8094,7 +8094,8 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 				(gnus-request-accept-article
 				 to-newsgroup select-method (not articles))))
 	       (setq new-xref (concat new-xref " " (car art-group)
-				      ":" (cdr art-group)))
+				      ":"
+				      (number-to-string (cdr art-group))))
 	       ;; Now we have the new Xrefs header, so we insert
 	       ;; it and replace the new article.
 	       (nnheader-replace-header "Xref" new-xref)

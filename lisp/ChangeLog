@@ -1,3 +1,10 @@
+2001-11-12 13:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-start.el (gnus-auto-subscribed-groups): Use ^nnml.
+
+	* gnus-sum.el (gnus-summary-move-article): Use number-to-string.
+	  From <Michael.Cook@cisco.com>
+
 2001-11-11  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (top-level): Autoload sha1.
