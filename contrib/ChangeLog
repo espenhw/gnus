@@ -1,3 +1,7 @@
+2001-08-24 16:09:14  Fabien Penso  <penso@linuxfr.org>
+
+	* gpg.el (gpg-command-sign-detached): Doc fix.
+
 2001-08-07  Andreas Jaeger  <aj@suse.de>
 
 	* gpg.el (gpg-passphrase-forget): Don't cache
