@@ -540,9 +540,9 @@ header line with the old Message-ID."
 	     to-address to-group mailing-list to-list
 	     newsgroup-p)
 	(when group
-	  (setq to-address (gnus-group-find-parameter group 'to-address)
+	  (setq to-address (gnus-parameter-to-address group)
 		to-group (gnus-group-find-parameter group 'to-group)
-		to-list (gnus-group-find-parameter group 'to-list)
+		to-list (gnus-parameter-to-list group)
 		newsgroup-p (gnus-group-find-parameter group 'newsgroup)
 		mailing-list (when gnus-mailing-list-groups
 			       (string-match gnus-mailing-list-groups group))

@@ -1331,9 +1331,9 @@ always hide."
 	     ((eq elem 'to-address)
 	      (let ((to (message-fetch-field "to"))
 		    (to-address
-		     (gnus-group-find-parameter
+		     (gnus-parameter-to-address
 		      (if (boundp 'gnus-newsgroup-name)
-			  gnus-newsgroup-name "") 'to-address)))
+			  gnus-newsgroup-name ""))))
 		(when (and to to-address
 			   (ignore-errors
 			     (gnus-string-equal
@@ -2760,6 +2760,15 @@ If variable `gnus-use-long-file-name' is non-nil, it is
 	   newsgroup
 	 (expand-file-name "news" (gnus-newsgroup-directory-form newsgroup)))
        gnus-article-save-directory)))
+
+(defun gnus-sender-save-name (newsgroup headers &optional last-file)
+  "Generate file name from sender."
+  (let ((from (mail-header-from headers)))
+    (expand-file-name
+     (if (and from (string-match "\\([^ <]+\\)@" from))
+	 (match-string 1 from)
+       "nobody")
+     gnus-article-save-directory)))
 
 (defun article-verify-x-pgp-sig ()
   "Verify X-PGP-Sig."

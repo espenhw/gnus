@@ -1435,6 +1435,49 @@ to be desirable; see the manual for further details."
 		 integer))
 
 (gnus-define-group-parameter
+ to-address
+ :function-document
+ "Return GROUP's to-address."
+ :variable-document
+  "*Alist of group regexps and correspondent to-addresses."
+  :parameter-type '(gnus-email-address :tag "To Address")
+  :parameter-document "\
+This will be used when doing followups and posts.
+
+This is primarily useful in mail groups that represent closed
+mailing lists--mailing lists where it's expected that everybody that
+writes to the mailing list is subscribed to it.  Since using this
+parameter ensures that the mail only goes to the mailing list itself,
+it means that members won't receive two copies of your followups.
+
+Using `to-address' will actually work whether the group is foreign or
+not.  Let's say there's a group on the server that is called
+`fa.4ad-l'.  This is a real newsgroup, but the server has gotten the
+articles from a mail-to-news gateway.  Posting directly to this group
+is therefore impossible--you have to send mail to the mailing list
+address instead.
+
+The gnus-group-split mail splitting mechanism will behave as if this
+address was listed in gnus-group-split Addresses (see below).")
+
+(gnus-define-group-parameter
+ to-list
+ :function-document
+ "Return GROUP's to-list."
+ :variable-document
+ "*Alist of group regexps and correspondent to-lists."
+ :parameter-type '(gnus-email-address :tag "To List")
+ :parameter-document "\
+This address will be used when doing a `a' in the group.
+
+It is totally ignored when doing a followup--except that if it is
+present in a news group, you'll get mail group semantics when doing
+`f'.
+
+The gnus-group-split mail splitting mechanism will behave as if this
+address was listed in gnus-group-split Addresses (see below).")
+
+(gnus-define-group-parameter
  auto-expire
  :type bool
  :function gnus-group-auto-expirable-p

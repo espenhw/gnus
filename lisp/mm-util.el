@@ -313,7 +313,7 @@ If the charset is `composition', return the actual one."
 (defun mm-mime-charset (charset)
   "Return the MIME charset corresponding to the MULE CHARSET."
   (if (eq charset 'unknown)
-      (error "8-bit characters are found in the message, please specify charset."))
+      (error "The message contains non-printable characters, please use attachment."))
   (if (and (fboundp 'coding-system-get) (fboundp 'get-charset-property))
       ;; This exists in Emacs 20.
       (or

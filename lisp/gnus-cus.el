@@ -74,36 +74,7 @@ if that value is non-nil."
 ;;; Group Customization:
 
 (defconst gnus-group-parameters
-  '((to-address (gnus-email-address :tag "To Address") "\
-This will be used when doing followups and posts.
-
-This is primarily useful in mail groups that represent closed
-mailing lists--mailing lists where it's expected that everybody that
-writes to the mailing list is subscribed to it.  Since using this
-parameter ensures that the mail only goes to the mailing list itself,
-it means that members won't receive two copies of your followups.
-
-Using `to-address' will actually work whether the group is foreign or
-not.  Let's say there's a group on the server that is called
-`fa.4ad-l'.  This is a real newsgroup, but the server has gotten the
-articles from a mail-to-news gateway.  Posting directly to this group
-is therefore impossible--you have to send mail to the mailing list
-address instead.
-
-The gnus-group-split mail splitting mechanism will behave as if this
-address was listed in gnus-group-split Addresses (see below).")
-
-    (to-list (gnus-email-address :tag "To List") "\
-This address will be used when doing a `a' in the group.
-
-It is totally ignored when doing a followup--except that if it is
-present in a news group, you'll get mail group semantics when doing
-`f'.
-
-The gnus-group-split mail splitting mechanism will behave as if this
-address was listed in gnus-group-split Addresses (see below).")
-
-    (extra-aliases (choice
+  '((extra-aliases (choice
 		    :tag "Extra Aliases"
 		    (list
 		     :tag "List"
@@ -306,8 +277,8 @@ DOC is a documentation string for the parameter.")
 				:doc ,(nth 2 entry)
 				(const :format "" ,(nth 0 entry))
 				,(nth 1 entry)))
-		       (append gnus-group-parameters 
-			       (reverse gnus-group-parameters-more)
+		       (append (reverse gnus-group-parameters-more)
+			       gnus-group-parameters 
 			       (if group
 				   gnus-extra-group-parameters
 				 gnus-extra-topic-parameters)))))

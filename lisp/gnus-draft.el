@@ -190,6 +190,20 @@
 			 (- total (length articles)) total)))
 	    (gnus-draft-send article)))))))
 
+;;;###autoload
+(defun gnus-draft-reminder ()
+  "Reminder user if there are unsent drafts."
+  (interactive)
+  (if (gnus-alive-p)
+      (let (active)
+	(catch 'continue
+	  (dolist (group '("nndraft:drafts" "nndraft:queue"))
+	    (setq active (gnus-activate-group group))
+	    (if (and active (>= (cdr active) (car active)))
+		(if (y-or-n-p "There are unsent drafts. Continue?")
+		    (throw 'continue t)
+		  (error "Stop!"))))))))
+
 ;;; Utility functions
 
 ;;;!!!If this is byte-compiled, it fails miserably.
