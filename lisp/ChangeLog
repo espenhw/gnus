@@ -1,3 +1,10 @@
+2001-01-09 01:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-decode.el (mm-interactively-view-part): Don't copy-sequence
+	handle.
+	* gnus-art.el (gnus-mime-view-part): Copy it.
+	(gnus-mime-view-part-as-type): Add into gnus-article-mime-handles.
+
 2001-01-09  Michael Downes <mjd@ams.org>
 
 	* gnus-sum.el (gnus-summary-read-group-1): More useful message.

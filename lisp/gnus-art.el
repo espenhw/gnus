@@ -3280,6 +3280,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (gnus-article-check-buffer)
   (let ((data (get-text-property (point) 'gnus-data)))
     (when data
+      (push (setq data (copy-sequence data)) gnus-article-mime-handles)
       (mm-interactively-view-part data))))
 
 (defun gnus-mime-view-part-as-type-internal ()
@@ -3290,27 +3291,30 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	 (def-type (and name (mm-default-file-encoding name))))
     (and def-type (cons def-type 0))))
 
-(defun gnus-mime-view-part-as-type (mime-type)
+(defun gnus-mime-view-part-as-type (&optional mime-type)
   "Choose a MIME media type, and view the part as such."
-  (interactive
-   (list (completing-read
-	  "View as MIME type: "
-	  (mapcar #'list (mailcap-mime-types))
-	  nil nil
-	  (gnus-mime-view-part-as-type-internal))))
+  (interactive)
+  (unless mime-type
+    (setq mime-type (completing-read
+		     "View as MIME type: "
+		     (mapcar #'list (mailcap-mime-types))
+		     nil nil
+		     (gnus-mime-view-part-as-type-internal))))
   (gnus-article-check-buffer)
   (let ((handle (get-text-property (point) 'gnus-data)))
     (when handle
-      (gnus-mm-display-part
-       (mm-make-handle (mm-handle-buffer handle)
-		       (cons mime-type (cdr (mm-handle-type handle)))
-		       (mm-handle-encoding handle)
-		       (mm-handle-undisplayer handle)
-		       (mm-handle-disposition handle)
-		       (mm-handle-description handle)
-		       (mm-handle-cache handle)
-		       (mm-handle-id handle))))))
-  
+      (setq handle
+	    (mm-make-handle (mm-handle-buffer handle)
+			    (cons mime-type (cdr (mm-handle-type handle)))
+			    (mm-handle-encoding handle)
+			    (mm-handle-undisplayer handle)
+			    (mm-handle-disposition handle)
+			    (mm-handle-description handle)
+			    (mm-handle-cache handle)
+			    (mm-handle-id handle)))
+      (push handle gnus-article-mime-handles)
+      (gnus-mm-display-part handle))))
+
 (defun gnus-mime-copy-part (&optional handle)
   "Put the the MIME part under point into a new buffer."
   (interactive)
