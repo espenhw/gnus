@@ -1787,6 +1787,8 @@ Return nil if no complete line has arrived."
 
 (defun imap-arrival-filter (proc string)
   "IMAP process filter."
+  ;; Sometimes, we are called even though the process has died.
+  ;; Better abstain from doing stuff in that case.
   (when (process-buffer proc)
     (with-current-buffer (process-buffer proc)
       (goto-char (point-max))
