@@ -9,6 +9,9 @@
 
 2000-08-21  Dave Love  <fx@gnu.org>
 
+	* gnus-ems.el (gnus-add-minor-mode): Add &rest arg.
+	(gnus-xemacs): Use featurep.
+
 	* mm-util.el (mm-read-charset): Maybe use builtin.
 	(mm-replace-chars-in-string): Maybe use subst-char-in-string.
 	(mm-multibyte-p, mm-with-unibyte-current-buffer)
