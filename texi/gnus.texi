@@ -2191,6 +2191,9 @@ will go to the next group of the same level (or lower).  This might be
 handy if you want to read the most important groups before you read the
 rest.
 
+If this variable is @code{best}, Gnus will make the next newsgroup the
+one with the best level.
+
 @vindex gnus-group-default-list-level
 All groups with a level less than or equal to
 @code{gnus-group-default-list-level} will be listed in the group buffer
@@ -8704,8 +8707,9 @@ command will make exit without updating (the @kbd{Q} command) worthless.
 @end table
 
 @vindex gnus-exit-group-hook
-@code{gnus-exit-group-hook} is called when you exit the current
-group.
+@code{gnus-exit-group-hook} is called when you exit the current group
+with an ``updating'' exit.  For instance @kbd{Q}
+(@code{gnus-summary-exit-no-update}) does not call this hook.
 
 @findex gnus-summary-wake-up-the-dead
 @findex gnus-dead-summary-mode

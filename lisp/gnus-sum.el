@@ -696,7 +696,8 @@ is not run if `gnus-visual' is nil."
   :type 'hook)
 
 (defcustom gnus-exit-group-hook nil
-  "*A hook called when exiting (not quitting) summary mode."
+  "*A hook called when exiting summary mode.
+This hook is not called from the non-updating exit commands like `Q'."
   :group 'gnus-various
   :type 'hook)
 
