@@ -1,3 +1,23 @@
+2001-04-14 00:48:42  Lars Magne Ingebrigtsen  <larsi@quimby.gnus.org>
+
+	* gnus.el: Oort Gnus v0.02 is released.
+
+2001-04-13 22:01:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-highlight): Highlight read
+	undownloaded articles as read articles.
+
+	* gnus-agent.el (gnus-agent-get-undownloaded-list): Clean up.
+	(gnus-agent-get-undownloaded-list): Mark all undownloaded
+	articles, even read ones, as such.
+
+	* gnus-sum.el (gnus-summary-find-matching): Clean up.
+	(gnus-find-matching-articles): New function.
+	(gnus-summary-limit-include-matching-articles): New command. 
+	(gnus-summary-limit-include-thread): Include articles that have
+	matching subjects.
+	(gnus-offer-save-summaries): Clean up.
+
 2001-04-13  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* nnmail.el (nnmail-split-fancy-with-parent): Add docstring.

@@ -641,23 +641,18 @@ the actual number of articles toggled is returned."
 	       (gnus-agent-method-p gnus-command-method))
       (gnus-agent-load-alist gnus-newsgroup-name)
       ;; First mark all undownloaded articles as undownloaded.
-      (let ((articles (append gnus-newsgroup-unreads
-			      gnus-newsgroup-marked
-			      gnus-newsgroup-dormant))
-	    article)
-	(while (setq article (pop articles))
-	  (unless (or (cdr (assq article gnus-agent-article-alist))
-		      (memq article gnus-newsgroup-downloadable)
-		      (memq article gnus-newsgroup-cached))
-	    (push article gnus-newsgroup-undownloaded))))
+      (dolist (article (mapcar (lambda (header) (mail-header-number header))
+			       gnus-newsgroup-headers))
+	(unless (or (cdr (assq article gnus-agent-article-alist))
+		    (memq article gnus-newsgroup-downloadable)
+		    (memq article gnus-newsgroup-cached))
+	  (push article gnus-newsgroup-undownloaded)))
       ;; Then mark downloaded downloadable as not-downloadable,
       ;; if you get my drift.
-      (let ((articles gnus-newsgroup-downloadable)
-	    article)
-	(while (setq article (pop articles))
-	  (when (cdr (assq article gnus-agent-article-alist))
-	    (setq gnus-newsgroup-downloadable
-		  (delq article gnus-newsgroup-downloadable))))))))
+      (dolist (article gnus-newsgroup-downloadable)
+	(when (cdr (assq article gnus-agent-article-alist))
+	  (setq gnus-newsgroup-downloadable
+		(delq article gnus-newsgroup-downloadable)))))))
 
 (defun gnus-agent-catchup ()
   "Mark all undownloaded articles as read."

@@ -820,8 +820,11 @@ automatically when it is selected."
     ((and (< score default) (memq mark (list gnus-downloadable-mark
 					     gnus-undownloaded-mark)))
      . gnus-summary-low-unread-face)
-    ((memq mark (list gnus-downloadable-mark gnus-undownloaded-mark))
+    ((and (memq mark (list gnus-downloadable-mark gnus-undownloaded-mark))
+	  (memq article gnus-newsgroup-unreads))
      . gnus-summary-normal-unread-face)
+    ((memq mark (list gnus-downloadable-mark gnus-undownloaded-mark))
+     . gnus-summary-normal-read-face)
     ((> score default)
      . gnus-summary-high-read-face)
     ((< score default)
@@ -4360,7 +4363,7 @@ or a straight list of headers."
 				 (not (eq gnus-fetch-old-headers 'some))
 				 (not (numberp gnus-fetch-old-headers)))
 				(> (length articles) 1))
-			  gnus-fetch-old-headers))))
+			    gnus-fetch-old-headers))))
 	    (gnus-get-newsgroup-headers-xover
 	     articles nil nil gnus-newsgroup-name t)
 	  (gnus-get-newsgroup-headers))
@@ -6714,10 +6717,25 @@ Returns how many articles were removed."
       (gnus-summary-position-point))))
 
 (defun gnus-summary-limit-include-thread (id)
-  "Display all the hidden articles that in the current thread."
+  "Display all the hidden articles that is in the thread with ID in it.
+When called interactively, ID is the Message-ID of the current
+article."
   (interactive (list (mail-header-id (gnus-summary-article-header))))
   (let ((articles (gnus-articles-in-thread
 		   (gnus-id-to-thread (gnus-root-id id)))))
+    (prog1
+	(gnus-summary-limit (nconc articles gnus-newsgroup-limit))
+	(gnus-summary-limit-include-matching-articles
+	 "subject"
+	 (regexp-quote (gnus-simplify-subject-re
+			(mail-header-subject (gnus-id-to-header id)))))
+      (gnus-summary-position-point))))
+
+(defun gnus-summary-limit-include-matching-articles (header regexp)
+  "Display all the hidden articles that have HEADERs that match REGEXP."
+  (interactive (list (read-string "Match on header: ")
+		     (read-string "Regexp: ")))
+  (let ((articles (gnus-find-matching-articles header regexp)))
     (prog1
 	(gnus-summary-limit (nconc articles gnus-newsgroup-limit))
       (gnus-summary-position-point))))
@@ -7388,6 +7406,18 @@ Optional argument BACKWARD means do search for backward.
       (gnus-summary-position-point)
       t)))
 
+(defun gnus-find-matching-articles (header regexp)
+  "Return a list of all articles that match REGEXP on HEADER.
+This search includes all articles in the current group that Gnus has
+fetched headers for, whether they are displayed or not."
+  (let ((articles nil)
+	(func `(lambda (h) (,(intern (concat "mail-header-" header)) h)))
+	(case-fold-search t))
+    (dolist (header gnus-newsgroup-headers)
+      (when (string-match regexp (funcall func header))
+	(push (mail-header-number header) articles)))
+    (nreverse articles)))
+
 (defun gnus-summary-find-matching (header regexp &optional backward unread
 					  not-case-fold)
   "Return a list of all articles that match REGEXP on HEADER.
@@ -7396,10 +7426,7 @@ BACKWARD is non-nil.  If BACKWARD is `all', do all articles.
 If UNREAD is non-nil, only unread articles will
 be taken into consideration.  If NOT-CASE-FOLD, case won't be folded
 in the comparisons."
-  (let ((data (if (eq backward 'all) gnus-newsgroup-data
-		(gnus-data-find-list
-		 (gnus-summary-article-number) (gnus-data-list backward))))
-	(case-fold-search (not not-case-fold))
+  (let ((case-fold-search (not not-case-fold))
 	articles d func)
     (if (consp header)
 	(if (eq (car header) 'extra)
@@ -7411,14 +7438,17 @@ in the comparisons."
       (unless (fboundp (intern (concat "mail-header-" header)))
 	(error "%s is not a valid header" header))
       (setq func `(lambda (h) (,(intern (concat "mail-header-" header)) h))))
-    (while data
-      (setq d (car data))
-      (and (or (not unread)		; We want all articles...
-	       (gnus-data-unread-p d))	; Or just unreads.
-	   (vectorp (gnus-data-header d)) ; It's not a pseudo.
-	   (string-match regexp (funcall func (gnus-data-header d))) ; Match.
-	   (push (gnus-data-number d) articles)) ; Success!
-      (setq data (cdr data)))
+    (dolist (d (if (eq backward 'all)
+		   gnus-newsgroup-data
+		 (gnus-data-find-list
+		  (gnus-summary-article-number)
+		  (gnus-data-list backward))))
+      (when (and (or (not unread)	; We want all articles...
+		     (gnus-data-unread-p d)) ; Or just unreads.
+		 (vectorp (gnus-data-header d)) ; It's not a pseudo.
+		 (string-match regexp
+			       (funcall func (gnus-data-header d)))) ; Match.
+	(push (gnus-data-number d) articles))) ; Success!
     (nreverse articles)))
 
 (defun gnus-summary-execute-command (header regexp command &optional backward)
@@ -9991,25 +10021,24 @@ If REVERSE, save parts that do not match TYPE."
 
 (defun gnus-offer-save-summaries ()
   "Offer to save all active summary buffers."
-  (save-excursion
-    (let ((buflist (buffer-list))
-	  buffers bufname)
-      ;; Go through all buffers and find all summaries.
-      (while buflist
-	(and (setq bufname (buffer-name (car buflist)))
-	     (string-match "Summary" bufname)
-	     (save-excursion
-	       (set-buffer bufname)
-	       ;; We check that this is, indeed, a summary buffer.
-	       (and (eq major-mode 'gnus-summary-mode)
-		    ;; Also make sure this isn't bogus.
-		    gnus-newsgroup-prepared
-		    ;; Also make sure that this isn't a dead summary buffer.
-		    (not gnus-dead-summary-mode)))
-	     (push bufname buffers))
-	(setq buflist (cdr buflist)))
-      ;; Go through all these summary buffers and offer to save them.
-      (when buffers
+  (let (buffers)
+    ;; Go through all buffers and find all summaries.
+    (dolist (buffer (buffer-list))
+      (when (and (setq buffer (buffer-name buffer))
+		 (string-match "Summary" buffer)
+		 (save-excursion
+		   (set-buffer buffer)
+		   ;; We check that this is, indeed, a summary buffer.
+		   (and (eq major-mode 'gnus-summary-mode)
+			;; Also make sure this isn't bogus.
+			gnus-newsgroup-prepared
+			;; Also make sure that this isn't a
+			;; dead summary buffer.
+			(not gnus-dead-summary-mode))))
+	(push buffer buffers)))
+    ;; Go through all these summary buffers and offer to save them.
+    (when buffers
+      (save-excursion
 	(map-y-or-n-p
 	 "Update summary buffer %s? "
 	 (lambda (buf)
