@@ -320,4 +320,4 @@ All functions will return nil and report an error."
 
 (provide 'nnoo)
 
-;;; nnoo.el ends here.
+;;; nnoo.el ends here

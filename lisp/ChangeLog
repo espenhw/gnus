@@ -1,3 +1,8 @@
+2001-07-10  Pavel Jan,Bm(Bk <Pavel@Janik.cz>
+
+	* gnus-logic.el, gnus-srvr.el, gnus-vm.el, nnheaderxm.el, nnoo.el:
+	Cleanup.
+
 2001-07-09 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-msg.el (gnus-bug): Erase buffer.

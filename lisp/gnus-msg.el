@@ -1017,7 +1017,7 @@ If YANK is non-nil, include the original article."
     (let (text)
       (save-excursion
 	(set-buffer (gnus-get-buffer-create " *gnus environment info*"))
-        (erase-buf)
+        (erase-buffer)
 	(gnus-debug)
 	(setq text (buffer-string)))
       (insert "<#part type=application/x-emacs-lisp disposition=inline description=\"User settings\">\n" text "\n<#/part>"))
