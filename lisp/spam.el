@@ -495,7 +495,7 @@ your main source of newsgroup names."
     (while articles
       (setq article (pop articles)
 	    mark (gnus-summary-article-mark article))
-      (cond ((spam-group-spam-mark-p nus-newsgroup-name mark) 
+      (cond ((spam-group-spam-mark-p gnus-newsgroup-name mark) 
 	     (push article spam-articles))
 	    ((memq article gnus-newsgroup-saved))
 	    ((spam-group-ham-mark-p gnus-newsgroup-name mark)
