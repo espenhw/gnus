@@ -1,3 +1,8 @@
+2004-01-13  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-range.el (gnus-compress-sequence): Doc fix.  Suggested by
+	Jim Blandy <jimb@redhat.com> (tiny change).
+
 2004-01-12  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-srvr.el (gnus-browse-foreign-server): Reduce consing.

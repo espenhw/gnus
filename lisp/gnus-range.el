@@ -1,6 +1,6 @@
 ;;; gnus-range.el --- range and sequence functions for Gnus
 
-;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2004
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Lars Magne Ingebrigtsen <larsi@gnus.org>
@@ -255,7 +255,7 @@ LIST1 and LIST2 have to be sorted over <."
     (cdr top)))
 
 (defun gnus-compress-sequence (numbers &optional always-list)
-  "Convert list of numbers to a list of ranges or a single range.
+  "Convert sorted list of numbers to a list of ranges or a single range.
 If ALWAYS-LIST is non-nil, this function will always release a list of
 ranges."
   (let* ((first (car numbers))
