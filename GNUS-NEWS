@@ -8,6 +8,11 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** `/ *' (gnus-summary-limit-include-cached) is rewritten.
+
+It was aliased to `Y c' (gnus-summary-insert-cached-articles). The new
+function filters out other articles.
+
 ** Group names are treated as UTF-8 by default.
 
 This is supposedly what USEFOR wants to migrate to.  See
