@@ -25,6 +25,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (require 'nnheader)
 
 (defvar message-xmas-dont-activate-region t

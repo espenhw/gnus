@@ -28,6 +28,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (if (not (fboundp 'char-int))
     (defalias 'char-int 'identity))
 

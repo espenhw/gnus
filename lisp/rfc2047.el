@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (eval-and-compile
   (eval
    '(unless (fboundp 'base64-decode-string)

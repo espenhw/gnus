@@ -1,3 +1,19 @@
+2000-10-27 14:19:53  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-mlspl.el: Require cl when compiling.
+	* messagexmas.el: Ditto.
+	* mm-util.el: Ditto.
+	* rfc2047.el: Ditto.
+	* rfc2231.el: Ditto.
+	* smiley-ems.el: Ditto.
+	* uudecode.el: Ditto.
+	
+	* smiley-ems.el (smiley-region): Use mapcar.
+
+2000-10-27 Stefan Monnier <monnier@cs.yale.edu>
+
+	* ietf-drums.el: Require cl when compiling.
+
 2000-10-27  Dave Love  <fx@gnu.org>
 
 	* nnheader.el (nnheader-translate-file-chars): Only kludge things

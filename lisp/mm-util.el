@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (require 'mail-prsvr)
 
 (defvar mm-mime-mule-charset-alist

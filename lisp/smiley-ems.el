@@ -35,6 +35,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (require 'nnheader)
 
 (defgroup smiley nil
@@ -95,10 +96,10 @@ rgexp to replace with IMAGE.  IMAGE is the name of a PBM file in
   (interactive "r")
   (when (and (fboundp 'display-graphic-p)
 	     (display-graphic-p))
-    (mapc (lambda (o)
-	    (if (eq 'smiley (overlay-get o 'smiley))
-		(delete-overlay o)))
-	  (overlays-in start end))
+    (mapcar (lambda (o)
+	      (if (eq 'smiley (overlay-get o 'smiley))
+		  (delete-overlay o)))
+	    (overlays-in start end))
     (unless smiley-cached-regexp-alist
       (smiley-update-cache))
     (save-excursion
