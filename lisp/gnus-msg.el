@@ -725,7 +725,9 @@ article number, and the cdr is the string to be yanked."
     (gnus-summary-handle-replysign)))
 
 (defun gnus-summary-followup-with-original (n &optional force-news)
-  "Compose a followup to an article and include the original article."
+  "Compose a followup to an article and include the original article.
+The text in the region will be yanked.  If the region isn't
+active, the entire article will be yanked."
   (interactive "P")
   (gnus-summary-followup (gnus-summary-work-articles n) force-news))
 
