@@ -1,0 +1,23 @@
+@title Configuring Gnus for reading news
+@node Server name and port
+@variable server :string (gnus-getenv-nntpserver)
+@variable port :number 119
+@validate
+(let* ((error nil)
+       (stream
+        (condition-case err
+	    (open-network-stream "nntpd" nil server port)
+          (error (setq error err)))))
+   (if (memq (process-status stream) '(open run))
+       (progn
+         (delete-process stream)
+         nil)
+     error)))
+@end validate
+@result gnus-select-method (list server port)
+@text
+To read Usenet news with Gnus, you first have to tell
+Gnus where the news server is.
+
+The server name is @variable{server}; port number @variable{port}.
+@end text
