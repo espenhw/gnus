@@ -1117,6 +1117,11 @@ they were created, so the latest changes will have precedence.)
 Information from the slave files has, of course, precedence over the
 information in the normal (i.e., master) @code{.newsrc} file.
 
+If the @code{.newsrc*} files have not been saved in the master when the
+slave starts, you may be prompted as to whether to read an auto-save
+file.  If you answer "yes", the unsaved changes to the master will be
+incorporated into the slave.  If you answer "no", the slave may see some
+messages as unread that have been read in the master.
 
 @node Fetching a Group
 @section Fetching a Group

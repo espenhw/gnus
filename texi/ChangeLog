@@ -1,3 +1,8 @@
+2002-02-20  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.texi (Slave Gnusae): Addition. 
+	From  David S. Goldberg <david.goldberg6@verizon.net> 
+	
 2002-02-18  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* emacs-mime.texi (mailcap): Addition.
