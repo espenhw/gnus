@@ -1592,6 +1592,8 @@ It is called with three parameters -- GROUP, LEVEL and OLDLEVEL.")
 (defvar gnus-opened-servers nil)
 
 (defvar gnus-current-move-group nil)
+(defvar gnus-current-copy-group nil)
+(defvar gnus-current-crosspost-group nil)
 
 (defvar gnus-newsgroup-dependencies nil)
 (defvar gnus-newsgroup-async nil)
@@ -1713,7 +1715,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.80"
+(defconst gnus-version "September Gnus v0.81"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -8879,7 +8881,7 @@ If WHERE is `summary', the summary mode line format will be used."
 	       gnus-tmp-header);; passed as argument to any user-format-funcs
 	  (setq mode-string (eval mformat))
 	  (setq max-len (max 4 (if gnus-mode-non-string-length
-				   (- (frame-width)
+				   (- (window-width)
 				      gnus-mode-non-string-length)
 				 (length mode-string))))
 	  ;; We might have to chop a bit of the string off...
@@ -12361,20 +12363,21 @@ with that article."
 		  (mail-header-subject (gnus-data-header (car data)))))
 		(t nil)))
 	 (end-point (save-excursion
-		      (gnus-summary-go-to-next-thread) (point)))
+		      (if (gnus-summary-go-to-next-thread) 
+			  (point) (point-max))))
 	 articles)
     (while (and data
 		(< (gnus-data-pos (car data)) end-point))
-      (and (or (not top-subject)
-	       (string= top-subject
-			(if (eq gnus-thread-operation-ignore-subject 'fuzzy)
-			    (gnus-simplify-subject-fuzzy
-			     (mail-header-subject
-			      (gnus-data-header (car data))))
-			  (gnus-simplify-subject-re
-			   (mail-header-subject
-			    (gnus-data-header (car data)))))))
-	   (setq articles (cons (gnus-data-number (car data)) articles)))
+      (when (or (not top-subject)
+		(string= top-subject
+			 (if (eq gnus-thread-operation-ignore-subject 'fuzzy)
+			     (gnus-simplify-subject-fuzzy
+			      (mail-header-subject
+			       (gnus-data-header (car data))))
+			   (gnus-simplify-subject-re
+			    (mail-header-subject
+			     (gnus-data-header (car data)))))))
+	(push (gnus-data-number (car data)) articles))
       (unless (and (setq data (cdr data))
 		   (> (gnus-data-level (car data)) top-level))
 	(setq data nil)))
@@ -13944,9 +13947,9 @@ or not."
     (let ((case-fold-search t)
 	  (buffer-read-only nil)
 	  (type (gnus-fetch-field "content-transfer-encoding")))
+      (gnus-headers-decode-quoted-printable)
       (when (or force
 		(and type (string-match "quoted-printable" (downcase type))))
-	(gnus-headers-decode-quoted-printable)
 	(goto-char (point-min))
 	(search-forward "\n\n" nil 'move)
 	(gnus-mime-decode-quoted-printable (point) (point-max))))))
@@ -16112,8 +16115,12 @@ If FORCE is non-nil, the .newsrc file is read."
 
 (defun gnus-convert-old-newsrc ()
   "Convert old newsrc into the new format, if needed."
-  (let ((fcv (gnus-continuum-version gnus-newsrc-file-version)))
+  (let ((fcv (and gnus-newsrc-file-version
+		  (gnus-continuum-version gnus-newsrc-file-version))))
     (cond
+     ;; No .newsrc.eld file was loaded.
+     ((null fcv) nil)
+     ;; Gnus 5 .newsrc.eld was loaded.
      ((< fcv (gnus-continuum-version "September Gnus v0.1"))
       (gnus-convert-old-ticks)))))
 

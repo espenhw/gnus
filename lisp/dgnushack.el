@@ -26,6 +26,7 @@
 
 ;;; Code:
 
+(require 'cl)
 (setq load-path (cons "." load-path))
 
 (defun dgnushack-compile ()
@@ -45,13 +46,12 @@
        (t
 	(setq byte-compile-warnings 
 	      '(free-vars unresolved callargs redefine obsolete))))
-      (and (or (and (not (string= file "gnus-xmas.el"))
-		    (not (string= file "x-easymenu.el"))
-		    (not (string= file "gnus-picon.el")))
-	       xemacs)
-	   (condition-case ()
-	       (byte-compile-file file)
-	     (error nil))))))
+      (when (or (not (member file '("gnus-xmas.el" "x-easymenu.el"
+				    "gnus-picon.el" "message-xmas.el")))
+		xemacs)
+	(condition-case ()
+	    (byte-compile-file file)
+	  (error nil))))))
 
 (defun dgnushack-recompile ()
   (require 'gnus)

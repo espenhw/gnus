@@ -1,4 +1,69 @@
+Mon May  6 00:23:09 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message-xmas.el (message-mode-menu): Moved to this file.
+
+	* message.el (message-make-organization): Use env var.
+
+	* gnus-xmas.el (gnus-xmas-topic-remove-excess-properties):
+	Wouldn't remove sufficient props.
+
+	* message-xmas.el: New file.
+
+	* gnus-cache.el (gnus-cache-read-active): Make sure the cache
+	directory exists.
+
+	* gnus.el (gnus-summary-articles-in-thread): Would not give right
+	answer on the fine thread. 
+
+Sun May  5 14:54:06 1996  Steven L Baur  <steve@miranova.com>
+
+	* message.el (message-mode-map): Added mode menu for XEmacs.
+
+Mon May  6 00:12:59 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-summary-recenter): Wouldn't display the
+	last line.
+
+Sun May  5 23:54:04 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el (gnus-convert-old-newsrc): Would bomb when no
+	.newsrc.eld was loaded.
+
+Sun May  5 17:34:38 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-set-mode-line): Use window width instead of frame
+	width. 
+
+Sat May  4 22:18:05 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus.el (gnus-article-de-quoted-unreadable): Always decode
+	RFC1522-encoded headers. 
+
+Sat May  4 22:03:39 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nntp.el (nntp-default-sentinel): Would bug out when closing
+	connections. 
+
+Thu May  2 16:11:52 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-mode-map): Changed.
+
+Mon Apr 29 19:09:19 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-vis.el (gnus-button-mailto): Use message.
+	(gnus-button-mailto): Copy mail buffer.
+
+Mon Apr 29 18:32:19 1996  Kees de Bruin  <bruin@tasking.nl>
+
+	* gnus.el (gnus-current-copy-group): New variable.
+
+Mon Apr 29 18:29:18 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* message.el (message-setup): Don't require Subject.
+
 Mon Apr 29 02:24:14 1996  Lars Magne Ingebrigtsen  <larsi@aegir.ifi.uio.no>
+
+	* gnus.el: September Gnus v0.80 is released.
 
 	* message.el (message-check-news-syntax): Better `empty' check.
 	(message-checksum): Better checksums.

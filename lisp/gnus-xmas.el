@@ -28,6 +28,7 @@
 (require 'text-props)
 (eval-when-compile (require 'cl))
 (defvar menu-bar-mode t)
+(require 'message-xmas)
 
 (defvar gnus-xmas-glyph-directory nil
   "*Directory where Gnus logos and icons are located.
@@ -110,25 +111,37 @@ It is provided only to ease porting of broken FSF Emacs programs."
 			 gnus-summary-selected-face))))
 
 (defun gnus-xmas-summary-recenter ()
+  "Center point in the summary window.
+If `gnus-auto-center-summary' is nil, or the article buffer isn't
+displayed, no centering will be performed."
+  ;; Suggested by earle@mahendo.JPL.NASA.GOV (Greg Earle).
+  ;; Recenter only when requested.  Suggested by popovich@park.cs.columbia.edu.
   (let* ((top (cond ((< (window-height) 4) 0)
 		    ((< (window-height) 7) 1)
 		    (t 2)))
-	 (height (- (window-height) 2))
+	 (height (- (window-height) 3))
 	 (bottom (save-excursion (goto-char (point-max))
 				 (forward-line (- height))
 				 (point)))
 	 (window (get-buffer-window (current-buffer))))
-    (and 
-     ;; The user has to want it,
-     gnus-auto-center-summary 
-     ;; the article buffer must be displayed,
-     (get-buffer-window gnus-article-buffer)
-     ;; Set the window start to either `bottom', which is the biggest
-     ;; possible valid number, or the second line from the top,
-     ;; whichever is the least.
-     (set-window-start
-      window (min bottom (save-excursion
-			   (forward-line (- top)) (point)))))))
+    ;; The user has to want it.
+    (when gnus-auto-center-summary
+      (when (get-buffer-window gnus-article-buffer)
+       ;; Only do recentering when the article buffer is displayed,
+       ;; Set the window start to either `bottom', which is the biggest
+       ;; possible valid number, or the second line from the top,
+       ;; whichever is the least.
+       (set-window-start
+	window (min bottom (save-excursion 
+			     (forward-line (- top)) (point)))))
+      ;; Do horizontal recentering while we're at it.
+      (when (and (get-buffer-window (current-buffer) t)
+		 (not (eq gnus-auto-center-summary 'vertical)))
+	(let ((selected (selected-window)))
+	  (select-window (get-buffer-window (current-buffer) t))
+	  (gnus-summary-position-point)
+	  (gnus-horizontal-recenter)
+	  (select-window selected))))))
 
 (defun gnus-xmas-group-remove-excess-properties ()
   (let ((end (point))
@@ -142,7 +155,7 @@ It is provided only to ease porting of broken FSF Emacs programs."
 (defun gnus-xmas-topic-remove-excess-properties ()
   (let ((end (point))
 	(beg (progn (forward-line -1) (point))))
-    (remove-text-properties beg end '(gnus-group nil))
+    (remove-text-properties beg end '(gnus-group nil gnus-unread nil))
     (goto-char end)))
 
 (defun gnus-xmas-extent-start-open (point)
@@ -446,30 +459,10 @@ pounce directly on the real variables themselves.")
 
 ;;; XEmacs logo and toolbar.
 
-(defun gnus-xmas-find-glyph-directory ()
-  (or gnus-xmas-glyph-directory ; We have a dir already...
-      (let ((path load-path)
-	    dir)
-	;; We try to find the dir by looking at the load path,
-	;; stripping away the last component and adding "etc/".
-	(while path
-	  (if (and (car path)
-		   (file-exists-p
-		    (setq dir (concat
-			       (file-name-directory
-				(directory-file-name (car path)))
-			       "etc/gnus/")))
-		   (file-directory-p dir)
-		   (file-exists-p (concat dir "gnus-group-exit-icon-up.xpm")))
-	      (setq gnus-xmas-glyph-directory dir
-		    path nil)
-	    (setq path (cdr path))))
-	gnus-xmas-glyph-directory)))
-
 (defun gnus-xmas-group-startup-message (&optional x y)
   "Insert startup message in current buffer."
   ;; Insert the message.
-  (gnus-xmas-find-glyph-directory)
+  (setq gnus-xmas-glyph-directory (message-xmas-find-glyph-directory "gnus"))
   (erase-buffer)
   (let ((file (and gnus-xmas-glyph-directory
 		   (concat 
@@ -583,37 +576,15 @@ If it is non-nil, it must be a toolbar.  The five legal values are
      gnus-summary-cancel-article t "Cancel article"])
   "The summary buffer toolbar.")
 
-(defun gnus-xmas-setup-toolbar (bar &optional force)
-  (let ((dir (gnus-xmas-find-glyph-directory))
-	icon up down disabled name)
-    (if (not dir)
-	()
-      (if (and (not force)
-	       (boundp (aref (car bar) 0)))
-	  dir
-	(while bar
-	  (setq icon (aref (car bar) 0)
-		name (symbol-name icon)
-		bar (cdr bar))
-	  (setq up (concat dir name "-up.xpm"))
-	  (setq down (concat dir name "-down.xpm"))
-	  (setq disabled (concat dir name "-disabled.xpm"))
-	  (if (not (file-exists-p up))
-	      (set icon nil)
-	    (set icon (toolbar-make-button-list
-		       up (and (file-exists-p down) down)
-		       (and (file-exists-p disabled) disabled)))))
-	dir))))
-
 (defun gnus-xmas-setup-group-toolbar ()
   (and gnus-use-toolbar
-       (gnus-xmas-setup-toolbar gnus-group-toolbar)
+       (message-xmas-setup-toolbar gnus-group-toolbar nil "gnus")
        (set-specifier (symbol-value gnus-use-toolbar)
 		      (cons (current-buffer) gnus-group-toolbar))))
 
 (defun gnus-xmas-setup-summary-toolbar ()
   (and gnus-use-toolbar
-       (gnus-xmas-setup-toolbar gnus-summary-toolbar)
+       (message-xmas-setup-toolbar gnus-summary-toolbar nil "gnus")
        (set-specifier (symbol-value gnus-use-toolbar)
 		      (cons (current-buffer) gnus-summary-toolbar))))
 

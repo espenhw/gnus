@@ -1527,7 +1527,8 @@ specified by `gnus-button-alist'."
 
 (defun gnus-button-mailto (address)
   ;; Mail to ADDRESS.
-  (gnus-new-mail address))
+  (set-buffer (gnus-copy-article-buffer))
+  (message-reply address))
 
 (defun gnus-button-reply (address)
   ;; Reply to ADDRESS.

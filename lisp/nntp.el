@@ -653,8 +653,8 @@ It will prompt for a password."
     (if (equal proc nntp-server-process)
 	(setq server nntp-address)
       (while (and servers 
-		  (not (equal proc (nth 1 (assq 'nntp-server-process
-						(car servers))))))
+		  (not (equal proc (cdr (assq 'nntp-server-process
+					      (car servers))))))
 	(setq servers (cdr servers)))
       (setq server (caar servers)))
     (when (and server
@@ -664,9 +664,9 @@ It will prompt for a password."
 
 (defun nntp-kill-connection (server)
   "Choke the connection to SERVER."
-  (let ((proc (nth 1 (assq 'nntp-server-process 
-			   (assoc server (cddr 
-					  (assq 'nntp nnoo-state-alist)))))))
+  (let ((proc (cdr (assq 'nntp-server-process 
+			 (assoc server (cddr 
+					(assq 'nntp nnoo-state-alist)))))))
     (when proc 
       (delete-process (process-name proc)))
     (nntp-close-server server)
@@ -775,9 +775,9 @@ It will prompt for a password."
 
 (defun nntp-kill-command (server)
   "Kill and restart the connection to SERVER."
-  (let ((proc (nth 1 (assq 
-		      'nntp-server-process 
-		      (assoc server (cddr (assq 'nntp nnoo-state-alist)))))))
+  (let ((proc (cdr (assq 
+		    'nntp-server-process 
+		    (assoc server (cddr (assq 'nntp nnoo-state-alist)))))))
     (when proc 
       (delete-process (process-name proc)))
     (nntp-close-server server)

@@ -509,6 +509,8 @@ Returns the list of articles removed."
 
 (defun gnus-cache-read-active (&optional force)
   "Read the cache active file."
+  (unless (file-exists-p gnus-cache-directory)
+    (make-directory gnus-cache-directory t))
   (if (not (and (file-exists-p gnus-cache-active-file)
 		(or force (not gnus-cache-active-hashtb))))
       ;; There is no active file, so we generate one.

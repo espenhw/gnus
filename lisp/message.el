@@ -193,15 +193,21 @@ variable `message-header-separator'.")
 
 ;;;###autoload
 (defvar message-reply-to-function nil
-  "Function that should return a list of headers.")
+  "Function that should return a list of headers.
+This function should pick out addresses from the To, Cc, and From headers
+and respond with new To and Cc headers.")
 
 ;;;###autoload
 (defvar message-wide-reply-to-function nil
-  "Function that should return a list of headers.")
+  "Function that should return a list of headers.
+This function should pick out addresses from the To, Cc, and From headers
+and respond with new To and Cc headers.")
 
 ;;;###autoload
 (defvar message-followup-to-function nil
-  "Function that should return a list of headers.")
+  "Function that should return a list of headers.
+This function should pick out addresses from the To, Cc, and From headers
+and respond with new To and Cc headers.")
 
 ;;;###autoload
 (defvar message-use-followup-to 'ask
@@ -370,6 +376,34 @@ The cdr of ech entry is a function for applying the face to a region.")
 (defvar message-sent-hook nil
   "Hook run after sending messages.")
 
+(if (string-match "XEmacs\\|Lucid" emacs-version)
+    (defvar message-mode-menu
+      '("Send Message"
+	"Go to Field:"
+	"----"
+	["To:" message-goto-to t]
+	["Subject:" message-goto-subject t]
+	["Summary:" message-goto-summary t]
+	["Keywords:" message-goto-keywords t]
+	["Newsgroups:" message-goto-newsgroups t]
+	["Followup-To:" message-goto-followup-to t]
+	["Distribution:" message-goto-distribution t]
+	["Body" message-goto-body t]
+	["Signature" message-goto-signature t]
+	"----"
+	"Miscellaneous Commands:"
+	"----"
+	["Sort Headers" message-sort-headers t]
+	["Yank Original" message-yank-original t]
+	["Fill Yanked Message" message-fill-yanked-message t]
+;;  ["Insert Signature"         news-reply-signature     t]
+	["Caesar (rot13) Message" message-caesar-buffer-body t]
+	"----"
+	["Post Message" message-send-and-exit t]
+	["Abort Message" message-dont-send t]
+	)
+      "Buffer Menu for XEmacs."))
+
 ;;; Internal variables.
 
 ;;; Regexp matching the delimiter of messages in UNIX mail format
@@ -439,6 +473,9 @@ The cdr of ech entry is a function for applying the face to a region.")
     (X-Mailer)
     (X-Newsreader))
   "Alist used for formatting headers.")
+
+(eval-and-compile
+  (autoload 'message-setup-toolbar "message-xmas"))
 
 
 
@@ -658,11 +695,13 @@ Return the number of headers removed."
   (define-key message-mode-map "\C-c\C-q" 'message-fill-yanked-message)
   (define-key message-mode-map "\C-c\C-w" 'message-insert-signature)
   (define-key message-mode-map "\C-c\C-r" 'message-caesar-buffer-body)
-  (define-key message-mode-map "\C-c\C-h" 'message-sort-headers)
+  (define-key message-mode-map "\C-c\C-o" 'message-sort-headers)
 
   (define-key message-mode-map "\C-c\C-c" 'message-send-and-exit)
   (define-key message-mode-map "\C-c\C-s" 'message-send)
-  (define-key message-mode-map "\C-c\C-k" 'message-dont-send))
+  (define-key message-mode-map "\C-c\C-k" 'message-dont-send)
+  (if (string-match "XEmacs\\|Lucid" emacs-version)
+      (define-key message-mode-map 'button3 'message-mode-menu)))
 
 (defun message-make-menu-bar ()
   (unless (boundp 'message-menu)
@@ -733,6 +772,8 @@ C-c C-r  message-ceasar-buffer-body (rot13 the message body)."
   (setq message-checksum nil)
   (when (fboundp 'mail-hist-define-keys)
     (mail-hist-define-keys))
+  (when (string-match "XEmacs\\|Lucid" emacs-version)
+    (message-setup-toolbar))
   (run-hooks 'text-mode-hook 'message-mode-hook))
 
 
@@ -1602,9 +1643,9 @@ the user from the mailer."
 		  message-user-organization)))))
     (save-excursion
       (message-set-work-buffer)
-      (cond ((stringp message-user-organization)
-	     (insert message-user-organization))
-	    ((and (eq t message-user-organization)
+      (cond ((stringp organization)
+	     (insert organization))
+	    ((and (eq t organization)
 		  message-user-organization-file
 		  (file-exists-p message-user-organization-file))
 	     (insert-file-contents message-user-organization-file)))
@@ -1907,8 +1948,7 @@ Headers already prepared in the buffer are not modified."
 (defun message-fill-header (header value)
   (let ((begin (point))
 	(fill-column 78)
-	(fill-prefix "\t")
-	end)
+	(fill-prefix "\t"))
     (insert (capitalize (symbol-name header))
 	    ": "
 	    (if (consp value) (car value) value)
@@ -1987,14 +2027,16 @@ Headers already prepared in the buffer are not modified."
     (when message-generate-headers-first
       (message-generate-headers
        (delq 'Lines
-	     (copy-sequence message-required-news-headers)))))
+	     (delq 'Subject
+		   (copy-sequence message-required-news-headers))))))
   (when (message-mail-p)
     (when message-default-mail-headers
       (insert message-default-mail-headers))
     (when message-generate-headers-first
       (message-generate-headers
        (delq 'Lines
-	     (copy-sequence message-required-mail-headers)))))
+	     (delq 'Subject
+		   (copy-sequence message-required-mail-headers))))))
   (message-insert-signature)
   (message-set-auto-save-file-name)
   (save-restriction
@@ -2053,8 +2095,8 @@ Headers already prepared in the buffer are not modified."
   "Start editing a reply to the article in the current buffer."
   (interactive)
   (let ((cur (current-buffer))
-	from subject date reply-to message-of to cc
-	references message-id sender follow-to sendto elt new-cc new-to
+	from subject date reply-to to cc
+	references message-id follow-to 
 	mct never-mct gnus-warning)
     (save-restriction
       (narrow-to-region
@@ -2075,7 +2117,6 @@ Headers already prepared in the buffer are not modified."
       ;; Find all relevant headers we need.
       (setq from (mail-fetch-field "from")
 	    date (mail-fetch-field "date") 
-	    sender (mail-fetch-field "sender")
 	    subject (or (mail-fetch-field "subject") "none")
 	    to (mail-fetch-field "to")
 	    cc (mail-fetch-field "cc")
@@ -2156,8 +2197,8 @@ Headers already prepared in the buffer are not modified."
 (defun message-followup ()
   (interactive)
   (let ((cur (current-buffer))
-	from subject date message-of reply-to mct
-	references message-id follow-to sendto elt 
+	from subject date reply-to mct
+	references message-id follow-to 
 	followup-to distribution newsgroups gnus-warning)
     (save-restriction
       (narrow-to-region
@@ -2525,6 +2566,10 @@ which specify the range to operate on."
      (while (re-search-forward "\b" end1 t)
        (if (eq (following-char) (char-after (- (point) 2)))
 	   (delete-char -2))))))
+
+;; Support for Mouse menus
+(when (string-match "XEmacs\\|Lucid" emacs-version)
+  (require 'message-xmas))
 
 (provide 'message)
 
