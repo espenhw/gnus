@@ -1,3 +1,8 @@
+2000-05-08 22:34:24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-group.el (gnus-group-list-cached): Don't use
+	`subst-char-in-string'.
+	
 2000-05-08  Dave Love  <fx@gnu.org>
 
 	* pop3.el (pop3-open-server): Fix creating name of trace buffer.

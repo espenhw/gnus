@@ -3649,7 +3649,9 @@ This command may read the active file."
 					;; Cache active file might use "." 
 					;; instead of ":".
 					(gnus-gethash 
-					 (subst-char-in-string ?: ?. group)
+					 (mapconcat 'identity
+						    (split-string group ":")
+						    ".")
 					 gnus-cache-active-hashtb))))
   (goto-char (point-min))
   (gnus-group-position-point))
