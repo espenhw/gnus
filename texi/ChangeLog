@@ -1,3 +1,9 @@
+2004-11-16  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (NNTP): Mention nntp-marks-is-evil and
+	nntp-marks-directory, from Romain Francoise
+	<romain@orebokech.com>.
+
 2004-11-14  Magnus Henoch  <mange@freemail.hu>
 
 	* gnus.texi (Hashcash): New default value of

@@ -12803,6 +12803,15 @@ default is 0.1 seconds.  If you have a slow line to the server (and
 don't like to see Emacs eat your available CPU power), you might set
 this to, say, 1.
 
+@item nntp-marks-is-evil
+@vindex nntp-marks-is-evil
+If non-@code{nil}, this back end will ignore any @sc{marks} files.  The
+default is @code{nil}.
+
+@item nntp-marks-directory
+@vindex nntp-marks-directory
+The directory where @sc{marks} for nntp groups will be stored.
+
 @end table
 
 @menu
