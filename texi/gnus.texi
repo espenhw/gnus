@@ -660,6 +660,7 @@ Getting Mail
 * Duplicates::                  Dealing with duplicated mail.
 * Not Reading Mail::            Using mail backends for reading other files.
 * Choosing a Mail Backend::     Gnus can read a variety of mail formats.
+* Archiving Mail::              How to backup your mail.
 
 Mail Sources
 
@@ -11475,6 +11476,7 @@ course.
 * Duplicates::                  Dealing with duplicated mail.
 * Not Reading Mail::            Using mail backends for reading other files.
 * Choosing a Mail Backend::     Gnus can read a variety of mail formats.
+* Archiving Mail::              How to backup your mail.
 @end menu
 
 
@@ -13439,6 +13441,35 @@ cases, it makes a lot of sense to let the Gnus Agent (@pxref{Gnus
 Unplugged}) handle downloading articles, and then you can read them at
 leisure from your local disk.  No more World Wide Wait for you.
 
+@node Archiving Mail
+@subsection Archiving Mail
+@cindex archiving mail
+@cindex backup of mail
+
+Some of the backends, notably nnml and nnfolder, now actually store
+the article marks with each group.  For these servers, archiving and
+restoring a group while preserving marks is fairly simple.
+
+(Preserving the group level and group parameters as well still
+requires ritual dancing and sacrifies to the @code{.newsrc.eld} deity
+though.)
+
+To archive an entire @code{nnml} or @code{nnfolder} server, take a
+recursive copy of the server directory.  There is no need to shut down
+Gnus, so archiving may be invoked by @code{cron} or similar.  You
+restore the data by restoring the directory tree, and adding a server
+definition pointing to that directory in Gnus. The @ref{Article
+Backlog}, @ref{Asynchronous Fetching} and other things might interfer
+with overwriting data, so you may want to shut down Gnus before you
+restore the data.
+
+It is also possible to archive individual @code{nnml} or
+@code{nnfolder} groups, while preserving marks.  For @code{nnml}, you
+recursively copy the group's directory within the @code{nnml} server
+directory.  For @code{nnfolder} you need to copy both the base folder
+file itself, and the file named by concatenating the base folder name
+with @code{.mkr}.  Restoring the groups is done with @kbd{G m} from
+the Group buffer.  The last step makes Gnus notice the new directory.
 
 @node Web Searches
 @subsection Web Searches

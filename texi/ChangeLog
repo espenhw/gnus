@@ -1,3 +1,7 @@
+2001-08-27  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Archiving Mail): Add.
+
 2001-08-25  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Mail Spool): Add marks.
