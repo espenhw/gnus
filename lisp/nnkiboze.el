@@ -88,7 +88,7 @@
 	      'nov))))))
 
 (deffoo nnkiboze-open-server (newsgroups &optional something)
-  (make-directory nnkiboze-directory t)
+  (gnus-make-directory nnkiboze-directory)
   (nnheader-init-server-buffer))
 
 (deffoo nnkiboze-server-opened (&optional server)

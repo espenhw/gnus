@@ -535,6 +535,12 @@ Bind `print-quoted' to t while printing."
 (defun gnus-prin1-to-string (form)
   "The same as `prin1', but but `print-quoted' to t."
   (prin1-to-string form))
+
+(defun gnus-make-directory (directory)
+  "Make DIRECTORY (and all its parents) if it doesn't exist."
+  (when (not (file-exists-p directory))
+    (make-directory directory t)
+    t))
  
 (provide 'gnus-util)
 

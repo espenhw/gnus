@@ -433,11 +433,13 @@ If SILENT, don't prompt the user."
      ;; Override normal method.
      ((and gnus-post-method
 	   (or (gnus-method-option-p group-method 'post)
-	       (gnus-method-option-p group-method 'post-mail)))
+	       (gnus-method-option-p group-method 'post-mail)
+	       (gnus-group-find-parameter group 'to-group)))
       gnus-post-method)
      ;; Perhaps this is a mail group?
      ((and (not (gnus-member-of-valid 'post group))
-	   (not (gnus-method-option-p group-method 'post-mail)))
+	   (not (gnus-method-option-p group-method 'post-mail))
+	   (not (gnus-group-find-parameter group 'to-group)))
       group-method)
      ;; Use the normal select method.
      (t gnus-select-method))))

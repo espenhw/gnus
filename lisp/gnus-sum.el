@@ -424,6 +424,8 @@ automatically when it is selected.")
 
 ;;; Internal variables
 
+(defvar gnus-scores-exclude-files nil)
+
 (defvar gnus-summary-display-table 
   ;; Change the display table.	Odd characters have a tendency to mess
   ;; up nicely formatted displays - we make all possible glyphs
@@ -5646,7 +5648,7 @@ Obeys the standard process/prefix convention."
 			 (list (cons 'to-group ogroup))))
 	 article group egroup groups vgroup)
     (while (setq article (pop articles))
-      (setq group (format "%s-%d" gnus-newsgroup-name gnus-current-article))
+      (setq group (format "%s-%d" gnus-newsgroup-name article))
       (gnus-summary-remove-process-mark article)
       (when (gnus-summary-display-article article)
 	(save-excursion
@@ -6357,7 +6359,7 @@ groups."
 
 (defalias 'gnus-summary-edit-article-postpone 'gnus-article-edit-exit)
 
-(defun gnus-summary-edit-article-done (references read-only buffer)
+(defun gnus-summary-edit-article-done (&optional references read-only buffer)
   "Make edits to the current article permanent."
   (interactive)
   ;; Replace the article.
@@ -6367,9 +6369,10 @@ groups."
 		 (current-buffer))))
       (error "Couldn't replace article.")
     ;; Update the summary buffer.
-    (if (equal (message-tokenize-header references " ")
-	       (message-tokenize-header
-		(or (message-fetch-field "references") "") " "))
+    (if (and references
+	     (equal (message-tokenize-header references " ")
+		    (message-tokenize-header
+		     (or (message-fetch-field "references") "") " ")))
 	;; We only have to update this line.
 	(save-excursion
 	  (save-restriction
@@ -6380,7 +6383,7 @@ groups."
 	      (gnus-summary-update-article-line
 	       (cdr gnus-article-current) header))))
       ;; Update threads.
-      (set-buffer buffer)
+      (set-buffer (or buffer gnus-summary-buffer))
       (gnus-summary-update-article (cdr gnus-article-current)))
     ;; Prettify the article buffer again.
     (save-excursion

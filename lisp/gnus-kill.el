@@ -152,7 +152,7 @@ gnus-kill-file-mode-hook with no arguments, if that value is non-nil."
 If NEWSGROUP is nil, the global kill file is selected."
   (interactive "sNewsgroup: ")
   (let ((file (gnus-newsgroup-kill-file newsgroup)))
-    (make-directory (file-name-directory file) t)
+    (gnus-make-directory (file-name-directory file))
     ;; Save current window configuration if this is first invocation.
     (or (and (get-file-buffer file)
 	     (get-buffer-window (get-file-buffer file)))

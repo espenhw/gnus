@@ -208,8 +208,7 @@ $ emacs -batch -f gnus-batch-brew-soup ^nnml \".*emacs.*\""
 ;; Store the current buffer. 
 (defun gnus-soup-store (directory prefix headers format index)
   ;; Create the directory, if needed. 
-  (or (file-directory-p directory)
-      (make-directory directory) t)
+  (gnus-make-directory directory)
   (let* ((msg-buf (find-file-noselect
 		   (concat directory prefix ".MSG")))
 	 (idx-buf (if (= index ?n)
@@ -326,8 +325,7 @@ If NOT-ALL, don't pack ticked articles."
       (while prefix
 	(gnus-set-work-buffer)
 	(insert (format "(setq gnus-soup-prev-prefix %d)\n" (cdar prefix)))
-	(unless (file-exists-p (caar prefix))
-	  (make-directory (caar prefix) t))
+	(gnus-make-directory (caar prefix))
 	(write-region (point-min) (point-max)
 		      (concat (caar prefix) gnus-soup-prefix-file) 
 		      nil 'nomesg)
@@ -346,8 +344,7 @@ If NOT-ALL, don't pack ticked articles."
 			   (string-to-int (gnus-soup-unique-prefix dir))
 			   files)))
 	 (dir (expand-file-name dir)))
-    (or (file-directory-p dir)
-	(make-directory dir t))
+    (gnus-make-directory dir)
     (setq gnus-soup-areas nil)
     (gnus-message 4 "Packing %s..." packer)
     (if (zerop (call-process shell-file-name
@@ -489,7 +486,7 @@ file. The vector contain three strings, [prefix name encoding]."
 (defun gnus-soup-unpack-packet (dir unpacker packet)
   "Unpack PACKET into DIR using UNPACKER.
 Return whether the unpacking was successful."
-  (make-directory dir t)
+  (gnus-make-directory dir)
   (gnus-message 4 "Unpacking: %s" (format unpacker packet))
   (prog1
       (zerop (call-process

@@ -210,7 +210,7 @@
 	nil)
     (condition-case ()
 	(progn
-	  (make-directory nndraft-directory t)
+	  (gnus-make-directory nndraft-directory)
 	  t)
       (file-error nil))))
 

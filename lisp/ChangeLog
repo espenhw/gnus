@@ -1,3 +1,61 @@
+Thu Sep  5 19:50:19 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-xmas.el (gnus-xmas-modeline-glyph): Set string properly.
+
+Thu Sep  5 18:39:47 1996  Lars Magne Ingebrigtsen  <larsi@gymir.ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-edit-article-done): Make params
+	optional. 
+
+	* nntp.el (nntp-list-active-group): Don't change group first. 
+
+	* gnus-util.el (gnus-make-directory): New function.
+
+	* gnus-msg.el (gnus-post-method): Do the right thing in
+	`to-group' groups.
+
+Thu Sep  5 08:29:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-win.el (gnus-always-force-window-configuration): New
+	variable. 
+	(gnus-configure-windows): Use it.
+
+	* gnus-sum.el (gnus-summary-save-article): Give better prompts. 
+
+	* gnus-load.el (gnus-valid-select-methods): Update.
+
+	* gnus-score.el (gnus-score-find-favourite-words): Didn't find any
+	words.
+
+	* gnus-sum.el (gnus-scores-exclude-files): Defined.
+
+	* gnus-async.el (gnus-async-prefetch-next): Don't do so much on
+	un-asynch groups.
+
+Thu Sep  5 08:26:11 1996  jeff sparkes  <jsparkes@nortel.ca>
+
+	* gnus-win.el (gnus-buffer-configuration): Bad cut'n'paste.
+
+Thu Sep  5 07:41:08 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-group.el (gnus-group-list-groups): Update format specs.
+
+Thu Sep  5 07:11:18 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* gnus-sum.el (gnus-summary-read-document): Generated wrong nndoc
+	group names. 
+
+Thu Sep  5 06:53:07 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnvirtual.el (nnvirtual-close-group): Don't update ephemeral
+	groups. 
+
+	* gnus.el (gnus-group-auto-expirable-p): Allow nil expiry params. 
+
+Wed Sep  4 06:46:03 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.26 is released.
+
 Wed Sep  4 06:42:34 1996  Lars Magne Ingebrigtsen  <larsi@nipling.ifi.uio.no>
 
 	* nnmail.el (nnmail-move-inbox): Reverse logic.

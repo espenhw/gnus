@@ -660,7 +660,7 @@ listed."
 	  unread (cdr gnus-group-list-mode)))
   (setq level (gnus-group-default-level level))
   (gnus-group-setup-buffer)		;May call from out of group buffer
-  (gnus-update-format-specifications)
+  (gnus-update-format-specifications nil 'group 'group-mode)
   (let ((case-fold-search nil)
 	(props (text-properties-at (gnus-point-at-bol)))
 	(group (gnus-group-group-name)))

@@ -223,7 +223,7 @@ If you want to run a special decoding program like nkf, use this hook.")
 		nil)
 	       (t file)))
 	     (gnus-number-of-articles-to-be-saved
-	      (when (stringp filename) num))) ; Magic
+	      (when (eq gnus-prompt-before-saving t) num))) ; Magic
 	(set-buffer gnus-summary-buffer)
 	(funcall gnus-default-article-saver filename)))))
 
@@ -272,8 +272,7 @@ If you want to run a special decoding program like nkf, use this hook.")
 			 (car split-name))))
 		(car (push result file-name-history)))))))
       ;; Create the directory.
-      (unless (equal (directory-file-name file) file)
-	(make-directory (file-name-directory file) t))
+      (gnus-make-directory (file-name-directory file))
       ;; If we have read a directory, we append the default file name.
       (when (file-directory-p file)
 	(setq file (concat (file-name-as-directory file)
@@ -299,8 +298,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 		   gnus-current-headers gnus-newsgroup-last-rmail)))
     (setq filename (gnus-read-save-file-name
 		    "Save %s in rmail file:" default-name filename))
-    (unless (file-exists-p (file-name-directory filename))
-      (make-directory (file-name-directory filename) t))
+    (gnus-make-directory (file-name-directory filename))
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction
@@ -324,8 +322,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 	  (expand-file-name filename
 			    (and default-name
 				 (file-name-directory default-name))))
-    (unless (file-exists-p (file-name-directory filename))
-      (make-directory (file-name-directory filename) t))
+    (gnus-make-directory (file-name-directory filename))
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction
@@ -348,8 +345,7 @@ Directory to save to is default to `gnus-article-save-directory'."
 		   gnus-current-headers gnus-newsgroup-last-file)))
     (setq filename (gnus-read-save-file-name
 		    "Save %s in file:" default-name filename))
-    (unless (file-exists-p (file-name-directory filename))
-      (make-directory (file-name-directory filename) t))
+    (gnus-make-directory (file-name-directory filename))
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction
@@ -369,8 +365,7 @@ The directory to save in defaults to `gnus-article-save-directory'."
 		   gnus-current-headers gnus-newsgroup-last-file)))
     (setq filename (gnus-read-save-file-name
 		    "Save %s body in file:" default-name filename))
-    (unless (file-exists-p (file-name-directory filename))
-      (make-directory (file-name-directory filename) t))
+    (gnus-make-directory (file-name-directory filename))
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
 	(save-restriction
@@ -493,7 +488,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
     "\C-c\C-i" gnus-info-find-node
     "\C-c\C-b" gnus-bug
 
-    "\C-d" gnus-article-read-summary-keys)
+    "\C-d" gnus-article-read-summary-keys
+    "\M-g" gnus-article-read-summary-keys)
 
   (substitute-key-definition
    'undefined 'gnus-article-read-summary-keys gnus-article-mode-map))

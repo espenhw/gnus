@@ -74,8 +74,7 @@ isn't bound, the message will be used unconditionally.")
   (interactive)
   (let ((groups gnus-nocem-groups)
 	group active gactive articles)
-    (or (file-exists-p gnus-nocem-directory)
-	(make-directory gnus-nocem-directory t))
+    (gnus-make-directory gnus-nocem-directory)
     ;; Load any previous NoCeM headers.
     (gnus-nocem-load-cache)
     ;; Read the active file if it hasn't been read yet.

@@ -39,6 +39,9 @@
 (defvar gnus-window-min-height 1
   "*Minimum height of Gnus buffers.")
 
+(defvar gnus-always-force-window-configuration nil
+  "*If non-nil, always force the Gnus window configurations.")
+
 (defvar gnus-buffer-configuration
   '((group
      (vertical 1.0
@@ -135,7 +138,7 @@
      (vertical 1.0
 	       (summary 0.5 point)
 	       ("*Score Trace*" 1.0)))
-    (score-trace
+    (score-words
      (vertical 1.0
 	       (summary 0.5 point)
 	       ("*Score Words*" 1.0)))
@@ -387,6 +390,7 @@ buffer configuration.")
 
 (defun gnus-configure-windows (setting &optional force)
   (setq gnus-current-window-configuration setting)
+  (setq force (or force gnus-always-force-window-configuration))
   (setq setting (gnus-windows-old-to-new setting))
   (let ((split (if (symbolp setting)
 		   (cadr (assq setting gnus-buffer-configuration))

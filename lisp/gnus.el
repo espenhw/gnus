@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.26"
+(defconst gnus-version-number "0.27"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -343,19 +343,27 @@ that that variable is buffer-local to the summary buffers."
 
 (defun gnus-group-total-expirable-p (group)
   "Check whether GROUP is total-expirable or not."
-  (let ((params (gnus-group-find-parameter group)))
-    (or (memq 'total-expire params)
-	(cdr (assq 'total-expire params)) ; (total-expire . t)
-	(and gnus-total-expirable-newsgroups ; Check var.
-	     (string-match gnus-total-expirable-newsgroups group)))))
+  (let ((params (gnus-group-find-parameter group))
+	val)
+    (cond
+     ((memq 'total-expire params)
+      t)
+     ((setq val (assq 'total-expire params)) ; (auto-expire . t)
+      (cdr val))
+     (gnus-total-expirable-newsgroups	; Check var.
+      (string-match gnus-total-expirable-newsgroups group)))))
 
 (defun gnus-group-auto-expirable-p (group)
   "Check whether GROUP is total-expirable or not."
-  (let ((params (gnus-group-find-parameter group)))
-    (or (memq 'auto-expire params)
-	(cdr (assq 'auto-expire params)) ; (auto-expire . t)
-	(and gnus-auto-expirable-newsgroups ; Check var.
-	     (string-match gnus-auto-expirable-newsgroups group)))))
+  (let ((params (gnus-group-find-parameter group))
+	val)
+    (cond
+     ((memq 'auto-expire params)
+      t)
+     ((setq val (assq 'auto-expire params)) ; (auto-expire . t)
+      (cdr val))
+     (gnus-auto-expirable-newsgroups	; Check var.
+      (string-match gnus-auto-expirable-newsgroups group)))))
 
 (defun gnus-virtual-group-p (group)
   "Say whether GROUP is virtual or not."

@@ -102,8 +102,7 @@ variable to \"^nnml\".")
 	    (if (> (buffer-size) 0)
 		;; non-empty overview, write it out
 		(progn
-		  (unless (file-exists-p (file-name-directory overview-file))
-		    (make-directory (file-name-directory overview-file) t))
+		  (gnus-make-directory (file-name-directory overview-file))
 		  (write-region (point-min) (point-max)
 				overview-file nil 'quietly))
 	      ;; empty overview file, remove it
@@ -144,8 +143,7 @@ variable to \"^nnml\".")
 		 (not (file-exists-p (setq file (gnus-cache-file-name
 						 group number)))))
 	;; Possibly create the cache directory.
-	(unless (file-exists-p (setq dir (file-name-directory file)))
-	  (make-directory dir t))
+	(gnus-make-directory (setq dir (file-name-directory file)))
 	;; Save the article in the cache.
 	(if (file-exists-p file)
 	    t				; The article already is saved.
@@ -523,8 +521,7 @@ Returns the list of articles removed."
 
 (defun gnus-cache-read-active (&optional force)
   "Read the cache active file."
-  (unless (file-exists-p gnus-cache-directory)
-    (make-directory gnus-cache-directory t))
+  (gnus-make-directory gnus-cache-directory)
   (if (not (and (file-exists-p gnus-cache-active-file)
 		(or force (not gnus-cache-active-hashtb))))
       ;; There is no active file, so we generate one.
@@ -553,8 +550,7 @@ Returns the list of articles removed."
 			   (symbol-name sym) (cdr (symbol-value sym))
 			   (car (symbol-value sym))))))
        gnus-cache-active-hashtb)
-      (unless (file-exists-p (file-name-directory gnus-cache-active-file))
-	(make-directory (file-name-directory gnus-cache-active-file) t))
+      (gnus-make-directory (file-name-directory gnus-cache-active-file))
       (write-region 
        (point-min) (point-max) gnus-cache-active-file nil 'silent))
     ;; Mark the active hashtb as unaltered.

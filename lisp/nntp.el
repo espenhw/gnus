@@ -316,7 +316,7 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 
 (deffoo nntp-list-active-group (group &optional server)
   "Return the active info on GROUP (which can be a regexp."
-  (nntp-possibly-change-group group server)
+  (nntp-possibly-change-group nil server)
   (nntp-send-command "^.*\r?\n" "LIST ACTIVE" group))
 
 (deffoo nntp-request-article (article &optional group server buffer command)

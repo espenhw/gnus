@@ -9451,7 +9451,7 @@ searches without having to use a browser.
 The @code{nnweb} backend allows an easy interface to the mighty search
 engine.  You create an @code{nnweb} group, enter a search pattern, and
 then enter the group and read the articles like you would any normal
-group.  The @kbd{G n} command in the group buffer (@pxref{Foreign
+group.  The @kbd{G w} command in the group buffer (@pxref{Foreign
 Groups}) will do this in an easy-to-use fashion.
 
 @code{nnweb} groups don't really lend themselves to being solid
@@ -11837,8 +11837,14 @@ you want to change the @code{article} setting, you could say:
 @end lisp
 
 You'd typically stick these @code{gnus-add-configuration} calls in your
-@file{.gnus} file or in some startup hook---they should be run after
+@file{.gnus.el} file or in some startup hook---they should be run after
 Gnus has been loaded.
+
+@vindex gnus-always-force-window-configuration
+If all windows mentioned in the configuration are already visible, Gnus
+won't change the window configuration.  If you always want to force the
+``right'' window configuration, you can set
+@code{gnus-always-force-window-configuration} to non-@code{nil}.
 
 
 @node Compilation
@@ -13252,6 +13258,12 @@ server parameters.
 A named select method.  Since a select methods defines all there is to
 know about connecting to a (physical) server, taking the who things as a
 whole is a virtual server.
+
+@item washing
+@cindex washing
+Taking a buffer and running it through a filter of some sort.  The
+result will (more often than not) be cleaner and more pleasing than the
+original. 
 
 @end table
 

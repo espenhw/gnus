@@ -779,8 +779,9 @@ If HIDE, hide the text instead."
 	   (glyph (make-glyph file)))
       (when (and (featurep 'x)
 		 (file-exists-p file))
-	(set-glyph-face glyph 'modeline-buffer-id)
-	glyph))))
+	(set-glyph-face glyph 'modeline-buffer-id))
+      (set-glyph-property glyph 'image (cons 'tty "Gnus:"))
+      glyph)))
 
 (defun gnus-xmas-mode-line-buffer-identification (line)
   (let ((line (car line))
@@ -791,8 +792,7 @@ If HIDE, hide the text instead."
 	  (incf chop)
 	(setq chop (/ (length line) 2)))
       (list 
-       (if (and (featurep 'x)
-		gnus-xmas-modeline-glyph)
+       (if gnus-xmas-modeline-glyph
 	   (cons gnus-xmas-modeline-left-extent gnus-xmas-modeline-glyph)
 	 (cons gnus-xmas-modeline-left-extent (substring line 0 chop)))
        (cons gnus-xmas-modeline-right-extent (substring line chop))))))

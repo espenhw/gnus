@@ -319,7 +319,7 @@ If a form, the result from the form will be used instead.")
 
 ;;;###autoload
 (defvar message-signature-file "~/.signature"
-  "*File containing the text inserted at end of message. buffer.")
+  "*File containing the text inserted at end of message buffer.")
 
 (defvar message-distribution-function nil
   "*Function called to return a Distribution header.")

@@ -181,8 +181,7 @@ If this variable is nil, no files will be excluded.")
 
 (defun nneething-map-file ()
   ;; We make sure that the .nneething directory exists. 
-  (unless (file-exists-p nneething-map-file-directory)
-    (make-directory nneething-map-file-directory 'parents))
+  (gnus-make-directory nneething-map-file-directory)
   ;; We store it in a special directory under the user's home dir.
   (concat (file-name-as-directory nneething-map-file-directory)
 	  nneething-group nneething-map-file))

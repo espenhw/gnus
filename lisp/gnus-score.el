@@ -901,7 +901,7 @@ SCORE is the score to add."
   (interactive (list gnus-current-score-file))
   (let ((winconf (current-window-configuration)))
     (and (buffer-name gnus-summary-buffer) (gnus-score-save))
-    (make-directory (file-name-directory file) t)
+    (gnus-make-directory (file-name-directory file))
     (setq gnus-score-edit-buffer (find-file-noselect file))
     (gnus-configure-windows 'edit-score)
     (gnus-score-mode)
@@ -916,7 +916,7 @@ SCORE is the score to add."
   "Edit a score file."
   (interactive 
    (list (read-file-name "Edit score file: " gnus-kill-files-directory)))
-  (make-directory (file-name-directory file) t)
+  (gnus-make-directory (file-name-directory file))
   (and (buffer-name gnus-summary-buffer) (gnus-score-save))
   (let ((winconf (current-window-configuration)))
     (setq gnus-score-edit-buffer (find-file-noselect file))
@@ -1186,8 +1186,7 @@ SCORE is the score to add."
 	      ;; This is a normal score file, so we print it very
 	      ;; prettily. 
 	      (pp score (current-buffer))))
-	  (if (and (not (file-exists-p (file-name-directory file)))
-		   (make-directory (file-name-directory file) t))
+	  (if (not (gnus-make-directory (file-name-directory file)))
 	      (gnus-error 1 "Can't create directory %s"
 			  (file-name-directory file))
 	    ;; If the score file is empty, we delete it.
@@ -2107,18 +2106,19 @@ SCORE is the score to add."
   "List words used in scoring."
   (interactive)
   (let ((alists (gnus-score-load-files (gnus-all-score-files)))
-	alist rule rules)
+	alist rule rules kill)
     ;; Go through all the score alists for this group
     ;; and find all `w' rules.
     (while (setq alist (pop alists))
-      (when (and (stringp (setq rule (pop alist)))
-		 (equal "subject" (downcase (pop rule))))
-	(while rule
-	  (when (memq (nth 3 (car rule)) '(w W word Word))
-	    (push (cons (or (nth 1 rule) gnus-score-interactive-default-score)
-			(car rule))
-		  rules))
-	  (pop rule))))
+      (while (setq rule (pop alist))
+	(when (and (stringp (car rule))
+		   (equal "subject" (downcase (pop rule))))
+	  (while (setq kill (pop rule))
+	    (when (memq (nth 3 kill) '(w W word Word))
+	      (push (cons (or (nth 1 kill)
+			      gnus-score-interactive-default-score)
+			  (car kill))
+		    rules))))))
     (setq rules (sort rules (lambda (r1 r2)
 			      (string-lessp (cdr r1) (cdr r2)))))
     ;; Add up words that have appeared several times.
@@ -2131,12 +2131,13 @@ SCORE is the score to add."
 	  (pop r))))
     ;; Insert the words.
     (nnheader-set-temp-buffer "*Score Words*")
-    (setq rules (sort rules (lambda (r1 r2) (> (car r1) (car r2)))))
-    (while rules
-      (insert (format "%-5d: %s\n" (caar rules) (cdar rules)))
-      (pop rules))
-    (gnus-add-current-to-buffer-list)
-    (gnus-configure-windows 'score-words)))
+    (if (not (setq rules (sort rules (lambda (r1 r2) (> (car r1) (car r2))))))
+	(gnus-error 3 "No word score rules")
+      (while rules
+	(insert (format "%-5d: %s\n" (caar rules) (cdar rules)))
+	(pop rules))
+      (gnus-add-current-to-buffer-list)
+      (gnus-configure-windows 'score-words))))
 
 (defun gnus-summary-rescore ()
   "Redo the entire scoring process in the current summary."
