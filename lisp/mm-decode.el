@@ -113,7 +113,9 @@ and `mm-inline-text-html-render-with-w3m', which uses emacs-w3m."
   "If non-nil, Gnus will allow retrieving images in the HTML contents
 with <img> tags.  It has no effect on Emacs/w3.  For emacs-w3m, the
 value of the option `w3m-display-inline-images' will be bound with
-this value."
+this value.  In addition, the variable `w3m-safe-url-regexp' will be
+bound with the value nil if it is non-nil to make emacs-w3m show all
+images, however this behavior may be changed in the future."
   :type 'boolean
   :group 'mime-display)
 

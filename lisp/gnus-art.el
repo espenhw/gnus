@@ -2091,8 +2091,11 @@ If READ-CHARSET, ask for a coding system."
   (mm-setup-w3m)
   (save-restriction
     (narrow-to-region (point) (point-max))
-    (let ((w3m-safe-url-regexp "\\`cid:")
-	  (w3m-display-inline-images mm-inline-text-html-with-images))
+    (let ((w3m-safe-url-regexp (if mm-inline-text-html-with-images
+				   nil
+				 "\\`cid:"))
+	  (w3m-display-inline-images mm-inline-text-html-with-images)
+	  w3m-force-redisplay)
       (w3m-region (point-min) (point-max)))
     (when mm-inline-text-html-with-w3m-keymap
       (add-text-properties

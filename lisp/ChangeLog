@@ -1,3 +1,13 @@
+2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mm-view.el (mm-inline-text-html-render-with-w3m): Bind
+	`w3m-safe-url-regexp' with nil if `mm-inline-text-html-with-images'
+	is non-nil; bind `w3m-force-redisplay' with nil.
+
+	* gnus-art.el (gnus-article-wash-html-with-w3m): Ditto.
+
+	* mm-decode.el (mm-inline-text-html-with-images): Supplement docs.
+
 2002-01-31  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnfolder.el (nnfolder-request-replace-article): Unfold. Don't
