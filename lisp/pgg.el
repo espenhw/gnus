@@ -192,15 +192,6 @@ the region."
   "Decrypt the current region between START and END."
   (interactive "r")
   (let* ((buf (current-buffer))
-	 (packet (cdr (assq 1 (with-temp-buffer
-				(insert-buffer-substring buf)
-				(pgg-decode-armor-region
-				 (point-min) (point-max))))))
-	 (key (cdr (assq 'key-identifier packet)))
-	 (pgg-default-user-id 
-	  (if key
-	      (concat "0x" (pgg-truncate-key-identifier key))
-	    pgg-default-user-id))
 	 (status
 	  (pgg-save-coding-system start end
 	    (pgg-invoke "decrypt-region" (or pgg-scheme pgg-default-scheme)

@@ -89,17 +89,18 @@
 	  (delete-file output-file-name))
       (set-default-file-modes orig-mode))))
 
-(defun pgg-gpg-possibly-cache-passphrase (passphrase)
+(defun pgg-gpg-possibly-cache-passphrase (passphrase &optional key)
   (if (and pgg-cache-passphrase
 	   (progn
 	     (goto-char (point-min))
 	     (re-search-forward "^\\[GNUPG:] GOOD_PASSPHRASE\\>" nil t)))
       (pgg-add-passphrase-cache
-       (progn
-	 (goto-char (point-min))
-	 (if (re-search-forward
-	      "^\\[GNUPG:] NEED_PASSPHRASE \\w+ ?\\w*" nil t)
-	     (substring (match-string 0) -8)))
+       (or key
+	   (progn
+	     (goto-char (point-min))
+	     (if (re-search-forward
+		  "^\\[GNUPG:] NEED_PASSPHRASE \\w+ ?\\w*" nil t)
+		 (substring (match-string 0) -8))))
        passphrase)))
 
 (defun pgg-gpg-lookup-key (string &optional type)
@@ -125,7 +126,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 	  (when sign
 	    (pgg-read-passphrase
 	     (format "GnuPG passphrase for %s: " pgg-gpg-user-id)
-	     (pgg-gpg-lookup-key pgg-gpg-user-id 'encrypt))))
+	     pgg-gpg-user-id)))
 	 (args
 	  (append
 	   (list "--batch" "--armor" "--always-trust" "--encrypt")
@@ -141,7 +142,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
       (pgg-gpg-process-region start end passphrase pgg-gpg-program args))
     (when sign
       (with-current-buffer pgg-errors-buffer
-	(pgg-gpg-possibly-cache-passphrase passphrase)))
+	(pgg-gpg-possibly-cache-passphrase passphrase pgg-gpg-user-id)))
     (pgg-process-when-success)))
 
 (defun pgg-gpg-decrypt-region (start end)
@@ -150,11 +151,11 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 	 (passphrase
 	  (pgg-read-passphrase
 	   (format "GnuPG passphrase for %s: " pgg-gpg-user-id)
-	   (pgg-gpg-lookup-key pgg-gpg-user-id 'encrypt)))
+	   pgg-gpg-user-id))
 	 (args '("--batch" "--decrypt")))
     (pgg-gpg-process-region start end passphrase pgg-gpg-program args)
     (with-current-buffer pgg-errors-buffer
-      (pgg-gpg-possibly-cache-passphrase passphrase)
+      (pgg-gpg-possibly-cache-passphrase passphrase pgg-gpg-user-id)
       (goto-char (point-min))
       (re-search-forward "^\\[GNUPG:] DECRYPTION_OKAY\\>" nil t))))
 
@@ -164,7 +165,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
 	 (passphrase
 	  (pgg-read-passphrase
 	   (format "GnuPG passphrase for %s: " pgg-gpg-user-id)
-	   (pgg-gpg-lookup-key pgg-gpg-user-id 'sign)))
+	   pgg-gpg-user-id))
 	 (args
 	  (list (if cleartext "--clearsign" "--detach-sign")
 		"--armor" "--batch" "--verbose"
@@ -174,7 +175,7 @@ If optional argument SIGN is non-nil, do a combined sign and encrypt."
     (pgg-as-lbt start end 'CRLF
       (pgg-gpg-process-region start end passphrase pgg-gpg-program args))
     (with-current-buffer pgg-errors-buffer
-      (pgg-gpg-possibly-cache-passphrase passphrase))
+      (pgg-gpg-possibly-cache-passphrase passphrase pgg-gpg-user-id))
     (pgg-process-when-success)))
 
 (defun pgg-gpg-verify-region (start end &optional signature)

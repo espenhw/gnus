@@ -1,3 +1,16 @@
+2003-10-27  Simon Josefsson  <jas@extundo.com>
+
+	* pgg-gpg.el (pgg-gpg-possibly-cache-passphrase): New optional
+	parameter key, overrides the key id used to store passphrase
+	under (uses true key id from gpg output if nil).
+	(pgg-gpg-encrypt-region): Search for passphrase using user suplied
+	string STR, instead of (pgg-lookup-key STR t).
+	(pgg-gpg-encrypt-region): Store passphrase under user suplied
+	string, instead of real key id taken from gpg output.
+	(pgg-gpg-decrypt-region): Likewise.
+	(pgg-gpg-sign-region): Likewise.
+	* pgg.el (pgg-decrypt-region): Don't set pgg-default-user-id.
+
 2003-10-27  Romain FRANCOISE  <romain@orebokech.com>
 
 	* gnus-art.el (gnus-article-goto-prev-page): Doc fix. 
