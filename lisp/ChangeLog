@@ -1,3 +1,10 @@
+2002-09-04  Jesper harder  <harder@ifa.au.dk>
+
+	* rfc1843.el (rfc1843-decode-loosely): Move to mime customization
+	group.
+	(rfc1843-decode-hzp): do.
+	(rfc1843-newsgroups-regexp): do.
+
 2002-09-04  Simon Josefsson  <jas@extundo.com>
 
 	* message.el (message-canlock-generate): Make sure sha1 doesn't

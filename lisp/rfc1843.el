@@ -54,7 +54,7 @@
 When it is set non-nil, only buffers or strings with strictly
 HZ-encoded are decoded."
   :type 'boolean
-  :group 'gnus)
+  :group 'mime)
 
 (defcustom rfc1843-decode-hzp t
   "HZ+ decoding support if non-nil.
@@ -64,12 +64,12 @@ e-mail transmission, news posting, etc.
 The document of HZ+ 0.78 specification can be found at
 ftp://ftp.math.psu.edu/pub/simpson/chinese/hzp/hzp.doc"
   :type 'boolean
-  :group 'gnus)
+  :group 'mime)
 
 (defcustom rfc1843-newsgroups-regexp "chinese\\|hz"
   "Regexp of newsgroups in which might be HZ encoded."
   :type 'string
-  :group 'gnus)
+  :group 'mime)
 
 (defun rfc1843-decode-region (from to)
   "Decode HZ in the region between FROM and TO."
