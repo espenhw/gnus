@@ -792,7 +792,8 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
 	       (insert article-string)
 	       (spam-stat-buffer-is-non-spam))))))
 
-      (add-hook 'gnus-save-newsrc-hook 'spam-stat-save))
+      (when spam-use-stat
+	(add-hook 'gnus-save-newsrc-hook 'spam-stat-save)))
 
   (file-error (progn
 		(defalias 'spam-stat-register-ham-routine 'ignore)
