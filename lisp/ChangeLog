@@ -1,3 +1,8 @@
+2004-09-20  Simon Josefsson  <jas@extundo.com>
+
+	* mm-util.el (mm-charset-synonym-alist): Map "unicode" to
+	"utf-16-le".
+
 2004-09-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* uudecode.el (uudecode-use-external): Add :version.

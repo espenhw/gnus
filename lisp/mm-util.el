@@ -160,6 +160,10 @@ system object in XEmacs."
 	       (mm-coding-system-p 'cp1250))
 	  '((windows-1250 . cp1250)))
     ;; A Microsoft misunderstanding.
+    ,@(if (and (not (mm-coding-system-p 'unicode))
+	       (mm-coding-system-p 'utf-16-le))
+	  '((unicode . utf-16-le)))
+    ;; A Microsoft misunderstanding.
     ,@(unless (mm-coding-system-p 'ks_c_5601-1987)
 	(if (mm-coding-system-p 'cp949)
 	    '((ks_c_5601-1987 . cp949))
