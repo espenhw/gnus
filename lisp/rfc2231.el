@@ -113,7 +113,8 @@ The list will be on the form
 	(when prev-attribute
 	  (push (cons prev-attribute prev-value) parameters))
 
-	`(,type ,@(nreverse parameters))))))
+	(when type
+	  `(,type ,@(nreverse parameters)))))))
 
 (defun rfc2231-decode-encoded-string (string)
   "Decode an RFC2231-encoded string.

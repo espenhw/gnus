@@ -31,9 +31,9 @@
        (string-match "nt" system-configuration)))
 
 (defvar mm-binary-coding-system 
-    (if mm-running-xemacs
-	'binary 'no-conversion)
-    "100% binary coding system.")   
+  (if mm-running-xemacs
+      'binary 'no-conversion)
+  "100% binary coding system.")   
 
 (defvar mm-text-coding-system 
   (cond 

@@ -38,7 +38,10 @@
 (defvoo nnsoup-directory "~/SOUP/"
   "*SOUP packet directory.")
 
-(defvoo nnsoup-tmp-directory "/tmp/"
+(defvoo nnsoup-tmp-directory
+    (cond ((fboundp 'temp-directory) (temp-directory))
+	  ((boundp 'temporary-file-directory) temporary-file-directory)
+	  ("/tmp/"))
   "*Where nnsoup will store temporary files.")
 
 (defvoo nnsoup-replies-directory (concat nnsoup-directory "replies/")
@@ -666,8 +669,6 @@ backend for the messages.")
   (require 'mail-utils)
   (let ((tembuf (generate-new-buffer " message temp"))
 	(case-fold-search nil)
-	(real-header-separator mail-header-separator)
-	(mail-header-separator "")
 	delimline
 	(mailbuf (current-buffer)))
     (unwind-protect
@@ -693,15 +694,11 @@ backend for the messages.")
 	    ;; Change header-delimiter to be what sendmail expects.
 	    (goto-char (point-min))
 	    (re-search-forward
-	     (concat "^" (regexp-quote real-header-separator) "\n"))
+	     (concat "^" (regexp-quote mail-header-separator) "\n"))
 	    (replace-match "\n")
 	    (backward-char 1)
 	    (setq delimline (point-marker))
-	    ;; Insert an extra newline if we need it to work around
-	    ;; Sun's bug that swallows newlines.
 	    (goto-char (1+ delimline))
-	    (when (eval message-mailer-swallows-blank-line)
-	      (newline))
 	    (let ((msg-buf
 		   (gnus-soup-store
 		    nnsoup-replies-directory

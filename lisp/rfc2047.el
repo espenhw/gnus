@@ -138,7 +138,7 @@ Should be called narrowed to the head of the message."
   "Say whether the current (narrowed) buffer contains characters that need encoding."
   (let ((charsets (mapcar
 		   'mm-mule-charset-to-mime-charset
-		   (find-charset-region (point-min) (point-max))))
+		   (mm-find-charset-region (point-min) (point-max))))
 	(cs (list 'us-ascii rfc2047-default-charset))
 	found)
     (while charsets
@@ -156,7 +156,7 @@ Should be called narrowed to the head of the message."
 	      (concat "[^" ietf-drums-tspecials " \t\n]+") nil t)
 	(push
 	 (list (match-beginning 0) (match-end 0)
-	       (car (delq 'ascii (find-charset-region
+	       (car (delq 'ascii (mm-find-charset-region
 				  (match-beginning 0) (match-end 0)))))
 	 words))
       words)))
@@ -271,7 +271,9 @@ Should be called narrowed to the head of the message."
 	  (when (and (mm-multibyte-p) rfc2047-default-charset)
 	    (mm-decode-coding-region b e rfc2047-default-charset))
 	  (setq b (point)))
-	(when (and (mm-multibyte-p) rfc2047-default-charset)
+	(when (and (mm-multibyte-p)
+		   rfc2047-default-charset
+		   (not (eq rfc2047-default-charset 'us-ascii)))
 	  (mm-decode-coding-region b (point-max) rfc2047-default-charset))))))
 
 (defun rfc2047-decode-string (string)

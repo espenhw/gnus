@@ -241,7 +241,10 @@ not.")
 (defvar mailcap-download-directory nil
   "*Where downloaded files should go by default.")
 
-(defvar mailcap-temporary-directory (or (getenv "TMPDIR") "/tmp")
+(defvar mailcap-temporary-directory
+  (cond ((fboundp 'temp-directory) (temp-directory))
+	((boundp 'temporary-file-directory) temporary-file-directory)
+	("/tmp/"))
   "*Where temporary files go.")
 
 ;;;
@@ -308,7 +311,8 @@ If FORCE, re-parse even if already parsed."
      (path nil)
      ((getenv "MAILCAPS") (setq path (getenv "MAILCAPS")))
      ((memq system-type '(ms-dos ms-windows windows-nt))
-      (setq path (mapconcat 'expand-file-name '("~/mail.cap" "~/etc/mail.cap")
+      (setq path (mapconcat 'expand-file-name
+			    '("~/mail.cap" "~/etc/mail.cap" "~/.mailcap")
 			    ";")))
      (t (setq path (mapconcat 'expand-file-name
 			      '("~/.mailcap"

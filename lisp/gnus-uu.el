@@ -216,7 +216,10 @@ Note that this variable can be used in conjunction with the
 
 ;; Various variables users may set
 
-(defcustom gnus-uu-tmp-dir "/tmp/"
+(defcustom gnus-uu-tmp-dir
+  (cond ((fboundp 'temp-directory) (temp-directory))
+	((boundp 'temporary-file-directory) temporary-file-directory)
+	("/tmp/"))
   "*Variable saying where gnus-uu is to do its work.
 Default is \"/tmp/\"."
   :group 'gnus-extract

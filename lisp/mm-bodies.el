@@ -131,9 +131,9 @@ If no encoding was done, nil is returned."
 	   ((null encoding)
 	    )
 	   ((eq encoding 'x-uuencode)
-	    (uudecode-decode-region (point-min) (point-max)))
+	    (funcall mm-uu-decode-function (point-min) (point-max)))
 	   ((eq encoding 'x-binhex)
-	    (binhex-decode-region (point-min) (point-max)))
+	    (funcall mm-uu-binhex-decode-function (point-min) (point-max)))
 	   ((functionp encoding)
 	    (funcall encoding (point-min) (point-max)))
 	   (t

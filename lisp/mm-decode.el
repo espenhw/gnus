@@ -48,10 +48,13 @@
   `(nth 6 ,handle))
 (defmacro mm-handle-set-cache (handle contents)
   `(setcar (nthcdr 6 ,handle) ,contents))
+(defmacro mm-handle-id (handle)
+  `(nth 7 ,handle))
 (defmacro mm-make-handle (&optional buffer type encoding undisplayer
-				    disposition description cache)
+				    disposition description cache
+				    id)
   `(list ,buffer ,type ,encoding ,undisplayer
-	 ,disposition ,description ,cache))
+	 ,disposition ,description ,cache ,id))
 
 (defvar mm-inline-media-tests
   '(("image/jpeg" mm-inline-image
@@ -108,7 +111,10 @@
     "text/richtext" "text/plain")
   "List that describes the precedence of alternative parts.")
 
-(defvar mm-tmp-directory "/tmp/"
+(defvar mm-tmp-directory
+  (cond ((fboundp 'temp-directory) (temp-directory))
+	((boundp 'temporary-file-directory) temporary-file-directory)
+	("/tmp/"))
   "Where mm will store its temporary files.")
 
 (defvar mm-all-images-fit nil
@@ -137,7 +143,8 @@
 		cd (mail-fetch-field "content-disposition")
 		description (mail-fetch-field "content-description")
 		id (mail-fetch-field "content-id"))))
-      (if (not ctl)
+      (if (or (not ctl)
+	      (not (string-match "/" (car ctl))))
 	  (mm-dissect-singlepart
 	   '("text/plain") nil no-strict-mime
 	   (and cd (condition-case ()
@@ -162,18 +169,18 @@
 	    (and cd (condition-case ()
 			(mail-header-parse-content-disposition cd)
 		      (error nil)))
-	    description))))
+	    description id))))
 	(when id
 	  (when (string-match " *<\\(.*\\)> *" id)
 	    (setq id (match-string 1 id)))
 	  (push (cons id result) mm-content-id-alist))
 	result))))
 
-(defun mm-dissect-singlepart (ctl cte &optional force cdl description)
+(defun mm-dissect-singlepart (ctl cte &optional force cdl description id)
   (when (or force
 	    (not (equal "text/plain" (car ctl))))
     (let ((res (mm-make-handle
-		(mm-copy-to-buffer) ctl cte nil cdl description)))
+		(mm-copy-to-buffer) ctl cte nil cdl description nil id)))
       (push (car res) mm-dissection-list)
       res)))
 

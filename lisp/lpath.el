@@ -38,7 +38,7 @@
 		     find-coding-systems-region get-charset-property
 		     coding-system-get w3-region
 		     rmail-summary-exists rmail-select-summary
-		     rmail-update-summary
+		     rmail-update-summary url-retrieve
 		     ))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count
@@ -49,12 +49,15 @@
 		    gnus-newsgroup-iso-8859-1-forced
 		    mail-mode-hook enable-multibyte-characters
 		    adaptive-fill-first-line-regexp adaptive-fill-regexp
-		    url-current-mime-headers buffer-file-coding-system)))
+		    url-current-mime-headers buffer-file-coding-system
+		    w3-image-mappings url-current-mime-type
+		    url-current-callback-func url-current-callback-data
+		    url-be-asynchronous temporary-file-directory)))
   (maybe-bind '(mail-mode-hook
 		enable-multibyte-characters browse-url-browser-function
 		adaptive-fill-first-line-regexp adaptive-fill-regexp
-		url-current-mime-headers))
-  (maybe-fbind '(color-instance-rgb-components
+		url-current-mime-headers help-echo-owns-message))
+  (maybe-fbind '(color-instance-rgb-components temp-directory
 		 glyph-width annotation-glyph window-pixel-width glyph-height
 		 window-pixel-height
 		 make-color-instance color-instance-name specifier-instance
@@ -76,6 +79,7 @@
 		 make-annotation 
 		 w3-do-setup w3-region
 		 rmail-summary-exists rmail-select-summary rmail-update-summary
+		 url-generic-parse-url
 		 )))
 
 (setq load-path (cons "." load-path))

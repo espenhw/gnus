@@ -1125,21 +1125,20 @@ this is a reply."
 		  (set (make-local-variable variable) value-value)
 		;; This is either a body or a header to be inserted in the
 		;; message.
-		(when value-value
-		  (let ((attr (car attribute)))
-		    (make-local-variable 'message-setup-hook)
-		    (if (eq 'body attr)
-			(add-hook 'message-setup-hook
-				  `(lambda ()
-				     (save-excursion
-				       (message-goto-body)
-				       (insert ,value-value))))
+		(let ((attr (car attribute)))
+		  (make-local-variable 'message-setup-hook)
+		  (if (eq 'body attr)
 		      (add-hook 'message-setup-hook
-				'gnus-message-insert-stylings)
-		      (push (cons (if (stringp attr) attr
-				    (symbol-name attr))
-				  value-value)
-			    gnus-message-style-insertions))))))))))))
+				`(lambda ()
+				   (save-excursion
+				     (message-goto-body)
+				     (insert ,value-value))))
+		    (add-hook 'message-setup-hook
+			      'gnus-message-insert-stylings)
+		    (push (cons (if (stringp attr) attr
+				  (symbol-name attr))
+				value-value)
+			  gnus-message-style-insertions)))))))))))
 
 (defun gnus-message-insert-stylings ()
   (let (val)

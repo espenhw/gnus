@@ -559,14 +559,13 @@ displayed by the first non-nil matching CONTENT face."
     ("\205" "...")
     ("\213" "<")
     ("\214" "OE")
-    ("\205" "...")
     ("\221" "`")
     ("\222" "'")
     ("\223" "``")
     ("\224" "''")
     ("\225" "*")
     ("\226" "-")
-    ("\227" "-")
+    ("\227" "-") 
     ("\231" "(TM)")
     ("\233" ">")
     ("\234" "oe")
@@ -2824,9 +2823,11 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 (defun gnus-article-maybe-hide-headers ()
   "Hide unwanted headers if `gnus-have-all-headers' is nil.
 Provided for backwards compatibility."
-  (or (save-excursion (set-buffer gnus-summary-buffer) gnus-have-all-headers)
-      gnus-inhibit-hiding
-      (gnus-article-hide-headers)))
+  (when (and (or (not (gnus-buffer-live-p gnus-summary-buffer))
+		 (not (save-excursion (set-buffer gnus-summary-buffer)
+				      gnus-have-all-headers)))
+	     (not gnus-inhibit-hiding))
+    (gnus-article-hide-headers)))
 
 ;;; Article savers.
 

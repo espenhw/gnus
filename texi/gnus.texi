@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.68 Manual
+@settitle Pterodactyl Gnus 0.69 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.68 Manual
+@title Pterodactyl Gnus 0.69 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.68.
+This manual corresponds to Pterodactyl Gnus 0.69.
 
 @end ifinfo
 
@@ -9781,6 +9781,12 @@ links.  If that's the case for you, set
 @code{nnmail-crosspost-link-function} to @code{copy-file}.  (This
 variable is @code{add-name-to-file} by default.)
 
+@findex nnmail-split-header-length-limit
+Header lines may be arbitrarily long.  However, the longer a line is,
+the longer it takes to match them.  Very long lines may lead to Gnus
+taking forever to split the mail, so Gnus excludes lines that are longer 
+than @code{nnmail-split-header-length-limit} (which defaults to 1024).
+
 @kindex M-x nnmail-split-history
 @kindex nnmail-split-history
 If you wish to see where the previous mail split put the messages, you
@@ -12219,7 +12225,7 @@ Enter the Agent category buffer (@code{gnus-enter-category-buffer}).
 @kindex J s (Agent Group)
 @findex gnus-agent-fetch-session
 Fetch all eligible articles in all groups
-(@code{gnus-agent-fetch-session}).
+(@code{gnus-agent-fetch-session}).  
 
 @item J S
 @kindex J S (Agent Group)
@@ -12231,7 +12237,15 @@ Send all sendable messages in the draft group
 @kindex J a (Agent Group)
 @findex gnus-agent-add-group
 Add the current group to an Agent category
-(@code{gnus-agent-add-group}).
+(@code{gnus-agent-add-group}).  This command understands the
+process/prefix convention (@pxref{Process/Prefix}).
+
+@item J r
+@kindex J r (Agent Group)
+@findex gnus-agent-remove-group
+Remove the current group from its category, if any
+(@code{gnus-agent-remove-group}).  This command understands the
+process/prefix convention (@pxref{Process/Prefix}).
 
 @end table
 

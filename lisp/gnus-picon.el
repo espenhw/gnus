@@ -26,7 +26,7 @@
 ;;; Code:
 
 (require 'gnus)
-(require 'xpm)
+;; (require 'xpm)
 (require 'annotations)
 (require 'custom)
 (require 'gnus-art)
@@ -148,6 +148,10 @@ please tell me so that we can list it."
   "Face to show xbm picons in."
   :group 'picons)
 
+(defface gnus-picons-face '((t (:foreground "black" :background "white")))
+  "Face to show picons in."
+  :group 'picons)
+
 (defcustom gnus-picons-setup-hook nil
   "Hook run in Picons buffers."
   :group 'picons
@@ -214,12 +218,15 @@ arguments necessary for the job.")
 (defun gnus-picons-setup-buffer ()
   (let ((name (gnus-picons-buffer-name)))
     (save-excursion
-      (if (get-buffer name)
+      (if (and (get-buffer name)
+	       (with-current-buffer name
+		 (eq major-mode 'gnus-picons-mode)))
 	  (set-buffer name)
 	(set-buffer (gnus-get-buffer-create name))
 	(buffer-disable-undo)
 	(setq buffer-read-only t)
 	(run-hooks 'gnus-picons-setup-hook)
+	(setq major-mode 'gnus-picons-mode)
 	(add-hook 'gnus-summary-prepare-exit-hook 'gnus-picons-kill-buffer))
       (current-buffer))))
 
@@ -476,8 +483,9 @@ none, and whose CDR is the corresponding element of DOMAINS."
 				    dir)))
 	(setq suffixes nil
 	      glyph (make-glyph f))
-	(when (equal suf "xbm")
-	  (set-glyph-face glyph 'gnus-picons-xbm-face))
+	(if (equal suf "xbm")
+	    (set-glyph-face glyph 'gnus-picons-xbm-face)
+	  (set-glyph-face glyph 'gnus-picons-face))
 	(push (cons key glyph) gnus-picons-glyph-alist)))
     glyph))
 

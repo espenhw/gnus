@@ -224,13 +224,75 @@ Note: LIST has to be sorted over `<'."
 	(setq ranges (cdr ranges)))
       out)))
 
-(defun gnus-remove-from-range (ranges list)
-  "Return a list of ranges that has all articles from LIST removed from RANGES.
-Note: LIST has to be sorted over `<'."
-  ;; !!! This function shouldn't look like this, but I've got a headache.
-  (gnus-compress-sequence
-   (gnus-set-difference
-    (gnus-uncompress-range ranges) list)))
+(defun gnus-remove-from-range (range1 range2)
+  "Return a range that has all articles from RANGE2 removed from
+RANGE1. The returned range is always a list."
+  (if (or (null range1) (null range2))
+      range1
+    (let (out r1 r2 r1_min r1_max r2_min r2_max)
+      (setq range1 (if (listp (cdr range1)) range1 (list range1))
+	    range2 (if (listp (cdr range2)) range2 (list range2))
+	    r1 (car range1)
+	    r2 (car range2) 
+	    r1_min (if (consp r1) (car r1) r1)
+	    r1_max (if (consp r1) (cdr r1) r1)
+	    r2_min (if (consp r2) (car r2) r2)
+	    r2_max (if (consp r2) (cdr r2) r2))
+      (while (and range1 range2)
+	(cond ((< r2_max r1_min)                           ; r2 < r1
+	       (pop range2)
+	       (setq r2 (car range2)
+		     r2_min (if (consp r2) (car r2) r2)
+		     r2_max (if (consp r2) (cdr r2) r2)))
+	      ((and (<= r2_min r1_min) (<= r1_max r2_max)) ; r2 overlap r1
+	       (pop range1)
+	       (setq r1 (car range1)
+		     r1_min (if (consp r1) (car r1) r1)
+		     r1_max (if (consp r1) (cdr r1) r1)))
+	      ((and (<= r2_min r1_min) (<= r2_max r1_max)) ; r2 overlap min r1
+	       (pop range2)
+	       (setq r1_min (1+ r2_max)
+		     r2 (car range2)
+		     r2_min (if (consp r2) (car r2) r2)
+		     r2_max (if (consp r2) (cdr r2) r2)))
+	      ((and (<= r1_min r2_min) (<= r2_max r1_max)) ; r2 contained in r1
+	       (if (eq r1_min (1- r2_min))
+		   (push r1_min out)
+		 (push (cons r1_min (1- r2_min)) out))
+	       (pop range2)
+	       (if (< r2_max r1_max) ; finished with r1?
+		   (setq r1_min (1+ r2_max))
+		 (pop range1)
+		 (setq r1 (car range1)
+		       r1_min (if (consp r1) (car r1) r1)
+		       r1_max (if (consp r1) (cdr r1) r1)))
+	       (setq r2 (car range2)
+		     r2_min (if (consp r2) (car r2) r2)
+		     r2_max (if (consp r2) (cdr r2) r2)))
+	      ((and (<= r2_min r1_max) (<= r1_max r2_max)) ; r2 overlap max r1
+	       (if (eq r1_min (1- r2_min))
+		   (push r1_min out)
+		 (push (cons r1_min (1- r2_min)) out))
+	       (pop range1)
+	       (setq r1 (car range1)
+		     r1_min (if (consp r1) (car r1) r1)
+		     r1_max (if (consp r1) (cdr r1) r1)))
+	      ((< r1_max r2_min)                           ; r2 > r1
+	       (pop range1)
+	       (if (eq r1_min r1_max)
+		   (push r1_min out)
+		 (push (cons r1_min r1_max) out))
+	       (setq r1 (car range1)
+		     r1_min (if (consp r1) (car r1) r1)
+		     r1_max (if (consp r1) (cdr r1) r1)))))
+      (when r1
+	(if (eq r1_min r1_max)
+	    (push r1_min out)
+	  (push (cons r1_min r1_max) out))
+	(pop range1))
+      (while range1
+        (push (pop range1) out))
+      (nreverse out))))
 
 (defun gnus-member-of-range (number ranges)
   (if (not (listp (cdr ranges)))

@@ -3,7 +3,7 @@
 
 ;; Author: Shenghuo Zhu <zsh@cs.rochester.edu>
 ;; Create Date: Oct 1, 1998
-;; $Revision: 5.2 $
+;; $Revision: 5.3 $
 ;; Time-stamp: <Tue Oct  6 23:48:38 EDT 1998 zsh>
 ;; Keywords: binhex
   
@@ -63,7 +63,10 @@ input and write the converted data to its standard output.")
   "^[^:]...............................................................$")
 (defconst binhex-end-line ":$")
 
-(defvar binhex-temporary-file-directory "/tmp/")
+(defvar binhex-temporary-file-directory
+  (cond ((fboundp 'temp-directory) (temp-directory))
+	((boundp 'temporary-file-directory) temporary-file-directory)
+	("/tmp/")))
 
 (if (string-match "XEmacs" emacs-version)
     (defalias 'binhex-insert-char 'insert-char)

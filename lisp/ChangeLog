@@ -1,3 +1,139 @@
+Sun Jan  3 13:32:02 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.69 is released.
+
+1999-01-03 06:45:10  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picons-setup-buffer): Run the hook.
+
+	* gnus-agent.el (gnus-agent-remove-group): New command and
+	keystroke. 
+
+	* rfc2047.el (rfc2047-decode-region): Check for us-ascii.
+
+1999-01-02 14:12:41  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-agent.el (gnus-agent-write-servers): Make directory.
+
+1998-12-26 02:38:01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-inline-text): Bind current id.
+
+	* mm-decode.el (mm-handle-id): New macro.
+	(mm-make-handle): Accept id.
+	(mm-dissect-singlepart): Use it.
+
+1998-12-23  Matt Pharr  <mmp@graphics.stanford.edu>
+
+      * message.el (message-cite-original-without-signature): Use
+      message-signature-separator when searching for signature in 
+      message-cite-original-without-signature.
+
+1998-12-24 16:25:38  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.el (gnus-server-to-method): Check named methods.
+
+1998-12-24 03:27:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-view-message): Goto point-min.
+
+	* nnmail.el (nnmail-article-group): Don't delete lines, only
+	shorten them.
+
+	* gnus-msg.el (gnus-configure-posting-styles): Also do nil
+	values.
+	
+	* nnheader.el (nnheader-temp-directory): New variable.
+	(nnheader-temp-directory): Removed.
+
+1998-12-22  Jack Vinson  <jvinson@chevax.ecs.umass.edu>
+
+	* mailcap.el (mailcap-parse-mailcaps): Add "~/.mailcaps" to the
+	list of files to check for mailcap entries under windows-nt.
+
+1998-12-24 03:02:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-maybe-hide-headers): Check whether the 
+	summary buffer exists.
+
+1998-12-22  Aaron M. Ucko  <amu@mit.edu>
+
+	* nnsoup.el (nnsoup-store-reply): Remove code to deal with
+	irrelevant Sun sendmail bug.
+	(nnsoup-store-reply): Stop mucking with	mail-header-separator.
+
+	* message.el (message-send-news): Bind mail-header-separator to
+	"" when asking backend to post.
+
+1998-12-22  Karl Kleinpaste  <karl@justresearch.com>
+
+	* mm-uu.el (mm-dissect-disposition): New variable.
+	(mm-uu-dissect): Use it.
+
+1998-12-21 21:34:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-inline-text): Bind url-current-object. 
+
+1998-12-06 03:05:41  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-range.el (gnus-remove-from-range): Rewrite.
+
+1998-12-09  SL Baur  <steve@altair.xemacs.org>
+
+	* gnus-picon.el (annotations): Remove bogus require 'xpm.
+
+1998-12-18  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-encode-message-body): Insert `MIME-Version'
+	instead of `Mime-Version'.
+
+1998-12-04  Hrvoje Niksic  <hniksic@srce.hr>
+
+	* message.el (message-insert-mime-part): Add the attachment
+ 	disposition.
+	(message-insert-mime-part): Make TYPE and DESCRIPTION optional.
+	(message-mime-query-type): New function.
+	(message-mime-query-description): Ditto.
+	(message-mime-query-file): Ditto.
+	(message-insert-mime-part): Use them.
+	(message-mime-insert-external): Use the new stuff.
+
+1998-12-19 23:02:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* nnmail.el (nnmail-split-header-length-limit): New variable. 
+
+	* mm-decode.el (mm-dissect-buffer): Check syntax.
+
+	* rfc2231.el (rfc2231-parse-string): Remove check for syntax.
+
+	* rfc2047.el (rfc2047-encodable-p): Use mm-find-charset-region. 
+	(rfc2047-dissect-region): Ditto.
+
+1998-12-17 18:36:43  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-view.el (mm-view-message): Decode charset.
+
+1998-12-16 16:01:22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2231.el (rfc2231-parse-string): Ignore syntactically invalid
+	CT headers. 
+
+Wed Dec 16 01:44:40 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-bodies.el (mm-decode-content-transfer-encoding): Use
+	mm-uu-*-function.
+	* mm-uu.el (mm-uu-dissect): Use x-uuencode.
+
+1998-12-16 10:20:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-send-mail): Do MML first.
+	(message-send-news): Ditto.
+
+1998-12-15 20:57:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-picon.el (gnus-picons-face): New face.
+	(gnus-picons-try-face): Use it.
+
 Tue Dec 15 19:17:43 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.68 is released.

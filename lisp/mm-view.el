@@ -70,6 +70,8 @@
       (setq text (mm-get-part handle))
       (let ((b (point))
 	    (url-standalone-mode t)
+	    (url-current-object
+	     (url-generic-parse-url (format "cid:%s" (mm-handle-id handle))))
 	    (width (window-width)))
 	(save-excursion
 	  (insert text)
@@ -135,7 +137,9 @@
 
 (defun mm-view-message ()
   (gnus-article-prepare-display)
-  (fundamental-mode))
+  (run-hooks 'gnus-article-decode-hook)
+  (fundamental-mode)
+  (goto-char (point-min)))
 
 (provide 'mm-view)
 

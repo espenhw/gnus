@@ -254,7 +254,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.68"
+(defconst gnus-version-number "0.69"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Pterodactyl Gnus v%s" gnus-version-number)
@@ -2365,7 +2365,14 @@ that that variable is buffer-local to the summary buffers."
 		 (not (equal server (format "%s:%s" (caaar opened)
 					    (cadaar opened)))))
        (pop opened))
-     (caar opened))))
+     (caar opened))
+   ;; It could be a named method, search all servers
+   (let ((servers gnus-secondary-select-methods))
+     (while (and servers
+		 (not (equal server (format "%s:%s" (caar servers)
+					    (cadar servers)))))
+       (pop servers))
+     (car servers))))
 
 (defmacro gnus-method-equal (ss1 ss2)
   "Say whether two servers are equal."
