@@ -110,14 +110,6 @@
       (substring str 0 width)
     str))
 
-;; Fixme: This is incomplete, but why not just use functionp?  In
-;; fact, that is used in various places.
-(defsubst gnus-functionp (form)
-  "Return non-nil if FORM is funcallable."
-  (or (and (symbolp form) (fboundp form))
-      (and (listp form) (eq (car form) 'lambda))
-      (byte-code-function-p form)))
-
 (defsubst gnus-goto-char (point)
   (and point (goto-char point)))
 
@@ -591,7 +583,7 @@ If N, return the Nth ancestor instead."
   "Return a composite sort condition based on the functions in FUNC."
   (cond
    ;; Just a simple function.
-   ((gnus-functionp funs) funs)
+   ((functionp funs) funs)
    ;; No functions at all.
    ((null funs) funs)
    ;; A list of functions.
@@ -616,7 +608,7 @@ If N, return the Nth ancestor instead."
 	(setq function (cadr function)
 	      first 't2
 	      last 't1))
-       ((gnus-functionp function)
+       ((functionp function)
 	;; Do nothing.
 	)
        (t

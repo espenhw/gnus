@@ -327,7 +327,7 @@ map.")))
     (if entry
 	(setq func (cdr entry)))
     (cond
-     ((gnus-functionp func)
+     ((functionp func)
       (funcall func handle))
      (t
       (apply (car func) handle (cdr func))))))

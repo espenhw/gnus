@@ -512,7 +512,7 @@ Gcc: header for archiving purposes."
 	(while (setq elem (pop alist))
 	  (when (or (and (stringp (car elem))
 			 (string-match (car elem) group))
-		    (and (gnus-functionp (car elem))
+		    (and (functionp (car elem))
 			 (funcall (car elem) group))
 		    (and (symbolp (car elem))
 			 (symbol-value (car elem))))
@@ -1204,7 +1204,8 @@ automatically."
 
 (defun gnus-summary-wide-reply-with-original (n)
   "Start composing a wide reply mail to the current message.
-The original article will be yanked."
+The original article will be yanked.
+Uses the process/prefix convention."
   (interactive "P")
   (gnus-summary-reply-with-original n t))
 
@@ -1705,7 +1706,7 @@ this is a reply."
       (message-narrow-to-headers)
       (let* ((group gnus-outgoing-message-group)
 	     (gcc (cond
-		   ((gnus-functionp group)
+		   ((functionp group)
 		    (funcall group))
 		   ((or (stringp group) (list group))
 		    group))))
@@ -1746,7 +1747,7 @@ this is a reply."
 	   ((and (listp var) (stringp (car var)))
 	    ;; A list of groups.
 	    var)
-	   ((gnus-functionp var)
+	   ((functionp var)
 	    ;; A function.
 	    (funcall var group))
 	   (t
@@ -1759,7 +1760,7 @@ this is a reply."
 				 ;; Regexp.
 				 (when (string-match (caar var) group)
 				   (cdar var)))
-				((gnus-functionp (car var))
+				((functionp (car var))
 				 ;; Function.
 				 (funcall (car var) group))
 				(t
@@ -1844,9 +1845,9 @@ this is a reply."
 			 (and header
 			      (string-match (pop style) header))))))
 	       ((or (symbolp match)
-		    (gnus-functionp match))
+		    (functionp match))
 		(cond
-		 ((gnus-functionp match)
+		 ((functionp match)
 		  ;; Function to be called.
 		  (funcall match))
 		 ((boundp match)
@@ -1884,8 +1885,8 @@ this is a reply."
 		   ((stringp value)
 		    value)
 		   ((or (symbolp value)
-			(gnus-functionp value))
-		    (cond ((gnus-functionp value)
+			(functionp value))
+		    (cond ((functionp value)
 			   (funcall value))
 			  ((boundp value)
 			   (symbol-value value))))

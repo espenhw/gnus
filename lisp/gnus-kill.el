@@ -598,7 +598,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		     (setq did-kill (string-match regexp value)))
 		   (cond ((stringp form) ;Keyboard macro.
 			  (execute-kbd-macro form))
-			 ((gnus-functionp form)
+			 ((functionp form)
 			  (funcall form))
 			 (t
 			  (eval form)))))
@@ -617,7 +617,7 @@ COMMAND must be a lisp expression or a string representing a key sequence."
 		    (setq did-kill (re-search-forward regexp nil t)))
 	      (cond ((stringp form)	;Keyboard macro.
 		     (execute-kbd-macro form))
-		    ((gnus-functionp form)
+		    ((functionp form)
 		     (funcall form))
 		    (t
 		     (eval form)))))))

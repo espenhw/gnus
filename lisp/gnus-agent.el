@@ -2370,7 +2370,7 @@ The following commands are available:
   (cond
    ;; Functions are just returned as is.
    ((or (symbolp predicate)
-	(gnus-functionp predicate))
+	(functionp predicate))
     `(,(or (cdr (assq predicate gnus-category-predicate-alist))
 	   predicate)))
    ;; More complex predicate.
@@ -2407,7 +2407,7 @@ return only unread articles."
          nil)
         ((not function)
          nil)
-        ((gnus-functionp function)
+        ((functionp function)
          'ignore)
         ((memq (car function) '(or and not))
          (apply (car function)

@@ -2035,7 +2035,7 @@ unfolded."
 	    ;; We display the face.
 	    (if (symbolp gnus-article-x-face-command)
 		;; The command is a lisp function, so we call it.
-		(if (gnus-functionp gnus-article-x-face-command)
+		(if (functionp gnus-article-x-face-command)
 		    (funcall gnus-article-x-face-command face)
 		  (error "%s is not a function" gnus-article-x-face-command))
 	      ;; The command is a string, so we interpret the command
@@ -2305,7 +2305,7 @@ If READ-CHARSET, ask for a coding system."
 	    (when entry
 	      (setq func (cdr entry)))
 	    (cond
-	     ((gnus-functionp func)
+	     ((functionp func)
 	      (funcall func))
 	     (t
 	      (apply (car func) (cdr func))))))))))
@@ -2579,7 +2579,7 @@ Point is left at the beginning of the narrowed-to region."
 		       (< (- (point-max) (point)) limit))
 		  (and (floatp limit)
 		       (< (count-lines (point) (point-max)) limit))
-		  (and (gnus-functionp limit)
+		  (and (functionp limit)
 		       (funcall limit))
 		  (and (stringp limit)
 		       (not (re-search-forward limit nil t))))
@@ -2781,7 +2781,7 @@ should replace the \"Date:\" one, or should be added below it."
 				  gnus-article-time-format)
 			      (error nil))
 			    gnus-article-time-format)))
-	    (if (gnus-functionp format)
+	    (if (functionp format)
 		(funcall format time)
 	      (concat "Date: " (format-time-string format time)))))
 	 ;; ISO 8601.

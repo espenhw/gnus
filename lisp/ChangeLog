@@ -1,5 +1,11 @@
 2003-04-27  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus.el: Remove gnus-functionp throughout.
+
+	* gnus-util.el (gnus-functionp): Removed.
+
+	* gnus-msg.el (gnus-summary-wide-reply-with-original): Doc fix. 
+
 	* message.el (message-required-headers): Add In-Reply-To.
 
 2003-04-27  Marshall T. Vandegrift  <vandem2@rpi.edu>

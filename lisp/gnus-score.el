@@ -2776,7 +2776,7 @@ The list is determined from the variable `gnus-score-file-alist'."
       ;; Go through all the functions for finding score files (or actual
       ;; scores) and add them to a list.
       (while funcs
-	(when (gnus-functionp (car funcs))
+	(when (functionp (car funcs))
 	  (setq score-files
 		(append score-files
 			(nreverse (funcall (car funcs) group)))))
@@ -2879,7 +2879,7 @@ If ADAPT, return the home adaptive file instead."
 	     ((stringp elem)
 	      elem)
 	     ;; Function.
-	     ((gnus-functionp elem)
+	     ((functionp elem)
 	      (funcall elem group))
 	     ;; Regexp-file cons.
 	     ((consp elem)

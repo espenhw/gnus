@@ -1013,7 +1013,7 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
   "Call METHOD to subscribe GROUP.
 If no function returns `non-nil', call `gnus-subscribe-zombies'."
   (unless (cond
-	   ((gnus-functionp method)
+	   ((functionp method)
 	    (funcall method group))
 	   ((listp method)
 	    (catch 'found
