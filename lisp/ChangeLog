@@ -1,5 +1,10 @@
 2004-01-05  Jesper Harder  <harder@ifa.au.dk>
 
+	* gnus-spec.el (gnus-correct-length, gnus-correct-substring):
+	Replace gnus-char-width with char-width.
+
+	* gnus-ems.el (gnus-char-width): Remove.
+
 	* spam-stat.el (with-syntax-table): Remove with-syntax-table
 	definition.
 	Remove Emacs 20 hash table compatibility code.

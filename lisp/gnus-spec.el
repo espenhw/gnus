@@ -290,7 +290,7 @@ text properties. This is only needed on XEmacs, as FSF Emacs does this anyway."
 (defun gnus-correct-length (string)
   "Return the correct width of STRING."
   (let ((length 0))
-    (mapcar (lambda (char) (incf length (gnus-char-width char))) string)
+    (mapcar (lambda (char) (incf length (char-width char))) string)
     length))
 
 (defun gnus-correct-substring (string start &optional end)
@@ -303,14 +303,14 @@ text properties. This is only needed on XEmacs, as FSF Emacs does this anyway."
     ;; Find the start position.
     (while (and (< seek length)
 		(< wseek start))
-      (incf wseek (gnus-char-width (aref string seek)))
+      (incf wseek (char-width (aref string seek)))
       (incf seek))
     (setq wstart seek)
     ;; Find the end position.
     (while (and (<= seek length)
 		(or (not end)
 		    (<= wseek end)))
-      (incf wseek (gnus-char-width (aref string seek)))
+      (incf wseek (char-width (aref string seek)))
       (incf seek))
     (setq wend seek)
     (substring string wstart (1- wend))))
