@@ -1,3 +1,7 @@
+2000-10-21 11:23:21  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-multibyte-p): Test (featurep 'xemacs).
+
 2000-10-21 10:54:57  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-mime-total-parts): New function.

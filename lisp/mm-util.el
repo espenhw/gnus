@@ -321,7 +321,8 @@ If the charset is `composition', return the actual one."
 
 (defsubst mm-multibyte-p ()
   "Say whether multibyte is enabled."
-  (if (boundp 'enable-multibyte-characters)
+  (if (and (not (featurep 'xemacs))
+	   (boundp 'enable-multibyte-characters))
       enable-multibyte-characters
     (featurep 'mule)))
 
