@@ -207,7 +207,7 @@ Return that buffer."
   (if (looking-at ".+")
       (setq file-name
 	    (let ((nnheader-file-name-translation-alist
-		   '((?/ . ?,) (? . ?_) (?* . ?_) (?$ . ?_))))
+		   '((?/ . ?,) (?\  . ?_) (?* . ?_) (?$ . ?_))))
 	      (nnheader-translate-file-chars (match-string 0))))))
 
 (defun mm-uu-binhex-filename ()

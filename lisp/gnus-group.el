@@ -960,7 +960,7 @@ simple manner.")
 
 ;; Emacs 21 tool bar.  Should be no-op otherwise.
 (defun gnus-group-make-tool-bar ()
-  (if (and 
+  (if (and
        (condition-case nil (require 'tool-bar) (error nil))
        (fboundp 'tool-bar-add-item-from-menu)
        (default-value 'tool-bar-mode)

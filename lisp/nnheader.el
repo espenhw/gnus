@@ -727,7 +727,8 @@ If FULL, translate everything."
 	;; We translate -- but only the file name.  We leave the directory
 	;; alone.
 	(if (and (featurep 'xemacs)
-		 (memq system-type '(cygwin32 win32 w32 mswindows windows-nt)))
+		 (memq system-type '(cygwin32 win32 w32 mswindows windows-nt
+					      cygwin)))
 	    ;; This is needed on NT and stuff, because
 	    ;; file-name-nondirectory is not enough to split
 	    ;; file names, containing ':', e.g.
