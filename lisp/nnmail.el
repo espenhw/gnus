@@ -1566,11 +1566,9 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 				 (list
 				  :predicate
 				  `(lambda (file)
-				     (string-match
-				      ,(concat
-					(regexp-quote (concat group suffix))
-					"$")
-				      file)))))))
+				     (string-equal
+				      ,(concat group suffix)
+				      (file-name-nondirectory file))))))))
 	(when nnmail-fetched-sources
 	  (if (member source nnmail-fetched-sources)
 	      (setq source nil)
