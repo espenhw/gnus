@@ -543,7 +543,7 @@ The buffer may be narrowed."
 	  (inline
 	    (rfc2047-decode-region (point-min) (point-max)))
 	  (buffer-string)))
-    string))
+    (mm-string-as-unibyte string)))
 
 (defun rfc2047-parse-and-decode (word)
   "Decode WORD and return it if it is an encoded word.

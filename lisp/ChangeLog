@@ -5,6 +5,8 @@
 	* rfc2047.el (rfc2047-decode-string): Return immediately if there
 	is no quoted-printable-encoded STRING.
 	From: Jesper Harder <harder@ifa.au.dk>
+	
+	(rfc2047-decode-string): Return unibyte string.
 
 2002-01-05  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
