@@ -2511,10 +2511,12 @@ Read an arbitrary directory as if it were a newsgroup with the
 Make a group based on some file or other
 (@code{gnus-group-make-doc-group}).  If you give a prefix to this
 command, you will be prompted for a file name and a file type.
-Currently supported types are @code{babyl}, @code{mbox}, @code{digest},
-@code{mmdf}, @code{news}, @code{rnews}, @code{clari-briefs},
-@code{rfc934}, @code{rfc822-forward}, @code{nsmail} and @code{forward}.
-If you run this command without a prefix, Gnus will guess at the file
+Currently supported types are @code{mbox}, @code{babyl},
+@code{digest}, @code{news}, @code{rnews}, @code{mmdf}, @code{forward},
+@code{rfc934}, @code{rfc822-forward}, @code{mime-parts},
+@code{standard-digest}, @code{slack-digest}, @code{clari-briefs},
+@code{nsmail}, @code{outlook}, @code{oe-dbx}, and @code{mailman}.  If
+you run this command without a prefix, Gnus will guess at the file
 type.  @xref{Document Groups}.
 
 @item G u
@@ -14602,7 +14604,8 @@ Virtual server variables:
 This should be one of @code{mbox}, @code{babyl}, @code{digest},
 @code{news}, @code{rnews}, @code{mmdf}, @code{forward}, @code{rfc934},
 @code{rfc822-forward}, @code{mime-parts}, @code{standard-digest},
-@code{slack-digest}, @code{clari-briefs}, @code{nsmail} or @code{guess}.
+@code{slack-digest}, @code{clari-briefs}, @code{nsmail},
+@code{outlook}, @code{oe-dbx}, and @code{mailman} or @code{guess}.
 
 @item nndoc-post-type
 @vindex nndoc-post-type
