@@ -14168,14 +14168,10 @@ articles or not.
 @item nnimap-authinfo-file
 @vindex nnimap-authinfo-file
 
-A file containing credentials used to log in on servers.  The format
-is (almost) the same as the @code{ftp} @file{~/.netrc} file.  See
-`nntp-authinfo-file' for exact syntax.
-
 A file containing credentials used to log in on servers.  The format is
 (almost) the same as the @code{ftp} @file{~/.netrc} file.  See the
 variable @code{nntp-authinfo-file} for exact syntax; also see
-@xref{NNTP}.
+@ref{NNTP}.
 
 @end table
 
