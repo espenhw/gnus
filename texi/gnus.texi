@@ -23,6 +23,12 @@
 \usepackage{pixidx}
 \input{gnusconfig.tex}
 
+\ifx\pdfoutput\undefined
+\else
+\usepackage[pdftex,bookmarks]{hyperref}
+\pdfcompresslevel=9
+\fi
+
 \makeindex
 \begin{document}
 
@@ -33,7 +39,11 @@
 \newcommand{\gnusbackslash}{/}
 
 \newcommand{\gnusref}[1]{``#1'' on page \pageref{#1}}
+\ifx\pdfoutput\undefined
 \newcommand{\gnusuref}[1]{\gnustt{#1}}
+\else
+\newcommand{\gnusuref}[1]{\href{#1}{\gnustt{#1}}}
+\fi
 \newcommand{\gnusxref}[1]{See ``#1'' on page \pageref{#1}}
 \newcommand{\gnuspxref}[1]{see ``#1'' on page \pageref{#1}}
 
