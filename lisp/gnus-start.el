@@ -2644,6 +2644,7 @@ If FORCE is non-nil, the .newsrc file is read."
     (let* ((print-quoted t)
            (print-readably t)
            (print-escape-multibyte nil)
+           (print-escape-nonascii t)
            (print-length nil)
            (print-level nil)
            (print-escape-newlines t)
