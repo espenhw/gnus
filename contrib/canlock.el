@@ -102,17 +102,21 @@
   :type 'hook
   :group 'canlock)
 
-;;; Internal variables.
+(defcustom canlock-password nil
+  "*Password to use when signing a Cancel-Lock or a Cancel-Key header."
+  :type 'string
+  :group 'canlock)
 
-(defvar canlock-password nil
-  "*Password to use when signing a Cancel-Lock or a Cancel-Key header.")
+(defcustom canlock-password-for-verify canlock-password
+  "*Password to use when verifying a Cancel-Lock or a Cancel-Key header."
+  :type 'string
+  :group 'canlock)
 
-(defvar canlock-password-for-verify canlock-password
-  "*Password to use when verifying a Cancel-Lock or a Cancel-Key header.")
-
-(defvar canlock-force-insert-header nil
+(defcustom canlock-force-insert-header nil
   "*If non-nil, insert a Cancel-Lock or a Cancel-Key header even though the
-buffer does not contain a news message.")
+buffer does not contain a news message."
+  :type 'boolean
+  :group 'canlock)
 
 ;;; Functions.
 
