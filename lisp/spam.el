@@ -980,7 +980,8 @@ Uses `gnus-newsgroup-name' if category is nil (for ham registration)."
   (save-window-excursion
     (gnus-summary-show-article t)
     (set-buffer gnus-article-buffer)
-    (let ((score (spam-check-bogofilter t)))
+    (let ((score (or (spam-check-bogofilter-headers t)
+		     (spam-check-bogofilter t))))
       (message "Spamicity score %s" score)
       (or score "0"))))
 

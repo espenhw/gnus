@@ -1,3 +1,9 @@
+2003-04-16  Teodor Zlatanov  <tzz@lifelogs.com>
+	From John Wiegley <johnw@gnu.org>
+
+	* spam.el (spam-bogofilter-score): check bogofilter headers before
+	checking bogofilter itself
+
 2003-04-16  Dave Love  <fx@gnu.org>
 
 	* nnmail.el (gnus): Require.
