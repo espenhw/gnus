@@ -469,14 +469,14 @@ be a select method."
   (let ((state gnus-plugged))
     (unwind-protect
 	(progn
+	  (unless group
+	    (error "No group on the current line"))
 	  (unless state
-	    (gnus-agent-toggle-plugged gnus-plugged)
-	    (unless group
-	      (error "No group on the current line"))
-	    (let ((gnus-command-method (gnus-find-method-for-group group)))
-	      (gnus-agent-with-fetch
-		(gnus-agent-fetch-group-1 group gnus-command-method)
-		(gnus-message 5 "Fetching %s...done" group)))))
+	    (gnus-agent-toggle-plugged gnus-plugged))
+	  (let ((gnus-command-method (gnus-find-method-for-group group)))
+	    (gnus-agent-with-fetch
+	      (gnus-agent-fetch-group-1 group gnus-command-method)
+	      (gnus-message 5 "Fetching %s...done" group))))
       (when (and (not state)
 		 gnus-plugged)
 	(gnus-agent-toggle-plugged gnus-plugged)))))

@@ -1,4 +1,12 @@
 2001-09-08  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-art.el (gnus-buttonized-mime-types): New variable.
+	(gnus-unbuttonized-mime-type-p): Use it.
+
+	* gnus-agent.el (gnus-agent-fetch-group): If online, actually
+	fetch group.
+
+2001-09-08  Simon Josefsson  <jas@extundo.com>
 	From Daniel Pittman <daniel@rimspace.net>
 
 	* gnus-spec.el (gnus-correct-pad-form): New function.

@@ -672,7 +672,17 @@ displayed by the first non-nil matching CONTENT face."
   :type '(repeat regexp))
 
 (defcustom gnus-unbuttonized-mime-types '(".*/.*")
-  "List of MIME types that should not be given buttons when rendered inline."
+  "List of MIME types that should not be given buttons when rendered inline.
+See also `gnus-buttonized-mime-types' which may override this variable."
+  :version "21.1"
+  :group 'gnus-article-mime
+  :type '(repeat regexp))
+
+(defcustom gnus-buttonized-mime-types nil
+  "List of MIME types that should be given buttons when rendered inline.
+If set, this variable overrides `gnus-unbuttonized-mime-types'.
+To see e.g. security buttons you could set this to
+`(\"multipart/signed\")'."
   :version "21.1"
   :group 'gnus-article-mime
   :type '(repeat regexp))
@@ -3934,11 +3944,16 @@ If no internal viewer is available, use an external viewer."
 (defun gnus-unbuttonized-mime-type-p (type)
   "Say whether TYPE is to be unbuttonized."
   (unless gnus-inhibit-mime-unbuttonizing
-    (catch 'found
-      (let ((types gnus-unbuttonized-mime-types))
-	(while types
-	  (when (string-match (pop types) type)
-	    (throw 'found t)))))))
+    (when (catch 'found
+	    (let ((types gnus-unbuttonized-mime-types))
+	      (while types
+		(when (string-match (pop types) type)
+		  (throw 'found t)))))
+      (not (catch 'found
+	     (let ((types gnus-buttonized-mime-types))
+	       (while types
+		 (when (string-match (pop types) type)
+		   (throw 'found t)))))))))
 
 (defun gnus-article-insert-newline ()
   "Insert a newline, but mark it as undeletable."

@@ -8323,7 +8323,20 @@ To have all Vcards be ignored, you'd say something like this:
 @vindex gnus-unbuttonized-mime-types
 This is a list of regexps.  @sc{mime} types that match a regexp from
 this list won't have @sc{mime} buttons inserted unless they aren't
-displayed.  The default value is @code{(".*/.*")}.
+displayed or this variable is overriden by
+@code{gnus-buttonized-mime-types}.  The default value is
+@code{(".*/.*")}.
+
+@item gnus-buttonized-mime-types
+@vindex gnus-buttonized-mime-types
+This is a list of regexps.  @sc{mime} types that match a regexp from
+this list will have @sc{mime} buttons inserted unless they aren't
+displayed.  This variable overrides
+@code{gnus-unbuttonized-mime-types}.  The default value is @code{nil}.
+
+To see e.g. security buttons but no other buttons, you could set this
+variable to @code{("multipart/signed")} and leave
+@code{gnus-unbuttonized-mime-types} to the default value.
 
 @item gnus-article-mime-part-function
 @vindex gnus-article-mime-part-function
