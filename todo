@@ -1016,6 +1016,8 @@ exceeding lisp nesting on huge groups.
 
  which should correspond to `B nntp RET sunsite.auc.dk' in *Group*.
 
+ [done]
+
 *    Take a look at w3-menu.el in the Emacs-W3 distribution - this
  works out really well.  Each menu is 'named' by a symbol that
  would be on a gnus-*-menus (where * would be whatever, but at
