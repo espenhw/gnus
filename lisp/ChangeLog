@@ -1,5 +1,8 @@
 2003-01-21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* mml-sec.el (mml-secure-sign-pgpauto): Renamed.
+	(mml-secure-encrypt-pgpmime): Removed double.
+
 	* gnus-sum.el (gnus-summary-mark-article-as-replied): Added
 	debugging statements.
 

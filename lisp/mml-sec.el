@@ -165,7 +165,7 @@ You can also customize or set `mml-signencrypt-style-alist' instead."
   (interactive)
   (mml-secure-part "pgp" 'sign))
 
-(defun mml-secure-sign-pgp ()
+(defun mml-secure-sign-pgpauto ()
   "Add MML tags to PGP-auto sign this MML part."
   (interactive)
   (mml-secure-part "pgpauto" 'sign))
@@ -259,7 +259,7 @@ If called with a prefix argument, only encrypt (do NOT sign)."
   (interactive "P")
   (mml-secure-message "pgpmime" (if dontsign 'encrypt 'signencrypt)))
 
-(defun mml-secure-message-encrypt-pgpmime (&optional dontsign)
+(defun mml-secure-message-encrypt-pgpauto (&optional dontsign)
   "Add MML tag to encrypt and sign the entire message.
 If called with a prefix argument, only encrypt (do NOT sign)."
   (interactive "P")
