@@ -1,5 +1,5 @@
 ;;; texi2latex.el --- convert a texi file into a LaTeX file.
-;; Copyright (C) 1996 Lars Magne Ingebrigtsen
+;; Copyright (C) 1996, 2004 Lars Magne Ingebrigtsen
 
 (require 'cl)
 
@@ -39,7 +39,8 @@
   (latexi-translate-file "message" t)
   (latexi-translate-file "emacs-mime" t)
   (latexi-translate-file "sieve" t)
-  (latexi-translate-file "pgg" t))
+  (latexi-translate-file "pgg" t)
+  (latexi-translate-file "sasl" t))
 
 (defun latexi-translate-file (file &optional as-a-chapter)
   "Translate file a LaTeX file."

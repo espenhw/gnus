@@ -1,5 +1,8 @@
 2004-01-05  Simon Josefsson  <jas@extundo.com>
 
+	* gnus.texi (Top): Add SASL.
+	* texi2latex.el (latexi-translate): Do sasl.
+
 	* pgg.texi (Caching passphrase): Fix PGG passphrase caching
 	section.
 
