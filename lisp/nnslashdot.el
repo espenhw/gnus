@@ -57,6 +57,9 @@
     "http://slashdot.org/article.pl?sid=%s&mode=nocomment"
   "Where nnslashdot will fetch the article from.")
 
+(defvoo nnslashdot-backslash-url "http://slashdot.org/slashdot.xml"
+  "Where nnslashdot will fetch the stories from.")
+
 (defvoo nnslashdot-threshold -1
   "The article threshold.")
 
@@ -387,7 +390,7 @@
         ;; First we do the Ultramode to get info on all the latest groups.
 	(progn
 	  (mm-with-unibyte-buffer
-	    (nnweb-insert "http://slashdot.org/slashdot.xml" t)
+	    (nnweb-insert nnslashdot-backslash-url t)
 	    (goto-char (point-min))
 	    (while (search-forward "<story>" nil t)
 	      (narrow-to-region (point) (search-forward "</story>"))

@@ -1,3 +1,12 @@
+2001-02-24 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus.el (gnus-read-method): Remove redundancy.
+
+2001-02-23 23:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnslashdot.el (nnslashdot-backslash-url): New.
+	(nnslashdot-request-list): Use it.
+
 2001-02-23 22:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnml.el (nnml-generate-active-info): Fix the case when there is

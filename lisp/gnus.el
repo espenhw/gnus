@@ -3017,11 +3017,19 @@ Disallow invalid group names."
 (defun gnus-read-method (prompt)
   "Prompt the user for a method.
 Allow completion over sensible values."
-  (let* ((servers
-	  (append gnus-valid-select-methods
-		  (mapcar (lambda (i) (list (format "%s:%s" (caar i)
-						    (cadar i))))
-			  gnus-opened-servers)
+  (let* ((open-servers 
+	  (mapcar (lambda (i) (cons (format "%s:%s" (caar i) (cadar i)) i))
+		  gnus-opened-servers))
+	 (valid-methods
+	  (let (methods)
+	    (dolist (method gnus-valid-select-methods)
+	      (if (or (memq 'prompt-address method)
+		      (not (assoc (format "%s:" (car method)) open-servers)))
+		  (push method methods)))
+	    methods))
+	 (servers
+	  (append valid-methods
+		  open-servers
 		  gnus-predefined-server-alist
 		  gnus-server-alist))
 	 (method
@@ -3036,13 +3044,7 @@ Allow completion over sensible values."
 			       (assoc method gnus-valid-select-methods))
 			 (read-string "Address: ")
 		       "")))
-	(or (let ((opened gnus-opened-servers))
-	      (while (and opened
-			  (not (equal (format "%s:%s" method address)
-				      (format "%s:%s" (caaar opened)
-					      (cadaar opened)))))
-		(pop opened))
-	      (caar opened))
+	(or (cadr (assoc (format "%s:%s" method address) open-servers))
 	    (list (intern method) address))))
      ((assoc method servers)
       method)
