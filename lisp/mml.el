@@ -668,7 +668,9 @@ If HANDLES is non-nil, use it instead reparsing the buffer."
     (define-key map "s" sign)
     (define-key map "c" encrypt)
     ;;(define-key map "n" 'mml-narrow-to-part)
-    (define-key main "\M-m" map)
+    ;; `M-m' conflicts with `back-to-indentation'.
+    ;; (define-key main "\M-m" map)
+    (define-key main "\C-c\C-m" map)
     main))
 
 (easy-menu-define

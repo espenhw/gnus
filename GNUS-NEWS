@@ -1,3 +1,10 @@
+** Gnus changes since 5.8.
+
+*** MML (Mime compose) prefix changed from `M-m' to `C-c C-m'.
+
+This change was made to avoid conflict with the standard binding of
+`back-to-indentation', which is also useful in message mode.
+
 ** Gnus changes.
 
 The Gnus NEWS entries are short, but they reflect sweeping changes in

@@ -1,3 +1,9 @@
+2000-12-19  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* mml.el (mml-mode-map): Change mml prefix from `M-m' to `C-c C-m'
+	to avoid conflict with the standard `back-to-indentation'
+	binding. 
+
 2000-12-17 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-extern.el (mm-inline-external-body): g-a-m-h may be a handle.
