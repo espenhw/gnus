@@ -433,7 +433,7 @@ New Groups
 * Subscription Methods::     What Gnus should do with new groups.
 * Filtering New Groups::     Making Gnus ignore certain new groups.
 
-The Group Buffer
+Group Buffer
 
 * Group Buffer Format::    Information listed and how you can change it.
 * Group Maneuvering::      Commands for moving in the group buffer.
@@ -474,7 +474,7 @@ Misc Group Stuff
 * Group Timestamp::       Making Gnus keep track of when you last read a group.
 * File Commands::         Reading and writing the Gnus files.
 
-The Summary Buffer
+Summary Buffer
 
 * Summary Buffer Format::       Deciding how the summary buffer is to look.
 * Summary Maneuvering::         Moving around the summary buffer.
@@ -584,7 +584,7 @@ Various Summary Stuff
 * Summary Generation Commands::       (Re)generating the summary buffer.
 * Really Various Summary Commands::   Those pesky non-conformant commands.
 
-The Article Buffer
+Article Buffer
 
 * Hiding Headers::        Deciding what headers should be displayed.
 * Using MIME::            Pushing articles through @sc{mime} before reading them.
@@ -613,7 +613,7 @@ Select Methods
 * Combined Groups::       Combining groups into one group.
 * Gnus Unplugged::        Reading news and mail offline.
 
-The Server Buffer
+Server Buffer
 
 * Server Buffer Format::      You can customize the look of this buffer.
 * Server Commands::           Commands to manipulate servers.
