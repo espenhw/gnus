@@ -1,3 +1,12 @@
+2003-05-11  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-enter-digest-group): Don't do article
+	washing etc.
+	(gnus-handle-ephemeral-exit): Don't reload article after exiting.
+
+	* nndoc.el (nndoc-type-alist): `mime-digest' should be before
+	`mime-parts'.
+
 2003-05-10  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-cite.el (gnus-article-hide-citation-maybe): Make toggling

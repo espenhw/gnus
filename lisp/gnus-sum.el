@@ -6616,7 +6616,10 @@ The state which existed when entering the ephemeral is reset."
 	(progn
 	  ;; The current article may be from the ephemeral group
 	  ;; thus it is best that we reload this article
-	  (gnus-summary-show-article)
+	  ;;
+	  ;; If we're exiting from a large digest, this can be
+	  ;; extremely slow.  So, it's better not to reload it. -- jh.
+	  ;;(gnus-summary-show-article)
 	  (if (and (boundp 'gnus-pick-mode) (symbol-value 'gnus-pick-mode))
 	      (gnus-configure-windows 'pick 'force)
 	    (gnus-configure-windows (cdr quit-config) 'force)))
@@ -8142,8 +8145,12 @@ If FORCE, force a digest interpretation.  If not, try
 to guess what the document format is."
   (interactive "P")
   (let ((conf gnus-current-window-configuration))
-    (save-excursion
-      (gnus-summary-select-article))
+    (save-window-excursion
+      (save-excursion
+	(let (gnus-article-prepare-hook
+	      gnus-display-mime-function
+	      gnus-break-pages)
+	  (gnus-summary-select-article))))
     (setq gnus-current-window-configuration conf)
     (let* ((name (format "%s-%d"
 			 (gnus-group-prefixed-name

@@ -58,6 +58,13 @@ from the document.")
   `((mmdf
      (article-begin .  "^\^A\^A\^A\^A\n")
      (body-end .  "^\^A\^A\^A\^A\n"))
+    (mime-digest
+     (article-begin . "")
+     (head-begin . "^ ?\n")
+     (head-end . "^ ?$")
+     (body-end . "")
+     (file-end . "")
+     (subtype digest guess))
     (mime-parts
      (generate-head-function . nndoc-generate-mime-parts-head)
      (article-transform-function . nndoc-transform-mime-parts))
@@ -94,13 +101,7 @@ from the document.")
      (head-end . "^\t")
      (generate-head-function . nndoc-generate-clari-briefs-head)
      (article-transform-function . nndoc-transform-clari-briefs))
-    (mime-digest
-     (article-begin . "")
-     (head-begin . "^ ?\n")
-     (head-end . "^ ?$")
-     (body-end . "")
-     (file-end . "")
-     (subtype digest guess))
+    
     (standard-digest
      (first-article . ,(concat "^" (make-string 70 ?-) "\n *\n+"))
      (article-begin . ,(concat "^\n" (make-string 30 ?-) "\n *\n+"))
