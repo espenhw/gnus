@@ -125,13 +125,16 @@
 
 (defun mm-coding-system-p (cs)
   "Return non-nil if CS is a symbol naming a coding system.
-In XEmacs, also return non-nil if CS is a coding system object."
+In XEmacs, also return non-nil if CS is a coding system object.
+If CS is available, return CS itself in Emacs, and return a coding
+system object in XEmacs."
   (if (fboundp 'find-coding-system)
       (find-coding-system cs)
     (if (fboundp 'coding-system-p)
-	(coding-system-p cs)
+	(when (coding-system-p cs)
+	  cs)
       ;; Is this branch ever actually useful?
-      (memq cs (mm-get-coding-system-list)))))
+      (car (memq cs (mm-get-coding-system-list))))))
 
 (defvar mm-charset-synonym-alist
   `(
@@ -538,14 +541,11 @@ This affects whether coding conversion should be attempted generally."
 	(not inconvertible))))
 
 (defun mm-sort-coding-systems-predicate (a b)
-  (let ((priorities
-	 (mapcar (lambda (cs)
-		   ;; Note: invalid entries are dropped silently
-		   (and (mm-coding-system-p cs)
-			(coding-system-base cs)))
-		 mm-coding-system-priorities)))
-    (and (mm-coding-system-p a)
-	 (if (mm-coding-system-p b)
+  (let ((priorities (mapcar 'mm-coding-system-p
+			    ;; Note: invalid entries are dropped silently
+			    mm-coding-system-priorities)))
+    (and (setq a (mm-coding-system-p a))
+	 (if (setq b (mm-coding-system-p b))
 	     (> (length (memq (coding-system-base a) priorities))
 		(length (memq (coding-system-base b) priorities)))
 	   t))))
