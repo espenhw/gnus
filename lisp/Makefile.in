@@ -31,7 +31,7 @@ clever some: gnus-load.elc
 
 install: install-el install-elc 
 
-install-el:
+install-el: gnus-load.el
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(lispdir)
 	echo " $(INSTALL_DATA) gnus-load.el $(lispdir)/gnus-load.el"
 	$(INSTALL_DATA) gnus-load.el $(lispdir)/gnus-load.el
@@ -69,7 +69,7 @@ separately:
 pot:
 	xpot -drgnus -r`cat ./version` *.el > rgnus.pot
 
-gnus-load.elc:
+gnus-load.el gnus-load.elc:
 	$(EMACS_COMP) -f dgnushack-make-cus-load $(srcdir)
 	$(EMACS_COMP) -f dgnushack-make-auto-load $(srcdir)
 	$(EMACS_COMP) -f dgnushack-make-load
