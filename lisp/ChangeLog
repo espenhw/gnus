@@ -1,3 +1,7 @@
+2002-03-31  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* dns.el: New file.
+
 2002-03-28  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-sum.el (gnus-summary-dummy-line-format):

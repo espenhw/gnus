@@ -25,6 +25,13 @@
 
 ;;; Code:
 
+(require 'mm-util)
+
+(defvar dns-timeout 5
+  "How many seconds to wait when doing DNS queries.")
+
+;;; Internal code:
+
 (defvar dns-query-types
   '((A 1)
     (NS 2)
@@ -118,8 +125,7 @@
       (mapconcat 'identity (nreverse name) "."))))
 
 (defun dns-write (spec)
-  "Write a DNS packet according to SPEC.
-\(dns-write '((id 2) (opcode query) (queries (("www.gnus.org")))))"
+  "Write a DNS packet according to SPEC."
   (with-temp-buffer
     (dns-write-bytes (dns-get 'id spec) 2)
     (dns-write-bytes
@@ -255,6 +261,7 @@
 
 (defun query-dns (name &optional type)
   "Query a DNS server for NAME of TYPE."
+  (setq type (or type 'A))
   (mm-with-unibyte-buffer
     (let ((coding-system-for-read 'binary)
 	  (coding-system-for-write 'binary))
@@ -265,18 +272,25 @@
 	      :buffer (current-buffer)
 	      :host "ns2.netfonds.no"
 	      :service "domain"
-	      :type 'datagram)))
+	      :type 'datagram))
+	    (step 100)
+	    (times (* dns-timeout 1000)))
 	(process-send-string
 	 process
 	 (dns-write `((id 4)
 		      (opcode query)
-		      (queries ((,name)))
+		      (queries ((,name (type ,type))))
 		      (recursion-desired-p t))))
-	(while (zerop (buffer-size))
-	  (accept-process-output process 1))
-	(dns-read (buffer-string))))))
+	(while (and (zerop (buffer-size))
+		    (> times 0))
+	  (accept-process-output process 0 step)
+	  (decf times step))
+	(ignore-errors
+	  (delete-process process))
+	(let ((answer (car (dns-get 'answers (dns-read (buffer-string))))))
+	  (when (eq type (dns-get 'type answer))
+	    (dns-get 'data answer)))))))
     
-
 (provide 'dns)
 
 ;;; dns.el ends here
