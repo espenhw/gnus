@@ -198,19 +198,20 @@
     expr)))
 
 (defun webmail-url (xurl)
-  (cond 
-   ((eq (car xurl) 'content)
-    (pop xurl)
-    (webmail-fetch-simple (if (stringp (car xurl))
-			      (car xurl)
-			    (apply 'format (webmail-eval (car xurl))))
-			  (apply 'format (webmail-eval (cdr xurl)))))
-   ((eq (car xurl) 'post)
-    (pop xurl)
-    (webmail-fetch-form (car xurl) (webmail-eval (cdr xurl))))
-   (t
-    (nnweb-insert (apply 'format (webmail-eval xurl))))))
-
+  (mm-with-unibyte-current-buffer
+    (cond 
+     ((eq (car xurl) 'content)
+      (pop xurl)
+      (webmail-fetch-simple (if (stringp (car xurl))
+				(car xurl)
+			      (apply 'format (webmail-eval (car xurl))))
+			    (apply 'format (webmail-eval (cdr xurl)))))
+     ((eq (car xurl) 'post)
+      (pop xurl)
+      (webmail-fetch-form (car xurl) (webmail-eval (cdr xurl))))
+     (t
+      (nnweb-insert (apply 'format (webmail-eval xurl)))))))
+  
 (defun webmail-decode-entities ()
   (goto-char (point-min))
   (while (re-search-forward "&\\(#[0-9]+\\|[a-z]+\\);" nil t)
