@@ -681,7 +681,7 @@ one charsets.")
 	  (value (pop plist)))
       (when value
 	;; Quote VALUE if it contains suspicious characters.
-	(when (string-match "[\"\\~/* \t\n]" value)
+	(when (string-match "[\"'\\~/*;() \t\n]" value)
 	  (setq value (prin1-to-string value)))
 	(insert (format " %s=%s" key value)))))
   (insert ">\n"))
