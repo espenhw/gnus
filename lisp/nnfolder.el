@@ -783,7 +783,8 @@ deleted.  Point is left where the deleted region was."
 
 ;;;###autoload
 (defun nnfolder-generate-active-file ()
-  "Look for mbox folders in the nnfolder directory and make them into groups."
+  "Look for mbox folders in the nnfolder directory and make them into groups.
+This command does not work if you use short group names."
   (interactive)
   (nnmail-activate 'nnfolder)
   (let ((files (directory-files nnfolder-directory))

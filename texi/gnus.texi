@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Pterodactyl Gnus 0.75 Manual
+@settitle Pterodactyl Gnus 0.76 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -318,7 +318,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Pterodactyl Gnus 0.75 Manual
+@title Pterodactyl Gnus 0.76 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -354,7 +354,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Pterodactyl Gnus 0.75.
+This manual corresponds to Pterodactyl Gnus 0.76.
 
 @end ifinfo
 
@@ -3252,6 +3252,7 @@ You can have as many summary buffers open as you wish.
 * Decoding Articles::           Gnus can treat series of (uu)encoded articles.
 * Article Treatment::           The article buffer can be mangled at will.
 * MIME Commands::               Doing MIMEy things with the articles.
+* Charsets::                    Character set issues.
 * Article Commands::            Doing various things with the article buffer.
 * Summary Sorting::             Sorting the summary buffer in various ways.
 * Finding the Parent::          No child support? Get the parent.
@@ -6021,7 +6022,7 @@ for instance, @code{sox} to convert an @samp{.au} sound file, you could
 say something like:
 @lisp
 (setq gnus-uu-user-view-rules
-      (list '(\"\\\\.au$\" \"sox %s -t .aiff > /dev/audio\")))
+      (list '("\\\\.au$" "sox %s -t .aiff > /dev/audio")))
 @end lisp
 
 @item gnus-uu-user-view-rules-end
@@ -7035,6 +7036,33 @@ Here's an example function the does the latter:
 @end lisp
 
 @end table
+
+
+@node Charsets
+@section Charsets
+@cindex charsets
+
+People use different charsets, and we have @sc{mime} to let us know what
+charsets they use.  Or rather, we wish we had.  Many people use
+newsreaders and mailers that do not understand or use @sc{mime}, and
+just send out messages without saying what character sets they use.  To
+help a bit with this, some local news hierarchies have policies that say
+what character set is the default.  For instance, the @samp{fj}
+hierarchy uses @code{iso-2022-jp-2}.
+
+@vindex gnus-group-charset-alist
+This knowledge is encoded in the @code{gnus-group-charset-alist}
+variable, which is an alist of regexps (to match group names) and
+default charsets to be used when reading these groups.
+
+In addition, some people do use soi-disant @sc{mime}-aware agents that
+aren't.  These blitely mark messages as being in @code{iso-8859-1} even
+if they really are in @code{koi-8}.  To help here, the
+@code{gnus-newsgroup-ignored-charsets} variable can be used.  The
+charsets that are listed here will be ignored.  The variable can be set
+on a group-by-group basis using the group parameters (@pxref{Group
+Parameters}).  The default value is @code{(unknown-8bit)}, which is
+something some agents insist on having in there.
 
 
 @node Article Commands
@@ -9962,6 +9990,13 @@ value.
 @item :suffix
 Only files ending with this suffix are used.  The default is
 @samp{.spool}.
+
+@item :predicate
+Only files that have this predicate return non-@code{nil} are returned.
+The default is @code{identity}.  This is used as an additional
+filter---only files that have the right suffix @emph{and} satisfy this
+predicate are considered.
+
 @end table
 
 An example directory mail source:
@@ -9993,17 +10028,46 @@ The password to give to the POP server.  If not specified, the user is
 prompted.
 
 @item :program
-The program to use to fetch mail from the POP server.
+The program to use to fetch mail from the POP server.  This is should be
+a @code{format}-like string.  Here's an example:
 
-@item :args
-The arguments to give to the program.  If this is a string, it is used
-as such.  If this is a list, it is @code{eval}ed first, and the result
-is used.
+@example
+fetchmail %u@@%s -P %p %t
+@end example
+
+The valid format specifier characters are:
+
+@table @samp
+@item t
+The name of the file the mail is to be moved to.  This must always be
+included in this string.
+
+@item s
+The name of the server.
+
+@item P
+The port number of the server.
+
+@item u
+The user name to use.
+
+@item p
+The password to use.
+@end table
+
+The values used for these specs are taken from the values you give the
+corresponding keywords.
 
 @item :function
 The function to use to fetch mail from the POP server.  The function is
 called with one parameter---the name of the file where the mail should
 be moved to.
+
+@item :authentication
+This can be either the symbol @code{password} or the symbol @code{apop}
+and says what authentication scheme to use.  The default is
+@code{password}.
+
 @end table
 
 If the @code{:program} and @code{:function} keywords aren't specified,
@@ -10091,7 +10155,7 @@ If you want to fetch mail both from your local spool as well as a POP
 mail server, you'd say something like:
 
 @lisp
-(setq mail-spool-file
+(setq nnmail-spool-file
       '((file)
         (pop :server "pop3.mail.server"
              :password "secret")))
@@ -10100,7 +10164,7 @@ mail server, you'd say something like:
 Or, if you don't want to use any of the keyword defaults:
 
 @lisp
-(setq mail-spool-file
+(setq nnmail-spool-file
       '((file :path "/var/spool/mail/user-name")
         (pop :server "pop3.mail.server"
              :user "user-name"
@@ -10886,7 +10950,8 @@ extract some information from it before removing it.
 If you have lots of @code{nnfolder}-like files you'd like to read with
 @code{nnfolder}, you can use the @kbd{M-x nnfolder-generate-active-file}
 command to make @code{nnfolder} aware of all likely files in
-@code{nnfolder-directory}.
+@code{nnfolder-directory}.  This only works if you use long file names,
+though.
 
 
 @node Other Sources
@@ -11035,15 +11100,7 @@ The rnews batch transport format.
 Forwarded articles.
 
 @item mime-parts
-MIME multipart messages, besides digests.
-
-@item mime-digest
-@cindex digest
-@cindex MIME digest
-@cindex 1153 digest
-@cindex RFC 1153 digest
-@cindex RFC 341 digest
-MIME (RFC 1341) digest format.
+MIME multipart messages.
 
 @item standard-digest
 The standard (RFC 1153) digest format.
@@ -11079,9 +11136,8 @@ Virtual server variables:
 @vindex nndoc-article-type
 This should be one of @code{mbox}, @code{babyl}, @code{digest},
 @code{news}, @code{rnews}, @code{mmdf}, @code{forward}, @code{rfc934},
-@code{rfc822-forward}, @code{mime-parts}, @code{mime-digest},
-@code{standard-digest}, @code{slack-digest}, @code{clari-briefs} or
-@code{guess}.
+@code{rfc822-forward}, @code{mime-parts}, @code{standard-digest},
+@code{slack-digest}, @code{clari-briefs} or @code{guess}.
 
 @item nndoc-post-type
 @vindex nndoc-post-type
@@ -12760,10 +12816,10 @@ Score on the author name.
 Score on the subject line.
 
 @item x
-Score on the Xref line---i.e., the cross-posting line.
+Score on the @code{Xref} line---i.e., the cross-posting line.
 
 @item r
-Score on the References line.
+Score on the @code{References} line.
 
 @item d
 Score on the date.
@@ -12772,10 +12828,11 @@ Score on the date.
 Score on the number of lines.
 
 @item i
-Score on the Message-ID.
+Score on the @code{Message-ID} header.
 
 @item f
-Score on followups.
+Score on followups---this matches the author name, and adds scores to
+the followups to this author.
 
 @item b
 Score on the body.

@@ -38,7 +38,7 @@
 (defvoo nndoc-article-type 'guess
   "*Type of the file.
 One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
-`rfc934', `rfc822-forward', `mime-digest', `mime-parts', `standard-digest',
+`rfc934', `rfc822-forward', `mime-parts', `standard-digest',
 `slack-digest', `clari-briefs' or `guess'.")
 
 (defvoo nndoc-post-type 'mail
@@ -81,12 +81,6 @@ from the document.")
      (head-end . "^\t")
      (generate-head-function . nndoc-generate-clari-briefs-head)
      (article-transform-function . nndoc-transform-clari-briefs))
-    (mime-digest
-     (article-begin . "")
-     (head-end . "^ ?$")
-     (body-end . "")
-     (file-end . "")
-     (subtype digest guess))
     (mime-parts
      (generate-head-function . nndoc-generate-mime-parts-head)
      (article-transform-function . nndoc-transform-mime-parts))
@@ -504,27 +498,6 @@ from the document.")
 	  (setq from (match-string 1)))))
     (insert "From: " "clari@clari.net (" (or from "unknown") ")"
 	    "\nSubject: " (or subject "(no subject)") "\n")))
-
-(defun nndoc-mime-digest-type-p ()
-  (let ((case-fold-search t)
-	boundary-id b-delimiter entry)
-    (when (and
-	   (re-search-forward
-	    (concat "^Content-Type: *multipart/digest;[ \t\n]*[ \t]"
-		    "boundary=\"?\\([^\"\n]*[^\" \t\n]\\)")
-	    nil t)
-	   (match-beginning 1))
-      (setq boundary-id (match-string 1)
-	    b-delimiter (concat "\n--" boundary-id "[\n \t]+"))
-      (setq entry (assq 'mime-digest nndoc-type-alist))
-      (setcdr entry
-	      (list
-	       (cons 'head-end "^ ?$")
-	       (cons 'body-begin "^ ?\n")
-	       (cons 'article-begin b-delimiter)
-	       (cons 'body-end-function 'nndoc-digest-body-end)
-	       (cons 'file-end (concat "\n--" boundary-id "--[ \t]*$"))))
-      t)))
 
 (defun nndoc-standard-digest-type-p ()
   (when (and (re-search-forward (concat "^" (make-string 70 ?-) "\n\n") nil t)

@@ -308,6 +308,12 @@ on your system, you could say something like:
 	       out)))
      out))
 
+(defmacro nnheader-nov-read-message-id ()
+  '(let ((id (nnheader-nov-field)))
+     (if (string-match "^<[^>]+>$" id)
+	 id
+       (nnheader-generate-fake-message-id))))
+
 (defun nnheader-parse-nov ()
   (let ((eol (gnus-point-at-eol)))
     (vector
@@ -315,8 +321,7 @@ on your system, you could say something like:
      (nnheader-nov-field)		; subject
      (nnheader-nov-field)		; from
      (nnheader-nov-field)		; date
-     (or (nnheader-nov-field)
-	 (nnheader-generate-fake-message-id)) ; id
+     (nnheader-nov-read-message-id)	; id
      (nnheader-nov-field)		; refs
      (nnheader-nov-read-integer)	; chars
      (nnheader-nov-read-integer)	; lines

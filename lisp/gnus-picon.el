@@ -592,9 +592,10 @@ none, and whose CDR is the corresponding element of DOMAINS."
       (setq start-re
 	    (concat
 	     ;; dbs
-	     "^\\(" (mapconcat 'identity dbs "\\|") "\\)/"
+	     "^\\(" (mapconcat 'regexp-quote dbs "\\|") "\\)/"
 	     ;; host
-	     "\\(\\(" (replace-in-string host "\\." "/\\|" t)
+	     "\\(\\(" (mapconcat 'regexp-quote
+				 (message-tokenize-header host ".") "/\\|")
 	     "/\\|MISC/\\)*\\)"
 	     ;; user
 	     "\\(" (regexp-quote user) "\\|unknown\\)/"

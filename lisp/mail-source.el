@@ -28,6 +28,7 @@
 (eval-when-compile (require 'cl))
 (eval-and-compile
   (autoload 'pop3-movemail "pop3"))
+(require 'format-spec)
 
 (defgroup mail-source nil
   "The mail-fetching library."
@@ -65,17 +66,18 @@
 		  (concat "/usr/spool/mail/" (user-login-name)))))
       (directory
        (:path)
-       (:suffix ".spool"))
+       (:suffix ".spool")
+       (:predicate identity))
       (pop
        (:server (getenv "MAILHOST"))
        (:port "pop3")
        (:user (or (user-login-name) (getenv "LOGNAME") (getenv "USER")))
        (:program)
-       (:args)
        (:function)
-       (:password))
+       (:password)
+       (:authentication password))
       (maildir
-       (:path)))
+       (:path "~/Maildir/new/")))
     "Mapping from keywords to default values.
 All keywords that can be used must be listed here."))
 
@@ -83,7 +85,7 @@ All keywords that can be used must be listed here."))
   '((file mail-source-fetch-file)
     (directory mail-source-fetch-directory)
     (pop mail-source-fetch-pop)
-    (qmail mail-source-fetch-qmail))
+    (maildir mail-source-fetch-maildir))
   "A mapping from source type to fetcher function.")
 
 (defvar mail-source-password-cache nil)
@@ -140,10 +142,6 @@ of the `let' form."
    ((and (listp value)
 	 (functionp (car value)))
     (eval value))
-   ;; Variable
-   ((and (symbolp value)
-	 (boundp value))
-    (symbol-value value))
    ;; Just return the value.
    (t
     value)))
@@ -278,9 +276,9 @@ If ARGS, PROMPT is used as an argument to `format'."
 	(setq mail-source-read-passwd 'ange-ftp-read-passwd)))
     (funcall mail-source-read-passwd prompt)))
 
-(defun mail-source-fetch-with-program (program args to)
-  (zerop (apply 'call-process program nil nil nil
-		(append (split-string args) (list to)))))
+(defun mail-source-fetch-with-program (program)
+  (zerop (call-process shell-file-name nil nil nil
+		       shell-command-switch program)))
 
 ;;;
 ;;; Different fetchers
@@ -302,6 +300,7 @@ If ARGS, PROMPT is used as an argument to `format'."
       (dolist (file (directory-files
 		     path t (concat (regexp-quote suffix) "$")))
 	(when (and (file-regular-p file)
+		   (funcall predicate file)
 		   (mail-source-movemail file mail-source-crash-box))
 	  (incf found (mail-source-callback callback file))))
       found)))
@@ -311,28 +310,33 @@ If ARGS, PROMPT is used as an argument to `format'."
   (mail-source-bind (pop source)
     (let ((from (format "%s:%s:%s" server user port))
 	  (mail-source-string (format "pop:%s@%s" user server)))
-      (setq password
-	    (or password
-		(cdr (assoc from mail-source-password-cache))
-		(mail-source-read-passwd
-		 (format "Password for %s at %s: " user server))))
-      (unless (assoc from mail-source-password-cache)
-	(push (cons from password) mail-source-password-cache))
+      (when (and (not (eq authentication 'apop))
+		 (not program))
+	(setq password
+	      (or password
+		  (cdr (assoc from mail-source-password-cache))
+		  (mail-source-read-passwd
+		   (format "Password for %s at %s: " user server))))
+	(unless (assoc from mail-source-password-cache)
+	  (push (cons from password) mail-source-password-cache)))
       (when server
 	(setenv "MAILHOST" server))
       (if (cond
 	   (program
-	    (when (listp args)
-	      (setq args (eval args)))
 	    (mail-source-fetch-with-program
-	     program args mail-source-crash-box))
+	     (format-spec
+	      program
+	      (format-spec-make ?p password ?t mail-source-crash-box
+				?s server ?P port ?u user))))
 	   (function
-	      (funcall function mail-source-crash-box))
+	    (funcall function mail-source-crash-box))
 	   ;; The default is to use pop3.el.
 	   (t
 	    (let ((pop3-password password)
 		  (pop3-maildrop user)
-		  (pop3-mailhost server))
+		  (pop3-mailhost server)
+		  (pop3-authentication-scheme
+		   (if (eq authentication 'apop) 'apop 'pass)))
 	      (save-excursion (pop3-movemail mail-source-crash-box)))))
 	  (mail-source-callback callback server)
 	;; We nix out the password in case the error
@@ -341,6 +345,17 @@ If ARGS, PROMPT is used as an argument to `format'."
 	      (delq (assoc from mail-source-password-cache)
 		    mail-source-password-cache))
 	0))))
+
+(defun mail-source-fetch-maildir (source callback)
+  "Fetcher for maildir sources."
+  (mail-source-bind (maildir source)
+    (let ((found 0)
+	  (mail-source-string (format "maildir:%s" path)))
+      (dolist (file (directory-files path t))
+	(when (and (file-regular-p file)
+		   (not (rename-file file mail-source-crash-box)))
+	  (incf found (mail-source-callback callback file))))
+      found)))
 
 (provide 'mail-source)
 

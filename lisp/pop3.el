@@ -104,7 +104,7 @@ Used for APOP authentication.")
     (pop3-quit process)
     (kill-buffer crashbuf)
     )
-  )
+  t)
 
 (defun pop3-open-server (mailhost port)
   "Open TCP connection to MAILHOST.

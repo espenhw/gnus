@@ -786,6 +786,40 @@ If SOURCE is a directory spec, try to return the group name component."
 	(goto-char end)
 	(forward-line 2)))))
 
+(defun nnmail-process-maildir-mail-format (func artnum-func)
+; In a maildir, every file contains exactly one mail
+  (let ((case-fold-search t)
+	message-id)
+    (goto-char (point-min))
+    ;; Find the end of the head.
+    (narrow-to-region
+     (point-min) 
+     (if (search-forward "\n\n" nil t)
+	 (1- (point))
+       ;; This will never happen, but just to be on the safe side --
+       ;; if there is no head-body delimiter, we search a bit manually.
+       (while (and (looking-at "From \\|[^ \t]+:")
+		   (not (eobp)))
+	 (forward-line 1)
+	 (point))))
+    ;; Find the Message-ID header.
+    (goto-char (point-min))
+    (if (re-search-forward "^Message-ID:[ \t]*\\(<[^>]+>\\)" nil t)
+	(setq message-id (match-string 1))
+      ;; There is no Message-ID here, so we create one.
+      (save-excursion
+	    (when (re-search-backward "^Message-ID[ \t]*:" nil t)
+	  (beginning-of-line)
+	  (insert "Original-")))
+      (forward-line 1)
+      (insert "Message-ID: " (setq message-id (nnmail-message-id)) "\n"))
+    (run-hooks 'nnmail-prepare-incoming-header-hook)
+    ;; Allow the backend to save the article.
+    (widen)
+    (save-excursion
+	(goto-char (point-min))
+	(nnmail-check-duplication message-id func artnum-func))))
+
 (defun nnmail-split-incoming (incoming func &optional exit-func
 				       group artnum-func)
   "Go through the entire INCOMING file and pick out each individual mail.
@@ -813,6 +847,8 @@ FUNC will be called with the buffer narrowed to each mail."
 	       (nnmail-process-babyl-mail-format func artnum-func))
 	      ((looking-at "\^A\^A\^A\^A")
 	       (nnmail-process-mmdf-mail-format func artnum-func))
+	      ((looking-at "Return-Path:")
+	       (nnmail-process-maildir-mail-format func artnum-func))
 	      (t
 	       (nnmail-process-unix-mail-format func artnum-func))))
       (when exit-func
@@ -1289,6 +1325,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 
 ;;; Get new mail.
 
+(defvar nnmail-fetched-sources nil)
+
 (defun nnmail-get-value (&rest args)
   (let ((sym (intern (apply 'format args))))
     (when (boundp sym)
@@ -1314,7 +1352,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       ;; and fetch the mail from each.
       (while (setq source (pop sources))
 	;; Be compatible with old values.
-	(when (stringp source)
+	(cond
+	 ((stringp source)
 	  (setq source
 		(cond
 		 ((string-match "^po:" source)
@@ -1323,15 +1362,31 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 		  (list 'directory :path source))
 		 (t
 		  (list 'file :path source)))))
+	 ((eq source 'procmail)
+	  (message "Invalid value for nnmail-spool-file: `procmail'")
+	  nil))
 	(nnheader-message 4 "%s: Reading incoming mail from %s..."
 			  method (car source))
-	(when (mail-source-fetch
-	       source
-	       `(lambda (file orig-file)
-		  (nnmail-split-incoming
-		   file ',(intern (format "%s-save-mail" method))
-		   ',spool-func (nnmail-get-split-group orig-file source)
-		   ',(intern (format "%s-active-number" method)))))
+	;; Hack to only fetch the contents of a single group's spool file.
+	(when (and (eq (car source) 'directory)
+		   group)
+	  (setq source (append source
+			       (list :predicate
+				     `(lambda (file)
+					(string-match ,(regexp-quote group)
+						      file))))))
+	(when nnmail-fetched-sources
+	  (if (member source nnmail-fetched-sources)
+	      (setq source nil)
+	    (push source nnmail-fetched-sources)))
+	(when (and source
+		   (mail-source-fetch
+		    source
+		    `(lambda (file orig-file)
+		       (nnmail-split-incoming
+			file ',(intern (format "%s-save-mail" method))
+			',spool-func (nnmail-get-split-group orig-file source)
+			',(intern (format "%s-active-number" method))))))
 	  (incf i)))
       ;; If we did indeed read any incoming spools, we save all info.
       (unless (zerop i)

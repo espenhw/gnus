@@ -1,3 +1,19 @@
+1999-02-09 16:21:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Charsets): New.
+
+1999-02-04 03:45:15  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* emacs-mime.texi (Conversion): New.
+
+1999-02-03 03:04:18  Miguel de Icaza  <miguel@nuclecu.unam.mx>
+
+	* gnus.texi (Fetching Mail): Typo fix.
+
+1999-02-02 22:28:42  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Mail Source Specifiers): Addition.
+
 1999-02-01 21:05:18  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* gnus.texi (Article Hiding): Addition.

@@ -71,7 +71,7 @@
 		warn t))
 	(setq point (point)
 	      contents (mml-read-part)
-	      charsets (delq 'ascii (mm-find-charset-region point (point))))
+	      charsets (mm-find-mime-charset-region point (point)))
 	(if (< (length charsets) 2)
 	    (push (nconc tag (list (cons 'contents contents)))
 		  struct)
@@ -93,15 +93,16 @@
   (save-excursion
     (narrow-to-region beg end)
     (goto-char (point-min))
-    (let ((current (char-charset (following-char)))
+    (let ((current (mm-mime-charset (char-charset (following-char))))
 	  charset struct space newline paragraph)
       (while (not (eobp))
 	(cond
 	 ;; The charset remains the same.
-	 ((or (eq (setq charset (char-charset (following-char))) 'ascii)
+	 ((or (eq (setq charset (mm-mime-charset
+				 (char-charset (following-char)))) 'us-ascii)
 	      (eq charset current)))
 	 ;; The initial charset was ascii.
-	 ((eq current 'ascii)
+	 ((eq current 'us-ascii)
 	  (setq current charset
 		space nil
 		newline nil
@@ -157,6 +158,7 @@
       (push (cons (intern elem) val) contents)
       (skip-chars-forward " \t\n"))
     (forward-char 1)
+    (skip-chars-forward " \t\n")
     (cons (intern name) (nreverse contents))))
 
 (defun mml-read-part ()
@@ -201,8 +203,12 @@
       (setq type (or (cdr (assq 'type cont)) "text/plain"))
       (if (equal (car (split-string type "/")) "text")
 	  (with-temp-buffer
-	    (if (setq filename (cdr (assq 'filename cont)))
-		(insert-file-contents-literally filename)
+	    (cond
+	     ((cdr (assq 'buffer cont))
+	      (insert-buffer-substring (cdr (assq 'buffer cont))))
+	     ((setq filename (cdr (assq 'filename cont)))
+	      (insert-file-contents-literally filename))
+	     (t
 	      (save-restriction
 		(narrow-to-region (point) (point))
 		(insert (cdr (assq 'contents cont)))
@@ -211,14 +217,18 @@
 		(while (re-search-forward
 			"<#!+/?\\(part\\|multipart\\|external\\)" nil t)
 		  (delete-region (+ (match-beginning 0) 2)
-				 (+ (match-beginning 0) 3)))))
-	    (setq charset (mm-encode-body)
-		  encoding (mm-body-encoding))
+				 (+ (match-beginning 0) 3))))))
+	    (setq charset (mm-encode-body))
+	    (setq encoding (mm-body-encoding charset))
 	    (setq coded (buffer-string)))
 	(mm-with-unibyte-buffer
-	  (if (setq filename (cdr (assq 'filename cont)))
-	      (insert-file-contents-literally filename)
-	    (insert (cdr (assq 'contents cont))))
+	  (cond
+	   ((cdr (assq 'buffer cont))
+	    (insert-buffer-substring (cdr (assq 'buffer cont))))
+	   ((setq filename (cdr (assq 'filename cont)))
+	    (insert-file-contents-literally filename))
+	   (t
+	    (insert (cdr (assq 'contents cont)))))
 	  (setq encoding (mm-encode-buffer type)
 		coded (buffer-string))))
       (mml-insert-mime-headers cont type charset encoding)
@@ -283,9 +293,13 @@
     (cond
      ((eq (car cont) 'part)
       (with-temp-buffer
-	(if (setq filename (cdr (assq 'filename cont)))
-	    (insert-file-contents-literally filename)
-	  (insert (cdr (assq 'contents cont))))
+	(cond
+	 ((cdr (assq 'buffer cont))
+	  (insert-buffer-substring (cdr (assq 'buffer cont))))
+	 ((setq filename (cdr (assq 'filename cont)))
+	  (insert-file-contents-literally filename))
+	 (t
+	  (insert (cdr (assq 'contents cont)))))
 	(goto-char (point-min))
 	(when (re-search-forward (concat "^--" (regexp-quote mml-boundary))
 				 nil t)
@@ -376,6 +390,71 @@
 	    "<#/?!*\\(multipart\\|part\\|external\\)" end t)
       (goto-char (match-beginning 1))
       (insert "!"))))
+
+;;;
+;;; Transforming MIME to MML
+;;;
+
+(defun mime-to-mml ()
+  "Translate the current buffer (which should be a message) into MML."
+  ;; First decode the head.
+  (save-restriction
+    (message-narrow-to-head)
+    (mail-decode-encoded-word-region (point-min) (point-max)))
+  (let ((handles (mm-dissect-buffer t)))
+    (goto-char (point-min))
+    (search-forward "\n\n" nil t)
+    (delete-region (point) (point-max))
+    (if (stringp (car handles))
+	(mml-insert-mime handles)
+      (mml-insert-mime handles t))
+    (mm-destroy-parts handles)))
+
+(defun mml-to-mime ()
+  "Translate the current buffer from MML to MIME."
+  (message-encode-message-body)
+  (save-restriction
+    (message-narrow-to-headers)
+    (mail-encode-encoded-word-buffer)))
+
+(defun mml-insert-mime (handle &optional no-markup)
+  (let (textp buffer)
+    ;; Determine type and stuff.
+    (unless (stringp (car handle))
+      (unless (setq textp (equal
+			   (car (split-string
+				 (car (mm-handle-type handle)) "/"))
+			   "text"))
+	(save-excursion
+	  (set-buffer (setq buffer (generate-new-buffer " *mml*")))
+	  (mm-insert-part handle))))
+    (unless no-markup
+      (mml-insert-mml-markup handle buffer))
+    (cond
+     ((stringp (car handle))
+      (mapcar 'mml-insert-mime (cdr handle))
+      (insert "<#/multipart>\n"))
+     (textp
+      (mm-insert-part handle)
+      (goto-char (point-max)))
+     (t
+      (insert "<#/part>\n")))))
+
+(defun mml-insert-mml-markup (handle &optional buffer)
+  "Take a MIME handle and insert an MML tag."
+  (if (stringp (car handle))
+      (insert "<#multipart type=" (cadr (split-string (car handle) "/"))
+	      ">\n")
+    (insert "<#part type=" (car (mm-handle-type handle)))
+    (dolist (elem (append (cdr (mm-handle-type handle))
+			  (cdr (mm-handle-disposition handle))))
+      (insert " " (symbol-name (car elem)) "=\"" (cdr elem) "\""))
+    (when buffer
+      (insert " buffer=\"" (buffer-name buffer) "\""))
+    (when (mm-handle-description handle)
+      (insert " description=\"" (mm-handle-description handle) "\""))
+    (equal (split-string (car (mm-handle-type handle)) "/") "text")
+    (insert ">\n")))
 
 (provide 'mml)
 

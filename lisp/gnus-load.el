@@ -19,7 +19,6 @@
 (put 'gnus-thread 'custom-loads '("gnus-sum"))
 (put 'languages 'custom-loads '("cus-edit"))
 (put 'development 'custom-loads '("cus-edit"))
-(put 'gnus-treading 'custom-loads '("gnus-sum"))
 (put 'nnmail-various 'custom-loads '("nnmail"))
 (put 'extensions 'custom-loads '("wid-edit"))
 (put 'message-various 'custom-loads '("message"))

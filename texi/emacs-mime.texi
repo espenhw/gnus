@@ -863,6 +863,7 @@ string containing the @sc{mime} message.
 * Simple MML Example::             An example MML document.
 * MML Definition::                 All valid MML elements.
 * Advanced MML Example::           Another example MML document.
+* Conversion::                     Going from @sc{mime} to MML and vice versa.
 @end menu
 
 
@@ -1083,6 +1084,33 @@ This plain text part is an attachment.
 --=-=-=--
 @end example
 
+
+@node Conversion
+@section Conversion
+
+@findex mime-to-mml
+A (multipart) @sc{mime} message can be converted to MML with the
+@code{mime-to-mml} function.  It works on the message in the current
+buffer, and substitutes MML markup for @sc{mime} boundaries.
+Non-textual parts do not have their contents in the buffer, but instead
+have the contents in separate buffers that are referred to from the MML
+tags.
+
+@findex mml-to-mime
+An MML message can be converted back to @sc{mime} by the
+@code{mml-to-mime} function.
+
+These functions are in certain senses ``lossy''---you will not get back
+an identical message if you run @sc{mime-to-mml} and then
+@sc{mml-to-mime}.  Not only will trivial things like the order of the
+headers differ, but the contents of the headers may also be different.
+For instance, the original message may use base64 encoding on text,
+while @sc{mml-to-mime} may decide to use quoted-printable encoding, and
+so on.
+
+In essence, however, these two functions should be the inverse of each
+other.  The resulting contents of the message should remain equivalent,
+if not identical.
 
 
 @node Standards

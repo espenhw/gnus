@@ -49,7 +49,7 @@
   :group 'gnus-group-foreign
   :type 'directory)
 
-(defcustom gnus-no-groups-message "No news is no news"
+(defcustom gnus-no-groups-message "No gnus is bad news"
   "*Message displayed by Gnus when no groups are available."
   :group 'gnus-start
   :type 'string)
@@ -2462,6 +2462,7 @@ up is returned."
 		 (format "these %d groups" (length groups)))))))
 	n
       (while (setq group (pop groups))
+	(gnus-group-remove-mark group)
 	;; Virtual groups have to be given special treatment.
 	(let ((method (gnus-find-method-for-group group)))
 	  (when (eq 'nnvirtual (car method))
@@ -2900,7 +2901,10 @@ If ARG is a number, it specifies which levels you are interested in
 re-scanning.  If ARG is non-nil and not a number, this will force
 \"hard\" re-reading of the active files from all servers."
   (interactive "P")
-  (let ((gnus-inhibit-demon t))
+  (let ((gnus-inhibit-demon t)
+	;; Binding this variable will inhibit multiple fetchings
+	;; of the same mail source.
+	(nnmail-fetched-sources (list t)))
     (gnus-run-hooks 'gnus-get-new-news-hook)
 
     ;; Read any slave files.

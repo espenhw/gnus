@@ -278,29 +278,6 @@ If t, use `message-user-organization-file'."
   :type 'file
   :group 'message-headers)
 
-(defcustom message-forward-start-separator
-  "------- Start of forwarded message -------\n"
-  "*Delimiter inserted before forwarded messages."
-  :group 'message-forwarding
-  :type 'string)
-
-(defcustom message-forward-end-separator
-  "------- End of forwarded message -------\n"
-  "*Delimiter inserted after forwarded messages."
-  :group 'message-forwarding
-  :type 'string)
-
-(defcustom message-signature-before-forwarded-message t
-  "*If non-nil, put the signature before any included forwarded message."
-  :group 'message-forwarding
-  :type 'boolean)
-
-(defcustom message-included-forward-headers
-  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-\\|^Message-ID:\\|^References:\\|^Content-Transfer-Encoding:\\|^Content-Type:\\|^Mime-Version:"
-  "*Regexp matching headers to be included in forwarded messages."
-  :group 'message-forwarding
-  :type 'regexp)
-
 (defcustom message-make-forward-subject-function
   'message-forward-subject-author-subject
  "*A list of functions that are called to generate a subject header for forwarded messages.
@@ -1537,7 +1514,8 @@ C-c C-a  message-mime-attach-file (attach a file as MIME)."
   (interactive)
   (if (looking-at "[ \t]*\n") (expand-abbrev))
   (goto-char (point-min))
-  (search-forward (concat "\n" mail-header-separator "\n") nil t))
+  (or (search-forward (concat "\n" mail-header-separator "\n") nil t)
+      (search-forward "\n\n" nil t)))
 
 (defun message-goto-eoh ()
   "Move point to the end of the headers."
@@ -2115,6 +2093,7 @@ the user from the mailer."
       (let ((message-deletable-headers
 	     (if news nil message-deletable-headers)))
 	(message-generate-headers message-required-mail-headers))
+      (untabify (point-min) (point-max))
       (let ((mail-parse-charset message-posting-charset))
 	(mail-encode-encoded-word-buffer))
       ;; Let the user do all of the above.
@@ -2290,6 +2269,7 @@ to find out how to use this."
 	(message-narrow-to-headers)
 	;; Insert some headers.
 	(message-generate-headers message-required-news-headers)
+	(untabify (point-min) (point-max))
 	(let ((mail-parse-charset message-posting-charset))
 	  (mail-encode-encoded-word-buffer))
 	;; Let the user do all of the above.
@@ -2589,15 +2569,12 @@ to find out how to use this."
    ;; Check the length of the signature.
    (message-check 'signature
      (goto-char (point-max))
-     (if (or (not (re-search-backward message-signature-separator nil t))
-	     (search-forward message-forward-end-separator nil t))
-	 t
-       (if (> (count-lines (point) (point-max)) 5)
-	   (y-or-n-p
-	    (format
-	     "Your .sig is %d lines; it should be max 4.  Really post? "
-	     (1- (count-lines (point) (point-max)))))
-	 t)))))
+     (if (> (count-lines (point) (point-max)) 5)
+	 (y-or-n-p
+	  (format
+	   "Your .sig is %d lines; it should be max 4.  Really post? "
+	   (1- (count-lines (point) (point-max)))))
+       t))))
 
 (defun message-checksum ()
   "Return a \"checksum\" for the current buffer."
@@ -3806,29 +3783,10 @@ Optional NEWS will use news to forward instead of mail."
       (message-mail nil subject))
     ;; Put point where we want it before inserting the forwarded
     ;; message.
-    (if message-signature-before-forwarded-message
-	(goto-char (point-max))
-      (message-goto-body))
-    ;; Make sure we're at the start of the line.
-    (unless (eolp)
-      (insert "\n"))
-    ;; Narrow to the area we are to insert.
-    (narrow-to-region (point) (point))
-    ;; Insert the separators and the forwarded buffer.
-    (insert message-forward-start-separator)
-    (setq art-beg (point))
-    (insert-buffer-substring cur)
-    (goto-char (point-max))
-    (insert message-forward-end-separator)
-    (set-text-properties (point-min) (point-max) nil)
-    ;; Remove all unwanted headers.
-    (goto-char art-beg)
-    (narrow-to-region (point) (if (search-forward "\n\n" nil t)
-				  (1- (point))
-				(point)))
-    (goto-char (point-min))
-    (message-remove-header message-included-forward-headers t nil t)
-    (widen)
+    (message-goto-body)
+    (insert (format
+	     "\n\n<#part type=message/rfc822 buffer=%S disposition=inline><#/part>\n"
+	     (buffer-name cur)))
     (message-position-point)))
 
 ;;;###autoload
@@ -4216,7 +4174,9 @@ TYPE is the MIME type to use."
 	   type (prin1-to-string file))))
 
 (defun message-encode-message-body ()
-  (let ((mail-parse-charset message-default-charset)
+  (let ((mail-parse-charset (or mail-parse-charset
+				message-default-charset
+				message-posting-charset))
 	(case-fold-search t)
 	lines multipart-p content-type-p)
     (message-goto-body)

@@ -38,6 +38,28 @@
 ;; BS, vertical TAB, form feed, and ^_
 (defvar mm-8bit-char-regexp "[^\x20-\x7f\r\n\t\x7\x8\xb\xc\x1f]")
 
+(defvar mm-body-charset-encoding-alist
+  '((us-ascii . 7bit)
+    (iso-8859-1 . quoted-printable)
+    (iso-8859-2 . quoted-printable)
+    (iso-8859-3 . quoted-printable)
+    (iso-8859-4 . quoted-printable)
+    (iso-8859-5 . base64)
+    (koi8-r . base64)
+    (iso-8859-7 . quoted-printable)
+    (iso-8859-8 . quoted-printable)
+    (iso-8859-9 . quoted-printable)
+    (iso-2022-jp . base64)
+    (iso-2022-kr . base64)
+    (gb2312 . base64)
+    (cn-gb . base64)
+    (cn-gb-2312 . base64)
+    (euc-kr . base64)
+    (iso-2022-jp-2 . base64)
+    (iso-2022-int-1 . base64))
+  "Alist of MIME charsets to encodings.
+Valid encodings are `7bit', `8bit', `quoted-printable' and `base64'.")
+
 (defun mm-encode-body ()
   "Encode a body.
 Should be called narrowed to the body that is to be encoded.
@@ -58,8 +80,7 @@ If no encoding was done, nil is returned."
 	  nil))
     (save-excursion
       (goto-char (point-min))
-      (let ((charsets
-	     (delq 'ascii (mm-find-charset-region (point-min) (point-max))))
+      (let ((charsets (mm-find-mime-charset-region (point-min) (point-max)))
 	    charset)
 	(cond
 	 ;; No encoding.
@@ -70,30 +91,44 @@ If no encoding was done, nil is returned."
 	  charsets)
 	 ;; We encode.
 	 (t
-	  (let ((mime-charset (mm-mime-charset (car charsets)))
+	  (let ((charset (car charsets))
 		start)
 	    (when (or t
 		      ;; We always decode.
 		      (not (mm-coding-system-equal
-			    mime-charset buffer-file-coding-system)))
+			    charset buffer-file-coding-system)))
 	      (while (not (eobp))
 		(if (eq (char-charset (char-after)) 'ascii)
 		    (when start
 		      (save-restriction
 			(narrow-to-region start (point))
-			(mm-encode-coding-region start (point) mime-charset)
+			(mm-encode-coding-region start (point) charset)
 			(goto-char (point-max)))
 		      (setq start nil))
 		  (unless start
 		    (setq start (point))))
 		(forward-char 1))
 	      (when start
-		(mm-encode-coding-region start (point) mime-charset)
+		(mm-encode-coding-region start (point) charset)
 		(setq start nil)))
-	    mime-charset)))))))
+	    charset)))))))
 
-(defun mm-body-encoding ()
-  "Return the encoding of the current buffer."
+(defun mm-body-encoding (charset)
+  "Do Content-Transfer-Encoding and return the encoding of the current buffer."
+  (let ((bits (mm-body-7-or-8)))
+    (cond
+     ((eq bits '7bit)
+      bits)
+     ((eq charset mail-parse-charset)
+      bits)
+     (t
+      (let ((encoding (or (cdr (assq charset mm-body-charset-encoding-alist ))
+			  'quoted-printable)))
+	(mm-encode-content-transfer-encoding encoding "text/plain")
+	encoding)))))
+
+(defun mm-body-7-or-8 ()
+  "Say whether the body is 7bit or 8bit."
   (cond
    ((not (featurep 'mule))
     (if (save-excursion
@@ -161,8 +196,8 @@ The characters in CHARSET should then be decoded."
 	(when (and charset
 		   (setq mule-charset (mm-charset-to-coding-system charset))
 		   ;; buffer-file-coding-system
-					;Article buffer is nil coding system
-					;in XEmacs
+		   ;;Article buffer is nil coding system
+		   ;;in XEmacs
 		   enable-multibyte-characters
 		   (or (not (eq mule-charset 'ascii))
 		       (setq mule-charset mail-parse-charset)))

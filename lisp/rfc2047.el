@@ -124,7 +124,8 @@ Should be called narrowed to the head of the message."
 	      (when method
 		(cond
 		 ((eq method 'mime)
-		  (rfc2047-encode-region (point-min) (point-max)))
+		  (rfc2047-encode-region (point-min) (point-max))
+		  (rfc2047-fold-region (point-min) (point-max)))
 		 ;; Hm.
 		 (t))))
 	    (goto-char (point-max)))))
@@ -206,6 +207,27 @@ Should be called narrowed to the head of the message."
 	(end-of-line)
 	(insert "?=")
 	(forward-line 1)))))
+
+(defun rfc2047-fold-region (b e)
+  "Fold the long lines in the region."
+  (save-restriction
+    (narrow-to-region b e)
+    (goto-char (point-min))
+    (let ((break nil))
+      (while (not (eobp))
+	(cond
+	 ((memq (char-after) '(?  ?\t))
+	  (setq break (point)))
+	 ((and (not break)
+	       (looking-at "=\\?"))
+	  (setq break (point)))
+	 ((and (looking-at "\\?=")
+	       (> (- (point) (save-excursion (beginning-of-line) (point))) 76))
+	  (goto-char break)
+	  (insert "\n ")
+	  (forward-line 1)))
+	(unless (eobp)
+	  (forward-char 1))))))
 
 (defun rfc2047-b-encode-region (b e)
   "Encode the header contained in REGION with the B encoding."

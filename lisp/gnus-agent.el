@@ -330,7 +330,6 @@ agent minor mode in all Gnus buffers."
     (gnus-request-create-group "queue" '(nndraft ""))
     (let ((gnus-level-default-subscribed 1))
       (gnus-subscribe-group "nndraft:queue" nil '(nndraft "")))
-    (gnus-group-set-parameter "nndraft:queue" 'charset nil)
     (gnus-group-set-parameter
      "nndraft:queue" 'gnus-dummy '((gnus-draft-mode)))))
 

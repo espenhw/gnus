@@ -219,7 +219,9 @@ to virtual article number.")
 	  (if buffer
 	      (save-excursion
 		(set-buffer buffer)
-		(gnus-request-article-this-buffer (cdr amap) cgroup))
+		;; We bind this here to avoid double decoding.
+		(let ((gnus-article-decode-hook nil))
+		  (gnus-request-article-this-buffer (cdr amap) cgroup)))
 	    (gnus-request-article (cdr amap) cgroup))))))))
 
 

@@ -1,3 +1,230 @@
+Thu Feb 11 04:58:51 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v0.76 is released.
+
+1999-02-06  Felix Lee  <flee@cygnus.com>
+
+	* gnus.el (gnus-group-change-level-function): Typo.
+
+1999-02-11 05:47:51  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-nov-skip-field): Removed.
+	(gnus-nov-field): Ditto.
+	(gnus-nov-parse-extra): Ditto.
+	(gnus-nov-read-integer): Ditto.
+
+1999-02-05 09:44:20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnheader.el (nnheader-nov-read-message-id): New macro.
+	(nnheader-parse-nov): Use it.
+
+	* gnus-sum.el (gnus-nov-read-message-id): New macro.
+	(gnus-nov-parse-line): Use it; use `(eobp)' instead of
+	`(eq (char-after) ?\n)'.
+
+1999-02-11 05:16:26  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-other-frame): Always pop up a new frame.
+
+Wed Feb 10 01:03:43 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-range.el (gnus-range-add): Rewrite.
+
+1999-02-02 18:12:00  Carsten Leonhardt  <leo@arioch.oche.de>
+
+	* nnmail.el (nnmail-split-incoming): Added detection of maildir
+ 	format.
+	(nnmail-process-maildir-mail-format): New function.
+
+	* mail-source.el (mail-source-fetch-maildir): New function.
+	(mail-source-keyword-map): Add default for maildir method.
+	(mail-source-fetcher-alist): Changed "qmail" to "maildir".
+
+1999-02-10 02:29:28  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetcher-alist): Remove apop.
+
+	* nndoc.el (nndoc-type-alist): Remove MIME-digest.
+	(nndoc-mime-digest-type-p): Removed.
+
+1999-02-09 15:25:52  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-article-read-summary-keys): Set the point
+	where it is supposed to be.
+	(gnus-treat-play-sounds): New variable.
+
+	* gnus-sum.el (gnus-newsgroup-ignored-charsets): New variable.
+
+	* gnus-art.el (article-display-x-face): Narrow to head.
+	(gnus-article-washed-types): New variable.
+	(article-hide-pgp): Is not a toggle.
+	(gnus-article-hide-text-type): Save types.
+	(article-decode-charset): Use it.
+
+	* nnmail.el (nnmail-get-new-mail): Ignore procmail.
+
+	* message.el (message-forward-start-separator): Removed.
+	(message-forward-end-separator): Removed.
+	(message-signature-before-forwarded-message): Removed.
+	(message-included-forward-headers): Removed.
+	(message-check-news-body-syntax): Don't check forward.
+	(message-forward): Use MIME.
+
+	* nnvirtual.el (nnvirtual-request-article): Bind
+	gnus-article-decode-hook to nil.
+
+1999-02-06 16:55:25  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mml.el (mml-parse-singlepart-with-multiple-charsets): Check for
+	us-ascii.
+
+1999-02-04 00:00:35  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* format-spec.el (format-spec): Be more robust.
+
+	* message.el (message-encode-message-body): Default
+	mail-parse-charset to mail-parse-charset.
+
+	* gnus-sum.el (gnus-summary-edit-article-done): Don't encode.
+	(gnus-summary-edit-article): Bind mail-parse-charset.
+
+	* mml.el (mml-read-tag): Ignore white space after end of tag.
+
+	* message.el (message-goto-body): Also work in separatorless
+	articles.
+
+	* mml.el (mml-translate-from-mime): New function.
+	(mml-insert-mime): Ditto.
+	(mml-to-mime): New function.
+	(mime-to-mml): New name.
+
+	* gnus-sum.el (gnus-summary-edit-article): Always select raw
+	article.
+
+	* gnus-group.el (gnus-group-catchup-current): Unmark groups.
+
+	* gnus-sum.el (gnus-summary-setup-default-charset): Don't
+	special-case nndraft groups.
+
+1999-02-03 16:44:19  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-get-newsgroup-headers): Bind charset.
+	(gnus-get-newsgroup-headers): Already bound.
+
+	* message.el (message-encode-message-body): Use posting charset.
+
+	* mm-bodies.el (mm-encode-body): Use MIME charsets.
+	(mm-body-encoding): Do CTE.
+	(mm-body-7-or-8): New function.
+
+	* mm-util.el (mm-mime-charset): Always fall back on alist.
+	(mm-mime-mule-charset-alist): Include katakana-jisx0201.
+	(mm-mime-mule-charset-alist): Add arabic-*-column.
+	(mm-find-mime-charset-region): New function.
+
+	* format-spec.el (format-spec-make): New function.
+
+	* mail-source.el (format-spec): Required.
+	(mail-source-fetch-with-program): Removed.
+	(mail-source-fetch-with-program): New function.
+
+	* format-spec.el: New file.
+
+1999-02-03 16:00:41  Tatsuya Ichikawa  <ichikawa@hv.epson.co.jp>
+
+	* mail-source.el (mail-source-fetch-with-program): Take optional
+	parameter.
+
+1999-02-03 00:31:21  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-start.el: Ignore some groups.
+	(gnus-setup-news): Bind nnmail-fetched-sources.
+
+	* message.el (message-send-mail): Remove all tabs.
+
+	* mm-util.el (mm-find-charset-region): Just check whether
+	find-charset-region is defined.
+
+1999-02-02 23:35:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-group.el (gnus-group-get-new-news): Use
+	nnmail-fetched-sources.
+
+	* nnmail.el (nnmail-fetched-sources): New variable.
+	(nnmail-get-new-mail): Use it.
+
+	* mail-source.el (mail-source-fetched-sources): New variable.
+	(mail-source-fetch): Use it.
+
+1999-02-02 23:20:20  Mark W. Eichin  <eichin@thok.org>
+
+	* gnus.el (gnus-getenv-nntpserver): if the file that
+ 	gnus-nntpserver-file names has a trailing newline, the
+ 	string-match will always match, and thus the file will never be
+ 	read.  (^ matches start of "line", \\` matches start of "buffer",
+ 	which is what was intended...)
+
+1999-02-02 23:17:40  Kim-Minh Kaplan  <kmkaplan@western.fr>
+
+	* gnus-picon.el (gnus-picons-parse-filenames): Quote group names.
+
+1999-01-28 04:15:46  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-start.el (gnus-read-active-file): Eliminate duplicated
+	select methods.
+
+1999-01-27  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus-range.el (gnus-remove-from-range): Sort second argument.
+
+1999-02-02 10:55:23  Scott Hofmann  <shofmann@mindspring.com>
+
+	* nntp.el: Use mail-source-read-passwd instead of nnmail-read-passwd.
+
+Mon Feb  1 23:23:03 1999  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-cus.el (gnus-group-parameters): Charset as symbol, and fix
+	a typo.
+	* gnus-sum.el (gnus-summary-setup-default-charset): Set nndraft's
+	charset to nil.
+	* gnus-agent.el (gnus-agent-queue-setup): Remove charset setting.
+	* gnus-start.el (gnus-start-draft-setup): Ditto.
+
+1999-02-02 22:13:14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch-directory): Use the predicate.
+	(mail-source-value): Don't do variables.
+
+	* nnmail.el (nnmail-get-new-mail): Set the predicate.
+
+	* gnus-sum.el (gnus-summary-toggle-header): Fix, and bound to t.
+
+1999-02-01  Michael Cook  <cook@sightpath.com>
+
+	* Defenestrate spurious ?a.
+
+1999-02-02 21:59:51  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch-pop): Instead use
+	:authentication.
+
+1999-02-01  Tatsuya Ichikawa <t-ichi@po.shiojiri.ne.jp>
+
+	* lisp/mail-source.el : Support APOP authentication scheme.
+
+1999-02-02 21:56:14  Tatsuya Ichikawa  <t-ichi@niagara.shiojiri.ne.jp>
+
+	* pop3.el (pop3-movemail): Return t.
+
+1999-02-02 21:48:46  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* rfc2047.el (rfc2047-fold-region): New function.
+	(rfc2047-encode-message-header): Use it.
+
+1999-02-02 21:07:27  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* gnus-sum.el (gnus-group-charset-alist): Add more.
+
 Mon Feb  1 21:18:00 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Pterodactyl Gnus v0.75 is released.

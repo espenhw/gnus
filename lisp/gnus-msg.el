@@ -645,9 +645,9 @@ The original article will be yanked."
   (interactive "P")
   (gnus-summary-reply-with-original n t))
 
-(defun gnus-summary-mail-forward (&optional full-headers post)
+(defun gnus-summary-mail-forward (&optional not-used post)
   "Forward the current message to another user.
-If FULL-HEADERS (the prefix), include full headers when forwarding."
+If POST, post instead of mail."
   (interactive "P")
   (gnus-setup-message 'forward
     (gnus-summary-select-article)
@@ -659,9 +659,7 @@ If FULL-HEADERS (the prefix), include full headers when forwarding."
       (erase-buffer)
       (insert text)
       (run-hooks 'gnus-article-decode-hook)
-      (let ((message-included-forward-headers
-	     (if full-headers "" message-included-forward-headers)))
-	(message-forward post)))))
+      (message-forward post))))
 
 (defun gnus-summary-resend-message (address n)
   "Resend the current article to ADDRESS."

@@ -108,7 +108,7 @@ rules as described later).")
 		    (const signature)
 		    string ) "\
 Banner to be removed from articles.")
-a
+
     (auto-expire (const :tag "Automatic Expire" t) "\
 All articles that are read will be marked as expirable.")
 
@@ -167,7 +167,7 @@ An arbitrary comment on the group.")
 Always display this group, even when there are no unread articles
 in it..")
 
-    (charset (string :tag "Charset") "\
+    (charset (symbol :tag "Charset") "\
 The default charset to use in the group."))
   "Alist of valid group parameters.
 

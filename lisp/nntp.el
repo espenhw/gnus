@@ -221,7 +221,7 @@ noticing asynchronous data.")
 (defvar nntp-async-process-list nil)
 
 (eval-and-compile
-  (autoload 'nnmail-read-passwd "nnmail")
+  (autoload 'mail-source-read-passwd "mail-source")
   (autoload 'open-ssl-stream "ssl"))
 
 
@@ -779,7 +779,7 @@ If SEND-IF-FORCE, only send authinfo to the server if the
        (or passwd
 	   nntp-authinfo-password
 	   (setq nntp-authinfo-password
-		     (nnmail-read-passwd (format "NNTP (%s@%s) password: "
+		     (mail-source-read-passwd (format "NNTP (%s@%s) password: "
 						 user nntp-address))))))))))
 
 (defun nntp-send-nosy-authinfo ()
@@ -789,7 +789,7 @@ If SEND-IF-FORCE, only send authinfo to the server if the
       (nntp-send-command "^3.*\r?\n" "AUTHINFO USER" user)
       (when t				;???Should check if AUTHINFO succeeded
 	(nntp-send-command "^2.*\r?\n" "AUTHINFO PASS"
-			   (nnmail-read-passwd "NNTP (%s@%s) password: "
+			   (mail-source-read-passwd "NNTP (%s@%s) password: "
 					       user nntp-address))))))
 
 (defun nntp-send-authinfo-from-file ()
@@ -1254,7 +1254,7 @@ password contained in '~/.nntp-authinfo'."
 	 proc (concat
 	       (or nntp-telnet-passwd
 		   (setq nntp-telnet-passwd
-			 (nnmail-read-passwd "Password: ")))
+			 (mail-source-read-passwd "Password: ")))
 	       "\n"))
 	(erase-buffer)
 	(nntp-wait-for-string nntp-telnet-shell-prompt)

@@ -774,9 +774,15 @@ The format is defined by the `gnus-article-time-format' variable."
   :group 'gnus-article-treat
   :type gnus-article-treat-custom)
 
+(defcustom gnus-treat-play-sounds nil
+  "Fill long lines."
+  :group 'gnus-article-treat
+  :type gnus-article-treat-custom)
+
 ;;; Internal variables
 
 (defvar article-goto-body-goes-to-point-min-p nil)
+(defvar gnus-article-wash-types nil)
 
 (defvar gnus-article-mime-handle-alist-1 nil)
 (defvar gnus-treatment-function-alist
@@ -813,7 +819,8 @@ The format is defined by the `gnus-article-time-format' variable."
     (gnus-treat-buttonize-head gnus-article-add-buttons-to-head)
     (gnus-treat-display-xface gnus-article-display-x-face)
     (gnus-treat-display-smileys gnus-smiley-display)
-    (gnus-treat-display-picons gnus-article-display-picons)))
+    (gnus-treat-display-picons gnus-article-display-picons)
+    (gnus-treat-play-sounds gnus-earcon-display)))
 
 (defvar gnus-article-mime-handle-alist nil)
 (defvar article-lapsed-timer nil)
@@ -883,11 +890,14 @@ Then replace the article with the result."
 
 (defun gnus-article-hide-text-type (b e type)
   "Hide text of TYPE between B and E."
+  (push type gnus-article-wash-types)
   (gnus-article-hide-text
    b e (cons 'article-type (cons type gnus-hidden-properties))))
 
 (defun gnus-article-unhide-text-type (b e type)
   "Unhide text of TYPE between B and E."
+  (setq gnus-article-wash-types
+	(delq type gnus-article-wash-types))
   (remove-text-properties
    b e (cons 'article-type (cons type gnus-hidden-properties)))
   (when (memq 'intangible gnus-hidden-properties)
@@ -1263,6 +1273,7 @@ MAP is an alist where the elements are on the form (\"from\" \"to\")."
 	  (case-fold-search t)
 	  from last)
       (save-restriction
+	(message-narrow-to-head)
 	(goto-char (point-min))
 	(setq from (message-fetch-field "from"))
 	(goto-char (point-min))
@@ -1332,6 +1343,8 @@ If PROMPT (the prefix), prompt for a coding system to use."
 			(mail-content-type-get ctl 'charset))))
 	     (mail-parse-charset gnus-newsgroup-charset)
 	     buffer-read-only)
+	(when (memq charset gnus-newsgroup-ignored-charsets)
+	  (setq charset nil))
 	(goto-char (point-max))
 	(widen)
 	(forward-line 1)
@@ -1371,43 +1384,41 @@ or not."
 	  (when charset
 	    (mm-decode-body charset)))))))
 
-(defun article-hide-pgp (&optional arg)
-  "Toggle hiding of any PGP headers and signatures in the current article.
-If given a negative prefix, always show; if given a positive prefix,
-always hide."
-  (interactive (gnus-article-hidden-arg))
-  (unless (gnus-article-check-hidden-text 'pgp arg)
-    (save-excursion
-      (let ((inhibit-point-motion-hooks t)
-	    buffer-read-only beg end)
-	(widen)
-	(goto-char (point-min))
-	;; Hide the "header".
-	(when (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
-	  (delete-region (1+ (match-beginning 0)) (match-end 0))
-	  ;; PGP 5 and GNU PG add a `Hash: <>' comment, hide that too
-	  (when (looking-at "Hash:.*$")
-	    (delete-region (point) (1+ (gnus-point-at-eol))))
-	  (setq beg (point))
-	  ;; Hide the actual signature.
-	  (and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
-	       (setq end (1+ (match-beginning 0)))
-	       (delete-region
-		end
-		(if (search-forward "\n-----END PGP SIGNATURE-----\n" nil t)
-		    (match-end 0)
-		  ;; Perhaps we shouldn't hide to the end of the buffer
-		  ;; if there is no end to the signature?
-		  (point-max))))
-	  ;; Hide "- " PGP quotation markers.
-	  (when (and beg end)
-	    (narrow-to-region beg end)
-	    (goto-char (point-min))
-	    (while (re-search-forward "^- " nil t)
-	      (delete-region
-	       (match-beginning 0) (match-end 0)))
-	    (widen))
-	  (gnus-run-hooks 'gnus-article-hide-pgp-hook))))))
+(defun article-hide-pgp ()
+  "Remove any PGP headers and signatures in the current article."
+  (interactive)
+  (save-excursion
+    (let ((inhibit-point-motion-hooks t)
+	  buffer-read-only beg end)
+      (widen)
+      (goto-char (point-min))
+      ;; Hide the "header".
+      (when (search-forward "\n-----BEGIN PGP SIGNED MESSAGE-----\n" nil t)
+	(push 'pgp gnus-article-wash-types)
+	(delete-region (1+ (match-beginning 0)) (match-end 0))
+	;; PGP 5 and GNU PG add a `Hash: <>' comment, hide that too
+	(when (looking-at "Hash:.*$")
+	  (delete-region (point) (1+ (gnus-point-at-eol))))
+	(setq beg (point))
+	;; Hide the actual signature.
+	(and (search-forward "\n-----BEGIN PGP SIGNATURE-----\n" nil t)
+	     (setq end (1+ (match-beginning 0)))
+	     (delete-region
+	      end
+	      (if (search-forward "\n-----END PGP SIGNATURE-----\n" nil t)
+		  (match-end 0)
+		;; Perhaps we shouldn't hide to the end of the buffer
+		;; if there is no end to the signature?
+		(point-max))))
+	;; Hide "- " PGP quotation markers.
+	(when (and beg end)
+	  (narrow-to-region beg end)
+	  (goto-char (point-min))
+	  (while (re-search-forward "^- " nil t)
+	    (delete-region
+	     (match-beginning 0) (match-end 0)))
+	  (widen))
+	(gnus-run-hooks 'gnus-article-hide-pgp-hook)))))
 
 (defun article-hide-pem (&optional arg)
   "Toggle hiding of any PEM headers and signatures in the current article.
@@ -1419,23 +1430,23 @@ always hide."
       (let (buffer-read-only end)
 	(widen)
 	(goto-char (point-min))
-	;; hide the horrendously ugly "header".
-	(and (search-forward "\n-----BEGIN PRIVACY-ENHANCED MESSAGE-----\n"
-			     nil
-			     t)
-	     (setq end (1+ (match-beginning 0)))
-	     (gnus-article-hide-text-type
-	      end
-	      (if (search-forward "\n\n" nil t)
-		  (match-end 0)
-		(point-max))
-	      'pem))
-	;; hide the trailer as well
-	(and (search-forward "\n-----END PRIVACY-ENHANCED MESSAGE-----\n"
-			     nil
-			     t)
-	     (gnus-article-hide-text-type
-	      (match-beginning 0) (match-end 0) 'pem))))))
+	;; Hide the horrendously ugly "header".
+	(when (and (search-forward
+		    "\n-----BEGIN PRIVACY-ENHANCED MESSAGE-----\n"
+		    nil t)
+		   (setq end (1+ (match-beginning 0))))
+	  (push 'pem gnus-article-wash-types)
+	  (gnus-article-hide-text-type
+	   end
+	   (if (search-forward "\n\n" nil t)
+	       (match-end 0)
+	     (point-max))
+	   'pem)
+	  ;; Hide the trailer as well
+	  (when (search-forward "\n-----END PRIVACY-ENHANCED MESSAGE-----\n"
+				nil t)
+	    (gnus-article-hide-text-type
+	     (match-beginning 0) (match-end 0) 'pem)))))))
 
 (defun article-strip-banner ()
   "Strip the banner specified by the `banner' group parameter."
@@ -2356,6 +2367,7 @@ commands:
   (make-local-variable 'gnus-article-mime-handles)
   (make-local-variable 'gnus-article-decoded-p)
   (make-local-variable 'gnus-article-mime-handle-alist)
+  (make-local-variable 'gnus-article-washed-types)
   (gnus-set-default-directory)
   (buffer-disable-undo)
   (setq buffer-read-only t)
@@ -2522,9 +2534,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	    (let ((gnus-article-mime-handle-alist-1
 		   gnus-article-mime-handle-alist))
 	      (gnus-set-mode-line 'article))
-	    (gnus-configure-windows 'article)
 	    (article-goto-body)
 	    (set-window-point (get-buffer-window (current-buffer)) (point))
+	    (gnus-configure-windows 'article)
 	    t))))))
 
 ;;;###autoload
@@ -2723,19 +2735,24 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   (gnus-article-part-wrapper n 'mm-save-part))
 
 (defun gnus-article-interactively-view-part (n)
-  "Pipe MIME part N, which is the numerical prefix."
+  "View MIME part N interactively, which is the numerical prefix."
   (interactive "p")
   (gnus-article-part-wrapper n 'mm-interactively-view-part))
 
 (defun gnus-article-copy-part (n)
-  "Pipe MIME part N, which is the numerical prefix."
+  "Copy MIME part N, which is the numerical prefix."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-copy-part))
 
 (defun gnus-article-externalize-part (n)
-  "Pipe MIME part N, which is the numerical prefix."
+  "View MIME part N externally, which is the numerical prefix."
   (interactive "p")
   (gnus-article-part-wrapper n 'gnus-mime-externalize-part))
+
+(defun gnus-article-inline-part (n)
+  "Inline MIME part N, which is the numerical prefix."
+  (interactive "p")
+  (gnus-article-part-wrapper n 'gnus-mime-inline-part))
 
 (defun gnus-article-view-part (n)
   "View MIME part N, which is the numerical prefix."
@@ -2860,7 +2877,7 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 	  ;; may change the point.  So we set the window point.
 	  (set-window-point window point)))
       (let* ((handles (or ihandles (mm-dissect-buffer) (mm-uu-dissect)))
-	     handle name type b e display)
+	     buffer-read-only handle name type b e display)
 	(unless ihandles
 	  ;; Top-level call; we clean up.
 	  (mm-destroy-parts gnus-article-mime-handles)
@@ -3077,14 +3094,14 @@ If ALL-HEADERS is non-nil, no headers are hidden."
   "Return a string which display status of article washing."
   (save-excursion
     (set-buffer gnus-article-buffer)
-    (let ((cite (gnus-article-hidden-text-p 'cite))
-	  (headers (gnus-article-hidden-text-p 'headers))
-	  (boring (gnus-article-hidden-text-p 'boring-headers))
-	  (pgp (gnus-article-hidden-text-p 'pgp))
-	  (pem (gnus-article-hidden-text-p 'pem))
-	  (signature (gnus-article-hidden-text-p 'signature))
-	  (overstrike (gnus-article-hidden-text-p 'overstrike))
-	  (emphasis (gnus-article-hidden-text-p 'emphasis)))
+    (let ((cite (memq 'cite gnus-article-wash-types))
+	  (headers (memq 'headers gnus-article-wash-types))
+	  (boring (memq 'boring-headers gnus-article-wash-types))
+	  (pgp (memq 'pgp gnus-article-wash-types))
+	  (pem (memq 'pem gnus-article-wash-types))
+	  (signature (memq 'signature gnus-article-wash-types))
+	  (overstrike (memq 'overstrike gnus-article-wash-types))
+	  (emphasis (memq 'emphasis gnus-article-wash-types)))
       (format "%c%c%c%c%c%c"
 	      (if cite ?c ? )
 	      (if (or headers boring) ?h ? )
@@ -3332,9 +3349,12 @@ Argument LINES specifies lines to be scrolled down."
           (set-buffer obuf)
           (unless not-restore-window
             (set-window-configuration owin))
-          (unless (or (not (eq selected 'old)) (member keys up-to-top))
+          (when (eq selected 'old)
+	    (article-goto-body)
+            (set-window-start (get-buffer-window (current-buffer))
+                              1)
             (set-window-point (get-buffer-window (current-buffer))
-                              opoint))
+                              (point)))
           (let ((win (get-buffer-window gnus-article-current-summary)))
             (when win
               (set-window-point win new-sum-point))))))))
@@ -3565,18 +3585,21 @@ groups."
     (error "The current newsgroup does not support article editing"))
   (gnus-article-date-original)
   (gnus-article-edit-article
+   'ignore
    `(lambda (no-highlight)
+      'ignore
       (gnus-summary-edit-article-done
        ,(or (mail-header-references gnus-current-headers) "")
        ,(gnus-group-read-only-p) ,gnus-summary-buffer no-highlight))))
 
-(defun gnus-article-edit-article (exit-func)
+(defun gnus-article-edit-article (start-func exit-func)
   "Start editing the contents of the current article buffer."
   (let ((winconf (current-window-configuration)))
     (set-buffer gnus-article-buffer)
     (gnus-article-edit-mode)
-    (gnus-article-delete-text-of-type 'annotation)
-    (gnus-set-text-properties (point-min) (point-max) nil)
+    (funcall start-func)
+    ;;(gnus-article-delete-text-of-type 'annotation)
+    ;;(gnus-set-text-properties (point-min) (point-max) nil)
     (gnus-configure-windows 'edit-article)
     (setq gnus-article-edit-done-function exit-func)
     (setq gnus-prev-winconf winconf)

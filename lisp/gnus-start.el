@@ -720,7 +720,6 @@ prompt the user for the name of an NNTP server to use."
   (unless (gnus-gethash "nndraft:drafts" gnus-newsrc-hashtb)
     (let ((gnus-level-default-subscribed 1))
       (gnus-subscribe-group "nndraft:drafts" nil '(nndraft "")))
-    (gnus-group-set-parameter "nndraft:drafts" 'charset nil)
     (gnus-group-set-parameter
      "nndraft:drafts" 'gnus-dummy '((gnus-draft-mode)))))
 
@@ -855,7 +854,10 @@ prompt the user for the name of an NNTP server to use."
   "Setup news information.
 If RAWFILE is non-nil, the .newsrc file will also be read.
 If LEVEL is non-nil, the news will be set up at level LEVEL."
-  (let ((init (not (and gnus-newsrc-alist gnus-active-hashtb (not rawfile)))))
+  (let ((init (not (and gnus-newsrc-alist gnus-active-hashtb (not rawfile))))
+	;; Binding this variable will inhibit multiple fetchings
+	;; of the same mail source.
+	(nnmail-fetched-sources (list t)))
 
     (when init
       ;; Clear some variables to re-initialize news information.
@@ -1521,19 +1523,24 @@ newsgroup."
 	(cond
 	 ;; We don't want these groups.
 	 ((> (gnus-info-level info) level)
-	  (setq active nil))
+	  (setq active 'ignore))
 	 ;; Activate groups.
 	 ((not gnus-read-active-file)
 	  (setq active (gnus-activate-group group 'scan))
 	  (inline (gnus-close-group group)))))
 
       ;; Get the number of unread articles in the group.
-      (if active
-	  (inline (gnus-get-unread-articles-in-group info active t))
+      (cond
+       ((eq active 'ignore)
+	;; Don't do anything.
+	)
+       (active
+	(inline (gnus-get-unread-articles-in-group info active t)))
+       (t
 	;; The group couldn't be reached, so we nix out the number of
 	;; unread articles and stuff.
 	(gnus-set-active group nil)
-	(setcar (gnus-gethash group gnus-newsrc-hashtb) t)))
+	(setcar (gnus-gethash group gnus-newsrc-hashtb) t))))
 
     (gnus-message 5 "Checking new news...done")))
 
@@ -1641,30 +1648,30 @@ newsgroup."
 (defun gnus-read-active-file (&optional force not-native)
   (gnus-group-set-mode-line)
   (let ((methods
-	 (append
-	  (if (and (not not-native)
-		   (gnus-check-server gnus-select-method))
-	      ;; The native server is available.
-	      (cons gnus-select-method gnus-secondary-select-methods)
-	    ;; The native server is down, so we just do the
-	    ;; secondary ones.
-	    gnus-secondary-select-methods)
-	  ;; Also read from the archive server.
-	  (when (gnus-archive-server-wanted-p)
-	    (list "archive"))))
-	list-type)
+	 (mapcar
+	  (lambda (m) (if (stringp m) (gnus-server-get-method nil m) m))
+	  (append
+	   (if (and (not not-native)
+		    (gnus-check-server gnus-select-method))
+	       ;; The native server is available.
+	       (cons gnus-select-method gnus-secondary-select-methods)
+	     ;; The native server is down, so we just do the
+	     ;; secondary ones.
+	     gnus-secondary-select-methods)
+	   ;; Also read from the archive server.
+	   (when (gnus-archive-server-wanted-p)
+	     (list "archive")))))
+	method where mesg list-type)
     (setq gnus-have-read-active-file nil)
     (save-excursion
       (set-buffer nntp-server-buffer)
-      (while methods
-	(let* ((method (if (stringp (car methods))
-			   (gnus-server-get-method nil (car methods))
-			 (car methods)))
-	       (where (nth 1 method))
-	       (mesg (format "Reading active file%s via %s..."
+      (while (setq method (pop methods))
+	(unless (member method methods)
+	  (setq where (nth 1 method)
+		mesg (format "Reading active file%s via %s..."
 			     (if (and where (not (zerop (length where))))
 				 (concat " from " where) "")
-			     (car method))))
+			     (car method)))
 	  (gnus-message 5 mesg)
 	  (when (gnus-check-server method)
 	    ;; Request that the backend scan its incoming messages.
@@ -1711,8 +1718,7 @@ newsgroup."
 		(gnus-active-to-gnus-format method gnus-active-hashtb nil t)
 		;; We mark this active file as read.
 		(push method gnus-have-read-active-file)
-		(gnus-message 5 "%sdone" mesg))))))
-	(setq methods (cdr methods))))))
+		(gnus-message 5 "%sdone" mesg))))))))))
 
 ;; Read an active file and place the results in `gnus-active-hashtb'.
 (defun gnus-active-to-gnus-format (&optional method hashtb ignore-errors

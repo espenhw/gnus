@@ -58,16 +58,21 @@
     (iso-8859-7 greek-iso8859-7)
     (iso-8859-8 hebrew-iso8859-8)
     (iso-8859-9 latin-iso8859-9)
+    (viscii vietnamese-viscii-lower)
     (iso-2022-jp-2 japanese-jisx0208)
     (iso-2022-jp latin-jisx0201
 		 japanese-jisx0208-1978)
     (euc-kr korean-ksc5601)
     (cn-gb-2312 chinese-gb2312)
     (cn-big5 chinese-big5-1 chinese-big5-2)
+    (tibetan tibetan)
+    (thai-tis620 thai-tis620)
+    (iso-2022-7bit ethiopic arabic-1-column arabic-2-column)
     (iso-2022-jp-2 latin-iso8859-1 greek-iso8859-7
 		   latin-jisx0201 japanese-jisx0208-1978
 		   chinese-gb2312 japanese-jisx0208
-		   korean-ksc5601 japanese-jisx0212)
+		   korean-ksc5601 japanese-jisx0212
+		   katakana-jisx0201)
     (iso-2022-int-1 latin-iso8859-1 greek-iso8859-7
 		    latin-jisx0201 japanese-jisx0208-1978
 		    chinese-gb2312 japanese-jisx0208
@@ -200,9 +205,18 @@ used as the line break code type of the coding system."
 	     'mime-charset))
        (and (eq charset 'ascii)
 	    'us-ascii)
-       (get-charset-property charset 'prefered-coding-system))
+       (get-charset-property charset 'prefered-coding-system)
+       (mm-mule-charset-to-mime-charset charset))
     ;; This is for XEmacs.
     (mm-mule-charset-to-mime-charset charset)))
+
+(defun mm-find-mime-charset-region (b e)
+  "Return the MIME charsets needed to encode the region between B and E."
+  (let ((charsets
+	 (mapcar 'mm-mime-charset
+		 (delq 'ascii
+		       (mm-find-charset-region b e)))))
+    (delete-duplicates charsets)))
 
 (defsubst mm-multibyte-p ()
   "Say whether multibyte is enabled."
@@ -238,9 +252,7 @@ See also `with-temp-file' and `with-output-to-string'."
 (defun mm-find-charset-region (b e)
   "Return a list of charsets in the region."
   (cond
-   ((and (boundp 'enable-multibyte-characters)
-	 enable-multibyte-characters
-	 (fboundp 'find-charset-region))
+   ((fboundp 'find-charset-region)
     (find-charset-region b e))
    ((not (boundp 'current-language-environment))
     (save-excursion

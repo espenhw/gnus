@@ -226,7 +226,12 @@ Note: LIST has to be sorted over `<'."
 
 (defun gnus-remove-from-range (range1 range2)
   "Return a range that has all articles from RANGE2 removed from
-RANGE1. The returned range is always a list."
+RANGE1. The returned range is always a list. RANGE2 can also be a
+unsorted list of articles."
+  (if (listp (cdr range2))
+      (setq range2 (sort range2 (lambda (e1 e2)
+                                 (< (if (consp e1) (car e1) e1)
+                                    (if (consp e2) (car e2) e2))))))
   (if (or (null range1) (null range2))
       range1
     (let (out r1 r2 r1_min r1_max r2_min r2_max)
@@ -326,19 +331,59 @@ RANGE1. The returned range is always a list."
     sublistp))
 
 (defun gnus-range-add (range1 range2)
-  "Add RANGE2 to RANGE1 destructively."
-  (cond
-   ;; If either are nil, then the job is quite easy.
-   ((or (null range1) (null range2))
-    (or range1 range2))
-   (t
-    ;; I don't like thinking.
-    (gnus-compress-sequence
-     (sort
-      (nconc
-       (gnus-uncompress-range range1)
-       (gnus-uncompress-range range2))
-      '<)))))
+  "Add RANGE2 to RANGE1 (nondestructively)."
+  (unless (listp (cdr range1))
+    (setq range1 (list range1)))
+  (unless (listp (cdr range2))
+    (setq range2 (list range2)))
+  (let ((item1 (pop range1))
+	(item2 (pop range2))
+	range item selector)
+    (while (or item1 item2)
+      (setq selector
+	    (cond 
+	     ((null item1) nil)
+	     ((null item2) t)
+	     ((and (numberp item1) (numberp item2)) (< item1 item2))
+	     ((numberp item1) (< item1 (car item2)))
+	     ((numberp item2) (< (car item1) item2))
+	     (t (< (car item1) (car item2)))))
+      (setq item
+	    (or
+	     (let ((tmp1 item) (tmp2 (if selector item1 item2)))
+	       (cond 
+		((null tmp1) tmp2)
+		((null tmp2) tmp1)
+		((and (numberp tmp1) (numberp tmp2))
+		 (cond 
+		  ((eq tmp1 tmp2) tmp1)
+		  ((eq (1+ tmp1) tmp2) (cons tmp1 tmp2))
+		  ((eq (1+ tmp2) tmp1) (cons tmp2 tmp1))
+		  (t nil)))
+		((numberp tmp1)
+		 (cond 
+		  ((and (>= tmp1 (car tmp2)) (<= tmp1 (cdr tmp2))) tmp2)
+		  ((eq (1+ tmp1) (car tmp2)) (cons tmp1 (cdr tmp2)))
+		  ((eq (1- tmp1) (cdr tmp2)) (cons (car tmp2) tmp1))
+		  (t nil)))
+		((numberp tmp2)
+		 (cond 
+		  ((and (>= tmp2 (car tmp1)) (<= tmp2 (cdr tmp1))) tmp1)
+		  ((eq (1+ tmp2) (car tmp1)) (cons tmp2 (cdr tmp1)))
+		  ((eq (1- tmp2) (cdr tmp1)) (cons (car tmp1) tmp2))
+		  (t nil)))
+		((< (1+ (cdr tmp1)) (car tmp2)) nil)
+		((< (1+ (cdr tmp2)) (car tmp1)) nil)
+		(t (cons (min (car tmp1) (car tmp2)) 
+			 (max (cdr tmp1) (cdr tmp2))))))
+	     (progn
+	       (if item (push item range))
+	       (if selector item1 item2))))
+      (if selector
+	  (setq item1 (pop range1))
+	(setq item2 (pop range2))))
+    (if item (push item range))
+    (reverse range)))
 
 (provide 'gnus-range)
 
