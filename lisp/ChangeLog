@@ -1,3 +1,8 @@
+2005-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-spec.el (gnus-update-format-specifications): Flush the
+	group format spec cache if it doesn't support decoded group names.
+
 2005-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-score.el (gnus-decay-scores, gnus-score-load-file): Allow
