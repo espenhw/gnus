@@ -1845,17 +1845,25 @@ Answer:
  name to put after the "@@". If the name of the machine
  where Gnus is running isn't suitable (it probably isn't
  at most private machines) you can tell Gnus what to use
- by saying:
- 
-
+ by saying
 @example
-(defun message-make-message-id()
-   (concat "<"(message-unique-id)"@@yourmachine.yourdomain.tld>"))
+(setq message-user-fqdn "yourmachine.yourdomain.tld")
 @end example
- 
-
 @noindent
- in ~/.gnus. If you have no idea what to insert for
+ in ~/.gnus.  If you use Gnus 5.9 or ealier, you can use this
+instead:
+@example
+(eval-after-load "message"
+  '(let (myfqdn "yourmachine.yourdomain.tld");; <-- Edit this!
+     (if (boundp 'message-user-fqdn)
+         (setq message-user-fqdn fqdn)
+       (gnus-message 1 "Redefining `message-make-fqdn'.")
+       (defun message-make-fqdn ()
+         "Return user's fully qualified domain name."
+         fqdn))))
+@end example
+
+ If you have no idea what to insert for
  "yourmachine.yourdomain.tld", you've got several
  choices. You can either ask your provider if he allows
  you to use something like
