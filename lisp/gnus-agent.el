@@ -1524,7 +1524,17 @@ The following commands are available:
 	      (goto-char (point-min))
 	      (while (not (eobp))
 		(skip-chars-forward "^\t")
-		(if (> (read (current-buffer)) day)
+		(if (let ((fetch-date (read (current-buffer))))
+		      (if (numberp fetch-date)
+			  (>  fetch-date day)
+			;; History file is corrupted.
+			(gnus-message 
+			 5 
+			 (format "File %s is corrupted!"
+				 (gnus-agent-lib-file "history")))
+			(sit-for 1)
+			;; Ignore it
+			t))
 		    ;; New article; we don't expire it.
 		    (forward-line 1)
 		  ;; Old article.  Schedule it for possible nuking.

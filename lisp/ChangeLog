@@ -1,3 +1,7 @@
+2000-11-20 15:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-expire): Ignore corrupted history.
+
 2000-11-20 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-article-describe-key): New function.
