@@ -1,3 +1,7 @@
+2002-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mml.el (mml-preview): Bind message-this-is-mail if it is mail.
+
 2002-11-13  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.el (gnus-summary-line-format): Document %C.

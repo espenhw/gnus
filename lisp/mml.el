@@ -337,7 +337,7 @@ A message part needs to be split into %d charset parts.  Really send? "
   "Return the buffer up till the next part, multipart or closing part or multipart.
 If MML is non-nil, return the buffer up till the correspondent mml tag."
   (let ((beg (point)) (count 1))
-   ;; If the tag ended at the end of the line, we go to the next line.
+    ;; If the tag ended at the end of the line, we go to the next line.
     (when (looking-at "[ \t]*\n")
       (forward-line 1))
     (if mml
@@ -881,7 +881,7 @@ See Info node `(emacs-mime)Composing'.
 
 (defun mml-minibuffer-read-file (prompt)
   (let ((file (read-file-name prompt nil nil t)))
-   ;; Prevent some common errors.  This is inspired by similar code in
+    ;; Prevent some common errors.  This is inspired by similar code in
     ;; VM.
     (when (file-directory-p file)
       (error "%s is a directory, cannot attach" file))
@@ -1014,6 +1014,7 @@ If RAW, don't highlight the article."
   (save-excursion
     (let* ((buf (current-buffer))
 	   (message-options message-options)
+	   (message-this-is-mail (message-mail-p))
 	   (message-this-is-news (message-news-p))
 	   (message-posting-charset (or (gnus-setup-posting-charset
 					 (save-restriction
