@@ -1,3 +1,12 @@
+2003-09-04  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-art.el (gnus-button-handle-info-url)
+	(gnus-button-handle-info-url-gnome)
+	(gnus-button-handle-info-url-kde, gnus-button-alist): Handle GNOME
+	and KDE style Info URLs.
+
+	* gnus-util.el (gnus-url-unhex-string): Don't replace "+" with " ".
+
 2003-09-02  Jesper Harder  <harder@ifa.au.dk>
 
 	* rfc2047.el (rfc2047-fold-region): Don't fold at the beginning

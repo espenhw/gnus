@@ -1187,7 +1187,6 @@ If you find some problem with the directory separator character, try
 If optional second argument ALLOW-NEWLINES is non-nil, then allow the
 decoding of carriage returns and line feeds in the string, which is normally
 forbidden in URL encoding."
-  (setq str (or (mm-subst-char-in-string ?+ ?  str) "")) ; why `or'?
   (let ((tmp "")
 	(case-fold-search t))
     (while (string-match "%[0-9a-f][0-9a-f]" str)

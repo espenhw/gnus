@@ -6056,9 +6056,15 @@ positives are possible."
       gnus-button-ctan-directory-regexp
       "/[-_.a-z0-9]+/[-_./a-z0-9]+[/a-z0-9]\\)")
      1 (>= gnus-button-tex-level 8) gnus-button-handle-ctan 1)
-    ;; This is info
-    ("\\binfo:\\(//\\)?\\([^'\">\n\t ]+\\)"
-     0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 2)
+    ;; This is info (home-grown style) <info://foo/bar+baz>
+    ("\\binfo://\\([^'\">\n\t ]+\\)"
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 1)
+    ;; Info GNOME style <info:foo#bar_baz>
+    ("\\binfo:\\([^(][^'\n\t\r \"><]*\\)"
+     0 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url-gnome 1)
+    ;; Info KDE style <info:(foo)bar baz>
+    ("<\\(info:\\(([^)]+)[^>\n\r]*\\)\\)>"
+     1 (>= gnus-button-emacs-level 1) gnus-button-handle-info-url-kde 2)
     ("\\((Info-goto-node\\|(info\\)[ \t\n]*\\(\"[^\"]*\"\\))" 0
      (>= gnus-button-emacs-level 1) gnus-button-handle-info-url 2)
     ("\\b\\(C-h\\|<?[Ff]1>?\\)[ \t\n]+i[ \t\n]+d?[ \t\n]?m[ \t\n]+\\([^ ]+ ?[^ ]+\\)[ \t\n]+RET"
@@ -6508,6 +6514,7 @@ specified by `gnus-button-alist'."
 
 (defun gnus-button-handle-info-url (url)
   "Fetch an info URL."
+  (setq url (mm-subst-char-in-string ?+ ?\  url))
   (cond
    ((string-match "^\\([^:/]+\\)?/\\(.*\\)" url)
     (gnus-info-find-node
@@ -6520,6 +6527,24 @@ specified by `gnus-button-alist'."
 	   (gnus-replace-in-string url "[\n\t ]+" " ") "\"" ""))
     (gnus-info-find-node url))
    (t (error "Can't parse %s" url))))
+
+(defun gnus-button-handle-info-url-gnome (url)
+  "Fetch GNOME style info URL."
+  (setq url (mm-subst-char-in-string ?_ ?\  url))
+  (if (string-match "\\([^#]+\\)#?\\(.*\\)" url)
+      (gnus-info-find-node
+       (concat "("
+	       (gnus-url-unhex-string 
+		 (match-string 1 url))
+	       ")"
+	       (or (gnus-url-unhex-string 
+		    (match-string 2 url))
+		   "Top")))
+    (error "Can't parse %s" url)))
+
+(defun gnus-button-handle-info-url-kde (url)
+  "Fetch KDE style info URL."
+  (gnus-info-find-node (gnus-url-unhex-string url)))
 
 (defun gnus-button-handle-info-keystrokes (url)
   "Call `info' when pushing the corresponding URL button."
