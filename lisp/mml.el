@@ -32,8 +32,7 @@
   (autoload 'message-make-message-id "message"))
 
 (defvar mml-generate-multipart-alist
-  '(("signed" . rfc2015-generate-signed-multipart)
-    ("encrypted" . rfc2015-generate-encrypted-multipart))
+  nil
   "*Alist of multipart generation functions.
 
 Each entry has the form (NAME . FUNCTION), where
