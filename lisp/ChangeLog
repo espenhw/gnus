@@ -2,6 +2,7 @@
 
 	* rfc2047.el (with-syntax-table): Define if necessary.
 	(rfc2047-syntax-table): Fix last change for XEmacs.
+	(rfc2047-parse-and-decode): Revert last change.
 
 2003-05-03  Jesper Harder  <harder@ifa.au.dk>
 
