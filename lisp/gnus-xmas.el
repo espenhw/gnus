@@ -641,10 +641,10 @@ If it is non-nil, it must be a toolbar.  The five legal values are
      gnus-summary-save-article-file t "Save article in file"]
     [gnus-summary-save-article
      gnus-summary-save-article t "Save article"]
-    [gnus-summary-catchup-and-exit
-     gnus-summary-catchup-and-exit t "Catchup and exit"]
     [gnus-summary-catchup
      gnus-summary-catchup t "Catchup"]
+    [gnus-summary-catchup-and-exit
+     gnus-summary-catchup-and-exit t "Catchup and exit"]
     [gnus-summary-exit gnus-summary-exit t "Exit this summary"]
     )
   "The summary buffer mail toolbar.")

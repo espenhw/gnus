@@ -70,7 +70,6 @@
 
 (nnoo-define-basics nnkiboze)
 
-
 (deffoo nnkiboze-retrieve-headers (articles &optional group server fetch-old)
   (nnkiboze-possibly-change-group group)
   (unless gnus-nov-is-evil
@@ -115,6 +114,7 @@
 	  beg end total)
       (save-excursion
 	(set-buffer nntp-server-buffer)
+	(erase-buffer)
 	(if (not (file-exists-p nov-file))
 	    (nnheader-report 'nnkiboze "Can't select group %s" group)
 	  (insert-file-contents nov-file)
@@ -215,7 +215,7 @@ Finds out what articles are to be part of the nnkiboze groups."
 	 gnus-thread-sort-functions gnus-show-threads 
 	 gnus-visual
 	 method nnkiboze-newsrc nov-buffer gname newsrc active
-	 ginfo lowest glevel)
+	 ginfo lowest glevel orig-info)
     (unless info
       (error "No such group: %s" group))
     ;; Load the kiboze newsrc file for this group.
@@ -256,43 +256,46 @@ Finds out what articles are to be part of the nnkiboze groups."
 	;; Ok, we have a valid component group, so we jump to it. 
 	(switch-to-buffer gnus-group-buffer)
 	(gnus-group-jump-to-group (caar newsrc))
-	;; We set all list of article marks to nil.  Since we operate
-	;; on copies of the real lists, we can destroy anything we
-	;; want here.
-	(and (setq ginfo (nth 2 (gnus-gethash (gnus-group-group-name)
-					      gnus-newsrc-hashtb)))
-	     (nth 3 ginfo)
-	     (setcar (nthcdr 3 ginfo) nil))
-	;; We set the list of read articles to be what we expect for
-	;; this kiboze group -- either nil or `(1 . LOWEST)'. 
-	(when ginfo
-	  (setcar (nthcdr 2 ginfo)
-		  (and (not (= lowest 1)) (cons 1 lowest))))
-	(if (not (and (or (not ginfo)
-			  (> (length (gnus-list-of-unread-articles 
-				      (car ginfo)))
-			     0))
-		      (progn
-			(gnus-group-select-group nil)
-			(eq major-mode 'gnus-summary-mode))))
-	    ()				; No unread articles, or we couldn't enter this group.
-	  ;; We are now in the group where we want to be.
-	  (setq method (gnus-find-method-for-group gnus-newsgroup-name))
-	  (when (eq method gnus-select-method)
-	    (setq method nil))
-	  ;; We go through the list of scored articles.
-	  (while gnus-newsgroup-scored
-	    (when (> (caar gnus-newsgroup-scored) lowest)
-	      ;; If it has a good score, then we enter this article
-	      ;; into the kiboze group.
-	      (nnkiboze-enter-nov 
-	       nov-buffer
-	       (gnus-summary-article-header 
-		(caar gnus-newsgroup-scored))
-	       gnus-newsgroup-name))
-	    (setq gnus-newsgroup-scored (cdr gnus-newsgroup-scored)))
-	  ;; That's it.  We exit this group.
-	  (gnus-summary-exit-no-update)))
+	(setq ginfo (gnus-get-info (gnus-group-group-name))
+	      orig-info (gnus-copy-sequence ginfo))
+	(unwind-protect
+	    (progn
+	      ;; We set all list of article marks to nil.  Since we operate
+	      ;; on copies of the real lists, we can destroy anything we
+	      ;; want here.
+	      (when (nth 3 ginfo)
+		(setcar (nthcdr 3 ginfo) nil))
+	      ;; We set the list of read articles to be what we expect for
+	      ;; this kiboze group -- either nil or `(1 . LOWEST)'. 
+	      (when ginfo
+		(setcar (nthcdr 2 ginfo)
+			(and (not (= lowest 1)) (cons 1 lowest))))
+	      (when (and (or (not ginfo)
+			     (> (length (gnus-list-of-unread-articles 
+					 (car ginfo)))
+				0))
+			 (progn
+			   (gnus-group-select-group nil)
+			   (eq major-mode 'gnus-summary-mode)))
+		;; We are now in the group where we want to be.
+		(setq method (gnus-find-method-for-group gnus-newsgroup-name))
+		(when (eq method gnus-select-method)
+		  (setq method nil))
+		;; We go through the list of scored articles.
+		(while gnus-newsgroup-scored
+		  (when (> (caar gnus-newsgroup-scored) lowest)
+		    ;; If it has a good score, then we enter this article
+		    ;; into the kiboze group.
+		    (nnkiboze-enter-nov 
+		     nov-buffer
+		     (gnus-summary-article-header 
+		      (caar gnus-newsgroup-scored))
+		     gnus-newsgroup-name))
+		  (setq gnus-newsgroup-scored (cdr gnus-newsgroup-scored)))
+		;; That's it.  We exit this group.
+		(gnus-summary-exit-no-update)))
+	  ;; Restore the proper info.
+	  (setcdr ginfo (cdr orig-info))))
       (setcdr (car newsrc) (car active))
       (setq newsrc (cdr newsrc)))
     ;; We save the nov file.
@@ -304,8 +307,7 @@ Finds out what articles are to be part of the nnkiboze groups."
       (insert "(setq nnkiboze-newsrc '")
       (gnus-prin1 nnkiboze-newsrc)
       (insert ")\n"))
-    (switch-to-buffer gnus-group-buffer)
-    (gnus-group-list-groups 5 nil)))
+    t))
     
 (defun nnkiboze-enter-nov (buffer header group)
   (save-excursion

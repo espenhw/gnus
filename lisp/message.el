@@ -942,6 +942,7 @@ Return the number of headers removed."
    ["Fill Yanked Message" message-fill-yanked-message t]
    ["Insert Signature" message-insert-signature t]
    ["Caesar (rot13) Message" message-caesar-buffer-body t]
+   ["Caesar (rot13) Region" message-caesar-region t]
    ["Rename buffer" message-rename-buffer t]
    ["Spellcheck" ispell-message t]
    "----"
@@ -951,6 +952,9 @@ Return the number of headers removed."
 (easy-menu-define 
  message-mode-field-menu message-mode-map ""
  '("Field"
+   ["Fetch To" message-insert-to t]
+   ["Fetch Newsgroups" message-insert-newsgroups t]
+   "----"
    ["To" message-goto-to t]
    ["Subject" message-goto-subject t]
    ["Cc" message-goto-cc t]

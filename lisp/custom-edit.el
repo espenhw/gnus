@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.00
+;; Version: 1.02
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -528,8 +528,8 @@ The list should be sorted most significant first."
 		   (widget-put tmp :options options))
 		 tmp))
 	 (conv (widget-convert type))
-	 (value (if (boundp symbol)
-		    (symbol-value symbol)
+	 (value (if (default-boundp symbol)
+		    (default-value symbol)
 		  (widget-get conv :value))))
     ;; If the widget is new, the child determine whether it is hidden.
     (cond (state)
@@ -555,8 +555,8 @@ The list should be sorted most significant first."
 				(car (get symbol 'saved-value)))
 			       ((get symbol 'factory-value)
 				(car (get symbol 'factory-value)))
-			       ((boundp symbol)
-				(custom-quote (symbol-value symbol)))
+			       ((default-boundp symbol)
+				(custom-quote (default-value symbol)))
 			       (t
 				(custom-quote (widget-get conv :value))))))
 	     (push (widget-create-child-and-convert widget 'sexp 
@@ -583,7 +583,7 @@ The list should be sorted most significant first."
 (defun custom-variable-state-set (widget)
   "Set the state of WIDGET."
   (let* ((symbol (widget-value widget))
-	 (value (symbol-value symbol))
+	 (value (default-value symbol))
 	 (state (if (get symbol 'saved-value)
 		    (if (condition-case nil
 			    (equal value

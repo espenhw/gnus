@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: extensions
-;; Version: 1.00
+;; Version: 1.02
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -19,9 +19,10 @@
 (autoload 'Info-goto-node "info")
 
 ;; The following should go away when bundled with Emacs.
-(condition-case ()
-    (require 'custom)
-  (error nil))
+(eval-and-compile
+  (condition-case ()
+      (require 'custom)
+    (error nil)))
 
 (unless (and (featurep 'custom) (fboundp 'custom-declare-variable))
   ;; We have the old custom-library, hack around it!
@@ -558,6 +559,11 @@ With optional ARG, move across that many fields."
 	       (message "Error: `widget-after-change' called on two fields"))
 	      (t
 	       (let ((size (widget-get field :size)))
+		 (and (string-match "XEmacs" emacs-version)
+		      ;; XEmacs cannot handle zero-sized fields.
+		      (or (null size)
+			  (zerop size))
+		      (setq size 1))
 		 (if size 
 		     (let ((begin (1+ (widget-get field :value-from)))
 			   (end (1- (widget-get field :value-to))))
@@ -896,6 +902,11 @@ With optional ARG, move across that many fields."
       (insert value)
       (if (< (length value) size)
 	  (insert-char ?\  (- size (length value)))))
+    (and (string-match "XEmacs" emacs-version)
+	 ;; XEmacs cannot handle zero-sized fields.
+	 (or (null size)
+	     (zerop size))
+	 (insert " "))
     (unless (memq widget widget-field-list)
       (setq widget-field-new (cons widget widget-field-new)))
     (widget-put widget :value-to (copy-marker (point)))

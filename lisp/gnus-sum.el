@@ -2125,7 +2125,7 @@ The following commands are available:
 	(setcdr list (cdr data))
 	(setcdr data ilist)
 	(when offset
-	  (gnus-data-update-list (cdr data) offset)))
+	  (gnus-data-update-list (cdr list) offset)))
       (setq gnus-newsgroup-data-reverse nil))))
 
 (defun gnus-data-remove (article &optional offset)
@@ -2154,17 +2154,6 @@ The following commands are available:
   (while data
     (setcar (nthcdr 2 (car data)) (+ offset (nth 2 (car data))))
     (setq data (cdr data))))
-
-(defun gnus-data-compute-positions ()
-  "Compute the positions of all articles."
-  (let ((data gnus-newsgroup-data)
-	pos)
-    (while data
-      (when (setq pos (text-property-any
-		       (point-min) (point-max)
-		       'gnus-number (gnus-data-number (car data))))
-	(gnus-data-set-pos (car data) (+ pos 3)))
-      (setq data (cdr data)))))
 
 (defun gnus-summary-article-pseudo-p (article)
   "Say whether this article is a pseudo article or not."
@@ -2399,6 +2388,10 @@ This is all marks except unread, ticked, dormant, and expirable."
 	(when (gnus-buffer-live-p gnus-article-buffer)
 	  (set-buffer gnus-article-buffer)
 	  (setq gnus-summary-buffer summary))))))
+
+(defun gnus-summary-article-unread-p (article)
+  "Say whether ARTICLE is unread or not."
+  (memq article gnus-newsgroup-unreads))
 
 (defun gnus-summary-first-article-p (&optional article)
   "Return whether ARTICLE is the first article in the buffer."
@@ -3052,6 +3045,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 (defun gnus-rebuild-thread (id)
   "Rebuild the thread containing ID."
   (let ((buffer-read-only nil)
+	(old-pos (gnus-point-at-bol))
 	current thread data)
     (if (not gnus-show-threads)
 	(setq thread (list (car (gnus-id-to-thread id))))
@@ -3086,8 +3080,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(setq data (nreverse gnus-newsgroup-data))
 	(setq threads gnus-newsgroup-threads))
       ;; We splice the new data into the data structure.
-      (gnus-data-enter-list current data)
-      (gnus-data-compute-positions)
+      (gnus-data-enter-list current data (- (point) old-pos))
       (setq gnus-newsgroup-threads (nconc threads gnus-newsgroup-threads)))))
 
 (defun gnus-number-to-header (number)
@@ -3207,16 +3200,19 @@ If NO-DISPLAY, don't generate a summary buffer."
 
 (defun gnus-remove-thread-1 (thread)
   "Remove the thread THREAD recursively."
-  (let ((number (mail-header-number (car thread)))
-	pos)
-    (when (setq pos (text-property-any
-		     (point-min) (point-max) 'gnus-number number))
-      (goto-char pos)
-      (gnus-delete-line)
-      (gnus-data-remove number))
-    (setq thread (cdr thread))
+  (let ((number (mail-header-number (pop thread)))
+	d)
+    (setq thread (reverse thread))
     (while thread
-      (gnus-remove-thread-1 (pop thread)))))
+      (gnus-remove-thread-1 (pop thread)))
+    (when (setq d (gnus-data-find number))
+      (goto-char (gnus-data-pos d))
+      (gnus-data-remove 
+       number
+       (- (gnus-point-at-bol)
+	  (prog1
+	      (1+ (gnus-point-at-eol))
+	    (gnus-delete-line)))))))
 
 (defun gnus-sort-threads (threads)
   "Sort THREADS."
@@ -4404,18 +4400,20 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
   (let ((header (if (and old-header use-old-header)
 		    old-header (gnus-read-header id)))
 	(number (and (numberp id) id))
-	pos)
+	pos d)
     (when header
       ;; Rebuild the thread that this article is part of and go to the
       ;; article we have fetched.
       (when (and (not gnus-show-threads)
 		 old-header)
-	(when (setq pos (text-property-any
-			 (point-min) (point-max) 'gnus-number 
-			 (mail-header-number old-header)))
-	  (goto-char pos)
-	  (gnus-delete-line)
-	  (gnus-data-remove (mail-header-number old-header))))
+	(when (setq d (gnus-data-find (mail-header-number old-header)))
+	  (goto-char (gnus-data-pos d))
+	  (gnus-data-remove 
+	   number
+	   (- (gnus-point-at-bol)
+	      (prog1
+		  (1+ (gnus-point-at-eol))
+		(gnus-delete-line))))))
       (when old-header
 	(mail-header-set-number header (mail-header-number old-header)))
       (setq gnus-newsgroup-sparse

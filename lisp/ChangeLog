@@ -1,3 +1,29 @@
+Sat Nov 23 23:22:27 1996  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-mode-menu): Added `message-caesar-region'. 
+	(message-mode-field-menu): Added `message-insert-to' and
+	`message-insert-newsgroups'. 
+
+Sat Nov 23 19:53:30 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnkiboze.el: Would destroy all component group infos.
+
+	* gnus-xmas.el (gnus-summary-mail-toolbar): Reversed cathup.
+
+	* gnus-sum.el (gnus-summary-article-unread-p): New function.
+	(gnus-remove-thread-1): Avoid `text-propery-any'.
+	(gnus-summary-insert-subject): Ditto.
+	(gnus-data-compute-positions): Removed.
+
+	* gnus-dup.el (gnus-dup-suppress-articles): Didn't do anything.
+
+	* gnus-group.el (gnus-group-restart): Just start up Gnus
+	properly. 
+
+Sat Nov 23 07:16:39 1996  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.69 is released.
+
 Sat Nov 23 05:00:36 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-cache.el (gnus-cache-update-active): Wouldn't mark the

@@ -4,7 +4,7 @@
 ;;
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: help, faces
-;; Version: 1.00
+;; Version: 1.02
 ;; X-URL: http://www.dina.kvl.dk/~abraham/custom/
 
 ;;; Commentary:
@@ -79,7 +79,8 @@ If FRAME is omitted or nil, use the selected frame."
 ;;;###autoload
 (defun custom-declare-variable (symbol value doc &rest args)
   "Like `defcustom', but SYMBOL and VALUE are evaluated as notmal arguments."
-  (unless (default-boundp symbol)
+  (unless (and (default-boundp symbol)
+	       (not (get symbol 'saved-value)))
     (set-default symbol (if (get symbol 'saved-value)
 			    (eval (car (get symbol 'saved-value)))
 			  (eval value))))
@@ -142,7 +143,8 @@ information."
   "Like `defface', but FACE is evaluated as a normal argument."
   (put face 'factory-face spec)
   (when (fboundp 'facep)
-    (unless (facep face)
+    (unless (and (facep face)
+		 (not (get face 'saved-face)))
       ;; If the user has already created the face, respect that.
       (let ((value (or (get face 'saved-face) spec)))
 	(custom-face-display-set face value))))
@@ -291,8 +293,7 @@ For other types variables, the effect is undefined."
   "Set FACE to the attributes to the first matching entry in SPEC.
 Iff optional FRAME is non-nil, set it for that frame only.
 See `defface' for information about SPEC."
-  (when (fboundp 'make-face)
-    (make-face face)
+  (when (fboundp 'copy-face)
     (copy-face 'custom-face-empty face)
     (while spec 
       (let* ((entry (car spec))
@@ -329,12 +330,12 @@ If FRAME is nil, the current FRAME is used."
 	  (setq display (cdr display))
 	  (cond ((eq req 'type)
 		 (let ((type (if (fboundp 'device-type)
-				 (device-type frame)
+				 (device-type (frame-device frame))
 			       window-system)))
 		   (setq match (memq type options))))
 		((eq req 'class)
 		 (let ((class (if (fboundp 'device-class)
-				  (device-class frame)
+				  (device-class (frame-device frame))
 				(frame-property frame 'display-type))))
 		   (setq match (memq class options))))
 		((eq req 'background)
@@ -346,7 +347,7 @@ If FRAME is nil, the current FRAME is used."
 		 (error "Unknown req `%S' with options `%S'" req options)))))
       match)))
 
-(defvar custom-face-attributes
+(defconst custom-face-attributes
   '((:bold (toggle :format "Bold: %v") custom-set-face-bold)
     (:italic (toggle :format "Italic: %v") custom-set-face-italic)
     (:underline
@@ -363,6 +364,34 @@ attibute, SET is a function for setting the attribute value.
 The SET function should take three arguments, the face to modify, the
 value of the attribute, and optionally the frame where the face should
 be changed.")
+
+(when (string-match "XEmacs" emacs-version)
+  ;; Support for special XEmacs font attributes.
+  (require 'font)
+
+  (unless (fboundp 'face-font-name)
+    (defun face-font-name (face &rest args)
+      (apply 'face-font face args)))
+
+  (defun set-face-font-size (face size &rest args)
+    "Set the font of FACE to SIZE"
+    (let* ((font (apply 'face-font-name face args))
+	   (fontobj (font-create-object font)))
+      (set-font-size fontobj size)
+      (apply 'set-face-font face fontobj args)))
+
+  (defun set-face-font-family (face family &rest args)
+    "Set the font of FACE to FAMILY"
+    (let* ((font (apply 'face-font-name face args))
+	   (fontobj (font-create-object font)))
+      (set-font-family fontobj family)
+      (apply 'set-face-font face fontobj args)))
+
+  (nconc custom-face-attributes
+	 '((:family (editable-field :format "Family: %v") 
+		    set-face-font-family)
+	   (:size (editable-field :format "Size: %v")
+		  set-face-font-size))))
 
 (defun custom-face-attribites-set (face frame &rest atts)
   "For FACE on FRAME set the attributes [KEYWORD VALUE]....

@@ -3171,8 +3171,7 @@ If FORCE, force saving whether it is necessary or not."
 	 (format "Are you sure you want to restart Gnus? "))
     (gnus-save-newsrc-file)
     (gnus-clear-system)
-    (gnus-setup-news 'force)
-    (gnus-group-list-groups arg)))
+    (gnus)))
 
 (defun gnus-group-read-init-file ()
   "Read the Gnus elisp init file."
