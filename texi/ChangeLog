@@ -1,3 +1,11 @@
+2004-09-30  Simon Josefsson  <jas@extundo.com>
+
+	* gnus-news.texi: Add.
+
+	* message.texi (Mail Headers): Add.
+
+	* gnus.texi (Hashcash): Fix.
+
 2004-09-29  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-news.texi: Add.

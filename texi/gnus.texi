@@ -22512,15 +22512,13 @@ header.  For more details, and for the external application
 @uref{http://www.cypherspace.org/~adam/hashcash/}.  Even more
 information can be found at @uref{http://www.camram.org/}.
 
-If you wish to call hashcash for each message you send, say something
-like:
+If you wish to generate hashcash for each message you send, you can
+customize @code{message-generate-hashcash} (@pxref{Mail Headers, ,Mail
+Headers,message, The Message Manual}), as in:
 
 @lisp
-(add-hook 'message-send-hook 'mail-add-payment)
+(setq message-generate-hashcash t)
 @end lisp
-
-The @file{hashcash.el} library can be found in Gnus or at
-@uref{http://users.actrix.gen.nz/mycroft/hashcash.el}.
 
 You will need to set up some additional variables as well:
 
