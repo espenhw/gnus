@@ -1290,9 +1290,9 @@ If RECURSIVE, search recursively."
 
 (defsubst mm-set-handle-multipart-parameter (handle parameter value)
   ;; HANDLE could be a CTL.
-  (if handle
-      (put-text-property 0 (length (car handle)) parameter value
-			 (car handle))))
+  (when handle
+    (put-text-property 0 (length (car handle)) parameter value
+		       (car handle))))
 
 (defun mm-possibly-verify-or-decrypt (parts ctl)
   (let ((type (car ctl))
