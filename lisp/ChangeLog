@@ -1,3 +1,9 @@
+2001-07-25 22:22:22  Raymond Scholz  <rscholz@zonix.de>
+
+	* nnmail.el (nnmail-split-fancy-with-parent-ignore-groups): New
+	variable.
+	(nnmail-split-fancy-with-parent): Ignore certain groups.
+	
 2001-07-25 11:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-util.el (gnus-byte-compile): New.
