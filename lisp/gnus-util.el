@@ -1260,6 +1260,19 @@ SPEC is a predicate specifier that contains stuff like `or', `and',
       (and (featurep 'xemacs)
 	   t)))
 
+(put 'gnus-parse-without-error 'lisp-indent-function 0)
+
+(defmacro gnus-parse-without-error (&rest body)
+  "Allow continuing onto the next line even if an error occurs."
+  `(while (not (eobp))
+     (condition-case ()
+	 (progn
+	   ,@body)
+       (error
+	(gnus-error 4 "Invalid data on line %d"
+		    (count-lines (point-min) (point)))
+	(forward-line 1)))))
+
 (provide 'gnus-util)
 
 ;;; gnus-util.el ends here

@@ -139,27 +139,19 @@
       (erase-buffer)
       (nnheader-insert-file-contents file)
       (goto-char (point-min))
-      ;; This loop is just for the `condition-case' -- if reading bugs
-      ;; out on a line, it'll still continue on to the next line.  So
-      ;; this look is normally just executed once.
-      (while (not (eobp))
-	(condition-case ()
-	    (while arts
-	      (setq n (read (current-buffer)))
-	      (if (> n (car arts))
-		  (beginning-of-line))
-	      (while (and arts (> n (car arts)))
-		(insert (format 
-			 "%d\t[Undownloaded article %d]\tGnus Agent\t\t\t\n"
-			 (car arts) (car arts)))
-		(pop arts))
-	      (if (and arts (= n (car arts)))
-		  (pop arts))
-	      (forward-line 1))
-	  (error
-	   (gnus-error 4 "Strange nov line (%d)"
-		       (count-lines (point-min) (point)))))
-	(forward-line 1))
+      (gnus-parse-without-error
+	(while arts
+	  (setq n (read (current-buffer)))
+	  (when (> n (car arts))
+	    (beginning-of-line))
+	  (while (and arts (> n (car arts)))
+	    (insert (format 
+		     "%d\t[Undownloaded article %d]\tGnus Agent\t\t\t\n"
+		     (car arts) (car arts)))
+	    (pop arts))
+	  (when (and arts (= n (car arts)))
+	    (pop arts))
+	  (forward-line 1)))
       (while arts
 	(insert (format
 		 "%d\t[Undownloaded article %d]\tGnus Agent\t\t\t\n"

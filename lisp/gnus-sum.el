@@ -3579,7 +3579,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
       (setq header nil)))
 
     (when header
-      ;; First check if that we are not creating a References loop.
+      ;; First check that we are not creating a References loop.
       (setq ref (gnus-parent-id (mail-header-references header)))
       (while (and ref
 		  (setq ref-dep (intern-soft ref dependencies))
@@ -3600,6 +3600,11 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 			 (list (symbol-value id-dep))))
 	(set ref-dep (list nil (symbol-value id-dep)))))
     header))
+
+(defun gnus-extract-message-id-from-in-reply-to (string)
+  (if (string-match "<[^>]+>" string)
+      (substring string (match-beginning 0) (match-end 0))
+    nil))
 
 (defun gnus-build-sparse-threads ()
   (let ((headers gnus-newsgroup-headers)
@@ -3677,7 +3682,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 (defsubst gnus-nov-parse-line (number dependencies &optional force-new)
   (let ((eol (gnus-point-at-eol))
 	(buffer (current-buffer))
-	header)
+	header references in-reply-to)
 
     ;; overview: [num subject from date id refs chars lines misc]
     (unwind-protect
@@ -3695,7 +3700,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 			  (nnheader-nov-field))	; from
 		 (nnheader-nov-field)	; date
 		 (nnheader-nov-read-message-id)	; id
-		 (nnheader-nov-field)	; refs
+		 (setq references (nnheader-nov-field))	; refs
 		 (nnheader-nov-read-integer) ; chars
 		 (nnheader-nov-read-integer) ; lines
 		 (unless (eobp)
@@ -3706,37 +3711,14 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 
       (widen))
 
+    (when (and (string= references "")
+	       (setq in-reply-to (mail-header-extra header))
+	       (setq in-reply-to (cdr (assq 'In-Reply-To in-reply-to))))
+      (mail-header-set-references
+       header (gnus-extract-message-id-from-in-reply-to in-reply-to)))
+
     (when gnus-alter-header-function
       (funcall gnus-alter-header-function header))
-    (gnus-dependencies-add-header header dependencies force-new)))
-
-(defsubst gnus-nov-parse-line-1 (number dependencies &optional force-new)
-  (let ((eol (gnus-point-at-eol))
-	(buffer (current-buffer))
-	header)
-
-    ;; overview: [num subject from date id refs chars lines misc]
-    (unwind-protect
-	(progn
-	  (narrow-to-region (point) eol)
-	  (unless (eobp)
-	    (forward-char))
-
-	  (setq header
-		(make-full-mail-header
-		 number			; number
-		 (nnheader-nov-field)	; subject
-		 (nnheader-nov-field)	; from
-		 (nnheader-nov-field)	; date
-		 (nnheader-nov-read-message-id)	; id
-		 (nnheader-nov-field)	; refs
-		 (nnheader-nov-read-integer) ; chars
-		 (nnheader-nov-read-integer) ; lines
-		 (unless (eobp)
-		   (nnheader-nov-field)) ; Xref
-		 (nnheader-nov-parse-extra)))) ; extra
-
-      (widen))
     (gnus-dependencies-add-header header dependencies force-new)))
 
 (defun gnus-build-get-header (id)
@@ -5506,29 +5488,24 @@ Return a list of headers that match SEQUENCE (see
       ;; Allow the user to mangle the headers before parsing them.
       (gnus-run-hooks 'gnus-parse-headers-hook)
       (goto-char (point-min))
-      (while (not (eobp))
-	(condition-case ()
-	    (while (and (or sequence allp)
-			(not (eobp)))
-	      (setq number (read cur))
-	      (when (not allp)
-		(while (and sequence
-			    (< (car sequence) number))
-		  (setq sequence (cdr sequence))))
-	      (when (and (or allp
-			     (and sequence
-				  (eq number (car sequence))))
-			 (progn
-			   (setq sequence (cdr sequence))
-			   (setq header (inline
-					  (gnus-nov-parse-line
-					   number dependencies force-new)))))
-		(push header headers))
-	      (forward-line 1))
-	  (error
-	   (gnus-error 4 "Strange nov line (%d)"
-		       (count-lines (point-min) (point)))))
-	(forward-line 1))
+      (gnus-parse-without-error
+	(while (and (or sequence allp)
+		    (not (eobp)))
+	  (setq number (read cur))
+	  (when (not allp)
+	    (while (and sequence
+			(< (car sequence) number))
+	      (setq sequence (cdr sequence))))
+	  (when (and (or allp
+			 (and sequence
+			      (eq number (car sequence))))
+		     (progn
+		       (setq sequence (cdr sequence))
+		       (setq header (inline
+				      (gnus-nov-parse-line
+				       number dependencies force-new)))))
+	    (push header headers))
+	  (forward-line 1)))
       ;; A common bug in inn is that if you have posted an article and
       ;; then retrieves the active file, it will answer correctly --
       ;; the new article is included.  However, a NOV entry for the
