@@ -1,3 +1,8 @@
+2001-11-09  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.el (gnus-local-domain): Fix doc.  From Pavel Jan,Bm(Bk
+	<Pavel@Janik.cz>.
+
 2001-11-09  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* message.el (message-point-in-header-p): New function.
