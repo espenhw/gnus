@@ -1,3 +1,7 @@
+2004-02-26  Jesper Harder  <harder@ifa.au.dk>
+
+	* flow-fill.el: Typo.
+
 2004-02-26  Andrew Cohen <cohen@andy.bu.edu>
 
 	* spam-wash.el: New file.
