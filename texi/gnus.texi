@@ -16020,9 +16020,9 @@ interesting (with @kbd{I T} or @kbd{I S}), and ignore (@kbd{C y}) the
 rest.  Next time you enter the group, you will see new articles in the
 interesting threads, plus any new threads.
 
-I.e.---the orphan score atom is for high-volume groups where there
-exist a few interesting threads which can't be found automatically by
-ordinary scoring rules.
+I.e.---the orphan score atom is for high-volume groups where a few
+interesting threads which can't be found automatically by ordinary
+scoring rules exist.
 
 @item adapt
 This entry controls the adaptive scoring.  If it is @code{t}, the
