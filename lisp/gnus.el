@@ -3179,12 +3179,16 @@ that that variable is buffer-local to the summary buffers."
   (format "%s+%s" (car method) (nth 1 method)))
 
 (defun gnus-group-prefixed-name (group method &optional full)
-  "Return the whole name from GROUP and METHOD.  Call with full set to
-get the fully qualified group name (even if the server is native)."
-  (and (stringp method) (setq method (gnus-server-to-method method)))
+  "Return the whole name from GROUP and METHOD.
+Call with full set to get the fully qualified group name (even if the
+server is native)."
+  (when (stringp method)
+    (setq method (gnus-server-to-method method)))
   (if (or (not method)
 	  (and (not full) (gnus-server-equal method "native"))
-	  (string-match ":" group))
+	  ;;;!!! This might not be right.  We'll see...
+	  ;(string-match ":" group)
+	  )
       group
     (concat (gnus-method-to-server-name method) ":" group)))
 

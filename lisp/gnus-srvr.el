@@ -831,7 +831,7 @@ buffer.
     (if (or (not (gnus-get-info group))
 	    (gnus-ephemeral-group-p group))
 	(unless (gnus-group-read-ephemeral-group
-		 (gnus-group-real-name group) gnus-browse-current-method nil
+		 group gnus-browse-current-method nil
 		 (cons (current-buffer) 'browse))
 	  (error "Couldn't enter %s" group))
       (unless (gnus-group-read-group nil no-article group)
@@ -876,10 +876,9 @@ buffer.
     (beginning-of-line)
     (let ((name (get-text-property (point) 'gnus-group)))
       (when (re-search-forward ": \\(.*\\)$" (gnus-point-at-eol) t)
-	(gnus-group-prefixed-name
-	 (or name
-	     (match-string-no-properties 1))
-	 gnus-browse-current-method)))))
+	(concat (gnus-method-to-server-name gnus-browse-current-method) ":" 
+		(or name
+		    (match-string-no-properties 1)))))))
 
 (defun gnus-browse-describe-group (group)
   "Describe the current group."

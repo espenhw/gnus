@@ -1,3 +1,13 @@
+2003-04-13  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.el (gnus-group-prefixed-name): Comment out the test for
+	colon. 
+
+	* gnus-srvr.el (gnus-browse-read-group): Don't give the real name
+	to the ephemeral entry, but the prefixed name.
+
+	* gnus.el (gnus-group-prefixed-name): Clean up.
+
 2003-04-13  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* gnus-agent.el (gnus-agent-group-pathname): Bind
