@@ -1,3 +1,18 @@
+2000-12-22 12:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-vm.el (gnus-summary-save-article-vm): Require gnus-art
+	before binding gnus-default-article-saver.
+
+	* gnus-sum.el (gnus-summary-save-article): 
+	(gnus-summary-pipe-output): 
+	(gnus-summary-save-article-mail): 
+	(gnus-summary-save-article-rmail): 
+	(gnus-summary-save-article-file): 
+	(gnus-summary-write-article-file): 
+	(gnus-summary-save-article-body-file): Ditto.
+
+	* gnus-mh.el (gnus-summary-save-article-folder): Ditto.
+
 2000-12-22 10:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-art.el (gnus-mime-security-button-map): 
