@@ -594,8 +594,7 @@ command whose response triggered the error."
 			      (progn ,@forms)
 			    (quit
 			     (nntp-close-server)
-                             (signal 'quit nil)))
-                          )
+                             (signal 'quit nil))))
 		  (when timer
 		    (nnheader-cancel-timer timer)))
 		nil))
