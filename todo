@@ -1404,6 +1404,8 @@ exceeding lisp nesting on huge groups.
 
 * Handle external-body parts.
 
+  [done for some access types]
+
 * When renaming a group name, nnmail-split-history does not get the
  group name renamed.
 
