@@ -1732,6 +1732,7 @@ increase the score of each group you read."
        ["Edit local kill file" gnus-summary-edit-local-kill t]
        ["Edit main kill file" gnus-summary-edit-global-kill t]
        ["Edit group parameters" gnus-summary-edit-parameters t]
+       ["Send a bug report" gnus-bug t]
        ("Exit"
 	["Catchup and exit" gnus-summary-catchup-and-exit t]
 	["Catchup all and exit" gnus-summary-catchup-and-exit t]
@@ -2016,12 +2017,14 @@ The following commands are available:
 
 (defun gnus-data-update-list (data offset)
   "Add OFFSET to the POS of all data entries in DATA."
+  (setq gnus-newsgroup-data-reverse nil)
   (while data
     (setcar (nthcdr 2 (car data)) (+ offset (nth 2 (car data))))
     (setq data (cdr data))))
 
 (defun gnus-data-compute-positions ()
   "Compute the positions of all articles."
+  (setq gnus-newsgroup-data-reverse nil)
   (let ((data gnus-newsgroup-data)
 	pos)
     (while data
@@ -3171,7 +3174,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 (defun gnus-summary-update-article (article &optional iheader)
   "Update ARTICLE in the summary buffer."
   (set-buffer gnus-summary-buffer)
-  (let* ((header (or iheader (gnus-summary-article-header article)))
+  (let* ((header (gnus-summary-article-header article))
 	 (id (mail-header-id header))
 	 (data (gnus-data-find article))
 	 (thread (gnus-id-to-thread id))
@@ -3188,12 +3191,11 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 	 (number (mail-header-number header))
 	 pos)
     (when thread
-      ;; !!! Should this be in or not?
       (unless iheader
-	(setcar thread nil))
-      (when parent
-	(delq thread parent))
-      (if (gnus-summary-insert-subject id header iheader)
+	(setcar thread nil)
+	(when parent
+	  (delq thread parent)))
+      (if (gnus-summary-insert-subject id header)
 	  ;; Set the (possibly) new article number in the data structure.
 	  (gnus-data-set-number data (gnus-id-to-article id))
 	(setcar thread old)
@@ -6105,6 +6107,7 @@ If ALL, mark even excluded ticked and dormants as read."
       ;; after the current one.
       (goto-char (point-max))
       (gnus-summary-find-prev))
+    (gnus-set-mode-line 'summary)
     ;; We return how many articles were removed from the summary
     ;; buffer as a result of the new limit.
     (- total (length gnus-newsgroup-data))))

@@ -659,6 +659,9 @@ parameter.  It should return nil, `warn' or `delete'."
 			    (set-file-modes
 			     tofile nnmail-default-file-modes))))
 		    ;; Probably a real error.
+		    ;; We nix out the password in case the error
+		    ;; was because of a wrong password being given.
+		    (setq nnmail-internal-password nil)
 		    (subst-char-in-region (point-min) (point-max) ?\n ?\  )
 		    (goto-char (point-max))
 		    (skip-chars-backward " \t")

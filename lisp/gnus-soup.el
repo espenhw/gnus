@@ -161,7 +161,8 @@ move those articles instead."
 	(gnus-summary-mark-as-read (car articles) gnus-souped-mark)
 	(setq articles (cdr articles)))
       (kill-buffer tmp-buf))
-    (gnus-soup-save-areas)))
+    (gnus-soup-save-areas)
+    (gnus-set-mode-line 'summary)))
 
 (defun gnus-soup-pack-packet ()
   "Make a SOUP packet from the SOUP areas."

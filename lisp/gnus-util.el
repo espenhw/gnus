@@ -854,6 +854,7 @@ ARG is passed to the first function."
 
 (defvar gnus-netrc-syntax-table
   (let ((table (copy-syntax-table text-mode-syntax-table)))
+    (modify-syntax-entry ?@ "w" table)
     (modify-syntax-entry ?- "w" table)
     (modify-syntax-entry ?_ "w" table)
     (modify-syntax-entry ?! "w" table)

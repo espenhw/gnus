@@ -1903,7 +1903,8 @@ If variable `gnus-use-long-file-name' is non-nil, it is
        ["Scroll backwards" gnus-article-goto-prev-page t]
        ["Show summary" gnus-article-show-summary t]
        ["Fetch Message-ID at point" gnus-article-refer-article t]
-       ["Mail to address at point" gnus-article-mail t]))
+       ["Mail to address at point" gnus-article-mail t]
+       ["Send a bug report" gnus-bug t]))
 
     (easy-menu-define
      gnus-article-treatment-menu gnus-article-mode-map ""
@@ -2411,7 +2412,7 @@ If given a prefix, show the hidden text instead."
 
 (defun gnus-request-article-this-buffer (article group)
   "Get an article and insert it into this buffer."
-  (let (do-update-line)
+  (let (do-update-line sparse-header)
     (prog1
 	(save-excursion
 	  (erase-buffer)
@@ -2445,7 +2446,7 @@ If given a prefix, show the hidden text instead."
 		    (setq do-update-line article)
 		    (setq article (mail-header-id header))
 		    (let ((gnus-override-method gnus-refer-article-method))
-		      (gnus-read-header article))
+		      (setq sparse-header (gnus-read-header article)))
 		    (setq gnus-newsgroup-sparse
 			  (delq article gnus-newsgroup-sparse)))
 		   ((vectorp header)
@@ -2546,7 +2547,7 @@ If given a prefix, show the hidden text instead."
 		     (stringp article)))
 	(let ((buf (current-buffer)))
 	  (set-buffer gnus-summary-buffer)
-	  (gnus-summary-update-article do-update-line)
+	  (gnus-summary-update-article do-update-line sparse-header)
 	  (gnus-summary-goto-subject do-update-line nil t)
 	  (set-window-point (get-buffer-window (current-buffer) t)
 			    (point))

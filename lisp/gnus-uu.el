@@ -1020,43 +1020,34 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 (defun gnus-uu-reginize-string (string)
   ;; Takes a string and puts a \ in front of every special character;
-  ;; ignores any leading "version numbers" thingies that they use in
-  ;; the comp.binaries groups, and either replaces anything that looks
-  ;; like "2/3" with "[0-9]+/[0-9]+" or, if it can't find something
-  ;; like that, replaces the last two numbers with "[0-9]+".  This, in
-  ;; my experience, should get most postings of a series.
-  (let ((count 2)
-	(vernum "v[0-9]+[a-z][0-9]+:")
-	beg)
+  ;; replaces the last thing that looks like "2/3" with "[0-9]+/[0-9]+"
+  ;; or, if it can't find something like that, tries "2 of 3", then
+  ;; finally just replaces the last two numbers with "[0-9]+".
+  (let ((count 2))
     (save-excursion
       (set-buffer (get-buffer-create gnus-uu-output-buffer-name))
       (buffer-disable-undo (current-buffer))
       (erase-buffer)
       (insert (regexp-quote string))
-      (setq beg 1)
 
       (setq case-fold-search nil)
-      (goto-char (point-min))
-      (when (looking-at vernum)
-	(replace-match vernum t t)
-	(setq beg (length vernum)))
 
-      (goto-char beg)
-      (if (re-search-forward "[ \t]*[0-9]+/[0-9]+" nil t)
-	  (replace-match " [0-9]+/[0-9]+")
+      (end-of-line)
+      (if (re-search-backward "\\([^0-9]\\)[0-9]+/[0-9]+" nil t)
+	  (replace-match "\\1[0-9]+/[0-9]+")
 
-	(goto-char beg)
-	(if (re-search-forward "[0-9]+[ \t]*of[ \t]*[0-9]+" nil t)
-	    (replace-match "[0-9]+ of [0-9]+")
+	(end-of-line)
+	(if (re-search-backward "\\([^0-9]\\)[0-9]+[ \t]*of[ \t]*[0-9]+" nil t)
+	    (replace-match "\\1[0-9]+ of [0-9]+")
 
 	  (end-of-line)
           (if (re-search-backward "\\([^0-9]\\)[0-9]+\\([^0-9]+\\)[0-9]+"
                                   nil t)
               (replace-match "\\1[0-9]+\\2[0-9]+" t nil nil nil))))
 
-      (goto-char beg)
+      (goto-char 1)
       (while (re-search-forward "[ \t]+" nil t)
-	(replace-match "[ \t]*" t t))
+	(replace-match "[ \t]+" t t))
 
       (buffer-substring 1 (point-max)))))
 
@@ -1357,11 +1348,18 @@ didn't work, and overwrite existing files.  Otherwise, ask each time."
 
 (defun gnus-uu-part-number (article)
   (let* ((header (gnus-summary-article-header article))
-	 (subject (and header (mail-header-subject header))))
-    (if (and subject
-	     (string-match "[0-9]+ */[0-9]+\\|[0-9]+ * of *[0-9]+" subject))
-	(match-string 0 subject)
-      "")))
+	 (subject (and header (mail-header-subject header)))
+	 (part nil))
+    (if subject
+	(while (string-match "[0-9]+/[0-9]+\\|[0-9]+[ \t]+of[ \t]+[0-9]+"
+			     subject)
+	  (setq part (match-string 0 subject))
+	  (setq subject (substring subject (match-end 0)))))
+    (or part
+	(while (string-match "\\([0-9]+\\)[^0-9]+\\([0-9]+\\)" subject)
+	  (setq part (match-string 0 subject))
+	  (setq subject (substring subject (match-end 0)))))
+    (or part "")))
 
 (defun gnus-uu-uudecode-sentinel (process event)
   (delete-process (get-process process)))

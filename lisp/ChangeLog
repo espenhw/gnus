@@ -1,3 +1,48 @@
+Mon Jul 27 03:26:00 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.27 is released.
+
+1998-07-27 02:27:11  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-topic.el (gnus-topic-update-unreads): New function.
+
+	* gnus-sum.el (gnus-summary-limit): Update mode line.
+
+	* gnus-soup.el (gnus-soup-add-article): Update mode line.
+
+	* gnus-group.el (gnus-group-make-menu-bar): Bug.
+
+	* gnus-art.el (gnus-article-make-menu-bar): Menu.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Bug reports.
+
+	* gnus-topic.el (gnus-topic-mode-map): h -> H.
+
+1998-07-19 16:59  Simon Josefsson  <jas@pdc.kth.se>
+
+       * gnus-util.el (gnus-netrc-syntax-table): @ is whitespace
+
+1998-07-17  Gordon Matzigkeit  <gord@fig.org>
+
+	* gnus-uu.el (gnus-uu-reginize-string): Simplify by looking
+	from back to front for part numbers, rather than skipping
+	leading ``version numbers.''
+
+	(gnus-uu-part-number): Make consistent with
+	gnus-uu-reginize-string.
+
+1998-07-26 19:01:58  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-art.el (gnus-request-article-this-buffer): Pass along
+	header. 
+
+	* gnus-sum.el (gnus-summary-update-article): Don't pass along
+	iheader to regeneration routine.
+
+1998-07-26 17:33:03  KOSEKI Yoshinori  <kose@yk.NetLaputa.ne.jp>
+
+	* nnmail.el (nnmail-move-inbox): Nix out password on errors.
+
 Sat Jul 25 19:31:36 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.26 is released.

@@ -1,3 +1,17 @@
+1998-07-21 17:51  Simon Josefsson  <jas@pdc.kth.se>
+
+	* gnus.texi (Splitting Mail): junk is fancy splitting only
+
+	* gnus.texi (Fancy Mail Splitting): warn about junk
+
+1998-07-27 02:28:33  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Topic Commands): Fix.
+
+1998-07-27 02:23:17  Robert Bihlmeyer  <robbe@orcus.priv.at>
+
+	* gnus.texi (Score Decays): Fix.
+
 Sun Jul 12 04:03:27 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Home Score File): Addition.

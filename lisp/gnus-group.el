@@ -730,6 +730,7 @@ ticked: The number of ticked articles."
        ["Read manual" gnus-info-find-node t]
        ["Flush score cache" gnus-score-flush-cache t]
        ["Toggle topics" gnus-topic-mode t]
+       ["Send a bug report" gnus-bug t]
        ["Exit from Gnus" gnus-group-exit t]
        ["Exit without saving" gnus-group-quit t]))
 

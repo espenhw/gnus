@@ -74,6 +74,7 @@ with some simple extensions.
 
 (defvar gnus-topic-active-topology nil)
 (defvar gnus-topic-active-alist nil)
+(defvar gnus-topic-unreads nil)
 
 (defvar gnus-topology-checked-p nil
   "Whether the topology has been checked in this session.")
@@ -109,9 +110,7 @@ with some simple extensions.
 
 (defun gnus-topic-unread (topic)
   "Return the number of unread articles in TOPIC."
-  (or (save-excursion
-	(and (gnus-topic-goto-topic topic)
-	     (gnus-group-topic-unread)))
+  (or (cdr (assoc topic gnus-topic-unreads))
       0))
 
 (defun gnus-group-topic-p ()
@@ -472,6 +471,7 @@ articles in the topic and its subtopics."
        (car type) visiblep
        (not (eq (nth 2 type) 'hidden))
        level all-entries unread))
+    (gnus-topic-update-unreads (car type) unread)
     (goto-char end)
     unread))
 
@@ -528,6 +528,7 @@ articles in the topic and its subtopics."
 	 (number-of-groups (length entries))
 	 (active-topic (eq gnus-topic-alist gnus-topic-active-alist))
 	 gnus-tmp-header)
+    (gnus-topic-update-unreads name unread)
     (beginning-of-line)
     ;; Insert the text.
     (gnus-add-text-properties
@@ -539,6 +540,11 @@ articles in the topic and its subtopics."
 	   'gnus-topic-unread unread
 	   'gnus-active active-topic
 	   'gnus-topic-visible visiblep))))
+
+(defun gnus-topic-update-unreads (topic unreads)
+  (setq gnus-topic-unreads (delq (assoc topic gnus-topic-unreads)
+				 gnus-topic-unreads))
+  (push (cons topic unreads) gnus-topic-unreads))
 
 (defun gnus-topic-update-topics-containing-group (group)
   "Update all topics that have GROUP as a member."
@@ -925,7 +931,7 @@ articles in the topic and its subtopics."
     "r" gnus-topic-rename
     "\177" gnus-topic-delete
     [delete] gnus-topic-delete
-    "h" gnus-topic-toggle-display-empty-topics)
+    "H" gnus-topic-toggle-display-empty-topics)
 
   (gnus-define-keys (gnus-topic-sort-map "S" gnus-group-topic-map)
     "s" gnus-topic-sort-groups
