@@ -32,7 +32,7 @@
 \makeindex
 \begin{document}
 
-\newcommand{\gnusversionname}{Oort Gnus v.}
+\newcommand{\gnusversionname}{Oort Gnus v0.05}
 \newcommand{\gnuschaptername}{}
 \newcommand{\gnussectionname}{}
 
@@ -381,7 +381,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Oort Gnus v.
+This manual corresponds to Oort Gnus v0.05
 
 @end ifinfo
 
@@ -477,8 +477,8 @@ Group Buffer Format
 
 Group Topics
 
-* Topic Variables::             How to customize the topics the Lisp Way.
 * Topic Commands::              Interactive E-Z commands.
+* Topic Variables::             How to customize the topics the Lisp Way.
 * Topic Sorting::               Sorting each topic individually.
 * Topic Topology::              A map of the world.
 * Topic Parameters::            Parameters that apply to all groups in a topic.
@@ -498,7 +498,7 @@ Summary Buffer
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
-* Delayed Articles::
+* Delayed Articles::            
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
@@ -543,16 +543,16 @@ Reply, Followup and Post
 * Summary Mail Commands::       Sending mail.
 * Summary Post Commands::       Sending news.
 * Summary Message Commands::    Other Message-related commands.
-* Canceling and Superseding::
+* Canceling and Superseding::   
 
 Marking Articles
 
 * Unread Articles::             Marks for unread articles.
 * Read Articles::               Marks for read articles.
 * Other Marks::                 Marks that do not affect readedness.
-* Setting Marks::
-* Generic Marking Commands::
-* Setting Process Marks::
+* Setting Marks::               
+* Generic Marking Commands::    
+* Setting Process Marks::       
 
 Marking Articles
 
@@ -593,8 +593,10 @@ Article Treatment
 * Article Fontisizing::         Making emphasized text look nice.
 * Article Hiding::              You also want to make certain info go away.
 * Article Washing::             Lots of way-neat functions to make life better.
+* Article Header::              Doing various header transformations.
 * Article Buttons::             Click on URLs, Message-IDs, addresses and the like.
 * Article Date::                Grumble, UT!
+* Article Display::             Display various stuff---X-Face, Picons, Smileys
 * Article Signature::           What is a signature?
 * Article Miscellania::         Various other stuff.
 
@@ -607,7 +609,7 @@ Various Summary Stuff
 
 * Summary Group Information::   Information oriented commands.
 * Searching for Articles::      Multiple article commands.
-* Summary Generation Commands::
+* Summary Generation Commands::  
 * Really Various Summary Commands::  Those pesky non-conformant commands.
 
 Article Buffer
@@ -676,7 +678,6 @@ Getting Mail
 * Duplicates::                  Dealing with duplicated mail.
 * Not Reading Mail::            Using mail back ends for reading other files.
 * Choosing a Mail Back End::    Gnus can read a variety of mail formats.
-* Archiving Mail::              How to backup your mail.
 
 Mail Sources
 
@@ -695,6 +696,7 @@ Choosing a Mail Back End
 
 Browsing the Web
 
+* Archiving Mail::              
 * Web Searches::                Creating groups from articles that match a string.
 * Slashdot::                    Reading the Slashdot comments.
 * Ultimate::                    The Ultimate Bulletin Board systems.
@@ -752,9 +754,9 @@ Agent Categories
 
 Agent Commands
 
-* Group Agent Commands::
-* Summary Agent Commands::
-* Server Agent Commands::
+* Group Agent Commands::        
+* Summary Agent Commands::      
+* Server Agent Commands::       
 
 Scoring
 
@@ -804,8 +806,9 @@ Various
 * Daemons::                     Gnus can do things behind your back.
 * NoCeM::                       How to avoid spam and other fatty foods.
 * Undo::                        Some actions can be undone.
+* Predicate Specifiers::        Specifying predicates.
 * Moderation::                  What to do if you're a moderator.
-* Image Enhancements::          There are more pictures and stuff under XEmacs.
+* Image Enhancements::          Modern versions of Emacs/XEmacs can display images.
 * Fuzzy Matching::              What's the big fuzz?
 * Thwarting Email Spam::        A how-to on avoiding unsolicited commercial email.
 * Various Various::             Things that are really various.
@@ -821,10 +824,11 @@ Formatting Variables
 * Tabulation::                  Tabulating your output.
 * Wide Characters::             Dealing with wide characters.
 
-XEmacs Enhancements
+Image Enhancements
 
-* Picons::                      How to display pictures of what your reading.
+* Picons::                      How to display pictures of what you're reading.
 * Smileys::                     Show all those happy faces the way they were meant to be shown.
+* X-Face::                      Display a funky, teensy black-and-white image.
 * Toolbar::                     Click'n'drool.
 * XVarious::                    Other XEmacsy Gnusey variables.
 
@@ -838,7 +842,9 @@ Picons
 
 Appendices
 
+* XEmacs::                      Requirements for installing under XEmacs.
 * History::                     How Gnus got where it is today.
+* The Manual::                  
 * On Writing Manuals::          Why this is not a beginner's guide.
 * Terminology::                 We use really difficult, like, words here.
 * Customization::               Tailoring Gnus to your needs.
@@ -887,8 +893,8 @@ Gnus Reference Guide
 
 Back End Interface
 
-* Required Back End Functions:: Functions that must be implemented.
-* Optional Back End Functions:: Functions that need not be implemented.
+* Required Back End Functions::  Functions that must be implemented.
+* Optional Back End Functions::  Functions that need not be implemented.
 * Error Messaging::             How to get messages and report errors.
 * Writing New Back Ends::       Extending old back ends.
 * Hooking New Back Ends Into Gnus::  What has to be done on the Gnus end.
@@ -4195,7 +4201,7 @@ You can have as many summary buffers open as you wish.
 * Choosing Articles::           Reading articles.
 * Paging the Article::          Scrolling the current article.
 * Reply Followup and Post::     Posting articles.
-* Delayed Articles::
+* Delayed Articles::            
 * Marking Articles::            Marking articles as read, expirable, etc.
 * Limiting::                    You can limit the summary buffer.
 * Threading::                   How threads are made.
@@ -4909,7 +4915,7 @@ Select the article buffer (@code{gnus-summary-select-article-buffer}).
 * Summary Mail Commands::       Sending mail.
 * Summary Post Commands::       Sending news.
 * Summary Message Commands::    Other Message-related commands.
-* Canceling and Superseding::
+* Canceling and Superseding::   
 @end menu
 
 
@@ -5342,6 +5348,9 @@ In addition, you also have marks that do not affect readedness.
 * Unread Articles::             Marks for unread articles.
 * Read Articles::               Marks for read articles.
 * Other Marks::                 Marks that do not affect readedness.
+* Setting Marks::               
+* Generic Marking Commands::    
+* Setting Process Marks::       
 @end menu
 
 @ifinfo
@@ -7561,16 +7570,16 @@ writing, so there are tons of functions and variables to make reading
 these articles easier.
 
 @menu
-* Article Highlighting::    You want to make the article look like fruit salad.
-* Article Fontisizing::     Making emphasized text look nice.
-* Article Hiding::          You also want to make certain info go away.
-* Article Washing::         Lots of way-neat functions to make life better.
-* Article Header::          Doing various header transformations.
-* Article Buttons::         Click on URLs, Message-IDs, addresses and the like.
-* Article Date::            Grumble, UT!
-* Article Display::         Display various stuff---X-Face, Picons, Smileys
-* Article Signature::       What is a signature?
-* Article Miscellania::     Various other stuff.
+* Article Highlighting::        You want to make the article look like fruit salad.
+* Article Fontisizing::         Making emphasized text look nice.
+* Article Hiding::              You also want to make certain info go away.
+* Article Washing::             Lots of way-neat functions to make life better.
+* Article Header::              Doing various header transformations.
+* Article Buttons::             Click on URLs, Message-IDs, addresses and the like.
+* Article Date::                Grumble, UT!
+* Article Display::             Display various stuff---X-Face, Picons, Smileys
+* Article Signature::           What is a signature?
+* Article Miscellania::         Various other stuff.
 @end menu
 
 
@@ -9344,7 +9353,7 @@ suggestions you find reasonable.  (Note that
 @menu
 * Summary Group Information::   Information oriented commands.
 * Searching for Articles::      Multiple article commands.
-* Summary Generation Commands::
+* Summary Generation Commands::  
 * Really Various Summary Commands::  Those pesky non-conformant commands.
 @end menu
 
@@ -11926,7 +11935,6 @@ course.
 * Duplicates::                  Dealing with duplicated mail.
 * Not Reading Mail::            Using mail back ends for reading other files.
 * Choosing a Mail Back End::    Gnus can read a variety of mail formats.
-* Archiving Mail::              How to backup your mail.
 @end menu
 
 
@@ -13911,6 +13919,7 @@ Gnus has been getting a bit of a collection of back ends for providing
 interfaces to these sources.
 
 @menu
+* Archiving Mail::              
 * Web Searches::                Creating groups from articles that match a string.
 * Slashdot::                    Reading the Slashdot comments.
 * Ultimate::                    The Ultimate Bulletin Board systems.
@@ -16146,9 +16155,9 @@ toggles the plugged/unplugged state of the Gnus Agent.
 
 
 @menu
-* Group Agent Commands::
-* Summary Agent Commands::
-* Server Agent Commands::
+* Group Agent Commands::        
+* Summary Agent Commands::      
+* Server Agent Commands::       
 @end menu
 
 You can run a complete batch fetch from the command line with the
@@ -18312,25 +18321,25 @@ four days, Gnus will decay the scores four times, for instance.
 @chapter Various
 
 @menu
-* Process/Prefix::          A convention used by many treatment commands.
-* Interactive::             Making Gnus ask you many questions.
-* Symbolic Prefixes::       How to supply some Gnus functions with options.
-* Formatting Variables::    You can specify what buffers should look like.
-* Window Layout::           Configuring the Gnus buffer windows.
-* Faces and Fonts::         How to change how faces look.
-* Compilation::             How to speed Gnus up.
-* Mode Lines::              Displaying information in the mode lines.
-* Highlighting and Menus::  Making buffers look all nice and cozy.
-* Buttons::                 Get tendinitis in ten easy steps!
-* Daemons::                 Gnus can do things behind your back.
-* NoCeM::                   How to avoid spam and other fatty foods.
-* Undo::                    Some actions can be undone.
-* Predicate Specifiers::    Specifying predicates.
-* Moderation::              What to do if you're a moderator.
-* Image Enhancements::      Modern versions of Emacs/XEmacs can display images.
-* Fuzzy Matching::          What's the big fuzz?
-* Thwarting Email Spam::    A how-to on avoiding unsolicited commercial email.
-* Various Various::         Things that are really various.
+* Process/Prefix::              A convention used by many treatment commands.
+* Interactive::                 Making Gnus ask you many questions.
+* Symbolic Prefixes::           How to supply some Gnus functions with options.
+* Formatting Variables::        You can specify what buffers should look like.
+* Window Layout::               Configuring the Gnus buffer windows.
+* Faces and Fonts::             How to change how faces look.
+* Compilation::                 How to speed Gnus up.
+* Mode Lines::                  Displaying information in the mode lines.
+* Highlighting and Menus::      Making buffers look all nice and cozy.
+* Buttons::                     Get tendinitis in ten easy steps!
+* Daemons::                     Gnus can do things behind your back.
+* NoCeM::                       How to avoid spam and other fatty foods.
+* Undo::                        Some actions can be undone.
+* Predicate Specifiers::        Specifying predicates.
+* Moderation::                  What to do if you're a moderator.
+* Image Enhancements::          Modern versions of Emacs/XEmacs can display images.
+* Fuzzy Matching::              What's the big fuzz?
+* Thwarting Email Spam::        A how-to on avoiding unsolicited commercial email.
+* Various Various::             Things that are really various.
 @end menu
 
 
@@ -19585,11 +19594,11 @@ XEmacs, as well as Emacs 21, is able to display pictures and stuff, so
 Gnus has taken advantage of that.
 
 @menu
-* Picons::     How to display pictures of what you're reading.
-* Smileys::    Show all those happy faces the way they were meant to be shown.
-* X-Face::     Display a funky, teensy black-and-white image.
-* Toolbar::    Click'n'drool.
-* XVarious::   Other XEmacsy Gnusey variables.
+* Picons::                      How to display pictures of what you're reading.
+* Smileys::                     Show all those happy faces the way they were meant to be shown.
+* X-Face::                      Display a funky, teensy black-and-white image.
+* Toolbar::                     Click'n'drool.
+* XVarious::                    Other XEmacsy Gnusey variables.
 @end menu
 
 
@@ -20307,13 +20316,13 @@ but at the common table.@*
 @menu
 * XEmacs::                      Requirements for installing under XEmacs.
 * History::                     How Gnus got where it is today.
+* The Manual::                  
 * On Writing Manuals::          Why this is not a beginner's guide.
 * Terminology::                 We use really difficult, like, words here.
 * Customization::               Tailoring Gnus to your needs.
 * Troubleshooting::             What you might try if things do not work.
 * Gnus Reference Guide::        Rilly, rilly technical stuff.
 * Emacs for Heathens::          A short introduction to Emacsian terms.
-* Frequently Asked Questions::
 @end menu
 
 
@@ -20369,10 +20378,13 @@ renamed it back again to ``Gnus''.  But in mixed case.  ``Gnus'' vs.
 
 @node Gnus Versions
 @subsection Gnus Versions
-@cindex Pterodactyl Gnus
 @cindex ding Gnus
 @cindex September Gnus
+@cindex Red Gnus
 @cindex Quassia Gnus
+@cindex Pterodactyl Gnus
+@cindex Oort Gnus
+@cindex No Gnus
 
 The first ``proper'' release of Gnus 5 was done in November 1995 when it
 was included in the Emacs 19.30 distribution (132 (ding) Gnus releases
@@ -22402,8 +22414,8 @@ In the examples and definitions I will refer to the imaginary back end
 @cindex @code{nnchoke}
 
 @menu
-* Required Back End Functions:: Functions that must be implemented.
-* Optional Back End Functions:: Functions that need not be implemented.
+* Required Back End Functions::  Functions that must be implemented.
+* Optional Back End Functions::  Functions that need not be implemented.
 * Error Messaging::             How to get messages and report errors.
 * Writing New Back Ends::       Extending old back ends.
 * Hooking New Back Ends Into Gnus::  What has to be done on the Gnus end.
