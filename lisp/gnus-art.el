@@ -1381,7 +1381,7 @@ not, so it should only be used interactively.
 
 Sm*rtq**t*s are M****s***'s unilateral extension to the character map
 in an attempt to provide more quoting characters.  If you see
-something like \222 or \264 where you're expecting some kind of
+something like \\222 or \\264 where you're expecting some kind of
 apostrophe or quotation mark, then try this wash."
   (interactive)
   (article-translate-strings gnus-article-dumbquotes-map))
