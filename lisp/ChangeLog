@@ -1,3 +1,8 @@
+2002-03-21  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-print-buffer): Remove gnus-decoration.
+	Trivial change from lorentey@elte.hu (L,Bu(Brentey K,Ba(Broly)
+
 2002-03-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-sum.el (gnus-summary-make-menu-bar): Use intern'ed function
@@ -71,7 +76,7 @@
 	duplication.
 	(gnus-summary-save-parts-type-history): Ditto.
 	(gnus-summary-save-parts-last-directory): Ditto.
-	From: andre@slamdunknetworks.com
+	Trivial change from andre@slamdunknetworks.com
 
 2002-03-09  Paul Jarc  <prj@po.cwru.edu
 

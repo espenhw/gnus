@@ -8128,6 +8128,7 @@ to save in."
 	  (copy-to-buffer buffer (point-min) (point-max))
 	  (set-buffer buffer)
 	  (gnus-article-delete-invisible-text)
+	  (gnus-remove-text-with-property 'gnus-decoration)
 	  (when (gnus-visual-p 'article-highlight 'highlight)
 	    ;; Copy-to-buffer doesn't copy overlay.  So redo
 	    ;; highlight.
