@@ -36,6 +36,11 @@
 ;; Especially, don't expect this library to buy security for you.  If
 ;; you don't understand what you are doing, you're as likely to lose
 ;; security than gain any by using this library.
+;;
+;; This library is not intended to provide a "raw" API for S/MIME,
+;; PKCSx or similar, it's intended to perform common operations
+;; done on messages encoded in these formats.  The terminology chosen
+;; reflect this.
 
 ;;; Quick introduction:
 
@@ -156,7 +161,7 @@ If nil, use system defaults."
 		 string)
   :group 'dig)
 
-(defvar smime-details-buffer "*S/MIME OpenSSL output*")
+(defvar smime-details-buffer "*OpenSSL output*")
 
 ;; OpenSSL wrappers.
 
@@ -240,28 +245,25 @@ nil."
 ;; Verify+decrypt region
 
 (defun smime-verify-region (b e)
-  (let ((buffer (generate-new-buffer (generate-new-buffer-name "*smime*")))
+  (let ((buffer (get-buffer-create smime-details-buffer))
 	(CAs (cond (smime-CA-file
 		    (list "-CAfile" (expand-file-name smime-CA-file)))
 		   (smime-CA-directory
 		    (list "-CApath" (expand-file-name smime-CA-directory)))
 		   (t
 		    (error "No CA configured.")))))
-    (prog1
-	(if (apply 'smime-call-openssl-region b e buffer "smime" "-verify" CAs)
-	    (message "S/MIME message verified succesfully.")
-	  (message "S/MIME message NOT verified successfully.")
-	  nil)
-      (with-current-buffer (get-buffer-create smime-details-buffer)
-	(goto-char (point-max))
-	(insert-buffer buffer))
-      (kill-buffer buffer))))
-  
+    (with-current-buffer buffer
+      (erase-buffer))
+    (if (apply 'smime-call-openssl-region b e buffer "smime" "-verify" CAs)
+	(message "S/MIME message verified succesfully.")
+      (message "S/MIME message NOT verified successfully.")
+      nil)))
+
 (defun smime-decrypt-region (b e keyfile)
   (let ((buffer (generate-new-buffer (generate-new-buffer-name "*smime*")))
 	CAs)
     (when (apply 'smime-call-openssl-region b e buffer "smime" "-decrypt" 
-		 "-recip" keyfile)
+		 "-recip" (list keyfile))
       
       )
     (with-current-buffer (get-buffer-create smime-details-buffer)
@@ -285,11 +287,55 @@ Uses current buffer if BUFFER is nil, queries user of KEYFILE is nil."
   (with-current-buffer (or buffer (current-buffer))
     (smime-decrypt-region 
      (point-min) (point-max)
-     (or keyfile
-	 (smime-get-key-by-email
-	  (completing-read "Decrypt with which key? " smime-keys nil nil
-			   (and (listp (car-safe smime-keys)) 
-				(caar smime-keys))))))))
+     (expand-file-name
+      (or keyfile
+	  (smime-get-key-by-email
+	   (completing-read "Decrypt with which key? " smime-keys nil nil
+			    (and (listp (car-safe smime-keys)) 
+				 (caar smime-keys)))))))))
+
+;; Various operations
+
+(defun smime-pkcs7-region (b e)
+  "Convert S/MIME message between points B and E into a PKCS7 message."
+  (let ((buffer (get-buffer-create smime-details-buffer)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    (when (smime-call-openssl-region b e buffer "smime" "-pk7out")
+      (delete-region b e)
+      (insert-buffer-substring buffer)
+      t)))
+
+(defun smime-pkcs7-certificates-region (b e)
+  "Extract any certificates enclosed in PKCS7 message between points B and E."
+  (let ((buffer (get-buffer-create smime-details-buffer)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    (when (smime-call-openssl-region b e buffer "pkcs7" "-print_certs" "-text")
+      (delete-region b e)
+      (insert-buffer-substring buffer)
+      t)))
+
+(defun smime-pkcs7-email-region (b e)
+  "Get email addresses contained in certificate between points B and E.
+A string or a list of strings is returned."
+  (let ((buffer (get-buffer-create smime-details-buffer)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    (when (smime-call-openssl-region b e buffer "x509" "-email" "-noout")
+      (delete-region b e)
+      (insert-buffer-substring buffer)
+      t)))  
+
+(defun smime-buffer-as-string-region (b e)
+  "Return each line in region between B and E as a list of strings."
+  (save-excursion
+    (goto-char b)
+    (let (res)
+      (while (< (point) e)
+	(push (buffer-substring (point) (point-at-eol)) res)
+	(forward-line))
+      res)))
 
 ;; Find certificates
 

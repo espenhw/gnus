@@ -5163,7 +5163,8 @@ For example:
 	    (setq gnus-mime-security-details-buffer
 		  (gnus-get-buffer-create "*MIME Security Details*")))
 	  (with-current-buffer gnus-mime-security-details-buffer
-	    (insert details))
+	    (insert details)
+	    (goto-char (point-min)))
 	  (pop-to-buffer gnus-mime-security-details-buffer))
       (gnus-message 5 "No details."))))
 

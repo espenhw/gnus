@@ -1,3 +1,24 @@
+2000-11-30  Simon Josefsson  <sj@extundo.com>
+
+	* mml-smime.el (mml-smime-verify): Verify that certificate mail
+	address match sender address.
+
+	* mm-decode.el (mm-possibly-verify-or-decrypt): Bind sender address.
+
+	* smime.el (smime-verify-region): Don't copy buffer.
+	(smime-decrypt-buffer): Use expand-file-name on keyfile.
+	(smime-pkcs7-region): New function.
+	(smime-pkcs7-certificates-region): Ditto.
+	(smime-pkcs7-email-region): Ditto.
+	(smime-buffer-as-string-region): Ditto.
+
+	* gnus-art.el (gnus-mime-security-show-details): Goto beginning of
+	buffer.
+
+2000-11-23  Jens Krinke <j.krinke@gmx.de>
+
+	* smime.el (smime-decrypt-region): Fix keyfile argument.
+
 2000-11-29 00:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-cache-accepted-message-ids): Add doc.

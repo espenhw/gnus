@@ -1018,6 +1018,10 @@ If RECURSIVE, search recursively."
 (defun mm-possibly-verify-or-decrypt (parts ctl)
   (let ((subtype (cadr (split-string (car ctl) "/")))
 	(mm-security-handle ctl) ;; (car CTL) is the type.
+	(from (save-restriction
+		(mail-narrow-to-head)
+		(cadr (funcall gnus-extract-address-components 
+			       (or (mail-fetch-field "from") "")))))
 	protocol func functest)
     (cond 
      ((equal subtype "signed")

@@ -130,10 +130,26 @@
     (when (get-buffer smime-details-buffer)
       (kill-buffer smime-details-buffer))
     (if (smime-verify-buffer)
-	(progn
-	  (mm-set-handle-multipart-parameter 
-	   mm-security-handle 'gnus-info "OK")
-	  (kill-buffer smime-details-buffer))
+	;; verify mail addresses in mail against those in certificate
+	(when (and (smime-pkcs7-region (point-min) (point-max))
+		   (smime-pkcs7-certificates-region (point-min) (point-max)))
+	  (with-temp-buffer
+	    (insert-buffer-substring (mm-handle-multipart-original-buffer ctl))
+	    (if (not (member from (and (smime-pkcs7-email-region
+					(point-min) (point-max))
+				       (smime-buffer-as-string-region
+					(point-min) (point-max)))))
+		(progn
+		  (mm-set-handle-multipart-parameter 
+		   mm-security-handle 'gnus-info "Sender forged")
+		  (mm-set-handle-multipart-parameter
+		   mm-security-handle 'gnus-details 
+		   (with-current-buffer
+		       (mm-handle-multipart-original-buffer ctl)
+		     (buffer-string))))
+	      (mm-set-handle-multipart-parameter 
+	       mm-security-handle 'gnus-info "OK")
+	      (kill-buffer smime-details-buffer))))
       (mm-set-handle-multipart-parameter 
        mm-security-handle 'gnus-info "Failed")
       (mm-set-handle-multipart-parameter
