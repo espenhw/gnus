@@ -2199,7 +2199,7 @@ Return nil if no complete line has arrived."
 (defun imap-parse-fetch (response)
   (when (eq (char-after) ?\()
     (let (uid flags envelope internaldate rfc822 rfc822header rfc822text
-	      rfc822size body bodydetail bodystructure)
+	      rfc822size body bodydetail bodystructure flags-empty)
       (while (not (eq (char-after) ?\)))
 	(imap-forward)
 	(let ((token (read (current-buffer))))
@@ -2207,7 +2207,9 @@ Return nil if no complete line has arrived."
 	  (cond ((eq token 'UID)
 		 (setq uid (ignore-errors (read (current-buffer)))))
 		((eq token 'FLAGS)
-		 (setq flags (imap-parse-flag-list)))
+		 (setq flags (imap-parse-flag-list))
+		 (if (not flags)
+		     (setq flags-empty 't)))
 		((eq token 'ENVELOPE)
 		 (setq envelope (imap-parse-envelope)))
 		((eq token 'INTERNALDATE)
@@ -2236,7 +2238,7 @@ Return nil if no complete line has arrived."
       (when uid
 	(setq imap-current-message uid)
 	(imap-message-put uid 'UID uid)
-	(and flags (imap-message-put uid 'FLAGS flags))
+	(and (or flags flags-empty) (imap-message-put uid 'FLAGS flags))
 	(and envelope (imap-message-put uid 'ENVELOPE envelope))
 	(and internaldate (imap-message-put uid 'INTERNALDATE internaldate))
 	(and rfc822 (imap-message-put uid 'RFC822 rfc822))

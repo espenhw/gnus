@@ -1,3 +1,8 @@
+2001-12-31  Simon Josefsson  <jas@extundo.com>
+
+	* imap.el (imap-parse-fetch): Notice empty flags responses.  From
+	Nic Ferrier <nferrier@tf1.tapsellferrier.co.uk>.
+
 2001-12-30  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus-picon.el (gnus-treat-from-picon): Autoload.
