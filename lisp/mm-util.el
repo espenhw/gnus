@@ -267,18 +267,19 @@ Valid elements include:
 	mm-iso-8859-15-compatible))
   "A table of the difference character between ISO-8859-X and ISO-8859-15.")
 
-(defcustom mm-coding-system-priorities nil
+(defcustom mm-coding-system-priorities
+  (if (boundp 'current-language-environment)
+      (let ((lang (symbol-value 'current-language-environment)))
+	(cond ((string= lang "Japanese")
+	       ;; Japanese users may prefer iso-2022-jp to shift-jis.
+	       '(iso-2022-jp iso-2022-jp-2 japanese-shift-jis
+			     iso-latin-1 utf-8)))))
   "Preferred coding systems for encoding outgoing mails.
 
 More than one suitable coding systems may be found for some texts.  By
 default, a coding system with the highest priority is used to encode
 outgoing mails (see `sort-coding-systems').  If this variable is set,
-it overrides the default priority.  For example, Japanese users may
-prefer iso-2022-jp to japanese-shift-jis:
-
-\(setq mm-coding-system-priorities
-  '(iso-2022-jp iso-2022-jp-2 japanese-shift-jis iso-latin-1 utf-8))
-"
+it overrides the default priority."
   :type '(repeat (symbol :tag "Coding system"))
   :group 'mime)
 

@@ -1,5 +1,10 @@
 2002-09-03  Katsumi Yamaoka <yamaoka@jpl.org>
 
+	* mm-util.el (mm-coding-system-priorities): Default to a list of
+	iso-2022-jp and others for the Japanese environment.
+
+2002-09-03  Katsumi Yamaoka <yamaoka@jpl.org>
+
 	* gnus-util.el (gnus-frame-or-window-display-name): Exclude
 	invalid display names.
 
