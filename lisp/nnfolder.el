@@ -403,6 +403,8 @@ time saver for large mailboxes.")
 (deffoo nnfolder-request-replace-article (article group buffer)
   (nnfolder-possibly-change-group group)
   (save-excursion
+    (set-buffer buffer)
+    (nnfolder-normalize-buffer)
     (set-buffer nnfolder-current-buffer)
     (goto-char (point-min))
     (if (not (search-forward (nnfolder-article-string article) nil t))
@@ -590,15 +592,18 @@ time saver for large mailboxes.")
 	      (obuf (current-buffer)))
 	  (nnfolder-possibly-change-folder (car group-art))
 	  (let ((buffer-read-only nil))
-	    (goto-char (point-max))
-	    (unless (eolp)
-	      (insert "\n"))
-	    (unless (bobp)
-	      (insert "\n"))
+	    (nnfolder-normalize-buffer)
 	    (insert-buffer-substring obuf beg end)))))
 
     ;; Did we save it anywhere?
     save-list))
+
+(defun nnfolder-normalize-buffer ()
+  "Make sure there are two newlines at the end of the buffer."
+  (goto-char (point-max))
+  (skip-chars-backward "\n")
+  (delete-region (point) (point-max))
+  (insert "\n\n"))
 
 (defun nnfolder-insert-newsgroup-line (group-art)
   (save-excursion
@@ -653,7 +658,11 @@ time saver for large mailboxes.")
     (if (equal (cadr (assoc group nnfolder-scantime-alist))
 	       (nth 5 (file-attributes file)))
 	;; This looks up-to-date, so we don't do any scanning.
-	buffer
+	(if (file-exists-p file)
+	    buffer
+	  (push (list group buffer) nnfolder-buffer-alist)
+	  (set-buffer-modified-p t)
+	  (save-buffer))
       ;; Parse the damn thing.
       (save-excursion
 	(nnmail-activate 'nnfolder)

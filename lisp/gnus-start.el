@@ -706,8 +706,8 @@ prompt the user for the name of an NNTP server to use."
 
 (defun gnus-start-draft-setup ()
   "Make sure the draft group exists."
+  (gnus-request-create-group "drafts" '(nndraft ""))
   (unless (gnus-gethash "nndraft:drafts" gnus-newsrc-hashtb)
-    (gnus-request-create-group "drafts" '(nndraft ""))
     (let ((gnus-level-default-subscribed 1))
       (gnus-subscribe-group "nndraft:drafts" nil '(nndraft "")))
     (gnus-group-set-parameter
@@ -1063,7 +1063,6 @@ for new groups."
 	 hashtb))
       (when new-newsgroups
 	(gnus-subscribe-hierarchical-interactive new-newsgroups)))
-    ;; Suggested by Per Abrahamsen <amanda@iesd.auc.dk>.
     (when (> groups 0)
       (gnus-message 6 "%d new newsgroup%s arrived."
 		    groups (if (> groups 1) "s have" " has")))
@@ -2476,8 +2475,15 @@ If FORCE is non-nil, the .newsrc file is read."
 	    (skip-chars-forward " \t")
 	    ;; ...  which leads to this line being effectively ignored.
 	    (when (symbolp group)
-	      (set group (buffer-substring
-			  (point) (progn (end-of-line) (point)))))
+	      (let ((str (buffer-substring
+			  (point) (progn (end-of-line) (point))))
+		    (coding
+		     (and (boundp enable-multibyte-characters)
+			  enable-multibyte-characters
+			  (gnus-mule-get-coding-system (symbol-name group)))))
+		(if coding
+		    (setq str (decode-coding-string str (car coding))))
+		(set group str)))
 	    (forward-line 1))))
       (gnus-message 5 "Reading descriptions file...done")
       t))))

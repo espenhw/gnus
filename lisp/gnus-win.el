@@ -534,7 +534,7 @@ should have point."
       (walk-windows
        (lambda (win)
 	 (let ((buf (window-buffer win)))
-	   (when (string-match	"^\\*Summary" (buffer-name buf))
+	   (when (string-match	"^\\*\\(Dead \\)?Summary" (buffer-name buf))
 	     (push buf bufs)
 	     (pop-to-buffer buf)
 	     (when (or (not lowest)

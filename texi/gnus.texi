@@ -17,6 +17,7 @@
 \usepackage{pagestyle}
 \usepackage{epsfig}
 \usepackage{bembo}
+\usepackage{pixidx}
 
 \makeindex
 \begin{document}
@@ -34,7 +35,7 @@
 
 \newcommand{\gnustt}[1]{{\fontfamily{pfu}\fontsize{10pt}{10}\selectfont #1}}
 \newcommand{\gnuscode}[1]{\gnustt{#1}}
-\newcommand{\gnussamp}[1]{``{\fontencoding{OT1}\fontfamily{pcr}\fontsize{10pt}{10}\selectfont #1}''}
+\newcommand{\gnussamp}[1]{``{\fontencoding{OT1}\fontfamily{pfu}\fontsize{10pt}{10}\selectfont #1}''}
 \newcommand{\gnuslisp}[1]{\gnustt{#1}}
 \newcommand{\gnuskbd}[1]{`\gnustt{#1}'}
 \newcommand{\gnusfile}[1]{`\gnustt{#1}'}
@@ -59,7 +60,7 @@
 \newcommand{\gnusless}{{$<$}}
 \newcommand{\gnusgreater}{{$>$}}
 
-\newcommand{\gnushead}{\raisebox{-1cm}{\epsfig{figure=gnus-head.eps,height=1cm}}}
+\newcommand{\gnushead}{\raisebox{-1cm}{\epsfig{figure=ps/gnus-head.eps,height=1cm}}}
 \newcommand{\gnusinteresting}{
 \marginpar[\mbox{}\hfill\gnushead]{\gnushead}
 }
@@ -102,13 +103,16 @@
 }
 
 \newcommand{\gnuspicon}[1]{
-\marginpar[\mbox{}\hfill\epsfig{figure=#1,height=1.5cm}]{\epsfig{figure=#1,height=1.5cm}}
+\margindex{\epsfig{figure=#1,width=2cm}}
 }
 
-\newcommand{\gnusxface}[1]{
-\marginpar[\mbox{}\hfill\epsfig{figure=#1,height=1cm}]{\epsfig{figure=#1,height=1cm}}
+\newcommand{\gnusxface}[2]{
+\margindex{\epsfig{figure=#1,width=1cm}\epsfig{figure=#2,width=1cm}}
 }
 
+\newcommand{\gnussmiley}[2]{
+\margindex{\makebox[2cm]{\hfill\epsfig{figure=#1,width=0.5cm}\hfill\epsfig{figure=#2,width=0.5cm}\hfill}}
+}
 
 \newcommand{\gnusitemx}[1]{\mbox{}\vspace*{-\itemsep}\vspace*{-\parsep}\item#1}
 
@@ -175,9 +179,9 @@
 {
 \ifodd\count0
 \mbox{} \hfill 
-\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.eps,height=1cm}}
 \else
-\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.eps,height=1cm}}
 \hfill \mbox{}
 \fi
 }
@@ -199,9 +203,9 @@
 {
 \ifodd\count0
 \mbox{} \hfill 
-\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.eps,height=1cm}}
 \else
-\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.eps,height=1cm}}
 \hfill \mbox{}
 \fi
 }
@@ -223,9 +227,9 @@
 {
 \ifodd\count0
 \mbox{} \hfill 
-\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.eps,height=1cm}}
 \else
-\raisebox{-0.5cm}{\epsfig{figure=gnus-big-logo.eps,height=1cm}}
+\raisebox{-0.5cm}{\epsfig{figure=ps/gnus-big-logo.eps,height=1cm}}
 \hfill \mbox{}
 \fi
 }
@@ -249,7 +253,7 @@
 \gnustitle{\gnustitlename}\\
 \rule{15cm}{1mm}\\
 \vfill
-\hspace*{0cm}\epsfig{figure=gnus-big-logo.eps,height=15cm}
+\hspace*{0cm}\epsfig{figure=ps/gnus-big-logo.eps,height=15cm}
 \vfill
 \rule{15cm}{1mm}\\
 \gnusauthor{by Lars Magne Ingebrigtsen}
@@ -261,7 +265,7 @@
 
 \thispagestyle{empty}
 
-Copyright \copyright{} 1995,96 Free Software Foundation, Inc. 
+Copyright \copyright{} 1995,96,97 Free Software Foundation, Inc. 
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -6333,9 +6337,7 @@ readable to me.
 @vindex gnus-article-x-face-too-ugly
 @iftex
 @iflatex
-\gnusxface{tmp/xface-karlheg.ps}
-\gnusxface{tmp/xface-kyle.ps}
-\gnusxface{tmp/xface-smb.ps}
+\include{xface}
 @end iflatex
 @end iftex
 Look for and display any X-Face headers
@@ -11877,7 +11879,8 @@ Default score of an article, which is 0 by default.
 @vindex gnus-summary-expunge-below
 Don't display the summary lines of articles that have scores lower than
 this variable.  This is @code{nil} by default, which means that no
-articles will be hidden.
+articles will be hidden.  This variable is local to the summary buffers,
+and has to be set from @code{gnus-summary-mode-hook}.
 
 @item gnus-score-over-mark
 @vindex gnus-score-over-mark
@@ -14309,18 +14312,7 @@ advantage of that.
 
 @iftex
 @iflatex
-\gnuspicon{tmp/picons-att.ps}
-\gnuspicon{tmp/picons-berkeley.ps}
-\gnuspicon{tmp/picons-caltech.ps}
-\gnuspicon{tmp/picons-canada.ps}
-\gnuspicon{tmp/picons-cr.ps}
-\gnuspicon{tmp/picons-cygnus.ps}
-\gnuspicon{tmp/picons-gov.ps}
-\gnuspicon{tmp/picons-mit.ps}
-\gnuspicon{tmp/picons-nasa.ps}
-\gnuspicon{tmp/picons-qmw.ps}
-\gnuspicon{tmp/picons-rms.ps}
-\gnuspicon{tmp/picons-ruu.ps}
+\include{picons}
 @end iflatex
 @end iftex
 
@@ -14341,6 +14333,12 @@ over your shoulder as you read news.
 @subsubsection Picon Basics
 
 What are Picons?  To quote directly from the Picons Web site:
+
+@iftex
+@iflatex
+\margindex{}
+@end iflatex
+@end iftex
 
 @quotation 
 @dfn{Picons} is short for ``personal icons''.  They're small,
@@ -14393,6 +14391,12 @@ To enable displaying picons, simply put the following line in your
 @node Hard Picons
 @subsubsection Hard Picons 
 
+@iftex
+@iflatex
+\margindex{}
+@end iflatex
+@end iftex
+
 Gnus can display picons for you as you enter and leave groups and
 articles.  It knows how to interact with three sections of the picons
 database.  Namely, it can display the picons newsgroup pictures,
@@ -14416,20 +14420,6 @@ Groups that are matched by this regexp won't have their group icons
 displayed. 
 
 @end table
-
-@iftex
-@iflatex
-\gnuspicon{tmp/picons-seuu.ps}
-\gnuspicon{tmp/picons-stanford.ps}
-\gnuspicon{tmp/picons-sun.ps}
-\gnuspicon{tmp/picons-ubc.ps}
-\gnuspicon{tmp/picons-ufl.ps}
-\gnuspicon{tmp/picons-uio.ps}
-\gnuspicon{tmp/picons-unit.ps}
-\gnuspicon{tmp/picons-upenn.ps}
-\gnuspicon{tmp/picons-wesleyan.ps}
-@end iflatex
-@end iftex
 
 Note: If you set @code{gnus-use-picons} to @code{t}, it will set up your
 window configuration for you to include the @code{picons} buffer.
@@ -14472,6 +14462,12 @@ for the append flag of @code{add-hook}:
 @node Picon Configuration
 @subsubsection Picon Configuration
 
+@iftex
+@iflatex
+\margindex{}
+@end iflatex
+@end iftex
+
 The following variables offer further control over how things are
 done, where things are located, and other useless stuff you really
 don't need to worry about.
@@ -14511,6 +14507,12 @@ gnus-picons-x-face-file-name)}
 Names a temporary file to store the @code{X-Face} bitmap in.  Defaults
 to @code{(format "/tmp/picon-xface.%s.xbm" (user-login-name))}.
 
+@iftex
+@iflatex
+\margindex{}
+@end iflatex
+@end iftex
+
 @item gnus-picons-buffer
 @vindex gnus-picons-buffer
 The name of the buffer that @code{picons} points to.  Defaults to
@@ -14521,6 +14523,13 @@ The name of the buffer that @code{picons} points to.  Defaults to
 @node Smileys
 @subsection Smileys
 @cindex smileys
+
+@iftex
+@iflatex
+\gnusfig{-3cm}{0.5cm}{\epsfig{figure=tmp/BigFace.ps,height=20cm}}
+\input{smiley}
+@end iflatex
+@end iftex
 
 @dfn{Smiley} is a package separate from Gnus, but since Gnus is
 currently the only package that uses Smiley, it is documented here.
@@ -14546,29 +14555,6 @@ and so on), and @code{smiley-nosey-regexp-alist} (which matches
 
 The alist used is specified by the @code{smiley-regexp-alist} variable,
 which defaults to the value of @code{smiley-deformed-regexp-alist}.
-
-Here's the default value of @code{smiley-smiley-regexp-alist}:
-
-@lisp
-(setq smiley-nosey-regexp-alist
-      '(("\\(:-+[<«]+\\)\\W" 1 "FaceAngry.xpm")
-        ("\\(:-+\\]+\\)\\W" 1 "FaceGoofy.xpm")
-        ("\\(:-+D\\)\\W" 1 "FaceGrinning.xpm")
-        ("\\(:-+[@}»]+\\)\\W" 1 "FaceHappy.xpm")
-        ("\\(:-*)+\\)\\W" 1 "FaceHappy.xpm")        
-        ("\\(:-+[/\\\"]+\\)\\W" 1 "FaceIronic.xpm")
-        ("\\([8|]-+[|Oo%]\\)\\W" 1 "FaceKOed.xpm")
-        ("\\([:|]-+#+\\)\\W" 1 "FaceNyah.xpm")
-        ("\\(:-+[(@{]+\\)\\W" 1 "FaceSad.xpm")
-        ("\\(:-+[Oo\*]\\)\\W" 1 "FaceStartled.xpm")
-        ("\\(:-+|\\)\\W" 1 "FaceStraight.xpm")
-        ("\\(:-+p\\)\\W" 1 "FaceTalking.xpm")
-        ("\\(:-+d\\)\\W" 1 "FaceTasty.xpm")
-        ("\\(;-+[>)@}»]+\\)\\W" 1 "FaceWinking.xpm")
-        ("\\(:-+[Vvµ]\\)\\W" 1 "FaceWry.xpm")
-        ("\\(][:8B]-[)>]\\)\\W" 1 "FaceDevilish.xpm")
-        ("\\([:|]-+P\\)\\W" 1 "FaceYukky.xpm")))
-@end lisp
 
 The first item in each element is the regexp to be matched; the second
 element is the regexp match group that is to be replaced by the picture;
@@ -14610,6 +14596,12 @@ Face used for mouse highlighting over the smiley face.
 @subsection Toolbar
 
 @table @code
+
+@iftex
+@iflatex
+\margindex{}
+@end iflatex
+@end iftex
 
 @item gnus-use-toolbar
 @vindex gnus-use-toolbar
@@ -14658,6 +14650,12 @@ Legal values include @code{flame}, @code{pine}, @code{moss},
 @vindex gnus-xmas-modeline-glyph
 A glyph displayed in all Gnus mode lines.  It is a tiny gnu head by
 default. 
+
+@iftex
+@iflatex
+\margindex{}
+@end iflatex
+@end iftex
 
 @end table
 
@@ -15240,6 +15238,7 @@ Jack Vinson.
 
 Also thanks to the following for patches and stuff:
 
+Jari Aalto,
 Adrian Aichner,
 Peter Arius, 
 Matt Armstrong,
@@ -15280,6 +15279,7 @@ David S. Goldberg,
 Michelangelo Grigni,
 D. Hall, 
 Magnus Hammerin,
+Kenichi Handa, @c ?
 Raja R. Harinath,
 Hisashige Kenji, @c Hisashige
 Marc Horowitz,
@@ -15298,6 +15298,7 @@ Peter Skov Knudsen,
 Shuhei Kobayashi, @c Kobayashi
 Thor Kristoffersen,
 Jens Lautenbacher,
+Seokchan Lee, @c ?
 Carsten Leonhardt,
 James LewisMoss,
 Christian Limpach,
@@ -15325,6 +15326,7 @@ Stephen Peters,
 Ulrich Pfeifer,
 John McClary Prevost,
 Colin Rafferty,
+Lars Balker Rasmussen,
 Bart Robinson,
 Jason Rumney,
 Jay Sachs,
@@ -15353,7 +15355,9 @@ Philippe Troin,
 James Troup,
 Enami Tsugutomo, @c ?
 Aaron M. Ucko, 
+Didier Verna,
 Jan Vroonhof,
+Stefan Waldherr,
 Barry A. Warsaw,
 Christoph Wedler,
 Joe Wells,
@@ -15506,6 +15510,12 @@ You can click on buttons instead of using the keyboard
 @node September Gnus
 @subsubsection September Gnus
 
+@iftex
+@iflatex
+\gnusfig{-28cm}{0cm}{\epsfig{figure=tmp/september.ps,height=20cm}}
+@end iflatex
+@end iftex
+
 New features in Gnus 5.2/5.3:
 
 @itemize @bullet
@@ -15647,6 +15657,11 @@ Configuration}).
 
 @item
 Mail can be re-scanned by a daemonic process (@pxref{Daemons}).
+@iftex
+@iflatex
+\marginpar[\mbox{}\hfill\epsfig{figure=tmp/fseptember.ps,height=5cm}]{\epsfig{figure=tmp/fseptember.ps,height=5cm}}
+@end iflatex
+@end iftex
 
 @item
 Gnus can make use of NoCeM files to weed out spam (@pxref{NoCeM}).
@@ -15741,6 +15756,12 @@ Further syntax checking of outgoing articles have been added.
 @subsubsection Red Gnus
 
 New features in Gnus 5.4/5.5:
+
+@iftex
+@iflatex
+\gnusfig{-5.5cm}{-4cm}{\epsfig{figure=tmp/red.ps,height=20cm}}
+@end iflatex
+@end iftex
 
 @itemize @bullet
 
@@ -15865,7 +15886,12 @@ Groups}).
 @item
 Cached articles can be pulled into the groups (@pxref{Summary Generation
 Commands}).
-  
+@iftex
+@iflatex
+\marginpar[\mbox{}\hfill\epsfig{figure=tmp/fred.ps,width=3cm}]{\epsfig{figure=tmp/fred.ps,width=3cm}}
+@end iflatex
+@end iftex
+
 @item
 Score files are now applied in a more reliable order (@pxref{Score
 Variables}).

@@ -145,7 +145,7 @@
 
 (defun gnus-byte-code (func)
   "Return a form that can be `eval'ed based on FUNC."
-  (let ((fval (symbol-function func)))
+  (let ((fval (indirect-function func)))
     (if (byte-code-function-p fval)
 	(let ((flist (append fval nil)))
 	  (setcar flist 'byte-code)

@@ -98,8 +98,6 @@ all.  This may very well take some time.")
       (let ((file nil)
 	    (number (length sequence))
 	    (count 0)
-	    ;; 1997/8/12 by MORIOKA Tomohiko
-	    ;;	for XEmacs/mule.
 	    (pathname-coding-system 'binary)
 	    beg article)
 	(if (stringp (car sequence))
@@ -560,8 +558,6 @@ all.  This may very well take some time.")
   (if (not group)
       t
     (let ((pathname (nnmail-group-pathname group nnml-directory))
-	  ;; 1997/8/14 by MORIOKA Tomohiko
-	  ;;	for XEmacs/mule.
 	  (pathname-coding-system 'binary))
       (when (not (equal pathname nnml-current-directory))
 	(setq nnml-current-directory pathname

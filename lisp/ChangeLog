@@ -1,3 +1,117 @@
+Sun Nov 23 16:21:41 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.14 is released.
+
+Sun Nov 23 14:04:07 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-read-descriptions-file): Make sure Mule is
+	bound.  And gagged.
+
+	* message.el (message-send-mail-with-mh): Use
+	`mh-new-draft-name'. 
+
+	* nnfolder.el (nnfolder-read-folder): Save new buffers.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): Removed "write to
+	file". 
+
+	* gnus-util.el (gnus-byte-code): Use indirect-function.
+
+	* nntp.el (nntp-open-telnet): Also accept 201.
+
+	* gnus-sum.el (gnus-summary-reparent-thread): Update thread.
+
+	* gnus-score.el (gnus-all-score-files): Don't do anything unless
+	GROUP. 
+
+	* nnmail.el (nnmail-split-it): Save-excursion.
+	(nnmail-group-pathname): Translate file chars.
+
+Sun Nov 23 13:41:10 1997  Gunnar Horrigmo  <horrigmo@online.no>
+
+	* gnus-sum.el (gnus-summary-exit): Don't skip if group
+	disappeared. 
+
+Sun Nov 23 13:32:55 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nnfolder.el (nnfolder-normalize-buffer): New function.
+	(nnfolder-save-mail): Use it.
+	(nnfolder-request-replace-article): Ditto.
+
+1997-11-19  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* message.el (message-header-lines): New widget.
+	(message-default-headers): Use it.
+	(message-default-mail-headers): Use it.
+	(message-default-news-headers): Use it.
+
+Sun Nov 23 12:44:38 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-win.el (gnus-remove-some-windows): Also delete dead summary
+	windows.
+
+	* gnus-score.el (gnus-score-adaptive): Check whether functions are
+	bound.
+
+Sun Nov 23 12:15:00 1997  Hallvard B. Furuseth  <h.b.furuseth@usit.uio.no>
+
+	* gnus-sum.el (gnus-summary-limit-include-thread): Interactive
+	fix. 
+
+Sun Nov 23 07:06:58 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-reparent-thread): Insert Message-ID in
+	proper place.
+
+Sat Nov 22 18:30:33 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cus.el (gnus-group-parameters): Add visible.
+
+Sat Nov 22 18:19:39 1997  Kim-Minh Kaplan  <kkaplan@lpthe.jussieu.fr>
+
+	* message.el (message-setup): Add a newline, if necessary.
+
+Sat Nov 22 18:04:34 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-mh.el (gnus-summary-save-in-folder): Fix for default.
+
+Sat Nov 22 18:01:26 1997  Didier Verna  <verna@inf.enst.fr>
+
+	* gnus-sum.el (gnus-summary-remove-bookmark): Interactive spec. 
+
+Mon Nov 17 23:50:51 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-art.el (article-display-x-face): Fold case.
+
+Thu Nov 13 22:57:23 1997  Kenichi Handa  <handa@etl.go.jp>
+
+	* gnus/gnus-start.el (gnus-read-descriptions-file): Decode
+	description if necessary.
+
+	* gnus/nntp.el (nntp-coding-system-for-read): Set default value to
+	binary.
+	(nntp-coding-system-for-write): Likewise.
+
+Thu Nov 13 22:30:19 1997  seokchan lee  <chan@xfer.kren.nm.kr>
+
+	* message.el (message-ignored-supersedes-headers): Ignore more
+	headers. 
+
+Thu Nov 13 22:28:13 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-separator-face): Lightened up.
+	(message-header-other-face): Ditto.
+
+Thu Nov 13 22:22:11 1997  jari aalto  <jari.aalto@poboxes.com>
+
+	* nnmail.el (nnmail-process-mmdf-mail-format): Pop to buffer.
+
+Thu Nov 13 22:09:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-start-draft-setup): Always create group.
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Translate file chars.
+
 Thu Nov  6 20:43:05 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.13 is released.

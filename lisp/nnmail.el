@@ -503,6 +503,7 @@ parameter.  It should return nil, `warn' or `delete'."
   "Make pathname for GROUP."
   (concat
    (let ((dir (file-name-as-directory (expand-file-name dir))))
+     (setq group (nnheader-translate-file-chars group))
      ;; If this directory exists, we use it directly.
      (if (or nnmail-use-long-file-names
 	     (file-directory-p (concat dir group)))
@@ -875,7 +876,9 @@ is a spool.  If not using procmail, return GROUP."
     (if (not (and (re-search-forward "^From " nil t)
 		  (goto-char (match-beginning 0))))
 	;; Possibly wrong format?
-	(error "Error, unknown mail format! (Possibly corrupted.)")
+	(progn
+	  (pop-to-buffer (current-buffer))
+	  (error "Error, unknown mail format! (Possibly corrupted.)"))
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point)
@@ -960,7 +963,9 @@ is a spool.  If not using procmail, return GROUP."
     (if (not (and (re-search-forward delim nil t)
 		  (forward-line 1)))
 	;; Possibly wrong format?
-	(error "Error, unknown mail format! (Possibly corrupted.)")
+	(progn
+	  (pop-to-buffer (current-buffer))
+	  (error "Error, unknown mail format! (Possibly corrupted.)"))
       ;; Carry on until the bitter end.
       (while (not (eobp))
 	(setq start (point))
@@ -1246,7 +1251,7 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 
    ;; Builtin : operation.
    ((eq (car split) ':)
-    (nnmail-split-it (eval (cdr split))))
+    (nnmail-split-it (save-excursion (eval (cdr split)))))
 
    ;; Check the cache for the regexp for this split.
    ;; FIX FIX FIX could avoid calling assq twice here

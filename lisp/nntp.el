@@ -153,8 +153,11 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defvoo nntp-warn-about-losing-connection t
   "*If non-nil, beep when a server closes connection.")
 
-(defvoo nntp-coding-system-for-read nil
-  "*coding-system for read from NNTP.")
+(defvoo nntp-coding-system-for-read 'binary
+  "*Coding system to read from NNTP.")
+
+(defvoo nntp-coding-system-for-write 'binary
+    "*Coding system to write to NNTP.")
 
 
 
@@ -1080,7 +1083,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	(nntp-wait-for-string "bash\\|\$ *\r?$\\|> *\r?")
 	(process-send-string
 	 proc (concat (mapconcat 'identity nntp-telnet-parameters " ") "\n"))
-	(nntp-wait-for-string "^\r*200")
+	(nntp-wait-for-string "^\r*20[01]")
 	(beginning-of-line)
 	(delete-region (point-min) (point))
 	(process-send-string proc "\^]")
@@ -1106,7 +1109,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 		 (mapconcat 'identity
 			    nntp-rlogin-parameters " ")))))
     (set-buffer buffer)
-    (nntp-wait-for-string "^\r*200")
+    (nntp-wait-for-string "^\r*20[01]")
     (beginning-of-line)
     (delete-region (point-min) (point))
     proc))

@@ -572,7 +572,8 @@ Some functions you can use are `+', `max', or `min'."
   :type 'function)
 
 (defcustom gnus-summary-expunge-below nil
-  "All articles that have a score less than this variable will be expunged."
+  "All articles that have a score less than this variable will be expunged.
+This variable is local to the summary buffers."
   :group 'gnus-score-default
   :type '(choice (const :tag "off" nil)
 		 integer))
@@ -580,7 +581,9 @@ Some functions you can use are `+', `max', or `min'."
 (defcustom gnus-thread-expunge-below nil
   "All threads that have a total score less than this variable will be expunged.
 See `gnus-thread-score-function' for en explanation of what a
-\"thread score\" is."
+\"thread score\" is.
+
+This variable is local to the summary buffers."
   :group 'gnus-treading
   :group 'gnus-score-default
   :type '(choice (const :tag "off" nil)
@@ -1600,7 +1603,6 @@ increase the score of each group you read."
 	["Save in default format" gnus-summary-save-article t]
 	["Save in file" gnus-summary-save-article-file t]
 	["Save in Unix mail format" gnus-summary-save-article-mail t]
-	["Write to file" gnus-summary-write-article-mail t]
 	["Save in MH folder" gnus-summary-save-article-folder t]
 	["Save in VM folder" gnus-summary-save-article-vm t]
 	["Save in RMAIL mbox" gnus-summary-save-article-rmail t]
@@ -2690,6 +2692,8 @@ If NO-DISPLAY, don't generate a summary buffer."
 	(and gnus-show-threads
 	     gnus-thread-hide-subtree
 	     (gnus-summary-hide-all-threads))
+	(when kill-buffer
+	  (gnus-kill-or-deaden-summary kill-buffer))
 	;; Show first unread article if requested.
 	(if (and (not no-article)
 		 (not no-display)
@@ -2704,9 +2708,7 @@ If NO-DISPLAY, don't generate a summary buffer."
 	  (goto-char (point-min))
 	  (gnus-summary-position-point)
 	  (gnus-set-mode-line 'summary)
-	  (gnus-configure-windows 'summary 'force))
-	(when kill-buffer
-	  (gnus-kill-or-deaden-summary kill-buffer))
+	  (gnus-configure-windows 'summary 'force))	
 	(when (get-buffer-window gnus-group-buffer t)
 	  ;; Gotta use windows, because recenter does weird stuff if
 	  ;; the current buffer ain't the displayed window.
@@ -5053,7 +5055,10 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
     (unless quit-config
       (gnus-group-jump-to-group group))
     (run-hooks 'gnus-summary-exit-hook)
-    (unless quit-config
+    (unless (or quit-config
+		;; If this group has disappeared from the summary
+		;; buffer, don't skip forwards.
+		(not (string= group (gnus-group-group-name))))
       (gnus-group-next-unread-group 1))
     (setq group-point (point))
     (if temporary
@@ -5982,7 +5987,7 @@ Returns how many articles were removed."
 
 (defun gnus-summary-limit-include-thread (id)
   "Display all the hidden articles that in the current thread."
-  (interactive (mail-header-id (gnus-summary-article-header)))
+  (interactive (list (mail-header-id (gnus-summary-article-header))))
   (gnus-set-global-variables)
   (let ((articles (gnus-articles-in-thread
 		   (gnus-id-to-thread (gnus-root-id id)))))
@@ -7487,7 +7492,7 @@ the actual number of articles marked is returned."
 
 (defun gnus-summary-set-bookmark (article)
   "Set a bookmark in current article."
-  (interactive (gnus-summary-article-number))
+  (interactive (list (gnus-summary-article-number)))
   (gnus-set-global-variables)
   (when (or (not (get-buffer gnus-article-buffer))
 	    (not gnus-current-article)
@@ -7517,7 +7522,7 @@ the actual number of articles marked is returned."
 
 (defun gnus-summary-remove-bookmark (article)
   "Remove the bookmark from the current article."
-  (interactive (gnus-summary-article-number))
+  (interactive (list (gnus-summary-article-number)))
   (gnus-set-global-variables)
   ;; Remove old bookmark, if one exists.
   (let ((old (assq article gnus-newsgroup-bookmarks)))
@@ -8118,8 +8123,12 @@ is non-nil or the Subject: of both articles are the same."
 	  (nnheader-temp-write nil
 	    (insert buf)
 	    (goto-char (point-min))
-	    (if (search-forward-regexp "^References: " nil t)
-		(insert message-id " " )
+	    (if (re-search-forward "^References: " nil t)
+		(progn
+		  (re-search-forward "^[^ \t]" nil t)
+		  (forward-line -1)
+		  (end-of-line)
+		  (insert " " message-id))
 	      (insert "References: " message-id "\n"))
 	    (unless (gnus-request-replace-article
 		     current-article (car gnus-article-current)
@@ -8127,6 +8136,7 @@ is non-nil or the Subject: of both articles are the same."
 	      (error "Couldn't replace article"))))
 	(set-buffer gnus-summary-buffer)
 	(gnus-summary-unmark-all-processable)
+	(gnus-summary-update-article current-article)
 	(gnus-summary-rethread-current)
 	(gnus-message 3 "Article %d is now the child of article %d"
 		      current-article parent-article)))))
@@ -8710,7 +8720,7 @@ save those articles instead."
 
 (defun gnus-summary-edit-global-kill (article)
   "Edit the \"global\" kill file."
-  (interactive (gnus-summary-article-number))
+  (interactive (list (gnus-summary-article-number)))
   (gnus-set-global-variables)
   (gnus-group-edit-global-kill article))
 

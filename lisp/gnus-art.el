@@ -878,7 +878,7 @@ characters to translate to."
     (when (process-status "article-x-face")
       (delete-process "article-x-face"))
     (let ((inhibit-point-motion-hooks t)
-	  (case-fold-search nil)
+	  (case-fold-search t)
 	  from)
       (save-restriction
 	(nnheader-narrow-to-headers)

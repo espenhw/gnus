@@ -512,7 +512,8 @@ articles in the topic and its subtopics."
 	 (indentation (make-string (* gnus-topic-indent-level level) ? ))
 	 (total-number-of-articles unread)
 	 (number-of-groups (length entries))
-	 (active-topic (eq gnus-topic-alist gnus-topic-active-alist)))
+	 (active-topic (eq gnus-topic-alist gnus-topic-active-alist))
+	 gnus-tmp-header)
     (beginning-of-line)
     ;; Insert the text.
     (gnus-add-text-properties

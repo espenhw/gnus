@@ -608,9 +608,10 @@ the actual number of articles toggled is returned."
 	    (if (not (re-search-forward "^Message-ID: *<\\([^>\n]+\\)>" nil t))
 		(setq id "No-Message-ID-in-article")
 	      (setq id (buffer-substring (match-beginning 1) (match-end 1))))
-	    (write-region (point-min) (point-max)
-			  (concat dir (number-to-string (caar pos)))
-			  nil 'silent)
+	    (let ((coding-system-for-write gnus-agent-article-file-coding-system))
+	      (write-region (point-min) (point-max)
+			    (concat dir (number-to-string (caar pos)))
+			    nil 'silent))
 	    (when (setq elem (assq (caar pos) gnus-agent-article-alist))
 	      (setcdr elem t))
 	    (gnus-agent-enter-history
@@ -686,7 +687,8 @@ the actual number of articles toggled is returned."
 	  (when (file-exists-p
 		 (setq file (gnus-agent-article-name ".overview" group)))
 	    (gnus-agent-braid-nov group articles file))
-	  (gnus-make-directory (file-name-directory file))
+	  (gnus-make-directory (nnheader-translate-file-chars
+				(file-name-directory file)))
 	  (write-region (point-min) (point-max) file nil 'silent)
 	  (gnus-agent-save-alist group articles nil))
 	t))))

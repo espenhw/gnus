@@ -155,7 +155,11 @@ Which articles to display on entering the group.
      unread and ticked articles.")
 
     (comment (string :tag  "Comment") "\
-An arbitrary comment on the group."))
+An arbitrary comment on the group.")
+
+    (visible (const :tag "Permanently visible" t) "\
+Always display this group, even when there are no unread articles
+in it.."))
   "Alist of valid group parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter

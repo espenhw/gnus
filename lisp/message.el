@@ -211,7 +211,7 @@ included.  Organization, Lines and X-Mailer are optional."
   :group 'message-headers
   :type 'regexp)
 
-(defcustom message-ignored-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\|Return-Path:\\|^Supersedes:"
+(defcustom message-ignored-supersedes-headers "^Path:\\|^Date\\|^NNTP-Posting-Host:\\|^Xref:\\|^Lines:\\|^Received:\\|^X-From-Line:\\||X-Trace:\\|X-Complaints-To:\\|Return-Path:\\|^Supersedes:"
   "*Header lines matching this regexp will be deleted before posting.
 It's best to delete old Path and Date headers before posting to avoid
 any confusion."
@@ -537,25 +537,30 @@ If stringp, use this; if non-nil, use no host name (user name only)."
 (defvar message-postpone-actions nil
   "A list of actions to be performed after postponing a message.")
 
+(define-widget 'message-header-lines 'text
+  "All header lines must be LFD terminated."
+  :valid-regexp "^\\'"
+  :error "All header lines must be newline terminated")
+
 (defcustom message-default-headers ""
   "*A string containing header lines to be inserted in outgoing messages.
 It is inserted before you edit the message, so you can edit or delete
 these lines."
   :group 'message-headers
-  :type 'string)
+  :type 'message-header-lines)
 
 (defcustom message-default-mail-headers ""
   "*A string of header lines to be inserted in outgoing mails."
   :group 'message-headers
   :group 'message-mail
-  :type 'string)
+  :type 'message-header-lines)
 
 (defcustom message-default-news-headers ""
   "*A string of header lines to be inserted in outgoing news
 articles."
   :group 'message-headers
   :group 'message-news
-  :type 'string)
+  :type 'message-header-lines)
 
 ;; Note: could use /usr/ucb/mail instead of sendmail;
 ;; options -t, and -v if not interactive.
@@ -683,7 +688,7 @@ Defaults to `text-mode-abbrev-table'.")
 (defface message-header-other-face
   '((((class color)
       (background dark))
-     (:foreground "red4"))
+     (:foreground "#b00000"))
     (((class color)
       (background light))
      (:foreground "steel blue"))
@@ -719,7 +724,7 @@ Defaults to `text-mode-abbrev-table'.")
 (defface message-separator-face
   '((((class color)
       (background dark))
-     (:foreground "blue4"))
+     (:foreground "blue3"))
     (((class color)
       (background light))
      (:foreground "brown"))
@@ -897,6 +902,7 @@ The cdr of ech entry is a function for applying the face to a region.")
 
 (eval-and-compile
   (autoload 'message-setup-toolbar "messagexmas")
+  (autoload 'mh-new-draft-name "mh-comp")
   (autoload 'mh-send-letter "mh-comp")
   (autoload 'gnus-point-at-eol "gnus-util")
   (autoload 'gnus-point-at-bol "gnus-util")
@@ -1537,7 +1543,7 @@ message-elide-elipsis) will be inserted where the text was killed."
 
 (defun message-caesar-buffer-body (&optional rotnum)
   "Caesar rotates all letters in the current buffer by 13 places.
-Used to encode/decode possibly offensive messages (commonly in net.jokes).
+Used to encode/decode possiblyun offensive messages (commonly in net.jokes).
 With prefix arg, specifies the number of places to rotate each letter forward.
 Mail and USENET news headers are not rotated."
   (interactive (if current-prefix-arg
@@ -2022,10 +2028,7 @@ to find out how to use this."
 (defun message-send-mail-with-mh ()
   "Send the prepared message buffer with mh."
   (let ((mh-previous-window-config nil)
-	(name (make-temp-name
-	       (concat (file-name-as-directory
-			(expand-file-name message-autosave-directory))
-		       "msg."))))
+	(name (mh-new-draft-name)))
     (setq buffer-file-name name)
     ;; MH wants to generate these headers itself.
     (when message-mh-deletable-headers
@@ -3026,7 +3029,8 @@ Headers already prepared in the buffer are not modified."
    headers)
   (delete-region (point) (progn (forward-line -1) (point)))
   (when message-default-headers
-    (insert message-default-headers))
+    (insert message-default-headers)
+    (or (bolp) (insert ?\n)))
   (put-text-property
    (point)
    (progn
@@ -3036,7 +3040,8 @@ Headers already prepared in the buffer are not modified."
   (forward-line -1)
   (when (message-news-p)
     (when message-default-news-headers
-      (insert message-default-news-headers))
+      (insert message-default-news-headers)
+      (or (bolp) (insert ?\n)))
     (when message-generate-headers-first
       (message-generate-headers
        (delq 'Lines
@@ -3044,7 +3049,8 @@ Headers already prepared in the buffer are not modified."
 		   (copy-sequence message-required-news-headers))))))
   (when (message-mail-p)
     (when message-default-mail-headers
-      (insert message-default-mail-headers))
+      (insert message-default-mail-headers)
+      (or (bolp) (insert ?\n)))
     (when message-generate-headers-first
       (message-generate-headers
        (delq 'Lines

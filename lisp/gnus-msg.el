@@ -840,6 +840,7 @@ The source file has to be in the Emacs load path."
 		 "gnus-art.el" "gnus-start.el" "gnus-async.el"
 		 "gnus-msg.el" "gnus-score.el" "gnus-win.el" "gnus-topic.el"
 		 "nnmail.el" "message.el"))
+	(point (point))
 	file expr olist sym)
     (gnus-message 4 "Please wait while we snoop your variables...")
     (sit-for 0)
@@ -885,11 +886,12 @@ The source file has to be in the Emacs load path."
 	(insert ";; (makeunbound '" (symbol-name (car olist)) ")\n"))
       (setq olist (cdr olist)))
     (insert "\n\n")
-    ;; Remove any null chars - they seem to cause trouble for some
+    ;; Remove any control chars - they seem to cause trouble for some
     ;; mailers.  (Byte-compiled output from the stuff above.)
-    (goto-char (point-min))
-    (while (re-search-forward "[\000\200]" nil t)
-      (replace-match "" t t))))
+    (goto-char point)
+    (while (re-search-forward "[\000-\010\013-\037\200-\237]" nil t)
+      (replace-match (format "\\%03o" (string-to-char (match-string 0)))
+		     t t))))
 
 ;;; Treatment of rejected articles.
 ;;; Bounced mail.

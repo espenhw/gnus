@@ -2088,7 +2088,7 @@ SCORE is the score to add."
 	       (alist malist)
 	       (date (current-time-string))
 	       (data gnus-newsgroup-data)
-	       elem headers match)
+	       elem headers match func)
 	  ;; First we transform the adaptive rule alist into something
 	  ;; that's faster to process.
 	  (while malist
@@ -2097,19 +2097,21 @@ SCORE is the score to add."
 	      (setcar elem (symbol-value (car elem))))
 	    (setq elem (cdr elem))
 	    (while elem
-	      (setcdr (car elem)
-		      (cons (if (eq (caar elem) 'followup)
-				"references"
-			      (symbol-name (caar elem)))
-			    (cdar elem)))
-	      (setcar (car elem)
-		      `(lambda (h)
-			 (,(intern
+	      (when (fboundp
+		     (setq func
+			   (intern
 			    (concat "mail-header-"
 				    (if (eq (caar elem) 'followup)
 					"message-id"
-				      (downcase (symbol-name (caar elem))))))
-			  h)))
+				      (downcase (symbol-name (caar elem))))))))
+		(setcdr (car elem)
+			(cons (if (eq (caar elem) 'followup)
+				  "references"
+				(symbol-name (caar elem)))
+			      (cdar elem)))
+		(setcar (car elem)
+			`(lambda (h)
+			   (,func h))))
 	      (setq elem (cdr elem)))
 	    (setq malist (cdr malist)))
 	  ;; Then we score away.
@@ -2597,57 +2599,58 @@ The list is determined from the variable gnus-score-file-alist."
   (let ((funcs gnus-score-find-score-files-function)
 	(group (or group gnus-newsgroup-name))
 	score-files)
-    ;; Make sure funcs is a list.
-    (and funcs
-	 (not (listp funcs))
-	 (setq funcs (list funcs)))
-    ;; Get the initial score files for this group.
-    (when funcs
-      (setq score-files (nreverse (gnus-score-find-alist group))))
-    ;; Add any home adapt files.
-    (let ((home (gnus-home-score-file group t)))
-      (when home
-	(push home score-files)
-	(setq gnus-newsgroup-adaptive-score-file home)))
-    ;; Check whether there is a `adapt-file' group parameter.
-    (let ((param-file (gnus-group-find-parameter group 'adapt-file)))
-      (when param-file
-	(push param-file score-files)
-	(setq gnus-newsgroup-adaptive-score-file param-file)))
-    ;; Go through all the functions for finding score files (or actual
-    ;; scores) and add them to a list.
-    (while funcs
-      (when (gnus-functionp (car funcs))
-	(setq score-files
-	      (nconc score-files (nreverse (funcall (car funcs) group)))))
-      (setq funcs (cdr funcs)))
-    ;; Add any home score files.
-    (let ((home (gnus-home-score-file group)))
-      (when home
-	(push home score-files)))
-    ;; Check whether there is a `score-file' group parameter.
-    (let ((param-file (gnus-group-find-parameter group 'score-file)))
-      (when param-file
-	(push param-file score-files)))
-    ;; Expand all files names.
-    (let ((files score-files))
-      (while files
-	(when (stringp (car files))
-	  (setcar files (expand-file-name
-			 (car files) gnus-kill-files-directory)))
-	(pop files)))
-    (setq score-files (nreverse score-files))
-    ;; Remove any duplicate score files.
-    (while (and score-files
-		(member (car score-files) (cdr score-files)))
-      (pop score-files))
-    (let ((files score-files))
-      (while (cdr files)
- 	(if (member (cadr files) (cddr files))
- 	    (setcdr files (cddr files))
- 	  (pop files))))
-    ;; Do the scoring if there are any score files for this group.
-    score-files))
+    (when group
+      ;; Make sure funcs is a list.
+      (and funcs
+	   (not (listp funcs))
+	   (setq funcs (list funcs)))
+      ;; Get the initial score files for this group.
+      (when funcs
+	(setq score-files (nreverse (gnus-score-find-alist group))))
+      ;; Add any home adapt files.
+      (let ((home (gnus-home-score-file group t)))
+	(when home
+	  (push home score-files)
+	  (setq gnus-newsgroup-adaptive-score-file home)))
+      ;; Check whether there is a `adapt-file' group parameter.
+      (let ((param-file (gnus-group-find-parameter group 'adapt-file)))
+	(when param-file
+	  (push param-file score-files)
+	  (setq gnus-newsgroup-adaptive-score-file param-file)))
+      ;; Go through all the functions for finding score files (or actual
+      ;; scores) and add them to a list.
+      (while funcs
+	(when (gnus-functionp (car funcs))
+	  (setq score-files
+		(nconc score-files (nreverse (funcall (car funcs) group)))))
+	(setq funcs (cdr funcs)))
+      ;; Add any home score files.
+      (let ((home (gnus-home-score-file group)))
+	(when home
+	  (push home score-files)))
+      ;; Check whether there is a `score-file' group parameter.
+      (let ((param-file (gnus-group-find-parameter group 'score-file)))
+	(when param-file
+	  (push param-file score-files)))
+      ;; Expand all files names.
+      (let ((files score-files))
+	(while files
+	  (when (stringp (car files))
+	    (setcar files (expand-file-name
+			   (car files) gnus-kill-files-directory)))
+	  (pop files)))
+      (setq score-files (nreverse score-files))
+      ;; Remove any duplicate score files.
+      (while (and score-files
+		  (member (car score-files) (cdr score-files)))
+	(pop score-files))
+      (let ((files score-files))
+	(while (cdr files)
+	  (if (member (cadr files) (cddr files))
+	      (setcdr files (cddr files))
+	    (pop files))))
+      ;; Do the scoring if there are any score files for this group.
+      score-files)))
 
 (defun gnus-possibly-score-headers (&optional trace)
   "Do scoring if scoring is required."
