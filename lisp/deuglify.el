@@ -388,7 +388,7 @@ NODISPLAY is non-nil, don't redisplay the article buffer."
       (gnus-with-article-buffer
 	(article-goto-body)
 	(if (re-search-forward
-	     (concat "^[" cite-marks " \t]*----* ?[^-]+ [^-]+ ?----*\n"
+            (concat "^[" cite-marks " \t]*--* ?[^-]+ [^-]+ ?--*\\s *\n"
 		     "[^\n:]+:[ \t]*\\([^\n]+\\)\n"
 		     "\\([^\n:]+:[ \t]*[^\n]+\n\\)+")
 	     nil t)

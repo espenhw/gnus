@@ -1,3 +1,17 @@
+2003-03-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch-imap): Revert.
+
+2003-03-22  Svend Tollak Munkejord  <stm@bacchus.pvv.org>
+
+	* deuglify.el (gnus-outlook-repair-attribution-outlook): Use a
+	less strict regexp.
+
+2003-03-22  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mail-source.el (mail-source-fetch-imap): Use buffer name for
+	more imap function.
+
 2003-03-21  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-art.el (article-decode-group-name): Replace Newsgroups and
