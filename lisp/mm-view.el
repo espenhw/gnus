@@ -281,9 +281,7 @@ will not be substituted.")
 	(when charset
 	  (delete-region (point-min) (point-max))
 	  (insert (mm-decode-string text charset)))
-	(let ((w3m-safe-url-regexp (if mm-inline-text-html-with-images
-				       nil
-				     "\\`cid:"))
+	(let ((w3m-safe-url-regexp mm-w3m-safe-url-regexp)
 	      (w3m-display-inline-images mm-inline-text-html-with-images)
 	      w3m-force-redisplay)
 	  (w3m-region (point-min) (point-max)))

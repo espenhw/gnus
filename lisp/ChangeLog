@@ -1,3 +1,11 @@
+2002-07-24  Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* mm-decode.el (mm-inline-text-html-with-images): Doc fix.
+	(mm-w3m-safe-url-regexp): New user option.
+
+	* mm-view.el (mm-inline-text-html-render-with-w3m): Use
+	`mm-w3m-safe-url-regexp' to bind `w3m-safe-url-regexp'.
+
 2002-07-23  Karl Kleinpaste  <karl@charcoal.com>
 
 	* gnus-sum.el (gnus-summary-delete-article): Force
@@ -9,7 +17,7 @@
 
 	* nnmail.el (nnmail-fancy-expiry-target): Treat nonexisting
 	headers as empty headers.
-	
+
 2002-07-21  Kai Gro,b_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Jochen Hein <jochen@jochen.org>.
 
@@ -37,12 +45,12 @@
 	spams.
 	(gnus-newsgroup-spam-marked): New variable.
 	(gnus-summary-local-variables): Add gnus-newsgroup-spam-marked.
-	(gnus-article-read-p, gnus-article-mark) 
-	(gnus-set-global-variables, gnus-set-global-variables) 
-	(gnus-article-marked-p, gnus-summary-mark-article-as-read) 
-	(gnus-summary-mark-article-as-unread) 
-	(gnus-summary-mark-article-as-unread, gnus-summary-mark-article) 
-	(gnus-mark-article-as-read, gnus-mark-article-as-unread) 
+	(gnus-article-read-p, gnus-article-mark)
+	(gnus-set-global-variables, gnus-set-global-variables)
+	(gnus-article-marked-p, gnus-summary-mark-article-as-read)
+	(gnus-summary-mark-article-as-unread)
+	(gnus-summary-mark-article-as-unread, gnus-summary-mark-article)
+	(gnus-mark-article-as-read, gnus-mark-article-as-unread)
 	(gnus-mark-article-as-unread, gnus-summary-catchup): Grok spam.
 
 2002-07-10  Simon Josefsson  <jas@extundo.com>
@@ -70,7 +78,7 @@
 	* gnus-topic.el (gnus-topic-indent, gnus-topic-unindent): Change
 	cdaar to cdar and car.
 
-	* nnsoup.el (nnsoup-retrieve-headers, nnsoup-request-type) 
+	* nnsoup.el (nnsoup-retrieve-headers, nnsoup-request-type)
 	(nnsoup-read-active-file, nnsoup-article-to-area): Ditto.
 
 2002-07-05  Katsumi Yamaoka <yamaoka@jpl.org>

@@ -127,13 +127,22 @@ It is suggested to customize `mm-text-html-renderer' instead.")
 
 (defcustom mm-inline-text-html-with-images nil
   "If non-nil, Gnus will allow retrieving images in the HTML contents
-with <img> tags.  It has no effect on Emacs/w3.  For emacs-w3m, the
-value of the option `w3m-display-inline-images' will be bound with
-this value.  In addition, the variable `w3m-safe-url-regexp' will be
-bound with the value nil if it is non-nil to make emacs-w3m show all
-images, however this behavior may be changed in the future."
+with <img> tags.  It has no effect on Emacs/w3.  See also
+the documentation for the option `mm-w3m-safe-url-regexp'."
   :type 'boolean
   :group 'mime-display)
+
+(defcustom mm-w3m-safe-url-regexp "\\`cid:"
+  "Regexp that matches safe url names.  Some HTML mails might have a
+trick of spammers using <img> tags.  It is likely to be intended to
+verify whether you have read the mail.  You can prevent your personal
+informations from leaking by setting this to the regexp which matches
+the safe url names.  The value of the variable `w3m-safe-url-regexp'
+will be bound with this value.  You may set this value to nil if you
+consider all the urls to be safe."
+  :type '(choice (regexp :tag "Regexp")
+		 (const :tag "All URLs are safe" nil)
+  :group 'mime-display))
 
 (defcustom mm-inline-text-html-with-w3m-keymap t
   "If non-nil, use emacs-w3m command keys in the article buffer."
@@ -681,9 +690,9 @@ external if displayed external."
 	  ;; We create a private sub-directory where we store our files.
 	  (set-file-modes dir 448)
 	  (if filename
-	      (setq file (expand-file-name 
+	      (setq file (expand-file-name
 			  (gnus-map-function mm-file-name-rewrite-functions
-                                             (file-name-nondirectory filename))
+					     (file-name-nondirectory filename))
 			  dir))
 	    (setq file (mm-make-temp-file (expand-file-name "mm." dir))))
 	  (let ((coding-system-for-write mm-binary-coding-system))
