@@ -1,3 +1,8 @@
+2000-09-13 09:38:26  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-util.el (gnus-write-active-file): Bind
+	coding-system-for-write.
+
 2000-09-13 09:14:57  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* nnmail.el (nnmail-get-new-mail): Don't test nnmail-spool-file.
