@@ -232,7 +232,7 @@ as unread by Gnus.")
 	  (goto-char (point-max))
 	  (insert
 	   (format
-	    "%s %d %d y\n"
+	    "%s %.0f %.0f y\n"
 	    (progn
 	      (string-match
 	       (regexp-quote
