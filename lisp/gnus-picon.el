@@ -211,8 +211,9 @@ To use:  (setq gnus-article-x-face-command 'gnus-picons-display-x-face)"
     (when (and (featurep 'xpm) 
 	       (or (not (fboundp 'device-type)) (equal (device-type) 'x))
 	       (setq from (mail-fetch-field "from"))
-	       (setq from (downcase (cadr (mail-extract-address-components
-					   from)))
+	       (setq from (downcase (or (cadr (mail-extract-address-components
+					       from))
+					""))
 		     at-idx (string-match "@" from)))
       (save-excursion
 	(let ((username (substring from 0 at-idx))

@@ -35,7 +35,7 @@ load it.  When done editing, push the [Save] button to save the file.
 Several score files may apply to each group, and several groups may
 use the same score file.  This is controlled implicitly by the name of
 the score file and the value of the global variable
-`gnus-score-find-score-files-function', and explicitly by the the
+`gnus-score-find-score-files-function', and explicitly by the
 `Files' and `Exclude Files' entries.") 
 	   (compact . t)
 	   (type . group)
@@ -53,7 +53,7 @@ the score file and the value of the global variable
 	  ((name . files)
 	   (tag . "Files")
 	   (doc . "\
-List of score files to load when the the current score file is loaded.
+List of score files to load when the current score file is loaded.
 You can use this to share score entries between multiple score files.
 
 Push the `[INS]' button add a score file to the list, or `[DEL]' to
@@ -66,7 +66,7 @@ delete a score file from the list.")
 	  ((name . exclude-files)
 	   (tag . "Exclude Files")
 	   (doc . "\
-List of score files to exclude when the the current score file is loaded.
+List of score files to exclude when the current score file is loaded.
 You can use this if you have a score file you want to share between a
 number of newsgroups, except for the newsgroup this score file
 matches.  [ Did anyone get that? ]
@@ -138,7 +138,7 @@ entry.  To make the entry expirable, choose instead the `Integer'
 entry.  After choosing the you can enter the date the score entry was
 last matched in the `Date' field.  The date will be automatically
 updated each time the score entry matches an article.  When the date
-become too old, the the score entry will be removed.
+become too old, the score entry will be removed.
 
 For your convenience, the date is specified as the number of days
 elapsed since the (imaginary) Gregorian date Sunday, December 31, 1
@@ -292,7 +292,7 @@ rules (overwriting `gnus-default-adaptive-score-alist').")
 		  (doc . "Customization of adaptive scoring.
 
 Each time you read an article it will be marked as read.  Likewise, if
-you delete it it will be marked as deleted, and if you tick it it will
+you delete it, it will be marked as deleted, and if you tick it, it will
 be marked as ticked.  When you leave a group, GNUS can automatically
 create score file entries based on these marks, so next time you enter
 the group articles with subjects that you read last time have higher

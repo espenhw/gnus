@@ -99,7 +99,7 @@ case, this list will be used as the parameter list given to rsh.")
 (defvoo nntp-rlogin-user-name nil
   "*User name on remote system when using the rlogin connect method.")
 
-(defvoo nntp-telnet-parameters '("exec" "telnet" "${NNTPSERVER:=localhost}" "nntp")
+(defvoo nntp-telnet-parameters '("exec" "telnet" "-8" "${NNTPSERVER:=localhost}" "nntp")
   "*Parameters to `nntp-open-telnet'.
 That function may be used as `nntp-open-server-function'.  In that
 case, this list will be executed as a command after logging in
@@ -120,7 +120,7 @@ via telnet.")
 (defvoo nntp-end-of-line "\r\n"
   "String to use on the end of lines when talking to the NNTP server.
 This is \"\\r\\n\" by default, but should be \"\\n\" when
-using rlogin to communicate with the server.")
+using rlogin or telnet to communicate with the server.")
 
 (defvoo nntp-large-newsgroup 50
   "*The number of the articles which indicates a large newsgroup.
@@ -733,13 +733,20 @@ It will prompt for a password."
   (save-excursion
     ;; Replace `.' at beginning of line with `..'.
     (goto-char (point-min))
-    (while (search-forward "\n." nil t)
+    (while (re-search-forward "^\\." nil t)
       (insert "."))
     (goto-char (point-max))
     ;; Insert newline at end of buffer.
     (or (bolp) (insert "\n"))
+    ;(goto-char (point-min))
+    ;(while (not (eobp))
+    ;  (end-of-line)
+    ;  (insert "\r")
+    ;  (forward-line 1))
     ;; Insert `.' at end of buffer (end of text mark).
+    (goto-char (point-max))
     (insert "." nntp-end-of-line)))
+
 
 
 ;;;
@@ -974,7 +981,7 @@ It will prompt for a password."
 	  ;; order to avoid deadlocks.
 	  (when (or (null articles)	;All requests have been sent.
 		    (zerop (% count nntp-maximum-request)))
-	    (accept-process-output)
+	    (accept-process-output nntp-server-process)
 	    ;; On some Emacs versions the preceding function has
 	    ;; a tendency to change the buffer. Perhaps. It's
 	    ;; quite difficult to reproduce, because it only
@@ -987,7 +994,7 @@ It will prompt for a password."
 		       (setq received (1+ received)))
 		     (setq last-point (point))
 		     (< received count))
-	      (accept-process-output)
+	      (accept-process-output nntp-server-process)
 	      (set-buffer buf)))))
 
       (when nntp-server-xover
@@ -1082,7 +1089,7 @@ It will prompt for a password."
 (defun nntp-open-server-semi-internal (server &optional service)
   "Open SERVER.
 If SERVER is nil, use value of environment variable `NNTPSERVER'.
-If SERVICE, this this as the port number."
+If SERVICE, use this as the port number."
   (nnheader-insert "")
   (let ((server (or server (getenv "NNTPSERVER")))
 	(status nil)
@@ -1203,8 +1210,7 @@ If SERVICE, this this as the port number."
   (let ((buf (current-buffer)))
     (goto-char (point-min))
     (while (not (re-search-forward regexp nil t))
-      (accept-process-output)
-      (sit-for 1)
+      (accept-process-output nntp-server-process)
       (set-buffer buf)
       (goto-char (point-min)))))
 
@@ -1213,7 +1219,7 @@ If SERVICE, this this as the port number."
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (let ((proc (start-process
-		 "nntpd" nntp-server-buffer "telnet"))
+		 "nntpd" nntp-server-buffer "telnet" "-8"))
 	  (case-fold-search t))
       (when (memq (process-status proc) '(open run))
 	(process-send-string proc "set escape \^X\n")
@@ -1239,8 +1245,11 @@ If SERVICE, this this as the port number."
 	(beginning-of-line)
 	(delete-region (point-min) (point))
 	(process-send-string proc "\^]")
+	(nntp-wait-for-string "^telnet")
 	(process-send-string proc "mode character\n")
-	(sit-for 2)
+	(accept-process-output proc 1)
+	(sit-for 1)
+	(goto-char (point-min))
 	(forward-line 1)
 	(delete-region (point) (point-max)))
       proc)))

@@ -1,3 +1,57 @@
+Sun Jul 14 18:21:14 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-mark-over): Would bug out.
+
+	* smiley.el (smiley-regexp-alist): New definition didn't work.
+
+Sun Jul 14 16:52:31 1996  Lars Magne Ingebrigtsen  <larsi@hler.ifi.uio.no>
+
+	* gnus.el ((provide 'gnus)): Make sure `gnus-directory' is set
+	when compiling.
+
+Sun Jul 14 15:38:21 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: autoload `gnus-copy-article-buffer'.
+
+	* message.el (message-do-send-housekeeping): Kill a superfluous
+	buffers. 
+
+	* gnus-picon.el (gnus-article-display-picons): Don't bug out on
+	nil addresses.
+
+	* custom.el ((fboundp 'plist-get)): Removed.
+	((fboundp 'add-to-list)): Removed.
+
+Sun Jul 14 15:30:27 1996  Martin Buchholz  <mrb@eng.sun.com>
+
+	* gnus.el: Many typo fixes.
+
+Thu Jul 11 18:06:24 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-retrieve-headers-with-xover):
+	`accept-process-output' from `nntp-server-process'.
+
+Tue Jul  9 07:51:31 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus-vis.el (gnus-group-make-menu-bar): Un-randomize.
+
+Mon Jul  8 09:53:39 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el (gnus-decode-rfc1522): Goto point-min before decoding. 
+
+Mon Jul  8 08:53:50 1996  Nat Makarevitch  <nat@nataa.fr.eu.org>
+
+	* smiley.el (smiley-regexp-alist): New definition.
+
+Sun Jul  7 13:33:44 1996  Sudish Joseph  <sudish@mindspring.com>
+
+	* nnmail.el (nnmail-split-fancy-syntax-table): `%' should have
+		  punctuation syntax to support the %-hack in addresses.
+
+Sat Jul  6 08:11:41 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
+
+	* gnus.el: Gnus v5.2.34 is released.
+
 Sat Jul  6 05:46:12 1996  Lars Magne Ingebrigtsen  <larsi@ylfing.ifi.uio.no>
 
 	* nnheader.el (nnheader-re-read-dir): Would sometimes bug out.

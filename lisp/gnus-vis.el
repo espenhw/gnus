@@ -380,7 +380,7 @@ HEADER is a regexp to match a header.  For a fuller explanation, see
 	 ["Execute command" gnus-group-universal-argument
 	  (or gnus-group-marked (gnus-group-group-name))])
 	("Subscribe"
-	 ["Subscribe to random group" gnus-group-unsubscribe-group t]
+	 ["Subscribe to a group" gnus-group-unsubscribe-group t]
 	 ["Kill all newsgroups in region" gnus-group-kill-region t]
 	 ["Kill all zombie groups" gnus-group-kill-all-zombies
 	  gnus-zombie-list]

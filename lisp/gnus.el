@@ -1113,7 +1113,7 @@ list of parameters to that command.")
 (defvar gnus-insert-pseudo-articles t
   "*If non-nil, insert pseudo-articles when decoding articles.")
 
-(defvar gnus-group-line-format "%M%S%p%P%5y: %(%g%)%l\n"
+(defvar gnus-group-line-format "%M\%S\%p\%P\%5y: %(%g%)%l\n"
   "*Format of group lines.
 It works along the same lines as a normal formatting string,
 with some simple extensions.
@@ -1161,7 +1161,7 @@ Also note that if you change the format specification to include any
 of these specs, you must probably re-start Gnus to see them go into
 effect.")
 
-(defvar gnus-summary-line-format "%U%R%z%I%(%[%4L: %-20,20n%]%) %s\n"
+(defvar gnus-summary-line-format "%U\%R\%z\%I\%(%[%4L: %-20,20n%]%) %s\n"
   "*The format specification of the lines in the summary buffer.
 
 It works along the same lines as a normal formatting string,
@@ -1250,7 +1250,7 @@ with some simple extensions:
   "*The format specification for the article mode line.
 See `gnus-summary-mode-line-format' for a closer description.")
 
-(defvar gnus-group-mode-line-format "Gnus: %%b {%M%:%S}"
+(defvar gnus-group-mode-line-format "Gnus: %%b {%M\%:%S}"
   "*The format specification for the group mode line.
 It works along the same lines as a normal formatting string,
 with some simple extensions:
@@ -1276,7 +1276,7 @@ with some simple extensions:
     ("nnfolder" mail respool address))
   "An alist of valid select methods.
 The first element of each list lists should be a string with the name
-of the select method.  The other elements may be be the category of
+of the select method.  The other elements may be the category of
 this method (ie. `post', `mail', `none' or whatever) or other
 properties that this method has (like being respoolable).
 If you implement a new select method, all you should have to change is
@@ -1771,7 +1771,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version-number "5.2.34"
+(defconst gnus-version-number "5.2.35"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Gnus v%s" gnus-version-number)
@@ -2127,7 +2127,8 @@ Thank you for your help in stamping out bugs.
       gnus-uu-decode-binhex-view)
      ("gnus-msg" (gnus-summary-send-map keymap)
       gnus-mail-yank-original gnus-mail-send-and-exit
-      gnus-article-mail gnus-new-mail gnus-mail-reply)
+      gnus-article-mail gnus-new-mail gnus-mail-reply
+      gnus-copy-article-buffer)
      ("gnus-msg" :interactive t
       gnus-group-post-news gnus-group-mail gnus-summary-post-news
       gnus-summary-followup gnus-summary-followup-with-original
@@ -6668,7 +6669,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
     (goto-char (point-min))
     (gnus-group-position-point)))
 
-;; Suggested by by Daniel Quinlan <quinlan@best.com>.
+;; Suggested by Daniel Quinlan <quinlan@best.com>.
 (defun gnus-group-apropos (regexp &optional search-description)
   "List all newsgroups that have names that match a regexp."
   (interactive "sGnus apropos (regexp): ")
@@ -8318,8 +8319,8 @@ If NO-DISPLAY, don't generate a summary buffer."
       (while threads
 	(setq sub (car threads))
 	(if (stringp (car sub))
-	    ;; This is a gathered threads, so we look at the roots
-	    ;; below it to find whether this article in in this
+	    ;; This is a gathered thread, so we look at the roots
+	    ;; below it to find whether this article is in this
 	    ;; gathered root.
 	    (progn
 	      (setq sub (cdr sub))
@@ -14279,6 +14280,7 @@ always hide."
        (goto-char (point-min))
        (or (search-forward "\n\n" nil t) (point-max)))
 
+      (goto-char (point-min))
       (while (re-search-forward 
 	      "=\\?iso-8859-1\\?q\\?\\([^?\t\n]*\\)\\?=" nil t)
 	(setq string (match-string 1))
@@ -15975,7 +15977,7 @@ newsgroup."
 	  (gnus-group-change-level entry gnus-level-killed)
 	  (setq gnus-killed-list (delete group gnus-killed-list))))
       ;; Then we remove all bogus groups from the list of killed and
-      ;; zombie groups.  They are are removed without confirmation.
+      ;; zombie groups.  They are removed without confirmation.
       (let ((dead-lists '(gnus-killed-list gnus-zombie-list))
 	    killed)
 	(while dead-lists
@@ -16002,6 +16004,7 @@ newsgroup."
 ;; We want to inline a function from gnus-cache, so we cheat here:
 (eval-when-compile
   (provide 'gnus)
+  (setq gnus-directory (or (getenv "SAVEDIR") "~/News/"))
   (require 'gnus-cache))
 
 (defun gnus-get-unread-articles-in-group (info active &optional update)
@@ -16276,7 +16279,7 @@ Returns whether the updating was successful."
       (setq lists (cdr lists)))))
 
 (defun gnus-get-killed-groups ()
-  "Go through the active hashtb and all all unknown groups as killed."
+  "Go through the active hashtb and mark all unknown groups as killed."
   ;; First make sure active file has been read.
   (unless (gnus-read-active-file-p)
     (let ((gnus-read-active-file t))

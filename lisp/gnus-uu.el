@@ -563,7 +563,7 @@ The headers will be included in the sequence they are matched.")
 	(data gnus-newsgroup-data))
     (save-excursion
       (while data
-	(when (> (or (cdr (assq (gnus-data-number (caar data))
+	(when (> (or (cdr (assq (gnus-data-number (car data))
 				gnus-newsgroup-scored))
 		     gnus-summary-default-score 0)
 		 score)
@@ -1092,7 +1092,7 @@ The headers will be included in the sequence they are matched.")
 ;;   If the list returned contains a `begin', the first element of
 ;;   the list *must* be a string with the file name of the decoded
 ;;   file.
-;; `end' if the the end of an encoded file has been received
+;; `end' if the end of an encoded file has been received
 ;; `middle' if the article was a body part of an encoded file
 ;; `wrong-type' if the article was not a part of an encoded file
 ;; `ok', which can be used everything is ok
@@ -1584,7 +1584,7 @@ The headers will be included in the sequence they are matched.")
 
 ;; Kills the temporary uu buffers, kills any processes, etc.
 (defun gnus-uu-clean-up ()
-  (let (buf pst)
+  (let (buf)
     (and gnus-uu-uudecode-process
 	 (memq (process-status (or gnus-uu-uudecode-process "nevair"))
 	       '(stop run))

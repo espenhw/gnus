@@ -392,7 +392,7 @@ used as score."
 	    (if mimic (error "%c %c" prefix hchar) (error "")))
 
 	  (when (/= (downcase tchar) tchar)
-	    ;; It was a majuscle, so we end reading and the the default.
+	    ;; It was a majuscle, so we end reading and use the default.
 	    (if mimic (message "%c %c %c" prefix hchar tchar)
 	      (message ""))
 	    (setq pchar (or pchar ?p)))

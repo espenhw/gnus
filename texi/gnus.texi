@@ -9322,6 +9322,8 @@ and @code{after}.  I can't really imagine this ever being useful, but,
 like, it would feel kinda silly not to provide this function.  Just in
 case.  You never know.  Better safe than sorry.  Once burnt, twice shy.
 Don't judge a book by its cover.  Never not have sex on a first date.
+(I have been told that at least one person, and I quote, ``found this
+function indispensable'', however.)
 
 @item Head, Body, All
 These three match keys use the same match types as the @code{From} (etc)

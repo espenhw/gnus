@@ -127,7 +127,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar gnus-summary-grouplens-line-format
-  "%U%R%z%l%I%(%[%4L: %-20,20n%]%) %s\n"
+  "%U\%R\%z%l%I\%(%[%4L: %-20,20n%]%) %s\n"
   "*The line format spec in summary GroupLens mode buffers.")
 
 (defvar grouplens-pseudonym ""

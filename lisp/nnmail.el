@@ -269,9 +269,14 @@ parameter.  It should return nil, `warn' or `delete'.")
 (defvar nnmail-pop-password nil
   "*Password to use when reading mail from a POP server, if required.")
 
-(defvar nnmail-split-fancy-syntax-table
-  (copy-syntax-table (standard-syntax-table))
+(defvar nnmail-split-fancy-syntax-table nil
   "Syntax table used by `nnmail-split-fancy'.")
+(unless (syntax-table-p nnmail-split-fancy-syntax-table)
+  (setq nnmail-split-fancy-syntax-table
+	(copy-syntax-table (standard-syntax-table)))
+  ;; support the %-hack
+  (modify-syntax-entry ?\% "." nnmail-split-fancy-syntax-table))
+
 
 (defvar nnmail-prepare-save-mail-hook nil
   "Hook called before saving mail.")

@@ -1319,7 +1319,8 @@ the user from the mailer."
 	(save-excursion
 	  (set-buffer tembuf)
 	  (erase-buffer)
-	  (insert-buffer-substring mailbuf)
+	  ;; Avoid copying text props.
+	  (insert (format "%s" (buffer-string nil nil mailbuf)))
 	  ;; Remove some headers.
 	  (save-restriction
 	    (message-narrow-to-headers)
@@ -1435,7 +1436,8 @@ the user from the mailer."
 	    (set-buffer tembuf)
 	    (buffer-disable-undo (current-buffer))
 	    (erase-buffer) 
-	    (insert-buffer-substring messbuf)
+	    ;; Avoid copying text props.
+	    (insert (format "%s" (buffer-string nil nil messbuf)))
 	    ;; Remove some headers.
 	    (save-restriction
 	      (message-narrow-to-headers)
@@ -2294,8 +2296,8 @@ Headers already prepared in the buffer are not modified."
   ;; We might have sent this buffer already.  Delete it from the
   ;; list of buffers.
   (setq message-buffer-list (delq (current-buffer) message-buffer-list))
-  (when (and message-max-buffers
-	     (>= (length message-buffer-list) message-max-buffers))
+  (while (and message-max-buffers
+	      (>= (length message-buffer-list) message-max-buffers))
     ;; Kill the oldest buffer -- unless it has been changed.
     (let ((buffer (pop message-buffer-list)))
       (when (and (buffer-name buffer)
@@ -2914,7 +2916,7 @@ which specify the range to operate on."
        (if (eq (following-char) (char-after (- (point) 2)))
 	   (delete-char -2))))))
 
-(fset 'message-exchange-point-and-mark 'exchange-point-and-mark)
+(defalias 'message-exchange-point-and-mark 'exchange-point-and-mark)
 
 ;; Support for toolbar
 (when (string-match "XEmacs\\|Lucid" emacs-version)
