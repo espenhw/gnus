@@ -1,5 +1,8 @@
 2003-02-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-draft.el (gnus-group-send-queue): Bind gnus-posting-styles
+	to nil.
+
 	* nnmail.el: Removed gnus-util autoload.
 
 	* gnus.el: Use gnus-prin1-to-string throughout.

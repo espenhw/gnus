@@ -186,6 +186,7 @@
 			(cdr (assq 'unsend
 				   (gnus-info-marks
 				    (gnus-get-info "nndraft:queue"))))))
+	   (gnus-posting-styles nil)
 	   (total (length articles))
 	   article)
       (while (setq article (pop articles))
