@@ -1,3 +1,7 @@
+2003-05-14 Lars Magne Ingebrigtsen <lars@ingebrigtsen.no>
+
+	* gnus.el: Gnus v5.10.2 is released.
+
 2003-05-14  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
 	* mail-source.el (mail-source-delete-incoming): Changed to t. 
