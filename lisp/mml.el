@@ -518,7 +518,8 @@ If MML is non-nil, return the buffer up till the correspondent mml tag."
   (message-encode-message-body)
   (save-restriction
     (message-narrow-to-headers-or-head)
-    (mail-encode-encoded-word-buffer)))
+    (let ((mail-parse-charset message-default-charset))
+      (mail-encode-encoded-word-buffer))))
 
 (defun mml-insert-mime (handle &optional no-markup)
   (let (textp buffer mmlp)
@@ -795,7 +796,9 @@ If RAW, don't highlight the article."
   (interactive "P")
   (let ((buf (current-buffer))
 	(message-posting-charset (or (gnus-setup-posting-charset 
-				      (message-fetch-field "Newsgroups"))
+				      (save-restriction
+					(message-narrow-to-headers-or-head)
+					(message-fetch-field "Newsgroups")))
 				     message-posting-charset)))
     (switch-to-buffer (get-buffer-create 
 		       (concat (if raw "*Raw MIME preview of "

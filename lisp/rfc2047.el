@@ -135,10 +135,7 @@ Should be called narrowed to the head of the message."
 	      (rfc2047-fold-region (point-min) (point-max)))
 	     ;; Hm.
 	     (t)))
-	  (goto-char (point-max)))))
-    (when mail-parse-charset
-      (mm-encode-coding-region
-       (point-min) (point-max) mail-parse-charset))))
+	  (goto-char (point-max)))))))
 
 (defun rfc2047-encodable-p (&optional header)
   "Say whether the current (narrowed) buffer contains characters that need encoding in headers."

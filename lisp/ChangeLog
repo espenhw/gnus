@@ -1,9 +1,19 @@
+2000-05-03 11:35:15  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-encode-message-header): Encode field by
+	field.
+	* mml.el (mml-to-mime): Use message-default-charset.
+	(mml-preview): Narrow to headers.
+	* message.el (message-send-mail): Use message-default-charset.
+	(message-send-news): Narrow to headers; 
+	use message-default-charset.
+
 2000-05-03 08:09:14  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-bodies.el (mm-decode-content-transfer-encoding): A better junk
 	detect.
 	* mml.el (mml-parse-singlepart-with-multiple-charsets): Save 
-	restriciton.
+	restriction.
 	(mml-parse-1): Warning message.
 	(mml-preview): Disable multibyte.
 

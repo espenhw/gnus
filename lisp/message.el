@@ -2262,7 +2262,8 @@ It should typically alter the sending method in some way or other."
 	      (message-generate-headers '(Lines)))
 	    ;; Remove some headers.
 	    (message-remove-header message-ignored-mail-headers t)
-	    (mail-encode-encoded-word-buffer))
+	    (let ((mail-parse-charset message-default-charset))
+	      (mail-encode-encoded-word-buffer)))
 	  (goto-char (point-max))
 	  ;; require one newline at the end.
 	  (or (= (preceding-char) ?\n)
@@ -2420,7 +2421,9 @@ to find out how to use this."
 	    message-syntax-checks))
 	 (message-this-is-news t)
 	 (message-posting-charset (gnus-setup-posting-charset 
-				   (message-fetch-field "Newsgroups")))
+				   (save-restriction
+				     (message-narrow-to-headers-or-head)
+				     (message-fetch-field "Newsgroups"))))
 	 result)
     (if (not (message-check-news-body-syntax))
 	nil
@@ -2452,7 +2455,7 @@ to find out how to use this."
 		  (message-generate-headers '(Lines)))
 		;; Remove some headers.
 		(message-remove-header message-ignored-news-headers t)
-		(let ((mail-parse-charset (car message-posting-charset)))
+		(let ((mail-parse-charset message-default-charset))
 		  (mail-encode-encoded-word-buffer)))
 	      (goto-char (point-max))
 	      ;; require one newline at the end.
