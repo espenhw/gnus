@@ -1,3 +1,7 @@
+2003-04-19  Jesper Harder  <harder@ifa.au.dk>
+
+	* gnus-sum.el (gnus-summary-delete-article): Improve docstring.
+
 2003-04-19  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* spam.el (spam-move-spam-nonspam-groups-only): dumb typo fix

@@ -9208,9 +9208,13 @@ deleted forever, right now."
 This command actually deletes articles.	 This is not a marking
 command.  The article will disappear forever from your life, never to
 return.
+
 If N is negative, delete backwards.
 If N is nil and articles have been marked with the process mark,
-delete these instead."
+delete these instead.
+
+If `gnus-novice-user' is non-nil you will be asked for
+confirmation before the articles are deleted."
   (interactive "P")
   (unless (gnus-check-backend-function 'request-expire-articles
 				       gnus-newsgroup-name)
