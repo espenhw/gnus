@@ -753,6 +753,7 @@ Gnus Unplugged
 * Agent Commands::              New commands for all the buffers.
 * Agent as Cache::              The Agent is a big cache too.
 * Agent Expiry::                How to make old articles go away.
+* Agent Regeneration::          How to recover from lost connections and other accidents.
 * Agent and IMAP::              How to use the Agent with IMAP.
 * Outgoing Messages::           What happens when you post/mail something?
 * Agent Variables::             Customizing is fun.
@@ -768,9 +769,9 @@ Agent Categories
 
 Agent Commands
 
-* Group Agent Commands::        
-* Summary Agent Commands::      
-* Server Agent Commands::       
+* Group Agent Commands::        Configure groups and fetch their contents.
+* Summary Agent Commands::      Manually select then fetch specific articles.
+* Server Agent Commands::       Select the servers that are supported by the agent.
 
 Scoring
 
@@ -5015,9 +5016,9 @@ the server and display it in the article buffer.
 @item gnus-select-article-hook
 @vindex gnus-select-article-hook
 This hook is called whenever an article is selected.  By default it
-exposes any threads hidden under the selected article.  If you wish
-that the Agent saves all articles you read, putting
-@code{gnus-agent-fetch-selected-article} on this hook should do it.
+exposes any threads hidden under the selected article.  If you would 
+like each article to be saved in the Agent as you read it, putting
+@code{gnus-agent-fetch-selected-article} on this hook will do so.
 
 @item gnus-mark-article-hook
 @vindex gnus-mark-article-hook
@@ -5760,12 +5761,20 @@ with a @samp{.} in the second column (@code{gnus-unseen-mark}).
 Compare with @code{gnus-recent-mark}.
 
 @item
+@vindex gnus-downloaded-mark
+When using the Gnus agent @pxref{Agent Basics}, articles may be
+downloaded for unplugged (offline) viewing.  If you are using the
+@samp{%O} spec, these articles get the @samp{+} mark in that spec.
+(The variable @code{gnus-downloaded-mark} controls which character to
+use.)
+
+@item
 @vindex gnus-undownloaded-mark
-When using the Gnus agent @pxref{Agent Basics}, some articles might not
-have been downloaded.  Such articles cannot be viewed while you are
-offline (unplugged).  These articles get the @samp{@@} mark in the
-first column.  (The variable @code{gnus-undownloaded-mark} controls
-which character to use.)
+When using the Gnus agent @pxref{Agent Basics}, some articles might
+not have been downloaded.  Such articles cannot be viewed while you
+are unplugged (offline).  If you are using the @samp{%O} spec, these
+articles get the @samp{-} mark in that spec.  (The variable
+@code{gnus-undownloaded-mark} controls which character to use.)
 
 @item
 @vindex gnus-downloadable-mark
@@ -16592,6 +16601,7 @@ Of course, to use it as such, you have to learn a few new commands.
 * Agent Commands::              New commands for all the buffers.
 * Agent as Cache::              The Agent is a big cache too.
 * Agent Expiry::                How to make old articles go away.
+* Agent Regeneration::          How to recover from lost connections and other accidents.
 * Agent and IMAP::              How to use the Agent with IMAP.
 * Outgoing Messages::           What happens when you post/mail something?
 * Agent Variables::             Customizing is fun.
@@ -17077,9 +17087,9 @@ toggles the plugged/unplugged state of the Gnus Agent.
 
 
 @menu
-* Group Agent Commands::        
-* Summary Agent Commands::      
-* Server Agent Commands::       
+* Group Agent Commands::        Configure groups and fetch their contents.
+* Summary Agent Commands::      Manually select then fetch specific articles.
+* Server Agent Commands::       Select the servers that are supported by the agent.
 @end menu
 
 
@@ -17161,7 +17171,19 @@ default.
 @item J c
 @kindex J c (Agent Summary)
 @findex gnus-agent-catchup
-Mark all undownloaded articles as read (@code{gnus-agent-catchup}).
+Mark all articles as read (@code{gnus-agent-catchup}) that are neither cached, downloaded, nor downloadable.
+
+@item J S
+@kindex J S (Agent Summary)
+@findex gnus-agent-fetch-group
+Download all eligible (See @pxref{Agent Categories}) articles in this group.
+(@code{gnus-agent-fetch-group}).
+
+@item J s
+@kindex J s (Agent Summary)
+@findex gnus-agent-fetch-series
+Download all processable articles in this group.
+(@code{gnus-agent-fetch-series}).
 
 @item J u
 @kindex J u (Agent Summary)
@@ -17224,6 +17246,10 @@ whenever you feel that you're running out of space.  It's not
 particularly fast or efficient, and it's not a particularly good idea to
 interrupt it (with @kbd{C-g} or anything else) once you've started it.
 
+Note that other functions, e.g. @code{gnus-request-expire-articles},
+might run @code{gnus-agent-expire} for you to keep the agent 
+synchronized with the group.
+
 @code{gnus-agent-expire-days} can also be a list of regexp/day pairs.
 The regexps will be matched against group names to allow differing
 expiry in different groups.
@@ -17236,7 +17262,8 @@ expiry in different groups.
 @end lisp
 
 If you use the list form, the last element must always be the default
-method---it must always match all groups.
+method---it must always match all groups. Also, for a regexp to match,
+it must match from the beginning of the group's name.
 
 @vindex gnus-agent-expire-all
 If @code{gnus-agent-expire-all} is non-@code{nil}, this command will
@@ -17244,15 +17271,49 @@ expire all articles---unread, read, ticked and dormant.  If @code{nil}
 (which is the default), only read articles are eligible for expiry, and
 unread, ticked and dormant articles will be kept indefinitely.
 
-@findex gnus-agent-regenerate
 If you find that some articles eligible for expiry are never expired,
 perhaps some Gnus Agent files are corrupted.  There's a special
-@code{gnus-agent-regenerate} command to fix possible problems.
+@pxref{gnus-agent-regenerate} command to fix possible problems.
+
+@node Agent Regeneration
+@subsection Agent Regeneration
+
+@cindex Agent Regeneration
+@cindex Gnus Agent Regeneration
+@cindex regeneration
+
+The local data structures used by @code{nnagent} may become corrupted
+due to certain exceptional conditions.  When this happens,
+@code{nnagent} functionality may degrade or even fail.  The solution
+to this problem is to repair the local data structures by removing all
+internal inconsistencies.
+
+For example, if your connection to your server is lost while
+downloaded articles into the agent, the local data structures will not
+know about articles downloaded prior to the connection failure.
+Running @code{gnus-agent-regenerate} or
+@code{gnus-agent-regenerate-group} will update the data structures
+such that you don't need to download these articles a second time.
+
+@findex gnus-agent-regenerate
+@kindex M-x gnus-agent-regenerate
+The command @code{gnus-agent-regenerate} will perform
+@code{gnus-agent-regenerate-group} on every agentized group.  While
+you can run @code{gnus-agent-regenerate} in any buffer, it is strongly
+recommended that you first close all summary buffers.
+
+@findex gnus-agent-regenerate-group
+@kindex M-x gnus-agent-regenerate-group
+The command @code{gnus-agent-regenerate-group} uses the local copies
+of individual articles to repair the local NOV(header) database.  It
+then updates the internal data structures that document which articles
+are stored locally.  An optional argument will mark articles in the
+agent as unread.
 
 @node Agent and IMAP
 @subsection Agent and IMAP
 
-The Agent work with any Gnus back end, including nnimap.  However,
+The Agent works with any Gnus back end, including nnimap.  However,
 since there are some conceptual differences between @sc{nntp} and
 @sc{imap}, this section (should) provide you with some information to
 make Gnus Agent work smoother as a @sc{imap} Disconnected Mode client.
@@ -17359,6 +17420,30 @@ offline servers into online status when you re-connect.  If it has any
 other value, all offline servers will be automatically switched into
 online status.
 
+@item gnus-agent-mark-unread-after-downloaded
+@vindex gnus-agent-mark-unread-after-downloaded
+If @code{gnus-agent-mark-unread-after-downloaded} is non-@code{nil},
+mark articles as unread after downloading.  The default is t.
+
+@item gnus-agent-consider-all-articles
+@vindex gnus-agent-consider-all-articles
+If @code{gnus-agent-consider-all-articles} is non-@code{nil}, the
+agent will fetch all missing headers.  When @code{nil}, the agent will
+fetch only new headers. The default is @code{nil}.
+
+@item gnus-agent-max-fetch-size
+@vindex gnus-agent-max-fetch-size
+The agent fetches articles into a temporary buffer prior to parsing
+them into individual files.  To avoid exceeding the max. buffer size,
+the agent alternates between fetching and parsing until all articles
+have been fetched.  @code{gnus-agent-max-fetch-size} provides a size
+limit to control how often the cycling occurs.  A large value improves
+performance.  A small value minimizes the time lost should the
+connection be lost while fetching (You may need to run
+@pxref{gnus-agent-regenerate-group} to update the group's state.
+However, all articles parsed prior to loosing the connection will be
+available while unplugged).
+
 @item gnus-server-unopen-status
 @vindex gnus-server-unopen-status
 Perhaps not a Agent variable, but closely related to the Agent, this
@@ -17455,7 +17540,7 @@ may ask:
 @end table
 
 In short, when Gnus is unplugged, it only looks into the locally stored
-articles; when it's plugged, it only talks to your ISP and also uses the
+articles; when it's plugged, it talks to your ISP and may also use the
 locally stored articles.
 
 

@@ -1,3 +1,19 @@
+2003-01-22  Kevin Greiner  <kgreiner@xpediantsolutions.com>
+
+	* gnus.texi (Agent Regeneration): New node.
+	(gnus-select-article-hook): clarified.
+	(gnus-downloaded-mark): Added definition.
+	(gnus-undownloaded-mark): Updated definition to reference the new
+	%O spec.
+	(gnus-agent-catchup): Identified articles that are NOT marked as read.
+	(gnus-agent-fetch-group): New command.
+	(gnus-agent-fetch-series): New command.
+	(Agent Expiry): Added comment to document that
+	gnus-request-expire-articles may invoke gnus-agent-expire.
+	(gnus-agent-mark-unread-after-downloaded): New variable.
+	(gnus-agent-consider-all-articles): New variable.
+	(gnus-agent-max-fetch-size): New variable.
+	
 2003-01-22  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnusref.tex (subsection*{Notes}): do.
