@@ -1,3 +1,7 @@
+Thu Apr 20 01:39:25 2000  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Pterodactyl Gnus v5.8.4 is released.
+
 2000-04-19  Dave Love  <fx@gnu.org>
 
 	* mailcap.el (mailcap-parse-mimetypes): Add ...mime.types.
