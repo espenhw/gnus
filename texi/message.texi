@@ -1114,8 +1114,13 @@ look sufficiently similar.
 
 @item message-generate-headers-first
 @vindex message-generate-headers-first
-If non-@code{nil}, generate all required headers before starting to
-compose the message.
+If @code{t}, generate all required headers before starting to
+compose the message.  This can also be a list of headers to generate:
+
+@lisp
+(setq message-generate-headers-first
+      '(References))
+@end lisp
 
 @vindex message-required-headers
 The variables @code{message-required-headers},
@@ -1125,6 +1130,12 @@ required.
 
 Note that some headers will be removed and re-generated before posting,
 because of the variable @code{message-deletable-headers} (see below).
+
+@item message-draft-headers
+@vindex message-draft-headers
+When running Message from Gnus, the message buffers are associated
+with a draft group.  @code{message-draft-headers} says which headers
+should be generated when a draft is written to the draft group.
 
 @item message-from-style
 @vindex message-from-style

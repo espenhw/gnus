@@ -1,3 +1,8 @@
+2003-01-01  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.texi (Message Headers): Added example.
+	(Message Headers): Addition.
+
 2002-12-31  Kai Gro,A_(Bjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* gnus.texi (Top): Add pointers to related manuals.  Suggested by
