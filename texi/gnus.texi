@@ -12552,16 +12552,18 @@ Virtual server settings:
 @table @code
 @item nnmbox-mbox-file
 @vindex nnmbox-mbox-file
-The name of the mail box in the user's home directory.
+The name of the mail box in the user's home directory.  Default is
+@file{~/mbox}.
 
 @item nnmbox-active-file
 @vindex nnmbox-active-file
-The name of the active file for the mail box.
+The name of the active file for the mail box.  Default is
+@file{~/.mbox-active}. 
 
 @item nnmbox-get-new-mail
 @vindex nnmbox-get-new-mail
 If non-@code{nil}, @code{nnmbox} will read incoming mail and split it
-into groups.
+into groups.  Default is @code{t}.
 @end table
 
 
@@ -12581,15 +12583,17 @@ Virtual server settings:
 @table @code
 @item nnbabyl-mbox-file
 @vindex nnbabyl-mbox-file
-The name of the rmail mbox file.
+The name of the rmail mbox file.  The default is @file{~/RMAIL}
 
 @item nnbabyl-active-file
 @vindex nnbabyl-active-file
-The name of the active file for the rmail box.
+The name of the active file for the rmail box.  The default is
+@file{~/.rmail-active}
 
 @item nnbabyl-get-new-mail
 @vindex nnbabyl-get-new-mail
-If non-@code{nil}, @code{nnbabyl} will read incoming mail.
+If non-@code{nil}, @code{nnbabyl} will read incoming mail.  Default is
+@code{t}
 @end table
 
 
@@ -12630,23 +12634,28 @@ Virtual server settings:
 @item nnml-directory
 @vindex nnml-directory
 All @code{nnml} directories will be placed under this directory.
+The default is the value of `message-directory' (whose default value is
+@file{~/Mail})
 
 @item nnml-active-file
 @vindex nnml-active-file
-The active file for the @code{nnml} server.
+The active file for the @code{nnml} server.  The default is
+@file{~/Mail/active"}.
 
 @item nnml-newsgroups-file
 @vindex nnml-newsgroups-file
 The @code{nnml} group descriptions file.  @xref{Newsgroups File
-Format}.
+Format}.  The default is @file{~/Mail/newsgroups"}.
 
 @item nnml-get-new-mail
 @vindex nnml-get-new-mail
-If non-@code{nil}, @code{nnml} will read incoming mail.
+If non-@code{nil}, @code{nnml} will read incoming mail.  The default is
+@code{t}
 
 @item nnml-nov-is-evil
 @vindex nnml-nov-is-evil
-If non-@code{nil}, this backend will ignore any @sc{nov} files.
+If non-@code{nil}, this backend will ignore any @sc{nov} files.  The
+default is @code{nil}
 
 @item nnml-nov-file-name
 @vindex nnml-nov-file-name
@@ -12683,11 +12692,14 @@ Virtual server settings:
 @table @code
 @item nnmh-directory
 @vindex nnmh-directory
-All @code{nnmh} directories will be located under this directory.
+All @code{nnmh} directories will be located under this directory.  The
+default is the value of @code{message-directory} (whose default is
+@file{~/Mail})
 
 @item nnmh-get-new-mail
 @vindex nnmh-get-new-mail
-If non-@code{nil}, @code{nnmh} will read incoming mail.
+If non-@code{nil}, @code{nnmh} will read incoming mail.  The default is
+@code{t}.
 
 @item nnmh-be-safe
 @vindex nnmh-be-safe
@@ -12696,7 +12708,7 @@ sure that the articles in the folder are actually what Gnus thinks they
 are.  It will check date stamps and stat everything in sight, so
 setting this to @code{t} will mean a serious slow-down.  If you never
 use anything but Gnus to read the @code{nnmh} articles, you do not have
-to set this variable to @code{t}.
+to set this variable to @code{t}.  The default is @code{nil}.
 @end table
 
 
@@ -12717,18 +12729,22 @@ Virtual server settings:
 @item nnfolder-directory
 @vindex nnfolder-directory
 All the @code{nnfolder} mail boxes will be stored under this directory.
+The default is the value of @code{message-directory} (whose default is
+@file{~/Mail})
 
 @item nnfolder-active-file
 @vindex nnfolder-active-file
-The name of the active file.
+The name of the active file.  The default is @file{~/Mail/active}.
 
 @item nnfolder-newsgroups-file
 @vindex nnfolder-newsgroups-file
-The name of the group descriptions file.  @xref{Newsgroups File Format}.
+The name of the group descriptions file.  @xref{Newsgroups File
+Format}.  The default is @file{~/Mail/newsgroups"}
 
 @item nnfolder-get-new-mail
 @vindex nnfolder-get-new-mail
-If non-@code{nil}, @code{nnfolder} will read incoming mail.
+If non-@code{nil}, @code{nnfolder} will read incoming mail.  The default
+is @code{t}
 
 @item nnfolder-save-buffer-hook
 @vindex nnfolder-save-buffer-hook
@@ -12753,7 +12769,8 @@ extract some information from it before removing it.
 
 @item nnfolder-nov-is-evil
 @vindex nnfolder-nov-is-evil
-If non-@code{nil}, this backend will ignore any @sc{nov} files.
+If non-@code{nil}, this backend will ignore any @sc{nov} files.  The
+default is @code{nil}.
 
 @end table
 

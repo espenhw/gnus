@@ -1,3 +1,8 @@
+2001-05-03 07:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+	From Sriram Karra <karra@cs.utah.edu>.
+
+	* gnus.texi: Add default value.
+
 2001-05-03 06:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Using GPG): Use example environment.
