@@ -3,6 +3,8 @@
 	* mm-decode.el (mm-file-name-delete-control)
 	(mm-file-name-delete-gotchas): New functions.
 	(mm-file-name-rewrite-functions): Use them.
+	(mm-attachment-file-modes): New option.
+	(mm-save-part-to-file): Use it.
 
 2003-10-02  Reiner Steib  <Reiner.Steib@gmx.de>
 

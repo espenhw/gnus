@@ -355,6 +355,11 @@ If not set, `default-directory' will be used."
   :type '(choice directory (const :tag "Default" nil))
   :group 'mime-display)
 
+(defcustom mm-attachment-file-modes ?\600
+  "Set the mode bits of saved attachments to this integer."
+  :type 'integer
+  :group 'mime-display)
+
 (defcustom mm-external-terminal-program "xterm"
   "The program to start an external terminal."
   :type 'string
@@ -1056,13 +1061,17 @@ string if you do not like underscores."
   (mm-with-unibyte-buffer
     (mm-insert-part handle)
     (let ((coding-system-for-write 'binary)
+	  (current-file-modes (default-file-modes))
 	  ;; Don't re-compress .gz & al.  Arguably we should make
 	  ;; `file-name-handler-alist' nil, but that would chop
 	  ;; ange-ftp, which is reasonable to use here.
 	  (inhibit-file-name-operation 'write-region)
 	  (inhibit-file-name-handlers
 	   (cons 'jka-compr-handler inhibit-file-name-handlers)))
-      (write-region (point-min) (point-max) file))))
+      (set-default-file-modes mm-attachment-file-modes)
+      (unwind-protect
+	  (write-region (point-min) (point-max) file)
+	(set-default-file-modes current-file-modes)))))
 
 (defun mm-pipe-part (handle)
   "Pipe HANDLE to a process."
