@@ -1,3 +1,7 @@
+2003-06-22  Simon Josefsson  <jas@extundo.com>
+
+	* message.texi (Security): Mention S/MIME passphrases.
+
 2003-06-20  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi: Add @command.

@@ -1033,8 +1033,13 @@ $ openssl pkcs12 -in ns.p12 -clcerts -nodes > key+cert.pem
 The @file{key+cert.pem} file should be pointed to from the
 @code{smime-keys} variable.  You should now be able to send signed mail.
 
-@emph{Note!}  Your private key is stored unencrypted in the file, so take
-care in handling it.
+@emph{Note!}  Your private key is now stored unencrypted in the file,
+so take care in handling it.  Storing encrypted keys on the disk are
+supported, and Gnus will ask you for a passphrase before invoking
+OpenSSL.  Read the OpenSSL documentation for how to achieve this.  If
+you use unencrypted keys (e.g., if they are on a secure storage, or if
+you are on secure single user machine) simply press @code{RET} at the
+passphrase prompt.
 
 @subsection Using PGP/MIME
 
