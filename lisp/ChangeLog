@@ -1,3 +1,13 @@
+2003-01-03  Teodor Zlatanov  <tzz@beld.net>
+
+	* spam.el (spam-enter-ham-BBDB, spam-BBDB-register-routine):
+	enable BBDB ham processing
+	(spam-blacklist-register-routine): enable blacklist spam processing
+	(spam-whitelist-register-routine): enable whitelist ham processing
+	(spam-fetch-field-from-fast): fast fetching of the "from" field
+	from (gnus-data-list)
+	(spam-summary-prepare-exit): works completely now
+
 2003-01-03  Jesper Harder  <harder@ifa.au.dk>
 
 	* mml.el (mml-insert-tag): Don't quote non-ASCII unibyte

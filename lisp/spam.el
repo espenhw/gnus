@@ -115,7 +115,7 @@ The regular expression is matched against the address."
   :type 'boolean
   :group 'spam)
 
-(defcustom spam-use-bbdb nil
+(defcustom spam-use-BBDB nil
   "Whether BBDB should be used by spam-split."
   :type 'boolean
   :group 'spam)
@@ -279,7 +279,6 @@ articles before they get registered by Bogofilter."
     (spam-mark-spam-as-expired-and-move-routine (gnus-parameter-spam-process-destination gnus-newsgroup-name)))
 
   (when (spam-group-ham-contents-p gnus-newsgroup-name)
-    ;; TODO: the ham processors here
     (when (or spam-use-whitelist
 	      (spam-group-processor-whitelist-p gnus-newsgroup-name))
       (spam-whitelist-register-routine))
@@ -330,18 +329,24 @@ articles before they get registered by Bogofilter."
 	    ((memq article gnus-newsgroup-saved))
 	    ((memq mark ham-mark-values) (push article ham-articles))))
     (when (and ham-articles ham-func)
-      (funcall ham-func ham-articles))
+      (mapc ham-func ham-articles))	; we use mapc because unlike mapcar it discards the return values
     (when (and spam-articles spam-func)
-      (funcall spam-func spam-articles))))
+      (mapc spam-func spam-articles))))	; we use mapc because unlike mapcar it discards the return values
+
+(defun spam-fetch-field-from-fast (article)
+  "Fetch the `from' field quickly, using the Gnus internal gnus-data-list function"
+  (if (and (numberp article)
+	   (assoc article (gnus-data-list nil)))
+      (mail-header-from (gnus-data-header (assoc article (gnus-data-list nil))))
+    nil))
 
 
 ;;;; Spam determination.
 
-
 (defvar spam-list-of-checks
   '((spam-use-blacklist  . spam-check-blacklist)
     (spam-use-whitelist  . spam-check-whitelist)
-    (spam-use-bbdb	 . spam-check-bbdb)
+    (spam-use-BBDB	 . spam-check-BBDB)
     (spam-use-ifile	 . spam-check-ifile)
     (spam-use-blackholes . spam-check-blackholes)
     (spam-use-bogofilter . spam-check-bogofilter))
@@ -408,6 +413,66 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (when matches
       spam-split-group)))
 
+;;;; BBDB
+;;; original idea for spam-check-BBDB from Alexander Kotelnikov <sacha@giotto.sj.ru>
+
+;; all this is done inside a condition-case to trap errors
+(condition-case nil
+    (progn
+
+      (require 'bbdb-com)
+
+      (defun spam-enter-ham-BBDB (from)
+	"Enter an address into the BBDB; implies ham (non-spam) sender"
+	(when (stringp from)
+	  (let* ((parsed-address (gnus-extract-address-components from))
+		 (name (or (car parsed-address) "Ham Sender"))
+		 (net-address (car (cdr parsed-address))))
+	    (message "Adding address %s to BBDB" from)
+	    (when (and net-address
+		       (not (bbdb-search (bbdb-records) nil nil net-address)))
+	      (bbdb-create-internal name nil net-address nil nil "ham sender added by spam.el")))))
+
+      (defun spam-BBDB-register-routine ()
+	(spam-generic-register-routine 
+	 ;; spam function
+	 nil
+	 ;; ham function
+	 (lambda (article)
+	   (spam-enter-ham-BBDB (spam-fetch-field-from-fast article)))))
+
+      (defun spam-check-BBDB ()
+	"Mail from people in the BBDB is never considered spam"
+	(let ((who (message-fetch-field "from")))
+	  (when who
+	    (setq who (regexp-quote (cadr (gnus-extract-address-components who))))
+	    (if (bbdb-search (bbdb-records) nil nil who) nil spam-split-group)))))
+
+  (file-error (progn
+		(setq spam-list-of-checks
+		      (delete (assoc 'spam-use-BBDB spam-list-of-checks)
+			      spam-list-of-checks))
+		(defun spam-check-BBDB ()
+		  message "spam-check-BBDB was invoked, but it shouldn't have")
+		(defun spam-BBDB-register-routine ()
+		  (spam-generic-register-routine nil nil)))))
+
+
+;;;; ifile
+;;; uses ifile-gnus.el from http://www.ai.mit.edu/people/jhbrown/ifile-gnus.html
+;;; check the ifile backend; return nil if the mail was NOT classified as spam
+;;; TODO: we can't (require 'ifile-gnus), because it will insinuate itself automatically
+(defun spam-check-ifile ()
+  (let ((ifile-primary-spam-group spam-split-group))
+    (ifile-spam-filter nil)))
+
+;; TODO: add ifile registration 
+;; We need ifile-gnus.el to support nnimap; we could feel the message
+;; directly to ifile like we do with bogofilter but that's ugly.
+(defun spam-ifile-register-routine ()
+  (spam-generic-register-routine nil nil))
+
+
 ;;;; Blacklists and whitelists.
 
 (defvar spam-whitelist-cache nil)
@@ -445,34 +510,6 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
     (setq spam-whitelist-cache (spam-parse-list spam-whitelist)))
   (if (spam-from-listed-p spam-whitelist-cache) nil spam-split-group))
 
-;;; original idea from Alexander Kotelnikov <sacha@giotto.sj.ru>
-(condition-case nil
-    (progn
-      (require 'bbdb-com)
-      (defun spam-check-bbdb ()
-	"We want messages from people who are in the BBDB not to be split to spam"
-	(let ((who (message-fetch-field "from")))
-	  (when who
-	    (setq who (regexp-quote (cadr (gnus-extract-address-components who))))
-	    (if (bbdb-search (bbdb-records) nil nil who) nil spam-split-group)))))
-  (file-error (setq spam-list-of-checks
-		    (delete (assoc 'spam-use-bbdb spam-list-of-checks)
-			    spam-list-of-checks))))
-
-;; TODO: add BBDB registration
-(defun spam-BBDB-register-routine
-  (spam-generic-register-routine nil nil))
-
-;;; check the ifile backend; return nil if the mail was NOT classified as spam
-;;; TODO: we can't (require) ifile, because it will insinuate itself automatically
-(defun spam-check-ifile ()
-  (let ((ifile-primary-spam-group spam-split-group))
-    (ifile-spam-filter nil)))
-
-;; TODO: add ifile registration
-(defun spam-ifile-register-routine
-  (spam-generic-register-routine nil nil))
-
 (defun spam-check-blacklist ()
   ;; FIXME!  Should it detect when file timestamps change?
   (unless spam-blacklist-cache
@@ -508,14 +545,28 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	      cache nil)))
     found))
 
-;; TODO: add blacklist and whitelist registrations
-(defun spam-blacklist-register-routine
-  (spam-generic-register-routine nil nil))
-(defun spam-whitelist-register-routine
-  (spam-generic-register-routine nil nil))
+(defun spam-blacklist-register-routine ()
+  (spam-generic-register-routine 
+   ;; the spam function
+   (lambda (article)
+     (let ((from (spam-fetch-field-from-fast article)))
+       (when (stringp from)
+	   (spam-enter-blacklist from))))
+   ;; the ham function
+   nil))
+
+(defun spam-whitelist-register-routine ()
+  (spam-generic-register-routine 
+   ;; the spam function
+   nil 
+   ;; the ham function
+   (lambda (article)
+     (let ((from (spam-fetch-field-from-fast article)))
+       (when (stringp from)
+	   (spam-enter-whitelist from))))))
 
 
-;;;; Training via Bogofilter.   Last updated 2002-09-02.
+;;;; Bogofilter
 
 ;;; See Paul Graham article, at `http://www.paulgraham.com/spam.html'.
 
