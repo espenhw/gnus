@@ -1,3 +1,7 @@
+2003-11-20  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Debugging IMAP): Add.
+
 2003-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus.texi (Score Decays): Update the gnus-decay-score function.

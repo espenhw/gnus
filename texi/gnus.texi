@@ -730,6 +730,7 @@ Browsing the Web
 * Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
 * Expunging mailboxes::         Equivalent of a ``compress mailbox'' button.
 * A note on namespaces::        How to (not) use @acronym{IMAP} namespace in Gnus.
+* Debugging IMAP::              What to do when things don't work.
 
 Other Sources
 
@@ -16126,6 +16127,7 @@ Courier 1.7.1 did.
 * Editing IMAP ACLs::           Limiting/enabling other users access to a mailbox.
 * Expunging mailboxes::         Equivalent of a ``compress mailbox'' button.
 * A note on namespaces::        How to (not) use @acronym{IMAP} namespace in Gnus.
+* Debugging IMAP::              What to do when things don't work.
 @end menu
 
 
@@ -16428,6 +16430,36 @@ Gnus.
 See the UoW IMAPD documentation for the @code{#driver.*/} prefix
 for more information on how to use the prefixes.  They are a power
 tool and should be used only if you are sure what the effects are.
+
+@node Debugging IMAP
+@subsection Debugging IMAP
+@cindex IMAP debugging
+@cindex protocol dump (IMAP)
+
+@acronym{IMAP} is a complex protocol, at least compared to
+@acronym{NNTP} or @acronym{POP3}.  Perhaps for that reason,
+implementation bugs are not unlikely.  If you encounter an odd
+behaviour, chances are that either the server or Gnus is buggy.  If
+you are familiar with network protocols in general, you will probably
+be able to extract some clues from reading the protocol dump of the
+exchanges between Gnus and the server.  Even if you are not familiar
+with network protocols, including the protocol exchange in
+@acronym{IMAP}-related bug reports may be critical for solving the
+problem.
+
+@vindex imap-log
+Because this protocol dump generate potentially large buffers, it is
+not enabled by default.  You can enable it by toggling @code{imap-log}
+as follows:
+
+@lisp
+(setq imap-log t)
+@end lisp
+
+This instruct the @code{imap.el} package to dump sent to the server,
+and everything received from the server.  The output is stored in the
+buffer @samp{*imap-log*}.  Look for error messages, which sometimes
+are tagged with the keyword @code{BAD}.
 
 @node Other Sources
 @section Other Sources
