@@ -1,3 +1,8 @@
+2004-02-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (X-Face): Add uncompface-use-external.
+	(Slow Machine): Ditto.
+
 2004-02-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-news.texi: dnd attachments.
