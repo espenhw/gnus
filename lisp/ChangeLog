@@ -1,3 +1,11 @@
+2002-03-09  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-save-parts-default-mime): Remove
+	duplication.
+	(gnus-summary-save-parts-type-history): Ditto.
+	(gnus-summary-save-parts-last-directory): Ditto.
+	From: andre@slamdunknetworks.com
+
 2002-03-09  Paul Jarc  <prj@po.cwru.edu
 
 	* gnus-start.el (gnus-auto-subscribed-groups): Include nnmaildir.

@@ -998,14 +998,6 @@ when prompting the user for which type of files to save."
   :group 'gnus-summary
   :type 'regexp)
 
-
-(defcustom gnus-summary-save-parts-default-mime "image/.*"
-  "*A regexp to match MIME parts when saving multiple parts of a message
-with gnus-summary-save-parts (X m). This regexp will be used by default
-when prompting the user for which type of files to save."
-  :group 'gnus-summary
-  :type 'regexp)
-
 (defcustom gnus-read-all-available-headers nil
   "Whether Gnus should parse all headers made available to it.
 This is mostly relevant for slow backends where the user may
@@ -1049,9 +1041,6 @@ the MIME-Version header is missed."
 (defvar gnus-thread-indent-array-level gnus-thread-indent-level)
 (defvar gnus-sort-gathered-threads-function 'gnus-thread-sort-by-number
   "Function called to sort the articles within a thread after it has been gathered together.")
-
-(defvar gnus-summary-save-parts-type-history nil)
-(defvar gnus-summary-save-parts-last-directory nil)
 
 (defvar gnus-summary-save-parts-type-history nil)
 (defvar gnus-summary-save-parts-last-directory nil)
