@@ -4169,7 +4169,8 @@ possible to change this.  Just write a new function
 
 The default string is @samp{%U%R%z%I%(%[%4L: %-23,23n%]%) %s\n}.
 
-The following format specification characters are understood:
+The following format specification characters and extended format
+specification(s) are understood:
 
 @table @samp
 @item N
@@ -4259,6 +4260,9 @@ article has any children.
 The line number.
 @item O
 Download mark.
+@item &user-date;
+Age sensitive date format.  Various date format is defined in
+@code{gnus-user-date-format-alist}.
 @item u
 User defined specifier.  The next character in the format string should
 be a letter.  Gnus will call the function
@@ -18201,6 +18205,8 @@ particularly wide values.  For that you can say @samp{%4,6y}, which
 means that the field will never be more than 6 characters wide and never
 less than 4 characters wide.
 
+Also Gnus supports some extended format specifications, such as
+@samp{%&user-date;}.
 
 @node Mode Line Formatting
 @subsection Mode Line Formatting
@@ -18299,6 +18305,9 @@ it's being called from.  The function should return a string, which will
 be inserted into the buffer just like information from any other
 specifier.  This function may also be called with dummy values, so it
 should protect against that.
+
+Also Gnus supports extended user-defined specs, such as @samp{%u&foo;}.
+Gnus will call the function @code{gnus-user-format-function-}@samp{foo}.
 
 You can also use tilde modifiers (@pxref{Advanced Formatting} to achieve
 much the same without defining new functions.  Here's an example:
