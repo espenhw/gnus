@@ -23,8 +23,8 @@
 
 ;;; Commentary:
 
-;; Installation: put the following statement in ~/.gnus:
-;;    (rfc2015-setup)
+;; Installation: put the following statement in ~/.gnus or ~/.emacs:
+;;    (add-hook 'gnus-startup-hook 'rfc2015-setup)
 ;; You may have to make sure that the directory where this file lives
 ;; is mentioned in `load-path'.
 ;; 
