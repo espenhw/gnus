@@ -47,3 +47,8 @@ ever-changing layouts.
 
 *** Gnus can now read IMAP mail via nnimap.
 
+
+Local variables:
+mode: outline
+paragraph-separate: "[ 	]*$"
+end:

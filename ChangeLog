@@ -1,3 +1,7 @@
+2000-04-22 20:25:20  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* GNUS-NEWS: Outline.
+
 2000-01-06  Dave Love  <fx@gnu.org>
 
 	* aclocal.m4 (AM_PATH_LISPDIR): Check for user's EMACS setting.
