@@ -1,5 +1,9 @@
 2002-02-04  Simon Josefsson  <jas@extundo.com>
 
+	* gnus-art.el (gnus-article-followup-with-original): Mark with
+	force, prevent errors when following up from article buffer.
+	(gnus-article-reply-with-original): Ditto.
+
 	* binhex.el (binhex-decoder-switches): Fix doc.  From
 	Pavel@Janik.cz (Pavel Jan,Bm(Bk).
 
