@@ -1,3 +1,19 @@
+2003-06-03  Dave Love  <fx@gnu.org>
+
+	* gnus-soup.el (gnus-soup-send-packet): Don't use
+	message-functionp.
+
+	* gnus.el (gnus-agent-cache): Doc fix.
+	(gnus-other-frame): Quote lambda used as hook.
+
+	* message.el: Doc fixes.
+	(message-functionp): Deleted.  Callers changed.
+	(message-fix-before-sending): Highlight with overlays.  Clarify
+	`illegible text' messages.
+	(rmail-enable-mime-composing, gnus-message-group-art): Defvar when
+	compiling.
+	(gnus-find-method-for-group, nnvirtual-find-group-art): Autoload.
+
 2003-06-03  Kai Gro,A_(Bjohann  <kai.grossjohann@gmx.net>
 
 	* nnmail.el (nnmail-split-fancy-match-partial-words): New user
