@@ -32,6 +32,7 @@
 (require 'nnheader)
 (require 'nntp)
 (require 'nnmail)
+(require 'gnus-util)
 (eval-and-compile
   (if (string-match "XEmacs" (emacs-version))
       (require 'itimer)

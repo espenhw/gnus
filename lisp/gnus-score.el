@@ -1651,7 +1651,7 @@ SCORE is the score to add."
 	    (setq request-func 'gnus-request-article))
 	  (while articles
 	    (setq article (mail-header-number (caar articles)))
-	    (gnus-message 7 "Scoring on article %s of %s..." article last)
+	    (gnus-message 7 "Scoring article %s of %s..." article last)
 	    (when (funcall request-func article gnus-newsgroup-name)
 	      (widen)
 	      (goto-char (point-min))

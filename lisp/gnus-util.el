@@ -621,10 +621,22 @@ Bind `print-quoted' and `print-readably' to t while printing."
       (save-restriction
 	(goto-char beg)
 	(while (re-search-forward "[ \t]*\n" end 'move)
-	  (put-text-property beg (match-beginning 0) prop val)
+	  (gnus-put-text-property beg (match-beginning 0) prop val)
 	  (setq beg (point)))
-	(put-text-property beg (point) prop val)))))
+	(gnus-put-text-property beg (point) prop val)))))
 
+(defun gnus-put-text-property-excluding-characters-with-faces (beg end
+								   prop val)
+  "The same as `put-text-property', but don't put props on characters with the `gnus-face' property."
+  (let ((b beg))
+    (while (/= b end)
+      (when (get-text-property b 'gnus-face)
+	(setq b (next-single-property-change b 'gnus-face nil end)))
+      (when (/= b end)
+	(gnus-put-text-property
+	 b (setq b (next-single-property-change b 'gnus-face nil end))
+	 prop val)))))
+  
 ;;; Protected and atomic operations.  dmoore@ucsd.edu 21.11.1996
 ;;; The primary idea here is to try to protect internal datastructures
 ;;; from becoming corrupted when the user hits C-g, or if a hook or

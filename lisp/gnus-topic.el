@@ -31,6 +31,7 @@
 (require 'gnus)
 (require 'gnus-group)
 (require 'gnus-start)
+(require 'gnus-util)
 
 (defgroup gnus-topic nil
   "Group topics."

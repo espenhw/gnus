@@ -237,9 +237,10 @@
 (defvar gnus-face-4 'bold)
 
 (defun gnus-face-face-function (form type)
-  `(gnus-put-text-property
+  `(gnus-add-text-properties
     (point) (progn ,@form (point))
-    'face ',(symbol-value (intern (format "gnus-face-%d" type)))))
+    '(gnus-face t
+		face ',(symbol-value (intern (format "gnus-face-%d" type))))))
 
 (defun gnus-tilde-max-form (el max-width)
   "Return a form that limits EL to MAX-WIDTH."
@@ -307,7 +308,8 @@
       (let ((number (if (match-beginning 1)
 			(match-string 1) "0"))
 	    (delim (aref (match-string 2) 0)))
-	(if (or (= delim ?\() (= delim ?\{))
+	(if (or (= delim ?\()
+		(= delim ?\{))
 	    (replace-match (concat "\"(" (if (= delim ?\() "mouse" "face")
 				   " " number " \""))
 	  (replace-match "\")\""))))

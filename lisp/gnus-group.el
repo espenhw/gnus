@@ -1127,7 +1127,7 @@ If REGEXP, only list groups matching REGEXP."
       (setq list (cdr list)))
     (let ((face (cdar list)))
       (unless (eq face (get-text-property beg 'face))
-	(gnus-put-text-property
+	(gnus-put-text-property-excluding-characters-with-faces
 	 beg end 'face
 	 (setq face (if (boundp face) (symbol-value face) face)))
 	(gnus-extent-start-open beg)))

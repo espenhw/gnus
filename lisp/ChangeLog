@@ -1,3 +1,29 @@
+Sun Jun 28 09:54:52 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.6.21 is released.
+
+Sun Jun 28 08:51:39 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-summary-edit-article-done): Copy the buffer to
+	a temp buffer before replacing.
+
+	* gnus-msg.el (gnus-post-news): Treat broken-reply-to in
+	followups. 
+
+	* gnus-sum.el (gnus-summary-goto-subject): Position point.
+
+Sat Jun 27 09:19:20 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-demon.el (gnus-util): Required.
+
+	* gnus-score.el (gnus-score-body): Message fix.
+
+	* gnus-group.el (gnus-group-highlight-line): Use it.
+
+	* gnus-util.el
+	(gnus-put-text-properties-excluding-characters-with-faces): New
+	function. 
+
 Sat Jun 27 08:56:08 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.6.20 is released.
