@@ -8,6 +8,11 @@ For older news, see Gnus info node "New Features".
 
 * Changes in Oort Gnus
 
+** deuglify.el (gnus-article-outlook-deuglify-article)
+
+A new file from Raymond Scholz <rscholz@zonix.de> for deuglifying
+broken Outlook (Express) articles.
+
 ** (require 'gnus-load)
 
 If you use a stand-alone Gnus distribution, you'd better add (require
