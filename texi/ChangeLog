@@ -1,3 +1,7 @@
+2003-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus.texi (Filtering Spam Using spam.el): Trivial fix.
+
 2003-01-10  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Choosing Variables, Agent Caveats): Add.

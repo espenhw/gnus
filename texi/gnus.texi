@@ -21518,7 +21518,7 @@ The following are the methods you can use to control the behavior of
 * Blackholes::                  
 * Bogofilter::                  
 * ifile spam filtering::        
-* spam-stat filtering::        
+* spam-stat spam filtering::    
 * Extending spam.el::           
 @end menu
 
