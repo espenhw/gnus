@@ -43,10 +43,10 @@
   "Score and kill file handling."
   :group 'gnus )
 
-(defconst gnus-version-number "0.84"
+(defconst gnus-version-number "5.4.1"
   "Version number for this version of Gnus.")
 
-(defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
+(defconst gnus-version (format "Gnus v%s" gnus-version-number)
   "Version string for this version of Gnus.")
 
 (defcustom gnus-inhibit-startup-message nil

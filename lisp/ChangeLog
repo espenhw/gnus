@@ -1,3 +1,7 @@
+Sat Jan 25 10:59:31 1997  Lars Magne Ingebrigtsen  <menja.larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.84 is released.
+
 Fri Jan 24 20:31:25 1997  Paul Franklin  <paul@cs.washington.edu>
 
 	* gnus-sum.el (gnus-summary-next-article): There's no

@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.84 Manual
+@settitle Gnus 5.4 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -287,7 +287,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.84 Manual
+@title Gnus 5.4 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -314,7 +314,7 @@ into another language, under the above conditions for modified versions.
 
 
 @node Top
-@top The Red Gnus Newsreader
+@top The Gnus Newsreader
 
 @ifinfo
 
@@ -323,7 +323,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Red Gnus 0.84
+This manual corresponds to Gnus 5.4.
 
 @end ifinfo
 
@@ -8770,7 +8770,7 @@ If non-@code{nil}, the mail backends will delete the temporary incoming
 file after splitting mail into the proper groups.  This is @code{nil} by
 default for reasons of security.
 
-Since Red Gnus is an alpha release, it is to be expected to lose mail.
+@c Since Red Gnus is an alpha release, it is to be expected to lose mail.
 (No Gnus release since (ding) Gnus 0.10 (or something like that) have
 lost mail, I think, but that's not the point.  (Except certain versions
 of Red Gnus.))  By not deleting the Incoming* files, one can be sure to
@@ -13475,11 +13475,12 @@ was included in the Emacs 19.30 distribution.
 In May 1996 the next Gnus generation (aka.  ``September Gnus'') was
 released under the name ``Gnus 5.2''.  
 
-On July 28th 1996 work on Red Gnus was begun.
+On July 28th 1996 work on Red Gnus was begun, and it was released on
+January 25th 1997 as ``Gnus 5.4''.
 
 If you happen upon a version of Gnus that has a name that is prefixed --
-``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Mamey Sapote Gnus''
--- don't panic.  Don't let it know that you're frightened.  Back away.
+``(ding) Gnus'', ``September Gnus'', ``Red Gnus'', ``Quassia Gnus'' --
+don't panic.  Don't let it know that you're frightened.  Back away.
 Slowly.  Whatever you do, don't run.  Walk away, calmly, until you're
 out of its reach.  Find a proper released version of Gnus and snuggle up
 to that instead.
@@ -13874,7 +13875,7 @@ actually are people who are using Gnus.  Who'd'a thunk it!
 @menu
 * ding Gnus::          New things in Gnus 5.0/5.1, the first new Gnus.
 * September Gnus::     The Thing Formally Known As Gnus 5.3/5.3.
-* Red Gnus::           The future---Gnus 5.4/5.5.
+* Red Gnus::           Third time best---Gnus 5.4/5.5.
 @end menu
 
 These lists are, of course, just @emph{short} overviews of the
