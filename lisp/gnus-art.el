@@ -2597,6 +2597,7 @@ groups."
   (when (and (not force)
 	     (gnus-group-read-only-p))
     (error "The current newsgroup does not support article editing"))
+  (gnus-article-date-original)
   (gnus-article-edit-article
    `(lambda (no-highlight)
       (gnus-summary-edit-article-done
@@ -3187,11 +3188,17 @@ forbidden in URL encoding."
 
 (defun gnus-button-url (address)
   "Browse ADDRESS."
-  (funcall browse-url-browser-function address))
+  ;; In Emacs 20, `browse-url-browser-function' may be an alist.
+  (if (listp browse-url-browser-function)
+      (browse-url address)
+    (funcall browse-url-browser-function address)))
 
 (defun gnus-button-embedded-url (address)
   "Browse ADDRESS."
-  (funcall browse-url-browser-function (gnus-strip-whitespace address)))
+  ;; In Emacs 20, `browse-url-browser-function' may be an alist.
+  (if (listp browse-url-browser-function)
+      (browse-url (gnus-strip-whitespace address))
+    (funcall browse-url-browser-function (gnus-strip-whitespace address))))
 
 ;;; Next/prev buttons in the article buffer.
 

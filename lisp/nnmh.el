@@ -466,7 +466,7 @@
       (setq active (cons 1 0))
       (push (list group active) nnmh-group-alist)
       (unless (file-exists-p dir)
-	(make-directory dir))
+	(gnus-make-directory dir))
       ;; Find the highest number in the group.
       (let ((files (sort
 		    (mapcar

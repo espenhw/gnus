@@ -103,6 +103,12 @@ via telnet.")
 (defvoo nntp-telnet-passwd nil
   "Password to use to log in via telnet with.")
 
+(defvoo nntp-open-telnet-envuser nil
+  "*If non-nil, telnet session (client and server both) will support the ENVIRON option and not prompt for login name.")
+
+(defvoo nntp-telnet-shell-prompt "bash\\|\$ *\r?$\\|> *\r?"
+  "*Regular expression to match the shell prompt on the remote machine.")
+
 (defvoo nntp-telnet-command "telnet"
   "Command used to start telnet.")
 
@@ -172,6 +178,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 (defvar nntp-process-start-point nil)
 (defvar nntp-inside-change-function nil)
 (defvoo nntp-last-command-time nil)
+(defvoo nntp-last-command nil)
 
 (defvar nntp-connection-list nil)
 
@@ -194,6 +201,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 
 (defsubst nntp-send-string (process string)
   "Send STRING to PROCESS."
+  (setq nntp-last-command-time (current-time)
+	nntp-last-command string)
   (process-send-string process (concat string nntp-end-of-line)))
 
 (defsubst nntp-wait-for (process wait-for buffer &optional decode discard)
@@ -204,8 +213,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
     (while (or (not (memq (char-after (point)) '(?2 ?3 ?4 ?5)))
 	       (looking-at "480"))
       (when (looking-at "480")
-	(erase-buffer)
-	(funcall nntp-authinfo-function))
+	(nntp-handle-authinfo process))
       (nntp-accept-process-output process)
       (goto-char (point-min)))
     (prog1
@@ -248,7 +256,6 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
       (if (memq (process-status process) '(open run))
 	  process
 	(when (buffer-name (process-buffer process))
-	  (message "Killed buffer %s" (process-buffer process))
 	  (kill-buffer (process-buffer process)))
 	(setq nntp-connection-alist (delq entry nntp-connection-alist))
 	nil))))
@@ -264,9 +271,8 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
       (process-buffer process))))
 
 (defsubst nntp-retrieve-data (command address port buffer
-				   &optional wait-for callback decode)
+				      &optional wait-for callback decode)
   "Use COMMAND to retrieve data into BUFFER from PORT on ADDRESS."
-  (setq nntp-last-command-time (current-time))
   (let ((process (or (nntp-find-connection buffer)
 		     (nntp-open-connection buffer))))
     (if (not process)
@@ -600,7 +606,7 @@ server there that you can connect to.  See also `nntp-open-connection-function'"
 
 (deffoo nntp-request-group (group &optional server dont-check)
   (nntp-possibly-change-group nil server)
-  (when (nntp-send-command "^2.*\n" "GROUP" group)
+  (when (nntp-send-command "^21.*\n" "GROUP" group)
     (let ((entry (nntp-find-connection-entry nntp-server-buffer)))
       (setcar (cddr entry) group))))
 
@@ -702,19 +708,19 @@ reading."
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
   (nntp-send-command
-   "^.*\r?\n" "AUTHINFO USER"
+   "^3.*\r?\n" "AUTHINFO USER"
    (read-string (format "NNTP (%s) user name: " nntp-address)))
   (nntp-send-command
-   "^.*\r?\n" "AUTHINFO PASS"
+   "^2.*\r?\n" "AUTHINFO PASS"
    (nnmail-read-passwd "NNTP (%s) password: " nntp-address)))
 
 (defun nntp-send-authinfo ()
   "Send the AUTHINFO to the nntp server.
 This function is supposed to be called from `nntp-server-opened-hook'.
 It will prompt for a password."
-  (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
+  (nntp-send-command "^3.*\r?\n" "AUTHINFO USER" (user-login-name))
   (nntp-send-command
-   "^.*\r?\n" "AUTHINFO PASS"
+   "^2.*\r?\n" "AUTHINFO PASS"
    (nnmail-read-passwd (format "NNTP (%s) password: " nntp-address))))
 
 (defun nntp-send-authinfo-from-file ()
@@ -724,12 +730,23 @@ This function is supposed to be called from `nntp-server-opened-hook'."
     (nnheader-temp-write nil
       (insert-file-contents "~/.nntp-authinfo")
       (goto-char (point-min))
-      (nntp-send-command "^.*\r?\n" "AUTHINFO USER" (user-login-name))
+      (nntp-send-command "^3.*\r?\n" "AUTHINFO USER" (user-login-name))
       (nntp-send-command
-       "^.*\r?\n" "AUTHINFO PASS"
+       "^2.*\r?\n" "AUTHINFO PASS"
        (buffer-substring (point) (progn (end-of-line) (point)))))))
 
 ;;; Internal functions.
+
+(defun nntp-handle-authinfo (process)
+  "Take care of an authinfo response from the server."
+  (let ((last nntp-last-command))
+    (funcall nntp-authinfo-function)
+    ;; We have to re-send the function that was interrupted by
+    ;; the authinfo request.
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (erase-buffer))
+    (nntp-send-string process last)))
 
 (defun nntp-make-process-buffer (buffer)
   "Create a new, fresh buffer usable for nntp process connections."
@@ -804,7 +821,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	  (save-excursion
 	    (goto-char beg)
 	    (if (looking-at "480")
-		(funcall nntp-authinfo-function)
+		(nntp-handle-authinfo nntp-process-to-buffer)
 	      (nntp-snarf-error-message)
 	      (funcall nntp-process-callback nil)))
 	(goto-char end)
@@ -1070,13 +1087,20 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 	  (case-fold-search t))
       (when (memq (process-status proc) '(open run))
 	(process-send-string proc "set escape \^X\n")
-	(process-send-string proc (concat "open " nntp-address "\n"))
-	(nntp-wait-for-string "^\r*.?login:")
-	(process-send-string
-	 proc (concat
-	       (or nntp-telnet-user-name
-		   (setq nntp-telnet-user-name (read-string "login: ")))
-	       "\n"))
+	(cond
+	 ((and nntp-open-telnet-envuser nntp-telnet-user-name)
+	  (process-send-string proc (concat "open " "-l" nntp-telnet-user-name
+					    nntp-address "\n")))
+	 (t
+	  (process-send-string proc (concat "open " nntp-address "\n"))))
+	(cond
+	 ((not nntp-open-telnet-envuser)
+	  (nntp-wait-for-string "^\r*.?login:")
+	  (process-send-string
+	   proc (concat
+		 (or nntp-telnet-user-name
+		     (setq nntp-telnet-user-name (read-string "login: ")))
+		 "\n"))))
 	(nntp-wait-for-string "^\r*.?password:")
 	(process-send-string
 	 proc (concat
@@ -1085,7 +1109,7 @@ This function is supposed to be called from `nntp-server-opened-hook'."
 			 (nnmail-read-passwd "Password: ")))
 	       "\n"))
 	(erase-buffer)
-	(nntp-wait-for-string "bash\\|\$ *\r?$\\|> *\r?")
+	(nntp-wait-for-string nntp-telnet-shell-prompt)
 	(process-send-string
 	 proc (concat (mapconcat 'identity nntp-telnet-parameters " ") "\n"))
 	(nntp-wait-for-string "^\r*20[01]")

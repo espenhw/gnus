@@ -1,3 +1,9 @@
+Fri Feb 13 18:23:19 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Mail Group Commands): Typo.
+	(NNTP): Addition.
+	(Mail and Procmail): Addition.
+
 Mon Feb  9 16:30:30 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus.texi (Article Date): Addition.

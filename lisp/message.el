@@ -320,10 +320,12 @@ The headers should be delimited by a line whose contents match the
 variable `mail-header-separator'.
 
 Legal values include `message-send-mail-with-sendmail' (the default),
-`message-send-mail-with-mh' and `message-send-mail-with-qmail'."
+`message-send-mail-with-mh', `message-send-mail-with-qmail' and
+`smtpmail-send-it'."
   :type '(radio (function-item message-send-mail-with-sendmail)
 		(function-item message-send-mail-with-mh)
 		(function-item message-send-mail-with-qmail)
+		(function-item smtpmail-send-it)
 		(function :tag "Other"))
   :group 'message-sending
   :group 'message-mail)
@@ -1807,6 +1809,7 @@ The text will also be indented the normal way."
 (defun message-dont-send ()
   "Don't send the message you have been editing."
   (interactive)
+  (save-buffer)
   (let ((actions message-postpone-actions))
     (message-bury (current-buffer))
     (message-do-actions actions)))
@@ -1983,7 +1986,8 @@ the user from the mailer."
 	(save-excursion
 	  (set-buffer errbuf)
 	  (erase-buffer))))
-    (let ((default-directory "/"))
+    (let ((default-directory "/")
+	  (coding-system-for-write 'binary))
       (apply 'call-process-region
 	     (append (list (point-min) (point-max)
 			   (if (boundp 'sendmail-program)
@@ -2031,27 +2035,28 @@ to find out how to use this."
   (run-hooks 'message-send-mail-hook)
   ;; send the message
   (case
-      (apply
-       'call-process-region 1 (point-max) message-qmail-inject-program
-       nil nil nil
-       ;; qmail-inject's default behaviour is to look for addresses on the
-       ;; command line; if there're none, it scans the headers.
-       ;; yes, it does The Right Thing w.r.t. Resent-To and it's kin.
-       ;;
-       ;; in general, ALL of qmail-inject's defaults are perfect for simply
-       ;; reading a formatted (i. e., at least a To: or Resent-To header)
-       ;; message from stdin.
-       ;;
-       ;; qmail also has the advantage of not having been raped by
-       ;; various vendors, so we don't have to allow for that, either --
-       ;; compare this with message-send-mail-with-sendmail and weep
-       ;; for sendmail's lost innocence.
-       ;;
-       ;; all this is way cool coz it lets us keep the arguments entirely
-       ;; free for -inject-arguments -- a big win for the user and for us
-       ;; since we don't have to play that double-guessing game and the user
-       ;; gets full control (no gestapo'ish -f's, for instance).  --sj
-       message-qmail-inject-args)
+      (let ((coding-system-for-write 'binary))
+	(apply
+	 'call-process-region 1 (point-max) message-qmail-inject-program
+	 nil nil nil
+	 ;; qmail-inject's default behaviour is to look for addresses on the
+	 ;; command line; if there're none, it scans the headers.
+	 ;; yes, it does The Right Thing w.r.t. Resent-To and it's kin.
+	 ;;
+	 ;; in general, ALL of qmail-inject's defaults are perfect for simply
+	 ;; reading a formatted (i. e., at least a To: or Resent-To header)
+	 ;; message from stdin.
+	 ;;
+	 ;; qmail also has the advantage of not having been raped by
+	 ;; various vendors, so we don't have to allow for that, either --
+	 ;; compare this with message-send-mail-with-sendmail and weep
+	 ;; for sendmail's lost innocence.
+	 ;;
+	 ;; all this is way cool coz it lets us keep the arguments entirely
+	 ;; free for -inject-arguments -- a big win for the user and for us
+	 ;; since we don't have to play that double-guessing game and the user
+	 ;; gets full control (no gestapo'ish -f's, for instance).  --sj
+	 message-qmail-inject-args))
     ;; qmail-inject doesn't say anything on it's stdout/stderr,
     ;; we have to look at the retval instead
     (0 nil)

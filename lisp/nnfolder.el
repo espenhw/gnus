@@ -329,76 +329,78 @@ time saver for large mailboxes.")
       (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
       (nconc rest articles))))
 
-(deffoo nnfolder-request-move-article
-  (article group server accept-form &optional last)
-  (let ((buf (get-buffer-create " *nnfolder move*"))
-	result)
-    (and
-     (nnfolder-request-article article group server)
-     (save-excursion
-       (set-buffer buf)
-       (buffer-disable-undo (current-buffer))
-       (erase-buffer)
-       (insert-buffer-substring nntp-server-buffer)
-       (goto-char (point-min))
-       (while (re-search-forward
-	       (concat "^" nnfolder-article-marker)
-	       (save-excursion (search-forward "\n\n" nil t) (point)) t)
-	 (delete-region (progn (beginning-of-line) (point))
-			(progn (forward-line 1) (point))))
-       (setq result (eval accept-form))
-       (kill-buffer buf)
-       result)
-     (save-excursion
-       (nnfolder-possibly-change-group group server)
-       (set-buffer nnfolder-current-buffer)
-       (goto-char (point-min))
-       (when (search-forward (nnfolder-article-string article) nil t)
-	 (nnfolder-delete-mail))
-       (when last
-	 (nnfolder-save-buffer)
-	 (nnfolder-adjust-min-active group)
-	 (nnmail-save-active nnfolder-group-alist nnfolder-active-file))))
-    result))
+(deffoo nnfolder-request-move-article (article group server
+					       accept-form &optional last)
+  (save-excursion
+    (let ((buf (get-buffer-create " *nnfolder move*"))
+	  result)
+      (and
+       (nnfolder-request-article article group server)
+       (save-excursion
+	 (set-buffer buf)
+	 (buffer-disable-undo (current-buffer))
+	 (erase-buffer)
+	 (insert-buffer-substring nntp-server-buffer)
+	 (goto-char (point-min))
+	 (while (re-search-forward
+		 (concat "^" nnfolder-article-marker)
+		 (save-excursion (search-forward "\n\n" nil t) (point)) t)
+	   (delete-region (progn (beginning-of-line) (point))
+			  (progn (forward-line 1) (point))))
+	 (setq result (eval accept-form))
+	 (kill-buffer buf)
+	 result)
+       (save-excursion
+	 (nnfolder-possibly-change-group group server)
+	 (set-buffer nnfolder-current-buffer)
+	 (goto-char (point-min))
+	 (when (search-forward (nnfolder-article-string article) nil t)
+	   (nnfolder-delete-mail))
+	 (when last
+	   (nnfolder-save-buffer)
+	   (nnfolder-adjust-min-active group)
+	   (nnmail-save-active nnfolder-group-alist nnfolder-active-file))))
+      result)))
 
 (deffoo nnfolder-request-accept-article (group &optional server last)
-  (nnfolder-possibly-change-group group server)
-  (nnmail-check-syntax)
-  (let ((buf (current-buffer))
-	result art-group)
-    (goto-char (point-min))
-    (when (looking-at "X-From-Line: ")
-      (replace-match "From "))
-    (and
-     (nnfolder-request-list)
-     (save-excursion
-       (set-buffer buf)
-       (goto-char (point-min))
-       (search-forward "\n\n" nil t)
-       (forward-line -1)
-       (while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
-	 (delete-region (point) (progn (forward-line 1) (point))))
-       (when nnmail-cache-accepted-message-ids
-	 (nnmail-cache-insert (nnmail-fetch-field "message-id")))
-       (setq result (if (stringp group)
-			(list (cons group (nnfolder-active-number group)))
-		      (setq art-group
-			    (nnmail-article-group 'nnfolder-active-number))))
-       (if (and (null result)
-		(yes-or-no-p "Moved to `junk' group; delete article? "))
-	   (setq result 'junk)
-	 (setq result
-	       (car (nnfolder-save-mail result)))))
-     (when last
+  (save-excursion
+    (nnfolder-possibly-change-group group server)
+    (nnmail-check-syntax)
+    (let ((buf (current-buffer))
+	  result art-group)
+      (goto-char (point-min))
+      (when (looking-at "X-From-Line: ")
+	(replace-match "From "))
+      (and
+       (nnfolder-request-list)
        (save-excursion
-	 (nnfolder-possibly-change-folder (or (caar art-group) group))
-	 (nnfolder-save-buffer)
+	 (set-buffer buf)
+	 (goto-char (point-min))
+	 (search-forward "\n\n" nil t)
+	 (forward-line -1)
+	 (while (re-search-backward (concat "^" nnfolder-article-marker) nil t)
+	   (delete-region (point) (progn (forward-line 1) (point))))
 	 (when nnmail-cache-accepted-message-ids
-	   (nnmail-cache-close)))))
-    (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
-    (unless result
-      (nnheader-report 'nnfolder "Couldn't store article"))
-    result))
+	   (nnmail-cache-insert (nnmail-fetch-field "message-id")))
+	 (setq result (if (stringp group)
+			  (list (cons group (nnfolder-active-number group)))
+			(setq art-group
+			      (nnmail-article-group 'nnfolder-active-number))))
+	 (if (and (null result)
+		  (yes-or-no-p "Moved to `junk' group; delete article? "))
+	     (setq result 'junk)
+	   (setq result
+		 (car (nnfolder-save-mail result)))))
+       (when last
+	 (save-excursion
+	   (nnfolder-possibly-change-folder (or (caar art-group) group))
+	   (nnfolder-save-buffer)
+	   (when nnmail-cache-accepted-message-ids
+	     (nnmail-cache-close)))))
+      (nnmail-save-active nnfolder-group-alist nnfolder-active-file)
+      (unless result
+	(nnheader-report 'nnfolder "Couldn't store article"))
+      result)))
 
 (deffoo nnfolder-request-replace-article (article group buffer)
   (nnfolder-possibly-change-group group)
@@ -537,7 +539,8 @@ time saver for large mailboxes.")
 	  (setq nnfolder-current-group group)
 
 	  (when (or (not nnfolder-current-buffer)
-		    (not (verify-visited-file-modtime nnfolder-current-buffer)))
+		    (not (verify-visited-file-modtime
+			  nnfolder-current-buffer)))
 	    (save-excursion
 	      (setq file (nnfolder-group-pathname group))
 	      ;; See whether we need to create the new file.

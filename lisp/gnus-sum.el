@@ -2173,10 +2173,12 @@ article number."
 	 (gnus-summary-last-subject))))
 
 (defmacro gnus-summary-article-header (&optional number)
+  "Return the header of article NUMBER."
   `(gnus-data-header (gnus-data-find
 		      ,(or number '(gnus-summary-article-number)))))
 
 (defmacro gnus-summary-thread-level (&optional number)
+  "Return the level of thread that starts with article NUMBER."
   `(if (and (eq gnus-summary-make-false-root 'dummy)
 	    (get-text-property (point) 'gnus-intangible))
        0
@@ -2184,10 +2186,12 @@ article number."
 		       ,(or number '(gnus-summary-article-number))))))
 
 (defmacro gnus-summary-article-mark (&optional number)
+  "Return the mark of article NUMBER."
   `(gnus-data-mark (gnus-data-find
 		    ,(or number '(gnus-summary-article-number)))))
 
 (defmacro gnus-summary-article-pos (&optional number)
+  "Return the position of the line of article NUMBER."
   `(gnus-data-pos (gnus-data-find
 		   ,(or number '(gnus-summary-article-number)))))
 
@@ -2210,6 +2214,7 @@ article number."
        gnus-summary-default-score 0))
 
 (defun gnus-summary-article-children (&optional number)
+  "Return a list of article numbers that are children of article NUMBER."
   (let* ((data (gnus-data-find-list (or number (gnus-summary-article-number))))
 	 (level (gnus-data-level (car data)))
 	 l children)
@@ -2221,6 +2226,7 @@ article number."
     (nreverse children)))
 
 (defun gnus-summary-article-parent (&optional number)
+  "Return the article number of the parent of article NUMBER."
   (let* ((data (gnus-data-find-list (or number (gnus-summary-article-number))
 				    (gnus-data-list t)))
 	 (level (gnus-data-level (car data))))
@@ -2245,6 +2251,11 @@ This is all marks except unread, ticked, dormant, and expirable."
 	   (= mark gnus-expirable-mark))))
 
 (defmacro gnus-article-mark (number)
+  "Return the MARK of article NUMBER.
+This macro should only be used when computing the mark the \"first\"
+time; i.e., when generating the summary lines.  After that,
+`gnus-summary-article-mark' should be used to examine the
+marks of articles."
   `(cond
     ((memq ,number gnus-newsgroup-unsendable) gnus-unsendable-mark)
     ((memq ,number gnus-newsgroup-undownloaded) gnus-undownloaded-mark)
@@ -5068,6 +5079,8 @@ gnus-exit-group-hook is called with no arguments if that value is non-nil."
       (gnus-dup-enter-articles))
     (when gnus-use-trees
       (gnus-tree-close group))
+    ;; Remove entries for this group.
+    (nnmail-purge-split-history group)
     ;; Make all changes in this group permanent.
     (unless quit-config
       (run-hooks 'gnus-exit-group-hook)
@@ -7035,6 +7048,9 @@ and `request-accept' functions."
 	      (gnus-request-replace-article
 	       article gnus-newsgroup-name (current-buffer)))))
 
+	;;;!!!Why is this necessary?
+	(set-buffer gnus-summary-buffer)
+	
 	(gnus-summary-goto-subject article)
 	(when (eq action 'move)
 	  (gnus-summary-mark-article article gnus-canceled-mark))))

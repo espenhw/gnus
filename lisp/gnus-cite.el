@@ -571,8 +571,10 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 (defun gnus-cite-parse-maybe (&optional force)
   ;; Parse if the buffer has changes since last time.
-  (if (and (not force) (equal gnus-cite-article gnus-article-current))
+  (if (and (not force)
+	   (equal gnus-cite-article gnus-article-current))
       ()
+    (gnus-cite-localize)
     ;;Reset parser information.
     (setq gnus-cite-prefix-alist nil
 	  gnus-cite-attribution-alist nil
@@ -906,10 +908,14 @@ See also the documentation for `gnus-article-highlight-citation'."
 	(setq prefix (car entry))))
     prefix))
 
-(gnus-add-shutdown 'gnus-cache-close 'gnus)
-
-(defun gnus-cache-close ()
-  (setq gnus-cite-prefix-alist nil))
+(defun gnus-cite-localize ()
+  "Make the citation variables local to the article buffer."
+  (let ((vars '(gnus-cite-article
+		gnus-cite-overlay-list gnus-cite-prefix-alist
+		gnus-cite-attribution-alist gnus-cite-loose-prefix-alist
+		gnus-cite-loose-attribution-alist)))
+    (while vars
+      (make-local-variable (pop vars)))))
 
 (gnus-ems-redefine)
 

@@ -53,7 +53,10 @@
     (easy-menu-define
      gnus-draft-menu gnus-draft-mode-map ""
      '("Drafts"
-       ["Toggle whether to send" gnus-draft-toggle-sending t]))))
+       ["Toggle whether to send" gnus-draft-toggle-sending t]
+       ["Edit" gnus-draft-edit-message t]
+       ["Send selected message(s)" gnus-draft-send-message t]
+       ["Send all messages" gnus-draft-send-all-messages t]))))
 
 (defun gnus-draft-mode (&optional arg)
   "Minor mode for providing a draft summary buffers.

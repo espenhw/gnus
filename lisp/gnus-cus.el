@@ -287,12 +287,12 @@ number will be marked as read and removed from the summary buffer.
 `gnus-thread-score-function' says how to compute the total score
 for a thread.")
 
-    (files (repeat :tag "Files" file) "\
+    (files (repeat :inline t :tag "Files" file) "\
 The value of this entry should be any number of file names.
 These files are assumed to be score files as well, and will be loaded
 the same way this one was.")
 
-    (exclude-files (repeat :tag "Exclude-files" file) "\
+    (exclude-files (repeat :inline t :tag "Exclude-files" file) "\
 The clue of this entry should be any number of files.
 These files will not be loaded, even though they would normally be so,
 for some reason or other.")

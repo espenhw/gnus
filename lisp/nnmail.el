@@ -1547,9 +1547,6 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
 (defun nnmail-get-new-mail (method exit-func temp
 				   &optional group spool-func)
   "Read new incoming mail."
-  ;; Nix out the previous split history.
-  (unless group
-    (setq nnmail-split-history nil))
   (let* ((spools (nnmail-get-spool-files group))
 	 (group-in group)
 	 nnmail-current-spool incoming incomings spool)
@@ -1747,6 +1744,17 @@ If ARGS, PROMPT is used as an argument to `format'."
 			  elem
 			  ", "))
 	(princ "\n")))))
+
+(defun nnmail-purge-split-history (group)
+  (let ((history nnmail-split-history))
+    (while history
+      (let ((pairs (car history)))
+	(while pairs
+	  (if (string= (car (car pairs)) group)
+	      (setcar pairs (cdr pairs))
+	    (setq pairs (cdr pairs)))))
+      (setq history (cdr history))))
+  (setq nnmail-split-history (delq nil nnmail-split-history)))
 
 (defun nnmail-new-mail-p (group)
   "Say whether GROUP has new mail."

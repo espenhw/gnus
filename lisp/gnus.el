@@ -246,7 +246,7 @@ is restarted, and sometimes reloaded."
   :link '(custom-manual "(gnus)Exiting Gnus")
   :group 'gnus)
 
-(defconst gnus-version-number "0.24"
+(defconst gnus-version-number "0.25"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Quassia Gnus v%s" gnus-version-number)
@@ -1529,6 +1529,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
      ("pp" pp pp-to-string pp-eval-expression)
      ("ps-print" ps-print-preprint)
      ("mail-extr" mail-extract-address-components)
+     ("browse-url" browse-url)
      ("message" :interactive t
       message-send-and-exit message-yank-original)
      ("nnmail" nnmail-split-fancy nnmail-article-group nnmail-date-to-time)

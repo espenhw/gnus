@@ -1,3 +1,79 @@
+Fri Feb 13 22:40:39 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Quassia Gnus v0.25 is released.
+
+Fri Feb 13 19:01:19 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nndoc.el (nndoc-type-alist): Allow blank lines to separate
+	headers from bodies.
+
+	* gnus-art.el (gnus-article-edit): Restore Date header.
+
+	* gnus-async.el (gnus-asynch-obarray): New variable.
+	(gnus-async-prefetched-article-entry): Use it.
+	(gnus-async-set-buffer): Use it.
+
+	* nnmh.el (nnmh-active-number): Create parent dirs.
+
+	* nntp.el (nntp-last-command): New variable.
+	(nntp-handle-authinfo): New function.
+
+	* gnus-sum.el (gnus-summary-exit): Call purging function.
+
+Fri Feb 13 18:59:16 1998  François Pinard  <pinard@iro.umontreal.ca>
+
+	* nnmail.el (nnmail-get-new-mail): Don't clear split-history.
+	(nnmail-purge-split-history): New function.
+
+Fri Feb 13 18:36:16 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* nntp.el (nntp-telnet-shell-prompt): Renamed.
+
+Fri Feb 13 18:35:23 1998  Sam Falkner  <samf@channelpoint.com>
+
+	* nntp.el (nntp-open-telnet-envuser): New variable.
+
+Fri Feb 13 18:29:23 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-send-mail-function): Added smtpmail-send-it.
+
+1998-02-11  Dave Love  <d.love@dl.ac.uk>
+
+	* gnus-art.el (gnus-button-url): Don't lose in Emacs 20 with
+	browse-url-browser-function an alist, not a function.
+	(gnus-button-embedded-url): Likewise.
+
+Fri Feb 13 17:10:31 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-cite.el (gnus-cite-localize): New function.
+	(gnus-cite-close): Renamed.
+	(gnus-cite-parse-maybe): Use it.
+
+	* gnus-sum.el (gnus-summary-move-article): Move back to summary
+	buffer. 
+
+	* nnfolder.el (nnfolder-request-accept-article): Save excursion.
+	(nnfolder-request-move-article): Ditto.
+
+	* nntp.el (nntp-find-connection): Don't message.
+
+Fri Feb 13 14:51:56 1998  MORIOKA Tomohiko  <steve@xemacs.org>
+
+	* message.el (message-send-mail-with-qmail): Fix.
+
+1998-02-13  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus-draft.el (gnus-draft-make-menu-bar): Added missing commands.
+
+1998-01-06  Per Abrahamsen  <abraham@dina.kvl.dk>
+
+	* gnus/gnus-cus.el (gnus-score-parameters): Make `files' and
+	`exclude-files' widgets inline.
+
+Fri Feb 13 12:46:23 1998  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-article-mark): Dox dox.
+
 Wed Feb 11 15:05:03 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Quassia Gnus v0.24 is released.

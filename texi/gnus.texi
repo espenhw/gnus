@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Quassia Gnus 0.24 Manual
+@settitle Quassia Gnus 0.25 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -313,7 +313,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Quassia Gnus 0.24 Manual
+@title Quassia Gnus 0.25 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -349,7 +349,7 @@ can be gotten by any nefarious means you can think of---@sc{nntp}, local
 spool or your mbox file.  All at the same time, if you want to push your
 luck.
 
-This manual corresponds to Quassia Gnus 0.24.
+This manual corresponds to Quassia Gnus 0.25.
 
 @end ifinfo
 
@@ -686,7 +686,7 @@ zombies later (with @kbd{A z}) and either kill them all off properly
 @item gnus-subscribe-randomly
 @vindex gnus-subscribe-randomly
 Subscribe all new groups in arbitrary order.  This really means that all
-new groups will be added at ``the top'' of the grop buffer.
+new groups will be added at ``the top'' of the group buffer.
 
 @item gnus-subscribe-alphabetically
 @vindex gnus-subscribe-alphabetically
@@ -7123,8 +7123,8 @@ Move the article from one mail group to another
 Copy the article from one group (mail group or not) to a mail group
 (@code{gnus-summary-copy-article}).
 
-@item B C
-@kindex B C (Summary)
+@item B B
+@kindex B B (Summary)
 @cindex crosspost mail
 @findex gnus-summary-crosspost-article
 Crosspost the current article to some other group
@@ -8994,6 +8994,17 @@ Password to use when logging in.
 A list of strings executed as a command after logging in
 via @code{telnet}.
 
+@item nntp-telnet-shell-prompt
+@vindex nntp-telnet-shell-prompt
+Regexp matching the shell prompt on the remote machine.  The default is
+@samp{bash\\|\$ *\r?$\\|> *\r?}.
+
+@item nntp-open-telnet-envuser
+@vindex nntp-open-telnet-envuser
+If non-@code{nil}, the @code{telnet} session (client and server both)
+will support the @code{ENVIRON} option and not prompt for login name.
+This works for Solaris @code{telnet}, for instance.
+
 @end table
 
 @item nntp-end-of-line
@@ -9542,6 +9553,16 @@ external delivery agent---@code{slocal}, @code{elm}, etc) to split
 incoming mail into groups.  If you do that, you should set
 @code{nnmail-spool-file} to @code{procmail} to ensure that the mail
 backends never ever try to fetch mail by themselves.
+
+If you have a combined @code{procmail}/POP/mailbox setup, you can do
+something like the following:
+
+@vindex nnmail-use-procmail
+@lisp
+(setq nnmail-use-procmail t)
+(setq nnmail-spool-file
+      '("/usr/spool/mail/my-name" "po:my-name"))
+@end lisp
 
 This also means that you probably don't want to set
 @code{nnmail-split-methods} either, which has some, perhaps, unexpected
@@ -17121,9 +17142,6 @@ X characters in the body.
  handle 480/381 authinfo requests separately.
 
 @item
- when sending authinfo automatically, things hang.
-
-@item
  include the texi/dir file in the distribution.
 
 @item
@@ -17150,10 +17168,6 @@ to something someone else has said.
 snews://secnews.netscape.com/netscape.communicator.unix 
 
 @item
-When the nntp server hangs up while the user is composing the message,
-when sending the message and the nntp server asks for AUTH, Gnus hangs. 
-
-@item
 One command to edit the original version if an article, and one to edit
 the displayed version.
 
@@ -17163,6 +17177,12 @@ current article.
 
 @item
 Switch from initial text to the new default text mechanism.
+
+@item
+How about making it possible to expire local articles?  Will it be
+possible to make various constraints on when an article can be
+expired, e.g. (read), (age > 14 days), or the more interesting (read
+& age > 14 days)?
 
 @item
 Solve the halting problem.
