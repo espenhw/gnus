@@ -1,5 +1,8 @@
 2002-01-10  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* mm-util.el (mm-charset-to-coding-system): Change charset to cs.
+	From: Torsten Hilbrich <email@myrkr.in-berlin.de>
+
 	* gnus.el (gnus-agent-covered-methods): Move here.
 	(gnus-online): New function.
 	(gnus-agent-method-p): Move here.

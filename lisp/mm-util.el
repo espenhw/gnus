@@ -336,7 +336,7 @@ used as the line break code type of the coding system."
     charset)
    ;; Translate invalid charsets.
    ((let ((cs (cdr (assq charset mm-charset-synonym-alist))))
-      (and cs (mm-coding-system-p charset) cs)))
+      (and cs (mm-coding-system-p cs) cs)))
    ;; Last resort: search the coding system list for entries which
    ;; have the right mime-charset in case the canonical name isn't
    ;; defined (though it should be).
