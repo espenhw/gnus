@@ -1,5 +1,8 @@
 2001-01-24 17:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
+	* gnus-agent.el (gnus-agent-add-server): Redraw the line.
+	(gnus-agent-remove-server): Ditto.
+
 	* gnus-srvr.el (gnus-server-line-format): Add %a.
 	(gnus-server-line-format-alist): Add gnus-tmp-agent.
 	(gnus-server-insert-server-line): Use it.

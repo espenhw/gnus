@@ -543,6 +543,7 @@ be a select method."
     (when (member method gnus-agent-covered-methods)
       (error "Server already in the agent program"))
     (push method gnus-agent-covered-methods)
+    (gnus-server-update-server server)
     (gnus-agent-write-servers)
     (message "Entered %s into the Agent" server)))
 
@@ -556,6 +557,7 @@ be a select method."
       (error "Server not in the agent program"))
     (setq gnus-agent-covered-methods
 	  (delete method gnus-agent-covered-methods))
+    (gnus-server-update-server server)
     (gnus-agent-write-servers)
     (message "Removed %s from the agent" server)))
 
