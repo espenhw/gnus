@@ -133,6 +133,7 @@ Used for APOP authentication.")
 Returns the process associated with the connection."
   (let ((coding-system-for-read 'binary)
 	(coding-system-for-write 'binary)
+	default-enable-multibyte-characters
 	process)
     (save-excursion
       (set-buffer (get-buffer-create (concat " trace of POP session to "
