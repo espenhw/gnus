@@ -4741,7 +4741,7 @@ Argument LINES specifies lines to be scrolled down."
   (let ((point (point)))
     (search-forward ">" nil t)		;Move point to end of "<....>".
     (if (re-search-backward "\\(<[^<> \t\n]+>\\)" nil t)
-	(let ((message-id (replace-regexp-in-string "<news:" "<" (match-string 1))))
+	(let ((message-id (gnus-replace-in-string (match-string 1) "<news:" "<" )))
 	  (goto-char point)
 	  (set-buffer gnus-summary-buffer)
 	  (gnus-summary-refer-article message-id))

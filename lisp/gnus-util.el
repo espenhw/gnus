@@ -907,10 +907,9 @@ with potentially long computations."
 (defun gnus-map-function (funs arg)
   "Applies the result of the first function in FUNS to the second, and so on.
 ARG is passed to the first function."
-  (let ((myfuns funs))
-    (while myfuns
-      (setq arg (funcall (pop myfuns) arg)))
-    arg))
+  (while funs
+    (setq arg (funcall (pop funs) arg)))
+  arg)
 
 (defun gnus-run-hooks (&rest funcs)
   "Does the same as `run-hooks', but saves the current buffer."
@@ -929,11 +928,11 @@ ARG is passed to the first function."
 	 (eq major-mode 'gnus-group-mode))))
 
 (defun gnus-remove-duplicates (list)
-  (let (new (tail list))
-    (while tail
-      (or (member (car tail) new)
-	  (setq new (cons (car tail) new)))
-      (setq tail (cdr tail)))
+  (let (new)
+    (while list
+      (or (member (car list) new)
+	  (setq new (cons (car list) new)))
+      (setq list (cdr list)))
     (nreverse new)))
 
 (defun gnus-remove-if (predicate list)
