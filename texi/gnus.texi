@@ -19616,8 +19616,8 @@ You can redefine the function that moves the point to the colon.  The
 function is called @code{gnus-goto-colon}.
 
 But perhaps the most convenient way to deal with this, if you don't want
-to have a colon in your line, is to use the @samp{%~} specifier.  If you
-put a @samp{%~} somewhere in your format line definition, Gnus will
+to have a colon in your line, is to use the @samp{%*} specifier.  If you
+put a @samp{%*} somewhere in your format line definition, Gnus will
 place point there.
 
 

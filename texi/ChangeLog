@@ -1,3 +1,7 @@
+2003-01-08  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus.texi (Positioning Point): %~ => ~*.
+
 2003-01-07  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* message.texi: Updated copyright line.
