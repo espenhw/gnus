@@ -1,3 +1,12 @@
+2005-01-02  Romain Francoise  <romain@orebokech.com>
+
+	* gnus-news.texi: Mention the new method used to hide headers.
+	Remove duplicate item about `/ r'.  Add missing @code.
+
+	* message.texi (Message Headers): Mention that headers are hidden
+	using narrowing, and how to expose them.
+	Update copyright.
+
 2005-01-02  Simon Josefsson  <jas@extundo.com>
 
 	* gnus-news.texi: Add.

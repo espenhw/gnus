@@ -54,8 +54,6 @@ inline @acronym{PGP} signed messages.
 
 @item You can now drag and drop attachments to the Message buffer.
 
-@item @kbd{/ r} limits the summary buffer to replied articles.
-
 @item @acronym{ANSI} @acronym{SGR} control sequences can be transformed
 using @kbd{W A}.
 
@@ -98,7 +96,7 @@ This changes the default of @code{gnus-article-loose-mime}.
 
 @item Gnus now support the ``hashcash'' client puzzle anti-spam idea.
 See the Gnus manual, section Hashcash, for more information.  Use
-(setq message-generate-hashcash t) to enable.
+@code{(setq message-generate-hashcash t)} to enable.
 
 @item Gnus supports new limiting commands in the Summary buffer:
 @kbd{/ r} (@code{gnus-summary-limit-to-replied}) and @kbd{/ R}
@@ -114,6 +112,9 @@ supported.  @xref{RSS}.
 @item URLs inside OpenPGP: headers are retrieved and imported to your
 PGP key ring when you click on them.
 
+@item Gnus uses narrowing to hide headers in Message buffers.
+The @code{References} header is hidden by default.  To make all
+headers visible, use @code{(setq message-hidden-headers nil)}.
 @end itemize
 
 @c gnus-news.texi ends here.

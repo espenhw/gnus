@@ -8,7 +8,7 @@
 @copying
 This file documents Message, the Emacs message composition mode.
 
-Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004 
+Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 
 Free Software Foundation, Inc.
 
 @quotation
@@ -1405,6 +1405,9 @@ hidden when composing a message.
 (setq message-hidden-headers
       '(not "From" "Subject" "To" "Cc" "Newsgroups"))
 @end lisp
+
+Headers are hidden using narrowing, you can use @kbd{M-x widen} to
+expose them in the buffer.
 
 @item message-header-synonyms
 @vindex message-header-synonyms
