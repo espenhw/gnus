@@ -209,7 +209,7 @@ use this option with care."
   "Variables that should not be reported in `gnus-bug'."
   :version "21.1"
   :group 'gnus-message
-  :type '(repeat (symbol :tab "Variable")))
+  :type '(repeat (symbol :tag "Variable")))
 
 (defcustom gnus-discouraged-post-methods
   '(nndraft nnml nnimap nnmaildir nnmh nnfolder nndir)
@@ -217,7 +217,7 @@ use this option with care."
 This variable is used only when `gnus-post-method' is `current'."
   :version "21.3"
   :group 'gnus-group-foreign
-  :type '(repeat (symbol :tab "Back end")))
+  :type '(repeat (symbol :tag "Back end")))
 
 (defcustom gnus-message-replysign
   nil
