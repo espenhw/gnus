@@ -219,9 +219,9 @@ on your system, you could say something like:
 (defsubst nnheader-generate-fake-message-id (&optional number)
   (if (numberp number)
       (format "fake+none+%s+%d" gnus-newsgroup-name number)
-  (format "fake+none+%s+%s" 
-	  gnus-newsgroup-name 
-	  (int-to-string (incf nnheader-fake-message-id)))))
+    (format "fake+none+%s+%s"
+	    gnus-newsgroup-name
+	    (int-to-string (incf nnheader-fake-message-id)))))
 
 (defsubst nnheader-fake-message-id-p (id)
   (save-match-data		       ; regular message-id's are <.*>

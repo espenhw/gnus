@@ -1,3 +1,76 @@
+2004-06-21  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+
+	* spam.el: section markers changed, TODO list revised
+	(spam-backends): new master list of all installed backends
+	(spam-summary-exit-behavior): new variable to determine how
+	messages moves are done at summary exit
+	(spam-move-spam-nonspam-groups-only)
+	(spam-process-ham-in-nonham-groups)
+	(spam-process-ham-in-spam-groups): variables removed, the
+	spam-summary-exit-behavior variable should be used to manage this
+	behavior
+	(spam-old-ham-articles, spam-old-spam-articles): removed
+	(spam-old-articles): new variable, replacing spam-old-ham-articles
+	and spam-old-spam-articles
+	(spam-use-copy, spam-use-move, spam-use-gmane, spam-use-resend):
+	empty variables, placeholders for the backends they represent
+	(spam-set-difference): moved, unchanged
+	(spam-list-of-processors): variable OBSOLETE, not used anymore
+	unless the user has a processor variable
+	(spam-classifications, spam-classification-valid-p)
+	(spam-backend-properties, spam-backend-property-valid-p)
+	(spam-backend-function-type-valid-p)
+	(spam-process-type-valid-p, spam-list-articles): helper functions
+	(spam-report-articles-gmane, spam-report-articles-resend):
+	functions removed, they are not needed
+	(spam-install-backend-super, spam-backend-list)
+	(spam-backend-check, spam-backend-valid-p, spam-backend-info)
+	(spam-backend-function, spam-backend-ham-registration-function)
+	(spam-backend-spam-registration-function)
+	(spam-backend-ham-unregistration-function)
+	(spam-backend-spam-unregistration-function)
+	(spam-backend-statistical-p, spam-backend-mover-p)
+	(spam-install-backend-alias, spam-install-checkonly-backend)
+	(spam-install-mover-backend, spam-install-nocheck-backend)
+	(spam-install-backend, spam-install-statistical-backend)
+	(spam-install-statistical-checkonly-backend): backend installation
+	support
+	(spam-summary-prepare-exit): rewritten to use the new backend code
+	(spam-group-processor-p): use the new backend code and respect the
+	summary exit behavior
+	(spam-mark-spam-as-expired-and-move-routine): removed
+	(spam-summary-prepare): changed to use the new spam-old-articles
+	variable
+	(spam-copy-or-move-routine, spam-copy-spam-routine)
+	(spam-move-spam-routine, spam-copy-ham-routine)
+	(spam-move-ham-routine): new code to copy/move ham or spam
+	(spam-fetch-field-fast): doc and code improved, plus it allows the
+	'number request
+	(spam-list-of-checks, spam-list-of-statistical-checks): variables
+	removed, no longer used
+	(spam-split, spam-find-spam): use the new backend code
+	(spam-registration-functions): variable removed, no longer used
+	(spam-unregister-routine): convenience wrapper
+	(spam-log-undo-registration, spam-register-routine)
+	(spam-log-processing-to-registry)
+	(spam-log-unregistration-needed-p): renamed "check" to "backend"
+	where possible
+	(spam-check-gmane-xref, spam-check-regex-headers)
+	(spam-check-blackholes, spam-check-stat, spam-check-ifile, spam-check-BBDB)
+	(spam-check-whitelist, spam-check-blacklist)
+	(spam-check-bogofilter-headers, spam-check-spamoracle)
+	(spam-check-spamassassin-headers, spam-check-bsfilter-headers)
+	(spam-check-crm114-headers): use the spam-split-group that
+	spam-split prepares, no need to determine it every time
+
+	* nnimap.el (nnimap-retrieve-headers-progress): add the message number to
+	the nnheader-parse-naked-head call
+
+	* nnheader.el (nnheader-generate-fake-message-id): fix indentation
+
+	* gnus-sum.el (gnus-nov-parse-line): add the message number to
+	the nnheader-nov-read-message-id call
+
 2004-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-group.el (gnus-group-get-new-news-this-group): Don't call

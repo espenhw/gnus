@@ -4080,7 +4080,7 @@ Returns HEADER if it was entered in the DEPENDENCIES.  Returns nil otherwise."
 			       (setq x (nnheader-nov-field))))
 		   (error x))
 		 (nnheader-nov-field)	; date
-		 (nnheader-nov-read-message-id)	; id
+		 (nnheader-nov-read-message-id number)	; id
 		 (setq references (nnheader-nov-field))	; refs
 		 (nnheader-nov-read-integer) ; chars
 		 (nnheader-nov-read-integer) ; lines
