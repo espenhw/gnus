@@ -1522,6 +1522,7 @@ increase the score of each group you read."
 	["CR" gnus-article-remove-cr t]
 	["Show X-Face" gnus-article-display-x-face t]
 	["Quoted-Printable" gnus-article-de-quoted-unreadable t]
+	["UnHTMLize" gnus-article-treat-html t]
 	["Rot 13" gnus-summary-caesar-message t]
 	["Unix pipe" gnus-summary-pipe-message t]
 	["Add buttons" gnus-article-add-buttons t]
@@ -6587,13 +6588,22 @@ and `request-accept' functions."
 		  (mapconcat 'identity 
 			     (delete "Xref:" (delete new-xref xref))
 			     " ")
-		  new-xref))
+		  " " new-xref))
 	   (save-excursion
 	     (set-buffer copy-buf)
+	     ;; First put the article in the destination group.
 	     (gnus-request-article-this-buffer article gnus-newsgroup-name)
-	     (nnheader-replace-header "xref" new-xref)
-	     (gnus-request-accept-article
-	      to-newsgroup select-method (not articles)))))))
+	     (setq art-group
+		   (gnus-request-accept-article
+		    to-newsgroup select-method (not articles)))
+	     (setq new-xref (concat new-xref " " (car art-group)
+				    ":" (cdr art-group)))
+	     ;; Now we have the new Xrefs header, so we insert
+	     ;; it and replace the new article.
+	     (nnheader-replace-header "Xref" new-xref)
+	     (gnus-request-replace-article
+	      (cdr art-group) to-newsgroup (current-buffer))
+	     art-group)))))
       (if (not art-group)
 	  (gnus-message 1 "Couldn't %s article %s"
 			(cadr (assq action names)) article)
@@ -6665,9 +6675,7 @@ and `request-accept' functions."
 	    (save-excursion
 	      (set-buffer copy-buf)
 	      (gnus-request-article-this-buffer article gnus-newsgroup-name)
-	      (nnheader-replace-header
-	       "xref" (concat new-xref " " (car art-group)
-			      ":" (cdr art-group)))
+	      (nnheader-replace-header "Xref" new-xref)
 	      (gnus-request-replace-article
 	       article gnus-newsgroup-name (current-buffer)))))
 

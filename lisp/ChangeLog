@@ -1,3 +1,19 @@
+Fri Mar  7 01:33:34 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.20 is released.
+
+Fri Mar  7 00:12:39 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* message.el (message-header-to-face): New faces.
+	(message-font-lock-keywords): Use them.
+
+	* gnus-sum.el (gnus-summary-make-menu-bar): No addition.
+	(gnus-summary-move-article): When crossposting, get the Xrefs
+	header right.
+
+	* nnfolder.el (nnfolder-request-accept-article): Work when
+	respooling. 
+
 Thu Mar  6 08:41:16 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.19 is released.

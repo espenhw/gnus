@@ -369,7 +369,7 @@ time saver for large mailboxes.")
   (nnfolder-possibly-change-group group server)
   (nnmail-check-syntax)
   (let ((buf (current-buffer))
-	result)
+	result art-group)
     (goto-char (point-min))
     (when (looking-at "X-From-Line: ")
       (replace-match "From "))
@@ -387,10 +387,11 @@ time saver for large mailboxes.")
 	     (car (nnfolder-save-mail
 		   (if (stringp group)
 		       (list (cons group (nnfolder-active-number group)))
-		     (nnmail-article-group 'nnfolder-active-number))))))
+		     (setq art-group
+			   (nnmail-article-group 'nnfolder-active-number)))))))
      (when last
        (save-excursion
-	 (nnfolder-possibly-change-folder group)
+	 (nnfolder-possibly-change-folder (or (car art-group) group))
 	 (nnfolder-save-buffer)
 	 (nnmail-cache-close))))
     (nnmail-save-active nnfolder-group-alist nnfolder-active-file)

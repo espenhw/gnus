@@ -600,21 +600,113 @@ actually occur."
 (defvar message-mode-abbrev-table text-mode-abbrev-table
   "Abbrev table used in Message mode buffers.
 Defaults to `text-mode-abbrev-table'.")
+(defgroup message-headers nil
+  "Message headers."
+  :link '(custom-manual "(message)Variables")
+  :group 'message)
+
+(defface message-header-to-face 
+  '((((class color)
+      (background dark))
+     (:foreground "light blue" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "MidnightBlue" :bold t :italic t))
+    (t 
+     (:bold t :italic t)))
+  "Face used for displaying from headers."
+  :group 'message-headers)
+
+(defface message-header-subject-face 
+  '((((class color)
+      (background dark))
+     (:foreground "pink" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "firebrick" :bold t :italic t))
+    (t 
+     (:bold t :italic t)))
+  "Face used for displaying subject headers."
+  :group 'message-headers)
+
+(defface message-header-newsgroups-face 
+  '((((class color)
+      (background dark))
+     (:foreground "yellow" :bold t :italic t))
+    (((class color)
+      (background light))
+     (:foreground "indianred" :bold t :italic t))
+    (t 
+     (:bold t :italic t)))
+  "Face used for displaying newsgroups headers."
+  :group 'message-headers)
+
+(defface message-header-name-face 
+  '((((class color)
+      (background dark))
+     (:foreground "cyan" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for displaying header names."
+  :group 'message-headers)
+
+(defface message-header-xheader-face 
+  '((((class color)
+      (background dark))
+     (:foreground "blue" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "blue" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for displaying X-Header headers."
+  :group 'message-headers)
+
+(defface message-separator-face 
+  '((((class color)
+      (background dark))
+     (:foreground "red" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "brown" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for displaying the separator."
+  :group 'message-headers)
+
+(defface message-cited-text-face 
+  '((((class color)
+      (background dark))
+     (:foreground "LightBlue" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "DarkGreen" :bold t))
+    (t 
+     (:bold t)))
+  "Face used for displaying cited text names."
+  :group 'message-headers)
 
 (defvar message-font-lock-keywords
-  (let* ((cite-prefix "A-Za-z") (cite-suffix (concat cite-prefix "0-9_.@-")))
-    (list '("^To:" . font-lock-function-name-face)
+  (let* ((cite-prefix "A-Za-z")
+	 (cite-suffix (concat cite-prefix "0-9_.@-")))
+    (list '("^To:" . message-header-to-face)
           '("^[GBF]?[Cc][Cc]:\\|^Reply-To:" . font-lock-keyword-face)
 	  '("^\\(Subject:\\)[ \t]*\\(.+\\)?"
-	    (1 font-lock-comment-face) (2 font-lock-type-face nil t))
+	    (1 message-header-name-face) (2 message-header-subject-face nil t))
+	  '("^\\(Newsgroups:\\|Followup-to:\\)[ \t]*\\(.+\\)?"
+	    (1 message-header-name-face)
+	    (2 message-header-newsgroups-face nil t))
 	  (list (concat "^\\(" (regexp-quote mail-header-separator) "\\)$")
-		1 'font-lock-comment-face)
+		1 'message-separator-face)
 	  (cons (concat "^[ \t]*"
 			"\\([" cite-prefix "]+[" cite-suffix "]*\\)?"
 			"[>|}].*")
-		'font-lock-reference-face)
+		'message-cited-text-face)
 	  '("^\\(X-[A-Za-z0-9-]+\\|In-Reply-To\\):.*"
-	    . font-lock-string-face)))
+	    . message-header-xheader-face)))
   "Additional expressions to highlight in Message mode.")
 
 (defvar message-face-alist

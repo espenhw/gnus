@@ -596,3 +596,5 @@ interface like
 
 then you could run the relevant function to complete the information in
 the header
+
+* cache the newsgroups file locally to avoid reloading it all the time.
