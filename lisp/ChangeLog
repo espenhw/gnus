@@ -1,5 +1,11 @@
 2000-10-28  Simon Josefsson  <sj@extundo.com>
 
+	* mml-sec.el (mml-smime-encrypt-buffer): Support certfiles stored
+	in buffers.
+	(mml-secure-dns-server): Removed.
+	(mml-secure-part-smime-encrypt-by-dns): Use DIG interface.  Don't
+	write certificates to files.
+
 	* smime.el (smime-dns-server): New variable.
 	(smime-mail-to-domain):
 	(smime-cert-by-dns): New functions.

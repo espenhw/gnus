@@ -50,8 +50,25 @@
       (error "Signing failed... inspect message logs for errors")))
 
 (defun mml-smime-encrypt-buffer (cont)
-  (or (smime-encrypt-buffer (list (cdr (assq 'certfile cont))))
-      (error "Encryption failed... inspect message logs for errors")))
+  (let (certnames certfiles tmp file tmpfiles)
+    (while (setq tmp (pop cont))
+      (if (and (consp tmp) (eq (car tmp) 'certfile))
+	  (push (cdr tmp) certnames)))
+    (while (setq tmp (pop certnames))
+      (if (not (and (not (file-exists-p tmp))
+		    (get-buffer tmp)))
+	  (push tmp certfiles)
+	(setq file (make-temp-name mm-tmp-directory))
+	(with-current-buffer tmp
+	  (write-region (point-min) (point-max) file))
+	(push file certfiles)
+	(push file tmpfiles)))
+    (if (smime-encrypt-buffer certfiles)
+	(while (setq tmp (pop tmpfiles))
+	  (delete-file tmp))
+      (while (setq tmp (pop tmpfiles))
+	(delete-file tmp))
+      (error "Encryption failed... inspect message logs for errors"))))
 
 (defun mml-pgpmime-sign-buffer (cont)
   (or (mml2015-mailcrypt-sign cont)
@@ -87,18 +104,13 @@
 		     "File with recipient's S/MIME certificate: "
 		     smime-certificate-directory nil t ""))))
 
-(defcustom mml-secure-dns-server ""
-  "DNS server to query certificates from."
-  :type 'string)
 
 (defun mml-secure-part-smime-encrypt-by-dns ()
-  ;; todo: deal with multiple recipients better
-  (let* ((file (make-temp-name (expand-file-name "mml." mm-tmp-directory)))
-	 (buf (create-file-buffer file))
-	 result who bad)
+  ;; todo: deal with comma separated multiple recipients
+  (let (result who bad cert)
     (condition-case ()
 	(while (not result)
-	  (setq who (read-from-minibuffer 
+	  (setq who (read-from-minibuffer
 		     (format "%sLookup certificate for: " (or bad ""))
 		     (cadr (funcall gnus-extract-address-components 
 				    (or (save-excursion
@@ -106,15 +118,10 @@
 					    (message-narrow-to-headers)
 					    (message-fetch-field "to")))
 					"")))))
-	  (if (eq (call-process "dnscert" nil buf nil who
-				mml-secure-dns-server)
-		  0)
-	      (with-current-buffer buf
-		(write-region (point-min) (point-max) file)
-		(setq result (list 'certfile file)))
+	  (if (setq cert (smime-cert-by-dns who))
+	      (setq result (list 'certfile (buffer-name cert)))
 	    (setq bad (format "`%s' not found. " who))))
       (quit))
-    (kill-buffer buf)
     result))
 
 (defun mml-secure-part-smime-encrypt ()
