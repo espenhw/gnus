@@ -4044,7 +4044,7 @@ the id of the parent article (if any)."
 	(when parent
 	  (delq thread parent)))
       (if (gnus-summary-insert-subject id header)
-       ;; Set the (possibly) new article number in the data structure.
+	  ;; Set the (possibly) new article number in the data structure.
 	  (gnus-data-set-number data (gnus-id-to-article id))
 	(setcar thread old)
 	nil))))
