@@ -8794,14 +8794,15 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 		      (nnheader-get-report (car to-method))))
        ((eq art-group 'junk)
 	(when (eq action 'move)
-	  (let ((id (mail-header-id (gnus-data-header 
-				     (assoc article (gnus-data-list nil))))))
-	    (gnus-summary-mark-article article gnus-canceled-mark)
-	    (gnus-message 4 "Deleted article %s" article)
-	    ;; run the move/copy/crosspost/respool hook
-	    (run-hook-with-args 'gnus-summary-article-delete-hook 
-				action id gnus-newsgroup-name nil
-				select-method))))
+	  (gnus-summary-mark-article article gnus-canceled-mark)
+	  (gnus-message 4 "Deleted article %s" article)
+	  ;; run the delete hook
+	  (run-hook-with-args 'gnus-summary-article-delete-hook
+			      action
+			      (gnus-data-header
+			       (assoc article (gnus-data-list nil)))
+			      gnus-newsgroup-name nil
+			      select-method)))
        (t
 	(let* ((pto-group (gnus-group-prefixed-name
 			   (car art-group) to-method))
@@ -8882,15 +8883,17 @@ ACTION can be either `move' (the default), `crosspost' or `copy'."
 	       article gnus-newsgroup-name (current-buffer))))
 
 	  ;; run the move/copy/crosspost/respool hook
-	  (let ((id (mail-header-id (gnus-data-header 
-				   (assoc article (gnus-data-list nil))))))
 	  (run-hook-with-args 'gnus-summary-article-move-hook 
-			      action id gnus-newsgroup-name to-newsgroup
-			      select-method)))
+			      action
+			      (gnus-data-header 
+			       (assoc article (gnus-data-list nil)))
+			      gnus-newsgroup-name
+			      to-newsgroup
+			      select-method))
 
 	;;;!!!Why is this necessary?
 	(set-buffer gnus-summary-buffer)
-
+	
 	(gnus-summary-goto-subject article)
 	(when (eq action 'move)
 	  (gnus-summary-mark-article article gnus-canceled-mark))))
@@ -9108,12 +9111,13 @@ This will be the case if the article has both been mailed and posted."
 		(when (and (not (memq article es))
 			   (gnus-data-find article))
 		  (gnus-summary-mark-article article gnus-canceled-mark)
-		  (let ((id (mail-header-id (gnus-data-header 
-					     (assoc article 
-						    (gnus-data-list nil))))))
-		    (run-hook-with-args 'gnus-summary-article-expire-hook
-					'delete id gnus-newsgroup-name nil
-					nil)))))))
+		  (run-hook-with-args 'gnus-summary-article-expire-hook
+				      'delete
+				      (gnus-data-header
+				       (assoc article (gnus-data-list nil)))
+				      gnus-newsgroup-name
+				      nil
+				      nil))))))
 	(gnus-message 6 "Expiring articles...done")))))
 
 (defun gnus-summary-expire-articles-now ()

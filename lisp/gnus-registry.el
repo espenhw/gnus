@@ -33,29 +33,46 @@
 (require 'gnus-sum)
 (require 'nnmail)
 
-;; (defcustom gnus-summary-article-spool-hook nil
-;;   "*A hook called after an article is spooled."
-;;   :group 'gnus-summary
-;;   :type 'hook)
+(defvar gnus-registry-hashtb nil
+  "*The article registry by Message ID.")
+(setq gnus-registry-hashtb (make-hash-table 
+			    :size 4096
+			    :test 'equal)) ; we test message ID strings equality
 
-(defun regtest (action id from &optional to method)
-  (message "Registry: article %s %s from %s to %s"
+;; sample data-header
+;; (defvar tzz-header '(49 "Re[2]: good news" "\"Jonathan Pryor\" <offerlm@aol.com>" "Mon, 17 Feb 2003 10:41:46 +-0800" "<88288020@dytqq>" "" 896 18 "lockgroove.bwh.harvard.edu spam.asian:49" nil))
+
+;; (maphash (lambda (key value) (message "key: %s value: %s" key value)) gnus-registry-hashtb)
+;; (clrhash gnus-registry-hashtb)
+
+(defun gnus-register-action (action data-header from &optional to method)
+  (let* ((id (mail-header-id data-header))
+	(hash-entry (gethash id gnus-registry-hashtb)))
+    (gnus-message 5 "Registry: article %s %s from %s to %s"
+	     id
+	     (if method "respooling" "going")
+	     (gnus-group-guess-full-name from)
+	     (if to (gnus-group-guess-full-name to) "the Bit Bucket"))
+    (unless hash-entry 
+      (setq hash-entry (puthash id (list data-header) gnus-registry-hashtb)))
+    (puthash id (cons (list action from to method) 
+		      (gethash id gnus-registry-hashtb)) gnus-registry-hashtb)))
+
+(defun gnus-register-spool-action (id group)
+  (gnus-message 5 "Registry: article %s spooled to %s"
 	   id
-	   (if method "respooling" "going")
-	   (gnus-group-guess-full-name from)
-	   (if to (gnus-group-guess-full-name to) "the Bit Bucket in the sky")))
+	   (gnus-group-prefixed-name 
+	    group 
+	    gnus-internal-registry-spool-current-method 
+	    t)))
 
-(defun regtest-nnmail (id group)
-  (message "Registry: article %s spooled to %s"
-	   id
-	   (gnus-group-prefixed-name group gnus-internal-registry-spool-current-method t)))
+(add-hook 'gnus-summary-article-move-hook 'gnus-register-action) ; also does copy, respool, and crosspost
+(add-hook 'gnus-summary-article-delete-hook 'gnus-register-action)
+(add-hook 'gnus-summary-article-expire-hook 'gnus-register-action)
+(add-hook 'nnmail-spool-hook 'gnus-register-spool-action)
 
-;;(add-hook 'gnus-summary-article-move-hook 'regtest) ; also does copy, respool, and crosspost
-;;(add-hook 'gnus-summary-article-delete-hook 'regtest)
-;;(add-hook 'gnus-summary-article-expire-hook 'regtest)
-(add-hook 'nnmail-spool-hook 'regtest-nnmail)
-
-;; TODO:
+;; TODO: a lot of things
+;; TODO: we have to load and save the registry through gnus-save-newsrc-file
 
 (provide 'gnus-registry)
 
