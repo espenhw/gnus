@@ -1,3 +1,7 @@
+1999-11-15 21:28:40  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* Makefile.in: Change `^  *' to `\t'.
+
 1999-11-11  Matt Pharr  <mmp@graphics.stanford.edu>
 
 	* message.el (message-forward): Pay attention to prefix argument
@@ -731,7 +735,7 @@ Mon Sep 27 15:18:05 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus-art.el (gnus-treat-predicate): Work for (not 5).
 
-1999-08-27  Peter von der Ahé  <pahe@daimi.au.dk>
+1999-08-27  Peter von der Ah-Aé  <pahe@daimi.au.dk>$)A
 
 	* message.el (message-send): More helpful error message if sending
 	fails
@@ -933,7 +937,7 @@ Fri Aug 27 13:17:48 1999  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 	* gnus-agent.el (gnus-agent-get-undownloaded-list): Don't
 	mark cached articles as `undownloaded'.
 
-Tue Jul 20 02:39:56 1999  Peter von der Ahé  <peter@ahe.dk>
+Tue Jul 20 02:39:56 1999  Peter von der Ah-Aé  <peter@ahe.dk>$)A
 
 	* gnus-sum.el (gnus-summary-exit): Allow gnus-use-adaptive-scoring
 	to have buffer local values.
@@ -3485,7 +3489,7 @@ Mon Nov 30 23:38:02 1998  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-uu.el (mm-uu-dissect): Use mm-make-handle.
 
-1998-12-01 01:53:49  François Pinard  <pinard@iro.umontreal.ca>
+1998-12-01 01:53:49  Fran-Açois Pinard  <pinard@iro.umontreal.ca>$)A
 
 	* nndoc.el (nndoc-mime-parts-type-p): Do related.
 
@@ -5231,7 +5235,7 @@ Mon Sep 14 18:55:38 1998  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* rfc2047.el (rfc2047-q-encode-region): Would bug out.
 
-1998-09-13  François Pinard  <pinard@iro.umontreal.ca>
+1998-09-13  Fran-Açois Pinard  <pinard@iro.umontreal.ca>$)A
 
 	* nndoc.el: Make nndoc-dissection-alist simpler for MIME, adjust all
           related functions.  Handle message/rfc822 parts.  Display subject on
