@@ -1,6 +1,8 @@
 2001-02-06 19:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.texi (Using GPG): Key binding.
+	
+	* message.texi (Security): Ditto.
 
 2001-02-06 18:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 

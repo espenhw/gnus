@@ -591,31 +591,31 @@ Manual}).
 Using the MML language, Message is able to create digitally signed and
 digitally encrypted messages.  Message (or rather MML) currently support
 PGP/MIME and S/MIME.  Instructing MML to perform security operations on
-a MIME part is done using the @code{M-m s} key map for signing and the
-@code{M-m c} key map for encryption, as follows.
+a MIME part is done using the @code{C-c C-m s} key map for signing and the
+@code{C-c C-m c} key map for encryption, as follows.
 
 @table @kbd
 
-@item M-m s s
-@kindex M-m s s
+@item C-c C-m s s
+@kindex C-c C-m s s
 @findex mml-secure-sign-smime
 
 Digitally sign current MIME part using S/MIME.
 
-@item M-m s p
-@kindex M-m s p
+@item C-c C-m s p
+@kindex C-c C-m s p
 @findex mml-secure-sign-pgp
 
 Digitally sign current MIME part using PGP/MIME.
 
-@item M-m c s
-@kindex M-m c s
+@item C-c C-m c s
+@kindex C-c C-m c s
 @findex mml-secure-encrypt-smime
 
 Digitally encrypt current MIME part using S/MIME.
 
-@item M-m c p
-@kindex M-m c p
+@item C-c C-m c p
+@kindex C-c C-m c p
 @findex mml-secure-encrypt-pgpmime
 
 Digitally encrypt current MIME part using PGP/MIME.
@@ -632,7 +632,7 @@ Since signing and especially encryption often is used when sensitive
 information is sent, you may want to have some way to ensure that your
 mail is actually signed or encrypted.  After invoking the above
 sign/encrypt commands, it is possible to preview the raw article by
-using @code{C-u M-m P} (@code{mml-preview}).  Then you can verify that
+using @code{C-u C-m P} (@code{mml-preview}).  Then you can verify that
 your long rant about what your ex-significant other or whomever actually
 did with that funny looking person at that strange party the other
 night, actually will be sent encrypted.
@@ -663,7 +663,7 @@ already lost that contest.)
 To be able to send encrypted mail, a personal certificate is not
 required.  Message (MML) need a certificate for the person to whom you
 wish to communicate with though.  You're asked for this when you type
-@code{M-m c s}.  Currently there are two ways to retrieve this
+@code{C-c C-m c s}.  Currently there are two ways to retrieve this
 certificate, from a local file or from DNS.  If you chose a local file,
 it need to contain a X.509 certificate in PEM format.  If you chose DNS,
 you're asked for the domain name where the certificate is stored, the
