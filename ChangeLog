@@ -1,3 +1,7 @@
+2004-05-23  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* etc/gnus/news-server.ast: Use library validation.
+
 2004-03-08  Kevin Greiner <kgreiner@xpediantsolutions.com>
 
 	* make.bat: Make sure that gnus-load.el and sieve are writable to
