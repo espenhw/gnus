@@ -380,9 +380,17 @@ If RECURSIVE is t, return groups in its subtopics too."
   "Compute the group parameters for GROUP taking into account inheritance from topics."
   (let ((params-list (copy-sequence (gnus-group-get-parameter group))))
     (save-excursion
-      (gnus-group-goto-group group)
       (nconc params-list
-	     (gnus-topic-hierarchical-parameters (gnus-current-topic))))))
+	     (gnus-topic-hierarchical-parameters
+	      ;; First we try to go to the group within the group
+	      ;; buffer and find the topic for the group that way.
+	      ;; This hopefully copes well with groups that are in
+	      ;; more than one topic.  Failing that (i.e. when the
+	      ;; group isn't visible in the group buffer) we find a
+	      ;; topic for the group via gnus-group-topic.
+	      (or (and (gnus-group-goto-group group)
+		       (gnus-current-topic))
+		  (gnus-group-topic group)))))))
 
 (defun gnus-topic-hierarchical-parameters (topic)
   "Return a topic list computed for TOPIC."
