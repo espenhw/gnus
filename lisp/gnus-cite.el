@@ -30,9 +30,6 @@
 (require 'gnus-art)
 (require 'gnus-range)
 
-(eval-and-compile
-  (autoload 'gnus-article-add-button "gnus-vis"))
-
 ;;; Customization:
 
 (defvar gnus-cited-text-button-line-format "%(%{[...]%}%)\n"
@@ -342,10 +339,15 @@ always hide."
 	    (goto-char beg)
 	    (unless (save-excursion (search-backward "\n\n" nil t))
 	      (insert "\n"))
-	    (gnus-article-add-button
+	    (put-text-property
 	     (point)
-	     (progn (eval gnus-cited-text-button-line-format-spec) (point))
-	     `gnus-article-toggle-cited-text (cons beg end))
+	     (progn
+	       (gnus-article-add-button
+		(point)
+		(progn (eval gnus-cited-text-button-line-format-spec) (point))
+		`gnus-article-toggle-cited-text (cons beg end))
+	       (point))
+	     'article-type 'annotation)
 	    (set-marker beg (point)))))))))
 
 (defun gnus-article-toggle-cited-text (region)

@@ -1529,7 +1529,10 @@ to find out how to use this."
       ;; Let the user do all of the above.
       (run-hooks 'message-header-hook))
     (message-cleanup-headers)
-    (when (message-check-news-syntax)
+    (if (not (message-check-news-syntax))
+	(progn
+	  (message "Posting nor performed")
+	  nil)
       (unwind-protect
 	  (save-excursion
 	    (set-buffer tembuf)
@@ -2589,9 +2592,11 @@ Headers already prepared in the buffer are not modified."
 		  (setq ccalist (delq (assoc (car (pop s)) s) ccalist)))))
 	    (setq follow-to (list (cons 'To (cdr (pop ccalist)))))
 	    (when ccalist
-	      (push (cons 'Cc
-			  (mapconcat (lambda (addr) (cdr addr)) ccalist ", "))
-		    follow-to)))))
+	      (let ((ccs (cons 'Cc (mapconcat 
+				    (lambda (addr) (cdr addr)) ccalist ", "))))
+		(when (string-match "^ +" ccs)
+		  (setq ccs (substring ccs (match-end 0))))
+	      (push ccs follow-to))))))
       (widen))
 
     (message-pop-to-buffer (message-buffer-name

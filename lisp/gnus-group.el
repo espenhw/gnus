@@ -347,7 +347,7 @@ variable.")
     "V" gnus-group-make-empty-virtual
     "D" gnus-group-enter-directory
     "f" gnus-group-make-doc-group
-    "n" gnus-group-make-web-group
+    "w" gnus-group-make-web-group
     "r" gnus-group-rename-group
     "\177" gnus-group-delete-group
     [delete] gnus-group-delete-group)

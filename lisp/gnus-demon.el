@@ -27,6 +27,7 @@
 
 (require 'gnus-load)
 (require 'gnus-int)
+(require 'nnheader)
 (require 'gnus)
 
 (defvar gnus-demon-handlers nil
@@ -217,6 +218,16 @@ time Emacs has been idle for IDLE `gnus-demon-timestep's.")
 	   (or (gnus-server-opened server)
 	       (gnus-open-server server))
 	   (gnus-request-scan nil server)))))
+
+(defun gnus-demon-add-rescan ()
+  "Add daemonic scanning of new articles from all backends."
+  (gnus-demon-add-handler 'gnus-demon-scan-news 120 60))
+
+(defun gnus-demon-scan-news ()
+  (when (gnus-alive-p)
+    (save-excursion
+      (set-buffer gnus-group-buffer)
+      (gnus-group-get-new-news))))
 
 (provide 'gnus-demon)
 

@@ -52,11 +52,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (article-begin . "^#! *rnews +\\([0-9]+\\) *\n")
      (body-end-function . nndoc-rnews-body-end))
     (mbox 
-     (article-begin . 
-		    ,(let ((delim (concat "^" message-unix-mail-delimiter)))
-		       (if (string-match "\n\\'" delim)
-			   (substring delim 0 (match-beginning 0))
-			 delim)))
+     (article-begin-function . nndoc-mbox-article-begin)
      (body-end-function . nndoc-mbox-body-end))
     (babyl 
      (article-begin . "\^_\^L *\n")
@@ -82,7 +78,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
      (subtype digest guess))
     (standard-digest
      (first-article . ,(concat "^" (make-string 70 ?-) "\n\n+"))
-     (article-begin . ,(concat "\n\n" (make-string 30 ?-) "\n\n+"))
+     (article-begin . ,(concat "^\n" (make-string 30 ?-) "\n\n+"))
      (prepare-body-function . nndoc-unquote-dashes)
      (body-end-function . nndoc-digest-body-end)
      (head-end . "^ ?$")
@@ -338,6 +334,10 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
   (when (looking-at message-unix-mail-delimiter)
     t))
 
+(defun nndoc-mbox-article-begin ()
+  (when (re-search-forward (concat "^" message-unix-mail-delimiter))
+    (goto-char (match-beginning 0))))
+
 (defun nndoc-mbox-body-end ()
   (let ((beg (point))
 	len end)
@@ -527,14 +527,17 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
       ;; Go through the file.
       (while (if (and first nndoc-first-article)
 		 (nndoc-search nndoc-first-article)
-	       (nndoc-search nndoc-article-begin))
+	       (condition-case ()
+		   (nndoc-search nndoc-article-begin)
+		 (error nil)))
 	(setq first nil)
 	(cond (nndoc-head-begin-function
 	       (funcall nndoc-head-begin-function))
 	      (nndoc-head-begin 
 	       (nndoc-search nndoc-head-begin)))
- 	(if (or (>= (point) (point-max)) (and nndoc-file-end
-		 (looking-at nndoc-file-end)))
+ 	(if (or (>= (point) (point-max))
+		(and nndoc-file-end
+		     (looking-at nndoc-file-end)))
 	    (goto-char (point-max))
 	  (setq head-begin (point))
 	  (nndoc-search (or nndoc-head-end "^$"))
@@ -547,7 +550,9 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 		   (funcall nndoc-body-end-function))
 	      (and nndoc-body-end
 		   (nndoc-search nndoc-body-end))
-	      (nndoc-search nndoc-article-begin)
+	      (condition-case ()
+		  (nndoc-search nndoc-article-begin)
+		(error nil))
 	      (progn
 		(goto-char (point-max))
 		(when nndoc-file-end

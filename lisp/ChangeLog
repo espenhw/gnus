@@ -1,3 +1,63 @@
+Fri Aug 30 01:36:10 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Use
+	`gnus-group-find-parameter'.
+
+	* nndoc.el (nndoc-mbox-article-begin): New function.
+
+	* gnus-sum.el (gnus-summary-search-article): Would expose the
+	first hidden thread.
+
+	* gnus-msg.el (gnus-copy-article-buffer): Delete annotations
+	before following up.
+
+	* gnus-cite.el (gnus-article-hide-citation): Mark buttons as
+	annotations. 
+
+	* article.el (article-delete-text-of-type): New function.
+
+	* nndoc.el (nndoc-type-alist): Be slightly more permissive. 
+
+	* gnus-sum.el (gnus-summary-enter-digest-group): Would nix out
+	quit-conf. 
+	(gnus-summary-read-document): Ditto.
+
+	* nndoc.el (nndoc-dissect-buffer): Escape errors in overflows.
+
+	* message.el (message-send-news): Give a message after not
+	posting. 
+	(message-reply): Remove leading spaces from Cc.
+
+Fri Aug 30 01:32:27 1996  Jack Vinson  <jvinson@cheux.ecs.umass.edu>
+
+	* nnmail.el (nnmail-get-split-group): New version.
+
+Fri Aug 30 00:47:17 1996  Jens Lautenbacher  <jens@lemming0.lem.uni-karlsruhe.de>
+
+	* gnus.texi (Group Parameters): Updated documentation 
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Updated to use the
+		  topic's value of gcc-self if no group value present.
+
+Fri Aug 30 00:19:43 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-start.el (gnus-set-default-directory): Expand default
+	directory. 
+
+	* gnus-group.el (gnus-group-make-web-group): Changed keystroke.
+
+	* gnus-sum.el (gnus-summary-verbose-headers): Show article after
+	toggling. 
+
+Thu Aug 29 23:50:54 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-demon.el (gnus-demon-add-rescan): New function.
+	(gnus-demon-scan-news): New function.
+
+Thu Aug 29 05:34:40 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.19 is released.
+
 Thu Aug 29 02:04:35 1996  Lars Magne Ingebrigtsen  <larsi@hrym.ifi.uio.no>
 
 	* nndoc.el (nndoc-babyl-body-begin): Would skip empty messages. 

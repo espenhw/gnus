@@ -99,14 +99,11 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
 \\{gnus-pick-mode-map}"
   (interactive "P")
   (when (eq major-mode 'gnus-summary-mode)
-    (make-local-variable 'gnus-pick-mode)
-    (setq gnus-pick-mode 
-	  (if (null arg) (not gnus-pick-mode)
-	    (> (prefix-numeric-value arg) 0)))
-    (when gnus-pick-mode
+    (when (set (make-local-variable 'gnus-pick-mode)
+	       (if (null arg) (not gnus-pick-mode)
+		 (> (prefix-numeric-value arg) 0)))
       ;; Make sure that we don't select any articles upon group entry.
-      (make-local-variable 'gnus-auto-select-first)
-      (setq gnus-auto-select-first nil)
+      (set (make-local-variable 'gnus-auto-select-first) nil)
       ;; Change line format.
       (setq gnus-summary-line-format gnus-summary-pick-line-format)
       (setq gnus-summary-line-format-spec nil)

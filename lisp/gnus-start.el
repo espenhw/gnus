@@ -2329,7 +2329,11 @@ If FORCE is non-nil, the .newsrc file is read."
 (defun gnus-set-default-directory ()
   "Set the default directory in the current buffer to `gnus-default-directory'.
 If this variable is nil, don't do anything."
-  (setq default-directory (or gnus-default-directory default-directory)))
+  (setq default-directory 
+	(if (and gnus-default-directory
+		 (file-exists-p gnus-default-directory))
+	    (expand-file-name gnus-default-directory)
+	  default-directory)))
 
 (provide 'gnus-start)
 

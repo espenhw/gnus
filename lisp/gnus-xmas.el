@@ -655,7 +655,7 @@ If it is non-nil, it must be a toolbar.  The five legal values are
     [gnus-summary-next-unread 
      gnus-summary-next-unread-article t "Next unread article"]
     [gnus-summary-mail-reply gnus-summary-reply t "Reply"]
-    [gnus-summary-mail-get gnus-mail-get t "Message get"]
+;    [gnus-summary-mail-get gnus-mail-get t "Message get"]
     [gnus-summary-mail-originate gnus-summary-post-news t "Originate"]
     [gnus-summary-mail-save gnus-summary-save-article t "Save"]
     [gnus-summary-mail-copy gnus-summary-copy-article t "Copy message"]

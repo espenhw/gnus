@@ -309,6 +309,7 @@ header line with the old Message-ID."
 	(set-buffer article-buffer)
 	(save-restriction
 	  (widen)
+	  (article-delete-text-of-type 'annotation)
 	  (setq contents (format "%s" (buffer-string)))
 	  (set-buffer gnus-original-article-buffer)
 	  (goto-char (point-min))
@@ -959,7 +960,7 @@ this is a reply."
 	  (insert "Gcc: ")
 	  (if (and gnus-newsgroup-name
 		   (setq gcc-self-val
-			 (gnus-group-get-parameter
+			 (gnus-group-find-parameter
 			  gnus-newsgroup-name 'gcc-self)))
 	      (progn 
 		(insert

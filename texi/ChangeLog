@@ -1,3 +1,11 @@
+Fri Aug 30 00:21:59 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Foreign Groups): Change.
+
+Thu Aug 29 23:51:45 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.texi (Daemons): Addition.
+
 Thu Aug 29 02:09:24 1996  François Pinard  <pinard@progiciels-bpi.ca>
 
 	* gnus.texi (Web Searches): Typo.

@@ -143,6 +143,14 @@ is the face used for highlighting.")
       (while (setq b (text-property-any b e 'article-type type))
 	(add-text-properties b (incf b) gnus-hidden-properties)))))
 
+(defun article-delete-text-of-type (type)
+  "Delete text of TYPE in the current buffer."
+  (save-excursion
+    (let ((b (point-min))
+	  (e (point-max)))
+      (while (setq b (text-property-any b e 'article-type type))
+	(delete-region b (incf b))))))
+
 (defun article-text-type-exists-p (type)
   "Say whether any text of type TYPE exists in the buffer."
   (text-property-any (point-min) (point-max) 'article-type type))

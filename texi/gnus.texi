@@ -1,7 +1,7 @@
 \input texinfo                  @c -*-texinfo-*-
 
 @setfilename gnus
-@settitle Red Gnus 0.19 Manual
+@settitle Red Gnus 0.20 Manual
 @synindex fn cp
 @synindex vr cp
 @synindex pg cp
@@ -230,7 +230,7 @@ into another language, under the above conditions for modified versions.
 @tex
 
 @titlepage
-@title Red Gnus 0.19 Manual
+@title Red Gnus 0.20 Manual
 
 @author by Lars Magne Ingebrigtsen
 @page
@@ -1651,8 +1651,8 @@ Currently supported types are @code{babyl}, @code{mbox}, @code{digest},
 @code{forward}.  If you run this command without a prefix, Gnus will
 guess at the file type.  @xref{Document Groups}.
 
-@item G n
-@kindex G n (Group)
+@item G w
+@kindex G w (Group)
 @findex gnus-group-make-web-group
 @cindex DejaNews
 @cindex Alta Vista
@@ -1765,8 +1765,12 @@ If the group parameter list contains an element like @code{(to-group
 
 @item gcc-self
 @cindex gcc-self
-If this symbol is present in the group parameter list, new composed
-messages will be @code{Gcc}'d to the current group.  
+If this symbol is present in the group parameter list and set to
+@code{t}, new composed messages will be @code{Gcc}'d to the current
+group. If it is present and set to @code{none}, no @code{Gcc:} header
+will be generated, if it is present and a string, this string will be
+inserted literally as a @code{gcc} header (this symbol takes precedence over
+any default @code{Gcc} rules as described later).
 
 @item auto-expire
 @cindex auto-expire
@@ -12044,11 +12048,12 @@ your @file{.gnus} file:
 
 @findex gnus-demon-add-nocem
 @findex gnus-demon-add-scanmail
+@findex gnus-demon-add-rescan
 @findex gnus-demon-add-disconnection
 Some ready-made functions to do this has been created:
-@code{gnus-demon-add-nocem}, @code{gnus-demon-add-disconnection}, and
-@code{gnus-demon-add-scanmail}.  Just put those functions in your
-@file{.gnus} if you want those abilities.
+@code{gnus-demon-add-nocem}, @code{gnus-demon-add-disconnection},
+@code{gnus-demon-add-rescan}, and @code{gnus-demon-add-scanmail}.  Just
+put those functions in your @file{.gnus} if you want those abilities.
 
 @findex gnus-demon-init
 @findex gnus-demon-cancel

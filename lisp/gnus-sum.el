@@ -1875,7 +1875,7 @@ This is all marks except unread, ticked, dormant, and expirable."
   (let ((config (make-symbol "config")))
     `(let ((,config (gnus-hidden-threads-configuration)))
        (unwind-protect
-	   (progn
+	   (save-excursion
 	     ,@forms)
 	 (gnus-restore-hidden-threads-configuration ,config)))))
 
@@ -2093,7 +2093,9 @@ This is all marks except unread, ticked, dormant, and expirable."
 (defvar gnus-tmp-new-adopts nil)
 
 (defun gnus-summary-number-of-articles-in-thread (thread &optional level char)
-  ;; Sum up all elements (and sub-elements) in a list.
+  "Return the number of articles in THREAD.  
+This may be 0 in some cases -- if none of the articles in
+the thread are to be displayed."
   (let* ((number
 	  ;; Fix by Luc Van Eycken <Luc.VanEycken@esat.kuleuven.ac.be>.
 	  (cond
@@ -5600,7 +5602,8 @@ to guess what the document format is."
 				 ,(get-buffer dig))
 			  (nndoc-article-type ,(if force 'digest 'guess))) t)
 	    ;; Make all postings to this group go to the parent group.
-	    (gnus-info-set-params (gnus-get-info name) params)
+	    (nconc (gnus-info-params (gnus-get-info name))
+		   params)
 	  ;; Couldn't select this doc group.
 	  (switch-to-buffer buf)
 	  (gnus-set-global-variables)
@@ -5637,7 +5640,8 @@ Obeys the standard process/prefix convention."
 		       t nil t))
 		(progn
 		  ;; Make all postings to this group go to the parent group.
-		  (gnus-info-set-params (gnus-get-info name) params)
+		  (nconc (gnus-info-params (gnus-get-info egroup))
+			 params)
 		  (push egroup groups))
 	      ;; Couldn't select this doc group.
 	      (gnus-error 3 "Article couldn't be entered"))))))
@@ -5707,7 +5711,8 @@ Optional argument BACKWARD means do search for backward.
 	 (if backward
 	     're-search-backward 're-search-forward))
 	(sum (current-buffer))
-	(found nil))
+	(found nil)
+	point)
     (gnus-save-hidden-threads
       (gnus-summary-select-article)
       (set-buffer gnus-article-buffer)
@@ -5726,7 +5731,8 @@ Optional argument BACKWARD means do search for backward.
 	       (get-buffer-window (current-buffer))
 	       (point))
 	      (forward-line 1)
-	      (set-buffer sum))
+	      (set-buffer sum)
+	      (setq point (point)))
 	  ;; We didn't find it, so we go to the next article.
 	  (set-buffer sum)
 	  (if (not (if backward (gnus-summary-find-prev)
@@ -5741,6 +5747,7 @@ Optional argument BACKWARD means do search for backward.
       (gnus-message 7 ""))
     ;; Return whether we found the regexp.
     (when (eq found 'found)
+      (goto-char point)
       (gnus-summary-show-thread)
       (gnus-summary-goto-subject gnus-current-article)
       (gnus-summary-position-point)
@@ -5851,13 +5858,13 @@ If ARG is a positive number, turn header display on.
 If ARG is a negative number, turn header display off."
   (interactive "P")
   (gnus-set-global-variables)
-  (gnus-summary-toggle-header arg)
   (setq gnus-show-all-headers
 	(cond ((or (not (numberp arg))
 		   (zerop arg))
 	       (not gnus-show-all-headers))
 	      ((natnump arg)
-	       t))))
+	       t)))
+  (gnus-summary-show-article))
 
 (defun gnus-summary-toggle-header (&optional arg)
   "Show the headers if they are hidden, or hide them if they are shown.

@@ -506,18 +506,27 @@ nn*-request-list should have been called before calling this function."
 	(kill-buffer (current-buffer))))))
 
 (defun nnmail-get-split-group (file group)
+  "Find out whether this FILE is to be split into GROUP only.
+If GROUP is non-nil and we are using procmail, return the group name
+only when the file is the correct procmail file.  When GROUP is nil,
+return nil if FILE is a spool file or the procmail group for which it
+is a spool.  If not using procmail, return GROUP."
   (if (or (eq nnmail-spool-file 'procmail)
 	  nnmail-use-procmail)
-      (cond (group group)
-	    ((string-match (concat "^" (expand-file-name
-					(file-name-as-directory
-					 nnmail-procmail-directory))
-				   "\\([^/]*\\)" nnmail-procmail-suffix "$")
-			   (expand-file-name file))
-	     (substring (expand-file-name file)
-			(match-beginning 1) (match-end 1)))
-	    (t
-	     group))
+      (if (string-match (concat "^" (expand-file-name
+				     (file-name-as-directory
+				      nnmail-procmail-directory))
+				"\\([^/]*\\)" nnmail-procmail-suffix "$")
+			(expand-file-name file))
+	  (let ((procmail-group (substring (expand-file-name file)
+					   (match-beginning 1)
+					   (match-end 1))))
+	    (if group 
+		(if (string-equal group procmail-group)
+		    group
+		  nil)
+	      procmail-group))
+	nil)
     group))
 
 (defun nnmail-process-babyl-mail-format (func artnum-func)
