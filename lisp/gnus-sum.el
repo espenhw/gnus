@@ -4553,6 +4553,10 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 
     (gnus-update-read-articles group gnus-newsgroup-unreads)
 
+    ;; Adjust and set lists of article marks.
+    (when info
+      (gnus-adjust-marked-articles info))
+    
     (if (setq articles select-articles)
 	(setq gnus-newsgroup-unselected
 	      (gnus-sorted-intersection
@@ -4592,9 +4596,13 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 	    (gnus-set-sorted-intersection
 	     gnus-newsgroup-unreads fetched-articles))
 
-      ;; Adjust and set lists of article marks.
-      (when info
-	(gnus-adjust-marked-articles info))
+      (let ((marks (assq 'seen (gnus-info-marks info))))
+	;; The `seen' marks are treated specially.
+	(when (setq gnus-newsgroup-seen (cdr marks))
+	  (dolist (article gnus-newsgroup-articles)
+	    (unless (gnus-member-of-range
+		     article gnus-newsgroup-seen)
+	      (push article gnus-newsgroup-unseen)))))
 
       ;; Removed marked articles that do not exist.
       (gnus-update-missing-marks
@@ -4795,14 +4803,7 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 
     (dolist (marks marked-lists)
       (setq mark (car marks))
-      (if (eq mark 'seen)
-	  ;; The `seen' marks are treated specially.
-	  (progn
-	    (when (setq gnus-newsgroup-seen (cdr marks))
-	      (dolist (article gnus-newsgroup-articles)
-		(unless (gnus-member-of-range
-			 article gnus-newsgroup-seen)
-		  (push article gnus-newsgroup-unseen)))))
+      (unless (eq mark 'seen)
 	;; Do the rest of the marks.
 	(set (setq var (intern (format "gnus-newsgroup-%s"
 				       (car (rassq mark types)))))
