@@ -1,3 +1,9 @@
+2004-09-21  Kevin Greiner  <kgreiner@compsol.cc>
+
+	* gnus-int.el (gnus-servers-that-use-local-marks): New variable.
+	(gnus-request-set-mark, gnus-request-update-mark): Use new
+	g-s-t-u-l-m to decide to use backend even when unplugged.
+
 2004-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-msg.el (gnus-inews-make-draft-meta-information): Don't add
