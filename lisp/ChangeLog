@@ -1,6 +1,7 @@
 2004-01-03  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* spam.el: Fix many (but not all) checkdoc complaints.
+	Delete trailing whitespace.
 
 	* message.el (message-header-synonyms): Defcustom.
 	(message-get-reply-headers): Catch `Original-To'.
