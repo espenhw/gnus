@@ -1,3 +1,13 @@
+2001-09-17  Miles Bader  <miles@gnu.org>
+
+	* gnus-srvr.el (gnus-server-insert-server-line): Don't let an
+	error querying a backend abort the whole process.
+
+2001-09-17 08:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-srvr.el (gnus-server-mode): Fix bogus fontification.
+	From Gerd M,Av(Bllmann <gerd@gnu.org>.
+
 2001-09-17  Didier Verna  <didier@xemacs.org>
 
 	* nndiary.el: version 0.2-b14.

@@ -221,7 +221,7 @@ The following specs are understood:
 All normal editing commands are switched off.
 \\<gnus-server-mode-map>
 For more in-depth information on this mode, read the manual
-(`\\[gnus-info-find-node]').
+\(`\\[gnus-info-find-node]').
 
 The following commands are available:
 
@@ -249,13 +249,15 @@ The following commands are available:
   (let* ((gnus-tmp-how (car method))
 	 (gnus-tmp-where (nth 1 method))
 	 (elem (assoc method gnus-opened-servers))
-	 (gnus-tmp-status (cond ((eq (nth 1 elem) 'denied)
-				 "(denied)")
-				((or (gnus-server-opened method)
-				     (eq (nth 1 elem) 'ok))
-				 "(opened)")
-				(t
-				 "(closed)")))
+ 	 (gnus-tmp-status
+ 	  (if (eq (nth 1 elem) 'denied)
+ 	      "(denied)"
+ 	    (condition-case nil
+ 		(if (or (gnus-server-opened method)
+ 			(eq (nth 1 elem) 'ok))
+		    "(opened)"
+ 		  "(closed)")
+ 	      ((error) "(error)"))))
 	 (gnus-tmp-agent (if (and gnus-agent
 				  (member method
 					  gnus-agent-covered-methods))
