@@ -31,7 +31,7 @@
 ;; have the effect of installing keybindings in dired-mode, place the
 ;; following in your ~/.gnus:
 
-;; (require 'gnus-dired)
+;; (require 'gnus-dired) ;, isn't needed due to autoload cookies
 ;; (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
 
 ;; Note that if you visit dired buffers before your ~/.gnus file has
@@ -74,8 +74,9 @@
       (gnus-add-minor-mode 'gnus-dired-mode "" gnus-dired-mode-map)
       (gnus-run-hooks 'gnus-dired-mode-hook))))
 
-;; Convenience method to turn on gnus-dired-mode.
-(defsubst turn-on-gnus-dired-mode ()
+;;;###autoload
+(defun turn-on-gnus-dired-mode ()
+  "Convenience method to turn on gnus-dired-mode."
   (gnus-dired-mode 1))
 
 ;; Method to attach files to a gnus composition.
