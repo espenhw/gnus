@@ -1,3 +1,7 @@
+2002-04-08  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-sum.el (gnus-summary-delete-marked-with): Fix typo.
+
 2002-04-07  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* mm-view.el (mm-inline-text-html-render-with-w3): Don't ignore
