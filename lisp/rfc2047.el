@@ -286,13 +286,15 @@ Should be called narrowed to the head of the message."
     (narrow-to-region b e)
     (goto-char (point-min))
     (let ((break nil)
+	  (qword-break nil)
 	  (bol (save-restriction
 		 (widen)
 		 (gnus-point-at-bol))))
       (while (not (eobp))
-	(when (and break (> (- (point) bol) 76))
-	  (goto-char break)
-	  (setq break nil)
+	(when (and (or break qword-break) (> (- (point) bol) 76))
+	  (goto-char (or break qword-break))
+	  (setq break nil
+		qword-break nil)
 	  (insert "\n ")
 	  (setq bol (1- (point)))
 	  ;; Don't break before the first non-LWSP characters.
@@ -302,7 +304,8 @@ Should be called narrowed to the head of the message."
 	 ((eq (char-after) ?\n)
 	  (forward-char 1)
 	  (setq bol (point)
-		break nil)
+		break nil
+		qword-break nil)
 	  (skip-chars-forward " \t")
 	  (unless (or (eobp) (eq (char-after) ?\n))
 	    (forward-char 1)))
@@ -312,17 +315,18 @@ Should be called narrowed to the head of the message."
 	  (skip-chars-forward " \t")
 	  (setq break (1- (point))))
 	 ((not break)
-	  (if (not (looking-at "=\\?"))
+	  (if (not (looking-at "=\\?[^=]"))
 	      (if (eq (char-after) ?=)
 		  (forward-char 1)
 		(skip-chars-forward "^ \t\n\r="))
-	    (setq break (point))
+	    (setq qword-break (point))
 	    (skip-chars-forward "^ \t\n\r")))
 	 (t
 	  (skip-chars-forward "^ \t\n\r"))))
-      (when (and break (> (- (point) bol) 76))
-	(goto-char break)
-	(setq break nil)
+      (when (and (or break qword-break) (> (- (point) bol) 76))
+	(goto-char (or break qword-break))
+	(setq break nil
+	      qword-break nil)
 	(insert "\n ")
 	(setq bol (1- (point)))
 	;; Don't break before the first non-LWSP characters.

@@ -1,3 +1,7 @@
+2000-10-10 08:44:13  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* rfc2047.el (rfc2047-fold-region): "=?=" is not a break point.
+
 2000-10-10 00:00:28  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* webmail.el (webmail-init): Use mm-disable-multibyte-mule4.
