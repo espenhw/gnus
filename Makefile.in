@@ -41,7 +41,7 @@ xsome:
 distclean:
 	make clean
 	rm -rf *~
-	for i in lisp texi; do (cd $$i; make distclean); done
+	for i in lisp texi etc; do (cd $$i; make distclean); done
 	rm -f config.log config.status config.cache Makefile
 
 config.status: $(srcdir)/configure
