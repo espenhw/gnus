@@ -951,6 +951,12 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 	       gnus-plugged)
       (gnus-find-new-newsgroups))
 
+    ;; Check and remove bogus newsgroups.
+    (when (and init gnus-check-bogus-newsgroups
+	       gnus-read-active-file (not level)
+	       (gnus-server-opened gnus-select-method))
+      (gnus-check-bogus-newsgroups))
+
     ;; We might read in new NoCeM messages here.
     (when (and gnus-use-nocem
 	       (not level)
@@ -962,12 +968,7 @@ If LEVEL is non-nil, the news will be set up at level LEVEL."
 
     ;; Find the number of unread articles in each non-dead group.
     (let ((gnus-read-active-file (and (not level) gnus-read-active-file)))
-      (gnus-get-unread-articles level))
-
-    (when (and init gnus-check-bogus-newsgroups
-	       gnus-read-active-file (not level)
-	       (gnus-server-opened gnus-select-method))
-      (gnus-check-bogus-newsgroups))))
+      (gnus-get-unread-articles level))))
 
 (defun gnus-call-subscribe-functions (method group)
   "Call METHOD to subscribe GROUP.
