@@ -452,6 +452,16 @@ regular expressions can be used in conjuction with
   :group 'message-interface
   :type '(repeat regexp))
 
+(defcustom message-allow-no-recipients 'ask
+  "Specifies what to do when there are no recipients other than Gcc/Fcc.
+If it is the symbol `always', the posting is allowed.  If it is the
+symbol `never', the posting is not allowed.  If it is the symbol
+`ask', you are prompted."
+  :group 'message-interface
+  :type '(choice (const always)
+		 (const never)
+		 (const ask)))
+
 (defcustom message-sendmail-f-is-evil nil
   "*Non-nil means don't add \"-f username\" to the sendmail command line.
 Doing so would be even more evil than leaving it out."
@@ -2519,13 +2529,15 @@ It should typically alter the sending method in some way or other."
     (unless (or sent (not success)
 		(let ((fcc (message-fetch-field "Fcc"))
 		      (gcc (message-fetch-field "Gcc")))
-		  (and (or fcc gcc)
-		       (setq dont-barf-on-no-method 
-			     (gnus-y-or-n-p
-			      (format "No receiver, perform %s anyway? "
-				      (cond ((and fcc gcc) "Fcc and Gcc")
-					    (fcc "Fcc")
-					    (t "Gcc"))))))))
+		  (when (or fcc gcc)
+		    (or (eq message-allow-no-recipients 'always)
+			(and (not (eq message-allow-no-recipients 'never))
+			     (setq dont-barf-on-no-method
+				   (gnus-y-or-n-p
+				    (format "No receiver, perform %s anyway? "
+					    (cond ((and fcc gcc) "Fcc and Gcc")
+						  (fcc "Fcc")
+						  (t "Gcc"))))))))))
       (error "No methods specified to send by"))
     (when (or dont-barf-on-no-method
 	      (and success sent))
