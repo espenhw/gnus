@@ -3572,7 +3572,9 @@ If ALL-HEADERS is non-nil, no headers are hidden."
 		      (cons gnus-newsgroup-name article))
 		(set-buffer gnus-summary-buffer)
 		(setq gnus-current-article article)
-		(if (memq article gnus-newsgroup-undownloaded)
+		(if (and (memq article gnus-newsgroup-undownloaded)
+			 (not (gnus-online (gnus-find-method-for-group
+					    gnus-newsgroup-name))))
 		    (progn
 		      (gnus-summary-set-agent-mark article)
 		      (message "Message marked for downloading"))
