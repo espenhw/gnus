@@ -2062,13 +2062,14 @@ If CLEAN, don't read existing active and agentview files."
   (message "Regenerating Gnus agent files...done"))
 
 (defun gnus-agent-go-online (&optional force)
-  "Bring servers online."
+  "Switch servers into online status."
   (interactive (list t))
   (dolist (server gnus-opened-servers)
     (when (eq (nth 1 server) 'offline)
       (if (if (eq force 'ask) 
 	      (gnus-y-or-n-p 
-	       (format "Bring %s:%s online? " (caar server) (cadar server)))
+	       (format "Switch %s:%s into online status? "
+		       (caar server) (cadar server)))
 	    force)
 	  (setcar (nthcdr 1 server) 'close)))))
 
