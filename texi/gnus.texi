@@ -8896,13 +8896,13 @@ Go to the Gnus info node (@code{gnus-info-find-node}).
 @item M-s
 @kindex M-s (Summary)
 @findex gnus-summary-search-article-forward
-Search through all subsequent articles for a regexp
+Search through all subsequent (raw) articles for a regexp
 (@code{gnus-summary-search-article-forward}).
 
 @item M-r
 @kindex M-r (Summary)
 @findex gnus-summary-search-article-backward
-Search through all previous articles for a regexp
+Search through all previous (raw) articles for a regexp
 (@code{gnus-summary-search-article-backward}).
 
 @item &
