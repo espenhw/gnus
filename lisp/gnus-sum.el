@@ -2077,7 +2077,7 @@ increase the score of each group you read."
 	 ["Age..." gnus-summary-limit-to-age t]
 	 ["Extra..." gnus-summary-limit-to-extra t]
 	 ["Score" gnus-summary-limit-to-score t]
-	 ["Score" gnus-summary-limit-to-display-predicate t]
+	 ["Display Predicate" gnus-summary-limit-to-display-predicate t]
 	 ["Unread" gnus-summary-limit-to-unread t]
 	 ["Non-dormant" gnus-summary-limit-exclude-dormant t]
 	 ["Articles" gnus-summary-limit-to-articles t]
