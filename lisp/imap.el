@@ -1107,11 +1107,11 @@ If EXAMINE is non-nil, do a read-only select."
 
 (defun imap-mailbox-examine-1 (mailbox &optional buffer)
   (with-current-buffer (or buffer (current-buffer))
-    (imap-mailbox-select-1 mailbox 'exmine)))
+    (imap-mailbox-select-1 mailbox 'examine)))
 
 (defun imap-mailbox-examine (mailbox &optional buffer)
   "Examine MAILBOX on server in BUFFER."
-  (imap-mailbox-select mailbox 'exmine buffer))
+  (imap-mailbox-select mailbox 'examine buffer))
 
 (defun imap-mailbox-unselect (&optional buffer)
   "Close current folder in BUFFER, without expunging articles."
