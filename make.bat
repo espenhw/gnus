@@ -60,12 +60,16 @@ cd ..
 goto end
 
 :usage
-echo Usage: make ^<emacs-dir^> [copy]
+echo Usage: make :emacs-dir: [copy]
 echo.
-echo where: ^<emacs-dir^> is the directory you installed emacs in
+echo where: :emacs-dir: is the directory you installed emacs in
 echo                    eg. d:\emacs\20.4
 echo        copy indicates that the compiled files should be copied to your
 echo             emacs lisp, info, and etc directories
+echo.
+echo Note: If you have Emacs/w3 you should set the environment variable 
+echo       W3DIR to the directory where w3 is installed eg.
+echo                 set W3DIR=d:\lisp\w3-4.0pre46\lisp
 
 rem Restore PWD so whoever called this batch file doesn't get confused
 set PWD=%GNUS_PWD_SAVE%

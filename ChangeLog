@@ -1,3 +1,7 @@
+2001-01-15  Jesper Harder <harder@ifa.au.dk>
+
+	* make.bat: Fix doc.
+
 2000-12-22 03:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* configure.in: Add etc/Makefile.
