@@ -699,12 +699,15 @@ the actual number of articles toggled is returned."
   (save-excursion
     (set-buffer gnus-agent-current-history)
     (goto-char (point-max))
-    (insert id "\t" (number-to-string date) "\t")
-    (while group-arts
-      (insert (format "%S" (caar group-arts)) 
-	      " " (number-to-string (cdr (pop group-arts)))
-	      " "))
-    (insert "\n")))
+    (let ((p (point)))
+      (insert id "\t" (number-to-string date) "\t")
+      (while group-arts
+	(insert (format "%S" (intern (caar group-arts)))
+		" " (number-to-string (cdr (pop group-arts)))
+		" "))
+      (insert "\n")
+      (while (search-backward "\\." p t)
+	(delete-char 1)))))
 
 (defun gnus-agent-article-in-history-p (id)
   (save-excursion
