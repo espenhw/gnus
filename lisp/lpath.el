@@ -43,6 +43,7 @@
 		     temp-directory babel-fetch babel-wash
 		     find-coding-systems-for-charsets sc-cite-regexp
 		     vcard-pretty-print image-type-available-p
+		     put-image 
 		     make-overlay overlay-put))
       (maybe-bind '(global-face-data
 		    mark-active transient-mark-mode mouse-selection-click-count

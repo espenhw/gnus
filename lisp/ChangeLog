@@ -1,3 +1,8 @@
+2000-04-28 00:31:53  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* lpath.el: Fbind put-image for XEmacs.
+	* mm-view.el (mm-inline-image): Fset it.
+
 2000-04-27 23:23:37  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* nndoc.el (nndoc-type-alist): Change forward regexp. 
@@ -75,7 +80,7 @@
 	* mm-bodies.el (mm-encode-body): Remove reference to
 	mm-default-charset in comment.
 
-2000-04-24 00:56:00  Björn Torkelsson  <torkel@hpc2n.umu.se>
+2000-04-24 00:56:00  Bj-Aörn Torkelsson  <torkel@hpc2n.umu.se>$)A
 
 	* rfc2047.el (rfc2047-encode-message-header): Fixing typo.
 	
@@ -184,7 +189,7 @@ Mon Apr 24 21:12:06 2000  Lars Magne Ingebrigtsen  <lmi@quimbies.gnus.org>
 
 	* gnus-sum.el (t): M-down and M-up.
 
-2000-04-22 20:22:03  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-04-22 20:22:03  Kai Gro-Aßjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>$)A
 
 	* gnus-sum.el: Doc fix.
 
@@ -245,7 +250,7 @@ Mon Apr 24 21:12:06 2000  Lars Magne Ingebrigtsen  <lmi@quimbies.gnus.org>
 	* gnus-msg.el (gnus-configure-posting-styles): Allow nil values to
 	override. 
 
-2000-04-21 21:58:20  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-04-21 21:58:20  Kai Gro-Aßjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>$)A
 
 	* nnmail.el (nnmail-cache-insert): Does some stuff that is
 	probably good to do, or something.  I dunno.  I just write these
@@ -837,7 +842,7 @@ Wed Jan  5 17:06:41 2000  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* webmail.el (webmail-hotmail-article): Don't insert message id.
 
-1999-12-28  Kai.Grossjohann@CS.Uni-Dortmund.DE (Kai Großjohann)
+1999-12-28  Kai.Grossjohann@CS.Uni-Dortmund.DE (Kai Gro-Aßjohann)$)A
 
 	* nnimap.el (nnimap-split-fancy): New variable.
 	(nnimap-split-fancy): New function.

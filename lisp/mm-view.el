@@ -63,10 +63,10 @@
     (set-extent-property annot 'mm t)
     (set-extent-property annot 'duplicable t)))
 
-(defun mm-inline-image (handle)
-  (if mm-xemacs-p
-      (mm-inline-image-xemacs handle)
-    (mm-inline-image-emacs handle)))
+(eval-and-compile
+  (if (string-match "XEmacs" (emacs-version))
+      (fset 'mm-inline-image 'mm-inline-image-xemacs)
+    (fset 'mm-inline-image 'mm-inline-image-emacs)))
 
 (defvar mm-w3-setup nil)
 (defun mm-setup-w3 ()
