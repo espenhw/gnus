@@ -310,12 +310,12 @@ See also `with-temp-file' and `with-output-to-string'."
       (save-restriction
 	(narrow-to-region b e)
 	(goto-char (point-min))
-	(let ((entry (assoc (capitalize current-language-environment)
+	(let ((entry (assoc current-language-environment 
 			    language-info-alist)))
 	  (skip-chars-forward "\0-\177")
 	  (if (eobp)
 	      '(ascii)
-	    (list 'ascii (car (last (assq 'charset entry)))))))))))
+	    (delq nil (list 'ascii (cadr (assq 'charset entry)))))))))))
 
 (defun mm-read-charset (prompt)
   "Return a charset."
