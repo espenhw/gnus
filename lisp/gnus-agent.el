@@ -865,7 +865,7 @@ the actual number of articles toggled is returned."
 			     (cdr (gnus-active group)))))))
     ;; Fetch them.
     (gnus-make-directory (nnheader-translate-file-chars
-			  (file-name-directory file)))
+			  (file-name-directory file) t))
     (when articles
       (gnus-message 7 "Fetching headers for %s..." group)
       (save-excursion

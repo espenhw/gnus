@@ -1,3 +1,7 @@
+2000-01-10 23:35:33  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* gnus-agent.el (gnus-agent-fetch-headers): Translate full path.
+
 2000-01-09 22:52:35  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnus.el (gnus-other-frame): Fix typo.
