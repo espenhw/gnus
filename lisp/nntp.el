@@ -530,7 +530,7 @@ opens a new connection then re-issues the NNTP command whose response triggered 
   (when (and (listp connectionless)
              (not (eq connectionless nil)))
     (setq forms (cons connectionless forms)
-          connectionless))
+          connectionless nil))
   `(let ((nntp-with-open-group-first-pass t)
          nntp-with-open-group-internal)
      (while (catch 'nntp-with-open-group-error
