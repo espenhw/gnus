@@ -1336,8 +1336,8 @@ Valid specifiers include:
 %c  Topic name (string)
 %g  The number of groups in the topic (integer)
 
-General format specifiers can also be used.  See
-(gnus)Formatting Variables.")
+General format specifiers can also be used.  See Info node
+`(gnus)Formatting Variables'.")
 
 (defvar gnus-category-mode-line-format "Gnus: %%b"
   "The format specification for the category mode line.")

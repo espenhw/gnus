@@ -1,6 +1,6 @@
 ;;; gnus-gl.el --- an interface to GroupLens for Gnus
 
-;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
+;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002
 ;;	Free Software Foundation, Inc.
 
 ;; Author: Brad Miller <bmiller@cs.umn.edu>
@@ -342,7 +342,7 @@ If this times out we give up and assume that something has died..." )
 
 (defun bbb-build-mid-scores-alist (groupname)
   "this function can be called as part of the function to return the list of score files to use.
-See the gnus variable gnus-score-find-score-files-function.
+See the gnus variable `gnus-score-find-score-files-function'.
 
 *Note:*  If you want to use grouplens scores along with calculated scores,
 you should see the offset and scale variables.  At this point, I don't

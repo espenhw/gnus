@@ -58,7 +58,7 @@ The following specs are understood:
 %a agent covered
 
 General format specifiers can also be used.
-See (gnus)Formatting Variables."
+See Info node `(gnus)Formatting Variables'."
   :link '(custom-manual "(gnus)Formatting Variables")
   :group 'gnus-server-visual
   :type 'string)

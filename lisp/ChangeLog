@@ -1,3 +1,79 @@
+2002-09-25  Bj,Av(Brn Torkelsson  <torkel@acc.umu.se>
+
+	* gnus-agent.el (gnus-category-line-format): Doc fixes (mostly added
+	links to Info)
+	* gnus-art.el (gnus-treat-highlight-signature): 
+	* gnus-art.el (gnus-treat-buttonize):
+	* gnus-art.el (gnus-treat-buttonize-head):
+	* gnus-art.el (gnus-treat-emphasize):
+	* gnus-art.el (gnus-treat-strip-cr):
+	* gnus-art.el (gnus-treat-unsplit-urls):
+	* gnus-art.el (gnus-treat-leading-whitespace):
+	* gnus-art.el (gnus-treat-hide-headers):
+	* gnus-art.el (gnus-treat-hide-boring-headers):
+	* gnus-art.el (gnus-treat-hide-signature):
+	* gnus-art.el (gnus-treat-fill-article):
+	* gnus-art.el (gnus-treat-hide-citation):
+	* gnus-art.el (gnus-treat-hide-citation-maybe):
+	* gnus-art.el (gnus-treat-strip-list-identifiers):
+	* gnus-art.el (gnus-treat-strip-pgp):
+	* gnus-art.el (gnus-treat-strip-pem):
+	* gnus-art.el (gnus-treat-strip-banner):
+	* gnus-art.el (gnus-treat-highlight-headers):
+	* gnus-art.el (gnus-treat-highlight-citation):
+	* gnus-art.el (gnus-treat-date-ut):
+	* gnus-art.el (gnus-treat-date-local):
+	* gnus-art.el (gnus-treat-date-english):
+	* gnus-art.el (gnus-treat-date-lapsed):
+	* gnus-art.el (gnus-treat-date-original):
+	* gnus-art.el (gnus-treat-date-iso8601):
+	* gnus-art.el (gnus-treat-date-user-defined):
+	* gnus-art.el (gnus-treat-strip-headers-in-body):
+	* gnus-art.el (gnus-treat-strip-trailing-blank-lines):
+	* gnus-art.el (gnus-treat-strip-leading-blank-lines):
+	* gnus-art.el (gnus-treat-strip-multiple-blank-lines):
+	* gnus-art.el (gnus-treat-unfold-headers):
+	* gnus-art.el (gnus-treat-fold-headers):
+	* gnus-art.el (gnus-treat-fold-newsgroups):
+	* gnus-art.el (gnus-treat-overstrike):
+	* gnus-art.el (gnus-treat-display-xface):
+	* gnus-art.el (gnus-treat-display-smileys):
+	* gnus-art.el (gnus-treat-from-picon):
+	* gnus-art.el (gnus-treat-mail-picon):
+	* gnus-art.el (gnus-treat-newsgroups-picon):
+	* gnus-art.el (gnus-treat-body-boundary):
+	* gnus-art.el (gnus-treat-capitalize-sentences):
+	* gnus-art.el (gnus-treat-fill-long-lines):
+	* gnus-art.el (gnus-treat-play-sounds):
+	* gnus-art.el (gnus-treat-translate):
+	* gnus-art.el (gnus-treat-x-pgp-sig):
+	* gnus-art.el (gnus-mime-button-line-format):
+	* gnus-art.el (gnus-button-man-level):
+	* gnus-art.el (gnus-button-emacs-level):
+	* gnus-cus.el (gnus-group-parameters):
+	* gnus-gl.el (bbb-build-mid-scores-alist):
+	* gnus-group.el (gnus-group-line-format):
+	* gnus-mlspl.el (gnus-group-split-setup):
+	* gnus-mlspl.el (gnus-group-split):
+	* gnus-msg.el (gnus-mailing-list-groups):
+	* gnus-msg.el (gnus-posting-styles):
+	* gnus-nocem.el (gnus-nocem-issuers):
+	* gnus-score.el (gnus-score-regexp-bad-p):
+	* gnus-srvr.el (gnus-server-line-format):
+	* gnus-topic.el (gnus-topic-line-format):
+	* gnus.el (gnus-summary-line-format):
+	* mail-source.el (mail-sources):
+	* message.el (message-subscribed-address-file):
+	* nnmail.el (nnmail-split-fancy):
+
+2002-09-24  Evgeny Roubinchtein  <zhenya@freeshell.org>
+
+	* mail-source.el(mail-source-run-script): use `functionp' to test
+	whether the argument `script' is in fact a function.
+	(mail-sources): adjust the defcustom to allow users to specify a
+	function or a string as the value of the `:prescript' and
+	`:postscript' arguments of the `file' and `pop3' mail sources.
+
 2002-09-25  Paul Jarc  <prj@po.cwru.edu>
 
 	* nnmaildir.el (nnmaildir--grp-add-art): fix minimum article

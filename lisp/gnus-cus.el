@@ -1,6 +1,6 @@
 ;;; gnus-cus.el --- customization commands for Gnus
 ;;
-;; Copyright (C) 1996, 1999, 2000, 2001 Free Software Foundation, Inc.
+;; Copyright (C) 1996, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Per Abrahamsen <abraham@dina.kvl.dk>
 ;; Keywords: news
@@ -214,7 +214,7 @@ in it..")
 			   (symbol :tag "Face"
 				   gnus-emphasis-highlight-words))))
      "highlight regexps.
-See gnus-emphasis-alist.")
+See `gnus-emphasis-alist'.")
 
     (posting-style
      (choice :tag "Posting style"
@@ -230,7 +230,7 @@ See gnus-emphasis-alist.")
 			      (const body))
 		      (string :format "%v"))))
      "post style.
-See gnus-posting-styles."))
+See `gnus-posting-styles'."))
   "Alist of valid group or topic parameters.
 
 Each entry has the form (NAME TYPE DOC), where NAME is the parameter

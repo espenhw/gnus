@@ -2925,7 +2925,7 @@ In the `new' case, the string is a safe replacement for REGEXP.
 In the `bad' case, the string is a unsafe subexpression of REGEXP,
 and we do not have a simple replacement to suggest.
 
-See `(Gnus)Scoring Tips' for examples of good regular expressions."
+See Info node `(gnus)Scoring Tips' for examples of good regular expressions."
   (let (case-fold-search)
     (and
      ;; First, try a relatively fast necessary condition.

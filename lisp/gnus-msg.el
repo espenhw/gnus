@@ -115,6 +115,7 @@ the second with the current group name."
   "*Alist of styles to use when posting.
 See Info node `(gnus)Posting Styles'."
   :group 'gnus-message
+  :link '(custom-manual "(gnus)Posting Styles")
   :type '(repeat (cons (choice (regexp)
 			       (variable)
 			       (list (const header)

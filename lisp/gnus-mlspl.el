@@ -1,6 +1,6 @@
 ;;; gnus-mlspl.el --- a group params-based mail splitting mechanism
 
-;; Copyright (C) 1998, 1999, 2000, 2001
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002
 ;;        Free Software Foundation, Inc.
 
 ;; Author: Alexandre Oliva <oliva@lsd.ic.unicamp.br>
@@ -61,7 +61,7 @@ unless overridden by any group marked as a catch-all group.  Typical
 uses are as simple as the name of a default mail group, but more
 elaborate fancy splits may also be useful to split mail that doesn't
 match any of the group-specified splitting rules.  See
-gnus-group-split-fancy for details."
+`gnus-group-split-fancy' for details."
   (interactive "P")
   (setq nnmail-split-methods 'nnmail-split-fancy)
   (when catch-all
@@ -87,7 +87,7 @@ instead.  This variable is set by gnus-group-split-setup."
 ;;;###autoload
 (defun gnus-group-split ()
   "Uses information from group parameters in order to split mail.
-See gnus-group-split-fancy for more information.
+See `gnus-group-split-fancy' for more information.
 
 gnus-group-split is a valid value for nnmail-split-methods."
   (let (nnmail-split-fancy)

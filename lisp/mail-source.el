@@ -60,6 +60,7 @@
 This variable is a list of mail source specifiers.
 See Info node `(gnus)Mail Source Specifiers'."
   :group 'mail-source
+  :link '(custom-manual "(gnus)Mail Source Specifiers")
   :type `(repeat
 	  (choice :format "%[Value Menu%] %v"
 		  :value (file)
@@ -83,10 +84,16 @@ See Info node `(gnus)Mail Source Specifiers'."
 					  (function :tag "Predicate"))
 				   (group :inline t
 					  (const :format "" :value :prescript)
-					  (string :tag "Prescript"))
+					  (choice :tag "Prescript"
+						  :value nil
+						  (string :format "%v")
+						  (function :format "%v")))
 				   (group :inline t
 					  (const :format "" :value :postscript)
-					  (string :tag "Postscript"))
+					  (choice :tag "Postscript"
+						  :value nil
+						  (string :format "%v")
+						  (function :format "%v")))
 				   (group :inline t
 					  (const :format "" :value :plugged)
 					  (boolean :tag "Plugged"))))
@@ -113,10 +120,16 @@ See Info node `(gnus)Mail Source Specifiers'."
 					  (string :tag "Program"))
 				   (group :inline t
 					  (const :format "" :value :prescript)
-					  (string :tag "Prescript"))
+					  (choice :tag "Prescript"
+						  :value nil
+						  (string :format "%v")
+						  (function :format "%v")))
 				   (group :inline t
 					  (const :format "" :value :postscript)
-					  (string :tag "Postscript"))
+					  (choice :tag "Postscript"
+						  :value nil
+						  (string :format "%v")
+						  (function :format "%v")))
 				   (group :inline t
 					  (const :format "" :value :function)
 					  (function :tag "Function"))
@@ -607,7 +620,7 @@ If ARGS, PROMPT is used as an argument to `format'."
 
 (defun mail-source-run-script (script spec &optional delay)
   (when script
-    (if (and (symbolp script) (fboundp script))
+    (if (functionp script)
 	(funcall script)
       (mail-source-call-script
        (format-spec script spec))))
