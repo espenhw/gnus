@@ -1,3 +1,7 @@
+2003-03-09  Paul Jarc  <prj@po.cwru.edu>
+
+	* gnus.texi (Top): Added menu item for Maildir node.
+
 2003-03-11  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus.texi (Paging the Article): Addition.

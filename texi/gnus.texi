@@ -704,6 +704,7 @@ Choosing a Mail Back End
 * Rmail Babyl::                 Emacs programs use the rmail babyl format.
 * Mail Spool::                  Store your mail in a private spool?
 * MH Spool::                    An mhspool-like back end.
+* Maildir::                     Another one-file-per-message format.
 * Mail Folders::                Having one file for each group.
 * Comparing Mail Back Ends::    An in-depth looks at pros and cons.
 
