@@ -375,7 +375,7 @@ virtual group.")
 
 (defun nnvirtual-create-mapping ()
   "Create an article mapping for the current group."
-  (let* (div
+  (let* (div m marks article list
 	 (map (sort
 	       (apply 
 		'nconc
@@ -398,14 +398,24 @@ virtual group.")
 				   (list (* div (- n (car active)))
 					 g n (and (memq n unreads) t)
 					 (nnvirtual-marks n marks)))
-				 (gnus-uncompress-range active))))))
-		 nnvirtual-component-groups))
+				 (gnus-uncompress-range active))))))	
+	 nnvirtual-component-groups))
 	       (lambda (m1 m2)
 		 (< (car m1) (car m2)))))
 	 (i 0))
     (setq nnvirtual-mapping map)
-    (while map
-      (setcar (pop map) (incf i)))))
+    (while (setq m (pop map))
+      (setcar m (setq article (incf i)))
+      (when (setq marks (nth 4 m))
+	(while marks
+	  (set (setq list
+		     (intern (concat "gnus-newsgroup-" 
+				     (symbol-name 
+				      (car (rassq (pop marks)
+						  gnus-article-mark-lists))))))
+	       (cons article (symbol-value list))))))))
+		     
+	       
 
 (provide 'nnvirtual)
 

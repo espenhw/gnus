@@ -1,4 +1,37 @@
+Thu Feb 29 09:15:05 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* nnvirtual.el (nnvirtual-create-mapping): Copy article marks.
+
+	* gnus.el (gnus-add-marked-articles): Would corrupt the
+	.newsrc.eld file.
+
+	* gnus-vis.el (gnus-group-highlight-line): Make sure `level' and
+	`score' are numbers.
+
+	* gnus-msg.el (gnus-inews-insert-archive-gcc): Group would be nil
+	when posting from the group buffer.
+
+	* gnus.el (gnus-fetch-group): Really fetch the group.
+	(gnus-summary-recenter): Respect `vertical'.
+	(gnus-recenter): Heed the prefix.
+
+Thu Feb 29 08:58:59 1996  Roderick Schertler  <roderick@gate.net>
+
+	* gnus-score.el (gnus-score-after-write-file-function): New
+	variable. 
+
+Thu Feb 29 08:00:08 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el (gnus-after-getting-new-news-hook): New hook.
+
+	* gnus-uu.el (gnus-uu-digest-mail-forward): Use normal
+	process/prefix convetions.
+
+	* nnfolder.el (nnfolder-request-scan): Kill buffers after saving.
+
 Wed Feb 28 04:39:49 1996  Lars Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.el: 0.46 is released.
 
 	* gnus.el (gnus-read-active-file): Don't try to retrieve groups
 	when no can be found.

@@ -994,8 +994,8 @@ ticked: The number of ticked articles in the group.
 	 (mailp (memq 'mail (assoc (symbol-name
 				    (car (or method gnus-select-method)))
 				   gnus-valid-select-methods)))
-	 (level (gnus-info-level info))
-	 (score (gnus-info-score info))
+	 (level (or (gnus-info-level info) 9))
+	 (score (or (gnus-info-score info) 0))
 	 (ticked (gnus-range-length (cdr (assq 'tick marked))))
 	 (inhibit-read-only t))
     ;; Eval the cars of the lists until we find a match.

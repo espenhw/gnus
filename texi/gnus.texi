@@ -2444,6 +2444,10 @@ Restart Gnus (@code{gnus-group-restart}).
 @vindex gnus-get-new-news-hook
 @code{gnus-get-new-news-hook} is run just before checking for new news. 
 
+@vindex gnus-after-getting-new-news-hook
+@code{gnus-after-getting-new-news-hook} is run after checking for new
+news.
+
 
 @node Group Information
 @subsection Group Information
@@ -9731,6 +9735,10 @@ stay fresh and young.)  However, if you set this variable to @code{nil},
 even matching entries will grow old and will have to face that oh-so
 grim reaper.  
 
+@item gnus-score-after-write-file-function
+@vindex gnus-score-after-write-file-function
+Function called with the name of the score file just written.
+
 @end table
 
 
@@ -11205,7 +11213,7 @@ but at the common table.@*
 * Terminology::                    We use really difficult, like, words here.
 * Customization::                  Tailoring Gnus to your needs.
 * Troubleshooting::                What you might try if things do not work.
-* A Programmer@'s Guide to Gnus::   Rilly, rilly technical stuff.
+* A Programmers Guide to Gnus::    Rilly, rilly technical stuff.
 * Emacs for Heathens::             A short introduction to Emacsian terms.
 * Frequently Asked Questions::     A question-and-answer session.
 @end menu
@@ -12008,7 +12016,7 @@ You can also ask on the ding mailing list---@samp{ding@@ifi.uio.no}.
 Write to @samp{ding-request@@ifi.uio.no} to subscribe.
 
 
-@node A Programmer@'s Guide to Gnus
+@node A Programmers Guide to Gnus
 @section A Programmer's Guide to Gnus
 
 It is my hope that other people will figure out smart stuff that Gnus

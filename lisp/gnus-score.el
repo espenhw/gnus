@@ -183,6 +183,9 @@ Should be one of the following symbols.
 
 If nil, the user will be asked for a duration.")
 
+(defvar gnus-score-after-write-file-function nil
+  "*Function called with the name of the score file just written to disk.")
+
 
 
 ;; Internal variables.
@@ -1002,9 +1005,10 @@ SCORE is the score to add."
 	      (if (zerop (buffer-size))
 		  (delete-file file)
 		;; There are scores, so we write the file. 
-		(and (file-writable-p file)
-		     (write-region (point-min) (point-max) 
-				   file nil 'silent))))
+ 		(when (file-writable-p file)
+		  (write-region (point-min) (point-max) file nil 'silent)
+		  (and gnus-score-after-write-file-function
+		       (funcall gnus-score-after-write-file-function file)))))
 	    (and gnus-score-uncacheable-files
 		 (string-match gnus-score-uncacheable-files file)
 		 (gnus-score-remove-from-cache file)))))

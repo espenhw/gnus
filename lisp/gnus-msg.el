@@ -1960,7 +1960,7 @@ mailer."
 
 	(auto-save-mode auto-save-default)
 	(gnus-inews-insert-gcc)
-	(gnus-inews-insert-archive-gcc)
+	(gnus-inews-insert-archive-gcc group)
 
 	(when (and follow-to (listp follow-to))
 	  (let (beg)
@@ -2086,7 +2086,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 
     (gnus-inews-insert-bfcc)
     (gnus-inews-insert-gcc)
-    (gnus-inews-insert-archive-gcc)
+    (gnus-inews-insert-archive-gcc group)
     (gnus-inews-insert-signature)
     (and gnus-post-prepare-function
 	 (gnus-functionp gnus-post-prepare-function)
@@ -2256,7 +2256,7 @@ If INHIBIT-PROMPT, never prompt for a Subject."
 
 	  (gnus-inews-insert-bfcc)
 	  (gnus-inews-insert-gcc)
-	  (gnus-inews-insert-archive-gcc)
+	  (gnus-inews-insert-archive-gcc group)
 
 	  ;; Now the headers should be ok, so we do the yanking.
 	  (goto-char (point-min))
@@ -2800,9 +2800,10 @@ Headers will be generated before sending."
 		    (mapconcat 'identity gcc " "))
 		  "\n"))))))
 
-(defun gnus-inews-insert-archive-gcc ()
+(defun gnus-inews-insert-archive-gcc (&optional group)
   "Insert the Gcc to say where the article is to be archived."
   (let* ((var gnus-message-archive-group)
+	 (group (or group gnus-newsgroup-name ""))
 	 result
 	 (groups
 	  (cond 
@@ -2820,7 +2821,7 @@ Headers will be generated before sending."
 	    var)
 	   ((gnus-functionp var)
 	    ;; A function.
-	    (funcall var gnus-newsgroup-name))
+	    (funcall var group))
 	   (t
 	    ;; An alist of regexps/functions/forms.
 	    (while (and var
@@ -2829,12 +2830,11 @@ Headers will be generated before sending."
 			       (cond 
 				((stringp (caar var))
 				 ;; Regexp.
-				 (when (string-match (caar var)
-						     gnus-newsgroup-name)
+				 (when (string-match (caar var) group)
 				   (cdar var)))
 				((gnus-functionp (car var))
 				 ;; Function.
-				 (funcall (car var) gnus-newsgroup-name))
+				 (funcall (car var) group))
 				(t
 				 (eval (car var)))))))
 	      (setq var (cdr var)))

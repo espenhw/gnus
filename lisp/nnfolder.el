@@ -248,7 +248,8 @@ it.")
 	       (setq nnfolder-buffer-alist 
 		     (delq (car bufs) nnfolder-buffer-alist))
 	     (set-buffer (nth 1 (car bufs)))
-	     (and (buffer-modified-p) (save-buffer)))
+	     (and (buffer-modified-p) (save-buffer))
+	     (kill-buffer (current-buffer)))
 	   (setq bufs (cdr bufs))))))
    nnfolder-directory
    group))

@@ -1384,6 +1384,9 @@ This hook is called after Gnus is connected to the NNTP server.")
 (defvar gnus-get-new-news-hook nil
   "*A hook run just before Gnus checks for new news.")
 
+(defvar gnus-after-getting-new-news-hook nil
+  "*A hook run after Gnus checks for new news.")
+
 (defvar gnus-group-prepare-function 'gnus-group-prepare-flat
   "*A function that is called to generate the group buffer.
 The function is called with three arguments: The first is a number;
@@ -1705,7 +1708,7 @@ variable (string, integer, character, etc).")
   "gnus-bug@ifi.uio.no (The Gnus Bugfixing Girls + Boys)"
   "The mail address of the Gnus maintainers.")
 
-(defconst gnus-version "September Gnus v0.46"
+(defconst gnus-version "September Gnus v0.47"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -5151,7 +5154,7 @@ Returns whether the fetching was successful or not."
   (interactive "sGroup name: ")
   (or (get-buffer gnus-group-buffer)
       (gnus))
-  (gnus-group-select-group))
+  (gnus-group-read-group nil nil group))
 
 ;; Enter a group that is not in the group buffer.  Non-nil is returned
 ;; if selection was successful.
@@ -6245,6 +6248,7 @@ re-scanning.  If ARG is non-nil and not a number, this will force
 	(gnus-get-unread-articles arg))
     (let ((gnus-read-active-file (if arg nil gnus-read-active-file)))
       (gnus-get-unread-articles arg)))
+  (run-hooks 'gnus-after-getting-new-news-hook)
   (gnus-group-list-groups))
 
 (defun gnus-group-get-new-news-this-group (&optional n)
@@ -8673,7 +8677,7 @@ If READ-ALL is non-nil, all articles in the group are selected."
 	(if force
 	    (if (null articles)
 		(setcar (nthcdr 3 info)
-			(delq (assq type marked) marked))
+			(delq (assq type (car marked)) (car marked)))
 	      (setcdr m (gnus-compress-sequence articles t)))
 	  (setcdr m (gnus-compress-sequence
 		     (sort (nconc (gnus-uncompress-range m)
@@ -9313,7 +9317,7 @@ articles with that subject.  If BACKWARD, search backward instead."
 (defun gnus-recenter (&optional n)
   "Center point in window and redisplay frame.
 Also do horizontal recentering."
-  (interactive)
+  (interactive "P")
   (when (and gnus-auto-center-summary
 	     (not (eq gnus-auto-center-summary 'vertical)))
     (gnus-horizontal-recenter))
@@ -9344,7 +9348,8 @@ displayed, no centering will be performed."
 	window (min bottom (save-excursion 
 			     (forward-line (- top)) (point)))))
       ;; Do horizontal recentering while we're at it.
-      (when (get-buffer-window (current-buffer) t)
+      (when (and (get-buffer-window (current-buffer) t)
+		 (not (eq gnus-auto-center-summary 'vertical)))
 	(let ((selected (selected-window)))
 	  (select-window (get-buffer-window (current-buffer) t))
 	  (gnus-summary-position-point)
