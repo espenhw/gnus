@@ -1,7 +1,7 @@
 2004-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* nntp.el (nntp-netcat-command): New variable.
-	(nntp-netcat-switches): New variable.
+	* nntp.el (nntp-via-netcat-command): New variable.
+	(nntp-via-netcat-switches): New variable.
 	(nntp-open-via-rlogin-and-netcat): New function.
 	(nntp-open-connection-function): Doc fix.
 	(nntp-telnet-command): Doc fix.

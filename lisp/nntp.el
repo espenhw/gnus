@@ -90,20 +90,10 @@ This is where you would put \"runsocks\" or stuff like that.")
 (defvoo nntp-telnet-command "telnet"
   "*Telnet command used to connect to the nntp server.
 This command is used by the methods `nntp-open-telnet-stream',
-`nntp-open-via-rlogin-and-telnet' and `nntp-open-via-telnet-and-telnet'.
-
-See `nntp-netcat-command' for the `nntp-open-via-rlogin-and-netcat'
-method.")
+`nntp-open-via-rlogin-and-telnet' and `nntp-open-via-telnet-and-telnet'.")
 
 (defvoo nntp-telnet-switches '("-8")
   "*Switches given to the telnet command `nntp-telnet-command'.")
-
-(defvoo nntp-netcat-command "nc"
-  "*Netcat command used to connect to the nntp server.
-This command is used by the `nntp-open-via-rlogin-and-netcat' method.")
-
-(defvoo nntp-netcat-switches nil
-  "*Switches given to the netcat command `nntp-netcat-command'.")
 
 (defvoo nntp-end-of-line "\r\n"
   "*String to use on the end of lines when talking to the NNTP server.
@@ -129,6 +119,13 @@ This command is used by the `nntp-open-via-telnet-and-telnet' method.")
 
 (defvoo nntp-via-telnet-switches '("-8")
   "*Switches given to the telnet command `nntp-via-telnet-command'.")
+
+(defvoo nntp-via-netcat-command "nc"
+  "*Netcat command used to connect to the nntp server.
+This command is used by the `nntp-open-via-rlogin-and-netcat' method.")
+
+(defvoo nntp-via-netcat-switches nil
+  "*Switches given to the netcat command `nntp-via-netcat-command'.")
 
 (defvoo nntp-via-user-name nil
   "*User name to log in on an intermediate host with.
@@ -1815,8 +1812,8 @@ Please refer to the following variables to customize the connection:
 - `nntp-via-rlogin-command-switches',
 - `nntp-via-user-name',
 - `nntp-via-address',
-- `nntp-netcat-command',
-- `nntp-netcat-switches',
+- `nntp-via-netcat-command',
+- `nntp-via-netcat-switches',
 - `nntp-address',
 - `nntp-port-number',
 - `nntp-end-of-line'."
@@ -1828,8 +1825,8 @@ Please refer to the following variables to customize the connection:
 		   ,@(when nntp-via-user-name
 		       (list "-l" nntp-via-user-name))
 		   ,nntp-via-address
-		   ,nntp-netcat-command
-		   ,@nntp-netcat-switches
+		   ,nntp-via-netcat-command
+		   ,@nntp-via-netcat-switches
 		   ,nntp-address
 		   ,nntp-port-number)))
     (apply 'start-process "nntpd" buffer command)))
