@@ -1,3 +1,15 @@
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
+	* make.bat: Redone from scratch; supports both Emacs and XEmacs
+	now; correctly generate gnus-load.el; check for errors; use
+	makeinfo if available, infohack.el if it isn't; be less verbose
+	when copying files; copy files from etc/gnus and etc/smilies, too
+
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
+	* make-x.bat: Removed, make.bat does its job now.
+
+2003-03-22  Frank Schmitt  <ich@frank-schmitt.net> 
+	* etc/gnus-tut.txt: Include Gnus FAQ from http://my.gnus.org.
+
 2003-02-19  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* GNUS-NEWS: Renamed `gnus-unsightly-citation-regexp' to
