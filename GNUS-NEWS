@@ -116,7 +116,7 @@ Gnus supports Muttprint natively with O P from the Summary and Article
 buffers.  Also, each individual MIME part can be printed using p on
 the MIME button.
 
-** Message supports the Importance: header.
+** Message supports the Importance: (RFC 2156) header.
 
 In the message buffer, C-c C-f C-i or C-u cycles through the valid values.
 
