@@ -420,7 +420,11 @@ Mule4 only."
    ((and (mm-multibyte-p)
  	 (fboundp 'find-charset-region))
     ;; Remove composition since the base charsets have been included.
-    (delq 'composition (find-charset-region b e)))
+    ;; Remove eight-bit-*, treat them as ascii.
+    (let ((css (find-charset-region b e)))
+      (mapcar (lambda (cs) (setq css (delq cs css)))
+	      '(composition eight-bit-control eight-bit-graphic))
+      css))
    (t
     ;; We are in a unibyte buffer or XEmacs non-mule, so we futz around a bit.
     (save-excursion

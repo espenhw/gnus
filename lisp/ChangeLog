@@ -1,3 +1,7 @@
+2000-11-30 14:00:00  ShengHuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-find-charset-region): Remove eight-bit-*.
+
 2000-11-30  Simon Josefsson  <sj@extundo.com>
 
 	* smime.el (smime-point-at-eol): New alias.
