@@ -16377,7 +16377,9 @@ machine students.uio.no login larsi password geheimnis port imap
 
 Note that it should be @code{port imap}, or @code{port 143}, if you
 use a @code{nnimap-stream} of @code{tls} or @code{ssl}, even if the
-actual port number used is port 993 for secured imap.
+actual port number used is port 993 for secured IMAP.  For
+convenience, Gnus will accept @code{port imaps} as a synonym of
+@code{port imap}.
 
 @item nnimap-need-unselect-to-notice-new-mail
 @vindex nnimap-need-unselect-to-notice-new-mail

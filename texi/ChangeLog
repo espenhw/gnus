@@ -1,3 +1,8 @@
+2004-08-17  Teodor Zlatanov  <tzz@lifelogs.com>
+
+	* gnus.texi (IMAP): add comments about imaps synonym to imap in
+	netrc syntax
+
 2004-08-15  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (IMAP): Add example.  Suggested and partially written
