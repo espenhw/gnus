@@ -1,3 +1,8 @@
+1999-12-15 08:55:19  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* nnagent.el (nnagent-server-opened): Redefine.
+	(nnagent-status-message): Ditto.
+
 1999-12-14 23:37:44  Shenghuo ZHU  <zsh@cs.rochester.edu>
 
 	* rfc1843.el (rfc1843-decode-region): Use

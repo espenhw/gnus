@@ -184,6 +184,14 @@
   (nnoo-parent-function 'nnagent 'nnml-set-status 
 		    (list article name value group (nnagent-server server))))
 
+(deffoo nnagent-server-opened (server)
+  (nnoo-parent-function 'nnagent 'nnml-server-opened
+			(list (nnagent-server server))))
+
+(deffoo nnagent-status-message (server)
+  (nnoo-parent-function 'nnagent 'nnml-status-message
+			(list (nnagent-server server))))
+
 ;; Use nnml functions for just about everything.
 (nnoo-import nnagent
   (nnml))
