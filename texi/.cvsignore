@@ -5,6 +5,7 @@ gnus-[0-9]*
 message
 message-[0-9]*
 sieve
+pgg
 gnustmp.texi
 *.dvi
 *.dvi-x
