@@ -2223,7 +2223,7 @@ message composition doesn't break too bad."
   ;; No reason this should be clutter up customize.  We make it a
   ;; property list (rather than a list of property symbols), to be
   ;; directly useful for `remove-text-properties'.
-  '(field nil read-only nil intangible nil invisible nil
+  '(field nil read-only nil 
 	  mouse-face nil modification-hooks nil insert-in-front-hooks nil
 	  insert-behind-hooks nil point-entered nil point-left nil)
   ;; Other special properties:
@@ -3279,7 +3279,14 @@ It should typically alter the sending method in some way or other."
   (goto-char (point-max))
   (unless (bolp)
     (insert "\n"))
-  ;; Delete all invisible text.
+  ;; Make the hidden headers visible.
+  (let ((points (message-text-with-property 'message-hidden)))
+    (when points
+      (goto-char (car points))
+      (dolist (point points)
+	(add-text-properties point (1+ point)
+			     '(invisible nil intangible nil)))))
+  ;; Make invisible text visible.
   (message-check 'invisible-text
     (let ((points (message-text-with-property 'invisible)))
       (when points
@@ -6482,15 +6489,18 @@ regexp varstr."
 		   message-hidden-headers))
 	(inhibit-point-motion-hooks t))
     (when regexps
-      (goto-char (point-min))
-      (while (not (eobp))
-	(if (not (message-hide-header-p regexps))
-	    (message-next-header)
-	  (let ((begin (point)))
-	    (message-next-header)
-	    (add-text-properties begin (point)
-				 '(intangible t invisible t
-					      message-hidden t))))))))
+      (save-excursion
+	(save-restriction
+	  (message-narrow-to-headers)
+	  (goto-char (point-min))
+	  (while (not (eobp))
+	    (if (not (message-hide-header-p regexps))
+		(message-next-header)
+	      (let ((begin (point)))
+		(message-next-header)
+		(add-text-properties begin (point)
+				     '(intangible t invisible t
+						  message-hidden t))))))))))
 
 (defun message-hide-header-p (regexps)
   (let ((result nil)
@@ -6499,12 +6509,10 @@ regexp varstr."
       (setq reverse t)
       (pop regexps))
     (dolist (regexp regexps)
-      (setq result
-	    (or result
-		(if reverse
-		    (not (looking-at regexp))
-		  (looking-at regexp)))))
-    result))
+      (setq result (or result (looking-at regexp))))
+    (if reverse
+	(not result)
+      result)))
 
 (when (featurep 'xemacs)
   (require 'messagexmas)

@@ -448,6 +448,7 @@ Thank you for your help in stamping out bugs.
 	       (add-hook 'kill-buffer-hook 'mml-destroy-buffers t t))
 	   (mml-destroy-buffers)
 	   (setq mml-buffer-list mbl)))
+       (message-hide-headers)
        (gnus-add-buffer)
        (gnus-configure-windows ,config t)
        (run-hooks 'post-command-hook)
