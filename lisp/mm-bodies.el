@@ -245,7 +245,8 @@ If TYPE is `text/plain' CRLF->LF translation may occur."
 
 (defun mm-decode-body (charset &optional encoding type force)
   "Decode the current article that has been encoded with ENCODING.
-The characters in CHARSET should then be decoded."
+The characters in CHARSET should then be decoded.  If FORCE is non-nil
+use the supplied charset unconditionally."
   (if (stringp charset)
       (setq charset (intern (downcase charset))))
   (if (or (not charset)
