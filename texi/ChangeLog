@@ -1,3 +1,8 @@
+2002-05-23  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Web Searches): Fix.  Trivial change from Niklas
+	Morberg <niklas.morberg@axis.com>.
+
 2002-05-22  Simon Josefsson  <jas@extundo.com>
 
 	* gnus.texi (Mail): Add variable.

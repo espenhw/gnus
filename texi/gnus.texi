@@ -14372,6 +14372,7 @@ is unnecessary in that case.
 @node Web Searches
 @subsection Web Searches
 @cindex nnweb
+@cindex Google
 @cindex DejaNews
 @cindex Alta Vista
 @cindex InReference
@@ -14418,7 +14419,7 @@ Virtual server variables:
 @item nnweb-type
 @vindex nnweb-type
 What search engine type is being used.  The currently supported types
-are @code{dejanews}, @code{dejanewsold}, @code{altavista} and
+are @code{google}, @code{dejanews}, @code{altavista} and
 @code{reference}.
 
 @item nnweb-search
