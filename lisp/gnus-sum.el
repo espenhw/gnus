@@ -2619,10 +2619,10 @@ If NO-DISPLAY, don't generate a summary buffer."
 	    (select-window (get-buffer-window gnus-group-buffer t))
 	    (when (gnus-group-goto-group group)
 	      (recenter))
-	    (select-window owin))))
-      ;; Mark this buffer as "prepared".
-      (setq gnus-newsgroup-prepared t)
-      t))))
+	    (select-window owin)))
+	;; Mark this buffer as "prepared".
+	(setq gnus-newsgroup-prepared t)
+	t)))))
 
 (defun gnus-summary-prepare ()
   "Generate the summary buffer."
@@ -2892,19 +2892,21 @@ If NO-DISPLAY, don't generate a summary buffer."
     (prog1
 	(save-excursion
 	  (set-buffer nntp-server-buffer)
-	  (goto-char (point-min))
-	  (while (and (not found) (search-forward id nil t))
-	    (beginning-of-line)
-	    (setq found (looking-at
-			 (format "^[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t%s"
-				 (regexp-quote id))))
-	    (or found (beginning-of-line 2)))
-	  (when found
-	    (beginning-of-line)
-	    (and
-	     (setq header (gnus-nov-parse-line
-			   (read (current-buffer)) deps))
-	     (gnus-parent-id (mail-header-references header)))))
+	  (let ((case-fold-search nil))
+	    (goto-char (point-min))
+	    (while (and (not found)
+			(search-forward id nil t))
+	      (beginning-of-line)
+	      (setq found (looking-at
+			   (format "^[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t%s"
+				   (regexp-quote id))))
+	      (or found (beginning-of-line 2)))
+	    (when found
+	      (beginning-of-line)
+	      (and
+	       (setq header (gnus-nov-parse-line
+			     (read (current-buffer)) deps))
+	       (gnus-parent-id (mail-header-references header))))))
       (when header
 	(let ((number (mail-header-number header)))
 	  (push number gnus-newsgroup-limit)

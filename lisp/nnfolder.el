@@ -681,10 +681,8 @@ time saver for large mailboxes.")
 	  (when (not (or nnfolder-distrust-mbox
 			 (< maxid 2)))
 	    (goto-char (point-max))
-	    (if (not (re-search-backward marker nil t))
-		(goto-char (point-min))
-	      (when (not (nnmail-search-unix-mail-delim))
-		(goto-char (point-min)))))
+	    (unless (re-search-backward marker nil t)
+	      (goto-char (point-min))))
 
 	  ;; Keep track of the active number on our own, and insert it back
 	  ;; into the active list when we're done.  Also, prime the pump to

@@ -1,3 +1,21 @@
+Thu Mar 20 17:33:54 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
+
+	* gnus.el: Gnus v5.4.33 is released.
+
+Thu Mar 20 16:01:38 1997  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-sum.el (gnus-build-get-header): Don't fold case.
+
+	* nnfolder.el (nnfolder-read-folder): Would always parse the
+	entire mbox.
+
+	* gnus-sum.el (gnus-summary-read-group-1): Return right value.
+
+	* gnus-start.el (gnus-slave-save-newsrc): Set file modes.
+
+	* nneething.el (nneething-open-server): New function.
+	(nneething-possibly-change-directory): Redefined.
+
 Wed Mar 19 21:16:48 1997  Lars Magne Ingebrigtsen  <larsi@menja.ifi.uio.no>
 
 	* gnus.el: Gnus v5.4.32 is released.

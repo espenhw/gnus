@@ -2303,7 +2303,8 @@ If FORCE is non-nil, the .newsrc file is read."
     (set-buffer gnus-dribble-buffer)
     (let ((slave-name
 	   (make-temp-name (concat gnus-current-startup-file "-slave-"))))
-      (gnus-write-buffer slave-name))))
+      (gnus-write-buffer slave-name)
+      (set-file-modes slave-name (file-modes gnus-current-startup-file)))))
 
 (defun gnus-master-read-slave-newsrc ()
   (let ((slave-files

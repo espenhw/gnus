@@ -55,7 +55,6 @@ If this variable is nil, no files will be excluded.")
   "Current news group directory.")
 
 (defvoo nneething-status-string "")
-(defvoo nneething-group-alist nil)
 
 (defvoo nneething-message-id-number 0)
 (defvoo nneething-work-buffer " *nneething work*")
@@ -151,28 +150,27 @@ If this variable is nil, no files will be excluded.")
   (setq nneething-current-directory nil)
   t)
 
+(deffoo nneething-open-server (server &optional defs)
+  (nnheader-init-server-buffer)
+  (if (nneething-server-opened server)
+      t
+    (unless (assq 'nneething-directory defs)
+      (setq defs (append defs (list (list 'nneething-directory server)))))
+    (nnoo-change-server 'nneething server defs)))
+
 
 ;;; Internal functions.
 
-(defun nneething-possibly-change-directory (group &optional dir)
-  (when group
-    (if (and nneething-group
-	     (string= group nneething-group))
-	t
-      (let (entry)
-	(if (setq entry (assoc group nneething-group-alist))
-	    (progn
-	      (setq nneething-group group)
-	      (setq nneething-directory (nth 1 entry))
-	      (setq nneething-map (nth 2 entry))
-	      (setq nneething-active (nth 3 entry)))
-	  (setq nneething-group group)
-	  (setq nneething-directory dir)
-	  (setq nneething-map nil)
-	  (setq nneething-active (cons 1 0))
-	  (nneething-create-mapping)
-	  (push (list group dir nneething-map nneething-active)
-		nneething-group-alist))))))
+(defun nneething-possibly-change-directory (group &optional server)
+  (when (and server
+	     (not (nneething-server-opened server)))
+    (nneething-open-server server))
+  (when (and group
+	     (not (equal nneething-group group)))
+    (setq nneething-group group)
+    (setq nneething-map nil)
+    (setq nneething-active (cons 1 0))
+    (nneething-create-mapping)))
 
 (defun nneething-map-file ()
   ;; We make sure that the .nneething directory exists.
