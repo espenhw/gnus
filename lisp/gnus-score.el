@@ -136,9 +136,11 @@ It can be:
  * A list
    The elements in this list can be:
 
-   * `(regexp . file-name)'
-     If the `regexp' matches the group name, the `file-name' will
-     will be used as the home score file.
+   * `(regexp file-name ...)'
+     If the `regexp' matches the group name, the first `file-name' will
+     will be used as the home score file.  (Multiple filenames are
+     allowed so that one may use gnus-score-file-single-match-alist to
+     set this variable.)
 
    * A function.
      If the function returns non-nil, the result will be used
@@ -1037,9 +1039,12 @@ SCORE is the score to add."
 	(delq (assoc file gnus-score-cache) gnus-score-cache)))
 
 (defun gnus-score-load-score-alist (file)
+  "Read score FILE."
   (let (alist)
     (if (not (file-readable-p file))
+	;; Couldn't read file.
 	(setq gnus-score-alist nil)
+      ;; Read file.
       (save-excursion
 	(gnus-set-work-buffer)
 	(insert-file-contents file)
@@ -1050,11 +1055,7 @@ SCORE is the score to add."
 		(condition-case ()
 		    (read (current-buffer))
 		  (error 
-		   (progn
-		     (gnus-message 3 "Problem with score file %s" file)
-		     (ding) 
-		     (sit-for 2)
-		     nil))))))
+		   (gnus-error 3.2 "Problem with score file %s" file))))))
       (if (eq (car alist) 'setq)
 	  ;; This is an old-style score file.
 	  (setq gnus-score-alist (gnus-score-transform-old-to-new alist))
@@ -2228,6 +2229,7 @@ SCORE is the score to add."
   "Return all possible score files under DIR."
   (let ((files (directory-files (expand-file-name dir) t nil t))
 	(regexp (gnus-score-file-regexp))
+	(case-fold-search nil)
 	out file)
     (while (setq file (pop files))
       (cond 
@@ -2495,7 +2497,7 @@ If ADAPT, return the home adaptive file instead."
 	     ;; Regexp-file cons
 	     ((consp elem)
 	      (when (string-match (car elem) group)
-		(cdr elem))))))
+		(cadr elem))))))
     (when found
       (nnheader-concat gnus-kill-files-directory found))))
 

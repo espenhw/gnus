@@ -26,7 +26,7 @@
 ;;; Code:
 
 (require 'nnheader)
-(eval-when-compile (require 'cl))
+(require 'cl)
 
 (defvar nnoo-definition-alist nil)
 (defvar nnoo-state-alist nil)
@@ -234,6 +234,7 @@
        (buffer-name nntp-server-buffer)))
 
 (defmacro nnoo-define-basics (backend)
+  "Define `close-server', `server-opened' and `status-message'."
   `(eval-and-compile
      (nnoo-define-basics-1 ',backend)))
 
@@ -247,6 +248,23 @@
 	     (server &optional defs)
 	   (nnoo-change-server ',backend server defs))))
 
+(defmacro nnoo-define-skeleton (backend)
+  "Define all required backend functions for BACKEND.
+All functions will return nil and report an error."
+  `(eval-and-compile
+     (nnoo-define-skeleton-1 ',backend)))
+
+(defun nnoo-define-skeleton-1 (backend)
+  (let ((functions '(retrieve-headers
+		     request-close server-opened request-article
+		     open-group request-group close-group
+		     request-list request-post))
+	function)
+    (while (setq function (pop functions))
+      (eval `(deffoo ,(nnoo-symbol backend function) 
+		 (&optional server)
+	       (nnheader-report ',backend ,(format "%s-%s not implemented"
+						   backend function)))))))
 (provide 'nnoo)
 
 ;;; nnoo.el ends here.

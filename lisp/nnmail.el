@@ -74,6 +74,9 @@ new mail into folder numbers that Gnus has marked as expired.")
 If nil, groups like \"mail.misc\" will end up in directories like
 \"mail/misc/\".")
 
+(defvar nnmail-default-file-modes 384
+  "Set the mode bits of all new mail files to this integer.")
+
 (defvar nnmail-expiry-wait 7
   "*Expirable articles that are older than this will be expired.
 This variable can either be a number (which will be interpreted as a
@@ -484,7 +487,8 @@ nn*-request-list should have been called before calling this function."
 			  (caadr group))))
 	(unless (file-exists-p (file-name-directory file-name))
 	  (make-directory (file-name-directory file-name) t))
-	(write-region 1 (point-max) (expand-file-name file-name) nil 'nomesg)
+	(nnmail-write-region
+	 1 (point-max) (expand-file-name file-name) nil 'nomesg)
 	(kill-buffer (current-buffer))))))
 
 (defun nnmail-get-split-group (file group)
@@ -1031,8 +1035,8 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
       (or (file-exists-p (file-name-directory nnmail-message-id-cache-file))
 	  (make-directory (file-name-directory nnmail-message-id-cache-file)
 			  t))
-      (write-region (point-min) (point-max)
-		    nnmail-message-id-cache-file nil 'silent)
+      (nnmail-write-region (point-min) (point-max)
+			   nnmail-message-id-cache-file nil 'silent)
       (set-buffer-modified-p nil)
       (setq nnmail-cache-buffer nil)
       ;;(kill-buffer (current-buffer))
@@ -1198,6 +1202,70 @@ See the documentation for the variable `nnmail-split-fancy' for documentation."
     (let ((case-fold-search t))
       (unless (re-search-forward "^Message-Id:" nil t)
 	(insert "Message-ID: " (nnmail-message-id) "\n")))))
+
+(defun nnmail-write-region (start end filename &optional append visit lockname)
+  "Do a `write-region', and then set the file modes."
+  (write-region start end filename append visit lockname)
+  (set-file-modes filename nnmail-default-file-modes))
+
+;;;
+;;; Status functions
+;;;
+
+(defun nnmail-replace-status (name value)
+  "Make status NAME and VALUE part of the current status line."
+  (save-restriction
+    (message-narrow-to-head)
+    (let ((status (nnmail-decode-status)))
+      (setq status (delq (member name status) status))
+      (when value
+	(push (cons name value) status))
+      (message-remove-header "status")
+      (goto-char (point-max))
+      (insert "Status: " (nnmail-encode-status status) "\n"))))
+
+(defun nnmail-decode-status ()
+  "Return a status-value alist from STATUS."
+  (goto-char (point-min))
+  (when (re-search-forward "^Status: " nil t)
+    (let (name value status)
+      (save-restriction
+	;; Narrow to the status.
+	(narrow-to-region
+	 (point)
+	 (if (re-search-forward "^[^ \t]" nil t)
+	     (1- (point))
+	   (point-max)))
+	;; Go through all elements and add them to the list.
+	(goto-char (point-min))
+	(while (re-search-forward "[^ \t=]+" nil t)
+	  (setq name (match-string 0))
+	  (if (not (= (following-char) ?=))
+	      ;; Implied "yes".
+	      (setq value "yes")
+	    (forward-char 1)
+	    (if (not (= (following-char) ?\"))
+		(if (not (looking-at "[^ \t]"))
+		    ;; Implied "no".
+		    (setq value "no")
+		  ;; Unquoted value.
+		  (setq value (match-string 0))
+		  (goto-char (match-end 0)))
+	      ;; Quoted value.
+	      (setq value (read (current-buffer)))))
+	  (push (cons name value) status)))
+      status)))
+
+(defun nnmail-encode-status (status)
+  "Return a status string from STATUS."
+  (mapconcat
+   (lambda (elem)
+     (concat
+      (car elem) "="
+      (if (string-match "[ \t]" (cdr elem))
+	  (prin1-to-string (cdr elem))
+	(cdr elem))))
+   status " "))
 
 (run-hooks 'nnmail-load-hook)
 	    

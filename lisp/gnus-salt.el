@@ -70,6 +70,7 @@ It accepts the same format specs that `gnus-summary-line-format' does.")
    "b" gnus-uu-mark-buffer
    "B" gnus-uu-unmark-buffer
    "." gnus-pick-article
+   gnus-mouse-2 gnus-pick-pick-article
    "\r" gnus-pick-start-reading))
 
 (defun gnus-pick-make-menu-bar ()
@@ -158,6 +159,12 @@ If ARG, pick the article on that line instead."
 	  (gnus-error 2 "No such line: %s" arg)
 	(goto-char pos))))
   (gnus-summary-mark-as-processable 1))
+
+(defun gnus-mouse-pick-article (e)
+  (interactive "e")
+  (mouse-set-point e)
+  (save-excursion
+    (gnus-summary-mark-as-processable 1)))
 
 (defun gnus-pick-next-page ()
   "Go to the next page.  If at the end of the buffer, start reading articles."
@@ -632,6 +639,7 @@ Two predefined functions are available:
   (when (save-excursion
 	  (set-buffer gnus-summary-buffer)
 	  (and gnus-use-trees
+	       gnus-show-threads
 	       (vectorp (gnus-summary-article-header article))))
     (save-excursion
       (let ((top (save-excursion

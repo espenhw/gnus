@@ -69,6 +69,23 @@ the group.")
 (defvar gnus-sent-message-ids-length 1000
   "The number of sent Message-IDs to save.")
 
+(defvar gnus-crosspost-complaint
+  "Hi,
+
+You posted the article below with the following Newsgroups header:
+
+Newsgroups: %s
+
+The %s group, at least, was an inappropriate recipient
+of this message.  Please trim your Newsgroups header to exclude this
+group before posting in the future.
+
+Thank you.
+"
+  "Format string to be inserted when complaining about crossposts.
+The first %s will be replaced by the Newsgroups header;
+the second with the current group name.")
+
 ;;; Internal variables.
 
 (defvar gnus-message-buffer "*Mail Gnus*")
@@ -580,23 +597,6 @@ The current group name will be inserted at \"%s\".")
 	(insert (format gnus-nastygram-message group))
 	(message-send-and-exit))))
 
-(defvar gnus-crosspost-complaint
-  "Hi,
-
-You posted the article below with the following Newsgroups header:
-
-Newsgroups: %s
-
-The %s group, at least, was an inappropriate recipient
-of this message.  Please trim your Newsgroups header to exclude this
-group before posting in the future.
-
-Thank you.
-"
-  "Format string to be inserted when complaining about crossposts.
-The first %s will be replaced by the Newsgroups header;
-the second with the current group name.")
-
 (defun gnus-summary-mail-crosspost-complaint (n)
   "Send a complaint about crossposting to the current article(s)."
   (interactive "P")
@@ -606,14 +606,19 @@ the second with the current group name.")
       (set-buffer gnus-summary-buffer)
       (gnus-summary-goto-subject article)
       (let ((group (gnus-group-real-name gnus-newsgroup-name))
-	    newsgroups)
+	    newsgroups followup-to)
 	(gnus-summary-select-article)
 	(set-buffer gnus-original-article-buffer)
-	(if (<= (length (message-tokenize-header
-			 (setq newsgroups (mail-fetch-field "newsgroups"))
-			 ", "))
-		1)
-	    (gnus-message 1 "Not a crossposted article")
+	(if (and (<= (length (message-tokenize-header
+			      (setq newsgroups (mail-fetch-field "newsgroups"))
+			      ", "))
+		     1)
+		 (or (not (setq followup-to (mail-fetch-field "followup-to")))
+		     (not (member group (message-tokenize-header
+					 followup-to ", ")))))
+	    (if followup-to
+		(gnus-message 1 "Followup-to restricted")
+	      (gnus-message 1 "Not a crossposted article"))
 	  (set-buffer gnus-summary-buffer)
 	  (gnus-summary-reply-with-original 1)
 	  (set-buffer gnus-message-buffer)

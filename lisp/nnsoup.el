@@ -620,11 +620,6 @@ The SOUP packet file name will be inserted at the %s.")
 	  ;; require one newline at the end.
 	  (or (= (preceding-char) ?\n)
 	      (insert ?\n))
-	  (when (and news
-		     (equal kind "mail")
-		     (or (mail-fetch-field "cc")
-			 (mail-fetch-field "to")))
-	    (message-insert-courtesy-copy))
 	  (let ((case-fold-search t))
 	    ;; Change header-delimiter to be what sendmail expects.
 	    (goto-char (point-min))

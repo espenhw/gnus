@@ -152,6 +152,8 @@ If you want to run a special decoding program like nkf, use this hook.")
     (nconc '((?w (gnus-article-wash-status) ?s))
 	   gnus-summary-mode-line-format-alist))
 
+(defvar gnus-number-of-articles-to-be-saved nil)
+
 ;;; Provide a mapping from `gnus-*' commands to Article commands.
 
 (eval-and-compile
@@ -195,7 +197,7 @@ If you want to run a special decoding program like nkf, use this hook.")
 
 ;;; Saving functions.
 
-(defun gnus-article-save (save-buffer file)
+(defun gnus-article-save (save-buffer file &optional num)
   "Save the currently selected article."
   (unless gnus-save-all-headers
     ;; Remove headers accoring to `gnus-saved-headers'.
@@ -210,59 +212,72 @@ If you want to run a special decoding program like nkf, use this hook.")
       ;; `gnus-original-article-buffer' (or so they think),
       ;; but we bind that variable to our save-buffer.
       (set-buffer gnus-article-buffer)
-      (let ((gnus-original-article-buffer save-buffer))
+      (let* ((gnus-original-article-buffer save-buffer)
+	     (filename
+	      (cond
+	       ((not gnus-prompt-before-saving)
+		'default)
+	       ((eq gnus-prompt-before-saving 'always)
+		nil)
+	       (t file)))
+	     (gnus-number-of-articles-to-be-saved
+	      (when (stringp filename) num))) ; Magic
 	(set-buffer gnus-summary-buffer)
-	(funcall
-	 gnus-default-article-saver
-	 (cond
-	  ((not gnus-prompt-before-saving)
-	   'default)
-	  ((eq gnus-prompt-before-saving 'always)
-	   nil)
-	  (t file)))))))
+	(funcall gnus-default-article-saver filename)))))
 
-(defun gnus-read-save-file-name (prompt default-name)
-  (let* ((split-name (gnus-get-split-value gnus-split-methods))
-	 (file
-	  ;; Let the split methods have their say.
-	  (cond
-	   ;; No split name was found.
-	   ((null split-name)
-	    (read-file-name
-	     (concat prompt " (default "
-		     (file-name-nondirectory default-name) ") ")
-	     (file-name-directory default-name)
-	     default-name))
-	   ;; A single split name was found
-	   ((= 1 (length split-name))
- 	    (let* ((name (car split-name))
- 		   (dir (cond ((file-directory-p name)
- 			       (file-name-as-directory name))
- 			      ((file-exists-p name) name)
- 			      (t gnus-article-save-directory))))
- 	      (read-file-name
- 	       (concat prompt " (default " name ") ")
- 	       dir name)))
-	   ;; A list of splits was found.
-	   (t
-	    (setq split-name (nreverse split-name))
-	    (let (result)
-	      (let ((file-name-history (nconc split-name file-name-history)))
-		(setq result
-		      (read-file-name
-		       (concat prompt " (`M-p' for defaults) ")
-		       gnus-article-save-directory
-		       (car split-name))))
-	      (car (push result file-name-history)))))))
-    ;; Create the directory.
-    (unless (equal (directory-file-name file) file)
-      (make-directory (file-name-directory file) t))
-    ;; If we have read a directory, we append the default file name.
-    (when (file-directory-p file)
-      (setq file (concat (file-name-as-directory file)
-			 (file-name-nondirectory default-name))))
-    ;; Possibly translate some characters.
-    (nnheader-translate-file-chars file)))
+(defun gnus-read-save-file-name (prompt default-name &optional filename)
+  (cond
+   ((eq filename 'default)
+    default-name)
+   (filename filename)
+   (t
+    (let* ((split-name (gnus-get-split-value gnus-split-methods))
+	   (prompt
+	    (format prompt (if (and gnus-number-of-articles-to-be-saved
+				    (> gnus-number-of-articles-to-be-saved 1))
+			       (format "these %d articles"
+				       gnus-number-of-articles-to-be-saved)
+			     "this article")))
+	   (file
+	    ;; Let the split methods have their say.
+	    (cond
+	     ;; No split name was found.
+	     ((null split-name)
+	      (read-file-name
+	       (concat prompt " (default "
+		       (file-name-nondirectory default-name) ") ")
+	       (file-name-directory default-name)
+	       default-name))
+	     ;; A single split name was found
+	     ((= 1 (length split-name))
+	      (let* ((name (car split-name))
+		     (dir (cond ((file-directory-p name)
+				 (file-name-as-directory name))
+				((file-exists-p name) name)
+				(t gnus-article-save-directory))))
+		(read-file-name
+		 (concat prompt " (default " name ") ")
+		 dir name)))
+	     ;; A list of splits was found.
+	     (t
+	      (setq split-name (nreverse split-name))
+	      (let (result)
+		(let ((file-name-history (nconc split-name file-name-history)))
+		  (setq result
+			(read-file-name
+			 (concat prompt " (`M-p' for defaults) ")
+			 gnus-article-save-directory
+			 (car split-name))))
+		(car (push result file-name-history)))))))
+      ;; Create the directory.
+      (unless (equal (directory-file-name file) file)
+	(make-directory (file-name-directory file) t))
+      ;; If we have read a directory, we append the default file name.
+      (when (file-directory-p file)
+	(setq file (concat (file-name-as-directory file)
+			   (file-name-nondirectory default-name))))
+      ;; Possibly translate some characters.
+      (nnheader-translate-file-chars file)))))
 
 (defun gnus-article-archive-name (group)
   "Return the first instance of an \"Archive-name\" in the current buffer."
@@ -280,12 +295,8 @@ Directory to save to is default to `gnus-article-save-directory'."
   (let ((default-name
 	  (funcall gnus-rmail-save-name gnus-newsgroup-name
 		   gnus-current-headers gnus-newsgroup-last-rmail)))
-    (setq filename
-	  (cond ((eq filename 'default)
-		 default-name)
-		(filename filename)
-		(t (gnus-read-save-file-name
-		    "Save in rmail file:" default-name))))
+    (setq filename (gnus-read-save-file-name
+		    "Save %s in rmail file:" default-name filename))
     (make-directory (file-name-directory filename) t)
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
@@ -304,12 +315,8 @@ Directory to save to is default to `gnus-article-save-directory'."
   (let ((default-name
 	  (funcall gnus-mail-save-name gnus-newsgroup-name
 		   gnus-current-headers gnus-newsgroup-last-mail)))
-    (setq filename
-	  (cond ((eq filename 'default)
-		 default-name)
-		(filename filename)
-		(t (gnus-read-save-file-name
-		    "Save in Unix mail file:" default-name))))
+    (setq filename (gnus-read-save-file-name
+		    "Save %s in Unix mail file:" default-name filename))
     (setq filename
 	  (expand-file-name filename
 			    (and default-name
@@ -335,12 +342,8 @@ Directory to save to is default to `gnus-article-save-directory'."
   (let ((default-name
 	  (funcall gnus-file-save-name gnus-newsgroup-name
 		   gnus-current-headers gnus-newsgroup-last-file)))
-    (setq filename
-	  (cond ((eq filename 'default)
-		 default-name)
-		(filename filename)
-		(t (gnus-read-save-file-name
-		    "Save in file:" default-name))))
+    (setq filename (gnus-read-save-file-name
+		    "Save %s in file:" default-name filename))
     (make-directory (file-name-directory filename) t)
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
@@ -359,12 +362,8 @@ The directory to save in defaults to `gnus-article-save-directory'."
   (let ((default-name
 	  (funcall gnus-file-save-name gnus-newsgroup-name
 		   gnus-current-headers gnus-newsgroup-last-file)))
-    (setq filename
-	  (cond ((eq filename 'default)
-		 default-name)
-		(filename filename)
-		(t (gnus-read-save-file-name
-		    "Save body in file:" default-name))))
+    (setq filename (gnus-read-save-file-name
+		    "Save %s body in file:" default-name filename))
     (make-directory (file-name-directory filename) t)
     (gnus-eval-in-buffer-window gnus-original-article-buffer
       (save-excursion
@@ -545,8 +544,8 @@ commands:
 	    (cons (list 'gnus-show-mime " MIME") minor-mode-alist)))
   (use-local-map gnus-article-mode-map)
   (gnus-update-format-specifications nil 'article-mode)
-  (make-local-variable 'page-delimiter)
-  (setq page-delimiter gnus-page-delimiter)
+  (set (make-local-variable 'page-delimiter) gnus-page-delimiter)
+  (gnus-set-default-directory)
   (buffer-disable-undo (current-buffer))
   (setq buffer-read-only t)		;Disable modification
   (run-hooks 'gnus-article-mode-hook))
@@ -1243,6 +1242,7 @@ groups."
   (let ((winconf (current-window-configuration)))
     (set-buffer gnus-article-buffer)
     (gnus-article-edit-mode)
+    (set-text-properties (point-min) (point-max) nil)
     (gnus-configure-windows 'edit-article)
     (setq gnus-article-edit-done-function exit-func)
     (setq gnus-prev-winconf winconf)
@@ -1274,27 +1274,27 @@ groups."
 	(window-start (window-start)))
     (erase-buffer)
     (insert buf)
-  (let ((winconf gnus-prev-winconf))
-    (gnus-article-mode)
-    ;; The cache and backlog have to be flushed somewhat.
-    (when gnus-use-cache
-      (gnus-cache-update-article 	
-       (car gnus-article-current) (cdr gnus-article-current)))
-    (when gnus-keep-backlog
-      (gnus-backlog-remove-article 
-       (car gnus-article-current) (cdr gnus-article-current)))
-    ;; Flush original article as well.
-    (save-excursion
-      (when (get-buffer gnus-original-article-buffer)
-	(set-buffer gnus-original-article-buffer)
-	(setq gnus-original-article nil)))
-    (set-window-configuration winconf)
-    ;; Tippy-toe some to make sure that point remains where it was.
-    (let ((buf (current-buffer)))
-      (set-buffer curbuf)
-      (set-window-start (get-buffer-window (current-buffer)) window-start)
-      (goto-char p)
-      (set-buffer buf)))))
+    (let ((winconf gnus-prev-winconf))
+      (gnus-article-mode)
+      ;; The cache and backlog have to be flushed somewhat.
+      (when gnus-use-cache
+	(gnus-cache-update-article 	
+	 (car gnus-article-current) (cdr gnus-article-current)))
+      (when gnus-keep-backlog
+	(gnus-backlog-remove-article 
+	 (car gnus-article-current) (cdr gnus-article-current)))
+      ;; Flush original article as well.
+      (save-excursion
+	(when (get-buffer gnus-original-article-buffer)
+	  (set-buffer gnus-original-article-buffer)
+	  (setq gnus-original-article nil)))
+      (set-window-configuration winconf)
+      ;; Tippy-toe some to make sure that point remains where it was.
+      (let ((buf (current-buffer)))
+	(set-buffer curbuf)
+	(set-window-start (get-buffer-window (current-buffer)) window-start)
+	(goto-char p)
+	(set-buffer buf)))))
       
 (defun gnus-article-edit-full-stops ()
   "Interactively repair spacing at end of sentences."
@@ -1663,7 +1663,7 @@ specified by `gnus-button-alist'."
 
 (defun gnus-button-url (address)
   "Browse ADDRESS."
-  (funcall browse-url-browser-function address browse-url-new-window-p))
+  (funcall browse-url-browser-function address))
 
 ;;; Next/prev buttons in the article buffer.
 

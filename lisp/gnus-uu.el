@@ -283,7 +283,10 @@ The headers will be included in the sequence they are matched.")
  "T" gnus-uu-unmark-thread
  "a" gnus-uu-mark-all
  "b" gnus-uu-mark-buffer
- "S" gnus-uu-mark-sparse)
+ "S" gnus-uu-mark-sparse
+ "k" gnus-summary-kill-process-mark
+ "y" gnus-summary-yank-process-mark
+ "w" gnus-summary-save-process-mark)
 
 (gnus-define-keys 
  (gnus-uu-extract-map "X" gnus-summary-mode-map)

@@ -482,7 +482,7 @@
 (defun nnmbox-read-mbox ()
   (nnmail-activate 'nnmbox)
   (if (not (file-exists-p nnmbox-mbox-file))
-      (write-region 1 1 nnmbox-mbox-file t 'nomesg))
+      (nnmail-write-region 1 1 nnmbox-mbox-file t 'nomesg))
   (if (and nnmbox-mbox-buffer
 	   (buffer-name nnmbox-mbox-buffer)
 	   (save-excursion

@@ -449,6 +449,7 @@ automatically when it is selected.")
 
 (defvar gnus-original-article nil)
 (defvar gnus-article-internal-prepare-hook nil)
+(defvar gnus-newsgroup-process-stack nil)
 
 (defvar gnus-thread-indent-array nil)
 (defvar gnus-thread-indent-array-level gnus-thread-indent-level)
@@ -638,7 +639,7 @@ variable (string, integer, character, etc).")
     (gnus-summary-mark-below . global)
     gnus-newsgroup-active gnus-scores-exclude-files
     gnus-newsgroup-history gnus-newsgroup-ancient
-    gnus-newsgroup-sparse
+    gnus-newsgroup-sparse gnus-newsgroup-process-stack
     (gnus-newsgroup-adaptive . gnus-use-adaptive-scoring)
     gnus-newsgroup-adaptive-score-file (gnus-reffed-article-number . -1)
     (gnus-newsgroup-expunged-tally . 0)
@@ -1392,7 +1393,12 @@ increase the score of each group you read."
 	 ["Mark buffer" gnus-uu-mark-buffer t]
 	 ["Mark sparse" gnus-uu-mark-sparse t]
 	 ["Mark thread" gnus-uu-mark-thread t]
-	 ["Unmark thread" gnus-uu-unmark-thread t]))
+	 ["Unmark thread" gnus-uu-unmark-thread t]
+	 ("Process Mark Sets"
+	  ["Kill" gnus-summary-kill-process-mark t]
+	  ["Yank" gnus-summary-yank-process-mark
+	   gnus-newsgroup-process-stack]
+	  ["Save" gnus-summary-save-process-mark t])))
        ("Scroll article"
 	["Page forward" gnus-summary-next-page t]
 	["Page backward" gnus-summary-prev-page t]
@@ -1573,6 +1579,7 @@ The following commands are available:
   (setq selective-display t)
   (setq selective-display-ellipses t)	;Display `...'
   (setq buffer-display-table gnus-summary-display-table)
+  (gnus-set-default-directory)
   (setq gnus-newsgroup-name group)
   (make-local-variable 'gnus-summary-line-format)
   (make-local-variable 'gnus-summary-line-format-spec)
@@ -3955,6 +3962,8 @@ This is meant to be called in `gnus-article-internal-prepare-hook'."
     ;; Report back a success?
     (and header (mail-header-number header))))
 
+;;; Process/prefix in the summary buffer
+
 (defun gnus-summary-work-articles (n)
   "Return a list of articles to be worked upon.	 The prefix argument,
 the list of process marked articles, and the current article will be
@@ -3991,10 +4000,40 @@ taken into consideration."
 	(nreverse articles))))
    (gnus-newsgroup-processable
     ;; There are process-marked articles present.
+    ;; Save current state.
+    (gnus-summary-save-process-mark)
+    ;; Return the list.
     (reverse gnus-newsgroup-processable))
    (t
     ;; Just return the current article.
     (list (gnus-summary-article-number)))))
+
+(defun gnus-summary-save-process-mark ()
+  "Push the current set of process marked articles on the stack."
+  (interactive)
+  (push (copy-sequence gnus-newsgroup-processable)
+	gnus-newsgroup-process-stack))
+
+(defun gnus-summary-kill-process-mark ()
+  "Push the current set of process marked articles on the stack and unmark."
+  (interactive)
+  (gnus-summary-save-process-mark)
+  (gnus-summary-unmark-all-processable))
+
+(defun gnus-summary-yank-process-mark ()
+  "Pop the last process mark state off the stack and restore it."
+  (interactive)
+  (unless gnus-newsgroup-process-stack
+    (error "Empty mark stack"))
+  (gnus-summary-process-mark-set (pop gnus-newsgroup-process-stack)))
+
+(defun gnus-summary-process-mark-set (set)
+  "Make SET into the current process marked articles."
+  (gnus-summary-unmark-all-processable)
+  (while set
+    (gnus-summary-set-process-mark (pop set))))
+
+;;; Searching and stuff
 
 (defun gnus-summary-search-group (&optional backward use-level)
   "Search for next unread newsgroup.
@@ -7362,10 +7401,11 @@ save those articles instead.
 The variable `gnus-default-article-saver' specifies the saver function."
   (interactive "P")
   (gnus-set-global-variables)
-  (let ((articles (gnus-summary-work-articles n))
-	(save-buffer (save-excursion 
-		       (nnheader-set-temp-buffer " *Gnus Save*")))
-	header article file)
+  (let* ((articles (gnus-summary-work-articles n))
+	 (save-buffer (save-excursion 
+			(nnheader-set-temp-buffer " *Gnus Save*")))
+	 (num (length articles))
+	 header article file)
     (while articles
       (setq header (gnus-summary-article-header
 		    (setq article (pop articles))))
@@ -7381,7 +7421,7 @@ The variable `gnus-default-article-saver' specifies the saver function."
 	  (set-buffer save-buffer)
 	  (erase-buffer)
 	  (insert-buffer-substring gnus-original-article-buffer))
-	(setq file (gnus-article-save save-buffer file))
+	(setq file (gnus-article-save save-buffer file num))
 	(gnus-summary-remove-process-mark article)
 	(unless not-saved
 	  (gnus-summary-set-saved-mark article))))

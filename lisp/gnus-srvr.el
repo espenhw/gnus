@@ -121,9 +121,9 @@ with some simple extensions.")
    "e" gnus-server-edit-server
 
    "O" gnus-server-open-server
-   "M-o" gnus-server-open-all-servers
+   "\M-o" gnus-server-open-all-servers
    "C" gnus-server-close-server
-   "M-c" gnus-server-close-all-servers
+   "\M-c" gnus-server-close-all-servers
    "D" gnus-server-deny-server
    "R" gnus-server-remove-denials
 
@@ -148,7 +148,7 @@ The following commands are available:
   (gnus-simplify-mode-line)
   (setq major-mode 'gnus-server-mode)
   (setq mode-name "Server")
-					;  (gnus-group-set-mode-line)
+  (gnus-set-default-directory)
   (setq mode-line-process nil)
   (use-local-map gnus-server-mode-map)
   (buffer-disable-undo (current-buffer))
@@ -602,6 +602,7 @@ buffer.
   (use-local-map gnus-browse-mode-map)
   (buffer-disable-undo (current-buffer))
   (setq truncate-lines t)
+  (gnus-set-default-directory)
   (setq buffer-read-only t)
   (run-hooks 'gnus-browse-mode-hook))
 

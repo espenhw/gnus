@@ -764,12 +764,12 @@ If HIDE, hide the text instead."
 
 (defvar gnus-xmas-modeline-left-extent 
   (let ((ext (copy-extent modeline-buffer-id-left-extent)))
-    (set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
+    ;(set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
     ext))
       
 (defvar gnus-xmas-modeline-right-extent 
   (let ((ext (copy-extent modeline-buffer-id-right-extent)))
-    (set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
+    ;(set-extent-property ext 'pointer gnus-xmas-pointer-glyph)
     ext))
 
 (defvar gnus-xmas-modeline-glyph

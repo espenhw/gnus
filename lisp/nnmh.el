@@ -304,7 +304,7 @@
     (nnmh-possibly-create-directory group)
     (condition-case ()
 	(progn
-	  (write-region 
+	  (nnmail-write-region 
 	   (point-min) (point-max)
 	   (concat nnmh-current-directory (int-to-string article))
 	   nil (if (nnheader-be-verbose 5) nil 'nomesg))
@@ -430,7 +430,7 @@
 	      ;; It was already saved, so we just make a hard link.
 	      (funcall nnmail-crosspost-link-function first file t)
 	    ;; Save the article.
-	    (write-region (point-min) (point-max) file nil nil)
+	    (nnmail-write-region (point-min) (point-max) file nil nil)
 	    (setq first file)))
 	(setq ga (cdr ga))))
     group-art))
@@ -514,7 +514,7 @@
       (insert ";; Gnus article active file for " group "\n\n")
       (insert "(setq nnmh-newsgroup-articles '")
       (insert (prin1-to-string articles) ")\n")
-      (write-region (point-min) (point-max) nnmh-file nil 'nomesg)
+      (nnmail-write-region (point-min) (point-max) nnmh-file nil 'nomesg)
       (kill-buffer (current-buffer)))))
 
 (defun nnmh-deletable-article-p (group article)

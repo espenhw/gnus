@@ -193,6 +193,9 @@ If nil, message won't autosave.")
 (defvar message-ignored-cited-headers "."
   "Delete these headers from the messages you yank.")
 
+(defvar message-cancel-message "I am canceling my own article."
+  "Message to be inserted in the cancel message.")
+
 ;; Useful to set in site-init.el
 ;;;###autoload
 (defvar message-send-mail-function 'message-send-mail-with-sendmail
@@ -527,7 +530,7 @@ The cdr of ech entry is a function for applying the face to a region.")
   (let ((regexp (format "[%s]+" (or separator ",")))
 	(beg 1)
 	(first t)
-	quoted elems)
+	quoted elems paren)
     (save-excursion
       (message-set-work-buffer)
       (insert header)
@@ -539,11 +542,18 @@ The cdr of ech entry is a function for applying the face to a region.")
 	(cond ((and (> (point) beg)
 		    (or (eobp)
 			(and (looking-at regexp)
-			     (not quoted))))
+			     (not quoted)
+			     (not paren))))
 	       (push (buffer-substring beg (point)) elems)
 	       (setq beg (match-end 0)))
 	      ((= (following-char) ?\")
-	       (setq quoted (not quoted)))))
+	       (setq quoted (not quoted)))
+	      ((and (= (following-char) ?\()
+		    (not quoted))
+	       (setq paren t))
+	      ((and (= (following-char) ?\))
+		    (not quoted))
+	       (setq paren nil))))
       (nreverse elems))))
 
 (defun message-fetch-field (header)
@@ -2680,7 +2690,7 @@ responses here are directed to other newsgroups."))
 		    (concat "Distribution: " distribution "\n")
 		  "")
 		mail-header-separator "\n"
-		"This is a cancel message from " from ".\n")
+		message-cancel-message)
 	(message "Canceling your article...")
 	(let ((message-syntax-checks 'dont-check-for-anything-just-trust-me))
 	  (funcall message-send-news-function))
@@ -2748,7 +2758,8 @@ header line with the old Message-ID."
 Optional NEWS will use news to forward instead of mail."
   (interactive "P")
   (let ((cur (current-buffer))
-	(subject (message-make-forward-subject)))
+	(subject (message-make-forward-subject))
+	art-beg)
     (if news (message-news nil subject) (message-mail nil subject))
     ;; Put point where we want it before inserting the forwarded
     ;; message. 
@@ -2762,13 +2773,13 @@ Optional NEWS will use news to forward instead of mail."
     (narrow-to-region (point) (point))
     ;; Insert the separators and the forwarded buffer.
     (insert message-forward-start-separator)
+    (setq art-beg (point))
     (insert-buffer-substring cur)
     (goto-char (point-max))
     (insert message-forward-end-separator)
     (set-text-properties (point-min) (point-max) nil)
     ;; Remove all unwanted headers.
-    (goto-char (point-min))
-    (forward-line 1)
+    (goto-char art-beg)
     (narrow-to-region (point) (if (search-forward "\n\n" nil t)
 				  (1- (point))
 				(point)))

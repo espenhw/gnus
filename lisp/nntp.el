@@ -236,6 +236,79 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 	(copy-to-buffer nntp-server-buffer (point-min) (point-max))
 	'headers))))
 
+(deffoo nntp-retrieve-groups (groups &optional server)
+  "Retrieve group info on GROUPS."
+  (nntp-possibly-change-group nil server)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    ;; The first time this is run, this variable is `try'.  So we
+    ;; try.   
+    (when (eq nntp-server-list-active-group 'try)
+      (nntp-try-list-active (car groups)))
+    (erase-buffer)
+    (let ((count 0)
+	  (received 0)
+	  (last-point (point-min))
+	  (command (if nntp-server-list-active-group "LIST ACTIVE" "GROUP")))
+      (while groups
+	;; Send the command to the server.
+	(nntp-send-command nil command (car groups))
+	(setq groups (cdr groups))
+	(setq count (1+ count))
+	;; Every 400 requests we have to read the stream in
+	;; order to avoid deadlocks.
+	(when (or (null groups)		;All requests have been sent.
+		  (zerop (% count nntp-maximum-request)))
+	  (nntp-accept-response)
+	  (while (progn
+		   (goto-char last-point)
+		   ;; Count replies.
+		   (while (re-search-forward "^[0-9]" nil t)
+		     (setq received (1+ received)))
+		   (setq last-point (point))
+		   (< received count))
+	    (nntp-accept-response))))
+
+      ;; Wait for the reply from the final command.
+      (when nntp-server-list-active-group
+	(goto-char (point-max))
+	(re-search-backward "^[0-9]" nil t)
+	(when (looking-at "^[23]")
+	  (while (progn
+		   (goto-char (- (point-max) 3))
+		   (not (looking-at "^\\.\r?\n")))
+	    (nntp-accept-response))))
+
+      ;; Now all replies are received. We remove CRs.
+      (goto-char (point-min))
+      (while (search-forward "\r" nil t)
+	(replace-match "" t t))
+
+      (if (not nntp-server-list-active-group)
+	  'group
+	;; We have read active entries, so we just delete the
+	;; superfluos gunk.
+	(goto-char (point-min))
+	(while (re-search-forward "^[.2-5]" nil t)
+	  (delete-region (match-beginning 0) 
+			 (progn (forward-line 1) (point))))
+	'active))))
+
+ (defun nntp-try-list-active (group)
+  (nntp-list-active-group group)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (goto-char (point-min))
+    (cond ((looking-at "5[0-9]+")
+	   (setq nntp-server-list-active-group nil))
+	  (t
+	   (setq nntp-server-list-active-group t)))))
+
+(deffoo nntp-list-active-group (group &optional server)
+  "Return the active info on GROUP (which can be a regexp."
+  (nntp-possibly-change-group group server)
+  (nntp-send-command "^.*\r?\n" "LIST ACTIVE" group))
+
 (deffoo nntp-request-article (article &optional group server buffer command)
   (nntp-possibly-change-group group server)
   (when (nntp-send-command-and-decode
@@ -312,16 +385,18 @@ server there that you can connect to. See also `nntp-open-connection-function'")
 
 (deffoo nntp-request-newgroups (date &optional server)
   (nntp-possibly-change-group nil server)
-  (let* ((date (timezone-parse-date date))
-	 (time-string
-	  (format "%s%02d%02d %s%s%s"
-		  (substring (aref date 0) 2) (string-to-int (aref date 1)) 
-		  (string-to-int (aref date 2)) (substring (aref date 3) 0 2)
-		  (substring 
-		   (aref date 3) 3 5) (substring (aref date 3) 6 8))))
-    (prog1
-	(nntp-send-command "^\\.\r?\n" "NEWGROUPS" time-string)
-      (nntp-decode-text))))
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (let* ((date (timezone-parse-date date))
+	   (time-string
+	    (format "%s%02d%02d %s%s%s"
+		    (substring (aref date 0) 2) (string-to-int (aref date 1)) 
+		    (string-to-int (aref date 2)) (substring (aref date 3) 0 2)
+		    (substring 
+		     (aref date 3) 3 5) (substring (aref date 3) 6 8))))
+      (prog1
+	  (nntp-send-command "^\\.\r?\n" "NEWGROUPS" time-string)
+	(nntp-decode-text)))))
 
 (deffoo nntp-request-post (&optional server)
   (nntp-possibly-change-group nil server)

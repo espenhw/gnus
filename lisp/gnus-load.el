@@ -31,6 +31,9 @@
 (defvar gnus-directory (or (getenv "SAVEDIR") "~/News/")
   "*Directory variable from which all other Gnus file variables are derived.")
 
+(defvar gnus-default-directory nil
+  "*Default directory for all Gnus buffers.")
+
 ;; Site dependent variables.  These variables should be defined in
 ;; paths.el.
 
@@ -353,7 +356,8 @@ slower.")
     ("nnkiboze" post virtual)
     ("nnsoup" post-mail address)
     ("nndraft" post-mail)
-    ("nnfolder" mail respool address))
+    ("nnfolder" mail respool address)
+    ("nngateway" none address prompt-address))
   "An alist of valid select methods.
 The first element of each list lists should be a string with the name
 of the select method.  The other elements may be the category of

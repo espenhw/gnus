@@ -100,7 +100,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
     (lanl-gov-announce
       (article-begin . "^\\\\\\\\\n")
       (head-begin . "^Paper.*:")
-      (head-end   . "^\\\\\\\\\n")
+      (head-end   . "\\(^\\\\\\\\.*\n\\|-----------------\\)")
       (body-begin . "")  
       (body-end   . "-------------------------------------------------")     
       (file-end   . "^Title: Recent Seminal")
@@ -489,7 +489,7 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
  	    (setq subject (concat (match-string 1) subject))
  	    (setq from (concat (match-string 2) " <" e-mail ">"))))
  	))
-    (while (string-match "(\[^)\]*)" from)
+    (while (and from (string-match "(\[^)\]*)" from))
       (setq from (replace-match "" t t from)))
     (insert "From: "  (or from "unknown")
  	    "\nSubject: " (or subject "(no subject)") "\n")))
@@ -526,8 +526,8 @@ One of `mbox', `babyl', `digest', `news', `rnews', `mmdf', `forward',
 	       (funcall nndoc-head-begin-function))
 	      (nndoc-head-begin 
 	       (nndoc-search nndoc-head-begin)))
- 	(if (and nndoc-file-end
-		 (looking-at nndoc-file-end))
+ 	(if (or (>= (point) (point-max)) (and nndoc-file-end
+		 (looking-at nndoc-file-end)))
 	    (goto-char (point-max))
 	  (setq head-begin (point))
 	  (nndoc-search (or nndoc-head-end "^$"))

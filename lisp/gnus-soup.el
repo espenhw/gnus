@@ -545,7 +545,9 @@ Return whether the unpacking was successful."
 		(gnus-message 5 "Sending news message to %s..."
 			      (mail-fetch-field "newsgroups"))
 		(sit-for 1)
-		(funcall message-send-news-function))
+		(let ((message-syntax-checks
+		       'dont-check-for-anything-just-trust-me))
+		  (funcall message-send-news-function)))
 	       ((string= (gnus-soup-reply-kind (car replies)) "mail")
 		(gnus-message 5 "Sending mail to %s..."
 			 (mail-fetch-field "to"))

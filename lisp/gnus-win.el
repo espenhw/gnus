@@ -196,42 +196,54 @@ buffer configuration.")
 	(error nil)))
     (pop gnus-created-frames)))
 
+(defun gnus-window-configuration-element (list)
+  (while (and list
+	      (not (assq (car list) gnus-window-configuration)))
+    (pop list))
+  (cadr (assq (car list) gnus-window-configuration)))
+
 (defun gnus-windows-old-to-new (setting)
   ;; First we take care of the really, really old Gnus 3 actions.
   (when (symbolp setting)
     (setq setting
 	  ;; Take care of ooold GNUS 3.x values.
 	  (cond ((eq setting 'SelectArticle) 'article)
-		((memq setting '(SelectSubject ExpandSubject)) 'summary)
-		((memq setting '(SelectNewsgroup ExitNewsgroup)) 'group)
+		((memq setting '(SelectNewsgroup SelectSubject ExpandSubject))
+		 'summary)
+		((memq setting '(ExitNewsgroup)) 'group)
 		(t setting))))
   (if (or (listp setting)
 	  (not (and gnus-window-configuration
 		    (memq setting '(group summary article)))))
       setting
-    (let* ((setting (if (eq setting 'group)
-			(if (assq 'newsgroup gnus-window-configuration)
-			    'newsgroup
-			  'newsgroups) setting))
-	   (elem (cadr (assq setting gnus-window-configuration)))
+    (let* ((elem
+	    (cond 
+	     ((eq setting 'group)
+	      (gnus-window-configuration-element
+	       '(group newsgroups ExitNewsgroup)))
+	     ((eq setting 'summary)
+	      (gnus-window-configuration-element
+	       '(summary SelectNewsgroup SelectSubject ExpandSubject)))
+	     ((eq setting 'article)
+	      (gnus-window-configuration-element
+	       '(article SelectArticle)))))
 	   (total (apply '+ elem))
 	   (types '(group summary article))
 	   (pbuf (if (eq setting 'newsgroups) 'group 'summary))
 	   (i 0)
-	   perc
-	   out)
+	   perc out)
       (while (< i 3)
 	(or (not (numberp (nth i elem)))
 	    (zerop (nth i elem))
 	    (progn
 	      (setq perc (if (= i 2)
 			     1.0
-			   (/ (float (nth 0 elem)) total)))
-	      (setq out (cons (if (eq pbuf (nth i types))
-				  (list (nth i types) perc 'point)
-				(list (nth i types) perc))
-			      out))))
-	(setq i (1+ i)))
+			   (/ (float (nth i elem)) total)))
+	      (push (if (eq pbuf (nth i types))
+			(list (nth i types) perc 'point)
+		      (list (nth i types) perc))
+		    out)))
+	(incf i))
       `(vertical 1.0 ,@(nreverse out)))))
 
 ;;;###autoload

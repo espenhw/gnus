@@ -521,24 +521,21 @@ time saver for large mailboxes.")
 	      (setq nnfolder-buffer-alist (delq inf nnfolder-buffer-alist))
 	      (setq inf nil)))
       
-	(if inf
-	    ()
+	(unless inf
 	  (save-excursion
 	    (setq file (nnfolder-group-pathname group))
-	    (if (file-directory-p (file-truename file))
-		()
+	    (unless (file-directory-p (file-truename file))
 	      (unless (file-exists-p file)
 		(unless (file-exists-p (file-name-directory file))
 		  (make-directory (file-name-directory file) t))
-		(write-region 1 1 file t 'nomesg))
+		(nnmail-write-region 1 1 file t 'nomesg))
 	      (setq nnfolder-current-buffer
 		    (nnfolder-read-folder file scanning))
-	      (if nnfolder-current-buffer 
-		  (progn
-		    (set-buffer nnfolder-current-buffer)
-		    (setq nnfolder-buffer-alist 
-			  (cons (list group nnfolder-current-buffer)
-				nnfolder-buffer-alist)))))))))
+	      (when nnfolder-current-buffer 
+		(set-buffer nnfolder-current-buffer)
+		(setq nnfolder-buffer-alist 
+		      (cons (list group nnfolder-current-buffer)
+			    nnfolder-buffer-alist))))))))
     (setq nnfolder-current-group group)))
 
 (defun nnfolder-save-mail (&optional group)
@@ -755,15 +752,15 @@ time saver for large mailboxes.")
   (interactive)
   (nnmail-activate 'nnfolder)
   (let ((files (directory-files nnfolder-directory))
-	file)
+        file)
     (while (setq file (pop files))
       (when (and (not (backup-file-name-p file))
-		 (nnheader-mail-file-mbox-p file))
-	(nnheader-message 5 "Adding group %s..." file)
-	(push (list file (cons 1 0)) nnfolder-group-alist)
-	(nnfolder-possibly-change-group file)
-;;	(nnfolder-read-folder file)
-	(nnfolder-close-group file))
+                 (nnheader-mail-file-mbox-p
+		  (concat nnfolder-directory file)))
+        (nnheader-message 5 "Adding group %s..." file)
+        (push (list file (cons 1 0)) nnfolder-group-alist)
+        (nnfolder-possibly-change-group file)
+        (nnfolder-close-group file))
       (message ""))))
 
 (defun nnfolder-group-pathname (group)

@@ -311,6 +311,7 @@ the program.
 @end menu
 
 
+
 @node Starting Up
 @chapter Starting Gnus
 @cindex starting up
@@ -735,7 +736,10 @@ will also means that Gnus has no record of what groups are new or old,
 so the automatic new groups subscription methods become meaningless.
 You should always set @code{gnus-check-new-newsgroups} to @code{nil} or
 @code{ask-server} if you set this variable to @code{nil} (@pxref{New
-Groups}).
+Groups}).  This variable can also be a regular expression.  If that's
+the case, remove all groups that do not match this regexp before
+saving.  This can be useful in certain obscure situations that involve
+several servers where not all servers support @code{ask-server}.
 
 @vindex gnus-startup-file
 The @code{gnus-startup-file} variable says where the startup files are.
@@ -1100,6 +1104,9 @@ The level of the group.
 The score of the group.
 @item ticked 
 The number of ticked articles in the group.
+@item total
+The total number of articles in the group.  Or rather, MAX-NUMBER minus
+MIN-NUMBER.
 @item topic
 When using the topic minor mode, this variable is bound to the current
 topic being inserted.
@@ -1594,8 +1601,8 @@ Enter a buffer where you can edit the group info
 @item G d
 @kindex G d (Group)
 @findex gnus-group-make-directory-group
-Make a directory group.  You will be prompted for a directory name
-(@code{gnus-group-make-directory-group}).  
+Make a directory group (@pxref{Directory Groups}).  You will be prompted
+for a directory name (@code{gnus-group-make-directory-group}).
 
 @item G h 
 @kindex G h (Group)
@@ -1625,6 +1632,7 @@ strings to match on headers (@code{gnus-group-make-kiboze-group}).
 @findex gnus-group-enter-directory
 Read an arbitrary directory as if with were a newsgroup with the
 @code{nneething} backend (@code{gnus-group-enter-directory}).
+@xref{Anything Groups}. 
 
 @item G f
 @kindex G f (Group)
@@ -1636,7 +1644,7 @@ command, you will be prompted for a file name and a file type.
 Currently supported types are @code{babyl}, @code{mbox}, @code{digest},
 @code{mmdf}, @code{news}, @code{rnews}, @code{clari-briefs}, and
 @code{forward}.  If you run this command without a prefix, Gnus will
-guess at the file type.
+guess at the file type.  @xref{Document Groups}.
 
 @item G DEL
 @kindex G DEL (Group)
@@ -1651,7 +1659,7 @@ absolutely sure of what you are doing.
 @kindex G V (Group)
 @findex gnus-group-make-empty-virtual
 Make a new, fresh, empty @code{nnvirtual} group
-(@code{gnus-group-make-empty-virtual}).
+(@code{gnus-group-make-empty-virtual}).  @xref{Virtual Groups}.
 
 @item G v
 @kindex G v (Group)
@@ -1922,6 +1930,10 @@ include:
 @item gnus-group-sort-by-alphabet
 @findex gnus-group-sort-by-alphabet
 Sort the group names alphabetically.  This is the default.
+
+@item gnus-group-sort-by-real-name
+@findex gnus-group-sort-by-real-name
+Sort the group alphabetically on the real (unprefixed) group names.
 
 @item gnus-group-sort-by-level
 @findex gnus-group-sort-by-level
@@ -3763,6 +3775,25 @@ Mark all articles in series order (@code{gnus-uu-mark-series}).
 @findex gnus-uu-mark-buffer
 Mark all articles in the buffer in the order they appear
 (@code{gnus-uu-mark-buffer}). 
+
+@item M P k
+@kindex M P k (Summary)
+@findex gnus-summary-kill-process-mark
+Push the current process mark set onto the stack and unmark all articles
+(@code{gnus-summary-kill-process-mark}).
+
+@item M P y
+@kindex M P y (Summary)
+@findex gnus-summary-yank-process-mark
+Pop the previous process mark set from the stack and restore it
+(@code{gnus-summary-yank-process-mark}).
+
+@item M P w
+@kindex M P w (Summary)
+@findex gnus-summary-save-process-mark
+Push the current process mark set onto the stack
+(@code{gnus-summary-save-process-mark}).
+
 @end table
 
 
@@ -6387,6 +6418,13 @@ mechanism is quite likely to be somewhat inefficient, but not overly
 so.  It's certainly preferrable to reading the same articles more than
 once.
 
+Duplicate suppression is not a very subtle instrument.  It's more like a
+sledge hammer than anything else.  It works in a very simple
+fashion---if you have marked an article as read, it adds this Message-ID
+to a cache.  The next time it sees this Message-ID, it will mark the
+article as read the the @samp{M} mark.  It doesn't care what group it
+saw the article in.
+
 @table @code
 @item gnus-suppress-duplicates
 @vindex gnus-suppress-duplicates
@@ -7987,8 +8025,16 @@ directory.  The default is @samp{movemail}.
 @cindex incoming mail files
 @cindex deleting incoming files
 If non-@code{nil}, the mail backends will delete the temporary incoming
-file after splitting mail into the proper groups.  This is @code{t} by
+file after splitting mail into the proper groups.  This is @code{nil} by
 default for reasons of security.
+
+Since Red Gnus is an alpha release, it is to be expected to lose mail.
+(No Gnus release since (ding) Gnus 0.10 (or something like that) have
+lost mail, I think, but that's not the point.)  By not deleting the
+Incoming* files, one can be sure to not lose mail -- if Gnus totally
+whacks out, one can always recover what was lost.
+
+Delete the @file{Incoming*} files at will.
 
 @item nnmail-use-long-file-names
 @vindex nnmail-use-long-file-names
@@ -8601,10 +8647,11 @@ below allow Gnus to view directories and files as if they were
 newsgroups.
 
 @menu
-* Directory Groups::   You can read a directory as if it was a newsgroup.
-* Anything Groups::    Dired?  Who needs dired?
-* Document Groups::    Single files can be the basis of a group.
-* SOUP::               Reading @sc{SOUP} packets ``offline''.
+* Directory Groups::      You can read a directory as if it was a newsgroup.
+* Anything Groups::       Dired?  Who needs dired?
+* Document Groups::       Single files can be the basis of a group.
+* SOUP::                  Reading @sc{SOUP} packets ``offline''.
+* Mail-To-News Gateways:: Posting articles via mail-to-news gateways.
 @end menu
 
 
@@ -8757,11 +8804,12 @@ If you have some old archived articles that you want to insert into your
 new & spiffy Gnus mail backend, @code{nndoc} can probably help you with
 that.  Say you have an old @file{RMAIL} file with mail that you now want
 to split into your new @code{nnml} groups.  You look at that file using
-@code{nndoc}, set the process mark on all the articles in the buffer
-(@kbd{M P b}, for instance), and then re-spool (@kbd{B r}) using
-@code{nnml}.  If all goes well, all the mail in the @file{RMAIL} file is
-now also stored in lots of @code{nnml} directories, and you can delete
-that pesky @file{RMAIL} file.  If you have the guts!  
+@code{nndoc} (using the @kbd{G f} command in the group buffer
+(@pxref{Foreign Groups})), set the process mark on all the articles in
+the buffer (@kbd{M P b}, for instance), and then re-spool (@kbd{B r})
+using @code{nnml}.  If all goes well, all the mail in the @file{RMAIL}
+file is now also stored in lots of @code{nnml} directories, and you can
+delete that pesky @file{RMAIL} file.  If you have the guts!
 
 Virtual server variables:
 
@@ -9148,6 +9196,57 @@ In specific, this is what it does:
 And that's it, really.  If you only want news to go into the @sc{soup}
 system you just use the first line.  If you only want mail to be
 @sc{soup}ed you use the second.
+
+
+@node Mail-To-News Gateways
+@subsection Mail-To-News Gateways
+@cindex mail-to-news gateways
+@cindex gateways
+
+If your local @code{nntp} server doesn't allow posting, for some reason
+or other, you can post using one of the numerous mail-to-news gateways.
+The @code{nngateway} backend provides the interface.
+
+Note that you can't read anything from this backend---it can only be
+used to post with.
+
+Server variables:
+
+@table @code
+@item nngateway-address 
+@vindex nngateway-address 
+This is the address of the mail-to-news gateway.
+
+@item nngateway-header-transformation
+@vindex nngateway-header-transformation
+News headers have often have to be transformed in some odd way or other
+for the mail-to-news gateway to accept it.  This variable says what 
+transformation should be called, and defaults to
+@code{nngateway-simple-header-transformation}.  The function is called
+narrowed to the headers to be transformed and with one parameter---the
+gateway address.
+
+This default function just inserts a new @code{To} header based on the
+@code{Newsgroups} header and the gateway address---an article with this
+@code{Newsgroups} header:
+
+@example
+Newsgroups: alt.religion.emacs
+@end example
+
+will get this @code{From} header inserted:
+
+@example
+To: alt-religion-emacs@@GATEWAY
+@end example
+
+@end table
+
+So, to use this, simply say something like:
+
+@lisp
+(setq gnus-post-method '(nngateway "GATEWAY.ADDRESS"))
+@end lisp
 
 
 @node Combined Groups
@@ -10145,7 +10244,7 @@ A list.  The elements in this list can be:
 
 @enumerate
 @item 
-@var{(regexp . file-name)}.  If the @var{regexp} matches the group name,
+@var{(regexp file-name)}.  If the @var{regexp} matches the group name,
 the @var{file-name} will will be used as the home score file.
 
 @item 
@@ -10185,9 +10284,9 @@ their own home score files:
 @lisp
 (setq gnus-home-score-file
       ;; All groups that match the regexp "\\.emacs"
-      '("\\.emacs" . "emacs.SCORE")
+      '("\\.emacs" "emacs.SCORE")
       ;; All the comp groups in one score file
-       ("^comp" . "comp.SCORE"))
+       ("^comp" "comp.SCORE"))
 @end lisp
    
 @vindex gnus-home-adapt-file
@@ -10229,6 +10328,28 @@ your own article.
 @vindex message-sent-hook
 These two functions are both primarily meant to be used in hooks like
 @code{message-sent-hook}.  
+
+If you look closely at your own @code{Message-ID}, you'll notice that
+the first two or three characters are always the same.  Here's two of
+mine:  
+
+@example
+<x6u3u47icf.fsf@@eyesore.no>
+<x6sp9o7ibw.fsf@@eyesore.no>
+@end example
+
+So ``my'' ident on this machine is @samp{x6}.  This can be
+exploited---the following rule will raise the score on all followups to
+myself: 
+
+@lisp
+("references" 
+ "<x6[0-9a-z]+\\.fsf@.*eyesore.no>" 1000 nil r)
+@end lisp
+
+Whether it's the first two or first three characters that are ``yours''
+is system-dependent.
+
 
 @node Scoring Tips
 @section Scoring Tips
@@ -10935,6 +11056,11 @@ process mark, just perform the operation on the current article.
 
 Quite simple, really, but it needs to be made clear so that surprises
 are avoided.
+
+Commands that react to the process mark will push the current list of
+process marked articles onto a stack and will then clear all process
+marked articles.  You can restore the previous configuration with the
+@kbd{M P y} command (@pxref{Setting Process Marks}).
 
 @vindex gnus-summary-goto-unread
 One thing that seems to shock & horrify lots of people is that, for
@@ -12015,6 +12141,21 @@ To use moderation mode in these two groups, say:
 
 @table @code
 
+@item gnus-directory
+@vindex gnus-directory
+All Gnus directories will be initialized from this variable, which
+defaults to the @samp{SAVEDIR} environment variable, or @file{~/News/}
+if that variable isn't set.
+
+@item gnus-default-directory
+@vindex gnus-default-directory
+Not related to the above variable at all---this variable says what the
+default directory of all Gnus buffers should be.  If you issue commands
+like @kbd{C-x C-f}, the prompt you'll get starts in the current buffer's
+default directory.  If this variable is @code{nil} (which is the
+default), the default directory will be the default directory of the
+buffer you were in when you started Gnus.
+
 @item gnus-verbose
 @vindex gnus-verbose
 This variable is an integer between zero and ten.  The higher the value,
@@ -13017,6 +13158,7 @@ In the examples and definitions I will refer to the imaginary backend
 @menu
 * Required Backend Functions::        Functions that must be implemented.
 * Optional Backend Functions::        Functions that need not be implemented.
+* Error Messaging::                   How to get messages and report errors.
 * Writing New Backends::              Extending old backends.
 * Hooking New Backends Into Gnus::    What has to be done on the Gnus end.
 @end menu
@@ -13450,10 +13592,38 @@ There should be no data returned.
 @end table
 
 
+@node Error Messaging
+@subsubsection Error Messaging
+
+@findex nnheader-report
+@findex nnheader-get-report
+The backends should use the function @code{nnheader-report} to report
+error conditions---they should not raise errors when they aren't able to
+perform a request.  The first argument to this function is the backend
+symbol, and the rest are interpreted as arguments to @code{format} if
+there are many of them, or just a string if there is one of them.
+This function always returns @code{nil}.
+
+@lisp
+(nnheader-report 'nnchoke "You did something totally bogus")
+
+(nnheader-report 'nnchoke "Could not request group %s" group)
+@end lisp
+
+Gnus, in turn, will call @code{nnheader-get-report} when it gets a
+@code{nil} back from a server, and this function returns the most
+recently reported message for the backend in question.  This function
+takes one argument---the server symbol.
+
+Internally, these function access @var{backend}@code{-status-string}, so
+the @code{nnchoke} backend will have its error message stored in
+@code{nnchoke-status-string}. 
+
+
 @node Writing New Backends
 @subsubsection Writing New Backends
 
-The various backends share many similarities.  @code{nnml} is just like
+Many backends are quite similar.  @code{nnml} is just like
 @code{nnspool}, but it allows you to edit the articles on the server.
 @code{nnmh} is just like @code{nnml}, but it doesn't use an active file,
 and it doesn't maintain overview databases.  @code{nndir} is just like

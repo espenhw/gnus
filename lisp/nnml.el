@@ -172,11 +172,7 @@ all. This may very well take some time.")
 					     (car group-num) 
 					     nnml-directory)))))))
 	  (setq path (concat gpath (int-to-string (cdr group-num)))))
-      (unless nnml-article-file-alist
-	(setq nnml-article-file-alist
-	      (nnheader-article-to-file-alist nnml-current-directory)))
-      (when (setq file (cdr (assq id nnml-article-file-alist)))
-	(setq path (concat nnml-current-directory file))))
+      (setq path (nnml-article-to-file id)))
     (cond 
      ((not path)
       (nnheader-report 'nnml "No such article: %s" id))
@@ -348,12 +344,13 @@ all. This may very well take some time.")
     (nnml-possibly-create-directory group)
     (let ((chars (nnmail-insert-lines))
 	  (art (concat (int-to-string article) "\t"))
-	  headers)
+	  headers file)
       (when (condition-case ()
 		(progn
-		  (write-region 
+		  (nnmail-write-region 
 		   (point-min) (point-max)
-		   (concat nnml-current-directory (int-to-string article))
+		   (setq file (concat nnml-current-directory
+				      (int-to-string article)))
 		   nil (if (nnheader-be-verbose 5) nil 'nomesg))
 		  t)
 	      (error nil))
@@ -444,8 +441,28 @@ all. This may very well take some time.")
 	(nnmail-save-active nnml-group-alist nnml-active-file)
 	t))))
 
+(deffoo nnml-set-status (article name value &optional group server)
+  (nnml-possibly-change-directory group server)
+  (let ((file (nnml-article-to-file article)))
+    (cond
+     ((not (file-exists-p file))
+      (nnheader-report 'nnml "File %s does not exist" file))
+     (t
+      (nnheader-temp-write file
+	(nnheader-insert-file-contents-literally file)
+	(nnmail-replace-status name value))
+      t))))
+
 
 ;;; Internal functions.
+
+(defun nnml-article-to-file (article)
+  (unless nnml-article-file-alist
+    (setq nnml-article-file-alist
+	  (nnheader-article-to-file-alist nnml-current-directory)))
+  (let (file)
+    (when (setq file (cdr (assq article nnml-article-file-alist)))
+      (concat nnml-current-directory file))))
 
 (defun nnml-deletable-article-p (group article)
   "Say whether ARTICLE in GROUP can be deleted."
@@ -576,8 +593,8 @@ all. This may very well take some time.")
 	      ;; It was already saved, so we just make a hard link.
 	      (funcall nnmail-crosspost-link-function first file t)
 	    ;; Save the article.
-	    (write-region (point-min) (point-max) file nil 
-			  (if (nnheader-be-verbose 5) nil 'nomesg))
+	    (nnmail-write-region (point-min) (point-max) file nil 
+				 (if (nnheader-be-verbose 5) nil 'nomesg))
 	    (setq first file)))
 	(setq ga (cdr ga))))
     ;; Generate a nov line for this article. We generate the nov
@@ -666,9 +683,8 @@ all. This may very well take some time.")
     (while nnml-nov-buffer-alist
       (when (buffer-name (cdar nnml-nov-buffer-alist))
 	(set-buffer (cdar nnml-nov-buffer-alist))
-	(and (buffer-modified-p)
-	     (write-region 
-	      1 (point-max) (buffer-file-name) nil 'nomesg))
+	(when (buffer-modified-p)
+	  (nnmail-write-region 1 (point-max) (buffer-file-name) nil 'nomesg))
 	(set-buffer-modified-p nil)
 	(kill-buffer (current-buffer)))
       (setq nnml-nov-buffer-alist (cdr nnml-nov-buffer-alist)))))
@@ -759,8 +775,7 @@ all. This may very well take some time.")
 	(setq files (cdr files)))
       (save-excursion
 	(set-buffer nov-buffer)
-	(write-region 1 (point-max) (expand-file-name nov) nil
-		      'nomesg)
+	(nnmail-write-region 1 (point-max) nov nil 'nomesg)
 	(kill-buffer (current-buffer))))))
 
 (defun nnml-nov-delete-article (group article)

@@ -1,3 +1,23 @@
+Thu Aug 15 17:59:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Followups To Yourself): Addition.
+	(Setting Process Marks): Addition.
+	(Process/Prefix): Addition.
+	(Startup Files): Addition.
+	(Mail-To-News Gateways): New.
+
+Wed Aug 14 15:02:14 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Home Score File): Fix.
+	(Various Various): New.
+
+Tue Aug 13 10:38:47 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus.texi (Error Messaging): New.
+	(Mail Backend Variables): Fix.
+	(Foreign Groups): Added references.
+	(Sorting Groups): Addition.
+
 Sun Aug 11 02:52:37 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
 
 	* gnus.texi (User-Defined Specs): Correction.

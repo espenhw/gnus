@@ -161,7 +161,10 @@ that Gnus has no record of which groups are new and which are old, so
 the automatic new newsgroups subscription methods become meaningless.
 
 You should always set `gnus-check-new-newsgroups' to `ask-server' or
-nil if you set this variable to nil.")
+nil if you set this variable to nil.
+
+This variable can also be a regexp.  In that case, all groups that do
+not match this regexp will be removed before saving the list.")
 
 (defvar gnus-ignored-newsgroups
   (purecopy (mapconcat 'identity
@@ -2076,14 +2079,19 @@ If FORCE is non-nil, the .newsrc file is read."
   (insert ";; to read .newsrc.\n")
   (insert "(setq gnus-newsrc-file-version "
 	  (prin1-to-string gnus-version) ")\n")
-  (let ((variables
-	 (if gnus-save-killed-list gnus-variable-list
-	   ;; Remove the `gnus-killed-list' from the list of variables
-	   ;; to be saved, if required.
-	   (delq 'gnus-killed-list (copy-sequence gnus-variable-list))))
-	;; Peel off the "dummy" group.
-	(gnus-newsrc-alist (cdr gnus-newsrc-alist))
-	variable)
+  (let* ((gnus-killed-list
+	  (if (and gnus-save-killed-list
+		   (stringp gnus-save-killed-list))
+	      (gnus-strip-killed-list)
+	    gnus-killed-list))
+	 (variables
+	  (if gnus-save-killed-list gnus-variable-list
+	    ;; Remove the `gnus-killed-list' from the list of variables
+	    ;; to be saved, if required.
+	    (delq 'gnus-killed-list (copy-sequence gnus-variable-list))))
+	 ;; Peel off the "dummy" group.
+	 (gnus-newsrc-alist (cdr gnus-newsrc-alist))
+	 variable)
     ;; Insert the variables into the file.
     (while variables
       (when (and (boundp (setq variable (pop variables)))
@@ -2091,6 +2099,16 @@ If FORCE is non-nil, the .newsrc file is read."
 	(insert "(setq " (symbol-name variable) " '")
 	(prin1 (symbol-value variable) (current-buffer))
 	(insert ")\n")))))
+
+(defun gnus-strip-killed-list ()
+  "Return the killed list minus the groups that match `gnus-save-killed-list'."
+  (let ((list gnus-killed-list)
+	olist)
+    (while list
+      (when (string-match gnus-save-killed-list)
+	(push (car list) olist))
+      (pop list))
+    (nreverse olist)))
 
 (defun gnus-gnus-to-newsrc-format ()
   ;; Generate and save the .newsrc file.
@@ -2292,6 +2310,11 @@ If FORCE is non-nil, the .newsrc file is read."
   (setq gnus-valid-select-methods
 	(nconc gnus-valid-select-methods
 	       (list (apply 'list name abilities)))))
+
+(defun gnus-set-default-directory ()
+  "Set the default directory in the current buffer to `gnus-default-directory'.
+If this variable is nil, don't do anything."
+  (setq default-directory (or gnus-default-directory default-directory)))
 
 (provide 'gnus-start)
 

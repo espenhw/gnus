@@ -483,7 +483,11 @@ The first string in ARGS can be a format string."
   nil)
 
 (defun nnheader-get-report (backend)
-  (message "%s" (symbol-value (intern (format "%s-status-string" backend)))))
+  "Get the most recent report from BACKEND."
+  (condition-case ()
+      (message "%s" (symbol-value (intern (format "%s-status-string"
+						  backend))))
+    (error (message ""))))
 
 (defun nnheader-insert (format &rest args)
   "Clear the communicaton buffer and insert FORMAT and ARGS into the buffer.

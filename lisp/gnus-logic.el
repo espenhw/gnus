@@ -86,7 +86,8 @@
       (if (not rule)
 	  t				; Empty rule is true.
 	(while (and rule
-		    (gnus-advanced-score-rule (pop rule))))
+		    (gnus-advanced-score-rule (car rule)))
+	  (pop rule))
 	;; If all the rules were true, then `rule' should be nil.
 	(not rule)))
      ;; "Or" rule.

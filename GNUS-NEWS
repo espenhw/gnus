@@ -64,3 +64,7 @@ the native server.
 *** A new command for reading collections of documents
 (nndoc with nnvirtual on top) has been added -- `M-C-d'.
 
+*** Process mark sets can be pushed and popped.
+
+*** A new mail-to-news backend makes it possible to post
+even when the NNTP server doesn't allow posting.

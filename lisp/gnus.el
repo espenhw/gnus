@@ -28,7 +28,7 @@
 
 (eval '(run-hooks 'gnus-load-hook))
 
-(defconst gnus-version-number "0.11"
+(defconst gnus-version-number "0.12"
   "Version number for this version of Gnus.")
 
 (defconst gnus-version (format "Red Gnus v%s" gnus-version-number)
@@ -800,7 +800,7 @@ Allow completion over sensible values."
 		(read-string "Address: ")
 	      "")))
      ((assoc method gnus-server-alist)
-      (cdr (assoc method gnus-server-alist)))
+      method)
      (t
       (list (intern method) "")))))
 

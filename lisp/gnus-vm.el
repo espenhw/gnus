@@ -95,7 +95,7 @@ save those articles instead."
 	  (cond ((eq folder 'default) default-name)
 		(folder folder)
 		(t (gnus-read-save-file-name 
-		    "Save article in VM folder:" default-name))))
+		    "Save %s in VM folder:" default-name))))
     (make-directory (file-name-directory folder) t)
     (set-buffer gnus-original-article-buffer)
     (save-excursion

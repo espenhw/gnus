@@ -85,9 +85,10 @@ Ignored if `gnus-group-use-permanent-levels' is non-nil.")
   "*Function used for sorting the group buffer.
 This function will be called with group info entries as the arguments
 for the groups to be sorted.  Pre-made functions include
-`gnus-group-sort-by-alphabet', `gnus-group-sort-by-unread',
-`gnus-group-sort-by-level', `gnus-group-sort-by-score',
-`gnus-group-sort-by-method', and `gnus-group-sort-by-rank'.
+`gnus-group-sort-by-alphabet', `gnus-group-sort-by-real-name',
+`gnus-group-sort-by-unread', `gnus-group-sort-by-level',
+`gnus-group-sort-by-score', `gnus-group-sort-by-method', and
+`gnus-group-sort-by-rank'.
 
 This variable can also be a list of sorting functions.	In that case,
 the most significant sort function should be the last function in the
@@ -501,8 +502,7 @@ variable.")
 	 (gnus-group-group-name)]
 	["Info" gnus-group-edit-group (gnus-group-group-name)])
        ("Score file"
-	["Flush cache" gnus-score-flush-cache
-	 (or gnus-score-cache gnus-short-name-score-file-cache)])
+	["Flush cache" gnus-score-flush-cache t])
        ("Move"
 	["Next" gnus-group-next-group t]
 	["Previous" gnus-group-prev-group t]
@@ -588,6 +588,7 @@ The following commands are available:
   (buffer-disable-undo (current-buffer))
   (setq truncate-lines t)
   (setq buffer-read-only t)
+  (gnus-set-default-directory)
   (gnus-update-format-specifications nil 'group 'group-mode)
   (gnus-update-group-mark-positions)
   (gnus-make-local-hook 'post-command-hook)
@@ -904,6 +905,8 @@ If REGEXP, only list groups matching REGEXP."
 	 (group (gnus-group-group-name))
 	 (entry (gnus-group-entry group))
 	 (unread (if (numberp (car entry)) (car entry) 0))
+	 (active (gnus-active group))
+	 (total (if active (1+ (- (cdr active) (car active))) 0))
 	 (info (nth 2 entry))
 	 (method (gnus-server-get-method group (gnus-info-method info)))
 	 (marked (gnus-info-marks info))
@@ -1933,6 +1936,11 @@ If REVERSE, sort in reverse order."
   "Sort alphabetically."
   (string< (gnus-info-group info1) (gnus-info-group info2)))
 
+(defun gnus-group-sort-by-real-name (info1 info2)
+  "Sort alphabetically on real (unprefixed) names."
+  (string< (gnus-group-real-name (gnus-info-group info1))
+	   (gnus-group-real-name (gnus-info-group info2))))
+
 (defun gnus-group-sort-by-unread (info1 info2)
   "Sort by number of unread articles."
   (let ((n1 (car (gnus-gethash (gnus-info-group info1) gnus-newsrc-hashtb)))
@@ -2473,7 +2481,7 @@ If N is negative, this group and the N-1 previous groups will be checked."
 	    (gnus-group-update-group group))
 	(if (eq (gnus-server-status (gnus-find-method-for-group group))
 		'denied)
-	    (gnus-error "Server denied access")
+	    (gnus-error 3 "Server denied access")
 	  (gnus-error 3 "%s error: %s" group (gnus-status-message group)))))
     (when beg (goto-char beg))
     (when gnus-goto-next-group-when-activating

@@ -1,3 +1,127 @@
+Sat Aug 17 12:58:28 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus-win.el (gnus-window-configuration-element): New function. 
+	(gnus-windows-old-to-new): Use it.
+	(gnus-windows-old-to-new): Produced bogus results.
+
+	* message.el (message-cancel-message): New variable.
+
+	* gnus-srvr.el (gnus-server-mode-map): Buggy keymap.
+
+	* gnus-group.el (gnus-group-get-new-news-this-group): Illegal
+	gnus-error value.
+
+Fri Aug 16 21:22:12 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nnmail.el (nnmail-replace-status, nnmail-decode-status,
+	nnmail-encode-status): New variables.
+
+	* nnml.el (nnml-article-to-file): New function.
+
+Fri Aug 16 20:26:12 1996  Kurt Swanson  <kurt@dna.lth.se>
+
+	* nnfolder.el (nnfolder-generate-active-file): Test the right
+	files. 
+
+Fri Aug 16 19:30:57 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-salt.el (gnus-possibly-generate-tree): Would bug out on
+	unthreaded buffers.
+
+	* gnus-xmas.el (gnus-xmas-modeline-right-extent): Disabled.
+	(gnus-xmas-modeline-left-extent): Ditto.
+
+	* gnus-group.el (gnus-group-make-menu-bar): Bugged out on
+	undefined variable.
+
+	* gnus.el (gnus-read-method): Return the virtual server name if
+	possible. 
+
+Thu Aug 15 18:15:58 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* nngateway.el: New file.
+
+	* nnoo.el (nnoo-define-skeleton): New macro.
+	(nnoo-define-skeleton-1): New function.
+
+	* gnus-start.el (gnus-strip-killed-list): New function.
+	(gnus-gnus-to-quick-newsrc-format): Use it.
+
+	* gnus-sum.el (gnus-summary-process-mark-set): New function.
+	(gnus-summary-yank-process-mark, gnus-summary-kill-process-mark,
+	gnus-summary-save-process-mark): New commands and keystrokes.
+
+	* nnml.el (nnml-generate-nov-file): Set modes.
+
+	* nnmail.el (nnmail-default-file-modes): New variable.
+	(nnmail-write-region): New function.
+
+	* gnus-score.el (gnus-score-score-files-1): Bind case-fold-search
+	to nil.
+
+Wed Aug 14 21:20:07 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-soup.el (gnus-soup-send-packet): Disable syntax checks.
+
+Wed Aug 14 20:28:09 1996  Fred Johansen  <Fred.Johansen@ifi.ntnu.no>
+
+	* gnus-logic.el (gnus-advanced-score-rule): `and' rules were
+	treated improperly.
+
+Wed Aug 14 15:29:39 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-salt.el (gnus-mouse-pick-article): New command. 
+
+	* gnus-art.el (gnus-button-url): Call with one argument.
+
+	* gnus-start.el (gnus-set-default-directory): New function.
+
+	* gnus-load.el (gnus-default-directory): New variable.
+
+Wed Aug 14 15:03:01 1996  Sudish Joseph  <sudish@mindspring.com>
+
+	* gnus-score.el (gnus-home-score-file): Changed syntax.
+
+Tue Aug 13 22:07:11 1996  Jan Vroonhof  <vroonhof@math.ethz.ch>
+
+	* nndoc.el (nndoc-dissect-buffer): Went into infinite loop if end
+	of file token wasn't properly detected.
+	(nndoc-type-alist): Better end-of-header regexp for
+	lanl.gov preprints
+	(nndoc-article-type): Updated doc string
+
+Mon Aug 12 21:01:25 1996  Sudish Joseph  <sudish@mindspring.com>
+
+	* nntp.el (nntp-request-newgroups): Switch to nntp-server-buffer
+	first.
+
+Tue Aug 13 09:44:46 1996  Lars Magne Ingebrigtsen  <lars@eyesore.no>
+
+	* gnus-group.el (gnus-group-sort-by-real-name): New function.
+
+	* gnus-sum.el (gnus-summary-save-article): Pass on number of
+	articles to be saved.
+
+	* gnus-art.el (gnus-article-edit-article): Remove all text props.
+	(gnus-read-save-file-name): Take an optional defaultish parameter.
+
+	* nntp.el (nntp-retrieve-groups): Saved.
+
+	* message.el (message-forward): Didn't work well with multi-line
+	separators. 
+
+	* gnus-msg.el (gnus-summary-mail-crosspost-complaint): Check
+	wheteher followup-to was restricted.
+
+	* nnsoup.el (nnsoup-store-reply): Would insert double courtesy
+	headers. 
+
+	* gnus-group.el (gnus-group-highlight-line): New `total' number. 
+
+Mon Aug 12 06:25:00 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
+
+	* gnus.el: Red Gnus v0.11 is released.
+
 Mon Aug 12 03:51:57 1996  Lars Magne Ingebrigtsen  <larsi@ifi.uio.no>
 
 	* gnus-async.el (gnus-make-async-article-function): New function.
