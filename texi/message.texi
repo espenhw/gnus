@@ -423,8 +423,9 @@ functions not take any arguments.  Default value is @code{nil}.
 There is a pre-defined function in Gnus that is a good candidate for
 this variable.  @code{gnus-find-subscribed-addresses} is a function
 that returns a list of addresses corresponding to the groups that have
-the @code{subscribed} (@pxref{(gnus)subscribed})
-group parameter set to a non-nil value.  This is how you would do it.
+the @code{subscribed} (@pxref{Group Parameters, ,Group Parameters,
+gnus, The Gnus Manual}) group parameter set to a non-nil value.  This
+is how you would do it.
 
 @lisp
 (setq message-subscribed-address-functions
