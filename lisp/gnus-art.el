@@ -136,7 +136,7 @@ If `gnus-visible-headers' is non-nil, this variable will be ignored."
   :group 'gnus-article-hiding)
 
 (defcustom gnus-visible-headers
-  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^[BGF]?Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From:\\|^X-Sent:"
+  "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^[BGF]?Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Mail-Followup-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From:\\|^X-Sent:"
   "*All headers that do not match this regexp will be hidden.
 This variable can also be a list of regexp of headers to remain visible.
 If this variable is non-nil, `gnus-ignored-headers' will be ignored."

@@ -1,5 +1,7 @@
 2000-11-02  Simon Josefsson  <sj@extundo.com>
 
+	* gnus-art.el (gnus-visible-headers): Add Mail-Followup-To.
+
 	* message.el (message-get-reply-headers): Better handling when
 	Mail-Followup-To is very large.
 	
