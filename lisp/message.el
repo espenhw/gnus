@@ -145,7 +145,7 @@ If the string contains the format spec \"%s\", the Newsgroups
 the article has been posted to will be inserted there.
 If this variable is nil, no such courtesy message will be added."
   :group 'message-sending
-  :type 'string)
+  :type '(radio (const nil) (string :size 0)))
 
 (defcustom message-ignored-bounced-headers
   "^\\(Received\\|Return-Path\\|Delivered-To\\):"

@@ -1238,6 +1238,7 @@ It can also be a list of select methods, as well as the special symbol
 list, Gnus will try all the methods in the list until it finds a match."
   :group 'gnus-server
   :type '(choice (const :tag "default" nil)
+		 (const current)
 		 (const :tag "Google" (nnweb "refer" (nnweb-type google)))
 		 gnus-select-method
 		 (repeat :menu-tag "Try multiple"

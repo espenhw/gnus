@@ -78,7 +78,8 @@ Registry entries are considered empty when they have no groups."
 (defcustom gnus-registry-max-entries nil
   "Maximum number of entries in the registry, nil for unlimited."
   :group 'gnus-registry
-  :type 'integer)
+  :type '(radio (const :format "Unlimited " nil)
+		(integer :format "Maximum number: %v\n" :size 0)))
 
 ;; Function(s) missing in Emacs 20
 (when (memq nil (mapcar 'fboundp '(puthash)))

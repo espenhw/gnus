@@ -1,3 +1,11 @@
+2003-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* gnus-registry.el (gnus-registry-max-entries): Fix customization
+	type.
+	* gnus-score.el (gnus-adaptive-word-length-limit): Ditto.
+	* gnus.el (gnus-refer-article-method): Ditto.
+	* message.el (message-courtesy-message): Ditto.
+
 2003-08-06  Jesper Harder  <harder@ifa.au.dk>
 
 	* gnus-art.el (gnus-header-face-alist): Fix "Newsgroups" entry.
