@@ -2,6 +2,7 @@
 
 	* message.el (message-mode-syntax-table): Move forward.
 	(message-cite-prefix-regexp): Auto detect non word constituents.
+	(message-cite-prefix-regexp): Don't use with-syntax-table.
 
 	* gnus-sum.el (gnus-summary-update-info): Use
 	gnus-list-range-intersection.

@@ -357,18 +357,21 @@ The provided functions are:
 (defcustom message-cite-prefix-regexp
   (if (string-match "[[:digit:]]" "1") ;; support POSIX?
       "\\([ \t]*[-_.[:word:]]+>+\\|[ \t]*[]>»|:}+]\\)+"
-    (with-syntax-table message-mode-syntax-table
-      ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
-      (let ((non-word-constituents
-	     (concat
-	      (if (string-match "\\w" "-")  "" "-")
-	      (if (string-match "\\w" "_")  "" "_")
-	      (if (string-match "\\w" ".")  "" "."))))
-	(if (equal non-word-constituents "")
-	    "\\([ \t]*\\(\\w\\)+>+\\|[ \t]*[]>»|:}+]\\)+"
-	  (concat "\\([ \t]*\\(\\w\\|[" 
-		  non-word-constituents
-		  "]\\)+>+\\|[ \t]*[]>»|:}+]\\)+")))))
+    ;; ?-, ?_ or ?. MUST NOT be in syntax entry w.
+    (let ((old-table (syntax-table))
+	  non-word-constituents)
+      (set-syntax-table message-mode-syntax-table)
+      (setq non-word-constituents
+	    (concat
+	     (if (string-match "\\w" "-")  "" "-")
+	     (if (string-match "\\w" "_")  "" "_")
+	     (if (string-match "\\w" ".")  "" ".")))
+      (set-syntax-table old-table)
+      (if (equal non-word-constituents "")
+	  "\\([ \t]*\\(\\w\\)+>+\\|[ \t]*[]>»|:}+]\\)+"
+	(concat "\\([ \t]*\\(\\w\\|[" 
+		non-word-constituents
+		"]\\)+>+\\|[ \t]*[]>»|:}+]\\)+"))))
   "*Regexp matching the longest possible citation prefix on a line."
   :group 'message-insertion
   :type 'regexp)
