@@ -426,6 +426,14 @@ spamoracle database."
   "Msx" gnus-summary-mark-as-spam
   "\M-d" gnus-summary-mark-as-spam)
 
+(defvar spam-cache-lookups nil
+  "Whether spam.el will try to cache lookups using spam-caches.")
+
+(defvar spam-caches (make-hash-table
+		     :size 10
+		     :test 'equal)
+  "Cache of spam detection entries.")
+
 (defvar spam-old-ham-articles nil
   "List of old ham articles, generated when a group is entered.")
 
@@ -440,6 +448,9 @@ spamoracle database."
   finds ham or spam.")
 
 ;; convenience functions
+(defun spam-clear-cache (symbol)
+  (remhash symbol spam-caches))
+
 (defun spam-xor (a b)
   "Logical exclusive `or'."
   (and (or a b) (not (and a b))))
@@ -914,9 +925,14 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
   (let* ((group gnus-newsgroup-name)
 	 (autodetect (gnus-parameter-spam-autodetect group))
 	 (methods (gnus-parameter-spam-autodetect-methods group))
-	 (first-method (nth 0 methods)))
-  (when (and autodetect
-	     (not (equal first-method 'none)))
+	 (first-method (nth 0 methods))
+	 (articles (if spam-autodetect-recheck-messages
+		       gnus-newsgroup-articles
+		     gnus-newsgroup-unseen))
+	 (spam-cache-lookups (< 2 (length articles))))
+
+    (when (and autodetect
+	       (not (equal first-method 'none)))
     (mapcar
      (lambda (article)
        (let ((id (spam-fetch-field-message-id-fast article))
@@ -942,16 +958,14 @@ See the Info node `(gnus)Fancy Mail Splitting' for more details."
 	       (when (zerop (gnus-registry-group-count id))
 		 (gnus-registry-add-group
 		  id group subject sender))
-
+	       
 	       (spam-log-processing-to-registry
 		id
 		'incoming
 		split-return
 		spam-split-last-successful-check
 		group))))))
-     (if spam-autodetect-recheck-messages
-	 gnus-newsgroup-articles
-       gnus-newsgroup-unseen)))))
+     articles))))
 
 (defvar spam-registration-functions
   ;; first the ham register, second the spam register function
@@ -1270,6 +1284,12 @@ functions")
       (require 'bbdb)
       (require 'bbdb-com)
 
+      ;; when the BBDB changes, we want to clear out our cache
+      (defun spam-clear-cache-BBDB (&rest immaterial)
+	(spam-clear-cache 'spam-use-BBDB))
+
+      (add-hook 'bbdb-change-hook 'spam-clear-cache-BBDB)
+
       (defun spam-enter-ham-BBDB (addresses &optional remove)
 	"Enter an address into the BBDB; implies ham (non-spam) sender"
 	(dolist (from addresses)
@@ -1308,10 +1328,21 @@ functions")
 	(let ((who (nnmail-fetch-field "from"))
 	      (spam-split-group (if spam-split-symbolic-return
 				    'spam
-				  spam-split-group)))
+				  spam-split-group))
+	      bbdb-cache)
+	  
+	  (when spam-cache-lookups
+	    (setq bbdb-cache (gethash 'spam-use-BBDB spam-caches))
+	    (unless bbdb-cache
+	      (setq bbdb-cache (bbdb-hashtable))
+	      (puthash 'spam-use-BBDB bbdb-cache spam-caches)))
+
 	  (when who
 	    (setq who (nth 1 (gnus-extract-address-components who)))
-	    (if (bbdb-search-simple nil who)
+	    (if
+		(if spam-cache-lookups
+		    (bbdb-gethash who bbdb-cache)
+		  (bbdb-search-simple nil who))
 		t
 	      (if spam-use-BBDB-exclusive
 		  spam-split-group
@@ -1319,6 +1350,8 @@ functions")
 
   (file-error (progn
 		(defalias 'bbdb-search-simple 'ignore)
+		(defalias 'bbdb-hashtable 'ignore)
+		(defalias 'bbdb-gethash 'ignore)
 		(defalias 'spam-check-BBDB 'ignore)
 		(defalias 'spam-BBDB-register-routine 'ignore)
 		(defalias 'spam-enter-ham-BBDB 'ignore)
@@ -1810,7 +1843,3 @@ REMOVE not nil, remove the ADDRESSES."
 (provide 'spam)
 
 ;;; spam.el ends here.
-
-(provide 'spam)
-
-;;; spam.el ends here

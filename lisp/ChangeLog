@@ -1,3 +1,15 @@
+2004-01-06  Teodor Zlatanov  <tzz@bwh.harvard.edu>
+
+	* spam.el (spam-cache-lookups, spam-caches, spam-clear-cache):
+	first attempt at some caching support (done for BBDB only now)
+	(spam-find-spam): set spam-cache-lookups if there are more than 2
+	addresses to be checked
+	(spam-clear-cache-BBDB): new function, to be invoked by
+	bbdb-change-hook, and triggering spam-clear-cache of 'spam-use-BBDB
+	(spam-check-BBDB): check and use the caches, if
+	spam-cache-lookups is on
+	remove superfluous (provide)
+
 2004-01-06  Reiner Steib  <Reiner.Steib@gmx.de>
 
 	* gnus-art.el (gnus-treat-ansi-sequences): Changed default.
