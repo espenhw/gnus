@@ -141,8 +141,9 @@
    info
    (gnus-update-read-articles (gnus-group-prefixed-name group '(nndraft ""))
 			      (nndraft-articles) t))
-  (let (marks)
-    (when (setq marks (nth 3 info))
+  (let ((marks (nth 3 info)))
+    (when marks
+      ;; Nix out all marks except the `unsend'-able article marks.
       (setcar (nthcdr 3 info)
 	      (if (assq 'unsend marks)
 		  (list (assq 'unsend marks))

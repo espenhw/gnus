@@ -480,7 +480,7 @@ The user will be prompted for header to score on, match type,
 permanence, and the string to be used.  The numerical prefix will be
 used as score."
   (interactive (gnus-interactive "P\ny"))
-  (gnus-summary-increase-score (- (gnus-score-default score)) symp))
+  (gnus-summary-increase-score (- (gnus-score-delta-default score)) symp))
 
 (defun gnus-score-kill-help-buffer ()
   (when (get-buffer "*Score Help*")
@@ -494,7 +494,7 @@ The user will be prompted for header to score on, match type,
 permanence, and the string to be used.  The numerical prefix will be
 used as score."
   (interactive (gnus-interactive "P\ny"))
-  (let* ((nscore (gnus-score-default score))
+  (let* ((nscore (gnus-score-delta-default score))
 	 (prefix (if (< nscore 0) ?L ?I))
 	 (increase (> nscore 0))
 	 (char-to-header
@@ -785,7 +785,7 @@ If optional argument `EXTRA' is non-nil, it's a non-standard overview header."
 	 (setq match (if match (gnus-simplify-subject-re match) "")))
 	((eq type 'f)
 	 (setq match (gnus-simplify-subject-fuzzy match))))
-  (let ((score (gnus-score-default score))
+  (let ((score (gnus-score-delta-default score))
 	(header (format "%s" (downcase header)))
 	new)
     (when prompt
@@ -968,7 +968,7 @@ EXTRA is the possible non-standard header."
 (defun gnus-score-followup-article (&optional score)
   "Add SCORE to all followups to the article in the current buffer."
   (interactive "P")
-  (setq score (gnus-score-default score))
+  (setq score (gnus-score-delta-default score))
   (when (gnus-buffer-live-p gnus-summary-buffer)
     (save-excursion
       (save-restriction
@@ -983,7 +983,7 @@ EXTRA is the possible non-standard header."
 (defun gnus-score-followup-thread (&optional score)
   "Add SCORE to all later articles in the thread the current buffer is part of."
   (interactive "P")
-  (setq score (gnus-score-default score))
+  (setq score (gnus-score-delta-default score))
   (when (gnus-buffer-live-p gnus-summary-buffer)
     (save-excursion
       (save-restriction
@@ -2409,14 +2409,14 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
       (gnus-summary-raise-score score))
     (gnus-summary-next-subject 1 t)))
 
-(defun gnus-score-default (level)
+(defun gnus-score-delta-default (level)
   (if level (prefix-numeric-value level)
     gnus-score-interactive-default-score))
 
 (defun gnus-summary-raise-thread (&optional score)
   "Raise the score of the articles in the current thread with SCORE."
   (interactive "P")
-  (setq score (gnus-score-default score))
+  (setq score (gnus-score-delta-default score))
   (let (e)
     (save-excursion
       (let ((articles (gnus-summary-articles-in-thread)))
@@ -2445,7 +2445,7 @@ score in GNUS-NEWSGROUP-SCORED by SCORE."
 (defun gnus-summary-lower-thread (&optional score)
   "Lower score of articles in the current thread with SCORE."
   (interactive "P")
-  (gnus-summary-raise-thread (- (1- (gnus-score-default score)))))
+  (gnus-summary-raise-thread (- (1- (gnus-score-delta-default score)))))
 
 ;;; Finding score files.
 

@@ -168,10 +168,13 @@ This variable will only be used if the value of
   :type 'string)
 
 (defcustom gnus-summary-goto-unread t
-  "*If t, marking commands will go to the next unread article.
+  "*If t, many commands will go to the next unread article.
+This applies to marking commands as well as other commands that
+\"naturally\" select the next article, like, for instance, `SPC' at
+the end of an article.
+If nil, only the marking commands will go to the next (un)read article.
 If `never', commands that usually go to the next unread article, will
-go to the next article, whether it is read or not.
-If nil, only the marking commands will go to the next (un)read article."
+go to the next article, whether it is read or not."
   :group 'gnus-summary-marks
   :link '(custom-manual "(gnus)Setting Marks")
   :type '(choice (const :tag "off" nil)
@@ -810,11 +813,14 @@ which it may alter in any way.")
   '(("^hk\\>\\|^tw\\>\\|\\<big5\\>" cn-big5)
     ("^cn\\>\\|\\<chinese\\>" cn-gb-2312)
     ("^fj\\>\\|^japan\\>" iso-2022-jp-2)
+    ("^tnn\\>\\|^pin\\>\\|^sci.lang.japan" iso-2022-7bit)
     ("^relcom\\>" koi8-r)
     ("^fido7\\>" koi8-r)
     ("^\\(cz\\|hun\\|pl\\|sk\\|hr\\)\\>" iso-8859-2)
     ("^israel\\>" iso-8859-1)
     ("^han\\>" euc-kr)
+    ("^alt.chinese.text.big5\\>" chinese-big5)
+    ("^soc.culture.vietnamese\\>" vietnamese-viqr)
     ("^\\(comp\\|rec\\|alt\\|sci\\|soc\\|news\\|gnu\\|bofh\\)\\>" iso-8859-1)
     (".*" iso-8859-1))
   "Alist of regexps (to match group names) and default charsets to be used when reading."
@@ -859,6 +865,10 @@ For example: ((1 . cn-gb-2312) (2 . big5))."
 		       (symbol :tag "Charset")))
   :group 'gnus-charset)
 
+(defcustom gnus-preserve-marks t
+  "Whether marks are preserved when moving, copying and respooling messages."
+  :type 'boolean
+  :group 'gnus-summary-marks)
 
 ;;; Internal variables
 
@@ -1359,7 +1369,7 @@ increase the score of each group you read."
     "\C-d" gnus-summary-enter-digest-group
     "\M-\C-d" gnus-summary-read-document
     "\M-\C-e" gnus-summary-edit-parameters
-    "\M-\C-g" gnus-summary-customize-parameters
+    "\M-\C-a" gnus-summary-customize-parameters
     "\C-c\C-b" gnus-bug
     "*" gnus-cache-enter-article
     "\M-*" gnus-cache-remove-article
@@ -1995,7 +2005,8 @@ increase the score of each group you read."
 					       (list 'gnus-summary-header
 						     (nth 1 header)))
 					     (list 'quote (nth 1 (car ts)))
-					     (list 'gnus-score-default nil)
+					     (list 'gnus-score-delta-default
+						   nil)
 					     (nth 1 (car ps))
 					     t)
 					    t)
@@ -4364,21 +4375,22 @@ If SELECT-ARTICLES, only select those articles from GROUP."
 		(setq arts (cdr arts)))
 	      (setq list (cdr all)))))
 
-	(or (memq (cdr type) uncompressed)
-	    (setq list (gnus-compress-sequence (set symbol (sort list '<)) t)))
+	(unless (memq (cdr type) uncompressed)
+	  (setq list (gnus-compress-sequence (set symbol (sort list '<)) t)))
        
-	(when (gnus-check-backend-function 'request-set-mark
-					   gnus-newsgroup-name)
+	(when (gnus-check-backend-function
+	       'request-set-mark gnus-newsgroup-name)
 	  ;; uncompressed:s are not proper flags (they are cons cells)
 	  ;; cache is a internal gnus flag
 	  (unless (memq (cdr type) (cons 'cache uncompressed))
 	    (let* ((old (cdr (assq (cdr type) (gnus-info-marks info))))
 		   (del (gnus-remove-from-range (gnus-copy-sequence old) list))
-		   (add (gnus-remove-from-range (gnus-copy-sequence list) old)))
-	      (if add
-		  (push (list add 'add (list (cdr type))) delta-marks))
-	      (if del
-		  (push (list del 'del (list (cdr type))) delta-marks)))))
+		   (add (gnus-remove-from-range
+			 (gnus-copy-sequence list) old)))
+	      (when add
+		(push (list add 'add (list (cdr type))) delta-marks))
+	      (when del
+		(push (list del 'del (list (cdr type))) delta-marks)))))
 	  
 	(when list
 	  (push (cons (cdr type) list) newmarked)))
@@ -7272,7 +7284,9 @@ re-spool using this method.
 
 For this function to work, both the current newsgroup and the
 newsgroup that you want to move to have to support the `request-move'
-and `request-accept' functions."
+and `request-accept' functions.
+
+ACTION can be either `move' (the default), `crosspost' or `copy'."
   (interactive "P")
   (unless action
     (setq action 'move))
@@ -7403,11 +7417,12 @@ and `request-accept' functions."
 	       info (gnus-add-to-range (gnus-info-read info)
 				       (list (cdr art-group)))))
 
-	    ;; Copy any marks over to the new group.
+	    ;; See whether the article is to be put in the cache.
 	    (let ((marks gnus-article-mark-lists)
 		  (to-article (cdr art-group)))
 
-	      ;; See whether the article is to be put in the cache.
+	      ;; Enter the article into the cache in the new group,
+	      ;; if that is required.
 	      (when gnus-use-cache
 		(gnus-cache-possibly-enter-article
 		 to-group to-article
@@ -7415,34 +7430,36 @@ and `request-accept' functions."
 		 (memq article gnus-newsgroup-dormant)
 		 (memq article gnus-newsgroup-unreads)))
 
-	      (when (and (equal to-group gnus-newsgroup-name)
-			 (not (memq article gnus-newsgroup-unreads)))
-		;; Mark this article as read in this group.
-		(push (cons to-article gnus-read-mark) gnus-newsgroup-reads)
-		(setcdr (gnus-active to-group) to-article)
-		(setcdr gnus-newsgroup-active to-article))
+	      (when gnus-preserve-marks 
+		;; Copy any marks over to the new group.
+		(when (and (equal to-group gnus-newsgroup-name)
+			   (not (memq article gnus-newsgroup-unreads)))
+		  ;; Mark this article as read in this group.
+		  (push (cons to-article gnus-read-mark) gnus-newsgroup-reads)
+		  (setcdr (gnus-active to-group) to-article)
+		  (setcdr gnus-newsgroup-active to-article))
 
-	      (while marks
-		(when (memq article (symbol-value
-				     (intern (format "gnus-newsgroup-%s"
-						     (caar marks)))))
-                  (push (cdar marks) to-marks)
-		  ;; If the other group is the same as this group,
-		  ;; then we have to add the mark to the list.
-		  (when (equal to-group gnus-newsgroup-name)
-		    (set (intern (format "gnus-newsgroup-%s" (caar marks)))
-			 (cons to-article
-			       (symbol-value
-				(intern (format "gnus-newsgroup-%s"
-						(caar marks)))))))
-		  ;; Copy the marks to other group.
-		  (gnus-add-marked-articles
-		   to-group (cdar marks) (list to-article) info))
-		(setq marks (cdr marks)))
+		(while marks
+		  (when (memq article (symbol-value
+				       (intern (format "gnus-newsgroup-%s"
+						       (caar marks)))))
+		    (push (cdar marks) to-marks)
+		    ;; If the other group is the same as this group,
+		    ;; then we have to add the mark to the list.
+		    (when (equal to-group gnus-newsgroup-name)
+		      (set (intern (format "gnus-newsgroup-%s" (caar marks)))
+			   (cons to-article
+				 (symbol-value
+				  (intern (format "gnus-newsgroup-%s"
+						  (caar marks)))))))
+		    ;; Copy the marks to other group.
+		    (gnus-add-marked-articles
+		     to-group (cdar marks) (list to-article) info))
+		  (setq marks (cdr marks)))
 
-              (gnus-request-set-mark to-group (list (list (list to-article)
-                                                          'set
-                                                          to-marks)))
+		(gnus-request-set-mark to-group (list (list (list to-article)
+							    'set
+							    to-marks))))
 
 	      (gnus-dribble-enter
 	       (concat "(gnus-group-set-info '"
@@ -8006,7 +8023,8 @@ the actual number of articles marked is returned."
   "Mark N articles as read forwards.
 If N is negative, mark backwards instead.  Mark with MARK, ?r by default.
 The difference between N and the actual number of articles marked is
-returned."
+returned.
+Iff NO-EXPIRE, auto-expiry will be inhibited."
   (interactive "p")
   (gnus-summary-show-thread)
   (let ((backward (< n 0))
@@ -8098,7 +8116,8 @@ Four MARK strings are reserved: `? ' (unread), `?!' (ticked),
 `??' (dormant) and `?E' (expirable).
 If MARK is nil, then the default character `?r' is used.
 If ARTICLE is nil, then the article on the current line will be
-marked."
+marked.
+Iff NO-EXPIRE, auto-expiry will be inhibited."
   ;; The mark might be a string.
   (when (stringp mark)
     (setq mark (aref mark 0)))

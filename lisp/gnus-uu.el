@@ -660,7 +660,7 @@ When called interactively, prompt for REGEXP."
 (defun gnus-uu-mark-over (&optional score)
   "Mark all articles with a score over SCORE (the prefix)."
   (interactive "P")
-  (let ((score (gnus-score-default score))
+  (let ((score (or score gnus-summary-default-score 0))
 	(data gnus-newsgroup-data))
     (save-excursion
       (while data

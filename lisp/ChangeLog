@@ -1,3 +1,18 @@
+2000-01-05 15:56:02  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-preserve-marks): New variable.
+	(gnus-summary-move-article): Use it.
+	(gnus-group-charset-alist): Added more entries.
+
+2000-01-03 01:18:36  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* mm-decode.el (mm-inline-override-types): Removed duplicate.
+
+	* gnus-uu.el (gnus-uu-mark-over): Use gnus-summary-default-score
+	as the default score.
+
+	* gnus-score.el (gnus-score-delta-default): Changed name.
+
 2000-01-04  Simon Josefsson  <jas@pdc.kth.se>
 
 	* imap.el (imap-parse-literal): 
@@ -5,6 +20,15 @@
 	(imap-parse-string): Handle quoted characters.
 
 2000-01-02 08:37:03  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* gnus-sum.el (gnus-summary-goto-unread): Doc fix.
+	(gnus-summary-mark-article): Doc fix.
+	(gnus-summary-mark-forward): Doc fix.
+	(t): Changed keystroke for gnus-summary-customize-parameters.
+
+	* gnus-art.el (gnus-article-mode-map): Use gnus-article-edit for
+	"e". 
+	(gnus-article-mode-map): No, don't.
 
 	* gnus-sum.el (gnus-summary-next-subject): Don't show the thread
 	of the final article.

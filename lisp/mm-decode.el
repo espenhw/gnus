@@ -169,11 +169,6 @@
   :type '(repeat string)
   :group 'mime-display)
 
-(defcustom mm-inline-override-types nil
-  "Types to be treated as attachments even if they can be displayed inline."
-  :type '(repeat string)
-  :group 'mime-display)
-
 (defcustom mm-automatic-external-display nil
   "List of MIME type regexps that will be displayed externally automatically."
   :type '(repeat string)

@@ -3141,13 +3141,13 @@ In no internal viewer is available, use an external viewer."
 	    (narrow-to-region (point) (point-max))
 	    (gnus-treat-article nil 1 1)
 	    (widen)))
-	(if (not ihandles)
-	    ;; Highlight the headers.
-	    (save-excursion
-	      (save-restriction
-		(article-goto-body)
-		(narrow-to-region (point-min) (point))
-		(gnus-treat-article 'head))))))))
+	(unless ihandles
+	  ;; Highlight the headers.
+	  (save-excursion
+	    (save-restriction
+	      (article-goto-body)
+	      (narrow-to-region (point-min) (point))
+	      (gnus-treat-article 'head))))))))
 
 (defvar gnus-mime-display-multipart-as-mixed nil)
 
@@ -3211,11 +3211,11 @@ In no internal viewer is available, use an external viewer."
 	  (push (cons id handle) gnus-article-mime-handle-alist)
 	  (when (or (not display)
 		    (not (gnus-unbuttonized-mime-type-p type)))
-	    (gnus-article-insert-newline)
+	    ;(gnus-article-insert-newline)
 	    (gnus-insert-mime-button
 	     handle id (list (or display (and not-attachment text))))
 	    (gnus-article-insert-newline)
-	    (gnus-article-insert-newline)
+	    ;(gnus-article-insert-newline)
 	    (setq move t)))
 	(let ((beg (point)))
 	  (cond

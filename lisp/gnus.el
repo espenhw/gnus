@@ -1679,7 +1679,7 @@ gnus-newsrc-hashtb should be kept so that both hold the same information.")
       gnus-summary-raise-score gnus-summary-raise-same-subject-and-select
       gnus-summary-lower-thread gnus-summary-lower-same-subject
       gnus-summary-lower-score gnus-summary-lower-same-subject-and-select
-      gnus-summary-current-score gnus-score-default
+      gnus-summary-current-score gnus-score-delta-default
       gnus-score-flush-cache gnus-score-close
       gnus-possibly-score-headers gnus-score-followup-article
       gnus-score-followup-thread)

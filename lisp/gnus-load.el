@@ -37,7 +37,7 @@
 (put 'gnus-cite 'custom-loads '("gnus-cite"))
 (put 'gnus-demon 'custom-loads '("gnus-demon"))
 (put 'gnus-message 'custom-loads '("message"))
-(put 'gnus-score-default 'custom-loads '("gnus-sum" "gnus-score"))
+(put 'gnus-score-delta-default 'custom-loads '("gnus-sum" "gnus-score"))
 (put 'nnmail-duplicate 'custom-loads '("nnmail"))
 (put 'message-interface 'custom-loads '("message"))
 (put 'nnmail-files 'custom-loads '("nnmail"))
