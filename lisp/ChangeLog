@@ -1,4 +1,9 @@
-2001-08-05  Florian Weimer  <fw@deneb.enyo.de>
+2001-08-06  Florian Weimer   <fw@deneb.enyo.de>
+
+	* message.el (message-indent-citation): Use
+	`message-yank-cited-prefix' for empty lines.
+
+2001-08-05  Florian Weimer   <fw@deneb.enyo.de>
 
 	* message.el (message-indent-citation): Quote only lines starting
 	with ">" using `message-yank-cited-prefix'.
