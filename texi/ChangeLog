@@ -4,6 +4,7 @@
 	`Group Topics'.  Rearrange keys to mention the most important keys
 	first and to have subsections.  Add some more explanation for
 	C-k/C-y.
+	(Group Buffer): Add comment from Alex Schroeder as todo item.
 
 2001-09-06  Kai Gro,A_(Bjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
