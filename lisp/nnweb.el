@@ -113,9 +113,10 @@ and `altavista'.")
     (set-buffer nntp-server-buffer)
     (erase-buffer)
     (let (article header)
-      (while (setq article (pop articles))
-	(when (setq header (cadr (assq article nnweb-articles)))
-	  (nnheader-insert-nov header)))
+      (mm-with-unibyte-current-buffer
+	(while (setq article (pop articles))
+	  (when (setq header (cadr (assq article nnweb-articles)))
+	    (nnheader-insert-nov header))))
       'nov)))
 
 (deffoo nnweb-request-scan (&optional group server)
@@ -169,7 +170,8 @@ and `altavista'.")
     (let* ((header (cadr (assq article nnweb-articles)))
 	   (url (and header (mail-header-xref header))))
       (when (or (and url
-		     (nnweb-fetch-url url))
+		     (mm-with-unibyte-current-buffer
+		       (nnweb-fetch-url url)))
 		(and (stringp article)
 		     (nnweb-definition 'id t)
 		     (let ((fetch (nnweb-definition 'id))
@@ -178,8 +180,9 @@ and `altavista'.")
 			 (setq art (match-string 1 article)))
 		       (and fetch
 			    art
-			    (nnweb-fetch-url
-			     (format fetch article))))))
+			    (mm-with-unibyte-current-buffer
+			      (nnweb-fetch-url
+			       (format fetch article)))))))
 	(unless nnheader-callback-function
 	  (funcall (nnweb-definition 'article))
 	  (nnweb-decode-entities))
@@ -381,12 +384,14 @@ and `altavista'.")
 		    group (nth 2 text)
 		    date (nth 1 text)
 		    from (nth 0 text))
-	      (string-match "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)" date)
-	      (setq date (format "%s %s 00:00:00 %s"
-				 (car (rassq (string-to-number
-					      (match-string 2 date))
-					     parse-time-months))
-				 (match-string 3 date) (match-string 1 date)))
+	      (if (string-match "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)" date)
+		  (setq date (format "%s %s 00:00:00 %s"
+				     (car (rassq (string-to-number
+						  (match-string 2 date))
+						 parse-time-months))
+				     (match-string 3 date) 
+				     (match-string 1 date)))
+		(setq date "Jan 1 00:00:00 0000"))
 	      (incf i)
 	      (setq url (concat url "&fmt=text"))
 	      (unless (nnweb-get-hashtb url)

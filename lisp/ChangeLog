@@ -1,3 +1,12 @@
+1999-12-02 11:14:50  Shenghuo ZHU  <zsh@cs.rochester.edu>
+
+	* mm-util.el (mm-with-unibyte-current-buffer): New macro.
+	* nnweb.el (nnweb-retrieve-headers): Use it.
+	(nnweb-request-article): Use it.
+	
+	* nnweb.el (nnweb-dejanews-create-mapping): Set a default date in
+ 	case matching failed.
+
 1999-12-02  John Wiegley <jwiegley@inprise.com>
 
 	* mail-source.el (mail-source-keyword-map): Add backslash to

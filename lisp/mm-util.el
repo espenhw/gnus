@@ -271,6 +271,24 @@ See also `with-temp-file' and `with-output-to-string'."
 (put 'mm-with-unibyte-buffer 'lisp-indent-function 0)
 (put 'mm-with-unibyte-buffer 'edebug-form-spec '(body))
 
+(defmacro mm-with-unibyte-current-buffer (&rest forms)
+  "Evaluate FORMS there like `progn' in current buffer."
+  (let ((multibyte (make-symbol "multibyte")))
+    `(if (or (string-match "XEmacs\\|Lucid" emacs-version)
+	     (not (fboundp 'set-buffer-multibyte)))
+	 (progn
+	   ,@forms)
+       (let ((,multibyte (default-value 'enable-multibyte-characters)))
+	 (unwind-protect
+	     (let ((buffer-file-coding-system mm-binary-coding-system)
+		   (coding-system-for-read mm-binary-coding-system)
+		   (coding-system-for-write mm-binary-coding-system))
+	       (set-buffer-multibyte nil)
+	       ,@forms)
+	   (set-buffer-multibyte ,multibyte))))))
+(put 'mm-with-unibyte-current-buffer 'lisp-indent-function 0)
+(put 'mm-with-unibyte-current-buffer 'edebug-form-spec '(body))
+
 (defun mm-find-charset-region (b e)
   "Return a list of charsets in the region."
   (cond
