@@ -1,5 +1,8 @@
 2001-12-30  Lars Magne Ingebrigtsen  <larsi@gnus.org>
 
+	* gnus-art.el (gnus-article-treat-fold-newsgroups): Don't
+	infloop. 
+
 	* gnus-sum.el (t): New `W D' map.
 
 	* gnus-art.el (gnus-treat-fold-newsgroups): New variable.

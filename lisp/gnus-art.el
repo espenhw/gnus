@@ -1641,7 +1641,8 @@ unfolded."
 	(mail-header-narrow-to-field)
 	(while (search-forward "," nil t)
 	  (replace-match ", " t t))
-	(mail-header-fold-field)))))
+	(mail-header-fold-field)
+	(goto-char (point-max))))))
 
 (defun gnus-article-treat-body-boundary ()
   "Place a boundary line at the end of the headers."
