@@ -1,3 +1,8 @@
+2000-07-03  Simon Josefsson  <simon@josefsson.org>
+
+	* gnus-sum.el (gnus-update-marks): Don't propagate download and
+	unsend flags.
+
 2000-07-03  Simon Josefsson  <jas@pdc.kth.se>
 
 	* nnimap.el (nnimap-open-connection): Don't look up virtual server
