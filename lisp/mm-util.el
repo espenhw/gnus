@@ -229,6 +229,7 @@ system object in XEmacs."
     (big5 chinese-big5-1 chinese-big5-2)
     (tibetan tibetan)
     (thai-tis620 thai-tis620)
+    (windows-1251 cyrillic-iso8859-5)
     (iso-2022-7bit ethiopic arabic-1-column arabic-2-column)
     (iso-2022-jp-2 latin-iso8859-1 greek-iso8859-7
 		   latin-jisx0201 japanese-jisx0208-1978

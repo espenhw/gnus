@@ -42,7 +42,13 @@
     (".*" base64))
   "Alist of regexps that match MIME types and their encodings.
 If the encoding is `qp-or-base64', then either quoted-printable
-or base64 will be used, depending on what is more efficient."
+or base64 will be used, depending on what is more efficient.
+
+Note: It affects body encoding only when a part is a raw forwarded
+message (which will be made by `gnus-summary-mail-forward' with the
+arg 2 for example) or is neither the text/* type nor the message/*
+type.  Even though in those cases, you can use the `encoding' MML tag
+to specify encoding of non-ASCII MIME parts."
   :type '(repeat (list (regexp :tag "MIME type")
 		       (choice :tag "encoding"
 			       (const 7bit)
