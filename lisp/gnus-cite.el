@@ -966,4 +966,8 @@ See also the documentation for `gnus-article-highlight-citation'."
 
 (provide 'gnus-cite)
 
+;; Local Variables:
+;; coding: iso-8859-1
+;; End:
+
 ;;; gnus-cite.el ends here
