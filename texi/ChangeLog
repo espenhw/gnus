@@ -1,3 +1,11 @@
+2002-02-16  Simon Josefsson  <jas@extundo.com>
+
+	* gnus.texi (Top): Change description of Posting Server node.
+	(Composing Messages): Ditto.
+	(Posting Server): Add some mail stuff.
+	(IMAP): Terminate @, from Emacs Gnus manual.
+	(Thwarting Email Spam): Use @sc.
+
 2002-02-16  ShengHuo ZHU  <zsh@cs.rochester.edu>
 
 	* gnusref.tex (subsection*{Notes}): Update.

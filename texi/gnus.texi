@@ -624,7 +624,7 @@ Article Buffer
 Composing Messages
 
 * Mail::                        Mailing and replying.
-* Posting Server::              What server should you post via?
+* Posting Server::              What server should you post and mail via?
 * Mail and Post::               Mailing and posting at the same time.
 * Archived Messages::           Where Gnus stores the messages you've sent.
 * Posting Styles::              An easier way to specify who you are.
@@ -10633,7 +10633,7 @@ on your setup (@pxref{Posting Server}).
 
 @menu
 * Mail::                        Mailing and replying.
-* Posting Server::              What server should you post via?
+* Posting Server::              What server should you post and mail via?
 * Mail and Post::               Mailing and posting at the same time.
 * Archived Messages::           Where Gnus stores the messages you've sent.
 * Posting Styles::              An easier way to specify who you are.
@@ -10673,15 +10673,18 @@ When you press those magical @kbd{C-c C-c} keys to ship off your latest
 
 Thank you for asking.  I hate you.
 
-@vindex gnus-post-method
+It can be quite complicated.  
 
-It can be quite complicated.  Normally, Gnus will post using the same
-select method as you're reading from (which might be convenient if
-you're reading lots of groups from different private servers).
-However.  If the server you're reading from doesn't allow posting,
-just reading, you probably want to use some other server to post your
-(extremely intelligent and fabulously interesting) articles.  You can
-then set the @code{gnus-post-method} to some other method:
+@vindex gnus-post-method
+When posting news, Message usually invokes @code{message-send-news}
+(@pxref{News Variables, , News Variables, message, Message Manual}).
+Normally, Gnus will post using the same select method as you're
+reading from (which might be convenient if you're reading lots of
+groups from different private servers).  However.  If the server
+you're reading from doesn't allow posting, just reading, you probably
+want to use some other server to post your (extremely intelligent and
+fabulously interesting) articles.  You can then set the
+@code{gnus-post-method} to some other method:
 
 @lisp
 (setq gnus-post-method '(nnspool ""))
@@ -10702,6 +10705,23 @@ for posting.
 Finally, if you want to always post using the native select method,
 you can set this variable to @code{native}.
 
+When sending mail, Message invokes @code{message-send-mail-function}.
+The default function, @code{message-send-mail-with-sendmail}, pipes
+your article to the @code{sendmail} binary for further queuing and
+sending.  When your local system is not configured for sending mail
+using @code{sendmail}, and you have access to a remote @sc{smtp}
+server, you can set @code{message-send-mail-function} to
+@code{smtpmail-send-it} and make sure to setup the @code{smtpmail}
+package correctly.  An example:
+
+@lisp
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-default-smtp-server "YOUR SMTP HOST")
+@end lisp
+
+Other possible choises for @code{message-send-mail-function} includes
+@code{message-send-mail-with-mh}, @code{message-send-mail-with-qmail},
+and @code{feedmail-send-it}.
 
 @node Mail and Post
 @section Mail and Post
@@ -12165,7 +12185,7 @@ mail, is that the transport mechanism has very little to do with how
 they want to treat a message.
 
 Many people subscribe to several mailing lists.  These are transported
-via SMTP, and are therefore mail.  But we might go for weeks without
+via @sc{smtp}, and are therefore mail.  But we might go for weeks without
 answering, or even reading these messages very carefully.  We may not
 need to save them because if we should need to read one again, they are
 archived somewhere else.
@@ -14691,10 +14711,10 @@ Please note that the value of @code{nnimap-stream} is a symbol!
 @dfn{kerberos4:} Connect with Kerberos 4. Requires the @samp{imtest} program.
 @item
 @dfn{starttls:} Connect via the STARTTLS extension (similar to
-SSL). Requires the external library @samp{starttls.el} and program
+SSL)@. Requires the external library @samp{starttls.el} and program
 @samp{starttls}.
 @item
-@dfn{ssl:} Connect through SSL. Requires OpenSSL (the program
+@dfn{ssl:} Connect through SSL@. Requires OpenSSL (the program
 @samp{openssl}) or SSLeay (@samp{s_client}) as well as the external
 library @samp{ssl.el}.
 @item
@@ -20542,7 +20562,7 @@ This says that all mail to this address is suspect, but if it has a
 header, it's probably ok.  All the rest goes to the @samp{spam} group.
 (This idea probably comes from Tim Pierce.)
 
-In addition, many mail spammers talk directly to your @code{smtp} server
+In addition, many mail spammers talk directly to your @sc{smtp} server
 and do not include your email address explicitly in the @code{To}
 header.  Why they do this is unknown---perhaps it's to thwart this
 thwarting scheme?  In any case, this is trivial to deal with---you just
