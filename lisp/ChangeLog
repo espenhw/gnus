@@ -1,3 +1,7 @@
+2004-06-04  Lars Magne Ingebrigtsen  <larsi@gnus.org>
+
+	* message.el (message-cite-original): Respect X-No-Archive. 
+
 2004-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* gnus-art.el (article-hide-headers): Refer to the values for
