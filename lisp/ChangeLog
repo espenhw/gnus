@@ -1,3 +1,31 @@
+Thu Apr 20 01:56:59 1995  Lars Magne Ingebrigtsen  <larsi@gjalp.ifi.uio.no>
+
+	* gnus-uu.el (gnus-uu-part-number): New function.
+
+	* gnus.el (gnus-post-news): Don't require a group name to be legal
+	to allow composing the article.
+	(gnus-set-mode-line): Would bug out on a non-numerical
+	non-string-length. 
+	(gnus-mail-reply-using-mail): Would go to the summary buffer
+	instead of the mail buffer with non-standard window configs.
+	(gnus-summary-next-page): Go to the summary buffer.
+	(gnus-mail-reply-using-mail): Yank before hook.
+	(gnus-group-mode-map): Reinstituted to old keystrokes.
+	Installed Eric Selberg's mh and split-window patches.
+
+	* nntp.el (nntp-open-server-function): New variable.
+	(nntp-rlogin-parameters): New variable.
+	(nntp-rlogin-user-name): New variable.
+	(nntp-open-rlogin-stream): New function.
+	(nntp-open-network-stream): New function.
+	(nntp-retrieve-groups): New function.
+	(nntp-open-server): Don't break on a defs list containing just
+	"nntp" or a port number.
+
+Wed Apr 19 07:19:31 1995  Lars Magne Ingebrigtsen  <larsi@holmenkollen.ifi.uio.no>
+
+	* gnus.el: 0.52 is released.
+
 Wed Apr 19 05:51:27 1995  Lars Magne Ingebrigtsen  <larsi@holmenkollen.ifi.uio.no>
 
 	* nntp.el (nntp-request-group): Error in regexp when using LIST

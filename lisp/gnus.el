@@ -47,8 +47,7 @@
 		  (if (and gnus-default-nntp-server
 			   (not (string= gnus-default-nntp-server "")))
 		      gnus-default-nntp-server)
-		  (system-name))
-	"nntp")
+		  (system-name)))
   "*Default method for selecting a newsgroup.
 This variable should be a list, where the first element is how the
 news is to be fetched, the second is the address.  An optional third
@@ -653,6 +652,10 @@ beginning of a line.")
 (defvar gnus-use-full-window t
   "*If non-nil, use the entire Emacs screen.")
 
+; for split windows. maybe a better way?
+(defvar gnus-split-window nil
+  "*If non-nil, put the article buffer in left-hand side of the window .")
+
 (defvar gnus-window-configuration
   '((summary (0 1 0))
     (newsgroups (1 0 0))
@@ -826,6 +829,7 @@ with some simple extensions.
 %F   Contents of the From: header (string)
 %x   Contents of the Xref: header (string)
 %D   Date of the article (string)
+%d   Date of the article (string) in DD-MMM format
 %M   Message-id of the article (string)
 %r   References of the article (string)
 %c   Number of characters in the article (integer)
@@ -1251,6 +1255,7 @@ of the last succesful match.")
 	(list ?F 'from ?s)
 	(list ?x (macroexpand '(header-xref header)) ?s)
 	(list ?D (macroexpand '(header-date header)) ?s)
+  	(list ?d '(gnus-dd-mmm (header-date header)) ?s)
 	(list ?M (macroexpand '(header-id header)) ?s)
 	(list ?r (macroexpand '(header-references header)) ?s)
 	(list ?c (macroexpand '(header-chars header)) ?d)
@@ -1298,7 +1303,7 @@ variable (string, integer, character, etc).")
 (defconst gnus-maintainer "Lars Magne Ingebrigtsen <larsi@ifi.uio.no>"
   "The mail address of the Gnus maintainer.")
 
-(defconst gnus-version "(ding) Gnus v0.52"
+(defconst gnus-version "(ding) Gnus v0.53"
   "Version number for this version of Gnus.")
 
 (defvar gnus-info-nodes
@@ -2188,7 +2193,6 @@ or not."
 	 (grpheight 0)
 	 (subheight 0)
 	 (artheight 0)
-
 	 ;; Make split-window-vertically leave focus in upper window.
 	 (split-window-keep-point t))
     (if (and (symbolp windows) (fboundp windows))
@@ -2229,15 +2233,19 @@ or not."
 	    (setq subheight (max window-min-height
 				 (/ (* height (nth 1 windows)) winsum))))
 	(if (not (zerop (nth 2 windows)))
-	    (setq artheight (max window-min-height
-				 (/ (* height (nth 2 windows)) winsum))))
+ 	    (if gnus-split-window ;hack by erik
+ 		(setq artheight height)
+ 	      (setq artheight (max window-min-height
+ 				   (/ (* height (nth 2 windows)) winsum)))))
 	(setq height (+ grpheight subheight artheight))
 	(enlarge-window (max 0 (- height (window-height (selected-window)))))
 	;; Then split the window.
-	(and (not (zerop artheight))
-	     (or (not (zerop grpheight))
-		 (not (zerop subheight)))
-	     (split-window-vertically (+ grpheight subheight)))
+  	(if (and (not (zerop artheight))
+  		 (or (not (zerop grpheight))
+  		     (not (zerop subheight))))
+  	    (if gnus-split-window
+  		(split-window-horizontally)
+  	      (split-window-vertically (+ grpheight subheight))))
 	(and (not (zerop grpheight))
 	     (not (zerop subheight))
 	     (split-window-vertically grpheight))
@@ -2443,6 +2451,19 @@ If nothing is specified, use the variable gnus-overload-functions."
 	   ;; return nil.  
 	   (not (memq symbol gnus-use-long-file-name)))))
 
+;; I suspect there's a better way, but I haven't taken the time to do
+;; it yet. -erik selberg@cs.washington.edu
+(defun gnus-dd-mmm (messy-date)
+  "Return a string like DD-MMM from a big messy string"
+  (let ((datevec (timezone-parse-date messy-date)))
+    (format "%2s-%s"
+	    (or (aref datevec 2) "??")
+	    (capitalize
+	     (or (car 
+		  (nth (1- (string-to-number (aref datevec 1)))
+		       timezone-months-assoc))
+		 "???")))))
+ 
 ;; List and range functions
 
 (defun gnus-last-element (list)
@@ -2788,6 +2809,8 @@ Note: LIST has to be sorted over `<'."
   (define-key gnus-group-mode-map "^" 'gnus-group-enter-server-mode)
   (define-key gnus-group-mode-map
     (if gnus-xemacs [button2] [mouse-2]) 'gnus-mouse-pick-group)
+  (define-key gnus-group-mode-map "<" 'beginning-of-buffer)
+  (define-key gnus-group-mode-map ">" 'end-of-buffer)
 
   (define-prefix-command 'gnus-group-make-map)
   (define-key gnus-group-mode-map "M" 'gnus-group-make-map)
@@ -5837,7 +5860,8 @@ If WHERE is `summary', the summary mode line format will be used."
 		 (subject
 		  (if gnus-current-headers
 		      (header-subject gnus-current-headers) ""))
-		 (max-len (- (frame-width) gnus-mode-non-string-length))
+		 (max-len (and gnus-mode-non-string-length
+			       (- (frame-width) gnus-mode-non-string-length)))
 		 header) ;; passed as argument to any user-format-funcs
 	    (setq mode-string (eval mformat))
 	    (and (numberp max-len)
@@ -6984,6 +7008,7 @@ instead of selecting the next article when reaching the end of the
 current article." 
   (interactive "P")
   (setq gnus-summary-buffer (current-buffer))
+  (gnus-set-global-variables)
   (let ((article (gnus-summary-article-number))
 	(endp nil))
     (if (or (null gnus-current-article)
@@ -6993,17 +7018,18 @@ current article."
 	;; Selected subject is different from current article's.
 	(gnus-summary-display-article article)
       (gnus-configure-windows 'article)
-      (pop-to-buffer gnus-summary-buffer)
       (gnus-eval-in-buffer-window
        gnus-article-buffer
        (setq endp (gnus-article-next-page lines)))
+      (pop-to-buffer gnus-summary-buffer)
       (if endp
  	  (cond (circular
  		 (gnus-summary-beginning-of-article))
  		(lines
  		 (message "End of message"))
  		((null lines)
- 		 (gnus-summary-next-unread-article))))))
+ 		 (gnus-summary-next-unread-article))))
+      (pop-to-buffer gnus-summary-buffer)))
   (gnus-summary-position-cursor))
 
 (defun gnus-summary-prev-page (lines)
@@ -7418,11 +7444,13 @@ and `request-accept' functions. (Ie. mail newsgroups at present.)"
 			   (format "(%s default) " gnus-current-move-group)
 			 ""))
 	       gnus-active-hashtb nil nil prefix)))
-    (if (or (string= to-newsgroup "") (string= to-newsgroup prefix))
-	(setq to-newsgroup (or gnus-current-move-group "")))
-    (or (gnus-gethash to-newsgroup gnus-active-hashtb)
-	(error "No such group: %s" to-newsgroup))
-    (setq gnus-current-move-group to-newsgroup)
+    (if to-newsgroup
+        (progn
+          (if (or (string= to-newsgroup "") (string= to-newsgroup prefix))
+              (setq to-newsgroup (or gnus-current-move-group "")))
+          (or (gnus-gethash to-newsgroup gnus-active-hashtb)
+              (error "No such group: %s" to-newsgroup))
+          (setq gnus-current-move-group to-newsgroup)))
     (or (gnus-check-backend-function 'request-accept-article 
 				     (or select-method to-newsgroup))
 	(error "%s does not support article moving" to-newsgroup))
@@ -7507,8 +7535,8 @@ latter case, they will be copied into the relevant groups."
     (if (assoc (symbol-name
 		(car (gnus-find-method-for-group gnus-newsgroup-name)))
 	       respool-methods)
-	(gnus-summary-copy-article n nil (intern respool-method)))
-    (gnus-summary-move-article n nil (intern respool-method))))
+	(gnus-summary-move-article n nil (intern respool-method)))
+    (gnus-summary-copy-article n nil (intern respool-method))))
 
 ;; Suggested by gregj@unidata.com (Gregory J. Grubbs).
 (defun gnus-summary-copy-article (n &optional to-newsgroup select-method)
@@ -7541,11 +7569,13 @@ functions. (Ie. mail newsgroups at present.)"
 			   (format "(%s default) " gnus-current-move-group)
 			 ""))
 	       gnus-active-hashtb nil nil prefix)))
-    (if (or (string= to-newsgroup "") (string= to-newsgroup prefix))
-	(setq to-newsgroup (or gnus-current-move-group "")))
-    (or (gnus-gethash to-newsgroup gnus-active-hashtb)
-	(error "No such group: %s" to-newsgroup))
-    (setq gnus-current-move-group to-newsgroup)
+    (if to-newsgroup
+        (progn
+          (if (or (string= to-newsgroup "") (string= to-newsgroup prefix))
+              (setq to-newsgroup (or gnus-current-move-group "")))
+          (or (gnus-gethash to-newsgroup gnus-active-hashtb)
+              (error "No such group: %s" to-newsgroup))
+          (setq gnus-current-move-group to-newsgroup)))
     (or (gnus-check-backend-function 'request-accept-article 
 				     (or select-method to-newsgroup))
 	(error "%s does not support article copying" to-newsgroup))
@@ -11021,7 +11051,18 @@ This mode is an extended emacs-lisp mode.
   (setq gnus-winconf-post-news (current-window-configuration))
   (let ((gnus-newsgroup-name nil))
     (unwind-protect
-	(gnus-post-news 'post)
+	(if gnus-split-window 
+	    (progn
+	      (pop-to-buffer gnus-article-buffer)
+	      (widen)
+	      (split-window-vertically)
+	      (gnus-post-news 'post))
+	  (progn
+	    (pop-to-buffer gnus-article-buffer)
+	    (widen)
+	    (delete-other-windows)
+	    (gnus-post-news 'post))
+	  )
       (or (and (eq (current-buffer) (get-buffer gnus-post-news-buffer))
 	       (not (zerop (buffer-size))))
 	  ;; Restore last window configuration.
@@ -11172,7 +11213,7 @@ Type \\[describe-mode] in the buffer to get a list of commands."
 	     post (not group)
 	     (progn
 	       (setq group 
-		     (completing-read "Group: " gnus-active-hashtb nil t))
+		     (completing-read "Group: " gnus-active-hashtb))
 	       (setq subject (read-string "Subject: "))))
 	(setq mail-reply-buffer article-buffer)
 
@@ -11958,8 +11999,8 @@ Customize the variable gnus-mail-reply-method to use another mailer."
   ;; Bug fix by jbw@bigbird.bu.edu (Joe Wells)
   ;; Stripping headers should be specified with mail-yank-ignored-headers.
   (gnus-set-global-variables)
-  (gnus-summary-select-article t)
   (setq gnus-winconf-post-news (current-window-configuration))
+  (gnus-summary-select-article t)
   (let ((gnus-newsgroup-name gnus-newsgroup-name))
     (bury-buffer gnus-article-buffer)
     (funcall gnus-mail-reply-method yank))
@@ -11977,7 +12018,11 @@ Customize the variable gnus-mail-forward-method to use another mailer."
   (interactive)
   (gnus-summary-select-article t)
   (setq gnus-winconf-post-news (current-window-configuration))
-  (set-buffer gnus-article-buffer)
+  (or gnus-split-window 
+      (switch-to-buffer gnus-article-buffer))
+  (widen)
+  (or gnus-split-window (delete-other-windows))
+  (or gnus-split-window (bury-buffer gnus-article-buffer))
   (let ((gnus-newsgroup-name gnus-newsgroup-name))
     (funcall gnus-mail-forward-method))
   (gnus-article-hide-headers-if-wanted))
@@ -12071,20 +12116,23 @@ mailer."
 	(forward-line 1)
 	(if yank
 	    (let ((last (point)))
+	      (save-excursion
+		(mail-yank-original nil))
 	      (run-hooks 'news-reply-header-hook)
-	      (mail-yank-original nil)
 	      (goto-char last))))
-      (if (not yank)
-	  (let ((mail (current-buffer)))
-	    (gnus-configure-windows '(0 0 1))
-	    (switch-to-buffer-other-window mail))
-	(gnus-configure-windows '(0 1 0))
-	(switch-to-buffer (current-buffer))))))
+      (let ((mail (current-buffer)))
+	(if yank
+	    (progn
+	      (gnus-configure-windows '(0 1 0))
+	      (switch-to-buffer mail))
+	  (gnus-configure-windows '(0 0 1))
+	  (switch-to-buffer-other-window mail))))))
 
 (defun gnus-mail-yank-original ()
   (interactive)
-  (run-hooks 'news-reply-header-hook)
-  (mail-yank-original nil))
+  (save-excursion
+   (mail-yank-original nil))
+  (run-hooks 'news-reply-header-hook))
 
 (defun gnus-mail-send-and-exit ()
   (interactive)

@@ -396,7 +396,7 @@ are groups that use different backends for getting news.
 The top part of an article, where administration information (etc.) is
 put. 
 @item body
-@cindex
+@cindex body
 The rest of an article. Everything that is not in the head is in the
 body. 
 @item header

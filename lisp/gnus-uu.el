@@ -511,7 +511,7 @@ so I simply dropped them.")
 			       (concat dir (file-name-nondirectory file))
 			     dir))
 	     (and (or (not (file-exists-p to-file))
-		      (gnus-y-or-n-p (format "%s exists; overwrite? ")))
+		      (gnus-y-or-n-p (format "%s exists; overwrite? " to-file)))
 		  (copy-file file to-file 1 t))))
       (setq files (cdr files)))
     (message "Saved %d file%s" len (if (> len 1) "s" ""))))
@@ -947,7 +947,7 @@ so I simply dropped them.")
 	      (setq state 'first-and-last)
 	    (setq state 'last)))
 
-      (message "Getting article %d" article)
+      (message "Getting article %d, %s" article (gnus-uu-part-number article))
 
       (if (not (= (or gnus-current-article 0) article))
 	  (progn
@@ -1040,6 +1040,13 @@ so I simply dropped them.")
 		(setq result-files nil))
 	    (gnus-uu-unmark-list-of-grabbed)))))
     result-files))
+
+(defun gnus-uu-part-number (article)
+  (let ((subject (header-subject (gnus-get-header-by-number article))))
+    (if (string-match "([0-9]+ */[0-9]+)\\|([0-9]+ * of *[0-9]+)"
+		      subject)
+	(substring subject (match-beginning 0) (match-end 0))
+      "")))
 
 (defun gnus-uu-uudecode-sentinel (process event)
   (delete-process (get-process process)))

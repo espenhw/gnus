@@ -35,7 +35,7 @@
   (autoload 'cancel-timer "timer"))
 
 (defvar nntp-server-hook nil
-  "Hooks for the NNTP server.
+  "*Hooks for the NNTP server.
 If the kanji code of the NNTP server is different from the local kanji
 code, the correct kanji code of the buffer associated with the NNTP
 server must be specified as follows:
@@ -51,56 +51,82 @@ If you'd like to change something depending on the server in this
 hook, use the variable `nntp-address'.")
 
 (defvar nntp-server-opened-hook nil
-  "Hook used for sending commands to the server at startup.  The
-default value is `nntp-send-mode-reader', whick makes an innd server
-spawn an nnrpd server.  Another useful function to put in this hook
-might be `nntp-send-authinfo', which will prompt for a password to
-allow posting from the server.  Note that this is only necessary to do
-on servers that use strict access control.")
-(add-hook 'nntp-server-opened-hook 'nntp-send-mode-reader)
+  "*Hook used for sending commands to the server at startup.  
+The default value is `nntp-send-mode-reader', whick makes an innd
+server spawn an nnrpd server.  Another useful function to put in this
+hook might be `nntp-send-authinfo', which will prompt for a password
+to allow posting from the server.  Note that this is only necessary to
+do on servers that use strict access control.")  (add-hook
+'nntp-server-opened-hook 'nntp-send-mode-reader)
+
+(defvar nntp-open-server-function 'nntp-open-network-stream
+  "*Function used for connecting to a remote system.
+It will be called with the address of the remote system.
+
+Two pre-made functions are `nntp-open-network-stream', which is the
+default, and simply connects to some port or other on the remote
+system (see nntp-port-number).  The other is `nntp-open-rlogin', which
+does an rlogin on the remote system, and then does a telnet to the
+NNTP server available there (see nntp-rlogin-parameters).")
+
+(defvar nntp-rlogin-parameters '("telnet" "${NNTPSERVER:=localhost}" "nntp")
+  "*Parameters to `nntp-open-login'.
+That function may be used as `nntp-open-server-function'.  In that
+case, this list will be used as the parameter list given to rsh.")
+
+(defvar nntp-rlogin-user-name nil
+  "*User name on remote system when using the rlogin connect method.")
 
 (defvar nntp-address nil
-  "The name of the NNTP server.")
+  "*The name of the NNTP server.")
 
 (defvar nntp-port-number "nntp"
-  "Port number to connect to.")
+  "*Port number to connect to.")
 
 (defvar nntp-large-newsgroup 50
-  "The number of the articles which indicates a large newsgroup.
+  "*The number of the articles which indicates a large newsgroup.
 If the number of the articles is greater than the value, verbose
 messages will be shown to indicate the current status.")
 
 (defvar nntp-buggy-select (memq system-type '(fujitsu-uts))
-  "t if your select routine is buggy.
+  "*t if your select routine is buggy.
 If the select routine signals error or fall into infinite loop while
 waiting for the server response, the variable must be set to t.  In
 case of Fujitsu UTS, it is set to T since `accept-process-output'
 doesn't work properly.")
 
 (defvar nntp-maximum-request 400
-  "The maximum number of the requests sent to the NNTP server at one time.
+  "*The maximum number of the requests sent to the NNTP server at one time.
 If Emacs hangs up while retrieving headers, set the variable to a
 lower value.")
 
 (defvar nntp-debug-read 10000
-  "Display '...' every 10Kbytes of a message being received if it is non-nil.
+  "*Display '...' every 10Kbytes of a message being received if it is non-nil.
 If it is a number, dots are displayed per the number.")
 
 (defvar nntp-nov-is-evil nil
-  "If non-nil, nntp will never attempt to use XOVER when talking to the server.")
+  "*If non-nil, nntp will never attempt to use XOVER when talking to the server.")
 
 (defvar nntp-xover-commands '("XOVER" "XOVERVIEW")
-  "List of strings that are used as commands to fetch NOV lines from a server.
+  "*List of strings that are used as commands to fetch NOV lines from a server.
 The strings are tried in turn until a positive response is gotten. If
 none of the commands are successful, nntp will just grab headers one
 by one.")
 
 (defvar nntp-connection-timeout nil
-  "Number of seconds to wait before an nntp connection times out.
+  "*Number of seconds to wait before an nntp connection times out.
 If this variable is nil, which is the default, no timers are set.")
 
 (defvar nntp-news-default-headers nil
-  "If non-nil, override `mail-default-headers' when posting news.")
+  "*If non-nil, override `mail-default-headers' when posting news.")
+
+(defvar nntp-prepare-server-hook nil
+  "*Hook run before a server is opened.
+If can be used to set up a server remotely, for instance.  Say you
+have an account at the machine \"other.machine\".  This machine has
+access to an NNTP server that you can't access locally.  You could
+then use this hook to rsh to the remote machine and start a proxy NNTP
+server there that you can connect to.")
 
 
 
@@ -121,7 +147,7 @@ You'd better not use this variable in NNTP front-end program but
 instead call function `nntp-status-message' to get status message.")
 
 (defvar nntp-server-xover t)
-(defvar nntp-server-list-active-group t)
+(defvar nntp-server-list-active-group 'try)
 (defvar nntp-current-group "")
 
 
@@ -141,10 +167,11 @@ instead call function `nntp-status-message' to get status message.")
    (list 'nntp-xover-commands nntp-xover-commands)
    (list 'nntp-connection-timeout nntp-connection-timeout)
    (list 'nntp-news-default-headers nntp-news-default-headers)
+   (list 'nntp-prepare-server-hook nntp-prepare-server-hook) 
    '(nntp-server-process nil)
    '(nntp-status-string nil)
    '(nntp-server-xover t)
-   '(nntp-server-list-active-group t)
+   '(nntp-server-list-active-group 'try)
    '(nntp-current-group "")))
 
 
@@ -207,17 +234,76 @@ instead call function `nntp-status-message' to get status message.")
 	;; First, fold continuation lines.
 	(goto-char (point-min))
 	(while (re-search-forward "\\(\r?\n[ \t]+\\)+" nil t)
-	  (replace-match " " t t))
+	  (replace-match " "))
 	;; Remove all "\r"'s
 	(goto-char (point-min))
-	(while (re-search-forward "\r" nil t)
-	  (replace-match "" t t))
+	(while (search-forward "\r" nil t)
+	  (replace-match ""))
 	'headers))))
+
+
+(defun nntp-retrieve-groups (groups &optional server)
+  (nntp-possibly-change-server nil server)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (and (eq nntp-server-list-active-group 'try)
+	 (nntp-try-list-active (car groups)))
+    (erase-buffer)
+    (let ((count 0)
+	  (received 0)
+	  (last-point (point-min))
+	  (command (if nntp-server-list-active-group
+		       "LIST ACTIVE" "GROUP")))
+	(while groups
+	  (nntp-send-strings-to-server "HEAD" (car groups))
+	  (setq groups (cdr groups))
+	  (setq count (1+ count))
+	  ;; Every 400 requests we have to read the stream in
+	  ;; order to avoid deadlocks.
+	  (if (or (null groups)       ;All requests have been sent.
+		  (zerop (% count nntp-maximum-request)))
+	      (progn
+		(accept-process-output)
+		(while (progn
+			 (goto-char last-point)
+			 ;; Count replies.
+			 (while (re-search-forward "^[0-9]" nil t)
+			   (setq received (1+ received)))
+			 (setq last-point (point))
+			 (< received count))
+		  (nntp-accept-response)))))
+	;; Wait for the reply from the final command.
+	(goto-char (point-max))
+	(re-search-backward "^[0-9]" nil t)
+	(if (looking-at "^[23]")
+	    (while (progn
+		     (goto-char (- (point-max) 3))
+		     (not (looking-at "^\\.\r$")))
+	      (nntp-accept-response)))
+
+	;; Now all replies are received. We remove CRs.
+	(goto-char (point-min))
+	(while (search-forward "\r" nil t)
+	  (replace-match ""))
+
+	(if nntp-server-list-active-group
+	    (progn
+	      ;; We have read active entries, so we just delete the
+	      ;; superfluos gunk.
+	      (goto-char (point-min))
+	      (while (re-search-forward "^[\\.234]" nil t)
+		(delete-region (match-beginning 0) 
+			       (progn (forward-line 1) (point))))
+	      'active)
+	  'group))))
 
 (defun nntp-open-server (server &optional defs)
   (nnheader-init-server-buffer)
   (if (nntp-server-opened server)
       t
+    (if (or (stringp (car defs))
+	    (numberp (car defs)))
+	(setq defs (cons (list 'nntp-server-port (car defs)) (cdr defs))))
     (or (assq 'nntp-address defs)
 	(setq defs (append defs (list (list 'nntp-address server)))))
     (if (and nntp-current-server
@@ -233,6 +319,7 @@ instead call function `nntp-status-message' to get status message.")
 	    (setq nntp-server-alist (delq state nntp-server-alist)))
 	(nnheader-set-init-variables nntp-server-variables defs)))
     (setq nntp-current-server server)
+    (run-hooks 'nntp-prepare-server-hook)
     (nntp-open-server-semi-internal nntp-address)))
 
 (defun nntp-close-server (&optional server)
@@ -320,37 +407,33 @@ instead call function `nntp-status-message' to get status message.")
   "Select GROUP."
   (if dont-check
       (nntp-send-command "^.*\r$" "GROUP" group)
+    (cond ((eq nntp-server-list-active-group 'try)
+	   (or (nntp-try-list-active group)
+	       (nntp-send-command "^.*\r$" "GROUP" group)))
+	  (nntp-server-list-active-group
+	   (nntp-list-active-group group))
+	  (t
+	   (nntp-send-command "^.*\r$" "GROUP" group)))
     (if nntp-server-list-active-group
 	(save-excursion
-	  (nntp-list-active-group group server)
 	  (set-buffer nntp-server-buffer)
 	  (goto-char (point-min))
-	  ;; We look at the output from `nntp-list-active-group' to
-	  ;; see whether the server supports this command.  If it
-	  ;; does, we transform the output.  
-	  (cond ((looking-at "2[0-9]+")
-		 (forward-line 1)
-		 (if (looking-at "[^ ]+[ \t]+\\([0-9]\\)[ \t]+\\([0-9]\\)")
-		     (let ((end (progn (goto-char (match-beginning 1))
-				       (read (current-buffer))))
-			   (beg (read (current-buffer))))
-		       (and (> beg end)
-			    (setq end 0
-				  beg 0))
-		       (erase-buffer)
-		       (insert (format "211 %s %d %d %d\n"
-				       group (max (- (1+ end) beg) 0)
-				       beg end)))))
-		;; The server does not support the command.
-		((looking-at "5[0-9]+")
-		 (setq nntp-server-list-active-group nil)
-		 (nntp-send-command "^.*\r$" "GROUP" group))
-		;; The server supports it, but the group doesn't
-		;; exist. 
-		((looking-at "4[0-9]+")
-		 (erase-buffer)
-		 nil)))
-      (nntp-send-command "^.*\r$" "GROUP" group))))
+	  (forward-line 1)
+	  (if (looking-at "[^ ]+[ \t]+\\([0-9]\\)[ \t]+\\([0-9]\\)")
+	      (let ((end (progn (goto-char (match-beginning 1))
+				(read (current-buffer))))
+		    (beg (read (current-buffer))))
+		(and (> beg end)
+		     (setq end 0
+			   beg 0))
+		(erase-buffer)
+		(insert (format "211 %s %d %d %d\n"
+				group (max (- (1+ end) beg) 0)
+				beg end))))))
+    (save-excursion
+      (set-buffer nntp-server-buffer)
+      (goto-char (point-min))
+      (looking-at "[23]"))))
 
 (defun nntp-list-active-group (group &optional server)
   (nntp-send-command "^.*\r$" "LIST ACTIVE" group))
@@ -794,8 +877,7 @@ If SERVICE, this this as the port number."
       (set-buffer nntp-server-buffer)
       (if (setq proc
 		(condition-case nil
-		    (open-network-stream 
-		     "nntpd" (current-buffer) server nntp-port-number)
+		    (funcall nntp-open-server-function server)
 		  (error nil)))
 	  (progn
 	    (setq nntp-server-process proc)
@@ -807,6 +889,14 @@ If SERVICE, this this as the port number."
 	    ;; It is possible to change kanji-fileio-code in this hook.
 	    (run-hooks 'nntp-server-hook)
 	    nntp-server-process)))))
+
+(defun nntp-open-network-stream (server)
+  (open-network-stream "nntpd" nntp-server-buffer server nntp-port-number))
+
+(defun nntp-open-rlogin-stream (server)
+  (apply 'start-process "nntpd" nntp-server-buffer "rsh" 
+	 "-l" (or nntp-rlogin-user-name (user-login-name))
+	 server nntp-rlogin-parameters))
 
 (defun nntp-close-server-internal (&optional server)
   "Close connection to news server."
@@ -859,6 +949,16 @@ defining this function as macro."
 	   (setq result (nntp-request-group newsgroup server))
 	   (setq nntp-current-group newsgroup)))
     result))
+
+(defun nntp-try-list-active (group)
+  (nntp-list-active-group group)
+  (save-excursion
+    (set-buffer nntp-server-buffer)
+    (goto-char (point-min))
+    (cond ((looking-at "5[0-9]+")
+	   (setq nntp-server-list-active-group nil))
+	  (t
+	   (setq nntp-server-list-active-group t)))))
 
 (provide 'nntp)
 

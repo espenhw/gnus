@@ -70,9 +70,22 @@ Optional argument YANK means yank original article.
 The command \\[mh-yank-cur-msg] yank the original message into current buffer."
   ;; First of all, prepare mhe mail buffer.
   ;; Bug fix by Timo METZEMAKERS <metzemakers@labri.u-bordeaux.fr>.
-  (pop-to-buffer gnus-article-buffer)
-  (let (from cc subject date to reply-to (buffer (current-buffer)))
+  (let (from cc subject date to reply-to to-userid orig-to
+	     (config (current-window-configuration))
+	     (buffer))
+    (pop-to-buffer gnus-article-buffer)
+    (setq buffer (current-buffer))
     (save-restriction
+      (or gnus-user-login-name ;; here cuz we need it here.
+	  (setq gnus-user-login-name (or (getenv "USER")
+					 (getenv "LOGNAME"))))
+      ;; junk which mh-send did, but now we do. also better, cuz doesn't
+      ;; call delete-other-windows when we don't want it to.
+      (if gnus-split-window 
+	  (progn
+	    (split-window-vertically)
+	    ))
+
       (gnus-article-show-all-headers)	;I don't think this is really needed.
       (setq from (gnus-fetch-field "from")
 	    subject (let ((subject (or (gnus-fetch-field "subject")
@@ -82,11 +95,23 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 			  (concat "Re: " subject) subject))
 	    reply-to (gnus-fetch-field "reply-to")
 	    cc (gnus-fetch-field "cc")
+	    orig-to (or (gnus-fetch-field "to") "")
 	    date (gnus-fetch-field "date"))
-      (setq mh-show-buffer buffer)
       (setq to (or reply-to from))
+      (setq to-userid (mail-strip-quoted-names orig-to))
+      (if (or (string-match "," orig-to)
+	      (not (string-match (substring to-userid 0 (string-match "@" to-userid))
+			    gnus-user-login-name)))
+	  (setq cc (concat (if cc (concat cc ", ") "") orig-to))
+	)
+;      (setq mh-show-buffer buffer)
+
       (mh-find-path)
-      (mh-send to (or cc "") subject)
+      (mh-goto-header-end 0)
+      (if gnus-split-window
+	  (mh-send-sub to (or cc "") (or subject "(None)") config) ;; Erik Selberg 1/23/94
+	(mh-send to (or cc "") subject) ;; shouldn't use according to mhe
+	)
       (save-excursion
 	(mh-insert-fields
 	 "In-reply-to:"
@@ -95,8 +120,10 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
 	  "'s message of " date)))
       (setq mh-sent-from-folder buffer)
       (setq mh-sent-from-msg 1)
+      (setq mh-previous-window-config config)
       ))
-  ;; Then, yank original article if requested.
+
+    ;; Then, yank original article if requested.
   (if yank
       (let ((last (point)))
 	(mh-yank-cur-msg)
@@ -112,30 +139,35 @@ The command \\[mh-yank-cur-msg] yank the original message into current buffer."
   (let ((to (read-string "To: "))
  	(cc (read-string "Cc: "))
  	(buffer (current-buffer))
- 	subject beg)
+ 	subject
+	(config (current-window-configuration))) ;; need to add this - erik
     ;;(gnus-article-show-all-headers)
+    (if gnus-split-window
+	(progn
+	  (pop-to-buffer gnus-article-buffer)
+	  (split-window-vertically)
+	  (setq buffer (current-buffer))
+	  ))
     (setq subject
 	  (concat "[" gnus-newsgroup-name "] "
 		  ;;(mail-strip-quoted-names (gnus-fetch-field "From")) ": "
 		  (or (gnus-fetch-field "subject") "")))
     (setq mh-show-buffer buffer)
     (mh-find-path)
-    (mh-send to (or cc "") subject)
+    (if gnus-split-window
+	(mh-send-sub to (or cc "") subject config)
+      (mh-send to (or cc "") subject)
+      )
     (save-excursion
       (goto-char (point-max))
-      (setq beg (point))
       (insert "\n------- Forwarded Message\n\n")
       (insert-buffer buffer)
       (goto-char (point-max))
       (insert "\n------- End of Forwarded Message\n")
-      (goto-char beg)
-      (while (setq beg (next-single-property-change (point) 'invisible))
-	(goto-char beg)
-	(delete-region beg (or (next-single-property-change 
-				(point) 'invisible)
-			       (point-max))))
       (setq mh-sent-from-folder buffer)
-      (setq mh-sent-from-msg 1))))
+      (setq mh-sent-from-msg 1)
+      (setq mh-previous-window-config config)
+      )))
 
 (defun gnus-mail-other-window-using-mhe ()
   "Compose mail other window using mh-e."
