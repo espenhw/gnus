@@ -103,15 +103,15 @@
      (when (gnus-buffer-exists-p buf)
        (kill-buffer buf))))
 
-(fset 'gnus-point-at-bol
-      (if (fboundp 'point-at-bol)
-	  'point-at-bol
-	'line-beginning-position))
+(defalias 'gnus-point-at-bol
+  (if (fboundp 'point-at-bol)
+      'point-at-bol
+    'line-beginning-position))
 
-(fset 'gnus-point-at-eol
-      (if (fboundp 'point-at-eol)
-	  'point-at-eol
-	'line-end-position))
+(defalias 'gnus-point-at-eol
+  (if (fboundp 'point-at-eol)
+      'point-at-eol
+    'line-end-position))
 
 (defun gnus-delete-first (elt list)
   "Delete by side effect the first occurrence of ELT as a member of LIST."
