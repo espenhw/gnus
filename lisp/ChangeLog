@@ -1,5 +1,7 @@
 2000-07-15  Simon Josefsson  <simon@josefsson.org>
 
+	* gnus-cus.el (gnus-group-parameters, banner): Type is regexp.
+
 	* imap.el (imap): 
 	(imap-kerberos4-program): 
 	(imap-gssapi-program): 

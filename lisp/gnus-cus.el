@@ -155,9 +155,9 @@ rules as described later).")
 
     (banner (choice :tag "Banner"
 		    (const signature)
-		    string
+		    regexp
 		    (const :tag "None" nil)) "\
-Banner to be removed from articles.")
+Regular expression matching banners to be removed from articles.")
 
     (auto-expire (const :tag "Automatic Expire" t) "\
 All articles that are read will be marked as expirable.")
